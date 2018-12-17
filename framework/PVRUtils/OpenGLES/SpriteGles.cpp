@@ -8,8 +8,11 @@ MatrixGroup_)
 //!\cond NO_DOXYGEN
 #include "SpriteGles.h"
 #include "UIRendererGles.h"
-#include "PVRCore/Strings/StringHash.h"
+#include "PVRCore/strings/StringHash.h"
 #include "PVRUtils/OpenGLES/ErrorsGles.h"
+#include "PVRCore/strings/UnicodeConverter.h"
+#include "PVRCore/types/GpuDataTypes.h"
+
 using glm::vec2;
 using glm::vec3;
 using glm::vec4;
@@ -141,9 +144,10 @@ void Image_::onRender(uint64_t parentId) const
 	{
 		gl::ActiveTexture(GL_TEXTURE7);
 		_uiRenderer->_uiStateTracker.activeTextureUnitChanged = true;
+		_uiRenderer->_uiStateTracker.activeTextureUnit = GL_TEXTURE7;
 	}
 
-	if (_uiRenderer->_uiStateTracker.boundTexture != getTexture())
+	if (static_cast<GLuint>(_uiRenderer->_uiStateTracker.boundTexture) != getTexture() || _uiRenderer->_uiStateTracker.activeTextureUnitChanged)
 	{
 		debugThrowOnApiError("Image_::onRender bind texture");
 		gl::BindTexture(GL_TEXTURE_2D, getTexture());
@@ -199,16 +203,17 @@ void Image_::onRender(uint64_t parentId) const
 }
 
 Image_::Image_(UIRenderer& uiRenderer, const GLuint& texture, uint32_t width, uint32_t height, bool useMipmaps, const GLuint& sampler)
-	: Sprite_(uiRenderer), _texW(width), _texH(height), _texture(texture), _isTextureDirty(true), _sampler(sampler)
+	: Sprite_(uiRenderer), _texW(width), _texH(height), _texture(texture), _sampler(sampler), _isTextureDirty(true)
 {
 	if (_uiRenderer->_uiStateTracker.activeTextureUnit != GL_TEXTURE7)
 	{
 		_uiRenderer->_uiStateTracker.activeTextureUnit = GL_TEXTURE7;
 		gl::ActiveTexture(GL_TEXTURE7);
-		_uiRenderer->_uiStateTracker.activeProgramChanged = true;
+		_uiRenderer->_uiStateTracker.activeTextureUnitChanged = true;
+		_uiRenderer->_uiStateTracker.activeTextureUnit = GL_TEXTURE7;
 	}
 
-	if (_uiRenderer->_uiStateTracker.boundTexture != _texture)
+	if (static_cast<GLuint>(_uiRenderer->_uiStateTracker.boundTexture) != _texture || _uiRenderer->_uiStateTracker.activeTextureUnitChanged)
 	{
 		_uiRenderer->_uiStateTracker.boundTexture = _texture;
 		gl::BindTexture(GL_TEXTURE_2D, _texture);
@@ -352,12 +357,20 @@ Font_::Font_(UIRenderer& uiRenderer, const GLuint& tex2D, const Texture& tex, co
 	_texture = tex2D;
 	if (uiRenderer.getApiVersion() > Api::OpenGLES2)
 	{
-		_sampler = (sampler != 0) ? sampler : (tex.getLayersSize().numMipLevels > 1) ? uiRenderer.getSamplerTrilinear() : uiRenderer.getSamplerBilinear();
+		_sampler = (sampler != 0) ? sampler : uiRenderer.getSamplerBilinear();
 		gl::BindSampler(7, _sampler);
 		_uiRenderer->_uiStateTracker.sampler7 = _sampler;
 	}
+	else
+	{
+		gl::BindTexture(GL_TEXTURE_2D, tex2D);
+		gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+		gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	}
 
-	if (tex.getPixelFormat().getNumChannels() == 1 && tex.getPixelFormat().getChannelContent(0) == 'a')
+	if ((tex.getPixelFormat().getNumChannels() == 1 && tex.getPixelFormat().getChannelContent(0) == 'a') ||
+		(tex.getPixelFormat().getNumChannels() == 4 && tex.getPixelFormat().getChannelContent(3) == 'a'))
 	{
 		_alphaRenderingMode = true;
 	}
@@ -378,7 +391,7 @@ uint32_t TextElement_::updateVertices(float fZPos, float xPos, float yPos, const
 
 	yPos -= font.getAscent();
 
-	yPos = glm::round<float>(yPos);
+	yPos = glm::round(yPos);
 
 	float preXPos = xPos; // The original offset (after screen scale modification) of the X coordinate.
 
@@ -401,7 +414,7 @@ uint32_t TextElement_::updateVertices(float fZPos, float xPos, float yPos, const
 		if (text[index] == 0x0A)
 		{
 			xPos = preXPos;
-			yPos -= glm::round<float>(static_cast<float>(font.getFontLineSpacing()));
+			yPos -= glm::round(static_cast<float>(font.getFontLineSpacing()));
 			continue;
 		}
 
@@ -411,14 +424,14 @@ uint32_t TextElement_::updateVertices(float fZPos, float xPos, float yPos, const
 		// No character found. Add a space.
 		if (charIndex == Font_::InvalidChar)
 		{
-			xPos += glm::round<float>(static_cast<float>(font.getSpaceWidth()));
+			xPos += glm::round(static_cast<float>(font.getSpaceWidth()));
 			continue;
 		}
 
 		kernOffset = 0;
 		fYOffset = static_cast<float>(font.getYOffset(charIndex));
 		// The A offset. Could include overhang or underhang.
-		fAOff = glm::round<float>(static_cast<float>(font.getCharMetrics(charIndex).xOff));
+		fAOff = glm::round(static_cast<float>(font.getCharMetrics(charIndex).xOff));
 
 		if (index < numCharsInString - 1)
 		{
@@ -436,7 +449,7 @@ uint32_t TextElement_::updateVertices(float fZPos, float xPos, float yPos, const
 		pVertices[vertexCount + 0].tv = (charUV.vt);
 		_boundingRect.add(pVertices[vertexCount + 0].x, pVertices[vertexCount + 0].y, 0.0f);
 
-		pVertices[vertexCount + 1].x = (xPos + fAOff + glm::round<float>(static_cast<float>(font.getRectangle(charIndex).width)));
+		pVertices[vertexCount + 1].x = (xPos + fAOff + glm::round(static_cast<float>(font.getRectangle(charIndex).width)));
 		pVertices[vertexCount + 1].y = (yPos + fYOffset);
 		pVertices[vertexCount + 1].z = (fZPos);
 		pVertices[vertexCount + 1].rhw = (1.0f);
@@ -445,14 +458,14 @@ uint32_t TextElement_::updateVertices(float fZPos, float xPos, float yPos, const
 		_boundingRect.add(pVertices[vertexCount + 1].x, pVertices[vertexCount + 1].y, 0.0f);
 
 		pVertices[vertexCount + 2].x = (xPos + fAOff);
-		pVertices[vertexCount + 2].y = (yPos + fYOffset - glm::round<float>(static_cast<float>(font.getRectangle(charIndex).height)));
+		pVertices[vertexCount + 2].y = (yPos + fYOffset - glm::round(static_cast<float>(font.getRectangle(charIndex).height)));
 		pVertices[vertexCount + 2].z = (fZPos);
 		pVertices[vertexCount + 2].rhw = (1.0f);
 		pVertices[vertexCount + 2].tu = (charUV.ul);
 		pVertices[vertexCount + 2].tv = (charUV.vb);
 		_boundingRect.add(pVertices[vertexCount + 2].x, pVertices[vertexCount + 2].y, 0.0f);
 
-		pVertices[vertexCount + 3].x = (xPos + fAOff + glm::round<float>(static_cast<float>(font.getRectangle(charIndex).width)));
+		pVertices[vertexCount + 3].x = (xPos + fAOff + glm::round(static_cast<float>(font.getRectangle(charIndex).width)));
 		pVertices[vertexCount + 3].y = (yPos + fYOffset - glm::round(static_cast<float>(font.getRectangle(charIndex).height)));
 		pVertices[vertexCount + 3].z = (fZPos);
 		pVertices[vertexCount + 3].rhw = (1.0f);
@@ -461,7 +474,7 @@ uint32_t TextElement_::updateVertices(float fZPos, float xPos, float yPos, const
 		_boundingRect.add(pVertices[vertexCount + 3].x, pVertices[vertexCount + 3].y, 0.0f);
 
 		// Add on this characters width
-		xPos = xPos + glm::round<float>(static_cast<float>(font.getCharMetrics(charIndex).characterWidth + kernOffset) /** renderParam.scale.x*/);
+		xPos = xPos + glm::round(static_cast<float>(font.getCharMetrics(charIndex).characterWidth + kernOffset) /** renderParam.scale.x*/);
 		vertexCount += 4;
 	}
 	return vertexCount;
@@ -556,10 +569,9 @@ void TextElement_::onRender() const
 void Text_::calculateMvp(uint64_t parentIds, glm::mat4 const& srt, const glm::mat4& viewProj, pvr::Rectanglei const& viewport) const
 {
 	_textElement->updateText();
-	math::AxisAlignedBox lastBox = _boundingRect;
-	_boundingRect = _textElement->getBoundingBox();
-	if (_isPositioningDirty || _boundingRect != lastBox)
+	if (_isPositioningDirty || _boundingRect != _textElement->getBoundingBox())
 	{
+		_boundingRect = _textElement->getBoundingBox();
 		vec2 offset;
 
 		switch (_anchor)
@@ -593,18 +605,26 @@ void Text_::calculateMvp(uint64_t parentIds, glm::mat4 const& srt, const glm::ma
 			break;
 		}
 
+		// Read the following bottom to top - this is because of how the optimised GLM functions work
+
+		// We are assuming the identity matrix so we can optimise out the operations
 		_cachedMatrix = glm::mat4(1.f);
 
-		//_matrix = translate(vec3(pos, 0.f));  //5: Finally, move it to its position
-		// ASSUMING IDENTITY MATRIX! - OPTIMIZE OUT THE OPS
+		// 5: Translate - move it to its position - we are assuming the identity matrix so we can optimise out the operations
+		//_cachedMatrix = translate(vec3(_position.x, _position.y, 0.f));
 
-		// 4: Bring to Pixel (screen) coordinates.
-		// BECAUSE _matrix IS A PURE ROTATION, WE CAN OPTIMISE THE 1st SCALING OP.
-		// THIS IS : _matrix = scale(_matrix, toScreenCoordinates);
+		// 4: Bring to Pixel (screen) coordinates. Because the matrix is a pure rotation we can optimise our the 1st scaling operation
+		// glm::vec3 toScreenCoordinates(1.f / _uiRenderer->getRenderingDimX(), 1.f / _uiRenderer->getRenderingDimY(), 1.f);
+		// _cachedMatrix = scale(_cachedMatrix, toScreenCoordinates);
 
-		_cachedMatrix = glm::rotate(_cachedMatrix, _rotation, vec3(0.f, 0.f, 1.f)); // 3: rotate it
-		_cachedMatrix = glm::scale(_cachedMatrix, vec3(_scale, 1.f)); // 2: Scale
-		_cachedMatrix = glm::translate(_cachedMatrix, vec3(-offset, 0.f)); // 1: Anchor the text properly
+		// 3: Rotate - do the rotation around the anchor
+		_cachedMatrix = glm::rotate(_cachedMatrix, _rotation, vec3(0.f, 0.f, 1.f));
+
+		// 2: Scale - do the scale around the anchor
+		_cachedMatrix = glm::scale(_cachedMatrix, vec3(_scale, 1.f));
+
+		// 1: Anchor the text properly - translate the anchor to the origin
+		_cachedMatrix = glm::translate(_cachedMatrix, vec3(-offset, 0.f));
 		_isPositioningDirty = false;
 	}
 
@@ -622,7 +642,7 @@ void Text_::onRender(uint64_t parentId) const
 {
 	if (_uiRenderer->getApiVersion() > Api::OpenGLES2)
 	{
-		if (_uiRenderer->_uiStateTracker.sampler7 != getFont()->getSampler())
+		if (static_cast<GLuint>(_uiRenderer->_uiStateTracker.sampler7) != getFont()->getSampler())
 		{
 			gl::BindSampler(7, getFont()->getSampler());
 			_uiRenderer->_uiStateTracker.sampler7 = getFont()->getSampler();
@@ -634,9 +654,10 @@ void Text_::onRender(uint64_t parentId) const
 	{
 		gl::ActiveTexture(GL_TEXTURE7);
 		_uiRenderer->_uiStateTracker.activeTextureUnitChanged = true;
+		_uiRenderer->_uiStateTracker.activeTextureUnit = GL_TEXTURE7;
 	}
 
-	if (_uiRenderer->_uiStateTracker.boundTexture != getFont()->getTexture() || _uiRenderer->_uiStateTracker.boundTextureChanged)
+	if (static_cast<GLuint>(_uiRenderer->_uiStateTracker.boundTexture) != getFont()->getTexture() || _uiRenderer->_uiStateTracker.activeTextureUnitChanged)
 	{
 		gl::BindTexture(GL_TEXTURE_2D, getFont()->getTexture());
 		_uiRenderer->_uiStateTracker.boundTexture = getFont()->getTexture();

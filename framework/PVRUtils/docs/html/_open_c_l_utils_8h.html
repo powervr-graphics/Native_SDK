@@ -15,7 +15,7 @@
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="IMGdoxygen.css" rel="stylesheet" type="text/css"/>
-<link rel="shortcut icon" href="http://www.imgtec.com/images/img.ico">
+<link rel="shortcut icon" type="image/x-icon" href="img.ico">
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
+      <a href="https://www.imgtec.com/developers/" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRUtils</span> Documentation</a>
    <tbody>
@@ -95,24 +95,24 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcl_1_1_open_c_l_error.html">cl::OpenCLError</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A simple std::runtime_error wrapper for throwing exceptions when receiving OpenCL errors. <a href="classcl_1_1_open_c_l_error.html#details">More...</a><br/></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classclutils_1_1_open_c_l_error.html">clutils::OpenCLError</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A simple std::runtime_error wrapper for throwing exceptions when receiving OpenCL errors. <a href="classclutils_1_1_open_c_l_error.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:aad3eaf9767ff1a0eb6aeb3ba673f2e5e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><b>cl::createOpenCLContext</b> (cl::Platform &amp;outPlatform, cl::Device &amp;outDevice, cl::Context &amp;outContext, cl::CommandQueue &amp;outQueue, cl_command_queue_properties queue_properties=0, cl_device_type device_type=CL_DEVICE_TYPE_ALL, const char *const platformName=NULL, cl_int *err=0)</td></tr>
-<tr class="memdesc:aad3eaf9767ff1a0eb6aeb3ba673f2e5e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an OpenCL context. <a href="#aad3eaf9767ff1a0eb6aeb3ba673f2e5e">More...</a><br/></td></tr>
-<tr class="separator:aad3eaf9767ff1a0eb6aeb3ba673f2e5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aeb33dfff814be053288daecf3affb45a"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><b>cl::getOpenCLError</b> (cl_int error)</td></tr>
-<tr class="memdesc:aeb33dfff814be053288daecf3affb45a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a string representation of an OpenCL error code. <a href="#aeb33dfff814be053288daecf3affb45a">More...</a><br/></td></tr>
-<tr class="separator:aeb33dfff814be053288daecf3affb45a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a63e4f41991fa06e65c8035c0c42aa4a5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><b>cl::isExtensionSupported</b> (const cl::Platform &amp;platform, const char *extension)</td></tr>
-<tr class="memdesc:a63e4f41991fa06e65c8035c0c42aa4a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines whether the given OpenCL extension is supported. <a href="#a63e4f41991fa06e65c8035c0c42aa4a5">More...</a><br/></td></tr>
-<tr class="separator:a63e4f41991fa06e65c8035c0c42aa4a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab3a4c66ce86af26d3da1364f25e6d481"><td class="memItemLeft" align="right" valign="top">cl::Program&#160;</td><td class="memItemRight" valign="bottom"><b>cl::loadKernel</b> (const cl::Context &amp;ctx, const cl::Device &amp;device, pvr::Stream &amp;kernelSource, const char *compilerOptions=0, const char *const *defines=0, uint32_t defineCount=0)</td></tr>
-<tr class="memdesc:ab3a4c66ce86af26d3da1364f25e6d481"><td class="mdescLeft">&#160;</td><td class="mdescRight">Loads a kernel program. <a href="#ab3a4c66ce86af26d3da1364f25e6d481">More...</a><br/></td></tr>
-<tr class="separator:ab3a4c66ce86af26d3da1364f25e6d481"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad56f71e24c0f1dd9281e4467a8f30c7d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><b>clutils::createOpenCLContext</b> (cl_platform_id &amp;outPlatform, cl_device_id &amp;outDevice, cl_context &amp;outContext, cl_command_queue &amp;outQueue, cl_command_queue_properties queue_properties=0, cl_device_type device_type=CL_DEVICE_TYPE_ALL, const char *const platformName=NULL, cl_int *err=0)</td></tr>
+<tr class="memdesc:ad56f71e24c0f1dd9281e4467a8f30c7d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an OpenCL context. <a href="#ad56f71e24c0f1dd9281e4467a8f30c7d">More...</a><br/></td></tr>
+<tr class="separator:ad56f71e24c0f1dd9281e4467a8f30c7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1b99d982eca08172913b3572d34d38b2"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><b>clutils::getOpenCLError</b> (cl_int error)</td></tr>
+<tr class="memdesc:a1b99d982eca08172913b3572d34d38b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a string representation of an OpenCL error code. <a href="#a1b99d982eca08172913b3572d34d38b2">More...</a><br/></td></tr>
+<tr class="separator:a1b99d982eca08172913b3572d34d38b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a520fb6b6e8840e06c7b07812487503bb"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><b>clutils::isExtensionSupported</b> (cl_platform_id platform, const char *extension)</td></tr>
+<tr class="memdesc:a520fb6b6e8840e06c7b07812487503bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines whether the given OpenCL extension is supported. <a href="#a520fb6b6e8840e06c7b07812487503bb">More...</a><br/></td></tr>
+<tr class="separator:a520fb6b6e8840e06c7b07812487503bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a17d2617b2429dbb806a5e598aebc5c43"><td class="memItemLeft" align="right" valign="top">cl_program&#160;</td><td class="memItemRight" valign="bottom"><b>clutils::loadKernel</b> (const cl_context &amp;ctx, const cl_device_id &amp;device, pvr::Stream &amp;kernelSource, const char *compilerOptions=0, const char *const *defines=0, uint32_t defineCount=0)</td></tr>
+<tr class="memdesc:a17d2617b2429dbb806a5e598aebc5c43"><td class="mdescLeft">&#160;</td><td class="mdescRight">Loads a kernel program. <a href="#a17d2617b2429dbb806a5e598aebc5c43">More...</a><br/></td></tr>
+<tr class="separator:a17d2617b2429dbb806a5e598aebc5c43"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Contains utility functions and helpers for working with OpenCL. </p>

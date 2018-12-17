@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['lights',['lights',['../structpvr_1_1assets_1_1_model_1_1_internal_data.html#a05b696b896e046f94fdbd0c7af675b18',1,'pvr::assets::Model::InternalData']]],
-  ['linearattenuation',['linearAttenuation',['../structpvr_1_1assets_1_1_light_1_1_internal_data.html#adedba0ef0b8bf613bcf7c7bb80fd3b6d',1,'pvr::assets::Light::InternalData']]],
-  ['loader',['loader',['../structpvr_1_1async_1_1_texture_load_future__.html#ac6dfaf430f539cc483da22998ff5ac24',1,'pvr::async::TextureLoadFuture_']]],
-  ['location',['location',['../structpvr_1_1assets_1_1effect_1_1_attribute_semantic.html#ad745c546f863b3cdddbc755e4252087a',1,'pvr::assets::effect::AttributeSemantic']]]
+  ['parentindex',['parentIndex',['../structpvr_1_1assets_1_1_model_1_1_node_1_1_internal_data.html#a0baf9be88dab02f2b4aef047a29b4ec7',1,'pvr::assets::Model::Node::InternalData']]],
+  ['positionindices',['positionIndices',['../structpvr_1_1assets_1_1_animation_data_1_1_internal_data.html#a6694d9cfce3063e28e9be52fbd76784a',1,'pvr::assets::AnimationData::InternalData']]],
+  ['primitivedata',['primitiveData',['../structpvr_1_1assets_1_1_mesh_1_1_internal_data.html#a1b0b9b8ad132c6a5a0d046f5fd97b086',1,'pvr::assets::Mesh::InternalData']]],
+  ['primitivetype',['primitiveType',['../structpvr_1_1assets_1_1_mesh_1_1_mesh_info.html#a79e0c9700dc43d5feda2178a881555bb',1,'pvr::assets::Mesh::MeshInfo']]]
 ];

@@ -58,12 +58,12 @@ END
 // RCDATA
 //
 /////////////////////////////////////////////////////////////////////////////
-// RCDATA: Assets (scenes, shaders, effects, textures...)
-arial_36.pvr		RCDATA		"..\\..\\..\\assets\\IntroducingUIRenderer\\arial_36.pvr"
-starjout_60.pvr		RCDATA		"..\\..\\..\\assets\\IntroducingUIRenderer\\starjout_60.pvr"
-title_36.pvr		RCDATA		"..\\..\\..\\assets\\IntroducingUIRenderer\\title_36.pvr"
-title_46.pvr		RCDATA		"..\\..\\..\\assets\\IntroducingUIRenderer\\title_46.pvr"
-title_56.pvr		RCDATA		"..\\..\\..\\assets\\IntroducingUIRenderer\\title_56.pvr"
+// RCDATA: Assets (scenes,  effects, textures...)
+arial_36_rgb.pvr		RCDATA		"..\\..\\..\\assets\\IntroducingUIRenderer\\arial_36_rgb.pvr"
+starjout_60_rgb.pvr		RCDATA		"..\\..\\..\\assets\\IntroducingUIRenderer\\starjout_60_rgb.pvr"
+title_36_rgb.pvr		RCDATA		"..\\..\\..\\assets\\IntroducingUIRenderer\\title_36_rgb.pvr"
+title_46_rgb.pvr		RCDATA		"..\\..\\..\\assets\\IntroducingUIRenderer\\title_46_rgb.pvr"
+title_56_rgb.pvr		RCDATA		"..\\..\\..\\assets\\IntroducingUIRenderer\\title_56_rgb.pvr"
 Text.txt		RCDATA		"..\\..\\..\\assets\\IntroducingUIRenderer\\Text.txt"
 titletext.txt		RCDATA		"..\\..\\..\\assets\\IntroducingUIRenderer\\titletext.txt"
 

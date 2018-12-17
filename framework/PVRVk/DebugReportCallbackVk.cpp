@@ -41,6 +41,7 @@ DebugReportCallback_::~DebugReportCallback_()
 			if (isEnabled())
 			{
 				_instance->getVkBindings().vkDestroyDebugReportCallbackEXT(_instance->getVkHandle(), getVkHandle(), nullptr);
+				_vkHandle = VK_NULL_HANDLE;
 			}
 			_instance.reset();
 		}

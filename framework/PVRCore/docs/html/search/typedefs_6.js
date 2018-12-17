@@ -1,6 +1,7 @@
 var searchData=
 [
-  ['pointertype',['PointerType',['../classpvr_1_1async_1_1_i_framework_async_result.html#ac2389a7b868955c43b03f7c14158c039',1,'pvr::async::IFrameworkAsyncResult']]],
-  ['producertoken',['ProducerToken',['../classpvr_1_1_locked_queue.html#ab03b5e25fac48e7bef00c5508590f558',1,'pvr::LockedQueue']]],
-  ['ptr_5ftype',['ptr_type',['../classpvr_1_1_buffer_stream.html#a06da2b86907df2ceb86577d5e004a6a6',1,'pvr::BufferStream::ptr_type()'],['../classpvr_1_1_stream.html#aa0cecaaaa443ce5895d8c3d69dcdeec2',1,'pvr::Stream::ptr_type()']]]
+  ['rectangle3df',['Rectangle3Df',['../namespacepvr.html#afc19de2d5b6952c2d5471033aa4f2563',1,'pvr']]],
+  ['rectangle3di',['Rectangle3Di',['../namespacepvr.html#a799b34b4c6caf281d54db6a9756dc39d',1,'pvr']]],
+  ['rectanglef',['Rectanglef',['../namespacepvr.html#aba0728db2b6aa21ad82b263a102fec44',1,'pvr']]],
+  ['rectanglei',['Rectanglei',['../namespacepvr.html#a779802ae077693e9183007cfbedf47d4',1,'pvr']]]
 ];

@@ -11,4 +11,6 @@ if (!hasProperty('NO_FRAMEWORK_BUILD')) {
 	project(':PVRShell').projectDir=file('../../../../framework/PVRShell/build-android')
 	include('PVRUtilsVk')
 	project(':PVRUtilsVk').projectDir=file('../../../../framework/PVRUtils/Vulkan/build-android')
+	include('PVRPfx')
+	project(':PVRPfx').projectDir=file('../../../../framework/PVRPfx/build-android')
 }

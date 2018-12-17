@@ -15,7 +15,7 @@
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="IMGdoxygen.css" rel="stylesheet" type="text/css"/>
-<link rel="shortcut icon" href="http://www.imgtec.com/images/img.ico">
+<link rel="shortcut icon" type="image/x-icon" href="img.ico">
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
+      <a href="https://www.imgtec.com/developers/" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRCore</span> Documentation</a>
    <tbody>
@@ -118,27 +118,21 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ae96015420201f3dd55441a95cf0de762"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpvr_1_1_asset_reader.html#a002fc10f03728e2ced71019d0b64f140">AssetHandle</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_asset_reader.html#ae96015420201f3dd55441a95cf0de762">getAssetHandle</a> ()</td></tr>
 <tr class="memdesc:ae96015420201f3dd55441a95cf0de762"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a new <a class="el" href="classpvr_1_1_asset.html" title="An Asset represents an object that can be stored and loaded. Models, Textures, Effects and similar al...">Asset</a>. Uses the (static) AssetType::createWithReader function to create a new asset that will be wrapped in a RefCountedResource to that asset. <a href="#ae96015420201f3dd55441a95cf0de762">More...</a><br/></td></tr>
 <tr class="separator:ae96015420201f3dd55441a95cf0de762"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a53e1cfa9e2868e123d215e37d88c8fb7"><td class="memItemLeft" align="right" valign="top">virtual std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_asset_reader.html#a53e1cfa9e2868e123d215e37d88c8fb7">getSupportedFileExtensions</a> ()=0</td></tr>
-<tr class="memdesc:a53e1cfa9e2868e123d215e37d88c8fb7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Implement this to return a list of all supported file extensions. Implement this function in your <a class="el" href="classpvr_1_1_asset_reader.html" title="Base class for an AssetReader, a class that can read Assets from a provided Stream.">AssetReader</a>. <a href="#a53e1cfa9e2868e123d215e37d88c8fb7">More...</a><br/></td></tr>
-<tr class="separator:a53e1cfa9e2868e123d215e37d88c8fb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afd0c4fed4e52dabf63995ccedf7dc7f5"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_asset_reader.html#afd0c4fed4e52dabf63995ccedf7dc7f5">hasAssetsLeftToLoad</a> ()=0</td></tr>
-<tr class="memdesc:afd0c4fed4e52dabf63995ccedf7dc7f5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Implement this function: Query if this object has assets to read (other has not been used yet, has been reset, or is reading a stream with multiple assets . <a href="#afd0c4fed4e52dabf63995ccedf7dc7f5">More...</a><br/></td></tr>
-<tr class="separator:afd0c4fed4e52dabf63995ccedf7dc7f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5fbc7964da3f45757f07a7fc903e71de"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_asset_reader.html#a5fbc7964da3f45757f07a7fc903e71de">hasAssetStream</a> ()</td></tr>
 <tr class="memdesc:a5fbc7964da3f45757f07a7fc903e71de"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if this <a class="el" href="classpvr_1_1_asset_reader.html" title="Base class for an AssetReader, a class that can read Assets from a provided Stream.">AssetReader</a> assets stream is loaded. <a href="#a5fbc7964da3f45757f07a7fc903e71de">More...</a><br/></td></tr>
 <tr class="separator:a5fbc7964da3f45757f07a7fc903e71de"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9f751fdba7f08b0a544b03fe9bde446a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_asset_reader.html#a9f751fdba7f08b0a544b03fe9bde446a">newAssetStream</a> (<a class="el" href="classpvr_1_1_stream.html#aa0cecaaaa443ce5895d8c3d69dcdeec2">Stream::ptr_type</a> assetStream)</td></tr>
-<tr class="memdesc:a9f751fdba7f08b0a544b03fe9bde446a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize with a new asset stream without open it.  <a href="#a9f751fdba7f08b0a544b03fe9bde446a">More...</a><br/></td></tr>
+<tr class="memdesc:a9f751fdba7f08b0a544b03fe9bde446a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize with a new asset stream without open it. <a href="#a9f751fdba7f08b0a544b03fe9bde446a">More...</a><br/></td></tr>
 <tr class="separator:a9f751fdba7f08b0a544b03fe9bde446a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7f51e982c8bf8635c9e4a6b8ef8e28fd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_asset_reader.html#a7f51e982c8bf8635c9e4a6b8ef8e28fd">openAssetStream</a> ()</td></tr>
-<tr class="memdesc:a7f51e982c8bf8635c9e4a6b8ef8e28fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Open the (Already set) asset stream. <a href="#a7f51e982c8bf8635c9e4a6b8ef8e28fd">More...</a><br/></td></tr>
+<tr class="memitem:a7f51e982c8bf8635c9e4a6b8ef8e28fd"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7f51e982c8bf8635c9e4a6b8ef8e28fd"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>openAssetStream</b> ()</td></tr>
 <tr class="separator:a7f51e982c8bf8635c9e4a6b8ef8e28fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abbac11966aa4cd1b623373ff9d91be2a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_asset_reader.html#abbac11966aa4cd1b623373ff9d91be2a">openAssetStream</a> (<a class="el" href="classpvr_1_1_stream.html#aa0cecaaaa443ce5895d8c3d69dcdeec2">Stream::ptr_type</a> assetStream)</td></tr>
-<tr class="memdesc:abbac11966aa4cd1b623373ff9d91be2a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize with a new asset stream and open it. <a href="#abbac11966aa4cd1b623373ff9d91be2a">More...</a><br/></td></tr>
-<tr class="separator:abbac11966aa4cd1b623373ff9d91be2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa16c2c3240b40b7e7420235c36323cd2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_asset_reader.html#aa16c2c3240b40b7e7420235c36323cd2">readAsset</a> (AssetType &amp;asset)</td></tr>
 <tr class="memdesc:aa16c2c3240b40b7e7420235c36323cd2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read asset. <a class="el" href="classpvr_1_1_asset.html" title="An Asset represents an object that can be stored and loaded. Models, Textures, Effects and similar al...">Asset</a> stream has to be opended before reading asset. <a href="#aa16c2c3240b40b7e7420235c36323cd2">More...</a><br/></td></tr>
 <tr class="separator:aa16c2c3240b40b7e7420235c36323cd2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeeddce54489c8176fce23cef9b0fb911"><td class="memItemLeft" align="right" valign="top">AssetType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_asset_reader.html#aeeddce54489c8176fce23cef9b0fb911">readAsset</a> ()</td></tr>
+<tr class="memdesc:aeeddce54489c8176fce23cef9b0fb911"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read asset. <a class="el" href="classpvr_1_1_asset.html" title="An Asset represents an object that can be stored and loaded. Models, Textures, Effects and similar al...">Asset</a> stream has to be opended before reading asset. <a href="#aeeddce54489c8176fce23cef9b0fb911">More...</a><br/></td></tr>
+<tr class="separator:aeeddce54489c8176fce23cef9b0fb911"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
@@ -323,62 +317,6 @@ template&lt;typename AssetType&gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="a53e1cfa9e2868e123d215e37d88c8fb7"></a>
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename AssetType&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual std::vector&lt;std::string&gt; <a class="el" href="classpvr_1_1_asset_reader.html">pvr::AssetReader</a>&lt; AssetType &gt;::getSupportedFileExtensions </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Implement this to return a list of all supported file extensions. Implement this function in your <a class="el" href="classpvr_1_1_asset_reader.html" title="Base class for an AssetReader, a class that can read Assets from a provided Stream.">AssetReader</a>.</p>
-<dl class="section return"><dt>Returns</dt><dd>Return a list of all supported file extensions (without the dot).</dd></dl>
-
-</div>
-</div>
-<a class="anchor" id="afd0c4fed4e52dabf63995ccedf7dc7f5"></a>
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename AssetType&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual bool <a class="el" href="classpvr_1_1_asset_reader.html">pvr::AssetReader</a>&lt; AssetType &gt;::hasAssetsLeftToLoad </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Implement this function: Query if this object has assets to read (other has not been used yet, has been reset, or is reading a stream with multiple assets .</p>
-<dl class="section return"><dt>Returns</dt><dd>Implement this to return true "readNextAsset" can be called, otherwise return false</dd></dl>
-
-</div>
-</div>
 <a class="anchor" id="a5fbc7964da3f45757f07a7fc903e71de"></a>
 <div class="memitem">
 <div class="memproto">
@@ -431,7 +369,7 @@ template&lt;typename AssetType&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>Initialize with a new asset stream without open it. </p>
+<p>Initialize with a new asset stream without open it.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">assetStream</td><td>stream to load</td></tr>
@@ -439,69 +377,6 @@ template&lt;typename AssetType&gt; </div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>True if successful, otherwise false (if the stream is invalid or not readable)</dd></dl>
-
-</div>
-</div>
-<a class="anchor" id="a7f51e982c8bf8635c9e4a6b8ef8e28fd"></a>
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename AssetType&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void <a class="el" href="classpvr_1_1_asset_reader.html">pvr::AssetReader</a>&lt; AssetType &gt;::openAssetStream </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Open the (Already set) asset stream.</p>
-<dl class="section return"><dt>Returns</dt><dd>True if successful, otherwise false (if the stream is invalid, not readable or was unable to open)</dd></dl>
-
-</div>
-</div>
-<a class="anchor" id="abbac11966aa4cd1b623373ff9d91be2a"></a>
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename AssetType&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void <a class="el" href="classpvr_1_1_asset_reader.html">pvr::AssetReader</a>&lt; AssetType &gt;::openAssetStream </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="classpvr_1_1_stream.html#aa0cecaaaa443ce5895d8c3d69dcdeec2">Stream::ptr_type</a>&#160;</td>
-          <td class="paramname"><em>assetStream</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Initialize with a new asset stream and open it.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">assetStream</td><td>The stream to load</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>True if successful, otherwise false (if the stream is invalid, not readable or was unable to open)</dd></dl>
 
 </div>
 </div>
@@ -519,6 +394,40 @@ template&lt;typename AssetType&gt; </div>
           <td>(</td>
           <td class="paramtype">AssetType &amp;&#160;</td>
           <td class="paramname"><em>asset</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Read asset. <a class="el" href="classpvr_1_1_asset.html" title="An Asset represents an object that can be stored and loaded. Models, Textures, Effects and similar al...">Asset</a> stream has to be opended before reading asset.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">asset</td><td>type type of asset to read</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true on success</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="aeeddce54489c8176fce23cef9b0fb911"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename AssetType&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">AssetType <a class="el" href="classpvr_1_1_asset_reader.html">pvr::AssetReader</a>&lt; AssetType &gt;::readAsset </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -590,7 +499,7 @@ template&lt;typename AssetType&gt; </div>
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>/usr/buildxl/buildroot/sdk/branch/SDK/framework/PVRCore/IO/<a class="el" href="_asset_reader_8h_source.html">AssetReader.h</a></li>
+<li>/usr/buildxl/buildroot/sdk/branch/SDK/framework/PVRCore/stream/<a class="el" href="_asset_reader_8h_source.html">AssetReader.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.4-->

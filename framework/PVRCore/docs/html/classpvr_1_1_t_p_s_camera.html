@@ -15,7 +15,7 @@
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="IMGdoxygen.css" rel="stylesheet" type="text/css"/>
-<link rel="shortcut icon" href="http://www.imgtec.com/images/img.ico">
+<link rel="shortcut icon" type="image/x-icon" href="img.ico">
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
+      <a href="https://www.imgtec.com/developers/" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRCore</span> Documentation</a>
    <tbody>
@@ -96,6 +96,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a86014d7341f7e8ae6c244471f73cd7d7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_t_p_s_camera.html#a86014d7341f7e8ae6c244471f73cd7d7">TPSCamera</a> ()</td></tr>
 <tr class="memdesc:a86014d7341f7e8ae6c244471f73cd7d7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default Constructor <a href="#a86014d7341f7e8ae6c244471f73cd7d7">More...</a><br/></td></tr>
 <tr class="separator:a86014d7341f7e8ae6c244471f73cd7d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa98b74e8dd2f0f059fc7dbf72f74aec1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa98b74e8dd2f0f059fc7dbf72f74aec1"></a>
+const glm::vec3 &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getCameraPosition</b> () const </td></tr>
+<tr class="separator:aa98b74e8dd2f0f059fc7dbf72f74aec1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a666a599fd2ac60b3415762b6fc29ff1c"><td class="memItemLeft" align="right" valign="top">const glm::mat4 &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_t_p_s_camera.html#a666a599fd2ac60b3415762b6fc29ff1c">getViewMatrix</a> () const </td></tr>
 <tr class="memdesc:a666a599fd2ac60b3415762b6fc29ff1c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates and returns the camera view matrix based on the most up to date camera properties if they have been updated (are dirty) or returns the last view matrix caluclated. <a href="#a666a599fd2ac60b3415762b6fc29ff1c">More...</a><br/></td></tr>
 <tr class="separator:a666a599fd2ac60b3415762b6fc29ff1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -106,7 +109,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:ac402f2cce8cf87d3555506a9ecef2047"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the height from the floor <a href="#ac402f2cce8cf87d3555506a9ecef2047">More...</a><br/></td></tr>
 <tr class="separator:ac402f2cce8cf87d3555506a9ecef2047"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a26d642e7dce8ce7703b21af8bb393142"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_t_p_s_camera.html#a26d642e7dce8ce7703b21af8bb393142">setTargetLookAngle</a> (float angleDeg)</td></tr>
-<tr class="memdesc:a26d642e7dce8ce7703b21af8bb393142"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the camera target look angle. <a href="#a26d642e7dce8ce7703b21af8bb393142">More...</a><br/></td></tr>
+<tr class="memdesc:a26d642e7dce8ce7703b21af8bb393142"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the camera target look angle. Tn this implementation, angle 0 means the camera is facing the north. <a href="#a26d642e7dce8ce7703b21af8bb393142">More...</a><br/></td></tr>
 <tr class="separator:a26d642e7dce8ce7703b21af8bb393142"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a274cd9ce857a18535986fd2e2b6b17f3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_t_p_s_camera.html#a274cd9ce857a18535986fd2e2b6b17f3">setTargetPosition</a> (const glm::vec3 &amp;targetPos)</td></tr>
 <tr class="memdesc:a274cd9ce857a18535986fd2e2b6b17f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the camera target position i.e. the 'lookat' value. <a href="#a274cd9ce857a18535986fd2e2b6b17f3">More...</a><br/></td></tr>
@@ -259,7 +262,7 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Set the camera target look angle.</p>
+<p>Set the camera target look angle. Tn this implementation, angle 0 means the camera is facing the north.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">angleDeg</td><td>The camera's new angle in degrees</td></tr>
@@ -366,7 +369,7 @@ Public Member Functions</h2></td></tr>
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>/usr/buildxl/buildroot/sdk/branch/SDK/framework/PVRCore/<a class="el" href="_t_p_s_camera_8h_source.html">TPSCamera.h</a></li>
+<li>/usr/buildxl/buildroot/sdk/branch/SDK/framework/PVRCore/cameras/<a class="el" href="_t_p_s_camera_8h_source.html">TPSCamera.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.4-->

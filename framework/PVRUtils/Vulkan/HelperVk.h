@@ -7,11 +7,10 @@
 
 #pragma once
 #include "PVRCore/PVRCore.h"
-#include "PVRCore/IO/FileStream.h"
+#include "PVRCore/stream/FileStream.h"
 #include "PVRAssets/Model.h"
 #include "PVRAssets/PVRAssets.h"
-#include "PVRAssets/TextureLoad.h"
-#include "PVRAssets/FileIO/PFXParser.h"
+#include "PVRCore/texture/TextureLoad.h"
 #include "PVRVk/DeviceVk.h"
 #include "PVRVk/PhysicalDeviceVk.h"
 #include "PVRVk/InstanceVk.h"
@@ -25,6 +24,7 @@
 #include "PVRVk/FramebufferVk.h"
 #include "PVRVk/SwapchainVk.h"
 #include "PVRUtils/Vulkan/MemoryAllocator.h"
+#include "PVRUtils/MultiObject.h"
 
 namespace pvr {
 namespace utils {
@@ -140,7 +140,7 @@ inline void setImageLayout(pvrvk::Image image, pvrvk::ImageLayout oldLayout, pvr
 
 /// <summary>Uploads an image to GPU memory and returns the created image view and associated image.</summary>
 /// <param name="device">The device to use to create the image and image view.</param>
-/// <param name="texture">The source pvr::assets::Texture object from which to take the texture data.</param>
+/// <param name="texture">The source pvr::Texture object from which to take the texture data.</param>
 /// <param name="allowDecompress">Specifies whether the texture can be decompressed as part of the image upload.</param>
 /// <param name="cmdPool">A command pool from which to allocate a temporary command buffer to carry out the upload operations.</param>
 /// <param name="queue">A queue to which the upload operations should be submitted to.</param>
@@ -153,13 +153,13 @@ inline void setImageLayout(pvrvk::Image image, pvrvk::ImageLayout oldLayout, pvr
 /// Valid flags include e_DEDICATED_MEMORY_BIT and e_MAPPED_BIT. e_DEDICATED_MEMORY_BIT indicates that the allocation should have its own memory block.
 /// e_MAPPED_BIT indicates memory will be persistently mapped respectively.</param>
 pvrvk::ImageView uploadImageAndViewSubmit(pvrvk::Device& device, const Texture& texture, bool allowDecompress, pvrvk::CommandPool& cmdPool, pvrvk::Queue& queue,
-	pvrvk::ImageUsageFlags usageFlags = pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout finalLayout = pvrvk::ImageLayout::e_GENERAL,
+	pvrvk::ImageUsageFlags usageFlags = pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout finalLayout = pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL,
 	vma::Allocator* stagingBufferAllocator = nullptr, vma::Allocator* imageAllocator = nullptr,
 	vma::AllocationCreateFlags imageAllocationCreateFlags = vma::AllocationCreateFlags::e_NONE);
 
 /// <summary>Uploads an image to gpu. The upload command and staging buffers are recorded in the commandbuffer.</summary>
 /// <param name="device">The device to use to create the image and image view.</param>
-/// <param name="texture">The source pvr::assets::Texture object from which to take the texture data.</param>
+/// <param name="texture">The source pvr::Texture object from which to take the texture data.</param>
 /// <param name="allowDecompress">Specifies whether the texture can be decompressed as part of the image upload.</param>
 /// <param name="commandBuffer">A secondary command buffer to which the upload operations are be added. Note that the upload will not
 /// be guranteed to be complete until the command buffer is submitted to a queue with appropriate synchronisation.</param>
@@ -172,13 +172,13 @@ pvrvk::ImageView uploadImageAndViewSubmit(pvrvk::Device& device, const Texture& 
 /// e_MAPPED_BIT indicates memory will be persistently mapped respectively.</param>
 /// <returns>The loaded image object.</returns>
 pvrvk::ImageView uploadImageAndView(pvrvk::Device& device, const Texture& texture, bool allowDecompress, pvrvk::SecondaryCommandBuffer& commandBuffer,
-	pvrvk::ImageUsageFlags usageFlags = pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout finalLayout = pvrvk::ImageLayout::e_GENERAL,
+	pvrvk::ImageUsageFlags usageFlags = pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout finalLayout = pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL,
 	vma::Allocator* stagingBufferAllocator = nullptr, vma::Allocator* imageAllocator = nullptr,
 	vma::AllocationCreateFlags imageAllocationCreateFlags = vma::AllocationCreateFlags::e_NONE);
 
 /// <summary>Upload image to gpu. The upload command and staging buffers are recorded in the commandbuffer.</summary>
 /// <param name="device">The device to use to create the image and image view.</param>
-/// <param name="texture">The source pvr::assets::Texture object from which to take the texture data.</param>
+/// <param name="texture">The source pvr::Texture object from which to take the texture data.</param>
 /// <param name="allowDecompress">Specifies whether the texture can be decompressed as part of the image upload.</param>
 /// <param name="commandBuffer">A command buffer to which the upload operations should be added. Note that the upload will not
 /// be guranteed to be complete until the command buffer is submitted to a queue with appropriate synchronisation.</param>
@@ -191,7 +191,26 @@ pvrvk::ImageView uploadImageAndView(pvrvk::Device& device, const Texture& textur
 /// e_MAPPED_BIT indicates memory will be persistently mapped respectively.</param>
 /// <returns>The image object.</returns>
 pvrvk::ImageView uploadImageAndView(pvrvk::Device& device, const Texture& texture, bool allowDecompress, pvrvk::CommandBuffer& commandBuffer,
-	pvrvk::ImageUsageFlags usageFlags = pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout finalLayout = pvrvk::ImageLayout::e_GENERAL,
+	pvrvk::ImageUsageFlags usageFlags = pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout finalLayout = pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL,
+	vma::Allocator* stagingBufferAllocator = nullptr, vma::Allocator* imageAllocator = nullptr,
+	vma::AllocationCreateFlags imageAllocationCreateFlags = vma::AllocationCreateFlags::e_NONE);
+
+/// <summary>Upload image to gpu. The upload command and staging buffers are recorded in the commandbuffer.</summary>
+/// <param name="device">The device to use to create the image.</param>
+/// <param name="texture">The source pvr::Texture object from which to take the texture data.</param>
+/// <param name="allowDecompress">Specifies whether the texture can be decompressed as part of the image upload.</param>
+/// <param name="commandBuffer">A command buffer to which the upload operations should be added. Note that the upload will not
+/// be guranteed to be complete until the command buffer is submitted to a queue with appropriate synchronisation.</param>
+/// <param name="usageFlags">A command buffer to add the pipelineBarrier for the image transition.</param>
+/// <param name="finalLayout">The final image layout the image will be transitioned to.</param>
+/// <param name="stagingBufferAllocator">A VMA allocator used to allocate memory for the created staging buffer.</param>
+/// <param name="imageAllocator">A VMA allocator used to allocate memory for the created image.</param>
+/// <param name="imageAllocationCreateFlags">VMA Allocation creation flags. These flags can be used to control how and where the memory is allocated from.
+/// Valid flags include e_DEDICATED_MEMORY_BIT and e_MAPPED_BIT. e_DEDICATED_MEMORY_BIT indicates that the allocation should have its own memory block.
+/// e_MAPPED_BIT indicates memory will be persistently mapped respectively.</param>
+/// <returns>The image object.</returns>
+pvrvk::Image uploadImage(pvrvk::Device& device, const Texture& texture, bool allowDecompress, pvrvk::CommandBuffer& commandBuffer,
+	pvrvk::ImageUsageFlags usageFlags = pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout finalLayout = pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL,
 	vma::Allocator* stagingBufferAllocator = nullptr, vma::Allocator* imageAllocator = nullptr,
 	vma::AllocationCreateFlags imageAllocationCreateFlags = vma::AllocationCreateFlags::e_NONE);
 
@@ -204,7 +223,7 @@ pvrvk::ImageView uploadImageAndView(pvrvk::Device& device, const Texture& textur
 /// <param name="assetProvider">Specifies an asset provider to use for loading the texture from system memory.</param>
 /// <param name="usageFlags">Specifies the usage flags for the image being created.</param>
 /// <param name="finalLayout">The final image layout the image will be transitioned to.</param>
-/// <param name="outAssetTexture">A pointer to a created pvr::assets::Texture.</param>
+/// <param name="outAssetTexture">A pointer to a created pvr::texture.</param>
 /// <param name="stagingBufferAllocator">A VMA allocator used to allocate memory for the created staging buffer.</param>
 /// <param name="imageAllocator">A VMA allocator used to allocate memory for the created image.</param>
 /// <param name="imageAllocationCreateFlags">VMA Allocation creation flags. These flags can be used to control how and where the memory is allocated from.
@@ -212,8 +231,8 @@ pvrvk::ImageView uploadImageAndView(pvrvk::Device& device, const Texture& textur
 /// e_MAPPED_BIT indicates memory will be persistently mapped respectively.</param>
 /// <returns>The Image Object uploaded.</returns>
 pvrvk::ImageView loadAndUploadImageAndView(pvrvk::Device& device, const char* fileName, bool allowDecompress, pvrvk::CommandBuffer& commandBuffer, IAssetProvider& assetProvider,
-	pvrvk::ImageUsageFlags usageFlags = pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout finalLayout = pvrvk::ImageLayout::e_GENERAL, Texture* outAssetTexture = nullptr,
-	vma::Allocator* stagingBufferAllocator = nullptr, vma::Allocator* imageAllocator = nullptr,
+	pvrvk::ImageUsageFlags usageFlags = pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout finalLayout = pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL,
+	Texture* outAssetTexture = nullptr, vma::Allocator* stagingBufferAllocator = nullptr, vma::Allocator* imageAllocator = nullptr,
 	vma::AllocationCreateFlags imageAllocationCreateFlags = vma::AllocationCreateFlags::e_NONE);
 
 /// <summary>Load and upload image to gpu. The upload command and staging buffers are recorded in the commandbuffer.</summary>
@@ -225,7 +244,7 @@ pvrvk::ImageView loadAndUploadImageAndView(pvrvk::Device& device, const char* fi
 /// <param name="assetProvider">Specifies an asset provider to use for loading the texture from system memory.</param>
 /// <param name="usageFlags">Specifies the usage flags for the image being created.</param>
 /// <param name="finalLayout">The final image layout the image will be transitioned to.</param>
-/// <param name="outAssetTexture">A pointer to a created pvr::assets::Texture.</param>
+/// <param name="outAssetTexture">A pointer to a created pvr::texture.</param>
 /// <param name="stagingBufferAllocator">A VMA allocator used to allocate memory for the created staging buffer.</param>
 /// <param name="imageAllocator">A VMA allocator used to allocate memory for the created image.</param>
 /// <param name="imageAllocationCreateFlags">VMA Allocation creation flags. These flags can be used to control how and where the memory is allocated from.
@@ -233,28 +252,7 @@ pvrvk::ImageView loadAndUploadImageAndView(pvrvk::Device& device, const char* fi
 /// e_MAPPED_BIT indicates memory will be persistently mapped respectively.</param>
 /// <returns>The Image Object uploaded.</returns>
 pvrvk::Image loadAndUploadImage(pvrvk::Device& device, const char* fileName, bool allowDecompress, pvrvk::CommandBuffer& commandBuffer, IAssetProvider& assetProvider,
-	pvrvk::ImageUsageFlags usageFlags = pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout finalLayout = pvrvk::ImageLayout::e_GENERAL, Texture* outAssetTexture = nullptr,
-	vma::Allocator* stagingBufferAllocator = nullptr, vma::Allocator* imageAllocator = nullptr,
-	vma::AllocationCreateFlags imageAllocationCreateFlags = vma::AllocationCreateFlags::e_NONE);
-
-/// <summary>Load and upload image to gpu. The upload command and staging buffers are recorded in the commandbuffer.</summary>
-/// <param name="device">The device to use to create the image and image view.</param>
-/// <param name="fileName">The filename of a source texture from which to take the texture data.</param>
-/// <param name="allowDecompress">Specifies whether the texture can be decompressed as part of the image upload.</param>
-/// <param name="commandBuffer">A secondary command buffer to which the upload operations should be added. Note that the upload will not
-/// be guranteed to be complete until the command buffer is submitted to a queue with appropriate synchronisation.</param>
-/// <param name="assetProvider">Specifies an asset provider to use for loading the texture from system memory.</param>
-/// <param name="usageFlags">Specifies the usage flags for the image being created.</param>
-/// <param name="finalLayout">The final image layout the image will be transitioned to.</param>
-/// <param name="outAssetTexture">A pointer to a created pvr::assets::Texture.</param>
-/// <param name="stagingBufferAllocator">A VMA allocator used to allocate memory for the created staging buffer.</param>
-/// <param name="imageAllocator">A VMA allocator used to allocate memory for the created image.</param>
-/// <param name="imageAllocationCreateFlags">VMA Allocation creation flags. These flags can be used to control how and where the memory is allocated from.
-/// Valid flags include e_DEDICATED_MEMORY_BIT and e_MAPPED_BIT. e_DEDICATED_MEMORY_BIT indicates that the allocation should have its own memory block.
-/// e_MAPPED_BIT indicates memory will be persistently mapped respectively.</param>
-/// <returns>The Image Object uploaded.</returns>
-pvrvk::ImageView loadAndUploadImageAndView(pvrvk::Device& device, const char* fileName, bool allowDecompress, pvrvk::SecondaryCommandBuffer& commandBuffer,
-	IAssetProvider& assetProvider, pvrvk::ImageUsageFlags usageFlags = pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout finalLayout = pvrvk::ImageLayout::e_GENERAL,
+	pvrvk::ImageUsageFlags usageFlags = pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout finalLayout = pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL,
 	Texture* outAssetTexture = nullptr, vma::Allocator* stagingBufferAllocator = nullptr, vma::Allocator* imageAllocator = nullptr,
 	vma::AllocationCreateFlags imageAllocationCreateFlags = vma::AllocationCreateFlags::e_NONE);
 
@@ -267,7 +265,28 @@ pvrvk::ImageView loadAndUploadImageAndView(pvrvk::Device& device, const char* fi
 /// <param name="assetProvider">Specifies an asset provider to use for loading the texture from system memory.</param>
 /// <param name="usageFlags">Specifies the usage flags for the image being created.</param>
 /// <param name="finalLayout">The final image layout the image will be transitioned to.</param>
-/// <param name="outAssetTexture">A pointer to a created pvr::assets::Texture.</param>
+/// <param name="outAssetTexture">A pointer to a created pvr::texture.</param>
+/// <param name="stagingBufferAllocator">A VMA allocator used to allocate memory for the created staging buffer.</param>
+/// <param name="imageAllocator">A VMA allocator used to allocate memory for the created image.</param>
+/// <param name="imageAllocationCreateFlags">VMA Allocation creation flags. These flags can be used to control how and where the memory is allocated from.
+/// Valid flags include e_DEDICATED_MEMORY_BIT and e_MAPPED_BIT. e_DEDICATED_MEMORY_BIT indicates that the allocation should have its own memory block.
+/// e_MAPPED_BIT indicates memory will be persistently mapped respectively.</param>
+/// <returns>The Image Object uploaded.</returns>
+pvrvk::ImageView loadAndUploadImageAndView(pvrvk::Device& device, const char* fileName, bool allowDecompress, pvrvk::SecondaryCommandBuffer& commandBuffer,
+	IAssetProvider& assetProvider, pvrvk::ImageUsageFlags usageFlags = pvrvk::ImageUsageFlags::e_SAMPLED_BIT,
+	pvrvk::ImageLayout finalLayout = pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, Texture* outAssetTexture = nullptr, vma::Allocator* stagingBufferAllocator = nullptr,
+	vma::Allocator* imageAllocator = nullptr, vma::AllocationCreateFlags imageAllocationCreateFlags = vma::AllocationCreateFlags::e_NONE);
+
+/// <summary>Load and upload image to gpu. The upload command and staging buffers are recorded in the commandbuffer.</summary>
+/// <param name="device">The device to use to create the image and image view.</param>
+/// <param name="fileName">The filename of a source texture from which to take the texture data.</param>
+/// <param name="allowDecompress">Specifies whether the texture can be decompressed as part of the image upload.</param>
+/// <param name="commandBuffer">A secondary command buffer to which the upload operations should be added. Note that the upload will not
+/// be guranteed to be complete until the command buffer is submitted to a queue with appropriate synchronisation.</param>
+/// <param name="assetProvider">Specifies an asset provider to use for loading the texture from system memory.</param>
+/// <param name="usageFlags">Specifies the usage flags for the image being created.</param>
+/// <param name="finalLayout">The final image layout the image will be transitioned to.</param>
+/// <param name="outAssetTexture">A pointer to a created pvr::texture.</param>
 /// <param name="stagingBufferAllocator">A VMA allocator used to allocate memory for the created staging buffer.</param>
 /// <param name="imageAllocator">A VMA allocator used to allocate memory for the created image.</param>
 /// <param name="imageAllocationCreateFlags">VMA Allocation creation flags. These flags can be used to control how and where the memory is allocated from.
@@ -275,8 +294,8 @@ pvrvk::ImageView loadAndUploadImageAndView(pvrvk::Device& device, const char* fi
 /// e_MAPPED_BIT indicates memory will be persistently mapped respectively.</param>
 /// <returns>The Image Object uploaded.</returns>
 pvrvk::Image loadAndUploadImage(pvrvk::Device& device, const char* fileName, bool allowDecompress, pvrvk::SecondaryCommandBuffer& commandBuffer, IAssetProvider& assetProvider,
-	pvrvk::ImageUsageFlags usageFlags = pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout finalLayout = pvrvk::ImageLayout::e_GENERAL, Texture* outAssetTexture = nullptr,
-	vma::Allocator* stagingBufferAllocator = nullptr, vma::Allocator* imageAllocator = nullptr,
+	pvrvk::ImageUsageFlags usageFlags = pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout finalLayout = pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL,
+	Texture* outAssetTexture = nullptr, vma::Allocator* stagingBufferAllocator = nullptr, vma::Allocator* imageAllocator = nullptr,
 	vma::AllocationCreateFlags imageAllocationCreateFlags = vma::AllocationCreateFlags::e_NONE);
 
 /// <summary>The ImageUpdateInfo struct.</summary>
@@ -302,7 +321,6 @@ struct ImageUpdateInfo
 	// 3D texture Only. Derive all states above Except arrayIndex
 	int32_t offsetZ; //!< Valid for 3D texture updates only
 	uint32_t depth; //!< Valid for texture updates only
-
 	ImageUpdateInfo()
 		: offsetX(0), imageWidth(1), dataWidth(1), mipLevel(0), data(nullptr), dataSize(0), offsetY(0), imageHeight(1), dataHeight(1), cubeFace(0), offsetZ(0), depth(1)
 	{}
@@ -340,7 +358,7 @@ inline void updateHostVisibleBuffer(pvrvk::Buffer& buffer, const void* data, VkD
 	bool unmap = false;
 	if (!buffer->getDeviceMemory()->isMapped())
 	{
-		buffer->getDeviceMemory()->map(&mapData, offset, size);
+		mapData = buffer->getDeviceMemory()->map(offset, size);
 		unmap = true;
 	}
 	else
@@ -422,6 +440,20 @@ struct QueuePopulateInfo
 
 	/// <summary>Indicates that the retrieved queue must support presentation to the provided surface.</summary>
 	pvrvk::Surface surface;
+
+	/// <summary>Specifies the priority which should be given to the retrieved queue.</summary>
+	float priority;
+
+	/// <summary>Constructor for a QueuePopulateInfo requiring that a set of queue flags is provided.</summary>
+	/// <param name="queueFlags">The queue flags the queue must support.</param>
+	/// <param name="priority">Specifies the priority which should be given to the retrieved queue.</param>
+	QueuePopulateInfo(pvrvk::QueueFlags queueFlags, float priority = 1.0f) : queueFlags(queueFlags), priority(priority) {}
+
+	/// <summary>Constructor for a QueuePopulateInfo requiring that a set of queue flags and a surface are provided.</summary>
+	/// <param name="queueFlags">The queue flags the queue must support.</param>
+	/// <param name="surface">Indicates that the retrieved queue must support presentation to the provided surface.</param>
+	/// <param name="priority">Specifies the priority which should be given to the retrieved queue.</param>
+	QueuePopulateInfo(pvrvk::QueueFlags queueFlags, pvrvk::Surface& surface, float priority = 1.0f) : queueFlags(queueFlags), surface(surface), priority(priority) {}
 };
 
 /// <summary>A structure encapsulating the family id and queue id of a particular queue retrieved via the helper function 'createDeviceAndQueues'.
@@ -502,12 +534,13 @@ struct InstanceExtensions
 
 /// <summary>Create the pvrvk::Device and the queues</summary>
 /// <param name="physicalDevice">A physical device to use for creating the logical device.</param>
-/// <param name="queueCreateFlags">A pointer to a list of QueuePopulateInfo structures specifying the required properties for each of the queues retrieved.</param>
-/// <param name="numQueueCreateFlags">The number of QueuePopulateInfo structures provided.</param>
+/// <param name="queueCreateInfos">A pointer to a list of QueuePopulateInfo structures specifying the required properties for each of the queues retrieved.</param>
+/// <param name="numQueueCreateInfos">The number of QueuePopulateInfo structures provided.</param>
 /// <param name="outAccessInfo">A pointer to a list of QueueAccessInfo structures specifying the properties for each of the queues retrieved.</param>
 /// <param name="deviceExtensions">A DeviceExtensions structure which specifyies a list device extensions to try to enable.</param>
+/// another.</param>
 /// <returns>Returns the created device</returns>
-pvrvk::Device createDeviceAndQueues(pvrvk::PhysicalDevice physicalDevice, const QueuePopulateInfo* queueCreateFlags, uint32_t numQueueCreateFlags, QueueAccessInfo* outAccessInfo,
+pvrvk::Device createDeviceAndQueues(pvrvk::PhysicalDevice physicalDevice, const QueuePopulateInfo* queueCreateInfos, uint32_t numQueueCreateInfos, QueueAccessInfo* outAccessInfo,
 	const DeviceExtensions& deviceExtensions = DeviceExtensions());
 
 /// <summary>Create a pvrvk::Swapchain using a pre-initialised pvrvk::Device and pvrvk::Surface choosing the color format of the swapchain images created from
@@ -594,22 +627,33 @@ void createSwapchainAndDepthStencilImageAndViews(pvrvk::Device& device, const pv
 /// image formats and dimensions will also be taken from the swapchain.</param>
 /// <param name="depthStencilImages">A pointer to an array of pvrvk::ImageView objects corresponding to an image to use as the depth stencil image per swap chain.</param>
 /// <param name="outFramebuffers">The created framebuffers will be returned by reference as part of outFramebuffers with each framebuffer corresponding to a single swap
-/// chain.</param> <param name="outRenderPass">The created renderpass will be returned by reference.</param> <param name="initialSwapchainLayout">Initial Layouts of the swapchain
-/// image</param> <param name="initialDepthStencilLayout">Initial Layouts of the depthstencil image</param>
+/// chain.</param>
+/// <param name="outRenderPass">The created renderpass will be returned by reference.</param>
+/// <param name="initialSwapchainLayout">Initial Layouts of the swapchain
+/// image</param>
+/// <param name="initialDepthStencilLayout">Initial Layouts of the depthstencil image</param>
+/// <param name="colorLoadOp">Attachment load operation for the color attachment</param>
+/// <param name="colorStoreOp">Attachment store operation for the color attachment</param>
+/// <param name="depthStencilLoadOp">Attachment load operation for the depth stencil attachment</param>
+/// <param name="depthStencilStoreOp">Attachment store operation for the depth stencil attachment</param>
 inline void createOnscreenFramebufferAndRenderpass(pvrvk::Swapchain& swapchain, pvrvk::ImageView* depthStencilImages, Multi<pvrvk::Framebuffer>& outFramebuffers,
 	pvrvk::RenderPass& outRenderPass, pvrvk::ImageLayout initialSwapchainLayout = pvrvk::ImageLayout::e_UNDEFINED,
-	pvrvk::ImageLayout initialDepthStencilLayout = pvrvk::ImageLayout::e_UNDEFINED)
+	pvrvk::ImageLayout initialDepthStencilLayout = pvrvk::ImageLayout::e_UNDEFINED, pvrvk::AttachmentLoadOp colorLoadOp = pvrvk::AttachmentLoadOp::e_CLEAR,
+	pvrvk::AttachmentStoreOp colorStoreOp = pvrvk::AttachmentStoreOp::e_STORE, pvrvk::AttachmentLoadOp depthStencilLoadOp = pvrvk::AttachmentLoadOp::e_CLEAR,
+	pvrvk::AttachmentStoreOp depthStencilStoreOp = pvrvk::AttachmentStoreOp::e_STORE)
 {
 	pvrvk::FramebufferCreateInfo framebufferInfos[pvrvk::FrameworkCaps::MaxSwapChains];
 	pvrvk::RenderPassCreateInfo rpInfo;
-	rpInfo.setAttachmentDescription(
-		0, pvrvk::AttachmentDescription::createColorDescription(swapchain->getImageFormat(), initialSwapchainLayout, pvrvk::ImageLayout::e_PRESENT_SRC_KHR));
+	rpInfo.setAttachmentDescription(0,
+		pvrvk::AttachmentDescription::createColorDescription(swapchain->getImageFormat(), initialSwapchainLayout, pvrvk::ImageLayout::e_PRESENT_SRC_KHR, colorLoadOp, colorStoreOp));
 
 	pvrvk::SubpassDescription subpass;
 	subpass.setColorAttachmentReference(0, pvrvk::AttachmentReference(0, pvrvk::ImageLayout::e_COLOR_ATTACHMENT_OPTIMAL));
 	if (depthStencilImages != nullptr)
 	{
-		rpInfo.setAttachmentDescription(1, pvrvk::AttachmentDescription::createDepthStencilDescription(depthStencilImages[0]->getImage()->getFormat(), initialDepthStencilLayout));
+		rpInfo.setAttachmentDescription(1,
+			pvrvk::AttachmentDescription::createDepthStencilDescription(depthStencilImages[0]->getImage()->getFormat(), initialDepthStencilLayout,
+				pvrvk::ImageLayout::e_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, depthStencilLoadOp, depthStencilStoreOp));
 		subpass.setDepthStencilAttachmentReference(pvrvk::AttachmentReference(1, pvrvk::ImageLayout::e_DEPTH_STENCIL_ATTACHMENT_OPTIMAL));
 	}
 
@@ -658,21 +702,31 @@ inline void createOnscreenFramebufferAndRenderpass(pvrvk::Swapchain& swapchain, 
 /// image formats and dimensions will also be taken from the swapchain.</param>
 /// <param name="depthStencilImages">A pointer to an array of pvrvk::ImageView objects corresponding to an image to use as the depth stencil image per swap chain.</param>
 /// <param name="outFramebuffers">The created framebuffers will be returned by reference as part of outFramebuffers with each framebuffer corresponding to a single swap
-/// chain.</param> <param name="initialSwapchainLayout">Initial Layouts of the swapchain image</param> <param name="initialDepthStencilLayout">Initial Layouts of the depthstencil
-/// image</param> <returns>Return 'True' if the framebuffer and renderpass were created successfully.</returns> <param name="initialSwapchainLayout">Initial Layouts of the
-/// swapchain image</param> <param name="initialDepthStencilLayout">Initial Layouts of the depthstencil image</param> <remarks>The renderpass will not be returned directly but can
-/// instead be retrieved via a call to outFramebuffers[i].getRenderpass()</remarks>
+/// chain.</param>
+/// <param name="initialSwapchainLayout">Initial Layouts of the swapchain image</param>
+/// <param name="initialDepthStencilLayout">Initial Layouts of the depthstencil
+/// image</param>
+/// <param name="initialSwapchainLayout">Initial Layouts of the swapchain image</param>
+/// <param name="initialDepthStencilLayout">Initial Layouts of the depthstencil image</param>
+/// <param name="colorLoadOp">Attachment load operation for the color attachment</param>
+/// <param name="colorStoreOp">Attachment store operation for the color attachment</param>
+/// <param name="depthStencilLoadOp">Attachment load operation for the depth stencil attachment</param>
+/// <param name="depthStencilStoreOp">Attachment store operation for the depth stencil attachment</param>
+/// <remarks>The renderpass will not be returned directly but can instead be retrieved via a call to outFramebuffers[i].getRenderpass()</remarks>
 inline void createOnscreenFramebufferAndRenderpass(pvrvk::Swapchain& swapchain, pvrvk::ImageView* depthStencilImages, Multi<pvrvk::Framebuffer>& outFramebuffers,
-	pvrvk::ImageLayout initialSwapchainLayout = pvrvk::ImageLayout::e_UNDEFINED, pvrvk::ImageLayout initialDepthStencilLayout = pvrvk::ImageLayout::e_UNDEFINED)
+	pvrvk::ImageLayout initialSwapchainLayout = pvrvk::ImageLayout::e_UNDEFINED, pvrvk::ImageLayout initialDepthStencilLayout = pvrvk::ImageLayout::e_UNDEFINED,
+	pvrvk::AttachmentLoadOp colorLoadOp = pvrvk::AttachmentLoadOp::e_CLEAR, pvrvk::AttachmentStoreOp colorStoreOp = pvrvk::AttachmentStoreOp::e_STORE,
+	pvrvk::AttachmentLoadOp depthStencilLoadOp = pvrvk::AttachmentLoadOp::e_CLEAR, pvrvk::AttachmentStoreOp depthStencilStoreOp = pvrvk::AttachmentStoreOp::e_STORE)
 {
 	pvrvk::RenderPass dummy;
-	createOnscreenFramebufferAndRenderpass(swapchain, depthStencilImages, outFramebuffers, dummy, initialSwapchainLayout, initialDepthStencilLayout);
+	createOnscreenFramebufferAndRenderpass(swapchain, depthStencilImages, outFramebuffers, dummy, initialSwapchainLayout, initialDepthStencilLayout, colorLoadOp, colorStoreOp,
+		depthStencilLoadOp, depthStencilStoreOp);
 }
 
 /// <summary>Fills out a pvrvk::ViewportStateCreateInfo structure setting parameters for a 'default' viewport and scissor based on the specified frame buffer dimensions.</summary>
 /// <param name="framebuffer">An input Framebuffer object from which to take dimensions used to initialise a pvrvk::ViewportStateCreateInfo structure.</param>
 /// <param name="outCreateInfo">A pvrvk::ViewportStateCreateInfo structure which will have its viewport and scissor members set based on the framebuffers dimensions.</param>
-inline void populateViewportStateCreateInfo(const pvrvk::Framebuffer& framebuffer, pvrvk::ViewportStateCreateInfo& outCreateInfo)
+inline void populateViewportStateCreateInfo(const pvrvk::Framebuffer& framebuffer, pvrvk::PipelineViewportStateCreateInfo& outCreateInfo)
 {
 	outCreateInfo.setViewportAndScissor(0,
 		pvrvk::Viewport(0.f, 0.f, static_cast<float>(framebuffer->getDimensions().getWidth()), static_cast<float>(framebuffer->getDimensions().getHeight())),
@@ -685,8 +739,8 @@ struct VertexBindings
 	/// <summary>Effect semantic.</summary>
 	std::string semanticName;
 
-	/// <summary>Binding id.</summary>
-	int16_t binding;
+	/// <summary>shader attribute location.</summary>
+	int16_t location;
 };
 
 /// <summary>Represents a shader Reflective binding, tying a Semantic name to an Attribute variable name.</summary>
@@ -708,7 +762,7 @@ struct VertexBindings_Name
 /// <param name="numOutBuffers">A pointer to an unsigned integer which will set to specify the number of buffers required to create
 /// buffers for to use the mesh vertex attributes.</param>
 inline void populateInputAssemblyFromMesh(const assets::Mesh& mesh, const VertexBindings* bindingMap, uint16_t numBindings,
-	pvrvk::PipelineVertexInputStateCreateInfo& vertexCreateInfo, pvrvk::InputAssemblerStateCreateInfo& inputAssemblerCreateInfo, uint16_t* numOutBuffers = nullptr)
+	pvrvk::PipelineVertexInputStateCreateInfo& vertexCreateInfo, pvrvk::PipelineInputAssemblerStateCreateInfo& inputAssemblerCreateInfo, uint16_t* numOutBuffers = nullptr)
 {
 	vertexCreateInfo.clear();
 	if (numOutBuffers)
@@ -729,7 +783,7 @@ inline void populateInputAssemblyFromMesh(const assets::Mesh& mesh, const Vertex
 			}
 
 			const pvrvk::VertexInputAttributeDescription attribDesc(
-				bindingMap[current].binding, attr->getDataIndex(), convertToPVRVkVertexInputFormat(layout.dataType, layout.width), layout.offset);
+				bindingMap[current].location, attr->getDataIndex(), convertToPVRVkVertexInputFormat(layout.dataType, layout.width), layout.offset);
 
 			const pvrvk::VertexInputBindingDescription bindingDesc(attr->getDataIndex(), stride, pvrvk::VertexInputRate::e_VERTEX);
 			vertexCreateInfo.addInputAttribute(attribDesc).addInputBinding(bindingDesc);
@@ -752,7 +806,7 @@ inline void populateInputAssemblyFromMesh(const assets::Mesh& mesh, const Vertex
 /// <param name="numOutBuffers">A pointer to an unsigned integer which will set to specify the number of buffers required to create
 /// buffers for to use the mesh vertex attributes.</param>
 inline void populateInputAssemblyFromMesh(const assets::Mesh& mesh, const VertexBindings_Name* bindingMap, uint16_t numBindings,
-	pvrvk::PipelineVertexInputStateCreateInfo& vertexCreateInfo, pvrvk::InputAssemblerStateCreateInfo& inputAssemblerCreateInfo, uint16_t* numOutBuffers = nullptr)
+	pvrvk::PipelineVertexInputStateCreateInfo& vertexCreateInfo, pvrvk::PipelineInputAssemblerStateCreateInfo& inputAssemblerCreateInfo, uint16_t* numOutBuffers = nullptr)
 {
 	vertexCreateInfo.clear();
 	if (numOutBuffers)
@@ -974,7 +1028,6 @@ inline void createSingleBuffersFromMeshes(pvrvk::Device& device, MeshIterator_ m
 {
 	requiresCommandBufferSubmission = false;
 
-	int i = 0;
 	while (meshIter != meshIterEnd)
 	{
 		size_t total = 0;
@@ -1047,7 +1100,6 @@ inline void createSingleBuffersFromMeshes(pvrvk::Device& device, MeshIterator_ m
 		}
 		++outVbos;
 		++outIbos;
-		++i;
 		++meshIter;
 	}
 }

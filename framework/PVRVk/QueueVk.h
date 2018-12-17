@@ -141,7 +141,9 @@ public:
 
 	/// <summary>Present</summary>
 	/// <param name="presentInfo">Present info</param>
-	void present(PresentInfo& presentInfo);
+	/// <param name="results">An array of presentInfo.swapchainCount Results. Applications that do not need per-swapchain results can use nullptr for results.
+	/// If non-NULL, each entry results will be set to the Result for presenting the swapchain corresponding to the same swapchain</param>
+	void present(PresentInfo& presentInfo, Result* const results = nullptr);
 
 	/// <summary>To wait on the host for the completion of outstanding queue operations for a given queue. This is equivalent to submitting a fence to a queue and waiting with an
 	/// infinite timeout for that fence to signal.</summary>
@@ -149,9 +151,16 @@ public:
 
 	/// <summary>Return supported queue flags</summary>
 	/// <returns>pvrvk::QueueFlags</returns>
-	pvrvk::QueueFlags getQueueFlags() const
+	pvrvk::QueueFlags getFlags() const
 	{
-		return _queueFlags;
+		return _flags;
+	}
+
+	/// <summary>Return the queues priority</summary>
+	/// <returns>Queue Priority</returns>
+	float getPriority() const
+	{
+		return _priority;
 	}
 
 	/// <summary>Submit sparse binding operations.</summary>
@@ -160,11 +169,11 @@ public:
 	/// <param name="fenceSignal"> Optional handle to a fence to be signaled. If fence is not null handle, it defines a fence signal operation.</param>
 	void bindSparse(const BindSparseInfo* bindInfo, uint32_t numBindInfos, Fence& fenceSignal);
 
-	/// <summary>Get queue family id</summary>
+	/// <summary>Get family id</summary>
 	/// <returns>uint</returns>32_t
-	uint32_t getQueueFamilyId() const
+	uint32_t getFamilyIndex() const
 	{
-		return _queueFamilyIndex;
+		return _familyIndex;
 	}
 
 private:
@@ -172,12 +181,13 @@ private:
 	friend struct ::pvrvk::RefCountEntryIntrusive;
 	friend class ::pvrvk::impl::Device_;
 
-	Queue_(DeviceWeakPtr device, VkQueue queue, pvrvk::QueueFlags flags, uint32_t queueFamilyIndex)
-		: DeviceObjectHandle(device, queue), DeviceObjectDebugMarker(pvrvk::DebugReportObjectTypeEXT::e_QUEUE_EXT), _queueFlags(flags), _queueFamilyIndex(queueFamilyIndex)
+	Queue_(DeviceWeakPtr device, VkQueue queue, pvrvk::QueueFlags flags, uint32_t familyIndex, float priority)
+		: DeviceObjectHandle(device, queue), DeviceObjectDebugMarker(pvrvk::DebugReportObjectTypeEXT::e_QUEUE_EXT), _flags(flags), _familyIndex(familyIndex), _priority(priority)
 	{}
 
-	pvrvk::QueueFlags _queueFlags;
-	uint32_t _queueFamilyIndex;
+	pvrvk::QueueFlags _flags;
+	uint32_t _familyIndex;
+	float _priority;
 };
 } // namespace impl
 } // namespace pvrvk

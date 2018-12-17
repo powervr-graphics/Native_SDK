@@ -6,7 +6,7 @@
 */
 //!\cond NO_DOXYGEN
 
-#include "PVRCore/IO/BufferStream.h"
+#include "PVRCore/stream/BufferStream.h"
 #include "PVRVk/ImageVk.h"
 #include "PVRVk/SamplerVk.h"
 #include "PVRVk/PipelineLayoutVk.h"
@@ -39,7 +39,7 @@ enum class UboDescSetBindingId
 	Material
 };
 } // namespace
-void UIRenderer::init_CreatePipeline()
+void UIRenderer::init_CreatePipeline(bool isFrameBufferSrgb)
 {
 	debug_assertion(_device.isValid(), "NULL Context");
 	GraphicsPipelineCreateInfo pipelineDesc;
@@ -63,8 +63,8 @@ void UIRenderer::init_CreatePipeline()
 	ShaderModule vs;
 	ShaderModule fs;
 
-	vs = _device->createShader(BufferStream("", spv_UIRendererVertShader, sizeof(spv_UIRendererVertShader)).readToEnd<uint32_t>());
-	fs = _device->createShader(BufferStream("", spv_UIRendererFragShader, sizeof(spv_UIRendererFragShader)).readToEnd<uint32_t>());
+	vs = _device->createShaderModule(ShaderModuleCreateInfo(BufferStream("", spv_UIRendererVertShader, sizeof(spv_UIRendererVertShader)).readToEnd<uint32_t>()));
+	fs = _device->createShaderModule(ShaderModuleCreateInfo(BufferStream("", spv_UIRendererFragShader, sizeof(spv_UIRendererFragShader)).readToEnd<uint32_t>()));
 
 	pipelineDesc.vertexShader.setShader(vs);
 	pipelineDesc.fragmentShader.setShader(fs);
@@ -85,6 +85,9 @@ void UIRenderer::init_CreatePipeline()
 	pipelineDesc.renderPass = _renderpass;
 	pipelineDesc.subpass = _subpass;
 	pipelineDesc.flags = pvrvk::PipelineCreateFlags::e_ALLOW_DERIVATIVES_BIT;
+
+	const int32_t shaderConst = static_cast<int32_t>(isFrameBufferSrgb);
+	pipelineDesc.fragmentShader.setShaderConstant(0, pvrvk::ShaderConstantInfo(0, &shaderConst, static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::Integer))));
 	_pipeline = _device->createGraphicsPipeline(pipelineDesc, _pipelineCache);
 	_pipeline->setObjectName("PVRUtilsVk::UIRenderer::UI GraphicsPipeline");
 }
@@ -204,8 +207,8 @@ Text UIRenderer::createText(const TextElement& textElement)
 	return text;
 }
 
-void UIRenderer::init(uint32_t width, uint32_t height, bool fullscreen, const RenderPass& renderpass, uint32_t subpass, CommandPool& cmdPool, Queue& queue, bool createDefaultLogo,
-	bool createDefaultTitle, bool createDefaultFont, uint32_t maxNumInstances, uint32_t maxNumSprites)
+void UIRenderer::init(uint32_t width, uint32_t height, bool fullscreen, const RenderPass& renderpass, uint32_t subpass, bool isFrameBufferSrgb, CommandPool& cmdPool, Queue& queue,
+	bool createDefaultLogo, bool createDefaultTitle, bool createDefaultFont, uint32_t maxNumInstances, uint32_t maxNumSprites)
 {
 	destroy();
 	_mustEndCommandBuffer = false;
@@ -221,18 +224,9 @@ void UIRenderer::init(uint32_t width, uint32_t height, bool fullscreen, const Re
 			pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT | pvrvk::BufferUsageFlags::e_INDEX_BUFFER_BIT | pvrvk::BufferUsageFlags::e_VERTEX_BUFFER_BIT,
 			(pvrvk::MemoryPropertyFlags(0)));
 
-		VkDeviceSize largeHeapMemoryBlockSize = align(_uboMvp._structuredBufferView.getSize(), tempBuffer->getMemoryRequirement().getAlignment()) +
-			align(_uboMaterial._structuredBufferView.getSize(), tempBuffer->getMemoryRequirement().getAlignment());
-
 		pvrvk::Device device = getDevice()->getReference();
 
-		if (createDefaultLogo || createDefaultFont)
-		{
-			largeHeapMemoryBlockSize = 0;
-			_imageAllocator = utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(device, 0));
-		}
-
-		_bufferAllocator = utils::vma::createAllocator(utils::vma::AllocatorCreateInfo(device, 0));
+		_vmaAllocator = utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(device, 0));
 	}
 
 	_screenDimensions = glm::vec2(width, height);
@@ -254,7 +248,7 @@ void UIRenderer::init(uint32_t width, uint32_t height, bool fullscreen, const Re
 
 	_pipelineCache = _device->createPipelineCache();
 
-	init_CreatePipeline();
+	init_CreatePipeline(isFrameBufferSrgb);
 	setUpUboPools(maxNumInstances, maxNumSprites);
 	init_CreateDefaultSampler();
 
@@ -311,16 +305,19 @@ void UIRenderer::init_CreateDefaultSampler()
 
 void UIRenderer::init_CreateDefaultSdkLogo(CommandBuffer& cmdBuffer)
 {
-	cmdBuffer->debugMarkerBeginEXT("PVRUtilsVk::UIRenderer::init_CreateDefaultSdkLogo");
 	ImageView sdkLogoImage;
 	Stream::ptr_type sdkLogo = Stream::ptr_type(new BufferStream("", _PowerVR_512x256_RG_pvr, _PowerVR_512x256_RG_pvr_size));
 
 	Texture sdkTex;
-	sdkTex = assets::textureLoad(sdkLogo, TextureFileFormat::PVR);
+	sdkTex = textureLoad(sdkLogo, TextureFileFormat::PVR);
 	sdkTex.setPixelFormat(GeneratePixelType2<'l', 'a', 8, 8>::ID);
 	Device device = getDevice()->getReference();
+
+	cmdBuffer->debugMarkerBeginEXT("PVRUtilsVk::UIRenderer::init_CreateDefaultSdkLogo");
 	sdkLogoImage = utils::uploadImageAndView(
-		device, sdkTex, true, cmdBuffer, pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout::e_GENERAL, &getBufferMemoryAllocator(), &getImageMemoryAllocator());
+		device, sdkTex, true, cmdBuffer, pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, &getMemoryAllocator(), &getMemoryAllocator());
+	cmdBuffer->debugMarkerEndEXT();
+
 	_sdkLogo = createImage(sdkLogoImage, _samplerBilinear);
 	_sdkLogo->setAnchor(Anchor::BottomRight, glm::vec2(.98f, -.98f));
 	float scalefactor = .3f * getRenderingDim().x / BaseScreenDim.x;
@@ -349,29 +346,61 @@ void UIRenderer::init_CreateDefaultSdkLogo(CommandBuffer& cmdBuffer)
 	_sdkLogo->setScale(glm::vec2(scalefactor));
 	_sdkLogo->commitUpdates();
 	_sdkLogo->getImageView()->setObjectName("PVRUtilsVk::UIRenderer::SDK Logo ImageView");
-	cmdBuffer->debugMarkerEndEXT();
 }
 
 void UIRenderer::init_CreateDefaultTitle()
 {
-	_defaultTitle = createText(createTextElement("DefaultTitle", _defaultFont, 256));
-	// set object names
-	if (_defaultTitle->getTextElement()->_vbo->getVkHandle() != VK_NULL_HANDLE)
+	// Default Title
 	{
-		_defaultTitle->getTextElement()->_vbo->setObjectName("PVRUtilsVk::UIRenderer::Default Title Vbo");
+		_defaultTitle = createText(createTextElement("DefaultTitle", _defaultFont, 256));
+		_defaultTitle->setAnchor(Anchor::TopLeft, glm::vec2(-.98f, .98f))->setScale(glm::vec2(.8, .8));
+		_defaultTitle->commitUpdates();
+		// set object names
+		if (_defaultTitle->getTextElement()->_vbo->getVkHandle() != VK_NULL_HANDLE)
+		{
+			_defaultTitle->getTextElement()->_vbo->setObjectName("PVRUtilsVk::UIRenderer::Default Title Vbo");
+		}
+
+		if (_defaultTitle->getTextElement()->_drawIndirectBuffer->getVkHandle() != VK_NULL_HANDLE)
+		{
+			_defaultTitle->getTextElement()->_drawIndirectBuffer->setObjectName("PVRUtilsVk::UIRenderer::Default Title Draw Indirect Buffer");
+		}
 	}
 
-	_defaultDescription = createText(createTextElement("", _defaultFont, 256));
-	_defaultControls = createText(createTextElement("", _defaultFont, 256));
-	_defaultTitle->setAnchor(Anchor::TopLeft, glm::vec2(-.98f, .98f))->setScale(glm::vec2(.8, .8));
-	_defaultTitle->commitUpdates();
+	// Default Description
+	{
+		_defaultDescription = createText(createTextElement("", _defaultFont, 256));
+		// set object names
+		if (_defaultDescription->getTextElement()->_vbo->getVkHandle() != VK_NULL_HANDLE)
+		{
+			_defaultDescription->getTextElement()->_vbo->setObjectName("PVRUtilsVk::UIRenderer::Default Description Vbo");
+		}
 
-	_defaultDescription->setAnchor(Anchor::TopLeft, glm::vec2(-.98f, .98f - _defaultTitle->getFont()->getFontLineSpacing() / static_cast<float>(getRenderingDimY()) * 1.5f))
-		->setScale(glm::vec2(.60, .60));
-	_defaultDescription->commitUpdates();
+		if (_defaultDescription->getTextElement()->_drawIndirectBuffer->getVkHandle() != VK_NULL_HANDLE)
+		{
+			_defaultDescription->getTextElement()->_drawIndirectBuffer->setObjectName("PVRUtilsVk::UIRenderer::Default Description Draw Indirect Buffer");
+		}
+		_defaultDescription->setAnchor(Anchor::TopLeft, glm::vec2(-.98f, .98f - _defaultTitle->getFont()->getFontLineSpacing() / static_cast<float>(getRenderingDimY()) * 1.5f))
+			->setScale(glm::vec2(.60, .60));
+		_defaultDescription->commitUpdates();
+	}
 
-	_defaultControls->setAnchor(Anchor::BottomLeft, glm::vec2(-.98f, -.98f))->setScale(glm::vec2(.5, .5));
-	_defaultControls->commitUpdates();
+	// Default Controls
+	{
+		_defaultControls = createText(createTextElement("", _defaultFont, 256));
+		// set object names
+		if (_defaultControls->getTextElement()->_vbo->getVkHandle() != VK_NULL_HANDLE)
+		{
+			_defaultControls->getTextElement()->_vbo->setObjectName("PVRUtilsVk::UIRenderer::Default Controls Vbo");
+		}
+
+		if (_defaultControls->getTextElement()->_drawIndirectBuffer->getVkHandle() != VK_NULL_HANDLE)
+		{
+			_defaultControls->getTextElement()->_drawIndirectBuffer->setObjectName("PVRUtilsVk::UIRenderer::Default Controls Draw Indirect Buffer");
+		}
+		_defaultControls->setAnchor(Anchor::BottomLeft, glm::vec2(-.98f, -.98f))->setScale(glm::vec2(.5, .5));
+		_defaultControls->commitUpdates();
+	}
 }
 
 void UIRenderer::init_CreateDefaultFont(CommandBuffer& cmdBuffer)
@@ -383,25 +412,28 @@ void UIRenderer::init_CreateDefaultFont(CommandBuffer& cmdBuffer)
 	// pick the right font size of this resolution.
 	if (maxRenderDim <= 800)
 	{
-		arialFontTex = Stream::ptr_type(new BufferStream("", _arialbd_36_pvr, _arialbd_36_pvr_size));
+		arialFontTex = Stream::ptr_type(new BufferStream("", _arialbd_36_r8_pvr, _arialbd_36_r8_pvr_size));
 	}
 	else if (maxRenderDim <= 1000)
 	{
-		arialFontTex = Stream::ptr_type(new BufferStream("", _arialbd_46_pvr, _arialbd_46_pvr_size));
+		arialFontTex = Stream::ptr_type(new BufferStream("", _arialbd_46_r8_pvr, _arialbd_46_r8_pvr_size));
 	}
 	else
 	{
-		arialFontTex = Stream::ptr_type(new BufferStream("", _arialbd_56_pvr, _arialbd_56_pvr_size));
+		arialFontTex = Stream::ptr_type(new BufferStream("", _arialbd_56_r8_pvr, _arialbd_56_r8_pvr_size));
 	}
-	fontTex = assets::textureLoad(arialFontTex, TextureFileFormat::PVR);
 
-	fontTex.setPixelFormat(GeneratePixelType1<'a', 8>::ID);
+	fontTex = textureLoad(arialFontTex, TextureFileFormat::PVR);
+
 	Device device = getDevice()->getReference();
-	pvrvk::ImageView fontImage = utils::uploadImageAndView(
-		device, fontTex, true, cmdBuffer, pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout::e_GENERAL, &getBufferMemoryAllocator(), &getImageMemoryAllocator());
-	_defaultFont = createFont(fontImage, fontTex);
 
+	pvrvk::ImageView fontImage = device->createImageView(pvrvk::ImageViewCreateInfo(utils::uploadImage(device, fontTex, true, cmdBuffer, pvrvk::ImageUsageFlags::e_SAMPLED_BIT,
+																						pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, &getMemoryAllocator(), &getMemoryAllocator()),
+		pvrvk::ComponentMapping(pvrvk::ComponentSwizzle::e_R, pvrvk::ComponentSwizzle::e_R, pvrvk::ComponentSwizzle::e_R, pvrvk::ComponentSwizzle::e_R)));
+
+	_defaultFont = createFont(fontImage, fontTex);
 	fontImage->setObjectName("PVRUtilsVk::UIRenderer::Default Font ImageView");
+
 	cmdBuffer->debugMarkerEndEXT();
 }
 
@@ -420,14 +452,10 @@ void UIRenderer::UboMaterial::initLayout(Device& device, uint32_t numArrayId)
 
 void UIRenderer::UboMaterial::init(Device& device, DescriptorSetLayout& descLayout, DescriptorPool& pool, UIRenderer& uirenderer)
 {
-	pvrvk::BufferCreateInfo bufferCreateInfo;
-	bufferCreateInfo.setSize((size_t)_structuredBufferView.getSize());
-	bufferCreateInfo.setUsageFlags(pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT);
-
 	_buffer = pvr::utils::createBuffer(device, (size_t)_structuredBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 		pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT |
 			pvrvk::MemoryPropertyFlags::e_HOST_CACHED_BIT,
-		&uirenderer._bufferAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+		&uirenderer._vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
 	_structuredBufferView.pointToMappedMemory(_buffer->getDeviceMemory()->getMappedData());
 	if (!_buffer.isValid())
@@ -459,14 +487,10 @@ void UIRenderer::UboMvp::initLayout(Device& device, uint32_t numElements)
 
 void UIRenderer::UboMvp::init(Device& device, DescriptorSetLayout& descLayout, DescriptorPool& pool, UIRenderer& uirenderer)
 {
-	pvrvk::BufferCreateInfo bufferCreateInfo;
-	bufferCreateInfo.setSize((size_t)_structuredBufferView.getSize());
-	bufferCreateInfo.setUsageFlags(pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT);
-
 	_buffer = pvr::utils::createBuffer(device, (size_t)_structuredBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 		pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT |
 			pvrvk::MemoryPropertyFlags::e_HOST_CACHED_BIT,
-		&uirenderer._bufferAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+		&uirenderer._vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
 	_structuredBufferView.pointToMappedMemory(_buffer->getDeviceMemory()->getMappedData());
 

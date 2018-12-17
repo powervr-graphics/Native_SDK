@@ -1,17 +1,12 @@
-#version 450
+#version 320 es
 
-layout(set = 0, binding = 0) uniform sampler2D tex;
+layout(set = 0, binding = 0) uniform mediump sampler2D tex;
 
-layout(location = 0) in highp vec2 uvs;
+layout(location = 0) in mediump vec2 uvs;
 
-
-layout(location = 0) out highp vec4 out_colour;
+layout(location = 0) out mediump vec4 outColor;
 
 void main()
 {
-
-
-	out_colour = vec4(0.1, 0.0, 0.15, texture(tex, uvs).r);
+	outColor = vec4(0.03, 0.0, 0.05, texture(tex, uvs).r);
 }
-
-

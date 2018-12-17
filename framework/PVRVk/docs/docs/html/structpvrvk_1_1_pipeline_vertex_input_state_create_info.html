@@ -15,7 +15,7 @@
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="IMGdoxygen.css" rel="stylesheet" type="text/css"/>
-<link rel="shortcut icon" href="http://www.imgtec.com/images/img.ico">
+<link rel="shortcut icon" type="image/x-icon" href="img.ico">
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
+      <a href="https://www.imgtec.com/developers/" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRVk</span> Documentation</a>
    <tbody>
@@ -112,6 +112,10 @@ Public Member Functions</h2></td></tr>
 VertexInputBindingDescription *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_pipeline_vertex_input_state_create_info.html#a99974b69b07715b1f1a9c5f561c5405a">getInputBinding</a> (uint32_t bufferBinding) const </td></tr>
 <tr class="memdesc:a99974b69b07715b1f1a9c5f561c5405a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a VertexBindingInfo for a buffer binding index, else return NULL if not found <a href="#a99974b69b07715b1f1a9c5f561c5405a">More...</a><br/></td></tr>
 <tr class="separator:a99974b69b07715b1f1a9c5f561c5405a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba0274e4fcdb417b7af708164bc8efc9"><td class="memItemLeft" align="right" valign="top">const <br class="typebreak"/>
+VertexInputBindingDescription &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_pipeline_vertex_input_state_create_info.html#aba0274e4fcdb417b7af708164bc8efc9">getInputBindingByIndex</a> (uint32_t index) const </td></tr>
+<tr class="memdesc:aba0274e4fcdb417b7af708164bc8efc9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns an input binding at a given index. <a href="#aba0274e4fcdb417b7af708164bc8efc9">More...</a><br/></td></tr>
+<tr class="separator:aba0274e4fcdb417b7af708164bc8efc9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a983542ff642fdda55fa8a9b3b7eb3211"><td class="memItemLeft" align="right" valign="top">const VertexInputBindingMap &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_pipeline_vertex_input_state_create_info.html#a983542ff642fdda55fa8a9b3b7eb3211">getInputBindings</a> () const </td></tr>
 <tr class="memdesc:a983542ff642fdda55fa8a9b3b7eb3211"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the input bindings <a href="#a983542ff642fdda55fa8a9b3b7eb3211">More...</a><br/></td></tr>
 <tr class="separator:a983542ff642fdda55fa8a9b3b7eb3211"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -311,6 +315,39 @@ VertexInputBindingDescription *&#160;</td><td class="memItemRight" valign="botto
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>const VertexInputBindingDescription*</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="aba0274e4fcdb417b7af708164bc8efc9"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const VertexInputBindingDescription&amp; pvrvk::PipelineVertexInputStateCreateInfo::getInputBindingByIndex </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns an input binding at a given index.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">index</td><td>The index of the VertexInputBindingDescription to retrieve.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>const VertexInputBindingDescription&amp;</dd></dl>
 
 </div>
 </div>

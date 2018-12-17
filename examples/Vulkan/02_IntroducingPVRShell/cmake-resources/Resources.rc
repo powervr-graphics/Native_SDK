@@ -58,13 +58,9 @@ END
 // RCDATA
 //
 /////////////////////////////////////////////////////////////////////////////
-// RCDATA: Assets (scenes, shaders, effects, textures...)
-FragShader_vk.spv		RCDATA		"..\\FragShader_vk.spv"
-VertShader_vk.spv		RCDATA		"..\\VertShader_vk.spv"
-FragShader_vk.fsh		RCDATA		"..\\FragShader_vk.fsh"
-VertShader_vk.vsh		RCDATA		"..\\VertShader_vk.vsh"
-recompile.sh		RCDATA		"..\\recompile.sh"
-recompile.bat		RCDATA		"..\\recompile.bat"
+// RCDATA: Vulkan Spir-V shaders(glsl)
+FragShader.fsh.spv		RCDATA		"..\\FragShader.fsh.spv"
+VertShader.vsh.spv		RCDATA		"..\\VertShader.vsh.spv"
 
 #endif    // English (United Kingdom) resources
 /////////////////////////////////////////////////////////////////////////////

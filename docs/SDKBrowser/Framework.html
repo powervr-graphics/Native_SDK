@@ -1,152 +1,216 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<title>The PowerVR SDK Browser</title>
-	<meta charset="UTF-8" />
-	<link rel="stylesheet" type="text/css" href="style.css">
-    <link rel="icon" type="image/png" href="./images/img-icon.png">
-</head>
 
-<body>
-	<div id="GlobalHeaderContainer">
+
+<!doctype html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>PowerVR SDK Framework &#8212; PowerVR SDK Browser  documentation</title>
+    <link rel="stylesheet" href="_static/img_style.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/img_style.js"></script>
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="OpenGLES Examples" href="ExamplesOpenGLES.html" />
+    <link rel="prev" title="Build Instructions" href="Build.html" />
+<div id="GlobalHeaderContainer">
 		<div id="GlobalHeader">
 			<div class="logo">
-				<a href="http://www.powervrinsider.com" target="_blank"><img src="./images/PVRlogo.png" width="40%" height="40%" /></a>
+				<a href="https://www.imgtec.com/developers/" target="_blank"><img src="_static/PVRlogo.png"/></a>
             </div>
-			<div class="sitetitle">PowerVR SDK Browser</div>
+			<div class="sitetitle"> PowerVR SDK Browser </div>
 		</div>
-	</div>
-	<div id="NavContainer">
-		<nav>
-			<div class="navlink">
-				<a href="Home.html">Home</a>
-			</div>
-			<div class="navlink">
-				<a href="GettingStarted.html">Getting Started</a>
-			</div>
-			<div class="navlink">
-				<a href="Examples.html">Examples</a>
-			</div>
-			<div class="navlink">
-				<a href="Framework.html" class="current">Framework</a>
-			</div>
-			<div class="navlink">
-				<a href="Documentation.html">Documentation</a>
-			</div>
-			<div class="navlink">
-				<a href="PowerVRTools.html">PowerVR Tools</a>
-			</div>
-			<div class="navlink">
-				<a href="Licence.html">EULA</a>
-			</div>
-			<div class="navlink">
-				<a href="Contact.html">Contact Us</a>
-			</div>
-		</nav>
-	</div>
+</div>
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="ExamplesOpenGLES.html" title="OpenGLES Examples"
+             accesskey="N">next</a></li>
+        <li class="right" >
+          <a href="Build.html" title="Build Instructions"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">PowerVR SDK Browser  documentation</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h3><a href="index.html">Table of Contents</a></h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Introduction.html">The PowerVR SDK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Build.html">Build Instructions</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">PowerVR SDK Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ExamplesOpenGLES.html">OpenGLES Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ExamplesVulkan.html">Vulkan Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Documentation.html">Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Licence.html">EULA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Contact.html">Contact Us</a></li>
+</ul>
 
-    <div class="content">
-        <h1>Framework</h1>
-		<p><strong>Contents: </strong><a href="#Overview" class="link">Overview</a>  |  <a href="#Building" class="link">Building</a>  |  <a href="#CreatingAnApplication" class="link">Creating an Application</a>  |  <a href="#Guidelines" class="link">Guidelines and Recommendations</a></p>
-		&nbsp;
-		<div id="Overview">
-			<p>For a detailed explanation of how the Framework functions, please refer to the <a href="../Documents/RELEASE/PowerVR Framework.Development Guide.pdf" target="_blank" class="link">PowerVR Framework Development Guide.</a></p>
-			<h2>Overview</h2>
-			<p>The PowerVR Framework is a complete framework source code, targeted for all major platforms, such as Windows, Linux, and macOS, as well as Android and iOS mobile platforms. A key strength of the PowerVR Framework is that it is platform-agnostic, meaning that with the same code, it is possible to compile for different platforms without changing source code.</p>
-			<p>The majority of the code is written in C++ and tested across different compilers (namely Visual Studio 2013-2017, GNU Compiler Collection and Clang) using modern C++ style and provides a complete framework for application development. There is also supporting per-platform code (Objective-C code for iOS and macOS, some Java code for Android, etc.), CMakeFiles and Gradle script to build for all supported platforms.</p>
-			<p>The Framework consists of libraries divided by functionality, as shown in the figure below. These modules are configured to be compiled as static libraries, but you can choose to use them differently, if desired.</p>
-			<img src="./images/PowerVRFrameworkComponents.png"/ style="display:block; margin-left:auto; margin-right:auto">	
-			<h3>PVRCore</h3>
-			<h4><strong><a href="../../framework/PVRCore/docs/Index.html" target="_blank">View source code documentation</a></strong></h4>
-			<p>This is the supporting code of the library to leverage for your own use. PVRCore is also used by the rest of the Framework and because of that, all examples using any other part of the Framework should link with PVRCore.</p>
-			<h3>PVRAssets</h3>
-			<h4><strong><a href="../../framework/PVRAssets/docs/Index.html" target="_blank">View source code documentation</a></strong></h4>
-			<p>This is the Framework’s asset code. It includes classes and helpers for scene, mesh, light, camera, and animations, asset loading code, etc. PVRAssets supports the loading of POD files, PVR and PFX materials format, as well as support for a number of texture formats.</p>
-			<h3>PVRShell</h3>
-			<h4><strong><a href="../../framework/PVRShell/docs/Index.html" target="_blank">View source code documentation</a></strong></h4>
-			<p>This is the native system abstraction (event loops, surfaces, windows, etc.) which greatly simplifies cross-platform compatibility. Essentially, PVRShell provides you with useful scaffolding for cross-platform development.</p>
-			<h3>PVRVk</h3>
-			<h4><strong><a href="../../framework/PVRVk/docs/Index.html" target="_blank">View source code documentation</a></strong></h4>
-			<p>This is a Vulkan C++ wrapper sporting reference-counted objects with lifetime management, strongly typed enums and other niceties.</p>
-			<h3>PVRUtils</h3>
-			<h4><strong><a href="../../framework/PVRUtils/docs/Index.html" target="_blank">View source code documentation</a></strong></h4>
-			<p>This is actually two libraries (the OpenGL ES version and the Vulkan version) providing very convenient helpers and wrappers, simplifying common Vulkan and OpenGL tasks such as Instance-Device-Surface/Context creation, texture loading and VBO/IBO generation. The Vulkan version is written agains PVRVk. Both also contain each a version of the UIRenderer, a 2D/3D printing library that can be used for text or sprite renderering. Its interface is similar between OpenGL ES and Vulkan, taking into account the core differences of the two APIs.</p>
-			<h3>PVRCamera</h3>
-			<h4><strong><a href="../../framework/PVRCamera/docs/Index.html" target="_blank">View source code documentation</a></strong></h4>
-			<p>This is the code for interfacing with the camera of mobile platforms. A "dummy" desktop version is provided to ease development. OpenGL ES only for the moment.</p>
-		</div>
-		
-		<div id="Building">
-			<h2>Building</h2>
-			<p>All PowerVR examples for all platforms will build the PowerVR Framework libraries they require. If you use them, or base your own code on them, you should not need to have to build the Framework separately - just include the relevant CMakeFiles or gradle projects as dependencies to your own (any of the SDK examples can be used for that purpose). That said, the PowerVR SDK normally also ships with pre-built versions of the libraries in the folder <span class="code">[SDK]/framework/bin/[Platform]</span>, where <span class="code">[SDK]</span> is the SDK root and <span class="code">[Platform]</span> is the name of your platform of interest - this is where you would normally link.</p>
-			<p>All modules can be built separately, by navigating to <span class="code">[SDK]/framework/[ModuleName]</span>, where <span class="code">[ModuleName]</span> is the name of the specific module of the PowerVR Framework. You can use cmake or gradle as normal, as building the examples automatically builds the Framework. As mentioned, this is not normally necessary as the Framework modules are already built automatically with the examples, as required, ensuring that any changes to the Framework code will be reflected on subsequent builds.</span>
-		</div>
-		
-		<div id="CreatingAnApplication">
-		<h2>Creating an Application</h2>
-		<p>To create a typical application, please follow these steps:</p>
-		<ol>
-			<li><p>Create a CMakeLists.txt for your platform. We suggest taking one of the example's CMakeLists.txt as base and just changing application names, filenames etc., but you can of course create your own. (For example,<span class="code">examples/Vulkan/Intermediate/Bumpmap/CMakeLists.txt</span></p>
-				<p>In more detail, to write your own CMakeLists.txt, after you create your basic skeleton based on your requirements:</p>
-				<ul>
-					<li>Add include directories:</li>
-					<ul>
-						<li><span class="code">[SDK]/framework</span></li>
-						<li><span class="code">[SDK]/include</span></li>
-					</ul>
-					<li>Add project dependencies(with add_subdirectory):</li>
-					<ul>
-						<li>(If Vulkan) <span class="code">[SDK]/framework/PVRVk</span></li>
-						<li>(If Vulkan) <span class="code">[SDK]/framework/PVRUtils/Vulkan</span></li>
-						<li>(If OpenGL ES) <span class="code">[SDK]/framework/PVRUtils/OpenGLES</span></li>
-						<li><span class="code">[SDK]/framework/PVRShell</span></li>
-						<li><span class="code">[SDK]/framework/PVRAssets</span></li>
-						<li><span class="code">[SDK]/framework/PVRCore</span></li>
-					</ul>
-					<li>Alternatively, build the Framework modules as described, and add depependencies to them with <span class="code">target_link_libraries</span></li>
-					<li>Link against other PowerVR libraries:</li>
-					<ul>
-						<li>(Optional) <span class="code">[SDK]/libs/[Platform]/[Other libraries, e.g. PVRScope]</span></li>
-					</ul>
-				</ul>
-			&nbsp;
-			<li><strong>(Android only)</strong> Create your gradle scripts. Explaining the Gradle language is beyond the scope of this guide, we recommend copying the <span class="code">build-android</span> folder of 
-				one of our examples and working from there. In short, the Framework modules have their own gradle scripts so ensuring that they are built is a matter of declaring them 
-				in the <span class="code">settings.gradle</span> of your example and adding dependencies in <span class="code">build.gradle</span>.<li>
-			&nbsp;
-			<li>Create your application files. For a single CPP file, your includes will usually be:</li>
-			
-			<ul>
-				<li><span class="code">PVRShell/PVRShell.h</span></li>
-				<li><span class="code">PVRUtils/GLES/PVRUtilsGles.h</span> or <span class="code">PVRUtils/Vulkan/PVRUtilsVk.h</span></li>
-			</ul>
-			&nbsp;
-			<li>Write the skeleton of your application (see description of <a href="#PVRShell" class="link">PVRShell</a>)</li>
-		</ol>
-		</div>
-		
-		<div id="Guidelines">
-		<h2>Guidelines and Recommendations</h2>
-		<p>Below are a set of guidelines and recommendations you might want to consider when using PowerVR Framework:</p>
-		<ul>
-			<li>Use PVRUtils to simplify common suprisingly complex tasks, making them easy, concise and understandable: Context creation, backbuffer/swapchain setup, texture uploading. Then, if you feel comfortable to dive into the nitty-gritty of it, simply step through the code to understand the actual mechanics implemented. Especially important for everyday Vulkan tasks that are surprisingly involved, like Texture uploading.</li>
-			&nbsp;
-			<li>The <span class="code">pvr::assets::Model</span> class contains all the information you need for drawing, including cameras, lights, and effects. Follow a typical PowerVR SDK examples (e.g. IntroducingPVRUtils) to understand its basic use, including getting out of a Model the information about the data layouts of its Meshes, etc. You can use a 3rd party 3D modelling application, use PVRGeoPOD to export a POD file, and load it as a pvr::assets::Model with all information.</li>
-			&nbsp;
-			<li>There are many utility functions that simplify complex tasks between Assets and the underlying API - for example, the pvr::utils::createInputAssemblyFromXXXXXX functions will make sure to populate a Vulkan pipeline's vertex configuration with the correct vertex configuration of a mesh. Similarly, the createXXXXBufferFromXXXX functions will auto-generate and upload VBOs for a mesh. Browse the SDK examples and the pvr::utils namespace for such helpers</li>
-			<li>Make sure you use and understand what <span class="code">pvr::utils::StructuredBufferView</span> can do for you: It is a class that basically allows you to precisely describe a Shader Interface Block (i.e. a UBO/SSBO definition in the shader) and then automatically calculates all the sizes, offsets and required paddings of every single one of its members, and CPU-side layout. It aligns everything based on STD140, takes into account dynamic offsets, provides helpers for directly setting values to mapped memory, and in general makes working with buffers a breeze. All examples that use UBOs or SSBOs use the StructuredMemoryView to define and set values.</li>
-		</ul>
-		</div>
-	</div>
-	<br>
-	<div id="FooterMainContainer">
-		<div id="FooterContainer">
-			<div class="footerlogo">
-				<a href="http://www.imgtec.com" target="_blank"><img src="./images/img-footer-logo-grey.png" width="100%" height="100%" /></a>
-			</div>
-			<div class="copyright">&copy; Imagination Technologies Limited<br> All rights reserved</div>
-		</div>
-	</div>
-</body>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
 
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="powervr-sdk-framework">
+<h1>PowerVR SDK Framework<a class="headerlink" href="#powervr-sdk-framework" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<p>The PowerVR Framework is a complete framework source code. It targets Windows, Linux, and macOS desktop platforms, and Android and iOS mobile platforms. A key strength of the PowerVR Framework is that it is platform-agnostic, meaning that with the same code, it is possible to compile for different platforms without changing the source code.</p>
+<p>The majority of the code is written in C++ and tested across different compilers (Visual Studio 2013-2017, GNU Compiler Collection, and Clang) using modern C++ style. It provides a complete framework for application development. There is also supporting per-platform code such as Objective-C code for iOS and macOS, and Java code for Android. CMake files are also supplied.</p>
+<p>The Framework consists of libraries divided by functionality, as shown in the figure below. These modules are provided to be configured as static libraries, but they can be used differently if required.</p>
+<div class="figure">
+<img alt="../images/PowerVRFrameworkComponents.png" src="../images/PowerVRFrameworkComponents.png" />
+</div>
+<div class="section" id="pvrcore">
+<h3>PVRCore<a class="headerlink" href="#pvrcore" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="../../framework/PVRCore/docs/Index.html">Source code documentation</a></p>
+<p>This is the supporting code of the library for developers to use as they wish. PVRCore is also used by the rest of the Framework, so therefore all examples using any other part of the Framework should always link with PVRCore.</p>
+</div>
+<div class="section" id="pvrassets">
+<h3>PVRAssets<a class="headerlink" href="#pvrassets" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="../../framework/PVRAssets/docs/Index.html">Source code documentation</a></p>
+<p>This is the Framework’s asset code. It includes classes and helpers for scene, mesh, light, camera, animations, and asset loading code.  PVRAssets supports the loading of POD files, PVR and PFX materials format, as well as support for a number of texture formats.</p>
+</div>
+<div class="section" id="pvrshell">
+<h3>PVRShell<a class="headerlink" href="#pvrshell" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="../../framework/PVRShell/docs/Index.html">Source code documentation</a></p>
+<p>This is the native system abstraction (such as event loops, surfaces, and windows) which simplifies cross-platform compatibility. PVRShell provides useful scaffolding for cross-platform development.</p>
+</div>
+<div class="section" id="pvrvk">
+<h3>PVRVk<a class="headerlink" href="#pvrvk" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="../../framework/PVRVk/docs/Index.html">Source code documentation</a></p>
+<p>This is a Vulkan C++ wrapper providing reference-counted objects with lifetime management, strongly typed enums, and other useful functionality.</p>
+</div>
+<div class="section" id="pvrutils">
+<h3>PVRUtils<a class="headerlink" href="#pvrutils" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="../../framework/PVRUtils/docs/Index.html">Source code documentation</a></p>
+<p>This contains two libraries (OpenGL ES and Vulkan) providing very convenient helpers and wrappers. These simplify common Vulkan and OpenGL tasks such as Instance-Device-Surface/Context creation, texture loading and VBO/IBO generation. The Vulkan version is written against PVRVk. Both versions each contain a version of the UIRenderer, a 2D/3D printing library that can be used for text or sprite renderering. There are similarities between the OpenGL ES and Vulkan interfaces, taking into account the core differences between the two APIs.</p>
+</div>
+<div class="section" id="pvrcamera">
+<h3>PVRCamera<a class="headerlink" href="#pvrcamera" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="../../framework/PVRCamera/docs/Index.html">Source code documentation</a></p>
+<p>This is the code for interfacing with the camera on mobile platforms. A dummy desktop version is provided to ease development. OpenGL ES only at present.</p>
+</div>
+</div>
+<div class="section" id="building">
+<h2>Building<a class="headerlink" href="#building" title="Permalink to this headline">¶</a></h2>
+<p>All PowerVR examples for all platforms will build the PowerVR Framework libraries they require. If they are used, or code is based upon them, then the Framework will not need to be built separately. Instead, include the relevant CMakeFiles or Gradle projects as dependencies. Any of the SDK examples can be used for this purpose.</p>
+<p>The PowerVR SDK ships with pre-built versions of the libraries in the folder <code class="docutils literal notranslate"><span class="pre">[SDK]/framework/bin/[Platform]</span></code>, where <code class="docutils literal notranslate"><span class="pre">[SDK]</span></code> is the SDK root and <code class="docutils literal notranslate"><span class="pre">[Platform]</span></code> is the name of the platform of interest. This is the location normally linked to.</p>
+<p>All modules can be built separately, by navigating to <code class="docutils literal notranslate"><span class="pre">[SDK]/framework/[ModuleName]</span></code>, where <code class="docutils literal notranslate"><span class="pre">[ModuleName]</span></code> is the name of the specific module of the PowerVR Framework. CMake or Gradle can be used as normal, as building the examples automatically builds the Framework.</p>
+</div>
+<div class="section" id="creating-an-application-using-the-framework">
+<h2>Creating an application using the Framework<a class="headerlink" href="#creating-an-application-using-the-framework" title="Permalink to this headline">¶</a></h2>
+<p>To create a typical application, please follow these steps:</p>
+<ol class="arabic">
+<li><p class="first">Create a <code class="docutils literal notranslate"><span class="pre">CMakeLists.txt</span></code> for the platform. This could be your own, or one of the SDK example’s <code class="docutils literal notranslate"><span class="pre">CMakeLists.txt</span></code> to use as a base. For example: <code class="docutils literal notranslate"><span class="pre">examples/Vulkan/Intermediate/Bumpmap/CMakeLists.txt</span></code>.</p>
+<p>In more detail:</p>
+<ul class="simple">
+<li><dl class="first docutils">
+<dt>Add include directories:</dt>
+<dd><ul class="first last">
+<li><code class="docutils literal notranslate"><span class="pre">[SDK]/framework</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">[SDK]/include</span></code></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Add CMake dependencies using <code class="docutils literal notranslate"><span class="pre">add_subdirectory</span></code>:</dt>
+<dd><ul class="first last">
+<li>(If Vulkan) <code class="docutils literal notranslate"><span class="pre">[SDK]/framework/PVRVk</span></code></li>
+<li>(If Vulkan) <code class="docutils literal notranslate"><span class="pre">[SDK]/framework/PVRUtils/Vulkan</span></code></li>
+<li>(If OpenGL ES) <code class="docutils literal notranslate"><span class="pre">[SDK]/framework/PVRUtils/OpenGLES</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">[SDK]/framework/PVRShell</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">[SDK]/framework/PVRAssets</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">[SDK]/framework/PVRCore</span></code></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li>Alternatively, build the Framework modules as described, and add depependencies to them with <code class="docutils literal notranslate"><span class="pre">target_link_libraries</span></code></li>
+<li><dl class="first docutils">
+<dt>Link against other libraries:</dt>
+<dd><ul class="first last">
+<li>(Optional) <code class="docutils literal notranslate"><span class="pre">[SDK]/libs/[Platform]/[Other</span> <span class="pre">libraries,</span> <span class="pre">e.g.</span> <span class="pre">PVRScope]</span></code></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</li>
+<li><p class="first">(<strong>Android only</strong>) Create the Gradle scripts. Explaining the Gradle language is beyond the scope of this guide. It is recommended to copy the <code class="docutils literal notranslate"><span class="pre">build-android</span></code> folder of one of the SDK examples and working from there. The Framework modules have their own Gradle scripts so ensuring that they are built means declaring them in the <code class="docutils literal notranslate"><span class="pre">settings.gradle</span></code> of the example and adding dependencies in <code class="docutils literal notranslate"><span class="pre">build.gradle</span></code>.</p>
+</li>
+<li><dl class="first docutils">
+<dt>Create the application files. For a single CPP file, the includes will usually be:</dt>
+<dd><ul class="first last simple">
+<li><code class="docutils literal notranslate"><span class="pre">PVRShell/PVRShell.h</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">PVRUtils/GLES/PVRUtilsGles.h</span></code> or <code class="docutils literal notranslate"><span class="pre">PVRUtils/Vulkan/PVRUtilsVk.h</span></code></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p class="first">Write the skeleton of the application. See description of PVRShell.</p>
+</li>
+</ol>
+</div>
+<div class="section" id="guidelines-and-recommendations">
+<h2>Guidelines and Recommendations<a class="headerlink" href="#guidelines-and-recommendations" title="Permalink to this headline">¶</a></h2>
+<p>Below are a set of guidelines and recommendations to consider when using the PowerVR Framework:</p>
+<ul class="simple">
+<li>Use PVRUtils to simplify common, suprisingly complex tasks. This makes them easy, concise and understandable. These tasks include context creation, backbuffer/swapchain setup, and texture uploading. Then step through the code to understand the actual mechanics implemented. This is particularly important for Vulkan tasks that are surprisingly involved, such as texture uploading.</li>
+<li>The <code class="docutils literal notranslate"><span class="pre">pvr::assets::Model</span></code> class contains all the information needed for drawing, including cameras, lights, and effects. Follow a typical PowerVR SDK example such as IntroducingPVRUtils to understand its basic use, including getting information about the data layout of meshes from a model.</li>
+<li>There are many utility functions that simplify complex tasks between Assets and the underlying API. For example, the <code class="docutils literal notranslate"><span class="pre">pvr::utils::createInputAssemblyFromXXXXXX</span></code> functions will populate a Vulkan pipeline’s vertex configuration with the correct vertex configuration of a mesh. Similarly, the <code class="docutils literal notranslate"><span class="pre">createXXXXBufferFromXXXX</span></code> functions will auto-generate and upload VBOs for a mesh. Browse the <code class="docutils literal notranslate"><span class="pre">pvr::utils</span></code> namespace for such helpers.</li>
+<li>Use and understand what <code class="docutils literal notranslate"><span class="pre">pvr::utils::StructuredBufferView</span></code> can do. It is a class that allows precise description of a Shader Interface Block, which is a UBO/SSBO definition in the shader. It then automatically calculates all the sizes, offsets, and required paddings of every single one of its members, and CPU-side layout. It aligns everything based on STD140, takes into account dynamic offsets, provides helpers for directly setting values to mapped memory, and essentially makes working with buffers much easier. All examples that use UBOs or SSBOs use the <code class="docutils literal notranslate"><span class="pre">StructuredMemoryView</span></code> to define and set values.</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="ExamplesOpenGLES.html" title="OpenGLES Examples"
+             >next</a></li>
+        <li class="right" >
+          <a href="Build.html" title="Build Instructions"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">PowerVR SDK Browser  documentation</a> &#187;</li> 
+      </ul>
+    </div>
+<div id="FooterMainContainer">
+    <div id="FooterContainer">
+		<div class="footerlogo">
+			<a href="http://www.imgtec.com" target="_blank"><img src="_static/img-footer-logo-grey.png" width="100%" height="100%" /></a>
+		</div>
+	<div class="copyright">&copy; Imagination Technologies Limited<br> All rights reserved</div>
+	</div>
+</div>
+  </body>
 </html>

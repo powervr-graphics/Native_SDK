@@ -1,9 +1,9 @@
-attribute highp vec4	inVertex;
-attribute highp vec3	inNormal;
-attribute highp vec2	inTexCoord;
+attribute highp vec4 inVertex;
+attribute mediump vec3 inNormal;
+attribute mediump vec2 inTexCoord;
 
-uniform highp mat4  MVPMatrix;
-uniform highp mat3  MVITMatrix;
+uniform highp mat4 MVPMatrix;
+uniform highp mat3 MVITMatrix;
 
 varying mediump vec3 ViewNormal;
 varying mediump vec2 TexCoord;

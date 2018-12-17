@@ -30,7 +30,6 @@
 #define __OPENCL_CL_EGL_H
 
 #ifdef __APPLE__
-
 #else
 #include <CL/cl.h>
 #endif

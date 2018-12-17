@@ -15,7 +15,7 @@
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="IMGdoxygen.css" rel="stylesheet" type="text/css"/>
-<link rel="shortcut icon" href="http://www.imgtec.com/images/img.ico">
+<link rel="shortcut icon" type="image/x-icon" href="img.ico">
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
+      <a href="https://www.imgtec.com/developers/" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRCore</span> Documentation</a>
    <tbody>
@@ -92,9 +92,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a0db8c031b7efc9956e4b2abc6ff86c87"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1strings.html#a0db8c031b7efc9956e4b2abc6ff86c87">concatenateLinesUntil</a> (std::string &amp;outStr, int &amp;line, const std::vector&lt; std::string &gt; &amp;lines, unsigned int limit, const char *endStr)</td></tr>
-<tr class="memdesc:a0db8c031b7efc9956e4b2abc6ff86c87"><td class="mdescLeft">&#160;</td><td class="mdescRight">Outputs a block of text starting from nLine and ending when the std::string endStr is found. <a href="#a0db8c031b7efc9956e4b2abc6ff86c87">More...</a><br/></td></tr>
-<tr class="separator:a0db8c031b7efc9956e4b2abc6ff86c87"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4f44ae405a051570877ed170991797a3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1strings.html#a4f44ae405a051570877ed170991797a3">concatenateLinesUntil</a> (std::string &amp;outStr, int &amp;line, const std::vector&lt; std::string &gt; &amp;lines, uint32_t limit, const char *endStr)</td></tr>
+<tr class="memdesc:a4f44ae405a051570877ed170991797a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Outputs a block of text starting from nLine and ending when the std::string endStr is found. <a href="#a4f44ae405a051570877ed170991797a3">More...</a><br/></td></tr>
+<tr class="separator:a4f44ae405a051570877ed170991797a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1c693ebcf2432829dd39503d4230e7ad"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1strings.html#a1c693ebcf2432829dd39503d4230e7ad">createFormatted</a> (const char *format,...)</td></tr>
 <tr class="memdesc:a1c693ebcf2432829dd39503d4230e7ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an std::string with a printf-like command. <a href="#a1c693ebcf2432829dd39503d4230e7ad">More...</a><br/></td></tr>
 <tr class="separator:a1c693ebcf2432829dd39503d4230e7ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -113,12 +113,15 @@ Functions</h2></td></tr>
 <tr class="memitem:a662bc5dfb1168d8b046dd767196ea45f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1strings.html#a662bc5dfb1168d8b046dd767196ea45f">endsWith</a> (const char *str, const char *substr)</td></tr>
 <tr class="memdesc:a662bc5dfb1168d8b046dd767196ea45f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tests if a std::string starts with another std::string. <a href="#a662bc5dfb1168d8b046dd767196ea45f">More...</a><br/></td></tr>
 <tr class="separator:a662bc5dfb1168d8b046dd767196ea45f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a248b7586076b29a74970237329ae1831"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a248b7586076b29a74970237329ae1831"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>getFileDirectory</b> (const std::string &amp;fileName, std::string &amp;outFileDir)</td></tr>
+<tr class="separator:a248b7586076b29a74970237329ae1831"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa066ce8c2bacd8377644533f21d52328"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1strings.html#aa066ce8c2bacd8377644533f21d52328">getFileNameAndExtension</a> (const std::string &amp;fileAndExtension, std::string &amp;filename, std::string &amp;extension)</td></tr>
 <tr class="memdesc:aa066ce8c2bacd8377644533f21d52328"><td class="mdescLeft">&#160;</td><td class="mdescRight">Separate a filename to name and extension <a href="#aa066ce8c2bacd8377644533f21d52328">More...</a><br/></td></tr>
 <tr class="separator:aa066ce8c2bacd8377644533f21d52328"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9d2160f6405e631aa254350ee592437c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1strings.html#a9d2160f6405e631aa254350ee592437c">ignoreWhitespace</a> (char **myString)</td></tr>
-<tr class="memdesc:a9d2160f6405e631aa254350ee592437c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Skips any beginning space, tab or new-line characters, advancing the pointer to the first non-whitespace character <a href="#a9d2160f6405e631aa254350ee592437c">More...</a><br/></td></tr>
-<tr class="separator:a9d2160f6405e631aa254350ee592437c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a364ece625c0b2343325aeba2b48c3647"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1strings.html#a364ece625c0b2343325aeba2b48c3647">ignoreWhitespace</a> (char **pszString)</td></tr>
+<tr class="memdesc:a364ece625c0b2343325aeba2b48c3647"><td class="mdescLeft">&#160;</td><td class="mdescRight">Skips any beginning space, tab or new-line characters, advancing the pointer to the first non-whitespace character <a href="#a364ece625c0b2343325aeba2b48c3647">More...</a><br/></td></tr>
+<tr class="separator:a364ece625c0b2343325aeba2b48c3647"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afdeba29026f5c1379f7c2643845745a8"><td class="memItemLeft" align="right" valign="top">char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1strings.html#afdeba29026f5c1379f7c2643845745a8">readEOLToken</a> (char *pToken)</td></tr>
 <tr class="memdesc:afdeba29026f5c1379f7c2643845745a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads next strings to the end of the line and interperts as a token. <a href="#afdeba29026f5c1379f7c2643845745a8">More...</a><br/></td></tr>
 <tr class="separator:afdeba29026f5c1379f7c2643845745a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -147,9 +150,12 @@ Functions</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Contains several valuable helpers to assist with common std::string operations: Starts with, ends with, create with printf-style formatting and others.</p>
 </div><h2 class="groupheader">Function Documentation</h2>
-<a class="anchor" id="a0db8c031b7efc9956e4b2abc6ff86c87"></a>
+<a class="anchor" id="a4f44ae405a051570877ed170991797a3"></a>
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">bool pvr::strings::concatenateLinesUntil </td>
@@ -172,7 +178,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramtype">uint32_t&#160;</td>
           <td class="paramname"><em>limit</em>, </td>
         </tr>
         <tr>
@@ -187,6 +193,11 @@ Functions</h2></td></tr>
           <td></td><td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p>Outputs a block of text starting from nLine and ending when the std::string endStr is found.</p>
@@ -533,18 +544,26 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a9d2160f6405e631aa254350ee592437c"></a>
+<a class="anchor" id="a364ece625c0b2343325aeba2b48c3647"></a>
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">void pvr::strings::ignoreWhitespace </td>
           <td>(</td>
           <td class="paramtype">char **&#160;</td>
-          <td class="paramname"><em>myString</em></td><td>)</td>
+          <td class="paramname"><em>pszString</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p>Skips any beginning space, tab or new-line characters, advancing the pointer to the first non-whitespace character</p>
@@ -560,6 +579,9 @@ Functions</h2></td></tr>
 <a class="anchor" id="afdeba29026f5c1379f7c2643845745a8"></a>
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">char* pvr::strings::readEOLToken </td>
@@ -569,6 +591,11 @@ Functions</h2></td></tr>
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p>Reads next strings to the end of the line and interperts as a token.</p>

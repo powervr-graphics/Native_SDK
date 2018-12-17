@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>PVRAssets: /usr/buildxl/buildroot/sdk/branch/SDK/framework/PVRAssets/FileIO/PODReader.h Source File</title>
+<title>PVRAssets: /usr/buildxl/buildroot/sdk/branch/SDK/framework/PVRAssets/fileio/PODReader.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -15,7 +15,7 @@
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="IMGdoxygen.css" rel="stylesheet" type="text/css"/>
-<link rel="shortcut icon" href="http://www.imgtec.com/images/img.ico">
+<link rel="shortcut icon" type="image/x-icon" href="img.ico">
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
+      <a href="https://www.imgtec.com/developers/" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRAssets</span> Documentation</a>
    <tbody>
@@ -76,7 +76,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_687531cb5acd5e736601deea3ef3b7c0.html">SDK</a></li><li class="navelem"><a class="el" href="dir_407ce59cc93389552d4bbf4df897abf8.html">framework</a></li><li class="navelem"><a class="el" href="dir_f33801fccc62bcd49344134f4e4800fa.html">PVRAssets</a></li><li class="navelem"><a class="el" href="dir_14383073131a23200182f04b8c08e2c3.html">FileIO</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_687531cb5acd5e736601deea3ef3b7c0.html">SDK</a></li><li class="navelem"><a class="el" href="dir_407ce59cc93389552d4bbf4df897abf8.html">framework</a></li><li class="navelem"><a class="el" href="dir_f33801fccc62bcd49344134f4e4800fa.html">PVRAssets</a></li><li class="navelem"><a class="el" href="dir_2a259fd671ddbe7a073d6b7af355b65c.html">fileio</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -87,44 +87,44 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a href="_p_o_d_reader_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;</div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#pragma once</span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_asset_includes_8h.html">PVRAssets/AssetIncludes.h</a>&quot;</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="keyword">namespace </span>pvr {</div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="keyword">namespace </span>assets {</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="keyword">class </span><a class="code" href="namespacepvr.html#a7449705e04c8fe948e390ea793106107aa559b87068921eec05086ce5485e9784">Model</a>;</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;</div>
-<div class="line"><a name="l00017"></a><span class="lineno"><a class="line" href="classpvr_1_1assets_1_1_p_o_d_reader.html">   17</a></span>&#160;<span class="keyword">class </span><a class="code" href="classpvr_1_1assets_1_1_p_o_d_reader.html">PODReader</a> : <span class="keyword">public</span> AssetReader&lt;Model&gt;</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;{</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    <a class="code" href="classpvr_1_1assets_1_1_p_o_d_reader.html#a1cac81e80dc2f5e0c556aefd4ca9367a">PODReader</a>();</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;</div>
-<div class="line"><a name="l00025"></a><span class="lineno"><a class="line" href="classpvr_1_1assets_1_1_p_o_d_reader.html#aa221af12341e9b655902d5f81b0e2b69">   25</a></span>&#160;    <a class="code" href="classpvr_1_1assets_1_1_p_o_d_reader.html#aa221af12341e9b655902d5f81b0e2b69">PODReader</a>(Stream::ptr_type assetStream) : AssetReader&lt;<a class="code" href="classpvr_1_1assets_1_1_model.html">Model</a>&gt;(std::move(assetStream)) {}</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classpvr_1_1assets_1_1_p_o_d_reader.html#a5284298775be4f4b444347c4a4b2e516">hasAssetsLeftToLoad</a>();</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="classpvr_1_1assets_1_1_p_o_d_reader.html#ae41f2273d82d543d0b515304c08917ab">canHaveMultipleAssets</a>();</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="classpvr_1_1assets_1_1_p_o_d_reader.html#aaa32cd7609ce8ecd11597d8705878775">isSupportedFile</a>(Stream&amp; assetStream);</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    <span class="keyword">virtual</span> std::vector&lt;std::string&gt; <a class="code" href="classpvr_1_1assets_1_1_p_o_d_reader.html#a4a1d40996bb4e4a6986af67861f9d18f">getSupportedFileExtensions</a>();</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    <span class="keywordtype">void</span> readNextAsset(<a class="code" href="classpvr_1_1assets_1_1_model.html">Model</a>&amp; asset);</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <span class="keywordtype">bool</span> _modelsToLoad;</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;};</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;} <span class="comment">// namespace assets</span></div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;} <span class="comment">// namespace pvr</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_model_8h.html">PVRAssets/Model.h</a>&quot;</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &quot;PVRCore/stream/AssetReader.h&quot;</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="keyword">namespace </span>pvr {</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="keyword">namespace </span>assets {</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="keyword">class </span>Model;</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;</div>
+<div class="line"><a name="l00018"></a><span class="lineno"><a class="line" href="classpvr_1_1assets_1_1_p_o_d_reader.html">   18</a></span>&#160;<span class="keyword">class </span><a class="code" href="classpvr_1_1assets_1_1_p_o_d_reader.html">PODReader</a> : <span class="keyword">public</span> AssetReader&lt;Model&gt;</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;{</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    <a class="code" href="classpvr_1_1assets_1_1_p_o_d_reader.html#a1cac81e80dc2f5e0c556aefd4ca9367a">PODReader</a>();</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;</div>
+<div class="line"><a name="l00026"></a><span class="lineno"><a class="line" href="classpvr_1_1assets_1_1_p_o_d_reader.html#aa221af12341e9b655902d5f81b0e2b69">   26</a></span>&#160;    <a class="code" href="classpvr_1_1assets_1_1_p_o_d_reader.html#aa221af12341e9b655902d5f81b0e2b69">PODReader</a>(Stream::ptr_type assetStream) : AssetReader&lt;<a class="code" href="classpvr_1_1assets_1_1_model.html">Model</a>&gt;(std::move(assetStream)) {}</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classpvr_1_1assets_1_1_p_o_d_reader.html#a5284298775be4f4b444347c4a4b2e516">hasAssetsLeftToLoad</a>();</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="classpvr_1_1assets_1_1_p_o_d_reader.html#ae41f2273d82d543d0b515304c08917ab">canHaveMultipleAssets</a>();</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="classpvr_1_1assets_1_1_p_o_d_reader.html#aaa32cd7609ce8ecd11597d8705878775">isSupportedFile</a>(Stream&amp; assetStream);</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    <span class="keyword">virtual</span> std::vector&lt;std::string&gt; <a class="code" href="classpvr_1_1assets_1_1_p_o_d_reader.html#a4a1d40996bb4e4a6986af67861f9d18f">getSupportedFileExtensions</a>();</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    <span class="keywordtype">void</span> readAsset_(<a class="code" href="classpvr_1_1assets_1_1_model.html">Model</a>&amp; asset);</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    <span class="keywordtype">bool</span> _modelsToLoad;</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;};</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;} <span class="comment">// namespace assets</span></div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;} <span class="comment">// namespace pvr</span></div>
+<div class="ttc" id="_model_8h_html"><div class="ttname"><a href="_model_8h.html">Model.h</a></div><div class="ttdoc">Contains the class representing an entire Scene, or Model. </div></div>
 <div class="ttc" id="classpvr_1_1assets_1_1_p_o_d_reader_html_ae41f2273d82d543d0b515304c08917ab"><div class="ttname"><a href="classpvr_1_1assets_1_1_p_o_d_reader.html#ae41f2273d82d543d0b515304c08917ab">pvr::assets::PODReader::canHaveMultipleAssets</a></div><div class="ttdeci">virtual bool canHaveMultipleAssets()</div><div class="ttdoc">Check if this reader supports multiple assets per stream.</div></div>
 <div class="ttc" id="classpvr_1_1assets_1_1_p_o_d_reader_html_a5284298775be4f4b444347c4a4b2e516"><div class="ttname"><a href="classpvr_1_1assets_1_1_p_o_d_reader.html#a5284298775be4f4b444347c4a4b2e516">pvr::assets::PODReader::hasAssetsLeftToLoad</a></div><div class="ttdeci">bool hasAssetsLeftToLoad()</div><div class="ttdoc">Check if there more assets in the stream.</div></div>
 <div class="ttc" id="classpvr_1_1assets_1_1_p_o_d_reader_html_a4a1d40996bb4e4a6986af67861f9d18f"><div class="ttname"><a href="classpvr_1_1assets_1_1_p_o_d_reader.html#a4a1d40996bb4e4a6986af67861f9d18f">pvr::assets::PODReader::getSupportedFileExtensions</a></div><div class="ttdeci">virtual std::vector&lt; std::string &gt; getSupportedFileExtensions()</div><div class="ttdoc">Check what are the expected file extensions for files supported by this reader.</div></div>
-<div class="ttc" id="classpvr_1_1assets_1_1_p_o_d_reader_html_aa221af12341e9b655902d5f81b0e2b69"><div class="ttname"><a href="classpvr_1_1assets_1_1_p_o_d_reader.html#aa221af12341e9b655902d5f81b0e2b69">pvr::assets::PODReader::PODReader</a></div><div class="ttdeci">PODReader(Stream::ptr_type assetStream)</div><div class="ttdoc">Construct reader from the specified stream.</div><div class="ttdef"><b>Definition:</b> PODReader.h:25</div></div>
-<div class="ttc" id="namespacepvr_html_a7449705e04c8fe948e390ea793106107aa559b87068921eec05086ce5485e9784"><div class="ttname"><a href="namespacepvr.html#a7449705e04c8fe948e390ea793106107aa559b87068921eec05086ce5485e9784">pvr::VariableScope::Model</a></div><div class="ttdoc">The variable is per model (stays constant for a given model, for example, ViewMatrix) ...</div></div>
+<div class="ttc" id="classpvr_1_1assets_1_1_p_o_d_reader_html_aa221af12341e9b655902d5f81b0e2b69"><div class="ttname"><a href="classpvr_1_1assets_1_1_p_o_d_reader.html#aa221af12341e9b655902d5f81b0e2b69">pvr::assets::PODReader::PODReader</a></div><div class="ttdeci">PODReader(Stream::ptr_type assetStream)</div><div class="ttdoc">Construct reader from the specified stream.</div><div class="ttdef"><b>Definition:</b> PODReader.h:26</div></div>
 <div class="ttc" id="classpvr_1_1assets_1_1_p_o_d_reader_html_aaa32cd7609ce8ecd11597d8705878775"><div class="ttname"><a href="classpvr_1_1assets_1_1_p_o_d_reader.html#aaa32cd7609ce8ecd11597d8705878775">pvr::assets::PODReader::isSupportedFile</a></div><div class="ttdeci">virtual bool isSupportedFile(Stream &amp;assetStream)</div><div class="ttdoc">Check if this reader supports the particular assetStream.</div></div>
-<div class="ttc" id="_asset_includes_8h_html"><div class="ttname"><a href="_asset_includes_8h.html">AssetIncludes.h</a></div><div class="ttdoc">Includes files commonly required for PVRAssets code files. Include PVRAssets.h instead to use PVRAsse...</div></div>
 <div class="ttc" id="classpvr_1_1assets_1_1_p_o_d_reader_html_a1cac81e80dc2f5e0c556aefd4ca9367a"><div class="ttname"><a href="classpvr_1_1assets_1_1_p_o_d_reader.html#a1cac81e80dc2f5e0c556aefd4ca9367a">pvr::assets::PODReader::PODReader</a></div><div class="ttdeci">PODReader()</div><div class="ttdoc">Construct empty reader.</div></div>
-<div class="ttc" id="classpvr_1_1assets_1_1_model_html"><div class="ttname"><a href="classpvr_1_1assets_1_1_model.html">pvr::assets::Model</a></div><div class="ttdoc">The Model class represents an entire Scene, or Model. It is mainly a Node structure, allowing various different kinds of data to be stored in the Nodes. The class contains a tree-like structure of Nodes. Each Node can be a Mesh node (containing a Mesh), Camera node or Light node. The tree-structure assumes transformational hierarchy (as usual). Transformations are expressed through Animation objects (a static transform is an animation with a single frame) There is an implicit order in the nodes - First in the array the Mesh nodes will be laid out, then Camera and Light nodes.</div><div class="ttdef"><b>Definition:</b> Model.h:40</div></div>
-<div class="ttc" id="classpvr_1_1assets_1_1_p_o_d_reader_html"><div class="ttname"><a href="classpvr_1_1assets_1_1_p_o_d_reader.html">pvr::assets::PODReader</a></div><div class="ttdoc">This class creates pvr::assets::Model object from Streams of POD Model data. Use the readAsset method...</div><div class="ttdef"><b>Definition:</b> PODReader.h:17</div></div>
+<div class="ttc" id="classpvr_1_1assets_1_1_model_html"><div class="ttname"><a href="classpvr_1_1assets_1_1_model.html">pvr::assets::Model</a></div><div class="ttdoc">The Model class represents an entire Scene, or Model. It is mainly a Node structure, allowing various different kinds of data to be stored in the Nodes. The class contains a tree-like structure of Nodes. Each Node can be a Mesh node (containing a Mesh), Camera node or Light node. The tree-structure assumes transformational hierarchy (as usual). Transformations are expressed through Animation objects (a static transform is an animation with a single frame) There is an implicit order in the nodes - First in the array the Mesh nodes will be laid out, then Camera and Light nodes.</div><div class="ttdef"><b>Definition:</b> Model.h:48</div></div>
+<div class="ttc" id="classpvr_1_1assets_1_1_p_o_d_reader_html"><div class="ttname"><a href="classpvr_1_1assets_1_1_p_o_d_reader.html">pvr::assets::PODReader</a></div><div class="ttdoc">This class creates pvr::assets::Model object from Streams of POD Model data. Use the readAsset method...</div><div class="ttdef"><b>Definition:</b> PODReader.h:18</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.4-->
 <!-- start footer part (NON TREEVIEW ONLY!!) -->

@@ -82,14 +82,26 @@ public:
 	Used to initialize variables that are not dependent on it (e.g. external modules, loading meshes, etc.)
 	If the rendering context is lost, initApplication() will not be called again.
 ***********************************************************************************************************************/
-pvr::Result OpenGLESIntroducingPVRShell::initApplication() { return pvr::Result::Success; }
+pvr::Result OpenGLESIntroducingPVRShell::initApplication()
+{
+	setBackBufferColorspace(pvr::ColorSpace::lRGB);
+	// Here we are setting the value to lRGB for simplicity: We are working directly with sRGB values in our textures
+	// and passing them through.
+	// Note, the default for PVRShell is sRGB: when doing anything but the most simplistic effects, you will need to
+	// work with linear values in the shaders and then either perform gamma correction in the shader, or (if supported)
+	// use an sRGB framebuffer (which performs this correction automatically).
+	return pvr::Result::Success;
+}
 
 /*!*********************************************************************************************************************
 \return Return Result::Success if no error occurred
 \brief  Code in quitApplication() will be called by pvr::Shell once per run, just before exiting the program.
 		If the rendering context is lost, QuitApplication() will not be called.
 ***********************************************************************************************************************/
-pvr::Result OpenGLESIntroducingPVRShell::quitApplication() { return pvr::Result::Success; }
+pvr::Result OpenGLESIntroducingPVRShell::quitApplication()
+{
+	return pvr::Result::Success;
+}
 
 /*!*********************************************************************************************************************
 \return Return Result::Success if no error occured
@@ -98,7 +110,7 @@ pvr::Result OpenGLESIntroducingPVRShell::quitApplication() { return pvr::Result:
 ***********************************************************************************************************************/
 pvr::Result OpenGLESIntroducingPVRShell::initView()
 {
-	//Initialize the PowerVR OpenGL bindings. Must be called before using any of the gl:: commands.
+	// Initialize the PowerVR OpenGL bindings. Must be called before using any of the gl:: commands.
 	_context.init(getWindow(), getDisplay(), getDisplayAttributes());
 
 	// Fragment and vertex shaders code
@@ -135,7 +147,8 @@ pvr::Result OpenGLESIntroducingPVRShell::initView()
 		gl::GetShaderiv(_fragShader, GL_INFO_LOG_LENGTH, &infoLogLength);
 
 		// Allocate enough space for the message and retrieve it
-		std::vector<char> infoLog; infoLog.resize(infoLogLength);
+		std::vector<char> infoLog;
+		infoLog.resize(infoLogLength);
 		gl::GetShaderInfoLog(_fragShader, infoLogLength, &numCharsWritten, infoLog.data());
 
 		//  Displays the message in a dialog box when the application quits
@@ -156,7 +169,8 @@ pvr::Result OpenGLESIntroducingPVRShell::initView()
 		int infoLogLength, numCharsWritten;
 		gl::GetShaderiv(_vertexShader, GL_INFO_LOG_LENGTH, &infoLogLength);
 
-		std::vector<char> infoLog; infoLog.resize(infoLogLength);
+		std::vector<char> infoLog;
+		infoLog.resize(infoLogLength);
 		gl::GetShaderInfoLog(_vertexShader, infoLogLength, &numCharsWritten, infoLog.data());
 
 		std::string message("Failed to compile vertex shader: ");
@@ -185,7 +199,8 @@ pvr::Result OpenGLESIntroducingPVRShell::initView()
 	{
 		int infoLogLength, numCharsWritten;
 		gl::GetProgramiv(_program, GL_INFO_LOG_LENGTH, &infoLogLength);
-		std::vector<char> infoLog; infoLog.resize(infoLogLength);
+		std::vector<char> infoLog;
+		infoLog.resize(infoLogLength);
 		gl::GetProgramInfoLog(_program, infoLogLength, &numCharsWritten, infoLog.data());
 
 		std::string message("Failed to link program: ");
@@ -203,7 +218,7 @@ pvr::Result OpenGLESIntroducingPVRShell::initView()
 	// Create VBO for the triangle from our data
 
 	// Vertex data
-	GLfloat afVertices[] = { -0.4f, -0.4f, 0.0f,  0.4f, -0.4f, 0.0f,   0.0f, 0.4f, 0.0f };
+	GLfloat afVertices[] = { -0.4f, -0.4f, 0.0f, 0.4f, -0.4f, 0.0f, 0.0f, 0.4f, 0.0f };
 
 	// Gen VBO
 	gl::GenBuffers(1, &_vbo);
@@ -229,12 +244,16 @@ pvr::Result OpenGLESIntroducingPVRShell::initView()
 pvr::Result OpenGLESIntroducingPVRShell::releaseView()
 {
 	// Release Vertex buffer object.
-	if (_vbo) gl::DeleteBuffers(1, &_vbo);
+	if (_vbo)
+		gl::DeleteBuffers(1, &_vbo);
 
 	// Frees the OpenGL handles for the program and the 2 shaders
-	if (_program) gl::DeleteProgram(_program);
-	if (_vertexShader)gl::DeleteShader(_vertexShader);
-	if (_fragShader) gl::DeleteShader(_fragShader);
+	if (_program)
+		gl::DeleteProgram(_program);
+	if (_vertexShader)
+		gl::DeleteShader(_vertexShader);
+	if (_fragShader)
+		gl::DeleteShader(_fragShader);
 
 	_context.release();
 
@@ -248,18 +267,11 @@ pvr::Result OpenGLESIntroducingPVRShell::releaseView()
 pvr::Result OpenGLESIntroducingPVRShell::renderFrame()
 {
 	// Matrix used for projection model view
-	float afIdentity[] =
-	{
-		1, 0, 0, 0,
-		0, 1, 0, 0,
-		0, 0, 1, 0,
-		0, 0, 0, 1
-	};
+	float afIdentity[] = { 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 };
 
 	//  Clears the color buffer. glClear() can also be used to clear the depth or stencil buffer
 	//  (GL_DEPTH_BUFFER_BIT or GL_STENCIL_BUFFER_BIT)
 	gl::Clear(GL_COLOR_BUFFER_BIT);
-
 
 	//  Bind the projection model view matrix (PMVMatrix) to
 	//  the associated uniform variable in the shader
@@ -308,9 +320,9 @@ pvr::Result OpenGLESIntroducingPVRShell::renderFrame()
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return Return auto ptr to the demo supplied by the user
-\brief  This function must be implemented by the user of the shell.
-		The user should return its PVRShell object defining the behaviour of the application.
-***********************************************************************************************************************/
-std::unique_ptr<pvr::Shell> pvr::newDemo() { return std::unique_ptr<pvr::Shell>(new OpenGLESIntroducingPVRShell()); }
+/// <summary>This function must be implemented by the user of the shell. The user should return its pvr::Shell object defining the behaviour of the application.</summary>
+/// <returns>Return a unique ptr to the demo supplied by the user.</returns>
+std::unique_ptr<pvr::Shell> pvr::newDemo()
+{
+	return std::unique_ptr<pvr::Shell>(new OpenGLESIntroducingPVRShell());
+}

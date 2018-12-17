@@ -7,7 +7,9 @@
 //!\cond NO_DOXYGEN
 #pragma once
 
-#include "PVRCore/CoreIncludes.h"
+#include "PVRCore/types/Types.h"
+#include "PVRCore/RefCounted.h"
+#include "PVRCore/Log.h"
 #include "OpenGLES/ES2/gl.h"
 #include "OpenGLES/ES2/glext.h"
 #ifdef __OBJC__

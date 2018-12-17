@@ -16,8 +16,6 @@ enum
 	VirtualHeight = 480,
 	UiDisplayTime = 5, // Display each page for 5 seconds
 	UiDisplayTimeInMs = UiDisplayTime * 1000,
-	BaseDimX = 800,
-	BaseDimY = 600,
 	NumClocks = 22
 };
 static const float LowerContainerHeight = .3f;
@@ -146,8 +144,8 @@ enum Enum
 };
 }
 
-const char* const FragShaderFileName = "ColShader_vk.fsh.spv"; // ColorShader
-const char* const VertShaderFileName = "ColShader_vk.vsh.spv"; // ColorShader
+const char* const FragShaderFileName = "ColShader.fsh.spv"; // ColorShader
+const char* const VertShaderFileName = "ColShader.vsh.spv"; // ColorShader
 
 // Group shader programs and their uniform locations together
 
@@ -303,7 +301,7 @@ void PageWindow::update(glm::mat4& proj, uint32_t swapchain, float width, float 
 	// update the render quad ubo
 	glm::mat4 scale = glm::scale(glm::vec3(glm::vec2(renderArea.getExtent().getWidth(), renderArea.getExtent().getHeight()) / glm::vec2(width, height), 1.f));
 	glm::mat4x4 mvp = proj * worldTrans * scale;
-	renderQuadUboBufferView.getElement(0, 0, swapchain).setValue(&mvp);
+	renderQuadUboBufferView.getElement(0, 0, swapchain).setValue(mvp);
 
 	// if the memory property flags used by the buffers' device memory do not contain e_HOST_COHERENT_BIT then we must flush the memory
 	if (static_cast<uint32_t>(renderQuadUboBuffer->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
@@ -398,8 +396,7 @@ struct DeviceResources
 	pvrvk::Surface surface;
 	pvrvk::Device device;
 	pvrvk::Queue queue;
-	pvr::utils::vma::Allocator vmaBufferAllocator;
-	pvr::utils::vma::Allocator vmaImageAllocator;
+	pvr::utils::vma::Allocator vmaAllocator;
 	pvrvk::Swapchain swapchain;
 	pvrvk::CommandPool commandPool;
 	pvrvk::DescriptorPool descriptorPool;
@@ -448,13 +445,16 @@ struct DeviceResources
 	pvr::ui::Image sprites[Sprites::Count + Ancillary::Count];
 
 	pvr::ui::PixelGroup groupBaseUI;
+
+	pvrvk::PipelineCache pipelineCache;
+
 	~DeviceResources()
 	{
 		if (device.isValid())
 		{
 			device->waitIdle();
-			int l = swapchain->getSwapchainLength();
-			for (int i = 0; i < l; ++i)
+			uint32_t l = swapchain->getSwapchainLength();
+			for (uint32_t i = 0; i < l; ++i)
 			{
 				if (perFrameAcquireFence[i].isValid())
 					perFrameAcquireFence[i]->wait();
@@ -504,14 +504,14 @@ private:
 		uint32_t width = getWidth();
 		uint32_t height = getHeight();
 		Vertex vVerts[4] = {
-			glm::vec4(0, height, 0, 1), // top left
-			glm::vec4(0, 0, 0, 1), // bottom left
-			glm::vec4(width, height, 0, 1), // top right
-			glm::vec4(width, 0, 0, 1) // bottom right
+			{ glm::vec4(0, height, 0, 1) }, // top left
+			{ glm::vec4(0, 0, 0, 1) }, // bottom left
+			{ glm::vec4(width, height, 0, 1) }, // top right
+			{ glm::vec4(width, 0, 0, 1) } // bottom right
 		};
 		_deviceResources->quadVbo = pvr::utils::createBuffer(_deviceResources->device, sizeof(vVerts),
 			pvrvk::BufferUsageFlags::e_VERTEX_BUFFER_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT,
-			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, &_deviceResources->vmaBufferAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, &_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
 		bool isBufferHostVisible = (_deviceResources->quadVbo->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT) != 0;
 
@@ -522,7 +522,7 @@ private:
 		else
 		{
 			pvr::utils::updateBufferUsingStagingBuffer(
-				_deviceResources->device, _deviceResources->quadVbo, uploadCmd, &vVerts[0], 0, static_cast<uint32_t>(sizeof(vVerts[0]) * 4), &_deviceResources->vmaBufferAllocator);
+				_deviceResources->device, _deviceResources->quadVbo, uploadCmd, &vVerts[0], 0, static_cast<uint32_t>(sizeof(vVerts[0]) * 4), &_deviceResources->vmaAllocator);
 		}
 	}
 
@@ -562,11 +562,11 @@ private:
 	void eventMappedInput(pvr::SimplifiedInput action);
 	float getVirtualWidth()
 	{
-		return (float)(isRotated() ? this->getHeight() : this->getWidth());
+		return static_cast<float>(isRotated() ? this->getHeight() : this->getWidth());
 	}
 	float getVirtualHeight()
 	{
-		return (float)(isRotated() ? this->getWidth() : this->getHeight());
+		return static_cast<float>(isRotated() ? this->getWidth() : this->getHeight());
 	}
 	float toDeviceX(float fVal)
 	{
@@ -615,10 +615,10 @@ void VulkanExampleUI::createPageWindow()
 	_deviceResources->textLorem->setColor(0.0f, 0.0f, 0.0f, 1.0f);
 	_deviceResources->textLorem->setAnchor(pvr::ui::Anchor::BottomLeft, glm::vec2(-1.0f, -1.0f));
 	_deviceResources->pageWindow.renderArea = pvrvk::Rect2D(0, 0, 390, 250);
-	_deviceResources->pageWindow.renderArea.setOffset(pvrvk::Offset2D((int32_t)(_deviceResources->pageWindow.renderArea.getOffset().getX() * _screenScale.x),
-		(int32_t)(_deviceResources->pageWindow.renderArea.getOffset().getY() * _screenScale.y)));
-	_deviceResources->pageWindow.renderArea.setExtent(pvrvk::Extent2D((int32_t)(_deviceResources->pageWindow.renderArea.getExtent().getWidth() * _screenScale.x),
-		(int32_t)(_deviceResources->pageWindow.renderArea.getExtent().getHeight() * _screenScale.y)));
+	_deviceResources->pageWindow.renderArea.setOffset(pvrvk::Offset2D(static_cast<int32_t>(_deviceResources->pageWindow.renderArea.getOffset().getX() * _screenScale.x),
+		static_cast<int32_t>(_deviceResources->pageWindow.renderArea.getOffset().getY() * _screenScale.y)));
+	_deviceResources->pageWindow.renderArea.setExtent(pvrvk::Extent2D(static_cast<uint32_t>(_deviceResources->pageWindow.renderArea.getExtent().getWidth() * _screenScale.x),
+		static_cast<uint32_t>(_deviceResources->pageWindow.renderArea.getExtent().getHeight() * _screenScale.y)));
 	for (uint32_t i = 0; i < _numSwapchain; ++i)
 	{
 		_deviceResources->pageWindow.group[i] = _deviceResources->uiRenderer.createMatrixGroup();
@@ -810,6 +810,7 @@ pvr::Result VulkanExampleUI::initApplication()
 	// initialise current and previous times to avoid saturating the variable used for rotating the window text
 	_currTime = this->getTime();
 	_prevTime = this->getTime();
+	_frameId = 0;
 
 	return pvr::Result::Success;
 }
@@ -933,11 +934,11 @@ void VulkanExampleUI::createPageClock()
 {
 	SpriteContainer container;
 	const uint32_t numClocksInColumn = 5;
-	float containerHeight = _deviceResources->sprites[Sprites::ClockfaceSmall]->getDimensions().y * numClocksInColumn / BaseDimY;
+	float containerHeight = _deviceResources->sprites[Sprites::ClockfaceSmall]->getDimensions().y * numClocksInColumn / getHeight();
 	containerHeight += LowerContainerHeight * .5f; // add the lower container height as well
 	float containerWidth = _deviceResources->sprites[Sprites::ClockfaceSmall]->getDimensions().x * 4;
 	containerWidth += _deviceResources->sprites[Sprites::Clockface]->getDimensions().x;
-	containerWidth /= BaseDimX;
+	containerWidth /= getWidth();
 
 	pvrvk::Rect2Df containerRect(-containerWidth, -containerHeight, containerWidth * 2.f, containerHeight * 2.f);
 	createSpriteContainer(containerRect, 2, LowerContainerHeight, container);
@@ -1049,10 +1050,15 @@ void VulkanExampleUI::createBaseUI()
 pvr::Result VulkanExampleUI::initView()
 {
 	_deviceResources = std::unique_ptr<DeviceResources>(new DeviceResources());
-	_frameId = 0;
 
 	// Create instance and retrieve compatible physical devices
 	_deviceResources->instance = pvr::utils::createInstance(this->getApplicationName());
+
+	if (_deviceResources->instance->getNumPhysicalDevices() == 0)
+	{
+		setExitMessage("Unable not find a compatible Vulkan physical device.");
+		return pvr::Result::UnknownError;
+	}
 
 	// Create the surface
 	_deviceResources->surface = pvr::utils::createSurface(_deviceResources->instance, _deviceResources->instance->getPhysicalDevice(0), this->getWindow(), this->getDisplay());
@@ -1072,8 +1078,7 @@ pvr::Result VulkanExampleUI::initView()
 	// get the queue
 	_deviceResources->queue = _deviceResources->device->getQueue(queueAccessInfo.familyId, queueAccessInfo.queueId);
 
-	_deviceResources->vmaBufferAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
-	_deviceResources->vmaImageAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
+	_deviceResources->vmaAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
 
 	pvrvk::SurfaceCapabilitiesKHR surfaceCapabilities = _deviceResources->instance->getPhysicalDevice(0)->getSurfaceCapabilities(_deviceResources->surface);
 
@@ -1087,14 +1092,15 @@ pvr::Result VulkanExampleUI::initView()
 	// Create the swapchain and depthstencil attachments
 	pvr::utils::createSwapchainAndDepthStencilImageAndViews(_deviceResources->device, _deviceResources->surface, getDisplayAttributes(), _deviceResources->swapchain,
 		_deviceResources->depthStencil, swapchainImageUsage, pvrvk::ImageUsageFlags::e_DEPTH_STENCIL_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_TRANSIENT_ATTACHMENT_BIT,
-		&_deviceResources->vmaImageAllocator);
+		&_deviceResources->vmaAllocator);
 
 	_numSwapchain = _deviceResources->swapchain->getSwapchainLength();
 
 	pvr::utils::createOnscreenFramebufferAndRenderpass(_deviceResources->swapchain, &_deviceResources->depthStencil[0], _deviceResources->onScreenFramebuffer);
 
 	// Create the commandpool
-	_deviceResources->commandPool = _deviceResources->device->createCommandPool(queueAccessInfo.familyId, pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT);
+	_deviceResources->commandPool =
+		_deviceResources->device->createCommandPool(pvrvk::CommandPoolCreateInfo(queueAccessInfo.familyId, pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT));
 
 	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(pvrvk::DescriptorPoolCreateInfo()
 																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 16)
@@ -1107,10 +1113,10 @@ pvr::Result VulkanExampleUI::initView()
 		_deviceResources->commandBufferTitleDesc[i] = _deviceResources->commandPool->allocateSecondaryCommandBuffer();
 	}
 	// Initialize _deviceResources->uiRenderer
-	_deviceResources->uiRenderer.init(getWidth(), getHeight(), isFullScreen(), _deviceResources->onScreenFramebuffer[0]->getRenderPass(), 0, _deviceResources->commandPool,
-		_deviceResources->queue, true, true, true, 1024);
+	_deviceResources->uiRenderer.init(getWidth(), getHeight(), isFullScreen(), _deviceResources->onScreenFramebuffer[0]->getRenderPass(), 0,
+		getBackBufferColorspace() == pvr::ColorSpace::sRGB, _deviceResources->commandPool, _deviceResources->queue, true, true, true, 1024);
 
-	_screenScale = glm::vec2(glm::min(_deviceResources->uiRenderer.getRenderingDim().x / BaseDimX, _deviceResources->uiRenderer.getRenderingDim().y / BaseDimY));
+	_screenScale = glm::vec2(glm::min(_deviceResources->uiRenderer.getRenderingDim().x / getWidth(), _deviceResources->uiRenderer.getRenderingDim().y / getHeight()));
 	_prevTransTime = this->getTime();
 
 	// Load the sprites
@@ -1127,6 +1133,9 @@ pvr::Result VulkanExampleUI::initView()
 	_deviceResources->queue->waitIdle();
 	_deviceResources->commandBuffer[0]->reset(pvrvk::CommandBufferResetFlags::e_RELEASE_RESOURCES_BIT);
 
+	// Create the pipeline cache
+	_deviceResources->pipelineCache = _deviceResources->device->createPipelineCache();
+
 	// Load the shaders
 	createPipelines();
 
@@ -1134,13 +1143,13 @@ pvr::Result VulkanExampleUI::initView()
 
 	if (isScreenRotated())
 	{
-		_projMtx = pvr::math::ortho(
-			pvr::Api::Vulkan, 0.f, (float_t)_deviceResources->swapchain->getDimension().getHeight(), 0.f, (float)_deviceResources->swapchain->getDimension().getWidth(), 0.0f);
+		_projMtx = pvr::math::ortho(pvr::Api::Vulkan, 0.f, static_cast<float>(_deviceResources->swapchain->getDimension().getHeight()), 0.f,
+			static_cast<float>(_deviceResources->swapchain->getDimension().getWidth()), 0.0f);
 	}
 	else
 	{
-		_projMtx = pvr::math::ortho(
-			pvr::Api::Vulkan, 0.f, (float_t)_deviceResources->swapchain->getDimension().getWidth(), 0.f, (float)_deviceResources->swapchain->getDimension().getHeight(), 0.0f);
+		_projMtx = pvr::math::ortho(pvr::Api::Vulkan, 0.f, static_cast<float>(_deviceResources->swapchain->getDimension().getWidth()), 0.f,
+			static_cast<float>(_deviceResources->swapchain->getDimension().getHeight()), 0.0f);
 	}
 	_swipe = false;
 	// set the default title
@@ -1188,7 +1197,7 @@ void VulkanExampleUI::loadSprites(pvrvk::CommandBuffer& uploadCmd)
 		_deviceResources->spritesDesc[i].uiWidth = tex.getWidth();
 		_deviceResources->spritesDesc[i].uiHeight = tex.getHeight();
 		_deviceResources->spritesDesc[i].imageView = pvr::utils::loadAndUploadImageAndView(_deviceResources->device, SpritesFileNames[i].c_str(), true, uploadCmd, *this,
-			pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout::e_GENERAL, &tex, &_deviceResources->vmaBufferAllocator, &_deviceResources->vmaImageAllocator);
+			pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, &tex, &_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
 		const uint8_t* pixelString = tex.getPixelFormat().getPixelTypeChar();
 
 		if (tex.getPixelFormat().getPixelTypeId() == (uint64_t)pvr::CompressedPixelFormat::PVRTCI_2bpp_RGBA ||
@@ -1240,7 +1249,7 @@ void VulkanExampleUI::createSamplersAndDescriptorSet()
 	_deviceResources->pageWindow.renderQuadUboBuffer =
 		pvr::utils::createBuffer(_deviceResources->device, ubo.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
-			&_deviceResources->vmaBufferAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+			&_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
 	ubo.pointToMappedMemory(_deviceResources->pageWindow.renderQuadUboBuffer->getDeviceMemory()->getMappedData());
 
@@ -1274,8 +1283,8 @@ void VulkanExampleUI::createPipelines()
 	pvr::Stream::ptr_type fragSource = getAssetStream(FragShaderFileName);
 
 	// create the vertex and fragment shaders
-	_deviceResources->vertexShader = _deviceResources->device->createShader(vertSource->readToEnd<uint32_t>());
-	_deviceResources->fragmentShader = _deviceResources->device->createShader(fragSource->readToEnd<uint32_t>());
+	_deviceResources->vertexShader = _deviceResources->device->createShaderModule(pvrvk::ShaderModuleCreateInfo(vertSource->readToEnd<uint32_t>()));
+	_deviceResources->fragmentShader = _deviceResources->device->createShaderModule(pvrvk::ShaderModuleCreateInfo(fragSource->readToEnd<uint32_t>()));
 
 	// --- renderquad pipeline
 	{
@@ -1308,7 +1317,7 @@ void VulkanExampleUI::createPipelines()
 
 		pvr::utils::populateViewportStateCreateInfo(_deviceResources->onScreenFramebuffer[0], pipeInfo.viewport);
 
-		_deviceResources->renderQuadPipe = _deviceResources->device->createGraphicsPipeline(pipeInfo);
+		_deviceResources->renderQuadPipe = _deviceResources->device->createGraphicsPipeline(pipeInfo, _deviceResources->pipelineCache);
 	}
 
 	// --- render window text ui pipeline
@@ -1334,7 +1343,7 @@ void VulkanExampleUI::createPipelines()
 		pipeInfo.colorBlend.setAttachmentState(0, colorAttachment);
 		pipeInfo.basePipeline = _deviceResources->uiRenderer.getPipeline();
 		pipeInfo.flags = pvrvk::PipelineCreateFlags::e_DERIVATIVE_BIT;
-		_deviceResources->renderWindowTextPipe = _deviceResources->device->createGraphicsPipeline(pipeInfo);
+		_deviceResources->renderWindowTextPipe = _deviceResources->device->createGraphicsPipeline(pipeInfo, _deviceResources->pipelineCache);
 	}
 }
 
@@ -1559,7 +1568,7 @@ pvr::Result VulkanExampleUI::renderFrame()
 	if (this->shouldTakeScreenshot())
 	{
 		pvr::utils::takeScreenshot(_deviceResources->swapchain, swapchainIndex, _deviceResources->commandPool, _deviceResources->queue, this->getScreenshotFileName(),
-			&_deviceResources->vmaBufferAllocator, &_deviceResources->vmaImageAllocator);
+			&_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
 	}
 
 	// Present

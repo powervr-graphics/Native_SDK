@@ -2,6 +2,8 @@ var searchData=
 [
   ['querypool',['QueryPool',['../namespacepvrvk.html#a9775dff694169a1bafd336a1a64508f7',1,'pvrvk']]],
   ['querypool_5f',['QueryPool_',['../classpvrvk_1_1impl_1_1_query_pool__.html',1,'pvrvk::impl']]],
+  ['querypoolcreateinfo',['QueryPoolCreateInfo',['../structpvrvk_1_1_query_pool_create_info.html',1,'pvrvk']]],
+  ['querypoolcreateinfo',['QueryPoolCreateInfo',['../structpvrvk_1_1_query_pool_create_info.html#a5880b442c921f3685b2881880d13fa17',1,'pvrvk::QueryPoolCreateInfo']]],
   ['querypoolvk_2eh',['QueryPoolVk.h',['../_query_pool_vk_8h.html',1,'']]],
   ['queue',['Queue',['../namespacepvrvk.html#a21c02fb0d74c71bc78b01b1ed0e8fe65',1,'pvrvk']]],
   ['queue_5f',['Queue_',['../classpvrvk_1_1impl_1_1_queue__.html',1,'pvrvk::impl']]],

@@ -36,6 +36,7 @@ const char* FrameDefs[CounterDefs::NumCounter] = { "Frames", "Frames10" };
 ***********************************************************************************************************************/
 class OpenGLESPVRScopeRemote : public pvr::Shell
 {
+	glm::vec3 ClearColor;
 	struct DeviceResources
 	{
 		GLuint program;
@@ -137,7 +138,7 @@ void OpenGLESPVRScopeRemote::createSamplerTexture()
 {
 	CPPLProcessingScoped PPLProcessingScoped(_spsCommsData, __FUNCTION__, static_cast<uint32_t>(strlen(__FUNCTION__)), _frameCounter);
 	auto texStream = getAssetStream(TextureFile);
-	pvr::Texture tex = pvr::assets::textureLoad(texStream, pvr::TextureFileFormat::PVR);
+	pvr::Texture tex = pvr::textureLoad(texStream, pvr::TextureFileFormat::PVR);
 	pvr::utils::TextureUploadResults uploadResults = pvr::utils::textureUpload(tex, _deviceResources->context->getApiVersion() == pvr::Api::OpenGLES2, true);
 	_deviceResources->texture = uploadResults.image;
 	gl::BindTexture(GL_TEXTURE_2D, _deviceResources->texture);
@@ -153,6 +154,17 @@ void OpenGLESPVRScopeRemote::createSamplerTexture()
 ***********************************************************************************************************************/
 void OpenGLESPVRScopeRemote::createProgram(const char* const fragShaderSource, const char* const vertShaderSource, bool recompile)
 {
+	// Enable or disable gamma correction based on if it is automatically performed on the framebuffer or we need to do it in the shader.
+	const char* defines[] = { "FRAMEBUFFER_SRGB" };
+	uint32_t numDefines = 1;
+	glm::vec3 clearColorLinearSpace(0.0f, 0.40f, .39f);
+	ClearColor = clearColorLinearSpace;
+	if (getBackBufferColorspace() != pvr::ColorSpace::sRGB)
+	{
+		ClearColor = pvr::utils::convertLRGBtoSRGB(clearColorLinearSpace); // Gamma correct the clear color...
+		numDefines = 0;
+	}
+
 	gl::GetError();
 	// Mapping of mesh semantic names to shader variables
 	const char* vertexBindings[] = { "inVertex", "inNormal", "inTexCoord" };
@@ -178,8 +190,8 @@ void OpenGLESPVRScopeRemote::createProgram(const char* const fragShaderSource, c
 		}
 		gl::GetError(); // Don't really care if we succeded or failed...
 	}
-	_deviceResources->shaders[0] = pvr::utils::loadShader(vertexShaderStream, pvr::ShaderType::VertexShader, nullptr, 0);
-	_deviceResources->shaders[1] = pvr::utils::loadShader(fragShaderStream, pvr::ShaderType::FragmentShader, nullptr, 0);
+	_deviceResources->shaders[0] = pvr::utils::loadShader(vertexShaderStream, pvr::ShaderType::VertexShader, defines, numDefines);
+	_deviceResources->shaders[1] = pvr::utils::loadShader(fragShaderStream, pvr::ShaderType::FragmentShader, defines, numDefines);
 
 	_deviceResources->program =
 		pvr::utils::createShaderProgram(_deviceResources->shaders, ARRAY_SIZE(_deviceResources->shaders), vertexBindings, attribIndices, ARRAY_SIZE(attribIndices));
@@ -229,9 +241,9 @@ pvr::Result OpenGLESPVRScopeRemote::initApplication()
 	_vertexConfiguration = createInputAssemblyFromMesh(_scene->getMesh(0), vertexBindings, 3);
 
 	_progUniforms.specularExponent = 5.f; // Width of the specular highlights (using low exponent for a brushed metal look)
-	_progUniforms.albedo = glm::vec3(1.f, .77f, .33f); // Overall color
-	_progUniforms.metallicity = 1.f; // Is the color of the specular white (nonmetallic), or coloured by the object(metallic)
-	_progUniforms.reflectivity = .8f; // Percentage of contribution of diffuse / specular
+	_progUniforms.albedo = glm::vec3(1.0f, 0.563f, 0.087f); // Overall color
+	_progUniforms.metallicity = 1.f; // Is the color of the specular white (nonmetallic), or colored by the object(metallic)
+	_progUniforms.reflectivity = 0.9f; // Percentage of contribution of diffuse / specular
 	_frameCounter = 0;
 	_frame10Counter = 0;
 
@@ -401,7 +413,7 @@ pvr::Result OpenGLESPVRScopeRemote::initView()
 		communicableItems.back().nDataLength = sizeof(_commsLibAlbedoB);
 
 		// Ok, submit our library
-		if (!pplLibraryCreate(_spsCommsData, communicableItems.data(), (unsigned int)communicableItems.size()))
+		if (!pplLibraryCreate(_spsCommsData, communicableItems.data(), static_cast<uint32_t>(communicableItems.size())))
 		{
 			Log(LogLevel::Debug, "PVRScopeRemote: pplLibraryCreate() failed\n");
 		}
@@ -443,7 +455,7 @@ pvr::Result OpenGLESPVRScopeRemote::initView()
 	createProgram(&_fragShaderSrc[0], &_vertShaderSrc[0], false);
 	debugThrowOnApiError("createProgram");
 	//  Initialize the UI Renderer
-	_deviceResources->uiRenderer.init(getWidth(), getHeight(), isFullScreen());
+	_deviceResources->uiRenderer.init(getWidth(), getHeight(), isFullScreen(), getBackBufferColorspace() == pvr::ColorSpace::sRGB);
 
 	// create the pvrscope connection pass and fail text
 	_deviceResources->uiRenderer.getDefaultTitle()->setText("PVRScopeRemote");
@@ -458,16 +470,16 @@ pvr::Result OpenGLESPVRScopeRemote::initView()
 	bool isRotated = this->isScreenRotated();
 	if (isRotated)
 	{
-		_progUniforms.projectionMtx = pvr::math::perspectiveFov(_deviceResources->context->getApiVersion(), glm::pi<float>() / 6, (float)getHeight(), (float)getWidth(),
-			_scene->getCamera(0).getNear(), _scene->getCamera(0).getFar(), glm::pi<float>() * .5f);
+		_progUniforms.projectionMtx = pvr::math::perspectiveFov(_deviceResources->context->getApiVersion(), glm::pi<float>() / 6, static_cast<float>(getHeight()),
+			static_cast<float>(getWidth()), _scene->getCamera(0).getNear(), _scene->getCamera(0).getFar(), glm::pi<float>() * .5f);
 	}
 	else
 	{
-		_progUniforms.projectionMtx = pvr::math::perspectiveFov(
-			_deviceResources->context->getApiVersion(), glm::pi<float>() / 6, (float)getWidth(), (float)getHeight(), _scene->getCamera(0).getNear(), _scene->getCamera(0).getFar());
+		_progUniforms.projectionMtx = pvr::math::perspectiveFov(_deviceResources->context->getApiVersion(), glm::pi<float>() / 6, static_cast<float>(getWidth()),
+			static_cast<float>(getHeight()), _scene->getCamera(0).getNear(), _scene->getCamera(0).getFar());
 	}
 	gl::BindFramebuffer(GL_DRAW_FRAMEBUFFER, _deviceResources->onScreenFbo);
-	gl::ClearColor(0.00f, 0.70f, 0.67f, 1.0f);
+	gl::ClearColor(ClearColor.r, ClearColor.g, ClearColor.b, 1.0f);
 	return pvr::Result::Success;
 }
 
@@ -489,9 +501,10 @@ pvr::Result OpenGLESPVRScopeRemote::releaseView()
 ***********************************************************************************************************************/
 pvr::Result OpenGLESPVRScopeRemote::renderFrame()
 {
-	CPPLProcessingScoped PPLProcessingScoped(_spsCommsData, __FUNCTION__, static_cast<uint32_t>(strlen(__FUNCTION__)), _frameCounter);
 	if (_spsCommsData)
 	{
+		_hasCommunicationError |= !pplSendProcessingBegin(_spsCommsData, __FUNCTION__, static_cast<uint32_t>(strlen(__FUNCTION__)), _frameCounter);
+
 		// mark every N frames
 		if (!(_frameCounter % 100))
 		{
@@ -663,6 +676,12 @@ pvr::Result OpenGLESPVRScopeRemote::renderFrame()
 
 	_deviceResources->context->swapBuffers();
 
+	if (_spsCommsData)
+	{
+		_hasCommunicationError |= !pplSendProcessingEnd(_spsCommsData);
+		_hasCommunicationError |= !pplSendFlush(_spsCommsData);
+	}
+
 	return pvr::Result::Success;
 }
 
@@ -680,7 +699,7 @@ void OpenGLESPVRScopeRemote::drawMesh(int nodeIndex)
 	// bind the VBO for the mesh
 	gl::BindBuffer(GL_ARRAY_BUFFER, _deviceResources->vbos[meshIndex]);
 	debugThrowOnApiError("draw mesh");
-	for (int i = 0; i < 3; ++i)
+	for (uint32_t i = 0; i < 3; ++i)
 	{
 		auto& attrib = _vertexConfiguration.attributes[i];
 		auto& binding = _vertexConfiguration.bindings[0];
@@ -713,7 +732,7 @@ void OpenGLESPVRScopeRemote::drawMesh(int nodeIndex)
 	}
 	else
 	{
-		for (int32_t i = 0; i < (int32_t)mesh.getNumStrips(); ++i)
+		for (uint32_t i = 0; i < mesh.getNumStrips(); ++i)
 		{
 			int offset = 0;
 			if (_deviceResources->ibos[meshIndex])
@@ -730,7 +749,7 @@ void OpenGLESPVRScopeRemote::drawMesh(int nodeIndex)
 			offset += mesh.getStripLength(i) + 2;
 		}
 	}
-	for (int i = 0; i < 3; ++i)
+	for (uint32_t i = 0; i < 3; ++i)
 	{
 		auto& attrib = _vertexConfiguration.attributes[i];
 		gl::DisableVertexAttribArray(attrib.index);
@@ -780,10 +799,8 @@ void OpenGLESPVRScopeRemote::executeCommands()
 	_deviceResources->uiRenderer.endRendering();
 }
 
-/*!*********************************************************************************************************************
-\return Return auto ptr to the demo supplied by the user
-\brief  This function must be implemented by the user of the shell. The user should return its Shell object defining the behavior of the application.
-***********************************************************************************************************************/
+/// <summary>This function must be implemented by the user of the shell. The user should return its pvr::Shell object defining the behaviour of the application.</summary>
+/// <returns>Return a unique ptr to the demo supplied by the user.</returns>
 std::unique_ptr<pvr::Shell> pvr::newDemo()
 {
 	return std::unique_ptr<pvr::Shell>(new OpenGLESPVRScopeRemote());

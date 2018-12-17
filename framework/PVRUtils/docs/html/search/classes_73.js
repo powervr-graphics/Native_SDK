@@ -7,7 +7,5 @@ var searchData=
   ['structuredbufferview',['StructuredBufferView',['../classpvr_1_1utils_1_1_structured_buffer_view.html',1,'pvr::utils']]],
   ['structuredbufferviewelement',['StructuredBufferViewElement',['../classpvr_1_1utils_1_1_structured_buffer_view_element.html',1,'pvr::utils']]],
   ['structuredmemorydescription',['StructuredMemoryDescription',['../classpvr_1_1utils_1_1_structured_memory_description.html',1,'pvr::utils']]],
-  ['structuredmemoryentry',['StructuredMemoryEntry',['../classpvr_1_1utils_1_1_structured_memory_entry.html',1,'pvr::utils']]],
-  ['subpass',['Subpass',['../structpvr_1_1effect_1_1_subpass.html',1,'pvr::effect']]],
-  ['subpassgroup',['SubpassGroup',['../structpvr_1_1effect_1_1_subpass_group.html',1,'pvr::effect']]]
+  ['structuredmemoryentry',['StructuredMemoryEntry',['../classpvr_1_1utils_1_1_structured_memory_entry.html',1,'pvr::utils']]]
 ];

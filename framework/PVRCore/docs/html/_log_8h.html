@@ -15,7 +15,7 @@
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="IMGdoxygen.css" rel="stylesheet" type="text/css"/>
-<link rel="shortcut icon" href="http://www.imgtec.com/images/img.ico">
+<link rel="shortcut icon" type="image/x-icon" href="img.ico">
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
+      <a href="https://www.imgtec.com/developers/" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRCore</span> Documentation</a>
    <tbody>
@@ -91,7 +91,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 
-<p>This file contains the Multi&lt;T&gt; class template, which is the usual container for objects that must be mirrored in the API level: Framebuffers etc.  
+<p>This file contains Logging functionality.  
 <a href="#details">More...</a></p>
 
 <p><a href="_log_8h_source.html">Go to the source code of this file.</a></p>
@@ -109,9 +109,6 @@ Classes</h2></td></tr>
 Namespaces</h2></td></tr>
 <tr class="memitem:namespaceimpl"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceimpl.html">impl</a></td></tr>
 <tr class="memdesc:namespaceimpl"><td class="mdescLeft">&#160;</td><td class="mdescRight">The default logger object. This is the only way to get that object. Is global.<br/></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespacepvr"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html">pvr</a></td></tr>
-<tr class="memdesc:namespacepvr"><td class="mdescLeft">&#160;</td><td class="mdescRight">Main PowerVR Framework Namespace<br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
@@ -148,24 +145,18 @@ Functions</h2></td></tr>
 <tr class="memitem:ac426cc4c4003d299f2b94245229ef813"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_log_8h.html#ac426cc4c4003d299f2b94245229ef813">assert_warning</a> (bool condition, const char *msg)</td></tr>
 <tr class="memdesc:ac426cc4c4003d299f2b94245229ef813"><td class="mdescLeft">&#160;</td><td class="mdescRight">If condition is false, logs a warning. <a href="#ac426cc4c4003d299f2b94245229ef813">More...</a><br/></td></tr>
 <tr class="separator:ac426cc4c4003d299f2b94245229ef813"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a554ee68704a464078482a0ea51bb3015"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_log_8h.html#a554ee68704a464078482a0ea51bb3015">assertion</a> (bool condition, const std::string &amp;message)</td></tr>
-<tr class="memdesc:a554ee68704a464078482a0ea51bb3015"><td class="mdescLeft">&#160;</td><td class="mdescRight">If condition is false, logs a critical error, debug breaks if possible, and - on debug builds - throws an assertion. If you wish to completely compile it out on release, use the macro debug_assertion. <a href="#a554ee68704a464078482a0ea51bb3015">More...</a><br/></td></tr>
-<tr class="separator:a554ee68704a464078482a0ea51bb3015"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a61a18ccf513c5a0f15271bf40c54ee46"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_log_8h.html#a61a18ccf513c5a0f15271bf40c54ee46">assertion</a> (bool condition, const char *msg)</td></tr>
 <tr class="memdesc:a61a18ccf513c5a0f15271bf40c54ee46"><td class="mdescLeft">&#160;</td><td class="mdescRight">If condition is false, logs a critical error, debug breaks if possible, and - on debug builds - throws an assertion. If you wish to completely compile it out on release, use the macro debug_assertion. <a href="#a61a18ccf513c5a0f15271bf40c54ee46">More...</a><br/></td></tr>
 <tr class="separator:a61a18ccf513c5a0f15271bf40c54ee46"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae2fb9742413063e506de3b8b869765e1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_log_8h.html#ae2fb9742413063e506de3b8b869765e1">assertion</a> (bool condition)</td></tr>
 <tr class="memdesc:ae2fb9742413063e506de3b8b869765e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">If condition is false, logs a critical error, debug breaks if possible, and - on debug builds - throws an assertion. If you wish to completely compile it out on release, use the macro debug_assertion. <a href="#ae2fb9742413063e506de3b8b869765e1">More...</a><br/></td></tr>
 <tr class="separator:ae2fb9742413063e506de3b8b869765e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2046b948dfc473b62d74e7b9f4ef399b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_log_8h.html#a2046b948dfc473b62d74e7b9f4ef399b">debuggerBreak</a> ()</td></tr>
-<tr class="memdesc:a2046b948dfc473b62d74e7b9f4ef399b"><td class="mdescLeft">&#160;</td><td class="mdescRight">If supported on the platform, makes the debugger break at this line. Used for Assertions on Visual Studio <a href="#a2046b948dfc473b62d74e7b9f4ef399b">More...</a><br/></td></tr>
-<tr class="separator:a2046b948dfc473b62d74e7b9f4ef399b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a554ee68704a464078482a0ea51bb3015"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_log_8h.html#a554ee68704a464078482a0ea51bb3015">assertion</a> (bool condition, const std::string &amp;message)</td></tr>
+<tr class="memdesc:a554ee68704a464078482a0ea51bb3015"><td class="mdescLeft">&#160;</td><td class="mdescRight">If condition is false, logs a critical error, debug breaks if possible, and - on debug builds - throws an assertion. If you wish to completely compile it out on release, use the macro debug_assertion. <a href="#a554ee68704a464078482a0ea51bb3015">More...</a><br/></td></tr>
+<tr class="separator:a554ee68704a464078482a0ea51bb3015"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad7a6a053610e0fd44cfa07a42a7d9975"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_logger.html">Logger</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_log_8h.html#ad7a6a053610e0fd44cfa07a42a7d9975">DefaultLogger</a> ()</td></tr>
 <tr class="memdesc:ad7a6a053610e0fd44cfa07a42a7d9975"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the default logger object. This is the only way to get that object. Is global. <a href="#ad7a6a053610e0fd44cfa07a42a7d9975">More...</a><br/></td></tr>
 <tr class="separator:ad7a6a053610e0fd44cfa07a42a7d9975"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afa84afea6f01844f727950b017b4e07d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_log_8h.html#afa84afea6f01844f727950b017b4e07d">isDebuggerPresent</a> ()</td></tr>
-<tr class="memdesc:afa84afea6f01844f727950b017b4e07d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks whether a debugger can be found for the current running process (on Windows and Linux only). The prescene of a debugger can be used to provide additional helpful functionality for debugging application issues one of which could be to break in the debugger when an exception is thrown. Being able to have the debugger break on such a thrown exception provides by far the most seamless and constructive environment for fixing an issue causing the exception to be thrown due to the full state and stack trace being present at the point in which the issue has occurred rather than relying on error logic handling. <a href="#afa84afea6f01844f727950b017b4e07d">More...</a><br/></td></tr>
-<tr class="separator:afa84afea6f01844f727950b017b4e07d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a49209d4079b083831638df881b307b68"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_log_8h.html#a49209d4079b083831638df881b307b68">Log</a> (<a class="el" href="_log_8h.html#aca1fd1d8935433e6ba2e3918214e07f9">LogLevel</a> severity, const char *formatString,...)</td></tr>
 <tr class="memdesc:a49209d4079b083831638df881b307b68"><td class="mdescLeft">&#160;</td><td class="mdescRight">Logs a message using the default logger. <a href="#a49209d4079b083831638df881b307b68">More...</a><br/></td></tr>
 <tr class="separator:a49209d4079b083831638df881b307b68"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -177,8 +168,7 @@ Functions</h2></td></tr>
 <tr class="separator:abaa5576306f05730bc42797aba5c759f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>This file contains the Multi&lt;T&gt; class template, which is the usual container for objects that must be mirrored in the API level: Framebuffers etc. </p>
-<p>This file contains Logging functionality.</p>
+<div class="textblock"><p>This file contains Logging functionality. </p>
 <dl class="section author"><dt>Author</dt><dd>PowerVR by Imagination, Developer Technology Team </dd></dl>
 <dl class="section user"><dt>Copyright:</dt><dd>Copyright (c) Imagination Technologies Limited. </dd></dl>
 </div><h2 class="groupheader">Macro Definition Documentation</h2>
@@ -343,49 +333,6 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a554ee68704a464078482a0ea51bb3015"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void assertion </td>
-          <td>(</td>
-          <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>condition</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>message</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>If condition is false, logs a critical error, debug breaks if possible, and - on debug builds - throws an assertion. If you wish to completely compile it out on release, use the macro debug_assertion.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">condition</td><td>Pass the condition to assert here. If true, nothing happens. If false, asserts</td></tr>
-    <tr><td class="paramname">message</td><td>The message that will be logged if the asserted condition is false.</td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
 <a class="anchor" id="a61a18ccf513c5a0f15271bf40c54ee46"></a>
 <div class="memitem">
 <div class="memproto">
@@ -461,7 +408,7 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a2046b948dfc473b62d74e7b9f4ef399b"></a>
+<a class="anchor" id="a554ee68704a464078482a0ea51bb3015"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -469,10 +416,21 @@ Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void debuggerBreak </td>
+          <td class="memname">void assertion </td>
           <td>(</td>
-          <td class="paramname"></td><td>)</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>condition</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>message</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
   </td>
@@ -482,7 +440,14 @@ Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>If supported on the platform, makes the debugger break at this line. Used for Assertions on Visual Studio</p>
+<p>If condition is false, logs a critical error, debug breaks if possible, and - on debug builds - throws an assertion. If you wish to completely compile it out on release, use the macro debug_assertion.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">condition</td><td>Pass the condition to assert here. If true, nothing happens. If false, asserts</td></tr>
+    <tr><td class="paramname">message</td><td>The message that will be logged if the asserted condition is false.</td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -509,32 +474,6 @@ Functions</h2></td></tr>
 
 <p>Returns the default logger object. This is the only way to get that object. Is global.</p>
 <dl class="section return"><dt>Returns</dt><dd>The default logger global logger.</dd></dl>
-
-</div>
-</div>
-<a class="anchor" id="afa84afea6f01844f727950b017b4e07d"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool isDebuggerPresent </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Checks whether a debugger can be found for the current running process (on Windows and Linux only). The prescene of a debugger can be used to provide additional helpful functionality for debugging application issues one of which could be to break in the debugger when an exception is thrown. Being able to have the debugger break on such a thrown exception provides by far the most seamless and constructive environment for fixing an issue causing the exception to be thrown due to the full state and stack trace being present at the point in which the issue has occurred rather than relying on error logic handling.</p>
-<dl class="section return"><dt>Returns</dt><dd>True if a debugger can be found for the current running process else False.</dd></dl>
 
 </div>
 </div>

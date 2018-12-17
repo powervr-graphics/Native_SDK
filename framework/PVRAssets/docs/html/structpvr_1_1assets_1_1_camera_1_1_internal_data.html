@@ -15,7 +15,7 @@
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="IMGdoxygen.css" rel="stylesheet" type="text/css"/>
-<link rel="shortcut icon" href="http://www.imgtec.com/images/img.ico">
+<link rel="shortcut icon" type="image/x-icon" href="img.ico">
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
+      <a href="https://www.imgtec.com/developers/" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRAssets</span> Documentation</a>
    <tbody>
@@ -81,6 +81,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="structpvr_1_1assets_1_1_camera_1_1_internal_data-members.html">List of all members</a>  </div>
   <div class="headertitle">
@@ -91,12 +92,18 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <p>Raw internal structure of the <a class="el" href="classpvr_1_1assets_1_1_camera.html" title="Contains all information necessary to recreate a Camera in the scene.">Camera</a>. 
  <a href="structpvr_1_1assets_1_1_camera_1_1_internal_data.html#details">More...</a></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1assets_1_1_camera_1_1_internal_data_1_1_fov_animation_data.html">FovAnimationData</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:a59a4793f6849cd55357397687b9226ae"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1assets_1_1_camera_1_1_internal_data.html#a59a4793f6849cd55357397687b9226ae">farClip</a></td></tr>
 <tr class="separator:a59a4793f6849cd55357397687b9226ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:affcddb4e69369c2ab9f5b411d57699a6"><td class="memItemLeft" align="right" valign="top">std::vector&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1assets_1_1_camera_1_1_internal_data.html#affcddb4e69369c2ab9f5b411d57699a6">FOVs</a></td></tr>
-<tr class="separator:affcddb4e69369c2ab9f5b411d57699a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a92365893fdb8191345863d9b49b1cb87"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a92365893fdb8191345863d9b49b1cb87"></a>
+std::vector&lt; <a class="el" href="structpvr_1_1assets_1_1_camera_1_1_internal_data_1_1_fov_animation_data.html">FovAnimationData</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>fovs</b></td></tr>
+<tr class="separator:a92365893fdb8191345863d9b49b1cb87"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad8da6724a9dc37d690a90f695247fcd0"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1assets_1_1_camera_1_1_internal_data.html#ad8da6724a9dc37d690a90f695247fcd0">nearClip</a></td></tr>
 <tr class="separator:ad8da6724a9dc37d690a90f695247fcd0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aebe44b2e19cd3109c212bc4ad96c96e1"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1assets_1_1_camera_1_1_internal_data.html#aebe44b2e19cd3109c212bc4ad96c96e1">targetNodeIdx</a></td></tr>
@@ -115,19 +122,6 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Far clip plane </p>
-
-</div>
-</div>
-<a class="anchor" id="affcddb4e69369c2ab9f5b411d57699a6"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::vector&lt;float&gt; pvr::assets::Camera::InternalData::FOVs</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Field of view </p>
 
 </div>
 </div>
@@ -158,7 +152,7 @@ Public Attributes</h2></td></tr>
 </div>
 </div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
-<li>/usr/buildxl/buildroot/sdk/branch/SDK/framework/PVRAssets/Model/<a class="el" href="_camera_8h_source.html">Camera.h</a></li>
+<li>/usr/buildxl/buildroot/sdk/branch/SDK/framework/PVRAssets/model/<a class="el" href="_camera_8h_source.html">Camera.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.4-->

@@ -87,7 +87,7 @@ buildscript {
 		jcenter()
 	}
 	dependencies {
-		classpath 'com.android.tools.build:gradle:3.0.0'
+		classpath 'com.android.tools.build:gradle:3.1.0'
 	}
 }
 
@@ -136,10 +136,18 @@ tasks.whenTaskAdded { task -> 	//When the "externalNativeBuild(debug or release)
 	if (task.name == 'packageRelease') {
 		task.dependsOn(checkReleaseSigning)
 		task.doFirst() { delete fileTree('bin') { include {'*.apk'} exclude {'*-debug.apk'} } }
-		task.doLast() { copyToBinRelease.execute() }
+		task.finalizedBy copyToBinRelease
 	}
 	if (task.name == 'packageDebug') {
 		task.doFirst() { delete fileTree('bin') { include '*-debug.apk'} }
-		task.doLast() { copyToBinDebug.execute() }
+		task.finalizedBy copyToBinDebug
+	}
+}
+
+allprojects {
+	repositories {
+		google()
+		jcenter()
+		mavenCentral()
 	}
 }

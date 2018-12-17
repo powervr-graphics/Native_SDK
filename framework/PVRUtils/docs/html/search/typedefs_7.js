@@ -4,6 +4,5 @@ var searchData=
   ['nativedisplayhandle',['NativeDisplayHandle',['../namespacepvr_1_1platform.html#adbd0faf5fe21127dc2c0a63174b8fb15',1,'pvr::platform']]],
   ['nativeplatformhandles',['NativePlatformHandles',['../namespacepvr_1_1platform.html#a08383d34dc81ce80fdf56fa21f9cbf90',1,'pvr::platform']]],
   ['nativesharedplatformhandles',['NativeSharedPlatformHandles',['../namespacepvr_1_1platform.html#af0c0d9442bb6615a5dcdf8f04fbfcb74',1,'pvr::platform']]],
-  ['nativewindow',['NativeWindow',['../namespacepvr_1_1platform.html#ae62e3026b365c47da1848f8d5bcb8355',1,'pvr::platform']]],
-  ['nodesemanticsetter',['NodeSemanticSetter',['../namespacepvr_1_1utils.html#a52ce711be6305e9237b2513013656b90',1,'pvr::utils']]]
+  ['nativewindow',['NativeWindow',['../namespacepvr_1_1platform.html#ae62e3026b365c47da1848f8d5bcb8355',1,'pvr::platform']]]
 ];

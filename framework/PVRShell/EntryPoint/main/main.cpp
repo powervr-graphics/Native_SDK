@@ -6,7 +6,7 @@
 */
 #include "PVRShell/OS/ShellOS.h"
 #include "PVRShell/StateMachine.h"
-#include "PVRShell/CommandLine.h"
+#include "PVRCore/commandline/CommandLine.h"
 
 /// <summary>The entry point for "typical" operating systems (e.g. linux based).
 /// Follows C/C++ standards.

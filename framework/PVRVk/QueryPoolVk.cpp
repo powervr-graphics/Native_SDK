@@ -9,15 +9,16 @@
 
 namespace pvrvk {
 namespace impl {
-QueryPool_::QueryPool_(const DeviceWeakPtr& device, QueryType queryType, uint32_t queryCount, QueryPipelineStatisticFlags statisticsFlags)
-	: DeviceObjectHandle(device), DeviceObjectDebugMarker(DebugReportObjectTypeEXT::e_QUERY_POOL_EXT)
+QueryPool_::QueryPool_(const DeviceWeakPtr& device, const QueryPoolCreateInfo& createInfo)
+	: DeviceObjectHandle(device), DeviceObjectDebugMarker(DebugReportObjectTypeEXT::e_QUERY_POOL_EXT), _createInfo(createInfo)
 {
-	_createInfo = {};
-	_createInfo.sType = static_cast<VkStructureType>(StructureType::e_QUERY_POOL_CREATE_INFO);
-	_createInfo.queryType = static_cast<VkQueryType>(queryType);
-	_createInfo.queryCount = queryCount;
-	_createInfo.pipelineStatistics = static_cast<VkQueryPipelineStatisticFlags>(statisticsFlags);
-	vkThrowIfFailed(_device->getVkBindings().vkCreateQueryPool(_device->getVkHandle(), &_createInfo, NULL, &_vkHandle), "Create Query Pool failed");
+	VkQueryPoolCreateInfo vkCreateInfo = {};
+	vkCreateInfo.sType = static_cast<VkStructureType>(StructureType::e_QUERY_POOL_CREATE_INFO);
+	vkCreateInfo.flags = static_cast<VkQueryPoolCreateFlags>(_createInfo.getFlags());
+	vkCreateInfo.queryType = static_cast<VkQueryType>(_createInfo.getQueryType());
+	vkCreateInfo.queryCount = _createInfo.getNumQueries();
+	vkCreateInfo.pipelineStatistics = static_cast<VkQueryPipelineStatisticFlags>(_createInfo.getPipelineStatisticFlags());
+	vkThrowIfFailed(static_cast<Result>(_device->getVkBindings().vkCreateQueryPool(_device->getVkHandle(), &vkCreateInfo, nullptr, &_vkHandle)), "Failed to create QueryPool");
 }
 
 bool QueryPool_::getResults(uint32_t queryIndex, size_t dataSize, void* data, QueryResultFlags flags)

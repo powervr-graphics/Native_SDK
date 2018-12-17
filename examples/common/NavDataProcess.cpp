@@ -365,7 +365,7 @@ void OSM::cleanData()
 /*!*********************************************************************************************************************
 \return RoadTypes the type of road.
 \param	ways Reference to a vector of ways which make up the intersection.
-\brief	Finds the dominant road type for a given intersection (used to colour the intersection based on the road type).
+\brief	Finds the dominant road type for a given intersection (used to color the intersection based on the road type).
 ***********************************************************************************************************************/
 RoadTypes::RoadTypes NavDataProcess::getIntersectionRoadType(const std::vector<Way>& ways) const
 {
@@ -374,7 +374,7 @@ RoadTypes::RoadTypes NavDataProcess::getIntersectionRoadType(const std::vector<W
 
 	uint32_t maxCount = 0;
 	uint32_t tempCount = 0;
-    RoadTypes::RoadTypes current = RoadTypes::None;
+	RoadTypes::RoadTypes current = RoadTypes::None;
 	RoadTypes::RoadTypes temp = RoadTypes::Motorway;
 
 	// Iterate through way and find which road type occurs the most.
@@ -401,7 +401,7 @@ RoadTypes::RoadTypes NavDataProcess::getIntersectionRoadType(const std::vector<W
 
 double NavDataProcess::getRoadWidth(const std::vector<Tag>& tags, RoadTypes::RoadTypes& outType) const
 {
-	// Needs extension to include colour
+	// Needs extension to include color
 	std::string roadType = "";
 	for (Tag tag : tags)
 	{

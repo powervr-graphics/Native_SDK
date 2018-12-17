@@ -23,8 +23,8 @@
 const char* ApplicationName       = "HelloAPI";
 
 // Width and height of the window
-const unsigned int WindowWidth     = 800;
-const unsigned int WindowHeight    = 600;
+const unsigned int WindowWidth     = 1280;
+const unsigned int WindowHeight    = 800;
 
 // Index to bind the attributes to vertex shaders
 const unsigned int VertexArray	 = 0;

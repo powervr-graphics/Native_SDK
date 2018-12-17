@@ -1,5 +1,0 @@
-<map id="pvr::assets::effect::DescriptorRef" name="pvr::assets::effect::DescriptorRef">
-<area shape="rect" id="node2" href="$structpvr_1_1assets_1_1effect_1_1_buffer_ref.html" title="A Reference to a buffer object inside the effect. Can be accessed either in its entirety through a Se..." alt="" coords="191,5,319,46"/>
-<area shape="rect" id="node3" href="$structpvr_1_1assets_1_1effect_1_1_input_attachment_ref.html" title="A Reference to an Input Attachment." alt="" coords="181,70,328,111"/>
-<area shape="rect" id="node4" href="$structpvr_1_1assets_1_1effect_1_1_uniform_semantic.html" title="A Reference to a Uniform semantic (a free&#45;standing shader variable)." alt="" coords="189,135,320,177"/>
-</map>

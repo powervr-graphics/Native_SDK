@@ -170,7 +170,7 @@ public:
 	/// <summary>Constructor. All flags are zero initialized, and family indexes set to -1.</summary>
 	ImageMemoryBarrier()
 		: srcAccessMask(pvrvk::AccessFlags(0)), dstAccessMask(pvrvk::AccessFlags(0)), oldLayout(pvrvk::ImageLayout::e_UNDEFINED), newLayout(pvrvk::ImageLayout::e_UNDEFINED),
-		  srcQueueFamilyIndex((uint32_t)-1), dstQueueFamilyIndex((uint32_t)-1)
+		  srcQueueFamilyIndex(static_cast<uint32_t>(-1)), dstQueueFamilyIndex(static_cast<uint32_t>(-1))
 	{}
 
 	/// <summary>Constructor. Set all individual elements.</summary>

@@ -1,11 +1,9 @@
 #version 310 es
 
-precision highp float;
-
-layout(location=0) out vec4 fullDimensionOutColor;
-layout(location=1) out vec4 halfDimensionOutColor;
+layout(location=0) out mediump vec4 fullDimensionOutColor;
+layout(location=1) out mediump vec4 halfDimensionOutColor;
 
 void main()
 {
-    halfDimensionOutColor = fullDimensionOutColor = vec4(.35, 0.0, 0.50, 1.0);
+    halfDimensionOutColor = fullDimensionOutColor = vec4(0.35, 0.0, 0.5, 1.0);
 }

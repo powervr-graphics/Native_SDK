@@ -58,7 +58,7 @@ END
 // RCDATA
 //
 /////////////////////////////////////////////////////////////////////////////
-// RCDATA: Assets (scenes, shaders, effects, textures...)
+// RCDATA: Assets (scenes,  effects, textures...)
 container-corner.pvr		RCDATA		"..\\..\\..\\assets\\ExampleUI\\container-corner.pvr"
 container-filler.pvr		RCDATA		"..\\..\\..\\assets\\ExampleUI\\container-filler.pvr"
 container-vertical.pvr		RCDATA		"..\\..\\..\\assets\\ExampleUI\\container-vertical.pvr"
@@ -93,12 +93,9 @@ window-topleft.pvr		RCDATA		"..\\..\\..\\assets\\ExampleUI\\window-topleft.pvr"
 window-topright.pvr		RCDATA		"..\\..\\..\\assets\\ExampleUI\\window-topright.pvr"
 loremipsum.pvr		RCDATA		"..\\..\\..\\assets\\ExampleUI\\loremipsum.pvr"
 vertical-bar.pvr		RCDATA		"..\\..\\..\\assets\\ExampleUI\\vertical-bar.pvr"
-ColShader_vk.fsh		RCDATA		"..\\ColShader_vk.fsh"
-ColShader_vk.vsh		RCDATA		"..\\ColShader_vk.vsh"
-ColShader_vk.fsh.spv		RCDATA		"..\\ColShader_vk.fsh.spv"
-ColShader_vk.vsh.spv		RCDATA		"..\\ColShader_vk.vsh.spv"
-recompile.sh		RCDATA		"..\\recompile.sh"
-recompile.bat		RCDATA		"..\\recompile.bat"
+// RCDATA: Vulkan Spir-V shaders(glsl)
+ColShader.fsh.spv		RCDATA		"..\\ColShader.fsh.spv"
+ColShader.vsh.spv		RCDATA		"..\\ColShader.vsh.spv"
 
 #endif    // English (United Kingdom) resources
 /////////////////////////////////////////////////////////////////////////////

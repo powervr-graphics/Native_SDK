@@ -15,7 +15,7 @@
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="IMGdoxygen.css" rel="stylesheet" type="text/css"/>
-<link rel="shortcut icon" href="http://www.imgtec.com/images/img.ico">
+<link rel="shortcut icon" type="image/x-icon" href="img.ico">
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
+      <a href="https://www.imgtec.com/developers/" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRCore</span> Documentation</a>
    <tbody>
@@ -1517,7 +1517,7 @@ std::map&lt; uint32_t, std::map<br class="typebreak"/>
   </table>
   </dd>
 </dl>
-<p>For <em>bumpOrder</em> Not all values need to be present. Denotes channel order; x,y,z refer to the corresponding axes, h indicates presence of the original height map. It is possible to have only some of these values rather than all. For example if 'h' is present alone it will be considered a height map. The values should be presented in RGBA order, regardless of the texture format, so a zyxh order in a bgra texture should still be passed as 'xyzh'. Capitals are allowed. Any character stored here that is not one of x,y,z,h or a NULL character will be ignored when PVRTexLib reads the data, but will be preserved. This is useful if you wish to define a custom data channel for instance. In these instances PVRTexLib will assume it is simply color data.</p>
+<p>For <em>bumpOrder</em> Not all values need to be present. Denotes channel order: x,y,z refer to the corresponding axes, h indicates presence of the original height map. It is possible to have only some of these values rather than all. For example if 'h' is present alone it will be considered a height map. The values should be presented in RGBA order, regardless of the texture format, so a zyxh order in a bgra texture should still be passed as 'xyzh'. Capitals are allowed. Any character stored here that is not one of x,y,z,h or a NULL character will be ignored when PVRTexLib reads the data, but will be preserved. This is useful if you wish to define a custom data channel for instance. In these instances PVRTexLib will assume it is simply color data.</p>
 
 </div>
 </div>
@@ -1614,7 +1614,7 @@ std::map&lt; uint32_t, std::map<br class="typebreak"/>
   </table>
   </dd>
 </dl>
-<p>for <em>cubmapOrder</em> Not all values need to be present. Denotes face order; Capitals refer to positive axis positions and small letters refer to negative axis positions. E.g. x=X-Negative, X=X-Positive. It is possible to have only some of these values rather than all, as long as they are NULL terminated. NB: Values past the 6th character are not read.</p>
+<p>for <em>cubmapOrder</em> Not all values need to be present. Denotes face order: Capitals refer to positive axis positions and small letters refer to negative axis positions. E.g. x=X-Negative, X=X-Positive. It is possible to have only some of these values rather than all, as long as they are NULL terminated. NB: Values past the 6th character are not read.</p>
 
 </div>
 </div>
@@ -1939,7 +1939,7 @@ std::map&lt; uint32_t, std::map<br class="typebreak"/>
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>/usr/buildxl/buildroot/sdk/branch/SDK/framework/PVRCore/<a class="el" href="_texture_8h_source.html">Texture.h</a></li>
+<li>/usr/buildxl/buildroot/sdk/branch/SDK/framework/PVRCore/texture/<a class="el" href="_texture_8h_source.html">Texture.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.4-->

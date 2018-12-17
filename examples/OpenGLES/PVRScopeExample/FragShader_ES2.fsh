@@ -1,16 +1,15 @@
-uniform sampler2D  sTexture;
+uniform mediump sampler2D sTexture;
 
-uniform highp vec3 ViewLightDirection;
+uniform mediump vec3 ViewLightDirection;
 uniform mediump vec3 AlbedoModulation;
 uniform mediump float SpecularExponent;  //How smooth is the object
 uniform mediump float Metallicity;  //How much is the specular light colored by the object's color
 uniform mediump float Reflectivity; //How much of the light is diffuse/specular
 
-
 varying mediump vec3 ViewNormal;
 varying mediump vec2 TexCoord;
 
-const mediump float AMBIENT = .25;
+const mediump float AMBIENT = 0.125;
 
 void main()
 {
@@ -45,7 +44,7 @@ void main()
 		//Most metallic:    Specular Color = albedo color
 		//Most un-metallic: Specular Color = white
 
-		mediump	float specularIntensity = max(pow(v_dot_r, SpecularExponent) * Reflectivity, 0.);
+		mediump float specularIntensity = max(pow(v_dot_r, SpecularExponent) * Reflectivity, 0.);
 
 		mediump float metallicSpecularIntensity = Metallicity * specularIntensity;
 		mediump float plasticSpecularIntensity = (1. - Metallicity) * specularIntensity;
@@ -53,6 +52,8 @@ void main()
 		mediump vec3 specularColor = vec3(plasticSpecularIntensity) + metallicSpecularIntensity * albedo;
 		color += specularColor;
 	}
-
+#ifndef FRAMEBUFFER_SRGB
+	color = pow(color, vec3(0.4545454545)); // Do gamma correction
+#endif	
 	gl_FragColor = vec4(color, 1.);
 }

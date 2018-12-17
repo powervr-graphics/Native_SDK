@@ -13,6 +13,25 @@ namespace impl {
 class PipelineCache_ : public DeviceObjectHandle<VkPipelineCache>, public DeviceObjectDebugMarker<PipelineCache_>
 {
 public:
+	/// <summary>Get the pipeline cache creation flags</summary>
+	/// <returns>The set of pipeline cache creation flags</returns>
+	inline PipelineCacheCreateFlags getFlags() const
+	{
+		return _createInfo.getFlags();
+	}
+	/// <summary>Get the initial data size of the pipeline cache</summary>
+	/// <returns>The initial data size of the pipeline cache</returns>
+	inline size_t getInitialDataSize() const
+	{
+		return _createInfo.getInitialDataSize();
+	}
+	/// <summary>Get the initial data of the pipeline cache</summary>
+	/// <returns>The initial data of the pipeline cache</returns>
+	inline const void* getInitialData() const
+	{
+		return _createInfo.getInitialData();
+	}
+
 	/// <summary>Get the maximum size of the data that can be retrieved from the this pipeline cache, in bytes</summary>
 	/// <returns>Returns maximum cache size</returns>
 	size_t getCacheMaxDataSize() const
@@ -34,28 +53,52 @@ public:
 		return mySize;
 	}
 
+	/// <summary>Get this pipeline cache's create flags</summary>
+	/// <returns>PipelineCacheCreateInfo</returns>
+	PipelineCacheCreateInfo getCreateInfo() const
+	{
+		return _createInfo;
+	}
+
 private:
 	template<typename>
 	friend struct ::pvrvk::RefCountEntryIntrusive;
 	friend class ::pvrvk::impl::Device_;
 	DECLARE_NO_COPY_SEMANTICS(PipelineCache_)
-	PipelineCache_(DeviceWeakPtr device, size_t initialDataSize, const void* pInitialData, PipelineCacheCreateFlags flags)
+
+	PipelineCache_(DeviceWeakPtr device, const PipelineCacheCreateInfo& createInfo)
 		: DeviceObjectHandle(device), DeviceObjectDebugMarker(DebugReportObjectTypeEXT::e_PIPELINE_CACHE_EXT)
 	{
-		const VkPipelineCacheCreateInfo createInfo{ static_cast<VkStructureType>(StructureType::e_PIPELINE_CACHE_CREATE_INFO), nullptr,
-			static_cast<VkPipelineCacheCreateFlags>(flags), initialDataSize, pInitialData };
-		vkThrowIfFailed(_device->getVkBindings().vkCreatePipelineCache(_device->getVkHandle(), &createInfo, nullptr, &_vkHandle), "Failed to create Pipeline Cache");
+		_createInfo = createInfo;
+
+		VkPipelineCacheCreateInfo vkCreateInfo = {};
+		vkCreateInfo.sType = static_cast<VkStructureType>(StructureType::e_PIPELINE_CACHE_CREATE_INFO);
+		vkCreateInfo.flags = static_cast<VkPipelineCacheCreateFlags>(_createInfo.getFlags());
+		vkCreateInfo.initialDataSize = _createInfo.getInitialDataSize();
+		vkCreateInfo.pInitialData = _createInfo.getInitialData();
+
+		vkThrowIfFailed(_device->getVkBindings().vkCreatePipelineCache(getDevice()->getVkHandle(), &vkCreateInfo, nullptr, &_vkHandle), "Failed to create Pipeline Cache");
 	}
 
 	/// <summary>destructor</summary>
 	~PipelineCache_()
 	{
-		if (_device.isValid())
+		if (getVkHandle() != VK_NULL_HANDLE)
 		{
-			_device->getVkBindings().vkDestroyPipelineCache(getDevice()->getVkHandle(), getVkHandle(), nullptr);
-			_vkHandle = VK_NULL_HANDLE;
+			if (_device.isValid())
+			{
+				_device->getVkBindings().vkDestroyPipelineCache(getDevice()->getVkHandle(), getVkHandle(), nullptr);
+				_vkHandle = VK_NULL_HANDLE;
+				_device.reset();
+			}
+			else
+			{
+				reportDestroyedAfterDevice("PipelineCache");
+			}
 		}
 	}
+
+	PipelineCacheCreateInfo _createInfo;
 };
 } // namespace impl
 } // namespace pvrvk

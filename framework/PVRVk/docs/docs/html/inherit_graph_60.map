@@ -1,3 +1,6 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$structpvrvk_1_1_input_assembler_state_create_info.html" title="Add Input Assembler configuration to this buffer object (primitive topology, vertex restart..." alt="" coords="5,5,189,46"/>
+<area shape="rect" id="node1" href="$classpvrvk_1_1impl_1_1_object_handle.html" title="pvrvk::impl::ObjectHandle\l\&lt; VkSurfaceKHR \&gt;" alt="" coords="5,5,179,46"/>
+<area shape="rect" id="node2" href="$classpvrvk_1_1impl_1_1_instance_object_handle.html" title="pvrvk::impl::InstanceObject\lHandle\&lt; VkSurfaceKHR \&gt;" alt="" coords="227,5,410,46"/>
+<area shape="rect" id="node3" href="$classpvrvk_1_1impl_1_1_surface__.html" title="A surface represents a renderable part of the &quot;screen&quot;, e.g. the inside part of the window..." alt="" coords="459,12,605,39"/>
+<area shape="rect" id="node4" href="$classpvrvk_1_1impl_1_1_display_plane_surface__.html" title="A DisplayPlane Surface." alt="" coords="653,5,824,46"/>
 </map>

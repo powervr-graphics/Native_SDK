@@ -1,9 +1,6 @@
 var searchData=
 [
-  ['offset2d',['Offset2D',['../namespacepvr.html#a3c68f9a2f58eb4afee65dee64a84ec60',1,'pvr']]],
-  ['offset3d',['Offset3D',['../namespacepvr.html#a9c82b565cdd75fbf396893a67ce24f4d',1,'pvr']]],
-  ['osapplication',['OSApplication',['../namespacepvr.html#aedeecfbbd5f300d790a94b7f47277582',1,'pvr']]],
-  ['osdata',['OSDATA',['../namespacepvr.html#ac6f2b93a38b04d593e40fb33ac919de9',1,'pvr']]],
-  ['osdisplay',['OSDisplay',['../namespacepvr.html#aeb92095259cdb0e0a5013d243b8cdcad',1,'pvr']]],
-  ['oswindow',['OSWindow',['../namespacepvr.html#a4a3c2268d5e5b11e1bc9cf97d7c337e8',1,'pvr']]]
+  ['pointertype',['PointerType',['../classpvr_1_1async_1_1_i_framework_async_result.html#ac2389a7b868955c43b03f7c14158c039',1,'pvr::async::IFrameworkAsyncResult']]],
+  ['producertoken',['ProducerToken',['../classpvr_1_1_locked_queue.html#ab03b5e25fac48e7bef00c5508590f558',1,'pvr::LockedQueue']]],
+  ['ptr_5ftype',['ptr_type',['../classpvr_1_1_buffer_stream.html#a06da2b86907df2ceb86577d5e004a6a6',1,'pvr::BufferStream::ptr_type()'],['../classpvr_1_1_stream.html#aa0cecaaaa443ce5895d8c3d69dcdeec2',1,'pvr::Stream::ptr_type()']]]
 ];

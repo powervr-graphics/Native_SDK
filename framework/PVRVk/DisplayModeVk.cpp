@@ -21,7 +21,7 @@ DisplayMode_::DisplayMode_(PhysicalDeviceWeakPtr physicalDevice, pvrvk::Display&
 	VkDisplayModeCreateInfoKHR createInfo = {};
 	createInfo.sType = VK_STRUCTURE_TYPE_DISPLAY_MODE_CREATE_INFO_KHR;
 	createInfo.flags = static_cast<VkDisplayModeCreateFlagsKHR>(displayModeCreateInfo.getFlags());
-	createInfo.parameters = *reinterpret_cast<VkDisplayModeParametersKHR*>(&_parameters);
+	createInfo.parameters = _parameters.get();
 	physicalDevice->getInstance()->getVkBindings().vkCreateDisplayModeKHR(physicalDevice->getVkHandle(), display->getVkHandle(), &createInfo, nullptr, &_vkHandle);
 }
 } // namespace impl

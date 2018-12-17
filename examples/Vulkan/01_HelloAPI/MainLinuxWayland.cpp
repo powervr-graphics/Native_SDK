@@ -93,8 +93,8 @@ static const struct wl_registry_listener registryListener =
 
 void createWYLNDWIndowSurface(VulkanHelloAPI& VulkanExample)
 {
-	VulkanExample.surfaceData.width = 800;
-	VulkanExample.surfaceData.height = 600;
+	VulkanExample.surfaceData.width = 1280;
+	VulkanExample.surfaceData.height = 800;
 
 	VulkanExample.surfaceData.display = wl_display_connect(NULL);
 	if (!VulkanExample.surfaceData.display)
@@ -153,7 +153,7 @@ int main(int /*argc*/, char** /*argv*/)
 	VulkanExample.initialize();
 	VulkanExample.recordCommandBuffer();
 
-	for (int i = 0; i < 800; ++i)
+	for (uint32_t i = 0; i < 800; ++i)
 	{
 		wl_display_dispatch_pending(VulkanExample.surfaceData.display);
 		VulkanExample.drawFrame();

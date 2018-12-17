@@ -21,78 +21,188 @@ void getOpenGLFormat(PixelFormat pixelFormat, pvr::ColorSpace colorSpace, pvr::V
 		glTypeSize = 1;
 		switch (pixelFormat.getPixelTypeId())
 		{
-#ifdef GL_COMPRESSED_RGB_PVRTC_2BPPV1_IMG
 		case static_cast<uint64_t>(CompressedPixelFormat::PVRTCI_2bpp_RGB):
 		{
-			glInternalFormat = GL_COMPRESSED_RGB_PVRTC_2BPPV1_IMG;
-			return;
-		}
+			if (colorSpace == ColorSpace::lRGB)
+			{
+#ifdef GL_COMPRESSED_RGB_PVRTC_2BPPV1_IMG
+				glInternalFormat = GL_COMPRESSED_RGB_PVRTC_2BPPV1_IMG;
+				return;
 #endif
-#ifdef GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG
+			}
+			else
+			{
+#ifdef GL_COMPRESSED_SRGB_PVRTC_2BPPV1_EXT
+				glInternalFormat = GL_COMPRESSED_SRGB_PVRTC_2BPPV1_EXT;
+				return;
+#endif
+			}
+			break;
+		}
 		case static_cast<uint64_t>(CompressedPixelFormat::PVRTCI_2bpp_RGBA):
 		{
-			glInternalFormat = GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG;
-			return;
-		}
+			if (colorSpace == ColorSpace::lRGB)
+			{
+#ifdef GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG
+				glInternalFormat = GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG;
+				return;
 #endif
-#ifdef GL_COMPRESSED_RGB_PVRTC_4BPPV1_IMG
+			}
+			else
+			{
+#ifdef GL_COMPRESSED_SRGB_ALPHA_PVRTC_2BPPV1_EXT
+				glInternalFormat = GL_COMPRESSED_SRGB_ALPHA_PVRTC_2BPPV1_EXT;
+				return;
+#endif
+			}
+			break;
+		}
 		case static_cast<uint64_t>(CompressedPixelFormat::PVRTCI_4bpp_RGB):
 		{
-			glInternalFormat = GL_COMPRESSED_RGB_PVRTC_4BPPV1_IMG;
-			return;
-		}
+			if (colorSpace == ColorSpace::lRGB)
+			{
+#ifdef GL_COMPRESSED_RGB_PVRTC_4BPPV1_IMG
+				glInternalFormat = GL_COMPRESSED_RGB_PVRTC_4BPPV1_IMG;
+				return;
 #endif
-#ifdef GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG
+			}
+			else
+			{
+#ifdef GL_COMPRESSED_SRGB_PVRTC_4BPPV1_EXT
+				glInternalFormat = GL_COMPRESSED_SRGB_PVRTC_4BPPV1_EXT;
+				return;
+#endif
+			}
+			break;
+		}
 		case static_cast<uint64_t>(CompressedPixelFormat::PVRTCI_4bpp_RGBA):
 		{
-			glInternalFormat = GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG;
-			return;
-		}
+			if (colorSpace == ColorSpace::lRGB)
+			{
+#ifdef GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG
+				glInternalFormat = GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG;
+				return;
 #endif
-#ifdef GL_COMPRESSED_RGBA_PVRTC_2BPPV2_IMG
+			}
+			else
+			{
+#ifdef GL_COMPRESSED_SRGB_ALPHA_PVRTC_4BPPV1_EXT
+				glInternalFormat = GL_COMPRESSED_SRGB_ALPHA_PVRTC_4BPPV1_EXT;
+				return;
+#endif
+			}
+			break;
+		}
 		case static_cast<uint64_t>(CompressedPixelFormat::PVRTCII_2bpp):
 		{
-			glInternalFormat = GL_COMPRESSED_RGBA_PVRTC_2BPPV2_IMG;
-			return;
-		}
+			if (colorSpace == ColorSpace::lRGB)
+			{
+#ifdef GL_COMPRESSED_RGBA_PVRTC_2BPPV2_IMG
+				glInternalFormat = GL_COMPRESSED_RGBA_PVRTC_2BPPV2_IMG;
+				return;
 #endif
-#ifdef GL_COMPRESSED_RGBA_PVRTC_4BPPV2_IMG
+			}
+			else
+			{
+#ifdef GL_COMPRESSED_SRGB_ALPHA_PVRTC_2BPPV2_IMG
+				glInternalFormat = GL_COMPRESSED_SRGB_ALPHA_PVRTC_2BPPV2_IMG;
+				return;
+#endif
+			}
+			break;
+		}
 		case static_cast<uint64_t>(CompressedPixelFormat::PVRTCII_4bpp):
 		{
-			glInternalFormat = GL_COMPRESSED_RGBA_PVRTC_4BPPV2_IMG;
-			return;
-		}
+			if (colorSpace == ColorSpace::lRGB)
+			{
+#ifdef GL_COMPRESSED_RGBA_PVRTC_4BPPV2_IMG
+				glInternalFormat = GL_COMPRESSED_RGBA_PVRTC_4BPPV2_IMG;
+				return;
 #endif
-#ifdef GL_ETC1_RGB8_OES
+			}
+			else
+			{
+#ifdef GL_COMPRESSED_SRGB_ALPHA_PVRTC_4BPPV2_IMG
+				glInternalFormat = GL_COMPRESSED_SRGB_ALPHA_PVRTC_4BPPV2_IMG;
+				return;
+#endif
+			}
+			break;
+		}
 		case static_cast<uint64_t>(CompressedPixelFormat::ETC1):
 		{
-			glInternalFormat = GL_ETC1_RGB8_OES;
-			return;
-		}
+			if (colorSpace == ColorSpace::lRGB)
+			{
+#ifdef GL_ETC1_RGB8_OES
+				glInternalFormat = GL_ETC1_RGB8_OES;
+				return;
 #endif
-#ifdef GL_COMPRESSED_RGB_S3TC_DXT1_EXT
+			}
+			else
+			{
+#ifdef GL_ETC1_SRGB8_NV
+				glInternalFormat = GL_ETC1_SRGB8_NV;
+				return;
+#endif
+			}
+			break;
+		}
 		case static_cast<uint64_t>(CompressedPixelFormat::DXT1):
 		{
-			glInternalFormat = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
-			return;
-		}
+			if (colorSpace == ColorSpace::lRGB)
+			{
+#ifdef GL_COMPRESSED_RGB_S3TC_DXT1_EXT
+				glInternalFormat = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
+				return;
 #endif
-#ifdef GL_COMPRESSED_RGBA_S3TC_DXT3_ANGLE
+			}
+			else
+			{
+#ifdef GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT1_NV
+				glInternalFormat = GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT1_NV;
+				return;
+#endif
+			}
+			break;
+		}
 		case static_cast<uint64_t>(CompressedPixelFormat::DXT2):
 		case static_cast<uint64_t>(CompressedPixelFormat::DXT3):
 		{
-			glInternalFormat = GL_COMPRESSED_RGBA_S3TC_DXT3_ANGLE;
-			return;
-		}
+			if (colorSpace == ColorSpace::lRGB)
+			{
+#ifdef GL_COMPRESSED_RGBA_S3TC_DXT3_ANGLE
+				glInternalFormat = GL_COMPRESSED_RGBA_S3TC_DXT3_ANGLE;
+				return;
 #endif
-#ifdef GL_COMPRESSED_RGBA_S3TC_DXT5_ANGLE
+			}
+			else
+			{
+#ifdef GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT3_NV
+				glInternalFormat = GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT3_NV;
+				return;
+#endif
+			}
+			break;
+		}
 		case static_cast<uint64_t>(CompressedPixelFormat::DXT4):
 		case static_cast<uint64_t>(CompressedPixelFormat::DXT5):
 		{
-			glInternalFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_ANGLE;
-			return;
-		}
+			if (colorSpace == ColorSpace::lRGB)
+			{
+#ifdef GL_COMPRESSED_RGBA_S3TC_DXT5_ANGLE
+				glInternalFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_ANGLE;
+				return;
 #endif
+			}
+			else
+			{
+#ifdef GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT5_NV
+				glInternalFormat = GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT5_NV;
+				return;
+#endif
+			}
+			break;
+		}
 		case static_cast<uint64_t>(CompressedPixelFormat::SharedExponentR9G9B9E5):
 		{
 			// Not technically a compressed format by OpenGL ES standards.
@@ -1223,7 +1333,8 @@ void getOpenGLFormat(PixelFormat pixelFormat, pvr::ColorSpace colorSpace, pvr::V
 			break;
 		}
 		default:
-		{}
+		{
+		}
 		}
 	}
 	// Default (erroneous) return values.
@@ -1874,7 +1985,8 @@ void getOpenGLStorageFormat(PixelFormat pixelFormat, pvr::ColorSpace colorSpace,
 			break;
 		}
 		default:
-		{}
+		{
+		}
 		}
 	}
 
@@ -1940,7 +2052,7 @@ GLenum convertToGles(DataType dataType)
 {
 	static const GLenum map[] = { GL_NONE, GL_FLOAT, GL_INT, GL_UNSIGNED_SHORT, GL_RGBA, GL_NONE, GL_NONE, GL_NONE, GL_NONE, GL_FIXED, GL_UNSIGNED_BYTE, GL_SHORT, GL_SHORT,
 		GL_BYTE, GL_BYTE, GL_UNSIGNED_BYTE, GL_UNSIGNED_SHORT, GL_UNSIGNED_INT, GL_NONE, GL_HALF_FLOAT };
-	return map[(int)dataType];
+	return map[static_cast<uint32_t>(dataType)];
 }
 
 GLenum convertToGles(SamplerAddressMode addressMode)

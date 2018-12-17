@@ -7,7 +7,6 @@
 #pragma once
 #include "PVRVk/HeadersVk.h"
 #include "PVRVk/RefCounted.h"
-#include "PVRVk/Log.h"
 #include <vector>
 #include <algorithm>
 
@@ -930,10 +929,16 @@ public:
 
 	/// <summary>Constructor</summary>
 	/// <param name="applicationInfo">A pointer to an application info structure</param>
+	/// <param name="enabledExtensionNames">A set of extensions to enable</param>
+	/// <param name="enabledLayerNames">A set of layers to enable</param>
 	/// <param name="flags">A set of InstanceCreateFlags to use</param>
-	InstanceCreateInfo(const ApplicationInfo* applicationInfo, InstanceCreateFlags flags = InstanceCreateFlags::e_NONE)
+	explicit InstanceCreateInfo(const ApplicationInfo* applicationInfo, const std::vector<std::string>& enabledExtensionNames = std::vector<std::string>(),
+		const std::vector<std::string>& enabledLayerNames = std::vector<std::string>(), InstanceCreateFlags flags = InstanceCreateFlags::e_NONE)
 		: flags(InstanceCreateFlags(flags)), applicationInfo(applicationInfo)
-	{}
+	{
+		setEnabledExtensions(enabledExtensionNames);
+		setEnabledLayers(enabledLayerNames);
+	}
 
 	/// <summary>Get the instance creation flags</summary>
 	/// <returns>The instance creation flags</returns>
@@ -1141,7 +1146,14 @@ private:
 
 public:
 	/// <summary>Constructor. Default initialised to 0</summary>
-	DeviceCreateInfo() : flags(DeviceCreateFlags(0)), enabledFeatures(nullptr) {}
+	explicit DeviceCreateInfo(const std::vector<DeviceQueueCreateInfo>& queueCreateInfos = std::vector<DeviceQueueCreateInfo>(),
+		const std::vector<std::string>& enabledExtensionNames = std::vector<std::string>(), const PhysicalDeviceFeatures* enabledFeatures = nullptr,
+		DeviceCreateFlags flags = DeviceCreateFlags::e_NONE)
+		: flags(flags), enabledFeatures(enabledFeatures)
+	{
+		setDeviceQueueCreateInfos(queueCreateInfos);
+		setEnabledExtensions(enabledExtensionNames);
+	}
 
 	/// <summary>Get the device creation flags</summary>
 	/// <returns>A set of DeviceCreateFlags</returns>
@@ -1263,7 +1275,7 @@ public:
 struct ClearValue
 {
 private:
-	uint8_t bytes[16];
+	char bytes[16];
 
 public:
 	/// <summary>Constructor. initialise with rgb: 0 and alpha 1 clear values</summary>
@@ -1431,13 +1443,13 @@ struct ClearAttachment : private VkClearAttachment
 	/// <returns>The attachment aspect mask</returns>
 	inline ImageAspectFlags getAspectMask() const
 	{
-		return reinterpret_cast<const ImageAspectFlags&>(aspectMask);
+		return static_cast<ImageAspectFlags>(aspectMask);
 	}
 	/// <summary>Set the attachment aspect masks</summary>
 	/// <param name="aspectMask">The attachment aspect mask.</param>
 	inline void setAspectMask(const ImageAspectFlags& aspectMask)
 	{
-		this->aspectMask = *reinterpret_cast<const VkImageAspectFlags*>(&aspectMask);
+		this->aspectMask = static_cast<VkImageAspectFlags>(aspectMask);
 	}
 	/// <summary>Get the attachment color attachment index</summary>
 	/// <returns>The attachment color attachment index</returns>
@@ -1453,15 +1465,17 @@ struct ClearAttachment : private VkClearAttachment
 	}
 	/// <summary>Get the attachment clear value</summary>
 	/// <returns>The attachment value value</returns>
-	inline const ClearValue& getClearValue() const
+	inline ClearValue getClearValue() const
 	{
-		return reinterpret_cast<const ClearValue&>(clearValue);
+		ClearValue retval;
+		memcpy(&retval, &clearValue, sizeof(ClearValue));
+		return retval;
 	}
 	/// <summary>Set the attachment clear value</summary>
 	/// <param name="clearValue">The attachment clear value.</param>
 	inline void setClearValue(const ClearValue& clearValue)
 	{
-		this->clearValue = *reinterpret_cast<const VkClearValue*>(&clearValue);
+		memcpy(&this->clearValue, &clearValue, sizeof(ClearValue));
 	}
 };
 
@@ -1549,109 +1563,109 @@ struct AttachmentDescription : private VkAttachmentDescription
 	/// <returns>A set of AttachmentDescriptionFlags</returns>
 	inline AttachmentDescriptionFlags getFlags() const
 	{
-		return reinterpret_cast<const AttachmentDescriptionFlags&>(flags);
+		return static_cast<AttachmentDescriptionFlags>(flags);
 	}
 	/// <summary>Set the attachment description flags</summary>
 	/// <param name="flags">The attachment description flags</param>
 	inline void setFlags(const AttachmentDescriptionFlags& flags)
 	{
-		this->flags = *reinterpret_cast<const VkAttachmentDescriptionFlags*>(&flags);
+		this->flags = static_cast<VkAttachmentDescriptionFlags>(flags);
 	}
 	/// <summary>Get the attachment Format</summary>
 	/// <returns>The attachment format</returns>
 	inline Format getFormat() const
 	{
-		return reinterpret_cast<const Format&>(format);
+		return static_cast<Format>(format);
 	}
 	/// <summary>Set the attachment format</summary>
 	/// <param name="format">The attachment format</param>
 	inline void setFormat(const Format& format)
 	{
-		this->format = *reinterpret_cast<const VkFormat*>(&format);
+		this->format = static_cast<VkFormat>(format);
 	}
 	/// <summary>Get the sample count for the attachment</summary>
 	/// <returns>The sample count for the attachment</returns>
 	inline SampleCountFlags getSamples() const
 	{
-		return reinterpret_cast<const SampleCountFlags&>(samples);
+		return static_cast<SampleCountFlags>(samples);
 	}
 	/// <summary>Set the attachment sample count flags</summary>
 	/// <param name="samples">The attachment sample count flags</param>
 	inline void setSamples(const SampleCountFlags& samples)
 	{
-		this->samples = *reinterpret_cast<const VkSampleCountFlagBits*>(&samples);
+		this->samples = static_cast<VkSampleCountFlagBits>(samples);
 	}
 	/// <summary>Get the attachment load operation</summary>
 	/// <returns>The attachment load operation</returns>
 	inline AttachmentLoadOp getLoadOp() const
 	{
-		return reinterpret_cast<const AttachmentLoadOp&>(loadOp);
+		return static_cast<AttachmentLoadOp>(loadOp);
 	}
 	/// <summary>Set the attachment load operation</summary>
 	/// <param name="loadOp">The attachment load operation</param>
 	inline void setLoadOp(const AttachmentLoadOp& loadOp)
 	{
-		this->loadOp = *reinterpret_cast<const VkAttachmentLoadOp*>(&loadOp);
+		this->loadOp = static_cast<VkAttachmentLoadOp>(loadOp);
 	}
 	/// <summary>Get the attachment store operation</summary>
 	/// <returns>The attachment store operation</returns>
 	inline AttachmentStoreOp getStoreOp() const
 	{
-		return reinterpret_cast<const AttachmentStoreOp&>(storeOp);
+		return static_cast<AttachmentStoreOp>(storeOp);
 	}
 	/// <summary>Set the attachment store operation</summary>
 	/// <param name="storeOp">The attachment store operation</param>
 	inline void setStoreOp(const AttachmentStoreOp& storeOp)
 	{
-		this->storeOp = *reinterpret_cast<const VkAttachmentStoreOp*>(&storeOp);
+		this->storeOp = static_cast<VkAttachmentStoreOp>(storeOp);
 	}
 	/// <summary>Get the attachment stencil load operation</summary>
 	/// <returns>The attachment stencil load operation</returns>
 	inline AttachmentLoadOp getStencilLoadOp() const
 	{
-		return reinterpret_cast<const AttachmentLoadOp&>(stencilLoadOp);
+		return static_cast<AttachmentLoadOp>(stencilLoadOp);
 	}
 	/// <summary>Set the attachment stencil load operation</summary>
 	/// <param name="stencilLoadOp">The attachment stencil load operation</param>
 	inline void setStencilLoadOp(const AttachmentLoadOp& stencilLoadOp)
 	{
-		this->stencilLoadOp = *reinterpret_cast<const VkAttachmentLoadOp*>(&stencilLoadOp);
+		this->stencilLoadOp = static_cast<VkAttachmentLoadOp>(stencilLoadOp);
 	}
 	/// <summary>Get the attachment stencil store operation</summary>
 	/// <returns>The attachment stencil store operation</returns>
 	inline AttachmentStoreOp getStencilStoreOp() const
 	{
-		return reinterpret_cast<const AttachmentStoreOp&>(stencilStoreOp);
+		return static_cast<AttachmentStoreOp>(stencilStoreOp);
 	}
 	/// <summary>Set the attachment stencil store operation</summary>
 	/// <param name="stencilStoreOp">The attachment stencil store operation</param>
 	inline void setStencilStoreOp(const AttachmentStoreOp& stencilStoreOp)
 	{
-		this->stencilStoreOp = *reinterpret_cast<const VkAttachmentStoreOp*>(&stencilStoreOp);
+		this->stencilStoreOp = static_cast<VkAttachmentStoreOp>(stencilStoreOp);
 	}
 	/// <summary>Get the attachment initial layout</summary>
 	/// <returns>The attachment initial layout</returns>
 	inline ImageLayout getInitialLayout() const
 	{
-		return reinterpret_cast<const ImageLayout&>(initialLayout);
+		return static_cast<ImageLayout>(initialLayout);
 	}
 	/// <summary>Set the attachment initial layout</summary>
 	/// <param name="initialLayout">The attachment initial layout</param>
 	inline void setInitialLayout(const ImageLayout& initialLayout)
 	{
-		this->initialLayout = *reinterpret_cast<const VkImageLayout*>(&initialLayout);
+		this->initialLayout = static_cast<VkImageLayout>(initialLayout);
 	}
 	/// <summary>Get the attachment final layout</summary>
 	/// <returns>The attachment final layout</returns>
 	inline ImageLayout getFinalLayout() const
 	{
-		return reinterpret_cast<const ImageLayout&>(finalLayout);
+		return static_cast<ImageLayout>(finalLayout);
 	}
 	/// <summary>Set the attachment final layout</summary>
 	/// <param name="finalLayout">The attachment final layout</param>
 	inline void setFinalLayout(const ImageLayout& finalLayout)
 	{
-		this->finalLayout = *reinterpret_cast<const VkImageLayout*>(&finalLayout);
+		this->finalLayout = static_cast<VkImageLayout>(finalLayout);
 	}
 };
 
@@ -1850,6 +1864,142 @@ private:
 	uint8_t _numColorAttachments;
 	uint8_t _numResolveAttachments;
 	uint8_t _numPreserveAttachments;
+};
+
+/// <summary>Pipeline cache creation descriptor.</summary>
+struct PipelineCacheCreateInfo
+{
+public:
+	/// <summary>Constructor</summary>
+	/// <param name="initialDataSize">The number of bytes in the initialData pointer</param>
+	/// <param name="pInitialData">A pointer to previously retrieved pipeline cache data</param>
+	/// <param name="flags">Flags to use for creating the pipeline cache</param>
+	explicit PipelineCacheCreateInfo(size_t initialDataSize = 0, const void* pInitialData = nullptr, PipelineCacheCreateFlags flags = PipelineCacheCreateFlags::e_NONE)
+		: _initialDataSize(initialDataSize), _pInitialData(pInitialData), _flags(flags)
+	{}
+
+	/// <summary>Get the pipeline cache creation flags</summary>
+	/// <returns>The set of pipeline cache creation flags</returns>
+	inline PipelineCacheCreateFlags getFlags() const
+	{
+		return _flags;
+	}
+	/// <summary>Set the pipeline cache creation flags</summary>
+	/// <param name="flags">The pipeline cache creation flags</param>
+	inline void setFlags(PipelineCacheCreateFlags flags)
+	{
+		this->_flags = flags;
+	}
+	/// <summary>Get the initial data size of the pipeline cache</summary>
+	/// <returns>The initial data size of the pipeline cache</returns>
+	inline size_t getInitialDataSize() const
+	{
+		return _initialDataSize;
+	}
+	/// <summary>Set the pipeline cache creation initial data size</summary>
+	/// <param name="initialDataSize">The pipeline cache creation initial data size</param>
+	inline void setInitialDataSize(size_t initialDataSize)
+	{
+		this->_initialDataSize = initialDataSize;
+	}
+	/// <summary>Get the initial data of the pipeline cache</summary>
+	/// <returns>The initial data of the pipeline cache</returns>
+	inline const void* getInitialData() const
+	{
+		return _pInitialData;
+	}
+	/// <summary>Set the pipeline cache creation initial data</summary>
+	/// <param name="pInitialData">The pipeline cache creation initial data</param>
+	inline void setInitialData(const void* pInitialData)
+	{
+		this->_pInitialData = pInitialData;
+	}
+
+private:
+	/// <summary>The number of bytes in _pInitialData</summary>
+	size_t _initialDataSize;
+	/// <summary>A pointer to previously retrieved pipeline cache data</summary>
+	const void* _pInitialData;
+	/// <summary>Flags to use for creating the pipeline cache</summary>
+	PipelineCacheCreateFlags _flags;
+};
+
+/// <summary>Event creation descriptor.</summary>
+struct EventCreateInfo
+{
+public:
+	/// <summary>Constructor</summary>
+	/// <param name="flags">Flags to use for creating the event</param>
+	explicit EventCreateInfo(EventCreateFlags flags = EventCreateFlags::e_NONE) : _flags(flags) {}
+
+	/// <summary>Get the event creation flags</summary>
+	/// <returns>The set of event creation flags</returns>
+	inline EventCreateFlags getFlags() const
+	{
+		return _flags;
+	}
+	/// <summary>Set the event creation flags</summary>
+	/// <param name="flags">The event creation flags</param>
+	inline void setFlags(EventCreateFlags flags)
+	{
+		this->_flags = flags;
+	}
+
+private:
+	/// <summary>Flags to use for creating the event</summary>
+	EventCreateFlags _flags;
+};
+
+/// <summary>fence creation descriptor.</summary>
+struct FenceCreateInfo
+{
+public:
+	/// <summary>Constructor</summary>
+	/// <param name="flags">Flags to use for creating the fence</param>
+	FenceCreateInfo(FenceCreateFlags flags = FenceCreateFlags::e_NONE) : _flags(flags) {}
+
+	/// <summary>Get the fence creation flags</summary>
+	/// <returns>The set of fence creation flags</returns>
+	inline FenceCreateFlags getFlags() const
+	{
+		return _flags;
+	}
+	/// <summary>Set the fence creation flags</summary>
+	/// <param name="flags">The fence creation flags</param>
+	inline void setFlags(FenceCreateFlags flags)
+	{
+		this->_flags = flags;
+	}
+
+private:
+	/// <summary>Flags to use for creating the fence</summary>
+	FenceCreateFlags _flags;
+};
+
+/// <summary>Semaphore creation descriptor.</summary>
+struct SemaphoreCreateInfo
+{
+public:
+	/// <summary>Constructor</summary>
+	/// <param name="flags">Flags to use for creating the Semaphore</param>
+	SemaphoreCreateInfo(SemaphoreCreateFlags flags = SemaphoreCreateFlags::e_NONE) : _flags(flags) {}
+
+	/// <summary>Get the Semaphore creation flags</summary>
+	/// <returns>The set of Semaphore creation flags</returns>
+	inline SemaphoreCreateFlags getFlags() const
+	{
+		return _flags;
+	}
+	/// <summary>Set the Semaphore creation flags</summary>
+	/// <param name="flags">The Semaphore creation flags</param>
+	inline void setFlags(SemaphoreCreateFlags flags)
+	{
+		this->_flags = flags;
+	}
+
+private:
+	/// <summary>Flags to use for creating the Semaphore</summary>
+	SemaphoreCreateFlags _flags;
 };
 } // namespace pvrvk
 #undef DEFINE_ENUM_OPERATORS

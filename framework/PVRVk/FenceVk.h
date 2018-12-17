@@ -30,13 +30,30 @@ public:
 	/// <summary>Reset this fence</summary>
 	void reset();
 
+	/// <summary>Get the fence creation flags</summary>
+	/// <returns>The set of fence creation flags</returns>
+	inline FenceCreateFlags getFlags() const
+	{
+		return _createInfo.getFlags();
+	}
+
+	/// <summary>Get this fence's create flags</summary>
+	/// <returns>FenceCreateInfo</returns>
+	FenceCreateInfo getCreateInfo() const
+	{
+		return _createInfo;
+	}
+
 private:
 	template<typename>
 	friend struct ::pvrvk::RefCountEntryIntrusive;
 	friend class ::pvrvk::impl::Device_;
 
-	Fence_(const DeviceWeakPtr& device, FenceCreateFlags fenceCreateFlags);
+	Fence_(const DeviceWeakPtr& device, const FenceCreateInfo& createInfo);
 	~Fence_();
+
+	/// <summary>Creation information used when creating the fence.</summary>
+	FenceCreateInfo _createInfo;
 };
 } // namespace impl
 } // namespace pvrvk

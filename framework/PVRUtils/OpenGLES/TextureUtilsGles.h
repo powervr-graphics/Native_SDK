@@ -6,7 +6,7 @@
 */
 #pragma once
 #include "PVRUtils/OpenGLES/BindingsGles.h"
-#include "PVRCore/Texture.h"
+#include "PVRCore/texture/Texture.h"
 
 namespace pvr {
 namespace utils {
@@ -45,7 +45,7 @@ private:
 };
 
 /// <summary>Upload a texture to the GPU on the current context, and return it as part of the TextureUploadResults structure.</summary>
-/// <param name="texture">The pvr::assets::texture to upload to the GPU</param>
+/// <param name="texture">The pvr::Texture to upload to the GPU</param>
 /// <param name="isEs2">Signifies whether the current context being used for the texture upload is ES2 only. If the
 /// context is ES2 only then the texture upload should not use ES3+ functionality as it will be unsupported via this context.</param>
 /// <param name="allowDecompress">Set to true to allow to attempt to de-compress unsupported compressed textures.

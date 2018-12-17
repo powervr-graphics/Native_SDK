@@ -22,17 +22,17 @@ namespace pvrvk {
 struct GraphicsPipelineCreateInfo : public PipelineCreateInfo<GraphicsPipeline>
 {
 public:
-	DepthStencilStateCreateInfo depthStencil; //!< Depth and stencil buffer creation info
-	ColorBlendStateCreateInfo colorBlend; //!< Color blending and attachments info
-	ViewportStateCreateInfo viewport; //!< Viewport creation info
-	RasterStateCreateInfo rasterizer; //!< Rasterizer configuration creation info
+	PipelineDepthStencilStateCreateInfo depthStencil; //!< Depth and stencil buffer creation info
+	PipelineColorBlendStateCreateInfo colorBlend; //!< Color blending and attachments info
+	PipelineViewportStateCreateInfo viewport; //!< Viewport creation info
+	PipelineRasterizationStateCreateInfo rasterizer; //!< Rasterizer configuration creation info
 	PipelineVertexInputStateCreateInfo vertexInput; //!< Vertex Input creation info
-	InputAssemblerStateCreateInfo inputAssembler; //!< Input Assembler creation info
-	ShaderStageCreateInfo vertexShader; //!< Vertex shader information
-	ShaderStageCreateInfo fragmentShader; //!< Fragment shader information
-	ShaderStageCreateInfo geometryShader; //!< Geometry shader information
+	PipelineInputAssemblerStateCreateInfo inputAssembler; //!< Input Assembler creation info
+	PipelineShaderStageCreateInfo vertexShader; //!< Vertex shader information
+	PipelineShaderStageCreateInfo fragmentShader; //!< Fragment shader information
+	PipelineShaderStageCreateInfo geometryShader; //!< Geometry shader information
 	TesselationStageCreateInfo tesselationStates; //!< Tesselation Control and evaluation shader information
-	MultiSampleStateCreateInfo multiSample; //!< Multisampling information
+	PipelineMultisampleStateCreateInfo multiSample; //!< Multisampling information
 	DynamicStatesCreateInfo dynamicStates; //!< Dynamic state Information
 	RenderPass renderPass; //!< The Renderpass
 	uint32_t subpass; //!< The subpass index

@@ -1,6 +1,7 @@
 var searchData=
 [
-  ['characteruv',['CharacterUV',['../structpvr_1_1ui_1_1impl_1_1_font___1_1_character_u_v.html',1,'pvr::ui::impl::Font_']]],
-  ['charmetrics',['CharMetrics',['../structpvr_1_1ui_1_1impl_1_1_font___1_1_char_metrics.html',1,'pvr::ui::impl::Font_']]],
-  ['conditionalpipeline',['ConditionalPipeline',['../structpvr_1_1effect_1_1_conditional_pipeline.html',1,'pvr::effect']]]
+  ['defragmentationinfo',['DefragmentationInfo',['../structpvr_1_1utils_1_1vma_1_1_defragmentation_info.html',1,'pvr::utils::vma']]],
+  ['defragmentationstats',['DefragmentationStats',['../structpvr_1_1utils_1_1vma_1_1_defragmentation_stats.html',1,'pvr::utils::vma']]],
+  ['deviceextensions',['DeviceExtensions',['../structpvr_1_1utils_1_1_device_extensions.html',1,'pvr::utils']]],
+  ['devicememorycallbacks',['DeviceMemoryCallbacks',['../structpvr_1_1utils_1_1vma_1_1_device_memory_callbacks.html',1,'pvr::utils::vma']]]
 ];

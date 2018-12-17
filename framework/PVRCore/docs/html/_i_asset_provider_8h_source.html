@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>PVRCore: /usr/buildxl/buildroot/sdk/branch/SDK/framework/PVRCore/Interfaces/IAssetProvider.h Source File</title>
+<title>PVRCore: /usr/buildxl/buildroot/sdk/branch/SDK/framework/PVRCore/IAssetProvider.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -15,7 +15,7 @@
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="IMGdoxygen.css" rel="stylesheet" type="text/css"/>
-<link rel="shortcut icon" href="http://www.imgtec.com/images/img.ico">
+<link rel="shortcut icon" type="image/x-icon" href="img.ico">
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
+      <a href="https://www.imgtec.com/developers/" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRCore</span> Documentation</a>
    <tbody>
@@ -76,7 +76,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_687531cb5acd5e736601deea3ef3b7c0.html">SDK</a></li><li class="navelem"><a class="el" href="dir_407ce59cc93389552d4bbf4df897abf8.html">framework</a></li><li class="navelem"><a class="el" href="dir_72a2a6c70dc66b6caf7d035656739fa9.html">PVRCore</a></li><li class="navelem"><a class="el" href="dir_16ec712cfa06104c0ac933fa12c60965.html">Interfaces</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_687531cb5acd5e736601deea3ef3b7c0.html">SDK</a></li><li class="navelem"><a class="el" href="dir_407ce59cc93389552d4bbf4df897abf8.html">framework</a></li><li class="navelem"><a class="el" href="dir_72a2a6c70dc66b6caf7d035656739fa9.html">PVRCore</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -87,19 +87,20 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a href="_i_asset_provider_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;</div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#pragma once</span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_defines_8h.html">PVRCore/Base/Defines.h</a>&quot;</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="keyword">namespace </span>pvr {</div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="keyword">class </span>Stream;</div>
-<div class="line"><a name="l00015"></a><span class="lineno"><a class="line" href="classpvr_1_1_i_asset_provider.html">   15</a></span>&#160;<span class="keyword">class </span><a class="code" href="classpvr_1_1_i_asset_provider.html">IAssetProvider</a></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;{</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    <span class="keyword">virtual</span> std::unique_ptr&lt;Stream&gt; <a class="code" href="classpvr_1_1_i_asset_provider.html#a47bce03844d1a74ad1951f89be534536">getAssetStream</a>(<span class="keyword">const</span> std::string&amp; filename, <span class="keywordtype">bool</span> logErrorOnNotFound = <span class="keyword">true</span>) = 0;</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;};</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;} <span class="comment">// namespace pvr</span></div>
-<div class="ttc" id="_defines_8h_html"><div class="ttname"><a href="_defines_8h.html">Defines.h</a></div><div class="ttdoc">Contains several definitions used throughout the PowerVR Framework. </div></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="keyword">namespace </span>pvr {</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="keyword">class </span>Stream;</div>
+<div class="line"><a name="l00017"></a><span class="lineno"><a class="line" href="classpvr_1_1_i_asset_provider.html">   17</a></span>&#160;<span class="keyword">class </span><a class="code" href="classpvr_1_1_i_asset_provider.html">IAssetProvider</a></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;{</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    <span class="keyword">virtual</span> std::unique_ptr&lt;Stream&gt; <a class="code" href="classpvr_1_1_i_asset_provider.html#a47bce03844d1a74ad1951f89be534536">getAssetStream</a>(<span class="keyword">const</span> std::string&amp; filename, <span class="keywordtype">bool</span> logErrorOnNotFound = <span class="keyword">true</span>) = 0;</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;};</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;} <span class="comment">// namespace pvr</span></div>
 <div class="ttc" id="classpvr_1_1_i_asset_provider_html_a47bce03844d1a74ad1951f89be534536"><div class="ttname"><a href="classpvr_1_1_i_asset_provider.html#a47bce03844d1a74ad1951f89be534536">pvr::IAssetProvider::getAssetStream</a></div><div class="ttdeci">virtual std::unique_ptr&lt; Stream &gt; getAssetStream(const std::string &amp;filename, bool logErrorOnNotFound=true)=0</div><div class="ttdoc">Create a Stream from the provided filename. The actual source of the stream is abstracted (filesystem...</div></div>
-<div class="ttc" id="classpvr_1_1_i_asset_provider_html"><div class="ttname"><a href="classpvr_1_1_i_asset_provider.html">pvr::IAssetProvider</a></div><div class="ttdoc">The IAssetProvider interface marks a class that provides the getAssetStream and getGraphicsContext me...</div><div class="ttdef"><b>Definition:</b> IAssetProvider.h:15</div></div>
+<div class="ttc" id="classpvr_1_1_i_asset_provider_html"><div class="ttname"><a href="classpvr_1_1_i_asset_provider.html">pvr::IAssetProvider</a></div><div class="ttdoc">The IAssetProvider interface marks a class that provides the getAssetStream function to load assets i...</div><div class="ttdef"><b>Definition:</b> IAssetProvider.h:17</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.4-->
 <!-- start footer part (NON TREEVIEW ONLY!!) -->

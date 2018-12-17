@@ -9,6 +9,60 @@
 #include "PVRVk/DeviceMemoryVk.h"
 
 namespace pvrvk {
+namespace {
+inline ImageViewType convertToPVRVkImageViewType(ImageType baseType, uint32_t numArrayLayers, bool isCubeMap)
+{
+	// if it is a cube map it has to be 2D Texture base
+	if (isCubeMap && baseType != ImageType::e_2D)
+	{
+		assertion(baseType == ImageType::e_2D, "Cubemap texture must be 2D");
+		return ImageViewType::e_MAX_ENUM;
+	}
+	// array must be atleast 1
+	if (!numArrayLayers)
+	{
+		assertion(false, "Number of array layers must be greater than equal to 0");
+		return ImageViewType::e_MAX_ENUM;
+	}
+	// if it is array it must be 1D or 2D texture base
+	if ((numArrayLayers > 1) && (baseType > ImageType::e_2D))
+	{
+		assertion(false, "1D and 2D image type supports array texture");
+		return ImageViewType::e_MAX_ENUM;
+	}
+
+	ImageViewType vkType[] = { ImageViewType::e_1D, ImageViewType::e_1D_ARRAY, ImageViewType::e_2D, ImageViewType::e_2D_ARRAY, ImageViewType::e_3D, ImageViewType::e_CUBE,
+		ImageViewType::e_CUBE_ARRAY };
+	if (isCubeMap)
+	{
+		numArrayLayers = (numArrayLayers > 6) * 6;
+	}
+	return vkType[(static_cast<uint32_t>(baseType) * 2) + (isCubeMap ? 3 : 0) + (numArrayLayers > 1 ? 1 : 0)];
+}
+
+inline ImageAspectFlags formatToImageAspect(Format format)
+{
+	if (format == Format::e_UNDEFINED)
+	{
+		throw ErrorUnknown("Cannot retrieve VkImageAspectFlags from an undefined VkFormat");
+	}
+	if (format < Format::e_D16_UNORM || format > Format::e_D32_SFLOAT_S8_UINT)
+	{
+		return ImageAspectFlags::e_COLOR_BIT;
+	}
+	const ImageAspectFlags formats[] = {
+		ImageAspectFlags::e_DEPTH_BIT, // VkFormat::e_D16_UNORM
+		ImageAspectFlags::e_DEPTH_BIT, // VkFormat::e_X8_D24_UNORM_PACK32
+		ImageAspectFlags::e_DEPTH_BIT, // VkFormat::e_D32_SFLOAT
+		ImageAspectFlags::e_STENCIL_BIT, // VkFormat::e_S8_UINT
+		ImageAspectFlags::e_DEPTH_BIT | ImageAspectFlags::e_STENCIL_BIT, // VkFormat::e_D16_UNORM_S8_UINT
+		ImageAspectFlags::e_DEPTH_BIT | ImageAspectFlags::e_STENCIL_BIT, // VkFormat::e_D24_UNORM_S8_UINT
+		ImageAspectFlags::e_DEPTH_BIT | ImageAspectFlags::e_STENCIL_BIT, // VkFormat::e_D32_SFLOAT_S8_UINT
+	};
+	return formats[static_cast<uint32_t>(format) - static_cast<uint32_t>(Format::e_D16_UNORM)];
+}
+} // namespace
+
 /// <summary>Image creation descriptor.</summary>
 struct ImageCreateInfo
 {
@@ -55,7 +109,6 @@ public:
 	{
 		this->_flags = flags;
 	}
-
 	/// <summary>Get Image creation type</summary>
 	/// <returns>Image creation type (ImageType)</returns>
 	inline ImageType getImageType() const
@@ -68,10 +121,9 @@ public:
 	{
 		this->_imageType = imageType;
 	}
-
 	/// <summary>Get Extent</summary>
 	/// <returns>Extent</returns>
-	inline Extent3D getExtent() const
+	inline const Extent3D& getExtent() const
 	{
 		return _extent;
 	}
@@ -81,7 +133,6 @@ public:
 	{
 		this->_extent = extent;
 	}
-
 	/// <summary>Get the number of Image mip map levels</summary>
 	/// <returns>Image mip map levels</returns>
 	inline uint32_t getNumMipLevels() const
@@ -94,7 +145,6 @@ public:
 	{
 		this->_numMipLevels = numMipLevels;
 	}
-
 	/// <summary>Get the number of Image array layers</summary>
 	/// <returns>Image array layers</returns>
 	inline uint32_t getNumArrayLayers() const
@@ -107,7 +157,6 @@ public:
 	{
 		this->_numArrayLayers = numArrayLayers;
 	}
-
 	/// <summary>Get the number of samples taken for the Image</summary>
 	/// <returns>Image number of samples (SampleCountFlags)</returns>
 	inline SampleCountFlags getNumSamples() const
@@ -120,7 +169,6 @@ public:
 	{
 		this->_numSamples = numSamples;
 	}
-
 	/// <summary>Get Image format</summary>
 	/// <returns>Image format (Format)</returns>
 	inline Format getFormat() const
@@ -133,7 +181,6 @@ public:
 	{
 		this->_format = format;
 	}
-
 	/// <summary>Get Image sharing mode</summary>
 	/// <returns>Image sharing mode (SharingMode)</returns>
 	inline SharingMode getSharingMode() const
@@ -146,7 +193,6 @@ public:
 	{
 		this->_sharingMode = sharingMode;
 	}
-
 	/// <summary>Get Image usage flags</summary>
 	/// <returns>Image usage flags (ImageUsageFlags)</returns>
 	inline ImageUsageFlags getUsageFlags() const
@@ -159,7 +205,6 @@ public:
 	{
 		this->_usageFlags = usageFlags;
 	}
-
 	/// <summary>Get Image initial layout</summary>
 	/// <returns>Image initial layout (ImageLayout)</returns>
 	inline ImageLayout getInitialLayout() const
@@ -172,7 +217,6 @@ public:
 	{
 		this->_initialLayout = initialLayout;
 	}
-
 	/// <summary>Get Image tiling mode</summary>
 	/// <returns>Image initial tiling mode (ImageTiling)</returns>
 	inline ImageTiling getTiling() const
@@ -185,7 +229,6 @@ public:
 	{
 		this->_tiling = tiling;
 	}
-
 	/// <summary>Get the number of queue family inidices for the image</summary>
 	/// <returns>The number of Image queue families</returns>
 	inline uint32_t getNumQueueFamilyIndices() const
@@ -240,6 +283,10 @@ class Image_ : public DeviceObjectHandle<VkImage>, public DeviceObjectDebugMarke
 {
 public:
 	DECLARE_NO_COPY_SEMANTICS(Image_)
+
+	/// <summary>Query and return a SubresourceLayout object describing the layout of the image</summary>
+	/// <returns>The SubresourceLayout of the image</returns>
+	pvrvk::SubresourceLayout getSubresourceLayout(const pvrvk::ImageSubresource& subresource) const;
 
 	/// <summary>Return a reference to the creation descriptor of the image</summary>
 	/// <returns>The reference to the ImageCreateInfo</returns>
@@ -375,10 +422,22 @@ public:
 		return static_cast<uint16_t>(_createInfo.getExtent().getDepth());
 	}
 
+	/// <summary>If a memory object has been bound to the object, return it. Otherwise, return empty device memory.</summary>
+	/// <returns>If a memory object has been bound to the object, the memory object. Otherwise, empty device memory.</returns>
+	const DeviceMemory& getDeviceMemory() const
+	{
+		return _memory;
+	}
+	/// <summary>If a memory object has been bound to the object, return it. Otherwise, return empty device memory.</summary>
+	/// <returns>If a memory object has been bound to the object, the memory object. Otherwise, empty device memory.</returns>
+	DeviceMemory& getDeviceMemory()
+	{
+		return _memory;
+	}
 	/// <summary>Bind memory to this non sparse image.</summary>
 	/// <param name="memory">The memory to attach to the given image object</param>
 	/// <param name="offset">The offset into the given memory to attach to the given image object</param>
-	void bindMemoryNonSparse(DeviceMemory memory, VkDeviceSize offset)
+	void bindMemoryNonSparse(DeviceMemory memory, VkDeviceSize offset = 0)
 	{
 		if ((_createInfo.getFlags() &
 				(pvrvk::ImageCreateFlags::e_SPARSE_ALIASED_BIT | pvrvk::ImageCreateFlags::e_SPARSE_BINDING_BIT | pvrvk::ImageCreateFlags::e_SPARSE_RESIDENCY_BIT)) != 0)
@@ -438,43 +497,193 @@ private:
 	friend struct ::pvrvk::RefCountEntryIntrusive;
 	friend class ::pvrvk::impl::Device_;
 	friend class ::pvrvk::impl::Swapchain_;
-	virtual ~SwapchainImage_();
+	~SwapchainImage_();
 
 	SwapchainImage_(const DeviceWeakPtr& device, const VkImage& swapchainImage, const Format& format, const Extent3D& extent, uint32_t numArrayLevels, uint32_t numMipLevels,
 		const ImageUsageFlags& usage);
 };
+} // namespace impl
 
-/// <summary>ImageView implementation that wraps the Vulkan Texture View object</summary>
+/// <summary>Image view creation descriptor.</summary>
+struct ImageViewCreateInfo
+{
+public:
+	/// <summary>Constructor (zero initialization)</summary>
+	ImageViewCreateInfo()
+		: _viewType(ImageViewType::e_2D), _format(Format::e_UNDEFINED), _components(ComponentMapping()), _subresourceRange(ImageSubresourceRange()),
+		  _flags(ImageViewCreateFlags::e_NONE)
+	{}
+
+	/// <summary>Constructor</summary>
+	/// <param name="image">Image to use in the ImageView</param>
+	/// <param name="components">Specifies a set of remappings of color components</param>
+	ImageViewCreateInfo(const Image& image, const ComponentMapping& components = ComponentMapping()) : _image(image), _components(components), _flags(ImageViewCreateFlags::e_NONE)
+	{
+		_viewType = convertToPVRVkImageViewType(_image->getImageType(), _image->getNumArrayLayers(), _image->isCubeMap());
+		_format = _image->getFormat();
+		_subresourceRange = ImageSubresourceRange(pvrvk::formatToImageAspect(_image->getFormat()), 0, _image->getNumMipLevels(), 0, _image->getNumArrayLayers());
+	}
+
+	/// <summary>Constructor</summary>
+	/// <param name="image">Image to use in the ImageView</param>
+	/// <param name="viewType">The image view type to use in the image view</param>
+	/// <param name="format">The format to use in the image view</param>
+	/// <param name="subresourceRange">A set of mipmap levels and array layers to be accessible to the view</param>
+	/// <param name="components">Specifies a set of remappings of color components</param>
+	/// <param name="flags">A set of pvrvk::ImageViewCreateFlags controlling how the ImageView will be created</param>
+	ImageViewCreateInfo(const Image& image, pvrvk::ImageViewType viewType, pvrvk::Format format, const ImageSubresourceRange& subresourceRange,
+		const ComponentMapping& components = ComponentMapping(), ImageViewCreateFlags flags = ImageViewCreateFlags::e_NONE)
+		: _image(image), _viewType(viewType), _format(format), _components(components), _subresourceRange(subresourceRange), _flags(flags)
+	{}
+
+	/// <summary>Get Image view creation Flags</summary>
+	/// <returns>Image view creation flags (ImageViewCreateFlags)</returns>
+	inline ImageViewCreateFlags getFlags() const
+	{
+		return _flags;
+	}
+	/// <summary>Set PVRVk Image view creation flags</summary>
+	/// <param name="flags">Flags to use for creating a PVRVk image view</param>
+	inline void setFlags(ImageViewCreateFlags flags)
+	{
+		this->_flags = flags;
+	}
+	/// <summary>Get Image</summary>
+	/// <returns>The Image used in the image view</returns>
+	inline Image& getImage()
+	{
+		return _image;
+	}
+	/// <summary>Get Image</summary>
+	/// <returns>The Image used in the image view</returns>
+	inline const Image& getImage() const
+	{
+		return _image;
+	}
+	/// <summary>Set PVRVk Image view creation image</summary>
+	/// <param name="image">Image to use for creating a PVRVk image view</param>
+	inline void setImage(const Image& image)
+	{
+		this->_image = image;
+	}
+	/// <summary>Get Image view creation type</summary>
+	/// <returns>Image view creation image view type (ImageViewType)</returns>
+	inline ImageViewType getViewType() const
+	{
+		return _viewType;
+	}
+	/// <summary>Set PVRVk Image view creation view type</summary>
+	/// <param name="viewType">Flags to use for creating a PVRVk image view</param>
+	inline void setViewType(ImageViewType viewType)
+	{
+		this->_viewType = viewType;
+	}
+	/// <summary>Get Image view format</summary>
+	/// <returns>Image view format (Format)</returns>
+	inline Format getFormat() const
+	{
+		return _format;
+	}
+	/// <summary>Set the Image view format for PVRVk Image creation</summary>
+	/// <param name="format">The image view format to use for creating a PVRVk image</param>
+	inline void setFormat(Format format)
+	{
+		this->_format = format;
+	}
+	/// <summary>Get Image view components</summary>
+	/// <returns>The Image view components used for remapping color components</returns>
+	inline const ComponentMapping& getComponents() const
+	{
+		return _components;
+	}
+	/// <summary>Set PVRVk Image view creation components</summary>
+	/// <param name="components">Specifies a set of remappings of color components</param>
+	inline void setComponents(const ComponentMapping& components)
+	{
+		this->_components = components;
+	}
+	/// <summary>Get Image view sub resource range</summary>
+	/// <returns>The Image view sub resource range used for selecting mipmap levels and array layers to be accessible to the view</returns>
+	inline const ImageSubresourceRange& getSubresourceRange() const
+	{
+		return _subresourceRange;
+	}
+	/// <summary>Set PVRVk Image view creation sub resource range</summary>
+	/// <param name="subresourceRange">Selects the set of mipmap levels and array layers to be accessible to the view</param>
+	inline void setSubresourceRange(const ImageSubresourceRange& subresourceRange)
+	{
+		this->_subresourceRange = subresourceRange;
+	}
+
+private:
+	/// <summary>The image to use in the image view</summary>
+	Image _image;
+	/// <summary>The type of image view to create</summary>
+	ImageViewType _viewType;
+	/// <summary>The format describing the format and type used to interpret data elements in the image</summary>
+	Format _format;
+	/// <summary>Specifies a set of remappings of color components</summary>
+	ComponentMapping _components;
+	/// <summary>Selects the set of mipmap levels and array layers to be accessible to the view</summary>
+	ImageSubresourceRange _subresourceRange;
+	/// <summary>Flags to use for creating the image view</summary>
+	ImageViewCreateFlags _flags;
+};
+
+namespace impl {
+/// <summary>pvrvk::ImageView implementation of a Vulkan VkImageView</summary>
 class ImageView_ : public DeviceObjectHandle<VkImageView>, public DeviceObjectDebugMarker<ImageView_>
 {
 public:
 	DECLARE_NO_COPY_SEMANTICS(ImageView_)
 
-	/// <summary>Get the underlying TextureStore object.</summary>
-	/// <returns>The underlying TextureStore object.</returns>
-	const Image& getImage() const
+	/// <summary>Get Image view creation Flags</summary>
+	/// <returns>Image view creation flags (ImageViewCreateFlags)</returns>
+	inline ImageViewCreateFlags getFlags() const
 	{
-		return _resource;
+		return _createInfo.getFlags();
 	}
-	/// <summary>Get the underlying TextureStore object.</summary>
-	/// <returns>The underlying TextureStore object.</returns>
-	Image& getImage()
+	/// <summary>Get Image</summary>
+	/// <returns>The Image used in the image view</returns>
+	inline Image& getImage()
 	{
-		return _resource;
+		return _createInfo.getImage();
 	}
-
-	/// <summary>Query if this object contains a valid reference to an actual Texture.</summary>
-	/// <returns>true if the texture is allocated (has an underlying image object), false otherwise.</returns>
-	bool isAllocated() const
+	/// <summary>Get Image</summary>
+	/// <returns>The Image used in the image view</returns>
+	inline const Image& getImage() const
 	{
-		return ((_resource.isValid() && _resource->isAllocated()) != 0);
+		return _createInfo.getImage();
 	}
-
-	/// <summary>Get vulkan object</summary>
-	/// <returns>pvrvk::ImageView&</returns>
-	pvrvk::ImageViewType getViewType() const
+	/// <summary>Get Image view creation type</summary>
+	/// <returns>Image view creation image view type (ImageViewType)</returns>
+	inline ImageViewType getViewType() const
 	{
-		return _viewType;
+		return _createInfo.getViewType();
+	}
+	/// <summary>Get Image view format</summary>
+	/// <returns>Image view format (Format)</returns>
+	inline Format getFormat() const
+	{
+		return _createInfo.getFormat();
+	}
+	/// <summary>Get Image view components</summary>
+	/// <returns>The Image view components used for remapping color components</returns>
+	inline const ComponentMapping& getComponents() const
+	{
+		return _createInfo.getComponents();
+	}
+	/// <summary>Get Image view sub resource range</summary>
+	/// <returns>The Image view sub resource range used for selecting mipmap levels and array layers to be accessible to the view</returns>
+	inline const ImageSubresourceRange& getSubresourceRange() const
+	{
+		return _createInfo.getSubresourceRange();
+	}
+	/// <summary>Get this images view's create flags</summary>
+	/// <returns>BufferViewCreateInfo</returns>
+	ImageViewCreateInfo getCreateInfo() const
+	{
+		return _createInfo;
 	}
 
 private:
@@ -482,12 +691,12 @@ private:
 	friend struct ::pvrvk::RefCountEntryIntrusive;
 	friend class ::pvrvk::impl::Device_;
 
-	ImageView_(const Image& image, pvrvk::ImageViewType viewType, pvrvk::Format format, const ImageSubresourceRange& range, ComponentMapping swizzleChannels);
+	ImageView_(const DeviceWeakPtr& device, const ImageViewCreateInfo& createInfo);
 
 	~ImageView_();
 
-	pvrvk::ImageViewType _viewType;
-	Image _resource; //!< Texture view implementations access the underlying texture through this
+	/// <summary>Creation information used when creating the image view.</summary>
+	ImageViewCreateInfo _createInfo;
 };
 } // namespace impl
 } // namespace pvrvk

@@ -45,7 +45,6 @@ public:
 	{
 		this->_flags = flags;
 	}
-
 	/// <summary>Get the buffer creation size</summary>
 	/// <returns>The set of buffer creation size</returns>
 	inline DeviceSize getSize() const
@@ -58,7 +57,6 @@ public:
 	{
 		this->_size = size;
 	}
-
 	/// <summary>Get the buffer creation sharing mode</summary>
 	/// <returns>The set of buffer creation sharing mode</returns>
 	inline SharingMode getSharingMode() const
@@ -71,7 +69,6 @@ public:
 	{
 		this->_sharingMode = sharingMode;
 	}
-
 	/// <summary>Get the buffer creation usage flags</summary>
 	/// <returns>The set of buffer creation usage flags</returns>
 	inline BufferUsageFlags getUsageFlags() const
@@ -84,21 +81,18 @@ public:
 	{
 		this->_usageFlags = usageFlags;
 	}
-
 	/// <summary>Get the number of queue family indices pointed to</summary>
 	/// <returns>The number of queue family indices pointed to</returns>
 	inline uint32_t getNumQueueFamilyIndices() const
 	{
 		return _numQueueFamilyIndices;
 	}
-
 	/// <summary>Set the number of queue family indices pointed to</summary>
 	/// <param name="numQueueFamilyIndices">The number of queue family indices pointed to</param>
 	inline void setNumQueueFamilyIndices(uint32_t numQueueFamilyIndices)
 	{
 		this->_numQueueFamilyIndices = numQueueFamilyIndices;
 	}
-
 	/// <summary>Get this buffer creation infos pointer to a list of supported queue family indices</summary>
 	/// <returns>A pointer to a list of supported queue family indices</returns>
 	inline const uint32_t* getQueueFamilyIndices() const
@@ -107,17 +101,17 @@ public:
 	}
 
 private:
-	/// <summary>Flags to use for creating the image</summary>
+	/// <summary>Flags to use for creating the buffer</summary>
 	BufferCreateFlags _flags;
 	/// <summary>The size of the buffer in bytes</summary>
 	DeviceSize _size;
-	/// <summary>Specifies the buffer sharing mode specifying how the image can be used by multiple queue families</summary>
+	/// <summary>Specifies the buffer sharing mode specifying how the buffer can be used by multiple queue families</summary>
 	SharingMode _sharingMode;
 	/// <summary>describes the buffer's intended usage</summary>
 	BufferUsageFlags _usageFlags;
 	/// <summary>The number of queue families in the _queueFamilyIndices array</summary>
 	uint32_t _numQueueFamilyIndices;
-	/// <summary>The list of queue families that will access this image</summary>
+	/// <summary>The list of queue families that will access this buffer</summary>
 	const uint32_t* _queueFamilyIndices;
 };
 
@@ -218,7 +212,7 @@ public:
 	}
 
 	/// <summary>Get this buffer's create flags</summary>
-	/// <returns>VkBufferCreateFlags</returns>
+	/// <returns>BufferCreateInfo</returns>
 	BufferCreateInfo getCreateInfo() const
 	{
 		return _createInfo;
@@ -253,59 +247,156 @@ private:
 	VkDeviceSize _memoryOffset;
 	DeviceMemory _deviceMemory;
 };
+} // namespace impl
 
-/// <summary>Vulkan implementation of the Buffer.</summary>
+/// <summary>Buffer view creation descriptor.</summary>
+struct BufferViewCreateInfo
+{
+public:
+	/// <summary>Constructor (zero initialization)</summary>
+	BufferViewCreateInfo() : _format(Format::e_UNDEFINED), _offset(0), _range(VK_WHOLE_SIZE), _flags(BufferViewCreateFlags::e_NONE) {}
+
+	/// <summary>Constructor</summary>
+	/// <param name="buffer">The buffer to be used in the buffer view</param>
+	/// <param name="format">The format of the data in the buffer</param>
+	/// <param name="offset">The buffer offset</param>
+	/// <param name="range">The range of the buffer view</param>
+	/// <param name="flags">A set of flags used for creating the buffer view</param>
+	BufferViewCreateInfo(const Buffer& buffer, Format format, DeviceSize offset = 0, DeviceSize range = VK_WHOLE_SIZE, BufferViewCreateFlags flags = BufferViewCreateFlags::e_NONE)
+		: _buffer(buffer), _format(format), _offset(offset), _range(range), _flags(flags)
+	{
+		assertion(range <= buffer->getSize() - offset);
+	}
+
+	/// <summary>Get the buffer view creation flags</summary>
+	/// <returns>The set of buffer view creation flags</returns>
+	inline BufferViewCreateFlags getFlags() const
+	{
+		return _flags;
+	}
+	/// <summary>Set the buffer view creation flags</summary>
+	/// <param name="flags">The buffer view creation flags</param>
+	inline void setFlags(BufferViewCreateFlags flags)
+	{
+		this->_flags = flags;
+	}
+	/// <summary>Get Buffer</summary>
+	/// <returns>The Buffer used in the buffer view</returns>
+	inline const Buffer& getBuffer() const
+	{
+		return _buffer;
+	}
+	/// <summary>Set PVRVk Buffer view creation image</summary>
+	/// <param name="buffer">Buffer to use for creating a PVRVk buffer view</param>
+	inline void setBuffer(const Buffer& buffer)
+	{
+		this->_buffer = buffer;
+	}
+	/// <summary>Get Buffer view format</summary>
+	/// <returns>Buffer view format (Format)</returns>
+	inline Format getFormat() const
+	{
+		return _format;
+	}
+	/// <summary>Set the Buffer view format for PVRVk Buffer creation</summary>
+	/// <param name="format">The buffer view format to use for creating a PVRVk buffer</param>
+	inline void setFormat(Format format)
+	{
+		this->_format = format;
+	}
+	/// <summary>Get the buffer view creation offset</summary>
+	/// <returns>The set of buffer view creation offset</returns>
+	inline DeviceSize getOffset() const
+	{
+		return _offset;
+	}
+	/// <summary>Set the buffer view creation offset</summary>
+	/// <param name="offset">The buffer view creation offset</param>
+	inline void setOffset(DeviceSize offset)
+	{
+		this->_offset = offset;
+	}
+	/// <summary>Get the buffer view creation range</summary>
+	/// <returns>The set of buffer view creation range</returns>
+	inline DeviceSize getRange() const
+	{
+		return _range;
+	}
+	/// <summary>Set the buffer view creation range</summary>
+	/// <param name="range">The buffer view creation range</param>
+	inline void setRange(DeviceSize range)
+	{
+		this->_range = range;
+	}
+
+private:
+	/// <summary>The buffer on which the view will be created</summary>
+	Buffer _buffer;
+	/// <summary>Describes the format of the data elements in the buffer</summary>
+	Format _format;
+	/// <summary>The offset in bytes from the base address of the buffer</summary>
+	DeviceSize _offset;
+	/// <summary>The size in bytes of the buffer view</summary>
+	DeviceSize _range;
+	/// <summary>Flags to use for creating the buffer view</summary>
+	BufferViewCreateFlags _flags;
+};
+
+namespace impl {
+/// <summary>pvrvk implementation of a BufferView.</summary>
 class BufferView_ : public DeviceObjectHandle<VkBufferView>, public DeviceObjectDebugMarker<BufferView_>
 {
 public:
 	DECLARE_NO_COPY_SEMANTICS(BufferView_)
 
-	/// <summary>Return the offset this buffer view pointing in to the buffer</summary>
-	/// <returns>VkDeviceSize</returns>
-	VkDeviceSize getOffset() const
+	/// <summary>Get the buffer view creation flags</summary>
+	/// <returns>The set of buffer view creation flags</returns>
+	inline BufferViewCreateFlags getFlags() const
 	{
-		return _offset;
+		return _createInfo.getFlags();
 	}
-
-	/// <summary>Return the range of this buffer view</summary>
-	/// <returns>VkDeviceSize</returns>
-	VkDeviceSize getSize() const
+	/// <summary>Get Buffer</summary>
+	/// <returns>The Buffer used in the buffer view</returns>
+	inline const Buffer& getBuffer() const
 	{
-		return _size;
+		return _createInfo.getBuffer();
 	}
-
-	/// <summary>Get the pointing buffer.</summary>
-	/// <returns>Buffer</returns>
-	Buffer getBuffer()
+	/// <summary>Get Buffer view format</summary>
+	/// <returns>Buffer view format (Format)</returns>
+	inline Format getFormat() const
 	{
-		return _buffer;
+		return _createInfo.getFormat();
 	}
-
-	/// <summary>Get the pointing buffer </summary>(const).
-	/// <returns>Buffer</returns>
-	const Buffer getBuffer() const
+	/// <summary>Get the buffer view creation offset</summary>
+	/// <returns>The set of buffer view creation offset</returns>
+	inline DeviceSize getOffset() const
 	{
-		return _buffer;
+		return _createInfo.getOffset();
 	}
-
-	/// <summary>Get buffer view format</summary>
-	/// <returns>VkFormat</returns>
-	Format getFormat() const
+	/// <summary>Get the buffer view creation range</summary>
+	/// <returns>The set of buffer view creation range</returns>
+	inline DeviceSize getRange() const
 	{
-		return _format;
+		return _createInfo.getRange();
+	}
+	/// <summary>Get this buffer view's create flags</summary>
+	/// <returns>BufferViewCreateInfo</returns>
+	BufferViewCreateInfo getCreateInfo() const
+	{
+		return _createInfo;
 	}
 
 private:
 	template<typename>
 	friend struct ::pvrvk::RefCountEntryIntrusive;
 	friend class ::pvrvk::impl::Device_;
-	BufferView_(const DeviceWeakPtr& device, const Buffer& buffer, Format format, VkDeviceSize offset, VkDeviceSize size);
+	BufferView_(const DeviceWeakPtr& device, const BufferViewCreateInfo& createInfo);
 
-	void destroy();
-	VkDeviceSize _offset;
-	VkDeviceSize _size;
-	Format _format;
-	Buffer _buffer;
+	/// <summary>Destructor. Will properly release all resources held by this object.</summary>
+	~BufferView_();
+
+	/// <summary>Creation information used when creating the buffer view.</summary>
+	BufferViewCreateInfo _createInfo;
 };
 } // namespace impl
 } // namespace pvrvk

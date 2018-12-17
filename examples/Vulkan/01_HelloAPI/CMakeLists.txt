@@ -27,7 +27,7 @@ include_directories(
 	${SDK_ROOT}/include/
 )
 
-list(APPEND SRC_FILES vk_getProcAddrs.cpp VulkanHelloAPI.cpp  vk_getProcAddrs.h VulkanHelloAPI.h vertShader_bin.h fragShader_bin.h VertShader_vk.vsh FragShader_vk.fsh )
+list(APPEND SRC_FILES vk_getProcAddrs.cpp VulkanHelloAPI.cpp  vk_getProcAddrs.h VulkanHelloAPI.h vertShader_bin.h fragShader_bin.h VertShader.vsh FragShader.fsh )
 
 if (WIN32)
 	list (APPEND SRC_FILES 

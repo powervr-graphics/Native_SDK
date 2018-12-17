@@ -3,7 +3,6 @@ var searchData=
   ['debugmarkerimpl',['DebugMarkerImpl',['../classpvrvk_1_1impl_1_1_debug_marker_impl.html',1,'pvrvk::impl']]],
   ['debugreportcallback_5f',['DebugReportCallback_',['../classpvrvk_1_1impl_1_1_debug_report_callback__.html',1,'pvrvk::impl']]],
   ['debugreportcallbackcreateinfo',['DebugReportCallbackCreateInfo',['../structpvrvk_1_1_debug_report_callback_create_info.html',1,'pvrvk']]],
-  ['depthstencilstatecreateinfo',['DepthStencilStateCreateInfo',['../structpvrvk_1_1_depth_stencil_state_create_info.html',1,'pvrvk']]],
   ['descriptorbufferinfo',['DescriptorBufferInfo',['../structpvrvk_1_1_descriptor_buffer_info.html',1,'pvrvk']]],
   ['descriptorimageinfo',['DescriptorImageInfo',['../structpvrvk_1_1_descriptor_image_info.html',1,'pvrvk']]],
   ['descriptorpool_5f',['DescriptorPool_',['../classpvrvk_1_1impl_1_1_descriptor_pool__.html',1,'pvrvk::impl']]],

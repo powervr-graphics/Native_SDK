@@ -15,7 +15,7 @@
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="IMGdoxygen.css" rel="stylesheet" type="text/css"/>
-<link rel="shortcut icon" href="http://www.imgtec.com/images/img.ico">
+<link rel="shortcut icon" type="image/x-icon" href="img.ico">
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
+      <a href="https://www.imgtec.com/developers/" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRVk</span> Documentation</a>
    <tbody>
@@ -97,7 +97,7 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vulkan implementation of the Buffer. <a href="classpvrvk_1_1impl_1_1_buffer__.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_buffer_view__.html">BufferView_</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vulkan implementation of the Buffer. <a href="classpvrvk_1_1impl_1_1_buffer_view__.html#details">More...</a><br/></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">pvrvk implementation of a BufferView. <a href="classpvrvk_1_1impl_1_1_buffer_view__.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_command_buffer__.html">CommandBuffer_</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contains all the commands and states that need to be recorded for later submission to the gpu including pipelines, textures, descriptor sets. Virtually everything that needs to happen on the GPU is submitted to the CommandBuffer. <a href="classpvrvk_1_1impl_1_1_command_buffer__.html#details">More...</a><br/></td></tr>
@@ -175,7 +175,7 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">ImageVk implementation that wraps the Vulkan Texture object <a href="classpvrvk_1_1impl_1_1_image__.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_image_view__.html">ImageView_</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">ImageView implementation that wraps the Vulkan Texture View object <a href="classpvrvk_1_1impl_1_1_image_view__.html#details">More...</a><br/></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="namespacepvrvk.html#ad4da214c95fffe4edccb14eb2c270f07" title="Base class for the view of any kind of texture view.">pvrvk::ImageView</a> implementation of a Vulkan VkImageView <a href="classpvrvk_1_1impl_1_1_image_view__.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_instance__.html">Instance_</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The Instance is a system-wide vulkan "implementation", similar in concept to the "installation" of Vulkan libraries on a system. Contrast with the "Physical Device" which for example represents a particular driver implementing Vulkan for a specific Device. Conceptually, the Instance "Forwards" to the "Physical Device / Device" <a href="classpvrvk_1_1impl_1_1_instance__.html#details">More...</a><br/></td></tr>
@@ -187,7 +187,7 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Defines a simple interface for a Vulkan object. <a href="classpvrvk_1_1impl_1_1_object_handle.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_physical_device__.html">PhysicalDevice_</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The representation of an entire actual, physical GPU device (as opposed to Device, which is a local, logical part of it). A Physical device is "determined", or "found", or "enumerated", (while a logical device is "created"). You can use the physical device to create logical Devices, determine Extensions etc. See Vulkan spec.  <a href="classpvrvk_1_1impl_1_1_physical_device__.html#details">More...</a><br/></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The representation of an entire actual, physical GPU device (as opposed to Device, which is a local, logical part of it). A Physical device is "determined", or "found", or "enumerated", (while a logical device is "created"). You can use the physical device to create logical Devices, determine Extensions etc. See Vulkan spec. <a href="classpvrvk_1_1impl_1_1_physical_device__.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_physical_device_object_handle.html">PhysicalDeviceObjectHandle</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Defines a simple interface for a Vulkan which holds a reference to a Vulkan Physical Device. <a href="classpvrvk_1_1impl_1_1_physical_device_object_handle.html#details">More...</a><br/></td></tr>

@@ -10,13 +10,13 @@
 
 namespace pvrvk {
 namespace impl {
-Semaphore_::Semaphore_(const DeviceWeakPtr& device) : DeviceObjectHandle(device), DeviceObjectDebugMarker(DebugReportObjectTypeEXT::e_SEMAPHORE_EXT)
+Semaphore_::Semaphore_(const DeviceWeakPtr& device, const SemaphoreCreateInfo& createInfo)
+	: DeviceObjectHandle(device), DeviceObjectDebugMarker(DebugReportObjectTypeEXT::e_SEMAPHORE_EXT), _createInfo(createInfo)
 {
-	VkSemaphoreCreateInfo nfo;
-	nfo.sType = static_cast<VkStructureType>(StructureType::e_SEMAPHORE_CREATE_INFO);
-	nfo.pNext = 0;
-	nfo.flags = static_cast<VkSemaphoreCreateFlags>(SemaphoreCreateFlags::e_NONE);
-	vkThrowIfFailed(_device->getVkBindings().vkCreateSemaphore(_device->getVkHandle(), &nfo, NULL, &_vkHandle), "Semaphore::failed to create Semaphore object");
+	VkSemaphoreCreateInfo vkCreateInfo = {};
+	vkCreateInfo.sType = static_cast<VkStructureType>(StructureType::e_SEMAPHORE_CREATE_INFO);
+	vkCreateInfo.flags = static_cast<VkSemaphoreCreateFlags>(_createInfo.getFlags());
+	vkThrowIfFailed(_device->getVkBindings().vkCreateSemaphore(getDevice()->getVkHandle(), &vkCreateInfo, nullptr, &_vkHandle), "Failed to create Semaphore");
 }
 
 Semaphore_::~Semaphore_()

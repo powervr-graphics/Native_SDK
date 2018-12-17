@@ -7,11 +7,10 @@ Graphics context.
 */
 #pragma once
 
-#include "PVRCore/CoreIncludes.h"
-#include "PVRCore/Stream.h"
-#include "PVRCore/Math/Rectangle.h"
-#include "PVRCore/Base/RefCounted.h"
-#include "PVRCore/StringFunctions.h"
+#include "PVRCore/stream/Stream.h"
+#include "PVRCore/math/Rectangle.h"
+#include "PVRCore/RefCounted.h"
+#include "PVRCore/strings/StringFunctions.h"
 #if TARGET_OS_IPHONE
 #include "PVRUtils/EAGL/EaglPlatformHandles.h"
 #else
@@ -94,7 +93,7 @@ public:
 
 	/// <summary>Getter for the on screen frame buffer object. The default or on screen frame buffer is not guaranteed to be zero on all platforms.</summary>
 	/// <returns>Returns the OpenGL ES handle for the on screen frame buffer object.</returns>
-	unsigned int getOnScreenFbo();
+	uint32_t getOnScreenFbo();
 
 	/// <summary>Creates an instance of a shared platform context</summary>
 	/// <returns>A unique pointer to a SharedEglContext_ instance.</returns>

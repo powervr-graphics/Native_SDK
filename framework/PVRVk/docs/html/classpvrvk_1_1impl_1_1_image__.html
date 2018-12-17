@@ -15,7 +15,7 @@
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="IMGdoxygen.css" rel="stylesheet" type="text/css"/>
-<link rel="shortcut icon" href="http://www.imgtec.com/images/img.ico">
+<link rel="shortcut icon" type="image/x-icon" href="img.ico">
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
+      <a href="https://www.imgtec.com/developers/" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRVk</span> Documentation</a>
    <tbody>
@@ -102,9 +102,9 @@ Inheritance diagram for pvrvk::impl::Image_:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a91af0ee2668252ccc0c0a5b751c94bcd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_image__.html#a91af0ee2668252ccc0c0a5b751c94bcd">bindMemoryNonSparse</a> (<a class="el" href="namespacepvrvk.html#a634be07eff8c3efd7788c1429c8ff129">DeviceMemory</a> memory, VkDeviceSize offset)</td></tr>
-<tr class="memdesc:a91af0ee2668252ccc0c0a5b751c94bcd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind memory to this non sparse image. <a href="#a91af0ee2668252ccc0c0a5b751c94bcd">More...</a><br/></td></tr>
-<tr class="separator:a91af0ee2668252ccc0c0a5b751c94bcd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6fead2ab34caa492a133bdf61e34e482"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_image__.html#a6fead2ab34caa492a133bdf61e34e482">bindMemoryNonSparse</a> (<a class="el" href="namespacepvrvk.html#a634be07eff8c3efd7788c1429c8ff129">DeviceMemory</a> memory, VkDeviceSize offset=0)</td></tr>
+<tr class="memdesc:a6fead2ab34caa492a133bdf61e34e482"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind memory to this non sparse image. <a href="#a6fead2ab34caa492a133bdf61e34e482">More...</a><br/></td></tr>
+<tr class="separator:a6fead2ab34caa492a133bdf61e34e482"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a966817e09fe601e4dc9a975801a520bd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structpvrvk_1_1_image_create_info.html">pvrvk::ImageCreateInfo</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_image__.html#a966817e09fe601e4dc9a975801a520bd">getCreateInfo</a> () const </td></tr>
 <tr class="memdesc:a966817e09fe601e4dc9a975801a520bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a reference to the creation descriptor of the image <a href="#a966817e09fe601e4dc9a975801a520bd">More...</a><br/></td></tr>
 <tr class="separator:a966817e09fe601e4dc9a975801a520bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -117,6 +117,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aa78f66f58571440f57204a645383c279"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvrvk.html#a8dd5932a80187b088ce6b591712dc2c2">DeviceWeakPtr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_device_object_handle.html#aa78f66f58571440f57204a645383c279">getDevice</a> ()</td></tr>
 <tr class="memdesc:aa78f66f58571440f57204a645383c279"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get Device <a href="#aa78f66f58571440f57204a645383c279">More...</a><br/></td></tr>
 <tr class="separator:aa78f66f58571440f57204a645383c279"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a452660dbb63dcf8b94adbccf35625195"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacepvrvk.html#a634be07eff8c3efd7788c1429c8ff129">DeviceMemory</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_image__.html#a452660dbb63dcf8b94adbccf35625195">getDeviceMemory</a> () const </td></tr>
+<tr class="memdesc:a452660dbb63dcf8b94adbccf35625195"><td class="mdescLeft">&#160;</td><td class="mdescRight">If a memory object has been bound to the object, return it. Otherwise, return empty device memory. <a href="#a452660dbb63dcf8b94adbccf35625195">More...</a><br/></td></tr>
+<tr class="separator:a452660dbb63dcf8b94adbccf35625195"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a994102a937f720dca131388a91bd0d9d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvrvk.html#a634be07eff8c3efd7788c1429c8ff129">DeviceMemory</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_image__.html#a994102a937f720dca131388a91bd0d9d">getDeviceMemory</a> ()</td></tr>
+<tr class="memdesc:a994102a937f720dca131388a91bd0d9d"><td class="mdescLeft">&#160;</td><td class="mdescRight">If a memory object has been bound to the object, return it. Otherwise, return empty device memory. <a href="#a994102a937f720dca131388a91bd0d9d">More...</a><br/></td></tr>
+<tr class="separator:a994102a937f720dca131388a91bd0d9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a29d37cb96277502f88134b5be0afa93b"><td class="memItemLeft" align="right" valign="top">Extent3D&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_image__.html#a29d37cb96277502f88134b5be0afa93b">getExtent</a> () const </td></tr>
 <tr class="memdesc:a29d37cb96277502f88134b5be0afa93b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get Extent <a href="#a29d37cb96277502f88134b5be0afa93b">More...</a><br/></td></tr>
 <tr class="separator:a29d37cb96277502f88134b5be0afa93b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -150,12 +156,18 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a96e957c5db24697d9f571c58b70f256f"><td class="memItemLeft" align="right" valign="top">SampleCountFlags&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_image__.html#a96e957c5db24697d9f571c58b70f256f">getNumSamples</a> () const </td></tr>
 <tr class="memdesc:a96e957c5db24697d9f571c58b70f256f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the number of samples taken for the Image <a href="#a96e957c5db24697d9f571c58b70f256f">More...</a><br/></td></tr>
 <tr class="separator:a96e957c5db24697d9f571c58b70f256f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af9cd7d892ba5d3d7988b9ecae846f5bf"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_device_object_debug_marker.html#af9cd7d892ba5d3d7988b9ecae846f5bf">getObjectName</a> () const</td></tr>
+<tr class="memdesc:af9cd7d892ba5d3d7988b9ecae846f5bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the Debug Marker name. <a href="#af9cd7d892ba5d3d7988b9ecae846f5bf">More...</a><br/></td></tr>
+<tr class="separator:af9cd7d892ba5d3d7988b9ecae846f5bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4785fe9d80f13d626ff1d3f36ebfcbbd"><td class="memItemLeft" align="right" valign="top">const uint32_t *const&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_image__.html#a4785fe9d80f13d626ff1d3f36ebfcbbd">getQueueFamilyIndices</a> () const </td></tr>
 <tr class="memdesc:a4785fe9d80f13d626ff1d3f36ebfcbbd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a pointer to a list of queue family inidices for the image <a href="#a4785fe9d80f13d626ff1d3f36ebfcbbd">More...</a><br/></td></tr>
 <tr class="separator:a4785fe9d80f13d626ff1d3f36ebfcbbd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abed244779be98b0e49d82a93564640ce"><td class="memItemLeft" align="right" valign="top">SharingMode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_image__.html#abed244779be98b0e49d82a93564640ce">getSharingMode</a> () const </td></tr>
 <tr class="memdesc:abed244779be98b0e49d82a93564640ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get Image sharing mode <a href="#abed244779be98b0e49d82a93564640ce">More...</a><br/></td></tr>
 <tr class="separator:abed244779be98b0e49d82a93564640ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f40d916a4c9ee2a50c8c8e16f2f6183"><td class="memItemLeft" align="right" valign="top">pvrvk::SubresourceLayout&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_image__.html#a5f40d916a4c9ee2a50c8c8e16f2f6183">getSubresourceLayout</a> (const pvrvk::ImageSubresource &amp;subresource) const </td></tr>
+<tr class="memdesc:a5f40d916a4c9ee2a50c8c8e16f2f6183"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query and return a SubresourceLayout object describing the layout of the image <a href="#a5f40d916a4c9ee2a50c8c8e16f2f6183">More...</a><br/></td></tr>
+<tr class="separator:a5f40d916a4c9ee2a50c8c8e16f2f6183"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa8985e754db390b41cfae83d95f405e2"><td class="memItemLeft" align="right" valign="top">ImageTiling&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_image__.html#aa8985e754db390b41cfae83d95f405e2">getTiling</a> () const </td></tr>
 <tr class="memdesc:aa8985e754db390b41cfae83d95f405e2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get Image tiling mode <a href="#aa8985e754db390b41cfae83d95f405e2">More...</a><br/></td></tr>
 <tr class="separator:aa8985e754db390b41cfae83d95f405e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -318,7 +330,7 @@ Protected Attributes</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="a91af0ee2668252ccc0c0a5b751c94bcd"></a>
+<a class="anchor" id="a6fead2ab34caa492a133bdf61e34e482"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -335,7 +347,7 @@ Protected Attributes</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">VkDeviceSize&#160;</td>
-          <td class="paramname"><em>offset</em>&#160;</td>
+          <td class="paramname"><em>offset</em> = <code>0</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -462,6 +474,58 @@ Protected Attributes</h2></td></tr>
 
 <p>Get Device</p>
 <dl class="section return"><dt>Returns</dt><dd>DeviceWeakPtr</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a452660dbb63dcf8b94adbccf35625195"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="namespacepvrvk.html#a634be07eff8c3efd7788c1429c8ff129">DeviceMemory</a>&amp; pvrvk::impl::Image_::getDeviceMemory </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>If a memory object has been bound to the object, return it. Otherwise, return empty device memory.</p>
+<dl class="section return"><dt>Returns</dt><dd>If a memory object has been bound to the object, the memory object. Otherwise, empty device memory.</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a994102a937f720dca131388a91bd0d9d"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacepvrvk.html#a634be07eff8c3efd7788c1429c8ff129">DeviceMemory</a>&amp; pvrvk::impl::Image_::getDeviceMemory </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>If a memory object has been bound to the object, return it. Otherwise, return empty device memory.</p>
+<dl class="section return"><dt>Returns</dt><dd>If a memory object has been bound to the object, the memory object. Otherwise, empty device memory.</dd></dl>
 
 </div>
 </div>
@@ -751,6 +815,32 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="af9cd7d892ba5d3d7988b9ecae846f5bf"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string&amp; <a class="el" href="classpvrvk_1_1impl_1_1_device_object_debug_marker.html">pvrvk::impl::DeviceObjectDebugMarker</a>&lt; <a class="el" href="classpvrvk_1_1impl_1_1_image__.html">Image_</a>  &gt;::getObjectName </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the Debug Marker name.</p>
+<dl class="section return"><dt>Returns</dt><dd>The object name</dd></dl>
+
+</div>
+</div>
 <a class="anchor" id="a4785fe9d80f13d626ff1d3f36ebfcbbd"></a>
 <div class="memitem">
 <div class="memproto">
@@ -800,6 +890,25 @@ Protected Attributes</h2></td></tr>
 
 <p>Get Image sharing mode</p>
 <dl class="section return"><dt>Returns</dt><dd>Image sharing mode (SharingMode)</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a5f40d916a4c9ee2a50c8c8e16f2f6183"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">pvrvk::SubresourceLayout pvrvk::impl::Image_::getSubresourceLayout </td>
+          <td>(</td>
+          <td class="paramtype">const pvrvk::ImageSubresource &amp;&#160;</td>
+          <td class="paramname"><em>subresource</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Query and return a SubresourceLayout object describing the layout of the image</p>
+<dl class="section return"><dt>Returns</dt><dd>The SubresourceLayout of the image</dd></dl>
 
 </div>
 </div>

@@ -10,15 +10,14 @@
 
 namespace pvrvk {
 namespace impl {
-CommandPool_::CommandPool_(const DeviceWeakPtr& device, uint32_t queueFamilyId, CommandPoolCreateFlags createFlags)
-	: DeviceObjectHandle(device), DeviceObjectDebugMarker(DebugReportObjectTypeEXT::e_COMMAND_POOL_EXT)
+CommandPool_::CommandPool_(const DeviceWeakPtr& device, const CommandPoolCreateInfo& createInfo)
+	: DeviceObjectHandle(device), DeviceObjectDebugMarker(DebugReportObjectTypeEXT::e_COMMAND_POOL_EXT), _createInfo(createInfo)
 {
-	_queueFamilyId = queueFamilyId;
-	VkCommandPoolCreateInfo poolCreateInfo = {};
-	poolCreateInfo.sType = static_cast<VkStructureType>(StructureType::e_COMMAND_POOL_CREATE_INFO);
-	poolCreateInfo.queueFamilyIndex = queueFamilyId;
-	poolCreateInfo.flags = static_cast<VkCommandPoolCreateFlags>(createFlags);
-	vkThrowIfFailed(_device->getVkBindings().vkCreateCommandPool(_device->getVkHandle(), &poolCreateInfo, NULL, &_vkHandle));
+	VkCommandPoolCreateInfo vkCreateInfo = {};
+	vkCreateInfo.sType = static_cast<VkStructureType>(StructureType::e_COMMAND_POOL_CREATE_INFO);
+	vkCreateInfo.flags = static_cast<VkCommandPoolCreateFlags>(_createInfo.getFlags());
+	vkCreateInfo.queueFamilyIndex = _createInfo.getQueueFamilyIndex();
+	vkThrowIfFailed(_device->getVkBindings().vkCreateCommandPool(_device->getVkHandle(), &vkCreateInfo, NULL, &_vkHandle), "Failed to create CommandPool");
 }
 } // namespace impl
 

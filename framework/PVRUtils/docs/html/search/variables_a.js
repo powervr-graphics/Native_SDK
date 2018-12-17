@@ -1,26 +1,5 @@
 var searchData=
 [
-  ['majorv',['majorV',['../structpvr_1_1utils_1_1_vulkan_version.html#ae034e617f8481394b0d37b6ddaa228fd',1,'pvr::utils::VulkanVersion']]],
-  ['manager_5f',['manager_',['../structpvr_1_1utils_1_1_renderman_effect.html#af7853deefa909ab349279d9d043d56ac',1,'pvr::utils::RendermanEffect']]],
-  ['material',['material',['../structpvr_1_1utils_1_1_renderman_subpass_material.html#ab2b79ce7efe3d1a41c7ea6373b1aac1f',1,'pvr::utils::RendermanSubpassMaterial']]],
-  ['materialeffects',['materialEffects',['../structpvr_1_1utils_1_1_renderman_subpass_group_model.html#a2da9da562d30f396571ac37ed9b26cdb',1,'pvr::utils::RendermanSubpassGroupModel']]],
-  ['materials',['materials',['../structpvr_1_1utils_1_1_renderman_model.html#a5b3cd65c7a7fb258c5bd96d38ebf817e',1,'pvr::utils::RendermanModel']]],
-  ['materialsubpass_5f',['materialSubpass_',['../structpvr_1_1utils_1_1_renderman_material_subpass_pipeline.html#a70c58a1747793ecf5d4b2bb326004ad2',1,'pvr::utils::RendermanMaterialSubpassPipeline']]],
-  ['materialsubpasspipelines',['materialSubpassPipelines',['../structpvr_1_1utils_1_1_renderman_subpass_material.html#a162109ce4211c9307366c878055737a3',1,'pvr::utils::RendermanSubpassMaterial']]],
-  ['maxblockcount',['maxBlockCount',['../structpvr_1_1utils_1_1vma_1_1_pool_create_info.html#a470bcea6c9b314471cecf2d2b81996b2',1,'pvr::utils::vma::PoolCreateInfo']]],
-  ['memory',['memory',['../structpvr_1_1utils_1_1_uniform_semantic.html#a1501c2efd2eaf593f556f0b79f190748',1,'pvr::utils::UniformSemantic::memory()'],['../structpvr_1_1utils_1_1_automatic_node_uniform_semantic.html#a6a9c37c77385000e15023dc151fb7fc0',1,'pvr::utils::AutomaticNodeUniformSemantic::memory()'],['../structpvr_1_1utils_1_1_automatic_model_uniform_semantic.html#a79d267549972c1e7fc622a3d8a05ff71',1,'pvr::utils::AutomaticModelUniformSemantic::memory()']]],
-  ['memorydescription',['memoryDescription',['../structpvr_1_1effect_1_1_buffer_def.html#a8147cbafde36646b26488ea3bb97a859',1,'pvr::effect::BufferDef::memoryDescription()'],['../structpvr_1_1utils_1_1_renderman_buffer_definition.html#a5bff6b59decabd547720a648623ad40d',1,'pvr::utils::RendermanBufferDefinition::memoryDescription()']]],
-  ['memoryheap',['memoryHeap',['../structpvr_1_1utils_1_1vma_1_1_stats.html#aa474124e34480ef086e12845a23c4095',1,'pvr::utils::vma::Stats']]],
-  ['memorytype',['memoryType',['../structpvr_1_1utils_1_1vma_1_1_stats.html#a421d98480d8066e335db5eef16ce0e91',1,'pvr::utils::vma::Stats']]],
-  ['memorytypebits',['memoryTypeBits',['../structpvr_1_1utils_1_1vma_1_1_allocation_create_info.html#ac71bca01c89a1600440f8a1011584afd',1,'pvr::utils::vma::AllocationCreateInfo']]],
-  ['memorytypeindex',['memoryTypeIndex',['../structpvr_1_1utils_1_1vma_1_1_pool_create_info.html#ada6ad35151680703ca0137c2d55c3bad',1,'pvr::utils::vma::PoolCreateInfo']]],
-  ['meshes',['meshes',['../structpvr_1_1utils_1_1_renderman_model.html#a2c8c117ecdadb7e497e129c95864ca93',1,'pvr::utils::RendermanModel']]],
-  ['mgr_5f',['mgr_',['../structpvr_1_1utils_1_1_renderman_model.html#a5ce53216e53c01dba3062f16b0a3d473',1,'pvr::utils::RendermanModel']]],
-  ['minblockcount',['minBlockCount',['../structpvr_1_1utils_1_1vma_1_1_pool_create_info.html#ab7b2f27e0a949c78b410f65ad1b1b77c',1,'pvr::utils::vma::PoolCreateInfo']]],
-  ['minorv',['minorV',['../structpvr_1_1utils_1_1_vulkan_version.html#a6c8a350c06cf3c659a092f0688f860b2',1,'pvr::utils::VulkanVersion']]],
-  ['miplevel',['mipLevel',['../structpvr_1_1utils_1_1_image_update_info.html#a1b452f639a4e507f7d3bdfaf529da029',1,'pvr::utils::ImageUpdateInfo']]],
-  ['model',['model',['../structpvr_1_1utils_1_1_automatic_model_buffer_entry_semantic.html#a546908d74b0e9f603370300b399f2066',1,'pvr::utils::AutomaticModelBufferEntrySemantic::model()'],['../structpvr_1_1utils_1_1_automatic_model_uniform_semantic.html#a192cd35043140294dc552306e00dd0bc',1,'pvr::utils::AutomaticModelUniformSemantic::model()']]],
-  ['modelscopebuffers',['modelScopeBuffers',['../structpvr_1_1effect_1_1_pipeline_def.html#a9d611179913701d5694ced9164acd11d',1,'pvr::effect::PipelineDef']]],
-  ['modelsubpass_5f',['modelSubpass_',['../structpvr_1_1utils_1_1_renderman_subpass_material.html#a65de06739db0ea03f24180b593058d1b',1,'pvr::utils::RendermanSubpassMaterial::modelSubpass_()'],['../structpvr_1_1utils_1_1_renderman_subpass_mesh.html#abc1df04494ea922deaadd5ad7ab6355b',1,'pvr::utils::RendermanSubpassMesh::modelSubpass_()']]],
-  ['mvp',['mvp',['../structpvr_1_1ui_1_1impl_1_1_image___1_1_mvp_data.html#acb2cf898208f523a7a2a0732302ad379',1,'pvr::ui::impl::Image_::MvpData::mvp()'],['../structpvr_1_1ui_1_1impl_1_1_image___1_1_mvp_ubo_data.html#a6275e70c6e63ed35b40c7be9cbf296c8',1,'pvr::ui::impl::Image_::MvpUboData::mvp()']]]
+  ['nativedisplay',['nativeDisplay',['../structpvr_1_1platform_1_1_native_display_handle__.html#a7996de2ec6692e1addfc46f59078e03b',1,'pvr::platform::NativeDisplayHandle_']]],
+  ['nativewindow',['nativeWindow',['../structpvr_1_1platform_1_1_native_window_handle__.html#a9a8bfae237ff5fe2f048f53ab6c2490a',1,'pvr::platform::NativeWindowHandle_']]]
 ];

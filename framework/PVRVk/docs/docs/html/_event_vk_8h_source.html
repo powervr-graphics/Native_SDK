@@ -15,7 +15,7 @@
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="IMGdoxygen.css" rel="stylesheet" type="text/css"/>
-<link rel="shortcut icon" href="http://www.imgtec.com/images/img.ico">
+<link rel="shortcut icon" type="image/x-icon" href="img.ico">
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
+      <a href="https://www.imgtec.com/developers/" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRVk</span> Documentation</a>
    <tbody>
@@ -102,26 +102,42 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classpvrvk_1_1impl_1_1_event__.html#ac78f1cc5d6e21cd7bb5b3f8720b4159e">isSet</a>();</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">typename</span>&gt;</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    <span class="keyword">friend</span> struct ::pvrvk::RefCountEntryIntrusive;</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    <span class="keyword">friend</span> class ::pvrvk::impl::Device_;</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    <span class="keyword">explicit</span> <a class="code" href="classpvrvk_1_1impl_1_1_event__.html">Event_</a>(<span class="keyword">const</span> <a class="code" href="namespacepvrvk.html#a8dd5932a80187b088ce6b591712dc2c2">DeviceWeakPtr</a>&amp; device);</div>
+<div class="line"><a name="l00032"></a><span class="lineno"><a class="line" href="classpvrvk_1_1impl_1_1_event__.html#a5661c61af2da9d9587389e38d092f6ab">   32</a></span>&#160;    <span class="keyword">inline</span> EventCreateFlags <a class="code" href="classpvrvk_1_1impl_1_1_event__.html#a5661c61af2da9d9587389e38d092f6ab">getFlags</a>()<span class="keyword"> const</span></div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;        <span class="keywordflow">return</span> _createInfo.<a class="code" href="structpvrvk_1_1_event_create_info.html#aae5e4d256c57fc8283239e9f17d20c16">getFlags</a>();</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    }</div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    ~<a class="code" href="classpvrvk_1_1impl_1_1_event__.html">Event_</a>();</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;};</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;} <span class="comment">// namespace impl</span></div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;} <span class="comment">// namespace pvrvk</span></div>
+<div class="line"><a name="l00039"></a><span class="lineno"><a class="line" href="classpvrvk_1_1impl_1_1_event__.html#adb4e0bbe9b4f2ad7688a2989537cdf46">   39</a></span>&#160;    <a class="code" href="structpvrvk_1_1_event_create_info.html">EventCreateInfo</a> <a class="code" href="classpvrvk_1_1impl_1_1_event__.html#adb4e0bbe9b4f2ad7688a2989537cdf46">getCreateInfo</a>()<span class="keyword"> const</span></div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;        <span class="keywordflow">return</span> _createInfo;</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    }</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">typename</span>&gt;</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    <span class="keyword">friend</span> struct ::pvrvk::RefCountEntryIntrusive;</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <span class="keyword">friend</span> class ::pvrvk::impl::Device_;</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    <a class="code" href="classpvrvk_1_1impl_1_1_event__.html">Event_</a>(<span class="keyword">const</span> <a class="code" href="namespacepvrvk.html#a8dd5932a80187b088ce6b591712dc2c2">DeviceWeakPtr</a>&amp; device, <span class="keyword">const</span> <a class="code" href="structpvrvk_1_1_event_create_info.html">EventCreateInfo</a>&amp; createInfo);</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    ~<a class="code" href="classpvrvk_1_1impl_1_1_event__.html">Event_</a>();</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    <a class="code" href="structpvrvk_1_1_event_create_info.html">EventCreateInfo</a> _createInfo;</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;};</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;} <span class="comment">// namespace impl</span></div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;} <span class="comment">// namespace pvrvk</span></div>
 <div class="ttc" id="classpvrvk_1_1impl_1_1_event___html_a33b573bfc2d376a6f91c7a2d1b9d949c"><div class="ttname"><a href="classpvrvk_1_1impl_1_1_event__.html#a33b573bfc2d376a6f91c7a2d1b9d949c">pvrvk::impl::Event_::set</a></div><div class="ttdeci">void set()</div><div class="ttdoc">Set this event</div><div class="ttdef"><b>Definition:</b> EventVk.cpp:39</div></div>
 <div class="ttc" id="classpvrvk_1_1impl_1_1_device_object_debug_marker_html"><div class="ttname"><a href="classpvrvk_1_1impl_1_1_device_object_debug_marker.html">pvrvk::impl::DeviceObjectDebugMarker</a></div><div class="ttdoc">A Debug Marker wrapper for PVRVk Device allocated objects. Handles naming and tagging calls for the e...</div><div class="ttdef"><b>Definition:</b> DebugMarkerVk.h:87</div></div>
 <div class="ttc" id="classpvrvk_1_1impl_1_1_event___html_a0d457249e5a5b7ed64e5b8bc459b8e62"><div class="ttname"><a href="classpvrvk_1_1impl_1_1_event__.html#a0d457249e5a5b7ed64e5b8bc459b8e62">pvrvk::impl::Event_::reset</a></div><div class="ttdeci">void reset()</div><div class="ttdoc">Reset this event</div><div class="ttdef"><b>Definition:</b> EventVk.cpp:44</div></div>
 <div class="ttc" id="classpvrvk_1_1impl_1_1_event___html_ac78f1cc5d6e21cd7bb5b3f8720b4159e"><div class="ttname"><a href="classpvrvk_1_1impl_1_1_event__.html#ac78f1cc5d6e21cd7bb5b3f8720b4159e">pvrvk::impl::Event_::isSet</a></div><div class="ttdeci">bool isSet()</div><div class="ttdoc">Return true if this event is set</div><div class="ttdef"><b>Definition:</b> EventVk.cpp:49</div></div>
 <div class="ttc" id="classpvrvk_1_1impl_1_1_event___html"><div class="ttname"><a href="classpvrvk_1_1impl_1_1_event__.html">pvrvk::impl::Event_</a></div><div class="ttdoc">Vulkan implementation of the Event class. Event can be used by the host to do fine-grained synchroniz...</div><div class="ttdef"><b>Definition:</b> EventVk.h:15</div></div>
-<div class="ttc" id="_types_vk_8h_html_a96e4c02fcc79177dfd9de56dce1a47cc"><div class="ttname"><a href="_types_vk_8h.html#a96e4c02fcc79177dfd9de56dce1a47cc">DECLARE_NO_COPY_SEMANTICS</a></div><div class="ttdeci">#define DECLARE_NO_COPY_SEMANTICS(TYPE)</div><div class="ttdoc">INTERNAL. Disable the Copy Constructor and the Copy Assignment Operator of the type</div><div class="ttdef"><b>Definition:</b> TypesVk.h:128</div></div>
+<div class="ttc" id="_types_vk_8h_html_a96e4c02fcc79177dfd9de56dce1a47cc"><div class="ttname"><a href="_types_vk_8h.html#a96e4c02fcc79177dfd9de56dce1a47cc">DECLARE_NO_COPY_SEMANTICS</a></div><div class="ttdeci">#define DECLARE_NO_COPY_SEMANTICS(TYPE)</div><div class="ttdoc">INTERNAL. Disable the Copy Constructor and the Copy Assignment Operator of the type</div><div class="ttdef"><b>Definition:</b> TypesVk.h:127</div></div>
+<div class="ttc" id="classpvrvk_1_1impl_1_1_event___html_a5661c61af2da9d9587389e38d092f6ab"><div class="ttname"><a href="classpvrvk_1_1impl_1_1_event__.html#a5661c61af2da9d9587389e38d092f6ab">pvrvk::impl::Event_::getFlags</a></div><div class="ttdeci">EventCreateFlags getFlags() const </div><div class="ttdoc">Get the event creation flags</div><div class="ttdef"><b>Definition:</b> EventVk.h:32</div></div>
+<div class="ttc" id="structpvrvk_1_1_event_create_info_html"><div class="ttname"><a href="structpvrvk_1_1_event_create_info.html">pvrvk::EventCreateInfo</a></div><div class="ttdoc">Event creation descriptor.</div><div class="ttdef"><b>Definition:</b> TypesVk.h:1928</div></div>
+<div class="ttc" id="structpvrvk_1_1_event_create_info_html_aae5e4d256c57fc8283239e9f17d20c16"><div class="ttname"><a href="structpvrvk_1_1_event_create_info.html#aae5e4d256c57fc8283239e9f17d20c16">pvrvk::EventCreateInfo::getFlags</a></div><div class="ttdeci">EventCreateFlags getFlags() const </div><div class="ttdoc">Get the event creation flags</div><div class="ttdef"><b>Definition:</b> TypesVk.h:1937</div></div>
 <div class="ttc" id="classpvrvk_1_1impl_1_1_device_object_handle_html"><div class="ttname"><a href="classpvrvk_1_1impl_1_1_device_object_handle.html">pvrvk::impl::DeviceObjectHandle</a></div><div class="ttdoc">Defines a simple interface for a Vulkan object which holds a reference to a particular device...</div><div class="ttdef"><b>Definition:</b> ObjectHandleVk.h:121</div></div>
 <div class="ttc" id="_device_vk_8h_html"><div class="ttname"><a href="_device_vk_8h.html">DeviceVk.h</a></div><div class="ttdoc">The PVRVk Device class. One of the bysiest classes in Vulkan, together with the Command Buffer...</div></div>
-<div class="ttc" id="namespacepvrvk_html_a8dd5932a80187b088ce6b591712dc2c2"><div class="ttname"><a href="namespacepvrvk.html#a8dd5932a80187b088ce6b591712dc2c2">pvrvk::DeviceWeakPtr</a></div><div class="ttdeci">RefCountedWeakReference&lt; impl::Device_ &gt; DeviceWeakPtr</div><div class="ttdoc">Forwared-declared weak-reference-counted handle to a Device. For detailed documentation, see PVRVk module</div><div class="ttdef"><b>Definition:</b> ForwardDecObjectsVk.h:226</div></div>
+<div class="ttc" id="namespacepvrvk_html_a8dd5932a80187b088ce6b591712dc2c2"><div class="ttname"><a href="namespacepvrvk.html#a8dd5932a80187b088ce6b591712dc2c2">pvrvk::DeviceWeakPtr</a></div><div class="ttdeci">RefCountedWeakReference&lt; impl::Device_ &gt; DeviceWeakPtr</div><div class="ttdoc">Forwared-declared weak-reference-counted handle to a Device. For detailed documentation, see PVRVk module</div><div class="ttdef"><b>Definition:</b> ForwardDecObjectsVk.h:235</div></div>
+<div class="ttc" id="classpvrvk_1_1impl_1_1_event___html_adb4e0bbe9b4f2ad7688a2989537cdf46"><div class="ttname"><a href="classpvrvk_1_1impl_1_1_event__.html#adb4e0bbe9b4f2ad7688a2989537cdf46">pvrvk::impl::Event_::getCreateInfo</a></div><div class="ttdeci">EventCreateInfo getCreateInfo() const </div><div class="ttdoc">Get this event&#39;s create flags</div><div class="ttdef"><b>Definition:</b> EventVk.h:39</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.4-->
 <!-- start footer part (NON TREEVIEW ONLY!!) -->

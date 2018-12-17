@@ -66,8 +66,7 @@ public:
 			}
 
 			_fontIbo = utils::createBuffer(getDevice(), sizeof(fontFaces[0]) * impl::Font_::FontElement, pvrvk::BufferUsageFlags::e_INDEX_BUFFER_BIT,
-				pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, &_bufferAllocator,
-				pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+				pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, &_vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 			pvrvk::Device deviceTemp = getDevice()->getReference();
 			pvr::utils::updateHostVisibleBuffer(_fontIbo, &fontFaces[0], 0, static_cast<uint32_t>(sizeof(fontFaces[0]) * fontFaces.size()), true);
 		}
@@ -91,7 +90,7 @@ public:
 				1.f, 1.f, 0.f, 1.0f, 1.f, 1.f, // upper right
 			};
 			_imageVbo = utils::createBuffer(getDevice(), sizeof(verts), pvrvk::BufferUsageFlags::e_VERTEX_BUFFER_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
-				pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, &_bufferAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+				pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, &_vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 			pvrvk::Device deviceTemp = getDevice()->getReference();
 			pvr::utils::updateHostVisibleBuffer(_imageVbo, static_cast<const void*>(verts), 0, sizeof(verts), true);
 		}
@@ -198,32 +197,18 @@ public:
 		return _pipeline;
 	}
 
-	/// <summary>Returns the VMA buffer allocator object used by this UIRenderer.</summary>
-	/// <returns>The VMA buffer allocator being used by the UIRenderer.</returns>
-	pvr::utils::vma::Allocator& getBufferMemoryAllocator()
+	/// <summary>Returns the VMA allocator object used by this UIRenderer.</summary>
+	/// <returns>The VMA allocator being used by the UIRenderer.</returns>
+	pvr::utils::vma::Allocator& getMemoryAllocator()
 	{
-		return _bufferAllocator;
+		return _vmaAllocator;
 	}
 
-	/// <summary>Returns the VMA buffer allocator object used by this UIRenderer.</summary>
-	/// <returns>The VMA buffer allocator being used by the UIRenderer.</returns>
-	const pvr::utils::vma::Allocator& getBufferMemoryAllocator() const
+	/// <summary>Returns the VMA allocator object used by this UIRenderer.</summary>
+	/// <returns>The VMA allocator being used by the UIRenderer.</returns>
+	const pvr::utils::vma::Allocator& getMemoryAllocator() const
 	{
-		return _bufferAllocator;
-	}
-
-	/// <summary>Returns the VMA image allocator object used by this UIRenderer.</summary>
-	/// <returns>The VMA image allocator being used by the UIRenderer.</returns>
-	pvr::utils::vma::Allocator& getImageMemoryAllocator()
-	{
-		return _imageAllocator;
-	}
-
-	/// <summary>Returns the VMA image allocator object used by this UIRenderer.</summary>
-	/// <returns>The VMA image allocator being used by the UIRenderer.</returns>
-	const pvr::utils::vma::Allocator& getImageMemoryAllocator() const
-	{
-		return _imageAllocator;
+		return _vmaAllocator;
 	}
 
 	/// <summary>Check that we have called beginRendering() and not called endRendering. See the beginRendering() method.</summary>
@@ -244,6 +229,7 @@ public:
 	/// <param name="fullscreen">Indicates whether the rendering is occuring in full screen mode.</param>
 	/// <param name="renderpass">A renderpass to use for this UIRenderer</param>
 	/// <param name="subpass">The subpass to use for this UIRenderer</param>
+	/// <param name="isFrameBufferSrgb">Specifies whether the render target is sRGB format. If not then a gamma correction is performed</param>
 	/// <param name="commandPool">The pvrvk::CommandPool object to use for allocating command buffers</param>
 	/// <param name="queue">The pvrvk::Queue object to use for submitting command buffers</param>
 	/// <param name="createDefaultLogo">Specifies whether a default logo should be initialised</param>
@@ -253,8 +239,8 @@ public:
 	/// it must be atleast maxNumSprites becasue each sprites is an instance on its own.</param>
 	/// <param name="maxNumSprites"> maximum number of renderable sprites (Text and Images)
 	/// to be allocated from this uirenderer</param>
-	void init(uint32_t width, uint32_t height, bool fullscreen, const pvrvk::RenderPass& renderpass, uint32_t subpass, pvrvk::CommandPool& commandPool, pvrvk::Queue& queue,
-		bool createDefaultLogo = true, bool createDefaultTitle = true, bool createDefaultFont = true, uint32_t maxNumInstances = 64, uint32_t maxNumSprites = 64);
+	void init(uint32_t width, uint32_t height, bool fullscreen, const pvrvk::RenderPass& renderpass, uint32_t subpass, bool isFrameBufferSrgb, pvrvk::CommandPool& commandPool,
+		pvrvk::Queue& queue, bool createDefaultLogo = true, bool createDefaultTitle = true, bool createDefaultFont = true, uint32_t maxNumInstances = 64, uint32_t maxNumSprites = 64);
 
 	/// <summary>Release the engine and its resources. Must be called once after we are done with the UIRenderer.
 	/// (usually, during releaseView).</summary>
@@ -275,7 +261,6 @@ public:
 		_uboMaterialLayout.reset();
 		_pipelineLayout.reset();
 		_pipeline.reset();
-		_pipelineCache.reset();
 		_samplerBilinear.reset();
 		_samplerTrilinear.reset();
 		_activeCommandBuffer.reset();
@@ -287,9 +272,11 @@ public:
 		_sprites.clear();
 		_fonts.clear();
 		_textElements.clear();
-		_bufferAllocator.reset();
-		_imageAllocator.reset();
+		_vmaAllocator.reset();
 		_device.reset();
+
+		_screenRotation = .0f;
+		_numSprites = 0;
 	}
 
 	/// <summary>Create a Text sprite. Initialize with std::string. Uses default font.</summary>
@@ -615,7 +602,7 @@ public:
 
 	/// <summary>End rendering. Always call this method before submitting the commandBuffer passed to the UIRenderer.</summary>
 	/// <remarks>This method must be called after you finish rendering sprites (after a call to beginRendering). The
-	/// sequence must always be beginRendering, render ..., endRendering. Τry to group as many of the rendering
+	/// sequence must always be beginRendering, render ..., endRendering. Try to group as many of the rendering
 	/// commands (preferably all) between beginRendering and endRendering.</remarks>
 	void endRendering()
 	{
@@ -735,8 +722,8 @@ public:
 		return _pipelineLayout;
 	}
 
-	/// <summary>return the default DescriptorSetLayout. ONLY to be used by the Sprites</summary>
-	/// <returns>const pvrvk::DescriptorSetLayout&</returns>
+	/// <summary>Returns the projection matrix</summary>
+	/// <returns>The UIRenderer projection matrix</returns>
 	glm::mat4 getProjection() const
 	{
 		return pvr::math::ortho(Api::Vulkan, 0.0, getRenderingDimX(), 0.0f, getRenderingDimY());
@@ -807,6 +794,27 @@ public:
 		return _uboMvp.getNumAvailableBufferArrays();
 	}
 
+	/// <summary>return the default DescriptorSetLayout. ONLY to be used by the Sprites</summary>
+	/// <returns>const pvrvk::DescriptorSetLayout&</returns>
+	pvrvk::DescriptorPool& getDescriptorPool()
+	{
+		return _descPool;
+	}
+
+	/// <summary>Return the bilinear sampler used by the UIRenderer</summary>
+	/// <returns>The bilinear sampler used by the UIRenderer</returns>
+	pvrvk::Sampler& getSamplerBilinear()
+	{
+		return _samplerBilinear;
+	}
+
+	/// <summary>Return the trilinear sampler used by the UIRenderer</summary>
+	/// <returns>The trilinear sampler used by the UIRenderer</returns>
+	pvrvk::Sampler& getSamplerTrilinear()
+	{
+		return _samplerTrilinear;
+	}
+
 private:
 	void updateResourceOwnsership()
 	{
@@ -828,22 +836,6 @@ private:
 	uint64_t generateGroupId()
 	{
 		return _groupId++;
-	}
-
-	/// <summary>return the default DescriptorSetLayout. ONLY to be used by the Sprites</summary>
-	/// <returns>const pvrvk::DescriptorSetLayout&</returns>
-	pvrvk::DescriptorPool& getDescriptorPool()
-	{
-		return _descPool;
-	}
-	pvrvk::Sampler getSamplerBilinear() const
-	{
-		return _samplerBilinear;
-	}
-
-	pvrvk::Sampler getSamplerTrilinear() const
-	{
-		return _samplerTrilinear;
 	}
 
 	struct UboMvp
@@ -970,11 +962,10 @@ private:
 	void init_CreateDefaultSdkLogo(pvrvk::CommandBuffer& cmdBuffer);
 	void init_CreateDefaultSampler();
 	void init_CreateDefaultTitle();
-	void init_CreatePipeline();
+	void init_CreatePipeline(bool isFramebufferSrgb);
 	void init_CreateDescriptorSetLayout();
 
-	pvr::utils::vma::Allocator _bufferAllocator;
-	pvr::utils::vma::Allocator _imageAllocator;
+	pvr::utils::vma::Allocator _vmaAllocator;
 	std::vector<SpriteWeakRef> _sprites;
 	std::vector<TextElementWeakRef> _textElements;
 	std::vector<FontWeakRef> _fonts;

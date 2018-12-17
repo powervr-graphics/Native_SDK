@@ -436,10 +436,8 @@ static inline bool isFrontClipInVolume(const glm::vec4 (&boundingHyperCube)[16])
 
 	  Now decide if we can use Z-pass instead of Z-fail.
 
-	  TODO: if we calculate the convex hull of the front-clip intersection
-	  points, we can use the connecting lines to do a more accurate on-
-	  screen check (currently it just uses the bounding box of the
-	  intersection points.)
+	  TODO: if we calculate the convex hull of the front-clip intersection points, we can use the connecting lines to do a more
+	  accurate on-screen check (currently it just uses the bounding box of the intersection points.)
 	*/
 
 	for (uint32_t i = 0; i < 32; ++i)

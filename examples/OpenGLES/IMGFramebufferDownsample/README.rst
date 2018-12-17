@@ -2,15 +2,19 @@
 IMG_framebuffer_downsample
 ==========================
 
-.. figure:: ./IMG_framebuffer_downsample.png
+.. figure:: ./IMGFramebufferDownsample.png
 
-Demonstrates the power of the extension GL_IMG_framebuffer_downsample which enables automatic downsampling of textures.
+This example shows the power of the extension ``GL_IMG_framebuffer_downsample`` which enables automatic downsampling of textures.
 
 Description
 -----------
-Demonstrates the advantages of using the extension GL_IMG_framebuffer_downsample. A triangle is first rendered to a special FBO with a texture of half size set as a downsampled texture using glFramebufferTexture2DDownsampleIMG and a full size texture set as normal. The application then renders to both the full size texture and half size texture and the GPU automatically downsamples the color attachment render. The left hand side of the rendered image has been sampled from the full size texture while the right hand side samples from the half size texture. This extension can be tremendously useful for various post processing techniques where it is desirable to generate downsamples images efficiently.
+This example demonstrates the advantages of using the extension ``GL_IMG_framebuffer_downsample``. A triangle is first rendered to a special FBO with a texture of half-size set as a downsampled texture using ``glFramebufferTexture2DDownsampleIMG`` and a full-size texture set as normal. 
 
-APIS
+The application then renders to both the full-size texture and half-size texture, and the GPU automatically downsamples the colour attachment render. The left side of the rendered image samples from the full-size texture, and the right side samples from the half-size texture. 
+
+This extension can be extremely useful for various post processing techniques where it is desirable to generate downsampled images efficiently.
+
+APIs
 ----
 * OpenGL ES 2.0+
 

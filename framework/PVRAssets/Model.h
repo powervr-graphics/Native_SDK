@@ -5,12 +5,12 @@
 \copyright Copyright (c) Imagination Technologies Limited.
 */
 #pragma once
-#include "PVRAssets/AssetIncludes.h"
-#include "PVRAssets/Model/Camera.h"
-#include "PVRAssets/Model/Animation.h"
-#include "PVRAssets/Model/Light.h"
-#include "PVRAssets/Model/Mesh.h"
-#include "PVRAssets/FileIO/PODReader.h"
+#include "PVRCore/stream/Asset.h"
+#include "PVRAssets/model/Camera.h"
+#include "PVRAssets/model/Animation.h"
+#include "PVRAssets/model/Light.h"
+#include "PVRAssets/model/Mesh.h"
+#include "PVRAssets/fileio/PODReader.h"
 
 /// <summary>Main namespace of the PowerVR Framework.</summary>
 namespace pvr {
@@ -24,12 +24,20 @@ class Camera;
 class Light;
 /// <summary>A reference counted wrapper for a Model</summary>
 typedef RefCountedResource<Model> ModelHandle;
-/// <summary>A reference counted wrapper for a Mesh. </summary>
+/// <summary>A reference counted wrapper for a Mesh.</summary>
 typedef RefCountedResource<Mesh> MeshHandle;
 /// <summary>A reference counted wrapper for a Camera</summary>
 typedef RefCountedResource<Camera> CameraHandle;
 /// <summary>A reference counted wrapper for a Light</summary>
 typedef RefCountedResource<Light> LightHandle;
+
+/// <summary>The skeleton structure encapsulates all that which is required to define a skeleton including name, a set of bones and matrices for transformations.</summary>
+struct Skeleton
+{
+	std::string name;
+	std::vector<uint32_t> bones;
+	std::vector<glm::mat4> invBindMatrices;
+};
 
 /// <summary>The Model class represents an entire Scene, or Model. It is mainly a Node structure, allowing various
 /// different kinds of data to be stored in the Nodes. The class contains a tree-like structure of Nodes. Each Node
@@ -91,19 +99,130 @@ public:
 		struct InternalData
 		{
 			StringHash name; //!< Name of object
-			int32_t objectIndex; //!< Index into mesh, light or camera array, depending on which object list contains this Node
-			int32_t materialIndex; //!< Index of material used on this mesh
-			int32_t parentIndex; //!< Index into Node array; recursively apply ancestor's transforms after this instance's.
-			Animation animation; //!< The animation this node uses
+			uint32_t objectIndex; //!< Index into mesh, light or camera array, depending on which object list contains this Node
+			uint32_t materialIndex; //!< Index of material used on this mesh
+			uint32_t parentIndex; //!< Index into Node array; recursively apply ancestor's transforms after this instance's.
 			UInt8Buffer userData; //!< Optionally, user data
 
-			InternalData() : objectIndex(-1), materialIndex(-1), parentIndex(-1) {}
+			enum TransformFlags
+			{
+				Identity = 0, //!< Transformation Identity
+				Scale = 0x01, //!< Transformation has Scale
+				Rotate = 0x02, //!< Transformation has Rotation
+				Translate = 0x04, //!< Transformation has Translation
+				SRT = Scale | Rotate | Translate, //!< SRT
+				Matrix = 64, // has matrix
+			};
+
+			// CONTAINS
+			float frameXform[16]; //!< contains interpolated SRT or Matrix for an frame else single Matrix for non animated node. Rotations are stored as quaternion in the format xyzw
+
+			// NODE'S LOCAL SPACE SRT
+			glm::vec3 scale; //!< Node's local space scale
+			glm::quat rotation; //!< Node's local space rotation
+			glm::vec3 translation; //!< Node's local space translation
+
+			uint32_t transformFlags; //!< keep an flag whether the transformation data is stored as SRT or Matrix or Identity.
+			int32_t skin; //!< Skin index for mesh nodes
+
+			// Animation
+			bool hasAnimation;
+
+			/// <summary>Get current frame scale animation</summary>
+			/// <returns>Returns scale</returns>
+			glm::vec3& getFrameScaleAnimation()
+			{
+				return *(glm::vec3*)frameXform;
+			}
+
+			/// <summary>Get current frame rotation animation</summary>
+			/// <returns>Returns rotation</returns>
+			glm::quat& getFrameRotationAnimation()
+			{
+				return *(glm::quat*)(&frameXform[3]);
+			}
+
+			/// <summary>Get current frame translation animation</summary>
+			/// <returns>Returns translation</returns>
+			glm::vec3& getFrameTranslationAnimation()
+			{
+				return *(glm::vec3*)(&frameXform[7]);
+			}
+
+			/// <summary>Get current frame scale animation (const)</summary>
+			/// <returns>Returns scale</returns>
+			const glm::vec3& getFrameScaleAnimation() const
+			{
+				return *(glm::vec3*)frameXform;
+			}
+
+			/// <summary>Get current frame rotation animation (const)</summary>
+			/// <returns>Returns rotation</returns>
+			const glm::quat& getFrameRotationAnimation() const
+			{
+				return *(glm::quat*)(&frameXform[3]);
+			}
+
+			/// <summary>Get current frame translation animation (const)</summary>
+			/// <returns>Returns rotation</returns>
+			const glm::vec3& getFrameTranslationAnimation() const
+			{
+				return *(glm::vec3*)(&frameXform[7]);
+			}
+
+			/// <summary>Get local space scale</summary>
+			/// <returns>Returns local space scale<returns>
+			glm::vec3& getScale()
+			{
+				return scale;
+			}
+
+			/// <summary>Get local space rotation</summary>
+			/// <returns>Returns local space rotation<returns>
+			glm::quat& getRotate()
+			{
+				return rotation;
+			}
+
+			/// <summary>Get local space translation</summary>
+			/// <returns>Returns local space translation<returns>
+			glm::vec3& getTranslation()
+			{
+				return translation;
+			}
+
+			/// <summary>Get local space scale</summary>
+			/// <returns>Returns local space scale<returns>
+			const glm::vec3& getScale() const
+			{
+				return scale;
+			}
+
+			/// <summary>Get local space rotation</summary>
+			/// <returns>Returns local space rotation<returns>
+			const glm::quat& getRotate() const
+			{
+				return rotation;
+			}
+
+			/// <summary>Get local space translation</summary>
+			/// <returns>Returns local space translation<returns>
+			const glm::vec3& getTranslation() const
+			{
+				return translation;
+			}
+
+			InternalData() : objectIndex(-1), materialIndex(-1), parentIndex(-1), scale(1.0f), translation(0.0f)
+			{
+				transformFlags = TransformFlags::Identity;
+				hasAnimation = false;
+			}
 		};
 
 	public:
 		/// <summary>Get which Mesh, Camera or Light this object refers to.</summary>
 		/// <returns>The index of the Mesh, Camera or Light array of this node (depending on its type)</returns>
-		int32_t getObjectId() const
+		uint32_t getObjectId() const
 		{
 			return _data.objectIndex;
 		}
@@ -117,14 +236,14 @@ public:
 
 		/// <summary>Get this Node's parent id.</summary>
 		/// <returns>The ID of this Node's parent Node.</returns>
-		int32_t getParentID() const
+		uint32_t getParentID() const
 		{
 			return _data.parentIndex;
 		}
 
 		/// <summary>Get this Node's material id.</summary>
 		/// <returns>The ID of this Node's Material</returns>
-		int32_t getMaterialIndex() const
+		uint32_t getMaterialIndex() const
 		{
 			return _data.materialIndex;
 		}
@@ -134,13 +253,6 @@ public:
 		void setMaterialIndex(uint32_t materialId)
 		{
 			_data.materialIndex = materialId;
-		}
-
-		/// <summary>Get this Node's animation.</summary>
-		/// <returns>The animation of this Node</returns>
-		const Animation& getAnimation() const
-		{
-			return _data.animation;
 		}
 
 		/// <summary>Get this Node's user data.</summary>
@@ -159,7 +271,7 @@ public:
 
 		/// <summary>Set mesh id. Must correlate with the actual position of this node in the data.</summary>
 		/// <param name="index">The id to set the index of this node.</param>
-		void setIndex(int32_t index)
+		void setIndex(uint32_t index)
 		{
 			_data.objectIndex = index;
 		}
@@ -173,17 +285,9 @@ public:
 
 		/// <summary>Set the parent of this node.</summary>
 		/// <param name="parentID">the ID of this node's parent</param>
-		void setParentID(int32_t parentID)
+		void setParentID(uint32_t parentID)
 		{
 			_data.parentIndex = parentID;
-		}
-
-		/// <summary>Set the animation of this node.</summary>
-		/// <param name="animation">The animation of this node. A copy of the animation object will be created and stored
-		/// directly.</param>
-		void setAnimation(const Animation& animation)
-		{
-			_data.animation = animation;
 		}
 
 		/// <summary>Set the user data of this node. A bit copy of the data will be made.</summary>
@@ -217,6 +321,13 @@ public:
 	class Texture
 	{
 	public:
+		/// <summary> Default Constructor </summary>
+		Texture() {}
+
+		/// <summary> Constructor </summary>
+		/// <param name="name">Texture name</param>
+		Texture(const StringHash&& name) : _name(std::move(name)) {}
+
 		/// <summary>Get the name of the texture.</summary>
 		/// <returns>Return the texture name</returns>
 		const pvr::StringHash& getName() const
@@ -287,7 +398,7 @@ public:
 		//"BLENDOP", BlendOperation
 		//"DIFFUSETEXTURE",
 		//"SPECULARTEXTURE",
-		//"BUMPMAPTEXTURE",
+		//"NORMALTEXTURE",
 		//"EMISSIVETEXTURE",
 		//"GLOSSINESSTEXTURE",
 		//"OPACITYTEXTURE",
@@ -309,6 +420,34 @@ public:
 		//"FLAGS"
 		//"USERDATA"
 
+		//--------  PBR COMMON SEMANTICS ---------
+		//"METALLICITY"
+		//"ROUGHNESS"
+		//"METALLICITYTEXTURE"
+		//"ROUGHNESSTEXTURE"
+
+		//-------- PBR POD SEMANTICS -------------
+		//"IOR"
+		//"FRESENEL"
+		//"SSSCATERING"
+		//"SSCATERINGDEPTH"
+		//"SSCATERINGCOLOR"
+		//"EMISSIONLUMINANCE"
+		//"EMISSIONKELVIN"
+		//"ANISTROPHY"
+
+		//-------- PBR GLTF SEMANTICS ------------
+		// "METALLICBASECOLOR"
+		// "EMISSIVECOLOR"
+		// "ALPHACUTOFF"
+		// "DOUBLESIDED"
+		// "NORMALTEXTURE"
+		// "OCCLUSIONTEXTURE"
+
+		//------- PBR SEMANTICS ----------
+		//"REFLECTIVITY"
+		//"EMISSION"
+
 		/// <summary>Raw internal structure of the Material.</summary>
 		struct InternalData
 		{
@@ -322,11 +461,333 @@ public:
 			UInt8Buffer userData; //!< Raw user data
 		};
 
+		/// <summary> Base class for Physically-based-rendering(PBR) semantics </summary>
+		class PBRSemantics
+		{
+		public:
+			/// <summary> Destructor </summary>
+			virtual ~PBRSemantics() {}
+
+			/// <summary> Constructor </summary>
+			/// <param name="mat">Material</param>
+			PBRSemantics(Material& mat) : _material(mat) {}
+
+			/// <summary> Get occlusion texture index </summary>
+			/// <return> Occlusion texture index </return>
+			uint32_t getOcclusionTextureIndex() const
+			{
+				return _material.getTextureIndex("OCCLUSIONTEXTURE");
+			}
+
+			/// <summary> Set occlusion texture index </summary>
+			/// <param name="index"> Occlusion texture index </param>
+			void setOcclusionTextureIndex(uint32_t index)
+			{
+				_material.setTextureIndex("OCCLUSIONTEXTURE", index);
+			}
+
+			/// <summary> Get normal texture index </summary>
+			/// <return> normal texture index </return>
+			uint32_t getNormalTextureIndex() const
+			{
+				return _material.getTextureIndex("NORMALTEXTURE");
+			}
+
+			/// <summary> Set normal texture index </summary>
+			/// <param name="index"> normal texture index </param>
+			void setNormalTextureIndex(uint32_t index)
+			{
+				_material.setTextureIndex("NORMALTEXTURE", index);
+			}
+
+			/// <summary> Get the RGB components of the emissive color of the material. These values are linear.
+			/// If an emissiveTexture is specified, this value is multiplied with the texel values.
+			/// </summary>
+			/// <return> emissive color </return>
+			glm::vec3 getEmissiveColor() const
+			{
+				return _material.getMaterialAttributeWithDefault("EMISSIVECOLOR", glm::vec3(0.f));
+			}
+
+			/// <summary> Set the RGB components of the emissive color of the material. These values are linear.
+			/// If an emissiveTexture is specified, this value is multiplied with the texel values.</summary>
+			/// <param name="color">  emissive color </param>
+			void setEmissiveColor(const glm::vec3& color)
+			{
+				FreeValue value;
+				value.setValue(color);
+				_material.setMaterialAttribute("EMISSIVECOLOR", value);
+			}
+
+			/// <summary> Set the emissive texture index</summary>
+			/// <param name="index">  emissive texture index </param>
+			void setEmissiveTextureIndex(uint32_t index)
+			{
+				_material.setTextureIndex("EMISSIVETEXTURE", index);
+			}
+
+			/// <summary> Get the emissive texture index</summary>
+			/// <return> Returns emissive texture index </return>
+			uint32_t getEmissiveTextureIndex() const
+			{
+				return _material.getTextureIndex("EMISSIVETEXTURE");
+			}
+
+			/// <summary> Set the roughness texture index</summary>
+			/// <param name="index">  roughness texture index </param>
+			void setRoughnessTextureIndex(uint32_t index)
+			{
+				_material.setTextureIndex("ROUGHNESSTEXTURE", index);
+			}
+
+			/// <summary> Get the roughness texture index</summary>
+			/// <return> Returns roughness texture index </return>
+			uint32_t getRoughnessTextureIndex()
+			{
+				return _material.getTextureIndex("ROUGHNESSTEXTURE");
+			}
+
+			/// <summary> Set the metallicity texture index</summary>
+			/// <param name="index">  metallicity texture index </param>
+			void setMetallicityTextureIndex(uint32_t index)
+			{
+				_material.setTextureIndex("METALLICITYTEXTURE", index);
+			}
+
+			/// <summary> Get the metallicity texture index</summary>
+			/// <return> Returns metallicity texture index </return>
+			uint32_t getMetallicityTextureIndex()
+			{
+				return _material.getTextureIndex("METALLICITYTEXTURE");
+			}
+
+		protected:
+			Material& _material;
+		};
+
+		/// <summary> POD Metallic roughness semantics</summary>
+		class PODMetallicRoughnessSemantics : public PBRSemantics
+		{
+		public:
+			/// <summary>Constructor</summary>
+			/// <param name="mat">Material</param>
+			PODMetallicRoughnessSemantics(Material& mat) : PBRSemantics(mat) {}
+
+			/// <summary>set emission luminance</summary>
+			/// <param name="luminance">luminance</param>
+			void setEmissionLuminance(float luminance)
+			{
+				_material.setMaterialAttribute("EMISSIONLUMINANCE", FreeValue(luminance));
+			}
+
+			/// <summary>The Physical Material supports an emissive component, additive light on top of other shading.
+			/// Emission identity is defined by the weight and color multiplied by the luminence, and also tinted by the Kelvin color temperature (where 6500=white).
+			/// </summary>
+			/// <returns>Returns emission luminance</returns>
+			float getEmissionLuminance() const
+			{
+				return _material.getMaterialAttributeWithDefault("EMISSIONLUMINANCE", 0.f);
+			}
+
+			/// <summary>Set emission kelvin</summary>
+			/// <param name="kelvin">Kelvin</returns>
+			void setEmissionKelvin(float kelvin)
+			{
+				_material.setMaterialAttribute("EMISSIONKELVIN", kelvin);
+			}
+
+			/// <summary>Get emission kelvin</summary>
+			/// <returns>Returns emission kelvin</returns>
+			float getEmissionKelvin() const
+			{
+				return _material.getMaterialAttributeWithDefault("EMISSIONKELVIN", 1.f);
+			}
+		};
+
+		enum class GLTFAlphaMode
+		{
+			Opaque, //< The alpha value is ignored and the rendered output is fully opaque.
+			Mask, //< The rendered output is either fully opaque or fully transparent depending on the alpha value and the specified alpha cutoff value.
+			Blend, //<The alpha value is used to composite the source and destination areas. The rendered output is combined with the background using the normal painting operation
+				   //(i.e. the Porter and Duff over operator).
+		};
+
+		/// <summary> This class provides accessor for gltf metallic roughness semantics </summary>
+		class GLTFMetallicRoughnessSemantics : public PBRSemantics
+		{
+		public:
+			/// <summary>Constructor</summary>
+			/// <param name="material">Material</returns>
+			GLTFMetallicRoughnessSemantics(Material& material) : PBRSemantics(material) {}
+
+			/// <summary> Set the base color of the material.
+			/// The base color has two different interpretations depending on the value of metalness.
+			/// When the material is a metal, the base color is the specific measured reflectance value at normal incidence (F0).
+			/// For a non-metal the base color represents the reflected diffuse color of the material.
+			/// In this model it is not possible to specify a F0 value for non-metals, and a linear value of 4% (0.04) is used.
+			/// </summary>
+			/// <param name="color">base color</param>
+			void setBaseColor(const glm::vec4& color)
+			{
+				FreeValue value;
+				value.setValue(color);
+				_material.setMaterialAttribute("METALLICBASECOLOR", value);
+			}
+
+			/// <summary> Get the base color of the material.
+			/// The base color has two different interpretations depending on the value of metalness.
+			/// When the material is a metal, the base color is the specific measured reflectance value at normal incidence (F0).
+			/// For a non-metal the base color represents the reflected diffuse color of the material.
+			/// In this model it is not possible to specify a F0 value for non-metals, and a linear value of 4% (0.04) is used.
+			/// </summary>
+			/// <return>base color</return>
+			glm::vec4 getBaseColor() const
+			{
+				return _material.getMaterialAttributeWithDefault<glm::vec4>("METALLICBASECOLOR", glm::vec4(1.f));
+			}
+
+			/// <summary> Set the base color texture. This texture contains RGB(A) components in sRGB color space.
+			/// The first three components (RGB) specify the base color of the material.
+			/// If the fourth component (A) is present, it represents the alpha coverage of the material.
+			/// Otherwise, an alpha of 1.0 is assumed. The alphaMode property specifies how alpha is interpreted.
+			/// The stored texels must not be premultiplied.
+			/// </summary>
+			/// <param name="index">base color texture index</param>
+			void setBaseColorTextureIndex(uint32_t index)
+			{
+				_material.setTextureIndex("DIFFUSETEXTURE", index);
+			}
+
+			/// <summary> Get the base color texture. This texture contains RGB(A) components in sRGB color space.
+			/// The first three components (RGB) specify the base color of the material.
+			/// If the fourth component (A) is present, it represents the alpha coverage of the material.
+			/// Otherwise, an alpha of 1.0 is assumed. The alphaMode property specifies how alpha is interpreted.
+			/// The stored texels must not be premultiplied.
+			/// </summary>
+			/// <return>base color texture index</return>
+			uint32_t getBaseColorTextureIndex() const
+			{
+				return _material.getTextureIndex("DIFFUSETEXTURE");
+			}
+
+			/// <summary> Set the metalness of the material. A value of 1.0 means the material is a metal.
+			/// A value of 0.0 means the material is a dielectric. Values in between are for blending between metals and dielectrics
+			/// such as dirty metallic surfaces. This value is linear. If a metallicRoughnessTexture is specified,
+			/// this value is multiplied with the metallic texel values.
+			/// </summary>
+			/// <param name="metallic">metallic factor</param>
+			void setMetallicity(float metallic)
+			{
+				FreeValue value;
+				value.setValue(metallic);
+				_material.setMaterialAttribute("METALLICITY", value);
+			}
+
+			/// <summary> Set the metalness of the material. A value of 1.0 means the material is a metal.
+			/// A value of 0.0 means the material is a dielectric. Values in between are for blending between metals and dielectrics
+			/// such as dirty metallic surfaces. This value is linear. If a metallicRoughnessTexture is specified,
+			/// this value is multiplied with the metallic texel values.
+			/// </summary>
+			/// <return>metallic factor</return>
+			float getMetallicity() const
+			{
+				return _material.getMaterialAttributeWithDefault<float>("METALLICITY", 0);
+			}
+
+			/// <summary> Set the roughness of the material. A value of 1.0 means the material is completely rough.
+			/// A value of 0.0 means the material is completely smooth. This value is linear.
+			/// If a metallicRoughnessTexture is specified, this value is multiplied with the roughness texel values.
+			/// </summary>
+			/// <param name="roughness">roughness factor</param>
+			void setRoughness(float roughness)
+			{
+				FreeValue value;
+				value.setValue(roughness);
+				_material.setMaterialAttribute("ROUGHNESS", value);
+			}
+
+			/// <summary> Get the roughness of the material. A value of 1.0 means the material is completely rough.
+			/// A value of 0.0 means the material is completely smooth. This value is linear.
+			/// If a metallicRoughnessTexture is specified, this value is multiplied with the roughness texel values.
+			/// </summary>
+			/// <return>roughness factor</return>
+			float getRoughness() const
+			{
+				return _material.getMaterialAttributeWithDefault<float>("ROUGHNESS", 0);
+			}
+
+			/// <summary> Get the alpha cutoff value of the material.
+			/// Specifies the cutoff threshold when in MASK mode. If the alpha value is greater than or equal to this
+			/// value then it is rendered as fully opaque, otherwise, it is rendered as fully transparent.
+			/// A value greater than 1.0 will render the entire material as fully transparent. This value is ignored for other modes.
+			/// </summary>
+			/// <return>The alpha cutoff value of the material.</return>
+			float getAlphaCutOff() const
+			{
+				return _material.getMaterialAttributeWithDefault("ALPHACUTOFF", 0.5f);
+			}
+
+			/// <summary> Get the alpha cutoff value of the material.
+			/// Specifies the cutoff threshold when in MASK mode. If the alpha value is greater than or equal to this
+			/// value then it is rendered as fully opaque, otherwise, it is rendered as fully transparent.
+			/// A value greater than 1.0 will render the entire material as fully transparent. This value is ignored for other modes.
+			/// </summary>
+			/// <param name="cutoff">cutoff factor</param>
+			void setAlphaCutOff(float cutoff)
+			{
+				FreeValue val;
+				val.setValue(cutoff);
+				_material.setMaterialAttribute("ALPHACUTOFF", val);
+			}
+
+			/// <summary> Return whether the material is double sided. When this value is false, back-face culling is enabled.
+			/// When this value is true, back-face culling is disabled and double sided lighting is enabled.
+			/// The back-face must have its normals reversed before the lighting equation is evaluated.
+			/// </summary>
+			/// <return>Return true whether is double sided</return>
+			bool isDoubleSided() const
+			{
+				return _material.getMaterialAttributeWithDefault("DOUBLESIDED", 1);
+			}
+
+			/// <summary> Set the material is double sided or not. When this value is false, back-face culling is enabled.
+			/// When this value is true, back-face culling is disabled and double sided lighting is enabled.
+			/// The back-face must have its normals reversed before the lighting equation is evaluated.
+			/// </summary>
+			/// <param name="doubleSided">set the material is double sided or not</param>
+			void setDoubleSided(bool doubleSided)
+			{
+				FreeValue val;
+				val.setValue(static_cast<uint32_t>(doubleSided));
+				_material.setMaterialAttribute("DOUBLESIDED", val);
+			}
+
+			/// <summary> Get the material's alpha rendering mode enumeration specifying the interpretation of the alpha
+			/// value of the main factor and texture.
+			/// </summary>
+			/// <return>Returns alpha mode</return>
+			GLTFAlphaMode getAlphaMode()
+			{
+				return static_cast<GLTFAlphaMode>(_material.getMaterialAttributeWithDefault("ALPHAMODE", static_cast<uint32_t>(GLTFAlphaMode::Opaque)));
+			}
+
+			/// <summary> Set the material's alpha rendering mode enumeration specifying the interpretation of the alpha
+			/// value of the main factor and texture.
+			/// </summary>
+			/// <param name="alphaMode">set the alpha mode</param>
+			void setAlphaMode(GLTFAlphaMode alphaMode) const
+			{
+				FreeValue val;
+				val.setValue(static_cast<uint32_t>(alphaMode));
+				_material.setMaterialAttribute("ALPHAMODE", val);
+			}
+		};
+
 		/// <summary> This class is provided for convenient compile-time access of the semantic values.</summary>
 		class DefaultMaterialSemantics
 		{
 		public:
-			/// <summary> Constructor from a parent material (in order to initialize the material reference). </summary>
+			/// <summary> Constructor from a parent material (in order to initialize the material reference).</summary>
 			/// <param name="material"> The material that will be the parent of this object.</param>
 			DefaultMaterialSemantics(const Material& material) : material(&material) {}
 
@@ -358,83 +819,83 @@ public:
 				return material->getMaterialAttributeWithDefault<float>("SHININESS", 0.f);
 			}
 
-			/// <summary>Get the diffuse color texture's index (semantic "DIFFUSEMAP", return-1 if not exist)</summary>
+			/// <summary>Get the diffuse color texture's index (semantic "DIFFUSETEXTURE", return-1 if not exist)</summary>
 			/// <returns>Return the diffuse texture index, if exists, otherwise return -1</returns>
-			int32_t getDiffuseTextureIndex() const
+			uint32_t getDiffuseTextureIndex() const
 			{
-				static const StringHash diffuseTexSemantic("DIFFUSEMAP");
+				static const StringHash diffuseTexSemantic("DIFFUSETEXTURE");
 				return material->getTextureIndex(diffuseTexSemantic);
 			}
 
-			/// <summary>Return the ambient color texture's index (semantic "AMBIENTMAP", return-1 if not exist)</summary>
+			/// <summary>Return the ambient color texture's index (semantic "AMBIENTTEXTURE", return-1 if not exist)</summary>
 			/// <returns>Return the Ambient texture index, if exists</returns>
-			int32_t getAmbientTextureIndex() const
+			uint32_t getAmbientTextureIndex() const
 			{
-				static const StringHash diffuseTexSemantic("AMBIENTMAP");
+				static const StringHash diffuseTexSemantic("AMBIENTTEXTURE");
 				return material->getTextureIndex(diffuseTexSemantic);
 			}
 
-			/// <summary>Get the specular color texture's index (semantic "SPECULARCOLORMAP", return-1 if not exist)</summary>
+			/// <summary>Get the specular color texture's index (semantic "SPECULARCOLORTEXTURE", return-1 if not exist)</summary>
 			/// <returns>Return the specular color texture index</returns>
-			int32_t getSpecularColorTextureIndex() const
+			uint32_t getSpecularColorTextureIndex() const
 			{
-				static const StringHash diffuseTexSemantic("SPECULARCOLORMAP");
+				static const StringHash diffuseTexSemantic("SPECULARCOLORTEXTURE");
 				return material->getTextureIndex(diffuseTexSemantic);
 			}
 
-			/// <summary>Get the specular level texture's index (semantic "SPECULARLEVELMAP", return-1 if not exist)</summary>
+			/// <summary>Get the specular level texture's index (semantic "SPECULARLEVELTEXTURE", return-1 if not exist)</summary>
 			/// <returns>Return the specular level texture index</returns>
-			int32_t getSpecularLevelTextureIndex() const
+			uint32_t getSpecularLevelTextureIndex() const
 			{
-				static const StringHash diffuseTexSemantic("SPECULARLEVELMAP");
+				static const StringHash diffuseTexSemantic("SPECULARLEVELTEXTURE");
 				return material->getTextureIndex(diffuseTexSemantic);
 			}
 
-			/// <summary>Get bumpmap texture index (semantic "NORMALMAP", return-1 if not exist)</summary>
+			/// <summary>Get bumpmap texture index (semantic "NORMALTEXTURE", return-1 if not exist)</summary>
 			/// <returns>Return the bumpmap texture index</returns>
-			int32_t getBumpMapTextureIndex() const
+			uint32_t getBumpMapTextureIndex() const
 			{
-				static const StringHash diffuseTexSemantic("NORMALMAP");
+				static const StringHash diffuseTexSemantic("NORMALTEXTURE");
 				return material->getTextureIndex(diffuseTexSemantic);
 			}
 
-			/// <summary>Get emissive texture's index  (semantic "EMISSIVEMAP", return-1 if not exist)</summary>
+			/// <summary>Get emissive texture's index  (semantic "EMISSIVETEXTURE", return-1 if not exist)</summary>
 			/// <returns>Return the emissive texture index</returns>
-			int32_t getEmissiveTextureIndex() const
+			uint32_t getEmissiveTextureIndex() const
 			{
-				static const StringHash diffuseTexSemantic("EMISSIVEMAP");
+				static const StringHash diffuseTexSemantic("EMISSIVETEXTURE");
 				return material->getTextureIndex(diffuseTexSemantic);
 			}
 
-			/// <summary>Get glossiness texture's index  (semantic "GLOSSINESSMAP", return-1 if not exist)</summary>
+			/// <summary>Get glossiness texture's index  (semantic "GLOSSINESSTEXTURE", return-1 if not exist)</summary>
 			/// <returns>Return the glossiness texture index</returns>
-			int32_t getGlossinessTextureIndex() const
+			uint32_t getGlossinessTextureIndex() const
 			{
-				static const StringHash diffuseTexSemantic("GLOSSINESSMAP");
+				static const StringHash diffuseTexSemantic("GLOSSINESSTEXTURE");
 				return material->getTextureIndex(diffuseTexSemantic);
 			}
 
-			/// <summary>Get opacity texture's index  (semantic "OPACITYMAP", return-1 if not exist)</summary>
+			/// <summary>Get opacity texture's index  (semantic "OPACITYTEXTURE", return-1 if not exist)</summary>
 			/// <returns>Return the opacity texture index</returns>
-			int32_t getOpacityTextureIndex() const
+			uint32_t getOpacityTextureIndex() const
 			{
-				static const StringHash diffuseTexSemantic("OPACITYMAP");
+				static const StringHash diffuseTexSemantic("OPACITYTEXTURE");
 				return material->getTextureIndex(diffuseTexSemantic);
 			}
 
-			/// <summary>Get reflection texture's index (semantic "REFLECTIONMAP", return-1 if not exist)</summary>
+			/// <summary>Get reflection texture's index (semantic "REFLECTIONTEXTURE", return-1 if not exist)</summary>
 			/// <returns>Return the reflection texture index</returns>
-			int32_t getReflectionTextureIndex() const
+			uint32_t getReflectionTextureIndex() const
 			{
-				static const StringHash diffuseTexSemantic("REFLECTIONMAP");
+				static const StringHash diffuseTexSemantic("REFLECTIONTEXTURE");
 				return material->getTextureIndex(diffuseTexSemantic);
 			}
 
-			/// <summary>Return refraction texture's index (semantic "REFRACTIONMAP", return-1 if not exist)</summary>
+			/// <summary>Return refraction texture's index (semantic "REFRACTIONTEXTURE", return-1 if not exist)</summary>
 			/// <returns>Return the refraction texture index</returns>
-			int32_t getRefractionTextureIndex() const
+			uint32_t getRefractionTextureIndex() const
 			{
-				static const StringHash diffuseTexSemantic("REFRACTIONMAP");
+				static const StringHash diffuseTexSemantic("REFRACTIONTEXTURE");
 				return material->getTextureIndex(diffuseTexSemantic);
 			}
 
@@ -534,7 +995,7 @@ public:
 			{
 				return &it->second;
 			}
-			return NULL;
+			return nullptr;
 		}
 
 		/// <summary> Retrieve a material attribute value, by Semantic Name, as a specific type.
@@ -586,7 +1047,7 @@ public:
 		/// <returns>True if the material texture exists, otherwise false</returns>
 		bool hasMaterialTexture(const StringHash& semantic) const
 		{
-			return getTextureIndex(semantic) != -1;
+			return getTextureIndex(semantic) != static_cast<uint32_t>(-1);
 		}
 		/// <summary>Check if a material attribute with the specified semantic exists.</summary>
 		/// <param name="semantic">The semantic of the material attribute to check.</param>
@@ -613,10 +1074,18 @@ public:
 		/// <summary>Find a texture with the specified semantic. If it exists, returns its index otherwise -1.</summary>
 		/// <param name="semantic">The semantic of the texture to retrieve.</param>
 		/// <returns>If the index with this semantic exists, return its index. Otherwise, return -1.</returns>
-		int32_t getTextureIndex(const StringHash& semantic) const
+		uint32_t getTextureIndex(const StringHash& semantic) const
 		{
 			auto it = _data.textureIndices.find(semantic);
-			return (it == _data.textureIndices.end()) ? -1 : static_cast<int32_t>(it->second);
+			return (it == _data.textureIndices.end()) ? -1 : it->second;
+		}
+
+		/// <summary>Set texture with the specified semantic and index.</summary>
+		/// <param name="semantic">The semantic of the texture.</param>
+		/// <param name="index">texture index</param>
+		void setTextureIndex(const StringHash& semantic, uint32_t index)
+		{
+			_data.textureIndices[semantic] = index;
 		}
 
 		/// <summary>Get this material name.</summary>
@@ -657,7 +1126,7 @@ public:
 	/// <summary>Struct containing the internal data of the Model.</summary>
 	struct InternalData
 	{
-		pvr::ContiguousMap<StringHash, FreeValue> semantics; //!< Store of the semantics
+		std::map<StringHash, FreeValue> semantics; //!< Store of the semantics
 
 		float clearColor[3]; //!< Background color
 		float ambientColor[3]; //!< Ambient color
@@ -668,14 +1137,17 @@ public:
 		std::vector<Texture> textures; //!< Textures in this Model
 		std::vector<Material> materials; //!< Materials in this Model
 		std::vector<Node> nodes; //!< Nodes array. The nodes are sorted thus: First Mesh Nodes, then Light Nodes, then Camera nodes.
+		std::vector<Skeleton> skeletons;
 
+		std::vector<AnimationData> animationsData;
+		std::vector<AnimationInstance> animationInstances;
 		uint32_t numMeshNodes; //!< Number of items in the nodes array which are Meshes
 		uint32_t numLightNodes; //!< Number of items in the nodes array which are Meshes
 		uint32_t numCameraNodes; //!< Number of items in the nodes array which are Meshes
 
 		uint32_t numFrames; //!< Number of frames of animation
 		float currentFrame; //!< Current frame in the animation
-		uint32_t FPS; //!< The frames per second the animation should be played at
+		float FPS; //!< The frames per second the animation should be played at
 
 		UInt8Buffer userData; //!< Custom raw data stored by the user
 
@@ -721,6 +1193,67 @@ public:
 	/// <returns>Return The world matrix of (nodeId).</returns>
 	glm::vec3 getLightPosition(uint32_t lightId) const;
 
+	/// <summary>Get number of animation data</summary>
+	/// <returns> Return number of animation data</return>
+	size_t getNumAnimationData() const
+	{
+		return _data.animationsData.size();
+	}
+
+	//! <summary> Get animation data <summary>
+	//! <param> animation data index </param>
+	//! <returns>Return animation data</returns>
+	const AnimationData& getAnimationData(uint32_t index) const
+	{
+		return _data.animationsData[index];
+	}
+
+	/// <summary>Get Animation Data</summary>
+	/// <param name="name">Animation data name</param>
+	/// <returns>Returns animation data</returns>
+	const AnimationData* getAnimationData(const char* name) const
+	{
+		const auto& it =
+			std::find_if(_data.animationsData.begin(), _data.animationsData.end(), [&](const AnimationData& anim) { return strcmp(name, anim.getAnimationName().c_str()) == 0; });
+		if (it != _data.animationsData.end())
+		{
+			return &(*it);
+		}
+		return nullptr;
+	}
+
+	/// <summary>Get animation instance</summary>
+	/// <param name="index">Animation instance index</param>
+	/// <returns>Returns animation instance</returns>
+	const AnimationInstance& getAnimationInstance(uint32_t index) const
+	{
+		return _data.animationInstances[index];
+	}
+
+	/// <summary>Get animation instance</summary>
+	/// <param name="index">Animation instance index</param>
+	/// <returns>Returns animation instance</returns>
+	AnimationInstance& getAnimationInstance(uint32_t index)
+	{
+		return _data.animationInstances[index];
+	}
+
+	/// <summary> Get number of animation instances </summary>
+	/// <returns>Return number of animation instances</returns>
+	size_t getNumAnimationInstances() const
+	{
+		return _data.animationInstances.size();
+	}
+
+	/// <summary> Add new animation instance </summary>
+	/// <param name="animationInstance">Animation instance to add</param>
+	/// <returns>Return animation instance id</returns>
+	size_t addAnimationInstance(const AnimationInstance& animationInstance)
+	{
+		_data.animationInstances.push_back(animationInstance);
+		return _data.animationInstances.size() - 1;
+	}
+
 	/// <summary>Return the model-to-world matrix of a node. Corresponds to the Model's current frame of animation. This
 	/// version will store a copy of the matrix in an internal cache so that repeated calls for it will use the cached
 	/// copy of it. Will also store the cached versions of all parents of this node, or use cached versions of them if
@@ -754,8 +1287,8 @@ public:
 	/// transformations.</remarks>
 	glm::mat4x4 toWorldMatrix(uint32_t nodeId, const glm::mat4& localMatrix) const
 	{
-		int32_t parentID = _data.nodes[nodeId].getParentID();
-		if (parentID < 0)
+		uint32_t parentID = _data.nodes[nodeId].getParentID();
+		if (parentID == static_cast<uint32_t>(-1))
 		{
 			return localMatrix;
 		}
@@ -766,28 +1299,20 @@ public:
 		}
 	}
 
-	/// <summary>Return the model-to-world matrix of a node, **relative to its parent node**. In order to get the actual
-	/// model-to-world matrix of the node, call getWorldMatrix (which will multiply the local matrix by the parent't
-	/// matrix).</summary>
-	/// <param name="nodeId">The node for which to return the local matrix.</param>
-	/// <returns>Return The locatmatrix of (nodeId).</returns>
-	/// <remarks>You can use this to get the transformation of a node relative to its parent hierarchies. May be
-	/// useful for implementing custom (e.g. procedural) animation/kinematics.</remarks>
-	glm::mat4x4 getLocalMatrix(uint32_t nodeId) const
+	/// <summary>Get skeleton</summary>
+	/// <param name="skeletonIndex">Skeleton index</param>
+	/// <returns>Return skeleton</returns>
+	const Skeleton& getSkeleton(uint32_t skeletonIndex) const
 	{
-		const Node& node = _data.nodes[nodeId];
-		return internal::optimizedMat4(node.getAnimation().getTransformationMatrix(_cache.frame, _cache.frameFraction));
+		return _data.skeletons[skeletonIndex];
 	}
 
-	/// <summary>Initialize the cache. Call this after changing the model data. It is automatically called by PODReader when
-	/// reading a POD file.</summary>
-	void initCache();
-
-	/// <summary>Release the memory of the cache.</summary>
-	void destroyCache();
-
-	/// <summary>Modify a node's transformation then flush the cache. No effect if cache is uninitialized</summary>
-	void flushCache();
+	/// <summary>Get number of skeletons</summary>
+	/// <returns>Return number of skeleton</returns>
+	size_t getNumSkeletons() const
+	{
+		return _data.skeletons.size();
+	}
 
 	/// <summary>Get the clear color (background) (float array R,G,B,A).</summary>
 	/// <returns>The clear color (float array R,G,B,A).</returns>
@@ -839,10 +1364,28 @@ public:
 		return getNode(getNodeIdFromCameraId(cameraNodeIndex));
 	}
 
+	/// <summary>Get a specific CameraNode.</summary>
+	/// <param name="cameraNodeIndex">The Index of a Camera Node. It is not the same as the NodeID. Valid values: (0
+	/// .. getNumCameraNodes()-1)</param>
+	/// <returns>Return The Camera Node</returns>
+	Node& getCameraNode(uint32_t cameraNodeIndex)
+	{
+		assertion(cameraNodeIndex < getNumCameraNodes(), "Invalid camera node index");
+		// Camera nodes are after the mesh and light nodes in the array
+		return getNode(getNodeIdFromCameraId(cameraNodeIndex));
+	}
+
+	/// <summary>Get number of animation instances</summary>
+	/// <returns> Returns number of animation instances<returns>
+	size_t getNumAnimations() const
+	{
+		return _data.animationsData.size();
+	}
+
 	/// <summary>Get the (global) Node Index of a specific CameraNode.</summary>
 	/// <param name="cameraNodeIndex">The Index of a Camera Node that will be used to calculate the NodeID. Valid
 	/// values: (0 to getNumCameraNodes()-1)</param>
-	/// <returns>Retunr The Node index of the specified camera node. Normally, it is the same as getNumMeshes +
+	/// <returns>Return The Node index of the specified camera node. Normally, it is the same as getNumMeshes +
 	/// getNumLights + cameraNodeIndex</returns>
 	uint32_t getNodeIdFromCameraId(uint32_t cameraNodeIndex) const
 	{
@@ -929,6 +1472,20 @@ public:
 		return _data.meshes[meshIndex];
 	}
 
+	/// <summary>Allocate memory for animation data</summary>
+	/// <param name="numAnimation">Number of animation data to allocate</param>
+	void allocateAnimationsData(uint32_t numAnimation)
+	{
+		_data.animationsData.resize(numAnimation);
+	}
+
+	/// <summary>Allocate memory for animation instances</summary>
+	/// <param name="numAnimation">Number of animation instances to allocate</param>
+	void allocateAnimationInstances(uint32_t numAnimation)
+	{
+		_data.animationInstances.resize(numAnimation);
+	}
+
 	/// <summary>Get the Mesh object with the specific Mesh Index.</summary>
 	/// <param name="index">The index of the Mesh. Valid values (0..getNumMeshes()-1)</param>
 	/// <returns>Return the mesh from this model</returns>
@@ -941,7 +1498,7 @@ public:
 	/// <summary>Get a specific Mesh Node.</summary>
 	/// <param name="meshIndex">The Index of the Mesh Node. For meshes, it is the same as the NodeID. Valid values: (0
 	/// to getNumMeshNodes()-1)</param>
-	/// <returns>Return he Mesh Node from this model</returns>
+	/// <returns>Return the Mesh Node from this model</returns>
 	const Node& getMeshNode(uint32_t meshIndex) const
 	{
 		assertion(meshIndex < getNumMeshNodes(), "Invalid mesh index");
@@ -1113,26 +1670,20 @@ public:
 		return _data.numFrames ? _data.numFrames : 1;
 	}
 
-	/// <summary>Set the current frame. Affects future animation calls (getWorldMatrix etc.).</summary>
-	/// <param name="frame">The current frame. Can be fractional, in which case interpolation will normally be
-	/// performed</param>
-	/// <returns>Return true on success, false if out of bounds.</returns>
-	bool setCurrentFrame(float frame);
-
 	/// <summary>Get the current frame of the scene.</summary>
 	/// <returns>Return the current frame</returns>
 	float getCurrentFrame();
 
 	/// <summary>Set the expected FPS of the animation.</summary>
 	/// <param name="fps">FPS of the animation</param>
-	void setFPS(uint32_t fps)
+	void setFPS(float fps)
 	{
 		_data.FPS = fps;
 	}
 
 	/// <summary>Get the FPS this animation was created for.</summary>
 	/// <returns>Get the expected FPS of the animation.</returns>
-	uint32_t getFPS() const
+	float getFPS() const
 	{
 		return _data.FPS;
 	}
@@ -1174,7 +1725,7 @@ public:
 	/// <param name="up">Camera tilt up (roll) vector in world.</param>
 	/// <remarks>If cameraIdx >= number of cameras, an error will be logged and this function will have no effect.
 	/// </remarks>
-	void getCameraProperties(int32_t cameraIdx, float& fov, glm::vec3& from, glm::vec3& to, glm::vec3& up) const;
+	void getCameraProperties(uint32_t cameraIdx, float& fov, glm::vec3& from, glm::vec3& to, glm::vec3& up, float frameTimeInMs = 0.f) const;
 
 	/// <summary>Get the properties of a camera.</summary>
 	/// <param name="cameraIdx">The index of the camera.</param>
@@ -1186,14 +1737,14 @@ public:
 	/// <param name="farClip">Camera far clipping plane distance</param>
 	/// <remarks>If cameraIdx >= number of cameras, an error will be logged and this function will have no effect.
 	/// </remarks>
-	void getCameraProperties(int32_t cameraIdx, float& fov, glm::vec3& from, glm::vec3& to, glm::vec3& up, float& nearClip, float& farClip) const;
+	void getCameraProperties(uint32_t cameraIdx, float& fov, glm::vec3& from, glm::vec3& to, glm::vec3& up, float& nearClip, float& farClip, float frameTimeInMs = 0.f) const;
 
 	/// <summary>Get the direction of a spot or directional light.</summary>
 	/// <param name="lightIdx">index of the light.</param>
 	/// <param name="direction">The direction of the light.</param>
 	/// <remarks>If lightIdx >= number of lights, an error will be logged and this function will have no effect.
 	/// </remarks>
-	void getLightDirection(int32_t lightIdx, glm::vec3& direction) const;
+	void getLightDirection(uint32_t lightIdx, glm::vec3& direction) const;
 
 	/// <summary>Get the position of a point or spot light.</summary>
 	/// <param name="lightIdx">light index.</param>
@@ -1201,51 +1752,42 @@ public:
 	/// <returns>False if <paramref name="lightIdx"/>does not exist</returns>
 	/// <remarks>If lightIdx >= number of lights, an error will be logged and this function will have no effect.
 	/// </remarks>
-	void getLightPosition(int32_t lightIdx, glm::vec3& position) const;
+	void getLightPosition(uint32_t lightIdx, glm::vec3& position) const;
 
 	/// <summary>Get the position of a point or spot light.</summary>
 	/// <param name="lightIdx">light index.</param>
 	/// <param name="position">The position of the light.</param>
 	/// <remarks>If lightIdx >= number of lights, an error will be logged and this function will have no effect.
 	/// </remarks>
-	void getLightPosition(int32_t lightIdx, glm::vec4& position) const;
+	void getLightPosition(uint32_t lightIdx, glm::vec4& position) const;
 
 	/// <summary>Free the resources of this model.</summary>
 	void destroy()
 	{
 		_data = InternalData();
-		initCache();
 	}
 
 	/// <summary>Allocate the specified number of mesh nodes.</summary>
 	/// <param name="no">The number of mesh nodes to allocate</param>
 	void allocMeshNodes(uint32_t no);
 
-private:
-	InternalData _data;
-
-	struct Cache
+	/// <summary> Add new texture</summary>
+	/// <param name="tex"> Texture to add</param>
+	/// <returns>returns texture index</returns>
+	int32_t addTexture(const Texture& tex)
 	{
-		float frameFraction;
-		uint32_t frame;
+		_data.textures.push_back(tex);
+		return static_cast<uint32_t>(_data.textures.size()) - 1;
+	}
 
 #ifdef DEBUG
-		int64_t total, frameNCacheHit, frameZeroCacheHit;
-		float frameHitPerc, frameZeroHitPerc;
+	int64_t total, frameNCacheHit, frameZeroCacheHit;
+	float frameHitPerc, frameZeroHitPerc;
 #endif
-		std::vector<float> cachedFrame; // Cache indicating the frames at which the matrix cache was filled
-		std::vector<glm::mat4x4> worldMatrixFrameN; // Cache of world matrices for the frame described in fCachedFrame
-		std::vector<glm::mat4x4> worldMatrixFrameZero; // Cache of frame 0 matrices
-
-		Cache() : frameFraction(0), frame(0)
-		{
-#ifdef DEBUG
-			total = frameNCacheHit = frameZeroCacheHit = 0;
-			frameHitPerc = frameZeroHitPerc = 0;
-#endif
-		}
-	};
-	mutable Cache _cache;
+	std::vector<float> cachedFrame; // Cache indicating the frames at which the matrix cache was filled
+	std::vector<glm::mat4x4> worldMatrixFrameN; // Cache of world matrices for the frame described in fCachedFrame
+	std::vector<glm::mat4x4> worldMatrixFrameZero; // Cache of frame 0 matrices
+	InternalData _data;
 };
 
 typedef Model::Material Material; ///< Export the Material into the pvr::assets namespace

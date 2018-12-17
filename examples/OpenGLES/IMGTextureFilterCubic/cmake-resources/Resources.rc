@@ -58,7 +58,7 @@ END
 // RCDATA
 //
 /////////////////////////////////////////////////////////////////////////////
-// RCDATA: Assets (scenes, shaders, effects, textures...)
+// RCDATA: OpenGL ES Textual shaders(glsl)
 FragShader.fsh		RCDATA		"..\\FragShader.fsh"
 VertShader.vsh		RCDATA		"..\\VertShader.vsh"
 

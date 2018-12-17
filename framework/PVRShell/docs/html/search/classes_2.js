@@ -1,4 +1,6 @@
 var searchData=
 [
-  ['option',['Option',['../structpvr_1_1platform_1_1_command_line_parser_1_1_parsed_command_line_1_1_option.html',1,'pvr::platform::CommandLineParser::ParsedCommandLine']]]
+  ['pointerlocation',['PointerLocation',['../classpvr_1_1_pointer_location.html',1,'pvr']]],
+  ['pointernormalisedlocation',['PointerNormalisedLocation',['../structpvr_1_1platform_1_1_shell_1_1_pointer_normalised_location.html',1,'pvr::platform::Shell']]],
+  ['pointingdevicestate',['PointingDeviceState',['../structpvr_1_1platform_1_1_shell_1_1_pointing_device_state.html',1,'pvr::platform::Shell']]]
 ];

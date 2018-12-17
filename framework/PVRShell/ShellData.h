@@ -5,8 +5,10 @@
 \copyright Copyright (c) Imagination Technologies Limited.
 */
 #pragma once
-#include "PVRShell/CommandLine.h"
-#include "PVRCore/Base/ComplexTypes.h"
+#include "PVRCore/commandline/CommandLine.h"
+#include "PVRCore/texture/PixelFormat.h"
+#include "PVRCore/types/Types.h"
+#include "PVRShell/Time_.h"
 
 /*! This file simply defines a version std::string. It can be commented out. */
 #include "sdkver.h"

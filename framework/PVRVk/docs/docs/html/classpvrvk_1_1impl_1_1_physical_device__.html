@@ -15,7 +15,7 @@
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="IMGdoxygen.css" rel="stylesheet" type="text/css"/>
-<link rel="shortcut icon" href="http://www.imgtec.com/images/img.ico">
+<link rel="shortcut icon" type="image/x-icon" href="img.ico">
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
+      <a href="https://www.imgtec.com/developers/" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRVk</span> Documentation</a>
    <tbody>
@@ -89,7 +89,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 
-<p>The representation of an entire actual, physical GPU device (as opposed to Device, which is a local, logical part of it). A Physical device is "determined", or "found", or "enumerated", (while a logical device is "created"). You can use the physical device to create logical Devices, determine Extensions etc. See Vulkan spec.  
+<p>The representation of an entire actual, physical GPU device (as opposed to Device, which is a local, logical part of it). A Physical device is "determined", or "found", or "enumerated", (while a logical device is "created"). You can use the physical device to create logical Devices, determine Extensions etc. See Vulkan spec. 
  <a href="classpvrvk_1_1impl_1_1_physical_device__.html#details">More...</a></p>
 <div class="dynheader">
 Inheritance diagram for pvrvk::impl::PhysicalDevice_:</div>
@@ -102,15 +102,15 @@ Inheritance diagram for pvrvk::impl::PhysicalDevice_:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a66fc039229f030b051e9ec4a359b8f88"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvrvk.html#a794b7de3c94b91535ce105918d4c4f5a">Device</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_physical_device__.html#a66fc039229f030b051e9ec4a359b8f88">createDevice</a> (const <a class="el" href="structpvrvk_1_1_device_create_info.html">DeviceCreateInfo</a> &amp;deviceCreateInfo)</td></tr>
-<tr class="memdesc:a66fc039229f030b051e9ec4a359b8f88"><td class="mdescLeft">&#160;</td><td class="mdescRight">create gpu device.  <a href="#a66fc039229f030b051e9ec4a359b8f88">More...</a><br/></td></tr>
+<tr class="memdesc:a66fc039229f030b051e9ec4a359b8f88"><td class="mdescLeft">&#160;</td><td class="mdescRight">create gpu device. <a href="#a66fc039229f030b051e9ec4a359b8f88">More...</a><br/></td></tr>
 <tr class="separator:a66fc039229f030b051e9ec4a359b8f88"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acb1bd8c0276e697f3d79bddc6b97f63a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvrvk.html#ab5ba29fcbf296b97d02b438dbaf54d9f">DisplayMode</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_physical_device__.html#acb1bd8c0276e697f3d79bddc6b97f63a">createDisplayMode</a> (<a class="el" href="namespacepvrvk.html#af2d7c17d852b7a8e69318f43645e78b6">pvrvk::Display</a> &amp;display, const <a class="el" href="structpvrvk_1_1_display_mode_create_info.html">pvrvk::DisplayModeCreateInfo</a> &amp;displayModeCreateInfo)</td></tr>
 <tr class="memdesc:acb1bd8c0276e697f3d79bddc6b97f63a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a display mode <a href="#acb1bd8c0276e697f3d79bddc6b97f63a">More...</a><br/></td></tr>
 <tr class="separator:acb1bd8c0276e697f3d79bddc6b97f63a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a22b1ef85daf8ede8ea84c15f6cbb4460"><td class="memItemLeft" align="right" valign="top">std::vector<br class="typebreak"/>
-&lt; ExtensionProperties &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_physical_device__.html#a22b1ef85daf8ede8ea84c15f6cbb4460">enumerateDeviceExtensionsProperties</a> ()</td></tr>
-<tr class="memdesc:a22b1ef85daf8ede8ea84c15f6cbb4460"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enumerate device extensions properties <a href="#a22b1ef85daf8ede8ea84c15f6cbb4460">More...</a><br/></td></tr>
-<tr class="separator:a22b1ef85daf8ede8ea84c15f6cbb4460"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a99a351ef46f4193e0e8347195b8091df"><td class="memItemLeft" align="right" valign="top">std::vector<br class="typebreak"/>
+&lt; ExtensionProperties &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_physical_device__.html#a99a351ef46f4193e0e8347195b8091df">getDeviceExtensionsProperties</a> ()</td></tr>
+<tr class="memdesc:a99a351ef46f4193e0e8347195b8091df"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enumerate device extensions properties <a href="#a99a351ef46f4193e0e8347195b8091df">More...</a><br/></td></tr>
+<tr class="separator:a99a351ef46f4193e0e8347195b8091df"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afc7c99afab5b1a9dd3762c6f3d024daf"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacepvrvk.html#af2d7c17d852b7a8e69318f43645e78b6">Display</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_physical_device__.html#afc7c99afab5b1a9dd3762c6f3d024daf">getDisplay</a> (uint32_t id) const </td></tr>
 <tr class="memdesc:afc7c99afab5b1a9dd3762c6f3d024daf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get Display (const) <a href="#afc7c99afab5b1a9dd3762c6f3d024daf">More...</a><br/></td></tr>
 <tr class="separator:afc7c99afab5b1a9dd3762c6f3d024daf"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -171,6 +171,12 @@ PhysicalDeviceMemoryProperties &amp;&#160;</td><td class="memItemRight" valign="
 <tr class="memitem:a00608b27d3445e8071786e9e39080155"><td class="memItemLeft" align="right" valign="top">SurfaceCapabilitiesKHR&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_physical_device__.html#a00608b27d3445e8071786e9e39080155">getSurfaceCapabilities</a> (const <a class="el" href="namespacepvrvk.html#a3d59bc44473920c3db2866f37829bb4c">Surface</a> &amp;surface) const </td></tr>
 <tr class="memdesc:a00608b27d3445e8071786e9e39080155"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get surface capabilities for a surface created using this physical device <a href="#a00608b27d3445e8071786e9e39080155">More...</a><br/></td></tr>
 <tr class="separator:a00608b27d3445e8071786e9e39080155"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a490e57389d6db004df475cc312b2b178"><td class="memItemLeft" align="right" valign="top">std::vector&lt; SurfaceFormatKHR &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_physical_device__.html#a490e57389d6db004df475cc312b2b178">getSurfaceFormats</a> (const <a class="el" href="namespacepvrvk.html#a3d59bc44473920c3db2866f37829bb4c">Surface</a> &amp;surface) const </td></tr>
+<tr class="memdesc:a490e57389d6db004df475cc312b2b178"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the set of supported surface formats <a href="#a490e57389d6db004df475cc312b2b178">More...</a><br/></td></tr>
+<tr class="separator:a490e57389d6db004df475cc312b2b178"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5015737b3d6251b22e5451a3724fa38b"><td class="memItemLeft" align="right" valign="top">std::vector&lt; PresentModeKHR &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_physical_device__.html#a5015737b3d6251b22e5451a3724fa38b">getSurfacePresentModes</a> (const <a class="el" href="namespacepvrvk.html#a3d59bc44473920c3db2866f37829bb4c">Surface</a> &amp;surface) const </td></tr>
+<tr class="memdesc:a5015737b3d6251b22e5451a3724fa38b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the set of supported surface presentation modes <a href="#a5015737b3d6251b22e5451a3724fa38b">More...</a><br/></td></tr>
+<tr class="separator:a5015737b3d6251b22e5451a3724fa38b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:addf0cdb934ca58768bc29af6e6d04823"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_physical_device__.html#addf0cdb934ca58768bc29af6e6d04823">getSurfaceSupport</a> (uint32_t queueFamilyIndex, <a class="el" href="namespacepvrvk.html#a3d59bc44473920c3db2866f37829bb4c">Surface</a> surface) const </td></tr>
 <tr class="memdesc:addf0cdb934ca58768bc29af6e6d04823"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determine whether the specified surface supports presentation <a href="#addf0cdb934ca58768bc29af6e6d04823">More...</a><br/></td></tr>
 <tr class="separator:addf0cdb934ca58768bc29af6e6d04823"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -188,7 +194,7 @@ Protected Attributes</h2></td></tr>
 <tr class="separator:a41f43268ad1a7d2d3bde2a228fbcac03"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>The representation of an entire actual, physical GPU device (as opposed to Device, which is a local, logical part of it). A Physical device is "determined", or "found", or "enumerated", (while a logical device is "created"). You can use the physical device to create logical Devices, determine Extensions etc. See Vulkan spec. </p>
+<div class="textblock"><p>The representation of an entire actual, physical GPU device (as opposed to Device, which is a local, logical part of it). A Physical device is "determined", or "found", or "enumerated", (while a logical device is "created"). You can use the physical device to create logical Devices, determine Extensions etc. See Vulkan spec.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a class="anchor" id="a66fc039229f030b051e9ec4a359b8f88"></a>
 <div class="memitem">
@@ -204,7 +210,7 @@ Protected Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>create gpu device. </p>
+<p>create gpu device.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">deviceCreateInfo</td><td>Device create info</td></tr>
@@ -251,12 +257,12 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a22b1ef85daf8ede8ea84c15f6cbb4460"></a>
+<a class="anchor" id="a99a351ef46f4193e0e8347195b8091df"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::vector&lt; ExtensionProperties &gt; &amp; pvrvk::impl::PhysicalDevice_::enumerateDeviceExtensionsProperties </td>
+          <td class="memname">std::vector&lt; ExtensionProperties &gt; &amp; pvrvk::impl::PhysicalDevice_::getDeviceExtensionsProperties </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -265,7 +271,7 @@ Protected Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Enumerate device extensions properties</p>
-<dl class="section return"><dt>Returns</dt><dd>std::vector&lt;pvrvk::ExtensionProperties&gt;</dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>vector of pvrvk::ExtensionProperties</dd></dl>
 
 </div>
 </div>
@@ -846,6 +852,56 @@ Protected Attributes</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SurfaceCapabilities</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a490e57389d6db004df475cc312b2b178"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; SurfaceFormatKHR &gt; pvrvk::impl::PhysicalDevice_::getSurfaceFormats </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespacepvrvk.html#a3d59bc44473920c3db2866f37829bb4c">Surface</a> &amp;&#160;</td>
+          <td class="paramname"><em>surface</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Retrieves the set of supported surface formats</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">surface</td><td>The surface to retrieve supported formats for</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>vector of pvrvk::ExtensionProperties</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a5015737b3d6251b22e5451a3724fa38b"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; PresentModeKHR &gt; pvrvk::impl::PhysicalDevice_::getSurfacePresentModes </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespacepvrvk.html#a3d59bc44473920c3db2866f37829bb4c">Surface</a> &amp;&#160;</td>
+          <td class="paramname"><em>surface</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Retrieves the set of supported surface presentation modes</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">surface</td><td>The surface to retrieve supported presentation modes for</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>vector of pvrvk::PresentModeKHR</dd></dl>
 
 </div>
 </div>

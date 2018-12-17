@@ -6,7 +6,12 @@ bottom of this file or of any Demo file for the newDemo function the user must i
 \copyright Copyright (c) Imagination Technologies Limited.
 */
 #pragma once
-#include "PVRShell/CommandLine.h"
+#include "PVRCore/commandline/CommandLine.h"
+#include "PVRShell/ShellData.h"
+#include "PVRCore/IAssetProvider.h"
+#include "PVRCore/stream/BufferStream.h"
+#include "PVRCore/Log.h"
+#include <queue>
 #include <bitset>
 
 /// <summary>Main namespace for the PowerVR Framework</summary>

@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>PVRCore: /usr/buildxl/buildroot/sdk/branch/SDK/framework/PVRCore/IO/Asset.h Source File</title>
+<title>PVRCore: /usr/buildxl/buildroot/sdk/branch/SDK/framework/PVRCore/stream/Asset.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -15,7 +15,7 @@
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="IMGdoxygen.css" rel="stylesheet" type="text/css"/>
-<link rel="shortcut icon" href="http://www.imgtec.com/images/img.ico">
+<link rel="shortcut icon" type="image/x-icon" href="img.ico">
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
+      <a href="https://www.imgtec.com/developers/" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRCore</span> Documentation</a>
    <tbody>
@@ -76,7 +76,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_687531cb5acd5e736601deea3ef3b7c0.html">SDK</a></li><li class="navelem"><a class="el" href="dir_407ce59cc93389552d4bbf4df897abf8.html">framework</a></li><li class="navelem"><a class="el" href="dir_72a2a6c70dc66b6caf7d035656739fa9.html">PVRCore</a></li><li class="navelem"><a class="el" href="dir_7c660917fc18fae91f623e9efc593373.html">IO</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_687531cb5acd5e736601deea3ef3b7c0.html">SDK</a></li><li class="navelem"><a class="el" href="dir_407ce59cc93389552d4bbf4df897abf8.html">framework</a></li><li class="navelem"><a class="el" href="dir_72a2a6c70dc66b6caf7d035656739fa9.html">PVRCore</a></li><li class="navelem"><a class="el" href="dir_1db9d34783bc71f5d5641f59cacc80d7.html">stream</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -84,10 +84,10 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">Asset.h</div>  </div>
 </div><!--header-->
 <div class="contents">
-<a href="_asset_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;</div>
+<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;</div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#pragma once</span></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#include &quot;<a class="code" href="_asset_reader_8h.html">PVRCore/IO/AssetReader.h</a>&quot;</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_ref_counted_8h.html">PVRCore/Base/RefCounted.h</a>&quot;</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#include &quot;<a class="code" href="_asset_reader_8h.html">PVRCore/stream/AssetReader.h</a>&quot;</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_ref_counted_8h.html">PVRCore/RefCounted.h</a>&quot;</span></div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;</div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="keyword">namespace </span>pvr {</div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keyword">template</span>&lt;<span class="keyword">typename</span> AssetType_&gt;</div>
@@ -119,19 +119,18 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;</div>
 <div class="line"><a name="l00059"></a><span class="lineno"><a class="line" href="classpvr_1_1_asset.html#afa21bea1ab5be2e43130b312a55a06da">   59</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classpvr_1_1_asset.html#afa21bea1ab5be2e43130b312a55a06da">loadWithReader</a>(<a class="code" href="classpvr_1_1_asset_reader.html">AssetReader&lt;AssetType_&gt;</a>&amp; reader, <a class="code" href="classpvr_1_1_stream.html#aa0cecaaaa443ce5895d8c3d69dcdeec2">Stream::ptr_type</a> stream)</div>
 <div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    {</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;        reader.<a class="code" href="classpvr_1_1_asset_reader.html#a7f51e982c8bf8635c9e4a6b8ef8e28fd">openAssetStream</a>(stream);</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;        reader.openAssetStream(stream);</div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;        reader.<a class="code" href="classpvr_1_1_asset_reader.html#aa16c2c3240b40b7e7420235c36323cd2">readAsset</a>(static_cast&lt;AssetType_&amp;&gt;(*<span class="keyword">this</span>));</div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    }</div>
 <div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;};</div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;} <span class="comment">// namespace pvr</span></div>
-<div class="ttc" id="classpvr_1_1_asset_reader_html_aa16c2c3240b40b7e7420235c36323cd2"><div class="ttname"><a href="classpvr_1_1_asset_reader.html#aa16c2c3240b40b7e7420235c36323cd2">pvr::AssetReader::readAsset</a></div><div class="ttdeci">void readAsset(AssetType &amp;asset)</div><div class="ttdoc">Read asset. Asset stream has to be opended before reading asset.</div><div class="ttdef"><b>Definition:</b> AssetReader.h:89</div></div>
+<div class="ttc" id="classpvr_1_1_asset_reader_html_aa16c2c3240b40b7e7420235c36323cd2"><div class="ttname"><a href="classpvr_1_1_asset_reader.html#aa16c2c3240b40b7e7420235c36323cd2">pvr::AssetReader::readAsset</a></div><div class="ttdeci">void readAsset(AssetType &amp;asset)</div><div class="ttdoc">Read asset. Asset stream has to be opended before reading asset.</div><div class="ttdef"><b>Definition:</b> AssetReader.h:76</div></div>
 <div class="ttc" id="_asset_reader_8h_html"><div class="ttname"><a href="_asset_reader_8h.html">AssetReader.h</a></div><div class="ttdoc">Contains the base class for any AssetReader. </div></div>
 <div class="ttc" id="_ref_counted_8h_html"><div class="ttname"><a href="_ref_counted_8h.html">RefCounted.h</a></div><div class="ttdoc">A smart pointer implementation very close to the spec of std::shared_ptr but with some differences an...</div></div>
-<div class="ttc" id="classpvr_1_1_asset_reader_html_a7f51e982c8bf8635c9e4a6b8ef8e28fd"><div class="ttname"><a href="classpvr_1_1_asset_reader.html#a7f51e982c8bf8635c9e4a6b8ef8e28fd">pvr::AssetReader::openAssetStream</a></div><div class="ttdeci">void openAssetStream()</div><div class="ttdoc">Open the (Already set) asset stream.</div><div class="ttdef"><b>Definition:</b> AssetReader.h:50</div></div>
 <div class="ttc" id="classpvr_1_1_asset_html"><div class="ttname"><a href="classpvr_1_1_asset.html">pvr::Asset</a></div><div class="ttdoc">An Asset represents an object that can be stored and loaded. Models, Textures, Effects and similar al...</div><div class="ttdef"><b>Definition:</b> Asset.h:17</div></div>
 <div class="ttc" id="classpvr_1_1_asset_html_a4f769378f8316207c10304d507998fc0"><div class="ttname"><a href="classpvr_1_1_asset.html#a4f769378f8316207c10304d507998fc0">pvr::Asset::loadWithReader</a></div><div class="ttdeci">void loadWithReader(AssetReader&lt; AssetType_ &gt; &amp;reader)</div><div class="ttdoc">Load the data of this asset from an AssetReader. This function requires an already constructed object...</div><div class="ttdef"><b>Definition:</b> Asset.h:50</div></div>
-<div class="ttc" id="classpvr_1_1_asset_reader_html"><div class="ttname"><a href="classpvr_1_1_asset_reader.html">pvr::AssetReader</a></div><div class="ttdoc">Base class for an AssetReader, a class that can read Assets from a provided Stream.</div><div class="ttdef"><b>Definition:</b> AssetReader.h:19</div></div>
-<div class="ttc" id="classpvr_1_1_stream_html_aa0cecaaaa443ce5895d8c3d69dcdeec2"><div class="ttname"><a href="classpvr_1_1_stream.html#aa0cecaaaa443ce5895d8c3d69dcdeec2">pvr::Stream::ptr_type</a></div><div class="ttdeci">std::unique_ptr&lt; Stream &gt; ptr_type</div><div class="ttdoc">The pointer type of the stream. This is the main handle used to pass nullable streams around...</div><div class="ttdef"><b>Definition:</b> Stream.h:59</div></div>
+<div class="ttc" id="classpvr_1_1_asset_reader_html"><div class="ttname"><a href="classpvr_1_1_asset_reader.html">pvr::AssetReader</a></div><div class="ttdoc">Base class for an AssetReader, a class that can read Assets from a provided Stream.</div><div class="ttdef"><b>Definition:</b> AssetReader.h:20</div></div>
+<div class="ttc" id="classpvr_1_1_stream_html_aa0cecaaaa443ce5895d8c3d69dcdeec2"><div class="ttname"><a href="classpvr_1_1_stream.html#aa0cecaaaa443ce5895d8c3d69dcdeec2">pvr::Stream::ptr_type</a></div><div class="ttdeci">std::unique_ptr&lt; Stream &gt; ptr_type</div><div class="ttdoc">The pointer type of the stream. This is the main handle used to pass nullable streams around...</div><div class="ttdef"><b>Definition:</b> Stream.h:61</div></div>
 <div class="ttc" id="classpvr_1_1_asset_html_a68cf7e4d74bbe7b784324c5acf076736"><div class="ttname"><a href="classpvr_1_1_asset.html#a68cf7e4d74bbe7b784324c5acf076736">pvr::Asset::createWithReader</a></div><div class="ttdeci">static Handle createWithReader(AssetReader&lt; AssetType_ &gt; &amp;&amp;reader)</div><div class="ttdoc">Create an asset with an AssetReader, and wrap it into a Handle (reference counted object)...</div><div class="ttdef"><b>Definition:</b> Asset.h:38</div></div>
 <div class="ttc" id="classpvr_1_1_asset_html_afa21bea1ab5be2e43130b312a55a06da"><div class="ttname"><a href="classpvr_1_1_asset.html#afa21bea1ab5be2e43130b312a55a06da">pvr::Asset::loadWithReader</a></div><div class="ttdeci">void loadWithReader(AssetReader&lt; AssetType_ &gt; &amp;reader, Stream::ptr_type stream)</div><div class="ttdoc">Load the data of this asset from an AssetReader. This function requires an already constructed object...</div><div class="ttdef"><b>Definition:</b> Asset.h:59</div></div>
 <div class="ttc" id="classpvr_1_1_asset_html_a6b97831dc9125ac2c5a7ee871152e59d"><div class="ttname"><a href="classpvr_1_1_asset.html#a6b97831dc9125ac2c5a7ee871152e59d">pvr::Asset::createWithReader</a></div><div class="ttdeci">static Handle createWithReader(AssetReader&lt; AssetType_ &gt; &amp;reader)</div><div class="ttdoc">Create asset with reader.</div><div class="ttdef"><b>Definition:</b> Asset.h:25</div></div>

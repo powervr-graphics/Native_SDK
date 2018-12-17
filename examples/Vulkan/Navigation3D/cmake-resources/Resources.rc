@@ -58,24 +58,18 @@ END
 // RCDATA
 //
 /////////////////////////////////////////////////////////////////////////////
-// RCDATA: Assets (scenes, shaders, effects, textures...)
+// RCDATA: Assets (scenes,  effects, textures...)
 font.pvr		RCDATA		"..\\..\\..\\assets\\Navigation3D\\font.pvr"
 Road.pvr		RCDATA		"..\\..\\..\\assets\\Navigation3D\\Road.pvr"
 map.osm		RCDATA		"..\\..\\..\\assets\\Navigation3D\\map.osm"
-AA_VertShader_vk.vsh		RCDATA		"..\\AA_VertShader_vk.vsh"
-AA_VertShader_vk.vsh.spv		RCDATA		"..\\AA_VertShader_vk.vsh.spv"
-AA_FragShader_vk.fsh		RCDATA		"..\\AA_FragShader_vk.fsh"
-AA_FragShader_vk.fsh.spv		RCDATA		"..\\AA_FragShader_vk.fsh.spv"
-VertShader_vk.vsh		RCDATA		"..\\VertShader_vk.vsh"
-VertShader_vk.vsh.spv		RCDATA		"..\\VertShader_vk.vsh.spv"
-FragShader_vk.fsh		RCDATA		"..\\FragShader_vk.fsh"
-FragShader_vk.fsh.spv		RCDATA		"..\\FragShader_vk.fsh.spv"
-PlanarShadow_VertShader_vk.vsh		RCDATA		"..\\PlanarShadow_VertShader_vk.vsh"
-PlanarShadow_VertShader_vk.vsh.spv		RCDATA		"..\\PlanarShadow_VertShader_vk.vsh.spv"
-PlanarShadow_FragShader_vk.fsh		RCDATA		"..\\PlanarShadow_FragShader_vk.fsh"
-PlanarShadow_FragShader_vk.fsh.spv		RCDATA		"..\\PlanarShadow_FragShader_vk.fsh.spv"
-PerVertexLight_VertShader_vk.vsh		RCDATA		"..\\PerVertexLight_VertShader_vk.vsh"
-PerVertexLight_VertShader_vk.vsh.spv		RCDATA		"..\\PerVertexLight_VertShader_vk.vsh.spv"
+// RCDATA: Vulkan Spir-V shaders(glsl)
+AA_VertShader.vsh.spv		RCDATA		"..\\AA_VertShader.vsh.spv"
+AA_FragShader.fsh.spv		RCDATA		"..\\AA_FragShader.fsh.spv"
+VertShader.vsh.spv		RCDATA		"..\\VertShader.vsh.spv"
+FragShader.fsh.spv		RCDATA		"..\\FragShader.fsh.spv"
+PlanarShadow_VertShader.vsh.spv		RCDATA		"..\\PlanarShadow_VertShader.vsh.spv"
+PlanarShadow_FragShader.fsh.spv		RCDATA		"..\\PlanarShadow_FragShader.fsh.spv"
+PerVertexLight_VertShader.vsh.spv		RCDATA		"..\\PerVertexLight_VertShader.vsh.spv"
 
 #endif    // English (United Kingdom) resources
 /////////////////////////////////////////////////////////////////////////////

@@ -16,16 +16,25 @@ namespace pvrvk {
 namespace impl {
 Swapchain_::~Swapchain_()
 {
-	VkDevice device = _device->getVkHandle();
-	for (uint32_t i = 0; i < _swapChainLength; ++i)
+	if (getVkHandle() != VK_NULL_HANDLE)
 	{
-		_colorImageViews[i].reset();
-	}
+		if (_device.isValid())
+		{
+			for (uint32_t i = 0; i < _swapChainLength; ++i)
+			{
+				_colorImageViews[i].reset();
+			}
 
-	_device->getVkBindings().vkDestroySwapchainKHR(device, getVkHandle(), nullptr);
-	_device.reset();
-	_surface.reset();
-	_vkHandle = VK_NULL_HANDLE;
+			_device->getVkBindings().vkDestroySwapchainKHR(_device->getVkHandle(), getVkHandle(), nullptr);
+			_vkHandle = VK_NULL_HANDLE;
+			_device.reset();
+			_surface.reset();
+		}
+		else
+		{
+			reportDestroyedAfterDevice("Swapchain");
+		}
+	}
 }
 
 bool Swapchain_::acquireNextImage(uint64_t timeOut, Semaphore signalSemaphore, Fence signalFence)
@@ -97,7 +106,7 @@ Swapchain_::Swapchain_(DeviceWeakPtr device, Surface surface, const SwapchainCre
 		SwapchainImage image;
 		image.construct(_device->getWeakReference(), swapchainImages[i], _createInfo.imageFormat,
 			pvrvk::Extent3D(_createInfo.imageExtent.getWidth(), _createInfo.imageExtent.getHeight(), 1), _createInfo.imageArrayLayers, 1, _createInfo.imageUsage);
-		_colorImageViews[i] = _device->createImageView(image);
+		_colorImageViews[i] = _device->createImageView(ImageViewCreateInfo(image));
 	}
 }
 } // namespace impl

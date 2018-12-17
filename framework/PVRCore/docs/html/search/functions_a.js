@@ -11,6 +11,5 @@ var searchData=
   ['mergedatatypessmaller',['mergeDatatypesSmaller',['../namespacepvr.html#a7ef5be44f3a11eac1a122cafd4a217db',1,'pvr']]],
   ['movex',['moveX',['../classpvr_1_1_f_p_s_camera.html#ad47f57eddf5fe13c34b64099d9d9ca99',1,'pvr::FPSCamera']]],
   ['movez',['moveZ',['../classpvr_1_1_f_p_s_camera.html#a93935a91f58b08898399f93b8949ec86',1,'pvr::FPSCamera']]],
-  ['multi',['Multi',['../classpvr_1_1_multi.html#a7a384d36093b365a9904d34c4aba6dc5',1,'pvr::Multi::Multi()'],['../classpvr_1_1_multi.html#a26d9ab8cc30f2d21efeae7bb33fc92fd',1,'pvr::Multi::Multi(const ElementType element)'],['../classpvr_1_1_multi.html#a2852bcd151de703b0dc3bc05430dfd42',1,'pvr::Multi::Multi(const ElementType *elements, const uint32_t count)']]],
   ['mutex',['Mutex',['../classpvr_1_1async_1_1_mutex.html#a422225bfb5a838883b349dfc162ce002',1,'pvr::async::Mutex']]]
 ];

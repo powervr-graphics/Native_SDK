@@ -15,7 +15,7 @@
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="IMGdoxygen.css" rel="stylesheet" type="text/css"/>
-<link rel="shortcut icon" href="http://www.imgtec.com/images/img.ico">
+<link rel="shortcut icon" type="image/x-icon" href="img.ico">
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
+      <a href="https://www.imgtec.com/developers/" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRCore</span> Documentation</a>
    <tbody>
@@ -99,9 +99,6 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1math_1_1_axis_aligned_box_min_max.html">AxisAlignedBoxMinMax</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">An AABB with a min-max representation. <a href="classpvr_1_1math_1_1_axis_aligned_box_min_max.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1math_1_1_bounding_sphere.html">BoundingSphere</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A class representing a sphere containing at least all points of an object <a href="classpvr_1_1math_1_1_bounding_sphere.html#details">More...</a><br/></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1math_1_1_frustum.html">Frustum</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">This class provides functionality to handle the volume enclosed by 6 planes, normally the viewing frustum. The planes are represented in Hessian Normal Form (normal, distance) as vec4( (xyz):[normal], w:[distance from 0,0,0] ) <a href="structpvr_1_1math_1_1_frustum.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -115,6 +112,12 @@ Functions</h2></td></tr>
 <tr class="memitem:a45d744e73481d0d55e1ef85e352b9c80"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1math.html#a45d744e73481d0d55e1ef85e352b9c80">aabbInFrustum</a> (const <a class="el" href="classpvr_1_1math_1_1_axis_aligned_box.html">AxisAlignedBox</a> &amp;box, const <a class="el" href="structpvr_1_1math_1_1_viewing_frustum.html">ViewingFrustum</a> &amp;frustum)</td></tr>
 <tr class="memdesc:a45d744e73481d0d55e1ef85e352b9c80"><td class="mdescLeft">&#160;</td><td class="mdescRight">Test if an AABB intersects or is inside a frustum. <a href="#a45d744e73481d0d55e1ef85e352b9c80">More...</a><br/></td></tr>
 <tr class="separator:a45d744e73481d0d55e1ef85e352b9c80"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adcced29724690d4e9cd70127c66e1416"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1math.html#adcced29724690d4e9cd70127c66e1416">adjustOffsetsAndWeightsForLinearSampling</a> (const uint32_t halfCoefficientsMinusOne, std::vector&lt; double &gt; &amp;weights, std::vector&lt; double &gt; &amp;offsets)</td></tr>
+<tr class="memdesc:adcced29724690d4e9cd70127c66e1416"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adjust a given set of Gaussian weights and offset to be "linearly samplerable" meaning we can achieve the same Gaussian Blur using fewer texture samples using Linear Sampling than would be required if not using Linear Sampling when sampling using the offsets <a href="#adcced29724690d4e9cd70127c66e1416">More...</a><br/></td></tr>
+<tr class="separator:adcced29724690d4e9cd70127c66e1416"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a516f06dadaa7811cb63a661f7d2573fe"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a516f06dadaa7811cb63a661f7d2573fe"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>constructSRT</b> (const glm::vec3 *scale, const glm::quat *rotate, const glm::vec3 *trans, glm::mat4 &amp;outMtx)</td></tr>
+<tr class="separator:a516f06dadaa7811cb63a661f7d2573fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a604fa4c3a5bcbcdd7ea87858b235e780"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1math.html#a604fa4c3a5bcbcdd7ea87858b235e780">distancePointToPlane</a> (const glm::vec3 &amp;point, const glm::vec4 &amp;plane)</td></tr>
 <tr class="memdesc:a604fa4c3a5bcbcdd7ea87858b235e780"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate the signed (in regards to the plane's normal) distance from a point to a plane <a href="#a604fa4c3a5bcbcdd7ea87858b235e780">More...</a><br/></td></tr>
 <tr class="separator:a604fa4c3a5bcbcdd7ea87858b235e780"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -122,9 +125,18 @@ Functions</h2></td></tr>
 <tr class="memitem:af2d743f7b77ed1970b8cce4720329c1d"><td class="memTemplItemLeft" align="right" valign="top">T&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1math.html#af2d743f7b77ed1970b8cce4720329c1d">gcd</a> (T lhs, T rhs)</td></tr>
 <tr class="memdesc:af2d743f7b77ed1970b8cce4720329c1d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate the Greatest Common Divisor of two numbers (the larger number that, if used to divide either value, has a remainder of zero. Order is irrelevant <a href="#af2d743f7b77ed1970b8cce4720329c1d">More...</a><br/></td></tr>
 <tr class="separator:af2d743f7b77ed1970b8cce4720329c1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a85a543782c65e440fd7b13612a9e6b80"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1math.html#a85a543782c65e440fd7b13612a9e6b80">generateGaussianKernelWeightsAndOffsets</a> (uint32_t kernelSize, bool truncateCoefficients, bool useLinearSamplerOptimization, std::vector&lt; double &gt; &amp;weights, std::vector&lt; double &gt; &amp;offsets, float minimumAcceptableCoefficient=0.0001f)</td></tr>
+<tr class="memdesc:a85a543782c65e440fd7b13612a9e6b80"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generates a set of Gaussian weights and offsets based on the given configuration values. This function makes use of the Pascal Triangle for calculating the Gaussian distribution. The Gaussian function is a distribution function of the normal distribution who's discrete equivalent is the binomial distribution for which the Pascal Triangle models. The Pascal Triangle provides us with a convenient and efficient mechanism for calculating the Gaussian weights and offsets required. Our method of generating Gaussian weights and offsets was inspired by <a href="http://rastergrid.com/blog/2010/09/efficient-gaussian-blur-with-linear-sampling/">http://rastergrid.com/blog/2010/09/efficient-gaussian-blur-with-linear-sampling/</a> . <a href="#a85a543782c65e440fd7b13612a9e6b80">More...</a><br/></td></tr>
+<tr class="separator:a85a543782c65e440fd7b13612a9e6b80"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6375e3f769eabe69aca533d5fd20f1c2"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1math.html#a6375e3f769eabe69aca533d5fd20f1c2">generatePascalTriangleRow</a> (const uint32_t row, std::vector&lt; uint64_t &gt; &amp;pascalCoefficients)</td></tr>
+<tr class="memdesc:a6375e3f769eabe69aca533d5fd20f1c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate the Pascal Triangle row for the given row and store and return its pascal triangle coefficinets along with the sum of the coefficients for the given row. <a href="#a6375e3f769eabe69aca533d5fd20f1c2">More...</a><br/></td></tr>
+<tr class="separator:a6375e3f769eabe69aca533d5fd20f1c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adc0e2a5fcfe563de724d8f73a02e3511"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1math.html#adc0e2a5fcfe563de724d8f73a02e3511">getFrustumPlanes</a> (<a class="el" href="namespacepvr.html#a74c5d1afa51512f076dd8e5844b171c8">pvr::Api</a> api, const glm::mat4 &amp;projection_from_world, <a class="el" href="structpvr_1_1math_1_1_viewing_frustum.html">ViewingFrustum</a> &amp;frustum_out)</td></tr>
 <tr class="memdesc:adc0e2a5fcfe563de724d8f73a02e3511"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve the viewing frustum from a projection matrix <a href="#adc0e2a5fcfe563de724d8f73a02e3511">More...</a><br/></td></tr>
 <tr class="separator:adc0e2a5fcfe563de724d8f73a02e3511"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a914dd4e1d9df5dee40d9b2d0fc2d95cf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1math.html#a914dd4e1d9df5dee40d9b2d0fc2d95cf">getFrustumPoints</a> (<a class="el" href="structpvr_1_1math_1_1_viewing_frustum.html">ViewingFrustum</a> &amp;frustum_out)</td></tr>
+<tr class="memdesc:a914dd4e1d9df5dee40d9b2d0fc2d95cf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve the points of a viewing frustum by intersecting planes <a href="#a914dd4e1d9df5dee40d9b2d0fc2d95cf">More...</a><br/></td></tr>
+<tr class="separator:a914dd4e1d9df5dee40d9b2d0fc2d95cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9529225771db0ee761416d8932797b78"><td class="memTemplParams" colspan="2">template&lt;typename Vec2 &gt; </td></tr>
 <tr class="memitem:a9529225771db0ee761416d8932797b78"><td class="memTemplItemLeft" align="right" valign="top">Vec2&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1math.html#a9529225771db0ee761416d8932797b78">getPerpendicular</a> (Vec2 const &amp;aVector)</td></tr>
 <tr class="memdesc:a9529225771db0ee761416d8932797b78"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a vector that is perpendicular to another vector <a href="#a9529225771db0ee761416d8932797b78">More...</a><br/></td></tr>
@@ -133,6 +145,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a9d618e96c7e3333051f2fd4496122a40"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1math.html#a9d618e96c7e3333051f2fd4496122a40">intersectLinePlane</a> (genType const &amp;origin, genType const &amp;dir, genType const &amp;planeOrigin, genType const &amp;planeNormal, typename genType::value_type &amp;intersectionDistance, typename genType::value_type epsilon=std::numeric_limits&lt; typename genType::value_type &gt;::epsilon())</td></tr>
 <tr class="memdesc:a9d618e96c7e3333051f2fd4496122a40"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs line -to - plane intersection  <a href="#a9d618e96c7e3333051f2fd4496122a40">More...</a><br/></td></tr>
 <tr class="separator:a9d618e96c7e3333051f2fd4496122a40"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc117726745988be4ce7c94d524aefb1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afc117726745988be4ce7c94d524aefb1"></a>
+glm::vec3&#160;</td><td class="memItemRight" valign="bottom"><b>IntersectPlanes</b> (glm::vec4 P0, glm::vec4 P1, glm::vec4 P2)</td></tr>
+<tr class="separator:afc117726745988be4ce7c94d524aefb1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:accd0426359027cb0b7266a8ae9fcc077"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:accd0426359027cb0b7266a8ae9fcc077"><td class="memTemplItemLeft" align="right" valign="top">T&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1math.html#accd0426359027cb0b7266a8ae9fcc077">lcm</a> (T lhs, T rhs)</td></tr>
 <tr class="memdesc:accd0426359027cb0b7266a8ae9fcc077"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate the Least Common Multiple of two numbers (the smaller integer that is a factor of both numbers). Order is irrelevant. If either of the numbers is 0, will return 0 <a href="#accd0426359027cb0b7266a8ae9fcc077">More...</a><br/></td></tr>
@@ -153,12 +168,6 @@ Functions</h2></td></tr>
 <tr class="memitem:aa8e885c1902f9999cb0cfc7a92fd5182"><td class="memItemLeft" align="right" valign="top">glm::mat4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1math.html#aa8e885c1902f9999cb0cfc7a92fd5182">ortho</a> (<a class="el" href="namespacepvr.html#a74c5d1afa51512f076dd8e5844b171c8">Api</a> api, float left, float right, float bottom, float top, float rotate=0.0f)</td></tr>
 <tr class="memdesc:aa8e885c1902f9999cb0cfc7a92fd5182"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculated an orthographic projection tilted projection matrix <a href="#aa8e885c1902f9999cb0cfc7a92fd5182">More...</a><br/></td></tr>
 <tr class="separator:aa8e885c1902f9999cb0cfc7a92fd5182"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab837bdd2199db44ea31c5b11d5d30069"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1math.html#ab837bdd2199db44ea31c5b11d5d30069">packRGBA</a> (uint8_t r, uint8_t g, uint8_t b, uint8_t a)</td></tr>
-<tr class="memdesc:ab837bdd2199db44ea31c5b11d5d30069"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pack 4 values (red, green, blue, alpha) in the range of 0-255 into a single 32 bit unsigned Integer unsigned. <a href="#ab837bdd2199db44ea31c5b11d5d30069">More...</a><br/></td></tr>
-<tr class="separator:ab837bdd2199db44ea31c5b11d5d30069"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae5e9c533a69b130284e95500cb66c263"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1math.html#ae5e9c533a69b130284e95500cb66c263">packRGBA</a> (float r, float g, float b, float a)</td></tr>
-<tr class="memdesc:ae5e9c533a69b130284e95500cb66c263"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pack 4 values (red, green, blue, alpha) in the range of 0.0-1.0 into a single 32 bit unsigned Integer unsigned. <a href="#ae5e9c533a69b130284e95500cb66c263">More...</a><br/></td></tr>
-<tr class="separator:ae5e9c533a69b130284e95500cb66c263"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac6ebf3ef98b324b9d155b841d26e47ce"><td class="memItemLeft" align="right" valign="top">glm::mat4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1math.html#ac6ebf3ef98b324b9d155b841d26e47ce">perspective</a> (<a class="el" href="namespacepvr.html#a74c5d1afa51512f076dd8e5844b171c8">Api</a> api, float fovy, float aspect, float near1, float far1, float rotate=.0f)</td></tr>
 <tr class="memdesc:ac6ebf3ef98b324b9d155b841d26e47ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculated a tilted perspective projection matrix <a href="#ac6ebf3ef98b324b9d155b841d26e47ce">More...</a><br/></td></tr>
 <tr class="separator:ac6ebf3ef98b324b9d155b841d26e47ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -222,6 +231,56 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>False if the AABB is completely outside the frustum, otherwise true</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="adcced29724690d4e9cd70127c66e1416"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void pvr::math::adjustOffsetsAndWeightsForLinearSampling </td>
+          <td>(</td>
+          <td class="paramtype">const uint32_t&#160;</td>
+          <td class="paramname"><em>halfCoefficientsMinusOne</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; double &gt; &amp;&#160;</td>
+          <td class="paramname"><em>weights</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; double &gt; &amp;&#160;</td>
+          <td class="paramname"><em>offsets</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Adjust a given set of Gaussian weights and offset to be "linearly samplerable" meaning we can achieve the same Gaussian Blur using fewer texture samples using Linear Sampling than would be required if not using Linear Sampling when sampling using the offsets</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">halfCoefficientsMinusOne</td><td>The row of the Pascal to generate coefficients with the first row being the 0th.</td></tr>
+    <tr><td class="paramname">weights</td><td>A vector containing the Gaussian weights for the given kernel size.</td></tr>
+    <tr><td class="paramname">offsets</td><td>A vector containing the Gaussian offsets for the given kernel.</td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -317,7 +376,123 @@ template&lt;typename T &gt; </div>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>The GCD. If the numbers are "coprime" (have no common divisor exept 1), the GCD is 1. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>The GCD. If the numbers are "coprime" (have no common divisor exept 1), the GCD is 1.</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a85a543782c65e440fd7b13612a9e6b80"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void pvr::math::generateGaussianKernelWeightsAndOffsets </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>kernelSize</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>truncateCoefficients</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>useLinearSamplerOptimization</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; double &gt; &amp;&#160;</td>
+          <td class="paramname"><em>weights</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; double &gt; &amp;&#160;</td>
+          <td class="paramname"><em>offsets</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minimumAcceptableCoefficient</em> = <code>0.0001f</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Generates a set of Gaussian weights and offsets based on the given configuration values. This function makes use of the Pascal Triangle for calculating the Gaussian distribution. The Gaussian function is a distribution function of the normal distribution who's discrete equivalent is the binomial distribution for which the Pascal Triangle models. The Pascal Triangle provides us with a convenient and efficient mechanism for calculating the Gaussian weights and offsets required. Our method of generating Gaussian weights and offsets was inspired by <a href="http://rastergrid.com/blog/2010/09/efficient-gaussian-blur-with-linear-sampling/">http://rastergrid.com/blog/2010/09/efficient-gaussian-blur-with-linear-sampling/</a> .</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">kernelSize</td><td>The size of the kernel for which to generate Gaussian Weights and Gaussian Offsets. The size of the kernel is used to select the starting row of the Pascal Triangle.</td></tr>
+    <tr><td class="paramname">truncateCoefficients</td><td>Can be used in combination with "minimumAcceptableCoefficient" to ignore coefficients from the Pascal Triangle which are smaller than the given value and are therefore deemed to be negligible. If the starting row is found to have too few coefficients than are required for the kernel size then the next row of the Pascal Triangle will be scanned for a list of coefficients deemed to be non-negligible and so on.</td></tr>
+    <tr><td class="paramname">useLinearSamplerOptimization</td><td>Specifies that the Gaussian Weights and Offsets returned will be modified prior to being returned so that they take advantage of Linear <a class="el" href="classpvr_1_1_texture.html" title="A 2D Texture asset, together with Information, Metadata and actual Pixel data. Only represents the ac...">Texture</a> Sampling which can provide a simple means of reducing the number of texture samples.</td></tr>
+    <tr><td class="paramname">weights</td><td>The returned by reference list of Gaussian Weights calculated using the Pascal Triangle.</td></tr>
+    <tr><td class="paramname">offsets</td><td>The returned by reference list of Gaussian Offsets calculated using the Pascal Triangle.</td></tr>
+    <tr><td class="paramname">minimumAcceptableCoefficient</td><td>Only used when ignoreNegligibleCoefficients is true and specifies the minimum coefficient value which is deemed to be non-negligible and therefore can be used as one of the returned weights. If a row does not contain enough coefficients deemed to be non-negligible then the next row will be checked for values greater than the specified minimum acceptable coefficient. Take care when specifying larger values for the minimum acceptable coefficient along with larger kernel sizes as you can run out of available precision quite quickly.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Returns the sum of the coefficients for the given row of the Pascal Triangle.</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a6375e3f769eabe69aca533d5fd20f1c2"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint64_t pvr::math::generatePascalTriangleRow </td>
+          <td>(</td>
+          <td class="paramtype">const uint32_t&#160;</td>
+          <td class="paramname"><em>row</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; uint64_t &gt; &amp;&#160;</td>
+          <td class="paramname"><em>pascalCoefficients</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Generate the Pascal Triangle row for the given row and store and return its pascal triangle coefficinets along with the sum of the coefficients for the given row.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">row</td><td>The row of the Pascal to generate coefficients with the first row being the 0th.</td></tr>
+    <tr><td class="paramname">pascalCoefficients</td><td>An empty vector capable of storing the pascal coefficients for the given row of the Pascal Triangle.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Returns the sum of the coefficients for the given row of the Pascal Triangle.</dd></dl>
 
 </div>
 </div>
@@ -365,6 +540,38 @@ template&lt;typename T &gt; </div>
     <tr><td class="paramname">projection_from_world</td><td>The projection matrix</td></tr>
     <tr><td class="paramname">frustum_out</td><td>The viewing frustum</td></tr>
     <tr><td class="paramname">api</td><td>The Graphics API for which to get the planes. Used to infer and use the underlying Device coordinate system.</td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a914dd4e1d9df5dee40d9b2d0fc2d95cf"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void pvr::math::getFrustumPoints </td>
+          <td>(</td>
+          <td class="paramtype">ViewingFrustum &amp;&#160;</td>
+          <td class="paramname"><em>frustum_out</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Retrieve the points of a viewing frustum by intersecting planes</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">frustum_out</td><td>The viewing frustum</td></tr>
   </table>
   </dd>
 </dl>
@@ -759,122 +966,6 @@ template&lt;typename T &gt; </div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>An orthographic projection matrix for the specified parameters, tilted by rotate</dd></dl>
-
-</div>
-</div>
-<a class="anchor" id="ab837bdd2199db44ea31c5b11d5d30069"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">uint32_t pvr::math::packRGBA </td>
-          <td>(</td>
-          <td class="paramtype">uint8_t&#160;</td>
-          <td class="paramname"><em>r</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint8_t&#160;</td>
-          <td class="paramname"><em>g</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint8_t&#160;</td>
-          <td class="paramname"><em>b</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint8_t&#160;</td>
-          <td class="paramname"><em>a</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Pack 4 values (red, green, blue, alpha) in the range of 0-255 into a single 32 bit unsigned Integer unsigned.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">r</td><td>Red channel (8 bit)</td></tr>
-    <tr><td class="paramname">g</td><td>Blue channel (8 bit)</td></tr>
-    <tr><td class="paramname">b</td><td>Red channel (8 bit)</td></tr>
-    <tr><td class="paramname">a</td><td>Red channel (8 bit)</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>32 bit RGBA value</dd></dl>
-
-</div>
-</div>
-<a class="anchor" id="ae5e9c533a69b130284e95500cb66c263"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">uint32_t pvr::math::packRGBA </td>
-          <td>(</td>
-          <td class="paramtype">float&#160;</td>
-          <td class="paramname"><em>r</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">float&#160;</td>
-          <td class="paramname"><em>g</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">float&#160;</td>
-          <td class="paramname"><em>b</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">float&#160;</td>
-          <td class="paramname"><em>a</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Pack 4 values (red, green, blue, alpha) in the range of 0.0-1.0 into a single 32 bit unsigned Integer unsigned.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">r</td><td>Red channel (normalized 0.0-1.0)</td></tr>
-    <tr><td class="paramname">g</td><td>Blue channel (normalized 0.0-1.0)</td></tr>
-    <tr><td class="paramname">b</td><td>Red channel (normalized 0.0-1.0)</td></tr>
-    <tr><td class="paramname">a</td><td>Red channel (normalized 0.0-1.0)</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>32 bit RGBA value</dd></dl>
 
 </div>
 </div>

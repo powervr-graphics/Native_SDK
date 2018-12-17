@@ -6,7 +6,7 @@
 */
 //!\cond NO_DOXYGEN
 #include "PVRShell/OS/ShellOS.h"
-#include "PVRCore/IO/FilePath.h"
+#include "PVRCore/stream/FilePath.h"
 #include "PVRCore/Log.h"
 
 #include "X11/Xlib.h"
@@ -35,7 +35,7 @@ struct InternalOS
 	XVisualInfo* visual;
 	Colormap colorMap;
 	Window window;
-	InternalOS() : display(0), screen(0), visual(0), window(0) {}
+	InternalOS() : display(nullptr), screen(0), visual(nullptr), window(0) {}
 };
 
 static Keys X11_To_Keycode[255] = {

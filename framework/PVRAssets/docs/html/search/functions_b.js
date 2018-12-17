@@ -1,6 +1,7 @@
 var searchData=
 [
-  ['operator_3c',['operator&lt;',['../classpvr_1_1assets_1_1_mesh_1_1_vertex_attribute_data.html#a4c819b8531a4f6073f0b37c6eb60b780',1,'pvr::assets::Mesh::VertexAttributeData']]],
-  ['operator_3d_3d',['operator==',['../classpvr_1_1assets_1_1_mesh_1_1_vertex_attribute_data.html#ade6d53bfac8c77b54fd7294363e8a8b5',1,'pvr::assets::Mesh::VertexAttributeData']]],
-  ['operator_5b_5d',['operator[]',['../classpvr_1_1_skip_graph_root.html#a1e7a0d271d296ecf6438ccc955b62d6c',1,'pvr::SkipGraphRoot::operator[](uint32_t nodeId)'],['../classpvr_1_1_skip_graph_root.html#a4dc9b46a1e5833000d6f4c9938cee66b',1,'pvr::SkipGraphRoot::operator[](uint32_t nodeId) const ']]]
+  ['pbrsemantics',['PBRSemantics',['../classpvr_1_1assets_1_1_model_1_1_material_1_1_p_b_r_semantics.html#a696cdd5160ae3fc7a60f3a0c60882c9f',1,'pvr::assets::Model::Material::PBRSemantics']]],
+  ['podmetallicroughnesssemantics',['PODMetallicRoughnessSemantics',['../classpvr_1_1assets_1_1_model_1_1_material_1_1_p_o_d_metallic_roughness_semantics.html#ab5f12b2e22c0e413ca0631bd365c66a4',1,'pvr::assets::Model::Material::PODMetallicRoughnessSemantics']]],
+  ['podreader',['PODReader',['../classpvr_1_1assets_1_1_p_o_d_reader.html#a1cac81e80dc2f5e0c556aefd4ca9367a',1,'pvr::assets::PODReader::PODReader()'],['../classpvr_1_1assets_1_1_p_o_d_reader.html#aa221af12341e9b655902d5f81b0e2b69',1,'pvr::assets::PODReader::PODReader(Stream::ptr_type assetStream)']]],
+  ['projectsilhouette',['projectSilhouette',['../classpvr_1_1_shadow_volume.html#af0253009d5bd543576e694a2ca7cd272',1,'pvr::ShadowVolume']]]
 ];

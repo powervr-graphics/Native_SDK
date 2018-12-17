@@ -15,14 +15,32 @@ class Semaphore_ : public DeviceObjectHandle<VkSemaphore>, public DeviceObjectDe
 {
 public:
 	DECLARE_NO_COPY_SEMANTICS(Semaphore_)
+
+	/// <summary>Get the Semaphore creation flags</summary>
+	/// <returns>The set of Semaphore creation flags</returns>
+	inline SemaphoreCreateFlags getFlags() const
+	{
+		return _createInfo.getFlags();
+	}
+
+	/// <summary>Get this Semaphore's create flags</summary>
+	/// <returns>SemaphoreCreateInfo</returns>
+	SemaphoreCreateInfo getCreateInfo() const
+	{
+		return _createInfo;
+	}
+
 private:
 	template<typename>
 	friend struct ::pvrvk::RefCountEntryIntrusive;
 	friend class ::pvrvk::impl::Device_;
 
-	explicit Semaphore_(const DeviceWeakPtr& device);
+	Semaphore_(const DeviceWeakPtr& device, const SemaphoreCreateInfo& createInfo);
 
 	~Semaphore_();
+
+	/// <summary>Creation information used when creating the Semaphore.</summary>
+	SemaphoreCreateInfo _createInfo;
 };
 } // namespace impl
 } // namespace pvrvk

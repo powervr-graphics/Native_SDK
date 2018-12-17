@@ -15,7 +15,7 @@
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="IMGdoxygen.css" rel="stylesheet" type="text/css"/>
-<link rel="shortcut icon" href="http://www.imgtec.com/images/img.ico">
+<link rel="shortcut icon" type="image/x-icon" href="img.ico">
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
+      <a href="https://www.imgtec.com/developers/" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRUtils</span> Documentation</a>
    <tbody>
@@ -113,8 +113,12 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;                                                   <span class="stringliteral">&quot;\t{\n&quot;</span></div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;                                                   <span class="stringliteral">&quot;\t\tgl_FragColor = vec4(varColor * vTex);\n&quot;</span></div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;                                                   <span class="stringliteral">&quot;\t}\n&quot;</span></div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;                                                   <span class="stringliteral">&quot;}\n&quot;</span>;</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">int</span> _print3DShader_glsles200_fsh_size = <span class="keyword">sizeof</span>(_print3DShader_glsles200_fsh) / <span class="keyword">sizeof</span>(_print3DShader_glsles200_fsh[0]);</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;                                                   <span class="stringliteral">&quot;\t#ifndef FRAMEBUFFER_SRGB\n&quot;</span></div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;                                                   <span class="stringliteral">&quot;\t\tgl_FragColor.rgb = pow(gl_FragColor.rgb, vec3(0.4545454545));// Gamma correction   (0.4545454545 = 1.0/ 2.2)\n&quot;</span></div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;                                                   <span class="stringliteral">&quot;\t#endif\n&quot;</span></div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;                                                   <span class="stringliteral">&quot;}\n&quot;</span>;</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">int</span> _print3DShader_glsles200_fsh_size = <span class="keyword">sizeof</span>(_print3DShader_glsles200_fsh) / <span class="keyword">sizeof</span>(_print3DShader_glsles200_fsh[0]);</div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.4-->
 <!-- start footer part (NON TREEVIEW ONLY!!) -->

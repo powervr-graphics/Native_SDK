@@ -4,22 +4,36 @@ PostProcessing
 
 .. figure:: ./PostProcessing.png
 
-This training course demonstrates a simple implementation of a 'bloom' post processing effect.
+This example demonstrates a set of heavily-optimised bloom post-processing implementations.
 
 Description
 -----------
-This training course demonstrates a simple implementation of a 'bloom' post processing effect, using Render Passes (Vulkan)/ Render To Texture (OpenGL ES)
-to render an intermediate scene and use it for postprocessing. The bright parts of the picture are extracted in lower resolution in a post processing step,
-blurred and then added over the final image to create a glow around the object's borders.
+This example demonstrates a set of heavily-optimised bloom post-processing implementations including:
 
-APIS
+- Reference implementation of a separated Gaussian Blur.
+- Linear sampler-optimised separated Gaussian Blur.
+- Sliding average compute-based separated Gaussian Blur.
+- Linear sampler-optimised separated Gaussian Blur with samples of negligible value truncated. This means the approximate blurs can be achieved with far fewer samples.
+- Hybrid Gaussian Blur using the truncated separated Gaussian Blur along with a sliding average-based Gaussian Blur.
+- Kawase Blur - Framebuffer post-processing effects in "DOUBLE-S.T.E.A.L." aka "Wreckless".
+- Dual Filter - Bandwidth-efficient rendering - siggraph2015-mmg-marius.
+- Tent Filter - Next generation post-processing in "Call Of Duty Advanced Warfare".
+
+Other than the Dual Filter and Tent Filter, the bloom post-processing implementations follow a similar high-level pattern:
+
+1. Downsampling the brighter regions of an input image to a lower resolution. 
+2. Several post-process passes, each working from the output of the previous pass, rendering to intermediate textures. 
+3. The resulting blurred image is then composited onto the original image to create a smooth bloom around the brighter regions.
+
+APIs
 ----
+* OpenGL ES 3.0+
 * Vulkan
-* OpenGL ES 2.0+
 
 Controls
 --------
-- Left/Right- Change the rendering mode (Object with bloom, object w/o bloom, bloom textures)
-- Up/Down- Increase/Decrease bloom intensity
-- Any Action- Pause
-- Quit- Close the application
+- Left/Right - Cycle through the various bloom implementations
+- Up/Down - Increase/decrease the size of the bloom intensity
+- Action1 - Pause
+- Action2 - Enable/disable rendering of bloom only
+- Quit - Close the application

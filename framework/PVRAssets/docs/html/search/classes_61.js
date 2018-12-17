@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['animation',['Animation',['../classpvr_1_1assets_1_1_animation.html',1,'pvr::assets']]],
-  ['attributesemantic',['AttributeSemantic',['../structpvr_1_1assets_1_1effect_1_1_attribute_semantic.html',1,'pvr::assets::effect']]]
+  ['animationdata',['AnimationData',['../classpvr_1_1assets_1_1_animation_data.html',1,'pvr::assets']]],
+  ['animationinstance',['AnimationInstance',['../structpvr_1_1assets_1_1_animation_instance.html',1,'pvr::assets']]]
 ];

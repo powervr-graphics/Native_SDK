@@ -58,7 +58,7 @@ END
 // RCDATA
 //
 /////////////////////////////////////////////////////////////////////////////
-// RCDATA: Assets (scenes, shaders, effects, textures...)
+// RCDATA: Assets (scenes,  effects, textures...)
 bigMushroom_shadow.pvr		RCDATA		"..\\..\\..\\assets\\GnomeHorde\\bigMushroom_shadow.pvr"
 bigMushroom_texture.pvr		RCDATA		"..\\..\\..\\assets\\GnomeHorde\\bigMushroom_texture.pvr"
 fern.pvr		RCDATA		"..\\..\\..\\assets\\GnomeHorde\\fern.pvr"
@@ -84,18 +84,12 @@ mushroom0.pod		RCDATA		"..\\..\\..\\assets\\GnomeHorde\\mushroom0.pod"
 mushroom1.pod		RCDATA		"..\\..\\..\\assets\\GnomeHorde\\mushroom1.pod"
 mushroom_shadow0.pod		RCDATA		"..\\..\\..\\assets\\GnomeHorde\\mushroom_shadow0.pod"
 rocks0.pod		RCDATA		"..\\..\\..\\assets\\GnomeHorde\\rocks0.pod"
+// RCDATA: Vulkan Spir-V shaders(glsl)
 Object.vsh.spv		RCDATA		"..\\Object.vsh.spv"
 Shadow.vsh.spv		RCDATA		"..\\Shadow.vsh.spv"
 Solid.fsh.spv		RCDATA		"..\\Solid.fsh.spv"
 Shadow.fsh.spv		RCDATA		"..\\Shadow.fsh.spv"
 Plant.fsh.spv		RCDATA		"..\\Plant.fsh.spv"
-Object.vsh		RCDATA		"..\\Object.vsh"
-Shadow.vsh		RCDATA		"..\\Shadow.vsh"
-Solid.fsh		RCDATA		"..\\Solid.fsh"
-Shadow.fsh		RCDATA		"..\\Shadow.fsh"
-Plant.fsh		RCDATA		"..\\Plant.fsh"
-recompile.sh		RCDATA		"..\\recompile.sh"
-recompile.bat		RCDATA		"..\\recompile.bat"
 
 #endif    // English (United Kingdom) resources
 /////////////////////////////////////////////////////////////////////////////

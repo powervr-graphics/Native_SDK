@@ -8,6 +8,9 @@
 #include "PVRShell/PVRShell.h"
 #include "PVRVk/PVRVk.h"
 #include "PVRUtils/PVRUtilsVk.h"
+#include "PVRPfx/RenderManagerVk.h"
+#include "PVRCore/pfx/PFXParser.h"
+
 // Light mesh nodes
 enum class LightNodes
 {
@@ -119,27 +122,51 @@ const float FrameRate = 1.0f / 120.0f;
 // Directional lighting configuration data
 namespace DirectionalLightConfiguration {
 static bool AdditionalDirectionalLight = true;
-const float DirectionalLightIntensity = .2f;
+const float DirectionalLightIntensity = .1f;
+const glm::vec4 AmbientLightColor = glm::vec4(.005f, .005f, .005f, 0.0f);
+
 } // namespace DirectionalLightConfiguration
 
 // Point lighting configuration data
 namespace PointLightConfiguration {
-float LightMaxDistance = 40.f;
-float LightMinDistance = 20.f;
-float LightMinHeight = -30.f;
-float LightMaxHeight = 40.f;
-float LightAxialVelocityChange = .01f;
-float LightRadialVelocityChange = .003f;
-float LightVerticalVelocityChange = .01f;
-float LightMaxAxialVelocity = 5.f;
-float LightMaxRadialVelocity = 1.5f;
-float LightMaxVerticalVelocity = 5.f;
+const float LightMaxDistance = 40.f;
+const float LightMinDistance = 20.f;
+const float LightMinHeight = -30.f;
+const float LightMaxHeight = 40.f;
+const float LightAxialVelocityChange = .01f;
+const float LightRadialVelocityChange = .003f;
+const float LightVerticalVelocityChange = .01f;
+const float LightMaxAxialVelocity = 5.f;
+const float LightMaxRadialVelocity = 1.5f;
+const float LightMaxVerticalVelocity = 5.f;
 
 static int32_t MaxScenePointLights = 5;
 static int32_t NumProceduralPointLights = 10;
-float PointLightScale = 32.0f; // PointLightScale handles the size of the scaled light geometry. This effects the areas of the screen which will go through point light rendering
-float PointLightRadius = PointLightScale / 2.0f; // PointLightRadius handles the actual point light falloff. Modifying one of these requires also modifying the other
-float PointlightIntensity = 5.0f;
+float PointlightIntensity = 20.f;
+const float PointLightMinIntensityForCuttoff = 10.f / 255.f;
+const float PointLightMaxRadius = 1.5f * glm::sqrt(PointLightConfiguration::PointlightIntensity / PointLightConfiguration::PointLightMinIntensityForCuttoff);
+// The "Max radius" value we find is 50% more than the radius where we reach a specific light value.
+// Light attenuation is quadratic: Light value = Intensity / Distance ^2
+// The problem is that with this equation, light has infinite radius, as it asymptotically goes to zero as distance increases
+// Very big radius is in general undesirable for deferred shading where you wish to have a lot of small lights, and where there
+// contribution will be small to none, but a sharp cutoff is usually quite visible on dark scenes.
+// For that reason, we have implemented an attenuation equation which begins close to the light following this value,
+// but then after a predetermined value, switches to linear falloff and continues to zero following the same slope.
+// This can be tweaked through this vale: It basically says "At which light intensity should the quadratic equation
+// be switched to a linear one and trail to zero?".
+// Following the numbers, if we follow the slope of 1/x^2 linearly, the value becomes exactly zero at 1.5 x distance.
+// Good guide values here are around 5.f/255.f for a sharp falloff (but hence better performance as less pixels are shaded
+// up to ~1.f/255.f for almost undetectably soft falloff in pitch-black scenes (hence more correct, but shading a lot
+// of pixels that have a miniscule lighting contribution).
+// Additionally, if there is a strong ambient or directional, this value can be increased (hence reducing the number of pixels
+// shaded) as the ambient light will completely hide the small contributions of the edges of the point lights. Reversely,
+// a completely dark scene would only be acceptable with values less than 2.f as otherwise the cutoff of the lights would be
+// quite visible.
+// NUMBERS: ( Symbols: Light Value: LV, Differential of LV: LV' Intensity: I, Distance: D, Distance of switch quadratic->linear:A)
+// After doing some number-crunching, starting with LV = I / D^2
+// LV = I * (3 * A^2 - 2 * D / A^3). See the PointLightPass2FragmentShader.
+// Finally, crunching more numbers you will find that LV drops to zero when D = 1.5 * A, so we need to render the lights
+// with a radius of 1.5 * A. In the shader, this is reversed to precisely find the point where we switch from quadratic to linear.
 } // namespace PointLightConfiguration
 
 // Subpasses used in the renderpass
@@ -179,8 +206,7 @@ struct DeviceResources
 	pvrvk::Device device;
 	pvrvk::Surface surface;
 	pvrvk::Queue queue;
-	pvr::utils::vma::Allocator vmaBufferAllocator;
-	pvr::utils::vma::Allocator vmaImageAllocator;
+	pvr::utils::vma::Allocator vmaAllocator;
 	pvrvk::Swapchain swapchain;
 
 	pvrvk::CommandPool commandPool;
@@ -203,8 +229,8 @@ struct DeviceResources
 		if (device.isValid())
 		{
 			device->waitIdle();
-			int l = swapchain->getSwapchainLength();
-			for (int i = 0; i < l; ++i)
+			uint32_t l = swapchain->getSwapchainLength();
+			for (uint32_t i = 0; i < l; ++i)
 			{
 				if (perFrameAcquireFence[i].isValid())
 					perFrameAcquireFence[i]->wait();
@@ -298,7 +324,7 @@ public:
 	{
 		auto& pipeline = _deviceResources->render_mgr.toPipeline(0, 0, static_cast<uint32_t>(RenderPassSubpass::GBuffer), 0, 0);
 		pipeline.updateAutomaticModelSemantics(0);
-		_deviceResources->render_mgr.toSubpassGroupModel(0, 0, static_cast<uint32_t>(RenderPassSubpass::GBuffer), 0, 0).updateFrame(0);
+		_deviceResources->render_mgr.toSubpassGroupModel(0, 0, static_cast<uint32_t>(RenderPassSubpass::GBuffer), 0, 0);
 	}
 
 	void eventMappedInput(pvr::SimplifiedInput key)
@@ -388,6 +414,12 @@ pvr::Result VulkanDeferredShadingPFX::initView()
 	// Create instance and retrieve compatible physical devices
 	_deviceResources->instance = pvr::utils::createInstance(this->getApplicationName());
 
+	if (_deviceResources->instance->getNumPhysicalDevices() == 0)
+	{
+		setExitMessage("Unable not find a compatible Vulkan physical device.");
+		return pvr::Result::UnknownError;
+	}
+
 	// Create the surface
 	_deviceResources->surface = pvr::utils::createSurface(_deviceResources->instance, _deviceResources->instance->getPhysicalDevice(0), this->getWindow(), this->getDisplay());
 
@@ -419,8 +451,7 @@ pvr::Result VulkanDeferredShadingPFX::initView()
 	// Create the swapchain
 	_deviceResources->swapchain = pvr::utils::createSwapchain(_deviceResources->device, _deviceResources->surface, getDisplayAttributes(), swapchainImageUsage);
 
-	_deviceResources->vmaBufferAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
-	_deviceResources->vmaImageAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
+	_deviceResources->vmaAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
 
 	// Get the number of swap images
 	_numSwapImages = _deviceResources->swapchain->getSwapchainLength();
@@ -447,8 +478,11 @@ pvr::Result VulkanDeferredShadingPFX::initView()
 	Log("Framebuffer dimensions: %d x %d\n", _framebufferWidth, _framebufferHeight);
 	Log("Onscreen Framebuffer dimensions: %d x %d\n", _windowWidth, _windowHeight);
 
+	_deviceResources->vmaAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
+
 	// create the commandpool
-	_deviceResources->commandPool = _deviceResources->device->createCommandPool(queueAccessInfo.familyId, pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT);
+	_deviceResources->commandPool =
+		_deviceResources->device->createCommandPool(pvrvk::CommandPoolCreateInfo(queueAccessInfo.familyId, pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT));
 
 	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(pvrvk::DescriptorPoolCreateInfo()
 																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 32)
@@ -491,7 +525,7 @@ pvr::Result VulkanDeferredShadingPFX::initView()
 	_pointLightModel->assignMaterialToMeshNodes(0, 0, _numberOfPointLights - 1);
 
 	//--- create the pfx effect
-	pvr::assets::pfx::PfxParser rd(Files::EffectPfx, this);
+	pvr::pfx::PfxParser rd(Files::EffectPfx, this);
 	if (!_deviceResources->render_mgr.init(*this, _deviceResources->swapchain, _deviceResources->descriptorPool))
 	{
 		return pvr::Result::UnknownError;
@@ -528,7 +562,7 @@ pvr::Result VulkanDeferredShadingPFX::initView()
 
 	// initialize the UIRenderer and set the title text
 	_deviceResources->uiRenderer.init(getWidth(), getHeight(), isFullScreen(), _deviceResources->render_mgr.toPass(0, 0).getFramebuffer(0)->getRenderPass(),
-		static_cast<uint32_t>(RenderPassSubpass::Lighting), _deviceResources->commandPool, _deviceResources->queue);
+		static_cast<uint32_t>(RenderPassSubpass::Lighting), getBackBufferColorspace() == pvr::ColorSpace::sRGB, _deviceResources->commandPool, _deviceResources->queue);
 
 	_deviceResources->uiRenderer.getDefaultTitle()->setText("DeferredShadingPFX").commitUpdates();
 	_deviceResources->uiRenderer.getDefaultControls()->setText("Action1: Pause\nAction2: Orbit Camera\n");
@@ -618,7 +652,7 @@ pvr::Result VulkanDeferredShadingPFX::renderFrame()
 	if (this->shouldTakeScreenshot())
 	{
 		pvr::utils::takeScreenshot(_deviceResources->swapchain, _swapchainIndex, _deviceResources->commandPool, _deviceResources->queue, this->getScreenshotFileName(),
-			&_deviceResources->vmaBufferAllocator, &_deviceResources->vmaImageAllocator);
+			&_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
 	}
 
 	//--------------------
@@ -665,7 +699,7 @@ void VulkanDeferredShadingPFX::uploadStaticSceneData()
 		specStrength.setValue(material.defaultSemantics().getShininess());
 		diffColor.setValue(glm::vec4(material.defaultSemantics().getDiffuse(), 1.f));
 		node.updateNodeValueSemantic("SPECULARSTRENGTH", specStrength, 0);
-		node.updateNodeValueSemantic("DIFFUSECOLOUR", diffColor, 0);
+		node.updateNodeValueSemantic("DIFFUSECOLOR", diffColor, 0);
 	}
 }
 
@@ -682,6 +716,16 @@ void VulkanDeferredShadingPFX::uploadStaticDirectionalLightData()
 			.toPipeline(0, 0, static_cast<uint32_t>(RenderPassSubpass::Lighting), static_cast<uint32_t>(LightingSubpassGroup::DirectionalLight),
 				static_cast<uint32_t>(LightingSubpassPipeline::DirectionalLighting))
 			.updateBufferEntryNodeSemantic("LIGHTINTENSITY", mem, 0,
+				_deviceResources->render_mgr
+					.toSubpassGroupModel(0, 0, static_cast<uint32_t>(RenderPassSubpass::Lighting), static_cast<uint32_t>(LightingSubpassGroup::DirectionalLight),
+						static_cast<uint32_t>(LightingSubpassPipeline::DirectionalLighting))
+					.toRendermanNode(i));
+
+		mem.setValue(DirectionalLightConfiguration::AmbientLightColor);
+		_deviceResources->render_mgr
+			.toPipeline(0, 0, static_cast<uint32_t>(RenderPassSubpass::Lighting), static_cast<uint32_t>(LightingSubpassGroup::DirectionalLight),
+				static_cast<uint32_t>(LightingSubpassPipeline::DirectionalLighting))
+			.updateBufferEntryNodeSemantic("AMBIENTLIGHT", mem, 0,
 				_deviceResources->render_mgr
 					.toSubpassGroupModel(0, 0, static_cast<uint32_t>(RenderPassSubpass::Lighting), static_cast<uint32_t>(LightingSubpassGroup::DirectionalLight),
 						static_cast<uint32_t>(LightingSubpassPipeline::DirectionalLighting))
@@ -802,7 +846,7 @@ void VulkanDeferredShadingPFX::updateDynamicSceneData(uint32_t swapchain)
 
 void VulkanDeferredShadingPFX::updateDynamicLightData(uint32_t swapchain)
 {
-	int32_t pointLight = 0;
+	uint32_t pointLight = 0;
 	uint32_t directionalLight = 0;
 	RenderData& pass = _renderInfo;
 	// update the lighting data
@@ -814,13 +858,13 @@ void VulkanDeferredShadingPFX::updateDynamicLightData(uint32_t swapchain)
 		{
 		case pvr::assets::Light::Point:
 		{
-			if (pointLight >= PointLightConfiguration::MaxScenePointLights)
+			if (pointLight >= static_cast<uint32_t>(PointLightConfiguration::MaxScenePointLights))
 			{
 				continue;
 			}
 
 			const glm::mat4& transMtx = _mainScene->getWorldMatrix(_mainScene->getNodeIdFromLightNodeId(i));
-			const glm::mat4& proxyScale = glm::scale(glm::vec3(PointLightConfiguration::PointLightScale)) * PointLightConfiguration::PointlightIntensity;
+			const glm::mat4& proxyScale = glm::scale(glm::vec3(PointLightConfiguration::PointLightMaxRadius)) * PointLightConfiguration::PointlightIntensity;
 
 			const glm::mat4 mWorldScale = transMtx * proxyScale;
 
@@ -850,10 +894,10 @@ void VulkanDeferredShadingPFX::updateDynamicLightData(uint32_t swapchain)
 		}
 	}
 
-	int numSceneLights = pointLight;
+	uint32_t numSceneLights = pointLight;
 	if (DirectionalLightConfiguration::AdditionalDirectionalLight)
 	{
-		pass.directionalLightPass.lightProperties[directionalLight].viewSpaceLightDirection = _viewMatrix * glm::vec4(0.f, -1.f, 0.f, 0.f);
+		pass.directionalLightPass.lightProperties[directionalLight].viewSpaceLightDirection = _viewMatrix * glm::vec4(1.f, -1.f, -0.5f, 0.f);
 		++directionalLight;
 	}
 
@@ -873,7 +917,7 @@ void VulkanDeferredShadingPFX::updateDynamicLightData(uint32_t swapchain)
 	}
 
 	// update the procedural point lights
-	for (; pointLight < numSceneLights + (int32_t)_numberOfPointLights; ++pointLight)
+	for (; pointLight < numSceneLights + _numberOfPointLights; ++pointLight)
 	{
 		updateProceduralPointLight(pass.pointLightPasses.initialData[pointLight], _renderInfo.pointLightPasses.lightProperties[pointLight], pointLight);
 	}
@@ -893,7 +937,7 @@ void VulkanDeferredShadingPFX::setProceduralPointLightInitialData(PointLightPass
 	pointLightProperties.lightColor = glm::vec4(lightColor, 1.); // random-looking
 	pointLightProperties.lightSourceColor = glm::vec4(lightColor, .8); // random-looking
 	pointLightProperties.lightIntensity = PointLightConfiguration::PointlightIntensity;
-	pointLightProperties.lightRadius = PointLightConfiguration::PointLightRadius;
+	pointLightProperties.lightRadius = PointLightConfiguration::PointLightMaxRadius;
 }
 
 /*!*********************************************************************************************************************
@@ -950,8 +994,7 @@ void VulkanDeferredShadingPFX::updateProceduralPointLight(PointLightPasses::Init
 	const float z = cos(data.angle) * data.distance;
 	const float y = data.height;
 	const glm::mat4& transMtx = glm::translate(glm::vec3(x, y, z));
-	const glm::mat4& proxyScale = glm::scale(glm::vec3(PointLightConfiguration::PointLightScale)) * PointLightConfiguration::PointlightIntensity;
-
+	const glm::mat4& proxyScale = glm::scale(glm::vec3(PointLightConfiguration::PointLightMaxRadius));
 	const glm::mat4 mWorldScale = transMtx * proxyScale;
 
 	// POINT LIGHT GEOMETRY : The spheres that will be used for the stencil pass
@@ -1021,18 +1064,6 @@ void VulkanDeferredShadingPFX::updateProceduralPointLight(PointLightPasses::Init
 ***********************************************************************************************************************/
 void VulkanDeferredShadingPFX::updateAnimation()
 {
-	uint64_t deltaTime = getFrameTime();
-
-	if (!_isPaused)
-	{
-		_frameNumber += deltaTime * ApplicationConfiguration::FrameRate;
-		if (_frameNumber > _mainScene->getNumFrames() - 1)
-		{
-			_frameNumber = 0;
-		}
-		_mainScene->setCurrentFrame(_frameNumber);
-	}
-
 	glm::vec3 vTo, vUp;
 	float fov;
 	_mainScene->getCameraProperties(_cameraId, fov, _cameraPosition, vTo, vUp);
@@ -1041,7 +1072,7 @@ void VulkanDeferredShadingPFX::updateAnimation()
 	static float angle = 0;
 	if (_animateCamera)
 	{
-		angle += getFrameTime() / 1000.f;
+		angle += getFrameTime() / 5000.f;
 	}
 	_viewMatrix = glm::lookAt(glm::vec3(sin(angle) * 100.f + vTo.x, vTo.y + 30., cos(angle) * 100.f + vTo.z), vTo, vUp);
 	_viewProjectionMatrix = _projectionMatrix * _viewMatrix;
@@ -1077,7 +1108,7 @@ void VulkanDeferredShadingPFX::initialiseStaticLightProperties()
 			pass.pointLightPasses.lightProperties[pointLight].lightIntensity = PointLightConfiguration::PointlightIntensity;
 
 			// POINT LIGHT PROXIES : The "drawcalls" that will perform the actual rendering
-			pass.pointLightPasses.lightProperties[pointLight].lightRadius = PointLightConfiguration::PointLightRadius;
+			pass.pointLightPasses.lightProperties[pointLight].lightRadius = PointLightConfiguration::PointLightMaxRadius;
 
 			// POINT LIGHT SOURCES : The little balls that we render to show the lights
 			pass.pointLightPasses.lightProperties[pointLight].lightSourceColor = glm::vec4(light.getColor(), .8f);
@@ -1107,7 +1138,7 @@ void VulkanDeferredShadingPFX::initialiseStaticLightProperties()
 ***********************************************************************************************************************/
 void VulkanDeferredShadingPFX::allocateLights()
 {
-	int32_t countPoint = 0;
+	uint32_t countPoint = 0;
 	uint32_t countDirectional = 0;
 	for (uint32_t i = 0; i < _mainScene->getNumLightNodes(); ++i)
 	{
@@ -1129,7 +1160,7 @@ void VulkanDeferredShadingPFX::allocateLights()
 		++countDirectional;
 	}
 
-	if (countPoint >= PointLightConfiguration::MaxScenePointLights)
+	if (countPoint >= static_cast<uint32_t>(PointLightConfiguration::MaxScenePointLights))
 	{
 		countPoint = PointLightConfiguration::MaxScenePointLights;
 	}
@@ -1143,7 +1174,7 @@ void VulkanDeferredShadingPFX::allocateLights()
 	_renderInfo.pointLightPasses.lightProperties.resize(countPoint);
 	_renderInfo.pointLightPasses.initialData.resize(countPoint);
 
-	for (int i = countPoint - PointLightConfiguration::NumProceduralPointLights; i < countPoint; ++i)
+	for (uint32_t i = countPoint - PointLightConfiguration::NumProceduralPointLights; i < countPoint; ++i)
 	{
 		setProceduralPointLightInitialData(_renderInfo.pointLightPasses.initialData[i], _renderInfo.pointLightPasses.lightProperties[i]);
 	}

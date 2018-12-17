@@ -64,6 +64,11 @@ const glm::vec2 VBOmem[] = {
 ***********************************************************************************************************************/
 pvr::Result OpenGLESIntroducingPVRCamera::initApplication()
 {
+	setBackBufferColorspace(pvr::ColorSpace::lRGB); // Because the camera values are normally in the sRGB colorspace,
+	// if we use an sRGB backbuffer, we would need to reverse gamma-correct the values before performing operations
+	// on the values. We are not doing this here for simplicity, so we need to make sure that the framebuffer does not
+	// gamma correct. Note that if we perform math on the camera texture values, this is not strictly correct to do on
+	// the sRGB colorspace and may have adverse effects on the hue.
 	return pvr::Result::Success;
 }
 
@@ -86,11 +91,7 @@ pvr::Result OpenGLESIntroducingPVRCamera::initView()
 	_context = pvr::createEglContext();
 	_context->init(getWindow(), getDisplay(), getDisplayAttributes());
 
-	if (!_camera.initializeSession(pvr::HWCamera::Front, getWidth(), getHeight()))
-	{
-		throw pvr::PvrError("Could not initialize a camera session");
-		return pvr::Result::UnknownError;
-	}
+	_camera.initializeSession(pvr::HWCamera::Front, getWidth(), getHeight());
 
 	//  Load and compile the shaders & link programs
 	{
@@ -105,11 +106,13 @@ pvr::Result OpenGLESIntroducingPVRCamera::initView()
 		}
 		_uvTransformLocation = gl::GetUniformLocation(_program, "uvTransform");
 	}
-	_uiRenderer.init(getWidth(), getHeight(), isFullScreen());
+	_uiRenderer.init(getWidth(), getHeight(), isFullScreen(), getBackBufferColorspace() == pvr::ColorSpace::sRGB);
 	_uiRenderer.getDefaultDescription()->setText("Streaming of hardware Camera video preview");
 	_uiRenderer.getDefaultDescription()->commitUpdates();
 	_uiRenderer.getDefaultTitle()->setText("IntroducingPVRCamera");
 	_uiRenderer.getDefaultTitle()->commitUpdates();
+
+	gl::ClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
 	return pvr::Result::Success;
 }
@@ -183,10 +186,8 @@ pvr::Result OpenGLESIntroducingPVRCamera::renderFrame()
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return Return an auto ptr to the demo supplied by the user
-\brief  This function must be implemented by the user of the shell. The user should return its PVRShell object defining the behaviour of the application.
-***********************************************************************************************************************/
+/// <summary>This function must be implemented by the user of the shell. The user should return its pvr::Shell object defining the behaviour of the application.</summary>
+/// <returns>Return a unique ptr to the demo supplied by the user.</returns>
 std::unique_ptr<pvr::Shell> pvr::newDemo()
 {
 	return std::unique_ptr<pvr::Shell>(new OpenGLESIntroducingPVRCamera());

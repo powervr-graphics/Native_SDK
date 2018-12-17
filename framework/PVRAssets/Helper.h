@@ -6,8 +6,10 @@
 */
 #pragma once
 
-#include "PVRAssets/Model/Mesh.h"
+#include "PVRAssets/model/Mesh.h"
 #include "PVRAssets/Model.h"
+#include "PVRCore/IAssetProvider.h"
+
 namespace pvr {
 namespace assets {
 namespace helper {

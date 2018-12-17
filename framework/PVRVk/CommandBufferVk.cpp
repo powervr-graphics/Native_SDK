@@ -28,24 +28,25 @@ inline void copyRectangleToVulkan(const Rect2D& renderArea, VkRect2D& vulkanRend
 
 CommandBufferBase_::~CommandBufferBase_()
 {
-	if (getDevice().isValid())
+	if (getVkHandle() != VK_NULL_HANDLE)
 	{
-		if (getVkHandle() != VK_NULL_HANDLE)
+		if (_device.isValid())
 		{
 			if (_pool.isValid())
 			{
 				_device->getVkBindings().vkFreeCommandBuffers(getDevice()->getVkHandle(), _pool->getVkHandle(), 1, &getVkHandle());
+				_vkHandle = VK_NULL_HANDLE;
+				_device.reset();
 			}
 			else
 			{
-				Log(LogLevel::Debug, "Trying to release a Command buffer AFTER its pool was destroyed");
+				Log(LogLevel::Debug, "Trying to release a Command buffer after its pool was destroyed");
 			}
-			_vkHandle = VK_NULL_HANDLE;
 		}
-	}
-	else
-	{
-		Log(LogLevel::Warning, "WARNING - Command buffer released AFTER its context was destroyed.");
+		else
+		{
+			reportDestroyedAfterDevice("CommandBuffer");
+		}
 	}
 }
 
@@ -89,7 +90,7 @@ VkImageMemoryBarrier imageBarrier(const ImageMemoryBarrier& imgBarrier)
 	barrier.image = imgBarrier.getImage()->getVkHandle();
 	barrier.newLayout = static_cast<VkImageLayout>(imgBarrier.getNewLayout());
 	barrier.oldLayout = static_cast<VkImageLayout>(imgBarrier.getOldLayout());
-	barrier.subresourceRange = *reinterpret_cast<const VkImageSubresourceRange*>(&imgBarrier.getSubresourceRange());
+	barrier.subresourceRange = imgBarrier.getSubresourceRange().get();
 	return barrier;
 }
 
@@ -245,6 +246,7 @@ void CommandBufferBase_::bindDescriptorSets(PipelineBindPoint bindingPoint, cons
 		_device->getVkBindings().vkCmdBindDescriptorSets(getVkHandle(), static_cast<VkPipelineBindPoint>(bindingPoint), pipelineLayout->getVkHandle(), firstSet, numDescriptorSets,
 			native_sets, numDynamicOffsets, dynamicOffsets);
 	}
+	_objectReferences.push_back(pipelineLayout);
 }
 
 void CommandBufferBase_::bindVertexBuffer(Buffer const* buffers, uint32_t* offsets, uint16_t numBuffers, uint16_t startBinding, uint16_t numBindings)
@@ -254,7 +256,7 @@ void CommandBufferBase_::bindVertexBuffer(Buffer const* buffers, uint32_t* offse
 		_objectReferences.push_back(buffers[numBuffers]);
 		VkBuffer buff[8];
 		VkDeviceSize sizes[8];
-		for (int i = 0; i < numBuffers; ++i)
+		for (uint16_t i = 0; i < numBuffers; ++i)
 		{
 			_objectReferences.push_back(buffers[i]);
 			buff[i] = buffers[i]->getVkHandle();
@@ -266,7 +268,7 @@ void CommandBufferBase_::bindVertexBuffer(Buffer const* buffers, uint32_t* offse
 	{
 		VkBuffer* buff = new VkBuffer[numBuffers];
 		VkDeviceSize* sizes = new VkDeviceSize[numBuffers];
-		for (int i = 0; i < numBuffers; ++i)
+		for (uint16_t i = 0; i < numBuffers; ++i)
 		{
 			_objectReferences.push_back(buffers[i]);
 			buff[i] = buffers[i]->getVkHandle();
@@ -370,7 +372,7 @@ void CommandBufferBase_::end()
 #endif
 }
 
-void CommandBuffer_::executeCommands(SecondaryCommandBuffer& secondaryCmdBuffer)
+void CommandBuffer_::executeCommands(const SecondaryCommandBuffer& secondaryCmdBuffer)
 {
 	if (secondaryCmdBuffer.isNull())
 	{
@@ -381,7 +383,7 @@ void CommandBuffer_::executeCommands(SecondaryCommandBuffer& secondaryCmdBuffer)
 	_device->getVkBindings().vkCmdExecuteCommands(getVkHandle(), 1, &secondaryCmdBuffer->getVkHandle());
 }
 
-void CommandBuffer_::executeCommands(SecondaryCommandBuffer* secondaryCmdBuffers, uint32_t numCommandBuffers)
+void CommandBuffer_::executeCommands(const SecondaryCommandBuffer* secondaryCmdBuffers, uint32_t numCommandBuffers)
 {
 	ArrayOrVector<VkCommandBuffer, 16> cmdBuffs(numCommandBuffers);
 	for (uint32_t i = 0; i < numCommandBuffers; ++i)
@@ -423,7 +425,7 @@ void CommandBuffer_::beginRenderPass(const Framebuffer& framebuffer, bool inline
 }
 
 // buffers, textures, images, push constants
-void CommandBufferBase_::updateBuffer(Buffer& buffer, const void* data, uint32_t offset, uint32_t length)
+void CommandBufferBase_::updateBuffer(const Buffer& buffer, const void* data, uint32_t offset, uint32_t length)
 {
 	_objectReferences.push_back(buffer);
 	_device->getVkBindings().vkCmdUpdateBuffer(getVkHandle(), buffer->getVkHandle(), offset, length, (const uint32_t*)data);
@@ -435,30 +437,30 @@ void CommandBufferBase_::pushConstants(const PipelineLayout& pipelineLayout, Sha
 	_device->getVkBindings().vkCmdPushConstants(getVkHandle(), pipelineLayout->getVkHandle(), static_cast<VkShaderStageFlags>(stageFlags), offset, size, data);
 }
 
-void CommandBufferBase_::resolveImage(Image& srcImage, Image& dstImage, const ImageResolve* regions, uint32_t numRegions, ImageLayout srcLayout, ImageLayout dstLayout)
+void CommandBufferBase_::resolveImage(const Image& srcImage, const Image& dstImage, const ImageResolve* regions, uint32_t numRegions, ImageLayout srcLayout, ImageLayout dstLayout)
 {
 	_objectReferences.push_back(srcImage);
 	_objectReferences.push_back(dstImage);
 	assert(sizeof(ImageResolve) == sizeof(VkImageResolve));
 	_device->getVkBindings().vkCmdResolveImage(getVkHandle(), srcImage->getVkHandle(), static_cast<VkImageLayout>(srcLayout), dstImage->getVkHandle(),
-		static_cast<VkImageLayout>(dstLayout), numRegions, reinterpret_cast<const VkImageResolve*>(regions));
+		static_cast<VkImageLayout>(dstLayout), numRegions, (const VkImageResolve*)(regions));
 }
 
-void CommandBufferBase_::blitImage(const Image& src, pvrvk::Image& dst, const ImageBlit* regions, uint32_t numRegions, Filter filter, ImageLayout srcLayout, ImageLayout dstLayout)
+void CommandBufferBase_::blitImage(const Image& src, const Image& dst, const ImageBlit* regions, uint32_t numRegions, Filter filter, ImageLayout srcLayout, ImageLayout dstLayout)
 {
 	_objectReferences.push_back(src);
 	_objectReferences.push_back(dst);
 	ArrayOrVector<VkImageBlit, 8> imageBlits(numRegions);
 	for (uint32_t i = 0; i < numRegions; ++i)
 	{
-		imageBlits[i] = *reinterpret_cast<const VkImageBlit*>(&regions[i]);
+		imageBlits[i] = regions[i].get();
 	}
 
 	_device->getVkBindings().vkCmdBlitImage(getVkHandle(), src->getVkHandle(), static_cast<VkImageLayout>(srcLayout), dst->getVkHandle(), static_cast<VkImageLayout>(dstLayout),
 		numRegions, imageBlits.get(), static_cast<VkFilter>(filter));
 }
 
-void CommandBufferBase_::copyImage(Image& srcImage, Image& dstImage, ImageLayout srcImageLayout, ImageLayout dstImageLayout, uint32_t numRegions, const ImageCopy* regions)
+void CommandBufferBase_::copyImage(const Image& srcImage, const Image& dstImage, ImageLayout srcImageLayout, ImageLayout dstImageLayout, uint32_t numRegions, const ImageCopy* regions)
 {
 	_objectReferences.push_back(srcImage);
 	_objectReferences.push_back(dstImage);
@@ -467,14 +469,14 @@ void CommandBufferBase_::copyImage(Image& srcImage, Image& dstImage, ImageLayout
 
 	for (uint32_t i = 0; i < numRegions; ++i)
 	{
-		pRegions[i] = *reinterpret_cast<const VkImageCopy*>(&regions[i]);
+		pRegions[i] = regions[i].get();
 	}
 
 	_device->getVkBindings().vkCmdCopyImage(getVkHandle(), srcImage->getVkHandle(), static_cast<VkImageLayout>(srcImageLayout), dstImage->getVkHandle(),
 		static_cast<VkImageLayout>(dstImageLayout), numRegions, pRegions.get());
 }
 
-void CommandBufferBase_::copyImageToBuffer(Image& srcImage, ImageLayout srcImageLayout, Buffer& dstBuffer, const BufferImageCopy* regions, uint32_t numRegions)
+void CommandBufferBase_::copyImageToBuffer(const Image& srcImage, ImageLayout srcImageLayout, Buffer& dstBuffer, const BufferImageCopy* regions, uint32_t numRegions)
 {
 	_objectReferences.push_back(srcImage);
 	_objectReferences.push_back(dstBuffer);
@@ -484,33 +486,33 @@ void CommandBufferBase_::copyImageToBuffer(Image& srcImage, ImageLayout srcImage
 
 	for (uint32_t i = 0; i < numRegions; ++i)
 	{
-		pRegions[i] = *reinterpret_cast<const VkBufferImageCopy*>(&regions[i]);
+		pRegions[i] = regions[i].get();
 	}
 
 	_device->getVkBindings().vkCmdCopyImageToBuffer(
 		getVkHandle(), srcImage->getVkHandle(), static_cast<VkImageLayout>(srcImageLayout), dstBuffer->getVkHandle(), numRegions, pRegions.get());
 }
 
-void CommandBufferBase_::copyBuffer(Buffer srcBuffer, Buffer dstBuffer, uint32_t numRegions, const BufferCopy* regions)
+void CommandBufferBase_::copyBuffer(const Buffer& srcBuffer, const Buffer& dstBuffer, uint32_t numRegions, const BufferCopy* regions)
 {
 	_objectReferences.push_back(srcBuffer);
 	_objectReferences.push_back(dstBuffer);
-	_device->getVkBindings().vkCmdCopyBuffer(getVkHandle(), srcBuffer->getVkHandle(), dstBuffer->getVkHandle(), numRegions, reinterpret_cast<const VkBufferCopy*>(regions));
+	_device->getVkBindings().vkCmdCopyBuffer(getVkHandle(), srcBuffer->getVkHandle(), dstBuffer->getVkHandle(), numRegions, (const VkBufferCopy*)regions);
 }
-void CommandBufferBase_::copyBufferToImage(const Buffer& buffer, Image& image, ImageLayout dstImageLayout, uint32_t regionsCount, const BufferImageCopy* regions)
+void CommandBufferBase_::copyBufferToImage(const Buffer& buffer, const Image& image, ImageLayout dstImageLayout, uint32_t regionsCount, const BufferImageCopy* regions)
 {
 	ArrayOrVector<VkBufferImageCopy, 8> bufferImageCopy(regionsCount);
 	_objectReferences.push_back(buffer);
 	_objectReferences.push_back(image);
 	for (uint32_t i = 0; i < regionsCount; ++i)
 	{
-		bufferImageCopy[i] = *reinterpret_cast<const VkBufferImageCopy*>(&regions[i]);
+		bufferImageCopy[i] = regions[i].get();
 	}
 	_device->getVkBindings().vkCmdCopyBufferToImage(
 		getVkHandle(), buffer->getVkHandle(), image->getVkHandle(), static_cast<VkImageLayout>(dstImageLayout), regionsCount, bufferImageCopy.get());
 }
 
-void CommandBufferBase_::fillBuffer(Buffer dstBuffer, uint32_t dstOffset, uint32_t data, uint64_t size)
+void CommandBufferBase_::fillBuffer(const Buffer& dstBuffer, uint32_t dstOffset, uint32_t data, uint64_t size)
 {
 	_objectReferences.push_back(dstBuffer);
 	_device->getVkBindings().vkCmdFillBuffer(getVkHandle(), dstBuffer->getVkHandle(), dstOffset, size, data);
@@ -519,12 +521,12 @@ void CommandBufferBase_::fillBuffer(Buffer dstBuffer, uint32_t dstOffset, uint32
 // dynamic commands
 void CommandBufferBase_::setViewport(const Viewport& viewport)
 {
-	_device->getVkBindings().vkCmdSetViewport(getVkHandle(), 0, 1, reinterpret_cast<const VkViewport*>(&viewport));
+	_device->getVkBindings().vkCmdSetViewport(getVkHandle(), 0, 1, &viewport.get());
 }
 
 void CommandBufferBase_::setScissor(uint32_t firstScissor, uint32_t numScissors, const Rect2D* scissors)
 {
-	_device->getVkBindings().vkCmdSetScissor(getVkHandle(), firstScissor, numScissors, reinterpret_cast<const VkRect2D*>(scissors));
+	_device->getVkBindings().vkCmdSetScissor(getVkHandle(), firstScissor, numScissors, (const VkRect2D*)scissors);
 }
 
 void CommandBufferBase_::setDepthBounds(float min, float max)
@@ -562,7 +564,7 @@ void CommandBufferBase_::setLineWidth(float lineWidth)
 	_device->getVkBindings().vkCmdSetLineWidth(getVkHandle(), lineWidth);
 }
 
-inline void clearcolorimage(const DeviceWeakPtr& device, VkCommandBuffer buffer, ImageView& image, ClearColorValue clearColor, const uint32_t* baseMipLevel,
+inline void clearcolorimage(const DeviceWeakPtr& device, VkCommandBuffer buffer, const ImageView& image, ClearColorValue clearColor, const uint32_t* baseMipLevel,
 	const uint32_t* numLevels, const uint32_t* baseArrayLayers, const uint32_t* numLayers, uint32_t numRanges, ImageLayout layout)
 {
 	assertion(layout == ImageLayout::e_GENERAL || layout == ImageLayout::e_TRANSFER_DST_OPTIMAL);
@@ -583,14 +585,14 @@ inline void clearcolorimage(const DeviceWeakPtr& device, VkCommandBuffer buffer,
 	device->getVkBindings().vkCmdClearColorImage(buffer, image->getImage()->getVkHandle(), static_cast<VkImageLayout>(layout), &clearColor.getColor(), numRanges, subResourceRanges);
 }
 
-void CommandBufferBase_::clearColorImage(ImageView& image, const ClearColorValue& clearColor, ImageLayout currentLayout, const uint32_t baseMipLevel, const uint32_t numLevels,
-	const uint32_t baseArrayLayer, const uint32_t numLayers)
+void CommandBufferBase_::clearColorImage(const ImageView& image, const ClearColorValue& clearColor, ImageLayout currentLayout, const uint32_t baseMipLevel,
+	const uint32_t numLevels, const uint32_t baseArrayLayer, const uint32_t numLayers)
 {
 	_objectReferences.push_back(image);
 	clearcolorimage(_device, getVkHandle(), image, clearColor, &baseMipLevel, &numLevels, &baseArrayLayer, &numLayers, 1u, currentLayout);
 }
 
-void CommandBufferBase_::clearColorImage(ImageView& image, const ClearColorValue& clearColor, ImageLayout layout, const uint32_t* baseMipLevel, const uint32_t* numLevels,
+void CommandBufferBase_::clearColorImage(const ImageView& image, const ClearColorValue& clearColor, ImageLayout layout, const uint32_t* baseMipLevel, const uint32_t* numLevels,
 	const uint32_t* baseArrayLayers, const uint32_t* numLayers, uint32_t numRanges)
 {
 	_objectReferences.push_back(image);
@@ -598,7 +600,7 @@ void CommandBufferBase_::clearColorImage(ImageView& image, const ClearColorValue
 	clearcolorimage(_device, getVkHandle(), image, clearColor, baseMipLevel, numLevels, baseArrayLayers, numLayers, numRanges, layout);
 }
 
-inline static void clearDepthStencilImageHelper(const DeviceWeakPtr& device, VkCommandBuffer nativeCommandBuffer, Image& image, ImageLayout layout, ImageAspectFlags imageAspect,
+inline static void clearDepthStencilImageHelper(const DeviceWeakPtr& device, VkCommandBuffer nativeCommandBuffer, const Image& image, ImageLayout layout, ImageAspectFlags imageAspect,
 	float clearDepth, uint32_t clearStencil, const uint32_t* baseMipLevel, const uint32_t* numLevels, const uint32_t* baseArrayLayers, const uint32_t* numLayers, uint32_t numRanges)
 {
 	if (!(layout == ImageLayout::e_GENERAL || layout == ImageLayout::e_TRANSFER_DST_OPTIMAL))
@@ -626,13 +628,13 @@ inline static void clearDepthStencilImageHelper(const DeviceWeakPtr& device, VkC
 }
 
 void CommandBufferBase_::clearDepthImage(
-	Image& image, float clearDepth, const uint32_t baseMipLevel, const uint32_t numLevels, const uint32_t baseArrayLayer, const uint32_t numLayers, ImageLayout layout)
+	const Image& image, float clearDepth, const uint32_t baseMipLevel, const uint32_t numLevels, const uint32_t baseArrayLayer, const uint32_t numLayers, ImageLayout layout)
 {
 	_objectReferences.push_back(image);
 	clearDepthStencilImageHelper(_device, getVkHandle(), image, layout, ImageAspectFlags::e_DEPTH_BIT, clearDepth, 0u, &baseMipLevel, &numLevels, &baseArrayLayer, &numLayers, 1u);
 }
 
-void CommandBufferBase_::clearDepthImage(pvrvk::Image& image, float clearDepth, const uint32_t* baseMipLevel, const uint32_t* numLevels, const uint32_t* baseArrayLayers,
+void CommandBufferBase_::clearDepthImage(const Image& image, float clearDepth, const uint32_t* baseMipLevel, const uint32_t* numLevels, const uint32_t* baseArrayLayers,
 	const uint32_t* numLayers, uint32_t numRanges, ImageLayout layout)
 {
 	_objectReferences.push_back(image);
@@ -640,14 +642,14 @@ void CommandBufferBase_::clearDepthImage(pvrvk::Image& image, float clearDepth, 
 }
 
 void CommandBufferBase_::clearStencilImage(
-	Image& image, uint32_t clearStencil, const uint32_t baseMipLevel, const uint32_t numLevels, const uint32_t baseArrayLayer, const uint32_t numLayers, ImageLayout layout)
+	const Image& image, uint32_t clearStencil, const uint32_t baseMipLevel, const uint32_t numLevels, const uint32_t baseArrayLayer, const uint32_t numLayers, ImageLayout layout)
 {
 	_objectReferences.push_back(image);
 	clearDepthStencilImageHelper(
 		_device, getVkHandle(), image, layout, ImageAspectFlags::e_STENCIL_BIT, 0.0f, clearStencil, &baseMipLevel, &numLevels, &baseArrayLayer, &numLayers, 1u);
 }
 
-void CommandBufferBase_::clearStencilImage(Image& image, uint32_t clearStencil, const uint32_t* baseMipLevel, const uint32_t* numLevels, const uint32_t* baseArrayLayers,
+void CommandBufferBase_::clearStencilImage(const Image& image, uint32_t clearStencil, const uint32_t* baseMipLevel, const uint32_t* numLevels, const uint32_t* baseArrayLayers,
 	const uint32_t* numLayers, uint32_t numRanges, ImageLayout layout)
 {
 	_objectReferences.push_back(image);
@@ -655,7 +657,7 @@ void CommandBufferBase_::clearStencilImage(Image& image, uint32_t clearStencil, 
 		_device, getVkHandle(), image, layout, ImageAspectFlags::e_STENCIL_BIT, 0.0f, clearStencil, baseMipLevel, numLevels, baseArrayLayers, numLayers, numRanges);
 }
 
-void CommandBufferBase_::clearDepthStencilImage(Image& image, float clearDepth, uint32_t clearStencil, const uint32_t baseMipLevel, const uint32_t numLevels,
+void CommandBufferBase_::clearDepthStencilImage(const Image& image, float clearDepth, uint32_t clearStencil, const uint32_t baseMipLevel, const uint32_t numLevels,
 	const uint32_t baseArrayLayer, const uint32_t numLayers, ImageLayout layout)
 {
 	_objectReferences.push_back(image);
@@ -663,7 +665,7 @@ void CommandBufferBase_::clearDepthStencilImage(Image& image, float clearDepth, 
 		&numLevels, &baseArrayLayer, &numLayers, 1u);
 }
 
-void CommandBufferBase_::clearDepthStencilImage(Image& image, float clearDepth, uint32_t clearStencil, const uint32_t* baseMipLevel, const uint32_t* numLevels,
+void CommandBufferBase_::clearDepthStencilImage(const Image& image, float clearDepth, uint32_t clearStencil, const uint32_t* baseMipLevel, const uint32_t* numLevels,
 	const uint32_t* baseArrayLayers, const uint32_t* numLayers, uint32_t numRanges, ImageLayout layout)
 {
 	_objectReferences.push_back(image);
@@ -705,13 +707,13 @@ void CommandBufferBase_::draw(uint32_t firstVertex, uint32_t numVertices, uint32
 	_device->getVkBindings().vkCmdDraw(getVkHandle(), numVertices, numInstances, firstVertex, firstInstance);
 }
 
-void CommandBufferBase_::drawIndexedIndirect(Buffer& buffer, uint32_t offset, uint32_t count, uint32_t stride)
+void CommandBufferBase_::drawIndexedIndirect(const Buffer& buffer, uint32_t offset, uint32_t count, uint32_t stride)
 {
 	_objectReferences.push_back(buffer);
 	_device->getVkBindings().vkCmdDrawIndexedIndirect(getVkHandle(), buffer->getVkHandle(), offset, count, stride);
 }
 
-void CommandBufferBase_::drawIndirect(Buffer& buffer, uint32_t offset, uint32_t count, uint32_t stride)
+void CommandBufferBase_::drawIndirect(const Buffer& buffer, uint32_t offset, uint32_t count, uint32_t stride)
 {
 	_objectReferences.push_back(buffer);
 	_device->getVkBindings().vkCmdDrawIndirect(getVkHandle(), buffer->getVkHandle(), offset, count, stride);

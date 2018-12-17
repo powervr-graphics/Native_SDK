@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>PVRCore: /usr/buildxl/buildroot/sdk/branch/SDK/framework/PVRCore/Math/AxisAlignedBox.h File Reference</title>
+<title>PVRCore: /usr/buildxl/buildroot/sdk/branch/SDK/framework/PVRCore/math/AxisAlignedBox.h File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -15,7 +15,7 @@
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="IMGdoxygen.css" rel="stylesheet" type="text/css"/>
-<link rel="shortcut icon" href="http://www.imgtec.com/images/img.ico">
+<link rel="shortcut icon" type="image/x-icon" href="img.ico">
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
+      <a href="https://www.imgtec.com/developers/" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRCore</span> Documentation</a>
    <tbody>
@@ -76,7 +76,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_687531cb5acd5e736601deea3ef3b7c0.html">SDK</a></li><li class="navelem"><a class="el" href="dir_407ce59cc93389552d4bbf4df897abf8.html">framework</a></li><li class="navelem"><a class="el" href="dir_72a2a6c70dc66b6caf7d035656739fa9.html">PVRCore</a></li><li class="navelem"><a class="el" href="dir_48c74c86711eac0861688432dcc19d81.html">Math</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_687531cb5acd5e736601deea3ef3b7c0.html">SDK</a></li><li class="navelem"><a class="el" href="dir_407ce59cc93389552d4bbf4df897abf8.html">framework</a></li><li class="navelem"><a class="el" href="dir_72a2a6c70dc66b6caf7d035656739fa9.html">PVRCore</a></li><li class="navelem"><a class="el" href="dir_fc2ab4e3393a44988e795a000e4d98b8.html">math</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -130,6 +130,12 @@ Functions</h2></td></tr>
 <tr class="memitem:adc0e2a5fcfe563de724d8f73a02e3511"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1math.html#adc0e2a5fcfe563de724d8f73a02e3511">pvr::math::getFrustumPlanes</a> (<a class="el" href="namespacepvr.html#a74c5d1afa51512f076dd8e5844b171c8">pvr::Api</a> api, const glm::mat4 &amp;projection_from_world, ViewingFrustum &amp;frustum_out)</td></tr>
 <tr class="memdesc:adc0e2a5fcfe563de724d8f73a02e3511"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve the viewing frustum from a projection matrix <a href="#adc0e2a5fcfe563de724d8f73a02e3511">More...</a><br/></td></tr>
 <tr class="separator:adc0e2a5fcfe563de724d8f73a02e3511"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a914dd4e1d9df5dee40d9b2d0fc2d95cf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1math.html#a914dd4e1d9df5dee40d9b2d0fc2d95cf">pvr::math::getFrustumPoints</a> (ViewingFrustum &amp;frustum_out)</td></tr>
+<tr class="memdesc:a914dd4e1d9df5dee40d9b2d0fc2d95cf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve the points of a viewing frustum by intersecting planes <a href="#a914dd4e1d9df5dee40d9b2d0fc2d95cf">More...</a><br/></td></tr>
+<tr class="separator:a914dd4e1d9df5dee40d9b2d0fc2d95cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc117726745988be4ce7c94d524aefb1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afc117726745988be4ce7c94d524aefb1"></a>
+glm::vec3&#160;</td><td class="memItemRight" valign="bottom"><b>pvr::math::IntersectPlanes</b> (glm::vec4 P0, glm::vec4 P1, glm::vec4 P2)</td></tr>
+<tr class="separator:afc117726745988be4ce7c94d524aefb1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a76ff8b92d0032831704d3502ea7b6abd"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1math.html#a76ff8b92d0032831704d3502ea7b6abd">pvr::math::pointOnSide</a> (const glm::vec3 &amp;point, const glm::vec4 &amp;plane)</td></tr>
 <tr class="memdesc:a76ff8b92d0032831704d3502ea7b6abd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate if the point is in the positive half-space defined by the plane (i.e. if it is lying on the same side as the normal points <a href="#a76ff8b92d0032831704d3502ea7b6abd">More...</a><br/></td></tr>
 <tr class="separator:a76ff8b92d0032831704d3502ea7b6abd"><td class="memSeparator" colspan="2">&#160;</td></tr>

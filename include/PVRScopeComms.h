@@ -9,6 +9,12 @@
 #ifndef _PVRSCOPECOMMS_H_
 #define _PVRSCOPECOMMS_H_
 
+#ifdef WIN32
+#define PVRSCOPE_EXPORT
+#else
+#define PVRSCOPE_EXPORT __attribute__((visibility("default")))
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -122,6 +128,7 @@ struct SSPSCommsCounterDef
  @brief         Initialise @ref ScopeComms
  @return        @ref ScopeComms data.
 ****************************************************************************/
+PVRSCOPE_EXPORT
 struct SSPSCommsData *pplInitialise(
 	const char			* const psName,		///< String to describe the application
 	const unsigned int	nNameLen			///< String length
@@ -130,6 +137,7 @@ struct SSPSCommsData *pplInitialise(
 /*!**************************************************************************
  @brief         Shutdown or de-initialise the remote control section of PVRScope.
 ****************************************************************************/
+PVRSCOPE_EXPORT
 void pplShutdown(
     struct SSPSCommsData	*psData			///< Context data
 );
@@ -144,6 +152,7 @@ void pplShutdown(
 				not running); therefore this function, is designed to allow an
 				entire array of connections to be waited upon simultaneously.
 ****************************************************************************/
+PVRSCOPE_EXPORT
 void pplWaitForConnection(
 	struct SSPSCommsData	* const psData,			///< Array of context data pointers
 	int						* const pnBoolResults,	///< Array of results - false (0) if timeout
@@ -154,6 +163,7 @@ void pplWaitForConnection(
 /*!**************************************************************************
  @brief         Query for the time. Units are microseconds, resolution is undefined.
 ****************************************************************************/
+PVRSCOPE_EXPORT
 unsigned int pplGetTimeUS(
 	struct SSPSCommsData	* const psData	    ///< Context data
 );
@@ -164,6 +174,7 @@ unsigned int pplGetTimeUS(
                 \li switching to outdoor renderer
                 \li starting benchmark test N
 ****************************************************************************/
+PVRSCOPE_EXPORT
 int pplSendMark(
 	struct SSPSCommsData	* const psData,		///< Context data
 	const char				* const psString,	///< String to send
@@ -177,6 +188,7 @@ int pplSendMark(
 				timeline, using a "flame graph" style when there is nesting.
 				See also the CPPLProcessingScoped helper class.
 ****************************************************************************/
+PVRSCOPE_EXPORT
 int pplSendProcessingBegin(
 	struct SSPSCommsData	* const psData,		///< Context data
 	const char				* const	psString,	///< Name of the processing block
@@ -191,6 +203,7 @@ int pplSendProcessingBegin(
 				timeline, using a "flame graph" style when there is nesting.
 				See also the CPPLProcessingScoped helper class.
 ****************************************************************************/
+PVRSCOPE_EXPORT
 int pplSendProcessingEnd(
 	struct SSPSCommsData	* const psData      ///< Context data
 );
@@ -198,6 +211,7 @@ int pplSendProcessingEnd(
 /*!**************************************************************************
  @brief         Create a library of remotely editable items
 ****************************************************************************/
+PVRSCOPE_EXPORT
 int pplLibraryCreate(
 	struct SSPSCommsData				* const psData,	///< Context data
 	const struct SSPSCommsLibraryItem	* const pItems,	///< Editable items
@@ -208,6 +222,7 @@ int pplLibraryCreate(
  @brief	        Query to see whether a library item has been edited, and also
 				retrieve the new data.
 ****************************************************************************/
+PVRSCOPE_EXPORT
 int pplLibraryDirtyGetFirst(
 	struct SSPSCommsData	* const psData,	        ///< Context data
 	unsigned int			* const pnItem,	        ///< Item number
@@ -218,6 +233,7 @@ int pplLibraryDirtyGetFirst(
 /*!**************************************************************************
  @brief         Specify the number of custom counters and their definitions
 ****************************************************************************/
+PVRSCOPE_EXPORT
 int pplCountersCreate(
 	struct SSPSCommsData				* const psData,	        ///< Context data
 	const struct SSPSCommsCounterDef	* const psCounterDefs,  ///< Counter definitions
@@ -228,6 +244,7 @@ int pplCountersCreate(
  @brief 	    Send an update for all the custom counters. The
 				psCounterReadings array must be nCount long.
 ****************************************************************************/
+PVRSCOPE_EXPORT
 int pplCountersUpdate(
 	struct SSPSCommsData		* const psData,	            ///< Context data
 	const unsigned int			* const psCounterReadings	///< Counter readings array
@@ -244,6 +261,7 @@ int pplCountersUpdate(
 				extremely infrequently, this function could be called once at
 				the end of each bout of data send.
 ****************************************************************************/
+PVRSCOPE_EXPORT
 int pplSendFlush(
 	struct SSPSCommsData		* const psData	    ///< Context data
 );
@@ -290,6 +308,7 @@ private:
 };
 #endif
 
+#undef PVRSCOPE_EXPORT
 #endif /* _PVRSCOPECOMMS_H_ */
 
 /*****************************************************************************

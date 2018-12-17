@@ -7,9 +7,10 @@
 #pragma once
 #include "PVRVk/PVRVk.h"
 #include "PVRUtils/StructuredMemory.h"
-#include "PVRCore/Math/AxisAlignedBox.h"
-#include "PVRCore/StringFunctions.h"
-#include "PVRCore/Texture.h"
+#include "PVRCore/math/AxisAlignedBox.h"
+#include "PVRCore/strings/StringFunctions.h"
+#include "PVRCore/texture/Texture.h"
+#include "PVRCore/RefCounted.h"
 
 //!\cond NO_DOXYGEN
 #define NUM_BITS_GROUP_ID 8
@@ -146,7 +147,7 @@ private:
 	/// the sprite's data contains into its own _cachedMatrix member.</summary>
 	virtual void calculateMvp(uint64_t parentIds, glm::mat4 const& srt, const glm::mat4& viewProj, pvrvk::Rect2D const& viewport) const = 0;
 
-	virtual void onRender(pvrvk::CommandBufferBase& commands, uint64_t parentId) const {}
+	virtual void onRender(pvrvk::CommandBufferBase& commands, uint64_t parentId) {}
 
 	/// <summary>A function to call when adding a particular instance.</summary>
 	/// <param name="instance">The instance id of the parent.</param>
@@ -186,6 +187,16 @@ protected:
 	/// <summary>View projection matrix.</summary>
 	glm::mat4 _viewProj;
 
+	/// <summary>Determines whether the sprite name should be updated.</summary>
+	/// <returns>Returns true if the sprite name is dirty and the cached string must be updated.</returns>
+	bool isSpriteNameDirty() const
+	{
+		return true;
+	}
+
+	/// <summary>A cached sprite name.</summary>
+	std::string _spriteName;
+
 public:
 	/// <summary>Call this function after changing the sprite in any way, in order to update its internal
 	/// information. This function should be called before any rendering commands are submitted and
@@ -208,7 +219,7 @@ public:
 	/// beginRendering on the uiRenderer this sprite belongs to to set up the commandBuffer to render to. In general
 	/// try to group as many render commands as possible between the beginRendering and endRendering. This overload
 	/// does not apply any transformations to the sprite.</summary>
-	void render() const;
+	void render();
 
 	/// <summary>Use this to use this sprite as Alpha channel only, setting its color to 1,1,1,a. Otherwise, an Alpha
 	/// texture would render black. Always use this setting to render Fonts that have been generated with PVRTexTool
@@ -272,6 +283,17 @@ public:
 	const glm::vec4& getColor() const
 	{
 		return _color;
+	}
+
+	/// <summary>Get the sprite name.</summary>
+	/// <returns>The sprites's name</returns>
+	virtual const std::string getSpriteName()
+	{
+		if (isSpriteNameDirty())
+		{
+			_spriteName = "Sprite";
+		}
+		return _spriteName;
 	}
 
 	/// <summary>This setting queries if this is set to render as Alpha channel only, (setting its color to 1,1,1,a).
@@ -457,7 +479,7 @@ private:
 	void calculateMvp(uint64_t parentIds, const glm::mat4& srt, const glm::mat4& viewProj, const pvrvk::Rect2D& viewport) const;
 
 	/// <summary>Function that will be automatically called by the uiRenderer. Do not call.</summary>
-	void onRender(pvrvk::CommandBufferBase& commands, uint64_t parentId) const;
+	void onRender(pvrvk::CommandBufferBase& commands, uint64_t parentId);
 
 	void updateTextureDescriptorSet() const;
 
@@ -582,6 +604,17 @@ public:
 	{
 		return getDimensions() * _scale;
 	}
+
+	/// <summary>Get the sprite name.</summary>
+	/// <returns>The sprites's name</returns>
+	const std::string getSpriteName()
+	{
+		if (isSpriteNameDirty())
+		{
+			_spriteName = getImageView()->getObjectName();
+		}
+		return _spriteName;
+	}
 };
 
 /// <summary>Use this class through the Refcounted Framework Object pvr::ui::Font. Is an Image_ containing font
@@ -674,7 +707,7 @@ private:
 
 public:
 	/// <summary>Load the font data from the font texture.</summary>
-	/// <param name="texture">The pvr::assets::Texture texture to load font data from.</param>
+	/// <param name="texture">The pvr::Texture texture to load font data from.</param>
 	/// <returns>Returns 'True' if the font was loaded successfully.</returns>
 	void loadFontData(const Texture& texture);
 
@@ -760,6 +793,13 @@ public:
 	{
 		return _texDescSet;
 	}
+
+	/// <summary>Retrieve the image view containing this font's texture.</summary>
+	/// <returns>This Font's texture.</returns>
+	const pvrvk::ImageView& getImageView() const
+	{
+		return _imageView;
+	}
 };
 
 /// <summary>UIRenderer vertex format.</summary>
@@ -812,7 +852,7 @@ private:
 	/// <param name="uiRenderer">The UIRenderer to use when creating the Font.</param>
 	/// <param name="font">The font to use for the text element.</param>
 	/// <param name="maxTextLength">The maximum number of characters for the text element.</param>
-	TextElement_(UIRenderer& uiRenderer, const Font& font, uint32_t maxTextLength = 255) : _uiRenderer(&uiRenderer), _font(font), _isTextDirty(true), _maxLength(maxTextLength)
+	TextElement_(UIRenderer& uiRenderer, const Font& font, uint32_t maxTextLength = 255) : _isTextDirty(true), _font(font), _maxLength(maxTextLength), _uiRenderer(&uiRenderer)
 	{
 		_maxLength = _maxLength ? _maxLength : 255;
 		createBuffers();
@@ -826,7 +866,7 @@ private:
 	/// <param name="maxTextLength">The maximum number of characters for the text element. If less than strlen(str),
 	/// it is implicitly set to strlen(<paramref name="str"/>)</param>
 	TextElement_(UIRenderer& uiRenderer, const std::string& str, const Font& font, uint32_t maxTextLength = 0)
-		: _isTextDirty(true), _font(font), _maxLength(std::max<uint32_t>((uint32_t)str.length(), maxTextLength)), _uiRenderer(&uiRenderer)
+		: _isTextDirty(true), _font(font), _maxLength(std::max<uint32_t>(static_cast<uint32_t>(str.length()), maxTextLength)), _uiRenderer(&uiRenderer)
 	{
 		_maxLength = _maxLength ? _maxLength : 255;
 		createBuffers();
@@ -841,7 +881,7 @@ private:
 	/// <param name="maxTextLength">The maximum number of characters for the text element. If less than strlen(str),
 	/// it is implicitly set to strlen(<paramref name="str"/>)</param>
 	TextElement_(UIRenderer& uiRenderer, const std::wstring& str, const Font& font, uint32_t maxTextLength = 0)
-		: _isTextDirty(true), _font(font), _maxLength(std::max<uint32_t>((uint32_t)str.length(), maxTextLength)), _uiRenderer(&uiRenderer)
+		: _isTextDirty(true), _font(font), _maxLength(std::max<uint32_t>(static_cast<uint32_t>(str.length()), maxTextLength)), _uiRenderer(&uiRenderer)
 	{
 		_maxLength = _maxLength ? _maxLength : 255;
 		createBuffers();
@@ -870,18 +910,17 @@ private:
 	void regenerateText() const;
 	void updateVbo() const;
 	/// <summary>Function that will be automatically called by the uiRenderer. Do not call.</summary>
-	void onRender(pvrvk::CommandBufferBase& commands) const;
+	void onRender(pvrvk::CommandBufferBase& commands);
 
 	/// <summary>Function that will be automatically called by the uiRenderer. Do not call.</summary>
 	uint32_t updateVertices(float fZPos, float xPos, float yPos, const std::vector<uint32_t>& text, Vertex* const pVertices) const;
 
-	uint32_t _spaceWidth;
 	bool _isUtf8;
 	mutable bool _isTextDirty;
+	mutable Font _font;
 	mutable pvrvk::Buffer _vbo;
 	mutable pvrvk::Buffer _drawIndirectBuffer;
 	mutable uint32_t _maxLength;
-	mutable Font _font;
 	mutable std::string _textStr;
 	mutable std::wstring _textWStr;
 	mutable std::vector<uint32_t> _utf32;
@@ -967,7 +1006,7 @@ private:
 	void onRemoveInstance(uint64_t parentId);
 
 	/// <summary>Constructor. Do not use - use UIRenderer::createText</summary>
-	Text_(UIRenderer& uiRenderer, const TextElement& text);
+	Text_(UIRenderer& uiRenderer, const TextElement& textElement);
 
 	struct MvpUboData
 	{
@@ -992,11 +1031,15 @@ private:
 
 	void calculateMvp(uint64_t parentIds, glm::mat4 const& srt, const glm::mat4& viewProj, pvrvk::Rect2D const& viewport) const;
 
-	void onRender(pvrvk::CommandBufferBase& commands, uint64_t parentId) const;
+	void onRender(pvrvk::CommandBufferBase& commands, uint64_t parentId);
 
 	void updateUbo(uint64_t parentId) const;
-	mutable TextElement _text;
+	mutable TextElement _textElement;
 	mutable std::map<uint64_t, MvpUboData> _mvpData;
+
+	std::string _imageViewObjectName;
+	std::string _vboObjectName;
+	std::string _drawIndirectBufferObjectName;
 
 public:
 	/// <summary>Virtual Descructor for a Text_.</summary>
@@ -1016,14 +1059,14 @@ public:
 	/// <returns>The text objects current text element</returns>
 	TextElement getTextElement()
 	{
-		return _text;
+		return _textElement;
 	}
 
 	/// <summary>Gets the text objects current text element</summary>
 	/// <returns>The text objects current text element</returns>
 	const TextElement getTextElement() const
 	{
-		return _text;
+		return _textElement;
 	}
 
 	/// <summary>Get the size of this texture after applying scale</summary>
@@ -1068,6 +1111,29 @@ public:
 		getTextElement()->setText(std::forward<std::wstring>(str));
 		return *this;
 	}
+
+	/// <summary>Determines whether the sprite name should be updated.</summary>
+	/// <returns>Returns true if the sprite name is dirty and the cached string must be updated.</returns>
+	bool isSpriteNameDirty() const
+	{
+		return !(_textElement->getFont()->getImageView()->getObjectName() == _imageViewObjectName && _textElement->_vbo->getObjectName() == _vboObjectName);
+	}
+
+	/// <summary>Get the sprite name.</summary>
+	/// <returns>The sprites's name</returns>
+	const std::string getSpriteName()
+	{
+		if (isSpriteNameDirty())
+		{
+			_imageViewObjectName = _textElement->getFont()->getImageView()->getObjectName();
+			_vboObjectName = _textElement->_vbo->getObjectName();
+			_drawIndirectBufferObjectName = _textElement->_drawIndirectBuffer->getObjectName();
+			_spriteName = "ImageView: " + _imageViewObjectName;
+			_spriteName += ", Vbo: " + _vboObjectName;
+			_spriteName += ", Indirect Buffer: " + _drawIndirectBufferObjectName;
+		}
+		return _spriteName;
+	}
 };
 
 /// <summary>Abstract container for sprites. See MatrixGroup or PixelGroup. A group contains references to a number of
@@ -1098,7 +1164,7 @@ private:
 	}
 
 	/// <summary>Internal function that UIRenderer calls to render. Do not call directly.</summary>
-	virtual void onRender(pvrvk::CommandBufferBase& commandBuffer, uint64_t parentId) const
+	virtual void onRender(pvrvk::CommandBufferBase& commandBuffer, uint64_t parentId)
 	{
 		for (ChildContainer::iterator it = _children.begin(); it != _children.end(); ++it)
 		{

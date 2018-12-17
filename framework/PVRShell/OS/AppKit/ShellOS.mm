@@ -6,7 +6,7 @@
 */
 //!\cond NO_DOXYGEN
 #include "PVRShell/OS/ShellOS.h"
-#include "PVRCore/IO/FilePath.h"
+#include "PVRCore/stream/FilePath.h"
 #include <mach/mach_time.h>
 #include <Foundation/Foundation.h>
 #include <AppKit/NSWindow.h>

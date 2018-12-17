@@ -27,14 +27,31 @@ public:
 	/// <returns>Return true if this event is set</returns>
 	bool isSet();
 
+	/// <summary>Get the event creation flags</summary>
+	/// <returns>The set of event creation flags</returns>
+	inline EventCreateFlags getFlags() const
+	{
+		return _createInfo.getFlags();
+	}
+
+	/// <summary>Get this event's create flags</summary>
+	/// <returns>EventCreateInfo</returns>
+	EventCreateInfo getCreateInfo() const
+	{
+		return _createInfo;
+	}
+
 private:
 	template<typename>
 	friend struct ::pvrvk::RefCountEntryIntrusive;
 	friend class ::pvrvk::impl::Device_;
 
-	explicit Event_(const DeviceWeakPtr& device);
+	Event_(const DeviceWeakPtr& device, const EventCreateInfo& createInfo);
 
 	~Event_();
+
+	/// <summary>Creation information used when creating the event.</summary>
+	EventCreateInfo _createInfo;
 };
 } // namespace impl
 } // namespace pvrvk

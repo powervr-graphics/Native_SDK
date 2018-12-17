@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['_5fassetstowrite',['_assetsToWrite',['../classpvr_1_1_asset_writer.html#a2ca5b8a026f1f4e735c0d31a1be36730',1,'pvr::AssetWriter']]],
   ['_5fassetstream',['_assetStream',['../classpvr_1_1_asset_reader.html#a86203def59b308cc09bfcb9a46ea866e',1,'pvr::AssetReader::_assetStream()'],['../classpvr_1_1_asset_writer.html#a92a322e4a022058c0c5115d044a6be13',1,'pvr::AssetWriter::_assetStream()']]],
   ['_5fbufferposition',['_bufferPosition',['../classpvr_1_1_buffer_stream.html#a3019996cf57333a904d9b704d8f5b96a',1,'pvr::BufferStream']]],
   ['_5fbuffersize',['_bufferSize',['../classpvr_1_1_buffer_stream.html#af8a53be56d245a30e272bdf857d3ff91',1,'pvr::BufferStream']]],

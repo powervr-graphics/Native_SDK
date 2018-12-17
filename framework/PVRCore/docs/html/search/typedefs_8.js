@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['storagetype',['StorageType',['../classpvr_1_1_contiguous_map.html#a3108122d56def4816936370f41206b2d',1,'pvr::ContiguousMap']]]
+  ['valuetype',['ValueType',['../classpvr_1_1async_1_1_i_framework_async_result.html#a443532fc20e721cbf2ffa8a15e180f56',1,'pvr::async::IFrameworkAsyncResult']]]
 ];

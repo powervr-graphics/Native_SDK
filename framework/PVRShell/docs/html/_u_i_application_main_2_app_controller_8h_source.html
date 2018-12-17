@@ -15,7 +15,7 @@
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="IMGdoxygen.css" rel="stylesheet" type="text/css"/>
-<link rel="shortcut icon" href="http://www.imgtec.com/images/img.ico">
+<link rel="shortcut icon" type="image/x-icon" href="img.ico">
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
+      <a href="https://www.imgtec.com/developers/" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRShell</span> Documentation</a>
    <tbody>
@@ -65,7 +65,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Pages</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -88,7 +88,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#pragma once</span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor"></span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_state_machine_8h.html">PVRShell/StateMachine.h</a>&quot;</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_command_line_8h.html">PVRShell/CommandLine.h</a>&quot;</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &quot;PVRCore/commandline/CommandLine.h&quot;</span></div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;</div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#import &lt;UIKit/UIApplication.h&gt;</span></div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#import &lt;Foundation/NSTimer.h&gt;</span></div>
@@ -97,15 +97,13 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;{</div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;    NSTimer* <a class="code" href="interface_app_controller.html#acee3167c31565783aec7bbe3b59ad4bb">mainLoopTimer</a>; </div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    <a class="code" href="classpvr_1_1platform_1_1_state_machine.html">pvr::platform::StateMachine</a>* <a class="code" href="interface_app_controller.html#a6619f568c3c92e3eb86de76babfa8f4d">stateMachine</a>; </div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    <a class="code" href="classpvr_1_1platform_1_1_command_line_parser.html">pvr::platform::CommandLineParser</a> <a class="code" href="interface_app_controller.html#aee150b1673f4b49b56ef2bd3d3f536fc">commandLine</a>; </div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    pvr::platform::CommandLineParser <a class="code" href="interface_app_controller.html#aee150b1673f4b49b56ef2bd3d3f536fc">commandLine</a>; </div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;}</div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;</div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="keyword">@end</span></div>
-<div class="ttc" id="_command_line_8h_html"><div class="ttname"><a href="_command_line_8h.html">CommandLine.h</a></div><div class="ttdoc">Contains the CommandLine class. </div></div>
 <div class="ttc" id="interface_app_controller_html_a6619f568c3c92e3eb86de76babfa8f4d"><div class="ttname"><a href="interface_app_controller.html#a6619f568c3c92e3eb86de76babfa8f4d">AppController::stateMachine</a></div><div class="ttdeci">pvr::platform::StateMachine * stateMachine</div><div class="ttdoc">The State Machine powering the pvr::Shell. </div><div class="ttdef"><b>Definition:</b> AppController.h:20</div></div>
 <div class="ttc" id="classpvr_1_1platform_1_1_state_machine_html"><div class="ttname"><a href="classpvr_1_1platform_1_1_state_machine.html">pvr::platform::StateMachine</a></div><div class="ttdoc">The StateMachine controlling the PowerVR Shell. Provides the application main loop and callbacks...</div><div class="ttdef"><b>Definition:</b> StateMachine.h:15</div></div>
 <div class="ttc" id="interface_app_controller_html"><div class="ttname"><a href="interface_app_controller.html">AppController</a></div><div class="ttdoc">iOS entry point implementation</div><div class="ttdef"><b>Definition:</b> AppController.h:16</div></div>
-<div class="ttc" id="classpvr_1_1platform_1_1_command_line_parser_html"><div class="ttname"><a href="classpvr_1_1platform_1_1_command_line_parser.html">pvr::platform::CommandLineParser</a></div><div class="ttdoc">This class parses, abstracts, stores and handles command line options passed on application launch...</div><div class="ttdef"><b>Definition:</b> CommandLine.h:15</div></div>
 <div class="ttc" id="interface_app_controller_html_acee3167c31565783aec7bbe3b59ad4bb"><div class="ttname"><a href="interface_app_controller.html#acee3167c31565783aec7bbe3b59ad4bb">AppController::mainLoopTimer</a></div><div class="ttdeci">NSTimer * mainLoopTimer</div><div class="ttdoc">timer for the main loop </div><div class="ttdef"><b>Definition:</b> AppController.h:19</div></div>
 <div class="ttc" id="_state_machine_8h_html"><div class="ttname"><a href="_state_machine_8h.html">StateMachine.h</a></div><div class="ttdoc">The StateMachine controlling the PowerVR Shell. </div></div>
 <div class="ttc" id="interface_app_controller_html_aee150b1673f4b49b56ef2bd3d3f536fc"><div class="ttname"><a href="interface_app_controller.html#aee150b1673f4b49b56ef2bd3d3f536fc">AppController::commandLine</a></div><div class="ttdeci">pvr::platform::CommandLineParser commandLine</div><div class="ttdoc">Command line options passed on app launch. </div><div class="ttdef"><b>Definition:</b> AppController.h:21</div></div>

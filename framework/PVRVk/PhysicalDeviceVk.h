@@ -18,7 +18,7 @@ namespace impl {
 /// <summary>The representation of an entire actual, physical GPU device (as opposed to Device,
 /// which is a local, logical part of it). A Physical device is "determined", or "found", or
 /// "enumerated", (while a logical device is "created"). You can use the physical device to
-/// create logical Devices, determine Extensions etc. See Vulkan spec. </summary>
+/// create logical Devices, determine Extensions etc. See Vulkan spec.</summary>
 class PhysicalDevice_ : public InstanceObjectHandle<VkPhysicalDevice>, public EmbeddedRefCount<PhysicalDevice_>
 {
 public:
@@ -88,7 +88,7 @@ public:
 	/// <returns>The created DisplayMode</returns>
 	DisplayMode createDisplayMode(pvrvk::Display& display, const pvrvk::DisplayModeCreateInfo& displayModeCreateInfo);
 
-	/// <summary> create gpu device. </summary>
+	/// <summary> create gpu device.</summary>
 	/// <param name="deviceCreateInfo">Device create info</param>
 	/// <returns>Device</returns>
 	Device createDevice(const DeviceCreateInfo& deviceCreateInfo);
@@ -100,9 +100,19 @@ public:
 		return _queueFamilyPropeties;
 	}
 
+	/// <summary>Retrieves the set of supported surface presentation modes</summary>
+	/// <param name="surface">The surface to retrieve supported presentation modes for</param>
+	/// <returns>vector of pvrvk::PresentModeKHR</returns>
+	std::vector<PresentModeKHR> getSurfacePresentModes(const Surface& surface) const;
+
+	/// <summary>Retrieves the set of supported surface formats</summary>
+	/// <param name="surface">The surface to retrieve supported formats for</param>
+	/// <returns>vector of pvrvk::ExtensionProperties</returns>
+	std::vector<SurfaceFormatKHR> getSurfaceFormats(const Surface& surface) const;
+
 	/// <summary>Enumerate device extensions properties</summary>
-	/// <returns>std::vector<pvrvk::ExtensionProperties></returns>
-	std::vector<ExtensionProperties>& enumerateDeviceExtensionsProperties();
+	/// <returns>vector of pvrvk::ExtensionProperties</returns>
+	std::vector<ExtensionProperties>& getDeviceExtensionsProperties();
 
 	/// <summary>Returns the image format properties for a given set of image creation parameters</summary>
 	/// <param name="format">The image format to get sparse image properties for.</param>

@@ -6,7 +6,8 @@
 */
 #pragma once
 #include "PVRUtils/OpenGLES/SpriteGles.h"
-#include "PVRCore/Texture.h"
+#include "PVRCore/texture/Texture.h"
+#include "PVRCore/math/MathUtils.h"
 
 namespace pvr {
 namespace ui {
@@ -337,8 +338,9 @@ public:
 	/// <param name="width">The width of the screen used for rendering.</param>
 	/// <param name="height">The height of the screen used for rendering</param>
 	/// <param name="fullscreen">Indicates whether the rendering is occuring in full screen mode.</param>
+	/// <param name="isFrameBufferSRGB">Indicates whether the rendering in to SRGB</param>
 	/// <returns>True indicating the result of initialising the UIRenderer was successful otherwise False.</returns>
-	void init(uint32_t width, uint32_t height, bool fullscreen);
+	void init(uint32_t width, uint32_t height, bool fullscreen, bool isFrameBufferSRGB);
 
 	/// <summary>Release the UIRenderer and its resources. Must be called once after we are done with the UIRenderer.
 	/// (usually, during releaseView).</summary>
@@ -354,25 +356,36 @@ public:
 		_fonts.clear();
 		_textElements.clear();
 
-		if (_fontIboCreated && _fontIbo != -1)
+		if (_fontIboCreated && _fontIbo != static_cast<uint32_t>(-1))
 		{
 			gl::DeleteBuffers(1, &_fontIbo);
 		}
-		if (_imageVboCreated && _imageVbo != -1)
+		if (_imageVboCreated && _imageVbo != static_cast<uint32_t>(-1))
 		{
 			gl::DeleteBuffers(1, &_imageVbo);
 		}
 		if (_api != Api::OpenGLES2)
 		{
-			if (_samplerBilinearCreated && _samplerBilinear != -1)
+			if (_samplerBilinearCreated && _samplerBilinear != static_cast<uint32_t>(-1))
 			{
 				gl::DeleteSamplers(1, &_samplerBilinear);
 			}
-			if (_samplerTrilinearCreated && _samplerTrilinear != -1)
+			if (_samplerTrilinearCreated && _samplerTrilinear != static_cast<uint32_t>(-1))
 			{
 				gl::DeleteSamplers(1, &_samplerTrilinear);
 			}
 		}
+
+		_screenRotation = .0f;
+		_program = 0;
+		_fontIboCreated = false;
+		_imageVboCreated = false;
+		_samplerBilinearCreated = false;
+		_samplerTrilinearCreated = false;
+		_samplerBilinear = -1;
+		_samplerTrilinear = -1;
+		_fontIbo = -1;
+		_imageVbo = -1;
 	}
 
 	/// <summary>Create a Text sprite. Initialize with std::string. Uses default font.</summary>
@@ -684,8 +697,8 @@ public:
 		return _defaultControls;
 	}
 
-	/// <summary>return the default DescriptorSetLayout. ONLY to be used by the Sprites</summary>
-	/// <returns>const api::DescriptorSetLayout&</returns>
+	/// <summary>Returns the projection matrix</summary>
+	/// <returns>The UIRenderer projection matrix</returns>
 	glm::mat4 getProjection() const
 	{
 		return pvr::math::ortho(Api::OpenGLES2, 0.0, getRenderingDimX(), 0.0f, getRenderingDimY());
@@ -773,7 +786,7 @@ private:
 	void init_CreateDefaultSampler();
 	void init_CreateDefaultSdkLogo();
 	void init_CreateDefaultTitle();
-	void init_CreateShaders();
+	void init_CreateShaders(bool framebufferSRGB);
 
 	std::vector<SpriteWeakRef> _sprites;
 	std::vector<TextElementWeakRef> _textElements;

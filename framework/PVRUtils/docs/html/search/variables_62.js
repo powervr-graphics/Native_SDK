@@ -1,8 +1,7 @@
 var searchData=
 [
-  ['batchid',['batchId',['../structpvr_1_1utils_1_1_renderman_node.html#afbe95cc70d9b040faf82a2a230ed7fdd',1,'pvr::utils::RendermanNode']]],
-  ['batchscopebuffers',['batchScopeBuffers',['../structpvr_1_1effect_1_1_pipeline_def.html#ae629b2dc9021af1c5fd2536e06ac8238',1,'pvr::effect::PipelineDef']]],
-  ['binding',['binding',['../structpvr_1_1effect_1_1_object_semantic.html#a500ba47609c4a7095a91dd42581148b8',1,'pvr::effect::ObjectSemantic::binding()'],['../structpvr_1_1utils_1_1_vertex_bindings.html#ab06b267b0543d9b3f4dff021027f1609',1,'pvr::utils::VertexBindings::binding()'],['../structpvr_1_1utils_1_1_renderman_buffer_binding.html#ab5a3a8ef491cd353bacad4b867b47042',1,'pvr::utils::RendermanBufferBinding::binding()']]],
+  ['binding',['binding',['../structpvr_1_1_vertex_attribute_info_with_binding.html#ace0ec1528e6b3360e59a346699921df0',1,'pvr::VertexAttributeInfoWithBinding']]],
+  ['bindingid',['bindingId',['../structpvr_1_1_vertex_input_binding_info.html#adc5e1075fbc902032830fa11604c3fc8',1,'pvr::VertexInputBindingInfo']]],
   ['blenddstalpha',['blendDstAlpha',['../structpvr_1_1ui_1_1_g_l_state.html#af6b6616ef34e6f5abb8dd0a7f82e26ee',1,'pvr::ui::GLState']]],
   ['blenddstalphachanged',['blendDstAlphaChanged',['../structpvr_1_1ui_1_1_g_l_state_tracker.html#aeb99104deed1e265fae7b7b7e7f9054d',1,'pvr::ui::GLStateTracker']]],
   ['blenddstrgb',['blendDstRgb',['../structpvr_1_1ui_1_1_g_l_state.html#a81100ca3deb239de81902ecd25d8db60',1,'pvr::ui::GLState']]],
@@ -20,14 +19,5 @@ var searchData=
   ['blocksize',['blockSize',['../structpvr_1_1utils_1_1vma_1_1_pool_create_info.html#a293fa320a7638ec1e1602ea126f6f24d',1,'pvr::utils::vma::PoolCreateInfo']]],
   ['boundtexture',['boundTexture',['../structpvr_1_1ui_1_1_g_l_state.html#a5a813152f1efe0f1dde9c12312ce613f',1,'pvr::ui::GLState']]],
   ['boundtexturechanged',['boundTextureChanged',['../structpvr_1_1ui_1_1_g_l_state_tracker.html#a835408952369a575f464889fe6baf00f',1,'pvr::ui::GLStateTracker']]],
-  ['buffer',['buffer',['../structpvr_1_1effect_1_1_buffer_def.html#a1e7cefd404a1ddc34b11fe5c83573391',1,'pvr::effect::BufferDef::buffer()'],['../structpvr_1_1utils_1_1_renderman_buffer_definition.html#aca4b91b299bbdf796e4ee703eb63f5f5',1,'pvr::utils::RendermanBufferDefinition::buffer()'],['../structpvr_1_1utils_1_1_buffer_entry_semantic.html#a8b6cfcfc16c13beeba5403600af5028c',1,'pvr::utils::BufferEntrySemantic::buffer()'],['../structpvr_1_1utils_1_1_automatic_node_buffer_entry_semantic.html#a2f826c4af19974d96985f206f4f05fe2',1,'pvr::utils::AutomaticNodeBufferEntrySemantic::buffer()'],['../structpvr_1_1utils_1_1_automatic_model_buffer_entry_semantic.html#aea711b2aa9b706e4ba9aafd179737583',1,'pvr::utils::AutomaticModelBufferEntrySemantic::buffer()']]],
-  ['bufferarrayid',['bufferArrayId',['../structpvr_1_1ui_1_1impl_1_1_image___1_1_mvp_ubo_data.html#a764a29d9b3b2dbb3e1a1a526f85237e8',1,'pvr::ui::impl::Image_::MvpUboData::bufferArrayId()'],['../structpvr_1_1ui_1_1impl_1_1_image___1_1_material_ubo_data.html#a0ddb719b118a7826e392b1b150b40f70',1,'pvr::ui::impl::Image_::MaterialUboData::bufferArrayId()']]],
-  ['bufferbindings',['bufferBindings',['../structpvr_1_1utils_1_1_renderman_pipeline.html#a31ba35967245856169966f77b3de6062',1,'pvr::utils::RendermanPipeline']]],
-  ['bufferdefinition',['bufferDefinition',['../structpvr_1_1utils_1_1_renderman_buffer_binding.html#a3d1ad36a741d27069fdb9b735bd7045f',1,'pvr::utils::RendermanBufferBinding']]],
-  ['bufferdefinitions',['bufferDefinitions',['../structpvr_1_1utils_1_1_renderman_effect.html#a5b64391d80a6575e15d0317544103f5e',1,'pvr::utils::RendermanEffect']]],
-  ['bufferdynamicoffset',['bufferDynamicOffset',['../structpvr_1_1utils_1_1_automatic_node_buffer_entry_semantic.html#ae3aa0893fa7b84655f6ed17b043f0545',1,'pvr::utils::AutomaticNodeBufferEntrySemantic']]],
-  ['bufferdynamicslice',['bufferDynamicSlice',['../structpvr_1_1utils_1_1_automatic_node_buffer_entry_semantic.html#af7fa534bbed154dbd5e49d0dea8fcb52',1,'pvr::utils::AutomaticNodeBufferEntrySemantic']]],
-  ['bufferentrysemantics',['bufferEntrySemantics',['../structpvr_1_1utils_1_1_renderman_pipeline.html#a5a20a691b5986fb9c97aa30e1ebc70f4',1,'pvr::utils::RendermanPipeline::bufferEntrySemantics()'],['../structpvr_1_1utils_1_1_renderman_effect.html#a7d7543daf490e166c70df7e31bf99380',1,'pvr::utils::RendermanEffect::bufferEntrySemantics()']]],
-  ['buffersemantics',['bufferSemantics',['../structpvr_1_1utils_1_1_renderman_pipeline.html#a30d7f6cd50fc600306b7f80608e55919',1,'pvr::utils::RendermanPipeline::bufferSemantics()'],['../structpvr_1_1utils_1_1_renderman_effect.html#ad4352f71b58b329f4580accbcbb7ff90',1,'pvr::utils::RendermanEffect::bufferSemantics()']]],
-  ['bufferview',['bufferView',['../structpvr_1_1effect_1_1_buffer_def.html#a256508b2abe4afb47c6c77094bb281b1',1,'pvr::effect::BufferDef']]]
+  ['bufferarrayid',['bufferArrayId',['../structpvr_1_1ui_1_1impl_1_1_image___1_1_mvp_ubo_data.html#a764a29d9b3b2dbb3e1a1a526f85237e8',1,'pvr::ui::impl::Image_::MvpUboData::bufferArrayId()'],['../structpvr_1_1ui_1_1impl_1_1_image___1_1_material_ubo_data.html#a0ddb719b118a7826e392b1b150b40f70',1,'pvr::ui::impl::Image_::MaterialUboData::bufferArrayId()']]]
 ];

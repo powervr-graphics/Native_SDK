@@ -58,7 +58,7 @@ END
 // RCDATA
 //
 /////////////////////////////////////////////////////////////////////////////
-// RCDATA: Assets (scenes, shaders, effects, textures...)
+// RCDATA: Assets (scenes,  effects, textures...)
 ATM.pvr		RCDATA		"..\\..\\..\\assets\\Navigation2D\\ATM.pvr"
 bank.pvr		RCDATA		"..\\..\\..\\assets\\Navigation2D\\bank.pvr"
 bar.pvr		RCDATA		"..\\..\\..\\assets\\Navigation2D\\bar.pvr"
@@ -96,6 +96,7 @@ university.pvr		RCDATA		"..\\..\\..\\assets\\Navigation2D\\university.pvr"
 vets.pvr		RCDATA		"..\\..\\..\\assets\\Navigation2D\\vets.pvr"
 worship.pvr		RCDATA		"..\\..\\..\\assets\\Navigation2D\\worship.pvr"
 map.osm		RCDATA		"..\\..\\..\\assets\\Navigation2D\\map.osm"
+// RCDATA: OpenGL ES Textual shaders(glsl)
 AA_VertShader.vsh		RCDATA		"..\\AA_VertShader.vsh"
 AA_FragShader.fsh		RCDATA		"..\\AA_FragShader.fsh"
 VertShader.vsh		RCDATA		"..\\VertShader.vsh"

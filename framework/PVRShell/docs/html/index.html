@@ -15,7 +15,7 @@
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="IMGdoxygen.css" rel="stylesheet" type="text/css"/>
-<link rel="shortcut icon" href="http://www.imgtec.com/images/img.ico">
+<link rel="shortcut icon" type="image/x-icon" href="img.ico">
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
+      <a href="https://www.imgtec.com/developers/" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRShell</span> Documentation</a>
    <tbody>
@@ -66,7 +66,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Pages</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -89,7 +89,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div>
 <div class="textblock"><h1><a class="anchor" id="overview"></a>
 Overview</h1>
-<p>PVRShell will usually be the foundation on top of which an application is written. This library abstracts the system and contains, among others, the application’s entry point (<a class="el" href="_n_s_application_main_2main_8m.html#a0ddf1224851353fc92bfbff6f499fa97" title="Application entry point for the macOS Appkit. Forwards to NSApplicationMain">main()</a>, android_main() or other, depending on the platform), command line arguments, events, main loop, etc., effectively abstracting the native platform.</p>
+<p>PVRShell will usually be the foundation on top of which an application is written. This library abstracts the system and contains, among others, the application's entry point (<a class="el" href="_n_s_application_main_2main_8m.html#a0ddf1224851353fc92bfbff6f499fa97" title="Application entry point for the macOS Appkit. Forwards to NSApplicationMain">main()</a>, android_main() or other, depending on the platform), command line arguments, events, main loop, etc., effectively abstracting the native platform.</p>
 <p>Also, PVRShell will create and teardown the window, initialize and de-initialize the graphics system, swap the buffers at the end of every frame, search platform-specific methods and file system storage (file system, assets, bundle, etc.).</p>
 <p>PVRShell directly depends on PVRCore. Normally, PVRShell is used as the first step of every PowerVR SDK application.</p>
 <p>PVRShell source can be found in the <a href="../../">PVRShell</a> folder in the SDK package.</p>
@@ -155,7 +155,7 @@ Implement a simple function <span class="code"><a class="el" href="namespacepvr.
 <ul>
 <li>
 <p class="startli">(Recommended, optional step) Implement input event handling </p>
-<p>Override either <span class="code"><a class="el" href="classpvr_1_1platform_1_1_shell.html#a5e9a69685418d9328fa2415476319f06" title="Override in your class to handle a unified interface for input across different platforms and devices...">pvr::Shell::eventMappedInput</a>(…)</span> and/or any of the device-specific input functions (<span class="code"><a class="el" href="classpvr_1_1platform_1_1_shell.html#a56e93594310a55610c3b65252726051d" title="Used externally to signify events to the Shell. Do not use.">pvr::Shell::onKeyDown</a></span>, <span class="code">onKeyUp</span>, <span class="code">onPointingDeviceDown</span>, etc.).</p>
+<p>Override either <span class="code"><a class="el" href="classpvr_1_1platform_1_1_shell.html#a5e9a69685418d9328fa2415476319f06" title="Override in your class to handle a unified interface for input across different platforms and devices...">pvr::Shell::eventMappedInput</a>(...)</span> and/or any of the device-specific input functions (<span class="code"><a class="el" href="classpvr_1_1platform_1_1_shell.html#a56e93594310a55610c3b65252726051d" title="Used externally to signify events to the Shell. Do not use.">pvr::Shell::onKeyDown</a></span>, <span class="code">onKeyUp</span>, <span class="code">onPointingDeviceDown</span>, etc.).</p>
 <p></p>
 <p><span class="code">eventMappedInput()</span> is a call-back provided by PVRShell to handle simplified input events unified across different platforms (for example, both a swipe left of a touchscreen, and the left arrow on a keyboard would map to <span class="code">MappedInput::Left</span>).</p>
 <p class="endli"></p>
@@ -170,7 +170,7 @@ Code Examples</h1>
 <div class="fragment"><div class="line"><span class="comment">//The five callbacks house the application</span></div>
 <div class="line"><span class="keywordtype">void</span> MyApplication::initApplication { setApiTypeRequired(pvr::api::OpenGLES3);}</div>
 <div class="line">pvr::Result MyApplication::renderFrame() { <span class="keywordtype">float</span> dt =this-&gt;getFrameTime(); ... }</div>
-</div><!-- fragment --><div class="fragment"><div class="line">this-&gt;getAssetStream(“Texture.pvr”); <span class="comment">// Will look everywhere for assets: Files, then Windows //Resources(.rc)/iOS bundled resources/Android assets</span></div>
+</div><!-- fragment --><div class="fragment"><div class="line">this-&gt;getAssetStream(<span class="stringliteral">&quot;Texture.pvr&quot;</span>); <span class="comment">// Will look everywhere for assets: Files, then Windows //Resources(.rc)/iOS bundled resources/Android assets</span></div>
 </div><!-- fragment --><div class="fragment"><div class="line"><span class="keywordtype">void</span> MyApplication::eventMappedInput(SimplifiedInput::Actions evt){ <span class="comment">//Abstracts/simplifies</span></div>
 <div class="line"><span class="keywordflow">switch</span> (evt){<span class="keywordflow">case</span> MappedInputEvent::Action1: pauseDemo();<span class="keywordflow">break</span>; <span class="keywordflow">case</span> MappedInputEvent::Left: showPreviousPage(); <span class="keywordflow">break</span>; <span class="keywordflow">case</span> MappedInputEvent::Quit: <span class="keywordflow">if</span> (showExitDialogue())</div>
 <div class="line">exitShell(); <span class="keywordflow">break</span>;}} </div>

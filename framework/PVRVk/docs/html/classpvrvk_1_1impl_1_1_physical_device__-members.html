@@ -15,7 +15,7 @@
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="IMGdoxygen.css" rel="stylesheet" type="text/css"/>
-<link rel="shortcut icon" href="http://www.imgtec.com/images/img.ico">
+<link rel="shortcut icon" type="image/x-icon" href="img.ico">
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
+      <a href="https://www.imgtec.com/developers/" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRVk</span> Documentation</a>
    <tbody>
@@ -91,7 +91,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <tr><td class="entry"><a class="el" href="classpvrvk_1_1impl_1_1_object_handle.html#a41f43268ad1a7d2d3bde2a228fbcac03">_vkHandle</a></td><td class="entry"><a class="el" href="classpvrvk_1_1impl_1_1_object_handle.html">pvrvk::impl::ObjectHandle&lt; VkPhysicalDevice &gt;</a></td><td class="entry"><span class="mlabel">protected</span></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="classpvrvk_1_1impl_1_1_physical_device__.html#a66fc039229f030b051e9ec4a359b8f88">createDevice</a>(const DeviceCreateInfo &amp;deviceCreateInfo)</td><td class="entry"><a class="el" href="classpvrvk_1_1impl_1_1_physical_device__.html">pvrvk::impl::PhysicalDevice_</a></td><td class="entry"></td></tr>
   <tr><td class="entry"><a class="el" href="classpvrvk_1_1impl_1_1_physical_device__.html#acb1bd8c0276e697f3d79bddc6b97f63a">createDisplayMode</a>(pvrvk::Display &amp;display, const pvrvk::DisplayModeCreateInfo &amp;displayModeCreateInfo)</td><td class="entry"><a class="el" href="classpvrvk_1_1impl_1_1_physical_device__.html">pvrvk::impl::PhysicalDevice_</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="classpvrvk_1_1impl_1_1_physical_device__.html#a22b1ef85daf8ede8ea84c15f6cbb4460">enumerateDeviceExtensionsProperties</a>()</td><td class="entry"><a class="el" href="classpvrvk_1_1impl_1_1_physical_device__.html">pvrvk::impl::PhysicalDevice_</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classpvrvk_1_1impl_1_1_physical_device__.html#a99a351ef46f4193e0e8347195b8091df">getDeviceExtensionsProperties</a>()</td><td class="entry"><a class="el" href="classpvrvk_1_1impl_1_1_physical_device__.html">pvrvk::impl::PhysicalDevice_</a></td><td class="entry"></td></tr>
   <tr><td class="entry"><a class="el" href="classpvrvk_1_1impl_1_1_physical_device__.html#afc7c99afab5b1a9dd3762c6f3d024daf">getDisplay</a>(uint32_t id) const </td><td class="entry"><a class="el" href="classpvrvk_1_1impl_1_1_physical_device__.html">pvrvk::impl::PhysicalDevice_</a></td><td class="entry"></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="classpvrvk_1_1impl_1_1_physical_device__.html#a14421100208bbdb5a9de059890ada3a4">getDisplay</a>(uint32_t id)</td><td class="entry"><a class="el" href="classpvrvk_1_1impl_1_1_physical_device__.html">pvrvk::impl::PhysicalDevice_</a></td><td class="entry"></td></tr>
   <tr><td class="entry"><a class="el" href="classpvrvk_1_1impl_1_1_physical_device__.html#aad2bba54e337836651e8626dd9b68e02">getDisplayPlaneCapabilities</a>(DisplayMode &amp;mode, uint32_t planeIndex)</td><td class="entry"><a class="el" href="classpvrvk_1_1impl_1_1_physical_device__.html">pvrvk::impl::PhysicalDevice_</a></td><td class="entry"></td></tr>
@@ -111,6 +111,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <tr><td class="entry"><a class="el" href="classpvrvk_1_1impl_1_1_physical_device__.html#a2fa34df6b9bc80ca5ca7c64da3204622">getQueueFamilyProperties</a>() const </td><td class="entry"><a class="el" href="classpvrvk_1_1impl_1_1_physical_device__.html">pvrvk::impl::PhysicalDevice_</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="classpvrvk_1_1impl_1_1_physical_device__.html#a56dcc2ba1edca3f4d50eb9167865a40c">getSparseImageFormatProperties</a>(pvrvk::Format format, pvrvk::ImageType imageType, pvrvk::SampleCountFlags sampleCount, pvrvk::ImageUsageFlags usage, pvrvk::ImageTiling tiling)</td><td class="entry"><a class="el" href="classpvrvk_1_1impl_1_1_physical_device__.html">pvrvk::impl::PhysicalDevice_</a></td><td class="entry"></td></tr>
   <tr><td class="entry"><a class="el" href="classpvrvk_1_1impl_1_1_physical_device__.html#a00608b27d3445e8071786e9e39080155">getSurfaceCapabilities</a>(const Surface &amp;surface) const </td><td class="entry"><a class="el" href="classpvrvk_1_1impl_1_1_physical_device__.html">pvrvk::impl::PhysicalDevice_</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classpvrvk_1_1impl_1_1_physical_device__.html#a490e57389d6db004df475cc312b2b178">getSurfaceFormats</a>(const Surface &amp;surface) const </td><td class="entry"><a class="el" href="classpvrvk_1_1impl_1_1_physical_device__.html">pvrvk::impl::PhysicalDevice_</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="classpvrvk_1_1impl_1_1_physical_device__.html#a5015737b3d6251b22e5451a3724fa38b">getSurfacePresentModes</a>(const Surface &amp;surface) const </td><td class="entry"><a class="el" href="classpvrvk_1_1impl_1_1_physical_device__.html">pvrvk::impl::PhysicalDevice_</a></td><td class="entry"></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="classpvrvk_1_1impl_1_1_physical_device__.html#addf0cdb934ca58768bc29af6e6d04823">getSurfaceSupport</a>(uint32_t queueFamilyIndex, Surface surface) const </td><td class="entry"><a class="el" href="classpvrvk_1_1impl_1_1_physical_device__.html">pvrvk::impl::PhysicalDevice_</a></td><td class="entry"></td></tr>
   <tr><td class="entry"><a class="el" href="classpvrvk_1_1impl_1_1_object_handle.html#a4f27eddb1090fc657f3af1966d353e0b">getVkHandle</a>() const</td><td class="entry"><a class="el" href="classpvrvk_1_1impl_1_1_object_handle.html">pvrvk::impl::ObjectHandle&lt; VkPhysicalDevice &gt;</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="classpvrvk_1_1impl_1_1_instance_object_handle.html#aa12719a8bf541472bdff21c3004918ce">InstanceObjectHandle</a>()</td><td class="entry"><a class="el" href="classpvrvk_1_1impl_1_1_instance_object_handle.html">pvrvk::impl::InstanceObjectHandle&lt; VkPhysicalDevice &gt;</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">protected</span></td></tr>

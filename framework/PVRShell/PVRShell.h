@@ -19,7 +19,7 @@
 \section overview Overview
 *****************************
 
-PVRShell will usually be the foundation on top of which an application is written. This library abstracts the system and contains, among others, the application’s entry point
+PVRShell will usually be the foundation on top of which an application is written. This library abstracts the system and contains, among others, the application's entry point
 (main(), android_main() or other, depending on the platform), command line arguments, events, main loop, etc., effectively abstracting the native platform.
 
 Also, PVRShell will create and teardown the window, initialize and de-initialize the graphics system, swap the buffers at the end of every frame, search platform-specific methods
@@ -73,7 +73,7 @@ Release API objects (textures, buffers) should be here.</p>
 </ul>
 <ul>
 <li>(Recommended, optional step) Implement input event handling</li>
-<p>Override either <span class="code">pvr::Shell::eventMappedInput(…)</span> and/or any of the device-specific input functions (<span class="code">pvr::Shell::onKeyDown</span>,
+<p>Override either <span class="code">pvr::Shell::eventMappedInput(...)</span> and/or any of the device-specific input functions (<span class="code">pvr::Shell::onKeyDown</span>,
 <span class="code">onKeyUp</span>, <span class="code">onPointingDeviceDown</span>, etc.).</p> <p><span class="code">eventMappedInput()</span> is a call-back provided by PVRShell to
 handle simplified input events unified across different platforms (for example, both a swipe left of a touchscreen, and the left arrow on a keyboard would map to <span
 class="code">MappedInput::Left</span>).</p>
@@ -92,7 +92,7 @@ pvr::Result MyApplication::renderFrame() { float dt =this->getFrameTime(); ... }
 \endcode
 
 \code
-this->getAssetStream(“Texture.pvr”); // Will look everywhere for assets: Files, then Windows //Resources(.rc)/iOS bundled resources/Android assets
+this->getAssetStream("Texture.pvr"); // Will look everywhere for assets: Files, then Windows //Resources(.rc)/iOS bundled resources/Android assets
 \endcode
 
 \code

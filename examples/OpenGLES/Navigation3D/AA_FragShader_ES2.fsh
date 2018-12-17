@@ -1,10 +1,10 @@
-uniform mediump sampler2D  sTexture;
+uniform mediump sampler2D sTexture;
 
-varying lowp vec4 fragColour;
+varying mediump vec4 fragColor;
 varying mediump vec2 texCoordOut;
 
 void main(void)
 {
-	lowp vec4 texColour = texture2D(sTexture, texCoordOut);
-	gl_FragColor = vec4(fragColour.rgb * texColour.r, texColour.a);
+	mediump vec4 texColor = texture2D(sTexture, texCoordOut);
+	gl_FragColor = vec4(fragColor.rgb * texColor.r, texColor.a);
 }

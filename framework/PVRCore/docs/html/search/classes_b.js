@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['pixelformat',['PixelFormat',['../classpvr_1_1_pixel_format.html',1,'pvr']]],
-  ['plane3d',['Plane3d',['../classpvr_1_1_plane3d.html',1,'pvr']]],
-  ['pvrerror',['PvrError',['../classpvr_1_1_pvr_error.html',1,'pvr']]]
+  ['operationfailederror',['OperationFailedError',['../classpvr_1_1_operation_failed_error.html',1,'pvr']]],
+  ['option',['Option',['../structpvr_1_1platform_1_1_command_line_parser_1_1_parsed_command_line_1_1_option.html',1,'pvr::platform::CommandLineParser::ParsedCommandLine']]]
 ];

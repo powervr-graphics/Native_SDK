@@ -7,7 +7,7 @@ createEglContext function used to create the graphics context used for the main 
 */
 //!\cond NO_DOXYGEN
 #include "PVRUtils/EGL/EglPlatformContext.h"
-#include "PVRCore/StringFunctions.h"
+#include "PVRCore/strings/StringFunctions.h"
 #include "PVRUtils/OpenGLES/BindingsGles.h"
 
 #ifndef EGL_CONTEXT_LOST_IMG
@@ -212,7 +212,7 @@ static inline bool isGlesVersionSupported(EGLDisplay display, Api graphicsapi, b
 	isSupported = false;
 	std::vector<EGLConfig> configs;
 	EGLint configAttributes[32];
-	unsigned int i = 0;
+	uint32_t i = 0;
 
 	{
 		configAttributes[i++] = EGL_SURFACE_TYPE;
@@ -480,7 +480,7 @@ static inline void initializeContext(bool wantWindow, DisplayAttributes& origina
 
 	for (;;)
 	{
-		unsigned int i = 0;
+		uint32_t i = 0;
 		Log(LogLevel::Debug, "Attempting to create context with:\n");
 		Log(LogLevel::Debug, "\tDebugbit: %s", debugBit ? "true" : "false");
 		Log(LogLevel::Debug, "\tRedBits: %d", attributes.redBits);
@@ -518,10 +518,8 @@ static inline void initializeContext(bool wantWindow, DisplayAttributes& origina
 			configAttributes[i++] = EGL_STENCIL_SIZE;
 			configAttributes[i++] = attributes.stencilBPP;
 
-			int windowBit = -1;
 			if (wantWindow)
 			{
-				windowBit = i;
 				configAttributes[i++] = EGL_SURFACE_TYPE;
 				configAttributes[i++] = EGL_WINDOW_BIT;
 			}
@@ -778,7 +776,7 @@ void createSharedContext(const DisplayAttributes& original_attributes, NativePla
 	// Round 2: Choose the config for the Texture Uploading context...
 	for (;;)
 	{
-		unsigned int i = 0;
+		uint32_t i = 0;
 		{
 			configAttributes[i++] = EGL_SURFACE_TYPE;
 			configAttributes[i++] = EGL_PBUFFER_BIT;
@@ -1116,7 +1114,7 @@ void EglContext_::init(OSWindow window, OSDisplay display, DisplayAttributes& at
 	}
 	else
 	{
-		Log(LogLevel::Information, "Created wl egl window\n");
+		Log(LogLevel::Information, "[EglContext::init] Created wayland egl window\n");
 	}
 #endif
 
@@ -1127,14 +1125,19 @@ void EglContext_::init(OSWindow window, OSDisplay display, DisplayAttributes& at
 		bool isSrgbSupported = egl::isEglExtensionSupported(_platformContextHandles->display, "EGL_KHR_gl_colorspace");
 		if (isSrgbSupported)
 		{
-			eglattribs[0] = EGL_COLORSPACE;
-			eglattribs[1] = EGL_COLORSPACE_sRGB;
+			eglattribs[0] = EGL_GL_COLORSPACE;
+			eglattribs[1] = EGL_GL_COLORSPACE_SRGB;
+			Log(LogLevel::Information, "[EglContext::init] Enabling sRGB window backbuffer.");
 		}
 		else
 		{
-			Log(LogLevel::Warning, "sRGB window backbuffer requested, but EGL_KHR_gl_colorspace is not supported. Creating linear RGB backbuffer.");
+			Log(LogLevel::Warning, "[EglContext::init] sRGB window backbuffer requested, but EGL_KHR_gl_colorspace is not supported. Creating linear RGB backbuffer.");
 			attributes.frameBufferSrgb = false;
 		}
+	}
+	else
+	{
+		Log(LogLevel::Information, "[EglContext::init] Enabling Linear window backbuffer.");
 	}
 
 	_platformContextHandles->drawSurface = _platformContextHandles->readSurface = egl::CreateWindowSurface(_platformContextHandles->display, config,
@@ -1253,7 +1256,7 @@ void EglContext_::populateMaxApiVersion()
 		{
 			Log("Error detected while testing OpenGL ES version %s for compatibility. Trying lower version", esversion);
 		}
-		graphicsapi = (Api)((int)graphicsapi - 1);
+		graphicsapi = static_cast<Api>(static_cast<int>(graphicsapi) - 1);
 	}
 	Log(LogLevel::Critical, "=== FATAL: COULD NOT FIND COMPATIBILITY WITH ANY OPENGL ES VERSION ===");
 }
@@ -1317,7 +1320,7 @@ void EglContext_::swapBuffers()
 	}
 }
 
-unsigned int pvr::platform::EglContext_::getOnScreenFbo()
+uint32_t pvr::platform::EglContext_::getOnScreenFbo()
 {
 	return 0;
 }

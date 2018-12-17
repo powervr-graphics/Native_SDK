@@ -15,7 +15,7 @@
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="IMGdoxygen.css" rel="stylesheet" type="text/css"/>
-<link rel="shortcut icon" href="http://www.imgtec.com/images/img.ico">
+<link rel="shortcut icon" type="image/x-icon" href="img.ico">
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
+      <a href="https://www.imgtec.com/developers/" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRVk</span> Documentation</a>
    <tbody>
@@ -117,6 +117,9 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_buffer_memory_barrier.html">BufferMemoryBarrier</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A Buffer memory barrier used only for memory accesses involving a specific range of the specified buffer object. It is also used to transfer ownership of an buffer range from one queue family to another.  <a href="structpvrvk_1_1_buffer_memory_barrier.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_buffer_view_create_info.html">BufferViewCreateInfo</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Buffer view creation descriptor. <a href="structpvrvk_1_1_buffer_view_create_info.html#details">More...</a><br/></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_clear_attachment.html">ClearAttachment</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="structpvrvk_1_1_clear_attachment.html" title="ClearAttachment structures defining the attachments to clear and the clear values to use...">ClearAttachment</a> structures defining the attachments to clear and the clear values to use. Used in Commandbuffer::ClearAttachments command <a href="structpvrvk_1_1_clear_attachment.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -129,8 +132,8 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_color.html">Color</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Floating point <a class="el" href="structpvrvk_1_1_color.html" title="Floating point Color data (rgba). Values from 0-1 inclusive">Color</a> data (rgba). Values from 0-1 inclusive <a href="structpvrvk_1_1_color.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_color_blend_state_create_info.html">ColorBlendStateCreateInfo</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pipeline <a class="el" href="structpvrvk_1_1_color.html" title="Floating point Color data (rgba). Values from 0-1 inclusive">Color</a> blending state configuration (alphaToCoverage, logicOp). <a href="structpvrvk_1_1_color_blend_state_create_info.html#details">More...</a><br/></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_command_pool_create_info.html">CommandPoolCreateInfo</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Command pool creation descriptor. <a href="structpvrvk_1_1_command_pool_create_info.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_compute_pipeline_create_info.html">ComputePipelineCreateInfo</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute pipeline create parameters. <a href="structpvrvk_1_1_compute_pipeline_create_info.html#details">More...</a><br/></td></tr>
@@ -140,9 +143,6 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_debug_report_callback_create_info.html">DebugReportCallbackCreateInfo</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">DebugReportCallback creation descriptor. <a href="structpvrvk_1_1_debug_report_callback_create_info.html#details">More...</a><br/></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_depth_stencil_state_create_info.html">DepthStencilStateCreateInfo</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contains parameters needed to set depth stencil states to a pipeline create params. This object can be added to a <a class="el" href="structpvrvk_1_1_pipeline_create_info.html" title="This represents all the information needed to create a GraphicsPipeline. All items must have proper v...">PipelineCreateInfo</a> to set a depth-stencil state to values other than their defaults. <a href="structpvrvk_1_1_depth_stencil_state_create_info.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_descriptor_buffer_info.html">DescriptorBufferInfo</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A struct describing a descriptor buffer binding <a href="structpvrvk_1_1_descriptor_buffer_info.html#details">More...</a><br/></td></tr>
@@ -168,11 +168,17 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_dynamic_states_create_info.html">DynamicStatesCreateInfo</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create params for Pipeline Dynamic states. Enable each state that you want to be able to dynamically set. <a href="structpvrvk_1_1_dynamic_states_create_info.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_event_create_info.html">EventCreateInfo</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Event creation descriptor. <a href="structpvrvk_1_1_event_create_info.html#details">More...</a><br/></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_export_memory_allocate_info_k_h_r.html">ExportMemoryAllocateInfoKHR</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Implementation of the VkExportMemoryAllocateInfoKHR class used by the VK_KHR_external_memory extension <a href="structpvrvk_1_1_export_memory_allocate_info_k_h_r.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_extent2_df.html">Extent2Df</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">2 dimensional extent which contains the width and height <a href="structpvrvk_1_1_extent2_df.html#details">More...</a><br/></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_fence_create_info.html">FenceCreateInfo</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">fence creation descriptor. <a href="structpvrvk_1_1_fence_create_info.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_framebuffer_create_info.html">FramebufferCreateInfo</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Framebuffer creation descriptor. <a href="structpvrvk_1_1_framebuffer_create_info.html#details">More...</a><br/></td></tr>
@@ -195,8 +201,8 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_image_memory_barrier.html">ImageMemoryBarrier</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A Image memory barrier used only for memory accesses involving a specific subresource range of the specified image object. It is also used to perform a layout transition for an image subresource range, or to transfer ownership of an image subresource range from one queue family to another. <a href="structpvrvk_1_1_image_memory_barrier.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_input_assembler_state_create_info.html">InputAssemblerStateCreateInfo</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add Input Assembler configuration to this buffer object (primitive topology, vertex restart, vertex reuse etc). <a href="structpvrvk_1_1_input_assembler_state_create_info.html#details">More...</a><br/></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_image_view_create_info.html">ImageViewCreateInfo</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Image view creation descriptor. <a href="structpvrvk_1_1_image_view_create_info.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_instance_create_info.html">InstanceCreateInfo</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contains instant info used for creating Vulkan instance <a href="structpvrvk_1_1_instance_create_info.html#details">More...</a><br/></td></tr>
@@ -210,26 +216,47 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1_memory_barrier_set.html">MemoryBarrierSet</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A memory barrier into the command stream. Used to signify that some types of pending operations from before the barrier must have finished before the commands after the barrier start executing. <a href="classpvrvk_1_1_memory_barrier_set.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_multi_sample_state_create_info.html">MultiSampleStateCreateInfo</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pipeline Multisampling state configuration: Number of samples, alpha to coverage, alpha to one, sampling mask. <a href="structpvrvk_1_1_multi_sample_state_create_info.html#details">More...</a><br/></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_offset2_df.html">Offset2Df</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">2 dimensional offset which contains the x and y <a href="structpvrvk_1_1_offset2_df.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_pipeline_cache_create_info.html">PipelineCacheCreateInfo</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pipeline cache creation descriptor. <a href="structpvrvk_1_1_pipeline_cache_create_info.html#details">More...</a><br/></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_pipeline_color_blend_state_create_info.html">PipelineColorBlendStateCreateInfo</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pipeline <a class="el" href="structpvrvk_1_1_color.html" title="Floating point Color data (rgba). Values from 0-1 inclusive">Color</a> blending state configuration (alphaToCoverage, logicOp). <a href="structpvrvk_1_1_pipeline_color_blend_state_create_info.html#details">More...</a><br/></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_pipeline_create_info.html">PipelineCreateInfo</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">This represents all the information needed to create a GraphicsPipeline. All items must have proper values for a pipeline to be successfully created, but all those for which it is possible (except, for example, Shaders and Vertex Formats) will have defaults same as their default values OpenGL ES graphics API.  <a href="structpvrvk_1_1_pipeline_create_info.html#details">More...</a><br/></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">This represents all the information needed to create a GraphicsPipeline. All items must have proper values for a pipeline to be successfully created, but all those for which it is possible (except, for example, Shaders and Vertex Formats) will have defaults same as their default values OpenGL ES graphics API. NOTES: The folloowing are required  <a href="structpvrvk_1_1_pipeline_create_info.html#details">More...</a><br/></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_pipeline_depth_stencil_state_create_info.html">PipelineDepthStencilStateCreateInfo</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contains parameters needed to set depth stencil states to a pipeline create params. This object can be added to a <a class="el" href="structpvrvk_1_1_pipeline_create_info.html" title="This represents all the information needed to create a GraphicsPipeline. All items must have proper v...">PipelineCreateInfo</a> to set a depth-stencil state to values other than their defaults. <a href="structpvrvk_1_1_pipeline_depth_stencil_state_create_info.html#details">More...</a><br/></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_pipeline_input_assembler_state_create_info.html">PipelineInputAssemblerStateCreateInfo</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add Input Assembler configuration to this buffer object (primitive topology, vertex restart, vertex reuse etc). <a href="structpvrvk_1_1_pipeline_input_assembler_state_create_info.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_pipeline_layout_create_info.html">PipelineLayoutCreateInfo</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pipeline Layout create information. The descriptor set layouts must be known to create a Pipeline layout.  <a href="structpvrvk_1_1_pipeline_layout_create_info.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_pipeline_multisample_state_create_info.html">PipelineMultisampleStateCreateInfo</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pipeline Multisampling state configuration: Number of samples, alpha to coverage, alpha to one, sampling mask. <a href="structpvrvk_1_1_pipeline_multisample_state_create_info.html#details">More...</a><br/></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_pipeline_rasterization_state_create_info.html">PipelineRasterizationStateCreateInfo</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pipeline Rasterisation, clipping and culling state configuration. Culling, winding order, depth clipping, raster discard, point size, fill mode, provoking vertex. <a href="structpvrvk_1_1_pipeline_rasterization_state_create_info.html#details">More...</a><br/></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_pipeline_shader_stage_create_info.html">PipelineShaderStageCreateInfo</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pipeline vertex ShaderModule stage create param. <a href="structpvrvk_1_1_pipeline_shader_stage_create_info.html#details">More...</a><br/></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_pipeline_vertex_input_state_create_info.html">PipelineVertexInputStateCreateInfo</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contains parameters needed to configure the Vertex Input for a pipeline object. (vertex attrubutes, input bindings etc.). Use by adding the buffer bindings with (setInputBinding) and then configure the attributes with (addVertexAttribute). Default settings: 0 Vertext buffers, 0 vertex attributes. <a href="structpvrvk_1_1_pipeline_vertex_input_state_create_info.html#details">More...</a><br/></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_pipeline_viewport_state_create_info.html">PipelineViewportStateCreateInfo</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pipeline Viewport state descriptor. Sets the base configuration of all viewports. <a href="structpvrvk_1_1_pipeline_viewport_state_create_info.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_present_info.html">PresentInfo</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Swapchain present info. Containes information for presentation such as swapchains, swapchain indices and wait semaphores <a href="structpvrvk_1_1_present_info.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_raster_state_create_info.html">RasterStateCreateInfo</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pipeline Rasterisation, clipping and culling state configuration. Culling, winding order, depth clipping, raster discard, point size, fill mode, provoking vertex. <a href="structpvrvk_1_1_raster_state_create_info.html#details">More...</a><br/></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_query_pool_create_info.html">QueryPoolCreateInfo</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">QueryPool creation descriptor. <a href="structpvrvk_1_1_query_pool_create_info.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_rect2_df.html">Rect2Df</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">2-dimensional floating point rectangle <a href="structpvrvk_1_1_rect2_df.html#details">More...</a><br/></td></tr>
@@ -240,11 +267,14 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_sampler_create_info.html">SamplerCreateInfo</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Object describing the state of a sampler. Also used to construct a full-blown Sampler object. <a href="structpvrvk_1_1_sampler_create_info.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_semaphore_create_info.html">SemaphoreCreateInfo</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Semaphore creation descriptor. <a href="structpvrvk_1_1_semaphore_create_info.html#details">More...</a><br/></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_shader_constant_info.html">ShaderConstantInfo</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A representation of a Shader constant <a href="structpvrvk_1_1_shader_constant_info.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_shader_stage_create_info.html">ShaderStageCreateInfo</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pipeline vertex ShaderModule stage create param. <a href="structpvrvk_1_1_shader_stage_create_info.html#details">More...</a><br/></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_shader_module_create_info.html">ShaderModuleCreateInfo</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">ShaderModule creation descriptor. <a href="structpvrvk_1_1_shader_module_create_info.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_sparse_buffer_memory_bind_info.html">SparseBufferMemoryBindInfo</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind memory to sparse buffer object which has been created with VK_BUFFER_CREATE_SPARSE_BINDING_BIT flag <a href="structpvrvk_1_1_sparse_buffer_memory_bind_info.html#details">More...</a><br/></td></tr>
@@ -272,9 +302,6 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_tesselation_stage_create_info.html">TesselationStageCreateInfo</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creation parameters for all Tesselation shaders <a href="structpvrvk_1_1_tesselation_stage_create_info.html#details">More...</a><br/></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_viewport_state_create_info.html">ViewportStateCreateInfo</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pipeline Viewport state descriptor. Sets the base configuration of all viewports. <a href="structpvrvk_1_1_viewport_state_create_info.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_write_descriptor_set.html">WriteDescriptorSet</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contains information for an initialization/update of a descriptor set. This class contains both the update AND the descriptor set to be updated, so that multiple descriptor sets can be updated in a single call to Device::updateDescriptorSets <a href="structpvrvk_1_1_write_descriptor_set.html#details">More...</a><br/></td></tr>

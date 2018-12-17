@@ -1,4 +1,4 @@
-#version 450
+#version 320 es
 
 #define VERTEX_ARRAY 0
 
@@ -13,16 +13,13 @@ layout(set = 1, binding = 1) uniform DynamicsPerPointLight
 };
 
 layout(location = 0) out highp vec3 vPositionVS;
-layout(location = 1) out highp vec3 vViewDirVS;
-layout(location = 2) out mediump vec2 vTexCoord;
+layout(location = 1) out mediump vec3 vViewDirVS;
 
 void main()
 {
 	gl_Position = mProxyWorldViewProjectionMatrix * vec4(inVertex, 1.0);
 	gl_Position.xyz = gl_Position.xyz / gl_Position.w;
 	gl_Position.w = 1.0;
-
-	vTexCoord = (gl_Position.xy + 1.0) * 0.5;
 
 	// Calculate the view-space position for lighting calculations
 	vPositionVS = (mProxyWorldViewMatrix * vec4(inVertex, 1.0)).xyz;

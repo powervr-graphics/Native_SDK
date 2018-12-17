@@ -11,7 +11,7 @@
 namespace pvr {
 namespace assets {
 namespace helper {
-void VertexRead(const uint8_t* data, const DataType type, uint32_t count, float* out)
+void VertexRead(const unsigned char* data, const DataType type, uint32_t count, float* out)
 {
 	uint32_t i;
 
@@ -203,7 +203,7 @@ void VertexRead(const uint8_t* data, const DataType type, uint32_t count, float*
 	}
 }
 
-void VertexIndexRead(const uint8_t* data, const IndexType type, uint32_t* const out)
+void VertexIndexRead(const unsigned char* data, const IndexType type, uint32_t* const out)
 {
 	switch (type)
 	{

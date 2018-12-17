@@ -14,8 +14,8 @@
 #endif
 
 // Shader Source
-const char FragShaderSrcFile[] = "FragShader_vk.fsh.spv";
-const char VertShaderSrcFile[] = "VertShader_vk.vsh.spv";
+const char FragShaderSrcFile[] = "FragShader.fsh.spv";
+const char VertShaderSrcFile[] = "VertShader.vsh.spv";
 
 // PVR texture files
 const char TextureFile[] = "Marble.pvr";
@@ -55,8 +55,7 @@ struct DeviceResources
 	pvrvk::Queue queue;
 	pvrvk::DescriptorPool descriptorPool;
 	pvrvk::CommandPool commandPool;
-	pvr::utils::vma::Allocator vmaBufferAllocator;
-	pvr::utils::vma::Allocator vmaImageAllocator;
+	pvr::utils::vma::Allocator vmaAllocator;
 	pvr::Multi<pvrvk::Framebuffer> onScreenFramebuffer;
 	pvr::Multi<pvrvk::ImageView> depthStencilImages;
 	pvr::Multi<pvrvk::Semaphore> semaphoreAcquire;
@@ -89,8 +88,8 @@ struct DeviceResources
 		if (device.isValid())
 		{
 			device->waitIdle();
-			int l = swapchain->getSwapchainLength();
-			for (int i = 0; i < l; ++i)
+			uint32_t l = swapchain->getSwapchainLength();
+			for (uint32_t i = 0; i < l; ++i)
 			{
 				if (perFrameFence[i].isValid())
 					perFrameFence[i]->wait();
@@ -180,7 +179,7 @@ void VulkanPVRScopeExample::eventMappedInput(pvr::SimplifiedInput key)
 	case pvr::SimplifiedInput::Right:
 	{
 		_selectedCounter++;
-		if (_selectedCounter > (int)_deviceResources->scopeGraph.getCounterNum())
+		if (_selectedCounter > static_cast<int32_t>(_deviceResources->scopeGraph.getCounterNum()))
 		{
 			_selectedCounter = _deviceResources->scopeGraph.getCounterNum();
 		}
@@ -219,7 +218,7 @@ void VulkanPVRScopeExample::eventMappedInput(pvr::SimplifiedInput key)
 void VulkanPVRScopeExample::createTexSamplerDescriptorSet(pvrvk::CommandBuffer& imageUploadCmd)
 {
 	_deviceResources->texture = pvr::utils::loadAndUploadImageAndView(_deviceResources->device, TextureFile, true, imageUploadCmd, *this, pvrvk::ImageUsageFlags::e_SAMPLED_BIT,
-		pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, nullptr, &_deviceResources->vmaBufferAllocator, &_deviceResources->vmaImageAllocator);
+		pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, nullptr, &_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
 
 	// create the bilinear sampler
 	pvrvk::SamplerCreateInfo samplerDesc;
@@ -249,7 +248,7 @@ void VulkanPVRScopeExample::createUboDescriptorSet()
 	_deviceResources->mvpUbo = pvr::utils::createBuffer(_deviceResources->device, _deviceResources->mvpUboView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT,
 		pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
-		&_deviceResources->vmaBufferAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+		&_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
 	_deviceResources->mvpUboView.pointToMappedMemory(_deviceResources->mvpUbo->getDeviceMemory()->getMappedData());
 
@@ -277,7 +276,7 @@ void VulkanPVRScopeExample::createUboDescriptorSet()
 		_deviceResources->materialUbo = pvr::utils::createBuffer(_deviceResources->device, _deviceResources->materialUboView.getSize(),
 			pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
-			&_deviceResources->vmaBufferAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+			&_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
 		_deviceResources->materialUboView.pointToMappedMemory(_deviceResources->materialUbo->getDeviceMemory()->getMappedData());
 	}
@@ -334,12 +333,12 @@ void VulkanPVRScopeExample::createPipeline()
 
 	pvrvk::GraphicsPipelineCreateInfo pipelineInfo;
 	pipelineInfo.viewport.setViewportAndScissor(0,
-		pvrvk::Viewport(0, 0, (float)_deviceResources->swapchain->getDimension().getWidth(), (float)_deviceResources->swapchain->getDimension().getHeight()),
+		pvrvk::Viewport(0, 0, static_cast<float>(_deviceResources->swapchain->getDimension().getWidth()), static_cast<float>(_deviceResources->swapchain->getDimension().getHeight())),
 		pvrvk::Rect2D(0, 0, _deviceResources->swapchain->getDimension().getWidth(), _deviceResources->swapchain->getDimension().getHeight()));
 
-	pipelineInfo.vertexShader.setShader(_deviceResources->device->createShader(getAssetStream(VertShaderSrcFile)->readToEnd<uint32_t>()));
+	pipelineInfo.vertexShader.setShader(_deviceResources->device->createShaderModule(pvrvk::ShaderModuleCreateInfo(getAssetStream(VertShaderSrcFile)->readToEnd<uint32_t>())));
 
-	pipelineInfo.fragmentShader.setShader(_deviceResources->device->createShader(getAssetStream(FragShaderSrcFile)->readToEnd<uint32_t>()));
+	pipelineInfo.fragmentShader.setShader(_deviceResources->device->createShaderModule(pvrvk::ShaderModuleCreateInfo(getAssetStream(FragShaderSrcFile)->readToEnd<uint32_t>())));
 
 	pipelineInfo.rasterizer.setCullMode(pvrvk::CullModeFlags::e_BACK_BIT);
 	pipelineInfo.depthStencil.enableDepthTest(true);
@@ -362,7 +361,7 @@ void VulkanPVRScopeExample::loadVbos(pvrvk::CommandBuffer& uploadCmd)
 	// load the vbo and ibo data
 	bool requiresCommandBufferSubmission = false;
 	pvr::utils::appendSingleBuffersFromModel(
-		_deviceResources->device, *_scene, _deviceResources->vbos, _deviceResources->ibos, uploadCmd, requiresCommandBufferSubmission, &_deviceResources->vmaBufferAllocator);
+		_deviceResources->device, *_scene, _deviceResources->vbos, _deviceResources->ibos, uploadCmd, requiresCommandBufferSubmission, &_deviceResources->vmaAllocator);
 }
 
 void VulkanPVRScopeExample::updateMVPMatrix(uint32_t swapchain)
@@ -447,6 +446,12 @@ pvr::Result VulkanPVRScopeExample::initView()
 	// Create instance and retrieve compatible physical devices
 	_deviceResources->instance = pvr::utils::createInstance(this->getApplicationName());
 
+	if (_deviceResources->instance->getNumPhysicalDevices() == 0)
+	{
+		setExitMessage("Unable not find a compatible Vulkan physical device.");
+		return pvr::Result::UnknownError;
+	}
+
 	// Create the surface
 	pvrvk::Surface surface = pvr::utils::createSurface(_deviceResources->instance, _deviceResources->instance->getPhysicalDevice(0), this->getWindow(), this->getDisplay());
 
@@ -467,8 +472,7 @@ pvr::Result VulkanPVRScopeExample::initView()
 	// Get the queues
 	_deviceResources->queue = _deviceResources->device->getQueue(queueAccessInfo.familyId, queueAccessInfo.queueId);
 
-	_deviceResources->vmaBufferAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
-	_deviceResources->vmaImageAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
+	_deviceResources->vmaAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
 
 	pvrvk::SurfaceCapabilitiesKHR surfaceCapabilities = _deviceResources->instance->getPhysicalDevice(0)->getSurfaceCapabilities(surface);
 
@@ -483,7 +487,7 @@ pvr::Result VulkanPVRScopeExample::initView()
 	// Create the swapchain
 	pvr::utils::createSwapchainAndDepthStencilImageAndViews(_deviceResources->device, surface, getDisplayAttributes(), _deviceResources->swapchain,
 		_deviceResources->depthStencilImages, swapchainImageUsage, pvrvk::ImageUsageFlags::e_DEPTH_STENCIL_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_TRANSIENT_ATTACHMENT_BIT,
-		&_deviceResources->vmaImageAllocator);
+		&_deviceResources->vmaAllocator);
 
 	//--------------------
 	// Create the framebuffer
@@ -492,8 +496,8 @@ pvr::Result VulkanPVRScopeExample::initView()
 
 	//--------------------
 	// Create the pools
-	_deviceResources->commandPool =
-		_deviceResources->device->createCommandPool(_deviceResources->queue->getQueueFamilyId(), pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT);
+	_deviceResources->commandPool = _deviceResources->device->createCommandPool(
+		pvrvk::CommandPoolCreateInfo(_deviceResources->queue->getFamilyIndex(), pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT));
 
 	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(pvrvk::DescriptorPoolCreateInfo()
 																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 16)
@@ -541,13 +545,13 @@ pvr::Result VulkanPVRScopeExample::initView()
 	_deviceResources->queue->waitIdle();
 
 	// Initialize UIRenderer
-	_deviceResources->uiRenderer.init(
-		getWidth(), getHeight(), isFullScreen(), _deviceResources->onScreenFramebuffer[0]->getRenderPass(), 0, _deviceResources->commandPool, _deviceResources->queue);
+	_deviceResources->uiRenderer.init(getWidth(), getHeight(), isFullScreen(), _deviceResources->onScreenFramebuffer[0]->getRenderPass(), 0,
+		getBackBufferColorspace() == pvr::ColorSpace::sRGB, _deviceResources->commandPool, _deviceResources->queue);
 
 	// Calculate the projection and view matrices
 	// Is the screen rotated?
 	const bool isRotate = this->isScreenRotated();
-	_projMtx = pvr::math::perspectiveFov(pvr::Api::Vulkan, glm::pi<float>() / 6, (float)getWidth(), (float)this->getHeight(), _scene->getCamera(0).getNear(),
+	_projMtx = pvr::math::perspectiveFov(pvr::Api::Vulkan, glm::pi<float>() / 6, static_cast<float>(getWidth()), static_cast<float>(getHeight()), _scene->getCamera(0).getNear(),
 		_scene->getCamera(0).getFar(), (isRotate ? glm::pi<float>() * .5f : 0.0f));
 
 	_viewMtx = glm::lookAt(glm::vec3(0, 0, 75), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
@@ -555,7 +559,7 @@ pvr::Result VulkanPVRScopeExample::initView()
 	// Initialize the graphing code
 	std::string errorStr;
 	if (!_deviceResources->scopeGraph.init(_deviceResources->device, _deviceResources->swapchain->getDimension(), _deviceResources->descriptorPool, *this,
-			_deviceResources->uiRenderer, _deviceResources->onScreenFramebuffer[0]->getRenderPass(), _deviceResources->vmaBufferAllocator, errorStr))
+			_deviceResources->uiRenderer, _deviceResources->onScreenFramebuffer[0]->getRenderPass(), _deviceResources->vmaAllocator, errorStr))
 	{
 		setExitMessage(errorStr.c_str());
 		return pvr::Result::NotInitialized;
@@ -651,7 +655,7 @@ pvr::Result VulkanPVRScopeExample::renderFrame()
 	if (this->shouldTakeScreenshot())
 	{
 		pvr::utils::takeScreenshot(_deviceResources->swapchain, swapchainIndex, _deviceResources->commandPool, _deviceResources->queue, this->getScreenshotFileName(),
-			&_deviceResources->vmaBufferAllocator, &_deviceResources->vmaImageAllocator);
+			&_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
 	}
 
 	//--------------------
@@ -701,7 +705,7 @@ void VulkanPVRScopeExample::drawMesh(int32_t nodeIndex, pvrvk::CommandBuffer& co
 	}
 	else
 	{
-		for (int32_t i = 0; i < (int32_t)mesh.getNumStrips(); ++i)
+		for (uint32_t i = 0; i < mesh.getNumStrips(); ++i)
 		{
 			int offset = 0;
 			if (_deviceResources->ibos[node.getObjectId()].isValid())
@@ -725,7 +729,7 @@ void VulkanPVRScopeExample::drawMesh(int32_t nodeIndex, pvrvk::CommandBuffer& co
 ***********************************************************************************************************************/
 void VulkanPVRScopeExample::recordCommandBuffer(uint32_t swapchain)
 {
-	const pvrvk::ClearValue clearValues[] = { pvrvk::ClearValue(0.00f, 0.70f, 0.67f, 1.0f), pvrvk::ClearValue::createDefaultDepthStencilClearValue() };
+	const pvrvk::ClearValue clearValues[] = { pvrvk::ClearValue(0.0f, 0.45f, 0.41f, 1.0f), pvrvk::ClearValue::createDefaultDepthStencilClearValue() };
 	pvrvk::CommandBuffer& command = _deviceResources->commandBuffer[swapchain];
 	command->begin();
 	command->beginRenderPass(_deviceResources->onScreenFramebuffer[swapchain], pvrvk::Rect2D(0, 0, getWidth(), getHeight()), true, clearValues, ARRAY_SIZE(clearValues));
@@ -817,11 +821,8 @@ void VulkanPVRScopeExample::updateDescription()
 	_deviceResources->uiRenderer.getDefaultDescription()->commitUpdates();
 }
 
-/*!*********************************************************************************************************************
-\return auto ptr to the demo supplied by the user
-\brief  This function must be implemented by the user of the shell. The user should return its Shell object defining the
-	behavior of the application.
-***********************************************************************************************************************/
+/// <summary>This function must be implemented by the user of the shell. The user should return its pvr::Shell object defining the behaviour of the application.</summary>
+/// <returns>Return a unique ptr to the demo supplied by the user.</returns>
 std::unique_ptr<pvr::Shell> pvr::newDemo()
 {
 	return std::unique_ptr<pvr::Shell>(new VulkanPVRScopeExample());

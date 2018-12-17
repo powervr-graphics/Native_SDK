@@ -1,7 +1,5 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node2" href="$classcl_1_1_open_c_l_error.html" title="A simple std::runtime_error wrapper for throwing exceptions when receiving OpenCL errors..." alt="" coords="194,5,310,32"/>
-<area shape="rect" id="node3" href="$classpvr_1_1_gl_error.html" title="A simple std::runtime_error wrapper for OpenGLES error codes." alt="" coords="207,56,297,83"/>
-<area shape="rect" id="node4" href="$classpvr_1_1_gl_extension_not_supported_error.html" title="A simple std::runtime_error wrapper for OpenGLES extension not supported error codes." alt="" coords="153,107,351,149"/>
-<area shape="rect" id="node5" href="$classpvr_1_1ui_1_1_u_i_renderer_error.html" title="A simple std::runtime_error wrapper for UIRenderer error codes." alt="" coords="171,173,333,200"/>
-<area shape="rect" id="node6" href="$classpvr_1_1ui_1_1_u_i_renderer_instance_max_error.html" title="A simple extension of a UIRendererError used to throwing errors due to reaching the maximum number of..." alt="" coords="401,166,583,207"/>
+<area shape="rect" id="node2" href="$classclutils_1_1_open_c_l_error.html" title="A simple std::runtime_error wrapper for throwing exceptions when receiving OpenCL errors..." alt="" coords="163,5,303,32"/>
+<area shape="rect" id="node3" href="$classpvr_1_1ui_1_1_u_i_renderer_error.html" title="A simple std::runtime_error wrapper for UIRenderer error codes." alt="" coords="153,56,314,83"/>
+<area shape="rect" id="node4" href="$classpvr_1_1ui_1_1_u_i_renderer_instance_max_error.html" title="A simple extension of a UIRendererError used to throwing errors due to reaching the maximum number of..." alt="" coords="363,49,546,90"/>
 </map>

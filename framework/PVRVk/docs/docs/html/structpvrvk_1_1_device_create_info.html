@@ -15,7 +15,7 @@
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="IMGdoxygen.css" rel="stylesheet" type="text/css"/>
-<link rel="shortcut icon" href="http://www.imgtec.com/images/img.ico">
+<link rel="shortcut icon" type="image/x-icon" href="img.ico">
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
+      <a href="https://www.imgtec.com/developers/" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRVk</span> Documentation</a>
    <tbody>
@@ -93,9 +93,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ae94d9a814df1085f552d713d1c6bb29c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_device_create_info.html#ae94d9a814df1085f552d713d1c6bb29c">DeviceCreateInfo</a> ()</td></tr>
-<tr class="memdesc:ae94d9a814df1085f552d713d1c6bb29c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor. Default initialised to 0 <a href="#ae94d9a814df1085f552d713d1c6bb29c">More...</a><br/></td></tr>
-<tr class="separator:ae94d9a814df1085f552d713d1c6bb29c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3df85bb7294ff57ad652eaed44e4ee84"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_device_create_info.html#a3df85bb7294ff57ad652eaed44e4ee84">DeviceCreateInfo</a> (const std::vector&lt; <a class="el" href="structpvrvk_1_1_device_queue_create_info.html">DeviceQueueCreateInfo</a> &gt; &amp;queueCreateInfos=std::vector&lt; <a class="el" href="structpvrvk_1_1_device_queue_create_info.html">DeviceQueueCreateInfo</a> &gt;(), const std::vector&lt; std::string &gt; &amp;enabledExtensionNames=std::vector&lt; std::string &gt;(), const PhysicalDeviceFeatures *enabledFeatures=nullptr, DeviceCreateFlags flags=DeviceCreateFlags::e_NONE)</td></tr>
+<tr class="memdesc:a3df85bb7294ff57ad652eaed44e4ee84"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor. Default initialised to 0 <a href="#a3df85bb7294ff57ad652eaed44e4ee84">More...</a><br/></td></tr>
+<tr class="separator:a3df85bb7294ff57ad652eaed44e4ee84"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aea49c06a8b0cea5ad7cdbe3f3b553ed5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_device_create_info.html#aea49c06a8b0cea5ad7cdbe3f3b553ed5">addDeviceQueue</a> (<a class="el" href="structpvrvk_1_1_device_queue_create_info.html">DeviceQueueCreateInfo</a> deviceQueueCreateInfo=<a class="el" href="structpvrvk_1_1_device_queue_create_info.html">DeviceQueueCreateInfo</a>())</td></tr>
 <tr class="memdesc:aea49c06a8b0cea5ad7cdbe3f3b553ed5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a new device queue creation info structure <a href="#aea49c06a8b0cea5ad7cdbe3f3b553ed5">More...</a><br/></td></tr>
 <tr class="separator:aea49c06a8b0cea5ad7cdbe3f3b553ed5"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -155,7 +155,7 @@ Public Member Functions</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Containes device create info.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a class="anchor" id="ae94d9a814df1085f552d713d1c6bb29c"></a>
+<a class="anchor" id="a3df85bb7294ff57ad652eaed44e4ee84"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -165,13 +165,36 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">pvrvk::DeviceCreateInfo::DeviceCreateInfo </td>
           <td>(</td>
-          <td class="paramname"></td><td>)</td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="structpvrvk_1_1_device_queue_create_info.html">DeviceQueueCreateInfo</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>queueCreateInfos</em> = <code>std::vector&lt;<a class="el" href="structpvrvk_1_1_device_queue_create_info.html">DeviceQueueCreateInfo</a>&gt;()</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">const std::vector&lt; std::string &gt; &amp;&#160;</td>
+          <td class="paramname"><em>enabledExtensionNames</em> = <code>std::vector&lt;std::string&gt;()</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const PhysicalDeviceFeatures *&#160;</td>
+          <td class="paramname"><em>enabledFeatures</em> = <code>nullptr</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">DeviceCreateFlags&#160;</td>
+          <td class="paramname"><em>flags</em> = <code>DeviceCreateFlags::e_NONE</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">explicit</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">

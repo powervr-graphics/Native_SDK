@@ -1,19 +1,19 @@
-#version 450
+#version 320 es
 
 layout(set = 0, binding = 0) uniform StaticPerScene
 {
-	highp float farClipDistance;
+	mediump float farClipDistance;
 };
 
 layout(set = 1, binding = 0) uniform StaticsPerPointLight
 {
-	highp float fLightIntensity;
-	highp float fLightRadius;
-	highp vec4 vLightColor;
-	highp vec4 vLightSourceColor;
+	mediump float fLightIntensity;
+	mediump float fLightRadius;
+	mediump vec4 vLightColor;
+	mediump vec4 vLightSourceColor;
 };
 
-layout(location = 0) out lowp vec4 oColorFbo;
+layout(location = 0) out mediump vec4 oColorFbo;
 
 void main()
 {

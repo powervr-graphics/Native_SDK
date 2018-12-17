@@ -7,6 +7,8 @@
 
 #include "PVRCamera/CameraInterface.h"
 #include <jni.h>
+#include "PVRCore/Log.h"
+#include "PVRCore/Errors.h"
 
 //!\cond NO_DOXYGEN
 
@@ -42,12 +44,11 @@ public:
 		memset(glm::value_ptr(projectionMatrix), 0, sizeof(projectionMatrix));
 	}
 
-	bool initializeSession(HWCamera::Enum eCamera, int width, int height)
+	void initializeSession(HWCamera::Enum eCamera, int width, int height)
 	{
 		if (strstr((const char*)gl::GetString(GL_EXTENSIONS), "OES_EGL_image_external") == 0)
 		{
-			Log(LogLevel::Critical, "CameraInterface - NativeExtension OES_EGL_image_external not found.\n");
-			return false;
+			throw InvalidOperationError("CameraInterface - NativeExtension OES_EGL_image_external not found.");
 		}
 
 		// Create an EGLImage External texture
@@ -61,25 +62,22 @@ public:
 
 		if ((res != 0) || (env == 0))
 		{
-			Log(LogLevel::Debug, "CameraInterface - NativeAttachCurrentThread failed");
-			return false;
+			throw InvalidOperationError("CameraInterface - NativeAttachCurrentThread failed.");
 		}
 
 		jclass clazz = 0;
 		clazz = env->GetObjectClass(jobj);
 		if (clazz == 0)
 		{
-			Log(LogLevel::Debug, "CameraInterface - NativeGetObjectClass failed");
 			cachedVM->DetachCurrentThread();
-			return false;
+			throw InvalidOperationError("CameraInterface - NativeGetObjectClass failed.");
 		}
 
 		jmethodID createCameraMethod = env->GetMethodID(clazz, "createCamera", "(I)I");
 		if (createCameraMethod == 0)
 		{
-			Log(LogLevel::Debug, "CameraInterface - NativeGetMethodID failed");
 			cachedVM->DetachCurrentThread();
-			return false;
+			throw InvalidOperationError("CameraInterface - NativeGetMethodID failed.");
 		}
 
 		int result = env->CallIntMethod(jobj, createCameraMethod, texture);
@@ -89,7 +87,7 @@ public:
 
 		cachedVM->DetachCurrentThread();
 
-		return result;
+		if (!result) throw InvalidOperationError("CameraInterface - Calling the java createCamera method failed.");
 	}
 
 	/****************************************************************************/
@@ -105,27 +103,24 @@ public:
 		{
 			if ((res != 0) || (env == 0))
 			{
-				Log(LogLevel::Debug, "CameraInterface - NativeAttachCurrentThread failed");
 				cachedVM->DetachCurrentThread();
-				return false;
+				throw InvalidOperationError("CameraInterface - updateImage::NativeAttachCurrentThread failed");
 			}
 
 			jclass clazz = 0;
 			clazz = env->GetObjectClass(jobj);
 			if (clazz == 0)
 			{
-				Log(LogLevel::Debug, "CameraInterface - NativeGetObjectClass failed");
 				cachedVM->DetachCurrentThread();
-				return false;
+				throw InvalidOperationError("CameraInterface - updateImage::NativeGetObjectClass failed");
 			}
 
 			// Get and cache the method ID.
 			updateImageMID = env->GetMethodID(clazz, "updateImage", "()Z");
 			if (updateImageMID == 0)
 			{
-				Log(LogLevel::Debug, "CameraInterface - NativeGetMethodID failed");
 				cachedVM->DetachCurrentThread();
-				return false;
+				throw InvalidOperationError("CameraInterface - updateImage::NativeGetMethodID failed");
 			}
 
 			env->DeleteLocalRef(clazz);
@@ -137,34 +132,31 @@ public:
 		return (bool)result;
 	}
 
-	void getCameraResolution(unsigned int& x, unsigned int& y)
+	void getCameraResolution(uint32_t& x, uint32_t& y)
 	{
 		JNIEnv* env = 0;
 		jint res = cachedVM->AttachCurrentThread(&env, 0);
 
 		if ((res != 0) || (env == 0))
 		{
-			Log(LogLevel::Debug, "CameraInterface - NativeAttachCurrentThread failed");
 			cachedVM->DetachCurrentThread();
-			return;
+			throw InvalidOperationError("CameraInterface - getCameraResolution:NativeAttachCurrentThread failed");
 		}
 
 		jclass clazz = 0;
 		clazz = env->GetObjectClass(jobj);
 		if (clazz == 0)
 		{
-			Log(LogLevel::Debug, "CameraInterface - NativeGetObjectClass failed");
+			throw InvalidOperationError("CameraInterface - getCameraResolution:NativeGetObjectClass failed");
 			cachedVM->DetachCurrentThread();
-			return;
 		}
 
 		// Get the X resolution.
 		jmethodID midx = env->GetMethodID(clazz, "getCameraResolutionX", "()I");
 		if (midx == 0)
 		{
-			Log(LogLevel::Debug, "CameraInterface - NativeGetMethodID failed");
 			cachedVM->DetachCurrentThread();
-			return;
+			throw InvalidOperationError("CameraInterface - getCameraResolution:NativeGetMethodID failed");
 		}
 
 		x = env->CallIntMethod(jobj, midx);
@@ -173,9 +165,8 @@ public:
 		jmethodID midy = env->GetMethodID(clazz, "getCameraResolutionY", "()I");
 		if (midy == 0)
 		{
-			Log(LogLevel::Debug, "CameraInterface - NativeGetMethodID failed");
 			cachedVM->DetachCurrentThread();
-			return;
+			throw InvalidOperationError("CameraInterface - getCameraResolution:NativeGetMethodID failed");
 		}
 
 		y = env->CallIntMethod(jobj, midy);
@@ -233,9 +224,9 @@ jint JNI_OnLoad(JavaVM* vm, void* reserved)
 	return JNI_VERSION_1_6;
 }
 
-bool pvr::CameraInterface::initializeSession(HWCamera::Enum camera, int width, int height)
+void pvr::CameraInterface::initializeSession(HWCamera::Enum camera, int width, int height)
 {
-	return static_cast<pvr::CameraInterfaceImpl*>(pImpl)->initializeSession(camera, width, height);
+	static_cast<pvr::CameraInterfaceImpl*>(pImpl)->initializeSession(camera, width, height);
 }
 
 bool global_dummy = false;
@@ -255,7 +246,7 @@ bool pvr::CameraInterface::hasProjectionMatrixChanged()
 	return static_cast<pvr::CameraInterfaceImpl*>(pImpl)->hasProjectionMatrixChanged;
 }
 
-void pvr::CameraInterface::getCameraResolution(unsigned int& x, unsigned int& y)
+void pvr::CameraInterface::getCameraResolution(uint32_t& x, uint32_t& y)
 {
 	return static_cast<pvr::CameraInterfaceImpl*>(pImpl)->getCameraResolution(x, y);
 }

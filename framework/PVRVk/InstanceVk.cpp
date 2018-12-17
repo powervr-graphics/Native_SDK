@@ -100,7 +100,6 @@ pvrvk::impl::Instance_::Instance_(const InstanceCreateInfo& instanceCreateInfo) 
 	{
 		_physicalDevices.push_back(PhysicalDevice_::createNew(getWeakReference(), vkPhyscialDevice[i]));
 	}
-	return;
 }
 
 pvrvk::Instance InstanceHelperFactory_::createVkInstance(const InstanceCreateInfo& createInfo)

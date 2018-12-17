@@ -7,8 +7,8 @@
 
 #pragma once
 #include "PVRCore/Threading.h"
-#include "PVRCore/Texture.h"
-#include "PVRAssets/TextureLoadAsync.h"
+#include "PVRCore/texture/Texture.h"
+#include "PVRCore/texture/TextureLoadAsync.h"
 #include "PVRVk/ImageVk.h"
 #include "PVRUtils/Vulkan/HelperVk.h"
 namespace pvr {
@@ -204,7 +204,7 @@ public:
 	{
 		_device = device;
 		_queueVk = queue;
-		_cmdPool = device->createCommandPool(queue->getQueueFamilyId(), pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT);
+		_cmdPool = device->createCommandPool(pvrvk::CommandPoolCreateInfo(queue->getFamilyIndex(), pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT));
 		_cmdQueueMutex = queueSemaphore;
 	}
 

@@ -1,10 +1,11 @@
 var searchData=
 [
-  ['texture',['Texture',['../classpvr_1_1_texture.html',1,'pvr']]],
-  ['texturearea',['TextureArea',['../structpvr_1_1_texture_area.html',1,'pvr']]],
-  ['textureheader',['TextureHeader',['../classpvr_1_1_texture_header.html',1,'pvr']]],
-  ['texturemetadata',['TextureMetaData',['../classpvr_1_1_texture_meta_data.html',1,'pvr']]],
-  ['time',['Time',['../classpvr_1_1_time.html',1,'pvr']]],
-  ['tpscamera',['TPSCamera',['../classpvr_1_1_t_p_s_camera.html',1,'pvr']]],
-  ['typedmem',['TypedMem',['../structpvr_1_1_typed_mem.html',1,'pvr']]]
+  ['shader',['Shader',['../structpvr_1_1effect_1_1_shader.html',1,'pvr::effect']]],
+  ['stencilstate',['StencilState',['../structpvr_1_1_stencil_state.html',1,'pvr']]],
+  ['stream',['Stream',['../classpvr_1_1_stream.html',1,'pvr']]],
+  ['stridedbuffer',['StridedBuffer',['../classpvr_1_1_strided_buffer.html',1,'pvr']]],
+  ['stringhash',['StringHash',['../classpvr_1_1_string_hash.html',1,'pvr']]],
+  ['subpass',['Subpass',['../structpvr_1_1effect_1_1_subpass.html',1,'pvr::effect']]],
+  ['subpassgroup',['SubpassGroup',['../structpvr_1_1effect_1_1_subpass_group.html',1,'pvr::effect']]],
+  ['swizzlechannels',['SwizzleChannels',['../structpvr_1_1_swizzle_channels.html',1,'pvr']]]
 ];

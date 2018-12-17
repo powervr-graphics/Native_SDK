@@ -4,16 +4,15 @@ MultiSampling
 
 .. figure:: ./MultiSampling.png
 
-Render a scene to a multisampling frame buffer object.
+Renders a scene to a multisampling framebuffer object.
 
 Description
 -----------
-This training course demonstrates how to use the framework to render a scene using multisampling feature. Provided for Vulkan (with SpirV shaders) and OpenGL ES 2.0+.
+This example demonstrates how to use the PowerVR Framework to render a scene using the multisampling feature.
 
-APIS
+APIs
 ----
 * Vulkan
-* OpenGL ES 2.0+
 
 Controls
 --------

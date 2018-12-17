@@ -15,7 +15,7 @@
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="IMGdoxygen.css" rel="stylesheet" type="text/css"/>
-<link rel="shortcut icon" href="http://www.imgtec.com/images/img.ico">
+<link rel="shortcut icon" type="image/x-icon" href="img.ico">
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
+      <a href="https://www.imgtec.com/developers/" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRCore</span> Documentation</a>
    <tbody>
@@ -125,18 +125,20 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>Callback
 : <a class="el" href="classpvr_1_1async_1_1_i_framework_async_result.html#a8416443f9cab22d5b542ebf52e58ae71">pvr::async::IFrameworkAsyncResult&lt; T &gt;</a>
 </li>
+<li>CallbackType
+: <a class="el" href="structpvr_1_1async_1_1_texture_load_future__.html#ab0a2354267bb90adac66def0e251f34d">pvr::async::TextureLoadFuture_</a>
+</li>
 <li>CameraAnimationController()
 : <a class="el" href="structpvr_1_1_camera_animation_controller.html#a521a66fc0dba2906401f134395639469">pvr::CameraAnimationController</a>
 </li>
 <li>CameraKeyFrame()
 : <a class="el" href="structpvr_1_1_camera_key_frame.html#af02250eeefc092989c0a8c7e9a40e69f">pvr::CameraKeyFrame</a>
 </li>
+<li>canHaveMultipleAssets()
+: <a class="el" href="classpvr_1_1pfx_1_1_pfx_parser.html#a25fa9582a64ac8f2bd426d9a6ae33b80">pvr::pfx::PfxParser</a>
+</li>
 <li>canWriteAsset()
 : <a class="el" href="classpvr_1_1_asset_writer.html#a7adac83bde32692e5e4fdfecca643164">pvr::AssetWriter&lt; AssetType &gt;</a>
-</li>
-<li>capacity()
-: <a class="el" href="classpvr_1_1_ring_buffer.html#a8723d068310f6bf259b7353bfe3f9db6">pvr::RingBuffer&lt; typename &gt;</a>
-, <a class="el" href="classpvr_1_1_indexed_array.html#ae3b168c894a48a739230d7e94bc2f596">pvr::IndexedArray&lt; ValueType_, IndexType_ &gt;</a>
 </li>
 <li>castValueMatrixToMatrix()
 : <a class="el" href="structpvr_1_1_free_value.html#ad819c5aa4834b2abbf291ef317098413">pvr::FreeValue</a>
@@ -149,8 +151,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </li>
 <li>center()
 : <a class="el" href="classpvr_1_1math_1_1_axis_aligned_box.html#a6bd022e376a1b88212f18745650fb33e">pvr::math::AxisAlignedBox</a>
-, <a class="el" href="structpvr_1_1_rectangle.html#a769d2978a3f69941f2ca17c7c5ef260c">pvr::Rectangle&lt; TYPE &gt;</a>
-, <a class="el" href="structpvr_1_1_rectangle3_d.html#a12345c701ed413ad4e9948243bacbef0">pvr::Rectangle3D&lt; TYPE &gt;</a>
+, <a class="el" href="structpvr_1_1_rectangle.html#a8271d64324e7e00e4185354dc027cbfe">pvr::Rectangle&lt; TYPE &gt;</a>
+, <a class="el" href="structpvr_1_1_rectangle3_d.html#a74e213590bc5dda92a59e5276d1bc45e">pvr::Rectangle3D&lt; TYPE &gt;</a>
 </li>
 <li>centerFar()
 : <a class="el" href="classpvr_1_1math_1_1_axis_aligned_box.html#a282d24eb9934710bcf7c38646607964a">pvr::math::AxisAlignedBox</a>
@@ -180,14 +182,10 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 : <a class="el" href="classpvr_1_1async_1_1_i_framework_cleanup_object.html#a2eeb9f821e79c7fc311b54d2640a9831">pvr::async::IFrameworkCleanupObject&lt; T &gt;</a>
 </li>
 <li>clear()
-: <a class="el" href="classpvr_1_1_bitfield.html#a2b0c5766124355ecdd802c36a873f8cb">pvr::Bitfield&lt; Storage_ &gt;</a>
-, <a class="el" href="classpvr_1_1_contiguous_map.html#ab31d72e5e5756da73b885d83029a9da3">pvr::ContiguousMap&lt; Key_, Value_, Comparator &gt;</a>
-, <a class="el" href="structpvr_1_1_typed_mem.html#abcb6de4cde92ff94863334b5a95c8ece">pvr::TypedMem</a>
-, <a class="el" href="classpvr_1_1_indexed_array.html#aa3b86079a6fdbec384a6c948521a143f">pvr::IndexedArray&lt; ValueType_, IndexType_ &gt;</a>
-, <a class="el" href="classpvr_1_1_multi.html#adc681912eac17d00f46cb823db38d0e5">pvr::Multi&lt; T_, MAX_ITEMS &gt;</a>
-, <a class="el" href="classpvr_1_1_ring_buffer.html#aec09efd06b9b9051f944af5a066a01c8">pvr::RingBuffer&lt; typename &gt;</a>
-, <a class="el" href="classpvr_1_1math_1_1_axis_aligned_box.html#ad450159909d86cb7c350651ebc42c64f">pvr::math::AxisAlignedBox</a>
+: <a class="el" href="classpvr_1_1math_1_1_axis_aligned_box.html#ad450159909d86cb7c350651ebc42c64f">pvr::math::AxisAlignedBox</a>
+, <a class="el" href="structpvr_1_1effect_1_1_effect.html#a125df06d64cfc413f4e8684d905bb516">pvr::effect::Effect</a>
 , <a class="el" href="classpvr_1_1_string_hash.html#a6ac0edabf30b1cf430527c0b66e5e3be">pvr::StringHash</a>
+, <a class="el" href="structpvr_1_1_typed_mem.html#abcb6de4cde92ff94863334b5a95c8ece">pvr::TypedMem</a>
 </li>
 <li>close()
 : <a class="el" href="classpvr_1_1_android_asset_stream.html#aeba46f96b846c513a964be837fd8e8c7">pvr::AndroidAssetStream</a>
@@ -197,13 +195,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </li>
 <li>closeAssetStream()
 : <a class="el" href="classpvr_1_1_asset_reader.html#a9b9057da5eafe3585806a5dae1c0f216">pvr::AssetReader&lt; AssetType &gt;</a>
+, <a class="el" href="classpvr_1_1_asset_writer.html#ac67021b0476b7f16e2fe359e90581e01">pvr::AssetWriter&lt; AssetType &gt;</a>
 </li>
 <li>colorSpace
-: <a class="el" href="structpvr_1_1_texture_header_1_1_header.html#a4e8ae8dbe3c628226ff53389efbf21e9">pvr::TextureHeader::Header</a>
-, <a class="el" href="structpvr_1_1_image_data_format.html#a8ee67a72ea434c4ecfa80b879c0abb10">pvr::ImageDataFormat</a>
+: <a class="el" href="structpvr_1_1_image_data_format.html#a8ee67a72ea434c4ecfa80b879c0abb10">pvr::ImageDataFormat</a>
+, <a class="el" href="structpvr_1_1_texture_header_1_1_header.html#a4e8ae8dbe3c628226ff53389efbf21e9">pvr::TextureHeader::Header</a>
 </li>
-<li>compact()
-: <a class="el" href="classpvr_1_1_indexed_array.html#af17498f4a82d16b4906b0468237fb4ba">pvr::IndexedArray&lt; ValueType_, IndexType_ &gt;</a>
+<li>CommandLineParser()
+: <a class="el" href="classpvr_1_1platform_1_1_command_line_parser.html#a67634e1c5ec66330b84391258ba00f0b">pvr::platform::CommandLineParser</a>
 </li>
 <li>compareMask
 : <a class="el" href="structpvr_1_1_stencil_state.html#a138069d61264546276e3c264f03dc52e">pvr::StencilState</a>
@@ -214,20 +213,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>CompressedFlag
 : <a class="el" href="structpvr_1_1_texture_header_1_1_header.html#a98897c220e0645d75555f481ae4749fba0f82ee6dd52139f3126922976c8cad1e">pvr::TextureHeader::Header</a>
 </li>
-<li>compressedSize
-: <a class="el" href="structpvr_1_1_texture_area.html#a3b61fe6ea7673c631182f38bfae44421">pvr::TextureArea</a>
+<li>conditions
+: <a class="el" href="structpvr_1_1effect_1_1_pipeline_reference.html#a6a38aa6ebf3170aad6ff2f66df09c5dc">pvr::effect::PipelineReference</a>
+</li>
+<li>ConditionType
+: <a class="el" href="structpvr_1_1effect_1_1_pipeline_condition.html#a12fa4da1af78b5b92c8712d9ea7c3fee">pvr::effect::PipelineCondition</a>
 </li>
 <li>configID
 : <a class="el" href="classpvr_1_1_display_attributes.html#a63aeaa47f5c21598750f0bd02a2d58cd">pvr::DisplayAttributes</a>
-</li>
-<li>const_index_iterator
-: <a class="el" href="classpvr_1_1_indexed_array.html#afb0ccad7d43d3e6845cc40624a8ad076">pvr::IndexedArray&lt; ValueType_, IndexType_ &gt;</a>
-</li>
-<li>const_iterator
-: <a class="el" href="classpvr_1_1_contiguous_map.html#ab48c278981530460f56e7cf5d254d0f5">pvr::ContiguousMap&lt; Key_, Value_, Comparator &gt;</a>
-</li>
-<li>const_reverse_iterator
-: <a class="el" href="classpvr_1_1_contiguous_map.html#a9a21214d3ca79e5f6ead1bc8253d9339">pvr::ContiguousMap&lt; Key_, Value_, Comparator &gt;</a>
 </li>
 <li>Constants
 : <a class="el" href="structpvr_1_1_texture_header_1_1_header.html#a98897c220e0645d75555f481ae4749fb">pvr::TextureHeader::Header</a>
@@ -240,9 +233,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </li>
 <li>ConsumerToken
 : <a class="el" href="classpvr_1_1_locked_queue.html#a72c024568453ddf245d8978c9873648f">pvr::LockedQueue&lt; T &gt;</a>
-</li>
-<li>ContainerType
-: <a class="el" href="classpvr_1_1_multi.html#a02c69e9b119b60375d8356d970879426">pvr::Multi&lt; T_, MAX_ITEMS &gt;</a>
 </li>
 <li>contextPriority
 : <a class="el" href="classpvr_1_1_display_attributes.html#ad67e7d968284305acf814f0496538a9a">pvr::DisplayAttributes</a>
@@ -271,11 +261,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>createFileStream()
 : <a class="el" href="classpvr_1_1_file_stream.html#ad421028fae90053fd8af2e24b89cede6">pvr::FileStream</a>
 </li>
+<li>createNew()
+: <a class="el" href="structpvr_1_1async_1_1_texture_load_future__.html#adb3280b2a4281681fd18c07e0ff2a214">pvr::async::TextureLoadFuture_</a>
+</li>
 <li>createWithReader()
 : <a class="el" href="classpvr_1_1_asset.html#a6b97831dc9125ac2c5a7ee871152e59d">pvr::Asset&lt; AssetType_ &gt;</a>
 </li>
-<li>cubeFace
-: <a class="el" href="structpvr_1_1_texture_area.html#abbea30e4b178b38b854f75f674e4f6b8">pvr::TextureArea</a>
+<li>cullFace
+: <a class="el" href="structpvr_1_1effect_1_1_pipeline_definition.html#af5f3a3fc51366bb77197828620872454">pvr::effect::PipelineDefinition</a>
 </li>
 </ul>
 </div><!-- contents -->

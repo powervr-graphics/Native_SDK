@@ -1,5 +1,7 @@
 #include "NavDataProcess.h"
 #include "../external/glm/gtx/intersect.hpp"
+#include "../external/pugixml/pugixml.hpp"
+
 const float TexUVLeft = -1.f;
 const float TexUVRight = 1.f;
 const float TexUVUp = .25f;
@@ -76,7 +78,7 @@ pvr::Result NavDataProcess::loadOSMData()
 #endif
 	pugi::xml_document mapData;
 	std::vector<char> mapStream = _assetStream->readToEnd<char>();
-	pugi::xml_parse_result result = mapData.load(mapStream.data(), static_cast<unsigned int>(mapStream.size()));
+	pugi::xml_parse_result result = mapData.load_string(mapStream.data(), static_cast<uint32_t>(mapStream.size()));
 
 	Log(LogLevel::Debug, "XML parse result: %s", result.description());
 	if (!result)
@@ -592,7 +594,7 @@ applied to the text based on the slope of the road segment i.e. the line between
 ***********************************************************************************************************************/
 void NavDataProcess::processLabels(const glm::dvec2& mapWorldDim)
 {
-	for (int lod = 0; lod <= LOD::Count; ++lod)
+	for (uint32_t lod = 0; lod <= LOD::Count; ++lod)
 	{
 		auto& _osmlodlabels = _osm.labels[lod];
 		if (_osmlodlabels.size() == 0)
@@ -752,13 +754,13 @@ void breakUpAllIntersectionWays(OSM& _osm, uint64_t intersection_id)
 	bool isLoop;
 	uint64_t wayToBreak_id = 0;
 
-	while (wayToBreak_id != -1)
+	while (wayToBreak_id != static_cast<uint64_t>(-1))
 	{
 		isLoop = false;
 		wayToBreak_id = -1;
 
 		// Determine if the junction involves only the start or end of a way
-		for (size_t way_idx = 0; way_idx < intersection_vertex.wayIds.size() && wayToBreak_id == -1; ++way_idx)
+		for (size_t way_idx = 0; way_idx < intersection_vertex.wayIds.size() && wayToBreak_id == static_cast<uint64_t>(-1); ++way_idx)
 		{
 			uint64_t way_id = intersection_vertex.wayIds[way_idx];
 			auto& oriway = _osm.getOriginalRoadWay(way_id);
@@ -774,7 +776,7 @@ void breakUpAllIntersectionWays(OSM& _osm, uint64_t intersection_id)
 			}
 		}
 
-		if (wayToBreak_id != -1) // If there is a junction part way through a road, or we have a loop to break up
+		if (wayToBreak_id != static_cast<uint64_t>(-1)) // If there is a junction part way through a road, or we have a loop to break up
 		{
 			Way& originalWay = _osm.originalRoadWays.find(wayToBreak_id)->second;
 			Way& triangulatedWay = _osm.triangulatedRoads.find(wayToBreak_id)->second;
@@ -825,7 +827,7 @@ void breakUpAllIntersectionWays(OSM& _osm, uint64_t intersection_id)
 			{
 				bool addOnlyOnce = true;
 				std::vector<uint64_t>& wayIds = _osm.getNodeById(newNonTriangulatedRoad.nodeIds[j]).wayIds;
-				for (int k = 0; k < (int)wayIds.size(); ++k)
+				for (uint32_t k = 0; k < static_cast<uint32_t>(wayIds.size()); ++k)
 				{
 					if (wayIds[k] == originalWay.id)
 					{
@@ -955,15 +957,15 @@ void processIntersection(OSM& _osm, uint64_t intersection_id)
 			const glm::dvec2* current_ptr_2;
 			glm::dvec2* next_ptr_1;
 			const glm::dvec2* next_ptr_3;
-			int current_tmp = 0;
-			int next_tmp = 1;
+			uint32_t current_tmp = 0;
+			uint32_t next_tmp = 1;
 
 			// FIX: For vertices that are on top of each other
 			while (true)
 			{
 				current_ptr_0 = &_osm.getNodeById(currentWay.nodeIds[current_tmp]).coords;
 				current_ptr_2 = &_osm.getNodeById(currentWay.nodeIds[current_tmp + 2]).coords;
-				if (current_tmp + 4 >= (int)currentWay.nodeIds.size())
+				if (current_tmp + 4 >= static_cast<uint32_t>(currentWay.nodeIds.size()))
 				{
 					break;
 				} // Nothing to do - can't look further...
@@ -977,7 +979,7 @@ void processIntersection(OSM& _osm, uint64_t intersection_id)
 			{
 				next_ptr_1 = &_osm.getNodeById(nextWay.nodeIds[next_tmp]).coords;
 				next_ptr_3 = &_osm.getNodeById(nextWay.nodeIds[next_tmp + 2]).coords;
-				if (next_tmp + 4 >= (int)nextWay.nodeIds.size())
+				if (next_tmp + 4 >= static_cast<uint32_t>(nextWay.nodeIds.size()))
 				{
 					break;
 				} // Nothing to do - can't look further...
@@ -1020,12 +1022,12 @@ void processIntersection(OSM& _osm, uint64_t intersection_id)
 			for (uint32_t current_node_idx = 0, next_node_idx = 0; current_node_idx + 1 < nonTriangulatedWays[currentWayNum].nodeIds.size() &&
 				 next_node_idx + 1 < nonTriangulatedWays[nextWayNum].nodeIds.size() && !intersection_point_found;)
 			{
-				int32_t current_idx_0 = current_node_idx * 2 + 0;
-				int32_t current_idx_2 = current_node_idx * 2 + 2;
-				assertion(current_idx_2 < (int)currentWay.nodeIds.size());
-				int32_t next_idx_1 = next_node_idx * 2 + 1;
-				int32_t next_idx_3 = next_node_idx * 2 + 3;
-				assertion(next_idx_3 < (int)nextWay.nodeIds.size());
+				uint32_t current_idx_0 = current_node_idx * 2 + 0;
+				uint32_t current_idx_2 = current_node_idx * 2 + 2;
+				assertion(current_idx_2 < static_cast<uint32_t>(currentWay.nodeIds.size()));
+				uint32_t next_idx_1 = next_node_idx * 2 + 1;
+				uint32_t next_idx_3 = next_node_idx * 2 + 3;
+				assertion(next_idx_3 < static_cast<uint32_t>(nextWay.nodeIds.size()));
 
 				glm::dvec2& current_0 = _osm.getNodeById(currentWay.nodeIds[current_idx_0]).coords; // Current road, right point on intersection
 				const glm::dvec2& current_2 = _osm.getNodeById(currentWay.nodeIds[current_idx_2]).coords; // Current road, right point, just before intersection
@@ -1077,12 +1079,12 @@ void processIntersection(OSM& _osm, uint64_t intersection_id)
 
 				if (isIntersectionValidForCurrent && isIntersectionValidForNext)
 				{
-					for (int i = 0; i <= (int)current_node_idx; ++i)
+					for (uint32_t i = 0; i <= current_node_idx; ++i)
 					{
 						_osm.getNodeById(currentWay.nodeIds[i * 2]).coords = intersection_point;
 					}
 
-					for (int i = 0; i <= (int)next_node_idx; ++i)
+					for (uint32_t i = 0; i <= next_node_idx; ++i)
 					{
 						_osm.getNodeById(nextWay.nodeIds[i * 2 + 1]).coords = intersection_point;
 					}
@@ -1443,7 +1445,7 @@ std::vector<uint64_t> NavDataProcess::tessellate(const std::vector<uint64_t>& ol
 		// Don't try to tessellate tiny segments.
 		if (!isOutOfBounds(node1.coords) && (node1.wayIds.size() == 1) && angle > lowerThreshold && angle < 180 - lowerThreshold && segments_length > width * .40)
 		{
-			int numSteps_angle = 1 + (int)((1.f - (angle / (180.f))) * 9.f);
+			uint32_t numSteps_angle = 1 + static_cast<uint32_t>(((1.f - (angle / (180.f))) * 9.f));
 
 			middleNodeAdded = false;
 
@@ -1475,7 +1477,7 @@ std::vector<uint64_t> NavDataProcess::tessellate(const std::vector<uint64_t>& ol
 			// But, we want to be careful that we do not move too far back
 
 			float numsteps_curve_length = static_cast<float>(5.f * segmentFactorSize / .45);
-			int numSteps = std::min(numSteps_angle, int(numsteps_curve_length));
+			uint32_t numSteps = std::min(numSteps_angle, static_cast<uint32_t>(numsteps_curve_length));
 
 			Real stepValue = 1.0 / (1 + numSteps);
 
@@ -1732,7 +1734,7 @@ void NavDataProcess::clipAgainst(const Vertex& vertex0, const Vertex& vertex1, c
 	rslt20 = (rslt20 && (clipDistance20 > 0.f && clipDistance20 <= dist2to0)); // Lines not parallel, but do not cross.
 
 	// Detecting the case where we're so "lucky" that one of the vertices is on the plane and the other two are on opposite sides...
-	int num_intersections = (rslt01 + rslt12 + rslt20);
+	uint32_t num_intersections = (rslt01 + rslt12 + rslt20);
 	//
 	// n triangle must have either no intersection or 2 intersection
 	assertion(num_intersections < 3, "INTERSECTION ERROR: Cannot have 3 intersections in line vs triangle.");
@@ -1787,7 +1789,7 @@ void NavDataProcess::clipAgainst(const Vertex& vertex0, const Vertex& vertex1, c
 	{
 		if (rslt01) // Vertex 2 is actually on the plane, 0 and 1 are on opposite sides of it. Triangles is: NEW->1->2 and NEW->2->0
 		{
-			glm::dvec2 newp_coords = vertex0.coords + (double)clipDistance01 * glm::dvec2(vec0to1);
+			glm::dvec2 newp_coords = vertex0.coords + static_cast<double>(clipDistance01) * glm::dvec2(vec0to1);
 			glm::vec2 newp_uvs = glm::mix(vertex0.texCoords, vertex1.texCoords, clipDistance01 / dist0to1);
 
 			Vertex newVert = Vertex(-1, newp_coords, true, newp_uvs);
@@ -1806,7 +1808,7 @@ void NavDataProcess::clipAgainst(const Vertex& vertex0, const Vertex& vertex1, c
 		}
 		else if (rslt12) // Triangles is: NEW->2->0 and NEW->0->1
 		{
-			glm::dvec2 newp_coords = vertex1.coords + (double)clipDistance12 * glm::dvec2(vec1to2);
+			glm::dvec2 newp_coords = vertex1.coords + static_cast<double>(clipDistance12) * glm::dvec2(vec1to2);
 			glm::vec2 newp_uvs = glm::mix(vertex1.texCoords, vertex2.texCoords, clipDistance12 / dist1to2);
 
 			Vertex newVert = Vertex(-1, newp_coords, true, newp_uvs);
@@ -1825,7 +1827,7 @@ void NavDataProcess::clipAgainst(const Vertex& vertex0, const Vertex& vertex1, c
 		}
 		else if (rslt20) // Triangles is: NEW->0->1 and NEW->1->2
 		{
-			glm::dvec2 newp_coords = vertex2.coords + (double)clipDistance20 * glm::dvec2(vec2to0);
+			glm::dvec2 newp_coords = vertex2.coords + static_cast<double>(clipDistance20) * glm::dvec2(vec2to0);
 			glm::vec2 newp_uvs = glm::mix(vertex2.texCoords, vertex0.texCoords, clipDistance20 / dist2to0);
 
 			Vertex newVert = Vertex(-1, newp_coords, true, newp_uvs);

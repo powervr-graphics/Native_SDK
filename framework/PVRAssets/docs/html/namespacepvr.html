@@ -15,7 +15,7 @@
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="IMGdoxygen.css" rel="stylesheet" type="text/css"/>
-<link rel="shortcut icon" href="http://www.imgtec.com/images/img.ico">
+<link rel="shortcut icon" type="image/x-icon" href="img.ico">
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
+      <a href="https://www.imgtec.com/developers/" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRAssets</span> Documentation</a>
    <tbody>
@@ -78,8 +78,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="header">
   <div class="summary">
 <a href="#namespaces">Namespaces</a> &#124;
-<a href="#nested-classes">Classes</a> &#124;
-<a href="#enum-members">Enumerations</a>  </div>
+<a href="#nested-classes">Classes</a>  </div>
   <div class="headertitle">
 <div class="title">pvr Namespace Reference</div>  </div>
 </div><!--header-->
@@ -96,83 +95,19 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_palette_expander.html">PaletteExpander</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Internally used by some texture readers. <a href="classpvr_1_1_palette_expander.html#details">More...</a><br/></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_indexed_array.html">IndexedArray</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A combination of array (std::vector) with associative container (std::map). Supports association of names with values, and retrieval by index. <a href="classpvr_1_1_indexed_array.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_shadow_volume.html">ShadowVolume</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents data for handling Shadow volumes of a single Mesh. <a href="classpvr_1_1_shadow_volume.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_skip_graph_node.html">SkipGraphNode</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stores a pointer to the node's data and also uses a dynamic array to store pointer to nodes this node depends on and another to store pointers to nodes that are dependant on this node. <a href="classpvr_1_1_skip_graph_node.html#details">More...</a><br/></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_skip_graph_root.html">SkipGraphRoot</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">This class is the entry point for creating and accessing the elements of a skip graph. It uses a hash table to store the nodes of the structure and a hash value that allows fast searching of the skip graph.  <a href="classpvr_1_1_skip_graph_root.html#details">More...</a><br/></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_volume.html">Volume</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents data for handling volumes of a single Mesh. <a href="classpvr_1_1_volume.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
-Enumerations</h2></td></tr>
-<tr class="memitem:a7449705e04c8fe948e390ea793106107"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#a7449705e04c8fe948e390ea793106107">VariableScope</a> { <br/>
-&#160;&#160;<a class="el" href="namespacepvr.html#a7449705e04c8fe948e390ea793106107a88183b946cc5f0e8c96b2e66e1c74a7e">VariableScope::Unknown</a>, 
-<a class="el" href="namespacepvr.html#a7449705e04c8fe948e390ea793106107a086247a9b57fde6eefee2a0c4752242d">VariableScope::Automatic</a>, 
-<a class="el" href="namespacepvr.html#a7449705e04c8fe948e390ea793106107aa559b87068921eec05086ce5485e9784">VariableScope::Model</a>, 
-<a class="el" href="namespacepvr.html#a7449705e04c8fe948e390ea793106107aa62d22910732d5343689f5117999abfa">VariableScope::Effect</a>, 
-<br/>
-&#160;&#160;<a class="el" href="namespacepvr.html#a7449705e04c8fe948e390ea793106107a6c3a6944a808a7c0bbb6788dbec54a9f">VariableScope::Node</a>, 
-<a class="el" href="namespacepvr.html#a7449705e04c8fe948e390ea793106107aa65c9562b8c9e07299be6bc0b4f3a072">VariableScope::BoneBatch</a>
-<br/>
- }</td></tr>
-<tr class="memdesc:a7449705e04c8fe948e390ea793106107"><td class="mdescLeft">&#160;</td><td class="mdescRight">The possible scope, or frequency of change, of a variable <a href="namespacepvr.html#a7449705e04c8fe948e390ea793106107">More...</a><br/></td></tr>
-<tr class="separator:a7449705e04c8fe948e390ea793106107"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Main namespace of the PowerVR Framework.</p>
-</div><h2 class="groupheader">Enumeration Type Documentation</h2>
-<a class="anchor" id="a7449705e04c8fe948e390ea793106107"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">enum <a class="el" href="namespacepvr.html#a7449705e04c8fe948e390ea793106107">pvr::VariableScope</a></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>The possible scope, or frequency of change, of a variable</p>
-<table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><em><a class="anchor" id="a7449705e04c8fe948e390ea793106107a88183b946cc5f0e8c96b2e66e1c74a7e"></a>Unknown</em>&#160;</td><td class="fielddoc">
-<p>Scope is unknown, undefined, or custom. </p>
-</td></tr>
-<tr><td class="fieldname"><em><a class="anchor" id="a7449705e04c8fe948e390ea793106107a086247a9b57fde6eefee2a0c4752242d"></a>Automatic</em>&#160;</td><td class="fielddoc">
-<p>Scope is being inferred from use. </p>
-</td></tr>
-<tr><td class="fieldname"><em><a class="anchor" id="a7449705e04c8fe948e390ea793106107aa559b87068921eec05086ce5485e9784"></a>Model</em>&#160;</td><td class="fielddoc">
-<p>The variable is per model (stays constant for a given model, for example, ViewMatrix) </p>
-</td></tr>
-<tr><td class="fieldname"><em><a class="anchor" id="a7449705e04c8fe948e390ea793106107aa62d22910732d5343689f5117999abfa"></a>Effect</em>&#160;</td><td class="fielddoc">
-<p>The variable is per effect (stays constant for a given effect, for example, directional light intensity) </p>
-</td></tr>
-<tr><td class="fieldname"><em><a class="anchor" id="a7449705e04c8fe948e390ea793106107a6c3a6944a808a7c0bbb6788dbec54a9f"></a>Node</em>&#160;</td><td class="fielddoc">
-<p>The variable is per Mesh Node (stays constant for a given node of a model, for example, ModelViewProjection matrix) </p>
-</td></tr>
-<tr><td class="fieldname"><em><a class="anchor" id="a7449705e04c8fe948e390ea793106107aa65c9562b8c9e07299be6bc0b4f3a072"></a>BoneBatch</em>&#160;</td><td class="fielddoc">
-<p>The variable is per Bone Batch (deprecated - stays constant for a given Bone Batch, for example, bones) </p>
-</td></tr>
-</table>
-
-</div>
-</div>
-</div><!-- contents -->
+</div></div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.4-->
 <!-- start footer part (NON TREEVIEW ONLY!!) -->
 <!--BEGIN GENERATE_TREEVIEW-->

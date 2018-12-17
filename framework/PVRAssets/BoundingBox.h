@@ -6,7 +6,7 @@
 */
 #pragma once
 #include <PVRAssets/Model.h>
-#include <PVRCore/Math/AxisAlignedBox.h>
+#include <PVRCore/math/AxisAlignedBox.h>
 namespace pvr {
 namespace assets {
 /// <summary>Contains utilities and helpers</summary>
@@ -82,7 +82,7 @@ inline math::AxisAlignedBox getBoundingBox(const Model& model)
 	if (model.getNumMeshes())
 	{
 		math::AxisAlignedBox retval(getBoundingBox(model.getMesh(0)));
-		for (int i = 1; i < model.getNumMeshes(); ++i)
+		for (uint32_t i = 1; i < model.getNumMeshes(); ++i)
 		{
 			retval.mergeBox(getBoundingBox(model.getMesh(i)));
 		}

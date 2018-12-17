@@ -23,11 +23,11 @@
 #define ERROR_TITLE _T("Error")
 
 // Width and height of the window
-const unsigned int WindowWidth = 800;
-const unsigned int WindowHeight = 600;
+const uint32_t WindowWidth = 1280;
+const uint32_t WindowHeight = 800;
 
 // Index to bind the attributes to vertex shaders
-const unsigned int VertexArray = 0;
+const uint32_t VertexArray = 0;
 
 // Variable set by the message handler to finish the demo
 bool HasUserQuit = false;
@@ -464,7 +464,7 @@ bool initializeShaders(GLuint& fragmentShader, GLuint& vertexShader, GLuint& sha
 	// Vertex shader code
 	const char* const vertexShaderSource = "\
 										   attribute highp vec4	myVertex;\
-										   uniform mediump mat4	transformationMatrix;\
+										   uniform highp mat4 transformationMatrix;\
 										   void main(void)\
 										   {\
 										   gl_Position = transformationMatrix * myVertex;\
@@ -776,7 +776,7 @@ int WINAPI WinMain(HINSTANCE applicationInstance, HINSTANCE previousInstance, TC
 	}
 
 	// Renders a triangle for 800 frames using the state setup in the previous function
-	for (int i = 0; i < 800; ++i)
+	for (uint32_t i = 0; i < 800; ++i)
 	{
 		if (!renderScene(shaderProgram, display, surface, nativeWindow))
 		{

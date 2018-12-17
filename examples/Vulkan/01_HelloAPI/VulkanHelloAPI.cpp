@@ -75,7 +75,7 @@ std::vector<std::string> VulkanHelloAPI::initLayers()
 
 	bool requestedStdValidation = false;
 	bool supportsStdValidation = false;
-	int stdValidationRequiredIndex = -1;
+	uint32_t stdValidationRequiredIndex = -1;
 
 	for (const auto& InstanceLayer : InstanceLayers)
 	{
@@ -97,7 +97,7 @@ std::vector<std::string> VulkanHelloAPI::initLayers()
 
 		if (!supportsStdValidation)
 		{
-			for (uint32_t i = 0; stdValidationRequiredIndex == -1 && i < outLayers.size(); ++i)
+			for (uint32_t i = 0; stdValidationRequiredIndex == static_cast<uint32_t>(-1) && i < outLayers.size(); ++i)
 			{
 				if (!strcmp(InstanceLayers[i].c_str(), "VK_LAYER_LUNARG_standard_validation"))
 				{
@@ -670,9 +670,9 @@ void VulkanHelloAPI::initShaders()
 	// SPIR-V can be used for both graphical and compute operations. We load the compiled code (see vertshader.h & fragshader.h)
 	// and create shader stages that are going to be used by our pipeline later on.
 
-	createShader(spv_VertShader_bin, sizeof(spv_VertShader_bin), 0, VK_SHADER_STAGE_VERTEX_BIT);
+	createShaderModule(spv_VertShader_bin, sizeof(spv_VertShader_bin), 0, VK_SHADER_STAGE_VERTEX_BIT);
 
-	createShader(spv_FragShader_bin, sizeof(spv_FragShader_bin), 1, VK_SHADER_STAGE_FRAGMENT_BIT);
+	createShaderModule(spv_FragShader_bin, sizeof(spv_FragShader_bin), 1, VK_SHADER_STAGE_FRAGMENT_BIT);
 }
 
 void VulkanHelloAPI::initRenderPass()
@@ -1041,7 +1041,7 @@ void VulkanHelloAPI::initDescriptorPoolAndSet()
 
 	// The info struct for our descriptor Pool
 	VkDescriptorPoolCreateInfo descriptorPoolInfo = {};
-	descriptorPoolInfo.flags = 0;
+	descriptorPoolInfo.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
 	descriptorPoolInfo.pNext = nullptr;
 	descriptorPoolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
 	descriptorPoolInfo.poolSizeCount = 2;
@@ -1111,7 +1111,7 @@ void VulkanHelloAPI::initDescriptorPoolAndSet()
 	VkDescriptorImageInfo descriptorImageInfo = {};
 	descriptorImageInfo.sampler = appManager.texture.sampler;
 	descriptorImageInfo.imageView = appManager.texture.view;
-	descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_PREINITIALIZED;
+	descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
 	descriptorSetWrite[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 	descriptorSetWrite[0].pNext = nullptr;
@@ -1587,7 +1587,7 @@ void VulkanHelloAPI::createDynamicUniformBuffer(BufferData& inBuffer)
 	}
 }
 
-void VulkanHelloAPI::createShader(const uint32_t* spvShader, size_t spvShaderSize, int indx, VkShaderStageFlagBits shaderStage)
+void VulkanHelloAPI::createShaderModule(const uint32_t* spvShader, size_t spvShaderSize, int indx, VkShaderStageFlagBits shaderStage)
 {
 	// This function will create a shader module and update our shader stage array. The shader stages will be used later on
 	// by the pipeline to determine the stages that the rendering process will go through. The shader module will hold
@@ -2030,7 +2030,8 @@ void VulkanHelloAPI::deinitialize()
 		vk::DestroySemaphore(appManager.device, semaphore, nullptr);
 	}
 
-	//  vk::FreeDescriptorSets(appManager.device, appManager.descriptorPool, 1, &appManager.descriptorSet);
+	vk::FreeDescriptorSets(appManager.device, appManager.descriptorPool, 1, &appManager.staticDescSet);
+	vk::FreeDescriptorSets(appManager.device, appManager.descriptorPool, 1, &appManager.dynamicDescSet);
 
 	// We destroy  both the descriptor Layout and descriptor Pool.
 	vk::DestroyDescriptorSetLayout(appManager.device, appManager.staticDescriptorSetLayout, nullptr);

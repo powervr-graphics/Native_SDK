@@ -6,13 +6,13 @@
 */
 //!\cond NO_DOXYGEN
 #include "PVRShell/OS/ShellOS.h"
-#include "PVRCore/IO/FilePath.h"
+#include "PVRCore/stream/FilePath.h"
 #include <mach/mach_time.h>
 #import <UIKit/UIKit.h>
 
 @interface AppWindow : UIWindow // The implementation appears at the bottom of this file
 {
-    pvr::Shell* eventQueue;
+	pvr::Shell* eventQueue;
 	CGFloat screenScale;
 }
 
@@ -50,7 +50,7 @@ ShellOS::~ShellOS()
 
 void ShellOS::updatePointingDeviceLocation()
 {
-    _shell->updatePointerPosition(PointerLocation(g_cursorX, g_cursorY));
+	_shell->updatePointerPosition(PointerLocation(g_cursorX, g_cursorY));
 }
 
 bool ShellOS::init(DisplayAttributes &data)
@@ -63,13 +63,13 @@ bool ShellOS::init(DisplayAttributes &data)
 	_ReadPaths.push_back([readPath UTF8String]);
 
 	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString* writePath = [NSString stringWithFormat:@"%@%@", [paths objectAtIndex:0], @"/"];
+	NSString* writePath = [NSString stringWithFormat:@"%@%@", [paths objectAtIndex:0], @"/"];
 	_WritePath = [writePath UTF8String];
-    
+	
 	// Setup the app name
-    NSString* name = [[NSProcessInfo processInfo] processName];
-    _AppName =[name UTF8String];
-    
+	NSString* name = [[NSProcessInfo processInfo] processName];
+	_AppName =[name UTF8String];
+	
 	return true;
 }
 
@@ -78,7 +78,7 @@ bool ShellOS::initializeWindow(DisplayAttributes &data)
 	CGFloat scale = 1.0;
 	
 	// Now create our window
-    data.fullscreen = true;
+	data.fullscreen = true;
  
 	UIScreen* screen = [UIScreen mainScreen];
 	if([UIScreen instancesRespondToSelector:@selector(scale)])
@@ -87,20 +87,20 @@ bool ShellOS::initializeWindow(DisplayAttributes &data)
 	}
 	
 	// Set our frame to fill the screen
-    CGRect frame = [screen applicationFrame];
+	CGRect frame = [screen applicationFrame];
 
-    data.x = frame.origin.x;
-    data.y = frame.origin.y;
-    data.width = frame.size.width * scale;
-    data.height = frame.size.height * scale;
+	data.x = frame.origin.x;
+	data.y = frame.origin.y;
+	data.width = frame.size.width * scale;
+	data.height = frame.size.height * scale;
 
-    _OSImplementation->window = [[AppWindow alloc] initWithFrame:frame];
-    
-    if(!_OSImplementation->window) {  return false;   }
-    
-    // pass the shell as the event queue
-    _OSImplementation->window.eventQueue = _shell.get();
-    
+	_OSImplementation->window = [[AppWindow alloc] initWithFrame:frame];
+	
+	if(!_OSImplementation->window) {  return false;   }
+	
+	// pass the shell as the event queue
+	_OSImplementation->window.eventQueue = _shell.get();
+	
 	// Give the window a copy of the eventQueue so it can pass on the keyboard/mouse events
 	[_OSImplementation->window setScreenScale:scale];
 	[_OSImplementation->window makeKeyAndVisible];
@@ -145,26 +145,26 @@ bool ShellOS::isInitialized()
 
 bool ShellOS::popUpMessage(const char * const title, const char * const message, ...) const
 {
-    if(title && message)
-    {
-        va_list arg;
+	if(title && message)
+	{
+		va_list arg;
 
-        va_start(arg, message);
- 
-        NSString *fullMessage = [[NSString alloc] initWithFormat:[NSString stringWithUTF8String:message] arguments:arg];
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:[NSString stringWithUTF8String:title]
-                                                    message:fullMessage
-                                                    delegate:nil
-                                                    cancelButtonTitle:@"OK"
-                                                    otherButtonTitles:nil];
-        
-        va_end(arg);
-        
-        [alert show];
-      //  [alert release];
-    }
-    
-    return true;
+		va_start(arg, message);
+
+		NSString *fullMessage = [[NSString alloc] initWithFormat:[NSString stringWithUTF8String:message] arguments:arg];
+		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:[NSString stringWithUTF8String:title]
+													message:fullMessage
+													delegate:nil
+													cancelButtonTitle:@"OK"
+													otherButtonTitles:nil];
+		
+		va_end(arg);
+		
+		[alert show];
+	  //  [alert release];
+	}
+	
+	return true;
 }
 }
 }
@@ -179,51 +179,50 @@ bool ShellOS::popUpMessage(const char * const title, const char * const message,
 
 - (void)sendEvent:(UIEvent *)event 
 {
-    assertion(eventQueue != NULL, "Event Queue Is NULL");
-    if(event.type == UIEventTypeTouches) 
+	if(event.type == UIEventTypeTouches) 
 	{
-        for(UITouch * t in [event allTouches]) 
+		for(UITouch * t in [event allTouches]) 
 		{
 			switch(t.phase)
 			{
 				case UITouchPhaseBegan:
 				{
 					CGPoint location = [t locationInView:self];
-                    g_cursorX =(location.x * screenScale);
-                    g_cursorY = (location.y) * screenScale;
-                    if(eventQueue->isScreenRotated() && eventQueue->isFullScreen())
-                    {
-                        std::swap(g_cursorX,g_cursorY);
-                    }
-                    eventQueue->onPointingDeviceDown(0);
-                    
-                
-                }
+					g_cursorX =(location.x * screenScale);
+					g_cursorY = (location.y) * screenScale;
+					if(eventQueue->isScreenRotated() && eventQueue->isFullScreen())
+					{
+						std::swap(g_cursorX,g_cursorY);
+					}
+					eventQueue->onPointingDeviceDown(0);
+					
+				
+				}
 				break;
 				case UITouchPhaseMoved:
-                {
-                }
+				{
+				}
 				break;
 				case UITouchPhaseEnded:
 				case UITouchPhaseCancelled:
-                {
-                    CGPoint location = [t locationInView:self];
-                   
-                    g_cursorX =(location.x * screenScale);
-                    g_cursorY =(location.y * screenScale);
-                    if(eventQueue->isScreenRotated() && eventQueue->isFullScreen())
-                    {
-                        std::swap(g_cursorX,g_cursorY);
-                    }
-                    eventQueue->onPointingDeviceUp(0);
-                    
-                }
+				{
+					CGPoint location = [t locationInView:self];
+				   
+					g_cursorX =(location.x * screenScale);
+					g_cursorY =(location.y * screenScale);
+					if(eventQueue->isScreenRotated() && eventQueue->isFullScreen())
+					{
+						std::swap(g_cursorX,g_cursorY);
+					}
+					eventQueue->onPointingDeviceUp(0);
+					
+				}
 				break;
 			}
-        }
-    }
+		}
+	}
 
-    [super sendEvent:event];
+	[super sendEvent:event];
 }
 
 @end

@@ -1,8 +1,7 @@
 var searchData=
 [
-  ['rectangle3df',['Rectangle3Df',['../namespacepvr.html#afc19de2d5b6952c2d5471033aa4f2563',1,'pvr']]],
-  ['rectangle3di',['Rectangle3Di',['../namespacepvr.html#a799b34b4c6caf281d54db6a9756dc39d',1,'pvr']]],
-  ['rectanglef',['Rectanglef',['../namespacepvr.html#aba0728db2b6aa21ad82b263a102fec44',1,'pvr']]],
-  ['rectanglei',['Rectanglei',['../namespacepvr.html#a779802ae077693e9183007cfbedf47d4',1,'pvr']]],
-  ['reverse_5fiterator',['reverse_iterator',['../classpvr_1_1_contiguous_map.html#aba6eb7e767be3fcc3deb785a7af11897',1,'pvr::ContiguousMap']]]
+  ['uint8buffer',['UInt8Buffer',['../namespacepvr.html#a870616cf592ddd3bd544f6c519ccac5f',1,'pvr']]],
+  ['utf16',['utf16',['../namespacepvr.html#a2f1b3a4b714cc874e267883662058a19',1,'pvr']]],
+  ['utf32',['utf32',['../namespacepvr.html#ae281450f4795e25d5ce35d674b17249b',1,'pvr']]],
+  ['utf8',['utf8',['../namespacepvr.html#a9ee58768dfb56ed9216c98178d572e17',1,'pvr']]]
 ];

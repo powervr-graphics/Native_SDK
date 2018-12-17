@@ -10,7 +10,6 @@
 #include "PVRAssets/PVRAssets.h"
 #include "PVRVk/PVRVk.h"
 #include "PVRUtils/Vulkan/UIRendererVk.h"
-#include "PVRUtils/Vulkan/RenderManagerVk.h"
 #include "PVRUtils/Vulkan/HelperVk.h"
 #include "PVRUtils/Vulkan/AsynchronousVk.h"
 #include "PVRUtils/StructuredMemory.h"
@@ -68,16 +67,16 @@ UIRenderer spriteEngine; Text niceCustomText; Font myFont; Image myImage; Group 
 pvrvk::SecondaryCommandBuffer uiRendererBuffer;
 
 spriteEngine->init(screenWidth, screenHeight, isFullScreen(), renderPass, *subpass* 0, cmdPool, cmdQueue);
-myText= spriteEngine->createText(“Hello, world”);
+myText= spriteEngine->createText("Hello, world");
 myText->setAnchor(Anchor::TopLeft, glm::vec2(-1, 0)); //"Pin" the top-left of the sprite to the center-left of the screen
 myText->setPixelOffset(30, -20); // Additionally move the text 30 pixels right and 20 pixels down from the anchor point we set
 
 myGroup = spriteEngine->createMatrixGroup(); //Create a group that we can transform with matrices.
-myGroup->setMatrix(glm::rotate(…)); myGroup->add(myText); //Whenever we render it, all sprites will be contained
+myGroup->setMatrix(glm::rotate(...)); myGroup->add(myText); //Whenever we render it, all sprites will be contained
 
 spriteEngine->beginRendering(uiRendererBuffer);
 myGroup->render(); //Everything is positioned relative to the screen, and then transformed with the Group
-myText->render(); //But we can still render it OUTSIDE of the group. It’s still a sprite.
+myText->render(); //But we can still render it OUTSIDE of the group. It is still a sprite.
 spriteEngine->endRendering();
 
 //The Command Buffer now contains all the drawing commands for the UI elements we rendered (minus the renderpass).

@@ -1,17 +1,17 @@
-=======
-Bumpmap
-=======
+==============
+Multithreading
+==============
 
 .. figure:: ./Multithreading.png
 
-This training course demonstrates using the PowerVR Framework to stream assets asynchronously into an application
+This example shows how to use the PowerVR Framework to stream assets asynchronously into an application.
 
 Description
 -----------
-This training course will display a loading screen (using UIRenderer) while assets are being loaded in, and then 
-switch to displaying the statue from the BumpMap demo.
+This example will display a loading screen (using UIRenderer) while assets are being loaded in, and then 
+switch to displaying the statue from the Bumpmap demo.
 
-APIS
+APIs
 ----
 * Vulkan
 

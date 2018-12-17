@@ -12,7 +12,7 @@
 
 const float RotateY = glm::pi<float>() / 150;
 const glm::vec4 LightDir(.24f, .685f, -.685f, 0.0f);
-const pvrvk::ClearValue ClearValue(0.00f, 0.70f, 0.67f, 1.f);
+const pvrvk::ClearValue ClearValue(0.0f, 0.40f, .39f, 1.f);
 /*!*********************************************************************************************************************
  shader attributes
  ***********************************************************************************************************************/
@@ -50,8 +50,8 @@ enum Enum
  ***********************************************************************************************************************/
 
 // Source and binary shaders
-const char FragShaderSrcFile[] = "FragShader_vk.fsh.spv";
-const char VertShaderSrcFile[] = "VertShader_vk.vsh.spv";
+const char FragShaderSrcFile[] = "FragShader.fsh.spv";
+const char VertShaderSrcFile[] = "VertShader.vsh.spv";
 
 // PVR texture files
 const char StatueTexFile[] = "Marble.pvr";
@@ -86,8 +86,7 @@ struct DeviceResources
 	pvrvk::Swapchain swapchain;
 	pvrvk::Queue queue;
 
-	pvr::utils::vma::Allocator vmaBufferAllocator;
-	pvr::utils::vma::Allocator vmaImageAllocator;
+	pvr::utils::vma::Allocator vmaAllocator;
 
 	pvrvk::DescriptorPool descriptorPool;
 	pvrvk::CommandPool commandPool;
@@ -150,8 +149,8 @@ struct DeviceResources
 		if (device.isValid())
 		{
 			device->waitIdle();
-			int l = swapchain->getSwapchainLength();
-			for (int i = 0; i < l; ++i)
+			uint32_t l = swapchain->getSwapchainLength();
+			for (uint32_t i = 0; i < l; ++i)
 			{
 				if (perFrameAcquireFence[i].isValid())
 					perFrameAcquireFence[i]->wait();
@@ -247,7 +246,7 @@ void VulkanMultithreading::createUbo()
 		_deviceResources->ubo = pvr::utils::createBuffer(_deviceResources->device, _deviceResources->structuredMemoryView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT,
 			pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
-			&_deviceResources->vmaBufferAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+			&_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
 		_deviceResources->structuredMemoryView.pointToMappedMemory(_deviceResources->ubo->getDeviceMemory()->getMappedData());
 	}
@@ -302,8 +301,8 @@ void VulkanMultithreading::loadPipeline()
 	pvr::Stream::ptr_type vertSource = getAssetStream(VertShaderSrcFile);
 	pvr::Stream::ptr_type fragSource = getAssetStream(FragShaderSrcFile);
 
-	pipeInfo.vertexShader.setShader(_deviceResources->device->createShader(vertSource->readToEnd<uint32_t>()));
-	pipeInfo.fragmentShader.setShader(_deviceResources->device->createShader(fragSource->readToEnd<uint32_t>()));
+	pipeInfo.vertexShader.setShader(_deviceResources->device->createShaderModule(pvrvk::ShaderModuleCreateInfo(vertSource->readToEnd<uint32_t>())));
+	pipeInfo.fragmentShader.setShader(_deviceResources->device->createShaderModule(pvrvk::ShaderModuleCreateInfo(fragSource->readToEnd<uint32_t>())));
 
 	const pvr::assets::Mesh& mesh = _scene->getMesh(0);
 	pipeInfo.inputAssembler.setPrimitiveTopology(pvr::utils::convertToPVRVk(mesh.getPrimitiveType()));
@@ -391,6 +390,12 @@ pvr::Result VulkanMultithreading::initView()
 	// Create instance and retrieve compatible physical devices
 	_deviceResources->instance = pvr::utils::createInstance(this->getApplicationName());
 
+	if (_deviceResources->instance->getNumPhysicalDevices() == 0)
+	{
+		setExitMessage("Unable not find a compatible Vulkan physical device.");
+		return pvr::Result::UnknownError;
+	}
+
 	// Create the surface
 	_deviceResources->surface = pvr::utils::createSurface(_deviceResources->instance, _deviceResources->instance->getPhysicalDevice(0), this->getWindow(), this->getDisplay());
 
@@ -413,12 +418,11 @@ pvr::Result VulkanMultithreading::initView()
 	// Get the queues
 	_deviceResources->queue = _deviceResources->device->getQueue(queueAccessInfo.familyId, queueAccessInfo.queueId);
 
-	_deviceResources->vmaBufferAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
-	_deviceResources->vmaImageAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
+	_deviceResources->vmaAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
 
 	// Create the commandpool & Descriptorpool
-	_deviceResources->commandPool =
-		_deviceResources->device->createCommandPool(_deviceResources->queue->getQueueFamilyId(), pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT);
+	_deviceResources->commandPool = _deviceResources->device->createCommandPool(
+		pvrvk::CommandPoolCreateInfo(_deviceResources->queue->getFamilyIndex(), pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT));
 
 	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(pvrvk::DescriptorPoolCreateInfo()
 																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 16)
@@ -447,7 +451,7 @@ pvr::Result VulkanMultithreading::initView()
 	// Create the swapchain image and depthstencil image
 	pvr::utils::createSwapchainAndDepthStencilImageAndViews(_deviceResources->device, _deviceResources->surface, getDisplayAttributes(), _deviceResources->swapchain,
 		_deviceResources->depthStencilImages, swapchainImageUsage, pvrvk::ImageUsageFlags::e_DEPTH_STENCIL_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_TRANSIENT_ATTACHMENT_BIT,
-		&_deviceResources->vmaImageAllocator);
+		&_deviceResources->vmaAllocator);
 
 	pvr::utils::createOnscreenFramebufferAndRenderpass(_deviceResources->swapchain, &_deviceResources->depthStencilImages[0], _deviceResources->framebuffer);
 
@@ -473,7 +477,7 @@ pvr::Result VulkanMultithreading::initView()
 	_deviceResources->commandBuffers[0]->begin();
 	bool requiresCommandBufferSubmission = false;
 	pvr::utils::appendSingleBuffersFromModel(_deviceResources->device, *_scene, _deviceResources->vbos, _deviceResources->ibos, _deviceResources->commandBuffers[0],
-		requiresCommandBufferSubmission, &_deviceResources->vmaBufferAllocator);
+		requiresCommandBufferSubmission, &_deviceResources->vmaAllocator);
 
 	_deviceResources->commandBuffers[0]->end();
 
@@ -489,8 +493,8 @@ pvr::Result VulkanMultithreading::initView()
 	}
 
 	//  Initialize UIRenderer
-	_deviceResources->uiRenderer.init(
-		getWidth(), getHeight(), isFullScreen(), _deviceResources->framebuffer[0]->getRenderPass(), 0, _deviceResources->commandPool, _deviceResources->queue);
+	_deviceResources->uiRenderer.init(getWidth(), getHeight(), isFullScreen(), _deviceResources->framebuffer[0]->getRenderPass(), 0,
+		getBackBufferColorspace() == pvr::ColorSpace::sRGB, _deviceResources->commandPool, _deviceResources->queue);
 
 	_deviceResources->uiRenderer.getDefaultTitle()->setText("Multithreading");
 	_deviceResources->uiRenderer.getDefaultTitle()->commitUpdates();
@@ -502,10 +506,10 @@ pvr::Result VulkanMultithreading::initView()
 	bool bRotate = this->isScreenRotated();
 
 	//  Calculate the projection and rotate it by 90 degree if the screen is rotated.
-	_viewProj = (bRotate
-			? pvr::math::perspectiveFov(
-				  pvr::Api::Vulkan, fov, (float)this->getHeight(), (float)this->getWidth(), _scene->getCamera(0).getNear(), _scene->getCamera(0).getFar(), glm::pi<float>() * .5f)
-			: pvr::math::perspectiveFov(pvr::Api::Vulkan, fov, (float)this->getWidth(), (float)this->getHeight(), _scene->getCamera(0).getNear(), _scene->getCamera(0).getFar()));
+	_viewProj = (bRotate ? pvr::math::perspectiveFov(pvr::Api::Vulkan, fov, static_cast<float>(this->getHeight()), static_cast<float>(this->getWidth()),
+							   _scene->getCamera(0).getNear(), _scene->getCamera(0).getFar(), glm::pi<float>() * .5f)
+						 : pvr::math::perspectiveFov(pvr::Api::Vulkan, fov, static_cast<float>(this->getWidth()), static_cast<float>(this->getHeight()),
+							   _scene->getCamera(0).getNear(), _scene->getCamera(0).getFar()));
 
 	_viewProj = _viewProj * glm::lookAt(from, to, up);
 	recordLoadingCommandBuffer();
@@ -591,8 +595,8 @@ pvr::Result VulkanMultithreading::renderFrame()
 			srcWrite.mvpMtx = _viewProj * mModel * _scene->getWorldMatrix(_scene->getNode(0).getObjectId());
 
 			uint32_t currentDynamicSlice = swapchainIndex * _scene->getNumMeshNodes();
-			_deviceResources->structuredMemoryView.getElement(0, 0, currentDynamicSlice).setValue(&srcWrite.mvpMtx);
-			_deviceResources->structuredMemoryView.getElement(1, 0, currentDynamicSlice).setValue(&srcWrite.lightDirModel);
+			_deviceResources->structuredMemoryView.getElement(0, 0, currentDynamicSlice).setValue(srcWrite.mvpMtx);
+			_deviceResources->structuredMemoryView.getElement(1, 0, currentDynamicSlice).setValue(srcWrite.lightDirModel);
 
 			// if the memory property flags used by the buffers' device memory do not contain e_HOST_COHERENT_BIT then we must flush the memory
 			if (static_cast<uint32_t>(_deviceResources->ubo->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
@@ -613,7 +617,7 @@ pvr::Result VulkanMultithreading::renderFrame()
 	if (this->shouldTakeScreenshot())
 	{
 		pvr::utils::takeScreenshot(_deviceResources->swapchain, swapchainIndex, _deviceResources->commandPool, _deviceResources->queue, getScreenshotFileName(),
-			&_deviceResources->vmaBufferAllocator, &_deviceResources->vmaImageAllocator);
+			&_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
 	}
 
 	// present
@@ -663,7 +667,7 @@ void VulkanMultithreading::drawMesh(pvrvk::CommandBuffer& commandBuffer, int nod
 	}
 	else
 	{
-		for (int i = 0; i < (int)mesh.getNumStrips(); ++i)
+		for (uint32_t i = 0; i < mesh.getNumStrips(); ++i)
 		{
 			int offset = 0;
 			if (_deviceResources->ibos[meshId].isValid())
@@ -687,7 +691,7 @@ void VulkanMultithreading::drawMesh(pvrvk::CommandBuffer& commandBuffer, int nod
 ***********************************************************************************************************************/
 void VulkanMultithreading::recordMainCommandBuffer()
 {
-	const pvrvk::ClearValue clearValues[] = { pvrvk::ClearValue(0.00f, 0.70f, 0.67f, 1.f), pvrvk::ClearValue(1.f, 0u) };
+	const pvrvk::ClearValue clearValues[] = { pvrvk::ClearValue(0.0f, 0.40f, .39f, 1.f), pvrvk::ClearValue(1.f, 0u) };
 	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
 	{
 		pvrvk::CommandBuffer& commandBuffer = _deviceResources->commandBuffers[i];
@@ -714,7 +718,7 @@ void VulkanMultithreading::recordMainCommandBuffer()
 ***********************************************************************************************************************/
 void VulkanMultithreading::recordLoadingCommandBuffer()
 {
-	const pvrvk::ClearValue clearColor[2] = { pvrvk::ClearValue(0.00f, 0.70f, 0.67f, 1.f), pvrvk::ClearValue(1.f, 0u) };
+	const pvrvk::ClearValue clearColor[2] = { pvrvk::ClearValue(0.0f, 0.40f, .39f, 1.f), pvrvk::ClearValue(1.f, 0u) };
 
 	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
 	{
@@ -738,11 +742,8 @@ void VulkanMultithreading::recordLoadingCommandBuffer()
 	}
 }
 
-/*!*********************************************************************************************************************
-\return Return an auto ptr to the demo supplied by the user
-\brief  This function must be implemented by the user of the shell. The user should return its
-	Shell object defining the behavior of the application.
-***********************************************************************************************************************/
+/// <summary>This function must be implemented by the user of the shell. The user should return its pvr::Shell object defining the behaviour of the application.</summary>
+/// <returns>Return a unique ptr to the demo supplied by the user.</returns>
 std::unique_ptr<pvr::Shell> pvr::newDemo()
 {
 	return std::unique_ptr<pvr::Shell>(new VulkanMultithreading());

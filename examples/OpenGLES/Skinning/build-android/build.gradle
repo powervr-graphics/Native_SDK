@@ -1,6 +1,32 @@
+// Applies the Android plugin for Gradle to this build and makes the android block available to specify Android-specific build options
 apply plugin: 'com.android.application'
 
 def hasSigningDefined = project.hasProperty('KEYSTORE_FILE') &&  project.hasProperty('KEYSTORE_PASSWORD') &&  project.hasProperty('KEY_ALIAS') && project.hasProperty('KEY_PASSWORD')
+def binOutput = hasProperty('BUILD_ENTIRE_SDK') ? '../../../../build-android/bin' : 'bin'
+// The set of framework projects on which this application is dependent
+def framework_projects = ["PVRCore", "PVRAssets", "PVRShell", "PVRUtilsGles"]
+
+// This block configures the repositories and dependencies for Gradle itself. Here we add a dependency for the Android plugin for Gradle as it provides
+// the additional instructions Gradle needs to build Android app modules
+buildscript {
+	repositories {
+		google()
+		jcenter()
+	}
+
+	// Adds the Android plugin for Gradle version 3.1.0 as a classpath dependency
+	dependencies {
+		classpath 'com.android.tools.build:gradle:3.1.0'
+	}
+}
+
+// This block configures the repositories and dependencies used by all modules in the project
+allprojects {
+	repositories {
+		google()
+		jcenter()
+	}
+}
 
 android {
 	compileSdkVersion 26
@@ -31,6 +57,7 @@ android {
 		}
 	}
 
+	// This block configures our build types
 	buildTypes {
 		release {
 			minifyEnabled false
@@ -48,46 +75,44 @@ android {
 		}
 	}
 
-///// TASK TO COPY ASSETS ///
-//Copy all our asset files into the android assets folder.
-//Add to this list files that will need to be read at runtime here: Textures, shaders, text files etc.
-FileCollection assetFiles = files(
-"${project.projectDir}/../../../assets/Robot/Arm.pvr",
-"${project.projectDir}/../../../assets/Robot/Grid.pvr",
-"${project.projectDir}/../../../assets/Robot/Pipes.pvr",
-"${project.projectDir}/../../../assets/Robot/RobotDiffuse.pvr",
-"${project.projectDir}/../../../assets/Robot/RobotNormal.pvr",
-"${project.projectDir}/../../../assets/Robot/Tiles.pvr",
-"${project.projectDir}/../DefaultVertShader.vsh",
-"${project.projectDir}/../DefaultFragShader.fsh",
-"${project.projectDir}/../SkinnedVertShader.vsh",
-"${project.projectDir}/../SkinnedFragShader.fsh",
-"${project.projectDir}/../../../assets/Robot/Robot.pod",
-
-)
-	//Runs before ndk building tasks
-	task copyAssets(type: Copy) {
-		from assetFiles
-		into sourceSets.main.assets.srcDirs[0]
-		fileMode = 0664
-	}
-	//Runs before ndk building tasks
+	// Ensure that the icons are copied early - we do this by making the preBuild task depends on the copyIcons task
 	task copyIcons(type: Copy) {
 		from file("${project.projectDir}/../../../../res/Android/OpenGLES")
 		into sourceSets.main.res.srcDirs[0]
 		fileMode = 0664
 	}
-	preBuild.dependsOn copyAssets
 	preBuild.dependsOn copyIcons
+
+	// Add to this list files that will need to be read at runtime here: Textures, shaders, text files etc.
+	FileCollection assetFiles = files(
+	"${project.projectDir}/../../../assets/Robot/Arm.pvr",
+	"${project.projectDir}/../../../assets/Robot/Grid.pvr",
+	"${project.projectDir}/../../../assets/Robot/Pipes.pvr",
+	"${project.projectDir}/../../../assets/Robot/RobotDiffuse.pvr",
+	"${project.projectDir}/../../../assets/Robot/RobotNormal.pvr",
+	"${project.projectDir}/../../../assets/Robot/Tiles.pvr",
+	"${project.projectDir}/../../../assets/Robot/Robot.pod",
+	"${project.projectDir}/../DefaultVertShader.vsh",
+	"${project.projectDir}/../DefaultFragShader.fsh",
+	"${project.projectDir}/../SkinnedVertShader.vsh",
+	"${project.projectDir}/../SkinnedFragShader.fsh",
+	)
+
+	// Add a task for copying our assets from "project.projectDir}/.." to the assets/ folder
+	task copyAssets(type: Copy) {
+		from assetFiles
+		into sourceSets.main.assets.srcDirs[0]
+		fileMode = 0664
+	}
 	
 	clean {
 		doLast() { delete "bin" }
 	}
 }
 
-def framework_projects = ["PVRCore", "PVRAssets", "PVRShell", "PVRUtilsGles"]
-
+// This block specifies dependencies required to build only the module itself
 dependencies {
+	// Dependency on local binaries
 	implementation fileTree(dir: 'libs', include: ['*.jar'])
 	if (!project.hasProperty('NO_FRAMEWORK_BUILD'))
 	{// Add the dependencies to the framework to guarantee build order. If the framework is prebuilt, this is not necessary
@@ -95,16 +120,7 @@ dependencies {
 	}
 }
 
-buildscript {
-	repositories {
-		google()
-		jcenter()
-	}
-	dependencies {
-		classpath 'com.android.tools.build:gradle:3.0.0'
-	}
-}
-
+// For release builds ensure that signing has taken place appropriately
 task checkReleaseSigning() {
 	doLast{
 		if (!hasSigningDefined && !project.hasProperty('NOSIGN')) {
@@ -119,14 +135,13 @@ task checkReleaseSigning() {
 	}
 }
 
-def binOutput = hasProperty('BUILD_ENTIRE_SDK') ? '../../../../build-android/bin' : 'bin'
-
 //Copy outputs to the bin/ folder
 task copyToBinDebug(type: Copy) {
 	from 'build/outputs/apk/debug'
 	into "${binOutput}"
 	include('*.apk')
 }
+// Copy outputs to the bin/ folder and remove the "-release" suffix
 task copyToBinRelease(type: Copy) {
 	from 'build/outputs/apk/release'
 	into "${binOutput}"
@@ -135,29 +150,30 @@ task copyToBinRelease(type: Copy) {
 }
 
 tasks.whenTaskAdded { task -> 	
+	// Ensure the assets folder is appropriately copied to the apk
+	if (task.name == 'externalNativeBuildRelease' || task.name == 'externalNativeBuildDebug') {
+		copyAssets.dependsOn task
+	}
+	if (task.name == 'mergeReleaseAssets' || task.name == 'mergeDebugAssets') {
+		task.dependsOn copyAssets
+	}
+
 	// Workaround library native code dependency issue in gradle 3.0.0.
 	// This should normally be handled by the dependencies above: (implementation project(':...'))
 	// refer to https://issuetracker.google.com/issues/69616088  . If these lines are removed, the framework is not built as it should be.
-	if (!project.hasProperty('NO_FRAMEWORK_BUILD'))
-	{
-		if (task.name == 'externalNativeBuildRelease') {
-			framework_projects.each {s -> task.dependsOn ":${s}:externalNativeBuildRelease" }
-		} else if (task.name == 'externalNativeBuildDebug') {
-			framework_projects.each {s -> task.dependsOn ":${s}:externalNativeBuildDebug" }
-		}
+	if (task.name == 'externalNativeBuildRelease') {
+		if (!project.hasProperty('NO_FRAMEWORK_BUILD')) { framework_projects.each {s -> task.dependsOn ":${s}:externalNativeBuildRelease" } }
+	} else if (task.name == 'externalNativeBuildDebug') {
+		if (!project.hasProperty('NO_FRAMEWORK_BUILD')) { framework_projects.each {s -> task.dependsOn ":${s}:externalNativeBuildDebug" } }
 	}
 	
-	//... Copy the binary to the final bin folder.
+
+	// Copy the binary to the final bin folder.
 	if (task.name == 'packageRelease') {
 		task.dependsOn(checkReleaseSigning)
-		task.doFirst() { delete fileTree('bin') { include {'*.apk'} exclude {'*-debug.apk'} } }
-		task.doLast() { copyToBinRelease.execute() }
+		task.finalizedBy copyToBinRelease
 	}
 	if (task.name == 'packageDebug') {
-		task.doFirst() { delete fileTree('bin') { include '*-debug.apk'} }
-		task.doLast() { copyToBinDebug.execute() }
+		task.finalizedBy copyToBinDebug
 	}
-}
-repositories {
-	google()
 }

@@ -75,6 +75,15 @@ struct DebugReportCallbackCreateInfo;
 struct DisplayModeCreateInfo;
 struct ImageCreateInfo;
 struct BufferCreateInfo;
+struct ImageViewCreateInfo;
+struct BufferViewCreateInfo;
+struct PipelineCacheCreateInfo;
+struct CommandPoolCreateInfo;
+struct FenceCreateInfo;
+struct EventCreateInfo;
+struct SemaphoreCreateInfo;
+struct QueryPoolCreateInfo;
+struct ShaderModuleCreateInfo;
 struct MemoryAllocationInfo;
 struct ExportMemoryAllocateInfoKHR;
 

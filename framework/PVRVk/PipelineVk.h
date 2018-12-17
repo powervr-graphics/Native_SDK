@@ -13,7 +13,6 @@ namespace pvrvk {
 /// <summary>This represents all the information needed to create a GraphicsPipeline. All items must have proper
 /// values for a pipeline to be successfully created, but all those for which it is possible (except, for example,
 /// Shaders and Vertex Formats) will have defaults same as their default values OpenGL ES graphics API.
-///
 /// NOTES: The folloowing are required
 ///  - at least one viewport & scissor
 ///  - renderpass
@@ -24,14 +23,14 @@ struct PipelineCreateInfo
 {
 public:
 	PipelineLayout pipelineLayout; //!< The pipeline layout
+	pvrvk::PipelineCreateFlags flags; //!< Any flags used for pipeline creation
 	PVRVkPipeline basePipeline; //!< The parent pipeline, in case of pipeline derivative.
 	int32_t basePipelineIndex; //!< The index of the base pipeline
-	pvrvk::PipelineCreateFlags flags; //!< Any flags used for pipeline creation
 
 	virtual ~PipelineCreateInfo() {}
 
 protected:
-	PipelineCreateInfo() : basePipelineIndex(-1), flags(pvrvk::PipelineCreateFlags(0)) {}
+	PipelineCreateInfo() : flags(pvrvk::PipelineCreateFlags(0)), basePipelineIndex(-1) {}
 };
 
 namespace impl {

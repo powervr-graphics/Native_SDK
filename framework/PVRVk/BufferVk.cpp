@@ -40,22 +40,23 @@ Buffer_::Buffer_(DeviceWeakPtr device, const BufferCreateInfo& createInfo)
 	vkCreateInfo.queueFamilyIndexCount = _createInfo.getNumQueueFamilyIndices();
 	vkThrowIfFailed(static_cast<Result>(device->getVkBindings().vkCreateBuffer(device->getVkHandle(), &vkCreateInfo, nullptr, &_vkHandle)), "Failed to create Buffer");
 
-	device->getVkBindings().vkGetBufferMemoryRequirements(device->getVkHandle(), _vkHandle, reinterpret_cast<VkMemoryRequirements*>(&_memRequirements));
+	device->getVkBindings().vkGetBufferMemoryRequirements(device->getVkHandle(), _vkHandle, &_memRequirements.get());
 }
 
-BufferView_::BufferView_(const DeviceWeakPtr& device, const Buffer& buffer, Format format, VkDeviceSize offset, VkDeviceSize size)
-	: DeviceObjectHandle(device), DeviceObjectDebugMarker(DebugReportObjectTypeEXT::e_BUFFER_VIEW_EXT), _offset(offset), _size(size), _format(format), _buffer(buffer)
+BufferView_::BufferView_(const DeviceWeakPtr& device, const BufferViewCreateInfo& createInfo)
+	: DeviceObjectHandle(device), DeviceObjectDebugMarker(DebugReportObjectTypeEXT::e_BUFFER_VIEW_EXT), _createInfo(createInfo)
 {
-	VkBufferViewCreateInfo createInfo = {};
-	createInfo.sType = static_cast<VkStructureType>(StructureType::e_BUFFER_CREATE_INFO);
-	createInfo.buffer = _buffer->getVkHandle();
-	createInfo.format = static_cast<VkFormat>(_format);
-	createInfo.offset = _offset;
-	createInfo.range = _size;
-	vkThrowIfFailed(static_cast<Result>(_device->getVkBindings().vkCreateBufferView(_device->getVkHandle(), &createInfo, nullptr, &_vkHandle)), "Failed to create BufferView");
+	VkBufferViewCreateInfo vkCreateInfo = {};
+	vkCreateInfo.sType = static_cast<VkStructureType>(StructureType::e_BUFFER_VIEW_CREATE_INFO);
+	vkCreateInfo.flags = static_cast<VkBufferViewCreateFlags>(_createInfo.getFlags());
+	vkCreateInfo.buffer = _createInfo.getBuffer()->getVkHandle();
+	vkCreateInfo.format = static_cast<VkFormat>(_createInfo.getFormat());
+	vkCreateInfo.offset = _createInfo.getOffset();
+	vkCreateInfo.range = _createInfo.getRange();
+	vkThrowIfFailed(static_cast<Result>(_device->getVkBindings().vkCreateBufferView(_device->getVkHandle(), &vkCreateInfo, nullptr, &_vkHandle)), "Failed to create BufferView");
 }
 
-void BufferView_::destroy()
+BufferView_::~BufferView_()
 {
 	if (getVkHandle() != VK_NULL_HANDLE)
 	{
@@ -63,6 +64,7 @@ void BufferView_::destroy()
 		{
 			_device->getVkBindings().vkDestroyBufferView(_device->getVkHandle(), getVkHandle(), nullptr);
 			_vkHandle = VK_NULL_HANDLE;
+			_device.reset();
 		}
 		else
 		{

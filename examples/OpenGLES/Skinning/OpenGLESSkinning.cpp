@@ -67,7 +67,7 @@ class OpenGLESSkinning : public pvr::Shell
 		GLuint programSkinned;
 
 		pvr::utils::StructuredBufferView ssboView;
-		std::vector<std::vector<GLuint> > ssbos;
+		std::vector<GLuint> ssbos;
 		pvr::utils::StructuredBufferView uboView;
 		GLuint ubo;
 
@@ -111,8 +111,10 @@ class OpenGLESSkinning : public pvr::Shell
 	// Variables to handle the animation in a time-based manner
 	float _currentFrame;
 
+	glm::vec3 _clearColor;
+
 public:
-	OpenGLESSkinning() : _currentFrame(0), _isPaused(false) {}
+	OpenGLESSkinning() : _isPaused(false), _currentFrame(0) {}
 
 	void renderNode(uint32_t nodeId, const glm::mat4& viewMatrix, const glm::mat4& viewProjMatrix, bool& optimizer);
 
@@ -203,6 +205,14 @@ pvr::Result OpenGLESSkinning::initView()
 	_deviceResources->context = pvr::createEglContext();
 	_deviceResources->context->init(getWindow(), getDisplay(), getDisplayAttributes(), pvr::Api::OpenGLES31);
 
+	glm::vec3 clearColorLinearSpace(0.0f, 0.45f, 0.41f);
+	_clearColor = clearColorLinearSpace;
+	if (getBackBufferColorspace() != pvr::ColorSpace::sRGB)
+	{
+		// Gamma correct the clear color
+		_clearColor = pvr::utils::convertLRGBtoSRGB(_clearColor);
+	}
+
 	GLint vertexShaderStorageBlocks = 0;
 	gl::GetIntegerv(GL_MAX_VERTEX_SHADER_STORAGE_BLOCKS, &vertexShaderStorageBlocks);
 
@@ -217,39 +227,53 @@ pvr::Result OpenGLESSkinning::initView()
 		float fov, nearClip, farClip;
 		_scene->getCameraProperties(0, fov, from, to, up, nearClip, farClip); // vTo is calculated from the rotation
 
-		_projectionMatrix = pvr::math::perspective(pvr::Api::OpenGLES2, fov, (float)getWidth() / getHeight(), nearClip, farClip);
+		_projectionMatrix = pvr::math::perspective(pvr::Api::OpenGLES2, fov, static_cast<float>(getWidth()) / static_cast<float>(getHeight()), nearClip, farClip);
 	}
 
 	_deviceResources->cookedScene.init(*this, *_scene);
 
-	// Load the shaders, create the programs
-	_deviceResources->programDefault = pvr::utils::createShaderProgram(
-		*this, Configuration::DefaultVertShaderFile, Configuration::DefaultFragShaderFile, Configuration::DefaultAttributeNames, Configuration::DefaultAttributeIndices, 3);
-	_deviceResources->programSkinned = pvr::utils::createShaderProgram(
-		*this, Configuration::SkinnedVertShaderFile, Configuration::SkinnedFragShaderFile, Configuration::SkinnedAttributeNames, Configuration::SkinnedAttributeIndices, 7);
+	const char* defines[] = { "FRAMEBUFFER_SRGB" };
+	uint32_t numDefines = 1;
+	if (getBackBufferColorspace() != pvr::ColorSpace::sRGB)
+	{
+		numDefines = 0;
+	}
 
-	for (int i = 0; i < (int)DefaultUniforms::Count; ++i)
+	// Load the shaders, create the programs
+	_deviceResources->programDefault = pvr::utils::createShaderProgram(*this, Configuration::DefaultVertShaderFile, Configuration::DefaultFragShaderFile,
+		Configuration::DefaultAttributeNames, Configuration::DefaultAttributeIndices, 3, defines, numDefines);
+	_deviceResources->programSkinned = pvr::utils::createShaderProgram(*this, Configuration::SkinnedVertShaderFile, Configuration::SkinnedFragShaderFile,
+		Configuration::SkinnedAttributeNames, Configuration::SkinnedAttributeIndices, 7, defines, numDefines);
+
+	for (uint32_t i = 0; i < static_cast<uint32_t>(DefaultUniforms::Count); ++i)
 	{
 		_defaultUniformLocations[i] = gl::GetUniformLocation(_deviceResources->programDefault, Configuration::DefaultUniformNames[i]);
 	}
-	for (int i = 0; i < (int)SkinnedUniforms::Count; ++i)
+	for (uint32_t i = 0; i < static_cast<uint32_t>(SkinnedUniforms::Count); ++i)
 	{
 		_skinnedUniformLocations[i] = gl::GetUniformLocation(_deviceResources->programSkinned, Configuration::SkinnedUniformNames[i]);
 	}
 	gl::UseProgram(_deviceResources->programDefault);
-	gl::Uniform1i(_defaultUniformLocations[(int)DefaultUniforms::TextureDiffuse], 0);
+	gl::Uniform1i(_defaultUniformLocations[static_cast<uint32_t>(DefaultUniforms::TextureDiffuse)], 0);
 	gl::UseProgram(_deviceResources->programSkinned);
-	gl::Uniform1i(_skinnedUniformLocations[(int)SkinnedUniforms::TextureDiffuse], 0);
-	gl::Uniform1i(_skinnedUniformLocations[(int)SkinnedUniforms::TextureNormal], 1);
+	gl::Uniform1i(_skinnedUniformLocations[static_cast<uint32_t>(SkinnedUniforms::TextureDiffuse)], 0);
+	gl::Uniform1i(_skinnedUniformLocations[static_cast<uint32_t>(SkinnedUniforms::TextureNormal)], 1);
 	setDefaultOpenglState();
 
 	// Create a buffer/buffers for the skinning data
 
-	_deviceResources->uiRenderer.init(getWidth(), getHeight(), isFullScreen());
-
+	_deviceResources->uiRenderer.init(getWidth(), getHeight(), isFullScreen(), getBackBufferColorspace() == pvr::ColorSpace::sRGB);
+	// clang-format off
 	pvr::utils::StructuredMemoryDescription desc(
-		"SSbo", 1, { { "BoneCount", pvr::GpuDatatypes::Integer }, { "Bones", 1, { { "BoneMatrix", pvr::GpuDatatypes::mat4x4 }, { "BoneMatrixIT", pvr::GpuDatatypes::mat3x3 } } } });
-
+		"SSbo", 1, { 
+			{ "Bones", 1, 
+				{ 
+					{ "BoneMatrix", pvr::GpuDatatypes::mat4x4 }, 
+					{ "BoneMatrixIT", pvr::GpuDatatypes::mat3x3 } 
+				} 
+			} 
+		});
+	// clang-format on
 	auto& ssboView = _deviceResources->ssboView;
 	ssboView.init(desc);
 
@@ -270,19 +294,19 @@ pvr::Result OpenGLESSkinning::initView()
 		if (mesh.getMeshInfo().isSkinned)
 		{
 			auto& ssboMesh = ssbos[meshId];
-			ssboMesh.resize(mesh.getNumBoneBatches());
-			gl::GenBuffers(static_cast<GLsizei>(ssboMesh.size()), ssboMesh.data());
-			for (uint32_t i = 0, end = mesh.getNumBoneBatches(); i < end; ++i)
-			{
-				ssboView.setLastElementArraySize(mesh.getNumBatchBones(i));
 
-				gl::BindBuffer(GL_SHADER_STORAGE_BUFFER, ssboMesh[i]);
-				gl::BufferData(GL_SHADER_STORAGE_BUFFER, (GLsizeiptr)ssboView.getSize(), nullptr, GL_DYNAMIC_DRAW);
-			}
+			const pvr::assets::Skeleton& skeleton = _scene->getSkeleton(mesh.getSkeletonId());
+
+			gl::GenBuffers(static_cast<GLsizei>(1), &ssboMesh);
+
+			ssboView.setLastElementArraySize(static_cast<uint32_t>(skeleton.bones.size()));
+
+			gl::BindBuffer(GL_SHADER_STORAGE_BUFFER, ssboMesh);
+			gl::BufferData(GL_SHADER_STORAGE_BUFFER, static_cast<GLsizeiptr>(ssboView.getSize()), nullptr, GL_DYNAMIC_DRAW);
 		}
 		else
 		{
-			ssbos[meshId].resize(0);
+			ssbos[meshId] = 0;
 		}
 	}
 	_bonesIdx = _deviceResources->ssboView.getIndex("Bones");
@@ -331,26 +355,24 @@ pvr::Result OpenGLESSkinning::renderFrame()
 {
 	// Calculates the frame number to animate in a time-based manner.
 	// Uses the shell function this->getTime() to get the time in milliseconds.
-	float fDelta = (float)getFrameTime();
+	float fDelta = static_cast<float>(getFrameTime());
+	pvr::assets::AnimationInstance animInst = _scene->getAnimationInstance(0);
 	if (_scene->getNumFrames() > 1)
 	{
 		if (fDelta > 0.0001f)
 		{
 			if (!_isPaused)
 			{
-				_currentFrame += fDelta / _scene->getFPS();
+				_currentFrame += fDelta;
 			}
-
-			// Wrap the Frame number back to Start
-			while (_currentFrame >= _scene->getNumFrames() - 1)
+			if (_currentFrame > animInst.getTotalTimeInMs())
 			{
-				_currentFrame -= (_scene->getNumFrames() - 1);
+				_currentFrame = 0;
 			}
 		}
-		// Set the _scene animation to the current frame
-		_scene->setCurrentFrame(_currentFrame);
 	}
 
+	animInst.updateAnimation(_currentFrame);
 	// Setting up the "view projection" matrix only once - it doesn't change with the object
 	// Technically the camera projection stats COULD be animated, but we don't check for that
 	// and we assume the camera projection parameters are static - hence we set it up just once,
@@ -367,7 +389,7 @@ pvr::Result OpenGLESSkinning::renderFrame()
 		viewProjMatrix = _projectionMatrix * viewMatrix;
 	}
 
-	gl::ClearColor(.2f, .3f, .4f, 1.f);
+	gl::ClearColor(_clearColor.r, _clearColor.g, _clearColor.b, 1.f);
 	gl::Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// Setting up "as if" our last rendered node was not skinned
@@ -385,8 +407,8 @@ pvr::Result OpenGLESSkinning::renderFrame()
 	gl::BindBufferBase(GL_UNIFORM_BUFFER, 0, _deviceResources->ubo);
 	void* uboData = gl::MapBufferRange(GL_UNIFORM_BUFFER, 0, (GLsizeiptr)_deviceResources->uboView.getSize(), GL_MAP_WRITE_BIT);
 	uboView.pointToMappedMemory(uboData);
-	uboView.getElement(_viewProjectionIdx).setValue(glm::value_ptr(viewProjMatrix));
-	uboView.getElement(_lightPositionIdx).setValue(glm::value_ptr(_scene->getLightPosition(0)));
+	uboView.getElement(_viewProjectionIdx).setValue(viewProjMatrix);
+	uboView.getElement(_lightPositionIdx).setValue(_scene->getLightPosition(0));
 	gl::UnmapBuffer(GL_UNIFORM_BUFFER);
 
 	// Get a new worldview camera and light position
@@ -433,8 +455,8 @@ void OpenGLESSkinning::renderNode(uint32_t nodeId, const glm::mat4& viewMatrix, 
 	uint32_t materialId = node.getMaterialIndex();
 	auto& material = _scene->getMaterial(materialId);
 
-	int32_t diffuseTexId = material.getTextureIndex("DIFFUSEMAP");
-	int32_t bumpTexId = material.getTextureIndex("NORMALMAP");
+	int32_t diffuseTexId = material.getTextureIndex("DIFFUSETEXTURE");
+	int32_t bumpTexId = material.getTextureIndex("NORMALTEXTURE");
 
 	GLuint diffuseTex = _deviceResources->cookedScene.getApiTextureById(diffuseTexId);
 	GLuint vbo = _deviceResources->cookedScene.getVboByMeshId(meshId, 0);
@@ -460,7 +482,7 @@ void OpenGLESSkinning::renderNode(uint32_t nodeId, const glm::mat4& viewMatrix, 
 		gl::BindTexture(GL_TEXTURE_2D, normalTex);
 		gl::ActiveTexture(GL_TEXTURE0);
 
-		for (int i = 0; i < sizeof(Configuration::SkinnedAttributeSemantics) / sizeof(Configuration::SkinnedAttributeSemantics[0]); ++i)
+		for (uint32_t i = 0; i < sizeof(Configuration::SkinnedAttributeSemantics) / sizeof(Configuration::SkinnedAttributeSemantics[0]); ++i)
 		{
 			auto& attr = *mesh.getVertexAttributeByName(Configuration::SkinnedAttributeSemantics[i]);
 			gl::VertexAttribPointer(i, attr.getN(), pvr::utils::convertToGles(attr.getVertexLayout().dataType), pvr::dataTypeIsNormalised(attr.getVertexLayout().dataType),
@@ -468,44 +490,34 @@ void OpenGLESSkinning::renderNode(uint32_t nodeId, const glm::mat4& viewMatrix, 
 		}
 		debugThrowOnApiError("OpenGLESSkinning::renderNode Skinned Setup");
 
-		for (uint32_t batch = 0, end = mesh.getNumBoneBatches(); batch < end; ++batch)
+		// Only bone batch 0 supported
+		const pvr::assets::Skeleton& skeleton = _scene->getSkeleton(mesh.getSkeletonId());
+
+		const uint32_t numBones = static_cast<uint32_t>(skeleton.bones.size());
+		gl::BindBuffer(GL_SHADER_STORAGE_BUFFER, _deviceResources->ssbos[meshId]);
+		gl::BindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, _deviceResources->ssbos[meshId]);
+
+		void* bones = gl::MapBufferRange(GL_SHADER_STORAGE_BUFFER, 0, static_cast<GLsizeiptr>(_deviceResources->ssboView.getSize()), GL_MAP_WRITE_BIT);
+		if (!bones)
 		{
-			// Only bone batch 0 supported
-			uint32_t numBones = mesh.getNumBatchBones(batch);
-
-			gl::BindBuffer(GL_SHADER_STORAGE_BUFFER, _deviceResources->ssbos[meshId][batch]);
-			gl::BindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, _deviceResources->ssbos[meshId][batch]);
-
-			_deviceResources->ssboView.setLastElementArraySize(numBones);
-
-			void* bones = gl::MapBufferRange(GL_SHADER_STORAGE_BUFFER, 0, (GLsizeiptr)_deviceResources->ssboView.getSize(), GL_MAP_WRITE_BIT);
-			if (!bones)
-			{
-				debugThrowOnApiError("OpenGLESSkinning::renderNode Mapping");
-			}
-			_deviceResources->ssboView.pointToMappedMemory(bones);
-
-			int32_t boneCount = mesh.getNumBones();
-			_deviceResources->ssboView.getElement(_boneCountIdx).setValue(&boneCount);
-
-			auto root = _deviceResources->ssboView;
-
-			for (uint32_t boneId = 0; boneId < numBones; ++boneId)
-			{
-				const auto& bone = _scene->getBoneWorldMatrix(nodeId, mesh.getBatchBone(batch, boneId));
-
-				auto bonesArrayRoot = root.getElement(_bonesIdx, boneId);
-				bonesArrayRoot.getElement(_boneMatrixIdx).setValue(glm::value_ptr(bone));
-				bonesArrayRoot.getElement(_boneMatrixItIdx).setValue(glm::value_ptr(glm::mat3x4(glm::inverseTranspose(glm::mat3(bone)))));
-			}
-
-			gl::UnmapBuffer(GL_SHADER_STORAGE_BUFFER);
-
-			debugThrowOnApiError("OpenGLESSkinning::renderNode Skinned Set uniforms");
-			gl::DrawElements(GL_TRIANGLES, mesh.getNumFaces(batch) * 3, pvr::utils::convertToGles(mesh.getFaces().getDataType()),
-				reinterpret_cast<const void*>(static_cast<uintptr_t>(mesh.getBatchFaceOffsetBytes(batch))));
-			debugThrowOnApiError("OpenGLESSkinning::renderNode Skinned Draw");
+			debugThrowOnApiError("OpenGLESSkinning::renderNode Mapping");
 		}
+		_deviceResources->ssboView.pointToMappedMemory(bones);
+		auto root = _deviceResources->ssboView;
+		for (uint32_t boneId = 0; boneId < numBones; ++boneId)
+		{
+			const auto& bone = _scene->getBoneWorldMatrix(nodeId, boneId);
+
+			auto bonesArrayRoot = root.getElement(_bonesIdx, boneId);
+			bonesArrayRoot.getElement(_boneMatrixIdx).setValue(bone);
+			bonesArrayRoot.getElement(_boneMatrixItIdx).setValue(glm::mat3x4(glm::inverseTranspose(glm::mat3(bone))));
+		}
+
+		gl::UnmapBuffer(GL_SHADER_STORAGE_BUFFER);
+
+		debugThrowOnApiError("OpenGLESSkinning::renderNode Skinned Set uniforms");
+		gl::DrawElements(GL_TRIANGLES, mesh.getNumFaces() * 3, pvr::utils::convertToGles(mesh.getFaces().getDataType()), reinterpret_cast<const void*>(0));
+		debugThrowOnApiError("OpenGLESSkinning::renderNode Skinned Draw");
 	}
 	else
 	{
@@ -521,7 +533,7 @@ void OpenGLESSkinning::renderNode(uint32_t nodeId, const glm::mat4& viewMatrix, 
 			gl::DisableVertexAttribArray(6);
 			lastRenderWasSkinned = false;
 		}
-		for (int i = 0; i < sizeof(Configuration::DefaultAttributeSemantics) / sizeof(Configuration::DefaultAttributeSemantics[0]); ++i)
+		for (uint32_t i = 0; i < sizeof(Configuration::DefaultAttributeSemantics) / sizeof(Configuration::DefaultAttributeSemantics[0]); ++i)
 		{
 			auto& attr = *mesh.getVertexAttributeByName(Configuration::DefaultAttributeSemantics[i]);
 			debug_assertion(attr.getDataIndex() == 0, "Only a single interleaved VBO supported for this demo");
@@ -537,9 +549,11 @@ void OpenGLESSkinning::renderNode(uint32_t nodeId, const glm::mat4& viewMatrix, 
 
 		const auto& mw = _scene->getWorldMatrix(nodeId);
 		const auto& mvp = viewProjMatrix * mw;
-		const auto& mwit = glm::inverseTranspose(glm::mat3(viewMatrix) * glm::mat3(mw));
+		const auto& mwit = glm::inverseTranspose(glm::mat3(mw));
 
-		gl::Uniform3fv(_defaultUniformLocations[static_cast<uint32_t>(DefaultUniforms::LightPos)], 1, glm::value_ptr(_scene->getLightPosition(0)));
+		auto lp = _scene->getLightPosition(0);
+
+		gl::Uniform3fv(_defaultUniformLocations[static_cast<uint32_t>(DefaultUniforms::LightPos)], 1, glm::value_ptr(lp));
 		debugThrowOnApiError("OpenGLESSkinning::renderNode Unskinned Set uniforms 0");
 		gl::UniformMatrix4x3fv(_defaultUniformLocations[static_cast<uint32_t>(DefaultUniforms::ModelMatrix)], 1, GL_FALSE, glm::value_ptr(glm::mat4x3(mw)));
 		debugThrowOnApiError("OpenGLESSkinning::renderNode Unskinned Set uniforms 1");
@@ -553,11 +567,8 @@ void OpenGLESSkinning::renderNode(uint32_t nodeId, const glm::mat4& viewMatrix, 
 	}
 }
 
-/*!*********************************************************************************************************************
-\return Return auto ptr to the demo supplied by the user
-\brief  This function must be implemented by the user of the shell. The user should return its Shell object defining the behaviour
-  of the application.
-***********************************************************************************************************************/
+/// <summary>This function must be implemented by the user of the shell. The user should return its pvr::Shell object defining the behaviour of the application.</summary>
+/// <returns>Return a unique ptr to the demo supplied by the user.</returns>
 std::unique_ptr<pvr::Shell> pvr::newDemo()
 {
 	return std::unique_ptr<pvr::Shell>(new OpenGLESSkinning());

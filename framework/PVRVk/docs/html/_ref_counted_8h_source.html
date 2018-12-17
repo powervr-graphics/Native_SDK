@@ -15,7 +15,7 @@
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="IMGdoxygen.css" rel="stylesheet" type="text/css"/>
-<link rel="shortcut icon" href="http://www.imgtec.com/images/img.ico">
+<link rel="shortcut icon" type="image/x-icon" href="img.ico">
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
+      <a href="https://www.imgtec.com/developers/" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRVk</span> Documentation</a>
    <tbody>
@@ -893,18 +893,17 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l01129"></a><span class="lineno"> 1129</span>&#160;{</div>
 <div class="line"><a name="l01130"></a><span class="lineno"> 1130</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> U, <span class="keywordtype">void</span> (U::*)()&gt;</div>
 <div class="line"><a name="l01131"></a><span class="lineno"> 1131</span>&#160;    <span class="keyword">struct </span>SFINAE</div>
-<div class="line"><a name="l01132"></a><span class="lineno"> 1132</span>&#160;    {</div>
-<div class="line"><a name="l01133"></a><span class="lineno"> 1133</span>&#160;    };</div>
-<div class="line"><a name="l01134"></a><span class="lineno"> 1134</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> U&gt;</div>
-<div class="line"><a name="l01135"></a><span class="lineno"> 1135</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">char</span> Test(SFINAE&lt;U, &amp;U::construct&gt;*);</div>
-<div class="line"><a name="l01136"></a><span class="lineno"> 1136</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> U&gt;</div>
-<div class="line"><a name="l01137"></a><span class="lineno"> 1137</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">int</span> Test(...);</div>
-<div class="line"><a name="l01138"></a><span class="lineno"> 1138</span>&#160;    <span class="keyword">enum</span></div>
-<div class="line"><a name="l01139"></a><span class="lineno"> 1139</span>&#160;    {</div>
-<div class="line"><a name="l01140"></a><span class="lineno"> 1140</span>&#160;        value = (<span class="keyword">sizeof</span>(Test&lt;T&gt;(0)) == <span class="keyword">sizeof</span>(char))</div>
-<div class="line"><a name="l01141"></a><span class="lineno"> 1141</span>&#160;    };</div>
-<div class="line"><a name="l01142"></a><span class="lineno"> 1142</span>&#160;};</div>
-<div class="line"><a name="l01143"></a><span class="lineno"> 1143</span>&#160;} <span class="comment">// namespace pvrvk</span></div>
+<div class="line"><a name="l01132"></a><span class="lineno"> 1132</span>&#160;    {};</div>
+<div class="line"><a name="l01133"></a><span class="lineno"> 1133</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> U&gt;</div>
+<div class="line"><a name="l01134"></a><span class="lineno"> 1134</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">char</span> Test(SFINAE&lt;U, &amp;U::construct&gt;*);</div>
+<div class="line"><a name="l01135"></a><span class="lineno"> 1135</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> U&gt;</div>
+<div class="line"><a name="l01136"></a><span class="lineno"> 1136</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">int</span> Test(...);</div>
+<div class="line"><a name="l01137"></a><span class="lineno"> 1137</span>&#160;    <span class="keyword">enum</span></div>
+<div class="line"><a name="l01138"></a><span class="lineno"> 1138</span>&#160;    {</div>
+<div class="line"><a name="l01139"></a><span class="lineno"> 1139</span>&#160;        value = (<span class="keyword">sizeof</span>(Test&lt;T&gt;(0)) == <span class="keyword">sizeof</span>(char))</div>
+<div class="line"><a name="l01140"></a><span class="lineno"> 1140</span>&#160;    };</div>
+<div class="line"><a name="l01141"></a><span class="lineno"> 1141</span>&#160;};</div>
+<div class="line"><a name="l01142"></a><span class="lineno"> 1142</span>&#160;} <span class="comment">// namespace pvrvk</span></div>
 <div class="ttc" id="_ref_counted_8h_html_a09ebb51796c9a44c1a0195ecdd14969c"><div class="ttname"><a href="_ref_counted_8h.html#a09ebb51796c9a44c1a0195ecdd14969c">PVR_REFCOUNTED_ASSERT</a></div><div class="ttdeci">#define PVR_REFCOUNTED_ASSERT(a)</div><div class="ttdoc">A simple compile time &quot;assert-in-debug-nop-in-release&quot;.</div><div class="ttdef"><b>Definition:</b> RefCounted.h:22</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.4-->

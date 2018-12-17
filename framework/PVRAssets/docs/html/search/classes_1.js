@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['bonebatches',['BoneBatches',['../structpvr_1_1assets_1_1_mesh_1_1_bone_batches.html',1,'pvr::assets::Mesh']]],
-  ['bufferdefinition',['BufferDefinition',['../structpvr_1_1assets_1_1effect_1_1_buffer_definition.html',1,'pvr::assets::effect']]],
-  ['bufferref',['BufferRef',['../structpvr_1_1assets_1_1effect_1_1_buffer_ref.html',1,'pvr::assets::effect']]]
+  ['camera',['Camera',['../classpvr_1_1assets_1_1_camera.html',1,'pvr::assets']]],
+  ['const_5fiterator',['const_iterator',['../classpvr_1_1_indexed_array_1_1const__iterator.html',1,'pvr::IndexedArray']]]
 ];

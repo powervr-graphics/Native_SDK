@@ -6,7 +6,7 @@
 ***********************************************************************************************************************/
 #include "PVRScopeStats.h"
 #include "PVRScopeGraph.h"
-#include "PVRCore/IO/BufferStream.h"
+#include "PVRCore/stream/BufferStream.h"
 #include <math.h>
 #include <string.h>
 
@@ -64,6 +64,12 @@ bool PVRScopeGraph::init(pvr::EglContext& context, pvr::IAssetProvider& assetPro
 	if (ePVRScopeInitCodeOk != ePVRScopeInitCode)
 	{
 		scopeData = 0;
+	}
+
+	// Gamma correct the graph colors
+	for (uint32_t i = 0; i < ColorTableSize; ++i)
+	{
+		ColorTable[i] = pvr::utils::convertLRGBtoSRGB(ColorTable[i]);
 	}
 
 	if (scopeData)
@@ -342,7 +348,7 @@ void PVRScopeGraph::update(float dt)
 
 			// Generate geometry
 			float oneOverMax = 1.f / maximum;
-			for (int iDst = 0, iSrc = graphCounters[counterId].writePosCB; iDst < (int)sizeCB; ++iDst, ++iSrc)
+			for (uint32_t iDst = 0, iSrc = graphCounters[counterId].writePosCB; iDst < sizeCB; ++iDst, ++iSrc)
 			{
 				enum
 				{
@@ -351,7 +357,7 @@ void PVRScopeGraph::update(float dt)
 				++filter_idx;
 				filter_idx %= FILTER;
 				// Wrap the source index when necessary
-				if (iSrc >= (int)sizeCB)
+				if (iSrc >= sizeCB)
 				{
 					iSrc = 0;
 				}
@@ -719,7 +725,7 @@ void PVRScopeGraph::position(const uint32_t viewportW, const uint32_t viewportH,
 		sizeCB = graph.width;
 
 		float pixelW = 2 * 1.0f / viewportW;
-		float graphH = 2 * (float)graph.height / viewportH;
+		float graphH = 2 * static_cast<float>(graph.height) / viewportH;
 
 		if (this->pixelW != pixelW || this->graphH != graphH)
 		{
@@ -734,8 +740,8 @@ void PVRScopeGraph::position(const uint32_t viewportW, const uint32_t viewportH,
 				graphCounters[i].writePosCB = 0;
 			}
 		}
-		x = 2 * ((float)graph.x / viewportW) - 1;
-		y = 2 * ((float)graph.y / viewportH) - 1; // flip the y for Vulkan
+		x = 2 * (static_cast<float>(graph.x) / viewportW) - 1;
+		y = 2 * (static_cast<float>(graph.y) / viewportH) - 1; // flip the y for Vulkan
 		updateBufferLines();
 	}
 }

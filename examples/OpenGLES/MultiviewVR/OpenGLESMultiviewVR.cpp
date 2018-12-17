@@ -35,6 +35,7 @@ glm::vec3 viewOffset(1.5f, 0.0f, 0.0f);
 ***********************************************************************************************************************/
 class MultiviewVR : public pvr::Shell
 {
+	glm::vec3 _clearColor;
 	pvr::EglContext _context;
 
 	// 3D Model
@@ -174,7 +175,7 @@ void MultiviewVR::loadTextures()
 	for (uint32_t i = 0; i < numMaterials; ++i)
 	{
 		const pvr::assets::Model::Material& material = _scene->getMaterial(i);
-		if (material.defaultSemantics().getDiffuseTextureIndex() != -1)
+		if (material.defaultSemantics().getDiffuseTextureIndex() != static_cast<uint32_t>(-1))
 		{
 			// Load the diffuse texture map
 			_texDiffuse[i] = pvr::utils::textureUpload(*this, _scene->getTexture(material.defaultSemantics().getDiffuseTextureIndex()).getName().c_str());
@@ -194,10 +195,19 @@ void MultiviewVR::loadTextures()
 ***********************************************************************************************************************/
 void MultiviewVR::loadShaders()
 {
+	// Enable or disable gamma correction based on if it is automatically performed on the framebuffer or we need to do it in the shader.
+	const char* defines[] = { "FRAMEBUFFER_SRGB" };
+	uint32_t numDefines = 1;
+	if (getBackBufferColorspace() != pvr::ColorSpace::sRGB)
+	{
+		numDefines = 0;
+	}
+
 	// Load and compile the shaders from files.
 	{
 		const char* attributes[] = { "inVertex", "inNormal", "inTexCoord" };
 		const uint16_t attribIndices[] = { 0, 1, 2 };
+
 		_multiViewProgram.handle = pvr::utils::createShaderProgram(*this, VertShaderSrcFile, FragShaderSrcFile, attributes, attribIndices, 3);
 
 		// Set the sampler2D variable to the first texture unit
@@ -215,7 +225,7 @@ void MultiviewVR::loadShaders()
 		const char* attributes[] = { "inVertex", "HighResTexCoord", "LowResTexCoord" };
 		const uint16_t attribIndices[] = { 0, 1, 2 };
 
-		_texQuadProgram.handle = pvr::utils::createShaderProgram(*this, TexQuadVertShaderSrcFile, TexQuadFragShaderSrcFile, attributes, attribIndices, 3);
+		_texQuadProgram.handle = pvr::utils::createShaderProgram(*this, TexQuadVertShaderSrcFile, TexQuadFragShaderSrcFile, attributes, attribIndices, 3, defines, numDefines);
 
 		// Set the sampler2D variable to the first texture unit
 		gl::UseProgram(_texQuadProgram.handle);
@@ -356,6 +366,14 @@ pvr::Result MultiviewVR::initView()
 		throw pvr::GlExtensionNotSupportedError("GL_OVR_multiview");
 	}
 
+	glm::vec3 clearColorLinearSpace(0.0f, 0.45f, 0.41f);
+	_clearColor = clearColorLinearSpace;
+	if (getBackBufferColorspace() != pvr::ColorSpace::sRGB)
+	{
+		// Gamma correct the clear color
+		_clearColor = pvr::utils::convertLRGBtoSRGB(clearColorLinearSpace);
+	}
+
 	createMultiViewFbo();
 	LoadVbos();
 	loadTextures();
@@ -383,31 +401,32 @@ pvr::Result MultiviewVR::initView()
 
 	if (isRotated)
 	{
-		_projection[0] = pvr::math::perspectiveFov(pvr::Api::OpenGLES3, fovWide, (float)_heightHigh, (float)_widthHigh, _scene->getCamera(0).getNear(), _scene->getCamera(0).getFar(),
+		_projection[0] = pvr::math::perspectiveFov(pvr::Api::OpenGLES3, fovWide, static_cast<float>(_heightHigh), static_cast<float>(_widthHigh), _scene->getCamera(0).getNear(),
+			_scene->getCamera(0).getFar(),
 			glm::pi<float>() * .5f); // rotate by 90 degree
 
 		_projection[1] = _projection[0];
 
-		_projection[2] =
-			pvr::math::perspectiveFov(pvr::Api::OpenGLES3, fovNarrow, (float)_heightHigh, (float)_widthHigh, _scene->getCamera(0).getNear(), _scene->getCamera(0).getFar(),
-				glm::pi<float>() * .5f); // rotate by 90 degree
+		_projection[2] = pvr::math::perspectiveFov(pvr::Api::OpenGLES3, fovNarrow, static_cast<float>(_heightHigh), static_cast<float>(_widthHigh), _scene->getCamera(0).getNear(),
+			_scene->getCamera(0).getFar(),
+			glm::pi<float>() * .5f); // rotate by 90 degree
 
 		_projection[3] = _projection[2];
 	}
 	else
 	{
-		_projection[0] = pvr::math::perspectiveFov(
-			pvr::Api::OpenGLES3, fovWide, (float)_widthHigh, (float)_heightHigh, _scene->getCamera(0).getNear(), _scene->getCamera(0).getFar()); // rotate by 90 degree
+		_projection[0] = pvr::math::perspectiveFov(pvr::Api::OpenGLES3, fovWide, static_cast<float>(_widthHigh), static_cast<float>(_heightHigh), _scene->getCamera(0).getNear(),
+			_scene->getCamera(0).getFar()); // rotate by 90 degree
 
 		_projection[1] = _projection[0];
 
-		_projection[2] = pvr::math::perspectiveFov(
-			pvr::Api::OpenGLES3, fovNarrow, (float)_widthHigh, (float)_heightHigh, _scene->getCamera(0).getNear(), _scene->getCamera(0).getFar()); // rotate by 90 degree
+		_projection[2] = pvr::math::perspectiveFov(pvr::Api::OpenGLES3, fovNarrow, static_cast<float>(_widthHigh), static_cast<float>(_heightHigh), _scene->getCamera(0).getNear(),
+			_scene->getCamera(0).getFar()); // rotate by 90 degree
 
 		_projection[3] = _projection[2];
 	}
 
-	_uiRenderer.init(getWidth(), getHeight(), isFullScreen());
+	_uiRenderer.init(getWidth(), getHeight(), isFullScreen(), getBackBufferColorspace() == pvr::ColorSpace::sRGB);
 
 	_uiRenderer.getDefaultTitle()->setText("MultiviewVR");
 	_uiRenderer.getDefaultTitle()->commitUpdates();
@@ -456,7 +475,7 @@ void MultiviewVR::renderToMultiViewFbo()
 	gl::Viewport(0, 0, _widthHigh, _heightHigh);
 	// Clear the color and depth buffer
 	gl::BindFramebuffer(GL_FRAMEBUFFER, _multiViewFbo.fbo);
-	gl::ClearColor(0.00f, 0.70f, 0.67f, 1.0f); // Use a nice bright blue as clear color
+	gl::ClearColor(_clearColor.r, _clearColor.g, _clearColor.b, 1.f); // Use a nice bright blue as clear color
 	gl::Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// Use shader program
@@ -464,15 +483,15 @@ void MultiviewVR::renderToMultiViewFbo()
 
 	// Calculates the _frame number to animate in a time-based manner.
 	// get the time in milliseconds.
-	_frame += (float)getFrameTime() / 30.f; /*design-time target fps for animation*/
-
-	if (_frame > _scene->getNumFrames() - 1)
+	_frame += static_cast<float>(getFrameTime()); /*design-time target fps for animation*/
+	pvr::assets::AnimationInstance& animInstance = _scene->getAnimationInstance(0);
+	if (_frame > animInstance.getTotalTimeInMs())
 	{
 		_frame = 0;
 	}
 
 	// Sets the scene animation to this _frame
-	_scene->setCurrentFrame(_frame);
+	animInstance.updateAnimation(_frame);
 
 	// Get the direction of the first light from the scene
 	glm::vec3 lightDirVec3;
@@ -654,7 +673,7 @@ void MultiviewVR::drawMesh(int nodeIndex)
 		// Are our face indices unsigned shorts? If they aren't, then they are unsigned ints
 		GLenum type = (mesh.getFaces().getDataType() == pvr::IndexType::IndexType16Bit) ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT;
 
-		for (int i = 0; i < (int)mesh.getNumStrips(); ++i)
+		for (uint32_t i = 0; i < mesh.getNumStrips(); ++i)
 		{
 			if (_indexVbo[meshIndex])
 			{
@@ -724,11 +743,8 @@ void MultiviewVR::drawHighLowResQuad()
 	gl::DisableVertexAttribArray(2);
 }
 
-/*!*********************************************************************************************************************
-\return auto ptr to the demo supplied by the user
-\brief  This function must be implemented by the user of the shell.
-	The user should return its Shell object defining the behaviour of the application.
-***********************************************************************************************************************/
+/// <summary>This function must be implemented by the user of the shell. The user should return its pvr::Shell object defining the behaviour of the application.</summary>
+/// <returns>Return a unique ptr to the demo supplied by the user.</returns>
 std::unique_ptr<pvr::Shell> pvr::newDemo()
 {
 	return std::unique_ptr<pvr::Shell>(new MultiviewVR());

@@ -6,8 +6,8 @@
 */
 #pragma once
 #include "PVRUtils/OpenGLES/BindingsGles.h"
-#include "PVRCore/Math/Rectangle.h"
-#include "PVRCore/Math/AxisAlignedBox.h"
+#include "PVRCore/math/Rectangle.h"
+#include "PVRCore/math/AxisAlignedBox.h"
 
 //!\cond NO_DOXYGEN
 #define NUM_BITS_GROUP_ID 8
@@ -580,7 +580,7 @@ private:
 	/// <summary>Constructor. Do not use - use the UIRenderer::createFont.</summary>
 	/// <param name="uiRenderer">The UIRenderer to use when creating the Font.</param>
 	/// <param name="tex2D">The OpenGL ES texture to use for the Font.</param>
-	/// <param name="tex">the pvr::assets::Texture texture to use for the Font..</param>
+	/// <param name="tex">the pvr::Texture texture to use for the Font..</param>
 	/// <param name="sampler">The OpenGL ES sampler to use for the Font.</param>
 	Font_(UIRenderer& uiRenderer, const GLuint& tex2D, const Texture& tex, const GLuint& sampler);
 
@@ -620,7 +620,7 @@ private:
 
 public:
 	/// <summary>Load the font data from the font texture.</summary>
-	/// <param name="texture">The pvr::assets::Texture texture to load font data from.</param>
+	/// <param name="texture">The pvr::Texture texture to load font data from.</param>
 	void loadFontData(const Texture& texture);
 
 	/// <summary>Find the index of a character inside the internal font character list. Only useful for custom font
@@ -809,13 +809,12 @@ private:
 	/// <summary>Function that will be automatically called by the uiRenderer. Do not call.</summary>
 	uint32_t updateVertices(float fZPos, float xPos, float yPos, const std::vector<uint32_t>& text, Vertex* const pVertices) const;
 
-	uint32_t _spaceWidth;
 	bool _isUtf8;
 	mutable bool _isTextDirty;
+	mutable Font _font;
 	mutable GLuint _vbo;
 	mutable bool _vboCreated;
 	mutable uint32_t _vboSize;
-	mutable Font _font;
 	mutable std::string _textStr;
 	mutable std::wstring _textWStr;
 	mutable std::vector<uint32_t> _utf32;

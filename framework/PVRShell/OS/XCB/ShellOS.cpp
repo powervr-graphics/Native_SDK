@@ -6,7 +6,7 @@
 */
 //!\cond NO_DOXYGEN
 #include "PVRShell/OS/ShellOS.h"
-#include "PVRCore/IO/FilePath.h"
+#include "PVRCore/stream/FilePath.h"
 #include "PVRCore/Log.h"
 
 #include "xcb/xcb.h"

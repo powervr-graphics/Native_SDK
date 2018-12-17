@@ -15,11 +15,11 @@
 #ifndef GLM_FORCE_RADIANS
 #define GLM_FORCE_RADIANS
 #endif
-
+#define GLM_ENABLE_EXPERIMENTAL
 #include "../../../external/glm/glm.hpp"
 #include "../../../external/glm/gtc/matrix_transform.hpp"
-#include "../../../external/glm/gtx/transform.hpp"
 #include "../../../external/glm/gtc/type_ptr.hpp"
+#include "../../../external/glm/gtx/transform.hpp"
 
 // The Surface Data structure is different based on the platform we're using
 // here we define the structure and its members inside Vulkan provided preprocessors
@@ -198,12 +198,12 @@ private:
 
 	struct BufferData
 	{
-		VkMemoryPropertyFlags memPropFlags;
 		VkBuffer buffer;
 		VkDeviceMemory memory;
-		VkDescriptorBufferInfo bufferInfo;
 		size_t size;
+		VkMemoryPropertyFlags memPropFlags;
 		void* mappedData;
+		VkDescriptorBufferInfo bufferInfo;
 
 		BufferData() : buffer(VK_NULL_HANDLE), memory(VK_NULL_HANDLE), size(0), memPropFlags(0), mappedData(nullptr) {}
 	};
@@ -331,7 +331,7 @@ public:
 	void initSwapChain();
 	// create the Images and Image Views to be used with the SwapChain.
 	void initImagesAndViews();
-	// create a vertex buffers to draw our primitive;
+	// create a vertex buffers to draw our primitive
 	void initVertexBuffers();
 	// We create a texture to apply to our primitive.
 	void initTexture();
@@ -354,12 +354,12 @@ public:
 	// Create the semaphore to deal with our command queue.
 	void initSemaphoreAndFence();
 
-	// Generic method to initialize buffers (both Vertex and Uniform use this);
+	// Generic method to initialize buffers (both Vertex and Uniform use this)
 	void createBuffer(BufferData& inBuffer, const uint8_t* inData, const VkBufferUsageFlags& inUsage);
 	// Generic Method for creating a Dynamic Uniform buffer.
 	void createDynamicUniformBuffer(BufferData& inBuffer);
 	// Generic method for creating a shader module.
-	void createShader(const uint32_t* spvShader, size_t spvShaderSize, int indx, VkShaderStageFlagBits shaderStage);
+	void createShaderModule(const uint32_t* spvShader, size_t spvShaderSize, int indx, VkShaderStageFlagBits shaderStage);
 	// Generates a texture without having to load an image file.
 	void generateTexture();
 	// Changes the rotation of the per frame Uniform buffer

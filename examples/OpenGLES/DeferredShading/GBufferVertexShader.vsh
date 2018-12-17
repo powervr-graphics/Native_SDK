@@ -6,7 +6,7 @@
 #define TANGENT_ARRAY 3
 
 layout(location = VERTEX_ARRAY) in highp vec3 inVertex;
-layout(location = NORMAL_ARRAY) in highp vec3 inNormal;
+layout(location = NORMAL_ARRAY) in mediump vec3 inNormal;
 layout(location = TEXCOORD_ARRAY) in mediump vec2 inTexCoords;
 layout(location = TANGENT_ARRAY) in highp vec3 inTangent;
 
@@ -17,11 +17,11 @@ layout(std140, binding = 0) uniform DynamicsPerModel
 	highp mat4 mWorldViewITMatrix;
 };
 
-layout (location = 0) out mediump vec2 vTexCoord;
-layout (location = 1) out highp vec3 vNormal;
-layout (location = 2) out highp vec3 vTangent;
-layout (location = 3) out highp vec3 vBinormal;
-layout (location = 4) out highp vec3 vViewPosition;
+layout(location = 0) out mediump vec2 vTexCoord;
+layout(location = 1) out mediump vec3 vNormal;
+layout(location = 2) out highp vec3 vTangent;
+layout(location = 3) out highp vec3 vBinormal;
+layout(location = 4) out highp vec3 vViewPosition;
 
 void main() 
 {
@@ -36,5 +36,5 @@ void main()
 	vViewPosition = (mWorldViewMatrix * vec4(inVertex, 1.0)).xyz;
 
 	// Pass the texture coordinates to the fragment shader
-	vTexCoord = inTexCoords;				
+	vTexCoord = inTexCoords;
 }

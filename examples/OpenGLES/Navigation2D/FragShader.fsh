@@ -1,10 +1,10 @@
 #version 300 es
 
-in lowp vec4 fragColor;
+uniform mediump vec4 myColor;
 
-layout (location = 0) out lowp vec4 oColor;
+layout(location = 0) out mediump vec4 oColor;
 
 void main(void)
 {
-	oColor = vec4(fragColor.rgb, 1.0);
+	oColor = vec4(myColor.rgb, 1.0);
 }

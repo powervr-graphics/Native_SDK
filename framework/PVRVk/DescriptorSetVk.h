@@ -173,7 +173,7 @@ public:
 	{
 		_numItems = descStore._numItems;
 		_tVec = descStore._tVec;
-		for (int i = 0; i < ArraySize; ++i)
+		for (uint32_t i = 0; i < ArraySize; ++i)
 		{
 			_tArray[i] = descStore._tArray[i];
 		}
@@ -195,7 +195,7 @@ public:
 		}
 		_numItems = descStore._numItems;
 		_tVec = descStore._tVec;
-		for (int i = 0; i < ArraySize; ++i)
+		for (uint32_t i = 0; i < ArraySize; ++i)
 		{
 			_tArray[i] = descStore._tArray[i];
 		}
@@ -296,7 +296,7 @@ public:
 	/// pool.</param> <param name="staticSsbos">The maximum number of storage buffer descriptor types which can be used in descriptor sets allocated by this descriptor
 	/// pool.</param> <param name="dynamicSsbos">The maximum number of dynamic storage buffer descriptor types which can be used in descriptor sets allocated by this descriptor
 	/// pool.</param>
-	DescriptorPoolCreateInfo(uint16_t maxSets, uint16_t combinedImageSamplers = 32, uint16_t inputAttachments = 0, uint16_t staticUbos = 32, uint16_t dynamicUbos = 32,
+	explicit DescriptorPoolCreateInfo(uint16_t maxSets, uint16_t combinedImageSamplers = 32, uint16_t inputAttachments = 0, uint16_t staticUbos = 32, uint16_t dynamicUbos = 32,
 		uint16_t staticSsbos = 0, uint16_t dynamicSsbos = 0)
 		: _numDescriptorTypes(0), _maxSets(maxSets)
 	{
@@ -401,7 +401,7 @@ struct DescriptorImageInfo
 	/// will be in at the time this descriptor is accessed. imageLayout is used in descriptor
 	/// updates for types pvrvk::DescriptorType::e_SAMPLED_IMAGE, pvrvk::DescriptorType::e_STORAGE_IMAGE,
 	/// pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, and pvrvk::DescriptorType::e_INPUT_ATTACHMENT</param>
-	DescriptorImageInfo(const ImageView& imageView, const Sampler& sampler, pvrvk::ImageLayout imageLayout = pvrvk::ImageLayout::e_GENERAL)
+	DescriptorImageInfo(const ImageView& imageView, const Sampler& sampler, pvrvk::ImageLayout imageLayout = pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL)
 		: sampler(sampler), imageView(imageView), imageLayout(imageLayout)
 	{}
 
@@ -413,7 +413,9 @@ struct DescriptorImageInfo
 	/// will be in at the time this descriptor is accessed. imageLayout is used in descriptor
 	/// updates for types pvrvk::DescriptorType::e_SAMPLED_IMAGE, pvrvk::DescriptorType::e_STORAGE_IMAGE,
 	/// pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, and pvrvk::DescriptorType::e_INPUT_ATTACHMENT</param>
-	DescriptorImageInfo(const ImageView& imageView, pvrvk::ImageLayout imageLayout = pvrvk::ImageLayout::e_GENERAL) : imageView(imageView), imageLayout(imageLayout) {}
+	DescriptorImageInfo(const ImageView& imageView, pvrvk::ImageLayout imageLayout = pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL)
+		: imageView(imageView), imageLayout(imageLayout)
+	{}
 };
 /// <summary>A struct describing a descriptor buffer binding</summary>
 struct DescriptorBufferInfo
@@ -746,13 +748,13 @@ private:
 			if (_descPool->getDevice().isValid())
 			{
 				_device->getVkBindings().vkFreeDescriptorSets(_descPool->getDevice()->getVkHandle(), _descPool->getVkHandle(), 1, &getVkHandle());
+				_vkHandle = VK_NULL_HANDLE;
 				_descPool->getDevice().reset();
 			}
 			else
 			{
 				reportDestroyedAfterDevice("DescriptorSet");
 			}
-			_vkHandle = VK_NULL_HANDLE;
 			_descPool.reset();
 			_descSetLayout.reset();
 		}

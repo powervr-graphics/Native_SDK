@@ -5,8 +5,8 @@
 \copyright Copyright (c) Imagination Technologies Limited.
 */
 //!\cond NO_DOXYGEN
-#include "PVRCore/Stream.h"
-#include "PVRCore/StringFunctions.h"
+#include "PVRCore/stream/Stream.h"
+#include "PVRCore/strings/StringFunctions.h"
 #include "PVRUtils/OpenGLES/ShaderUtilsGles.h"
 #include "PVRUtils/OpenGLES/BindingsGles.h"
 #include "PVRUtils/OpenGLES/ErrorsGles.h"

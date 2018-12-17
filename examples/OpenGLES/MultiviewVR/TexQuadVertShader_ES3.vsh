@@ -1,9 +1,9 @@
 #version 300 es
-in highp   vec3  inVertex;
-in mediump vec2  inHighResTexCoord;
-in mediump vec2  inLowResTexCoord;
-out mediump vec2   HighResTexCoord;
-out mediump vec2   LowResTexCoord;
+in highp vec3 inVertex;
+in mediump vec2 inHighResTexCoord;
+in mediump vec2 inLowResTexCoord;
+out mediump vec2 HighResTexCoord;
+out mediump vec2 LowResTexCoord;
 void main()
 {
 	// Transform position

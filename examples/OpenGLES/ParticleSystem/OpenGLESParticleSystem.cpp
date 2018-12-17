@@ -86,7 +86,7 @@ enum
 
 const float CameraNear = .1f;
 const float CameraFar = 1000.0f;
-const glm::vec3 LightPosition(0.0f, 40.0f, 0.0f);
+const glm::vec3 LightPosition(0.0f, 10.0f, 0.0f);
 const uint32_t workgroupSize = 32;
 const Sphere SpheresData[] = {
 	Sphere(glm::vec3(-20.0f, 6.0f, -20.0f), 5.f),
@@ -328,7 +328,7 @@ bool OpenGLESParticleSystem::createBuffers()
 	// Create the (VBO/SSBO) Particles buffer
 	gl::GenBuffers(NumBuffers, _deviceResources->particleBuffers);
 	gl::GenVertexArrays(NumBuffers, _deviceResources->particleVaos);
-	for (int i = 0; i < NumBuffers; ++i)
+	for (uint32_t i = 0; i < NumBuffers; ++i)
 	{
 		gl::BindBuffer(GL_ARRAY_BUFFER, _deviceResources->particleBuffers[i]);
 		gl::BufferData(GL_ARRAY_BUFFER, sizeof(Particle) * _numParticles, nullptr, GL_DYNAMIC_COPY);
@@ -413,6 +413,13 @@ void OpenGLESParticleSystem::useComputePassProgram()
 ***********************************************************************************************************************/
 bool OpenGLESParticleSystem::createPrograms()
 {
+	// Enable or disable gamma correction based on if it is automatically performed on the framebuffer or we need to do it in the shader.
+	const char* defines[] = { "FRAMEBUFFER_SRGB" };
+	uint32_t numDefines = 1;
+	if (getBackBufferColorspace() != pvr::ColorSpace::sRGB)
+	{
+		numDefines = 0;
+	}
 	// Simple Pipeline
 	{
 		pvr::utils::VertexAttributeInfoGles attributes[2];
@@ -431,7 +438,8 @@ bool OpenGLESParticleSystem::createPrograms()
 		const char* simplePipeAttributes[] = { "inVertex", "inNormal" };
 		const uint16_t simplePipeAttributeIndices[] = { Attributes::VertexArray, Attributes::NormalArray };
 
-		_deviceResources->programSimple.program = pvr::utils::createShaderProgram(*this, Files::VertShader, Files::FragShader, simplePipeAttributes, simplePipeAttributeIndices, 2);
+		_deviceResources->programSimple.program =
+			pvr::utils::createShaderProgram(*this, Files::VertShader, Files::FragShader, simplePipeAttributes, simplePipeAttributeIndices, 2, defines, numDefines);
 
 		useSimplePipelineProgramAndSetState();
 
@@ -446,7 +454,8 @@ bool OpenGLESParticleSystem::createPrograms()
 		const char* floorPipeAttributes[] = { "inVertex", "inNormal" };
 		const uint16_t floorPipeAttributeIndices[] = { Attributes::VertexArray, Attributes::NormalArray };
 
-		_deviceResources->programFloor.program = pvr::utils::createShaderProgram(*this, Files::VertShader, Files::FragShader, floorPipeAttributes, floorPipeAttributeIndices, 2);
+		_deviceResources->programFloor.program =
+			pvr::utils::createShaderProgram(*this, Files::VertShader, Files::FragShader, floorPipeAttributes, floorPipeAttributeIndices, 2, defines, numDefines);
 
 		_deviceResources->programFloor.mvMatrixLoc = gl::GetUniformLocation(_deviceResources->programFloor.program, "uModelViewMatrix");
 		_deviceResources->programFloor.mvITMatrixLoc = gl::GetUniformLocation(_deviceResources->programFloor.program, "uModelViewITMatrix");
@@ -460,7 +469,7 @@ bool OpenGLESParticleSystem::createPrograms()
 		const uint16_t particleAttribIndices[] = { 0, 1 };
 
 		_deviceResources->programParticle.program =
-			pvr::utils::createShaderProgram(*this, Files::ParticleVertShader, Files::ParticleFragShader, particleAttribs, particleAttribIndices, 2);
+			pvr::utils::createShaderProgram(*this, Files::ParticleVertShader, Files::ParticleFragShader, particleAttribs, particleAttribIndices, 2, defines, numDefines);
 		_deviceResources->programParticle.mvpMatrixLoc = gl::GetUniformLocation(_deviceResources->programParticle.program, "uModelViewProjectionMatrix");
 	}
 
@@ -539,17 +548,8 @@ pvr::Result OpenGLESParticleSystem::initView()
 	_deviceResources->context = pvr::createEglContext();
 	_deviceResources->context->init(getWindow(), getDisplay(), getDisplayAttributes(), pvr::Api::OpenGLES31);
 
-	if (this->isForcingFrameTime())
-	{
-		srand(0);
-	}
-	else
-	{
-		srand((unsigned int)this->getTime());
-	}
-
 	// Initialize UIRenderer textures
-	_deviceResources->uiRenderer.init(getWidth(), getHeight(), isFullScreen());
+	_deviceResources->uiRenderer.init(getWidth(), getHeight(), isFullScreen(), getBackBufferColorspace() == pvr::ColorSpace::sRGB);
 
 	//  Create the Buffers
 	if (!createBuffers())
@@ -576,7 +576,7 @@ pvr::Result OpenGLESParticleSystem::initView()
 	initializeParticles(_numParticles);
 
 	// Creates the projection matrix.
-	_projMtx = glm::perspectiveFov(glm::pi<float>() / 3.0f, (float)getWidth(), (float)getHeight(), Configuration::CameraNear, Configuration::CameraFar);
+	_projMtx = glm::perspectiveFov(glm::pi<float>() / 3.0f, static_cast<float>(getWidth()), static_cast<float>(getHeight()), Configuration::CameraNear, Configuration::CameraFar);
 
 	_deviceResources->uiRenderer.getDefaultTitle()->setText("ParticleSystem");
 	_deviceResources->uiRenderer.getDefaultDescription()->setText(pvr::strings::createFormatted("No. of Particles: %d", _numParticles));
@@ -660,7 +660,7 @@ pvr::Result OpenGLESParticleSystem::renderFrame()
 ***********************************************************************************************************************/
 void OpenGLESParticleSystem::updateSphereProgramUniforms(const glm::mat4& proj, const glm::mat4& view)
 {
-	for (int i = 0; i < Configuration::NumberOfSpheres; ++i)
+	for (uint32_t i = 0; i < Configuration::NumberOfSpheres; ++i)
 	{
 		const glm::vec3& position = Configuration::SpheresData[i].vPosition;
 		float radius = Configuration::SpheresData[i].fRadius;
@@ -690,7 +690,7 @@ void OpenGLESParticleSystem::updateFloorProgramUniforms()
 ************************************************************************************************************************/
 void OpenGLESParticleSystem::updateParticleUniforms()
 {
-	float dt = (float)getFrameTime();
+	float dt = static_cast<float>(getFrameTime());
 
 	static float rot_angle = 0.0f;
 	rot_angle += dt / 500.0f;
@@ -701,16 +701,16 @@ void OpenGLESParticleSystem::updateParticleUniforms()
 
 	_particleConfigData.emitter = Emitter(rot * skew, 1.3f, 1.0f);
 
-	if (dt == 0)
-	{
-		return;
-	}
 	dt *= 0.001f;
+
 	_particleConfigData.dt = dt;
 	_particleConfigData.totalTime += dt;
+
 	debugThrowOnApiError("OpenGLESParticleSystem::updateParticleUniforms Enter");
+
 	gl::BindBuffer(GL_UNIFORM_BUFFER, _deviceResources->particleConfigUbo);
 	gl::BufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(_particleConfigData), &_particleConfigData);
+
 	debugThrowOnApiError("OpenGLESParticleSystem::updateParticleUniforms Exit");
 }
 
@@ -769,13 +769,13 @@ void OpenGLESParticleSystem::initializeParticles(uint32_t _numParticles)
 
 	for (uint32_t i = 0; i < _numParticles; ++i)
 	{
-		_particleArrayData[i].fTimeToLive = pvr::randomrange(0, _particleConfigData.maxLifespan);
-		_particleArrayData[i].vPosition.x = 0;
-		_particleArrayData[i].vPosition.y = 0;
-		_particleArrayData[i].vPosition.z = 1;
-		_particleArrayData[i].vVelocity = glm::vec3();
+		_particleArrayData[i].fTimeToLive = pvr::randomrange(0.0f, _particleConfigData.maxLifespan);
+		_particleArrayData[i].vPosition.x = 0.0f;
+		_particleArrayData[i].vPosition.y = 0.0f;
+		_particleArrayData[i].vPosition.z = 1.0f;
+		_particleArrayData[i].vVelocity = glm::vec3(0.0f);
 	}
-	for (int i = 0; i < NumBuffers; ++i)
+	for (uint32_t i = 0; i < NumBuffers; ++i)
 	{
 		gl::BindBuffer(GL_SHADER_STORAGE_BUFFER, _deviceResources->particleBuffers[i]);
 		gl::BufferData(GL_SHADER_STORAGE_BUFFER, sizeof(Particle) * _numParticles, _particleArrayData.data(), GL_DYNAMIC_COPY);

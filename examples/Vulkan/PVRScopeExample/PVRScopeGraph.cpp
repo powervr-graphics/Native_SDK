@@ -6,7 +6,7 @@
 ***********************************************************************************************************************/
 #include "PVRScopeStats.h"
 #include "PVRScopeGraph.h"
-#include "PVRCore/IO/BufferStream.h"
+#include "PVRCore/stream/BufferStream.h"
 #include <math.h>
 #include <string.h>
 
@@ -35,8 +35,8 @@ enum
 	ColorTableSize = ARRAY_SIZE(ColorTable)
 };
 namespace Configuration {
-const char* const VertShaderFileVK = "GraphVertShader_vk.vsh.spv";
-const char* const FragShaderFileVK = "GraphFragShader_vk.fsh.spv";
+const char* const VertShaderFileVK = "GraphVertShader.vsh.spv";
+const char* const FragShaderFileVK = "GraphFragShader.fsh.spv";
 const char* const VertShaderFileES = "GraphVertShader.vsh";
 const char* const FragShaderFileES = "GraphFragShader.fsh";
 } // namespace Configuration
@@ -377,7 +377,7 @@ void PVRScopeGraph::update(float dt)
 
 			// Generate geometry
 			float oneOverMax = 1.f / maximum;
-			for (int iDst = 0, iSrc = graphCounters[counterId].writePosCB; iDst < (int)sizeCB; ++iDst, ++iSrc)
+			for (int iDst = 0, iSrc = graphCounters[counterId].writePosCB; iDst < static_cast<int32_t>(sizeCB); ++iDst, ++iSrc)
 			{
 				enum
 				{
@@ -386,7 +386,7 @@ void PVRScopeGraph::update(float dt)
 				++filter_idx;
 				filter_idx %= FILTER;
 				// Wrap the source index when necessary
-				if (iSrc >= (int)sizeCB)
+				if (iSrc >= static_cast<int32_t>(sizeCB))
 				{
 					iSrc = 0;
 				}
@@ -456,9 +456,9 @@ bool PVRScopeGraph::createPipeline(const pvrvk::RenderPass& renderPass, const pv
 		.addInputAttribute(pvrvk::VertexInputAttributeDescription(Configuration::VertexArrayBinding, 0, pvrvk::Format::e_R32G32_SFLOAT, 0));
 	pipeInfo.renderPass = renderPass;
 
-	vertexShader = _device->createShader(_assetProvider->getAssetStream(Configuration::VertShaderFileVK)->readToEnd<uint32_t>());
+	vertexShader = _device->createShaderModule(pvrvk::ShaderModuleCreateInfo(_assetProvider->getAssetStream(Configuration::VertShaderFileVK)->readToEnd<uint32_t>()));
 
-	fragmentShader = _device->createShader(_assetProvider->getAssetStream(Configuration::FragShaderFileVK)->readToEnd<uint32_t>());
+	fragmentShader = _device->createShaderModule(pvrvk::ShaderModuleCreateInfo(_assetProvider->getAssetStream(Configuration::FragShaderFileVK)->readToEnd<uint32_t>()));
 
 	// create the pipeline
 	if (!vertexShader.isValid() || !fragmentShader.isValid())
@@ -779,7 +779,7 @@ void PVRScopeGraph::position(const uint32_t viewportW, const uint32_t viewportH,
 		sizeCB = graph.getExtent().getWidth();
 
 		float pixelW = 2 * 1.0f / viewportW;
-		float graphH = 2 * (float)graph.getExtent().getHeight() / viewportH;
+		float graphH = 2 * static_cast<float>(graph.getExtent().getHeight()) / viewportH;
 
 		if (this->pixelW != pixelW || this->graphH != graphH)
 		{
@@ -794,8 +794,8 @@ void PVRScopeGraph::position(const uint32_t viewportW, const uint32_t viewportH,
 				graphCounters[i].writePosCB = 0;
 			}
 		}
-		x = 2 * ((float)graph.getOffset().getX() / viewportW) - 1;
-		y = 2 * ((float)graph.getOffset().getY() / viewportH) - 1; // flip the y for Vulkan
+		x = 2 * (static_cast<float>(graph.getOffset().getX()) / viewportW) - 1;
+		y = 2 * (static_cast<float>(graph.getOffset().getY()) / viewportH) - 1; // flip the y for Vulkan
 		updateBufferLines();
 	}
 }

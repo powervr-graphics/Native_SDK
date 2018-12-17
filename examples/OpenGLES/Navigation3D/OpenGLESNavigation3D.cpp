@@ -2,10 +2,9 @@
 #include "PVRUtils/PVRUtilsGles.h"
 #define NAV_3D
 #include "../../common/NavDataProcess.h"
-//#include "../Common.h"
-#include "PVRCore/TPSCamera.h"
+#include "PVRCore/cameras/TPSCamera.h"
 const float CameraMoveSpeed = 1.f;
-static const float CamHeight = .2f;
+static const float CamHeight = .35f;
 static uint32_t routeIndex = 0;
 // Camera Settings
 const float CameraRotationSpeed = .5f;
@@ -15,6 +14,15 @@ const float CamRotationTime = 10000.f;
 const char* RoadTexFile = "Road.pvr";
 const char* MapFile = "map.osm";
 const char* FontFile = "font.pvr";
+
+// Shaders
+const char FragShaderSrcFile[] = "FragShader_ES2.fsh";
+const char VertShaderSrcFile[] = "VertShader_ES2.vsh";
+const char AAFragShaderSrcFile[] = "AA_FragShader_ES2.fsh";
+const char AAVertShaderSrcFile[] = "AA_VertShader_ES2.vsh";
+const char PlanarShadowFragShaderSrcFile[] = "PlanarShadow_FragShader_ES2.fsh";
+const char PlanarShadowVertShaderSrcFile[] = "PlanarShadow_VertShader_ES2.vsh";
+const char PerVertexLightVertShaderSrcFile[] = "PerVertexLight_VertShader_ES2.vsh";
 
 enum class PipelineState
 {
@@ -31,7 +39,7 @@ struct ShaderProgramFill
 	enum Uniform
 	{
 		UniformTransform,
-		UniformColour,
+		UniformColor,
 		UniformCount
 	};
 	int32_t uniformLocation[UniformCount];
@@ -49,7 +57,7 @@ struct ShaderProgramRoad
 	enum Uniform
 	{
 		UniformTransform,
-		UniformColour,
+		UniformColor,
 		UniformCount
 	};
 	int32_t uniformLocation[UniformCount];
@@ -85,7 +93,7 @@ struct ShaderProgramBuilding
 		UniformTransform,
 		UniformViewMatrix,
 		UniformLightDir,
-		UniformColour,
+		UniformColor,
 		UniformCount
 	};
 	int32_t uniformLocation[UniformCount];
@@ -98,6 +106,9 @@ struct ShaderProgramBuilding
 
 struct DeviceResources
 {
+	// Graphics context.
+	pvr::EglContext context;
+
 	// Pipelines
 	ShaderProgramRoad roadPipe;
 	ShaderProgramFill fillPipe;
@@ -108,9 +119,7 @@ struct DeviceResources
 	// Descriptor set for texture
 	GLuint roadTex, fontTex;
 
-	pvr::ui::Font font;
 	pvr::ui::Text text;
-	pvr::ui::MatrixGroup textMtxGroup;
 	pvr::ui::UIRenderer uiRenderer;
 };
 
@@ -194,35 +203,44 @@ public:
 		const glm::vec4 light = glm::vec4(glm::normalize(glm::vec3(0.25f, 2.4f, -1.15f)), 0.0f);
 		const float d = glm::dot(ground, light);
 
-		shadowMatrix[0][0] = (float)(d - light.x * ground.x);
-		shadowMatrix[1][0] = (float)(0.0 - light.x * ground.y);
-		shadowMatrix[2][0] = (float)(0.0 - light.x * ground.z);
-		shadowMatrix[3][0] = (float)(0.0 - light.x * ground.w);
+		_shadowMatrix[0][0] = static_cast<float>(d - light.x * ground.x);
+		_shadowMatrix[1][0] = static_cast<float>(0.0 - light.x * ground.y);
+		_shadowMatrix[2][0] = static_cast<float>(0.0 - light.x * ground.z);
+		_shadowMatrix[3][0] = static_cast<float>(0.0 - light.x * ground.w);
 
-		shadowMatrix[0][1] = (float)(0.0 - light.y * ground.x);
-		shadowMatrix[1][1] = (float)(d - light.y * ground.y);
-		shadowMatrix[2][1] = (float)(0.0 - light.y * ground.z);
-		shadowMatrix[3][1] = (float)(0.0 - light.y * ground.w);
+		_shadowMatrix[0][1] = static_cast<float>(0.0 - light.y * ground.x);
+		_shadowMatrix[1][1] = static_cast<float>(d - light.y * ground.y);
+		_shadowMatrix[2][1] = static_cast<float>(0.0 - light.y * ground.z);
+		_shadowMatrix[3][1] = static_cast<float>(0.0 - light.y * ground.w);
 
-		shadowMatrix[0][2] = (float)(0.0 - light.z * ground.x);
-		shadowMatrix[1][2] = (float)(0.0 - light.z * ground.y);
-		shadowMatrix[2][2] = (float)(d - light.z * ground.z);
-		shadowMatrix[3][2] = (float)(0.0 - light.z * ground.w);
+		_shadowMatrix[0][2] = static_cast<float>(0.0 - light.z * ground.x);
+		_shadowMatrix[1][2] = static_cast<float>(0.0 - light.z * ground.y);
+		_shadowMatrix[2][2] = static_cast<float>(d - light.z * ground.z);
+		_shadowMatrix[3][2] = static_cast<float>(0.0 - light.z * ground.w);
 
-		shadowMatrix[0][3] = (float)(0.0 - light.w * ground.x);
-		shadowMatrix[1][3] = (float)(0.0 - light.w * ground.y);
-		shadowMatrix[2][3] = (float)(0.0 - light.w * ground.z);
-		shadowMatrix[3][3] = (float)(d - light.w * ground.w);
+		_shadowMatrix[0][3] = static_cast<float>(0.0 - light.w * ground.x);
+		_shadowMatrix[1][3] = static_cast<float>(0.0 - light.w * ground.y);
+		_shadowMatrix[2][3] = static_cast<float>(0.0 - light.w * ground.z);
+		_shadowMatrix[3][3] = static_cast<float>(d - light.w * ground.w);
 	}
 
 private:
-	std::unique_ptr<NavDataProcess> OSMdata;
-
-	// Graphics context.
-	pvr::EglContext context;
+	std::unique_ptr<NavDataProcess> _OSMdata;
 
 	// Graphics resources - buffers, samplers, descriptors.
-	std::unique_ptr<DeviceResources> deviceResources;
+	std::unique_ptr<DeviceResources> _deviceResources;
+
+	glm::vec4 _clearColor;
+
+	glm::vec4 _roadAreaColor;
+	glm::vec4 _motorwayColor;
+	glm::vec4 _trunkRoadColor;
+	glm::vec4 _primaryRoadColor;
+	glm::vec4 _secondaryRoadColor;
+	glm::vec4 _serviceRoadColor;
+	glm::vec4 _otherRoadColor;
+	glm::vec4 _parkingColor;
+	glm::vec4 _outlineColor;
 
 	struct GlesStateTracker
 	{
@@ -232,39 +250,46 @@ private:
 		{
 			memset(boundTextures, 0, sizeof(boundTextures));
 		}
-	} glesStates;
+	} _glesStates;
 
-	// UI object for text.
-	pvr::ui::UIRenderer _uiRenderer;
-
-	std::vector<std::vector<std::unique_ptr<TileRenderingResources> > > tileRenderingResources;
+	std::vector<std::vector<std::unique_ptr<TileRenderingResources> > > _tileRenderingResources;
 
 	// Uniforms
-	glm::mat4 viewProjMatrix;
-	glm::mat4 viewMatrix;
+	glm::mat4 _viewProjMatrix;
+	glm::mat4 _viewMatrix;
 
-	glm::vec3 lightDir;
+	glm::vec3 _lightDir;
 
 	// Transformation variables
-	glm::mat4 perspectiveMatrix;
-	glm::mat4 ui_orthoMtx;
+	glm::mat4 _perspectiveMatrix;
 
-	pvr::math::ViewingFrustum viewFrustum;
+	pvr::math::ViewingFrustum _viewFrustum;
 
 	// Window variables
-	uint32_t windowWidth;
-	uint32_t windowHeight;
+	uint32_t _windowWidth;
+	uint32_t _windowHeight;
 
 	// Map tile dimensions
-	uint32_t numRows;
-	uint32_t numCols;
+	uint32_t _numRows;
+	uint32_t _numCols;
 
-	float totalRouteDistance;
-	float keyFrameTime;
-	std::string currentRoad;
+	float _totalRouteDistance;
+	float _keyFrameTime;
+	std::string _currentRoad;
 
-	glm::mat4 shadowMatrix;
-	pvr::TPSCamera camera;
+	glm::mat4 _shadowMatrix;
+
+	struct CameraTracking
+	{
+		glm::vec3 translation;
+		glm::mat4 camRotation;
+		glm::vec3 look;
+		glm::vec3 up;
+
+		CameraTracking() : translation(0.0f), camRotation(0.0f) {}
+	} cameraInfo;
+	pvr::TPSCamera _camera;
+
 	void createBuffers();
 	bool loadTexture();
 	void setUniforms();
@@ -273,17 +298,17 @@ private:
 	void updateAnimation();
 	void calculateTransform();
 	void calculateClipPlanes();
-	bool InFrustum(glm::vec2 min, glm::vec2 max);
+	bool inFrustum(glm::vec2 min, glm::vec2 max);
 	void executeCommands(const TileRenderingResources& tileRes);
 	void createPrograms();
 	void setPipelineStates(PipelineState pipelineState);
 	// Calculate the key frametime between one point to another.
 	float calculateRouteKeyFrameTime(const glm::dvec2& start, const glm::dvec2& end)
 	{
-		return ::calculateRouteKeyFrameTime(start, end, totalRouteDistance, CameraMoveSpeed);
+		return ::calculateRouteKeyFrameTime(start, end, _totalRouteDistance, CameraMoveSpeed);
 	}
 
-	glm::vec3 cameraTranslation;
+	glm::vec3 _cameraTranslation;
 	template<class ShaderProgram>
 	void bindProgram(const ShaderProgram& program);
 
@@ -294,12 +319,12 @@ private:
 			gl::ActiveTexture(GL_TEXTURE0 + index);
 			gl::BindTexture(GL_TEXTURE_2D, texture);
 			debugThrowOnApiError("OGLESNavigation3D::bindTexture");
-			glesStates.boundTextures[index] = texture;
+			_glesStates.boundTextures[index] = texture;
 		}
 	}
 
 public:
-	OGLESNavigation3D() : ui_orthoMtx(1.0), totalRouteDistance(0.0f), keyFrameTime(0.0f), shadowMatrix(1.0), cameraTranslation(0.0f) {}
+	OGLESNavigation3D() : _totalRouteDistance(0.0f), _keyFrameTime(0.0f), _shadowMatrix(1.0), _cameraTranslation(0.0f) {}
 };
 
 /*!*********************************************************************************************************************
@@ -310,15 +335,33 @@ If the rendering context is lost, initApplication() will not be called again.
 ***********************************************************************************************************************/
 pvr::Result OGLESNavigation3D::initApplication()
 {
-	OSMdata.reset(new NavDataProcess(getAssetStream(MapFile), glm::ivec2(getWidth(), getHeight())));
-	pvr::Result result = OSMdata->loadAndProcessData();
+	// Disable gamma correction in the framebuffer.
+	setBackBufferColorspace(pvr::ColorSpace::lRGB);
+	// WARNING: This should not be done lightly. This example has taken care of linear/sRGB color space conversion appropriately and has been tuned specifically
+	// for performance/color space correctness.
+
+	_OSMdata.reset(new NavDataProcess(getAssetStream(MapFile), glm::ivec2(getWidth(), getHeight())));
+	pvr::Result result = _OSMdata->loadAndProcessData();
 
 	if (result != pvr::Result::Success)
 		return result;
 
-	setDepthBitsPerPixel(24);
-	setStencilBitsPerPixel(8);
 	createShadowMatrix();
+
+	// perform gamma correction of the linear space colors so that they can do used directly without further thinking about Linear/sRGB color space conversions
+	// This should not be done lightly. This example in most cases only passes through hardcoded color values and uses them directly without applying any
+	// math to their values and so can be performed safely.
+	// When rendering the buildings we do apply math to these colors and as such the color space conversion has been taken care of appropriately
+	_clearColor = pvr::utils::convertLRGBtoSRGB(ClearColorLinearSpace);
+	_roadAreaColor = pvr::utils::convertLRGBtoSRGB(RoadAreaColorLinearSpace);
+	_motorwayColor = pvr::utils::convertLRGBtoSRGB(MotorwayColorLinearSpace);
+	_trunkRoadColor = pvr::utils::convertLRGBtoSRGB(TrunkRoadColorLinearSpace);
+	_primaryRoadColor = pvr::utils::convertLRGBtoSRGB(PrimaryRoadColorLinearSpace);
+	_secondaryRoadColor = pvr::utils::convertLRGBtoSRGB(SecondaryRoadColorLinearSpace);
+	_serviceRoadColor = pvr::utils::convertLRGBtoSRGB(ServiceRoadColorLinearSpace);
+	_otherRoadColor = pvr::utils::convertLRGBtoSRGB(OtherRoadColorLinearSpace);
+	_parkingColor = pvr::utils::convertLRGBtoSRGB(ParkingColorLinearSpace);
+	_outlineColor = pvr::utils::convertLRGBtoSRGB(OutlineColorLinearSpace);
 
 	return pvr::Result::Success;
 }
@@ -330,118 +373,103 @@ Used to initialize variables that are dependent on the rendering context (e.g. t
 ***********************************************************************************************************************/
 pvr::Result OGLESNavigation3D::initView()
 {
-	deviceResources.reset(new DeviceResources());
+	_deviceResources.reset(new DeviceResources());
 
-	// Acquire graphics context.
-	context = pvr::createEglContext();
-	context->init(getWindow(), getDisplay(), getDisplayAttributes());
+	// Acquire graphics _deviceResources->context.
+	_deviceResources->context = pvr::createEglContext();
+	_deviceResources->context->init(getWindow(), getDisplay(), getDisplayAttributes());
 	// Initialise uiRenderer
-	deviceResources->uiRenderer.init(getWidth(), getHeight(), isFullScreen());
+	_deviceResources->uiRenderer.init(getWidth(), getHeight(), isFullScreen(), getBackBufferColorspace() == pvr::ColorSpace::sRGB);
 
-	windowWidth = static_cast<uint32_t>(deviceResources->uiRenderer.getRenderingDimX());
-	windowHeight = static_cast<uint32_t>(deviceResources->uiRenderer.getRenderingDimY());
+	_windowWidth = static_cast<uint32_t>(_deviceResources->uiRenderer.getRenderingDimX());
+	_windowHeight = static_cast<uint32_t>(_deviceResources->uiRenderer.getRenderingDimY());
 
-	OSMdata->initTiles();
-	numRows = OSMdata->getNumRows();
-	numCols = OSMdata->getNumCols();
-	tileRenderingResources.resize(numCols);
+	Log(LogLevel::Information, "Initialising Tile Data");
 
-	for (uint32_t i = 0; i < numCols; ++i)
+	_OSMdata->initTiles();
+	_numRows = _OSMdata->getNumRows();
+	_numCols = _OSMdata->getNumCols();
+	_tileRenderingResources.resize(_numCols);
+
+	for (uint32_t i = 0; i < _numCols; ++i)
 	{
-		tileRenderingResources[i].resize(numRows);
+		_tileRenderingResources[i].resize(_numRows);
 	}
-	deviceResources->uiRenderer.getDefaultTitle()->setText("Navigation3D");
-	deviceResources->uiRenderer.getDefaultTitle()->commitUpdates();
+	_deviceResources->uiRenderer.getDefaultTitle()->setText("Navigation3D");
+	_deviceResources->uiRenderer.getDefaultTitle()->commitUpdates();
 
 	if (!loadTexture())
 	{
 		return pvr::Result::UnknownError;
 	}
 
-	deviceResources->text = deviceResources->uiRenderer.createText(deviceResources->font);
-	deviceResources->text->setColor(0.0f, 0.0f, 0.0f, 1.0f);
-	deviceResources->text->setScale(0.25f, 0.25f);
-	deviceResources->text->setPixelOffset(0.0f, static_cast<float>(-int32_t(windowHeight / 3)));
-	deviceResources->text->commitUpdates();
-
-	deviceResources->textMtxGroup = deviceResources->uiRenderer.createMatrixGroup();
-	deviceResources->textMtxGroup->add(deviceResources->text);
-	deviceResources->textMtxGroup->commitUpdates();
+	_deviceResources->text = _deviceResources->uiRenderer.createText();
+	_deviceResources->text->setColor(0.0f, 0.0f, 0.0f, 1.0f);
+	_deviceResources->text->setPixelOffset(0.0f, static_cast<float>(-int32_t(_windowHeight / 3)));
+	_deviceResources->text->commitUpdates();
 
 	createPrograms();
 	setUniforms();
 	createBuffers();
-	OSMdata->convertRoute(glm::dvec2(0), 0, 0, totalRouteDistance);
+	_OSMdata->convertRoute(glm::dvec2(0), 0, 0, _totalRouteDistance);
 
-	const glm::dvec2& camStartPosition = OSMdata->getRouteData()[routeIndex].point;
-	camera.setTargetPosition(glm::vec3(camStartPosition.x, 0.f, camStartPosition.y));
-	camera.setHeight(.2f);
-	camera.setDistanceFromTarget(.55f);
-	currentRoad = OSMdata->getRouteData()[routeIndex].name;
+	cameraInfo.translation.x = static_cast<float>(_OSMdata->getRouteData()[0].point.x);
+	cameraInfo.translation.z = static_cast<float>(_OSMdata->getRouteData()[0].point.y);
+	cameraInfo.translation.y = CamHeight;
 
+	const glm::dvec2& camStartPosition = _OSMdata->getRouteData()[routeIndex].point;
+	_camera.setTargetPosition(glm::vec3(camStartPosition.x, 0.f, camStartPosition.y));
+	_camera.setHeight(CamHeight);
+	_camera.setDistanceFromTarget(1.0f);
+	_currentRoad = _OSMdata->getRouteData()[routeIndex].name;
 	return pvr::Result::Success;
 }
 
 void OGLESNavigation3D::createPrograms()
 {
-	// Create pipeline objects
-	pvr::Stream::ptr_type vertShaderStream = getAssetStream("VertShader_ES2.vsh");
-	pvr::Stream::ptr_type fragShaderStream = getAssetStream("FragShader_ES2.fsh");
-
-	pvr::Stream::ptr_type aa_vertStream = getAssetStream("AA_VertShader_ES2.vsh");
-	pvr::Stream::ptr_type aa_fragStream = getAssetStream("AA_FragShader_ES2.fsh");
-
-	pvr::Stream::ptr_type perVertexLight_vertStream = getAssetStream("PerVertexLight_VertShader_ES2.vsh");
-	pvr::Stream::ptr_type planerShadow_vertStream = getAssetStream("PlanarShadow_VertShader_ES2.vsh");
-	pvr::Stream::ptr_type planerShadow_fragStream = getAssetStream("PlanarShadow_FragShader_ES2.fsh");
+	// Enable or disable gamma correction based on if it is automatically performed on the framebuffer or we need to do it in the shader.
+	const char* defines[] = { "GAMMA_CORRECTION" };
+	uint32_t numDefines = 1;
 
 	const char* attribNames[] = { "myVertex", "texCoord", "normal" };
 	const uint16_t attribIndicies[] = { 0, 1, 2 };
-	const GLuint shaders[] = {
-		pvr::utils::loadShader(*vertShaderStream, pvr::ShaderType::VertexShader, nullptr, 0), // 0
-		pvr::utils::loadShader(*fragShaderStream, pvr::ShaderType::FragmentShader, nullptr, 0), // 1
-		pvr::utils::loadShader(*aa_vertStream, pvr::ShaderType::VertexShader, nullptr, 0), // 2
-		pvr::utils::loadShader(*aa_fragStream, pvr::ShaderType::FragmentShader, nullptr, 0), // 3
-		pvr::utils::loadShader(*perVertexLight_vertStream, pvr::ShaderType::VertexShader, nullptr, 0), // 4
-		pvr::utils::loadShader(*planerShadow_vertStream, pvr::ShaderType::VertexShader, nullptr, 0), // 5
-		pvr::utils::loadShader(*planerShadow_fragStream, pvr::ShaderType::FragmentShader, nullptr, 0), // 6
-	};
 
 	// Road program
 	{
-		deviceResources->roadPipe.program = pvr::utils::createShaderProgram(&shaders[2], 2, attribNames, attribIndicies, ARRAY_SIZE(attribNames), nullptr);
-		deviceResources->roadPipe.uniformLocation[ShaderProgramRoad::UniformTransform] = gl::GetUniformLocation(deviceResources->roadPipe.program, "transform");
-		deviceResources->roadPipe.uniformLocation[ShaderProgramRoad::UniformColour] = gl::GetUniformLocation(deviceResources->roadPipe.program, "myColour");
+		_deviceResources->roadPipe.program = pvr::utils::createShaderProgram(*this, AAVertShaderSrcFile, AAFragShaderSrcFile, attribNames, attribIndicies, ARRAY_SIZE(attribNames));
+		_deviceResources->roadPipe.uniformLocation[ShaderProgramRoad::UniformTransform] = gl::GetUniformLocation(_deviceResources->roadPipe.program, "transform");
+		_deviceResources->roadPipe.uniformLocation[ShaderProgramRoad::UniformColor] = gl::GetUniformLocation(_deviceResources->roadPipe.program, "myColor");
 
-		gl::UseProgram(deviceResources->roadPipe.program);
-		gl::Uniform1i(gl::GetUniformLocation(deviceResources->roadPipe.program, "sTexture"), 0);
+		gl::UseProgram(_deviceResources->roadPipe.program);
+		gl::Uniform1i(gl::GetUniformLocation(_deviceResources->roadPipe.program, "sTexture"), 0);
 	}
 
 	// Fill program and Outline program
 	{
-		deviceResources->fillPipe.program = pvr::utils::createShaderProgram(shaders, 2, attribNames, attribIndicies, ARRAY_SIZE(attribNames), nullptr);
-		deviceResources->fillPipe.uniformLocation[ShaderProgramFill::UniformTransform] = gl::GetUniformLocation(deviceResources->fillPipe.program, "transform");
-		deviceResources->fillPipe.uniformLocation[ShaderProgramFill::UniformColour] = gl::GetUniformLocation(deviceResources->fillPipe.program, "myColour");
-		deviceResources->outlinePipe = deviceResources->fillPipe;
+		_deviceResources->fillPipe.program = pvr::utils::createShaderProgram(*this, VertShaderSrcFile, FragShaderSrcFile, attribNames, attribIndicies, ARRAY_SIZE(attribNames));
+		_deviceResources->fillPipe.uniformLocation[ShaderProgramFill::UniformTransform] = gl::GetUniformLocation(_deviceResources->fillPipe.program, "transform");
+		_deviceResources->fillPipe.uniformLocation[ShaderProgramFill::UniformColor] = gl::GetUniformLocation(_deviceResources->fillPipe.program, "myColor");
+		_deviceResources->outlinePipe = _deviceResources->fillPipe;
 	}
 
 	// Building program
 	{
-		const GLuint myShaders[] = { shaders[4], shaders[1] };
-		deviceResources->buildingPipe.program = pvr::utils::createShaderProgram(myShaders, 2, attribNames, attribIndicies, ARRAY_SIZE(attribNames), nullptr);
-		deviceResources->buildingPipe.uniformLocation[ShaderProgramBuilding::UniformTransform] = gl::GetUniformLocation(deviceResources->buildingPipe.program, "transform");
-		deviceResources->buildingPipe.uniformLocation[ShaderProgramBuilding::UniformViewMatrix] = gl::GetUniformLocation(deviceResources->buildingPipe.program, "viewMatrix");
-		deviceResources->buildingPipe.uniformLocation[ShaderProgramBuilding::UniformLightDir] = gl::GetUniformLocation(deviceResources->buildingPipe.program, "lightDir");
-		deviceResources->buildingPipe.uniformLocation[ShaderProgramBuilding::UniformColour] = gl::GetUniformLocation(deviceResources->buildingPipe.program, "myColour");
+		_deviceResources->buildingPipe.program =
+			pvr::utils::createShaderProgram(*this, PerVertexLightVertShaderSrcFile, FragShaderSrcFile, attribNames, attribIndicies, ARRAY_SIZE(attribNames), defines, numDefines);
+		_deviceResources->buildingPipe.uniformLocation[ShaderProgramBuilding::UniformTransform] = gl::GetUniformLocation(_deviceResources->buildingPipe.program, "transform");
+		_deviceResources->buildingPipe.uniformLocation[ShaderProgramBuilding::UniformViewMatrix] = gl::GetUniformLocation(_deviceResources->buildingPipe.program, "viewMatrix");
+		_deviceResources->buildingPipe.uniformLocation[ShaderProgramBuilding::UniformLightDir] = gl::GetUniformLocation(_deviceResources->buildingPipe.program, "lightDir");
+		_deviceResources->buildingPipe.uniformLocation[ShaderProgramBuilding::UniformColor] = gl::GetUniformLocation(_deviceResources->buildingPipe.program, "myColor");
 	}
 
 	// Planar shadow program
 	{
-		deviceResources->planarShadowPipe.program = pvr::utils::createShaderProgram(&shaders[5], 2, attribNames, attribIndicies, ARRAY_SIZE(attribNames), nullptr);
-		deviceResources->planarShadowPipe.uniformLocation[ShaderProgramPlanerShadow::UniformTransform] =
-			gl::GetUniformLocation(deviceResources->planarShadowPipe.program, "transform");
-		deviceResources->planarShadowPipe.uniformLocation[ShaderProgramPlanerShadow::UniformShadowMatrix] =
-			gl::GetUniformLocation(deviceResources->planarShadowPipe.program, "shadowMatrix");
+		_deviceResources->planarShadowPipe.program =
+			pvr::utils::createShaderProgram(*this, PlanarShadowVertShaderSrcFile, PlanarShadowFragShaderSrcFile, attribNames, attribIndicies, ARRAY_SIZE(attribNames));
+		_deviceResources->planarShadowPipe.uniformLocation[ShaderProgramPlanerShadow::UniformTransform] =
+			gl::GetUniformLocation(_deviceResources->planarShadowPipe.program, "transform");
+		_deviceResources->planarShadowPipe.uniformLocation[ShaderProgramPlanerShadow::UniformShadowMatrix] =
+			gl::GetUniformLocation(_deviceResources->planarShadowPipe.program, "shadowMatrix");
 	}
 }
 
@@ -486,12 +514,12 @@ void OGLESNavigation3D::setPipelineStates(PipelineState pipelineState)
 bool OGLESNavigation3D::loadTexture()
 {
 	/// Road Texture
-	pvr::Texture tex = pvr::assets::textureLoad(getAssetStream(RoadTexFile), pvr::TextureFileFormat::PVR);
+	pvr::Texture tex = pvr::textureLoad(getAssetStream(RoadTexFile), pvr::TextureFileFormat::PVR);
 
-	pvr::utils::TextureUploadResults uploadResultRoadTex = pvr::utils::textureUpload(tex, context->getApiVersion() == pvr::Api::OpenGLES2, true);
+	pvr::utils::TextureUploadResults uploadResultRoadTex = pvr::utils::textureUpload(tex, _deviceResources->context->getApiVersion() == pvr::Api::OpenGLES2, true);
 
-	deviceResources->roadTex = uploadResultRoadTex.image;
-	gl::BindTexture(GL_TEXTURE_2D, deviceResources->roadTex);
+	_deviceResources->roadTex = uploadResultRoadTex.image;
+	gl::BindTexture(GL_TEXTURE_2D, _deviceResources->roadTex);
 	gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -499,17 +527,15 @@ bool OGLESNavigation3D::loadTexture()
 	//	gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT)
 
 	/// Font Texture
-	tex = pvr::assets::textureLoad(getAssetStream(FontFile), pvr::TextureFileFormat::PVR);
-	pvr::utils::TextureUploadResults uploadResulFontTex = pvr::utils::textureUpload(tex, context->getApiVersion() == pvr::Api::OpenGLES2, true);
-	deviceResources->fontTex = uploadResulFontTex.image;
-	gl::BindTexture(GL_TEXTURE_2D, deviceResources->fontTex);
+	tex = pvr::textureLoad(getAssetStream(FontFile), pvr::TextureFileFormat::PVR);
+	pvr::utils::TextureUploadResults uploadResulFontTex = pvr::utils::textureUpload(tex, _deviceResources->context->getApiVersion() == pvr::Api::OpenGLES2, true);
+	_deviceResources->fontTex = uploadResulFontTex.image;
+	gl::BindTexture(GL_TEXTURE_2D, _deviceResources->fontTex);
 	gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-	deviceResources->font = deviceResources->uiRenderer.createFont(deviceResources->fontTex, tex);
-	return deviceResources->font.isValid();
+	return true;
 }
 
 /*!*********************************************************************************************************************
@@ -517,10 +543,8 @@ bool OGLESNavigation3D::loadTexture()
 ***********************************************************************************************************************/
 void OGLESNavigation3D::setUniforms()
 {
-	ui_orthoMtx = pvr::math::ortho(context->getApiVersion(), 0.0f, float(windowWidth), 0.0f, float(windowHeight));
-
-	perspectiveMatrix = deviceResources->uiRenderer.getScreenRotation() *
-		pvr::math::perspectiveFov(context->getApiVersion(), glm::radians(45.0f), float(windowWidth), float(windowHeight), 0.01f, 3.f);
+	_perspectiveMatrix = _deviceResources->uiRenderer.getScreenRotation() *
+		pvr::math::perspectiveFov(_deviceResources->context->getApiVersion(), glm::radians(45.0f), float(_windowWidth), float(_windowHeight), 0.01f, 5.f);
 }
 
 /*!*********************************************************************************************************************
@@ -531,16 +555,16 @@ void OGLESNavigation3D::createBuffers()
 	uint32_t col = 0;
 	uint32_t row = 0;
 
-	for (auto& tileCol : OSMdata->getTiles())
+	for (auto& tileCol : _OSMdata->getTiles())
 	{
 		for (Tile& tile : tileCol)
 		{
-			tileRenderingResources[col][row].reset(new TileRenderingResources());
-			TileRenderingResources& tileResource = *tileRenderingResources[col][row];
+			_tileRenderingResources[col][row].reset(new TileRenderingResources());
+			TileRenderingResources& tileResource = *_tileRenderingResources[col][row];
 
 			// Set the min and max coordinates for the tile
-			tile.screenMin = remap(tile.min, OSMdata->getTiles()[0][0].min, OSMdata->getTiles()[0][0].max, glm::dvec2(-5, -5), glm::dvec2(5, 5));
-			tile.screenMax = remap(tile.max, OSMdata->getTiles()[0][0].min, OSMdata->getTiles()[0][0].max, glm::dvec2(-5, -5), glm::dvec2(5, 5));
+			tile.screenMin = remap(tile.min, _OSMdata->getTiles()[0][0].min, _OSMdata->getTiles()[0][0].max, glm::dvec2(-5, -5), glm::dvec2(5, 5));
+			tile.screenMax = remap(tile.max, _OSMdata->getTiles()[0][0].min, _OSMdata->getTiles()[0][0].max, glm::dvec2(-5, -5), glm::dvec2(5, 5));
 
 			// Create vertices for tile
 			for (auto nodeIterator = tile.nodes.begin(); nodeIterator != tile.nodes.end(); ++nodeIterator)
@@ -548,12 +572,11 @@ void OGLESNavigation3D::createBuffers()
 				nodeIterator->second.index = static_cast<uint32_t>(tile.vertices.size());
 
 				glm::vec2 remappedPos =
-					glm::vec2(remap(nodeIterator->second.coords, OSMdata->getTiles()[0][0].min, OSMdata->getTiles()[0][0].max, glm::dvec2(-5, -5), glm::dvec2(5, 5)));
+					glm::vec2(remap(nodeIterator->second.coords, _OSMdata->getTiles()[0][0].min, _OSMdata->getTiles()[0][0].max, glm::dvec2(-5, -5), glm::dvec2(5, 5)));
 				glm::vec3 vertexPos = glm::vec3(remappedPos.x, nodeIterator->second.height, remappedPos.y);
 
 				Tile::VertexData vertData(vertexPos, nodeIterator->second.texCoords);
-				//	Log("Vertex data pos(%f, %f, %f)   tex(%f, %f)   normal(%f, %f, %f)", vertData.pos.x, vertData.pos.y, vertData.pos.z, vertData.texCoord.x, vertData.texCoord.y,
-				//	vertData.normal.x, vertData.normal.y, vertData.normal.z);
+
 				tile.vertices.push_back(vertData);
 			}
 
@@ -584,14 +607,14 @@ void OGLESNavigation3D::createBuffers()
 
 			// Create vertex and index buffers
 			// Interleaved vertex buffer (vertex position + texCoord)
-			gl::GenBuffers(1, &tileRenderingResources[col][row]->vbo);
-			const uint32_t vboSize = (uint32_t)(tile.vertices.size() * sizeof(tile.vertices[0]));
-			gl::BindBuffer(GL_ARRAY_BUFFER, tileRenderingResources[col][row]->vbo);
+			gl::GenBuffers(1, &_tileRenderingResources[col][row]->vbo);
+			const uint32_t vboSize = static_cast<uint32_t>(tile.vertices.size() * sizeof(tile.vertices[0]));
+			gl::BindBuffer(GL_ARRAY_BUFFER, _tileRenderingResources[col][row]->vbo);
 			gl::BufferData(GL_ARRAY_BUFFER, vboSize, tile.vertices.data(), GL_STATIC_DRAW);
 
-			const uint32_t iboSize = (uint32_t)(tile.indices.size() * sizeof(tile.indices[0]));
-			gl::GenBuffers(1, &tileRenderingResources[col][row]->ibo);
-			gl::BindBuffer(GL_ELEMENT_ARRAY_BUFFER, tileRenderingResources[col][row]->ibo);
+			const uint32_t iboSize = static_cast<uint32_t>(tile.indices.size() * sizeof(tile.indices[0]));
+			gl::GenBuffers(1, &_tileRenderingResources[col][row]->ibo);
+			gl::BindBuffer(GL_ELEMENT_ARRAY_BUFFER, _tileRenderingResources[col][row]->ibo);
 			gl::BufferData(GL_ELEMENT_ARRAY_BUFFER, iboSize, tile.indices.data(), GL_STATIC_DRAW);
 			row++;
 		}
@@ -618,7 +641,7 @@ pvr::Result OGLESNavigation3D::renderFrame()
 		pvr::utils::takeScreenshot(this->getScreenshotFileName(), this->getWidth(), this->getHeight());
 	}
 
-	context->swapBuffers();
+	_deviceResources->context->swapBuffers();
 	return pvr::Result::Success;
 }
 
@@ -627,25 +650,27 @@ pvr::Result OGLESNavigation3D::renderFrame()
 ***********************************************************************************************************************/
 void OGLESNavigation3D::updateAnimation()
 {
-	if (OSMdata->getRouteData().size() == 0)
+	if (_OSMdata->getRouteData().size() == 0)
 	{
 		return;
 	}
+
+	static const float rotationOffset = -90.f;
 	static bool turning = false;
 	static float animTime = 0.0f;
 	static float rotateTime = 0.0f;
 	static float currentRotationTime = 0.0f;
-	static float currentRotation = static_cast<float>(OSMdata->getRouteData()[routeIndex].rotation);
-	static glm::dvec2 camStartPosition = OSMdata->getRouteData()[routeIndex].point;
+	static float currentRotation = static_cast<float>(_OSMdata->getRouteData()[routeIndex].rotation);
+	static glm::dvec2 camStartPosition = _OSMdata->getRouteData()[routeIndex].point;
 	static glm::dvec2 camEndPosition;
 	static glm::dvec2 camLerpPos = glm::dvec2(0.0f);
 	static bool destinationReached = false;
 	static float routeRestartTime = 0.;
 	float dt = float(getFrameTime());
-	camEndPosition = OSMdata->getRouteData()[routeIndex + 1].point;
-	keyFrameTime = calculateRouteKeyFrameTime(camStartPosition, camEndPosition);
+	camEndPosition = _OSMdata->getRouteData()[routeIndex + 1].point;
+	const uint32_t lastRouteIndex = routeIndex;
+	_keyFrameTime = calculateRouteKeyFrameTime(camStartPosition, camEndPosition);
 	// Do the transaltion if the camera is not turning
-
 	if (destinationReached && routeRestartTime >= 2000)
 	{
 		destinationReached = false;
@@ -660,30 +685,31 @@ void OGLESNavigation3D::updateAnimation()
 	if (!turning)
 	{
 		// Interpolate between two positions.
-		camLerpPos = glm::mix(camStartPosition, camEndPosition, animTime / keyFrameTime);
+		camLerpPos = glm::mix(camStartPosition, camEndPosition, animTime / _keyFrameTime);
 
-		cameraTranslation = glm::vec3(camLerpPos.x, CamHeight, camLerpPos.y);
-		camera.setTargetPosition(glm::vec3(camLerpPos.x, 0.0f, camLerpPos.y));
-		camera.setTargetLookAngle(currentRotation);
+		cameraInfo.translation = glm::vec3(camLerpPos.x, CamHeight, camLerpPos.y);
+		_camera.setTargetPosition(glm::vec3(camLerpPos.x, 0.0f, camLerpPos.y));
+		_camera.setTargetLookAngle(currentRotation + rotationOffset);
 	}
-	if (animTime >= keyFrameTime)
+	if (animTime >= _keyFrameTime)
 	{
-		const float r1 = static_cast<float>(OSMdata->getRouteData()[routeIndex].rotation);
-		const float r2 = static_cast<float>(OSMdata->getRouteData()[routeIndex + 1].rotation);
+		const float r1 = static_cast<float>(_OSMdata->getRouteData()[routeIndex].rotation);
+		const float r2 = static_cast<float>(_OSMdata->getRouteData()[routeIndex + 1].rotation);
+
 		if ((!turning && fabs(r2 - r1) > 3.f) || (turning))
 		{
 			float diff = r2 - r1;
-			float diffAbs = fabs(diff);
-			if (diffAbs > 180.f)
+			float absDiff = fabs(diff);
+			if (absDiff > 180.f)
 			{
 				if (diff > 0.f) // if the difference is positive angle then do negative rotation
-					diff = -(360.f - diffAbs);
+					diff = -(360.f - absDiff);
 				else // else do a positive rotation
-					diff = (360.f - diffAbs);
+					diff = (360.f - absDiff);
 			}
-			diffAbs = fabs(diff);
-			if (rotateTime == 0.0f)
-				rotateTime = 18.f * diffAbs; // 18ms for an angle * angle diff
+			absDiff = fabs(diff); // get the abs
+			rotateTime = 18.f * absDiff; // 18ms for an angle * angle diff
+
 			currentRotationTime += dt;
 			currentRotationTime = glm::clamp(currentRotationTime, 0.0f, rotateTime);
 			if (currentRotationTime >= rotateTime)
@@ -694,33 +720,37 @@ void OGLESNavigation3D::updateAnimation()
 			{
 				turning = true;
 				currentRotation = glm::mix(r1, r1 + diff, currentRotationTime / rotateTime);
-				camera.setTargetLookAngle(currentRotation);
+				_camera.setTargetLookAngle(currentRotation + rotationOffset);
 			}
 		}
 	}
-	if (animTime >= keyFrameTime && !turning)
+	if (animTime >= _keyFrameTime && !turning)
 	{
 		turning = false;
 		currentRotationTime = 0.0f;
 		rotateTime = 0.0f;
 		// Iterate through the route
-		if (++routeIndex == OSMdata->getRouteData().size() - 1)
+		if (++routeIndex == _OSMdata->getRouteData().size() - 1)
 		{
-			currentRotation = static_cast<float>(OSMdata->getRouteData()[0].rotation);
+			currentRotation = static_cast<float>(_OSMdata->getRouteData()[0].rotation);
 			routeIndex = 0;
 			destinationReached = true;
-			routeRestartTime = 0.0f;
+			routeRestartTime = 0.f;
 		}
 		else
 		{
-			currentRotation = static_cast<float>(OSMdata->getRouteData()[routeIndex].rotation);
+			currentRotation = static_cast<float>(_OSMdata->getRouteData()[routeIndex].rotation);
 		}
-		currentRoad = OSMdata->getRouteData()[routeIndex].name;
 		animTime = 0.0f;
 		// Reset the route.
-		camStartPosition = OSMdata->getRouteData()[routeIndex].point;
+		camStartPosition = _OSMdata->getRouteData()[routeIndex].point;
 	}
-	viewMatrix = camera.getViewMatrix();
+	if (lastRouteIndex != routeIndex)
+	{
+		_currentRoad = _OSMdata->getRouteData()[routeIndex].name;
+	}
+	_viewMatrix = _camera.getViewMatrix();
+
 	animTime += dt;
 }
 
@@ -729,8 +759,8 @@ void OGLESNavigation3D::updateAnimation()
 ***********************************************************************************************************************/
 void OGLESNavigation3D::calculateTransform()
 {
-	lightDir = glm::normalize(glm::mat3(viewMatrix) * glm::vec3(0.25f, -2.4f, -1.15f));
-	viewProjMatrix = perspectiveMatrix * viewMatrix;
+	_lightDir = glm::normalize(glm::mat3(_viewMatrix) * glm::vec3(0.25f, -2.4f, -1.15f));
+	_viewProjMatrix = _perspectiveMatrix * _viewMatrix;
 }
 
 /*!*********************************************************************************************************************
@@ -738,31 +768,29 @@ void OGLESNavigation3D::calculateTransform()
 ***********************************************************************************************************************/
 void OGLESNavigation3D::executeCommands()
 {
-	gl::ClearColor(ClearColor.r, ClearColor.g, ClearColor.b, ClearColor.a);
+	gl::ClearColor(_clearColor.r, _clearColor.g, _clearColor.b, _clearColor.a);
 	gl::Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-	for (uint32_t i = 0; i < numCols; ++i)
+	for (uint32_t i = 0; i < _numCols; ++i)
 	{
-		for (uint32_t j = 0; j < numRows; ++j)
+		for (uint32_t j = 0; j < _numRows; ++j)
 		{
 			// Only queue up commands if the tile is visible.
-			if (InFrustum(OSMdata->getTiles()[i][j].screenMin, OSMdata->getTiles()[i][j].screenMax))
+			if (inFrustum(_OSMdata->getTiles()[i][j].screenMin, _OSMdata->getTiles()[i][j].screenMax))
 			{
-				executeCommands(*tileRenderingResources[i][j]);
+				executeCommands(*_tileRenderingResources[i][j]);
 			}
 		}
 	}
 
-	deviceResources->text->setText(currentRoad);
-	deviceResources->text->commitUpdates();
-	deviceResources->textMtxGroup->setViewProjection(ui_orthoMtx);
-	deviceResources->textMtxGroup->commitUpdates();
+	_deviceResources->text->setText(_currentRoad);
+	_deviceResources->text->commitUpdates();
 
 	// Render UI elements.
-	deviceResources->uiRenderer.beginRendering();
-	deviceResources->textMtxGroup->render();
-	deviceResources->uiRenderer.getDefaultTitle()->render();
-	deviceResources->uiRenderer.getSdkLogo()->render();
-	deviceResources->uiRenderer.endRendering();
+	_deviceResources->uiRenderer.beginRendering();
+	_deviceResources->text->render();
+	_deviceResources->uiRenderer.getDefaultTitle()->render();
+	_deviceResources->uiRenderer.getSdkLogo()->render();
+	_deviceResources->uiRenderer.endRendering();
 }
 
 /*!*********************************************************************************************************************
@@ -770,7 +798,7 @@ void OGLESNavigation3D::executeCommands()
 ***********************************************************************************************************************/
 void OGLESNavigation3D::calculateClipPlanes()
 {
-	pvr::math::getFrustumPlanes(context->getApiVersion(), viewProjMatrix, viewFrustum);
+	pvr::math::getFrustumPlanes(_deviceResources->context->getApiVersion(), _viewProjMatrix, _viewFrustum);
 }
 
 /*!*********************************************************************************************************************
@@ -780,21 +808,21 @@ void OGLESNavigation3D::calculateClipPlanes()
 \brief	Tests whether a 2D bounding box is intersected or enclosed by a view frustum.
 Only the near, far, left and right planes of the view frustum are taken into consideration to optimize the intersection test.
 ***********************************************************************************************************************/
-bool OGLESNavigation3D::InFrustum(glm::vec2 min, glm::vec2 max)
+bool OGLESNavigation3D::inFrustum(glm::vec2 min, glm::vec2 max)
 {
 	// Test the axis-aligned bounding box against each frustum plane,
 	// cull if all points are outside of one the view frustum planes.
 	pvr::math::AxisAlignedBox aabb;
 	aabb.setMinMax(glm::vec3(min.x, 0.f, min.y), glm::vec3(max.x, 5.0f, max.y));
-	return pvr::math::aabbInFrustum(aabb, viewFrustum);
+	return pvr::math::aabbInFrustum(aabb, _viewFrustum);
 }
 template<class ShaderProgram>
 void OGLESNavigation3D::bindProgram(const ShaderProgram& program)
 {
-	// if (program.program != glesStates.boundProgram)
+	if (program.program != _glesStates.boundProgram)
 	{
 		gl::UseProgram(program.program);
-		glesStates.boundProgram = program.program;
+		_glesStates.boundProgram = program.program;
 	}
 }
 
@@ -831,33 +859,33 @@ void OGLESNavigation3D::executeCommands(const TileRenderingResources& tileRes)
 	const uint32_t innerNum = tileRes.innerNum;
 	if (parkingNum > 0)
 	{
-		bindProgram(deviceResources->fillPipe);
-		gl::UniformMatrix4fv(deviceResources->fillPipe.uniformLocation[ShaderProgramFill::Uniform::UniformTransform], 1, false, glm::value_ptr(viewProjMatrix));
-		gl::Uniform4fv(deviceResources->fillPipe.uniformLocation[ShaderProgramFill::Uniform::UniformColour], 1, glm::value_ptr(ParkingColourUniform));
+		bindProgram(_deviceResources->fillPipe);
+		gl::UniformMatrix4fv(_deviceResources->fillPipe.uniformLocation[ShaderProgramFill::Uniform::UniformTransform], 1, false, glm::value_ptr(_viewProjMatrix));
+		gl::Uniform4fv(_deviceResources->fillPipe.uniformLocation[ShaderProgramFill::Uniform::UniformColor], 1, glm::value_ptr(_parkingColor));
 		gl::DrawElements(GL_TRIANGLES, parkingNum, GL_UNSIGNED_INT, nullptr);
 		offset += parkingNum * sizeof(uint32_t);
 	}
 	if (areaNum > 0)
 	{
-		const ShaderProgramFill& program = deviceResources->fillPipe;
+		const ShaderProgramFill& program = _deviceResources->fillPipe;
 		bindProgram(program);
-		gl::UniformMatrix4fv(program.uniformLocation[ShaderProgramFill::Uniform::UniformTransform], 1, false, glm::value_ptr(viewProjMatrix));
-		gl::Uniform4fv(program.uniformLocation[ShaderProgramFill::Uniform::UniformColour], 1, glm::value_ptr(RoadAreaColourUniform));
+		gl::UniformMatrix4fv(program.uniformLocation[ShaderProgramFill::Uniform::UniformTransform], 1, false, glm::value_ptr(_viewProjMatrix));
+		gl::Uniform4fv(program.uniformLocation[ShaderProgramFill::Uniform::UniformColor], 1, glm::value_ptr(_roadAreaColor));
 		gl::DrawElements(GL_TRIANGLES, areaNum, GL_UNSIGNED_INT, reinterpret_cast<const void*>(static_cast<uintptr_t>(offset)));
 		offset += areaNum * sizeof(uint32_t);
 	}
 	if (roadAreaOutlineNum > 0)
 	{
-		const ShaderProgramFill& program = deviceResources->outlinePipe;
+		const ShaderProgramFill& program = _deviceResources->outlinePipe;
 		bindProgram(program);
-		gl::UniformMatrix4fv(program.uniformLocation[ShaderProgramFill::Uniform::UniformTransform], 1, false, glm::value_ptr(viewProjMatrix));
-		gl::Uniform4fv(program.uniformLocation[ShaderProgramFill::Uniform::UniformColour], 1, glm::value_ptr(OutlineColourUniform));
+		gl::UniformMatrix4fv(program.uniformLocation[ShaderProgramFill::Uniform::UniformTransform], 1, false, glm::value_ptr(_viewProjMatrix));
+		gl::Uniform4fv(program.uniformLocation[ShaderProgramFill::Uniform::UniformColor], 1, glm::value_ptr(_outlineColor));
 		gl::DrawElements(GL_LINES, roadAreaOutlineNum, GL_UNSIGNED_INT, reinterpret_cast<const void*>(static_cast<uintptr_t>(offset)));
 		offset += roadAreaOutlineNum * sizeof(uint32_t);
 	}
 
 	// Draw the roads
-	const ShaderProgramRoad& program = deviceResources->roadPipe;
+	const ShaderProgramRoad& program = _deviceResources->roadPipe;
 	gl::Enable(GL_BLEND);
 	// Classic Alpha blending, but preserving framebuffer alpha to avoid artifacts on compositors that actually use the alpha value.
 	gl::BlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ZERO, GL_ONE);
@@ -865,11 +893,11 @@ void OGLESNavigation3D::executeCommands(const TileRenderingResources& tileRes)
 
 	// Motorways
 	bindProgram(program);
-	gl::UniformMatrix4fv(program.uniformLocation[ShaderProgramRoad::Uniform::UniformTransform], 1, false, glm::value_ptr(viewProjMatrix));
-	bindTexture(0, deviceResources->roadTex);
+	gl::UniformMatrix4fv(program.uniformLocation[ShaderProgramRoad::Uniform::UniformTransform], 1, false, glm::value_ptr(_viewProjMatrix));
+	bindTexture(0, _deviceResources->roadTex);
 	if (motorwayNum > 0)
 	{
-		gl::Uniform4fv(program.uniformLocation[ShaderProgramRoad::UniformColour], 1, glm::value_ptr(MotorwayColour));
+		gl::Uniform4fv(program.uniformLocation[ShaderProgramRoad::UniformColor], 1, glm::value_ptr(_motorwayColor));
 		gl::DrawElements(GL_TRIANGLES, motorwayNum, GL_UNSIGNED_INT, reinterpret_cast<const void*>(static_cast<uintptr_t>(offset)));
 		offset += motorwayNum * sizeof(uint32_t);
 	}
@@ -877,7 +905,7 @@ void OGLESNavigation3D::executeCommands(const TileRenderingResources& tileRes)
 	// Trunk roads
 	if (trunkRoadNum > 0)
 	{
-		gl::Uniform4fv(program.uniformLocation[ShaderProgramRoad::UniformColour], 1, glm::value_ptr(TrunkRoadColour));
+		gl::Uniform4fv(program.uniformLocation[ShaderProgramRoad::UniformColor], 1, glm::value_ptr(_trunkRoadColor));
 		gl::DrawElements(GL_TRIANGLES, trunkRoadNum, GL_UNSIGNED_INT, reinterpret_cast<const void*>(static_cast<uintptr_t>(offset)));
 		offset += trunkRoadNum * sizeof(uint32_t);
 	}
@@ -885,7 +913,7 @@ void OGLESNavigation3D::executeCommands(const TileRenderingResources& tileRes)
 	// Primary roads
 	if (primaryRoadNum > 0)
 	{
-		gl::Uniform4fv(program.uniformLocation[ShaderProgramRoad::UniformColour], 1, glm::value_ptr(PrimaryRoadColour));
+		gl::Uniform4fv(program.uniformLocation[ShaderProgramRoad::UniformColor], 1, glm::value_ptr(_primaryRoadColor));
 		gl::DrawElements(GL_TRIANGLES, primaryRoadNum, GL_UNSIGNED_INT, reinterpret_cast<const void*>(static_cast<uintptr_t>(offset)));
 		offset += primaryRoadNum * sizeof(uint32_t);
 	}
@@ -893,14 +921,14 @@ void OGLESNavigation3D::executeCommands(const TileRenderingResources& tileRes)
 	// Road roads
 	if (secondaryRoadNum > 0)
 	{
-		gl::Uniform4fv(program.uniformLocation[ShaderProgramRoad::UniformColour], 1, glm::value_ptr(SecondaryRoadColour));
+		gl::Uniform4fv(program.uniformLocation[ShaderProgramRoad::UniformColor], 1, glm::value_ptr(_secondaryRoadColor));
 		gl::DrawElements(GL_TRIANGLES, secondaryRoadNum, GL_UNSIGNED_INT, reinterpret_cast<const void*>(static_cast<uintptr_t>(offset)));
 		offset += secondaryRoadNum * sizeof(uint32_t);
 	}
 	// Service Roads
 	if (serviceRoadNum > 0)
 	{
-		gl::Uniform4fv(program.uniformLocation[ShaderProgramRoad::UniformColour], 1, glm::value_ptr(ServiceRoadColour));
+		gl::Uniform4fv(program.uniformLocation[ShaderProgramRoad::UniformColor], 1, glm::value_ptr(_serviceRoadColor));
 		gl::DrawElements(GL_TRIANGLES, serviceRoadNum, GL_UNSIGNED_INT, reinterpret_cast<const void*>(static_cast<uintptr_t>(offset)));
 		offset += serviceRoadNum * sizeof(uint32_t);
 	}
@@ -908,20 +936,20 @@ void OGLESNavigation3D::executeCommands(const TileRenderingResources& tileRes)
 	// Other (any other roads)
 	if (otherRoadNum > 0)
 	{
-		gl::Uniform4fv(program.uniformLocation[ShaderProgramRoad::UniformColour], 1, glm::value_ptr(OtherRoadColour));
+		gl::Uniform4fv(program.uniformLocation[ShaderProgramRoad::UniformColor], 1, glm::value_ptr(_otherRoadColor));
 		gl::DrawElements(GL_TRIANGLES, otherRoadNum, GL_UNSIGNED_INT, reinterpret_cast<const void*>(static_cast<uintptr_t>(offset)));
 		offset += otherRoadNum * sizeof(uint32_t);
 	}
 	// Draw the buildings & shadows
 	if (buildNum > 0)
 	{
-		const ShaderProgramBuilding& buildingProgram = deviceResources->buildingPipe;
+		const ShaderProgramBuilding& buildingProgram = _deviceResources->buildingPipe;
 		bindProgram(buildingProgram);
 
-		gl::UniformMatrix4fv(buildingProgram.uniformLocation[ShaderProgramBuilding::Uniform::UniformTransform], 1, false, glm::value_ptr(viewProjMatrix));
-		gl::UniformMatrix4fv(buildingProgram.uniformLocation[ShaderProgramBuilding::Uniform::UniformViewMatrix], 1, false, glm::value_ptr(viewMatrix));
-		gl::Uniform3fv(buildingProgram.uniformLocation[ShaderProgramBuilding::Uniform::UniformLightDir], 1, glm::value_ptr(lightDir));
-		gl::Uniform4fv(buildingProgram.uniformLocation[ShaderProgramBuilding::Uniform::UniformColour], 1, glm::value_ptr(BuildColourUniform));
+		gl::UniformMatrix4fv(buildingProgram.uniformLocation[ShaderProgramBuilding::Uniform::UniformTransform], 1, false, glm::value_ptr(_viewProjMatrix));
+		gl::UniformMatrix4fv(buildingProgram.uniformLocation[ShaderProgramBuilding::Uniform::UniformViewMatrix], 1, false, glm::value_ptr(_viewMatrix));
+		gl::Uniform3fv(buildingProgram.uniformLocation[ShaderProgramBuilding::Uniform::UniformLightDir], 1, glm::value_ptr(_lightDir));
+		gl::Uniform4fv(buildingProgram.uniformLocation[ShaderProgramBuilding::Uniform::UniformColor], 1, glm::value_ptr(BuildingColorLinearSpace));
 
 		gl::DrawElements(GL_TRIANGLES, buildNum, GL_UNSIGNED_INT, reinterpret_cast<const void*>(static_cast<uintptr_t>(offset)));
 
@@ -933,10 +961,10 @@ void OGLESNavigation3D::executeCommands(const TileRenderingResources& tileRes)
 		gl::StencilOp(GL_KEEP, GL_KEEP, GL_INCR_WRAP);
 		gl::Enable(GL_STENCIL_TEST);
 		gl::BlendEquation(GL_FUNC_ADD);
-		const ShaderProgramPlanerShadow& shadowProgram = deviceResources->planarShadowPipe;
+		const ShaderProgramPlanerShadow& shadowProgram = _deviceResources->planarShadowPipe;
 		bindProgram(shadowProgram);
-		gl::UniformMatrix4fv(shadowProgram.uniformLocation[ShaderProgramPlanerShadow::Uniform::UniformTransform], 1, false, glm::value_ptr(viewProjMatrix));
-		gl::UniformMatrix4fv(shadowProgram.uniformLocation[ShaderProgramPlanerShadow::Uniform::UniformShadowMatrix], 1, false, glm::value_ptr(shadowMatrix));
+		gl::UniformMatrix4fv(shadowProgram.uniformLocation[ShaderProgramPlanerShadow::Uniform::UniformTransform], 1, false, glm::value_ptr(_viewProjMatrix));
+		gl::UniformMatrix4fv(shadowProgram.uniformLocation[ShaderProgramPlanerShadow::Uniform::UniformShadowMatrix], 1, false, glm::value_ptr(_shadowMatrix));
 
 		gl::DrawElements(GL_TRIANGLES, buildNum, GL_UNSIGNED_INT, reinterpret_cast<const void*>(static_cast<uintptr_t>(offset)));
 		offset += buildNum * sizeof(uint32_t);
@@ -946,24 +974,14 @@ void OGLESNavigation3D::executeCommands(const TileRenderingResources& tileRes)
 
 	if (innerNum > 0)
 	{
-		const ShaderProgramFill& program = deviceResources->fillPipe;
+		const ShaderProgramFill& program = _deviceResources->fillPipe;
 		bindProgram(program);
-		gl::UniformMatrix4fv(program.uniformLocation[ShaderProgramFill::Uniform::UniformTransform], 1, false, glm::value_ptr(viewProjMatrix));
+		gl::UniformMatrix4fv(program.uniformLocation[ShaderProgramFill::Uniform::UniformTransform], 1, false, glm::value_ptr(_viewProjMatrix));
 
-		gl::Uniform4fv(program.uniformLocation[ShaderProgramFill::Uniform::UniformColour], 1, glm::value_ptr(ClearColor));
+		gl::Uniform4fv(program.uniformLocation[ShaderProgramFill::Uniform::UniformColor], 1, glm::value_ptr(_clearColor));
 		gl::DrawElements(GL_TRIANGLES, innerNum, GL_UNSIGNED_INT, reinterpret_cast<const void*>(static_cast<uintptr_t>(offset)));
 		offset += innerNum * sizeof(uint32_t);
 	}
-}
-
-/*!*********************************************************************************************************************
-\return	auto ptr of the demo supplied by the user
-\brief	This function must be implemented by the user of the shell. The user should return its PVRShell object defining
-the behaviour of the application.
-***********************************************************************************************************************/
-std::unique_ptr<pvr::Shell> pvr::newDemo()
-{
-	return std::unique_ptr<pvr::Shell>(new OGLESNavigation3D());
 }
 
 /*!*********************************************************************************************************************
@@ -973,7 +991,7 @@ std::unique_ptr<pvr::Shell> pvr::newDemo()
 pvr::Result OGLESNavigation3D::releaseView()
 {
 	// Clean up tile rendering resource data.
-	for (auto& resourceCol : tileRenderingResources)
+	for (auto& resourceCol : _tileRenderingResources)
 	{
 		for (auto& resource : resourceCol)
 		{
@@ -981,12 +999,10 @@ pvr::Result OGLESNavigation3D::releaseView()
 		}
 	}
 
-	OSMdata.reset();
+	_OSMdata.reset();
 
 	// Reset context and associated resources.
-	deviceResources.reset(0);
-	if (context.get())
-		context->release();
+	_deviceResources.reset(0);
 
 	return pvr::Result::Success;
 }
@@ -999,4 +1015,11 @@ If the rendering context is lost, quitApplication() will not be called.
 pvr::Result OGLESNavigation3D::quitApplication()
 {
 	return pvr::Result::Success;
+}
+
+/// <summary>This function must be implemented by the user of the shell. The user should return its pvr::Shell object defining the behaviour of the application.</summary>
+/// <returns>Return a unique ptr to the demo supplied by the user.</returns>
+std::unique_ptr<pvr::Shell> pvr::newDemo()
+{
+	return std::unique_ptr<pvr::Shell>(new OGLESNavigation3D());
 }

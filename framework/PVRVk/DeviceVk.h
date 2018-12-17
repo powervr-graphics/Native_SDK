@@ -35,7 +35,7 @@ class Device_ : public PhysicalDeviceObjectHandle<VkDevice>, public EmbeddedRefC
 public:
 	DECLARE_NO_COPY_SEMANTICS(Device_)
 
-	/// <summary> Wait on the host for the completion of outstanding queue operations
+	/// <summary>Wait on the host for the completion of outstanding queue operations
 	/// for all queues on this device This is equivalent to calling waitIdle for all
 	/// queues owned by this device.</summary>
 	void waitIdle();
@@ -45,6 +45,7 @@ public:
 	/// <returns>Return a valid compute pipeline on success</returns>
 	/// <param name="pipelineCache">Either null handle, indicating that pipeline caching is disabled; or the handle of a valid pipeline cache object, in which case use of that
 	/// cache is enabled for the duration of the command.</param>
+	/// <returns>Return a valid pipeline on success</returns>.
 	ComputePipeline createComputePipeline(const ComputePipelineCreateInfo& createInfo, const PipelineCache& pipelineCache = PipelineCache());
 
 	/// <summary>create array of compute pipelines</summary>
@@ -58,7 +59,8 @@ public:
 	/// <summary>create graphicsPipeline</summary>
 	/// <param name="createInfo">Pipeline create info</param>
 	/// <param name="pipelineCache">Either null handle, indicating that pipeline caching is disabled; or the handle of a valid pipeline cache object, in which case use of that
-	/// cache is enabled for the duration of the command.</param> <returns>Return a valid pipeline on success</returns>.
+	/// cache is enabled for the duration of the command.</param>
+	/// <returns>Return a valid pipeline on success</returns>.
 	GraphicsPipeline createGraphicsPipeline(const GraphicsPipelineCreateInfo& createInfo, const PipelineCache& pipelineCache = PipelineCache());
 
 	/// <summary>create array of graphics pipelines</summary>
@@ -66,46 +68,28 @@ public:
 	/// <param name="numCreateInfos">Number of pipeline to create</param>
 	/// <param name="outPipelines">Out pipeline</param>
 	/// <param name="pipelineCache">Either null handle, indicating that pipeline caching is disabled; or the handle of a valid pipeline cache object, in which case use of that
-	/// cache is enabled for the duration of the command.</param> <returns>return true if success</returns>.
+	/// cache is enabled for the duration of the command.</param>
 	void createGraphicsPipelines(const GraphicsPipelineCreateInfo* createInfos, uint32_t numCreateInfos, const PipelineCache& pipelineCache, GraphicsPipeline* outPipelines);
 
 	/// <summary>Create sampler object</summary>
 	/// <param name="createInfo">Sampler Create info</param>
-	/// <returns> Return a valid sampler object on success</returns>.
+	/// <returns>Return a valid sampler object on success</returns>.
 	Sampler createSampler(const SamplerCreateInfo& createInfo);
 
 	/// <summary>create an image using this device.</summary>
 	/// <param name="createInfo">The image creation descriptor</param>
-	/// <returns> The created Image object on success, null Image on failure</returns>
+	/// <returns>The created Image object on success</returns>
 	Image createImage(const ImageCreateInfo& createInfo);
 
-	/// <summary> Create image view object. NOTE: for a non sparse image, a valid memory object must
-	/// have bound on the image</summary>
-	/// <param name="image">The image to use for creating the image view</param>
-	/// <param name="swizzleChannels">The channels to swizzle, default Identity</param>
-	/// <returns> The created ImageView object on success, null ImageView on failure</returns>
-	ImageView createImageView(const Image& image, const ComponentMapping& swizzleChannels = ComponentMapping());
-
-	/// <summary>create Image view object
-	/// NOTE: for non sparse image, a valid memory object must have bound on the image</summary>
-	/// </summary>
-	/// <param name="image">The image to use for creating the image view</param>
-	/// <param name="viewType">The type of the image view</param>
-	/// <param name="format">the Format must be the same as the Image format, Unless if the image is
-	///   created with Mutable format flag</param>
-	/// <param name="range">The sub resource image range</param>
-	/// <param name="swizzleChannels">The channels to swizzle</param>
-	/// <returns> The created ImageView object on success, null ImageView on failure</returns>
-	ImageView createImageView(
-		const Image& image, pvrvk::ImageViewType viewType, pvrvk::Format format, const ImageSubresourceRange& range, const ComponentMapping& swizzleChannels = ComponentMapping());
+	/// <summary>Create image view object</summary>
+	/// <param name="createInfo">The image view creation descriptor</param>
+	/// <returns>The created ImageView object on success</returns>
+	ImageView createImageView(const ImageViewCreateInfo& createInfo);
 
 	/// <summary>Create buffer view</summary>
-	/// <param name="buffer">buffer object</param>
-	/// <param name="format">buffer format</param>
-	/// <param name="offset">view offset</param>
-	/// <param name="range"> view range</param>
-	/// <returns> Return valid object if success</returns>
-	BufferView createBufferView(const Buffer& buffer, pvrvk::Format format, VkDeviceSize offset, VkDeviceSize range);
+	/// <param name="createInfo">The buffer view creation descriptor</param>
+	/// <returns>The created BufferView object on success</returns>
+	BufferView createBufferView(const BufferViewCreateInfo& createInfo);
 
 	/// <summary>Create a new buffer object and (optionally) allocate and bind memory for it</summary>
 	/// <param name="createInfo">The buffer creation descriptor</param>
@@ -118,9 +102,9 @@ public:
 	DeviceMemory allocateMemory(const MemoryAllocationInfo& allocationInfo);
 
 	/// <summary>Create Shader Object</summary>
-	/// <param name="shaderSrc">Shader source data</param>
+	/// <param name="createInfo">Shader module createInfo</param>
 	/// <returns> Return a valid shader if success</returns>
-	ShaderModule createShader(const std::vector<uint32_t>& shaderSrc);
+	ShaderModule createShaderModule(const ShaderModuleCreateInfo& createInfo);
 
 	/// <summary>createFramebuffer Create Framebuffer object</summary>
 	/// <param name="createInfo">Framebuffer createInfo</param>
@@ -138,16 +122,14 @@ public:
 	DescriptorPool createDescriptorPool(const DescriptorPoolCreateInfo& createInfo);
 
 	/// <summary>create Descriptor set layout</summary>
-	/// <param name="createInfo"> Descriptor layout createInfo</param>
+	/// <param name="createInfo">Descriptor layout createInfo</param>
 	/// <returns>Return a valid object if success</returns>.
 	DescriptorSetLayout createDescriptorSetLayout(const DescriptorSetLayoutCreateInfo& createInfo);
 
 	/// <summary>Create PipelineCache object</summary>
-	/// <param name="initialDataSize"> initialDataSize is the number of bytes in pInitialData. If initialDataSize is zero, the pipeline cache will initially be empty.</param>
-	/// <param name="initialData">initialData is a pointer to previously retrieved pipeline cache data.</param>
-	/// <param name="flags"> flags is reserved for future use</param>
-	/// <returns>Return a valid Pipeline cache object which will be initially empty. If initialDataSize is zero, initialData is ignored.</returns>
-	PipelineCache createPipelineCache(size_t initialDataSize = 0, const void* initialData = nullptr, pvrvk::PipelineCacheCreateFlags flags = pvrvk::PipelineCacheCreateFlags::e_NONE);
+	/// <param name="createInfo">Pipeline cache creation info descriptor.</param>
+	/// <returns>Return a valid Pipeline cache object.</returns>
+	PipelineCache createPipelineCache(const PipelineCacheCreateInfo& createInfo = PipelineCacheCreateInfo());
 
 	/// <summary>Merge PipelineCache objects</summary>
 	/// <param name="srcPipeCaches">Pipeline caches, which will be merged into destPipeCache</param>
@@ -161,7 +143,7 @@ public:
 	/// <returns>Return a valid object if success</returns>.
 	PipelineLayout createPipelineLayout(const PipelineLayoutCreateInfo& createInfo);
 
-	/// <summary>Wait this device for an array of fences </summary>
+	/// <summary>Wait this device for an array of fences</summary>
 	/// <param name="numFences">Number of fence to wait</param>
 	/// <param name="fences">Fences to wait for</param>
 	/// <param name="waitAll">Wait for all fence if flags set to true</param>
@@ -170,36 +152,34 @@ public:
 	bool waitForFences(uint32_t numFences, const Fence* fences, const bool waitAll, const uint64_t timeout);
 
 	/// <summary>Reset an array of fences</summary>
-	/// <param name="numFences"> Number of fence to reset</param>
+	/// <param name="numFences">Number of fence to reset</param>
 	/// <param name="fences">Fence to reset</param>
 	void resetFences(uint32_t numFences, const Fence* fences);
 
 	/// <summary> Create commandpool</summary>
-	/// <param name="queueFamilyId">All commandbuffer created from this commandpool must be submitted ti the queue </param>
-	///  with the same queue family id.
-	/// <param name="createFlags">Create flags</param>
+	/// <param name="createInfo">Command Pool creation info structure</param>
 	/// <returns>Return a valid object if success</returns>.
-	CommandPool createCommandPool(uint32_t queueFamilyId, pvrvk::CommandPoolCreateFlags createFlags);
+	CommandPool createCommandPool(const CommandPoolCreateInfo& createInfo);
 
 	/// <summary>Create Fence</summary>
-	/// <param name="fenceCreateFlags">Fence create flags</param>
+	/// <param name="createInfo">Fence create info</param>
 	/// <returns>Return a valid object if success</returns>.
-	Fence createFence(pvrvk::FenceCreateFlags fenceCreateFlags = pvrvk::FenceCreateFlags(0));
+	Fence createFence(const FenceCreateInfo& createInfo = FenceCreateInfo());
 
 	/// <summary>Create Event</summary>
+	/// <param name="createInfo">Event create info</param>
 	/// <returns>Return a valid object if success</returns>.
-	Event createEvent();
+	Event createEvent(const EventCreateInfo& createInfo = EventCreateInfo());
 
 	/// <summary>Create semaphore</summary>
+	/// <param name="createInfo">Semaphore create info</param>
 	/// <returns>Return a valid object if success</returns>.
-	Semaphore createSemaphore();
+	Semaphore createSemaphore(const SemaphoreCreateInfo& createInfo = SemaphoreCreateInfo());
 
 	/// <summary>Create QueryPool</summary>
-	/// <param name="queryType">Specifies the type of queries managed by the pool</param>
-	/// <param name="queryCount">The number of queries managed by the pool</param>
-	/// <param name="statisticsFlags">Specifies which counters will be returned in queries on the new pool</param>
+	/// <param name="createInfo">QueryPool create info</param>
 	/// <returns>return a valid object if success</returns>.
-	QueryPool createQueryPool(pvrvk::QueryType queryType, uint32_t queryCount, pvrvk::QueryPipelineStatisticFlags statisticsFlags = pvrvk::QueryPipelineStatisticFlags(0));
+	QueryPool createQueryPool(const QueryPoolCreateInfo& createInfo);
 
 	/// <summary>Return true if this device support PVRTC image</summary>
 	/// <returns>Return true if supported</returns>
@@ -230,7 +210,7 @@ public:
 		throw ErrorValidationFailedEXT("Request for queue from family id that did not exist.");
 	}
 
-	/// <summary> Return true if the given extension is enabled (const).</summary>
+	/// <summary>Return true if the given extension is enabled (const).</summary>
 	/// <param name="extension"></param>
 	/// <returns></returns>
 	bool isExtensionEnabled(const char* extension) const

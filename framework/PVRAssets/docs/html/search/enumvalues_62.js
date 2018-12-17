@@ -21,6 +21,5 @@ var searchData=
   ['blendopmax',['BlendOpMax',['../classpvr_1_1assets_1_1_model_1_1_material.html#adc74eac948295f7211c8b6058006f6a1a862d24335b437ca26fa78db701c868bd',1,'pvr::assets::Model::Material']]],
   ['blendopmin',['BlendOpMin',['../classpvr_1_1assets_1_1_model_1_1_material.html#adc74eac948295f7211c8b6058006f6a1ab89bcd9b84ed7c1f710669dae302afac',1,'pvr::assets::Model::Material']]],
   ['blendopreversesubtract',['BlendOpReverseSubtract',['../classpvr_1_1assets_1_1_model_1_1_material.html#adc74eac948295f7211c8b6058006f6a1a358e8cfd35f9a403f4ca08fbb25ce898',1,'pvr::assets::Model::Material']]],
-  ['blendopsubtract',['BlendOpSubtract',['../classpvr_1_1assets_1_1_model_1_1_material.html#adc74eac948295f7211c8b6058006f6a1adb0c6374a15167c09a7ff38b11f55be0',1,'pvr::assets::Model::Material']]],
-  ['bonebatch',['BoneBatch',['../namespacepvr.html#a7449705e04c8fe948e390ea793106107aa65c9562b8c9e07299be6bc0b4f3a072',1,'pvr']]]
+  ['blendopsubtract',['BlendOpSubtract',['../classpvr_1_1assets_1_1_model_1_1_material.html#adc74eac948295f7211c8b6058006f6a1adb0c6374a15167c09a7ff38b11f55be0',1,'pvr::assets::Model::Material']]]
 ];

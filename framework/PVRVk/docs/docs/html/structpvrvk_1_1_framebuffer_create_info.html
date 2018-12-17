@@ -15,7 +15,7 @@
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="IMGdoxygen.css" rel="stylesheet" type="text/css"/>
-<link rel="shortcut icon" href="http://www.imgtec.com/images/img.ico">
+<link rel="shortcut icon" type="image/x-icon" href="img.ico">
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
+      <a href="https://www.imgtec.com/developers/" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRVk</span> Documentation</a>
    <tbody>
@@ -96,6 +96,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a29c5850ac0254a44d937dbc5d72d0367"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_framebuffer_create_info.html#a29c5850ac0254a44d937dbc5d72d0367">FramebufferCreateInfo</a> ()</td></tr>
 <tr class="memdesc:a29c5850ac0254a44d937dbc5d72d0367"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor (zero initialization) <a href="#a29c5850ac0254a44d937dbc5d72d0367">More...</a><br/></td></tr>
 <tr class="separator:a29c5850ac0254a44d937dbc5d72d0367"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8269a7017a9ff001e710f94bbb2246f8"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_framebuffer_create_info.html#a8269a7017a9ff001e710f94bbb2246f8">FramebufferCreateInfo</a> (uint32_t width, uint32_t height, uint32_t layers, const <a class="el" href="namespacepvrvk.html#a55f833c5feaaa65f3aaed3a08a7a55e6">RenderPass</a> &amp;renderPass, uint32_t numAttachments=0, <a class="el" href="namespacepvrvk.html#ad4da214c95fffe4edccb14eb2c270f07">ImageView</a> *attachments=nullptr)</td></tr>
+<tr class="memdesc:a8269a7017a9ff001e710f94bbb2246f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor (zero initialization) <a href="#a8269a7017a9ff001e710f94bbb2246f8">More...</a><br/></td></tr>
+<tr class="separator:a8269a7017a9ff001e710f94bbb2246f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4260b11af094f12e357a9c6deb683766"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_framebuffer_create_info.html#a4260b11af094f12e357a9c6deb683766">clear</a> ()</td></tr>
 <tr class="memdesc:a4260b11af094f12e357a9c6deb683766"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reset this object <a href="#a4260b11af094f12e357a9c6deb683766">More...</a><br/></td></tr>
 <tr class="separator:a4260b11af094f12e357a9c6deb683766"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -151,6 +154,66 @@ Public Member Functions</h2></td></tr>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Constructor (zero initialization)</p>
+
+</div>
+</div>
+<a class="anchor" id="a8269a7017a9ff001e710f94bbb2246f8"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">pvrvk::FramebufferCreateInfo::FramebufferCreateInfo </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>height</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>layers</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacepvrvk.html#a55f833c5feaaa65f3aaed3a08a7a55e6">RenderPass</a> &amp;&#160;</td>
+          <td class="paramname"><em>renderPass</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>numAttachments</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacepvrvk.html#ad4da214c95fffe4edccb14eb2c270f07">ImageView</a> *&#160;</td>
+          <td class="paramname"><em>attachments</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
   </td>

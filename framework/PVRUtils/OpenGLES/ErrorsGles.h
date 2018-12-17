@@ -5,7 +5,6 @@
 \copyright Copyright (c) Imagination Technologies Limited.
 */
 #pragma once
-#include "PVRCore/Log.h"
 #include "PVRUtils/OpenGLES/BindingsGles.h"
 namespace pvr {
 namespace utils {
@@ -15,38 +14,36 @@ namespace utils {
 const char* getGlErrorString(GLuint apiError);
 } // namespace utils
 /// <summary>A simple std::runtime_error wrapper for OpenGLES error codes.</summary>
-class GlError : public std::runtime_error
+class GlError : public PvrError
 {
 public:
 	/// <summary>Constructor.</summary>
 	/// <param name="errorCode">The OpenGLES error code to log.</param>
-	GlError(GLuint errorCode) : std::runtime_error(std::string("OpenGL ES Error occured: [") + utils::getGlErrorString(errorCode) + "]") {}
+	GlError(GLuint errorCode) : PvrError(std::string("OpenGL ES Error occured: [") + utils::getGlErrorString(errorCode) + "]") {}
 	/// <summary>Constructor.</summary>
 	/// <param name="errorCode">The OpenGLES error code to log.</param>
 	/// <param name="message">A message to log alongside the OpenGLES error code.</param>
-	GlError(GLuint errorCode, std::string message) : std::runtime_error(std::string("OpenGL ES Error occured: [") + utils::getGlErrorString(errorCode) + "] -- " + message) {}
+	GlError(GLuint errorCode, std::string message) : PvrError(std::string("OpenGL ES Error occured: [") + utils::getGlErrorString(errorCode) + "] -- " + message) {}
 	/// <summary>Constructor.</summary>
 	/// <param name="errorCode">The OpenGLES error code to log.</param>
 	/// <param name="message">A message to log alongside the OpenGLES error code.</param>
 	GlError(GLuint errorCode, const char* message)
-		: std::runtime_error(message ? std::string("OpenGL ES Error occured: [") + utils::getGlErrorString(errorCode) + "] -- " + message
-									 : std::string("OpenGL ES Error occured: [") + utils::getGlErrorString(errorCode) + "]")
+		: PvrError(message ? std::string("OpenGL ES Error occured: [") + utils::getGlErrorString(errorCode) + "] -- " + message
+						   : std::string("OpenGL ES Error occured: [") + utils::getGlErrorString(errorCode) + "]")
 	{}
 };
 
 /// <summary>A simple std::runtime_error wrapper for OpenGLES extension not supported error codes.</summary>
-class GlExtensionNotSupportedError : public std::runtime_error
+class GlExtensionNotSupportedError : public PvrError
 {
 public:
 	/// <summary>Constructor.</summary>
 	/// <param name="extensionString">The unsunpported OpenGLES extension name to log.</param>
-	GlExtensionNotSupportedError(std::string extensionString) : std::runtime_error("Error: Required extension not supported [" + extensionString + "]") {}
+	GlExtensionNotSupportedError(std::string extensionString) : PvrError("Error: Required extension not supported [" + extensionString + "]") {}
 	/// <summary>Constructor.</summary>
 	/// <param name="extensionString">The unsunpported OpenGLES extension name to log.</param>
 	/// <param name="message">A message to log alongside the unsunpported OpenGLES extension name.</param>
-	GlExtensionNotSupportedError(std::string extensionString, std::string message)
-		: std::runtime_error("Error: Required extension not supported [" + extensionString + "] -- " + message)
-	{}
+	GlExtensionNotSupportedError(std::string extensionString, std::string message) : PvrError("Error: Required extension not supported [" + extensionString + "] -- " + message) {}
 };
 
 namespace utils {

@@ -4,17 +4,18 @@ ParticleSystem
 
 .. figure:: ./ParticleSystem.png
 
-Shows how to implement a simple particle system using GPGPU.
+This example shows how to implement a simple particle system using GPGPU.
 
 Description
 -----------
-The demo utilises GPGPU (GPU Compute) to implement a particle system, a simple integration-based simulation which is advanced and then rendered every frame strictly on the GPU, without any CPU access of that data. Particle systems are techniques that use a large amount of sprites to simulate phenomena that would be difficult to reproduce with conventional rendering techniques. Furthermore, it also highlights the interaction between the Compute and the Rendering part of a simulation.
-Requires OpenGL ES 3.1 or Vulkan capable platform.
+Particle systems are techniques that use a large amount of sprites to simulate phenomena that would be difficult to reproduce with conventional rendering techniques. 
 
-APIS
+This example uses GPGPU (GPU Compute) to implement a particle system. This is a simple integration-based simulation which is advanced and then rendered every frame strictly on the GPU, without any CPU access of that data. It also highlights the interaction between the compute and the rendering part of a simulation.
+
+APIs
 ----
+* OpenGL ES 3.0+
 * Vulkan
-* OpenGL ES 3.1
 
 Controls
 --------

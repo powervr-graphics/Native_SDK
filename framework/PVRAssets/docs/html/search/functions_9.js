@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['loadnow',['loadNow',['../structpvr_1_1async_1_1_texture_load_future__.html#a0dfecf32f5552c811b549c02c1fb2836',1,'pvr::async::TextureLoadFuture_']]],
-  ['loadtextureasync',['loadTextureAsync',['../classpvr_1_1async_1_1_texture_async_loader.html#aa74f95ceb743fe78dd06d6fda13659dc',1,'pvr::async::TextureAsyncLoader']]]
+  ['material',['Material',['../classpvr_1_1assets_1_1_model_1_1_material.html#a8453456d586952692e46495b0670aceb',1,'pvr::assets::Model::Material']]],
+  ['meshinfo',['MeshInfo',['../structpvr_1_1assets_1_1_mesh_1_1_mesh_info.html#a8e26b4540200cce2ee93b04cec953d8b',1,'pvr::assets::Mesh::MeshInfo']]]
 ];

@@ -7,13 +7,12 @@
 
 #pragma once
 //!\cond NO_DOXYGEN
-#define DYNAMICCL_NO_NAMESPACE
 #define CL_HPP_TARGET_OPENCL_VERSION 120
 #define CL_HPP_MINIMUM_OPENCL_VERSION 110
 //!\endcond
-#include "CL/cl2.hpp"
+#include "DynamicOCL.h"
 
-namespace cl {
+namespace clutils {
 /// <summary>Get a string representation of an OpenCL error code.</summary>
 /// <param name="error">The OpenCL error code</param>
 /// <param name="error">The OpenCL error code</param>
@@ -230,7 +229,7 @@ public:
 /// <param name="platform">The OpenCL platform.</param>
 /// <param name="extension">The OpenCL extension to check support for.</param>
 /// <returns>True if the given OpenCL extension is supported.</returns>
-inline bool isExtensionSupported(const cl::Platform& platform, const char* extension)
+inline bool isExtensionSupported(cl_platform_id platform, const char* extension)
 {
 	// Extension names should not have spaces.
 	const char* where = strchr(extension, ' ');
@@ -240,13 +239,15 @@ inline bool isExtensionSupported(const cl::Platform& platform, const char* exten
 		return 0;
 	}
 
-	std::string extensions;
-	platform.getInfo(CL_PLATFORM_EXTENSIONS, &extensions);
+	size_t size;
+	cl::GetPlatformInfo(platform, CL_PLATFORM_EXTENSIONS, 0, nullptr, &size);
+	std::vector<char> extensions(size + 1);
+	cl::GetPlatformInfo(platform, CL_PLATFORM_EXTENSIONS, size + 1, extensions.data(), nullptr);
 
 	const char* start;
 	const char* terminator;
 
-	start = extensions.c_str();
+	start = extensions.data();
 	for (;;)
 	{
 		where = strstr(start, extension);
@@ -276,7 +277,7 @@ inline bool isExtensionSupported(const cl::Platform& platform, const char* exten
 /// <param name="device_type">The OpenCL device type.</param>
 /// <param name="platformName">The OpenCL platform name to use.</param>
 /// <param name="err">The OpenCL error.</param>
-inline void createOpenCLContext(cl::Platform& outPlatform, cl::Device& outDevice, cl::Context& outContext, cl::CommandQueue& outQueue,
+inline void createOpenCLContext(cl_platform_id& outPlatform, cl_device_id& outDevice, cl_context& outContext, cl_command_queue& outQueue,
 	cl_command_queue_properties queue_properties = 0, cl_device_type device_type = CL_DEVICE_TYPE_ALL, const char* const platformName = NULL, cl_int* err = 0)
 {
 	bool contextCreated = false;
@@ -286,8 +287,10 @@ inline void createOpenCLContext(cl::Platform& outPlatform, cl::Device& outDevice
 	/*
 	 *  Query the available OpenCL platforms.
 	 */
-	std::vector<cl::Platform> platforms;
-	errcode = cl::Platform::get(&platforms);
+	cl_uint numPlatforms;
+	errcode = cl::GetPlatformIDs(0, nullptr, &numPlatforms);
+	std::vector<cl_platform_id> platforms(numPlatforms);
+	errcode = cl::GetPlatformIDs(numPlatforms, platforms.data(), NULL);
 	if (errcode != CL_SUCCESS)
 	{
 		throw OpenCLError(errcode, "cl::createOpenCLContext : Failed to query platform IDs");
@@ -306,9 +309,10 @@ inline void createOpenCLContext(cl::Platform& outPlatform, cl::Device& outDevice
 		/*
 		 *  Check whether the platform matches the requested one.
 		 */
-		std::string platName;
 		size_t platformNameLength = 0;
-		errcode = platforms[i].getInfo(CL_PLATFORM_NAME, &platName);
+		errcode = cl::GetPlatformInfo(platforms[i], CL_PLATFORM_NAME, 0, NULL, &platformNameLength);
+		std::vector<char> platName(platformNameLength);
+		errcode = cl::GetPlatformInfo(platforms[i], CL_PLATFORM_NAME, platformNameLength, platName.data(), NULL);
 		if (errcode != CL_SUCCESS)
 		{
 			Log(LogLevel::Error, "c.", getOpenCLError(errcode));
@@ -317,7 +321,7 @@ inline void createOpenCLContext(cl::Platform& outPlatform, cl::Device& outDevice
 		if (platformName)
 		{
 			bool bPlatformNameMatches = false;
-			if (strncmp(platName.c_str(), platformName, platformNameLength) == 0)
+			if (strncmp(platName.data(), platformName, platformNameLength) == 0)
 			{
 				bPlatformNameMatches = true;
 			}
@@ -332,8 +336,10 @@ inline void createOpenCLContext(cl::Platform& outPlatform, cl::Device& outDevice
 		/*
 		 *  Query for the first available device that matches the requirements.
 		 */
-		std::vector<cl::Device> devices;
-		errcode = platforms[i].getDevices(device_type, &devices);
+		cl_uint numDevices;
+		errcode = cl::GetDeviceIDs(platforms[i], device_type, 0, NULL, &numDevices);
+		std::vector<cl_device_id> devices(numDevices);
+		errcode = cl::GetDeviceIDs(platforms[i], device_type, numDevices, devices.data(), NULL);
 		if (errcode != CL_SUCCESS && errcode != CL_DEVICE_NOT_FOUND)
 		{
 			throw OpenCLError(errcode, "[cl::createOpenCLContext]: Failed to query OpenCL devices");
@@ -345,15 +351,18 @@ inline void createOpenCLContext(cl::Platform& outPlatform, cl::Device& outDevice
 			continue;
 		}
 
-		std::string platform_extensions;
-		platforms[i].getInfo(CL_PLATFORM_EXTENSIONS, &platform_extensions);
-		std::string device_extensions;
-		devices[0].getInfo(CL_DEVICE_EXTENSIONS, &device_extensions);
+		size_t platformExtensionsStringLength, deviceExtensionsStringLength;
+		cl::GetPlatformInfo(platforms[i], CL_PLATFORM_EXTENSIONS, 0, NULL, &platformExtensionsStringLength);
+		std::vector<char> platform_extensions(platformExtensionsStringLength);
+		cl::GetPlatformInfo(platforms[i], CL_PLATFORM_EXTENSIONS, platformExtensionsStringLength, platform_extensions.data(), NULL);
 
-		cl_platform_id platId = platforms[i].Wrapper<cl_platform_id>::get();
+		cl::GetDeviceInfo(devices[0], CL_DEVICE_EXTENSIONS, 0, NULL, &deviceExtensionsStringLength);
+		std::vector<char> device_extensions(deviceExtensionsStringLength);
+		cl::GetDeviceInfo(devices[0], CL_DEVICE_EXTENSIONS, deviceExtensionsStringLength, device_extensions.data(), NULL);
+
 		cl_context_properties contextProperties[] = {
 			CL_CONTEXT_PLATFORM,
-			(cl_context_properties)platId,
+			(cl_context_properties)platforms[i],
 			0,
 			0,
 			0,
@@ -363,7 +372,7 @@ inline void createOpenCLContext(cl::Platform& outPlatform, cl::Device& outDevice
 			0,
 		};
 
-		cl::Context context = cl::Context(devices, contextProperties, nullptr, nullptr, &errcode);
+		cl_context context = cl::CreateContext(contextProperties, static_cast<cl_uint>(devices.size()), devices.data(), nullptr, nullptr, &errcode);
 		if (errcode != CL_SUCCESS)
 		{
 			throw OpenCLError(errcode, "[cl::createOpenCLContext]: Failed to create context");
@@ -372,16 +381,19 @@ inline void createOpenCLContext(cl::Platform& outPlatform, cl::Device& outDevice
 		cl_command_queue q;
 		{
 			cl_command_queue_properties props = { 0 };
-			q = clCreateCommandQueue(context.get(), devices[0].get(), props, &errcode);
+
+			typedef cl_command_queue(CL_API_CALL * PFNclCreateCommandQueue)(cl_context context, cl_device_id device, cl_command_queue_properties properties, cl_int * errcode_ret);
+			static PFNclCreateCommandQueue _clCreateCommandQueue = (PFNclCreateCommandQueue)cl::internals::getClFunction(cl::CLFunctions::CreateCommandQueue);
+			q = _clCreateCommandQueue(context, devices[0], props, &errcode);
 		}
 
-		cl::CommandQueue queue(q);
+		cl_command_queue queue(q);
 		if (errcode != CL_SUCCESS || q == NULL)
 		{
 			throw OpenCLError(errcode, "[cl::createOpenCLContext]: Failed to create command queue");
 		}
 
-		Log(LogLevel::Information, "[cl::createOpenCLContext]: Created context on platform %s.", platName.c_str());
+		Log(LogLevel::Information, "[cl::createOpenCLContext]: Created context on platform %s.", platName.data());
 		outPlatform = platforms[i];
 		outContext = context;
 		outDevice = devices[0];
@@ -404,8 +416,8 @@ inline void createOpenCLContext(cl::Platform& outPlatform, cl::Device& outDevice
 /// <param name="defines">A list of defineCount defines to use in the shader</param>
 /// <param name="defineCount">The number of defines to use in the shader</param>
 /// <returns>The created kernel program</returns>
-cl::Program loadKernel(
-	const cl::Context& ctx, const cl::Device& device, pvr::Stream& kernelSource, const char* compilerOptions = 0, const char* const* defines = 0, uint32_t defineCount = 0)
+cl_program loadKernel(
+	const cl_context& ctx, const cl_device_id& device, pvr::Stream& kernelSource, const char* compilerOptions = 0, const char* const* defines = 0, uint32_t defineCount = 0)
 {
 	cl_int errcode;
 
@@ -427,23 +439,28 @@ cl::Program loadKernel(
 	sourceDataStr.append("\n");
 	sourceDataStr.append(shaderSrc);
 
-	cl::Program program(ctx, sourceDataStr, false, &errcode);
-	if (program.get() == NULL || errcode != CL_SUCCESS)
+	const char* tmp = sourceDataStr.c_str();
+	const char** source_string_list_tmp = &tmp;
+
+	cl_program program = cl::CreateProgramWithSource(ctx, 1, source_string_list_tmp, NULL, &errcode);
+	if (program == NULL || errcode != CL_SUCCESS)
 	{
-		throw OpenCLError(errcode, "[cl::loadKernel]: Failed to create OpenCL program ");
+		throw OpenCLError(errcode, "[cl::loadKernel]:[cl::CreateProgramWithSource] Failed to create OpenCL program ");
 	}
-	errcode = program.build();
+	errcode = cl::BuildProgram(program, 1, &device, compilerOptions, nullptr, nullptr);
 	if (errcode != CL_SUCCESS)
 	{
-		std::string errlog;
 		cl_int build_errcode = errcode;
-		errcode = program.getBuildInfo<std::string>(device, CL_PROGRAM_BUILD_LOG, &errlog);
+		size_t size_of_log;
+		errcode = cl::GetProgramBuildInfo(program, device, CL_PROGRAM_BUILD_LOG, 0, nullptr, &size_of_log);
+		std::vector<char> errlog(size_of_log);
+		errcode = cl::GetProgramBuildInfo(program, device, CL_PROGRAM_BUILD_LOG, size_of_log, &errlog, NULL);
 		if (errcode != CL_SUCCESS)
 		{
 			throw OpenCLError(errcode, "[cl::loadKernel]: Failed to build program. Failed to get program build log.");
 		}
-		throw OpenCLError(build_errcode, "[cl::loadKernel]: Failed to build program. Build log:\n" + errlog);
+		throw OpenCLError(build_errcode, "[cl::loadKernel]: Failed to build program. Build log:\n" + std::string(errlog.data()));
 	}
 	return program;
 }
-} // namespace cl
+} // namespace clutils

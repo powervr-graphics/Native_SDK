@@ -25,6 +25,7 @@ var searchData=
   ['_5frotation',['_rotation',['../classpvr_1_1ui_1_1impl_1_1_i2d_component.html#aab9edc81b6d66feab8cb1d48a6b45904',1,'pvr::ui::impl::I2dComponent']]],
   ['_5fsampler',['_sampler',['../classpvr_1_1ui_1_1impl_1_1_image__.html#a9c68a7477156488d404384d3145a7840',1,'pvr::ui::impl::Image_::_sampler()'],['../classpvr_1_1ui_1_1impl_1_1_image__.html#a31b0861927cae32be61f7d69eff8c823',1,'pvr::ui::impl::Image_::_sampler()']]],
   ['_5fscale',['_scale',['../classpvr_1_1ui_1_1impl_1_1_i2d_component.html#a8547ef1035bbefb18533fbe3ebe19371',1,'pvr::ui::impl::I2dComponent']]],
+  ['_5fspritename',['_spriteName',['../classpvr_1_1ui_1_1impl_1_1_sprite__.html#ace6136aee0f832c947f8f1aeae6bd05a',1,'pvr::ui::impl::Sprite_']]],
   ['_5ftexdescset',['_texDescSet',['../classpvr_1_1ui_1_1impl_1_1_image__.html#ad7f35abdbcc46136b8e20163d6bec06e',1,'pvr::ui::impl::Image_']]],
   ['_5ftexh',['_texH',['../classpvr_1_1ui_1_1impl_1_1_image__.html#ad6490c203976d5e84f5464f8f35910d4',1,'pvr::ui::impl::Image_']]],
   ['_5ftexture',['_texture',['../classpvr_1_1ui_1_1impl_1_1_image__.html#a81c34d044aa6860bfecd16f5eab1d62a',1,'pvr::ui::impl::Image_::_texture()'],['../namespacepvr_1_1utils.html#a2d05dae5b25d13ac9f23c80c1e4afbb9',1,'pvr::utils::_texture()']]],

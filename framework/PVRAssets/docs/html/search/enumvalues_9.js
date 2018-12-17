@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['spot',['Spot',['../classpvr_1_1assets_1_1_light.html#a6c46cd62c805c31bdc99f79137e1421baddaefd698c85a66d56b5e946143bb8e6',1,'pvr::assets::Light']]]
+  ['visible',['Visible',['../classpvr_1_1_shadow_volume.html#a26e4418ab016fa8dd0e2d2cea9b5a52eaeac5571bd351f6545e1ec4e9f48b62d6',1,'pvr::ShadowVolume']]]
 ];

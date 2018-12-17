@@ -1,6 +1,6 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classpvrvk_1_1impl_1_1_device_object_debug_marker.html" title="pvrvk::impl::DeviceObject\lDebugMarker\&lt; Framebuffer_ \&gt;" alt="" coords="227,5,429,46"/>
-<area shape="rect" id="node2" href="$classpvrvk_1_1impl_1_1_framebuffer__.html" title="Vulkan implementation of the Framebuffer (Framebuffer object) class." alt="" coords="477,45,648,72"/>
-<area shape="rect" id="node3" href="$classpvrvk_1_1impl_1_1_object_handle.html" title="pvrvk::impl::ObjectHandle\l\&lt; VkFramebuffer \&gt;" alt="" coords="5,70,179,111"/>
-<area shape="rect" id="node4" href="$classpvrvk_1_1impl_1_1_device_object_handle.html" title="pvrvk::impl::DeviceObject\lHandle\&lt; VkFramebuffer \&gt;" alt="" coords="241,70,415,111"/>
+<area shape="rect" id="node1" href="$classpvrvk_1_1impl_1_1_device_object_debug_marker.html" title="pvrvk::impl::DeviceObject\lDebugMarker\&lt; Event_ \&gt;" alt="" coords="227,5,400,46"/>
+<area shape="rect" id="node2" href="$classpvrvk_1_1impl_1_1_event__.html" title="Vulkan implementation of the Event class. Event can be used by the host to do fine&#45;grained synchroniz..." alt="" coords="449,45,583,72"/>
+<area shape="rect" id="node3" href="$classpvrvk_1_1impl_1_1_object_handle.html" title="pvrvk::impl::ObjectHandle\l\&lt; VkEvent \&gt;" alt="" coords="5,70,179,111"/>
+<area shape="rect" id="node4" href="$classpvrvk_1_1impl_1_1_device_object_handle.html" title="pvrvk::impl::DeviceObject\lHandle\&lt; VkEvent \&gt;" alt="" coords="227,70,400,111"/>
 </map>

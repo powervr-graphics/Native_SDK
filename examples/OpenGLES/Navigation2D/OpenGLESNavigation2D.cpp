@@ -132,7 +132,7 @@ struct TileRenderingResources
 		gl::DeleteBuffers(1, &vbo);
 		gl::DeleteBuffers(1, &ibo);
 		gl::DeleteBuffers(1, &vao);
-		for (int i = 0; i < LOD::Count; ++i)
+		for (uint32_t i = 0; i < static_cast<uint32_t>(LOD::Count); ++i)
 		{
 			cameraRotateGroup[i].reset();
 			labels[i].clear();
@@ -230,11 +230,10 @@ class OGLESNavigation2D : public pvr::Shell
 	// Transformation variables
 	glm::vec2 _translation;
 	float _scale;
-	glm::mat4 _mapProjMtx;
 	glm::mat4 _projMtx;
 	float _rotation;
 
-	std::vector<Plane> _clipPlanes;
+	pvr::math::ViewingFrustum _viewFrustum;
 
 	// Map tile dimensions
 	uint32_t _numRows;
@@ -259,6 +258,21 @@ class OGLESNavigation2D : public pvr::Shell
 	float _rotateTime;
 	float _rotateAnimTime;
 	float _screenWidth, _screenHeight;
+
+	glm::vec4 _clearColor;
+
+	glm::vec4 _roadAreaColor;
+	glm::vec4 _motorwayColor;
+	glm::vec4 _trunkRoadColor;
+	glm::vec4 _primaryRoadColor;
+	glm::vec4 _secondaryRoadColor;
+	glm::vec4 _serviceRoadColor;
+	glm::vec4 _otherRoadColor;
+	glm::vec4 _parkingColor;
+	glm::vec4 _buildingColor;
+	glm::vec4 _outlineColor;
+
+	glm::mat4 _mapProjMtx;
 
 public:
 	// PVR shell functions
@@ -288,7 +302,7 @@ public:
 	void resetCameraVariables();
 	void updateSubtitleText();
 
-	OGLESNavigation2D() : _totalRouteDistance(0.0f), _projMtx(1.0), _rotation(0.0f), _cameraMode(CameraMode::Auto) {}
+	OGLESNavigation2D() : _projMtx(1.0), _rotation(0.0f), _totalRouteDistance(0.0f), _cameraMode(CameraMode::Auto) {}
 
 	void handleInput();
 
@@ -299,11 +313,11 @@ private:
 		float scaleFactor;
 		if (isScreenRotated())
 		{
-			scaleFactor = (float)getHeight() / displayAttrib.height;
+			scaleFactor = static_cast<float>(getHeight()) / displayAttrib.height;
 		}
 		else
 		{
-			scaleFactor = (float)getWidth() / displayAttrib.width;
+			scaleFactor = static_cast<float>(getWidth()) / displayAttrib.width;
 		}
 		for (uint32_t i = 0; i < LOD::Count; ++i)
 		{
@@ -368,15 +382,38 @@ If the rendering _deviceResources->context is lost, initApplication() will not b
 ***********************************************************************************************************************/
 pvr::Result OGLESNavigation2D::initApplication()
 {
-	// As we are rendering in 2D we have no need for either of the depth of stencil buffers
+	// Disable gamma correction in the framebuffer.
+	setBackBufferColorspace(pvr::ColorSpace::lRGB);
+	// WARNING: This should not be done lightly. This example only passes through textures or hardcoded color values.
+	// If you do that, you should ensure that your textures will end up giving you the correct values. If you use
+	// normal sRGB textures, they will NOT provide you with the values you except (they will look too dark).
+	// Also linear operations will not work correctly. Again in this example this is not a problem as we have tweaked
+	// all values manually for visual effect and there is no lighting math going on.
+
 	setDepthBitsPerPixel(0);
 	setStencilBitsPerPixel(0);
-	_clipPlanes.resize(4);
+
 	// Load and process the map.
 	_OSMdata.reset(new NavDataProcess(getAssetStream(MapFile), glm::ivec2(getWidth(), getHeight())));
 	pvr::Result result = _OSMdata->loadAndProcessData();
 
 	Log(LogLevel::Information, "MAP SIZE IS: [ %d x %d ] TILES", _OSMdata->getNumRows(), _OSMdata->getNumCols());
+
+	// perform gamma correction of the linear space colors so that they can do used directly without further thinking about Linear/sRGB color space conversions
+	// This should not be done lightly. This example only passes through hardcoded color values and uses them directly without applying any
+	// math to their values and so can be performed safely.
+	_clearColor = pvr::utils::convertLRGBtoSRGB(ClearColorLinearSpace);
+	_roadAreaColor = pvr::utils::convertLRGBtoSRGB(RoadAreaColorLinearSpace);
+	_motorwayColor = pvr::utils::convertLRGBtoSRGB(MotorwayColorLinearSpace);
+	_trunkRoadColor = pvr::utils::convertLRGBtoSRGB(TrunkRoadColorLinearSpace);
+	_primaryRoadColor = pvr::utils::convertLRGBtoSRGB(PrimaryRoadColorLinearSpace);
+	_secondaryRoadColor = pvr::utils::convertLRGBtoSRGB(SecondaryRoadColorLinearSpace);
+	_serviceRoadColor = pvr::utils::convertLRGBtoSRGB(ServiceRoadColorLinearSpace);
+	_otherRoadColor = pvr::utils::convertLRGBtoSRGB(OtherRoadColorLinearSpace);
+	_parkingColor = pvr::utils::convertLRGBtoSRGB(ParkingColorLinearSpace);
+	_buildingColor = pvr::utils::convertLRGBtoSRGB(BuildingColorLinearSpace);
+	_outlineColor = pvr::utils::convertLRGBtoSRGB(OutlineColorLinearSpace);
+
 	return result;
 }
 
@@ -474,7 +511,7 @@ pvr::Result OGLESNavigation2D::initView()
 		std::swap(_screenWidth, _screenHeight);
 	}
 
-	_projMtx = pvr::math::ortho(_deviceResources->context->getApiVersion(), 0.0f, (float)_screenWidth, 0.0f, (float)_screenHeight);
+	_projMtx = pvr::math::ortho(_deviceResources->context->getApiVersion(), 0.0f, static_cast<float>(_screenWidth), 0.0f, static_cast<float>(_screenHeight));
 
 	_mapProjMtx = _tileRenderingResources[0][0].renderer->getScreenRotation() * _projMtx;
 
@@ -484,7 +521,7 @@ pvr::Result OGLESNavigation2D::initView()
 	Log(LogLevel::Information, "Converting Route");
 	initRoute();
 
-	_deviceResources->uiRenderer.init(getWidth(), getHeight(), isFullScreen());
+	_deviceResources->uiRenderer.init(getWidth(), getHeight(), isFullScreen(), getBackBufferColorspace() == pvr::ColorSpace::sRGB);
 
 	_deviceResources->uiRenderer.getDefaultTitle()->setText("Navigation2D");
 
@@ -492,7 +529,7 @@ pvr::Result OGLESNavigation2D::initView()
 	updateSubtitleText();
 
 	gl::BindFramebuffer(GL_FRAMEBUFFER, _deviceResources->defaultFbo);
-	gl::ClearColor(ClearColor.r, ClearColor.g, ClearColor.b, ClearColor.a);
+	gl::ClearColor(_clearColor.r, _clearColor.g, _clearColor.b, _clearColor.a);
 	gl::ClearDepthf(1.0f);
 	gl::ClearStencil(0);
 
@@ -670,7 +707,7 @@ void OGLESNavigation2D::initializeRenderers(TileRenderingResources* begin, TileR
 {
 	begin->renderer.construct();
 	auto& renderer = *begin->renderer;
-	renderer.init(getWidth(), getHeight(), isFullScreen());
+	renderer.init(getWidth(), getHeight(), isFullScreen(), getBackBufferColorspace() == pvr::ColorSpace::sRGB);
 
 	if (_deviceResources->context->getApiVersion() != pvr::Api::OpenGLES2)
 	{
@@ -731,7 +768,7 @@ void OGLESNavigation2D::renderTile(const Tile& tile, TileRenderingResources& ren
 	uint32_t offset = 0;
 
 	// Bind the vertex and index buffers for the tile
-	if (_stateTracker.vao != renderingResources.vao)
+	if (_stateTracker.vao != static_cast<GLint>(renderingResources.vao))
 	{
 		if (_deviceResources->context->getApiVersion() != pvr::Api::OpenGLES2)
 		{
@@ -756,7 +793,7 @@ void OGLESNavigation2D::renderTile(const Tile& tile, TileRenderingResources& ren
 		_stateTracker.activeTextureUnitChanged = false;
 	}
 
-	if (_stateTracker.boundTexture != _deviceResources->texAtlas || _stateTracker.boundTextureChanged)
+	if (_stateTracker.boundTexture != static_cast<GLint>(_deviceResources->texAtlas) || _stateTracker.boundTextureChanged)
 	{
 		_stateTracker.boundTexture = _deviceResources->texAtlas;
 		gl::BindTexture(GL_TEXTURE_2D, _deviceResources->texAtlas);
@@ -771,7 +808,7 @@ void OGLESNavigation2D::renderTile(const Tile& tile, TileRenderingResources& ren
 	if (renderingResources.properties.parkingNum > 0 || renderingResources.properties.buildNum > 0 || renderingResources.properties.innerNum > 0 ||
 		renderingResources.properties.areaNum > 0)
 	{
-		if (_stateTracker.activeProgram != _deviceResources->fillProgram)
+		if (_stateTracker.activeProgram != static_cast<GLint>(_deviceResources->fillProgram))
 		{
 			gl::UseProgram(_deviceResources->fillProgram);
 			_stateTracker.activeProgram = _deviceResources->fillProgram;
@@ -789,7 +826,7 @@ void OGLESNavigation2D::renderTile(const Tile& tile, TileRenderingResources& ren
 		if (renderingResources.properties.parkingNum > 0)
 		{
 			gl::UniformMatrix4fv(_deviceResources->fillTransformUniformLocation, 1, GL_FALSE, glm::value_ptr(_mapMVPMtx));
-			gl::Uniform4fv(_deviceResources->fillColorUniformLocation, 1, glm::value_ptr(ParkingColourUniform));
+			gl::Uniform4fv(_deviceResources->fillColorUniformLocation, 1, glm::value_ptr(_parkingColor));
 
 			gl::DrawElements(GL_TRIANGLES, renderingResources.properties.parkingNum, GL_UNSIGNED_INT, 0);
 			offset += renderingResources.properties.parkingNum;
@@ -799,7 +836,7 @@ void OGLESNavigation2D::renderTile(const Tile& tile, TileRenderingResources& ren
 		if (renderingResources.properties.buildNum > 0)
 		{
 			gl::UniformMatrix4fv(_deviceResources->fillTransformUniformLocation, 1, GL_FALSE, glm::value_ptr(_mapMVPMtx));
-			gl::Uniform4fv(_deviceResources->fillColorUniformLocation, 1, glm::value_ptr(BuildColourUniform));
+			gl::Uniform4fv(_deviceResources->fillColorUniformLocation, 1, glm::value_ptr(_buildingColor));
 
 			gl::DrawElements(GL_TRIANGLES, renderingResources.properties.buildNum, GL_UNSIGNED_INT, reinterpret_cast<const void*>(static_cast<uintptr_t>(offset * 4)));
 			offset += renderingResources.properties.buildNum;
@@ -809,7 +846,7 @@ void OGLESNavigation2D::renderTile(const Tile& tile, TileRenderingResources& ren
 		if (renderingResources.properties.innerNum > 0)
 		{
 			gl::UniformMatrix4fv(_deviceResources->fillTransformUniformLocation, 1, GL_FALSE, glm::value_ptr(_mapMVPMtx));
-			gl::Uniform4fv(_deviceResources->fillColorUniformLocation, 1, glm::value_ptr(ClearColor));
+			gl::Uniform4fv(_deviceResources->fillColorUniformLocation, 1, glm::value_ptr(_clearColor));
 
 			gl::DrawElements(GL_TRIANGLES, renderingResources.properties.innerNum, GL_UNSIGNED_INT, reinterpret_cast<const void*>(static_cast<uintptr_t>(offset * 4)));
 			offset += renderingResources.properties.innerNum;
@@ -819,7 +856,7 @@ void OGLESNavigation2D::renderTile(const Tile& tile, TileRenderingResources& ren
 		if (renderingResources.properties.areaNum > 0)
 		{
 			gl::UniformMatrix4fv(_deviceResources->fillTransformUniformLocation, 1, GL_FALSE, glm::value_ptr(_mapMVPMtx));
-			gl::Uniform4fv(_deviceResources->fillColorUniformLocation, 1, glm::value_ptr(RoadAreaColourUniform));
+			gl::Uniform4fv(_deviceResources->fillColorUniformLocation, 1, glm::value_ptr(_roadAreaColor));
 
 			gl::DrawElements(GL_TRIANGLES, renderingResources.properties.areaNum, GL_UNSIGNED_INT, reinterpret_cast<const void*>(static_cast<uintptr_t>(offset * 4)));
 			offset += renderingResources.properties.areaNum;
@@ -829,7 +866,7 @@ void OGLESNavigation2D::renderTile(const Tile& tile, TileRenderingResources& ren
 	if (renderingResources.properties.serviceRoadNum > 0 || renderingResources.properties.otherRoadNum > 0 || renderingResources.properties.secondaryRoadNum > 0 ||
 		renderingResources.properties.primaryRoadNum > 0 || renderingResources.properties.trunkRoadNum > 0 || renderingResources.properties.motorwayNum > 0)
 	{
-		if (_stateTracker.activeProgram != _deviceResources->roadProgram)
+		if (_stateTracker.activeProgram != static_cast<GLint>(_deviceResources->roadProgram))
 		{
 			gl::UseProgram(_deviceResources->roadProgram);
 			_stateTracker.activeProgram = _deviceResources->roadProgram;
@@ -850,7 +887,7 @@ void OGLESNavigation2D::renderTile(const Tile& tile, TileRenderingResources& ren
 		// Service Roads
 		if (renderingResources.properties.serviceRoadNum > 0)
 		{
-			gl::Uniform4fv(_deviceResources->roadColorUniformLocation, 1, glm::value_ptr(ServiceRoadColour));
+			gl::Uniform4fv(_deviceResources->roadColorUniformLocation, 1, glm::value_ptr(_serviceRoadColor));
 			gl::DrawElements(GL_TRIANGLES, renderingResources.properties.serviceRoadNum, GL_UNSIGNED_INT, reinterpret_cast<const void*>(static_cast<uintptr_t>(offset * 4)));
 			offset += renderingResources.properties.serviceRoadNum;
 		}
@@ -858,7 +895,7 @@ void OGLESNavigation2D::renderTile(const Tile& tile, TileRenderingResources& ren
 		// Other (any other roads)
 		if (renderingResources.properties.otherRoadNum > 0)
 		{
-			gl::Uniform4fv(_deviceResources->roadColorUniformLocation, 1, glm::value_ptr(OtherRoadColour));
+			gl::Uniform4fv(_deviceResources->roadColorUniformLocation, 1, glm::value_ptr(_otherRoadColor));
 			gl::DrawElements(GL_TRIANGLES, renderingResources.properties.otherRoadNum, GL_UNSIGNED_INT, reinterpret_cast<const void*>(static_cast<uintptr_t>(offset * 4)));
 			offset += renderingResources.properties.otherRoadNum;
 		}
@@ -866,7 +903,7 @@ void OGLESNavigation2D::renderTile(const Tile& tile, TileRenderingResources& ren
 		// Secondary Roads
 		if (renderingResources.properties.secondaryRoadNum > 0)
 		{
-			gl::Uniform4fv(_deviceResources->roadColorUniformLocation, 1, glm::value_ptr(SecondaryRoadColour));
+			gl::Uniform4fv(_deviceResources->roadColorUniformLocation, 1, glm::value_ptr(_secondaryRoadColor));
 			gl::DrawElements(GL_TRIANGLES, renderingResources.properties.secondaryRoadNum, GL_UNSIGNED_INT, reinterpret_cast<const void*>(static_cast<uintptr_t>(offset * 4)));
 			offset += renderingResources.properties.secondaryRoadNum;
 		}
@@ -874,7 +911,7 @@ void OGLESNavigation2D::renderTile(const Tile& tile, TileRenderingResources& ren
 		// Primary Roads
 		if (renderingResources.properties.primaryRoadNum > 0)
 		{
-			gl::Uniform4fv(_deviceResources->roadColorUniformLocation, 1, glm::value_ptr(PrimaryRoadColour));
+			gl::Uniform4fv(_deviceResources->roadColorUniformLocation, 1, glm::value_ptr(_primaryRoadColor));
 			gl::DrawElements(GL_TRIANGLES, renderingResources.properties.primaryRoadNum, GL_UNSIGNED_INT, reinterpret_cast<const void*>(static_cast<uintptr_t>(offset * 4)));
 
 			offset += renderingResources.properties.primaryRoadNum;
@@ -883,14 +920,14 @@ void OGLESNavigation2D::renderTile(const Tile& tile, TileRenderingResources& ren
 		// Trunk Roads
 		if (renderingResources.properties.trunkRoadNum > 0)
 		{
-			gl::Uniform4fv(_deviceResources->roadColorUniformLocation, 1, glm::value_ptr(TrunkRoadColour));
+			gl::Uniform4fv(_deviceResources->roadColorUniformLocation, 1, glm::value_ptr(_trunkRoadColor));
 			gl::DrawElements(GL_TRIANGLES, renderingResources.properties.trunkRoadNum, GL_UNSIGNED_INT, reinterpret_cast<const void*>(static_cast<uintptr_t>(offset * 4)));
 			offset += renderingResources.properties.trunkRoadNum;
 		}
 
 		if (renderingResources.properties.motorwayNum > 0)
 		{
-			gl::Uniform4fv(_deviceResources->roadColorUniformLocation, 1, glm::value_ptr(MotorwayColour));
+			gl::Uniform4fv(_deviceResources->roadColorUniformLocation, 1, glm::value_ptr(_motorwayColor));
 			gl::DrawElements(GL_TRIANGLES, renderingResources.properties.motorwayNum, GL_UNSIGNED_INT, reinterpret_cast<const void*>(static_cast<uintptr_t>(offset * 4)));
 			offset += renderingResources.properties.motorwayNum;
 		}
@@ -1238,7 +1275,7 @@ bool skipAmenityLabel(AmenityLabelData& labelData, Label& label, glm::dvec3& ext
 	float halfExtent_x = label.text->getScaledDimension().x / 1.95f;
 
 	// Check if this and the previous text (in the same LOD level) overlap, if they do skip this text.
-	float distance = (float)glm::distance(labelData.coords, glm::dvec2(extent));
+	float distance = static_cast<float>(glm::distance(labelData.coords, glm::dvec2(extent)));
 	if (distance < (extent.z + halfExtent_x) && glm::abs(extent.z - halfExtent_x) < distance)
 	{
 		label.text.reset();
@@ -1272,7 +1309,7 @@ bool skipLabel(LabelData& labelData, Label& label, glm::dvec3& extent)
 	}
 
 	// Check if this and the previous text (in the same LOD level) overlap, if they do skip this text.
-	float distance = (float)glm::distance(labelData.coords, glm::dvec2(extent));
+	float distance = static_cast<float>(glm::distance(labelData.coords, glm::dvec2(extent)));
 	if (distance < (extent.z + halfExtent_x) && glm::abs(extent.z - halfExtent_x) < distance)
 	{
 		label.text.reset();
@@ -1459,14 +1496,7 @@ void OGLESNavigation2D::render()
 ***********************************************************************************************************************/
 void OGLESNavigation2D::calculateClipPlanes()
 {
-	glm::vec4 rowX = glm::vec4(_mapMVPMtx[0][0], _mapMVPMtx[1][0], _mapMVPMtx[2][0], _mapMVPMtx[3][0]);
-	glm::vec4 rowY = glm::vec4(_mapMVPMtx[0][1], _mapMVPMtx[1][1], _mapMVPMtx[2][1], _mapMVPMtx[3][1]);
-	glm::vec4 rowW = glm::vec4(_mapMVPMtx[0][3], _mapMVPMtx[1][3], _mapMVPMtx[2][3], _mapMVPMtx[3][3]);
-
-	_clipPlanes[0] = Plane(rowW - rowX); // Right
-	_clipPlanes[1] = Plane(rowW + rowX); // Left
-	_clipPlanes[2] = Plane(rowW - rowY); // Top
-	_clipPlanes[3] = Plane(rowW + rowY); // Bottom
+	pvr::math::getFrustumPlanes(_deviceResources->context->getApiVersion(), _mapMVPMtx, _viewFrustum);
 }
 
 /*!*********************************************************************************************************************
@@ -1480,35 +1510,9 @@ bool OGLESNavigation2D::inFrustum(glm::vec2 min, glm::vec2 max)
 {
 	// Test the axis-aligned bounding box against each frustum plane,
 	// cull if all points are outside of one the view frustum planes.
-	for (uint32_t i = 0; i < _clipPlanes.size(); ++i)
-	{
-		uint32_t pointsOut = 0;
-
-		// Test the points against the plane
-		if ((_clipPlanes[i].normal.x * min.x + _clipPlanes[i].normal.y * min.y + _clipPlanes[i].distance) < 0.0f)
-		{
-			pointsOut++;
-		}
-		if ((_clipPlanes[i].normal.x * max.x + _clipPlanes[i].normal.y * min.y + _clipPlanes[i].distance) < 0.0f)
-		{
-			pointsOut++;
-		}
-		if ((_clipPlanes[i].normal.x * max.x + _clipPlanes[i].normal.y * max.y + _clipPlanes[i].distance) < 0.0f)
-		{
-			pointsOut++;
-		}
-		if ((_clipPlanes[i].normal.x * min.x + _clipPlanes[i].normal.y * max.y + _clipPlanes[i].distance) < 0.0f)
-		{
-			pointsOut++;
-		}
-
-		// If all four corners are outside of the plane then it is not visible.
-		if (pointsOut == 4)
-		{
-			return false;
-		}
-	}
-	return true;
+	pvr::math::AxisAlignedBox aabb;
+	aabb.setMinMax(glm::vec3(min.x, min.y, 0.0f), glm::vec3(max.x, max.y, 1.0f));
+	return pvr::math::aabbInFrustum(aabb, _viewFrustum);
 }
 
 void OGLESNavigation2D::updateGroups(uint32_t col, uint32_t row)

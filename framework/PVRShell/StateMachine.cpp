@@ -7,9 +7,10 @@
 //!\cond NO_DOXYGEN
 #include "PVRShell/StateMachine.h"
 #include "PVRShell/Shell.h"
-#include "PVRCore/IO/FileStream.h"
+#include "PVRCore/stream/FileStream.h"
 #include "PVRCore/Log.h"
-#include "PVRCore/Base/Time_.h"
+#include "PVRShell/Time_.h"
+#include <map>
 #include <cstdlib>
 #include <cmath>
 #include <sstream>
@@ -41,12 +42,13 @@ Result StateMachine::init()
 		for (size_t i = 0; i < ShellOS::getReadPaths().size(); ++i)
 		{
 			filepath = ShellOS::getReadPaths()[i] + PVRSHELL_COMMANDLINE_TXT_FILE;
-			FileStream file(filepath.c_str(), "r", false);
+			FileStream file(filepath, "r", false);
 
 			file.open();
 			if (file.isopen())
 			{
-				_shellData.commandLine->prefix(&file);
+				auto str = file.readString();
+				_shellData.commandLine->prefix(str.c_str());
 				Log(LogLevel::Information, ("Command-line options have been loaded from file " + filepath).c_str());
 				break;
 			}
@@ -68,7 +70,7 @@ void StateMachine::readApiFromCommandLine()
 	const char *arg, *val;
 	const platform::CommandLineParser::ParsedCommandLine& options = _shellData.commandLine->getParsedCommandLine();
 
-	for (unsigned int i = 0; i < options.getOptionsList().size(); ++i)
+	for (uint32_t i = 0; i < options.getOptionsList().size(); ++i)
 	{
 		arg = options.getOptionsList()[i].arg;
 		val = options.getOptionsList()[i].val;
@@ -142,7 +144,7 @@ typedef void (*SetShellParameterPtr)(Shell& shell, const char* arg, const char* 
 	}
 #define WARNING_UNSUPPORTED_OPTION(x) \
 	{ \
-		Log(LogLevel::Warning, "PVRShell recognised command-line option '" x "' is unsupported in this application and has been ignored."); \
+		Log(LogLevel::Warning, "PVRShell recognised command-line option '" x "' is unsupported by PVRShell and has been ignored."); \
 	}
 void setWidth(Shell& shell, const char* arg, const char* val)
 {
@@ -154,7 +156,7 @@ void setHeight(Shell& shell, const char* arg, const char* val)
 	WARN_AND_QUIT_IF_PARAMETER_NOT_PROVIDED(arg, val);
 	shell.setDimensions(shell.getWidth(), atoi(val));
 }
-void setAasamples(Shell& shell, const char* arg, const char* val)
+void setAASamples(Shell& shell, const char* arg, const char* val)
 {
 	WARN_AND_QUIT_IF_PARAMETER_NOT_PROVIDED(arg, val);
 	shell.setAASamples(atoi(val));
@@ -369,20 +371,21 @@ void showInfo(Shell& shell, const char* /*arg*/, const char* /*val*/)
 	shell.getOS()._shellData.outputInfo = true;
 }
 void showCommandLineOptions(Shell& shell, const char* arg, const char* val);
+void showCommandLineOptionsAndExit(Shell& shell, const char* arg, const char* val);
 } // namespace
 
 #undef WARNING_UNSUPPORTED_OPTION
 
 const std::map<std::string, SetShellParameterPtr> supportedCommandLineOptions{ std::make_pair("-width", &setWidth), std::make_pair("-height", &setHeight),
-	std::make_pair("-aasamples", &setAasamples), std::make_pair("-fullscreen", &setFullScreen), std::make_pair("-quitafterframe", &setQuitAfterFrame),
+	std::make_pair("-aasamples", &setAASamples), std::make_pair("-fullscreen", &setFullScreen), std::make_pair("-quitafterframe", &setQuitAfterFrame),
 	std::make_pair("-qaf", &setQuitAfterFrame), std::make_pair("-quitaftertime", &setQuitAfterTime), std::make_pair("-qat", &setQuitAfterTime), std::make_pair("-posx", &setPosx),
 	std::make_pair("-posy", &setPosy), std::make_pair("-swaplength", &setSwapLength), std::make_pair("-preferredswaplength", &setSwapLength), std::make_pair("-vsync", &setVsync),
 	std::make_pair("-loglevel", &setLogLevel), std::make_pair("-colorbpp", &setColorBpp), std::make_pair("-colourbpp", &setColorBpp), std::make_pair("-cbpp", &setColorBpp),
 	std::make_pair("-depthbpp", &setDepthBpp), std::make_pair("-dbpp", &setDepthBpp), std::make_pair("-stencilbpp", &setStencilBpp), std::make_pair("-dbpp", &setStencilBpp),
 	std::make_pair("-c", &setCaptureFrames), std::make_pair("-screenshotscale", &setScreenshotScale), std::make_pair("-priority", &setContextPriority),
 	std::make_pair("-config", &setDesiredCconfigId), std::make_pair("-forceframetime", &setForceFrameTime), std::make_pair("-fft", &setForceFrameTime),
-	std::make_pair("-version", &showVersion), std::make_pair("-fps", &setShowFps), std::make_pair("-info", &showInfo), std::make_pair("-h", &showCommandLineOptions),
-	std::make_pair("-help", &showCommandLineOptions) };
+	std::make_pair("-version", &showVersion), std::make_pair("-fps", &setShowFps), std::make_pair("-info", &showInfo), std::make_pair("-h", &showCommandLineOptionsAndExit),
+	std::make_pair("-help", &showCommandLineOptionsAndExit), std::make_pair("--help", &showCommandLineOptionsAndExit) };
 
 namespace {
 void showCommandLineOptions(Shell& /*shell*/, const char* /*arg*/, const char* /*val*/)
@@ -398,19 +401,25 @@ void showCommandLineOptions(Shell& /*shell*/, const char* /*arg*/, const char* /
 	}
 	Log(LogLevel::Information, "%s", sstream.str().c_str());
 }
+
+void showCommandLineOptionsAndExit(Shell& shell, const char* /*arg*/, const char* /*val*/)
+{
+	showCommandLineOptions(shell, nullptr, nullptr);
+	shell.exitShell();
+}
 } // namespace
 
 void StateMachine::applyCommandLine()
 {
 #define WARNING_UNKNOWN_OPTION(x) \
 	{ \
-		Log(LogLevel::Warning, "PVRShell recognised command-line option '%s' is unsupported in this application and has been ignored.", x); \
+		Log(LogLevel::Warning, "PVRShell recognised command-line option '%s' is unsupported by PVRShell and has been ignored.", x); \
 	}
 	const char *arg, *val;
 	const platform::CommandLineParser::ParsedCommandLine& options = _shellData.commandLine->getParsedCommandLine();
 
 	bool has_unknown_options = false;
-	for (unsigned int i = 0; i < options.getOptionsList().size(); ++i)
+	for (uint32_t i = 0; i < options.getOptionsList().size(); ++i)
 	{
 		arg = options.getOptionsList()[i].arg;
 		val = options.getOptionsList()[i].val;
@@ -496,6 +505,13 @@ Result StateMachine::executeOnce()
 	case StateNotInitialized:
 		return Result::NotInitialized;
 	case StateInitApplication:
+		if (_shellData.commandLine->getParsedCommandLine().hasOption("-h") || _shellData.commandLine->getParsedCommandLine().hasOption("-help"))
+		{
+			applyCommandLine();
+			_currentState = StateExit;
+			result = Result::Success;
+			break;
+		}
 		_shell = newDemo();
 		{
 			readApiFromCommandLine();
@@ -538,14 +554,21 @@ Result StateMachine::executeOnce()
 	{
 		applyCommandLine();
 		// Initialize our window. On some platforms this will be a dummy function
-		result = (ShellOS::initializeWindow(_shellData.attributes) ? Result::Success : Result::InitializationError);
-		if (result == Result::Success)
+		if (_shellData.weAreDone)
 		{
-			_currentState = StateInitView;
+			_currentState = StateQuitApplication;
 		}
 		else
 		{
-			_currentState = StateQuitApplication;
+			result = (ShellOS::initializeWindow(_shellData.attributes) ? Result::Success : Result::InitializationError);
+			if (result == Result::Success)
+			{
+				_currentState = StateInitView;
+			}
+			else
+			{
+				_currentState = StateQuitApplication;
+			}
 		}
 	}
 	break;

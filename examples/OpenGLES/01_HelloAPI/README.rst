@@ -4,17 +4,22 @@ HelloAPI
 
 .. figure:: ./HelloAPI.png
 
-
-Draw a basic triangle to the screen.
+Draws a basic triangle to the screen.
 
 Description
 -----------
-A basic tutorial that guides the user, step-by-step, through the process of initializing a window using the "raw" API, (Vulkan or OpenGL ES 2), drawing a triangle with a simple shader, and then terminating the window (depending on the platform, either after a few seconds, or when the user closes the window).
+A basic tutorial that guides the user, step-by-step, through the process of drawing a basic triangle to the screen.
 
-APIS
+This includes:
+
+* initialising a window using raw OpenGL ES
+* drawing a triangle with a simple shader 
+* terminating the window - depending on the platform, either after a few seconds, or when the user closes the window.
+
+APIs
 ----
+* OpenGL ES 2.0+
 * Vulkan
-* OpenGL ES 2.0
 
 Controls
 --------

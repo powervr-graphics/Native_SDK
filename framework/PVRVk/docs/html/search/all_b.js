@@ -1,7 +1,7 @@
 var searchData=
 [
   ['magfilter',['magFilter',['../structpvrvk_1_1_sampler_create_info.html#ab815ba89abfcb47a376cb1362e26f9e6',1,'pvrvk::SamplerCreateInfo']]],
-  ['map',['map',['../classpvrvk_1_1impl_1_1_i_device_memory__.html#a12d159f6b5d6aaa9dd597e88358aca48',1,'pvrvk::impl::IDeviceMemory_::map()'],['../classpvrvk_1_1impl_1_1_device_memory__.html#adef3d66f2029c2b31379ce4064ff2d7b',1,'pvrvk::impl::DeviceMemory_::map()']]],
+  ['map',['map',['../classpvrvk_1_1impl_1_1_i_device_memory__.html#afb5544e7a7dab0033a8337644cd1b3c8',1,'pvrvk::impl::IDeviceMemory_::map()'],['../classpvrvk_1_1impl_1_1_device_memory__.html#a39541496c24d83ff933f316e8f3b4cde',1,'pvrvk::impl::DeviceMemory_::map()']]],
   ['maxcolorattachments',['MaxColorAttachments',['../namespacepvrvk_1_1_framework_caps.html#a20083be34c1c1140044619f55f9cb124a6cd018a45b57a0f4e48071a2443248e2',1,'pvrvk::FrameworkCaps']]],
   ['maxdepthstencilattachments',['MaxDepthStencilAttachments',['../namespacepvrvk_1_1_framework_caps.html#a20083be34c1c1140044619f55f9cb124a1b249cfc97307146f465b6a51efe4925',1,'pvrvk::FrameworkCaps']]],
   ['maxdescriptordynamicoffsets',['MaxDescriptorDynamicOffsets',['../namespacepvrvk_1_1_framework_caps.html#a20083be34c1c1140044619f55f9cb124a4d32b8e9e8448825e78876d5014cff73',1,'pvrvk::FrameworkCaps']]],
@@ -23,16 +23,14 @@ var searchData=
   ['memory',['memory',['../structpvrvk_1_1_sparse_memory_bind.html#a0e92df0cf6ee59595ac5d28364d7c511',1,'pvrvk::SparseMemoryBind::memory()'],['../structpvrvk_1_1_sparse_image_memory_bind.html#a4b1f48a41b6097b27bdae6f51e06d8b4',1,'pvrvk::SparseImageMemoryBind::memory()']]],
   ['memoryallocationinfo',['MemoryAllocationInfo',['../structpvrvk_1_1_memory_allocation_info.html#ac95f60ad11e11d692c0a05ae2c9ae4c3',1,'pvrvk::MemoryAllocationInfo::MemoryAllocationInfo()'],['../structpvrvk_1_1_memory_allocation_info.html#ae318985d5dd0c187955af68cdde783ba',1,'pvrvk::MemoryAllocationInfo::MemoryAllocationInfo(DeviceSize allocationSize, uint32_t memoryTypeIndex)']]],
   ['memoryallocationinfo',['MemoryAllocationInfo',['../structpvrvk_1_1_memory_allocation_info.html',1,'pvrvk']]],
-  ['memorybarrier',['MemoryBarrier',['../structpvrvk_1_1_memory_barrier.html#af2c63ff215a781bd6a1975336f163d28',1,'pvrvk::MemoryBarrier::MemoryBarrier()'],['../structpvrvk_1_1_memory_barrier.html#a25cd18bbeeb589f2984bc5dc04f456b1',1,'pvrvk::MemoryBarrier::MemoryBarrier(pvrvk::AccessFlags srcAccessMask, pvrvk::AccessFlags dstAccessMask)']]],
   ['memorybarrier',['MemoryBarrier',['../structpvrvk_1_1_memory_barrier.html',1,'pvrvk']]],
-  ['memorybarrierset',['MemoryBarrierSet',['../classpvrvk_1_1_memory_barrier_set.html#aa0bd646be5e388e89c7ea673c271b28a',1,'pvrvk::MemoryBarrierSet']]],
+  ['memorybarrier',['MemoryBarrier',['../structpvrvk_1_1_memory_barrier.html#af2c63ff215a781bd6a1975336f163d28',1,'pvrvk::MemoryBarrier::MemoryBarrier()'],['../structpvrvk_1_1_memory_barrier.html#a25cd18bbeeb589f2984bc5dc04f456b1',1,'pvrvk::MemoryBarrier::MemoryBarrier(pvrvk::AccessFlags srcAccessMask, pvrvk::AccessFlags dstAccessMask)']]],
   ['memorybarrierset',['MemoryBarrierSet',['../classpvrvk_1_1_memory_barrier_set.html',1,'pvrvk']]],
+  ['memorybarrierset',['MemoryBarrierSet',['../classpvrvk_1_1_memory_barrier_set.html#aa0bd646be5e388e89c7ea673c271b28a',1,'pvrvk::MemoryBarrierSet']]],
   ['memoryoffset',['memoryOffset',['../structpvrvk_1_1_sparse_memory_bind.html#a6d80a1b21beb029a45ae3c6253eb2a72',1,'pvrvk::SparseMemoryBind::memoryOffset()'],['../structpvrvk_1_1_sparse_image_memory_bind.html#a768cdc503f4d92761c260718db3f8a74',1,'pvrvk::SparseImageMemoryBind::memoryOffset()']]],
   ['mergepipelinecache',['mergePipelineCache',['../classpvrvk_1_1impl_1_1_device__.html#a306704e5eee64a2a43193aabc2d4c08d',1,'pvrvk::impl::Device_']]],
   ['minfilter',['minFilter',['../structpvrvk_1_1_sampler_create_info.html#a52921555a6efe280feea9015003c509a',1,'pvrvk::SamplerCreateInfo']]],
   ['minimagecount',['minImageCount',['../structpvrvk_1_1_swapchain_create_info.html#a117efdf49612ee5ac99354a4a49ed93b',1,'pvrvk::SwapchainCreateInfo']]],
   ['mipmapmode',['mipMapMode',['../structpvrvk_1_1_sampler_create_info.html#afdc525f548a7070531aac787e20d724d',1,'pvrvk::SamplerCreateInfo']]],
-  ['multisample',['multiSample',['../structpvrvk_1_1_graphics_pipeline_create_info.html#ad144b8b3b7b7e1d6d744c6c78e656a92',1,'pvrvk::GraphicsPipelineCreateInfo']]],
-  ['multisamplestatecreateinfo',['MultiSampleStateCreateInfo',['../structpvrvk_1_1_multi_sample_state_create_info.html#a32e7abf070189bbdf123ba6aa89c4a10',1,'pvrvk::MultiSampleStateCreateInfo']]],
-  ['multisamplestatecreateinfo',['MultiSampleStateCreateInfo',['../structpvrvk_1_1_multi_sample_state_create_info.html',1,'pvrvk']]]
+  ['multisample',['multiSample',['../structpvrvk_1_1_graphics_pipeline_create_info.html#a18c4e6c1a446297c8152854b8c3403de',1,'pvrvk::GraphicsPipelineCreateInfo']]]
 ];

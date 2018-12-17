@@ -25,7 +25,7 @@ Display_::Display_(PhysicalDeviceWeakPtr physicalDevice, const DisplayProperties
 
 		for (uint32_t i = 0; i < numModes; ++i)
 		{
-			DisplayModePropertiesKHR displayModeProperties = *reinterpret_cast<DisplayModePropertiesKHR*>(&displayModePropertiesVk[i]);
+			DisplayModePropertiesKHR displayModeProperties = displayModePropertiesVk[i];
 			_displayModes.push_back(DisplayMode_::createNew(getPhysicalDevice(), displayModeProperties));
 		}
 	}

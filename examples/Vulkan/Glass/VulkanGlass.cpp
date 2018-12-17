@@ -51,21 +51,21 @@ const char BalloonFile[] = "Balloon.pod";
 // shaders
 namespace Shaders {
 const char* Names[] = {
-	"DefaultVertShader_vk.vsh.spv",
-	"DefaultFragShader_vk.fsh.spv",
-	"ParaboloidVertShader_vk.vsh.spv",
-	"SkyboxVertShader_vk.vsh.spv",
-	"SkyboxFragShader_vk.fsh.spv",
-	"EffectReflectVertShader_vk.vsh.spv",
-	"EffectReflectFragShader_vk.fsh.spv",
-	"EffectRefractVertShader_vk.vsh.spv",
-	"EffectRefractFragShader_vk.fsh.spv",
-	"EffectChromaticDispersion_vk.vsh.spv",
-	"EffectChromaticDispersion_vk.fsh.spv",
-	"EffectReflectionRefraction_vk.vsh.spv",
-	"EffectReflectionRefraction_vk.fsh.spv",
-	"EffectReflectChromDispersion_vk.vsh.spv",
-	"EffectReflectChromDispersion_vk.fsh.spv",
+	"DefaultVertShader.vsh.spv",
+	"DefaultFragShader.fsh.spv",
+	"ParaboloidVertShader.vsh.spv",
+	"SkyboxVertShader.vsh.spv",
+	"SkyboxFragShader.fsh.spv",
+	"EffectReflectVertShader.vsh.spv",
+	"EffectReflectFragShader.fsh.spv",
+	"EffectRefractVertShader.vsh.spv",
+	"EffectRefractFragShader.fsh.spv",
+	"EffectChromaticDispersion.vsh.spv",
+	"EffectChromaticDispersion.fsh.spv",
+	"EffectReflectionRefraction.vsh.spv",
+	"EffectReflectionRefraction.fsh.spv",
+	"EffectReflectChromDispersion.vsh.spv",
+	"EffectReflectChromDispersion.fsh.spv",
 };
 
 enum Enum
@@ -228,8 +228,8 @@ struct PassSkyBox
 		pvr::Stream::ptr_type vertexShaderSource = shell.getAssetStream(vertexShader);
 		pvr::Stream::ptr_type fragmentShaderSource = shell.getAssetStream(fragmentShader);
 
-		pipeInfo.vertexShader.setShader(device->createShader(vertexShaderSource->readToEnd<uint32_t>()));
-		pipeInfo.fragmentShader.setShader(device->createShader(fragmentShaderSource->readToEnd<uint32_t>()));
+		pipeInfo.vertexShader.setShader(device->createShaderModule(pvrvk::ShaderModuleCreateInfo(vertexShaderSource->readToEnd<uint32_t>())));
+		pipeInfo.fragmentShader.setShader(device->createShaderModule(pvrvk::ShaderModuleCreateInfo(fragmentShaderSource->readToEnd<uint32_t>())));
 
 		// create the pipeline layout
 		pvrvk::PipelineLayoutCreateInfo pipelineLayout;
@@ -486,8 +486,8 @@ struct PassBalloon : public IModelPass
 		pvr::Stream::ptr_type vertexShaderSource = shell.getAssetStream(vertexShader);
 		pvr::Stream::ptr_type fragmentShaderSource = shell.getAssetStream(fragmentShader);
 
-		pipeInfo.vertexShader.setShader(device->createShader(vertexShaderSource->readToEnd<uint32_t>()));
-		pipeInfo.fragmentShader.setShader(device->createShader(fragmentShaderSource->readToEnd<uint32_t>()));
+		pipeInfo.vertexShader.setShader(device->createShaderModule(pvrvk::ShaderModuleCreateInfo(vertexShaderSource->readToEnd<uint32_t>())));
+		pipeInfo.fragmentShader.setShader(device->createShaderModule(pvrvk::ShaderModuleCreateInfo(fragmentShaderSource->readToEnd<uint32_t>())));
 
 		// create the pipeline layout
 		pvrvk::PipelineLayoutCreateInfo pipelineLayout;
@@ -644,9 +644,9 @@ private:
 
 		pipeInfo.renderPass = _renderPass;
 
-		pipeInfo.vertexShader.setShader(device->createShader(shell.getAssetStream(Shaders::Names[Shaders::ParaboloidVS])->readToEnd<uint32_t>()));
+		pipeInfo.vertexShader.setShader(device->createShaderModule(pvrvk::ShaderModuleCreateInfo(shell.getAssetStream(Shaders::Names[Shaders::ParaboloidVS])->readToEnd<uint32_t>())));
 
-		pipeInfo.fragmentShader.setShader(device->createShader(shell.getAssetStream(Shaders::Names[Shaders::DefaultFS])->readToEnd<uint32_t>()));
+		pipeInfo.fragmentShader.setShader(device->createShaderModule(pvrvk::ShaderModuleCreateInfo(shell.getAssetStream(Shaders::Names[Shaders::DefaultFS])->readToEnd<uint32_t>())));
 
 		// create the pipeline layout
 		pvrvk::PipelineLayoutCreateInfo pipelineLayout;
@@ -673,8 +673,8 @@ private:
 
 		// set the viewport to render to the left paraboloid
 		pipeInfo.viewport.setViewportAndScissor(0,
-			pvrvk::Viewport((float)parabolidViewport[0].getOffset().getX(), (float)parabolidViewport[0].getOffset().getY(), (float)parabolidViewport[0].getExtent().getWidth(),
-				(float)parabolidViewport[0].getExtent().getHeight()),
+			pvrvk::Viewport(static_cast<float>(parabolidViewport[0].getOffset().getX()), static_cast<float>(parabolidViewport[0].getOffset().getY()),
+				static_cast<float>(parabolidViewport[0].getExtent().getWidth()), static_cast<float>(parabolidViewport[0].getExtent().getHeight())),
 			pvrvk::Rect2D(0, 0, ParaboloidTexSize * 2, ParaboloidTexSize));
 
 		// create the left paraboloid graphics pipeline
@@ -685,8 +685,8 @@ private:
 
 		// create the second pipeline for the right viewport
 		pipeInfo.viewport.setViewportAndScissor(0,
-			pvrvk::Viewport((float)parabolidViewport[1].getOffset().getX(), (float)parabolidViewport[1].getOffset().getY(), (float)parabolidViewport[1].getExtent().getWidth(),
-				(float)parabolidViewport[1].getExtent().getHeight()),
+			pvrvk::Viewport(static_cast<float>(parabolidViewport[1].getOffset().getX()), static_cast<float>(parabolidViewport[1].getOffset().getY()),
+				static_cast<float>(parabolidViewport[1].getExtent().getWidth()), static_cast<float>(parabolidViewport[1].getExtent().getHeight())),
 			pvrvk::Rect2D(0, 0, ParaboloidTexSize * 2, ParaboloidTexSize));
 		pipeInfo.rasterizer.setCullMode(pvrvk::CullModeFlags::e_BACK_BIT);
 
@@ -741,7 +741,7 @@ private:
 				pvrvk::SampleCountFlags::e_1_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, &vmaAllocator,
 				pvr::utils::vma::AllocationCreateFlags::e_DEDICATED_MEMORY_BIT);
 
-			_paraboloidTextures[i] = device->createImageView(colorTexture);
+			_paraboloidTextures[i] = device->createImageView(pvrvk::ImageViewCreateInfo(colorTexture));
 
 			//---------------
 			// create the render-target depth-stencil texture
@@ -757,7 +757,7 @@ private:
 			pvrvk::FramebufferCreateInfo framebufferInfo;
 			framebufferInfo.setRenderPass(_renderPass);
 			framebufferInfo.setAttachment(0, _paraboloidTextures[i]);
-			framebufferInfo.setAttachment(1, device->createImageView(depthTexture));
+			framebufferInfo.setAttachment(1, device->createImageView(pvrvk::ImageViewCreateInfo(depthTexture)));
 			framebufferInfo.setDimensions(framebufferDim);
 
 			_framebuffer[i] = device->createFramebuffer(framebufferInfo);
@@ -1058,8 +1058,8 @@ struct PassStatue : public IModelPass
 		pvr::Stream::ptr_type vertexShaderSource = shell.getAssetStream(vertexShader);
 		pvr::Stream::ptr_type fragmentShaderSource = shell.getAssetStream(fragmentShader);
 
-		pipeInfo.vertexShader.setShader(device->createShader(vertexShaderSource->readToEnd<uint32_t>()));
-		pipeInfo.fragmentShader.setShader(device->createShader(fragmentShaderSource->readToEnd<uint32_t>()));
+		pipeInfo.vertexShader.setShader(device->createShaderModule(pvrvk::ShaderModuleCreateInfo(vertexShaderSource->readToEnd<uint32_t>())));
+		pipeInfo.fragmentShader.setShader(device->createShaderModule(pvrvk::ShaderModuleCreateInfo(fragmentShaderSource->readToEnd<uint32_t>())));
 
 		pipeInfo.viewport.setViewportAndScissor(0, pvrvk::Viewport(0.0f, 0.0f, static_cast<float>(viewportDim.getWidth()), static_cast<float>(viewportDim.getHeight())),
 			pvrvk::Rect2D(0, 0, viewportDim.getWidth(), viewportDim.getHeight()));
@@ -1067,7 +1067,7 @@ struct PassStatue : public IModelPass
 		pvrvk::ShaderModule shaders[Shaders::NumShaders];
 		for (uint32_t i = 0; i < Shaders::NumShaders; ++i)
 		{
-			shaders[i] = device->createShader(shell.getAssetStream(Shaders::Names[i])->readToEnd<uint32_t>());
+			shaders[i] = device->createShaderModule(pvrvk::ShaderModuleCreateInfo(shell.getAssetStream(Shaders::Names[i])->readToEnd<uint32_t>()));
 		}
 
 		// Effects Vertex and fragment shader
@@ -1171,8 +1171,7 @@ struct DeviceResources
 	pvrvk::Instance instance;
 	pvrvk::DebugReportCallback debugCallbacks[2];
 	pvrvk::Device device;
-	pvr::utils::vma::Allocator vmaBufferAllocator;
-	pvr::utils::vma::Allocator vmaImageAllocator;
+	pvr::utils::vma::Allocator vmaAllocator;
 
 	pvrvk::PipelineCache pipelineCache;
 
@@ -1205,8 +1204,8 @@ struct DeviceResources
 		if (device.isValid())
 		{
 			device->waitIdle();
-			int l = swapchain->getSwapchainLength();
-			for (int i = 0; i < l; ++i)
+			uint32_t l = swapchain->getSwapchainLength();
+			for (uint32_t i = 0; i < l; ++i)
 			{
 				if (perFrameFence[i].isValid())
 					perFrameFence[i]->wait();
@@ -1297,7 +1296,7 @@ pvr::Result VulkanGlass::initApplication()
 {
 	_cameraAngle = glm::pi<float>() - .6f;
 
-	for (int i = 0; i < PassBalloon::NumBalloon; ++i)
+	for (uint32_t i = 0; i < PassBalloon::NumBalloon; ++i)
 	{
 		_balloonAngle[i] = glm::pi<float>() * i / 5.f;
 	}
@@ -1338,6 +1337,12 @@ pvr::Result VulkanGlass::initView()
 	// Create instance and retrieve compatible physical devices
 	_deviceResources->instance = pvr::utils::createInstance(this->getApplicationName());
 
+	if (_deviceResources->instance->getNumPhysicalDevices() == 0)
+	{
+		setExitMessage("Unable not find a compatible Vulkan physical device.");
+		return pvr::Result::UnknownError;
+	}
+
 	// Create the surface
 	_deviceResources->surface = pvr::utils::createSurface(_deviceResources->instance, _deviceResources->instance->getPhysicalDevice(0), this->getWindow(), this->getDisplay());
 
@@ -1357,10 +1362,7 @@ pvr::Result VulkanGlass::initView()
 	_deviceResources->queue = _deviceResources->device->getQueue(queueAccessInfo.familyId, queueAccessInfo.queueId);
 
 	// Create memory allocator
-	pvr::utils::vma::AllocatorCreateInfo allocatorInfo;
-	allocatorInfo.device = _deviceResources->device;
-	_deviceResources->vmaBufferAllocator = pvr::utils::vma::createAllocator(allocatorInfo);
-	_deviceResources->vmaImageAllocator = pvr::utils::vma::createAllocator(allocatorInfo);
+	_deviceResources->vmaAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
 
 	pvrvk::SurfaceCapabilitiesKHR surfaceCapabilities = _deviceResources->instance->getPhysicalDevice(0)->getSurfaceCapabilities(_deviceResources->surface);
 
@@ -1374,15 +1376,15 @@ pvr::Result VulkanGlass::initView()
 	// create the swapchain
 	pvr::utils::createSwapchainAndDepthStencilImageAndViews(_deviceResources->device, _deviceResources->surface, getDisplayAttributes(), _deviceResources->swapchain,
 		_deviceResources->depthStencilImages, swapchainImageUsage, pvrvk::ImageUsageFlags::e_DEPTH_STENCIL_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_TRANSIENT_ATTACHMENT_BIT,
-		&_deviceResources->vmaImageAllocator);
+		&_deviceResources->vmaAllocator);
 
 	// create the framebuffer
 	pvr::utils::createOnscreenFramebufferAndRenderpass(_deviceResources->swapchain, &_deviceResources->depthStencilImages[0], _deviceResources->onScreenFramebuffer);
 
 	//---------------
 	// Create the commandpool
-	_deviceResources->commandPool =
-		_deviceResources->device->createCommandPool(_deviceResources->queue->getQueueFamilyId(), pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT);
+	_deviceResources->commandPool = _deviceResources->device->createCommandPool(
+		pvrvk::CommandPoolCreateInfo(_deviceResources->queue->getFamilyIndex(), pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT));
 
 	//---------------
 	// Create the DescriptorPool
@@ -1416,25 +1418,25 @@ pvr::Result VulkanGlass::initView()
 
 	// set up the passes
 	_deviceResources->passSkyBox.init(*this, _deviceResources->device, _deviceResources->onScreenFramebuffer, _deviceResources->onScreenFramebuffer[0]->getRenderPass(),
-		_deviceResources->sceneCommandBuffers[0], _deviceResources->descriptorPool, _deviceResources->commandPool, _deviceResources->pipelineCache,
-		_deviceResources->vmaBufferAllocator, _deviceResources->vmaImageAllocator);
+		_deviceResources->sceneCommandBuffers[0], _deviceResources->descriptorPool, _deviceResources->commandPool, _deviceResources->pipelineCache, _deviceResources->vmaAllocator,
+		_deviceResources->vmaAllocator);
 
 	_deviceResources->passBalloon.init(*this, _deviceResources->device, _deviceResources->onScreenFramebuffer, _deviceResources->onScreenFramebuffer[0]->getRenderPass(),
 		_deviceResources->sceneCommandBuffers[0], _deviceResources->descriptorPool, _deviceResources->commandPool, _balloonScene, _deviceResources->pipelineCache,
-		_deviceResources->vmaBufferAllocator, _deviceResources->vmaImageAllocator);
+		_deviceResources->vmaAllocator, _deviceResources->vmaAllocator);
 
 	_deviceResources->passParaboloid.init(*this, _deviceResources->device, _balloonScene, _deviceResources->sceneCommandBuffers[0], _deviceResources->commandPool,
-		_deviceResources->descriptorPool, _deviceResources->swapchain->getSwapchainLength(), _deviceResources->pipelineCache, _deviceResources->vmaBufferAllocator,
-		_deviceResources->vmaImageAllocator);
+		_deviceResources->descriptorPool, _deviceResources->swapchain->getSwapchainLength(), _deviceResources->pipelineCache, _deviceResources->vmaAllocator,
+		_deviceResources->vmaAllocator);
 
 	_deviceResources->passStatue.init(*this, _deviceResources->device, _deviceResources->sceneCommandBuffers[0], _deviceResources->descriptorPool,
 		_deviceResources->swapchain->getSwapchainLength(), _statueScene, _deviceResources->passParaboloid, _deviceResources->passSkyBox,
 		_deviceResources->onScreenFramebuffer[0]->getRenderPass(), _deviceResources->onScreenFramebuffer[0]->getDimensions(), _deviceResources->pipelineCache,
-		_deviceResources->vmaBufferAllocator, _deviceResources->vmaImageAllocator);
+		_deviceResources->vmaAllocator, _deviceResources->vmaAllocator);
 
 	// Initialize UIRenderer
-	_deviceResources->uiRenderer.init(
-		getWidth(), getHeight(), isFullScreen(), _deviceResources->onScreenFramebuffer[0]->getRenderPass(), 0, _deviceResources->commandPool, _deviceResources->queue);
+	_deviceResources->uiRenderer.init(getWidth(), getHeight(), isFullScreen(), _deviceResources->onScreenFramebuffer[0]->getRenderPass(), 0,
+		getBackBufferColorspace() == pvr::ColorSpace::sRGB, _deviceResources->commandPool, _deviceResources->queue);
 
 	//---------------
 	// Submit the inital commands
@@ -1453,8 +1455,8 @@ pvr::Result VulkanGlass::initView()
 															   " effect\nUp / Down  : Tilt camera");
 	_deviceResources->uiRenderer.getDefaultControls()->commitUpdates();
 	// Calculate the projection and view matrices
-	_projectionMatrix =
-		pvr::math::perspectiveFov(pvr::Api::Vulkan, CamFov, (float)this->getWidth(), (float)this->getHeight(), CamNear, CamFar, (isScreenRotated() ? glm::pi<float>() * .5f : 0.0f));
+	_projectionMatrix = pvr::math::perspectiveFov(pvr::Api::Vulkan, CamFov, static_cast<float>(this->getWidth()), static_cast<float>(this->getHeight()), CamNear, CamFar,
+		(isScreenRotated() ? glm::pi<float>() * .5f : 0.0f));
 	recordCommands();
 	return pvr::Result::Success;
 }
@@ -1498,7 +1500,7 @@ pvr::Result VulkanGlass::renderFrame()
 	if (this->shouldTakeScreenshot())
 	{
 		pvr::utils::takeScreenshot(_deviceResources->swapchain, swapchainIndex, _deviceResources->commandPool, _deviceResources->queue, this->getScreenshotFileName(),
-			&_deviceResources->vmaBufferAllocator, &_deviceResources->vmaImageAllocator);
+			&_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
 	}
 
 	//--------------------
@@ -1606,11 +1608,8 @@ void VulkanGlass::recordCommands()
 	}
 }
 
-/*!*********************************************************************************************************************
-\return auto ptr of the demo supplied by the user
-\brief  This function must be implemented by the user of the shell. The user should return its PVRShell object defining the
-		behaviour of the application.
-***********************************************************************************************************************/
+/// <summary>This function must be implemented by the user of the shell. The user should return its pvr::Shell object defining the behaviour of the application.</summary>
+/// <returns>Return a unique ptr to the demo supplied by the user.</returns>
 std::unique_ptr<pvr::Shell> pvr::newDemo()
 {
 	return std::unique_ptr<pvr::Shell>(new VulkanGlass());

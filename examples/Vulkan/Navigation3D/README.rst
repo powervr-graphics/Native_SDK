@@ -9,16 +9,20 @@ Demonstrates parsing, processing and rendering of raw OSM data as a 3D navigatio
 Description
 -----------	
 The 3D navigation example demonstrates the entire process of creating a navigational map from raw XML data,
-in this case the example is using Open Street Map data. The example demonstrates loading and parsing of the XML,
-it also shows the processing of the raw data into render-able polygons which can be used by the GPU, this is 
-achieved through triangulation which uses the ear clipping algorithm to generate triangles from lists of points.
-This example also shows several rendering techniques such as; anti-aliased lines with GRLAA for road outlines, 
-handling of UI elements for road names and places of interest, and an effective tile based approach to batching 
-and culling the geometry. 
+in this case using Open Street Map (OSM) data. 
 
-APIS
+The example shows how to load and parse the XML. It then shows how to process the raw data into renderable polygons which can be used by the GPU. This is achieved through triangulation, which uses the ear-clipping algorithm to generate triangles from lists of points.
+
+This example also shows several rendering techniques such as: 
+
+* anti-aliased lines with GRLAA for road outlines 
+* handling of UI elements for road names and places of interest 
+* an effective tile based approach to batching and culling the geometry.
+
+APIs
 ----
-* OpenGL ES 2.0+, Vulkan
+* OpenGL ES 2.0+
+* Vulkan
 
 Controls
 --------

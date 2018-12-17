@@ -7,7 +7,7 @@
 //!\cond NO_DOXYGEN
 #include "UIRendererGles.h"
 #include "ErrorsGles.h"
-#include "PVRCore/IO/BufferStream.h"
+#include "PVRCore/stream/BufferStream.h"
 #include "PVRUtils/OpenGLES/HelperGles.h"
 #include "PVRUtils/ArialBoldFont.h"
 #include "PVRUtils/PowerVRLogo.h"
@@ -476,13 +476,23 @@ void UIRenderer::setUiState()
 	_uiStateTracker.setUiState(_api);
 }
 
-void UIRenderer::init_CreateShaders()
+void UIRenderer::init_CreateShaders(bool framebufferSRGB)
 {
 	// Text_ pipe
 	GLuint shaders[] = { 0, 0 };
 
-	shaders[0] = pvr::utils::loadShader(BufferStream("", _print3DShader_glsles200_vsh, _print3DShader_glsles200_vsh_size), ShaderType::VertexShader, NULL, 0);
-	shaders[1] = pvr::utils::loadShader(BufferStream("", _print3DShader_glsles200_fsh, _print3DShader_glsles200_fsh_size), ShaderType::FragmentShader, NULL, 0);
+	shaders[0] = pvr::utils::loadShader(BufferStream("", _print3DShader_glsles200_vsh, _print3DShader_glsles200_vsh_size), ShaderType::VertexShader, nullptr, 0);
+
+	// fragment shader
+	if (framebufferSRGB)
+	{
+		const char* fragShaderDefines[] = { "FRAMEBUFFER_SRGB" };
+		shaders[1] = pvr::utils::loadShader(BufferStream("", _print3DShader_glsles200_fsh, _print3DShader_glsles200_fsh_size), ShaderType::FragmentShader, fragShaderDefines, 1);
+	}
+	else
+	{
+		shaders[1] = pvr::utils::loadShader(BufferStream("", _print3DShader_glsles200_fsh, _print3DShader_glsles200_fsh_size), ShaderType::FragmentShader, nullptr, 0);
+	}
 
 	const char* attributes[] = { "myVertex", "myUV" };
 	const uint16_t attribIndices[] = { 0, 1 };
@@ -507,24 +517,6 @@ void UIRenderer::init_CreateShaders()
 Font UIRenderer::createFont(const Texture& tex, GLuint sampler)
 {
 	auto results = utils::textureUpload(tex, _api == Api::OpenGLES2, true);
-
-	if (_api == Api::OpenGLES2)
-	{
-		gl::BindTexture(GL_TEXTURE_2D, results.image);
-		if (tex.getLayersSize().numMipLevels > 1)
-		{
-			gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
-			gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		}
-		else
-		{
-			gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		}
-		gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	}
-
 	return createFont(results.image, tex, sampler);
 }
 
@@ -641,7 +633,7 @@ inline Api getCurrentGlesVersion()
 
 } // namespace
 
-void UIRenderer::init(uint32_t width, uint32_t height, bool fullscreen)
+void UIRenderer::init(uint32_t width, uint32_t height, bool fullscreen, bool isFrameBufferSRGB)
 {
 	_api = pvr::utils::getCurrentGlesVersion();
 
@@ -657,7 +649,7 @@ void UIRenderer::init(uint32_t width, uint32_t height, bool fullscreen)
 	debugThrowOnApiError("UIRenderer::init 1");
 	storeCurrentGlState();
 	debugThrowOnApiError("UIRenderer::init 2");
-	init_CreateShaders();
+	init_CreateShaders(isFrameBufferSRGB);
 
 	if (_api != Api::OpenGLES2)
 	{
@@ -680,7 +672,7 @@ void UIRenderer::init(uint32_t width, uint32_t height, bool fullscreen)
 	_uiStateTracker.vertexAttribTypes[0] = GL_FLOAT;
 	_uiStateTracker.vertexAttribNormalized[0] = GL_FALSE;
 	_uiStateTracker.vertexAttribStride[0] = sizeof(float) * 6;
-	_uiStateTracker.vertexAttribOffset[0] = NULL;
+	_uiStateTracker.vertexAttribOffset[0] = nullptr;
 
 	_uiStateTracker.vertexAttribBindings[1] = 1;
 	_uiStateTracker.vertexAttribSizes[1] = 2;
@@ -703,7 +695,7 @@ void UIRenderer::init_CreateDefaultSampler()
 		gl::GenSamplers(1, &_samplerBilinear);
 		gl::GenSamplers(1, &_samplerTrilinear);
 		debugThrowOnApiError("UIRenderer::init_CreateDefaultSampler 1.1");
-		gl::SamplerParameteri(_samplerBilinear, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		gl::SamplerParameteri(_samplerBilinear, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
 		debugThrowOnApiError("UIRenderer::init_CreateDefaultSampler 1.2");
 		gl::SamplerParameteri(_samplerBilinear, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		debugThrowOnApiError("UIRenderer::init_CreateDefaultSampler 1.3");
@@ -715,7 +707,7 @@ void UIRenderer::init_CreateDefaultSampler()
 
 		debugThrowOnApiError("UIRenderer::init_CreateDefaultSampler 2");
 
-		gl::SamplerParameteri(_samplerTrilinear, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+		gl::SamplerParameteri(_samplerTrilinear, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 		debugThrowOnApiError("UIRenderer::init_CreateDefaultSampler 2.1");
 		gl::SamplerParameteri(_samplerTrilinear, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		debugThrowOnApiError("UIRenderer::init_CreateDefaultSampler 2.2");
@@ -737,7 +729,7 @@ void UIRenderer::init_CreateDefaultSdkLogo()
 {
 	Stream::ptr_type sdkLogo = Stream::ptr_type(new BufferStream("", _PowerVR_512x256_RG_pvr, _PowerVR_512x256_RG_pvr_size));
 	Texture sdkTex;
-	sdkTex = assets::textureLoad(sdkLogo, TextureFileFormat::PVR);
+	sdkTex = textureLoad(sdkLogo, TextureFileFormat::PVR);
 
 	sdkTex.setPixelFormat(GeneratePixelType2<'l', 'a', 8, 8>::ID);
 
@@ -746,21 +738,21 @@ void UIRenderer::init_CreateDefaultSdkLogo()
 	_sdkLogo->setAnchor(Anchor::BottomRight, glm::vec2(.98f, -.98f));
 	float scalefactor = .3f * getRenderingDim().x / BaseScreenDim.x;
 
-	if (scalefactor > 1)
+	if (scalefactor > 1.f)
 	{
-		scalefactor = 1;
+		scalefactor = 1.f;
 	}
-	else if (scalefactor > .5)
+	else if (scalefactor > .5f)
 	{
-		scalefactor = .5;
+		scalefactor = .5f;
 	}
-	else if (scalefactor > .25)
+	else if (scalefactor > .25f)
 	{
-		scalefactor = .25;
+		scalefactor = .25f;
 	}
-	else if (scalefactor > .125)
+	else if (scalefactor > .125f)
 	{
-		scalefactor = .125;
+		scalefactor = .125f;
 	}
 	else
 	{
@@ -800,21 +792,29 @@ void UIRenderer::init_CreateDefaultFont()
 	// pick the right font size of this resolution.
 	if (maxRenderDim <= 800)
 	{
-		arialFontTex = Stream::ptr_type(new BufferStream("", _arialbd_36_pvr, _arialbd_36_pvr_size));
+		arialFontTex = Stream::ptr_type(new BufferStream("", _arialbd_36_rgb888_pvr, _arialbd_36_rgb888_pvr_size));
 	}
 	else if (maxRenderDim <= 1000)
 	{
-		arialFontTex = Stream::ptr_type(new BufferStream("", _arialbd_46_pvr, _arialbd_46_pvr_size));
+		arialFontTex = Stream::ptr_type(new BufferStream("", _arialbd_46_rgb888_pvr, _arialbd_46_rgb888_pvr_size));
 	}
 	else
 	{
-		arialFontTex = Stream::ptr_type(new BufferStream("", _arialbd_56_pvr, _arialbd_56_pvr_size));
+		arialFontTex = Stream::ptr_type(new BufferStream("", _arialbd_56_rgb888_pvr, _arialbd_56_rgb888_pvr_size));
 	}
 
-	fontTex = assets::textureLoad(arialFontTex, TextureFileFormat::PVR);
-	fontTex.setPixelFormat(GeneratePixelType1<'a', 8>::ID);
+	fontTex = textureLoad(arialFontTex, TextureFileFormat::PVR);
 
 	_defaultFont = createFont(fontTex);
+
+	// Font Textures are encoded as sRGB 3 channels because one/ teo channel sRGb textures are not supported in OpenGLES.
+	// Therefore set G,B and Alpha to value from the Red channel.
+	gl::BindTexture(GL_TEXTURE_2D, _defaultFont->getTexture());
+	gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_RED);
+	gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_RED);
+	gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_RED);
+	gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, GL_RED);
+	gl::BindTexture(GL_TEXTURE_2D, 0);
 }
 } // namespace ui
 } // namespace pvr

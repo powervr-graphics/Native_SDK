@@ -53,7 +53,7 @@ void enumerateInstanceExtensions(std::vector<ExtensionProperties>& outExtensionP
 	uint32_t numItems = 0;
 	pvrvk::impl::vkThrowIfFailed(vkBindings.vkEnumerateInstanceExtensionProperties(nullptr, &numItems, nullptr), "ExtensionsVk::Failed to enumerate instance extension properties");
 	outExtensionProps.resize(numItems);
-	pvrvk::impl::vkThrowIfFailed(vkBindings.vkEnumerateInstanceExtensionProperties(nullptr, &numItems, reinterpret_cast<VkExtensionProperties*>(outExtensionProps.data())),
+	pvrvk::impl::vkThrowIfFailed(vkBindings.vkEnumerateInstanceExtensionProperties(nullptr, &numItems, (VkExtensionProperties*)outExtensionProps.data()),
 		"ExtensionsVk::Failed to enumerate instance extension properties");
 }
 

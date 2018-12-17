@@ -58,7 +58,7 @@ END
 // RCDATA
 //
 /////////////////////////////////////////////////////////////////////////////
-// RCDATA: Assets (scenes, shaders, effects, textures...)
+// RCDATA: Assets (scenes,  effects, textures...)
 Arm.pvr		RCDATA		"..\\..\\..\\assets\\Robot\\Arm.pvr"
 Grid.pvr		RCDATA		"..\\..\\..\\assets\\Robot\\Grid.pvr"
 Pipes.pvr		RCDATA		"..\\..\\..\\assets\\Robot\\Pipes.pvr"
@@ -67,16 +67,11 @@ RobotNormal.pvr		RCDATA		"..\\..\\..\\assets\\Robot\\RobotNormal.pvr"
 Tiles.pvr		RCDATA		"..\\..\\..\\assets\\Robot\\Tiles.pvr"
 Robot.pod		RCDATA		"..\\..\\..\\assets\\Robot\\Robot.pod"
 Skinning.pfx		RCDATA		"..\\Skinning.pfx"
-DefaultFragShader_vk.fsh		RCDATA		"..\\DefaultFragShader_vk.fsh"
-DefaultVertShader_vk.vsh		RCDATA		"..\\DefaultVertShader_vk.vsh"
-SkinnedFragShader_vk.fsh		RCDATA		"..\\SkinnedFragShader_vk.fsh"
-SkinnedVertShader_vk.vsh		RCDATA		"..\\SkinnedVertShader_vk.vsh"
-DefaultVertShader_vk.spv		RCDATA		"..\\DefaultVertShader_vk.spv"
-DefaultFragShader_vk.spv		RCDATA		"..\\DefaultFragShader_vk.spv"
-SkinnedVertShader_vk.spv		RCDATA		"..\\SkinnedVertShader_vk.spv"
-SkinnedFragShader_vk.spv		RCDATA		"..\\SkinnedFragShader_vk.spv"
-recompile.sh		RCDATA		"..\\recompile.sh"
-recompile.bat		RCDATA		"..\\recompile.bat"
+// RCDATA: Vulkan Spir-V shaders(glsl)
+DefaultFragShader.fsh.spv		RCDATA		"..\\DefaultFragShader.fsh.spv"
+DefaultVertShader.vsh.spv		RCDATA		"..\\DefaultVertShader.vsh.spv"
+SkinnedFragShader.fsh.spv		RCDATA		"..\\SkinnedFragShader.fsh.spv"
+SkinnedVertShader.vsh.spv		RCDATA		"..\\SkinnedVertShader.vsh.spv"
 
 #endif    // English (United Kingdom) resources
 /////////////////////////////////////////////////////////////////////////////

@@ -15,7 +15,7 @@
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="IMGdoxygen.css" rel="stylesheet" type="text/css"/>
-<link rel="shortcut icon" href="http://www.imgtec.com/images/img.ico">
+<link rel="shortcut icon" type="image/x-icon" href="img.ico">
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
+      <a href="https://www.imgtec.com/developers/" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRAssets</span> Documentation</a>
    <tbody>
@@ -95,9 +95,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1assets_1_1_mesh_1_1_bone_batches.html">BoneBatches</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">This class is used to break meshes into different batches in order to avoid overflowing the number of uniforms that would otherwise be required to load all the bones into. <a href="structpvr_1_1assets_1_1_mesh_1_1_bone_batches.html#details">More...</a><br/></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_face_data.html">FaceData</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The <a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_face_data.html" title="The FaceData class contains the information of the Indices that defines the Faces of a Mesh...">FaceData</a> class contains the information of the Indices that defines the Faces of a <a class="el" href="classpvr_1_1assets_1_1_mesh.html" title="Mesh class. Represent a Mesh, a collection of primitives (usually, but not necessarily, triangles) together with their per-vertex information. A mesh&#39;s is a grouping where all vertices/primitives will have the same basic transformation (but can then be skinned) and material applied.">Mesh</a>.  <a href="classpvr_1_1assets_1_1_mesh_1_1_face_data.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -113,7 +110,7 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a4722749d8d5bfa2c811074f83a109169"><td class="memItemLeft" align="right" valign="top">typedef IndexedArray<br class="typebreak"/>
+<tr class="memitem:a4722749d8d5bfa2c811074f83a109169"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="classpvr_1_1_indexed_array.html">IndexedArray</a><br class="typebreak"/>
 &lt; <a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_vertex_attribute_data.html">VertexAttributeData</a>, <br class="typebreak"/>
 StringHash &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#a4722749d8d5bfa2c811074f83a109169">VertexAttributeContainer</a></td></tr>
 <tr class="memdesc:a4722749d8d5bfa2c811074f83a109169"><td class="mdescLeft">&#160;</td><td class="mdescRight">This container is automatically kept sorted. <a href="#a4722749d8d5bfa2c811074f83a109169">More...</a><br/></td></tr>
@@ -139,15 +136,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ae320f2a19d317b96675e82d626482cfc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#ae320f2a19d317b96675e82d626482cfc">clearAllData</a> ()</td></tr>
 <tr class="memdesc:ae320f2a19d317b96675e82d626482cfc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove all data blocks. <a href="#ae320f2a19d317b96675e82d626482cfc">More...</a><br/></td></tr>
 <tr class="separator:ae320f2a19d317b96675e82d626482cfc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aed6ea457b436fc57266d14d8fddf407c"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#aed6ea457b436fc57266d14d8fddf407c">getBatchBone</a> (uint32_t batch, uint32_t bone) const </td></tr>
-<tr class="memdesc:aed6ea457b436fc57266d14d8fddf407c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the global index of a bone from its batch and index in the batch. <a href="#aed6ea457b436fc57266d14d8fddf407c">More...</a><br/></td></tr>
-<tr class="separator:aed6ea457b436fc57266d14d8fddf407c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad547fc0fe2790736db4839bd70052962"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#ad547fc0fe2790736db4839bd70052962">getBatchFaceOffset</a> (uint32_t batch) const </td></tr>
-<tr class="memdesc:ad547fc0fe2790736db4839bd70052962"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the offset in the Faces data that the specified batch begins at. <a href="#ad547fc0fe2790736db4839bd70052962">More...</a><br/></td></tr>
-<tr class="separator:ad547fc0fe2790736db4839bd70052962"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7719d5ec94e1a6deca30103f0234c52f"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#a7719d5ec94e1a6deca30103f0234c52f">getBatchFaceOffsetBytes</a> (uint32_t batch) const </td></tr>
-<tr class="memdesc:a7719d5ec94e1a6deca30103f0234c52f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the offset in the Faces data that the specified batch begins at. <a href="#a7719d5ec94e1a6deca30103f0234c52f">More...</a><br/></td></tr>
-<tr class="separator:a7719d5ec94e1a6deca30103f0234c52f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab6f9fe4b4705e6dfead28b9b87e27116"><td class="memItemLeft" align="right" valign="top">const void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#ab6f9fe4b4705e6dfead28b9b87e27116">getData</a> (uint32_t index) const </td></tr>
 <tr class="memdesc:ab6f9fe4b4705e6dfead28b9b87e27116"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a pointer to the data of a specified Data block. Read only overload. <a href="#ab6f9fe4b4705e6dfead28b9b87e27116">More...</a><br/></td></tr>
 <tr class="separator:ab6f9fe4b4705e6dfead28b9b87e27116"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -169,14 +157,14 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a0bd59376ff32b82b6eebba0c8c135ace"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structpvr_1_1assets_1_1_mesh_1_1_mesh_info.html">MeshInfo</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#a0bd59376ff32b82b6eebba0c8c135ace">getMeshInfo</a> () const </td></tr>
 <tr class="memdesc:a0bd59376ff32b82b6eebba0c8c135ace"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get information on this <a class="el" href="classpvr_1_1assets_1_1_mesh.html" title="Mesh class. Represent a Mesh, a collection of primitives (usually, but not necessarily, triangles) together with their per-vertex information. A mesh&#39;s is a grouping where all vertices/primitives will have the same basic transformation (but can then be skinned) and material applied.">Mesh</a>. <a href="#a0bd59376ff32b82b6eebba0c8c135ace">More...</a><br/></td></tr>
 <tr class="separator:a0bd59376ff32b82b6eebba0c8c135ace"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a542e53405460a419d30d375ef5b6786f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structpvr_1_1assets_1_1_mesh_1_1_mesh_info.html">MeshInfo</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#a542e53405460a419d30d375ef5b6786f">getMeshInfo</a> ()</td></tr>
+<tr class="memdesc:a542e53405460a419d30d375ef5b6786f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get information on this <a class="el" href="classpvr_1_1assets_1_1_mesh.html" title="Mesh class. Represent a Mesh, a collection of primitives (usually, but not necessarily, triangles) together with their per-vertex information. A mesh&#39;s is a grouping where all vertices/primitives will have the same basic transformation (but can then be skinned) and material applied.">Mesh</a>. <a href="#a542e53405460a419d30d375ef5b6786f">More...</a><br/></td></tr>
+<tr class="separator:a542e53405460a419d30d375ef5b6786f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6e178e1f82eef52d6c4ee5e91ca2990a"><td class="memItemLeft" align="right" valign="top">const FreeValue *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#a6e178e1f82eef52d6c4ee5e91ca2990a">getMeshSemantic</a> (const StringHash &amp;semantic) const </td></tr>
 <tr class="memdesc:a6e178e1f82eef52d6c4ee5e91ca2990a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the value of a Per-Mesh semantic as a FreeValue, null if it does not exist. <a href="#a6e178e1f82eef52d6c4ee5e91ca2990a">More...</a><br/></td></tr>
 <tr class="separator:a6e178e1f82eef52d6c4ee5e91ca2990a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4631a8b4fb8bfa0888efd0da743f1150"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#a4631a8b4fb8bfa0888efd0da743f1150">getNumBatchBones</a> (uint32_t batch) const </td></tr>
-<tr class="memdesc:a4631a8b4fb8bfa0888efd0da743f1150"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get how many bones the specified bone batch has. <a href="#a4631a8b4fb8bfa0888efd0da743f1150">More...</a><br/></td></tr>
-<tr class="separator:a4631a8b4fb8bfa0888efd0da743f1150"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaed956628770c5a5d268ad6575d97cba"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#aaed956628770c5a5d268ad6575d97cba">getNumBoneBatches</a> () const </td></tr>
-<tr class="memdesc:aaed956628770c5a5d268ad6575d97cba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the number of <a class="el" href="structpvr_1_1assets_1_1_mesh_1_1_bone_batches.html" title="This class is used to break meshes into different batches in order to avoid overflowing the number of...">BoneBatches</a> the bones of this mesh are organised into. <a href="#aaed956628770c5a5d268ad6575d97cba">More...</a><br/></td></tr>
+<tr class="memdesc:aaed956628770c5a5d268ad6575d97cba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the number of BoneBatches the bones of this mesh are organised into. <a href="#aaed956628770c5a5d268ad6575d97cba">More...</a><br/></td></tr>
 <tr class="separator:aaed956628770c5a5d268ad6575d97cba"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af2b00633fc96e0ca805715c91f670abb"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#af2b00633fc96e0ca805715c91f670abb">getNumBones</a> () const </td></tr>
 <tr class="memdesc:af2b00633fc96e0ca805715c91f670abb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the information of a VertexAttribute by its SemanticName. <a href="#af2b00633fc96e0ca805715c91f670abb">More...</a><br/></td></tr>
@@ -190,9 +178,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a1f92999bddcef4351a470309b287af91"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#a1f92999bddcef4351a470309b287af91">getNumFaces</a> () const </td></tr>
 <tr class="memdesc:a1f92999bddcef4351a470309b287af91"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the number of faces that comprise this mesh. <a href="#a1f92999bddcef4351a470309b287af91">More...</a><br/></td></tr>
 <tr class="separator:a1f92999bddcef4351a470309b287af91"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a104eceb0cca8c21cc7b1f437af60781d"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#a104eceb0cca8c21cc7b1f437af60781d">getNumFaces</a> (uint32_t boneBatch) const </td></tr>
-<tr class="memdesc:a104eceb0cca8c21cc7b1f437af60781d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the number of faces that comprise the designated bonebatch. <a href="#a104eceb0cca8c21cc7b1f437af60781d">More...</a><br/></td></tr>
-<tr class="separator:a104eceb0cca8c21cc7b1f437af60781d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a563f695e4cd8d361859ae1d6529e29f7"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#a563f695e4cd8d361859ae1d6529e29f7">getNumIndices</a> () const </td></tr>
 <tr class="memdesc:a563f695e4cd8d361859ae1d6529e29f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the number of indices that comprise this mesh. Takes TriangleStrips into consideration.  <a href="#a563f695e4cd8d361859ae1d6529e29f7">More...</a><br/></td></tr>
 <tr class="separator:a563f695e4cd8d361859ae1d6529e29f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -205,6 +190,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aad44274c2f282635815af77085e05ae0"><td class="memItemLeft" align="right" valign="top">PrimitiveTopology&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#aad44274c2f282635815af77085e05ae0">getPrimitiveType</a> () const </td></tr>
 <tr class="memdesc:aad44274c2f282635815af77085e05ae0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the primitive topology that the data in this <a class="el" href="classpvr_1_1assets_1_1_mesh.html" title="Mesh class. Represent a Mesh, a collection of primitives (usually, but not necessarily, triangles) together with their per-vertex information. A mesh&#39;s is a grouping where all vertices/primitives will have the same basic transformation (but can then be skinned) and material applied.">Mesh</a> represent. <a href="#aad44274c2f282635815af77085e05ae0">More...</a><br/></td></tr>
 <tr class="separator:aad44274c2f282635815af77085e05ae0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af679432248190c876d74b342af4c16ac"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af679432248190c876d74b342af4c16ac"></a>
+int32_t&#160;</td><td class="memItemRight" valign="bottom"><b>getSkeletonId</b> () const </td></tr>
+<tr class="separator:af679432248190c876d74b342af4c16ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0b8b165ab2fb7b8e3c0d76c1b243a7e4"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#a0b8b165ab2fb7b8e3c0d76c1b243a7e4">getStride</a> (uint32_t index) const </td></tr>
 <tr class="memdesc:a0b8b165ab2fb7b8e3c0d76c1b243a7e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get distance in bytes from vertex in an array to the next. <a href="#a0b8b165ab2fb7b8e3c0d76c1b243a7e4">More...</a><br/></td></tr>
 <tr class="separator:a0b8b165ab2fb7b8e3c0d76c1b243a7e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -245,9 +233,6 @@ Public Member Functions</h2></td></tr>
 &lt; StridedBuffer &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#a489d5d9e5a2a54127623b756e78c4315">getVertexData</a> () const </td></tr>
 <tr class="memdesc:a489d5d9e5a2a54127623b756e78c4315"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get all DataBlocks of this <a class="el" href="classpvr_1_1assets_1_1_mesh.html" title="Mesh class. Represent a Mesh, a collection of primitives (usually, but not necessarily, triangles) together with their per-vertex information. A mesh&#39;s is a grouping where all vertices/primitives will have the same basic transformation (but can then be skinned) and material applied.">Mesh</a>. <a href="#a489d5d9e5a2a54127623b756e78c4315">More...</a><br/></td></tr>
 <tr class="separator:a489d5d9e5a2a54127623b756e78c4315"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a12bcecb68bbf030852edd91a31498160"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#a12bcecb68bbf030852edd91a31498160">mergeBoneBatches</a> (uint32_t boneIndexAttributeId)</td></tr>
-<tr class="memdesc:a12bcecb68bbf030852edd91a31498160"><td class="mdescLeft">&#160;</td><td class="mdescRight">Merge all bone batches into one, effectively re-merging the mesh into one draw call <a href="#a12bcecb68bbf030852edd91a31498160">More...</a><br/></td></tr>
-<tr class="separator:a12bcecb68bbf030852edd91a31498160"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1e2ba13eaed9b97ac1975af18dcfd421"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#a1e2ba13eaed9b97ac1975af18dcfd421">removeAllVertexAttributes</a> ()</td></tr>
 <tr class="memdesc:a1e2ba13eaed9b97ac1975af18dcfd421"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove all vertex attribute to the mesh. <a href="#a1e2ba13eaed9b97ac1975af18dcfd421">More...</a><br/></td></tr>
 <tr class="separator:a1e2ba13eaed9b97ac1975af18dcfd421"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -290,7 +275,7 @@ Public Member Functions</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">typedef IndexedArray&lt;<a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_vertex_attribute_data.html">VertexAttributeData</a>, StringHash&gt; <a class="el" href="classpvr_1_1assets_1_1_mesh.html#a4722749d8d5bfa2c811074f83a109169">pvr::assets::Mesh::VertexAttributeContainer</a></td>
+          <td class="memname">typedef <a class="el" href="classpvr_1_1_indexed_array.html">IndexedArray</a>&lt;<a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_vertex_attribute_data.html">VertexAttributeData</a>, StringHash&gt; <a class="el" href="classpvr_1_1assets_1_1_mesh.html#a4722749d8d5bfa2c811074f83a109169">pvr::assets::Mesh::VertexAttributeContainer</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -564,116 +549,6 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="aed6ea457b436fc57266d14d8fddf407c"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">uint32_t pvr::assets::Mesh::getBatchBone </td>
-          <td>(</td>
-          <td class="paramtype">uint32_t&#160;</td>
-          <td class="paramname"><em>batch</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint32_t&#160;</td>
-          <td class="paramname"><em>bone</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Get the global index of a bone from its batch and index in the batch.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">batch</td><td>The index of a BoneBatch</td></tr>
-    <tr><td class="paramname">bone</td><td>The index in the of a bone in the batch</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>The index of the bone</dd></dl>
-
-</div>
-</div>
-<a class="anchor" id="ad547fc0fe2790736db4839bd70052962"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">uint32_t pvr::assets::Mesh::getBatchFaceOffset </td>
-          <td>(</td>
-          <td class="paramtype">uint32_t&#160;</td>
-          <td class="paramname"><em>batch</em></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Get the offset in the Faces data that the specified batch begins at.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">batch</td><td>The index of a BoneBatch</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>The offset, in bytes, in the Faces data that the specified batch begins at.</dd></dl>
-
-</div>
-</div>
-<a class="anchor" id="a7719d5ec94e1a6deca30103f0234c52f"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">uint32_t pvr::assets::Mesh::getBatchFaceOffsetBytes </td>
-          <td>(</td>
-          <td class="paramtype">uint32_t&#160;</td>
-          <td class="paramname"><em>batch</em></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Get the offset in the Faces data that the specified batch begins at.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">batch</td><td>The index of a BoneBatch</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>The offset, in bytes, in the Faces data that the specified batch begins at.</dd></dl>
-
-</div>
-</div>
 <a class="anchor" id="ab6f9fe4b4705e6dfead28b9b87e27116"></a>
 <div class="memitem">
 <div class="memproto">
@@ -877,6 +752,32 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a542e53405460a419d30d375ef5b6786f"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structpvr_1_1assets_1_1_mesh_1_1_mesh_info.html">MeshInfo</a>&amp; pvr::assets::Mesh::getMeshInfo </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get information on this <a class="el" href="classpvr_1_1assets_1_1_mesh.html" title="Mesh class. Represent a Mesh, a collection of primitives (usually, but not necessarily, triangles) together with their per-vertex information. A mesh&#39;s is a grouping where all vertices/primitives will have the same basic transformation (but can then be skinned) and material applied.">Mesh</a>.</p>
+<dl class="section return"><dt>Returns</dt><dd>A <a class="el" href="structpvr_1_1assets_1_1_mesh_1_1_mesh_info.html" title="Contains mesh information.">Mesh::MeshInfo</a> object containing information on this <a class="el" href="classpvr_1_1assets_1_1_mesh.html" title="Mesh class. Represent a Mesh, a collection of primitives (usually, but not necessarily, triangles) together with their per-vertex information. A mesh&#39;s is a grouping where all vertices/primitives will have the same basic transformation (but can then be skinned) and material applied.">Mesh</a></dd></dl>
+
+</div>
+</div>
 <a class="anchor" id="a6e178e1f82eef52d6c4ee5e91ca2990a"></a>
 <div class="memitem">
 <div class="memproto">
@@ -910,39 +811,6 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a4631a8b4fb8bfa0888efd0da743f1150"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">uint32_t pvr::assets::Mesh::getNumBatchBones </td>
-          <td>(</td>
-          <td class="paramtype">uint32_t&#160;</td>
-          <td class="paramname"><em>batch</em></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Get how many bones the specified bone batch has.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">batch</td><td>The index of a BoneBatch</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>The number of bones in the batch with index (batch)</dd></dl>
-
-</div>
-</div>
 <a class="anchor" id="aaed956628770c5a5d268ad6575d97cba"></a>
 <div class="memitem">
 <div class="memproto">
@@ -964,7 +832,7 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Get the number of <a class="el" href="structpvr_1_1assets_1_1_mesh_1_1_bone_batches.html" title="This class is used to break meshes into different batches in order to avoid overflowing the number of...">BoneBatches</a> the bones of this mesh are organised into.</p>
+<p>Get the number of BoneBatches the bones of this mesh are organised into.</p>
 <dl class="section return"><dt>Returns</dt><dd>The number of bone batches</dd></dl>
 
 </div>
@@ -1070,31 +938,6 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Get the number of faces that comprise this mesh.</p>
-<dl class="section return"><dt>Returns</dt><dd>The number of faces</dd></dl>
-
-</div>
-</div>
-<a class="anchor" id="a104eceb0cca8c21cc7b1f437af60781d"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">uint32_t pvr::assets::Mesh::getNumFaces </td>
-          <td>(</td>
-          <td class="paramtype">uint32_t&#160;</td>
-          <td class="paramname"><em>boneBatch</em></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Get the number of faces that comprise the designated bonebatch.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">boneBatch</td><td>The bone batch id</td></tr>
-  </table>
-  </dd>
-</dl>
 <dl class="section return"><dt>Returns</dt><dd>The number of faces</dd></dl>
 
 </div>
@@ -1403,7 +1246,7 @@ Public Member Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<p>This method does lookup in constant O(1) time. Use the getVertexAttributeID to get the index to use this method</p>
+<p>This method does lookup in constant O(1) time. Use the <a class="el" href="classpvr_1_1assets_1_1_mesh.html#a514add6ba80930e469334ca641ad3f17" title="Get the Index of a VertexAttribute by its SemanticName.">getVertexAttributeIndex()</a> to get the index to use this method</p>
 
 </div>
 </div>
@@ -1577,30 +1420,6 @@ Public Member Functions</h2></td></tr>
 <p>Get all DataBlocks of this <a class="el" href="classpvr_1_1assets_1_1_mesh.html" title="Mesh class. Represent a Mesh, a collection of primitives (usually, but not necessarily, triangles) together with their per-vertex information. A mesh&#39;s is a grouping where all vertices/primitives will have the same basic transformation (but can then be skinned) and material applied.">Mesh</a>.</p>
 <dl class="section return"><dt>Returns</dt><dd>The datablocks, as an std::vector of StridedBuffers that additionally have a stride member. </dd></dl>
 <p>Use as char arrays and additionally use the <a class="el" href="classpvr_1_1assets_1_1_mesh.html#a0b8b165ab2fb7b8e3c0d76c1b243a7e4" title="Get distance in bytes from vertex in an array to the next.">getStride()</a> method to get the element stride</p>
-
-</div>
-</div>
-<a class="anchor" id="a12bcecb68bbf030852edd91a31498160"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void pvr::assets::Mesh::mergeBoneBatches </td>
-          <td>(</td>
-          <td class="paramtype">uint32_t&#160;</td>
-          <td class="paramname"><em>boneIndexAttributeId</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Merge all bone batches into one, effectively re-merging the mesh into one draw call</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">boneIndexAttributeId</td><td>The Attribute ID of the Bone Index attribute of this mesh</td></tr>
-  </table>
-  </dd>
-</dl>
 
 </div>
 </div>
@@ -1951,7 +1770,7 @@ Public Member Functions</h2></td></tr>
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>/usr/buildxl/buildroot/sdk/branch/SDK/framework/PVRAssets/Model/<a class="el" href="_mesh_8h_source.html">Mesh.h</a></li>
+<li>/usr/buildxl/buildroot/sdk/branch/SDK/framework/PVRAssets/model/<a class="el" href="_mesh_8h_source.html">Mesh.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.4-->

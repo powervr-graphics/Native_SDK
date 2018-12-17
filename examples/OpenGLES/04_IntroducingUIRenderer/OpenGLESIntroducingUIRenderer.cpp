@@ -9,8 +9,8 @@
 #include "PVRUtils/PVRUtilsGles.h"
 
 // PVR font files
-const char CentralTextFontFile[] = "arial_36.pvr";
-const char CentralTitleFontFile[] = "starjout_60.pvr";
+const char CentralTextFontFile[] = "arial_36_rgb.pvr";
+const char CentralTitleFontFile[] = "starjout_60_rgb.pvr";
 const char CentralTextFile[] = "Text.txt";
 
 namespace FontSize {
@@ -24,9 +24,9 @@ enum Enum
 }
 
 const char* SubTitleFontFiles[FontSize::Count] = {
-	"title_36.pvr",
-	"title_46.pvr",
-	"title_56.pvr",
+	"title_36_rgb.pvr",
+	"title_46_rgb.pvr",
+	"title_56_rgb.pvr",
 };
 
 const uint32_t IntroTime = 4000;
@@ -146,7 +146,7 @@ pvr::Result OpenGLESIntroducingUIRenderer::quitApplication()
 }
 
 /*!******************************************************************************************************************
-\brief  Generates a simple _background texture procedurally.
+\brief  Generates a simple background texture procedurally.
 \param[in]  screenWidth screen dimension's width
 \param[in]  screenHeight screen dimension's height
 *********************************************************************************************************************/
@@ -194,7 +194,7 @@ inline void loadFontFromResources(pvr::Shell& streamManager, const char* filenam
 	// Hence we use texture load.
 	pvr::Stream::ptr_type fontFile = streamManager.getAssetStream(filename);
 	pvr::Texture tmpTexture;
-	tmpTexture = pvr::assets::textureLoad(fontFile, pvr::getTextureFormatFromFilename(filename));
+	tmpTexture = pvr::textureLoad(fontFile, pvr::getTextureFormatFromFilename(filename));
 	font = uirenderer.createFont(tmpTexture);
 }
 
@@ -207,7 +207,7 @@ pvr::Result OpenGLESIntroducingUIRenderer::initView()
 {
 	_context = pvr::createEglContext();
 	_context->init(getWindow(), getDisplay(), getDisplayAttributes());
-	_uiRenderer.init(getWidth(), getHeight(), isFullScreen());
+	_uiRenderer.init(getWidth(), getHeight(), isFullScreen(), getBackBufferColorspace() == pvr::ColorSpace::sRGB);
 
 	// The fonts are loaded here using a PVRTool's ResourceFile wrapper. However,
 	// it is possible to load the textures in any way that provides access to a pointer
@@ -232,9 +232,15 @@ pvr::Result OpenGLESIntroducingUIRenderer::initView()
 		{
 			titleFontFileName = SubTitleFontFiles[FontSize::n_36];
 		}
-
 		loadFontFromResources(*this, titleFontFileName, _uiRenderer, subTitleFont);
 	}
+	gl::BindTexture(GL_TEXTURE_2D, subTitleFont->getTexture());
+	gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, GL_RED);
+	gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_ONE);
+	gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_ONE);
+	gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_ONE);
+
+	gl::BindTexture(GL_TEXTURE_2D, 0);
 
 	_centralTextGroup = _uiRenderer.createMatrixGroup();
 	_titleText1 = _uiRenderer.createText(subTitleFont);
@@ -254,12 +260,12 @@ pvr::Result OpenGLESIntroducingUIRenderer::initView()
 	_centralTitleLine1->setAnchor(pvr::ui::Anchor::BottomCenter, glm::vec2(.0f, .0f));
 	_centralTitleLine2->setAnchor(pvr::ui::Anchor::TopCenter, glm::vec2(.0f, .0f));
 
-	// Generate _background texture
+	// Generate background texture
 	generateBackgroundTexture(getWidth(), getHeight());
-	_textStartY = (int32_t)(-_uiRenderer.getRenderingDimY() - _centralTextGroup->getDimensions().y);
+	_textStartY = static_cast<int32_t>(-_uiRenderer.getRenderingDimY() - _centralTextGroup->getDimensions().y);
 	float linesSize = _centralTextLines.size() * _centralTextLines[0]->getDimensions().y;
-	_textEndY = (int32_t)(_uiRenderer.getRenderingDimY() + linesSize * .5f);
-	_textOffset = (float)_textStartY;
+	_textEndY = static_cast<int32_t>(_uiRenderer.getRenderingDimY() + linesSize * .5f);
+	_textOffset = static_cast<float>(_textStartY);
 
 	gl::ClearColor(0.f, 0.f, 0.f, 1.f);
 	return pvr::Result::Success;
@@ -271,8 +277,7 @@ pvr::Result OpenGLESIntroducingUIRenderer::initView()
 *********************************************************************************************************************/
 pvr::Result OpenGLESIntroducingUIRenderer::releaseView()
 {
-	// Release _uiRenderer Textures
-	_uiRenderer.release();
+	// Release uiRenderer Textures
 	_centralTextLines.clear();
 	_centralTitleLine1.reset();
 	_centralTitleLine2.reset();
@@ -280,6 +285,8 @@ pvr::Result OpenGLESIntroducingUIRenderer::releaseView()
 	_titleText2.reset();
 	_centralTextGroup.reset();
 	_background.reset();
+	_uiRenderer.release();
+	_context.reset();
 
 	return pvr::Result::Success;
 }
@@ -298,7 +305,7 @@ pvr::Result OpenGLESIntroducingUIRenderer::renderFrame()
 
 	_uiRenderer.beginRendering();
 	_background->render();
-	// Render the 'Introducing _uiRenderer' title for the first n seconds.
+	// Render the 'IntroducingUIRenderer' title for the first n seconds.
 	if (currentTime < IntroTime)
 	{
 		updateCentralTitle(currentTime);
@@ -307,17 +314,23 @@ pvr::Result OpenGLESIntroducingUIRenderer::renderFrame()
 		_centralTitleLine1->render();
 		_centralTitleLine2->render();
 	}
-	// Render the 3D _text.
+	// Render the 3D text.
 	else
 	{
 		updateCentralText(currentTime);
-		// Tells _uiRenderer to do all the pending _text rendering now
+		// Tells uiRenderer to do all the pending text rendering now
 		_centralTextGroup->render();
-		//// Tells _uiRenderer to do all the pending _text rendering now
+		// Tells uiRenderer to do all the pending text rendering now
 	}
 
-	_titleText1->render();
-	_titleText2->render();
+	if (_titleText1->getColor().a > 0.0f)
+	{
+		_titleText1->render();
+	}
+	if (_titleText2->getColor().a > 0.0f)
+	{
+		_titleText2->render();
+	}
 	_uiRenderer.getSdkLogo()->render();
 	_uiRenderer.endRendering();
 
@@ -337,7 +350,7 @@ pvr::Result OpenGLESIntroducingUIRenderer::renderFrame()
 void OpenGLESIntroducingUIRenderer::updateSubTitle(uint64_t currentTime)
 {
 	// Fade effect
-	static int prevLang = (int)-1;
+	static uint32_t prevLang = -1;
 	uint32_t titleLang = static_cast<uint32_t>((currentTime / 1000) / (TitleTime / 1000)) % Language::Count;
 
 	uint32_t nextLang = (titleLang + 1) % Language::Count;
@@ -346,13 +359,14 @@ void OpenGLESIntroducingUIRenderer::updateSubTitle(uint64_t currentTime)
 	float nextPerc = 0.0f;
 	if (modTime > TitleTime - TitleFadeTime)
 	{
-		titlePerc = 1.0f - ((modTime - (TitleTime - TitleFadeTime)) / (float)TitleFadeTime);
+		titlePerc = 1.0f - ((modTime - (TitleTime - TitleFadeTime)) / static_cast<float>(TitleFadeTime));
 		nextPerc = 1.0f - titlePerc;
 	}
-	uint32_t titleCol = ((static_cast<uint32_t>(titlePerc * 255)) << 24) | 0xFFFFFF;
-	uint32_t nextCol = ((static_cast<uint32_t>(nextPerc * 255)) << 24) | 0xFFFFFF;
 
-	// Here we are passing in a wide-character std::string to _uiRenderer function. This allows
+	const glm::vec4 titleCol = glm::vec4(1.0f, 1.f, 1.f, titlePerc);
+	const glm::vec4 nextCol = glm::vec4(1.0f, 1.f, 1.f, nextPerc);
+
+	// Here we are passing in a wide-character std::string to uiRenderer function. This allows
 	// Unicode to be compiled in to std::string-constants, which this code snippet demonstrates.
 	// Because we are not setting a projection or a model-view matrix the default projection
 	// matrix is used.
@@ -364,6 +378,7 @@ void OpenGLESIntroducingUIRenderer::updateSubTitle(uint64_t currentTime)
 	}
 	_titleText1->setColor(titleCol);
 	_titleText2->setColor(nextCol);
+
 	_titleText1->commitUpdates();
 	_titleText2->commitUpdates();
 }
@@ -374,8 +389,8 @@ void OpenGLESIntroducingUIRenderer::updateSubTitle(uint64_t currentTime)
 *********************************************************************************************************************/
 void OpenGLESIntroducingUIRenderer::updateCentralTitle(uint64_t currentTime)
 {
-	// Using the MeasureText() method provided by _uiRenderer, we can determine the bounding-box
-	// size of a std::string of _text. This can be useful for justify _text centrally, as we are
+	// Using the MeasureText() method provided by uiRenderer, we can determine the bounding-box
+	// size of a std::string of text. This can be useful for justify text centrally, as we are
 	// doing here.
 	float fadeAmount = 1.0f;
 
@@ -401,13 +416,24 @@ void OpenGLESIntroducingUIRenderer::updateCentralTitle(uint64_t currentTime)
 *********************************************************************************************************************/
 void OpenGLESIntroducingUIRenderer::updateCentralText(uint64_t currentTime)
 {
-	const glm::mat4 mProjection = glm::perspective(0.7f, float(_uiRenderer.getRenderingDimX()) / float(_uiRenderer.getRenderingDimY()), 1.0f, 2000.0f);
+	glm::mat4 mProjection = glm::mat4(1.0f);
+
+	if (isScreenRotated())
+	{
+		mProjection = pvr::math::perspectiveFov(
+			pvr::Api::OpenGLES31, 0.7f, static_cast<float>(_uiRenderer.getRenderingDimY()), static_cast<float>(_uiRenderer.getRenderingDimX()), 1.0f, 2000.0f);
+	}
+	else
+	{
+		mProjection = pvr::math::perspectiveFov(
+			pvr::Api::OpenGLES31, 0.7f, static_cast<float>(_uiRenderer.getRenderingDimX()), static_cast<float>(_uiRenderer.getRenderingDimY()), 1.0f, 2000.0f);
+	}
 
 	const glm::mat4 mCamera = glm::lookAt(glm::vec3(_uiRenderer.getRenderingDimX() * .5f, -_uiRenderer.getRenderingDimY(), 700.0f),
 		glm::vec3(_uiRenderer.getRenderingDimX() * .5f, 0, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	_mvp = mProjection * mCamera;
 
-	float lineSpacingNDC = 1.6f * _centralTextLines[0]->getFont()->getFontLineSpacing() / (float)getHeight();
+	float lineSpacingNDC = 1.6f * _centralTextLines[0]->getFont()->getFontLineSpacing() / static_cast<float>(getHeight());
 
 	// Calculate the FPS scale.
 	float fFPSScale = float(getFrameTime()) * 60 / 1000;
@@ -419,50 +445,45 @@ void OpenGLESIntroducingUIRenderer::updateCentralText(uint64_t currentTime)
 		fSpeedInc = _textOffset / _textEndY;
 	}
 	_textOffset += (0.75f + (1.0f * fSpeedInc)) * fFPSScale;
-	if (_textOffset > (float)_textEndY)
+	if (_textOffset > static_cast<float>(_textEndY))
 	{
-		_textOffset = (float)_textStartY;
+		_textOffset = static_cast<float>(_textStartY);
 	}
 
 	glm::mat4 trans = glm::translate(glm::vec3(0.0f, _textOffset, 0.0f));
 
-	// _uiRenderer can optionally be provided with user-defined projection and model-view matrices
-	// which allow custom layout of _text. Here we are proving both a projection and model-view
+	// uiRenderer can optionally be provided with user-defined projection and model-view matrices
+	// which allow custom layout of text. Here we are proving both a projection and model-view
 	// matrix. The projection matrix specified here uses perspective projection which will
-	// provide the 3D effect. The model-view matrix positions the the _text in world space
-	// providing the 'camera' position and the scrolling of the _text.
+	// provide the 3D effect. The model-view matrix positions the the text in world space
+	// providing the 'camera' position and the scrolling of the text.
 
 	_centralTextGroup->setScaleRotateTranslate(trans);
 	_centralTextGroup->setViewProjection(_mvp);
 
 	// The previous method (renderTitle()) explains the following functions in more detail
-	// however put simply, we are looping the entire array of loaded _text which is encoded
-	// in UTF-8. _uiRenderer batches this internally and the call to Flush() will render the
-	// _text to the frame buffer. We are also fading out the _text over a certain distance.
+	// however put simply, we are looping the entire array of loaded text which is encoded
+	// in UTF-8. uiRenderer batches this internally and the call to Flush() will render the
+	// _text to the frame buffer. We are also fading out the text over a certain distance.
 	float pos, fade;
-	uint32_t uiCol;
 	for (uint32_t uiIndex = 0; uiIndex < _textLines.size(); ++uiIndex)
 	{
 		pos = (_textOffset - (uiIndex * 36.0f));
 		fade = 1.0f;
+		glm::vec4 color(1.0f, 1.0f, 0.0f, 1.0f);
 		if (pos > TextFadeStart)
 		{
 			fade = glm::clamp(1.0f - ((pos - TextFadeStart) / (TextFadeEnd - TextFadeStart)), 0.0f, 1.0f);
+			color.a *= fade;
 		}
-
-		uiCol = ((static_cast<uint32_t>(fade * 255)) << 24) | 0x00FFFF;
-
-		_centralTextLines[uiIndex]->setColor(uiCol);
+		_centralTextLines[uiIndex]->setColor(color);
 		_centralTextLines[uiIndex]->setAnchor(pvr::ui::Anchor::Center, glm::vec2(0.f, -(uiIndex * lineSpacingNDC)));
 	}
 	_centralTextGroup->commitUpdates();
 }
 
-/*!******************************************************************************************************************
-\brief  This function must be implemented by the user of the shell.
-	The user should return its pvr::Shell object defining the behaviour of the application.
-\return Return auto ptr to the demo supplied by the user
-*********************************************************************************************************************/
+/// <summary>This function must be implemented by the user of the shell. The user should return its pvr::Shell object defining the behaviour of the application.</summary>
+/// <returns>Return a unique ptr to the demo supplied by the user.</returns>
 std::unique_ptr<pvr::Shell> pvr::newDemo()
 {
 	return std::unique_ptr<pvr::Shell>(new OpenGLESIntroducingUIRenderer());

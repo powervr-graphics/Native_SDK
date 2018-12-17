@@ -8,15 +8,6 @@
 #include <android/asset_manager.h>
 
 namespace pvr {
-AndroidAssetStream::AndroidAssetStream(AAssetManager* assetManager, const std::string& filename) : Stream(filename), assetManager(assetManager), _asset(NULL)
-{
-	_isReadable = true;
-}
-
-AndroidAssetStream::~AndroidAssetStream()
-{
-	close();
-}
 
 void AndroidAssetStream::read(size_t size, size_t count, void* outData, size_t& outElementsRead) const
 {
@@ -28,7 +19,6 @@ void AndroidAssetStream::read(size_t size, size_t count, void* outData, size_t& 
 
 	if (dataRead == 0)
 	{
-		Log(LogLevel::Debug, "[AndroidAssetStream::read] Was attempting to read past the end of stream ");
 		outElementsRead = dataRead;
 	}
 	else if (dataRead < 0)

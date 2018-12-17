@@ -58,7 +58,7 @@ END
 // RCDATA
 //
 /////////////////////////////////////////////////////////////////////////////
-// RCDATA: Assets (scenes, shaders, effects, textures...)
+// RCDATA: Assets (scenes,  effects, textures...)
 Arm.pvr		RCDATA		"..\\..\\..\\assets\\Robot\\Arm.pvr"
 Grid.pvr		RCDATA		"..\\..\\..\\assets\\Robot\\Grid.pvr"
 Pipes.pvr		RCDATA		"..\\..\\..\\assets\\Robot\\Pipes.pvr"
@@ -66,6 +66,7 @@ RobotDiffuse.pvr		RCDATA		"..\\..\\..\\assets\\Robot\\RobotDiffuse.pvr"
 RobotNormal.pvr		RCDATA		"..\\..\\..\\assets\\Robot\\RobotNormal.pvr"
 Tiles.pvr		RCDATA		"..\\..\\..\\assets\\Robot\\Tiles.pvr"
 Robot.pod		RCDATA		"..\\..\\..\\assets\\Robot\\Robot.pod"
+// RCDATA: OpenGL ES Textual shaders(glsl)
 DefaultVertShader.vsh		RCDATA		"..\\DefaultVertShader.vsh"
 DefaultFragShader.fsh		RCDATA		"..\\DefaultFragShader.fsh"
 SkinnedVertShader.vsh		RCDATA		"..\\SkinnedVertShader.vsh"

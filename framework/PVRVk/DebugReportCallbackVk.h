@@ -23,7 +23,9 @@ public:
 	/// <param name="flags">A set of DebugReportFlagsEXT which specify the events causing this callback to be called.</param>
 	/// <param name="callback">The application callback function to call.</param>
 	/// <param name="pUserData">The userdata which will be passed to the application callback function.</param>
-	DebugReportCallbackCreateInfo(DebugReportFlagsEXT flags, PFN_vkDebugReportCallbackEXT callback, void* pUserData) : _flags(flags), _callback(callback), _userData(pUserData) {}
+	DebugReportCallbackCreateInfo(DebugReportFlagsEXT flags, PFN_vkDebugReportCallbackEXT callback, void* pUserData = nullptr)
+		: _flags(flags), _callback(callback), _userData(pUserData)
+	{}
 
 	/// <summary>Get the flags for the creation info</summary>
 	/// <returns>The DebugReportFlagsEXT</returns>

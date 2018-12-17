@@ -5,7 +5,7 @@
 #define TEXCOORD_ARRAY 2
 
 layout(location = VERTEX_ARRAY) in highp vec3 inVertex;
-layout(location = NORMAL_ARRAY) in highp vec3 inNormal;
+layout(location = NORMAL_ARRAY) in mediump vec3 inNormal;
 layout(location = TEXCOORD_ARRAY) in mediump vec2 inTexCoords;
 
 layout(std140, binding = 0) uniform DynamicsPerModel
@@ -15,9 +15,9 @@ layout(std140, binding = 0) uniform DynamicsPerModel
 	highp mat4 mWorldViewITMatrix;
 };
 
-layout (location = 0) out mediump vec2 vTexCoord;
-layout (location = 1) out highp vec3 vNormal;
-layout (location = 2) out highp vec3 vViewPosition;
+layout(location = 0) out mediump vec2 vTexCoord;
+layout(location = 1) out mediump vec3 vNormal;
+layout(location = 2) out highp vec3 vViewPosition;
 
 void main() 
 {

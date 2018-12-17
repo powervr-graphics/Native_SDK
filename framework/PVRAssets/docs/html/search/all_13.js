@@ -1,13 +1,13 @@
 var searchData=
 [
-  ['uniformrequired',['UniformRequired',['../structpvr_1_1assets_1_1effect_1_1_pipeline_condition.html#a6fec8ab23f2e6e96cce92553a2d6f4bbac17035b12c07c05c8e6395ada123cb04',1,'pvr::assets::effect::PipelineCondition']]],
-  ['uniformrequiredno',['UniformRequiredNo',['../structpvr_1_1assets_1_1effect_1_1_pipeline_condition.html#a6fec8ab23f2e6e96cce92553a2d6f4bba141cdc75bed6c3fe878bb546620d612d',1,'pvr::assets::effect::PipelineCondition']]],
-  ['uniforms',['uniforms',['../structpvr_1_1assets_1_1effect_1_1_pipeline_definition.html#a6a155a700665e1fdc48f18738b8cac93',1,'pvr::assets::effect::PipelineDefinition']]],
-  ['uniformsemantic',['UniformSemantic',['../structpvr_1_1assets_1_1effect_1_1_uniform_semantic.html',1,'pvr::assets::effect']]],
-  ['units',['units',['../structpvr_1_1assets_1_1_mesh_1_1_mesh_info.html#a5080ae5ce7dad75fbb01e97334c52c19',1,'pvr::assets::Mesh::MeshInfo::units()'],['../structpvr_1_1assets_1_1_model_1_1_internal_data.html#a2e9fcb42e24137acf05768f5dc11e6c8',1,'pvr::assets::Model::InternalData::units()']]],
-  ['unknown',['Unknown',['../namespacepvr.html#a7449705e04c8fe948e390ea793106107a88183b946cc5f0e8c96b2e66e1c74a7e',1,'pvr']]],
-  ['unpackmatrix',['unpackMatrix',['../structpvr_1_1assets_1_1_mesh_1_1_internal_data.html#a04e91786b4c0b0beac25a18fc61fd9f1',1,'pvr::assets::Mesh::InternalData']]],
-  ['usedepthstencil',['useDepthStencil',['../structpvr_1_1assets_1_1effect_1_1_subpass.html#a925c912aa63251e3d9bb18f565e9573f',1,'pvr::assets::effect::Subpass']]],
-  ['userdata',['userData',['../structpvr_1_1assets_1_1_model_1_1_node_1_1_internal_data.html#aa806e568e8f9adee167c9fa759a0d003',1,'pvr::assets::Model::Node::InternalData::userData()'],['../structpvr_1_1assets_1_1_model_1_1_material_1_1_internal_data.html#a6667891ee136b12b0753e61eb986140d',1,'pvr::assets::Model::Material::InternalData::userData()'],['../structpvr_1_1assets_1_1_model_1_1_internal_data.html#a6daf41fe67611b85376b306cec3cf133',1,'pvr::assets::Model::InternalData::userData()']]],
-  ['userdataptr',['userDataPtr',['../structpvr_1_1assets_1_1_mesh_1_1_internal_data.html#af1563815f92a828077fe66985b0660d0',1,'pvr::assets::Mesh::InternalData::userDataPtr()'],['../structpvr_1_1assets_1_1_model_1_1_internal_data.html#a62093d8a85f55125408b6b5a4b028e6a',1,'pvr::assets::Model::InternalData::userDataPtr()']]]
+  ['targetnodeidx',['targetNodeIdx',['../structpvr_1_1assets_1_1_camera_1_1_internal_data.html#aebe44b2e19cd3109c212bc4ad96c96e1',1,'pvr::assets::Camera::InternalData']]],
+  ['texture',['Texture',['../classpvr_1_1assets_1_1_model_1_1_texture.html',1,'pvr::assets::Model']]],
+  ['texture',['Texture',['../classpvr_1_1assets_1_1_model_1_1_texture.html#a40970410ead4cc22c5350c2f42ebd666',1,'pvr::assets::Model::Texture::Texture()'],['../classpvr_1_1assets_1_1_model_1_1_texture.html#a87c535a5a6cf73bcac851bba8877f82a',1,'pvr::assets::Model::Texture::Texture(const StringHash &amp;&amp;name)']]],
+  ['textureindices',['textureIndices',['../structpvr_1_1assets_1_1_model_1_1_material_1_1_internal_data.html#a22273426e4d4deb919d77b6474c7163e',1,'pvr::assets::Model::Material::InternalData']]],
+  ['textures',['textures',['../structpvr_1_1assets_1_1_model_1_1_internal_data.html#a5483f50b56400578022b089a7f168434',1,'pvr::assets::Model::InternalData']]],
+  ['toworldmatrix',['toWorldMatrix',['../classpvr_1_1assets_1_1_model.html#a12448e1f020a38195dc4bc2675776064',1,'pvr::assets::Model']]],
+  ['transformflags',['TransformFlags',['../structpvr_1_1assets_1_1_model_1_1_node_1_1_internal_data.html#a701ea5273f31220a00b09fc2979d07ac',1,'pvr::assets::Model::Node::InternalData::TransformFlags()'],['../structpvr_1_1assets_1_1_model_1_1_node_1_1_internal_data.html#a4b1f87ae329441c3879fcc8021689866',1,'pvr::assets::Model::Node::InternalData::transformFlags()']]],
+  ['translate',['Translate',['../structpvr_1_1assets_1_1_model_1_1_node_1_1_internal_data.html#a701ea5273f31220a00b09fc2979d07acaf77612a713ad5bd566de4aa8b3479c21',1,'pvr::assets::Model::Node::InternalData']]],
+  ['translation',['translation',['../structpvr_1_1assets_1_1_model_1_1_node_1_1_internal_data.html#ab82ad841034d2f103c2c35f89e569c9f',1,'pvr::assets::Model::Node::InternalData']]],
+  ['type',['type',['../structpvr_1_1assets_1_1_light_1_1_internal_data.html#af0026779246ad825fee84960ebd74db5',1,'pvr::assets::Light::InternalData']]]
 ];

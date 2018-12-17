@@ -19,7 +19,7 @@ the documentation for the main module page.
 *****************************
 PVRVK is a library providing an advanced interface that is close enough to the original Vulkan interface
 to be perfectly useable with the Vulkan spec, while offering a sweet spot combination of simplicity,
-ease of use and minimal overhead. It most important features are C++ language offering defaults and
+ease of use and minimal overhead. Its most important features are C++ language offering defaults and
 constructors for all objects, deterministic lifecycle management through reference counting and in
 general a clean, modern interface.
 
@@ -67,9 +67,9 @@ Pipeline Creation
 										 .setDescSetLayout(1, descLayoutUboDynamic)
 										 .setDescSetLayout(2, descLayoutUboStatic));
 
-	//Load the shaders from their bytes. The createShader function accepts a vector of unsigned integers containing the binary spir-v.
-	pipeCreate.vertexShader = device->createShader(getAssetStream("Object.vsh.spv")->readToEnd<uint32_t>());
-	pipeCreate.fragmentShader = device->createShader(getAssetStream("Solid.fsh.spv")->readToEnd<uint32_t>());
+	//Load the shaders from their bytes. The createShaderModule function accepts a vector of unsigned integers containing the binary spir-v.
+	pipeCreate.vertexShader = device->createShaderModule(getAssetStream("Object.vsh.spv")->readToEnd<uint32_t>());
+	pipeCreate.fragmentShader = device->createShaderModule(getAssetStream("Solid.fsh.spv")->readToEnd<uint32_t>());
 
 	//Create a color blending state without blending
 	pvrvk::PipelineColorBlendAttachmentState cbStateNoBlend(false);

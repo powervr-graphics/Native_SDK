@@ -107,6 +107,7 @@ struct DrawDirectionalLight
 	struct DirectionalLightProperties
 	{
 		glm::vec4 lightIntensity;
+		glm::vec4 ambientLight;
 		glm::vec4 viewSpaceLightDirection;
 	};
 	std::vector<DirectionalLightProperties> lightProperties;
@@ -142,24 +143,24 @@ namespace Files {
 const char* const PointLightModelFile = "pointlight.pod";
 const char* const SceneFile = "SatyrAndTable.pod";
 
-const char* const GBufferVertexShader = "GBufferVertexShader_vk.vsh.spv";
-const char* const GBufferFragmentShader = "GBufferFragmentShader_vk.fsh.spv";
+const char* const GBufferVertexShader = "GBufferVertexShader.vsh.spv";
+const char* const GBufferFragmentShader = "GBufferFragmentShader.fsh.spv";
 
-const char* const GBufferFloorVertexShader = "GBufferFloorVertexShader_vk.vsh.spv";
-const char* const GBufferFloorFragmentShader = "GBufferFloorFragmentShader_vk.fsh.spv";
+const char* const GBufferFloorVertexShader = "GBufferFloorVertexShader.vsh.spv";
+const char* const GBufferFloorFragmentShader = "GBufferFloorFragmentShader.fsh.spv";
 
-const char* const AttributelessVertexShader = "AttributelessVertexShader_vk.vsh.spv";
+const char* const AttributelessVertexShader = "AttributelessVertexShader.vsh.spv";
 
-const char* const DirectionalLightingFragmentShader = "DirectionalLightFragmentShader_vk.fsh.spv";
+const char* const DirectionalLightingFragmentShader = "DirectionalLightFragmentShader.fsh.spv";
 
-const char* const PointLightPass1FragmentShader = "PointLightPass1FragmentShader_vk.fsh.spv";
-const char* const PointLightPass1VertexShader = "PointLightPass1VertexShader_vk.vsh.spv";
+const char* const PointLightPass1FragmentShader = "PointLightPass1FragmentShader.fsh.spv";
+const char* const PointLightPass1VertexShader = "PointLightPass1VertexShader.vsh.spv";
 
-const char* const PointLightPass2FragmentShader = "PointLightPass2FragmentShader_vk.fsh.spv";
-const char* const PointLightPass2VertexShader = "PointLightPass2VertexShader_vk.vsh.spv";
+const char* const PointLightPass2FragmentShader = "PointLightPass2FragmentShader.fsh.spv";
+const char* const PointLightPass2VertexShader = "PointLightPass2VertexShader.vsh.spv";
 
-const char* const PointLightPass3FragmentShader = "PointLightPass3FragmentShader_vk.fsh.spv";
-const char* const PointLightPass3VertexShader = "PointLightPass3VertexShader_vk.vsh.spv";
+const char* const PointLightPass3FragmentShader = "PointLightPass3FragmentShader.fsh.spv";
+const char* const PointLightPass3VertexShader = "PointLightPass3VertexShader.vsh.spv";
 } // namespace Files
 
 // buffer entry names used for the structured memory views used throughout the demo
@@ -194,6 +195,7 @@ const char* const ProxyWorldViewMatrix = "mProxyWorldViewMatrix";
 namespace PerDirectionalLight {
 const char* const LightIntensity = "fLightIntensity";
 const char* const LightViewDirection = "vViewDirection";
+const char* const AmbientLight = "fAmbientLight";
 } // namespace PerDirectionalLight
 } // namespace BufferEntryNames
 
@@ -205,27 +207,50 @@ const float FrameRate = 1.0f / 120.0f;
 // Directional lighting configuration data
 namespace DirectionalLightConfiguration {
 static bool AdditionalDirectionalLight = true;
-const float DirectionalLightIntensity = .2f;
+const float DirectionalLightIntensity = .1f;
+const glm::vec4 AmbientLightColor = glm::vec4(.005f, .005f, .005f, 0.0f);
 } // namespace DirectionalLightConfiguration
 
 // Point lighting configuration data
 namespace PointLightConfiguration {
-float LightMaxDistance = 40.f;
-float LightMinDistance = 20.f;
-float LightMinHeight = -30.f;
-float LightMaxHeight = 40.f;
-float LightAxialVelocityChange = .01f;
-float LightRadialVelocityChange = .003f;
-float LightVerticalVelocityChange = .01f;
-float LightMaxAxialVelocity = 5.f;
-float LightMaxRadialVelocity = 1.5f;
-float LightMaxVerticalVelocity = 5.f;
+const float LightMaxDistance = 40.f;
+const float LightMinDistance = 20.f;
+const float LightMinHeight = -30.f;
+const float LightMaxHeight = 40.f;
+const float LightAxialVelocityChange = .01f;
+const float LightRadialVelocityChange = .003f;
+const float LightVerticalVelocityChange = .01f;
+const float LightMaxAxialVelocity = 5.f;
+const float LightMaxRadialVelocity = 1.5f;
+const float LightMaxVerticalVelocity = 5.f;
 
-static int32_t MaxScenePointLights = 5;
-static int32_t NumProceduralPointLights = 10;
-float PointLightScale = 32.0f; // PointLightScale handles the size of the scaled light geometry. This effects the areas of the screen which will go through point light rendering
-float PointLightRadius = PointLightScale / 2.0f; // PointLightRadius handles the actual point light falloff. Modifying one of these requires also modifying the other
-float PointlightIntensity = 5.0f;
+int32_t MaxScenePointLights = 5;
+int32_t NumProceduralPointLights = 10;
+float PointlightIntensity = 20.f;
+const float PointLightMinIntensityForCuttoff = 10.f / 255.f;
+const float PointLightMaxRadius = 1.5f * glm::sqrt(PointLightConfiguration::PointlightIntensity / PointLightConfiguration::PointLightMinIntensityForCuttoff);
+// The "Max radius" value we find is 50% more than the radius where we reach a specific light value.
+// Light attenuation is quadratic: Light value = Intensity / Distance ^2
+// The problem is that with this equation, light has infinite radius, as it asymptotically goes to zero as distance increases
+// Very big radius is in general undesirable for deferred shading where you wish to have a lot of small lights, and where there
+// contribution will be small to none, but a sharp cutoff is usually quite visible on dark scenes.
+// For that reason, we have implemented an attenuation equation which begins close to the light following this value,
+// but then after a predetermined value, switches to linear falloff and continues to zero following the same slope.
+// This can be tweaked through this vale: It basically says "At which light intensity should the quadratic equation
+// be switched to a linear one and trail to zero?".
+// Following the numbers, if we follow the slope of 1/x^2 linearly, the value becomes exactly zero at 1.5 x distance.
+// Good guide values here are around 5.f/255.f for a sharp falloff (but hence better performance as less pixels are shaded
+// up to ~1.f/255.f for almost undetectably soft falloff in pitch-black scenes (hence more correct, but shading a lot
+// of pixels that have a miniscule lighting contribution).
+// Additionally, if there is a strong ambient or directional, this value can be increased (hence reducing the number of pixels
+// shaded) as the ambient light will completely hide the small contributions of the edges of the point lights. Reversely,
+// a completely dark scene would only be acceptable with values less than 2.f as otherwise the cutoff of the lights would be
+// quite visible.
+// NUMBERS: ( Symbols: Light Value: LV, Differential of LV: LV' Intensity: I, Distance: D, Distance of switch quadratic->linear:A)
+// After doing some number-crunching, starting with LV = I / D^2
+// LV = I * (3 * A^2 - 2 * D / A^3). See the PointLightPass2FragmentShader.
+// Finally, crunching more numbers you will find that LV drops to zero when D = 1.5 * A, so we need to render the lights
+// with a radius of 1.5 * A. In the shader, this is reversed to precisely find the point where we switch from quadratic to linear.
 } // namespace PointLightConfiguration
 
 // Subpasses used in the renderpass
@@ -255,8 +280,7 @@ struct DeviceResources
 	pvrvk::Surface surface;
 	pvrvk::Queue queue;
 	pvrvk::Swapchain swapchain;
-	pvr::utils::vma::Allocator vmaBufferAllocator;
-	pvr::utils::vma::Allocator vmaImageAllocator;
+	pvr::utils::vma::Allocator vmaAllocator;
 	pvrvk::CommandPool commandPool;
 	pvrvk::DescriptorPool descriptorPool;
 
@@ -371,6 +395,8 @@ struct DeviceResources
 
 	RenderData renderInfo;
 
+	pvrvk::PipelineCache pipelineCache;
+
 	// UIRenderer used to display text
 	pvr::ui::UIRenderer uiRenderer;
 	~DeviceResources()
@@ -378,8 +404,8 @@ struct DeviceResources
 		if (device.isValid())
 		{
 			device->waitIdle();
-			int l = swapchain->getSwapchainLength();
-			for (int i = 0; i < l; ++i)
+			uint32_t l = swapchain->getSwapchainLength();
+			for (uint32_t i = 0; i < l; ++i)
 			{
 				if (perFrameAcquireFence[i].isValid())
 					perFrameAcquireFence[i]->wait();
@@ -413,7 +439,6 @@ public:
 	uint32_t _numberOfDirectionalLights;
 
 	// Projection and Model View matrices
-	glm::vec3 _cameraPosition;
 	glm::mat4 _viewMatrix;
 	glm::mat4 _projectionMatrix;
 	glm::mat4 _viewProjectionMatrix;
@@ -548,6 +573,12 @@ pvr::Result VulkanDeferredShading::initView()
 	// Create instance and retrieve compatible physical devices
 	_deviceResources->instance = pvr::utils::createInstance(this->getApplicationName());
 
+	if (_deviceResources->instance->getNumPhysicalDevices() == 0)
+	{
+		setExitMessage("Unable not find a compatible Vulkan physical device.");
+		return pvr::Result::UnknownError;
+	}
+
 	// Create the surface
 	_deviceResources->surface = pvr::utils::createSurface(_deviceResources->instance, _deviceResources->instance->getPhysicalDevice(0), this->getWindow(), this->getDisplay());
 
@@ -568,8 +599,7 @@ pvr::Result VulkanDeferredShading::initView()
 
 	_deviceResources->queue = _deviceResources->device->getQueue(queueAccessInfo.familyId, queueAccessInfo.queueId);
 
-	_deviceResources->vmaBufferAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
-	_deviceResources->vmaImageAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
+	_deviceResources->vmaAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
 
 	pvrvk::SurfaceCapabilitiesKHR surfaceCapabilities = _deviceResources->instance->getPhysicalDevice(0)->getSurfaceCapabilities(_deviceResources->surface);
 
@@ -583,7 +613,7 @@ pvr::Result VulkanDeferredShading::initView()
 	// create the swapchain
 	pvr::utils::createSwapchainAndDepthStencilImageAndViews(_deviceResources->device, _deviceResources->surface, getDisplayAttributes(), _deviceResources->swapchain,
 		_deviceResources->depthStencilImages, swapchainImageUsage, pvrvk::ImageUsageFlags::e_DEPTH_STENCIL_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_TRANSIENT_ATTACHMENT_BIT,
-		&_deviceResources->vmaImageAllocator);
+		&_deviceResources->vmaAllocator);
 
 	// Get the number of swap images
 	_numSwapImages = _deviceResources->swapchain->getSwapchainLength();
@@ -614,7 +644,8 @@ pvr::Result VulkanDeferredShading::initView()
 	Log(LogLevel::Information, "Onscreen Framebuffer dimensions: %d x %d\n", _windowWidth, _windowHeight);
 
 	// create the commandpool
-	_deviceResources->commandPool = _deviceResources->device->createCommandPool(queueAccessInfo.familyId, pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT);
+	_deviceResources->commandPool =
+		_deviceResources->device->createCommandPool(pvrvk::CommandPoolCreateInfo(queueAccessInfo.familyId, pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT));
 
 	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(pvrvk::DescriptorPoolCreateInfo()
 																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 32)
@@ -681,7 +712,7 @@ pvr::Result VulkanDeferredShading::initView()
 
 	// setup UI renderer
 	_deviceResources->uiRenderer.init(getWidth(), getHeight(), isFullScreen(), _deviceResources->onScreenLocalMemoryRenderPass, RenderPassSubpasses::UIRenderer,
-		_deviceResources->commandPool, _deviceResources->queue);
+		getBackBufferColorspace() == pvr::ColorSpace::sRGB, _deviceResources->commandPool, _deviceResources->queue);
 	_deviceResources->uiRenderer.getDefaultTitle()->setText("DeferredShading");
 	_deviceResources->uiRenderer.getDefaultTitle()->commitUpdates();
 	_deviceResources->uiRenderer.getDefaultControls()->setText("Action1: Pause\nAction2: Orbit Camera\n");
@@ -691,14 +722,17 @@ pvr::Result VulkanDeferredShading::initView()
 	bool isRotated = this->isScreenRotated();
 	if (isRotated)
 	{
-		_projectionMatrix = pvr::math::perspective(pvr::Api::Vulkan, _mainScene->getCamera(0).getFOV(), (float)this->getHeight() / (float)this->getWidth(),
+		_projectionMatrix = pvr::math::perspective(pvr::Api::Vulkan, _mainScene->getCamera(0).getFOV(), static_cast<float>(this->getHeight()) / static_cast<float>(this->getWidth()),
 			_mainScene->getCamera(0).getNear(), _mainScene->getCamera(0).getFar(), glm::pi<float>() * .5f);
 	}
 	else
 	{
-		_projectionMatrix = pvr::math::perspective(pvr::Api::Vulkan, _mainScene->getCamera(0).getFOV(), (float)this->getWidth() / (float)this->getHeight(),
-			_mainScene->getCamera(0).getNear(), _mainScene->getCamera(0).getFar());
+		_projectionMatrix = pvr::math::perspective(pvr::Api::Vulkan, _mainScene->getCamera(0).getFOV(),
+			static_cast<float>(this->getWidth()) / static_cast<float>(this->getHeight()), _mainScene->getCamera(0).getNear(), _mainScene->getCamera(0).getFar());
 	}
+
+	// Create the pipeline cache
+	_deviceResources->pipelineCache = _deviceResources->device->createPipelineCache();
 
 	// Create demo pipelines
 	createPipelines();
@@ -771,7 +805,7 @@ pvr::Result VulkanDeferredShading::renderFrame()
 	if (this->shouldTakeScreenshot())
 	{
 		pvr::utils::takeScreenshot(_deviceResources->swapchain, _swapchainIndex, _deviceResources->commandPool, _deviceResources->queue, this->getScreenshotFileName(),
-			&_deviceResources->vmaBufferAllocator, &_deviceResources->vmaImageAllocator);
+			&_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
 	}
 
 	//--------------------
@@ -881,7 +915,7 @@ void VulkanDeferredShading::createPointLightGeometryStencilPassDescriptorSets()
 			_deviceResources->pointLightGeometryStencilDescriptorSets.add(
 				_deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->pointLightGeometryStencilDescriptorLayout));
 
-			pvrvk::WriteDescriptorSet* descSetUpdate = &writeDescSets[i * _numSwapImages];
+			pvrvk::WriteDescriptorSet* descSetUpdate = &writeDescSets[i * 2];
 			descSetUpdate->set(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, _deviceResources->pointLightGeometryStencilDescriptorSets[i], 0);
 			descSetUpdate->setBufferInfo(
 				0, pvrvk::DescriptorBufferInfo(_deviceResources->staticPointLightBuffer, 0, _deviceResources->staticPointLightBufferView.getDynamicSliceSize()));
@@ -891,7 +925,7 @@ void VulkanDeferredShading::createPointLightGeometryStencilPassDescriptorSets()
 			descSetUpdate->setBufferInfo(
 				0, pvrvk::DescriptorBufferInfo(_deviceResources->dynamicPointLightBuffer, 0, _deviceResources->dynamicPointLightBufferView.getDynamicSliceSize()));
 		}
-		_deviceResources->device->updateDescriptorSets(writeDescSets.data(), (uint32_t)writeDescSets.size(), nullptr, 0);
+		_deviceResources->device->updateDescriptorSets(writeDescSets.data(), static_cast<uint32_t>(writeDescSets.size()), nullptr, 0);
 	}
 }
 
@@ -967,7 +1001,7 @@ void VulkanDeferredShading::createPointLightProxyPassDescriptorSets()
 											pvrvk::DescriptorImageInfo(_deviceResources->framebufferGbufferImages[FramebufferGBufferAttachments::Depth][i],
 												pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL)));
 		}
-		_deviceResources->device->updateDescriptorSets(descSetWrites.data(), (uint32_t)descSetWrites.size(), nullptr, 0);
+		_deviceResources->device->updateDescriptorSets(descSetWrites.data(), static_cast<uint32_t>(descSetWrites.size()), nullptr, 0);
 	}
 }
 
@@ -1007,7 +1041,7 @@ void VulkanDeferredShading::createPointLightSourcePassDescriptorSets()
 				pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, _deviceResources->pointLightSourceDescriptorSets[i], 1)
 					.setBufferInfo(0, pvrvk::DescriptorBufferInfo(_deviceResources->dynamicPointLightBuffer, 0, _deviceResources->dynamicPointLightBufferView.getDynamicSliceSize())));
 		}
-		_deviceResources->device->updateDescriptorSets(descSetUpdate.data(), (uint32_t)descSetUpdate.size(), nullptr, 0);
+		_deviceResources->device->updateDescriptorSets(descSetUpdate.data(), static_cast<uint32_t>(descSetUpdate.size()), nullptr, 0);
 	}
 }
 
@@ -1116,20 +1150,20 @@ void VulkanDeferredShading::createMaterialsAndDescriptorSets(pvrvk::CommandBuffe
 		pvrvk::ImageView diffuseMap;
 		uint32_t numTextures = 0;
 		pvrvk::ImageView bumpMap;
-		if (material.defaultSemantics().getDiffuseTextureIndex() != -1)
+		if (material.defaultSemantics().getDiffuseTextureIndex() != static_cast<uint32_t>(-1))
 		{
 			// Load the diffuse texture map
 			diffuseMap = pvr::utils::loadAndUploadImageAndView(_deviceResources->device,
 				_mainScene->getTexture(material.defaultSemantics().getDiffuseTextureIndex()).getName().c_str(), true, uploadCmd, *this, pvrvk::ImageUsageFlags::e_SAMPLED_BIT,
-				pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, nullptr, &_deviceResources->vmaBufferAllocator, &_deviceResources->vmaImageAllocator);
+				pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, nullptr, &_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
 			++numTextures;
 		}
-		if (material.defaultSemantics().getBumpMapTextureIndex() != -1)
+		if (material.defaultSemantics().getBumpMapTextureIndex() != static_cast<uint32_t>(-1))
 		{
 			// Load the bumpmap
 			bumpMap = pvr::utils::loadAndUploadImageAndView(_deviceResources->device,
 				_mainScene->getTexture(material.defaultSemantics().getBumpMapTextureIndex()).getName().c_str(), true, uploadCmd, *this, pvrvk::ImageUsageFlags::e_SAMPLED_BIT,
-				pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, nullptr, &_deviceResources->vmaBufferAllocator, &_deviceResources->vmaImageAllocator);
+				pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, nullptr, &_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
 
 			++numTextures;
 		}
@@ -1177,7 +1211,7 @@ void VulkanDeferredShading::createMaterialsAndDescriptorSets(pvrvk::CommandBuffe
 			}
 		}
 	}
-	_deviceResources->device->updateDescriptorSets(writeDescSets.data(), (uint32_t)writeDescSets.size(), nullptr, 0);
+	_deviceResources->device->updateDescriptorSets(writeDescSets.data(), static_cast<uint32_t>(writeDescSets.size()), nullptr, 0);
 }
 
 /*!*********************************************************************************************************************
@@ -1208,9 +1242,11 @@ void VulkanDeferredShading::createModelPipelines()
 	renderGBufferPipelineCreateInfo.colorBlend.setAttachmentState(2, renderGBufferColorAttachment);
 
 	// load and create appropriate shaders
-	renderGBufferPipelineCreateInfo.vertexShader.setShader(_deviceResources->device->createShader(getAssetStream(Files::GBufferVertexShader)->readToEnd<uint32_t>()));
+	renderGBufferPipelineCreateInfo.vertexShader.setShader(
+		_deviceResources->device->createShaderModule(pvrvk::ShaderModuleCreateInfo(getAssetStream(Files::GBufferVertexShader)->readToEnd<uint32_t>())));
 
-	renderGBufferPipelineCreateInfo.fragmentShader.setShader(_deviceResources->device->createShader(getAssetStream(Files::GBufferFragmentShader)->readToEnd<uint32_t>()));
+	renderGBufferPipelineCreateInfo.fragmentShader.setShader(
+		_deviceResources->device->createShaderModule(pvrvk::ShaderModuleCreateInfo(getAssetStream(Files::GBufferFragmentShader)->readToEnd<uint32_t>())));
 
 	// setup vertex inputs
 	renderGBufferPipelineCreateInfo.vertexInput.clear();
@@ -1243,12 +1279,15 @@ void VulkanDeferredShading::createModelPipelines()
 	renderGBufferPipelineCreateInfo.depthStencil.setStencilBack(stencilState);
 
 	renderGBufferPipelineCreateInfo.pipelineLayout = _deviceResources->pipeLayoutTwoSamplers;
-	_deviceResources->renderInfo.storeLocalMemoryPass.objects[MeshNodes::Satyr].pipeline = _deviceResources->device->createGraphicsPipeline(renderGBufferPipelineCreateInfo);
+	_deviceResources->renderInfo.storeLocalMemoryPass.objects[MeshNodes::Satyr].pipeline =
+		_deviceResources->device->createGraphicsPipeline(renderGBufferPipelineCreateInfo, _deviceResources->pipelineCache);
 
 	// load and create appropriate shaders
-	renderGBufferPipelineCreateInfo.vertexShader.setShader(_deviceResources->device->createShader(getAssetStream(Files::GBufferFloorVertexShader)->readToEnd<uint32_t>()));
+	renderGBufferPipelineCreateInfo.vertexShader.setShader(
+		_deviceResources->device->createShaderModule(pvrvk::ShaderModuleCreateInfo(getAssetStream(Files::GBufferFloorVertexShader)->readToEnd<uint32_t>())));
 
-	renderGBufferPipelineCreateInfo.fragmentShader.setShader(_deviceResources->device->createShader(getAssetStream(Files::GBufferFloorFragmentShader)->readToEnd<uint32_t>()));
+	renderGBufferPipelineCreateInfo.fragmentShader.setShader(
+		_deviceResources->device->createShaderModule(pvrvk::ShaderModuleCreateInfo(getAssetStream(Files::GBufferFloorFragmentShader)->readToEnd<uint32_t>())));
 
 	// setup vertex inputs
 	renderGBufferPipelineCreateInfo.vertexInput.clear();
@@ -1256,7 +1295,8 @@ void VulkanDeferredShading::createModelPipelines()
 		_mainScene->getMesh(MeshNodes::Floor), floorVertexBindings, 3, renderGBufferPipelineCreateInfo.vertexInput, renderGBufferPipelineCreateInfo.inputAssembler);
 
 	renderGBufferPipelineCreateInfo.pipelineLayout = _deviceResources->pipeLayoutOneSampler;
-	_deviceResources->renderInfo.storeLocalMemoryPass.objects[MeshNodes::Floor].pipeline = _deviceResources->device->createGraphicsPipeline(renderGBufferPipelineCreateInfo);
+	_deviceResources->renderInfo.storeLocalMemoryPass.objects[MeshNodes::Floor].pipeline =
+		_deviceResources->device->createGraphicsPipeline(renderGBufferPipelineCreateInfo, _deviceResources->pipelineCache);
 }
 
 /*!*********************************************************************************************************************
@@ -1308,9 +1348,10 @@ void VulkanDeferredShading::createDirectionalLightingPipeline()
 	renderDirectionalLightingPipelineInfo.colorBlend.setAttachmentState(0, pvrvk::PipelineColorBlendAttachmentState());
 
 	// load and create appropriate shaders
-	renderDirectionalLightingPipelineInfo.vertexShader.setShader(_deviceResources->device->createShader(getAssetStream(Files::AttributelessVertexShader)->readToEnd<uint32_t>()));
+	renderDirectionalLightingPipelineInfo.vertexShader.setShader(
+		_deviceResources->device->createShaderModule(pvrvk::ShaderModuleCreateInfo(getAssetStream(Files::AttributelessVertexShader)->readToEnd<uint32_t>())));
 	renderDirectionalLightingPipelineInfo.fragmentShader.setShader(
-		_deviceResources->device->createShader(getAssetStream(Files::DirectionalLightingFragmentShader)->readToEnd<uint32_t>()));
+		_deviceResources->device->createShaderModule(pvrvk::ShaderModuleCreateInfo(getAssetStream(Files::DirectionalLightingFragmentShader)->readToEnd<uint32_t>())));
 
 	// setup vertex inputs
 	renderDirectionalLightingPipelineInfo.vertexInput.clear();
@@ -1322,7 +1363,8 @@ void VulkanDeferredShading::createDirectionalLightingPipeline()
 	renderDirectionalLightingPipelineInfo.renderPass = _deviceResources->onScreenLocalMemoryRenderPass;
 	renderDirectionalLightingPipelineInfo.subpass = RenderPassSubpasses::Lighting;
 
-	_deviceResources->renderInfo.directionalLightPass.pipeline = _deviceResources->device->createGraphicsPipeline(renderDirectionalLightingPipelineInfo);
+	_deviceResources->renderInfo.directionalLightPass.pipeline =
+		_deviceResources->device->createGraphicsPipeline(renderDirectionalLightingPipelineInfo, _deviceResources->pipelineCache);
 }
 
 /*!*********************************************************************************************************************
@@ -1362,8 +1404,10 @@ void VulkanDeferredShading::createPointLightStencilPipeline()
 	pointLightStencilPipelineCreateInfo.depthStencil.setDepthCompareFunc(pvrvk::CompareOp::e_LESS_OR_EQUAL).enableStencilTest(true);
 
 	// load and create appropriate shaders
-	pointLightStencilPipelineCreateInfo.vertexShader.setShader(_deviceResources->device->createShader(getAssetStream(Files::PointLightPass1VertexShader)->readToEnd<uint32_t>()));
-	pointLightStencilPipelineCreateInfo.fragmentShader.setShader(_deviceResources->device->createShader(getAssetStream(Files::PointLightPass1FragmentShader)->readToEnd<uint32_t>()));
+	pointLightStencilPipelineCreateInfo.vertexShader.setShader(
+		_deviceResources->device->createShaderModule(pvrvk::ShaderModuleCreateInfo(getAssetStream(Files::PointLightPass1VertexShader)->readToEnd<uint32_t>())));
+	pointLightStencilPipelineCreateInfo.fragmentShader.setShader(
+		_deviceResources->device->createShaderModule(pvrvk::ShaderModuleCreateInfo(getAssetStream(Files::PointLightPass1FragmentShader)->readToEnd<uint32_t>())));
 
 	// setup vertex inputs
 	pointLightStencilPipelineCreateInfo.vertexInput.clear();
@@ -1393,7 +1437,8 @@ void VulkanDeferredShading::createPointLightStencilPipeline()
 
 	pointLightStencilPipelineCreateInfo.pipelineLayout = _deviceResources->pointLightGeometryStencilPipelineLayout;
 
-	_deviceResources->renderInfo.pointLightGeometryStencilPass.pipeline = _deviceResources->device->createGraphicsPipeline(pointLightStencilPipelineCreateInfo);
+	_deviceResources->renderInfo.pointLightGeometryStencilPass.pipeline =
+		_deviceResources->device->createGraphicsPipeline(pointLightStencilPipelineCreateInfo, _deviceResources->pipelineCache);
 }
 
 /*!*********************************************************************************************************************
@@ -1441,9 +1486,11 @@ void VulkanDeferredShading::createPointLightProxyPipeline()
 	pointLightProxyPipelineCreateInfo.colorBlend.setAttachmentState(0, blendConfig);
 
 	// load and create appropriate shaders
-	pointLightProxyPipelineCreateInfo.vertexShader.setShader(_deviceResources->device->createShader(getAssetStream(Files::PointLightPass2VertexShader)->readToEnd<uint32_t>()));
+	pointLightProxyPipelineCreateInfo.vertexShader.setShader(
+		_deviceResources->device->createShaderModule(pvrvk::ShaderModuleCreateInfo(getAssetStream(Files::PointLightPass2VertexShader)->readToEnd<uint32_t>())));
 
-	pointLightProxyPipelineCreateInfo.fragmentShader.setShader(_deviceResources->device->createShader(getAssetStream(Files::PointLightPass2FragmentShader)->readToEnd<uint32_t>()));
+	pointLightProxyPipelineCreateInfo.fragmentShader.setShader(
+		_deviceResources->device->createShaderModule(pvrvk::ShaderModuleCreateInfo(getAssetStream(Files::PointLightPass2FragmentShader)->readToEnd<uint32_t>())));
 
 	// setup vertex states
 	pointLightProxyPipelineCreateInfo.vertexInput.clear();
@@ -1464,7 +1511,7 @@ void VulkanDeferredShading::createPointLightProxyPipeline()
 
 	pointLightProxyPipelineCreateInfo.pipelineLayout = _deviceResources->pointLightProxyPipelineLayout;
 
-	_deviceResources->renderInfo.pointLightProxyPass.pipeline = _deviceResources->device->createGraphicsPipeline(pointLightProxyPipelineCreateInfo);
+	_deviceResources->renderInfo.pointLightProxyPass.pipeline = _deviceResources->device->createGraphicsPipeline(pointLightProxyPipelineCreateInfo, _deviceResources->pipelineCache);
 }
 
 /*!*********************************************************************************************************************
@@ -1502,9 +1549,11 @@ void VulkanDeferredShading::createPointLightSourcePipeline()
 	pointLightSourcePipelineCreateInfo.colorBlend.setAttachmentState(0, colorAttachment);
 
 	// load and create appropriate shaders
-	pointLightSourcePipelineCreateInfo.vertexShader.setShader(_deviceResources->device->createShader(getAssetStream(Files::PointLightPass3VertexShader)->readToEnd<uint32_t>()));
+	pointLightSourcePipelineCreateInfo.vertexShader.setShader(
+		_deviceResources->device->createShaderModule(pvrvk::ShaderModuleCreateInfo(getAssetStream(Files::PointLightPass3VertexShader)->readToEnd<uint32_t>())));
 
-	pointLightSourcePipelineCreateInfo.fragmentShader.setShader(_deviceResources->device->createShader(getAssetStream(Files::PointLightPass3FragmentShader)->readToEnd<uint32_t>()));
+	pointLightSourcePipelineCreateInfo.fragmentShader.setShader(
+		_deviceResources->device->createShaderModule(pvrvk::ShaderModuleCreateInfo(getAssetStream(Files::PointLightPass3FragmentShader)->readToEnd<uint32_t>())));
 
 	// setup vertex states
 	pointLightSourcePipelineCreateInfo.vertexInput.clear();
@@ -1517,7 +1566,8 @@ void VulkanDeferredShading::createPointLightSourcePipeline()
 
 	pointLightSourcePipelineCreateInfo.pipelineLayout = _deviceResources->pointLightSourcePipelineLayout;
 
-	_deviceResources->renderInfo.pointLightSourcesPass.pipeline = _deviceResources->device->createGraphicsPipeline(pointLightSourcePipelineCreateInfo);
+	_deviceResources->renderInfo.pointLightSourcesPass.pipeline =
+		_deviceResources->device->createGraphicsPipeline(pointLightSourcePipelineCreateInfo, _deviceResources->pipelineCache);
 }
 
 /*!*********************************************************************************************************************
@@ -1603,6 +1653,18 @@ void VulkanDeferredShading::createFramebufferAndRenderpass()
 	subpassDependency.setDstSubpass(RenderPassSubpasses::Lighting);
 	renderPassInfo.addSubpassDependency(subpassDependency);
 
+	// Add external subpass dependencies to avoid the overly cautious implicit subpass depedencies
+	pvrvk::SubpassDependency externalDependencies[2];
+	externalDependencies[0] = pvrvk::SubpassDependency(pvrvk::SubpassExternal, RenderPassSubpasses::GBuffer, pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT,
+		pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT, pvrvk::AccessFlags::e_MEMORY_READ_BIT,
+		pvrvk::AccessFlags::e_COLOR_ATTACHMENT_READ_BIT | pvrvk::AccessFlags::e_COLOR_ATTACHMENT_WRITE_BIT, pvrvk::DependencyFlags::e_BY_REGION_BIT);
+	externalDependencies[1] = pvrvk::SubpassDependency(RenderPassSubpasses::Lighting, pvrvk::SubpassExternal, pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT,
+		pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT, pvrvk::AccessFlags::e_COLOR_ATTACHMENT_READ_BIT | pvrvk::AccessFlags::e_COLOR_ATTACHMENT_WRITE_BIT,
+		pvrvk::AccessFlags::e_MEMORY_READ_BIT, pvrvk::DependencyFlags::e_BY_REGION_BIT);
+
+	renderPassInfo.addSubpassDependency(externalDependencies[0]);
+	renderPassInfo.addSubpassDependency(externalDependencies[1]);
+
 	// Create the renderpass
 	_deviceResources->onScreenLocalMemoryRenderPass = _deviceResources->device->createRenderPass(renderPassInfo);
 
@@ -1619,10 +1681,10 @@ void VulkanDeferredShading::createFramebufferAndRenderpass()
 			pvrvk::Image transientColorAttachmentTexture = pvr::utils::createImage(_deviceResources->device, pvrvk::ImageType::e_2D, renderpassStorageFormats[currentIndex],
 				dimension, pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_TRANSIENT_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_INPUT_ATTACHMENT_BIT,
 				static_cast<pvrvk::ImageCreateFlags>(0), pvrvk::ImageLayersSize(), pvrvk::SampleCountFlags::e_1_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT,
-				pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_LAZILY_ALLOCATED_BIT, &_deviceResources->vmaImageAllocator,
+				pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_LAZILY_ALLOCATED_BIT, &_deviceResources->vmaAllocator,
 				pvr::utils::vma::AllocationCreateFlags::e_DEDICATED_MEMORY_BIT);
 
-			_deviceResources->framebufferGbufferImages[currentIndex].add(_deviceResources->device->createImageView(transientColorAttachmentTexture));
+			_deviceResources->framebufferGbufferImages[currentIndex].add(_deviceResources->device->createImageView(pvrvk::ImageViewCreateInfo(transientColorAttachmentTexture)));
 			onScreenFramebufferCreateInfo.setAttachment(currentIndex + 1, _deviceResources->framebufferGbufferImages[currentIndex][i]);
 		}
 		onScreenFramebufferCreateInfo.setAttachment(FramebufferGBufferAttachments::Count + 1u, _deviceResources->depthStencilImages[i]);
@@ -1642,10 +1704,10 @@ void VulkanDeferredShading::loadVbos(pvrvk::CommandBuffer& uploadCmd)
 	bool requiresCommandBufferSubmission = false;
 
 	pvr::utils::appendSingleBuffersFromModel(_deviceResources->device, *_mainScene, _deviceResources->sceneVbos, _deviceResources->sceneIbos, uploadCmd,
-		requiresCommandBufferSubmission, &_deviceResources->vmaBufferAllocator);
+		requiresCommandBufferSubmission, &_deviceResources->vmaAllocator);
 
 	pvr::utils::createSingleBuffersFromMesh(_deviceResources->device, _pointLightModel->getMesh(LightNodes::PointLightMeshNode), _deviceResources->pointLightVbo,
-		_deviceResources->pointLightIbo, uploadCmd, requiresCommandBufferSubmission, &_deviceResources->vmaBufferAllocator);
+		_deviceResources->pointLightIbo, uploadCmd, requiresCommandBufferSubmission, &_deviceResources->vmaAllocator);
 }
 
 /*!*********************************************************************************************************************
@@ -1664,7 +1726,7 @@ void VulkanDeferredShading::createModelBuffers()
 		_deviceResources->modelMaterialBuffer = pvr::utils::createBuffer(_deviceResources->device, _deviceResources->modelMaterialBufferView.getSize(),
 			pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
-			&_deviceResources->vmaBufferAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+			&_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
 		_deviceResources->modelMaterialBufferView.pointToMappedMemory(_deviceResources->modelMaterialBuffer->getDeviceMemory()->getMappedData());
 	}
@@ -1680,7 +1742,7 @@ void VulkanDeferredShading::createModelBuffers()
 		_deviceResources->modelMatrixBuffer = pvr::utils::createBuffer(_deviceResources->device, _deviceResources->modelMatrixBufferView.getSize(),
 			pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
-			&_deviceResources->vmaBufferAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+			&_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
 		_deviceResources->modelMatrixBufferView.pointToMappedMemory(_deviceResources->modelMatrixBuffer->getDeviceMemory()->getMappedData());
 	}
@@ -1694,6 +1756,7 @@ void VulkanDeferredShading::createDirectionalLightingBuffers()
 	{
 		pvr::utils::StructuredMemoryDescription desc;
 		desc.addElement(BufferEntryNames::PerDirectionalLight::LightIntensity, pvr::GpuDatatypes::vec4);
+		desc.addElement(BufferEntryNames::PerDirectionalLight::AmbientLight, pvr::GpuDatatypes::vec4);
 
 		_deviceResources->staticDirectionalLightBufferView.initDynamic(desc, _numberOfDirectionalLights, pvr::BufferUsageFlags::UniformBuffer,
 			static_cast<uint32_t>(_deviceResources->device->getPhysicalDevice()->getProperties().getLimits().getMinUniformBufferOffsetAlignment()));
@@ -1701,7 +1764,7 @@ void VulkanDeferredShading::createDirectionalLightingBuffers()
 		_deviceResources->staticDirectionalLightBuffer = pvr::utils::createBuffer(_deviceResources->device, _deviceResources->staticDirectionalLightBufferView.getSize(),
 			pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
-			&_deviceResources->vmaBufferAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+			&_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
 		_deviceResources->staticDirectionalLightBufferView.pointToMappedMemory(_deviceResources->staticDirectionalLightBuffer->getDeviceMemory()->getMappedData());
 	}
@@ -1716,7 +1779,7 @@ void VulkanDeferredShading::createDirectionalLightingBuffers()
 		_deviceResources->dynamicDirectionalLightBuffer = pvr::utils::createBuffer(_deviceResources->device, _deviceResources->dynamicDirectionalLightBufferView.getSize(),
 			pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
-			&_deviceResources->vmaBufferAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+			&_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
 		_deviceResources->dynamicDirectionalLightBufferView.pointToMappedMemory(_deviceResources->dynamicDirectionalLightBuffer->getDeviceMemory()->getMappedData());
 	}
@@ -1740,7 +1803,7 @@ void VulkanDeferredShading::createPointLightBuffers()
 		_deviceResources->staticPointLightBuffer = pvr::utils::createBuffer(_deviceResources->device, _deviceResources->staticPointLightBufferView.getSize(),
 			pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
-			&_deviceResources->vmaBufferAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+			&_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
 		_deviceResources->staticPointLightBufferView.pointToMappedMemory(_deviceResources->staticPointLightBuffer->getDeviceMemory()->getMappedData());
 	}
@@ -1758,7 +1821,7 @@ void VulkanDeferredShading::createPointLightBuffers()
 		_deviceResources->dynamicPointLightBuffer = pvr::utils::createBuffer(_deviceResources->device, _deviceResources->dynamicPointLightBufferView.getSize(),
 			pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
-			&_deviceResources->vmaBufferAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+			&_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
 		_deviceResources->dynamicPointLightBufferView.pointToMappedMemory(_deviceResources->dynamicPointLightBuffer->getDeviceMemory()->getMappedData());
 	}
@@ -1788,7 +1851,7 @@ void VulkanDeferredShading::createSceneWideBuffers()
 	_deviceResources->farClipDistanceBuffer = pvr::utils::createBuffer(_deviceResources->device, _deviceResources->farClipDistanceBufferView.getSize(),
 		pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
-		&_deviceResources->vmaBufferAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+		&_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
 	_deviceResources->farClipDistanceBufferView.pointToMappedMemory(_deviceResources->farClipDistanceBuffer->getDeviceMemory()->getMappedData());
 }
@@ -1815,7 +1878,7 @@ void VulkanDeferredShading::uploadStaticSceneData()
 {
 	// static scene properties buffer
 	_farClipDistance = _mainScene->getCamera(0).getFar();
-	_deviceResources->farClipDistanceBufferView.getElementByName(BufferEntryNames::PerScene::FarClipDistance).setValue(&_farClipDistance);
+	_deviceResources->farClipDistanceBufferView.getElementByName(BufferEntryNames::PerScene::FarClipDistance).setValue(_farClipDistance);
 
 	// if the memory property flags used by the buffers' device memory do not contain e_HOST_COHERENT_BIT then we must flush the memory
 	if (static_cast<uint32_t>(_deviceResources->farClipDistanceBuffer->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
@@ -1832,8 +1895,8 @@ void VulkanDeferredShading::uploadStaticModelData()
 	// static model buffer
 	for (uint32_t i = 0; i < _mainScene->getNumMeshNodes(); ++i)
 	{
-		_deviceResources->modelMaterialBufferView.getElementByName(BufferEntryNames::PerModelMaterial::SpecularStrength, 0, i).setValue(&_deviceResources->materials[i].specularStrength);
-		_deviceResources->modelMaterialBufferView.getElementByName(BufferEntryNames::PerModelMaterial::DiffuseColor, 0, i).setValue(&_deviceResources->materials[i].diffuseColor);
+		_deviceResources->modelMaterialBufferView.getElementByName(BufferEntryNames::PerModelMaterial::SpecularStrength, 0, i).setValue(_deviceResources->materials[i].specularStrength);
+		_deviceResources->modelMaterialBufferView.getElementByName(BufferEntryNames::PerModelMaterial::DiffuseColor, 0, i).setValue(_deviceResources->materials[i].diffuseColor);
 	}
 
 	// if the memory property flags used by the buffers' device memory do not contain e_HOST_COHERENT_BIT then we must flush the memory
@@ -1852,7 +1915,9 @@ void VulkanDeferredShading::uploadStaticDirectionalLightData()
 	for (uint32_t i = 0; i < _numberOfDirectionalLights; ++i)
 	{
 		_deviceResources->staticDirectionalLightBufferView.getElementByName(BufferEntryNames::PerDirectionalLight::LightIntensity, 0, i)
-			.setValue(&_deviceResources->renderInfo.directionalLightPass.lightProperties[i].lightIntensity);
+			.setValue(_deviceResources->renderInfo.directionalLightPass.lightProperties[i].lightIntensity);
+		_deviceResources->staticDirectionalLightBufferView.getElementByName(BufferEntryNames::PerDirectionalLight::AmbientLight, 0, i)
+			.setValue(_deviceResources->renderInfo.directionalLightPass.lightProperties[i].ambientLight);
 	}
 
 	// if the memory property flags used by the buffers' device memory do not contain e_HOST_COHERENT_BIT then we must flush the memory
@@ -1871,13 +1936,13 @@ void VulkanDeferredShading::uploadStaticPointLightData()
 	for (uint32_t i = 0; i < _numberOfPointLights; ++i)
 	{
 		_deviceResources->staticPointLightBufferView.getElementByName(BufferEntryNames::PerPointLight::LightIntensity, 0, i)
-			.setValue(&_deviceResources->renderInfo.pointLightPasses.lightProperties[i].lightIntensity);
+			.setValue(_deviceResources->renderInfo.pointLightPasses.lightProperties[i].lightIntensity);
 		_deviceResources->staticPointLightBufferView.getElementByName(BufferEntryNames::PerPointLight::LightRadius, 0, i)
-			.setValue(&_deviceResources->renderInfo.pointLightPasses.lightProperties[i].lightRadius);
+			.setValue(_deviceResources->renderInfo.pointLightPasses.lightProperties[i].lightRadius);
 		_deviceResources->staticPointLightBufferView.getElementByName(BufferEntryNames::PerPointLight::LightColor, 0, i)
-			.setValue(&_deviceResources->renderInfo.pointLightPasses.lightProperties[i].lightColor);
+			.setValue(_deviceResources->renderInfo.pointLightPasses.lightProperties[i].lightColor);
 		_deviceResources->staticPointLightBufferView.getElementByName(BufferEntryNames::PerPointLight::LightSourceColor, 0, i)
-			.setValue(&_deviceResources->renderInfo.pointLightPasses.lightProperties[i].lightSourceColor);
+			.setValue(_deviceResources->renderInfo.pointLightPasses.lightProperties[i].lightSourceColor);
 	}
 
 	// if the memory property flags used by the buffers' device memory do not contain e_HOST_COHERENT_BIT then we must flush the memory
@@ -1916,12 +1981,12 @@ void VulkanDeferredShading::updateDynamicSceneData()
 		pass.storeLocalMemoryPass.objects[i].worldViewProj = _viewProjectionMatrix * pass.storeLocalMemoryPass.objects[i].world;
 		pass.storeLocalMemoryPass.objects[i].worldViewIT4x4 = glm::inverseTranspose(pass.storeLocalMemoryPass.objects[i].worldView);
 
-		_deviceResources->modelMatrixBufferView.getElementByName(BufferEntryNames::PerModel::WorldViewMatrix, 0, dynamicSlice).setValue(&pass.storeLocalMemoryPass.objects[i].worldView);
+		_deviceResources->modelMatrixBufferView.getElementByName(BufferEntryNames::PerModel::WorldViewMatrix, 0, dynamicSlice).setValue(pass.storeLocalMemoryPass.objects[i].worldView);
 
 		_deviceResources->modelMatrixBufferView.getElementByName(BufferEntryNames::PerModel::WorldViewProjectionMatrix, 0, dynamicSlice)
-			.setValue(&pass.storeLocalMemoryPass.objects[i].worldViewProj);
+			.setValue(pass.storeLocalMemoryPass.objects[i].worldViewProj);
 
-		_deviceResources->modelMatrixBufferView.getElementByName(BufferEntryNames::PerModel::WorldViewITMatrix, 0, dynamicSlice).setValue(&pass.storeLocalMemoryPass.objects[i].worldViewIT4x4);
+		_deviceResources->modelMatrixBufferView.getElementByName(BufferEntryNames::PerModel::WorldViewITMatrix, 0, dynamicSlice).setValue(pass.storeLocalMemoryPass.objects[i].worldViewIT4x4);
 	}
 
 	// if the memory property flags used by the buffers' device memory do not contain e_HOST_COHERENT_BIT then we must flush the memory
@@ -1950,7 +2015,7 @@ void VulkanDeferredShading::updateDynamicSceneData()
 			}
 
 			const glm::mat4& transMtx = _mainScene->getWorldMatrix(_mainScene->getNodeIdFromLightNodeId(i));
-			const glm::mat4& proxyScale = glm::scale(glm::vec3(PointLightConfiguration::PointLightScale)) * PointLightConfiguration::PointlightIntensity;
+			const glm::mat4& proxyScale = glm::scale(glm::vec3(PointLightConfiguration::PointLightMaxRadius));
 			const glm::mat4 mWorldScale = transMtx * proxyScale;
 
 			// POINT LIGHT GEOMETRY : The spheres that will be used for the stencil pass
@@ -1979,7 +2044,7 @@ void VulkanDeferredShading::updateDynamicSceneData()
 	int numSceneLights = pointLight;
 	if (DirectionalLightConfiguration::AdditionalDirectionalLight)
 	{
-		pass.directionalLightPass.lightProperties[directionalLight].viewSpaceLightDirection = _viewMatrix * glm::vec4(0.f, -1.f, 0.f, 0.f);
+		pass.directionalLightPass.lightProperties[directionalLight].viewSpaceLightDirection = _viewMatrix * glm::vec4(1.f, -1.f, -.5f, 0.f);
 		++directionalLight;
 	}
 
@@ -1994,7 +2059,7 @@ void VulkanDeferredShading::updateDynamicSceneData()
 		{
 			uint32_t dynamicSlice = i + _swapchainIndex * _numberOfDirectionalLights;
 			_deviceResources->dynamicDirectionalLightBufferView.getElementByName(BufferEntryNames::PerDirectionalLight::LightViewDirection, 0, dynamicSlice)
-				.setValue(&_deviceResources->renderInfo.directionalLightPass.lightProperties[i].viewSpaceLightDirection);
+				.setValue(_deviceResources->renderInfo.directionalLightPass.lightProperties[i].viewSpaceLightDirection);
 		}
 
 		// if the memory property flags used by the buffers' device memory do not contain e_HOST_COHERENT_BIT then we must flush the memory
@@ -2012,16 +2077,16 @@ void VulkanDeferredShading::updateDynamicSceneData()
 		{
 			uint32_t dynamicSlice = i + _swapchainIndex * _numberOfPointLights;
 			_deviceResources->dynamicPointLightBufferView.getElementByName(BufferEntryNames::PerPointLight::ProxyWorldViewProjectionMatrix, 0, dynamicSlice)
-				.setValue(&_deviceResources->renderInfo.pointLightPasses.lightProperties[i].proxyWorldViewProjectionMatrix);
+				.setValue(_deviceResources->renderInfo.pointLightPasses.lightProperties[i].proxyWorldViewProjectionMatrix);
 
 			_deviceResources->dynamicPointLightBufferView.getElementByName(BufferEntryNames::PerPointLight::ProxyWorldViewMatrix, 0, dynamicSlice)
-				.setValue(&_deviceResources->renderInfo.pointLightPasses.lightProperties[i].proxyWorldViewMatrix);
+				.setValue(_deviceResources->renderInfo.pointLightPasses.lightProperties[i].proxyWorldViewMatrix);
 
 			_deviceResources->dynamicPointLightBufferView.getElementByName(BufferEntryNames::PerPointLight::ProxyLightViewPosition, 0, dynamicSlice)
-				.setValue(&_deviceResources->renderInfo.pointLightPasses.lightProperties[i].proxyViewSpaceLightPosition);
+				.setValue(_deviceResources->renderInfo.pointLightPasses.lightProperties[i].proxyViewSpaceLightPosition);
 
 			_deviceResources->dynamicPointLightBufferView.getElementByName(BufferEntryNames::PerPointLight::WorldViewProjectionMatrix, 0, dynamicSlice)
-				.setValue(&_deviceResources->renderInfo.pointLightPasses.lightProperties[i].worldViewProjectionMatrix);
+				.setValue(_deviceResources->renderInfo.pointLightPasses.lightProperties[i].worldViewProjectionMatrix);
 		}
 
 		// if the memory property flags used by the buffers' device memory do not contain e_HOST_COHERENT_BIT then we must flush the memory
@@ -2053,12 +2118,12 @@ void VulkanDeferredShading::updateProceduralPointLight(PointLightPasses::Initial
 		pointLightProperties.lightColor = glm::vec4(lightColor, 1.); // random-looking
 		pointLightProperties.lightSourceColor = glm::vec4(lightColor, .8); // random-looking
 		pointLightProperties.lightIntensity = PointLightConfiguration::PointlightIntensity;
-		pointLightProperties.lightRadius = PointLightConfiguration::PointLightRadius;
+		pointLightProperties.lightRadius = PointLightConfiguration::PointLightMaxRadius;
 	}
 
 	if (!initial && !_isPaused) // Skip for the first _frameNumber, as sometimes this moves the light too far...
 	{
-		float dt = (float)std::min(getFrameTime(), uint64_t(30));
+		float dt = static_cast<float>(std::min(getFrameTime(), uint64_t(30)));
 		if (data.distance < PointLightConfiguration::LightMinDistance)
 		{
 			data.axial_vel = glm::abs(data.axial_vel) + (PointLightConfiguration::LightMaxAxialVelocity * dt * .001f);
@@ -2105,7 +2170,7 @@ void VulkanDeferredShading::updateProceduralPointLight(PointLightPasses::Initial
 	float y = data.height;
 
 	const glm::mat4& transMtx = glm::translate(glm::vec3(x, y, z));
-	const glm::mat4& proxyScale = glm::scale(glm::vec3(PointLightConfiguration::PointLightScale)) * PointLightConfiguration::PointlightIntensity;
+	const glm::mat4& proxyScale = glm::scale(glm::vec3(PointLightConfiguration::PointLightMaxRadius));
 
 	const glm::mat4 mWorldScale = transMtx * proxyScale;
 
@@ -2125,27 +2190,15 @@ void VulkanDeferredShading::updateProceduralPointLight(PointLightPasses::Initial
 ***********************************************************************************************************************/
 void VulkanDeferredShading::updateAnimation()
 {
-	uint64_t deltaTime = getFrameTime();
-
-	if (!_isPaused)
-	{
-		_frameNumber += deltaTime * ApplicationConfiguration::FrameRate;
-		if (_frameNumber > _mainScene->getNumFrames() - 1)
-		{
-			_frameNumber = 0;
-		}
-		_mainScene->setCurrentFrame(_frameNumber);
-	}
-
-	glm::vec3 vTo, vUp;
+	glm::vec3 vFrom, vTo, vUp;
 	float fov;
-	_mainScene->getCameraProperties(_cameraId, fov, _cameraPosition, vTo, vUp);
+	_mainScene->getCameraProperties(_cameraId, fov, vFrom, vTo, vUp);
 
 	// Update camera matrices
 	static float angle = 0;
 	if (_animateCamera)
 	{
-		angle += getFrameTime() / 1000.f;
+		angle += getFrameTime() / 5000.f;
 	}
 	_viewMatrix = glm::lookAt(glm::vec3(sin(angle) * 100.f + vTo.x, vTo.y + 30., cos(angle) * 100.f + vTo.z), vTo, vUp);
 	_viewProjectionMatrix = _projectionMatrix * _viewMatrix;
@@ -2213,7 +2266,7 @@ void VulkanDeferredShading::initialiseStaticLightProperties()
 			pass.pointLightPasses.lightProperties[pointLight].lightIntensity = PointLightConfiguration::PointlightIntensity;
 
 			// POINT LIGHT PROXIES : The "drawcalls" that will perform the actual rendering
-			pass.pointLightPasses.lightProperties[pointLight].lightRadius = PointLightConfiguration::PointLightRadius;
+			pass.pointLightPasses.lightProperties[pointLight].lightRadius = PointLightConfiguration::PointLightMaxRadius;
 
 			// POINT LIGHT SOURCES : The little balls that we render to show the lights
 			pass.pointLightPasses.lightProperties[pointLight].lightSourceColor = glm::vec4(light.getColor(), .8f);
@@ -2223,6 +2276,7 @@ void VulkanDeferredShading::initialiseStaticLightProperties()
 		case pvr::assets::Light::Directional:
 		{
 			pass.directionalLightPass.lightProperties[directionalLight].lightIntensity = glm::vec4(light.getColor(), 1.0f) * DirectionalLightConfiguration::DirectionalLightIntensity;
+			pass.directionalLightPass.lightProperties[directionalLight].ambientLight = glm::vec4(0.f, 0.f, 0.f, 0.f);
 			++directionalLight;
 		}
 		break;
@@ -2233,6 +2287,7 @@ void VulkanDeferredShading::initialiseStaticLightProperties()
 	if (DirectionalLightConfiguration::AdditionalDirectionalLight)
 	{
 		pass.directionalLightPass.lightProperties[directionalLight].lightIntensity = glm::vec4(1, 1, 1, 1) * DirectionalLightConfiguration::DirectionalLightIntensity;
+		pass.directionalLightPass.lightProperties[directionalLight].ambientLight = DirectionalLightConfiguration::AmbientLightColor;
 		++directionalLight;
 	}
 }
@@ -2242,7 +2297,7 @@ void VulkanDeferredShading::initialiseStaticLightProperties()
 ***********************************************************************************************************************/
 void VulkanDeferredShading::allocateLights()
 {
-	int32_t countPoint = 0;
+	uint32_t countPoint = 0;
 	uint32_t countDirectional = 0;
 	for (uint32_t i = 0; i < _mainScene->getNumLightNodes(); ++i)
 	{
@@ -2264,7 +2319,7 @@ void VulkanDeferredShading::allocateLights()
 		++countDirectional;
 	}
 
-	if (countPoint >= PointLightConfiguration::MaxScenePointLights)
+	if (countPoint >= static_cast<uint32_t>(PointLightConfiguration::MaxScenePointLights))
 	{
 		countPoint = PointLightConfiguration::MaxScenePointLights;
 	}
@@ -2278,7 +2333,7 @@ void VulkanDeferredShading::allocateLights()
 	_deviceResources->renderInfo.pointLightPasses.lightProperties.resize(countPoint);
 	_deviceResources->renderInfo.pointLightPasses.initialData.resize(countPoint);
 
-	for (int i = countPoint - PointLightConfiguration::NumProceduralPointLights; i < countPoint; ++i)
+	for (uint32_t i = countPoint - PointLightConfiguration::NumProceduralPointLights; i < countPoint; ++i)
 	{
 		updateProceduralPointLight(_deviceResources->renderInfo.pointLightPasses.initialData[i], _deviceResources->renderInfo.pointLightPasses.lightProperties[i], true);
 	}
@@ -2337,7 +2392,7 @@ void VulkanDeferredShading::recordSecondaryCommandBuffers()
 \param swapChainIndex Current swap chain index
 \param subpass Current sub pass
 ***********************************************************************************************************************/
-void VulkanDeferredShading::recordCommandBufferRenderGBuffer(pvrvk::SecondaryCommandBuffer& commandBuffer, uint32_t swapChainIndex, uint32_t subpass)
+void VulkanDeferredShading::recordCommandBufferRenderGBuffer(pvrvk::SecondaryCommandBuffer& commandBuffer, uint32_t swapChainIndex, uint32_t /*subpass*/)
 {
 	DrawGBuffer& pass = _deviceResources->renderInfo.storeLocalMemoryPass;
 
@@ -2418,7 +2473,7 @@ void VulkanDeferredShading::recordCommandsDirectionalLights(pvrvk::SecondaryComm
 \param subpass Current sub pass
 ***********************************************************************************************************************/
 void VulkanDeferredShading::recordCommandsPointLightGeometryStencil(
-	pvrvk::SecondaryCommandBuffer& commandBuffer, uint32_t swapChainIndex, uint32_t subpass, const uint32_t pointLight, const pvr::assets::Mesh& pointLightMesh)
+	pvrvk::SecondaryCommandBuffer& commandBuffer, uint32_t swapChainIndex, uint32_t /*subpass*/, const uint32_t pointLight, const pvr::assets::Mesh& pointLightMesh)
 {
 	PointLightGeometryStencil& pointGeometryStencilPass = _deviceResources->renderInfo.pointLightGeometryStencilPass;
 	PointLightPasses& pointPasses = _deviceResources->renderInfo.pointLightPasses;
@@ -2443,7 +2498,7 @@ void VulkanDeferredShading::recordCommandsPointLightGeometryStencil(
 \param subpass Current sub pass
 ***********************************************************************************************************************/
 void VulkanDeferredShading::recordCommandsPointLightProxy(
-	pvrvk::SecondaryCommandBuffer& commandBuffer, uint32_t swapChainIndex, uint32_t subpass, const uint32_t pointLight, const pvr::assets::Mesh& pointLightMesh)
+	pvrvk::SecondaryCommandBuffer& commandBuffer, uint32_t swapChainIndex, uint32_t /*subpass*/, const uint32_t pointLight, const pvr::assets::Mesh& pointLightMesh)
 {
 	DrawPointLightProxy& pointLightProxyPass = _deviceResources->renderInfo.pointLightProxyPass;
 	PointLightPasses& pointPasses = _deviceResources->renderInfo.pointLightPasses;

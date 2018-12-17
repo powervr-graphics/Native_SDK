@@ -15,7 +15,7 @@
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="IMGdoxygen.css" rel="stylesheet" type="text/css"/>
-<link rel="shortcut icon" href="http://www.imgtec.com/images/img.ico">
+<link rel="shortcut icon" type="image/x-icon" href="img.ico">
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
+      <a href="https://www.imgtec.com/developers/" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRCore</span> Documentation</a>
    <tbody>
@@ -86,29 +86,21 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="contents">
 <a href="_p_v_r_core_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;</div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#pragma once</span></div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#include &quot;<a class="code" href="_core_includes_8h.html">PVRCore/CoreIncludes.h</a>&quot;</span></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_ref_counted_8h.html">PVRCore/Base/RefCounted.h</a>&quot;</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_maths_8h.html">PVRCore/Maths.h</a>&quot;</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_complex_types_8h.html">PVRCore/Base/ComplexTypes.h</a>&quot;</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_i_o_8h.html">PVRCore/IO.h</a>&quot;</span></div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_data_structures_8h.html">PVRCore/DataStructures.h</a>&quot;</span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_string_functions_8h.html">PVRCore/StringFunctions.h</a>&quot;</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_string_hash_8h.html">PVRCore/Strings/StringHash.h</a>&quot;</span></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_time___8h.html">PVRCore/Base/Time_.h</a>&quot;</span></div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_i_asset_provider_8h.html">PVRCore/Interfaces/IAssetProvider.h</a>&quot;</span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#include &lt;iterator&gt;</span></div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="comment">/*****************************************************************************/</span></div>
-<div class="ttc" id="_i_o_8h_html"><div class="ttname"><a href="_i_o_8h.html">IO.h</a></div><div class="ttdoc">IO utilities include file. Includes other files. </div></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#include &quot;<a class="code" href="_ref_counted_8h.html">PVRCore/RefCounted.h</a>&quot;</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_math_utils_8h.html">PVRCore/math/MathUtils.h</a>&quot;</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &quot;PVRCore/stream/BufferStream.h&quot;</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;PVRCore/types/Types.h&quot;</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_string_functions_8h.html">PVRCore/strings/StringFunctions.h</a>&quot;</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_string_hash_8h.html">PVRCore/strings/StringHash.h</a>&quot;</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_i_asset_provider_8h.html">PVRCore/IAssetProvider.h</a>&quot;</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &lt;iterator&gt;</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="comment">/*****************************************************************************/</span></div>
+<div class="ttc" id="_math_utils_8h_html"><div class="ttname"><a href="_math_utils_8h.html">MathUtils.h</a></div><div class="ttdoc">Includes required GLM library components and defines the rest of the information necessary for PowerV...</div></div>
 <div class="ttc" id="_ref_counted_8h_html"><div class="ttname"><a href="_ref_counted_8h.html">RefCounted.h</a></div><div class="ttdoc">A smart pointer implementation very close to the spec of std::shared_ptr but with some differences an...</div></div>
 <div class="ttc" id="_string_hash_8h_html"><div class="ttname"><a href="_string_hash_8h.html">StringHash.h</a></div><div class="ttdoc">A hashed std::string with functionality for fast compares. </div></div>
-<div class="ttc" id="_maths_8h_html"><div class="ttname"><a href="_maths_8h.html">Maths.h</a></div><div class="ttdoc">Includes required GLM library components and defines the rest of the information necessary for PowerV...</div></div>
-<div class="ttc" id="_time___8h_html"><div class="ttname"><a href="_time___8h.html">Time_.h</a></div><div class="ttdoc">Class for dealing with time in a cross-platform way. </div></div>
-<div class="ttc" id="_complex_types_8h_html"><div class="ttname"><a href="_complex_types_8h.html">ComplexTypes.h</a></div><div class="ttdoc">Contains structures, classes and enums used throughout the framework. Conceptually sits higher than T...</div></div>
 <div class="ttc" id="_i_asset_provider_8h_html"><div class="ttname"><a href="_i_asset_provider_8h.html">IAssetProvider.h</a></div><div class="ttdoc">Contains the IAssetProvider interface, which decouples the Shell file retrieval functions from the Sh...</div></div>
-<div class="ttc" id="_core_includes_8h_html"><div class="ttname"><a href="_core_includes_8h.html">CoreIncludes.h</a></div><div class="ttdoc">Commonly included files from other PVRCore files. To include PVRCore functionality, use PVRCore.h instead. </div></div>
 <div class="ttc" id="_string_functions_8h_html"><div class="ttname"><a href="_string_functions_8h.html">StringFunctions.h</a></div><div class="ttdoc">Contains helper functions for std::string manipulation. </div></div>
-<div class="ttc" id="_data_structures_8h_html"><div class="ttname"><a href="_data_structures_8h.html">DataStructures.h</a></div><div class="ttdoc">Includes all the Data Structures files. </div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.4-->
 <!-- start footer part (NON TREEVIEW ONLY!!) -->

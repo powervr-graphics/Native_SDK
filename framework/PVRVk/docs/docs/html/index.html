@@ -15,7 +15,7 @@
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="IMGdoxygen.css" rel="stylesheet" type="text/css"/>
-<link rel="shortcut icon" href="http://www.imgtec.com/images/img.ico">
+<link rel="shortcut icon" type="image/x-icon" href="img.ico">
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
+      <a href="https://www.imgtec.com/developers/" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRVk</span> Documentation</a>
    <tbody>
@@ -88,7 +88,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div>
 <div class="textblock"><h1><a class="anchor" id="overview"></a>
 Overview</h1>
-<p>PVRVK is a library providing an advanced interface that is close enough to the original Vulkan interface to be perfectly useable with the Vulkan spec, while offering a sweet spot combination of simplicity, ease of use and minimal overhead. It most important features are C++ language offering defaults and constructors for all objects, deterministic lifecycle management through reference counting and in general a clean, modern interface.</p>
+<p>PVRVK is a library providing an advanced interface that is close enough to the original Vulkan interface to be perfectly useable with the Vulkan spec, while offering a sweet spot combination of simplicity, ease of use and minimal overhead. Its most important features are C++ language offering defaults and constructors for all objects, deterministic lifecycle management through reference counting and in general a clean, modern interface.</p>
 <h1><a class="anchor" id="usage"></a>
 Using PVRVk</h1>
 <p>PVRVk can be used indpendently of the rest of the framework, by following the Vulkan spec with the following differences: </p>
@@ -130,9 +130,9 @@ Code Examples</h1>
 <div class="line">                                     .setDescSetLayout(1, descLayoutUboDynamic)</div>
 <div class="line">                                     .setDescSetLayout(2, descLayoutUboStatic));</div>
 <div class="line"></div>
-<div class="line"><span class="comment">//Load the shaders from their bytes. The createShader function accepts a vector of unsigned integers containing the binary spir-v.</span></div>
-<div class="line">pipeCreate.<a class="code" href="structpvrvk_1_1_graphics_pipeline_create_info.html#a7430bdc4e34507976415a9a622298ab7">vertexShader</a> = device-&gt;createShader(getAssetStream(<span class="stringliteral">&quot;Object.vsh.spv&quot;</span>)-&gt;readToEnd&lt;uint32_t&gt;());</div>
-<div class="line">pipeCreate.<a class="code" href="structpvrvk_1_1_graphics_pipeline_create_info.html#a0922334ace4f8571a08515e7c703c222">fragmentShader</a> = device-&gt;createShader(getAssetStream(<span class="stringliteral">&quot;Solid.fsh.spv&quot;</span>)-&gt;readToEnd&lt;uint32_t&gt;());</div>
+<div class="line"><span class="comment">//Load the shaders from their bytes. The createShaderModule function accepts a vector of unsigned integers containing the binary spir-v.</span></div>
+<div class="line">pipeCreate.<a class="code" href="structpvrvk_1_1_graphics_pipeline_create_info.html#ad924f0005603c037915919727bf1846d">vertexShader</a> = device-&gt;createShaderModule(getAssetStream(<span class="stringliteral">&quot;Object.vsh.spv&quot;</span>)-&gt;readToEnd&lt;uint32_t&gt;());</div>
+<div class="line">pipeCreate.<a class="code" href="structpvrvk_1_1_graphics_pipeline_create_info.html#abde18f16a4741d43b42b8a86b6d76836">fragmentShader</a> = device-&gt;createShaderModule(getAssetStream(<span class="stringliteral">&quot;Solid.fsh.spv&quot;</span>)-&gt;readToEnd&lt;uint32_t&gt;());</div>
 <div class="line"></div>
 <div class="line"><span class="comment">//Create a color blending state without blending</span></div>
 <div class="line">pvrvk::PipelineColorBlendAttachmentState cbStateNoBlend(<span class="keyword">false</span>);</div>
@@ -140,22 +140,22 @@ Code Examples</h1>
 <div class="line"></div>
 <div class="line">pipeCreate.<a class="code" href="structpvrvk_1_1_graphics_pipeline_create_info.html#a03b01b372319395b445226abc2e39052">vertexInput</a>.<a class="code" href="structpvrvk_1_1_pipeline_vertex_input_state_create_info.html#a8188468367a5ead2993ad9406ff0d65d">addInputAttribute</a>(VertexAttribute(/ *attribute config here* /)).<a class="code" href="structpvrvk_1_1_pipeline_vertex_input_state_create_info.html#aa11025b0ee5c07f5cde7176e7d879ff2">addInputBinding</a>(VertexInputBindingDescription(/ * input bindings here * /);</div>
 <div class="line"></div>
-<div class="line">pipeCreate.<a class="code" href="structpvrvk_1_1_graphics_pipeline_create_info.html#af54b6dbd6a6079d42f8ac9b3335ae0a6">rasterizer</a>.<a class="code" href="structpvrvk_1_1_raster_state_create_info.html#a3b2b2ccc67fa8f4852532ee26a080fed">setFrontFaceWinding</a>(VkFrontFace::e_COUNTER_CLOCKWISE);</div>
-<div class="line">pipeCreate.<a class="code" href="structpvrvk_1_1_graphics_pipeline_create_info.html#af54b6dbd6a6079d42f8ac9b3335ae0a6">rasterizer</a>.<a class="code" href="structpvrvk_1_1_raster_state_create_info.html#adc67c1e1255ab85287b6546446f799f4">setCullMode</a>(VkCullModeFlags::e_BACK_BIT);</div>
-<div class="line">pipeCreate.<a class="code" href="structpvrvk_1_1_graphics_pipeline_create_info.html#a680b63dd662045aca5251f9ca7ed8442">depthStencil</a>.<a class="code" href="structpvrvk_1_1_depth_stencil_state_create_info.html#aba891e6465f9f89511017fd344ab0520">enableDepthTest</a>(<span class="keyword">true</span>);</div>
-<div class="line">pipeCreate.<a class="code" href="structpvrvk_1_1_graphics_pipeline_create_info.html#a680b63dd662045aca5251f9ca7ed8442">depthStencil</a>.<a class="code" href="structpvrvk_1_1_depth_stencil_state_create_info.html#a14f94b8e822ff23ba30a1c3d36609115">setDepthCompareFunc</a>(VkCompareOp::e_LESS);</div>
-<div class="line">pipeCreate.<a class="code" href="structpvrvk_1_1_graphics_pipeline_create_info.html#a680b63dd662045aca5251f9ca7ed8442">depthStencil</a>.<a class="code" href="structpvrvk_1_1_depth_stencil_state_create_info.html#a0ec3bd3752311f7b684d1332b29a89c8">enableDepthWrite</a>(<span class="keyword">true</span>);</div>
+<div class="line">pipeCreate.<a class="code" href="structpvrvk_1_1_graphics_pipeline_create_info.html#ad18817b7f943a230c08fdcbab25e3676">rasterizer</a>.<a class="code" href="structpvrvk_1_1_pipeline_rasterization_state_create_info.html#a3745846c303d7ece5ab7350f82e674db">setFrontFaceWinding</a>(VkFrontFace::e_COUNTER_CLOCKWISE);</div>
+<div class="line">pipeCreate.<a class="code" href="structpvrvk_1_1_graphics_pipeline_create_info.html#ad18817b7f943a230c08fdcbab25e3676">rasterizer</a>.<a class="code" href="structpvrvk_1_1_pipeline_rasterization_state_create_info.html#a87182af7d1b392e28077bbb6083d6022">setCullMode</a>(VkCullModeFlags::e_BACK_BIT);</div>
+<div class="line">pipeCreate.<a class="code" href="structpvrvk_1_1_graphics_pipeline_create_info.html#a4e1a19206b36b40964fb23f2c58fc258">depthStencil</a>.<a class="code" href="structpvrvk_1_1_pipeline_depth_stencil_state_create_info.html#a50f374a50fa134a62492044c76a452b4">enableDepthTest</a>(<span class="keyword">true</span>);</div>
+<div class="line">pipeCreate.<a class="code" href="structpvrvk_1_1_graphics_pipeline_create_info.html#a4e1a19206b36b40964fb23f2c58fc258">depthStencil</a>.<a class="code" href="structpvrvk_1_1_pipeline_depth_stencil_state_create_info.html#add807ef1d35a7144a02030ddd23d22ed">setDepthCompareFunc</a>(VkCompareOp::e_LESS);</div>
+<div class="line">pipeCreate.<a class="code" href="structpvrvk_1_1_graphics_pipeline_create_info.html#a4e1a19206b36b40964fb23f2c58fc258">depthStencil</a>.<a class="code" href="structpvrvk_1_1_pipeline_depth_stencil_state_create_info.html#ac3a2f8da3d5cc0fd0eb4aa899b04974f">enableDepthWrite</a>(<span class="keyword">true</span>);</div>
 <div class="line">pipeCreate.<a class="code" href="structpvrvk_1_1_graphics_pipeline_create_info.html#abb507315e7bedc76b6d282f96fed446c">renderPass</a> = onScreenFramebuffer[0]-&gt;getRenderPass();</div>
 <div class="line">pipeCreate.<a class="code" href="structpvrvk_1_1_pipeline_create_info.html#a64a29e29ea312ceedc8e16c7626044a8">pipelineLayout</a> = pipeLayout;</div>
 <div class="line"></div>
-<div class="line">pipeCreate.<a class="code" href="structpvrvk_1_1_graphics_pipeline_create_info.html#a08013d4e2e9ed9054a8cb03b304889e3">viewport</a>.<a class="code" href="structpvrvk_1_1_viewport_state_create_info.html#a7689a2460d1f1a1d6812d3043db73a59">setViewportAndScissor</a>(0,</div>
+<div class="line">pipeCreate.<a class="code" href="structpvrvk_1_1_graphics_pipeline_create_info.html#a3d2131a9a561df507b73b1ec9c749bd9">viewport</a>.<a class="code" href="structpvrvk_1_1_pipeline_viewport_state_create_info.html#ace72fde64cbc53312ece3a48c7d7451c">setViewportAndScissor</a>(0,</div>
 <div class="line">pvrvk::Viewport(0, 0, swapchain-&gt;getDimension().width,  swapchain-&gt;getDimension().height),</div>
 <div class="line">             pvrvk::Rect2Di(0, 0, swapchain-&gt;getDimension().width, swapchain-&gt;getDimension().height));</div>
 <div class="line"></div>
 <div class="line"><span class="comment">// create the pipeline</span></div>
 <div class="line">     = objectVsh;</div>
-<div class="line">    pipeCreate.<a class="code" href="structpvrvk_1_1_graphics_pipeline_create_info.html#a0922334ace4f8571a08515e7c703c222">fragmentShader</a> = solidFsh;</div>
-<div class="line">    pipeCreate.<a class="code" href="structpvrvk_1_1_graphics_pipeline_create_info.html#afa3d81dd0e1789e6e21a93c518143236">colorBlend</a>.<a class="code" href="structpvrvk_1_1_color_blend_state_create_info.html#a7d8ff1e9f22798a91fa0b7be8a324d69">setAttachmentState</a>(0, cbStateNoBlend);</div>
+<div class="line">    pipeCreate.<a class="code" href="structpvrvk_1_1_graphics_pipeline_create_info.html#abde18f16a4741d43b42b8a86b6d76836">fragmentShader</a> = solidFsh;</div>
+<div class="line">    pipeCreate.<a class="code" href="structpvrvk_1_1_graphics_pipeline_create_info.html#a055eb914ad2e17c1bd2e0001c7f79e4e">colorBlend</a>.<a class="code" href="structpvrvk_1_1_pipeline_color_blend_state_create_info.html#ae032ae907091b19b086d6fb10da0e7e0">setAttachmentState</a>(0, cbStateNoBlend);</div>
 <div class="line"></div>
 <div class="line">    <a class="code" href="namespacepvrvk.html#aa2443b681960df638797cf93bbf33fb7">pvrvk::GraphicsPipeline</a> solidObjectPipeline = device-&gt;createGraphicsPipeline(pipeCreate);</div>
 <div class="line">    <span class="keywordflow">if</span> (solidObjectPipeline.isNull())</div>

@@ -14,34 +14,60 @@ namespace pvrvk {
 struct SwapchainCreateInfo
 {
 public:
-	pvrvk::SwapchainCreateFlagsKHR flags; //!< Bitmask of pvrvk::SwapchainCreateFlagBitsKHR indicating parameters of swapchain creation.
+	SwapchainCreateFlagsKHR flags; //!< Bitmask of SwapchainCreateFlagBitsKHR indicating parameters of swapchain creation.
 	Surface surface; //!< The surface that the swapchain will present images to.
 	uint32_t minImageCount; //!< The minimum number of presentable images that the application needs. The platform will either create the swapchain with at least that many images,
 							//!< or will fail to create the swapchain
-	pvrvk::Format imageFormat; //!< pvrvk::Format that is valid for swapchains on the specified surface.
-	pvrvk::ColorSpaceKHR imageColorSpace; //!<  pvrvk::ColorSpaceKHR that is valid for swapchains on the specified surface.
-	Extent2D imageExtent; //!< Size (in pixels) of the swapchain. Behavior is platform-dependent when the image extent does not match the surface’s currentExtent as returned by
+	Format imageFormat; //!< Format that is valid for swapchains on the specified surface.
+	ColorSpaceKHR imageColorSpace; //!<  ColorSpaceKHR that is valid for swapchains on the specified surface.
+	Extent2D imageExtent; //!< Size (in pixels) of the swapchain. Behavior is platform-dependent when the image extent does not match the surface's currentExtent as returned by
 						  //!< PysicalDevice::getSurfaceCapabilities
 	uint32_t imageArrayLayers; //!< Number of views in a multiview/stereo surface. For non-stereoscopic-3D applications, this value is 1
-	pvrvk::ImageUsageFlags imageUsage; //!< Bitmask of pvrvk::ImageUsageFlagBits, indicating how the application will use the swapchain’s presentable images
-	pvrvk::SharingMode imageSharingMode; //!< Sharing mode used for the images of the swapchain.
+	ImageUsageFlags imageUsage; //!< Bitmask of ImageUsageFlagBits, indicating how the application will use the swapchain's presentable images
+	SharingMode imageSharingMode; //!< Sharing mode used for the images of the swapchain.
 	uint32_t numQueueFamilyIndex; //!< Number of queue families having access to the images of the swapchain in case imageSharingMode is VKSharingMode::e_CONCURRENT
 	const uint32_t* queueFamilyIndices; //!< Array of queue family indices having access to the images of the swapchain in case imageSharingMode is VKSharingMode::e_CONCURRENT
-	pvrvk::SurfaceTransformFlagsKHR preTransform; //!< Bitmask of pvrvk::SurfaceTransformFlagBitsKHR, describing the transform, relative to the presentation engine’s natural
-												  //!< orientation, applied to the image content prior to presentation
-	pvrvk::CompositeAlphaFlagsKHR compositeAlpha; //!< Bitmask of pvrvk::CompositeAlphaFlagBitsKHR indicating the alpha compositing mode to use when this surface is composited
-												  //!< together with other surfaces on certain window systems
-	pvrvk::PresentModeKHR presentMode; //!< Presentation mode the swapchain will use. A swapchain’s present mode determines how incoming present requests will be processed and queued internally
+	SurfaceTransformFlagsKHR preTransform; //!< Bitmask of SurfaceTransformFlagBitsKHR, describing the transform, relative to the presentation engine's natural
+										   //!< orientation, applied to the image content prior to presentation
+	CompositeAlphaFlagsKHR compositeAlpha; //!< Bitmask of CompositeAlphaFlagBitsKHR indicating the alpha compositing mode to use when this surface is composited
+										   //!< together with other surfaces on certain window systems
+	PresentModeKHR presentMode; //!< Presentation mode the swapchain will use. A swapchain's present mode determines how incoming present requests will be processed and queued internally
 	bool clipped; //!< indicates whether the Vulkan implementation is allowed to discard rendering operations that affect regions of the surface which are not visible
 	Swapchain oldSwapchain; //!< If not null handle, specifies the swapchain that will be replaced by the new swapchain being created. The new swapchain will be a descendant of
 							//!< oldSwapchain. Further, any descendants of the new swapchain will also be descendants of oldSwapchain
 
 	/// <summary>Constructor. Default intialised</summary>
 	SwapchainCreateInfo()
-		: flags(pvrvk::SwapchainCreateFlagsKHR(0)), minImageCount(0), imageFormat(pvrvk::Format::e_UNDEFINED), imageColorSpace(pvrvk::ColorSpaceKHR::e_PASS_THROUGH_EXT),
-		  imageExtent(Extent2D()), imageArrayLayers(0), imageUsage(pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT), imageSharingMode(pvrvk::SharingMode::e_EXCLUSIVE),
-		  numQueueFamilyIndex(0), preTransform(pvrvk::SurfaceTransformFlagsKHR::e_IDENTITY_BIT_KHR), compositeAlpha(pvrvk::CompositeAlphaFlagsKHR::e_OPAQUE_BIT_KHR),
-		  presentMode(pvrvk::PresentModeKHR::e_FIFO_KHR), clipped(true)
+		: flags(SwapchainCreateFlagsKHR(0)), minImageCount(0), imageFormat(Format::e_UNDEFINED), imageColorSpace(ColorSpaceKHR::e_PASS_THROUGH_EXT), imageExtent(Extent2D()),
+		  imageArrayLayers(0), imageUsage(ImageUsageFlags::e_COLOR_ATTACHMENT_BIT), imageSharingMode(SharingMode::e_EXCLUSIVE), numQueueFamilyIndex(0),
+		  preTransform(SurfaceTransformFlagsKHR::e_IDENTITY_BIT_KHR), compositeAlpha(CompositeAlphaFlagsKHR::e_OPAQUE_BIT_KHR), presentMode(PresentModeKHR::e_FIFO_KHR), clipped(true)
+	{}
+
+	/// <summary>Constructor.</summary>
+	/// <param name="surface">The surface onto which the swapchain will present images</param>
+	/// <param name="minImageCount">The minimum number of presentable images that the application needs</param>
+	/// <param name="imageExtent">The size (in pixels) of the swapchain image(s)</param>
+	/// <param name="flags">A set of pvrvk::SwapchainCreateFlagsKHR indicating parameters of the swapchain creation.</param>
+	/// <param name="numQueueFamilyIndex">The number of queue families having access to the image(s) of the swapchain when imageSharingMode is VK_SHARING_MODE_CONCURRENT</param>
+	/// <param name="queueFamilyIndices">An array of queue family indices having access to the images(s) of the swapchain when imageSharingMode is VK_SHARING_MODE_CONCURRENT</param>
+	/// <param name="imageUsage">A set of pvrvk::ImageUsageFlags describing the intended usage of the (acquired) swapchain images.</param>
+	/// <param name="imageFormat">A pvrvk::Format value specifying the format the swapchain image(s) will be created with.</param>
+	/// <param name="imageColorSpace">A pvrvk::ColorSpaceKHR value specifying the way the swapchain interprets image data.</param>
+	/// <param name="presentMode">The presentation mode the swapchain will use.</param>
+	/// <param name="imageArrayLayers">The number of views in a multiview/stereo surface</param>
+	/// <param name="imageSharingMode">The sharing mode used for the image(s) of the swapchain.</param>
+	/// <param name="preTransform">A pvrvk::SurfaceTransformFlagsKHR value describing the transform, relative to the presentation engine�s natural orientation, applied to the image content prior to presentation. If it does not match the currentTransform value returned by vkGetPhysicalDeviceSurfaceCapabilitiesKHR, the presentation engine will transform the image content as part of the presentation operation.</param>
+	/// <param name="compositeAlpha">A pvrvk::CompositeAlphaFlagsKHR value indicating the alpha compositing mode to use when this surface is composited together with other surfaces on certain window systems.</param>
+	/// <param name="clipped">Specifies whether the Vulkan implementation is allowed to discard rendering operations that affect regions of the surface that are not visible.</param>
+	/// <param name="oldSwapchain">Is a null pvrvk::Swapchain, or the existing non-retired swapchain currently associated with surface.</param>
+	SwapchainCreateInfo(Surface surface, uint32_t minImageCount, Extent2D imageExtent, SwapchainCreateFlagsKHR flags, uint32_t numQueueFamilyIndex,
+		const uint32_t* queueFamilyIndices, ImageUsageFlags imageUsage, Format imageFormat = Format::e_R8G8B8A8_UNORM,
+		ColorSpaceKHR imageColorSpace = ColorSpaceKHR::e_PASS_THROUGH_EXT, PresentModeKHR presentMode = PresentModeKHR::e_FIFO_KHR, uint32_t imageArrayLayers = 1,
+		SharingMode imageSharingMode = SharingMode::e_EXCLUSIVE, SurfaceTransformFlagsKHR preTransform = SurfaceTransformFlagsKHR::e_IDENTITY_BIT_KHR,
+		CompositeAlphaFlagsKHR compositeAlpha = CompositeAlphaFlagsKHR::e_OPAQUE_BIT_KHR, bool clipped = true, Swapchain oldSwapchain = Swapchain())
+		: flags(flags), surface(surface), minImageCount(minImageCount), imageFormat(imageFormat), imageColorSpace(imageColorSpace), imageExtent(imageExtent),
+		  imageArrayLayers(imageArrayLayers), imageUsage(imageUsage), imageSharingMode(imageSharingMode), numQueueFamilyIndex(numQueueFamilyIndex),
+		  queueFamilyIndices(queueFamilyIndices), preTransform(preTransform), compositeAlpha(compositeAlpha), presentMode(presentMode), clipped(true), oldSwapchain(oldSwapchain)
 	{}
 };
 
@@ -54,7 +80,7 @@ public:
 	DECLARE_NO_COPY_SEMANTICS(Swapchain_)
 
 	/// <summary>Acquire next image. The acquired swapchain index can be retrieved by calling getSwapchainIndex.
-	///   Note: The presenation engine may still be consuming the swapchain image, therefore the calle must synchronise it before using it. </summary>
+	///   Note: The presenation engine may still be consuming the swapchain image, therefore the calle must synchronise it before using it.</summary>
 	/// <param name="timeOut">indicates how long the function waits, in nanoseconds, if no image is available.</param>
 	/// <param name="signalSemaphore"> is null semaphore or a semaphore to signal</param>
 	/// <param name="signalFence">is a null fence or fence to signal</param>
@@ -62,7 +88,7 @@ public:
 	bool acquireNextImage(uint64_t timeOut, Semaphore signalSemaphore, Fence signalFence);
 
 	/// <summary>Acquire next image. The acquired swapchain index can be retrieved by calling getSwapchainIndex.
-	///   Note: The presenation engine may still be consuming the swapchain image, therefore the calle must synchronise it before using it. </summary>
+	///   Note: The presenation engine may still be consuming the swapchain image, therefore the calle must synchronise it before using it.</summary>
 	/// <param name="timeOut">indicates how long the function waits, in nanoseconds, if no image is available.</param>
 	/// <param name="signalSemaphore"> is null semaphore or a semaphore to signal</param>
 	/// <returns>Return true if image was acquired, false if timed out or suboptimal.</returns>
@@ -114,9 +140,9 @@ public:
 		return _createInfo.clipped;
 	}
 
-	/// <summary>Gets the pvrvk::CompositeAlphaFlagsKHR of the swapchain images</summary>
-	/// <returns>The pvrvk::CompositeAlphaFlagsKHR for the swapchain image</returns>
-	pvrvk::CompositeAlphaFlagsKHR getCompositeAlphaFlags() const
+	/// <summary>Gets the CompositeAlphaFlagsKHR of the swapchain images</summary>
+	/// <returns>The CompositeAlphaFlagsKHR for the swapchain image</returns>
+	CompositeAlphaFlagsKHR getCompositeAlphaFlags() const
 	{
 		return _createInfo.compositeAlpha;
 	}
@@ -129,36 +155,36 @@ public:
 	}
 
 	/// <summary>Get swapchain image format</summary>
-	/// <returns>pvrvk::Format</returns>
-	pvrvk::Format getImageFormat() const
+	/// <returns>Format</returns>
+	Format getImageFormat() const
 	{
 		return _createInfo.imageFormat;
 	}
 
 	/// <summary>Gets the color space of the swapchain images</summary>
 	/// <returns>The color space of the swapchain images</returns>
-	pvrvk::ColorSpaceKHR getColorSpace() const
+	ColorSpaceKHR getColorSpace() const
 	{
 		return _createInfo.imageColorSpace;
 	}
 
 	/// <summary>Gets the surface transform flags of the swapchain images</summary>
 	/// <returns>The surface transform flags of the swapchain images</returns>
-	pvrvk::SurfaceTransformFlagsKHR getTransformFlags() const
+	SurfaceTransformFlagsKHR getTransformFlags() const
 	{
 		return _createInfo.preTransform;
 	}
 
 	/// <summary>Gets the image sharing mode of the swapchain images</summary>
 	/// <returns>The image sharing mode of the swapchain images</returns>
-	pvrvk::SharingMode getSharingMode() const
+	SharingMode getSharingMode() const
 	{
 		return _createInfo.imageSharingMode;
 	}
 
 	/// <summary>Gets the presentation mode of the swapchain images</summary>
 	/// <returns>The presentation mode of the swapchain images</returns>
-	pvrvk::PresentModeKHR getPresentationMode() const
+	PresentModeKHR getPresentationMode() const
 	{
 		return _createInfo.presentMode;
 	}
@@ -184,15 +210,15 @@ public:
 
 	/// <summary>Gets the swapchain image usage flags</summary>
 	/// <returns>The swapchain image usage</returns>
-	pvrvk::ImageUsageFlags getUsage() const
+	ImageUsageFlags getUsage() const
 	{
 		return _createInfo.imageUsage;
 	}
 
 	/// <summary>Returns whether the swapchain supports the specified image usage flag bits</summary>
-	/// <param name="imageUsage">The pvrvk::ImageUsageFlags bits to check for support</param>
+	/// <param name="imageUsage">The ImageUsageFlags bits to check for support</param>
 	/// <returns>True if the swapchain supports the specified image usage</returns>
-	bool supportsUsage(const pvrvk::ImageUsageFlags& imageUsage) const
+	bool supportsUsage(const ImageUsageFlags& imageUsage) const
 	{
 		if (static_cast<uint32_t>(getUsage() & imageUsage) != 0)
 		{
@@ -213,7 +239,7 @@ private:
 	uint32_t _swapChainLength;
 	ImageView _colorImageViews[static_cast<uint32_t>(FrameworkCaps::MaxSwapChains)];
 	Surface _surface;
-	pvrvk::SwapchainCreateInfo _createInfo;
+	SwapchainCreateInfo _createInfo;
 };
 } // namespace impl
 } // namespace pvrvk

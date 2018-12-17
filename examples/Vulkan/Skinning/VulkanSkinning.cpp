@@ -6,6 +6,8 @@
 ***********************************************************************************************************************/
 #include "PVRShell/PVRShell.h"
 #include "PVRUtils/PVRUtilsVk.h"
+#include "PVRPfx/RenderManagerVk.h"
+#include "PVRCore/pfx/PFXParser.h"
 
 namespace Configuration {
 const char EffectFile[] = "Skinning.pfx";
@@ -30,8 +32,7 @@ struct DeviceResources
 	pvrvk::DescriptorPool descriptorPool;
 	pvrvk::Queue queue;
 
-	pvr::utils::vma::Allocator vmaBufferAllocator;
-	pvr::utils::vma::Allocator vmaImageAllocator;
+	pvr::utils::vma::Allocator vmaAllocator;
 
 	pvrvk::Surface surface;
 
@@ -49,8 +50,8 @@ struct DeviceResources
 		if (device.isValid())
 		{
 			device->waitIdle();
-			int l = swapchain->getSwapchainLength();
-			for (int i = 0; i < l; ++i)
+			uint32_t l = swapchain->getSwapchainLength();
+			for (uint32_t i = 0; i < l; ++i)
 			{
 				if (perFrameAcquireFence[i].isValid())
 					perFrameAcquireFence[i]->wait();
@@ -153,6 +154,12 @@ pvr::Result VulkanSkinning::initView()
 	// Create instance and retrieve compatible physical devices
 	_deviceResources->instance = pvr::utils::createInstance(this->getApplicationName());
 
+	if (_deviceResources->instance->getNumPhysicalDevices() == 0)
+	{
+		setExitMessage("Unable not find a compatible Vulkan physical device.");
+		return pvr::Result::UnknownError;
+	}
+
 	// Create the surface
 	_deviceResources->surface = pvr::utils::createSurface(_deviceResources->instance, _deviceResources->instance->getPhysicalDevice(0), this->getWindow(), this->getDisplay());
 
@@ -181,8 +188,7 @@ pvr::Result VulkanSkinning::initView()
 		return pvr::Result::UnknownError;
 	}
 
-	_deviceResources->vmaBufferAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
-	_deviceResources->vmaImageAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
+	_deviceResources->vmaAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
 
 	pvrvk::SurfaceCapabilitiesKHR surfaceCapabilities = _deviceResources->instance->getPhysicalDevice(0)->getSurfaceCapabilities(_deviceResources->surface);
 
@@ -196,12 +202,12 @@ pvr::Result VulkanSkinning::initView()
 	// create the swapchain
 	pvr::utils::createSwapchainAndDepthStencilImageAndViews(_deviceResources->device, _deviceResources->surface, getDisplayAttributes(), _deviceResources->swapchain,
 		_deviceResources->depthStencilImages, swapchainImageUsage, pvrvk::ImageUsageFlags::e_DEPTH_STENCIL_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_TRANSIENT_ATTACHMENT_BIT,
-		&_deviceResources->vmaImageAllocator);
+		&_deviceResources->vmaAllocator);
 
 	_currentFrame = 0.;
 
 	// Setup the effect
-	pvr::assets::pfx::PfxParser rd(Configuration::EffectFile, this);
+	pvr::pfx::PfxParser rd(Configuration::EffectFile, this);
 
 	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(pvrvk::DescriptorPoolCreateInfo()
 																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 16)
@@ -209,8 +215,8 @@ pvr::Result VulkanSkinning::initView()
 																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 128)
 																						  .setMaxDescriptorSets(256));
 
-	_deviceResources->commandPool =
-		_deviceResources->device->createCommandPool(_deviceResources->queue->getQueueFamilyId(), pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT);
+	_deviceResources->commandPool = _deviceResources->device->createCommandPool(
+		pvrvk::CommandPoolCreateInfo(_deviceResources->queue->getFamilyIndex(), pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT));
 
 	// create the commandbuffers, semaphores & the fence
 	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
@@ -260,8 +266,8 @@ pvr::Result VulkanSkinning::initView()
 	}
 	***************************************************************/
 
-	_deviceResources->uiRenderer.init(
-		getWidth(), getHeight(), isFullScreen(), _deviceResources->mgr.toPass(0, 0).getFramebuffer(0)->getRenderPass(), 0, _deviceResources->commandPool, _deviceResources->queue);
+	_deviceResources->uiRenderer.init(getWidth(), getHeight(), isFullScreen(), _deviceResources->mgr.toPass(0, 0).getFramebuffer(0)->getRenderPass(), 0,
+		getBackBufferColorspace() == pvr::ColorSpace::sRGB, _deviceResources->commandPool, _deviceResources->queue);
 
 	_deviceResources->commandBuffers[0]->end();
 	pvrvk::SubmitInfo submitInfo;
@@ -310,23 +316,26 @@ pvr::Result VulkanSkinning::renderFrame()
 	_deviceResources->perFrameCommandBufferFence[swapchainIndex]->wait();
 	_deviceResources->perFrameCommandBufferFence[swapchainIndex]->reset();
 
-	const float fDelta = (float)getFrameTime();
+	const float fDelta = static_cast<float>(getFrameTime());
+	auto& animation = _scene->getAnimationInstance(0);
+
 	if (fDelta > 0.0001f)
 	{
 		if (!_isPaused)
 		{
-			_currentFrame += fDelta / _scene->getFPS();
-		}
-
-		// Wrap the Frame number back to Start
-		while (_currentFrame >= _scene->getNumFrames() - 1)
-		{
-			_currentFrame -= (_scene->getNumFrames() - 1);
+			if (_currentFrame > animation.getTotalTimeInMs())
+			{
+				_currentFrame = 0;
+			}
+			else
+			{
+				_currentFrame += getFrameTime();
+			}
 		}
 	}
+	_scene->getAnimationInstance(0).updateAnimation(_currentFrame);
 
 	// Set the _scene animation to the current frame
-	_deviceResources->mgr.toSubpassGroupModel(0, 0, 0, 0, 0).updateFrame(_currentFrame);
 	_deviceResources->mgr.updateAutomaticSemantics(swapchainIndex);
 
 	/***************************************************************
@@ -364,7 +373,7 @@ pvr::Result VulkanSkinning::renderFrame()
 	if (this->shouldTakeScreenshot())
 	{
 		pvr::utils::takeScreenshot(_deviceResources->swapchain, swapchainIndex, _deviceResources->commandPool, _deviceResources->queue, this->getScreenshotFileName(),
-			&_deviceResources->vmaBufferAllocator, &_deviceResources->vmaImageAllocator);
+			&_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
 	}
 
 	pvrvk::PresentInfo presentInfo;
@@ -421,8 +430,8 @@ inline std::vector<pvr::StringHash> generateBonesList(const char* base, uint32_t
 inline void VulkanSkinning::recordCommandBuffer()
 {
 	const pvrvk::ClearValue clearValues[2] = {
-		pvrvk::ClearValue(0.f, 0.f, 0.f, 1.f),
-		pvrvk::ClearValue(1.f, 0u),
+		pvrvk::ClearValue(0.0f, 0.45f, 0.41f, 1.0f),
+		pvrvk::ClearValue(1.0f, 0u),
 	};
 	for (uint32_t swapidx = 0; swapidx < _deviceResources->swapchain->getSwapchainLength(); ++swapidx)
 	{
@@ -452,11 +461,8 @@ inline void VulkanSkinning::recordCommandBuffer()
 	}
 }
 
-/*!*********************************************************************************************************************
-\return Return auto ptr to the demo supplied by the user
-\brief  This function must be implemented by the user of the shell. The user should return its Shell object defining the behaviour
-of the application.
-***********************************************************************************************************************/
+/// <summary>This function must be implemented by the user of the shell. The user should return its pvr::Shell object defining the behaviour of the application.</summary>
+/// <returns>Return a unique ptr to the demo supplied by the user.</returns>
 std::unique_ptr<pvr::Shell> pvr::newDemo()
 {
 	return std::unique_ptr<pvr::Shell>(new VulkanSkinning());

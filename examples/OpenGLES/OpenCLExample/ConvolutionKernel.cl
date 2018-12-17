@@ -43,20 +43,20 @@
  *   |---|---|---|---|---|---|---|---|---|---|
  *
  */
-inline void prefetch_texture_samples_8x4(__read_only image2d_t srcImage, sampler_t sampler, __local float3* colours)
+inline void prefetch_texture_samples_8x4(__read_only image2d_t srcImage, sampler_t sampler, __local float3* colors)
 {
 	const int2 grid = (int2)(get_group_id(0) * 8, get_group_id(1) * 4);
 	const int2 lid = (int2)(get_local_id(0), get_local_id(1));
 
 	if (lid.x < 6 && lid.y < 2)
 	{
-		// Prefetch required colour samples
+		// Prefetch required color samples
 		const int2 lid_offset = lid * (int2)(10, 5);
-		colours[lid_offset.x + lid_offset.y] =     read_imagef(srcImage, sampler, grid + (int2)(lid_offset.y - 1, lid.x - 1)).xyz;
-		colours[lid_offset.x + lid_offset.y + 1] = read_imagef(srcImage, sampler, grid + (int2)(lid_offset.y, lid.x - 1)).xyz;
-		colours[lid_offset.x + lid_offset.y + 2] = read_imagef(srcImage, sampler, grid + (int2)(lid_offset.y + 1, lid.x - 1)).xyz;
-		colours[lid_offset.x + lid_offset.y + 3] = read_imagef(srcImage, sampler, grid + (int2)(lid_offset.y + 2, lid.x - 1)).xyz;
-		colours[lid_offset.x + lid_offset.y + 4] = read_imagef(srcImage, sampler, grid + (int2)(lid_offset.y + 3, lid.x - 1)).xyz;
+		colors[lid_offset.x + lid_offset.y] =     read_imagef(srcImage, sampler, grid + (int2)(lid_offset.y - 1, lid.x - 1)).xyz;
+		colors[lid_offset.x + lid_offset.y + 1] = read_imagef(srcImage, sampler, grid + (int2)(lid_offset.y, lid.x - 1)).xyz;
+		colors[lid_offset.x + lid_offset.y + 2] = read_imagef(srcImage, sampler, grid + (int2)(lid_offset.y + 1, lid.x - 1)).xyz;
+		colors[lid_offset.x + lid_offset.y + 3] = read_imagef(srcImage, sampler, grid + (int2)(lid_offset.y + 2, lid.x - 1)).xyz;
+		colors[lid_offset.x + lid_offset.y + 4] = read_imagef(srcImage, sampler, grid + (int2)(lid_offset.y + 3, lid.x - 1)).xyz;
 	}
 
 	// wait for all work-items to finish
@@ -65,17 +65,17 @@ inline void prefetch_texture_samples_8x4(__read_only image2d_t srcImage, sampler
 
 /*
  * Picks the highest luminance value in a 3x3 surrounding and
- * writes the corresping colour as result.
+ * writes the corresping color as result.
  */
 __attribute__((reqd_work_group_size(8, 4, 1)))
 __kernel void erode_3x3(__read_only image2d_t srcImage, __write_only image2d_t dstImage, sampler_t sampler)
 {
 	const int2 lid = (int2)(get_local_id(0), get_local_id(1));
 
-	__local float3 colours[60];
-	prefetch_texture_samples_8x4(srcImage, sampler, colours);
+	__local float3 colors[60];
+	prefetch_texture_samples_8x4(srcImage, sampler, colors);
 
-	// Convert all colour values to luminance in parallel
+	// Convert all color values to luminance in parallel
 	const float3 rgb_to_lum = (float3)(0.3f, 0.59f, 0.11f);
 
 	__local float luminance[60];
@@ -83,11 +83,11 @@ __kernel void erode_3x3(__read_only image2d_t srcImage, __write_only image2d_t d
 	{
 		const int2 lid_offset = lid * (int2)(10, 5);
 		int cache_id = lid_offset.x + lid_offset.y;
-		luminance[cache_id] = dot(rgb_to_lum, colours[cache_id]);
-		luminance[cache_id + 1] = dot(rgb_to_lum, colours[cache_id + 1]);
-		luminance[cache_id + 2] = dot(rgb_to_lum, colours[cache_id + 2]);
-		luminance[cache_id + 3] = dot(rgb_to_lum, colours[cache_id + 3]);
-		luminance[cache_id + 4] = dot(rgb_to_lum, colours[cache_id + 4]);
+		luminance[cache_id] = dot(rgb_to_lum, colors[cache_id]);
+		luminance[cache_id + 1] = dot(rgb_to_lum, colors[cache_id + 1]);
+		luminance[cache_id + 2] = dot(rgb_to_lum, colors[cache_id + 2]);
+		luminance[cache_id + 3] = dot(rgb_to_lum, colors[cache_id + 3]);
+		luminance[cache_id + 4] = dot(rgb_to_lum, colors[cache_id + 4]);
 	}
 
 	// wait for all work-items to finish
@@ -111,7 +111,7 @@ __kernel void erode_3x3(__read_only image2d_t srcImage, __write_only image2d_t d
 	if (luminance[idx + 22] > luminance[min_idx]) { min_idx = idx + 22; }//test vs 2,2
 
 	const int2 gid = (int2)(get_group_id(0) * 8, get_group_id(1) * 4);
-	write_imagef(dstImage, gid + lid, (float4)(colours[min_idx], 1.0f));
+	write_imagef(dstImage, gid + lid, (float4)(colors[min_idx], 1.0f));
 }
 
 /*
@@ -123,17 +123,17 @@ __kernel void box_3x3(__read_only image2d_t srcImage, __write_only image2d_t dst
 	const int2 gid = (int2)(get_group_id(0) * 8, get_group_id(1) * 4);
 	const int2 lid = (int2)(get_local_id(0), get_local_id(1));
 
-	__local float3 colours[60];
-	prefetch_texture_samples_8x4(srcImage, sampler, colours);
+	__local float3 colors[60];
+	prefetch_texture_samples_8x4(srcImage, sampler, colors);
 
 	int offset = lid.y * 10 + lid.x;
-	float3 colour = 0.f;
-	colour +=  colours[offset + 00]*1.f + colours[offset + 01]*1.f + colours[offset + 02]*1.f;
-	colour +=  colours[offset + 10]*1.f + colours[offset + 11]*1.f + colours[offset + 12]*1.f;
-	colour +=  colours[offset + 20]*1.f + colours[offset + 21]*1.f + colours[offset + 22]*1.f;
-	colour /= 9.0f;
+	float3 color = 0.f;
+	color +=  colors[offset + 00]*1.f + colors[offset + 01]*1.f + colors[offset + 02]*1.f;
+	color +=  colors[offset + 10]*1.f + colors[offset + 11]*1.f + colors[offset + 12]*1.f;
+	color +=  colors[offset + 20]*1.f + colors[offset + 21]*1.f + colors[offset + 22]*1.f;
+	color /= 9.0f;
 
-	write_imagef(dstImage, gid + lid, (float4)(colour, 1.0f));
+	write_imagef(dstImage, gid + lid, (float4)(color, 1.0f));
 }
 
 __attribute__((reqd_work_group_size(8, 4, 1)))
@@ -147,17 +147,17 @@ __kernel void copy(__read_only image2d_t srcImage, __write_only image2d_t dstIma
 
 /*
  * Picks the lowest luminance value in a 3x3 surrounding and
- * writes the corresping colour as result.
+ * writes the corresping color as result.
  */
 __attribute__((reqd_work_group_size(8, 4, 1)))
 __kernel void dilate_3x3(__read_only image2d_t srcImage, __write_only image2d_t dstImage, sampler_t sampler)
 {
 	const int2 lid = (int2)(get_local_id(0), get_local_id(1));
 
-	__local float3 colours[60];
-	prefetch_texture_samples_8x4(srcImage, sampler, colours);
+	__local float3 colors[60];
+	prefetch_texture_samples_8x4(srcImage, sampler, colors);
 
-	// Convert all colour values to luminance in parallel
+	// Convert all color values to luminance in parallel
 	const float3 rgb_to_lum = (float3)(0.3f, 0.59f, 0.11f);
 
 	__local float luminance[60];
@@ -165,11 +165,11 @@ __kernel void dilate_3x3(__read_only image2d_t srcImage, __write_only image2d_t 
 	{
 		const int2 lid_offset = lid * (int2)(10, 5);
 		int offset1;
-		luminance[lid_offset.x + lid_offset.y] = dot(rgb_to_lum, colours[lid_offset.x + lid_offset.y]);
-		luminance[lid_offset.x + lid_offset.y + 1] = dot(rgb_to_lum, colours[lid_offset.x + lid_offset.y + 1]);
-		luminance[lid_offset.x + lid_offset.y + 2] = dot(rgb_to_lum, colours[lid_offset.x + lid_offset.y + 2]);
-		luminance[lid_offset.x + lid_offset.y + 3] = dot(rgb_to_lum, colours[lid_offset.x + lid_offset.y + 3]);
-		luminance[lid_offset.x + lid_offset.y + 4] = dot(rgb_to_lum, colours[lid_offset.x + lid_offset.y + 4]);
+		luminance[lid_offset.x + lid_offset.y] = dot(rgb_to_lum, colors[lid_offset.x + lid_offset.y]);
+		luminance[lid_offset.x + lid_offset.y + 1] = dot(rgb_to_lum, colors[lid_offset.x + lid_offset.y + 1]);
+		luminance[lid_offset.x + lid_offset.y + 2] = dot(rgb_to_lum, colors[lid_offset.x + lid_offset.y + 2]);
+		luminance[lid_offset.x + lid_offset.y + 3] = dot(rgb_to_lum, colors[lid_offset.x + lid_offset.y + 3]);
+		luminance[lid_offset.x + lid_offset.y + 4] = dot(rgb_to_lum, colors[lid_offset.x + lid_offset.y + 4]);
 	}
 
 	// wait for all work-items to finish
@@ -188,7 +188,7 @@ __kernel void dilate_3x3(__read_only image2d_t srcImage, __write_only image2d_t 
 	if (luminance[idx + 22] < luminance[max_idx]) { max_idx = idx + 22; }//test vs 2,2
 
 	const int2 gid = (int2)(get_group_id(0) * 8, get_group_id(1) * 4);
-	write_imagef(dstImage, gid + lid, (float4)(colours[max_idx], 1.0f));
+	write_imagef(dstImage, gid + lid, (float4)(colors[max_idx], 1.0f));
 }
 
 
@@ -201,15 +201,15 @@ __kernel void edgedetect_3x3(__read_only image2d_t srcImage, __write_only image2
 	const int2 gid = (int2)(get_group_id(0) * 8, get_group_id(1) * 4);
 	const int2 lid = (int2)(get_local_id(0), get_local_id(1));
 
-	__local float3 colours[60];
-	prefetch_texture_samples_8x4(srcImage, sampler, colours);
+	__local float3 colors[60];
+	prefetch_texture_samples_8x4(srcImage, sampler, colors);
 
 	int offset = lid.y * 10 + lid.x;
-	float3 colour = colours[offset + 00] * -1.0f + colours[offset + 01] * -1.0f + colours[offset + 02] * -1.0f;
-	colour +=       colours[offset + 10] * -1.0f + colours[offset + 11] *  8.0f + colours[offset + 12] * -1.0f;
-	colour +=       colours[offset + 20] * -1.0f + colours[offset + 21] * -1.0f + colours[offset + 22] * -1.0f;
+	float3 color = colors[offset + 00] * -1.0f + colors[offset + 01] * -1.0f + colors[offset + 02] * -1.0f;
+	color +=       colors[offset + 10] * -1.0f + colors[offset + 11] *  8.0f + colors[offset + 12] * -1.0f;
+	color +=       colors[offset + 20] * -1.0f + colors[offset + 21] * -1.0f + colors[offset + 22] * -1.0f;
 
-	write_imagef(dstImage, gid + lid, (float4)(colour, 1.0f));
+	write_imagef(dstImage, gid + lid, (float4)(color, 1.0f));
 }
 
 /*
@@ -223,21 +223,21 @@ __kernel void sobel_3x3(__read_only image2d_t srcImage,
 	const int2 gid = (int2)(get_group_id(0) * 8, get_group_id(1) * 4);
 	const int2 lid = (int2)(get_local_id(0), get_local_id(1));
 
-	__local float3 colours[60];
-	prefetch_texture_samples_8x4(srcImage, sampler, colours);
+	__local float3 colors[60];
+	prefetch_texture_samples_8x4(srcImage, sampler, colors);
 
 	// horizontal filter
 	int offset = lid.y * 10 + lid.x;
-	float3 colour;
-	colour = colours[offset] * -1.0f + colours[offset + 1] * -2.0f + colours[offset + 2] * -1.0f;
-	colour += colours[offset + 20] + colours[offset + 21] * 2.0f + colours[offset + 22];
+	float3 color;
+	color = colors[offset] * -1.0f + colors[offset + 1] * -2.0f + colors[offset + 2] * -1.0f;
+	color += colors[offset + 20] + colors[offset + 21] * 2.0f + colors[offset + 22];
 
 	// vertical filter
-	colour += colours[offset] * -1.0f + colours[offset + 2];
-	colour += colours[offset + 10] * -2.0f + colours[offset + 12] * 2.0f;
-	colour += colours[offset + 20] * -1.0f + colours[offset + 22] * 1.0f;
+	color += colors[offset] * -1.0f + colors[offset + 2];
+	color += colors[offset + 10] * -2.0f + colors[offset + 12] * 2.0f;
+	color += colors[offset + 20] * -1.0f + colors[offset + 22] * 1.0f;
 
-	write_imagef(dstImage, gid + lid, (float4)(colour, 1.0f));
+	write_imagef(dstImage, gid + lid, (float4)(color, 1.0f));
 }
 
 /*
@@ -249,16 +249,16 @@ __kernel void gaussian_3x3(__read_only image2d_t srcImage, __write_only image2d_
 	const int2 gid = (int2)(get_group_id(0) * 8, get_group_id(1) * 4);
 	const int2 lid = (int2)(get_local_id(0), get_local_id(1));
 
-	__local float3 colours[60];
-	prefetch_texture_samples_8x4(srcImage, sampler, colours);
+	__local float3 colors[60];
+	prefetch_texture_samples_8x4(srcImage, sampler, colors);
 
 	int offset = lid.y * 10 + lid.x;
-	float3 colour;
-	colour = colours[offset] * 0.0625f + colours[offset + 1] * 0.125f + colours[offset + 2] * 0.0625f;
-	colour += colours[offset + 10] * 0.125f + colours[offset + 11] * 0.25f + colours[offset + 12] * 0.125f;
-	colour += colours[offset + 20] * 0.0625f + colours[offset + 21] * 0.125f + colours[offset + 22] * 0.0625f;
+	float3 color;
+	color = colors[offset] * 0.0625f + colors[offset + 1] * 0.125f + colors[offset + 2] * 0.0625f;
+	color += colors[offset + 10] * 0.125f + colors[offset + 11] * 0.25f + colors[offset + 12] * 0.125f;
+	color += colors[offset + 20] * 0.0625f + colors[offset + 21] * 0.125f + colors[offset + 22] * 0.0625f;
 
-	write_imagef(dstImage, gid + lid, (float4)(colour, 1.0f));
+	write_imagef(dstImage, gid + lid, (float4)(color, 1.0f));
 }
 
 
@@ -271,16 +271,16 @@ __kernel void emboss_3x3(__read_only image2d_t srcImage, __write_only image2d_t 
 	const int2 gid = (int2)(get_group_id(0) * 8, get_group_id(1) * 4);
 	const int2 lid = (int2)(get_local_id(0), get_local_id(1));
 
-	__local float3 colours[60];
-	prefetch_texture_samples_8x4(srcImage, sampler, colours);
+	__local float3 colors[60];
+	prefetch_texture_samples_8x4(srcImage, sampler, colors);
 
 	int offset = lid.y * 10 + lid.x;
-	float3 colour;
-	colour = colours[offset] * -2.0f + colours[offset + 1] * -1.0f;
-	colour += colours[offset + 10] * -1.0f + colours[offset + 11] * 1.0f + colours[offset + 12] * 1.0f;
-	colour += colours[offset + 21] * 1.0f + colours[offset + 22] * 2.0f;
+	float3 color;
+	color = colors[offset] * -2.0f + colors[offset + 1] * -1.0f;
+	color += colors[offset + 10] * -1.0f + colors[offset + 11] * 1.0f + colors[offset + 12] * 1.0f;
+	color += colors[offset + 21] * 1.0f + colors[offset + 22] * 2.0f;
 
-	write_imagef(dstImage, gid + lid, (float4)(colour, 1.0f));
+	write_imagef(dstImage, gid + lid, (float4)(color, 1.0f));
 }
 
 /*
@@ -291,14 +291,14 @@ __kernel void sharpen_3x3(__read_only image2d_t srcImage, __write_only image2d_t
 	const int2 gid = (int2)(get_group_id(0) * 8, get_group_id(1) * 4);
 	const int2 lid = (int2)(get_local_id(0), get_local_id(1));
 
-	__local float3 colours[60];
-	prefetch_texture_samples_8x4(srcImage, sampler, colours);
+	__local float3 colors[60];
+	prefetch_texture_samples_8x4(srcImage, sampler, colors);
 
 	int offset = lid.y * 10 + lid.x;
-	float3 colour;
-	colour = colours[offset + 11] * -1.0f;
-	colour += colours[offset + 10] * -1.0f + colours[offset + 11] * 5.0f + colours[offset + 12] * -1.0f;
-	colour += colours[offset + 21] * -1.0f;
+	float3 color;
+	color = colors[offset + 11] * -1.0f;
+	color += colors[offset + 10] * -1.0f + colors[offset + 11] * 5.0f + colors[offset + 12] * -1.0f;
+	color += colors[offset + 21] * -1.0f;
 
-	write_imagef(dstImage, gid + lid, (float4)(colour, 1.0f));
+	write_imagef(dstImage, gid + lid, (float4)(color, 1.0f));
 }

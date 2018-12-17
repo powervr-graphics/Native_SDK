@@ -12,6 +12,7 @@ MatrixGroup_)
 #include "PVRVk/DescriptorSetVk.h"
 #include "PVRVk/SamplerVk.h"
 #include "PVRVk/ImageVk.h"
+#include "PVRCore/strings/UnicodeConverter.h"
 
 using glm::vec2;
 using glm::vec3;
@@ -55,7 +56,7 @@ const std::pair<StringHash, GpuDatatypes> UboData::EntryNames[] = {
 	std::pair<StringHash, GpuDatatypes>("alphaMode", GpuDatatypes::Integer),
 };
 
-Sprite_::Sprite_(UIRenderer& uiRenderer) : _color(1.f, 1.f, 1.f, 1.f), _alphaMode(false), _uiRenderer(&uiRenderer)
+Sprite_::Sprite_(UIRenderer& uiRenderer) : _color(1.f, 1.f, 1.f, 1.f), _alphaMode(false), _uiRenderer(&uiRenderer), _spriteName("")
 {
 	_boundingRect.clear();
 }
@@ -65,7 +66,7 @@ void Sprite_::commitUpdates() const
 	calculateMvp(0, glm::mat4(1.f), _uiRenderer->getScreenRotation() * _uiRenderer->getProjection(), _uiRenderer->getViewport());
 }
 
-void Sprite_::render() const
+void Sprite_::render()
 {
 	if (!_uiRenderer->isRendering())
 	{
@@ -167,13 +168,15 @@ void Image_::calculateMvp(uint64_t parentIds, const glm::mat4& srt, const glm::m
 	updateUbo(parentIds);
 }
 
-void Image_::onRender(CommandBufferBase& commandBuffer, uint64_t parentId) const
+void Image_::onRender(CommandBufferBase& commandBuffer, uint64_t parentId)
 {
+	commandBuffer->debugMarkerBeginEXT("Rendering: (" + getSpriteName() + ")");
 	commandBuffer->bindDescriptorSet(PipelineBindPoint::e_GRAPHICS, _uiRenderer->getPipelineLayout(), 0, getTexDescriptorSet(), nullptr, 0);
 	_uiRenderer->getUbo().bindUboDynamic(commandBuffer, _uiRenderer->getPipelineLayout(), _mvpData[parentId].bufferArrayId);
 	_uiRenderer->getMaterial().bindUboDynamic(commandBuffer, _uiRenderer->getPipelineLayout(), _materialData.bufferArrayId);
 	commandBuffer->bindVertexBuffer(_uiRenderer->getImageVbo(), 0, 0);
 	commandBuffer->draw(0, 6);
+	commandBuffer->debugMarkerEndEXT();
 }
 
 void Image_::onAddInstance(uint64_t parentId)
@@ -201,7 +204,7 @@ void Image_::onRemoveInstance(uint64_t parentId)
 }
 
 Image_::Image_(UIRenderer& uiRenderer, const ImageView& imageView, uint32_t width, uint32_t height, const Sampler& sampler)
-	: Sprite_(uiRenderer), _texW(width), _texH(height), _imageView(imageView), _isTextureDirty(true), _sampler(sampler)
+	: Sprite_(uiRenderer), _texW(width), _texH(height), _imageView(imageView), _sampler(sampler), _isTextureDirty(true)
 {
 	if (!_sampler.isValid())
 	{
@@ -348,10 +351,11 @@ Font_::Font_(UIRenderer& uiRenderer, const pvrvk::ImageView& tex2D, const Textur
 	{
 		_alphaRenderingMode = true;
 	}
+
 	_texDescSet = uiRenderer.getDescriptorPool()->allocateDescriptorSet(uiRenderer.getTexDescriptorSetLayout());
 	// update the texture descriptor set
 	WriteDescriptorSet writeDescSet(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, _texDescSet, 0, 0);
-	writeDescSet.setImageInfo(0, DescriptorImageInfo(_imageView, (sampler.isValid() ? sampler : uiRenderer.getSamplerBilinear())));
+	writeDescSet.setImageInfo(0, DescriptorImageInfo(_imageView, (sampler.isValid() ? sampler : uiRenderer.getSamplerBilinear()), pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL));
 	uiRenderer.getDevice()->updateDescriptorSets(&writeDescSet, 1, nullptr, 0);
 }
 
@@ -362,16 +366,16 @@ uint32_t TextElement_::updateVertices(float fZPos, float xPos, float yPos, const
 		return 0;
 	}
 	_boundingRect.clear();
-	/* Nothing to update */
 
 	Font tmp = _font;
 	Font_& font = *tmp;
 
 	yPos -= font.getAscent();
 
-	yPos = glm::round<float>(yPos);
+	yPos = glm::round(yPos);
 
-	float preXPos = xPos; // The original offset (after screen scale modification) of the X coordinate.
+	// The original offset (after screen scale modification) of the X coordinate.
+	float preXPos = xPos;
 
 	float kernOffset;
 	float fAOff;
@@ -392,7 +396,7 @@ uint32_t TextElement_::updateVertices(float fZPos, float xPos, float yPos, const
 		if (text[index] == 0x0A)
 		{
 			xPos = preXPos;
-			yPos -= glm::round<float>(static_cast<float>(font.getFontLineSpacing()));
+			yPos -= glm::round(static_cast<float>(font.getFontLineSpacing()));
 			continue;
 		}
 
@@ -402,14 +406,14 @@ uint32_t TextElement_::updateVertices(float fZPos, float xPos, float yPos, const
 		// No character found. Add a space.
 		if (charIndex == Font_::InvalidChar)
 		{
-			xPos += glm::round<float>(static_cast<float>(font.getSpaceWidth()));
+			xPos += glm::round(static_cast<float>(font.getSpaceWidth()));
 			continue;
 		}
 
 		kernOffset = 0;
 		fYOffset = static_cast<float>(font.getYOffset(charIndex));
 		// The A offset. Could include overhang or underhang.
-		fAOff = glm::round<float>(static_cast<float>(font.getCharMetrics(charIndex).xOff));
+		fAOff = glm::round(static_cast<float>(font.getCharMetrics(charIndex).xOff));
 
 		if (index < numCharsInString - 1)
 		{
@@ -418,7 +422,7 @@ uint32_t TextElement_::updateVertices(float fZPos, float xPos, float yPos, const
 		}
 
 		const Font_::CharacterUV& charUV = font.getCharacterUV(charIndex);
-		/* Filling vertex data */
+		// Filling vertex data
 		pVertices[vertexCount + 0].x = (xPos + fAOff);
 		pVertices[vertexCount + 0].y = (yPos + fYOffset);
 		pVertices[vertexCount + 0].z = (fZPos);
@@ -427,7 +431,7 @@ uint32_t TextElement_::updateVertices(float fZPos, float xPos, float yPos, const
 		pVertices[vertexCount + 0].tv = (charUV.vt);
 		_boundingRect.add(pVertices[vertexCount + 0].x, pVertices[vertexCount + 0].y, 0.0f);
 
-		pVertices[vertexCount + 1].x = (xPos + fAOff + glm::round<float>(static_cast<float>(font.getRectangle(charIndex).getExtent().getWidth())));
+		pVertices[vertexCount + 1].x = (xPos + fAOff + glm::round(static_cast<float>(font.getRectangle(charIndex).getExtent().getWidth())));
 		pVertices[vertexCount + 1].y = (yPos + fYOffset);
 		pVertices[vertexCount + 1].z = (fZPos);
 		pVertices[vertexCount + 1].rhw = (1.0f);
@@ -436,14 +440,14 @@ uint32_t TextElement_::updateVertices(float fZPos, float xPos, float yPos, const
 		_boundingRect.add(pVertices[vertexCount + 1].x, pVertices[vertexCount + 1].y, 0.0f);
 
 		pVertices[vertexCount + 2].x = (xPos + fAOff);
-		pVertices[vertexCount + 2].y = (yPos + fYOffset - glm::round<float>(static_cast<float>(font.getRectangle(charIndex).getExtent().getHeight())));
+		pVertices[vertexCount + 2].y = (yPos + fYOffset - glm::round(static_cast<float>(font.getRectangle(charIndex).getExtent().getHeight())));
 		pVertices[vertexCount + 2].z = (fZPos);
 		pVertices[vertexCount + 2].rhw = (1.0f);
 		pVertices[vertexCount + 2].tu = (charUV.ul);
 		pVertices[vertexCount + 2].tv = (charUV.vb);
 		_boundingRect.add(pVertices[vertexCount + 2].x, pVertices[vertexCount + 2].y, 0.0f);
 
-		pVertices[vertexCount + 3].x = (xPos + fAOff + glm::round<float>(static_cast<float>(font.getRectangle(charIndex).getExtent().getWidth())));
+		pVertices[vertexCount + 3].x = (xPos + fAOff + glm::round(static_cast<float>(font.getRectangle(charIndex).getExtent().getWidth())));
 		pVertices[vertexCount + 3].y = (yPos + fYOffset - round(static_cast<float>(font.getRectangle(charIndex).getExtent().getHeight())));
 		pVertices[vertexCount + 3].z = (fZPos);
 		pVertices[vertexCount + 3].rhw = (1.0f);
@@ -452,7 +456,7 @@ uint32_t TextElement_::updateVertices(float fZPos, float xPos, float yPos, const
 		_boundingRect.add(pVertices[vertexCount + 3].x, pVertices[vertexCount + 3].y, 0.0f);
 
 		// Add on this characters width
-		xPos = xPos + glm::round<float>(static_cast<float>(font.getCharMetrics(charIndex).characterWidth + kernOffset) /** renderParam.scale.x*/);
+		xPos = xPos + glm::round(static_cast<float>(font.getCharMetrics(charIndex).characterWidth + kernOffset) /** renderParam.scale.x*/);
 		vertexCount += 4;
 	}
 	return vertexCount;
@@ -472,14 +476,14 @@ void Text_::onAddInstance(uint64_t parentId)
 void TextElement_::createBuffers()
 {
 	_vbo = utils::createBuffer(_uiRenderer->getDevice(), static_cast<uint32_t>(sizeof(Vertex) * _maxLength * 4), pvrvk::BufferUsageFlags::e_VERTEX_BUFFER_BIT,
-		pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, &_uiRenderer->getBufferMemoryAllocator(),
+		pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, &_uiRenderer->getMemoryAllocator(),
 		pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
 	_drawIndirectBuffer = utils::createBuffer(_uiRenderer->getDevice(), sizeof(VkDrawIndexedIndirectCommand), pvrvk::BufferUsageFlags::e_INDIRECT_BUFFER_BIT,
 		pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 		pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT | pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT |
 			pvrvk::MemoryPropertyFlags::e_HOST_CACHED_BIT,
-		&_uiRenderer->getBufferMemoryAllocator(), pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+		&_uiRenderer->getMemoryAllocator(), pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 }
 
 void TextElement_::regenerateText() const
@@ -531,7 +535,7 @@ void TextElement_::updateVbo() const
 	pvr::utils::updateHostVisibleBuffer(_drawIndirectBuffer, &cmd, 0, static_cast<VkDeviceSize>(sizeof(VkDrawIndexedIndirectCommand)), true);
 }
 
-void TextElement_::onRender(CommandBufferBase& commands) const
+void TextElement_::onRender(CommandBufferBase& commands)
 {
 	if (_vbo.isValid())
 	{
@@ -543,11 +547,11 @@ void TextElement_::onRender(CommandBufferBase& commands) const
 
 void Text_::calculateMvp(uint64_t parentIds, glm::mat4 const& srt, const glm::mat4& viewProj, Rect2D const& viewport) const
 {
-	_text->updateText();
-	math::AxisAlignedBox lastBox = _boundingRect;
-	_boundingRect = _text->getBoundingBox();
-	if (_isPositioningDirty || _boundingRect != lastBox)
+	_textElement->updateText();
+	if (_isPositioningDirty || _boundingRect != _textElement->getBoundingBox())
 	{
+		_boundingRect = _textElement->getBoundingBox();
+
 		vec2 offset;
 
 		switch (_anchor)
@@ -581,18 +585,26 @@ void Text_::calculateMvp(uint64_t parentIds, glm::mat4 const& srt, const glm::ma
 			break;
 		}
 
+		// Read the following bottom to top - this is because of how the optimised GLM functions work
+
+		// We are assuming the identity matrix so we can optimise out the operations
 		_cachedMatrix = glm::mat4(1.f);
 
-		//_matrix = translate(vec3(pos, 0.f));  //5: Finally, move it to its position
-		// ASSUMING IDENTITY MATRIX! - OPTIMIZE OUT THE OPS
+		// 5: Translate - move it to its position - we are assuming the identity matrix so we can optimise out the operations
+		//_cachedMatrix = translate(vec3(_position.x, _position.y, 0.f));
 
-		// 4: Bring to Pixel (screen) coordinates.
-		// BECAUSE _matrix IS A PURE ROTATION, WE CAN OPTIMISE THE 1st SCALING OP.
-		// THIS IS : _matrix = scale(_matrix, toScreenCoordinates);
+		// 4: Bring to Pixel (screen) coordinates. Because the matrix is a pure rotation we can optimise our the 1st scaling operation
+		// glm::vec3 toScreenCoordinates(1.f / _uiRenderer->getRenderingDimX(), 1.f / _uiRenderer->getRenderingDimY(), 1.f);
+		// _cachedMatrix = scale(_cachedMatrix, toScreenCoordinates);
 
-		_cachedMatrix = glm::rotate(_cachedMatrix, _rotation, vec3(0.f, 0.f, 1.f)); // 3: rotate it
-		_cachedMatrix = glm::scale(_cachedMatrix, vec3(_scale, 1.f)); // 2: Scale
-		_cachedMatrix = glm::translate(_cachedMatrix, vec3(-offset, 0.f)); // 1: Anchor the text properly
+		// 3: Rotate - do the rotation around the anchor
+		_cachedMatrix = glm::rotate(_cachedMatrix, _rotation, vec3(0.f, 0.f, 1.f));
+
+		// 2: Scale - do the scale around the anchor
+		_cachedMatrix = glm::scale(_cachedMatrix, vec3(_scale, 1.f));
+
+		// 1: Anchor the text properly - translate the anchor to the origin
+		_cachedMatrix = glm::translate(_cachedMatrix, vec3(-offset, 0.f));
 		_isPositioningDirty = false;
 	}
 
@@ -616,15 +628,17 @@ void Text_::updateUbo(uint64_t parentIds) const
 	_uiRenderer->getMaterial().updateMaterial(_materialData.bufferArrayId, _color, 1, glm::mat4(1.f));
 }
 
-void Text_::onRender(CommandBufferBase& commandBuffer, uint64_t parentId) const
+void Text_::onRender(CommandBufferBase& commandBuffer, uint64_t parentId)
 {
 	updateUbo(parentId);
+	commandBuffer->debugMarkerBeginEXT("Rendering: (" + getSpriteName() + ")");
 	commandBuffer->bindDescriptorSet(pvrvk::PipelineBindPoint::e_GRAPHICS, _uiRenderer->getPipelineLayout(), 0, getTexDescriptorSet(), nullptr, 0);
 
 	_uiRenderer->getUbo().bindUboDynamic(commandBuffer, _uiRenderer->getPipelineLayout(), _mvpData[parentId].bufferArrayId);
 	_uiRenderer->getMaterial().bindUboDynamic(commandBuffer, _uiRenderer->getPipelineLayout(), _materialData.bufferArrayId);
 
-	_text->onRender(commandBuffer);
+	_textElement->onRender(commandBuffer);
+	commandBuffer->debugMarkerEndEXT();
 }
 
 void Text_::onRemoveInstance(uint64_t parentId)
@@ -638,9 +652,9 @@ void Text_::onRemoveInstance(uint64_t parentId)
 	}
 }
 
-Text_::Text_(UIRenderer& uiRenderer, const TextElement& text) : Sprite_(uiRenderer), _text(text)
+Text_::Text_(UIRenderer& uiRenderer, const TextElement& textElement) : Sprite_(uiRenderer), _textElement(textElement), _imageViewObjectName(""), _vboObjectName("")
 {
-	_alphaMode = text->getFont()->isAlphaRendering();
+	_alphaMode = textElement->getFont()->isAlphaRendering();
 	if (_materialData.bufferArrayId == -1)
 	{
 		_materialData.bufferArrayId = _uiRenderer->getMaterial().getNewBufferArray();
@@ -649,6 +663,7 @@ Text_::Text_(UIRenderer& uiRenderer, const TextElement& text) : Sprite_(uiRender
 			throw UIRendererInstanceMaxError("Failed to create Text (Material instances)");
 		}
 	}
+
 	onAddInstance(0);
 }
 

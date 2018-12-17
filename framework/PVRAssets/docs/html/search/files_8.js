@@ -1,9 +1,5 @@
 var searchData=
 [
-  ['paletteexpander_2ecpp',['PaletteExpander.cpp',['../_palette_expander_8cpp.html',1,'']]],
-  ['paletteexpander_2eh',['PaletteExpander.h',['../_palette_expander_8h.html',1,'']]],
-  ['pfxparser_2ecpp',['PFXParser.cpp',['../_p_f_x_parser_8cpp.html',1,'']]],
-  ['pfxparser_2eh',['PFXParser.h',['../_p_f_x_parser_8h.html',1,'']]],
   ['poddefines_2eh',['PODDefines.h',['../_p_o_d_defines_8h.html',1,'']]],
   ['podreader_2ecpp',['PODReader.cpp',['../_p_o_d_reader_8cpp.html',1,'']]],
   ['podreader_2eh',['PODReader.h',['../_p_o_d_reader_8h.html',1,'']]],

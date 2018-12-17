@@ -1,7 +1,10 @@
 var searchData=
 [
-  ['text_5f',['Text_',['../classpvr_1_1ui_1_1impl_1_1_text__.html',1,'pvr::ui::impl']]],
-  ['textelement_5f',['TextElement_',['../classpvr_1_1ui_1_1impl_1_1_text_element__.html',1,'pvr::ui::impl']]],
-  ['textureinfo',['TextureInfo',['../structpvr_1_1effect_1_1_texture_info.html',1,'pvr::effect']]],
-  ['textureuploadresults',['TextureUploadResults',['../structpvr_1_1utils_1_1_texture_upload_results.html',1,'pvr::utils']]]
+  ['vertex',['Vertex',['../structpvr_1_1ui_1_1impl_1_1_vertex.html',1,'pvr::ui::impl']]],
+  ['vertexattributeinfo',['VertexAttributeInfo',['../structpvr_1_1_vertex_attribute_info.html',1,'pvr']]],
+  ['vertexattributeinfowithbinding',['VertexAttributeInfoWithBinding',['../structpvr_1_1_vertex_attribute_info_with_binding.html',1,'pvr']]],
+  ['vertexbindings',['VertexBindings',['../structpvr_1_1utils_1_1_vertex_bindings.html',1,'pvr::utils']]],
+  ['vertexbindings_5fname',['VertexBindings_Name',['../structpvr_1_1utils_1_1_vertex_bindings___name.html',1,'pvr::utils']]],
+  ['vertexinputbindinginfo',['VertexInputBindingInfo',['../structpvr_1_1_vertex_input_binding_info.html',1,'pvr']]],
+  ['vulkanversion',['VulkanVersion',['../structpvr_1_1utils_1_1_vulkan_version.html',1,'pvr::utils']]]
 ];

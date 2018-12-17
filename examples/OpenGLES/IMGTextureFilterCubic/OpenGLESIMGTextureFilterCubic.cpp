@@ -96,12 +96,12 @@ pvr::Result OpenGLESIMGTextureFilterCubic::initView()
 	LoadVbos();
 	loadShaders();
 
-	_uiRenderer.init(getWidth(), getHeight(), isFullScreen());
+	_uiRenderer.init(getWidth(), getHeight(), isFullScreen(), getBackBufferColorspace() == pvr::ColorSpace::sRGB);
 
 	_uiRenderer.getDefaultTitle()->setText("IMGTextureFilterCubic");
 	_uiRenderer.getDefaultTitle()->commitUpdates();
-	_uiRenderer.getDefaultControls()->setText("Left: Bilinear Filtering.\nRight: Cubic Filtering.");
-	_uiRenderer.getDefaultControls()->commitUpdates();
+	_uiRenderer.getDefaultDescription()->setText("Left: Bilinear Filtering.\nRight: Cubic Filtering.");
+	_uiRenderer.getDefaultDescription()->commitUpdates();
 
 	//  Set OpenGL ES render states needed for this training course
 	// Enable backface culling and depth test
@@ -109,19 +109,27 @@ pvr::Result OpenGLESIMGTextureFilterCubic::initView()
 	gl::Enable(GL_CULL_FACE);
 	gl::Enable(GL_DEPTH_TEST);
 
-	// Use a nice bright blue as clear color
-	gl::ClearColor(0.00f, 0.70f, 0.67f, 1.0f);
+	glm::vec3 clearColorLinearSpace(0.0f, 0.45f, 0.41f);
+	glm::vec3 clearColor = clearColorLinearSpace;
+	if (getBackBufferColorspace() != pvr::ColorSpace::sRGB)
+	{
+		// Gamma correct the clear color
+		clearColor = pvr::utils::convertLRGBtoSRGB(clearColorLinearSpace);
+	}
 
-	_projection = glm::perspectiveFov(45.0f, (float)this->getWidth(), (float)this->getHeight(), 0.1f, 250.0f);
+	// Use a nice bright blue as clear color
+	gl::ClearColor(clearColor.r, clearColor.g, clearColor.b, 1.0f);
+
+	_projection = glm::perspectiveFov(45.0f, static_cast<float>(this->getWidth()), static_cast<float>(this->getHeight()), 0.1f, 250.0f);
 
 	std::vector<unsigned char> img(this->getWidth() * this->getHeight() * 4);
 
-	int size = 2;
-	int half = size / 2;
+	uint32_t size = 4;
+	uint32_t half = size / 2;
 
-	for (int32_t y = 0; y < (int32_t)this->getHeight(); ++y)
+	for (uint32_t y = 0; y < this->getHeight(); ++y)
 	{
-		for (int32_t x = 0; x < (int32_t)this->getWidth(); ++x)
+		for (uint32_t x = 0; x < this->getWidth(); ++x)
 		{
 			if (x % size < half && y % size < half)
 			{
@@ -132,9 +140,9 @@ pvr::Result OpenGLESIMGTextureFilterCubic::initView()
 			}
 			else if (x % size >= half && y % size < half)
 			{
-				img[(x + y * this->getWidth()) * 4 + 0] = 0;
-				img[(x + y * this->getWidth()) * 4 + 1] = 255;
-				img[(x + y * this->getWidth()) * 4 + 2] = 0;
+				img[(x + y * this->getWidth()) * 4 + 0] = 255;
+				img[(x + y * this->getWidth()) * 4 + 1] = 0;
+				img[(x + y * this->getWidth()) * 4 + 2] = 127;
 				img[(x + y * this->getWidth()) * 4 + 3] = 255;
 			}
 			else if (x % size < half && y % size >= half)
@@ -146,9 +154,9 @@ pvr::Result OpenGLESIMGTextureFilterCubic::initView()
 			}
 			else
 			{
-				img[(x + y * this->getWidth()) * 4 + 0] = 255;
-				img[(x + y * this->getWidth()) * 4 + 1] = 0;
-				img[(x + y * this->getWidth()) * 4 + 2] = 255;
+				img[(x + y * this->getWidth()) * 4 + 0] = 0;
+				img[(x + y * this->getWidth()) * 4 + 1] = 255;
+				img[(x + y * this->getWidth()) * 4 + 2] = 0;
 				img[(x + y * this->getWidth()) * 4 + 3] = 255;
 			}
 		}
@@ -220,7 +228,6 @@ pvr::Result OpenGLESIMGTextureFilterCubic::renderFrame()
 
 		_uiRenderer.getSdkLogo()->render();
 		_uiRenderer.getDefaultTitle()->render();
-		_uiRenderer.getDefaultControls()->render();
 		_uiRenderer.getDefaultDescription()->render();
 		_uiRenderer.endRendering();
 	}
@@ -308,7 +315,15 @@ void OpenGLESIMGTextureFilterCubic::loadShaders()
 	const char* attributes[] = { "inVertex" };
 	const uint16_t attributeIndices[] = { 0 };
 
-	_ShaderProgram.handle = pvr::utils::createShaderProgram(*this, VertShaderSrcFile, FragShaderSrcFile, attributes, attributeIndices, 1);
+	// Enable or disable gamma correction based on if it is automatically performed on the framebuffer or we need to do it in the shader.
+	const char* defines[] = { "FRAMEBUFFER_SRGB" };
+	uint32_t numDefines = 1;
+	if (getBackBufferColorspace() != pvr::ColorSpace::sRGB)
+	{
+		numDefines = 0;
+	}
+
+	_ShaderProgram.handle = pvr::utils::createShaderProgram(*this, VertShaderSrcFile, FragShaderSrcFile, attributes, attributeIndices, 1, defines, numDefines);
 
 	gl::UseProgram(_ShaderProgram.handle);
 	// Store the location of uniforms for later use
@@ -323,11 +338,8 @@ void OpenGLESIMGTextureFilterCubic::loadShaders()
 	pvr::utils::throwOnGlError("[OpenGLESIMGTextureFilterCubic::LoadVbos] - Failed to create shaders and programs");
 }
 
-/*!*********************************************************************************************************************
-\return auto ptr to the demo supplied by the user
-\brief  This function must be implemented by the user of the shell.
-	The user should return its Shell object defining the behaviour of the application.
-***********************************************************************************************************************/
+/// <summary>This function must be implemented by the user of the shell. The user should return its pvr::Shell object defining the behaviour of the application.</summary>
+/// <returns>Return a unique ptr to the demo supplied by the user.</returns>
 std::unique_ptr<pvr::Shell> pvr::newDemo()
 {
 	return std::unique_ptr<pvr::Shell>(new OpenGLESIMGTextureFilterCubic());

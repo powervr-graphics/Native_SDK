@@ -6,7 +6,7 @@
 */
 #include "PVRShell/OS/ShellOS.h"
 #include "PVRShell/StateMachine.h"
-#include "PVRShell/CommandLine.h"
+#include "PVRCore/commandline/CommandLine.h"
 #include "PVRCore/Log.h"
 #include <android_native_app_glue.h>
 

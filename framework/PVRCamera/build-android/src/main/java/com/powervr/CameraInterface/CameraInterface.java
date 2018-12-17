@@ -26,19 +26,19 @@ public class CameraInterface implements SurfaceTexture.OnFrameAvailableListener 
 	// Size comparator
 	public class SizeComparator implements Comparator<Size> {
 
-	    @Override
-	    public int compare(Size s1, Size s2) {
-	          if(s1.width > s2.width) {
-	              return 1;
-	          }
-	          else if(s1.width < s2.width) {
-	              return -1;
-	          }
-	          return 0;
-	    }           
+		@Override
+		public int compare(Size s1, Size s2) {
+			  if(s1.width > s2.width) {
+				  return 1;
+			  }
+			  else if(s1.width < s2.width) {
+				  return -1;
+			  }
+			  return 0;
+		}		   
 	}
 	
-    private Camera mCamera;
+	private Camera mCamera;
 	private SurfaceTexture mSurface;
 	
 	private float[] mTexCoordsProjM = new float[16];
@@ -50,37 +50,37 @@ public class CameraInterface implements SurfaceTexture.OnFrameAvailableListener 
 	private final int mWidth, mHeight;
 	private final CameraSource mCameraSource;
 	
-    // Native calls
- 	public native void cacheJavaObject();
- 	public native void setTexCoordsProjMatrix(float[] a);
+	// Native calls
+	public native void cacheJavaObject();
+	public native void setTexCoordsProjMatrix(float[] a);
 	
-    public CameraInterface (int width, int height, CameraSource cs) {
+	public CameraInterface (int width, int height, CameraSource cs) {
 		this.mWidth = width;
 		this.mHeight = height;
 		this.mCameraSource = cs;
-    	cacheJavaObject();
-    }
- 	
- 	public int createCamera(int textureID) {
- 		// Create SurfaceTexture
- 		try {
- 			mSurface = new SurfaceTexture(textureID);
- 		}
- 		catch (RuntimeException ioe) {
- 			Log.e("CameraInterface", "Error creating SurfaceTexture");
- 			return 0;
- 		}
- 		
+		cacheJavaObject();
+	}
+	
+	public int createCamera(int textureID) {
+		// Create SurfaceTexture
+		try {
+			mSurface = new SurfaceTexture(textureID);
+		}
+		catch (RuntimeException ioe) {
+			Log.e("CameraInterface", "Error creating SurfaceTexture");
+			return 0;
+		}
+		
 		try {
 			mUpdateImage = true;
 			mSurface.setOnFrameAvailableListener(this);
-        }
-        catch (RuntimeException ioe) {
-            Log.w("CameraInterface", "Error setting OnFrameAvailableListener");
+		}
+		catch (RuntimeException ioe) {
+			Log.w("CameraInterface", "Error setting OnFrameAvailableListener");
 			return 0;
-        }
+		}
 
-        if(Camera.getNumberOfCameras() == 0)
+		if(Camera.getNumberOfCameras() == 0)
 		{
 			Log.w("CameraInterface", "Error - Could not find a Camera to use.");
 			return 0;
@@ -139,22 +139,22 @@ public class CameraInterface implements SurfaceTexture.OnFrameAvailableListener 
 
 		// Attempt to attach the gl texture to the camera
 		try {
-            mCamera.setPreviewTexture(mSurface);
-            mCamera.startPreview();
+			mCamera.setPreviewTexture(mSurface);
+			mCamera.startPreview();
 
 			Log.w("CameraInterface", "GLTexture attached to camera ");
-        }
-        catch(Exception e) {
-            Log.w("CameraInterface", "Could not open camera");
+		}
+		catch(Exception e) {
+			Log.w("CameraInterface", "Could not open camera");
 
 			mCamera.stopPreview();
 			mCamera.release();
 			return 0;
-        }
+		}
 		
 		return textureID;
- 	}
- 	
+	}
+	
 	public int getCameraResolutionX() {
 		return mCameraResolutionX;
 	}

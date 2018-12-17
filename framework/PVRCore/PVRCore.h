@@ -5,16 +5,13 @@
 \copyright Copyright (c) Imagination Technologies Limited.
 */
 #pragma once
-#include "PVRCore/CoreIncludes.h"
-#include "PVRCore/Base/RefCounted.h"
-#include "PVRCore/Maths.h"
-#include "PVRCore/Base/ComplexTypes.h"
-#include "PVRCore/IO.h"
-#include "PVRCore/DataStructures.h"
-#include "PVRCore/StringFunctions.h"
-#include "PVRCore/Strings/StringHash.h"
-#include "PVRCore/Base/Time_.h"
-#include "PVRCore/Interfaces/IAssetProvider.h"
+#include "PVRCore/RefCounted.h"
+#include "PVRCore/math/MathUtils.h"
+#include "PVRCore/stream/BufferStream.h"
+#include "PVRCore/types/Types.h"
+#include "PVRCore/strings/StringFunctions.h"
+#include "PVRCore/strings/StringHash.h"
+#include "PVRCore/IAssetProvider.h"
 #include <iterator>
 
 /*****************************************************************************/
@@ -67,16 +64,10 @@ To use PVRCore:
 *****************************
 
 \code
-pvr::FileStream myTexture(“BodyNormalMap.pvr”);
+pvr::FileStream myTexture("BodyNormalMap.pvr");
 pvr::BufferStream myTexture(myTextureInMemory);
 \endcode
 
 Everything that deals with file/asset data uses streams. Also check <span class="code">WindowsResourceStream</span>, <span class="code">AndroidAssetStream</span>
 
-\code
-pvr::Logger myLog;
-myLog.setMessenger(myCustomFileLoggingMessenger);
-myLog(“I am logging this in my custom logger”);
-Log(Log::Verbose, “Usually I will just be using the global PowerVR Log function. Nobody likes globals, except for logging…”);
-\endcode
 */

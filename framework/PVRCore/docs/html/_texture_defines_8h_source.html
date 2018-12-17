@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>PVRCore: /usr/buildxl/buildroot/sdk/branch/SDK/framework/PVRCore/Texture/TextureDefines.h Source File</title>
+<title>PVRCore: /usr/buildxl/buildroot/sdk/branch/SDK/framework/PVRCore/texture/TextureDefines.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -15,7 +15,7 @@
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="IMGdoxygen.css" rel="stylesheet" type="text/css"/>
-<link rel="shortcut icon" href="http://www.imgtec.com/images/img.ico">
+<link rel="shortcut icon" type="image/x-icon" href="img.ico">
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
+      <a href="https://www.imgtec.com/developers/" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRCore</span> Documentation</a>
    <tbody>
@@ -76,7 +76,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_687531cb5acd5e736601deea3ef3b7c0.html">SDK</a></li><li class="navelem"><a class="el" href="dir_407ce59cc93389552d4bbf4df897abf8.html">framework</a></li><li class="navelem"><a class="el" href="dir_72a2a6c70dc66b6caf7d035656739fa9.html">PVRCore</a></li><li class="navelem"><a class="el" href="dir_84cfa6db8adc0f140f2dc36630a21245.html">Texture</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_687531cb5acd5e736601deea3ef3b7c0.html">SDK</a></li><li class="navelem"><a class="el" href="dir_407ce59cc93389552d4bbf4df897abf8.html">framework</a></li><li class="navelem"><a class="el" href="dir_72a2a6c70dc66b6caf7d035656739fa9.html">PVRCore</a></li><li class="navelem"><a class="el" href="dir_233d40f8a91d7f87a473a984557214de.html">texture</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -86,58 +86,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="contents">
 <a href="_texture_defines_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;</div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#pragma once</span></div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#include &quot;<a class="code" href="_defines_8h.html">PVRCore/Base/Defines.h</a>&quot;</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;</div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="keyword">namespace </span>pvr {</div>
-<div class="line"><a name="l00016"></a><span class="lineno"><a class="line" href="namespacepvr.html#af73ac8316fd8bc048cee4cb33c8ca226">   16</a></span>&#160;<span class="keyword">inline</span> uint64_t <a class="code" href="namespacepvr.html#af73ac8316fd8bc048cee4cb33c8ca226">textureOffset2D</a>(uint64_t x, uint64_t y, uint64_t width)</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;{</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    <span class="keywordflow">return</span> ((x) + (y * width));</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;}</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;</div>
-<div class="line"><a name="l00028"></a><span class="lineno"><a class="line" href="namespacepvr.html#a4f1dcae0666fe3f28a26302a7c5d0c03">   28</a></span>&#160;<span class="keyword">inline</span> uint64_t <a class="code" href="namespacepvr.html#a4f1dcae0666fe3f28a26302a7c5d0c03">textureOffset3D</a>(uint64_t x, uint64_t y, uint64_t z, uint64_t width, uint64_t height)</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;{</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    <span class="keywordflow">return</span> ((x) + (y * width) + (z * width * height));</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;}</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;</div>
-<div class="line"><a name="l00034"></a><span class="lineno"><a class="line" href="namespacepvr.html#a0e463dd072d8bc9dd455491d1a663668">   34</a></span>&#160;<span class="keyword">enum</span> <a class="code" href="namespacepvr.html#a0e463dd072d8bc9dd455491d1a663668">Constants</a></div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;{</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    PVRTEX_MIPMAP = (1 &lt;&lt; 8), </div>
-<div class="line"><a name="l00037"></a><span class="lineno"><a class="line" href="namespacepvr.html#a0e463dd072d8bc9dd455491d1a663668a23671adbbb6b36b70a41c08602e2564f">   37</a></span>&#160;    <a class="code" href="namespacepvr.html#a0e463dd072d8bc9dd455491d1a663668a23671adbbb6b36b70a41c08602e2564f">PVRTEX_TWIDDLE</a> = (1 &lt;&lt; 9), </div>
-<div class="line"><a name="l00038"></a><span class="lineno"><a class="line" href="namespacepvr.html#a0e463dd072d8bc9dd455491d1a663668ab99b95a8d3e3a09915f701ebd11669e0">   38</a></span>&#160;    <a class="code" href="namespacepvr.html#a0e463dd072d8bc9dd455491d1a663668ab99b95a8d3e3a09915f701ebd11669e0">PVRTEX_BUMPMAP</a> = (1 &lt;&lt; 10), </div>
-<div class="line"><a name="l00039"></a><span class="lineno"><a class="line" href="namespacepvr.html#a0e463dd072d8bc9dd455491d1a663668a5e73cc8fec9a5861208b97999f1cd0b2">   39</a></span>&#160;    <a class="code" href="namespacepvr.html#a0e463dd072d8bc9dd455491d1a663668a5e73cc8fec9a5861208b97999f1cd0b2">PVRTEX_TILING</a> = (1 &lt;&lt; 11), </div>
-<div class="line"><a name="l00040"></a><span class="lineno"><a class="line" href="namespacepvr.html#a0e463dd072d8bc9dd455491d1a663668a80424d056ec65d5439dc169f1d35b625">   40</a></span>&#160;    <a class="code" href="namespacepvr.html#a0e463dd072d8bc9dd455491d1a663668a80424d056ec65d5439dc169f1d35b625">PVRTEX_CUBEMAP</a> = (1 &lt;&lt; 12), </div>
-<div class="line"><a name="l00041"></a><span class="lineno"><a class="line" href="namespacepvr.html#a0e463dd072d8bc9dd455491d1a663668aad5d7bfcceebb69cd04ae90c0d908d5b">   41</a></span>&#160;    <a class="code" href="namespacepvr.html#a0e463dd072d8bc9dd455491d1a663668aad5d7bfcceebb69cd04ae90c0d908d5b">PVRTEX_FALSEMIPCOL</a> = (1 &lt;&lt; 13), </div>
-<div class="line"><a name="l00042"></a><span class="lineno"><a class="line" href="namespacepvr.html#a0e463dd072d8bc9dd455491d1a663668aaa409129950b394648312efe10d36586">   42</a></span>&#160;    <a class="code" href="namespacepvr.html#a0e463dd072d8bc9dd455491d1a663668aaa409129950b394648312efe10d36586">PVRTEX_VOLUME</a> = (1 &lt;&lt; 14), </div>
-<div class="line"><a name="l00043"></a><span class="lineno"><a class="line" href="namespacepvr.html#a0e463dd072d8bc9dd455491d1a663668a572250b03ef82171e377f9c87fa5e25f">   43</a></span>&#160;    <a class="code" href="namespacepvr.html#a0e463dd072d8bc9dd455491d1a663668a572250b03ef82171e377f9c87fa5e25f">PVRTEX_ALPHA</a> = (1 &lt;&lt; 15), </div>
-<div class="line"><a name="l00044"></a><span class="lineno"><a class="line" href="namespacepvr.html#a0e463dd072d8bc9dd455491d1a663668aab9c48c3d41c2cc10f01442e1856b77c">   44</a></span>&#160;    <a class="code" href="namespacepvr.html#a0e463dd072d8bc9dd455491d1a663668aab9c48c3d41c2cc10f01442e1856b77c">PVRTEX_VERTICAL_FLIP</a> = (1 &lt;&lt; 16), </div>
-<div class="line"><a name="l00045"></a><span class="lineno"><a class="line" href="namespacepvr.html#a0e463dd072d8bc9dd455491d1a663668a691f6acd2426ef4b6dfbecaec8600b13">   45</a></span>&#160;    <a class="code" href="namespacepvr.html#a0e463dd072d8bc9dd455491d1a663668a691f6acd2426ef4b6dfbecaec8600b13">PVRTEX_PIXELTYPE</a> = 0xff, </div>
-<div class="line"><a name="l00046"></a><span class="lineno"><a class="line" href="namespacepvr.html#a0e463dd072d8bc9dd455491d1a663668a365c121026e2901f535781d41d93d3da">   46</a></span>&#160;    <a class="code" href="namespacepvr.html#a0e463dd072d8bc9dd455491d1a663668a365c121026e2901f535781d41d93d3da">PVRTEX_IDENTIFIER</a> = 0x21525650, </div>
-<div class="line"><a name="l00047"></a><span class="lineno"><a class="line" href="namespacepvr.html#a0e463dd072d8bc9dd455491d1a663668aff34d9bbfcc9a6c42a07476cf6661cd9">   47</a></span>&#160;    <a class="code" href="namespacepvr.html#a0e463dd072d8bc9dd455491d1a663668aff34d9bbfcc9a6c42a07476cf6661cd9">PVRTEX_V1_HEADER_SIZE</a> = 44, </div>
-<div class="line"><a name="l00048"></a><span class="lineno"><a class="line" href="namespacepvr.html#a0e463dd072d8bc9dd455491d1a663668a7ec982a2d890d48cae143c5970765ecf">   48</a></span>&#160;    <a class="code" href="namespacepvr.html#a0e463dd072d8bc9dd455491d1a663668a7ec982a2d890d48cae143c5970765ecf">PVRTC2_MIN_TEXWIDTH</a> = 16, </div>
-<div class="line"><a name="l00049"></a><span class="lineno"><a class="line" href="namespacepvr.html#a0e463dd072d8bc9dd455491d1a663668ae3decd2de15588863ccea790249edc0a">   49</a></span>&#160;    <a class="code" href="namespacepvr.html#a0e463dd072d8bc9dd455491d1a663668ae3decd2de15588863ccea790249edc0a">PVRTC2_MIN_TEXHEIGHT</a> = 8, </div>
-<div class="line"><a name="l00050"></a><span class="lineno"><a class="line" href="namespacepvr.html#a0e463dd072d8bc9dd455491d1a663668a997b74fc5e403a09bdb4faf5b352f7b4">   50</a></span>&#160;    <a class="code" href="namespacepvr.html#a0e463dd072d8bc9dd455491d1a663668a997b74fc5e403a09bdb4faf5b352f7b4">PVRTC4_MIN_TEXWIDTH</a> = 8, </div>
-<div class="line"><a name="l00051"></a><span class="lineno"><a class="line" href="namespacepvr.html#a0e463dd072d8bc9dd455491d1a663668a1a04f251581dd946893556f0dce39d1a">   51</a></span>&#160;    <a class="code" href="namespacepvr.html#a0e463dd072d8bc9dd455491d1a663668a1a04f251581dd946893556f0dce39d1a">PVRTC4_MIN_TEXHEIGHT</a> = 8, </div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;};</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;} <span class="comment">// namespace pvr</span></div>
-<div class="ttc" id="namespacepvr_html_a0e463dd072d8bc9dd455491d1a663668a1a04f251581dd946893556f0dce39d1a"><div class="ttname"><a href="namespacepvr.html#a0e463dd072d8bc9dd455491d1a663668a1a04f251581dd946893556f0dce39d1a">pvr::PVRTC4_MIN_TEXHEIGHT</a></div><div class="ttdoc">&lt; DEPRECATED. </div><div class="ttdef"><b>Definition:</b> TextureDefines.h:51</div></div>
-<div class="ttc" id="namespacepvr_html_a0e463dd072d8bc9dd455491d1a663668ae3decd2de15588863ccea790249edc0a"><div class="ttname"><a href="namespacepvr.html#a0e463dd072d8bc9dd455491d1a663668ae3decd2de15588863ccea790249edc0a">pvr::PVRTC2_MIN_TEXHEIGHT</a></div><div class="ttdoc">&lt; DEPRECATED. </div><div class="ttdef"><b>Definition:</b> TextureDefines.h:49</div></div>
-<div class="ttc" id="namespacepvr_html_a0e463dd072d8bc9dd455491d1a663668aab9c48c3d41c2cc10f01442e1856b77c"><div class="ttname"><a href="namespacepvr.html#a0e463dd072d8bc9dd455491d1a663668aab9c48c3d41c2cc10f01442e1856b77c">pvr::PVRTEX_VERTICAL_FLIP</a></div><div class="ttdoc">&lt; v2.1. Is there transparency info in the texture. DEPRECATED. </div><div class="ttdef"><b>Definition:</b> TextureDefines.h:44</div></div>
-<div class="ttc" id="namespacepvr_html_a0e463dd072d8bc9dd455491d1a663668"><div class="ttname"><a href="namespacepvr.html#a0e463dd072d8bc9dd455491d1a663668">pvr::Constants</a></div><div class="ttdeci">Constants</div><div class="ttdoc">Legacy constants (V1/V2)</div><div class="ttdef"><b>Definition:</b> TextureDefines.h:34</div></div>
-<div class="ttc" id="_defines_8h_html"><div class="ttname"><a href="_defines_8h.html">Defines.h</a></div><div class="ttdoc">Contains several definitions used throughout the PowerVR Framework. </div></div>
-<div class="ttc" id="namespacepvr_html_a0e463dd072d8bc9dd455491d1a663668ab99b95a8d3e3a09915f701ebd11669e0"><div class="ttname"><a href="namespacepvr.html#a0e463dd072d8bc9dd455491d1a663668ab99b95a8d3e3a09915f701ebd11669e0">pvr::PVRTEX_BUMPMAP</a></div><div class="ttdoc">&lt; Is twiddled. DEPRECATED. </div><div class="ttdef"><b>Definition:</b> TextureDefines.h:38</div></div>
-<div class="ttc" id="namespacepvr_html_a0e463dd072d8bc9dd455491d1a663668aaa409129950b394648312efe10d36586"><div class="ttname"><a href="namespacepvr.html#a0e463dd072d8bc9dd455491d1a663668aaa409129950b394648312efe10d36586">pvr::PVRTEX_VOLUME</a></div><div class="ttdoc">&lt; Are there false colored MIP levels. DEPRECATED. </div><div class="ttdef"><b>Definition:</b> TextureDefines.h:42</div></div>
-<div class="ttc" id="namespacepvr_html_a0e463dd072d8bc9dd455491d1a663668aff34d9bbfcc9a6c42a07476cf6661cd9"><div class="ttname"><a href="namespacepvr.html#a0e463dd072d8bc9dd455491d1a663668aff34d9bbfcc9a6c42a07476cf6661cd9">pvr::PVRTEX_V1_HEADER_SIZE</a></div><div class="ttdoc">&lt; The pvr identifier is the characters &#39;P&#39;,&#39;V&#39;,&#39;R&#39;. DEPRECATED. </div><div class="ttdef"><b>Definition:</b> TextureDefines.h:47</div></div>
-<div class="ttc" id="namespacepvr_html_a0e463dd072d8bc9dd455491d1a663668a365c121026e2901f535781d41d93d3da"><div class="ttname"><a href="namespacepvr.html#a0e463dd072d8bc9dd455491d1a663668a365c121026e2901f535781d41d93d3da">pvr::PVRTEX_IDENTIFIER</a></div><div class="ttdoc">&lt; Pixel type is always in the last 16bits of the flags. DEPRECATED. </div><div class="ttdef"><b>Definition:</b> TextureDefines.h:46</div></div>
-<div class="ttc" id="namespacepvr_html_a0e463dd072d8bc9dd455491d1a663668a691f6acd2426ef4b6dfbecaec8600b13"><div class="ttname"><a href="namespacepvr.html#a0e463dd072d8bc9dd455491d1a663668a691f6acd2426ef4b6dfbecaec8600b13">pvr::PVRTEX_PIXELTYPE</a></div><div class="ttdoc">&lt; v2.1. Is the texture vertically flipped. DEPRECATED. </div><div class="ttdef"><b>Definition:</b> TextureDefines.h:45</div></div>
-<div class="ttc" id="namespacepvr_html_a4f1dcae0666fe3f28a26302a7c5d0c03"><div class="ttname"><a href="namespacepvr.html#a4f1dcae0666fe3f28a26302a7c5d0c03">pvr::textureOffset3D</a></div><div class="ttdeci">uint64_t textureOffset3D(uint64_t x, uint64_t y, uint64_t z, uint64_t width, uint64_t height)</div><div class="ttdoc">calculate the offset of 3D texture</div><div class="ttdef"><b>Definition:</b> TextureDefines.h:28</div></div>
-<div class="ttc" id="namespacepvr_html_a0e463dd072d8bc9dd455491d1a663668a572250b03ef82171e377f9c87fa5e25f"><div class="ttname"><a href="namespacepvr.html#a0e463dd072d8bc9dd455491d1a663668a572250b03ef82171e377f9c87fa5e25f">pvr::PVRTEX_ALPHA</a></div><div class="ttdoc">&lt; Is this a volume texture. DEPRECATED. </div><div class="ttdef"><b>Definition:</b> TextureDefines.h:43</div></div>
-<div class="ttc" id="namespacepvr_html_a0e463dd072d8bc9dd455491d1a663668aad5d7bfcceebb69cd04ae90c0d908d5b"><div class="ttname"><a href="namespacepvr.html#a0e463dd072d8bc9dd455491d1a663668aad5d7bfcceebb69cd04ae90c0d908d5b">pvr::PVRTEX_FALSEMIPCOL</a></div><div class="ttdoc">&lt; Is a cubemap/skybox. DEPRECATED.} </div><div class="ttdef"><b>Definition:</b> TextureDefines.h:41</div></div>
-<div class="ttc" id="namespacepvr_html_a0e463dd072d8bc9dd455491d1a663668a23671adbbb6b36b70a41c08602e2564f"><div class="ttname"><a href="namespacepvr.html#a0e463dd072d8bc9dd455491d1a663668a23671adbbb6b36b70a41c08602e2564f">pvr::PVRTEX_TWIDDLE</a></div><div class="ttdoc">&lt; Has mip map levels. DEPRECATED. </div><div class="ttdef"><b>Definition:</b> TextureDefines.h:37</div></div>
-<div class="ttc" id="namespacepvr_html_a0e463dd072d8bc9dd455491d1a663668a7ec982a2d890d48cae143c5970765ecf"><div class="ttname"><a href="namespacepvr.html#a0e463dd072d8bc9dd455491d1a663668a7ec982a2d890d48cae143c5970765ecf">pvr::PVRTC2_MIN_TEXWIDTH</a></div><div class="ttdoc">&lt; Old header size was 44 for identification purposes. DEPRECATED. </div><div class="ttdef"><b>Definition:</b> TextureDefines.h:48</div></div>
-<div class="ttc" id="namespacepvr_html_a0e463dd072d8bc9dd455491d1a663668a5e73cc8fec9a5861208b97999f1cd0b2"><div class="ttname"><a href="namespacepvr.html#a0e463dd072d8bc9dd455491d1a663668a5e73cc8fec9a5861208b97999f1cd0b2">pvr::PVRTEX_TILING</a></div><div class="ttdoc">&lt; Has normals encoded for a bump map. DEPRECATED. </div><div class="ttdef"><b>Definition:</b> TextureDefines.h:39</div></div>
-<div class="ttc" id="namespacepvr_html_af73ac8316fd8bc048cee4cb33c8ca226"><div class="ttname"><a href="namespacepvr.html#af73ac8316fd8bc048cee4cb33c8ca226">pvr::textureOffset2D</a></div><div class="ttdeci">uint64_t textureOffset2D(uint64_t x, uint64_t y, uint64_t width)</div><div class="ttdoc">Calculate the offset of a 2D texture</div><div class="ttdef"><b>Definition:</b> TextureDefines.h:16</div></div>
-<div class="ttc" id="namespacepvr_html_a0e463dd072d8bc9dd455491d1a663668a997b74fc5e403a09bdb4faf5b352f7b4"><div class="ttname"><a href="namespacepvr.html#a0e463dd072d8bc9dd455491d1a663668a997b74fc5e403a09bdb4faf5b352f7b4">pvr::PVRTC4_MIN_TEXWIDTH</a></div><div class="ttdoc">&lt; DEPRECATED. </div><div class="ttdef"><b>Definition:</b> TextureDefines.h:50</div></div>
-<div class="ttc" id="namespacepvr_html_a0e463dd072d8bc9dd455491d1a663668a80424d056ec65d5439dc169f1d35b625"><div class="ttname"><a href="namespacepvr.html#a0e463dd072d8bc9dd455491d1a663668a80424d056ec65d5439dc169f1d35b625">pvr::PVRTEX_CUBEMAP</a></div><div class="ttdoc">&lt; Is bordered for tiled pvr. DEPRECATED. </div><div class="ttdef"><b>Definition:</b> TextureDefines.h:40</div></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="keyword">namespace </span>pvr {} <span class="comment">// namespace pvr</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.4-->
 <!-- start footer part (NON TREEVIEW ONLY!!) -->

@@ -14,7 +14,7 @@ namespace pvrvk {
 struct ComputePipelineCreateInfo : public PipelineCreateInfo<ComputePipeline>
 {
 public:
-	ShaderStageCreateInfo computeShader; //!< Compute shader information
+	PipelineShaderStageCreateInfo computeShader; //!< Compute shader information
 
 	ComputePipelineCreateInfo() : PipelineCreateInfo() {}
 };

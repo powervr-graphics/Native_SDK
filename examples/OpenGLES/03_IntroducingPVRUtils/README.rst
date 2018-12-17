@@ -1,19 +1,19 @@
-﻿===================
+===================
 IntroducingPVRUtils
 ===================
 
 .. figure:: ./IntroducingPVRUtils.png
 
-Render a .pod scene using a a simple vertex and fragment shader making use of the PVRUtils library for various utility functions.
+This example renders a ``.POD`` scene using a a simple vertex and fragment shader, making use of the PVRUtils library for various utility functions.
 
 Description
 -----------
-This training course demonstrates how to make the most of the PVRUtils library for handling various api agnostic utility functions such as loading shaders and creating buffers. Various api specific utility functions are also provided such as the OpenGLES specific EGL context creation and Vulkan swapchain and instance creation helper. The PVRUtils library is also used to display simple text on screen.
+This example demonstrates how to make the most of the PVRUtils library for handling API-agnostic utility functions such as loading shaders and creating buffers. Various API-specific utility functions are also provided such as the OpenGL ES-specific EGL context creation. The PVRUtils UIRenderer library is also used to display simple text on screen.
 
-APIS
+APIs
 ----
-* Vulkan
 * OpenGL ES 2.0+
+* Vulkan
 
 Controls
 --------

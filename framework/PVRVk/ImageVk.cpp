@@ -16,18 +16,18 @@ Image_::~Image_()
 {
 	if (isAllocated())
 	{
-		if (_device.isValid())
+		if (getVkHandle() != VK_NULL_HANDLE)
 		{
-			if (getVkHandle() != VK_NULL_HANDLE)
+			if (_device.isValid())
 			{
 				_device->getVkBindings().vkDestroyImage(_device->getVkHandle(), getVkHandle(), nullptr);
 				_vkHandle = VK_NULL_HANDLE;
+				_device.reset();
 			}
-			// DUE TO SHARED POINTERS, NO VIEWS EXIST IF THIS IS CALLED.
-		}
-		else
-		{
-			Log(LogLevel::Warning, "Texture object was not released up before context destruction");
+			else
+			{
+				reportDestroyedAfterDevice("Image");
+			}
 		}
 	}
 }
@@ -35,6 +35,8 @@ Image_::~Image_()
 Image_::Image_(const DeviceWeakPtr& device, const ImageCreateInfo& createInfo)
 	: DeviceObjectHandle(device), DeviceObjectDebugMarker(DebugReportObjectTypeEXT::e_IMAGE_EXT), _createInfo(createInfo)
 {
+	auto& bindings = _device->getVkBindings();
+
 	VkImageCreateInfo vkCreateInfo = {};
 	vkCreateInfo.sType = static_cast<VkStructureType>(StructureType::e_IMAGE_CREATE_INFO);
 	vkCreateInfo.flags = static_cast<VkImageCreateFlags>(_createInfo.getFlags());
@@ -59,9 +61,17 @@ Image_::Image_(const DeviceWeakPtr& device, const ImageCreateInfo& createInfo)
 		static_cast<pvrvk::ImageCreateFlags>(_createInfo.getFlags()));
 #endif
 
-	impl::vkThrowIfFailed(device->getVkBindings().vkCreateImage(device->getVkHandle(), &vkCreateInfo, NULL, &_vkHandle), "ImageVk createImage");
+	impl::vkThrowIfFailed(bindings.vkCreateImage(device->getVkHandle(), &vkCreateInfo, NULL, &_vkHandle), "ImageVk createImage");
 
-	device->getVkBindings().vkGetImageMemoryRequirements(device->getVkHandle(), _vkHandle, reinterpret_cast<VkMemoryRequirements*>(&_memReqs));
+	bindings.vkGetImageMemoryRequirements(device->getVkHandle(), _vkHandle, (VkMemoryRequirements*)(&_memReqs));
+}
+
+pvrvk::SubresourceLayout Image_::getSubresourceLayout(const pvrvk::ImageSubresource& subresource) const
+{
+	pvrvk::SubresourceLayout layout;
+
+	_device->getVkBindings().vkGetImageSubresourceLayout(_device->getVkHandle(), _vkHandle, &(VkImageSubresource&)subresource, &(VkSubresourceLayout&)layout);
+	return layout;
 }
 } // namespace impl
 
@@ -70,9 +80,9 @@ SwapchainImage_::~SwapchainImage_()
 {
 	if (isAllocated())
 	{
-		if (!getDevice().isValid())
+		if (!_device.isValid())
 		{
-			Log(LogLevel::Warning, "Texture object was not released up before context destruction");
+			reportDestroyedAfterDevice("SwapchainImage");
 		}
 	}
 	_vkHandle = VK_NULL_HANDLE;
@@ -97,25 +107,19 @@ SwapchainImage_::SwapchainImage_(const DeviceWeakPtr& device, const VkImage& swa
 } // namespace impl
 
 namespace impl {
-ImageView_::ImageView_(const Image& image, ImageViewType viewType, Format format, const ImageSubresourceRange& range, ComponentMapping swizzleChannels)
-	: DeviceObjectHandle(), DeviceObjectDebugMarker(DebugReportObjectTypeEXT::e_IMAGE_VIEW_EXT), _viewType(ImageViewType::e_MAX_ENUM)
+ImageView_::ImageView_(const DeviceWeakPtr& device, const ImageViewCreateInfo& createInfo)
+	: DeviceObjectHandle(device), DeviceObjectDebugMarker(DebugReportObjectTypeEXT::e_IMAGE_VIEW_EXT), _createInfo(createInfo)
 {
-	_device = image->getDevice();
-	_resource = image;
-	_viewType = viewType;
-	VkImageViewCreateInfo viewCreateInfo = {};
-	viewCreateInfo.sType = static_cast<VkStructureType>(StructureType::e_IMAGE_VIEW_CREATE_INFO);
-	viewCreateInfo.image = image->getVkHandle();
-	viewCreateInfo.viewType = static_cast<VkImageViewType>(viewType);
+	VkImageViewCreateInfo vkCreateInfo = {};
+	vkCreateInfo.sType = static_cast<VkStructureType>(StructureType::e_IMAGE_VIEW_CREATE_INFO);
+	vkCreateInfo.flags = static_cast<VkImageViewCreateFlags>(_createInfo.getFlags());
+	vkCreateInfo.image = _createInfo.getImage()->getVkHandle();
+	vkCreateInfo.viewType = static_cast<VkImageViewType>(_createInfo.getViewType());
+	vkCreateInfo.format = static_cast<VkFormat>(_createInfo.getFormat());
+	vkCreateInfo.components = (VkComponentMapping&)_createInfo.getComponents();
+	vkCreateInfo.subresourceRange = (VkImageSubresourceRange&)_createInfo.getSubresourceRange();
 
-	viewCreateInfo.format = static_cast<VkFormat>(format);
-	viewCreateInfo.components = *reinterpret_cast<VkComponentMapping*>(&swizzleChannels);
-	viewCreateInfo.subresourceRange.aspectMask = static_cast<VkImageAspectFlags>(range.getAspectMask());
-	viewCreateInfo.subresourceRange.baseMipLevel = range.getBaseMipLevel();
-	viewCreateInfo.subresourceRange.levelCount = range.getLevelCount();
-	viewCreateInfo.subresourceRange.baseArrayLayer = range.getBaseArrayLayer();
-	viewCreateInfo.subresourceRange.layerCount = range.getLayerCount();
-	vkThrowIfFailed(_device->getVkBindings().vkCreateImageView(image->getDevice()->getVkHandle(), &viewCreateInfo, nullptr, &_vkHandle), "Failed to create ImageView");
+	vkThrowIfFailed(_device->getVkBindings().vkCreateImageView(getDevice()->getVkHandle(), &vkCreateInfo, nullptr, &_vkHandle), "Failed to create ImageView");
 }
 ImageView_::~ImageView_()
 {

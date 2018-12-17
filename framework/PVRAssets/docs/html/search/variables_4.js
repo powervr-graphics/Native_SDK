@@ -1,5 +1,10 @@
 var searchData=
 [
-  ['datatype',['dataType',['../structpvr_1_1assets_1_1effect_1_1_buffer_definition_1_1_entry.html#a3b5c2c639a77587e6d594f778389b9f2',1,'pvr::assets::effect::BufferDefinition::Entry::dataType()'],['../structpvr_1_1assets_1_1effect_1_1_uniform_semantic.html#a60eb944ef546a14d11fed955f15bb502',1,'pvr::assets::effect::UniformSemantic::dataType()'],['../structpvr_1_1assets_1_1effect_1_1_attribute_semantic.html#a9a7021577058e1f814c3aebc52c2831c',1,'pvr::assets::effect::AttributeSemantic::dataType()']]],
-  ['depthcmpfunc',['depthCmpFunc',['../structpvr_1_1assets_1_1effect_1_1_pipeline_definition.html#a4ae60a7f36c46069aeea3419151cca06',1,'pvr::assets::effect::PipelineDefinition']]]
+  ['faces',['faces',['../structpvr_1_1assets_1_1_mesh_1_1_internal_data.html#aee521e2671ae6b5ef1ef87c42b0be73d',1,'pvr::assets::Mesh::InternalData']]],
+  ['falloffangle',['falloffAngle',['../structpvr_1_1assets_1_1_light_1_1_internal_data.html#adcc41b5b10de63a81ff47c21f63dcf98',1,'pvr::assets::Light::InternalData']]],
+  ['falloffexponent',['falloffExponent',['../structpvr_1_1assets_1_1_light_1_1_internal_data.html#a23fd8ecf504c7c1855a8600ccb55d987',1,'pvr::assets::Light::InternalData']]],
+  ['farclip',['farClip',['../structpvr_1_1assets_1_1_camera_1_1_internal_data.html#a59a4793f6849cd55357397687b9226ae',1,'pvr::assets::Camera::InternalData']]],
+  ['flags',['flags',['../structpvr_1_1assets_1_1_animation_data_1_1_internal_data.html#a6723c160580db5b1c04301d80c1a4097',1,'pvr::assets::AnimationData::InternalData::flags()'],['../structpvr_1_1assets_1_1_model_1_1_internal_data.html#a310ec30be710c89028e20cae6f96d18e',1,'pvr::assets::Model::InternalData::flags()']]],
+  ['fps',['FPS',['../structpvr_1_1assets_1_1_model_1_1_internal_data.html#a0504df7eb3c96cf201cf9ecff492240f',1,'pvr::assets::Model::InternalData']]],
+  ['framexform',['frameXform',['../structpvr_1_1assets_1_1_model_1_1_node_1_1_internal_data.html#a5e18a4df3a2bdf54dd735004b6f119c9',1,'pvr::assets::Model::Node::InternalData']]]
 ];

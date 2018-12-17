@@ -58,8 +58,9 @@ END
 // RCDATA
 //
 /////////////////////////////////////////////////////////////////////////////
-// RCDATA: Assets (scenes, shaders, effects, textures...)
+// RCDATA: Assets (scenes,  effects, textures...)
 Lenna.pvr		RCDATA		"..\\..\\..\\assets\\Lenna.pvr"
+// RCDATA: OpenGL ES Textual shaders(glsl)
 FragShader_ES3.fsh		RCDATA		"..\\FragShader_ES3.fsh"
 VertShader_ES3.vsh		RCDATA		"..\\VertShader_ES3.vsh"
 CompShader_ES3.csh		RCDATA		"..\\CompShader_ES3.csh"

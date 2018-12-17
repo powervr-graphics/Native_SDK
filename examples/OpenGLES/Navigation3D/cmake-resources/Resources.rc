@@ -58,10 +58,11 @@ END
 // RCDATA
 //
 /////////////////////////////////////////////////////////////////////////////
-// RCDATA: Assets (scenes, shaders, effects, textures...)
+// RCDATA: Assets (scenes,  effects, textures...)
 font.pvr		RCDATA		"..\\..\\..\\assets\\Navigation3D\\font.pvr"
 Road.pvr		RCDATA		"..\\..\\..\\assets\\Navigation3D\\Road.pvr"
 map.osm		RCDATA		"..\\..\\..\\assets\\Navigation3D\\map.osm"
+// RCDATA: OpenGL ES Textual shaders(glsl)
 AA_VertShader_ES2.vsh		RCDATA		"..\\AA_VertShader_ES2.vsh"
 AA_FragShader_ES2.fsh		RCDATA		"..\\AA_FragShader_ES2.fsh"
 VertShader_ES2.vsh		RCDATA		"..\\VertShader_ES2.vsh"

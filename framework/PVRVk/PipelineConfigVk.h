@@ -63,9 +63,8 @@ typedef std::vector<VertexInputAttributeDescription> VertexAttributeMap;
 /// added to a PipelineCreateInfo to set a depth-stencil state to values other than their defaults.</summary>
 /// <remarks>--- Defaults: --- depthWrite:enabled, depthTest:enabled, DepthComparison:Less, Stencil Text:
 /// disabled, All stencil ops:Keep,</remarks>
-struct DepthStencilStateCreateInfo
+struct PipelineDepthStencilStateCreateInfo
 {
-public:
 private:
 	// stencil
 	bool _depthTest;
@@ -92,9 +91,9 @@ public:
 	/// <param name="stencilBack">Stencil back state</param>
 	/// <param name="minDepth">Min depth value</param>
 	/// <param name="maxDepth">Max depth value</param>
-	DepthStencilStateCreateInfo(bool depthWrite = true, bool depthTest = false, pvrvk::CompareOp depthCompareFunc = pvrvk::CompareOp::e_LESS, bool stencilTest = false,
-		bool depthBoundTest = false, const StencilOpState& stencilFront = StencilOpState(), const StencilOpState& stencilBack = StencilOpState(), float minDepth = 0.f,
-		float maxDepth = 1.f)
+	explicit PipelineDepthStencilStateCreateInfo(bool depthWrite = true, bool depthTest = false, pvrvk::CompareOp depthCompareFunc = pvrvk::CompareOp::e_LESS,
+		bool stencilTest = false, bool depthBoundTest = false, const StencilOpState& stencilFront = StencilOpState(), const StencilOpState& stencilBack = StencilOpState(),
+		float minDepth = 0.f, float maxDepth = 1.f)
 		: _depthTest(depthTest), _depthWrite(depthWrite), _stencilTestEnable(stencilTest), _depthBoundTest(depthBoundTest), _enableDepthStencilState(true), _minDepth(minDepth),
 		  _maxDepth(maxDepth), _stencilFront(stencilFront), _stencilBack(stencilBack), _depthCmpOp(depthCompareFunc)
 	{}
@@ -158,7 +157,7 @@ public:
 	/// <summary>Enable/ Disale the entire state</summary>
 	/// <param name="flag">True:enable, False:disable</param>
 	/// <returns>this object (allows chained calls)</returns>
-	DepthStencilStateCreateInfo& enableAllStates(bool flag)
+	PipelineDepthStencilStateCreateInfo& enableAllStates(bool flag)
 	{
 		_enableDepthStencilState = flag;
 		return *this;
@@ -167,7 +166,7 @@ public:
 	/// <summary>Enable/disable writing into the Depth Buffer.</summary>
 	/// <param name="depthWrite">True:enable, False:disable</param>
 	/// <returns>this object (allows chained calls)</returns>
-	DepthStencilStateCreateInfo& enableDepthWrite(bool depthWrite)
+	PipelineDepthStencilStateCreateInfo& enableDepthWrite(bool depthWrite)
 	{
 		_depthWrite = depthWrite;
 		return *this;
@@ -176,7 +175,7 @@ public:
 	/// <summary>Enable/disable depth test (initial state: enabled)</summary>
 	/// <param name="depthTest">True:enable, False:disable</param>
 	/// <returns>this object (allows chained calls)</returns>
-	DepthStencilStateCreateInfo& enableDepthTest(bool depthTest)
+	PipelineDepthStencilStateCreateInfo& enableDepthTest(bool depthTest)
 	{
 		_depthTest = depthTest;
 		return *this;
@@ -185,7 +184,7 @@ public:
 	/// <summary>Set the depth compare function (initial state: LessEqual)</summary>
 	/// <param name="compareFunc">A ComparisonMode (Less, Greater, Less etc.)</param>
 	/// <returns>this object (allows chained calls)</returns>
-	DepthStencilStateCreateInfo& setDepthCompareFunc(pvrvk::CompareOp compareFunc)
+	PipelineDepthStencilStateCreateInfo& setDepthCompareFunc(pvrvk::CompareOp compareFunc)
 	{
 		_depthCmpOp = compareFunc;
 		return *this;
@@ -194,7 +193,7 @@ public:
 	/// <summary>Enable/disable stencil test.</summary>
 	/// <param name="stencilTest">True:enable, False:disable</param>
 	/// <returns>this object (allows chained calls)</returns>
-	DepthStencilStateCreateInfo& enableStencilTest(bool stencilTest)
+	PipelineDepthStencilStateCreateInfo& enableStencilTest(bool stencilTest)
 	{
 		_stencilTestEnable = stencilTest;
 		return *this;
@@ -203,7 +202,7 @@ public:
 	/// <summary>Set the stencil front state</summary>
 	/// <param name="stencil">Stencil state</param>
 	/// <returns>this object (allows chained calls)</returns>
-	DepthStencilStateCreateInfo& setStencilFront(const StencilOpState& stencil)
+	PipelineDepthStencilStateCreateInfo& setStencilFront(const StencilOpState& stencil)
 	{
 		_stencilFront = stencil;
 		return *this;
@@ -212,7 +211,7 @@ public:
 	/// <summary>Set the stencil back state</summary>
 	/// <param name="stencil">Stencil state</param>
 	/// <returns>this object (allows chained calls)</returns>
-	DepthStencilStateCreateInfo& setStencilBack(const StencilOpState& stencil)
+	PipelineDepthStencilStateCreateInfo& setStencilBack(const StencilOpState& stencil)
 	{
 		_stencilBack = stencil;
 		return *this;
@@ -221,7 +220,7 @@ public:
 	/// <summary>Set the stencil front and back state</summary>
 	/// <param name="stencil">Stencil state</param>
 	/// <returns>this object (allows chained calls)</returns>
-	DepthStencilStateCreateInfo& setStencilFrontAndBack(StencilOpState& stencil)
+	PipelineDepthStencilStateCreateInfo& setStencilFrontAndBack(StencilOpState& stencil)
 	{
 		_stencilFront = stencil, _stencilBack = stencil;
 		return *this;
@@ -244,7 +243,7 @@ public:
 	/// <summary>Enable/ Disable depth bound testing</summary>
 	/// <param name="enabled">True:enable, False:disable</param>
 	/// <returns>this object (allows chained calls)</returns>
-	DepthStencilStateCreateInfo& setDepthBoundEnabled(bool enabled)
+	PipelineDepthStencilStateCreateInfo& setDepthBoundEnabled(bool enabled)
 	{
 		_depthBoundTest = enabled;
 		return *this;
@@ -253,7 +252,7 @@ public:
 	/// <summary>Set the minimum depth bound</summary>
 	/// <param name="minDepth">The minimum depth bound</param>
 	/// <returns>this object (allows chained calls)</returns>
-	DepthStencilStateCreateInfo& setMinDepthBound(float minDepth)
+	PipelineDepthStencilStateCreateInfo& setMinDepthBound(float minDepth)
 	{
 		_minDepth = minDepth;
 		return *this;
@@ -262,7 +261,7 @@ public:
 	/// <summary>Set the maximum depth bound</summary>
 	/// <param name="maxDepth">The maximum depth bound</param>
 	/// <returns>this object (allows chained calls)</returns>
-	DepthStencilStateCreateInfo& setMaxDepthBound(float maxDepth)
+	PipelineDepthStencilStateCreateInfo& setMaxDepthBound(float maxDepth)
 	{
 		_maxDepth = maxDepth;
 		return *this;
@@ -328,6 +327,14 @@ public:
 		return nullptr;
 	}
 
+	/// <summary>Returns an input binding at a given index.</summary>
+	/// <param name="index">The index of the VertexInputBindingDescription to retrieve.</param>
+	/// <returns>const VertexInputBindingDescription&</returns>
+	const VertexInputBindingDescription& getInputBindingByIndex(uint32_t index) const
+	{
+		return _inputBindings[index];
+	}
+
 	/// <summary>Add vertex layout information to a buffer binding index using a VertexAttributeInfo object.</summary>
 	/// <param name="attributeInfo">Vertex attribute info.</param>
 	/// <returns>this object (allows chained calls)</returns>
@@ -355,7 +362,7 @@ public:
 /// reuse etc).</summary>
 /// <remarks>--- Default settings --- Primitive Topology: TriangleList, Primitive Restart: False, Vertex Reuse:
 /// Disabled, Primitive Restart Index: 0xFFFFFFFF</remarks>
-struct InputAssemblerStateCreateInfo
+struct PipelineInputAssemblerStateCreateInfo
 {
 	friend class ::pvrvk::impl::GraphicsPipeline_;
 
@@ -372,7 +379,7 @@ public:
 	/// <param name="primitiveRestartEnable">(true: enabled, false: disabled) Default:false</param>
 	/// <param name="primitiveRestartIndex">Primitive Restart Index. Default 0xFFFFFFFF</param>
 	/// <returns>this object (allows chained calls)</returns>
-	InputAssemblerStateCreateInfo(pvrvk::PrimitiveTopology topology = pvrvk::PrimitiveTopology::e_TRIANGLE_LIST, bool disableVertexReuse = true,
+	explicit PipelineInputAssemblerStateCreateInfo(pvrvk::PrimitiveTopology topology = pvrvk::PrimitiveTopology::e_TRIANGLE_LIST, bool disableVertexReuse = true,
 		bool primitiveRestartEnable = false, uint32_t primitiveRestartIndex = 0xFFFFFFFF)
 		: _topology(topology), _disableVertexReuse(disableVertexReuse), _primitiveRestartEnable(primitiveRestartEnable), _primitiveRestartIndex(primitiveRestartIndex)
 	{}
@@ -380,7 +387,7 @@ public:
 	/// <summary>Enable/ disable primitive restart.</summary>
 	/// <param name="enable">true for enable, false for disable.</param>
 	/// <returns>this object (allows chained calls)</returns>
-	InputAssemblerStateCreateInfo& setPrimitiveRestartEnable(bool enable)
+	PipelineInputAssemblerStateCreateInfo& setPrimitiveRestartEnable(bool enable)
 	{
 		_primitiveRestartEnable = enable;
 		return *this;
@@ -389,7 +396,7 @@ public:
 	/// <summary>Enable/ disable vertex reuse.</summary>
 	/// <param name="disable">true for disable, false for enable.</param>
 	/// <returns>this object (allows chained calls)</returns>
-	InputAssemblerStateCreateInfo& setVertexReuseDisable(bool disable)
+	PipelineInputAssemblerStateCreateInfo& setVertexReuseDisable(bool disable)
 	{
 		_disableVertexReuse = disable;
 		return *this;
@@ -398,7 +405,7 @@ public:
 	/// <summary>Set primitive topology.</summary>
 	/// <param name="topology">The primitive topology to interpret the vertices as (TriangleList, Lines etc)</param>
 	/// <returns>this object (allows chained calls)</returns>
-	InputAssemblerStateCreateInfo& setPrimitiveTopology(pvrvk::PrimitiveTopology topology)
+	PipelineInputAssemblerStateCreateInfo& setPrimitiveTopology(pvrvk::PrimitiveTopology topology)
 	{
 		this->_topology = topology;
 		return *this;
@@ -435,7 +442,7 @@ public:
 
 /// <summary>Pipeline Color blending state configuration (alphaToCoverage, logicOp).</summary>
 /// <remarks>Defaults: Enable alpha to coverage:false, Enable logic op: false, Logic Op: Set, Attachments: 0</remarks>
-struct ColorBlendStateCreateInfo
+struct PipelineColorBlendStateCreateInfo
 {
 private:
 	friend class ::pvrvk::impl::GraphicsPipeline_;
@@ -461,7 +468,7 @@ public:
 	/// <param name="logicOp">Select logic operation (default:Set)</param>
 	/// <param name="attachmentStates">An array of color blend attachment states (default: NULL)</param>
 	/// <param name="numAttachmentStates">Number of color attachment states in array (default: 0)</param>
-	ColorBlendStateCreateInfo(bool alphaToCoverageEnable, bool logicOpEnable, pvrvk::LogicOp logicOp, Color colorBlendConstants,
+	PipelineColorBlendStateCreateInfo(bool alphaToCoverageEnable, bool logicOpEnable, pvrvk::LogicOp logicOp, Color colorBlendConstants,
 		PipelineColorBlendAttachmentState* attachmentStates, uint32_t numAttachmentStates)
 		: _numAttachmentStates(0), _alphaToCoverageEnable(alphaToCoverageEnable), _logicOpEnable(logicOpEnable), _logicOp(logicOp), _colorBlendConstants(colorBlendConstants)
 	{
@@ -478,7 +485,7 @@ public:
 	/// <param name="logicOpEnable">enable/disable logicOp (default:disable)</param>
 	/// <param name="logicOp">Select logic operation (default:Set)</param>
 	/// <param name="colorBlendConstants">Set color blend constants. Default (0,0,0,0)</param>
-	ColorBlendStateCreateInfo(
+	explicit PipelineColorBlendStateCreateInfo(
 		bool alphaToCoverageEnable = false, bool logicOpEnable = false, pvrvk::LogicOp logicOp = pvrvk::LogicOp::e_SET, Color colorBlendConstants = Color(0., 0., 0., 0.))
 		: _numAttachmentStates(0), _alphaToCoverageEnable(alphaToCoverageEnable), _logicOpEnable(logicOpEnable), _logicOp(logicOp), _colorBlendConstants(colorBlendConstants)
 	{}
@@ -486,7 +493,7 @@ public:
 	/// <summary>Set a constant for color blending</summary>
 	/// <param name="blendConst">The color blend constant</param>
 	/// <returns>Return this object (allows chained calls)</returns>
-	ColorBlendStateCreateInfo& setColorBlendConst(const Color& blendConst)
+	PipelineColorBlendStateCreateInfo& setColorBlendConst(const Color& blendConst)
 	{
 		_colorBlendConstants = blendConst;
 		return *this;
@@ -517,7 +524,7 @@ public:
 	/// <summary>Enable/ disable alpha to coverage.</summary>
 	/// <param name="alphaToCoverageEnable">Boolean flags indicating to enable/ disable alpha coverage</param>
 	/// <returns>this object (allows chained calls)</returns>
-	ColorBlendStateCreateInfo& setAlphaToCoverageEnable(bool alphaToCoverageEnable)
+	PipelineColorBlendStateCreateInfo& setAlphaToCoverageEnable(bool alphaToCoverageEnable)
 	{
 		_alphaToCoverageEnable = alphaToCoverageEnable;
 		return *this;
@@ -526,7 +533,7 @@ public:
 	/// <summary>Enable/ disable logic op.</summary>
 	/// <param name="logicOpEnable">Boolean flags indicating to enable/ disable logic op</param>
 	/// <returns>this object (allows chained calls)</returns>
-	ColorBlendStateCreateInfo& setLogicOpEnable(bool logicOpEnable)
+	PipelineColorBlendStateCreateInfo& setLogicOpEnable(bool logicOpEnable)
 	{
 		_logicOpEnable = logicOpEnable;
 		return *this;
@@ -535,7 +542,7 @@ public:
 	/// <summary>Set the logic op.</summary>
 	/// <param name="logicOp">New logic op to set</param>
 	/// <returns>this object (allows chained calls)</returns>
-	ColorBlendStateCreateInfo& setLogicOp(pvrvk::LogicOp logicOp)
+	PipelineColorBlendStateCreateInfo& setLogicOp(pvrvk::LogicOp logicOp)
 	{
 		_logicOp = logicOp;
 		return *this;
@@ -543,7 +550,7 @@ public:
 
 	/// <summary>Append a color attachment blend configuration (appended to the end of the attachments list).</summary>
 	/// <returns>this object (allows chained calls)</returns>
-	ColorBlendStateCreateInfo& clearAttachments()
+	PipelineColorBlendStateCreateInfo& clearAttachments()
 	{
 		for (uint32_t i = 0; i < FrameworkCaps::MaxColorAttachments; i++)
 		{
@@ -557,7 +564,7 @@ public:
 	/// <param name="index">Which index this color attachment will be</param>
 	/// <param name="state">The color attachment state to add</param>
 	/// <returns>this object (allows chained calls)</returns>
-	ColorBlendStateCreateInfo& setAttachmentState(uint32_t index, const PipelineColorBlendAttachmentState& state)
+	PipelineColorBlendStateCreateInfo& setAttachmentState(uint32_t index, const PipelineColorBlendAttachmentState& state)
 	{
 		debug_assertion(index < FrameworkCaps::MaxColorAttachments, "Blend config out of range.");
 		_attachmentStates[index] = state;
@@ -572,7 +579,7 @@ public:
 	/// <param name="state">An array of color attachment states</param>
 	/// <param name="count">The number of color attachment states in (state)</param>
 	/// <returns>this object (allows chained calls)</returns>
-	ColorBlendStateCreateInfo& setAttachmentStates(uint32_t count, PipelineColorBlendAttachmentState const* state)
+	PipelineColorBlendStateCreateInfo& setAttachmentStates(uint32_t count, PipelineColorBlendAttachmentState const* state)
 	{
 		debug_assertion(count < FrameworkCaps::MaxColorAttachments, "Blend config out of range.");
 		for (uint32_t i = 0; i < count; i++)
@@ -607,7 +614,7 @@ public:
 
 /// <summary>Pipeline Viewport state descriptor. Sets the base configuration of all viewports.</summary>
 /// <remarks>Defaults: Number of Viewports:1, Clip Origin: lower lef, Depth range: 0..1</remarks>
-struct ViewportStateCreateInfo
+struct PipelineViewportStateCreateInfo
 {
 	friend class ::pvrvk::impl::GraphicsPipeline_;
 
@@ -617,14 +624,14 @@ private:
 
 public:
 	/// <summary>Constructor.</summary>
-	ViewportStateCreateInfo() : _numScissorViewports(0) {}
+	PipelineViewportStateCreateInfo() : _numScissorViewports(0) {}
 
 	/// <summary>Configure the viewport with its corresponding scissor rectangle for an attachment</summary>
 	/// <param name="index">The index of the attachment for which to set the viewport and scissor rectangle</param>
 	/// <param name="viewport">The viewport to set for attachment <paramref name="index"/></param>
 	/// <param name="scissor">The scissor rectangle of the viewport</param>
 	/// <returns>return this object (allows chained calls)</returns>
-	ViewportStateCreateInfo& setViewportAndScissor(uint32_t index, const Viewport& viewport, const Rect2D& scissor)
+	PipelineViewportStateCreateInfo& setViewportAndScissor(uint32_t index, const Viewport& viewport, const Rect2D& scissor)
 	{
 		debug_assertion(index < FrameworkCaps::MaxScissorViewports, "Scissor Viewport out of range.");
 		_scissorViewports[index].first = scissor;
@@ -635,7 +642,7 @@ public:
 
 	/// <summary>Clear all states</summary>
 	/// <returns>Return this object (allows chained calls)</returns>
-	ViewportStateCreateInfo& clear()
+	PipelineViewportStateCreateInfo& clear()
 	{
 		for (uint32_t i = 0; i < FrameworkCaps::MaxScissorViewports; i++)
 		{
@@ -674,7 +681,7 @@ public:
 /// raster discard, point size, fill mode, provoking vertex.</summary>
 /// <remarks>Defaults: Cull face: back, Front face: CounterClockWise, Depth Clipping: true, Rasterizer Discard: false,
 /// Program Point Size: false, Point Origin: Lower left, Fill Mode: Front&Back, Provoking Vertex: First</remarks>
-struct RasterStateCreateInfo
+struct PipelineRasterizationStateCreateInfo
 {
 private:
 	pvrvk::CullModeFlags _cullFace;
@@ -706,9 +713,10 @@ public:
 	/// <param name="depthBiasClamp">If depth bias is enabled, the clamping value for depth bias (default 0)</param>
 	/// <param name="depthBiasConstantFactor">If depth bias is enabled, the constant value by which to bias depth(default 0)</param>
 	/// <param name="depthBiasSlopeFactor">If depth bias is enabled, the slope value by which to bias depth(default:0)</param>
-	RasterStateCreateInfo(pvrvk::CullModeFlags cullFace = pvrvk::CullModeFlags::e_NONE, pvrvk::FrontFace frontFaceWinding = pvrvk::FrontFace::e_COUNTER_CLOCKWISE,
-		bool enableDepthClip = true, bool enableRasterizerDiscard = false, bool enableProgramPointSize = false, pvrvk::PolygonMode fillMode = pvrvk::PolygonMode::e_FILL,
-		float lineWidth = 1.0f, bool enableDepthBias = false, float depthBiasClamp = 0.f, float depthBiasConstantFactor = 0.f, float depthBiasSlopeFactor = 0.f)
+	explicit PipelineRasterizationStateCreateInfo(pvrvk::CullModeFlags cullFace = pvrvk::CullModeFlags::e_NONE,
+		pvrvk::FrontFace frontFaceWinding = pvrvk::FrontFace::e_COUNTER_CLOCKWISE, bool enableDepthClip = true, bool enableRasterizerDiscard = false,
+		bool enableProgramPointSize = false, pvrvk::PolygonMode fillMode = pvrvk::PolygonMode::e_FILL, float lineWidth = 1.0f, bool enableDepthBias = false,
+		float depthBiasClamp = 0.f, float depthBiasConstantFactor = 0.f, float depthBiasSlopeFactor = 0.f)
 		: _cullFace(cullFace), _frontFaceWinding(frontFaceWinding), _enableDepthClip(enableDepthClip), _enableRasterizerDiscard(enableRasterizerDiscard),
 		  _enableProgramPointSize(enableProgramPointSize), _enableDepthBias(enableDepthBias), _depthBiasClamp(depthBiasClamp), _depthBiasConstantFactor(depthBiasConstantFactor),
 		  _depthBiasSlopeFactor(depthBiasSlopeFactor), _fillMode(fillMode), _lineWidth(lineWidth)
@@ -717,7 +725,7 @@ public:
 	/// <summary>Set the face that will be culled (front/back/both/none).</summary>
 	/// <param name="face">Cull face </param>
 	/// <returns>this object (allows chained calls)</returns>
-	RasterStateCreateInfo& setCullMode(pvrvk::CullModeFlags face)
+	PipelineRasterizationStateCreateInfo& setCullMode(pvrvk::CullModeFlags face)
 	{
 		_cullFace = face;
 		return *this;
@@ -726,7 +734,7 @@ public:
 	/// <summary>Set the line width</summary>
 	/// <param name="lineWidth">The width of lines (in pixels) when drawing line primitives.</param>
 	/// <returns>Return this object (allows chained calls)</returns>
-	RasterStateCreateInfo& setLineWidth(float lineWidth)
+	PipelineRasterizationStateCreateInfo& setLineWidth(float lineWidth)
 	{
 		_lineWidth = lineWidth;
 		return *this;
@@ -736,7 +744,7 @@ public:
 	/// <param name="enableDepthClip">Set to true to clip polygons at the Z-sides of the view frustum Set to false to
 	/// clamp the depth to the min/max values and not clip based on depth</param>
 	/// <returns>Return this object (allows chained calls)</returns>
-	RasterStateCreateInfo& setDepthClip(bool enableDepthClip)
+	PipelineRasterizationStateCreateInfo& setDepthClip(bool enableDepthClip)
 	{
 		_enableDepthClip = enableDepthClip;
 		return *this;
@@ -748,7 +756,7 @@ public:
 	/// <param name="depthBiasConstantFactor">A constant value added to all fragment depths</param>
 	/// <param name="depthBiasSlopeFactor">Depth slope factor for multiply fragment depths</param>
 	/// <returns>Return this object (allows chained calls)</returns>
-	RasterStateCreateInfo& setDepthBias(bool enableDepthBias, bool depthBiasClamp = 0.f, bool depthBiasConstantFactor = 0.f, bool depthBiasSlopeFactor = 0.f)
+	PipelineRasterizationStateCreateInfo& setDepthBias(bool enableDepthBias, bool depthBiasClamp = 0.f, bool depthBiasConstantFactor = 0.f, bool depthBiasSlopeFactor = 0.f)
 	{
 		_enableDepthBias = enableDepthBias;
 		_depthBiasClamp = depthBiasClamp;
@@ -761,7 +769,7 @@ public:
 	/// face).</summary>
 	/// <param name="frontFaceWinding">The winding order that will represent front faces</param>
 	/// <returns>this object (allows chained calls)</returns>
-	RasterStateCreateInfo& setFrontFaceWinding(pvrvk::FrontFace frontFaceWinding)
+	PipelineRasterizationStateCreateInfo& setFrontFaceWinding(pvrvk::FrontFace frontFaceWinding)
 	{
 		_frontFaceWinding = frontFaceWinding;
 		return *this;
@@ -770,7 +778,7 @@ public:
 	/// <summary>Disable all phases after transform feedback (rasterization and later)</summary>
 	/// <param name="enable">Set to "false" for normal rendering, "true" to enable rasterization discard</param>
 	/// <returns>this object (allows chained calls)</returns>
-	RasterStateCreateInfo& setRasterizerDiscard(bool enable)
+	PipelineRasterizationStateCreateInfo& setRasterizerDiscard(bool enable)
 	{
 		_enableRasterizerDiscard = enable;
 		return *this;
@@ -779,7 +787,7 @@ public:
 	/// <summary>Enable/disable Program Point Size.</summary>
 	/// <param name="enable">Set to "true" to control point size for the entire program</param>
 	/// <returns>this object (allows chained calls)</returns>
-	RasterStateCreateInfo& setProgramPointSize(bool enable)
+	PipelineRasterizationStateCreateInfo& setProgramPointSize(bool enable)
 	{
 		_enableProgramPointSize = enable;
 		return *this;
@@ -788,7 +796,7 @@ public:
 	/// <summary>Set polygon fill mode.</summary>
 	/// <param name="mode">New polygon mode to set</param>
 	/// <returns>this object (allows chained calls)</returns>
-	RasterStateCreateInfo& setPolygonMode(pvrvk::PolygonMode mode)
+	PipelineRasterizationStateCreateInfo& setPolygonMode(pvrvk::PolygonMode mode)
 	{
 		_fillMode = mode;
 		return *this;
@@ -880,7 +888,7 @@ public:
 /// <summary>Pipeline Multisampling state configuration: Number of samples, alpha to coverage, alpha to one,
 /// sampling mask.</summary>
 /// <remarks>Defaults: No multisampling</remarks>
-struct MultiSampleStateCreateInfo
+struct PipelineMultisampleStateCreateInfo
 {
 private:
 	friend class ::pvrvk::impl::GraphicsPipeline_;
@@ -901,7 +909,7 @@ public:
 	/// <param name="rasterizationSamples">The number of rasterization samples (default 1)</param>
 	/// <param name="minSampleShading">The minimum sample Shading (default 0)</param>
 	/// <param name="sampleMask">sampleMask (default 0)</param>
-	MultiSampleStateCreateInfo(bool stateEnabled = false, bool sampleShadingEnable = false, bool alphaToCoverageEnable = false, bool alphaToOneEnable = false,
+	explicit PipelineMultisampleStateCreateInfo(bool stateEnabled = false, bool sampleShadingEnable = false, bool alphaToCoverageEnable = false, bool alphaToOneEnable = false,
 		pvrvk::SampleCountFlags rasterizationSamples = pvrvk::SampleCountFlags::e_1_BIT, float minSampleShading = 0.f, uint32_t sampleMask = 0xffffffff)
 		: _stateEnabled(stateEnabled), _sampleShadingEnable(sampleShadingEnable), _alphaToCoverageEnable(alphaToCoverageEnable), _alphaToOneEnable(alphaToOneEnable),
 		  _numRasterizationSamples(rasterizationSamples), _minSampleShading(minSampleShading), _sampleMask(sampleMask)
@@ -910,7 +918,7 @@ public:
 	/// <summary>Enable/disable multisampling</summary>
 	/// <param name="active">true enable, false disable if the pipeline has rasterization disabled.</param>
 	/// <returns>this (allow chaining)</returns>
-	MultiSampleStateCreateInfo& enableAllStates(bool active)
+	PipelineMultisampleStateCreateInfo& enableAllStates(bool active)
 	{
 		_stateEnabled = active;
 		return *this;
@@ -919,7 +927,7 @@ public:
 	/// <summary>Enable/ Disable alpha to coverage</summary>
 	/// <param name="enable">True to enable Alpha to Coverage, false to Disable</param>
 	/// <returns>Return this object (allows chained calls)</returns>
-	MultiSampleStateCreateInfo& setAlphaToCoverage(bool enable)
+	PipelineMultisampleStateCreateInfo& setAlphaToCoverage(bool enable)
 	{
 		_alphaToCoverageEnable = enable;
 		return *this;
@@ -928,17 +936,17 @@ public:
 	/// <summary>Enable/ disable sampler shading (Multi Sampling Anti Aliasing).</summary>
 	/// <param name="enable">true enable per-sample shading, false to disable</param>
 	/// <returns>this (allow chaining)</returns>
-	MultiSampleStateCreateInfo& setSampleShading(bool enable)
+	PipelineMultisampleStateCreateInfo& setSampleShading(bool enable)
 	{
 		_sampleShadingEnable = enable;
 		return *this;
 	}
 
-	/// <summary>Controls whether the alpha component of the fragment’s first color output is replaced with one
+	/// <summary>Controls whether the alpha component of the fragment's first color output is replaced with one
 	/// </summary>
 	/// <param name="enable">true enable alpha to one, false disable</param>
 	/// <returns>this (allow chaining)</returns>
-	MultiSampleStateCreateInfo& setAlphaToOne(bool enable)
+	PipelineMultisampleStateCreateInfo& setAlphaToOne(bool enable)
 	{
 		_alphaToOneEnable = enable;
 		return *this;
@@ -947,7 +955,7 @@ public:
 	/// <summary>Set the number of samples per pixel used in rasterization (Multi sample anti aliasing)</summary>
 	/// <param name="numSamples">The number of samples</param>
 	/// <returns>this (allow chaining)</returns>
-	MultiSampleStateCreateInfo& setNumRasterizationSamples(pvrvk::SampleCountFlags numSamples)
+	PipelineMultisampleStateCreateInfo& setNumRasterizationSamples(pvrvk::SampleCountFlags numSamples)
 	{
 		_numRasterizationSamples = numSamples;
 		return *this;
@@ -956,7 +964,7 @@ public:
 	/// <summary>Set minimum sample shading.</summary>
 	/// <param name="minSampleShading">The number of minimum samples to shade</param>
 	/// <returns>this (allow chaining)</returns>
-	MultiSampleStateCreateInfo& setMinSampleShading(float minSampleShading)
+	PipelineMultisampleStateCreateInfo& setMinSampleShading(float minSampleShading)
 	{
 		_minSampleShading = minSampleShading;
 		return *this;
@@ -966,7 +974,7 @@ public:
 	/// during rasterization.</summary>
 	/// <param name="mask">The sample mask. See the corresponding API spec for exact bit usage of the mask.</param>
 	/// <returns>this (allow chaining)</returns>
-	MultiSampleStateCreateInfo& setSampleMask(uint32_t mask)
+	PipelineMultisampleStateCreateInfo& setSampleMask(uint32_t mask)
 	{
 		_sampleMask = mask;
 		return *this;
@@ -1059,7 +1067,7 @@ public:
 struct ShaderConstantInfo
 {
 	uint32_t constantId; //!< ID of the specialization constant in SPIR-V.
-	char data[64]; //!< Data, max can hold 4x4 matrix
+	unsigned char data[64]; //!< Data, max can hold 4x4 matrix
 	uint32_t sizeInBytes; //!< Data size in bytes
 
 	/// <summary>Constructor (Zero initialization)</summary>
@@ -1079,14 +1087,15 @@ struct ShaderConstantInfo
 	/// <param name="constantId">ID of the specialization constant in SPIR-V.</param>
 	/// <param name="data">Data, max can hold 4x4 matrix</param>
 	/// <param name="sizeOfData">Data size in bytes</param>
-	ShaderConstantInfo(uint32_t constantId, void* data, uint32_t sizeOfData) : constantId(constantId), sizeInBytes(sizeof(data))
+	ShaderConstantInfo(uint32_t constantId, const void* data, uint32_t sizeOfData) : constantId(constantId), sizeInBytes(sizeOfData)
 	{
-		memcpy(this->data, &data, sizeOfData);
+		memset(this->data, 0, sizeof(this->data));
+		memcpy(this->data, data, sizeInBytes);
 	}
 };
 
 /// <summary>Pipeline vertex ShaderModule stage create param.</summary>
-struct ShaderStageCreateInfo
+struct PipelineShaderStageCreateInfo
 {
 	friend class ::pvrvk::impl::GraphicsPipeline_;
 
@@ -1098,11 +1107,11 @@ private:
 
 public:
 	/// <summary>Constructor.</summary>
-	ShaderStageCreateInfo() : _numShaderConsts(0), _entryPoint("main") {}
+	PipelineShaderStageCreateInfo() : _numShaderConsts(0), _entryPoint("main") {}
 
 	/// <summary>Construct from a pvrvk::ShaderModule object</summary>
 	/// <param name="shader">A vertex shader</param>
-	ShaderStageCreateInfo(const ShaderModule& shader) : _shaderModule(shader), _numShaderConsts(0), _entryPoint("main") {}
+	PipelineShaderStageCreateInfo(const ShaderModule& shader) : _shaderModule(shader), _numShaderConsts(0), _entryPoint("main") {}
 
 	/// <summary>Get the shader of this shader stage object</summary>
 	/// <returns>The shader</returns>
@@ -1141,8 +1150,8 @@ public:
 
 	/// <summary>operator =</summary>
 	/// <param name="shader">ShaderModule object</param>
-	/// <returns>ShaderStageCreateInfo&</returns>
-	ShaderStageCreateInfo& operator=(const ShaderModule& shader)
+	/// <returns>PipelineShaderStageCreateInfo&</returns>
+	PipelineShaderStageCreateInfo& operator=(const ShaderModule& shader)
 	{
 		setShader(shader);
 		return *this;
@@ -1152,14 +1161,14 @@ public:
 	/// <param name="index">The index of the shader constant to set (does not have to be in order)</param>
 	/// <param name="shaderConst">The shader constant to set to index <paramref name="index"/></param>
 	/// <returns>Return this (allow chaining)</returns>
-	ShaderStageCreateInfo& setShaderConstant(uint32_t index, const ShaderConstantInfo& shaderConst)
+	PipelineShaderStageCreateInfo& setShaderConstant(uint32_t index, const ShaderConstantInfo& shaderConst)
 	{
 		debug_assertion(index < static_cast<uint32_t>(FrameworkCaps::MaxSpecialisationInfos), "Specialisation index is invalid.");
 		if (!_shaderConsts[index].isValid())
 		{
-			_shaderConsts[index] = shaderConst;
 			_numShaderConsts++;
 		}
+		_shaderConsts[index] = shaderConst;
 		return *this;
 	}
 
@@ -1168,7 +1177,7 @@ public:
 	/// <param name="numConstants">The number of shader constants in <paramref name="shaderConsts"/></param>
 	/// <returns>Return this (allow chaining)</returns>
 	/// <remarks>Uses better memory reservation than the setShaderConstant counterpart.</remarks>
-	ShaderStageCreateInfo& setShaderConstants(const ShaderConstantInfo* shaderConsts, uint32_t numConstants)
+	PipelineShaderStageCreateInfo& setShaderConstants(const ShaderConstantInfo* shaderConsts, uint32_t numConstants)
 	{
 		debug_assertion(numConstants < static_cast<uint32_t>(FrameworkCaps::MaxSpecialisationInfos), "Specialisation index is invalid.");
 

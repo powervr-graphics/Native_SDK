@@ -3,17 +3,17 @@
 #define VERTEX_ARRAY	0
 #define NORMAL_ARRAY	1
 
-layout (location = VERTEX_ARRAY) in highp vec3 inVertex;
-layout (location = NORMAL_ARRAY) in highp vec3 inNormal;
+layout(location = VERTEX_ARRAY) in highp vec3 inVertex;
+layout(location = NORMAL_ARRAY) in mediump vec3 inNormal;
 
-uniform highp mat4  uModelViewMatrix;
-uniform highp mat3  uModelViewITMatrix;
-uniform highp mat4  uModelViewProjectionMatrix;
+uniform highp mat4 uModelViewMatrix;
+uniform highp mat3 uModelViewITMatrix;
+uniform highp mat4 uModelViewProjectionMatrix;
 
-uniform highp vec3  uLightPosition;
+uniform highp vec3 uLightPosition;
 
-out highp vec3  vNormal;
-out highp vec3  vLightDirection;
+out mediump vec3 vNormal;
+out mediump vec3 vLightDirection;
 
 void main()
 {

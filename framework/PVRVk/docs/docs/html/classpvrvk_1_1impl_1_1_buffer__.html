@@ -15,7 +15,7 @@
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="IMGdoxygen.css" rel="stylesheet" type="text/css"/>
-<link rel="shortcut icon" href="http://www.imgtec.com/images/img.ico">
+<link rel="shortcut icon" type="image/x-icon" href="img.ico">
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
+      <a href="https://www.imgtec.com/developers/" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRVk</span> Documentation</a>
    <tbody>
@@ -125,6 +125,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a06482b67012d6e87fee67e8841568eb6"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_buffer__.html#a06482b67012d6e87fee67e8841568eb6">getNumQueueFamilyIndices</a> () const </td></tr>
 <tr class="memdesc:a06482b67012d6e87fee67e8841568eb6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the number of queue families supported by this buffer <a href="#a06482b67012d6e87fee67e8841568eb6">More...</a><br/></td></tr>
 <tr class="separator:a06482b67012d6e87fee67e8841568eb6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af9cd7d892ba5d3d7988b9ecae846f5bf"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_device_object_debug_marker.html#af9cd7d892ba5d3d7988b9ecae846f5bf">getObjectName</a> () const</td></tr>
+<tr class="memdesc:af9cd7d892ba5d3d7988b9ecae846f5bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the Debug Marker name. <a href="#af9cd7d892ba5d3d7988b9ecae846f5bf">More...</a><br/></td></tr>
+<tr class="separator:af9cd7d892ba5d3d7988b9ecae846f5bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a818554addf0b575899bdea0a7786d132"><td class="memItemLeft" align="right" valign="top">const uint32_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_buffer__.html#a818554addf0b575899bdea0a7786d132">getQueueFamilyIndices</a> () const </td></tr>
 <tr class="memdesc:a818554addf0b575899bdea0a7786d132"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get this buffer's pointer to supported queue families <a href="#a818554addf0b575899bdea0a7786d132">More...</a><br/></td></tr>
 <tr class="separator:a818554addf0b575899bdea0a7786d132"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -236,7 +239,7 @@ Protected Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Get this buffer's create flags</p>
-<dl class="section return"><dt>Returns</dt><dd>VkBufferCreateFlags</dd></dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="structpvrvk_1_1_buffer_create_info.html" title="Buffer creation descriptor.">BufferCreateInfo</a></dd></dl>
 
 </div>
 </div>
@@ -394,6 +397,32 @@ Protected Attributes</h2></td></tr>
 
 <p>Get the number of queue families supported by this buffer</p>
 <dl class="section return"><dt>Returns</dt><dd>The size of the list of supported queue family indices</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="af9cd7d892ba5d3d7988b9ecae846f5bf"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string&amp; <a class="el" href="classpvrvk_1_1impl_1_1_device_object_debug_marker.html">pvrvk::impl::DeviceObjectDebugMarker</a>&lt; <a class="el" href="classpvrvk_1_1impl_1_1_buffer__.html">Buffer_</a>  &gt;::getObjectName </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the Debug Marker name.</p>
+<dl class="section return"><dt>Returns</dt><dd>The object name</dd></dl>
 
 </div>
 </div>

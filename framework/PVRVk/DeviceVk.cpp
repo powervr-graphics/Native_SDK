@@ -83,12 +83,12 @@ std::vector<const char*> filterLayers(const std::vector<VkLayerProperties>& vec,
 	return retval;
 }
 
-pvrvk::GraphicsPipeline Device_::createGraphicsPipeline(const GraphicsPipelineCreateInfo& desc, const PipelineCache& pipelineCache)
+pvrvk::GraphicsPipeline Device_::createGraphicsPipeline(const GraphicsPipelineCreateInfo& createInfo, const PipelineCache& pipelineCache)
 {
 	GraphicsPipelinePopulate pipelineFactory;
 	VkPipeline vkPipeline;
 
-	if (!pipelineFactory.init(desc))
+	if (!pipelineFactory.init(createInfo))
 	{
 		return GraphicsPipeline();
 	}
@@ -97,7 +97,7 @@ pvrvk::GraphicsPipeline Device_::createGraphicsPipeline(const GraphicsPipelineCr
 		"Create GraphicsPipeline Failed.");
 
 	GraphicsPipeline pipeline;
-	pipeline.construct(getWeakReference(), vkPipeline, desc);
+	pipeline.construct(getWeakReference(), vkPipeline, createInfo);
 	return pipeline;
 }
 
@@ -253,104 +253,42 @@ void Device_::updateDescriptorSets(const WriteDescriptorSet* writeDescSets, uint
 			copyDescSet.srcArrayElement, copyDescSet.dstSet->getVkHandle(), copyDescSet.dstBinding, copyDescSet.dstArrayElement, copyDescSet.descriptorCount };
 	});
 
-	getVkBindings().vkUpdateDescriptorSets(getVkHandle(), (uint32_t)vkWriteDescSets.size(), vkWriteDescSets.data(), (uint32_t)vkCopyDescriptorSets.size(), vkCopyDescriptorSets.data());
+	getVkBindings().vkUpdateDescriptorSets(
+		getVkHandle(), static_cast<uint32_t>(vkWriteDescSets.size()), vkWriteDescSets.data(), static_cast<uint32_t>(vkCopyDescriptorSets.size()), vkCopyDescriptorSets.data());
 }
 
-namespace {
-inline ImageViewType convertToPVRVkImageViewType(ImageType baseType, uint32_t numArrayLayers, bool isCubeMap)
-{
-	// if it is a cube map it has to be 2D Texture base
-	if (isCubeMap && baseType != ImageType::e_2D)
-	{
-		assertion(baseType == ImageType::e_2D, "Cubemap texture must be 2D");
-		return ImageViewType::e_MAX_ENUM;
-	}
-	// array must be atleast 1
-	if (!numArrayLayers)
-	{
-		assertion(false, "Number of array layers must be greater than equal to 0");
-		return ImageViewType::e_MAX_ENUM;
-	}
-	// if it is array it must be 1D or 2D texture base
-	if ((numArrayLayers > 1) && (baseType > ImageType::e_2D))
-	{
-		assertion(false, "1D and 2D image type supports array texture");
-		return ImageViewType::e_MAX_ENUM;
-	}
-
-	ImageViewType vkType[] = { ImageViewType::e_1D, ImageViewType::e_1D_ARRAY, ImageViewType::e_2D, ImageViewType::e_2D_ARRAY, ImageViewType::e_3D, ImageViewType::e_CUBE,
-		ImageViewType::e_CUBE_ARRAY };
-	if (isCubeMap)
-	{
-		numArrayLayers = (numArrayLayers > 6) * 6;
-	}
-	return vkType[(static_cast<uint32_t>(baseType) * 2) + (isCubeMap ? 3 : 0) + (numArrayLayers > 1 ? 1 : 0)];
-}
-} // namespace
-
-inline ImageAspectFlags formatToImageAspect(Format format)
-{
-	if (format == Format::e_UNDEFINED || format == Format::e_NONE)
-	{
-		throw ErrorUnknown("Cannot retrieve VkImageAspectFlags from an undefined VkFormat");
-	}
-	if (format < Format::e_D16_UNORM || format > Format::e_D32_SFLOAT_S8_UINT)
-	{
-		return ImageAspectFlags::e_COLOR_BIT;
-	}
-	const ImageAspectFlags formats[] = {
-		ImageAspectFlags::e_DEPTH_BIT, // VkFormat::e_D16_UNORM
-		ImageAspectFlags::e_DEPTH_BIT, // VkFormat::e_X8_D24_UNORM_PACK32
-		ImageAspectFlags::e_DEPTH_BIT, // VkFormat::e_D32_SFLOAT
-		ImageAspectFlags::e_STENCIL_BIT, // VkFormat::e_S8_UINT
-		ImageAspectFlags::e_DEPTH_BIT | ImageAspectFlags::e_STENCIL_BIT, // VkFormat::e_D16_UNORM_S8_UINT
-		ImageAspectFlags::e_DEPTH_BIT | ImageAspectFlags::e_STENCIL_BIT, // VkFormat::e_D24_UNORM_S8_UINT
-		ImageAspectFlags::e_DEPTH_BIT | ImageAspectFlags::e_STENCIL_BIT, // VkFormat::e_D32_SFLOAT_S8_UINT
-	};
-	return formats[static_cast<uint32_t>(format) - static_cast<uint32_t>(Format::e_D16_UNORM)];
-}
-
-ImageView Device_::createImageView(const Image& image, ImageViewType viewType, Format format, const ImageSubresourceRange& range, const ComponentMapping& swizzleChannels)
+ImageView Device_::createImageView(const ImageViewCreateInfo& createInfo)
 {
 	ImageView imageView;
-	imageView.construct(image, viewType, format, range, swizzleChannels);
+	imageView.construct(getWeakReference(), createInfo);
 	return imageView;
 }
 
-ImageView Device_::createImageView(const Image& image, const ComponentMapping& swizzleChannels)
-{
-	ImageSubresourceRange range;
-	range.setAspectMask(formatToImageAspect(image->getFormat()));
-	range.setLevelCount(image->getNumMipLevels());
-	range.setLayerCount(image->getNumArrayLayers());
-	return createImageView(image, convertToPVRVkImageViewType(image->getImageType(), image->getNumArrayLayers(), image->isCubeMap()), image->getFormat(), range, swizzleChannels);
-}
-
-Framebuffer Device_::createFramebuffer(const FramebufferCreateInfo& desc)
+Framebuffer Device_::createFramebuffer(const FramebufferCreateInfo& createInfo)
 {
 	Framebuffer framebuffer;
-	framebuffer.construct(getWeakReference(), desc);
+	framebuffer.construct(getWeakReference(), createInfo);
 	return framebuffer;
 }
 
-Fence Device_::createFence(FenceCreateFlags fenceCreateFlags)
+Fence Device_::createFence(const FenceCreateInfo& createInfo)
 {
 	Fence fence;
-	fence.construct(getWeakReference(), fenceCreateFlags);
+	fence.construct(getWeakReference(), createInfo);
 	return fence;
 }
 
-Event Device_::createEvent()
+Event Device_::createEvent(const EventCreateInfo& createInfo)
 {
 	Event event;
-	event.construct(getWeakReference());
+	event.construct(getWeakReference(), createInfo);
 	return event;
 }
 
-Semaphore Device_::createSemaphore()
+Semaphore Device_::createSemaphore(const SemaphoreCreateInfo& createInfo)
 {
 	Semaphore semaphore;
-	semaphore.construct(getWeakReference());
+	semaphore.construct(getWeakReference(), createInfo);
 	return semaphore;
 }
 
@@ -370,32 +308,31 @@ DeviceMemory Device_::allocateMemory(const MemoryAllocationInfo& allocationInfo)
 	return mem;
 }
 
-ShaderModule Device_::createShader(const std::vector<uint32_t>& shaderSrc)
+ShaderModule Device_::createShaderModule(const ShaderModuleCreateInfo& createInfo)
 {
-	ShaderModule vs;
-	vs.construct(getWeakReference(), shaderSrc);
-	return vs;
+	ShaderModule shaderModule;
+	shaderModule.construct(getWeakReference(), createInfo);
+	return shaderModule;
 }
 
-Sampler Device_::createSampler(const SamplerCreateInfo& desc)
+Sampler Device_::createSampler(const SamplerCreateInfo& createInfo)
 {
 	Sampler sampler;
-	sampler.construct(getWeakReference(), desc);
+	sampler.construct(getWeakReference(), createInfo);
 	return sampler;
 }
 
-RenderPass Device_::createRenderPass(const RenderPassCreateInfo& renderPass)
+RenderPass Device_::createRenderPass(const RenderPassCreateInfo& createInfo)
 {
-	RenderPass rp;
-	rp.construct(getReference(), renderPass);
-	return rp;
+	RenderPass renderPass;
+	renderPass.construct(getReference(), createInfo);
+	return renderPass;
 }
 
-BufferView Device_::createBufferView(const Buffer& buffer, Format format, VkDeviceSize offset, VkDeviceSize range)
+BufferView Device_::createBufferView(const BufferViewCreateInfo& createInfo)
 {
-	assertion(range == 0xFFFFFFFFu || (range <= buffer->getSize() - offset));
 	BufferView bufferview;
-	bufferview.construct(getWeakReference(), buffer, format, offset, std::min(range, buffer->getSize() - offset));
+	bufferview.construct(getWeakReference(), createInfo);
 	return bufferview;
 }
 
@@ -405,15 +342,15 @@ DescriptorPool Device_::createDescriptorPool(const DescriptorPoolCreateInfo& cre
 	return descPool;
 }
 
-CommandPool Device_::createCommandPool(uint32_t queueFamilyId, CommandPoolCreateFlags createFlags)
+CommandPool Device_::createCommandPool(const CommandPoolCreateInfo& createInfo)
 {
-	return impl::CommandPool_::createNew(getWeakReference(), queueFamilyId, createFlags);
+	return impl::CommandPool_::createNew(getWeakReference(), createInfo);
 }
 
-PipelineLayout Device_::createPipelineLayout(const PipelineLayoutCreateInfo& desc)
+PipelineLayout Device_::createPipelineLayout(const PipelineLayoutCreateInfo& createInfo)
 {
 	PipelineLayout pipelayout;
-	pipelayout.construct(getWeakReference(), desc);
+	pipelayout.construct(getWeakReference(), createInfo);
 	return pipelayout;
 }
 
@@ -422,7 +359,7 @@ bool Device_::waitForFences(uint32_t numFences, const Fence* const fences, const
 	VkFence vkFenceArray[10];
 	std::vector<VkFence> vkFenceVec(0);
 	VkFence* vkFences = vkFenceArray;
-	if (numFences > ARRAY_SIZE(vkFenceArray))
+	if (numFences > sizeof(vkFenceArray) / sizeof(vkFenceArray[0]))
 	{
 		vkFenceVec.resize(numFences);
 		vkFences = vkFenceVec.data();
@@ -448,7 +385,7 @@ void Device_::resetFences(uint32_t numFences, const Fence* const fences)
 	VkFence vkFenceArray[10];
 	std::vector<VkFence> vkFenceVec(0);
 	VkFence* vkFences = vkFenceArray;
-	if (numFences > ARRAY_SIZE(vkFenceArray))
+	if (numFences > sizeof(vkFenceArray) / sizeof(vkFenceArray[0]))
 	{
 		vkFenceVec.resize(numFences);
 		vkFences = vkFenceVec.data();
@@ -462,17 +399,17 @@ void Device_::resetFences(uint32_t numFences, const Fence* const fences)
 	vkThrowIfFailed(getVkBindings().vkResetFences(getVkHandle(), numFences, vkFences), "Reset fences failed");
 }
 
-pvrvk::DescriptorSetLayout Device_::createDescriptorSetLayout(const DescriptorSetLayoutCreateInfo& desc)
+pvrvk::DescriptorSetLayout Device_::createDescriptorSetLayout(const DescriptorSetLayoutCreateInfo& createInfo)
 {
 	DescriptorSetLayout layout;
-	layout.construct(getWeakReference(), desc);
+	layout.construct(getWeakReference(), createInfo);
 	return layout;
 }
 
-PipelineCache Device_::createPipelineCache(size_t initialDataSize, const void* initialData, PipelineCacheCreateFlags flags)
+PipelineCache Device_::createPipelineCache(const PipelineCacheCreateInfo& createInfo)
 {
 	PipelineCache pipelineCache;
-	pipelineCache.construct(getWeakReference(), initialDataSize, initialData, flags);
+	pipelineCache.construct(getWeakReference(), createInfo);
 	return pipelineCache;
 }
 
@@ -491,9 +428,9 @@ Swapchain Device_::createSwapchain(const SwapchainCreateInfo& createInfo, const 
 	return swapchain;
 }
 
-QueryPool Device_::createQueryPool(QueryType queryType, uint32_t queryCount, QueryPipelineStatisticFlags statisticsFlags)
+QueryPool Device_::createQueryPool(const QueryPoolCreateInfo& createInfo)
 {
-	QueryPool queryPool = impl::QueryPool_::createNew(getWeakReference(), queryType, queryCount, statisticsFlags);
+	QueryPool queryPool = impl::QueryPool_::createNew(getWeakReference(), createInfo);
 	return queryPool;
 }
 
@@ -508,6 +445,9 @@ struct QueueFamilyCreateInfo
 	uint32_t queueFamilyId;
 	uint32_t queueId;
 	bool supportPresentation;
+	explicit QueueFamilyCreateInfo(uint32_t queueFamilyId = -1, uint32_t queueId = -1, bool supportPresentation = 0)
+		: queueFamilyId(queueFamilyId), queueId(queueId), supportPresentation(supportPresentation)
+	{}
 };
 
 Device_::Device_(PhysicalDeviceWeakPtr physicalDevice, const DeviceCreateInfo& createInfo) : PhysicalDeviceObjectHandle(physicalDevice)
@@ -535,7 +475,7 @@ Device_::Device_(PhysicalDeviceWeakPtr physicalDevice, const DeviceCreateInfo& c
 	deviceCreateInfo.queueCreateInfoCount = static_cast<uint32_t>(_createInfo.getNumDeviceQueueCreateInfos());
 	deviceCreateInfo.pQueueCreateInfos = queueCreateInfos.get();
 
-	deviceCreateInfo.pEnabledFeatures = reinterpret_cast<const VkPhysicalDeviceFeatures*>(_createInfo.getEnabledFeatures());
+	deviceCreateInfo.pEnabledFeatures = &_createInfo.getEnabledFeatures()->get();
 
 	// Extensions
 	std::vector<const char*> enabledExtensions;
@@ -561,6 +501,7 @@ Device_::Device_(PhysicalDeviceWeakPtr physicalDevice, const DeviceCreateInfo& c
 
 	uint32_t queueFamilyIndex;
 	uint32_t queueIndex;
+	float queuePriority;
 	for (uint32_t i = 0; i < _createInfo.getNumDeviceQueueCreateInfos(); ++i)
 	{
 		queueFamilyIndex = queueCreateInfos[i].queueFamilyIndex;
@@ -571,8 +512,9 @@ Device_::Device_(PhysicalDeviceWeakPtr physicalDevice, const DeviceCreateInfo& c
 		VkQueue vkQueue;
 		for (queueIndex = 0; queueIndex < queueCreateInfos[i].queueCount; ++queueIndex)
 		{
+			queuePriority = queueCreateInfos[i].pQueuePriorities[queueIndex];
 			getVkBindings().vkGetDeviceQueue(getVkHandle(), queueFamilyIndex, queueIndex, &vkQueue);
-			_queueFamilies.back().queues[queueIndex].construct(getWeakReference(), vkQueue, queueFamProps[queueFamilyIndex].getQueueFlags(), queueFamilyIndex);
+			_queueFamilies.back().queues[queueIndex].construct(getWeakReference(), vkQueue, queueFamProps[queueFamilyIndex].getQueueFlags(), queueFamilyIndex, queuePriority);
 		}
 	}
 }

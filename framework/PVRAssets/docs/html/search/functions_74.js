@@ -1,7 +1,5 @@
 var searchData=
 [
-  ['texturedefinition',['TextureDefinition',['../structpvr_1_1assets_1_1effect_1_1_texture_definition.html#ae817e56ac172f0fc7cfcfe5e05a79ec0',1,'pvr::assets::effect::TextureDefinition::TextureDefinition()'],['../structpvr_1_1assets_1_1effect_1_1_texture_definition.html#ab64412887387519199eea963cd3b7a7a',1,'pvr::assets::effect::TextureDefinition::TextureDefinition(const StringHash &amp;name, const StringHash &amp;path, uint32_t width, uint32_t height, const ImageDataFormat &amp;fmt)']]],
-  ['textureload',['textureLoad',['../namespacepvr_1_1assets.html#a25ecfac7feab180dc4064f8f694413ee',1,'pvr::assets::textureLoad(Stream::ptr_type &amp;&amp;textureStream, TextureFileFormat type)'],['../namespacepvr_1_1assets.html#a8e735bd21c4aafcc97ece45866261d62',1,'pvr::assets::textureLoad(Stream::ptr_type &amp;textureStream, TextureFileFormat type)']]],
-  ['textureref',['TextureRef',['../structpvr_1_1assets_1_1effect_1_1_texture_ref.html#aef8a8566d4f53e41d9c1c0c49a86a291',1,'pvr::assets::effect::TextureRef::TextureRef()'],['../structpvr_1_1assets_1_1effect_1_1_texture_ref.html#a2cde30b528a0f662ba2a9eef356ac26f',1,'pvr::assets::effect::TextureRef::TextureRef(StringHash textureName, uint8_t set, uint8_t binding, StringHash variableName)']]],
+  ['texture',['Texture',['../classpvr_1_1assets_1_1_model_1_1_texture.html#a40970410ead4cc22c5350c2f42ebd666',1,'pvr::assets::Model::Texture::Texture()'],['../classpvr_1_1assets_1_1_model_1_1_texture.html#a87c535a5a6cf73bcac851bba8877f82a',1,'pvr::assets::Model::Texture::Texture(const StringHash &amp;&amp;name)']]],
   ['toworldmatrix',['toWorldMatrix',['../classpvr_1_1assets_1_1_model.html#a12448e1f020a38195dc4bc2675776064',1,'pvr::assets::Model']]]
 ];

@@ -4,23 +4,29 @@ GnomeHorde
 
 .. figure:: ./GnomeHorde.png
 
-This demo shows a very efficient technique for multithreaded command buffer generation and rendering.
+This example shows a very efficient technique for multithreaded command buffer generation and rendering.
 
 Description
 -----------
-The GnomeHorde divides its world into tiles, each containing a small number of objects.
-It uses 3 groups of threads - the Main thread, which kicks all other tasks and does the
-actual command buffer submisison (rendering), a number of Visibility threads, each of 
-which processes large groups of tiles, and a number of Tile Processing threads, each of
-which generate command buffers for a tile. Command buffers are created (when the tile has
-just become visible), recalculated (when the tile's Level Of Detail has changed) or 
-recycled (when the tile has just become nonvisible) as required.
-The communication of the threads is abstracted using Producer-Consumer Queues passing the
-coordinates of tiles as parameters.
-When all generation is done, the main thread collects all secondary command buffers and
-submits them to the GPU rendering Queue.
+The GnomeHorde example divides its world into tiles, each containing a small number of objects.
 
-APIS
+It uses three groups of threads:
+
+* the Main thread - which kicks all other tasks and performs command buffer submission (rendering)
+* a number of Visibility threads - which each process large groups of tiles
+* a number of Tile Processing threads, which each generate command buffers for a tile. 
+
+As required, command buffers are:
+
+* created when the tile has just become visible
+* recalculated when the level-of-detail (LOD) of the tile has changed 
+* recycled when the tile has just become non-visible. 
+
+The communication of the threads is abstracted using Producer-Consumer Queues passing the co-ordinates of tiles as parameters.
+
+When all generation is done, the main thread collects all secondary command buffers and submits them to the GPU rendering queue.
+
+APIs
 ----
 * Vulkan
 

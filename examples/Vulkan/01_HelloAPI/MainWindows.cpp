@@ -29,8 +29,8 @@ static LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 
 void createWin32WIndowSurface(VulkanHelloAPI& VulkanExample)
 {
-	VulkanExample.surfaceData.width = 800.0f;
-	VulkanExample.surfaceData.height = 600.0f;
+	VulkanExample.surfaceData.width = 1280.0f;
+	VulkanExample.surfaceData.height = 800.0f;
 
 	WNDCLASS win_class;
 	VulkanExample.surfaceData.connection = GetModuleHandle(NULL);
@@ -76,11 +76,11 @@ int CALLBACK WinMain(_In_ HINSTANCE hInstance, _In_ HINSTANCE, _In_ LPSTR lpCmdL
 	VulkanExample.initialize();
 	VulkanExample.recordCommandBuffer();
 
-	for (int i = 0; i < 500; ++i)
+	for (uint32_t i = 0; i < 800; ++i)
 	{
 		VulkanExample.drawFrame();
 	}
-
+	VulkanExample.deinitialize();
 	destroyWin32WindowSurface(VulkanExample);
 
 	return 0;

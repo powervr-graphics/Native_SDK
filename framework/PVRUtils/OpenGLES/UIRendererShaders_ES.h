@@ -35,5 +35,9 @@ static const char _print3DShader_glsles200_fsh[] = "uniform sampler2D fontTextur
 												   "\t{\n"
 												   "\t\tgl_FragColor = vec4(varColor * vTex);\n"
 												   "\t}\n"
+
+												   "\t#ifndef FRAMEBUFFER_SRGB\n"
+												   "\t\tgl_FragColor.rgb = pow(gl_FragColor.rgb, vec3(0.4545454545));// Gamma correction   (0.4545454545 = 1.0/ 2.2)\n"
+												   "\t#endif\n"
 												   "}\n";
 static const int _print3DShader_glsles200_fsh_size = sizeof(_print3DShader_glsles200_fsh) / sizeof(_print3DShader_glsles200_fsh[0]);

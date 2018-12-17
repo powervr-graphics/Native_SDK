@@ -15,7 +15,7 @@
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="IMGdoxygen.css" rel="stylesheet" type="text/css"/>
-<link rel="shortcut icon" href="http://www.imgtec.com/images/img.ico">
+<link rel="shortcut icon" type="image/x-icon" href="img.ico">
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
+      <a href="https://www.imgtec.com/developers/" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRShell</span> Documentation</a>
    <tbody>
@@ -65,7 +65,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Pages</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -86,101 +86,98 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="contents">
 <a href="_shell_o_s_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;</div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#pragma once</span></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#include &quot;<a class="code" href="_shell_includes_8h.html">PVRShell/ShellIncludes.h</a>&quot;</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_shell_data_8h.html">PVRShell/ShellData.h</a>&quot;</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_shell_8h.html">PVRShell/Shell.h</a>&quot;</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="keyword">namespace </span>pvr {</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="keyword">namespace </span>platform {</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="comment">// Forward declaration of internal implementation.</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="keyword">struct </span>InternalOS;</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;</div>
-<div class="line"><a name="l00019"></a><span class="lineno"><a class="line" href="classpvr_1_1platform_1_1_shell_o_s.html">   19</a></span>&#160;<span class="keyword">class </span><a class="code" href="classpvr_1_1platform_1_1_shell_o_s.html">ShellOS</a></div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;{</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00023"></a><span class="lineno"><a class="line" href="structpvr_1_1platform_1_1_shell_o_s_1_1_capabilities.html">   23</a></span>&#160;    <span class="keyword">struct </span><a class="code" href="structpvr_1_1platform_1_1_shell_o_s_1_1_capabilities.html">Capabilities</a></div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    {</div>
-<div class="line"><a name="l00025"></a><span class="lineno"><a class="line" href="structpvr_1_1platform_1_1_shell_o_s_1_1_capabilities.html#aee6cf8ed92ccb247b20575865706906d">   25</a></span>&#160;        Capability <a class="code" href="structpvr_1_1platform_1_1_shell_o_s_1_1_capabilities.html#aee6cf8ed92ccb247b20575865706906d">resizable</a>; </div>
-<div class="line"><a name="l00026"></a><span class="lineno"><a class="line" href="structpvr_1_1platform_1_1_shell_o_s_1_1_capabilities.html#aeddf4adcf512898d44b8a6723456f677">   26</a></span>&#160;        Capability <a class="code" href="structpvr_1_1platform_1_1_shell_o_s_1_1_capabilities.html#aeddf4adcf512898d44b8a6723456f677">movable</a>; </div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    };</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    <a class="code" href="structpvr_1_1platform_1_1_shell_data.html">ShellData</a> _shellData;</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    <a class="code" href="classpvr_1_1platform_1_1_shell_o_s.html">ShellOS</a>(OSApplication instance, OSDATA osdata);</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    <span class="keyword">virtual</span> ~<a class="code" href="classpvr_1_1platform_1_1_shell_o_s.html">ShellOS</a>();</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    <span class="keywordtype">bool</span> init(DisplayAttributes&amp; data); <span class="comment">// Accepts a data struct so it can overide default values</span></div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    <span class="keywordtype">bool</span> initializeWindow(DisplayAttributes&amp; data);</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    <span class="keywordtype">bool</span> isInitialized();</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    <span class="keywordtype">void</span> releaseWindow();</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    <span class="comment">// Getters</span></div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    OSApplication getApplication() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    OSDisplay getDisplay() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    OSWindow getWindow() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    <span class="keyword">const</span> std::string&amp; getDefaultReadPath() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    <span class="keyword">const</span> std::vector&lt;std::string&gt;&amp; getReadPaths() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    <span class="keyword">const</span> std::string&amp; getWritePath() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <span class="keyword">const</span> std::string&amp; getApplicationName() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    <span class="keywordtype">void</span> setApplicationName(<span class="keyword">const</span> std::string&amp;);</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    <span class="keywordtype">bool</span> handleOSEvents();</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    <span class="keyword">static</span> <span class="keyword">const</span> <a class="code" href="structpvr_1_1platform_1_1_shell_o_s_1_1_capabilities.html">Capabilities</a>&amp; getCapabilities()</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    {</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;        <span class="keywordflow">return</span> _capabilities;</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    }</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    <span class="keywordtype">bool</span> popUpMessage(<span class="keyword">const</span> <span class="keywordtype">char</span>* <span class="keyword">const</span> title, <span class="keyword">const</span> <span class="keywordtype">char</span>* <span class="keyword">const</span> message, ...) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    <a class="code" href="classpvr_1_1platform_1_1_shell.html">Shell</a>* getShell()</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    {</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;        <span class="keywordflow">return</span> _shell.get();</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    }</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    <span class="keywordtype">void</span> updatePointingDeviceLocation();</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;<span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    std::unique_ptr&lt;Shell&gt; _shell;</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    std::string _AppName;</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    std::vector&lt;std::string&gt; _ReadPaths;</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    std::string _WritePath;</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    OSApplication _instance;</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    InternalOS* _OSImplementation;</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    <span class="keyword">static</span> <span class="keyword">const</span> Capabilities _capabilities;</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;};</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;<span class="keyword">inline</span> <span class="keyword">const</span> std::string&amp; ShellOS::getApplicationName()<span class="keyword"> const</span></div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;<span class="keyword"></span>{</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    <span class="keywordflow">return</span> _AppName;</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;}</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">void</span> ShellOS::setApplicationName(<span class="keyword">const</span> std::string&amp; appName)</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;{</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;    _AppName = appName;</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;}</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;<span class="keyword">inline</span> <span class="keyword">const</span> std::string&amp; ShellOS::getDefaultReadPath()<span class="keyword"> const</span></div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;<span class="keyword"></span>{</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    assertion(_ReadPaths.size() != 0);</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    <span class="keywordflow">return</span> _ReadPaths[0];</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;}</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;<span class="keyword">inline</span> <span class="keyword">const</span> std::vector&lt;std::string&gt;&amp; ShellOS::getReadPaths()<span class="keyword"> const</span></div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;<span class="keyword"></span>{</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    <span class="keywordflow">return</span> _ReadPaths;</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;}</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;<span class="keyword">inline</span> <span class="keyword">const</span> std::string&amp; ShellOS::getWritePath()<span class="keyword"> const</span></div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;<span class="keyword"></span>{</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    <span class="keywordflow">return</span> _WritePath;</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;}</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;} <span class="comment">// namespace platform</span></div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;} <span class="comment">// namespace pvr</span></div>
-<div class="ttc" id="structpvr_1_1platform_1_1_shell_o_s_1_1_capabilities_html"><div class="ttname"><a href="structpvr_1_1platform_1_1_shell_o_s_1_1_capabilities.html">pvr::platform::ShellOS::Capabilities</a></div><div class="ttdoc">Capabilities that may be different between platforms.</div><div class="ttdef"><b>Definition:</b> ShellOS.h:23</div></div>
-<div class="ttc" id="structpvr_1_1platform_1_1_shell_o_s_1_1_capabilities_html_aeddf4adcf512898d44b8a6723456f677"><div class="ttname"><a href="structpvr_1_1platform_1_1_shell_o_s_1_1_capabilities.html#aeddf4adcf512898d44b8a6723456f677">pvr::platform::ShellOS::Capabilities::movable</a></div><div class="ttdeci">Capability movable</div><div class="ttdoc">A window with this capability can be moved while the program is running (e.g windows and X11...</div><div class="ttdef"><b>Definition:</b> ShellOS.h:26</div></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#include &quot;<a class="code" href="_shell_data_8h.html">PVRShell/ShellData.h</a>&quot;</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_shell_8h.html">PVRShell/Shell.h</a>&quot;</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno"><a class="line" href="namespacepvr.html">   11</a></span>&#160;<span class="keyword">namespace </span>pvr {</div>
+<div class="line"><a name="l00012"></a><span class="lineno"><a class="line" href="namespacepvr_1_1platform.html">   12</a></span>&#160;<span class="keyword">namespace </span>platform {</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="comment">// Forward declaration of internal implementation.</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="keyword">struct </span>InternalOS;</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;</div>
+<div class="line"><a name="l00018"></a><span class="lineno"><a class="line" href="classpvr_1_1platform_1_1_shell_o_s.html">   18</a></span>&#160;<span class="keyword">class </span><a class="code" href="classpvr_1_1platform_1_1_shell_o_s.html">ShellOS</a></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;{</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00022"></a><span class="lineno"><a class="line" href="structpvr_1_1platform_1_1_shell_o_s_1_1_capabilities.html">   22</a></span>&#160;    <span class="keyword">struct </span><a class="code" href="structpvr_1_1platform_1_1_shell_o_s_1_1_capabilities.html">Capabilities</a></div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    {</div>
+<div class="line"><a name="l00024"></a><span class="lineno"><a class="line" href="structpvr_1_1platform_1_1_shell_o_s_1_1_capabilities.html#aee6cf8ed92ccb247b20575865706906d">   24</a></span>&#160;        Capability <a class="code" href="structpvr_1_1platform_1_1_shell_o_s_1_1_capabilities.html#aee6cf8ed92ccb247b20575865706906d">resizable</a>; </div>
+<div class="line"><a name="l00025"></a><span class="lineno"><a class="line" href="structpvr_1_1platform_1_1_shell_o_s_1_1_capabilities.html#aeddf4adcf512898d44b8a6723456f677">   25</a></span>&#160;        Capability <a class="code" href="structpvr_1_1platform_1_1_shell_o_s_1_1_capabilities.html#aeddf4adcf512898d44b8a6723456f677">movable</a>; </div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    };</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    <a class="code" href="structpvr_1_1platform_1_1_shell_data.html">ShellData</a> _shellData;</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    <a class="code" href="classpvr_1_1platform_1_1_shell_o_s.html">ShellOS</a>(OSApplication instance, OSDATA osdata);</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    <span class="keyword">virtual</span> ~<a class="code" href="classpvr_1_1platform_1_1_shell_o_s.html">ShellOS</a>();</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <span class="keywordtype">bool</span> init(DisplayAttributes&amp; data); <span class="comment">// Accepts a data struct so it can overide default values</span></div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    <span class="keywordtype">bool</span> initializeWindow(DisplayAttributes&amp; data);</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    <span class="keywordtype">bool</span> isInitialized();</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    <span class="keywordtype">void</span> releaseWindow();</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    <span class="comment">// Getters</span></div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    OSApplication getApplication() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    OSDisplay getDisplay() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    OSWindow getWindow() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    <span class="keyword">const</span> std::string&amp; getDefaultReadPath() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    <span class="keyword">const</span> std::vector&lt;std::string&gt;&amp; getReadPaths() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    <span class="keyword">const</span> std::string&amp; getWritePath() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    <span class="keyword">const</span> std::string&amp; getApplicationName() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <span class="keywordtype">void</span> setApplicationName(<span class="keyword">const</span> std::string&amp;);</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    <span class="keywordtype">bool</span> handleOSEvents();</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <span class="keyword">static</span> <span class="keyword">const</span> <a class="code" href="structpvr_1_1platform_1_1_shell_o_s_1_1_capabilities.html">Capabilities</a>&amp; getCapabilities()</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    {</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;        <span class="keywordflow">return</span> _capabilities;</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    }</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    <span class="keywordtype">bool</span> popUpMessage(<span class="keyword">const</span> <span class="keywordtype">char</span>* <span class="keyword">const</span> title, <span class="keyword">const</span> <span class="keywordtype">char</span>* <span class="keyword">const</span> message, ...) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    <a class="code" href="classpvr_1_1platform_1_1_shell.html">Shell</a>* getShell()</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    {</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;        <span class="keywordflow">return</span> _shell.get();</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    }</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    <span class="keywordtype">void</span> updatePointingDeviceLocation();</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;<span class="keyword">protected</span>:</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    std::unique_ptr&lt;Shell&gt; _shell;</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    std::string _AppName;</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    std::vector&lt;std::string&gt; _ReadPaths;</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    std::string _WritePath;</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    OSApplication _instance;</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    InternalOS* _OSImplementation;</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    <span class="keyword">static</span> <span class="keyword">const</span> Capabilities _capabilities;</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;};</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;<span class="keyword">inline</span> <span class="keyword">const</span> std::string&amp; ShellOS::getApplicationName()<span class="keyword"> const</span></div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;<span class="keyword"></span>{</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    <span class="keywordflow">return</span> _AppName;</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;}</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">void</span> ShellOS::setApplicationName(<span class="keyword">const</span> std::string&amp; appName)</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;{</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    _AppName = appName;</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;}</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;<span class="keyword">inline</span> <span class="keyword">const</span> std::string&amp; ShellOS::getDefaultReadPath()<span class="keyword"> const</span></div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;<span class="keyword"></span>{</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    <span class="keywordflow">return</span> _ReadPaths[0];</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;}</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;<span class="keyword">inline</span> <span class="keyword">const</span> std::vector&lt;std::string&gt;&amp; ShellOS::getReadPaths()<span class="keyword"> const</span></div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;<span class="keyword"></span>{</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;    <span class="keywordflow">return</span> _ReadPaths;</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;}</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;<span class="keyword">inline</span> <span class="keyword">const</span> std::string&amp; ShellOS::getWritePath()<span class="keyword"> const</span></div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;<span class="keyword"></span>{</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    <span class="keywordflow">return</span> _WritePath;</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;}</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;} <span class="comment">// namespace platform</span></div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;} <span class="comment">// namespace pvr</span></div>
+<div class="ttc" id="structpvr_1_1platform_1_1_shell_o_s_1_1_capabilities_html"><div class="ttname"><a href="structpvr_1_1platform_1_1_shell_o_s_1_1_capabilities.html">pvr::platform::ShellOS::Capabilities</a></div><div class="ttdoc">Capabilities that may be different between platforms.</div><div class="ttdef"><b>Definition:</b> ShellOS.h:22</div></div>
+<div class="ttc" id="structpvr_1_1platform_1_1_shell_o_s_1_1_capabilities_html_aeddf4adcf512898d44b8a6723456f677"><div class="ttname"><a href="structpvr_1_1platform_1_1_shell_o_s_1_1_capabilities.html#aeddf4adcf512898d44b8a6723456f677">pvr::platform::ShellOS::Capabilities::movable</a></div><div class="ttdeci">Capability movable</div><div class="ttdoc">A window with this capability can be moved while the program is running (e.g windows and X11...</div><div class="ttdef"><b>Definition:</b> ShellOS.h:25</div></div>
 <div class="ttc" id="_shell_data_8h_html"><div class="ttname"><a href="_shell_data_8h.html">ShellData.h</a></div><div class="ttdoc">Class containing internal data of the PowerVR Shell. </div></div>
-<div class="ttc" id="structpvr_1_1platform_1_1_shell_data_html"><div class="ttname"><a href="structpvr_1_1platform_1_1_shell_data.html">pvr::platform::ShellData</a></div><div class="ttdoc">Internal. Contains and tracks internal data necessary to power the pvr::Shell.</div><div class="ttdef"><b>Definition:</b> ShellData.h:27</div></div>
-<div class="ttc" id="classpvr_1_1platform_1_1_shell_html"><div class="ttname"><a href="classpvr_1_1platform_1_1_shell.html">pvr::platform::Shell</a></div><div class="ttdoc">The PowerVR Shell (pvr::Shell) is the main class that the user will inherit his application from...</div><div class="ttdef"><b>Definition:</b> Shell.h:193</div></div>
-<div class="ttc" id="classpvr_1_1platform_1_1_shell_o_s_html"><div class="ttname"><a href="classpvr_1_1platform_1_1_shell_o_s.html">pvr::platform::ShellOS</a></div><div class="ttdoc">Internal class Implements a lot of the functionality and forwards to the platform from PVRShell...</div><div class="ttdef"><b>Definition:</b> ShellOS.h:19</div></div>
-<div class="ttc" id="structpvr_1_1platform_1_1_shell_o_s_1_1_capabilities_html_aee6cf8ed92ccb247b20575865706906d"><div class="ttname"><a href="structpvr_1_1platform_1_1_shell_o_s_1_1_capabilities.html#aee6cf8ed92ccb247b20575865706906d">pvr::platform::ShellOS::Capabilities::resizable</a></div><div class="ttdeci">Capability resizable</div><div class="ttdoc">A window with this capability can be resized while the program is running (e.g windows, X11, but not Android) </div><div class="ttdef"><b>Definition:</b> ShellOS.h:25</div></div>
+<div class="ttc" id="structpvr_1_1platform_1_1_shell_data_html"><div class="ttname"><a href="structpvr_1_1platform_1_1_shell_data.html">pvr::platform::ShellData</a></div><div class="ttdoc">Internal. Contains and tracks internal data necessary to power the pvr::Shell.</div><div class="ttdef"><b>Definition:</b> ShellData.h:29</div></div>
+<div class="ttc" id="classpvr_1_1platform_1_1_shell_html"><div class="ttname"><a href="classpvr_1_1platform_1_1_shell.html">pvr::platform::Shell</a></div><div class="ttdoc">The PowerVR Shell (pvr::Shell) is the main class that the user will inherit his application from...</div><div class="ttdef"><b>Definition:</b> Shell.h:198</div></div>
+<div class="ttc" id="classpvr_1_1platform_1_1_shell_o_s_html"><div class="ttname"><a href="classpvr_1_1platform_1_1_shell_o_s.html">pvr::platform::ShellOS</a></div><div class="ttdoc">Internal class Implements a lot of the functionality and forwards to the platform from PVRShell...</div><div class="ttdef"><b>Definition:</b> ShellOS.h:18</div></div>
+<div class="ttc" id="structpvr_1_1platform_1_1_shell_o_s_1_1_capabilities_html_aee6cf8ed92ccb247b20575865706906d"><div class="ttname"><a href="structpvr_1_1platform_1_1_shell_o_s_1_1_capabilities.html#aee6cf8ed92ccb247b20575865706906d">pvr::platform::ShellOS::Capabilities::resizable</a></div><div class="ttdeci">Capability resizable</div><div class="ttdoc">A window with this capability can be resized while the program is running (e.g windows, X11, but not Android) </div><div class="ttdef"><b>Definition:</b> ShellOS.h:24</div></div>
 <div class="ttc" id="_shell_8h_html"><div class="ttname"><a href="_shell_8h.html">Shell.h</a></div><div class="ttdoc">Contains the all-important pvr::Shell class that the user will be inheriting from for his application...</div></div>
-<div class="ttc" id="_shell_includes_8h_html"><div class="ttname"><a href="_shell_includes_8h.html">ShellIncludes.h</a></div><div class="ttdoc">Typical includes that most PVRShell application files will require. Include PVRShell.h instead to use the pvr::Shell. </div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.4-->
 <!-- start footer part (NON TREEVIEW ONLY!!) -->

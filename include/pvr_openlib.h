@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <cstring>
+#include <cstdio>
 
 #if defined(__linux__) || defined(__ANDROID__) || defined(__QNXNTO__) || defined(__APPLE__)
 #include <unistd.h>
@@ -247,7 +248,7 @@ inline pvr::lib::LIBTYPE OpenLibrary(const char* pszPath)
 	pvr::lib::LIBTYPE hostLib = OpenFramework(pszPath);
 	if (!hostLib)
 	{
-		Log_Error("Could not load§ host library '%s'", pszPath);
+		Log_Error("Could not load host library '%s'", pszPath);
 	}
 	Log_Info("Host library '%s' loaded", pszPath);
 	return hostLib;
@@ -338,7 +339,7 @@ inline void* getLibraryFunction(pvr::lib::LIBTYPE hostLib, const char* pszName)
 	}
 	return nullptr;
 }
-}
+} // namespace internal
 } // namespace pvr
 #elif defined(ANDROID)
 
@@ -405,7 +406,7 @@ PtrType_ inline getLibFunctionChecked(pvr::lib::LIBTYPE hostLib, const std::stri
 	PtrType_ func = getLibFunction<PtrType_>(hostLib, functionName);
 	if (!func)
 	{
-		Log_Error("Failed to load function [%s] from library '%s'.\n", functionName.c_str(), libraryName.c_str());
+		Log_Warning("Failed to load function [%s] from library '%s'.\n", functionName.c_str(), libraryName.c_str());
 	}
 	return func;
 }

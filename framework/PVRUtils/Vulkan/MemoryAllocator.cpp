@@ -150,7 +150,7 @@ size_t Pool_::makeAllocationsLost()
 
 Pool_::Pool_(const PoolCreateInfo& createInfo) : _vmaPool(VK_NULL_HANDLE)
 {
-	pvrvk::impl::vkThrowIfError((pvrvk::Result)vmaCreatePool(_allocator->_vmaAllocator, (VmaPoolCreateInfo*)&createInfo, &_vmaPool), "Failed to create Memory Pool");
+	pvrvk::impl::vkThrowIfError((pvrvk::Result)vmaCreatePool(_allocator->_vmaAllocator, &(VmaPoolCreateInfo&)createInfo, &_vmaPool), "Failed to create Memory Pool");
 }
 
 void Pool_::destroyObject()
@@ -164,7 +164,7 @@ void Pool_::destroyObject()
 PoolStats Pool_::getStats() const
 {
 	PoolStats stats;
-	vmaGetPoolStats(_allocator->_vmaAllocator, _vmaPool, reinterpret_cast<VmaPoolStats*>(&stats));
+	vmaGetPoolStats(_allocator->_vmaAllocator, _vmaPool, &(VmaPoolStats&)stats);
 	return stats;
 }
 
@@ -209,9 +209,9 @@ Allocation_::~Allocation_()
 	_vkHandle = VK_NULL_HANDLE;
 }
 
-void Allocation_::map(void** mappedMemory, VkDeviceSize offset, VkDeviceSize size)
+void* Allocation_::map(VkDeviceSize offset, VkDeviceSize size, pvrvk::MemoryMapFlags memoryMapFlags)
 {
-	offset += getOffset();
+	size_t total_offset = offset + getOffset();
 	if (!isMappable())
 	{
 		throw pvrvk::ErrorMemoryMapFailed("Cannot map memory block as the memory was created without "
@@ -223,31 +223,31 @@ void Allocation_::map(void** mappedMemory, VkDeviceSize offset, VkDeviceSize siz
 	}
 	if (size != VK_WHOLE_SIZE)
 	{
-		if ((offset + size) > (offset + _allocInfo.size))
+		if ((total_offset + size) > (total_offset + _allocInfo.size))
 		{
-			// throw VkErrorValidationFailedEXT("Cannot map map memory block 0x%ullx"
-			//    " - Attempting to map offset (0x%ullx) + size (0x%ullx) range greater than the memory block size", getVkHandle(), offset, size);
 			throw pvrvk::ErrorMemoryMapFailed("Cannot map map memory block : offset + size range greater than the memory block size");
 		}
 	}
 
-	pvrvk::impl::vkThrowIfFailed((pvrvk::Result)vmaMapMemory(_memAllocator->_vmaAllocator, _vmaAllocation, mappedMemory), "Failed to map memory block");
+	void* mappedMemory = nullptr;
+
+	pvrvk::impl::vkThrowIfFailed((pvrvk::Result)vmaMapMemory(_memAllocator->_vmaAllocator, _vmaAllocation, &mappedMemory), "Failed to map memory block");
 
 	if (mappedMemory == 0)
 	{
 		throw pvrvk::ErrorMemoryMapFailed("Failed to map memory block");
 	}
 
-	mappedMemory += offset;
-
 	// store the mapped offset and mapped size
 	_mappedOffset = offset;
 	_mappedSize = size;
+	mappedMemory = ((char*)mappedMemory + offset);
+	return mappedMemory;
 }
 
 bool Allocation_::isAllocationLost() const
 {
-	if ((int)(_createFlags & AllocationCreateFlags::e_CAN_BECOME_LOST_BIT) != 0)
+	if (static_cast<uint32_t>(_createFlags & AllocationCreateFlags::e_CAN_BECOME_LOST_BIT) != 0)
 	{
 		updateAllocationInfo();
 	}
@@ -361,6 +361,8 @@ pvr::utils::vma::impl::Allocator_::Allocator_(const AllocatorCreateInfo& createI
 		deviceBindings.vkFreeMemory,
 		deviceBindings.vkMapMemory,
 		deviceBindings.vkUnmapMemory,
+		deviceBindings.vkFlushMappedMemoryRanges,
+		deviceBindings.vkInvalidateMappedMemoryRanges,
 		deviceBindings.vkBindBufferMemory,
 		deviceBindings.vkBindImageMemory,
 		deviceBindings.vkGetBufferMemoryRequirements,
@@ -380,7 +382,7 @@ pvr::utils::vma::impl::Allocator_::Allocator_(const AllocatorCreateInfo& createI
 		_deviceMemCallbacks = *createInfo.pDeviceMemoryCallbacks;
 	}
 	const VmaAllocatorCreateInfo vmaCreateInfo{ static_cast<VmaAllocatorCreateFlags>(createInfo.flags), _device->getPhysicalDevice()->getVkHandle(), _device->getVkHandle(),
-		createInfo.preferredLargeHeapBlockSize, reinterpret_cast<const VkAllocationCallbacks*>(createInfo.pAllocationCallbacks), &vmaDeviceMemCallbacks, createInfo.frameInUseCount,
+		createInfo.preferredLargeHeapBlockSize, (const VkAllocationCallbacks*)createInfo.pAllocationCallbacks, &vmaDeviceMemCallbacks, createInfo.frameInUseCount,
 		createInfo.pHeapSizeLimit, &vmaFunctions };
 	_reportFlags = createInfo.reportFlags;
 	pvrvk::impl::vkThrowIfFailed(::VkResult(vmaCreateAllocator(&vmaCreateInfo, &_vmaAllocator)), "Failed to create memory allocator");

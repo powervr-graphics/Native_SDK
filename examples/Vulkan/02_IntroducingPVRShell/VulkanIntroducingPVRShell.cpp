@@ -426,7 +426,6 @@ inline uint32_t getMemoryTypeIndexHelper(const VkPhysicalDeviceMemoryProperties&
 /// <param name="optimalMemoryProperties">An optimal st of memory property flags to use for the memory allocation.</param>
 /// <param name="outMemoryTypeIndex">The memory type index used for allocating the memory.</param>
 /// <param name="outMemoryPropertyFlags">The memory property flags actually used when allocating the memory.</param>
-/// <returns>The memory type index found supporting the specified VkMemoryPropertyFlags.</returns>
 inline void getMemoryTypeIndex(const VkPhysicalDeviceMemoryProperties& deviceMemProps, const uint32_t allowedMemoryTypeBits, const VkMemoryPropertyFlags requiredMemoryProperties,
 	const VkMemoryPropertyFlags optimalMemoryProperties, uint32_t& outMemoryTypeIndex, VkMemoryPropertyFlags& outMemoryPropertyFlags)
 {
@@ -490,8 +489,13 @@ inline VkImageAspectFlags formatToImageAspect(VkFormat format)
 
 // Filenames for the SPIR-V shader file binaries used in this demo
 // Note that the binaries are precompiled using the "recompile script" included alongside the demo (recompile.sh/recompile.bat)
-const char* VertShaderName = "VertShader_vk.spv";
-const char* FragShaderName = "FragShader_vk.spv";
+const char* VertShaderName = "VertShader.vsh.spv";
+const char* FragShaderName = "FragShader.fsh.spv";
+
+enum
+{
+	MAX_SWAPCHAIN_IMAGES = 4
+};
 
 /// <summary>VulkanIntroducingPVRShell is the main demo class implementing the pvr::Shell functionality required for rendering to the screen.
 /// The PowerVR shell handles all OS specific initialisation code, and is extremely convenient for writing portable applications. It also has several built in
@@ -526,7 +530,7 @@ class VulkanIntroducingPVRShell : public pvr::Shell
 	std::vector<std::string> _enabledLayerNames;
 
 	// Stores the set of created Debug Report Callbacks which provide a mechanism for the Vulkan layers and the implementation to call back to the application.
-	pvr::Multi<VkDebugReportCallbackEXT> _debugReportCallbacks;
+	VkDebugReportCallbackEXT _debugReportCallbacks[MAX_SWAPCHAIN_IMAGES];
 
 	// A physical device usually corresponding to a single device in the system
 	VkPhysicalDevice _physicalDevice;
@@ -550,10 +554,10 @@ class VulkanIntroducingPVRShell : public pvr::Shell
 	VkFormat _swapchainColorFormat;
 
 	// The set of images used for presenting images via the implementation's presentation engine
-	pvr::Multi<VkImage> _swapchainImages;
+	VkImage _swapchainImages[MAX_SWAPCHAIN_IMAGES];
 
 	// A set of VkImageViews used so the swapchain images can be used as framebuffer attachments
-	pvr::Multi<VkImageView> _swapchainImageViews;
+	VkImageView _swapchainImageViews[MAX_SWAPCHAIN_IMAGES];
 
 	// The logical device representing a logical connection to an underlying physical device
 	VkDevice _device;
@@ -603,22 +607,22 @@ class VulkanIntroducingPVRShell : public pvr::Shell
 	VkRenderPass _renderPass;
 
 	// The framebuffer specifies a set of attachments used by the renderpass.
-	pvr::Multi<VkFramebuffer> _framebuffers;
+	VkFramebuffer _framebuffers[MAX_SWAPCHAIN_IMAGES];
 	// The depth stencil images and views used for rendering.
-	pvr::Multi<VkImage> _depthStencilImages;
-	pvr::Multi<VkImageView> _depthStencilImageViews;
+	VkImage _depthStencilImages[MAX_SWAPCHAIN_IMAGES];
+	VkImageView _depthStencilImageViews[MAX_SWAPCHAIN_IMAGES];
 
 	// The format of the depth stencil images.
 	VkFormat _depthStencilFormat;
 
 	// The memory backing for the depth stencil images.
-	pvr::Multi<VkDeviceMemory> _depthStencilImageMemory;
+	VkDeviceMemory _depthStencilImageMemory[MAX_SWAPCHAIN_IMAGES];
 
 	// Synchronisation primitives used for specifying dependencies and ordering during rendering frames.
-	pvr::Multi<VkSemaphore> _imageAcquireSemaphores;
-	pvr::Multi<VkSemaphore> _presentationSemaphores;
-	pvr::Multi<VkFence> _perFrameAcquisitionFences;
-	pvr::Multi<VkFence> _perFrameCommandBufferFences;
+	VkSemaphore _imageAcquireSemaphores[MAX_SWAPCHAIN_IMAGES];
+	VkSemaphore _presentationSemaphores[MAX_SWAPCHAIN_IMAGES];
+	VkFence _perFrameAcquisitionFences[MAX_SWAPCHAIN_IMAGES];
+	VkFence _perFrameCommandBufferFences[MAX_SWAPCHAIN_IMAGES];
 
 	// The queue to which various command buffers will be submitted to.
 	VkQueue _queue;
@@ -640,7 +644,7 @@ class VulkanIntroducingPVRShell : public pvr::Shell
 	VkCommandPool _commandPool;
 
 	// The commands buffers to which commands are rendered. The commands can then be submitted together.
-	pvr::Multi<VkCommandBuffer> _commandBuffers;
+	VkCommandBuffer _commandBuffers[MAX_SWAPCHAIN_IMAGES];
 
 	// The layout specifying the descriptors used by the graphics pipeline.
 	VkPipelineLayout _pipelineLayout;
@@ -722,22 +726,17 @@ public:
 	void createPipelineLayout();
 	void createBufferAndMemory(VkDeviceSize size, VkBufferUsageFlags usageFlags, VkMemoryPropertyFlags requiredMemFlags, VkMemoryPropertyFlags optimalMemFlags, VkBuffer& outBuffer,
 		VkDeviceMemory& outMemory, VkMemoryPropertyFlags& outMemFlags);
-	int32_t getCompatibleQueueFamily();
+	uint32_t getCompatibleQueueFamily();
 
 	/// <summary>Default constructor for VulkanIntroducingPVRShell used to initialise the variables used throughout the demo.</summary>
 	VulkanIntroducingPVRShell()
 		: // Vulkan resource handles
-		  _instance(VK_NULL_HANDLE), _debugReportCallbacks(VK_NULL_HANDLE), _physicalDevice(VK_NULL_HANDLE), _surface(VK_NULL_HANDLE), _swapchain(VK_NULL_HANDLE),
-		  _device(VK_NULL_HANDLE), _vbo(VK_NULL_HANDLE), _vboMemory(VK_NULL_HANDLE), _modelViewProjectionMemory(VK_NULL_HANDLE), _modelViewProjectionBuffer(VK_NULL_HANDLE),
-		  _descriptorPool(VK_NULL_HANDLE), _renderPass(VK_NULL_HANDLE), _queue(VK_NULL_HANDLE), _pipelineLayout(VK_NULL_HANDLE), _graphicsPipeline(VK_NULL_HANDLE),
-		  _commandPool(VK_NULL_HANDLE), _pipelineCache(VK_NULL_HANDLE), _staticDescriptorSetLayout(VK_NULL_HANDLE), _dynamicDescriptorSetLayout(VK_NULL_HANDLE),
-		  _staticDescriptorSet(VK_NULL_HANDLE), _dynamicDescriptorSet(VK_NULL_HANDLE), _triangleImage(VK_NULL_HANDLE), _triangleImageView(VK_NULL_HANDLE),
-		  _triangleImageMemory(VK_NULL_HANDLE), _bilinearSampler(VK_NULL_HANDLE), _vertexShaderModule(VK_NULL_HANDLE), _fragmentShaderModule(VK_NULL_HANDLE),
-
-		  // per swapchain Vulkan resource handles
-		  _swapchainImages(VK_NULL_HANDLE), _swapchainImageViews(VK_NULL_HANDLE), _framebuffers(VK_NULL_HANDLE), _depthStencilImages(VK_NULL_HANDLE),
-		  _depthStencilImageMemory(VK_NULL_HANDLE), _depthStencilImageViews(VK_NULL_HANDLE), _imageAcquireSemaphores(VK_NULL_HANDLE), _presentationSemaphores(VK_NULL_HANDLE),
-		  _perFrameAcquisitionFences(VK_NULL_HANDLE), _perFrameCommandBufferFences(VK_NULL_HANDLE), _commandBuffers(VK_NULL_HANDLE),
+		  _instance(VK_NULL_HANDLE), _physicalDevice(VK_NULL_HANDLE), _surface(VK_NULL_HANDLE), _swapchain(VK_NULL_HANDLE), _device(VK_NULL_HANDLE), _vbo(VK_NULL_HANDLE),
+		  _vboMemory(VK_NULL_HANDLE), _modelViewProjectionMemory(VK_NULL_HANDLE), _modelViewProjectionBuffer(VK_NULL_HANDLE), _descriptorPool(VK_NULL_HANDLE),
+		  _renderPass(VK_NULL_HANDLE), _queue(VK_NULL_HANDLE), _pipelineLayout(VK_NULL_HANDLE), _graphicsPipeline(VK_NULL_HANDLE), _commandPool(VK_NULL_HANDLE),
+		  _pipelineCache(VK_NULL_HANDLE), _staticDescriptorSetLayout(VK_NULL_HANDLE), _dynamicDescriptorSetLayout(VK_NULL_HANDLE), _staticDescriptorSet(VK_NULL_HANDLE),
+		  _dynamicDescriptorSet(VK_NULL_HANDLE), _triangleImage(VK_NULL_HANDLE), _triangleImageView(VK_NULL_HANDLE), _triangleImageMemory(VK_NULL_HANDLE),
+		  _bilinearSampler(VK_NULL_HANDLE), _vertexShaderModule(VK_NULL_HANDLE), _fragmentShaderModule(VK_NULL_HANDLE),
 
 		  // initialise variables used for animation
 		  _modelMatrix(glm::mat4(1)), _viewProjectionMatrix(glm::mat4(1)), _rotationAngle(45.0f),
@@ -747,7 +746,24 @@ public:
 		  _currentFrameIndex(0), _swapchainLength(0), _swapchainColorFormat(VK_FORMAT_UNDEFINED), _depthStencilFormat(VK_FORMAT_UNDEFINED),
 		  _triangleImageFormat(VK_FORMAT_UNDEFINED), _swapchainIndex(-1), _viewport(), _scissor(), _vboStride(-1), _graphicsQueueFamilyIndex(-1),
 		  _modelViewProjectionBufferSize(-1), _dynamicBufferAlignedSize(-1), _textureDimensions(), _textureData(0), _modelViewProjectionMappedMemory(0), _numDebugCallbacks(0)
-	{}
+	{
+		for (uint32_t i = 0; i < MAX_SWAPCHAIN_IMAGES; ++i)
+		{
+			// per swapchain Vulkan resource handles
+			_swapchainImages[i] = VK_NULL_HANDLE;
+			_swapchainImageViews[i] = VK_NULL_HANDLE;
+			_framebuffers[i] = VK_NULL_HANDLE;
+			_depthStencilImages[i] = VK_NULL_HANDLE;
+			_depthStencilImageMemory[i] = VK_NULL_HANDLE;
+			_depthStencilImageViews[i] = VK_NULL_HANDLE;
+			_imageAcquireSemaphores[i] = VK_NULL_HANDLE;
+			_presentationSemaphores[i] = VK_NULL_HANDLE;
+			_perFrameAcquisitionFences[i] = VK_NULL_HANDLE;
+			_perFrameCommandBufferFences[i] = VK_NULL_HANDLE;
+			_commandBuffers[i] = VK_NULL_HANDLE;
+			_debugReportCallbacks[i] = VK_NULL_HANDLE;
+		}
+	}
 };
 
 /// <summary>Code in initApplication() will be called by Shell once per run, before the rendering context is created.
@@ -756,8 +772,12 @@ public:
 /// <returns>Result::Success if no error occurred.</returns>
 pvr::Result VulkanIntroducingPVRShell::initApplication()
 {
-	// We are using a very simple orthographic projection that will make the window coordinates to be -1 bottom, 1 top, and "square", i.e. corrected
-	// for the aspect ratio. This means that the horizontal coordinates of the screen will be -aspect_ratio for left, aspect_ratio right.
+	setBackBufferColorspace(pvr::ColorSpace::lRGB);
+	// Here we are setting the backbuffer colorspace value to lRGB for simplicity: We are working directly with the "final" sRGB
+	// values in our textures and passing the values through.
+	// Note, the default for PVRShell is sRGB: when doing anything but the most simplistic effects, you will need to
+	// work with linear values in the shaders and then either perform gamma correction in the shader, or (if supported)
+	// use an sRGB framebuffer (which performs this correction automatically).
 	return pvr::Result::Success;
 }
 
@@ -797,11 +817,11 @@ pvr::Result VulkanIntroducingPVRShell::initView()
 	// the screen is rotated
 	if (isScreenRotated())
 	{
-		aspect = (float)getHeight() / (float)getWidth();
+		aspect = static_cast<float>(getHeight()) / static_cast<float>(getWidth());
 	}
 	else
 	{
-		aspect = (float)getWidth() / (float)getHeight();
+		aspect = static_cast<float>(getWidth()) / static_cast<float>(getHeight());
 	}
 
 	_viewProjectionMatrix = pvr::math::ortho(pvr::Api::Vulkan, aspect, -aspect, -1.f, 1.f);
@@ -1187,6 +1207,31 @@ void VulkanIntroducingPVRShell::createInstance()
 		throw pvr::PvrError("Unable to initialise Vulkan.");
 	}
 
+	uint32_t major = -1;
+	uint32_t minor = -1;
+	uint32_t patch = -1;
+
+	// If a valid function pointer for vkEnumerateInstanceVersion cannot be retrieved then Vulkan only 1.0 is supported by the implementation otherwise we can use
+	// vkEnumerateInstanceVersion to determine the api version supported.
+	if (_vkBindings.vkEnumerateInstanceVersion)
+	{
+		uint32_t supportedApiVersion;
+		_vkBindings.vkEnumerateInstanceVersion(&supportedApiVersion);
+
+		major = VK_VERSION_MAJOR(supportedApiVersion);
+		minor = VK_VERSION_MINOR(supportedApiVersion);
+		patch = VK_VERSION_PATCH(supportedApiVersion);
+
+		Log(LogLevel::Information, "The function pointer for 'vkEnumerateInstanceVersion' was valid. Supported instance version: ([%d].[%d].[%d]).", major, minor, patch);
+	}
+	else
+	{
+		major = 1;
+		minor = 0;
+		patch = 0;
+		Log(LogLevel::Information, "Could not find a function pointer for 'vkEnumerateInstanceVersion'. Setting instance version to: ([%d].[%d].[%d]).", major, minor, patch);
+	}
+
 	// Fill in the application info structure which can help an implementation recognise behaviour inherent to various classes of applications
 	VkApplicationInfo appInfo = {};
 	appInfo.pApplicationName = "VulkanIntroducingPVRShell";
@@ -1194,7 +1239,7 @@ void VulkanIntroducingPVRShell::createInstance()
 	appInfo.engineVersion = 1;
 	appInfo.pEngineName = "VulkanIntroducingPVRShell";
 	appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-	appInfo.apiVersion = VK_MAKE_VERSION(1, 0, 0);
+	appInfo.apiVersion = VK_MAKE_VERSION(major, minor, patch);
 
 	// Retrieve a list of supported instance extensions and filter them based on a set of requested instance extension to be enabled.
 	uint32_t numExtensions = 0;
@@ -1228,7 +1273,7 @@ void VulkanIntroducingPVRShell::createInstance()
 
 	bool requestedStdValidation = false;
 	bool supportsStdValidation = false;
-	int stdValidationRequiredIndex = -1;
+	uint32_t stdValidationRequiredIndex = -1;
 
 	for (uint32_t i = 0; i < ARRAY_SIZE(Layers::InstanceLayers); ++i)
 	{
@@ -1250,7 +1295,7 @@ void VulkanIntroducingPVRShell::createInstance()
 
 		if (!supportsStdValidation)
 		{
-			for (uint32_t i = 0; stdValidationRequiredIndex == -1 && i < layerProps.size(); ++i)
+			for (uint32_t i = 0; stdValidationRequiredIndex == static_cast<uint32_t>(-1) && i < layerProps.size(); ++i)
 			{
 				if (!strcmp(Layers::InstanceLayers[i].c_str(), "VK_LAYER_LUNARG_standard_validation"))
 				{
@@ -1567,7 +1612,7 @@ void VulkanIntroducingPVRShell::createSurface(void* display, void* window)
 }
 
 /// <summary>Get the compatible queue families from the device selected.</summary>
-int32_t VulkanIntroducingPVRShell::getCompatibleQueueFamily()
+uint32_t VulkanIntroducingPVRShell::getCompatibleQueueFamily()
 {
 	// Attempts to retrieve a queue family which supports both graphics and presentation for the given application surface. This application has been
 	// written in such a way which requires that the graphics and presentation queue families match.
@@ -1679,13 +1724,9 @@ void VulkanIntroducingPVRShell::createLogicalDevice()
 	// First query for the supported set of physical device features.
 	VkPhysicalDeviceFeatures deviceFeatures;
 	_instanceVkFunctions.vkGetPhysicalDeviceFeatures(_physicalDevice, &deviceFeatures);
-	// We disable robustBufferAccess unless the application is being run in debug mode with robustBufferAccess specifying whether accesses to buffers are bounds - checked against
-	// the range of the buffer descriptor. Enabling robustBufferAccess in debug mode provides additional robustness and validation above and beyond that of the validation layers.
-#ifdef DEBUG
-	deviceFeatures.robustBufferAccess = true;
-#else
+
+	// Ensure that robustBufferAccess is disabled
 	deviceFeatures.robustBufferAccess = false;
-#endif
 
 	deviceInfo.pEnabledFeatures = &deviceFeatures;
 
@@ -1848,7 +1889,7 @@ void VulkanIntroducingPVRShell::createSwapchain()
 
 	bool foundFormat = false;
 
-	for (unsigned int i = 0; i < surfaceFormats.size() && !foundFormat; ++i)
+	for (uint32_t i = 0; i < surfaceFormats.size() && !foundFormat; ++i)
 	{
 		for (uint32_t j = 0; j < numPreferredColorFormats; ++j)
 		{
@@ -2207,7 +2248,7 @@ void VulkanIntroducingPVRShell::recordCommandBuffers()
 	commandBufferBeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
 	// Specify the clear values used by the RenderPass for clearing the specified framebuffer attachments
-	VkClearValue clearVals[2] = { 0 };
+	VkClearValue clearVals[2] = { { 0 } };
 	clearVals[0].color.float32[0] = 0.00f;
 	clearVals[0].color.float32[1] = 0.70f;
 	clearVals[0].color.float32[2] = .67f;
@@ -2357,7 +2398,7 @@ void VulkanIntroducingPVRShell::createPipeline()
 	vertexInputBindingDescription.stride = _vboStride;
 
 	// The VkVertexInputAttributeDescription structure specifies the structure of a particular vertex attribute (position, normal, uvs etc.).
-	VkVertexInputAttributeDescription vertexInputAttributeDescription[3];
+	VkVertexInputAttributeDescription vertexInputAttributeDescription[2];
 	vertexInputAttributeDescription[0].binding = 0;
 	vertexInputAttributeDescription[0].format = VK_FORMAT_R32G32B32A32_SFLOAT;
 	vertexInputAttributeDescription[0].location = 0;
@@ -2796,7 +2837,7 @@ void VulkanIntroducingPVRShell::allocateDescriptorSets()
 	VkDescriptorImageInfo descriptorImageInfo = {};
 	descriptorImageInfo.sampler = _bilinearSampler;
 	descriptorImageInfo.imageView = _triangleImageView;
-	descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_PREINITIALIZED;
+	descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
 	// Fill the VkWriteDescriptorSet structures relating to the descriptors to use in the static descriptor set
 	{
@@ -3414,7 +3455,7 @@ void VulkanIntroducingPVRShell::createSynchronisationPrimitives()
 }
 
 /// <summary>This function must be implemented by the user of the shell. The user should return its pvr::Shell object defining the behaviour of the application.</summary>
-/// <returns>Return a unique ptr to the demo supplied by the user.</param>
+/// <returns>Return a unique ptr to the demo supplied by the user.</returns>
 std::unique_ptr<pvr::Shell> pvr::newDemo()
 {
 	return std::unique_ptr<pvr::Shell>(new VulkanIntroducingPVRShell());

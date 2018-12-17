@@ -15,7 +15,7 @@
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="IMGdoxygen.css" rel="stylesheet" type="text/css"/>
-<link rel="shortcut icon" href="http://www.imgtec.com/images/img.ico">
+<link rel="shortcut icon" type="image/x-icon" href="img.ico">
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
+      <a href="https://www.imgtec.com/developers/" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRAssets</span> Documentation</a>
    <tbody>
@@ -103,9 +103,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a02291db7745f60a6e690199bea3e7f7e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_camera.html#a02291db7745f60a6e690199bea3e7f7e">getFar</a> () const </td></tr>
 <tr class="memdesc:a02291db7745f60a6e690199bea3e7f7e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the far clipping plane distance. <a href="#a02291db7745f60a6e690199bea3e7f7e">More...</a><br/></td></tr>
 <tr class="separator:a02291db7745f60a6e690199bea3e7f7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a936db138226ed80b754a85add7a9c8a1"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_camera.html#a936db138226ed80b754a85add7a9c8a1">getFOV</a> (uint32_t frame=0, float interp=0) const </td></tr>
-<tr class="memdesc:a936db138226ed80b754a85add7a9c8a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get field of view for a specific frame (in radians). Interpolates between frames. The interpolation point is between <em>frame</em> and <em>frame</em> +1, with factor <em>interp.</em>  <a href="#a936db138226ed80b754a85add7a9c8a1">More...</a><br/></td></tr>
-<tr class="separator:a936db138226ed80b754a85add7a9c8a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a27306841fd24db8a345314bc4b88ae3e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_camera.html#a27306841fd24db8a345314bc4b88ae3e">getFOV</a> (float timeInMs=0) const </td></tr>
+<tr class="memdesc:a27306841fd24db8a345314bc4b88ae3e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get field of view for a specific frame (in radians). Interpolates between frames. The interpolation point is between <em>frame</em> and <em>frame</em> +1, with factor <em>interp.</em>  <a href="#a27306841fd24db8a345314bc4b88ae3e">More...</a><br/></td></tr>
+<tr class="separator:a27306841fd24db8a345314bc4b88ae3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6eb1a2ab1debef4a31e6cdeb41930582"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structpvr_1_1assets_1_1_camera_1_1_internal_data.html">InternalData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_camera.html#a6eb1a2ab1debef4a31e6cdeb41930582">getInternalData</a> ()</td></tr>
 <tr class="memdesc:a6eb1a2ab1debef4a31e6cdeb41930582"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a reference to the internal data of this object. Handle with care. <a href="#a6eb1a2ab1debef4a31e6cdeb41930582">More...</a><br/></td></tr>
 <tr class="separator:a6eb1a2ab1debef4a31e6cdeb41930582"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -124,9 +124,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aff8c6f03c3e4ca94ff397fe13c33271e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_camera.html#aff8c6f03c3e4ca94ff397fe13c33271e">setFOV</a> (float fov)</td></tr>
 <tr class="memdesc:aff8c6f03c3e4ca94ff397fe13c33271e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set field of view (Radians) <a href="#aff8c6f03c3e4ca94ff397fe13c33271e">More...</a><br/></td></tr>
 <tr class="separator:aff8c6f03c3e4ca94ff397fe13c33271e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac334f23d675834d29b9d2e48ae60bd39"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_camera.html#ac334f23d675834d29b9d2e48ae60bd39">setFOV</a> (uint32_t numFrames, const float *fovs)</td></tr>
-<tr class="memdesc:ac334f23d675834d29b9d2e48ae60bd39"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set a field of view animation for a number of frame. <a href="#ac334f23d675834d29b9d2e48ae60bd39">More...</a><br/></td></tr>
-<tr class="separator:ac334f23d675834d29b9d2e48ae60bd39"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8993f0d4e0997422b04a07c569e0ac07"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_camera.html#a8993f0d4e0997422b04a07c569e0ac07">setFOV</a> (uint32_t numFrames, const float *fovs, const float *timeInSec)</td></tr>
+<tr class="memdesc:a8993f0d4e0997422b04a07c569e0ac07"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set a field of view animation for a number of frame. <a href="#a8993f0d4e0997422b04a07c569e0ac07">More...</a><br/></td></tr>
+<tr class="separator:a8993f0d4e0997422b04a07c569e0ac07"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5d1388be53c005dc0360daf01036f9ca"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_camera.html#a5d1388be53c005dc0360daf01036f9ca">setNear</a> (float nearClip)</td></tr>
 <tr class="memdesc:a5d1388be53c005dc0360daf01036f9ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the near clipping plane distance. <a href="#a5d1388be53c005dc0360daf01036f9ca">More...</a><br/></td></tr>
 <tr class="separator:a5d1388be53c005dc0360daf01036f9ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -163,26 +163,16 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a936db138226ed80b754a85add7a9c8a1"></a>
+<a class="anchor" id="a27306841fd24db8a345314bc4b88ae3e"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">float pvr::assets::Camera::getFOV </td>
           <td>(</td>
-          <td class="paramtype">uint32_t&#160;</td>
-          <td class="paramname"><em>frame</em> = <code>0</code>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
           <td class="paramtype">float&#160;</td>
-          <td class="paramname"><em>interp</em> = <code>0</code>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td> const</td>
+          <td class="paramname"><em>timeInMs</em> = <code>0</code></td><td>)</td>
+          <td> const</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -359,7 +349,7 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="ac334f23d675834d29b9d2e48ae60bd39"></a>
+<a class="anchor" id="a8993f0d4e0997422b04a07c569e0ac07"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -373,7 +363,13 @@ Public Member Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const float *&#160;</td>
-          <td class="paramname"><em>fovs</em>&#160;</td>
+          <td class="paramname"><em>fovs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const float *&#160;</td>
+          <td class="paramname"><em>timeInSec</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -459,7 +455,7 @@ Public Member Functions</h2></td></tr>
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>/usr/buildxl/buildroot/sdk/branch/SDK/framework/PVRAssets/Model/<a class="el" href="_camera_8h_source.html">Camera.h</a></li>
+<li>/usr/buildxl/buildroot/sdk/branch/SDK/framework/PVRAssets/model/<a class="el" href="_camera_8h_source.html">Camera.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.4-->

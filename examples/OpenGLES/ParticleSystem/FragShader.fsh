@@ -1,14 +1,21 @@
 #version 300 es
 
-in highp vec3 vNormal;
-in highp vec3 vLightDirection;
+in mediump vec3 vNormal;
+in mediump vec3 vLightDirection;
 
-layout (location = 0) out lowp vec4 oColor;
+layout(location = 0) out mediump vec4 oColor;
 
 void main()
 {
-	highp float inv_lightdist = 1.0 / length(vLightDirection);
-	highp float diffuse = max(dot(normalize(vNormal), vLightDirection * inv_lightdist), 0.0);
+	mediump float lightdist = length(vLightDirection);
+	mediump float inv_lightdist = 1.0 / (lightdist * lightdist) ;
+	mediump float diffuse = max(dot(normalize(vNormal), vLightDirection), 0.0);
 	
-	oColor = vec4(vec3(diffuse) * inv_lightdist * 20.0, 1.0);
+	mediump float color = diffuse * inv_lightdist;
+
+#ifndef FRAMEBUFFER_SRGB
+	color = pow(color, 0.4545454545);
+#endif	
+
+	oColor = vec4(vec3(color), 1.0);
 }

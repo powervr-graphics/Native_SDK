@@ -1,6 +1,6 @@
 #version 300 es
 
-uniform sampler2D sTexture;
+uniform mediump sampler2D sTexture;
 
 uniform mediump vec3 viewLightDirection;
 uniform mediump vec3 albedoModulation;
@@ -17,9 +17,9 @@ uniform mediump float reflectivity;
 in mediump vec3 viewNormal;
 in mediump vec2 texCoord;
 
-layout (location = 0) out lowp vec4 oColor;
+layout(location = 0) out mediump vec4 oColor;
 
-const mediump float Ambient = 0.25;
+const mediump float Ambient = 0.125;
 const mediump vec3 viewDirection = vec3(0.57735, 0.57735, -0.57735);
 
 void main()
@@ -54,7 +54,7 @@ void main()
 		// Most metallic: Specular Color = albedo color
 		// Most un-metallic: Specular Color = white
 
-		mediump	float specularIntensity = max(pow(v_dot_r, specularExponent) * reflectivity, 0.0);
+		mediump float specularIntensity = max(pow(v_dot_r, specularExponent) * reflectivity, 0.0);
 
 		// metallic/specular factor
 		mediump float metallicSpecularIntensity = metallicity * specularIntensity;
@@ -63,6 +63,8 @@ void main()
 		mediump vec3 specularColor = vec3(plasticSpecularIntensity) + metallicSpecularIntensity * albedo;
 		color += specularColor;
 	}
-
+#ifndef FRAMEBUFFER_SRGB
+	color = pow(color, vec3(0.4545454545)); // Gamma correction
+#endif
 	oColor = vec4(color, 1.0);
 }

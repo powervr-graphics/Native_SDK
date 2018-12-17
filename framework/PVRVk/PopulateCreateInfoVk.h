@@ -80,7 +80,7 @@ inline void convert(VkViewport& vkvp, const Viewport& vp)
 }
 
 //!\cond NO_DOXYGEN
-inline void populateShaderInfo(const VkShaderModule& shader, pvrvk::ShaderStageFlags vkShaderStage, VkSpecializationInfo& specializationInfo, char* specializationInfoData,
+inline void populateShaderInfo(const VkShaderModule& shader, pvrvk::ShaderStageFlags vkShaderStage, VkSpecializationInfo& specializationInfo, unsigned char* specializationInfoData,
 	const ShaderConstantInfo* shaderConsts, uint32_t shaderConstCount, VkSpecializationMapEntry* mapEntries, VkPipelineShaderStageCreateInfo& outShader, const char* entryPoint)
 {
 	// caculate the number of size in bytes required.
@@ -139,12 +139,12 @@ private:
 	VkViewport _viewports[FrameworkCaps::MaxViewportRegions];
 	VkDynamicState dynamicStates[FrameworkCaps::MaxDynamicStates];
 	VkSpecializationInfo specializationInfos[FrameworkCaps::MaxSpecialisationInfos];
-	char specializationInfoData[FrameworkCaps::MaxSpecialisationInfos][FrameworkCaps::MaxSpecialisationInfoDataSize];
+	unsigned char specializationInfoData[FrameworkCaps::MaxSpecialisationInfos][FrameworkCaps::MaxSpecialisationInfoDataSize];
 	VkSpecializationMapEntry specilizationEntries[FrameworkCaps::MaxSpecialisationInfos][FrameworkCaps::MaxSpecialisationMapEntries];
 
 public:
 	/// <summary>Default constructor</summary>
-	GraphicsPipelinePopulate(){}
+	GraphicsPipelinePopulate() {}
 
 	/// <summary>Returns the underlying vulkan object</summary>
 	/// <returns>The vulkan object</returns>
@@ -249,7 +249,7 @@ public:
 			assertion(val.getInputBindings().size() <= FrameworkCaps::MaxVertexBindings);
 			for (uint32_t i = 0; i < val.getInputBindings().size(); i++)
 			{
-				convert(_vkVertexBindings[i], *val.getInputBinding(i));
+				convert(_vkVertexBindings[i], val.getInputBindingByIndex(i));
 			}
 			_vertexInput.vertexBindingDescriptionCount = static_cast<uint32_t>(val.getInputBindings().size());
 			_vertexInput.pVertexBindingDescriptions = static_cast<uint32_t>(val.getInputBindings().size()) == 0u ? nullptr : &_vkVertexBindings[0];
@@ -343,7 +343,7 @@ public:
 			for (uint32_t i = 0; i < gpcp.viewport.getNumViewportScissors(); ++i)
 			{
 				convert(_viewports[i], gpcp.viewport.getViewport(i));
-				_scissors[i] = *reinterpret_cast<const VkRect2D*>(&gpcp.viewport.getScissor(i));
+				_scissors[i] = gpcp.viewport.getScissor(i).get();
 			}
 
 			// viewport-scissor
@@ -451,7 +451,7 @@ struct ComputePipelinePopulate
 	VkSpecializationInfo specializationInfos;
 
 	/// <summary>Specialization data</summary>
-	char specializationInfoData[FrameworkCaps::MaxSpecialisationInfoDataSize];
+	unsigned char specializationInfoData[FrameworkCaps::MaxSpecialisationInfoDataSize];
 
 	/// <summary>Specialization entry mappings</summary>
 	VkSpecializationMapEntry specilizationEntries[FrameworkCaps::MaxSpecialisationMapEntries];

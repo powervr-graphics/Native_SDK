@@ -15,7 +15,7 @@
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="IMGdoxygen.css" rel="stylesheet" type="text/css"/>
-<link rel="shortcut icon" href="http://www.imgtec.com/images/img.ico">
+<link rel="shortcut icon" type="image/x-icon" href="img.ico">
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
+      <a href="https://www.imgtec.com/developers/" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRCore</span> Documentation</a>
    <tbody>
@@ -91,13 +91,13 @@ Overview</h1>
 <p>PVRCore is a collection of supporting code for the PowerVR Framework. Code using other modules of the Framework should link with PVRCore. An example of code that can be found in PVRCore: </p>
 <ul>
 <li>
-Utility classes and specialized data structures used by the Framework (<span class="code"><a class="el" href="_ring_buffer_8h.html" title="Contains a RingBuffer data structure implementation. ">RingBuffer.h</a></span>, <span class="code"><a class="el" href="_contiguous_map_8h.html" title="Contains a map implementation based on contiguous storage, optimised for retrieval and iteration...">ContiguousMap.h</a></span>) </li>
+Utility classes and specialized data structures used by the Framework (<span class="code">RingBuffer.h</span>, <span class="code">ContiguousMap.h</span>) </li>
 <li>
 The main Smart Pointer class used by the Framework (<span class="code"><a class="el" href="_ref_counted_8h.html" title="A smart pointer implementation very close to the spec of std::shared_ptr but with some differences an...">RefCounted.h</a></span>) </li>
 <li>
-Data streams (e.g. <span class="code"><a class="el" href="_file_stream_8h.html" title="Streams that are created from files. ">FileStream.h</a></span>, <span class="code"><a class="el" href="_buffer_stream_8h.html" title="A Stream wrapping a block of memory. ">BufferStream.h</a></span>) </li>
+Data streams (e.g. <span class="code"><a class="el" href="_file_stream_8h.html" title="Streams that are created from files. ">FileStream.h</a></span>, <span class="code"><a class="el" href="_buffer_stream_8h_source.html">BufferStream.h</a></span>) </li>
 <li>
-Logging and error reporting (<span class="code"><a class="el" href="_log_8h.html" title="This file contains the Multi&lt;T&gt; class template, which is the usual container for objects that must be...">Log.h</a></span>) </li>
+Logging and error reporting (<span class="code"><a class="el" href="_log_8h.html" title="This file contains Logging functionality. ">Log.h</a></span>) </li>
 <li>
 Special math (projection matrix calculations, bounding boxes, shadow volumes) </li>
 </ul>
@@ -130,14 +130,10 @@ Otherwise, include <span class="code">Framework/PVRCore/PVRCore.h</span> or the 
 </ul>
 <h1><a class="anchor" id="code"></a>
 Code Examples</h1>
-<div class="fragment"><div class="line"><a class="code" href="classpvr_1_1_file_stream.html">pvr::FileStream</a> myTexture(“BodyNormalMap.pvr”);</div>
+<div class="fragment"><div class="line"><a class="code" href="classpvr_1_1_file_stream.html">pvr::FileStream</a> myTexture(<span class="stringliteral">&quot;BodyNormalMap.pvr&quot;</span>);</div>
 <div class="line"><a class="code" href="classpvr_1_1_buffer_stream.html">pvr::BufferStream</a> myTexture(myTextureInMemory);</div>
-</div><!-- fragment --><p>Everything that deals with file/asset data uses streams. Also check <span class="code">WindowsResourceStream</span>, <span class="code">AndroidAssetStream</span></p>
-<div class="fragment"><div class="line">pvr::Logger myLog;</div>
-<div class="line">myLog.setMessenger(myCustomFileLoggingMessenger);</div>
-<div class="line">myLog(“I am logging <span class="keyword">this</span> in my custom logger”);</div>
-<div class="line"><a class="code" href="_log_8h.html#a49209d4079b083831638df881b307b68">Log</a>(Log::Verbose, “Usually I will just be <span class="keyword">using</span> the global PowerVR <a class="code" href="_log_8h.html#a49209d4079b083831638df881b307b68">Log</a> <span class="keyword">function</span>. Nobody likes globals, except <span class="keywordflow">for</span> logging…”);</div>
-</div><!-- fragment --> </div></div><!-- contents -->
+</div><!-- fragment --><p>Everything that deals with file/asset data uses streams. Also check <span class="code">WindowsResourceStream</span>, <span class="code">AndroidAssetStream</span> </p>
+</div></div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.4-->
 <!-- start footer part (NON TREEVIEW ONLY!!) -->
 <!--BEGIN GENERATE_TREEVIEW-->

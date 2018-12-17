@@ -3,8 +3,8 @@
 #define POSITION_ARRAY	0
 #define LIFESPAN_ARRAY	1
 
-layout (location = POSITION_ARRAY) in highp vec3  inPosition;
-layout (location = LIFESPAN_ARRAY) in highp float inLifespan;
+layout(location = POSITION_ARRAY) in highp vec3 inPosition;
+layout(location = LIFESPAN_ARRAY) in mediump float inLifespan;
 
 uniform highp mat4 uModelViewProjectionMatrix;
 

@@ -113,7 +113,7 @@ DescriptorSetLayout_::DescriptorSetLayout_(const DeviceWeakPtr& device, const De
 		}
 	}
 	vkLayoutCreateInfo.sType = static_cast<VkStructureType>(StructureType::e_DESCRIPTOR_SET_LAYOUT_CREATE_INFO);
-	vkLayoutCreateInfo.bindingCount = (uint32_t)getCreateInfo().getNumBindings();
+	vkLayoutCreateInfo.bindingCount = static_cast<uint32_t>(getCreateInfo().getNumBindings());
 	vkLayoutCreateInfo.pBindings = vkBindings.get();
 	vkThrowIfFailed(_device->getVkBindings().vkCreateDescriptorSetLayout(_device->getVkHandle(), &vkLayoutCreateInfo, nullptr, &_vkHandle), "Create Descriptor Set Layout failed");
 }

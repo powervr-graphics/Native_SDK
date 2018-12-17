@@ -6,9 +6,7 @@
 */
 #pragma once
 #include "PVRAssets/Model.h"
-#include "PVRAssets/FileIO/PODReader.h"
-#include "PVRAssets/FileIO/PFXParser.h"
-#include "PVRAssets/TextureLoad.h"
+#include "PVRAssets/fileio/PODReader.h"
 #include "PVRAssets/Helper.h"
 
 /*****************************************************************************/

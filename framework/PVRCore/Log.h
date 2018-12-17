@@ -6,17 +6,21 @@
 */
 #ifndef _PVR_LOG_H
 #define _PVR_LOG_H
+#pragma once
+
 #include <string>
 #include <assert.h>
-#pragma once
 #include <cstdlib>
 #include <cstdarg>
 #include <cstring>
 #include <cstdio>
+#include "PVRCore/Errors.h"
 
 #if defined(_WIN32)
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
+#endif
+#ifndef NOMINMAX
 #define NOMINMAX
 #endif
 #include <Windows.h>
@@ -48,8 +52,6 @@ static const int messageTypes[] = { _SLOG_DEBUG1, _SLOG_DEBUG1, _SLOG_INFO, _SLO
 static const char* messageTypes[] = { "VERBOSE: ", "DEBUG: ", "INFORMATION: ", "WARNING: ", "ERROR: ", "CRITICAL: ", "PERFORMANCE: " };
 #endif
 
-#include "PVRCore/Base/Types.h"
-
 //!\cond NO_DOXYGEN
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR) || defined(__ANDROID__)
 #define PVR_PLATFORM_IS_MOBILE 1
@@ -57,56 +59,6 @@ static const char* messageTypes[] = { "VERBOSE: ", "DEBUG: ", "INFORMATION: ", "
 #define PVR_PLATFORM_IS_DESKTOP 1
 #endif
 //!\endcond
-
-/// <summary>Checks whether a debugger can be found for the current running process (on Windows and Linux only).
-/// The prescene of a debugger can be used to provide additional helpful functionality for debugging application issues one of which could be to break in the
-/// debugger when an exception is thrown. Being able to have the debugger break on such a thrown exception provides by far the most seamless and constructive environment for
-/// fixing an issue causing the exception to be thrown due to the full state and stack trace being present at the point in which the issue has occurred rather
-/// than relying on error logic handling.</summary>
-/// <returns>True if a debugger can be found for the current running process else False.</returns>
-inline bool isDebuggerPresent()
-{
-	// only check once for whether the debugger is present as this may not be efficient to determine
-	static bool isUsingDebugger = false;
-	static bool haveCheckedForDebugger = false;
-	if (!haveCheckedForDebugger)
-	{
-#if defined(_MSC_VER)
-		if (IsDebuggerPresent())
-		{
-			isUsingDebugger = true;
-		}
-#elif defined(__linux__)
-		// reference implementation taken from: https://stackoverflow.com/a/24969863
-		char buf[1024];
-
-		int status_fd = open("/proc/self/status", O_RDONLY);
-		if (status_fd == -1)
-		{
-			isUsingDebugger = false;
-		}
-		else
-		{
-			ssize_t num_read = read(status_fd, buf, sizeof(buf) - 1);
-			if (num_read > 0)
-			{
-				static const char TracerPid[] = "TracerPid:";
-				char* tracer_pid;
-
-				buf[num_read] = 0;
-				tracer_pid = strstr(buf, TracerPid);
-				if (tracer_pid)
-				{
-					isUsingDebugger = !!atoi(tracer_pid + sizeof(TracerPid) - 1);
-				}
-			}
-		}
-#endif
-		haveCheckedForDebugger = true;
-	}
-
-	return isUsingDebugger;
-}
 
 /// <summary>Enumerates possible severities from Critical down to Debug.</summary>
 enum class LogLevel
@@ -255,9 +207,9 @@ public:
 #if defined(__ANDROID__)
 			// Note: There may be issues displaying 64bits values with this function
 			// Note: This function will truncate long messages
-			__android_log_vprint(messageTypes[(int)severity], "com.powervr.Example", formatString, argumentList);
+			__android_log_vprint(messageTypes[static_cast<uint32_t>(severity)], "com.powervr.Example", formatString, argumentList);
 #elif defined(__QNXNTO__)
-			vslogf(1, messageTypes[(int)severity], formatString, argumentList);
+			vslogf(1, messageTypes[static_cast<uint32_t>(severity)], formatString, argumentList);
 #else // Not android Not QNX
 			static char buffer[4096];
 			va_list tempList;
@@ -340,47 +292,12 @@ inline void Log(const char* formatString, ...)
 	va_end(argumentList);
 }
 
-/// <summary>If supported on the platform, makes the debugger break at this line. Used for Assertions on Visual Studio</summary>
-inline void debuggerBreak()
-{
-	if (isDebuggerPresent())
-	{
-#if defined(__linux__)
-		{
-			raise(SIGTRAP);
-		}
-#elif defined(_MSC_VER)
-		__debugbreak();
-#endif
-	}
-}
-
-namespace pvr {
-inline PvrError::PvrError(std::string message) : std::runtime_error(message)
-{
-	debuggerBreak();
-}
-} // namespace pvr
-
-/// <summary>If condition is false, logs a critical error, debug breaks if possible, and - on debug builds - throws an assertion.
-/// If you wish to completely compile it out on release, use the macro debug_assertion.</summary>
-/// <param name="condition">Pass the condition to assert here. If true, nothing happens. If false, asserts</param>
-/// <param name="message">The message that will be logged if the asserted condition is false.</param>
-inline void assertion(bool condition, const std::string& message)
-{
-	if (!condition)
-	{
-		Log(LogLevel::Critical, ("ASSERTION FAILED: " + message).c_str());
-		debuggerBreak();
-		assert(0);
-	}
-}
 //!\cond NO_DOXYGEN
 // clang-format off
 #define SLASH(s) /##s
 #define COMMENT SLASH(/)
-	// clang-format on
-	//!\endcond
+// clang-format on
+//!\endcond
 
 #ifdef DEBUG
 /// <summary>Logs a debug message using the default logger. Compiled out on release</summary>
@@ -392,27 +309,6 @@ inline void assertion(bool condition, const std::string& message)
 #define DebugLog(message) void(0)
 #endif
 
-#ifdef DEBUG
-/// <summary>An assertion that gets completely compiled out in release  builds.
-/// Anything inside a macro will be removed, so you may want to put expensive
-/// operations for the assert directly here.</summary>
-/// <param name="condition">Pass the condition to assert here. Is completely compiled out in release, so this
-/// can be taken advantage of by doing potentially expensive operations inline in the function call.</param>
-/// <param name="message">The message that will be logged if the asserted condition is false. Is completely
-/// compiled out in release, so thiscan be taken advantage of by doing potentially expensive operations
-/// such as building the message string inline here.</param>
-#define debug_assertion(condition, message) assertion(condition, message)
-#else
-/// <summary>An assertion that gets completely compiled out in release  builds.
-/// Anything inside a macro will be removed, so you may want to put expensive
-/// operations for the assert directly here.</summary>
-/// <param name="condition">Pass the condition to assert here. Is completely compiled out in release, so this
-/// can be taken advantage of by doing potentially expensive operations inline in the function call.</param>
-/// <param name="message">The message that will be logged if the asserted condition is false. Is completely
-/// compiled out in release, so thiscan be taken advantage of by doing potentially expensive operations
-/// such as building the message string inline here.</param>
-#define debug_assertion(condition, message) ((void)0)
-#endif
 #ifdef DEBUG
 /// <summary>In debug builds only, log a warning if the condition is false.</summary>
 /// <param name="condition">Pass the condition to assert here. If true, nothing happens. If false, log warning.</param>
@@ -459,4 +355,40 @@ inline void assertion(bool condition)
 {
 	assertion(condition, "");
 }
+
+#ifdef DEBUG
+/// <summary>An assertion that gets completely compiled out in release  builds.
+/// Anything inside a macro will be removed, so you may want to put expensive
+/// operations for the assert directly here.</summary>
+/// <param name="condition">Pass the condition to assert here. Is completely compiled out in release, so this
+/// can be taken advantage of by doing potentially expensive operations inline in the function call.</param>
+/// <param name="message">The message that will be logged if the asserted condition is false. Is completely
+/// compiled out in release, so thiscan be taken advantage of by doing potentially expensive operations
+/// such as building the message string inline here.</param>
+#define debug_assertion(condition, message) assertion(condition, message)
+#else
+/// <summary>An assertion that gets completely compiled out in release  builds.
+/// Anything inside a macro will be removed, so you may want to put expensive
+/// operations for the assert directly here.</summary>
+/// <param name="condition">Pass the condition to assert here. Is completely compiled out in release, so this
+/// can be taken advantage of by doing potentially expensive operations inline in the function call.</param>
+/// <param name="message">The message that will be logged if the asserted condition is false. Is completely
+/// compiled out in release, so thiscan be taken advantage of by doing potentially expensive operations
+/// such as building the message string inline here.</param>
+#define debug_assertion(condition, message) ((void)0)
+#endif
+/// <summary>If condition is false, logs a critical error, debug breaks if possible, and - on debug builds - throws an assertion.
+/// If you wish to completely compile it out on release, use the macro debug_assertion.</summary>
+/// <param name="condition">Pass the condition to assert here. If true, nothing happens. If false, asserts</param>
+/// <param name="message">The message that will be logged if the asserted condition is false.</param>
+inline void assertion(bool condition, const std::string& message)
+{
+	if (!condition)
+	{
+		Log(LogLevel::Critical, ("ASSERTION FAILED: " + message).c_str());
+		debuggerBreak();
+		assert(0);
+	}
+}
+
 #endif

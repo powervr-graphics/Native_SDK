@@ -1,10 +1,8 @@
 #version 310 es
 
-precision highp float;
+in highp vec3 inVertex;
 
-in vec3 inVertex;
-
-uniform mat4 MVPMatrix;
+uniform highp mat4 MVPMatrix;
 
 void main()
 {

@@ -5,7 +5,7 @@
 \copyright Copyright (c) Imagination Technologies Limited.
 */
 #include "PVRShell/OS/ShellOS.h"
-#include "PVRCore/IO/FilePath.h"
+#include "PVRCore/stream/FilePath.h"
 #include "PVRCore/Log.h"
 
 #include <android_native_app_glue.h>

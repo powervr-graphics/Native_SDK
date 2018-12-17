@@ -3,7 +3,6 @@ var searchData=
   ['shell_2ecpp',['Shell.cpp',['../_shell_8cpp.html',1,'']]],
   ['shell_2eh',['Shell.h',['../_shell_8h.html',1,'']]],
   ['shelldata_2eh',['ShellData.h',['../_shell_data_8h.html',1,'']]],
-  ['shellincludes_2eh',['ShellIncludes.h',['../_shell_includes_8h.html',1,'']]],
   ['shellos_2ecpp',['ShellOS.cpp',['../_d_r_m_2_shell_o_s_8cpp.html',1,'']]],
   ['shellos_2ecpp',['ShellOS.cpp',['../_null_w_s_2_shell_o_s_8cpp.html',1,'']]],
   ['shellos_2ecpp',['ShellOS.cpp',['../_q_n_x_null_w_s_2_shell_o_s_8cpp.html',1,'']]],

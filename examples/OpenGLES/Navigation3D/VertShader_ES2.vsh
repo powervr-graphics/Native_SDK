@@ -1,12 +1,12 @@
-attribute highp vec3	myVertex;
+attribute highp vec3 myVertex;
 
 uniform highp mat4 transform;
-uniform lowp vec4 myColour;
+uniform mediump vec4 myColor;
 
-varying lowp vec4 fragColour;
+varying mediump vec4 fragColor;
 
 void main(void)
 {
 	gl_Position = transform * vec4(myVertex, 1.0);
-	fragColour = myColour;
+	fragColor = myColor;
 }

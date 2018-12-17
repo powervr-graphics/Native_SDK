@@ -10,10 +10,10 @@
 
 #ifdef VK_USE_PLATFORM_XLIB_KHR
 
-SurfaceData createXLIBWIndowSurface(VulkanHelloAPI& VulkanExample)
+void createXLIBWIndowSurface(VulkanHelloAPI& VulkanExample)
 {
-	VulkanExample.surfaceData.width = 800.0f;
-	VulkanExample.surfaceData.height = 600.0f;
+	VulkanExample.surfaceData.width = 1280.0f;
+	VulkanExample.surfaceData.height = 800.0f;
 	VulkanExample.surfaceData.display = XOpenDisplay(0);
 
 	if (VulkanExample.surfaceData.display != nullptr)
@@ -71,8 +71,6 @@ SurfaceData createXLIBWIndowSurface(VulkanHelloAPI& VulkanExample)
 		// Setup the window manager protocols to handle window deletion events
 		Atom windowManagerDelete = XInternAtom(VulkanExample.surfaceData.display, "WM_DELETE_WINDOW", True);
 		XSetWMProtocols(VulkanExample.surfaceData.display, VulkanExample.surfaceData.window, &windowManagerDelete, 1);
-
-        // return SurfaceData(WinWidth, WinHeight, display, window);
 	}
 }
 
@@ -83,7 +81,7 @@ int main(int /*argc*/, char** /*argv*/)
 	VulkanExample.initialize();
 	VulkanExample.recordCommandBuffer();
 
-    for (int i = 0; i < 800; ++i)
+    for (uint32_t i = 0; i < 800; ++i)
 	{
         // Check for messages from the windowing system.
 		int numberOfMessages = XPending(VulkanExample.surfaceData.display);

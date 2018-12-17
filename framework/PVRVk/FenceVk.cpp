@@ -10,12 +10,13 @@
 
 namespace pvrvk {
 namespace impl {
-Fence_::Fence_(const DeviceWeakPtr& device, FenceCreateFlags fenceCreateFlags) : DeviceObjectHandle(device), DeviceObjectDebugMarker(DebugReportObjectTypeEXT::e_FENCE_EXT)
+Fence_::Fence_(const DeviceWeakPtr& device, const FenceCreateInfo& createInfo)
+	: DeviceObjectHandle(device), DeviceObjectDebugMarker(DebugReportObjectTypeEXT::e_FENCE_EXT), _createInfo(createInfo)
 {
-	VkFenceCreateInfo nfo = {};
-	nfo.sType = static_cast<VkStructureType>(StructureType::e_FENCE_CREATE_INFO);
-	nfo.flags = static_cast<VkFenceCreateFlags>(fenceCreateFlags);
-	vkThrowIfFailed(_device->getVkBindings().vkCreateFence(_device->getVkHandle(), &nfo, NULL, &_vkHandle), "Fence::failed to create Fence object");
+	VkFenceCreateInfo vkCreateInfo = {};
+	vkCreateInfo.sType = static_cast<VkStructureType>(StructureType::e_FENCE_CREATE_INFO);
+	vkCreateInfo.flags = static_cast<VkFenceCreateFlags>(createInfo.getFlags());
+	vkThrowIfFailed(_device->getVkBindings().vkCreateFence(_device->getVkHandle(), &vkCreateInfo, NULL, &_vkHandle), "Failed to create Fence");
 }
 
 Fence_::~Fence_()

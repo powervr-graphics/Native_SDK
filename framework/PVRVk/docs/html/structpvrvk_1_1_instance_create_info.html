@@ -15,7 +15,7 @@
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="IMGdoxygen.css" rel="stylesheet" type="text/css"/>
-<link rel="shortcut icon" href="http://www.imgtec.com/images/img.ico">
+<link rel="shortcut icon" type="image/x-icon" href="img.ico">
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
+      <a href="https://www.imgtec.com/developers/" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRVk</span> Documentation</a>
    <tbody>
@@ -96,9 +96,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a1247468b832c9e48b6cae073364e7378"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_instance_create_info.html#a1247468b832c9e48b6cae073364e7378">InstanceCreateInfo</a> ()</td></tr>
 <tr class="memdesc:a1247468b832c9e48b6cae073364e7378"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor. Default initialised to 0 <a href="#a1247468b832c9e48b6cae073364e7378">More...</a><br/></td></tr>
 <tr class="separator:a1247468b832c9e48b6cae073364e7378"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a77345bd3ce76afa9748ef025842b8ec2"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_instance_create_info.html#a77345bd3ce76afa9748ef025842b8ec2">InstanceCreateInfo</a> (const <a class="el" href="structpvrvk_1_1_application_info.html">ApplicationInfo</a> *applicationInfo, InstanceCreateFlags flags=InstanceCreateFlags::e_NONE)</td></tr>
-<tr class="memdesc:a77345bd3ce76afa9748ef025842b8ec2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor <a href="#a77345bd3ce76afa9748ef025842b8ec2">More...</a><br/></td></tr>
-<tr class="separator:a77345bd3ce76afa9748ef025842b8ec2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aea0b8ea79bb44707ae39e65bc6816f83"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_instance_create_info.html#aea0b8ea79bb44707ae39e65bc6816f83">InstanceCreateInfo</a> (const <a class="el" href="structpvrvk_1_1_application_info.html">ApplicationInfo</a> *applicationInfo, const std::vector&lt; std::string &gt; &amp;enabledExtensionNames=std::vector&lt; std::string &gt;(), const std::vector&lt; std::string &gt; &amp;enabledLayerNames=std::vector&lt; std::string &gt;(), InstanceCreateFlags flags=InstanceCreateFlags::e_NONE)</td></tr>
+<tr class="memdesc:aea0b8ea79bb44707ae39e65bc6816f83"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor <a href="#aea0b8ea79bb44707ae39e65bc6816f83">More...</a><br/></td></tr>
+<tr class="separator:aea0b8ea79bb44707ae39e65bc6816f83"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a60c30838a3a5eb2be84f0860df3c84b0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_instance_create_info.html#a60c30838a3a5eb2be84f0860df3c84b0">addEnabledExtension</a> (const std::string &amp;extensionName)</td></tr>
 <tr class="memdesc:a60c30838a3a5eb2be84f0860df3c84b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a new instance extension to the list of extensions to enable <a href="#a60c30838a3a5eb2be84f0860df3c84b0">More...</a><br/></td></tr>
 <tr class="separator:a60c30838a3a5eb2be84f0860df3c84b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -176,7 +176,7 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a77345bd3ce76afa9748ef025842b8ec2"></a>
+<a class="anchor" id="aea0b8ea79bb44707ae39e65bc6816f83"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -192,6 +192,18 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">const std::vector&lt; std::string &gt; &amp;&#160;</td>
+          <td class="paramname"><em>enabledExtensionNames</em> = <code>std::vector&lt;std::string&gt;()</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; std::string &gt; &amp;&#160;</td>
+          <td class="paramname"><em>enabledLayerNames</em> = <code>std::vector&lt;std::string&gt;()</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">InstanceCreateFlags&#160;</td>
           <td class="paramname"><em>flags</em> = <code>InstanceCreateFlags::e_NONE</code>&#160;</td>
         </tr>
@@ -203,7 +215,7 @@ Public Member Functions</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">explicit</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -212,6 +224,8 @@ Public Member Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">applicationInfo</td><td>A pointer to an application info structure</td></tr>
+    <tr><td class="paramname">enabledExtensionNames</td><td>A set of extensions to enable</td></tr>
+    <tr><td class="paramname">enabledLayerNames</td><td>A set of layers to enable</td></tr>
     <tr><td class="paramname">flags</td><td>A set of InstanceCreateFlags to use</td></tr>
   </table>
   </dd>

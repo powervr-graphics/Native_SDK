@@ -7,7 +7,7 @@
 #pragma once
 
 #include "PVRShell/StateMachine.h"
-#include "PVRShell/CommandLine.h"
+#include "PVRCore/commandline/CommandLine.h"
 
 #import <UIKit/UIApplication.h>
 #import <Foundation/NSTimer.h>

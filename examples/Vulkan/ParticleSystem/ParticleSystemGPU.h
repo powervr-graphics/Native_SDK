@@ -8,9 +8,9 @@
 #pragma once
 
 #include "PVRShell/PVRShell.h"
-#include "PVRCore/Strings/StringHash.h"
+#include "PVRCore/strings/StringHash.h"
 #include "PVRUtils/PVRUtilsVk.h"
-const char* const ComputeShaderFileName = "ParticleSolver_vk.csh.spv";
+const char* const ComputeShaderFileName = "ParticleSolver.csh.spv";
 const uint32_t NumBuffers(2);
 const uint32_t MaxSwapChains = uint32_t(pvrvk::FrameworkCaps::MaxSwapChains);
 // The particle structure will be kept packed. We will have to be careful with strides
@@ -58,7 +58,7 @@ struct Emitter
 	float fHeight; // float
 	float fRadius; // float
 	Emitter(const glm::mat4& trans, float height, float radius) : mTransformation(trans), fHeight(height), fRadius(radius) {}
-	Emitter() {}
+	Emitter() : mTransformation(1.0f), fHeight(0.0f), fRadius(0.0f) {}
 };
 
 const pvr::utils::StructuredMemoryDescription ParticleConfigViewMapping("ParticleConfig", 1,
@@ -92,7 +92,7 @@ struct ParticleConfig
 	float fTotalTime;
 	// size of the 1st element of an array, so we must upload
 	// enough data for it to be a multiple of vec4(i.e. 4floats/16 bytes : 25->28)
-	ParticleConfig() {}
+	ParticleConfig() : vG(glm::vec3(0.0f)), fDt(0.0f), fTotalTime(0.0f) {}
 
 	void updateBufferView(pvr::utils::StructuredBufferView& view, pvrvk::Buffer& buffer, uint32_t swapidx)
 	{
@@ -118,7 +118,7 @@ public:
 	~ParticleSystemGPU();
 
 	void init(uint32_t maxParticles, const Sphere* spheres, uint32_t numSpheres, pvrvk::Device& device, pvrvk::CommandPool& commandPool, pvrvk::DescriptorPool& descriptorPool,
-		uint32_t numSwapchains, pvr::utils::vma::Allocator allocator);
+		uint32_t numSwapchains, pvr::utils::vma::Allocator& allocator, pvrvk::PipelineCache& pipelineCache);
 
 	void updateUniforms(uint32_t swapchain, float dt);
 	void setNumberOfParticles(uint32_t numParticles, pvrvk::Queue& queue, pvr::utils::vma::Allocator allocator);
@@ -128,7 +128,7 @@ public:
 	}
 	void setEmitter(const Emitter& emitter);
 	void setGravity(const glm::vec3& g);
-	unsigned int getWorkGroupSize(void) const
+	uint32_t getWorkGroupSize() const
 	{
 		return workgroupSize;
 	}
@@ -145,7 +145,7 @@ public:
 	}
 
 private:
-	void createComputePipeline();
+	void createComputePipeline(pvrvk::PipelineCache& pipelineCache);
 
 	enum BufferBindingPoint
 	{
@@ -161,7 +161,6 @@ private:
 	// SIMULATION DATA
 	glm::vec3 gravity;
 	uint32_t numParticles;
-	uint32_t maxWorkgroupSize;
 	uint32_t workgroupSize;
 	uint32_t numSpheres;
 	uint32_t swapchainLength;

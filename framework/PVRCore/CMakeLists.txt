@@ -1,8 +1,4 @@
 cmake_minimum_required(VERSION 3.3)
-if(pvrcore_included)
-	return()
-endif(pvrcore_included)
-set(pvrcore_included true)
 
 project(PVRCore)
 
@@ -11,20 +7,22 @@ include (../../cmake/Common.cmake)
 file(GLOB PVRCORE_SRC
   ${CMAKE_CURRENT_SOURCE_DIR}/*.h
   ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/Base/*.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/Base/*.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/DataStructures/*.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/DataStructures/*.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/Interfaces/*.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/Interfaces/*.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/IO/*.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/IO/*.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/Math/*.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/Math/*.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/Strings/*.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/Strings/*.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/Texture/*.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/Texture/*.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/cameras/*.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/cameras/*.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/math/*.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/math/*.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/pfx/*.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/pfx/*.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/strings/*.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/strings/*.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/stream/*.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/stream/*.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/texture/*.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/texture/*.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/textureio/*.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/textureio/*.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/types/*.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/types/*.h
   ${CMAKE_CURRENT_SOURCE_DIR}/../../external/pugixml/pugixml.cpp
 )
 
@@ -47,5 +45,5 @@ elseif(UNIX)
 endif()
 
 add_library(PVRCore STATIC ${PVRCORE_SRC})
-
-target_compile_definitions( PVRCore PUBLIC  $<$<CONFIG:Debug>:DEBUG=1> $<$<NOT:$<CONFIG:Debug>>:NDEBUG=1 RELEASE=1> )
+target_include_directories(PVRCore PUBLIC ${CMAKE_CURRENT_LIST_DIR}/..)
+target_compile_definitions(PVRCore PUBLIC  $<$<CONFIG:Debug>:DEBUG=1> $<$<NOT:$<CONFIG:Debug>>:NDEBUG=1 RELEASE=1> )

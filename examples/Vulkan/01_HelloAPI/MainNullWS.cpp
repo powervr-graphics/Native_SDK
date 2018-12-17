@@ -15,7 +15,7 @@ int main(int /*argc*/, char** /*argv*/)
 	VulkanExample.initialize();
 	VulkanExample.recordCommandBuffer();
 
-	for (int i = 0; i < 800; ++i)
+	for (uint32_t i = 0; i < 800; ++i)
 	{
 		VulkanExample.drawFrame();
 	}

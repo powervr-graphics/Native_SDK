@@ -8,6 +8,80 @@
 #include "PVRVk/DeviceVk.h"
 
 namespace pvrvk {
+/// <summary>QueryPool creation descriptor.</summary>
+struct QueryPoolCreateInfo
+{
+public:
+	/// <summary>Constructor</summary>
+	/// <param name="queryType">The type of queries managed by the pool</param>
+	/// <param name="queryCount">The number of queries managed by the pool</param>
+	/// <param name="pipelineStatistics">Specifies which counters will be returned in queries on the pool</param>
+	/// <param name="flags">Flags to use for creating the query pool</param>
+	QueryPoolCreateInfo(QueryType queryType, uint32_t queryCount, QueryPipelineStatisticFlags pipelineStatistics = QueryPipelineStatisticFlags::e_NONE,
+		QueryPoolCreateFlags flags = QueryPoolCreateFlags::e_NONE)
+		: _flags(flags), _queryType(queryType), _queryCount(queryCount), _pipelineStatistics(pipelineStatistics)
+	{}
+
+	/// <summary>Get the query pool creation flags</summary>
+	/// <returns>The set of query pool creation flags</returns>
+	inline QueryPoolCreateFlags getFlags() const
+	{
+		return _flags;
+	}
+	/// <summary>Set the query pool creation flags</summary>
+	/// <param name="flags">The query pool creation flags</param>
+	inline void setFlags(QueryPoolCreateFlags flags)
+	{
+		this->_flags = flags;
+	}
+	/// <summary>Get the set of counters which will be returned in queries on the pool</summary>
+	/// <returns>The set of counters which will be returned in queries on the pool</returns>
+	inline QueryPipelineStatisticFlags getPipelineStatisticFlags() const
+	{
+		return _pipelineStatistics;
+	}
+	/// <summary>Set the set counters will be returned in queries on the pool</summary>
+	/// <param name="pipelineStatistics">The set of counters which will be returned in queries on the pool</param>
+	inline void setPipelineStatisticFlags(QueryPipelineStatisticFlags pipelineStatistics)
+	{
+		this->_pipelineStatistics = pipelineStatistics;
+	}
+	/// <summary>Get the type of queries managed by this query pool</summary>
+	/// <returns>The type of queries managed by this query pool</returns>
+	inline QueryType getQueryType() const
+	{
+		return _queryType;
+	}
+	/// <summary>Set the type of queries this query pool can manage</summary>
+	/// <param name="queryType">The type of queries the query pool can manage</param>
+	inline void setQueryType(QueryType queryType)
+	{
+		this->_queryType = queryType;
+	}
+	/// <summary>Get the number of queries managed by the pool</summary>
+	/// <returns>The number of queries managed by the pool</returns>
+	inline uint32_t getNumQueries() const
+	{
+		return _queryCount;
+	}
+	/// <summary>Set the number queries managed by the pool</summary>
+	/// <param name="queryCount">The number of queries to be managed by the pool</param>
+	inline void setNumQueries(uint32_t queryCount)
+	{
+		this->_queryCount = queryCount;
+	}
+
+private:
+	/// <summary>Flags to use for creating the query pool</summary>
+	QueryPoolCreateFlags _flags;
+	/// <summary>The type of queries managed by the pool</summary>
+	QueryType _queryType;
+	/// <summary>The number of queries managed by the pool</summary>
+	uint32_t _queryCount;
+	/// <summary>Specifies which counters will be returned in queries on the pool</summary>
+	QueryPipelineStatisticFlags _pipelineStatistics;
+};
+
 namespace impl {
 /// <summary>Vulkan implementation of the Query Pool class.
 /// Destroying the query pool will also destroy the queries allocated from this pool
@@ -39,19 +113,41 @@ public:
 	/// <returns>True if the results or statuses for the set of queries were successfully retrieved</returns>
 	bool getResults(uint32_t firstQuery, uint32_t queryCount, size_t dataSize, void* data, VkDeviceSize stride, QueryResultFlags flags);
 
-	/// <summary>Returns the number of queries in the QueryPool</summary>
-	/// <returns>The number of queries being managed by the QueryPool</returns>
-	uint32_t getNumQueries() const
+	/// <summary>Get the query pool creation flags</summary>
+	/// <returns>The set of query pool creation flags</returns>
+	inline QueryPoolCreateFlags getFlags() const
 	{
-		return _createInfo.queryCount;
+		return _createInfo.getFlags();
+	}
+	/// <summary>Get the set of counters which will be returned in queries on the pool</summary>
+	/// <returns>The set of counters which will be returned in queries on the pool</returns>
+	inline QueryPipelineStatisticFlags getQueryPipelineStatisticFlags() const
+	{
+		return _createInfo.getPipelineStatisticFlags();
+	}
+	/// <summary>Get the type of queries managed by this query pool</summary>
+	/// <returns>The type of queries managed by this query pool</returns>
+	inline QueryType getQueryType() const
+	{
+		return _createInfo.getQueryType();
+	}
+	/// <summary>Get the number of queries managed by the pool</summary>
+	/// <returns>The number of queries managed by the pool</returns>
+	inline uint32_t getNumQueries() const
+	{
+		return _createInfo.getNumQueries();
+	}
+	/// <summary>Get this query pool's create flags</summary>
+	/// <returns>QueryPoolCreateInfo</returns>
+	QueryPoolCreateInfo getCreateInfo() const
+	{
+		return _createInfo;
 	}
 
 private:
 	friend class ::pvrvk::impl::Device_;
 
-	/// <summary>Construct a QueryPool</summary>
-	/// <param name="device">The GpuDevice this query pool will be constructed from.</param>
-	QueryPool_(const DeviceWeakPtr& device, pvrvk::QueryType queryType, uint32_t queryCount, pvrvk::QueryPipelineStatisticFlags statisticsFlags);
+	QueryPool_(const DeviceWeakPtr& device, const QueryPoolCreateInfo& createInfo);
 
 	/* IMPLEMENTING EmbeddedResource */
 	void destroyObject()
@@ -71,7 +167,7 @@ private:
 		}
 	}
 
-	VkQueryPoolCreateInfo _createInfo;
+	QueryPoolCreateInfo _createInfo;
 };
 } // namespace impl
 } // namespace pvrvk

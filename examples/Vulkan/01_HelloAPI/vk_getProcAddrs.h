@@ -281,7 +281,7 @@ inline void logOutput(bool error, const char* const formatString, va_list argume
 #elif defined(__QNXNTO__)
 	vslogf(1, error ? _SLOG_INFO : _SLOG_ERROR, formatString, argumentList);
 #else // Not android Not QNX
-	FILE* logfile = fopen("Log.txt", "w");
+	FILE* logfile = fopen("log.txt", "w");
 	static char buffer[4096];
 	va_list tempList;
 	memset(buffer, 0, sizeof(buffer));
@@ -292,13 +292,13 @@ inline void logOutput(bool error, const char* const formatString, va_list argume
 #endif
 
 	vsnprintf(buffer, 4095, formatString, argumentList);
-	fprintf(logfile, "%s%s\n", procAddressMessageTypes[(int)error], buffer);
+	fprintf(logfile, "%s%s\n", procAddressMessageTypes[static_cast<uint32_t>(error)], buffer);
 	fclose(logfile);
 #if defined(_WIN32)
 
 	if (IsDebuggerPresent())
 	{
-		OutputDebugString(procAddressMessageTypes[(int)error]);
+		OutputDebugString(procAddressMessageTypes[static_cast<uint32_t>(error)]);
 		OutputDebugString(buffer);
 		OutputDebugString("\n");
 	}

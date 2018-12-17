@@ -6,7 +6,7 @@
 */
 #pragma once
 
-#include "PVRCore/CoreIncludes.h"
+#include "PVRCore/types/Types.h"
 #if defined(WAYLAND)
 #include <wayland-egl.h>
 #endif

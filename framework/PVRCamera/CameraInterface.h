@@ -6,8 +6,8 @@
 */
 #pragma once
 
-#include "PVRCore/CoreIncludes.h"
 #include "DynamicGles.h"
+#include "PVRCore/math/MathUtils.h"
 
 /// <summary>Main PowerVR Namespace</summary>
 namespace pvr {
@@ -19,7 +19,7 @@ enum Enum
 	Front, ///< Front camera
 	Back, ///< Back camera
 };
-}; // namespace HWCamera
+} // namespace HWCamera
 
 /// <summary>A class design to provide you with a Texture handle to the Camera's image.</summary>
 class CameraInterface
@@ -35,8 +35,7 @@ public:
 	/// <param name="eCamera">The hardware camera to attempt to stream from</param>
 	/// <param name="preferredResX,preferredResY">If supported by the implementation, set a preferred resolution
 	/// </param>
-	/// <returns>true if successful</returns>
-	bool initializeSession(HWCamera::Enum eCamera, int preferredResX = 0, int preferredResY = 0);
+	void initializeSession(HWCamera::Enum eCamera, int preferredResX = 0, int preferredResY = 0);
 
 	/// <summary>Shutdown the AV capture session and release associated objects.</summary>
 	void destroySession();
@@ -89,7 +88,7 @@ public:
 	/// <summary>Returns the resolution of the currently active camera.</summary>
 	/// <param name="x">The horizontal resolution of the currently active camera will be saved here</param>
 	/// <param name="y">The vertical resolution of the currently active camera will be saved here</param>
-	void getCameraResolution(unsigned int& x, unsigned int& y);
+	void getCameraResolution(uint32_t& x, uint32_t& y);
 
 private:
 	void* pImpl;

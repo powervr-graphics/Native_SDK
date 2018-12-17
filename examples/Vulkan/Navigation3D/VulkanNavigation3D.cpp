@@ -11,8 +11,8 @@
 #define NAV_3D
 #include "../../common/NavDataProcess.h"
 #include "../../../external/glm/gtx/vector_angle.hpp"
-#include "PVRCore/TPSCamera.h"
-#include "PVRCore/Math/AxisAlignedBox.h"
+#include "PVRCore/math/AxisAlignedBox.h"
+#include "PVRCore/cameras/TPSCamera.h"
 namespace ColourUniforms {
 enum ColourUniforms
 {
@@ -39,7 +39,7 @@ enum SetBinding
 	TextureSampler = 2
 };
 }
-static const float CamHeight = .2f;
+static const float CamHeight = .35f;
 static uint32_t routeIndex = 0;
 
 struct DeviceResources
@@ -51,8 +51,7 @@ struct DeviceResources
 	pvrvk::Swapchain swapchain;
 	pvrvk::Queue queue;
 
-	pvr::utils::vma::Allocator vmaBufferAllocator;
-	pvr::utils::vma::Allocator vmaImageAllocator;
+	pvr::utils::vma::Allocator vmaAllocator;
 
 	pvrvk::CommandPool cmdPool;
 	pvrvk::DescriptorPool descPool;
@@ -101,8 +100,8 @@ struct DeviceResources
 		if (device.isValid())
 		{
 			device->waitIdle();
-			int l = swapchain->getSwapchainLength();
-			for (int i = 0; i < l; ++i)
+			uint32_t l = swapchain->getSwapchainLength();
+			for (uint32_t i = 0; i < l; ++i)
 			{
 				if (fencePerFrame[i].isValid())
 					fencePerFrame[i]->wait();
@@ -120,7 +119,6 @@ struct TileRenderingResources
 
 // Alpha, luminance texture.
 static const char* RoadTexFile = "Road.pvr";
-static const char* ArrowTexFile = "arrow.pvr";
 static const char* MapFile = "map.osm";
 static const char* FontFile = "font.pvr";
 
@@ -165,8 +163,6 @@ private:
 	// Transformation variables
 	glm::mat4 _perspectiveMatrix;
 
-	glm::mat4 _uiOrthoMtx;
-
 	pvr::math::ViewingFrustum _viewFrustum;
 	glm::dvec2 _mapWorldDim;
 	// Window variables
@@ -182,6 +178,18 @@ private:
 	std::string _currentRoad;
 
 	glm::mat4 _shadowMatrix;
+
+	glm::vec4 _clearColor;
+
+	glm::vec4 _roadAreaColor;
+	glm::vec4 _motorwayColor;
+	glm::vec4 _trunkRoadColor;
+	glm::vec4 _primaryRoadColor;
+	glm::vec4 _secondaryRoadColor;
+	glm::vec4 _serviceRoadColor;
+	glm::vec4 _otherRoadColor;
+	glm::vec4 _parkingColor;
+	glm::vec4 _outlineColor;
 
 	void createBuffers(pvrvk::CommandBuffer& uploadCmd);
 	bool createUbos();
@@ -230,7 +238,7 @@ private:
 	float calculateRouteKeyFrameTime(const glm::dvec2& start, const glm::dvec2& end);
 
 public:
-	VulkanNavigation3D() : _uiOrthoMtx(1.0), _totalRouteDistance(0.0f), _keyFrameTime(0.0f), _shadowMatrix(1.0) {}
+	VulkanNavigation3D() : _totalRouteDistance(0.0f), _keyFrameTime(0.0f), _shadowMatrix(1.0) {}
 };
 
 // Calculate the key frametime between one point to another.
@@ -247,15 +255,41 @@ If the rendering context is lost, initApplication() will not be called again.
 ***********************************************************************************************************************/
 pvr::Result VulkanNavigation3D::initApplication()
 {
+	// Disable gamma correction in the framebuffer.
+	//
+	setBackBufferColorspace(pvr::ColorSpace::lRGB);
+	// WARNING: This should not be done lightly. This example has taken care of linear/sRGB color space conversion appropriately and has been tuned specifically
+	// for performance/color space correctness.
+
 	_OSMdata.reset(new NavDataProcess(getAssetStream(MapFile), glm::ivec2(_windowWidth, _windowHeight)));
 	pvr::Result result = _OSMdata->loadAndProcessData();
 	if (result != pvr::Result::Success)
 	{
 		return result;
 	}
-	setDepthBitsPerPixel(24);
-	setStencilBitsPerPixel(8);
+
 	createShadowMatrix();
+
+	_frameId = 0;
+
+	// perform gamma correction of the linear space colors so that they can do used directly without further thinking about Linear/sRGB color space conversions
+	// This should not be done lightly. This example in most cases only passes through hardcoded color values and uses them directly without applying any
+	// math to their values and so can be performed safely.
+	// When rendering the buildings we do apply math to these colors and as such the color space conversion has been taken care of appropriately
+
+	// Note that for the clear color floating point values will be converted to the format of the image with the clear value being treated as linear if the image is sRGB
+	_clearColor = pvr::utils::convertLRGBtoSRGB(ClearColorLinearSpace);
+
+	_roadAreaColor = pvr::utils::convertLRGBtoSRGB(RoadAreaColorLinearSpace);
+	_motorwayColor = pvr::utils::convertLRGBtoSRGB(MotorwayColorLinearSpace);
+	_trunkRoadColor = pvr::utils::convertLRGBtoSRGB(TrunkRoadColorLinearSpace);
+	_primaryRoadColor = pvr::utils::convertLRGBtoSRGB(PrimaryRoadColorLinearSpace);
+	_secondaryRoadColor = pvr::utils::convertLRGBtoSRGB(SecondaryRoadColorLinearSpace);
+	_serviceRoadColor = pvr::utils::convertLRGBtoSRGB(ServiceRoadColorLinearSpace);
+	_otherRoadColor = pvr::utils::convertLRGBtoSRGB(OtherRoadColorLinearSpace);
+	_parkingColor = pvr::utils::convertLRGBtoSRGB(ParkingColorLinearSpace);
+	_outlineColor = pvr::utils::convertLRGBtoSRGB(OutlineColorLinearSpace);
+
 	return pvr::Result::Success;
 }
 
@@ -271,11 +305,16 @@ Used to initialize variables that are dependent on the rendering context (e.g. t
 ***********************************************************************************************************************/
 pvr::Result VulkanNavigation3D::initView()
 {
-	_frameId = 0;
 	_deviceResources = std::unique_ptr<DeviceResources>(new DeviceResources());
 
 	// Create instance and retrieve compatible physical devices
 	_deviceResources->instance = pvr::utils::createInstance(this->getApplicationName());
+
+	if (_deviceResources->instance->getNumPhysicalDevices() == 0)
+	{
+		setExitMessage("Unable not find a compatible Vulkan physical device.");
+		return pvr::Result::UnknownError;
+	}
 
 	// Create the surface
 	_deviceResources->surface = pvr::utils::createSurface(_deviceResources->instance, _deviceResources->instance->getPhysicalDevice(0), this->getWindow(), this->getDisplay());
@@ -305,11 +344,11 @@ pvr::Result VulkanNavigation3D::initView()
 	_deviceResources->queue = _deviceResources->device->getQueue(queueAccessInfo.familyId, queueAccessInfo.queueId);
 
 	// setup the vma allocators
-	_deviceResources->vmaBufferAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
-	_deviceResources->vmaImageAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
+	_deviceResources->vmaAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
 
 	// Create the commandpool
-	_deviceResources->cmdPool = _deviceResources->device->createCommandPool(queueAccessInfo.familyId, pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT);
+	_deviceResources->cmdPool =
+		_deviceResources->device->createCommandPool(pvrvk::CommandPoolCreateInfo(queueAccessInfo.familyId, pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT));
 
 	pvrvk::SurfaceCapabilitiesKHR surfaceCapabilities = _deviceResources->instance->getPhysicalDevice(0)->getSurfaceCapabilities(_deviceResources->surface);
 
@@ -323,17 +362,20 @@ pvr::Result VulkanNavigation3D::initView()
 	pvr::Multi<pvrvk::ImageView> dsImages;
 	// create the swapchain
 	pvr::utils::createSwapchainAndDepthStencilImageAndViews(_deviceResources->device, _deviceResources->surface, getDisplayAttributes(), _deviceResources->swapchain, dsImages,
-		swapchainImageUsage, pvrvk::ImageUsageFlags::e_DEPTH_STENCIL_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_TRANSIENT_ATTACHMENT_BIT, &_deviceResources->vmaImageAllocator);
+		swapchainImageUsage, pvrvk::ImageUsageFlags::e_DEPTH_STENCIL_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_TRANSIENT_ATTACHMENT_BIT, &_deviceResources->vmaAllocator);
 
 	// Create on screen frame buffer objects.
 	createFboAndRenderPass(dsImages);
 
 	// Initialise uiRenderer
-	_deviceResources->uiRenderer.init(getWidth(), getHeight(), isFullScreen(), _deviceResources->fbo[0]->getRenderPass(), 0, _deviceResources->cmdPool, _deviceResources->queue,
-		true, true, true, 4 + _deviceResources->swapchain->getSwapchainLength(), 4 + _deviceResources->swapchain->getSwapchainLength());
+	_deviceResources->uiRenderer.init(getWidth(), getHeight(), isFullScreen(), _deviceResources->fbo[0]->getRenderPass(), 0, getBackBufferColorspace() == pvr::ColorSpace::sRGB,
+		_deviceResources->cmdPool, _deviceResources->queue, true, true, true, 4 + _deviceResources->swapchain->getSwapchainLength(),
+		4 + _deviceResources->swapchain->getSwapchainLength());
 
 	_windowWidth = static_cast<uint32_t>(_deviceResources->uiRenderer.getRenderingDimX());
 	_windowHeight = static_cast<uint32_t>(_deviceResources->uiRenderer.getRenderingDimY());
+
+	Log(LogLevel::Information, "Initialising Tile Data");
 
 	_OSMdata->initTiles();
 
@@ -381,7 +423,6 @@ pvr::Result VulkanNavigation3D::initView()
 	{
 		_deviceResources->text[i] = _deviceResources->uiRenderer.createText("DUMMY", 255);
 		_deviceResources->text[i]->setColor(0.0f, 0.0f, 0.0f, 1.0f);
-		_deviceResources->text[i]->setScale(1.f, 1.f);
 		_deviceResources->text[i]->setPixelOffset(0.0f, static_cast<float>(-int32_t(_windowHeight / 3)));
 		_deviceResources->text[i]->commitUpdates();
 	}
@@ -404,14 +445,14 @@ pvr::Result VulkanNavigation3D::initView()
 	// wait for the queue to finishs
 	_deviceResources->queue->waitIdle();
 
-	cameraInfo.translation.x = (float)_OSMdata->getRouteData()[0].point.x;
+	cameraInfo.translation.x = static_cast<float>(_OSMdata->getRouteData()[0].point.x);
 	cameraInfo.translation.z = static_cast<float>(_OSMdata->getRouteData()[0].point.y);
 	cameraInfo.translation.y = CamHeight;
 
 	const glm::dvec2& camStartPosition = _OSMdata->getRouteData()[routeIndex].point;
 	_camera.setTargetPosition(glm::vec3(camStartPosition.x, 0.f, camStartPosition.y));
 	_camera.setHeight(CamHeight);
-	_camera.setDistanceFromTarget(0.55f);
+	_camera.setDistanceFromTarget(1.0f);
 
 	_currentRoad = _OSMdata->getRouteData()[routeIndex].name;
 	return pvr::Result::Success;
@@ -435,7 +476,7 @@ bool VulkanNavigation3D::createUbos()
 		_deviceResources->uboDynamic.buffer = pvr::utils::createBuffer(_deviceResources->device, _deviceResources->uboDynamic.bufferView.getSize(),
 			pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
-			&_deviceResources->vmaBufferAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+			&_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
 		_deviceResources->uboDynamic.bufferView.pointToMappedMemory(_deviceResources->uboDynamic.buffer->getDeviceMemory()->getMappedData());
 	}
@@ -451,7 +492,7 @@ bool VulkanNavigation3D::createUbos()
 		_deviceResources->uboStatic.buffer =
 			pvr::utils::createBuffer(_deviceResources->device, bufferSize, pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 				pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
-				&_deviceResources->vmaBufferAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+				&_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
 		// Write in to the buffer
 		_deviceResources->uboStatic.bufferView.pointToMappedMemory(_deviceResources->uboStatic.buffer->getDeviceMemory()->getMappedData());
@@ -501,7 +542,7 @@ void VulkanNavigation3D::initTextureAndSampler(pvrvk::CommandBuffer& uploadCmdBu
 	_deviceResources->samplerTrilinear = _deviceResources->device->createSampler(samplerInfo);
 
 	texBase = pvr::utils::loadAndUploadImageAndView(_deviceResources->device, RoadTexFile, true, uploadCmdBuffer, *this, pvrvk::ImageUsageFlags::e_SAMPLED_BIT,
-		pvrvk::ImageLayout::e_GENERAL, nullptr, &_deviceResources->vmaBufferAllocator, &_deviceResources->vmaImageAllocator);
+		pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, nullptr, &_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
 
 	// create the descriptor set layout
 	pvrvk::DescriptorSetLayoutCreateInfo descSetLayoutInfo;
@@ -520,7 +561,7 @@ void VulkanNavigation3D::initTextureAndSampler(pvrvk::CommandBuffer& uploadCmdBu
 	// upload the font
 	pvr::Texture fontHeader;
 	pvrvk::ImageView fontTex = pvr::utils::loadAndUploadImageAndView(_deviceResources->device, FontFile, true, uploadCmdBuffer, *this, pvrvk::ImageUsageFlags::e_SAMPLED_BIT,
-		pvrvk::ImageLayout::e_GENERAL, &fontHeader, &_deviceResources->vmaBufferAllocator, &_deviceResources->vmaImageAllocator);
+		pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, &fontHeader, &_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
 
 	samplerInfo.wrapModeU = pvrvk::SamplerAddressMode::e_CLAMP_TO_EDGE;
 	samplerInfo.wrapModeV = pvrvk::SamplerAddressMode::e_CLAMP_TO_EDGE;
@@ -539,9 +580,8 @@ inline VkDeviceSize getColorUniformSlice(ColourUniforms::ColourUniforms uniforms
 ***********************************************************************************************************************/
 void VulkanNavigation3D::setUniforms()
 {
-	_uiOrthoMtx = pvr::math::ortho(pvr::Api::Vulkan, 0.0f, float(_windowWidth), 0.0f, float(_windowHeight));
 	_perspectiveMatrix =
-		_deviceResources->uiRenderer.getScreenRotation() * pvr::math::perspectiveFov(pvr::Api::Vulkan, glm::radians(45.0f), float(_windowWidth), float(_windowHeight), 0.01f, 3.f);
+		_deviceResources->uiRenderer.getScreenRotation() * pvr::math::perspectiveFov(pvr::Api::Vulkan, glm::radians(45.0f), float(_windowWidth), float(_windowHeight), 0.01f, 5.f);
 }
 
 /*!*********************************************************************************************************************
@@ -554,25 +594,25 @@ void VulkanNavigation3D::createShadowMatrix()
 	const glm::vec4 light = glm::vec4(glm::normalize(glm::vec3(0.25f, 2.4f, -1.15f)), 0.0f);
 	const float d = glm::dot(ground, light);
 
-	_shadowMatrix[0][0] = (float)(d - light.x * ground.x);
-	_shadowMatrix[1][0] = (float)(0.0 - light.x * ground.y);
-	_shadowMatrix[2][0] = (float)(0.0 - light.x * ground.z);
-	_shadowMatrix[3][0] = (float)(0.0 - light.x * ground.w);
+	_shadowMatrix[0][0] = static_cast<float>(d - light.x * ground.x);
+	_shadowMatrix[1][0] = static_cast<float>(0.0 - light.x * ground.y);
+	_shadowMatrix[2][0] = static_cast<float>(0.0 - light.x * ground.z);
+	_shadowMatrix[3][0] = static_cast<float>(0.0 - light.x * ground.w);
 
-	_shadowMatrix[0][1] = (float)(0.0 - light.y * ground.x);
-	_shadowMatrix[1][1] = (float)(d - light.y * ground.y);
-	_shadowMatrix[2][1] = (float)(0.0 - light.y * ground.z);
-	_shadowMatrix[3][1] = (float)(0.0 - light.y * ground.w);
+	_shadowMatrix[0][1] = static_cast<float>(0.0 - light.y * ground.x);
+	_shadowMatrix[1][1] = static_cast<float>(d - light.y * ground.y);
+	_shadowMatrix[2][1] = static_cast<float>(0.0 - light.y * ground.z);
+	_shadowMatrix[3][1] = static_cast<float>(0.0 - light.y * ground.w);
 
-	_shadowMatrix[0][2] = (float)(0.0 - light.z * ground.x);
-	_shadowMatrix[1][2] = (float)(0.0 - light.z * ground.y);
-	_shadowMatrix[2][2] = (float)(d - light.z * ground.z);
-	_shadowMatrix[3][2] = (float)(0.0 - light.z * ground.w);
+	_shadowMatrix[0][2] = static_cast<float>(0.0 - light.z * ground.x);
+	_shadowMatrix[1][2] = static_cast<float>(0.0 - light.z * ground.y);
+	_shadowMatrix[2][2] = static_cast<float>(d - light.z * ground.z);
+	_shadowMatrix[3][2] = static_cast<float>(0.0 - light.z * ground.w);
 
-	_shadowMatrix[0][3] = (float)(0.0 - light.w * ground.x);
-	_shadowMatrix[1][3] = (float)(0.0 - light.w * ground.y);
-	_shadowMatrix[2][3] = (float)(0.0 - light.w * ground.z);
-	_shadowMatrix[3][3] = (float)(d - light.w * ground.w);
+	_shadowMatrix[0][3] = static_cast<float>(0.0 - light.w * ground.x);
+	_shadowMatrix[1][3] = static_cast<float>(0.0 - light.w * ground.y);
+	_shadowMatrix[2][3] = static_cast<float>(0.0 - light.w * ground.z);
+	_shadowMatrix[3][3] = static_cast<float>(d - light.w * ground.w);
 }
 
 /*!*********************************************************************************************************************
@@ -597,7 +637,7 @@ void VulkanNavigation3D::createBuffers(pvrvk::CommandBuffer& uploadCmd)
 			// Create vertices for tile
 			for (auto nodeIterator = tile.nodes.begin(); nodeIterator != tile.nodes.end(); ++nodeIterator)
 			{
-				nodeIterator->second.index = (uint32_t)tile.vertices.size();
+				nodeIterator->second.index = static_cast<uint32_t>(tile.vertices.size());
 
 				glm::vec2 remappedPos =
 					glm::vec2(remap(nodeIterator->second.coords, _OSMdata->getTiles()[0][0].min, _OSMdata->getTiles()[0][0].max, glm::dvec2(-5, -5), glm::dvec2(5, 5)));
@@ -641,7 +681,7 @@ void VulkanNavigation3D::createBuffers(pvrvk::CommandBuffer& uploadCmd)
 				tileRes->vbo = pvr::utils::createBuffer(_deviceResources->device, vboSize,
 					pvrvk::BufferUsageFlags::e_VERTEX_BUFFER_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 					pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
-					&_deviceResources->vmaBufferAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+					&_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
 				bool isBufferHostVisible = (tileRes->vbo->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT) != 0;
 				if (isBufferHostVisible)
@@ -650,8 +690,7 @@ void VulkanNavigation3D::createBuffers(pvrvk::CommandBuffer& uploadCmd)
 				}
 				else
 				{
-					pvr::utils::updateBufferUsingStagingBuffer(
-						_deviceResources->device, tileRes->vbo, uploadCmd, tile.vertices.data(), 0, vboSize, &_deviceResources->vmaBufferAllocator);
+					pvr::utils::updateBufferUsingStagingBuffer(_deviceResources->device, tileRes->vbo, uploadCmd, tile.vertices.data(), 0, vboSize, &_deviceResources->vmaAllocator);
 				}
 			}
 
@@ -661,7 +700,7 @@ void VulkanNavigation3D::createBuffers(pvrvk::CommandBuffer& uploadCmd)
 				tileRes->ibo = pvr::utils::createBuffer(_deviceResources->device, iboSize,
 					pvrvk::BufferUsageFlags::e_INDEX_BUFFER_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 					pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
-					&_deviceResources->vmaBufferAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+					&_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
 				bool isBufferHostVisible = (tileRes->ibo->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT) != 0;
 				if (isBufferHostVisible)
@@ -670,8 +709,7 @@ void VulkanNavigation3D::createBuffers(pvrvk::CommandBuffer& uploadCmd)
 				}
 				else
 				{
-					pvr::utils::updateBufferUsingStagingBuffer(
-						_deviceResources->device, tileRes->ibo, uploadCmd, tile.indices.data(), 0, iboSize, &_deviceResources->vmaBufferAllocator);
+					pvr::utils::updateBufferUsingStagingBuffer(_deviceResources->device, tileRes->ibo, uploadCmd, tile.indices.data(), 0, iboSize, &_deviceResources->vmaAllocator);
 				}
 			}
 
@@ -689,7 +727,7 @@ void VulkanNavigation3D::createBuffers(pvrvk::CommandBuffer& uploadCmd)
 
 				// Bind the Dynamic and static buffers
 				pvrvk::DescriptorSet descSets[] = { _deviceResources->uboDynamic.set, _deviceResources->uboStatic.set };
-				cmdBuffer->bindDescriptorSets(pvrvk::PipelineBindPoint::e_GRAPHICS, _deviceResources->fillPipe->getPipelineLayout(), 0, descSets, ARRAY_SIZE(descSets), &offset, 1);
+				cmdBuffer->bindDescriptorSets(pvrvk::PipelineBindPoint::e_GRAPHICS, _deviceResources->fillPipe->getPipelineLayout(), 0, descSets, ARRAY_SIZE(descSets), &uboOffset, 1);
 
 				// Bind the vertex and index buffers for the tile
 				cmdBuffer->bindVertexBuffer(_tileRenderingResources[col][row]->vbo, 0, 0);
@@ -699,8 +737,9 @@ void VulkanNavigation3D::createBuffers(pvrvk::CommandBuffer& uploadCmd)
 				// Draw the car parking
 				if (parkingNum > 0)
 				{
-					glm::vec4 colorId = ParkingColourUniform;
-					cmdBuffer->pushConstants(_deviceResources->fillPipe->getPipelineLayout(), pvrvk::ShaderStageFlags::e_VERTEX_BIT, 0, sizeof(colorId), &colorId);
+					glm::vec4 colorId = _parkingColor;
+					cmdBuffer->pushConstants(_deviceResources->fillPipe->getPipelineLayout(), pvrvk::ShaderStageFlags::e_VERTEX_BIT, 0,
+						static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::vec4)), &colorId);
 					cmdBuffer->bindPipeline(_deviceResources->fillPipe);
 					lastBoundPipeline = _deviceResources->fillPipe;
 					cmdBuffer->drawIndexed(0, parkingNum);
@@ -710,8 +749,9 @@ void VulkanNavigation3D::createBuffers(pvrvk::CommandBuffer& uploadCmd)
 				// Draw the road areas
 				if (areaNum > 0)
 				{
-					const glm::vec4 colorId = RoadAreaColourUniform;
-					cmdBuffer->pushConstants(_deviceResources->fillPipe->getPipelineLayout(), pvrvk::ShaderStageFlags::e_VERTEX_BIT, 0, sizeof(colorId), &colorId);
+					const glm::vec4 colorId = _roadAreaColor;
+					cmdBuffer->pushConstants(_deviceResources->fillPipe->getPipelineLayout(), pvrvk::ShaderStageFlags::e_VERTEX_BIT, 0,
+						static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::vec4)), &colorId);
 					if (lastBoundPipeline != _deviceResources->fillPipe)
 					{
 						cmdBuffer->bindPipeline(_deviceResources->fillPipe);
@@ -724,9 +764,10 @@ void VulkanNavigation3D::createBuffers(pvrvk::CommandBuffer& uploadCmd)
 				// Draw the outlines for road areas
 				if (roadAreaOutlineNum > 0)
 				{
-					const glm::vec4 colorId = OutlineColourUniform;
-					cmdBuffer->pushConstants(_deviceResources->outlinePipe->getPipelineLayout(), pvrvk::ShaderStageFlags::e_VERTEX_BIT, 0, sizeof(colorId), &colorId);
-					// if (lastBoundPipeline != _deviceResources->outlinePipe)
+					const glm::vec4 colorId = _outlineColor;
+					cmdBuffer->pushConstants(_deviceResources->outlinePipe->getPipelineLayout(), pvrvk::ShaderStageFlags::e_VERTEX_BIT, 0,
+						static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::vec4)), &colorId);
+					if (lastBoundPipeline != _deviceResources->outlinePipe)
 					{
 						cmdBuffer->bindPipeline(_deviceResources->outlinePipe);
 						lastBoundPipeline = _deviceResources->outlinePipe;
@@ -747,8 +788,9 @@ void VulkanNavigation3D::createBuffers(pvrvk::CommandBuffer& uploadCmd)
 				// Motorways
 				if (motorwayNum > 0)
 				{
-					const glm::vec4 colorId = MotorwayColour;
-					cmdBuffer->pushConstants(_deviceResources->roadPipe->getPipelineLayout(), pvrvk::ShaderStageFlags::e_VERTEX_BIT, 0, sizeof(colorId), &colorId);
+					const glm::vec4 colorId = _motorwayColor;
+					cmdBuffer->pushConstants(_deviceResources->roadPipe->getPipelineLayout(), pvrvk::ShaderStageFlags::e_VERTEX_BIT, 0,
+						static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::vec4)), &colorId);
 					cmdBuffer->bindPipeline(_deviceResources->roadPipe);
 					lastBoundPipeline = _deviceResources->roadPipe;
 					cmdBuffer->drawIndexed(offset, motorwayNum);
@@ -758,8 +800,9 @@ void VulkanNavigation3D::createBuffers(pvrvk::CommandBuffer& uploadCmd)
 				// Trunk Roads
 				if (trunkRoadNum > 0)
 				{
-					const glm::vec4 colorId = TrunkRoadColour;
-					cmdBuffer->pushConstants(_deviceResources->roadPipe->getPipelineLayout(), pvrvk::ShaderStageFlags::e_VERTEX_BIT, 0, sizeof(colorId), &colorId);
+					const glm::vec4 colorId = _trunkRoadColor;
+					cmdBuffer->pushConstants(_deviceResources->roadPipe->getPipelineLayout(), pvrvk::ShaderStageFlags::e_VERTEX_BIT, 0,
+						static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::vec4)), &colorId);
 					cmdBuffer->bindPipeline(_deviceResources->roadPipe);
 					lastBoundPipeline = _deviceResources->roadPipe;
 					cmdBuffer->drawIndexed(offset, trunkRoadNum);
@@ -769,8 +812,9 @@ void VulkanNavigation3D::createBuffers(pvrvk::CommandBuffer& uploadCmd)
 				// Primary Roads
 				if (primaryRoadNum > 0)
 				{
-					const glm::vec4 colorId = PrimaryRoadColour;
-					cmdBuffer->pushConstants(_deviceResources->roadPipe->getPipelineLayout(), pvrvk::ShaderStageFlags::e_VERTEX_BIT, 0, sizeof(colorId), &colorId);
+					const glm::vec4 colorId = _primaryRoadColor;
+					cmdBuffer->pushConstants(_deviceResources->roadPipe->getPipelineLayout(), pvrvk::ShaderStageFlags::e_VERTEX_BIT, 0,
+						static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::vec4)), &colorId);
 					cmdBuffer->bindPipeline(_deviceResources->roadPipe);
 					lastBoundPipeline = _deviceResources->roadPipe;
 					cmdBuffer->drawIndexed(offset, primaryRoadNum);
@@ -780,8 +824,9 @@ void VulkanNavigation3D::createBuffers(pvrvk::CommandBuffer& uploadCmd)
 				// Secondary Roads
 				if (secondaryRoadNum > 0)
 				{
-					const glm::vec4 colorId = SecondaryRoadColour;
-					cmdBuffer->pushConstants(_deviceResources->roadPipe->getPipelineLayout(), pvrvk::ShaderStageFlags::e_VERTEX_BIT, 0, sizeof(colorId), &colorId);
+					const glm::vec4 colorId = _secondaryRoadColor;
+					cmdBuffer->pushConstants(_deviceResources->roadPipe->getPipelineLayout(), pvrvk::ShaderStageFlags::e_VERTEX_BIT, 0,
+						static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::vec4)), &colorId);
 					cmdBuffer->bindPipeline(_deviceResources->roadPipe);
 					lastBoundPipeline = _deviceResources->roadPipe;
 					cmdBuffer->drawIndexed(offset, secondaryRoadNum);
@@ -791,8 +836,9 @@ void VulkanNavigation3D::createBuffers(pvrvk::CommandBuffer& uploadCmd)
 				// Service Roads
 				if (serviceRoadNum > 0)
 				{
-					const glm::vec4 colorId = ServiceRoadColour;
-					cmdBuffer->pushConstants(_deviceResources->roadPipe->getPipelineLayout(), pvrvk::ShaderStageFlags::e_VERTEX_BIT, 0, sizeof(colorId), &colorId);
+					const glm::vec4 colorId = _serviceRoadColor;
+					cmdBuffer->pushConstants(_deviceResources->roadPipe->getPipelineLayout(), pvrvk::ShaderStageFlags::e_VERTEX_BIT, 0,
+						static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::vec4)), &colorId);
 					cmdBuffer->bindPipeline(_deviceResources->roadPipe);
 					lastBoundPipeline = _deviceResources->roadPipe;
 					cmdBuffer->drawIndexed(offset, serviceRoadNum);
@@ -802,9 +848,10 @@ void VulkanNavigation3D::createBuffers(pvrvk::CommandBuffer& uploadCmd)
 				// Other (any other roads)
 				if (otherRoadNum > 0)
 				{
-					const glm::vec4 colorId = OtherRoadColour;
+					const glm::vec4 colorId = _otherRoadColor;
 					cmdBuffer->bindPipeline(_deviceResources->roadPipe);
-					cmdBuffer->pushConstants(_deviceResources->roadPipe->getPipelineLayout(), pvrvk::ShaderStageFlags::e_VERTEX_BIT, 0, sizeof(colorId), &colorId);
+					cmdBuffer->pushConstants(_deviceResources->roadPipe->getPipelineLayout(), pvrvk::ShaderStageFlags::e_VERTEX_BIT, 0,
+						static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::vec4)), &colorId);
 					lastBoundPipeline = _deviceResources->roadPipe;
 					cmdBuffer->drawIndexed(offset, otherRoadNum);
 					offset += otherRoadNum;
@@ -813,9 +860,10 @@ void VulkanNavigation3D::createBuffers(pvrvk::CommandBuffer& uploadCmd)
 				// Draw the buildings & shadows
 				if (buildNum > 0)
 				{
-					const glm::vec4 colorId = BuildColourUniform;
-					cmdBuffer->pushConstants(_deviceResources->buildingPipe->getPipelineLayout(), pvrvk::ShaderStageFlags::e_VERTEX_BIT, 0, sizeof(colorId), &colorId);
-					// if (lastBoundPipeline != _deviceResources->buildingPipe)
+					const glm::vec4 colorId = BuildingColorLinearSpace;
+					cmdBuffer->pushConstants(_deviceResources->buildingPipe->getPipelineLayout(), pvrvk::ShaderStageFlags::e_VERTEX_BIT, 0,
+						static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::vec4)), &colorId);
+					if (lastBoundPipeline != _deviceResources->buildingPipe)
 					{
 						cmdBuffer->bindPipeline(_deviceResources->buildingPipe);
 						lastBoundPipeline = _deviceResources->buildingPipe;
@@ -836,8 +884,9 @@ void VulkanNavigation3D::createBuffers(pvrvk::CommandBuffer& uploadCmd)
 						cmdBuffer->bindPipeline(_deviceResources->fillPipe);
 						lastBoundPipeline = _deviceResources->fillPipe;
 					}
-					const glm::vec4 colorId = ClearColor;
-					cmdBuffer->pushConstants(_deviceResources->fillPipe->getPipelineLayout(), pvrvk::ShaderStageFlags::e_VERTEX_BIT, 0, sizeof(colorId), &colorId);
+					const glm::vec4 colorId = _clearColor;
+					cmdBuffer->pushConstants(_deviceResources->fillPipe->getPipelineLayout(), pvrvk::ShaderStageFlags::e_VERTEX_BIT, 0,
+						static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::vec4)), &colorId);
 					cmdBuffer->drawIndexed(offset, innerNum);
 					offset += innerNum;
 				}
@@ -857,7 +906,7 @@ uint32_t VulkanNavigation3D::generateIndices(Tile& tile, std::vector<Way>& way, 
 	{
 		if (way[i].roadType == type)
 		{
-			for (int j = 0; j < way[i].nodeIds.size(); ++j)
+			for (uint32_t j = 0; j < way[i].nodeIds.size(); ++j)
 			{
 				tile.indices.push_back(tile.nodes.find(way[i].nodeIds[j])->second.index);
 				count++;
@@ -909,7 +958,7 @@ pvr::Result VulkanNavigation3D::renderFrame()
 	if (this->shouldTakeScreenshot())
 	{
 		pvr::utils::takeScreenshot(_deviceResources->swapchain, swapchainIndex, _deviceResources->cmdPool, _deviceResources->queue, getScreenshotFileName(),
-			&_deviceResources->vmaBufferAllocator, &_deviceResources->vmaImageAllocator);
+			&_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
 	}
 
 	// Present
@@ -934,6 +983,7 @@ void VulkanNavigation3D::updateAnimation()
 		return;
 	}
 
+	static const float rotationOffset = -90.f;
 	static bool turning = false;
 	static float animTime = 0.0f;
 	static float rotateTime = 0.0f;
@@ -967,7 +1017,7 @@ void VulkanNavigation3D::updateAnimation()
 
 		cameraInfo.translation = glm::vec3(camLerpPos.x, CamHeight, camLerpPos.y);
 		_camera.setTargetPosition(glm::vec3(camLerpPos.x, 0.0f, camLerpPos.y));
-		_camera.setTargetLookAngle(currentRotation);
+		_camera.setTargetLookAngle(currentRotation + rotationOffset);
 	}
 	if (animTime >= _keyFrameTime)
 	{
@@ -998,7 +1048,7 @@ void VulkanNavigation3D::updateAnimation()
 			{
 				turning = true;
 				currentRotation = glm::mix(r1, r1 + diff, currentRotationTime / rotateTime);
-				_camera.setTargetLookAngle(currentRotation);
+				_camera.setTargetLookAngle(currentRotation + rotationOffset);
 			}
 		}
 	}
@@ -1046,8 +1096,7 @@ void VulkanNavigation3D::calculateTransform()
 ***********************************************************************************************************************/
 void VulkanNavigation3D::recordPrimaryCBO(uint32_t swapchain)
 {
-	const pvrvk::ClearValue clearValues[] = { pvrvk::ClearValue(ClearColor[0], ClearColor[1], ClearColor[2], ClearColor[3]), pvrvk::ClearValue::createDefaultDepthStencilClearValue() };
-	const uint32_t swapchainIndex = _deviceResources->swapchain->getSwapchainIndex();
+	const pvrvk::ClearValue clearValues[] = { pvrvk::ClearValue(_clearColor.r, _clearColor.g, _clearColor.b, _clearColor.a), pvrvk::ClearValue::createDefaultDepthStencilClearValue() };
 
 	_deviceResources->cbos[swapchain]->begin();
 	_deviceResources->cbos[swapchain]->beginRenderPass(_deviceResources->fbo[swapchain], pvrvk::Rect2D(0, 0, getWidth(), getHeight()), false, clearValues, 2);
@@ -1078,7 +1127,7 @@ void VulkanNavigation3D::updateCommandBuffer(const uint32_t swapchain)
 			}
 		}
 	}
-	/* Draw text elements. */
+	// Draw text elements
 	if (updateText[swapchain] != routeIndex)
 	{
 		updateText[swapchain] = routeIndex;
@@ -1126,7 +1175,8 @@ bool VulkanNavigation3D::createPipelines()
 	_deviceResources->pipeLayoutInfo.addDescSetLayout(_deviceResources->uboStatic.layout); // Set 1
 	_deviceResources->pipeLayoutInfo.addDescSetLayout(_deviceResources->texDescSetLayout); // Set 2
 
-	_deviceResources->pipeLayoutInfo.setPushConstantRange(0, pvrvk::PushConstantRange(pvrvk::ShaderStageFlags::e_VERTEX_BIT, 0, sizeof(glm::vec4)));
+	_deviceResources->pipeLayoutInfo.setPushConstantRange(
+		0, pvrvk::PushConstantRange(pvrvk::ShaderStageFlags::e_VERTEX_BIT, 0, static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::vec4))));
 	_deviceResources->pipeLayout = _deviceResources->device->createPipelineLayout(_deviceResources->pipeLayoutInfo);
 
 	// Create the pipeline cache
@@ -1141,15 +1191,14 @@ bool VulkanNavigation3D::createPipelines()
 
 	// Vertex input info.
 	const pvrvk::VertexInputAttributeDescription posAttrib(0, 0, pvrvk::Format::e_R32G32B32_SFLOAT, 0);
-	const pvrvk::VertexInputAttributeDescription texAttrib(1, 0, pvrvk::Format::e_R32G32_SFLOAT, sizeof(float) * 3);
-	const pvrvk::VertexInputAttributeDescription normalAttrib(2, 0, pvrvk::Format::e_R32G32B32_SFLOAT, sizeof(float) * 5);
+	const pvrvk::VertexInputAttributeDescription texAttrib(1, 0, pvrvk::Format::e_R32G32_SFLOAT, static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::Float) * 3));
+	const pvrvk::VertexInputAttributeDescription normalAttrib(2, 0, pvrvk::Format::e_R32G32B32_SFLOAT, static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::Float) * 5));
 
 	// Set parameters shared by all pipelines
-
 	roadInfo.vertexInput.addInputBinding(pvrvk::VertexInputBindingDescription(0, sizeof(Tile::VertexData)));
 	roadInfo.colorBlend.setAttachmentState(0, pvrvk::PipelineColorBlendAttachmentState(false));
-	roadInfo.vertexShader = _deviceResources->device->createShader(getAssetStream("VertShader_vk.vsh.spv")->readToEnd<uint32_t>());
-	roadInfo.fragmentShader = _deviceResources->device->createShader(getAssetStream("FragShader_vk.fsh.spv")->readToEnd<uint32_t>());
+	roadInfo.vertexShader = _deviceResources->device->createShaderModule(pvrvk::ShaderModuleCreateInfo(getAssetStream("VertShader.vsh.spv")->readToEnd<uint32_t>()));
+	roadInfo.fragmentShader = _deviceResources->device->createShaderModule(pvrvk::ShaderModuleCreateInfo(getAssetStream("FragShader.fsh.spv")->readToEnd<uint32_t>()));
 	roadInfo.inputAssembler.setPrimitiveTopology(pvrvk::PrimitiveTopology::e_TRIANGLE_LIST);
 	roadInfo.rasterizer.setCullMode(pvrvk::CullModeFlags::e_NONE);
 	roadInfo.depthStencil.enableDepthWrite(true).enableDepthTest(true).setDepthCompareFunc(pvrvk::CompareOp::e_LESS_OR_EQUAL);
@@ -1161,7 +1210,6 @@ bool VulkanNavigation3D::createPipelines()
 	fillInfo = outlineInfo = planarShadowInfo = buildingInfo = roadInfo;
 	fillInfo.vertexInput.addInputAttribute(posAttrib);
 	fillInfo.rasterizer.setCullMode(pvrvk::CullModeFlags::e_BACK_BIT);
-	// planarShadowInfo.rasterizer.setCullMode(pvrvk::CullModeFlags::e_BACK_BIT);
 	outlineInfo.rasterizer.setCullMode(pvrvk::CullModeFlags::e_BACK_BIT);
 
 	// Road pipeline specific parameters. Classic Alpha blending, but preserving framebuffer alpha to avoid artifacts on
@@ -1169,8 +1217,8 @@ bool VulkanNavigation3D::createPipelines()
 	roadInfo.colorBlend.setAttachmentState(0,
 		pvrvk::PipelineColorBlendAttachmentState(
 			true, pvrvk::BlendFactor::e_SRC_ALPHA, pvrvk::BlendFactor::e_ONE_MINUS_SRC_ALPHA, pvrvk::BlendOp::e_ADD, pvrvk::BlendFactor::e_ZERO, pvrvk::BlendFactor::e_ONE));
-	roadInfo.vertexShader = _deviceResources->device->createShader(getAssetStream("AA_VertShader_vk.vsh.spv")->readToEnd<uint32_t>());
-	roadInfo.fragmentShader = _deviceResources->device->createShader(getAssetStream("AA_FragShader_vk.fsh.spv")->readToEnd<uint32_t>());
+	roadInfo.vertexShader = _deviceResources->device->createShaderModule(pvrvk::ShaderModuleCreateInfo(getAssetStream("AA_VertShader.vsh.spv")->readToEnd<uint32_t>()));
+	roadInfo.fragmentShader = _deviceResources->device->createShaderModule(pvrvk::ShaderModuleCreateInfo(getAssetStream("AA_FragShader.fsh.spv")->readToEnd<uint32_t>()));
 	roadInfo.vertexInput.addInputAttribute(posAttrib).addInputAttribute(texAttrib);
 
 	// Outline pipeline specific parameters
@@ -1178,12 +1226,19 @@ bool VulkanNavigation3D::createPipelines()
 	outlineInfo.vertexInput.addInputAttribute(posAttrib);
 
 	// Building pipeline specific parameters
-	buildingInfo.vertexShader = _deviceResources->device->createShader(getAssetStream("PerVertexLight_VertShader_vk.vsh.spv")->readToEnd<uint32_t>());
+	buildingInfo.vertexShader =
+		_deviceResources->device->createShaderModule(pvrvk::ShaderModuleCreateInfo(getAssetStream("PerVertexLight_VertShader.vsh.spv")->readToEnd<uint32_t>()));
 	buildingInfo.vertexInput.addInputAttribute(posAttrib).addInputAttribute(normalAttrib);
 
+	int32_t doGammaCorrection = 1;
+	pvrvk::ShaderConstantInfo shaderConstant = pvrvk::ShaderConstantInfo(0, &doGammaCorrection, static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::Integer)));
+	buildingInfo.fragmentShader.setShaderConstant(0, shaderConstant);
+
 	// Planar shadow pipeline specific parameters
-	planarShadowInfo.vertexShader = _deviceResources->device->createShader(getAssetStream("PlanarShadow_VertShader_vk.vsh.spv")->readToEnd<uint32_t>());
-	planarShadowInfo.fragmentShader = _deviceResources->device->createShader(getAssetStream("PlanarShadow_FragShader_vk.fsh.spv")->readToEnd<uint32_t>());
+	planarShadowInfo.vertexShader =
+		_deviceResources->device->createShaderModule(pvrvk::ShaderModuleCreateInfo(getAssetStream("PlanarShadow_VertShader.vsh.spv")->readToEnd<uint32_t>()));
+	planarShadowInfo.fragmentShader =
+		_deviceResources->device->createShaderModule(pvrvk::ShaderModuleCreateInfo(getAssetStream("PlanarShadow_FragShader.fsh.spv")->readToEnd<uint32_t>()));
 	planarShadowInfo.colorBlend.setAttachmentState(0,
 		pvrvk::PipelineColorBlendAttachmentState(
 			true, pvrvk::BlendFactor::e_SRC_ALPHA, pvrvk::BlendFactor::e_ONE_MINUS_SRC_ALPHA, pvrvk::BlendOp::e_ADD, pvrvk::BlendFactor::e_ZERO, pvrvk::BlendFactor::e_ONE));
@@ -1211,7 +1266,6 @@ bool VulkanNavigation3D::createPipelines()
 
 void VulkanNavigation3D::recordUICommands()
 {
-	// return;
 	for (uint32_t swapchain = 0; swapchain < _deviceResources->swapchain->getSwapchainLength(); ++swapchain)
 	{
 		_deviceResources->uiElementsCbo[swapchain]->begin(_deviceResources->fbo[swapchain]);
@@ -1224,16 +1278,6 @@ void VulkanNavigation3D::recordUICommands()
 		_deviceResources->uiRenderer.endRendering();
 		_deviceResources->uiElementsCbo[swapchain]->end();
 	}
-}
-
-/*!*********************************************************************************************************************
-\return	auto ptr of the demo supplied by the user
-\brief	This function must be implemented by the user of the shell. The user should return its PVRShell object defining
-the behaviour of the application.
-***********************************************************************************************************************/
-std::unique_ptr<pvr::Shell> pvr::newDemo()
-{
-	return std::unique_ptr<pvr::Shell>(new VulkanNavigation3D());
 }
 
 /*!*********************************************************************************************************************
@@ -1258,4 +1302,11 @@ pvr::Result VulkanNavigation3D::quitApplication()
 {
 	_OSMdata.reset();
 	return pvr::Result::Success;
+}
+
+/// <summary>This function must be implemented by the user of the shell. The user should return its pvr::Shell object defining the behaviour of the application.</summary>
+/// <returns>Return a unique ptr to the demo supplied by the user.</returns>
+std::unique_ptr<pvr::Shell> pvr::newDemo()
+{
+	return std::unique_ptr<pvr::Shell>(new VulkanNavigation3D());
 }

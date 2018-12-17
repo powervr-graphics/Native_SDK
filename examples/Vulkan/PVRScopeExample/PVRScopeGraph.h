@@ -151,6 +151,5 @@ public:
 protected:
 	void updateBufferLines();
 	void update(float dt_millis);
-	void filter();
 	bool createPipeline(const pvrvk::RenderPass& renderPass, const pvrvk::Extent2D& dimension, std::string& errorStr);
 };

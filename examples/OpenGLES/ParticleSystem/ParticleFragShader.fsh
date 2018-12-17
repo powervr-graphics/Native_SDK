@@ -1,7 +1,7 @@
 #version 300 es
 
 in mediump float lifespan;
-layout (location = 0) out lowp vec4 oColor;
+layout(location = 0) out mediump vec4 oColor;
 
 void main()
 {

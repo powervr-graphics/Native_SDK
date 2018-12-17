@@ -19,7 +19,7 @@
 #include <algorithm> // for min, max
 #include <mutex> // for std::mutex
 #include <atomic> // for std::atomic
-#include <malloc.h> // for aligned_alloc()
+#include <cstdlib>
 
 #if (_WIN32)
 #define snprintf _snprintf
@@ -32,7 +32,6 @@ inline void* aligned_alloc(size_t size, size_t alignment)
 }
 
 #endif
-#include "PVRVk/Log.h"
 namespace pvr {
 namespace utils {
 namespace vma {
@@ -43,6 +42,28 @@ class Allocator_;
 class DeviceMemoryWrapper_;
 class DeviceMemoryCallbackDispatcher_;
 //!\cond NO_DOXYGEN
+#ifdef DEBUG
+// Enable the following defines for improved validation of memory usage in debug builds
+// VMA_DEBUG_INITIALIZE_ALLOCATIONS:
+//		Makes memory of all new allocations initialized to bit pattern `0xDCDCDCDC`.
+//		Before an allocation is destroyed, its memory is filled with bit pattern `0xEFEFEFEF`.
+//		If you find these values while debugging your program, good chances are that you incorrectly
+//		read Vulkan memory that is allocated but not initialized, or already freed, respectively.
+#define VMA_DEBUG_INITIALIZE_ALLOCATIONS 1
+// VMA_DEBUG_MARGIN:
+//		Enforces a specified number of bytes as a margin before and after every allocation.
+//		If your bug goes away after enabling margins, it means it may be caused by memory
+//		being overwritten outside of allocation boundaries.It is not100 % certain though. Change in application behavior may also be caused by different order and
+//		distribution of allocations across memory blocks after margins are applied.
+#define VMA_DEBUG_MARGIN 4
+// VMA_DEBUG_DETECT_CORRUPTION:
+//		If this feature is enabled, number of bytes specified as `VMA_DEBUG_MARGIN`
+//		(it must be multiply of 4) before and after every allocation is filled with a magic number. This idea is also know as "canary".
+//		Memory is automatically mapped and unmapped if necessary. This number is validated automatically when the allocation is destroyed.
+//		If it's not equal to the expected value, `VMA_ASSERT()` is executed. It clearly means that either CPU or GPU overwritten the
+//		memory outside of boundaries of the allocation, which indicates a serious bug.
+#define VMA_DEBUG_DETECT_CORRUPTION 1
+#endif
 #include "../../../external/vma/src/vk_mem_alloc.h"
 //!\endcond
 } // namespace impl
@@ -581,6 +602,10 @@ struct PoolCreateInfo
 	/// If you want to allow any allocations other than used in the current frame to
 	/// become lost, set this value to 0.</summary>
 	uint32_t frameInUseCount;
+
+	PoolCreateInfo() : memoryTypeIndex(-1), flags(PoolCreateFlags(0)), blockSize(0), minBlockCount(0), maxBlockCount(0), frameInUseCount(0) {}
+	PoolCreateInfo(uint32_t memoryTypeIndex, PoolCreateFlags flags, pvrvk::DeviceSize blockSize = 0, size_t minBlockCount = 0, size_t maxBlockCount = 0, uint32_t frameInUseCount = 0)
+	{}
 };
 //!\cond NO_DOXYGEN
 namespace impl {
@@ -627,14 +652,14 @@ public:
 		_vkHandle = VK_NULL_HANDLE; // avoid pvrvk::impl::DeviceMemory_ from calling vkFreeMemory
 	}
 
-	virtual void map(void** /*mappedMemory*/, VkDeviceSize /*offset*/, VkDeviceSize /*size*/)
+	virtual void* map(VkDeviceSize /*offset*/, VkDeviceSize /*size*/, pvrvk::MemoryMapFlags /*memoryMapFlags*/)
 	{
-		std::runtime_error("Vma DeviceMemory cannot be mapped, Use Allocation map");
+		throw std::runtime_error("Vma DeviceMemory cannot be mapped, Use Allocation map");
 	}
 
 	virtual void unmap()
 	{
-		std::runtime_error("Vma DeviceMemory cannot be unmapped, Use Allocation unmap");
+		throw std::runtime_error("Vma DeviceMemory cannot be unmapped, Use Allocation unmap");
 	}
 };
 
@@ -666,7 +691,7 @@ public:
 	/// <param name="mappedMemory">Returned mapped data</param>
 	/// <param name="offset">The offset into the device memory to map</param>
 	/// <param name="size">The size of the returned mapped data</param>
-	void map(void** mappedMemory, VkDeviceSize offset = 0, VkDeviceSize size = VK_WHOLE_SIZE);
+	void* map(VkDeviceSize offset = 0, VkDeviceSize size = VK_WHOLE_SIZE, pvrvk::MemoryMapFlags memoryMapFlags = pvrvk::MemoryMapFlags::e_NONE);
 
 	/// <summary>Function unmaps the memory previously mapped by the mapMemory function</summary>
 	void unmap();
@@ -1026,7 +1051,7 @@ inline AllocationCreateFlags Allocation_::getCreateFlags() const
 
 inline bool Allocation_::canBecomeLost() const
 {
-	return (int)(_createFlags & AllocationCreateFlags::e_CAN_BECOME_LOST_BIT) != 0;
+	return static_cast<uint32_t>(_createFlags & AllocationCreateFlags::e_CAN_BECOME_LOST_BIT) != 0;
 }
 
 inline VkDeviceSize Allocation_::getMappedOffset() const

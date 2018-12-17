@@ -73,14 +73,14 @@ public:
 	/// <returns>If True then the application can re-arrange the planes on this display in any order relative to each other.</returns>
 	inline bool getPlaneReorderPossible() const
 	{
-		return _properties.getPlaneReorderPossible();
+		return _properties.getPlaneReorderPossible() != 0;
 	}
 
 	/// <summary>Indicates whether the display supports self-refresh/internal buffering</summary>
 	/// <returns>True if the application can submit persistent present operations on swapchains created against this display</returns>
 	inline bool getPersistentContent() const
 	{
-		return _properties.getPersistentContent();
+		return _properties.getPersistentContent() != 0;
 	}
 
 private:

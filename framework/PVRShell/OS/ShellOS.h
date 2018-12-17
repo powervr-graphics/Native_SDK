@@ -6,7 +6,6 @@ delegated to platform-specific ShellOS.cpp files. Do not access or use directly.
 \copyright Copyright (c) Imagination Technologies Limited.
 */
 #pragma once
-#include "PVRShell/ShellIncludes.h"
 #include "PVRShell/ShellData.h"
 #include "PVRShell/Shell.h"
 namespace pvr {
@@ -85,7 +84,6 @@ inline void ShellOS::setApplicationName(const std::string& appName)
 }
 inline const std::string& ShellOS::getDefaultReadPath() const
 {
-	assertion(_ReadPaths.size() != 0);
 	return _ReadPaths[0];
 }
 inline const std::vector<std::string>& ShellOS::getReadPaths() const

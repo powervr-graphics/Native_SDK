@@ -5,10 +5,10 @@
 \copyright Copyright (c) Imagination Technologies Limited.
 */
 //!\cond NO_DOXYGEN
-#include "PVRCore/IO/FileStream.h"
+#include "PVRCore/stream/FileStream.h"
 #include "PVRUtils/OpenGLES/TextureUtilsGles.h"
-#include "PVRCore/Texture.h"
-#include "PVRCore/Texture/PVRTDecompress.h"
+#include "PVRCore/texture/Texture.h"
+#include "PVRCore/texture/PVRTDecompress.h"
 #include "PVRUtils/OpenGLES/ErrorsGles.h"
 #include "PVRUtils/OpenGLES/BindingsGles.h"
 #include "PVRUtils/OpenGLES/ConvertToGlesTypes.h"
@@ -145,6 +145,7 @@ TextureUploadResults textureUpload(const Texture& texture, bool isEs2, bool allo
 #ifdef GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG
 		case GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG:
 #endif
+
 #if defined(GL_COMPRESSED_RGB_PVRTC_2BPPV1_IMG) || defined(GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG) || defined(GL_COMPRESSED_RGB_PVRTC_4BPPV1_IMG) || \
 	defined(GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG)
 		{
@@ -193,9 +194,72 @@ TextureUploadResults textureUpload(const Texture& texture, bool isEs2, bool allo
 			break;
 		}
 #endif
-#if defined(GL_COMPRESSED_RGBA_PVRTC_2BPPV2_IMG) || defined(GL_COMPRESSED_RGBA_PVRTC_2BPPV2_IMG)
+#ifdef GL_COMPRESSED_SRGB_PVRTC_2BPPV1_EXT
+		case GL_COMPRESSED_SRGB_PVRTC_2BPPV1_EXT:
+#endif
+#ifdef GL_COMPRESSED_SRGB_ALPHA_PVRTC_2BPPV1_EXT
+		case GL_COMPRESSED_SRGB_ALPHA_PVRTC_2BPPV1_EXT:
+#endif
+#ifdef GL_COMPRESSED_SRGB_PVRTC_4BPPV1_EXT
+		case GL_COMPRESSED_SRGB_PVRTC_4BPPV1_EXT:
+#endif
+#ifdef GL_COMPRESSED_SRGB_ALPHA_PVRTC_4BPPV1_EXT
+		case GL_COMPRESSED_SRGB_ALPHA_PVRTC_4BPPV1_EXT:
+#endif
+#if defined(GL_COMPRESSED_SRGB_PVRTC_2BPPV1_EXT) || defined(GL_COMPRESSED_SRGB_ALPHA_PVRTC_2BPPV1_EXT) || defined(GL_COMPRESSED_SRGB_PVRTC_4BPPV1_EXT) || \
+	defined(GL_COMPRESSED_SRGB_ALPHA_PVRTC_4BPPV1_EXT)
+		{
+			if (!gl::isGlExtensionSupported("GL_EXT_pvrtc_sRGB"))
+			{
+				if (allowDecompress)
+				{
+					// No longer compressed if this is the case.
+					isCompressedFormat = false;
+
+					// Set up the new texture and header.
+					TextureHeader cDecompressedHeader(texture);
+					cDecompressedHeader.setPixelFormat(GeneratePixelType4<'r', 'g', 'b', 'a', 8, 8, 8, 8>::ID);
+
+					cDecompressedHeader.setChannelType(VariableType::UnsignedByteNorm);
+					cDecompressedTexture = Texture(cDecompressedHeader);
+
+					// Update the texture format.
+					utils::getOpenGLFormat(cDecompressedTexture.getPixelFormat(), cDecompressedTexture.getColorSpace(), cDecompressedTexture.getChannelType(), glInternalFormat,
+						glFormat, glType, glTypeSize, unused);
+
+					// Do decompression, one surface at a time.
+					for (uint32_t uiMIPLevel = 0; uiMIPLevel < textureToUse->getNumMipMapLevels(); ++uiMIPLevel)
+					{
+						for (uint32_t uiArray = 0; uiArray < textureToUse->getNumArrayMembers(); ++uiArray)
+						{
+							for (uint32_t uiFace = 0; uiFace < textureToUse->getNumFaces(); ++uiFace)
+							{
+								PVRTDecompressPVRTC(textureToUse->getDataPointer(uiMIPLevel, uiArray, uiFace), (textureToUse->getBitsPerPixel() == 2 ? 1 : 0),
+									textureToUse->getWidth(uiMIPLevel), textureToUse->getHeight(uiMIPLevel), cDecompressedTexture.getDataPointer(uiMIPLevel, uiArray, uiFace));
+							}
+						}
+					}
+					// Make sure the function knows to use a decompressed texture instead.
+					textureToUse = &cDecompressedTexture;
+
+					retval.isDecompressed = true;
+				}
+				else
+				{
+					throw GlExtensionNotSupportedError("GL_EXT_pvrtc_sRGB",
+						"[textureUplodad] Format was unsupported in this implementation."
+						"Allowing software decompression (allowDecompress=true) will enable you to use this format.");
+				}
+			}
+			break;
+		}
+#endif
+#if defined(GL_COMPRESSED_RGBA_PVRTC_2BPPV2_IMG) || defined(GL_COMPRESSED_RGBA_PVRTC_4BPPV2_IMG) || defined(GL_COMPRESSED_SRGB_ALPHA_PVRTC_2BPPV2_IMG) || \
+	defined(GL_COMPRESSED_SRGB_ALPHA_PVRTC_4BPPV2_IMG)
 		case GL_COMPRESSED_RGBA_PVRTC_2BPPV2_IMG:
 		case GL_COMPRESSED_RGBA_PVRTC_4BPPV2_IMG:
+		case GL_COMPRESSED_SRGB_ALPHA_PVRTC_2BPPV2_IMG:
+		case GL_COMPRESSED_SRGB_ALPHA_PVRTC_4BPPV2_IMG:
 		{
 			if (!gl::isGlExtensionSupported("GL_IMG_texture_compression_pvrtc2"))
 			{
@@ -279,9 +343,10 @@ TextureUploadResults textureUpload(const Texture& texture, bool isEs2, bool allo
 			if ((glInternalFormat >= GL_COMPRESSED_RGBA_ASTC_4x4_KHR && glInternalFormat <= GL_COMPRESSED_RGBA_ASTC_12x12_KHR) ||
 				(glInternalFormat >= GL_COMPRESSED_SRGB8_ALPHA8_ASTC_4x4_KHR && glInternalFormat <= GL_COMPRESSED_SRGB8_ALPHA8_ASTC_12x12_KHR))
 			{
-				if (!gl::isGlExtensionSupported("GL_KHR_texture_compression_astc_hdr"))
+				if (!gl::isGlExtensionSupported("GL_KHR_texture_compression_astc_hdr") && !gl::isGlExtensionSupported("GL_KHR_texture_compression_astc_ldr"))
 				{
-					throw GlExtensionNotSupportedError("GL_KHR_texture_compression_astc_hdr", "[textureUplodad] Format was unsupported in this implementation.");
+					throw GlExtensionNotSupportedError(
+						"GL_KHR_texture_compression_astc_hdr/GL_KHR_texture_compression_astc_ldr", "[textureUplodad] Format was unsupported in this implementation.");
 				}
 			}
 #endif

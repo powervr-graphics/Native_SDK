@@ -1,20 +1,21 @@
 #pragma once
 #include "PVRAssets/PVRAssets.h"
 #include <deque>
+#include <set>
 
-/***Road types - colour uniforms***/
-const glm::vec4 ClearColor(.8, 0.8, 0.8, 1.f);
-const glm::vec4 RoadAreaColourUniform(0.690, 0.769, 0.871, 1.0f);
-const glm::vec4 MotorwayColour(1.000, 0.627, 0.478, 1.0f);
-const glm::vec4 TrunkRoadColour(0.9725f, 0.6980f, 0.6117f, 1.0f);
-const glm::vec4 PrimaryRoadColour(0.9882f, 0.8392f, 0.6431f, 1.0f);
-const glm::vec4 SecondaryRoadColour(1.0f, 1.0f, 0.5019f, 1.0f);
-const glm::vec4 ServiceRoadColour(0.996f, 0.996f, 0.996f, 1.0f);
-const glm::vec4 OtherRoadColour(0.996f, 0.996f, 0.996f, 1.0f);
+/***Road types - color uniforms***/
+const glm::vec4 ClearColorLinearSpace(0.65f, 0.65f, 0.65f, 1.0f);
+const glm::vec4 RoadAreaColorLinearSpace(0.390f, 0.469f, 0.571f, 1.0f);
+const glm::vec4 MotorwayColorLinearSpace(1.000f, 0.327f, 0.178f, 1.0f);
+const glm::vec4 TrunkRoadColorLinearSpace(0.6725f, 0.3980f, 0.3117f, 1.0f);
+const glm::vec4 PrimaryRoadColorLinearSpace(0.6882f, 0.5392f, 0.3431f, 1.0f);
+const glm::vec4 SecondaryRoadColorLinearSpace(1.0f, 1.0f, 0.2019f, 1.0f);
+const glm::vec4 ServiceRoadColorLinearSpace(0.696f, 0.696f, 0.696f, 1.0f);
+const glm::vec4 OtherRoadColorLinearSpace(0.696f, 0.696f, 0.696f, 1.0f);
 /**************************/
-const glm::vec4 ParkingColourUniform(0.9412f, 0.902f, 0.549f, 1.0f);
-const glm::vec4 BuildColourUniform(0.65, 0.65, 0.65, 1.f);
-const glm::vec4 OutlineColourUniform(0.4392f, 0.5412f, 0.5647f, 1.0f);
+const glm::vec4 ParkingColorLinearSpace(0.6412f, 0.602f, 0.249f, 1.0f);
+const glm::vec4 BuildingColorLinearSpace(0.28f, 0.28f, 0.28f, 1.0f);
+const glm::vec4 OutlineColorLinearSpace(0.2392f, 0.3412f, 0.3647f, 1.0f);
 
 // Describes the different types of way, used for tiling.
 namespace WayTypes {
@@ -402,12 +403,7 @@ typedef double Real;
 const double boundaryBufferX = 0.05;
 const double boundaryBufferY = 0.05;
 
-// Calcuate the rotate time in millisec
-// inline float cameraRotationTimeInMs(float angleDeg, float speed)
-//{
-//	return glm::abs(angleDeg / speed) * 1000;
-//}
-
+// Calculate the rotate time in millisec
 inline float cameraRotationTimeInMs(float angleDeg, float ms360)
 {
 	return glm::abs(angleDeg / 360.f * ms360);
@@ -682,7 +678,7 @@ inline bool compareID(const Vertex* const a, const Vertex* const b)
 template<typename Vec2>
 inline bool rayIntersect(const Vec2& p0, const Vec2& d0, const Vec2& p1, const Vec2& d1, typename Vec2::value_type& outDistanceD0, Vec2& outIntersectionPoint)
 {
-	typedef glm::detail::tvec3<typename Vec2::value_type, glm::precision::defaultp> Vec3;
+	typedef glm::tvec3<typename Vec2::value_type, glm::precision::defaultp> Vec3;
 	outIntersectionPoint = p0;
 	outDistanceD0 = 0;
 	if (isVectorEqual(p0, p1))
@@ -732,8 +728,8 @@ template<typename Vec2>
 inline typename Vec2::value_type vectorAngleSine(const Vec2& d0, const Vec2& d1)
 {
 	using namespace glm;
-	return glm::length(glm::cross(normalize(detail::tvec3<typename Vec2::value_type, glm::precision::defaultp>(d0, 0.)),
-		normalize(glm::detail::tvec3<typename Vec2::value_type, glm::precision::defaultp>(d1, 0.))));
+	return glm::length(glm::cross(
+		normalize(glm::tvec3<typename Vec2::value_type, glm::precision::defaultp>(d0, 0.)), normalize(glm::tvec3<typename Vec2::value_type, glm::precision::defaultp>(d1, 0.))));
 }
 
 template<typename Vec2>
@@ -807,7 +803,7 @@ inline void cleanString(std::string& s)
 ***********************************************************************************************************************/
 inline double getRoadWidth(RoadTypes::RoadTypes type)
 {
-	static const float roadWidths[] = { .015f, .014f, .013f, .012f, .010f, .008f };
+	static const float roadWidths[] = { 0.015f, 0.014f, 0.013f, 0.012f, 0.010f, 0.008f };
 	return roadWidths[type];
 }
 
@@ -906,7 +902,7 @@ inline const std::string& getIntersectionRoadName(const std::vector<std::pair<Ta
 /*!*********************************************************************************************************************
 \return RoadTypes the type of road.
 \param  ways Reference to a vector of ways which make up the intersection.
-\brief  Finds the dominant road type for a given intersection (used to colour
+\brief  Finds the dominant road type for a given intersection (used to color
 the intersection based on the road type).
 ***********************************************************************************************************************/
 inline RoadTypes::RoadTypes getIntersectionRoadType(const std::vector<Way>& ways)
@@ -985,7 +981,9 @@ inline bool initializeBuildingTypesMap(std::map<std::string, BuildingType::Build
 inline BuildingType::BuildingType getBuildingType(Tag* tags, size_t numTags)
 {
 	static std::map<std::string, BuildingType::BuildingType> strings;
+
 	static bool used_to_initialize = initializeBuildingTypesMap(strings);
+
 	for (size_t i = 0; i < numTags; ++i)
 	{
 		auto& tag = tags[i];
@@ -1109,8 +1107,8 @@ inline void remapItemCoordinates(NavDataProcess& navDataProcess, uint32_t& numCo
 
 			tile.screenMax = remap(tile.max, navDataProcess.getTiles()[0][0].min, navDataProcess.getTiles()[numCols - 1][numRows - 1].max, -mapWorldDim * .5, mapWorldDim * .5);
 
-			const float newMax = (float)glm::length(mapWorldDim);
-			const float oldMax = (float)glm::length(navDataProcess.getTiles()[numCols - 1][numRows - 1].max);
+			const float newMax = static_cast<float>(glm::length(mapWorldDim));
+			const float oldMax = static_cast<float>(glm::length(navDataProcess.getTiles()[numCols - 1][numRows - 1].max));
 
 			for (uint32_t lod = 0; lod < LOD::Count; ++lod)
 			{

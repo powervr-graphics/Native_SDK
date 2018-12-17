@@ -1,0 +1,250 @@
+
+
+<!doctype html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Build Instructions &#8212; PowerVR SDK Browser  documentation</title>
+    <link rel="stylesheet" href="_static/img_style.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/img_style.js"></script>
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="PowerVR SDK Framework" href="Framework.html" />
+    <link rel="prev" title="The PowerVR SDK" href="Introduction.html" />
+<div id="GlobalHeaderContainer">
+		<div id="GlobalHeader">
+			<div class="logo">
+				<a href="https://www.imgtec.com/developers/" target="_blank"><img src="_static/PVRlogo.png"/></a>
+            </div>
+			<div class="sitetitle"> PowerVR SDK Browser </div>
+		</div>
+</div>
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="Framework.html" title="PowerVR SDK Framework"
+             accesskey="N">next</a></li>
+        <li class="right" >
+          <a href="Introduction.html" title="The PowerVR SDK"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">PowerVR SDK Browser  documentation</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h3><a href="index.html">Table of Contents</a></h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Introduction.html">The PowerVR SDK</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Build Instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Framework.html">PowerVR SDK Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ExamplesOpenGLES.html">OpenGLES Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ExamplesVulkan.html">Vulkan Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Documentation.html">Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Licence.html">EULA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Contact.html">Contact Us</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="build-instructions">
+<h1>Build Instructions<a class="headerlink" href="#build-instructions" title="Permalink to this headline">¶</a></h1>
+<p>All the projects in this SDK are based on <a class="reference external" href="https://cmake.org/">CMake</a>, an open-source, cross-platform tool designed to create project files for a variety of compilers and IDEs.
+Please download CMake from <a class="reference external" href="https://cmake.org/download/">the CMake website</a> and install it to be able to create the projects to build our SDK.</p>
+<p>Android builds use the same CMake files, integrated in the Android gradle-based build system. To build for Android, follow the specific instructions for Android - do not run CMake manually. It is not necessary to download CMake to build for Android, as it is bundled in the Android SDK. See the <a class="reference internal" href="#android-instructions">Android instructions</a>.</p>
+<p>Each example in the SDK contains:</p>
+<ul class="simple">
+<li>The CMake file</li>
+<li>Supporting files in a folder called <code class="docutils literal notranslate"><span class="pre">cmake-resources</span></code>. These are files needed to generate CMake projects for some platforms.</li>
+<li>Android build scripts in a <code class="docutils literal notranslate"><span class="pre">android-build</span></code> folder. These will build that example, including both Framework and external dependencies.</li>
+</ul>
+<p>There is also a global CMake file and <code class="docutils literal notranslate"><span class="pre">android-build</span></code> at the root of the SDK, which will build all the examples and Framework projects together.</p>
+<div class="section" id="cmake-instructions">
+<h2>CMake instructions<a class="headerlink" href="#cmake-instructions" title="Permalink to this headline">¶</a></h2>
+<p>For building on Android, do not call CMake manually as the Android build system calls it at the correct time. See the <a class="reference internal" href="#android-instructions">Android instructions</a>.</p>
+<ul>
+<li><p class="first">Create a directory for the generated files, and navigate to this directory.</p>
+</li>
+<li><p class="first">Execute CMake, pointing it to the directory where the <code class="docutils literal notranslate"><span class="pre">CMakeLists.txt</span></code> is located.</p>
+<p>For example: from <code class="docutils literal notranslate"><span class="pre">[path-to-sdk]/cmake-build/</span></code>, or from <code class="docutils literal notranslate"><span class="pre">[path-to-sdk]/examples/[example_api]/[example_name]/</span></code> folder:</p>
+<p><code class="docutils literal notranslate"><span class="pre">cmake</span> <span class="pre">..</span></code> (optionally <code class="docutils literal notranslate"><span class="pre">-G</span></code> for Unix Makefiles, Visual Studio 15, Xcode, Eclipse and so on)</p>
+</li>
+</ul>
+<div class="section" id="building-the-generated-project">
+<h3>Building the generated project<a class="headerlink" href="#building-the-generated-project" title="Permalink to this headline">¶</a></h3>
+<p>The projects can be built as usual based on the types of projects selected, such as through Visual Studio or calling <code class="docutils literal notranslate"><span class="pre">make</span></code> for the makefiles.</p>
+<p>Binaries are output in the <code class="docutils literal notranslate"><span class="pre">bin</span></code> subfolder of the CMake build folder or <code class="docutils literal notranslate"><span class="pre">android-build</span></code> folder.</p>
+<div class="section" id="unix-makefiles">
+<h4>Unix Makefiles<a class="headerlink" href="#unix-makefiles" title="Permalink to this headline">¶</a></h4>
+<p>Unix makefiles are the default way to build on on Linux, but also work anywhere where a <code class="docutils literal notranslate"><span class="pre">make</span></code> program exists.</p>
+<p>Unix makefiles can also be used on macOS and potentially other platforms that support a <code class="docutils literal notranslate"><span class="pre">make</span></code> command.</p>
+<p>Building the project is performed by calling <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">[-j8</span> <span class="pre">,</span> <span class="pre">other</span> <span class="pre">options]</span></code></p>
+<p><strong>Note:</strong> Always pass the <code class="docutils literal notranslate"><span class="pre">-j[some</span> <span class="pre">number]</span></code> parameter with a number close to the number of CPU cores on the system when building with makefiles. This speeds the build up <em>considerably</em>. We have found <code class="docutils literal notranslate"><span class="pre">-j8</span></code> to be safe and suitable for a lot of systems.</p>
+</div>
+<div class="section" id="windows-visual-studio">
+<h4>Windows Visual Studio<a class="headerlink" href="#windows-visual-studio" title="Permalink to this headline">¶</a></h4>
+<p>Microsoft Visual Studio is the default generator on Windows. CMake cannot generate multi-architecture projects (ones that support both 32-bit and 64-bit) as is conventional for those familiar with MSVC, so only one can be selected. It is recommended to use 64-bit if it is available, but both are fully supported.</p>
+<p>The default CMake architecture is 32-bit. It can be set to 64-bit by passing the <code class="docutils literal notranslate"><span class="pre">-A[x64]</span></code> parameter.</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">cmake</span> <span class="pre">[path-to-CMakeLists.txt]</span></code> - generates a solution for the installed version of Visual Studio, 32-bit</li>
+<li><code class="docutils literal notranslate"><span class="pre">cmake</span> <span class="pre">[path-to-CMakeLists.txt]</span> <span class="pre">-Ax64</span></code> - generates a solution for the installed version of Visual Studio, 64-bit</li>
+<li><code class="docutils literal notranslate"><span class="pre">cmake</span> <span class="pre">[path-to-CMakeLists.txt]</span> <span class="pre">-G</span> <span class="pre">&quot;Visual</span> <span class="pre">Studio</span> <span class="pre">15&quot;</span> <span class="pre">-Ax64</span></code> - generates Visual Studio 2017 solution, 64-bit</li>
+<li>… and so on</li>
+</ul>
+</div>
+<div class="section" id="xcode-when-targetting-macos">
+<h4>Xcode (when targetting macOS)<a class="headerlink" href="#xcode-when-targetting-macos" title="Permalink to this headline">¶</a></h4>
+<p>In order to generate Xcode projects, the Xcode generator must be explicitly passed:</p>
+<p><code class="docutils literal notranslate"><span class="pre">cmake</span> <span class="pre">[path-to-CMakeLists.txt]</span> <span class="pre">-G</span> <span class="pre">Xcode</span></code></p>
+<p>The generated project files can be opened with Xcode as normal, or built from command-line with <code class="docutils literal notranslate"><span class="pre">xcodebuild</span></code> or <code class="docutils literal notranslate"><span class="pre">cmake</span> <span class="pre">--build</span> <span class="pre">.</span></code></p>
+</div>
+<div class="section" id="xcode-when-targeting-ios">
+<h4>Xcode (when targeting iOS)<a class="headerlink" href="#xcode-when-targeting-ios" title="Permalink to this headline">¶</a></h4>
+<p>The instructions for iOS are the same as macOS except a CMake toolchain file needs to be passed, as iOS is cross-compiled. This is provided in <code class="docutils literal notranslate"><span class="pre">[path-to-sdk]/cmake/toolchains/Darwin-gcc-ios</span></code></p>
+<p>Generate the Xcode projects with:</p>
+<p><code class="docutils literal notranslate"><span class="pre">cmake</span> <span class="pre">[path-to-CMakeLists.txt]</span> <span class="pre">-G</span> <span class="pre">Xcode</span> <span class="pre">-DCMAKE_TOOLCHAIN_FILE=[path-to-sdk]/cmake/toolchains/Darwin-gcc-ios.cmake</span></code></p>
+</div>
+</div>
+<div class="section" id="cmake-supported-parameters">
+<h3>CMake supported Parameters<a class="headerlink" href="#cmake-supported-parameters" title="Permalink to this headline">¶</a></h3>
+<p>Parameters can be passed to CMake using the <code class="docutils literal notranslate"><span class="pre">-D[PARAM_NAME]=[PARAM_VALUE]</span></code> syntax. There are many built-in parameters that can be passed to control aspects of the build. See the CMake documentation for more information on advanced usage.</p>
+<p>There are a few PowerVR SDK specific parameters defined. The most important ones are as follows:</p>
+<ul class="simple">
+<li><strong>-DCMAKE_BUILD_TYPE</strong> : The build variant. Supported values: Debug, <strong>Release (Default)</strong>, MinSizeRel, RelWithDebInfo</li>
+<li><strong>-DBUILD_OPENGLES_EXAMPLES</strong> (Optional): Pass this parameter if both Vulkan and OpenGL examples are downloaded but, for whatever reason, only a solution for the OpenGL ES ones is required</li>
+<li><strong>-DBUILD_VULKAN_EXAMPLES</strong> (Optional): Pass this parameter if both Vulkan and OpenGL examples are downloaded but, for whatever reason, only a solution for the Vulkan ones is required</li>
+<li><strong>-DWS=[NullWS (default), X11, Wayland, Screen]</strong> : (Linux and QNX Only) - controls the windowing system. Usually, desktop Linux systems will be running an X11/XCB or Wayland server. Development platforms often use a NullWS system which is where the GPU renders to the screen directly without a windowing system. Screen is commonly used on QNX. Normally <code class="docutils literal notranslate"><span class="pre">-DWS=X11</span></code> or <code class="docutils literal notranslate"><span class="pre">-DWS=Wayland</span></code> is needed for typical desktop PCs running Linux, and <code class="docutils literal notranslate"><span class="pre">-DWS=X11</span></code>, <code class="docutils literal notranslate"><span class="pre">-DWS=Wayland</span></code> or <code class="docutils literal notranslate"><span class="pre">-DWS=NullWS</span></code> for developer boards.</li>
+</ul>
+</div>
+<div class="section" id="cross-compilation">
+<h3>Cross-compilation<a class="headerlink" href="#cross-compilation" title="Permalink to this headline">¶</a></h3>
+<p>CMake uses toolchain files for cross-compiling. These are usually not necessary when targeting the machine that is being built on, also known as native or host compilation.</p>
+<p>For cross-compiling, there are several different CMake toolchain files for a number of different architectures on Linux (armv7, armv7hf, armv8, x86_32, x86_64, mips32, mips64), QNX (aarch64le, armle-v7, x86_32, x86_64) and iOS. These can be found in <code class="docutils literal notranslate"><span class="pre">[path-to-sdk]/cmake/toolchains</span></code>, and they can be used as guidance to make a different build setup.</p>
+<p>Toolchains are passed directly to the CMake command-line: <code class="docutils literal notranslate"><span class="pre">cmake</span> <span class="pre">../..</span> <span class="pre">-DCMAKE_TOOLCHAIN_FILE=[path-to-sdk]/cmake/toolchains/Linux-gcc-armv8</span></code></p>
+</div>
+</div>
+<div class="section" id="android-instructions">
+<h2>Android instructions<a class="headerlink" href="#android-instructions" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="setup">
+<h3>Setup<a class="headerlink" href="#setup" title="Permalink to this headline">¶</a></h3>
+<p>Download the <a class="reference external" href="https://developer.android.com/studio/index.html">Android SDK</a> and NDK, and configure it with the Android platforms required. The examples currently use Android 26 but can easily be changed. We recommend using Android Studio, but the command-line tools work as well.</p>
+<p>If using Android Studio:</p>
+<ul class="simple">
+<li>Use the dialog: <code class="docutils literal notranslate"><span class="pre">Import</span> <span class="pre">project</span></code>, and import the <code class="docutils literal notranslate"><span class="pre">build-android</span></code> folder for building.</li>
+<li>Go to Tools&gt;Android&gt;SDK Manager and download the NDK, CMake, LLDB, Android platform 26, and Android build tools.</li>
+<li>Follow the IDE prompts to download and configure any additional packages required.</li>
+</ul>
+<p>If using command-line tools:</p>
+<ul class="simple">
+<li>Use the Android SDK Manager and download the NDK, CMake, LLDB, Android platform 26, and Android build tools.</li>
+<li>Navigate to the <code class="docutils literal notranslate"><span class="pre">build-android</span></code> folder either in the root of the SDK, or in the folder of the example for building.</li>
+<li>Create a <code class="docutils literal notranslate"><span class="pre">local.properties</span></code> file variable, and add the line <code class="docutils literal notranslate"><span class="pre">sdk-dir=[path-to-the-ANDROID-sdk]</span></code>, or add an environment variable <code class="docutils literal notranslate"><span class="pre">ANDROID_HOME=[path-to-the-ANDROID-sdk]</span></code>.</li>
+</ul>
+</div>
+<div class="section" id="gradle-basics">
+<h3>Gradle basics<a class="headerlink" href="#gradle-basics" title="Permalink to this headline">¶</a></h3>
+<p>Android uses its own build system, which uses CMake internally. It is not necessary to call CMake directly, instead, run Gradle or the Gradle Wrapper and it will call CMake when necessary.</p>
+<p>Each example has a <code class="docutils literal notranslate"><span class="pre">build-android</span></code> folder which contains the necessary Gradle project files for only that example, and a <code class="docutils literal notranslate"><span class="pre">build-android</span></code> folder in the root of the SDK for building the entire SDK.</p>
+<p>The easiest way to build, run, and debug with Gradle is to download and use Android Studio from Google. This is highly recommended, if nothing else for the easy on-device debugging that it offers.</p>
+<p><strong>*Note:</strong> Use Google’s documentation for general instructions on using Android Studio. The UI is intuitive and we do not require special steps. Android Studio may prompt for downloading and installing various packages, or updating the examples when newer versions of plugins are available.</p>
+<p>Building from the command-line is very easy. The <code class="docutils literal notranslate"><span class="pre">gradle</span> <span class="pre">wrapper</span></code> is used to avoid downloading and installing <code class="docutils literal notranslate"><span class="pre">gradle</span></code>. The wrapper is a tiny script located in the corresponding <code class="docutils literal notranslate"><span class="pre">build-android</span></code> folder. The wrapper will automatically download (if not present) the required Gradle version and run it. Using the Gradle wrapper is optional, it can still be downloaded and installed manually.</p>
+<p>To use the Gradle wrapper:</p>
+<ul class="simple">
+<li>Run <code class="docutils literal notranslate"><span class="pre">gradlew</span> <span class="pre">assemble[Debug/Release]</span> <span class="pre">[parameters]</span></code> from the <code class="docutils literal notranslate"><span class="pre">build-android</span></code> folder</li>
+</ul>
+<p>To use Gradle:</p>
+<ul class="simple">
+<li>Download, install, and add Gradle to the path</li>
+<li>Run <code class="docutils literal notranslate"><span class="pre">gradle</span> <span class="pre">assemble[Debug/Release]</span> <span class="pre">[parameters]</span></code> from the <code class="docutils literal notranslate"><span class="pre">build-android</span></code> folder</li>
+</ul>
+</div>
+<div class="section" id="gradle-properties">
+<h3>Gradle properties<a class="headerlink" href="#gradle-properties" title="Permalink to this headline">¶</a></h3>
+<p>There are a few different properties that can/need to be configured. These can be set up in different places:</p>
+<ul class="simple">
+<li>A <code class="docutils literal notranslate"><span class="pre">gradle.properties</span></code> file in each example or Framework module configures properties for that project.</li>
+<li>A global <code class="docutils literal notranslate"><span class="pre">gradle.properties</span></code> file in the <code class="docutils literal notranslate"><span class="pre">GRADLE_USER_HOME</span></code> directory. This is not provided, but it is very convenient to globally override all the SDK options. For example - key signing, or for changing the target Android ABI for the whole SDK.</li>
+<li>The properties can be passed as command-line parameters, by passing <code class="docutils literal notranslate"><span class="pre">-P[PARAM_NAME]=[PARAM_VALUE]</span></code> to the command-line.</li>
+</ul>
+<div class="section" id="android-abis">
+<h4>Android ABIs<a class="headerlink" href="#android-abis" title="Permalink to this headline">¶</a></h4>
+<p>By default, every example’s <code class="docutils literal notranslate"><span class="pre">gradle.properties</span></code> file has an <code class="docutils literal notranslate"><span class="pre">ANDROID_ABIS=x86,x86_64,armeabi-v7a,arm64-v8a</span></code> entry. This creates an apk that targets those architectures.</p>
+<p>During development it is usually preferable to build only for your platform’s architecture to decrease build times. To change the architectures which are built, there are several options:</p>
+<ul class="simple">
+<li>Change the properties in each required project</li>
+<li>Add a corresponding line to the global <code class="docutils literal notranslate"><span class="pre">gradle.properties</span></code> file. This overrides per-project properties.</li>
+<li>Build with, for example, <code class="docutils literal notranslate"><span class="pre">gradlew</span> <span class="pre">assembleDebug</span> <span class="pre">-PANDROID_ABIS=armeabi-v7a</span></code>. This overrides both <code class="docutils literal notranslate"><span class="pre">gradle.properties</span></code> files.</li>
+</ul>
+</div>
+<div class="section" id="apk-signing">
+<h4>APK Signing<a class="headerlink" href="#apk-signing" title="Permalink to this headline">¶</a></h4>
+<p>The provided Gradle scripts have provision for signing the release apks. This is achieved by setting properties in your apks. We recommend that if you set up your own keystore, add your usernames and key aliases to a global <code class="docutils literal notranslate"><span class="pre">gradle.properties</span></code>, and pass the passwords through the command-line.</p>
+<p>The following properties must be set either per project in per-project <code class="docutils literal notranslate"><span class="pre">gradle.properties</span></code>, or globally in system-wide <code class="docutils literal notranslate"><span class="pre">gradle.properties</span></code> or through the command-line with <code class="docutils literal notranslate"><span class="pre">-PNOSIGN</span></code>:</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">KEYSTORE=[Path-to-keystore-file]</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">KEYSTORE_PASSWORD=[Password-to-keystore]</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">KEY_ALIAS=[Alias-to-signing-key]</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">KEY_PASSWORD=[Password-to-signing]</span></code></li>
+</ul>
+<p>If the release apks do not need to be signed, pass the parameter <code class="docutils literal notranslate"><span class="pre">NOSIGN</span></code> with any value to disable signing:</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">NOSIGN=[anything]</span></code></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="Framework.html" title="PowerVR SDK Framework"
+             >next</a></li>
+        <li class="right" >
+          <a href="Introduction.html" title="The PowerVR SDK"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">PowerVR SDK Browser  documentation</a> &#187;</li> 
+      </ul>
+    </div>
+<div id="FooterMainContainer">
+    <div id="FooterContainer">
+		<div class="footerlogo">
+			<a href="http://www.imgtec.com" target="_blank"><img src="_static/img-footer-logo-grey.png" width="100%" height="100%" /></a>
+		</div>
+	<div class="copyright">&copy; Imagination Technologies Limited<br> All rights reserved</div>
+	</div>
+</div>
+  </body>
+</html>

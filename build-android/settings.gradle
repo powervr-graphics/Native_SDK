@@ -1,4 +1,4 @@
-rootProject.name='PowerVR SDK'
+rootProject.name='PowerVR_SDK'
 
 ext['BUILD_ENTIRE_SDK'] = 1
 
@@ -25,14 +25,16 @@ def OPENGLES_EXAMPLES = [
 	'PVRScopeExample',
 	'PVRScopeRemote',
 	'IMGFramebufferDownsample',
-	'IMGTextureFilterCubic'
+	'IMGTextureFilterCubic',
+	'ImageBasedLighting'
 ]
 
 def VULKAN_EXAMPLES = [ 
 	'01_HelloAPI',
 	'02_IntroducingPVRShell',
-	'03_IntroducingPVRUtils',
-	'04_IntroducingUIRenderer',
+	'03_IntroducingPVRVk',
+	'04_IntroducingPVRUtils',
+	'05_IntroducingUIRenderer',
 	'Skinning',
 	'MultiSampling',
 	'PostProcessing',
@@ -48,7 +50,8 @@ def VULKAN_EXAMPLES = [
 	'DeferredShadingPFX',
 	'Glass',
 	'PVRScopeExample',
-	'PVRScopeRemote'
+	'PVRScopeRemote',
+	'ImageBasedLighting'
 ]
 
 include('PVRCore')
@@ -75,6 +78,8 @@ if (hasProperty('BUILD_VULKAN_EXAMPLES')) {
 	project(':PVRVk').projectDir=file('../framework/PVRVk/build-android')
 	include(':PVRUtilsVk')
 	project(':PVRUtilsVk').projectDir=file('../framework/PVRUtils/Vulkan/build-android')
+	include(':PVRPfx')
+	project(':PVRPfx').projectDir=file('../framework/PVRPfx/build-android')
 
 	VULKAN_EXAMPLES.each { example ->
 		include(":Vulkan${example.indexOf('_') == 2 ? example.substring(3) : example}")

@@ -1,3 +1,4 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$structpvr_1_1_generic_offset2_d.html" title="The GenericOffset2D contains a 16&#45;bit 2D offset (offsetX, offsetY)" alt="" coords="5,5,184,32"/>
+<area shape="rect" id="node1" href="$structpvr_1_1effect_1_1_texture_ref.html" title="Stores effect texture information." alt="" coords="5,5,160,32"/>
+<area shape="rect" id="node2" href="$structpvr_1_1effect_1_1_texture_reference.html" title="Stores effect texture information." alt="" coords="209,5,402,32"/>
 </map>

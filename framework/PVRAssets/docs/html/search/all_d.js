@@ -1,8 +1,21 @@
 var searchData=
 [
-  ['objectindex',['objectIndex',['../structpvr_1_1assets_1_1_model_1_1_node_1_1_internal_data.html#ab4ec60148de7f4ac82aac404247faac4',1,'pvr::assets::Model::Node::InternalData']]],
-  ['offsets',['offsets',['../structpvr_1_1assets_1_1_mesh_1_1_bone_batches.html#abf824727924d3f5aa733d60a2226e44f',1,'pvr::assets::Mesh::BoneBatches']]],
-  ['operator_3c',['operator&lt;',['../classpvr_1_1assets_1_1_mesh_1_1_vertex_attribute_data.html#a4c819b8531a4f6073f0b37c6eb60b780',1,'pvr::assets::Mesh::VertexAttributeData']]],
-  ['operator_3d_3d',['operator==',['../classpvr_1_1assets_1_1_mesh_1_1_vertex_attribute_data.html#ade6d53bfac8c77b54fd7294363e8a8b5',1,'pvr::assets::Mesh::VertexAttributeData']]],
-  ['operator_5b_5d',['operator[]',['../classpvr_1_1_skip_graph_root.html#a1e7a0d271d296ecf6438ccc955b62d6c',1,'pvr::SkipGraphRoot::operator[](uint32_t nodeId)'],['../classpvr_1_1_skip_graph_root.html#a4dc9b46a1e5833000d6f4c9938cee66b',1,'pvr::SkipGraphRoot::operator[](uint32_t nodeId) const ']]]
+  ['name',['name',['../structpvr_1_1assets_1_1_model_1_1_node_1_1_internal_data.html#af76d8f173d35b7a999da2373a798da57',1,'pvr::assets::Model::Node::InternalData::name()'],['../structpvr_1_1assets_1_1_model_1_1_material_1_1_internal_data.html#ac5b4bf55af616ee87ffed52fb056cbc5',1,'pvr::assets::Model::Material::InternalData::name()']]],
+  ['nearclip',['nearClip',['../structpvr_1_1assets_1_1_camera_1_1_internal_data.html#ad8da6724a9dc37d690a90f695247fcd0',1,'pvr::assets::Camera::InternalData']]],
+  ['node',['Node',['../classpvr_1_1assets_1_1_model_1_1_node.html',1,'pvr::assets::Model']]],
+  ['node',['Node',['../namespacepvr_1_1assets.html#ac02baf97dd53df9b348d1937ea312089',1,'pvr::assets']]],
+  ['nodehandle',['NodeHandle',['../namespacepvr_1_1assets.html#a7804265895df4f884d4e32b2886862a8',1,'pvr::assets']]],
+  ['nodes',['nodes',['../structpvr_1_1assets_1_1_model_1_1_internal_data.html#a59eadc7de3f46e45f1d22eba27314bad',1,'pvr::assets::Model::InternalData']]],
+  ['normal',['normal',['../structpvr_1_1_volume_1_1_volume_triangle.html#a7bae53ef7d3bfacf1449d762943188d1',1,'pvr::Volume::VolumeTriangle']]],
+  ['numbones',['numBones',['../structpvr_1_1assets_1_1_mesh_1_1_internal_data.html#a0343ebfab17908834c2923ee15feafc8',1,'pvr::assets::Mesh::InternalData']]],
+  ['numcameranodes',['numCameraNodes',['../structpvr_1_1assets_1_1_model_1_1_internal_data.html#afa94dfff060c93411c09c5c807c964ea',1,'pvr::assets::Model::InternalData']]],
+  ['numcontrolpointsperpatch',['numControlPointsPerPatch',['../structpvr_1_1assets_1_1_mesh_1_1_mesh_info.html#ac522a5d6e6a216eed270f967f957e19f',1,'pvr::assets::Mesh::MeshInfo']]],
+  ['numfaces',['numFaces',['../structpvr_1_1assets_1_1_mesh_1_1_mesh_info.html#a4db0abee571be59fa86dda17c5fe99f5',1,'pvr::assets::Mesh::MeshInfo']]],
+  ['numframes',['numFrames',['../structpvr_1_1assets_1_1_animation_data_1_1_internal_data.html#ad9b1462fca670df7511f29f298f35dbf',1,'pvr::assets::AnimationData::InternalData::numFrames()'],['../structpvr_1_1assets_1_1_model_1_1_internal_data.html#ad7161f7634c89425d9a0154582116932',1,'pvr::assets::Model::InternalData::numFrames()']]],
+  ['numlightnodes',['numLightNodes',['../structpvr_1_1assets_1_1_model_1_1_internal_data.html#a21cde74923d452f388256c49fde6d28e',1,'pvr::assets::Model::InternalData']]],
+  ['numlighttypes',['NumLightTypes',['../classpvr_1_1assets_1_1_light.html#a6c46cd62c805c31bdc99f79137e1421ba18228a848cf38a508313c7f83cf52588',1,'pvr::assets::Light']]],
+  ['nummeshnodes',['numMeshNodes',['../structpvr_1_1assets_1_1_model_1_1_internal_data.html#ace0007bfde237ba7cee91a8788815177',1,'pvr::assets::Model::InternalData']]],
+  ['numpatches',['numPatches',['../structpvr_1_1assets_1_1_mesh_1_1_mesh_info.html#a0db2ab39a1bd78f2e235e0dccde0f722',1,'pvr::assets::Mesh::MeshInfo']]],
+  ['numpatchsubdivisions',['numPatchSubdivisions',['../structpvr_1_1assets_1_1_mesh_1_1_mesh_info.html#a77e5a3819705babce9a095147d762f8f',1,'pvr::assets::Mesh::MeshInfo']]],
+  ['numvertices',['numVertices',['../structpvr_1_1assets_1_1_mesh_1_1_mesh_info.html#ab8b2fe8133670ffe2ef55833b3a0a7cd',1,'pvr::assets::Mesh::MeshInfo']]]
 ];

@@ -7,11 +7,12 @@
 //!\cond NO_DOXYGEN
 #include "PVRShell/Shell.h"
 #include "PVRShell/ShellData.h"
-#include "PVRCore/IO/FilePath.h"
-#include "PVRCore/Log.h"
+#include "PVRCore/stream/FilePath.h"
 #include "PVRShell/OS/ShellOS.h"
-#include "PVRCore/IO/FileStream.h"
-#include "PVRCore/StringFunctions.h"
+#include "PVRCore/stream/FileStream.h"
+#include "PVRCore/strings/StringFunctions.h"
+#include "PVRCore/types/Types.h"
+#include "PVRCore/Log.h"
 #include <cstdlib>
 #include <fstream>
 #if defined(_WIN32)

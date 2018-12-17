@@ -10,7 +10,6 @@
 
 #include "PVRShell/OS/ShellOS.h"
 #include "PVRShell/StateMachine.h"
-#include "PVRShell/CommandLine.h"
 #include "PVRShell/OS/Windows/WindowsOSData.h"
 #include <windows.h>
 #include <io.h>

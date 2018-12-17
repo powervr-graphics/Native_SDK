@@ -256,12 +256,15 @@ pvr::CameraInterface::~CameraInterface()
 	[impl release];
 }
 
-bool pvr::CameraInterface::initializeSession(pvr::HWCamera::Enum eCamera, int preferredResX, int preferredResY)
+void pvr::CameraInterface::initializeSession(pvr::HWCamera::Enum eCamera, int preferredResX, int preferredResY)
 {
 	CameraInterfaceImpl* impl = static_cast<CameraInterfaceImpl*>(pImpl);
 
 	NSString* error;
-	return [impl intialiseCaptureSessionFromCamera:eCamera withError:&error];
+	if (![impl intialiseCaptureSessionFromCamera:eCamera withError:&error])
+	{
+		NSLog(@"ERROR: Failed to initialise Camera.\n");
+	}
 }
 
 bool pvr::CameraInterface::updateImage()
@@ -310,14 +313,5 @@ bool pvr::CameraInterface::hasLumaChromaTextures()
 {
 	return true;
 }
-namespace pvr{
-//pvr::api::TextureView getTextureFromPVRCameraHandle(pvr::GraphicsContext& context, const pvr::native::HTexture_& cameraTexture)
-//{
-//	(LogLevel::Verbose, "Camera interface util: Handle %d, Target 0x%08X", cameraTexture.handle, cameraTexture.target);
-//	api::TextureStore texStore = context->createTexture();
-//	static_cast<native::HTexture_&>(api::native_cast(*texStore)) = cameraTexture;
-//    
-//    return context->createTextureView(texStore, ImageSubresourceRange(ImageLayersSize(1,1),ImageSubresource(0,0)));
-//}
-}
+
 //!\endcond

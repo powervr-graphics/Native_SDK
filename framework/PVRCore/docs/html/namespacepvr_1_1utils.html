@@ -15,7 +15,7 @@
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="IMGdoxygen.css" rel="stylesheet" type="text/css"/>
-<link rel="shortcut icon" href="http://www.imgtec.com/images/img.ico">
+<link rel="shortcut icon" type="image/x-icon" href="img.ico">
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
+      <a href="https://www.imgtec.com/developers/" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRCore</span> Documentation</a>
    <tbody>
@@ -102,9 +102,12 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a4eeeff8a7e62ee09b82b3357b186c221"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1utils.html#a4eeeff8a7e62ee09b82b3357b186c221">isLittleEndian</a> ()</td></tr>
-<tr class="memdesc:a4eeeff8a7e62ee09b82b3357b186c221"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tests endianness of the current platform. <a href="#a4eeeff8a7e62ee09b82b3357b186c221">More...</a><br/></td></tr>
-<tr class="separator:a4eeeff8a7e62ee09b82b3357b186c221"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f3d3865ccfb2594554db510d8117fb7"><td class="memItemLeft" align="right" valign="top">glm::vec3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1utils.html#a2f3d3865ccfb2594554db510d8117fb7">convertLRGBtoSRGB</a> (const glm::vec3 &amp;lRGB)</td></tr>
+<tr class="memdesc:a2f3d3865ccfb2594554db510d8117fb7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert the linear rgb color values in to srgb color space. <a href="#a2f3d3865ccfb2594554db510d8117fb7">More...</a><br/></td></tr>
+<tr class="separator:a2f3d3865ccfb2594554db510d8117fb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e91b4282031b4bb19d11286b1b14d04"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1utils.html#a1e91b4282031b4bb19d11286b1b14d04">convertLRGBtoSRGB</a> (const glm::vec4 &amp;lRGB)</td></tr>
+<tr class="memdesc:a1e91b4282031b4bb19d11286b1b14d04"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert the linear rgb color values in to srgb color space. The Alpha value get unmodified. <a href="#a1e91b4282031b4bb19d11286b1b14d04">More...</a><br/></td></tr>
+<tr class="separator:a1e91b4282031b4bb19d11286b1b14d04"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad1d2042ec2af243eaf4bcce0a06d6e5e"><td class="memTemplParams" colspan="2">template&lt;typename T1 , typename T2 &gt; </td></tr>
 <tr class="memitem:ad1d2042ec2af243eaf4bcce0a06d6e5e"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1utils.html#ad1d2042ec2af243eaf4bcce0a06d6e5e">memCopy</a> (T1 &amp;dst, const T2 &amp;src)</td></tr>
 <tr class="memdesc:ad1d2042ec2af243eaf4bcce0a06d6e5e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Typed memcopy. Copies the bits of an object to another object. Although T1 can be different to T2, sizeof(T1) must be equal to sizeof(T2) <a href="#ad1d2042ec2af243eaf4bcce0a06d6e5e">More...</a><br/></td></tr>
@@ -121,11 +124,25 @@ Functions</h2></td></tr>
 <tr class="memitem:abfdd74c999717c59497fcfabf175f259"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1utils.html#abfdd74c999717c59497fcfabf175f259">memSet</a> (T &amp;dst, int32_t i)</td></tr>
 <tr class="memdesc:abfdd74c999717c59497fcfabf175f259"><td class="mdescLeft">&#160;</td><td class="mdescRight">Typed memset. Sets each byte of the destination object to a source value. <a href="#abfdd74c999717c59497fcfabf175f259">More...</a><br/></td></tr>
 <tr class="separator:abfdd74c999717c59497fcfabf175f259"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a859ae40a806302e0fd178e8ac43b0aa4"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1utils.html#a859ae40a806302e0fd178e8ac43b0aa4">packRGBA</a> (uint8_t r, uint8_t g, uint8_t b, uint8_t a)</td></tr>
+<tr class="memdesc:a859ae40a806302e0fd178e8ac43b0aa4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pack 4 values (red, green, blue, alpha) in the range of 0-255 into a single 32 bit unsigned Integer unsigned. <a href="#a859ae40a806302e0fd178e8ac43b0aa4">More...</a><br/></td></tr>
+<tr class="separator:a859ae40a806302e0fd178e8ac43b0aa4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a38f3ef46feb17fd528fe1b032a85ec65"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1utils.html#a38f3ef46feb17fd528fe1b032a85ec65">packRGBA</a> (float r, float g, float b, float a)</td></tr>
+<tr class="memdesc:a38f3ef46feb17fd528fe1b032a85ec65"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pack 4 values (red, green, blue, alpha) in the range of 0.0-1.0 into a single 32 bit unsigned Integer unsigned. <a href="#a38f3ef46feb17fd528fe1b032a85ec65">More...</a><br/></td></tr>
+<tr class="separator:a38f3ef46feb17fd528fe1b032a85ec65"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaaaa305aff93d4009411f21f2718ebe7"><td class="memTemplParams" colspan="2">template&lt;typename T1_ &gt; </td></tr>
+<tr class="memitem:aaaaa305aff93d4009411f21f2718ebe7"><td class="memTemplItemLeft" align="right" valign="top">std::array&lt; T1_, sizeof(T1_)&gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1utils.html#aaaaa305aff93d4009411f21f2718ebe7">readBits</a> (const T1_ &amp;value)</td></tr>
+<tr class="memdesc:aaaaa305aff93d4009411f21f2718ebe7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Store the bits of a value in a static array of char. <a href="#aaaaa305aff93d4009411f21f2718ebe7">More...</a><br/></td></tr>
+<tr class="separator:aaaaa305aff93d4009411f21f2718ebe7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8cfb58d371b7e9b2d5847a4a15b4817d"><td class="memTemplParams" colspan="2">template&lt;typename Toutput_ , typename Tinput_ &gt; </td></tr>
+<tr class="memitem:a8cfb58d371b7e9b2d5847a4a15b4817d"><td class="memTemplItemLeft" align="right" valign="top">Toutput_&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1utils.html#a8cfb58d371b7e9b2d5847a4a15b4817d">reinterpretBits</a> (const Tinput_ &amp;value)</td></tr>
+<tr class="memdesc:a8cfb58d371b7e9b2d5847a4a15b4817d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Take a value's bit representation and reinterpret them as another type. Second template parameter should normally be implicitly declared. First template parameter is mandatory. <a href="#a8cfb58d371b7e9b2d5847a4a15b4817d">More...</a><br/></td></tr>
+<tr class="separator:a8cfb58d371b7e9b2d5847a4a15b4817d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Contains assorted utility functions (test endianness, unicode conversions etc.)</p>
 </div><h2 class="groupheader">Function Documentation</h2>
-<a class="anchor" id="a4eeeff8a7e62ee09b82b3357b186c221"></a>
+<a class="anchor" id="a2f3d3865ccfb2594554db510d8117fb7"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -133,9 +150,10 @@ Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">bool pvr::utils::isLittleEndian </td>
+          <td class="memname">glm::vec3 pvr::utils::convertLRGBtoSRGB </td>
           <td>(</td>
-          <td class="paramname"></td><td>)</td>
+          <td class="paramtype">const glm::vec3 &amp;&#160;</td>
+          <td class="paramname"><em>lRGB</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -146,8 +164,47 @@ Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Tests endianness of the current platform.</p>
-<dl class="section return"><dt>Returns</dt><dd>True if this platform is Little Endian, false if it is Big Endian.</dd></dl>
+<p>Convert the linear rgb color values in to srgb color space.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">lRGB</td><td>lRGB</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>sRGB color value</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a1e91b4282031b4bb19d11286b1b14d04"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 pvr::utils::convertLRGBtoSRGB </td>
+          <td>(</td>
+          <td class="paramtype">const glm::vec4 &amp;&#160;</td>
+          <td class="paramname"><em>lRGB</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Convert the linear rgb color values in to srgb color space. The Alpha value get unmodified.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">lRGB</td><td>lRGB</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>sRGB color value</dd></dl>
 
 </div>
 </div>
@@ -341,6 +398,189 @@ template&lt;typename T &gt; </div>
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a class="anchor" id="a859ae40a806302e0fd178e8ac43b0aa4"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t pvr::utils::packRGBA </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>r</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>g</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>a</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Pack 4 values (red, green, blue, alpha) in the range of 0-255 into a single 32 bit unsigned Integer unsigned.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">r</td><td>Red channel (8 bit)</td></tr>
+    <tr><td class="paramname">g</td><td>Blue channel (8 bit)</td></tr>
+    <tr><td class="paramname">b</td><td>Red channel (8 bit)</td></tr>
+    <tr><td class="paramname">a</td><td>Red channel (8 bit)</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>32 bit RGBA value</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a38f3ef46feb17fd528fe1b032a85ec65"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t pvr::utils::packRGBA </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>r</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>g</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>a</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Pack 4 values (red, green, blue, alpha) in the range of 0.0-1.0 into a single 32 bit unsigned Integer unsigned.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">r</td><td>Red channel (normalized 0.0-1.0)</td></tr>
+    <tr><td class="paramname">g</td><td>Blue channel (normalized 0.0-1.0)</td></tr>
+    <tr><td class="paramname">b</td><td>Red channel (normalized 0.0-1.0)</td></tr>
+    <tr><td class="paramname">a</td><td>Red channel (normalized 0.0-1.0)</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>32 bit RGBA value</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="aaaaa305aff93d4009411f21f2718ebe7"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T1_ &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">std::array&lt;T1_, sizeof(T1_)&gt; pvr::utils::readBits </td>
+          <td>(</td>
+          <td class="paramtype">const T1_ &amp;&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Store the bits of a value in a static array of char.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">value</td><td>The value to reinterpret</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">T1_</td><td>Input value type. Should not need to be explicitly defined, can be inferred.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A StaticArray&lt;T1_&gt; with a size exactly equal to the size of T1_ in characters, containing the bit representation of value.</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a8cfb58d371b7e9b2d5847a4a15b4817d"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Toutput_ , typename Tinput_ &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">Toutput_ pvr::utils::reinterpretBits </td>
+          <td>(</td>
+          <td class="paramtype">const Tinput_ &amp;&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Take a value's bit representation and reinterpret them as another type. Second template parameter should normally be implicitly declared. First template parameter is mandatory.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">value</td><td>The value to reinterpret</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">Toutput_</td><td>Output value type. Must be explicitly defined.</td></tr>
+    <tr><td class="paramname">Tinput_</td><td>Input value type. Should not need to be explicitly defined, can be inferred. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The reinterpreted value</dd></dl>
 
 </div>
 </div>

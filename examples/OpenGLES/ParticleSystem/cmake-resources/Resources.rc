@@ -58,8 +58,9 @@ END
 // RCDATA
 //
 /////////////////////////////////////////////////////////////////////////////
-// RCDATA: Assets (scenes, shaders, effects, textures...)
+// RCDATA: Assets (scenes,  effects, textures...)
 sphere.pod		RCDATA		"..\\..\\..\\assets\\ParticleSystem\\sphere.pod"
+// RCDATA: OpenGL ES Textual shaders(glsl)
 FragShader.fsh		RCDATA		"..\\FragShader.fsh"
 VertShader.vsh		RCDATA		"..\\VertShader.vsh"
 ParticleFragShader.fsh		RCDATA		"..\\ParticleFragShader.fsh"

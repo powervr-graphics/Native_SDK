@@ -1,8 +1,4 @@
 cmake_minimum_required(VERSION 3.3)
-if(pvrshell_included)
-	return()
-endif(pvrshell_included)
-set(pvrshell_included true)
 
 project(PVRShell)
 
@@ -111,4 +107,6 @@ ADD_LIBRARY(PVRShell STATIC
 	${SHELL_SRC}
 	${SHELLOS_SRC}
 )
-target_compile_definitions( PVRShell PUBLIC $<$<CONFIG:Debug>:DEBUG=1> $<$<NOT:$<CONFIG:Debug>>:RELEASE=1> )
+target_compile_definitions(PVRShell PUBLIC $<$<CONFIG:Debug>:DEBUG=1> $<$<NOT:$<CONFIG:Debug>>:RELEASE=1>)
+target_include_directories(PVRShell PUBLIC ${CMAKE_CURRENT_LIST_DIR}/..)
+

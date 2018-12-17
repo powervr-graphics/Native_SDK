@@ -14,8 +14,9 @@
 /// Convert struct/ class from pvr type to struct/class
 ///**********************************************************************
 #include "PVRVk/TypesVk.h"
-#include "PVRCore/Base/ComplexTypes.h"
-#include "PVRCore/Texture.h"
+#include "PVRCore/types/Types.h"
+#include "PVRUtils/PVRUtilsTypes.h"
+#include "PVRCore/texture/Texture.h"
 #include "PVRVk/HeadersVk.h"
 namespace pvr {
 namespace utils {
@@ -26,21 +27,21 @@ namespace utils {
 	{ \
 		return (_pvrvktype_)item; \
 	}
-PVR_DECLARE_DIRECT_MAPPING(::pvrvk::PrimitiveTopology, ::pvr::PrimitiveTopology);
-PVR_DECLARE_DIRECT_MAPPING(::pvrvk::BufferUsageFlags, ::pvr::BufferUsageFlags);
-PVR_DECLARE_DIRECT_MAPPING(::pvrvk::BlendOp, ::pvr::BlendOp);
-PVR_DECLARE_DIRECT_MAPPING(::pvrvk::ColorComponentFlags, ::pvr::ColorChannelFlags);
-PVR_DECLARE_DIRECT_MAPPING(::pvrvk::BlendFactor, ::pvr::BlendFactor);
-PVR_DECLARE_DIRECT_MAPPING(::pvrvk::StencilOp, ::pvr::StencilOp);
-PVR_DECLARE_DIRECT_MAPPING(::pvrvk::SamplerAddressMode, ::pvr::SamplerAddressMode);
-PVR_DECLARE_DIRECT_MAPPING(::pvrvk::Filter, ::pvr::Filter);
-PVR_DECLARE_DIRECT_MAPPING(::pvrvk::SamplerMipmapMode, ::pvr::SamplerMipmapMode);
-PVR_DECLARE_DIRECT_MAPPING(::pvrvk::CompareOp, ::pvr::CompareOp);
-PVR_DECLARE_DIRECT_MAPPING(::pvrvk::ImageAspectFlags, ::pvr::ImageAspectFlags);
-PVR_DECLARE_DIRECT_MAPPING(::pvrvk::ImageType, ::pvr::ImageType);
-PVR_DECLARE_DIRECT_MAPPING(::pvrvk::DescriptorType, ::pvr::DescriptorType);
-PVR_DECLARE_DIRECT_MAPPING(::pvrvk::CullModeFlags, ::pvr::Face);
-PVR_DECLARE_DIRECT_MAPPING(::pvrvk::FrontFace, ::pvr::PolygonWindingOrder);
+PVR_DECLARE_DIRECT_MAPPING(::pvrvk::PrimitiveTopology, ::pvr::PrimitiveTopology)
+PVR_DECLARE_DIRECT_MAPPING(::pvrvk::BufferUsageFlags, ::pvr::BufferUsageFlags)
+PVR_DECLARE_DIRECT_MAPPING(::pvrvk::BlendOp, ::pvr::BlendOp)
+PVR_DECLARE_DIRECT_MAPPING(::pvrvk::ColorComponentFlags, ::pvr::ColorChannelFlags)
+PVR_DECLARE_DIRECT_MAPPING(::pvrvk::BlendFactor, ::pvr::BlendFactor)
+PVR_DECLARE_DIRECT_MAPPING(::pvrvk::StencilOp, ::pvr::StencilOp)
+PVR_DECLARE_DIRECT_MAPPING(::pvrvk::SamplerAddressMode, ::pvr::SamplerAddressMode)
+PVR_DECLARE_DIRECT_MAPPING(::pvrvk::Filter, ::pvr::Filter)
+PVR_DECLARE_DIRECT_MAPPING(::pvrvk::SamplerMipmapMode, ::pvr::SamplerMipmapMode)
+PVR_DECLARE_DIRECT_MAPPING(::pvrvk::CompareOp, ::pvr::CompareOp)
+PVR_DECLARE_DIRECT_MAPPING(::pvrvk::ImageAspectFlags, ::pvr::ImageAspectFlags)
+PVR_DECLARE_DIRECT_MAPPING(::pvrvk::ImageType, ::pvr::ImageType)
+PVR_DECLARE_DIRECT_MAPPING(::pvrvk::DescriptorType, ::pvr::DescriptorType)
+PVR_DECLARE_DIRECT_MAPPING(::pvrvk::CullModeFlags, ::pvr::Face)
+PVR_DECLARE_DIRECT_MAPPING(::pvrvk::FrontFace, ::pvr::PolygonWindingOrder)
 
 inline pvrvk::IndexType convertToPVRVk(IndexType type)
 {
@@ -355,9 +356,11 @@ inline pvrvk::Format convertToPVRVkPixelFormat(PixelFormat format, ColorSpace co
 				case GeneratePixelType1<'r', 8>::ID:
 				case GeneratePixelType1<'l', 8>::ID:
 				case GeneratePixelType1<'a', 8>::ID:
-					return pvrvk::Format::e_R8_UNORM;
+					return (isSrgb ? pvrvk::Format::e_R8_SRGB : pvrvk::Format::e_R8_UNORM);
 				case GeneratePixelType4<'b', 'g', 'r', 'a', 8, 8, 8, 8>::ID:
-					return (isSrgb ? pvrvk::Format::e_B8G8R8A8_SNORM : pvrvk::Format::e_B8G8R8A8_UNORM);
+					return (isSrgb ? pvrvk::Format::e_B8G8R8A8_SRGB : pvrvk::Format::e_B8G8R8A8_UNORM);
+				case GeneratePixelType3<'b', 'g', 'r', 8, 8, 8>::ID:
+					return (isSrgb ? pvrvk::Format::e_B8G8R8_SRGB : pvrvk::Format::e_B8G8R8_UNORM);
 				case GeneratePixelType4<'r', 'g', 'b', 'a', 4, 4, 4, 4>::ID:
 					return pvrvk::Format::e_R4G4B4A4_UNORM_PACK16;
 				}
@@ -373,6 +376,10 @@ inline pvrvk::Format convertToPVRVkPixelFormat(PixelFormat format, ColorSpace co
 				case GeneratePixelType2<'r', 'g', 8, 8>::ID:
 				case GeneratePixelType2<'l', 'a', 8, 8>::ID:
 					return pvrvk::Format::e_R8G8B8_SNORM;
+				case GeneratePixelType4<'b', 'g', 'r', 'a', 8, 8, 8, 8>::ID:
+					return (isSrgb ? pvrvk::Format::e_B8G8R8A8_SRGB : pvrvk::Format::e_B8G8R8A8_SNORM);
+				case GeneratePixelType3<'b', 'g', 'r', 8, 8, 8>::ID:
+					return (isSrgb ? pvrvk::Format::e_B8G8R8_SRGB : pvrvk::Format::e_B8G8R8_SNORM);
 				case GeneratePixelType1<'r', 8>::ID:
 				case GeneratePixelType1<'l', 8>::ID:
 				case GeneratePixelType1<'a', 8>::ID:
@@ -392,6 +399,10 @@ inline pvrvk::Format convertToPVRVkPixelFormat(PixelFormat format, ColorSpace co
 					return pvrvk::Format::e_R8G8_UINT;
 				case GeneratePixelType1<'r', 8>::ID:
 					return pvrvk::Format::e_R8_UINT;
+				case GeneratePixelType4<'b', 'g', 'r', 'a', 8, 8, 8, 8>::ID:
+					return pvrvk::Format::e_B8G8R8A8_UINT;
+				case GeneratePixelType3<'b', 'g', 'r', 8, 8, 8>::ID:
+					return pvrvk::Format::e_B8G8R8_UINT;
 				}
 			}
 			case VariableType::SignedByte:
@@ -527,6 +538,7 @@ inline pvrvk::Format convertToPVRVkPixelFormat(PixelFormat format, ColorSpace co
 			}
 			default:
 			{
+				break;
 			}
 			}
 		}
@@ -609,7 +621,7 @@ inline pvrvk::Offset2D convertToPVRVk(const Offset2D& extent)
 {
 	return pvrvk::Offset2D{ extent.x, extent.y };
 }
-} // namespace api
+} // namespace utils
 } // namespace pvr
 
 //!\endcond

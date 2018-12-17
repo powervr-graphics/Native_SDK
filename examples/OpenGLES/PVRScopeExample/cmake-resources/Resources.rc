@@ -58,9 +58,10 @@ END
 // RCDATA
 //
 /////////////////////////////////////////////////////////////////////////////
-// RCDATA: Assets (scenes, shaders, effects, textures...)
+// RCDATA: Assets (scenes,  effects, textures...)
 Marble.pvr		RCDATA		"..\\..\\..\\assets\\Satyr\\Marble.pvr"
 Satyr.pod		RCDATA		"..\\..\\..\\assets\\Satyr\\Satyr.pod"
+// RCDATA: OpenGL ES Textual shaders(glsl)
 FragShader_ES2.fsh		RCDATA		"..\\FragShader_ES2.fsh"
 FragShader_ES3.fsh		RCDATA		"..\\FragShader_ES3.fsh"
 VertShader_ES2.vsh		RCDATA		"..\\VertShader_ES2.vsh"

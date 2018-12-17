@@ -58,16 +58,13 @@ END
 // RCDATA
 //
 /////////////////////////////////////////////////////////////////////////////
-// RCDATA: Assets (scenes, shaders, effects, textures...)
+// RCDATA: Assets (scenes,  effects, textures...)
 MarbleNormalMap.pvr		RCDATA		"..\\..\\..\\assets\\Satyr\\MarbleNormalMap.pvr"
 Marble.pvr		RCDATA		"..\\..\\..\\assets\\Satyr\\Marble.pvr"
 Satyr.pod		RCDATA		"..\\..\\..\\assets\\Satyr\\Satyr.pod"
-FragShader_vk.fsh		RCDATA		"..\\FragShader_vk.fsh"
-FragShader_vk.fsh.spv		RCDATA		"..\\FragShader_vk.fsh.spv"
-VertShader_vk.vsh		RCDATA		"..\\VertShader_vk.vsh"
-VertShader_vk.vsh.spv		RCDATA		"..\\VertShader_vk.vsh.spv"
-recompile.sh		RCDATA		"..\\recompile.sh"
-recompile.bat		RCDATA		"..\\recompile.bat"
+// RCDATA: Vulkan Spir-V shaders(glsl)
+FragShader.fsh.spv		RCDATA		"..\\FragShader.fsh.spv"
+VertShader.vsh.spv		RCDATA		"..\\VertShader.vsh.spv"
 
 #endif    // English (United Kingdom) resources
 /////////////////////////////////////////////////////////////////////////////

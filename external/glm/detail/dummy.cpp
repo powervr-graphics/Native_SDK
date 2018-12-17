@@ -1,37 +1,13 @@
-///////////////////////////////////////////////////////////////////////////////////
-/// OpenGL Mathematics (glm.g-truc.net)
-///
-/// Copyright (c) 2005 - 2014 G-Truc Creation (www.g-truc.net)
-/// Permission is hereby granted, free of charge, to any person obtaining a copy
-/// of this software and associated documentation files (the "Software"), to deal
-/// in the Software without restriction, including without limitation the rights
-/// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-/// copies of the Software, and to permit persons to whom the Software is
-/// furnished to do so, subject to the following conditions:
-/// 
-/// The above copyright notice and this permission notice shall be included in
-/// all copies or substantial portions of the Software.
-/// 
-/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-/// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-/// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-/// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-/// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-/// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-/// THE SOFTWARE.
-///
 /// @ref core
 /// @file glm/core/dummy.cpp
-/// @date 2011-01-19 / 2011-06-15
-/// @author Christophe Riccio
 ///
-/// GLM is a header only library. There is nothing to compile. 
+/// GLM is a header only library. There is nothing to compile.
 /// dummy.cpp exist only a wordaround for CMake file.
-///////////////////////////////////////////////////////////////////////////////////
 
-#define GLM_FORCE_RADIANS
+/*
 #define GLM_MESSAGES
-#include "../glm.hpp"
+#include <glm/glm.hpp>
+#include <glm/ext.hpp>
 #include <limits>
 
 struct material
@@ -68,9 +44,9 @@ struct light
 
 glm::vec3 computeNormal
 (
-	glm::vec3 const & a,
-	glm::vec3 const & b,
-	glm::vec3 const & c
+	glm::vec3 const& a,
+	glm::vec3 const& b,
+	glm::vec3 const& c
 )
 {
 	return glm::normalize(glm::cross(c - a, b - a));
@@ -86,7 +62,7 @@ void glUniformMatrix4fv(GLuint, int, int, float*){}
 #include <glm/mat4x4.hpp> // glm::mat4
 #include <glm/gtc/matrix_transform.hpp> // glm::translate, glm::rotate, glm::scale, glm::perspective
 #include <glm/gtc/type_ptr.hpp> // glm::value_ptr
-void func(GLuint LocationMVP, float Translate, glm::vec2 const & Rotate)
+void func(GLuint LocationMVP, float Translate, glm::vec2 const& Rotate)
 {
 	glm::mat4 Projection = glm::perspective(45.0f, 4.0f / 3.0f, 0.1f, 100.f);
 	glm::mat4 ViewTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -Translate));
@@ -145,6 +121,8 @@ struct intersection
 	glm::vec4 position;
 	glm::vec3 normal;
 };
+*/
+
 
 /*
 // Sample 4
@@ -154,10 +132,10 @@ struct intersection
 #include <glm/gtc/random.hpp>// glm::vecRand3
 glm::vec3 lighting
 (
-	intersection const & Intersection,
-	material const & Material,
-	light const & Light,
-	glm::vec3 const & View
+	intersection const& Intersection,
+	material const& Material,
+	light const& Light,
+	glm::vec3 const& View
 )
 {
 	glm::vec3 Color(0.0f);
@@ -186,7 +164,23 @@ glm::vec3 lighting
 	return Color;
 }
 */
+
 int main()
 {
+/*
+	glm::vec1 o(1);
+	glm::vec2 a(1);
+	glm::vec3 b(1);
+	glm::vec4 c(1);
+
+	glm::quat q;
+	glm::dualquat p;
+
+	glm::mat4 m(1);
+
+	float a0 = normalizeDotA(a, a);
+	float b0 = normalizeDotB(b, b);
+	float c0 = normalizeDotC(c, c);
+*/
 	return 0;
 }

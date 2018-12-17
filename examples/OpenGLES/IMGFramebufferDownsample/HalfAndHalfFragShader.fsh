@@ -7,12 +7,12 @@ uniform highp float WindowWidth;
 
 in mediump vec2 TexCoord;
 
-layout (location = 0) out lowp vec4 oColor;
+layout(location = 0) out mediump vec4 oColor;
 
 void main()
 {
 	highp float imageCoordX = gl_FragCoord.x - 0.5;
 	highp float xPosition = imageCoordX / WindowWidth;
 
-	oColor = xPosition < 0.5 ? textureLod(fullDimensionColor, TexCoord, 1.0) : (xPosition > 0.495 && xPosition < 0.505) ? vec4(1.0, 1.0, 1.0, 1.0) : textureLod(halfDimensionColor, TexCoord, 1.0);
+	oColor = xPosition < 0.5 ? textureLod(fullDimensionColor, TexCoord, 1.0) : (xPosition > 0.497 && xPosition < 0.503) ? vec4(1.0, 1.0, 1.0, 1.0) : textureLod(halfDimensionColor, TexCoord, 1.0);
 }

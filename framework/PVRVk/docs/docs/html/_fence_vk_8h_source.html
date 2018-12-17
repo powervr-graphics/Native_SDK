@@ -15,7 +15,7 @@
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="IMGdoxygen.css" rel="stylesheet" type="text/css"/>
-<link rel="shortcut icon" href="http://www.imgtec.com/images/img.ico">
+<link rel="shortcut icon" type="image/x-icon" href="img.ico">
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
+      <a href="https://www.imgtec.com/developers/" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRVk</span> Documentation</a>
    <tbody>
@@ -102,25 +102,41 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;</div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classpvrvk_1_1impl_1_1_fence__.html#ababa5e5e9965ba01ca5bb497a26d6aef">reset</a>();</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">typename</span>&gt;</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    <span class="keyword">friend</span> struct ::pvrvk::RefCountEntryIntrusive;</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    <span class="keyword">friend</span> class ::pvrvk::impl::Device_;</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    <a class="code" href="classpvrvk_1_1impl_1_1_fence__.html">Fence_</a>(<span class="keyword">const</span> <a class="code" href="namespacepvrvk.html#a8dd5932a80187b088ce6b591712dc2c2">DeviceWeakPtr</a>&amp; device, FenceCreateFlags fenceCreateFlags);</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    ~<a class="code" href="classpvrvk_1_1impl_1_1_fence__.html">Fence_</a>();</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;};</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;} <span class="comment">// namespace impl</span></div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;} <span class="comment">// namespace pvrvk</span></div>
+<div class="line"><a name="l00035"></a><span class="lineno"><a class="line" href="classpvrvk_1_1impl_1_1_fence__.html#ab3e8f73848ea40461784973cf2ae0a4f">   35</a></span>&#160;    <span class="keyword">inline</span> FenceCreateFlags <a class="code" href="classpvrvk_1_1impl_1_1_fence__.html#ab3e8f73848ea40461784973cf2ae0a4f">getFlags</a>()<span class="keyword"> const</span></div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;        <span class="keywordflow">return</span> _createInfo.<a class="code" href="structpvrvk_1_1_fence_create_info.html#a25cc2d83387290f07d207544933f64d0">getFlags</a>();</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    }</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;</div>
+<div class="line"><a name="l00042"></a><span class="lineno"><a class="line" href="classpvrvk_1_1impl_1_1_fence__.html#a9d9cb310fc00c306a06156a6edc6cc78">   42</a></span>&#160;    <a class="code" href="structpvrvk_1_1_fence_create_info.html">FenceCreateInfo</a> <a class="code" href="classpvrvk_1_1impl_1_1_fence__.html#a9d9cb310fc00c306a06156a6edc6cc78">getCreateInfo</a>()<span class="keyword"> const</span></div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;        <span class="keywordflow">return</span> _createInfo;</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    }</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">typename</span>&gt;</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    <span class="keyword">friend</span> struct ::pvrvk::RefCountEntryIntrusive;</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <span class="keyword">friend</span> class ::pvrvk::impl::Device_;</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    <a class="code" href="classpvrvk_1_1impl_1_1_fence__.html">Fence_</a>(<span class="keyword">const</span> <a class="code" href="namespacepvrvk.html#a8dd5932a80187b088ce6b591712dc2c2">DeviceWeakPtr</a>&amp; device, <span class="keyword">const</span> <a class="code" href="structpvrvk_1_1_fence_create_info.html">FenceCreateInfo</a>&amp; createInfo);</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    ~<a class="code" href="classpvrvk_1_1impl_1_1_fence__.html">Fence_</a>();</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    <a class="code" href="structpvrvk_1_1_fence_create_info.html">FenceCreateInfo</a> _createInfo;</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;};</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;} <span class="comment">// namespace impl</span></div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;} <span class="comment">// namespace pvrvk</span></div>
 <div class="ttc" id="classpvrvk_1_1impl_1_1_device_object_debug_marker_html"><div class="ttname"><a href="classpvrvk_1_1impl_1_1_device_object_debug_marker.html">pvrvk::impl::DeviceObjectDebugMarker</a></div><div class="ttdoc">A Debug Marker wrapper for PVRVk Device allocated objects. Handles naming and tagging calls for the e...</div><div class="ttdef"><b>Definition:</b> DebugMarkerVk.h:87</div></div>
-<div class="ttc" id="_types_vk_8h_html_a96e4c02fcc79177dfd9de56dce1a47cc"><div class="ttname"><a href="_types_vk_8h.html#a96e4c02fcc79177dfd9de56dce1a47cc">DECLARE_NO_COPY_SEMANTICS</a></div><div class="ttdeci">#define DECLARE_NO_COPY_SEMANTICS(TYPE)</div><div class="ttdoc">INTERNAL. Disable the Copy Constructor and the Copy Assignment Operator of the type</div><div class="ttdef"><b>Definition:</b> TypesVk.h:128</div></div>
+<div class="ttc" id="_types_vk_8h_html_a96e4c02fcc79177dfd9de56dce1a47cc"><div class="ttname"><a href="_types_vk_8h.html#a96e4c02fcc79177dfd9de56dce1a47cc">DECLARE_NO_COPY_SEMANTICS</a></div><div class="ttdeci">#define DECLARE_NO_COPY_SEMANTICS(TYPE)</div><div class="ttdoc">INTERNAL. Disable the Copy Constructor and the Copy Assignment Operator of the type</div><div class="ttdef"><b>Definition:</b> TypesVk.h:127</div></div>
+<div class="ttc" id="classpvrvk_1_1impl_1_1_fence___html_ab3e8f73848ea40461784973cf2ae0a4f"><div class="ttname"><a href="classpvrvk_1_1impl_1_1_fence__.html#ab3e8f73848ea40461784973cf2ae0a4f">pvrvk::impl::Fence_::getFlags</a></div><div class="ttdeci">FenceCreateFlags getFlags() const </div><div class="ttdoc">Get the fence creation flags</div><div class="ttdef"><b>Definition:</b> FenceVk.h:35</div></div>
 <div class="ttc" id="classpvrvk_1_1impl_1_1_fence___html"><div class="ttname"><a href="classpvrvk_1_1impl_1_1_fence__.html">pvrvk::impl::Fence_</a></div><div class="ttdoc">Vulkan implementation of the Fence class Fence can be used by the host to determine completion of exe...</div><div class="ttdef"><b>Definition:</b> FenceVk.h:16</div></div>
-<div class="ttc" id="classpvrvk_1_1impl_1_1_fence___html_a2f81c3158db2ef6c25601087640591ac"><div class="ttname"><a href="classpvrvk_1_1impl_1_1_fence__.html#a2f81c3158db2ef6c25601087640591ac">pvrvk::impl::Fence_::isSignalled</a></div><div class="ttdeci">bool isSignalled()</div><div class="ttdoc">Return true if this fence is signaled</div><div class="ttdef"><b>Definition:</b> FenceVk.cpp:52</div></div>
+<div class="ttc" id="classpvrvk_1_1impl_1_1_fence___html_a2f81c3158db2ef6c25601087640591ac"><div class="ttname"><a href="classpvrvk_1_1impl_1_1_fence__.html#a2f81c3158db2ef6c25601087640591ac">pvrvk::impl::Fence_::isSignalled</a></div><div class="ttdeci">bool isSignalled()</div><div class="ttdoc">Return true if this fence is signaled</div><div class="ttdef"><b>Definition:</b> FenceVk.cpp:53</div></div>
 <div class="ttc" id="classpvrvk_1_1impl_1_1_device_object_handle_html"><div class="ttname"><a href="classpvrvk_1_1impl_1_1_device_object_handle.html">pvrvk::impl::DeviceObjectHandle</a></div><div class="ttdoc">Defines a simple interface for a Vulkan object which holds a reference to a particular device...</div><div class="ttdef"><b>Definition:</b> ObjectHandleVk.h:121</div></div>
 <div class="ttc" id="_device_vk_8h_html"><div class="ttname"><a href="_device_vk_8h.html">DeviceVk.h</a></div><div class="ttdoc">The PVRVk Device class. One of the bysiest classes in Vulkan, together with the Command Buffer...</div></div>
-<div class="ttc" id="classpvrvk_1_1impl_1_1_fence___html_ababa5e5e9965ba01ca5bb497a26d6aef"><div class="ttname"><a href="classpvrvk_1_1impl_1_1_fence__.html#ababa5e5e9965ba01ca5bb497a26d6aef">pvrvk::impl::Fence_::reset</a></div><div class="ttdeci">void reset()</div><div class="ttdoc">Reset this fence</div><div class="ttdef"><b>Definition:</b> FenceVk.cpp:47</div></div>
-<div class="ttc" id="namespacepvrvk_html_a8dd5932a80187b088ce6b591712dc2c2"><div class="ttname"><a href="namespacepvrvk.html#a8dd5932a80187b088ce6b591712dc2c2">pvrvk::DeviceWeakPtr</a></div><div class="ttdeci">RefCountedWeakReference&lt; impl::Device_ &gt; DeviceWeakPtr</div><div class="ttdoc">Forwared-declared weak-reference-counted handle to a Device. For detailed documentation, see PVRVk module</div><div class="ttdef"><b>Definition:</b> ForwardDecObjectsVk.h:226</div></div>
-<div class="ttc" id="classpvrvk_1_1impl_1_1_fence___html_a77fffad1a6607d079f441f25472dabbd"><div class="ttname"><a href="classpvrvk_1_1impl_1_1_fence__.html#a77fffad1a6607d079f441f25472dabbd">pvrvk::impl::Fence_::wait</a></div><div class="ttdeci">bool wait(uint64_t timeoutNanos=static_cast&lt; uint64_t &gt;(-1))</div><div class="ttdoc">Host to wait for this fence to be signaled</div><div class="ttdef"><b>Definition:</b> FenceVk.cpp:38</div></div>
+<div class="ttc" id="structpvrvk_1_1_fence_create_info_html"><div class="ttname"><a href="structpvrvk_1_1_fence_create_info.html">pvrvk::FenceCreateInfo</a></div><div class="ttdoc">fence creation descriptor.</div><div class="ttdef"><b>Definition:</b> TypesVk.h:1954</div></div>
+<div class="ttc" id="classpvrvk_1_1impl_1_1_fence___html_a9d9cb310fc00c306a06156a6edc6cc78"><div class="ttname"><a href="classpvrvk_1_1impl_1_1_fence__.html#a9d9cb310fc00c306a06156a6edc6cc78">pvrvk::impl::Fence_::getCreateInfo</a></div><div class="ttdeci">FenceCreateInfo getCreateInfo() const </div><div class="ttdoc">Get this fence&#39;s create flags</div><div class="ttdef"><b>Definition:</b> FenceVk.h:42</div></div>
+<div class="ttc" id="classpvrvk_1_1impl_1_1_fence___html_ababa5e5e9965ba01ca5bb497a26d6aef"><div class="ttname"><a href="classpvrvk_1_1impl_1_1_fence__.html#ababa5e5e9965ba01ca5bb497a26d6aef">pvrvk::impl::Fence_::reset</a></div><div class="ttdeci">void reset()</div><div class="ttdoc">Reset this fence</div><div class="ttdef"><b>Definition:</b> FenceVk.cpp:48</div></div>
+<div class="ttc" id="structpvrvk_1_1_fence_create_info_html_a25cc2d83387290f07d207544933f64d0"><div class="ttname"><a href="structpvrvk_1_1_fence_create_info.html#a25cc2d83387290f07d207544933f64d0">pvrvk::FenceCreateInfo::getFlags</a></div><div class="ttdeci">FenceCreateFlags getFlags() const </div><div class="ttdoc">Get the fence creation flags</div><div class="ttdef"><b>Definition:</b> TypesVk.h:1963</div></div>
+<div class="ttc" id="namespacepvrvk_html_a8dd5932a80187b088ce6b591712dc2c2"><div class="ttname"><a href="namespacepvrvk.html#a8dd5932a80187b088ce6b591712dc2c2">pvrvk::DeviceWeakPtr</a></div><div class="ttdeci">RefCountedWeakReference&lt; impl::Device_ &gt; DeviceWeakPtr</div><div class="ttdoc">Forwared-declared weak-reference-counted handle to a Device. For detailed documentation, see PVRVk module</div><div class="ttdef"><b>Definition:</b> ForwardDecObjectsVk.h:235</div></div>
+<div class="ttc" id="classpvrvk_1_1impl_1_1_fence___html_a77fffad1a6607d079f441f25472dabbd"><div class="ttname"><a href="classpvrvk_1_1impl_1_1_fence__.html#a77fffad1a6607d079f441f25472dabbd">pvrvk::impl::Fence_::wait</a></div><div class="ttdeci">bool wait(uint64_t timeoutNanos=static_cast&lt; uint64_t &gt;(-1))</div><div class="ttdoc">Host to wait for this fence to be signaled</div><div class="ttdef"><b>Definition:</b> FenceVk.cpp:39</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.4-->
 <!-- start footer part (NON TREEVIEW ONLY!!) -->

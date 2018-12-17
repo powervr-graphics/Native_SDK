@@ -189,9 +189,26 @@ public:
 	}
 
 	/// <summary>Bind vertex buffer</summary>
+	/// <param name="buffers">A set of vertex buffers to bind</param>
+	/// <param name="firstBinding">The first index into buffers</param>
+	/// <param name="bindingCount">The number of vertex buffers to bind</param>
+	/// <param name="offsets">A pointer to an array of bindingCount buffer offsets</param>
+	void bindVertexBuffers(const Buffer* buffers, uint32_t firstBinding, uint16_t bindingCount, const uint32_t* offsets = nullptr)
+	{
+		VkBuffer native_buffers[static_cast<uint32_t>(FrameworkCaps::MaxVertexBindings)] = { VK_NULL_HANDLE };
+		for (uint32_t i = 0; i < bindingCount; ++i)
+		{
+			_objectReferences.push_back(buffers[i]);
+			native_buffers[i] = buffers[i]->getVkHandle();
+		}
+
+		_device->getVkBindings().vkCmdBindVertexBuffers(getVkHandle(), firstBinding, bindingCount, native_buffers, (VkDeviceSize*)offsets);
+	}
+
+	/// <summary>Bind vertex buffer</summary>
 	/// <param name="buffer">Buffer</param>
 	/// <param name="offset">Buffer offset</param>
-	/// <param name="bindingIndex">The index of the vertex input binding whose state is updated by the command. </param>
+	/// <param name="bindingIndex">The index of the vertex input binding whose state is updated by the command.</param>
 	void bindVertexBuffer(const Buffer& buffer, uint32_t offset, uint16_t bindingIndex)
 	{
 		_objectReferences.push_back(buffer);
@@ -270,13 +287,6 @@ public:
 		_device->getVkBindings().vkResetCommandBuffer(getVkHandle(), static_cast<VkCommandBufferResetFlagBits>(resetFlags));
 	}
 
-#ifdef DEBUG
-	void logCommandStackTraces()
-	{
-		debug_assertion(false, "Not implemented for Vulkan");
-	}
-#endif
-
 	/// <summary>Copy data between Images</summary>
 	/// <param name="srcImage">Source image</param>
 	/// <param name="dstImage">Destination image</param>
@@ -284,7 +294,7 @@ public:
 	/// <param name="dstImageLayout">Destination image layout</param>
 	/// <param name="regions">Regions to copy</param>
 	/// <param name="numRegions">Number of regions</param>
-	void copyImage(Image& srcImage, Image& dstImage, ImageLayout srcImageLayout, ImageLayout dstImageLayout, uint32_t numRegions, const ImageCopy* regions);
+	void copyImage(const Image& srcImage, const Image& dstImage, ImageLayout srcImageLayout, ImageLayout dstImageLayout, uint32_t numRegions, const ImageCopy* regions);
 
 	/// <summary>Copy image to buffer</summary>
 	/// <param name="srcImage">Source image to copy from</param>
@@ -292,7 +302,7 @@ public:
 	/// <param name="dstBuffer">Destination buffer</param>
 	/// <param name="regions">Regions to copy</param>
 	/// <param name="numRegions">Number of regions</param>
-	void copyImageToBuffer(Image& srcImage, ImageLayout srcImageLayout, Buffer& dstBuffer, const BufferImageCopy* regions, uint32_t numRegions);
+	void copyImageToBuffer(const Image& srcImage, ImageLayout srcImageLayout, Buffer& dstBuffer, const BufferImageCopy* regions, uint32_t numRegions);
 
 	/// <summary>Copy Buffer</summary>
 	/// <param name="srcBuffer">Source buffer</param>
@@ -302,7 +312,7 @@ public:
 	/// Each region in pRegions is copied from the source buffer to the same region of the destination buffer.
 	/// srcBuffer and dstBuffer can be the same buffer or alias the same memory, but the result is undefined if the copy regions overlap in memory.
 	/// </param>
-	void copyBuffer(Buffer srcBuffer, Buffer dstBuffer, uint32_t numRegions, const BufferCopy* regions);
+	void copyBuffer(const Buffer& srcBuffer, const Buffer& dstBuffer, uint32_t numRegions, const BufferCopy* regions);
 
 	/// <summary>Copy buffer to image</summary>
 	/// <param name="buffer">Source Buffer </param>
@@ -310,7 +320,7 @@ public:
 	/// <param name="dstImageLayout">Destination image's current layout</param>
 	/// <param name="regionsCount">Copy regions</param>
 	/// <param name="regions">Number of regions</param>
-	void copyBufferToImage(const Buffer& buffer, Image& image, ImageLayout dstImageLayout, uint32_t regionsCount, const BufferImageCopy* regions);
+	void copyBufferToImage(const Buffer& buffer, const Image& image, ImageLayout dstImageLayout, uint32_t regionsCount, const BufferImageCopy* regions);
 
 	/// <summary>Clear buffer data</summary>
 	/// <param name="dstBuffer">Destination buffer to be filled</param>
@@ -319,7 +329,7 @@ public:
 	/// The data word is written to memory according to the host endianness.</param>
 	/// <param name="size">The number of bytes to fill, and must be either a multiple of 4, or VK_WHOLE_SIZE to
 	/// fill the range from offset to the end of the buffer</param>
-	void fillBuffer(Buffer dstBuffer, uint32_t dstOffset, uint32_t data, uint64_t size = VK_WHOLE_SIZE);
+	void fillBuffer(const Buffer& dstBuffer, uint32_t dstOffset, uint32_t data, uint64_t size = VK_WHOLE_SIZE);
 
 	/// <summary>Set viewport</summary>
 	/// <param name="viewport">Viewport</param>
@@ -361,14 +371,14 @@ public:
 	/// <param name="offset">The byte offset into buffer where parameters begin.</param>
 	/// <param name="count">The number of draws to execute.</param>
 	/// <param name="stride">The byte stride between successive sets of draw commands.</param>
-	void drawIndirect(Buffer& buffer, uint32_t offset, uint32_t count, uint32_t stride);
+	void drawIndirect(const Buffer& buffer, uint32_t offset, uint32_t count, uint32_t stride);
 
 	/// <summary>Non-indexed indirect drawing command.</summary>
 	/// <param name="buffer">The buffer containing draw parameters.</param>
 	/// <param name="offset">The byte offset into buffer where parameters begin.</param>
 	/// <param name="count">The number of draws to execute.</param>
 	/// <param name="stride">The byte stride between successive sets of draw commands.</param>
-	void drawIndexedIndirect(Buffer& buffer, uint32_t offset, uint32_t count, uint32_t stride);
+	void drawIndexedIndirect(const Buffer& buffer, uint32_t offset, uint32_t count, uint32_t stride);
 
 	/// <summary>Dispatching work provokes work in a compute pipeline. A compute pipeline must be bound to the command buffer
 	/// before any dispatch commands are recorded.</summary>
@@ -393,7 +403,7 @@ public:
 	/// <param name="numLevels">Number of mipmap levels to clear</param>
 	/// <param name="baseArrayLayer">Base array layer to clear</param>
 	/// <param name="numLayers">Number of array layers to clear</param>
-	void clearColorImage(ImageView& image, const ClearColorValue& clearColor, ImageLayout currentLayout, const uint32_t baseMipLevel = 0, const uint32_t numLevels = 1,
+	void clearColorImage(const ImageView& image, const ClearColorValue& clearColor, ImageLayout currentLayout, const uint32_t baseMipLevel = 0, const uint32_t numLevels = 1,
 		const uint32_t baseArrayLayer = 0, const uint32_t numLayers = 1);
 
 	/// <summary>Clears a color image outside of a renderpass instance using a number of ranges.</summary>
@@ -405,7 +415,7 @@ public:
 	/// <param name="baseArrayLayers">A pointer to an array of base array layers to clear.</param>
 	/// <param name="numLayers">A pointer to an array array layers to clear.</param>
 	/// <param name="numRanges">The number of elements in the baseMipLevel, numLevels, baseArrayLayers and numLayers arrays.</param>
-	void clearColorImage(ImageView& image, const ClearColorValue& clearColor, ImageLayout currentLayout, const uint32_t* baseMipLevels, const uint32_t* numLevels,
+	void clearColorImage(const ImageView& image, const ClearColorValue& clearColor, ImageLayout currentLayout, const uint32_t* baseMipLevels, const uint32_t* numLevels,
 		const uint32_t* baseArrayLayers, const uint32_t* numLayers, uint32_t numRanges);
 
 	/// <summary>Clear depth stencil image outside of a renderpass instance.</summary>
@@ -417,7 +427,7 @@ public:
 	/// <param name="baseArrayLayer">Base array layer to clear</param>
 	/// <param name="numLayers">Number of array layers to clear</param>
 	/// <param name="layout">Image current layout</param>
-	void clearDepthStencilImage(Image& image, float clearDepth, uint32_t clearStencil, const uint32_t baseMipLevel, const uint32_t numLevels, const uint32_t baseArrayLayer,
+	void clearDepthStencilImage(const Image& image, float clearDepth, uint32_t clearStencil, const uint32_t baseMipLevel, const uint32_t numLevels, const uint32_t baseArrayLayer,
 		const uint32_t numLayers, ImageLayout layout);
 
 	/// <summary>Clear depth stencil image outside of a renderpass instance using a number of ranges.</summary>
@@ -432,8 +442,8 @@ public:
 	/// used as the number of array elements in the arrays passed to baseMipLevels, numLevels,
 	/// baseArrayLayers and numLayers</param>
 	/// <param name="layout">Image current layout</param>
-	void clearDepthStencilImage(Image& image, float clearDepth, uint32_t clearStencil, const uint32_t* baseMipLevels, const uint32_t* numLevels, const uint32_t* baseArrayLayers,
-		const uint32_t* numLayers, uint32_t numRanges, ImageLayout layout);
+	void clearDepthStencilImage(const Image& image, float clearDepth, uint32_t clearStencil, const uint32_t* baseMipLevels, const uint32_t* numLevels,
+		const uint32_t* baseArrayLayers, const uint32_t* numLayers, uint32_t numRanges, ImageLayout layout);
 
 	/// <summary>Clears a stencil image outside of a renderpass instance.</summary>
 	/// <param name="image">Image to clear</param>
@@ -443,8 +453,8 @@ public:
 	/// <param name="baseArrayLayer">Base array layer to clear</param>
 	/// <param name="numLayers">Number of array layers to clear</param>
 	/// <param name="layout">Image current layout</param>
-	void clearStencilImage(
-		Image& image, uint32_t clearStencil, const uint32_t baseMipLevel, const uint32_t numLevels, const uint32_t baseArrayLayer, const uint32_t numLayers, ImageLayout layout);
+	void clearStencilImage(const Image& image, uint32_t clearStencil, const uint32_t baseMipLevel, const uint32_t numLevels, const uint32_t baseArrayLayer,
+		const uint32_t numLayers, ImageLayout layout);
 
 	/// <summary>Clear stencil image outside of a renderpass instance using a number of ranges.</summary>
 	/// <param name="image">Image to clear</param>
@@ -457,7 +467,7 @@ public:
 	/// used as the number of array elements in the arrays passed to baseMipLevels, numLevels,
 	/// baseArrayLayers and numLayers</param>
 	/// <param name="layout">Image current layout</param>
-	void clearStencilImage(Image& image, uint32_t clearStencil, const uint32_t* baseMipLevels, const uint32_t* numLevels, const uint32_t* baseArrayLayers,
+	void clearStencilImage(const Image& image, uint32_t clearStencil, const uint32_t* baseMipLevels, const uint32_t* numLevels, const uint32_t* baseArrayLayers,
 		const uint32_t* numLayers, uint32_t numRanges, ImageLayout layout);
 
 	/// <summary>Clear depth image outside of a renderpass instance.</summary>
@@ -469,7 +479,7 @@ public:
 	/// <param name="numLayers">Number of array layers to clear</param>
 	/// <param name="layout">Current layout of the image</param>
 	void clearDepthImage(
-		Image& image, float clearDepth, const uint32_t baseMipLevel, const uint32_t numLevels, const uint32_t baseArrayLayer, const uint32_t numLayers, ImageLayout layout);
+		const Image& image, float clearDepth, const uint32_t baseMipLevel, const uint32_t numLevels, const uint32_t baseArrayLayer, const uint32_t numLayers, ImageLayout layout);
 
 	/// <summary>Clears the depth image outside of a renderpass instance using a number of ranges.</summary>
 	/// <param name="image">Image to clear</param>
@@ -482,7 +492,7 @@ public:
 	/// used as the number of array elements in the arrays passed to baseMipLevels, numLevels,
 	/// baseArrayLayers and numLayers</param>
 	/// <param name="layout">Image current layout</param>
-	void clearDepthImage(Image& image, float clearDepth, const uint32_t* baseMipLevels, const uint32_t* numLevels, const uint32_t* baseArrayLayers, const uint32_t* numLayers,
+	void clearDepthImage(const Image& image, float clearDepth, const uint32_t* baseMipLevels, const uint32_t* numLevels, const uint32_t* baseArrayLayers, const uint32_t* numLayers,
 		uint32_t numRanges, ImageLayout layout);
 
 	/// <summary>Sets the dynamic scissor state affecting pipeline objects created with VK_DYNAMIC_STATE_SCISSOR enabled.</summary>
@@ -514,7 +524,7 @@ public:
 	/// <summary>Sets the dynamic depth bias state affecting pipeline objects created where depthBiasEnable is enabled.</summary>
 	/// <param name="constantFactor">A scalar factor controlling the constant depth value added to each fragment.</param>
 	/// <param name="clamp">The maximum (or minimum) depth bias of a fragment.</param>
-	/// <param name="slopeFactor">A scalar factor applied to a fragment�s slope in depth bias calculations.</param>
+	/// <param name="slopeFactor">A scalar factor applied to a fragment's slope in depth bias calculations.</param>
 	void setDepthBias(float constantFactor, float clamp, float slopeFactor);
 
 	/// <summary>Sets the dynamic blend constant bias state affecting pipeline objects created with VK_DYNAMIC_STATE_BLEND_CONSTANTS enabled.</summary>
@@ -534,7 +544,7 @@ public:
 	/// <param name="filter">A Filter specifying the filter to apply if the blits require scaling</param>
 	/// <param name="srcLayout">The layout of the src image subresrcs for the blit.</param>
 	/// <param name="dstLayout">The layout of the dst image subresrcs for the blit.</param>
-	void blitImage(const Image& srcImage, Image& dstImage, const ImageBlit* regions, uint32_t numRegions, Filter filter, ImageLayout srcLayout, ImageLayout dstLayout);
+	void blitImage(const Image& srcImage, const Image& dstImage, const ImageBlit* regions, uint32_t numRegions, Filter filter, ImageLayout srcLayout, ImageLayout dstLayout);
 
 	/// <summary>Copies regions of a src image into a dst image, potentially also performing format conversions, aritrary scaling and filtering.</summary>
 	/// <param name="srcImage">The src Image in the copy.</param>
@@ -543,7 +553,7 @@ public:
 	/// <param name="numRegions">The number of regions to blit.</param>
 	/// <param name="srcLayout">The layout of the src image subresrcs for the blit.</param>
 	/// <param name="dstLayout">The layout of the dst image subresrcs for the blit.</param>
-	void resolveImage(Image& srcImage, Image& dstImage, const ImageResolve* regions, uint32_t numRegions, ImageLayout srcLayout, ImageLayout dstLayout);
+	void resolveImage(const Image& srcImage, const Image& dstImage, const ImageResolve* regions, uint32_t numRegions, ImageLayout srcLayout, ImageLayout dstLayout);
 
 	/// <summary>Updates buffer data inline in a command buffer. The update is only allowed outside of a renderpass and is treated as a transfer operation
 	/// for the purposes of syncrhonization.</summary>
@@ -551,7 +561,7 @@ public:
 	/// <param name="data">A pointer to the src data for the buffer update. The data must be at least length bytes in size.</param>
 	/// <param name="offset">The byte offset into the buffer to start updating, and must be a multiple of 4.</param>
 	/// <param name="length">The number of bytes to update, and must be a multiple of 4.</param>
-	void updateBuffer(Buffer& buffer, const void* data, uint32_t offset, uint32_t length);
+	void updateBuffer(const Buffer& buffer, const void* data, uint32_t offset, uint32_t length);
 
 	/// <summary>Updates the value of shader push constants at the offset specified.</summary>
 	/// <param name="pipelineLayout">The pipeline layout used to program the push constant updates.</param>
@@ -619,12 +629,12 @@ public:
 
 	/// <summary>Record commands from the secondary command buffer.</summary>
 	/// <param name="secondaryCmdBuffer">Record all commands from a secondary command buffer</param>
-	void executeCommands(SecondaryCommandBuffer& secondaryCmdBuffer);
+	void executeCommands(const SecondaryCommandBuffer& secondaryCmdBuffer);
 
 	/// <summary>Record commands from an array of secondary command buffer</summary>
 	/// <param name="secondaryCmdBuffers">A c-style array of SecondaryCommandBuffers</param>
 	/// <param name="numCommandBuffers">The number of SecondaryCommandBuffers in secondaryCmdBuffers</param>
-	void executeCommands(SecondaryCommandBuffer* secondaryCmdBuffers, uint32_t numCommandBuffers);
+	void executeCommands(const SecondaryCommandBuffer* secondaryCmdBuffers, uint32_t numCommandBuffers);
 
 	/// <summary>Begins the renderpass for the provided Framebuffer and renderpass and using a specific renderable area.</summary>
 	/// <param name="framebuffer">A Framework wrapped Vulkan Framebuffer object to use as part of the VkRenderPassBeginInfo structure.</param>

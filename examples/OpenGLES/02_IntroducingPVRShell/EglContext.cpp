@@ -1,12 +1,24 @@
 #include "EglContext.h"
+#include "PVRCore/Log.h"
 
-enum { retry_RemoveDebugBit, retry_DisableAA, retry_ReduceStencilBpp, retry_NoStencil, retry_StencilBpp, retry_ColorBpp, retry_reduceAlphaBpp, retry_NoAlpha, retry_DepthBpp, retry_DONE };
+enum
+{
+	retry_RemoveDebugBit,
+	retry_DisableAA,
+	retry_ReduceStencilBpp,
+	retry_NoStencil,
+	retry_StencilBpp,
+	retry_ColorBpp,
+	retry_reduceAlphaBpp,
+	retry_NoAlpha,
+	retry_DepthBpp,
+	retry_DONE
+};
 const char* retries_string[] = { "RemoveDebugBit", "DisableAA", "ReduceStencilBpp", "NoStencil", "ColorBpp", "ReduceAlphaBpp", "NoAlpha", "DepthBpp" };
-
 
 void fixAttributes(const pvr::DisplayAttributes& origAttr, pvr::DisplayAttributes& attr, uint32_t* retries, bool& debugBit)
 {
-	if (retries[retry_ColorBpp] == 1) //0:inactive 1:active, currently tested 2: active, unsure  3:active fixed
+	if (retries[retry_ColorBpp] == 1) // 0:inactive 1:active, currently tested 2: active, unsure  3:active fixed
 	{
 		attr.redBits = 1;
 		attr.greenBits = 1;
@@ -87,27 +99,42 @@ void fixAttributes(const pvr::DisplayAttributes& origAttr, pvr::DisplayAttribute
 	}
 }
 
-
 char const* eglErrorToStr(EGLint errorCode)
 {
 	switch (errorCode)
 	{
-	case EGL_SUCCESS: return "EGL_SUCCESS";
-	case EGL_NOT_INITIALIZED: return "EGL_NOT_INITIALIZED";
-	case EGL_BAD_ACCESS: return "EGL_BAD_ACCESS";
-	case EGL_BAD_ALLOC: return "EGL_BAD_ALLOC";
-	case EGL_BAD_ATTRIBUTE: return "EGL_BAD_ATTRIBUTE";
-	case EGL_BAD_CONTEXT: return "EGL_BAD_CONTEXT";
-	case EGL_BAD_CONFIG: return "EGL_BAD_CONFIG";
-	case EGL_BAD_CURRENT_SURFACE: return "EGL_BAD_CURRENT_SURFACE";
-	case EGL_BAD_DISPLAY: return "EGL_BAD_DISPLAY";
-	case EGL_BAD_SURFACE: return "EGL_BAD_SURFACE";
-	case EGL_BAD_MATCH: return "EGL_BAD_MATCH";
-	case EGL_BAD_PARAMETER: return "EGL_BAD_PARAMETER";
-	case EGL_BAD_NATIVE_PIXMAP: return "EGL_BAD_NATIVE_PIXMAP";
-	case EGL_BAD_NATIVE_WINDOW: return "EGL_BAD_NATIVE_WINDOW";
-	case EGL_CONTEXT_LOST: return "EGL_CONTEXT_LOST";
-	default: return "EGL_SUCCESS";
+	case EGL_SUCCESS:
+		return "EGL_SUCCESS";
+	case EGL_NOT_INITIALIZED:
+		return "EGL_NOT_INITIALIZED";
+	case EGL_BAD_ACCESS:
+		return "EGL_BAD_ACCESS";
+	case EGL_BAD_ALLOC:
+		return "EGL_BAD_ALLOC";
+	case EGL_BAD_ATTRIBUTE:
+		return "EGL_BAD_ATTRIBUTE";
+	case EGL_BAD_CONTEXT:
+		return "EGL_BAD_CONTEXT";
+	case EGL_BAD_CONFIG:
+		return "EGL_BAD_CONFIG";
+	case EGL_BAD_CURRENT_SURFACE:
+		return "EGL_BAD_CURRENT_SURFACE";
+	case EGL_BAD_DISPLAY:
+		return "EGL_BAD_DISPLAY";
+	case EGL_BAD_SURFACE:
+		return "EGL_BAD_SURFACE";
+	case EGL_BAD_MATCH:
+		return "EGL_BAD_MATCH";
+	case EGL_BAD_PARAMETER:
+		return "EGL_BAD_PARAMETER";
+	case EGL_BAD_NATIVE_PIXMAP:
+		return "EGL_BAD_NATIVE_PIXMAP";
+	case EGL_BAD_NATIVE_WINDOW:
+		return "EGL_BAD_NATIVE_WINDOW";
+	case EGL_CONTEXT_LOST:
+		return "EGL_CONTEXT_LOST";
+	default:
+		return "EGL_SUCCESS";
 	}
 }
 inline EGLNativeDisplayType ptrToEGLNativeDisplayType(void* ptr)
@@ -120,11 +147,9 @@ inline EGLNativeDisplayType ptrToEGLNativeDisplayType(void* ptr)
 void EglContext::release()
 {
 	// Check the current context/surface/display. If they are equal to the handles in this class, remove them from the current context
-	if (_platformContextHandles.display == egl::GetCurrentDisplay() &&
-	    _platformContextHandles.display != EGL_NO_DISPLAY &&
-	    _platformContextHandles.drawSurface == egl::GetCurrentSurface(EGL_DRAW) &&
-	    _platformContextHandles.readSurface == egl::GetCurrentSurface(EGL_READ) &&
-	    _platformContextHandles.context == egl::GetCurrentContext())
+	if (_platformContextHandles.display == egl::GetCurrentDisplay() && _platformContextHandles.display != EGL_NO_DISPLAY &&
+		_platformContextHandles.drawSurface == egl::GetCurrentSurface(EGL_DRAW) && _platformContextHandles.readSurface == egl::GetCurrentSurface(EGL_READ) &&
+		_platformContextHandles.context == egl::GetCurrentContext())
 	{
 		egl::MakeCurrent(egl::GetCurrentDisplay(), EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
 	}
@@ -153,9 +178,9 @@ void EglContext::release()
 
 bool EglContext::makeCurrent()
 {
-	bool result = (egl::MakeCurrent(_platformContextHandles.display, _platformContextHandles.drawSurface,
-	                                _platformContextHandles.drawSurface, _platformContextHandles.context) == EGL_TRUE);
-#if !defined(__ANDROID__)&&!defined(TARGET_OS_IPHONE)
+	bool result =
+		(egl::MakeCurrent(_platformContextHandles.display, _platformContextHandles.drawSurface, _platformContextHandles.drawSurface, _platformContextHandles.context) == EGL_TRUE);
+#if !defined(__ANDROID__) && !defined(TARGET_OS_IPHONE)
 	if (_swapInterval != -2)
 	{
 		// Set our swap interval which affects the current draw surface
@@ -249,13 +274,13 @@ EGLContext getContextForConfig(EGLDisplay display, EGLConfig config, pvr::Api gr
 
 	contextAttributes[i] = EGL_NONE;
 
-	//Create the context
+	// Create the context
 	EGLContext _context = egl::CreateContext(display, config, NULL, contextAttributes);
 	if (_context == EGL_NO_CONTEXT)
 	{
 #ifdef DEBUG
-		//RETRY! Do we support debug bit?
-		egl::GetError(); //clear error
+		// RETRY! Do we support debug bit?
+		egl::GetError(); // clear error
 		contextAttributes[debug_flag] = EGL_NONE;
 		_context = egl::CreateContext(display, config, NULL, contextAttributes);
 #endif
@@ -267,13 +292,16 @@ bool EglContext::isGlesVersionSupported(EGLDisplay display, pvr::Api graphicsapi
 {
 #if defined(TARGET_OS_MAC)
 	/* Max Api supported on macOS is OpenGLES3*/
-	if (graphicsapi > pvr::Api::OpenGLES3) { return false; }
+	if (graphicsapi > pvr::Api::OpenGLES3)
+	{
+		return false;
+	}
 #endif
 
 	isSupported = false;
 	std::vector<EGLConfig> configs;
 	EGLint configAttributes[32];
-	unsigned int i = 0;
+	uint32_t i = 0;
 
 	{
 		configAttributes[i++] = EGL_SURFACE_TYPE;
@@ -281,13 +309,13 @@ bool EglContext::isGlesVersionSupported(EGLDisplay display, pvr::Api graphicsapi
 
 		switch (graphicsapi)
 		{
-		case pvr::Api::OpenGLES2: //GLES2
+		case pvr::Api::OpenGLES2: // GLES2
 			Log(LogLevel::Debug, "EglPlatformContext.cpp: isGlesVersionSupported: Setting EGL_OPENGL_ES2_BIT");
 			configAttributes[i++] = EGL_RENDERABLE_TYPE;
 			configAttributes[i++] = EGL_OPENGL_ES2_BIT;
 			break;
-		case pvr::Api::OpenGLES3: //GLES2
-		case pvr::Api::OpenGLES31: //GLES2
+		case pvr::Api::OpenGLES3: // GLES2
+		case pvr::Api::OpenGLES31: // GLES2
 			Log(LogLevel::Debug, "EglPlatformContext.cpp: isGlesVersionSupported: Setting EGL_OPENGL_ES3_BIT_KHR");
 			configAttributes[i++] = EGL_RENDERABLE_TYPE;
 			configAttributes[i++] = EGL_OPENGL_ES3_BIT_KHR;
@@ -300,8 +328,8 @@ bool EglContext::isGlesVersionSupported(EGLDisplay display, pvr::Api graphicsapi
 
 	configAttributes[i] = EGL_NONE;
 
-	EGLint  numConfigs;
-	EGLint  configsSize;
+	EGLint numConfigs;
+	EGLint configsSize;
 
 	// Find out how many configs there are in total that match our criteria
 	if (!egl::ChooseConfig(display, configAttributes, NULL, 0, &configsSize))
@@ -314,11 +342,10 @@ bool EglContext::isGlesVersionSupported(EGLDisplay display, pvr::Api graphicsapi
 	{
 		configs.resize(configsSize);
 
-		if (egl::ChooseConfig(display, configAttributes, configs.data(), configsSize, &numConfigs) != EGL_TRUE
-		    || numConfigs != configsSize)
+		if (egl::ChooseConfig(display, configAttributes, configs.data(), configsSize, &numConfigs) != EGL_TRUE || numConfigs != configsSize)
 		{
 			Log("EglPlatformContext.cpp: getMaxEglVersion - eglChooseConfig unexpected error %x getting list of configurations, but %d possible configs were already detected.",
-			    egl::GetError(), configsSize);
+				egl::GetError(), configsSize);
 			return false;
 		}
 
@@ -347,8 +374,8 @@ void EglContext::populateMaxApiVersion()
 	bool result;
 	while (graphicsapi > pvr::Api::Unspecified)
 	{
-		const char* esversion = (graphicsapi == pvr::Api::OpenGLES31 ? "3.1" : graphicsapi == pvr::Api::OpenGLES3 ? "3.0" : graphicsapi == pvr::Api::OpenGLES2 ?
-		                         "2.0" : "UNKNOWN_VERSION");
+		const char* esversion =
+			(graphicsapi == pvr::Api::OpenGLES31 ? "3.1" : graphicsapi == pvr::Api::OpenGLES3 ? "3.0" : graphicsapi == pvr::Api::OpenGLES2 ? "2.0" : "UNKNOWN_VERSION");
 		result = isGlesVersionSupported(_platformContextHandles.display, graphicsapi, supported);
 
 		if (result == true)
@@ -368,7 +395,7 @@ void EglContext::populateMaxApiVersion()
 		{
 			Log("Error detected while testing OpenGL ES version %s for compatibility. Trying lower version", esversion);
 		}
-		graphicsapi = (pvr::Api)((int)graphicsapi - 1);
+		graphicsapi = static_cast<pvr::Api>(static_cast<int32_t>(graphicsapi) - 1);
 	}
 	Log(LogLevel::Critical, "=== FATAL: COULD NOT FIND COMPATIBILITY WITH ANY OPENGL ES VERSION ===");
 }
@@ -406,8 +433,7 @@ bool EglContext::preInitialize(pvr::OSDisplay osdisplay, NativePlatformHandle& h
 	return true;
 }
 
-bool EglContext::initializeContext(bool wantWindow, pvr::DisplayAttributes& original_attributes,
-                                   NativePlatformHandle& handles, EGLConfig& config, pvr::Api graphicsapi)
+bool EglContext::initializeContext(bool wantWindow, pvr::DisplayAttributes& original_attributes, NativePlatformHandle& handles, EGLConfig& config, pvr::Api graphicsapi)
 {
 	// Choose a config based on user supplied attributes
 	std::vector<EGLConfig> configs;
@@ -436,10 +462,14 @@ bool EglContext::initializeContext(bool wantWindow, pvr::DisplayAttributes& orig
 	}
 
 	bool create_context_supported = egl::isEglExtensionSupported(handles.display, "EGL_KHR_create_context");
-	if (create_context_supported) { Log(LogLevel::Information, "EGL context creation: EGL_KHR_create_context supported..."); }
+	if (create_context_supported)
+	{
+		Log(LogLevel::Information, "EGL context creation: EGL_KHR_create_context supported...");
+	}
 	else
 	{
-		Log(requestedMinorVersion ? LogLevel::Warning : LogLevel::Information, "EGL context creation: EGL_KHR_create_context not supported. Minor version will be discarded, and debug disabled.");
+		Log(requestedMinorVersion ? LogLevel::Warning : LogLevel::Information,
+			"EGL context creation: EGL_KHR_create_context not supported. Minor version will be discarded, and debug disabled.");
 		requestedMinorVersion = 0;
 	}
 
@@ -450,9 +480,15 @@ bool EglContext::initializeContext(bool wantWindow, pvr::DisplayAttributes& orig
 	{
 		switch (original_attributes.contextPriority)
 		{
-		case 0: Log(LogLevel::Information, "EGL context creation: EGL_IMG_context_priority supported! Setting context LOW priority..."); break;
-		case 1: Log(LogLevel::Information, "EGL context creation: EGL_IMG_context_priority supported! Setting context MEDIUM priority..."); break;
-		default: Log(LogLevel::Information, "EGL context creation: EGL_IMG_context_priority supported! Setting context HIGH priority (default)..."); break;
+		case 0:
+			Log(LogLevel::Information, "EGL context creation: EGL_IMG_context_priority supported! Setting context LOW priority...");
+			break;
+		case 1:
+			Log(LogLevel::Information, "EGL context creation: EGL_IMG_context_priority supported! Setting context MEDIUM priority...");
+			break;
+		default:
+			Log(LogLevel::Information, "EGL context creation: EGL_IMG_context_priority supported! Setting context HIGH priority (default)...");
+			break;
 		}
 	}
 	else
@@ -467,18 +503,42 @@ bool EglContext::initializeContext(bool wantWindow, pvr::DisplayAttributes& orig
 	debugBit = true;
 #endif
 
-	if (!debugBit) { retries[retry_RemoveDebugBit] = 4; }
-	if (attributes.aaSamples == 0) { retries[retry_DisableAA] = 3; }
-	if (attributes.alphaBits == 0) { retries[retry_reduceAlphaBpp] = 3; }
-	if (attributes.alphaBits == 0) { retries[retry_NoAlpha] = 3; }
-	if (attributes.stencilBPP == 0) { retries[retry_StencilBpp] = 3; }
-	if (attributes.stencilBPP == 0) { retries[retry_NoStencil] = 3; }
-	if (attributes.depthBPP == 0) { retries[retry_DepthBpp] = 3; }
-	if (attributes.forceColorBPP) { retries[retry_ColorBpp] = 3; }
+	if (!debugBit)
+	{
+		retries[retry_RemoveDebugBit] = 4;
+	}
+	if (attributes.aaSamples == 0)
+	{
+		retries[retry_DisableAA] = 3;
+	}
+	if (attributes.alphaBits == 0)
+	{
+		retries[retry_reduceAlphaBpp] = 3;
+	}
+	if (attributes.alphaBits == 0)
+	{
+		retries[retry_NoAlpha] = 3;
+	}
+	if (attributes.stencilBPP == 0)
+	{
+		retries[retry_StencilBpp] = 3;
+	}
+	if (attributes.stencilBPP == 0)
+	{
+		retries[retry_NoStencil] = 3;
+	}
+	if (attributes.depthBPP == 0)
+	{
+		retries[retry_DepthBpp] = 3;
+	}
+	if (attributes.forceColorBPP)
+	{
+		retries[retry_ColorBpp] = 3;
+	}
 
 	for (;;)
 	{
-		unsigned int i = 0;
+		uint32_t i = 0;
 		Log(LogLevel::Debug, "Attempting to create context with:\n");
 		Log(LogLevel::Debug, "\tDebugbit: %s", debugBit ? "true" : "false");
 		Log(LogLevel::Debug, "\tRedBits: %d", attributes.redBits);
@@ -516,23 +576,21 @@ bool EglContext::initializeContext(bool wantWindow, pvr::DisplayAttributes& orig
 			configAttributes[i++] = EGL_STENCIL_SIZE;
 			configAttributes[i++] = attributes.stencilBPP;
 
-			int windowBit = -1;
 			if (wantWindow)
 			{
-				windowBit = i;
 				configAttributes[i++] = EGL_SURFACE_TYPE;
 				configAttributes[i++] = EGL_WINDOW_BIT;
 			}
 
 			switch (graphicsapi)
 			{
-			case pvr::Api::OpenGLES2: //GLES2
+			case pvr::Api::OpenGLES2: // GLES2
 				Log(LogLevel::Debug, "EGL context creation: Setting EGL_OPENGL_ES2_BIT");
 				configAttributes[i++] = EGL_RENDERABLE_TYPE;
 				configAttributes[i++] = EGL_OPENGL_ES2_BIT;
 				break;
-			case pvr::Api::OpenGLES3: //GLES2
-			case pvr::Api::OpenGLES31: //GLES2
+			case pvr::Api::OpenGLES3: // GLES2
+			case pvr::Api::OpenGLES31: // GLES2
 				Log(LogLevel::Debug, "EGL context creation: EGL_OPENGL_ES3_BIT");
 				configAttributes[i++] = EGL_RENDERABLE_TYPE;
 				configAttributes[i++] = EGL_OPENGL_ES3_BIT_KHR;
@@ -555,8 +613,8 @@ bool EglContext::initializeContext(bool wantWindow, pvr::DisplayAttributes& orig
 
 		configAttributes[i] = EGL_NONE;
 
-		EGLint  numConfigs;
-		EGLint  configsSize;
+		EGLint numConfigs;
+		EGLint configsSize;
 
 		EGLint eglerror = egl::GetError();
 		assertion(eglerror == EGL_SUCCESS, "initializeContext: egl error logged before choosing egl config");
@@ -567,21 +625,27 @@ bool EglContext::initializeContext(bool wantWindow, pvr::DisplayAttributes& orig
 
 		if (attributes.forceColorBPP)
 		{
-			if (configsSize == 0) { return false; }
+			if (configsSize == 0)
+			{
+				return false;
+			}
 		}
 		else
 		{
-			if (configsSize > 1) { configsSize = 1; }
+			if (configsSize > 1)
+			{
+				configsSize = 1;
+			}
 		}
 		numConfigs = configsSize;
 		if (configsSize)
 		{
-
 			configs.resize(configsSize);
 
 			if (egl::ChooseConfig(handles.display, configAttributes, configs.data(), configsSize, &numConfigs) != EGL_TRUE)
 			{
-				Log("EGL context creation: initializeContext Error choosing egl config. %x.    Expected number of configs: %d    Actual: %d.", egl::GetError(), numConfigs, configsSize);
+				Log("EGL context creation: initializeContext Error choosing egl config. %x.    Expected number of configs: %d    Actual: %d.", egl::GetError(), numConfigs,
+					configsSize);
 				return false;
 			}
 		}
@@ -598,15 +662,10 @@ bool EglContext::initializeContext(bool wantWindow, pvr::DisplayAttributes& orig
 
 				for (; configIdx < configsSize; ++configIdx)
 				{
-					if ((egl::GetConfigAttrib(handles.display, configs[configIdx], EGL_RED_SIZE, &value)
-					     && value == static_cast<EGLint>(original_attributes.redBits))
-					    && (egl::GetConfigAttrib(handles.display, configs[configIdx], EGL_GREEN_SIZE, &value)
-					        && value == static_cast<EGLint>(original_attributes.greenBits))
-					    && (egl::GetConfigAttrib(handles.display, configs[configIdx], EGL_BLUE_SIZE, &value)
-					        && value == static_cast<EGLint>(original_attributes.blueBits))
-					    && (egl::GetConfigAttrib(handles.display, configs[configIdx], EGL_ALPHA_SIZE, &value)
-					        && value == static_cast<EGLint>(original_attributes.alphaBits))
-					   )
+					if ((egl::GetConfigAttrib(handles.display, configs[configIdx], EGL_RED_SIZE, &value) && value == static_cast<EGLint>(original_attributes.redBits)) &&
+						(egl::GetConfigAttrib(handles.display, configs[configIdx], EGL_GREEN_SIZE, &value) && value == static_cast<EGLint>(original_attributes.greenBits)) &&
+						(egl::GetConfigAttrib(handles.display, configs[configIdx], EGL_BLUE_SIZE, &value) && value == static_cast<EGLint>(original_attributes.blueBits)) &&
+						(egl::GetConfigAttrib(handles.display, configs[configIdx], EGL_ALPHA_SIZE, &value) && value == static_cast<EGLint>(original_attributes.alphaBits)))
 					{
 						break;
 					}
@@ -646,15 +705,21 @@ bool EglContext::initializeContext(bool wantWindow, pvr::DisplayAttributes& orig
 
 				switch (attributes.contextPriority)
 				{
-				case 0: contextAttributes[i++] = EGL_CONTEXT_PRIORITY_LOW_IMG; break;
-				case 1: contextAttributes[i++] = EGL_CONTEXT_PRIORITY_MEDIUM_IMG; break;
-				default: contextAttributes[i++] = EGL_CONTEXT_PRIORITY_HIGH_IMG; break;
+				case 0:
+					contextAttributes[i++] = EGL_CONTEXT_PRIORITY_LOW_IMG;
+					break;
+				case 1:
+					contextAttributes[i++] = EGL_CONTEXT_PRIORITY_MEDIUM_IMG;
+					break;
+				default:
+					contextAttributes[i++] = EGL_CONTEXT_PRIORITY_HIGH_IMG;
+					break;
 				}
 			}
 			contextAttributes[i] = EGL_NONE;
 
 			Log(LogLevel::Information, "Creating EGL context...");
-			//Create the context
+			// Create the context
 			handles.context = egl::CreateContext(handles.display, config, NULL, contextAttributes);
 
 			//// SUCCESS -- FUNCTION SUCCESSFUL EXIT POINT
@@ -666,7 +731,10 @@ bool EglContext::initializeContext(bool wantWindow, pvr::DisplayAttributes& orig
 				{
 					if (retries[retrybit] == 1) // If was "now trying"...
 					{
-						Log(LogLevel::Debug, "Current testing bit was %s. Will mark this as 'definitely not supported'(3), clear all 'tentative'(2) bits if present. If no tentative bits were found, will succeed!", retries_string[retrybit]);
+						Log(LogLevel::Debug,
+							"Current testing bit was %s. Will mark this as 'definitely not supported'(3), clear all 'tentative'(2) bits if present. If no tentative bits were "
+							"found, will succeed!",
+							retries_string[retrybit]);
 						retries[retrybit] = 3; // Fix that we definitely need that.
 						// Now, we try and enable all the rest of them...
 						for (uint32_t retrybit_2 = 0; retrybit_2 < retry_DONE; ++retrybit_2)
@@ -677,7 +745,6 @@ bool EglContext::initializeContext(bool wantWindow, pvr::DisplayAttributes& orig
 								retries[retrybit_2] = 0; // Reset it!
 							}
 						}
-
 					}
 				}
 
@@ -708,7 +775,7 @@ bool EglContext::initializeContext(bool wantWindow, pvr::DisplayAttributes& orig
 			{
 				Log(LogLevel::Debug, "Context not created yet. Clearing EGL errors.");
 			}
-		} //eglChooseConfif failed.
+		} // eglChooseConfif failed.
 
 		//// FAILURE ////
 		if (attributes.configID > 0)
@@ -723,19 +790,19 @@ bool EglContext::initializeContext(bool wantWindow, pvr::DisplayAttributes& orig
 		bool must_retry = false;
 		for (uint32_t retry_bit = 0; retry_bit < retry_DONE; ++retry_bit)
 		{
-			if (retries[retry_bit] == 1) //Was the current one being checked out?
+			if (retries[retry_bit] == 1) // Was the current one being checked out?
 			{
 				Log(LogLevel::Information, "Setting bit %s as 'unsure'(2), since the context creation still failed.", retries_string[retry_bit]);
-				retries[retry_bit] = 2; //Mark it as "unsure"
+				retries[retry_bit] = 2; // Mark it as "unsure"
 				break;
 			}
 		}
 		for (uint32_t retry_bit = 0; retry_bit < retry_DONE && !must_retry; ++retry_bit)
 		{
-			if (retries[retry_bit] == 0) //Found one we didn't test?
+			if (retries[retry_bit] == 0) // Found one we didn't test?
 			{
 				Log(LogLevel::Information, "Setting bit %s as 'currently testing'(1).", retries_string[retry_bit]);
-				retries[retry_bit] = 1; //Test it...
+				retries[retry_bit] = 1; // Test it...
 				must_retry = true;
 			}
 		}
@@ -779,11 +846,12 @@ bool EglContext::init(pvr::OSWindow window, pvr::OSDisplay display, pvr::Display
 
 	if (minApi > maxApi)
 	{
-		Log(LogLevel::Error, "================================================================================\n"
-		    "API level requested [%s] was not supported. Max supported API level on this device is [%s]\n"
-		    "**** APPLICATION WILL EXIT ****\n"
-		    "================================================================================",
-		    apiName(minApi), apiName(_maxApiVersion));
+		Log(LogLevel::Error,
+			"================================================================================\n"
+			"API level requested [%s] was not supported. Max supported API level on this device is [%s]\n"
+			"**** APPLICATION WILL EXIT ****\n"
+			"================================================================================",
+			apiName(minApi), apiName(_maxApiVersion));
 		return false;
 	}
 
@@ -795,8 +863,7 @@ bool EglContext::init(pvr::OSWindow window, pvr::OSDisplay display, pvr::Display
 	else
 	{
 		_apiType = std::max(minApi, maxApi);
-		Log(LogLevel::Information, "Requested minimum API level : %s. Will actually create %s since it is supported.",
-		    apiName(minApi), apiName(_apiType));
+		Log(LogLevel::Information, "Requested minimum API level : %s. Will actually create %s since it is supported.", apiName(minApi), apiName(_apiType));
 	}
 
 	EGLConfig config;
@@ -807,8 +874,7 @@ bool EglContext::init(pvr::OSWindow window, pvr::OSDisplay display, pvr::Display
 
 	// CREATE THE WINDOW SURFACE
 #if defined(WAYLAND)
-	_platformContextHandles.eglWindow = wl_egl_window_create((wl_surface*)window,
-	                                    attributes.width, attributes.height);
+	_platformContextHandles.eglWindow = wl_egl_window_create((wl_surface*)window, attributes.width, attributes.height);
 	if (_platformContextHandles.eglWindow == EGL_NO_SURFACE)
 	{
 		Log("Can't create egl window\n");
@@ -836,14 +902,13 @@ bool EglContext::init(pvr::OSWindow window, pvr::OSDisplay display, pvr::Display
 		}
 	}
 
-	_platformContextHandles.drawSurface = _platformContextHandles.readSurface = egl::CreateWindowSurface(
-	                                        _platformContextHandles.display, config,
+	_platformContextHandles.drawSurface = _platformContextHandles.readSurface = egl::CreateWindowSurface(_platformContextHandles.display, config,
 #if defined(WAYLAND)
-	                                        _platformContextHandles.eglWindow,
+		_platformContextHandles.eglWindow,
 #else
-	                                        reinterpret_cast<EGLNativeWindowType>(window),
+		reinterpret_cast<EGLNativeWindowType>(window),
 #endif
-	                                        eglattribs);
+		eglattribs);
 
 	if (_platformContextHandles.drawSurface == EGL_NO_SURFACE)
 	{
@@ -852,18 +917,24 @@ bool EglContext::init(pvr::OSWindow window, pvr::OSDisplay display, pvr::Display
 	}
 
 	// Update the attributes to the surface's
-	egl::QuerySurface(_platformContextHandles.display, _platformContextHandles.drawSurface, EGL_WIDTH,
-	                  (EGLint*)&attributes.width);
-	egl::QuerySurface(_platformContextHandles.display, _platformContextHandles.drawSurface, EGL_HEIGHT,
-	                  (EGLint*)&attributes.height);
+	egl::QuerySurface(_platformContextHandles.display, _platformContextHandles.drawSurface, EGL_WIDTH, (EGLint*)&attributes.width);
+	egl::QuerySurface(_platformContextHandles.display, _platformContextHandles.drawSurface, EGL_HEIGHT, (EGLint*)&attributes.height);
 
 	_swapInterval = 1;
 	switch (attributes.vsyncMode)
 	{
-	case pvr::VsyncMode::Half: _swapInterval = 2; break;
-	case pvr::VsyncMode::Mailbox: case pvr::VsyncMode::Off: _swapInterval = 0; break;
-	case pvr::VsyncMode::Relaxed: _swapInterval = -1; break;
-	default: break;
+	case pvr::VsyncMode::Half:
+		_swapInterval = 2;
+		break;
+	case pvr::VsyncMode::Mailbox:
+	case pvr::VsyncMode::Off:
+		_swapInterval = 0;
+		break;
+	case pvr::VsyncMode::Relaxed:
+		_swapInterval = -1;
+		break;
+	default:
+		break;
 	}
 
 	_isDiscardSupported = ((_apiType >= pvr::Api::OpenGLES3) || egl::isEglExtensionSupported("GL_EXT_discard_framebuffer"));

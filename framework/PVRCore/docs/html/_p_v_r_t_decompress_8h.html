@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>PVRCore: /usr/buildxl/buildroot/sdk/branch/SDK/framework/PVRCore/Texture/PVRTDecompress.h File Reference</title>
+<title>PVRCore: /usr/buildxl/buildroot/sdk/branch/SDK/framework/PVRCore/texture/PVRTDecompress.h File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -15,7 +15,7 @@
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="IMGdoxygen.css" rel="stylesheet" type="text/css"/>
-<link rel="shortcut icon" href="http://www.imgtec.com/images/img.ico">
+<link rel="shortcut icon" type="image/x-icon" href="img.ico">
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
+      <a href="https://www.imgtec.com/developers/" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRCore</span> Documentation</a>
    <tbody>
@@ -76,7 +76,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_687531cb5acd5e736601deea3ef3b7c0.html">SDK</a></li><li class="navelem"><a class="el" href="dir_407ce59cc93389552d4bbf4df897abf8.html">framework</a></li><li class="navelem"><a class="el" href="dir_72a2a6c70dc66b6caf7d035656739fa9.html">PVRCore</a></li><li class="navelem"><a class="el" href="dir_84cfa6db8adc0f140f2dc36630a21245.html">Texture</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_687531cb5acd5e736601deea3ef3b7c0.html">SDK</a></li><li class="navelem"><a class="el" href="dir_407ce59cc93389552d4bbf4df897abf8.html">framework</a></li><li class="navelem"><a class="el" href="dir_72a2a6c70dc66b6caf7d035656739fa9.html">PVRCore</a></li><li class="navelem"><a class="el" href="dir_233d40f8a91d7f87a473a984557214de.html">texture</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -101,12 +101,12 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a25b61a39a49138f7e12cfb6341ee8c10"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#a25b61a39a49138f7e12cfb6341ee8c10">pvr::PVRTDecompressETC</a> (const void *srcData, unsigned int xDim, unsigned int yDim, void *dstData, int mode)</td></tr>
-<tr class="memdesc:a25b61a39a49138f7e12cfb6341ee8c10"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decompresses ETC to RGBA 8888. <a href="#a25b61a39a49138f7e12cfb6341ee8c10">More...</a><br/></td></tr>
-<tr class="separator:a25b61a39a49138f7e12cfb6341ee8c10"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a548c4f915769e543602e3f76cc1a3be1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#a548c4f915769e543602e3f76cc1a3be1">pvr::PVRTDecompressPVRTC</a> (const void *compressedData, int do2bitMode, int xDim, int yDim, uint8_t *outResultImage)</td></tr>
-<tr class="memdesc:a548c4f915769e543602e3f76cc1a3be1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decompresses PVRTC to RGBA 8888. <a href="#a548c4f915769e543602e3f76cc1a3be1">More...</a><br/></td></tr>
-<tr class="separator:a548c4f915769e543602e3f76cc1a3be1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a717b05fe80f33f87f83e84aafdcd6029"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#a717b05fe80f33f87f83e84aafdcd6029">pvr::PVRTDecompressETC</a> (const void *srcData, uint32_t xDim, uint32_t yDim, void *dstData, uint32_t mode)</td></tr>
+<tr class="memdesc:a717b05fe80f33f87f83e84aafdcd6029"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decompresses ETC to RGBA 8888. <a href="#a717b05fe80f33f87f83e84aafdcd6029">More...</a><br/></td></tr>
+<tr class="separator:a717b05fe80f33f87f83e84aafdcd6029"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff06586480b28aae72e01be1c735cacf"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#aff06586480b28aae72e01be1c735cacf">pvr::PVRTDecompressPVRTC</a> (const void *compressedData, uint32_t do2bitMode, uint32_t xDim, uint32_t yDim, uint8_t *outResultImage)</td></tr>
+<tr class="memdesc:aff06586480b28aae72e01be1c735cacf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decompresses PVRTC to RGBA 8888. <a href="#aff06586480b28aae72e01be1c735cacf">More...</a><br/></td></tr>
+<tr class="separator:aff06586480b28aae72e01be1c735cacf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Contains functions to decompress PVRTC or ETC formats into RGBA8888. </p>

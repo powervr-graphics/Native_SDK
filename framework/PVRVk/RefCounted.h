@@ -1129,8 +1129,7 @@ struct IsRefCountedType
 {
 	template<typename U, void (U::*)()>
 	struct SFINAE
-	{
-	};
+	{};
 	template<typename U>
 	static char Test(SFINAE<U, &U::construct>*);
 	template<typename U>

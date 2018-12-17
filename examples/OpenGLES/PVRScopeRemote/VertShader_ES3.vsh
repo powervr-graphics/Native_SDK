@@ -5,8 +5,8 @@
 #define TEXCOORD_ARRAY	2
 
 layout(location = VERTEX_ARRAY) in highp vec4 inVertex;
-layout(location = NORMAL_ARRAY) in highp vec3 inNormal;
-layout(location = TEXCOORD_ARRAY) in highp vec2 inTexCoord;
+layout(location = NORMAL_ARRAY) in mediump vec3 inNormal;
+layout(location = TEXCOORD_ARRAY) in mediump vec2 inTexCoord;
 
 uniform highp mat4 mVPMatrix;
 uniform highp mat3 mVITMatrix;

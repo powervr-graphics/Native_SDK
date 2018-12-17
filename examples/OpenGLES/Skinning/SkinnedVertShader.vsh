@@ -23,14 +23,13 @@
 	will not work properly in clip space.
 */
 
-in highp vec3	inVertex;
+in highp vec3 inVertex;
 in mediump vec3 inNormal;
 in mediump vec3 inTangent;
 in mediump vec3 inBiNormal;
 in mediump vec2 inTexCoord;
 in highp vec4 inBoneWeights;
 in highp vec4 inBoneIndex;
-
 
 struct Bone{
 	highp mat4 boneMatrix;
@@ -39,19 +38,20 @@ struct Bone{
 
 layout (std140, binding = 0) uniform MyUBlock
 {
-	highp   mat4 ViewProjMatrix;
-	mediump vec3 LightPos;
+	highp mat4 ViewProjMatrix;
+	highp vec3 LightPos;
 };
 
 layout (std140, binding = 0) buffer MyBBlock
 {
-	mediump int  BoneCount;
-	Bone bones[];
+    Bone bones[];
 };
 
-
-out mediump vec3 vLight;
+out highp vec3 vLight;
 out mediump vec2 vTexCoord;
+
+out highp vec3 worldPosition;
+out mediump float vOneOverAttenuation;
 
 void main()
 {
@@ -61,19 +61,15 @@ void main()
 	mediump ivec4 boneIndex = ivec4(inBoneIndex);
 	mediump vec4 boneWeights = inBoneWeights;
 
-	highp mat4 boneMatrix;
-	mediump mat3 normalMatrix;
-
 	mediump vec3 worldTangent = vec3(0, 0, 0);
 	mediump vec3 worldBiNormal = vec3(0, 0, 0);
 
 	highp vec4 position = vec4(0, 0, 0, 0);
 	mediump vec3 worldNormal = vec3(0, 0, 0);
 
-	for (lowp int i = 0; i < BoneCount; ++i)
+	for (mediump int i = 0; i < 4; ++i)
 	{
 		Bone b = bones[boneIndex.x];
-
 		position += b.boneMatrix * vec4(inVertex, 1.0) * boneWeights.x;
 		worldNormal += b.boneMatrixIT  * inNormal * boneWeights.x;
 
@@ -85,15 +81,22 @@ void main()
 		boneWeights = boneWeights.yzwx;
 	}
 
+	worldPosition = position.xyz / position.w;
+
 	gl_Position = ViewProjMatrix * position;
 
 	// lighting
-	mediump vec3 TmpLightDir = normalize(LightPos - position.xyz);
+	mediump vec3 tmpLightDir = LightPos - position.xyz;
+	mediump float light_distance = length(tmpLightDir);
+	tmpLightDir /= light_distance;
 
-	vLight.x = dot(normalize(worldTangent), TmpLightDir);
-	vLight.y = dot(normalize(worldBiNormal), TmpLightDir);
-	vLight.z = dot(normalize(worldNormal), TmpLightDir);
+	vOneOverAttenuation = 1.0 / (1.0 + 0.00005 * light_distance * light_distance);
+
+	vLight.x = dot(normalize(worldTangent), tmpLightDir);
+	vLight.y = dot(normalize(worldBiNormal), tmpLightDir);
+	vLight.z = dot(normalize(worldNormal), tmpLightDir);
 
 	// Pass through texcoords
 	vTexCoord = inTexCoord;
+
 }

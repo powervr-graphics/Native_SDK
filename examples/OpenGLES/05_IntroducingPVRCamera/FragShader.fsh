@@ -1,20 +1,20 @@
 #if defined(ANDROID)
 
-#extension GL_OES_EGL_image_external:require
-uniform samplerExternalOES Sampler;
+#extension GL_OES_EGL_image_external : require
+uniform mediump samplerExternalOES Sampler;
 
 #elif defined(IOS)
 
-uniform sampler2D        	SamplerY;
-uniform sampler2D        	SamplerUV;
+uniform mediump sampler2D SamplerY;
+uniform mediump sampler2D SamplerUV;
 
 #else
 
-uniform sampler2D        	Sampler;
+uniform mediump sampler2D Sampler;
 
 #endif
 
-varying mediump vec2     vTexCoord;
+varying mediump vec2 vTexCoord;
 
 void main()
 {
@@ -28,11 +28,12 @@ void main()
 
     // BT.709 - Convert from yuv to rgb
     color = mat3(1.0,     1.0,      1.0,
-			 0.0,     -.18732,  1.8556,
-			 1.57481, -.46813,  0.0) * yuv;
+			     0.0,     -.18732,  1.8556,
+			     1.57481, -.46813,  0.0) * yuv;
 #endif
-//Any effect can be applied here - for example, a nightvision effect...
+	//Any effect can be applied here - for example, a nightvision effect...
 	mediump float intensity = dot(vec3(0.30, 0.59, 0.11), color);
 	gl_FragColor.xyz = intensity * vec3(0.2, 1.0, .2);
     gl_FragColor.w = 1.0;
+	// NO gamma correction, the values from the camera coming in are sRGB values
 }

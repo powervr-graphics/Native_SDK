@@ -1,3 +1,4 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classpvr_1_1_bitfield.html" title="Class wrapping an arithmetic type and providing bitwise operation for its bits" alt="" coords="6,5,170,32"/>
+<area shape="rect" id="node1" href="$classpvr_1_1async_1_1_async_scheduler.html" title="pvr::async::AsyncScheduler\l\&lt; TexturePtr, TextureLoadFuture,\l&amp;impl::textureLoadAsyncWorker \&gt;" alt="" coords="6,4,229,60"/>
+<area shape="rect" id="node2" href="$classpvr_1_1async_1_1_texture_async_loader.html" title="A class that loads Textures in a (single) different thread and provides futures to them..." alt="" coords="278,11,450,53"/>
 </map>

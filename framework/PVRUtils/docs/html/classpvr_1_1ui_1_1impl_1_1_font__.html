@@ -15,7 +15,7 @@
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="IMGdoxygen.css" rel="stylesheet" type="text/css"/>
-<link rel="shortcut icon" href="http://www.imgtec.com/images/img.ico">
+<link rel="shortcut icon" type="image/x-icon" href="img.ico">
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
+      <a href="https://www.imgtec.com/developers/" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRUtils</span> Documentation</a>
    <tbody>
@@ -175,6 +175,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a5da7a3d7453b2d165b08574cbfa72d25"><td class="memItemLeft" align="right" valign="top">int16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1ui_1_1impl_1_1_font__.html#a5da7a3d7453b2d165b08574cbfa72d25">getFontLineSpacing</a> () const </td></tr>
 <tr class="memdesc:a5da7a3d7453b2d165b08574cbfa72d25"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the spacing between baseline to baseline of this font, in pixels. <a href="#a5da7a3d7453b2d165b08574cbfa72d25">More...</a><br/></td></tr>
 <tr class="separator:a5da7a3d7453b2d165b08574cbfa72d25"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a79683df12658a0c6735b74ff276480ad"><td class="memItemLeft" align="right" valign="top">const pvrvk::ImageView &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1ui_1_1impl_1_1_font__.html#a79683df12658a0c6735b74ff276480ad">getImageView</a> () const </td></tr>
+<tr class="memdesc:a79683df12658a0c6735b74ff276480ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve the image view containing this font's texture. <a href="#a79683df12658a0c6735b74ff276480ad">More...</a><br/></td></tr>
+<tr class="separator:a79683df12658a0c6735b74ff276480ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3a856c7f31178315eecc66cf11ace67d"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacepvr.html#a779802ae077693e9183007cfbedf47d4">Rectanglei</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1ui_1_1impl_1_1_font__.html#a3a856c7f31178315eecc66cf11ace67d">getRectangle</a> (uint32_t index) const </td></tr>
 <tr class="memdesc:a3a856c7f31178315eecc66cf11ace67d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the rectangle for a specific character <a href="#a3a856c7f31178315eecc66cf11ace67d">More...</a><br/></td></tr>
 <tr class="separator:a3a856c7f31178315eecc66cf11ace67d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -617,6 +620,32 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a79683df12658a0c6735b74ff276480ad"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const pvrvk::ImageView&amp; pvr::ui::impl::Font_::getImageView </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Retrieve the image view containing this font's texture.</p>
+<dl class="section return"><dt>Returns</dt><dd>This Font's texture.</dd></dl>
+
+</div>
+</div>
 <a class="anchor" id="a3a856c7f31178315eecc66cf11ace67d"></a>
 <div class="memitem">
 <div class="memproto">
@@ -948,7 +977,7 @@ Public Member Functions</h2></td></tr>
 <p>Load the font data from the font texture.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">texture</td><td>The pvr::assets::Texture texture to load font data from.</td></tr>
+    <tr><td class="paramname">texture</td><td>The pvr::Texture texture to load font data from.</td></tr>
   </table>
   </dd>
 </dl>
@@ -972,7 +1001,7 @@ Public Member Functions</h2></td></tr>
 <p>Load the font data from the font texture.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">texture</td><td>The pvr::assets::Texture texture to load font data from.</td></tr>
+    <tr><td class="paramname">texture</td><td>The pvr::Texture texture to load font data from.</td></tr>
   </table>
   </dd>
 </dl>

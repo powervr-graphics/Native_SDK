@@ -136,8 +136,7 @@ struct DeviceResources
 	pvrvk::Swapchain swapchain;
 	pvrvk::Queue queue;
 
-	pvr::utils::vma::Allocator vmaBufferAllocator;
-	pvr::utils::vma::Allocator vmaImageAllocator;
+	pvr::utils::vma::Allocator vmaAllocator;
 
 	pvrvk::CommandPool commandPool;
 	pvrvk::DescriptorPool descriptorPool;
@@ -192,8 +191,8 @@ struct DeviceResources
 		if (device.isValid())
 		{
 			device->waitIdle();
-			int l = swapchain->getSwapchainLength();
-			for (int i = 0; i < l; ++i)
+			uint32_t l = swapchain->getSwapchainLength();
+			for (uint32_t i = 0; i < l; ++i)
 			{
 				if (perFrameCommandBufferFence[i].isValid())
 					perFrameCommandBufferFence[i]->wait();
@@ -273,10 +272,9 @@ class VulkanNavigation2D : public pvr::Shell
 	glm::vec2 _translation;
 	float _scale;
 	glm::mat4 _projMtx;
-	glm::mat4 _mapProjMtx;
 	float _rotation;
 
-	std::vector<Plane> _clipPlanes;
+	pvr::math::ViewingFrustum _viewFrustum;
 
 	// Map tile dimensions
 	uint32_t _numRows;
@@ -302,12 +300,25 @@ class VulkanNavigation2D : public pvr::Shell
 	float _screenWidth, _screenHeight;
 	bool _destinationReached = false;
 
+	glm::vec4 _clearColor;
+
+	glm::vec4 _roadAreaColor;
+	glm::vec4 _motorwayColor;
+	glm::vec4 _trunkRoadColor;
+	glm::vec4 _primaryRoadColor;
+	glm::vec4 _secondaryRoadColor;
+	glm::vec4 _serviceRoadColor;
+	glm::vec4 _otherRoadColor;
+	glm::vec4 _parkingColor;
+	glm::vec4 _buildingColor;
+	glm::vec4 _outlineColor;
+
 public:
-	VulkanNavigation2D() : _totalRouteDistance(0.0f), _projMtx(1.0), _rotation(0.0f), _cameraMode(CameraMode::Auto) {}
+	VulkanNavigation2D() : _projMtx(1.0), _rotation(0.0f), _totalRouteDistance(0.0f), _cameraMode(CameraMode::Auto) {}
 
 	// PVR shell functions
 
-	///< summary>
+	/// <summary>
 	/// Return pvr::Result::Success if no error occurred
 	/// Code in initApplication() will be called by the Shell once per run,
 	/// before the rendering context is created.Used to initialize variables that
@@ -369,11 +380,11 @@ private:
 		float scaleFactor;
 		if (isScreenRotated())
 		{
-			scaleFactor = (float)getHeight() / displayAttrib.height;
+			scaleFactor = static_cast<float>(getHeight()) / displayAttrib.height;
 		}
 		else
 		{
-			scaleFactor = (float)getWidth() / displayAttrib.width;
+			scaleFactor = static_cast<float>(getWidth()) / displayAttrib.width;
 		}
 		for (uint32_t i = 0; i < LOD::Count; ++i)
 		{
@@ -385,12 +396,19 @@ private:
 
 pvr::Result VulkanNavigation2D::initApplication()
 {
+	// Disable gamma correction in the framebuffer.
+	setBackBufferColorspace(pvr::ColorSpace::lRGB);
+	// WARNING: This should not be done lightly. This example only passes through textures or hardcoded color values.
+	// If you do that, you should ensure that your textures will end up giving you the correct values. If you use
+	// normal sRGB textures, they will NOT provide you with the values you except (they will look too dark).
+	// Also linear operations will not work correctly. Again in this example this is not a problem as we have tweaked
+	// all values manually for visual effect and there is no lighting math going on.
+
 	// Re-calculate the scale based on the screen dim.
 	// As we are rendering in 2D we have no need for either of the depth or
 	// stencil buffers
 	setDepthBitsPerPixel(0);
 	setStencilBitsPerPixel(0);
-	_clipPlanes.resize(4);
 
 	// Load and process the map.
 	_OSMdata.reset(new NavDataProcess(getAssetStream(MapFile), glm::ivec2(getWidth(), getHeight())));
@@ -399,6 +417,24 @@ pvr::Result VulkanNavigation2D::initApplication()
 	Log(LogLevel::Information, "MAP SIZE IS: [ %d x %d ] TILES", _OSMdata->getNumRows(), _OSMdata->getNumCols());
 
 	_frameId = 0;
+
+	// perform gamma correction of the linear space colors so that they can do used directly without further thinking about Linear/sRGB color space conversions
+	// This should not be done lightly. This example only passes through hardcoded color values and uses them directly without applying any
+	// math to their values and so can be performed safely.
+
+	// Note that for the clear color floating point values will be converted to the format of the imagem with the clear value being treated as linear if the image is sRGB
+	_clearColor = pvr::utils::convertLRGBtoSRGB(ClearColorLinearSpace);
+	_roadAreaColor = pvr::utils::convertLRGBtoSRGB(RoadAreaColorLinearSpace);
+	_motorwayColor = pvr::utils::convertLRGBtoSRGB(MotorwayColorLinearSpace);
+	_trunkRoadColor = pvr::utils::convertLRGBtoSRGB(TrunkRoadColorLinearSpace);
+	_primaryRoadColor = pvr::utils::convertLRGBtoSRGB(PrimaryRoadColorLinearSpace);
+	_secondaryRoadColor = pvr::utils::convertLRGBtoSRGB(SecondaryRoadColorLinearSpace);
+	_serviceRoadColor = pvr::utils::convertLRGBtoSRGB(ServiceRoadColorLinearSpace);
+	_otherRoadColor = pvr::utils::convertLRGBtoSRGB(OtherRoadColorLinearSpace);
+	_parkingColor = pvr::utils::convertLRGBtoSRGB(ParkingColorLinearSpace);
+	_buildingColor = pvr::utils::convertLRGBtoSRGB(BuildingColorLinearSpace);
+	_outlineColor = pvr::utils::convertLRGBtoSRGB(OutlineColorLinearSpace);
+
 	return result;
 }
 
@@ -452,6 +488,12 @@ pvr::Result VulkanNavigation2D::initView()
 
 	// Create instance and retrieve compatible physical devices
 	_deviceResources->instance = pvr::utils::createInstance(this->getApplicationName());
+
+	if (_deviceResources->instance->getNumPhysicalDevices() == 0)
+	{
+		setExitMessage("Unable not find a compatible Vulkan physical device.");
+		return pvr::Result::UnknownError;
+	}
 
 	// Create the surface
 	_deviceResources->surface = pvr::utils::createSurface(_deviceResources->instance, _deviceResources->instance->getPhysicalDevice(0), this->getWindow(), this->getDisplay());
@@ -509,17 +551,17 @@ pvr::Result VulkanNavigation2D::initView()
 	}
 
 	// Create the commandpool
-	_deviceResources->commandPool = _deviceResources->device->createCommandPool(queueAccessInfo.familyId, pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT);
+	_deviceResources->commandPool =
+		_deviceResources->device->createCommandPool(pvrvk::CommandPoolCreateInfo(queueAccessInfo.familyId, pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT));
 
 	// Allocate the commandbuffers (primary and the secondary)
 	_deviceResources->commandPool->allocateCommandBuffers(_numSwapchains, &_deviceResources->commandBuffers[0]);
 	_deviceResources->commandPool->allocateSecondaryCommandBuffers(_numSwapchains, &_deviceResources->uiRendererCmdBuffers[0]);
 
-	_deviceResources->uiRenderer.init(getWidth(), getHeight(), isFullScreen(), _deviceResources->framebuffer[0]->getRenderPass(), 0, _deviceResources->commandPool,
-		_deviceResources->queue, true, true, true, 4, 4);
+	_deviceResources->uiRenderer.init(getWidth(), getHeight(), isFullScreen(), _deviceResources->framebuffer[0]->getRenderPass(), 0,
+		getBackBufferColorspace() == pvr::ColorSpace::sRGB, _deviceResources->commandPool, _deviceResources->queue, true, true, true, 4, 4);
 
-	_deviceResources->vmaBufferAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
-	_deviceResources->vmaImageAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
+	_deviceResources->vmaAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
 
 	// Load and upload the textures from the disk. The images are loaded using a
 	// staging buffer, therefore we need to record the upload commands on the
@@ -572,8 +614,8 @@ pvr::Result VulkanNavigation2D::initView()
 	roadInfo.depthStencil.enableDepthTest(false).enableDepthWrite(false);
 
 	roadInfo.colorBlend.setAttachmentState(0, pvrvk::PipelineColorBlendAttachmentState(false));
-	roadInfo.vertexShader = _deviceResources->device->createShader(getAssetStream("VertShader_vk.vsh.spv")->readToEnd<uint32_t>());
-	roadInfo.fragmentShader = _deviceResources->device->createShader(getAssetStream("FragShader_vk.fsh.spv")->readToEnd<uint32_t>());
+	roadInfo.vertexShader = _deviceResources->device->createShaderModule(pvrvk::ShaderModuleCreateInfo(getAssetStream("VertShader.vsh.spv")->readToEnd<uint32_t>()));
+	roadInfo.fragmentShader = _deviceResources->device->createShaderModule(pvrvk::ShaderModuleCreateInfo(getAssetStream("FragShader.fsh.spv")->readToEnd<uint32_t>()));
 	roadInfo.inputAssembler.setPrimitiveTopology(pvrvk::PrimitiveTopology::e_TRIANGLE_LIST);
 
 	roadInfo.rasterizer.setCullMode(pvrvk::CullModeFlags::e_NONE);
@@ -589,8 +631,8 @@ pvr::Result VulkanNavigation2D::initView()
 			true, pvrvk::BlendFactor::e_SRC_ALPHA, pvrvk::BlendFactor::e_ONE_MINUS_SRC_ALPHA, pvrvk::BlendOp::e_ADD, pvrvk::BlendFactor::e_ZERO, pvrvk::BlendFactor::e_ONE));
 	// Blending : (src, Alpha, 1 - src Alpha), preserve framebuffer Alpha value to avoid artifacts in compositors. Change this is a different
 	// destination alpha value is required.
-	roadInfo.vertexShader = _deviceResources->device->createShader(getAssetStream("AA_VertShader_vk.vsh.spv")->readToEnd<uint32_t>());
-	roadInfo.fragmentShader = _deviceResources->device->createShader(getAssetStream("AA_FragShader_vk.fsh.spv")->readToEnd<uint32_t>());
+	roadInfo.vertexShader = _deviceResources->device->createShaderModule(pvrvk::ShaderModuleCreateInfo(getAssetStream("AA_VertShader.vsh.spv")->readToEnd<uint32_t>()));
+	roadInfo.fragmentShader = _deviceResources->device->createShaderModule(pvrvk::ShaderModuleCreateInfo(getAssetStream("AA_FragShader.fsh.spv")->readToEnd<uint32_t>()));
 
 	// Create pipeline objects
 	_deviceResources->roadPipe = _deviceResources->device->createGraphicsPipeline(roadInfo, _deviceResources->pipelineCache);
@@ -612,9 +654,7 @@ pvr::Result VulkanNavigation2D::initView()
 	}
 
 	// Create the projection matrices.
-	_projMtx = pvr::math::ortho(pvr::Api::Vulkan, 0.0, (float)_screenWidth, 0.0f, (float)_screenHeight);
-	_mapProjMtx =
-		/*_tileRenderingResources[0][0].swapResources[0].renderer->getScreenRotation() * */ _projMtx;
+	_projMtx = pvr::math::ortho(pvr::Api::Vulkan, 0.0, static_cast<float>(_screenWidth), 0.0f, static_cast<float>(_screenHeight));
 
 	Log(LogLevel::Information, "Creating per Tile buffers");
 	createBuffers(_deviceResources->commandBuffers[0]);
@@ -657,7 +697,7 @@ pvr::Result VulkanNavigation2D::renderFrame()
 	updateAnimation();
 	const float rotation = glm::radians(_rotation + MapScreenAlignRotation);
 	// create the map projection matrix. Read from bottom to top.
-	_mapMVPMtx = _mapProjMtx *
+	_mapMVPMtx = _projMtx *
 		glm::translate(glm::vec3(_translation.x + _screenWidth * .5 /*center the map*/, _translation.y + _screenHeight * .5 /*center the map*/,
 			0.0f)) // final transform
 		* glm::translate(glm::vec3(-_translation.x, -_translation.y,
@@ -701,7 +741,7 @@ pvr::Result VulkanNavigation2D::renderFrame()
 	if (this->shouldTakeScreenshot())
 	{
 		pvr::utils::takeScreenshot(_deviceResources->swapchain, swapchainIndex, _deviceResources->commandPool, _deviceResources->queue, this->getScreenshotFileName(),
-			&_deviceResources->vmaBufferAllocator, &_deviceResources->vmaImageAllocator);
+			&_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
 	}
 
 	// PRESENT
@@ -840,6 +880,7 @@ bool VulkanNavigation2D::initializeRenderers(TileRenderingResources* begin, Tile
 																					  // camera groups and is a sprite
 		}
 
+#pragma warning WHAT_FIX_THIS_REMOVING_THE_LINE_BELOW_BREAKS
 		numSpriteInstances += 10;
 		begin->numSprites = numSprites;
 		begin->numSpriteInstances = numSpriteInstances;
@@ -849,8 +890,8 @@ bool VulkanNavigation2D::initializeRenderers(TileRenderingResources* begin, Tile
 			begin->swapResources[swapIndex].renderer.construct();
 			auto& renderer = *begin->swapResources[swapIndex].renderer;
 
-			renderer.init(getWidth(), getHeight(), isFullScreen(), _deviceResources->framebuffer[0]->getRenderPass(), 0, _deviceResources->commandPool, _deviceResources->queue,
-				false, false, false, numSpriteInstances, numSprites);
+			renderer.init(getWidth(), getHeight(), isFullScreen(), _deviceResources->framebuffer[0]->getRenderPass(), 0, getBackBufferColorspace() == pvr::ColorSpace::sRGB,
+				_deviceResources->commandPool, _deviceResources->queue, false, false, false, numSpriteInstances, numSprites);
 
 			begin->swapResources[swapIndex].font =
 				begin->swapResources[swapIndex].renderer->createFont(_deviceResources->fontImage, _deviceResources->fontTexture, _deviceResources->fontSampler);
@@ -960,7 +1001,7 @@ bool VulkanNavigation2D::createUbos()
 		_deviceResources->uboMvp.buffer =
 			pvr::utils::createBuffer(_deviceResources->device, bufferSize, pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 				pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
-				&_deviceResources->vmaBufferAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+				&_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
 		_deviceResources->uboMvp.bufferView.pointToMappedMemory(_deviceResources->uboMvp.buffer->getDeviceMemory()->getMappedData());
 	}
@@ -997,21 +1038,21 @@ bool VulkanNavigation2D::createUbos()
 		uboColor.buffer = pvr::utils::createBuffer(_deviceResources->device, uboSize, pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT,
 			pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
-			&_deviceResources->vmaBufferAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+			&_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
 		uboColor.bufferView.pointToMappedMemory(uboColor.buffer->getDeviceMemory()->getMappedData());
 
-		uboColor.bufferView.getElement(0, 0, static_cast<uint32_t>(MapColors::Clear)).setValue(ClearColor);
-		uboColor.bufferView.getElement(0, 0, static_cast<uint32_t>(MapColors::Building)).setValue(BuildColourUniform);
-		uboColor.bufferView.getElement(0, 0, static_cast<uint32_t>(MapColors::Motorway)).setValue(MotorwayColour);
-		uboColor.bufferView.getElement(0, 0, static_cast<uint32_t>(MapColors::Other)).setValue(OtherRoadColour);
-		uboColor.bufferView.getElement(0, 0, static_cast<uint32_t>(MapColors::Outline)).setValue(OutlineColourUniform);
-		uboColor.bufferView.getElement(0, 0, static_cast<uint32_t>(MapColors::Parking)).setValue(ParkingColourUniform);
-		uboColor.bufferView.getElement(0, 0, static_cast<uint32_t>(MapColors::Primary)).setValue(PrimaryRoadColour);
-		uboColor.bufferView.getElement(0, 0, static_cast<uint32_t>(MapColors::RoadArea)).setValue(RoadAreaColourUniform);
-		uboColor.bufferView.getElement(0, 0, static_cast<uint32_t>(MapColors::Secondary)).setValue(SecondaryRoadColour);
-		uboColor.bufferView.getElement(0, 0, static_cast<uint32_t>(MapColors::Service)).setValue(ServiceRoadColour);
-		uboColor.bufferView.getElement(0, 0, static_cast<uint32_t>(MapColors::Trunk)).setValue(TrunkRoadColour);
+		uboColor.bufferView.getElement(0, 0, static_cast<uint32_t>(MapColors::Clear)).setValue(_clearColor);
+		uboColor.bufferView.getElement(0, 0, static_cast<uint32_t>(MapColors::Building)).setValue(_buildingColor);
+		uboColor.bufferView.getElement(0, 0, static_cast<uint32_t>(MapColors::Motorway)).setValue(_motorwayColor);
+		uboColor.bufferView.getElement(0, 0, static_cast<uint32_t>(MapColors::Other)).setValue(_otherRoadColor);
+		uboColor.bufferView.getElement(0, 0, static_cast<uint32_t>(MapColors::Outline)).setValue(_outlineColor);
+		uboColor.bufferView.getElement(0, 0, static_cast<uint32_t>(MapColors::Parking)).setValue(_parkingColor);
+		uboColor.bufferView.getElement(0, 0, static_cast<uint32_t>(MapColors::Primary)).setValue(_primaryRoadColor);
+		uboColor.bufferView.getElement(0, 0, static_cast<uint32_t>(MapColors::RoadArea)).setValue(_roadAreaColor);
+		uboColor.bufferView.getElement(0, 0, static_cast<uint32_t>(MapColors::Secondary)).setValue(_secondaryRoadColor);
+		uboColor.bufferView.getElement(0, 0, static_cast<uint32_t>(MapColors::Service)).setValue(_serviceRoadColor);
+		uboColor.bufferView.getElement(0, 0, static_cast<uint32_t>(MapColors::Trunk)).setValue(_trunkRoadColor);
 
 		// if the memory property flags used by the buffers' device memory do not contain e_HOST_COHERENT_BIT then we must flush the memory
 		if (static_cast<uint32_t>(uboColor.buffer->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
@@ -1038,7 +1079,7 @@ void VulkanNavigation2D::loadTexture(pvrvk::CommandBuffer& uploadCmd)
 {
 	// Load font texture
 	_deviceResources->fontImage = pvr::utils::loadAndUploadImageAndView(_deviceResources->device, FontFile, true, uploadCmd, *this, pvrvk::ImageUsageFlags::e_SAMPLED_BIT,
-		pvrvk::ImageLayout::e_GENERAL, &_deviceResources->fontTexture, &_deviceResources->vmaBufferAllocator, &_deviceResources->vmaImageAllocator);
+		pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, &_deviceResources->fontTexture, &_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
 
 	pvrvk::SamplerCreateInfo samplerInfo;
 	samplerInfo.magFilter = pvrvk::Filter::e_LINEAR;
@@ -1056,11 +1097,11 @@ void VulkanNavigation2D::loadTexture(pvrvk::CommandBuffer& uploadCmd)
 	{
 		images[i] = pvr::utils::loadAndUploadImage(_deviceResources->device, SpriteFileNames[i].c_str(), true, uploadCmd, *this,
 			pvrvk::ImageUsageFlags::e_SAMPLED_BIT | pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT, pvrvk::ImageLayout::e_TRANSFER_SRC_OPTIMAL, nullptr,
-			&_deviceResources->vmaBufferAllocator, &_deviceResources->vmaImageAllocator);
+			&_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
 	}
 
 	pvr::utils::generateTextureAtlas(_deviceResources->device, images, _deviceResources->atlasOffsets, ARRAY_SIZE(SpriteFileNames), pvrvk::ImageLayout::e_TRANSFER_SRC_OPTIMAL,
-		&_deviceResources->imageAtlas, nullptr, uploadCmd, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, &_deviceResources->vmaImageAllocator);
+		&_deviceResources->imageAtlas, nullptr, uploadCmd, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, &_deviceResources->vmaAllocator);
 }
 
 /*!*********************************************************************************************************************
@@ -1135,7 +1176,7 @@ void VulkanNavigation2D::createBuffers(pvrvk::CommandBuffer& uploadCmd)
 					tileRes.vbo = pvr::utils::createBuffer(_deviceResources->device, vboSize,
 						pvrvk::BufferUsageFlags::e_VERTEX_BUFFER_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 						pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
-						&_deviceResources->vmaBufferAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+						&_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
 					bool isBufferHostVisible = (tileRes.vbo->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT) != 0;
 					if (isBufferHostVisible)
@@ -1144,8 +1185,7 @@ void VulkanNavigation2D::createBuffers(pvrvk::CommandBuffer& uploadCmd)
 					}
 					else
 					{
-						pvr::utils::updateBufferUsingStagingBuffer(
-							_deviceResources->device, tileRes.vbo, uploadCmd, tile.vertices.data(), 0, vboSize, &_deviceResources->vmaBufferAllocator);
+						pvr::utils::updateBufferUsingStagingBuffer(_deviceResources->device, tileRes.vbo, uploadCmd, tile.vertices.data(), 0, vboSize, &_deviceResources->vmaAllocator);
 					}
 				}
 
@@ -1155,7 +1195,7 @@ void VulkanNavigation2D::createBuffers(pvrvk::CommandBuffer& uploadCmd)
 					tileRes.ibo = pvr::utils::createBuffer(_deviceResources->device, iboSize,
 						pvrvk::BufferUsageFlags::e_INDEX_BUFFER_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 						pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
-						&_deviceResources->vmaBufferAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+						&_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
 					bool isBufferHostVisible = (tileRes.ibo->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT) != 0;
 					if (isBufferHostVisible)
@@ -1164,8 +1204,7 @@ void VulkanNavigation2D::createBuffers(pvrvk::CommandBuffer& uploadCmd)
 					}
 					else
 					{
-						pvr::utils::updateBufferUsingStagingBuffer(
-							_deviceResources->device, tileRes.ibo, uploadCmd, tile.indices.data(), 0, iboSize, &_deviceResources->vmaBufferAllocator);
+						pvr::utils::updateBufferUsingStagingBuffer(_deviceResources->device, tileRes.ibo, uploadCmd, tile.indices.data(), 0, iboSize, &_deviceResources->vmaAllocator);
 					}
 				}
 
@@ -1440,7 +1479,7 @@ bool skipAmenityLabel(AmenityLabelData& labelData, Label& label, glm::dvec3& ext
 
 	// Check if this and the previous text (in the same LOD level) overlap, if
 	// they do skip this text.
-	float distance = (float)glm::distance(labelData.coords, glm::dvec2(extent));
+	float distance = static_cast<float>(glm::distance(labelData.coords, glm::dvec2(extent)));
 	if (distance < (extent.z + halfExtent_x) && glm::abs(extent.z - halfExtent_x) < distance)
 	{
 		label.text.reset();
@@ -1478,7 +1517,7 @@ bool skipLabel(LabelData& labelData, Label& label, glm::dvec3& extent)
 
 	// Check if this and the previous text (in the same LOD level) overlap, if
 	// they do skip this text.
-	float distance = (float)glm::distance(labelData.coords, glm::dvec2(extent));
+	float distance = static_cast<float>(glm::distance(labelData.coords, glm::dvec2(extent)));
 	if (distance < (extent.z + halfExtent_x) && glm::abs(extent.z - halfExtent_x) < distance)
 	{
 		label.text.reset();
@@ -1701,7 +1740,8 @@ void VulkanNavigation2D::updateCommandBuffer(pvrvk::CommandBuffer& cbo, uint32_t
 
 	if (hasChanges || _uiRendererChanged[swapchainIndex])
 	{
-		const pvrvk::ClearValue clearValues[] = { pvrvk::ClearValue(ClearColor.r, ClearColor.g, ClearColor.b, ClearColor.a), pvrvk::ClearValue::createDefaultDepthStencilClearValue() };
+		const pvrvk::ClearValue clearValues[] = { pvrvk::ClearValue(_clearColor.r, _clearColor.g, _clearColor.b, _clearColor.a),
+			pvrvk::ClearValue::createDefaultDepthStencilClearValue() };
 
 		cbo->begin();
 		cbo->beginRenderPass(_deviceResources->framebuffer[swapchainIndex], pvrvk::Rect2D(0, 0, getWidth(), getHeight()), false, clearValues, ARRAY_SIZE(clearValues));
@@ -1734,14 +1774,7 @@ void VulkanNavigation2D::updateCommandBuffer(pvrvk::CommandBuffer& cbo, uint32_t
 ***********************************************************************************************************************/
 void VulkanNavigation2D::calculateClipPlanes()
 {
-	glm::vec4 rowX = glm::vec4(_mapMVPMtx[0][0], _mapMVPMtx[1][0], _mapMVPMtx[2][0], _mapMVPMtx[3][0]);
-	glm::vec4 rowY = glm::vec4(_mapMVPMtx[0][1], _mapMVPMtx[1][1], _mapMVPMtx[2][1], _mapMVPMtx[3][1]);
-	glm::vec4 rowW = glm::vec4(_mapMVPMtx[0][3], _mapMVPMtx[1][3], _mapMVPMtx[2][3], _mapMVPMtx[3][3]);
-
-	_clipPlanes[0] = Plane(rowW - rowX); // Right
-	_clipPlanes[1] = Plane(rowW + rowX); // Left
-	_clipPlanes[2] = Plane(rowW - rowY); // Top
-	_clipPlanes[3] = Plane(rowW + rowY); // Bottom
+	pvr::math::getFrustumPlanes(pvr::Api::Vulkan, _mapMVPMtx, _viewFrustum);
 }
 
 /*!*********************************************************************************************************************
@@ -1756,35 +1789,9 @@ bool VulkanNavigation2D::inFrustum(glm::vec2 min, glm::vec2 max)
 {
 	// Test the axis-aligned bounding box against each frustum plane,
 	// cull if all points are outside of one the view frustum planes.
-	for (uint32_t i = 0; i < _clipPlanes.size(); ++i)
-	{
-		uint32_t pointsOut = 0;
-
-		// Test the points against the plane
-		if ((_clipPlanes[i].normal.x * min.x - _clipPlanes[i].normal.y * min.y + _clipPlanes[i].distance) < 0.0f)
-		{
-			pointsOut++;
-		}
-		if ((_clipPlanes[i].normal.x * max.x - _clipPlanes[i].normal.y * min.y + _clipPlanes[i].distance) < 0.0f)
-		{
-			pointsOut++;
-		}
-		if ((_clipPlanes[i].normal.x * max.x - _clipPlanes[i].normal.y * max.y + _clipPlanes[i].distance) < 0.0f)
-		{
-			pointsOut++;
-		}
-		if ((_clipPlanes[i].normal.x * min.x - _clipPlanes[i].normal.y * max.y + _clipPlanes[i].distance) < 0.0f)
-		{
-			pointsOut++;
-		}
-
-		// If all four corners are outside of the plane then it is not visible.
-		if (pointsOut == 4)
-		{
-			return false;
-		}
-	}
-	return true;
+	pvr::math::AxisAlignedBox aabb;
+	aabb.setMinMax(glm::vec3(min.x, min.y, 0.f), glm::vec3(max.x, max.y, 1.0f));
+	return pvr::math::aabbInFrustum(aabb, _viewFrustum);
 }
 
 void VulkanNavigation2D::updateGroups(uint32_t col, uint32_t row, uint32_t swapindex)
@@ -1927,11 +1934,9 @@ void VulkanNavigation2D::updateAmenities(uint32_t col, uint32_t row, uint32_t sw
 		}
 	}
 }
-/*!*********************************************************************************************************************
-\return auto ptr of the demo supplied by the user
-\brief  This function must be implemented by the user of the shell. The user
-should return its PVRShell object defining the behaviour of the application.
-***********************************************************************************************************************/
+
+/// <summary>This function must be implemented by the user of the shell. The user should return its pvr::Shell object defining the behaviour of the application.</summary>
+/// <returns>Return a unique ptr to the demo supplied by the user.</returns>
 std::unique_ptr<pvr::Shell> pvr::newDemo()
 {
 	return std::unique_ptr<pvr::Shell>(new VulkanNavigation2D());

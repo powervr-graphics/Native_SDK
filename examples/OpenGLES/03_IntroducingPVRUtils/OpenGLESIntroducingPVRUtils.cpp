@@ -76,6 +76,8 @@ class OpenGLESIntroducingPVRUtils : public pvr::Shell
 
 	std::unique_ptr<DeviceResources> _deviceResources;
 
+	glm::vec3 _clearColor;
+
 	// 3D Model
 	pvr::assets::ModelHandle _scene;
 
@@ -123,7 +125,7 @@ pvr::Result OpenGLESIntroducingPVRUtils::initApplication()
 	}
 
 	// Ensure that all meshes use an indexed triangle list
-	for (unsigned int i = 0; i < _scene->getNumMeshes(); ++i)
+	for (uint32_t i = 0; i < _scene->getNumMeshes(); ++i)
 	{
 		if (_scene->getMesh(i).getPrimitiveType() != pvr::PrimitiveTopology::TriangleList || _scene->getMesh(i).getFaces().getDataSize() == 0)
 		{
@@ -163,7 +165,7 @@ pvr::Result OpenGLESIntroducingPVRUtils::initView()
 
 	pvr::utils::appendSingleBuffersFromModel(*_scene, _deviceResources->vbos, _deviceResources->ibos);
 
-	_deviceResources->uiRenderer.init(getWidth(), getHeight(), isFullScreen());
+	_deviceResources->uiRenderer.init(getWidth(), getHeight(), isFullScreen(), getBackBufferColorspace() == pvr::ColorSpace::sRGB);
 
 	_deviceResources->uiRenderer.getDefaultTitle()->setText("IntroducingPVRUtils");
 	_deviceResources->uiRenderer.getDefaultTitle()->commitUpdates();
@@ -171,7 +173,19 @@ pvr::Result OpenGLESIntroducingPVRUtils::initView()
 	static const char* attribs[] = { "inVertex", "inNormal", "inTexCoord" };
 	static const uint16_t attribIndices[] = { 0, 1, 2 };
 
-	GLuint program = _deviceResources->program = pvr::utils::createShaderProgram(*this, VertexShaderFile, FragmentShaderFile, attribs, attribIndices, 3);
+	// Enable or disable gamma correction based on if it is automatically performed on the framebuffer or we need to do it in the shader.
+	const char* defines[] = { "FRAMEBUFFER_SRGB" };
+	uint32_t numDefines = 1;
+	glm::vec3 clearColorLinearSpace(0.0f, 0.45f, 0.41f);
+	_clearColor = clearColorLinearSpace;
+	if (getBackBufferColorspace() != pvr::ColorSpace::sRGB)
+	{
+		// Gamma correct the clear color
+		_clearColor = pvr::utils::convertLRGBtoSRGB(clearColorLinearSpace);
+		numDefines = 0;
+	}
+
+	GLuint program = _deviceResources->program = pvr::utils::createShaderProgram(*this, VertexShaderFile, FragmentShaderFile, attribs, attribIndices, 3, defines, numDefines);
 
 	std::string errorStr;
 
@@ -193,7 +207,7 @@ pvr::Result OpenGLESIntroducingPVRUtils::initView()
 		*it = 0;
 	}
 
-	while (i < _scene->getNumMaterials() && _scene->getMaterial(i).defaultSemantics().getDiffuseTextureIndex() != -1)
+	while (i < _scene->getNumMaterials() && _scene->getMaterial(i).defaultSemantics().getDiffuseTextureIndex() != static_cast<uint32_t>(-1))
 	{
 		// create the texture object
 		GLuint texture = 0;
@@ -215,15 +229,15 @@ pvr::Result OpenGLESIntroducingPVRUtils::initView()
 	bool isRotated = this->isScreenRotated();
 	if (!isRotated)
 	{
-		_projMtx = glm::perspective(_scene->getCamera(0).getFOV(), (float)this->getWidth() / (float)this->getHeight(), _scene->getCamera(0).getNear(), _scene->getCamera(0).getFar());
+		_projMtx = glm::perspective(_scene->getCamera(0).getFOV(), static_cast<float>(this->getWidth()) / static_cast<float>(this->getHeight()), _scene->getCamera(0).getNear(),
+			_scene->getCamera(0).getFar());
 	}
 	else
 	{
-		_projMtx = pvr::math::perspective(pvr::Api::OpenGLES2, _scene->getCamera(0).getFOV(), (float)this->getHeight() / (float)this->getWidth(), _scene->getCamera(0).getNear(),
-			_scene->getCamera(0).getFar(), glm::pi<float>() * .5f);
+		_projMtx = pvr::math::perspective(pvr::Api::OpenGLES2, _scene->getCamera(0).getFOV(), static_cast<float>(this->getHeight()) / static_cast<float>(this->getWidth()),
+			_scene->getCamera(0).getNear(), _scene->getCamera(0).getFar(), glm::pi<float>() * .5f);
 	}
 
-	glm::vec3 from, to, up(0.0f, 1.0f, 0.0f);
 	float fov;
 	glm::vec3 cameraPos, cameraTarget, cameraUp;
 
@@ -237,9 +251,10 @@ void OpenGLESIntroducingPVRUtils::setOpenglState()
 	gl::DepthMask(GL_TRUE);
 	gl::ColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 	gl::CullFace(GL_BACK);
+	gl::Enable(GL_CULL_FACE);
 	gl::FrontFace(GL_CCW);
 	gl::Enable(GL_DEPTH_TEST);
-	gl::ClearColor(0.00f, 0.70f, 0.67f, 1.0f);
+	gl::ClearColor(_clearColor.r, _clearColor.g, _clearColor.b, 1.f);
 	gl::EnableVertexAttribArray(0);
 	gl::EnableVertexAttribArray(1);
 	gl::EnableVertexAttribArray(2);
@@ -263,15 +278,16 @@ pvr::Result OpenGLESIntroducingPVRUtils::renderFrame()
 {
 	//  Calculates the _frame number to animate in a time-based manner.
 	//  get the time in milliseconds.
-	_frame += (float)getFrameTime() / 30.f; // design-time target fps for animation
+	pvr::assets::AnimationInstance& animInst = _scene->getAnimationInstance(0);
+	_frame += static_cast<float>(getFrameTime());
 
-	if (_frame >= _scene->getNumFrames() - 1)
+	if (_frame >= animInst.getTotalTimeInMs())
 	{
 		_frame = 0;
 	}
 
 	// Sets the _scene animation to this _frame
-	_scene->setCurrentFrame(_frame);
+	animInst.updateAnimation(_frame);
 
 	setOpenglState();
 
@@ -279,7 +295,7 @@ pvr::Result OpenGLESIntroducingPVRUtils::renderFrame()
 	gl::Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	gl::Uniform1i(_uniformLocations[Uniforms::AlbedoTexture], 0);
 
-	for (int i = 0; i < (int)_scene->getNumMeshNodes(); ++i)
+	for (uint32_t i = 0; i < _scene->getNumMeshNodes(); ++i)
 	{
 		renderMesh(i);
 	}
@@ -329,6 +345,7 @@ void OpenGLESIntroducingPVRUtils::renderMesh(uint32_t meshNodeId)
 
 	// Gets the node model matrix
 	worldView = _viewMtx * _scene->getWorldMatrix(meshNodeId);
+
 	gl::ActiveTexture(GL_TEXTURE0);
 	// Passes the world-view-projection matrix (WVP) to the shader to transform the vertices
 	gl::UniformMatrix4fv(_uniformLocations[Uniforms::WorldViewProjection], 1, GL_FALSE, glm::value_ptr(_projMtx * worldView));
@@ -347,7 +364,7 @@ void OpenGLESIntroducingPVRUtils::renderMesh(uint32_t meshNodeId)
 	gl::BindBuffer(GL_ARRAY_BUFFER, _deviceResources->vbos[pNode->getObjectId()]);
 	gl::BindBuffer(GL_ELEMENT_ARRAY_BUFFER, _deviceResources->ibos[pNode->getObjectId()]);
 
-	for (int i = 0; i < 3; ++i)
+	for (uint32_t i = 0; i < 3; ++i)
 	{
 		auto& attrib = _vertexConfiguration.attributes[i];
 		auto& binding = _vertexConfiguration.bindings[0];
@@ -358,10 +375,8 @@ void OpenGLESIntroducingPVRUtils::renderMesh(uint32_t meshNodeId)
 	gl::DrawElements(GL_TRIANGLES, pMesh->getNumFaces() * 3, pvr::utils::convertToGles(pMesh->getFaces().getDataType()), 0);
 }
 
-/*!*********************************************************************************************************************
-\brief  This function must be implemented by the user of the shell. The user should return its pvr::Shell object defining the behaviour of the application.
-\return Return an auto ptr to the demo supplied by the user
-***********************************************************************************************************************/
+/// <summary>This function must be implemented by the user of the shell. The user should return its pvr::Shell object defining the behaviour of the application.</summary>
+/// <returns>Return a unique ptr to the demo supplied by the user.</returns>
 std::unique_ptr<pvr::Shell> pvr::newDemo()
 {
 	return std::unique_ptr<pvr::Shell>(new OpenGLESIntroducingPVRUtils());

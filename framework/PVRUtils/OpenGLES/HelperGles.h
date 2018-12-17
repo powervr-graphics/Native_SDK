@@ -5,14 +5,16 @@
 \copyright Copyright (c) Imagination Technologies Limited.
 */
 #pragma once
-#include "PVRCore/TGAWriter.h"
-#include "PVRCore/Texture/PVRTDecompress.h"
+#include "PVRCore/IAssetProvider.h"
+#include "PVRCore/texture/PVRTDecompress.h"
+#include "PVRUtils/PVRUtilsTypes.h"
 #include "PVRAssets/Model.h"
-#include "PVRAssets/TextureLoad.h"
+#include "PVRCore/texture/TextureLoad.h"
 #include "PVRUtils/OpenGLES/TextureUtilsGles.h"
 #include "PVRUtils/OpenGLES/ShaderUtilsGles.h"
 #include "PVRUtils/OpenGLES/ConvertToGlesTypes.h"
 #include "PVRUtils/OpenGLES/ErrorsGles.h"
+#include "PVRCore/textureio/TGAWriter.h"
 #include <iterator>
 
 namespace pvr {
@@ -21,6 +23,103 @@ namespace pvr {
 /// such as automated generation of VBOs for specific meshes, or tying together Effects and Meshes to automate
 /// Pipeline creation.</summary>
 namespace utils {
+
+/// <summary>Insert sorted element in to the container</summary>
+/// <param name="cont">Container to insert the element into.</param>
+/// <param name="begin">Container range begin</param>
+/// <param name="end">Container range end</param>
+/// <param name="item">Item to insert in to the container</param>
+/// <param name="compare">Comparison operator used for sorting</param>
+template<typename container, typename val, typename cmp>
+size_t insertSorted(container& cont, typename container::iterator begin, typename container::iterator end, const val& item, const cmp& compare)
+{
+	typename container::iterator it = std::upper_bound(begin, end, item, compare);
+	int64_t offset = static_cast<int64_t>(it - begin);
+	cont.insert(it, item);
+	return static_cast<size_t>(offset);
+}
+
+/// <summary>Insert sorted element in to the container</summary>
+/// <param name="cont">Container to insert the element into.</param>
+/// <param name="begin">Container range begin</param>
+/// <param name="end">Container range end</param>
+/// <param name="item">Item to insert in to the container</param>
+template<typename container, typename val>
+size_t insertSorted(container& cont, typename container::iterator begin, typename container::iterator end, const val& item)
+{
+	return insertSorted(cont, begin, end, item, std::less<val>());
+}
+
+/// <summary>Insert sorted element in to the container</summary>
+/// <param name="cont">Container to insert the element into.</param>
+/// <param name="item">Item to insert in to the container</param>
+template<typename container, typename val>
+size_t insertSorted(container& cont, const val& item)
+{
+	return insertSorted(cont, cont.begin(), cont.end(), item);
+}
+
+/// <summary>Insert sorted element in to the container</summary>
+/// <param name="item">Item to insert in to the container</param>
+/// <param name="compare">Comparison operator used for sorting</param>
+template<typename container, typename val, typename cmp>
+size_t insertSorted(container& cont, const val& item, const cmp& compare)
+{
+	return insertSorted(cont, cont.begin(), cont.end(), item, compare);
+}
+
+/// <summary>Insert sorted element, Overwrite if element exist in the container</summary>
+/// <param name="cont">Container to insert the element into.</param>
+/// <param name="begin">Container range begin</param>
+/// <param name="end">Container range end</param>
+/// <param name="item">Item to insert in to the container</param>
+/// <param name="compare">Comparison operator used for sorting</param>
+template<typename container, typename val, typename cmp>
+size_t insertSorted_overwrite(container& cont, typename container::iterator begin, typename container::iterator end, const val& item, const cmp& compare)
+{
+	typename container::iterator it = std::lower_bound(begin, end, item, compare);
+	int64_t offset = static_cast<int64_t>(it - begin);
+	if (it != end && !(compare(*it, item) || compare(item, *it)))
+	{
+		*it = item;
+	}
+	else
+	{
+		cont.insert(it, item);
+	}
+	return static_cast<size_t>(offset);
+}
+
+/// <summary>Insert sorted element, Overwrite if element exist in the container</summary>
+/// <param name="cont">Container to insert the element into.</param>
+/// <param name="begin">Container range begin</param>
+/// <param name="end">Container range end</param>
+/// <param name="item">Item to insert in to the container</param>
+template<typename container, typename val>
+size_t insertSorted_overwrite(container& cont, typename container::iterator begin, typename container::iterator end, const val& item)
+{
+	return insertSorted_overwrite(cont, begin, end, item, std::less<val>());
+}
+
+/// <summary>Insert sorted element, Overwrite if element exist in the container</summary>
+/// <param name="cont">Container to insert the element into.</param>
+/// <param name="item">Item to insert in to the container</param>
+template<typename container, typename val>
+size_t insertSorted_overwrite(container& cont, const val& item)
+{
+	return insertSorted_overwrite(cont, cont.begin(), cont.end(), item);
+}
+
+/// <summary>Insert sorted element, Overwrite if element exist in the container</summary>
+/// <param name="cont">Container to insert the element into.</param>
+/// <param name="item">Item to insert in to the container</param>
+/// <param name="compare">Comparison operator used for sorting</param>
+template<typename container, typename val, typename cmp>
+size_t insertSorted_overwrite(container& cont, const val& item, const cmp& compare)
+{
+	return insertSorted_overwrite(cont, cont.begin(), cont.end(), item, compare);
+}
+
 inline Api getCurrentGlesVersion()
 {
 	const char* apistring = (const char*)gl::GetString(GL_VERSION);
@@ -84,7 +183,7 @@ inline bool checkFboStatus()
 /// <summary>Reads a block of pixel data from the frame buffer using the dimensions width and height as the dimensions of the
 /// pixel rectangle saved. The function will save the pixel data as a TGA file with the name specified by screenshotFileName. The
 /// function can be used to take screenshots of the current frame buffer or frame when called prior to presenting the backbuffer i.e.
-/// swapping buffers. </summary>
+/// swapping buffers.</summary>
 /// <param name="screenshotFileName">The name used as the filename for the saved TGA screenshot.</param>
 /// <param name="width">The width of the pixel rectangle retrieved.</param>
 /// <param name="height">The width of the pixel rectangle retrieved.</param>
@@ -129,7 +228,7 @@ inline void takeScreenshot(const std::string& screenshotFileName, const uint32_t
 /// <summary>Reads a block of pixel data from the frame buffer using the dimensions width and height as the dimensions of the
 /// pixel rectangle saved. The function will save the pixel data as a TGA file with the name specified by screenshotFileName. The
 /// function can be used to take screenshots of the current frame buffer or frame when called prior to presenting the backbuffer i.e.
-/// swapping buffers. </summary>
+/// swapping buffers.</summary>
 /// <param name="screenshotFileName">The name used as the filename for the saved TGA screenshot.</param>
 /// <param name="width">The width of the pixel rectangle retrieved.</param>
 /// <param name="height">The width of the pixel rectangle retrieved.</param>
@@ -137,7 +236,7 @@ inline void takeScreenshot(const std::string& screenshotFileName, const uint32_t
 /// <returns>A scaling factor to use for increasing the size of the saved screenshot.</returns>
 inline GLuint textureUpload(IAssetProvider& app, const char* file, pvr::Texture& outTexture, bool isEs2 = false)
 {
-	outTexture = pvr::assets::textureLoad(app.getAssetStream(file), pvr::getTextureFormatFromFilename(file));
+	outTexture = pvr::textureLoad(app.getAssetStream(file), pvr::getTextureFormatFromFilename(file));
 
 	auto res = pvr::utils::textureUpload(outTexture, isEs2, true);
 
@@ -152,7 +251,7 @@ inline GLuint textureUpload(IAssetProvider& app, const char* file, bool isEs2 = 
 
 inline pvr::Texture getTextureData(IAssetProvider& app, const char* file)
 {
-	Texture outTexture = pvr::assets::textureLoad(app.getAssetStream(file), pvr::getTextureFormatFromFilename(file));
+	Texture outTexture = pvr::textureLoad(app.getAssetStream(file), pvr::getTextureFormatFromFilename(file));
 
 	// Is the texture compressed? RGB9E5 is treated as an uncompressed texture in OpenGL/ES so is a special case.
 	bool isCompressedFormat =
@@ -247,18 +346,18 @@ inline void generateTextureAtlas(
 
 	struct Area
 	{
-		int x;
-		int y;
-		int w;
-		int h;
-		int size;
+		uint32_t x;
+		uint32_t y;
+		uint32_t w;
+		uint32_t h;
+		uint32_t size;
 		bool isFilled;
 
 		Area* right;
 		Area* left;
 
 	private:
-		void setSize(int width, int height)
+		void setSize(uint32_t width, uint32_t height)
 		{
 			w = width;
 			h = height;
@@ -266,7 +365,7 @@ inline void generateTextureAtlas(
 		}
 
 	public:
-		Area(int width, int height) : x(0), y(0), isFilled(false), right(NULL), left(NULL)
+		Area(uint32_t width, uint32_t height) : x(0), y(0), isFilled(false), right(NULL), left(NULL)
 		{
 			setSize(width, height);
 		}
@@ -275,7 +374,7 @@ inline void generateTextureAtlas(
 			setSize(0, 0);
 		}
 
-		Area* insert(int width, int height)
+		Area* insert(uint32_t width, uint32_t height)
 		{
 			// If this area has branches below it (i.e. is not a leaf) then traverse those.
 			// Check the left branch first.
@@ -419,7 +518,7 @@ inline void generateTextureAtlas(
 	//// sort the sprites
 	std::sort(sortedImage.begin(), sortedImage.end(), SortCompare());
 	// find the best width and height
-	int width = 0, height = 0, area = 0;
+	uint32_t width = 0, height = 0, area = 0;
 	uint32_t preferredDim[] = { 8, 16, 32, 64, 128, 256, 512, 1024 };
 	const uint32_t atlasPixelBorder = 1;
 	const uint32_t totalBorder = atlasPixelBorder * 2;
@@ -430,7 +529,7 @@ inline void generateTextureAtlas(
 		area += (sortedImage[i].width + totalBorder) * (sortedImage[i].height + totalBorder);
 	}
 	i = 0;
-	while (((int)preferredDim[i] * (int)preferredDim[i]) < area && i < sizeof(preferredDim) / sizeof(preferredDim[0]))
+	while ((preferredDim[i] * preferredDim[i]) < area && i < sizeof(preferredDim) / sizeof(preferredDim[0]))
 	{
 		++i;
 	}
@@ -447,7 +546,7 @@ inline void generateTextureAtlas(
 	Offset3D dstOffset[2];
 
 	// create the out texture store
-	ImageStorageFormat outFmt(PixelFormat::RGBA_32323232, 1, ColorSpace::lRGB, VariableType::Float);
+	ImageStorageFormat outFmt(PixelFormat::RGBA_32323232(), 1, ColorSpace::lRGB, VariableType::Float);
 	gl::GenTextures(1, outTexture);
 	gl::BindTexture(GL_TEXTURE_2D, *outTexture);
 
@@ -480,7 +579,7 @@ inline void generateTextureAtlas(
 	for (uint32_t i = 0; i < numTextures; ++i)
 	{
 		const SortedImage& image = sortedImage[i];
-		pRtrn = head->insert((int)sortedImage[i].width + totalBorder, (int)sortedImage[i].height + totalBorder);
+		pRtrn = head->insert(sortedImage[i].width + totalBorder, sortedImage[i].height + totalBorder);
 		if (!pRtrn)
 		{
 			head->deleteArea();
@@ -519,23 +618,55 @@ inline void generateTextureAtlas(
 	pvr::utils::throwOnGlError("generateTextureAtlas End");
 }
 
+inline GLuint createShaderProgram(IAssetProvider& app, const char* vertShader, const char* tessCtrlShader, const char* tessEvalShader, const char* geometryShader,
+	const char* fragShader, const char** attribNames, const uint16_t* attribIndices, uint32_t numAttribs, const char* const* defines = 0, uint32_t numDefines = 0)
+{
+	GLuint shaders[5] = { 0 };
+	GLuint program = 0;
+	uint32_t count = 0;
+	if (vertShader)
+	{
+		auto vertShaderSrc = app.getAssetStream(vertShader);
+		shaders[count++] = pvr::utils::loadShader(*vertShaderSrc, pvr::ShaderType::VertexShader, defines, numDefines);
+	}
+
+	if (tessCtrlShader)
+	{
+		auto texCtrShaderSrc = app.getAssetStream(tessCtrlShader);
+		shaders[count++] = pvr::utils::loadShader(*texCtrShaderSrc, pvr::ShaderType::TessControlShader, defines, numDefines);
+	}
+
+	if (tessEvalShader)
+	{
+		auto texEvalShaderSrc = app.getAssetStream(tessEvalShader);
+		shaders[count++] = pvr::utils::loadShader(*texEvalShaderSrc, pvr::ShaderType::TessEvaluationShader, defines, numDefines);
+	}
+
+	if (geometryShader)
+	{
+		auto geometryShaderSrc = app.getAssetStream(geometryShader);
+		shaders[count++] = pvr::utils::loadShader(*geometryShaderSrc, pvr::ShaderType::GeometryShader, defines, numDefines);
+	}
+
+	if (fragShader)
+	{
+		auto fragShaderSrc = app.getAssetStream(fragShader);
+		shaders[count++] = pvr::utils::loadShader(*fragShaderSrc, pvr::ShaderType::FragmentShader, defines, numDefines);
+	}
+
+	program = pvr::utils::createShaderProgram(shaders, count, attribNames, attribIndices, numAttribs);
+	for (uint32_t i = 0; i < count; ++i)
+	{
+		gl::DeleteShader(shaders[i]);
+	}
+
+	return program;
+}
+
 inline GLuint createShaderProgram(IAssetProvider& app, const char* vertShader, const char* fragShader, const char** attribNames, const uint16_t* attribIndices, uint32_t numAttribs,
 	const char* const* defines = 0, uint32_t numDefines = 0)
 {
-	GLuint shaders[2] = { 0, 0 };
-	GLuint program = 0;
-
-	auto vertShaderSrc = app.getAssetStream(vertShader);
-
-	shaders[0] = pvr::utils::loadShader(*vertShaderSrc, pvr::ShaderType::VertexShader, defines, numDefines);
-	auto fragShaderSrc = app.getAssetStream(fragShader);
-
-	shaders[1] = pvr::utils::loadShader(*fragShaderSrc, pvr::ShaderType::FragmentShader, defines, numDefines);
-
-	program = pvr::utils::createShaderProgram(shaders, 2, attribNames, attribIndices, numAttribs);
-	gl::DeleteShader(shaders[0]);
-	gl::DeleteShader(shaders[1]);
-	return program;
+	return createShaderProgram(app, vertShader, nullptr, nullptr, nullptr, fragShader, attribNames, attribIndices, numAttribs, defines, numDefines);
 }
 
 inline GLuint createComputeShaderProgram(IAssetProvider& app, const char* compShader, const char* const* defines = 0, uint32_t numDefines = 0)

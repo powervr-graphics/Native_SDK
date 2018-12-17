@@ -15,7 +15,7 @@
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="IMGdoxygen.css" rel="stylesheet" type="text/css"/>
-<link rel="shortcut icon" href="http://www.imgtec.com/images/img.ico">
+<link rel="shortcut icon" type="image/x-icon" href="img.ico">
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
+      <a href="https://www.imgtec.com/developers/" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRVk</span> Documentation</a>
    <tbody>
@@ -132,51 +132,54 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a2853f758e9e70e100e3140405fc8e03c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_command_buffer_base__.html#a2853f758e9e70e100e3140405fc8e03c">bindVertexBuffer</a> (<a class="el" href="namespacepvrvk.html#a2a117db0aab25382d050908b2bfa4c8b">Buffer</a> const *buffers, uint32_t *offsets, uint16_t numBuffers, uint16_t startBinding, uint16_t numBindings)</td></tr>
 <tr class="memdesc:a2853f758e9e70e100e3140405fc8e03c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind vertex buffer <a href="#a2853f758e9e70e100e3140405fc8e03c">More...</a><br/></td></tr>
 <tr class="separator:a2853f758e9e70e100e3140405fc8e03c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a88093ef10da31dcaa3846beb36617bbb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_command_buffer_base__.html#a88093ef10da31dcaa3846beb36617bbb">blitImage</a> (const <a class="el" href="namespacepvrvk.html#a0dde8112e297d1089979fbdbdcbbe0f4">Image</a> &amp;srcImage, <a class="el" href="namespacepvrvk.html#a0dde8112e297d1089979fbdbdcbbe0f4">Image</a> &amp;dstImage, const ImageBlit *regions, uint32_t numRegions, Filter filter, ImageLayout srcLayout, ImageLayout dstLayout)</td></tr>
-<tr class="memdesc:a88093ef10da31dcaa3846beb36617bbb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copies regions of a src image into a dst image, potentially also performing format conversions, aritrary scaling and filtering. <a href="#a88093ef10da31dcaa3846beb36617bbb">More...</a><br/></td></tr>
-<tr class="separator:a88093ef10da31dcaa3846beb36617bbb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a40c135444b1cab09ac85b642323155cb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_command_buffer_base__.html#a40c135444b1cab09ac85b642323155cb">bindVertexBuffers</a> (const <a class="el" href="namespacepvrvk.html#a2a117db0aab25382d050908b2bfa4c8b">Buffer</a> *buffers, uint32_t firstBinding, uint16_t bindingCount, const uint32_t *offsets=nullptr)</td></tr>
+<tr class="memdesc:a40c135444b1cab09ac85b642323155cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind vertex buffer <a href="#a40c135444b1cab09ac85b642323155cb">More...</a><br/></td></tr>
+<tr class="separator:a40c135444b1cab09ac85b642323155cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b6b3caadb988c50778a3867c229d652"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_command_buffer_base__.html#a5b6b3caadb988c50778a3867c229d652">blitImage</a> (const <a class="el" href="namespacepvrvk.html#a0dde8112e297d1089979fbdbdcbbe0f4">Image</a> &amp;srcImage, const <a class="el" href="namespacepvrvk.html#a0dde8112e297d1089979fbdbdcbbe0f4">Image</a> &amp;dstImage, const ImageBlit *regions, uint32_t numRegions, Filter filter, ImageLayout srcLayout, ImageLayout dstLayout)</td></tr>
+<tr class="memdesc:a5b6b3caadb988c50778a3867c229d652"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copies regions of a src image into a dst image, potentially also performing format conversions, aritrary scaling and filtering. <a href="#a5b6b3caadb988c50778a3867c229d652">More...</a><br/></td></tr>
+<tr class="separator:a5b6b3caadb988c50778a3867c229d652"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a26d8498fee836c63989072eb483d8938"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_command_buffer_base__.html#a26d8498fee836c63989072eb483d8938">clearAttachment</a> (const <a class="el" href="structpvrvk_1_1_clear_attachment.html">ClearAttachment</a> &amp;clearAttachment, const ClearRect &amp;clearRectangle)</td></tr>
 <tr class="memdesc:a26d8498fee836c63989072eb483d8938"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears a particular attachment using a provided region whilst inside of a renderpass. <a href="#a26d8498fee836c63989072eb483d8938">More...</a><br/></td></tr>
 <tr class="separator:a26d8498fee836c63989072eb483d8938"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac681c14ddfb7b443d318e695633571b5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_command_buffer_base__.html#ac681c14ddfb7b443d318e695633571b5">clearAttachments</a> (const uint32_t numAttachments, const <a class="el" href="structpvrvk_1_1_clear_attachment.html">ClearAttachment</a> *clearAttachments, uint32_t numRectangles, const ClearRect *clearRectangles)</td></tr>
 <tr class="memdesc:ac681c14ddfb7b443d318e695633571b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear a set of attacments using a number of regions for each selected attachment to clear whilst inside a renderpass. <a href="#ac681c14ddfb7b443d318e695633571b5">More...</a><br/></td></tr>
 <tr class="separator:ac681c14ddfb7b443d318e695633571b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0b76e94f5959d34d1fd15be43a9d0b6e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_command_buffer_base__.html#a0b76e94f5959d34d1fd15be43a9d0b6e">clearColorImage</a> (<a class="el" href="namespacepvrvk.html#ad4da214c95fffe4edccb14eb2c270f07">ImageView</a> &amp;image, const <a class="el" href="structpvrvk_1_1_clear_color_value.html">ClearColorValue</a> &amp;clearColor, ImageLayout currentLayout, const uint32_t baseMipLevel=0, const uint32_t numLevels=1, const uint32_t baseArrayLayer=0, const uint32_t numLayers=1)</td></tr>
-<tr class="memdesc:a0b76e94f5959d34d1fd15be43a9d0b6e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears a color image outside of a renderpass instance. <a href="#a0b76e94f5959d34d1fd15be43a9d0b6e">More...</a><br/></td></tr>
-<tr class="separator:a0b76e94f5959d34d1fd15be43a9d0b6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a57c9d24c5b0f0486c9ab5602269edf4a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_command_buffer_base__.html#a57c9d24c5b0f0486c9ab5602269edf4a">clearColorImage</a> (<a class="el" href="namespacepvrvk.html#ad4da214c95fffe4edccb14eb2c270f07">ImageView</a> &amp;image, const <a class="el" href="structpvrvk_1_1_clear_color_value.html">ClearColorValue</a> &amp;clearColor, ImageLayout currentLayout, const uint32_t *baseMipLevels, const uint32_t *numLevels, const uint32_t *baseArrayLayers, const uint32_t *numLayers, uint32_t numRanges)</td></tr>
-<tr class="memdesc:a57c9d24c5b0f0486c9ab5602269edf4a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears a color image outside of a renderpass instance using a number of ranges. <a href="#a57c9d24c5b0f0486c9ab5602269edf4a">More...</a><br/></td></tr>
-<tr class="separator:a57c9d24c5b0f0486c9ab5602269edf4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a77fa9538ba0fcb3c2dc77f5e58a90e55"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_command_buffer_base__.html#a77fa9538ba0fcb3c2dc77f5e58a90e55">clearDepthImage</a> (<a class="el" href="namespacepvrvk.html#a0dde8112e297d1089979fbdbdcbbe0f4">Image</a> &amp;image, float clearDepth, const uint32_t baseMipLevel, const uint32_t numLevels, const uint32_t baseArrayLayer, const uint32_t numLayers, ImageLayout layout)</td></tr>
-<tr class="memdesc:a77fa9538ba0fcb3c2dc77f5e58a90e55"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear depth image outside of a renderpass instance. <a href="#a77fa9538ba0fcb3c2dc77f5e58a90e55">More...</a><br/></td></tr>
-<tr class="separator:a77fa9538ba0fcb3c2dc77f5e58a90e55"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7e669f8997f42c5d9ae85222efa53c5a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_command_buffer_base__.html#a7e669f8997f42c5d9ae85222efa53c5a">clearDepthImage</a> (<a class="el" href="namespacepvrvk.html#a0dde8112e297d1089979fbdbdcbbe0f4">Image</a> &amp;image, float clearDepth, const uint32_t *baseMipLevels, const uint32_t *numLevels, const uint32_t *baseArrayLayers, const uint32_t *numLayers, uint32_t numRanges, ImageLayout layout)</td></tr>
-<tr class="memdesc:a7e669f8997f42c5d9ae85222efa53c5a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears the depth image outside of a renderpass instance using a number of ranges. <a href="#a7e669f8997f42c5d9ae85222efa53c5a">More...</a><br/></td></tr>
-<tr class="separator:a7e669f8997f42c5d9ae85222efa53c5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0c4d7f8b6ddcd8f4a22adea5c0474bc9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_command_buffer_base__.html#a0c4d7f8b6ddcd8f4a22adea5c0474bc9">clearDepthStencilImage</a> (<a class="el" href="namespacepvrvk.html#a0dde8112e297d1089979fbdbdcbbe0f4">Image</a> &amp;image, float clearDepth, uint32_t clearStencil, const uint32_t baseMipLevel, const uint32_t numLevels, const uint32_t baseArrayLayer, const uint32_t numLayers, ImageLayout layout)</td></tr>
-<tr class="memdesc:a0c4d7f8b6ddcd8f4a22adea5c0474bc9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear depth stencil image outside of a renderpass instance. <a href="#a0c4d7f8b6ddcd8f4a22adea5c0474bc9">More...</a><br/></td></tr>
-<tr class="separator:a0c4d7f8b6ddcd8f4a22adea5c0474bc9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aadc22a2bd68016cfcb03a4eba0adb3f4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_command_buffer_base__.html#aadc22a2bd68016cfcb03a4eba0adb3f4">clearDepthStencilImage</a> (<a class="el" href="namespacepvrvk.html#a0dde8112e297d1089979fbdbdcbbe0f4">Image</a> &amp;image, float clearDepth, uint32_t clearStencil, const uint32_t *baseMipLevels, const uint32_t *numLevels, const uint32_t *baseArrayLayers, const uint32_t *numLayers, uint32_t numRanges, ImageLayout layout)</td></tr>
-<tr class="memdesc:aadc22a2bd68016cfcb03a4eba0adb3f4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear depth stencil image outside of a renderpass instance using a number of ranges. <a href="#aadc22a2bd68016cfcb03a4eba0adb3f4">More...</a><br/></td></tr>
-<tr class="separator:aadc22a2bd68016cfcb03a4eba0adb3f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a300280c8edf7996f94fba4e634f56a18"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_command_buffer_base__.html#a300280c8edf7996f94fba4e634f56a18">clearStencilImage</a> (<a class="el" href="namespacepvrvk.html#a0dde8112e297d1089979fbdbdcbbe0f4">Image</a> &amp;image, uint32_t clearStencil, const uint32_t baseMipLevel, const uint32_t numLevels, const uint32_t baseArrayLayer, const uint32_t numLayers, ImageLayout layout)</td></tr>
-<tr class="memdesc:a300280c8edf7996f94fba4e634f56a18"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears a stencil image outside of a renderpass instance. <a href="#a300280c8edf7996f94fba4e634f56a18">More...</a><br/></td></tr>
-<tr class="separator:a300280c8edf7996f94fba4e634f56a18"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4fafdc0e9a578950eaf38bc83931aaba"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_command_buffer_base__.html#a4fafdc0e9a578950eaf38bc83931aaba">clearStencilImage</a> (<a class="el" href="namespacepvrvk.html#a0dde8112e297d1089979fbdbdcbbe0f4">Image</a> &amp;image, uint32_t clearStencil, const uint32_t *baseMipLevels, const uint32_t *numLevels, const uint32_t *baseArrayLayers, const uint32_t *numLayers, uint32_t numRanges, ImageLayout layout)</td></tr>
-<tr class="memdesc:a4fafdc0e9a578950eaf38bc83931aaba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear stencil image outside of a renderpass instance using a number of ranges. <a href="#a4fafdc0e9a578950eaf38bc83931aaba">More...</a><br/></td></tr>
-<tr class="separator:a4fafdc0e9a578950eaf38bc83931aaba"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a900d1651d2366f7c5db896d9ddf4b73f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_command_buffer_base__.html#a900d1651d2366f7c5db896d9ddf4b73f">copyBuffer</a> (<a class="el" href="namespacepvrvk.html#a2a117db0aab25382d050908b2bfa4c8b">Buffer</a> srcBuffer, <a class="el" href="namespacepvrvk.html#a2a117db0aab25382d050908b2bfa4c8b">Buffer</a> dstBuffer, uint32_t numRegions, const BufferCopy *regions)</td></tr>
-<tr class="memdesc:a900d1651d2366f7c5db896d9ddf4b73f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy Buffer <a href="#a900d1651d2366f7c5db896d9ddf4b73f">More...</a><br/></td></tr>
-<tr class="separator:a900d1651d2366f7c5db896d9ddf4b73f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adb34b2defee7acc83aaaa82f23c16b88"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_command_buffer_base__.html#adb34b2defee7acc83aaaa82f23c16b88">copyBufferToImage</a> (const <a class="el" href="namespacepvrvk.html#a2a117db0aab25382d050908b2bfa4c8b">Buffer</a> &amp;buffer, <a class="el" href="namespacepvrvk.html#a0dde8112e297d1089979fbdbdcbbe0f4">Image</a> &amp;image, ImageLayout dstImageLayout, uint32_t regionsCount, const BufferImageCopy *regions)</td></tr>
-<tr class="memdesc:adb34b2defee7acc83aaaa82f23c16b88"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy buffer to image <a href="#adb34b2defee7acc83aaaa82f23c16b88">More...</a><br/></td></tr>
-<tr class="separator:adb34b2defee7acc83aaaa82f23c16b88"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adaf1fb46af6d7186a1b631f26b31914a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_command_buffer_base__.html#adaf1fb46af6d7186a1b631f26b31914a">copyImage</a> (<a class="el" href="namespacepvrvk.html#a0dde8112e297d1089979fbdbdcbbe0f4">Image</a> &amp;srcImage, <a class="el" href="namespacepvrvk.html#a0dde8112e297d1089979fbdbdcbbe0f4">Image</a> &amp;dstImage, ImageLayout srcImageLayout, ImageLayout dstImageLayout, uint32_t numRegions, const ImageCopy *regions)</td></tr>
-<tr class="memdesc:adaf1fb46af6d7186a1b631f26b31914a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy data between Images <a href="#adaf1fb46af6d7186a1b631f26b31914a">More...</a><br/></td></tr>
-<tr class="separator:adaf1fb46af6d7186a1b631f26b31914a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a664eb3e79ee7a405f8daf3425db77d2d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_command_buffer_base__.html#a664eb3e79ee7a405f8daf3425db77d2d">copyImageToBuffer</a> (<a class="el" href="namespacepvrvk.html#a0dde8112e297d1089979fbdbdcbbe0f4">Image</a> &amp;srcImage, ImageLayout srcImageLayout, <a class="el" href="namespacepvrvk.html#a2a117db0aab25382d050908b2bfa4c8b">Buffer</a> &amp;dstBuffer, const BufferImageCopy *regions, uint32_t numRegions)</td></tr>
-<tr class="memdesc:a664eb3e79ee7a405f8daf3425db77d2d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy image to buffer <a href="#a664eb3e79ee7a405f8daf3425db77d2d">More...</a><br/></td></tr>
-<tr class="separator:a664eb3e79ee7a405f8daf3425db77d2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6a5832f5365e38a33a1768baf09fc4ba"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_command_buffer_base__.html#a6a5832f5365e38a33a1768baf09fc4ba">clearColorImage</a> (const <a class="el" href="namespacepvrvk.html#ad4da214c95fffe4edccb14eb2c270f07">ImageView</a> &amp;image, const <a class="el" href="structpvrvk_1_1_clear_color_value.html">ClearColorValue</a> &amp;clearColor, ImageLayout currentLayout, const uint32_t baseMipLevel=0, const uint32_t numLevels=1, const uint32_t baseArrayLayer=0, const uint32_t numLayers=1)</td></tr>
+<tr class="memdesc:a6a5832f5365e38a33a1768baf09fc4ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears a color image outside of a renderpass instance. <a href="#a6a5832f5365e38a33a1768baf09fc4ba">More...</a><br/></td></tr>
+<tr class="separator:a6a5832f5365e38a33a1768baf09fc4ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae1050ce0f6d621cb56b25e5ba0e862cf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_command_buffer_base__.html#ae1050ce0f6d621cb56b25e5ba0e862cf">clearColorImage</a> (const <a class="el" href="namespacepvrvk.html#ad4da214c95fffe4edccb14eb2c270f07">ImageView</a> &amp;image, const <a class="el" href="structpvrvk_1_1_clear_color_value.html">ClearColorValue</a> &amp;clearColor, ImageLayout currentLayout, const uint32_t *baseMipLevels, const uint32_t *numLevels, const uint32_t *baseArrayLayers, const uint32_t *numLayers, uint32_t numRanges)</td></tr>
+<tr class="memdesc:ae1050ce0f6d621cb56b25e5ba0e862cf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears a color image outside of a renderpass instance using a number of ranges. <a href="#ae1050ce0f6d621cb56b25e5ba0e862cf">More...</a><br/></td></tr>
+<tr class="separator:ae1050ce0f6d621cb56b25e5ba0e862cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac919e8871b7d6b2c6886562f08c5b5ac"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_command_buffer_base__.html#ac919e8871b7d6b2c6886562f08c5b5ac">clearDepthImage</a> (const <a class="el" href="namespacepvrvk.html#a0dde8112e297d1089979fbdbdcbbe0f4">Image</a> &amp;image, float clearDepth, const uint32_t baseMipLevel, const uint32_t numLevels, const uint32_t baseArrayLayer, const uint32_t numLayers, ImageLayout layout)</td></tr>
+<tr class="memdesc:ac919e8871b7d6b2c6886562f08c5b5ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear depth image outside of a renderpass instance. <a href="#ac919e8871b7d6b2c6886562f08c5b5ac">More...</a><br/></td></tr>
+<tr class="separator:ac919e8871b7d6b2c6886562f08c5b5ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51b58f4906588ca9dfa2438c37540c30"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_command_buffer_base__.html#a51b58f4906588ca9dfa2438c37540c30">clearDepthImage</a> (const <a class="el" href="namespacepvrvk.html#a0dde8112e297d1089979fbdbdcbbe0f4">Image</a> &amp;image, float clearDepth, const uint32_t *baseMipLevels, const uint32_t *numLevels, const uint32_t *baseArrayLayers, const uint32_t *numLayers, uint32_t numRanges, ImageLayout layout)</td></tr>
+<tr class="memdesc:a51b58f4906588ca9dfa2438c37540c30"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears the depth image outside of a renderpass instance using a number of ranges. <a href="#a51b58f4906588ca9dfa2438c37540c30">More...</a><br/></td></tr>
+<tr class="separator:a51b58f4906588ca9dfa2438c37540c30"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc175f1965e8857291b3e61380fde0d1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_command_buffer_base__.html#afc175f1965e8857291b3e61380fde0d1">clearDepthStencilImage</a> (const <a class="el" href="namespacepvrvk.html#a0dde8112e297d1089979fbdbdcbbe0f4">Image</a> &amp;image, float clearDepth, uint32_t clearStencil, const uint32_t baseMipLevel, const uint32_t numLevels, const uint32_t baseArrayLayer, const uint32_t numLayers, ImageLayout layout)</td></tr>
+<tr class="memdesc:afc175f1965e8857291b3e61380fde0d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear depth stencil image outside of a renderpass instance. <a href="#afc175f1965e8857291b3e61380fde0d1">More...</a><br/></td></tr>
+<tr class="separator:afc175f1965e8857291b3e61380fde0d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac4caad1d3256751db0735dae4c4ecd14"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_command_buffer_base__.html#ac4caad1d3256751db0735dae4c4ecd14">clearDepthStencilImage</a> (const <a class="el" href="namespacepvrvk.html#a0dde8112e297d1089979fbdbdcbbe0f4">Image</a> &amp;image, float clearDepth, uint32_t clearStencil, const uint32_t *baseMipLevels, const uint32_t *numLevels, const uint32_t *baseArrayLayers, const uint32_t *numLayers, uint32_t numRanges, ImageLayout layout)</td></tr>
+<tr class="memdesc:ac4caad1d3256751db0735dae4c4ecd14"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear depth stencil image outside of a renderpass instance using a number of ranges. <a href="#ac4caad1d3256751db0735dae4c4ecd14">More...</a><br/></td></tr>
+<tr class="separator:ac4caad1d3256751db0735dae4c4ecd14"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96fcb36a78addbdf25d5f52044e37152"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_command_buffer_base__.html#a96fcb36a78addbdf25d5f52044e37152">clearStencilImage</a> (const <a class="el" href="namespacepvrvk.html#a0dde8112e297d1089979fbdbdcbbe0f4">Image</a> &amp;image, uint32_t clearStencil, const uint32_t baseMipLevel, const uint32_t numLevels, const uint32_t baseArrayLayer, const uint32_t numLayers, ImageLayout layout)</td></tr>
+<tr class="memdesc:a96fcb36a78addbdf25d5f52044e37152"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears a stencil image outside of a renderpass instance. <a href="#a96fcb36a78addbdf25d5f52044e37152">More...</a><br/></td></tr>
+<tr class="separator:a96fcb36a78addbdf25d5f52044e37152"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7894b82302fae9d634b6564a0e912256"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_command_buffer_base__.html#a7894b82302fae9d634b6564a0e912256">clearStencilImage</a> (const <a class="el" href="namespacepvrvk.html#a0dde8112e297d1089979fbdbdcbbe0f4">Image</a> &amp;image, uint32_t clearStencil, const uint32_t *baseMipLevels, const uint32_t *numLevels, const uint32_t *baseArrayLayers, const uint32_t *numLayers, uint32_t numRanges, ImageLayout layout)</td></tr>
+<tr class="memdesc:a7894b82302fae9d634b6564a0e912256"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear stencil image outside of a renderpass instance using a number of ranges. <a href="#a7894b82302fae9d634b6564a0e912256">More...</a><br/></td></tr>
+<tr class="separator:a7894b82302fae9d634b6564a0e912256"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9fc6d67c3d3a47780e62c8d9632776cb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_command_buffer_base__.html#a9fc6d67c3d3a47780e62c8d9632776cb">copyBuffer</a> (const <a class="el" href="namespacepvrvk.html#a2a117db0aab25382d050908b2bfa4c8b">Buffer</a> &amp;srcBuffer, const <a class="el" href="namespacepvrvk.html#a2a117db0aab25382d050908b2bfa4c8b">Buffer</a> &amp;dstBuffer, uint32_t numRegions, const BufferCopy *regions)</td></tr>
+<tr class="memdesc:a9fc6d67c3d3a47780e62c8d9632776cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy Buffer <a href="#a9fc6d67c3d3a47780e62c8d9632776cb">More...</a><br/></td></tr>
+<tr class="separator:a9fc6d67c3d3a47780e62c8d9632776cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a851659286aa0122bc8d42ec5c823604c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_command_buffer_base__.html#a851659286aa0122bc8d42ec5c823604c">copyBufferToImage</a> (const <a class="el" href="namespacepvrvk.html#a2a117db0aab25382d050908b2bfa4c8b">Buffer</a> &amp;buffer, const <a class="el" href="namespacepvrvk.html#a0dde8112e297d1089979fbdbdcbbe0f4">Image</a> &amp;image, ImageLayout dstImageLayout, uint32_t regionsCount, const BufferImageCopy *regions)</td></tr>
+<tr class="memdesc:a851659286aa0122bc8d42ec5c823604c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy buffer to image <a href="#a851659286aa0122bc8d42ec5c823604c">More...</a><br/></td></tr>
+<tr class="separator:a851659286aa0122bc8d42ec5c823604c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a226df08eca4fcc10fac3976860cd70af"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_command_buffer_base__.html#a226df08eca4fcc10fac3976860cd70af">copyImage</a> (const <a class="el" href="namespacepvrvk.html#a0dde8112e297d1089979fbdbdcbbe0f4">Image</a> &amp;srcImage, const <a class="el" href="namespacepvrvk.html#a0dde8112e297d1089979fbdbdcbbe0f4">Image</a> &amp;dstImage, ImageLayout srcImageLayout, ImageLayout dstImageLayout, uint32_t numRegions, const ImageCopy *regions)</td></tr>
+<tr class="memdesc:a226df08eca4fcc10fac3976860cd70af"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy data between Images <a href="#a226df08eca4fcc10fac3976860cd70af">More...</a><br/></td></tr>
+<tr class="separator:a226df08eca4fcc10fac3976860cd70af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8da3e72621920307892661c98f0cab01"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_command_buffer_base__.html#a8da3e72621920307892661c98f0cab01">copyImageToBuffer</a> (const <a class="el" href="namespacepvrvk.html#a0dde8112e297d1089979fbdbdcbbe0f4">Image</a> &amp;srcImage, ImageLayout srcImageLayout, <a class="el" href="namespacepvrvk.html#a2a117db0aab25382d050908b2bfa4c8b">Buffer</a> &amp;dstBuffer, const BufferImageCopy *regions, uint32_t numRegions)</td></tr>
+<tr class="memdesc:a8da3e72621920307892661c98f0cab01"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy image to buffer <a href="#a8da3e72621920307892661c98f0cab01">More...</a><br/></td></tr>
+<tr class="separator:a8da3e72621920307892661c98f0cab01"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae7b0c98a25f798bb0af566f3f1238c3c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_command_buffer_base__.html#ae7b0c98a25f798bb0af566f3f1238c3c">copyQueryPoolResults</a> (<a class="el" href="namespacepvrvk.html#a9775dff694169a1bafd336a1a64508f7">QueryPool</a> &amp;queryPool, uint32_t firstQuery, uint32_t queryCount, <a class="el" href="namespacepvrvk.html#a2a117db0aab25382d050908b2bfa4c8b">Buffer</a> &amp;dstBuffer, VkDeviceSize offset, VkDeviceSize stride, QueryResultFlags flags)</td></tr>
 <tr class="memdesc:ae7b0c98a25f798bb0af566f3f1238c3c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copies the query statuses and numerical results directly to buffer memory. <a href="#ae7b0c98a25f798bb0af566f3f1238c3c">More...</a><br/></td></tr>
 <tr class="separator:ae7b0c98a25f798bb0af566f3f1238c3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -201,21 +204,21 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a9d0dd5fece38c2da3f474f302f70eba8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_command_buffer_base__.html#a9d0dd5fece38c2da3f474f302f70eba8">drawIndexed</a> (uint32_t firstIndex, uint32_t numIndices, uint32_t vertexOffset=0, uint32_t firstInstance=0, uint32_t numInstances=1)</td></tr>
 <tr class="memdesc:a9d0dd5fece38c2da3f474f302f70eba8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Indexed drawing command. <a href="#a9d0dd5fece38c2da3f474f302f70eba8">More...</a><br/></td></tr>
 <tr class="separator:a9d0dd5fece38c2da3f474f302f70eba8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2da4e6e18ae17379fd66ae6a7e3d3eb7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_command_buffer_base__.html#a2da4e6e18ae17379fd66ae6a7e3d3eb7">drawIndexedIndirect</a> (<a class="el" href="namespacepvrvk.html#a2a117db0aab25382d050908b2bfa4c8b">Buffer</a> &amp;buffer, uint32_t offset, uint32_t count, uint32_t stride)</td></tr>
-<tr class="memdesc:a2da4e6e18ae17379fd66ae6a7e3d3eb7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Non-indexed indirect drawing command. <a href="#a2da4e6e18ae17379fd66ae6a7e3d3eb7">More...</a><br/></td></tr>
-<tr class="separator:a2da4e6e18ae17379fd66ae6a7e3d3eb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a38db7b68a0aafa77bc03b5f199843b6c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_command_buffer_base__.html#a38db7b68a0aafa77bc03b5f199843b6c">drawIndirect</a> (<a class="el" href="namespacepvrvk.html#a2a117db0aab25382d050908b2bfa4c8b">Buffer</a> &amp;buffer, uint32_t offset, uint32_t count, uint32_t stride)</td></tr>
-<tr class="memdesc:a38db7b68a0aafa77bc03b5f199843b6c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Non-indexed indirect drawing command. <a href="#a38db7b68a0aafa77bc03b5f199843b6c">More...</a><br/></td></tr>
-<tr class="separator:a38db7b68a0aafa77bc03b5f199843b6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a58c8d29b0470bcc6df46f83032408db1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_command_buffer_base__.html#a58c8d29b0470bcc6df46f83032408db1">drawIndexedIndirect</a> (const <a class="el" href="namespacepvrvk.html#a2a117db0aab25382d050908b2bfa4c8b">Buffer</a> &amp;buffer, uint32_t offset, uint32_t count, uint32_t stride)</td></tr>
+<tr class="memdesc:a58c8d29b0470bcc6df46f83032408db1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Non-indexed indirect drawing command. <a href="#a58c8d29b0470bcc6df46f83032408db1">More...</a><br/></td></tr>
+<tr class="separator:a58c8d29b0470bcc6df46f83032408db1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2ea627c5ef086a05ac210a4a4b3287ea"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_command_buffer_base__.html#a2ea627c5ef086a05ac210a4a4b3287ea">drawIndirect</a> (const <a class="el" href="namespacepvrvk.html#a2a117db0aab25382d050908b2bfa4c8b">Buffer</a> &amp;buffer, uint32_t offset, uint32_t count, uint32_t stride)</td></tr>
+<tr class="memdesc:a2ea627c5ef086a05ac210a4a4b3287ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Non-indexed indirect drawing command. <a href="#a2ea627c5ef086a05ac210a4a4b3287ea">More...</a><br/></td></tr>
+<tr class="separator:a2ea627c5ef086a05ac210a4a4b3287ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a571250974bf01a908011ca732dbb74d7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_command_buffer_base__.html#a571250974bf01a908011ca732dbb74d7">end</a> ()</td></tr>
 <tr class="memdesc:a571250974bf01a908011ca732dbb74d7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Call this function when you are done recording commands. BeginRecording must be called first.  <a href="#a571250974bf01a908011ca732dbb74d7">More...</a><br/></td></tr>
 <tr class="separator:a571250974bf01a908011ca732dbb74d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac1bc81278e124ac66d23eac1fe2dc6cd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_command_buffer_base__.html#ac1bc81278e124ac66d23eac1fe2dc6cd">endQuery</a> (<a class="el" href="namespacepvrvk.html#a9775dff694169a1bafd336a1a64508f7">QueryPool</a> &amp;queryPool, uint32_t queryIndex)</td></tr>
 <tr class="memdesc:ac1bc81278e124ac66d23eac1fe2dc6cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ends a query for a particular QueryPool. <a href="#ac1bc81278e124ac66d23eac1fe2dc6cd">More...</a><br/></td></tr>
 <tr class="separator:ac1bc81278e124ac66d23eac1fe2dc6cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a56e3f2184eeb8f9aadaa631c1338179b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_command_buffer_base__.html#a56e3f2184eeb8f9aadaa631c1338179b">fillBuffer</a> (<a class="el" href="namespacepvrvk.html#a2a117db0aab25382d050908b2bfa4c8b">Buffer</a> dstBuffer, uint32_t dstOffset, uint32_t data, uint64_t size=VK_WHOLE_SIZE)</td></tr>
-<tr class="memdesc:a56e3f2184eeb8f9aadaa631c1338179b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear buffer data <a href="#a56e3f2184eeb8f9aadaa631c1338179b">More...</a><br/></td></tr>
-<tr class="separator:a56e3f2184eeb8f9aadaa631c1338179b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9e4d36d3a03784aa145a257affc24c3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_command_buffer_base__.html#ae9e4d36d3a03784aa145a257affc24c3">fillBuffer</a> (const <a class="el" href="namespacepvrvk.html#a2a117db0aab25382d050908b2bfa4c8b">Buffer</a> &amp;dstBuffer, uint32_t dstOffset, uint32_t data, uint64_t size=VK_WHOLE_SIZE)</td></tr>
+<tr class="memdesc:ae9e4d36d3a03784aa145a257affc24c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear buffer data <a href="#ae9e4d36d3a03784aa145a257affc24c3">More...</a><br/></td></tr>
+<tr class="separator:ae9e4d36d3a03784aa145a257affc24c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afbec4fbcfddbaff8fa39c6abf03f21f8"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacepvrvk.html#ac9949394db8b3d968a7402b837567f87">CommandPool</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_command_buffer_base__.html#afbec4fbcfddbaff8fa39c6abf03f21f8">getCommandPool</a> () const </td></tr>
 <tr class="memdesc:afbec4fbcfddbaff8fa39c6abf03f21f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Const getter for the command pool used to allocate this command buffer. <a href="#afbec4fbcfddbaff8fa39c6abf03f21f8">More...</a><br/></td></tr>
 <tr class="separator:afbec4fbcfddbaff8fa39c6abf03f21f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -225,6 +228,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aa78f66f58571440f57204a645383c279"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvrvk.html#a8dd5932a80187b088ce6b591712dc2c2">DeviceWeakPtr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_device_object_handle.html#aa78f66f58571440f57204a645383c279">getDevice</a> ()</td></tr>
 <tr class="memdesc:aa78f66f58571440f57204a645383c279"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get Device <a href="#aa78f66f58571440f57204a645383c279">More...</a><br/></td></tr>
 <tr class="separator:aa78f66f58571440f57204a645383c279"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af9cd7d892ba5d3d7988b9ecae846f5bf"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_device_object_debug_marker.html#af9cd7d892ba5d3d7988b9ecae846f5bf">getObjectName</a> () const</td></tr>
+<tr class="memdesc:af9cd7d892ba5d3d7988b9ecae846f5bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the Debug Marker name. <a href="#af9cd7d892ba5d3d7988b9ecae846f5bf">More...</a><br/></td></tr>
+<tr class="separator:af9cd7d892ba5d3d7988b9ecae846f5bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4f27eddb1090fc657f3af1966d353e0b"><td class="memItemLeft" align="right" valign="top">const VkCommandBuffer &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_object_handle.html#a4f27eddb1090fc657f3af1966d353e0b">getVkHandle</a> () const</td></tr>
 <tr class="memdesc:a4f27eddb1090fc657f3af1966d353e0b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get vulkan object (const) <a href="#a4f27eddb1090fc657f3af1966d353e0b">More...</a><br/></td></tr>
 <tr class="separator:a4f27eddb1090fc657f3af1966d353e0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -260,9 +266,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="memitem:a8148425c603008468c0a25e84c486b1d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_command_buffer_base__.html#a8148425c603008468c0a25e84c486b1d">resetQueryPool</a> (<a class="el" href="namespacepvrvk.html#a9775dff694169a1bafd336a1a64508f7">QueryPool</a> &amp;queryPool, uint32_t queryIndex)</td></tr>
 <tr class="memdesc:a8148425c603008468c0a25e84c486b1d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resets a particular range of queries for a particular QueryPool and sets their status' to unavailable which also makes their numerical results undefined. <a href="#a8148425c603008468c0a25e84c486b1d">More...</a><br/></td></tr>
 <tr class="separator:a8148425c603008468c0a25e84c486b1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abf5c74a05c61018eef6ac794c10d2938"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_command_buffer_base__.html#abf5c74a05c61018eef6ac794c10d2938">resolveImage</a> (<a class="el" href="namespacepvrvk.html#a0dde8112e297d1089979fbdbdcbbe0f4">Image</a> &amp;srcImage, <a class="el" href="namespacepvrvk.html#a0dde8112e297d1089979fbdbdcbbe0f4">Image</a> &amp;dstImage, const ImageResolve *regions, uint32_t numRegions, ImageLayout srcLayout, ImageLayout dstLayout)</td></tr>
-<tr class="memdesc:abf5c74a05c61018eef6ac794c10d2938"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copies regions of a src image into a dst image, potentially also performing format conversions, aritrary scaling and filtering. <a href="#abf5c74a05c61018eef6ac794c10d2938">More...</a><br/></td></tr>
-<tr class="separator:abf5c74a05c61018eef6ac794c10d2938"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7934a30102546d42737ea88999eb3e16"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_command_buffer_base__.html#a7934a30102546d42737ea88999eb3e16">resolveImage</a> (const <a class="el" href="namespacepvrvk.html#a0dde8112e297d1089979fbdbdcbbe0f4">Image</a> &amp;srcImage, const <a class="el" href="namespacepvrvk.html#a0dde8112e297d1089979fbdbdcbbe0f4">Image</a> &amp;dstImage, const ImageResolve *regions, uint32_t numRegions, ImageLayout srcLayout, ImageLayout dstLayout)</td></tr>
+<tr class="memdesc:a7934a30102546d42737ea88999eb3e16"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copies regions of a src image into a dst image, potentially also performing format conversions, aritrary scaling and filtering. <a href="#a7934a30102546d42737ea88999eb3e16">More...</a><br/></td></tr>
+<tr class="separator:a7934a30102546d42737ea88999eb3e16"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9ce2c215aa9814e5e8aa02f679f9fa24"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_command_buffer_base__.html#a9ce2c215aa9814e5e8aa02f679f9fa24">setBlendConstants</a> (float rgba[4])</td></tr>
 <tr class="memdesc:a9ce2c215aa9814e5e8aa02f679f9fa24"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the dynamic blend constant bias state affecting pipeline objects created with VK_DYNAMIC_STATE_BLEND_CONSTANTS enabled. <a href="#a9ce2c215aa9814e5e8aa02f679f9fa24">More...</a><br/></td></tr>
 <tr class="separator:a9ce2c215aa9814e5e8aa02f679f9fa24"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -299,9 +305,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="memitem:a8b850bccfeda750ecb9e2c98c8c2b018"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_command_buffer_base__.html#a8b850bccfeda750ecb9e2c98c8c2b018">setViewport</a> (const Viewport &amp;viewport)</td></tr>
 <tr class="memdesc:a8b850bccfeda750ecb9e2c98c8c2b018"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set viewport <a href="#a8b850bccfeda750ecb9e2c98c8c2b018">More...</a><br/></td></tr>
 <tr class="separator:a8b850bccfeda750ecb9e2c98c8c2b018"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9ec18d08b6609a9078a081fa31f3ce77"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_command_buffer_base__.html#a9ec18d08b6609a9078a081fa31f3ce77">updateBuffer</a> (<a class="el" href="namespacepvrvk.html#a2a117db0aab25382d050908b2bfa4c8b">Buffer</a> &amp;buffer, const void *data, uint32_t offset, uint32_t length)</td></tr>
-<tr class="memdesc:a9ec18d08b6609a9078a081fa31f3ce77"><td class="mdescLeft">&#160;</td><td class="mdescRight">Updates buffer data inline in a command buffer. The update is only allowed outside of a renderpass and is treated as a transfer operation for the purposes of syncrhonization. <a href="#a9ec18d08b6609a9078a081fa31f3ce77">More...</a><br/></td></tr>
-<tr class="separator:a9ec18d08b6609a9078a081fa31f3ce77"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abdff785ab2013d7b2ff4c05f2f5e21af"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_command_buffer_base__.html#abdff785ab2013d7b2ff4c05f2f5e21af">updateBuffer</a> (const <a class="el" href="namespacepvrvk.html#a2a117db0aab25382d050908b2bfa4c8b">Buffer</a> &amp;buffer, const void *data, uint32_t offset, uint32_t length)</td></tr>
+<tr class="memdesc:abdff785ab2013d7b2ff4c05f2f5e21af"><td class="mdescLeft">&#160;</td><td class="mdescRight">Updates buffer data inline in a command buffer. The update is only allowed outside of a renderpass and is treated as a transfer operation for the purposes of syncrhonization. <a href="#abdff785ab2013d7b2ff4c05f2f5e21af">More...</a><br/></td></tr>
+<tr class="separator:abdff785ab2013d7b2ff4c05f2f5e21af"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aff7cfaed7300edd34cd1de176278e516"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_command_buffer_base__.html#aff7cfaed7300edd34cd1de176278e516">waitForEvent</a> (const <a class="el" href="namespacepvrvk.html#a6696a17453f99f2b221a28bb05e4934b">Event</a> &amp;event, PipelineStageFlags srcStage, PipelineStageFlags dstStage, const <a class="el" href="classpvrvk_1_1_memory_barrier_set.html">MemoryBarrierSet</a> &amp;barriers)</td></tr>
 <tr class="memdesc:aff7cfaed7300edd34cd1de176278e516"><td class="mdescLeft">&#160;</td><td class="mdescRight">Defines a memory dependency between prior event signal operations and subsequent commands. <a href="#aff7cfaed7300edd34cd1de176278e516">More...</a><br/></td></tr>
 <tr class="separator:aff7cfaed7300edd34cd1de176278e516"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -799,7 +805,7 @@ Protected Attributes</h2></td></tr>
   <table class="params">
     <tr><td class="paramname">buffer</td><td>Buffer</td></tr>
     <tr><td class="paramname">offset</td><td>Buffer offset</td></tr>
-    <tr><td class="paramname">bindingIndex</td><td>The index of the vertex input binding whose state is updated by the command. </td></tr>
+    <tr><td class="paramname">bindingIndex</td><td>The index of the vertex input binding whose state is updated by the command.</td></tr>
   </table>
   </dd>
 </dl>
@@ -862,7 +868,64 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a88093ef10da31dcaa3846beb36617bbb"></a>
+<a class="anchor" id="a40c135444b1cab09ac85b642323155cb"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void pvrvk::impl::CommandBufferBase_::bindVertexBuffers </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespacepvrvk.html#a2a117db0aab25382d050908b2bfa4c8b">Buffer</a> *&#160;</td>
+          <td class="paramname"><em>buffers</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>firstBinding</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint16_t&#160;</td>
+          <td class="paramname"><em>bindingCount</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint32_t *&#160;</td>
+          <td class="paramname"><em>offsets</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Bind vertex buffer</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">buffers</td><td>A set of vertex buffers to bind</td></tr>
+    <tr><td class="paramname">firstBinding</td><td>The first index into buffers</td></tr>
+    <tr><td class="paramname">bindingCount</td><td>The number of vertex buffers to bind</td></tr>
+    <tr><td class="paramname">offsets</td><td>A pointer to an array of bindingCount buffer offsets</td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a5b6b3caadb988c50778a3867c229d652"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -875,7 +938,7 @@ Protected Attributes</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacepvrvk.html#a0dde8112e297d1089979fbdbdcbbe0f4">Image</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespacepvrvk.html#a0dde8112e297d1089979fbdbdcbbe0f4">Image</a> &amp;&#160;</td>
           <td class="paramname"><em>dstImage</em>, </td>
         </tr>
         <tr>
@@ -1024,14 +1087,14 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a0b76e94f5959d34d1fd15be43a9d0b6e"></a>
+<a class="anchor" id="a6a5832f5365e38a33a1768baf09fc4ba"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">void pvrvk::impl::CommandBufferBase_::clearColorImage </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacepvrvk.html#ad4da214c95fffe4edccb14eb2c270f07">ImageView</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespacepvrvk.html#ad4da214c95fffe4edccb14eb2c270f07">ImageView</a> &amp;&#160;</td>
           <td class="paramname"><em>image</em>, </td>
         </tr>
         <tr>
@@ -1094,14 +1157,14 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a57c9d24c5b0f0486c9ab5602269edf4a"></a>
+<a class="anchor" id="ae1050ce0f6d621cb56b25e5ba0e862cf"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">void pvrvk::impl::CommandBufferBase_::clearColorImage </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacepvrvk.html#ad4da214c95fffe4edccb14eb2c270f07">ImageView</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespacepvrvk.html#ad4da214c95fffe4edccb14eb2c270f07">ImageView</a> &amp;&#160;</td>
           <td class="paramname"><em>image</em>, </td>
         </tr>
         <tr>
@@ -1171,14 +1234,14 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a77fa9538ba0fcb3c2dc77f5e58a90e55"></a>
+<a class="anchor" id="ac919e8871b7d6b2c6886562f08c5b5ac"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">void pvrvk::impl::CommandBufferBase_::clearDepthImage </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacepvrvk.html#a0dde8112e297d1089979fbdbdcbbe0f4">Image</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespacepvrvk.html#a0dde8112e297d1089979fbdbdcbbe0f4">Image</a> &amp;&#160;</td>
           <td class="paramname"><em>image</em>, </td>
         </tr>
         <tr>
@@ -1241,14 +1304,14 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a7e669f8997f42c5d9ae85222efa53c5a"></a>
+<a class="anchor" id="a51b58f4906588ca9dfa2438c37540c30"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">void pvrvk::impl::CommandBufferBase_::clearDepthImage </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacepvrvk.html#a0dde8112e297d1089979fbdbdcbbe0f4">Image</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespacepvrvk.html#a0dde8112e297d1089979fbdbdcbbe0f4">Image</a> &amp;&#160;</td>
           <td class="paramname"><em>image</em>, </td>
         </tr>
         <tr>
@@ -1318,14 +1381,14 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a0c4d7f8b6ddcd8f4a22adea5c0474bc9"></a>
+<a class="anchor" id="afc175f1965e8857291b3e61380fde0d1"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">void pvrvk::impl::CommandBufferBase_::clearDepthStencilImage </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacepvrvk.html#a0dde8112e297d1089979fbdbdcbbe0f4">Image</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespacepvrvk.html#a0dde8112e297d1089979fbdbdcbbe0f4">Image</a> &amp;&#160;</td>
           <td class="paramname"><em>image</em>, </td>
         </tr>
         <tr>
@@ -1395,14 +1458,14 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="aadc22a2bd68016cfcb03a4eba0adb3f4"></a>
+<a class="anchor" id="ac4caad1d3256751db0735dae4c4ecd14"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">void pvrvk::impl::CommandBufferBase_::clearDepthStencilImage </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacepvrvk.html#a0dde8112e297d1089979fbdbdcbbe0f4">Image</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespacepvrvk.html#a0dde8112e297d1089979fbdbdcbbe0f4">Image</a> &amp;&#160;</td>
           <td class="paramname"><em>image</em>, </td>
         </tr>
         <tr>
@@ -1479,14 +1542,14 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a300280c8edf7996f94fba4e634f56a18"></a>
+<a class="anchor" id="a96fcb36a78addbdf25d5f52044e37152"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">void pvrvk::impl::CommandBufferBase_::clearStencilImage </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacepvrvk.html#a0dde8112e297d1089979fbdbdcbbe0f4">Image</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespacepvrvk.html#a0dde8112e297d1089979fbdbdcbbe0f4">Image</a> &amp;&#160;</td>
           <td class="paramname"><em>image</em>, </td>
         </tr>
         <tr>
@@ -1549,14 +1612,14 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a4fafdc0e9a578950eaf38bc83931aaba"></a>
+<a class="anchor" id="a7894b82302fae9d634b6564a0e912256"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">void pvrvk::impl::CommandBufferBase_::clearStencilImage </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacepvrvk.html#a0dde8112e297d1089979fbdbdcbbe0f4">Image</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespacepvrvk.html#a0dde8112e297d1089979fbdbdcbbe0f4">Image</a> &amp;&#160;</td>
           <td class="paramname"><em>image</em>, </td>
         </tr>
         <tr>
@@ -1626,20 +1689,20 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a900d1651d2366f7c5db896d9ddf4b73f"></a>
+<a class="anchor" id="a9fc6d67c3d3a47780e62c8d9632776cb"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">void pvrvk::impl::CommandBufferBase_::copyBuffer </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacepvrvk.html#a2a117db0aab25382d050908b2bfa4c8b">Buffer</a>&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespacepvrvk.html#a2a117db0aab25382d050908b2bfa4c8b">Buffer</a> &amp;&#160;</td>
           <td class="paramname"><em>srcBuffer</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacepvrvk.html#a2a117db0aab25382d050908b2bfa4c8b">Buffer</a>&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespacepvrvk.html#a2a117db0aab25382d050908b2bfa4c8b">Buffer</a> &amp;&#160;</td>
           <td class="paramname"><em>dstBuffer</em>, </td>
         </tr>
         <tr>
@@ -1675,7 +1738,7 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="adb34b2defee7acc83aaaa82f23c16b88"></a>
+<a class="anchor" id="a851659286aa0122bc8d42ec5c823604c"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1688,7 +1751,7 @@ Protected Attributes</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacepvrvk.html#a0dde8112e297d1089979fbdbdcbbe0f4">Image</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespacepvrvk.html#a0dde8112e297d1089979fbdbdcbbe0f4">Image</a> &amp;&#160;</td>
           <td class="paramname"><em>image</em>, </td>
         </tr>
         <tr>
@@ -1731,20 +1794,20 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="adaf1fb46af6d7186a1b631f26b31914a"></a>
+<a class="anchor" id="a226df08eca4fcc10fac3976860cd70af"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">void pvrvk::impl::CommandBufferBase_::copyImage </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacepvrvk.html#a0dde8112e297d1089979fbdbdcbbe0f4">Image</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespacepvrvk.html#a0dde8112e297d1089979fbdbdcbbe0f4">Image</a> &amp;&#160;</td>
           <td class="paramname"><em>srcImage</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacepvrvk.html#a0dde8112e297d1089979fbdbdcbbe0f4">Image</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespacepvrvk.html#a0dde8112e297d1089979fbdbdcbbe0f4">Image</a> &amp;&#160;</td>
           <td class="paramname"><em>dstImage</em>, </td>
         </tr>
         <tr>
@@ -1794,14 +1857,14 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a664eb3e79ee7a405f8daf3425db77d2d"></a>
+<a class="anchor" id="a8da3e72621920307892661c98f0cab01"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">void pvrvk::impl::CommandBufferBase_::copyImageToBuffer </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacepvrvk.html#a0dde8112e297d1089979fbdbdcbbe0f4">Image</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespacepvrvk.html#a0dde8112e297d1089979fbdbdcbbe0f4">Image</a> &amp;&#160;</td>
           <td class="paramname"><em>srcImage</em>, </td>
         </tr>
         <tr>
@@ -2255,14 +2318,14 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a2da4e6e18ae17379fd66ae6a7e3d3eb7"></a>
+<a class="anchor" id="a58c8d29b0470bcc6df46f83032408db1"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">void pvrvk::impl::CommandBufferBase_::drawIndexedIndirect </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacepvrvk.html#a2a117db0aab25382d050908b2bfa4c8b">Buffer</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespacepvrvk.html#a2a117db0aab25382d050908b2bfa4c8b">Buffer</a> &amp;&#160;</td>
           <td class="paramname"><em>buffer</em>, </td>
         </tr>
         <tr>
@@ -2304,14 +2367,14 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a38db7b68a0aafa77bc03b5f199843b6c"></a>
+<a class="anchor" id="a2ea627c5ef086a05ac210a4a4b3287ea"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">void pvrvk::impl::CommandBufferBase_::drawIndirect </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacepvrvk.html#a2a117db0aab25382d050908b2bfa4c8b">Buffer</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespacepvrvk.html#a2a117db0aab25382d050908b2bfa4c8b">Buffer</a> &amp;&#160;</td>
           <td class="paramname"><em>buffer</em>, </td>
         </tr>
         <tr>
@@ -2405,14 +2468,14 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a56e3f2184eeb8f9aadaa631c1338179b"></a>
+<a class="anchor" id="ae9e4d36d3a03784aa145a257affc24c3"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">void pvrvk::impl::CommandBufferBase_::fillBuffer </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacepvrvk.html#a2a117db0aab25382d050908b2bfa4c8b">Buffer</a>&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespacepvrvk.html#a2a117db0aab25382d050908b2bfa4c8b">Buffer</a> &amp;&#160;</td>
           <td class="paramname"><em>dstBuffer</em>, </td>
         </tr>
         <tr>
@@ -2529,6 +2592,32 @@ Protected Attributes</h2></td></tr>
 
 <p>Get Device</p>
 <dl class="section return"><dt>Returns</dt><dd>DeviceWeakPtr</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="af9cd7d892ba5d3d7988b9ecae846f5bf"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string&amp; <a class="el" href="classpvrvk_1_1impl_1_1_device_object_debug_marker.html">pvrvk::impl::DeviceObjectDebugMarker</a>&lt; <a class="el" href="classpvrvk_1_1impl_1_1_command_buffer_base__.html">CommandBufferBase_</a>  &gt;::getObjectName </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the Debug Marker name.</p>
+<dl class="section return"><dt>Returns</dt><dd>The object name</dd></dl>
 
 </div>
 </div>
@@ -2834,20 +2923,20 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="abf5c74a05c61018eef6ac794c10d2938"></a>
+<a class="anchor" id="a7934a30102546d42737ea88999eb3e16"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">void pvrvk::impl::CommandBufferBase_::resolveImage </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacepvrvk.html#a0dde8112e297d1089979fbdbdcbbe0f4">Image</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespacepvrvk.html#a0dde8112e297d1089979fbdbdcbbe0f4">Image</a> &amp;&#160;</td>
           <td class="paramname"><em>srcImage</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacepvrvk.html#a0dde8112e297d1089979fbdbdcbbe0f4">Image</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespacepvrvk.html#a0dde8112e297d1089979fbdbdcbbe0f4">Image</a> &amp;&#160;</td>
           <td class="paramname"><em>dstImage</em>, </td>
         </tr>
         <tr>
@@ -2956,7 +3045,7 @@ Protected Attributes</h2></td></tr>
   <table class="params">
     <tr><td class="paramname">constantFactor</td><td>A scalar factor controlling the constant depth value added to each fragment.</td></tr>
     <tr><td class="paramname">clamp</td><td>The maximum (or minimum) depth bias of a fragment.</td></tr>
-    <tr><td class="paramname">slopeFactor</td><td>A scalar factor applied to a fragment�s slope in depth bias calculations.</td></tr>
+    <tr><td class="paramname">slopeFactor</td><td>A scalar factor applied to a fragment's slope in depth bias calculations.</td></tr>
   </table>
   </dd>
 </dl>
@@ -3318,14 +3407,14 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a9ec18d08b6609a9078a081fa31f3ce77"></a>
+<a class="anchor" id="abdff785ab2013d7b2ff4c05f2f5e21af"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">void pvrvk::impl::CommandBufferBase_::updateBuffer </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacepvrvk.html#a2a117db0aab25382d050908b2bfa4c8b">Buffer</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespacepvrvk.html#a2a117db0aab25382d050908b2bfa4c8b">Buffer</a> &amp;&#160;</td>
           <td class="paramname"><em>buffer</em>, </td>
         </tr>
         <tr>

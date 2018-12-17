@@ -15,7 +15,7 @@
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="IMGdoxygen.css" rel="stylesheet" type="text/css"/>
-<link rel="shortcut icon" href="http://www.imgtec.com/images/img.ico">
+<link rel="shortcut icon" type="image/x-icon" href="img.ico">
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
+      <a href="https://www.imgtec.com/developers/" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRCore</span> Documentation</a>
    <tbody>
@@ -148,9 +148,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ab11a891b78041bfd22b60ee7017320ed"><td class="memItemLeft" align="right" valign="top">std::vector&lt; char &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_stream.html#ab11a891b78041bfd22b60ee7017320ed">readChars</a> () const </td></tr>
 <tr class="memdesc:ab11a891b78041bfd22b60ee7017320ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convenience function that reads all data in the stream into a raw, contiguous block of memory. Requires random-access stream. <a href="#ab11a891b78041bfd22b60ee7017320ed">More...</a><br/></td></tr>
 <tr class="separator:ab11a891b78041bfd22b60ee7017320ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a071cd65a8dc5b4d5b87b2fd2fbc52d40"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_stream.html#a071cd65a8dc5b4d5b87b2fd2fbc52d40">readExact</a> (size_t elementSize, size_t numElements, void *buffer)</td></tr>
-<tr class="memdesc:a071cd65a8dc5b4d5b87b2fd2fbc52d40"><td class="mdescLeft">&#160;</td><td class="mdescRight">Main read function. Read exactly a specified amount of items into the provided buffer, otherwise error. <a href="#a071cd65a8dc5b4d5b87b2fd2fbc52d40">More...</a><br/></td></tr>
-<tr class="separator:a071cd65a8dc5b4d5b87b2fd2fbc52d40"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb192f1ea1fdbd37df0203f33631f842"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_stream.html#afb192f1ea1fdbd37df0203f33631f842">readExact</a> (size_t elementSize, size_t numElements, void *buffer) const </td></tr>
+<tr class="memdesc:afb192f1ea1fdbd37df0203f33631f842"><td class="mdescLeft">&#160;</td><td class="mdescRight">Main read function. Read exactly a specified amount of items into the provided buffer, otherwise error. <a href="#afb192f1ea1fdbd37df0203f33631f842">More...</a><br/></td></tr>
+<tr class="separator:afb192f1ea1fdbd37df0203f33631f842"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6e8a083b062a49690ae33b8a8482f504"><td class="memTemplParams" colspan="2">template&lt;typename T_ &gt; </td></tr>
 <tr class="memitem:a6e8a083b062a49690ae33b8a8482f504"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classpvr_1_1_stream.html#a6e8a083b062a49690ae33b8a8482f504">readIntoBuffer</a> (std::vector&lt; T_ &gt; &amp;outString) const </td></tr>
 <tr class="memdesc:a6e8a083b062a49690ae33b8a8482f504"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convenience function that reads all data in the stream into a raw, contiguous block of memory. Requires random-access stream. <a href="#a6e8a083b062a49690ae33b8a8482f504">More...</a><br/></td></tr>
@@ -161,6 +161,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a19d80505ddd9bbf8460d74b58033fbad"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_stream.html#a19d80505ddd9bbf8460d74b58033fbad">readIntoString</a> (std::string &amp;outString) const </td></tr>
 <tr class="memdesc:a19d80505ddd9bbf8460d74b58033fbad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convenience function that reads all data in the stream into a std::string <a href="#a19d80505ddd9bbf8460d74b58033fbad">More...</a><br/></td></tr>
 <tr class="separator:a19d80505ddd9bbf8460d74b58033fbad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afeb6e323070903a708aaa52e1518c942"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_stream.html#afeb6e323070903a708aaa52e1518c942">readString</a> () const </td></tr>
+<tr class="memdesc:afeb6e323070903a708aaa52e1518c942"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convenience function that reads all data in the stream into a std::string <a href="#afeb6e323070903a708aaa52e1518c942">More...</a><br/></td></tr>
+<tr class="separator:afeb6e323070903a708aaa52e1518c942"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa67b74d82cdf80fa57ebfb15cbf1e70d"><td class="memTemplParams" colspan="2">template&lt;typename Type_ &gt; </td></tr>
 <tr class="memitem:aa67b74d82cdf80fa57ebfb15cbf1e70d"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; Type_ &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classpvr_1_1_stream.html#aa67b74d82cdf80fa57ebfb15cbf1e70d">readToEnd</a> () const </td></tr>
 <tr class="memdesc:aa67b74d82cdf80fa57ebfb15cbf1e70d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convenience functions that reads all data in the stream into a contiguous block of memory of a specified element type. Requires random-access stream. <a href="#aa67b74d82cdf80fa57ebfb15cbf1e70d">More...</a><br/></td></tr>
@@ -254,6 +257,9 @@ Protected Attributes</h2></td></tr>
 <a class="anchor" id="a05ca59947befae74afd5b907b0d0d567"></a>
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">pvr::FileStream::FileStream </td>
@@ -279,6 +285,11 @@ Protected Attributes</h2></td></tr>
           <td></td><td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p>Create a new filestream of a specified file.</p>
@@ -311,7 +322,7 @@ Protected Attributes</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -416,7 +427,7 @@ Protected Attributes</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -444,7 +455,7 @@ Protected Attributes</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -472,7 +483,7 @@ Protected Attributes</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -552,7 +563,7 @@ Protected Attributes</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -603,7 +614,7 @@ Protected Attributes</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -650,7 +661,7 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a071cd65a8dc5b4d5b87b2fd2fbc52d40"></a>
+<a class="anchor" id="afb192f1ea1fdbd37df0203f33631f842"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -678,7 +689,7 @@ Protected Attributes</h2></td></tr>
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td></td>
+          <td></td><td> const</td>
         </tr>
       </table>
   </td>
@@ -800,6 +811,37 @@ template&lt;typename T_ &gt; </div>
 
 </div>
 </div>
+<a class="anchor" id="afeb6e323070903a708aaa52e1518c942"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string pvr::Stream::readString </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Convenience function that reads all data in the stream into a std::string</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">outString</td><td>The string where the stream's data will all be saved</td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a class="anchor" id="aa67b74d82cdf80fa57ebfb15cbf1e70d"></a>
 <div class="memitem">
 <div class="memproto">
@@ -830,7 +872,7 @@ template&lt;typename Type_ &gt; </div>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>A std::vector&lt;Type_&gt; containing all data from the current point to the end of the stream.</dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>A std::vector of Type_ containing all data from the current point to the end of the stream.</dd></dl>
 
 </div>
 </div>
@@ -861,7 +903,7 @@ template&lt;typename Type_ &gt; </div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -919,7 +961,7 @@ template&lt;typename Type_ &gt; </div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -1124,7 +1166,7 @@ template&lt;typename Type_ &gt; </div>
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>/usr/buildxl/buildroot/sdk/branch/SDK/framework/PVRCore/IO/<a class="el" href="_file_stream_8h_source.html">FileStream.h</a></li>
+<li>/usr/buildxl/buildroot/sdk/branch/SDK/framework/PVRCore/stream/<a class="el" href="_file_stream_8h_source.html">FileStream.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.4-->

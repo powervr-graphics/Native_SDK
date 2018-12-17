@@ -5,6 +5,7 @@
 \copyright Copyright (c) Imagination Technologies Limited.
 */
 #include "PVRCamera/CameraInterface.h"
+#include "PVRCore/Errors.h"
 //!\cond NO_DOXYGEN
 
 namespace pvr {
@@ -12,13 +13,13 @@ class CameraInterfaceImpl
 {
 public:
 	GLuint myTexture;
-	int height, width;
+	uint32_t height, width;
 	CameraInterfaceImpl() : myTexture(0), height(512), width(512) {}
-	bool generateTexture()
+	void generateTexture()
 	{
+		gl::GetError(); // Make sure you don't break due to previous errors
 		if (!myTexture)
 		{
-			gl::GetError();
 			gl::GenTextures(1, &myTexture);
 		}
 
@@ -30,9 +31,9 @@ public:
 		std::vector<uint32_t> rawBuffer;
 		rawBuffer.resize(height * width);
 		bool one = false, two = false;
-		int hfheight = height / 2, hfwidth = width / 2;
-		for (int j = 0; j < height; ++j)
-			for (int i = 0; i < width; ++i)
+		uint32_t hfheight = height / 2, hfwidth = width / 2;
+		for (uint32_t j = 0; j < height; ++j)
+			for (uint32_t i = 0; i < width; ++i)
 			{
 				if ((i < hfwidth + 64) && (i > hfwidth - 65) && (j < hfheight + 72) && (j > hfheight - 57))
 				{
@@ -55,20 +56,19 @@ public:
 					two = false;
 				}
 
-				rawBuffer[j * width + i] = (one ^ two ? 0xFFC0C0C0 : 0xFF202020);
+				rawBuffer[j * width + i] = (one ^ two ? 0xFFC0C0C0 : 0xFF606060);
 			}
-		gl::TexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, rawBuffer.data());
+		gl::TexImage2D(GL_TEXTURE_2D, 0, GL_SRGB8_ALPHA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, rawBuffer.data());
 		GLint err = gl::GetError();
 		if (err != GL_NO_ERROR)
 		{
-			Log("PVRCamera, Dummy version - Error while generating the dummy camera texture. Possible bug.");
-			return false;
+			throw new pvr::PvrError("PVRCamera, Dummy version - Error while generating the dummy camera texture.");
 		}
-		return true;
 	}
 	void destroyTexture()
 	{
-		if (myTexture) gl::DeleteTextures(1, &myTexture);
+		if (myTexture)
+			gl::DeleteTextures(1, &myTexture);
 		myTexture = 0;
 	}
 	const GLuint& getRgbTexture()
@@ -86,12 +86,11 @@ CameraInterface::~CameraInterface()
 	delete static_cast<CameraInterfaceImpl*>(pImpl);
 }
 
-bool CameraInterface::initializeSession(HWCamera::Enum eCamera, int preferredResX, int preferredResY)
+void CameraInterface::initializeSession(HWCamera::Enum eCamera, int preferredResX, int preferredResY)
 {
-	Log("PVRCamera: Initialising session.");
 	static_cast<CameraInterfaceImpl*>(pImpl)->width = preferredResX ? preferredResX : 512;
 	static_cast<CameraInterfaceImpl*>(pImpl)->height = preferredResY ? preferredResY : 512;
-	return static_cast<CameraInterfaceImpl*>(pImpl)->generateTexture();
+	static_cast<CameraInterfaceImpl*>(pImpl)->generateTexture();
 }
 
 bool CameraInterface::updateImage()
@@ -130,7 +129,7 @@ void CameraInterface::destroySession()
 	static_cast<CameraInterfaceImpl*>(pImpl)->destroyTexture();
 }
 
-void CameraInterface::getCameraResolution(unsigned int& x, unsigned int& y)
+void CameraInterface::getCameraResolution(uint32_t& x, uint32_t& y)
 {
 	x = static_cast<CameraInterfaceImpl*>(pImpl)->width;
 	y = static_cast<CameraInterfaceImpl*>(pImpl)->height;

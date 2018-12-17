@@ -58,16 +58,12 @@ END
 // RCDATA
 //
 /////////////////////////////////////////////////////////////////////////////
-// RCDATA: Assets (scenes, shaders, effects, textures...)
+// RCDATA: Assets (scenes,  effects, textures...)
 Lenna.pvr		RCDATA		"..\\..\\..\\assets\\Lenna.pvr"
-FragShader_vk.fsh		RCDATA		"..\\FragShader_vk.fsh"
-FragShader_vk.fsh.spv		RCDATA		"..\\FragShader_vk.fsh.spv"
-VertShader_vk.vsh		RCDATA		"..\\VertShader_vk.vsh"
-VertShader_vk.vsh.spv		RCDATA		"..\\VertShader_vk.vsh.spv"
-CompShader_vk.csh		RCDATA		"..\\CompShader_vk.csh"
-CompShader_vk.csh.spv		RCDATA		"..\\CompShader_vk.csh.spv"
-recompile.sh		RCDATA		"..\\recompile.sh"
-recompile.bat		RCDATA		"..\\recompile.bat"
+// RCDATA: Vulkan Spir-V shaders(glsl)
+FragShader.fsh.spv		RCDATA		"..\\FragShader.fsh.spv"
+VertShader.vsh.spv		RCDATA		"..\\VertShader.vsh.spv"
+CompShader.csh.spv		RCDATA		"..\\CompShader.csh.spv"
 
 #endif    // English (United Kingdom) resources
 /////////////////////////////////////////////////////////////////////////////

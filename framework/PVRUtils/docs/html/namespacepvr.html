@@ -15,7 +15,7 @@
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="IMGdoxygen.css" rel="stylesheet" type="text/css"/>
-<link rel="shortcut icon" href="http://www.imgtec.com/images/img.ico">
+<link rel="shortcut icon" type="image/x-icon" href="img.ico">
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
+      <a href="https://www.imgtec.com/developers/" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRUtils</span> Documentation</a>
    <tbody>
@@ -112,6 +112,18 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_image_api_async_uploader.html">ImageApiAsyncUploader</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">This class wraps a worker thread that uploads texture to the GPU asynchronously and returns futures to them. This class would normally be used with Texture Futures as well, in order to do both of the operations asynchronously.  <a href="classpvr_1_1_image_api_async_uploader.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_multi.html">Multi</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A small statically allocated array This class represents a small array of items. The array is statically allocated, and has at most 255 items, usually 8. It is not meant to (and cannot) be used to store large numbers of items (use a std::vector instead), rather it is meant to hold small tuples of items. The PowerVR framework utilizes this class to store tuples of one-per-swap-image items <a href="classpvr_1_1_multi.html#details">More...</a><br/></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1_vertex_attribute_info.html">VertexAttributeInfo</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contains a full description of a Vertex Attribute: Index, format, number of elements, offset in the buffer, optionally name. All values (except attributeName) must be set explicitly. <a href="structpvr_1_1_vertex_attribute_info.html#details">More...</a><br/></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1_vertex_attribute_info_with_binding.html">VertexAttributeInfoWithBinding</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A container struct carrying Vertex Attribute information (vertex layout, plus binding point) <a href="structpvr_1_1_vertex_attribute_info_with_binding.html#details">More...</a><br/></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1_vertex_input_binding_info.html">VertexInputBindingInfo</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Information about a Buffer binding: Binding index, stride, (instance) step rate. <a href="structpvr_1_1_vertex_input_binding_info.html#details">More...</a><br/></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
@@ -138,7 +150,6 @@ Functions</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Main PowerVR Framework namespace</p>
-<p>cond NO_DOXYGEN</p>
 <p>Main PowerVR Namespace</p>
 </div><h2 class="groupheader">Typedef Documentation</h2>
 <a class="anchor" id="a3340319e831c4d82125a16bf2dbf9e0e"></a>

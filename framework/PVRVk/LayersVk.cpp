@@ -49,8 +49,8 @@ void enumerateInstanceLayers(std::vector<LayerProperties>& outLayers)
 	uint32_t numItems = 0;
 	pvrvk::impl::vkThrowIfFailed(vkBindings.vkEnumerateInstanceLayerProperties(&numItems, nullptr), "LayersVk::Failed to enumerate instance layer properties");
 	outLayers.resize(numItems);
-	pvrvk::impl::vkThrowIfFailed(vkBindings.vkEnumerateInstanceLayerProperties(&numItems, reinterpret_cast<VkLayerProperties*>(outLayers.data())),
-		"LayersVk::Failed to enumerate instance layer properties");
+	pvrvk::impl::vkThrowIfFailed(
+		vkBindings.vkEnumerateInstanceLayerProperties(&numItems, (VkLayerProperties*)outLayers.data()), "LayersVk::Failed to enumerate instance layer properties");
 }
 } // namespace Instance
 } // namespace Layers

@@ -6,12 +6,16 @@
 */
 
 #pragma once
-#include "PVRCore/PVRCore.h"
+#include "PVRCore/types/Types.h"
+#include "PVRCore/types/GpuDataTypes.h"
+#include "PVRCore/types/FreeValue.h"
+#include "PVRCore/strings/StringHash.h"
 #include <sstream>
 #include <iomanip>
 
 /// <summary>Main PowerVR Namespace</summary>
 namespace pvr {
+
 /// <summary>Main namespace for the PVRUtils Library
 namespace utils {
 //!\cond NO_DOXYGEN
@@ -558,9 +562,9 @@ public:
 	}
 
 	//!\cond NO_DOXYGEN
-	inline static void printPreamble(std::stringstream& str, int level)
+	inline static void printPreamble(std::stringstream& str, uint32_t level)
 	{
-		for (int i = 0; i < level; ++i)
+		for (uint32_t i = 0; i < level; ++i)
 		{
 			str << " ";
 		}
@@ -782,7 +786,7 @@ public:
 	/// <returns>Return the size of the underlying structure memory entry.</returns>
 	uint64_t getValueSize() const
 	{
-		return _prototype.getSize();
+		return _prototype._arrayMemberSize;
 	}
 //!\cond NO_DOXYGEN
 // clang-format off

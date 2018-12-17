@@ -99,6 +99,13 @@ public:
 			*static_cast<const uint64_t*>(static_cast<const void*>(&static_cast<PVRVkObject&>(*this).getVkHandle())), objectName);
 	}
 
+	/// <summary>Gets the Debug Marker name.</summary>
+	/// <returns>The object name</returns>
+	const std::string& getObjectName() const
+	{
+		return _debugMarker.getName();
+	}
+
 	/// <summary>Resets the name of a specified object using the extension VK_EXT_debug_marker.</summary>
 	void resetObjectName()
 	{

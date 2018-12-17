@@ -20,20 +20,19 @@
 // Because of that we need to be very careful, and upload the data in a controllable way from the CPU (e.g. using std140 packing,
 // packing manually float values in quads and reading as vectors et.c.).
 
-//Padding could be calculated instead of being explicitly added with std140, but it helps catch errors easier and is just simpler.
 struct Particle
 {
 	highp vec3 vPosition;
-	highp float _padding_particle_0;
-	highp vec3 vVelocity;
-	highp float fLife;
+	mediump float _padding_particle_0;
+	mediump vec3 vVelocity;
+	mediump float fLife;
 };
 
 struct Emitter
 {
-	highp mat4  mTransformation;
-	highp float    fHeight;
-	highp float    fRadius;
+	highp mat4 mTransformation;
+	mediump float fHeight;
+	mediump float fRadius;
 };
 
 layout(std140, binding = PARTICLES_SSBO_BINDING_IN) readonly buffer SsboParticlesInput
@@ -65,7 +64,6 @@ layout(std140, binding = CONFIG_UNIFORM_BINDING) uniform UboData
 	highp float maxLifespan;
 };
 
-
 int last_random;
 void seed_random(int seed)
 {
@@ -74,8 +72,7 @@ void seed_random(int seed)
 
 float randf()
 {
-	//This is not random at all, and was chosen for looking nice and nothing else.
-
+	// This is not random at all, and was chosen for looking nice and nothing else.
 	last_random = abs(1103515245 * abs(last_random) + 12345);
 
 	return float(last_random) / float(2147483647);
@@ -89,8 +86,7 @@ Particle EmitParticle(Emitter emitter)
 	highp float r = randf() * emitter.fRadius;
 
 	//We need pos to be a vec4 so we can transform it using the emitter's transformation
-	vec4 emittedDirection = vec4(r, u, r, 1);
-
+	mediump vec4 emittedDirection = vec4(r, u, r, 1);
 
 	// Transform according to emitter orientation
 	emittedDirection = emitter.mTransformation * emittedDirection;
@@ -102,13 +98,6 @@ Particle EmitParticle(Emitter emitter)
 	//Start from the origin (this could have been randomised as well.
 	particle.vPosition = vec3(0, 0, 0);
 
-	//// Generate random parameters for spawn position calculations
-	////Randomly emit particle
-	//vec3 emittedDirection = vec3(randf() * 2. - 1., 0., randf() * 2. - 1.);
-	//Particle particle;
-	//// Give it random speed
-	//particle.vVelocity = emittedDirection * vec3(7., 15., 7.) + vec3(0., 0., 0.);
-
 	return particle;
 }
 
@@ -117,7 +106,6 @@ layout(local_size_x = WORKGROUP_SIZE) in;
 void main()
 {
 	uint gid = gl_GlobalInvocationID.x;
-	uint lid = gl_LocalInvocationID.x;
 
 	seed_random(int(fTotalTime * 13579846.) + int(gid + 10000u) * 145);
 
@@ -125,15 +113,15 @@ void main()
 	//const uint numParticles = 131072; //or numParticles passed as a uniform, or as a compile-time constant
 	//if (gid >= numParticles) return; 
 
-	//Load a particle's values in a register.
+	// Load a particle's values in a register.
 	Particle particle = aParticlesIn[gid];
 
-	highp float life = particle.fLife;
+	mediump float life = particle.fLife;
 
-	//Reduce it's lifetime ( 0 < life < in the order of 1)
+	// Reduce it's lifetime ( 0 < life < in the order of 1)
 	life -= dt * TIME_FACTOR;
 
-	//Respawn if particle is dead 
+	// Respawn if particle is dead 
 	if (life < .0)
 	{
 		particle = EmitParticle(emitter);
@@ -141,7 +129,7 @@ void main()
 	}
 	else
 	{
-		highp vec3 v = particle.vVelocity;
+		mediump vec3 v = particle.vVelocity;
 
 		//Simulate particle movement: 
 		// Mass is implicitly "1" just to simplify calculations.
@@ -159,8 +147,7 @@ void main()
 		//CENTERWARD ATTRACTION (Make a pillar)
 		if (inwardForceCoeff != 0.)
 		{
-
-			float inward = (particle.vPosition.x * particle.vPosition.x + particle.vPosition.z * particle.vPosition.z) * inwardForceCoeff;
+			mediump float inward = (particle.vPosition.x * particle.vPosition.x + particle.vPosition.z * particle.vPosition.z) * inwardForceCoeff;
 			if (inward > .001)
 			{
 				Ftotal += max(inward - inwardForceRadius + life, 0.) * normalize(vec3(-particle.vPosition.x, 0, -particle.vPosition.z));
@@ -170,14 +157,13 @@ void main()
 		//DRAG (Linear (shape) and Quadratic (medium)
 		if (dragCoeffLinear != 0. && dragCoeffQuadratic != 0.)
 		{
-			float vlength = length(v);
+			mediump float vlength = length(v);
 			highp vec3 vnorm = v / vlength;
 			Ftotal += vnorm * (vlength * (-dragCoeffLinear - dragCoeffQuadratic * vlength));
 		}
 
 		//a0 = Ftot. Update velocity
 		v = Ftotal * dt + v;
-
 
 		//Do the last part of the semi-implicit Euler : 
 		particle.vPosition = v * dt + particle.vPosition;
@@ -186,18 +172,18 @@ void main()
 		for (uint i = 0u; i < numSpheres; i++)
 		{
 			// Fetch sphere attributes (position=sphereDef.xyz, radius=sphereDef.w)
-			vec4 sphereDef = aSpheres[i];
+			highp vec4 sphereDef = aSpheres[i];
 
 			//Check whether particle penetrated the sphere. Reuse calculations as much as possible.
 			//Normally, we would just go ahead and use length(), but at this point we will probably
 			//be using a lot of the intermediates as well.
-			vec3 sphere_to_particle = particle.vPosition - sphereDef.xyz;
-			float distanceSq = dot(sphere_to_particle, sphere_to_particle);
+			highp vec3 sphere_to_particle = particle.vPosition - sphereDef.xyz;
+			highp float distanceSq = dot(sphere_to_particle, sphere_to_particle);
 
 			//If inside the sphere
 			if (distanceSq < sphereDef.w * sphereDef.w)
 			{
-				float rDist = inversesqrt(distanceSq);
+				highp float rDist = inversesqrt(distanceSq);
 				//Project it back to sphere surface and do a very simple and fast velocity inversion
 				vec3 dir_to_circle = sphere_to_particle * rDist;
 				particle.vPosition = dir_to_circle * sphereDef.w + sphereDef.xyz; //Move it ON the sphere
@@ -211,7 +197,7 @@ void main()
 		{
 			//	//x & z coeffs represent a sort of friction, y represents reflection -- As always, we can
 			//	//use a model that is as physically correct or incorrect as is appropriate for our use
-			const vec3 reflectCoeffs = vec3(0.4f, -0.3f, 0.4f);
+			const highp vec3 reflectCoeffs = vec3(0.4f, -0.3f, 0.4f);
 			particle.vPosition.y = -particle.vPosition.y;
 			v *= reflectCoeffs;
 		}

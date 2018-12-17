@@ -29,6 +29,8 @@ const char SceneFile[] = "Satyr.pod";
 ***********************************************************************************************************************/
 class OpenGLESPVRScopeExample : public pvr::Shell
 {
+	glm::vec3 ClearColor;
+
 	struct DeviceResources
 	{
 		pvr::EglContext context;
@@ -85,7 +87,7 @@ class OpenGLESPVRScopeExample : public pvr::Shell
 
 	// Variables for the graphing code
 	int32_t _selectedCounter;
-	int32_t interval;
+	int32_t _interval;
 
 public:
 	virtual pvr::Result initApplication();
@@ -117,7 +119,7 @@ void OpenGLESPVRScopeExample::eventMappedInput(pvr::SimplifiedInput key)
 	case pvr::SimplifiedInput::Right:
 	{
 		_selectedCounter++;
-		if (_selectedCounter > (int32_t)_deviceResources->scopeGraph.getCounterNum())
+		if (_selectedCounter > static_cast<int32_t>(_deviceResources->scopeGraph.getCounterNum()))
 		{
 			_selectedCounter = _deviceResources->scopeGraph.getCounterNum();
 		}
@@ -171,16 +173,30 @@ void OpenGLESPVRScopeExample::createProgram()
 		{ "UV0", "inTexCoord" },
 	};
 
+	// Enable or disable gamma correction based on if it is automatically performed on the framebuffer or we need to do it in the shader.
+	const char* defines[] = { "FRAMEBUFFER_SRGB" };
+	uint32_t numDefines = 1;
+
+	glm::vec3 clearColorLinearSpace(0.0f, 0.45f, 0.41f);
+	ClearColor = clearColorLinearSpace;
+	if (getBackBufferColorspace() != pvr::ColorSpace::sRGB)
+	{
+		ClearColor = pvr::utils::convertLRGBtoSRGB(clearColorLinearSpace); // Gamma correct the clear color...
+		numDefines = 0;
+	}
+
 	uint16_t attribIndices[ARRAY_SIZE(attribNames)] = { 0, 1, 2 };
 
 	_deviceResources->program = 0;
 	if (_deviceResources->context->getApiVersion() < pvr::Api::OpenGLES3)
 	{
-		_deviceResources->program = pvr::utils::createShaderProgram(*this, "VertShader_ES2.vsh", "FragShader_ES2.fsh", attribNames, attribIndices, ARRAY_SIZE(attribIndices));
+		_deviceResources->program =
+			pvr::utils::createShaderProgram(*this, "VertShader_ES2.vsh", "FragShader_ES2.fsh", attribNames, attribIndices, ARRAY_SIZE(attribIndices), defines, numDefines);
 	}
 	else
 	{
-		_deviceResources->program = pvr::utils::createShaderProgram(*this, "VertShader_ES3.vsh", "FragShader_ES3.fsh", attribNames, attribIndices, ARRAY_SIZE(attribIndices));
+		_deviceResources->program =
+			pvr::utils::createShaderProgram(*this, "VertShader_ES3.vsh", "FragShader_ES3.fsh", attribNames, attribIndices, ARRAY_SIZE(attribIndices), defines, numDefines);
 	}
 
 	_uniformLocations.mvpMtx = gl::GetUniformLocation(_deviceResources->program, "MVPMatrix");
@@ -221,7 +237,7 @@ pvr::Result OpenGLESPVRScopeExample::initApplication()
 
 	// At the time of writing, this counter is the USSE load for vertex + pixel processing
 	_selectedCounter = 0;
-	interval = 0;
+	_interval = 0;
 	_angleY = 0.0f;
 	// Load the _scene
 	if (!pvr::utils::loadModel(*this, SceneFile, _scene))
@@ -234,7 +250,7 @@ pvr::Result OpenGLESPVRScopeExample::initApplication()
 	{
 		const pvr::CommandLine commandline = getCommandLine();
 		commandline.getIntOption("-counter", _selectedCounter);
-		commandline.getIntOption("-interval", interval);
+		commandline.getIntOption("-interval", _interval);
 	}
 	return pvr::Result::Success;
 }
@@ -275,20 +291,20 @@ pvr::Result OpenGLESPVRScopeExample::initView()
 	createProgram();
 
 	// Initialize UIRenderer
-	_deviceResources->uiRenderer.init(getWidth(), getHeight(), isFullScreen());
+	_deviceResources->uiRenderer.init(getWidth(), getHeight(), isFullScreen(), getBackBufferColorspace() == pvr::ColorSpace::sRGB);
 
 	// Calculate the projection and view matrices
 	// Is the screen rotated?
 	bool isRotate = this->isScreenRotated();
 	if (isRotate)
 	{
-		_progUniforms.projectionMtx = pvr::math::perspectiveFov(_deviceResources->context->getApiVersion(), glm::pi<float>() / 6, (float)this->getWidth(), (float)this->getHeight(),
-			_scene->getCamera(0).getNear(), _scene->getCamera(0).getFar(), glm::pi<float>() * .5f);
+		_progUniforms.projectionMtx = pvr::math::perspectiveFov(_deviceResources->context->getApiVersion(), glm::pi<float>() / 6, static_cast<float>(this->getWidth()),
+			static_cast<float>(this->getHeight()), _scene->getCamera(0).getNear(), _scene->getCamera(0).getFar(), glm::pi<float>() * .5f);
 	}
 	else
 	{
-		_progUniforms.projectionMtx = pvr::math::perspectiveFov(_deviceResources->context->getApiVersion(), glm::pi<float>() / 6, (float)this->getWidth(), (float)this->getHeight(),
-			_scene->getCamera(0).getNear(), _scene->getCamera(0).getFar());
+		_progUniforms.projectionMtx = pvr::math::perspectiveFov(_deviceResources->context->getApiVersion(), glm::pi<float>() / 6, static_cast<float>(this->getWidth()),
+			static_cast<float>(this->getHeight()), _scene->getCamera(0).getNear(), _scene->getCamera(0).getFar());
 	}
 
 	// Initialize the graphing code
@@ -333,7 +349,7 @@ pvr::Result OpenGLESPVRScopeExample::initView()
 		}
 
 		// Set the update interval: number of updates [frames] before updating the graph
-		_deviceResources->scopeGraph.setUpdateInterval(interval);
+		_deviceResources->scopeGraph.setUpdateInterval(_interval);
 	}
 	else
 	{
@@ -473,7 +489,7 @@ void OpenGLESPVRScopeExample::drawMesh(uint32_t nodeIndex)
 void OpenGLESPVRScopeExample::executeGlCommands()
 {
 	gl::BindFramebuffer(GL_DRAW_FRAMEBUFFER, _deviceResources->onScreenFbo);
-	gl::ClearColor(0.00f, 0.70f, 0.67f, 1.0f);
+	gl::ClearColor(ClearColor.r, ClearColor.g, ClearColor.b, 1.f);
 	gl::Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	gl::Enable(GL_CULL_FACE);
 	gl::UseProgram(_deviceResources->program);
@@ -562,11 +578,8 @@ void OpenGLESPVRScopeExample::updateDescription()
 	_deviceResources->uiRenderer.getDefaultDescription()->commitUpdates();
 }
 
-/*!*********************************************************************************************************************
-\return auto ptr to the demo supplied by the user
-\brief  This function must be implemented by the user of the shell. The user should return its pvr::Shell object defining the
-	behavior of the application.
-***********************************************************************************************************************/
+/// <summary>This function must be implemented by the user of the shell. The user should return its pvr::Shell object defining the behaviour of the application.</summary>
+/// <returns>Return a unique ptr to the demo supplied by the user.</returns>
 std::unique_ptr<pvr::Shell> pvr::newDemo()
 {
 	return std::unique_ptr<pvr::Shell>(new OpenGLESPVRScopeExample());

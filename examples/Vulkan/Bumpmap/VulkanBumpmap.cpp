@@ -36,15 +36,12 @@ enum Enum
  ***********************************************************************************************************************/
 
 // Source and binary shaders
-const char FragShaderSrcFile[] = "FragShader_vk.fsh.spv";
-const char VertShaderSrcFile[] = "VertShader_vk.vsh.spv";
+const char FragShaderSrcFile[] = "FragShader.fsh.spv";
+const char VertShaderSrcFile[] = "VertShader.vsh.spv";
 
 // PVR texture files
 const char StatueTexFile[] = "Marble.pvr";
 const char StatueNormalMapFile[] = "MarbleNormalMap.pvr";
-
-const char ShadowTexFile[] = "Shadow.pvr";
-const char ShadowNormalMapFile[] = "ShadowNormalMap.pvr";
 
 // POD _scene files
 const char SceneFile[] = "Satyr.pod";
@@ -63,8 +60,7 @@ class VulkanBumpmap : public pvr::Shell
 		pvrvk::CommandPool commandPool;
 		pvrvk::DescriptorPool descriptorPool;
 		pvrvk::Queue queue;
-		pvr::utils::vma::Allocator vmaBufferAllocator;
-		pvr::utils::vma::Allocator vmaImageAllocator;
+		pvr::utils::vma::Allocator vmaAllocator;
 		pvrvk::Semaphore semaphoreImageAcquired[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
 		pvrvk::Fence perFrameAcquireFence[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
 		pvrvk::Semaphore semaphorePresent[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
@@ -86,14 +82,15 @@ class VulkanBumpmap : public pvr::Shell
 
 		// UIRenderer used to display text
 		pvr::ui::UIRenderer uiRenderer;
+
 		~DeviceResources()
 		{
 			if (device.isValid())
 			{
 				device->waitIdle();
 			}
-			int l = swapchain->getSwapchainLength();
-			for (int i = 0; i < l; ++i)
+			uint32_t l = swapchain->getSwapchainLength();
+			for (uint32_t i = 0; i < l; ++i)
 			{
 				if (perFrameAcquireFence[i].isValid())
 					perFrameAcquireFence[i]->wait();
@@ -155,9 +152,9 @@ void VulkanBumpmap::createImageSamplerDescriptor(pvrvk::CommandBuffer& imageUplo
 	pvrvk::Sampler samplerTrilinear = device->createSampler(samplerInfo);
 
 	texBase = pvr::utils::loadAndUploadImageAndView(_deviceResources->device, StatueTexFile, true, imageUploadCmd, *this, pvrvk::ImageUsageFlags::e_SAMPLED_BIT,
-		pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, nullptr, &_deviceResources->vmaBufferAllocator, &_deviceResources->vmaImageAllocator);
+		pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, nullptr, &_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
 	texNormalMap = pvr::utils::loadAndUploadImageAndView(_deviceResources->device, StatueNormalMapFile, true, imageUploadCmd, *this, pvrvk::ImageUsageFlags::e_SAMPLED_BIT,
-		pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, nullptr, &_deviceResources->vmaBufferAllocator, &_deviceResources->vmaImageAllocator);
+		pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, nullptr, &_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
 
 	texBase->setObjectName("Base diffuse ImageView");
 	texNormalMap->setObjectName("Normal map ImgaeView");
@@ -187,7 +184,7 @@ void VulkanBumpmap::createUbo()
 		_deviceResources->ubo = pvr::utils::createBuffer(_deviceResources->device, _deviceResources->structuredBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT,
 			pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
-			&_deviceResources->vmaBufferAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+			&_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 		_deviceResources->structuredBufferView.pointToMappedMemory(_deviceResources->ubo->getDeviceMemory()->getMappedData());
 		_deviceResources->ubo->setObjectName("Object Ubo");
 	}
@@ -239,16 +236,18 @@ void VulkanBumpmap::createPipeline()
 	}
 
 	const pvrvk::Rect2D rect(0, 0, _deviceResources->swapchain->getDimension().getWidth(), _deviceResources->swapchain->getDimension().getHeight());
-	pipeInfo.viewport.setViewportAndScissor(
-		0, pvrvk::Viewport((float)rect.getOffset().getX(), (float)rect.getOffset().getY(), (float)rect.getExtent().getWidth(), (float)rect.getExtent().getHeight()), rect);
+	pipeInfo.viewport.setViewportAndScissor(0,
+		pvrvk::Viewport(static_cast<float>(rect.getOffset().getX()), static_cast<float>(rect.getOffset().getY()), static_cast<float>(rect.getExtent().getWidth()),
+			static_cast<float>(rect.getExtent().getHeight())),
+		rect);
 	pipeInfo.rasterizer.setCullMode(pvrvk::CullModeFlags::e_BACK_BIT);
 	pipeInfo.colorBlend.setAttachmentState(0, colorAttachemtState);
 
 	pvr::Stream::ptr_type vertSource = getAssetStream(VertShaderSrcFile);
 	pvr::Stream::ptr_type fragSource = getAssetStream(FragShaderSrcFile);
 
-	pipeInfo.vertexShader.setShader(_deviceResources->device->createShader(vertSource->readToEnd<uint32_t>()));
-	pipeInfo.fragmentShader.setShader(_deviceResources->device->createShader(fragSource->readToEnd<uint32_t>()));
+	pipeInfo.vertexShader.setShader(_deviceResources->device->createShaderModule(pvrvk::ShaderModuleCreateInfo(vertSource->readToEnd<uint32_t>())));
+	pipeInfo.fragmentShader.setShader(_deviceResources->device->createShaderModule(pvrvk::ShaderModuleCreateInfo(fragSource->readToEnd<uint32_t>())));
 
 	const pvr::assets::Mesh& mesh = _scene->getMesh(0);
 	pipeInfo.inputAssembler.setPrimitiveTopology(pvr::utils::convertToPVRVk(mesh.getPrimitiveType()));
@@ -277,6 +276,8 @@ pvr::Result VulkanBumpmap::initApplication()
 	// Load the _scene
 	pvr::assets::helper::loadModel(*this, SceneFile, _scene);
 	_angleY = 0.0f;
+	_frameId = 0;
+
 	return pvr::Result::Success;
 }
 
@@ -298,11 +299,16 @@ pvr::Result VulkanBumpmap::quitApplication()
 ***********************************************************************************************************************/
 pvr::Result VulkanBumpmap::initView()
 {
-	_frameId = 0;
 	_deviceResources = std::unique_ptr<DeviceResources>(new DeviceResources());
 
 	// Create instance and retrieve compatible physical devices
 	_deviceResources->instance = pvr::utils::createInstance(this->getApplicationName());
+
+	if (_deviceResources->instance->getNumPhysicalDevices() == 0)
+	{
+		setExitMessage("Unable not find a compatible Vulkan physical device.");
+		return pvr::Result::UnknownError;
+	}
 
 	// Create the surface
 	pvrvk::Surface surface = pvr::utils::createSurface(_deviceResources->instance, _deviceResources->instance->getPhysicalDevice(0), this->getWindow(), this->getDisplay());
@@ -319,8 +325,7 @@ pvr::Result VulkanBumpmap::initView()
 	_deviceResources->device = pvr::utils::createDeviceAndQueues(_deviceResources->instance->getPhysicalDevice(0), &queuePopulateInfo, 1, &queueAccessInfo);
 	_deviceResources->queue = _deviceResources->device->getQueue(queueAccessInfo.familyId, queueAccessInfo.queueId);
 
-	_deviceResources->vmaBufferAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
-	_deviceResources->vmaImageAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
+	_deviceResources->vmaAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
 
 	pvrvk::SurfaceCapabilitiesKHR surfaceCapabilities = _deviceResources->instance->getPhysicalDevice(0)->getSurfaceCapabilities(surface);
 
@@ -335,12 +340,12 @@ pvr::Result VulkanBumpmap::initView()
 	// Create the swapchain
 	pvr::utils::createSwapchainAndDepthStencilImageAndViews(_deviceResources->device, surface, getDisplayAttributes(), _deviceResources->swapchain,
 		_deviceResources->depthStencilImages, swapchainImageUsage, pvrvk::ImageUsageFlags::e_DEPTH_STENCIL_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_TRANSIENT_ATTACHMENT_BIT,
-		&_deviceResources->vmaImageAllocator);
+		&_deviceResources->vmaAllocator);
 
 	//---------------
 	// Create the commandpool and descriptorset pool
-	_deviceResources->commandPool =
-		_deviceResources->device->createCommandPool(_deviceResources->queue->getQueueFamilyId(), pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT);
+	_deviceResources->commandPool = _deviceResources->device->createCommandPool(
+		pvrvk::CommandPoolCreateInfo(_deviceResources->queue->getFamilyIndex(), pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT));
 	_deviceResources->commandPool->setObjectName("Main Command Pool");
 
 	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(pvrvk::DescriptorPoolCreateInfo()
@@ -390,7 +395,7 @@ pvr::Result VulkanBumpmap::initView()
 	// load the vbo and ibo data
 	bool requiresCommandBufferSubmission = false;
 	pvr::utils::appendSingleBuffersFromModel(_deviceResources->device, *_scene, _deviceResources->vbos, _deviceResources->ibos, _deviceResources->commandBuffers[0],
-		requiresCommandBufferSubmission, &_deviceResources->vmaBufferAllocator);
+		requiresCommandBufferSubmission, &_deviceResources->vmaAllocator);
 
 	// create the image samplers
 	createImageSamplerDescriptor(_deviceResources->commandBuffers[0]);
@@ -403,8 +408,8 @@ pvr::Result VulkanBumpmap::initView()
 	_deviceResources->queue->waitIdle();
 
 	//  Initialize UIRenderer
-	_deviceResources->uiRenderer.init(
-		getWidth(), getHeight(), isFullScreen(), _deviceResources->onScreenFramebuffers[0]->getRenderPass(), 0, _deviceResources->commandPool, _deviceResources->queue);
+	_deviceResources->uiRenderer.init(getWidth(), getHeight(), isFullScreen(), _deviceResources->onScreenFramebuffers[0]->getRenderPass(), 0,
+		getBackBufferColorspace() == pvr::ColorSpace::sRGB, _deviceResources->commandPool, _deviceResources->queue);
 
 	_deviceResources->uiRenderer.getDefaultTitle()->setText("Bumpmap");
 	_deviceResources->uiRenderer.getDefaultTitle()->commitUpdates();
@@ -420,10 +425,10 @@ pvr::Result VulkanBumpmap::initView()
 	const bool bRotate = this->isScreenRotated();
 
 	//  Calculate the projection and rotate it by 90 degree if the screen is rotated.
-	_viewProj = (bRotate
-			? pvr::math::perspectiveFov(
-				  pvr::Api::Vulkan, fov, (float)this->getHeight(), (float)this->getWidth(), _scene->getCamera(0).getNear(), _scene->getCamera(0).getFar(), glm::pi<float>() * .5f)
-			: pvr::math::perspectiveFov(pvr::Api::Vulkan, fov, (float)this->getWidth(), (float)this->getHeight(), _scene->getCamera(0).getNear(), _scene->getCamera(0).getFar()));
+	_viewProj = (bRotate ? pvr::math::perspectiveFov(pvr::Api::Vulkan, fov, static_cast<float>(this->getHeight()), static_cast<float>(this->getWidth()),
+							   _scene->getCamera(0).getNear(), _scene->getCamera(0).getFar(), glm::pi<float>() * .5f)
+						 : pvr::math::perspectiveFov(pvr::Api::Vulkan, fov, static_cast<float>(this->getWidth()), static_cast<float>(this->getHeight()),
+							   _scene->getCamera(0).getNear(), _scene->getCamera(0).getFar()));
 
 	_viewProj = _viewProj * glm::lookAt(from, to, up);
 
@@ -474,8 +479,8 @@ pvr::Result VulkanBumpmap::renderFrame()
 	srcWrite.lightDirModel = glm::vec3(LightDir * mModel);
 	srcWrite.mvpMtx = _viewProj * mModel * _scene->getWorldMatrix(_scene->getNode(0).getObjectId());
 
-	_deviceResources->structuredBufferView.getElementByName("MVPMatrix", 0, swapchainIndex).setValue(&srcWrite.mvpMtx);
-	_deviceResources->structuredBufferView.getElementByName("LightDirModel", 0, swapchainIndex).setValue(&srcWrite.lightDirModel);
+	_deviceResources->structuredBufferView.getElementByName("MVPMatrix", 0, swapchainIndex).setValue(srcWrite.mvpMtx);
+	_deviceResources->structuredBufferView.getElementByName("LightDirModel", 0, swapchainIndex).setValue(srcWrite.lightDirModel);
 
 	// if the memory property flags used by the buffers' device memory do not contain e_HOST_COHERENT_BIT then we must flush the memory
 	if (static_cast<uint32_t>(_deviceResources->ubo->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
@@ -500,7 +505,7 @@ pvr::Result VulkanBumpmap::renderFrame()
 	if (this->shouldTakeScreenshot())
 	{
 		pvr::utils::takeScreenshot(_deviceResources->swapchain, swapchainIndex, _deviceResources->commandPool, _deviceResources->queue, this->getScreenshotFileName(),
-			&_deviceResources->vmaBufferAllocator, &_deviceResources->vmaImageAllocator);
+			&_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
 	}
 
 	//---------------
@@ -576,27 +581,26 @@ void VulkanBumpmap::drawMesh(pvrvk::CommandBuffer& commandBuffer, int nodeIndex)
 void VulkanBumpmap::recordCommandBuffer()
 {
 	const uint32_t numSwapchains = _deviceResources->swapchain->getSwapchainLength();
-	pvrvk::ClearValue clearValues[2] = { pvrvk::ClearValue(0.00f, 0.70f, 0.67f, 1.f), pvrvk::ClearValue(1.f, 0u) };
+	pvrvk::ClearValue clearValues[2] = { pvrvk::ClearValue(0.0f, 0.45f, 0.41f, 1.f), pvrvk::ClearValue(1.f, 0u) };
 	for (uint32_t i = 0; i < numSwapchains; ++i)
 	{
 		// begin recording commands for the current swap chain command buffer
 		_deviceResources->commandBuffers[i]->begin();
-		_deviceResources->commandBuffers[i]->debugMarkerBeginEXT("VulkanBumpmap: Main CommandBuffer");
+		_deviceResources->commandBuffers[i]->debugMarkerBeginEXT("Render Frame");
 
 		// begin the render pass
 		_deviceResources->commandBuffers[i]->beginRenderPass(
 			_deviceResources->onScreenFramebuffers[i], pvrvk::Rect2D(0, 0, getWidth(), getHeight()), true, clearValues, ARRAY_SIZE(clearValues));
+
+		_deviceResources->commandBuffers[i]->debugMarkerBeginEXT("Mesh");
 
 		// calculate the dynamic offset to use
 		const uint32_t dynamicOffset = _deviceResources->structuredBufferView.getDynamicSliceOffset(i);
 		// enqueue the static states which wont be changed through out the frame
 		_deviceResources->commandBuffers[i]->bindPipeline(_deviceResources->pipe);
 		_deviceResources->commandBuffers[i]->bindDescriptorSet(pvrvk::PipelineBindPoint::e_GRAPHICS, _deviceResources->pipelayout, 0, _deviceResources->texDescSet, nullptr);
-
 		_deviceResources->commandBuffers[i]->bindDescriptorSet(
 			pvrvk::PipelineBindPoint::e_GRAPHICS, _deviceResources->pipelayout, 1, _deviceResources->uboDescSets[i], &dynamicOffset, 1);
-
-		_deviceResources->commandBuffers[i]->debugMarkerBeginEXT("VulkanBumpmap: Rendering VulkanBumpmap Mesh");
 		drawMesh(_deviceResources->commandBuffers[i], 0);
 		_deviceResources->commandBuffers[i]->debugMarkerEndEXT();
 
@@ -616,11 +620,8 @@ void VulkanBumpmap::recordCommandBuffer()
 	}
 }
 
-/*!*********************************************************************************************************************
-\return Return an auto ptr to the demo supplied by the user
-\brief  This function must be implemented by the user of the shell. The user should return its
-	Shell object defining the behavior of the application.
-***********************************************************************************************************************/
+/// <summary>This function must be implemented by the user of the shell. The user should return its pvr::Shell object defining the behaviour of the application.</summary>
+/// <returns>Return a unique ptr to the demo supplied by the user.</returns>
 std::unique_ptr<pvr::Shell> pvr::newDemo()
 {
 	return std::unique_ptr<pvr::Shell>(new VulkanBumpmap());

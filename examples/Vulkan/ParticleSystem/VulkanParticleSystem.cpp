@@ -12,11 +12,11 @@
 namespace Files {
 // Asset files
 const char SphereModelFile[] = "sphere.pod";
-const char FragShaderSrcFile[] = "FragShader_vk.fsh.spv";
-const char VertShaderSrcFile[] = "VertShader_vk.vsh.spv";
-const char FloorVertShaderSrcFile[] = "FloorVertShader_vk.vsh.spv";
-const char ParticleShaderFragSrcFile[] = "ParticleFragShader_vk.fsh.spv";
-const char ParticleShaderVertSrcFile[] = "ParticleVertShader_vk.vsh.spv";
+const char FragShaderSrcFile[] = "FragShader.fsh.spv";
+const char VertShaderSrcFile[] = "VertShader.vsh.spv";
+const char FloorVertShaderSrcFile[] = "FloorVertShader.vsh.spv";
+const char ParticleShaderFragSrcFile[] = "ParticleFragShader.fsh.spv";
+const char ParticleShaderVertSrcFile[] = "ParticleVertShader.vsh.spv";
 } // namespace Files
 
 namespace Configuration {
@@ -141,10 +141,8 @@ private:
 		pvrvk::DescriptorPool descriptorPool;
 		ParticleSystemGPU particleSystemGPU;
 
-		pvr::utils::vma::Allocator vmaBufferAllocator;
-		pvr::utils::vma::Allocator vmaImageAllocator;
+		pvr::utils::vma::Allocator vmaAllocator;
 
-		pvrvk::ImageView particleTex;
 		pvrvk::CommandBuffer mainCommandBuffers[MaxSwapChains];
 		pvrvk::SecondaryCommandBuffer graphicsCommandBuffers[MaxSwapChains];
 		pvrvk::SecondaryCommandBuffer uiRendererCommandBuffers[MaxSwapChains];
@@ -173,8 +171,8 @@ private:
 			if (device.isValid())
 			{
 				device->waitIdle();
-				int l = swapchain->getSwapchainLength();
-				for (int i = 0; i < l; ++i)
+				uint32_t l = swapchain->getSwapchainLength();
+				for (uint32_t i = 0; i < l; ++i)
 				{
 					if (perFrameAcquireFence[i].isValid())
 						perFrameAcquireFence[i]->wait();
@@ -231,10 +229,10 @@ void VulkanParticleSystem::eventMappedInput(pvr::SimplifiedInput key)
 	case pvr::SimplifiedInput::Left:
 	{
 		_deviceResources->queue->waitIdle(); // wait for the queue to finish and update all the compute commandbuffers
-		unsigned int numParticles = _deviceResources->particleSystemGPU.getNumberOfParticles();
+		uint32_t numParticles = _deviceResources->particleSystemGPU.getNumberOfParticles();
 		if (numParticles / 2 >= Configuration::MinNoParticles)
 		{
-			_deviceResources->particleSystemGPU.setNumberOfParticles(numParticles / 2, _deviceResources->queue, _deviceResources->vmaBufferAllocator);
+			_deviceResources->particleSystemGPU.setNumberOfParticles(numParticles / 2, _deviceResources->queue, _deviceResources->vmaAllocator);
 			_deviceResources->uiRenderer.getDefaultDescription()->setText(pvr::strings::createFormatted("No. of Particles: %d", numParticles / 2));
 			_deviceResources->uiRenderer.getDefaultDescription()->commitUpdates();
 			recordCommandBuffers();
@@ -244,10 +242,10 @@ void VulkanParticleSystem::eventMappedInput(pvr::SimplifiedInput key)
 	case pvr::SimplifiedInput::Right:
 	{
 		_deviceResources->queue->waitIdle(); // wait for the queue to finish and to update all the compute commandbuffers
-		unsigned int numParticles = _deviceResources->particleSystemGPU.getNumberOfParticles();
+		uint32_t numParticles = _deviceResources->particleSystemGPU.getNumberOfParticles();
 		if (numParticles * 2 <= Configuration::MaxNoParticles)
 		{
-			_deviceResources->particleSystemGPU.setNumberOfParticles(numParticles * 2, _deviceResources->queue, _deviceResources->vmaBufferAllocator);
+			_deviceResources->particleSystemGPU.setNumberOfParticles(numParticles * 2, _deviceResources->queue, _deviceResources->vmaAllocator);
 			_deviceResources->uiRenderer.getDefaultDescription()->setText(pvr::strings::createFormatted("No. of Particles: %d", numParticles * 2));
 			_deviceResources->uiRenderer.getDefaultDescription()->commitUpdates();
 			recordCommandBuffers();
@@ -280,7 +278,7 @@ void VulkanParticleSystem::createBuffers()
 	_deviceResources->mainCommandBuffers[0]->begin();
 	bool requiresCommandBufferSubmission = false;
 	pvr::utils::createSingleBuffersFromMesh(_deviceResources->device, _scene->getMesh(0), _deviceResources->passSphere.vbo, _deviceResources->passSphere.ibo,
-		_deviceResources->mainCommandBuffers[0], requiresCommandBufferSubmission, &_deviceResources->vmaBufferAllocator);
+		_deviceResources->mainCommandBuffers[0], requiresCommandBufferSubmission, &_deviceResources->vmaAllocator);
 
 	_deviceResources->mainCommandBuffers[0]->end();
 
@@ -303,7 +301,7 @@ void VulkanParticleSystem::createBuffers()
 	_deviceResources->passFloor.vbo =
 		pvr::utils::createBuffer(_deviceResources->device, sizeof(afVertexBufferData), pvrvk::BufferUsageFlags::e_VERTEX_BUFFER_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
-			&_deviceResources->vmaBufferAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+			&_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 	pvr::utils::updateHostVisibleBuffer(_deviceResources->passFloor.vbo, afVertexBufferData, 0, sizeof(afVertexBufferData), true);
 }
 
@@ -313,10 +311,10 @@ void VulkanParticleSystem::createBuffers()
 ***********************************************************************************************************************/
 void VulkanParticleSystem::createPipelines()
 {
-	pvrvk::ShaderModule fragShader = _deviceResources->device->createShader(getAssetStream(Files::FragShaderSrcFile)->readToEnd<uint32_t>());
+	pvrvk::ShaderModule fragShader = _deviceResources->device->createShaderModule(pvrvk::ShaderModuleCreateInfo(getAssetStream(Files::FragShaderSrcFile)->readToEnd<uint32_t>()));
 	// Sphere Pipeline
 	{
-		pvrvk::ShaderModule vertShader = _deviceResources->device->createShader(getAssetStream(Files::VertShaderSrcFile)->readToEnd<uint32_t>());
+		pvrvk::ShaderModule vertShader = _deviceResources->device->createShaderModule(pvrvk::ShaderModuleCreateInfo(getAssetStream(Files::VertShaderSrcFile)->readToEnd<uint32_t>()));
 		const pvr::utils::VertexBindings attributes[] = { { "POSITION", 0 }, { "NORMAL", 1 } };
 		pvrvk::GraphicsPipelineCreateInfo pipeCreateInfo;
 		pipeCreateInfo.viewport.setViewportAndScissor(0,
@@ -343,7 +341,8 @@ void VulkanParticleSystem::createPipelines()
 
 	//  Floor Pipeline
 	{
-		pvrvk::ShaderModule vertShader = _deviceResources->device->createShader(getAssetStream(Files::FloorVertShaderSrcFile)->readToEnd<uint32_t>());
+		pvrvk::ShaderModule vertShader =
+			_deviceResources->device->createShaderModule(pvrvk::ShaderModuleCreateInfo(getAssetStream(Files::FloorVertShaderSrcFile)->readToEnd<uint32_t>()));
 		const pvrvk::VertexInputAttributeDescription attributes[] = { pvrvk::VertexInputAttributeDescription(0, 0, pvrvk::Format::e_R32G32B32_SFLOAT, 0),
 			pvrvk::VertexInputAttributeDescription(1, 0, pvrvk::Format::e_R32G32B32_SFLOAT, sizeof(float) * 3) };
 		pvrvk::GraphicsPipelineCreateInfo pipeCreateInfo;
@@ -372,8 +371,11 @@ void VulkanParticleSystem::createPipelines()
 	//  Particle Pipeline
 	{
 		const pvrvk::VertexInputAttributeDescription attributes[] = { pvrvk::VertexInputAttributeDescription(Attributes::ParticlePositionArray, 0, pvrvk::Format::e_R32G32B32_SFLOAT, 0),
-			pvrvk::VertexInputAttributeDescription(Attributes::ParticleLifespanArray, 0, pvrvk::Format::e_R32_SFLOAT, sizeof(float_t) * 3 * 2 + sizeof(float)) };
+			pvrvk::VertexInputAttributeDescription(Attributes::ParticleLifespanArray, 0, pvrvk::Format::e_R32_SFLOAT,
+				static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::vec4) + pvr::getSize(pvr::GpuDatatypes::vec3))) };
+
 		pvrvk::GraphicsPipelineCreateInfo pipeCreateInfo;
+
 		pipeCreateInfo.viewport.setViewportAndScissor(0,
 			pvrvk::Viewport(0.0f, 0.0f, static_cast<float>(_deviceResources->swapchain->getDimension().getWidth()),
 				static_cast<float>(_deviceResources->swapchain->getDimension().getHeight())),
@@ -385,9 +387,11 @@ void VulkanParticleSystem::createPipelines()
 
 		pipeCreateInfo.depthStencil.enableDepthWrite(true).enableDepthTest(true);
 
-		pipeCreateInfo.vertexShader.setShader(_deviceResources->device->createShader(getAssetStream(Files::ParticleShaderVertSrcFile)->readToEnd<uint32_t>()));
+		pipeCreateInfo.vertexShader.setShader(
+			_deviceResources->device->createShaderModule(pvrvk::ShaderModuleCreateInfo(getAssetStream(Files::ParticleShaderVertSrcFile)->readToEnd<uint32_t>())));
 
-		pipeCreateInfo.fragmentShader.setShader(_deviceResources->device->createShader(getAssetStream(Files::ParticleShaderFragSrcFile)->readToEnd<uint32_t>()));
+		pipeCreateInfo.fragmentShader.setShader(
+			_deviceResources->device->createShaderModule(pvrvk::ShaderModuleCreateInfo(getAssetStream(Files::ParticleShaderFragSrcFile)->readToEnd<uint32_t>())));
 
 		pipeCreateInfo.renderPass = _deviceResources->onScreenFramebuffer[0]->getRenderPass();
 		pipeCreateInfo.vertexInput.addInputAttributes(attributes, sizeof(attributes) / sizeof(attributes[0]));
@@ -454,7 +458,7 @@ void VulkanParticleSystem::createDescriptors()
 		_deviceResources->passSphere.uboPerModel = pvr::utils::createBuffer(_deviceResources->device, _deviceResources->passSphere.uboPerModelBufferView.getSize(),
 			pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
-			&_deviceResources->vmaBufferAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+			&_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
 		_deviceResources->passSphere.uboPerModelBufferView.pointToMappedMemory(_deviceResources->passSphere.uboPerModel->getDeviceMemory()->getMappedData());
 	}
@@ -466,7 +470,7 @@ void VulkanParticleSystem::createDescriptors()
 		_deviceResources->passFloor.uboPerModel = pvr::utils::createBuffer(_deviceResources->device, _deviceResources->passFloor.uboPerModelBufferView.getSize(),
 			pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
-			&_deviceResources->vmaBufferAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+			&_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
 		_deviceResources->passFloor.uboPerModelBufferView.pointToMappedMemory(_deviceResources->passFloor.uboPerModel->getDeviceMemory()->getMappedData());
 	}
@@ -480,7 +484,7 @@ void VulkanParticleSystem::createDescriptors()
 		_deviceResources->passSphere.uboLightProp = pvr::utils::createBuffer(_deviceResources->device, _deviceResources->passSphere.uboLightPropBufferView.getSize(),
 			pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
-			&_deviceResources->vmaBufferAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+			&_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
 		_deviceResources->passSphere.uboLightPropBufferView.pointToMappedMemory(_deviceResources->passSphere.uboLightProp->getDeviceMemory()->getMappedData());
 	}
@@ -494,7 +498,7 @@ void VulkanParticleSystem::createDescriptors()
 		_deviceResources->passParticles.uboMvp = pvr::utils::createBuffer(_deviceResources->device, _deviceResources->passParticles.uboMvpBufferView.getSize(),
 			pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
-			&_deviceResources->vmaBufferAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+			&_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
 		_deviceResources->passParticles.uboMvpBufferView.pointToMappedMemory(_deviceResources->passParticles.uboMvp->getDeviceMemory()->getMappedData());
 	}
@@ -554,12 +558,16 @@ void VulkanParticleSystem::createDescriptors()
 ***********************************************************************************************************************/
 pvr::Result VulkanParticleSystem::initView()
 {
-	srand(static_cast<uint32_t>(this->getTime()));
-
 	_deviceResources = std::unique_ptr<DeviceResources>(new DeviceResources(*this));
 
 	// Create instance and retrieve compatible physical devices
 	_deviceResources->instance = pvr::utils::createInstance(this->getApplicationName());
+
+	if (_deviceResources->instance->getNumPhysicalDevices() == 0)
+	{
+		setExitMessage("Unable not find a compatible Vulkan physical device.");
+		return pvr::Result::UnknownError;
+	}
 
 	// Create the surface
 	_deviceResources->surface = pvr::utils::createSurface(_deviceResources->instance, _deviceResources->instance->getPhysicalDevice(0), this->getWindow(), this->getDisplay());
@@ -581,11 +589,11 @@ pvr::Result VulkanParticleSystem::initView()
 	// get the queue
 	_deviceResources->queue = _deviceResources->device->getQueue(queueAccessInfo.familyId, queueAccessInfo.queueId);
 
-	_deviceResources->vmaBufferAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
-	_deviceResources->vmaImageAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
+	_deviceResources->vmaAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
 
 	// create the commandpool
-	_deviceResources->commandPool = _deviceResources->device->createCommandPool(queueAccessInfo.familyId, pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT);
+	_deviceResources->commandPool =
+		_deviceResources->device->createCommandPool(pvrvk::CommandPoolCreateInfo(queueAccessInfo.familyId, pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT));
 
 	// create the descriptor pool
 	pvrvk::DescriptorPoolCreateInfo poolInfo;
@@ -609,7 +617,7 @@ pvr::Result VulkanParticleSystem::initView()
 	// create the swapchain
 	pvr::utils::createSwapchainAndDepthStencilImageAndViews(_deviceResources->device, _deviceResources->surface, getDisplayAttributes(), _deviceResources->swapchain,
 		_deviceResources->depthStencilImages, swapchainImageUsage, pvrvk::ImageUsageFlags::e_DEPTH_STENCIL_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_TRANSIENT_ATTACHMENT_BIT,
-		&_deviceResources->vmaImageAllocator);
+		&_deviceResources->vmaAllocator);
 
 	// create the on screen framebuffer
 	pvr::utils::createOnscreenFramebufferAndRenderpass(_deviceResources->swapchain, &_deviceResources->depthStencilImages[0], _deviceResources->onScreenFramebuffer);
@@ -629,20 +637,21 @@ pvr::Result VulkanParticleSystem::initView()
 	}
 
 	// Initialize UIRenderer textures
-	_deviceResources->uiRenderer.init(
-		getWidth(), getHeight(), isFullScreen(), _deviceResources->onScreenFramebuffer[0]->getRenderPass(), 0, _deviceResources->commandPool, _deviceResources->queue);
+	_deviceResources->uiRenderer.init(getWidth(), getHeight(), isFullScreen(), _deviceResources->onScreenFramebuffer[0]->getRenderPass(), 0,
+		getBackBufferColorspace() == pvr::ColorSpace::sRGB, _deviceResources->commandPool, _deviceResources->queue);
+
+	// Create the pipeline cache
+	_deviceResources->pipelineCache = _deviceResources->device->createPipelineCache();
 
 	std::string errorStr;
 	_deviceResources->particleSystemGPU.init(Configuration::MaxNoParticles, Configuration::Spheres, Configuration::NumberOfSpheres, _deviceResources->device,
-		_deviceResources->commandPool, _deviceResources->descriptorPool, _deviceResources->swapchain->getSwapchainLength(), _deviceResources->vmaBufferAllocator);
+		_deviceResources->commandPool, _deviceResources->descriptorPool, _deviceResources->swapchain->getSwapchainLength(), _deviceResources->vmaAllocator,
+		_deviceResources->pipelineCache);
 
 	//  Create the Buffers
 	createBuffers();
 
 	createDescriptors();
-
-	// Create the pipeline cache
-	_deviceResources->pipelineCache = _deviceResources->device->createPipelineCache();
 
 	//  Load and compile the shaders & link programs
 	createPipelines();
@@ -651,13 +660,14 @@ pvr::Result VulkanParticleSystem::initView()
 	_mLightView = glm::lookAt(glm::vec3(0.0f, 80.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f));
 
 	// Creates the projection matrix.
-	_projMtx = pvr::math::perspectiveFov(pvr::Api::Vulkan, glm::pi<float>() / 3.0f, (float)getWidth(), (float)getHeight(), Configuration::CameraNear, Configuration::CameraFar);
+	_projMtx = pvr::math::perspectiveFov(
+		pvr::Api::Vulkan, glm::pi<float>() / 3.0f, static_cast<float>(getWidth()), static_cast<float>(getHeight()), Configuration::CameraNear, Configuration::CameraFar);
 
 	// Create a bias matrix
 	_mBiasMatrix = glm::mat4(0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.5f, 0.0f, 0.5f, 0.5f, 0.5f, 1.0f);
 
 	_deviceResources->particleSystemGPU.setGravity(glm::vec3(0.f, -9.81f, 0.f));
-	_deviceResources->particleSystemGPU.setNumberOfParticles(Configuration::InitialNoParticles, _deviceResources->queue, _deviceResources->vmaBufferAllocator);
+	_deviceResources->particleSystemGPU.setNumberOfParticles(Configuration::InitialNoParticles, _deviceResources->queue, _deviceResources->vmaAllocator);
 
 	_deviceResources->uiRenderer.getDefaultTitle()->setText("ParticleSystem");
 	_deviceResources->uiRenderer.getDefaultDescription()->setText(pvr::strings::createFormatted("No. of Particles: %d", Configuration::InitialNoParticles));
@@ -731,7 +741,7 @@ pvr::Result VulkanParticleSystem::renderFrame()
 	if (this->shouldTakeScreenshot())
 	{
 		pvr::utils::takeScreenshot(_deviceResources->swapchain, swapchainIndex, _deviceResources->commandPool, _deviceResources->queue, this->getScreenshotFileName(),
-			&_deviceResources->vmaBufferAllocator, &_deviceResources->vmaImageAllocator);
+			&_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
 	}
 
 	// present
@@ -818,10 +828,10 @@ void VulkanParticleSystem::updateFloor()
 void VulkanParticleSystem::updateParticleUniforms()
 {
 	uint32_t swapchainIndex = _deviceResources->swapchain->getSwapchainIndex();
-	float step = (float)getFrameTime();
+	float dt = static_cast<float>(getFrameTime());
 
 	static float rot_angle = 0.0f;
-	rot_angle += step / 500.0f;
+	rot_angle += dt / 500.0f;
 	float el_angle = (sinf(rot_angle / 4.0f) + 1.0f) * 0.2f + 0.2f;
 
 	glm::mat4 rot = glm::rotate(rot_angle, glm::vec3(0.0f, 1.0f, 0.0f));
@@ -830,7 +840,7 @@ void VulkanParticleSystem::updateParticleUniforms()
 	Emitter sEmitter(rot * skew, 1.3f, 1.0f);
 
 	_deviceResources->particleSystemGPU.setEmitter(sEmitter);
-	_deviceResources->particleSystemGPU.updateUniforms(swapchainIndex, step);
+	_deviceResources->particleSystemGPU.updateUniforms(swapchainIndex, dt);
 
 	_deviceResources->passParticles.uboMvpBufferView.getElement(0, 0, swapchainIndex).setValue(_viewProjMtx);
 

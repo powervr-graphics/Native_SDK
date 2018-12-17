@@ -43,12 +43,18 @@ dependencies {
 	implementation fileTree(dir: 'libs', include: ['*.jar'])
 }
 buildscript {
-
 	repositories {
 		google()
 		jcenter()
 	}
 	dependencies {
-		classpath 'com.android.tools.build:gradle:3.0.0'
+		classpath 'com.android.tools.build:gradle:3.1.0'
+	}
+}
+
+allprojects {
+	repositories {
+		google()
+		jcenter()
 	}
 }

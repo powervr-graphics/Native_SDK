@@ -116,6 +116,6 @@ elseif (UNIX)
 endif()
 
 if (EXTRA_LIBS)
-	target_link_libraries(	OpenGLESHelloAPI ${EXTRA_LIBS} )
+	target_link_libraries(OpenGLESHelloAPI ${EXTRA_LIBS} )
 endif()
-target_compile_definitions( OpenGLESHelloAPI PUBLIC $<$<CONFIG:Debug>:DEBUG=1> $<$<NOT:$<CONFIG:Debug>>:RELEASE=1> ) #Defines DEBUG=1 or RELEASE=1
+target_compile_definitions(OpenGLESHelloAPI PUBLIC $<$<CONFIG:Debug>:DEBUG=1> $<$<NOT:$<CONFIG:Debug>>:RELEASE=1> ) #Defines DEBUG=1 or RELEASE=1

@@ -24,12 +24,12 @@ Surface_::~Surface_()
 		{
 			getInstance()->getVkBindings().vkDestroySurfaceKHR(_instance->getVkHandle(), getVkHandle(), NULL);
 			_vkHandle = VK_NULL_HANDLE;
+			_instance.reset();
 		}
 		else
 		{
 			Log(LogLevel::Warning, "Attempted to destroy object of type [Surface] after its corresponding VkInstance");
 		}
-		_vkHandle = VK_NULL_HANDLE;
 	}
 }
 
@@ -177,7 +177,7 @@ DisplayPlaneSurface_::DisplayPlaneSurface_(InstanceWeakPtr instance, const Displ
 		surfaceCreateInfo.transform = static_cast<VkSurfaceTransformFlagBitsKHR>(_transformFlags);
 		surfaceCreateInfo.globalAlpha = _globalAlpha;
 		surfaceCreateInfo.alphaMode = static_cast<VkDisplayPlaneAlphaFlagBitsKHR>(_alphaFlags);
-		surfaceCreateInfo.imageExtent = *reinterpret_cast<const VkExtent2D*>(&_imageExtent);
+		surfaceCreateInfo.imageExtent = _imageExtent.get();
 
 		vkThrowIfFailed(getInstance()->getVkBindings().vkCreateDisplayPlaneSurfaceKHR(getInstance()->getVkHandle(), &surfaceCreateInfo, nullptr, &_vkHandle),
 			"Could not create DisplayPlane Surface");

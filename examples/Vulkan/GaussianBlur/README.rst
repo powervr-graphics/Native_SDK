@@ -4,19 +4,20 @@ GaussianBlur
 
 .. figure:: ./GaussianBlur.png
 
-Shows how to perform a extremely wide, highly optimized Gaussian Blur using Compute shaders.
+Shows how to perform a extremely wide, highly optimised Gaussian Blur using compute shaders.
 
 Description
 -----------
-This training course demonstrates how to perform a 19x19 Gaussian Blur leveraging every input and output step
+This example demonstrates how to perform a 19x19 Gaussian Blur. It uses every input and output step
 to blur an image by reading from an input using compute while blurring in one direction, and then writing to 
-the output with a Fragment shader while blurring in the other direction.
-This technique used has been highly optimized for PowerVR and is highly suitable for very large convolution width.
+the output with a fragment shader whilst blurring in the other direction.
 
-APIS
+This technique has been highly optimised for PowerVR and is very suitable for a very large convolution width.
+
+APIs
 ----
+* OpenGL ES 3.0+
 * Vulkan
-* OpenGL ES 3.0
 
 Controls
 --------

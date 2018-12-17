@@ -8,7 +8,7 @@
 #define _APPCONTROLLER_H_
 
 #include "PVRShell/StateMachine.h"
-#include "PVRShell/CommandLine.h"
+#include "PVRCore/commandline/CommandLine.h"
 #import <AppKit/NSApplication.h>
 #import <Foundation/NSTimer.h>
 

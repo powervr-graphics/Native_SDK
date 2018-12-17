@@ -8,8 +8,8 @@
 
 namespace pvrvk {
 namespace impl {
-ShaderModule_::ShaderModule_(const DeviceWeakPtr& device, const std::vector<uint32_t>& shaderSrc)
-	: DeviceObjectHandle(device), DeviceObjectDebugMarker(DebugReportObjectTypeEXT::e_SHADER_MODULE_EXT)
+ShaderModule_::ShaderModule_(const DeviceWeakPtr& device, const ShaderModuleCreateInfo& createInfo)
+	: DeviceObjectHandle(device), DeviceObjectDebugMarker(DebugReportObjectTypeEXT::e_SHADER_MODULE_EXT), _createInfo(createInfo)
 {
 	if (getVkHandle() != VK_NULL_HANDLE)
 	{
@@ -19,16 +19,11 @@ ShaderModule_::ShaderModule_(const DeviceWeakPtr& device, const std::vector<uint
 		_device->getVkBindings().vkDestroyShaderModule(_device->getVkHandle(), getVkHandle(), NULL);
 	}
 
-	if (shaderSrc.empty())
-	{
-		throw ErrorValidationFailedEXT("Attempted to create Shader Module with empty shader source.");
-	}
 	VkShaderModuleCreateInfo shaderModuleCreateInfo = {};
 	shaderModuleCreateInfo.sType = static_cast<VkStructureType>(StructureType::e_SHADER_MODULE_CREATE_INFO);
-	shaderModuleCreateInfo.pNext = nullptr;
-	shaderModuleCreateInfo.codeSize = shaderSrc.size();
-	shaderModuleCreateInfo.pCode = shaderSrc.data();
-	vkThrowIfFailed(_device->getVkBindings().vkCreateShaderModule(_device->getVkHandle(), &shaderModuleCreateInfo, nullptr, &_vkHandle), "ShaderModule Creation Failed");
+	shaderModuleCreateInfo.codeSize = _createInfo.getCodeSize();
+	shaderModuleCreateInfo.pCode = _createInfo.getShaderSources().data();
+	vkThrowIfFailed(_device->getVkBindings().vkCreateShaderModule(_device->getVkHandle(), &shaderModuleCreateInfo, nullptr, &_vkHandle), "Failed to create ShaderModule");
 }
 
 ShaderModule_::~ShaderModule_()
@@ -38,6 +33,7 @@ ShaderModule_::~ShaderModule_()
 		if (_device.isValid())
 		{
 			_device->getVkBindings().vkDestroyShaderModule(_device->getVkHandle(), getVkHandle(), nullptr);
+			_vkHandle = VK_NULL_HANDLE;
 			_device.reset();
 		}
 		else

@@ -21,7 +21,10 @@ public:
 
 	/// <summary>Constructor</summary>
 	/// <param name="parameters">Display mode parameters used to initialise the display mode creation structure</param>
-	DisplayModeCreateInfo(DisplayModeParametersKHR parameters) : _flags(DisplayModeCreateFlagsKHR::e_NONE), _parameters(parameters) {}
+	/// <param name="flags">A set of pvrvk::DisplayModeCreateFlagsKHR defining how to create a given pvrvk::DisplayMode</param>
+	DisplayModeCreateInfo(DisplayModeParametersKHR parameters, DisplayModeCreateFlagsKHR flags = DisplayModeCreateFlagsKHR::e_NONE)
+		: _flags(DisplayModeCreateFlagsKHR::e_NONE), _parameters(parameters)
+	{}
 
 	/// <summary>Getter for the display mode creation flags</summary>
 	/// <returns>A DisplayModeCreateFlagsKHR structure</returns>

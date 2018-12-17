@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>PVRCore: /usr/buildxl/buildroot/sdk/branch/SDK/framework/PVRCore/Texture/FileDefinesTGA.h Source File</title>
+<title>PVRCore: /usr/buildxl/buildroot/sdk/branch/SDK/framework/PVRCore/textureio/FileDefinesTGA.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -15,7 +15,7 @@
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="IMGdoxygen.css" rel="stylesheet" type="text/css"/>
-<link rel="shortcut icon" href="http://www.imgtec.com/images/img.ico">
+<link rel="shortcut icon" type="image/x-icon" href="img.ico">
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
+      <a href="https://www.imgtec.com/developers/" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRCore</span> Documentation</a>
    <tbody>
@@ -76,7 +76,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_687531cb5acd5e736601deea3ef3b7c0.html">SDK</a></li><li class="navelem"><a class="el" href="dir_407ce59cc93389552d4bbf4df897abf8.html">framework</a></li><li class="navelem"><a class="el" href="dir_72a2a6c70dc66b6caf7d035656739fa9.html">PVRCore</a></li><li class="navelem"><a class="el" href="dir_84cfa6db8adc0f140f2dc36630a21245.html">Texture</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_687531cb5acd5e736601deea3ef3b7c0.html">SDK</a></li><li class="navelem"><a class="el" href="dir_407ce59cc93389552d4bbf4df897abf8.html">framework</a></li><li class="navelem"><a class="el" href="dir_72a2a6c70dc66b6caf7d035656739fa9.html">PVRCore</a></li><li class="navelem"><a class="el" href="dir_54df85bc86542d2b4d8d35fd679dd83e.html">textureio</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -84,10 +84,10 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">FileDefinesTGA.h</div>  </div>
 </div><!--header-->
 <div class="contents">
-<a href="_file_defines_t_g_a_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;</div>
+<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;</div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#pragma once</span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_core_includes_8h.html">PVRCore/CoreIncludes.h</a>&quot;</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &lt;cstdint&gt;</span></div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="keyword">namespace </span>pvr {</div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="keyword">namespace </span>texture_tga {</div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="keyword">struct </span>FileHeader</div>
@@ -112,7 +112,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    <a class="code" href="namespacepvr.html#a7924324f96dc973225ad3c532cc72309a6adf97f83acf6453d4a6a4b1070f3754">None</a>,</div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    Paletted</div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;};</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;};</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;}</div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;</div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacepvr.html#ab98ea90165357c2f9030218c337f90bf">ImageType</a> {</div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="keyword">enum</span> Enum</div>
@@ -128,7 +128,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    RunLengthHuffmanDelta = 32,</div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    RunLengthHuffmanDeltaFourPassQuadTree</div>
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;};</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;};</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;}</div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;</div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;<span class="keyword">enum</span> DescriptorFlag</div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;{</div>
@@ -140,9 +140,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;</div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;} <span class="comment">// namespace texture_tga</span></div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;} <span class="comment">// namespace pvr</span></div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;<span class="comment">//!\endcond</span></div>
-<div class="ttc" id="namespacepvr_html_ab98ea90165357c2f9030218c337f90bf"><div class="ttname"><a href="namespacepvr.html#ab98ea90165357c2f9030218c337f90bf">pvr::ImageType</a></div><div class="ttdeci">ImageType</div><div class="ttdoc">The dimension of an image.</div><div class="ttdef"><b>Definition:</b> Types.h:1060</div></div>
-<div class="ttc" id="_core_includes_8h_html"><div class="ttname"><a href="_core_includes_8h.html">CoreIncludes.h</a></div><div class="ttdoc">Commonly included files from other PVRCore files. To include PVRCore functionality, use PVRCore.h instead. </div></div>
+<div class="ttc" id="namespacepvr_html_ab98ea90165357c2f9030218c337f90bf"><div class="ttname"><a href="namespacepvr.html#ab98ea90165357c2f9030218c337f90bf">pvr::ImageType</a></div><div class="ttdeci">ImageType</div><div class="ttdoc">The dimension of an image.</div><div class="ttdef"><b>Definition:</b> Texture.h:24</div></div>
 <div class="ttc" id="namespacepvr_html_a7924324f96dc973225ad3c532cc72309a6adf97f83acf6453d4a6a4b1070f3754"><div class="ttname"><a href="namespacepvr.html#a7924324f96dc973225ad3c532cc72309a6adf97f83acf6453d4a6a4b1070f3754">pvr::DataType::None</a></div><div class="ttdoc">None, or unknown. </div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.4-->

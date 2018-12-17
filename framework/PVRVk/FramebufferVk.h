@@ -32,6 +32,16 @@ public:
 	/// <summary>Constructor (zero initialization)</summary>
 	FramebufferCreateInfo() : _numAttachments(0), _layers(1), _width(0), _height(0) {}
 
+	/// <summary>Constructor (zero initialization)</summary>
+	FramebufferCreateInfo(uint32_t width, uint32_t height, uint32_t layers, const RenderPass& renderPass, uint32_t numAttachments = 0, ImageView* attachments = nullptr)
+		: _numAttachments(numAttachments), _layers(layers), _width(width), _height(height), _renderPass(renderPass)
+	{
+		for (uint32_t i = 0; i < numAttachments; ++i)
+		{
+			_attachments[i] = attachments[i];
+		}
+	}
+
 	/// <summary>Return number of color attachment</summary>
 	/// <returns>Number of color _attachments</returns>
 	uint32_t getNumAttachments() const

@@ -6,10 +6,10 @@
 #endif
 
 layout(rgba8)  __pixel_localEXT FragDataLocal {
-	layout(rgba8) highp vec4 albedo;
-	layout(rgb10_a2) highp vec4 normal; 
+	layout(rgba8) mediump vec4 albedo;
+	layout(rgb10_a2) mediump vec4 normal; 
 	layout(r32f) highp float depth;
-	layout(rgba8) highp vec4 color;
+	layout(r11f_g11f_b10f) mediump vec3 color;
 } pls;
 
 void main()

@@ -1,6 +1,5 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classpvrvk_1_1impl_1_1_device_object_debug_marker.html" title="pvrvk::impl::DeviceObject\lDebugMarker\&lt; DescriptorSetLayout_ \&gt;" alt="" coords="235,5,485,46"/>
-<area shape="rect" id="node2" href="$classpvrvk_1_1impl_1_1_descriptor_set_layout__.html" title="Constructor. . Vulkan implementation of a DescriptorSet." alt="" coords="534,38,709,79"/>
-<area shape="rect" id="node3" href="$classpvrvk_1_1impl_1_1_object_handle.html" title="pvrvk::impl::ObjectHandle\l\&lt; VkDescriptorSetLayout \&gt;" alt="" coords="5,70,187,111"/>
-<area shape="rect" id="node4" href="$classpvrvk_1_1impl_1_1_device_object_handle.html" title="pvrvk::impl::DeviceObject\lHandle\&lt; VkDescriptorSetLayout \&gt;" alt="" coords="249,70,471,111"/>
+<area shape="rect" id="node1" href="$classpvrvk_1_1impl_1_1_object_handle.html" title="pvrvk::impl::ObjectHandle\l\&lt; VkDebugReportCallbackEXT \&gt;" alt="" coords="5,5,221,46"/>
+<area shape="rect" id="node2" href="$classpvrvk_1_1impl_1_1_instance_object_handle.html" title="pvrvk::impl::InstanceObject\lHandle\&lt; VkDebugReportCallbackEXT \&gt;" alt="" coords="270,5,527,46"/>
+<area shape="rect" id="node3" href="$classpvrvk_1_1impl_1_1_debug_report_callback__.html" title="Vulkan DebugReportCallback wrapper" alt="" coords="576,5,747,46"/>
 </map>

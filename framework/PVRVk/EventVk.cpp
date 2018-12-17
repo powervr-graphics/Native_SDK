@@ -10,13 +10,13 @@
 
 namespace pvrvk {
 namespace impl {
-Event_::Event_(const DeviceWeakPtr& device) : DeviceObjectHandle(device), DeviceObjectDebugMarker(DebugReportObjectTypeEXT::e_EVENT_EXT)
+Event_::Event_(const DeviceWeakPtr& device, const EventCreateInfo& createInfo)
+	: DeviceObjectHandle(device), DeviceObjectDebugMarker(DebugReportObjectTypeEXT::e_EVENT_EXT), _createInfo(createInfo)
 {
-	VkEventCreateInfo nfo;
-	nfo.sType = static_cast<VkStructureType>(StructureType::e_EVENT_CREATE_INFO);
-	nfo.pNext = 0;
-	nfo.flags = static_cast<VkEventCreateFlags>(EventCreateFlags::e_NONE);
-	vkThrowIfFailed(_device->getVkBindings().vkCreateEvent(_device->getVkHandle(), &nfo, NULL, &_vkHandle), "EventVk_::init: Failed to create Semaphore object");
+	VkEventCreateInfo vkCreateInfo = {};
+	vkCreateInfo.sType = static_cast<VkStructureType>(StructureType::e_EVENT_CREATE_INFO);
+	vkCreateInfo.flags = static_cast<VkEventCreateFlags>(createInfo.getFlags());
+	vkThrowIfFailed(_device->getVkBindings().vkCreateEvent(_device->getVkHandle(), &vkCreateInfo, NULL, &_vkHandle), "Failed to create Event");
 }
 
 Event_::~Event_()

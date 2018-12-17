@@ -48,7 +48,7 @@ struct SamplerCreateInfo
 	pvrvk::CompareOp compareOp; //!< Comparison mode for comparison samplers. Default None.
 	bool compareOpEnable; //!< Enable the compare op
 	bool enableAnisotropy; //!< Enable anisotropic filtering
-	float anisotropyMaximum; //!< Texture anisotropic filtering. Default 0.
+	float anisotropyMaximum; //!< Texture anisotropic filtering. Default 1.
 	float lodBias; //!< Texture level-of-detail bias (bias of mipmap to select). Default 0.
 	float lodMinimum; //!< Texture minimum level-of-detail (mipmap). Default 0.
 	float lodMaximum; //!< Texture maximum level-of-detail (mipmap). Default 0.

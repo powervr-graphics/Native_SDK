@@ -1,6 +1,7 @@
-#version 450
+#version 320 es
+
 layout (location = 0)in highp vec4 myVertex;
-layout (location = 1)in highp vec2 myUV;
+layout (location = 1)in mediump vec2 myUV;
 layout(std140,set = 1, binding = 0)uniform MVP
 {
     highp mat4 myMVPMatrix;

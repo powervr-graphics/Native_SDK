@@ -12,11 +12,11 @@ namespace pvrvk {
 /// <summary> Implementation of the VkExportMemoryAllocateInfoKHR  class used by the VK_KHR_external_memory extension</summary>
 struct ExportMemoryAllocateInfoKHR
 {
-	ExternalMemoryHandleTypeFlags handleTypes;//!< <summary> HandleTypes member </summary>
-	/// <summary> Constructor. handleTypes are initialized to zero. </summary>
+	ExternalMemoryHandleTypeFlags handleTypes; //!< <summary> HandleTypes member </summary>
+	/// <summary> Constructor. handleTypes are initialized to zero.</summary>
 	ExportMemoryAllocateInfoKHR() : handleTypes(ExternalMemoryHandleTypeFlags::e_NONE) {}
-	/// <summary> Constructor. handleTypes are initialized to the parameter passed. </summary>
-	/// <param name="handleTypes"> The ExternalMemoryHandleTypeFlags used to initialise handleTypes. </param>
+	/// <summary> Constructor. handleTypes are initialized to the parameter passed.</summary>
+	/// <param name="handleTypes"> The ExternalMemoryHandleTypeFlags used to initialise handleTypes.</param>
 	ExportMemoryAllocateInfoKHR(ExternalMemoryHandleTypeFlags handleTypes) : handleTypes(handleTypes) {}
 };
 
@@ -124,15 +124,15 @@ public:
 	}
 
 	/// <summary>Return this mapped memory offset (const)</summary>
-	/// <returns>The offset of the mapped range, if any.</returns
+	/// <returns>The offset of the mapped range, if any.</returns>
 	virtual VkDeviceSize getMappedOffset() const = 0;
 
 	/// <summary>Return a pointer to the mapped memory</summary>
-	/// <returns>Mapped memory</returns
+	/// <returns>Mapped memory</returns>
 	virtual void* getMappedData() = 0;
 
 	/// <summary>Return this mapped memory size</summary>
-	/// <returns>The size of the mapped range, if any.</returns
+	/// <returns>The size of the mapped range, if any.</returns>
 	virtual VkDeviceSize getMappedSize() const = 0;
 
 	/// <summary>Return this memory size</summary>
@@ -140,16 +140,14 @@ public:
 	virtual VkDeviceSize getSize() const = 0;
 
 	/// <summary>Return true if this memory is being mapped by the host</summary>
-	/// <returns>True if memory is already mapped, otherwise false.</returns
+	/// <returns>True if memory is already mapped, otherwise false.</returns>
 	virtual bool isMapped() const = 0;
 
-	/// <summary>
-	/// map this memory. NOTE: Only memory created with HostVisible flag can be mapped and unmapped
-	/// </summary>
-	/// <param name="mappedMemory">Out mapped memory</param>
+	/// <summary>map this memory. NOTE: Only memory created with HostVisible flag can be mapped and unmapped</summary>
 	/// <param name="offset">Zero-based byte offset from the beginning of the memory object.</param>
-	/// <param name="size">Size of the memory range to map, or VK_WHOLE_SIZE to map from offset to the end of the allocation</param>
-	virtual void map(void** mappedMemory, VkDeviceSize offset = 0, VkDeviceSize size = VK_WHOLE_SIZE) = 0;
+	/// <param name="size">Size of the memory range to map, or VK_WHOLE_SIZE to map from offset to the end of the allocation.</param>
+	/// <param name="memoryMapFlags">A pvrvk::MemoryMapFlags flag defining the how memory mapping should occur.</param>
+	virtual void* map(VkDeviceSize offset = 0, VkDeviceSize size = VK_WHOLE_SIZE, pvrvk::MemoryMapFlags memoryMapFlags = pvrvk::MemoryMapFlags::e_NONE) = 0;
 
 	/// <summary>Unmap this memory block</summary>
 	virtual void unmap() = 0;
@@ -187,21 +185,21 @@ public:
 	}
 
 	/// <summary>Return this mapped memory offset (const)</summary>
-	/// <returns>VkDeviceSize</returns
+	/// <returns>VkDeviceSize</returns>
 	VkDeviceSize getMappedOffset() const
 	{
 		return _mappedOffset;
 	}
 
 	/// <summary>Return a pointer to the mapped memory</summary>
-	/// <returns>Mapped memory</returns
+	/// <returns>Mapped memory</returns>
 	virtual void* getMappedData()
 	{
 		return _mappedMemory;
 	}
 
 	/// <summary>Return this mapped memory size (const)</summary>
-	/// <returns>VkDeviceSize</returns
+	/// <returns>VkDeviceSize</returns>
 	VkDeviceSize getMappedSize() const
 	{
 		return _mappedSize;
@@ -215,21 +213,18 @@ public:
 	}
 
 	/// <summary>Return true if this memory is being mapped by the host (const)</summary>
-	/// <returns>VkDeviceSize</returns
+	/// <returns>VkDeviceSize</returns>
 	bool isMapped() const
 	{
 		return _mappedSize > 0;
 	}
 
-	/// <summary>
-	/// map this memory. NOTE: Only memory created with HostVisible flag can be mapped and unmapped
-	/// </summary>
-	/// <param name="mappedMemory">Out mapped memory</param>
+	/// <summary>map this memory. NOTE: Only memory created with HostVisible flag can be mapped and unmapped</summary>
 	/// <param name="offset">Zero-based byte offset from the beginning of the memory object.</param>
 	/// <param name="size">Size of the memory range to map, or VK_WHOLE_SIZE to map from offset to the end of the allocation</param>
-	virtual void map(void** mappedMemory, VkDeviceSize offset = 0, VkDeviceSize size = VK_WHOLE_SIZE)
+	/// <param name="memoryMapFlags">A pvrvk::MemoryMapFlags flag defining the how memory mapping should occur.</param>
+	virtual void* map(VkDeviceSize offset = 0, VkDeviceSize size = VK_WHOLE_SIZE, pvrvk::MemoryMapFlags memoryMapFlags = pvrvk::MemoryMapFlags::e_NONE)
 	{
-		assertion(mappedMemory != nullptr, "DeviceMemory::map - mappedMemory must be a valid pointer");
 		if (!isMappable())
 		{
 			throw ErrorMemoryMapFailed("Cannot map memory block as the memory was created without "
@@ -243,14 +238,11 @@ public:
 		{
 			if (offset + size > getSize())
 			{
-				// throw VkErrorValidationFailedEXT("Cannot map map memory block 0x%ullx"
-				//    " - Attempting to map offset (0x%ullx) + size (0x%ullx) range greater than the memory block size", getVkHandle(), offset, size);
 				throw ErrorMemoryMapFailed("Cannot map map memory block : offset + size range greater than the memory block size");
 			}
 		}
 
-		vkThrowIfFailed(
-			_device->getVkBindings().vkMapMemory(_device->getVkHandle(), getVkHandle(), offset, size, static_cast<VkMemoryMapFlags>(pvrvk::MemoryMapFlags::e_NONE), &_mappedMemory),
+		vkThrowIfFailed(_device->getVkBindings().vkMapMemory(_device->getVkHandle(), getVkHandle(), offset, size, static_cast<VkMemoryMapFlags>(memoryMapFlags), &_mappedMemory),
 			"Failed to map memory block");
 
 		if (_mappedMemory == nullptr)
@@ -259,9 +251,9 @@ public:
 		}
 
 		// store the mapped offset and mapped size
-		*mappedMemory = _mappedMemory;
 		_mappedOffset = offset;
 		_mappedSize = size;
+		return _mappedMemory;
 	}
 
 	/// <summary>Unmap this memory block</summary>
@@ -336,8 +328,16 @@ protected:
 	{
 		if (getVkHandle() != VK_NULL_HANDLE)
 		{
-			_device->getVkBindings().vkFreeMemory(_device->getVkHandle(), getVkHandle(), nullptr);
-			_vkHandle = VK_NULL_HANDLE;
+			if (_device.isValid())
+			{
+				_device->getVkBindings().vkFreeMemory(_device->getVkHandle(), getVkHandle(), nullptr);
+				_vkHandle = VK_NULL_HANDLE;
+				_device.reset();
+			}
+			else
+			{
+				reportDestroyedAfterDevice("DeviceMemory");
+			}
 		}
 	}
 

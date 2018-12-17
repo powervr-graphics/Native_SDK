@@ -15,7 +15,7 @@
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="IMGdoxygen.css" rel="stylesheet" type="text/css"/>
-<link rel="shortcut icon" href="http://www.imgtec.com/images/img.ico">
+<link rel="shortcut icon" type="image/x-icon" href="img.ico">
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
+      <a href="https://www.imgtec.com/developers/" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRVk</span> Documentation</a>
    <tbody>
@@ -152,9 +152,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a79eb8134d7dbc627f05bb7d47ea1301d"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_i_device_memory__.html#a79eb8134d7dbc627f05bb7d47ea1301d">isMapped</a> () const =0</td></tr>
 <tr class="memdesc:a79eb8134d7dbc627f05bb7d47ea1301d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if this memory is being mapped by the host <a href="#a79eb8134d7dbc627f05bb7d47ea1301d">More...</a><br/></td></tr>
 <tr class="separator:a79eb8134d7dbc627f05bb7d47ea1301d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a12d159f6b5d6aaa9dd597e88358aca48"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_i_device_memory__.html#a12d159f6b5d6aaa9dd597e88358aca48">map</a> (void **mappedMemory, VkDeviceSize offset=0, VkDeviceSize size=VK_WHOLE_SIZE)=0</td></tr>
-<tr class="memdesc:a12d159f6b5d6aaa9dd597e88358aca48"><td class="mdescLeft">&#160;</td><td class="mdescRight">map this memory. NOTE: Only memory created with HostVisible flag can be mapped and unmapped  <a href="#a12d159f6b5d6aaa9dd597e88358aca48">More...</a><br/></td></tr>
-<tr class="separator:a12d159f6b5d6aaa9dd597e88358aca48"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb5544e7a7dab0033a8337644cd1b3c8"><td class="memItemLeft" align="right" valign="top">virtual void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_i_device_memory__.html#afb5544e7a7dab0033a8337644cd1b3c8">map</a> (VkDeviceSize offset=0, VkDeviceSize size=VK_WHOLE_SIZE, pvrvk::MemoryMapFlags memoryMapFlags=pvrvk::MemoryMapFlags::e_NONE)=0</td></tr>
+<tr class="memdesc:afb5544e7a7dab0033a8337644cd1b3c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">map this memory. NOTE: Only memory created with HostVisible flag can be mapped and unmapped <a href="#afb5544e7a7dab0033a8337644cd1b3c8">More...</a><br/></td></tr>
+<tr class="separator:afb5544e7a7dab0033a8337644cd1b3c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a242c697b4a8ad72788e1712a43a50b77"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_i_device_memory__.html#a242c697b4a8ad72788e1712a43a50b77">unmap</a> ()=0</td></tr>
 <tr class="memdesc:a242c697b4a8ad72788e1712a43a50b77"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unmap this memory block <a href="#a242c697b4a8ad72788e1712a43a50b77">More...</a><br/></td></tr>
 <tr class="separator:a242c697b4a8ad72788e1712a43a50b77"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -391,7 +391,7 @@ Protected Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Return a pointer to the mapped memory</p>
-<dl class="section return"><dt>Returns</dt><dd>Mapped memory&lt;/returns </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Mapped memory</dd></dl>
 
 <p>Implemented in <a class="el" href="classpvrvk_1_1impl_1_1_device_memory__.html#a9a8589bba541e3bc0b9d71e7b8e97fb3">pvrvk::impl::DeviceMemory_</a>.</p>
 
@@ -419,7 +419,7 @@ Protected Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Return this mapped memory offset (const)</p>
-<dl class="section return"><dt>Returns</dt><dd>The offset of the mapped range, if any.&lt;/returns </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>The offset of the mapped range, if any.</dd></dl>
 
 <p>Implemented in <a class="el" href="classpvrvk_1_1impl_1_1_device_memory__.html#aa8e3c320f627c0e321059295acb45c08">pvrvk::impl::DeviceMemory_</a>.</p>
 
@@ -447,7 +447,7 @@ Protected Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Return this mapped memory size</p>
-<dl class="section return"><dt>Returns</dt><dd>The size of the mapped range, if any.&lt;/returns </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>The size of the mapped range, if any.</dd></dl>
 
 <p>Implemented in <a class="el" href="classpvrvk_1_1impl_1_1_device_memory__.html#a66674e465c3b45948b25b9729dbfb709">pvrvk::impl::DeviceMemory_</a>.</p>
 
@@ -691,13 +691,13 @@ Protected Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Return true if this memory is being mapped by the host</p>
-<dl class="section return"><dt>Returns</dt><dd>True if memory is already mapped, otherwise false.&lt;/returns </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>True if memory is already mapped, otherwise false.</dd></dl>
 
 <p>Implemented in <a class="el" href="classpvrvk_1_1impl_1_1_device_memory__.html#a047f9551a6dd09db2df050753e019401">pvrvk::impl::DeviceMemory_</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a12d159f6b5d6aaa9dd597e88358aca48"></a>
+<a class="anchor" id="afb5544e7a7dab0033a8337644cd1b3c8"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -705,14 +705,8 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual void pvrvk::impl::IDeviceMemory_::map </td>
+          <td class="memname">virtual void* pvrvk::impl::IDeviceMemory_::map </td>
           <td>(</td>
-          <td class="paramtype">void **&#160;</td>
-          <td class="paramname"><em>mappedMemory</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
           <td class="paramtype">VkDeviceSize&#160;</td>
           <td class="paramname"><em>offset</em> = <code>0</code>, </td>
         </tr>
@@ -720,7 +714,13 @@ Protected Attributes</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">VkDeviceSize&#160;</td>
-          <td class="paramname"><em>size</em> = <code>VK_WHOLE_SIZE</code>&#160;</td>
+          <td class="paramname"><em>size</em> = <code>VK_WHOLE_SIZE</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">pvrvk::MemoryMapFlags&#160;</td>
+          <td class="paramname"><em>memoryMapFlags</em> = <code>pvrvk::MemoryMapFlags::e_NONE</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -735,17 +735,17 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>map this memory. NOTE: Only memory created with HostVisible flag can be mapped and unmapped </p>
+<p>map this memory. NOTE: Only memory created with HostVisible flag can be mapped and unmapped</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">mappedMemory</td><td>Out mapped memory</td></tr>
     <tr><td class="paramname">offset</td><td>Zero-based byte offset from the beginning of the memory object.</td></tr>
-    <tr><td class="paramname">size</td><td>Size of the memory range to map, or VK_WHOLE_SIZE to map from offset to the end of the allocation</td></tr>
+    <tr><td class="paramname">size</td><td>Size of the memory range to map, or VK_WHOLE_SIZE to map from offset to the end of the allocation.</td></tr>
+    <tr><td class="paramname">memoryMapFlags</td><td>A pvrvk::MemoryMapFlags flag defining the how memory mapping should occur.</td></tr>
   </table>
   </dd>
 </dl>
 
-<p>Implemented in <a class="el" href="classpvrvk_1_1impl_1_1_device_memory__.html#adef3d66f2029c2b31379ce4064ff2d7b">pvrvk::impl::DeviceMemory_</a>.</p>
+<p>Implemented in <a class="el" href="classpvrvk_1_1impl_1_1_device_memory__.html#a39541496c24d83ff933f316e8f3b4cde">pvrvk::impl::DeviceMemory_</a>.</p>
 
 </div>
 </div>

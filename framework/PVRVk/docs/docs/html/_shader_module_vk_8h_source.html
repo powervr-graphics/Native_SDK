@@ -15,7 +15,7 @@
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="IMGdoxygen.css" rel="stylesheet" type="text/css"/>
-<link rel="shortcut icon" href="http://www.imgtec.com/images/img.ico">
+<link rel="shortcut icon" type="image/x-icon" href="img.ico">
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
+      <a href="https://www.imgtec.com/developers/" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRVk</span> Documentation</a>
    <tbody>
@@ -89,29 +89,97 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#include &quot;<a class="code" href="_device_vk_8h.html">PVRVk/DeviceVk.h</a>&quot;</span></div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;</div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="keyword">namespace </span>pvrvk {</div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="keyword">namespace </span>impl {</div>
-<div class="line"><a name="l00014"></a><span class="lineno"><a class="line" href="classpvrvk_1_1impl_1_1_shader_module__.html">   14</a></span>&#160;<span class="keyword">class </span><a class="code" href="classpvrvk_1_1impl_1_1_shader_module__.html">ShaderModule_</a> : <span class="keyword">public</span> <a class="code" href="classpvrvk_1_1impl_1_1_device_object_handle.html">DeviceObjectHandle</a>&lt;VkShaderModule&gt;, <span class="keyword">public</span> <a class="code" href="classpvrvk_1_1impl_1_1_device_object_debug_marker.html">DeviceObjectDebugMarker</a>&lt;ShaderModule_&gt;</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;{</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;    <a class="code" href="_types_vk_8h.html#a96e4c02fcc79177dfd9de56dce1a47cc">DECLARE_NO_COPY_SEMANTICS</a>(<a class="code" href="classpvrvk_1_1impl_1_1_shader_module__.html">ShaderModule_</a>)</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">typename</span>&gt;</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    <span class="keyword">friend</span> struct ::pvrvk::RefCountEntryIntrusive;</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    <span class="keyword">friend</span> class ::pvrvk::impl::Device_;</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    <a class="code" href="classpvrvk_1_1impl_1_1_shader_module__.html">ShaderModule_</a>(<span class="keyword">const</span> <a class="code" href="namespacepvrvk.html#a8dd5932a80187b088ce6b591712dc2c2">DeviceWeakPtr</a>&amp; device, <span class="keyword">const</span> std::vector&lt;uint32_t&gt;&amp; shaderSrc);</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    ~<a class="code" href="classpvrvk_1_1impl_1_1_shader_module__.html">ShaderModule_</a>();</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;};</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;} <span class="comment">// namespace impl</span></div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;} <span class="comment">// namespace pvrvk</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno"><a class="line" href="structpvrvk_1_1_shader_module_create_info.html">   13</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structpvrvk_1_1_shader_module_create_info.html">ShaderModuleCreateInfo</a></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;{</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00019"></a><span class="lineno"><a class="line" href="structpvrvk_1_1_shader_module_create_info.html#a2111bd4c426a51637d4390ce895a35c6">   19</a></span>&#160;    <span class="keyword">inline</span> <a class="code" href="structpvrvk_1_1_shader_module_create_info.html#a2111bd4c426a51637d4390ce895a35c6">ShaderModuleCreateInfo</a>(<span class="keyword">const</span> std::vector&lt;uint32_t&gt;&amp; shaderSources, ShaderModuleCreateFlags flags = ShaderModuleCreateFlags::e_NONE)</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;        : _flags(flags), _shaderSources(shaderSources)</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    {</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;        <span class="keywordflow">if</span> (_shaderSources.empty())</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;        {</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;            <span class="keywordflow">throw</span> ErrorValidationFailedEXT(<span class="stringliteral">&quot;Attempted to create ShaderModuleCreateInfo with empty shader source.&quot;</span>);</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;        }</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    }</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;</div>
+<div class="line"><a name="l00030"></a><span class="lineno"><a class="line" href="structpvrvk_1_1_shader_module_create_info.html#a3ce5a00b8823bf9a074966bc02ab3049">   30</a></span>&#160;    <span class="keyword">inline</span> ShaderModuleCreateFlags <a class="code" href="structpvrvk_1_1_shader_module_create_info.html#a3ce5a00b8823bf9a074966bc02ab3049">getFlags</a>()<span class="keyword"> const</span></div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;        <span class="keywordflow">return</span> _flags;</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    }</div>
+<div class="line"><a name="l00036"></a><span class="lineno"><a class="line" href="structpvrvk_1_1_shader_module_create_info.html#aa6c6b544bf728a34649d1db273ae959a">   36</a></span>&#160;    <span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code" href="structpvrvk_1_1_shader_module_create_info.html#aa6c6b544bf728a34649d1db273ae959a">setFlags</a>(ShaderModuleCreateFlags flags)</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    {</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;        this-&gt;_flags = flags;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    }</div>
+<div class="line"><a name="l00042"></a><span class="lineno"><a class="line" href="structpvrvk_1_1_shader_module_create_info.html#a436a3e505f66930f6d384d9cdf0bab9a">   42</a></span>&#160;    <span class="keyword">inline</span> uint32_t <a class="code" href="structpvrvk_1_1_shader_module_create_info.html#a436a3e505f66930f6d384d9cdf0bab9a">getCodeSize</a>()<span class="keyword"> const</span></div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>uint32_t<span class="keyword">&gt;</span>(_shaderSources.size());</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    }</div>
+<div class="line"><a name="l00048"></a><span class="lineno"><a class="line" href="structpvrvk_1_1_shader_module_create_info.html#ab9178b884f824ddfb3c045a33aad11f4">   48</a></span>&#160;    <span class="keyword">inline</span> <span class="keyword">const</span> std::vector&lt;uint32_t&gt;&amp; <a class="code" href="structpvrvk_1_1_shader_module_create_info.html#ab9178b884f824ddfb3c045a33aad11f4">getShaderSources</a>()<span class="keyword"> const</span></div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;        <span class="keywordflow">return</span> _shaderSources;</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    }</div>
+<div class="line"><a name="l00054"></a><span class="lineno"><a class="line" href="structpvrvk_1_1_shader_module_create_info.html#ae0efcd8c725f04710d942cb40359fe92">   54</a></span>&#160;    <span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code" href="structpvrvk_1_1_shader_module_create_info.html#ae0efcd8c725f04710d942cb40359fe92">setShaderSources</a>(<span class="keyword">const</span> std::vector&lt;uint32_t&gt;&amp; shaderSources)</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    {</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;        this-&gt;_shaderSources = shaderSources;</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    }</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    ShaderModuleCreateFlags _flags;</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    std::vector&lt;uint32_t&gt; _shaderSources;</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;};</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;<span class="keyword">namespace </span>impl {</div>
+<div class="line"><a name="l00067"></a><span class="lineno"><a class="line" href="classpvrvk_1_1impl_1_1_shader_module__.html">   67</a></span>&#160;<span class="keyword">class </span><a class="code" href="classpvrvk_1_1impl_1_1_shader_module__.html">ShaderModule_</a> : <span class="keyword">public</span> <a class="code" href="classpvrvk_1_1impl_1_1_device_object_handle.html">DeviceObjectHandle</a>&lt;VkShaderModule&gt;, <span class="keyword">public</span> <a class="code" href="classpvrvk_1_1impl_1_1_device_object_debug_marker.html">DeviceObjectDebugMarker</a>&lt;ShaderModule_&gt;</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;{</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    <a class="code" href="_types_vk_8h.html#a96e4c02fcc79177dfd9de56dce1a47cc">DECLARE_NO_COPY_SEMANTICS</a>(<a class="code" href="classpvrvk_1_1impl_1_1_shader_module__.html">ShaderModule_</a>)</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    </div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    <span class="keyword">inline</span> ShaderModuleCreateFlags <a class="code" href="classpvrvk_1_1impl_1_1_shader_module__.html#a2e9c050d8dd7a21cc71dfe7e35f31b98">getFlags</a>()<span class="keyword"> const</span></div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;        <span class="keywordflow">return</span> _createInfo.<a class="code" href="structpvrvk_1_1_shader_module_create_info.html#a3ce5a00b8823bf9a074966bc02ab3049">getFlags</a>();</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    }</div>
+<div class="line"><a name="l00080"></a><span class="lineno"><a class="line" href="classpvrvk_1_1impl_1_1_shader_module__.html#a5316466b9c63e6dd27a036173291adf8">   80</a></span>&#160;    <span class="keyword">inline</span> uint32_t <a class="code" href="classpvrvk_1_1impl_1_1_shader_module__.html#a5316466b9c63e6dd27a036173291adf8">getCodeSize</a>()<span class="keyword"> const</span></div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;        <span class="keywordflow">return</span> _createInfo.<a class="code" href="structpvrvk_1_1_shader_module_create_info.html#a436a3e505f66930f6d384d9cdf0bab9a">getCodeSize</a>();</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    }</div>
+<div class="line"><a name="l00086"></a><span class="lineno"><a class="line" href="classpvrvk_1_1impl_1_1_shader_module__.html#a15afbe7cf77d8cfe34afe4d9d772c43f">   86</a></span>&#160;    <span class="keyword">inline</span> <span class="keyword">const</span> std::vector&lt;uint32_t&gt;&amp; <a class="code" href="classpvrvk_1_1impl_1_1_shader_module__.html#a15afbe7cf77d8cfe34afe4d9d772c43f">getShaderSources</a>()<span class="keyword"> const</span></div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;        <span class="keywordflow">return</span> _createInfo.<a class="code" href="structpvrvk_1_1_shader_module_create_info.html#ab9178b884f824ddfb3c045a33aad11f4">getShaderSources</a>();</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    }</div>
+<div class="line"><a name="l00092"></a><span class="lineno"><a class="line" href="classpvrvk_1_1impl_1_1_shader_module__.html#a1b5404a75982d0eb7a8182787be7b56e">   92</a></span>&#160;    <a class="code" href="structpvrvk_1_1_shader_module_create_info.html">ShaderModuleCreateInfo</a> <a class="code" href="classpvrvk_1_1impl_1_1_shader_module__.html#a1b5404a75982d0eb7a8182787be7b56e">getCreateInfo</a>()<span class="keyword"> const</span></div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;        <span class="keywordflow">return</span> _createInfo;</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    }</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">typename</span>&gt;</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;    <span class="keyword">friend</span> struct ::pvrvk::RefCountEntryIntrusive;</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;    <span class="keyword">friend</span> class ::pvrvk::impl::Device_;</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;    <a class="code" href="classpvrvk_1_1impl_1_1_shader_module__.html">ShaderModule_</a>(<span class="keyword">const</span> <a class="code" href="namespacepvrvk.html#a8dd5932a80187b088ce6b591712dc2c2">DeviceWeakPtr</a>&amp; device, <span class="keyword">const</span> <a class="code" href="structpvrvk_1_1_shader_module_create_info.html">ShaderModuleCreateInfo</a>&amp; createInfo);</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;    ~<a class="code" href="classpvrvk_1_1impl_1_1_shader_module__.html">ShaderModule_</a>();</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;    <a class="code" href="structpvrvk_1_1_shader_module_create_info.html">ShaderModuleCreateInfo</a> _createInfo;</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;};</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;} <span class="comment">// namespace impl</span></div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;} <span class="comment">// namespace pvrvk</span></div>
+<div class="ttc" id="structpvrvk_1_1_shader_module_create_info_html_aa6c6b544bf728a34649d1db273ae959a"><div class="ttname"><a href="structpvrvk_1_1_shader_module_create_info.html#aa6c6b544bf728a34649d1db273ae959a">pvrvk::ShaderModuleCreateInfo::setFlags</a></div><div class="ttdeci">void setFlags(ShaderModuleCreateFlags flags)</div><div class="ttdoc">Set the ShaderModule creation flags</div><div class="ttdef"><b>Definition:</b> ShaderModuleVk.h:36</div></div>
+<div class="ttc" id="structpvrvk_1_1_shader_module_create_info_html_a436a3e505f66930f6d384d9cdf0bab9a"><div class="ttname"><a href="structpvrvk_1_1_shader_module_create_info.html#a436a3e505f66930f6d384d9cdf0bab9a">pvrvk::ShaderModuleCreateInfo::getCodeSize</a></div><div class="ttdeci">uint32_t getCodeSize() const </div><div class="ttdoc">Get the size of the shader sources</div><div class="ttdef"><b>Definition:</b> ShaderModuleVk.h:42</div></div>
+<div class="ttc" id="structpvrvk_1_1_shader_module_create_info_html"><div class="ttname"><a href="structpvrvk_1_1_shader_module_create_info.html">pvrvk::ShaderModuleCreateInfo</a></div><div class="ttdoc">ShaderModule creation descriptor.</div><div class="ttdef"><b>Definition:</b> ShaderModuleVk.h:13</div></div>
+<div class="ttc" id="classpvrvk_1_1impl_1_1_shader_module___html_a2e9c050d8dd7a21cc71dfe7e35f31b98"><div class="ttname"><a href="classpvrvk_1_1impl_1_1_shader_module__.html#a2e9c050d8dd7a21cc71dfe7e35f31b98">pvrvk::impl::ShaderModule_::getFlags</a></div><div class="ttdeci">ShaderModuleCreateFlags getFlags() const </div><div class="ttdoc">Get the ShaderModule creation flags</div><div class="ttdef"><b>Definition:</b> ShaderModuleVk.h:74</div></div>
 <div class="ttc" id="classpvrvk_1_1impl_1_1_device_object_debug_marker_html"><div class="ttname"><a href="classpvrvk_1_1impl_1_1_device_object_debug_marker.html">pvrvk::impl::DeviceObjectDebugMarker</a></div><div class="ttdoc">A Debug Marker wrapper for PVRVk Device allocated objects. Handles naming and tagging calls for the e...</div><div class="ttdef"><b>Definition:</b> DebugMarkerVk.h:87</div></div>
-<div class="ttc" id="_types_vk_8h_html_a96e4c02fcc79177dfd9de56dce1a47cc"><div class="ttname"><a href="_types_vk_8h.html#a96e4c02fcc79177dfd9de56dce1a47cc">DECLARE_NO_COPY_SEMANTICS</a></div><div class="ttdeci">#define DECLARE_NO_COPY_SEMANTICS(TYPE)</div><div class="ttdoc">INTERNAL. Disable the Copy Constructor and the Copy Assignment Operator of the type</div><div class="ttdef"><b>Definition:</b> TypesVk.h:128</div></div>
+<div class="ttc" id="_types_vk_8h_html_a96e4c02fcc79177dfd9de56dce1a47cc"><div class="ttname"><a href="_types_vk_8h.html#a96e4c02fcc79177dfd9de56dce1a47cc">DECLARE_NO_COPY_SEMANTICS</a></div><div class="ttdeci">#define DECLARE_NO_COPY_SEMANTICS(TYPE)</div><div class="ttdoc">INTERNAL. Disable the Copy Constructor and the Copy Assignment Operator of the type</div><div class="ttdef"><b>Definition:</b> TypesVk.h:127</div></div>
+<div class="ttc" id="structpvrvk_1_1_shader_module_create_info_html_a2111bd4c426a51637d4390ce895a35c6"><div class="ttname"><a href="structpvrvk_1_1_shader_module_create_info.html#a2111bd4c426a51637d4390ce895a35c6">pvrvk::ShaderModuleCreateInfo::ShaderModuleCreateInfo</a></div><div class="ttdeci">ShaderModuleCreateInfo(const std::vector&lt; uint32_t &gt; &amp;shaderSources, ShaderModuleCreateFlags flags=ShaderModuleCreateFlags::e_NONE)</div><div class="ttdoc">Constructor</div><div class="ttdef"><b>Definition:</b> ShaderModuleVk.h:19</div></div>
 <div class="ttc" id="classpvrvk_1_1impl_1_1_device_object_handle_html"><div class="ttname"><a href="classpvrvk_1_1impl_1_1_device_object_handle.html">pvrvk::impl::DeviceObjectHandle</a></div><div class="ttdoc">Defines a simple interface for a Vulkan object which holds a reference to a particular device...</div><div class="ttdef"><b>Definition:</b> ObjectHandleVk.h:121</div></div>
+<div class="ttc" id="classpvrvk_1_1impl_1_1_shader_module___html_a15afbe7cf77d8cfe34afe4d9d772c43f"><div class="ttname"><a href="classpvrvk_1_1impl_1_1_shader_module__.html#a15afbe7cf77d8cfe34afe4d9d772c43f">pvrvk::impl::ShaderModule_::getShaderSources</a></div><div class="ttdeci">const std::vector&lt; uint32_t &gt; &amp; getShaderSources() const </div><div class="ttdoc">Get the shader sources</div><div class="ttdef"><b>Definition:</b> ShaderModuleVk.h:86</div></div>
 <div class="ttc" id="_device_vk_8h_html"><div class="ttname"><a href="_device_vk_8h.html">DeviceVk.h</a></div><div class="ttdoc">The PVRVk Device class. One of the bysiest classes in Vulkan, together with the Command Buffer...</div></div>
-<div class="ttc" id="classpvrvk_1_1impl_1_1_shader_module___html"><div class="ttname"><a href="classpvrvk_1_1impl_1_1_shader_module__.html">pvrvk::impl::ShaderModule_</a></div><div class="ttdoc">Vulkan shader module wrapper</div><div class="ttdef"><b>Definition:</b> ShaderModuleVk.h:14</div></div>
-<div class="ttc" id="namespacepvrvk_html_a8dd5932a80187b088ce6b591712dc2c2"><div class="ttname"><a href="namespacepvrvk.html#a8dd5932a80187b088ce6b591712dc2c2">pvrvk::DeviceWeakPtr</a></div><div class="ttdeci">RefCountedWeakReference&lt; impl::Device_ &gt; DeviceWeakPtr</div><div class="ttdoc">Forwared-declared weak-reference-counted handle to a Device. For detailed documentation, see PVRVk module</div><div class="ttdef"><b>Definition:</b> ForwardDecObjectsVk.h:226</div></div>
+<div class="ttc" id="structpvrvk_1_1_shader_module_create_info_html_ae0efcd8c725f04710d942cb40359fe92"><div class="ttname"><a href="structpvrvk_1_1_shader_module_create_info.html#ae0efcd8c725f04710d942cb40359fe92">pvrvk::ShaderModuleCreateInfo::setShaderSources</a></div><div class="ttdeci">void setShaderSources(const std::vector&lt; uint32_t &gt; &amp;shaderSources)</div><div class="ttdoc">Set the shader sources to use for creating a shader module</div><div class="ttdef"><b>Definition:</b> ShaderModuleVk.h:54</div></div>
+<div class="ttc" id="structpvrvk_1_1_shader_module_create_info_html_a3ce5a00b8823bf9a074966bc02ab3049"><div class="ttname"><a href="structpvrvk_1_1_shader_module_create_info.html#a3ce5a00b8823bf9a074966bc02ab3049">pvrvk::ShaderModuleCreateInfo::getFlags</a></div><div class="ttdeci">ShaderModuleCreateFlags getFlags() const </div><div class="ttdoc">Get the ShaderModule creation flags</div><div class="ttdef"><b>Definition:</b> ShaderModuleVk.h:30</div></div>
+<div class="ttc" id="classpvrvk_1_1impl_1_1_shader_module___html"><div class="ttname"><a href="classpvrvk_1_1impl_1_1_shader_module__.html">pvrvk::impl::ShaderModule_</a></div><div class="ttdoc">Vulkan shader module wrapper</div><div class="ttdef"><b>Definition:</b> ShaderModuleVk.h:67</div></div>
+<div class="ttc" id="classpvrvk_1_1impl_1_1_shader_module___html_a5316466b9c63e6dd27a036173291adf8"><div class="ttname"><a href="classpvrvk_1_1impl_1_1_shader_module__.html#a5316466b9c63e6dd27a036173291adf8">pvrvk::impl::ShaderModule_::getCodeSize</a></div><div class="ttdeci">uint32_t getCodeSize() const </div><div class="ttdoc">Get the size of the shader sources</div><div class="ttdef"><b>Definition:</b> ShaderModuleVk.h:80</div></div>
+<div class="ttc" id="structpvrvk_1_1_shader_module_create_info_html_ab9178b884f824ddfb3c045a33aad11f4"><div class="ttname"><a href="structpvrvk_1_1_shader_module_create_info.html#ab9178b884f824ddfb3c045a33aad11f4">pvrvk::ShaderModuleCreateInfo::getShaderSources</a></div><div class="ttdeci">const std::vector&lt; uint32_t &gt; &amp; getShaderSources() const </div><div class="ttdoc">Get the shader sources</div><div class="ttdef"><b>Definition:</b> ShaderModuleVk.h:48</div></div>
+<div class="ttc" id="namespacepvrvk_html_a8dd5932a80187b088ce6b591712dc2c2"><div class="ttname"><a href="namespacepvrvk.html#a8dd5932a80187b088ce6b591712dc2c2">pvrvk::DeviceWeakPtr</a></div><div class="ttdeci">RefCountedWeakReference&lt; impl::Device_ &gt; DeviceWeakPtr</div><div class="ttdoc">Forwared-declared weak-reference-counted handle to a Device. For detailed documentation, see PVRVk module</div><div class="ttdef"><b>Definition:</b> ForwardDecObjectsVk.h:235</div></div>
+<div class="ttc" id="classpvrvk_1_1impl_1_1_shader_module___html_a1b5404a75982d0eb7a8182787be7b56e"><div class="ttname"><a href="classpvrvk_1_1impl_1_1_shader_module__.html#a1b5404a75982d0eb7a8182787be7b56e">pvrvk::impl::ShaderModule_::getCreateInfo</a></div><div class="ttdeci">ShaderModuleCreateInfo getCreateInfo() const </div><div class="ttdoc">Get this shader modules&#39;s create flags</div><div class="ttdef"><b>Definition:</b> ShaderModuleVk.h:92</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.4-->
 <!-- start footer part (NON TREEVIEW ONLY!!) -->

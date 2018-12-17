@@ -136,8 +136,8 @@ void OpenGLESIMGFramebufferDownsample::updateSubtitleText()
 {
 	if (_useHalfAndHalf)
 	{
-		_uiRenderer.getDefaultDescription()->setText("Rendering the object using GL_IMG_framebuffer_downsample.\nLeft hand side samples from the full size texture.\nRight hand "
-													 "side samples from the half size texture.");
+		_uiRenderer.getDefaultDescription()->setText("Rendering the object using GL_IMG_framebuffer_downsample.\nLeft: Samples from the full size texture.\nRight: Samples from "
+													 "the half size texture created using GL_IMG_framebuffer_downsample.");
 	}
 	else if (_useFullDimensionFramebuffer)
 	{
@@ -145,7 +145,8 @@ void OpenGLESIMGFramebufferDownsample::updateSubtitleText()
 	}
 	else
 	{
-		_uiRenderer.getDefaultDescription()->setText("Rendering the object using GL_IMG_framebuffer_downsample.\nSamples from the half size texture.");
+		_uiRenderer.getDefaultDescription()->setText("Rendering the object using GL_IMG_framebuffer_downsample.\nSamples from the half size texture created using "
+													 "GL_IMG_framebuffer_downsample.");
 	}
 
 	_uiRenderer.getDefaultDescription()->commitUpdates();
@@ -159,6 +160,7 @@ If the rendering context is lost, InitApplication() will not be called again.
 ***********************************************************************************************************************/
 pvr::Result OpenGLESIMGFramebufferDownsample::initApplication()
 {
+	setBackBufferColorspace(pvr::ColorSpace::lRGB); // Example visuals are tweaked to directly use sRGB values to avoid shader gamma correction
 	// Initialize variables used for the animation
 	_frame = 0;
 	updateMode(0);
@@ -180,18 +182,15 @@ pvr::Result OpenGLESIMGFramebufferDownsample::initView()
 	{
 		throw pvr::GlExtensionNotSupportedError("GL_IMG_framebuffer_downsample");
 	}
-	if (gl::ext::FramebufferTexture2DDownsampleIMG == nullptr)
-	{
-		throw pvr::GlExtensionNotSupportedError("GL_IMG_framebuffer_downsample", "Extension function pointer not loaded correctly");
-	}
 
 	_triVbo = 0;
 
 	LoadVbos();
 	loadShaders();
 
-	_uiRenderer.init(getWidth(), getHeight(), isFullScreen());
-
+	_uiRenderer.init(getWidth(), getHeight(), isFullScreen(), getBackBufferColorspace() == pvr::ColorSpace::sRGB);
+	_uiRenderer.getDefaultControls()->setText("Left / Right: Change render mode\n");
+	_uiRenderer.getDefaultControls()->commitUpdates();
 	_uiRenderer.getDefaultTitle()->setText("IMGFramebufferDownsample");
 	_uiRenderer.getDefaultTitle()->commitUpdates();
 
@@ -206,15 +205,22 @@ pvr::Result OpenGLESIMGFramebufferDownsample::initView()
 
 	gl::Viewport(0, 0, this->getWidth(), this->getHeight());
 
-	// Use a relaxing blue as clear color
-	gl::ClearColor(0.00f, 0.40f, 0.50f, 1.0f);
+	glm::vec3 clearColorLinearSpace(0.0f, 0.45f, 0.41f);
+	glm::vec3 clearColor = clearColorLinearSpace;
+	if (getBackBufferColorspace() != pvr::ColorSpace::sRGB)
+	{
+		// Gamma correct the clear color
+		clearColor = pvr::utils::convertLRGBtoSRGB(clearColorLinearSpace);
+	}
+
+	gl::ClearColor(clearColor.r, clearColor.g, clearColor.b, 1.0f);
 
 	_projection = glm::ortho(0.0, 1.0, 0.0, 1.0, 0.0, 10.0);
 
 	GLint xDownscale, yDownscale;
 	getDownScaleFactor(xDownscale, yDownscale);
 
-	Log("Using PVR Downsampling");
+	Log("Using GL_IMG_framebuffer_downsample");
 	Log("Downsampling factor: %i, %i", xDownscale, yDownscale);
 
 	// Create depth texture. Depth and stencil buffers must be full size
@@ -346,10 +352,6 @@ pvr::Result OpenGLESIMGFramebufferDownsample::renderFrame()
 
 	if (this->shouldTakeScreenshot())
 	{
-		GLsync tempSync = gl::FenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
-		gl::WaitSync(tempSync, 0, GL_TIMEOUT_IGNORED);
-		gl::DeleteSync(tempSync);
-
 		pvr::utils::takeScreenshot(this->getScreenshotFileName(), this->getWidth(), this->getHeight());
 	}
 
@@ -492,11 +494,8 @@ void OpenGLESIMGFramebufferDownsample::loadShaders()
 	gl::Uniform1f(gl::GetUniformLocation(_HalfAndHalfShaderProgram.handle, "WindowWidth"), (GLfloat)this->getWidth());
 }
 
-/*!*********************************************************************************************************************
-\return	auto ptr to the demo supplied by the user
-\brief	This function must be implemented by the user of the shell.
-		The user should return its Shell object defining the behaviour of the application.
-***********************************************************************************************************************/
+/// <summary>This function must be implemented by the user of the shell. The user should return its pvr::Shell object defining the behaviour of the application.</summary>
+/// <returns>Return a unique ptr to the demo supplied by the user.</returns>
 std::unique_ptr<pvr::Shell> pvr::newDemo()
 {
 	return std::unique_ptr<pvr::Shell>(new OpenGLESIMGFramebufferDownsample());

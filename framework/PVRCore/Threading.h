@@ -6,8 +6,7 @@ MoodyCamel's BlockingConcurrentQueue, and
 \copyright Copyright (c) Imagination Technologies Limited.
 */
 #pragma once
-#include "CoreIncludes.h"
-#include "PVRCore/DataStructures/RingBuffer.h"
+#include "PVRCore/RefCounted.h"
 #include "../external/concurrent_queue/blockingconcurrentqueue.h"
 
 #include <thread>

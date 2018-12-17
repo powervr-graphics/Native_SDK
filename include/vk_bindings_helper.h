@@ -225,6 +225,10 @@ static inline void initVkDeviceBindings(VkDevice device, VkDeviceBindings *bindi
     bindings->vkCreateDescriptorUpdateTemplateKHR = (PFN_vkCreateDescriptorUpdateTemplateKHR) getDeviceProcAddress(device, "vkCreateDescriptorUpdateTemplateKHR");
     bindings->vkDestroyDescriptorUpdateTemplateKHR = (PFN_vkDestroyDescriptorUpdateTemplateKHR) getDeviceProcAddress(device, "vkDestroyDescriptorUpdateTemplateKHR");
     bindings->vkUpdateDescriptorSetWithTemplateKHR = (PFN_vkUpdateDescriptorSetWithTemplateKHR) getDeviceProcAddress(device, "vkUpdateDescriptorSetWithTemplateKHR");
+    bindings->vkCreateRenderPass2KHR = (PFN_vkCreateRenderPass2KHR) getDeviceProcAddress(device, "vkCreateRenderPass2KHR");
+    bindings->vkCmdBeginRenderPass2KHR = (PFN_vkCmdBeginRenderPass2KHR) getDeviceProcAddress(device, "vkCmdBeginRenderPass2KHR");
+    bindings->vkCmdNextSubpass2KHR = (PFN_vkCmdNextSubpass2KHR) getDeviceProcAddress(device, "vkCmdNextSubpass2KHR");
+    bindings->vkCmdEndRenderPass2KHR = (PFN_vkCmdEndRenderPass2KHR) getDeviceProcAddress(device, "vkCmdEndRenderPass2KHR");
     bindings->vkGetSwapchainStatusKHR = (PFN_vkGetSwapchainStatusKHR) getDeviceProcAddress(device, "vkGetSwapchainStatusKHR");
 #ifdef VK_USE_PLATFORM_WIN32_KHR
     bindings->vkImportFenceWin32HandleKHR = (PFN_vkImportFenceWin32HandleKHR) getDeviceProcAddress(device, "vkImportFenceWin32HandleKHR");
@@ -242,17 +246,27 @@ static inline void initVkDeviceBindings(VkDevice device, VkDeviceBindings *bindi
     bindings->vkBindBufferMemory2KHR = (PFN_vkBindBufferMemory2KHR) getDeviceProcAddress(device, "vkBindBufferMemory2KHR");
     bindings->vkBindImageMemory2KHR = (PFN_vkBindImageMemory2KHR) getDeviceProcAddress(device, "vkBindImageMemory2KHR");
     bindings->vkGetDescriptorSetLayoutSupportKHR = (PFN_vkGetDescriptorSetLayoutSupportKHR) getDeviceProcAddress(device, "vkGetDescriptorSetLayoutSupportKHR");
+    bindings->vkCmdDrawIndirectCountKHR = (PFN_vkCmdDrawIndirectCountKHR) getDeviceProcAddress(device, "vkCmdDrawIndirectCountKHR");
+    bindings->vkCmdDrawIndexedIndirectCountKHR = (PFN_vkCmdDrawIndexedIndirectCountKHR) getDeviceProcAddress(device, "vkCmdDrawIndexedIndirectCountKHR");
     bindings->vkDebugMarkerSetObjectTagEXT = (PFN_vkDebugMarkerSetObjectTagEXT) getDeviceProcAddress(device, "vkDebugMarkerSetObjectTagEXT");
     bindings->vkDebugMarkerSetObjectNameEXT = (PFN_vkDebugMarkerSetObjectNameEXT) getDeviceProcAddress(device, "vkDebugMarkerSetObjectNameEXT");
     bindings->vkCmdDebugMarkerBeginEXT = (PFN_vkCmdDebugMarkerBeginEXT) getDeviceProcAddress(device, "vkCmdDebugMarkerBeginEXT");
     bindings->vkCmdDebugMarkerEndEXT = (PFN_vkCmdDebugMarkerEndEXT) getDeviceProcAddress(device, "vkCmdDebugMarkerEndEXT");
     bindings->vkCmdDebugMarkerInsertEXT = (PFN_vkCmdDebugMarkerInsertEXT) getDeviceProcAddress(device, "vkCmdDebugMarkerInsertEXT");
+    bindings->vkCmdBindTransformFeedbackBuffersEXT = (PFN_vkCmdBindTransformFeedbackBuffersEXT) getDeviceProcAddress(device, "vkCmdBindTransformFeedbackBuffersEXT");
+    bindings->vkCmdBeginTransformFeedbackEXT = (PFN_vkCmdBeginTransformFeedbackEXT) getDeviceProcAddress(device, "vkCmdBeginTransformFeedbackEXT");
+    bindings->vkCmdEndTransformFeedbackEXT = (PFN_vkCmdEndTransformFeedbackEXT) getDeviceProcAddress(device, "vkCmdEndTransformFeedbackEXT");
+    bindings->vkCmdBeginQueryIndexedEXT = (PFN_vkCmdBeginQueryIndexedEXT) getDeviceProcAddress(device, "vkCmdBeginQueryIndexedEXT");
+    bindings->vkCmdEndQueryIndexedEXT = (PFN_vkCmdEndQueryIndexedEXT) getDeviceProcAddress(device, "vkCmdEndQueryIndexedEXT");
+    bindings->vkCmdDrawIndirectByteCountEXT = (PFN_vkCmdDrawIndirectByteCountEXT) getDeviceProcAddress(device, "vkCmdDrawIndirectByteCountEXT");
     bindings->vkCmdDrawIndirectCountAMD = (PFN_vkCmdDrawIndirectCountAMD) getDeviceProcAddress(device, "vkCmdDrawIndirectCountAMD");
     bindings->vkCmdDrawIndexedIndirectCountAMD = (PFN_vkCmdDrawIndexedIndirectCountAMD) getDeviceProcAddress(device, "vkCmdDrawIndexedIndirectCountAMD");
     bindings->vkGetShaderInfoAMD = (PFN_vkGetShaderInfoAMD) getDeviceProcAddress(device, "vkGetShaderInfoAMD");
 #ifdef VK_USE_PLATFORM_WIN32_KHR
     bindings->vkGetMemoryWin32HandleNV = (PFN_vkGetMemoryWin32HandleNV) getDeviceProcAddress(device, "vkGetMemoryWin32HandleNV");
 #endif // VK_USE_PLATFORM_WIN32_KHR
+    bindings->vkCmdBeginConditionalRenderingEXT = (PFN_vkCmdBeginConditionalRenderingEXT) getDeviceProcAddress(device, "vkCmdBeginConditionalRenderingEXT");
+    bindings->vkCmdEndConditionalRenderingEXT = (PFN_vkCmdEndConditionalRenderingEXT) getDeviceProcAddress(device, "vkCmdEndConditionalRenderingEXT");
     bindings->vkCmdProcessCommandsNVX = (PFN_vkCmdProcessCommandsNVX) getDeviceProcAddress(device, "vkCmdProcessCommandsNVX");
     bindings->vkCmdReserveSpaceForCommandsNVX = (PFN_vkCmdReserveSpaceForCommandsNVX) getDeviceProcAddress(device, "vkCmdReserveSpaceForCommandsNVX");
     bindings->vkCreateIndirectCommandsLayoutNVX = (PFN_vkCreateIndirectCommandsLayoutNVX) getDeviceProcAddress(device, "vkCreateIndirectCommandsLayoutNVX");
@@ -277,12 +291,35 @@ static inline void initVkDeviceBindings(VkDevice device, VkDeviceBindings *bindi
     bindings->vkGetMemoryAndroidHardwareBufferANDROID = (PFN_vkGetMemoryAndroidHardwareBufferANDROID) getDeviceProcAddress(device, "vkGetMemoryAndroidHardwareBufferANDROID");
 #endif // VK_USE_PLATFORM_ANDROID_KHR
     bindings->vkCmdSetSampleLocationsEXT = (PFN_vkCmdSetSampleLocationsEXT) getDeviceProcAddress(device, "vkCmdSetSampleLocationsEXT");
+    bindings->vkGetImageDrmFormatModifierPropertiesEXT = (PFN_vkGetImageDrmFormatModifierPropertiesEXT) getDeviceProcAddress(device, "vkGetImageDrmFormatModifierPropertiesEXT");
     bindings->vkCreateValidationCacheEXT = (PFN_vkCreateValidationCacheEXT) getDeviceProcAddress(device, "vkCreateValidationCacheEXT");
     bindings->vkDestroyValidationCacheEXT = (PFN_vkDestroyValidationCacheEXT) getDeviceProcAddress(device, "vkDestroyValidationCacheEXT");
     bindings->vkMergeValidationCachesEXT = (PFN_vkMergeValidationCachesEXT) getDeviceProcAddress(device, "vkMergeValidationCachesEXT");
     bindings->vkGetValidationCacheDataEXT = (PFN_vkGetValidationCacheDataEXT) getDeviceProcAddress(device, "vkGetValidationCacheDataEXT");
+    bindings->vkCmdBindShadingRateImageNV = (PFN_vkCmdBindShadingRateImageNV) getDeviceProcAddress(device, "vkCmdBindShadingRateImageNV");
+    bindings->vkCmdSetViewportShadingRatePaletteNV = (PFN_vkCmdSetViewportShadingRatePaletteNV) getDeviceProcAddress(device, "vkCmdSetViewportShadingRatePaletteNV");
+    bindings->vkCmdSetCoarseSampleOrderNV = (PFN_vkCmdSetCoarseSampleOrderNV) getDeviceProcAddress(device, "vkCmdSetCoarseSampleOrderNV");
+    bindings->vkCreateAccelerationStructureNV = (PFN_vkCreateAccelerationStructureNV) getDeviceProcAddress(device, "vkCreateAccelerationStructureNV");
+    bindings->vkDestroyAccelerationStructureNV = (PFN_vkDestroyAccelerationStructureNV) getDeviceProcAddress(device, "vkDestroyAccelerationStructureNV");
+    bindings->vkGetAccelerationStructureMemoryRequirementsNV = (PFN_vkGetAccelerationStructureMemoryRequirementsNV) getDeviceProcAddress(device, "vkGetAccelerationStructureMemoryRequirementsNV");
+    bindings->vkBindAccelerationStructureMemoryNV = (PFN_vkBindAccelerationStructureMemoryNV) getDeviceProcAddress(device, "vkBindAccelerationStructureMemoryNV");
+    bindings->vkCmdBuildAccelerationStructureNV = (PFN_vkCmdBuildAccelerationStructureNV) getDeviceProcAddress(device, "vkCmdBuildAccelerationStructureNV");
+    bindings->vkCmdCopyAccelerationStructureNV = (PFN_vkCmdCopyAccelerationStructureNV) getDeviceProcAddress(device, "vkCmdCopyAccelerationStructureNV");
+    bindings->vkCmdTraceRaysNV = (PFN_vkCmdTraceRaysNV) getDeviceProcAddress(device, "vkCmdTraceRaysNV");
+    bindings->vkCreateRayTracingPipelinesNV = (PFN_vkCreateRayTracingPipelinesNV) getDeviceProcAddress(device, "vkCreateRayTracingPipelinesNV");
+    bindings->vkGetRayTracingShaderGroupHandlesNV = (PFN_vkGetRayTracingShaderGroupHandlesNV) getDeviceProcAddress(device, "vkGetRayTracingShaderGroupHandlesNV");
+    bindings->vkGetAccelerationStructureHandleNV = (PFN_vkGetAccelerationStructureHandleNV) getDeviceProcAddress(device, "vkGetAccelerationStructureHandleNV");
+    bindings->vkCmdWriteAccelerationStructuresPropertiesNV = (PFN_vkCmdWriteAccelerationStructuresPropertiesNV) getDeviceProcAddress(device, "vkCmdWriteAccelerationStructuresPropertiesNV");
+    bindings->vkCompileDeferredNV = (PFN_vkCompileDeferredNV) getDeviceProcAddress(device, "vkCompileDeferredNV");
     bindings->vkGetMemoryHostPointerPropertiesEXT = (PFN_vkGetMemoryHostPointerPropertiesEXT) getDeviceProcAddress(device, "vkGetMemoryHostPointerPropertiesEXT");
     bindings->vkCmdWriteBufferMarkerAMD = (PFN_vkCmdWriteBufferMarkerAMD) getDeviceProcAddress(device, "vkCmdWriteBufferMarkerAMD");
+    bindings->vkGetCalibratedTimestampsEXT = (PFN_vkGetCalibratedTimestampsEXT) getDeviceProcAddress(device, "vkGetCalibratedTimestampsEXT");
+    bindings->vkCmdDrawMeshTasksNV = (PFN_vkCmdDrawMeshTasksNV) getDeviceProcAddress(device, "vkCmdDrawMeshTasksNV");
+    bindings->vkCmdDrawMeshTasksIndirectNV = (PFN_vkCmdDrawMeshTasksIndirectNV) getDeviceProcAddress(device, "vkCmdDrawMeshTasksIndirectNV");
+    bindings->vkCmdDrawMeshTasksIndirectCountNV = (PFN_vkCmdDrawMeshTasksIndirectCountNV) getDeviceProcAddress(device, "vkCmdDrawMeshTasksIndirectCountNV");
+    bindings->vkCmdSetExclusiveScissorNV = (PFN_vkCmdSetExclusiveScissorNV) getDeviceProcAddress(device, "vkCmdSetExclusiveScissorNV");
+    bindings->vkCmdSetCheckpointNV = (PFN_vkCmdSetCheckpointNV) getDeviceProcAddress(device, "vkCmdSetCheckpointNV");
+    bindings->vkGetQueueCheckpointDataNV = (PFN_vkGetQueueCheckpointDataNV) getDeviceProcAddress(device, "vkGetQueueCheckpointDataNV");
 }
 
 
@@ -345,12 +382,6 @@ static inline void initVkInstanceBindings(VkInstance instance, VkInstanceBinding
 #ifdef VK_USE_PLATFORM_WAYLAND_KHR
     bindings->vkGetPhysicalDeviceWaylandPresentationSupportKHR = (PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR) getinstanceProcAddress(instance, "vkGetPhysicalDeviceWaylandPresentationSupportKHR");
 #endif // VK_USE_PLATFORM_WAYLAND_KHR
-#ifdef VK_USE_PLATFORM_MIR_KHR
-    bindings->vkCreateMirSurfaceKHR = (PFN_vkCreateMirSurfaceKHR) getinstanceProcAddress(instance, "vkCreateMirSurfaceKHR");
-#endif // VK_USE_PLATFORM_MIR_KHR
-#ifdef VK_USE_PLATFORM_MIR_KHR
-    bindings->vkGetPhysicalDeviceMirPresentationSupportKHR = (PFN_vkGetPhysicalDeviceMirPresentationSupportKHR) getinstanceProcAddress(instance, "vkGetPhysicalDeviceMirPresentationSupportKHR");
-#endif // VK_USE_PLATFORM_MIR_KHR
 #ifdef VK_USE_PLATFORM_ANDROID_KHR
     bindings->vkCreateAndroidSurfaceKHR = (PFN_vkCreateAndroidSurfaceKHR) getinstanceProcAddress(instance, "vkCreateAndroidSurfaceKHR");
 #endif // VK_USE_PLATFORM_ANDROID_KHR
@@ -373,6 +404,10 @@ static inline void initVkInstanceBindings(VkInstance instance, VkInstanceBinding
     bindings->vkGetPhysicalDeviceExternalFencePropertiesKHR = (PFN_vkGetPhysicalDeviceExternalFencePropertiesKHR) getinstanceProcAddress(instance, "vkGetPhysicalDeviceExternalFencePropertiesKHR");
     bindings->vkGetPhysicalDeviceSurfaceCapabilities2KHR = (PFN_vkGetPhysicalDeviceSurfaceCapabilities2KHR) getinstanceProcAddress(instance, "vkGetPhysicalDeviceSurfaceCapabilities2KHR");
     bindings->vkGetPhysicalDeviceSurfaceFormats2KHR = (PFN_vkGetPhysicalDeviceSurfaceFormats2KHR) getinstanceProcAddress(instance, "vkGetPhysicalDeviceSurfaceFormats2KHR");
+    bindings->vkGetPhysicalDeviceDisplayProperties2KHR = (PFN_vkGetPhysicalDeviceDisplayProperties2KHR) getinstanceProcAddress(instance, "vkGetPhysicalDeviceDisplayProperties2KHR");
+    bindings->vkGetPhysicalDeviceDisplayPlaneProperties2KHR = (PFN_vkGetPhysicalDeviceDisplayPlaneProperties2KHR) getinstanceProcAddress(instance, "vkGetPhysicalDeviceDisplayPlaneProperties2KHR");
+    bindings->vkGetDisplayModeProperties2KHR = (PFN_vkGetDisplayModeProperties2KHR) getinstanceProcAddress(instance, "vkGetDisplayModeProperties2KHR");
+    bindings->vkGetDisplayPlaneCapabilities2KHR = (PFN_vkGetDisplayPlaneCapabilities2KHR) getinstanceProcAddress(instance, "vkGetDisplayPlaneCapabilities2KHR");
     bindings->vkCreateDebugReportCallbackEXT = (PFN_vkCreateDebugReportCallbackEXT) getinstanceProcAddress(instance, "vkCreateDebugReportCallbackEXT");
     bindings->vkDestroyDebugReportCallbackEXT = (PFN_vkDestroyDebugReportCallbackEXT) getinstanceProcAddress(instance, "vkDestroyDebugReportCallbackEXT");
     bindings->vkDebugReportMessageEXT = (PFN_vkDebugReportMessageEXT) getinstanceProcAddress(instance, "vkDebugReportMessageEXT");
@@ -407,4 +442,8 @@ static inline void initVkInstanceBindings(VkInstance instance, VkInstanceBinding
     bindings->vkDestroyDebugUtilsMessengerEXT = (PFN_vkDestroyDebugUtilsMessengerEXT) getinstanceProcAddress(instance, "vkDestroyDebugUtilsMessengerEXT");
     bindings->vkSubmitDebugUtilsMessageEXT = (PFN_vkSubmitDebugUtilsMessageEXT) getinstanceProcAddress(instance, "vkSubmitDebugUtilsMessageEXT");
     bindings->vkGetPhysicalDeviceMultisamplePropertiesEXT = (PFN_vkGetPhysicalDeviceMultisamplePropertiesEXT) getinstanceProcAddress(instance, "vkGetPhysicalDeviceMultisamplePropertiesEXT");
+    bindings->vkGetPhysicalDeviceCalibrateableTimeDomainsEXT = (PFN_vkGetPhysicalDeviceCalibrateableTimeDomainsEXT) getinstanceProcAddress(instance, "vkGetPhysicalDeviceCalibrateableTimeDomainsEXT");
+#ifdef VK_USE_PLATFORM_FUCHSIA
+    bindings->vkCreateImagePipeSurfaceFUCHSIA = (PFN_vkCreateImagePipeSurfaceFUCHSIA) getinstanceProcAddress(instance, "vkCreateImagePipeSurfaceFUCHSIA");
+#endif // VK_USE_PLATFORM_FUCHSIA
 }

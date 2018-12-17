@@ -58,13 +58,14 @@ END
 // RCDATA
 //
 /////////////////////////////////////////////////////////////////////////////
-// RCDATA: Assets (scenes, shaders, effects, textures...)
+// RCDATA: Assets (scenes,  effects, textures...)
 Marble.pvr		RCDATA		"..\\..\\..\\assets\\Satyr\\Marble.pvr"
 MarbleNormalMap.pvr		RCDATA		"..\\..\\..\\assets\\Satyr\\MarbleNormalMap.pvr"
 Table.pvr		RCDATA		"..\\..\\..\\assets\\Satyr\\Table.pvr"
 SatyrAndTable.pod		RCDATA		"..\\..\\..\\assets\\Satyr\\SatyrAndTable.pod"
 pointlight.pod		RCDATA		"..\\..\\..\\assets\\Satyr\\pointlight.pod"
 effect_MRT_PFX3.pfx		RCDATA		"..\\effect_MRT_PFX3.pfx"
+// RCDATA: Vulkan Spir-V shaders(glsl)
 AttributelessVertexShader.vsh.spv		RCDATA		"..\\AttributelessVertexShader.vsh.spv"
 GBufferFragmentShader.fsh.spv		RCDATA		"..\\GBufferFragmentShader.fsh.spv"
 GBufferVertexShader.vsh.spv		RCDATA		"..\\GBufferVertexShader.vsh.spv"
@@ -77,20 +78,6 @@ PointLightPass2FragmentShader.fsh.spv		RCDATA		"..\\PointLightPass2FragmentShade
 PointLightPass2VertexShader.vsh.spv		RCDATA		"..\\PointLightPass2VertexShader.vsh.spv"
 PointLightPass3FragmentShader.fsh.spv		RCDATA		"..\\PointLightPass3FragmentShader.fsh.spv"
 PointLightPass3VertexShader.vsh.spv		RCDATA		"..\\PointLightPass3VertexShader.vsh.spv"
-AttributelessVertexShader.vsh		RCDATA		"..\\AttributelessVertexShader.vsh"
-GBufferFragmentShader.fsh		RCDATA		"..\\GBufferFragmentShader.fsh"
-GBufferVertexShader.vsh		RCDATA		"..\\GBufferVertexShader.vsh"
-GBufferFloorFragmentShader.fsh		RCDATA		"..\\GBufferFloorFragmentShader.fsh"
-GBufferFloorVertexShader.vsh		RCDATA		"..\\GBufferFloorVertexShader.vsh"
-DirectionalLightFragmentShader.fsh		RCDATA		"..\\DirectionalLightFragmentShader.fsh"
-PointLightPass1FragmentShader.fsh		RCDATA		"..\\PointLightPass1FragmentShader.fsh"
-PointLightPass1VertexShader.vsh		RCDATA		"..\\PointLightPass1VertexShader.vsh"
-PointLightPass2FragmentShader.fsh		RCDATA		"..\\PointLightPass2FragmentShader.fsh"
-PointLightPass2VertexShader.vsh		RCDATA		"..\\PointLightPass2VertexShader.vsh"
-PointLightPass3FragmentShader.fsh		RCDATA		"..\\PointLightPass3FragmentShader.fsh"
-PointLightPass3VertexShader.vsh		RCDATA		"..\\PointLightPass3VertexShader.vsh"
-recompile.sh		RCDATA		"..\\recompile.sh"
-recompile.bat		RCDATA		"..\\recompile.bat"
 
 #endif    // English (United Kingdom) resources
 /////////////////////////////////////////////////////////////////////////////

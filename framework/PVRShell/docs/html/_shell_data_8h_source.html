@@ -15,7 +15,7 @@
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="IMGdoxygen.css" rel="stylesheet" type="text/css"/>
-<link rel="shortcut icon" href="http://www.imgtec.com/images/img.ico">
+<link rel="shortcut icon" type="image/x-icon" href="img.ico">
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
+      <a href="https://www.imgtec.com/developers/" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRShell</span> Documentation</a>
    <tbody>
@@ -65,7 +65,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Pages</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -86,72 +86,74 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="contents">
 <a href="_shell_data_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;</div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#pragma once</span></div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#include &quot;<a class="code" href="_command_line_8h.html">PVRShell/CommandLine.h</a>&quot;</span></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &quot;PVRCore/Base/ComplexTypes.h&quot;</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;</div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;sdkver.h&quot;</span></div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#if !defined(PVRSDK_BUILD)</span></div>
-<div class="line"><a name="l00014"></a><span class="lineno"><a class="line" href="_shell_data_8h.html#a65740d47f0df49fcca7522baeab691a8">   14</a></span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define PVRSDK_BUILD &quot;n.n@nnnnnnn&quot;</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#if !defined(PVRSHELL_COMMANDLINE_TXT_FILE)</span></div>
-<div class="line"><a name="l00019"></a><span class="lineno"><a class="line" href="_shell_data_8h.html#a63a9742f3c2447a9e12dfe905136dbb9">   19</a></span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define PVRSHELL_COMMANDLINE_TXT_FILE &quot;PVRShellCL.txt&quot;</span></div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="keyword">namespace </span>pvr {</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="keyword">namespace </span>platform {</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="keyword">class </span>ShellOS;</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;</div>
-<div class="line"><a name="l00027"></a><span class="lineno"><a class="line" href="structpvr_1_1platform_1_1_shell_data.html">   27</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structpvr_1_1platform_1_1_shell_data.html">ShellData</a></div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;{</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    Time timer;</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    uint64_t timeAtInitApplication;</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    uint64_t lastFrameTime;</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    uint64_t currentFrameTime;</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    std::string exitMessage;</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    <a class="code" href="classpvr_1_1platform_1_1_shell_o_s.html">ShellOS</a>* os;</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    DisplayAttributes attributes;</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    <a class="code" href="classpvr_1_1platform_1_1_command_line_parser.html">CommandLineParser</a>* commandLine;</div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#include &quot;PVRCore/commandline/CommandLine.h&quot;</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &quot;PVRCore/texture/PixelFormat.h&quot;</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &quot;PVRCore/types/Types.h&quot;</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_time___8h.html">PVRShell/Time_.h</a>&quot;</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;sdkver.h&quot;</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#if !defined(PVRSDK_BUILD)</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno"><a class="line" href="_shell_data_8h.html#a65740d47f0df49fcca7522baeab691a8">   16</a></span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define PVRSDK_BUILD &quot;n.n@nnnnnnn&quot;</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor">#if !defined(PVRSHELL_COMMANDLINE_TXT_FILE)</span></div>
+<div class="line"><a name="l00021"></a><span class="lineno"><a class="line" href="_shell_data_8h.html#a63a9742f3c2447a9e12dfe905136dbb9">   21</a></span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define PVRSHELL_COMMANDLINE_TXT_FILE &quot;PVRShellCL.txt&quot;</span></div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="keyword">namespace </span>pvr {</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="keyword">namespace </span>platform {</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="keyword">class </span>ShellOS;</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;</div>
+<div class="line"><a name="l00029"></a><span class="lineno"><a class="line" href="structpvr_1_1platform_1_1_shell_data.html">   29</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structpvr_1_1platform_1_1_shell_data.html">ShellData</a></div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;{</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    <a class="code" href="classpvr_1_1_time.html">Time</a> timer;</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    uint64_t timeAtInitApplication;</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    uint64_t lastFrameTime;</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    uint64_t currentFrameTime;</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    std::string exitMessage;</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    <a class="code" href="classpvr_1_1platform_1_1_shell_o_s.html">ShellOS</a>* os;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    DisplayAttributes attributes;</div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    int32_t captureFrameStart;</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    int32_t captureFrameStop;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    uint32_t captureFrameScale;</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    <span class="keywordtype">bool</span> trapPointerOnDrag;</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    <span class="keywordtype">bool</span> forceFrameTime;</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    uint32_t fakeFrameTime;</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    <span class="keywordtype">bool</span> exiting;</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    CommandLineParser* commandLine;</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    int32_t captureFrameStart;</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    int32_t captureFrameStop;</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    uint32_t captureFrameScale;</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <span class="keywordtype">bool</span> trapPointerOnDrag;</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    <span class="keywordtype">bool</span> forceFrameTime;</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    uint32_t fakeFrameTime;</div>
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    uint32_t frameNo;</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    <span class="keywordtype">bool</span> exiting;</div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    <span class="keywordtype">bool</span> forceReleaseInitCycle;</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    int32_t dieAfterFrame;</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    <span class="keywordtype">float</span> dieAfterTime;</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    int64_t startTime;</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    <span class="keywordtype">bool</span> outputInfo;</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    uint32_t frameNo;</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    <span class="keywordtype">bool</span> forceReleaseInitCycle;</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    int32_t dieAfterFrame;</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    <span class="keywordtype">float</span> dieAfterTime;</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    int64_t startTime;</div>
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    <span class="keywordtype">bool</span> weAreDone;</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    <span class="keywordtype">bool</span> outputInfo;</div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    <span class="keywordtype">float</span> FPS;</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    <span class="keywordtype">bool</span> showFPS;</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    Api contextType;</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    Api minContextType;</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    <a class="code" href="structpvr_1_1platform_1_1_shell_data.html">ShellData</a>()</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;        : os(0), commandLine(0), captureFrameStart(-1), captureFrameStop(-1), captureFrameScale(1), trapPointerOnDrag(<span class="keyword">true</span>), forceFrameTime(<span class="keyword">false</span>), fakeFrameTime(16),</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;          exiting(<span class="keyword">false</span>), frameNo(0), forceReleaseInitCycle(<span class="keyword">false</span>), dieAfterFrame(-1), dieAfterTime(-1), startTime(0), outputInfo(<span class="keyword">false</span>), weAreDone(<span class="keyword">false</span>), FPS(0.0f),</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;          showFPS(<span class="keyword">false</span>), contextType(Api::Unspecified), minContextType(Api::Unspecified){};</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;};</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;} <span class="comment">// namespace platform</span></div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;} <span class="comment">// namespace pvr</span></div>
-<div class="ttc" id="_command_line_8h_html"><div class="ttname"><a href="_command_line_8h.html">CommandLine.h</a></div><div class="ttdoc">Contains the CommandLine class. </div></div>
-<div class="ttc" id="structpvr_1_1platform_1_1_shell_data_html"><div class="ttname"><a href="structpvr_1_1platform_1_1_shell_data.html">pvr::platform::ShellData</a></div><div class="ttdoc">Internal. Contains and tracks internal data necessary to power the pvr::Shell.</div><div class="ttdef"><b>Definition:</b> ShellData.h:27</div></div>
-<div class="ttc" id="classpvr_1_1platform_1_1_shell_o_s_html"><div class="ttname"><a href="classpvr_1_1platform_1_1_shell_o_s.html">pvr::platform::ShellOS</a></div><div class="ttdoc">Internal class Implements a lot of the functionality and forwards to the platform from PVRShell...</div><div class="ttdef"><b>Definition:</b> ShellOS.h:19</div></div>
-<div class="ttc" id="classpvr_1_1platform_1_1_command_line_parser_html"><div class="ttname"><a href="classpvr_1_1platform_1_1_command_line_parser.html">pvr::platform::CommandLineParser</a></div><div class="ttdoc">This class parses, abstracts, stores and handles command line options passed on application launch...</div><div class="ttdef"><b>Definition:</b> CommandLine.h:15</div></div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    <span class="keywordtype">bool</span> weAreDone;</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    <span class="keywordtype">float</span> FPS;</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    <span class="keywordtype">bool</span> showFPS;</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    Api contextType;</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    Api minContextType;</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    <a class="code" href="structpvr_1_1platform_1_1_shell_data.html">ShellData</a>()</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;        : os(0), commandLine(0), captureFrameStart(-1), captureFrameStop(-1), captureFrameScale(1), trapPointerOnDrag(<span class="keyword">true</span>), forceFrameTime(<span class="keyword">false</span>), fakeFrameTime(16),</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;          exiting(<span class="keyword">false</span>), frameNo(0), forceReleaseInitCycle(<span class="keyword">false</span>), dieAfterFrame(-1), dieAfterTime(-1), startTime(0), outputInfo(<span class="keyword">false</span>), weAreDone(<span class="keyword">false</span>), FPS(0.0f),</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;          showFPS(<span class="keyword">false</span>), contextType(Api::Unspecified), minContextType(Api::Unspecified){};</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;};</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;} <span class="comment">// namespace platform</span></div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;} <span class="comment">// namespace pvr</span></div>
+<div class="ttc" id="classpvr_1_1_time_html"><div class="ttname"><a href="classpvr_1_1_time.html">pvr::Time</a></div><div class="ttdoc">This class provides functions for measuring time: current time, elapsed time etc. High performance ti...</div><div class="ttdef"><b>Definition:</b> Time_.h:16</div></div>
+<div class="ttc" id="_time___8h_html"><div class="ttname"><a href="_time___8h.html">Time_.h</a></div><div class="ttdoc">Class for dealing with time in a cross-platform way. </div></div>
+<div class="ttc" id="structpvr_1_1platform_1_1_shell_data_html"><div class="ttname"><a href="structpvr_1_1platform_1_1_shell_data.html">pvr::platform::ShellData</a></div><div class="ttdoc">Internal. Contains and tracks internal data necessary to power the pvr::Shell.</div><div class="ttdef"><b>Definition:</b> ShellData.h:29</div></div>
+<div class="ttc" id="classpvr_1_1platform_1_1_shell_o_s_html"><div class="ttname"><a href="classpvr_1_1platform_1_1_shell_o_s.html">pvr::platform::ShellOS</a></div><div class="ttdoc">Internal class Implements a lot of the functionality and forwards to the platform from PVRShell...</div><div class="ttdef"><b>Definition:</b> ShellOS.h:18</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.4-->
 <!-- start footer part (NON TREEVIEW ONLY!!) -->

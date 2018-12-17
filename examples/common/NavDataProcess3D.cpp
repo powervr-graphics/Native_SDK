@@ -1,4 +1,5 @@
 #include "NavDataProcess.h"
+#include "../../external/pugixml/pugixml.hpp"
 
 /*!*********************************************************************************************************************
 \return	Return pvr::Result::Success if no error occurred
@@ -7,8 +8,8 @@
 pvr::Result NavDataProcess::loadAndProcessData()
 {
 	// Set tile scaling parameters
-	_osm.lonTileScale = 0.008;
-	_osm.latTileScale = 0.008;
+	_osm.lonTileScale = 0.0015;
+	_osm.latTileScale = 0.0015;
 
 	pvr::Result result = loadOSMData();
 
@@ -66,7 +67,7 @@ pvr::Result NavDataProcess::loadOSMData()
 #endif
 	pugi::xml_document mapData;
 	std::vector<char> mapStream = _assetStream->readToEnd<char>();
-	pugi::xml_parse_result result = mapData.load(mapStream.data(), static_cast<unsigned int>(mapStream.size()));
+	pugi::xml_parse_result result = mapData.load_string(mapStream.data(), static_cast<uint32_t>(mapStream.size()));
 
 	Log(LogLevel::Debug, "XML parse result: %s", result.description());
 	if (!result)
@@ -643,10 +644,6 @@ glm::dvec2 NavDataProcess::lonLatToMetres(const glm::dvec2 origin, const glm::dv
 ***********************************************************************************************************************/
 void NavDataProcess::triangulateAllRoads()
 {
-	uint64_t lastNodeID = 0;
-	uint64_t additionalID = 0;
-	uint64_t lastWayID = 0;
-
 	// Triangulate the roads
 	for (auto wayIterator = _osm.originalRoadWays.begin(); wayIterator != _osm.originalRoadWays.end(); ++wayIterator)
 	{
@@ -655,14 +652,10 @@ void NavDataProcess::triangulateAllRoads()
 		else
 		{
 			uint32_t breakIndex = 0;
-			/*Increases node density around sharp bends, which in turn increases the number of triangles produced by the triangulation function,
-			which improves visual quality for sharp bends, at the cost of memory usage, initialisation time and potentially frame times.*/
+			// Increases node density around sharp bends, which in turn increases the number of triangles produced by the triangulation function,
+			// which improves visual quality for sharp bends, at the cost of memory usage, initialisation time and potentially frame times
 			if (wayIterator->second.nodeIds.size() > 2)
 				wayIterator->second.nodeIds = tessellate(wayIterator->second.nodeIds, breakIndex);
-
-			lastNodeID = wayIterator->second.nodeIds.back();
-			additionalID = wayIterator->second.nodeIds[wayIterator->second.nodeIds.size() - 2];
-			lastWayID = wayIterator->first;
 
 			// This loop breaks a way if the start or end intersects with another part of the way
 			for (uint32_t i = 1; i < (wayIterator->second.nodeIds.size() - 1); ++i)
@@ -671,7 +664,6 @@ void NavDataProcess::triangulateAllRoads()
 				{
 					if (wayIterator->second.nodeIds[i] == wayIterator->second.nodeIds.back())
 					{
-						//	std::reverse(wayIterator->second.nodeIds.begin(), wayIterator->second.nodeIds.end());
 						i = static_cast<uint32_t>(wayIterator->second.nodeIds.size() - i - 1);
 					}
 
@@ -1601,8 +1593,9 @@ void NavDataProcess::fillTiles(Vertex startNode, Vertex endNode, const uint64_t 
 	if (isIntersection)
 	{
 		if (_osm.intersectionNodes.rbegin()->second.junctionWays.size() == 0 ||
-			_osm.intersectionNodes.rbegin()->second.junctionWays.rbegin()->first != _osm.tiles[startTile.x][startTile.y].roadWays.size() - 1)
-			_osm.intersectionNodes.rbegin()->second.junctionWays.push_back(std::pair<uint32_t, glm::uvec2>(_osm.tiles[startTile.x][startTile.y].roadWays.size() - 1, startTile));
+			_osm.intersectionNodes.rbegin()->second.junctionWays.rbegin()->first != static_cast<uint32_t>(_osm.tiles[startTile.x][startTile.y].roadWays.size()) - 1)
+			_osm.intersectionNodes.rbegin()->second.junctionWays.push_back(
+				std::pair<uint32_t, glm::uvec2>(static_cast<uint32_t>(_osm.tiles[startTile.x][startTile.y].roadWays.size()) - 1, startTile));
 	}
 
 	// Add start node to boundaryNode vector.
@@ -1682,7 +1675,8 @@ void NavDataProcess::fillTiles(Vertex startNode, Vertex endNode, const uint64_t 
 		if (isIntersection && !_osm.intersectionNodes.rbegin()->second.isBound)
 		{
 			_osm.intersectionNodes.rbegin()->second.isBound = true;
-			_osm.intersectionNodes.rbegin()->second.junctionWays.push_back(std::pair<uint32_t, glm::uvec2>(_osm.tiles[currentTile.x][currentTile.y].roadWays.size() - 1, currentTile));
+			_osm.intersectionNodes.rbegin()->second.junctionWays.push_back(
+				std::pair<uint32_t, glm::uvec2>(static_cast<uint32_t>(_osm.tiles[currentTile.x][currentTile.y].roadWays.size()) - 1, currentTile));
 		}
 
 		currentNode = newNode;
@@ -2311,8 +2305,6 @@ void NavDataProcess::calculateJunctionTexCoords()
 			{
 				Tile& myTile = _osm.tiles[currentTile.x][currentTile.y];
 
-				// assertion(myTile.nodes.find(itr->second.nodes[j]) != myTile.nodes.end(), "");
-
 				std::map<uint64_t, Vertex>::iterator it = myTile.nodes.find(itr->second.nodes[j]);
 				if (it == myTile.nodes.end())
 				{
@@ -2321,8 +2313,8 @@ void NavDataProcess::calculateJunctionTexCoords()
 				Vertex* currentNode = &it->second;
 
 				bool done = false;
-				/* Iterate over road ways in the tile that the junction resides in and find any ways which contain nodes
-				that are part of the junction, also find any nodes which share the same co-ordinates as the nodes that define the junction. */
+				// Iterate over road ways in the tile that the junction resides in and find any ways which contain nodes
+				// that are part of the junction, also find any nodes which share the same co-ordinates as the nodes that define the junction.
 				for (Way& w : _osm.tiles[currentTile.x][currentTile.y].roadWays)
 				{
 					for (uint32_t k = 0; k < w.nodeIds.size(); ++k)
@@ -2360,7 +2352,6 @@ void NavDataProcess::calculateJunctionTexCoords()
 				std::vector<uint32_t>() = { 2, 1, 0 } };
 
 			static const std::vector<uint32_t> remappedIndices = { 1, 2, 0 };
-			// static const std::vector<uint32_t> remappedIndices2 = { 2, 0, 1 };
 			uint32_t currentIndex = 0;
 
 			// Determine the correct indexing for 'found nodes' in order to correctly build the junction / calculate texture co-ordinates.

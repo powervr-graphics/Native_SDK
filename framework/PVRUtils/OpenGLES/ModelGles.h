@@ -5,7 +5,6 @@
 \copyright Copyright (c) Imagination Technologies Limited.
 */
 #pragma once
-#include "PVRAssets/AssetIncludes.h"
 #include "PVRAssets/Model.h"
 #include "PVRUtils/OpenGLES/HelperGles.h"
 

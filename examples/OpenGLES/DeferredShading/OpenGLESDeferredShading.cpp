@@ -230,8 +230,8 @@ const std::string ViewSpaceLightDirection = "vViewSpaceLightDirection";
 }
 
 namespace StaticPointLight {
-const std::string LightRadius = "fLightRadius";
 const std::string LightIntensity = "fLightIntensity";
+const std::string LightRadius = "fLightRadius";
 const std::string LightColor = "vLightColor";
 const std::string LightSourceColor = "vLightSourceColor";
 } // namespace StaticPointLight
@@ -252,14 +252,12 @@ const float FrameRate = 1.0f / 120.0f;
 // Directional lighting configuration data
 namespace DirectionalLightConfiguration {
 static bool AdditionalDirectionalLight = true;
-const float DirectionalLightIntensity = .2f;
-const glm::vec4 AmbientLightColor = glm::vec4(0.2f, 0.2f, 0.1f, 0.0f);
+const float DirectionalLightIntensity = .1f;
+const glm::vec4 AmbientLightColor = glm::vec4(.005f, .005f, .005f, 0.0f);
 } // namespace DirectionalLightConfiguration
 
 // Point lighting configuration data
 namespace PointLightConfiguration {
-int32_t MaxScenePointLights = 5;
-int32_t NumProceduralPointLights = 10;
 float LightMaxDistance = 40.f;
 float LightMinDistance = 20.f;
 float LightMinHeight = -30.f;
@@ -270,9 +268,35 @@ float LightVerticalVelocityChange = .01f;
 float LightMaxAxialVelocity = 5.f;
 float LightMaxRadialVelocity = 1.5f;
 float LightMaxVerticalVelocity = 5.f;
-float PointLightScale = 32.0f; // PointLightScale handles the size of the scaled light geometry. This effects the areas of the screen which will go through point light rendering
-float PointLightRadius = PointLightScale / 2.0f; // PointLightRadius handles the actual point light falloff. Modifying one of these requires also modifying the other
-float PointlightIntensity = 5.0f;
+
+uint32_t MaxScenePointLights = 5;
+int32_t NumProceduralPointLights = 10;
+float PointlightIntensity = 20.f;
+float PointLightMinIntensityForCuttoff = 10.f / 255.f;
+float PointLightMaxRadius = 1.5f * glm::sqrt(PointLightConfiguration::PointlightIntensity / PointLightConfiguration::PointLightMinIntensityForCuttoff);
+// The "Max radius" value we find is 50% more than the radius where we reach a specific light value.
+// Light attenuation is quadratic: Light value = Intensity / Distance ^2
+// The problem is that with this equation, light has infinite radius, as it asymptotically goes to zero as distance increases
+// Very big radius is in general undesirable for deferred shading where you wish to have a lot of small lights, and where there
+// contribution will be small to none, but a sharp cutoff is usually quite visible on dark scenes.
+// For that reason, we have implemented an attenuation equation which begins close to the light following this value,
+// but then after a predetermined value, switches to linear falloff and continues to zero following the same slope.
+// This can be tweaked through this vale: It basically says "At which light intensity should the quadratic equation
+// be switched to a linear one and trail to zero?".
+// Following the numbers, if we follow the slope of 1/x^2 linearly, the value becomes exactly zero at 1.5 x distance.
+// Good guide values here are around 5.f/255.f for a sharp falloff (but hence better performance as less pixels are shaded
+// up to ~1.f/255.f for almost undetectably soft falloff in pitch-black scenes (hence more correct, but shading a lot
+// of pixels that have a miniscule lighting contribution).
+// Additionally, if there is a strong ambient or directional, this value can be increased (hence reducing the number of pixels
+// shaded) as the ambient light will completely hide the small contributions of the edges of the point lights. Reversely,
+// a completely dark scene would only be acceptable with values less than 2.f as otherwise the cutoff of the lights would be
+// quite visible.
+// NUMBERS: ( Symbols: Light Value: LV, Differential of LV: LV' Intensity: I, Distance: D, Distance of switch quadratic->linear:A)
+// After doing some number-crunching, starting with LV = I / D^2
+// LV = I * (3 * A^2 - 2 * D / A^3). See the PointLightPass2FragmentShader.
+// Finally, crunching more numbers you will find that LV drops to zero when D = 1.5 * A, so we need to render the lights
+// with a radius of 1.5 * A. In the shader, this is reversed to precisely find the point where we switch from quadratic to linear.
+
 } // namespace PointLightConfiguration
 
 /*!*********************************************************************************************************************
@@ -362,6 +386,7 @@ public:
 	int32_t _windowWidth;
 	int32_t _windowHeight;
 
+	bool _simpleGammaFunction;
 	bool _pixelLocalStorageSupported;
 	bool _pixelLocalStorage2Supported;
 	bool _bufferStorageExtSupported;
@@ -488,7 +513,6 @@ Used to initialize variables that are dependent on the rendering context (e.g. t
 ***********************************************************************************************************************/
 pvr::Result OpenGLESDeferredShading::initView()
 {
-	srand((unsigned int)this->getTime());
 	_deviceResources = std::unique_ptr<DeviceResources>(new DeviceResources());
 	_deviceResources->context = pvr::createEglContext();
 
@@ -513,6 +537,7 @@ pvr::Result OpenGLESDeferredShading::initView()
 
 	commandOptions.getIntOption("-numlights", PointLightConfiguration::NumProceduralPointLights);
 	commandOptions.getFloatOption("-lightintensity", PointLightConfiguration::PointlightIntensity);
+	_simpleGammaFunction = commandOptions.hasOption("-simpleGamma");
 
 	if (!_pixelLocalStorageSupported && !_pixelLocalStorage2Supported)
 	{
@@ -532,7 +557,7 @@ pvr::Result OpenGLESDeferredShading::initView()
 	}
 
 	// setup UI renderer
-	_deviceResources->uiRenderer.init(getWidth(), getHeight(), isFullScreen());
+	_deviceResources->uiRenderer.init(getWidth(), getHeight(), isFullScreen(), getBackBufferColorspace() == pvr::ColorSpace::sRGB);
 	_deviceResources->uiRenderer.getDefaultTitle()->setText("DeferredShading");
 	_deviceResources->uiRenderer.getDefaultTitle()->commitUpdates();
 	_deviceResources->uiRenderer.getDefaultControls()->setText("Action1: Pause\n"
@@ -552,13 +577,13 @@ pvr::Result OpenGLESDeferredShading::initView()
 
 	if (isScreenRotated())
 	{
-		_projectionMatrix = pvr::math::perspectiveFov(pvr::Api::OpenGLES31, _mainScene->getCamera(0).getFOV(), (float)_windowHeight, (float)_windowWidth,
+		_projectionMatrix = pvr::math::perspectiveFov(pvr::Api::OpenGLES31, _mainScene->getCamera(0).getFOV(), static_cast<float>(_windowHeight), static_cast<float>(_windowWidth),
 			_mainScene->getCamera(0).getNear(), _mainScene->getCamera(0).getFar(), glm::pi<float>() * .5f);
 	}
 	else
 	{
-		_projectionMatrix =
-			glm::perspectiveFov(_mainScene->getCamera(0).getFOV(), (float)_windowWidth, (float)_windowHeight, _mainScene->getCamera(0).getNear(), _mainScene->getCamera(0).getFar());
+		_projectionMatrix = glm::perspectiveFov(_mainScene->getCamera(0).getFOV(), static_cast<float>(_windowWidth), static_cast<float>(_windowHeight),
+			_mainScene->getCamera(0).getNear(), _mainScene->getCamera(0).getFar());
 	}
 
 	createPrograms();
@@ -751,13 +776,13 @@ void OpenGLESDeferredShading::renderGBuffer()
 		gl::BindBufferRange(GL_UNIFORM_BUFFER, BufferBindings::Materials, _deviceResources->modelMaterialUbo, _deviceResources->modelMaterialBufferView.getDynamicSliceOffset(i),
 			(size_t)_deviceResources->modelMaterialBufferView.getDynamicSliceSize());
 
-		if (material.diffuseTexture != -1)
+		if (material.diffuseTexture != static_cast<uint32_t>(-1))
 		{
 			gl::ActiveTexture(GL_TEXTURE0);
 			gl::BindSampler(0, _deviceResources->samplerTrilinear);
 			gl::BindTexture(GL_TEXTURE_2D, material.diffuseTexture);
 		}
-		if (material.bumpmapTexture != -1)
+		if (material.bumpmapTexture != static_cast<uint32_t>(-1))
 		{
 			gl::ActiveTexture(GL_TEXTURE1);
 			gl::BindSampler(1, _deviceResources->samplerTrilinear);
@@ -1027,7 +1052,7 @@ void OpenGLESDeferredShading::createMaterialTextures()
 
 		int numTextures = 0;
 
-		if (material.defaultSemantics().getDiffuseTextureIndex() != -1)
+		if (material.defaultSemantics().getDiffuseTextureIndex() != static_cast<uint32_t>(-1))
 		{
 			// load the diffuse texture
 			_deviceResources->materials[i].diffuseTexture =
@@ -1035,7 +1060,7 @@ void OpenGLESDeferredShading::createMaterialTextures()
 
 			++numTextures;
 		}
-		if (material.defaultSemantics().getBumpMapTextureIndex() != -1)
+		if (material.defaultSemantics().getBumpMapTextureIndex() != static_cast<uint32_t>(-1))
 		{
 			// Load the bumpmap
 			_deviceResources->materials[i].bumpmapTexture =
@@ -1126,8 +1151,20 @@ void OpenGLESDeferredShading::createPrograms()
 			*this, Files::PointLightPass3VertexShader.c_str(), Files::PointLightPass3FragmentShader.c_str(), attributeNames, attributeIndices, numAttributes);
 	}
 	{ // Blit program
+		// Enable or disable gamma correction based on if it is automatically performed on the framebuffer or we need to do it in the shader.
+		const char* defines[] = { NULL, NULL };
+		uint32_t numDefines = 0;
+		if (getBackBufferColorspace() == pvr::ColorSpace::sRGB)
+		{
+			defines[numDefines++] = "FRAMEBUFFER_SRGB";
+		}
+		if (_simpleGammaFunction)
+		{
+			defines[numDefines++] = "SIMPLE_GAMMA_FUNCTION";
+		}
+
 		_deviceResources->renderInfo.writePlsToFbo.program =
-			pvr::utils::createShaderProgram(*this, Files::AttributelessVertexShader.c_str(), Files::WritePlsToFboShader.c_str(), 0, 0, 0);
+			pvr::utils::createShaderProgram(*this, Files::AttributelessVertexShader.c_str(), Files::WritePlsToFboShader.c_str(), 0, 0, 0, defines, numDefines);
 	}
 }
 
@@ -1136,18 +1173,6 @@ void OpenGLESDeferredShading::createPrograms()
 ***********************************************************************************************************************/
 void OpenGLESDeferredShading::updateAnimation()
 {
-	uint64_t deltaTime = getFrameTime();
-
-	if (!_isPaused)
-	{
-		_frameNumber += deltaTime * ApplicationConfiguration::FrameRate;
-		if (_frameNumber > _mainScene->getNumFrames() - 1)
-		{
-			_frameNumber = 0;
-		}
-		_mainScene->setCurrentFrame(_frameNumber);
-	}
-
 	glm::vec3 vTo, vUp;
 	float fov;
 	_mainScene->getCameraProperties(_cameraId, fov, _cameraPosition, vTo, vUp);
@@ -1247,9 +1272,9 @@ void OpenGLESDeferredShading::uploadStaticModelData()
 	}
 	for (uint32_t i = 0; i < _mainScene->getNumMeshNodes(); ++i)
 	{
-		_deviceResources->modelMaterialBufferView.getElementByName(BufferEntryNames::PerModelMaterial::SpecularStrength, 0, i).setValue(&_deviceResources->materials[i].specularStrength);
+		_deviceResources->modelMaterialBufferView.getElementByName(BufferEntryNames::PerModelMaterial::SpecularStrength, 0, i).setValue(_deviceResources->materials[i].specularStrength);
 
-		_deviceResources->modelMaterialBufferView.getElementByName(BufferEntryNames::PerModelMaterial::DiffuseColor, 0, i).setValue(&_deviceResources->materials[i].diffuseColor);
+		_deviceResources->modelMaterialBufferView.getElementByName(BufferEntryNames::PerModelMaterial::DiffuseColor, 0, i).setValue(_deviceResources->materials[i].diffuseColor);
 	}
 	if (!_bufferStorageExtSupported)
 	{
@@ -1280,10 +1305,10 @@ void OpenGLESDeferredShading::uploadStaticDirectionalLightData()
 	for (uint32_t i = 0; i < _numberOfDirectionalLights; ++i)
 	{
 		_deviceResources->staticDirectionalLightBufferView.getElementByName(BufferEntryNames::StaticDirectionalLight::LightIntensity, 0, i)
-			.setValue(&_deviceResources->renderInfo.directionalLightPass.lightProperties[i].lightIntensity);
+			.setValue(_deviceResources->renderInfo.directionalLightPass.lightProperties[i].lightIntensity);
 
 		_deviceResources->staticDirectionalLightBufferView.getElementByName(BufferEntryNames::StaticDirectionalLight::AmbientLight, 0, i)
-			.setValue(&DirectionalLightConfiguration::AmbientLightColor);
+			.setValue(DirectionalLightConfiguration::AmbientLightColor);
 	}
 	if (!_bufferStorageExtSupported)
 	{
@@ -1304,16 +1329,16 @@ void OpenGLESDeferredShading::uploadStaticPointLightData()
 	for (uint32_t i = 0; i < _numberOfPointLights; ++i)
 	{
 		_deviceResources->staticPointLightBufferView.getElementByName(BufferEntryNames::StaticPointLight::LightIntensity, 0, i)
-			.setValue(&_deviceResources->renderInfo.pointLightPasses.lightProperties[i].lightIntensity);
+			.setValue(_deviceResources->renderInfo.pointLightPasses.lightProperties[i].lightIntensity);
 
 		_deviceResources->staticPointLightBufferView.getElementByName(BufferEntryNames::StaticPointLight::LightRadius, 0, i)
-			.setValue(&_deviceResources->renderInfo.pointLightPasses.lightProperties[i].lightRadius);
+			.setValue(_deviceResources->renderInfo.pointLightPasses.lightProperties[i].lightRadius);
 
 		_deviceResources->staticPointLightBufferView.getElementByName(BufferEntryNames::StaticPointLight::LightColor, 0, i)
-			.setValue(&_deviceResources->renderInfo.pointLightPasses.lightProperties[i].lightColor);
+			.setValue(_deviceResources->renderInfo.pointLightPasses.lightProperties[i].lightColor);
 
 		_deviceResources->staticPointLightBufferView.getElementByName(BufferEntryNames::StaticPointLight::LightSourceColor, 0, i)
-			.setValue(&_deviceResources->renderInfo.pointLightPasses.lightProperties[i].lightSourceColor);
+			.setValue(_deviceResources->renderInfo.pointLightPasses.lightProperties[i].lightSourceColor);
 	}
 	if (!_bufferStorageExtSupported)
 	{
@@ -1487,7 +1512,7 @@ void OpenGLESDeferredShading::createGeometryBuffers()
 ***********************************************************************************************************************/
 void OpenGLESDeferredShading::allocateLights()
 {
-	int32_t countPoint = 0;
+	uint32_t countPoint = 0;
 	uint32_t countDirectional = 0;
 	for (uint32_t i = 0; i < _mainScene->getNumLightNodes(); ++i)
 	{
@@ -1514,7 +1539,7 @@ void OpenGLESDeferredShading::allocateLights()
 		countPoint = PointLightConfiguration::MaxScenePointLights;
 	}
 
-	countPoint += PointLightConfiguration::NumProceduralPointLights;
+	countPoint += static_cast<uint32_t>(PointLightConfiguration::NumProceduralPointLights);
 
 	_numberOfPointLights = countPoint;
 
@@ -1524,7 +1549,7 @@ void OpenGLESDeferredShading::allocateLights()
 	_deviceResources->renderInfo.pointLightPasses.lightProperties.resize(countPoint);
 	_deviceResources->renderInfo.pointLightPasses.initialData.resize(countPoint);
 
-	for (int i = countPoint - PointLightConfiguration::NumProceduralPointLights; i < countPoint; ++i)
+	for (uint32_t i = countPoint - static_cast<uint32_t>(PointLightConfiguration::NumProceduralPointLights); i < countPoint; ++i)
 	{
 		updateProceduralPointLight(_deviceResources->renderInfo.pointLightPasses.initialData[i], _deviceResources->renderInfo.pointLightPasses.lightProperties[i], true);
 	}
@@ -1537,7 +1562,7 @@ void OpenGLESDeferredShading::initialiseStaticLightProperties()
 {
 	RenderData& pass = _deviceResources->renderInfo;
 
-	int32_t pointLight = 0;
+	uint32_t pointLight = 0;
 	uint32_t directionalLight = 0;
 	for (uint32_t i = 0; i < _mainScene->getNumLightNodes(); ++i)
 	{
@@ -1559,7 +1584,7 @@ void OpenGLESDeferredShading::initialiseStaticLightProperties()
 			pass.pointLightPasses.lightProperties[pointLight].lightIntensity = PointLightConfiguration::PointlightIntensity;
 
 			// POINT LIGHT PROXIES : The "drawcalls" that will perform the actual rendering
-			pass.pointLightPasses.lightProperties[pointLight].lightRadius = PointLightConfiguration::PointLightRadius;
+			pass.pointLightPasses.lightProperties[pointLight].lightRadius = PointLightConfiguration::PointLightMaxRadius;
 
 			// POINT LIGHT SOURCES : The little balls that we render to show the lights
 			pass.pointLightPasses.lightProperties[pointLight].lightSourceColor = glm::vec4(light.getColor(), .8f);
@@ -1602,13 +1627,13 @@ void OpenGLESDeferredShading::updateProceduralPointLight(PointLightPasses::Initi
 		pointLightProperties.lightColor = glm::vec4(lightColor, 1.); // random-looking
 		pointLightProperties.lightSourceColor = glm::vec4(lightColor, 0.8); // random-looking
 		pointLightProperties.lightIntensity = PointLightConfiguration::PointlightIntensity;
-		pointLightProperties.lightRadius = PointLightConfiguration::PointLightRadius;
+		pointLightProperties.lightRadius = PointLightConfiguration::PointLightMaxRadius;
 	}
 
 	if (!initial && !_isPaused) // Skip for the first frameNumber, as sometimes this moves the light too far...
 	{
 		uint64_t maxFrameTime = 30;
-		float dt = (float)std::min(getFrameTime(), maxFrameTime);
+		float dt = static_cast<float>(std::min(getFrameTime(), maxFrameTime));
 		if (data.distance < PointLightConfiguration::LightMinDistance)
 		{
 			data.axial_vel = glm::abs(data.axial_vel) + (PointLightConfiguration::LightMaxAxialVelocity * dt * .001f);
@@ -1655,7 +1680,7 @@ void OpenGLESDeferredShading::updateProceduralPointLight(PointLightPasses::Initi
 	float y = data.height;
 
 	const glm::mat4& transMtx = glm::translate(glm::vec3(x, y, z));
-	const glm::mat4& proxyScale = glm::scale(glm::vec3(PointLightConfiguration::PointLightScale)) * PointLightConfiguration::PointlightIntensity;
+	const glm::mat4& proxyScale = glm::scale(glm::vec3(PointLightConfiguration::PointLightMaxRadius));
 
 	const glm::mat4 mWorldScale = transMtx * proxyScale;
 
@@ -1694,9 +1719,9 @@ void OpenGLESDeferredShading::updateDynamicSceneData()
 			pass.renderGBuffer.objects[i].worldViewProj = _viewProjectionMatrix * pass.renderGBuffer.objects[i].world;
 			pass.renderGBuffer.objects[i].worldViewIT4x4 = glm::inverseTranspose(pass.renderGBuffer.objects[i].worldView);
 
-			_deviceResources->modelMatrixBufferView.getElementByName(BufferEntryNames::PerModel::WorldViewMatrix, 0, i).setValue(&pass.renderGBuffer.objects[i].worldView);
-			_deviceResources->modelMatrixBufferView.getElementByName(BufferEntryNames::PerModel::WorldViewProjectionMatrix, 0, i).setValue(&pass.renderGBuffer.objects[i].worldViewProj);
-			_deviceResources->modelMatrixBufferView.getElementByName(BufferEntryNames::PerModel::WorldViewITMatrix, 0, i).setValue(&pass.renderGBuffer.objects[i].worldViewIT4x4);
+			_deviceResources->modelMatrixBufferView.getElementByName(BufferEntryNames::PerModel::WorldViewMatrix, 0, i).setValue(pass.renderGBuffer.objects[i].worldView);
+			_deviceResources->modelMatrixBufferView.getElementByName(BufferEntryNames::PerModel::WorldViewProjectionMatrix, 0, i).setValue(pass.renderGBuffer.objects[i].worldViewProj);
+			_deviceResources->modelMatrixBufferView.getElementByName(BufferEntryNames::PerModel::WorldViewITMatrix, 0, i).setValue(pass.renderGBuffer.objects[i].worldViewIT4x4);
 		}
 		if (!_bufferStorageExtSupported)
 		{
@@ -1704,7 +1729,7 @@ void OpenGLESDeferredShading::updateDynamicSceneData()
 		}
 	}
 
-	int32_t pointLight = 0;
+	uint32_t pointLight = 0;
 	uint32_t directionalLight = 0;
 
 	// update the lighting data
@@ -1722,7 +1747,7 @@ void OpenGLESDeferredShading::updateDynamicSceneData()
 			}
 
 			const glm::mat4& transMtx = _mainScene->getWorldMatrix(_mainScene->getNodeIdFromLightNodeId(i));
-			const glm::mat4& proxyScale = glm::scale(glm::vec3(PointLightConfiguration::PointLightScale)) * PointLightConfiguration::PointlightIntensity;
+			const glm::mat4& proxyScale = glm::scale(glm::vec3(PointLightConfiguration::PointLightMaxRadius));
 			const glm::mat4 mWorldScale = transMtx * proxyScale;
 
 			// POINT LIGHT GEOMETRY : The spheres that will be used for the stencil pass
@@ -1751,11 +1776,11 @@ void OpenGLESDeferredShading::updateDynamicSceneData()
 	int numSceneLights = pointLight;
 	if (DirectionalLightConfiguration::AdditionalDirectionalLight)
 	{
-		pass.directionalLightPass.lightProperties[directionalLight].viewSpaceLightDirection = _viewMatrix * glm::vec4(0.f, -1.f, 0.f, 0.f);
+		pass.directionalLightPass.lightProperties[directionalLight].viewSpaceLightDirection = _viewMatrix * glm::normalize(glm::vec4(1.f, -1.f, -.5f, 0.f));
 		++directionalLight;
 	}
 
-	for (; pointLight < numSceneLights + PointLightConfiguration::NumProceduralPointLights; ++pointLight)
+	for (; pointLight < numSceneLights + static_cast<uint32_t>(PointLightConfiguration::NumProceduralPointLights); ++pointLight)
 	{
 		updateProceduralPointLight(pass.pointLightPasses.initialData[pointLight], _deviceResources->renderInfo.pointLightPasses.lightProperties[pointLight], false);
 	}
@@ -1772,7 +1797,7 @@ void OpenGLESDeferredShading::updateDynamicSceneData()
 		for (uint32_t i = 0; i < _numberOfDirectionalLights; ++i)
 		{
 			_deviceResources->dynamicDirectionalLightBufferView.getElementByName(BufferEntryNames::DynamicDirectionalLight::ViewSpaceLightDirection, 0, i)
-				.setValue(&_deviceResources->renderInfo.directionalLightPass.lightProperties[i].viewSpaceLightDirection);
+				.setValue(_deviceResources->renderInfo.directionalLightPass.lightProperties[i].viewSpaceLightDirection);
 		}
 		if (!_bufferStorageExtSupported)
 		{
@@ -1791,13 +1816,13 @@ void OpenGLESDeferredShading::updateDynamicSceneData()
 	for (uint32_t i = 0; i < _numberOfPointLights; ++i)
 	{
 		_deviceResources->dynamicPointLightBufferView.getElementByName(BufferEntryNames::DynamicPointLight::WorldViewProjectionMatrix, 0, i)
-			.setValue(&_deviceResources->renderInfo.pointLightPasses.lightProperties[i].worldViewProjectionMatrix);
+			.setValue(_deviceResources->renderInfo.pointLightPasses.lightProperties[i].worldViewProjectionMatrix);
 		_deviceResources->dynamicPointLightBufferView.getElementByName(BufferEntryNames::DynamicPointLight::ViewPosition, 0, i)
-			.setValue(&_deviceResources->renderInfo.pointLightPasses.lightProperties[i].proxyViewSpaceLightPosition);
+			.setValue(_deviceResources->renderInfo.pointLightPasses.lightProperties[i].proxyViewSpaceLightPosition);
 		_deviceResources->dynamicPointLightBufferView.getElementByName(BufferEntryNames::DynamicPointLight::ProxyWorldViewProjectionMatrix, 0, i)
-			.setValue(&_deviceResources->renderInfo.pointLightPasses.lightProperties[i].proxyWorldViewProjectionMatrix);
+			.setValue(_deviceResources->renderInfo.pointLightPasses.lightProperties[i].proxyWorldViewProjectionMatrix);
 		_deviceResources->dynamicPointLightBufferView.getElementByName(BufferEntryNames::DynamicPointLight::ProxyWorldViewMatrix, 0, i)
-			.setValue(&_deviceResources->renderInfo.pointLightPasses.lightProperties[i].proxyWorldViewMatrix);
+			.setValue(_deviceResources->renderInfo.pointLightPasses.lightProperties[i].proxyWorldViewMatrix);
 	}
 	if (!_bufferStorageExtSupported)
 	{

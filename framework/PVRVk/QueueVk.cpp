@@ -96,7 +96,7 @@ void Queue_::submit(const SubmitInfo* queueSubmitInfo, uint32_t numSubmitInfos, 
 		"VkQueueSubmit failed");
 }
 
-void Queue_::present(PresentInfo& presentInfo)
+void Queue_::present(PresentInfo& presentInfo, Result* const results)
 {
 	VkSwapchainKHR swapchainsVector[FrameworkCaps::MaxSwapChains];
 	uint32_t imageIndices[FrameworkCaps::MaxSwapChains];
@@ -114,7 +114,6 @@ void Queue_::present(PresentInfo& presentInfo)
 		waitSemaphores[i] = presentInfo.waitSemaphores[i]->getVkHandle();
 	}
 
-	Result result = Result::e_SUCCESS;
 	VkPresentInfoKHR presentInfoVk = {};
 	presentInfoVk.sType = static_cast<VkStructureType>(StructureType::e_PRESENT_INFO_KHR);
 	presentInfoVk.swapchainCount = presentInfo.numSwapchains;
@@ -122,7 +121,7 @@ void Queue_::present(PresentInfo& presentInfo)
 	presentInfoVk.pImageIndices = imageIndices;
 	presentInfoVk.pWaitSemaphores = waitSemaphores.get();
 	presentInfoVk.waitSemaphoreCount = presentInfo.numWaitSemaphores;
-	presentInfoVk.pResults = reinterpret_cast<VkResult*>(&result);
+	presentInfoVk.pResults = (VkResult*)results;
 
 	vkThrowIfFailed(_device->getVkBindings().vkQueuePresentKHR(getVkHandle(), &presentInfoVk), "Error in queue present");
 }
@@ -173,7 +172,7 @@ inline void processSparseImageOpaqueMemoryBindInfo(const SparseImageOpaqueMemory
 
 inline void processSparseImageMemoryBind(const SparseImageMemoryBind& sparseImageMemoryBind, VkSparseImageMemoryBind& outSparseImageMemoryBind)
 {
-	outSparseImageMemoryBind.subresource = *reinterpret_cast<const VkImageSubresource*>(&sparseImageMemoryBind.subresource);
+	outSparseImageMemoryBind.subresource = sparseImageMemoryBind.subresource.get();
 
 	outSparseImageMemoryBind.offset = VkOffset3D{
 		sparseImageMemoryBind.offset.getX(),

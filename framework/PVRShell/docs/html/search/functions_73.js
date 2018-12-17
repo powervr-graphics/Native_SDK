@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['set',['set',['../classpvr_1_1platform_1_1_command_line_parser.html#a9a545af09de4a19aa48495628f102144',1,'pvr::platform::CommandLineParser::set(const wchar_t *cmdLine)'],['../classpvr_1_1platform_1_1_command_line_parser.html#a249f71f43dcc573b8a8a9879da6c6564',1,'pvr::platform::CommandLineParser::set(int argc, char **argv)'],['../classpvr_1_1platform_1_1_command_line_parser.html#a48f3f10e7457fede61cf1009b7de0813',1,'pvr::platform::CommandLineParser::set(const char *cmdLine)'],['../classpvr_1_1platform_1_1_command_line_parser.html#a56adbc7bd26523ea8a9bce9ab79f4d83',1,'pvr::platform::CommandLineParser::set(Stream *stream)'],['../classpvr_1_1platform_1_1_command_line_parser.html#a8ee5e39b74e2f4a5ac92e89cef40dda1',1,'pvr::platform::CommandLineParser::set(const CommandLineParser &amp;commandLine)']]],
   ['setaasamples',['setAASamples',['../classpvr_1_1platform_1_1_shell.html#a8a3fea11c2afd9d517d73b9b24cc5413',1,'pvr::platform::Shell']]],
   ['setapplicationname',['setApplicationName',['../classpvr_1_1platform_1_1_shell.html#a721ae2f199a6f58fd678819d147079ac',1,'pvr::platform::Shell']]],
   ['setbackbuffercolorspace',['setBackBufferColorspace',['../classpvr_1_1platform_1_1_shell.html#a3c4e5b34aaa471ec416c940d54936c4e',1,'pvr::platform::Shell']]],

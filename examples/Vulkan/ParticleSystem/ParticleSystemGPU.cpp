@@ -19,7 +19,7 @@
 \brief ctor
 ***********************************************************************************************************************/
 ParticleSystemGPU::ParticleSystemGPU(pvr::Shell& assetLoader)
-	: computeShaderSrcFile("ParticleSolver.csh"), numParticles(0), workgroupSize(32), numSpheres(0), assetProvider(assetLoader)
+	: computeShaderSrcFile("ParticleSolver.csh"), gravity(0.0f), numParticles(0), workgroupSize(32), numSpheres(0), assetProvider(assetLoader)
 {
 	memset(&particleConfigData, 0, sizeof(ParticleConfig));
 }
@@ -39,51 +39,53 @@ ParticleSystemGPU::~ParticleSystemGPU() {}
 	- The actual number of particles (SetNumberOfParticles actually allocates memory for the particles)
 ***********************************************************************************************************************/
 void ParticleSystemGPU::init(uint32_t maxParticles, const Sphere* spheres, uint32_t numSpheres, pvrvk::Device& device, pvrvk::CommandPool& commandPool,
-	pvrvk::DescriptorPool& descriptorPool, uint32_t numSwapchains, pvr::utils::vma::Allocator allocator)
+	pvrvk::DescriptorPool& descriptorPool, uint32_t numSwapchains, pvr::utils::vma::Allocator& allocator, pvrvk::PipelineCache& pipelineCache)
 {
 	this->commandPool = commandPool;
 	this->device = device;
 	swapchainLength = numSwapchains;
 
-	createComputePipeline();
+	createComputePipeline(pipelineCache);
 	setCollisionSpheres(spheres, numSpheres, allocator);
 	// create the ssbo buffer
-	particleBufferViewSsbos = pvr::utils::createBuffer(device, sizeof(Particle) * maxParticles,
-		pvrvk::BufferUsageFlags::e_VERTEX_BUFFER_BIT | pvrvk::BufferUsageFlags::e_STORAGE_BUFFER_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT,
-		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, &allocator, pvr::utils::vma::AllocationCreateFlags::e_NONE);
+	{
+		particleBufferViewSsbos = pvr::utils::createBuffer(device, sizeof(Particle) * maxParticles,
+			pvrvk::BufferUsageFlags::e_VERTEX_BUFFER_BIT | pvrvk::BufferUsageFlags::e_STORAGE_BUFFER_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT,
+			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, &allocator, pvr::utils::vma::AllocationCreateFlags::e_NONE);
+	}
 
-	particleConfigUboBufferView.initDynamic(ParticleConfigViewMapping, swapchainLength, pvr::BufferUsageFlags::UniformBuffer,
-		static_cast<uint32_t>(device->getPhysicalDevice()->getProperties().getLimits().getMinUniformBufferOffsetAlignment()));
+	{
+		particleConfigUboBufferView.initDynamic(ParticleConfigViewMapping, swapchainLength, pvr::BufferUsageFlags::UniformBuffer,
+			static_cast<uint32_t>(device->getPhysicalDevice()->getProperties().getLimits().getMinUniformBufferOffsetAlignment()));
 
-	particleConfigUbo =
-		pvr::utils::createBuffer(device, particleConfigUboBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
-			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT, &allocator,
-			pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+		particleConfigUbo =
+			pvr::utils::createBuffer(device, particleConfigUboBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
+				pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT, &allocator,
+				pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
-	particleConfigUboBufferView.pointToMappedMemory(particleConfigUbo->getDeviceMemory()->getMappedData());
+		particleConfigUboBufferView.pointToMappedMemory(particleConfigUbo->getDeviceMemory()->getMappedData());
+	}
 
-	pvrvk::WriteDescriptorSet writeDescSets[pvrvk::FrameworkCaps::MaxSwapChains * 3];
+	std::vector<pvrvk::WriteDescriptorSet> writeDescSets;
 	for (uint8_t i = 0; i < swapchainLength; ++i)
 	{
 		multiBuffer.descSets[i] = descriptorPool->allocateDescriptorSet(pipe->getPipelineLayout()->getDescriptorSetLayout(0));
 		// update
-		writeDescSets[i * 3]
-			.set(pvrvk::DescriptorType::e_UNIFORM_BUFFER, multiBuffer.descSets[i], BufferBindingPoint::SPHERES_UBO_BINDING_INDEX)
-			.setBufferInfo(0, pvrvk::DescriptorBufferInfo(collisonSpheresUbo, 0, collisonSpheresUboBufferView.getDynamicSliceSize()));
+		writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_UNIFORM_BUFFER, multiBuffer.descSets[i], BufferBindingPoint::SPHERES_UBO_BINDING_INDEX)
+									.setBufferInfo(0, pvrvk::DescriptorBufferInfo(collisonSpheresUbo, 0, collisonSpheresUboBufferView.getDynamicSliceSize())));
 
-		writeDescSets[i * 3 + 1]
-			.set(pvrvk::DescriptorType::e_UNIFORM_BUFFER, multiBuffer.descSets[i], BufferBindingPoint::PARTICLE_CONFIG_UBO_BINDING_INDEX)
-			.setBufferInfo(0, pvrvk::DescriptorBufferInfo(particleConfigUbo, 0, particleConfigUboBufferView.getDynamicSliceSize()));
+		writeDescSets.push_back(
+			pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_UNIFORM_BUFFER, multiBuffer.descSets[i], BufferBindingPoint::PARTICLE_CONFIG_UBO_BINDING_INDEX)
+				.setBufferInfo(
+					0, pvrvk::DescriptorBufferInfo(particleConfigUbo, particleConfigUboBufferView.getDynamicSliceOffset(i), particleConfigUboBufferView.getDynamicSliceSize())));
 
-		writeDescSets[i * 3 + 2]
-			.set(pvrvk::DescriptorType::e_STORAGE_BUFFER, multiBuffer.descSets[i], BufferBindingPoint::PARTICLES_SSBO_BINDING_INDEX_IN_OUT)
-			.setBufferInfo(0, pvrvk::DescriptorBufferInfo(particleBufferViewSsbos, 0, particleBufferViewSsbos->getSize()));
+		writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_STORAGE_BUFFER, multiBuffer.descSets[i], BufferBindingPoint::PARTICLES_SSBO_BINDING_INDEX_IN_OUT)
+									.setBufferInfo(0, pvrvk::DescriptorBufferInfo(particleBufferViewSsbos, 0, particleBufferViewSsbos->getSize())));
 	}
-	device->updateDescriptorSets(writeDescSets, swapchainLength * 3, nullptr, 0);
+	device->updateDescriptorSets(writeDescSets.data(), static_cast<uint32_t>(writeDescSets.size()), nullptr, 0);
 
 	stagingBuffer = pvr::utils::createBuffer(device, particleBufferViewSsbos->getSize(), pvrvk::BufferUsageFlags::e_TRANSFER_SRC_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
-		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT, &allocator,
-		pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT, &allocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
 	stagingFence = device->createFence();
 	commandStaging = commandPool->allocateCommandBuffer();
@@ -94,7 +96,7 @@ void ParticleSystemGPU::init(uint32_t maxParticles, const Sphere* spheres, uint3
 \return true if success
 \param[in]  std::string & errorStr
 ***********************************************************************************************************************/
-void ParticleSystemGPU::createComputePipeline()
+void ParticleSystemGPU::createComputePipeline(pvrvk::PipelineCache& pipelineCache)
 {
 	pvrvk::DescriptorSetLayoutCreateInfo descSetLayoutInfo;
 	pvrvk::PipelineLayoutCreateInfo pipeLayoutInfo;
@@ -106,10 +108,10 @@ void ParticleSystemGPU::createComputePipeline()
 	pipeLayoutInfo.setDescSetLayout(0, device->createDescriptorSetLayout(descSetLayoutInfo));
 
 	pvrvk::ComputePipelineCreateInfo pipeCreateInfo;
-	pvrvk::ShaderModule shader = device->createShader(assetProvider.getAssetStream(ComputeShaderFileName)->readToEnd<uint32_t>());
+	pvrvk::ShaderModule shader = device->createShaderModule(pvrvk::ShaderModuleCreateInfo(assetProvider.getAssetStream(ComputeShaderFileName)->readToEnd<uint32_t>()));
 	pipeCreateInfo.computeShader.setShader(shader);
 	pipeCreateInfo.pipelineLayout = device->createPipelineLayout(pipeLayoutInfo);
-	pipe = device->createComputePipeline(pipeCreateInfo);
+	pipe = device->createComputePipeline(pipeCreateInfo, pipelineCache);
 }
 
 /*!*********************************************************************************************************************
@@ -119,13 +121,10 @@ void ParticleSystemGPU::createComputePipeline()
 ***********************************************************************************************************************/
 void ParticleSystemGPU::updateUniforms(uint32_t swapchain, float dt)
 {
-	if (dt == 0)
-	{
-		return;
-	}
 	dt *= 0.001f;
 	particleConfigData.fDt = dt;
 	particleConfigData.fTotalTime += dt;
+
 	particleConfigData.updateBufferView(particleConfigUboBufferView, particleConfigUbo, swapchain);
 }
 
@@ -141,13 +140,14 @@ void ParticleSystemGPU::setNumberOfParticles(uint32_t numParticles, pvrvk::Queue
 	this->numParticles = numParticles;
 
 	Particle* tmpData = (Particle*)stagingBuffer->getDeviceMemory()->getMappedData();
-	for (uint32_t i = 0; i < numParticles; ++i, ++tmpData)
+	for (uint32_t i = 0; i < numParticles; ++i)
 	{
-		tmpData->vPosition = glm::vec3(((float)rand() / RAND_MAX) * 50.f - 25.f, ((float)rand() / RAND_MAX) * 50.f, ((float)rand() / RAND_MAX) * 50.f - 25.f);
-		tmpData->vVelocity = tmpData->vPosition * .2f;
-		tmpData->fTimeToLive = ((float)rand() / RAND_MAX);
+		tmpData[i].vPosition.x = 0.0f;
+		tmpData[i].vPosition.y = 0.0f;
+		tmpData[i].vPosition.z = 1.0f;
+		tmpData[i].vVelocity = glm::vec3(0.0f);
+		tmpData[i].fTimeToLive = pvr::randomrange(0.0f, 1.5f);
 	}
-	memset(tmpData, 0, stagingBuffer->getSize() - (sizeof(Particle) * numParticles)); // zero out the remaining entries
 
 	// flush the memory if required
 	if ((stagingBuffer->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
@@ -155,24 +155,27 @@ void ParticleSystemGPU::setNumberOfParticles(uint32_t numParticles, pvrvk::Queue
 		stagingBuffer->getDeviceMemory()->flushRange(0, stagingBuffer->getSize());
 	}
 
-	// copy it to the destination buffer
+	// Copy the new set of particles to the destination buffer
 	commandStaging->begin();
-	const pvrvk::BufferCopy bufferCopy(0, 0, static_cast<uint32_t>(stagingBuffer->getSize()));
+	// Fill the destination buffer with 0's
+	commandStaging->fillBuffer(particleBufferViewSsbos, 0, 0, particleBufferViewSsbos->getSize());
+	const pvrvk::BufferCopy bufferCopy(0, 0, sizeof(Particle) * numParticles);
 	commandStaging->copyBuffer(stagingBuffer, particleBufferViewSsbos, 1, &bufferCopy);
 	commandStaging->end();
 
 	pvrvk::SubmitInfo submitInfo;
 	submitInfo.commandBuffers = &commandStaging;
 	submitInfo.numCommandBuffers = 1;
+
+	pvrvk::PipelineStageFlags pipeWaitStageFlags = pvrvk::PipelineStageFlags::e_ALL_BITS;
+	submitInfo.waitDestStages = &pipeWaitStageFlags;
 	queue->submit(&submitInfo, 1, stagingFence);
 	stagingFence->wait();
 	stagingFence->reset();
 
+	for (uint32_t i = 0; i < swapchainLength; ++i)
 	{
-		for (uint32_t i = 0; i < swapchainLength; ++i)
-		{
-			recordCommandBuffer(i);
-		}
+		recordCommandBuffer(i);
 	}
 }
 

@@ -15,7 +15,7 @@
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="IMGdoxygen.css" rel="stylesheet" type="text/css"/>
-<link rel="shortcut icon" href="http://www.imgtec.com/images/img.ico">
+<link rel="shortcut icon" type="image/x-icon" href="img.ico">
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
+      <a href="https://www.imgtec.com/developers/" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRVk</span> Documentation</a>
    <tbody>
@@ -97,87 +97,89 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="keyword">public</span>:</div>
 <div class="line"><a name="l00020"></a><span class="lineno"><a class="line" href="structpvrvk_1_1_debug_report_callback_create_info.html#a550f5f0f94e09b55b94b01cfa3e81197">   20</a></span>&#160;    <a class="code" href="structpvrvk_1_1_debug_report_callback_create_info.html#a550f5f0f94e09b55b94b01cfa3e81197">DebugReportCallbackCreateInfo</a>() : _flags(DebugReportFlagsEXT::e_ALL_BITS), _callback(nullptr), _userData(nullptr) {}</div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;</div>
-<div class="line"><a name="l00026"></a><span class="lineno"><a class="line" href="structpvrvk_1_1_debug_report_callback_create_info.html#a24feec9a95870929d0f1bba20e92ddc0">   26</a></span>&#160;    <a class="code" href="structpvrvk_1_1_debug_report_callback_create_info.html#a24feec9a95870929d0f1bba20e92ddc0">DebugReportCallbackCreateInfo</a>(DebugReportFlagsEXT flags, PFN_vkDebugReportCallbackEXT callback, <span class="keywordtype">void</span>* pUserData) : _flags(flags), _callback(callback), _userData(pUserData) {}</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;</div>
-<div class="line"><a name="l00030"></a><span class="lineno"><a class="line" href="structpvrvk_1_1_debug_report_callback_create_info.html#aae5373791cff7c3138ded9a7d2a26abc">   30</a></span>&#160;    DebugReportFlagsEXT <a class="code" href="structpvrvk_1_1_debug_report_callback_create_info.html#aae5373791cff7c3138ded9a7d2a26abc">getFlags</a>()<span class="keyword"> const</span></div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="keyword">    </span>{</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;        <span class="keywordflow">return</span> _flags;</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    }</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;</div>
-<div class="line"><a name="l00038"></a><span class="lineno"><a class="line" href="structpvrvk_1_1_debug_report_callback_create_info.html#a8302f0799e95af772a2b77fa17d6ba2e">   38</a></span>&#160;    <a class="code" href="structpvrvk_1_1_debug_report_callback_create_info.html">DebugReportCallbackCreateInfo</a>&amp; <a class="code" href="structpvrvk_1_1_debug_report_callback_create_info.html#a8302f0799e95af772a2b77fa17d6ba2e">setFlags</a>(<span class="keyword">const</span> DebugReportFlagsEXT&amp; flags)</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    {</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;        this-&gt;_flags = flags;</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;        <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    }</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;</div>
-<div class="line"><a name="l00046"></a><span class="lineno"><a class="line" href="structpvrvk_1_1_debug_report_callback_create_info.html#aec5e47d66cd2a9c4f508eee413750757">   46</a></span>&#160;    PFN_vkDebugReportCallbackEXT <a class="code" href="structpvrvk_1_1_debug_report_callback_create_info.html#aec5e47d66cd2a9c4f508eee413750757">getCallback</a>()<span class="keyword"> const</span></div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;<span class="keyword">    </span>{</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;        <span class="keywordflow">return</span> _callback;</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    }</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;</div>
-<div class="line"><a name="l00054"></a><span class="lineno"><a class="line" href="structpvrvk_1_1_debug_report_callback_create_info.html#a1653712dbf9a79fb1dca87f0ec78a82b">   54</a></span>&#160;    <a class="code" href="structpvrvk_1_1_debug_report_callback_create_info.html">DebugReportCallbackCreateInfo</a>&amp; <a class="code" href="structpvrvk_1_1_debug_report_callback_create_info.html#a1653712dbf9a79fb1dca87f0ec78a82b">setCallback</a>(<span class="keyword">const</span> PFN_vkDebugReportCallbackEXT&amp; callback)</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    {</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;        this-&gt;_callback = callback;</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;        <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    }</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;</div>
-<div class="line"><a name="l00062"></a><span class="lineno"><a class="line" href="structpvrvk_1_1_debug_report_callback_create_info.html#a9825141ef64ecc1ad2f5080ca60eb2a3">   62</a></span>&#160;    <span class="keyword">inline</span> <span class="keywordtype">void</span>* <a class="code" href="structpvrvk_1_1_debug_report_callback_create_info.html#a9825141ef64ecc1ad2f5080ca60eb2a3">getPUserData</a>()<span class="keyword"> const</span></div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;<span class="keyword">    </span>{</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;        <span class="keywordflow">return</span> _userData;</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    }</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;</div>
-<div class="line"><a name="l00070"></a><span class="lineno"><a class="line" href="structpvrvk_1_1_debug_report_callback_create_info.html#a9592bca8baec43b774bc38ede06d5e3d">   70</a></span>&#160;    <span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code" href="structpvrvk_1_1_debug_report_callback_create_info.html#a9592bca8baec43b774bc38ede06d5e3d">setPUserData</a>(<span class="keywordtype">void</span>* pUserData)</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    {</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;        this-&gt;_userData = pUserData;</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    }</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    DebugReportFlagsEXT _flags;</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    PFN_vkDebugReportCallbackEXT _callback;</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    <span class="keywordtype">void</span>* _userData;</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;};</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;<span class="keyword">namespace </span>impl {</div>
-<div class="line"><a name="l00086"></a><span class="lineno"><a class="line" href="classpvrvk_1_1impl_1_1_debug_report_callback__.html">   86</a></span>&#160;<span class="keyword">class </span><a class="code" href="classpvrvk_1_1impl_1_1_debug_report_callback__.html">DebugReportCallback_</a> : <span class="keyword">public</span> <a class="code" href="classpvrvk_1_1impl_1_1_instance_object_handle.html">InstanceObjectHandle</a>&lt;VkDebugReportCallbackEXT&gt;</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;{</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    <a class="code" href="_types_vk_8h.html#a96e4c02fcc79177dfd9de56dce1a47cc">DECLARE_NO_COPY_SEMANTICS</a>(<a class="code" href="classpvrvk_1_1impl_1_1_debug_report_callback__.html">DebugReportCallback_</a>)</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;    </div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classpvrvk_1_1impl_1_1_debug_report_callback__.html#a19a73159c2617d0274a16a2c5ca66b73">isEnabled</a>()</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    {</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;        <span class="keywordflow">return</span> _enabled;</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    }</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">typename</span>&gt;</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;    <span class="keyword">friend</span> struct ::pvrvk::RefCountEntryIntrusive;</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    <span class="keyword">friend</span> class ::pvrvk::impl::Instance_;</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;    <a class="code" href="classpvrvk_1_1impl_1_1_debug_report_callback__.html">DebugReportCallback_</a>(<a class="code" href="namespacepvrvk.html#a12eb8ece54cc68ea07dfe3df3c8433dc">InstanceWeakPtr</a> instance, <span class="keyword">const</span> <a class="code" href="structpvrvk_1_1_debug_report_callback_create_info.html">DebugReportCallbackCreateInfo</a>&amp; createInfo);</div>
+<div class="line"><a name="l00026"></a><span class="lineno"><a class="line" href="structpvrvk_1_1_debug_report_callback_create_info.html#a7b82388071cbe25602602a925deeb050">   26</a></span>&#160;    <a class="code" href="structpvrvk_1_1_debug_report_callback_create_info.html#a7b82388071cbe25602602a925deeb050">DebugReportCallbackCreateInfo</a>(DebugReportFlagsEXT flags, PFN_vkDebugReportCallbackEXT callback, <span class="keywordtype">void</span>* pUserData = <span class="keyword">nullptr</span>)</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;        : _flags(flags), _callback(callback), _userData(pUserData)</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    {}</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;</div>
+<div class="line"><a name="l00032"></a><span class="lineno"><a class="line" href="structpvrvk_1_1_debug_report_callback_create_info.html#aae5373791cff7c3138ded9a7d2a26abc">   32</a></span>&#160;    DebugReportFlagsEXT <a class="code" href="structpvrvk_1_1_debug_report_callback_create_info.html#aae5373791cff7c3138ded9a7d2a26abc">getFlags</a>()<span class="keyword"> const</span></div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;        <span class="keywordflow">return</span> _flags;</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    }</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;</div>
+<div class="line"><a name="l00040"></a><span class="lineno"><a class="line" href="structpvrvk_1_1_debug_report_callback_create_info.html#a8302f0799e95af772a2b77fa17d6ba2e">   40</a></span>&#160;    <a class="code" href="structpvrvk_1_1_debug_report_callback_create_info.html">DebugReportCallbackCreateInfo</a>&amp; <a class="code" href="structpvrvk_1_1_debug_report_callback_create_info.html#a8302f0799e95af772a2b77fa17d6ba2e">setFlags</a>(<span class="keyword">const</span> DebugReportFlagsEXT&amp; flags)</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    {</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;        this-&gt;_flags = flags;</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;        <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    }</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;</div>
+<div class="line"><a name="l00048"></a><span class="lineno"><a class="line" href="structpvrvk_1_1_debug_report_callback_create_info.html#aec5e47d66cd2a9c4f508eee413750757">   48</a></span>&#160;    PFN_vkDebugReportCallbackEXT <a class="code" href="structpvrvk_1_1_debug_report_callback_create_info.html#aec5e47d66cd2a9c4f508eee413750757">getCallback</a>()<span class="keyword"> const</span></div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;        <span class="keywordflow">return</span> _callback;</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    }</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;</div>
+<div class="line"><a name="l00056"></a><span class="lineno"><a class="line" href="structpvrvk_1_1_debug_report_callback_create_info.html#a1653712dbf9a79fb1dca87f0ec78a82b">   56</a></span>&#160;    <a class="code" href="structpvrvk_1_1_debug_report_callback_create_info.html">DebugReportCallbackCreateInfo</a>&amp; <a class="code" href="structpvrvk_1_1_debug_report_callback_create_info.html#a1653712dbf9a79fb1dca87f0ec78a82b">setCallback</a>(<span class="keyword">const</span> PFN_vkDebugReportCallbackEXT&amp; callback)</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    {</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;        this-&gt;_callback = callback;</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;        <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    }</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;</div>
+<div class="line"><a name="l00064"></a><span class="lineno"><a class="line" href="structpvrvk_1_1_debug_report_callback_create_info.html#a9825141ef64ecc1ad2f5080ca60eb2a3">   64</a></span>&#160;    <span class="keyword">inline</span> <span class="keywordtype">void</span>* <a class="code" href="structpvrvk_1_1_debug_report_callback_create_info.html#a9825141ef64ecc1ad2f5080ca60eb2a3">getPUserData</a>()<span class="keyword"> const</span></div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;        <span class="keywordflow">return</span> _userData;</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    }</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;</div>
+<div class="line"><a name="l00072"></a><span class="lineno"><a class="line" href="structpvrvk_1_1_debug_report_callback_create_info.html#a9592bca8baec43b774bc38ede06d5e3d">   72</a></span>&#160;    <span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code" href="structpvrvk_1_1_debug_report_callback_create_info.html#a9592bca8baec43b774bc38ede06d5e3d">setPUserData</a>(<span class="keywordtype">void</span>* pUserData)</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    {</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;        this-&gt;_userData = pUserData;</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    }</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    DebugReportFlagsEXT _flags;</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    PFN_vkDebugReportCallbackEXT _callback;</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    <span class="keywordtype">void</span>* _userData;</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;};</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;<span class="keyword">namespace </span>impl {</div>
+<div class="line"><a name="l00088"></a><span class="lineno"><a class="line" href="classpvrvk_1_1impl_1_1_debug_report_callback__.html">   88</a></span>&#160;<span class="keyword">class </span><a class="code" href="classpvrvk_1_1impl_1_1_debug_report_callback__.html">DebugReportCallback_</a> : <span class="keyword">public</span> <a class="code" href="classpvrvk_1_1impl_1_1_instance_object_handle.html">InstanceObjectHandle</a>&lt;VkDebugReportCallbackEXT&gt;</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;{</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;    <a class="code" href="_types_vk_8h.html#a96e4c02fcc79177dfd9de56dce1a47cc">DECLARE_NO_COPY_SEMANTICS</a>(<a class="code" href="classpvrvk_1_1impl_1_1_debug_report_callback__.html">DebugReportCallback_</a>)</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    </div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classpvrvk_1_1impl_1_1_debug_report_callback__.html#a19a73159c2617d0274a16a2c5ca66b73">isEnabled</a>()</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    {</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;        <span class="keywordflow">return</span> _enabled;</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    }</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">typename</span>&gt;</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;    <span class="keyword">friend</span> struct ::pvrvk::RefCountEntryIntrusive;</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;    <span class="keyword">friend</span> class ::pvrvk::impl::Instance_;</div>
 <div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;    ~<a class="code" href="classpvrvk_1_1impl_1_1_debug_report_callback__.html">DebugReportCallback_</a>();</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;    <a class="code" href="classpvrvk_1_1impl_1_1_debug_report_callback__.html">DebugReportCallback_</a>(<a class="code" href="namespacepvrvk.html#a12eb8ece54cc68ea07dfe3df3c8433dc">InstanceWeakPtr</a> instance, <span class="keyword">const</span> <a class="code" href="structpvrvk_1_1_debug_report_callback_create_info.html">DebugReportCallbackCreateInfo</a>&amp; createInfo);</div>
 <div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;    <span class="keywordtype">bool</span> _enabled;</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;};</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;} <span class="comment">// namespace impl</span></div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;} <span class="comment">// namespace pvrvk</span></div>
-<div class="ttc" id="structpvrvk_1_1_debug_report_callback_create_info_html_a1653712dbf9a79fb1dca87f0ec78a82b"><div class="ttname"><a href="structpvrvk_1_1_debug_report_callback_create_info.html#a1653712dbf9a79fb1dca87f0ec78a82b">pvrvk::DebugReportCallbackCreateInfo::setCallback</a></div><div class="ttdeci">DebugReportCallbackCreateInfo &amp; setCallback(const PFN_vkDebugReportCallbackEXT &amp;callback)</div><div class="ttdoc">Set the PFN_vkDebugReportCallbackEXT specifying the callback function which will be called...</div><div class="ttdef"><b>Definition:</b> DebugReportCallbackVk.h:54</div></div>
-<div class="ttc" id="classpvrvk_1_1impl_1_1_debug_report_callback___html_a19a73159c2617d0274a16a2c5ca66b73"><div class="ttname"><a href="classpvrvk_1_1impl_1_1_debug_report_callback__.html#a19a73159c2617d0274a16a2c5ca66b73">pvrvk::impl::DebugReportCallback_::isEnabled</a></div><div class="ttdeci">bool isEnabled()</div><div class="ttdoc">Returns whether the DebugReportCallback object has been enabled.</div><div class="ttdef"><b>Definition:</b> DebugReportCallbackVk.h:93</div></div>
-<div class="ttc" id="structpvrvk_1_1_debug_report_callback_create_info_html_a9825141ef64ecc1ad2f5080ca60eb2a3"><div class="ttname"><a href="structpvrvk_1_1_debug_report_callback_create_info.html#a9825141ef64ecc1ad2f5080ca60eb2a3">pvrvk::DebugReportCallbackCreateInfo::getPUserData</a></div><div class="ttdeci">void * getPUserData() const </div><div class="ttdoc">Get the user data passed to the callback</div><div class="ttdef"><b>Definition:</b> DebugReportCallbackVk.h:62</div></div>
-<div class="ttc" id="structpvrvk_1_1_debug_report_callback_create_info_html_a9592bca8baec43b774bc38ede06d5e3d"><div class="ttname"><a href="structpvrvk_1_1_debug_report_callback_create_info.html#a9592bca8baec43b774bc38ede06d5e3d">pvrvk::DebugReportCallbackCreateInfo::setPUserData</a></div><div class="ttdeci">void setPUserData(void *pUserData)</div><div class="ttdoc">Set the user data passed to the callback.</div><div class="ttdef"><b>Definition:</b> DebugReportCallbackVk.h:70</div></div>
-<div class="ttc" id="_types_vk_8h_html_a96e4c02fcc79177dfd9de56dce1a47cc"><div class="ttname"><a href="_types_vk_8h.html#a96e4c02fcc79177dfd9de56dce1a47cc">DECLARE_NO_COPY_SEMANTICS</a></div><div class="ttdeci">#define DECLARE_NO_COPY_SEMANTICS(TYPE)</div><div class="ttdoc">INTERNAL. Disable the Copy Constructor and the Copy Assignment Operator of the type</div><div class="ttdef"><b>Definition:</b> TypesVk.h:128</div></div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;    ~<a class="code" href="classpvrvk_1_1impl_1_1_debug_report_callback__.html">DebugReportCallback_</a>();</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;    <span class="keywordtype">bool</span> _enabled;</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;};</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;} <span class="comment">// namespace impl</span></div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;} <span class="comment">// namespace pvrvk</span></div>
+<div class="ttc" id="structpvrvk_1_1_debug_report_callback_create_info_html_a1653712dbf9a79fb1dca87f0ec78a82b"><div class="ttname"><a href="structpvrvk_1_1_debug_report_callback_create_info.html#a1653712dbf9a79fb1dca87f0ec78a82b">pvrvk::DebugReportCallbackCreateInfo::setCallback</a></div><div class="ttdeci">DebugReportCallbackCreateInfo &amp; setCallback(const PFN_vkDebugReportCallbackEXT &amp;callback)</div><div class="ttdoc">Set the PFN_vkDebugReportCallbackEXT specifying the callback function which will be called...</div><div class="ttdef"><b>Definition:</b> DebugReportCallbackVk.h:56</div></div>
+<div class="ttc" id="classpvrvk_1_1impl_1_1_debug_report_callback___html_a19a73159c2617d0274a16a2c5ca66b73"><div class="ttname"><a href="classpvrvk_1_1impl_1_1_debug_report_callback__.html#a19a73159c2617d0274a16a2c5ca66b73">pvrvk::impl::DebugReportCallback_::isEnabled</a></div><div class="ttdeci">bool isEnabled()</div><div class="ttdoc">Returns whether the DebugReportCallback object has been enabled.</div><div class="ttdef"><b>Definition:</b> DebugReportCallbackVk.h:95</div></div>
+<div class="ttc" id="structpvrvk_1_1_debug_report_callback_create_info_html_a9825141ef64ecc1ad2f5080ca60eb2a3"><div class="ttname"><a href="structpvrvk_1_1_debug_report_callback_create_info.html#a9825141ef64ecc1ad2f5080ca60eb2a3">pvrvk::DebugReportCallbackCreateInfo::getPUserData</a></div><div class="ttdeci">void * getPUserData() const </div><div class="ttdoc">Get the user data passed to the callback</div><div class="ttdef"><b>Definition:</b> DebugReportCallbackVk.h:64</div></div>
+<div class="ttc" id="structpvrvk_1_1_debug_report_callback_create_info_html_a9592bca8baec43b774bc38ede06d5e3d"><div class="ttname"><a href="structpvrvk_1_1_debug_report_callback_create_info.html#a9592bca8baec43b774bc38ede06d5e3d">pvrvk::DebugReportCallbackCreateInfo::setPUserData</a></div><div class="ttdeci">void setPUserData(void *pUserData)</div><div class="ttdoc">Set the user data passed to the callback.</div><div class="ttdef"><b>Definition:</b> DebugReportCallbackVk.h:72</div></div>
+<div class="ttc" id="_types_vk_8h_html_a96e4c02fcc79177dfd9de56dce1a47cc"><div class="ttname"><a href="_types_vk_8h.html#a96e4c02fcc79177dfd9de56dce1a47cc">DECLARE_NO_COPY_SEMANTICS</a></div><div class="ttdeci">#define DECLARE_NO_COPY_SEMANTICS(TYPE)</div><div class="ttdoc">INTERNAL. Disable the Copy Constructor and the Copy Assignment Operator of the type</div><div class="ttdef"><b>Definition:</b> TypesVk.h:127</div></div>
 <div class="ttc" id="_object_handle_vk_8h_html"><div class="ttname"><a href="_object_handle_vk_8h.html">ObjectHandleVk.h</a></div><div class="ttdoc">Defines a simple interface for a Vulkan object. </div></div>
 <div class="ttc" id="_types_vk_8h_html"><div class="ttname"><a href="_types_vk_8h.html">TypesVk.h</a></div><div class="ttdoc">Contains framework types. </div></div>
 <div class="ttc" id="structpvrvk_1_1_debug_report_callback_create_info_html"><div class="ttname"><a href="structpvrvk_1_1_debug_report_callback_create_info.html">pvrvk::DebugReportCallbackCreateInfo</a></div><div class="ttdoc">DebugReportCallback creation descriptor.</div><div class="ttdef"><b>Definition:</b> DebugReportCallbackVk.h:16</div></div>
-<div class="ttc" id="structpvrvk_1_1_debug_report_callback_create_info_html_a8302f0799e95af772a2b77fa17d6ba2e"><div class="ttname"><a href="structpvrvk_1_1_debug_report_callback_create_info.html#a8302f0799e95af772a2b77fa17d6ba2e">pvrvk::DebugReportCallbackCreateInfo::setFlags</a></div><div class="ttdeci">DebugReportCallbackCreateInfo &amp; setFlags(const DebugReportFlagsEXT &amp;flags)</div><div class="ttdoc">Set the DebugReportFlagsEXT which specify the events causing this callback to be called.</div><div class="ttdef"><b>Definition:</b> DebugReportCallbackVk.h:38</div></div>
-<div class="ttc" id="structpvrvk_1_1_debug_report_callback_create_info_html_a24feec9a95870929d0f1bba20e92ddc0"><div class="ttname"><a href="structpvrvk_1_1_debug_report_callback_create_info.html#a24feec9a95870929d0f1bba20e92ddc0">pvrvk::DebugReportCallbackCreateInfo::DebugReportCallbackCreateInfo</a></div><div class="ttdeci">DebugReportCallbackCreateInfo(DebugReportFlagsEXT flags, PFN_vkDebugReportCallbackEXT callback, void *pUserData)</div><div class="ttdoc">Constructor</div><div class="ttdef"><b>Definition:</b> DebugReportCallbackVk.h:26</div></div>
-<div class="ttc" id="classpvrvk_1_1impl_1_1_debug_report_callback___html"><div class="ttname"><a href="classpvrvk_1_1impl_1_1_debug_report_callback__.html">pvrvk::impl::DebugReportCallback_</a></div><div class="ttdoc">Vulkan DebugReportCallback wrapper</div><div class="ttdef"><b>Definition:</b> DebugReportCallbackVk.h:86</div></div>
-<div class="ttc" id="structpvrvk_1_1_debug_report_callback_create_info_html_aec5e47d66cd2a9c4f508eee413750757"><div class="ttname"><a href="structpvrvk_1_1_debug_report_callback_create_info.html#aec5e47d66cd2a9c4f508eee413750757">pvrvk::DebugReportCallbackCreateInfo::getCallback</a></div><div class="ttdeci">PFN_vkDebugReportCallbackEXT getCallback() const </div><div class="ttdoc">Get the application callback function</div><div class="ttdef"><b>Definition:</b> DebugReportCallbackVk.h:46</div></div>
+<div class="ttc" id="structpvrvk_1_1_debug_report_callback_create_info_html_a8302f0799e95af772a2b77fa17d6ba2e"><div class="ttname"><a href="structpvrvk_1_1_debug_report_callback_create_info.html#a8302f0799e95af772a2b77fa17d6ba2e">pvrvk::DebugReportCallbackCreateInfo::setFlags</a></div><div class="ttdeci">DebugReportCallbackCreateInfo &amp; setFlags(const DebugReportFlagsEXT &amp;flags)</div><div class="ttdoc">Set the DebugReportFlagsEXT which specify the events causing this callback to be called.</div><div class="ttdef"><b>Definition:</b> DebugReportCallbackVk.h:40</div></div>
+<div class="ttc" id="classpvrvk_1_1impl_1_1_debug_report_callback___html"><div class="ttname"><a href="classpvrvk_1_1impl_1_1_debug_report_callback__.html">pvrvk::impl::DebugReportCallback_</a></div><div class="ttdoc">Vulkan DebugReportCallback wrapper</div><div class="ttdef"><b>Definition:</b> DebugReportCallbackVk.h:88</div></div>
+<div class="ttc" id="structpvrvk_1_1_debug_report_callback_create_info_html_a7b82388071cbe25602602a925deeb050"><div class="ttname"><a href="structpvrvk_1_1_debug_report_callback_create_info.html#a7b82388071cbe25602602a925deeb050">pvrvk::DebugReportCallbackCreateInfo::DebugReportCallbackCreateInfo</a></div><div class="ttdeci">DebugReportCallbackCreateInfo(DebugReportFlagsEXT flags, PFN_vkDebugReportCallbackEXT callback, void *pUserData=nullptr)</div><div class="ttdoc">Constructor</div><div class="ttdef"><b>Definition:</b> DebugReportCallbackVk.h:26</div></div>
+<div class="ttc" id="structpvrvk_1_1_debug_report_callback_create_info_html_aec5e47d66cd2a9c4f508eee413750757"><div class="ttname"><a href="structpvrvk_1_1_debug_report_callback_create_info.html#aec5e47d66cd2a9c4f508eee413750757">pvrvk::DebugReportCallbackCreateInfo::getCallback</a></div><div class="ttdeci">PFN_vkDebugReportCallbackEXT getCallback() const </div><div class="ttdoc">Get the application callback function</div><div class="ttdef"><b>Definition:</b> DebugReportCallbackVk.h:48</div></div>
 <div class="ttc" id="_debug_marker_vk_8h_html"><div class="ttname"><a href="_debug_marker_vk_8h.html">DebugMarkerVk.h</a></div><div class="ttdoc">A simple Debug Marker wrapper providing support for object naming and tagging. PVRVk objects which su...</div></div>
-<div class="ttc" id="namespacepvrvk_html_a12eb8ece54cc68ea07dfe3df3c8433dc"><div class="ttname"><a href="namespacepvrvk.html#a12eb8ece54cc68ea07dfe3df3c8433dc">pvrvk::InstanceWeakPtr</a></div><div class="ttdeci">RefCountedWeakReference&lt; impl::Instance_ &gt; InstanceWeakPtr</div><div class="ttdoc">Forwared-declared weak-reference-counted handle to a Instance. For detailed documentation, see PVRVk module</div><div class="ttdef"><b>Definition:</b> ForwardDecObjectsVk.h:214</div></div>
+<div class="ttc" id="namespacepvrvk_html_a12eb8ece54cc68ea07dfe3df3c8433dc"><div class="ttname"><a href="namespacepvrvk.html#a12eb8ece54cc68ea07dfe3df3c8433dc">pvrvk::InstanceWeakPtr</a></div><div class="ttdeci">RefCountedWeakReference&lt; impl::Instance_ &gt; InstanceWeakPtr</div><div class="ttdoc">Forwared-declared weak-reference-counted handle to a Instance. For detailed documentation, see PVRVk module</div><div class="ttdef"><b>Definition:</b> ForwardDecObjectsVk.h:223</div></div>
 <div class="ttc" id="structpvrvk_1_1_debug_report_callback_create_info_html_a550f5f0f94e09b55b94b01cfa3e81197"><div class="ttname"><a href="structpvrvk_1_1_debug_report_callback_create_info.html#a550f5f0f94e09b55b94b01cfa3e81197">pvrvk::DebugReportCallbackCreateInfo::DebugReportCallbackCreateInfo</a></div><div class="ttdeci">DebugReportCallbackCreateInfo()</div><div class="ttdoc">Constructor (zero initialization)</div><div class="ttdef"><b>Definition:</b> DebugReportCallbackVk.h:20</div></div>
-<div class="ttc" id="structpvrvk_1_1_debug_report_callback_create_info_html_aae5373791cff7c3138ded9a7d2a26abc"><div class="ttname"><a href="structpvrvk_1_1_debug_report_callback_create_info.html#aae5373791cff7c3138ded9a7d2a26abc">pvrvk::DebugReportCallbackCreateInfo::getFlags</a></div><div class="ttdeci">DebugReportFlagsEXT getFlags() const </div><div class="ttdoc">Get the flags for the creation info</div><div class="ttdef"><b>Definition:</b> DebugReportCallbackVk.h:30</div></div>
+<div class="ttc" id="structpvrvk_1_1_debug_report_callback_create_info_html_aae5373791cff7c3138ded9a7d2a26abc"><div class="ttname"><a href="structpvrvk_1_1_debug_report_callback_create_info.html#aae5373791cff7c3138ded9a7d2a26abc">pvrvk::DebugReportCallbackCreateInfo::getFlags</a></div><div class="ttdeci">DebugReportFlagsEXT getFlags() const </div><div class="ttdoc">Get the flags for the creation info</div><div class="ttdef"><b>Definition:</b> DebugReportCallbackVk.h:32</div></div>
 <div class="ttc" id="classpvrvk_1_1impl_1_1_instance_object_handle_html"><div class="ttname"><a href="classpvrvk_1_1impl_1_1_instance_object_handle.html">pvrvk::impl::InstanceObjectHandle</a></div><div class="ttdoc">Defines a simple interface for a Vulkan which holds a reference to a Vulkan instance.</div><div class="ttdef"><b>Definition:</b> ObjectHandleVk.h:43</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.4-->

@@ -5,8 +5,8 @@
 \copyright Copyright (c) Imagination Technologies Limited.
 */
 #pragma once
-#include "PVRCore/Base/ComplexTypes.h"
-#include "PVRCore/Texture.h"
+#include "PVRCore/types/Types.h"
+#include "PVRCore/texture/Texture.h"
 #include "PVRUtils/OpenGLES/ErrorsGles.h"
 
 namespace pvr {
@@ -112,7 +112,7 @@ GLenum convertToGles(SamplerAddressMode addressMode);
 GLenum convertToGles(StencilOp stencilOp);
 
 /// <summary>Convert to opengl blend op output.</summary>
-/// <param name="blendOp">Α BlendOp enum</param>
+/// <param name="blendOp">A BlendOp enum</param>
 /// <returns>A GLenum representing a Blend Operation (GL_FUNC_ADD, GL_MIN etc)</returns>
 GLenum convertToGles(BlendOp blendOp);
 
