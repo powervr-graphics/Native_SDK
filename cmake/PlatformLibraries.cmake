@@ -7,7 +7,7 @@ elseif (ANDROID) #log and basic android library for Android
 	find_library(lib-log log)
 	list(APPEND EXTRA_LIBS ${lib-android} ${lib-log})
 elseif (APPLE)
-	if (IOS) #A ton of libraries for iOS and OSX. 
+	if (IOS) #A ton of libraries for iOS and OSX.
 		set (PLATFORM_FOLDER iOS)
 		find_library(lib-uikit UIKit)
 		find_library(lib-gles OpenGLES)
@@ -53,11 +53,11 @@ elseif (UNIX) # Mainly, add the windowing system libraries and include folders
 	elseif(${WS} STREQUAL XCB) # The user has requested the XCB libraries
 		# XCB isn't currently being used by the PowerVR SDK but the following would allow you to link against the XCB libraries
 		find_package(XCB REQUIRED)
-		
+
 		if(NOT ${XCB_FOUND})
 			message("XCB libraries could not be found. Please try setting: -DCMAKE_PREFIX_PATH pointing towards your XCB libraries")
 		endif()
-		
+
 		list (APPEND EXTRA_LIBS ${XCB_LIBRARIES})
 		include_directories(${XCB_INCLUDE_DIRS})
 	elseif(${WS} STREQUAL Wayland) # The user has requested the Wayland libraries
@@ -66,11 +66,11 @@ elseif (UNIX) # Mainly, add the windowing system libraries and include folders
 			list (APPEND EXTRA_LIBS ${WAYLAND_EGL_LIBRARIES})
 			include_directories(${WAYLAND_EGL_INCLUDE_DIR})
 		endif()
-		
+
 		if(NOT ${WAYLAND_FOUND})
 			message("Wayland libraries could not be found. Please try setting: -DCMAKE_PREFIX_PATH pointing towards your Wayland libraries")
 		endif()
-		
+
 		find_library(lib-ffi ffi HINTS ${PKG_WAYLAND_LIBRARY_DIRS})
 		list (APPEND EXTRA_LIBS ${WAYLAND_CLIENT_LIBRARIES} ${lib-ffi})
 		include_directories(${WAYLAND_CLIENT_INCLUDE_DIR})

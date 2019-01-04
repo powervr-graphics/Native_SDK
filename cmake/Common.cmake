@@ -31,9 +31,6 @@ endif()
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/modules")  #for find_package
 
-#Add common include folders
-include_directories(${SDK_ROOT}/include/ ${SDK_ROOT}/framework/)
-
 # Set SPIRV_COMPILER
 if (WIN32)
 	set (SPIRV_COMPILER "${SDK_ROOT}/external/spir-v/glslangValidator.exe")
