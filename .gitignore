@@ -1,0 +1,2 @@
+# CMake output directory is set to be inside the CMAKE_SOURCE_DIR. Ignore binary files.
+/framework/bin/
