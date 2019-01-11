@@ -34,6 +34,7 @@ The samples encoded in this map is the result of the specular BRDF of the enviro
 Evironment BRDF: The second sum includes everything else, it is same as integrating the specular BRDF with solid white environment. This takes two inputs (roughness and cos Θv (view angle)) and two outputs (scale and bias to F0) in the range [0,1]. This is pre-calculated and stored in a 2D look-up texture (2D LUT). The sum of the integration is not specific for an environment therefore the texture can be used for any environment map. The texture need to be stored in 16bit per component format for proper precision and stored as RG1616 texture format.
 
 IBL Layers
+
 .. figure:: ./IBL_layers.png
 
 APIs
