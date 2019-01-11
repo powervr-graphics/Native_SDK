@@ -26,7 +26,7 @@ For specular we want the reflection to be crispy when the roughness value is low
 
 The Equation split into two sums. Each sum can be pre-calculated (Pre-Filtered Environment map and Environment BRDF)
 
-Pre-Filtered Environment map
+Pre-Filtered Environment map:
 The first sum is pre-calculated  for different roughness values and stored in the mip-map levels of the cubemap. The environment map is convolved  with CGX distribution using important sampling. 
 Specular reflections looks shiny when the roughness values is low and it becomes blurry when the roughness value is high. This is encoded in mip levels. Mip level 0 contains samples for roughness value 0, and the remaining mip levels get blurry for as the roughness value increases to 1.
 The samples encoded in this map is the result of the specular BRDF of the environment map. For each pixels in the environment map computes the Cook-Torrentz microfacet BRDF and stores those results.
