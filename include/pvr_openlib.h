@@ -56,7 +56,7 @@ inline void logOutput(const int logLevel, const char* const formatString, va_lis
 		OutputDebugString("\n");
 	}
 #else
-	printf("%s", procAddressMessageTypes[error]);
+	printf("%s", procAddressMessageTypes[logLevel]);
 	vprintf(formatString, tempList);
 	printf("\n");
 #endif
