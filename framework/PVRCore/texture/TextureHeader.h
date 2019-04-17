@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <cstdint>
 #include <cstddef>
+#include <string>
 
 namespace pvr {
 /// <summary>Flag interpreted as All mipmap levels.</summary>
