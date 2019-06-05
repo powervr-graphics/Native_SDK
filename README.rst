@@ -1,3 +1,6 @@
+.. image:: https://travis-ci.org/powervr-graphics/Native_SDK.svg?branch=master
+    :target: https://travis-ci.org/powervr-graphics/Native_SDK
+    
 .. figure:: ./docs/images/WelcomeGraphic.png
 
 ===============
