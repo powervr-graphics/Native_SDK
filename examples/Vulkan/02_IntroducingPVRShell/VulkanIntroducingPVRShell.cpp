@@ -320,7 +320,7 @@ const std::string InstanceLayers[] = {
 /// the list of enabled extensions which have been specified as "enabledExtensionNames".</summary> <param name="enabledExtensionNames">A set of instance extension which have been
 /// enabled via the ppEnabledExtensionNames member of the VkInstanceCreateInfo structure.</param> <param name="extensionName">The extension name to check for inclusion in the set
 /// of enabled extensions.</param> <returns>Returns true if the extension "extensionName" can be found in the list of enabled extensions.</returns>
-bool isInstanceExtensionEnabled(const std::vector<std::string>& enabledExtensionNames, const char* extensionName)
+bool isExtensionEnabled(const std::vector<std::string>& enabledExtensionNames, const char* extensionName)
 {
 	for (uint32_t i = 0; i < enabledExtensionNames.size(); i++)
 	{
@@ -621,8 +621,7 @@ class VulkanIntroducingPVRShell : public pvr::Shell
 	// Synchronisation primitives used for specifying dependencies and ordering during rendering frames.
 	VkSemaphore _imageAcquireSemaphores[MAX_SWAPCHAIN_IMAGES];
 	VkSemaphore _presentationSemaphores[MAX_SWAPCHAIN_IMAGES];
-	VkFence _perFrameAcquisitionFences[MAX_SWAPCHAIN_IMAGES];
-	VkFence _perFrameCommandBufferFences[MAX_SWAPCHAIN_IMAGES];
+	VkFence _perFrameResourcesFences[MAX_SWAPCHAIN_IMAGES];
 
 	// The queue to which various command buffers will be submitted to.
 	VkQueue _queue;
@@ -758,8 +757,7 @@ public:
 			_depthStencilImageViews[i] = VK_NULL_HANDLE;
 			_imageAcquireSemaphores[i] = VK_NULL_HANDLE;
 			_presentationSemaphores[i] = VK_NULL_HANDLE;
-			_perFrameAcquisitionFences[i] = VK_NULL_HANDLE;
-			_perFrameCommandBufferFences[i] = VK_NULL_HANDLE;
+			_perFrameResourcesFences[i] = VK_NULL_HANDLE;
 			_commandBuffers[i] = VK_NULL_HANDLE;
 			_debugReportCallbacks[i] = VK_NULL_HANDLE;
 		}
@@ -861,48 +859,41 @@ pvr::Result VulkanIntroducingPVRShell::initView()
 pvr::Result VulkanIntroducingPVRShell::renderFrame()
 {
 	// As discussed in "createSwapchain", the application doesn't actually "own" the presentation images meaning they cannot "just" render to the image
-	// but must acquire an image from the presentation engine prior to making use of it.
-	// Even then, after acquiring an image, the application must use synchronization primitives to ensure that the presentation engine has completely finished with the image.
+	// but must acquire an image from the presentation engine prior to making use of it. The act of acquiring an image from the presentation engine guarantees that
+	// the presentation engine has completely finished with the image.
 
 	// As with various other tasks in Vulkan rendering an image and presenting it to the screen takes some explanation, various commands and a fair amount of thought.
 
-	// We are using a "canonical" way to do synchronization that works in all but the most exotic of cases. The basic strategy
-	// * We track the number of frames in flight separately (this is _currentFrameIndex). This number is independent of *which* image we are rendering to, and is used for our
-	//   vkAcquireNextImage fences
-	// * We use this number to ensure that we never attempt to double-use resources with 2 different ways. The necessity of the two fences (you would expect one to be enought)
-	// stems, mostly, from a combination of two factors: 1) We do not wish to attempt to acquire a fence and then immediately wait for it to be available - we wish to connect the
-	// acquire operation with the rendering via a Semaphore, so we avoid the CPU-wait of the fence. Hence, we want to wait until the last possible moment to do the fence-wait. This
-	// wait ends up being the first wait during the frame 2) At the same time, we do not know which swapchain image we will acquire until after the fence.
+	// We are using a "canonical" way to do synchronization that works in all but the most exotic of cases.
+	// Calls to vkAcquireNextImageKHR, using a timeout of UINT64_MAX, will block until a presentable image from the swapchain can be acquired or will return an error.
+	// Calls to vkAcquireNextImageKHR may return immediately and therefore we cannot rely simply on this call to meter our rendering speed, we instead make use of
+	// The fence _perFrameResourcesFences[_swapchainIndex] to provides us with metered rendering and we make use of a semaphore _imageAcquireSemaphores[_currentFrameIndex] signalled
+	// by the call to vkAcquireNextImageKHR to guarantee that the presentation engine has finished reading from the image meaning it is now safe for the image layout
+	// and contents to be modified. The vkQueueSubmit call used to write to the swapchain image uses the semaphore _imageAcquireSemaphores[_currentFrameIndex] as a wait semaphore meaning
+	// the vkQueueSubmit call will only be executed once the semaphore has been signalled by the vkAcquireNextImageKHR ensuring that the presentation
+	// engine has relinquished control of the image. Only after this can the swapchain be safely modified.
 
 	// A high level overview for rendering and presenting an image to the screen is as follows:
-	//		1). Wait for the current frame's image acquisition fence to have been signalled : This means the presentation engine is finished reading from the image.
-	//		2). Acquire a presentable image from the presentation engine. The index of the next image into which to render will be returned.
-	//		3). Wait for the per frame resources fence to become signalled meaning the resources/command buffers for the current virtual frame are finished with.
-	//		4). Render the image (update variables, vkQueueSubmit). We are using per swapchain pre-recorded command buffers so we only need to submit them on each frame.
-	//		5). Present the acquired and now rendered image. Presenting an image returns ownership of the image back to the presentation engine.
-	//		6). Increment (and wrap) the virtual frame index
+	// 1). Acquire a presentable image from the presentation engine. The index of the next image into which to render will be returned.
+	// 2). Wait for the per frame resources fence to become signalled meaning the resources/command buffers for the current virtual frame are finished with.
+	// 3). Render the image (update variables, vkQueueSubmit). We are using per swapchain pre-recorded command buffers so we only need to submit them on each frame.
+	// 4). Present the acquired and now rendered image. Presenting an image returns ownership of the image back to the presentation engine.
+	// 5). Increment (and wrap) the virtual frame index
 
 	//
-	// 1). Wait for the current frame's image acquisition fence to have been signalled meaning the presentation engine is finished reading from the image.
-	//
-	vulkanSuccessOrDie(
-		_deviceVkFunctions.vkWaitForFences(_device, 1, &_perFrameAcquisitionFences[_currentFrameIndex], true, uint64_t(-1)), "Failed to wait for per frame acquisition fence");
-	vulkanSuccessOrDie(_deviceVkFunctions.vkResetFences(_device, 1, &_perFrameAcquisitionFences[_currentFrameIndex]), "Failed to reset per frame acquisition fence");
-	//
-	// 2). Acquire a presentable image from the presentation image (note the index of the next image will be returned).
+	// 1). Acquire a presentable image from the presentation engine. The index of the next image into which to render will be returned.
 	//
 	// The order in which images are acquired is implementation-dependent, and may be different than the order the images were presented
-	vulkanSuccessOrDie(_deviceVkFunctions.vkAcquireNextImageKHR(
-						   _device, _swapchain, uint64_t(-1), _imageAcquireSemaphores[_currentFrameIndex], _perFrameAcquisitionFences[_currentFrameIndex], &_swapchainIndex),
+	vulkanSuccessOrDie(_deviceVkFunctions.vkAcquireNextImageKHR(_device, _swapchain, uint64_t(-1), _imageAcquireSemaphores[_currentFrameIndex], VK_NULL_HANDLE, &_swapchainIndex),
 		"Failed to acquire next image");
 
 	//
-	// 3). Wait for the per frame resources fence to have been signalled meaning the resources/command buffers for the current virtual frame are finished with.
+	// 2). Wait for the per frame resources fence to become signalled meaning the resources/command buffers for the current virtual frame are finished with.
 	//
 	// Wait for the command buffer from swapChainLength frames ago to be finished with.
 	vulkanSuccessOrDie(
-		_deviceVkFunctions.vkWaitForFences(_device, 1, &_perFrameCommandBufferFences[_swapchainIndex], true, uint64_t(-1)), "Failed to wait for per frame command buffer fence");
-	vulkanSuccessOrDie(_deviceVkFunctions.vkResetFences(_device, 1, &_perFrameCommandBufferFences[_swapchainIndex]), "Failed to wait for per frame command buffer fence");
+		_deviceVkFunctions.vkWaitForFences(_device, 1, &_perFrameResourcesFences[_swapchainIndex], true, uint64_t(-1)), "Failed to wait for per frame command buffer fence");
+	vulkanSuccessOrDie(_deviceVkFunctions.vkResetFences(_device, 1, &_perFrameResourcesFences[_swapchainIndex]), "Failed to wait for per frame command buffer fence");
 
 	// Update the model view projection buffer data
 	{
@@ -936,7 +927,7 @@ pvr::Result VulkanIntroducingPVRShell::renderFrame()
 	}
 
 	//
-	// 4). Render the image (vkQueueSubmit).
+	// 3). Render the image (update variables, vkQueueSubmit). We are using per swapchain pre-recorded command buffers so we only need to submit them on each frame.
 	//
 	// Submit the specified command buffer to the given queue.
 	// The queue submission will wait on the corresponding image acquisition semaphore to have been signalled.
@@ -952,10 +943,10 @@ pvr::Result VulkanIntroducingPVRShell::renderFrame()
 	submitInfo.signalSemaphoreCount = 1;
 	submitInfo.pWaitDstStageMask = &waitStage;
 	submitInfo.commandBufferCount = 1;
-	vulkanSuccessOrDie(_deviceVkFunctions.vkQueueSubmit(_queue, 1, &submitInfo, _perFrameCommandBufferFences[_swapchainIndex]), "Failed to submit queue");
+	vulkanSuccessOrDie(_deviceVkFunctions.vkQueueSubmit(_queue, 1, &submitInfo, _perFrameResourcesFences[_swapchainIndex]), "Failed to submit queue");
 
 	//
-	// 5). Present the acquired and now rendered image.
+	// 4). Present the acquired and now rendered image. Presenting an image returns ownership of the image back to the presentation engine.
 	//
 	// Queues the current swapchain image for presentation.
 	// The queue presentation will wait on the corresponding image presentation semaphore.
@@ -971,7 +962,7 @@ pvr::Result VulkanIntroducingPVRShell::renderFrame()
 	vulkanSuccessOrDie(_deviceVkFunctions.vkQueuePresentKHR(_queue, &present), "Failed to present the swapchain image");
 
 	//
-	// 6). Increment (and wrap) the virtual frame index
+	// 5). Increment (and wrap) the virtual frame index
 	//
 	_currentFrameIndex = (_currentFrameIndex + 1) % _swapchainLength;
 
@@ -1003,22 +994,13 @@ pvr::Result VulkanIntroducingPVRShell::releaseView()
 			_presentationSemaphores[i] = VK_NULL_HANDLE;
 		}
 
-		if (_perFrameAcquisitionFences[i])
+		if (_perFrameResourcesFences[i])
 		{
-			vulkanSuccessOrDie(_deviceVkFunctions.vkWaitForFences(_device, 1, &_perFrameAcquisitionFences[i], true, uint64_t(-1)), "Failed to wait for per frame acquisition fence");
-			vulkanSuccessOrDie(_deviceVkFunctions.vkResetFences(_device, 1, &_perFrameAcquisitionFences[i]), "Failed to reset per frame acqusition fence");
+			vulkanSuccessOrDie(_deviceVkFunctions.vkWaitForFences(_device, 1, &_perFrameResourcesFences[i], true, uint64_t(-1)), "Failed to wait for per frame command buffer fence");
+			vulkanSuccessOrDie(_deviceVkFunctions.vkResetFences(_device, 1, &_perFrameResourcesFences[i]), "Failed to reset per frame command buffer fence");
 
-			_deviceVkFunctions.vkDestroyFence(_device, _perFrameAcquisitionFences[i], nullptr);
-			_perFrameAcquisitionFences[i] = VK_NULL_HANDLE;
-		}
-		if (_perFrameCommandBufferFences[i])
-		{
-			vulkanSuccessOrDie(
-				_deviceVkFunctions.vkWaitForFences(_device, 1, &_perFrameCommandBufferFences[i], true, uint64_t(-1)), "Failed to wait for per frame command buffer fence");
-			vulkanSuccessOrDie(_deviceVkFunctions.vkResetFences(_device, 1, &_perFrameCommandBufferFences[i]), "Failed to reset per frame command buffer fence");
-
-			_deviceVkFunctions.vkDestroyFence(_device, _perFrameCommandBufferFences[i], nullptr);
-			_perFrameCommandBufferFences[i] = VK_NULL_HANDLE;
+			_deviceVkFunctions.vkDestroyFence(_device, _perFrameResourcesFences[i], nullptr);
+			_perFrameResourcesFences[i] = VK_NULL_HANDLE;
 		}
 
 		if (_framebuffers[i])
@@ -1165,7 +1147,7 @@ pvr::Result VulkanIntroducingPVRShell::releaseView()
 		_instanceVkFunctions.vkDestroySurfaceKHR(_instance, _surface, nullptr);
 		_surface = VK_NULL_HANDLE;
 	}
-	if (isInstanceExtensionEnabled(_enabledInstanceExtensionNames, VK_EXT_DEBUG_REPORT_EXTENSION_NAME))
+	if (isExtensionEnabled(_enabledInstanceExtensionNames, VK_EXT_DEBUG_REPORT_EXTENSION_NAME))
 	{
 		for (uint32_t i = 0; i < _numDebugCallbacks; i++)
 		{
@@ -1367,7 +1349,7 @@ void VulkanIntroducingPVRShell::initDebugCallbacks()
 	// Create debug report callbacks using the VK_EXT_debug_report extension providing a way for the Vulkan layers and the implementation itself to call back to the application
 	// in particular circumstances.
 
-	if (isInstanceExtensionEnabled(_enabledInstanceExtensionNames, VK_EXT_DEBUG_REPORT_EXTENSION_NAME))
+	if (isExtensionEnabled(_enabledInstanceExtensionNames, VK_EXT_DEBUG_REPORT_EXTENSION_NAME))
 	{
 		// Setup callback creation information
 		VkDebugReportCallbackCreateInfoEXT callbackCreateInfo;
@@ -1468,7 +1450,7 @@ void VulkanIntroducingPVRShell::createSurface(void* display, void* window)
 
 #if defined(VK_USE_PLATFORM_ANDROID_KHR)
 	// Creates a VkSurfaceKHR object for an Android native window
-	if (isInstanceExtensionEnabled(_enabledInstanceExtensionNames, VK_KHR_ANDROID_SURFACE_EXTENSION_NAME))
+	if (isExtensionEnabled(_enabledInstanceExtensionNames, VK_KHR_ANDROID_SURFACE_EXTENSION_NAME))
 	{
 		VkAndroidSurfaceCreateInfoKHR surfaceInfo = {};
 		surfaceInfo.sType = VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR;
@@ -1483,7 +1465,7 @@ void VulkanIntroducingPVRShell::createSurface(void* display, void* window)
 	}
 #elif defined VK_USE_PLATFORM_WIN32_KHR
 	// Creates a VkSurfaceKHR object for a Win32 window
-	if (isInstanceExtensionEnabled(_enabledInstanceExtensionNames, VK_KHR_WIN32_SURFACE_EXTENSION_NAME))
+	if (isExtensionEnabled(_enabledInstanceExtensionNames, VK_KHR_WIN32_SURFACE_EXTENSION_NAME))
 	{
 		VkWin32SurfaceCreateInfoKHR surfaceInfo = {};
 		surfaceInfo.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
@@ -1499,7 +1481,7 @@ void VulkanIntroducingPVRShell::createSurface(void* display, void* window)
 	}
 #elif defined(VK_USE_PLATFORM_XCB_KHR)
 	// Creates a VkSurfaceKHR object for an X11 window, using the XCB client-side library.
-	if (isInstanceExtensionEnabled(_enabledInstanceExtensionNames, VK_KHR_XCB_SURFACE_EXTENSION_NAME))
+	if (isExtensionEnabled(_enabledInstanceExtensionNames, VK_KHR_XCB_SURFACE_EXTENSION_NAME))
 	{
 		typedef xcb_connection_t* (*PFN_XGetXCBConnection)(Display*);
 		void* dlHandle = dlopen("libX11-xcb.so.1;libX11-xcb.so", RTLD_LAZY);
@@ -1531,7 +1513,7 @@ void VulkanIntroducingPVRShell::createSurface(void* display, void* window)
 #if defined(VK_USE_PLATFORM_XLIB_KHR)
 	Log(LogLevel::Information, "Using xlib protocol");
 	// Creates a VkSurfaceKHR object for an X11 window, using the Xlib client-side library.
-	if (isInstanceExtensionEnabled(_enabledInstanceExtensionNames, VK_KHR_XLIB_SURFACE_EXTENSION_NAME))
+	if (isExtensionEnabled(_enabledInstanceExtensionNames, VK_KHR_XLIB_SURFACE_EXTENSION_NAME))
 	{
 		VkXlibSurfaceCreateInfoKHR surfaceInfo = {};
 		surfaceInfo.sType = VK_STRUCTURE_TYPE_XLIB_SURFACE_CREATE_INFO_KHR;
@@ -1543,7 +1525,7 @@ void VulkanIntroducingPVRShell::createSurface(void* display, void* window)
 #endif
 #elif defined(VK_USE_PLATFORM_XLIB_KHR)
 	// Creates a VkSurfaceKHR object for an X11 window, using the Xlib client-side library.
-	if (isInstanceExtensionEnabled(_enabledInstanceExtensionNames, VK_KHR_XLIB_SURFACE_EXTENSION_NAME))
+	if (isExtensionEnabled(_enabledInstanceExtensionNames, VK_KHR_XLIB_SURFACE_EXTENSION_NAME))
 	{
 		VkXlibSurfaceCreateInfoKHR surfaceInfo = {};
 		surfaceInfo.sType = VK_STRUCTURE_TYPE_XLIB_SURFACE_CREATE_INFO_KHR;
@@ -1554,7 +1536,7 @@ void VulkanIntroducingPVRShell::createSurface(void* display, void* window)
 	}
 #elif defined(VK_USE_PLATFORM_WAYLAND_KHR)
 	// Creates a VkSurfaceKHR object for a Wayland surface.
-	if (isInstanceExtensionEnabled(_enabledInstanceExtensionNames, VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME))
+	if (isExtensionEnabled(_enabledInstanceExtensionNames, VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME))
 	{
 		VkWaylandSurfaceCreateInfoKHR surfaceInfo = {};
 		surfaceInfo.sType = VK_STRUCTURE_TYPE_WAYLAND_SURFACE_CREATE_INFO_KHR;
@@ -1568,7 +1550,7 @@ void VulkanIntroducingPVRShell::createSurface(void* display, void* window)
 		throw pvr::PvrError("Wayland surface instance extensions not supported");
 	}
 #else
-	if (isInstanceExtensionEnabled(_enabledInstanceExtensionNames, VK_KHR_DISPLAY_EXTENSION_NAME))
+	if (isExtensionEnabled(_enabledInstanceExtensionNames, VK_KHR_DISPLAY_EXTENSION_NAME))
 	{
 		// Creates a VkSurfaceKHR structure for a display surface.
 		VkDisplayPropertiesKHR properties;
@@ -1836,27 +1818,10 @@ void selectPresentMode(const pvr::DisplayAttributes& displayAttributes, std::vec
 		break;
 	}
 
-	// Set the swapchain length appropriately based on the choice of presentation mode.
+	// Set the swapchain length if it has not already been set.
 	if (!displayAttributes.swapLength)
 	{
-		switch (presentationMode)
-		{
-		case VK_PRESENT_MODE_IMMEDIATE_KHR:
-			swapLength = 2;
-			break;
-		case VK_PRESENT_MODE_MAILBOX_KHR:
-			swapLength = 3;
-			break;
-		case VK_PRESENT_MODE_FIFO_KHR:
-			swapLength = 2;
-			break;
-		case VK_PRESENT_MODE_FIFO_RELAXED_KHR:
-			swapLength = 2;
-			break;
-		default:
-			swapLength = 2;
-			Log(LogLevel::Information, "Unexpected Vsync Mode specified. Defaulting swap chain length to %u", swapLength);
-		}
+		swapLength = 3;
 	}
 }
 
@@ -1883,7 +1848,7 @@ void VulkanIntroducingPVRShell::createSwapchain()
 		"Failed to retrieved physical device surface formats");
 
 	// From the list of retrieved VkFormats/VkColorSpaceKHR pairs supported by the physical device surface find one suitable from a list of preferred choices.
-	VkSurfaceFormatKHR chosenSurfaceFormat = { VK_FORMAT_UNDEFINED, VkColorSpaceKHR(0) };
+	VkSurfaceFormatKHR swapchainColorFormat = { VK_FORMAT_UNDEFINED, VkColorSpaceKHR(0) };
 	const uint32_t numPreferredColorFormats = 2;
 	VkFormat preferredColorFormats[numPreferredColorFormats] = { VK_FORMAT_R8G8B8A8_UNORM, VK_FORMAT_B8G8R8A8_UNORM };
 
@@ -1895,7 +1860,7 @@ void VulkanIntroducingPVRShell::createSwapchain()
 		{
 			if (surfaceFormats[i].format == preferredColorFormats[j])
 			{
-				chosenSurfaceFormat = surfaceFormats[i];
+				swapchainColorFormat = surfaceFormats[i];
 				foundFormat = true;
 				break;
 			}
@@ -1904,11 +1869,22 @@ void VulkanIntroducingPVRShell::createSwapchain()
 
 	if (!foundFormat)
 	{
-		throw pvr::PvrError("Failed to find a valid VkSurfaceFormatKHR to use for the swapchain");
+		// No preference... Get the first one.
+		if (surfaceFormats.size())
+		{
+			foundFormat = true;
+			swapchainColorFormat = surfaceFormats[0];
+		}
+		else
+		{
+			throw pvr::PvrError("Failed to find a valid pvrvk::SurfaceFormatKHR to use for the swapchain");
+		}
 	}
 
+	Log(LogLevel::Information, "Surface format selected: VkFormat with enumeration value %d", swapchainColorFormat.format);
+
 	// Store the presentation image color format as we will make use of it elsewhere.
-	_swapchainColorFormat = chosenSurfaceFormat.format;
+	_swapchainColorFormat = swapchainColorFormat.format;
 
 	// Get the surface capabilities from the surface and physical device.
 	VkSurfaceCapabilitiesKHR surfaceCaps;
@@ -1952,7 +1928,7 @@ void VulkanIntroducingPVRShell::createSwapchain()
 	swapChainInfo.imageExtent.width = displayAttributes.width;
 	swapChainInfo.imageExtent.height = displayAttributes.height;
 	swapChainInfo.imageArrayLayers = 1;
-	swapChainInfo.imageColorSpace = chosenSurfaceFormat.colorSpace;
+	swapChainInfo.imageColorSpace = swapchainColorFormat.colorSpace;
 	swapChainInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 	swapChainInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
 	swapChainInfo.queueFamilyIndexCount = 1;
@@ -3447,8 +3423,7 @@ void VulkanIntroducingPVRShell::createSynchronisationPrimitives()
 
 	for (uint32_t i = 0; i < _swapchainLength; ++i)
 	{
-		vulkanSuccessOrDie(_deviceVkFunctions.vkCreateFence(_device, &fci, nullptr, &_perFrameAcquisitionFences[i]), "Failed to create acquisition fence");
-		vulkanSuccessOrDie(_deviceVkFunctions.vkCreateFence(_device, &fci, nullptr, &_perFrameCommandBufferFences[i]), "Failed to create command buffer fence");
+		vulkanSuccessOrDie(_deviceVkFunctions.vkCreateFence(_device, &fci, nullptr, &_perFrameResourcesFences[i]), "Failed to create command buffer fence");
 		vulkanSuccessOrDie(_deviceVkFunctions.vkCreateSemaphore(_device, &sci, nullptr, &_imageAcquireSemaphores[i]), "Failed to create semaphore");
 		vulkanSuccessOrDie(_deviceVkFunctions.vkCreateSemaphore(_device, &sci, nullptr, &_presentationSemaphores[i]), "Failed to create semaphore");
 	}

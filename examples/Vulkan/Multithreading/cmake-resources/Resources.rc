@@ -1,4 +1,4 @@
-//Microsoft eMbedded Visual C++ generated resource script.
+// Microsoft Visual C++ generated resource script.
 //
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
@@ -58,13 +58,13 @@ END
 // RCDATA
 //
 /////////////////////////////////////////////////////////////////////////////
-// RCDATA: Assets (scenes,  effects, textures...)
-MarbleNormalMap.pvr		RCDATA		"..\\..\\..\\assets\\Satyr\\MarbleNormalMap.pvr"
-Marble.pvr		RCDATA		"..\\..\\..\\assets\\Satyr\\Marble.pvr"
-Satyr.pod		RCDATA		"..\\..\\..\\assets\\Satyr\\Satyr.pod"
-// RCDATA: Vulkan Spir-V shaders(glsl)
-FragShader.fsh.spv		RCDATA		"..\\FragShader.fsh.spv"
-VertShader.vsh.spv		RCDATA		"..\\VertShader.vsh.spv"
+MarbleNormalMap.pvr RCDATA "..\\..\\..\\assets\\Satyr\\MarbleNormalMap.pvr"
+Marble.pvr RCDATA "..\\..\\..\\assets\\Satyr\\Marble.pvr"
+Satyr.pod RCDATA "..\\..\\..\\assets\\Satyr\\Satyr.pod"
+FragShader.fsh RCDATA "..\\FragShader.fsh"
+VertShader.vsh RCDATA "..\\VertShader.vsh"
+FragShader.fsh.spv RCDATA "..\\FragShader.fsh.spv"
+VertShader.vsh.spv RCDATA "..\\VertShader.vsh.spv"
 
 #endif    // English (United Kingdom) resources
 /////////////////////////////////////////////////////////////////////////////

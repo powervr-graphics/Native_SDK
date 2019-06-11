@@ -1,0 +1,11 @@
+if(BUILD_OPENGLES_EXAMPLES)
+	if(EXISTS ${CMAKE_CURRENT_LIST_DIR}/OpenGLES/CMakeLists.txt)
+		add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/OpenGLES")
+	endif()
+endif()
+
+if(BUILD_VULKAN_EXAMPLES)
+	if(EXISTS ${CMAKE_CURRENT_LIST_DIR}/Vulkan/CMakeLists.txt)
+		add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/Vulkan")
+	endif()
+endif()

@@ -1,7 +1,7 @@
 /*!
 \brief Basic file used in the PowerVR Framework. Defines several types used throughout the Framework (sized
 arithmetic types, enumerations, character types).
-\file PVRCore/Base/Types.h
+\file PVRCore/types/Types.h
 \author PowerVR by Imagination, Developer Technology Team
 \copyright Copyright (c) Imagination Technologies Limited.
 */
@@ -501,7 +501,7 @@ enum class SamplerAddressMode : uint8_t
 	Default = Repeat
 };
 
-/// <summary> Enumeration of mipmap modes supported for a sampler</summary>
+/// <summary>Enumeration of mipmap modes supported for a sampler</summary>
 enum class SamplerMipmapMode : uint8_t
 {
 	Nearest, //!< Nearest neighbour
@@ -509,7 +509,7 @@ enum class SamplerMipmapMode : uint8_t
 	Count
 };
 
-/// <summary> This enum is made to pack all sampler filtering info in 8 bits for specific uses. Use "packSamplerFilter" and "unpackSamplerFilter".
+/// <summary>This enum is made to pack all sampler filtering info in 8 bits for specific uses. Use "packSamplerFilter" and "unpackSamplerFilter".
 /// NOTE: The defined values are only the most common cases - other 8 bit values are also valid (for example, different minification and magnification filters)</summary>
 enum PackedSamplerFilter : int8_t
 {
@@ -567,6 +567,34 @@ enum class ShaderType
 	FrameShader,
 	Count
 };
+
+/// <summary>Converts a pvr::ShaderType to string</summary>
+/// <param name="shaderType">The type of the shader</param>
+/// <returns>A stringified version of pvr::ShaderType</returns>
+inline std::string to_string(ShaderType shaderType)
+{
+	switch (shaderType)
+	{
+	case ShaderType::VertexShader:
+		return "Vertex";
+	case ShaderType::FragmentShader:
+		return "Fragment";
+	case ShaderType::ComputeShader:
+		return "Compute";
+	case ShaderType::TessControlShader:
+		return "Tessellation Control";
+	case ShaderType::TessEvaluationShader:
+		return "Tessellation Evaluation";
+	case ShaderType::GeometryShader:
+		return "Geometry";
+	case ShaderType::RayShader:
+		return "Ray";
+	case ShaderType::FrameShader:
+		return "Frame";
+	default:
+		return "Unknown";
+	}
+}
 
 /// <summary>Pre-defined Result codes (success and generic errors).</summary>
 enum class Result
@@ -643,7 +671,7 @@ enum class VsyncMode
 class DisplayAttributes
 {
 public:
-	/// <summary> Unnamed enum for constants</summary>
+	/// <summary>Unnamed enum for constants</summary>
 	enum
 	{
 		PosDefault = -1 //!< Sentinel value for Default position
@@ -822,8 +850,7 @@ struct StencilState
 	/// <param name="depthFail">Action performed on samples that pass the stencil test and fail the depth test.</param>
 	/// <param name="stencilFail">Action performed on samples that fail the stencil test.</param>
 	/// <param name="compareOp">Comparison operator used in the stencil test.</param>
-	/// <param name="compareMask">Selects the bits of the unsigned Integer stencil values during in the stencil test.
-	/// </param>
+	/// <param name="compareMask">Selects the bits of the unsigned Integer stencil values during in the stencil test.</param>
 	/// <param name="writeMask">Selects the bits of the unsigned Integer stencil values updated by the stencil test in the
 	/// stencil framebuffer attachment</param>
 	/// <param name="reference">Integer reference value that is used in the unsigned stencil comparison.</param>

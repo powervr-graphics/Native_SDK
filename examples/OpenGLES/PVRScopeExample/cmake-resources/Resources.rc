@@ -1,4 +1,4 @@
-//Microsoft eMbedded Visual C++ generated resource script.
+// Microsoft Visual C++ generated resource script.
 //
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
@@ -58,18 +58,16 @@ END
 // RCDATA
 //
 /////////////////////////////////////////////////////////////////////////////
-// RCDATA: Assets (scenes,  effects, textures...)
-Marble.pvr		RCDATA		"..\\..\\..\\assets\\Satyr\\Marble.pvr"
-Satyr.pod		RCDATA		"..\\..\\..\\assets\\Satyr\\Satyr.pod"
-// RCDATA: OpenGL ES Textual shaders(glsl)
-FragShader_ES2.fsh		RCDATA		"..\\FragShader_ES2.fsh"
-FragShader_ES3.fsh		RCDATA		"..\\FragShader_ES3.fsh"
-VertShader_ES2.vsh		RCDATA		"..\\VertShader_ES2.vsh"
-VertShader_ES3.vsh		RCDATA		"..\\VertShader_ES3.vsh"
-GraphFragShader_ES2.fsh		RCDATA		"..\\GraphFragShader_ES2.fsh"
-GraphFragShader_ES3.fsh		RCDATA		"..\\GraphFragShader_ES3.fsh"
-GraphVertShader_ES2.vsh		RCDATA		"..\\GraphVertShader_ES2.vsh"
-GraphVertShader_ES3.vsh		RCDATA		"..\\GraphVertShader_ES3.vsh"
+Marble.pvr RCDATA "..\\..\\..\\assets\\Satyr\\Marble.pvr"
+Satyr.pod RCDATA "..\\..\\..\\assets\\Satyr\\Satyr.pod"
+FragShader_ES2.fsh RCDATA "..\\FragShader_ES2.fsh"
+FragShader_ES3.fsh RCDATA "..\\FragShader_ES3.fsh"
+VertShader_ES2.vsh RCDATA "..\\VertShader_ES2.vsh"
+VertShader_ES3.vsh RCDATA "..\\VertShader_ES3.vsh"
+GraphFragShader_ES2.fsh RCDATA "..\\GraphFragShader_ES2.fsh"
+GraphFragShader_ES3.fsh RCDATA "..\\GraphFragShader_ES3.fsh"
+GraphVertShader_ES2.vsh RCDATA "..\\GraphVertShader_ES2.vsh"
+GraphVertShader_ES3.vsh RCDATA "..\\GraphVertShader_ES3.vsh"
 
 #endif    // English (United Kingdom) resources
 /////////////////////////////////////////////////////////////////////////////

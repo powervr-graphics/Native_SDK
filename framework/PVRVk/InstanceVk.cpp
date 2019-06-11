@@ -31,7 +31,7 @@ const PhysicalDevice& Instance_::getPhysicalDevice(uint32_t id) const
 	return _physicalDevices[id];
 }
 
-pvrvk::impl::Instance_::Instance_(const InstanceCreateInfo& instanceCreateInfo) : ObjectHandle()
+pvrvk::impl::Instance_::Instance_(make_shared_enabler, const InstanceCreateInfo& instanceCreateInfo) : PVRVkObjectBase()
 {
 	VkBindings vkBindings;
 	if (!initVkBindings(&vkBindings))
@@ -42,15 +42,12 @@ pvrvk::impl::Instance_::Instance_(const InstanceCreateInfo& instanceCreateInfo) 
 	_createInfo = instanceCreateInfo;
 
 	VkApplicationInfo appInfo = {};
-	if (_createInfo.getApplicationInfo())
-	{
-		appInfo.sType = static_cast<VkStructureType>(StructureType::e_APPLICATION_INFO);
-		appInfo.apiVersion = _createInfo.getApplicationInfo()->getApiVersion();
-		appInfo.pApplicationName = _createInfo.getApplicationInfo()->getApplicationName().c_str();
-		appInfo.applicationVersion = _createInfo.getApplicationInfo()->getApplicationVersion();
-		appInfo.pEngineName = _createInfo.getApplicationInfo()->getEngineName().c_str();
-		appInfo.engineVersion = _createInfo.getApplicationInfo()->getEngineVersion();
-	}
+	appInfo.sType = static_cast<VkStructureType>(StructureType::e_APPLICATION_INFO);
+	appInfo.apiVersion = _createInfo.getApplicationInfo().getApiVersion();
+	appInfo.pApplicationName = _createInfo.getApplicationInfo().getApplicationName().c_str();
+	appInfo.applicationVersion = _createInfo.getApplicationInfo().getApplicationVersion();
+	appInfo.pEngineName = _createInfo.getApplicationInfo().getEngineName().c_str();
+	appInfo.engineVersion = _createInfo.getApplicationInfo().getEngineVersion();
 
 	std::vector<const char*> enabledExtensions;
 	std::vector<const char*> enableLayers;
@@ -59,28 +56,74 @@ pvrvk::impl::Instance_::Instance_(const InstanceCreateInfo& instanceCreateInfo) 
 	instanceCreateInfoVk.sType = static_cast<VkStructureType>(StructureType::e_INSTANCE_CREATE_INFO);
 	instanceCreateInfoVk.pApplicationInfo = &appInfo;
 
-	if (instanceCreateInfo.getNumEnabledExtensionNames())
+	if (instanceCreateInfo.getExtensionList().getNumExtensions())
 	{
-		enabledExtensions.resize(_createInfo.getNumEnabledExtensionNames());
-		for (uint32_t i = 0; i < _createInfo.getNumEnabledExtensionNames(); ++i)
+		enabledExtensions.resize(instanceCreateInfo.getExtensionList().getNumExtensions());
+		for (uint32_t i = 0; i < instanceCreateInfo.getExtensionList().getNumExtensions(); ++i)
 		{
-			enabledExtensions[i] = _createInfo.getEnabledExtensionName(i).c_str();
+			enabledExtensions[i] = instanceCreateInfo.getExtensionList().getExtension(i).getName().c_str();
 		}
 
 		instanceCreateInfoVk.enabledExtensionCount = static_cast<uint32_t>(enabledExtensions.size());
 		instanceCreateInfoVk.ppEnabledExtensionNames = enabledExtensions.data();
 	}
 
-	if (instanceCreateInfo.getNumEnabledLayerNames())
+	if (instanceCreateInfo.getLayerList().getNumLayers())
 	{
-		enableLayers.resize(_createInfo.getNumEnabledLayerNames());
-		for (uint32_t i = 0; i < _createInfo.getNumEnabledLayerNames(); ++i)
+		enableLayers.resize(instanceCreateInfo.getLayerList().getNumLayers());
+		for (uint32_t i = 0; i < instanceCreateInfo.getLayerList().getNumLayers(); ++i)
 		{
-			enableLayers[i] = _createInfo.getEnabledLayerName(i).c_str();
+			enableLayers[i] = _createInfo.getLayerList().getLayer(i).getName().c_str();
 		}
 
 		instanceCreateInfoVk.enabledLayerCount = static_cast<uint32_t>(enableLayers.size());
 		instanceCreateInfoVk.ppEnabledLayerNames = enableLayers.data();
+	}
+
+	// Setup callback creation information
+	VkDebugUtilsMessengerCreateInfoEXT callbackCreateInfo = {};
+
+	// Setup the debug utils messenger callback if one has been provided
+	if (instanceCreateInfo.getDebugUtilsMessengerCreateInfo().getCallback())
+	{
+		callbackCreateInfo.sType = static_cast<VkStructureType>(StructureType::e_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT);
+		callbackCreateInfo.pNext = nullptr;
+		callbackCreateInfo.flags = static_cast<VkDebugUtilsMessengerCreateFlagsEXT>(instanceCreateInfo.getDebugUtilsMessengerCreateInfo().getFlags());
+		callbackCreateInfo.messageSeverity = static_cast<VkDebugUtilsMessageSeverityFlagsEXT>(instanceCreateInfo.getDebugUtilsMessengerCreateInfo().getMessageSeverity());
+		callbackCreateInfo.flags = static_cast<VkDebugUtilsMessageTypeFlagsEXT>(instanceCreateInfo.getDebugUtilsMessengerCreateInfo().getMessageType());
+		callbackCreateInfo.pfnUserCallback = instanceCreateInfo.getDebugUtilsMessengerCreateInfo().getCallback();
+		callbackCreateInfo.pUserData = instanceCreateInfo.getDebugUtilsMessengerCreateInfo().getPUserData();
+
+		appendPNext((VkBaseInStructure*)&instanceCreateInfoVk, &callbackCreateInfo);
+	}
+
+	// Setup validation features
+	VkValidationFeaturesEXT validationFeatures = {};
+	std::vector<VkValidationFeatureEnableEXT> vkEnabledValidationFeatures;
+	std::vector<VkValidationFeatureDisableEXT> vkDisabledValidationFeatures;
+
+	// Setup the validation features to enable or disable if they have been provided
+	if (instanceCreateInfo.getValidationFeatures().getNumEnabledValidationFeatures() || instanceCreateInfo.getValidationFeatures().getNumDisabledValidationFeatures())
+	{
+		validationFeatures.sType = static_cast<VkStructureType>(StructureType::e_VALIDATION_FEATURES_EXT);
+		validationFeatures.pNext = nullptr;
+		validationFeatures.enabledValidationFeatureCount = instanceCreateInfo.getValidationFeatures().getNumEnabledValidationFeatures();
+		validationFeatures.disabledValidationFeatureCount = instanceCreateInfo.getValidationFeatures().getNumDisabledValidationFeatures();
+
+		for (uint32_t i = 0; i < instanceCreateInfo.getValidationFeatures().getNumEnabledValidationFeatures(); ++i)
+		{
+			vkEnabledValidationFeatures.emplace_back(static_cast<VkValidationFeatureEnableEXT>(instanceCreateInfo.getValidationFeatures().getEnabledValidationFeature(i)));
+		}
+
+		for (uint32_t i = 0; i < instanceCreateInfo.getValidationFeatures().getNumDisabledValidationFeatures(); ++i)
+		{
+			vkDisabledValidationFeatures.emplace_back(static_cast<VkValidationFeatureDisableEXT>(instanceCreateInfo.getValidationFeatures().getDisabledValidationFeature(i)));
+		}
+
+		validationFeatures.pEnabledValidationFeatures = vkEnabledValidationFeatures.data();
+		validationFeatures.pDisabledValidationFeatures = vkDisabledValidationFeatures.data();
+
+		appendPNext((VkBaseInStructure*)&instanceCreateInfoVk, &validationFeatures);
 	}
 
 	vkThrowIfFailed(vkBindings.vkCreateInstance(&instanceCreateInfoVk, nullptr, &_vkHandle), "Instance Constructor");
@@ -88,23 +131,31 @@ pvrvk::impl::Instance_::Instance_(const InstanceCreateInfo& instanceCreateInfo) 
 	// Retrieve the function pointers for the functions taking a VkInstance as their dispatchable handles.
 	initVkInstanceBindings(_vkHandle, &_vkBindings, vkBindings.vkGetInstanceProcAddr);
 
+	// setup the extension table which can be used to cheaply determine support for extensions
+	_extensionTable.setEnabledExtensions(enabledExtensions);
+}
+
+void pvrvk::impl::Instance_::retrievePhysicalDevices()
+{
 	// Enumerate the list of installed physical devices
 	uint32_t numPhysicalDevices = 0;
 	getVkBindings().vkEnumeratePhysicalDevices(getVkHandle(), &numPhysicalDevices, nullptr);
 
 	// Retreive the numPhysicalDevices installed on the system
-	std::vector<VkPhysicalDevice> vkPhyscialDevice(numPhysicalDevices);
-	vkThrowIfFailed(getVkBindings().vkEnumeratePhysicalDevices(getVkHandle(), &numPhysicalDevices, vkPhyscialDevice.data()));
+	std::vector<VkPhysicalDevice> vkPhysicalDevices(numPhysicalDevices);
+	vkThrowIfFailed(getVkBindings().vkEnumeratePhysicalDevices(getVkHandle(), &numPhysicalDevices, vkPhysicalDevices.data()));
 
+	Instance instance = shared_from_this();
 	for (uint32_t i = 0; i < numPhysicalDevices; ++i)
 	{
-		_physicalDevices.push_back(PhysicalDevice_::createNew(getWeakReference(), vkPhyscialDevice[i]));
+		_physicalDevices.emplace_back(PhysicalDevice_::constructShared(instance, vkPhysicalDevices[i]));
+		_physicalDevices.back()->retrieveDisplays();
 	}
 }
 
 pvrvk::Instance InstanceHelperFactory_::createVkInstance(const InstanceCreateInfo& createInfo)
 {
-	return impl::Instance_::createNew(createInfo);
+	return impl::Instance_::constructShared(createInfo);
 }
 } // namespace impl
 

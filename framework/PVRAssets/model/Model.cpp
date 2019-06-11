@@ -50,7 +50,7 @@ glm::mat4x4 Model::getBoneWorldMatrix(uint32_t skinNodeId, uint32_t boneIndex) c
 	glm::mat4 nodeWorld(1.f);
 	if (nodeData.transformFlags & pvr::assets::Node::InternalData::TransformFlags::SRT)
 	{
-		pvr::math::constructSRT(&nodeData.getScale(), &nodeData.getRotate(), &nodeData.getTranslation(), nodeWorld);
+		nodeWorld = pvr::math::constructSRT(nodeData.getScale(), nodeData.getRotate(), nodeData.getTranslation());
 	}
 	else if (nodeData.transformFlags == pvr::assets::Node::InternalData::TransformFlags::Matrix)
 	{
@@ -59,52 +59,47 @@ glm::mat4x4 Model::getBoneWorldMatrix(uint32_t skinNodeId, uint32_t boneIndex) c
 	return getWorldMatrix(skeleton.bones[boneIndex]) * skeleton.invBindMatrices[boneIndex] * nodeWorld;
 }
 
-inline glm::mat4 constructSRT(const glm::vec3& scale, const glm::quat& rotate, const glm::vec3& trans)
-{
-	return glm::translate(trans) * glm::toMat4(rotate) * glm::scale(scale);
-}
-
 glm::mat4x4 Model::getWorldMatrix(uint32_t id) const
 {
 	const Node& node = _data.nodes[id];
 	int32_t parentID = _data.nodes[id].getParentID();
 	const auto& nodeData = node.getInternalData();
 
-	glm::mat4 m = glm::mat4(1.0f);
+	glm::mat4 srtMatrix = glm::mat4(1.0f);
 	if (nodeData.transformFlags == Node::InternalData::TransformFlags::Matrix)
 	{
-		m = *(glm::mat4*)nodeData.frameXform;
+		srtMatrix = *(glm::mat4*)nodeData.frameXform;
 		debug_assertion(!nodeData.hasAnimation, "Node cannot have transformation matrix and animation data");
 	}
 	else if (nodeData.hasAnimation)
 	{
 		debug_assertion(nodeData.transformFlags & Node::InternalData::TransformFlags::SRT, "Animation data must be stores as SRT");
-		pvr::math::constructSRT(&nodeData.getFrameScaleAnimation(), &nodeData.getFrameRotationAnimation(), &nodeData.getFrameTranslationAnimation(), m);
+		srtMatrix = pvr::math::constructSRT(nodeData.getFrameScaleAnimation(), nodeData.getFrameRotationAnimation(), nodeData.getFrameTranslationAnimation());
 	}
 	else if ((nodeData.transformFlags & Node::InternalData::TransformFlags::SRT))
 	{
 		if (nodeData.transformFlags & Node::InternalData::TransformFlags::Scale)
 		{
-			m = glm::scale(nodeData.getScale());
+			srtMatrix = glm::scale(nodeData.getScale());
 		}
 		if (nodeData.transformFlags & Node::InternalData::TransformFlags::Rotate)
 		{
-			m = glm::toMat4(nodeData.getRotate()) * m;
+			srtMatrix = glm::toMat4(nodeData.getRotate()) * srtMatrix;
 		}
 		if (nodeData.transformFlags & Node::InternalData::TransformFlags::Translate)
 		{
-			m = glm::translate(nodeData.getTranslation()) * m;
+			srtMatrix = glm::translate(nodeData.getTranslation()) * srtMatrix;
 		}
 	}
 
 	// Concatenate with parent transformation if one exist.
 	if (parentID < 0)
 	{
-		return m;
+		return srtMatrix;
 	}
 	else
 	{
-		return getWorldMatrix(parentID) * m;
+		return getWorldMatrix(parentID) * srtMatrix;
 	}
 }
 

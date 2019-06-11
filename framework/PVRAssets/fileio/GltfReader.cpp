@@ -150,7 +150,7 @@ void parseNodeTransformation(const tinygltf::Node& tinyNode, pvr::assets::Node& 
 			data.transformFlags |= Node::InternalData::TransformFlags::Translate;
 		}
 		// construct the initial frame.
-		pvr::math::constructSRT(&data.getScale(), &data.getRotate(), &data.getTranslation(), *(glm::mat4*)(data.frameXform));
+		*(glm::mat4*)data.frameXform = pvr::math::constructSRT(data.getScale(), data.getRotate(), data.getTranslation());
 	}
 }
 
@@ -346,7 +346,7 @@ void parseAllAnimation(const tinygltf::Model& tinyModel, pvr::assets::Model& mod
 			if (targetNode >= 0 && nodeMapping[targetNode].node != nullptr)
 			{
 				channel.keyFrame = tinySampleIndex;
-				channel.nodes.push_back(nodeMapping[targetNode].node);
+				channel.nodes.emplace_back(nodeMapping[targetNode].node);
 				nodeMapping[targetNode].node->getInternalData().hasAnimation = true;
 			}
 		}

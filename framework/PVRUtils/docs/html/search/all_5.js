@@ -8,8 +8,10 @@ var searchData=
   ['eglplatformcontext_2eh',['EglPlatformContext.h',['../_egl_platform_context_8h.html',1,'']]],
   ['eglplatformhandles_2eh',['EglPlatformHandles.h',['../_egl_platform_handles_8h.html',1,'']]],
   ['elementtype',['ElementType',['../classpvr_1_1_multi.html#ab99af96c2ba05abc0db8b9da127135c8',1,'pvr::Multi']]],
+  ['endcommandbufferdebuglabel',['endCommandBufferDebugLabel',['../namespacepvr_1_1utils.html#a12e6adce5bcec23564fd67553c9f4088',1,'pvr::utils::endCommandBufferDebugLabel(pvrvk::CommandBufferBase commandBufferBase)'],['../namespacepvr_1_1utils.html#a2da693f264b2b719a77fc84bf0a32ec5',1,'pvr::utils::endCommandBufferDebugLabel(pvrvk::CommandBuffer &amp;commandBuffer)'],['../namespacepvr_1_1utils.html#adee1c88c7937b7a16127e810b75b2ab7',1,'pvr::utils::endCommandBufferDebugLabel(pvrvk::SecondaryCommandBuffer &amp;secondaryCommandBuffer)']]],
+  ['endqueuedebuglabel',['endQueueDebugLabel',['../namespacepvr_1_1utils.html#a605300322093e44b7cd509533f14b4fa',1,'pvr::utils']]],
   ['endrendering',['endRendering',['../classpvr_1_1ui_1_1_u_i_renderer.html#ab717d49c299af41ff539628028f19f57',1,'pvr::ui::UIRenderer::endRendering()'],['../classpvr_1_1ui_1_1_u_i_renderer.html#ab30490a8bd1784af8ca747a2af108e8a',1,'pvr::ui::UIRenderer::endRendering(GLStateTracker &amp;stateTracker)'],['../classpvr_1_1ui_1_1_u_i_renderer.html#ab717d49c299af41ff539628028f19f57',1,'pvr::ui::UIRenderer::endRendering()']]],
+  ['enum_5fclass_5fbitwise_5foperator',['ENUM_CLASS_BITWISE_OPERATOR',['../_memory_allocator_8h.html#a5f44254c26ac63ef00921cc89fb379ea',1,'MemoryAllocator.h']]],
   ['errorsgles_2ecpp',['ErrorsGles.cpp',['../_errors_gles_8cpp.html',1,'']]],
-  ['errorsgles_2eh',['ErrorsGles.h',['../_errors_gles_8h.html',1,'']]],
-  ['extensionstrings',['extensionStrings',['../structpvr_1_1utils_1_1_device_extensions.html#a958e2eeac8ddfd9ea8dabaaa8d2f35cf',1,'pvr::utils::DeviceExtensions::extensionStrings()'],['../structpvr_1_1utils_1_1_instance_extensions.html#a494d9b581ffb708349599aabc2a5838a',1,'pvr::utils::InstanceExtensions::extensionStrings()']]]
+  ['errorsgles_2eh',['ErrorsGles.h',['../_errors_gles_8h.html',1,'']]]
 ];

@@ -33,21 +33,31 @@ public:
 	/// <summary>Preprocessed data needed to create volumes out of a mesh</summary>
 	struct VolumeMesh
 	{
-		//!\cond NO_DOXYGEN
+		/// <summary>A pointer to a list of vertices making up the volume</summary>
 		glm::vec3* vertices;
+		/// <summary>A pointer to a list of edges between vertices</summary>
 		VolumeEdge* edges;
+		/// <summary>A pointer to a list of triangles making up the volume</summary>
 		VolumeTriangle* triangles;
+		/// <summary>The minimum vertex</summary>
 		glm::vec3 minimum;
+		/// <summary>The maximum vertex</summary>
 		glm::vec3 maximum;
+		/// <summary>The number of vertices making up the volume</summary>
 		uint32_t numVertices;
+		/// <summary>The number of edges making up the volume</summary>
 		uint32_t numEdges;
+		/// <summary>The number of triangles making up the volume</summary>
 		uint32_t numTriangles;
 
+		/// <summary>Vertex data</summary>
 		uint8_t* vertexData;
+
+		/// <summary>Specifies whether 32 bit indicies are required</summary>
 		bool needs32BitIndices;
 
+		/// <summary>Default constructor for a volume mesh</summary>
 		VolumeMesh() : vertices(nullptr), edges(nullptr), triangles(nullptr), numVertices(0), numEdges(0), numTriangles(0), vertexData(nullptr), needs32BitIndices(false) {}
-		//!\endcond
 	};
 
 	/// <summary>dtor, releases all resources held by the Volume.</summary>
@@ -59,8 +69,7 @@ public:
 	/// <returns>True if successfully initialized, otherwise false</returns>
 	/// <remarks>This method will pre-process the data in the mesh, to calculate all vertices, edges and faces of the
 	/// mesh as required. In effect it will extract the POSITION semantic data and the face data and use it to create
-	/// a "light" and cleaned up version of the mesh that will be then used to calculate extruded volumes as required.
-	/// </remarks>
+	/// a "light" and cleaned up version of the mesh that will be then used to calculate extruded volumes as required.</remarks>
 	bool init(const assets::Mesh& mesh);
 
 	/// <summary>Initialize a volume from raw data.</summary>
@@ -101,7 +110,7 @@ public:
 	uint32_t getIndexDataSize();
 
 	/// <summary>Get the stride of the Index data, in bytes. Is sizeof(IndexType).</summary>
-	/// <returns> The index data stride </returns>
+	/// <returns> The index data stride</returns>
 	uint32_t getIndexDataStride();
 
 	/// <summary>Get the number of triangles in the volume.</summary>

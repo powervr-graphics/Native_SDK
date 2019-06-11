@@ -11,6 +11,7 @@
 #include "PVRVk/PVRVk.h"
 #include "PVRUtils/Vulkan/UIRendererVk.h"
 #include "PVRUtils/Vulkan/HelperVk.h"
+#include "PVRUtils/Vulkan/ShaderUtilsVk.h"
 #include "PVRUtils/Vulkan/AsynchronousVk.h"
 #include "PVRUtils/StructuredMemory.h"
 

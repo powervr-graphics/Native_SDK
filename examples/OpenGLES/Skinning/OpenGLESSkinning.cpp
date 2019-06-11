@@ -158,7 +158,7 @@ void OpenGLESSkinning::eventMappedInput(pvr::SimplifiedInput action)
 pvr::Result OpenGLESSkinning::initApplication()
 {
 	pvr::assets::PODReader podReader(getAssetStream(Configuration::SceneFile));
-	if ((_scene = pvr::assets::Model::createWithReader(podReader)).isNull())
+	if ((_scene = pvr::assets::Model::createWithReader(podReader)) == nullptr)
 	{
 		setExitMessage("Error: Could not create the _scene file %s.", Configuration::SceneFile);
 		return pvr::Result::InitializationError;

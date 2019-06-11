@@ -1,3 +1,9 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classpvr_1_1_asset_writer.html" title="Base class for Classes that can be used to write back effects to disk." alt="" coords="6,5,210,32"/>
+<area shape="rect" id="node1" href="$classpvr_1_1_asset_reader.html" title="pvr::AssetReader\&lt; Texture \&gt;" alt="" coords="5,176,197,203"/>
+<area shape="rect" id="node2" href="$classpvr_1_1asset_readers_1_1_texture_reader_b_m_p.html" title="Experimental BMP Texture reader" alt="" coords="246,5,383,46"/>
+<area shape="rect" id="node3" href="$classpvr_1_1asset_readers_1_1_texture_reader_d_d_s.html" title="Experimental DDS Texture reader" alt="" coords="246,70,383,111"/>
+<area shape="rect" id="node4" href="$classpvr_1_1asset_readers_1_1_texture_reader_k_t_x.html" title="Experimental KTX Texture reader" alt="" coords="246,135,383,177"/>
+<area shape="rect" id="node5" href="$classpvr_1_1asset_readers_1_1_texture_reader_p_v_r.html" title="This class creates pvr::Texture object from Streams of PVR texture data. Use the readAsset method to ..." alt="" coords="246,201,383,242"/>
+<area shape="rect" id="node6" href="$classpvr_1_1asset_readers_1_1_texture_reader_t_g_a.html" title="Experimental TGA Texture reader" alt="" coords="246,266,383,307"/>
+<area shape="rect" id="node7" href="$classpvr_1_1asset_readers_1_1_texture_reader_x_n_b.html" title="Experimental XNB Texture reader" alt="" coords="246,331,383,373"/>
 </map>

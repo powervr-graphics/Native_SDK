@@ -25,75 +25,136 @@ public:
 		Capability movable; //!< A window with this capability can be moved while the program is running (e.g windows and X11, but not Android)
 	};
 
-	//!\cond NO_DOXYGEN
-	ShellData _shellData;
+	ShellData _shellData; //!< Platform specific shell data
+
+	/// <summary>Constructor.</summary>
+	/// <param name="instance">An OS Specific instance.</param>
+	/// <param name="osdata">OS Specific data.</param>
 	ShellOS(OSApplication instance, OSDATA osdata);
 
+	/// <summary>Destructor.</summary>
 	virtual ~ShellOS();
 
-	bool init(DisplayAttributes& data); // Accepts a data struct so it can overide default values
+	/// <summary>Initializes the platform specific shell. Accepts a data struct so it can overide default values.</summary>
+	/// <param name="data">A set of display attributes which will be set within this function.</param>
+	/// <returns>True on success</returns>
+	bool init(DisplayAttributes& data);
+
+	/// <summary>Initializes the platform specific window.</summary>
+	/// <param name="data">A set of display attributes which will be set within this function.</param>
+	/// <returns>True on success</returns>
 	bool initializeWindow(DisplayAttributes& data);
+
+	/// <summary>Indicates whether the platform specific shell has been initiailised.</summary>
+	/// <returns>True on success</returns>
 	bool isInitialized();
+
+	/// <summary>Releases the platform specific window.</summary>
 	void releaseWindow();
 
-	// Getters
+	/// <summary>Retrieves the platform specific application.</summary>
+	/// <returns>The OS specific application</returns>
 	OSApplication getApplication() const;
+
+	/// <summary>Retrieves the platform specific display.</summary>
+	/// <returns>The OS specific display</returns>
 	OSDisplay getDisplay() const;
+
+	/// <summary>Retrieves the platform specific window.</summary>
+	/// <returns>The OS specific window</returns>
 	OSWindow getWindow() const;
+
+	/// <summary>Retrieves the default read path.</summary>
+	/// <returns>The default read path</returns>
 	const std::string& getDefaultReadPath() const;
+
+	/// <summary>Retrieves the read paths.</summary>
+	/// <returns>The read paths</returns>
 	const std::vector<std::string>& getReadPaths() const;
+
+	/// <summary>Retrieves the read paths.</summary>
+	/// <param name="readPaths">A new read path to add to the list of read paths.</param>
+	void addReadPath(const std::string& readPaths)
+	{
+		_readPaths.emplace_back(readPaths);
+	}
+
+	/// <summary>Clears the read paths.</summary>
+	void clearReadPaths()
+	{
+		_readPaths.clear();
+	}
+
+	/// <summary>Retrieves the current write path.</summary>
+	/// <returns>The write path</returns>
 	const std::string& getWritePath() const;
+
+	/// <summary>Retrieves the application name.</summary>
+	/// <returns>The application name</returns>
 	const std::string& getApplicationName() const;
-	void setApplicationName(const std::string&);
+
+	/// <summary>Sets the application name.</summary>
+	/// <param name="applicationName">An application name.</param>
+	void setApplicationName(const std::string& applicationName);
+
+	/// <summary>Handles os specific events.</summary>
+	/// <returns>True on success</returns>
 	bool handleOSEvents();
 
+	/// <summary>Retrieves OS specific capabilities.</summary>
+	/// <returns>OS Specific capabilities</returns>
 	static const Capabilities& getCapabilities()
 	{
 		return _capabilities;
 	}
 
+	/// <summary>Pops up a message.</summary>
+	/// <param name="title">Specifies the title.</param>
+	/// <param name="message">Specifies the message.</param>
+	/// <param name="...">Variable arguments for the format std::string. Printf-style rules</param>
+	/// <returns>True on success</returns>
 	bool popUpMessage(const char* const title, const char* const message, ...) const;
 
+	/// <summary>Retrieves the shell.</summary>
+	/// <returns>A pointer to the shell</returns>
 	Shell* getShell()
 	{
 		return _shell.get();
 	}
 
+	/// <summary>Updates the location of the pointing device.</summary>
 	void updatePointingDeviceLocation();
 
 protected:
-	std::unique_ptr<Shell> _shell;
-	std::string _AppName;
-	std::vector<std::string> _ReadPaths;
-	std::string _WritePath;
+	std::unique_ptr<Shell> _shell; //!< A unique pointer to the shell
+	std::string _appName; //!< The application name
+	std::vector<std::string> _readPaths; //!< A list of read paths
+	std::string _writePath; //!< The current write path
 
 private:
 	OSApplication _instance;
 	InternalOS* _OSImplementation;
 	static const Capabilities _capabilities;
-	//!\endcond
 };
-//!\cond NO_DOXYGEN
 inline const std::string& ShellOS::getApplicationName() const
 {
-	return _AppName;
+	return _appName;
 }
-inline void ShellOS::setApplicationName(const std::string& appName)
+inline void ShellOS::setApplicationName(const std::string& applicationName)
 {
-	_AppName = appName;
+	_appName = applicationName;
 }
 inline const std::string& ShellOS::getDefaultReadPath() const
 {
-	return _ReadPaths[0];
+	return _readPaths[0];
 }
 inline const std::vector<std::string>& ShellOS::getReadPaths() const
 {
-	return _ReadPaths;
+	return _readPaths;
 }
 inline const std::string& ShellOS::getWritePath() const
 {
-	return _WritePath;
+	return _writePath;
 }
-//!\endcond
 } // namespace platform
 } // namespace pvr

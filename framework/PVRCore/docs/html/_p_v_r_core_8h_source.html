@@ -86,19 +86,25 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="contents">
 <a href="_p_v_r_core_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;</div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#pragma once</span></div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#include &quot;<a class="code" href="_ref_counted_8h.html">PVRCore/RefCounted.h</a>&quot;</span></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_math_utils_8h.html">PVRCore/math/MathUtils.h</a>&quot;</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &quot;PVRCore/stream/BufferStream.h&quot;</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;PVRCore/types/Types.h&quot;</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_string_functions_8h.html">PVRCore/strings/StringFunctions.h</a>&quot;</span></div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_string_hash_8h.html">PVRCore/strings/StringHash.h</a>&quot;</span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_i_asset_provider_8h.html">PVRCore/IAssetProvider.h</a>&quot;</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &lt;iterator&gt;</span></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="comment">/*****************************************************************************/</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#include &quot;<a class="code" href="_math_utils_8h.html">PVRCore/math/MathUtils.h</a>&quot;</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_buffer_stream_8h.html">PVRCore/stream/BufferStream.h</a>&quot;</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_types_8h.html">PVRCore/types/Types.h</a>&quot;</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_string_functions_8h.html">PVRCore/strings/StringFunctions.h</a>&quot;</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_string_hash_8h.html">PVRCore/strings/StringHash.h</a>&quot;</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_i_asset_provider_8h.html">PVRCore/IAssetProvider.h</a>&quot;</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_command_line_8h.html">PVRCore/commandline/CommandLine.h</a>&quot;</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &quot;PVRCore/textureio/TextureIO.h&quot;</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &lt;iterator&gt;</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="comment">// RefCounted.h has been made deprecated and is now unused throughout the PowerVR SDK</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_ref_counted_8h.html">PVRCore/RefCounted.h</a>&quot;</span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="comment">/*****************************************************************************/</span></div>
 <div class="ttc" id="_math_utils_8h_html"><div class="ttname"><a href="_math_utils_8h.html">MathUtils.h</a></div><div class="ttdoc">Includes required GLM library components and defines the rest of the information necessary for PowerV...</div></div>
 <div class="ttc" id="_ref_counted_8h_html"><div class="ttname"><a href="_ref_counted_8h.html">RefCounted.h</a></div><div class="ttdoc">A smart pointer implementation very close to the spec of std::shared_ptr but with some differences an...</div></div>
+<div class="ttc" id="_types_8h_html"><div class="ttname"><a href="_types_8h.html">Types.h</a></div><div class="ttdoc">Basic file used in the PowerVR Framework. Defines several types used throughout the Framework (sized ...</div></div>
 <div class="ttc" id="_string_hash_8h_html"><div class="ttname"><a href="_string_hash_8h.html">StringHash.h</a></div><div class="ttdoc">A hashed std::string with functionality for fast compares. </div></div>
+<div class="ttc" id="_command_line_8h_html"><div class="ttname"><a href="_command_line_8h.html">CommandLine.h</a></div><div class="ttdoc">Contains the CommandLine class. </div></div>
+<div class="ttc" id="_buffer_stream_8h_html"><div class="ttname"><a href="_buffer_stream_8h.html">BufferStream.h</a></div><div class="ttdoc">A Stream wrapping a block of memory. </div></div>
 <div class="ttc" id="_i_asset_provider_8h_html"><div class="ttname"><a href="_i_asset_provider_8h.html">IAssetProvider.h</a></div><div class="ttdoc">Contains the IAssetProvider interface, which decouples the Shell file retrieval functions from the Sh...</div></div>
 <div class="ttc" id="_string_functions_8h_html"><div class="ttname"><a href="_string_functions_8h.html">StringFunctions.h</a></div><div class="ttdoc">Contains helper functions for std::string manipulation. </div></div>
 </div><!-- fragment --></div><!-- contents -->

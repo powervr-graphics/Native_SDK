@@ -1,6 +1,6 @@
 /*!
 \brief Implementation of methods of the TextureReaderKTX class.
-\file PVRCore/textureReaders/TextureReaderKTX.cpp
+\file PVRCore/textureio/TextureReaderKTX.cpp
 \author PowerVR by Imagination, Developer Technology Team
 \copyright Copyright (c) Imagination Technologies Limited.
 */
@@ -1263,7 +1263,7 @@ void TextureReaderKTX::readAsset_(Texture& asset)
 						{
 							// Calculate the data offset for the relevant scan line
 							uint64_t scanLineOffset =
-							    (textureOffset3D(0, texHeight, texDepth, asset.getWidth(mipMapLevel), asset.getHeight(mipMapLevel)) * (asset.getBitsPerPixel() / 8));
+								(textureOffset3D(0, texHeight, texDepth, asset.getWidth(mipMapLevel), asset.getHeight(mipMapLevel)) * (asset.getBitsPerPixel() / 8));
 							// Read in the texture data for the current scan line.
 							_assetStream->readExact(
 								(asset.getBitsPerPixel() / 8) * asset.getWidth(mipMapLevel), 1, asset.getDataPointer(mipMapLevel, iSurface, iFace) + scanLineOffset);

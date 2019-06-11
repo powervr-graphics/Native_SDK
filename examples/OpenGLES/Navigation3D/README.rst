@@ -6,6 +6,10 @@ Navigation3D
 
 Demonstrates parsing, processing and rendering of raw OSM data as a 3D navigational map.
 
+API
+---
+* OpenGL ES 2.0+
+
 Description
 -----------	
 The 3D navigation example demonstrates the entire process of creating a navigational map from raw XML data,
@@ -18,11 +22,6 @@ This example also shows several rendering techniques such as:
 * anti-aliased lines with GRLAA for road outlines 
 * handling of UI elements for road names and places of interest 
 * an effective tile based approach to batching and culling the geometry. 
-
-APIs
-----
-* OpenGL ES 2.0+
-* Vulkan
 
 Controls
 --------

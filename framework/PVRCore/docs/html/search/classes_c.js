@@ -9,6 +9,7 @@ var searchData=
   ['pipelinereference',['PipelineReference',['../structpvr_1_1effect_1_1_pipeline_reference.html',1,'pvr::effect']]],
   ['pipelinevertexbinding',['PipelineVertexBinding',['../structpvr_1_1effect_1_1_pipeline_vertex_binding.html',1,'pvr::effect']]],
   ['pixelformat',['PixelFormat',['../classpvr_1_1_pixel_format.html',1,'pvr']]],
+  ['pixelformat',['PixelFormat',['../structpvr_1_1texture__dds_1_1_pixel_format.html',1,'pvr::texture_dds']]],
   ['plane3d',['Plane3d',['../classpvr_1_1_plane3d.html',1,'pvr']]],
   ['pvrerror',['PvrError',['../classpvr_1_1_pvr_error.html',1,'pvr']]]
 ];

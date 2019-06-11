@@ -10,8 +10,7 @@ namespace pvr {
 namespace platform {
 class Shell;
 
-/// <summary>The StateMachine controlling the PowerVR Shell. Provides the application main loop and callbacks.
-/// </summary>
+/// <summary>The StateMachine controlling the PowerVR Shell. Provides the application main loop and callbacks.</summary>
 class StateMachine : public ShellOS
 {
 public:

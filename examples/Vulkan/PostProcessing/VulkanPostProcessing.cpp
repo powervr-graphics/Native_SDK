@@ -8,8 +8,6 @@
 #include "PVRShell/PVRShell.h"
 #include "PVRUtils/PVRUtilsVk.h"
 #include "PVRCore/cameras/TPSCamera.h"
-#define _USE_MATH_DEFINES
-#include <math.h>
 
 namespace BufferEntryNames {
 namespace PerMesh {
@@ -19,13 +17,8 @@ const char* const WorldMatrix = "worldMatrix";
 
 namespace Scene {
 const char* const EyePosition = "eyePosition";
-const char* const LightPosition = "lightPosition";
 const char* const InverseViewProjectionMatrix = "inverseViewProjectionMatrix";
 } // namespace Scene
-
-namespace BloomConfig {
-const char* const LuminosityThreshold = "luminosityThreshold";
-} // namespace BloomConfig
 } // namespace BufferEntryNames
 
 // Bloom modes
@@ -51,36 +44,43 @@ const std::string BloomStrings[] = { "Original Image (No Post Processing)", "Gau
 // Files used throughout the demo
 namespace Files {
 // Shader file names
-const char Downsample2x2VertSrcFile[] = "Downsample2x2VertShader.vsh.spv";
-const char Downsample2x2FragSrcFile[] = "Downsample2x2FragShader.fsh.spv";
 const char Downsample4x4VertSrcFile[] = "Downsample4x4VertShader.vsh.spv";
 const char Downsample4x4FragSrcFile[] = "Downsample4x4FragShader.fsh.spv";
+
+// Dual Filter shaders
 const char DualFilterDownSampleFragSrcFile[] = "DualFilterDownSampleFragShader.fsh.spv";
 const char DualFilterUpSampleFragSrcFile[] = "DualFilterUpSampleFragShader.fsh.spv";
 const char DualFilterUpSampleMergedFinalPassFragSrcFile[] = "DualFilterUpSampleMergedFinalPassFragShader.fsh.spv";
 const char DualFilterDownVertSrcFile[] = "DualFilterDownVertShader.vsh.spv";
 const char DualFilterUpVertSrcFile[] = "DualFilterUpVertShader.vsh.spv";
+
+// Tent Filter shaders
 const char TentFilterUpSampleVertSrcFile[] = "TentFilterUpSampleVertShader.vsh.spv";
-const char TentFilterUpSampleFragSrcFile[] = "TentFilterUpSampleFragShader.fsh.spv";
 const char TentFilterFirstUpSampleFragSrcFile[] = "TentFilterFirstUpSampleFragShader.fsh.spv";
+const char TentFilterUpSampleFragSrcFile[] = "TentFilterUpSampleFragShader.fsh.spv";
 const char TentFilterUpSampleMergedFinalPassFragSrcFile[] = "TentFilterUpSampleMergedFinalPassFragShader.fsh.spv";
-const char GaussianComputeBlurHorizontal16fSrcFile[] = "GaussianCompHorizontalShader16f.csh.spv";
-const char GaussianComputeBlurHorizontal16frgbaSrcFile[] = "GaussianCompHorizontalShader16frgba.csh.spv";
-const char GaussianComputeBlurVertical16fSrcFile[] = "GaussianCompVerticalShader16f.csh.spv";
-const char GaussianComputeBlurVertical16frgbaSrcFile[] = "GaussianCompVerticalShader16frgba.csh.spv";
-const char GaussianHorizontalFragSrcFile[] = "GaussianHorizontalFragShader.fsh.spv";
-const char GaussianVerticalFragSrcFile[] = "GaussianVerticalFragShader.fsh.spv";
-const char GaussianVertSrcFile[] = "GaussianVertShader.vsh.spv";
+
+// Kawase Blur shaders
 const char KawaseVertSrcFile[] = "KawaseVertShader.vsh.spv";
 const char KawaseFragSrcFile[] = "KawaseFragShader.fsh.spv";
-const char LinearGaussianEvenSamplesFragSrcFile[] = "LinearGaussianEvenSamplesFragShader.fsh.spv";
-const char LinearGaussianEvenSamplesHorizontalVertSrcFile[] = "LinearGaussianEvenSamplesHorizontalVertShader.vsh.spv";
-const char LinearGaussianEvenSamplesVerticalVertSrcFile[] = "LinearGaussianEvenSamplesVerticalVertShader.vsh.spv";
-const char LinearGaussianOddSamplesFragSrcFile[] = "LinearGaussianOddSamplesFragShader.fsh.spv";
-const char LinearGaussianOddSamplesHorizontalVertSrcFile[] = "LinearGaussianOddSamplesHorizontalVertShader.vsh.spv";
-const char LinearGaussianOddSamplesVerticalVertSrcFile[] = "LinearGaussianOddSamplesVerticalVertShader.vsh.spv";
+
+// Traditional Gaussian Blur shaders
+const char GaussianFragSrcFile[] = "GaussianBlurFragmentShader.fsh.in";
+const char GaussianVertSrcFile[] = "GaussianVertShader.vsh.spv";
+
+// Linear Sampler Optimised Gaussian Blur shaders
+const char LinearGaussianVertSrcFile[] = "LinearGaussianBlurVertexShader.vsh.in";
+const char LinearGaussianFragSrcFile[] = "LinearGaussianBlurFragmentShader.fsh.in";
+
+// Compute based sliding average Gaussian Blur shaders
+const char GaussianComputeBlurHorizontalSrcFile[] = "ComputeGaussianBlurHorizontalShader.csh.in";
+const char GaussianComputeBlurVerticalSrcFile[] = "ComputeGaussianBlurVerticalShader.csh.in";
+
+// Post Bloom Shaders
 const char PostBloomVertShaderSrcFile[] = "PostBloomVertShader.vsh.spv";
 const char PostBloomFragShaderSrcFile[] = "PostBloomFragShader.fsh.spv";
+
+// Scene Rendering shaders
 const char FragShaderSrcFile[] = "FragShader.fsh.spv";
 const char VertShaderSrcFile[] = "VertShader.vsh.spv";
 const char SkyboxFragShaderSrcFile[] = "SkyboxFragShader.fsh.spv";
@@ -93,18 +93,53 @@ const char SceneFile[] = "Satyr.pod";
 // Texture files
 const char StatueTexFile[] = "Marble.pvr";
 const char StatueNormalMapTexFile[] = "MarbleNormalMap.pvr";
-const char SkyboxTexFile[] = "MonValley_baked_lightmap.pvr";
-const char DiffuseIrradianceMapTexFile[] = "DiffuseIrradianceMap.pvr";
+
+struct EnvironmentTextures
+{
+	std::string skyboxTexture;
+	std::string diffuseIrradianceMapTexture;
+	float averageLuminance;
+	float keyValue;
+	float threshold;
+
+	float getLinearExposure() const
+	{
+		return keyValue / averageLuminance;
+	}
+};
+
+float luma(glm::vec3 color)
+{
+	return glm::max(glm::dot(color, glm::vec3(0.2126f, 0.7152f, 0.0722f)), 0.0001f);
+}
+
+// The following were taken from the lowest mipmap of each of the corresponding irradiance textures
+float sataraNightLuminance = luma((1.0f / 6.0f) *
+	(glm::vec3(55.0f, 42.0f, 13.0f) + glm::vec3(21.0f, 16.0f, 8.0f) + glm::vec3(7.0f, 5.0f, 6.0f) + glm::vec3(5.0f, 4.0f, 1.0f) + glm::vec3(72.0f, 57.0f, 19.0f) +
+		glm::vec3(14.0f, 10.0f, 5.0f)));
+
+float pinkSunriseLuminance = luma((1.0f / 6.0f) *
+	(glm::vec3(104.0f, 76.0f, 106.0f) + glm::vec3(28.0f, 23.0f, 41.0f) + glm::vec3(137.0f, 110.0f, 197.0f) + glm::vec3(9.0f, 6.0f, 7.0f) + glm::vec3(129.0f, 89.0f, 113.0f) +
+		glm::vec3(28.0f, 27.0f, 54.0f)));
+
+float signalHillSunriseLuminance = luma((1.0f / 6.0f) *
+	(glm::vec3(10.0f, 10.0f, 10.0f) + glm::vec3(4.0f, 4.0f, 6.0f) + glm::vec3(8.0f, 10.0f, 16.0f) + glm::vec3(4.0f, 2.0f, 0.0f) + glm::vec3(9.0f, 9.0f, 9.0f) +
+		glm::vec3(4.0f, 4.0f, 5.0f)));
+
+// Textures
+EnvironmentTextures SceneTexFileNames[] = { { "satara_night_scale_0.305_rgb9e5.pvr", "satara_night_scale_0.305_rgb9e5_Irradiance.pvr", sataraNightLuminance, 9.0f, 2.6f },
+	{ "pink_sunrise_rgb9e5.pvr", "pink_sunrise_rgb9e5_Irradiance.pvr", pinkSunriseLuminance, 50.0f, 0.65f },
+	{ "signal_hill_sunrise_scale_0.312_rgb9e5.pvr", "signal_hill_sunrise_scale_0.312_rgb9e5_Irradiance.pvr", signalHillSunriseLuminance, 23.0f, 0.85f } };
+
+const int NumScenes = sizeof SceneTexFileNames / sizeof SceneTexFileNames[0];
 
 // Various defaults
 const float CameraNear = 1.0f;
 const float CameraFar = 1000.0f;
 const float RotateY = glm::pi<float>() / 150;
 const float Fov = 0.80f;
-const float BloomLumaThreshold = 0.8f;
-const glm::vec3 LightPosition = glm::vec3(100.0, 50.0, 1000.0);
 const float MinimumAcceptibleCoefficient = 0.0003f;
-const uint8_t MaxDualFilterIteration = 10;
+const uint8_t MaxFilterIterations = 10;
 const uint8_t MaxKawaseIteration = 5;
 const uint8_t MaxGaussianKernel = 51;
 const uint8_t MaxGaussianHalfKernel = (MaxGaussianKernel - 1) / 2 + 1;
@@ -128,99 +163,107 @@ struct KawasePass
 // A wrapper for the demo configuration at any time
 struct DemoConfiguration
 {
-	std::pair<uint32_t, std::string> gaussianConfig;
-	std::pair<uint32_t, std::string> linearGaussianConfig;
-	std::pair<uint32_t, std::string> computeGaussianConfig;
-	std::pair<uint32_t, std::string> truncatedLinearGaussianConfig;
-	std::pair<KawasePass, std::string> kawaseConfig;
-	std::pair<uint32_t, std::string> dualFilterConfig;
-	std::pair<uint32_t, std::string> tentFilterConfig;
-	std::pair<uint32_t, std::string> hybridConfig;
+	uint32_t gaussianConfig;
+	uint32_t linearGaussianConfig;
+	uint32_t computeGaussianConfig;
+	uint32_t truncatedLinearGaussianConfig;
+	KawasePass kawaseConfig;
+	uint32_t dualFilterConfig;
+	uint32_t tentFilterConfig;
+	uint32_t hybridConfig;
 };
 
 const uint32_t NumDemoConfigurations = 5;
 const uint32_t DefaultDemoConfigurations = 2;
 DemoConfiguration Configurations[NumDemoConfigurations]{ // Demo Blur Configurations
 	DemoConfiguration{
-		std::make_pair(5, "Kernel Size = 5 (5 + 5 taps)"), // Original Gaussian Blur
-		std::make_pair(5, "Kernel Size = 5 (3 + 3 taps)"), // Linear Gaussian Blur
-		std::make_pair(5, "Kernel Size = 5 (Sliding Average)"), // Compute Gaussian Blur
-		std::make_pair(5, "Kernel Size = 5 (3 + 3 taps)"), // Truncated Linear Gaussian Blur
-		std::make_pair(KawasePass{ 2, { 0, 0 } }, "2 Iterations: 0, 0"), // Kawase Blur
-		std::make_pair(2, "Iterations = 2 (1 downsample, 1 upsample)"), // Dual Filter Blur
-		std::make_pair(2, "Iterations = 2 (1 downsample, 1 upsample)"), // Tent Filter
-		std::make_pair(0, "Horizontal Compute (5 taps), Vertical Truncated Gaussian (3 taps)"), // Hybrid
+		5, // Original Gaussian Blur
+		5, // Linear Gaussian Blur
+		5, // Compute Gaussian Blur
+		5, // Truncated Linear Gaussian Blur
+		KawasePass{ 2, { 0, 0 } }, // Kawase Blur
+		2, // Dual Filter Blur
+		2, // Tent Filter
+		0, // Hybrid
 	},
 	DemoConfiguration{
-		std::make_pair(15, "Kernel Size = 15 (15 + 15 taps)"), // Original Gaussian Blur
-		std::make_pair(15, "Kernel Size = 15 (8 + 8 taps)"), // Linear Gaussian Blur
-		std::make_pair(15, "Kernel Size = 15 (Sliding Average)"), // Compute Gaussian Blur
-		std::make_pair(11, "Kernel Size = 11 (6 + 6 taps)"), // Truncated Linear Gaussian Blur
-		std::make_pair(KawasePass{ 3, { 0, 0, 1 } }, "3 Iterations: 0, 0, 1"), // Kawase Blur
-		std::make_pair(4, "Iterations = 4 (2 downsample, 2 upsample)"), // Dual Filter Blur
-		std::make_pair(4, "Iterations = 4 (2 downsample, 2 upsample)"), // Tent Filter
-		std::make_pair(0, "Horizontal Compute (15 taps), Vertical Truncated Gaussian (6 taps)"), // Hybrid
+		15, // Original Gaussian Blur
+		15, // Linear Gaussian Blur
+		15, // Compute Gaussian Blur
+		11, // Truncated Linear Gaussian Blur
+		KawasePass{ 3, { 0, 0, 1 } }, // Kawase Blur
+		4, // Dual Filter Blur
+		4, // Tent Filter
+		0, // Hybrid
 	},
 	DemoConfiguration{
-		std::make_pair(25, "Kernel Size = 25 (25 + 25 taps)"), // Original Gaussian Blur
-		std::make_pair(25, "Kernel Size = 25 (13 + 13 taps)"), // Linear Gaussian Blur
-		std::make_pair(25, "Kernel Size = 25 (Sliding Average)"), // Compute Gaussian Blur
-		std::make_pair(17, "Kernel Size = 17 (9 + 9 taps)"), // Truncated Linear Gaussian Blur
-		std::make_pair(KawasePass{ 4, { 0, 0, 1, 1 } }, "4 Iterations: 0, 0, 1, 1"), // Kawase Blur
-		std::make_pair(6, "Iterations = 6 (3 downsample, 3 upsample)"), // Dual Filter Blur
-		std::make_pair(6, "Iterations = 6 (3 downsample, 3 upsample)"), // Tent Filter
-		std::make_pair(0, "Horizontal Compute (25 taps), Vertical Truncated Gaussian (9 taps)"), // Hybrid
+		25, // Original Gaussian Blur
+		25, // Linear Gaussian Blur
+		25, // Compute Gaussian Blur
+		17, // Truncated Linear Gaussian Blur
+		KawasePass{ 4, { 0, 0, 1, 1 } }, // Kawase Blur
+		6, // Dual Filter Blur
+		6, // Tent Filter
+		0, // Hybrid
 	},
 	DemoConfiguration{
-		std::make_pair(35, "Kernel Size = 35 (35 + 35 taps)"), // Original Gaussian Blur
-		std::make_pair(35, "Kernel Size = 35 (18 + 18 taps)"), // Linear Gaussian Blur
-		std::make_pair(35, "Kernel Size = 35 (Sliding Average)"), // Compute Gaussian Blur
-		std::make_pair(21, "Kernel Size = 21 (11 + 11 taps)"), // Truncated Linear Gaussian Blur
-		std::make_pair(KawasePass{ 4, { 0, 1, 1, 1 } }, "4 Iterations: 0, 1, 1, 1"), // Kawase Blur
-		std::make_pair(8, "Iterations = 8 (4 downsample, 4 upsample)"), // Dual Filter Blur
-		std::make_pair(8, "Iterations = 8 (4 downsample, 4 upsample)"), // Tent Filter
-		std::make_pair(0, "Horizontal Compute (35 taps), Vertical Truncated Gaussian (11 taps)"), // Hybrid
+		35, // Original Gaussian Blur
+		35, // Linear Gaussian Blur
+		35, // Compute Gaussian Blur
+		21, // Truncated Linear Gaussian Blur
+		KawasePass{ 4, { 0, 1, 1, 1 } }, // Kawase Blur
+		8, // Dual Filter Blur
+		8, // Tent Filter
+		0, // Hybrid
 	},
 	DemoConfiguration{
-		std::make_pair(51, "Kernel Size = 51 (51 + 51 taps)"), // Original Gaussian Blur
-		std::make_pair(51, "Kernel Size = 51 (26 + 26 taps)"), // Linear Gaussian Blur
-		std::make_pair(51, "Kernel Size = 51 (Sliding Average)"), // Compute Gaussian Blur
-		std::make_pair(25, "Kernel Size = 25 (13 + 13 taps)"), // Truncated Linear Gaussian Blur
-		std::make_pair(KawasePass{ 5, { 0, 0, 1, 1, 2 } }, "5 Iterations: 0, 0, 1, 1, 2"), // Kawase Blur
-		std::make_pair(10, "Iterations = 10 (5 downsample, 5 upsample)"), // Dual Filter Blur
-		std::make_pair(10, "Iterations = 10 (5 downsample, 5 upsample)"), // Tent Filter
-		std::make_pair(0, "Horizontal Compute (51 taps), Vertical Truncated Gaussian (13 taps)"), // Hybrid
+		51, // Original Gaussian Blur
+		51, // Linear Gaussian Blur
+		51, // Compute Gaussian Blur
+		25, // Truncated Linear Gaussian Blur
+		KawasePass{ 5, { 0, 0, 1, 1, 2 } }, // Kawase Blur
+		10, // Dual Filter Blur
+		10, // Tent Filter
+		0, // Hybrid
 	}
 };
 } // namespace DemoConfigurations
 
 /// <summary>Prints the gaussian weights and offsets provided in the vectors.</summary>
-/// <param name="gaussianOffsets">The list of gaussian offsets to print.</param>
 /// <param name="gaussianWeights">The list of gaussian weights to print.</param>
-void printGaussianWeightsAndOffsets(std::vector<double>& gaussianOffsets, std::vector<double>& gaussianWeights)
+/// <param name="gaussianOffsets">The list of gaussian offsets to print.</param>
+/// <param name="iterationsString">A string defining the number of iterations.</param>
+/// <param name="weightsString">A string defining the iteration set of weights.</param>
+/// <param name="offsetsString">A string defining the iteration set of offsets.</param>
+void generateGaussianWeightsAndOffsetsStrings(std::vector<double>& gaussianWeights, std::vector<double>& gaussianOffsets, std::string& iterationsString, std::string& weightsString,
+	std::string& offsetsString, bool duplicateWeightsStrings = false)
 {
-	Log(LogLevel::Information, "const int maxStepCount = %u;", gaussianWeights.size());
-	Log(LogLevel::Information, "const float gWeights[maxStepCount] =");
-	Log(LogLevel::Information, "{");
-
-	for (uint32_t i = 0; i < gaussianWeights.size() - 1; i++)
+	std::string weights;
+	for (uint32_t i = 0; i < gaussianWeights.size() - 1; ++i)
 	{
-		Log(LogLevel::Information, "%.15f,", gaussianWeights[i]);
+		weights += pvr::strings::createFormatted("%.15f,", gaussianWeights[i]);
 	}
+	weights += pvr::strings::createFormatted("%.15f", gaussianWeights[gaussianWeights.size() - 1]);
 
-	Log(LogLevel::Information, "%.15f", gaussianWeights[gaussianWeights.size() - 1]);
-	Log(LogLevel::Information, "};");
-
-	Log(LogLevel::Information, "const float gOffsets[maxStepCount] =");
-	Log(LogLevel::Information, "{");
-
-	for (uint32_t i = 0; i < gaussianOffsets.size() - 1; i++)
+	std::string offsets;
+	for (uint32_t i = 0; i < gaussianOffsets.size() - 1; ++i)
 	{
-		Log(LogLevel::Information, "%.15f,", gaussianOffsets[i]);
+		offsets += pvr::strings::createFormatted("%.15f,", gaussianOffsets[i]);
 	}
+	offsets += pvr::strings::createFormatted("%.15f", gaussianOffsets[gaussianOffsets.size() - 1]);
 
-	Log(LogLevel::Information, "%.15f", gaussianOffsets[gaussianOffsets.size() - 1]);
-	Log(LogLevel::Information, "};");
+	if (duplicateWeightsStrings)
+	{
+		weights += "," + weights;
+
+		weightsString = pvr::strings::createFormatted("const mediump float gWeights[numIterations * 2] = {%s};", weights.c_str());
+	}
+	else
+	{
+		weightsString = pvr::strings::createFormatted("const mediump float gWeights[numIterations] = {%s};", weights.c_str());
+		offsetsString = pvr::strings::createFormatted("const mediump float gOffsets[numIterations] = {%s};", offsets.c_str());
+	}
+	iterationsString = pvr::strings::createFormatted("const uint numIterations = %uu;", gaussianWeights.size());
 }
 
 /// <summary>Updates the gaussian weights and offsets using the configuration provided.</summary>
@@ -228,64 +271,79 @@ void printGaussianWeightsAndOffsets(std::vector<double>& gaussianOffsets, std::v
 /// <param name="useLinearOptimisation">Specifies whether linear sampling will be used when texture sampling using the given weights and offsets,
 /// if linear sampling will be used then the weights and offsets must be adjusted accordingly.</param>
 /// <param name="truncateCoefficients">Specifies whether to truncate and ignore coefficients which would provide a negligible change in the resulting blurred image.</param>
-/// <param name="gaussianOffsets">The returned list of gaussian offsets (as double).</param>
 /// <param name="gaussianWeights">The returned list of gaussian weights (as double).</param>
-/// <param name="gaussianOffsetsFloats">The returned list of gaussian offsets (as float).</param>
-/// <param name="gaussianWeightsFloats">The returned list of gaussian weights (as float).</param>
-void updateGaussianWeightsAndOffsets(uint32_t kernelSize, bool useLinearOptimisation, bool truncateCoefficients, std::vector<double>& gaussianOffsets,
-	std::vector<double>& gaussianWeights, std::vector<float>& gaussianOffsetsFloats, std::vector<float>& gaussianWeightsFloats)
+/// <param name="gaussianOffsets">The returned list of gaussian offsets (as double).</param>
+void generateGaussianCoefficients(uint32_t kernelSize, bool useLinearOptimisation, bool truncateCoefficients, std::vector<double>& gaussianWeights, std::vector<double>& gaussianOffsets)
 {
-	// Ensure that the kernel given is odd in size. Our utility function requires a central sampling position although this demo also caters for even kernel sizes
+	// Ensure that the kernel given is odd in size
 	assertion((kernelSize - 1) % 2 == 0);
 	assertion(kernelSize <= MaxGaussianKernel);
 
-	// clear the previous set of gaussian weights and offsets
-	gaussianWeights.clear();
-	gaussianOffsets.clear();
-	gaussianWeightsFloats.clear();
-	gaussianOffsetsFloats.clear();
-
 	// generate a new set of weights and offsets based on the given configuration
 	pvr::math::generateGaussianKernelWeightsAndOffsets(kernelSize, truncateCoefficients, useLinearOptimisation, gaussianWeights, gaussianOffsets, MinimumAcceptibleCoefficient);
+}
 
-	// The following can be used to print the current set of Gaussian Offsets and Weights in use and can be helpful during debugging
-	/*
-	if (useLinearOptimisation)
+bool queueFamiliesCompatible(pvrvk::ImageView& imageView, const uint32_t* queueFamilyIndices, uint32_t numQueueFamilyIndices)
+{
+	for (uint32_t i = 0; i < numQueueFamilyIndices; ++i)
 	{
-		Log(LogLevel::Information, "Linear Sampling Optimized Gaussian Weights and Offsets:");
-	}
-	else
-	{
-		Log(LogLevel::Information, "Gaussian Weights and Offsets:");
-	}
-	printGaussianWeightsAndOffsets(gaussianOffsets, gaussianWeights);
-	*/
-
-	// Convert the Gaussian weights from double precision to floating point
-	// Only store half of the kernel weights and offsets rather than the full kernel size set of weights and offsets as each side of the kernel will match the other meaning we
-	// can save on the amount of data to upload and sample from in the shader
-	if (gaussianWeights.size() % 2 == 0)
-	{
-		uint32_t halfKernelSize = static_cast<uint32_t>(gaussianWeights.size() / 2);
-
-		gaussianWeightsFloats.resize(halfKernelSize);
-		gaussianOffsetsFloats.resize(halfKernelSize);
-		for (uint32_t i = halfKernelSize; i < gaussianWeights.size(); ++i)
+		bool foundMatch = false;
+		for (uint32_t j = 0; j < imageView->getCreateInfo().getImage()->getNumQueueFamilyIndices(); ++j)
 		{
-			gaussianWeightsFloats[i - halfKernelSize] = static_cast<float>(gaussianWeights[i]);
-			gaussianOffsetsFloats[i - halfKernelSize] = static_cast<float>(gaussianOffsets[i]);
+			if (imageView->getCreateInfo().getImage()->getQueueFamilyIndices()[j] == queueFamilyIndices[i])
+			{
+				foundMatch = true;
+			}
+		}
+		if (!foundMatch)
+		{
+			return false;
 		}
 	}
+
+	return true;
+}
+
+bool isCompatibleImageView(pvrvk::ImageView& imageView, pvrvk::ImageType imageType, pvrvk::Format format, const pvrvk::Extent3D& dimension, pvrvk::ImageUsageFlags usage,
+	const pvrvk::ImageLayersSize& layerSize, pvrvk::SampleCountFlags samples, pvrvk::MemoryPropertyFlags memoryFlags, pvrvk::SharingMode sharingMode, pvrvk::ImageTiling tiling,
+	const uint32_t* queueFamilyIndices, uint32_t numQueueFamilyIndices)
+{
+	if (imageView)
+	{
+		if (imageView->getImage()->getImageType() == imageType && imageView->getImage()->getFormat() == format &&
+			imageView->getImage()->getExtent().getWidth() == dimension.getWidth() && imageView->getImage()->getExtent().getHeight() == dimension.getHeight() &&
+			imageView->getImage()->getExtent().getDepth() == dimension.getDepth() && static_cast<uint32_t>(imageView->getImage()->getUsageFlags() & usage) != 0 &&
+			imageView->getImage()->getNumArrayLayers() == layerSize.getNumArrayLevels() && imageView->getImage()->getNumMipLevels() == layerSize.getNumMipLevels() &&
+			imageView->getImage()->getNumSamples() == samples && static_cast<uint32_t>(imageView->getImage()->getDeviceMemory()->getMemoryFlags() & memoryFlags) != 0 &&
+			imageView->getImage()->getSharingMode() == sharingMode && imageView->getImage()->getTiling() == tiling &&
+			queueFamiliesCompatible(imageView, queueFamilyIndices, numQueueFamilyIndices))
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+void addImageToSharedImages(std::vector<pvr::Multi<pvrvk::ImageView> >& sharedImageViews, pvrvk::ImageView& imageView, uint32_t currentSwapchainIndex)
+{
+	// Naively add a new entry to the back of the shared image list if the swapchain is 0
+	// This requires that images are added in "swapchain order"
+	if (currentSwapchainIndex == 0)
+	{
+		sharedImageViews.resize(sharedImageViews.size() + 1);
+		sharedImageViews[sharedImageViews.size() - 1].add(imageView);
+	}
 	else
 	{
-		uint32_t halfKernelSize = static_cast<uint32_t>((gaussianWeights.size() - 1) / 2 + 1);
-
-		gaussianWeightsFloats.resize(halfKernelSize);
-		gaussianOffsetsFloats.resize(halfKernelSize);
-		for (uint32_t i = halfKernelSize - 1; i < gaussianWeights.size(); ++i)
+		for (uint32_t i = 0; i < sharedImageViews.size(); ++i)
 		{
-			gaussianWeightsFloats[i - (halfKernelSize - 1)] = static_cast<float>(gaussianWeights[i]);
-			gaussianOffsetsFloats[i - (halfKernelSize - 1)] = static_cast<float>(gaussianOffsets[i]);
+			if (isCompatibleImageView(sharedImageViews[i][0], imageView->getImage()->getImageType(), imageView->getImage()->getFormat(), imageView->getImage()->getExtent(),
+					imageView->getImage()->getUsageFlags(), pvrvk::ImageLayersSize(imageView->getImage()->getNumArrayLayers(), imageView->getImage()->getNumMipLevels()),
+					imageView->getImage()->getNumSamples(), imageView->getImage()->getDeviceMemory()->getMemoryFlags(), imageView->getImage()->getSharingMode(),
+					imageView->getImage()->getTiling(), imageView->getImage()->getQueueFamilyIndices(), imageView->getImage()->getNumQueueFamilyIndices()))
+			{
+				sharedImageViews[i].add(imageView);
+			}
 		}
 	}
 }
@@ -319,18 +377,9 @@ struct StatuePass
 	/// <param name="vmaAllocator">A VMA allocator to use for allocating images and buffers.</param>
 	/// <param name="utilityCommandBuffer">A command buffer to use for queueing up all initialisation commands. This command buffer will be submitted later by the main
 	/// application.</param>
-	/// <param name="samplerBilinear">A bilinear sampler object.</param>
-	/// <param name="samplerTrilinear">A trilinear sampler object.</param>
 	/// <param name="pipelineCache">A pipeline cache object to use when creating pipelines.</param>
-	/// <param name="irrandianceImageView">A diffuse irradiance map to use as an albedo replacement.</param>
-	/// <param name="sceneBufferView">Buffer view for the scene buffer.</param>
-	/// <param name="sceneBuffer">The scene buffer.</param>
-	/// <param name="bloomConfigBufferView">Buffer view for the bloom config buffer.</param>
-	/// <param name="bloomConfigBuffer">The bloom config buffer.</param>
 	void init(pvr::IAssetProvider& assetProvider, pvrvk::Device& device, pvrvk::Swapchain& swapchain, pvrvk::CommandPool& commandPool, pvrvk::DescriptorPool& descriptorPool,
-		pvrvk::RenderPass& renderpass, pvr::Multi<pvrvk::Framebuffer>& framebuffers, pvr::utils::vma::Allocator& vmaAllocator, pvrvk::CommandBuffer& utilityCommandBuffer,
-		pvrvk::Sampler& samplerBilinear, pvrvk::Sampler& samplerTrilinear, pvrvk::PipelineCache& pipelineCache, pvrvk::ImageView& irrandianceImageView,
-		pvr::utils::StructuredBufferView& sceneBufferView, pvrvk::Buffer& sceneBuffer, pvr::utils::StructuredBufferView& bloomConfigBufferView, pvrvk::Buffer& bloomConfigBuffer)
+		pvrvk::RenderPass& renderpass, pvr::utils::vma::Allocator& vmaAllocator, pvrvk::CommandBuffer& utilityCommandBuffer, pvrvk::PipelineCache& pipelineCache)
 	{
 		// Load the scene
 		pvr::assets::helper::loadModel(assetProvider, SceneFile, scene);
@@ -344,14 +393,14 @@ struct StatuePass
 		createDescriptorSetLayout(device);
 		createPipeline(assetProvider, device, renderpass, swapchain->getDimension(), pipelineCache);
 
-		createDescriptorSets(
-			device, swapchain, descriptorPool, irrandianceImageView, samplerBilinear, samplerTrilinear, sceneBufferView, sceneBuffer, bloomConfigBufferView, bloomConfigBuffer);
+		for (uint32_t i = 0; i < swapchain->getSwapchainLength(); ++i)
+		{
+			descriptorSets.add(descriptorPool->allocateDescriptorSet(descriptorSetLayout));
+		}
 
 		for (uint32_t i = 0; i < swapchain->getSwapchainLength(); ++i)
 		{
 			commandBuffers.add(commandPool->allocateSecondaryCommandBuffer());
-			// Commands can be recorded up front - these don't change based on changes to the bloom used
-			recordCommandBuffer(i, framebuffers, commandBuffers);
 		}
 	}
 
@@ -424,58 +473,44 @@ struct StatuePass
 		descSetLayout.setBinding(0, pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 1, pvrvk::ShaderStageFlags::e_FRAGMENT_BIT);
 		descSetLayout.setBinding(1, pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 1, pvrvk::ShaderStageFlags::e_FRAGMENT_BIT);
 		descSetLayout.setBinding(2, pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 1, pvrvk::ShaderStageFlags::e_FRAGMENT_BIT);
-		descSetLayout.setBinding(3, pvrvk::DescriptorType::e_UNIFORM_BUFFER, 1, pvrvk::ShaderStageFlags::e_FRAGMENT_BIT);
-		descSetLayout.setBinding(4, pvrvk::DescriptorType::e_UNIFORM_BUFFER, 1, pvrvk::ShaderStageFlags::e_VERTEX_BIT);
-		descSetLayout.setBinding(5, pvrvk::DescriptorType::e_UNIFORM_BUFFER, 1u, pvrvk::ShaderStageFlags::e_FRAGMENT_BIT);
+		descSetLayout.setBinding(3, pvrvk::DescriptorType::e_UNIFORM_BUFFER, 1, pvrvk::ShaderStageFlags::e_VERTEX_BIT);
 
 		descriptorSetLayout = device->createDescriptorSetLayout(descSetLayout);
 
 		pvrvk::PipelineLayoutCreateInfo pipelineLayoutInfo;
 		pipelineLayoutInfo.setDescSetLayout(0, descriptorSetLayout);
 
+		pvrvk::PushConstantRange pushConstantsRange;
+		pushConstantsRange.setOffset(0);
+		pushConstantsRange.setSize(static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::Float) * 2));
+		pushConstantsRange.setStageFlags(pvrvk::ShaderStageFlags::e_FRAGMENT_BIT);
+		pipelineLayoutInfo.setPushConstantRange(0, pushConstantsRange);
+
 		pipelineLayout = device->createPipelineLayout(pipelineLayoutInfo);
 	}
 
-	/// <summary>Creates the descriptor sets used for rendering the statue.</summary>
+	/// <summary>Updates the descriptor sets used for rendering the statue.</summary>
 	/// <param name="device">The device from which the resources will be allocated.</param>
-	/// <param name="swapchain">The swapchain which will determine the number of per swapchain resources to allocate.</param>
-	/// <param name="descriptorPool">The descriptor pool from which to allocate descriptor sets.</param>
+	/// <param name="swapchainIndex">The swapchain index of the descriptor set to update.</param>
 	/// <param name="diffuseIrradianceMap">The diffuse irradiance map used as a replacement to a fixed albedo.</param>
 	/// <param name="samplerBilinear">A bilinear sampler object.</param>
 	/// <param name="samplerTrilinear">A trilinear sampler object.</param>
-	/// <param name="sceneBufferView">Buffer view for the scene buffer.</param>
-	/// <param name="sceneBuffer">The scene buffer.</param>
-	/// <param name="bloomConfigBufferView">Buffer view for the bloom config buffer.</param>
-	/// <param name="bloomConfigBuffer">The bloom config buffer.</param>
-	void createDescriptorSets(pvrvk::Device& device, pvrvk::Swapchain& swapchain, pvrvk::DescriptorPool& descriptorPool, pvrvk::ImageView& diffuseIrradianceMap,
-		pvrvk::Sampler& samplerBilinear, pvrvk::Sampler& samplerTrilinear, pvr::utils::StructuredBufferView& sceneBufferView, pvrvk::Buffer& sceneBuffer,
-		pvr::utils::StructuredBufferView& bloomConfigBufferView, pvrvk::Buffer& bloomConfigBuffer)
+	void updateDescriptorSets(pvrvk::Device& device, uint32_t swapchainIndex, pvrvk::ImageView& diffuseIrradianceMap, pvrvk::Sampler& samplerBilinear, pvrvk::Sampler& samplerTrilinear)
 	{
 		std::vector<pvrvk::WriteDescriptorSet> writeDescSets;
 
-		for (uint32_t i = 0; i < swapchain->getSwapchainLength(); ++i)
-		{
-			descriptorSets.add(descriptorPool->allocateDescriptorSet(descriptorSetLayout));
+		writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, descriptorSets[swapchainIndex], 0)
+									.setImageInfo(0, pvrvk::DescriptorImageInfo(albeoImageView, samplerBilinear, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL)));
 
-			writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, descriptorSets[i], 0)
-										.setImageInfo(0, pvrvk::DescriptorImageInfo(albeoImageView, samplerBilinear, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL)));
+		writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, descriptorSets[swapchainIndex], 1)
+									.setImageInfo(0, pvrvk::DescriptorImageInfo(normalMapImageView, samplerTrilinear, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL)));
 
-			writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, descriptorSets[i], 1)
-										.setImageInfo(0, pvrvk::DescriptorImageInfo(normalMapImageView, samplerTrilinear, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL)));
+		writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, descriptorSets[swapchainIndex], 2)
+									.setImageInfo(0, pvrvk::DescriptorImageInfo(diffuseIrradianceMap, samplerTrilinear, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL)));
 
-			writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, descriptorSets[i], 2)
-										.setImageInfo(0, pvrvk::DescriptorImageInfo(diffuseIrradianceMap, samplerTrilinear, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL)));
-
-			writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_UNIFORM_BUFFER, descriptorSets[i], 3)
-										.setBufferInfo(0, pvrvk::DescriptorBufferInfo(sceneBuffer, sceneBufferView.getDynamicSliceOffset(i), sceneBufferView.getDynamicSliceSize())));
-
-			writeDescSets.push_back(
-				pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_UNIFORM_BUFFER, descriptorSets[i], 4)
-					.setBufferInfo(0, pvrvk::DescriptorBufferInfo(buffer, structuredBufferView.getDynamicSliceOffset(i), structuredBufferView.getDynamicSliceSize())));
-
-			writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_UNIFORM_BUFFER, descriptorSets[i], 5)
-										.setBufferInfo(0, pvrvk::DescriptorBufferInfo(bloomConfigBuffer, 0, bloomConfigBufferView.getSize())));
-		}
+		writeDescSets.push_back(
+			pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_UNIFORM_BUFFER, descriptorSets[swapchainIndex], 3)
+				.setBufferInfo(0, pvrvk::DescriptorBufferInfo(buffer, structuredBufferView.getDynamicSliceOffset(swapchainIndex), structuredBufferView.getDynamicSliceSize())));
 
 		device->updateDescriptorSets(writeDescSets.data(), static_cast<uint32_t>(writeDescSets.size()), nullptr, 0);
 	}
@@ -541,7 +576,7 @@ struct StatuePass
 		if (mesh.getNumStrips() == 0)
 		{
 			// Indexed Triangle list
-			if (ibos[meshId].isValid())
+			if (ibos[meshId])
 			{
 				commandBuffer->bindIndexBuffer(ibos[meshId], 0, pvr::utils::convertToPVRVk(mesh.getFaces().getDataType()));
 				commandBuffer->drawIndexed(0, mesh.getNumFaces() * 3, 0, 0, 1);
@@ -557,7 +592,7 @@ struct StatuePass
 			uint32_t offset = 0;
 			for (uint32_t i = 0; i < mesh.getNumStrips(); ++i)
 			{
-				if (ibos[meshId].isValid())
+				if (ibos[meshId])
 				{
 					// Indexed Triangle strips
 					commandBuffer->bindIndexBuffer(ibos[meshId], 0, pvr::utils::convertToPVRVk(mesh.getFaces().getDataType()));
@@ -575,16 +610,21 @@ struct StatuePass
 
 	/// <summary>Records the secondary command buffers for rendering the statue.</summary>
 	/// <param name="swapchainIndex">The swapchain index for which the recorded command buffer will be used.</param>
-	/// <param name="framebuffers">The framebuffers to render into</param>
-	/// <param name="commandBuffers">The secondary command buffers to record into.</param>
-	void recordCommandBuffer(uint32_t swapchainIndex, pvr::Multi<pvrvk::Framebuffer>& framebuffers, pvr::Multi<pvrvk::SecondaryCommandBuffer>& commandBuffers)
+	/// <param name="framebuffer">The framebuffer to render into</param>
+	/// <param name="exposure">The exposure value used to 'expose' the color prior to post processing</param>
+	/// <param name="threshold">The threshold value used to determine how much of the color to retain for the bloom</param>
+	void recordCommandBuffer(uint32_t swapchainIndex, pvrvk::Framebuffer& framebuffer, float exposure, float threshold)
 	{
-		commandBuffers[swapchainIndex]->begin(framebuffers[swapchainIndex], 0, pvrvk::CommandBufferUsageFlags::e_RENDER_PASS_CONTINUE_BIT);
-		commandBuffers[swapchainIndex]->debugMarkerBeginEXT("Statue");
+		commandBuffers[swapchainIndex]->begin(framebuffer, 0, pvrvk::CommandBufferUsageFlags::e_RENDER_PASS_CONTINUE_BIT);
+		pvr::utils::beginCommandBufferDebugLabel(commandBuffers[swapchainIndex], pvrvk::DebugUtilsLabel("Statue"));
 		commandBuffers[swapchainIndex]->bindPipeline(pipeline);
 		commandBuffers[swapchainIndex]->bindDescriptorSet(pvrvk::PipelineBindPoint::e_GRAPHICS, pipelineLayout, 0u, descriptorSets[swapchainIndex]);
+		commandBuffers[swapchainIndex]->pushConstants(
+			pipelineLayout, pvrvk::ShaderStageFlags::e_FRAGMENT_BIT, 0, static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::Float)), &exposure);
+		commandBuffers[swapchainIndex]->pushConstants(pipelineLayout, pvrvk::ShaderStageFlags::e_FRAGMENT_BIT, static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::Float)),
+			static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::Float)), &threshold);
 		drawMesh(commandBuffers[swapchainIndex], 0);
-		commandBuffers[swapchainIndex]->debugMarkerEndEXT();
+		pvr::utils::endCommandBufferDebugLabel(commandBuffers[swapchainIndex]);
 		commandBuffers[swapchainIndex]->end();
 	}
 };
@@ -598,6 +638,7 @@ struct SkyboxPass
 	pvrvk::DescriptorSetLayout descriptorSetLayout;
 	pvr::Multi<pvrvk::DescriptorSet> descriptorSets;
 	pvr::Multi<pvrvk::SecondaryCommandBuffer> commandBuffers;
+	uint32_t currentScene;
 
 	/// <summary>Initialises the skybox pass.</summary>
 	/// <param name="assetProvider">The pvr::IAssetProvider which will be used for loading resources from memory.</param>
@@ -608,47 +649,49 @@ struct SkyboxPass
 	/// <param name="renderpass">The RenderPass to use.</param>
 	/// <param name="framebuffers">The framebuffers to use.</param>
 	/// <param name="vmaAllocator">A VMA allocator to use for allocating images and buffers.</param>
-	/// <param name="utilityCommandBuffer">A command buffer to use for queueing up all initialisation commands. This command buffer will be submitted later by the main
-	/// application.</param>
-	/// <param name="samplerTrilinear">A trilinear sampler object.</param>
 	/// <param name="pipelineCache">A pipeline cache object to use when creating pipelines.</param>
-	/// <param name="sceneBufferView">Buffer view for the scene buffer.</param>
-	/// <param name="sceneBuffer">The scene buffer.</param>
-	/// <param name="bloomConfigBufferView">Buffer view for the bloom config buffer.</param>
-	/// <param name="bloomConfigBuffer">The bloom config buffer.</param>
 	void init(pvr::IAssetProvider& assetProvider, pvrvk::Device& device, pvrvk::Swapchain& swapchain, pvrvk::CommandPool& commandPool, pvrvk::DescriptorPool& descriptorPool,
-		pvrvk::RenderPass& renderpass, pvr::Multi<pvrvk::Framebuffer>& framebuffers, pvr::utils::vma::Allocator& vmaAllocator, pvrvk::CommandBuffer& utilityCommandBuffer,
-		pvrvk::Sampler& samplerTrilinear, pvrvk::PipelineCache& pipelineCache, pvr::utils::StructuredBufferView& sceneBufferView, pvrvk::Buffer& sceneBuffer,
-		pvr::utils::StructuredBufferView& bloomConfigBufferView, pvrvk::Buffer& bloomConfigBuffer)
+		pvrvk::RenderPass& renderpass, pvr::utils::vma::Allocator& vmaAllocator, pvrvk::PipelineCache& pipelineCache)
 	{
-		loadSkyBoxTextures(assetProvider, device, utilityCommandBuffer, vmaAllocator);
-
+		this->currentScene = -1;
 		createDescriptorSetLayout(device);
 		createPipeline(assetProvider, device, renderpass, swapchain->getDimension(), pipelineCache);
 
-		createDescriptorSets(device, swapchain, descriptorPool, samplerTrilinear, sceneBufferView, sceneBuffer, bloomConfigBufferView, bloomConfigBuffer);
+		for (uint32_t i = 0; i < swapchain->getSwapchainLength(); ++i)
+		{
+			descriptorSets.add(descriptorPool->allocateDescriptorSet(descriptorSetLayout));
+		}
 
 		for (uint32_t i = 0; i < swapchain->getSwapchainLength(); ++i)
 		{
 			commandBuffers.add(commandPool->allocateSecondaryCommandBuffer());
-			recordCommandBuffer(i, framebuffers, commandBuffers);
 		}
 	}
 
-	/// <summary>Creates the textures used for rendering the skybox.</summary>
+	/// <summary>Creates the texture used for rendering the skybox.</summary>
 	/// <param name="assetProvider">The pvr::IAssetProvider which will be used for loading resources from memory.</param>
 	/// <param name="device">The device from which the resources will be allocated.</param>
 	/// <param name="utilityCommandBuffer">A command buffer to use for queueing up all initialisation commands. This command buffer will be submitted later by the main
 	/// application.</param>
 	/// <param name="vmaAllocator">A VMA allocator to use for allocating images and buffers.</param>
-	void loadSkyBoxTextures(pvr::IAssetProvider& assetProvider, pvrvk::Device device, pvrvk::CommandBuffer& utilityCommandBuffer, pvr::utils::vma::Allocator& vmaAllocator)
+	/// <param name="currentScene">The current scene to use.</param>
+	void loadSkyBoxImageView(
+		pvr::IAssetProvider& assetProvider, pvrvk::Device device, pvrvk::CommandBuffer& commandBuffer, pvr::utils::vma::Allocator& vmaAllocator, uint32_t currentScene)
 	{
-		// Load the Texture PVR file from the disk
-		pvr::Texture skyBoxTexture = pvr::textureLoad(assetProvider.getAssetStream(SkyboxTexFile), pvr::TextureFileFormat::PVR);
+		// Only load the image view if required
+		if (this->currentScene != currentScene)
+		{
+			skyBoxImageView.reset();
 
-		// Create and Allocate Textures.
-		skyBoxImageView = pvr::utils::uploadImageAndView(
-			device, skyBoxTexture, true, utilityCommandBuffer, pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, &vmaAllocator, &vmaAllocator);
+			// Load the Texture PVR file from the disk
+			pvr::Texture skyBoxTexture = pvr::textureLoad(assetProvider.getAssetStream(SceneTexFileNames[currentScene].skyboxTexture), pvr::TextureFileFormat::PVR);
+
+			// Create and Allocate Textures.
+			skyBoxImageView = pvr::utils::uploadImageAndView(
+				device, skyBoxTexture, true, commandBuffer, pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, &vmaAllocator, &vmaAllocator);
+
+			this->currentScene = currentScene;
+		}
 	}
 
 	/// <summary>Creates the descriptor set layouts used for rendering the statue.</summary>
@@ -659,43 +702,37 @@ struct SkyboxPass
 
 		descSetLayout.setBinding(0, pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 1, pvrvk::ShaderStageFlags::e_FRAGMENT_BIT);
 		descSetLayout.setBinding(1, pvrvk::DescriptorType::e_UNIFORM_BUFFER, 1, pvrvk::ShaderStageFlags::e_VERTEX_BIT);
-		descSetLayout.setBinding(2, pvrvk::DescriptorType::e_UNIFORM_BUFFER, 1u, pvrvk::ShaderStageFlags::e_FRAGMENT_BIT);
 
 		descriptorSetLayout = device->createDescriptorSetLayout(descSetLayout);
 
 		pvrvk::PipelineLayoutCreateInfo pipelineLayoutInfo;
 		pipelineLayoutInfo.setDescSetLayout(0, descriptorSetLayout);
 
+		pvrvk::PushConstantRange pushConstantsRange;
+		pushConstantsRange.setOffset(0);
+		pushConstantsRange.setSize(static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::Float) * 2));
+		pushConstantsRange.setStageFlags(pvrvk::ShaderStageFlags::e_FRAGMENT_BIT);
+		pipelineLayoutInfo.setPushConstantRange(0, pushConstantsRange);
+
 		pipelineLayout = device->createPipelineLayout(pipelineLayoutInfo);
 	}
 
-	/// <summary>Creates the descriptor sets used for rendering the skybox.</summary>
+	/// <summary>Updates the descriptor sets used for rendering the skybox.</summary>
 	/// <param name="device">The device from which the resources will be allocated.</param>
-	/// <param name="swapchain">The swapchain which will determine the number of per swapchain resources to allocate.</param>
-	/// <param name="descriptorPool">The descriptor pool from which to allocate descriptor sets.</param>
+	/// <param name="swapchainIndex">The swapchain index of the descriptor set to update.</param>
 	/// <param name="samplerTrilinear">A trilinear sampler object.</param>
-	/// <param name="sceneBufferView">Buffer view for the scene buffer.</param>
 	/// <param name="sceneBuffer">The scene buffer.</param>
-	/// <param name="bloomConfigBufferView">Buffer view for the bloom config buffer.</param>
-	/// <param name="bloomConfigBuffer">The bloom config buffer.</param>
-	void createDescriptorSets(pvrvk::Device& device, pvrvk::Swapchain& swapchain, pvrvk::DescriptorPool& descriptorPool, pvrvk::Sampler& samplerTrilinear,
-		pvr::utils::StructuredBufferView& sceneBufferView, pvrvk::Buffer& sceneBuffer, pvr::utils::StructuredBufferView& bloomConfigBufferView, pvrvk::Buffer& bloomConfigBuffer)
+	/// <param name="sceneBufferView">Buffer view for the scene buffer.</param>
+	void updateDescriptorSets(
+		pvrvk::Device& device, uint32_t swapchainIndex, pvrvk::Sampler& samplerTrilinear, pvrvk::Buffer& sceneBuffer, pvr::utils::StructuredBufferView& sceneBufferView)
 	{
 		std::vector<pvrvk::WriteDescriptorSet> writeDescSets;
+		writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, descriptorSets[swapchainIndex], 0)
+									.setImageInfo(0, pvrvk::DescriptorImageInfo(skyBoxImageView, samplerTrilinear, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL)));
 
-		for (uint32_t i = 0; i < swapchain->getSwapchainLength(); ++i)
-		{
-			descriptorSets.add(descriptorPool->allocateDescriptorSet(descriptorSetLayout));
-
-			writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, descriptorSets[i], 0)
-										.setImageInfo(0, pvrvk::DescriptorImageInfo(skyBoxImageView, samplerTrilinear, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL)));
-
-			writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_UNIFORM_BUFFER, descriptorSets[i], 1)
-										.setBufferInfo(0, pvrvk::DescriptorBufferInfo(sceneBuffer, sceneBufferView.getDynamicSliceOffset(i), sceneBufferView.getDynamicSliceSize())));
-
-			writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_UNIFORM_BUFFER, descriptorSets[i], 2)
-										.setBufferInfo(0, pvrvk::DescriptorBufferInfo(bloomConfigBuffer, 0, bloomConfigBufferView.getSize())));
-		}
+		writeDescSets.push_back(
+			pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_UNIFORM_BUFFER, descriptorSets[swapchainIndex], 1)
+				.setBufferInfo(0, pvrvk::DescriptorBufferInfo(sceneBuffer, sceneBufferView.getDynamicSliceOffset(swapchainIndex), sceneBufferView.getDynamicSliceSize())));
 
 		device->updateDescriptorSets(writeDescSets.data(), static_cast<uint32_t>(writeDescSets.size()), nullptr, 0);
 	}
@@ -746,21 +783,26 @@ struct SkyboxPass
 
 	/// <summary>Records the secondary command buffers for rendering the skybox.</summary>
 	/// <param name="swapchainIndex">The swapchain index for which the recorded command buffer will be used.</param>
-	/// <param name="framebuffers">The framebuffers to render into</param>
-	/// <param name="commandBuffers">The secondary command buffers to record into.</param>
-	void recordCommandBuffer(uint32_t swapchainIndex, pvr::Multi<pvrvk::Framebuffer>& framebuffers, pvr::Multi<pvrvk::SecondaryCommandBuffer>& commandBuffers)
+	/// <param name="framebuffer">The framebuffer to render into</param>
+	/// <param name="exposure">The exposure value used to 'expose' the color prior to post processing</param>
+	/// <param name="threshold">The threshold value used to determine how much of the color to retain for the bloom</param>
+	void recordCommandBuffer(uint32_t swapchainIndex, pvrvk::Framebuffer& framebuffer, float exposure, float threshold)
 	{
-		commandBuffers[swapchainIndex]->begin(framebuffers[swapchainIndex], 0, pvrvk::CommandBufferUsageFlags::e_RENDER_PASS_CONTINUE_BIT);
-		commandBuffers[swapchainIndex]->debugMarkerBeginEXT("Skybox");
+		commandBuffers[swapchainIndex]->begin(framebuffer, 0, pvrvk::CommandBufferUsageFlags::e_RENDER_PASS_CONTINUE_BIT);
+		pvr::utils::beginCommandBufferDebugLabel(commandBuffers[swapchainIndex], pvrvk::DebugUtilsLabel("Skybox"));
 		commandBuffers[swapchainIndex]->bindPipeline(pipeline);
 		commandBuffers[swapchainIndex]->bindDescriptorSet(pvrvk::PipelineBindPoint::e_GRAPHICS, pipelineLayout, 0u, descriptorSets[swapchainIndex]);
+		commandBuffers[swapchainIndex]->pushConstants(
+			pipelineLayout, pvrvk::ShaderStageFlags::e_FRAGMENT_BIT, 0, static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::Float)), &exposure);
+		commandBuffers[swapchainIndex]->pushConstants(pipelineLayout, pvrvk::ShaderStageFlags::e_FRAGMENT_BIT, static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::Float)),
+			static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::Float)), &threshold);
 		commandBuffers[swapchainIndex]->draw(0, 6);
-		commandBuffers[swapchainIndex]->debugMarkerEndEXT();
+		pvr::utils::endCommandBufferDebugLabel(commandBuffers[swapchainIndex]);
 		commandBuffers[swapchainIndex]->end();
 	}
 };
 
-// A Downsample pass used for downsampling images by 1/4 x 1/4 i.e. 1/16 resolution
+// A Downsample pass which can be used for downsampling images by 1/4 x 1/4 i.e. 1/16 resolution
 struct DownSamplePass
 {
 	pvrvk::DescriptorSetLayout descriptorSetLayout;
@@ -770,7 +812,7 @@ struct DownSamplePass
 	pvrvk::RenderPass renderPass;
 	pvr::Multi<pvrvk::SecondaryCommandBuffer> commandBuffers;
 	pvrvk::GraphicsPipeline pipeline;
-	glm::vec2 blurConfigs[4];
+	glm::vec4 downsampleConfigs[4];
 
 	/// <summary>Initialises the Downsample pass.</summary>
 	/// <param name="assetProvider">The pvr::IAssetProvider which will be used for loading resources from memory.</param>
@@ -780,25 +822,29 @@ struct DownSamplePass
 	/// <param name="descriptorPool">The descriptor pool from which to allocate descriptor sets.</param>
 	/// <param name="blurFramebufferDimensions">The dimensions to use for the downsample pass. These dimensions should be 1/4 x 1/4 the size of the source image.</param>
 	/// <param name="inputImageViews">A set of images to downsample.</param>
-	/// <param name="colorImageViews">A pre-allocated set of images to render downsampled images to.</param>
+	/// <param name="outputImageViews">A pre-allocated set of images to render downsampled images to.</param>
 	/// <param name="sampler">A bilinear sampler object.</param>
 	/// <param name="pipelineCache">A pipeline cache object to use when creating pipelines.</param>
 	/// <param name="isComputeDownsample">Determines the destination image layout to use as well as the destination PipelineStageFlags.</param>
 	void init(pvr::IAssetProvider& assetProvider, pvrvk::Device& device, pvrvk::Swapchain& swapchain, pvrvk::CommandPool& commandPool, pvrvk::DescriptorPool& descriptorPool,
-		const glm::ivec2& blurFramebufferDimensions, pvr::Multi<pvrvk::ImageView>& inputImageViews, pvr::Multi<pvrvk::ImageView>& colorImageViews, pvrvk::Sampler& sampler,
+		const glm::ivec2& blurFramebufferDimensions, pvr::Multi<pvrvk::ImageView>& inputImageViews, pvr::Multi<pvrvk::ImageView>& outputImageViews, pvrvk::Sampler& sampler,
 		pvrvk::PipelineCache& pipelineCache, bool isComputeDownsample)
 	{
+		const glm::vec2 dimensionRatio = glm::vec2(inputImageViews[0]->getImage()->getExtent().getWidth() / outputImageViews[0]->getImage()->getExtent().getWidth(),
+			inputImageViews[0]->getImage()->getExtent().getHeight() / outputImageViews[0]->getImage()->getExtent().getHeight());
+
 		// A set of pre-calculated offsets to use for the downsample
 		const glm::vec2 offsets[4] = { glm::vec2(-1.0, -1.0), glm::vec2(1.0, -1.0), glm::vec2(-1.0, 1.0), glm::vec2(1.0, 1.0) };
+		const glm::vec2 step = glm::vec2(1.0f / (blurFramebufferDimensions.x * dimensionRatio.x), 1.0f / (blurFramebufferDimensions.y * dimensionRatio.y));
 
-		blurConfigs[0] = glm::vec2(1.0f / (blurFramebufferDimensions.x * 4), 1.0f / (blurFramebufferDimensions.y * 4)) * offsets[0];
-		blurConfigs[1] = glm::vec2(1.0f / (blurFramebufferDimensions.x * 4), 1.0f / (blurFramebufferDimensions.y * 4)) * offsets[1];
-		blurConfigs[2] = glm::vec2(1.0f / (blurFramebufferDimensions.x * 4), 1.0f / (blurFramebufferDimensions.y * 4)) * offsets[2];
-		blurConfigs[3] = glm::vec2(1.0f / (blurFramebufferDimensions.x * 4), 1.0f / (blurFramebufferDimensions.y * 4)) * offsets[3];
+		downsampleConfigs[0] = glm::vec4(step * offsets[0], 0.0f, 0.0f);
+		downsampleConfigs[1] = glm::vec4(step * offsets[1], 0.0f, 0.0f);
+		downsampleConfigs[2] = glm::vec4(step * offsets[2], 0.0f, 0.0f);
+		downsampleConfigs[3] = glm::vec4(step * offsets[3], 0.0f, 0.0f);
 
 		createDescriptorSetLayout(device);
 		createDescriptorSets(device, swapchain, descriptorPool, inputImageViews, sampler);
-		createFramebuffers(device, swapchain, blurFramebufferDimensions, colorImageViews, isComputeDownsample);
+		createFramebuffers(device, swapchain, blurFramebufferDimensions, outputImageViews, isComputeDownsample);
 		createPipeline(assetProvider, device, blurFramebufferDimensions, pipelineCache);
 
 		for (uint32_t i = 0; i < swapchain->getSwapchainLength(); ++i)
@@ -822,7 +868,7 @@ struct DownSamplePass
 
 		pipeLayoutInfo.setDescSetLayout(0, descriptorSetLayout);
 
-		uint32_t pushConstantsSize = static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::vec2) * 4);
+		uint32_t pushConstantsSize = static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::vec4) * 4);
 
 		pvrvk::PushConstantRange pushConstantsRange;
 		pushConstantsRange.setOffset(0);
@@ -963,75 +1009,14 @@ struct DownSamplePass
 	void recordCommands(uint32_t swapchainIndex)
 	{
 		commandBuffers[swapchainIndex]->begin(framebuffers[swapchainIndex], 0, pvrvk::CommandBufferUsageFlags::e_RENDER_PASS_CONTINUE_BIT);
-		commandBuffers[swapchainIndex]->debugMarkerBeginEXT("Downsample");
+		pvr::utils::beginCommandBufferDebugLabel(commandBuffers[swapchainIndex], pvrvk::DebugUtilsLabel("Downsample"));
 		commandBuffers[swapchainIndex]->bindPipeline(pipeline);
 		commandBuffers[swapchainIndex]->bindDescriptorSet(pvrvk::PipelineBindPoint::e_GRAPHICS, pipelineLayout, 0u, descriptorSets[swapchainIndex]);
 		commandBuffers[swapchainIndex]->pushConstants(
-			pipelineLayout, pvrvk::ShaderStageFlags::e_VERTEX_BIT, 0, static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::vec2) * 4), &blurConfigs[0]);
+			pipelineLayout, pvrvk::ShaderStageFlags::e_VERTEX_BIT, 0, static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::vec4) * 4), &downsampleConfigs);
 		commandBuffers[swapchainIndex]->draw(0, 3);
-		commandBuffers[swapchainIndex]->debugMarkerEndEXT();
+		pvr::utils::endCommandBufferDebugLabel(commandBuffers[swapchainIndex]);
 		commandBuffers[swapchainIndex]->end();
-	}
-};
-
-// A Downsample pass used for downsampling images by 1/2 x 1/2 i.e. 1/4 resolution making use of vkCmdBlitImage
-struct BlitDownSamplePass
-{
-	void recordCommands(pvrvk::SecondaryCommandBuffer& commandBuffer, pvrvk::Image& sourceImage, pvrvk::Image& destinationImage, pvrvk::Queue& queue)
-	{
-		pvrvk::MemoryBarrierSet preBlitLayoutTransition;
-		pvrvk::MemoryBarrierSet postBlitLayoutTransition;
-
-		// Setup the image layout transitions
-		{
-			// Transition the source image ready to be used as a blit source
-			preBlitLayoutTransition.addBarrier(pvrvk::ImageMemoryBarrier(pvrvk::AccessFlags::e_COLOR_ATTACHMENT_WRITE_BIT, pvrvk::AccessFlags::e_TRANSFER_WRITE_BIT, sourceImage,
-				pvrvk::ImageSubresourceRange(pvrvk::ImageAspectFlags::e_COLOR_BIT, 0u, 1u, 0u, 1u), pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL,
-				pvrvk::ImageLayout::e_TRANSFER_SRC_OPTIMAL, queue->getFamilyIndex(), queue->getFamilyIndex()));
-
-			// Transition the destination image ready to be used as a blit destination
-			preBlitLayoutTransition.addBarrier(pvrvk::ImageMemoryBarrier(pvrvk::AccessFlags::e_COLOR_ATTACHMENT_WRITE_BIT, pvrvk::AccessFlags::e_TRANSFER_WRITE_BIT,
-				destinationImage, pvrvk::ImageSubresourceRange(pvrvk::ImageAspectFlags::e_COLOR_BIT, 0u, 1u, 0u, 1u), pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL,
-				pvrvk::ImageLayout::e_TRANSFER_DST_OPTIMAL, queue->getFamilyIndex(), queue->getFamilyIndex()));
-
-			// Transition the source image back, ready to be used as a SHADER_READ_ONLY image
-			postBlitLayoutTransition.addBarrier(pvrvk::ImageMemoryBarrier(pvrvk::AccessFlags::e_TRANSFER_READ_BIT, pvrvk::AccessFlags::e_COLOR_ATTACHMENT_WRITE_BIT, sourceImage,
-				pvrvk::ImageSubresourceRange(pvrvk::ImageAspectFlags::e_COLOR_BIT, 0u, 1u, 0u, 1u), pvrvk::ImageLayout::e_TRANSFER_SRC_OPTIMAL,
-				pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, queue->getFamilyIndex(), queue->getFamilyIndex()));
-
-			// Transition the destination image back, ready to be used as a SHADER_READ_ONLY image
-			postBlitLayoutTransition.addBarrier(pvrvk::ImageMemoryBarrier(pvrvk::AccessFlags::e_TRANSFER_WRITE_BIT, pvrvk::AccessFlags::e_COLOR_ATTACHMENT_WRITE_BIT,
-				destinationImage, pvrvk::ImageSubresourceRange(pvrvk::ImageAspectFlags::e_COLOR_BIT, 0u, 1u, 0u, 1u), pvrvk::ImageLayout::e_TRANSFER_DST_OPTIMAL,
-				pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, queue->getFamilyIndex(), queue->getFamilyIndex()));
-		}
-
-		// Perform the blit:
-		//		1. Transition the source and destination images ready for the blit
-		//		2. Perform the blit using a linear filter
-		//		3. Transition the source and destination images after the blit ready to be used as SHADER_READY_ONLY images
-		{
-			// Transition the source and destination images ready for the blit
-			commandBuffer->pipelineBarrier(pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT, pvrvk::PipelineStageFlags::e_TRANSFER_BIT, preBlitLayoutTransition);
-
-			// Setup the blit region
-			pvrvk::Offset3D sourceOffsets[] = { pvrvk::Offset3D(0, 0, 0), pvrvk::Offset3D(sourceImage->getWidth(), sourceImage->getHeight(), 1) };
-			pvrvk::Offset3D destinationOffsets[] = { pvrvk::Offset3D(0, 0, 0), pvrvk::Offset3D(destinationImage->getWidth(), destinationImage->getHeight(), 1) };
-			pvrvk::ImageBlit blitRegion = pvrvk::ImageBlit(pvrvk::ImageSubresourceLayers(pvrvk::ImageAspectFlags::e_COLOR_BIT, 0, 0, 1), &sourceOffsets[0],
-				pvrvk::ImageSubresourceLayers(pvrvk::ImageAspectFlags::e_COLOR_BIT, 0, 0, 1), &destinationOffsets[0]);
-
-			// Perform the blit using a linear filter
-			commandBuffer->blitImage(
-				sourceImage, destinationImage, &blitRegion, 1, pvrvk::Filter::e_LINEAR, pvrvk::ImageLayout::e_TRANSFER_SRC_OPTIMAL, pvrvk::ImageLayout::e_TRANSFER_DST_OPTIMAL);
-
-			// Transition the source and destination images after the blit ready to be used as SHADER_READY_ONLY images
-			commandBuffer->pipelineBarrier(pvrvk::PipelineStageFlags::e_TRANSFER_BIT, pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT, postBlitLayoutTransition);
-		}
-
-		// Clear up the image layout transitions ready for the next downsample pass
-		{
-			preBlitLayoutTransition.clearAllBarriers();
-			postBlitLayoutTransition.clearAllBarriers();
-		}
 	}
 };
 
@@ -1242,22 +1227,23 @@ struct KawaseBlurPass
 	/// <summary>Records the commands required for the Kawase blur iterations based on the current configuration.</summary>
 	/// <param name="swapchainIndex">The swapchain index for which the recorded command buffer will be used.</param>
 	/// <param name="blurFramebuffers">The ping-ponged Framebuffers to use in the Kawase blur iterations.</param>
-	void recordCommands(uint32_t swapchainIndex, pvr::Multi<pvrvk::Framebuffer>* blurFramebuffers)
+	void recordCommands(uint32_t swapchainIndex, pvr::Multi<pvrvk::Framebuffer>* blurFramebuffers, uint32_t numFramebuffers)
 	{
 		// Iterate through the Kawase blur iterations
-		for (uint32_t i = 0; i < blurIterations; i++)
+		for (uint32_t i = 0; i < blurIterations; ++i)
 		{
 			// Calculate the ping pong index based on the current iteration
-			uint32_t pingPongIndex = i % 2;
+			uint32_t pingPongIndex = i % numFramebuffers;
 
 			commandBuffers[i][swapchainIndex]->begin(blurFramebuffers[pingPongIndex][swapchainIndex], 0, pvrvk::CommandBufferUsageFlags::e_RENDER_PASS_CONTINUE_BIT);
-			commandBuffers[i][swapchainIndex]->debugMarkerBeginEXT(pvr::strings::createFormatted("Kawase Blur - swapchain (%i): %i", swapchainIndex, i));
+			pvr::utils::beginCommandBufferDebugLabel(
+				commandBuffers[i][swapchainIndex], pvrvk::DebugUtilsLabel(pvr::strings::createFormatted("Kawase Blur - swapchain (%i): %i", swapchainIndex, i)));
 			commandBuffers[i][swapchainIndex]->pushConstants(
 				pipelineLayout, pvrvk::ShaderStageFlags::e_VERTEX_BIT, 0, static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::vec2) * 4), &pushConstants[i]);
 			commandBuffers[i][swapchainIndex]->bindPipeline(pipeline);
 			commandBuffers[i][swapchainIndex]->bindDescriptorSet(pvrvk::PipelineBindPoint::e_GRAPHICS, pipelineLayout, 0u, descriptorSets[pingPongIndex][swapchainIndex]);
 			commandBuffers[i][swapchainIndex]->draw(0, 3);
-			commandBuffers[i][swapchainIndex]->debugMarkerEndEXT();
+			pvr::utils::endCommandBufferDebugLabel(commandBuffers[i][swapchainIndex]);
 			commandBuffers[i][swapchainIndex]->end();
 		}
 	}
@@ -1274,7 +1260,7 @@ struct KawaseBlurPass
 		pvrvk::ClearValue clearValue = pvrvk::ClearValue(0.0f, 0.0f, 0.0f, 1.f);
 
 		// Iterate through the current set of Kawase blur iterations
-		for (uint32_t i = 0; i < blurIterations; i++)
+		for (uint32_t i = 0; i < blurIterations; ++i)
 		{
 			uint32_t pingPongIndex = i % 2;
 
@@ -1293,18 +1279,18 @@ struct KawaseBlurPass
 // Filters images whilst Downsampling and Upsampling
 struct DualFilterBlurPass
 {
-	// We only need (MaxDualFilterIteration - 1) images as the first image is an input to the blur pass
+	// We only need (MaxFilterIterations - 1) images as the first image is an input to the blur pass
 	// We also special case the final pass as this requires either a different pipeline or a different descriptor set/layout
 
 	// Special cased final pass pipeline where the final upsample pass and compositing occurs in the same pipeline. This lets us avoid an extra write to memory/read from memory pass
 	pvrvk::GraphicsPipeline finalPassPipeline;
 	pvrvk::GraphicsPipeline finalPassBloomOnlyPipeline;
 
-	// Pre allocated Up and Down sample pipelines for the iterations up to MaxDualFilterIteration
-	pvrvk::GraphicsPipeline pipelines[MaxDualFilterIteration - 1];
+	// Pre allocated Up and Down sample pipelines for the iterations up to MaxFilterIterations
+	pvrvk::GraphicsPipeline pipelines[MaxFilterIterations - 1];
 
 	// The current set of pipelines in use for the currently selected configuration
-	pvrvk::GraphicsPipeline currentPipelines[MaxDualFilterIteration];
+	pvrvk::GraphicsPipeline currentPipelines[MaxFilterIterations];
 
 	// The special cased final pass descriptor set layout
 	pvrvk::DescriptorSetLayout finalPassDescriptorSetLayout;
@@ -1322,22 +1308,22 @@ struct DualFilterBlurPass
 	pvr::Multi<pvrvk::DescriptorSet> finalPassDescriptorSets;
 
 	// The per swapchain descriptor sets for the up and down sample passes
-	pvr::Multi<pvrvk::DescriptorSet> descriptorSets[MaxDualFilterIteration - 1];
+	pvr::Multi<pvrvk::DescriptorSet> descriptorSets[MaxFilterIterations - 1];
 
-	// The pre allocated framebuffers for the iterations up to MaxDualFilterIteration
-	pvr::Multi<pvrvk::Framebuffer> framebuffers[MaxDualFilterIteration - 1];
+	// The pre allocated framebuffers for the iterations up to MaxFilterIterations
+	pvr::Multi<pvrvk::Framebuffer> framebuffers[MaxFilterIterations - 1];
 
 	// The current set of framebuffers in use for the currently selected configuration
-	pvr::Multi<pvrvk::Framebuffer> currentFramebuffers[MaxDualFilterIteration - 1];
+	pvr::Multi<pvrvk::Framebuffer> currentFramebuffers[MaxFilterIterations - 1];
 
-	// The pre allocated image views for the iterations up to MaxDualFilterIteration
-	pvr::Multi<pvrvk::ImageView> imageViews[MaxDualFilterIteration - 1];
+	// The pre allocated image views for the iterations up to MaxFilterIterations
+	pvr::Multi<pvrvk::ImageView> imageViews[MaxFilterIterations - 1];
 
 	// The current set of image views in use for the currently selected configuration
-	pvr::Multi<pvrvk::ImageView> currentImageViews[MaxDualFilterIteration - 1];
+	pvr::Multi<pvrvk::ImageView> currentImageViews[MaxFilterIterations - 1];
 
 	// The set of command buffers where commands will be recorded for the current configuration
-	pvr::Multi<pvrvk::SecondaryCommandBuffer> commandBuffers[MaxDualFilterIteration];
+	pvr::Multi<pvrvk::SecondaryCommandBuffer> commandBuffers[MaxFilterIterations];
 
 	// The framebuffer dimensions for the current configuration
 	std::vector<glm::vec2> currentIterationDimensions;
@@ -1355,7 +1341,7 @@ struct DualFilterBlurPass
 	uint32_t blurIterations;
 
 	// The current set of push constants for the current configuration
-	glm::vec2 pushConstants[MaxDualFilterIteration][8];
+	glm::vec2 pushConstants[MaxFilterIterations][8];
 
 	// The final full resolution framebuffer dimensions
 	glm::ivec2 framebufferDimensions;
@@ -1363,8 +1349,12 @@ struct DualFilterBlurPass
 	// The color image format in use
 	pvrvk::Format colorImageFormat;
 
-	// The source image currently being blurred
-	pvr::Multi<pvrvk::ImageView> currentImageToBlur;
+	// The source images to blur
+	pvr::Multi<pvrvk::ImageView> sourceImageViews;
+	// The offscreen images used to compose the final image
+	pvr::Multi<pvrvk::ImageView> offscreenImageViews;
+
+	pvrvk::Sampler sampler;
 
 	/// <summary>Initialises the Dual Filter blur.</summary>
 	/// <param name="assetProvider">The pvr::IAssetProvider which will be used for loading resources from memory.</param>
@@ -1373,41 +1363,36 @@ struct DualFilterBlurPass
 	/// <param name="commandPool">The command pool from which to allocate command buffers.</param>
 	/// <param name="descriptorPool">The descriptor pool from which to allocate descriptor sets.</param>
 	/// <param name="blurRenderPass">The RenderPass to use.</param>
+	/// <param name="offscreenImageViews">A list of offscreen images (one per swapchain) which will be used in the final image composition pass.</param>
+	/// <param name="sourceImageViews">A list of source images (one per swapchain) which will be used as the source for the blur.</param>
 	/// <param name="vmaAllocator">A VMA allocator to use for allocating images and buffers.</param>
 	/// <param name="colorImageFormat">The color image format to use for the Dual Filter blur.</param>
 	/// <param name="framebufferDimensions">The full size resolution framebuffer dimensions.</param>
 	/// <param name="sampler">The sampler object to use when sampling from the images during the Dual Filter blur passes.</param>
-	/// <param name="utilityCommandBuffer">A command buffer to use for queueing up all initialisation commands. This command buffer will be submitted later by the main
-	/// application.</param>
 	/// <param name="onScreenRenderPass">The main RenderPass used for rendering to the screen.</param>
 	/// <param name="pipelineCache">A pipeline cache object to use when creating pipelines.</param>
+	/// <param name="sharedImageViews">A set of shared image views which are available for use rather than allocating identical images.</param>
 	void init(pvr::IAssetProvider& assetProvider, pvrvk::Device& device, pvrvk::Swapchain& swapchain, pvrvk::CommandPool& commandPool, pvrvk::DescriptorPool& descriptorPool,
-		pvrvk::RenderPass& blurRenderPass, pvr::utils::vma::Allocator& vmaAllocator, pvrvk::Format colorImageFormat, const glm::ivec2& framebufferDimensions,
-		pvrvk::Sampler& sampler, pvrvk::CommandBuffer& utilityCommandBuffer, pvrvk::RenderPass& onScreenRenderPass, pvrvk::PipelineCache& pipelineCache)
+		pvrvk::RenderPass& blurRenderPass, pvr::Multi<pvrvk::ImageView>& offscreenImageViews, pvr::Multi<pvrvk::ImageView>& sourceImageViews,
+		pvr::utils::vma::Allocator& vmaAllocator, pvrvk::Format colorImageFormat, const glm::ivec2& framebufferDimensions, pvrvk::Sampler& sampler,
+		pvrvk::RenderPass& onScreenRenderPass, pvrvk::PipelineCache& pipelineCache, std::vector<pvr::Multi<pvrvk::ImageView> >& sharedImageViews)
 	{
 		this->colorImageFormat = colorImageFormat;
 		this->framebufferDimensions = framebufferDimensions;
 		this->blurIterations = -1;
+		this->sampler = sampler;
+		this->offscreenImageViews = offscreenImageViews;
+		this->sourceImageViews = sourceImageViews;
 
-		createBuffers(device, swapchain, vmaAllocator);
 		createDescriptorSetLayouts(device);
 		createDescriptorSets(swapchain, descriptorPool);
 
 		// Calculate the maximum set of per iteration framebuffer dimensions
-		// The maximum set will start from framebufferDimensions and allow for MaxDualFilterIteration. Note that this includes down and up sample passes
+		// The maximum set will start from framebufferDimensions and allow for MaxFilterIterations. Note that this includes down and up sample passes
 		calculateIterationDimensions();
 
 		// Allocates the images used for each of the down/up sample passes
-		allocatePingPongImages(device, swapchain, vmaAllocator);
-
-		// Transition the images
-		for (uint32_t i = 0; i < swapchain->getSwapchainLength(); ++i)
-		{
-			for (uint32_t j = 0; j < MaxDualFilterIteration - 1; j++)
-			{
-				pvr::utils::setImageLayout(imageViews[j][i]->getImage(), pvrvk::ImageLayout::e_UNDEFINED, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, utilityCommandBuffer);
-			}
-		}
+		allocatePingPongImages(device, swapchain, vmaAllocator, sharedImageViews);
 
 		// Create the dual filter framebuffers
 		createFramebuffers(device, swapchain, blurRenderPass);
@@ -1415,7 +1400,7 @@ struct DualFilterBlurPass
 		// Create the up and down sample pipelines
 		createPipelines(assetProvider, device, blurRenderPass, onScreenRenderPass, pipelineCache);
 
-		for (uint32_t i = 0; i < MaxDualFilterIteration; ++i)
+		for (uint32_t i = 0; i < MaxFilterIterations; ++i)
 		{
 			for (uint32_t j = 0; j < swapchain->getSwapchainLength(); ++j)
 			{
@@ -1423,12 +1408,6 @@ struct DualFilterBlurPass
 			}
 		}
 	}
-
-	/// <summary>Creates any required buffers - The Dual Filter blur pass doesn't use any buffers.</summary>
-	/// <param name="device">The device from which the resources will be allocated.</param>
-	/// <param name="swapchain">The swapchain which will determine the number of per swapchain resources to allocate.</param>
-	/// <param name="vmaAllocator">A VMA allocator to use for allocating images and buffers.</param>
-	virtual void createBuffers(pvrvk::Device& device, pvrvk::Swapchain& swapchain, pvr::utils::vma::Allocator& vmaAllocator) {}
 
 	/// <summary>Returns the blurred image for the given swapchain index.</summary>
 	/// <param name="swapchainIndex">The swapchain index of the blurred image to retrieve.</param>
@@ -1476,7 +1455,7 @@ struct DualFilterBlurPass
 			currentPipelines[index] = pipelines[index];
 		}
 
-		for (uint32_t i = MaxDualFilterIteration - (blurIterations / 2); i < MaxDualFilterIteration - 1; ++i)
+		for (uint32_t i = MaxFilterIterations - (blurIterations / 2); i < MaxFilterIterations - 1; ++i)
 		{
 			currentPipelines[index] = pipelines[i];
 			index++;
@@ -1486,7 +1465,7 @@ struct DualFilterBlurPass
 	/// <summary>Configure the set of Framebuffers based on the current Dual Filter configuration.</summary>
 	void configureFramebuffers()
 	{
-		for (uint32_t i = 0; i < MaxDualFilterIteration - 1; ++i)
+		for (uint32_t i = 0; i < MaxFilterIterations - 1; ++i)
 		{
 			currentFramebuffers[i].clear();
 		}
@@ -1497,7 +1476,7 @@ struct DualFilterBlurPass
 			currentFramebuffers[index] = framebuffers[index];
 		}
 
-		for (uint32_t i = MaxDualFilterIteration - (blurIterations / 2); i < MaxDualFilterIteration - 1; ++i)
+		for (uint32_t i = MaxFilterIterations - (blurIterations / 2); i < MaxFilterIterations - 1; ++i)
 		{
 			currentFramebuffers[index] = framebuffers[i];
 			index++;
@@ -1507,7 +1486,7 @@ struct DualFilterBlurPass
 	/// <summary>Configure the set of Dual Filter ping pong images based on the current Dual Filter configuration.</summary>
 	virtual void configurePingPongImages()
 	{
-		for (uint32_t i = 0; i < MaxDualFilterIteration - 1; ++i)
+		for (uint32_t i = 0; i < MaxFilterIterations - 1; ++i)
 		{
 			currentImageViews[i].clear();
 		}
@@ -1518,7 +1497,7 @@ struct DualFilterBlurPass
 			currentImageViews[index] = imageViews[index];
 		}
 
-		for (uint32_t i = MaxDualFilterIteration - (blurIterations / 2); i < MaxDualFilterIteration - 1; ++i)
+		for (uint32_t i = MaxFilterIterations - (blurIterations / 2); i < MaxFilterIterations - 1; ++i)
 		{
 			currentImageViews[index] = imageViews[i];
 			index++;
@@ -1528,8 +1507,8 @@ struct DualFilterBlurPass
 	/// <summary>Calculate the full set of Dual Filter iteration dimensions.</summary>
 	void calculateIterationDimensions()
 	{
-		maxIterationDimensions.resize(MaxDualFilterIteration);
-		maxIterationInverseDimensions.resize(MaxDualFilterIteration);
+		maxIterationDimensions.resize(MaxFilterIterations);
+		maxIterationInverseDimensions.resize(MaxFilterIterations);
 
 		// Determine the dimensions and inverse dimensions for each iteration of the Dual Filter
 		// If the original texture size is 800x600 and we are using a 4 pass Dual Filter then:
@@ -1540,7 +1519,7 @@ struct DualFilterBlurPass
 		glm::ivec2 dimension = glm::ivec2(framebufferDimensions.x, framebufferDimensions.y);
 
 		// Calculate the dimensions and inverse dimensions top down
-		for (uint32_t i = 0; i < MaxDualFilterIteration / 2; ++i)
+		for (uint32_t i = 0; i < MaxFilterIterations / 2; ++i)
 		{
 			dimension = glm::ivec2(glm::ceil(dimension.x / 2.0f), glm::ceil(dimension.y / 2.0f));
 			maxIterationDimensions[i] = dimension;
@@ -1550,7 +1529,7 @@ struct DualFilterBlurPass
 
 		dimension = glm::ivec2(framebufferDimensions.x, framebufferDimensions.y);
 
-		for (uint32_t i = MaxDualFilterIteration - 1; i >= MaxDualFilterIteration / 2; --i)
+		for (uint32_t i = MaxFilterIterations - 1; i >= MaxFilterIterations / 2; --i)
 		{
 			maxIterationDimensions[i] = dimension;
 			glm::vec2 inverseDimensions = glm::vec2(1.0f / dimension.x, 1.0f / dimension.y);
@@ -1580,7 +1559,7 @@ struct DualFilterBlurPass
 			iterationInverseDimensions.push_back(maxIterationInverseDimensions[i]);
 		}
 
-		uint32_t index = MaxDualFilterIteration - (numIterations / 2);
+		uint32_t index = MaxFilterIterations - (numIterations / 2);
 		for (uint32_t i = numIterations / 2; i < numIterations; ++i)
 		{
 			iterationDimensions.push_back(maxIterationDimensions[index]);
@@ -1593,28 +1572,57 @@ struct DualFilterBlurPass
 	/// <param name="device">The device from which the resources will be allocated.</param>
 	/// <param name="swapchain">The swapchain which will determine the number of per swapchain resources to allocate.</param>
 	/// <param name="vmaAllocator">A VMA allocator to use for allocating images and buffers.</param>
-	virtual void allocatePingPongImages(pvrvk::Device& device, pvrvk::Swapchain& swapchain, pvr::utils::vma::Allocator& vmaAllocator)
+	/// <param name="sharedImageViews">A set of shared image views which are available for use rather than allocating identical images.</param>
+	virtual void allocatePingPongImages(
+		pvrvk::Device& device, pvrvk::Swapchain& swapchain, pvr::utils::vma::Allocator& vmaAllocator, std::vector<pvr::Multi<pvrvk::ImageView> >& sharedImageViews)
 	{
 		pvrvk::ImageUsageFlags imageUsage = pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_SAMPLED_BIT;
 
+		auto localSharedImageViews = sharedImageViews;
+
 		for (uint32_t i = 0; i < swapchain->getSwapchainLength(); ++i)
 		{
-			for (uint32_t j = 0; j < MaxDualFilterIteration / 2; ++j)
+			for (uint32_t j = 0; j < MaxFilterIterations / 2; ++j)
 			{
 				pvrvk::Extent3D extent =
 					pvrvk::Extent3D(static_cast<uint32_t>(maxIterationDimensions[j].x), static_cast<uint32_t>(maxIterationDimensions[j].y), static_cast<uint32_t>(1.0f));
 
-				pvrvk::Image blurColorTexture = pvr::utils::createImage(device, pvrvk::ImageType::e_2D, colorImageFormat, extent, imageUsage, static_cast<pvrvk::ImageCreateFlags>(0),
-					pvrvk::ImageLayersSize(), pvrvk::SampleCountFlags::e_1_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_NONE, &vmaAllocator);
+				// Attempt to find a compatible image to cut down on the maximum number of images allocated
+				bool foundCompatible = false;
+				uint32_t compatibleImageIndex = -1;
+				for (uint32_t k = 0; k < localSharedImageViews.size(); ++k)
+				{
+					if (isCompatibleImageView(localSharedImageViews[k][i], pvrvk::ImageType::e_2D, colorImageFormat, extent, imageUsage, pvrvk::ImageLayersSize(),
+							pvrvk::SampleCountFlags::e_1_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::SharingMode::e_EXCLUSIVE, pvrvk::ImageTiling::e_OPTIMAL,
+							nullptr, 0))
+					{
+						foundCompatible = true;
+						compatibleImageIndex = k;
+						break;
+					}
+				}
+				if (foundCompatible)
+				{
+					// add and remove from the back
+					imageViews[j].add(sharedImageViews[compatibleImageIndex][sharedImageViews[compatibleImageIndex].size() - 1 - i]);
+					localSharedImageViews[compatibleImageIndex].resize(localSharedImageViews[compatibleImageIndex].size() - 1);
+				}
+				else
+				{
+					pvrvk::Image blurColorTexture = pvr::utils::createImage(device, pvrvk::ImageType::e_2D, colorImageFormat, extent, imageUsage,
+						static_cast<pvrvk::ImageCreateFlags>(0), pvrvk::ImageLayersSize(), pvrvk::SampleCountFlags::e_1_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT,
+						pvrvk::MemoryPropertyFlags::e_NONE, &vmaAllocator);
 
-				imageViews[j].add(device->createImageView(pvrvk::ImageViewCreateInfo(blurColorTexture)));
+					imageViews[j].add(device->createImageView(pvrvk::ImageViewCreateInfo(blurColorTexture)));
+					addImageToSharedImages(sharedImageViews, imageViews[j].back(), i);
+				}
 			}
 
 			// We're able to reuse images between up/down sample passes. This can help us keep down the total number of images in flight
 			uint32_t k = 0;
-			for (uint32_t j = MaxDualFilterIteration / 2; j < MaxDualFilterIteration - 1; ++j)
+			for (uint32_t j = MaxFilterIterations / 2; j < MaxFilterIterations - 1; ++j)
 			{
-				uint32_t reuseIndex = (MaxDualFilterIteration / 2) - 1 - (k + 1);
+				uint32_t reuseIndex = (MaxFilterIterations / 2) - 1 - (k + 1);
 
 				imageViews[j].add(imageViews[reuseIndex][i]);
 				k++;
@@ -1633,7 +1641,7 @@ struct DualFilterBlurPass
 			pvrvk::FramebufferCreateInfo createInfo;
 			createInfo.setRenderPass(blurRenderPass);
 
-			for (uint32_t j = 0; j < MaxDualFilterIteration - 1; ++j)
+			for (uint32_t j = 0; j < MaxFilterIterations - 1; ++j)
 			{
 				createInfo.setDimensions(static_cast<uint32_t>(maxIterationDimensions[j].x), static_cast<uint32_t>(maxIterationDimensions[j].y));
 				createInfo.setAttachment(0, imageViews[j][i]);
@@ -1653,17 +1661,20 @@ struct DualFilterBlurPass
 		// The final pass uses a number of extra resources compared to the other passes
 		descSetInfo.setBinding(1, pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 1u, pvrvk::ShaderStageFlags::e_FRAGMENT_BIT);
 		descSetInfo.setBinding(2, pvrvk::DescriptorType::e_UNIFORM_BUFFER, 1u, pvrvk::ShaderStageFlags::e_FRAGMENT_BIT);
+
 		finalPassDescriptorSetLayout = device->createDescriptorSetLayout(descSetInfo);
 
-		// Push constants are used for uploading the texture sample offsets
-		pvrvk::PushConstantRange pushConstantsRange;
-		pushConstantsRange.setOffset(0);
-		pushConstantsRange.setSize(static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::vec2) * 8));
-		pushConstantsRange.setStageFlags(pvrvk::ShaderStageFlags::e_VERTEX_BIT);
-
 		pvrvk::PipelineLayoutCreateInfo pipeLayoutInfo;
+
+		// Push constants are used for uploading the texture sample offsets
+		pvrvk::PushConstantRange pushConstantsRanges;
+		pushConstantsRanges.setOffset(0);
+		pushConstantsRanges.setSize(static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::vec2) * 8 + pvr::getSize(pvr::GpuDatatypes::Float)));
+		pushConstantsRanges.setStageFlags(pvrvk::ShaderStageFlags::e_VERTEX_BIT | pvrvk::ShaderStageFlags::e_FRAGMENT_BIT);
+
 		pipeLayoutInfo.setDescSetLayout(0, descriptorSetLayout);
-		pipeLayoutInfo.setPushConstantRange(0, pushConstantsRange);
+		pipeLayoutInfo.setPushConstantRange(0, pushConstantsRanges);
+
 		pipelineLayout = device->createPipelineLayout(pipeLayoutInfo);
 
 		pipeLayoutInfo.setDescSetLayout(0, finalPassDescriptorSetLayout);
@@ -1677,7 +1688,7 @@ struct DualFilterBlurPass
 	{
 		for (uint32_t i = 0; i < swapchain->getSwapchainLength(); ++i)
 		{
-			for (uint32_t j = 0; j < MaxDualFilterIteration - 1; ++j)
+			for (uint32_t j = 0; j < MaxFilterIterations - 1; ++j)
 			{
 				descriptorSets[j].add(descriptorPool->allocateDescriptorSet(descriptorSetLayout));
 			}
@@ -1688,18 +1699,12 @@ struct DualFilterBlurPass
 	/// <summary>Updates the descriptor sets used for each of the down/up sample passes.</summary>
 	/// <param name="device">The device from which the updateDescriptorSets call will be piped.</param>
 	/// <param name="swapchainIndex">The swapchain index of the descriptor set to update.</param>
-	/// <param name="originalImageView">The original unblurred image view.</param>
-	/// <param name="imageToBlur">The original unblurred luminance image view.</param>
-	/// <param name="sampler">The sampler object to use when sampling from the images during the Dual Filter blur passes.</param>
-	virtual void updateDescriptorSets(pvrvk::Device& device, uint32_t swapchainIndex, pvrvk::ImageView& originalImageView, pvrvk::ImageView& imageToBlur, pvrvk::Sampler& sampler)
+	virtual void updateDescriptorSets(pvrvk::Device& device, uint32_t swapchainIndex)
 	{
-		// The source image to blur/apply bloom to
-		currentImageToBlur[swapchainIndex] = imageToBlur;
-
 		// First pass
 		std::vector<pvrvk::WriteDescriptorSet> writeDescSets;
 		writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, descriptorSets[0][swapchainIndex], 0)
-									.setImageInfo(0, pvrvk::DescriptorImageInfo(currentImageToBlur[swapchainIndex], sampler, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL)));
+									.setImageInfo(0, pvrvk::DescriptorImageInfo(sourceImageViews[swapchainIndex], sampler, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL)));
 
 		// Down/up sample passes
 		for (uint32_t j = 1; j < blurIterations - 1; ++j)
@@ -1715,7 +1720,7 @@ struct DualFilterBlurPass
 				.setImageInfo(0, pvrvk::DescriptorImageInfo(currentImageViews[blurIterations - 2][swapchainIndex], sampler, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL)));
 
 		writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, finalPassDescriptorSets[swapchainIndex], 1)
-									.setImageInfo(0, pvrvk::DescriptorImageInfo(originalImageView, sampler, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL)));
+									.setImageInfo(0, pvrvk::DescriptorImageInfo(offscreenImageViews[swapchainIndex], sampler, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL)));
 
 		device->updateDescriptorSets(writeDescSets.data(), static_cast<uint32_t>(writeDescSets.size()), nullptr, 0);
 	}
@@ -1749,10 +1754,10 @@ struct DualFilterBlurPass
 		pipelineInfo.subpass = 0;
 
 		// Create the up and down sample pipelines using the appropriate dimensions and shaders
-		for (uint32_t j = 0; j < MaxDualFilterIteration - 1; ++j)
+		for (uint32_t j = 0; j < MaxFilterIterations - 1; ++j)
 		{
 			// Downsample
-			if (j < MaxDualFilterIteration / 2)
+			if (j < MaxFilterIterations / 2)
 			{
 				pipelineInfo.vertexShader.setShader(
 					device->createShaderModule(pvrvk::ShaderModuleCreateInfo(assetProvider.getAssetStream(Files::DualFilterDownVertSrcFile)->readToEnd<uint32_t>())));
@@ -1800,7 +1805,7 @@ struct DualFilterBlurPass
 	/// <summary>Configure the Dual Filter push constant values based on the current Dual Filter configuration.</summary>
 	virtual void configurePushConstants()
 	{
-		for (uint32_t i = 0; i < blurIterations; i++)
+		for (uint32_t i = 0; i < blurIterations; ++i)
 		{
 			// Downsample
 			if (i < blurIterations / 2)
@@ -1838,17 +1843,21 @@ struct DualFilterBlurPass
 	/// <summary>Records the commands required for the Dual Filter blur iterations based on the current configuration.</summary>
 	/// <param name="swapchainIndex">The swapchain index for which the recorded command buffer will be used.</param>
 	/// <param name="onScreenFramebuffer">The on screen Framebuffer.</param>
-	virtual void recordCommands(uint32_t swapchainIndex, pvrvk::Framebuffer& onScreenFramebuffer, bool renderBloomOnly)
+	/// <param name="renderBloomOnly">The exposure to use in the tonemapping.</param>
+	/// <param name="exposure">The exposure to use in the tonemapping.</param>
+	virtual void recordCommands(uint32_t swapchainIndex, pvrvk::Framebuffer& onScreenFramebuffer, bool renderBloomOnly, float exposure)
 	{
-		for (uint32_t i = 0; i < blurIterations; i++)
+		for (uint32_t i = 0; i < blurIterations; ++i)
 		{
 			// Special case the final Dual Filter iteration
 			if (i == blurIterations - 1)
 			{
 				commandBuffers[i][swapchainIndex]->begin(onScreenFramebuffer, 0, pvrvk::CommandBufferUsageFlags::e_RENDER_PASS_CONTINUE_BIT);
-				commandBuffers[i][swapchainIndex]->debugMarkerBeginEXT(pvr::strings::createFormatted("Dual Filter Blur (Final Pass) - swapchain (%i): %i", swapchainIndex, i));
-				commandBuffers[i][swapchainIndex]->pushConstants(finalPassPipeline->getPipelineLayout(), pvrvk::ShaderStageFlags::e_VERTEX_BIT, 0,
-					static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::vec2) * 8), &pushConstants[i]);
+				pvr::utils::beginCommandBufferDebugLabel(commandBuffers[i][swapchainIndex],
+					pvrvk::DebugUtilsLabel(pvr::strings::createFormatted("Dual Filter Blur (Final Pass) - swapchain (%i): %i", swapchainIndex, i)));
+				commandBuffers[i][swapchainIndex]->pushConstants(finalPassPipeline->getPipelineLayout(),
+					pvrvk::ShaderStageFlags::e_VERTEX_BIT | pvrvk::ShaderStageFlags::e_FRAGMENT_BIT, 0, static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::vec2) * 8),
+					&pushConstants[i]);
 
 				if (renderBloomOnly)
 				{
@@ -1859,6 +1868,9 @@ struct DualFilterBlurPass
 					commandBuffers[i][swapchainIndex]->bindPipeline(finalPassPipeline);
 				}
 
+				commandBuffers[i][swapchainIndex]->pushConstants(pipelineLayout, pvrvk::ShaderStageFlags::e_VERTEX_BIT | pvrvk::ShaderStageFlags::e_FRAGMENT_BIT,
+					static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::vec2) * 8), static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::Float)), &exposure);
+
 				commandBuffers[i][swapchainIndex]->bindDescriptorSet(
 					pvrvk::PipelineBindPoint::e_GRAPHICS, finalPassPipeline->getPipelineLayout(), 0u, finalPassDescriptorSets[swapchainIndex]);
 			}
@@ -1866,16 +1878,18 @@ struct DualFilterBlurPass
 			else
 			{
 				commandBuffers[i][swapchainIndex]->begin(currentFramebuffers[i][swapchainIndex], 0, pvrvk::CommandBufferUsageFlags::e_RENDER_PASS_CONTINUE_BIT);
-				commandBuffers[i][swapchainIndex]->debugMarkerBeginEXT(pvr::strings::createFormatted("Dual filter Blur - swapchain (%i): %i", swapchainIndex, i));
-				commandBuffers[i][swapchainIndex]->pushConstants(currentPipelines[i]->getPipelineLayout(), pvrvk::ShaderStageFlags::e_VERTEX_BIT, 0,
-					static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::vec2) * 8), &pushConstants[i]);
+				pvr::utils::beginCommandBufferDebugLabel(
+					commandBuffers[i][swapchainIndex], pvrvk::DebugUtilsLabel(pvr::strings::createFormatted("Dual filter Blur - swapchain (%i): %i", swapchainIndex, i)));
+				commandBuffers[i][swapchainIndex]->pushConstants(currentPipelines[i]->getPipelineLayout(),
+					pvrvk::ShaderStageFlags::e_VERTEX_BIT | pvrvk::ShaderStageFlags::e_FRAGMENT_BIT, 0, static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::vec2) * 8),
+					&pushConstants[i]);
 				commandBuffers[i][swapchainIndex]->bindPipeline(currentPipelines[i]);
 				commandBuffers[i][swapchainIndex]->bindDescriptorSet(
 					pvrvk::PipelineBindPoint::e_GRAPHICS, currentPipelines[i]->getPipelineLayout(), 0u, descriptorSets[i][swapchainIndex]);
 			}
 
 			commandBuffers[i][swapchainIndex]->draw(0, 3);
-			commandBuffers[i][swapchainIndex]->debugMarkerEndEXT();
+			pvr::utils::endCommandBufferDebugLabel(commandBuffers[i][swapchainIndex]);
 			commandBuffers[i][swapchainIndex]->end();
 		}
 	}
@@ -1894,7 +1908,7 @@ struct DualFilterBlurPass
 	{
 		pvrvk::ClearValue clearValue = pvrvk::ClearValue(0.0f, 0.0f, 0.0f, 1.f);
 
-		for (uint32_t i = 0; i < blurIterations; i++)
+		for (uint32_t i = 0; i < blurIterations; ++i)
 		{
 			// Special Case the final Dual Filter pass
 			if (i == blurIterations - 1)
@@ -1920,11 +1934,11 @@ struct DualFilterBlurPass
 // Filters whilst Downsampling and Upsampling
 // Downsamples:
 //	Used for preventing aliasing artifacts
-//		A = downsample2(FullRes)
-//		B = downsample2(A)
-//		C = downsample2(B)
-//		D = downsample2(C)
-//		E = downsample2(D)
+//		A = downsample4(FullRes)
+//		B = downsample4(A)
+//		C = downsample4(B)
+//		D = downsample4(C)
+//		E = downsample4(D)
 // Upsamples:
 //	Used for image quality and smooth results
 //	Upsampling progressively using bilinear filtering is equivalent to bi-quadratic b-spline filtering
@@ -1941,26 +1955,26 @@ struct DualFilterBlurPass
 // We make use of the DualFilterBlurPass as these passes share many similarities
 struct DownAndTentFilterBlurPass : public DualFilterBlurPass
 {
-	// The descriptor set layout for the up sample iterations
-	pvrvk::DescriptorSetLayout upSampleDescriptorSetLayout;
-
-	// The pipeline layout for the up sample iterations
-	pvrvk::PipelineLayout upSamplePipelineLayout;
-
-	// A special cased up sample pipeline - we have one per potential Dual Filter iteration as the dimension used is important
-	pvrvk::GraphicsPipeline firstUpSamplePipelines[MaxDualFilterIteration / 2 - 1];
-
 	// Up sample pass image dependencies - these are dependencies on the downsampled mipmap i.e upsample D' is dependent on down sampled image D
-	pvr::Multi<std::vector<pvrvk::ImageView> > upSampleIterationImageDependencies[MaxDualFilterIteration / 2 - 1];
+	pvr::Multi<std::vector<pvrvk::ImageView> > upSampleIterationImageDependencies[MaxFilterIterations / 2 - 1];
 
 	// Defines a scale to use for offsetting the tent offsets
-	glm::vec2 tentScale;
+	glm::vec2 tentScales[MaxFilterIterations / 2];
 
-	// Determines whether the images of the specifies color format can be used as BLIT_SRC and BLIT_DST
-	bool supportsBlit;
+	// A set of downsample passes
+	DownSamplePass downsamplePasses[MaxFilterIterations / 2];
 
-	// Provides the capability of downsampling images using a linear filter
-	BlitDownSamplePass blitDownSamplePass;
+	// The descriptor set layout for the up sample iterations
+	pvrvk::DescriptorSetLayout firstUpSampleDescriptorSetLayout;
+
+	// The special cased first up sample pass per swapchain descriptor sets
+	pvr::Multi<pvrvk::DescriptorSet> firstUpSampleDescriptorSets;
+
+	// The pipeline layout for the up sample iterations
+	pvrvk::PipelineLayout firstUpSamplePipelineLayout;
+
+	// A special cased up sample pipeline - we have one per potential Filter iteration as the dimension used is important
+	pvrvk::GraphicsPipeline firstUpSamplePipelines[MaxFilterIterations / 2 - 1];
 
 	/// <summary>Initialises the Dual Filter blur.</summary>
 	/// <param name="assetProvider">The pvr::IAssetProvider which will be used for loading resources from memory.</param>
@@ -1969,24 +1983,41 @@ struct DownAndTentFilterBlurPass : public DualFilterBlurPass
 	/// <param name="commandPool">The command pool from which to allocate command buffers.</param>
 	/// <param name="descriptorPool">The descriptor pool from which to allocate descriptor sets.</param>
 	/// <param name="blurRenderPass">The RenderPass to use for down/up sampling.</param>
+	/// <param name="offscreenImageViews">A list of offscreen images (one per swapchain) which will be used in the final image composition pass.</param>
+	/// <param name="sourceImageViews">A list of source images (one per swapchain) which will be used as the source for the blur.</param>
 	/// <param name="vmaAllocator">A VMA allocator to use for allocating images and buffers.</param>
 	/// <param name="colorImageFormat">The color image format to use for the Dual Filter blur.</param>
 	/// <param name="framebufferDimensions">The full size resolution framebuffer dimensions.</param>
 	/// <param name="sampler">The sampler object to use when sampling from the images during the Dual Filter blur passes.</param>
-	/// <param name="utilityCommandBuffer">A command buffer to use for queueing up all initialisation commands. This command buffer will be submitted later by the main
-	/// application.</param>
 	/// <param name="onScreenRenderPass">The main RenderPass used for rendering to the screen.</param>
 	/// <param name="pipelineCache">A pipeline cache object to use when creating pipelines.</param>
+	/// <param name="sharedImageViews">A set of shared image views which are available for use rather than allocating identical images.</param>
 	void init(pvr::IAssetProvider& assetProvider, pvrvk::Device& device, pvrvk::Swapchain& swapchain, pvrvk::CommandPool& commandPool, pvrvk::DescriptorPool& descriptorPool,
-		pvrvk::RenderPass& blurRenderPass, pvr::utils::vma::Allocator& vmaAllocator, pvrvk::Format colorImageFormat, const glm::ivec2& framebufferDimensions,
-		pvrvk::Sampler& sampler, pvrvk::CommandBuffer& utilityCommandBuffer, pvrvk::RenderPass& onScreenRenderPass, pvrvk::PipelineCache& pipelineCache, bool supportsBlit)
+		pvrvk::RenderPass& blurRenderPass, pvr::Multi<pvrvk::ImageView>& offscreenImageViews, pvr::Multi<pvrvk::ImageView>& sourceImageViews,
+		pvr::utils::vma::Allocator& vmaAllocator, pvrvk::Format colorImageFormat, const glm::ivec2& framebufferDimensions, pvrvk::Sampler& sampler,
+		pvrvk::RenderPass& onScreenRenderPass, pvrvk::PipelineCache& pipelineCache, std::vector<pvr::Multi<pvrvk::ImageView> >& sharedImageViews)
 	{
-		tentScale = glm::vec2(3.0f, 3.0f);
+		// These parameters are used to scale the tent filter so that it does not map directly to pixels and may have "holes"
+		tentScales[0] = glm::vec2(1.0f, 1.0f);
+		tentScales[1] = glm::vec2(1.0f, 1.0f);
+		tentScales[2] = glm::vec2(1.0f, 1.0f);
+		tentScales[3] = glm::vec2(1.0f, 1.0f);
+		tentScales[4] = glm::vec2(1.0f, 1.0f);
 
-		this->supportsBlit = supportsBlit;
+		DualFilterBlurPass::init(assetProvider, device, swapchain, commandPool, descriptorPool, blurRenderPass, offscreenImageViews, sourceImageViews, vmaAllocator,
+			colorImageFormat, framebufferDimensions, sampler, onScreenRenderPass, pipelineCache, sharedImageViews);
 
-		DualFilterBlurPass::init(assetProvider, device, swapchain, commandPool, descriptorPool, blurRenderPass, vmaAllocator, colorImageFormat, framebufferDimensions, sampler,
-			utilityCommandBuffer, onScreenRenderPass, pipelineCache);
+		for (uint32_t i = 0; i < MaxFilterIterations / 2; ++i)
+		{
+			pvr::Multi<pvrvk::ImageView>& sourceImages = sourceImageViews;
+			pvr::Multi<pvrvk::ImageView>& destinationImages = imageViews[i];
+			if (i != 0)
+			{
+				sourceImages = imageViews[i - 1];
+			}
+			downsamplePasses[i].init(
+				assetProvider, device, swapchain, commandPool, descriptorPool, maxIterationDimensions[i], sourceImages, destinationImages, sampler, pipelineCache, false);
+		}
 	}
 
 	/// <summary>Creates the descriptor sets used for up/down sample passes.</summary>
@@ -1996,17 +2027,11 @@ struct DownAndTentFilterBlurPass : public DualFilterBlurPass
 	{
 		for (uint32_t i = 0; i < swapchain->getSwapchainLength(); ++i)
 		{
-			for (uint32_t j = 0; j < MaxDualFilterIteration - 1; ++j)
+			for (uint32_t j = 0; j < MaxFilterIterations / 2 - 1; ++j)
 			{
-				if (j < MaxDualFilterIteration / 2 + 1)
-				{
-					descriptorSets[j].add(descriptorPool->allocateDescriptorSet(descriptorSetLayout));
-				}
-				else
-				{
-					descriptorSets[j].add(descriptorPool->allocateDescriptorSet(upSampleDescriptorSetLayout));
-				}
+				descriptorSets[j].add(descriptorPool->allocateDescriptorSet(descriptorSetLayout));
 			}
+			firstUpSampleDescriptorSets.add(descriptorPool->allocateDescriptorSet(firstUpSampleDescriptorSetLayout));
 			finalPassDescriptorSets.add(descriptorPool->allocateDescriptorSet(finalPassDescriptorSetLayout));
 		}
 	}
@@ -2015,24 +2040,49 @@ struct DownAndTentFilterBlurPass : public DualFilterBlurPass
 	/// <param name="device">The device from which the resources will be allocated.</param>
 	/// <param name="swapchain">The swapchain which will determine the number of per swapchain resources to allocate.</param>
 	/// <param name="vmaAllocator">A VMA allocator to use for allocating images and buffers.</param>
-	void allocatePingPongImages(pvrvk::Device& device, pvrvk::Swapchain& swapchain, pvr::utils::vma::Allocator& vmaAllocator) override
+	/// <param name="sharedImageViews">A set of shared image views which are available for use rather than allocating identical images.</param>
+	void allocatePingPongImages(
+		pvrvk::Device& device, pvrvk::Swapchain& swapchain, pvr::utils::vma::Allocator& vmaAllocator, std::vector<pvr::Multi<pvrvk::ImageView> >& sharedImageViews) override
 	{
 		pvrvk::ImageUsageFlags imageUsage = pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_SAMPLED_BIT;
-		if (supportsBlit)
-		{
-			imageUsage |= pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT | pvrvk::ImageUsageFlags::e_TRANSFER_DST_BIT;
-		}
+
+		auto localSharedImageViews = sharedImageViews;
 
 		for (uint32_t i = 0; i < swapchain->getSwapchainLength(); ++i)
 		{
-			for (uint32_t j = 0; j < MaxDualFilterIteration - 1; ++j)
+			for (uint32_t j = 0; j < MaxFilterIterations - 1; ++j)
 			{
 				pvrvk::Extent3D extent = pvrvk::Extent3D(static_cast<uint32_t>(maxIterationDimensions[j].x), static_cast<uint32_t>(maxIterationDimensions[j].y), 1);
 
-				pvrvk::Image blurColorTexture = pvr::utils::createImage(device, pvrvk::ImageType::e_2D, colorImageFormat, extent, imageUsage, static_cast<pvrvk::ImageCreateFlags>(0),
-					pvrvk::ImageLayersSize(), pvrvk::SampleCountFlags::e_1_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_NONE, &vmaAllocator);
+				// Attempt to find a compatible image to cut down on the maximum number of images allocated
+				bool foundCompatible = false;
+				uint32_t compatibleImageIndex = -1;
+				for (uint32_t k = 0; k < localSharedImageViews.size(); ++k)
+				{
+					if (isCompatibleImageView(localSharedImageViews[k][i], pvrvk::ImageType::e_2D, colorImageFormat, extent, imageUsage, pvrvk::ImageLayersSize(),
+							pvrvk::SampleCountFlags::e_1_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::SharingMode::e_EXCLUSIVE, pvrvk::ImageTiling::e_OPTIMAL,
+							nullptr, 0))
+					{
+						foundCompatible = true;
+						compatibleImageIndex = k;
+						break;
+					}
+				}
+				if (foundCompatible)
+				{
+					// add and remove from the back
+					imageViews[j].add(sharedImageViews[compatibleImageIndex][sharedImageViews[compatibleImageIndex].size() - 1 - i]);
+					localSharedImageViews[compatibleImageIndex].resize(localSharedImageViews[compatibleImageIndex].size() - 1);
+				}
+				else
+				{
+					pvrvk::Image blurColorTexture = pvr::utils::createImage(device, pvrvk::ImageType::e_2D, colorImageFormat, extent, imageUsage,
+						static_cast<pvrvk::ImageCreateFlags>(0), pvrvk::ImageLayersSize(), pvrvk::SampleCountFlags::e_1_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT,
+						pvrvk::MemoryPropertyFlags::e_NONE, &vmaAllocator);
 
-				imageViews[j].add(device->createImageView(pvrvk::ImageViewCreateInfo(blurColorTexture)));
+					imageViews[j].add(device->createImageView(pvrvk::ImageViewCreateInfo(blurColorTexture)));
+					addImageToSharedImages(sharedImageViews, imageViews[j].back(), i);
+				}
 			}
 		}
 	}
@@ -2040,7 +2090,7 @@ struct DownAndTentFilterBlurPass : public DualFilterBlurPass
 	/// <summary>Configure the set of Tent Filter ping pong images based on the current Tent Filter configuration.</summary>
 	void configurePingPongImages() override
 	{
-		for (uint32_t i = 0; i < MaxDualFilterIteration - 1; ++i)
+		for (uint32_t i = 0; i < MaxFilterIterations - 1; ++i)
 		{
 			currentImageViews[i].clear();
 		}
@@ -2053,22 +2103,22 @@ struct DownAndTentFilterBlurPass : public DualFilterBlurPass
 
 		for (uint32_t i = 0; i < (blurIterations / 2) - 1; ++i)
 		{
-			currentImageViews[index] = imageViews[(MaxDualFilterIteration - (blurIterations / 2)) + i];
+			currentImageViews[index] = imageViews[(MaxFilterIterations - (blurIterations / 2)) + i];
 			index++;
 		}
 	}
 
 	/// <summary>Creates the descriptor set layouts used for up/down sample passes.</summary>
 	/// <param name="device">The device from which the descriptor set layouts will be allocated.</param>
-	virtual void createDescriptorSetLayouts(pvrvk::Device& device) override
+	void createDescriptorSetLayouts(pvrvk::Device& device) override
 	{
 		// create the pre bloom descriptor set layout
 		pvrvk::DescriptorSetLayoutCreateInfo descSetInfo;
 		descSetInfo.setBinding(0, pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 1u, pvrvk::ShaderStageFlags::e_FRAGMENT_BIT);
-		descriptorSetLayout = device->createDescriptorSetLayout(descSetInfo);
+		firstUpSampleDescriptorSetLayout = device->createDescriptorSetLayout(descSetInfo);
 
 		descSetInfo.setBinding(1, pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 1u, pvrvk::ShaderStageFlags::e_FRAGMENT_BIT);
-		upSampleDescriptorSetLayout = device->createDescriptorSetLayout(descSetInfo);
+		descriptorSetLayout = device->createDescriptorSetLayout(descSetInfo);
 
 		descSetInfo.setBinding(2, pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 1u, pvrvk::ShaderStageFlags::e_FRAGMENT_BIT);
 		descSetInfo.setBinding(3, pvrvk::DescriptorType::e_UNIFORM_BUFFER, 1u, pvrvk::ShaderStageFlags::e_FRAGMENT_BIT);
@@ -2076,18 +2126,19 @@ struct DownAndTentFilterBlurPass : public DualFilterBlurPass
 
 		// create the pipeline layouts
 		pvrvk::PipelineLayoutCreateInfo pipeLayoutInfo;
+		pipeLayoutInfo.setDescSetLayout(0, firstUpSampleDescriptorSetLayout);
+		firstUpSamplePipelineLayout = device->createPipelineLayout(pipeLayoutInfo);
+
 		pipeLayoutInfo.setDescSetLayout(0, descriptorSetLayout);
-		pipelineLayout = device->createPipelineLayout(pipeLayoutInfo);
 
 		// Push constants are used for uploading the texture sample offsets
-		pvrvk::PushConstantRange pushConstantsRange;
-		pushConstantsRange.setOffset(0);
-		pushConstantsRange.setStageFlags(pvrvk::ShaderStageFlags::e_VERTEX_BIT);
-		pushConstantsRange.setSize(static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::vec2) * 8));
-		pipeLayoutInfo.setPushConstantRange(0, pushConstantsRange);
+		pvrvk::PushConstantRange pushConstantsRanges;
+		pushConstantsRanges.setOffset(0);
+		pushConstantsRanges.setStageFlags(pvrvk::ShaderStageFlags::e_VERTEX_BIT | pvrvk::ShaderStageFlags::e_FRAGMENT_BIT);
+		pushConstantsRanges.setSize(static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::vec2) * 8 + pvr::getSize(pvr::GpuDatatypes::Float)));
+		pipeLayoutInfo.setPushConstantRange(0, pushConstantsRanges);
 
-		pipeLayoutInfo.setDescSetLayout(0, upSampleDescriptorSetLayout);
-		upSamplePipelineLayout = device->createPipelineLayout(pipeLayoutInfo);
+		pipelineLayout = device->createPipelineLayout(pipeLayoutInfo);
 
 		pipeLayoutInfo.setDescSetLayout(0, finalPassDescriptorSetLayout);
 		finalPassPipelineLayout = device->createPipelineLayout(pipeLayoutInfo);
@@ -2096,51 +2147,28 @@ struct DownAndTentFilterBlurPass : public DualFilterBlurPass
 	/// <summary>Updates the descriptor sets used for each of the down/up sample passes.</summary>
 	/// <param name="device">The device from which the updateDescriptorSets call will be piped.</param>
 	/// <param name="swapchainIndex">The swapchain index of the descriptor set to update.</param>
-	/// <param name="originalImageView">The original unblurred image view.</param>
-	/// <param name="imageToBlur">The original unblurred luminance image view.</param>
-	/// <param name="sampler">The sampler object to use when sampling from the images during the Tent Filter blur passes.</param>
-	virtual void updateDescriptorSets(pvrvk::Device& device, uint32_t swapchainIndex, pvrvk::ImageView& originalImageView, pvrvk::ImageView& imageToBlur, pvrvk::Sampler& sampler) override
+	void updateDescriptorSets(pvrvk::Device& device, uint32_t swapchainIndex) override
 	{
-		// The source image to blur/apply bloom to
-		currentImageToBlur[swapchainIndex] = imageToBlur;
-
 		std::vector<pvrvk::WriteDescriptorSet> writeDescSets;
-
-		// First pass
-		writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, descriptorSets[0][swapchainIndex], 0)
-									.setImageInfo(0, pvrvk::DescriptorImageInfo(currentImageToBlur[swapchainIndex], sampler, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL)));
-
-		// downsample
-		for (uint32_t i = 1; i < blurIterations / 2; ++i)
-		{
-			writeDescSets.push_back(
-				pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, descriptorSets[i][swapchainIndex], 0)
-					.setImageInfo(0, pvrvk::DescriptorImageInfo(currentImageViews[i - 1][swapchainIndex], sampler, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL)));
-		}
 
 		uint32_t upSampleDescriptorIndex = 0;
 
-		// first up sample
+		// first Upsample
 		writeDescSets.push_back(
-			pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, descriptorSets[MaxDualFilterIteration / 2 + upSampleDescriptorIndex][swapchainIndex], 0)
+			pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, firstUpSampleDescriptorSets[swapchainIndex], 0)
 				.setImageInfo(0, pvrvk::DescriptorImageInfo(currentImageViews[blurIterations / 2 - 1][swapchainIndex], sampler, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL)));
-		upSampleDescriptorIndex++;
-
-		uint32_t downsampledImageIndex = 1;
 
 		// upsample
 		for (uint32_t i = blurIterations / 2 + 1; i < blurIterations - 1; ++i)
 		{
 			writeDescSets.push_back(
-				pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, descriptorSets[MaxDualFilterIteration / 2 + upSampleDescriptorIndex][swapchainIndex], 0)
+				pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, descriptorSets[upSampleDescriptorIndex][swapchainIndex], 0)
 					.setImageInfo(0, pvrvk::DescriptorImageInfo(currentImageViews[i - 1][swapchainIndex], sampler, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL)));
 
-			writeDescSets.push_back(
-				pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, descriptorSets[MaxDualFilterIteration / 2 + upSampleDescriptorIndex][swapchainIndex], 1)
-					.setImageInfo(0,
-						pvrvk::DescriptorImageInfo(
-							currentImageViews[blurIterations / 2 - 1 - downsampledImageIndex][swapchainIndex], sampler, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL)));
-			downsampledImageIndex++;
+			writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, descriptorSets[upSampleDescriptorIndex][swapchainIndex], 1)
+										.setImageInfo(0,
+											pvrvk::DescriptorImageInfo(currentImageViews[blurIterations / 2 - 1 - upSampleDescriptorIndex][swapchainIndex], sampler,
+												pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL)));
 			upSampleDescriptorIndex++;
 		}
 
@@ -2153,12 +2181,12 @@ struct DownAndTentFilterBlurPass : public DualFilterBlurPass
 									.setImageInfo(0, pvrvk::DescriptorImageInfo(currentImageViews[0][swapchainIndex], sampler, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL)));
 
 		writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, finalPassDescriptorSets[swapchainIndex], 2)
-									.setImageInfo(0, pvrvk::DescriptorImageInfo(originalImageView, sampler, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL)));
+									.setImageInfo(0, pvrvk::DescriptorImageInfo(offscreenImageViews[swapchainIndex], sampler, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL)));
 
 		device->updateDescriptorSets(writeDescSets.data(), static_cast<uint32_t>(writeDescSets.size()), nullptr, 0);
 
 		upSampleIterationImageDependencies->clear();
-		downsampledImageIndex = 0;
+		uint32_t downsampledImageIndex = 0;
 
 		// The last entry into the downSampledImageViews array
 		uint32_t lastDownSampledImageIndex = blurIterations / 2 - 1;
@@ -2179,7 +2207,7 @@ struct DownAndTentFilterBlurPass : public DualFilterBlurPass
 	/// <param name="blurRenderPass">The RenderPass to use for down/up sampling.</param>
 	/// <param name="onScreenRenderPass">The on screen RenderPass used for the final Tent Filter pass.</param>
 	/// <param name="pipelineCache">A pipeline cache object to use when creating pipelines.</param>
-	virtual void createPipelines(pvr::IAssetProvider& assetProvider, pvrvk::Device& device, pvrvk::RenderPass& blurRenderPass, pvrvk::RenderPass& onScreenRenderPass,
+	void createPipelines(pvr::IAssetProvider& assetProvider, pvrvk::Device& device, pvrvk::RenderPass& blurRenderPass, pvrvk::RenderPass& onScreenRenderPass,
 		pvrvk::PipelineCache& pipelineCache) override
 	{
 		pvrvk::GraphicsPipelineCreateInfo pipelineInfo;
@@ -2202,56 +2230,33 @@ struct DownAndTentFilterBlurPass : public DualFilterBlurPass
 		pipelineInfo.renderPass = blurRenderPass;
 		pipelineInfo.subpass = 0;
 
-		uint32_t upSamplePipelineIndex = 0;
-
-		// Create the up and down sample pipelines using the appropriate dimensions and shaders
-		for (uint32_t i = 0; i < MaxDualFilterIteration - 1; ++i)
+		uint32_t firstUpSampleIndex = 0;
+		// Create the up sample pipelines using the appropriate dimensions and shaders
+		for (uint32_t i = MaxFilterIterations / 2; i < MaxFilterIterations - 1; ++i)
 		{
-			// Downsample
-			if (i < MaxDualFilterIteration / 2)
-			{
-				pipelineInfo.vertexShader.setShader(
-					device->createShaderModule(pvrvk::ShaderModuleCreateInfo(assetProvider.getAssetStream(Files::Downsample2x2VertSrcFile)->readToEnd<uint32_t>())));
-				pipelineInfo.fragmentShader.setShader(
-					device->createShaderModule(pvrvk::ShaderModuleCreateInfo(assetProvider.getAssetStream(Files::Downsample2x2FragSrcFile)->readToEnd<uint32_t>())));
-				pipelineInfo.pipelineLayout = pipelineLayout;
-			}
-			// Upsample
-			else
-			{
-				pipelineInfo.vertexShader.setShader(
-					device->createShaderModule(pvrvk::ShaderModuleCreateInfo(assetProvider.getAssetStream(Files::TentFilterUpSampleVertSrcFile)->readToEnd<uint32_t>())));
-				pipelineInfo.fragmentShader.setShader(
-					device->createShaderModule(pvrvk::ShaderModuleCreateInfo(assetProvider.getAssetStream(Files::TentFilterUpSampleFragSrcFile)->readToEnd<uint32_t>())));
-				pipelineInfo.pipelineLayout = upSamplePipelineLayout;
-			}
+			pipelineInfo.vertexShader.setShader(
+				device->createShaderModule(pvrvk::ShaderModuleCreateInfo(assetProvider.getAssetStream(Files::TentFilterUpSampleVertSrcFile)->readToEnd<uint32_t>())));
+			pipelineInfo.fragmentShader.setShader(
+				device->createShaderModule(pvrvk::ShaderModuleCreateInfo(assetProvider.getAssetStream(Files::TentFilterUpSampleFragSrcFile)->readToEnd<uint32_t>())));
+			pipelineInfo.pipelineLayout = pipelineLayout;
 
 			pipelineInfo.viewport.setViewportAndScissor(0,
 				pvrvk::Viewport(0.0f, 0.0f, static_cast<float>(maxIterationDimensions[i].x), static_cast<float>(maxIterationDimensions[i].y)),
 				pvrvk::Rect2D(0, 0, static_cast<uint32_t>(maxIterationDimensions[i].x), static_cast<uint32_t>(maxIterationDimensions[i].y)));
 
 			pipelines[i] = device->createGraphicsPipeline(pipelineInfo, pipelineCache);
+
+			// Special cased the first up sample pipelines
+			pipelineInfo.vertexShader.setShader(
+				device->createShaderModule(pvrvk::ShaderModuleCreateInfo(assetProvider.getAssetStream(Files::PostBloomVertShaderSrcFile)->readToEnd<uint32_t>())));
+			pipelineInfo.fragmentShader.setShader(
+				device->createShaderModule(pvrvk::ShaderModuleCreateInfo(assetProvider.getAssetStream(Files::TentFilterFirstUpSampleFragSrcFile)->readToEnd<uint32_t>())));
+			pipelineInfo.pipelineLayout = firstUpSamplePipelineLayout;
+
+			firstUpSamplePipelines[firstUpSampleIndex] = device->createGraphicsPipeline(pipelineInfo, pipelineCache);
+			firstUpSampleIndex++;
+
 			pipelineInfo.viewport.clear();
-
-			// Special cased first up sample pipeline. This may seem strange but we need to handle first up sample pipelines
-			// for various numbers of iterations as they will have different dimensions
-			if (i >= MaxDualFilterIteration / 2)
-			{
-				// Note we use the Downsample2x2VertSrcFile as it's a simple vertex shader just passing texture coordinates through
-				pipelineInfo.vertexShader.setShader(
-					device->createShaderModule(pvrvk::ShaderModuleCreateInfo(assetProvider.getAssetStream(Files::Downsample2x2VertSrcFile)->readToEnd<uint32_t>())));
-				pipelineInfo.fragmentShader.setShader(
-					device->createShaderModule(pvrvk::ShaderModuleCreateInfo(assetProvider.getAssetStream(Files::TentFilterFirstUpSampleFragSrcFile)->readToEnd<uint32_t>())));
-				pipelineInfo.pipelineLayout = pipelineLayout;
-
-				pipelineInfo.viewport.setViewportAndScissor(0,
-					pvrvk::Viewport(0.0f, 0.0f, static_cast<float>(maxIterationDimensions[i].x), static_cast<float>(maxIterationDimensions[i].y)),
-					pvrvk::Rect2D(0, 0, static_cast<uint32_t>(maxIterationDimensions[i].x), static_cast<uint32_t>(maxIterationDimensions[i].y)));
-
-				firstUpSamplePipelines[upSamplePipelineIndex] = device->createGraphicsPipeline(pipelineInfo, pipelineCache);
-				pipelineInfo.viewport.clear();
-				upSamplePipelineIndex++;
-			}
 		}
 
 		// Create the final Tent filter pass pipeline
@@ -2277,21 +2282,24 @@ struct DownAndTentFilterBlurPass : public DualFilterBlurPass
 	}
 
 	/// <summary>Configure the Tent Filter push constant values based on the current Tent Filter configuration.</summary>
-	virtual void configurePushConstants() override
+	void configurePushConstants() override
 	{
 		const glm::vec2 offsets[8] = { glm::vec2(-1.0, 1.0), glm::vec2(0.0, 1.0), glm::vec2(1.0, 1.0), glm::vec2(1.0, 0.0), glm::vec2(1.0, -1.0), glm::vec2(0.0, -1.0),
 			glm::vec2(-1.0, -1.0), glm::vec2(-1.0, 0.0) };
 
-		for (uint32_t i = 0; i < blurIterations; i++)
+		uint32_t tentScaleIndex = 0;
+		// The tent filter passes only start after the first up sample pass has finished
+		for (uint32_t i = blurIterations / 2; i < blurIterations; ++i)
 		{
-			pushConstants[i][0] = glm::vec2(1.0f / (currentIterationDimensions[i].x * 0.5), 1.0f / (currentIterationDimensions[i].y * 0.5)) * offsets[0] * tentScale;
-			pushConstants[i][1] = glm::vec2(1.0f / (currentIterationDimensions[i].x * 0.5), 1.0f / (currentIterationDimensions[i].y * 0.5)) * offsets[1] * tentScale;
-			pushConstants[i][2] = glm::vec2(1.0f / (currentIterationDimensions[i].x * 0.5), 1.0f / (currentIterationDimensions[i].y * 0.5)) * offsets[2] * tentScale;
-			pushConstants[i][3] = glm::vec2(1.0f / (currentIterationDimensions[i].x * 0.5), 1.0f / (currentIterationDimensions[i].y * 0.5)) * offsets[3] * tentScale;
-			pushConstants[i][4] = glm::vec2(1.0f / (currentIterationDimensions[i].x * 0.5), 1.0f / (currentIterationDimensions[i].y * 0.5)) * offsets[4] * tentScale;
-			pushConstants[i][5] = glm::vec2(1.0f / (currentIterationDimensions[i].x * 0.5), 1.0f / (currentIterationDimensions[i].y * 0.5)) * offsets[5] * tentScale;
-			pushConstants[i][6] = glm::vec2(1.0f / (currentIterationDimensions[i].x * 0.5), 1.0f / (currentIterationDimensions[i].y * 0.5)) * offsets[6] * tentScale;
-			pushConstants[i][7] = glm::vec2(1.0f / (currentIterationDimensions[i].x * 0.5), 1.0f / (currentIterationDimensions[i].y * 0.5)) * offsets[7] * tentScale;
+			pushConstants[i][0] = glm::vec2(1.0f / (currentIterationDimensions[i].x * 0.5), 1.0f / (currentIterationDimensions[i].y * 0.5)) * offsets[0] * tentScales[tentScaleIndex];
+			pushConstants[i][1] = glm::vec2(1.0f / (currentIterationDimensions[i].x * 0.5), 1.0f / (currentIterationDimensions[i].y * 0.5)) * offsets[1] * tentScales[tentScaleIndex];
+			pushConstants[i][2] = glm::vec2(1.0f / (currentIterationDimensions[i].x * 0.5), 1.0f / (currentIterationDimensions[i].y * 0.5)) * offsets[2] * tentScales[tentScaleIndex];
+			pushConstants[i][3] = glm::vec2(1.0f / (currentIterationDimensions[i].x * 0.5), 1.0f / (currentIterationDimensions[i].y * 0.5)) * offsets[3] * tentScales[tentScaleIndex];
+			pushConstants[i][4] = glm::vec2(1.0f / (currentIterationDimensions[i].x * 0.5), 1.0f / (currentIterationDimensions[i].y * 0.5)) * offsets[4] * tentScales[tentScaleIndex];
+			pushConstants[i][5] = glm::vec2(1.0f / (currentIterationDimensions[i].x * 0.5), 1.0f / (currentIterationDimensions[i].y * 0.5)) * offsets[5] * tentScales[tentScaleIndex];
+			pushConstants[i][6] = glm::vec2(1.0f / (currentIterationDimensions[i].x * 0.5), 1.0f / (currentIterationDimensions[i].y * 0.5)) * offsets[6] * tentScales[tentScaleIndex];
+			pushConstants[i][7] = glm::vec2(1.0f / (currentIterationDimensions[i].x * 0.5), 1.0f / (currentIterationDimensions[i].y * 0.5)) * offsets[7] * tentScales[tentScaleIndex];
+			tentScaleIndex++;
 		}
 	}
 
@@ -2299,83 +2307,55 @@ struct DownAndTentFilterBlurPass : public DualFilterBlurPass
 	/// <summary>Records the commands required for the Tent Filter blur iterations based on the current configuration.</summary>
 	/// <param name="swapchainIndex">The swapchain index for which the recorded command buffer will be used.</param>
 	/// <param name="onScreenFramebuffer">The on screen Framebuffer.</param>
+	/// <param name="renderBloomOnly">Indicates that only the bloom should be rendered to the screen.</param>
 	/// <param name="queue">The queue being used.</param>
 	/// <param name="sourceImageView">The source image to blur.</param>
-	void recordCommands(uint32_t swapchainIndex, pvrvk::Framebuffer& onScreenFramebuffer, bool renderBloomOnly, pvrvk::Queue& queue, pvrvk::ImageView& sourceImageView)
+	/// <param name="exposure">The exposure to use in the tonemapping.</param>
+	void recordCommands(uint32_t swapchainIndex, pvrvk::Framebuffer& onScreenFramebuffer, bool renderBloomOnly, pvrvk::Queue& queue, pvrvk::ImageView& sourceImageView, float exposure)
 	{
-		uint32_t index = 0;
+		uint32_t upSampleIndex = 0;
 
 		uint32_t i = 0;
 
-		if (supportsBlit)
+		// Perform downsamples using separate passes
+		for (; i < blurIterations / 2; ++i)
 		{
-			commandBuffers[0][swapchainIndex]->begin();
-
-			// Downsample using vkCmdBlitImage
-			for (; i < blurIterations / 2; i++)
-			{
-				pvrvk::Image sourceImage = sourceImageView->getImage();
-
-				if (i > 0)
-				{
-					sourceImage = currentImageViews[i - 1][swapchainIndex]->getImage();
-				}
-
-				blitDownSamplePass.recordCommands(commandBuffers[0][swapchainIndex], sourceImage, currentImageViews[i][swapchainIndex]->getImage(), queue);
-			}
-
-			commandBuffers[0][swapchainIndex]->end();
-		}
-		else
-		{
-			// Perform downsamples using separate passes
-			for (; i < blurIterations / 2; i++)
-			{
-				commandBuffers[i][swapchainIndex]->begin(currentFramebuffers[i][swapchainIndex], 0, pvrvk::CommandBufferUsageFlags::e_RENDER_PASS_CONTINUE_BIT);
-				commandBuffers[i][swapchainIndex]->debugMarkerBeginEXT(pvr::strings::createFormatted("Tent Blur (Down Sample Pass) - swapchain (%i): %i", swapchainIndex, i));
-				commandBuffers[i][swapchainIndex]->bindPipeline(currentPipelines[i]);
-				commandBuffers[i][swapchainIndex]->bindDescriptorSet(
-					pvrvk::PipelineBindPoint::e_GRAPHICS, currentPipelines[i]->getPipelineLayout(), 0u, descriptorSets[i][swapchainIndex]);
-				commandBuffers[i][swapchainIndex]->draw(0, 3);
-				commandBuffers[i][swapchainIndex]->debugMarkerEndEXT();
-				commandBuffers[i][swapchainIndex]->end();
-			}
+			downsamplePasses[i].recordCommands(swapchainIndex);
 		}
 
 		if (blurIterations > 2)
 		{
-			// Handle the first up sample pass
 			commandBuffers[i][swapchainIndex]->begin(currentFramebuffers[i][swapchainIndex], 0, pvrvk::CommandBufferUsageFlags::e_RENDER_PASS_CONTINUE_BIT);
-			commandBuffers[i][swapchainIndex]->debugMarkerBeginEXT(pvr::strings::createFormatted("Tent Blur (First Up Sample Pass) - swapchain (%i): %i", swapchainIndex, 0));
-			commandBuffers[i][swapchainIndex]->bindPipeline(firstUpSamplePipelines[MaxDualFilterIteration / 2 - i]);
-			commandBuffers[i][swapchainIndex]->bindDescriptorSet(pvrvk::PipelineBindPoint::e_GRAPHICS, firstUpSamplePipelines[MaxDualFilterIteration / 2 - i]->getPipelineLayout(),
-				0u, descriptorSets[(MaxDualFilterIteration / 2) + index][swapchainIndex]);
+			pvr::utils::beginCommandBufferDebugLabel(commandBuffers[i][swapchainIndex],
+				pvrvk::DebugUtilsLabel(pvr::strings::createFormatted("Tent Blur (First Up Sample Pass) - swapchain (%i): %i", swapchainIndex, i)));
+			commandBuffers[i][swapchainIndex]->bindPipeline(firstUpSamplePipelines[MaxFilterIterations / 2 - i]);
+			commandBuffers[i][swapchainIndex]->bindDescriptorSet(pvrvk::PipelineBindPoint::e_GRAPHICS, firstUpSamplePipelineLayout, 0u, firstUpSampleDescriptorSets[swapchainIndex]);
 			commandBuffers[i][swapchainIndex]->draw(0, 3);
-			commandBuffers[i][swapchainIndex]->debugMarkerEndEXT();
+			pvr::utils::endCommandBufferDebugLabel(commandBuffers[i][swapchainIndex]);
 			commandBuffers[i][swapchainIndex]->end();
-			index++;
 			i++;
 
 			// Handle the other up sample passes
-			for (; i < blurIterations - 1; i++)
+			for (; i < blurIterations - 1; ++i)
 			{
 				commandBuffers[i][swapchainIndex]->begin(currentFramebuffers[i][swapchainIndex], 0, pvrvk::CommandBufferUsageFlags::e_RENDER_PASS_CONTINUE_BIT);
-				commandBuffers[i][swapchainIndex]->debugMarkerBeginEXT(pvr::strings::createFormatted("Tent Blur (Up Sample Pass) - swapchain (%i): %i", swapchainIndex, i));
+				pvr::utils::beginCommandBufferDebugLabel(
+					commandBuffers[i][swapchainIndex], pvrvk::DebugUtilsLabel(pvr::strings::createFormatted("Tent Blur (Up Sample Pass) - swapchain (%i): %i", swapchainIndex, i)));
 				commandBuffers[i][swapchainIndex]->bindPipeline(currentPipelines[i]);
-				commandBuffers[i][swapchainIndex]->pushConstants(currentPipelines[i]->getPipelineLayout(), pvrvk::ShaderStageFlags::e_VERTEX_BIT, 0,
+				commandBuffers[i][swapchainIndex]->pushConstants(pipelineLayout, pvrvk::ShaderStageFlags::e_VERTEX_BIT | pvrvk::ShaderStageFlags::e_FRAGMENT_BIT, 0,
 					static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::vec2) * 8), &pushConstants[i]);
-				commandBuffers[i][swapchainIndex]->bindDescriptorSet(
-					pvrvk::PipelineBindPoint::e_GRAPHICS, currentPipelines[i]->getPipelineLayout(), 0u, descriptorSets[(MaxDualFilterIteration / 2) + index][swapchainIndex]);
+				commandBuffers[i][swapchainIndex]->bindDescriptorSet(pvrvk::PipelineBindPoint::e_GRAPHICS, pipelineLayout, 0u, descriptorSets[upSampleIndex][swapchainIndex]);
 				commandBuffers[i][swapchainIndex]->draw(0, 3);
-				commandBuffers[i][swapchainIndex]->debugMarkerEndEXT();
+				pvr::utils::endCommandBufferDebugLabel(commandBuffers[i][swapchainIndex]);
 				commandBuffers[i][swapchainIndex]->end();
-				index++;
+				upSampleIndex++;
 			}
 		}
 
 		// Special case the final up sample pass
 		commandBuffers[i][swapchainIndex]->begin(onScreenFramebuffer, 0, pvrvk::CommandBufferUsageFlags::e_RENDER_PASS_CONTINUE_BIT);
-		commandBuffers[i][swapchainIndex]->debugMarkerBeginEXT(pvr::strings::createFormatted("Tent Blur (Final Pass) - swapchain (%i): %i", swapchainIndex, i));
+		pvr::utils::beginCommandBufferDebugLabel(
+			commandBuffers[i][swapchainIndex], pvrvk::DebugUtilsLabel(pvr::strings::createFormatted("Tent Blur (Final Pass) - swapchain (%i): %i", swapchainIndex, i)));
 		if (renderBloomOnly)
 		{
 			commandBuffers[i][swapchainIndex]->bindPipeline(finalPassBloomOnlyPipeline);
@@ -2384,11 +2364,13 @@ struct DownAndTentFilterBlurPass : public DualFilterBlurPass
 		{
 			commandBuffers[i][swapchainIndex]->bindPipeline(finalPassPipeline);
 		}
-		commandBuffers[i][swapchainIndex]->pushConstants(
-			finalPassPipeline->getPipelineLayout(), pvrvk::ShaderStageFlags::e_VERTEX_BIT, 0, static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::vec2) * 8), &pushConstants[i]);
+		commandBuffers[i][swapchainIndex]->pushConstants(finalPassPipeline->getPipelineLayout(), pvrvk::ShaderStageFlags::e_VERTEX_BIT | pvrvk::ShaderStageFlags::e_FRAGMENT_BIT, 0,
+			static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::vec2) * 8), &pushConstants[i]);
+		commandBuffers[i][swapchainIndex]->pushConstants(finalPassPipeline->getPipelineLayout(), pvrvk::ShaderStageFlags::e_VERTEX_BIT | pvrvk::ShaderStageFlags::e_FRAGMENT_BIT,
+			static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::vec2) * 8), static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::Float)), &exposure);
 		commandBuffers[i][swapchainIndex]->bindDescriptorSet(pvrvk::PipelineBindPoint::e_GRAPHICS, finalPassPipeline->getPipelineLayout(), 0u, finalPassDescriptorSets[swapchainIndex]);
 		commandBuffers[i][swapchainIndex]->draw(0, 3);
-		commandBuffers[i][swapchainIndex]->debugMarkerEndEXT();
+		pvr::utils::endCommandBufferDebugLabel(commandBuffers[i][swapchainIndex]);
 		commandBuffers[i][swapchainIndex]->end();
 	}
 
@@ -2409,51 +2391,40 @@ struct DownAndTentFilterBlurPass : public DualFilterBlurPass
 		pvrvk::ImageLayout sourceImageLayout = pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL;
 		pvrvk::ImageLayout destinationImageLayout = pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL;
 
-		uint32_t i = 0;
-
-		if (supportsBlit)
+		for (uint32_t i = 0; i < blurIterations / 2; ++i)
 		{
-			// Perform the downsamples using vkCmdBlitImage
-			commandBuffer->executeCommands(commandBuffers[0][swapchainIndex]);
-
-			// skip to the up samples passes
-			i = blurIterations / 2;
+			commandBuffer->beginRenderPass(downsamplePasses[i].framebuffers[swapchainIndex], blurRenderPass,
+				pvrvk::Rect2D(0, 0, static_cast<uint32_t>(currentIterationDimensions[i].x), static_cast<uint32_t>(currentIterationDimensions[i].y)), false, &clearValue, 1);
+			commandBuffer->executeCommands(downsamplePasses[i].commandBuffers[swapchainIndex]);
+			commandBuffer->endRenderPass();
 		}
+
 		uint32_t upSampleIndex = 0;
-		for (; i < blurIterations; i++)
+		for (uint32_t i = blurIterations / 2; i < blurIterations - 1; ++i)
 		{
 			// Take care of the extra image dependencies the up sample passes require
-			if (i > blurIterations / 2)
+			for (uint32_t j = 0; j < upSampleIterationImageDependencies[upSampleIndex][swapchainIndex].size(); ++j)
 			{
-				for (uint32_t j = 0; j < upSampleIterationImageDependencies[upSampleIndex][swapchainIndex].size(); ++j)
-				{
-					pvrvk::MemoryBarrierSet layoutTransition;
-					layoutTransition.addBarrier(pvrvk::ImageMemoryBarrier(pvrvk::AccessFlags::e_COLOR_ATTACHMENT_WRITE_BIT, pvrvk::AccessFlags::e_SHADER_READ_BIT,
-						upSampleIterationImageDependencies[upSampleIndex][swapchainIndex][j]->getImage(),
-						pvrvk::ImageSubresourceRange(pvrvk::ImageAspectFlags::e_COLOR_BIT, 0u, 1u, 0u, 1u), sourceImageLayout, destinationImageLayout, queue->getFamilyIndex(),
-						queue->getFamilyIndex()));
-					commandBuffer->pipelineBarrier(pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT, pvrvk::PipelineStageFlags::e_FRAGMENT_SHADER_BIT, layoutTransition);
-				}
-
-				upSampleIndex++;
+				pvrvk::MemoryBarrierSet layoutTransition;
+				layoutTransition.addBarrier(pvrvk::ImageMemoryBarrier(pvrvk::AccessFlags::e_COLOR_ATTACHMENT_WRITE_BIT, pvrvk::AccessFlags::e_SHADER_READ_BIT,
+					upSampleIterationImageDependencies[upSampleIndex][swapchainIndex][j]->getImage(), pvrvk::ImageSubresourceRange(pvrvk::ImageAspectFlags::e_COLOR_BIT, 0u, 1u, 0u, 1u),
+					sourceImageLayout, destinationImageLayout, queue->getFamilyIndex(), queue->getFamilyIndex()));
+				commandBuffer->pipelineBarrier(pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT, pvrvk::PipelineStageFlags::e_FRAGMENT_SHADER_BIT, layoutTransition);
 			}
 
-			// Handle the special cased final up sample whereby we merge the upsample blur with the tonemapping pass to save on write/reads
-			if (i == blurIterations - 1)
-			{
-				commandBuffer->beginRenderPass(onScreenFramebuffer, onScreenRenderPass,
-					pvrvk::Rect2D(0, 0, static_cast<uint32_t>(currentIterationDimensions[i].x), static_cast<uint32_t>(currentIterationDimensions[i].y)), false, onScreenClearValues,
-					numOnScreenClearValues);
-				commandBuffer->executeCommands(commandBuffers[i][swapchainIndex]);
-			}
-			else
-			{
-				commandBuffer->beginRenderPass(currentFramebuffers[i][swapchainIndex], blurRenderPass,
-					pvrvk::Rect2D(0, 0, static_cast<uint32_t>(currentIterationDimensions[i].x), static_cast<uint32_t>(currentIterationDimensions[i].y)), false, &clearValue, 1);
-				commandBuffer->executeCommands(commandBuffers[i][swapchainIndex]);
-				commandBuffer->endRenderPass();
-			}
+			upSampleIndex++;
+
+			commandBuffer->beginRenderPass(currentFramebuffers[i][swapchainIndex], blurRenderPass,
+				pvrvk::Rect2D(0, 0, static_cast<uint32_t>(currentIterationDimensions[i].x), static_cast<uint32_t>(currentIterationDimensions[i].y)), false, &clearValue, 1);
+			commandBuffer->executeCommands(commandBuffers[i][swapchainIndex]);
+			commandBuffer->endRenderPass();
 		}
+
+		// Handle the special cased final up sample whereby we merge the upsample blur with the tonemapping pass to save on write/reads
+		commandBuffer->beginRenderPass(onScreenFramebuffer, onScreenRenderPass,
+			pvrvk::Rect2D(0, 0, static_cast<uint32_t>(currentIterationDimensions[blurIterations - 1].x), static_cast<uint32_t>(currentIterationDimensions[blurIterations - 1].y)),
+			false, onScreenClearValues, numOnScreenClearValues);
+		commandBuffer->executeCommands(commandBuffers[blurIterations - 1][swapchainIndex]);
 	}
 };
 
@@ -2461,8 +2432,8 @@ struct DownAndTentFilterBlurPass : public DualFilterBlurPass
 struct GaussianBlurPass
 {
 	// Horizontal and Vertical graphics pipelines
-	pvrvk::GraphicsPipeline horizontalPipeline;
-	pvrvk::GraphicsPipeline verticalPipeline;
+	pvrvk::GraphicsPipeline horizontalPipelines[DemoConfigurations::NumDemoConfigurations];
+	pvrvk::GraphicsPipeline verticalPipelines[DemoConfigurations::NumDemoConfigurations];
 
 	pvrvk::DescriptorSetLayout descriptorSetLayout;
 	pvrvk::PipelineLayout pipelineLayout;
@@ -2475,19 +2446,22 @@ struct GaussianBlurPass
 	pvr::Multi<pvrvk::SecondaryCommandBuffer> horizontalBlurCommandBuffers;
 	pvr::Multi<pvrvk::SecondaryCommandBuffer> verticalBlurCommandBuffers;
 
-	// Gaussian offsets and weights
-	std::vector<double> gaussianOffsets;
-	std::vector<double> gaussianWeights;
-
-	std::vector<float> gaussianOffsetsFloats;
-	std::vector<float> gaussianWeightsFloats;
-	// stores details regarding the Gaussian blur configuration currently in use
-	glm::vec4 blurConfig;
-	// the size of the gaussian kernel currently in use
-	uint32_t kernelSize;
-	pvr::Multi<pvrvk::Buffer> bloomConfigBuffers;
-	uint32_t ssboPerSwapchainSize;
 	pvr::Multi<pvrvk::ImageView> blurredImages;
+
+	uint32_t currentKernelConfig;
+
+	// Gaussian offsets and weights
+	std::vector<std::vector<double> > gaussianOffsets;
+	std::vector<std::vector<double> > gaussianWeights;
+
+	std::vector<std::string> perKernelSizeIterationsStrings;
+	std::vector<std::string> perKernelSizeWeightsStrings;
+	std::vector<std::string> perKernelSizeOffsetsStrings;
+
+	float inverseFramebufferWidth;
+	float inverseFramebufferHeight;
+	std::string inverseFramebufferWidthString;
+	std::string inverseFramebufferHeightString;
 
 	/// <summary>Initialises the Gaussian blur pass.</summary>
 	/// <param name="assetProvider">The pvr::IAssetProvider which will be used for loading resources from memory.</param>
@@ -2506,11 +2480,15 @@ struct GaussianBlurPass
 		pvr::utils::vma::Allocator& vmaAllocator, pvrvk::RenderPass& blurRenderPass, const glm::ivec2& blurFramebufferDimensions,
 		pvr::Multi<pvrvk::ImageView>& horizontalBlurImageViews, pvr::Multi<pvrvk::ImageView>& verticalBlurImageViews, pvrvk::Sampler& sampler, pvrvk::PipelineCache& pipelineCache)
 	{
-		createBuffers(device, swapchain, vmaAllocator);
-
-		blurConfig = glm::vec4(1.0f / blurFramebufferDimensions.x, 1.0f / blurFramebufferDimensions.y, 0.0f, 0.0f);
-
 		createDescriptorSetLayout(device);
+
+		inverseFramebufferWidth = 1.0f / blurFramebufferDimensions.x;
+		inverseFramebufferHeight = 1.0f / blurFramebufferDimensions.y;
+		gaussianWeights.resize(DemoConfigurations::NumDemoConfigurations);
+		gaussianOffsets.resize(DemoConfigurations::NumDemoConfigurations);
+
+		generatePerConfigGaussianCoefficients();
+		generateGaussianShaderStrings();
 
 		createPipelines(assetProvider, device, blurRenderPass, blurFramebufferDimensions, pipelineCache);
 		createDescriptorSets(device, swapchain, descriptorPool, horizontalBlurImageViews, verticalBlurImageViews, sampler);
@@ -2526,55 +2504,34 @@ struct GaussianBlurPass
 
 	/// <summary>Updates the kernel configuration currently in use.</summary>
 	/// <param name="kernelSizeConfig">The kernel size.</param>
-	/// <param name="useLinearOptimisation">Specifies whether the offsets and weights used for the current kernel size should be modified
-	/// (optimised) for use with linear sampling.</param>
-	/// <param name="truncateCoefficients">Provides us with an efficient and convenient mechanism for achieving blurs approximating
-	/// blurs with larger kernel sizes Note that using making use "truncateCoefficients" can result in a loss of a low value high
-	/// precision tail in the blur. Depending on the scene/image being blurred the effect of using "truncateCoefficients" may not be
-	/// particularly visible however in some cases it may be required that high precision low value tails are present - it may be artistically
-	/// required that no loss is observed. Using a traditional 8 bit per channel color buffer we could very well get away with the loss of the
-	/// very low value tails. Using a HDR 16 bit per channel color buffer we may get away with ignoring negligible coefficients depending on
-	/// the minimum coefficient we deem to be non-negligible. For the most accurate of blur then we would recommened against its use however
-	/// if speed is of the utmost importance and if you can get away with the quality degradation then ignoring negligible coefficients
-	/// is a great way to reduce the number of texture samples. We will leave this decision to the reader..</param>
-	virtual void updateKernelConfig(uint32_t kernelSizeConfig, bool useLinearOptimisation, bool truncateCoefficients)
+	void updateKernelConfig(uint32_t kernelSizeConfig)
 	{
-		kernelSize = kernelSizeConfig;
-		updateGaussianWeightsAndOffsets(kernelSize, useLinearOptimisation, truncateCoefficients, gaussianOffsets, gaussianWeights, gaussianOffsetsFloats, gaussianWeightsFloats);
-		blurConfig.z = static_cast<float>(gaussianOffsetsFloats.size());
+		currentKernelConfig = kernelSizeConfig;
 	}
 
-	/// <summary>Updates the kernel buffers for the specified swapchain index.</summary>
-	/// <param name="swapchainIndex">The swapchain index of the buffer to update.</param>
-	virtual void updateKernelBuffer(uint32_t swapchainIndex)
+	virtual void generatePerConfigGaussianCoefficients()
 	{
-		void* memory = bloomConfigBuffers[swapchainIndex]->getDeviceMemory()->getMappedData();
-
-		memcpy(static_cast<char*>(memory), &blurConfig, pvr::getSize(pvr::GpuDatatypes::vec4));
-		memcpy(static_cast<char*>(memory) + pvr::getSize(pvr::GpuDatatypes::vec4), gaussianWeightsFloats.data(), pvr::getSize(pvr::GpuDatatypes::Float) * MaxGaussianHalfKernel);
-		memcpy(static_cast<char*>(memory) + pvr::getSize(pvr::GpuDatatypes::vec4) + pvr::getSize(pvr::GpuDatatypes::Float) * MaxGaussianHalfKernel, gaussianOffsetsFloats.data(),
-			pvr::getSize(pvr::GpuDatatypes::Float) * MaxGaussianHalfKernel);
-
-		// if the memory property flags used by the buffers' device memory do not contain e_HOST_COHERENT_BIT then we must flush the memory
-		if (static_cast<uint32_t>(bloomConfigBuffers[swapchainIndex]->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
+		for (uint32_t i = 0; i < DemoConfigurations::NumDemoConfigurations; ++i)
 		{
-			bloomConfigBuffers[swapchainIndex]->getDeviceMemory()->flushRange();
+			generateGaussianCoefficients(DemoConfigurations::Configurations[i].gaussianConfig, false, false, gaussianWeights[i], gaussianOffsets[i]);
 		}
 	}
 
-	/// <summary>Creates any required buffers.</summary>
-	/// <param name="device">The device from which the resources will be allocated.</param>
-	/// <param name="swapchain">The swapchain which will determine the number of per swapchain resources to allocate.</param>
-	/// <param name="vmaAllocator">A VMA allocator to use for allocating images and buffers.</param>
-	virtual void createBuffers(pvrvk::Device& device, pvrvk::Swapchain& swapchain, pvr::utils::vma::Allocator& vmaAllocator)
+	/// <summary>Generates the gaussian weights and offsets strings used by the various Gaussian shaders.</summary>
+	virtual void generateGaussianShaderStrings()
 	{
-		ssboPerSwapchainSize = static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::vec4) + pvr::getSize(pvr::GpuDatatypes::Float) * MaxGaussianHalfKernel * 2);
+		// Generate per kernel size weights, offsets and iterations strings
+		perKernelSizeIterationsStrings.resize(DemoConfigurations::NumDemoConfigurations);
+		perKernelSizeWeightsStrings.resize(DemoConfigurations::NumDemoConfigurations);
+		perKernelSizeOffsetsStrings.resize(DemoConfigurations::NumDemoConfigurations);
 
-		for (uint32_t i = 0; i < swapchain->getSwapchainLength(); ++i)
+		for (uint32_t i = 0; i < DemoConfigurations::NumDemoConfigurations; ++i)
 		{
-			bloomConfigBuffers[i] = pvr::utils::createBuffer(device, ssboPerSwapchainSize, pvrvk::BufferUsageFlags::e_STORAGE_BUFFER_BIT,
-				pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT, &vmaAllocator);
+			generateGaussianWeightsAndOffsetsStrings(
+				gaussianWeights[i], gaussianOffsets[i], perKernelSizeIterationsStrings[i], perKernelSizeWeightsStrings[i], perKernelSizeOffsetsStrings[i]);
 		}
+		inverseFramebufferWidthString = pvr::strings::createFormatted("const highp float inverseFramebufferWidth = %.15f;", inverseFramebufferWidth);
+		inverseFramebufferHeightString = pvr::strings::createFormatted("const highp float inverseFramebufferHeight = %.15f;", inverseFramebufferHeight);
 	}
 
 	/// <summary>Creates the descriptor set layouts used for up/down sample passes.</summary>
@@ -2583,7 +2540,6 @@ struct GaussianBlurPass
 	{
 		pvrvk::DescriptorSetLayoutCreateInfo descSetInfo;
 		descSetInfo.setBinding(0, pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 1u, pvrvk::ShaderStageFlags::e_FRAGMENT_BIT);
-		descSetInfo.setBinding(1, pvrvk::DescriptorType::e_STORAGE_BUFFER, 1u, pvrvk::ShaderStageFlags::e_FRAGMENT_BIT);
 		descriptorSetLayout = device->createDescriptorSetLayout(descSetInfo);
 
 		pvrvk::PipelineLayoutCreateInfo pipeLayoutInfo;
@@ -2611,16 +2567,10 @@ struct GaussianBlurPass
 			writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, horizontalDescriptorSets[i], 0)
 										.setImageInfo(0, pvrvk::DescriptorImageInfo(verticalBlurImageViews[i], sampler, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL)));
 
-			writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_STORAGE_BUFFER, horizontalDescriptorSets[i], 1)
-										.setBufferInfo(0, pvrvk::DescriptorBufferInfo(bloomConfigBuffers[i], 0, ssboPerSwapchainSize)));
-
 			// Descriptor sets for the Vertical Blur Pass
 			verticalDescriptorSets.add(descriptorPool->allocateDescriptorSet(descriptorSetLayout));
 			writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, verticalDescriptorSets[i], 0)
 										.setImageInfo(0, pvrvk::DescriptorImageInfo(horizontalBlurImageViews[i], sampler, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL)));
-
-			writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_STORAGE_BUFFER, verticalDescriptorSets[i], 1)
-										.setBufferInfo(0, pvrvk::DescriptorBufferInfo(bloomConfigBuffers[i], 0, ssboPerSwapchainSize)));
 		}
 
 		device->updateDescriptorSets(writeDescSets.data(), static_cast<uint32_t>(writeDescSets.size()), nullptr, 0);
@@ -2635,6 +2585,32 @@ struct GaussianBlurPass
 	virtual void createPipelines(
 		pvr::IAssetProvider& assetProvider, pvrvk::Device& device, pvrvk::RenderPass& renderPass, const glm::ivec2& blurFramebufferDimensions, pvrvk::PipelineCache& pipelineCache)
 	{
+		pvrvk::ShaderModule horizontalFragShaderModules[DemoConfigurations::NumDemoConfigurations];
+		pvrvk::ShaderModule verticalFragShaderModules[DemoConfigurations::NumDemoConfigurations];
+
+		// Generate the Gaussian blur fragment shader modules
+		for (uint32_t i = 0; i < DemoConfigurations::NumDemoConfigurations; ++i)
+		{
+			// Load the base Gaussian fragment shader
+			auto fragShaderStream = assetProvider.getAssetStream(Files::GaussianFragSrcFile);
+
+			// Load the base Gaussian fragment shader into a string
+			// At this point the fragment shader is missing its templated arguments and will not compile "as is"
+			std::string shaderSource;
+			fragShaderStream->readIntoString(shaderSource);
+
+			// Insert the templates into the base shader
+			// The reference Gaussian fragment shader requires the number of iterations, the weights for each iteration and the direction to sample
+			std::string horizontalShaderString = pvr::strings::createFormatted(shaderSource.c_str(), perKernelSizeIterationsStrings[i].c_str(), perKernelSizeOffsetsStrings[i].c_str(),
+				perKernelSizeWeightsStrings[i].c_str(), inverseFramebufferWidthString.c_str(), inverseFramebufferHeightString.c_str(), "1.0, 0.0");
+			std::string verticalShaderString = pvr::strings::createFormatted(shaderSource.c_str(), perKernelSizeIterationsStrings[i].c_str(), perKernelSizeOffsetsStrings[i].c_str(),
+				perKernelSizeWeightsStrings[i].c_str(), inverseFramebufferWidthString.c_str(), inverseFramebufferHeightString.c_str(), "0.0, 1.0");
+
+			// Create shader modules using the auto generated shader sources
+			horizontalFragShaderModules[i] = pvr::utils::createShaderModule(device, horizontalShaderString, pvrvk::ShaderStageFlags::e_FRAGMENT_BIT);
+			verticalFragShaderModules[i] = pvr::utils::createShaderModule(device, verticalShaderString, pvrvk::ShaderStageFlags::e_FRAGMENT_BIT);
+		}
+
 		pvrvk::GraphicsPipelineCreateInfo pipelineInfo;
 		pipelineInfo.viewport.setViewportAndScissor(0, pvrvk::Viewport(0.0f, 0.0f, static_cast<float>(blurFramebufferDimensions.x), static_cast<float>(blurFramebufferDimensions.y)),
 			pvrvk::Rect2D(0, 0, blurFramebufferDimensions.x, blurFramebufferDimensions.y));
@@ -2661,15 +2637,20 @@ struct GaussianBlurPass
 		pipelineInfo.subpass = 0;
 
 		pipelineInfo.vertexShader.setShader(device->createShaderModule(pvrvk::ShaderModuleCreateInfo(assetProvider.getAssetStream(Files::GaussianVertSrcFile)->readToEnd<uint32_t>())));
-		pipelineInfo.fragmentShader.setShader(
-			device->createShaderModule(pvrvk::ShaderModuleCreateInfo(assetProvider.getAssetStream(Files::GaussianHorizontalFragSrcFile)->readToEnd<uint32_t>())));
 
-		horizontalPipeline = device->createGraphicsPipeline(pipelineInfo, pipelineCache);
+		for (uint32_t i = 0; i < DemoConfigurations::NumDemoConfigurations; ++i)
+		{
+			// Horizontal Pipeline
+			pipelineInfo.fragmentShader.setShader(horizontalFragShaderModules[i]);
+			horizontalPipelines[i] = device->createGraphicsPipeline(pipelineInfo, pipelineCache);
+		}
 
-		pipelineInfo.vertexShader.setShader(device->createShaderModule(pvrvk::ShaderModuleCreateInfo(assetProvider.getAssetStream(Files::GaussianVertSrcFile)->readToEnd<uint32_t>())));
-		pipelineInfo.fragmentShader.setShader(
-			device->createShaderModule(pvrvk::ShaderModuleCreateInfo(assetProvider.getAssetStream(Files::GaussianVerticalFragSrcFile)->readToEnd<uint32_t>())));
-		verticalPipeline = device->createGraphicsPipeline(pipelineInfo, pipelineCache);
+		for (uint32_t i = 0; i < DemoConfigurations::NumDemoConfigurations; ++i)
+		{
+			// Vertical Pipeline
+			pipelineInfo.fragmentShader.setShader(verticalFragShaderModules[i]);
+			verticalPipelines[i] = device->createGraphicsPipeline(pipelineInfo, pipelineCache);
+		}
 	}
 
 	/// <summary>Records the commands required for the Gaussian blur.</summary>
@@ -2682,13 +2663,14 @@ struct GaussianBlurPass
 		{
 			horizontalBlurCommandBuffers[swapchainIndex]->begin(horizontalBlurFramebuffers[swapchainIndex], 0, pvrvk::CommandBufferUsageFlags::e_RENDER_PASS_CONTINUE_BIT);
 
-			horizontalBlurCommandBuffers[swapchainIndex]->debugMarkerBeginEXT(pvr::strings::createFormatted("Gaussian Blur (horizontal) - swapchain (%i)", swapchainIndex));
+			pvr::utils::beginCommandBufferDebugLabel(
+				horizontalBlurCommandBuffers[swapchainIndex], pvrvk::DebugUtilsLabel(pvr::strings::createFormatted("Gaussian Blur (horizontal) - swapchain (%i)", swapchainIndex)));
 
-			horizontalBlurCommandBuffers[swapchainIndex]->bindPipeline(horizontalPipeline);
+			horizontalBlurCommandBuffers[swapchainIndex]->bindPipeline(horizontalPipelines[currentKernelConfig]);
 			horizontalBlurCommandBuffers[swapchainIndex]->bindDescriptorSet(pvrvk::PipelineBindPoint::e_GRAPHICS, pipelineLayout, 0u, horizontalDescriptorSets[swapchainIndex]);
 
 			horizontalBlurCommandBuffers[swapchainIndex]->draw(0, 3);
-			horizontalBlurCommandBuffers[swapchainIndex]->debugMarkerEndEXT();
+			pvr::utils::endCommandBufferDebugLabel(horizontalBlurCommandBuffers[swapchainIndex]);
 			horizontalBlurCommandBuffers[swapchainIndex]->end();
 		}
 
@@ -2696,13 +2678,14 @@ struct GaussianBlurPass
 		{
 			verticalBlurCommandBuffers[swapchainIndex]->begin(verticalBlurFramebuffers[swapchainIndex], 0, pvrvk::CommandBufferUsageFlags::e_RENDER_PASS_CONTINUE_BIT);
 
-			verticalBlurCommandBuffers[swapchainIndex]->debugMarkerBeginEXT(pvr::strings::createFormatted("Gaussian Blur (vertical) - swapchain (%i)", swapchainIndex));
+			pvr::utils::beginCommandBufferDebugLabel(
+				verticalBlurCommandBuffers[swapchainIndex], pvrvk::DebugUtilsLabel(pvr::strings::createFormatted("Gaussian Blur (vertical) - swapchain (%i)", swapchainIndex)));
 
-			verticalBlurCommandBuffers[swapchainIndex]->bindPipeline(verticalPipeline);
+			verticalBlurCommandBuffers[swapchainIndex]->bindPipeline(verticalPipelines[currentKernelConfig]);
 			verticalBlurCommandBuffers[swapchainIndex]->bindDescriptorSet(pvrvk::PipelineBindPoint::e_GRAPHICS, pipelineLayout, 0u, verticalDescriptorSets[swapchainIndex]);
 
 			verticalBlurCommandBuffers[swapchainIndex]->draw(0, 3);
-			verticalBlurCommandBuffers[swapchainIndex]->debugMarkerEndEXT();
+			pvr::utils::endCommandBufferDebugLabel(verticalBlurCommandBuffers[swapchainIndex]);
 			verticalBlurCommandBuffers[swapchainIndex]->end();
 		}
 	}
@@ -2755,68 +2738,25 @@ struct GaussianBlurPass
 struct ComputeBlurPass : public GaussianBlurPass
 {
 	// Horizontal and Vertical compute pipelines
-	pvrvk::ComputePipeline horizontalComputePipeline;
-	pvrvk::ComputePipeline verticalComputePipeline;
+	pvrvk::ComputePipeline horizontalComputePipelines[DemoConfigurations::NumDemoConfigurations];
+	pvrvk::ComputePipeline verticalComputePipelines[DemoConfigurations::NumDemoConfigurations];
 
-	// For our compute shader based Gaussian blur we duplicate the Gaussian weights so that we don't need special shader logic to handle buffer overruns
-	std::vector<float> duplicatedGaussianWeightsFloats;
+	std::vector<std::string> perKernelSizeCacheStrings;
 
-	virtual void createBuffers(pvrvk::Device& device, pvrvk::Swapchain& swapchain, pvr::utils::vma::Allocator& vmaAllocator)
+	void generatePerConfigGaussianCoefficients() override
 	{
-		ssboPerSwapchainSize = static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::vec4) + pvr::getSize(pvr::GpuDatatypes::Float) * MaxGaussianKernel * 2);
-
-		for (uint32_t i = 0; i < swapchain->getSwapchainLength(); ++i)
+		for (uint32_t i = 0; i < DemoConfigurations::NumDemoConfigurations; ++i)
 		{
-			bloomConfigBuffers[i] = pvr::utils::createBuffer(device, ssboPerSwapchainSize, pvrvk::BufferUsageFlags::e_STORAGE_BUFFER_BIT,
-				pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT, &vmaAllocator);
+			generateGaussianCoefficients(DemoConfigurations::Configurations[i].computeGaussianConfig, false, false, gaussianWeights[i], gaussianOffsets[i]);
 		}
 	}
 
-	virtual void updateKernelBuffer(uint32_t swapchainIndex)
-	{
-		void* memory = bloomConfigBuffers[swapchainIndex]->getDeviceMemory()->getMappedData();
-
-		memcpy(static_cast<char*>(memory), &blurConfig, pvr::getSize(pvr::GpuDatatypes::vec4));
-		memcpy(static_cast<char*>(memory) + pvr::getSize(pvr::GpuDatatypes::vec4), duplicatedGaussianWeightsFloats.data(),
-			pvr::getSize(pvr::GpuDatatypes::Float) * MaxGaussianKernel * 2);
-
-		if (static_cast<uint32_t>(bloomConfigBuffers[swapchainIndex]->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
-		{
-			bloomConfigBuffers[swapchainIndex]->getDeviceMemory()->flushRange();
-		}
-	}
-
-	virtual void updateKernelConfig(uint32_t kernelSizeConfig, bool useLinearOptimisation, bool ignoreNegligibleCoefficients)
-	{
-		kernelSize = kernelSizeConfig;
-		updateGaussianWeightsAndOffsets(
-			kernelSize, useLinearOptimisation, ignoreNegligibleCoefficients, gaussianOffsets, gaussianWeights, gaussianOffsetsFloats, gaussianWeightsFloats);
-
-		duplicatedGaussianWeightsFloats.clear();
-
-		blurConfig.z = static_cast<float>(gaussianWeights.size());
-
-		for (uint32_t duplications = 0; duplications < 2; duplications++)
-		{
-			for (uint32_t i = 0; i < gaussianWeightsFloats.size(); i++)
-			{
-				duplicatedGaussianWeightsFloats.push_back(gaussianWeightsFloats[gaussianWeightsFloats.size() - 1 - i]);
-			}
-
-			for (uint32_t i = 1; i < gaussianWeightsFloats.size(); i++)
-			{
-				duplicatedGaussianWeightsFloats.push_back(gaussianWeightsFloats[i]);
-			}
-		}
-	}
-
-	virtual void createDescriptorSetLayout(pvrvk::Device& device)
+	void createDescriptorSetLayout(pvrvk::Device& device) override
 	{
 		// create the descriptor set layout
 		pvrvk::DescriptorSetLayoutCreateInfo descSetInfo;
 		descSetInfo.setBinding(0, pvrvk::DescriptorType::e_STORAGE_IMAGE, 1u, pvrvk::ShaderStageFlags::e_COMPUTE_BIT);
 		descSetInfo.setBinding(1, pvrvk::DescriptorType::e_STORAGE_IMAGE, 1u, pvrvk::ShaderStageFlags::e_COMPUTE_BIT);
-		descSetInfo.setBinding(2, pvrvk::DescriptorType::e_STORAGE_BUFFER, 1u, pvrvk::ShaderStageFlags::e_COMPUTE_BIT);
 
 		descriptorSetLayout = device->createDescriptorSetLayout(descSetInfo);
 
@@ -2828,8 +2768,8 @@ struct ComputeBlurPass : public GaussianBlurPass
 		pipelineLayout = device->createPipelineLayout(pipeLayoutInfo);
 	}
 
-	virtual void createDescriptorSets(pvrvk::Device& device, pvrvk::Swapchain& swapchain, pvrvk::DescriptorPool& descriptorPool,
-		pvr::Multi<pvrvk::ImageView>& horizontalBlurImageViews, pvr::Multi<pvrvk::ImageView>& verticalBlurImageViews, pvrvk::Sampler& sampler)
+	void createDescriptorSets(pvrvk::Device& device, pvrvk::Swapchain& swapchain, pvrvk::DescriptorPool& descriptorPool, pvr::Multi<pvrvk::ImageView>& horizontalBlurImageViews,
+		pvr::Multi<pvrvk::ImageView>& verticalBlurImageViews, pvrvk::Sampler& sampler) override
 	{
 		std::vector<pvrvk::WriteDescriptorSet> writeDescSets;
 
@@ -2843,9 +2783,6 @@ struct ComputeBlurPass : public GaussianBlurPass
 			writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_STORAGE_IMAGE, horizontalDescriptorSets[i], 1)
 										.setImageInfo(0, pvrvk::DescriptorImageInfo(horizontalBlurImageViews[i], sampler, pvrvk::ImageLayout::e_GENERAL)));
 
-			writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_STORAGE_BUFFER, horizontalDescriptorSets[i], 2)
-										.setBufferInfo(0, pvrvk::DescriptorBufferInfo(bloomConfigBuffers[i], 0, ssboPerSwapchainSize)));
-
 			// Descriptor sets for the Vertical Blur Pass
 			verticalDescriptorSets.add(descriptorPool->allocateDescriptorSet(descriptorSetLayout));
 			writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_STORAGE_IMAGE, verticalDescriptorSets[i], 0)
@@ -2853,52 +2790,108 @@ struct ComputeBlurPass : public GaussianBlurPass
 
 			writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_STORAGE_IMAGE, verticalDescriptorSets[i], 1)
 										.setImageInfo(0, pvrvk::DescriptorImageInfo(verticalBlurImageViews[i], sampler, pvrvk::ImageLayout::e_GENERAL)));
-
-			writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_STORAGE_BUFFER, verticalDescriptorSets[i], 2)
-										.setBufferInfo(0, pvrvk::DescriptorBufferInfo(bloomConfigBuffers[i], 0, ssboPerSwapchainSize)));
 		}
 
 		device->updateDescriptorSets(writeDescSets.data(), static_cast<uint32_t>(writeDescSets.size()), nullptr, 0);
 	}
 
-	virtual void createPipelines(
-		pvr::IAssetProvider& assetProvider, pvrvk::Device& device, pvrvk::RenderPass& renderPass, const glm::ivec2& blurFramebufferDimensions, pvrvk::PipelineCache& pipelineCache)
+	/// <summary>Generates the gaussian weights and offsets strings used by the various Gaussian shaders.</summary>
+	void generateGaussianShaderStrings() override
+	{
+		// Generate per kernel size weights, offsets and iterations strings
+		perKernelSizeIterationsStrings.resize(DemoConfigurations::NumDemoConfigurations);
+		perKernelSizeWeightsStrings.resize(DemoConfigurations::NumDemoConfigurations);
+		perKernelSizeOffsetsStrings.resize(DemoConfigurations::NumDemoConfigurations);
+
+		// Compute shaders also need the per row/column color cache
+		perKernelSizeCacheStrings.resize(DemoConfigurations::NumDemoConfigurations);
+
+		for (uint32_t i = 0; i < DemoConfigurations::NumDemoConfigurations; ++i)
+		{
+			generateGaussianWeightsAndOffsetsStrings(
+				gaussianWeights[i], gaussianOffsets[i], perKernelSizeIterationsStrings[i], perKernelSizeWeightsStrings[i], perKernelSizeOffsetsStrings[i], true);
+
+			// Construct the compute shader specific per row/column color cache strings
+			std::string cache = "";
+			for (uint32_t j = 0; j < ((gaussianWeights[i].size() * 2) - 1); j++)
+			{
+				cache += "0.0,";
+			}
+			cache += "0.0";
+
+			perKernelSizeCacheStrings[i] = pvr::strings::createFormatted("mediump float f[numIterations * 2] = {%s};", cache.c_str());
+		}
+	}
+
+	void createPipelines(pvr::IAssetProvider& assetProvider, pvrvk::Device& device, pvrvk::RenderPass& renderPass, const glm::ivec2& blurFramebufferDimensions,
+		pvrvk::PipelineCache& pipelineCache) override
 	{
 		pvrvk::ComputePipelineCreateInfo pipelineInfo;
 
-		std::string horizontalComputeShader;
-		std::string verticalComputeShader;
+		pvrvk::ShaderModule horizontalShaderModules[DemoConfigurations::NumDemoConfigurations];
+		pvrvk::ShaderModule verticalShaderModules[DemoConfigurations::NumDemoConfigurations];
 
+		std::string formatString = "";
+
+		// The templated compute shaders require that the image formats are specified in the shader
 		if (device->getPhysicalDevice()->getFeatures().getShaderStorageImageExtendedFormats())
 		{
-			horizontalComputeShader = Files::GaussianComputeBlurHorizontal16fSrcFile;
-			verticalComputeShader = Files::GaussianComputeBlurVertical16fSrcFile;
+			formatString = "r16f";
 		}
 		// Special case platforms without support for shader storage image extended formats (features.ShaderStorageImageExtendedFormats)
 		// if features.ShaderStorageImageExtendedFormats is not supported then fallback to the less efficient rgba16f shaders
 		else
 		{
-			horizontalComputeShader = Files::GaussianComputeBlurHorizontal16frgbaSrcFile;
-			verticalComputeShader = Files::GaussianComputeBlurVertical16frgbaSrcFile;
+			formatString = "rgba16f";
 		}
 
-		pipelineInfo.computeShader.setShader(device->createShaderModule(pvrvk::ShaderModuleCreateInfo(assetProvider.getAssetStream(horizontalComputeShader)->readToEnd<uint32_t>())));
-
 		pipelineInfo.pipelineLayout = pipelineLayout;
-		horizontalComputePipeline = device->createComputePipeline(pipelineInfo, pipelineCache);
 
-		pipelineInfo.computeShader.setShader(device->createShaderModule(pvrvk::ShaderModuleCreateInfo(assetProvider.getAssetStream(verticalComputeShader)->readToEnd<uint32_t>())));
-		verticalComputePipeline = device->createComputePipeline(pipelineInfo, pipelineCache);
+		// Generate the Gaussian blur compute shader modules
+		for (uint32_t i = 0; i < DemoConfigurations::NumDemoConfigurations; ++i)
+		{
+			// Load the base Gaussian compute shaders
+			// The horizontal compute shader performs a sliding average across each row of the image
+			auto horizontalComputeShaderStream = assetProvider.getAssetStream(Files::GaussianComputeBlurHorizontalSrcFile);
+			// The vertical compute shader performs a sliding average across each column of the image
+			auto verticalComputeShaderStream = assetProvider.getAssetStream(Files::GaussianComputeBlurVerticalSrcFile);
+
+			// Load the base Gaussian compute shaders into strings
+			// At this point the compute shaders are missing its templated arguments and will not compile as they are
+			std::string horizontalShaderSource;
+			horizontalComputeShaderStream->readIntoString(horizontalShaderSource);
+			std::string verticalShaderSource;
+			verticalComputeShaderStream->readIntoString(verticalShaderSource);
+
+			// Insert the templates into the base shaders
+			// The reference Gaussian compute shaders require the format of the images to use, the number of iterations,
+			// the weights for each iteration and the per kernel size caches
+			std::string horizontalShaderString = pvr::strings::createFormatted(horizontalShaderSource.c_str(), formatString.c_str(), formatString.c_str(),
+				perKernelSizeIterationsStrings[i].c_str(), perKernelSizeWeightsStrings[i].c_str(), perKernelSizeCacheStrings[i].c_str());
+			std::string verticalShaderString = pvr::strings::createFormatted(verticalShaderSource.c_str(), formatString.c_str(), formatString.c_str(),
+				perKernelSizeIterationsStrings[i].c_str(), perKernelSizeWeightsStrings[i].c_str(), perKernelSizeCacheStrings[i].c_str());
+
+			// Create shader modules using the auto generated shader sources
+			horizontalShaderModules[i] = pvr::utils::createShaderModule(device, horizontalShaderString, pvrvk::ShaderStageFlags::e_COMPUTE_BIT);
+			verticalShaderModules[i] = pvr::utils::createShaderModule(device, verticalShaderString, pvrvk::ShaderStageFlags::e_COMPUTE_BIT);
+
+			pipelineInfo.computeShader.setShader(horizontalShaderModules[i]);
+			horizontalComputePipelines[i] = device->createComputePipeline(pipelineInfo, pipelineCache);
+
+			pipelineInfo.computeShader.setShader(verticalShaderModules[i]);
+			verticalComputePipelines[i] = device->createComputePipeline(pipelineInfo, pipelineCache);
+		}
 	}
 
 	using GaussianBlurPass::recordCommands;
-	virtual void recordCommands(uint32_t swapchainIndex, pvr::Multi<pvrvk::ImageView>& horizontalBlurImages, pvr::Multi<pvrvk::ImageView>& verticalBlurImages, pvrvk::Queue& queue)
+	void recordCommands(uint32_t swapchainIndex, pvr::Multi<pvrvk::ImageView>& horizontalBlurImages, pvr::Multi<pvrvk::ImageView>& verticalBlurImages, pvrvk::Queue& queue)
 	{
 		// horizontal
 		{
+			horizontalBlurCommandBuffers[swapchainIndex]->reset();
 			horizontalBlurCommandBuffers[swapchainIndex]->begin();
-			horizontalBlurCommandBuffers[swapchainIndex]->debugMarkerBeginEXT("Compute Blur Horizontal");
-			horizontalBlurCommandBuffers[swapchainIndex]->bindPipeline(horizontalComputePipeline);
+			pvr::utils::beginCommandBufferDebugLabel(horizontalBlurCommandBuffers[swapchainIndex], pvrvk::DebugUtilsLabel("Compute Blur Horizontal"));
+			horizontalBlurCommandBuffers[swapchainIndex]->bindPipeline(horizontalComputePipelines[currentKernelConfig]);
 			horizontalBlurCommandBuffers[swapchainIndex]->bindDescriptorSet(pvrvk::PipelineBindPoint::e_COMPUTE, pipelineLayout, 0u, horizontalDescriptorSets[swapchainIndex]);
 
 			// Draw a quad
@@ -2906,7 +2899,7 @@ struct ComputeBlurPass : public GaussianBlurPass
 			// dispatch y = 1
 			// dispatch z = 1
 			horizontalBlurCommandBuffers[swapchainIndex]->dispatch(static_cast<uint32_t>(glm::ceil(horizontalBlurImages[swapchainIndex]->getImage()->getHeight() / 32.0f)), 1, 1);
-			horizontalBlurCommandBuffers[swapchainIndex]->debugMarkerEndEXT();
+			pvr::utils::endCommandBufferDebugLabel(horizontalBlurCommandBuffers[swapchainIndex]);
 
 			pvrvk::MemoryBarrierSet layoutTransition;
 			// Set up a barrier to pass the image from our horizontal compute shader to our vertical compute shader.
@@ -2921,9 +2914,10 @@ struct ComputeBlurPass : public GaussianBlurPass
 
 		// vertical
 		{
+			verticalBlurCommandBuffers[swapchainIndex]->reset();
 			verticalBlurCommandBuffers[swapchainIndex]->begin();
-			verticalBlurCommandBuffers[swapchainIndex]->debugMarkerBeginEXT("Compute Blur Vertical");
-			verticalBlurCommandBuffers[swapchainIndex]->bindPipeline(verticalComputePipeline);
+			pvr::utils::beginCommandBufferDebugLabel(verticalBlurCommandBuffers[swapchainIndex], pvrvk::DebugUtilsLabel("Compute Blur Vertical"));
+			verticalBlurCommandBuffers[swapchainIndex]->bindPipeline(verticalComputePipelines[currentKernelConfig]);
 			verticalBlurCommandBuffers[swapchainIndex]->bindDescriptorSet(pvrvk::PipelineBindPoint::e_COMPUTE, pipelineLayout, 0u, verticalDescriptorSets[swapchainIndex]);
 
 			// Draw a quad
@@ -2931,7 +2925,7 @@ struct ComputeBlurPass : public GaussianBlurPass
 			// dispatch y = 1
 			// dispatch z = 1
 			verticalBlurCommandBuffers[swapchainIndex]->dispatch(static_cast<uint32_t>(glm::ceil(verticalBlurImages[swapchainIndex]->getImage()->getWidth() / 32.0f)), 1, 1);
-			verticalBlurCommandBuffers[swapchainIndex]->debugMarkerEndEXT();
+			pvr::utils::endCommandBufferDebugLabel(verticalBlurCommandBuffers[swapchainIndex]);
 
 			pvrvk::ImageLayout sourceImageLayout = pvrvk::ImageLayout::e_GENERAL;
 			pvrvk::ImageLayout destinationImageLayout = pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL;
@@ -2962,30 +2956,83 @@ struct ComputeBlurPass : public GaussianBlurPass
 // A Linear sampler optimised Gaussian Blur Pass
 struct LinearGaussianBlurPass : public GaussianBlurPass
 {
-	// Horizontal and Vertical graphics pipelines to handle special cases where the number of samples will be an even number
-	pvrvk::GraphicsPipeline evenSampleHorizontalPipeline;
-	pvrvk::GraphicsPipeline evenSampleVerticalPipeline;
-
-	virtual void createDescriptorSetLayout(pvrvk::Device& device) override
+	void generatePerConfigGaussianCoefficients() override
 	{
-		// create the descriptor set layout
-		pvrvk::DescriptorSetLayoutCreateInfo descSetInfo;
-		descSetInfo.setBinding(0, pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 1u, pvrvk::ShaderStageFlags::e_FRAGMENT_BIT);
-		descSetInfo.setBinding(1, pvrvk::DescriptorType::e_STORAGE_BUFFER, 1u, pvrvk::ShaderStageFlags::e_VERTEX_BIT | pvrvk::ShaderStageFlags::e_FRAGMENT_BIT);
-
-		descriptorSetLayout = device->createDescriptorSetLayout(descSetInfo);
-
-		// create the pipeline layouts
-		pvrvk::PipelineLayoutCreateInfo pipeLayoutInfo;
-
-		pipeLayoutInfo.setDescSetLayout(0, descriptorSetLayout);
-
-		pipelineLayout = device->createPipelineLayout(pipeLayoutInfo);
+		for (uint32_t i = 0; i < DemoConfigurations::NumDemoConfigurations; ++i)
+		{
+			generateGaussianCoefficients(DemoConfigurations::Configurations[i].linearGaussianConfig, true, false, gaussianWeights[i], gaussianOffsets[i]);
+		}
 	}
 
-	virtual void createPipelines(pvr::IAssetProvider& assetProvider, pvrvk::Device& device, pvrvk::RenderPass& renderPass, const glm::ivec2& blurFramebufferDimensions,
+	/// <summary>Generates the gaussian weights and offsets strings used by the various Gaussian shaders.</summary>
+	void generateGaussianShaderStrings() override
+	{
+		// Generate per kernel size weights, offsets and iterations strings
+		perKernelSizeIterationsStrings.resize(DemoConfigurations::NumDemoConfigurations);
+		perKernelSizeWeightsStrings.resize(DemoConfigurations::NumDemoConfigurations);
+		perKernelSizeOffsetsStrings.resize(DemoConfigurations::NumDemoConfigurations);
+
+		for (uint32_t i = 0; i < DemoConfigurations::NumDemoConfigurations; ++i)
+		{
+			generateGaussianWeightsAndOffsetsStrings(
+				gaussianWeights[i], gaussianOffsets[i], perKernelSizeIterationsStrings[i], perKernelSizeWeightsStrings[i], perKernelSizeOffsetsStrings[i]);
+		}
+		inverseFramebufferWidthString = pvr::strings::createFormatted("const highp float inverseFramebufferWidth = %.15f;", inverseFramebufferWidth);
+		inverseFramebufferHeightString = pvr::strings::createFormatted("const highp float inverseFramebufferHeight = %.15f;", inverseFramebufferHeight);
+	}
+
+	void createPipelines(pvr::IAssetProvider& assetProvider, pvrvk::Device& device, pvrvk::RenderPass& renderPass, const glm::ivec2& blurFramebufferDimensions,
 		pvrvk::PipelineCache& pipelineCache) override
 	{
+		// Vertex Shader Modules
+		pvrvk::ShaderModule horizontalVertexShaderModules[DemoConfigurations::NumDemoConfigurations];
+		pvrvk::ShaderModule verticalVertexShaderModules[DemoConfigurations::NumDemoConfigurations];
+
+		// Fragment Shader Module
+		pvrvk::ShaderModule fragShaderModules[DemoConfigurations::NumDemoConfigurations];
+
+		// Generate the Gaussian blur shader modules
+		for (uint32_t i = 0; i < DemoConfigurations::NumDemoConfigurations; ++i)
+		{
+			// Load the linear optimised Gaussian vertex shader
+			auto vertexShaderStream = assetProvider.getAssetStream(Files::LinearGaussianVertSrcFile);
+
+			// Load the linear optimised Gaussian vertex shader into a string
+			// At this point the vertex shader is missing its templated arguments and won't compile as is
+			std::string vertexShaderSource;
+			vertexShaderStream->readIntoString(vertexShaderSource);
+
+			// Insert the templates into the linear optimised vertex shader
+			// The linear optimised Gaussian vertex shaders require the number of iterations, the offsets for each iteration, the number of texture coordinates
+			// and the direction to sample
+			std::string horizontalShaderString = pvr::strings::createFormatted(vertexShaderSource.c_str(), perKernelSizeIterationsStrings[i].c_str(),
+				perKernelSizeOffsetsStrings[i].c_str(), inverseFramebufferWidthString.c_str(), inverseFramebufferHeightString.c_str(), "1.0, 0.0");
+			std::string verticalShaderString = pvr::strings::createFormatted(vertexShaderSource.c_str(), perKernelSizeIterationsStrings[i].c_str(),
+				perKernelSizeOffsetsStrings[i].c_str(), inverseFramebufferWidthString.c_str(), inverseFramebufferHeightString.c_str(), "0.0, 1.0");
+
+			// Linear Optimised Gaussian Blur Vertex Shaders
+			// Create shader modules for the horizontal and vertical linearly optimised Gaussian blur vertex shaders
+			horizontalVertexShaderModules[i] = pvr::utils::createShaderModule(device, horizontalShaderString, pvrvk::ShaderStageFlags::e_VERTEX_BIT);
+			verticalVertexShaderModules[i] = pvr::utils::createShaderModule(device, verticalShaderString, pvrvk::ShaderStageFlags::e_VERTEX_BIT);
+
+			// Load the linear optimised Gaussian fragment shader
+			auto fragmentShaderStream = assetProvider.getAssetStream(Files::LinearGaussianFragSrcFile);
+
+			// Load the linear optimised Gaussian fragment shader into a string
+			// At this point the fragment shader is missing its templated arguments and won't compile as is
+			std::string fragShaderSource;
+			fragmentShaderStream->readIntoString(fragShaderSource);
+
+			// Insert the templates into the fragment shader
+			// The linear optimised Gaussian fragment shader requires the number of iterations, the weights for each iteration and the number of texture coordinates
+			std::string fragmentShaderString =
+				pvr::strings::createFormatted(fragShaderSource.c_str(), perKernelSizeIterationsStrings[i].c_str(), perKernelSizeWeightsStrings[i].c_str());
+
+			// Linear Optimised Gaussian Blur Fragment Shader
+			// Create a shader module for the Linear optimised Gaussian blur fragment shader
+			fragShaderModules[i] = pvr::utils::createShaderModule(device, fragmentShaderString, pvrvk::ShaderStageFlags::e_FRAGMENT_BIT);
+		}
+
 		pvrvk::GraphicsPipelineCreateInfo pipelineInfo;
 		pipelineInfo.viewport.setViewportAndScissor(0, pvrvk::Viewport(0.0f, 0.0f, static_cast<float>(blurFramebufferDimensions.x), static_cast<float>(blurFramebufferDimensions.y)),
 			pvrvk::Rect2D(0, 0, blurFramebufferDimensions.x, blurFramebufferDimensions.y));
@@ -3011,57 +3058,38 @@ struct LinearGaussianBlurPass : public GaussianBlurPass
 		pipelineInfo.renderPass = renderPass;
 		pipelineInfo.subpass = 0;
 
-		// Handle odd and even number samples using specifically optimised shaders for each case
-		// Generally an application will know beforehand which of the two approaches they would favour and would stick to one or the other implementation
-		// In our case we provide implementations for both so that we aren't limited by one or the other kernel sizes
-		pipelineInfo.vertexShader.setShader(
-			device->createShaderModule(pvrvk::ShaderModuleCreateInfo(assetProvider.getAssetStream(Files::LinearGaussianOddSamplesHorizontalVertSrcFile)->readToEnd<uint32_t>())));
-		pipelineInfo.fragmentShader.setShader(
-			device->createShaderModule(pvrvk::ShaderModuleCreateInfo(assetProvider.getAssetStream(Files::LinearGaussianOddSamplesFragSrcFile)->readToEnd<uint32_t>())));
+		for (uint32_t i = 0; i < DemoConfigurations::NumDemoConfigurations; ++i)
+		{
+			// Set common shader constants for the vertex shaders
+			pipelineInfo.vertexShader.setShaderConstant(
+				0, pvrvk::ShaderConstantInfo(0, &blurFramebufferDimensions.x, static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::uinteger))));
+			pipelineInfo.vertexShader.setShaderConstant(
+				1, pvrvk::ShaderConstantInfo(1, &blurFramebufferDimensions.y, static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::uinteger))));
 
-		horizontalPipeline = device->createGraphicsPipeline(pipelineInfo, pipelineCache);
+			pipelineInfo.fragmentShader.setShader(fragShaderModules[i]);
 
-		pipelineInfo.vertexShader.setShader(
-			device->createShaderModule(pvrvk::ShaderModuleCreateInfo(assetProvider.getAssetStream(Files::LinearGaussianOddSamplesVerticalVertSrcFile)->readToEnd<uint32_t>())));
-		pipelineInfo.fragmentShader.setShader(
-			device->createShaderModule(pvrvk::ShaderModuleCreateInfo(assetProvider.getAssetStream(Files::LinearGaussianOddSamplesFragSrcFile)->readToEnd<uint32_t>())));
-		verticalPipeline = device->createGraphicsPipeline(pipelineInfo, pipelineCache);
+			pipelineInfo.vertexShader.setShader(horizontalVertexShaderModules[i]);
+			horizontalPipelines[i] = device->createGraphicsPipeline(pipelineInfo, pipelineCache);
 
-		pipelineInfo.vertexShader.setShader(
-			device->createShaderModule(pvrvk::ShaderModuleCreateInfo(assetProvider.getAssetStream(Files::LinearGaussianEvenSamplesHorizontalVertSrcFile)->readToEnd<uint32_t>())));
-		pipelineInfo.fragmentShader.setShader(
-			device->createShaderModule(pvrvk::ShaderModuleCreateInfo(assetProvider.getAssetStream(Files::LinearGaussianEvenSamplesFragSrcFile)->readToEnd<uint32_t>())));
-
-		evenSampleHorizontalPipeline = device->createGraphicsPipeline(pipelineInfo, pipelineCache);
-
-		pipelineInfo.vertexShader.setShader(
-			device->createShaderModule(pvrvk::ShaderModuleCreateInfo(assetProvider.getAssetStream(Files::LinearGaussianEvenSamplesVerticalVertSrcFile)->readToEnd<uint32_t>())));
-		pipelineInfo.fragmentShader.setShader(
-			device->createShaderModule(pvrvk::ShaderModuleCreateInfo(assetProvider.getAssetStream(Files::LinearGaussianEvenSamplesFragSrcFile)->readToEnd<uint32_t>())));
-		evenSampleVerticalPipeline = device->createGraphicsPipeline(pipelineInfo, pipelineCache);
+			pipelineInfo.vertexShader.setShader(verticalVertexShaderModules[i]);
+			verticalPipelines[i] = device->createGraphicsPipeline(pipelineInfo, pipelineCache);
+		}
 	}
 
-	virtual void recordCommands(uint32_t swapchainIndex, pvr::Multi<pvrvk::Framebuffer>& horizontalBlurFramebuffers, pvr::Multi<pvrvk::Framebuffer>& verticalBlurFramebuffers) override
+	void recordCommands(uint32_t swapchainIndex, pvr::Multi<pvrvk::Framebuffer>& horizontalBlurFramebuffers, pvr::Multi<pvrvk::Framebuffer>& verticalBlurFramebuffers) override
 	{
 		// Record the commands to use for carrying out the horizontal gaussian blur pass
 		{
 			horizontalBlurCommandBuffers[swapchainIndex]->begin(horizontalBlurFramebuffers[swapchainIndex], 0, pvrvk::CommandBufferUsageFlags::e_RENDER_PASS_CONTINUE_BIT);
 
-			horizontalBlurCommandBuffers[swapchainIndex]->debugMarkerBeginEXT(pvr::strings::createFormatted("Linear Gaussian Blur (horizontal) - swapchain (%i)", swapchainIndex));
+			pvr::utils::beginCommandBufferDebugLabel(horizontalBlurCommandBuffers[swapchainIndex],
+				pvrvk::DebugUtilsLabel(pvr::strings::createFormatted("Linear Gaussian Blur (horizontal) - swapchain (%i)", swapchainIndex)));
 
-			// appropriately handle odd vs even numbers of taps
-			if (gaussianWeights.size() % 2 == 0)
-			{
-				horizontalBlurCommandBuffers[swapchainIndex]->bindPipeline(evenSampleHorizontalPipeline);
-			}
-			else
-			{
-				horizontalBlurCommandBuffers[swapchainIndex]->bindPipeline(horizontalPipeline);
-			}
+			horizontalBlurCommandBuffers[swapchainIndex]->bindPipeline(horizontalPipelines[currentKernelConfig]);
 
 			horizontalBlurCommandBuffers[swapchainIndex]->bindDescriptorSet(pvrvk::PipelineBindPoint::e_GRAPHICS, pipelineLayout, 0u, horizontalDescriptorSets[swapchainIndex]);
 			horizontalBlurCommandBuffers[swapchainIndex]->draw(0, 3);
-			horizontalBlurCommandBuffers[swapchainIndex]->debugMarkerEndEXT();
+			pvr::utils::endCommandBufferDebugLabel(horizontalBlurCommandBuffers[swapchainIndex]);
 			horizontalBlurCommandBuffers[swapchainIndex]->end();
 		}
 
@@ -3069,22 +3097,28 @@ struct LinearGaussianBlurPass : public GaussianBlurPass
 		{
 			verticalBlurCommandBuffers[swapchainIndex]->begin(verticalBlurFramebuffers[swapchainIndex], 0, pvrvk::CommandBufferUsageFlags::e_RENDER_PASS_CONTINUE_BIT);
 
-			verticalBlurCommandBuffers[swapchainIndex]->debugMarkerBeginEXT(pvr::strings::createFormatted("Linear Gaussian Blur (vertical) - swapchain (%i)", swapchainIndex));
+			pvr::utils::beginCommandBufferDebugLabel(verticalBlurCommandBuffers[swapchainIndex],
+				pvrvk::DebugUtilsLabel(pvr::strings::createFormatted("Linear Gaussian Blur (vertical) - swapchain (%i)", swapchainIndex)));
 
-			if (gaussianWeights.size() % 2 == 0)
-			{
-				verticalBlurCommandBuffers[swapchainIndex]->bindPipeline(evenSampleVerticalPipeline);
-			}
-			else
-			{
-				verticalBlurCommandBuffers[swapchainIndex]->bindPipeline(verticalPipeline);
-			}
+			verticalBlurCommandBuffers[swapchainIndex]->bindPipeline(verticalPipelines[currentKernelConfig]);
 
 			verticalBlurCommandBuffers[swapchainIndex]->bindDescriptorSet(pvrvk::PipelineBindPoint::e_GRAPHICS, pipelineLayout, 0u, verticalDescriptorSets[swapchainIndex]);
 
 			verticalBlurCommandBuffers[swapchainIndex]->draw(0, 3);
-			verticalBlurCommandBuffers[swapchainIndex]->debugMarkerEndEXT();
+			pvr::utils::endCommandBufferDebugLabel(verticalBlurCommandBuffers[swapchainIndex]);
 			verticalBlurCommandBuffers[swapchainIndex]->end();
+		}
+	}
+};
+
+// A Truncated Linear sampler optimised Gaussian Blur Pass
+struct TruncatedLinearGaussianBlurPass : public LinearGaussianBlurPass
+{
+	void generatePerConfigGaussianCoefficients() override
+	{
+		for (uint32_t i = 0; i < DemoConfigurations::NumDemoConfigurations; ++i)
+		{
+			generateGaussianCoefficients(DemoConfigurations::Configurations[i].truncatedLinearGaussianConfig, true, true, gaussianWeights[i], gaussianOffsets[i]);
 		}
 	}
 };
@@ -3095,7 +3129,7 @@ struct HybridGaussianBlurPass
 	// The Compute shader based Gaussian Blur pass - we will only be making use of the horizontal blur resources
 	ComputeBlurPass* computeBlurPass;
 	// The Fragment shader based Gaussian Blur pass - we will only be making use of the vertical blur resources
-	LinearGaussianBlurPass* linearBlurPass;
+	TruncatedLinearGaussianBlurPass* linearBlurPass;
 
 	// Command buffers for the horizontal and vertical blur passes
 	pvr::Multi<pvrvk::SecondaryCommandBuffer> horizontalBlurCommandBuffers;
@@ -3106,7 +3140,7 @@ struct HybridGaussianBlurPass
 	/// <param name="linearBlurPass">The Fragment shader based Gaussian Blur pass - we will only be making use of the vertical blur resources.</param>
 	/// <param name="swapchain">The swapchain which will determine the number of per swapchain resources to allocate.</param>
 	/// <param name="commandPool">The command pool from which to allocate command buffers.</param>
-	void init(ComputeBlurPass* computeBlurPass, LinearGaussianBlurPass* linearBlurPass, pvrvk::Swapchain& swapchain, pvrvk::CommandPool& commandPool)
+	void init(ComputeBlurPass* computeBlurPass, TruncatedLinearGaussianBlurPass* linearBlurPass, pvrvk::Swapchain& swapchain, pvrvk::CommandPool& commandPool)
 	{
 		this->computeBlurPass = computeBlurPass;
 		this->linearBlurPass = linearBlurPass;
@@ -3128,9 +3162,10 @@ struct HybridGaussianBlurPass
 	{
 		// horizontal compute based gaussian blur pass
 		{
+			horizontalBlurCommandBuffers[swapchainIndex]->reset();
 			horizontalBlurCommandBuffers[swapchainIndex]->begin();
-			horizontalBlurCommandBuffers[swapchainIndex]->debugMarkerBeginEXT("Compute Blur Horizontal");
-			horizontalBlurCommandBuffers[swapchainIndex]->bindPipeline(computeBlurPass->horizontalComputePipeline);
+			pvr::utils::beginCommandBufferDebugLabel(horizontalBlurCommandBuffers[swapchainIndex], pvrvk::DebugUtilsLabel("Compute Blur Horizontal"));
+			horizontalBlurCommandBuffers[swapchainIndex]->bindPipeline(computeBlurPass->horizontalComputePipelines[computeBlurPass->currentKernelConfig]);
 			horizontalBlurCommandBuffers[swapchainIndex]->bindDescriptorSet(
 				pvrvk::PipelineBindPoint::e_COMPUTE, computeBlurPass->pipelineLayout, 0u, computeBlurPass->horizontalDescriptorSets[swapchainIndex]);
 
@@ -3140,7 +3175,7 @@ struct HybridGaussianBlurPass
 			// dispatch z = 1
 			horizontalBlurCommandBuffers[swapchainIndex]->dispatch(
 				static_cast<uint32_t>(glm::ceil(horizontalBlurFramebuffers[swapchainIndex]->getDimensions().getHeight() / 32.0f)), 1, 1);
-			horizontalBlurCommandBuffers[swapchainIndex]->debugMarkerEndEXT();
+			pvr::utils::endCommandBufferDebugLabel(horizontalBlurCommandBuffers[swapchainIndex]);
 
 			pvrvk::MemoryBarrierSet layoutTransition;
 			// Set up a barrier to pass the image from our horizontal compute shader to our vertical fragment shader.
@@ -3155,24 +3190,18 @@ struct HybridGaussianBlurPass
 
 		// vertical fragment based gaussian blur pass
 		{
+			verticalBlurCommandBuffers[swapchainIndex]->reset();
 			verticalBlurCommandBuffers[swapchainIndex]->begin(verticalBlurFramebuffers[swapchainIndex], 0, pvrvk::CommandBufferUsageFlags::e_RENDER_PASS_CONTINUE_BIT);
-			verticalBlurCommandBuffers[swapchainIndex]->debugMarkerBeginEXT(pvr::strings::createFormatted("Linear Gaussian Blur (vertical) - swapchain (%i)", swapchainIndex));
+			pvr::utils::beginCommandBufferDebugLabel(verticalBlurCommandBuffers[swapchainIndex],
+				pvrvk::DebugUtilsLabel(pvr::strings::createFormatted("Linear Gaussian Blur (vertical) - swapchain (%i)", swapchainIndex)));
 
-			// appropriately handle odd vs even numbers of taps
-			if (linearBlurPass->gaussianWeights.size() % 2 == 0)
-			{
-				verticalBlurCommandBuffers[swapchainIndex]->bindPipeline(linearBlurPass->evenSampleVerticalPipeline);
-			}
-			else
-			{
-				verticalBlurCommandBuffers[swapchainIndex]->bindPipeline(linearBlurPass->verticalPipeline);
-			}
+			verticalBlurCommandBuffers[swapchainIndex]->bindPipeline(linearBlurPass->verticalPipelines[linearBlurPass->currentKernelConfig]);
 
 			verticalBlurCommandBuffers[swapchainIndex]->bindDescriptorSet(
 				pvrvk::PipelineBindPoint::e_GRAPHICS, linearBlurPass->pipelineLayout, 0u, linearBlurPass->verticalDescriptorSets[swapchainIndex]);
 
 			verticalBlurCommandBuffers[swapchainIndex]->draw(0, 3);
-			verticalBlurCommandBuffers[swapchainIndex]->debugMarkerEndEXT();
+			pvr::utils::endCommandBufferDebugLabel(verticalBlurCommandBuffers[swapchainIndex]);
 			verticalBlurCommandBuffers[swapchainIndex]->end();
 		}
 	}
@@ -3205,7 +3234,6 @@ struct PostBloomPass
 	pvrvk::PipelineLayout pipelineLayout;
 	pvrvk::GraphicsPipeline defaultPipeline;
 	pvrvk::GraphicsPipeline bloomOnlyPipeline;
-	pvrvk::GraphicsPipeline offscreenOnlyPipeline;
 	pvrvk::DescriptorSetLayout descriptorSetLayout;
 	pvr::Multi<pvrvk::DescriptorSet> descriptorSets;
 	pvr::Multi<pvrvk::SecondaryCommandBuffer> commandBuffers;
@@ -3239,11 +3267,20 @@ struct PostBloomPass
 		pvrvk::DescriptorSetLayoutCreateInfo descSetInfo;
 		descSetInfo.setBinding(0, pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 1u, pvrvk::ShaderStageFlags::e_FRAGMENT_BIT);
 		descSetInfo.setBinding(1, pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 1u, pvrvk::ShaderStageFlags::e_FRAGMENT_BIT);
+		descSetInfo.setBinding(2, pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 1u, pvrvk::ShaderStageFlags::e_FRAGMENT_BIT);
+		descSetInfo.setBinding(3, pvrvk::DescriptorType::e_UNIFORM_BUFFER, 1u, pvrvk::ShaderStageFlags::e_VERTEX_BIT);
 
 		descriptorSetLayout = device->createDescriptorSetLayout(descSetInfo);
 
 		pvrvk::PipelineLayoutCreateInfo pipeLayoutInfo;
 		pipeLayoutInfo.setDescSetLayout(0, descriptorSetLayout);
+
+		pvrvk::PushConstantRange pushConstantsRange;
+		pushConstantsRange.setOffset(0);
+		pushConstantsRange.setSize(static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::Float)));
+		pushConstantsRange.setStageFlags(pvrvk::ShaderStageFlags::e_FRAGMENT_BIT);
+		pipeLayoutInfo.setPushConstantRange(0, pushConstantsRange);
+
 		pipelineLayout = device->createPipelineLayout(pipeLayoutInfo);
 	}
 
@@ -3262,17 +3299,29 @@ struct PostBloomPass
 	/// <param name="device">The device from which the updateDescriptorSets call will be piped.</param>
 	/// <param name="swapchainIndex">The swapchain index of the descriptor set to update.</param>
 	/// <param name="originalImageView">The original unblurred image view.</param>
-	/// <param name="blurredImageView">The blurred luminance image view.</param>
-	/// <param name="sampler">The sampler object to use when sampling from the images.</param>
-	void updateDescriptorSets(pvrvk::Device& device, uint32_t swapchainIndex, pvrvk::ImageView& originalImageView, pvrvk::ImageView& blurredImageView, pvrvk::Sampler& sampler)
+	/// <param name="blurredImageView">The blurred image view.</param>
+	/// <param name="bilinearSampler">The sampler object to use when sampling from the images.</param>
+	/// <param name="sceneBufferView">Buffer view for the scene buffer.</param>
+	/// <param name="sceneBuffer">The scene buffer.</param>
+	/// <param name="diffuseIrradianceMap">The diffuse irradiance map used as a replacement to a fixed albedo.</param>
+	/// <param name="samplerTrilinear">A trilinear sampler object.</param>
+	void updateDescriptorSets(pvrvk::Device& device, uint32_t swapchainIndex, pvrvk::ImageView& originalImageView, pvrvk::ImageView& blurredImageView, pvrvk::Sampler& bilinearSampler,
+		pvrvk::Buffer& sceneBuffer, pvr::utils::StructuredBufferView& sceneBufferView, pvrvk::ImageView& diffuseIrradianceMap, pvrvk::Sampler& samplerTrilinear)
 	{
 		std::vector<pvrvk::WriteDescriptorSet> writeDescSets;
 
 		writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, descriptorSets[swapchainIndex], 0)
-									.setImageInfo(0, pvrvk::DescriptorImageInfo(blurredImageView, sampler, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL)));
+									.setImageInfo(0, pvrvk::DescriptorImageInfo(blurredImageView, bilinearSampler, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL)));
 
 		writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, descriptorSets[swapchainIndex], 1)
-									.setImageInfo(0, pvrvk::DescriptorImageInfo(originalImageView, sampler, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL)));
+									.setImageInfo(0, pvrvk::DescriptorImageInfo(originalImageView, bilinearSampler, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL)));
+
+		writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, descriptorSets[swapchainIndex], 2)
+									.setImageInfo(0, pvrvk::DescriptorImageInfo(diffuseIrradianceMap, samplerTrilinear, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL)));
+
+		writeDescSets.push_back(
+			pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_UNIFORM_BUFFER, descriptorSets[swapchainIndex], 3)
+				.setBufferInfo(0, pvrvk::DescriptorBufferInfo(sceneBuffer, sceneBufferView.getDynamicSliceOffset(swapchainIndex), sceneBufferView.getDynamicSliceSize())));
 
 		device->updateDescriptorSets(writeDescSets.data(), static_cast<uint32_t>(writeDescSets.size()), nullptr, 0);
 	}
@@ -3322,28 +3371,18 @@ struct PostBloomPass
 		int enabled = 1;
 		pipelineInfo.fragmentShader.setShaderConstant(0, pvrvk::ShaderConstantInfo(0, &enabled, static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::Integer))));
 		bloomOnlyPipeline = device->createGraphicsPipeline(pipelineInfo, pipelineCache);
-
-		// Disable bloom only
-		// Enable Offscreen only
-		int disabled = 0;
-		pipelineInfo.fragmentShader.setShaderConstant(0, pvrvk::ShaderConstantInfo(0, &disabled, static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::Integer))));
-		pipelineInfo.fragmentShader.setShaderConstant(1, pvrvk::ShaderConstantInfo(1, &enabled, static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::Integer))));
-
-		offscreenOnlyPipeline = device->createGraphicsPipeline(pipelineInfo, pipelineCache);
 	}
 
 	/// <summary>Records the secondary command buffers for the post bloom composition pass.</summary>
 	/// <param name="swapchainIndex">The swapchain index for which the recorded command buffer will be used.</param>
 	/// <param name="framebuffer">The framebuffer to render into</param>
-	void recordCommandBuffer(uint32_t swapchainIndex, pvrvk::Framebuffer& framebuffer, bool renderBloomOnly, bool renderOffScreenOnly)
+	/// <param name="renderBloomOnly">Indicates that only the bloom should be rendered to the screen</param>
+	/// <param name="exposure">The exposure to use in the tonemapping.</param>
+	void recordCommandBuffer(uint32_t swapchainIndex, pvrvk::Framebuffer& framebuffer, bool renderBloomOnly, float exposure)
 	{
 		commandBuffers[swapchainIndex]->begin(framebuffer, 0, pvrvk::CommandBufferUsageFlags::e_RENDER_PASS_CONTINUE_BIT);
-		commandBuffers[swapchainIndex]->debugMarkerBeginEXT("PostBloom");
-		if (renderOffScreenOnly)
-		{
-			commandBuffers[swapchainIndex]->bindPipeline(offscreenOnlyPipeline);
-		}
-		else if (renderBloomOnly)
+		pvr::utils::beginCommandBufferDebugLabel(commandBuffers[swapchainIndex], pvrvk::DebugUtilsLabel("PostBloom"));
+		if (renderBloomOnly)
 		{
 			commandBuffers[swapchainIndex]->bindPipeline(bloomOnlyPipeline);
 		}
@@ -3351,9 +3390,11 @@ struct PostBloomPass
 		{
 			commandBuffers[swapchainIndex]->bindPipeline(defaultPipeline);
 		}
+		commandBuffers[swapchainIndex]->pushConstants(
+			pipelineLayout, pvrvk::ShaderStageFlags::e_FRAGMENT_BIT, 0, static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::Float)), &exposure);
 		commandBuffers[swapchainIndex]->bindDescriptorSet(pvrvk::PipelineBindPoint::e_GRAPHICS, pipelineLayout, 0u, descriptorSets[swapchainIndex]);
 		commandBuffers[swapchainIndex]->draw(0, 3);
-		commandBuffers[swapchainIndex]->debugMarkerEndEXT();
+		pvr::utils::endCommandBufferDebugLabel(commandBuffers[swapchainIndex]);
 		commandBuffers[swapchainIndex]->end();
 	}
 };
@@ -3361,7 +3402,7 @@ struct PostBloomPass
 struct DeviceResources
 {
 	pvrvk::Instance instance;
-	pvrvk::DebugReportCallback debugCallbacks[2];
+	pvr::utils::DebugUtilsCallbacks debugUtilsCallbacks;
 	pvrvk::Device device;
 	pvrvk::DescriptorPool descriptorPool;
 	pvrvk::CommandPool commandPool;
@@ -3380,17 +3421,16 @@ struct DeviceResources
 	pvr::Multi<pvrvk::ImageView> depthStencilImages;
 
 	// Synchronisation primitives
-	pvrvk::Semaphore semaphoreImageAcquired[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
-	pvrvk::Fence perFrameAcquireFence[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
-	pvrvk::Semaphore semaphorePresent[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
-	pvrvk::Fence perFrameCommandBufferFence[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	pvrvk::Semaphore imageAcquiredSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	pvrvk::Semaphore presentationSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	pvrvk::Fence perFrameResourcesFences[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
 
 	// Textures
 	pvr::Multi<pvrvk::ImageView> luminanceImageViews;
 	pvr::Multi<pvrvk::ImageView> offScreenColorImageViews;
-	pvr::Multi<pvrvk::ImageView> pingPongImageViews[2];
-	pvr::Multi<pvrvk::ImageView> storageImagePingPongImageViews[2];
-	pvrvk::ImageView diffuseIrradianceMapImageView;
+	pvrvk::ImageView diffuseIrradianceMapImageViews[NumScenes];
+
+	std::vector<pvr::Multi<pvrvk::ImageView> > sharedBlurImageViews;
 
 	// Bloom resources
 	pvrvk::RenderPass blurRenderPass;
@@ -3416,7 +3456,7 @@ struct DeviceResources
 	DownSamplePass computeDownsamplePass;
 	GaussianBlurPass gaussianBlurPass;
 	LinearGaussianBlurPass linearGaussianBlurPass;
-	LinearGaussianBlurPass truncatedLinearGaussianBlurPass;
+	TruncatedLinearGaussianBlurPass truncatedLinearGaussianBlurPass;
 	DualFilterBlurPass dualFilterBlurPass;
 	DownAndTentFilterBlurPass downAndTentFilterBlurPass;
 	ComputeBlurPass computeBlurPass;
@@ -3430,23 +3470,17 @@ struct DeviceResources
 	// Buffers and their views
 	pvr::utils::StructuredBufferView sceneBufferView;
 	pvrvk::Buffer sceneBuffer;
-	pvr::utils::StructuredBufferView lightBufferView;
-	pvrvk::Buffer lightBuffer;
-	pvr::utils::StructuredBufferView bloomConfigBufferView;
-	pvrvk::Buffer bloomConfigBuffer;
 
 	~DeviceResources()
 	{
-		if (device.isValid())
+		if (device)
 		{
 			device->waitIdle();
 			uint32_t l = swapchain->getSwapchainLength();
 			for (uint32_t i = 0; i < l; ++i)
 			{
-				if (perFrameAcquireFence[i].isValid())
-					perFrameAcquireFence[i]->wait();
-				if (perFrameCommandBufferFence[i].isValid())
-					perFrameCommandBufferFence[i]->wait();
+				if (perFrameResourcesFences[i])
+					perFrameResourcesFences[i]->wait();
 			}
 		}
 	}
@@ -3468,7 +3502,6 @@ class VulkanPostProcessing : public pvr::Shell
 	uint32_t _blurScale;
 
 	// Synchronisation counters
-	uint32_t _numSwapImages;
 	uint32_t _swapchainIndex;
 	uint32_t _frameId;
 	uint32_t _queueIndex;
@@ -3483,17 +3516,14 @@ class VulkanPostProcessing : public pvr::Shell
 	bool _isManual;
 	float _modeDuration;
 
-	glm::vec3 _lightPosition;
 	glm::mat4 _viewMatrix;
 	glm::mat4 _projectionMatrix;
 	glm::mat4 _viewProjectionMatrix;
 
 	BloomMode _blurMode;
 
-	bool _useThreshold;
-	float _bloomLumaThreshold;
-
 	uint32_t _currentDemoConfiguration;
+	uint32_t _currentScene;
 
 	bool _mustRecordPrimaryCommandBuffer[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
 	bool _mustUpdatePerSwapchainDemoConfig[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
@@ -3502,7 +3532,11 @@ class VulkanPostProcessing : public pvr::Shell
 
 	std::string _currentBlurString;
 
-	bool _supportsBlit;
+	bool _useMultiQueue;
+
+	float _exposure;
+	float _threshold;
+	uint32_t _pingPongImageIndices[2];
 
 public:
 	VulkanPostProcessing() {}
@@ -3514,9 +3548,7 @@ public:
 	virtual pvr::Result renderFrame();
 
 	void recordBlurCommands(BloomMode blurMode, uint32_t swapchainIndex);
-	void createBuffers();
 	void createSceneBuffers();
-	void createBloomThresholdBuffer();
 	void createBlurRenderPass();
 	void createHybridBlurRenderPass();
 	void createBlurFramebuffers();
@@ -3528,6 +3560,7 @@ public:
 	void updateBlurDescription();
 	void recordUIRendererCommands(uint32_t swapchainIndex, pvr::Multi<pvrvk::SecondaryCommandBuffer>& commandBuffers);
 	void updateDemoConfigs();
+	void handleDesktopInput();
 	void eventMappedInput(pvr::SimplifiedInput e);
 	void updateBloomConfiguration();
 	void updateAnimation();
@@ -3546,8 +3579,6 @@ pvr::Result VulkanPostProcessing::initApplication()
 	// Default demo properties
 	_animateObject = true;
 	_animateCamera = false;
-	_lightPosition = LightPosition;
-	_useThreshold = true;
 	_objectAngleY = 0.0f;
 	_cameraAngle = 240.0f;
 	_camera.setDistanceFromTarget(200.f);
@@ -3559,6 +3590,8 @@ pvr::Result VulkanPostProcessing::initApplication()
 	_modeSwitchTime = 0.0f;
 	_isManual = false;
 	_modeDuration = 1.5f;
+	_currentScene = 0;
+	_renderOnlyBloom = false;
 
 	// Handle command line arguments including "blurmode", "blursize" and "bloom"
 	const pvr::CommandLine& commandOptions = getCommandLine();
@@ -3598,7 +3631,6 @@ pvr::Result VulkanPostProcessing::initApplication()
 		_currentDemoConfiguration = DemoConfigurations::DefaultDemoConfigurations;
 	}
 
-	_renderOnlyBloom = false;
 	commandOptions.getBoolOptionSetTrueIfPresent("-bloom", _renderOnlyBloom);
 
 	return pvr::Result::Success;
@@ -3623,12 +3655,8 @@ pvr::Result VulkanPostProcessing::initView()
 	// Create the surface
 	pvrvk::Surface surface = pvr::utils::createSurface(_deviceResources->instance, _deviceResources->instance->getPhysicalDevice(0), this->getWindow(), this->getDisplay());
 
-	// Add Debug Report Callbacks
-	// Add a Debug Report Callback for logging messages for events of all supported types.
-	_deviceResources->debugCallbacks[0] = pvr::utils::createDebugReportCallback(_deviceResources->instance);
-	// Add a second Debug Report Callback for throwing exceptions for Error events.
-	_deviceResources->debugCallbacks[1] =
-		pvr::utils::createDebugReportCallback(_deviceResources->instance, pvrvk::DebugReportFlagsEXT::e_ERROR_BIT_EXT, pvr::utils::throwOnErrorDebugReportCallback);
+	// Create a default set of debug utils messengers or debug callbacks using either VK_EXT_debug_utils or VK_EXT_debug_report respectively
+	_deviceResources->debugUtilsCallbacks = pvr::utils::createDebugUtilsCallbacks(_deviceResources->instance);
 
 	pvr::utils::QueuePopulateInfo queueCreateInfos[] = {
 		{ pvrvk::QueueFlags::e_GRAPHICS_BIT | pvrvk::QueueFlags::e_COMPUTE_BIT, surface }, // Queue 0
@@ -3638,10 +3666,28 @@ pvr::Result VulkanPostProcessing::initView()
 	_deviceResources->device = pvr::utils::createDeviceAndQueues(_deviceResources->instance->getPhysicalDevice(0), queueCreateInfos, 2, queueAccessInfos);
 
 	_deviceResources->queues[0] = _deviceResources->device->getQueue(queueAccessInfos[0].familyId, queueAccessInfos[0].queueId);
-	_deviceResources->queues[1] = _deviceResources->device->getQueue(queueAccessInfos[1].familyId, queueAccessInfos[1].queueId);
 
-	// Currently we're requiring that both queues use the same queue family id
-	assertion(_deviceResources->queues[0]->getFamilyIndex() == _deviceResources->queues[1]->getFamilyIndex());
+	// In the future we may want to improve our flexibility wrt. making use of multiple queues but for now to support multi queue the queue must support
+	// Graphics + Compute + WSI support.
+	// Other multi queue approaches may be possible i.e. making use of additional queues which do not support graphics/WSI
+	_useMultiQueue = false;
+	if (queueAccessInfos[1].familyId != -1 && queueAccessInfos[1].queueId != -1)
+	{
+		_useMultiQueue = true;
+		Log(LogLevel::Information, "Multiple queues support e_GRAPHICS_BIT + e_COMPUTE_BIT + WSI. These queues will be used to ping-pong work each frame");
+	}
+	else
+	{
+		Log(LogLevel::Information, "Only a single queue supports e_GRAPHICS_BIT + e_COMPUTE_BIT + WSI. We cannot ping-pong work each frame");
+	}
+
+	if (_useMultiQueue)
+	{
+		_deviceResources->queues[1] = _deviceResources->device->getQueue(queueAccessInfos[1].familyId, queueAccessInfos[1].queueId);
+
+		// Currently we're requiring that both queues use the same queue family id
+		assertion(_deviceResources->queues[0]->getFamilyIndex() == _deviceResources->queues[1]->getFamilyIndex());
+	}
 
 	pvrvk::SurfaceCapabilitiesKHR surfaceCapabilities = _deviceResources->instance->getPhysicalDevice(0)->getSurfaceCapabilities(surface);
 
@@ -3653,21 +3699,6 @@ pvr::Result VulkanPostProcessing::initView()
 	}
 
 	_luminanceColorFormat = pvrvk::Format::e_R16_SFLOAT;
-
-	// Determine support for using images created using the given image format as a blit src and blit dst
-	{
-		pvrvk::FormatProperties properties = _deviceResources->device->getPhysicalDevice()->getFormatProperties(_luminanceColorFormat);
-		pvrvk::FormatFeatureFlags flags = properties.getOptimalTilingFeatures();
-
-		if ((static_cast<uint32_t>(flags & pvrvk::FormatFeatureFlags::e_BLIT_SRC_BIT) != 0) && (static_cast<uint32_t>(flags & pvrvk::FormatFeatureFlags::e_BLIT_DST_BIT) != 0))
-		{
-			_supportsBlit = true;
-		}
-		else
-		{
-			_supportsBlit = false;
-		}
-	}
 
 	// Create memory allocator
 	_deviceResources->vmaAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
@@ -3691,9 +3722,6 @@ pvr::Result VulkanPostProcessing::initView()
 	{
 		_projectionMatrix = pvr::math::perspectiveFov(pvr::Api::Vulkan, Fov, static_cast<float>(getWidth()), static_cast<float>(getHeight()), CameraNear, CameraFar);
 	}
-
-	// Get the number of swap images
-	_numSwapImages = _deviceResources->swapchain->getSwapchainLength();
 
 	// Get current swap index
 	_swapchainIndex = _deviceResources->swapchain->getSwapchainIndex();
@@ -3750,17 +3778,14 @@ pvr::Result VulkanPostProcessing::initView()
 		pvrvk::CommandPoolCreateInfo(_deviceResources->queues[0]->getFamilyIndex(), pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT));
 
 	// This demo application makes use of quite a large number of Images and Buffers and therefore we're making possible for the descriptor pool to allocate descriptors with various limits.maxDescriptorSet*
-	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(
-		pvrvk::DescriptorPoolCreateInfo()
-			.setMaxDescriptorSets(75)
-			.addDescriptorInfo(pvrvk::DescriptorType::e_INPUT_ATTACHMENT, 10)
-			.addDescriptorInfo(
-				pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, _deviceResources->device->getPhysicalDevice()->getProperties().getLimits().getMaxDescriptorSetSampledImages())
-			.addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC,
-				_deviceResources->device->getPhysicalDevice()->getProperties().getLimits().getMaxDescriptorSetUniformBuffersDynamic())
-			.addDescriptorInfo(pvrvk::DescriptorType::e_STORAGE_IMAGE, 20)
-			.addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, _deviceResources->device->getPhysicalDevice()->getProperties().getLimits().getMaxDescriptorSetUniformBuffers())
-			.addDescriptorInfo(pvrvk::DescriptorType::e_STORAGE_BUFFER, _deviceResources->device->getPhysicalDevice()->getProperties().getLimits().getMaxDescriptorSetStorageBuffers()));
+	_deviceResources->descriptorPool =
+		_deviceResources->device->createDescriptorPool(pvrvk::DescriptorPoolCreateInfo()
+														   .setMaxDescriptorSets(125)
+														   .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER,
+															   _deviceResources->device->getPhysicalDevice()->getProperties().getLimits().getMaxDescriptorSetSampledImages())
+														   .addDescriptorInfo(pvrvk::DescriptorType::e_STORAGE_IMAGE, 20)
+														   .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER,
+															   _deviceResources->device->getPhysicalDevice()->getProperties().getLimits().getMaxDescriptorSetUniformBuffers()));
 
 	// create the utility commandbuffer which will be used for image layout transitions and buffer/image uploads.
 	_deviceResources->utilityCommandBuffer = _deviceResources->commandPool->allocateCommandBuffer();
@@ -3769,14 +3794,14 @@ pvr::Result VulkanPostProcessing::initView()
 	// Create the framebuffers and main rendering images
 	// Note the use of the color attachment load operation (pvrvk::AttachmentLoadOp::e_DONT_CARE). The final composition pass will be a full screen render
 	// so we don't need to clear the attachment prior to rendering to the image as each pixel will get a new value either way
-	pvr::utils::createOnscreenFramebufferAndRenderpass(_deviceResources->swapchain, nullptr, _deviceResources->onScreenFramebuffers, _deviceResources->onScreenRenderPass,
+	pvr::utils::createOnscreenFramebufferAndRenderPass(_deviceResources->swapchain, nullptr, _deviceResources->onScreenFramebuffers, _deviceResources->onScreenRenderPass,
 		pvrvk::ImageLayout::e_UNDEFINED, pvrvk::ImageLayout::e_UNDEFINED, pvrvk::AttachmentLoadOp::e_DONT_CARE);
 
 	// Create the pipeline cache
 	_deviceResources->pipelineCache = _deviceResources->device->createPipelineCache();
 
-	// create demo buffers
-	createBuffers();
+	// create demo scene buffers
+	createSceneBuffers();
 
 	// Allocate two images to use which can be "ping-ponged" between when applying various filters/blurs
 	// Pass 1: Read From 1, Render to 0
@@ -3789,38 +3814,33 @@ pvr::Result VulkanPostProcessing::initView()
 	// Create the samplers used for various texture sampling
 	createSamplers();
 
-	// transition the blur pingpong images ready for their first use
+	// transition the shared blur images ready for their first use
 	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
 	{
-		for (uint32_t j = 0; j < 2; j++)
+		for (uint32_t j = 0; j < _deviceResources->sharedBlurImageViews.size(); j++)
 		{
-			pvr::utils::setImageLayout(_deviceResources->pingPongImageViews[j][i]->getImage(), pvrvk::ImageLayout::e_UNDEFINED, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL,
+			pvr::utils::setImageLayout(_deviceResources->sharedBlurImageViews[j][i]->getImage(), pvrvk::ImageLayout::e_UNDEFINED, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL,
 				_deviceResources->utilityCommandBuffer);
-			if (_storageImageLuminanceColorFormat != _luminanceColorFormat)
-			{
-				pvr::utils::setImageLayout(_deviceResources->storageImagePingPongImageViews[j][i]->getImage(), pvrvk::ImageLayout::e_UNDEFINED,
-					pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, _deviceResources->utilityCommandBuffer);
-			}
 		}
 	}
 
-	pvr::Texture diffuseIrradianceMapTexture = pvr::textureLoad(this->getAssetStream(DiffuseIrradianceMapTexFile), pvr::TextureFileFormat::PVR);
+	// The diffue irradiance maps are small so we load them all up front
+	for (uint32_t i = 0; i < NumScenes; ++i)
+	{
+		pvr::Texture diffuseIrradianceMapTexture = pvr::textureLoad(this->getAssetStream(SceneTexFileNames[i].diffuseIrradianceMapTexture), pvr::TextureFileFormat::PVR);
 
-	// Create and Allocate Textures
-	_deviceResources->diffuseIrradianceMapImageView =
-		pvr::utils::uploadImageAndView(_deviceResources->device, diffuseIrradianceMapTexture, true, _deviceResources->utilityCommandBuffer, pvrvk::ImageUsageFlags::e_SAMPLED_BIT,
-			pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, &_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
+		// Create and Allocate Textures
+		_deviceResources->diffuseIrradianceMapImageViews[i] =
+			pvr::utils::uploadImageAndView(_deviceResources->device, diffuseIrradianceMapTexture, true, _deviceResources->utilityCommandBuffer,
+				pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, &_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
+	}
 
 	// Create the main scene rendering passes
 	_deviceResources->statuePass.init(*this, _deviceResources->device, _deviceResources->swapchain, _deviceResources->commandPool, _deviceResources->descriptorPool,
-		_deviceResources->offScreenRenderPass, _deviceResources->offScreenFramebuffers, _deviceResources->vmaAllocator, _deviceResources->utilityCommandBuffer,
-		_deviceResources->samplerBilinear, _deviceResources->samplerTrilinear, _deviceResources->pipelineCache, _deviceResources->diffuseIrradianceMapImageView,
-		_deviceResources->sceneBufferView, _deviceResources->sceneBuffer, _deviceResources->bloomConfigBufferView, _deviceResources->bloomConfigBuffer);
+		_deviceResources->offScreenRenderPass, _deviceResources->vmaAllocator, _deviceResources->utilityCommandBuffer, _deviceResources->pipelineCache);
 
 	_deviceResources->skyBoxPass.init(*this, _deviceResources->device, _deviceResources->swapchain, _deviceResources->commandPool, _deviceResources->descriptorPool,
-		_deviceResources->offScreenRenderPass, _deviceResources->offScreenFramebuffers, _deviceResources->vmaAllocator, _deviceResources->utilityCommandBuffer,
-		_deviceResources->samplerTrilinear, _deviceResources->pipelineCache, _deviceResources->sceneBufferView, _deviceResources->sceneBuffer,
-		_deviceResources->bloomConfigBufferView, _deviceResources->bloomConfigBuffer);
+		_deviceResources->offScreenRenderPass, _deviceResources->vmaAllocator, _deviceResources->pipelineCache);
 
 	// Create bloom RenderPasses and Framebuffers
 	createBlurRenderPass();
@@ -3832,11 +3852,11 @@ pvr::Result VulkanPostProcessing::initView()
 	// Create the downsample passes
 	{
 		_deviceResources->downsamplePass.init(*this, _deviceResources->device, _deviceResources->swapchain, _deviceResources->commandPool, _deviceResources->descriptorPool,
-			_blurFramebufferDimensions, _deviceResources->luminanceImageViews, _deviceResources->pingPongImageViews[0], _deviceResources->samplerBilinear,
+			_blurFramebufferDimensions, _deviceResources->luminanceImageViews, _deviceResources->sharedBlurImageViews[_pingPongImageIndices[0]], _deviceResources->samplerBilinear,
 			_deviceResources->pipelineCache, false);
 
 		_deviceResources->computeDownsamplePass.init(*this, _deviceResources->device, _deviceResources->swapchain, _deviceResources->commandPool, _deviceResources->descriptorPool,
-			_blurFramebufferDimensions, _deviceResources->luminanceImageViews, _deviceResources->storageImagePingPongImageViews[0], _deviceResources->samplerBilinear,
+			_blurFramebufferDimensions, _deviceResources->luminanceImageViews, _deviceResources->sharedBlurImageViews[_pingPongImageIndices[0]], _deviceResources->samplerBilinear,
 			_deviceResources->pipelineCache, true);
 	}
 
@@ -3851,22 +3871,24 @@ pvr::Result VulkanPostProcessing::initView()
 		uint32_t verticalPassPingPongImageIndex = 0;
 
 		_deviceResources->gaussianBlurPass.init(*this, _deviceResources->device, _deviceResources->swapchain, _deviceResources->commandPool, _deviceResources->descriptorPool,
-			_deviceResources->vmaAllocator, _deviceResources->blurRenderPass, _blurFramebufferDimensions, _deviceResources->pingPongImageViews[horizontalPassPingPongImageIndex],
-			_deviceResources->pingPongImageViews[verticalPassPingPongImageIndex], _deviceResources->samplerNearest, _deviceResources->pipelineCache);
+			_deviceResources->vmaAllocator, _deviceResources->blurRenderPass, _blurFramebufferDimensions,
+			_deviceResources->sharedBlurImageViews[_pingPongImageIndices[horizontalPassPingPongImageIndex]],
+			_deviceResources->sharedBlurImageViews[_pingPongImageIndices[verticalPassPingPongImageIndex]], _deviceResources->samplerNearest, _deviceResources->pipelineCache);
 
 		_deviceResources->linearGaussianBlurPass.init(*this, _deviceResources->device, _deviceResources->swapchain, _deviceResources->commandPool, _deviceResources->descriptorPool,
-			_deviceResources->vmaAllocator, _deviceResources->blurRenderPass, _blurFramebufferDimensions, _deviceResources->pingPongImageViews[horizontalPassPingPongImageIndex],
-			_deviceResources->pingPongImageViews[verticalPassPingPongImageIndex], _deviceResources->samplerBilinear, _deviceResources->pipelineCache);
+			_deviceResources->vmaAllocator, _deviceResources->blurRenderPass, _blurFramebufferDimensions,
+			_deviceResources->sharedBlurImageViews[_pingPongImageIndices[horizontalPassPingPongImageIndex]],
+			_deviceResources->sharedBlurImageViews[_pingPongImageIndices[verticalPassPingPongImageIndex]], _deviceResources->samplerBilinear, _deviceResources->pipelineCache);
 
 		_deviceResources->truncatedLinearGaussianBlurPass.init(*this, _deviceResources->device, _deviceResources->swapchain, _deviceResources->commandPool,
 			_deviceResources->descriptorPool, _deviceResources->vmaAllocator, _deviceResources->blurRenderPass, _blurFramebufferDimensions,
-			_deviceResources->pingPongImageViews[horizontalPassPingPongImageIndex], _deviceResources->pingPongImageViews[verticalPassPingPongImageIndex],
-			_deviceResources->samplerBilinear, _deviceResources->pipelineCache);
+			_deviceResources->sharedBlurImageViews[_pingPongImageIndices[horizontalPassPingPongImageIndex]],
+			_deviceResources->sharedBlurImageViews[_pingPongImageIndices[verticalPassPingPongImageIndex]], _deviceResources->samplerBilinear, _deviceResources->pipelineCache);
 
 		_deviceResources->computeBlurPass.init(*this, _deviceResources->device, _deviceResources->swapchain, _deviceResources->commandPool, _deviceResources->descriptorPool,
 			_deviceResources->vmaAllocator, _deviceResources->blurRenderPass, _blurFramebufferDimensions,
-			_deviceResources->storageImagePingPongImageViews[horizontalPassPingPongImageIndex], _deviceResources->storageImagePingPongImageViews[verticalPassPingPongImageIndex],
-			_deviceResources->samplerNearest, _deviceResources->pipelineCache);
+			_deviceResources->sharedBlurImageViews[_pingPongImageIndices[horizontalPassPingPongImageIndex]],
+			_deviceResources->sharedBlurImageViews[_pingPongImageIndices[verticalPassPingPongImageIndex]], _deviceResources->samplerNearest, _deviceResources->pipelineCache);
 
 		_deviceResources->hybridGaussianBlurPass.init(
 			&_deviceResources->computeBlurPass, &_deviceResources->truncatedLinearGaussianBlurPass, _deviceResources->swapchain, _deviceResources->commandPool);
@@ -3874,22 +3896,28 @@ pvr::Result VulkanPostProcessing::initView()
 
 	// Kawase Blur
 	{
+		std::vector<pvr::Multi<pvrvk::ImageView> > kawaseImages;
+		kawaseImages.emplace_back(_deviceResources->sharedBlurImageViews[_pingPongImageIndices[0]]);
+		kawaseImages.emplace_back(_deviceResources->sharedBlurImageViews[_pingPongImageIndices[1]]);
+
 		_deviceResources->kawaseBlurPass.init(*this, _deviceResources->device, _deviceResources->swapchain, _deviceResources->commandPool, _deviceResources->descriptorPool,
-			_deviceResources->blurRenderPass, _blurFramebufferDimensions, _deviceResources->pingPongImageViews, 2, _deviceResources->samplerBilinear, _deviceResources->pipelineCache);
+			_deviceResources->blurRenderPass, _blurFramebufferDimensions, kawaseImages.data(), 2, _deviceResources->samplerBilinear, _deviceResources->pipelineCache);
 	}
 
 	// Dual Filter Blur
 	{
 		_deviceResources->dualFilterBlurPass.init(*this, _deviceResources->device, _deviceResources->swapchain, _deviceResources->commandPool, _deviceResources->descriptorPool,
-			_deviceResources->blurRenderPass, _deviceResources->vmaAllocator, _luminanceColorFormat, glm::ivec2(this->getWidth(), this->getHeight()),
-			_deviceResources->samplerBilinear, _deviceResources->utilityCommandBuffer, _deviceResources->onScreenRenderPass, _deviceResources->pipelineCache);
+			_deviceResources->blurRenderPass, _deviceResources->offScreenColorImageViews, _deviceResources->luminanceImageViews, _deviceResources->vmaAllocator,
+			_luminanceColorFormat, glm::ivec2(this->getWidth(), this->getHeight()), _deviceResources->samplerBilinear, _deviceResources->onScreenRenderPass,
+			_deviceResources->pipelineCache, _deviceResources->sharedBlurImageViews);
 	}
 
 	// Down Sample and Tent filter blur pass
 	{
-		_deviceResources->downAndTentFilterBlurPass.init(*this, _deviceResources->device, _deviceResources->swapchain, _deviceResources->commandPool, _deviceResources->descriptorPool,
-			_deviceResources->blurRenderPass, _deviceResources->vmaAllocator, _luminanceColorFormat, glm::ivec2(this->getWidth(), this->getHeight()),
-			_deviceResources->samplerBilinear, _deviceResources->utilityCommandBuffer, _deviceResources->onScreenRenderPass, _deviceResources->pipelineCache, _supportsBlit);
+		_deviceResources->downAndTentFilterBlurPass.init(*this, _deviceResources->device, _deviceResources->swapchain, _deviceResources->commandPool,
+			_deviceResources->descriptorPool, _deviceResources->blurRenderPass, _deviceResources->offScreenColorImageViews, _deviceResources->luminanceImageViews,
+			_deviceResources->vmaAllocator, _luminanceColorFormat, glm::ivec2(this->getWidth(), this->getHeight()), _deviceResources->samplerBilinear,
+			_deviceResources->onScreenRenderPass, _deviceResources->pipelineCache, _deviceResources->sharedBlurImageViews);
 	}
 
 	_deviceResources->utilityCommandBuffer->end();
@@ -3913,10 +3941,9 @@ pvr::Result VulkanPostProcessing::initView()
 	// create the synchronisation primitives
 	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
 	{
-		_deviceResources->semaphorePresent[i] = _deviceResources->device->createSemaphore();
-		_deviceResources->semaphoreImageAcquired[i] = _deviceResources->device->createSemaphore();
-		_deviceResources->perFrameCommandBufferFence[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
-		_deviceResources->perFrameAcquireFence[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
+		_deviceResources->presentationSemaphores[i] = _deviceResources->device->createSemaphore();
+		_deviceResources->imageAcquiredSemaphores[i] = _deviceResources->device->createSemaphore();
+		_deviceResources->perFrameResourcesFences[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
 	}
 
 	// initalise the UI Renderers
@@ -3942,14 +3969,14 @@ pvr::Result VulkanPostProcessing::initView()
 /// <returns>Result::Success if no error occurred.</summary>
 pvr::Result VulkanPostProcessing::renderFrame()
 {
-	_deviceResources->perFrameAcquireFence[_frameId]->wait();
-	_deviceResources->perFrameAcquireFence[_frameId]->reset();
-	_deviceResources->swapchain->acquireNextImage(uint64_t(-1), _deviceResources->semaphoreImageAcquired[_frameId], _deviceResources->perFrameAcquireFence[_frameId]);
+	handleDesktopInput();
+
+	_deviceResources->swapchain->acquireNextImage(uint64_t(-1), _deviceResources->imageAcquiredSemaphores[_frameId]);
 
 	_swapchainIndex = _deviceResources->swapchain->getSwapchainIndex();
 
-	_deviceResources->perFrameCommandBufferFence[_swapchainIndex]->wait();
-	_deviceResources->perFrameCommandBufferFence[_swapchainIndex]->reset();
+	_deviceResources->perFrameResourcesFences[_swapchainIndex]->wait();
+	_deviceResources->perFrameResourcesFences[_swapchainIndex]->reset();
 
 	// update dynamic buffers
 	updateDynamicSceneData();
@@ -3963,10 +3990,10 @@ pvr::Result VulkanPostProcessing::renderFrame()
 
 	pvrvk::SubmitInfo submitInfo;
 	pvrvk::PipelineStageFlags submitWaitFlags = pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT;
-	submitInfo.waitDestStages = &submitWaitFlags;
-	submitInfo.waitSemaphores = &_deviceResources->semaphoreImageAcquired[_frameId];
+	submitInfo.waitDstStageMask = &submitWaitFlags;
+	submitInfo.waitSemaphores = &_deviceResources->imageAcquiredSemaphores[_frameId];
 	submitInfo.numWaitSemaphores = 1;
-	submitInfo.signalSemaphores = &_deviceResources->semaphorePresent[_frameId];
+	submitInfo.signalSemaphores = &_deviceResources->presentationSemaphores[_frameId];
 	submitInfo.numSignalSemaphores = 1;
 	submitInfo.numCommandBuffers = 1;
 	submitInfo.commandBuffers = &_deviceResources->mainCommandBuffers[_swapchainIndex];
@@ -3985,16 +4012,16 @@ pvr::Result VulkanPostProcessing::renderFrame()
 	// VkQueue objects which are submitted to in a ping-ponged fashion. Each VkQueue only needs to observe barriers used in command buffers which are submitted to them meaning
 	// there are no barriers enforced between the two sets of separate commands other than the presentation synchronisation logic. This simple change allows us to observe the
 	// following workload scheduling: Compute Workload                |1----|    |2----| Fragment Workload      |1----||2----|  |1---||1--||2---||2--|
-	_deviceResources->queues[_queueIndex]->submit(&submitInfo, 1, _deviceResources->perFrameCommandBufferFence[_swapchainIndex]);
+	_deviceResources->queues[_queueIndex]->submit(&submitInfo, 1, _deviceResources->perFrameResourcesFences[_swapchainIndex]);
 
 	if (this->shouldTakeScreenshot())
 	{
-		pvr::utils::takeScreenshot(_deviceResources->swapchain, _swapchainIndex, _deviceResources->commandPool, _deviceResources->queues[_queueIndex],
+		pvr::utils::takeScreenshot(_deviceResources->queues[_queueIndex], _deviceResources->commandPool, _deviceResources->swapchain, _swapchainIndex,
 			this->getScreenshotFileName(), &_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
 	}
 
 	pvrvk::PresentInfo presentInfo;
-	presentInfo.waitSemaphores = &_deviceResources->semaphorePresent[_frameId];
+	presentInfo.waitSemaphores = &_deviceResources->presentationSemaphores[_frameId];
 	presentInfo.numWaitSemaphores = 1;
 	presentInfo.swapchains = &_deviceResources->swapchain;
 	presentInfo.numSwapchains = 1;
@@ -4004,7 +4031,11 @@ pvr::Result VulkanPostProcessing::renderFrame()
 	_deviceResources->queues[_queueIndex]->present(presentInfo);
 
 	_frameId = (_frameId + 1) % _deviceResources->swapchain->getSwapchainLength();
-	_queueIndex = (_queueIndex + 1) % 2;
+
+	if (_useMultiQueue)
+	{
+		_queueIndex = (_queueIndex + 1) % 2;
+	}
 
 	return pvr::Result::Success;
 }
@@ -4036,7 +4067,8 @@ void VulkanPostProcessing::createUiRenderer()
 	_deviceResources->uiRenderer.getDefaultControls()->setText("Left / right: Blur Mode\n"
 															   "Up / Down: Blur Size\n"
 															   "Action 1: Enable/Disable Bloom\n"
-															   "Action 2: Enable/Disable Animation\n");
+															   "Action 2: Enable/Disable Animation\n"
+															   "Action 3: Change Scene\n");
 	_deviceResources->uiRenderer.getDefaultControls()->commitUpdates();
 
 	updateBlurDescription();
@@ -4056,42 +4088,71 @@ void VulkanPostProcessing::updateBlurDescription()
 	}
 	case (BloomMode::GaussianOriginal):
 	{
-		_currentBlurString = BloomStrings[static_cast<uint32_t>(_blurMode)] + "\n" + DemoConfigurations::Configurations[_currentDemoConfiguration].gaussianConfig.second;
+		uint32_t numSamples = static_cast<uint32_t>(_deviceResources->gaussianBlurPass.gaussianOffsets[_currentDemoConfiguration].size());
+		_currentBlurString = BloomStrings[static_cast<uint32_t>(_blurMode)] + "\n" +
+			pvr::strings::createFormatted("Kernel Size = %u (%u + %u taps)", DemoConfigurations::Configurations[_currentDemoConfiguration].gaussianConfig, numSamples, numSamples);
 		break;
 	}
 	case (BloomMode::GaussianLinear):
 	{
-		_currentBlurString = BloomStrings[static_cast<uint32_t>(_blurMode)] + "\n" + DemoConfigurations::Configurations[_currentDemoConfiguration].linearGaussianConfig.second;
+		uint32_t numSamples = static_cast<uint32_t>(_deviceResources->linearGaussianBlurPass.gaussianOffsets[_currentDemoConfiguration].size());
+		_currentBlurString = BloomStrings[static_cast<uint32_t>(_blurMode)] + "\n" +
+			pvr::strings::createFormatted(
+				"Kernel Size = %u (%u + %u taps)", DemoConfigurations::Configurations[_currentDemoConfiguration].linearGaussianConfig, numSamples, numSamples);
 		break;
 	}
 	case (BloomMode::GaussianLinearTruncated):
 	{
-		_currentBlurString = BloomStrings[static_cast<uint32_t>(_blurMode)] + "\n" + DemoConfigurations::Configurations[_currentDemoConfiguration].truncatedLinearGaussianConfig.second;
+		uint32_t numSamples = static_cast<uint32_t>(_deviceResources->truncatedLinearGaussianBlurPass.gaussianOffsets[_currentDemoConfiguration].size());
+		_currentBlurString = BloomStrings[static_cast<uint32_t>(_blurMode)] + "\n" +
+			pvr::strings::createFormatted(
+				"Kernel Size = %u (%u + %u taps)", DemoConfigurations::Configurations[_currentDemoConfiguration].truncatedLinearGaussianConfig, numSamples, numSamples);
 		break;
 	}
 	case (BloomMode::Compute):
 	{
-		_currentBlurString = BloomStrings[static_cast<uint32_t>(_blurMode)] + "\n" + DemoConfigurations::Configurations[_currentDemoConfiguration].computeGaussianConfig.second;
+		uint32_t numSamples = static_cast<uint32_t>(_deviceResources->computeBlurPass.gaussianOffsets[_currentDemoConfiguration].size());
+		_currentBlurString = BloomStrings[static_cast<uint32_t>(_blurMode)] + "\n" +
+			pvr::strings::createFormatted(
+				"Kernel Size = %u (Sliding Average)", DemoConfigurations::Configurations[_currentDemoConfiguration].computeGaussianConfig, numSamples, numSamples);
 		break;
 	}
 	case (BloomMode::DualFilter):
 	{
-		_currentBlurString = BloomStrings[static_cast<uint32_t>(_blurMode)] + "\n" + DemoConfigurations::Configurations[_currentDemoConfiguration].dualFilterConfig.second;
+		uint32_t numSamples = _deviceResources->dualFilterBlurPass.blurIterations / 2;
+		_currentBlurString = BloomStrings[static_cast<uint32_t>(_blurMode)] + "\n" +
+			pvr::strings::createFormatted(
+				"Iterations = %u (%u Downsamples, %u Upsamples)", DemoConfigurations::Configurations[_currentDemoConfiguration].dualFilterConfig, numSamples, numSamples);
 		break;
 	}
 	case (BloomMode::TentFilter):
 	{
-		_currentBlurString = BloomStrings[static_cast<uint32_t>(_blurMode)] + "\n" + DemoConfigurations::Configurations[_currentDemoConfiguration].tentFilterConfig.second;
+		uint32_t numSamples = _deviceResources->downAndTentFilterBlurPass.blurIterations / 2;
+		_currentBlurString = BloomStrings[static_cast<uint32_t>(_blurMode)] + "\n" +
+			pvr::strings::createFormatted(
+				"Iterations = %u (%u Downsamples, %u Upsamples)", DemoConfigurations::Configurations[_currentDemoConfiguration].tentFilterConfig, numSamples, numSamples);
 		break;
 	}
 	case (BloomMode::HybridGaussian):
 	{
-		_currentBlurString = BloomStrings[static_cast<uint32_t>(_blurMode)] + "\n" + DemoConfigurations::Configurations[_currentDemoConfiguration].hybridConfig.second;
+		uint32_t numComputeSamples = static_cast<uint32_t>(_deviceResources->hybridGaussianBlurPass.computeBlurPass->gaussianOffsets[_currentDemoConfiguration].size());
+		uint32_t numLinearSamples = static_cast<uint32_t>(_deviceResources->hybridGaussianBlurPass.linearBlurPass->gaussianOffsets[_currentDemoConfiguration].size());
+		_currentBlurString = BloomStrings[static_cast<uint32_t>(_blurMode)] + "\n" +
+			pvr::strings::createFormatted("Horizontal Compute %u taps, Vertical Linear Gaussian %u taps)", numComputeSamples, numLinearSamples);
 		break;
 	}
 	case (BloomMode::Kawase):
 	{
-		_currentBlurString = BloomStrings[static_cast<uint32_t>(_blurMode)] + "\n" + DemoConfigurations::Configurations[_currentDemoConfiguration].kawaseConfig.second;
+		std::string kernelString = "";
+		uint32_t numIterations = _deviceResources->kawaseBlurPass.blurIterations;
+
+		for (uint32_t i = 0; i < numIterations - 1; ++i)
+		{
+			kernelString += pvr::strings::createFormatted("%u,", DemoConfigurations::Configurations[_currentDemoConfiguration].kawaseConfig.kernel[i]);
+		}
+		kernelString += pvr::strings::createFormatted("%u", DemoConfigurations::Configurations[_currentDemoConfiguration].kawaseConfig.kernel[numIterations - 1]);
+
+		_currentBlurString = BloomStrings[static_cast<uint32_t>(_blurMode)] + "\n" + pvr::strings::createFormatted("%u Iterations: %s", numIterations, kernelString.c_str());
 		break;
 	}
 	default:
@@ -4108,9 +4169,8 @@ void VulkanPostProcessing::createSceneBuffers()
 	pvr::utils::StructuredMemoryDescription desc;
 	desc.addElement(BufferEntryNames::Scene::InverseViewProjectionMatrix, pvr::GpuDatatypes::mat4x4);
 	desc.addElement(BufferEntryNames::Scene::EyePosition, pvr::GpuDatatypes::vec3);
-	desc.addElement(BufferEntryNames::Scene::LightPosition, pvr::GpuDatatypes::vec3);
 
-	_deviceResources->sceneBufferView.initDynamic(desc, _numSwapImages, pvr::BufferUsageFlags::UniformBuffer,
+	_deviceResources->sceneBufferView.initDynamic(desc, _deviceResources->swapchain->getSwapchainLength(), pvr::BufferUsageFlags::UniformBuffer,
 		_deviceResources->device->getPhysicalDevice()->getProperties().getLimits().getMinUniformBufferOffsetAlignment());
 
 	_deviceResources->sceneBuffer = pvr::utils::createBuffer(_deviceResources->device, _deviceResources->sceneBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT,
@@ -4119,52 +4179,31 @@ void VulkanPostProcessing::createSceneBuffers()
 	_deviceResources->sceneBufferView.pointToMappedMemory(_deviceResources->sceneBuffer->getDeviceMemory()->getMappedData());
 }
 
-/// <summary>Creates the bloom threshold buffer.</summary>
-void VulkanPostProcessing::createBloomThresholdBuffer()
-{
-	pvr::utils::StructuredMemoryDescription desc;
-	desc.addElement(BufferEntryNames::BloomConfig::LuminosityThreshold, pvr::GpuDatatypes::Float);
-
-	_deviceResources->bloomConfigBufferView.initDynamic(desc, _deviceResources->swapchain->getSwapchainLength(), pvr::BufferUsageFlags::UniformBuffer,
-		_deviceResources->device->getPhysicalDevice()->getProperties().getLimits().getMinUniformBufferOffsetAlignment());
-
-	_deviceResources->bloomConfigBuffer =
-		pvr::utils::createBuffer(_deviceResources->device, _deviceResources->bloomConfigBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT,
-			pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT, &_deviceResources->vmaAllocator);
-
-	_deviceResources->bloomConfigBufferView.pointToMappedMemory(_deviceResources->bloomConfigBuffer->getDeviceMemory()->getMappedData());
-}
-
-/// <summary>Creates main application buffers.</summary>
-void VulkanPostProcessing::createBuffers()
-{
-	createSceneBuffers();
-	createBloomThresholdBuffer();
-
-	// update the bloom threshold buffer
-	if (_useThreshold)
-	{
-		// This threshold values controls the minimum luminosity value any fragment must have to be used as part of the bloom
-		_bloomLumaThreshold = BloomLumaThreshold;
-	}
-	else
-	{
-		_bloomLumaThreshold = 0.0;
-	}
-
-	_deviceResources->bloomConfigBufferView.getElementByName(BufferEntryNames::BloomConfig::LuminosityThreshold).setValue(_bloomLumaThreshold);
-}
-
 /// <summary>Records the main command buffers used for rendering the demo.</summary>
 /// <param name="swapchainIndex">The swapchain index for which the recorded command buffer will be used.</param>
 void VulkanPostProcessing::recordMainCommandBuffer(uint32_t swapchainIndex)
 {
+	_deviceResources->mainCommandBuffers[swapchainIndex]->reset();
 	_deviceResources->mainCommandBuffers[swapchainIndex]->begin();
 
-	_deviceResources->mainCommandBuffers[swapchainIndex]->debugMarkerBeginEXT(pvr::strings::createFormatted("Render Scene - swapchain: %i", swapchainIndex));
+	pvr::utils::beginCommandBufferDebugLabel(
+		_deviceResources->mainCommandBuffers[swapchainIndex], pvrvk::DebugUtilsLabel(pvr::strings::createFormatted("Render Scene - swapchain: %i", swapchainIndex)));
 
 	const pvrvk::ClearValue offScreenClearValues[] = { pvrvk::ClearValue(0.0f, 0.0f, 0.0f, 1.f), pvrvk::ClearValue(0.0f, 0.0f, 0.0f, 1.f),
 		pvrvk::ClearValue::createDefaultDepthStencilClearValue() };
+
+	_deviceResources->skyBoxPass.loadSkyBoxImageView(
+		*this, _deviceResources->device, _deviceResources->mainCommandBuffers[swapchainIndex], _deviceResources->vmaAllocator, _currentScene);
+
+	// Update the scene rendering descriptor sets
+	_deviceResources->statuePass.updateDescriptorSets(_deviceResources->device, swapchainIndex, _deviceResources->diffuseIrradianceMapImageViews[_currentScene],
+		_deviceResources->samplerBilinear, _deviceResources->samplerTrilinear);
+	_deviceResources->skyBoxPass.updateDescriptorSets(
+		_deviceResources->device, swapchainIndex, _deviceResources->samplerTrilinear, _deviceResources->sceneBuffer, _deviceResources->sceneBufferView);
+
+	// record command buffers used for rendering the main scene
+	_deviceResources->statuePass.recordCommandBuffer(swapchainIndex, _deviceResources->offScreenFramebuffers[swapchainIndex], _exposure, _threshold);
+	_deviceResources->skyBoxPass.recordCommandBuffer(swapchainIndex, _deviceResources->offScreenFramebuffers[swapchainIndex], _exposure, _threshold);
 
 	// Render the main scene
 	_deviceResources->mainCommandBuffers[swapchainIndex]->beginRenderPass(_deviceResources->offScreenFramebuffers[swapchainIndex], _deviceResources->offScreenRenderPass,
@@ -4173,37 +4212,36 @@ void VulkanPostProcessing::recordMainCommandBuffer(uint32_t swapchainIndex)
 	_deviceResources->mainCommandBuffers[swapchainIndex]->executeCommands(_deviceResources->skyBoxPass.commandBuffers[swapchainIndex]);
 	_deviceResources->mainCommandBuffers[swapchainIndex]->endRenderPass();
 
-	_deviceResources->mainCommandBuffers[swapchainIndex]->debugMarkerEndEXT();
+	pvr::utils::endCommandBufferDebugLabel(_deviceResources->mainCommandBuffers[swapchainIndex]);
 
 	pvrvk::ClearValue clearValues = pvrvk::ClearValue(0.0f, 0.0f, 0.0f, 1.f);
 
-	// Downsample the luminance image view
+	// When using Dual/Tent filter no downsample is required as they take care of downsampling theirselves
+	if (!(_blurMode == BloomMode::DualFilter || _blurMode == BloomMode::TentFilter))
+	{
+		// Use a special cased downsample pass when the next pass will be using compute
+		if (_blurMode == BloomMode::Compute || _blurMode == BloomMode::HybridGaussian)
+		{
+			_deviceResources->computeDownsamplePass.recordCommands(swapchainIndex);
+
+			_deviceResources->mainCommandBuffers[swapchainIndex]->beginRenderPass(_deviceResources->computeDownsamplePass.framebuffers[swapchainIndex],
+				_deviceResources->computeDownsamplePass.renderPass, pvrvk::Rect2D(0, 0, _blurFramebufferDimensions.x, _blurFramebufferDimensions.y), false, &clearValues, 1);
+			_deviceResources->mainCommandBuffers[swapchainIndex]->executeCommands(_deviceResources->computeDownsamplePass.commandBuffers[swapchainIndex]);
+			_deviceResources->mainCommandBuffers[swapchainIndex]->endRenderPass();
+		}
+		else
+		{
+			_deviceResources->downsamplePass.recordCommands(swapchainIndex);
+
+			_deviceResources->mainCommandBuffers[swapchainIndex]->beginRenderPass(_deviceResources->downsamplePass.framebuffers[swapchainIndex],
+				_deviceResources->downsamplePass.renderPass, pvrvk::Rect2D(0, 0, _blurFramebufferDimensions.x, _blurFramebufferDimensions.y), false, &clearValues, 1);
+			_deviceResources->mainCommandBuffers[swapchainIndex]->executeCommands(_deviceResources->downsamplePass.commandBuffers[swapchainIndex]);
+			_deviceResources->mainCommandBuffers[swapchainIndex]->endRenderPass();
+		}
+	}
+
 	if (_blurMode != BloomMode::NoBloom)
 	{
-		// When using Dual/Tent filter no downsample is required as they take care of downsampling theirselves
-		if (!(_blurMode == BloomMode::DualFilter || _blurMode == BloomMode::TentFilter))
-		{
-			// Use a special cased downsample pass when the next pass will be using compute
-			if (_blurMode == BloomMode::Compute || _blurMode == BloomMode::HybridGaussian)
-			{
-				_deviceResources->computeDownsamplePass.recordCommands(swapchainIndex);
-
-				_deviceResources->mainCommandBuffers[swapchainIndex]->beginRenderPass(_deviceResources->computeDownsamplePass.framebuffers[swapchainIndex],
-					_deviceResources->computeDownsamplePass.renderPass, pvrvk::Rect2D(0, 0, _blurFramebufferDimensions.x, _blurFramebufferDimensions.y), false, &clearValues, 1);
-				_deviceResources->mainCommandBuffers[swapchainIndex]->executeCommands(_deviceResources->computeDownsamplePass.commandBuffers[swapchainIndex]);
-				_deviceResources->mainCommandBuffers[swapchainIndex]->endRenderPass();
-			}
-			else
-			{
-				_deviceResources->downsamplePass.recordCommands(swapchainIndex);
-
-				_deviceResources->mainCommandBuffers[swapchainIndex]->beginRenderPass(_deviceResources->downsamplePass.framebuffers[swapchainIndex],
-					_deviceResources->downsamplePass.renderPass, pvrvk::Rect2D(0, 0, _blurFramebufferDimensions.x, _blurFramebufferDimensions.y), false, &clearValues, 1);
-				_deviceResources->mainCommandBuffers[swapchainIndex]->executeCommands(_deviceResources->downsamplePass.commandBuffers[swapchainIndex]);
-				_deviceResources->mainCommandBuffers[swapchainIndex]->endRenderPass();
-			}
-		}
-
 		// Record the current set of commands for bloom
 		recordBlurCommands(_blurMode, swapchainIndex);
 
@@ -4237,7 +4275,7 @@ void VulkanPostProcessing::recordMainCommandBuffer(uint32_t swapchainIndex)
 
 				pvrvk::MemoryBarrierSet layoutTransitions;
 				layoutTransitions.addBarrier(pvrvk::ImageMemoryBarrier(pvrvk::AccessFlags::e_COLOR_ATTACHMENT_WRITE_BIT, pvrvk::AccessFlags::e_SHADER_WRITE_BIT,
-					_deviceResources->storageImagePingPongImageViews[1][swapchainIndex]->getImage(), pvrvk::ImageSubresourceRange(pvrvk::ImageAspectFlags::e_COLOR_BIT),
+					_deviceResources->sharedBlurImageViews[_pingPongImageIndices[1]][swapchainIndex]->getImage(), pvrvk::ImageSubresourceRange(pvrvk::ImageAspectFlags::e_COLOR_BIT),
 					sourceImageLayout, destinationImageLayout, _deviceResources->queues[0]->getFamilyIndex(), _deviceResources->queues[0]->getFamilyIndex()));
 
 				_deviceResources->mainCommandBuffers[swapchainIndex]->pipelineBarrier(
@@ -4276,7 +4314,7 @@ void VulkanPostProcessing::recordMainCommandBuffer(uint32_t swapchainIndex)
 
 				pvrvk::MemoryBarrierSet layoutTransitions;
 				layoutTransitions.addBarrier(pvrvk::ImageMemoryBarrier(pvrvk::AccessFlags::e_COLOR_ATTACHMENT_WRITE_BIT, pvrvk::AccessFlags::e_SHADER_WRITE_BIT,
-					_deviceResources->storageImagePingPongImageViews[1][swapchainIndex]->getImage(), pvrvk::ImageSubresourceRange(pvrvk::ImageAspectFlags::e_COLOR_BIT),
+					_deviceResources->sharedBlurImageViews[_pingPongImageIndices[1]][swapchainIndex]->getImage(), pvrvk::ImageSubresourceRange(pvrvk::ImageAspectFlags::e_COLOR_BIT),
 					sourceImageLayout, destinationImageLayout, _deviceResources->queues[0]->getFamilyIndex(), _deviceResources->queues[0]->getFamilyIndex()));
 
 				_deviceResources->mainCommandBuffers[swapchainIndex]->pipelineBarrier(
@@ -4305,50 +4343,57 @@ void VulkanPostProcessing::recordMainCommandBuffer(uint32_t swapchainIndex)
 		case (BloomMode::GaussianOriginal):
 		{
 			_deviceResources->postBloomPass.updateDescriptorSets(_deviceResources->device, swapchainIndex, _deviceResources->offScreenColorImageViews[swapchainIndex],
-				_deviceResources->gaussianBlurPass.getBlurredImage(swapchainIndex), _deviceResources->samplerBilinear);
+				_deviceResources->gaussianBlurPass.getBlurredImage(swapchainIndex), _deviceResources->samplerBilinear, _deviceResources->sceneBuffer,
+				_deviceResources->sceneBufferView, _deviceResources->diffuseIrradianceMapImageViews[_currentScene], _deviceResources->samplerTrilinear);
 			break;
 		}
 		case (BloomMode::GaussianLinear):
 		{
 			_deviceResources->postBloomPass.updateDescriptorSets(_deviceResources->device, swapchainIndex, _deviceResources->offScreenColorImageViews[swapchainIndex],
-				_deviceResources->linearGaussianBlurPass.getBlurredImage(swapchainIndex), _deviceResources->samplerBilinear);
+				_deviceResources->linearGaussianBlurPass.getBlurredImage(swapchainIndex), _deviceResources->samplerBilinear, _deviceResources->sceneBuffer,
+				_deviceResources->sceneBufferView, _deviceResources->diffuseIrradianceMapImageViews[_currentScene], _deviceResources->samplerTrilinear);
 			break;
 		}
 		case (BloomMode::Compute):
 		{
 			_deviceResources->postBloomPass.updateDescriptorSets(_deviceResources->device, swapchainIndex, _deviceResources->offScreenColorImageViews[swapchainIndex],
-				_deviceResources->computeBlurPass.getBlurredImage(swapchainIndex), _deviceResources->samplerBilinear);
+				_deviceResources->computeBlurPass.getBlurredImage(swapchainIndex), _deviceResources->samplerBilinear, _deviceResources->sceneBuffer,
+				_deviceResources->sceneBufferView, _deviceResources->diffuseIrradianceMapImageViews[_currentScene], _deviceResources->samplerTrilinear);
 			break;
 		}
 		case (BloomMode::GaussianLinearTruncated):
 		{
 			_deviceResources->postBloomPass.updateDescriptorSets(_deviceResources->device, swapchainIndex, _deviceResources->offScreenColorImageViews[swapchainIndex],
-				_deviceResources->truncatedLinearGaussianBlurPass.getBlurredImage(swapchainIndex), _deviceResources->samplerBilinear);
+				_deviceResources->truncatedLinearGaussianBlurPass.getBlurredImage(swapchainIndex), _deviceResources->samplerBilinear, _deviceResources->sceneBuffer,
+				_deviceResources->sceneBufferView, _deviceResources->diffuseIrradianceMapImageViews[_currentScene], _deviceResources->samplerTrilinear);
 			break;
 		}
 		case (BloomMode::Kawase):
 		{
 			_deviceResources->postBloomPass.updateDescriptorSets(_deviceResources->device, swapchainIndex, _deviceResources->offScreenColorImageViews[swapchainIndex],
-				_deviceResources->kawaseBlurPass.getBlurredImage(swapchainIndex), _deviceResources->samplerBilinear);
+				_deviceResources->kawaseBlurPass.getBlurredImage(swapchainIndex), _deviceResources->samplerBilinear, _deviceResources->sceneBuffer,
+				_deviceResources->sceneBufferView, _deviceResources->diffuseIrradianceMapImageViews[_currentScene], _deviceResources->samplerTrilinear);
 			break;
 		}
 		case (BloomMode::HybridGaussian):
 		{
 			_deviceResources->postBloomPass.updateDescriptorSets(_deviceResources->device, swapchainIndex, _deviceResources->offScreenColorImageViews[swapchainIndex],
-				_deviceResources->hybridGaussianBlurPass.linearBlurPass->getBlurredImage(swapchainIndex), _deviceResources->samplerBilinear);
+				_deviceResources->hybridGaussianBlurPass.linearBlurPass->getBlurredImage(swapchainIndex), _deviceResources->samplerBilinear, _deviceResources->sceneBuffer,
+				_deviceResources->sceneBufferView, _deviceResources->diffuseIrradianceMapImageViews[_currentScene], _deviceResources->samplerTrilinear);
 			break;
 		}
 		case (BloomMode::NoBloom):
 		{
 			_deviceResources->postBloomPass.updateDescriptorSets(_deviceResources->device, swapchainIndex, _deviceResources->offScreenColorImageViews[swapchainIndex],
-				_deviceResources->luminanceImageViews[swapchainIndex], _deviceResources->samplerBilinear);
+				_deviceResources->sharedBlurImageViews[_pingPongImageIndices[0]][swapchainIndex], _deviceResources->samplerBilinear, _deviceResources->sceneBuffer,
+				_deviceResources->sceneBufferView, _deviceResources->diffuseIrradianceMapImageViews[_currentScene], _deviceResources->samplerTrilinear);
 			break;
 		}
 		default:
 			throw pvr::UnsupportedOperationError("Unsupported BlurMode.");
 		}
 
-		_deviceResources->postBloomPass.recordCommandBuffer(swapchainIndex, _deviceResources->onScreenFramebuffers[swapchainIndex], _renderOnlyBloom, _blurMode == BloomMode::NoBloom);
+		_deviceResources->postBloomPass.recordCommandBuffer(swapchainIndex, _deviceResources->onScreenFramebuffers[swapchainIndex], _renderOnlyBloom, _exposure);
 		_deviceResources->mainCommandBuffers[swapchainIndex]->executeCommands(_deviceResources->postBloomPass.commandBuffers[swapchainIndex]);
 	}
 
@@ -4380,24 +4425,24 @@ void VulkanPostProcessing::recordBlurCommands(BloomMode blurMode, uint32_t swapc
 	}
 	case (BloomMode::Compute):
 	{
-		_deviceResources->computeBlurPass.recordCommands(
-			swapchainIndex, _deviceResources->storageImagePingPongImageViews[0], _deviceResources->storageImagePingPongImageViews[1], _deviceResources->queues[_queueIndex]);
+		_deviceResources->computeBlurPass.recordCommands(swapchainIndex, _deviceResources->sharedBlurImageViews[_pingPongImageIndices[0]],
+			_deviceResources->sharedBlurImageViews[_pingPongImageIndices[1]], _deviceResources->queues[_queueIndex]);
 		break;
 	}
 	case (BloomMode::Kawase):
 	{
-		_deviceResources->kawaseBlurPass.recordCommands(swapchainIndex, _deviceResources->blurFramebuffers);
+		_deviceResources->kawaseBlurPass.recordCommands(swapchainIndex, _deviceResources->blurFramebuffers, 2);
 		break;
 	}
 	case (BloomMode::DualFilter):
 	{
-		_deviceResources->dualFilterBlurPass.recordCommands(swapchainIndex, _deviceResources->onScreenFramebuffers[swapchainIndex], _renderOnlyBloom);
+		_deviceResources->dualFilterBlurPass.recordCommands(swapchainIndex, _deviceResources->onScreenFramebuffers[swapchainIndex], _renderOnlyBloom, _exposure);
 		break;
 	}
 	case (BloomMode::TentFilter):
 	{
 		_deviceResources->downAndTentFilterBlurPass.recordCommands(swapchainIndex, _deviceResources->onScreenFramebuffers[swapchainIndex], _renderOnlyBloom,
-			_deviceResources->queues[_queueIndex], _deviceResources->luminanceImageViews[_deviceResources->swapchain->getSwapchainIndex()]);
+			_deviceResources->queues[_queueIndex], _deviceResources->luminanceImageViews[_deviceResources->swapchain->getSwapchainIndex()], _exposure);
 		break;
 	}
 	case (BloomMode::HybridGaussian):
@@ -4416,48 +4461,23 @@ void VulkanPostProcessing::allocatePingPongImages()
 {
 	pvrvk::Extent3D dimension = pvrvk::Extent3D(_blurFramebufferDimensions.x, _blurFramebufferDimensions.y, 1u);
 
-	// If the storage image luminance color format matches the standard luminance color format then we only need allocate 2 images
-	if (_storageImageLuminanceColorFormat == _luminanceColorFormat)
+	// Allocate the luminance render targets (we need to ping pong between 2 targets)
+	pvrvk::ImageUsageFlags storageImageUsage = pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_SAMPLED_BIT | pvrvk::ImageUsageFlags::e_STORAGE_BIT;
+
+	_deviceResources->sharedBlurImageViews.resize(_deviceResources->sharedBlurImageViews.size() + 2);
+
+	_pingPongImageIndices[0] = _deviceResources->sharedBlurImageViews.size() - 2;
+	_pingPongImageIndices[1] = _deviceResources->sharedBlurImageViews.size() - 1;
+
+	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
 	{
-		// Allocate the luminance render targets (we need to ping pong between 2 targets)
-		pvrvk::ImageUsageFlags imageUsage = pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_SAMPLED_BIT | pvrvk::ImageUsageFlags::e_STORAGE_BIT;
-
-		for (uint32_t i = 0; i < 2; ++i)
+		for (uint32_t j = 0; j < 2; ++j)
 		{
-			for (uint32_t j = 0; j < _numSwapImages; ++j)
-			{
-				pvrvk::Image blurColorTexture = pvr::utils::createImage(_deviceResources->device, pvrvk::ImageType::e_2D, _luminanceColorFormat, dimension, imageUsage,
-					static_cast<pvrvk::ImageCreateFlags>(0), pvrvk::ImageLayersSize(), pvrvk::SampleCountFlags::e_1_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT,
-					pvrvk::MemoryPropertyFlags::e_NONE, &_deviceResources->vmaAllocator);
-
-				_deviceResources->pingPongImageViews[i].add(_deviceResources->device->createImageView(pvrvk::ImageViewCreateInfo(blurColorTexture)));
-				_deviceResources->storageImagePingPongImageViews[i] = _deviceResources->pingPongImageViews[i];
-			}
-		}
-	}
-	// else 2 sets of images need allocating
-	else
-	{
-		// Allocate the luminance render targets (we need to ping pong between 2 targets)
-		pvrvk::ImageUsageFlags imageUsage = pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_SAMPLED_BIT;
-		pvrvk::ImageUsageFlags storageImageUsage = pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_SAMPLED_BIT | pvrvk::ImageUsageFlags::e_STORAGE_BIT;
-
-		for (uint32_t i = 0; i < 2; ++i)
-		{
-			for (uint32_t j = 0; j < _numSwapImages; ++j)
-			{
-				pvrvk::Image blurColorTexture = pvr::utils::createImage(_deviceResources->device, pvrvk::ImageType::e_2D, _luminanceColorFormat, dimension, imageUsage,
-					static_cast<pvrvk::ImageCreateFlags>(0), pvrvk::ImageLayersSize(), pvrvk::SampleCountFlags::e_1_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT,
-					pvrvk::MemoryPropertyFlags::e_NONE, &_deviceResources->vmaAllocator);
-
-				_deviceResources->pingPongImageViews[i].add(_deviceResources->device->createImageView(pvrvk::ImageViewCreateInfo(blurColorTexture)));
-
-				pvrvk::Image storageImageColorTexture = pvr::utils::createImage(_deviceResources->device, pvrvk::ImageType::e_2D, _storageImageLuminanceColorFormat, dimension,
-					storageImageUsage, static_cast<pvrvk::ImageCreateFlags>(0), pvrvk::ImageLayersSize(), pvrvk::SampleCountFlags::e_1_BIT,
-					pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_NONE, &_deviceResources->vmaAllocator,
-					pvr::utils::vma::AllocationCreateFlags::e_NONE, pvrvk::SharingMode::e_EXCLUSIVE, _storageImageTiling);
-				_deviceResources->storageImagePingPongImageViews[i].add(_deviceResources->device->createImageView(pvrvk::ImageViewCreateInfo(storageImageColorTexture)));
-			}
+			pvrvk::Image blurColorTexture = pvr::utils::createImage(_deviceResources->device, pvrvk::ImageType::e_2D, _storageImageLuminanceColorFormat, dimension,
+				storageImageUsage, static_cast<pvrvk::ImageCreateFlags>(0), pvrvk::ImageLayersSize(), pvrvk::SampleCountFlags::e_1_BIT,
+				pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_NONE, &_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_NONE,
+				pvrvk::SharingMode::e_EXCLUSIVE, _storageImageTiling);
+			_deviceResources->sharedBlurImageViews[_pingPongImageIndices[j]].add(_deviceResources->device->createImageView(pvrvk::ImageViewCreateInfo(blurColorTexture)));
 		}
 	}
 }
@@ -4488,10 +4508,10 @@ void VulkanPostProcessing::createBlurFramebuffers()
 {
 	for (uint32_t i = 0; i < 2; ++i)
 	{
-		for (uint32_t j = 0; j < _numSwapImages; ++j)
+		for (uint32_t j = 0; j < _deviceResources->swapchain->getSwapchainLength(); ++j)
 		{
 			pvrvk::FramebufferCreateInfo createInfo;
-			createInfo.setAttachment(0, _deviceResources->pingPongImageViews[!i][j]);
+			createInfo.setAttachment(0, _deviceResources->sharedBlurImageViews[!_pingPongImageIndices[i]][j]);
 			createInfo.setDimensions(_blurFramebufferDimensions.x, _blurFramebufferDimensions.y);
 			createInfo.setRenderPass(_deviceResources->blurRenderPass);
 
@@ -4503,20 +4523,20 @@ void VulkanPostProcessing::createBlurFramebuffers()
 /// <summary>Create the framebuffers which will be used in the hybrid bloom pass.</summary>
 void VulkanPostProcessing::createHybridBlurFramebuffers()
 {
-	for (uint32_t i = 0; i < _numSwapImages; ++i)
+	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
 	{
 		pvrvk::FramebufferCreateInfo createInfo;
-		createInfo.setAttachment(0, _deviceResources->storageImagePingPongImageViews[1][i]);
+		createInfo.setAttachment(0, _deviceResources->sharedBlurImageViews[_pingPongImageIndices[1]][i]);
 		createInfo.setDimensions(_blurFramebufferDimensions.x, _blurFramebufferDimensions.y);
 		createInfo.setRenderPass(_deviceResources->hybridBlurRenderPass);
 
 		_deviceResources->hybridBlurFramebuffers[0].add(_deviceResources->device->createFramebuffer(createInfo));
 	}
 
-	for (uint32_t i = 0; i < _numSwapImages; ++i)
+	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
 	{
 		pvrvk::FramebufferCreateInfo createInfo;
-		createInfo.setAttachment(0, _deviceResources->pingPongImageViews[0][i]);
+		createInfo.setAttachment(0, _deviceResources->sharedBlurImageViews[_pingPongImageIndices[0]][i]);
 		createInfo.setDimensions(_blurFramebufferDimensions.x, _blurFramebufferDimensions.y);
 		createInfo.setRenderPass(_deviceResources->blurRenderPass);
 
@@ -4530,7 +4550,7 @@ void VulkanPostProcessing::createBlurRenderPass()
 	pvrvk::RenderPassCreateInfo renderPassInfo;
 
 	renderPassInfo.setAttachmentDescription(0,
-		pvrvk::AttachmentDescription::createColorDescription(_deviceResources->pingPongImageViews[0][0]->getFormat(), pvrvk::ImageLayout::e_UNDEFINED,
+		pvrvk::AttachmentDescription::createColorDescription(_deviceResources->sharedBlurImageViews[_pingPongImageIndices[0]][0]->getFormat(), pvrvk::ImageLayout::e_UNDEFINED,
 			pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, pvrvk::AttachmentLoadOp::e_DONT_CARE, pvrvk::AttachmentStoreOp::e_STORE, pvrvk::SampleCountFlags::e_1_BIT));
 
 	pvrvk::SubpassDescription subpass;
@@ -4557,7 +4577,7 @@ void VulkanPostProcessing::createHybridBlurRenderPass()
 	pvrvk::RenderPassCreateInfo renderPassInfo;
 
 	renderPassInfo.setAttachmentDescription(0,
-		pvrvk::AttachmentDescription::createColorDescription(_deviceResources->storageImagePingPongImageViews[0][0]->getFormat(), pvrvk::ImageLayout::e_GENERAL,
+		pvrvk::AttachmentDescription::createColorDescription(_deviceResources->sharedBlurImageViews[_pingPongImageIndices[0]][0]->getFormat(), pvrvk::ImageLayout::e_GENERAL,
 			pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, pvrvk::AttachmentLoadOp::e_DONT_CARE, pvrvk::AttachmentStoreOp::e_STORE, pvrvk::SampleCountFlags::e_1_BIT));
 
 	pvrvk::SubpassDescription subpass;
@@ -4597,13 +4617,11 @@ void VulkanPostProcessing::createOffScreenFramebuffers()
 			pvrvk::ImageLayout::e_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, pvrvk::AttachmentLoadOp::e_CLEAR, pvrvk::AttachmentStoreOp::e_DONT_CARE, pvrvk::AttachmentLoadOp::e_CLEAR,
 			pvrvk::AttachmentStoreOp::e_DONT_CARE, pvrvk::SampleCountFlags::e_1_BIT));
 
-	pvrvk::SubpassDescription localMemorySubpasses[2];
-
-	// Subpass 0
-	localMemorySubpasses[0].setColorAttachmentReference(0, pvrvk::AttachmentReference(0, pvrvk::ImageLayout::e_COLOR_ATTACHMENT_OPTIMAL));
-	localMemorySubpasses[0].setColorAttachmentReference(1, pvrvk::AttachmentReference(1, pvrvk::ImageLayout::e_COLOR_ATTACHMENT_OPTIMAL));
-	localMemorySubpasses[0].setDepthStencilAttachmentReference(pvrvk::AttachmentReference(2, pvrvk::ImageLayout::e_DEPTH_STENCIL_ATTACHMENT_OPTIMAL));
-	renderPassInfo.setSubpass(0, localMemorySubpasses[0]);
+	pvrvk::SubpassDescription offscreenSubpass;
+	offscreenSubpass.setColorAttachmentReference(0, pvrvk::AttachmentReference(0, pvrvk::ImageLayout::e_COLOR_ATTACHMENT_OPTIMAL));
+	offscreenSubpass.setColorAttachmentReference(1, pvrvk::AttachmentReference(1, pvrvk::ImageLayout::e_COLOR_ATTACHMENT_OPTIMAL));
+	offscreenSubpass.setDepthStencilAttachmentReference(pvrvk::AttachmentReference(2, pvrvk::ImageLayout::e_DEPTH_STENCIL_ATTACHMENT_OPTIMAL));
+	renderPassInfo.setSubpass(0, offscreenSubpass);
 
 	// Add external subpass dependencies to avoid the implicit subpass depedencies and to provide more optimal pipeline stage task synchronisation
 	pvrvk::SubpassDependency externalDependencies[2];
@@ -4620,13 +4638,9 @@ void VulkanPostProcessing::createOffScreenFramebuffers()
 	_deviceResources->offScreenRenderPass = _deviceResources->device->createRenderPass(renderPassInfo);
 
 	const pvrvk::Extent3D& dimension = pvrvk::Extent3D(_deviceResources->swapchain->getDimension().getWidth(), _deviceResources->swapchain->getDimension().getHeight(), 1u);
-	for (uint32_t i = 0; i < _numSwapImages; ++i)
+	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
 	{
 		pvrvk::ImageUsageFlags imageUsage = pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_SAMPLED_BIT;
-		if (_supportsBlit)
-		{
-			imageUsage |= pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT | pvrvk::ImageUsageFlags::e_TRANSFER_DST_BIT;
-		}
 
 		// Allocate the HDR luminance texture
 		pvrvk::Image luminanceColorTexture = pvr::utils::createImage(_deviceResources->device, pvrvk::ImageType::e_2D, _luminanceColorFormat, dimension, imageUsage,
@@ -4667,51 +4681,23 @@ void VulkanPostProcessing::updateDynamicSceneData()
 	// Update the Scene Buffer
 	_deviceResources->sceneBufferView.getElementByName(BufferEntryNames::Scene::InverseViewProjectionMatrix, 0, _swapchainIndex).setValue(glm::inverse(_viewProjectionMatrix));
 	_deviceResources->sceneBufferView.getElementByName(BufferEntryNames::Scene::EyePosition, 0, _swapchainIndex).setValue(_camera.getCameraPosition());
-	_deviceResources->sceneBufferView.getElementByName(BufferEntryNames::Scene::LightPosition, 0, _swapchainIndex).setValue(_lightPosition);
+
+	_exposure = SceneTexFileNames[_currentScene].getLinearExposure();
+	_threshold = SceneTexFileNames[_currentScene].threshold;
 
 	// Update any bloom configuration buffers currently required
 	if (_mustUpdatePerSwapchainDemoConfig[_deviceResources->swapchain->getSwapchainIndex()])
 	{
 		switch (_blurMode)
 		{
-		case (BloomMode::GaussianOriginal):
-		{
-			_deviceResources->gaussianBlurPass.updateKernelBuffer(_deviceResources->swapchain->getSwapchainIndex());
-			break;
-		}
-		case (BloomMode::GaussianLinear):
-		{
-			_deviceResources->linearGaussianBlurPass.updateKernelBuffer(_deviceResources->swapchain->getSwapchainIndex());
-			break;
-		}
-		case (BloomMode::GaussianLinearTruncated):
-		{
-			_deviceResources->truncatedLinearGaussianBlurPass.updateKernelBuffer(_deviceResources->swapchain->getSwapchainIndex());
-			break;
-		}
-		case (BloomMode::Compute):
-		{
-			_deviceResources->computeBlurPass.updateKernelBuffer(_deviceResources->swapchain->getSwapchainIndex());
-			break;
-		}
 		case (BloomMode::DualFilter):
 		{
-			_deviceResources->dualFilterBlurPass.updateDescriptorSets(_deviceResources->device, _deviceResources->swapchain->getSwapchainIndex(),
-				_deviceResources->offScreenColorImageViews[_deviceResources->swapchain->getSwapchainIndex()],
-				_deviceResources->luminanceImageViews[_deviceResources->swapchain->getSwapchainIndex()], _deviceResources->samplerBilinear);
+			_deviceResources->dualFilterBlurPass.updateDescriptorSets(_deviceResources->device, _deviceResources->swapchain->getSwapchainIndex());
 			break;
 		}
 		case (BloomMode::TentFilter):
 		{
-			_deviceResources->downAndTentFilterBlurPass.updateDescriptorSets(_deviceResources->device, _deviceResources->swapchain->getSwapchainIndex(),
-				_deviceResources->offScreenColorImageViews[_deviceResources->swapchain->getSwapchainIndex()],
-				_deviceResources->luminanceImageViews[_deviceResources->swapchain->getSwapchainIndex()], _deviceResources->samplerBilinear);
-			break;
-		}
-		case (BloomMode::HybridGaussian):
-		{
-			_deviceResources->hybridGaussianBlurPass.linearBlurPass->updateKernelBuffer(_deviceResources->swapchain->getSwapchainIndex());
-			_deviceResources->hybridGaussianBlurPass.computeBlurPass->updateKernelBuffer(_deviceResources->swapchain->getSwapchainIndex());
+			_deviceResources->downAndTentFilterBlurPass.updateDescriptorSets(_deviceResources->device, _deviceResources->swapchain->getSwapchainIndex());
 			break;
 		}
 		default:
@@ -4772,6 +4758,11 @@ void VulkanPostProcessing::updateAnimation()
 				_blurMode = static_cast<BloomMode>(currentBlurMode);
 			}
 
+			if (_blurMode == BloomMode::NoBloom)
+			{
+				(++_currentScene) %= NumScenes;
+			}
+
 			updateBloomConfiguration();
 		}
 	}
@@ -4784,46 +4775,48 @@ void VulkanPostProcessing::updateDemoConfigs()
 	{
 	case (BloomMode::GaussianOriginal):
 	{
-		_deviceResources->gaussianBlurPass.updateKernelConfig(DemoConfigurations::Configurations[_currentDemoConfiguration].gaussianConfig.first, false, false);
+		_deviceResources->gaussianBlurPass.updateKernelConfig(_currentDemoConfiguration);
 		break;
 	}
 	case (BloomMode::GaussianLinear):
 	{
-		_deviceResources->linearGaussianBlurPass.updateKernelConfig(DemoConfigurations::Configurations[_currentDemoConfiguration].linearGaussianConfig.first, true, false);
+		_deviceResources->linearGaussianBlurPass.updateKernelConfig(_currentDemoConfiguration);
 		break;
 	}
 	case (BloomMode::GaussianLinearTruncated):
 	{
-		_deviceResources->truncatedLinearGaussianBlurPass.updateKernelConfig(
-			DemoConfigurations::Configurations[_currentDemoConfiguration].truncatedLinearGaussianConfig.first, true, true);
+		_deviceResources->truncatedLinearGaussianBlurPass.updateKernelConfig(_currentDemoConfiguration);
 		break;
 	}
 	case (BloomMode::Kawase):
 	{
-		_deviceResources->kawaseBlurPass.updateConfig(DemoConfigurations::Configurations[_currentDemoConfiguration].kawaseConfig.first.kernel,
-			DemoConfigurations::Configurations[_currentDemoConfiguration].kawaseConfig.first.numIterations, _deviceResources->pingPongImageViews, 2);
+		std::vector<pvr::Multi<pvrvk::ImageView> > kawaseImages;
+		kawaseImages.emplace_back(_deviceResources->sharedBlurImageViews[_pingPongImageIndices[0]]);
+		kawaseImages.emplace_back(_deviceResources->sharedBlurImageViews[_pingPongImageIndices[1]]);
+
+		_deviceResources->kawaseBlurPass.updateConfig(DemoConfigurations::Configurations[_currentDemoConfiguration].kawaseConfig.kernel,
+			DemoConfigurations::Configurations[_currentDemoConfiguration].kawaseConfig.numIterations, kawaseImages.data(), 2);
 		break;
 	}
 	case (BloomMode::Compute):
 	{
-		_deviceResources->computeBlurPass.updateKernelConfig(DemoConfigurations::Configurations[_currentDemoConfiguration].computeGaussianConfig.first, false, false);
+		_deviceResources->computeBlurPass.updateKernelConfig(_currentDemoConfiguration);
 		break;
 	}
 	case (BloomMode::DualFilter):
 	{
-		_deviceResources->dualFilterBlurPass.updateConfig(DemoConfigurations::Configurations[_currentDemoConfiguration].dualFilterConfig.first);
+		_deviceResources->dualFilterBlurPass.updateConfig(DemoConfigurations::Configurations[_currentDemoConfiguration].dualFilterConfig);
 		break;
 	}
 	case (BloomMode::TentFilter):
 	{
-		_deviceResources->downAndTentFilterBlurPass.updateConfig(DemoConfigurations::Configurations[_currentDemoConfiguration].dualFilterConfig.first);
+		_deviceResources->downAndTentFilterBlurPass.updateConfig(DemoConfigurations::Configurations[_currentDemoConfiguration].dualFilterConfig);
 		break;
 	}
 	case (BloomMode::HybridGaussian):
 	{
-		_deviceResources->truncatedLinearGaussianBlurPass.updateKernelConfig(
-			DemoConfigurations::Configurations[_currentDemoConfiguration].truncatedLinearGaussianConfig.first, true, true);
-		_deviceResources->computeBlurPass.updateKernelConfig(DemoConfigurations::Configurations[_currentDemoConfiguration].computeGaussianConfig.first, false, false);
+		_deviceResources->truncatedLinearGaussianBlurPass.updateKernelConfig(_currentDemoConfiguration);
+		_deviceResources->computeBlurPass.updateKernelConfig(_currentDemoConfiguration);
 		break;
 	}
 	default:
@@ -4840,11 +4833,58 @@ void VulkanPostProcessing::updateBloomConfiguration()
 	_deviceResources->uiRenderer.getDefaultDescription()->setText(_currentBlurString);
 	_deviceResources->uiRenderer.getDefaultDescription()->commitUpdates();
 
-	for (uint32_t i = 0; i < _numSwapImages; ++i)
+	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
 	{
 		_mustRecordPrimaryCommandBuffer[i] = true;
 		_mustUpdatePerSwapchainDemoConfig[i] = true;
 	}
+}
+
+void VulkanPostProcessing::handleDesktopInput()
+{
+#ifdef PVR_PLATFORM_IS_DESKTOP
+	if (isKeyPressed(pvr::Keys::PageDown))
+	{
+		SceneTexFileNames[_currentScene].keyValue *= .85f;
+		for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
+		{
+			_mustRecordPrimaryCommandBuffer[i] = true;
+			_mustUpdatePerSwapchainDemoConfig[i] = true;
+		}
+	}
+	if (isKeyPressed(pvr::Keys::PageUp))
+	{
+		SceneTexFileNames[_currentScene].keyValue *= 1.15f;
+		for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
+		{
+			_mustRecordPrimaryCommandBuffer[i] = true;
+			_mustUpdatePerSwapchainDemoConfig[i] = true;
+		}
+	}
+
+	SceneTexFileNames[_currentScene].keyValue = glm::clamp(SceneTexFileNames[_currentScene].keyValue, 0.001f, 100.0f);
+
+	if (isKeyPressed(pvr::Keys::SquareBracketLeft))
+	{
+		SceneTexFileNames[_currentScene].threshold -= 0.05f;
+		for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
+		{
+			_mustRecordPrimaryCommandBuffer[i] = true;
+			_mustUpdatePerSwapchainDemoConfig[i] = true;
+		}
+	}
+	if (isKeyPressed(pvr::Keys::SquareBracketRight))
+	{
+		SceneTexFileNames[_currentScene].threshold += 0.05f;
+		for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
+		{
+			_mustRecordPrimaryCommandBuffer[i] = true;
+			_mustUpdatePerSwapchainDemoConfig[i] = true;
+		}
+	}
+
+	SceneTexFileNames[_currentScene].threshold = glm::clamp(SceneTexFileNames[_currentScene].threshold, 0.05f, 20.0f);
+#endif
 }
 
 /// <summary>Handles user input and updates live variables accordingly.</summary>
@@ -4907,6 +4947,16 @@ void VulkanPostProcessing::eventMappedInput(pvr::SimplifiedInput e)
 	case pvr::SimplifiedInput::Action2:
 	{
 		_animateObject = !_animateObject;
+		_animateCamera = !_animateCamera;
+		for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
+		{
+			_mustRecordPrimaryCommandBuffer[i] = true;
+		}
+		break;
+	}
+	case pvr::SimplifiedInput::Action3:
+	{
+		(++_currentScene) %= NumScenes;
 		for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
 		{
 			_mustRecordPrimaryCommandBuffer[i] = true;

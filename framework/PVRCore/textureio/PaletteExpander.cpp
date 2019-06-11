@@ -1,6 +1,6 @@
 /*!
 \brief Implementation of methods of the PaletteExpander class.
-\file PVRAssets/fileio/PaletteExpander.cpp
+\file PVRCore/textureio/PaletteExpander.cpp
 \author PowerVR by Imagination, Developer Technology Team
 \copyright Copyright (c) Imagination Technologies Limited.
 */

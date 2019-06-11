@@ -80,6 +80,12 @@
 <a class="reference internal image-reference" href="../../examples/Vulkan/01_HelloAPI/HelloAPI.png"><img alt="../../examples/Vulkan/01_HelloAPI/HelloAPI.png" src="../../examples/Vulkan/01_HelloAPI/HelloAPI.png" style="width: 320.0px; height: 200.0px;" /></a>
 </div>
 <p>Draws a basic triangle to the screen.</p>
+<div class="section" id="api">
+<h3>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Vulkan</li>
+</ul>
+</div>
 <div class="section" id="description">
 <h3>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h3>
 <p>A basic tutorial that guides the user, step-by-step, through the process of drawing a basic triangle to the screen.</p>
@@ -88,13 +94,6 @@
 <li>initialising a window using raw Vulkan</li>
 <li>drawing a triangle with a simple shader</li>
 <li>terminating the window - depending on the platform, either after a few seconds, or when the user closes the window.</li>
-</ul>
-</div>
-<div class="section" id="apis">
-<h3>APIs<a class="headerlink" href="#apis" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
-<li>OpenGL ES 2.0+</li>
-<li>Vulkan</li>
 </ul>
 </div>
 <div class="section" id="controls">
@@ -111,16 +110,15 @@
 </div>
 <p>This example introduces the PVRShell library.</p>
 <div class="section" id="id1">
-<h3>Description<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
-<p>This example shows basic use of the PVRShell library.  The PowerVR Shell handles all OS specific initialisation code. It has several built-in command-line features which allow for the specifying of attributes such as window width/height, quitting after a number of frames, taking screenshots and others.</p>
-<p>When using the PVR Shell, the application uses the class <code class="docutils literal notranslate"><span class="pre">pvr::Shell</span></code> as its base class, and is constructed and returned from a <code class="docutils literal notranslate"><span class="pre">pvr::newDemo</span></code> function.</p>
-</div>
-<div class="section" id="id2">
-<h3>APIs<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<h3>API<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
-<li>OpenGL ES 2.0+</li>
 <li>Vulkan</li>
 </ul>
+</div>
+<div class="section" id="id2">
+<h3>Description<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<p>This example shows basic use of the PVRShell library.  The PowerVR Shell handles all OS specific initialisation code. It has several built-in command-line features which allow for the specifying of attributes such as window width/height, quitting after a number of frames, taking screenshots and others.</p>
+<p>When using the PVR Shell, the application uses the class <code class="docutils literal notranslate"><span class="pre">pvr::Shell</span></code> as its base class, and is constructed and returned from a <code class="docutils literal notranslate"><span class="pre">pvr::newDemo</span></code> function.</p>
 </div>
 <div class="section" id="id3">
 <h3>Controls<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
@@ -136,19 +134,19 @@
 </div>
 <p>This example introduces the PVRVk library.</p>
 <div class="section" id="id4">
-<h3>Description<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<h3>API<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Vulkan</li>
+</ul>
+</div>
+<div class="section" id="id5">
+<h3>Description<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
 <p>This example shows basic use of the PVRVk library. PVRVk provides an advanced interface similar to the original Vulkan interface, making it useable with the Vulkan specification. It offers a sweet spot combination of simplicity, ease of use, with minimal overhead.</p>
 <p>The most important features of PVRVk are considered to be:</p>
 <ul class="simple">
 <li>C++ language, offering defaults and constructors for all objects</li>
 <li>deterministic lifecycle management through reference counting</li>
 <li>a clean, modern interface.</li>
-</ul>
-</div>
-<div class="section" id="id5">
-<h3>APIs<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
-<li>Vulkan</li>
 </ul>
 </div>
 <div class="section" id="id6">
@@ -163,18 +161,17 @@
 <div class="figure">
 <a class="reference internal image-reference" href="../../examples/Vulkan/04_IntroducingPVRUtils/IntroducingPVRUtils.png"><img alt="../../examples/Vulkan/04_IntroducingPVRUtils/IntroducingPVRUtils.png" src="../../examples/Vulkan/04_IntroducingPVRUtils/IntroducingPVRUtils.png" style="width: 320.0px; height: 200.0px;" /></a>
 </div>
-<p>This example renders a <code class="docutils literal notranslate"><span class="pre">.POD</span></code> scene using a a simple vertex and fragment shader, making use of the PVRUtils library for various utility functions.</p>
+<p>This example renders a <code class="docutils literal notranslate"><span class="pre">.pod</span></code> scene using a a simple vertex and fragment shader, making use of the PVRUtils library for various utility functions.</p>
 <div class="section" id="id7">
-<h3>Description<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
-<p>This example demonstrates how to make the most of the PVRUtils library for handling API-agnostic utility functions such as loading shaders and creating buffers. Various API-specific utility functions are also provided such as the Vulkan swapchain and instance creation helper.</p>
-<p>The PVRUtils UIRenderer library is also used to display simple text on the screen.</p>
-</div>
-<div class="section" id="id8">
-<h3>APIs<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
+<h3>API<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
-<li>OpenGL ES 2.0+</li>
 <li>Vulkan</li>
 </ul>
+</div>
+<div class="section" id="id8">
+<h3>Description<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
+<p>This example demonstrates how to make the most of the PVRUtils library for handling API-agnostic utility functions such as loading shaders and creating buffers. Various API-specific utility functions are also provided such as the Vulkan swapchain and instance creation helper.</p>
+<p>The PVRUtils UIRenderer library is also used to display simple text on the screen.</p>
 </div>
 <div class="section" id="id9">
 <h3>Controls<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
@@ -190,7 +187,13 @@
 </div>
 <p>This example introduces the UIRenderer from the PVRUtils library for advanced text tasks.</p>
 <div class="section" id="id10">
-<h3>Description<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
+<h3>API<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Vulkan</li>
+</ul>
+</div>
+<div class="section" id="id11">
+<h3>Description<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
 <p>The UIRenderer allows the user to create “Sprites” (2D elements) which can be grouped in 2D and/or 3D groups to be displayed as UIs or world text. This includes:</p>
 <ul class="simple">
 <li>2D transformations (pixel and/or NDC coordinates) both single, and in a group</li>
@@ -198,13 +201,6 @@
 <li>3D transformations of groups of sprites</li>
 </ul>
 <p>In this example, UIRendererer is used to display images and Unicode text, screen aligned, and with 3D transformations.</p>
-</div>
-<div class="section" id="id11">
-<h3>APIs<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
-<li>OpenGL ES 2.0+</li>
-<li>Vulkan</li>
-</ul>
 </div>
 <div class="section" id="id12">
 <h3>Controls<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
@@ -220,15 +216,15 @@
 </div>
 <p>This example demonstrates using a normal map to implement bumpmapping using the PowerVR Framework.</p>
 <div class="section" id="id13">
-<h3>Description<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h3>
-<p>Bumpmapping is a technique for simulating bumps and wrinkles on the surface of an object. This is achieved by perturbing the surface normals of the object and using the perturbed normal during the illumination calculations. The result is an apparently bumpy surface rather than a perfectly smooth surface, although the surface of the underlying object is not actually changed.</p>
-<p>This technique is used extensively in graphics applications to add perceived detail to models without adding further geometry, and could be considered the baseline for modern rendering.</p>
-</div>
-<div class="section" id="id14">
-<h3>APIs<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h3>
+<h3>API<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Vulkan</li>
 </ul>
+</div>
+<div class="section" id="id14">
+<h3>Description<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h3>
+<p>Bumpmapping is a technique for simulating bumps and wrinkles on the surface of an object. This is achieved by perturbing the surface normals of the object and using the perturbed normal during the illumination calculations. The result is an apparently bumpy surface rather than a perfectly smooth surface, although the surface of the underlying object is not actually changed.</p>
+<p>This technique is used extensively in graphics applications to add perceived detail to models without adding further geometry, and could be considered the baseline for modern rendering.</p>
 </div>
 <div class="section" id="id15">
 <h3>Controls<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h3>
@@ -244,18 +240,17 @@
 </div>
 <p>This example demonstrates optimal deferred shading using Pixel Local Storage (PLS), or Subpasses with Transient Attachments (Vulkan)</p>
 <div class="section" id="id16">
-<h3>Description<a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h3>
+<h3>API<a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Vulkan</li>
+</ul>
+</div>
+<div class="section" id="id17">
+<h3>Description<a class="headerlink" href="#id17" title="Permalink to this headline">¶</a></h3>
 <p>Traditional rendering algorithms submit geometry and immediately apply shading effects to the rasterized primitives. Complex shading effects may require multiple draw calls (one per object per light) or render passes to produce the final pixel colour, with the geometry submitted every pass.</p>
 <p>Deferred shading is an alternative rendering technique that submits the scene geometry once, storing per-pixel attributes into local video memory to be used in the subsequent rendering passes.</p>
 <p>In these later passes, light volume primitives are rendered, and the per-pixel attributes contained in the buffer are retrieved at a 1:1 mapping ratio so that each pixel is shaded individually.</p>
 <p>With the PowerVR architecture, the developer can use fast on-chip memory instead of the render target by using Subpasses with input attachments corresponding to transient, lazily allocated images.</p>
-</div>
-<div class="section" id="id17">
-<h3>APIs<a class="headerlink" href="#id17" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
-<li>OpenGL ES 3.0+</li>
-<li>Vulkan</li>
-</ul>
 </div>
 <div class="section" id="id18">
 <h3>Controls<a class="headerlink" href="#id18" title="Permalink to this headline">¶</a></h3>
@@ -273,18 +268,18 @@
 </div>
 <p>Duplicates the DeferredShading example, using a simple PFX scene description to describe this complex rendering scenario.</p>
 <div class="section" id="id19">
-<h3>Description<a class="headerlink" href="#id19" title="Permalink to this headline">¶</a></h3>
+<h3>API<a class="headerlink" href="#id19" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Vulkan</li>
+</ul>
+</div>
+<div class="section" id="id20">
+<h3>Description<a class="headerlink" href="#id20" title="Permalink to this headline">¶</a></h3>
 <p>Traditional rendering algorithms submit geometry and immediately apply shading effects to the rasterized primitives. Complex shading effects may require multiple draw calls (one per object per light) or render passes to produce the final pixel colour, with the geometry submitted every pass.</p>
 <p>Deferred shading is an alternative rendering technique that submits the scene geometry once, storing per-pixel attributes into local video memory to be used in the subsequent rendering passes.</p>
 <p>In these later passes, light volume primitives are rendered, and the per-pixel attributes contained in the buffer are retrieved at a 1:1 mapping ratio so that each pixel is shaded individually.</p>
 <p>With the PowerVR architecture, the developer can use fast on-chip memory instead of the render target by using Subpasses with input attachments corresponding to transient, lazily allocated images.</p>
 <p>In this example, the same technique is described in a PFX file, and rendered with the RenderManager. This avoids almost all the code in the example except for the most basic, demonstrating the power of the RenderManager combined with PFX files as a scene description.</p>
-</div>
-<div class="section" id="id20">
-<h3>APIs<a class="headerlink" href="#id20" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
-<li>Vulkan</li>
-</ul>
 </div>
 <div class="section" id="id21">
 <h3>Controls<a class="headerlink" href="#id21" title="Permalink to this headline">¶</a></h3>
@@ -302,14 +297,14 @@
 </div>
 <p>Use the PVRUtils library to efficiently render sprites, to create a complex user interface.</p>
 <div class="section" id="id22">
-<h3>Description<a class="headerlink" href="#id22" title="Permalink to this headline">¶</a></h3>
-<p>Rendering graphical user interfaces can quickly become very complex. PVRUtils can help with rendering a lot of sprites with different complicated transformations, while remaining crisp and responsive. Usability and performance optimisations can both be found in this example, such as UIRenderer transformation groups.</p>
-</div>
-<div class="section" id="id23">
-<h3>APIs<a class="headerlink" href="#id23" title="Permalink to this headline">¶</a></h3>
+<h3>API<a class="headerlink" href="#id22" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Vulkan</li>
 </ul>
+</div>
+<div class="section" id="id23">
+<h3>Description<a class="headerlink" href="#id23" title="Permalink to this headline">¶</a></h3>
+<p>Rendering graphical user interfaces can quickly become very complex. PVRUtils can help with rendering a lot of sprites with different complicated transformations, while remaining crisp and responsive. Usability and performance optimisations can both be found in this example, such as UIRenderer transformation groups.</p>
 </div>
 <div class="section" id="id24">
 <h3>Controls<a class="headerlink" href="#id24" title="Permalink to this headline">¶</a></h3>
@@ -326,18 +321,17 @@
 </div>
 <p>Shows how to perform a extremely wide, highly optimised Gaussian Blur using compute shaders.</p>
 <div class="section" id="id25">
-<h3>Description<a class="headerlink" href="#id25" title="Permalink to this headline">¶</a></h3>
+<h3>API<a class="headerlink" href="#id25" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Vulkan</li>
+</ul>
+</div>
+<div class="section" id="id26">
+<h3>Description<a class="headerlink" href="#id26" title="Permalink to this headline">¶</a></h3>
 <p>This example demonstrates how to perform a 19x19 Gaussian Blur. It uses every input and output step
 to blur an image by reading from an input using compute while blurring in one direction, and then writing to
 the output with a fragment shader whilst blurring in the other direction.</p>
 <p>This technique has been highly optimised for PowerVR and is very suitable for a very large convolution width.</p>
-</div>
-<div class="section" id="id26">
-<h3>APIs<a class="headerlink" href="#id26" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
-<li>OpenGL ES 3.0+</li>
-<li>Vulkan</li>
-</ul>
 </div>
 <div class="section" id="id27">
 <h3>Controls<a class="headerlink" href="#id27" title="Permalink to this headline">¶</a></h3>
@@ -353,15 +347,15 @@ the output with a fragment shader whilst blurring in the other direction.</p>
 </div>
 <p>Demonstrates dynamic reflection and refraction using a dual paraboloid environment map.</p>
 <div class="section" id="id28">
-<h3>Description<a class="headerlink" href="#id28" title="Permalink to this headline">¶</a></h3>
-<p>This example shows a technique to maintain a dynamic environment map by rendering both hemispheres of the scene to two halves of a single rectangular texture.</p>
-<p>This example also demonstrates rendering skyboxes with a full screen quad, reflection, and refraction with chromatic dispersion.</p>
-</div>
-<div class="section" id="id29">
-<h3>APIs<a class="headerlink" href="#id29" title="Permalink to this headline">¶</a></h3>
+<h3>API<a class="headerlink" href="#id28" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Vulkan</li>
 </ul>
+</div>
+<div class="section" id="id29">
+<h3>Description<a class="headerlink" href="#id29" title="Permalink to this headline">¶</a></h3>
+<p>This example shows a technique to maintain a dynamic environment map by rendering both hemispheres of the scene to two halves of a single rectangular texture.</p>
+<p>This example also demonstrates rendering skyboxes with a full screen quad, reflection, and refraction with chromatic dispersion.</p>
 </div>
 <div class="section" id="id30">
 <h3>Controls<a class="headerlink" href="#id30" title="Permalink to this headline">¶</a></h3>
@@ -379,7 +373,13 @@ the output with a fragment shader whilst blurring in the other direction.</p>
 </div>
 <p>This example shows a very efficient technique for multithreaded command buffer generation and rendering.</p>
 <div class="section" id="id31">
-<h3>Description<a class="headerlink" href="#id31" title="Permalink to this headline">¶</a></h3>
+<h3>API<a class="headerlink" href="#id31" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Vulkan</li>
+</ul>
+</div>
+<div class="section" id="id32">
+<h3>Description<a class="headerlink" href="#id32" title="Permalink to this headline">¶</a></h3>
 <p>The GnomeHorde example divides its world into tiles, each containing a small number of objects.</p>
 <p>It uses three groups of threads:</p>
 <ul class="simple">
@@ -396,16 +396,33 @@ the output with a fragment shader whilst blurring in the other direction.</p>
 <p>The communication of the threads is abstracted using Producer-Consumer Queues passing the co-ordinates of tiles as parameters.</p>
 <p>When all generation is done, the main thread collects all secondary command buffers and submits them to the GPU rendering queue.</p>
 </div>
-<div class="section" id="id32">
-<h3>APIs<a class="headerlink" href="#id32" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
-<li>Vulkan</li>
-</ul>
-</div>
 <div class="section" id="id33">
 <h3>Controls<a class="headerlink" href="#id33" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Esc- Close</li>
+</ul>
+</div>
+</div>
+<div class="section" id="imgtexturefiltercubic">
+<h2>IMGTextureFilterCubic<a class="headerlink" href="#imgtexturefiltercubic" title="Permalink to this headline">¶</a></h2>
+<div class="figure">
+<a class="reference internal image-reference" href="../../examples/Vulkan/IMGTextureFilterCubic/IMGTextureFilterCubic.png"><img alt="../../examples/Vulkan/IMGTextureFilterCubic/IMGTextureFilterCubic.png" src="../../examples/Vulkan/IMGTextureFilterCubic/IMGTextureFilterCubic.png" style="width: 320.0px; height: 200.0px;" /></a>
+</div>
+<p>This example demonstrates the advantages of using the device extension <code class="docutils literal notranslate"><span class="pre">VK_IMG_filter_cubic</span></code> for cubic texture filtering</p>
+<div class="section" id="id34">
+<h3>API<a class="headerlink" href="#id34" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Vulkan</li>
+</ul>
+</div>
+<div class="section" id="id35">
+<h3>Description<a class="headerlink" href="#id35" title="Permalink to this headline">¶</a></h3>
+<p>This example shows the advantages of using cubic texture filtering using the extension <code class="docutils literal notranslate"><span class="pre">VK_IMG_filter_cubic</span></code>. The left side of the image is rendered using traditional bilinear texture filtering with mipmapping. The right side of the image is rendered using cubic texture filtering.</p>
+</div>
+<div class="section" id="id36">
+<h3>Controls<a class="headerlink" href="#id36" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Quit- Close the application</li>
 </ul>
 </div>
 </div>
@@ -414,24 +431,24 @@ the output with a fragment shader whilst blurring in the other direction.</p>
 <div class="figure">
 <a class="reference internal image-reference" href="../../examples/Vulkan/ImageBasedLighting/ImageBasedLighting.png"><img alt="../../examples/Vulkan/ImageBasedLighting/ImageBasedLighting.png" src="../../examples/Vulkan/ImageBasedLighting/ImageBasedLighting.png" style="width: 320.0px; height: 200.0px;" /></a>
 </div>
-<p>This example demonstrates Physically Based Rendering (PBR) using Image Based Lighting (IBL).</p>
-<div class="section" id="id34">
-<h3>Description<a class="headerlink" href="#id34" title="Permalink to this headline">¶</a></h3>
-<p>The example has two scenes:</p>
+<p>This example demonstrates Physically Based Rendering (PBR) with Image Based Lighting (IBL).</p>
+<p>IBL: based on <a class="reference external" href="https://blog.selfshadow.com/publications/s2013-shading-course/karis/s2013_pbs_epic_notes_v2.pdf">https://blog.selfshadow.com/publications/s2013-shading-course/karis/s2013_pbs_epic_notes_v2.pdf</a></p>
+<div class="section" id="id37">
+<h3>API<a class="headerlink" href="#id37" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
-<li>Helmet, showcasing a model with multiple material properties.</li>
-<li>Spheres, showcasing lighting and shading for different metallicity and roughness values using Metallic-Roughness PBR workflow.</li>
-</ul>
-</div>
-<div class="section" id="id35">
-<h3>APIs<a class="headerlink" href="#id35" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
-<li>OpenGL ES 3.0+</li>
 <li>Vulkan</li>
 </ul>
 </div>
-<div class="section" id="id36">
-<h3>Controls<a class="headerlink" href="#id36" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id38">
+<h3>Description<a class="headerlink" href="#id38" title="Permalink to this headline">¶</a></h3>
+<p>This example has two scenes using Metallic-Roughness PBR workflow. It features two scenes, a GLTF model rederered  with  albedo, metallic roughness and emissive map, and a collection of spheres showcasing different metallic and non metallic non-texture values.
+The examples uses a Diffuse map pre-computed offline from the environment map, using the lambert diffuse BRDF, and two specular maps (also calculated offline): A Pre-Filtered Environment map for different roughness values, and an Environment BRDF including the rest of the equation.</p>
+<div class="figure">
+<a class="reference internal image-reference" href="../../examples/Vulkan/ImageBasedLighting/IBL_layers.png"><img alt="../../examples/Vulkan/ImageBasedLighting/IBL_layers.png" src="../../examples/Vulkan/ImageBasedLighting/IBL_layers.png" style="width: 320.0px; height: 200.0px;" /></a>
+</div>
+</div>
+<div class="section" id="id39">
+<h3>Controls<a class="headerlink" href="#id39" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Quit- Close the application</li>
 <li>Left/ Right to change the scene</li>
@@ -445,18 +462,18 @@ the output with a fragment shader whilst blurring in the other direction.</p>
 <a class="reference internal image-reference" href="../../examples/Vulkan/MultiSampling/MultiSampling.png"><img alt="../../examples/Vulkan/MultiSampling/MultiSampling.png" src="../../examples/Vulkan/MultiSampling/MultiSampling.png" style="width: 320.0px; height: 200.0px;" /></a>
 </div>
 <p>Renders a scene to a multisampling framebuffer object.</p>
-<div class="section" id="id37">
-<h3>Description<a class="headerlink" href="#id37" title="Permalink to this headline">¶</a></h3>
-<p>This example demonstrates how to use the PowerVR Framework to render a scene using the multisampling feature.</p>
-</div>
-<div class="section" id="id38">
-<h3>APIs<a class="headerlink" href="#id38" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id40">
+<h3>API<a class="headerlink" href="#id40" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Vulkan</li>
 </ul>
 </div>
-<div class="section" id="id39">
-<h3>Controls<a class="headerlink" href="#id39" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id41">
+<h3>Description<a class="headerlink" href="#id41" title="Permalink to this headline">¶</a></h3>
+<p>This example demonstrates how to use the PowerVR Framework to render a scene using the multisampling feature.</p>
+</div>
+<div class="section" id="id42">
+<h3>Controls<a class="headerlink" href="#id42" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Quit- Close the application</li>
 </ul>
@@ -467,20 +484,17 @@ the output with a fragment shader whilst blurring in the other direction.</p>
 <div class="figure">
 <a class="reference internal image-reference" href="../../examples/Vulkan/Multithreading/Multithreading.png"><img alt="../../examples/Vulkan/Multithreading/Multithreading.png" src="../../examples/Vulkan/Multithreading/Multithreading.png" style="width: 320.0px; height: 200.0px;" /></a>
 </div>
-<p>This example shows how to use the PowerVR Framework to stream assets asynchronously into an application.</p>
-<div class="section" id="id40">
-<h3>Description<a class="headerlink" href="#id40" title="Permalink to this headline">¶</a></h3>
+<p>This example shows how to use the PowerVR Framework to stream assets asynchronously into an application.
+API
+—
+* Vulkan</p>
+<div class="section" id="id43">
+<h3>Description<a class="headerlink" href="#id43" title="Permalink to this headline">¶</a></h3>
 <p>This example will display a loading screen (using UIRenderer) while assets are being loaded in, and then
 switch to displaying the statue from the Bumpmap demo.</p>
 </div>
-<div class="section" id="id41">
-<h3>APIs<a class="headerlink" href="#id41" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
-<li>Vulkan</li>
-</ul>
-</div>
-<div class="section" id="id42">
-<h3>Controls<a class="headerlink" href="#id42" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id44">
+<h3>Controls<a class="headerlink" href="#id44" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Quit- Close the application</li>
 </ul>
@@ -492,8 +506,14 @@ switch to displaying the statue from the Bumpmap demo.</p>
 <a class="reference internal image-reference" href="../../examples/Vulkan/Navigation2D/Navigation2D.png"><img alt="../../examples/Vulkan/Navigation2D/Navigation2D.png" src="../../examples/Vulkan/Navigation2D/Navigation2D.png" style="width: 320.0px; height: 200.0px;" /></a>
 </div>
 <p>Demonstrates parsing, processing and rendering of raw OSM data as a 2D navigational map.</p>
-<div class="section" id="id43">
-<h3>Description<a class="headerlink" href="#id43" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id45">
+<h3>API<a class="headerlink" href="#id45" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Vulkan</li>
+</ul>
+</div>
+<div class="section" id="id46">
+<h3>Description<a class="headerlink" href="#id46" title="Permalink to this headline">¶</a></h3>
 <p>The 2D navigation example shows the complete process of creating a navigational map from raw data, in this
 case Open Street Map (OSM) data.</p>
 <p>The example demonstrates:</p>
@@ -511,15 +531,8 @@ case Open Street Map (OSM) data.</p>
 <li>an effective tile-based approach to batching and culling the geometry.</li>
 </ul>
 </div>
-<div class="section" id="id44">
-<h3>APIs<a class="headerlink" href="#id44" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
-<li>OpenGL ES 2.0+</li>
-<li>Vulkan</li>
-</ul>
-</div>
-<div class="section" id="id45">
-<h3>Controls<a class="headerlink" href="#id45" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id47">
+<h3>Controls<a class="headerlink" href="#id47" title="Permalink to this headline">¶</a></h3>
 <p>Q- Quit- Close the application</p>
 </div>
 </div>
@@ -529,8 +542,14 @@ case Open Street Map (OSM) data.</p>
 <a class="reference internal image-reference" href="../../examples/Vulkan/Navigation3D/Navigation3D.png"><img alt="../../examples/Vulkan/Navigation3D/Navigation3D.png" src="../../examples/Vulkan/Navigation3D/Navigation3D.png" style="width: 320.0px; height: 200.0px;" /></a>
 </div>
 <p>Demonstrates parsing, processing and rendering of raw OSM data as a 3D navigational map.</p>
-<div class="section" id="id46">
-<h3>Description<a class="headerlink" href="#id46" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id48">
+<h3>API<a class="headerlink" href="#id48" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Vulkan</li>
+</ul>
+</div>
+<div class="section" id="id49">
+<h3>Description<a class="headerlink" href="#id49" title="Permalink to this headline">¶</a></h3>
 <p>The 3D navigation example demonstrates the entire process of creating a navigational map from raw XML data,
 in this case using Open Street Map (OSM) data.</p>
 <p>The example shows how to load and parse the XML. It then shows how to process the raw data into renderable polygons which can be used by the GPU. This is achieved through triangulation, which uses the ear-clipping algorithm to generate triangles from lists of points.</p>
@@ -541,15 +560,8 @@ in this case using Open Street Map (OSM) data.</p>
 <li>an effective tile based approach to batching and culling the geometry.</li>
 </ul>
 </div>
-<div class="section" id="id47">
-<h3>APIs<a class="headerlink" href="#id47" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
-<li>OpenGL ES 2.0+</li>
-<li>Vulkan</li>
-</ul>
-</div>
-<div class="section" id="id48">
-<h3>Controls<a class="headerlink" href="#id48" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id50">
+<h3>Controls<a class="headerlink" href="#id50" title="Permalink to this headline">¶</a></h3>
 <p>Q- Quit- Close the application</p>
 </div>
 </div>
@@ -559,19 +571,18 @@ in this case using Open Street Map (OSM) data.</p>
 <a class="reference internal image-reference" href="../../examples/Vulkan/PVRScopeExample/PVRScopeExample.png"><img alt="../../examples/Vulkan/PVRScopeExample/PVRScopeExample.png" src="../../examples/Vulkan/PVRScopeExample/PVRScopeExample.png" style="width: 320.0px; height: 200.0px;" /></a>
 </div>
 <p>Demonstrates the use of PVRScope and the example graphing code.</p>
-<div class="section" id="id49">
-<h3>Description<a class="headerlink" href="#id49" title="Permalink to this headline">¶</a></h3>
-<p>This example uses a simple PBR-style shader and shows the use of PVRScope to allow an application to return performance statistics from the GPU in real time. It uses the example graphing code to render a graph of the selected counters on the screen. For further details, refer to the PVRScope User Manual.</p>
-</div>
-<div class="section" id="id50">
-<h3>APIs<a class="headerlink" href="#id50" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id51">
+<h3>API<a class="headerlink" href="#id51" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
-<li>OpenGL ES 2.0+</li>
 <li>Vulkan</li>
 </ul>
 </div>
-<div class="section" id="id51">
-<h3>Controls<a class="headerlink" href="#id51" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id52">
+<h3>Description<a class="headerlink" href="#id52" title="Permalink to this headline">¶</a></h3>
+<p>This example uses a simple PBR-style shader and shows the use of PVRScope to allow an application to return performance statistics from the GPU in real time. It uses the example graphing code to render a graph of the selected counters on the screen. For further details, refer to the PVRScope User Manual.</p>
+</div>
+<div class="section" id="id53">
+<h3>Controls<a class="headerlink" href="#id53" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Quit- Close demo</li>
 <li>Up/Down- Select a counter from the available list of HW counters</li>
@@ -585,20 +596,19 @@ in this case using Open Street Map (OSM) data.</p>
 <a class="reference internal image-reference" href="../../examples/Vulkan/PVRScopeRemote/PVRScopeRemote.png"><img alt="../../examples/Vulkan/PVRScopeRemote/PVRScopeRemote.png" src="../../examples/Vulkan/PVRScopeRemote/PVRScopeRemote.png" style="width: 320.0px; height: 200.0px;" /></a>
 </div>
 <p>Demonstrates the use of PVRScope’s remote communication features.</p>
-<div class="section" id="id52">
-<h3>Description<a class="headerlink" href="#id52" title="Permalink to this headline">¶</a></h3>
-<p>This example shows how to use the editable data and custom mark functionality of PVRScope. PVRTune must be running and connected to an instance of PVRPerfServer running on the target device for this example to function.</p>
-<p>A simple physically-based shader is provided with properties of Albedo, Metallicity and Glossiness. These, together with the shaders, can be edited from the PVRTune GUI. This allows immediate modification of the appearance of the statue.</p>
-</div>
-<div class="section" id="id53">
-<h3>APIs<a class="headerlink" href="#id53" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id54">
+<h3>API<a class="headerlink" href="#id54" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
-<li>OpenGL ES 2.0+</li>
 <li>Vulkan</li>
 </ul>
 </div>
-<div class="section" id="id54">
-<h3>Controls<a class="headerlink" href="#id54" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id55">
+<h3>Description<a class="headerlink" href="#id55" title="Permalink to this headline">¶</a></h3>
+<p>This example shows how to use the editable data and custom mark functionality of PVRScope. PVRTune must be running and connected to an instance of PVRPerfServer running on the target device for this example to function.</p>
+<p>A simple physically-based shader is provided with properties of Albedo, Metallicity and Glossiness. These, together with the shaders, can be edited from the PVRTune GUI. This allows immediate modification of the appearance of the statue.</p>
+</div>
+<div class="section" id="id56">
+<h3>Controls<a class="headerlink" href="#id56" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Quit- Close demo</li>
 <li>PVRTune- Control example variables through PVRTune</li>
@@ -611,20 +621,19 @@ in this case using Open Street Map (OSM) data.</p>
 <a class="reference internal image-reference" href="../../examples/Vulkan/ParticleSystem/ParticleSystem.png"><img alt="../../examples/Vulkan/ParticleSystem/ParticleSystem.png" src="../../examples/Vulkan/ParticleSystem/ParticleSystem.png" style="width: 320.0px; height: 200.0px;" /></a>
 </div>
 <p>This example shows how to implement a simple particle system using GPGPU.</p>
-<div class="section" id="id55">
-<h3>Description<a class="headerlink" href="#id55" title="Permalink to this headline">¶</a></h3>
-<p>Particle systems are techniques that use a large amount of sprites to simulate phenomena that would be difficult to reproduce with conventional rendering techniques.</p>
-<p>This example uses GPGPU (GPU Compute) to implement a particle system. This is a simple integration-based simulation which is advanced and then rendered every frame strictly on the GPU, without any CPU access of that data. It also highlights the interaction between the compute and the rendering part of a simulation.</p>
-</div>
-<div class="section" id="id56">
-<h3>APIs<a class="headerlink" href="#id56" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id57">
+<h3>API<a class="headerlink" href="#id57" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
-<li>OpenGL ES 3.0+</li>
 <li>Vulkan</li>
 </ul>
 </div>
-<div class="section" id="id57">
-<h3>Controls<a class="headerlink" href="#id57" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id58">
+<h3>Description<a class="headerlink" href="#id58" title="Permalink to this headline">¶</a></h3>
+<p>Particle systems are techniques that use a large amount of sprites to simulate phenomena that would be difficult to reproduce with conventional rendering techniques.</p>
+<p>This example uses GPGPU (GPU Compute) to implement a particle system. This is a simple integration-based simulation which is advanced and then rendered every frame strictly on the GPU, without any CPU access of that data. It also highlights the interaction between the compute and the rendering part of a simulation.</p>
+</div>
+<div class="section" id="id59">
+<h3>Controls<a class="headerlink" href="#id59" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><dl class="first docutils">
 <dt>Quit- Close demo</dt>
@@ -644,8 +653,14 @@ in this case using Open Street Map (OSM) data.</p>
 <a class="reference internal image-reference" href="../../examples/Vulkan/PostProcessing/PostProcessing.png"><img alt="../../examples/Vulkan/PostProcessing/PostProcessing.png" src="../../examples/Vulkan/PostProcessing/PostProcessing.png" style="width: 320.0px; height: 200.0px;" /></a>
 </div>
 <p>This example demonstrates a set of heavily-optimised bloom post-processing implementations.</p>
-<div class="section" id="id58">
-<h3>Description<a class="headerlink" href="#id58" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id60">
+<h3>API<a class="headerlink" href="#id60" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Vulkan</li>
+</ul>
+</div>
+<div class="section" id="id61">
+<h3>Description<a class="headerlink" href="#id61" title="Permalink to this headline">¶</a></h3>
 <p>This example demonstrates a set of heavily-optimised bloom post-processing implementations including:</p>
 <ul class="simple">
 <li>Reference implementation of a separated Gaussian Blur.</li>
@@ -664,15 +679,8 @@ in this case using Open Street Map (OSM) data.</p>
 <li>The resulting blurred image is then composited onto the original image to create a smooth bloom around the brighter regions.</li>
 </ol>
 </div>
-<div class="section" id="id59">
-<h3>APIs<a class="headerlink" href="#id59" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
-<li>OpenGL ES 3.0+</li>
-<li>Vulkan</li>
-</ul>
-</div>
-<div class="section" id="id60">
-<h3>Controls<a class="headerlink" href="#id60" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id62">
+<h3>Controls<a class="headerlink" href="#id62" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Left/Right - Cycle through the various bloom implementations</li>
 <li>Up/Down - Increase/decrease the size of the bloom intensity</li>
@@ -688,21 +696,20 @@ in this case using Open Street Map (OSM) data.</p>
 <a class="reference internal image-reference" href="../../examples/Vulkan/Skinning/Skinning.png"><img alt="../../examples/Vulkan/Skinning/Skinning.png" src="../../examples/Vulkan/Skinning/Skinning.png" style="width: 320.0px; height: 200.0px;" /></a>
 </div>
 <p>This example shows a scene with a combination of a skinned, bumpmapped character with non-skinned, non-bumpmapped objects.</p>
-<div class="section" id="id61">
-<h3>Description<a class="headerlink" href="#id61" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id63">
+<h3>API<a class="headerlink" href="#id63" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Vulkan</li>
+</ul>
+</div>
+<div class="section" id="id64">
+<h3>Description<a class="headerlink" href="#id64" title="Permalink to this headline">¶</a></h3>
 <p>Skinning is the act of animating a vertex over time given a set (palette) of matrices, and a known set of blend weights assigned to those matrices.</p>
 <p>The Skinning example shows a skinned character in combination with bump mapping. For each frame, the matrix palette is recomputed based on time.</p>
 <p>PVRAssets and POD files support skinning with either full transformation matrices, or Quaternion rotation with scaling and translation vectors. The provided POD file contains matrix animation. A shader storage buffer object is used to support a dynamic number of bones.</p>
 </div>
-<div class="section" id="id62">
-<h3>APIs<a class="headerlink" href="#id62" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
-<li>OpenGL ES 3.0+</li>
-<li>Vulkan</li>
-</ul>
-</div>
-<div class="section" id="id63">
-<h3>Controls<a class="headerlink" href="#id63" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id65">
+<h3>Controls<a class="headerlink" href="#id65" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Action1/2/3- Pause</li>
 <li>Esc- Close</li>

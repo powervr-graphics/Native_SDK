@@ -46,6 +46,7 @@ now use the shell to create a "Hello triangle" app, similar to the previous
 one.
 
 */
+#include "PVRShell/PVRShell.h"
 #include "EglContext.h"
 
 // Index to bind the attributes to vertex shaders

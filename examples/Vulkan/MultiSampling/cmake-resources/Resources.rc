@@ -1,4 +1,4 @@
-//Microsoft eMbedded Visual C++ generated resource script.
+// Microsoft Visual C++ generated resource script.
 //
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
@@ -58,14 +58,14 @@ END
 // RCDATA
 //
 /////////////////////////////////////////////////////////////////////////////
-// RCDATA: Assets (scenes,  effects, textures...)
-GnomeWood.pvr		RCDATA		"..\\..\\..\\assets\\GnomeToy\\GnomeWood.pvr"
-DarkWood.pvr		RCDATA		"..\\..\\..\\assets\\GnomeToy\\DarkWood.pvr"
-ClearWood.pvr		RCDATA		"..\\..\\..\\assets\\GnomeToy\\ClearWood.pvr"
-GnomeToy.pod		RCDATA		"..\\..\\..\\assets\\GnomeToy\\GnomeToy.pod"
-// RCDATA: Vulkan Spir-V shaders(glsl)
-VertShader.vsh.spv		RCDATA		"..\\VertShader.vsh.spv"
-FragShader.fsh.spv		RCDATA		"..\\FragShader.fsh.spv"
+GnomeWood.pvr RCDATA "..\\..\\..\\assets\\GnomeToy\\GnomeWood.pvr"
+DarkWood.pvr RCDATA "..\\..\\..\\assets\\GnomeToy\\DarkWood.pvr"
+ClearWood.pvr RCDATA "..\\..\\..\\assets\\GnomeToy\\ClearWood.pvr"
+GnomeToy.pod RCDATA "..\\..\\..\\assets\\GnomeToy\\GnomeToy.pod"
+VertShader.vsh RCDATA "..\\VertShader.vsh"
+FragShader.fsh RCDATA "..\\FragShader.fsh"
+VertShader.vsh.spv RCDATA "..\\VertShader.vsh.spv"
+FragShader.fsh.spv RCDATA "..\\FragShader.fsh.spv"
 
 #endif    // English (United Kingdom) resources
 /////////////////////////////////////////////////////////////////////////////

@@ -1,6 +1,6 @@
 /*!
 \brief An experimental AssetReader that reads pvr::asset::Texture objects from an XNB file.
-\file PVRCore/textureReaders/TextureReaderXNB.h
+\file PVRCore/textureio/TextureReaderXNB.h
 \author PowerVR by Imagination, Developer Technology Team
 \copyright Copyright (c) Imagination Technologies Limited.
 */
@@ -10,14 +10,18 @@
 #include "PVRCore/textureio/FileDefinesXNB.h"
 #include "PVRCore/stream/AssetReader.h"
 
-//!\cond NO_DOXYGEN
 namespace pvr {
 namespace assetReaders {
 /// <summary>Experimental XNB Texture reader</summary>
 class TextureReaderXNB : public AssetReader<Texture>
 {
 public:
+	/// <summary>Constructor</summary>
 	TextureReaderXNB();
+
+	/// <summary>Specifies if the XNB file is supported</summary>
+	/// <param name="assetStream">An asset stream to read the XNB from</param>
+	/// <returns>True if this reader supports the particular assetStream</returns>
 	virtual bool isSupportedFile(Stream& assetStream);
 
 private:
@@ -41,4 +45,3 @@ private:
 };
 } // namespace assetReaders
 } // namespace pvr
-//!\endcond

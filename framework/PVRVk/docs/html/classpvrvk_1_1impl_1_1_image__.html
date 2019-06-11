@@ -81,8 +81,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pro-methods">Protected Member Functions</a> &#124;
+<a href="#pro-static-methods">Static Protected Member Functions</a> &#124;
 <a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="classpvrvk_1_1impl_1_1_image__-members.html">List of all members</a>  </div>
   <div class="headertitle">
@@ -97,30 +98,36 @@ Inheritance diagram for pvrvk::impl::Image_:</div>
 <div class="dyncontent">
 <div class="center"><img src="classpvrvk_1_1impl_1_1_image____inherit__graph.png" border="0" usemap="#pvrvk_1_1impl_1_1_image___inherit__map" alt="Inheritance graph"/></div>
 <map name="pvrvk_1_1impl_1_1_image___inherit__map" id="pvrvk_1_1impl_1_1_image___inherit__map">
-<area shape="rect" id="node5" href="classpvrvk_1_1impl_1_1_swapchain_image__.html" title="The Specialized image for swapchain" alt="" coords="635,45,837,72"/><area shape="rect" id="node2" href="classpvrvk_1_1impl_1_1_device_object_handle.html" title="pvrvk::impl::DeviceObject\lHandle\&lt; VkImage \&gt;" alt="" coords="227,5,400,46"/><area shape="rect" id="node3" href="classpvrvk_1_1impl_1_1_object_handle.html" title="pvrvk::impl::ObjectHandle\l\&lt; VkImage \&gt;" alt="" coords="5,5,179,46"/><area shape="rect" id="node4" href="classpvrvk_1_1impl_1_1_device_object_debug_marker.html" title="pvrvk::impl::DeviceObject\lDebugMarker\&lt; Image_ \&gt;" alt="" coords="227,70,400,111"/></map>
+<area shape="rect" id="node5" href="classpvrvk_1_1impl_1_1_swapchain_image__.html" title="The Specialized image for swapchain" alt="" coords="766,55,967,81"/><area shape="rect" id="node2" href="classpvrvk_1_1impl_1_1_p_v_r_vk_device_object_base.html" title="pvrvk::impl::PVRVkDevice\lObjectBase\&lt; VkImage, ObjectType\l::e_IMAGE \&gt;" alt="" coords="301,4,531,60"/><area shape="rect" id="node3" href="classpvrvk_1_1impl_1_1_p_v_r_vk_object_base.html" title="pvrvk::impl::PVRVkObject\lBase\&lt; VkImage, PVRVkObjectType \&gt;" alt="" coords="6,11,253,53"/><area shape="rect" id="node4" href="classpvrvk_1_1impl_1_1_device_object_debug_utils.html" title="pvrvk::impl::DeviceObject\lDebugUtils\&lt; Image_ \&gt;" alt="" coords="329,83,503,125"/></map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_image___1_1make__shared__enabler.html">make_shared_enabler</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A class which restricts the creation of a <a class="el" href="namespacepvrvk.html#a5e7f46cb10bc00fb2407525312b4116b" title="A backing store for any kind of texture.">pvrvk::Image</a> to children or friends of a <a class="el" href="classpvrvk_1_1impl_1_1_image__.html" title="ImageVk implementation that wraps the Vulkan Texture object">pvrvk::impl::Image_</a>. <a href="classpvrvk_1_1impl_1_1_image___1_1make__shared__enabler.html#details">More...</a><br/></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a6fead2ab34caa492a133bdf61e34e482"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_image__.html#a6fead2ab34caa492a133bdf61e34e482">bindMemoryNonSparse</a> (<a class="el" href="namespacepvrvk.html#a634be07eff8c3efd7788c1429c8ff129">DeviceMemory</a> memory, VkDeviceSize offset=0)</td></tr>
+<tr class="memitem:a6fead2ab34caa492a133bdf61e34e482"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_image__.html#a6fead2ab34caa492a133bdf61e34e482">bindMemoryNonSparse</a> (<a class="el" href="namespacepvrvk.html#a5f5c47d6dc912e104bafd3c3aba2a0a3">DeviceMemory</a> memory, VkDeviceSize offset=0)</td></tr>
 <tr class="memdesc:a6fead2ab34caa492a133bdf61e34e482"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind memory to this non sparse image. <a href="#a6fead2ab34caa492a133bdf61e34e482">More...</a><br/></td></tr>
 <tr class="separator:a6fead2ab34caa492a133bdf61e34e482"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a966817e09fe601e4dc9a975801a520bd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structpvrvk_1_1_image_create_info.html">pvrvk::ImageCreateInfo</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_image__.html#a966817e09fe601e4dc9a975801a520bd">getCreateInfo</a> () const </td></tr>
 <tr class="memdesc:a966817e09fe601e4dc9a975801a520bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a reference to the creation descriptor of the image <a href="#a966817e09fe601e4dc9a975801a520bd">More...</a><br/></td></tr>
 <tr class="separator:a966817e09fe601e4dc9a975801a520bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad03bb634c051a4a08aca121b6ede0a12"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_image__.html#ad03bb634c051a4a08aca121b6ede0a12">getDepth</a> () const </td></tr>
-<tr class="memdesc:ad03bb634c051a4a08aca121b6ede0a12"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the depth of this texture (number of (non-array) layers of texels in the lowest mipmap)  <a href="#ad03bb634c051a4a08aca121b6ede0a12">More...</a><br/></td></tr>
+<tr class="memdesc:ad03bb634c051a4a08aca121b6ede0a12"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the depth of this texture (number of (non-array) layers of texels in the lowest mipmap) <a href="#ad03bb634c051a4a08aca121b6ede0a12">More...</a><br/></td></tr>
 <tr class="separator:ad03bb634c051a4a08aca121b6ede0a12"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a29d79599ff2851f03e72df701b411fd1"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacepvrvk.html#a8dd5932a80187b088ce6b591712dc2c2">DeviceWeakPtr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_device_object_handle.html#a29d79599ff2851f03e72df701b411fd1">getDevice</a> () const</td></tr>
-<tr class="memdesc:a29d79599ff2851f03e72df701b411fd1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get Device (const) <a href="#a29d79599ff2851f03e72df701b411fd1">More...</a><br/></td></tr>
-<tr class="separator:a29d79599ff2851f03e72df701b411fd1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa78f66f58571440f57204a645383c279"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvrvk.html#a8dd5932a80187b088ce6b591712dc2c2">DeviceWeakPtr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_device_object_handle.html#aa78f66f58571440f57204a645383c279">getDevice</a> ()</td></tr>
-<tr class="memdesc:aa78f66f58571440f57204a645383c279"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get Device <a href="#aa78f66f58571440f57204a645383c279">More...</a><br/></td></tr>
-<tr class="separator:aa78f66f58571440f57204a645383c279"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a452660dbb63dcf8b94adbccf35625195"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacepvrvk.html#a634be07eff8c3efd7788c1429c8ff129">DeviceMemory</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_image__.html#a452660dbb63dcf8b94adbccf35625195">getDeviceMemory</a> () const </td></tr>
+<tr class="memitem:af6593b9f7bf426811d4639b8358f3437"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacepvrvk.html#a48baa2a10fcb9f1bafd42e398fdbce61">Device</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_p_v_r_vk_device_object_base.html#af6593b9f7bf426811d4639b8358f3437">getDevice</a> () const</td></tr>
+<tr class="memdesc:af6593b9f7bf426811d4639b8358f3437"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get Device (const) <a href="#af6593b9f7bf426811d4639b8358f3437">More...</a><br/></td></tr>
+<tr class="separator:af6593b9f7bf426811d4639b8358f3437"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5fac1d61fb53bcce751d3386d97a41d1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvrvk.html#a48baa2a10fcb9f1bafd42e398fdbce61">Device</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_p_v_r_vk_device_object_base.html#a5fac1d61fb53bcce751d3386d97a41d1">getDevice</a> ()</td></tr>
+<tr class="memdesc:a5fac1d61fb53bcce751d3386d97a41d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get Device <a href="#a5fac1d61fb53bcce751d3386d97a41d1">More...</a><br/></td></tr>
+<tr class="separator:a5fac1d61fb53bcce751d3386d97a41d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a452660dbb63dcf8b94adbccf35625195"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacepvrvk.html#a5f5c47d6dc912e104bafd3c3aba2a0a3">DeviceMemory</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_image__.html#a452660dbb63dcf8b94adbccf35625195">getDeviceMemory</a> () const </td></tr>
 <tr class="memdesc:a452660dbb63dcf8b94adbccf35625195"><td class="mdescLeft">&#160;</td><td class="mdescRight">If a memory object has been bound to the object, return it. Otherwise, return empty device memory. <a href="#a452660dbb63dcf8b94adbccf35625195">More...</a><br/></td></tr>
 <tr class="separator:a452660dbb63dcf8b94adbccf35625195"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a994102a937f720dca131388a91bd0d9d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvrvk.html#a634be07eff8c3efd7788c1429c8ff129">DeviceMemory</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_image__.html#a994102a937f720dca131388a91bd0d9d">getDeviceMemory</a> ()</td></tr>
+<tr class="memitem:a994102a937f720dca131388a91bd0d9d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvrvk.html#a5f5c47d6dc912e104bafd3c3aba2a0a3">DeviceMemory</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_image__.html#a994102a937f720dca131388a91bd0d9d">getDeviceMemory</a> ()</td></tr>
 <tr class="memdesc:a994102a937f720dca131388a91bd0d9d"><td class="mdescLeft">&#160;</td><td class="mdescRight">If a memory object has been bound to the object, return it. Otherwise, return empty device memory. <a href="#a994102a937f720dca131388a91bd0d9d">More...</a><br/></td></tr>
 <tr class="separator:a994102a937f720dca131388a91bd0d9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a29d37cb96277502f88134b5be0afa93b"><td class="memItemLeft" align="right" valign="top">Extent3D&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_image__.html#a29d37cb96277502f88134b5be0afa93b">getExtent</a> () const </td></tr>
@@ -156,9 +163,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a96e957c5db24697d9f571c58b70f256f"><td class="memItemLeft" align="right" valign="top">SampleCountFlags&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_image__.html#a96e957c5db24697d9f571c58b70f256f">getNumSamples</a> () const </td></tr>
 <tr class="memdesc:a96e957c5db24697d9f571c58b70f256f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the number of samples taken for the Image <a href="#a96e957c5db24697d9f571c58b70f256f">More...</a><br/></td></tr>
 <tr class="separator:a96e957c5db24697d9f571c58b70f256f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af9cd7d892ba5d3d7988b9ecae846f5bf"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_device_object_debug_marker.html#af9cd7d892ba5d3d7988b9ecae846f5bf">getObjectName</a> () const</td></tr>
-<tr class="memdesc:af9cd7d892ba5d3d7988b9ecae846f5bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the Debug Marker name. <a href="#af9cd7d892ba5d3d7988b9ecae846f5bf">More...</a><br/></td></tr>
-<tr class="separator:af9cd7d892ba5d3d7988b9ecae846f5bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac76498acd2c21abc91403f55db935163"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_device_object_debug_utils.html#ac76498acd2c21abc91403f55db935163">getObjectName</a> () const</td></tr>
+<tr class="memdesc:ac76498acd2c21abc91403f55db935163"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the Debug Marker name. <a href="#ac76498acd2c21abc91403f55db935163">More...</a><br/></td></tr>
+<tr class="separator:ac76498acd2c21abc91403f55db935163"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e8a3543c48cdc939fa0eeed3a9e85c9"><td class="memItemLeft" align="right" valign="top">ObjectType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_p_v_r_vk_object_base.html#a3e8a3543c48cdc939fa0eeed3a9e85c9">getObjectType</a> () const</td></tr>
+<tr class="memdesc:a3e8a3543c48cdc939fa0eeed3a9e85c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the specified object's type. <a href="#a3e8a3543c48cdc939fa0eeed3a9e85c9">More...</a><br/></td></tr>
+<tr class="separator:a3e8a3543c48cdc939fa0eeed3a9e85c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4785fe9d80f13d626ff1d3f36ebfcbbd"><td class="memItemLeft" align="right" valign="top">const uint32_t *const&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_image__.html#a4785fe9d80f13d626ff1d3f36ebfcbbd">getQueueFamilyIndices</a> () const </td></tr>
 <tr class="memdesc:a4785fe9d80f13d626ff1d3f36ebfcbbd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a pointer to a list of queue family inidices for the image <a href="#a4785fe9d80f13d626ff1d3f36ebfcbbd">More...</a><br/></td></tr>
 <tr class="separator:a4785fe9d80f13d626ff1d3f36ebfcbbd"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -174,9 +184,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a061d37d7b3b875cd269dde146f314dbe"><td class="memItemLeft" align="right" valign="top">ImageUsageFlags&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_image__.html#a061d37d7b3b875cd269dde146f314dbe">getUsageFlags</a> () const </td></tr>
 <tr class="memdesc:a061d37d7b3b875cd269dde146f314dbe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get Image usage flags <a href="#a061d37d7b3b875cd269dde146f314dbe">More...</a><br/></td></tr>
 <tr class="separator:a061d37d7b3b875cd269dde146f314dbe"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4f27eddb1090fc657f3af1966d353e0b"><td class="memItemLeft" align="right" valign="top">const VkImage &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_object_handle.html#a4f27eddb1090fc657f3af1966d353e0b">getVkHandle</a> () const</td></tr>
-<tr class="memdesc:a4f27eddb1090fc657f3af1966d353e0b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get vulkan object (const) <a href="#a4f27eddb1090fc657f3af1966d353e0b">More...</a><br/></td></tr>
-<tr class="separator:a4f27eddb1090fc657f3af1966d353e0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5bdea0f8bea6d2335934b10ff3d64285"><td class="memItemLeft" align="right" valign="top">const VkImage &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_p_v_r_vk_object_base.html#a5bdea0f8bea6d2335934b10ff3d64285">getVkHandle</a> () const</td></tr>
+<tr class="memdesc:a5bdea0f8bea6d2335934b10ff3d64285"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get vulkan object (const) <a href="#a5bdea0f8bea6d2335934b10ff3d64285">More...</a><br/></td></tr>
+<tr class="separator:a5bdea0f8bea6d2335934b10ff3d64285"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ade046924b4863acf12a6dbfbcf4b0b8c"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_image__.html#ade046924b4863acf12a6dbfbcf4b0b8c">getWidth</a> () const </td></tr>
 <tr class="memdesc:ade046924b4863acf12a6dbfbcf4b0b8c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the width of this texture (number of columns of texels in the lowest mipmap) <a href="#ade046924b4863acf12a6dbfbcf4b0b8c">More...</a><br/></td></tr>
 <tr class="separator:ade046924b4863acf12a6dbfbcf4b0b8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -186,150 +196,49 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a41ebadfc82e4226609fa6437d33699a5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_image__.html#a41ebadfc82e4226609fa6437d33699a5">isCubeMap</a> () const </td></tr>
 <tr class="memdesc:a41ebadfc82e4226609fa6437d33699a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if this texture is a cubemap <a href="#a41ebadfc82e4226609fa6437d33699a5">More...</a><br/></td></tr>
 <tr class="separator:a41ebadfc82e4226609fa6437d33699a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0d5fc2fba19956e2923f87641cd3811e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_device_object_debug_marker.html#a0d5fc2fba19956e2923f87641cd3811e">resetObjectName</a> ()</td></tr>
-<tr class="memdesc:a0d5fc2fba19956e2923f87641cd3811e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resets the name of a specified object using the extension VK_EXT_debug_marker. <a href="#a0d5fc2fba19956e2923f87641cd3811e">More...</a><br/></td></tr>
-<tr class="separator:a0d5fc2fba19956e2923f87641cd3811e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae323b1f0833e0e90489612e897c78821"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_device_object_debug_marker.html#ae323b1f0833e0e90489612e897c78821">setObjectName</a> (const std::string &amp;objectName)</td></tr>
-<tr class="memdesc:ae323b1f0833e0e90489612e897c78821"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes use of the extension VK_EXT_debug_marker to provide a name for a specified object. <a href="#ae323b1f0833e0e90489612e897c78821">More...</a><br/></td></tr>
-<tr class="separator:ae323b1f0833e0e90489612e897c78821"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a90a2912d1e2fb065219b50eb55fbfd34"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_device_object_debug_marker.html#a90a2912d1e2fb065219b50eb55fbfd34">setObjectTag</a> (uint64_t tagName, size_t tagSize, const void *tag)</td></tr>
-<tr class="memdesc:a90a2912d1e2fb065219b50eb55fbfd34"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes use of the extension VK_EXT_debug_marker to provide a tag for a specified object. <a href="#a90a2912d1e2fb065219b50eb55fbfd34">More...</a><br/></td></tr>
-<tr class="separator:a90a2912d1e2fb065219b50eb55fbfd34"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac34022a1a96759902c41c68a33264576"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_device_object_debug_utils.html#ac34022a1a96759902c41c68a33264576">resetObjectName</a> ()</td></tr>
+<tr class="memdesc:ac34022a1a96759902c41c68a33264576"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resets the name of a specified object using the extension VK_EXT_debug_marker or VK_EXT_debug_utils. <a href="#ac34022a1a96759902c41c68a33264576">More...</a><br/></td></tr>
+<tr class="separator:ac34022a1a96759902c41c68a33264576"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a93cc55657dbc15c87bc158960f5ececd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_device_object_debug_utils.html#a93cc55657dbc15c87bc158960f5ececd">setObjectName</a> (const std::string &amp;objectName)</td></tr>
+<tr class="memdesc:a93cc55657dbc15c87bc158960f5ececd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes use of the extension VK_EXT_debug_marker or VK_EXT_debug_utils to provide a name for a specified object. <a href="#a93cc55657dbc15c87bc158960f5ececd">More...</a><br/></td></tr>
+<tr class="separator:a93cc55657dbc15c87bc158960f5ececd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4f3e93927c6dfb8e82ef548282462f03"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_device_object_debug_utils.html#a4f3e93927c6dfb8e82ef548282462f03">setObjectTag</a> (uint64_t tagName, size_t tagSize, const void *tag)</td></tr>
+<tr class="memdesc:a4f3e93927c6dfb8e82ef548282462f03"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes use of the extension VK_EXT_debug_marker or VK_EXT_debug_utils to provide a tag for a specified object. <a href="#a4f3e93927c6dfb8e82ef548282462f03">More...</a><br/></td></tr>
+<tr class="separator:a4f3e93927c6dfb8e82ef548282462f03"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
-Protected Member Functions</h2></td></tr>
-<tr class="memitem:aa6d9e53ce7144c1a0dbf260e11da1142"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_image__.html#aa6d9e53ce7144c1a0dbf260e11da1142">Image_</a> (const <a class="el" href="namespacepvrvk.html#a8dd5932a80187b088ce6b591712dc2c2">DeviceWeakPtr</a> &amp;device, const <a class="el" href="structpvrvk_1_1_image_create_info.html">ImageCreateInfo</a> &amp;createInfo)</td></tr>
-<tr class="memdesc:aa6d9e53ce7144c1a0dbf260e11da1142"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor. <a href="#aa6d9e53ce7144c1a0dbf260e11da1142">More...</a><br/></td></tr>
-<tr class="separator:aa6d9e53ce7144c1a0dbf260e11da1142"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a130fe5ddb36feb460d4ad6243479e670"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_image__.html#a130fe5ddb36feb460d4ad6243479e670">Image_</a> (const <a class="el" href="namespacepvrvk.html#a8dd5932a80187b088ce6b591712dc2c2">DeviceWeakPtr</a> &amp;device)</td></tr>
-<tr class="memdesc:a130fe5ddb36feb460d4ad6243479e670"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor. <a href="#a130fe5ddb36feb460d4ad6243479e670">More...</a><br/></td></tr>
-<tr class="separator:a130fe5ddb36feb460d4ad6243479e670"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1994581767be60275a66ecb856545bf9"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_image__.html#a1994581767be60275a66ecb856545bf9">~Image_</a> ()</td></tr>
-<tr class="memdesc:a1994581767be60275a66ecb856545bf9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructor. Will properly release all resources held by this object. <a href="#a1994581767be60275a66ecb856545bf9">More...</a><br/></td></tr>
-<tr class="separator:a1994581767be60275a66ecb856545bf9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-static-methods"></a>
+Static Protected Member Functions</h2></td></tr>
+<tr class="memitem:a0f659b527467585e320da2e523f4ae52"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="namespacepvrvk.html#a5e7f46cb10bc00fb2407525312b4116b">Image</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_image__.html#a0f659b527467585e320da2e523f4ae52">constructShared</a> (const <a class="el" href="namespacepvrvk.html#aecbfc9aca0ecd8de47ccb6137aafcabd">DeviceWeakPtr</a> &amp;device, const <a class="el" href="structpvrvk_1_1_image_create_info.html">ImageCreateInfo</a> &amp;createInfo)</td></tr>
+<tr class="memdesc:a0f659b527467585e320da2e523f4ae52"><td class="mdescLeft">&#160;</td><td class="mdescRight">Protected function used to construct a <a class="el" href="namespacepvrvk.html#a5e7f46cb10bc00fb2407525312b4116b" title="A backing store for any kind of texture.">pvrvk::Image</a>. Note that this function shouldn't normally be called directly and will be called by a friend of <a class="el" href="classpvrvk_1_1impl_1_1_image__.html" title="ImageVk implementation that wraps the Vulkan Texture object">Image_</a> which will generally be a Device <a href="#a0f659b527467585e320da2e523f4ae52">More...</a><br/></td></tr>
+<tr class="separator:a0f659b527467585e320da2e523f4ae52"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51792636beae7e778efcbb18d3d8b5f2"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="namespacepvrvk.html#a5e7f46cb10bc00fb2407525312b4116b">Image</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_image__.html#a51792636beae7e778efcbb18d3d8b5f2">constructShared</a> (const <a class="el" href="namespacepvrvk.html#aecbfc9aca0ecd8de47ccb6137aafcabd">DeviceWeakPtr</a> &amp;device)</td></tr>
+<tr class="memdesc:a51792636beae7e778efcbb18d3d8b5f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Protected function used to construct a <a class="el" href="namespacepvrvk.html#a5e7f46cb10bc00fb2407525312b4116b" title="A backing store for any kind of texture.">pvrvk::Image</a>. Note that this function shouldn't normally be called directly and will be called by a friend of <a class="el" href="classpvrvk_1_1impl_1_1_image__.html" title="ImageVk implementation that wraps the Vulkan Texture object">Image_</a> which will generally be a Device <a href="#a51792636beae7e778efcbb18d3d8b5f2">More...</a><br/></td></tr>
+<tr class="separator:a51792636beae7e778efcbb18d3d8b5f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
 <tr class="memitem:a8c15ca129f2d2cef6dce2df7b8f47e31"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structpvrvk_1_1_image_create_info.html">pvrvk::ImageCreateInfo</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_image__.html#a8c15ca129f2d2cef6dce2df7b8f47e31">_createInfo</a></td></tr>
 <tr class="memdesc:a8c15ca129f2d2cef6dce2df7b8f47e31"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creation information used when creating the image. <a href="#a8c15ca129f2d2cef6dce2df7b8f47e31">More...</a><br/></td></tr>
 <tr class="separator:a8c15ca129f2d2cef6dce2df7b8f47e31"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa6ff16a7e0728a785f1367dfb33d6099"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvrvk.html#a8dd5932a80187b088ce6b591712dc2c2">DeviceWeakPtr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_device_object_handle.html#aa6ff16a7e0728a785f1367dfb33d6099">_device</a></td></tr>
-<tr class="memdesc:aa6ff16a7e0728a785f1367dfb33d6099"><td class="mdescLeft">&#160;</td><td class="mdescRight">The device which was used to create this DeviceObject <a href="#aa6ff16a7e0728a785f1367dfb33d6099">More...</a><br/></td></tr>
-<tr class="separator:aa6ff16a7e0728a785f1367dfb33d6099"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5088814b6a07e1004ec1f57ebf9c1f90"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvrvk.html#a634be07eff8c3efd7788c1429c8ff129">DeviceMemory</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_image__.html#a5088814b6a07e1004ec1f57ebf9c1f90">_memory</a></td></tr>
+<tr class="memitem:a7e34537906b05ee353451b35dac332ca"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvrvk.html#aecbfc9aca0ecd8de47ccb6137aafcabd">DeviceWeakPtr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_p_v_r_vk_device_object_base.html#a7e34537906b05ee353451b35dac332ca">_device</a></td></tr>
+<tr class="memdesc:a7e34537906b05ee353451b35dac332ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">The device which was used to create this DeviceObject <a href="#a7e34537906b05ee353451b35dac332ca">More...</a><br/></td></tr>
+<tr class="separator:a7e34537906b05ee353451b35dac332ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5088814b6a07e1004ec1f57ebf9c1f90"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvrvk.html#a5f5c47d6dc912e104bafd3c3aba2a0a3">DeviceMemory</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_image__.html#a5088814b6a07e1004ec1f57ebf9c1f90">_memory</a></td></tr>
 <tr class="memdesc:a5088814b6a07e1004ec1f57ebf9c1f90"><td class="mdescLeft">&#160;</td><td class="mdescRight">Device memory bound to this image (Only for non sparse image). <a href="#a5088814b6a07e1004ec1f57ebf9c1f90">More...</a><br/></td></tr>
 <tr class="separator:a5088814b6a07e1004ec1f57ebf9c1f90"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5b2f5b8392ed2e27f6da7197b2a90b5b"><td class="memItemLeft" align="right" valign="top">pvrvk::MemoryRequirements&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_image__.html#a5b2f5b8392ed2e27f6da7197b2a90b5b">_memReqs</a></td></tr>
 <tr class="memdesc:a5b2f5b8392ed2e27f6da7197b2a90b5b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Image specific memory requirements <a href="#a5b2f5b8392ed2e27f6da7197b2a90b5b">More...</a><br/></td></tr>
 <tr class="separator:a5b2f5b8392ed2e27f6da7197b2a90b5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a41f43268ad1a7d2d3bde2a228fbcac03"><td class="memItemLeft" align="right" valign="top">VkImage&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_object_handle.html#a41f43268ad1a7d2d3bde2a228fbcac03">_vkHandle</a></td></tr>
-<tr class="memdesc:a41f43268ad1a7d2d3bde2a228fbcac03"><td class="mdescLeft">&#160;</td><td class="mdescRight">The Vulkan object handle representing the Vulkan object at an API level. <a href="#a41f43268ad1a7d2d3bde2a228fbcac03">More...</a><br/></td></tr>
-<tr class="separator:a41f43268ad1a7d2d3bde2a228fbcac03"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4f6a5283158daab0cdc032c0c6925f37"><td class="memItemLeft" align="right" valign="top">ObjectType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_p_v_r_vk_object_base.html#a4f6a5283158daab0cdc032c0c6925f37">_objectType</a></td></tr>
+<tr class="memdesc:a4f6a5283158daab0cdc032c0c6925f37"><td class="mdescLeft">&#160;</td><td class="mdescRight">The Vulkan object type. <a href="#a4f6a5283158daab0cdc032c0c6925f37">More...</a><br/></td></tr>
+<tr class="separator:a4f6a5283158daab0cdc032c0c6925f37"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a674fbf75f66ed66d68aa03d32e6114bd"><td class="memItemLeft" align="right" valign="top">VkImage&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_p_v_r_vk_object_base.html#a674fbf75f66ed66d68aa03d32e6114bd">_vkHandle</a></td></tr>
+<tr class="memdesc:a674fbf75f66ed66d68aa03d32e6114bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">The Vulkan object handle representing the Vulkan object at an API level. <a href="#a674fbf75f66ed66d68aa03d32e6114bd">More...</a><br/></td></tr>
+<tr class="separator:a674fbf75f66ed66d68aa03d32e6114bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>ImageVk implementation that wraps the Vulkan Texture object</p>
-</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a class="anchor" id="a1994581767be60275a66ecb856545bf9"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual pvrvk::impl::Image_::~Image_ </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Destructor. Will properly release all resources held by this object.</p>
-
-</div>
-</div>
-<a class="anchor" id="aa6d9e53ce7144c1a0dbf260e11da1142"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">pvrvk::impl::Image_::Image_ </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="namespacepvrvk.html#a8dd5932a80187b088ce6b591712dc2c2">DeviceWeakPtr</a> &amp;&#160;</td>
-          <td class="paramname"><em>device</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="structpvrvk_1_1_image_create_info.html">ImageCreateInfo</a> &amp;&#160;</td>
-          <td class="paramname"><em>createInfo</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Constructor.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">device</td><td>The Devices from which to create the image from</td></tr>
-    <tr><td class="paramname">createInfo</td><td>The <a class="el" href="structpvrvk_1_1_image_create_info.html" title="Image creation descriptor.">ImageCreateInfo</a> descriptor specifying creation parameters</td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a class="anchor" id="a130fe5ddb36feb460d4ad6243479e670"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">pvrvk::impl::Image_::Image_ </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="namespacepvrvk.html#a8dd5932a80187b088ce6b591712dc2c2">DeviceWeakPtr</a> &amp;&#160;</td>
-          <td class="paramname"><em>device</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">explicit</span><span class="mlabel">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Constructor.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">device</td><td>The Devices from which to create the image from</td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<h2 class="groupheader">Member Function Documentation</h2>
+</div><h2 class="groupheader">Member Function Documentation</h2>
 <a class="anchor" id="a6fead2ab34caa492a133bdf61e34e482"></a>
 <div class="memitem">
 <div class="memproto">
@@ -340,7 +249,7 @@ Protected Attributes</h2></td></tr>
         <tr>
           <td class="memname">void pvrvk::impl::Image_::bindMemoryNonSparse </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacepvrvk.html#a634be07eff8c3efd7788c1429c8ff129">DeviceMemory</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacepvrvk.html#a5f5c47d6dc912e104bafd3c3aba2a0a3">DeviceMemory</a>&#160;</td>
           <td class="paramname"><em>memory</em>, </td>
         </tr>
         <tr>
@@ -370,6 +279,83 @@ Protected Attributes</h2></td></tr>
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a class="anchor" id="a0f659b527467585e320da2e523f4ae52"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="namespacepvrvk.html#a5e7f46cb10bc00fb2407525312b4116b">Image</a> pvrvk::impl::Image_::constructShared </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespacepvrvk.html#aecbfc9aca0ecd8de47ccb6137aafcabd">DeviceWeakPtr</a> &amp;&#160;</td>
+          <td class="paramname"><em>device</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structpvrvk_1_1_image_create_info.html">ImageCreateInfo</a> &amp;&#160;</td>
+          <td class="paramname"><em>createInfo</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Protected function used to construct a <a class="el" href="namespacepvrvk.html#a5e7f46cb10bc00fb2407525312b4116b" title="A backing store for any kind of texture.">pvrvk::Image</a>. Note that this function shouldn't normally be called directly and will be called by a friend of <a class="el" href="classpvrvk_1_1impl_1_1_image__.html" title="ImageVk implementation that wraps the Vulkan Texture object">Image_</a> which will generally be a Device</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">device</td><td>The Device from which the image will be creted</td></tr>
+    <tr><td class="paramname">createInfo</td><td>The <a class="el" href="structpvrvk_1_1_image_create_info.html" title="Image creation descriptor.">ImageCreateInfo</a> descriptor specifying creation parameters</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Returns a successfully created <a class="el" href="namespacepvrvk.html#a5e7f46cb10bc00fb2407525312b4116b" title="A backing store for any kind of texture.">pvrvk::Image</a></dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a51792636beae7e778efcbb18d3d8b5f2"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="namespacepvrvk.html#a5e7f46cb10bc00fb2407525312b4116b">Image</a> pvrvk::impl::Image_::constructShared </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespacepvrvk.html#aecbfc9aca0ecd8de47ccb6137aafcabd">DeviceWeakPtr</a> &amp;&#160;</td>
+          <td class="paramname"><em>device</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Protected function used to construct a <a class="el" href="namespacepvrvk.html#a5e7f46cb10bc00fb2407525312b4116b" title="A backing store for any kind of texture.">pvrvk::Image</a>. Note that this function shouldn't normally be called directly and will be called by a friend of <a class="el" href="classpvrvk_1_1impl_1_1_image__.html" title="ImageVk implementation that wraps the Vulkan Texture object">Image_</a> which will generally be a Device</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">device</td><td>The Device from which the image will be creted</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Returns a successfully created <a class="el" href="namespacepvrvk.html#a5e7f46cb10bc00fb2407525312b4116b" title="A backing store for any kind of texture.">pvrvk::Image</a></dd></dl>
 
 </div>
 </div>
@@ -420,12 +406,12 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Get the depth of this texture (number of (non-array) layers of texels in the lowest mipmap) </p>
+<p>Get the depth of this texture (number of (non-array) layers of texels in the lowest mipmap)</p>
 <dl class="section return"><dt>Returns</dt><dd>Texture depth</dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="a29d79599ff2851f03e72df701b411fd1"></a>
+<a class="anchor" id="af6593b9f7bf426811d4639b8358f3437"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -433,7 +419,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const <a class="el" href="namespacepvrvk.html#a8dd5932a80187b088ce6b591712dc2c2">DeviceWeakPtr</a> <a class="el" href="classpvrvk_1_1impl_1_1_device_object_handle.html">pvrvk::impl::DeviceObjectHandle</a>&lt; VkImage  &gt;::getDevice </td>
+          <td class="memname">const <a class="el" href="namespacepvrvk.html#a48baa2a10fcb9f1bafd42e398fdbce61">Device</a> <a class="el" href="classpvrvk_1_1impl_1_1_p_v_r_vk_device_object_base.html">pvrvk::impl::PVRVkDeviceObjectBase</a>&lt; VkImage , PVRVkObjectType &gt;::getDevice </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -451,7 +437,7 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="aa78f66f58571440f57204a645383c279"></a>
+<a class="anchor" id="a5fac1d61fb53bcce751d3386d97a41d1"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -459,7 +445,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="namespacepvrvk.html#a8dd5932a80187b088ce6b591712dc2c2">DeviceWeakPtr</a> <a class="el" href="classpvrvk_1_1impl_1_1_device_object_handle.html">pvrvk::impl::DeviceObjectHandle</a>&lt; VkImage  &gt;::getDevice </td>
+          <td class="memname"><a class="el" href="namespacepvrvk.html#a48baa2a10fcb9f1bafd42e398fdbce61">Device</a> <a class="el" href="classpvrvk_1_1impl_1_1_p_v_r_vk_device_object_base.html">pvrvk::impl::PVRVkDeviceObjectBase</a>&lt; VkImage , PVRVkObjectType &gt;::getDevice </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -485,7 +471,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const <a class="el" href="namespacepvrvk.html#a634be07eff8c3efd7788c1429c8ff129">DeviceMemory</a>&amp; pvrvk::impl::Image_::getDeviceMemory </td>
+          <td class="memname">const <a class="el" href="namespacepvrvk.html#a5f5c47d6dc912e104bafd3c3aba2a0a3">DeviceMemory</a>&amp; pvrvk::impl::Image_::getDeviceMemory </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -511,7 +497,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="namespacepvrvk.html#a634be07eff8c3efd7788c1429c8ff129">DeviceMemory</a>&amp; pvrvk::impl::Image_::getDeviceMemory </td>
+          <td class="memname"><a class="el" href="namespacepvrvk.html#a5f5c47d6dc912e104bafd3c3aba2a0a3">DeviceMemory</a>&amp; pvrvk::impl::Image_::getDeviceMemory </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -815,7 +801,7 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="af9cd7d892ba5d3d7988b9ecae846f5bf"></a>
+<a class="anchor" id="ac76498acd2c21abc91403f55db935163"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -823,7 +809,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const std::string&amp; <a class="el" href="classpvrvk_1_1impl_1_1_device_object_debug_marker.html">pvrvk::impl::DeviceObjectDebugMarker</a>&lt; <a class="el" href="classpvrvk_1_1impl_1_1_image__.html">Image_</a>  &gt;::getObjectName </td>
+          <td class="memname">const std::string&amp; <a class="el" href="classpvrvk_1_1impl_1_1_device_object_debug_utils.html">pvrvk::impl::DeviceObjectDebugUtils</a>&lt; <a class="el" href="classpvrvk_1_1impl_1_1_image__.html">Image_</a>  &gt;::getObjectName </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -838,6 +824,32 @@ Protected Attributes</h2></td></tr>
 
 <p>Gets the Debug Marker name.</p>
 <dl class="section return"><dt>Returns</dt><dd>The object name</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a3e8a3543c48cdc939fa0eeed3a9e85c9"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">ObjectType <a class="el" href="classpvrvk_1_1impl_1_1_p_v_r_vk_object_base.html">pvrvk::impl::PVRVkObjectBase</a>&lt; VkImage , PVRVkObjectType &gt;::getObjectType </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the specified object's type.</p>
+<dl class="section return"><dt>Returns</dt><dd>The object type</dd></dl>
 
 </div>
 </div>
@@ -908,6 +920,12 @@ Protected Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Query and return a SubresourceLayout object describing the layout of the image</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">subresource</td><td>A subresource used to retrieve a subresource layout</td></tr>
+  </table>
+  </dd>
+</dl>
 <dl class="section return"><dt>Returns</dt><dd>The SubresourceLayout of the image</dd></dl>
 
 </div>
@@ -964,7 +982,7 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a4f27eddb1090fc657f3af1966d353e0b"></a>
+<a class="anchor" id="a5bdea0f8bea6d2335934b10ff3d64285"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -972,7 +990,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const VkImage &amp; <a class="el" href="classpvrvk_1_1impl_1_1_object_handle.html">pvrvk::impl::ObjectHandle</a>&lt; VkImage  &gt;::getVkHandle </td>
+          <td class="memname">const VkImage &amp; <a class="el" href="classpvrvk_1_1impl_1_1_p_v_r_vk_object_base.html">pvrvk::impl::PVRVkObjectBase</a>&lt; VkImage , PVRVkObjectType &gt;::getVkHandle </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -1068,7 +1086,7 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a0d5fc2fba19956e2923f87641cd3811e"></a>
+<a class="anchor" id="ac34022a1a96759902c41c68a33264576"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -1076,7 +1094,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classpvrvk_1_1impl_1_1_device_object_debug_marker.html">pvrvk::impl::DeviceObjectDebugMarker</a>&lt; <a class="el" href="classpvrvk_1_1impl_1_1_image__.html">Image_</a>  &gt;::resetObjectName </td>
+          <td class="memname">void <a class="el" href="classpvrvk_1_1impl_1_1_device_object_debug_utils.html">pvrvk::impl::DeviceObjectDebugUtils</a>&lt; <a class="el" href="classpvrvk_1_1impl_1_1_image__.html">Image_</a>  &gt;::resetObjectName </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -1089,11 +1107,11 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Resets the name of a specified object using the extension VK_EXT_debug_marker.</p>
+<p>Resets the name of a specified object using the extension VK_EXT_debug_marker or VK_EXT_debug_utils.</p>
 
 </div>
 </div>
-<a class="anchor" id="ae323b1f0833e0e90489612e897c78821"></a>
+<a class="anchor" id="a93cc55657dbc15c87bc158960f5ececd"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -1101,7 +1119,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classpvrvk_1_1impl_1_1_device_object_debug_marker.html">pvrvk::impl::DeviceObjectDebugMarker</a>&lt; <a class="el" href="classpvrvk_1_1impl_1_1_image__.html">Image_</a>  &gt;::setObjectName </td>
+          <td class="memname">void <a class="el" href="classpvrvk_1_1impl_1_1_device_object_debug_utils.html">pvrvk::impl::DeviceObjectDebugUtils</a>&lt; <a class="el" href="classpvrvk_1_1impl_1_1_image__.html">Image_</a>  &gt;::setObjectName </td>
           <td>(</td>
           <td class="paramtype">const std::string &amp;&#160;</td>
           <td class="paramname"><em>objectName</em></td><td>)</td>
@@ -1115,7 +1133,7 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Makes use of the extension VK_EXT_debug_marker to provide a name for a specified object.</p>
+<p>Makes use of the extension VK_EXT_debug_marker or VK_EXT_debug_utils to provide a name for a specified object.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">objectName</td><td>The name to use for the object</td></tr>
@@ -1125,7 +1143,7 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a90a2912d1e2fb065219b50eb55fbfd34"></a>
+<a class="anchor" id="a4f3e93927c6dfb8e82ef548282462f03"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -1133,7 +1151,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classpvrvk_1_1impl_1_1_device_object_debug_marker.html">pvrvk::impl::DeviceObjectDebugMarker</a>&lt; <a class="el" href="classpvrvk_1_1impl_1_1_image__.html">Image_</a>  &gt;::setObjectTag </td>
+          <td class="memname">void <a class="el" href="classpvrvk_1_1impl_1_1_device_object_debug_utils.html">pvrvk::impl::DeviceObjectDebugUtils</a>&lt; <a class="el" href="classpvrvk_1_1impl_1_1_image__.html">Image_</a>  &gt;::setObjectTag </td>
           <td>(</td>
           <td class="paramtype">uint64_t&#160;</td>
           <td class="paramname"><em>tagName</em>, </td>
@@ -1163,7 +1181,7 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Makes use of the extension VK_EXT_debug_marker to provide a tag for a specified object.</p>
+<p>Makes use of the extension VK_EXT_debug_marker or VK_EXT_debug_utils to provide a tag for a specified object.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">tagName</td><td>A numerical identifier of the tag for the object</td></tr>
@@ -1198,7 +1216,7 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="aa6ff16a7e0728a785f1367dfb33d6099"></a>
+<a class="anchor" id="a7e34537906b05ee353451b35dac332ca"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -1206,7 +1224,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="namespacepvrvk.html#a8dd5932a80187b088ce6b591712dc2c2">DeviceWeakPtr</a> <a class="el" href="classpvrvk_1_1impl_1_1_device_object_handle.html">pvrvk::impl::DeviceObjectHandle</a>&lt; VkImage  &gt;::_device</td>
+          <td class="memname"><a class="el" href="namespacepvrvk.html#aecbfc9aca0ecd8de47ccb6137aafcabd">DeviceWeakPtr</a> <a class="el" href="classpvrvk_1_1impl_1_1_p_v_r_vk_device_object_base.html">pvrvk::impl::PVRVkDeviceObjectBase</a>&lt; VkImage , PVRVkObjectType &gt;::_device</td>
         </tr>
       </table>
   </td>
@@ -1228,7 +1246,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="namespacepvrvk.html#a634be07eff8c3efd7788c1429c8ff129">DeviceMemory</a> pvrvk::impl::Image_::_memory</td>
+          <td class="memname"><a class="el" href="namespacepvrvk.html#a5f5c47d6dc912e104bafd3c3aba2a0a3">DeviceMemory</a> pvrvk::impl::Image_::_memory</td>
         </tr>
       </table>
   </td>
@@ -1264,7 +1282,7 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a41f43268ad1a7d2d3bde2a228fbcac03"></a>
+<a class="anchor" id="a4f6a5283158daab0cdc032c0c6925f37"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -1272,7 +1290,29 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">VkImage  <a class="el" href="classpvrvk_1_1impl_1_1_object_handle.html">pvrvk::impl::ObjectHandle</a>&lt; VkImage  &gt;::_vkHandle</td>
+          <td class="memname">ObjectType <a class="el" href="classpvrvk_1_1impl_1_1_p_v_r_vk_object_base.html">pvrvk::impl::PVRVkObjectBase</a>&lt; VkImage , PVRVkObjectType &gt;::_objectType</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>The Vulkan object type.</p>
+
+</div>
+</div>
+<a class="anchor" id="a674fbf75f66ed66d68aa03d32e6114bd"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">VkImage  <a class="el" href="classpvrvk_1_1impl_1_1_p_v_r_vk_object_base.html">pvrvk::impl::PVRVkObjectBase</a>&lt; VkImage , PVRVkObjectType &gt;::_vkHandle</td>
         </tr>
       </table>
   </td>

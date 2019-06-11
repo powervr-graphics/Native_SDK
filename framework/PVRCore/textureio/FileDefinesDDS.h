@@ -1,28 +1,28 @@
 /*!
 \brief Defines used internally by the DDS reader.
-\file PVRCore/textureReaders/FileDefinesDDS.h
+\file PVRCore/textureio/FileDefinesDDS.h
 \author PowerVR by Imagination, Developer Technology Team
 \copyright Copyright (c) Imagination Technologies Limited.
 */
 #pragma once
 #include <cstdint>
 
-//!\cond NO_DOXYGEN
 namespace pvr {
 namespace texture_dds {
+/// <summary>Pixel format used in DDS files.</summary>
 struct PixelFormat
 {
-	uint32_t size;
-	uint32_t flags;
-	uint32_t fourCC; // Meant to be four characters, but is easier to manage with a MAKEFOURCC value.
-	uint32_t bitCount;
-	uint32_t redMask;
-	uint32_t greenMask;
-	uint32_t blueMask;
-	uint32_t alphaMask;
+	uint32_t size; //!< The size of the DDS file
+	uint32_t flags; //!< Flags for the DDS file
+	uint32_t fourCC; //!< Meant to be four characters, but is easier to manage with a MAKEFOURCC value.
+	uint32_t bitCount; //!< The bit count used in the DDS file
+	uint32_t redMask; //!< A red channel mask
+	uint32_t greenMask; //!< A green channel mask
+	uint32_t blueMask; //!< A blue channel mask
+	uint32_t alphaMask; //!< An alpha channel mask
 };
 
-// Pixel Format flag values
+/// <summary>Pixel Format flag values.</summary>
 enum PixelFormatFlags
 {
 	e_alphaPixels = 0x00000001,
@@ -38,28 +38,29 @@ enum PixelFormatFlags
 
 static const uint32_t c_expectedPixelFormatSize = 32;
 
+/// <summary>File header format for DDS files.</summary>
 struct FileHeader
 {
-	uint32_t size;
-	uint32_t flags;
-	uint32_t height;
-	uint32_t width;
-	uint32_t pitchOrLinearSize;
-	uint32_t depth;
-	uint32_t numMipMaps;
-	uint32_t reserved[11];
-	PixelFormat pixelFormat;
-	uint32_t Capabilities1;
-	uint32_t Capabilities2;
-	uint32_t Capabilities3;
-	uint32_t Capabilities4;
-	uint32_t reserved2;
+	uint32_t size; //!< The size of the DDS File
+	uint32_t flags; //!< The flags used by the DDS
+	uint32_t height; //!< The height of the image
+	uint32_t width; //!< The width of the image
+	uint32_t pitchOrLinearSize; //!< Specifies the pitch or linear size of the image
+	uint32_t depth; //!< The depth of the image
+	uint32_t numMipMaps; //!< The number of mip maps
+	uint32_t reserved[11]; //!< Reserved bits
+	PixelFormat pixelFormat; //!< The pixel format used
+	uint32_t Capabilities1; //!< Capabilities
+	uint32_t Capabilities2; //!< Capabilities
+	uint32_t Capabilities3; //!< Capabilities
+	uint32_t Capabilities4; //!< Capabilities
+	uint32_t reserved2; //!< Reserved
 };
 
 static const uint32_t c_magicIdentifier = 0x20534444; // "DDS "
 static const uint32_t c_expectedDDSSize = 124;
 
-// DDS FileHeader flag values
+/// <summary>DDS FileHeader flag values.</summary>
 enum Flags
 {
 	e_Capabilities = 0x00000001,
@@ -72,7 +73,7 @@ enum Flags
 	e_depth = 0x00800000
 };
 
-// Flag values in Capabilities1
+/// <summary>Flag values in Capabilities1.</summary>
 enum Capabilities1Flags
 {
 	e_complex = 0x00000008,
@@ -80,7 +81,7 @@ enum Capabilities1Flags
 	e_mipMaps = 0x00400000
 };
 
-// Flag values in Capabilities2
+/// <summary>Flag values in Capabilities2.</summary>
 enum Capabilities2Flags
 {
 	e_cubeMap = 0x00000200,
@@ -93,16 +94,17 @@ enum Capabilities2Flags
 	e_volume = 0x00200000
 };
 
+/// <summary>File header for DX10.</summary>
 struct FileHeaderDX10
 {
-	uint32_t dxgiFormat;
-	uint32_t resourceDimension;
-	uint32_t miscFlags; // see DDS_RESOURCE_MISC_FLAG
-	uint32_t arraySize;
-	uint32_t miscFlags2;
+	uint32_t dxgiFormat; //!< The format
+	uint32_t resourceDimension; //!< The dimension of the resource
+	uint32_t miscFlags; //!< See DDS_RESOURCE_MISC_FLAG
+	uint32_t arraySize; //!< The array size
+	uint32_t miscFlags2; //!< Flags
 };
 
-// Subset here matches D3D10_RESOURCE_DIMENSION and D3D11_RESOURCE_DIMENSION
+/// <summary>Subset here matches D3D10_RESOURCE_DIMENSION and D3D11_RESOURCE_DIMENSION.</summary>
 enum TextureDimension
 {
 	e_texture1D = 2,
@@ -110,12 +112,13 @@ enum TextureDimension
 	e_texture3D = 4,
 };
 
-// Subset here matches D3D10_RESOURCE_MISC_FLAG and D3D11_RESOURCE_MISC_FLAG
+/// <summary>Subset here matches D3D10_RESOURCE_MISC_FLAG and D3D11_RESOURCE_MISC_FLAG.</summary>
 enum TextureMiscellaneousFlags
 {
 	e_textureCube = 0x4L,
 };
 
+/// <summary>Subset here matches D3D10_RESOURCE_MISC_FLAG and D3D11_RESOURCE_MISC_FLAG.</summary>
 enum TextureMiscellaneousFlags2
 {
 	Unknown,
@@ -125,16 +128,17 @@ enum TextureMiscellaneousFlags2
 	e_custom
 };
 
-// Make FourCC template
+/// <summary>Make FourCC template.</summary>
 template<char C1Name, char C2Name, char C3Name, char C4Name>
 class MakeFourCC
 {
 public:
+	/// <summary>The compile time generated FourCC value constructed using the template parameters.</summary>
 	static const uint64_t FourCC =
 		((static_cast<uint32_t>(C1Name)) + (static_cast<uint32_t>(C2Name) << 8) + (static_cast<uint32_t>(C3Name) << 16) + (static_cast<uint32_t>(C4Name) << 24));
 };
 
-// Direct3D (Up to DirectX 9) formats.
+/// <summary>Direct3D (Up to DirectX 9) formats.</summary>
 enum D3DFormat
 {
 	D3DFMT_UNKNOWN = 0,
@@ -198,7 +202,7 @@ enum D3DFormat
 	D3DFMT_FORCE_DWORD = 0x7fffffff
 };
 
-// DXGI (DirectX 10 onwards) formats.
+/// <summary>DXGI (DirectX 10 onwards) formats.</summary>
 enum DXGIFormat
 {
 	DXGI_FORMAT_UNKNOWN = 0,
@@ -280,4 +284,3 @@ enum DXGIFormat
 };
 } // namespace texture_dds
 } // namespace pvr
-//!\endcond

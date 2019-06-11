@@ -92,11 +92,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
 Namespaces</h2></td></tr>
+<tr class="memitem:namespacepvr_1_1asset_readers"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1asset_readers.html">assetReaders</a></td></tr>
+<tr class="memdesc:namespacepvr_1_1asset_readers"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contains classes whose purpose is to read specific storage formats (bmp, POD, pfx, pvr etc.) into PVRAssets classes (<a class="el" href="classpvr_1_1_texture.html" title="A 2D Texture asset, together with Information, Metadata and actual Pixel data. Only represents the ac...">Texture</a>, Model, Effect etc.).<br/></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacepvr_1_1_gpu_datatypes_helper"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1_gpu_datatypes_helper.html">GpuDatatypesHelper</a></td></tr>
 <tr class="memdesc:namespacepvr_1_1_gpu_datatypes_helper"><td class="mdescLeft">&#160;</td><td class="mdescRight">Groups functionality that has to do with bit calculations/sizes/offsets of glsl types<br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacepvr_1_1math"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1math.html">math</a></td></tr>
-<tr class="memdesc:namespacepvr_1_1math"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contains mathematical functionality and classes, such as bounding box calculations, intersections etc. <br/></td></tr>
+<tr class="memdesc:namespacepvr_1_1math"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contains mathematical functionality and classes, such as bounding box calculations, intersections etc.<br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacepvr_1_1strings"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1strings.html">strings</a></td></tr>
 <tr class="memdesc:namespacepvr_1_1strings"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contains several valuable helpers to assist with common std::string operations: Starts with, ends with, create with printf-style formatting and others.<br/></td></tr>
@@ -111,7 +114,7 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A <a class="el" href="classpvr_1_1_stream.html" title="This class is used to abstract streams of data (files, blocks of memory, resources etc...">Stream</a> implementation that is used to access resources built in an Android package (apk).  <a href="classpvr_1_1_android_asset_stream.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_asset.html">Asset</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">An <a class="el" href="classpvr_1_1_asset.html" title="An Asset represents an object that can be stored and loaded. Models, Textures, Effects and similar al...">Asset</a> represents an object that can be stored and loaded. Models, Textures, Effects and similar all inherit from <a class="el" href="classpvr_1_1_asset.html" title="An Asset represents an object that can be stored and loaded. Models, Textures, Effects and similar al...">Asset</a>. The class provides a Handle typedef for convenience, which is a reference-counted PVR Framework object type. Provides convenience functions for loading assets with assetReaders. <a href="classpvr_1_1_asset.html#details">More...</a><br/></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">An <a class="el" href="classpvr_1_1_asset.html" title="An Asset represents an object that can be stored and loaded. Models, Textures, Effects and similar al...">Asset</a> represents an object that can be stored and loaded. Models, Textures, Effects and similar all inherit from <a class="el" href="classpvr_1_1_asset.html" title="An Asset represents an object that can be stored and loaded. Models, Textures, Effects and similar al...">Asset</a>. The class provides a Handle typedef for convenience, which is a reference-counted PVR Framework object type. Provides convenience functions for loading assets with <a class="el" href="namespacepvr_1_1asset_readers.html" title="Contains classes whose purpose is to read specific storage formats (bmp, POD, pfx, pvr etc.) into PVRAssets classes (Texture, Model, Effect etc.).">assetReaders</a>. <a href="classpvr_1_1_asset.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_asset_reader.html">AssetReader</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Base class for an <a class="el" href="classpvr_1_1_asset_reader.html" title="Base class for an AssetReader, a class that can read Assets from a provided Stream.">AssetReader</a>, a class that can read Assets from a provided <a class="el" href="classpvr_1_1_stream.html" title="This class is used to abstract streams of data (files, blocks of memory, resources etc...">Stream</a>. <a href="classpvr_1_1_asset_reader.html#details">More...</a><br/></td></tr>
@@ -136,6 +139,9 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_display_attributes.html">DisplayAttributes</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contains display configuration information (width, height, position, title, bpp etc.). <a href="classpvr_1_1_display_attributes.html#details">More...</a><br/></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_file_e_o_f_error.html">FileEOFError</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A simple std::runtime_error wrapper for throwing exceptions when attempting to read past the End Of File <a href="classpvr_1_1_file_e_o_f_error.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_file_i_o_error.html">FileIOError</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A simple std::runtime_error wrapper for throwing exceptions when undertaking File IO operations <a href="classpvr_1_1_file_i_o_error.html#details">More...</a><br/></td></tr>
@@ -185,11 +191,38 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1hash.html">hash</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Class template denoting a hash. Specializations only - no default implementation. (int32_t/int64_t/uint32_t/uint64_t/string) <a href="structpvr_1_1hash.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1hash_3_01int32__t_01_4.html">hash&lt; int32_t &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Template specialization of hash specifically for int32_t <a href="structpvr_1_1hash_3_01int32__t_01_4.html#details">More...</a><br/></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1hash_3_01int64__t_01_4.html">hash&lt; int64_t &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Template specialization of hash specifically for int64_t <a href="structpvr_1_1hash_3_01int64__t_01_4.html#details">More...</a><br/></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1hash_3_01std_1_1basic__string_3_01_t_01_4_01_4.html">hash&lt; std::basic_string&lt; T &gt; &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Template specialization of hash specifically for an std::basic_string <a href="structpvr_1_1hash_3_01std_1_1basic__string_3_01_t_01_4_01_4.html#details">More...</a><br/></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1hash_3_01uint32__t_01_4.html">hash&lt; uint32_t &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Template specialization of hash specifically for uint32_t <a href="structpvr_1_1hash_3_01uint32__t_01_4.html#details">More...</a><br/></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1hash_3_01uint64__t_01_4.html">hash&lt; uint64_t &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Template specialization of hash specifically for uint64_t <a href="structpvr_1_1hash_3_01uint64__t_01_4.html#details">More...</a><br/></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_hash_compile_time.html">HashCompileTime</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Template specialization for unsigned char values. <a href="classpvr_1_1_hash_compile_time.html#details">More...</a><br/></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1hasher__helper.html">hasher_helper</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A dummy helper. <a href="classpvr_1_1hasher__helper.html#details">More...</a><br/></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1hasher__helper_3_01hashvalue_00_01first_01_4.html">hasher_helper&lt; hashvalue, first &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Template specialization for uint32_t values. <a href="classpvr_1_1hasher__helper_3_01hashvalue_00_01first_01_4.html#details">More...</a><br/></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1hasher__helper_3_01hashvalue_00_01first_00_01dummy_8_8_8_4.html">hasher_helper&lt; hashvalue, first, dummy...&gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Template specialization for uint32_t values. <a href="classpvr_1_1hasher__helper_3_01hashvalue_00_01first_00_01dummy_8_8_8_4.html#details">More...</a><br/></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_asset_provider.html">IAssetProvider</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The <a class="el" href="classpvr_1_1_i_asset_provider.html" title="The IAssetProvider interface marks a class that provides the getAssetStream function to load assets i...">IAssetProvider</a> interface marks a class that provides the getAssetStream function to load assets in a platform independent way. <a href="classpvr_1_1_i_asset_provider.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1_image_data_format.html">ImageDataFormat</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents an image format, including pixel format(channels/bits per channel), datatype and colorspace.  <a href="structpvr_1_1_image_data_format.html#details">More...</a><br/></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents an image format, including pixel format(channels/bits per channel), datatype and colorspace. /summary&gt;  <a href="structpvr_1_1_image_data_format.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1_image_layers_size.html">ImageLayersSize</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Structure describes the number of array levels and mip levels an image contains <a href="structpvr_1_1_image_layers_size.html#details">More...</a><br/></td></tr>
@@ -237,7 +270,7 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Internally used by some texture readers. <a href="classpvr_1_1_palette_expander.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_pixel_format.html">PixelFormat</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The <a class="el" href="classpvr_1_1_pixel_format.html" title="The PixelFormat class fully defines a Pixel Format (channels, format, compression, bit width etc.). ">PixelFormat</a> class fully defines a Pixel Format (channels, format, compression, bit width etc.).  <a href="classpvr_1_1_pixel_format.html#details">More...</a><br/></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The <a class="el" href="classpvr_1_1_pixel_format.html" title="The PixelFormat class fully defines a Pixel Format (channels, format, compression, bit width etc.).">PixelFormat</a> class fully defines a Pixel Format (channels, format, compression, bit width etc.). <a href="classpvr_1_1_pixel_format.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_plane3d.html">Plane3d</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Uses the plane equation Ax + By + Cz + D = 0, where A B C are plane normal, xyz are position on the plane and D is distance to the plane. <a href="classpvr_1_1_plane3d.html#details">More...</a><br/></td></tr>
@@ -246,7 +279,7 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A simple std::runtime_error wrapper for throwing generic PVR exceptions <a href="classpvr_1_1_pvr_error.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1_rectangle.html">Rectangle</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A class representing an axis-aligned rectangle. Internal representation TopLeft and size.  <a href="structpvr_1_1_rectangle.html#details">More...</a><br/></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A class representing an axis-aligned rectangle. Internal representation TopLeft and size. <a href="structpvr_1_1_rectangle.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1_rectangle3_d.html">Rectangle3D</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A class representing an Axis-Aligned cuboidal region of 3D space. Internal representation offset defined as the absolute coordinates of one corner of the bounding region and extent which defines the second corner of the bounding region relative to the offset. <a href="structpvr_1_1_rectangle3_d.html#details">More...</a><br/></td></tr>
@@ -269,14 +302,20 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture.html">Texture</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A 2D <a class="el" href="classpvr_1_1_texture.html" title="A 2D Texture asset, together with Information, Metadata and actual Pixel data. Only represents the ac...">Texture</a> asset, together with Information, Metadata and actual Pixel data. Only represents the actual data, not the API objects that may be created from it. <a href="classpvr_1_1_texture.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_decompression_error.html">TextureDecompressionError</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A simple std::runtime_error wrapper for throwing exceptions when invalid operations are attempted <a href="classpvr_1_1_texture_decompression_error.html#details">More...</a><br/></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html">TextureHeader</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A class mirroring the PVR <a class="el" href="classpvr_1_1_texture.html" title="A 2D Texture asset, together with Information, Metadata and actual Pixel data. Only represents the ac...">Texture</a> container format header, and which can in general represent any <a class="el" href="classpvr_1_1_texture.html" title="A 2D Texture asset, together with Information, Metadata and actual Pixel data. Only represents the ac...">Texture</a> asset. Contains accessors functions to facilitate using the <a class="el" href="classpvr_1_1_texture.html" title="A 2D Texture asset, together with Information, Metadata and actual Pixel data. Only represents the ac...">Texture</a> data in application code.  <a href="classpvr_1_1_texture_header.html#details">More...</a><br/></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A class mirroring the PVR <a class="el" href="classpvr_1_1_texture.html" title="A 2D Texture asset, together with Information, Metadata and actual Pixel data. Only represents the ac...">Texture</a> container format header, and which can in general represent any <a class="el" href="classpvr_1_1_texture.html" title="A 2D Texture asset, together with Information, Metadata and actual Pixel data. Only represents the ac...">Texture</a> asset. Contains accessors functions to facilitate using the <a class="el" href="classpvr_1_1_texture.html" title="A 2D Texture asset, together with Information, Metadata and actual Pixel data. Only represents the ac...">Texture</a> data in application code. /summary&gt;  <a href="classpvr_1_1_texture_header.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_meta_data.html">TextureMetaData</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The <a class="el" href="classpvr_1_1_texture_meta_data.html" title="The TextureMetaData class contains metadata of a texture. Metadata is any information that a texture ...">TextureMetaData</a> class contains metadata of a texture. Metadata is any information that a texture could be correctly loaded from file without. In most cases, metadata may still be necessary to actually USE the texture, such as winding orders, paddings, atlas information and others. <a href="classpvr_1_1_texture_meta_data.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_t_p_s_camera.html">TPSCamera</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A simple third person camera implementation <a href="classpvr_1_1_t_p_s_camera.html#details">More...</a><br/></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_t_p_s_orbit_camera.html">TPSOrbitCamera</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A simple third person orbit camera implementation <a href="classpvr_1_1_t_p_s_orbit_camera.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1_typed_mem.html">TypedMem</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents Free Value View that is backed by a (usually small) dynamically allocated block. <a href="structpvr_1_1_typed_mem.html#details">More...</a><br/></td></tr>
@@ -288,7 +327,7 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">This class contains all the information of a Vertex Attribute's layout inside a block of memory, typically a Vertex Buffer Object. This informations is normally the DataType of the attribute, the Offset (from the beginning of the array) and the width (how many values of type DataType form an attribute). <a href="structpvr_1_1_vertex_attribute_layout.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_windows_resource_stream.html">WindowsResourceStream</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A <a class="el" href="classpvr_1_1_stream.html" title="This class is used to abstract streams of data (files, blocks of memory, resources etc...">Stream</a> implementation that is used to access resources built in a MS Windows executable.  <a href="classpvr_1_1_windows_resource_stream.html#details">More...</a><br/></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A <a class="el" href="classpvr_1_1_stream.html" title="This class is used to abstract streams of data (files, blocks of memory, resources etc...">Stream</a> implementation that is used to access resources built in a MS Windows executable. <a href="classpvr_1_1_windows_resource_stream.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
@@ -355,10 +394,10 @@ typedef <a class="el" href="structpvr_1_1effect_1_1_effect.html">effect::Effect<
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
 Enumerations</h2></td></tr>
-<tr class="memitem:acb32ff4e68d199049aba566eb5729c4c"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom">{ <b>pvrTextureAllMipMaps</b> = -1
+<tr class="memitem:af88eb990f89e601fa71b688d99673620"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom">{ <b>pvrTextureAllMipMaps</b> = -1
  }</td></tr>
-<tr class="memdesc:acb32ff4e68d199049aba566eb5729c4c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flag interpreted as All mipmap levels. <a href="namespacepvr.html#acb32ff4e68d199049aba566eb5729c4c">More...</a><br/></td></tr>
-<tr class="separator:acb32ff4e68d199049aba566eb5729c4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memdesc:af88eb990f89e601fa71b688d99673620"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flag interpreted as All mipmap levels. <a href="namespacepvr.html#af88eb990f89e601fa71b688d99673620">More...</a><br/></td></tr>
+<tr class="separator:af88eb990f89e601fa71b688d99673620"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a74c5d1afa51512f076dd8e5844b171c8"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#a74c5d1afa51512f076dd8e5844b171c8">Api</a> { <br/>
 &#160;&#160;<b>Unspecified</b> = 0, 
 <b>OpenGLES2</b>, 
@@ -922,6 +961,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ac0940447f72ad2b8777a37cd3181b5c9"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#ac0940447f72ad2b8777a37cd3181b5c9">apiName</a> (<a class="el" href="namespacepvr.html#a74c5d1afa51512f076dd8e5844b171c8">Api</a> api)</td></tr>
 <tr class="memdesc:ac0940447f72ad2b8777a37cd3181b5c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the api name std::string of the given Enumeration <a href="#ac0940447f72ad2b8777a37cd3181b5c9">More...</a><br/></td></tr>
 <tr class="separator:ac0940447f72ad2b8777a37cd3181b5c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad604ae533aa5f192cf745d3b37e1f7e1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#ad604ae533aa5f192cf745d3b37e1f7e1">convertXYZToCubeUV</a> (float x, float y, float z, <a class="el" href="namespacepvr.html#a87b409df225dee78541eb74988f4e20c">CubeFace</a> &amp;face, float &amp;u, float &amp;v)</td></tr>
+<tr class="memdesc:ad604ae533aa5f192cf745d3b37e1f7e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts an x, y and z direction to a texture coordinate of a particular cubemap face. <a href="#ad604ae533aa5f192cf745d3b37e1f7e1">More...</a><br/></td></tr>
+<tr class="separator:ad604ae533aa5f192cf745d3b37e1f7e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a32304b6fe8a8ebcfdaa03d5b227da809"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#a32304b6fe8a8ebcfdaa03d5b227da809">dataTypeIsNormalised</a> (<a class="el" href="namespacepvr.html#a7924324f96dc973225ad3c532cc72309">DataType</a> type)</td></tr>
 <tr class="memdesc:a32304b6fe8a8ebcfdaa03d5b227da809"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return if the format is Normalized (represents a range between 0..1 for unsigned types or between -1..1 for signed types) <a href="#a32304b6fe8a8ebcfdaa03d5b227da809">More...</a><br/></td></tr>
 <tr class="separator:a32304b6fe8a8ebcfdaa03d5b227da809"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -947,7 +989,7 @@ Functions</h2></td></tr>
 <tr class="memdesc:a8277a30a2c9fa98ba8c66c2c8516f923"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the number of vector elements (i.e. Rows) of a type. (e.g. vec2=&gt;2) <a href="#a8277a30a2c9fa98ba8c66c2c8516f923">More...</a><br/></td></tr>
 <tr class="separator:a8277a30a2c9fa98ba8c66c2c8516f923"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5b67db200cee4a4078676dc5f3622ec0"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#a5b67db200cee4a4078676dc5f3622ec0">getOffsetAfter</a> (<a class="el" href="namespacepvr.html#aa4440f5fd1256889bd3b3822002208b6">GpuDatatypes</a> type, uint64_t previousTotalSize)</td></tr>
-<tr class="memdesc:a5b67db200cee4a4078676dc5f3622ec0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Aligns an address/offset with the alignment of a type &ndash; equivalently, assuming you want to place a type after a known offset (i.e. calculating the offset of an item inside a struct having already calculated its previous element) (i.e. aligning a vec4 after an item that ends at 30 bytes returns 32 bytes...)  <a href="#a5b67db200cee4a4078676dc5f3622ec0">More...</a><br/></td></tr>
+<tr class="memdesc:a5b67db200cee4a4078676dc5f3622ec0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Aligns an address/offset with the alignment of a type &ndash; equivalently, assuming you want to place a type after a known offset (i.e. calculating the offset of an item inside a struct having already calculated its previous element) (i.e. aligning a vec4 after an item that ends at 30 bytes returns 32 bytes...) <a href="#a5b67db200cee4a4078676dc5f3622ec0">More...</a><br/></td></tr>
 <tr class="separator:a5b67db200cee4a4078676dc5f3622ec0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a10f119283374e989cd179f6831fe1e36"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#a10f119283374e989cd179f6831fe1e36">getResultCodeString</a> (<a class="el" href="namespacepvr.html#a1c5fa1488e4ba61dd568718646a8c73d">Result</a> result)</td></tr>
 <tr class="memdesc:a10f119283374e989cd179f6831fe1e36"><td class="mdescLeft">&#160;</td><td class="mdescRight">Use this function to convert a Result into a std::string that is suitable for outputting. <a href="#a10f119283374e989cd179f6831fe1e36">More...</a><br/></td></tr>
@@ -973,6 +1015,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a3cbe7fd082e1089dc162d9afdacdd6f1"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#a3cbe7fd082e1089dc162d9afdacdd6f1">getVectorUnalignedSize</a> (<a class="el" href="namespacepvr.html#aa4440f5fd1256889bd3b3822002208b6">GpuDatatypes</a> type)</td></tr>
 <tr class="memdesc:a3cbe7fd082e1089dc162d9afdacdd6f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the cpu-packed size of each vector element a type (disregarding matrix columns if they exist) <a href="#a3cbe7fd082e1089dc162d9afdacdd6f1">More...</a><br/></td></tr>
 <tr class="separator:a3cbe7fd082e1089dc162d9afdacdd6f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a43f0a8e74fd2e53e456ced76b3a9ac"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#a1a43f0a8e74fd2e53e456ced76b3a9ac">growFloat</a> (const uint32_t &amp;value, const uint8_t &amp;mantissaBits, const uint8_t &amp;exponentBits, const uint8_t &amp;exponentBias, const bool hasSign)</td></tr>
+<tr class="memdesc:a1a43f0a8e74fd2e53e456ced76b3a9ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Produces a floating point value based on the uint32_t value, the mantissa bits and exponent bits <a href="#a1a43f0a8e74fd2e53e456ced76b3a9ac">More...</a><br/></td></tr>
+<tr class="separator:a1a43f0a8e74fd2e53e456ced76b3a9ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ade5ae06be9adae4c32d10aa679b5731e"><td class="memTemplParams" colspan="2">template&lt;typename T1_ &gt; </td></tr>
 <tr class="memitem:ade5ae06be9adae4c32d10aa679b5731e"><td class="memTemplItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacepvr.html#ade5ae06be9adae4c32d10aa679b5731e">hash32_32</a> (const T1_ &amp;t)</td></tr>
 <tr class="memdesc:ade5ae06be9adae4c32d10aa679b5731e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Function object hashing to 32 bit values into a 32 bit unsigned Integer. <a href="#ade5ae06be9adae4c32d10aa679b5731e">More...</a><br/></td></tr>
@@ -1007,11 +1052,11 @@ Functions</h2></td></tr>
 <tr class="memitem:acb9d4eda8ff979cd4e5ae394aa9321c6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr.html#aa4440f5fd1256889bd3b3822002208b6">GpuDatatypes</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#acb9d4eda8ff979cd4e5ae394aa9321c6">operator&amp;</a> (<a class="el" href="namespacepvr.html#aa4440f5fd1256889bd3b3822002208b6">GpuDatatypes</a> lhs, <a class="el" href="namespacepvr_1_1_gpu_datatypes_helper.html#a84bf23cf8acb6cfb591074eda461590f">GpuDatatypesHelper::Bits</a> rhs)</td></tr>
 <tr class="memdesc:acb9d4eda8ff979cd4e5ae394aa9321c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bitwise operator AND. Typical semantics. Allows AND between GpuDatatypes and Bits <a href="#acb9d4eda8ff979cd4e5ae394aa9321c6">More...</a><br/></td></tr>
 <tr class="separator:acb9d4eda8ff979cd4e5ae394aa9321c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3a657a3b9bf986f2d0a195cf5182145d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3a657a3b9bf986f2d0a195cf5182145d"></a>
-<a class="el" href="namespacepvr.html#aee12f61a84bee4c4513c6bfad5b042d2">ImageAspectFlags</a>&#160;</td><td class="memItemRight" valign="bottom"><b>operator&amp;</b> (<a class="el" href="namespacepvr.html#aee12f61a84bee4c4513c6bfad5b042d2">ImageAspectFlags</a> lhs, <a class="el" href="namespacepvr.html#aee12f61a84bee4c4513c6bfad5b042d2">ImageAspectFlags</a> rhs)</td></tr>
+<tr class="memitem:a3a657a3b9bf986f2d0a195cf5182145d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr.html#aee12f61a84bee4c4513c6bfad5b042d2">ImageAspectFlags</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#a3a657a3b9bf986f2d0a195cf5182145d">operator&amp;</a> (<a class="el" href="namespacepvr.html#aee12f61a84bee4c4513c6bfad5b042d2">ImageAspectFlags</a> lhs, <a class="el" href="namespacepvr.html#aee12f61a84bee4c4513c6bfad5b042d2">ImageAspectFlags</a> rhs)</td></tr>
+<tr class="memdesc:a3a657a3b9bf986f2d0a195cf5182145d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Operator&amp;. <a href="#a3a657a3b9bf986f2d0a195cf5182145d">More...</a><br/></td></tr>
 <tr class="separator:a3a657a3b9bf986f2d0a195cf5182145d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9724b862751802480a1d70bd5b3688ee"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9724b862751802480a1d70bd5b3688ee"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>operator&amp;=</b> (<a class="el" href="namespacepvr.html#aee12f61a84bee4c4513c6bfad5b042d2">ImageAspectFlags</a> &amp;lhs, <a class="el" href="namespacepvr.html#aee12f61a84bee4c4513c6bfad5b042d2">ImageAspectFlags</a> rhs)</td></tr>
+<tr class="memitem:a9724b862751802480a1d70bd5b3688ee"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#a9724b862751802480a1d70bd5b3688ee">operator&amp;=</a> (<a class="el" href="namespacepvr.html#aee12f61a84bee4c4513c6bfad5b042d2">ImageAspectFlags</a> &amp;lhs, <a class="el" href="namespacepvr.html#aee12f61a84bee4c4513c6bfad5b042d2">ImageAspectFlags</a> rhs)</td></tr>
+<tr class="memdesc:a9724b862751802480a1d70bd5b3688ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Operator&amp;=. <a href="#a9724b862751802480a1d70bd5b3688ee">More...</a><br/></td></tr>
 <tr class="separator:a9724b862751802480a1d70bd5b3688ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae6830359c957ddaf92782874bb70e825"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr.html#aa4440f5fd1256889bd3b3822002208b6">GpuDatatypes</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#ae6830359c957ddaf92782874bb70e825">operator&lt;&lt;</a> (<a class="el" href="namespacepvr.html#aa4440f5fd1256889bd3b3822002208b6">GpuDatatypes</a> lhs, <a class="el" href="namespacepvr_1_1_gpu_datatypes_helper.html#a84bf23cf8acb6cfb591074eda461590f">GpuDatatypesHelper::Bits</a> rhs)</td></tr>
 <tr class="memdesc:ae6830359c957ddaf92782874bb70e825"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bitwise operator LEFT SHIFT. Typical semantics. Allows LEFT SHIFT of GpuDatatypes by Bits <a href="#ae6830359c957ddaf92782874bb70e825">More...</a><br/></td></tr>
@@ -1019,12 +1064,11 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>operator&amp;=</b> (<
 <tr class="memitem:ab32d83bd296ef37d4c646b2552e276e7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr.html#aa4440f5fd1256889bd3b3822002208b6">GpuDatatypes</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#ab32d83bd296ef37d4c646b2552e276e7">operator&gt;&gt;</a> (<a class="el" href="namespacepvr.html#aa4440f5fd1256889bd3b3822002208b6">GpuDatatypes</a> lhs, <a class="el" href="namespacepvr_1_1_gpu_datatypes_helper.html#a84bf23cf8acb6cfb591074eda461590f">GpuDatatypesHelper::Bits</a> rhs)</td></tr>
 <tr class="memdesc:ab32d83bd296ef37d4c646b2552e276e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bitwise operator RIGHT SHIFT. Typical semantics. Allows RIGHT SHIFT of GpuDatatypes by Bits <a href="#ab32d83bd296ef37d4c646b2552e276e7">More...</a><br/></td></tr>
 <tr class="separator:ab32d83bd296ef37d4c646b2552e276e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af90306acc1aaa07ed01111e86229dd02"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af90306acc1aaa07ed01111e86229dd02"></a>
-<a class="el" href="namespacepvr.html#aee12f61a84bee4c4513c6bfad5b042d2">ImageAspectFlags</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#af90306acc1aaa07ed01111e86229dd02">operator|</a> (<a class="el" href="namespacepvr.html#aee12f61a84bee4c4513c6bfad5b042d2">ImageAspectFlags</a> lhs, <a class="el" href="namespacepvr.html#aee12f61a84bee4c4513c6bfad5b042d2">ImageAspectFlags</a> rhs)</td></tr>
-<tr class="memdesc:af90306acc1aaa07ed01111e86229dd02"><td class="mdescLeft">&#160;</td><td class="mdescRight">Macro that defines all common bitwise operators for an enum-class. <br/></td></tr>
+<tr class="memitem:af90306acc1aaa07ed01111e86229dd02"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr.html#aee12f61a84bee4c4513c6bfad5b042d2">ImageAspectFlags</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#af90306acc1aaa07ed01111e86229dd02">operator|</a> (<a class="el" href="namespacepvr.html#aee12f61a84bee4c4513c6bfad5b042d2">ImageAspectFlags</a> lhs, <a class="el" href="namespacepvr.html#aee12f61a84bee4c4513c6bfad5b042d2">ImageAspectFlags</a> rhs)</td></tr>
+<tr class="memdesc:af90306acc1aaa07ed01111e86229dd02"><td class="mdescLeft">&#160;</td><td class="mdescRight">Operator|. <a href="#af90306acc1aaa07ed01111e86229dd02">More...</a><br/></td></tr>
 <tr class="separator:af90306acc1aaa07ed01111e86229dd02"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad9b7e5a5c13f5eb605d551685cff1be7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad9b7e5a5c13f5eb605d551685cff1be7"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>operator|=</b> (<a class="el" href="namespacepvr.html#aee12f61a84bee4c4513c6bfad5b042d2">ImageAspectFlags</a> &amp;lhs, <a class="el" href="namespacepvr.html#aee12f61a84bee4c4513c6bfad5b042d2">ImageAspectFlags</a> rhs)</td></tr>
+<tr class="memitem:ad9b7e5a5c13f5eb605d551685cff1be7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#ad9b7e5a5c13f5eb605d551685cff1be7">operator|=</a> (<a class="el" href="namespacepvr.html#aee12f61a84bee4c4513c6bfad5b042d2">ImageAspectFlags</a> &amp;lhs, <a class="el" href="namespacepvr.html#aee12f61a84bee4c4513c6bfad5b042d2">ImageAspectFlags</a> rhs)</td></tr>
+<tr class="memdesc:ad9b7e5a5c13f5eb605d551685cff1be7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Operator|=. <a href="#ad9b7e5a5c13f5eb605d551685cff1be7">More...</a><br/></td></tr>
 <tr class="separator:ad9b7e5a5c13f5eb605d551685cff1be7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abbe45548f9e676d52b1645ea21ba4d11"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr.html#aafc960d10904ec52d4d823ed66717c43">PackedSamplerFilter</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#abbe45548f9e676d52b1645ea21ba4d11">packSamplerFilter</a> (<a class="el" href="namespacepvr.html#a84d320093e1561f82e57776aafd947d7">Filter</a> mini, <a class="el" href="namespacepvr.html#a84d320093e1561f82e57776aafd947d7">Filter</a> magni, <a class="el" href="namespacepvr.html#ac7a59f03f943f1c79a5339331fc15abe">SamplerMipmapMode</a> mip)</td></tr>
 <tr class="memdesc:abbe45548f9e676d52b1645ea21ba4d11"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pack a minification filter, a magnification filter and a mipmap filter into an 8 bit value <a href="#abbe45548f9e676d52b1645ea21ba4d11">More...</a><br/></td></tr>
@@ -1050,6 +1094,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>operator|=</b> (<a cl
 <tr class="memitem:a9c1f6b7a326b8538c81c2b7de3c058c6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpvr_1_1_texture.html">Texture</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#a9c1f6b7a326b8538c81c2b7de3c058c6">textureLoad</a> (<a class="el" href="classpvr_1_1_stream.html#aa0cecaaaa443ce5895d8c3d69dcdeec2">Stream::ptr_type</a> &amp;&amp;textureStream)</td></tr>
 <tr class="memdesc:a9c1f6b7a326b8538c81c2b7de3c058c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load a texture from binary data. Synchronous. <a href="#a9c1f6b7a326b8538c81c2b7de3c058c6">More...</a><br/></td></tr>
 <tr class="separator:a9c1f6b7a326b8538c81c2b7de3c058c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a627b4365be1581c05ca10e33752b4f"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#a5a627b4365be1581c05ca10e33752b4f">to_string</a> (<a class="el" href="namespacepvr.html#af5c2a4d46bb7aa6a877a0ed8c5ba3ac8">ShaderType</a> shaderType)</td></tr>
+<tr class="memdesc:a5a627b4365be1581c05ca10e33752b4f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a <a class="el" href="namespacepvr.html#af5c2a4d46bb7aa6a877a0ed8c5ba3ac8" title="Enumeration of all supported shader types.">pvr::ShaderType</a> to string <a href="#a5a627b4365be1581c05ca10e33752b4f">More...</a><br/></td></tr>
+<tr class="separator:a5a627b4365be1581c05ca10e33752b4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a547738cbdb228eba2d1d4b58d2c142c9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr.html#a7924324f96dc973225ad3c532cc72309">DataType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#a547738cbdb228eba2d1d4b58d2c142c9">toDataType</a> (<a class="el" href="namespacepvr.html#aa4440f5fd1256889bd3b3822002208b6">GpuDatatypes</a> type)</td></tr>
 <tr class="memdesc:a547738cbdb228eba2d1d4b58d2c142c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the Cpu Datatype <em>type</em>  refers to (i.e. which CPU datatype must you load in the data you upload to the GPU to correctly upload the same value in the shader). <a href="#a547738cbdb228eba2d1d4b58d2c142c9">More...</a><br/></td></tr>
 <tr class="separator:a547738cbdb228eba2d1d4b58d2c142c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1308,7 +1355,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>operator|=</b> (<a cl
 </div>
 </div>
 <h2 class="groupheader">Enumeration Type Documentation</h2>
-<a class="anchor" id="acb32ff4e68d199049aba566eb5729c4c"></a>
+<a class="anchor" id="af88eb990f89e601fa71b688d99673620"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -2663,6 +2710,77 @@ template&lt;typename t1 , typename t2 &gt; </div>
 
 </div>
 </div>
+<a class="anchor" id="ad604ae533aa5f192cf745d3b37e1f7e1"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void pvr::convertXYZToCubeUV </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">CubeFace &amp;&#160;</td>
+          <td class="paramname"><em>face</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float &amp;&#160;</td>
+          <td class="paramname"><em>u</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float &amp;&#160;</td>
+          <td class="paramname"><em>v</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Converts an x, y and z direction to a texture coordinate of a particular cubemap face.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">x</td><td>The x component of te direction.</td></tr>
+    <tr><td class="paramname">y</td><td>The y component of te direction.</td></tr>
+    <tr><td class="paramname">z</td><td>The z component of te direction.</td></tr>
+    <tr><td class="paramname">face</td><td>The cubemap face enumeration retrieved using the x, y, z direction.</td></tr>
+    <tr><td class="paramname">u</td><td>The u component of the texture coordinate retrieved.</td></tr>
+    <tr><td class="paramname">v</td><td>The v component of the texture coordinate retrieved.</td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a class="anchor" id="a32304b6fe8a8ebcfdaa03d5b227da809"></a>
 <div class="memitem">
 <div class="memproto">
@@ -2971,7 +3089,7 @@ template&lt;typename t1 , typename t2 &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>Aligns an address/offset with the alignment of a type &ndash; equivalently, assuming you want to place a type after a known offset (i.e. calculating the offset of an item inside a struct having already calculated its previous element) (i.e. aligning a vec4 after an item that ends at 30 bytes returns 32 bytes...) </p>
+<p>Aligns an address/offset with the alignment of a type &ndash; equivalently, assuming you want to place a type after a known offset (i.e. calculating the offset of an item inside a struct having already calculated its previous element) (i.e. aligning a vec4 after an item that ends at 30 bytes returns 32 bytes...)</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">type</td><td>The datatype to test</td></tr>
@@ -3265,6 +3383,71 @@ template&lt;typename t1 , typename t2 &gt; </div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The size that a single column of <em>type</em>  would take on the CPU</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a1a43f0a8e74fd2e53e456ced76b3a9ac"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float pvr::growFloat </td>
+          <td>(</td>
+          <td class="paramtype">const uint32_t &amp;&#160;</td>
+          <td class="paramname"><em>value</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint8_t &amp;&#160;</td>
+          <td class="paramname"><em>mantissaBits</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint8_t &amp;&#160;</td>
+          <td class="paramname"><em>exponentBits</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint8_t &amp;&#160;</td>
+          <td class="paramname"><em>exponentBias</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const bool&#160;</td>
+          <td class="paramname"><em>hasSign</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Produces a floating point value based on the uint32_t value, the mantissa bits and exponent bits</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">value</td><td>The uint32_t value</td></tr>
+    <tr><td class="paramname">mantissaBits</td><td>The mantissa bits</td></tr>
+    <tr><td class="paramname">exponentBits</td><td>The exponent bits</td></tr>
+    <tr><td class="paramname">exponentBias</td><td>The exponent bias</td></tr>
+    <tr><td class="paramname">hasSign</td><td>Specifies whether the float has a sign bit</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The resulting floating point value</dd></dl>
 
 </div>
 </div>
@@ -3683,6 +3866,94 @@ template&lt;typename T1_ &gt; </div>
 
 </div>
 </div>
+<a class="anchor" id="a3a657a3b9bf986f2d0a195cf5182145d"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacepvr.html#aee12f61a84bee4c4513c6bfad5b042d2">ImageAspectFlags</a> pvr::operator&amp; </td>
+          <td>(</td>
+          <td class="paramtype">ImageAspectFlags&#160;</td>
+          <td class="paramname"><em>lhs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">ImageAspectFlags&#160;</td>
+          <td class="paramname"><em>rhs</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Operator&amp;.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">lhs</td><td>The right hand side of the operator</td></tr>
+    <tr><td class="paramname">rhs</td><td>The right hand side of the operator</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A set of ImageAspectFlags after applying the operator&amp;.</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a9724b862751802480a1d70bd5b3688ee"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void pvr::operator&amp;= </td>
+          <td>(</td>
+          <td class="paramtype">ImageAspectFlags &amp;&#160;</td>
+          <td class="paramname"><em>lhs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">ImageAspectFlags&#160;</td>
+          <td class="paramname"><em>rhs</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Operator&amp;=.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">lhs</td><td>The right hand side of the operator</td></tr>
+    <tr><td class="paramname">rhs</td><td>The right hand side of the operator</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A set of ImageAspectFlags after applying the operator&amp;=.</dd></dl>
+
+</div>
+</div>
 <a class="anchor" id="ae6830359c957ddaf92782874bb70e825"></a>
 <div class="memitem">
 <div class="memproto">
@@ -3768,6 +4039,94 @@ template&lt;typename T1_ &gt; </div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>lhs RIGHT SHIFT rhs</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="af90306acc1aaa07ed01111e86229dd02"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacepvr.html#aee12f61a84bee4c4513c6bfad5b042d2">ImageAspectFlags</a> pvr::operator| </td>
+          <td>(</td>
+          <td class="paramtype">ImageAspectFlags&#160;</td>
+          <td class="paramname"><em>lhs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">ImageAspectFlags&#160;</td>
+          <td class="paramname"><em>rhs</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Operator|.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">lhs</td><td>The right hand side of the operator</td></tr>
+    <tr><td class="paramname">rhs</td><td>The right hand side of the operator</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A set of ImageAspectFlags after applying the operator|.</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ad9b7e5a5c13f5eb605d551685cff1be7"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void pvr::operator|= </td>
+          <td>(</td>
+          <td class="paramtype">ImageAspectFlags &amp;&#160;</td>
+          <td class="paramname"><em>lhs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">ImageAspectFlags&#160;</td>
+          <td class="paramname"><em>rhs</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Operator|=.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">lhs</td><td>The right hand side of the operator</td></tr>
+    <tr><td class="paramname">rhs</td><td>The right hand side of the operator</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A set of ImageAspectFlags after applying the operator|=.</dd></dl>
 
 </div>
 </div>
@@ -4094,7 +4453,6 @@ template&lt;typename T1_ &gt; </div>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">textureStream</td><td>A stream from which to load the binary data</td></tr>
-    <tr><td class="paramname">type</td><td>The type of the texture. Several supported formats.</td></tr>
   </table>
   </dd>
 </dl>
@@ -4128,11 +4486,43 @@ template&lt;typename T1_ &gt; </div>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">textureStream</td><td>A stream from which to load the binary data</td></tr>
-    <tr><td class="paramname">type</td><td>The type of the texture. Several supported formats.</td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>True if successful, otherwise false</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a5a627b4365be1581c05ca10e33752b4f"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string pvr::to_string </td>
+          <td>(</td>
+          <td class="paramtype">ShaderType&#160;</td>
+          <td class="paramname"><em>shaderType</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Converts a <a class="el" href="namespacepvr.html#af5c2a4d46bb7aa6a877a0ed8c5ba3ac8" title="Enumeration of all supported shader types.">pvr::ShaderType</a> to string</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">shaderType</td><td>The type of the shader</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A stringified version of <a class="el" href="namespacepvr.html#af5c2a4d46bb7aa6a877a0ed8c5ba3ac8" title="Enumeration of all supported shader types.">pvr::ShaderType</a></dd></dl>
 
 </div>
 </div>
@@ -4406,9 +4796,9 @@ template&lt;typename T1_ &gt; </div>
     <tr><td class="paramname">filename</td><td>C-style string with the filename to write the TGA.</td></tr>
     <tr><td class="paramname">w</td><td>The width of the image</td></tr>
     <tr><td class="paramname">h</td><td>The height of the image</td></tr>
-    <tr><td class="paramname">imageData</td><td>Pointer to the RED channel image data</td></tr>
-    <tr><td class="paramname">imageData</td><td>Pointer to the GREEN channel image data</td></tr>
-    <tr><td class="paramname">imageData</td><td>Pointer to the BLUE channel image data</td></tr>
+    <tr><td class="paramname">imageDataR</td><td>Pointer to the RED channel image data</td></tr>
+    <tr><td class="paramname">imageDataG</td><td>Pointer to the GREEN channel image data</td></tr>
+    <tr><td class="paramname">imageDataB</td><td>Pointer to the BLUE channel image data</td></tr>
     <tr><td class="paramname">stride</td><td>Size in bytes of each pixel</td></tr>
     <tr><td class="paramname">pixelReplicate</td><td>Upscale factor.</td></tr>
   </table>

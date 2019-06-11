@@ -6,11 +6,8 @@
 \brief      Shows how to do a bloom effect
 ***********************************************************************************************/
 #include "PVRShell/PVRShell.h"
-#include "PVRAssets/PVRAssets.h"
 #include "PVRUtils/PVRUtilsGles.h"
 #include "PVRCore/cameras/TPSCamera.h"
-#define _USE_MATH_DEFINES
-#include <math.h>
 
 namespace BufferEntryNames {
 namespace PerMesh {
@@ -20,13 +17,8 @@ const char* const WorldMatrix = "worldMatrix";
 
 namespace Scene {
 const char* const EyePosition = "eyePosition";
-const char* const LightPosition = "lightPosition";
 const char* const InverseViewProjectionMatrix = "inverseViewProjectionMatrix";
 } // namespace Scene
-
-namespace BloomConfig {
-const char* const LuminosityThreshold = "luminosityThreshold";
-} // namespace BloomConfig
 } // namespace BufferEntryNames
 
 // Bloom modes
@@ -45,6 +37,27 @@ enum class BloomMode
 	DefaultMode = GaussianLinearTruncated
 };
 
+enum class OffscreenAttachments
+{
+	Offscreen = 0,
+	Luminance = 1,
+	DepthStencil = 2,
+	NumAttachments
+};
+
+enum class OffscreenWithIMGFramebufferDownsampleAttachments
+{
+	Offscreen = 0,
+	DownsampledLuminance = 1,
+	DepthStencil = 2,
+	NumAttachments
+};
+
+enum class BloomAttachments
+{
+	Bloom
+};
+
 // Titles for the various bloom modes
 const std::string BloomStrings[] = { "Original Image (No Post Processing)", "Gaussian (Reference Implementation)", "Gaussian (Linear Sampling)",
 	"Gaussian (Compute Sliding Average)", "Hybrid Gaussian", "Truncated Gaussian (Linear Sampling)", "Kawase", "Dual Filter", "Tent Filter" };
@@ -56,31 +69,41 @@ const char Downsample2x2VertSrcFile[] = "Downsample2x2VertShader.vsh";
 const char Downsample2x2FragSrcFile[] = "Downsample2x2FragShader.fsh";
 const char Downsample4x4VertSrcFile[] = "Downsample4x4VertShader.vsh";
 const char Downsample4x4FragSrcFile[] = "Downsample4x4FragShader.fsh";
-const char DoubleDownsample2x2FragSrcFile[] = "DoubleDownsample2x2FragShader.fsh";
+
+// Dual Filter shaders
 const char DualFilterDownSampleFragSrcFile[] = "DualFilterDownSampleFragShader.fsh";
 const char DualFilterUpSampleFragSrcFile[] = "DualFilterUpSampleFragShader.fsh";
 const char DualFilterUpSampleMergedFinalPassFragSrcFile[] = "DualFilterUpSampleMergedFinalPassFragShader.fsh";
 const char DualFilterDownVertSrcFile[] = "DualFilterDownVertShader.vsh";
 const char DualFilterUpVertSrcFile[] = "DualFilterUpVertShader.vsh";
+
+// Tent Filter shaders
 const char TentFilterUpSampleVertSrcFile[] = "TentFilterUpSampleVertShader.vsh";
-const char TentFilterUpSampleFragSrcFile[] = "TentFilterUpSampleFragShader.fsh";
 const char TentFilterFirstUpSampleFragSrcFile[] = "TentFilterFirstUpSampleFragShader.fsh";
+const char TentFilterUpSampleFragSrcFile[] = "TentFilterUpSampleFragShader.fsh";
 const char TentFilterUpSampleMergedFinalPassFragSrcFile[] = "TentFilterUpSampleMergedFinalPassFragShader.fsh";
-const char GaussianComputeBlurHorizontalfSrcFile[] = "GaussianCompHorizontalShader.csh";
-const char GaussianComputeBlurVerticalfSrcFile[] = "GaussianCompVerticalShader.csh";
-const char GaussianHorizontalFragSrcFile[] = "GaussianHorizontalFragShader.fsh";
-const char GaussianVerticalFragSrcFile[] = "GaussianVerticalFragShader.fsh";
-const char GaussianVertSrcFile[] = "GaussianVertShader.vsh";
+
+// Kawase Blur shaders
 const char KawaseVertSrcFile[] = "KawaseVertShader.vsh";
 const char KawaseFragSrcFile[] = "KawaseFragShader.fsh";
-const char LinearGaussianEvenSamplesFragSrcFile[] = "LinearGaussianEvenSamplesFragShader.fsh";
-const char LinearGaussianEvenSamplesHorizontalVertSrcFile[] = "LinearGaussianEvenSamplesHorizontalVertShader.vsh";
-const char LinearGaussianEvenSamplesVerticalVertSrcFile[] = "LinearGaussianEvenSamplesVerticalVertShader.vsh";
-const char LinearGaussianOddSamplesFragSrcFile[] = "LinearGaussianOddSamplesFragShader.fsh";
-const char LinearGaussianOddSamplesHorizontalVertSrcFile[] = "LinearGaussianOddSamplesHorizontalVertShader.vsh";
-const char LinearGaussianOddSamplesVerticalVertSrcFile[] = "LinearGaussianOddSamplesVerticalVertShader.vsh";
+
+// Traditional Gaussian Blur shaders
+const char GaussianFragSrcFile[] = "GaussianBlurFragmentShader.fsh.in";
+const char GaussianVertSrcFile[] = "GaussianVertShader.vsh";
+
+// Linear Sampler Optimised Gaussian Blur shaders
+const char LinearGaussianVertSrcFile[] = "LinearGaussianBlurVertexShader.vsh.in";
+const char LinearGaussianFragSrcFile[] = "LinearGaussianBlurFragmentShader.fsh.in";
+
+// Compute based sliding average Gaussian Blur shaders
+const char GaussianComputeBlurHorizontalSrcFile[] = "ComputeGaussianBlurHorizontalShader.csh.in";
+const char GaussianComputeBlurVerticalSrcFile[] = "ComputeGaussianBlurVerticalShader.csh.in";
+
+// Post Bloom Shaders
 const char PostBloomVertShaderSrcFile[] = "PostBloomVertShader.vsh";
 const char PostBloomFragShaderSrcFile[] = "PostBloomFragShader.fsh";
+
+// Scene Rendering shaders
 const char FragShaderSrcFile[] = "FragShader.fsh";
 const char VertShaderSrcFile[] = "VertShader.vsh";
 const char SkyboxFragShaderSrcFile[] = "SkyboxFragShader.fsh";
@@ -93,23 +116,58 @@ const char SceneFile[] = "Satyr.pod";
 // Texture files
 const char StatueTexFile[] = "Marble.pvr";
 const char StatueNormalMapTexFile[] = "MarbleNormalMap.pvr";
-const char SkyboxTexFile[] = "MonValley_baked_lightmap.pvr";
-const char DiffuseIrradianceMapTexFile[] = "DiffuseIrradianceMap.pvr";
+
+struct EnvironmentTextures
+{
+	std::string skyboxTexture;
+	std::string diffuseIrradianceMapTexture;
+	float averageLuminance;
+	float keyValue;
+	float threshold;
+
+	float getLinearExposure() const
+	{
+		return keyValue / averageLuminance;
+	}
+};
+
+float luma(glm::vec3 color)
+{
+	return glm::max(glm::dot(color, glm::vec3(0.2126f, 0.7152f, 0.0722f)), 0.0001f);
+}
+
+// The following were taken from the lowest mipmap of each of the corresponding irradiance textures
+float sataraNightLuminance = luma((1.0f / 6.0f) *
+	(glm::vec3(55.0f, 42.0f, 13.0f) + glm::vec3(21.0f, 16.0f, 8.0f) + glm::vec3(7.0f, 5.0f, 6.0f) + glm::vec3(5.0f, 4.0f, 1.0f) + glm::vec3(72.0f, 57.0f, 19.0f) +
+		glm::vec3(14.0f, 10.0f, 5.0f)));
+
+float pinkSunriseLuminance = luma((1.0f / 6.0f) *
+	(glm::vec3(104.0f, 76.0f, 106.0f) + glm::vec3(28.0f, 23.0f, 41.0f) + glm::vec3(137.0f, 110.0f, 197.0f) + glm::vec3(9.0f, 6.0f, 7.0f) + glm::vec3(129.0f, 89.0f, 113.0f) +
+		glm::vec3(28.0f, 27.0f, 54.0f)));
+
+float signalHillSunriseLuminance = luma((1.0f / 6.0f) *
+	(glm::vec3(10.0f, 10.0f, 10.0f) + glm::vec3(4.0f, 4.0f, 6.0f) + glm::vec3(8.0f, 10.0f, 16.0f) + glm::vec3(4.0f, 2.0f, 0.0f) + glm::vec3(9.0f, 9.0f, 9.0f) +
+		glm::vec3(4.0f, 4.0f, 5.0f)));
+
+// Textures
+EnvironmentTextures SceneTexFileNames[] = { { "satara_night_scale_0.305_rgb9e5.pvr", "satara_night_scale_0.305_rgb9e5_Irradiance.pvr", sataraNightLuminance, 9.0f, 2.6f },
+	{ "pink_sunrise_rgb9e5.pvr", "pink_sunrise_rgb9e5_Irradiance.pvr", pinkSunriseLuminance, 50.0f, 0.65f },
+	{ "signal_hill_sunrise_scale_0.312_rgb9e5.pvr", "signal_hill_sunrise_scale_0.312_rgb9e5_Irradiance.pvr", signalHillSunriseLuminance, 23.0f, 0.85f } };
+
+const int NumScenes = sizeof SceneTexFileNames / sizeof SceneTexFileNames[0];
 
 // Various defaults
 const float CameraNear = 1.0f;
 const float CameraFar = 1000.0f;
 const float RotateY = glm::pi<float>() / 150;
 const float Fov = 0.80f;
-const float BloomLumaThreshold = 0.8f;
-const glm::vec3 LightPosition = glm::vec3(100.0, 50.0, 1000.0);
 const float MinimumAcceptibleCoefficient = 0.0003f;
-const uint8_t MaxDualFilterIteration = 10;
+const uint8_t MaxFilterIterations = 10;
 const uint8_t MaxKawaseIteration = 5;
 const uint8_t MaxGaussianKernel = 51;
 const uint8_t MaxGaussianHalfKernel = (MaxGaussianKernel - 1) / 2 + 1;
 
-const pvr::utils::VertexBindings_Name VertexBindings[] = { { "POSITION", "inVertex" }, { "NORMAL", "inNormal" }, { "UV0", "inTexCoords" }, { "TANGENT", "inTangent" } };
+const pvr::utils::VertexBindings_Name VertexBindings[] = { { "POSITION", "inVertex" }, { "NORMAL", "inNormal" }, { "UV0", "inTexCoord" }, { "TANGENT", "inTangent" } };
 
 enum class AttributeIndices
 {
@@ -117,6 +175,16 @@ enum class AttributeIndices
 	NormalArray = 1,
 	TexCoordArray = 2,
 	TangentArray = 3
+};
+
+// Provides a simple wrapper around a framebuffer and its given attachments
+struct Framebuffer
+{
+	GLuint framebuffer;
+	std::vector<GLuint> attachments;
+	glm::ivec2 dimensions;
+
+	Framebuffer() : framebuffer(-1), dimensions(1) {}
 };
 
 // Handles the configurations being used in the demo controlling how the various bloom techniques will operate
@@ -131,68 +199,68 @@ struct KawasePass
 // A wrapper for the demo configuration at any time
 struct DemoConfiguration
 {
-	std::pair<uint32_t, std::string> gaussianConfig;
-	std::pair<uint32_t, std::string> linearGaussianConfig;
-	std::pair<uint32_t, std::string> computeGaussianConfig;
-	std::pair<uint32_t, std::string> truncatedLinearGaussianConfig;
-	std::pair<KawasePass, std::string> kawaseConfig;
-	std::pair<uint32_t, std::string> dualFilterConfig;
-	std::pair<uint32_t, std::string> tentFilterConfig;
-	std::pair<uint32_t, std::string> hybridConfig;
+	uint32_t gaussianConfig;
+	uint32_t linearGaussianConfig;
+	uint32_t computeGaussianConfig;
+	uint32_t truncatedLinearGaussianConfig;
+	KawasePass kawaseConfig;
+	uint32_t dualFilterConfig;
+	uint32_t tentFilterConfig;
+	uint32_t hybridConfig;
 };
 
 const uint32_t NumDemoConfigurations = 5;
 const uint32_t DefaultDemoConfigurations = 2;
 DemoConfiguration Configurations[NumDemoConfigurations]{ // Demo Blur Configurations
 	DemoConfiguration{
-		std::make_pair(5, "Kernel Size = 5 (5 + 5 taps)"), // Original Gaussian Blur
-		std::make_pair(5, "Kernel Size = 5 (3 + 3 taps)"), // Linear Gaussian Blur
-		std::make_pair(5, "Kernel Size = 5 (Sliding Average)"), // Compute Gaussian Blur
-		std::make_pair(5, "Kernel Size = 5 (3 + 3 taps)"), // Truncated Linear Gaussian Blur
-		std::make_pair(KawasePass{ 2, { 0, 0 } }, "2 Iterations: 0, 0"), // Kawase Blur
-		std::make_pair(2, "Iterations = 2 (1 downsample, 1 upsample)"), // Dual Filter Blur
-		std::make_pair(2, "Iterations = 2 (1 downsample, 1 upsample)"), // Tent Filter
-		std::make_pair(0, "Horizontal Compute (5 taps), Vertical Truncated Gaussian (3 taps)"), // Hybrid
+		5, // Original Gaussian Blur
+		5, // Linear Gaussian Blur
+		5, // Compute Gaussian Blur
+		5, // Truncated Linear Gaussian Blur
+		KawasePass{ 2, { 0, 0 } }, // Kawase Blur
+		2, // Dual Filter Blur
+		2, // Tent Filter
+		0, // Hybrid
 	},
 	DemoConfiguration{
-		std::make_pair(15, "Kernel Size = 15 (15 + 15 taps)"), // Original Gaussian Blur
-		std::make_pair(15, "Kernel Size = 15 (8 + 8 taps)"), // Linear Gaussian Blur
-		std::make_pair(15, "Kernel Size = 15 (Sliding Average)"), // Compute Gaussian Blur
-		std::make_pair(11, "Kernel Size = 11 (6 + 6 taps)"), // Truncated Linear Gaussian Blur
-		std::make_pair(KawasePass{ 3, { 0, 0, 1 } }, "3 Iterations: 0, 0, 1"), // Kawase Blur
-		std::make_pair(4, "Iterations = 4 (2 downsample, 2 upsample)"), // Dual Filter Blur
-		std::make_pair(4, "Iterations = 4 (2 downsample, 2 upsample)"), // Tent Filter
-		std::make_pair(0, "Horizontal Compute (15 taps), Vertical Truncated Gaussian (6 taps)"), // Hybrid
+		15, // Original Gaussian Blur
+		15, // Linear Gaussian Blur
+		15, // Compute Gaussian Blur
+		11, // Truncated Linear Gaussian Blur
+		KawasePass{ 3, { 0, 0, 1 } }, // Kawase Blur
+		4, // Dual Filter Blur
+		4, // Tent Filter
+		0, // Hybrid
 	},
 	DemoConfiguration{
-		std::make_pair(25, "Kernel Size = 25 (25 + 25 taps)"), // Original Gaussian Blur
-		std::make_pair(25, "Kernel Size = 25 (13 + 13 taps)"), // Linear Gaussian Blur
-		std::make_pair(25, "Kernel Size = 25 (Sliding Average)"), // Compute Gaussian Blur
-		std::make_pair(17, "Kernel Size = 17 (9 + 9 taps)"), // Truncated Linear Gaussian Blur
-		std::make_pair(KawasePass{ 4, { 0, 0, 1, 1 } }, "4 Iterations: 0, 0, 1, 1"), // Kawase Blur
-		std::make_pair(6, "Iterations = 6 (3 downsample, 3 upsample)"), // Dual Filter Blur
-		std::make_pair(6, "Iterations = 6 (3 downsample, 3 upsample)"), // Tent Filter
-		std::make_pair(0, "Horizontal Compute (25 taps), Vertical Truncated Gaussian (9 taps)"), // Hybrid
+		25, // Original Gaussian Blur
+		25, // Linear Gaussian Blur
+		25, // Compute Gaussian Blur
+		17, // Truncated Linear Gaussian Blur
+		KawasePass{ 4, { 0, 0, 1, 1 } }, // Kawase Blur
+		6, // Dual Filter Blur
+		6, // Tent Filter
+		0, // Hybrid
 	},
 	DemoConfiguration{
-		std::make_pair(35, "Kernel Size = 35 (35 + 35 taps)"), // Original Gaussian Blur
-		std::make_pair(35, "Kernel Size = 35 (18 + 18 taps)"), // Linear Gaussian Blur
-		std::make_pair(35, "Kernel Size = 35 (Sliding Average)"), // Compute Gaussian Blur
-		std::make_pair(21, "Kernel Size = 21 (11 + 11 taps)"), // Truncated Linear Gaussian Blur
-		std::make_pair(KawasePass{ 4, { 0, 1, 1, 1 } }, "4 Iterations: 0, 1, 1, 1"), // Kawase Blur
-		std::make_pair(8, "Iterations = 8 (4 downsample, 4 upsample)"), // Dual Filter Blur
-		std::make_pair(8, "Iterations = 8 (4 downsample, 4 upsample)"), // Tent Filter
-		std::make_pair(0, "Horizontal Compute (35 taps), Vertical Truncated Gaussian (11 taps)"), // Hybrid
+		35, // Original Gaussian Blur
+		35, // Linear Gaussian Blur
+		35, // Compute Gaussian Blur
+		21, // Truncated Linear Gaussian Blur
+		KawasePass{ 4, { 0, 1, 1, 1 } }, // Kawase Blur
+		8, // Dual Filter Blur
+		8, // Tent Filter
+		0, // Hybrid
 	},
 	DemoConfiguration{
-		std::make_pair(51, "Kernel Size = 51 (51 + 51 taps)"), // Original Gaussian Blur
-		std::make_pair(51, "Kernel Size = 51 (26 + 26 taps)"), // Linear Gaussian Blur
-		std::make_pair(51, "Kernel Size = 51 (Sliding Average)"), // Compute Gaussian Blur
-		std::make_pair(25, "Kernel Size = 25 (13 + 13 taps)"), // Truncated Linear Gaussian Blur
-		std::make_pair(KawasePass{ 5, { 0, 0, 1, 1, 2 } }, "5 Iterations: 0, 0, 1, 1, 2"), // Kawase Blur
-		std::make_pair(10, "Iterations = 10 (5 downsample, 5 upsample)"), // Dual Filter Blur
-		std::make_pair(10, "Iterations = 10 (5 downsample, 5 upsample)"), // Tent Filter
-		std::make_pair(0, "Horizontal Compute (51 taps), Vertical Truncated Gaussian (13 taps)"), // Hybrid
+		51, // Original Gaussian Blur
+		51, // Linear Gaussian Blur
+		51, // Compute Gaussian Blur
+		25, // Truncated Linear Gaussian Blur
+		KawasePass{ 5, { 0, 0, 1, 1, 2 } }, // Kawase Blur
+		10, // Dual Filter Blur
+		10, // Tent Filter
+		0, // Hybrid
 	}
 };
 } // namespace DemoConfigurations
@@ -204,32 +272,40 @@ inline void GL_APIENTRY debugCallback(GLenum source, GLenum type, GLuint id, GLe
 }
 
 /// <summary>Prints the gaussian weights and offsets provided in the vectors.</summary>
-/// <param name="gaussianOffsets">The list of gaussian offsets to print.</param>
 /// <param name="gaussianWeights">The list of gaussian weights to print.</param>
-void printGaussianWeightsAndOffsets(std::vector<double>& gaussianOffsets, std::vector<double>& gaussianWeights)
+/// <param name="gaussianOffsets">The list of gaussian offsets to print.</param>
+/// <param name="iterationsString">A string defining the number of iterations.</param>
+/// <param name="weightsString">A string defining the iteration set of weights.</param>
+/// <param name="offsetsString">A string defining the iteration set of offsets.</param>
+void generateGaussianWeightsAndOffsetsStrings(std::vector<double>& gaussianWeights, std::vector<double>& gaussianOffsets, std::string& iterationsString, std::string& weightsString,
+	std::string& offsetsString, bool duplicateWeightsStrings = false)
 {
-	Log(LogLevel::Information, "const int maxStepCount = %u;", gaussianWeights.size());
-	Log(LogLevel::Information, "const float gWeights[maxStepCount] =");
-	Log(LogLevel::Information, "{");
-
-	for (uint32_t i = 0; i < gaussianWeights.size() - 1; i++)
+	std::string weights;
+	for (uint32_t i = 0; i < gaussianWeights.size() - 1; ++i)
 	{
-		Log(LogLevel::Information, "%.15f,", gaussianWeights[i]);
+		weights += pvr::strings::createFormatted("%.15f,", gaussianWeights[i]);
 	}
+	weights += pvr::strings::createFormatted("%.15f", gaussianWeights[gaussianWeights.size() - 1]);
 
-	Log(LogLevel::Information, "%.15f", gaussianWeights[gaussianWeights.size() - 1]);
-	Log(LogLevel::Information, "};");
-
-	Log(LogLevel::Information, "const float gOffsets[maxStepCount] =");
-	Log(LogLevel::Information, "{");
-
-	for (uint32_t i = 0; i < gaussianOffsets.size() - 1; i++)
+	std::string offsets;
+	for (uint32_t i = 0; i < gaussianOffsets.size() - 1; ++i)
 	{
-		Log(LogLevel::Information, "%.15f,", gaussianOffsets[i]);
+		offsets += pvr::strings::createFormatted("%.15f,", gaussianOffsets[i]);
 	}
+	offsets += pvr::strings::createFormatted("%.15f", gaussianOffsets[gaussianOffsets.size() - 1]);
 
-	Log(LogLevel::Information, "%.15f", gaussianOffsets[gaussianOffsets.size() - 1]);
-	Log(LogLevel::Information, "};");
+	if (duplicateWeightsStrings)
+	{
+		weights += "," + weights;
+
+		weightsString = pvr::strings::createFormatted("const mediump float gWeights[numIterations * 2u] = float[numIterations * 2u](%s);", weights.c_str());
+	}
+	else
+	{
+		weightsString = pvr::strings::createFormatted("const mediump float gWeights[numIterations] = float[numIterations](%s);", weights.c_str());
+		offsetsString = pvr::strings::createFormatted("const mediump float gOffsets[numIterations] = float[numIterations](%s);", offsets.c_str());
+	}
+	iterationsString = pvr::strings::createFormatted("const uint numIterations = %uu;", gaussianWeights.size());
 }
 
 /// <summary>Updates the gaussian weights and offsets using the configuration provided.</summary>
@@ -237,66 +313,16 @@ void printGaussianWeightsAndOffsets(std::vector<double>& gaussianOffsets, std::v
 /// <param name="useLinearOptimisation">Specifies whether linear sampling will be used when texture sampling using the given weights and offsets,
 /// if linear sampling will be used then the weights and offsets must be adjusted accordingly.</param>
 /// <param name="truncateCoefficients">Specifies whether to truncate and ignore coefficients which would provide a negligible change in the resulting blurred image.</param>
-/// <param name="gaussianOffsets">The returned list of gaussian offsets (as double).</param>
 /// <param name="gaussianWeights">The returned list of gaussian weights (as double).</param>
-/// <param name="gaussianOffsetsFloats">The returned list of gaussian offsets (as float).</param>
-/// <param name="gaussianWeightsFloats">The returned list of gaussian weights (as float).</param>
-void updateGaussianWeightsAndOffsets(uint32_t kernelSize, bool useLinearOptimisation, bool truncateCoefficients, std::vector<double>& gaussianOffsets,
-	std::vector<double>& gaussianWeights, std::vector<float>& gaussianOffsetsFloats, std::vector<float>& gaussianWeightsFloats)
+/// <param name="gaussianOffsets">The returned list of gaussian offsets (as double).</param>
+void generateGaussianCoefficients(uint32_t kernelSize, bool useLinearOptimisation, bool truncateCoefficients, std::vector<double>& gaussianWeights, std::vector<double>& gaussianOffsets)
 {
-	// Ensure that the kernel given is odd in size. Our utility function requires a central sampling position although this demo also caters for even kernel sizes
+	// Ensure that the kernel given is odd in size
 	assertion((kernelSize - 1) % 2 == 0);
 	assertion(kernelSize <= MaxGaussianKernel);
 
-	// clear the previous set of gaussian weights and offsets
-	gaussianWeights.clear();
-	gaussianOffsets.clear();
-	gaussianWeightsFloats.clear();
-	gaussianOffsetsFloats.clear();
-
 	// generate a new set of weights and offsets based on the given configuration
 	pvr::math::generateGaussianKernelWeightsAndOffsets(kernelSize, truncateCoefficients, useLinearOptimisation, gaussianWeights, gaussianOffsets, MinimumAcceptibleCoefficient);
-
-	// The following can be used to print the current set of Gaussian Offsets and Weights in use and can be helpful during debugging
-	/*
-	if (useLinearOptimisation)
-	{
-	Log(LogLevel::Information, "Linear Sampling Optimized Gaussian Weights and Offsets:");
-	}
-	else
-	{
-	Log(LogLevel::Information, "Gaussian Weights and Offsets:");
-	}
-	printGaussianWeightsAndOffsets(gaussianOffsets, gaussianWeights);
-	*/
-
-	// Convert the Gaussian weights from double precision to floating point
-	// Only store half of the kernel weights and offsets rather than the full kernel size set of weights and offsets as each side of the kernel will match the other meaning we
-	// can save on the amount of data to upload and sample from in the shader
-	if (gaussianWeights.size() % 2 == 0)
-	{
-		uint32_t halfKernelSize = static_cast<uint32_t>(gaussianWeights.size() / 2);
-
-		gaussianWeightsFloats.resize(halfKernelSize);
-		gaussianOffsetsFloats.resize(halfKernelSize);
-		for (uint32_t i = halfKernelSize; i < gaussianWeights.size(); ++i)
-		{
-			gaussianWeightsFloats[i - halfKernelSize] = static_cast<float>(gaussianWeights[i]);
-			gaussianOffsetsFloats[i - halfKernelSize] = static_cast<float>(gaussianOffsets[i]);
-		}
-	}
-	else
-	{
-		uint32_t halfKernelSize = static_cast<uint32_t>((gaussianWeights.size() - 1) / 2 + 1);
-
-		gaussianWeightsFloats.resize(halfKernelSize);
-		gaussianOffsetsFloats.resize(halfKernelSize);
-		for (uint32_t i = halfKernelSize - 1; i < gaussianWeights.size(); ++i)
-		{
-			gaussianWeightsFloats[i - (halfKernelSize - 1)] = static_cast<float>(gaussianWeights[i]);
-			gaussianOffsetsFloats[i - (halfKernelSize - 1)] = static_cast<float>(gaussianOffsets[i]);
-		}
-	}
 }
 
 // A simple pass used for rendering our statue object
@@ -315,6 +341,9 @@ struct StatuePass
 	void* mappedMemory;
 	bool isBufferStorageExtSupported;
 
+	GLint exposureUniformLocation;
+	GLint thresholdUniformLocation;
+
 	// 3D Model
 	pvr::assets::ModelHandle scene;
 
@@ -326,7 +355,7 @@ struct StatuePass
 		this->isBufferStorageExtSupported = isBufferStorageExtSupported;
 
 		// Load the scene
-		pvr::assets::helper::loadModel(assetProvider, SceneFile, scene);
+		pvr::utils::loadModel(assetProvider, SceneFile, scene);
 		pvr::utils::appendSingleBuffersFromModel(*scene, vbos, ibos);
 
 		bindVertexSpecification(scene->getMesh(0), VertexBindings, 4, vertexConfigurations, vao, vbos[0], ibos[0]);
@@ -391,7 +420,8 @@ struct StatuePass
 			gl::BindBuffer(GL_COPY_READ_BUFFER, buffer);
 			gl::ext::BufferStorageEXT(GL_COPY_READ_BUFFER, (GLsizei)structuredBufferView.getSize(), 0, GL_MAP_WRITE_BIT_EXT | GL_MAP_PERSISTENT_BIT_EXT | GL_MAP_COHERENT_BIT_EXT);
 
-			mappedMemory = gl::MapBufferRange(GL_COPY_READ_BUFFER, 0, structuredBufferView.getSize(), GL_MAP_WRITE_BIT_EXT | GL_MAP_PERSISTENT_BIT_EXT | GL_MAP_COHERENT_BIT_EXT);
+			mappedMemory = gl::MapBufferRange(
+				GL_COPY_READ_BUFFER, 0, static_cast<GLsizeiptr>(structuredBufferView.getSize()), GL_MAP_WRITE_BIT_EXT | GL_MAP_PERSISTENT_BIT_EXT | GL_MAP_COHERENT_BIT_EXT);
 			structuredBufferView.pointToMappedMemory(mappedMemory);
 		}
 	}
@@ -411,6 +441,9 @@ struct StatuePass
 		gl::Uniform1i(gl::GetUniformLocation(program, "sBaseTex"), 0);
 		gl::Uniform1i(gl::GetUniformLocation(program, "sNormalMap"), 1);
 		gl::Uniform1i(gl::GetUniformLocation(program, "irradianceMap"), 2);
+
+		exposureUniformLocation = gl::GetUniformLocation(program, "linearExposure");
+		thresholdUniformLocation = gl::GetUniformLocation(program, "threshold");
 	}
 
 	/// <summary>Update the object animation.</summary>
@@ -464,20 +497,15 @@ struct StatuePass
 	}
 
 	/// <summary>Renders the statue.</summary>
-	/// <param name="thresholdBuffer">The bloom threshold buffer</param>
-	/// <param name="thresholdBufferSize">The size of the bloom threshold buffer</param>
-	/// <param name="sceneBuffer">The scene buffer</param>
-	/// <param name="sceneBufferSize">The size of the scene buffer</param>
 	/// <param name="irradianceMap">The irradiance map</param>
 	/// <param name="samplerTrilinear">The trilinear sampler to use</param>
 	/// <param name="irradianceSampler">A sampler to use for sampling the irradiance map</param>
-	void render(GLuint thresholdBuffer, GLsizeiptr thresholdBufferSize, GLuint sceneBuffer, GLsizeiptr sceneBufferSize, GLuint irradianceMap, GLuint samplerTrilinear,
-		GLuint irradianceSampler)
+	/// <param name="exposure">The exposure value used to 'expose' the color prior to post processing</param>
+	/// <param name="threshold">The threshold value used to determine how much of the color to retain for the bloom</param>
+	void render(GLuint irradianceMap, GLuint samplerTrilinear, GLuint irradianceSampler, float exposure, float threshold)
 	{
 		debugThrowOnApiError("StatuePass before render");
-		gl::BindBufferRange(GL_UNIFORM_BUFFER, 0, buffer, 0, structuredBufferView.getSize());
-		gl::BindBufferRange(GL_UNIFORM_BUFFER, 1, sceneBuffer, 0, sceneBufferSize);
-		gl::BindBufferRange(GL_UNIFORM_BUFFER, 2, thresholdBuffer, 0, thresholdBufferSize);
+		gl::BindBufferRange(GL_UNIFORM_BUFFER, 0, buffer, 0, static_cast<GLsizeiptr>(structuredBufferView.getSize()));
 
 		gl::ActiveTexture(GL_TEXTURE0);
 		gl::BindSampler(0, samplerTrilinear);
@@ -492,6 +520,8 @@ struct StatuePass
 		gl::BindTexture(GL_TEXTURE_CUBE_MAP, irradianceMap);
 
 		gl::UseProgram(program);
+		gl::Uniform1f(exposureUniformLocation, exposure);
+		gl::Uniform1f(thresholdUniformLocation, threshold);
 		renderMesh(0);
 		debugThrowOnApiError("StatuePass after render");
 	}
@@ -501,7 +531,9 @@ struct StatuePass
 struct SkyboxPass
 {
 	GLuint program;
-	GLuint skyBoxTexture;
+	GLuint skyBoxTextures[NumScenes];
+	GLint exposureUniformLocation;
+	GLint thresholdUniformLocation;
 
 	/// <summary>Initialises the skybox pass.</summary>
 	/// <param name="assetProvider">The pvr::IAssetProvider which will be used for loading resources from memory.</param>
@@ -515,8 +547,11 @@ struct SkyboxPass
 	/// <param name="assetProvider">The pvr::IAssetProvider which will be used for loading resources from memory.</param>
 	void loadSkyBoxTextures(pvr::IAssetProvider& assetProvider)
 	{
-		// Load the Texture PVR file from the disk
-		skyBoxTexture = pvr::utils::textureUpload(assetProvider, SkyboxTexFile);
+		for (uint32_t i = 0; i < NumScenes; ++i)
+		{
+			// Load the Texture PVR file from the disk
+			skyBoxTextures[i] = pvr::utils::textureUpload(assetProvider, SceneTexFileNames[i].skyboxTexture);
+		}
 	}
 
 	/// <summary>Create the rendering program used for rendering the skybox.</summary>
@@ -526,91 +561,137 @@ struct SkyboxPass
 		program = pvr::utils::createShaderProgram(assetProvider, Files::SkyboxVertShaderSrcFile, Files::SkyboxFragShaderSrcFile, nullptr, nullptr, 0);
 		gl::UseProgram(program);
 		gl::Uniform1i(gl::GetUniformLocation(program, "skybox"), 0);
+		exposureUniformLocation = gl::GetUniformLocation(program, "linearExposure");
+		thresholdUniformLocation = gl::GetUniformLocation(program, "threshold");
 	}
 
 	/// <summary>Renders the skybox.</summary>
-	/// <param name="thresholdBuffer">The bloom threshold buffer</param>
-	/// <param name="thresholdBufferSize">The size of the bloom threshold buffer</param>
 	/// <param name="sceneBuffer">The scene buffer</param>
 	/// <param name="sceneBufferSize">The size of the scene buffer</param>
 	/// <param name="samplerTrilinear">The trilinear sampler to use</param>
-	void render(GLuint thresholdBuffer, GLsizeiptr thresholdBufferSize, GLuint sceneBuffer, GLsizeiptr sceneBufferSize, GLuint samplerTrilinear)
+	/// <param name="exposure">The exposure value used to 'expose' the color prior to post processing</param>
+	/// <param name="threshold">The threshold value used to determine how much of the color to retain for the bloom</param>
+	/// <param name="currentScene">The current scene to use.</param>
+	void render(GLuint sceneBuffer, GLsizeiptr sceneBufferSize, GLuint samplerTrilinear, float exposure, float threshold, uint32_t currentScene)
 	{
 		debugThrowOnApiError("Skybox Pass before render");
-		gl::BindBufferRange(GL_UNIFORM_BUFFER, 0, thresholdBuffer, 0, thresholdBufferSize);
-		gl::BindBufferRange(GL_UNIFORM_BUFFER, 1, sceneBuffer, 0, sceneBufferSize);
+		gl::BindBufferRange(GL_UNIFORM_BUFFER, 0, sceneBuffer, 0, sceneBufferSize);
 
 		gl::ActiveTexture(GL_TEXTURE0);
-		gl::BindTexture(GL_TEXTURE_CUBE_MAP, skyBoxTexture);
+		gl::BindTexture(GL_TEXTURE_CUBE_MAP, skyBoxTextures[currentScene]);
 		gl::BindSampler(0, samplerTrilinear);
 
 		gl::UseProgram(program);
+		gl::Uniform1f(exposureUniformLocation, exposure);
+		gl::Uniform1f(thresholdUniformLocation, threshold);
 		gl::DrawArrays(GL_TRIANGLES, 0, 6);
 		debugThrowOnApiError("Skybox Pass after render");
 	}
 };
 
-// A Downsample pass used for downsampling images by 1/4 x 1/4 i.e. 1/16 resolution OR 1/2 x 1/2 i.e. 1/4 resolution
-// depending on whether GL_IMG_framebuffer_downsample is supported
-struct DownSamplePass
+// A Downsample pass which can be used for downsampling images by 1/2 x 1/2 i.e. 1/4 resolution
+struct DownSamplePass2x2
 {
 	GLuint program;
-	GLuint downsampleConfigUniformLocation;
-	glm::vec2 blurConfigs[4];
-	bool isIMGFramebufferDownsampleSupported;
+	GLuint framebuffer;
+	glm::ivec2 downsampleDimensions;
 
 	/// <summary>Initialises the Downsample pass.</summary>
 	/// <param name="assetProvider">The pvr::IAssetProvider which will be used for loading resources from memory.</param>
-	/// <param name="framebufferDimensions">The dimensions to use for the downsample pass. These dimensions should be 1/4 x 1/4 OR 1/2 x 1/2 the size of the source image.</param>
-	/// <param name="isIMGFramebufferDownsampleSupported">Specifies whether the extension GL_IMG_framebuffer_downsample is supported.</param>
-	void init(pvr::IAssetProvider& assetProvider, const glm::ivec2& framebufferDimensions, bool isIMGFramebufferDownsampleSupported)
+	/// <param name="outputTexture">The color texture use as the output of the downsample.</param>
+	/// <param name="destinationImageDimensions">The dimensions of the destination image which contains the downsampled image.</param>
+	virtual void init(pvr::IAssetProvider& assetProvider, GLuint outputTexture, const glm::ivec2& destinationImageDimensions)
 	{
-		this->isIMGFramebufferDownsampleSupported = isIMGFramebufferDownsampleSupported;
+		createProgram(assetProvider);
+		this->downsampleDimensions = destinationImageDimensions;
+		createFramebuffer(outputTexture);
+		debugThrowOnApiError("DownSamplePass2x2 init");
+	}
+
+	virtual void createFramebuffer(GLuint outputTexture)
+	{
+		gl::GenFramebuffers(1, &framebuffer);
+		gl::BindFramebuffer(GL_DRAW_FRAMEBUFFER, framebuffer);
+		gl::FramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, outputTexture, 0);
+		gl::FramebufferParameteri(GL_DRAW_FRAMEBUFFER, GL_FRAMEBUFFER_DEFAULT_WIDTH, downsampleDimensions.x);
+		gl::FramebufferParameteri(GL_DRAW_FRAMEBUFFER, GL_FRAMEBUFFER_DEFAULT_HEIGHT, downsampleDimensions.y);
+		pvr::utils::checkFboStatus();
+	}
+
+	/// <summary>Create the rendering program used for downsampling the luminance texture.</summary>
+	/// <param name="assetProvider">The pvr::IAssetProvider which will be used for loading resources from memory.</param>
+	virtual void createProgram(pvr::IAssetProvider& assetProvider)
+	{
+		program = pvr::utils::createShaderProgram(assetProvider, Files::Downsample2x2VertSrcFile, Files::Downsample2x2FragSrcFile, nullptr, nullptr, 0);
+		gl::UseProgram(program);
+		gl::Uniform1i(gl::GetUniformLocation(program, "sTexture"), 0);
+	}
+
+	/// <summary>Performs a downsample of the provided texture.</summary>
+	/// <param name="sourceTexture">The source texture to downsample</param>
+	/// <param name="samplerBilinear">The bilinear sampler to use</param>
+	virtual void render(GLuint sourceTexture, GLuint samplerBilinear)
+	{
+		debugThrowOnApiError("Downsample Pass before render");
+
+		gl::Viewport(0, 0, downsampleDimensions.x, downsampleDimensions.y);
+		gl::BindFramebuffer(GL_DRAW_FRAMEBUFFER, framebuffer);
+		gl::Clear(GL_COLOR_BUFFER_BIT);
+
+		gl::ActiveTexture(GL_TEXTURE0);
+		gl::BindTexture(GL_TEXTURE_2D, sourceTexture);
+		gl::BindSampler(0, samplerBilinear);
+
+		gl::UseProgram(program);
+		gl::DrawArrays(GL_TRIANGLE_STRIP, 0, 3);
+		debugThrowOnApiError("Downsample Pass after render");
+	}
+};
+
+// A Downsample pass which can be used for downsampling images by 1/4 x 1/4 i.e. 1/4 resolution
+struct DownSamplePass4x4 : public DownSamplePass2x2
+{
+	GLuint downsampleConfigUniformLocations[4];
+	glm::vec2 downsampleConfigs[4];
+
+	/// <summary>Initialises the Downsample pass.</summary>
+	/// <param name="assetProvider">The pvr::IAssetProvider which will be used for loading resources from memory.</param>
+	/// <param name="outputTexture">The texture to use as the output of the downsample.</param>
+	/// <param name="destinationImageDimensions">The dimensions of the destination image which contains the downsampled image.</param>
+	/// <param name="sourceImageDimensions">The dimensions of the source image to be downsampled.</param>
+	void init(pvr::IAssetProvider& assetProvider, GLuint outputTexture, const glm::ivec2& destinationImageDimensions, const glm::ivec2& sourceImageDimensions)
+	{
+		const glm::vec2 dimensionRatio = glm::vec2(sourceImageDimensions.x / destinationImageDimensions.x, sourceImageDimensions.y / destinationImageDimensions.y);
 
 		// A set of pre-calculated offsets to use for the downsample
 		const glm::vec2 offsets[4] = { glm::vec2(-1.0, -1.0), glm::vec2(1.0, -1.0), glm::vec2(-1.0, 1.0), glm::vec2(1.0, 1.0) };
 
-		blurConfigs[0] = glm::vec2(1.0f / (framebufferDimensions.x * 4), 1.0f / (framebufferDimensions.y * 4)) * offsets[0];
-		blurConfigs[1] = glm::vec2(1.0f / (framebufferDimensions.x * 4), 1.0f / (framebufferDimensions.y * 4)) * offsets[1];
-		blurConfigs[2] = glm::vec2(1.0f / (framebufferDimensions.x * 4), 1.0f / (framebufferDimensions.y * 4)) * offsets[2];
-		blurConfigs[3] = glm::vec2(1.0f / (framebufferDimensions.x * 4), 1.0f / (framebufferDimensions.y * 4)) * offsets[3];
-		createProgram(assetProvider);
+		downsampleConfigs[0] = glm::vec2(1.0f / (destinationImageDimensions.x * dimensionRatio.x), 1.0f / (destinationImageDimensions.y * dimensionRatio.y)) * offsets[0];
+		downsampleConfigs[1] = glm::vec2(1.0f / (destinationImageDimensions.x * dimensionRatio.x), 1.0f / (destinationImageDimensions.y * dimensionRatio.y)) * offsets[1];
+		downsampleConfigs[2] = glm::vec2(1.0f / (destinationImageDimensions.x * dimensionRatio.x), 1.0f / (destinationImageDimensions.y * dimensionRatio.y)) * offsets[2];
+		downsampleConfigs[3] = glm::vec2(1.0f / (destinationImageDimensions.x * dimensionRatio.x), 1.0f / (destinationImageDimensions.y * dimensionRatio.y)) * offsets[3];
+
+		DownSamplePass2x2::init(assetProvider, outputTexture, destinationImageDimensions);
 
 		debugThrowOnApiError("DownSamplePass init");
 	}
 
 	/// <summary>Create the rendering program used for downsampling the luminance texture.</summary>
 	/// <param name="assetProvider">The pvr::IAssetProvider which will be used for loading resources from memory.</param>
-	void createProgram(pvr::IAssetProvider& assetProvider)
+	void createProgram(pvr::IAssetProvider& assetProvider) override
 	{
-		// GL_IMG_framebuffer_downsample is supported then we only need a program for downsampling 2x2
-		if (isIMGFramebufferDownsampleSupported)
-		{
-			program = pvr::utils::createShaderProgram(assetProvider, Files::Downsample2x2VertSrcFile, Files::Downsample2x2FragSrcFile, nullptr, nullptr, 0);
-		}
-		// else the program needs to be able to downsample by 1/4 x 1/4
-		else
-		{
-			program = pvr::utils::createShaderProgram(assetProvider, Files::Downsample4x4VertSrcFile, Files::Downsample4x4FragSrcFile, nullptr, nullptr, 0);
-			gl::UseProgram(program);
-			downsampleConfigUniformLocation = gl::GetUniformLocation(program, "downsampleConfigs");
-			gl::Uniform2fv(downsampleConfigUniformLocation, 4, glm::value_ptr(blurConfigs[0]));
-		}
-	}
-
-	/// <summary>Performs a downsample of the provided luminance texture.</summary>
-	/// <param name="luminanceTexture">The the luminance texture to downsample</param>
-	/// <param name="samplerBilinear">The bilinear sampler to use</param>
-	void render(GLuint luminanceTexture, GLuint samplerBilinear)
-	{
-		debugThrowOnApiError("Downsample Pass before render");
-		gl::ActiveTexture(GL_TEXTURE0);
-		gl::BindTexture(GL_TEXTURE_2D, luminanceTexture);
-		gl::BindSampler(0, samplerBilinear);
-
+		program = pvr::utils::createShaderProgram(assetProvider, Files::Downsample4x4VertSrcFile, Files::Downsample4x4FragSrcFile, nullptr, nullptr, 0);
 		gl::UseProgram(program);
-		gl::DrawArrays(GL_TRIANGLE_STRIP, 0, 3);
-		debugThrowOnApiError("Downsample Pass after render");
+		downsampleConfigUniformLocations[0] = gl::GetUniformLocation(program, "downsampleConfigs[0]");
+		downsampleConfigUniformLocations[1] = gl::GetUniformLocation(program, "downsampleConfigs[1]");
+		downsampleConfigUniformLocations[2] = gl::GetUniformLocation(program, "downsampleConfigs[2]");
+		downsampleConfigUniformLocations[3] = gl::GetUniformLocation(program, "downsampleConfigs[3]");
+
+		gl::Uniform2fv(downsampleConfigUniformLocations[0], 1, glm::value_ptr(downsampleConfigs[0]));
+		gl::Uniform2fv(downsampleConfigUniformLocations[1], 1, glm::value_ptr(downsampleConfigs[1]));
+		gl::Uniform2fv(downsampleConfigUniformLocations[2], 1, glm::value_ptr(downsampleConfigs[2]));
+		gl::Uniform2fv(downsampleConfigUniformLocations[3], 1, glm::value_ptr(downsampleConfigs[3]));
+		gl::Uniform1i(gl::GetUniformLocation(program, "sTexture"), 0);
 	}
 };
 
@@ -633,7 +714,7 @@ struct KawaseBlurPass
 
 	uint32_t blurredImageIndex;
 
-	GLuint blurConfigLocation;
+	GLuint blurConfigLocations[4];
 
 	glm::ivec2 framebufferDimensions;
 
@@ -695,36 +776,48 @@ struct KawaseBlurPass
 		gl::UseProgram(program);
 		gl::Uniform1i(gl::GetUniformLocation(program, "sTexture"), 0);
 
-		blurConfigLocation = gl::GetUniformLocation(program, "blurConfigs");
+		blurConfigLocations[0] = gl::GetUniformLocation(program, "blurConfigs[0]");
+		blurConfigLocations[1] = gl::GetUniformLocation(program, "blurConfigs[1]");
+		blurConfigLocations[2] = gl::GetUniformLocation(program, "blurConfigs[2]");
+		blurConfigLocations[3] = gl::GetUniformLocation(program, "blurConfigs[3]");
 	}
 
 	/// <summary>Performs a Kawase blur using the current configuration.</summary>
-	/// <param name="horizontalBlurFramebuffer">The first of the ping ponged framebuffers.</param>
-	/// <param name="verticalBlurFramebuffer">The second of the ping ponged framebuffers.</param>
-	/// <param name="pingPong0Texture">The first of the ping ponged textures.</param>
-	/// <param name="pingPong1Texture">The second of the ping ponged textures.</param>
+	/// <param name="sourceTexture">The source texture to downsample</param>
+	/// <param name="framebuffers">The framebuffers to use in the Kawase blur.</param>
+	/// <param name="numFramebuffers">The number of framebuffers to use.</param>
 	/// <param name="samplerBilinear">The sampler object to use when sampling from the ping-ponged images during the Kawase blur passes.</param>
-	void render(GLuint horizontalBlurFramebuffer, GLuint verticalBlurFramebuffer, GLuint pingPong0Texture, GLuint pingPong1Texture, GLuint samplerBilinear)
+	void render(GLuint sourceTexture, Framebuffer* framebuffers, uint32_t numFramebuffers, GLuint samplerBilinear)
 	{
-		GLuint framebuffers[2] = { horizontalBlurFramebuffer, verticalBlurFramebuffer };
-		GLuint textures[2] = { pingPong0Texture, pingPong1Texture };
-
 		// Iterate through the Kawase blur iterations
-		for (uint32_t i = 0; i < blurIterations; i++)
+		for (uint32_t i = 0; i < blurIterations; ++i)
 		{
 			debugThrowOnApiError("Kawase Pass before render");
 			// calculate the ping pong index based on the current iteration
-			uint32_t pingPongIndex = i % 2;
+			uint32_t pingPongIndex = i % numFramebuffers;
 
-			gl::BindFramebuffer(GL_DRAW_FRAMEBUFFER, framebuffers[pingPongIndex]);
+			gl::BindFramebuffer(GL_DRAW_FRAMEBUFFER, framebuffers[pingPongIndex].framebuffer);
 			gl::Clear(GL_COLOR_BUFFER_BIT);
 
+			GLuint currentTexture = -1;
+			if (i == 0)
+			{
+				currentTexture = sourceTexture;
+			}
+			else
+			{
+				currentTexture = framebuffers[(i - 1) % numFramebuffers].attachments[static_cast<uint32_t>(BloomAttachments::Bloom)];
+			}
+
 			gl::ActiveTexture(GL_TEXTURE0);
-			gl::BindTexture(GL_TEXTURE_2D, textures[pingPongIndex]);
+			gl::BindTexture(GL_TEXTURE_2D, currentTexture);
 			gl::BindSampler(0, samplerBilinear);
 
 			gl::UseProgram(program);
-			gl::Uniform2fv(blurConfigLocation, 4, glm::value_ptr(configUniforms[i][0]));
+			gl::Uniform2fv(blurConfigLocations[0], 1, glm::value_ptr(configUniforms[i][0]));
+			gl::Uniform2fv(blurConfigLocations[1], 1, glm::value_ptr(configUniforms[i][1]));
+			gl::Uniform2fv(blurConfigLocations[2], 1, glm::value_ptr(configUniforms[i][2]));
+			gl::Uniform2fv(blurConfigLocations[3], 1, glm::value_ptr(configUniforms[i][3]));
 			gl::DrawArrays(GL_TRIANGLE_STRIP, 0, 3);
 			debugThrowOnApiError("Kawase Pass after render");
 		}
@@ -736,7 +829,7 @@ struct KawaseBlurPass
 // Filters images whilst Downsampling and Upsampling
 struct DualFilterBlurPass
 {
-	// We only need (MaxDualFilterIteration - 1) images as the first image is an input to the blur pass
+	// We only need (MaxFilterIterations - 1) images as the first image is an input to the blur pass
 	// We also special case the final pass as this requires either a different pipeline or a different descriptor set/layout
 
 	// Special cased final pass pipeline where the final upsample pass and compositing occurs in the same pipeline. This lets us avoid an extra write to memory/read from memory pass
@@ -745,19 +838,18 @@ struct DualFilterBlurPass
 
 	GLuint upSampleProgram;
 	GLuint downSampleProgram;
-	GLuint doubleDownSampleProgram;
 
-	// The pre allocated framebuffers for the iterations up to MaxDualFilterIteration
-	GLuint framebuffers[MaxDualFilterIteration - 1];
+	// The pre allocated framebuffers for the iterations up to MaxFilterIterations
+	GLuint framebuffers[MaxFilterIterations - 1];
 
 	// The current set of framebuffers in use for the currently selected configuration
-	GLuint currentFramebuffers[MaxDualFilterIteration - 1];
+	GLuint currentFramebuffers[MaxFilterIterations - 1];
 
-	// The pre allocated image views for the iterations up to MaxDualFilterIteration
-	GLuint textures[MaxDualFilterIteration - 1];
+	// The pre allocated image views for the iterations up to MaxFilterIterations
+	GLuint textures[MaxFilterIterations - 1];
 
 	// The current set of image views in use for the currently selected configuration
-	GLuint currentTextures[MaxDualFilterIteration - 1];
+	GLuint currentTextures[MaxFilterIterations - 1];
 
 	// The framebuffer dimensions for the current configuration
 	std::vector<glm::vec2> currentIterationDimensions;
@@ -775,7 +867,7 @@ struct DualFilterBlurPass
 	uint32_t blurIterations;
 
 	// The current set of uniforms for the current configuration
-	glm::vec2 configUniforms[MaxDualFilterIteration][8];
+	glm::vec2 configUniforms[MaxFilterIterations][8];
 
 	// The final full resolution framebuffer dimensions
 	glm::ivec2 framebufferDimensions;
@@ -783,10 +875,12 @@ struct DualFilterBlurPass
 	// The color image format in use
 	GLuint colorImageFormat;
 
-	GLuint upSampleBlurConfigLocation;
-	GLuint downSampleBlurConfigLocation;
-	GLuint finalUpSampleBlurConfigLocation;
-	GLuint finalUpSampleBlurBloomOnlyConfigLocation;
+	GLuint upSampleBlurConfigLocations[8];
+	GLuint downSampleBlurConfigLocations[4];
+	GLuint finalUpSampleBlurConfigLocations[8];
+	GLuint finalUpSampleBlurBloomOnlyConfigLocations[8];
+
+	GLint exposureUniformLocation;
 
 	/// <summary>Initialises the Dual Filter blur.</summary>
 	/// <param name="assetProvider">The pvr::IAssetProvider which will be used for loading resources from memory.</param>
@@ -798,10 +892,8 @@ struct DualFilterBlurPass
 		this->framebufferDimensions = framebufferDimensions;
 		this->blurIterations = -1;
 
-		createBuffers();
-
 		// Calculate the maximum set of per iteration framebuffer dimensions
-		// The maximum set will start from framebufferDimensions and allow for MaxDualFilterIteration. Note that this includes down and up sample passes
+		// The maximum set will start from framebufferDimensions and allow for MaxFilterIterations. Note that this includes down and up sample passes
 		calculateIterationDimensions();
 
 		// Allocates the images used for each of the down/up sample passes
@@ -813,9 +905,6 @@ struct DualFilterBlurPass
 		// Create the up and down sample programs
 		createPrograms(assetProvider, srgbFramebuffer);
 	}
-
-	/// <summary>Creates any required buffers - The Dual Filter blur pass doesn't use any buffers.</summary>
-	virtual void createBuffers() {}
 
 	/// <summary>Returns the blurred texture.</summary>
 	/// <returns>The blurred texture.</returns>
@@ -859,7 +948,7 @@ struct DualFilterBlurPass
 			currentFramebuffers[index] = framebuffers[index];
 		}
 
-		for (uint32_t i = MaxDualFilterIteration - (blurIterations / 2); i < MaxDualFilterIteration - 1; ++i)
+		for (uint32_t i = MaxFilterIterations - (blurIterations / 2); i < MaxFilterIterations - 1; ++i)
 		{
 			currentFramebuffers[index] = framebuffers[i];
 			index++;
@@ -875,7 +964,7 @@ struct DualFilterBlurPass
 			currentTextures[index] = textures[index];
 		}
 
-		for (uint32_t i = MaxDualFilterIteration - (blurIterations / 2); i < MaxDualFilterIteration - 1; ++i)
+		for (uint32_t i = MaxFilterIterations - (blurIterations / 2); i < MaxFilterIterations - 1; ++i)
 		{
 			currentTextures[index] = textures[i];
 			index++;
@@ -885,8 +974,8 @@ struct DualFilterBlurPass
 	/// <summary>Calculate the full set of Dual Filter iteration dimensions.</summary>
 	void calculateIterationDimensions()
 	{
-		maxIterationDimensions.resize(MaxDualFilterIteration);
-		maxIterationInverseDimensions.resize(MaxDualFilterIteration);
+		maxIterationDimensions.resize(MaxFilterIterations);
+		maxIterationInverseDimensions.resize(MaxFilterIterations);
 
 		// Determine the dimensions and inverse dimensions for each iteration of the Dual Filter
 		// If the original texture size is 800x600 and we are using a 4 pass Dual Filter then:
@@ -895,9 +984,9 @@ struct DualFilterBlurPass
 		//		Iteration 2: 400x300
 		//		Iteration 3: 800x600
 		glm::ivec2 dimension =
-			glm::ivec2(glm::ceil(framebufferDimensions.x / glm::pow(2, MaxDualFilterIteration / 2)), glm::ceil(framebufferDimensions.y / glm::pow(2, MaxDualFilterIteration / 2)));
+			glm::ivec2(glm::ceil(framebufferDimensions.x / glm::pow(2, MaxFilterIterations / 2)), glm::ceil(framebufferDimensions.y / glm::pow(2, MaxFilterIterations / 2)));
 
-		for (int32_t i = (MaxDualFilterIteration / 2) - 1; i >= 0; --i)
+		for (int32_t i = (MaxFilterIterations / 2) - 1; i >= 0; --i)
 		{
 			maxIterationDimensions[i] = dimension;
 			glm::vec2 inverseDimensions = glm::vec2(1.0f / dimension.x, 1.0f / dimension.y);
@@ -905,10 +994,10 @@ struct DualFilterBlurPass
 			dimension = glm::ivec2(glm::ceil(dimension.x * 2.0f), glm::ceil(dimension.y * 2.0f));
 		}
 
-		dimension = glm::ivec2(
-			glm::ceil(framebufferDimensions.x / glm::pow(2, MaxDualFilterIteration / 2 - 1)), glm::ceil(framebufferDimensions.y / glm::pow(2, MaxDualFilterIteration / 2 - 1)));
+		dimension =
+			glm::ivec2(glm::ceil(framebufferDimensions.x / glm::pow(2, MaxFilterIterations / 2 - 1)), glm::ceil(framebufferDimensions.y / glm::pow(2, MaxFilterIterations / 2 - 1)));
 
-		for (uint32_t i = MaxDualFilterIteration / 2; i < MaxDualFilterIteration - 1; ++i)
+		for (uint32_t i = MaxFilterIterations / 2; i < MaxFilterIterations - 1; ++i)
 		{
 			maxIterationDimensions[i] = dimension;
 			glm::vec2 inverseDimensions = glm::vec2(1.0f / dimension.x, 1.0f / dimension.y);
@@ -918,9 +1007,9 @@ struct DualFilterBlurPass
 
 		dimension = glm::ivec2(glm::ceil(framebufferDimensions.x), glm::ceil(framebufferDimensions.y));
 
-		maxIterationDimensions[MaxDualFilterIteration - 1] = dimension;
+		maxIterationDimensions[MaxFilterIterations - 1] = dimension;
 		glm::vec2 inverseDimensions = glm::vec2(1.0f / dimension.x, 1.0f / dimension.y);
-		maxIterationInverseDimensions[MaxDualFilterIteration - 1] = inverseDimensions;
+		maxIterationInverseDimensions[MaxFilterIterations - 1] = inverseDimensions;
 	}
 
 	/// <summary>Calculate the Dual Filter iteration dimensions based on the current Dual Filter configuration.</summary>
@@ -944,7 +1033,7 @@ struct DualFilterBlurPass
 			iterationInverseDimensions.push_back(maxIterationInverseDimensions[i]);
 		}
 
-		uint32_t index = MaxDualFilterIteration - (numIterations / 2);
+		uint32_t index = MaxFilterIterations - (numIterations / 2);
 		for (uint32_t i = numIterations / 2; i < numIterations; ++i)
 		{
 			iterationDimensions.push_back(maxIterationDimensions[index]);
@@ -956,7 +1045,7 @@ struct DualFilterBlurPass
 	/// <summary>Allocates the textures used for each of the down / up sample passes.</summary>
 	virtual void allocatePingPongTextures()
 	{
-		for (uint32_t i = 0; i < MaxDualFilterIteration / 2; ++i)
+		for (uint32_t i = 0; i < MaxFilterIterations / 2; ++i)
 		{
 			gl::GenTextures(1, &textures[i]);
 			gl::BindTexture(GL_TEXTURE_2D, textures[i]);
@@ -965,9 +1054,9 @@ struct DualFilterBlurPass
 
 		// We're able to reuse images between up/down sample passes. This can help us keep down the total number of images in flight
 		uint32_t k = 0;
-		for (uint32_t i = MaxDualFilterIteration / 2; i < MaxDualFilterIteration - 1; ++i)
+		for (uint32_t i = MaxFilterIterations / 2; i < MaxFilterIterations - 1; ++i)
 		{
-			uint32_t reuseIndex = (MaxDualFilterIteration / 2) - 1 - (k + 1);
+			uint32_t reuseIndex = (MaxFilterIterations / 2) - 1 - (k + 1);
 			textures[i] = textures[reuseIndex];
 			k++;
 		}
@@ -976,13 +1065,29 @@ struct DualFilterBlurPass
 	/// <summary>Allocates the framebuffers used for each of the down / up sample passes.</summary>
 	virtual void createFramebuffers()
 	{
-		for (uint32_t i = 0; i < MaxDualFilterIteration - 1; ++i)
+		for (uint32_t i = 0; i < MaxFilterIterations - 1; ++i)
 		{
 			gl::GenFramebuffers(1, &framebuffers[i]);
 			gl::BindFramebuffer(GL_DRAW_FRAMEBUFFER, framebuffers[i]);
 			gl::FramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textures[i], 0);
 			gl::FramebufferParameteri(GL_DRAW_FRAMEBUFFER, GL_FRAMEBUFFER_DEFAULT_WIDTH, static_cast<GLint>(maxIterationDimensions[i].x));
 			gl::FramebufferParameteri(GL_DRAW_FRAMEBUFFER, GL_FRAMEBUFFER_DEFAULT_HEIGHT, static_cast<GLint>(maxIterationDimensions[i].y));
+		}
+	}
+
+	void getUpSampleConfigUniformLocations(GLuint upSampleBlurConfigLocations[8], GLuint program, const std::string& uniformLocationName)
+	{
+		for (uint32_t i = 0; i < 8; ++i)
+		{
+			upSampleBlurConfigLocations[i] = gl::GetUniformLocation(program, pvr::strings::createFormatted(std::string(uniformLocationName + "[%i]").c_str(), i).c_str());
+		}
+	}
+
+	void setUpSampleConfigUniforms(GLuint upSampleBlurConfigLocations[8], const glm::vec2 upSampleConfigs[8])
+	{
+		for (uint32_t i = 0; i < 8; ++i)
+		{
+			gl::Uniform2fv(upSampleBlurConfigLocations[i], 1, glm::value_ptr(upSampleConfigs[i]));
 		}
 	}
 
@@ -1002,39 +1107,37 @@ struct DualFilterBlurPass
 
 		gl::UseProgram(downSampleProgram);
 		gl::Uniform1i(gl::GetUniformLocation(downSampleProgram, "sTexture"), 0);
-		downSampleBlurConfigLocation = gl::GetUniformLocation(downSampleProgram, "blurConfigs");
+		downSampleBlurConfigLocations[0] = gl::GetUniformLocation(downSampleProgram, "blurConfigs[0]");
+		downSampleBlurConfigLocations[1] = gl::GetUniformLocation(downSampleProgram, "blurConfigs[1]");
+		downSampleBlurConfigLocations[2] = gl::GetUniformLocation(downSampleProgram, "blurConfigs[2]");
+		downSampleBlurConfigLocations[3] = gl::GetUniformLocation(downSampleProgram, "blurConfigs[3]");
 
 		gl::UseProgram(upSampleProgram);
 		gl::Uniform1i(gl::GetUniformLocation(upSampleProgram, "sTexture"), 0);
-		upSampleBlurConfigLocation = gl::GetUniformLocation(upSampleProgram, "blurConfigs");
+		getUpSampleConfigUniformLocations(upSampleBlurConfigLocations, upSampleProgram, "blurConfigs");
 
 		finalPassProgram = pvr::utils::createShaderProgram(assetProvider, Files::DualFilterUpVertSrcFile, Files::DualFilterUpSampleMergedFinalPassFragSrcFile, nullptr, nullptr, 0,
 			defines.data(), static_cast<uint32_t>(defines.size()));
+
+		gl::UseProgram(finalPassProgram);
+		getUpSampleConfigUniformLocations(finalUpSampleBlurConfigLocations, finalPassProgram, "blurConfigs");
+		gl::Uniform1i(gl::GetUniformLocation(finalPassProgram, "sBlurTexture"), 0);
+		gl::Uniform1i(gl::GetUniformLocation(finalPassProgram, "sOffScreenTexture"), 1);
+		exposureUniformLocation = gl::GetUniformLocation(finalPassProgram, "linearExposure");
 
 		defines.push_back("RENDER_BLOOM");
 		finalPassBloomOnlyProgram = pvr::utils::createShaderProgram(assetProvider, Files::DualFilterUpVertSrcFile, Files::DualFilterUpSampleMergedFinalPassFragSrcFile, nullptr,
 			nullptr, 0, defines.data(), static_cast<uint32_t>(defines.size()));
 
-		GLuint programs[] = { finalPassProgram, finalPassBloomOnlyProgram };
-
-		for (uint32_t i = 0; i < 2; ++i)
-		{
-			gl::UseProgram(programs[i]);
-			gl::Uniform1i(gl::GetUniformLocation(programs[i], "sTexture"), 0);
-			gl::Uniform1i(gl::GetUniformLocation(programs[i], "sOffScreenTexture"), 1);
-		}
-
-		gl::UseProgram(finalPassProgram);
-		finalUpSampleBlurConfigLocation = gl::GetUniformLocation(finalPassProgram, "blurConfigs");
-
 		gl::UseProgram(finalPassBloomOnlyProgram);
-		finalUpSampleBlurBloomOnlyConfigLocation = gl::GetUniformLocation(finalPassBloomOnlyProgram, "blurConfigs");
+		getUpSampleConfigUniformLocations(finalUpSampleBlurBloomOnlyConfigLocations, finalPassBloomOnlyProgram, "blurConfigs");
+		gl::Uniform1i(gl::GetUniformLocation(finalPassBloomOnlyProgram, "sBlurTexture"), 0);
 	}
 
 	/// <summary>Configure the Dual Filter uniforms values based on the current Dual Filter configuration.</summary>
 	virtual void configureConfigUniforms()
 	{
-		for (uint32_t i = 0; i < blurIterations; i++)
+		for (uint32_t i = 0; i < blurIterations; ++i)
 		{
 			// Downsample
 			if (i < blurIterations / 2)
@@ -1070,81 +1173,94 @@ struct DualFilterBlurPass
 	}
 
 	/// <summary>Renders the Dual Filter blur iterations based on the current configuration.</summary>
-	/// <param name="luminanceTexture">The source luminance texture.</param>
+	/// <param name="sourceTexture">The source texture.</param>
 	/// <param name="offscreenTexture">The offscreen texture.</param>
 	/// <param name="onScreenFbo">The on screen fbo.</param>
 	/// <param name="samplerBilinear">The sampler object to use when sampling Dual Filter.</param>
-	virtual void render(GLuint luminanceTexture, GLuint offscreenTexture, GLuint onScreenFbo, GLuint samplerBilinear, bool renderBloomOnly)
+	/// <param name="exposure">The exposure to use in the tonemapping.</param>
+	virtual void render(GLuint sourceTexture, GLuint offscreenTexture, GLuint onScreenFbo, GLuint samplerBilinear, bool renderBloomOnly, float exposure)
 	{
-		for (uint32_t i = 0; i < blurIterations; i++)
+		gl::ActiveTexture(GL_TEXTURE0);
+		gl::BindSampler(0, samplerBilinear);
+
+		uint32_t i = 0;
+
+		// Downsample passes
+		for (; i < blurIterations / 2; ++i)
 		{
 			gl::Viewport(0, 0, static_cast<GLsizei>(currentIterationDimensions[i].x), static_cast<GLsizei>(currentIterationDimensions[i].y));
 
+			debugThrowOnApiError("Dual Filter First Downsample before render");
+			gl::BindFramebuffer(GL_DRAW_FRAMEBUFFER, currentFramebuffers[i]);
+			gl::Clear(GL_COLOR_BUFFER_BIT);
+
 			if (i == 0)
 			{
-				debugThrowOnApiError("Dual Filter First Pass before render");
-				gl::BindFramebuffer(GL_DRAW_FRAMEBUFFER, currentFramebuffers[i]);
-				gl::Clear(GL_COLOR_BUFFER_BIT);
-
-				gl::ActiveTexture(GL_TEXTURE0);
-				gl::BindTexture(GL_TEXTURE_2D, luminanceTexture);
-				gl::BindSampler(0, samplerBilinear);
-
-				gl::UseProgram(downSampleProgram);
-				gl::Uniform2fv(downSampleBlurConfigLocation, 4, glm::value_ptr(configUniforms[i][0]));
-			}
-			// Special case the final Dual Filter iteration
-			else if (i == blurIterations - 1)
-			{
-				debugThrowOnApiError("Dual Filter Final Pass before render");
-				gl::BindFramebuffer(GL_DRAW_FRAMEBUFFER, onScreenFbo);
-				gl::Clear(GL_COLOR_BUFFER_BIT);
-
-				gl::ActiveTexture(GL_TEXTURE0);
-				gl::BindTexture(GL_TEXTURE_2D, currentTextures[blurIterations - 2]);
-				gl::BindSampler(0, samplerBilinear);
-
-				gl::ActiveTexture(GL_TEXTURE1);
-				gl::BindTexture(GL_TEXTURE_2D, offscreenTexture);
-				gl::BindSampler(1, samplerBilinear);
-
-				if (renderBloomOnly)
-				{
-					gl::UseProgram(finalPassBloomOnlyProgram);
-					gl::Uniform2fv(finalUpSampleBlurBloomOnlyConfigLocation, 8, glm::value_ptr(configUniforms[i][0]));
-				}
-				else
-				{
-					gl::UseProgram(finalPassProgram);
-					gl::Uniform2fv(finalUpSampleBlurConfigLocation, 8, glm::value_ptr(configUniforms[i][0]));
-				}
+				gl::BindTexture(GL_TEXTURE_2D, sourceTexture);
 			}
 			else
 			{
-				debugThrowOnApiError("Dual Filter Pass before render");
-				// Down sample passes
-				if (i < blurIterations / 2)
-				{
-					gl::UseProgram(downSampleProgram);
-					gl::Uniform2fv(downSampleBlurConfigLocation, 4, glm::value_ptr(configUniforms[i][0]));
-				}
-				// Up sample passes
-				else
-				{
-					gl::UseProgram(upSampleProgram);
-					gl::Uniform2fv(upSampleBlurConfigLocation, 8, glm::value_ptr(configUniforms[i][0]));
-				}
-				gl::BindFramebuffer(GL_DRAW_FRAMEBUFFER, currentFramebuffers[i]);
-				gl::Clear(GL_COLOR_BUFFER_BIT);
-
-				gl::ActiveTexture(GL_TEXTURE0);
 				gl::BindTexture(GL_TEXTURE_2D, currentTextures[i - 1]);
-				gl::BindSampler(0, samplerBilinear);
 			}
 
+			gl::UseProgram(downSampleProgram);
+			gl::Uniform2fv(downSampleBlurConfigLocations[0], 1, glm::value_ptr(configUniforms[i][0]));
+			gl::Uniform2fv(downSampleBlurConfigLocations[1], 1, glm::value_ptr(configUniforms[i][1]));
+			gl::Uniform2fv(downSampleBlurConfigLocations[2], 1, glm::value_ptr(configUniforms[i][2]));
+			gl::Uniform2fv(downSampleBlurConfigLocations[3], 1, glm::value_ptr(configUniforms[i][3]));
+
 			gl::DrawArrays(GL_TRIANGLE_STRIP, 0, 3);
-			debugThrowOnApiError("Dual Filter Pass after render");
+
+			debugThrowOnApiError("Dual Filter First Downsample after render");
 		}
+
+		// Up sample passes
+		for (; i < blurIterations - 1; ++i)
+		{
+			debugThrowOnApiError("Dual Filter First Upsample before render");
+
+			gl::Viewport(0, 0, static_cast<GLsizei>(currentIterationDimensions[i].x), static_cast<GLsizei>(currentIterationDimensions[i].y));
+
+			gl::UseProgram(upSampleProgram);
+			setUpSampleConfigUniforms(upSampleBlurConfigLocations, configUniforms[i]);
+
+			gl::BindFramebuffer(GL_DRAW_FRAMEBUFFER, currentFramebuffers[i]);
+			gl::Clear(GL_COLOR_BUFFER_BIT);
+
+			gl::BindTexture(GL_TEXTURE_2D, currentTextures[i - 1]);
+
+			gl::DrawArrays(GL_TRIANGLE_STRIP, 0, 3);
+			debugThrowOnApiError("Dual Filter First Upsample after render");
+		}
+
+		// Final Up sample
+		debugThrowOnApiError("Dual Filter Final Pass before render");
+
+		gl::Viewport(0, 0, static_cast<GLsizei>(currentIterationDimensions[i].x), static_cast<GLsizei>(currentIterationDimensions[i].y));
+
+		gl::BindFramebuffer(GL_DRAW_FRAMEBUFFER, onScreenFbo);
+		gl::Clear(GL_COLOR_BUFFER_BIT);
+
+		gl::BindTexture(GL_TEXTURE_2D, currentTextures[blurIterations - 2]);
+
+		if (renderBloomOnly)
+		{
+			gl::UseProgram(finalPassBloomOnlyProgram);
+			setUpSampleConfigUniforms(finalUpSampleBlurBloomOnlyConfigLocations, configUniforms[i]);
+		}
+		else
+		{
+			gl::ActiveTexture(GL_TEXTURE1);
+			gl::BindTexture(GL_TEXTURE_2D, offscreenTexture);
+			gl::BindSampler(1, samplerBilinear);
+
+			gl::UseProgram(finalPassProgram);
+			setUpSampleConfigUniforms(finalUpSampleBlurConfigLocations, configUniforms[i]);
+			gl::Uniform1f(exposureUniformLocation, exposure);
+		}
+
+		gl::DrawArrays(GL_TRIANGLE_STRIP, 0, 3);
+		debugThrowOnApiError("Dual Filter Final Up sample Pass after render");
 	}
 };
 
@@ -1152,11 +1268,11 @@ struct DualFilterBlurPass
 // Filters whilst Downsampling and Upsampling
 // Downsamples:
 //	Used for preventing aliasing artifacts
-//		A = downsample2(FullRes)
-//		B = downsample2(A)
-//		C = downsample2(B)
-//		D = downsample2(C)
-//		E = downsample2(D)
+//		A = downsample4(FullRes)
+//		B = downsample4(A)
+//		C = downsample4(B)
+//		D = downsample4(C)
+//		E = downsample4(D)
 // Upsamples:
 //	Used for image quality and smooth results
 //	Upsampling progressively using bilinear filtering is equivalent to bi-quadratic b-spline filtering
@@ -1173,14 +1289,13 @@ struct DualFilterBlurPass
 // We make use of the DualFilterBlurPass as these passes share many similarities
 struct DownAndTentFilterBlurPass : public DualFilterBlurPass
 {
-	// The down sample image views
-	GLuint downSampledTextures[MaxDualFilterIteration / 2];
-	GLuint doubleDownSampleFramebuffers[MaxDualFilterIteration / 4];
-	GLuint firstUpSampleProgram;
-	bool isIMGFramebufferDownsampleSupported;
-	uint32_t blurScale;
 	// Defines a scale to use for offsetting the tent offsets
-	glm::vec2 tentScale;
+	glm::vec2 tentScales[MaxFilterIterations / 2];
+
+	// A set of downsample passes
+	DownSamplePass4x4 downsamplePasses[MaxFilterIterations / 2];
+
+	GLuint firstUpSampleProgram;
 
 	/// <summary>Initialises the Dual Filter blur.</summary>
 	/// <param name="assetProvider">The pvr::IAssetProvider which will be used for loading resources from memory.</param>
@@ -1189,100 +1304,29 @@ struct DownAndTentFilterBlurPass : public DualFilterBlurPass
 	/// <param name="isIMGFramebufferDownsampleSupported">Specifies whether the extension GL_IMG_framebuffer_downsample is supported.</param>
 	void init(pvr::IAssetProvider& assetProvider, GLuint colorImageFormat, const glm::ivec2& framebufferDimensions, bool isIMGFramebufferDownsampleSupported, bool srgbFramebuffer)
 	{
-		this->isIMGFramebufferDownsampleSupported = isIMGFramebufferDownsampleSupported;
-		if (this->isIMGFramebufferDownsampleSupported)
-		{
-			// If isIMGFramebufferDownsampleSupported is supported then 2x2 downsample must be supported
-			this->blurScale = 2;
-		}
-		else
-		{
-			this->blurScale = -1;
-		}
-		tentScale = glm::vec2(3.0f, 3.0f);
+		// These parameters are used to scale the tent filter so that it does not map directly to pixels and may have "holes"
+		tentScales[0] = glm::vec2(1.0f, 1.0f);
+		tentScales[1] = glm::vec2(1.0f, 1.0f);
+		tentScales[2] = glm::vec2(1.0f, 1.0f);
+		tentScales[3] = glm::vec2(1.0f, 1.0f);
+		tentScales[4] = glm::vec2(1.0f, 1.0f);
+
 		DualFilterBlurPass::init(assetProvider, colorImageFormat, framebufferDimensions, srgbFramebuffer);
-	}
 
-	/// <summary>Allocates the framebuffers used for each of the down / up sample passes.</summary>
-	void createFramebuffers() override
-	{
-		DualFilterBlurPass::createFramebuffers();
-
-		// If GL_IMG_framebuffer_downsample is supported then we make use of the extension to achieve what we're coining as a double downsample pass
-		if (isIMGFramebufferDownsampleSupported)
+		for (uint32_t i = 0; i < MaxFilterIterations / 2; ++i)
 		{
-			uint32_t doubleDownsampleIndex = 0;
-			for (uint32_t i = 0; i < (MaxDualFilterIteration / 2) - ((MaxDualFilterIteration / 2) % 2); i = i + 2)
-			{
-				gl::GenFramebuffers(1, &doubleDownSampleFramebuffers[doubleDownsampleIndex]);
-				gl::BindFramebuffer(GL_DRAW_FRAMEBUFFER, doubleDownSampleFramebuffers[doubleDownsampleIndex]);
-				gl::FramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textures[i], 0);
-				gl::ext::FramebufferTexture2DDownsampleIMG(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, textures[i + 1], 0, blurScale, blurScale);
-				gl::FramebufferParameteri(GL_DRAW_FRAMEBUFFER, GL_FRAMEBUFFER_DEFAULT_WIDTH, static_cast<GLint>(maxIterationDimensions[i].x));
-				gl::FramebufferParameteri(GL_DRAW_FRAMEBUFFER, GL_FRAMEBUFFER_DEFAULT_HEIGHT, static_cast<GLint>(maxIterationDimensions[i].y));
-				pvr::utils::checkFboStatus();
-				doubleDownsampleIndex++;
-			}
-		}
-	}
-
-	void configureFramebuffers() override
-	{
-		uint32_t index = 0;
-		if (isIMGFramebufferDownsampleSupported && (blurIterations / 2) >= 2)
-		{
-			// make use of the double downsample framebuffers
-			uint32_t doubleDownsampleIndex = 0;
-			bool needsExtraDownSample = blurIterations / 2 % 2 == 1;
-			for (; index < (blurIterations / 2) - needsExtraDownSample; index = index + 2)
-			{
-				currentFramebuffers[index] = doubleDownSampleFramebuffers[doubleDownsampleIndex];
-				doubleDownsampleIndex++;
-			}
-			// Add any other non double down sample framebuffers to finish the downsamples
-			for (; index < blurIterations / 2; ++index)
-			{
-				currentFramebuffers[index] = framebuffers[index];
-			}
-		}
-		else
-		{
-			for (; index < blurIterations / 2; ++index)
-			{
-				currentFramebuffers[index] = framebuffers[index];
-			}
-		}
-
-		for (uint32_t i = MaxDualFilterIteration - (blurIterations / 2); i < MaxDualFilterIteration - 1; ++i)
-		{
-			currentFramebuffers[index] = framebuffers[i];
-			index++;
+			downsamplePasses[i].init(assetProvider, textures[i], glm::ivec2(maxIterationDimensions[i].x, maxIterationDimensions[i].y),
+				glm::ivec2(maxIterationDimensions[i].x * 2.0, maxIterationDimensions[i].y * 2.0));
 		}
 	}
 
 	void allocatePingPongTextures() override
 	{
-		for (uint32_t i = 0; i < MaxDualFilterIteration - 1; ++i)
+		for (uint32_t i = 0; i < MaxFilterIterations - 1; ++i)
 		{
 			gl::GenTextures(1, &textures[i]);
 			gl::BindTexture(GL_TEXTURE_2D, textures[i]);
 			gl::TexStorage2D(GL_TEXTURE_2D, 1, colorImageFormat, static_cast<GLsizei>(maxIterationDimensions[i].x), static_cast<GLsizei>(maxIterationDimensions[i].y));
-		}
-	}
-
-	void configurePingPongTextures() override
-	{
-		uint32_t index = 0;
-		for (; index < blurIterations / 2; ++index)
-		{
-			currentTextures[index] = textures[index];
-			downSampledTextures[index] = currentTextures[index];
-		}
-
-		for (uint32_t i = 0; i < (blurIterations / 2) - 1; ++i)
-		{
-			currentTextures[index] = textures[(MaxDualFilterIteration - (blurIterations / 2)) + i];
-			index++;
 		}
 	}
 
@@ -1295,50 +1339,33 @@ struct DownAndTentFilterBlurPass : public DualFilterBlurPass
 			defines.push_back("FRAMEBUFFER_SRGB");
 		}
 
-		downSampleProgram = pvr::utils::createShaderProgram(assetProvider, Files::Downsample2x2VertSrcFile, Files::Downsample2x2FragSrcFile, nullptr, nullptr, 0);
-		gl::UseProgram(downSampleProgram);
-		gl::Uniform1i(gl::GetUniformLocation(downSampleProgram, "sTexture"), 0);
-
-		// Create a special case double downsample program if GL_IMG_framebuffer_downsample is supported
-		if (isIMGFramebufferDownsampleSupported)
-		{
-			doubleDownSampleProgram = pvr::utils::createShaderProgram(assetProvider, Files::Downsample2x2VertSrcFile, Files::DoubleDownsample2x2FragSrcFile, nullptr, nullptr, 0);
-			gl::UseProgram(doubleDownSampleProgram);
-			gl::Uniform1i(gl::GetUniformLocation(doubleDownSampleProgram, "sTexture"), 0);
-		}
-
-		firstUpSampleProgram = pvr::utils::createShaderProgram(assetProvider, Files::Downsample2x2VertSrcFile, Files::TentFilterFirstUpSampleFragSrcFile, nullptr, nullptr, 0);
+		firstUpSampleProgram = pvr::utils::createShaderProgram(assetProvider, Files::PostBloomVertShaderSrcFile, Files::TentFilterFirstUpSampleFragSrcFile, nullptr, nullptr, 0);
 		gl::UseProgram(firstUpSampleProgram);
-		gl::Uniform1i(gl::GetUniformLocation(firstUpSampleProgram, "sCurrentBlurredImage"), 0);
+		gl::Uniform1i(gl::GetUniformLocation(firstUpSampleProgram, "sDownsampledImage"), 0);
 
 		upSampleProgram = pvr::utils::createShaderProgram(assetProvider, Files::TentFilterUpSampleVertSrcFile, Files::TentFilterUpSampleFragSrcFile, nullptr, nullptr, 0);
 		gl::UseProgram(upSampleProgram);
 		gl::Uniform1i(gl::GetUniformLocation(upSampleProgram, "sCurrentBlurredImage"), 0);
 		gl::Uniform1i(gl::GetUniformLocation(upSampleProgram, "sDownsampledCurrentMipLevel"), 1);
-		upSampleBlurConfigLocation = gl::GetUniformLocation(upSampleProgram, "upSampleConfigs");
+		getUpSampleConfigUniformLocations(upSampleBlurConfigLocations, upSampleProgram, "upSampleConfigs");
 
 		finalPassProgram = pvr::utils::createShaderProgram(assetProvider, Files::TentFilterUpSampleVertSrcFile, Files::TentFilterUpSampleMergedFinalPassFragSrcFile, nullptr,
 			nullptr, 0, defines.data(), static_cast<uint32_t>(defines.size()));
+		gl::UseProgram(finalPassProgram);
+		getUpSampleConfigUniformLocations(finalUpSampleBlurConfigLocations, finalPassProgram, "upSampleConfigs");
+		gl::Uniform1i(gl::GetUniformLocation(finalPassProgram, "sCurrentBlurredImage"), 0);
+		gl::Uniform1i(gl::GetUniformLocation(finalPassProgram, "sDownsampledCurrentMipLevel"), 1);
+		gl::Uniform1i(gl::GetUniformLocation(finalPassProgram, "sOffScreenTexture"), 2);
+		exposureUniformLocation = gl::GetUniformLocation(finalPassProgram, "linearExposure");
 
 		defines.push_back("RENDER_BLOOM");
 		finalPassBloomOnlyProgram = pvr::utils::createShaderProgram(assetProvider, Files::TentFilterUpSampleVertSrcFile, Files::TentFilterUpSampleMergedFinalPassFragSrcFile,
 			nullptr, nullptr, 0, defines.data(), static_cast<uint32_t>(defines.size()));
 
-		GLuint programs[] = { finalPassProgram, finalPassBloomOnlyProgram };
-
-		for (uint32_t i = 0; i < 2; ++i)
-		{
-			gl::UseProgram(programs[i]);
-			gl::Uniform1i(gl::GetUniformLocation(programs[i], "sCurrentBlurredImage"), 0);
-			gl::Uniform1i(gl::GetUniformLocation(programs[i], "sDownsampledCurrentMipLevel"), 1);
-			gl::Uniform1i(gl::GetUniformLocation(programs[i], "sOffScreenTexture"), 2);
-		}
-
-		gl::UseProgram(finalPassProgram);
-		finalUpSampleBlurConfigLocation = gl::GetUniformLocation(finalPassProgram, "upSampleConfigs");
-
 		gl::UseProgram(finalPassBloomOnlyProgram);
-		finalUpSampleBlurBloomOnlyConfigLocation = gl::GetUniformLocation(finalPassBloomOnlyProgram, "upSampleConfigs");
+		getUpSampleConfigUniformLocations(finalUpSampleBlurBloomOnlyConfigLocations, finalPassBloomOnlyProgram, "upSampleConfigs");
+		gl::Uniform1i(gl::GetUniformLocation(finalPassBloomOnlyProgram, "sCurrentBlurredImage"), 0);
+		gl::Uniform1i(gl::GetUniformLocation(finalPassBloomOnlyProgram, "sDownsampledCurrentMipLevel"), 1);
 	}
 
 	virtual void configureConfigUniforms() override
@@ -1346,182 +1373,117 @@ struct DownAndTentFilterBlurPass : public DualFilterBlurPass
 		const glm::vec2 offsets[8] = { glm::vec2(-1.0, 1.0), glm::vec2(0.0, 1.0), glm::vec2(1.0, 1.0), glm::vec2(1.0, 0.0), glm::vec2(1.0, -1.0), glm::vec2(0.0, -1.0),
 			glm::vec2(-1.0, -1.0), glm::vec2(-1.0, 0.0) };
 
-		for (uint32_t i = 0; i < blurIterations; i++)
+		uint32_t tentScaleIndex = 0;
+		// The tent filter passes only start after the first up sample pass has finished
+		for (uint32_t i = blurIterations / 2; i < blurIterations; ++i)
 		{
-			configUniforms[i][0] = glm::vec2(1.0f / (currentIterationDimensions[i].x * 0.5), 1.0f / (currentIterationDimensions[i].y * 0.5)) * offsets[0] * tentScale;
-			configUniforms[i][1] = glm::vec2(1.0f / (currentIterationDimensions[i].x * 0.5), 1.0f / (currentIterationDimensions[i].y * 0.5)) * offsets[1] * tentScale;
-			configUniforms[i][2] = glm::vec2(1.0f / (currentIterationDimensions[i].x * 0.5), 1.0f / (currentIterationDimensions[i].y * 0.5)) * offsets[2] * tentScale;
-			configUniforms[i][3] = glm::vec2(1.0f / (currentIterationDimensions[i].x * 0.5), 1.0f / (currentIterationDimensions[i].y * 0.5)) * offsets[3] * tentScale;
-			configUniforms[i][4] = glm::vec2(1.0f / (currentIterationDimensions[i].x * 0.5), 1.0f / (currentIterationDimensions[i].y * 0.5)) * offsets[4] * tentScale;
-			configUniforms[i][5] = glm::vec2(1.0f / (currentIterationDimensions[i].x * 0.5), 1.0f / (currentIterationDimensions[i].y * 0.5)) * offsets[5] * tentScale;
-			configUniforms[i][6] = glm::vec2(1.0f / (currentIterationDimensions[i].x * 0.5), 1.0f / (currentIterationDimensions[i].y * 0.5)) * offsets[6] * tentScale;
-			configUniforms[i][7] = glm::vec2(1.0f / (currentIterationDimensions[i].x * 0.5), 1.0f / (currentIterationDimensions[i].y * 0.5)) * offsets[7] * tentScale;
+			configUniforms[i][0] = glm::vec2(1.0f / (currentIterationDimensions[i].x * 0.5), 1.0f / (currentIterationDimensions[i].y * 0.5)) * offsets[0] * tentScales[tentScaleIndex];
+			configUniforms[i][1] = glm::vec2(1.0f / (currentIterationDimensions[i].x * 0.5), 1.0f / (currentIterationDimensions[i].y * 0.5)) * offsets[1] * tentScales[tentScaleIndex];
+			configUniforms[i][2] = glm::vec2(1.0f / (currentIterationDimensions[i].x * 0.5), 1.0f / (currentIterationDimensions[i].y * 0.5)) * offsets[2] * tentScales[tentScaleIndex];
+			configUniforms[i][3] = glm::vec2(1.0f / (currentIterationDimensions[i].x * 0.5), 1.0f / (currentIterationDimensions[i].y * 0.5)) * offsets[3] * tentScales[tentScaleIndex];
+			configUniforms[i][4] = glm::vec2(1.0f / (currentIterationDimensions[i].x * 0.5), 1.0f / (currentIterationDimensions[i].y * 0.5)) * offsets[4] * tentScales[tentScaleIndex];
+			configUniforms[i][5] = glm::vec2(1.0f / (currentIterationDimensions[i].x * 0.5), 1.0f / (currentIterationDimensions[i].y * 0.5)) * offsets[5] * tentScales[tentScaleIndex];
+			configUniforms[i][6] = glm::vec2(1.0f / (currentIterationDimensions[i].x * 0.5), 1.0f / (currentIterationDimensions[i].y * 0.5)) * offsets[6] * tentScales[tentScaleIndex];
+			configUniforms[i][7] = glm::vec2(1.0f / (currentIterationDimensions[i].x * 0.5), 1.0f / (currentIterationDimensions[i].y * 0.5)) * offsets[7] * tentScales[tentScaleIndex];
+			tentScaleIndex++;
 		}
 	}
 
-	virtual void render(GLuint luminanceTexture, GLuint offscreenTexture, GLuint onScreenFbo, GLuint samplerBilinear, bool renderBloomOnly) override
+	virtual void render(GLuint sourceTexture, GLuint offscreenTexture, GLuint onScreenFbo, GLuint samplerBilinear, bool renderBloomOnly, float exposure) override
 	{
 		uint32_t downsampledIndex = 1;
 
 		GLenum drawBuffers[] = { GL_COLOR_ATTACHMENT0 };
-
-		gl::ActiveTexture(GL_TEXTURE0);
-		gl::BindSampler(0, samplerBilinear);
+		gl::DrawBuffers(1, drawBuffers);
 
 		uint32_t i = 0;
 
-		// if true we should attempt a double downsample (If GL_IMG_framebuffer_downsample is
-		// supported and if there are enough downsample passes to take advantage of a double downsample)
-		if (isIMGFramebufferDownsampleSupported && (blurIterations / 2) >= 2)
+		// Perform downsamples using separate passes
+		for (; i < blurIterations / 2; ++i)
 		{
-			uint32_t doubleDownsampleIterations = (blurIterations / 2) / 2;
-
-			GLenum doubleDownsampleDrawBuffers[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
-
-			bool needsExtraDownSample = blurIterations / 2 % 2 == 1;
-
-			for (; i < doubleDownsampleIterations; i++)
+			GLuint inputTexture = -1;
+			if (i == 0)
 			{
-				debugThrowOnApiError("Tent Filter Double Downsample Pass before render");
-				uint32_t iterationIndex = i * 2;
-				gl::Viewport(0, 0, static_cast<GLsizei>(currentIterationDimensions[iterationIndex].x), static_cast<GLsizei>(currentIterationDimensions[iterationIndex].y));
-
-				gl::BindFramebuffer(GL_DRAW_FRAMEBUFFER, doubleDownSampleFramebuffers[i]);
-				gl::DrawBuffers(2, doubleDownsampleDrawBuffers);
-				gl::Clear(GL_COLOR_BUFFER_BIT);
-				gl::UseProgram(doubleDownSampleProgram);
-
-				if (iterationIndex == 0)
-				{
-					gl::BindTexture(GL_TEXTURE_2D, luminanceTexture);
-				}
-				else
-				{
-					gl::BindTexture(GL_TEXTURE_2D, currentTextures[iterationIndex - 1]);
-				}
-
-				gl::DrawArrays(GL_TRIANGLE_STRIP, 0, 3);
+				inputTexture = sourceTexture;
 			}
-
-			// We may need to perform a single (0 or 1) extra single downsamples
-			if (needsExtraDownSample)
-			{
-				debugThrowOnApiError("Tent Filter Downsample Pass before render");
-				i = (blurIterations / 2) - 1;
-
-				gl::Viewport(0, 0, static_cast<GLsizei>(currentIterationDimensions[i].x), static_cast<GLsizei>(currentIterationDimensions[i].y));
-
-				gl::BindFramebuffer(GL_DRAW_FRAMEBUFFER, currentFramebuffers[i]);
-				gl::DrawBuffers(1, drawBuffers);
-				gl::Clear(GL_COLOR_BUFFER_BIT);
-				gl::UseProgram(downSampleProgram);
-
-				gl::BindTexture(GL_TEXTURE_2D, currentTextures[i - 1]);
-
-				gl::DrawArrays(GL_TRIANGLE_STRIP, 0, 3);
-			}
-		}
-		// if GL_IMG_framebuffer_downsample is not supported then carry out the traditional downsample passes
-		else
-		{
-			for (; i < blurIterations / 2; i++)
-			{
-				debugThrowOnApiError("Tent Filter Downsample Pass before render");
-				gl::Viewport(0, 0, static_cast<GLsizei>(currentIterationDimensions[i].x), static_cast<GLsizei>(currentIterationDimensions[i].y));
-
-				gl::BindFramebuffer(GL_DRAW_FRAMEBUFFER, currentFramebuffers[i]);
-				gl::DrawBuffers(1, drawBuffers);
-				gl::Clear(GL_COLOR_BUFFER_BIT);
-				gl::UseProgram(downSampleProgram);
-
-				if (i == 0)
-				{
-					gl::BindTexture(GL_TEXTURE_2D, luminanceTexture);
-				}
-				else
-				{
-					gl::BindTexture(GL_TEXTURE_2D, currentTextures[i - 1]);
-				}
-
-				gl::DrawArrays(GL_TRIANGLE_STRIP, 0, 3);
-			}
-		}
-
-		// Up sample passes
-		i = blurIterations / 2;
-
-		for (; i < blurIterations; i++)
-		{
-			gl::Viewport(0, 0, static_cast<GLsizei>(currentIterationDimensions[i].x), static_cast<GLsizei>(currentIterationDimensions[i].y));
-
-			// final pass
-			if (i == blurIterations - 1)
-			{
-				debugThrowOnApiError("Tent Filter Final Up sample Pass before render");
-				gl::BindFramebuffer(GL_DRAW_FRAMEBUFFER, onScreenFbo);
-				gl::Clear(GL_COLOR_BUFFER_BIT);
-
-				gl::ActiveTexture(GL_TEXTURE0);
-				gl::BindTexture(GL_TEXTURE_2D, currentTextures[i - 1]);
-				gl::BindSampler(0, samplerBilinear);
-
-				gl::ActiveTexture(GL_TEXTURE1);
-				gl::BindTexture(GL_TEXTURE_2D, downSampledTextures[0]);
-				gl::BindSampler(1, samplerBilinear);
-
-				gl::ActiveTexture(GL_TEXTURE2);
-				gl::BindTexture(GL_TEXTURE_2D, offscreenTexture);
-				gl::BindSampler(2, samplerBilinear);
-
-				if (renderBloomOnly)
-				{
-					gl::UseProgram(finalPassBloomOnlyProgram);
-					gl::Uniform2fv(finalUpSampleBlurBloomOnlyConfigLocation, 8, glm::value_ptr(configUniforms[i][0]));
-				}
-				else
-				{
-					gl::UseProgram(finalPassProgram);
-					gl::Uniform2fv(finalUpSampleBlurConfigLocation, 8, glm::value_ptr(configUniforms[i][0]));
-				}
-			}
-			// first upsample
-			else if (i == blurIterations / 2)
-			{
-				debugThrowOnApiError("Tent Filter First Up sample Pass before render");
-				gl::BindFramebuffer(GL_DRAW_FRAMEBUFFER, currentFramebuffers[i]);
-				gl::DrawBuffers(1, drawBuffers);
-				gl::Clear(GL_COLOR_BUFFER_BIT);
-
-				gl::ActiveTexture(GL_TEXTURE0);
-				gl::BindSampler(0, samplerBilinear);
-				gl::BindTexture(GL_TEXTURE_2D, currentTextures[i - 1]);
-
-				gl::UseProgram(firstUpSampleProgram);
-			}
-			// up sample
 			else
 			{
-				debugThrowOnApiError("Tent Filter Up sample Pass before render");
-				gl::BindFramebuffer(GL_DRAW_FRAMEBUFFER, currentFramebuffers[i]);
-				gl::DrawBuffers(1, drawBuffers);
-				gl::Clear(GL_COLOR_BUFFER_BIT);
+				inputTexture = currentTextures[i - 1];
+			}
+			downsamplePasses[i].render(inputTexture, samplerBilinear);
+		}
 
-				gl::ActiveTexture(GL_TEXTURE0);
-				gl::BindTexture(GL_TEXTURE_2D, currentTextures[i - 1]);
-				gl::BindSampler(0, samplerBilinear);
+		// Upsample
+		for (; i < blurIterations - 1; ++i)
+		{
+			debugThrowOnApiError("Tent Filter Up sample Pass before render");
+			gl::Viewport(0, 0, static_cast<GLsizei>(currentIterationDimensions[i].x), static_cast<GLsizei>(currentIterationDimensions[i].y));
+			gl::BindFramebuffer(GL_DRAW_FRAMEBUFFER, currentFramebuffers[i]);
+			gl::Clear(GL_COLOR_BUFFER_BIT);
 
+			gl::ActiveTexture(GL_TEXTURE0);
+			gl::BindTexture(GL_TEXTURE_2D, currentTextures[i - 1]);
+			gl::BindSampler(0, samplerBilinear);
+
+			if (i == blurIterations / 2)
+			{
+				gl::UseProgram(firstUpSampleProgram);
+			}
+			else
+			{
 				gl::ActiveTexture(GL_TEXTURE1);
-				gl::BindTexture(GL_TEXTURE_2D, downSampledTextures[blurIterations / 2 - 1 - downsampledIndex]);
+				gl::BindTexture(GL_TEXTURE_2D, currentTextures[blurIterations / 2 - 1 - downsampledIndex]);
 				gl::BindSampler(1, samplerBilinear);
 				downsampledIndex++;
 
 				gl::UseProgram(upSampleProgram);
-				gl::Uniform2fv(upSampleBlurConfigLocation, 8, glm::value_ptr(configUniforms[i][0]));
+				setUpSampleConfigUniforms(upSampleBlurConfigLocations, configUniforms[i]);
 			}
 
 			gl::DrawArrays(GL_TRIANGLE_STRIP, 0, 3);
 			debugThrowOnApiError("Tent Filter Pass after render");
 		}
+
+		// Final pass up sample
+		debugThrowOnApiError("Tent Filter Final Up sample Pass before render");
+		gl::Viewport(0, 0, static_cast<GLsizei>(currentIterationDimensions[i].x), static_cast<GLsizei>(currentIterationDimensions[i].y));
+		gl::BindFramebuffer(GL_DRAW_FRAMEBUFFER, onScreenFbo);
+		gl::Clear(GL_COLOR_BUFFER_BIT);
+
+		if (renderBloomOnly)
+		{
+			gl::ActiveTexture(GL_TEXTURE0);
+			gl::BindTexture(GL_TEXTURE_2D, currentTextures[i - 1]);
+			gl::BindSampler(0, samplerBilinear);
+
+			gl::ActiveTexture(GL_TEXTURE1);
+			gl::BindTexture(GL_TEXTURE_2D, currentTextures[0]);
+			gl::BindSampler(1, samplerBilinear);
+
+			gl::UseProgram(finalPassBloomOnlyProgram);
+			setUpSampleConfigUniforms(finalUpSampleBlurBloomOnlyConfigLocations, configUniforms[i]);
+		}
+		else
+		{
+			gl::ActiveTexture(GL_TEXTURE0);
+			gl::BindTexture(GL_TEXTURE_2D, currentTextures[i - 1]);
+			gl::BindSampler(0, samplerBilinear);
+
+			gl::ActiveTexture(GL_TEXTURE1);
+			gl::BindTexture(GL_TEXTURE_2D, currentTextures[0]);
+			gl::BindSampler(1, samplerBilinear);
+
+			gl::ActiveTexture(GL_TEXTURE2);
+			gl::BindTexture(GL_TEXTURE_2D, offscreenTexture);
+			gl::BindSampler(2, samplerBilinear);
+
+			gl::UseProgram(finalPassProgram);
+			setUpSampleConfigUniforms(finalUpSampleBlurConfigLocations, configUniforms[i]);
+			gl::Uniform1f(exposureUniformLocation, exposure);
+		}
+
+		gl::DrawArrays(GL_TRIANGLE_STRIP, 0, 3);
+		debugThrowOnApiError("Tent Filter Final Up sample Pass after render");
 	}
 };
 
@@ -1529,38 +1491,37 @@ struct DownAndTentFilterBlurPass : public DualFilterBlurPass
 struct GaussianBlurPass
 {
 	// Horizontal and Vertical graphics pipelines
-	GLuint horizontalProgram;
-	GLuint verticalProgram;
+	GLuint horizontalPrograms[DemoConfigurations::NumDemoConfigurations];
+	GLuint verticalPrograms[DemoConfigurations::NumDemoConfigurations];
+
+	uint32_t currentKernelConfig;
 
 	// Gaussian offsets and weights
-	std::vector<double> gaussianOffsets;
-	std::vector<double> gaussianWeights;
+	std::vector<std::vector<double> > gaussianOffsets;
+	std::vector<std::vector<double> > gaussianWeights;
 
-	std::vector<float> gaussianOffsetsFloats;
-	std::vector<float> gaussianWeightsFloats;
+	std::vector<std::string> perKernelSizeIterationsStrings;
+	std::vector<std::string> perKernelSizeWeightsStrings;
+	std::vector<std::string> perKernelSizeOffsetsStrings;
 
-	// stores details regarding the Gaussian blur configuration currently in use
-	glm::vec4 blurConfig;
-
-	// the size of the gaussian kernel currently in use
-	uint32_t kernelSize;
-	uint32_t ssboSize;
-
-	GLuint bloomConfigBuffer;
-
-	void* mappedMemory;
-
-	bool isBufferStorageExtSupported;
+	float inverseFramebufferWidth;
+	float inverseFramebufferHeight;
+	std::string inverseFramebufferWidthString;
+	std::string inverseFramebufferHeightString;
 
 	/// <summary>Initialises the Gaussian blur pass.</summary>
 	/// <param name="assetProvider">The pvr::IAssetProvider which will be used for loading resources from memory.</param>
 	/// <param name="blurFramebufferDimensions">The dimensions used for the blur.</param>
-	/// <param name="isBufferStorageExtSupported">True if GL_EXT_buffer_storage is supported.</param>
-	void init(pvr::IAssetProvider& assetProvider, const glm::ivec2& blurFramebufferDimensions, bool isBufferStorageExtSupported)
+	void init(pvr::IAssetProvider& assetProvider, const glm::ivec2& blurFramebufferDimensions)
 	{
-		this->isBufferStorageExtSupported = isBufferStorageExtSupported;
-		createBuffer();
-		blurConfig = glm::vec4(1.0f / blurFramebufferDimensions.x, 1.0f / blurFramebufferDimensions.y, 0.0f, 0.0f);
+		inverseFramebufferWidth = 1.0f / blurFramebufferDimensions.x;
+		inverseFramebufferHeight = 1.0f / blurFramebufferDimensions.y;
+
+		gaussianWeights.resize(DemoConfigurations::NumDemoConfigurations);
+		gaussianOffsets.resize(DemoConfigurations::NumDemoConfigurations);
+
+		generatePerConfigGaussianCoefficients();
+		generateGaussianShaderStrings();
 
 		createPrograms(assetProvider);
 
@@ -1569,102 +1530,117 @@ struct GaussianBlurPass
 
 	/// <summary>Updates the kernel configuration currently in use.</summary>
 	/// <param name="kernelSizeConfig">The kernel size.</param>
-	/// <param name="useLinearOptimisation">Specifies whether the offsets and weights used for the current kernel size should be modified
-	/// (optimised) for use with linear sampling.</param>
-	/// <param name="truncateCoefficients">Provides us with an efficient and convenient mechanism for achieving blurs approximating
-	/// blurs with larger kernel sizes Note that using making use "truncateCoefficients" can result in a loss of a low value high
-	/// precision tail in the blur. Depending on the scene/image being blurred the effect of using "truncateCoefficients" may not be
-	/// particularly visible however in some cases it may be required that high precision low value tails are present - it may be artistically
-	/// required that no loss is observed. Using a traditional 8 bit per channel color buffer we could very well get away with the loss of the
-	/// very low value tails. Using a HDR 16 bit per channel color buffer we may get away with ignoring negligible coefficients depending on
-	/// the minimum coefficient we deem to be non-negligible. For the most accurate of blur then we would recommened against its use however
-	/// if speed is of the utmost importance and if you can get away with the quality degradation then ignoring negligible coefficients
-	/// is a great way to reduce the number of texture samples. We will leave this decision to the reader..</param>
-	virtual void updateKernelConfig(uint32_t kernelSizeConfig, bool useLinearOptimisation, bool truncateCoefficients)
+	void updateKernelConfig(uint32_t kernelSizeConfig)
 	{
-		kernelSize = kernelSizeConfig;
-		updateGaussianWeightsAndOffsets(kernelSize, useLinearOptimisation, truncateCoefficients, gaussianOffsets, gaussianWeights, gaussianOffsetsFloats, gaussianWeightsFloats);
-
-		blurConfig.z = static_cast<float>(gaussianOffsetsFloats.size());
+		currentKernelConfig = kernelSizeConfig;
 	}
 
-	/// <summary>Updates the kernel buffers for the specified swapchain index.</summary>
-	virtual void updateKernelBuffer()
+	virtual void generatePerConfigGaussianCoefficients()
 	{
-		if (!isBufferStorageExtSupported)
+		for (uint32_t i = 0; i < DemoConfigurations::NumDemoConfigurations; ++i)
 		{
-			gl::BindBuffer(GL_SHADER_STORAGE_BUFFER, bloomConfigBuffer);
-			mappedMemory = gl::MapBufferRange(GL_SHADER_STORAGE_BUFFER, 0, (size_t)ssboSize, GL_MAP_WRITE_BIT);
-		}
-
-		memcpy(static_cast<char*>(mappedMemory), &blurConfig, pvr::getSize(pvr::GpuDatatypes::vec4));
-		memcpy(static_cast<char*>(mappedMemory) + pvr::getSize(pvr::GpuDatatypes::vec4), gaussianWeightsFloats.data(), pvr::getSize(pvr::GpuDatatypes::Float) * MaxGaussianHalfKernel);
-		memcpy(static_cast<char*>(mappedMemory) + pvr::getSize(pvr::GpuDatatypes::vec4) + pvr::getSize(pvr::GpuDatatypes::Float) * MaxGaussianHalfKernel,
-			gaussianOffsetsFloats.data(), pvr::getSize(pvr::GpuDatatypes::Float) * MaxGaussianHalfKernel);
-
-		if (!isBufferStorageExtSupported)
-		{
-			gl::UnmapBuffer(GL_SHADER_STORAGE_BUFFER);
+			generateGaussianCoefficients(DemoConfigurations::Configurations[i].gaussianConfig, false, false, gaussianWeights[i], gaussianOffsets[i]);
 		}
 	}
 
-	/// <summary>Creates any required buffers.</summary>
-	virtual void createBuffer()
+	/// <summary>Generates the gaussian weights and offsets strings used by the various Gaussian shaders.</summary>
+	virtual void generateGaussianShaderStrings()
 	{
-		ssboSize = static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::vec4) + pvr::getSize(pvr::GpuDatatypes::Float) * MaxGaussianHalfKernel * 2);
+		// Generate per kernel size weights, offsets and iterations strings
+		perKernelSizeIterationsStrings.resize(DemoConfigurations::NumDemoConfigurations);
+		perKernelSizeWeightsStrings.resize(DemoConfigurations::NumDemoConfigurations);
+		perKernelSizeOffsetsStrings.resize(DemoConfigurations::NumDemoConfigurations);
 
-		gl::GenBuffers(1, &bloomConfigBuffer);
-		gl::BindBuffer(GL_SHADER_STORAGE_BUFFER, bloomConfigBuffer);
-		gl::BufferData(GL_SHADER_STORAGE_BUFFER, (size_t)ssboSize, nullptr, GL_DYNAMIC_DRAW);
-
-		// if GL_EXT_buffer_storage is supported then map the buffer upfront and never upmap it
-		if (isBufferStorageExtSupported)
+		for (uint32_t i = 0; i < DemoConfigurations::NumDemoConfigurations; ++i)
 		{
-			gl::BindBuffer(GL_COPY_READ_BUFFER, bloomConfigBuffer);
-			gl::ext::BufferStorageEXT(GL_COPY_READ_BUFFER, (GLsizei)ssboSize, 0, GL_MAP_WRITE_BIT_EXT | GL_MAP_PERSISTENT_BIT_EXT | GL_MAP_COHERENT_BIT_EXT);
-
-			mappedMemory = gl::MapBufferRange(GL_COPY_READ_BUFFER, 0, ssboSize, GL_MAP_WRITE_BIT_EXT | GL_MAP_PERSISTENT_BIT_EXT | GL_MAP_COHERENT_BIT_EXT);
+			generateGaussianWeightsAndOffsetsStrings(
+				gaussianWeights[i], gaussianOffsets[i], perKernelSizeIterationsStrings[i], perKernelSizeWeightsStrings[i], perKernelSizeOffsetsStrings[i]);
 		}
+		inverseFramebufferWidthString = pvr::strings::createFormatted("const highp float inverseFramebufferWidth = %.15f;", inverseFramebufferWidth);
+		inverseFramebufferHeightString = pvr::strings::createFormatted("const highp float inverseFramebufferHeight = %.15f;", inverseFramebufferHeight);
 	}
 
 	/// <summary>Creates the Gaussian blur programs.</summary>
 	/// <param name="assetProvider">The pvr::IAssetProvider which will be used for loading resources from memory.</param>
 	virtual void createPrograms(pvr::IAssetProvider& assetProvider)
 	{
-		horizontalProgram = pvr::utils::createShaderProgram(assetProvider, Files::GaussianVertSrcFile, Files::GaussianHorizontalFragSrcFile, nullptr, nullptr, 0);
-		gl::UseProgram(horizontalProgram);
-		gl::Uniform1i(gl::GetUniformLocation(horizontalProgram, "sTexture"), 0);
-		verticalProgram = pvr::utils::createShaderProgram(assetProvider, Files::GaussianVertSrcFile, Files::GaussianVerticalFragSrcFile, nullptr, nullptr, 0);
-		gl::UseProgram(verticalProgram);
-		gl::Uniform1i(gl::GetUniformLocation(verticalProgram, "sTexture"), 0);
+		GLuint horizontalFragShaders[DemoConfigurations::NumDemoConfigurations];
+		GLuint verticalFragShaders[DemoConfigurations::NumDemoConfigurations];
+
+		// Generate the Gaussian blur fragment shaders
+		for (uint32_t i = 0; i < DemoConfigurations::NumDemoConfigurations; ++i)
+		{
+			// Load the base Gaussian fragment shader
+			auto fragShaderStream = assetProvider.getAssetStream(Files::GaussianFragSrcFile);
+
+			// Load the base Gaussian fragment shader into a string
+			// At this point the fragment shader is missing its templated arguments and will not compile "as is"
+			std::string shaderSource;
+			fragShaderStream->readIntoString(shaderSource);
+
+			// Insert the templates into the base shader
+			// The reference Gaussian fragment shader requires the number of iterations, the weights for each iteration and the direction to sample
+			std::string horizontalShaderString = pvr::strings::createFormatted(shaderSource.c_str(), perKernelSizeIterationsStrings[i].c_str(), perKernelSizeOffsetsStrings[i].c_str(),
+				perKernelSizeWeightsStrings[i].c_str(), inverseFramebufferWidthString.c_str(), inverseFramebufferHeightString.c_str(), "1.0, 0.0");
+			std::string verticalShaderString = pvr::strings::createFormatted(shaderSource.c_str(), perKernelSizeIterationsStrings[i].c_str(), perKernelSizeOffsetsStrings[i].c_str(),
+				perKernelSizeWeightsStrings[i].c_str(), inverseFramebufferWidthString.c_str(), inverseFramebufferHeightString.c_str(), "0.0, 1.0");
+
+			// Create shaders using the auto generated shader sources
+			horizontalFragShaders[i] = pvr::utils::loadShader(horizontalShaderString, pvr::ShaderType::FragmentShader, nullptr, 0);
+			verticalFragShaders[i] = pvr::utils::loadShader(verticalShaderString, pvr::ShaderType::FragmentShader, nullptr, 0);
+		}
+
+		// Load the base Gaussian vertex shader
+		auto vertexShaderStream = assetProvider.getAssetStream(Files::GaussianVertSrcFile);
+		std::string vertexShaderSource;
+		vertexShaderStream->readIntoString(vertexShaderSource);
+
+		GLuint vertexShader = pvr::utils::loadShader(vertexShaderSource, pvr::ShaderType::VertexShader, nullptr, 0);
+
+		for (uint32_t i = 0; i < DemoConfigurations::NumDemoConfigurations; ++i)
+		{
+			GLuint shaders[2] = { vertexShader, horizontalFragShaders[i] };
+			// Horizontal Program
+			horizontalPrograms[i] = pvr::utils::createShaderProgram(shaders, 2, nullptr, nullptr, 0, nullptr);
+
+			gl::UseProgram(horizontalPrograms[i]);
+			gl::Uniform1i(gl::GetUniformLocation(horizontalPrograms[i], "sTexture"), 0);
+		}
+
+		for (uint32_t i = 0; i < DemoConfigurations::NumDemoConfigurations; ++i)
+		{
+			GLuint shaders[2] = { vertexShader, verticalFragShaders[i] };
+			// Vertical Program
+			verticalPrograms[i] = pvr::utils::createShaderProgram(shaders, 2, nullptr, nullptr, 0, nullptr);
+
+			gl::UseProgram(verticalPrograms[i]);
+			gl::Uniform1i(gl::GetUniformLocation(verticalPrograms[i], "sTexture"), 0);
+		}
 	}
 
-	/// <summary>Renders Dual Filter blur iterations based on the current configuration.</summary>
-	/// <param name="downsampledTexture">The source downsampled luminance texture.</param>
-	/// <param name="horizontallyBlurredTexture">The texture which will contain the horizontal Gaussian blur.</param>
-	/// <param name="horizontalBlurFramebuffer">The framebuffer to use in the horizontal Gaussian blur.</param>
-	/// <param name="verticalBlurFramebuffer">The framebuffer to use in the vertical Gaussian blur.</param>
+	/// <summary>Performs a Gaussian Blur on the source texture.</summary>
+	/// <param name="sourceTexture">The source texture to perform a Gaussian Blur on.</param>
+	/// <param name="horizontalBlurFramebuffer">The framebuffer to use for the horizontal Gaussian blur.</param>
+	/// <param name="verticalBlurFramebuffer">The framebuffer to use for the vertical Gaussian blur.</param>
 	/// <param name="samplerBilinear">The sampler object to use when sampling.</param>
-	virtual void render(GLuint downsampledTexture, GLuint horizontallyBlurredTexture, GLuint horizontalBlurFramebuffer, GLuint verticalBlurFramebuffer, GLuint samplerBilinear)
+	virtual void render(GLuint sourceTexture, Framebuffer& horizontalBlurFramebuffer, Framebuffer& verticalBlurFramebuffer, GLuint samplerBilinear)
 	{
 		debugThrowOnApiError("Gaussian Blur Pass before render");
-		gl::BindFramebuffer(GL_DRAW_FRAMEBUFFER, horizontalBlurFramebuffer);
+		gl::BindFramebuffer(GL_DRAW_FRAMEBUFFER, horizontalBlurFramebuffer.framebuffer);
 		gl::Clear(GL_COLOR_BUFFER_BIT);
-
-		gl::BindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, bloomConfigBuffer);
 
 		gl::ActiveTexture(GL_TEXTURE0);
-		gl::BindTexture(GL_TEXTURE_2D, downsampledTexture);
+		gl::BindTexture(GL_TEXTURE_2D, sourceTexture);
 		gl::BindSampler(0, samplerBilinear);
 
-		gl::UseProgram(horizontalProgram);
+		gl::UseProgram(horizontalPrograms[currentKernelConfig]);
 		gl::DrawArrays(GL_TRIANGLE_STRIP, 0, 3);
 
-		gl::BindFramebuffer(GL_DRAW_FRAMEBUFFER, verticalBlurFramebuffer);
+		gl::BindFramebuffer(GL_DRAW_FRAMEBUFFER, verticalBlurFramebuffer.framebuffer);
 		gl::Clear(GL_COLOR_BUFFER_BIT);
 
-		gl::BindTexture(GL_TEXTURE_2D, horizontallyBlurredTexture);
-		gl::UseProgram(verticalProgram);
+		gl::BindTexture(GL_TEXTURE_2D, horizontalBlurFramebuffer.attachments[static_cast<uint32_t>(BloomAttachments::Bloom)]);
+		gl::UseProgram(verticalPrograms[currentKernelConfig]);
 		gl::DrawArrays(GL_TRIANGLE_STRIP, 0, 3);
 		debugThrowOnApiError("Gaussian Blur Pass after render");
 	}
@@ -1673,102 +1649,115 @@ struct GaussianBlurPass
 // A Compute shader based Gaussian Blur Pass
 struct ComputeBlurPass : public GaussianBlurPass
 {
-	// For our compute shader based Gaussian blur we duplicate the Gaussian weights so that we don't need special shader logic to handle buffer overruns
-	std::vector<float> duplicatedGaussianWeightsFloats;
+	std::vector<std::string> perKernelSizeCacheStrings;
 
-	virtual void createBuffer()
+	void generatePerConfigGaussianCoefficients() override
 	{
-		ssboSize = static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::vec4) + pvr::getSize(pvr::GpuDatatypes::Float) * MaxGaussianKernel * 2);
-
-		gl::GenBuffers(1, &bloomConfigBuffer);
-		gl::BindBuffer(GL_SHADER_STORAGE_BUFFER, bloomConfigBuffer);
-		gl::BufferData(GL_SHADER_STORAGE_BUFFER, (size_t)ssboSize, nullptr, GL_DYNAMIC_DRAW);
-
-		// if GL_EXT_buffer_storage is supported then map the buffer upfront and never upmap it
-		if (isBufferStorageExtSupported)
+		for (uint32_t i = 0; i < DemoConfigurations::NumDemoConfigurations; ++i)
 		{
-			gl::BindBuffer(GL_COPY_READ_BUFFER, bloomConfigBuffer);
-			gl::ext::BufferStorageEXT(GL_COPY_READ_BUFFER, (GLsizei)ssboSize, 0, GL_MAP_WRITE_BIT_EXT | GL_MAP_PERSISTENT_BIT_EXT | GL_MAP_COHERENT_BIT_EXT);
-
-			mappedMemory = gl::MapBufferRange(GL_COPY_READ_BUFFER, 0, ssboSize, GL_MAP_WRITE_BIT_EXT | GL_MAP_PERSISTENT_BIT_EXT | GL_MAP_COHERENT_BIT_EXT);
+			generateGaussianCoefficients(DemoConfigurations::Configurations[i].computeGaussianConfig, false, false, gaussianWeights[i], gaussianOffsets[i]);
 		}
 	}
 
-	virtual void updateKernelBuffer()
+	/// <summary>Generates the gaussian weights and offsets strings used by the various Gaussian shaders.</summary>
+	void generateGaussianShaderStrings() override
 	{
-		if (!isBufferStorageExtSupported)
+		// Generate per kernel size weights, offsets and iterations strings
+		perKernelSizeIterationsStrings.resize(DemoConfigurations::NumDemoConfigurations);
+		perKernelSizeWeightsStrings.resize(DemoConfigurations::NumDemoConfigurations);
+		perKernelSizeOffsetsStrings.resize(DemoConfigurations::NumDemoConfigurations);
+
+		// Compute shaders also need the per row/column color cache
+		perKernelSizeCacheStrings.resize(DemoConfigurations::NumDemoConfigurations);
+
+		for (uint32_t i = 0; i < DemoConfigurations::NumDemoConfigurations; ++i)
 		{
-			gl::BindBuffer(GL_SHADER_STORAGE_BUFFER, bloomConfigBuffer);
-			mappedMemory = gl::MapBufferRange(GL_SHADER_STORAGE_BUFFER, 0, (size_t)ssboSize, GL_MAP_WRITE_BIT);
-		}
+			generateGaussianWeightsAndOffsetsStrings(
+				gaussianWeights[i], gaussianOffsets[i], perKernelSizeIterationsStrings[i], perKernelSizeWeightsStrings[i], perKernelSizeOffsetsStrings[i], true);
 
-		memcpy(static_cast<char*>(mappedMemory), &blurConfig, pvr::getSize(pvr::GpuDatatypes::vec4));
-		memcpy(static_cast<char*>(mappedMemory) + pvr::getSize(pvr::GpuDatatypes::vec4), duplicatedGaussianWeightsFloats.data(),
-			pvr::getSize(pvr::GpuDatatypes::Float) * MaxGaussianKernel * 2);
-
-		if (!isBufferStorageExtSupported)
-		{
-			gl::UnmapBuffer(GL_SHADER_STORAGE_BUFFER);
-		}
-	}
-
-	virtual void updateKernelConfig(uint32_t kernelSizeConfig, bool useLinearOptimisation, bool truncateCoefficients)
-	{
-		kernelSize = kernelSizeConfig;
-		updateGaussianWeightsAndOffsets(kernelSize, useLinearOptimisation, truncateCoefficients, gaussianOffsets, gaussianWeights, gaussianOffsetsFloats, gaussianWeightsFloats);
-
-		duplicatedGaussianWeightsFloats.clear();
-
-		blurConfig.z = static_cast<float>(gaussianWeights.size());
-
-		for (uint32_t duplications = 0; duplications < 2; duplications++)
-		{
-			for (uint32_t i = 0; i < gaussianWeightsFloats.size(); i++)
+			// Construct the compute shader specific per row/column color cache strings
+			std::string cache = "";
+			for (uint32_t j = 0; j < ((gaussianWeights[i].size() * 2) - 1); j++)
 			{
-				duplicatedGaussianWeightsFloats.push_back(gaussianWeightsFloats[gaussianWeightsFloats.size() - 1 - i]);
+				cache += "0.0,";
 			}
+			cache += "0.0";
 
-			for (uint32_t i = 1; i < gaussianWeightsFloats.size(); i++)
-			{
-				duplicatedGaussianWeightsFloats.push_back(gaussianWeightsFloats[i]);
-			}
+			perKernelSizeCacheStrings[i] = pvr::strings::createFormatted("mediump float f[numIterations * 2u] = float[numIterations * 2u](%s);", cache.c_str());
 		}
 	}
 
-	virtual void createPrograms(pvr::IAssetProvider& assetProvider)
+	virtual void createPrograms(pvr::IAssetProvider& assetProvider) override
 	{
-		horizontalProgram = pvr::utils::createComputeShaderProgram(assetProvider, Files::GaussianComputeBlurHorizontalfSrcFile);
-		verticalProgram = pvr::utils::createComputeShaderProgram(assetProvider, Files::GaussianComputeBlurVerticalfSrcFile);
+		GLuint horizontalShaders[DemoConfigurations::NumDemoConfigurations];
+		GLuint verticalShaders[DemoConfigurations::NumDemoConfigurations];
+
+		// Generate the Gaussian blur compute shaders
+		for (uint32_t i = 0; i < DemoConfigurations::NumDemoConfigurations; ++i)
+		{
+			// Load the base Gaussian compute shaders
+			// The horizontal compute shader performs a sliding average across each row of the image
+			auto horizontalComputeShaderStream = assetProvider.getAssetStream(Files::GaussianComputeBlurHorizontalSrcFile);
+			// The vertical compute shader performs a sliding average across each column of the image
+			auto verticalComputeShaderStream = assetProvider.getAssetStream(Files::GaussianComputeBlurVerticalSrcFile);
+
+			// Load the base Gaussian compute shaders into strings
+			// At this point the compute shaders are missing its templated arguments and will not compile as they are
+			std::string horizontalShaderSource;
+			horizontalComputeShaderStream->readIntoString(horizontalShaderSource);
+			std::string verticalShaderSource;
+			verticalComputeShaderStream->readIntoString(verticalShaderSource);
+
+			// Insert the templates into the base shaders
+			// The reference Gaussian compute shaders require the format of the images to use, the number of iterations,
+			// the weights for each iteration and the per kernel size caches
+			std::string horizontalShaderString = pvr::strings::createFormatted(
+				horizontalShaderSource.c_str(), perKernelSizeIterationsStrings[i].c_str(), perKernelSizeWeightsStrings[i].c_str(), perKernelSizeCacheStrings[i].c_str());
+			std::string verticalShaderString = pvr::strings::createFormatted(
+				verticalShaderSource.c_str(), perKernelSizeIterationsStrings[i].c_str(), perKernelSizeWeightsStrings[i].c_str(), perKernelSizeCacheStrings[i].c_str());
+
+			// Create shaders using the auto generated shader sources
+			horizontalShaders[i] = pvr::utils::loadShader(horizontalShaderString, pvr::ShaderType::ComputeShader, nullptr, 0);
+			verticalShaders[i] = pvr::utils::loadShader(verticalShaderString, pvr::ShaderType::ComputeShader, nullptr, 0);
+
+			// Horizontal Program
+			horizontalPrograms[i] = pvr::utils::createShaderProgram(&horizontalShaders[i], 1, nullptr, nullptr, 0, nullptr);
+
+			// Vertical Program
+			verticalPrograms[i] = pvr::utils::createShaderProgram(&verticalShaders[i], 1, nullptr, nullptr, 0, nullptr);
+		}
 	}
 
 	using GaussianBlurPass::render;
-	virtual void render(
-		GLuint downsampledTexture, GLuint horizontallyBlurredTexture, GLuint horizontalBlurFramebuffer, GLuint verticalBlurFramebuffer, const glm::ivec2& blurFramebufferDimensions)
+	virtual void render(GLuint sourceTexture, Framebuffer& horizontalBlurFramebuffer, Framebuffer& verticalBlurFramebuffer, GLenum imageFormat) override
 	{
 		debugThrowOnApiError("Compute Gaussian Blur Pass before render");
-		gl::BindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, bloomConfigBuffer);
+
+		assert(horizontalBlurFramebuffer.dimensions.x == verticalBlurFramebuffer.dimensions.x && horizontalBlurFramebuffer.dimensions.y == verticalBlurFramebuffer.dimensions.y);
 
 		// horizontal
 		{
 			// We Execute the Compute shader, we bind the input and output texture.
-			gl::UseProgram(horizontalProgram);
+			gl::UseProgram(horizontalPrograms[currentKernelConfig]);
 
-			gl::BindImageTexture(0, downsampledTexture, 0, GL_FALSE, 0, GL_READ_ONLY, GL_RGBA16F);
-			gl::BindImageTexture(1, horizontallyBlurredTexture, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA16F);
+			gl::BindImageTexture(0, sourceTexture, 0, GL_FALSE, 0, GL_READ_ONLY, imageFormat);
+			gl::BindImageTexture(1, horizontalBlurFramebuffer.attachments[static_cast<uint32_t>(BloomAttachments::Bloom)], 0, GL_FALSE, 0, GL_WRITE_ONLY, imageFormat);
 
-			gl::DispatchCompute(static_cast<uint32_t>(glm::ceil(blurFramebufferDimensions.y / 32.0f)), 1, 1);
+			gl::DispatchCompute(static_cast<uint32_t>(glm::ceil(horizontalBlurFramebuffer.dimensions.y / 32.0f)), 1, 1);
 			gl::MemoryBarrier(GL_TEXTURE_FETCH_BARRIER_BIT);
+			debugThrowOnApiError("Compute Gaussian Blur Pass after horizontal pass");
 		}
 
 		// vertical
 		{
-			gl::UseProgram(verticalProgram);
+			gl::UseProgram(verticalPrograms[currentKernelConfig]);
 
-			gl::BindImageTexture(0, horizontallyBlurredTexture, 0, GL_FALSE, 0, GL_READ_ONLY, GL_RGBA16F);
-			gl::BindImageTexture(1, downsampledTexture, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA16F);
+			gl::BindImageTexture(0, horizontalBlurFramebuffer.attachments[static_cast<uint32_t>(BloomAttachments::Bloom)], 0, GL_FALSE, 0, GL_READ_ONLY, imageFormat);
+			gl::BindImageTexture(1, verticalBlurFramebuffer.attachments[static_cast<uint32_t>(BloomAttachments::Bloom)], 0, GL_FALSE, 0, GL_WRITE_ONLY, imageFormat);
 
-			gl::DispatchCompute(static_cast<uint32_t>(glm::ceil(blurFramebufferDimensions.x / 32.0f)), 1, 1);
+			gl::DispatchCompute(static_cast<uint32_t>(glm::ceil(horizontalBlurFramebuffer.dimensions.x / 32.0f)), 1, 1);
 			gl::MemoryBarrier(GL_TEXTURE_FETCH_BARRIER_BIT);
+			debugThrowOnApiError("Compute Gaussian Blur Pass after vertical pass");
 		}
 
 		debugThrowOnApiError("Compute Gaussian Blur Pass after render");
@@ -1778,68 +1767,131 @@ struct ComputeBlurPass : public GaussianBlurPass
 // A Linear sampler optimised Gaussian Blur Pass
 struct LinearGaussianBlurPass : public GaussianBlurPass
 {
-	// Horizontal and Vertical graphics pipelines to handle special cases where the number of samples will be an even number
-	GLuint evenSampleHorizontalProgram;
-	GLuint evenSampleVerticalProgram;
+	void generatePerConfigGaussianCoefficients() override
+	{
+		for (uint32_t i = 0; i < DemoConfigurations::NumDemoConfigurations; ++i)
+		{
+			generateGaussianCoefficients(DemoConfigurations::Configurations[i].linearGaussianConfig, true, false, gaussianWeights[i], gaussianOffsets[i]);
+		}
+	}
+
+	/// <summary>Generates the gaussian weights and offsets strings used by the various Gaussian shaders.</summary>
+	void generateGaussianShaderStrings() override
+	{
+		// Generate per kernel size weights, offsets and iterations strings
+		perKernelSizeIterationsStrings.resize(DemoConfigurations::NumDemoConfigurations);
+		perKernelSizeWeightsStrings.resize(DemoConfigurations::NumDemoConfigurations);
+		perKernelSizeOffsetsStrings.resize(DemoConfigurations::NumDemoConfigurations);
+
+		for (uint32_t i = 0; i < DemoConfigurations::NumDemoConfigurations; ++i)
+		{
+			generateGaussianWeightsAndOffsetsStrings(
+				gaussianWeights[i], gaussianOffsets[i], perKernelSizeIterationsStrings[i], perKernelSizeWeightsStrings[i], perKernelSizeOffsetsStrings[i]);
+		}
+		inverseFramebufferWidthString = pvr::strings::createFormatted("const highp float inverseFramebufferWidth = %.15f;", inverseFramebufferWidth);
+		inverseFramebufferHeightString = pvr::strings::createFormatted("const highp float inverseFramebufferHeight = %.15f;", inverseFramebufferHeight);
+	}
 
 	virtual void createPrograms(pvr::IAssetProvider& assetProvider) override
 	{
-		horizontalProgram =
-			pvr::utils::createShaderProgram(assetProvider, Files::LinearGaussianOddSamplesHorizontalVertSrcFile, Files::LinearGaussianOddSamplesFragSrcFile, nullptr, nullptr, 0);
-		gl::UseProgram(horizontalProgram);
-		gl::Uniform1i(gl::GetUniformLocation(horizontalProgram, "sTexture"), 0);
-		verticalProgram =
-			pvr::utils::createShaderProgram(assetProvider, Files::LinearGaussianOddSamplesVerticalVertSrcFile, Files::LinearGaussianOddSamplesFragSrcFile, nullptr, nullptr, 0);
-		gl::UseProgram(verticalProgram);
-		gl::Uniform1i(gl::GetUniformLocation(verticalProgram, "sTexture"), 0);
+		// Vertex Shaders
+		GLuint horizontalVertexShaders[DemoConfigurations::NumDemoConfigurations];
+		GLuint verticalVertexShaders[DemoConfigurations::NumDemoConfigurations];
 
-		evenSampleHorizontalProgram =
-			pvr::utils::createShaderProgram(assetProvider, Files::LinearGaussianEvenSamplesHorizontalVertSrcFile, Files::LinearGaussianEvenSamplesFragSrcFile, nullptr, nullptr, 0);
-		gl::UseProgram(evenSampleHorizontalProgram);
-		gl::Uniform1i(gl::GetUniformLocation(evenSampleHorizontalProgram, "sTexture"), 0);
-		evenSampleVerticalProgram =
-			pvr::utils::createShaderProgram(assetProvider, Files::LinearGaussianEvenSamplesVerticalVertSrcFile, Files::LinearGaussianEvenSamplesFragSrcFile, nullptr, nullptr, 0);
-		gl::UseProgram(evenSampleVerticalProgram);
-		gl::Uniform1i(gl::GetUniformLocation(evenSampleVerticalProgram, "sTexture"), 0);
+		// Fragment Shaders
+		GLuint fragShaders[DemoConfigurations::NumDemoConfigurations];
+
+		// Generate the Gaussian blur shader modules
+		for (uint32_t i = 0; i < DemoConfigurations::NumDemoConfigurations; ++i)
+		{
+			// Load the linear optimised Gaussian vertex shader
+			auto vertexShaderStream = assetProvider.getAssetStream(Files::LinearGaussianVertSrcFile);
+
+			// Load the linear optimised Gaussian vertex shader into a string
+			// At this point the vertex shader is missing its templated arguments and won't compile as is
+			std::string vertexShaderSource;
+			vertexShaderStream->readIntoString(vertexShaderSource);
+
+			// Insert the templates into the linear optimised vertex shader
+			// The linear optimised Gaussian vertex shaders require the number of iterations, the offsets for each iteration, the number of texture coordinates
+			// and the direction to sample
+			std::string horizontalShaderString = pvr::strings::createFormatted(vertexShaderSource.c_str(), perKernelSizeIterationsStrings[i].c_str(),
+				perKernelSizeOffsetsStrings[i].c_str(), inverseFramebufferWidthString.c_str(), inverseFramebufferHeightString.c_str(), "1.0, 0.0");
+			std::string verticalShaderString = pvr::strings::createFormatted(vertexShaderSource.c_str(), perKernelSizeIterationsStrings[i].c_str(),
+				perKernelSizeOffsetsStrings[i].c_str(), inverseFramebufferWidthString.c_str(), inverseFramebufferHeightString.c_str(), "0.0, 1.0");
+
+			// Linear Optimised Gaussian Blur Vertex Shaders
+			// Create shader modules for the horizontal and vertical linearly optimised Gaussian blur vertex shaders
+			horizontalVertexShaders[i] = pvr::utils::loadShader(horizontalShaderString, pvr::ShaderType::VertexShader, nullptr, 0);
+			verticalVertexShaders[i] = pvr::utils::loadShader(verticalShaderString, pvr::ShaderType::VertexShader, nullptr, 0);
+
+			// Load the linear optimised Gaussian fragment shader
+			auto fragmentShaderStream = assetProvider.getAssetStream(Files::LinearGaussianFragSrcFile);
+
+			// Load the linear optimised Gaussian fragment shader into a string
+			// At this point the fragment shader is missing its templated arguments and won't compile as is
+			std::string fragShaderSource;
+			fragmentShaderStream->readIntoString(fragShaderSource);
+
+			// Insert the templates into the fragment shader
+			// The linear optimised Gaussian fragment shader requires the number of iterations, the weights for each iteration and the number of texture coordinates
+			std::string fragmentShaderString =
+				pvr::strings::createFormatted(fragShaderSource.c_str(), perKernelSizeIterationsStrings[i].c_str(), perKernelSizeWeightsStrings[i].c_str());
+
+			// Linear Optimised Gaussian Blur Fragment Shader
+			// Create a shader module for the Linear optimised Gaussian blur fragment shader
+			fragShaders[i] = pvr::utils::loadShader(fragmentShaderString, pvr::ShaderType::FragmentShader, nullptr, 0);
+		}
+
+		for (uint32_t i = 0; i < DemoConfigurations::NumDemoConfigurations; ++i)
+		{
+			GLuint shaders[2] = { horizontalVertexShaders[i], fragShaders[i] };
+			// Horizontal Program
+			horizontalPrograms[i] = pvr::utils::createShaderProgram(shaders, 2, nullptr, nullptr, 0, nullptr);
+			gl::UseProgram(horizontalPrograms[i]);
+			gl::Uniform1i(gl::GetUniformLocation(horizontalPrograms[i], "sTexture"), 0);
+
+			shaders[0] = verticalVertexShaders[i];
+
+			// Vertical Program
+			verticalPrograms[i] = pvr::utils::createShaderProgram(shaders, 2, nullptr, nullptr, 0, nullptr);
+			gl::UseProgram(verticalPrograms[i]);
+			gl::Uniform1i(gl::GetUniformLocation(verticalPrograms[i], "sTexture"), 0);
+		}
 	}
 
-	virtual void render(GLuint downsampledTexture, GLuint horizontallyBlurredTexture, GLuint horizontalBlurFramebuffer, GLuint verticalBlurFramebuffer, GLuint samplerBilinear) override
+	virtual void render(GLuint sourceTexture, Framebuffer& horizontalBlurFramebuffer, Framebuffer& verticalBlurFramebuffer, GLuint samplerBilinear) override
 	{
 		debugThrowOnApiError("Linear Gaussian Blur Pass before render");
-		gl::BindFramebuffer(GL_DRAW_FRAMEBUFFER, horizontalBlurFramebuffer);
+		gl::BindFramebuffer(GL_DRAW_FRAMEBUFFER, horizontalBlurFramebuffer.framebuffer);
 		gl::Clear(GL_COLOR_BUFFER_BIT);
-
-		gl::BindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, bloomConfigBuffer);
 
 		gl::ActiveTexture(GL_TEXTURE0);
-		gl::BindTexture(GL_TEXTURE_2D, downsampledTexture);
+		gl::BindTexture(GL_TEXTURE_2D, sourceTexture);
 		gl::BindSampler(0, samplerBilinear);
 
-		// appropriately handle odd vs even numbers of taps
-		if (gaussianWeights.size() % 2 == 0)
-		{
-			gl::UseProgram(evenSampleHorizontalProgram);
-		}
-		else
-		{
-			gl::UseProgram(horizontalProgram);
-		}
+		gl::UseProgram(horizontalPrograms[currentKernelConfig]);
 		gl::DrawArrays(GL_TRIANGLE_STRIP, 0, 3);
 
-		gl::BindFramebuffer(GL_DRAW_FRAMEBUFFER, verticalBlurFramebuffer);
+		gl::BindFramebuffer(GL_DRAW_FRAMEBUFFER, verticalBlurFramebuffer.framebuffer);
 		gl::Clear(GL_COLOR_BUFFER_BIT);
 
-		gl::BindTexture(GL_TEXTURE_2D, horizontallyBlurredTexture);
-		if (gaussianWeights.size() % 2 == 0)
-		{
-			gl::UseProgram(evenSampleVerticalProgram);
-		}
-		else
-		{
-			gl::UseProgram(verticalProgram);
-		}
+		gl::BindTexture(GL_TEXTURE_2D, horizontalBlurFramebuffer.attachments[static_cast<uint32_t>(BloomAttachments::Bloom)]);
+		gl::UseProgram(verticalPrograms[currentKernelConfig]);
 		gl::DrawArrays(GL_TRIANGLE_STRIP, 0, 3);
 		debugThrowOnApiError("Linear Gaussian Blur Pass after render");
+	}
+};
+
+// A Truncated Linear sampler optimised Gaussian Blur Pass
+struct TruncatedLinearGaussianBlurPass : public LinearGaussianBlurPass
+{
+	void generatePerConfigGaussianCoefficients() override
+	{
+		for (uint32_t i = 0; i < DemoConfigurations::NumDemoConfigurations; ++i)
+		{
+			generateGaussianCoefficients(DemoConfigurations::Configurations[i].truncatedLinearGaussianConfig, true, true, gaussianWeights[i], gaussianOffsets[i]);
+		}
 	}
 };
 
@@ -1849,59 +1901,45 @@ struct HybridGaussianBlurPass
 	// The Compute shader based Gaussian Blur pass - we will only be making use of the horizontal blur resources
 	ComputeBlurPass* computeBlurPass;
 	// The Fragment shader based Gaussian Blur pass - we will only be making use of the vertical blur resources
-	LinearGaussianBlurPass* linearBlurPass;
+	TruncatedLinearGaussianBlurPass* linearBlurPass;
 
 	/// <summary>A minimal initialisation function as no extra resources are created for this type of blur pass and instead we make use of the compute and fragment based passes.</summary>
 	/// <param name="computeBlurPass">The Compute shader based Gaussian Blur pass - we will only be making use of the horizontal blur resources.</param>
 	/// <param name="linearBlurPass">The Fragment shader based Gaussian Blur pass - we will only be making use of the vertical blur resources.</param>
-	void init(ComputeBlurPass* computeBlurPass, LinearGaussianBlurPass* linearBlurPass)
+	void init(ComputeBlurPass* computeBlurPass, TruncatedLinearGaussianBlurPass* linearBlurPass)
 	{
 		this->computeBlurPass = computeBlurPass;
 		this->linearBlurPass = linearBlurPass;
 	}
 
 	/// <summary>Renders A hybrid gaussian blur based on the current configuration.</summary>
-	/// <param name="downsampledTexture">The source downsampled luminance texture.</param>
-	/// <param name="horizontallyBlurredTexture">The texture which will contain the horizontal Gaussian blur.</param>
+	/// <param name="sourceTexture">The source texture to blur.</param>
 	/// <param name="horizontalBlurFramebuffer">The framebuffer to use in the horizontal Gaussian blur.</param>
 	/// <param name="verticalBlurFramebuffer">The framebuffer to use in the vertical Gaussian blur.</param>
-	/// <param name="blurFramebufferDimensions">The dimensions used for the blur.</param>
 	/// <param name="samplerBilinear">The sampler object to use when sampling.</param>
-	void render(GLuint downsampledTexture, GLuint horizontallyBlurredTexture, GLuint horizontalBlurFramebuffer, GLuint verticalBlurFramebuffer,
-		const glm::ivec2& blurFramebufferDimensions, GLuint samplerBilinear)
+	void render(GLuint sourceTexture, Framebuffer& horizontalBlurFramebuffer, Framebuffer& verticalBlurFramebuffer, GLuint samplerBilinear, GLenum imageFormat)
 	{
 		debugThrowOnApiError("Hybrid Gaussian Blur Pass before render");
-		gl::BindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, this->computeBlurPass->bloomConfigBuffer);
+
+		assert(horizontalBlurFramebuffer.dimensions.x == verticalBlurFramebuffer.dimensions.x && horizontalBlurFramebuffer.dimensions.y == verticalBlurFramebuffer.dimensions.y);
 
 		// horizontal
 		{
 			// We Execute the Compute shader, we bind the input and output texture.
-			gl::UseProgram(this->computeBlurPass->horizontalProgram);
-
-			gl::BindImageTexture(0, downsampledTexture, 0, GL_FALSE, 0, GL_READ_ONLY, GL_RGBA16F);
-			gl::BindImageTexture(1, horizontallyBlurredTexture, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA16F);
-
-			gl::DispatchCompute(static_cast<uint32_t>(glm::ceil(blurFramebufferDimensions.y / 32.0f)), 1, 1);
+			gl::UseProgram(this->computeBlurPass->horizontalPrograms[this->computeBlurPass->currentKernelConfig]);
+			gl::BindImageTexture(0, sourceTexture, 0, GL_FALSE, 0, GL_READ_ONLY, imageFormat);
+			gl::BindImageTexture(1, horizontalBlurFramebuffer.attachments[static_cast<uint32_t>(BloomAttachments::Bloom)], 0, GL_FALSE, 0, GL_WRITE_ONLY, imageFormat);
+			gl::DispatchCompute(static_cast<uint32_t>(glm::ceil(horizontalBlurFramebuffer.dimensions.y / 32.0f)), 1, 1);
 			gl::MemoryBarrier(GL_TEXTURE_FETCH_BARRIER_BIT);
 		}
 
 		// vertical
 		{
-			gl::BindFramebuffer(GL_DRAW_FRAMEBUFFER, verticalBlurFramebuffer);
+			gl::BindFramebuffer(GL_DRAW_FRAMEBUFFER, verticalBlurFramebuffer.framebuffer);
 			gl::Clear(GL_COLOR_BUFFER_BIT);
-
-			gl::BindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, this->linearBlurPass->bloomConfigBuffer);
-
-			gl::BindTexture(GL_TEXTURE_2D, horizontallyBlurredTexture);
+			gl::BindTexture(GL_TEXTURE_2D, horizontalBlurFramebuffer.attachments[static_cast<uint32_t>(BloomAttachments::Bloom)]);
 			gl::BindSampler(0, samplerBilinear);
-			if (this->linearBlurPass->gaussianWeights.size() % 2 == 0)
-			{
-				gl::UseProgram(this->linearBlurPass->evenSampleVerticalProgram);
-			}
-			else
-			{
-				gl::UseProgram(this->linearBlurPass->verticalProgram);
-			}
+			gl::UseProgram(this->linearBlurPass->verticalPrograms[this->linearBlurPass->currentKernelConfig]);
 			gl::DrawArrays(GL_TRIANGLE_STRIP, 0, 3);
 		}
 		debugThrowOnApiError("Hybrid Gaussian Blur Pass after render");
@@ -1913,16 +1951,13 @@ struct PostBloomPass
 {
 	GLuint defaultProgram;
 	GLuint bloomOnlyProgram;
-	GLuint offscreenOnlyProgram;
 	void* mappedMemory;
-	bool isBufferStorageExtSupported;
+	GLint exposureUniformLocation;
 
 	/// <summary>Initialises the Post Bloom pass.</summary>
 	/// <param name="assetProvider">The pvr::IAssetProvider which will be used for loading resources from memory.</param>
-	/// <param name="isBufferStorageExtSupported">True if GL_EXT_buffer_storage is supported.</param>
-	void init(pvr::IAssetProvider& assetProvider, bool isBufferStorageExtSupported, bool srgbFramebuffer)
+	void init(pvr::IAssetProvider& assetProvider, bool srgbFramebuffer)
 	{
-		this->isBufferStorageExtSupported = isBufferStorageExtSupported;
 		createProgram(assetProvider, srgbFramebuffer);
 
 		debugThrowOnApiError("PostBloomPass init");
@@ -1942,49 +1977,48 @@ struct PostBloomPass
 		defaultProgram = pvr::utils::createShaderProgram(
 			assetProvider, Files::PostBloomVertShaderSrcFile, Files::PostBloomFragShaderSrcFile, nullptr, nullptr, 0, defines.data(), static_cast<uint32_t>(defines.size()));
 
+		gl::UseProgram(defaultProgram);
+		gl::Uniform1i(gl::GetUniformLocation(defaultProgram, "sBlurTexture"), 0);
+		gl::Uniform1i(gl::GetUniformLocation(defaultProgram, "sOffScreenTexture"), 1);
+		exposureUniformLocation = gl::GetUniformLocation(defaultProgram, "linearExposure");
+
 		defines.push_back("RENDER_BLOOM");
 		bloomOnlyProgram = pvr::utils::createShaderProgram(
 			assetProvider, Files::PostBloomVertShaderSrcFile, Files::PostBloomFragShaderSrcFile, nullptr, nullptr, 0, defines.data(), static_cast<uint32_t>(defines.size()));
 
-		defines[defines.size() - 1] = "RENDER_OFFSCREEN";
-		offscreenOnlyProgram = pvr::utils::createShaderProgram(
-			assetProvider, Files::PostBloomVertShaderSrcFile, Files::PostBloomFragShaderSrcFile, nullptr, nullptr, 0, defines.data(), static_cast<uint32_t>(defines.size()));
-
-		GLuint programs[] = { defaultProgram, bloomOnlyProgram, offscreenOnlyProgram };
-
-		for (uint32_t i = 0; i < 3; ++i)
-		{
-			gl::UseProgram(programs[i]);
-			gl::Uniform1i(gl::GetUniformLocation(programs[i], "sBlurTexture"), 0);
-			gl::Uniform1i(gl::GetUniformLocation(programs[i], "sOriginalTexture"), 1);
-		}
+		gl::UseProgram(bloomOnlyProgram);
+		gl::Uniform1i(gl::GetUniformLocation(bloomOnlyProgram, "sBlurTexture"), 0);
 	}
 
 	/// <summary>Renders the post bloom composition pass.</summary>
 	/// <param name="blurTexture">The bloomed luminance texture.</param>
 	/// <param name="originalTexture">The original HDR texture.</param>
 	/// <param name="samplerBilinear">The sampler object to use when sampling.</param>
-	void render(GLuint blurTexture, GLuint originalTexture, GLuint samplerBilinear, bool renderBloomOnly, bool renderOffScreenOnly)
+	/// <param name="renderBloomOnly">Render the bloom only.</param>
+	/// <param name="exposure">The exposure to use in the tonemapping.</param>
+	void render(GLuint blurTexture, GLuint originalTexture, GLuint samplerBilinear, bool renderBloomOnly, float exposure)
 	{
 		debugThrowOnApiError("Post Bloom Pass before render");
-		gl::ActiveTexture(GL_TEXTURE0);
-		gl::BindTexture(GL_TEXTURE_2D, blurTexture);
-		gl::BindSampler(0, samplerBilinear);
-		gl::ActiveTexture(GL_TEXTURE1);
-		gl::BindTexture(GL_TEXTURE_2D, originalTexture);
-		gl::BindSampler(1, samplerBilinear);
 
-		if (renderOffScreenOnly)
+		if (renderBloomOnly)
 		{
-			gl::UseProgram(offscreenOnlyProgram);
-		}
-		else if (renderBloomOnly)
-		{
+			gl::ActiveTexture(GL_TEXTURE0);
+			gl::BindTexture(GL_TEXTURE_2D, blurTexture);
+			gl::BindSampler(0, samplerBilinear);
+
 			gl::UseProgram(bloomOnlyProgram);
 		}
 		else
 		{
+			gl::ActiveTexture(GL_TEXTURE0);
+			gl::BindTexture(GL_TEXTURE_2D, blurTexture);
+			gl::BindSampler(0, samplerBilinear);
+			gl::ActiveTexture(GL_TEXTURE1);
+			gl::BindTexture(GL_TEXTURE_2D, originalTexture);
+			gl::BindSampler(1, samplerBilinear);
+
 			gl::UseProgram(defaultProgram);
+			gl::Uniform1f(exposureUniformLocation, exposure);
 		}
 
 		gl::DrawArrays(GL_TRIANGLE_STRIP, 0, 3);
@@ -2001,26 +2035,19 @@ class OpenGLESPostProcessing : public pvr::Shell
 	pvr::EglContext _context;
 
 	// Framebuffers
-	GLuint _offScreenFramebuffer;
-	GLuint _offScreenNoDownsampleFramebuffer;
-	GLuint _blurFramebuffers[2];
-	GLuint _computeBlurFramebuffers[2];
+	Framebuffer _offScreenFramebuffer;
+	Framebuffer _offScreenFramebufferUsingIMGDownsample;
+	Framebuffer _blurFramebuffers[2];
+	Framebuffer _computeBlurFramebuffers[2];
 
 	// Textures
-	GLuint _luminanceTexture;
-	GLuint _downSampledLuminanceTexture;
-	GLuint _offScreenColorTexture;
-
-	GLuint _pingPongTextures[2];
-	GLuint _computePingPongTextures[2];
-
-	GLuint _diffuseIrradianceTexture;
+	GLuint _diffuseIrradianceTextures[NumScenes];
+	GLuint _offScreenTexture;
 
 	// Samplers
 	GLuint _samplerNearest;
 	GLuint _samplerBilinear;
 	GLuint _samplerTrilinear;
-	GLuint _irradianceSampler;
 
 	GLuint _depthStencilTexture;
 
@@ -2031,9 +2058,6 @@ class OpenGLESPostProcessing : public pvr::Shell
 	pvr::utils::StructuredBufferView _sceneBufferView;
 	GLuint _sceneBuffer;
 
-	pvr::utils::StructuredBufferView _bloomThresholdBufferView;
-	GLuint _bloomThresholdBuffer;
-
 	SkyboxPass _skyBoxPass;
 	StatuePass _statuePass;
 	PostBloomPass _postBloomPass;
@@ -2041,7 +2065,7 @@ class OpenGLESPostProcessing : public pvr::Shell
 	// Blur Passes
 	GaussianBlurPass _gaussianBlurPass;
 	LinearGaussianBlurPass _linearGaussianBlurPass;
-	LinearGaussianBlurPass _truncatedLinearGaussianBlurPass;
+	TruncatedLinearGaussianBlurPass _truncatedLinearGaussianBlurPass;
 
 	DualFilterBlurPass _dualFilterBlurPass;
 	DownAndTentFilterBlurPass _downAndTentFilterBlurPass;
@@ -2050,7 +2074,11 @@ class OpenGLESPostProcessing : public pvr::Shell
 
 	KawaseBlurPass _kawaseBlurPass;
 
-	DownSamplePass _downsamplePass;
+	DownSamplePass2x2 _downsamplePass2x2;
+	DownSamplePass4x4 _downsamplePass4x4;
+
+	DownSamplePass2x2 _computeDownsamplePass2x2;
+	DownSamplePass4x4 _computeDownsamplePass4x4;
 
 	GLenum _luminanceColorFormat;
 	GLenum _computeLuminanceColorFormat;
@@ -2071,22 +2099,18 @@ class OpenGLESPostProcessing : public pvr::Shell
 	bool _isManual;
 	float _modeDuration;
 
-	glm::vec3 _lightPosition;
 	glm::mat4 _viewMatrix;
 	glm::mat4 _projectionMatrix;
 	glm::mat4 _viewProjectionMatrix;
 
 	BloomMode _blurMode;
 
-	bool _useThreshold;
-
 	uint32_t _currentDemoConfiguration;
+
+	uint32_t _currentScene;
 
 	bool _isIMGFramebufferDownsampleSupported;
 	bool _isBufferStorageExtSupported;
-	bool _mustUpdateDemoConfig;
-
-	float _bloomLumaThreshold;
 
 	bool _renderOnlyBloom;
 
@@ -2094,6 +2118,9 @@ class OpenGLESPostProcessing : public pvr::Shell
 
 	GLenum _drawBuffers[1];
 	GLenum _mrtDrawBuffers[2];
+
+	float _exposure;
+	float _threshold;
 
 public:
 	OpenGLESPostProcessing() {}
@@ -2104,18 +2131,17 @@ public:
 	virtual pvr::Result quitApplication();
 	virtual pvr::Result renderFrame();
 
-	void createBuffers();
 	void createSceneBuffer();
-	void createBloomThresholdBuffer();
 	void getDownScaleFactor(GLint& xDownscale, GLint& yDownscale);
 	void createBlurFramebuffers();
+	void createFramebufferAndAttachment(GLuint& framebuffer, GLuint& texture, GLenum attachmentFormat, const glm::ivec2& dimension);
 	void createSamplers();
-	void allocatePingPongTextures();
 	void createOffScreenFramebuffers();
 	void createUiRenderer();
 	void updateBlurDescription();
 	void renderUI();
 	void updateDemoConfigs();
+	void handleDesktopInput();
 	void eventMappedInput(pvr::SimplifiedInput e);
 	void updateBloomConfiguration();
 	void updateAnimation();
@@ -2132,8 +2158,6 @@ pvr::Result OpenGLESPostProcessing::initApplication()
 
 	_animateObject = true;
 	_animateCamera = false;
-	_lightPosition = LightPosition;
-	_useThreshold = true;
 	_objectAngleY = 0.0f;
 	_cameraAngle = 240.0f;
 	_camera.setDistanceFromTarget(200.f);
@@ -2144,6 +2168,8 @@ pvr::Result OpenGLESPostProcessing::initApplication()
 	_modeSwitchTime = 0.0f;
 	_isManual = false;
 	_modeDuration = 1.5f;
+	_currentScene = 0;
+	_renderOnlyBloom = false;
 
 	_drawBuffers[0] = GL_COLOR_ATTACHMENT0;
 	_mrtDrawBuffers[0] = GL_COLOR_ATTACHMENT0;
@@ -2190,7 +2216,6 @@ pvr::Result OpenGLESPostProcessing::initApplication()
 		_currentDemoConfiguration = DemoConfigurations::DefaultDemoConfigurations;
 	}
 
-	_renderOnlyBloom = false;
 	commandOptions.getBoolOptionSetTrueIfPresent("-bloom", _renderOnlyBloom);
 
 	return pvr::Result::Success;
@@ -2263,16 +2288,17 @@ pvr::Result OpenGLESPostProcessing::initView()
 	}
 
 	// create demo buffers
-	createBuffers();
+	createSceneBuffer();
 
-	_diffuseIrradianceTexture = pvr::utils::textureUpload(*this, DiffuseIrradianceMapTexFile);
+	for (uint32_t i = 0; i < NumScenes; ++i)
+	{
+		_diffuseIrradianceTextures[i] = pvr::utils::textureUpload(*this, SceneTexFileNames[i].diffuseIrradianceMapTexture);
+	}
 
-	// Allocate two images to use which can be "ping-ponged" between when applying various filters/blurs
+	// Creates the offscreen framebuffers allong with their attachments
+	// The framebuffers and images can then be "ping-ponged" between when applying various filters/blurs
 	// Pass 1: Read From 1, Render to 0
 	// Pass 2: Read From 0, Render to 1
-	allocatePingPongTextures();
-
-	// Create the HDR offscreen framebuffers
 	createOffScreenFramebuffers();
 
 	// Create the samplers used for various texture sampling
@@ -2283,20 +2309,24 @@ pvr::Result OpenGLESPostProcessing::initView()
 
 	createBlurFramebuffers();
 
-	_downsamplePass.init(*this, _blurFramebufferDimensions, _isIMGFramebufferDownsampleSupported);
-	_postBloomPass.init(*this, _isBufferStorageExtSupported, getBackBufferColorspace() == pvr::ColorSpace::sRGB);
+	// Create the downsample passes
+	_downsamplePass2x2.init(*this, _blurFramebuffers[1].attachments[static_cast<uint32_t>(BloomAttachments::Bloom)], _blurFramebufferDimensions);
+	_downsamplePass4x4.init(
+		*this, _blurFramebuffers[1].attachments[static_cast<uint32_t>(BloomAttachments::Bloom)], _blurFramebufferDimensions, glm::ivec2(this->getWidth(), this->getHeight()));
+
+	_computeDownsamplePass2x2.init(*this, _computeBlurFramebuffers[1].attachments[static_cast<uint32_t>(BloomAttachments::Bloom)], _blurFramebufferDimensions);
+	_computeDownsamplePass4x4.init(*this, _computeBlurFramebuffers[1].attachments[static_cast<uint32_t>(BloomAttachments::Bloom)], _blurFramebufferDimensions,
+		glm::ivec2(this->getWidth(), this->getHeight()));
+
+	_postBloomPass.init(*this, getBackBufferColorspace() == pvr::ColorSpace::sRGB);
 
 	// Initialise the Blur Passes
 	// Gaussian Blurs
 	{
-		_gaussianBlurPass.init(*this, _blurFramebufferDimensions, _isBufferStorageExtSupported);
-
-		_linearGaussianBlurPass.init(*this, _blurFramebufferDimensions, _isBufferStorageExtSupported);
-
-		_truncatedLinearGaussianBlurPass.init(*this, _blurFramebufferDimensions, _isBufferStorageExtSupported);
-
-		_computeBlurPass.init(*this, _blurFramebufferDimensions, _isBufferStorageExtSupported);
-
+		_gaussianBlurPass.init(*this, _blurFramebufferDimensions);
+		_linearGaussianBlurPass.init(*this, _blurFramebufferDimensions);
+		_truncatedLinearGaussianBlurPass.init(*this, _blurFramebufferDimensions);
+		_computeBlurPass.init(*this, _blurFramebufferDimensions);
 		_hybridGaussianBlurPass.init(&_computeBlurPass, &_truncatedLinearGaussianBlurPass);
 	}
 
@@ -2316,15 +2346,13 @@ pvr::Result OpenGLESPostProcessing::initView()
 			getBackBufferColorspace() == pvr::ColorSpace::sRGB);
 	}
 
+	// Update the demo configuration
+	updateDemoConfigs();
+
 	// initalise the UI Renderers
 	createUiRenderer();
 
-	// Initially update the bloom configurations
-	updateDemoConfigs();
-
-	// signals that the demo configuration and associated buffers need updating
-	_mustUpdateDemoConfig = true;
-
+	// Set basic default state
 	gl::BindFramebuffer(GL_FRAMEBUFFER, _context->getOnScreenFbo());
 	gl::UseProgram(0);
 
@@ -2352,6 +2380,8 @@ pvr::Result OpenGLESPostProcessing::renderFrame()
 {
 	debugThrowOnApiError("Frame begin");
 
+	handleDesktopInput();
+
 	// update dynamic buffers
 	updateDynamicSceneData();
 
@@ -2362,14 +2392,24 @@ pvr::Result OpenGLESPostProcessing::renderFrame()
 	// Note that the DualFilter and TentFilter take care of their own downsampling
 	if (_blurMode == BloomMode::DualFilter || _blurMode == BloomMode::TentFilter)
 	{
-		gl::BindFramebuffer(GL_DRAW_FRAMEBUFFER, _offScreenNoDownsampleFramebuffer);
+		gl::BindFramebuffer(GL_DRAW_FRAMEBUFFER, _offScreenFramebuffer.framebuffer);
 	}
 	else
 	{
-		gl::BindFramebuffer(GL_DRAW_FRAMEBUFFER, _offScreenFramebuffer);
+		// Make use of IMG_framebuffer_downsample extension
+		if (_isIMGFramebufferDownsampleSupported)
+		{
+			gl::BindFramebuffer(GL_DRAW_FRAMEBUFFER, _offScreenFramebufferUsingIMGDownsample.framebuffer);
+		}
+		else
+		{
+			gl::BindFramebuffer(GL_DRAW_FRAMEBUFFER, _offScreenFramebuffer.framebuffer);
+		}
 	}
 
-	// Setup the set of draw buffers
+	// The scene rendering requires the use of 2 draw buffers
+	// 1. The offscreen texture
+	// 2. The Luminance color buffer
 	gl::DrawBuffers(2, _mrtDrawBuffers);
 
 	// Clear the color and depth
@@ -2380,11 +2420,10 @@ pvr::Result OpenGLESPostProcessing::renderFrame()
 	gl::FrontFace(GL_CCW);
 	gl::Enable(GL_DEPTH_TEST);
 	gl::DepthFunc(GL_LESS);
-	_statuePass.render(
-		_bloomThresholdBuffer, _bloomThresholdBufferView.getSize(), _sceneBuffer, _sceneBufferView.getSize(), _diffuseIrradianceTexture, _samplerTrilinear, _irradianceSampler);
+	_statuePass.render(_diffuseIrradianceTextures[_currentScene], _samplerTrilinear, _samplerTrilinear, _exposure, _threshold);
 
 	gl::DepthFunc(GL_LEQUAL);
-	_skyBoxPass.render(_bloomThresholdBuffer, _bloomThresholdBufferView.getSize(), _sceneBuffer, _sceneBufferView.getSize(), _samplerTrilinear);
+	_skyBoxPass.render(_sceneBuffer, static_cast<GLsizeiptr>(_sceneBufferView.getSize()), _samplerTrilinear, _exposure, _threshold, _currentScene);
 
 	// Disable depth testing, from this point onwards we don't need depth
 	gl::Disable(GL_DEPTH_TEST);
@@ -2399,78 +2438,92 @@ pvr::Result OpenGLESPostProcessing::renderFrame()
 	// Set draw buffers for rendering to only a single attachment
 	gl::DrawBuffers(1, _drawBuffers);
 
-	if (_blurMode != BloomMode::NoBloom)
+	// Perform a downsample if the bloom mode is not DualFilter or TentFilter
+	if (!(_blurMode == BloomMode::DualFilter || _blurMode == BloomMode::TentFilter))
 	{
-		// Perform a downsample if the bloom mode is not DualFilter or TentFilter
-		if (!(_blurMode == BloomMode::DualFilter || _blurMode == BloomMode::TentFilter))
+		// If isIMGFramebufferDownsampleSupported is supported a native 2x2 downsample must be supported which we have made use of in the previous pass.
+		// This means that at this point _downSampledLuminanceTexture already contains a downsampled image (1/4 resolution) but if the scale is 2x2 then
+		// we still need to perform another downsample of the image to get it into our desired 1/16 resolution.
+		if (_isIMGFramebufferDownsampleSupported && _IMGFramebufferScale == 2)
 		{
-			gl::Viewport(0, 0, _blurFramebufferDimensions.x, _blurFramebufferDimensions.y);
-
 			if (_blurMode == BloomMode::Compute || _blurMode == BloomMode::HybridGaussian)
 			{
-				gl::BindFramebuffer(GL_DRAW_FRAMEBUFFER, _computeBlurFramebuffers[1]);
+				_computeDownsamplePass2x2.render(
+					_offScreenFramebufferUsingIMGDownsample.attachments[static_cast<uint32_t>(OffscreenWithIMGFramebufferDownsampleAttachments::DownsampledLuminance)],
+					_samplerBilinear);
 			}
 			else
 			{
-				gl::BindFramebuffer(GL_DRAW_FRAMEBUFFER, _blurFramebuffers[1]);
-			}
-			gl::Clear(GL_COLOR_BUFFER_BIT);
-
-			// If isIMGFramebufferDownsampleSupported is supported 2x2 downsample must be supported
-			// At this point _downSampledLuminanceTexture already contains a downsampled image but if the scale is 2x2 then we must still downsample the image again
-			if (_isIMGFramebufferDownsampleSupported && _IMGFramebufferScale == 2)
-			{
-				_downsamplePass.render(_downSampledLuminanceTexture, _samplerBilinear);
-			}
-			else
-			{
-				_downsamplePass.render(_luminanceTexture, _samplerBilinear);
+				_downsamplePass2x2.render(
+					_offScreenFramebufferUsingIMGDownsample.attachments[static_cast<uint32_t>(OffscreenWithIMGFramebufferDownsampleAttachments::DownsampledLuminance)],
+					_samplerBilinear);
 			}
 		}
+		// If IMG_framebuffer_downsample is not supported then just do a 1/4 x 1/4 downsample
+		else
+		{
+			if (_blurMode == BloomMode::Compute || _blurMode == BloomMode::HybridGaussian)
+			{
+				_computeDownsamplePass4x4.render(
+					_offScreenFramebuffer.attachments[static_cast<uint32_t>(OffscreenWithIMGFramebufferDownsampleAttachments::DownsampledLuminance)], _samplerBilinear);
+			}
+			else
+			{
+				_downsamplePass4x4.render(_offScreenFramebuffer.attachments[static_cast<uint32_t>(OffscreenAttachments::Luminance)], _samplerBilinear);
+			}
+		}
+	}
 
+	if (_blurMode != BloomMode::NoBloom)
+	{
 		// Render the bloom
 		switch (_blurMode)
 		{
 		case (BloomMode::GaussianOriginal):
 		{
-			_gaussianBlurPass.render(_pingPongTextures[1], _pingPongTextures[0], _blurFramebuffers[0], _blurFramebuffers[1], _samplerNearest);
+			_gaussianBlurPass.render(_blurFramebuffers[1].attachments[static_cast<uint32_t>(BloomAttachments::Bloom)], _blurFramebuffers[0], _blurFramebuffers[1], _samplerNearest);
 			break;
 		}
 
 		case (BloomMode::GaussianLinear):
 		{
-			_linearGaussianBlurPass.render(_pingPongTextures[1], _pingPongTextures[0], _blurFramebuffers[0], _blurFramebuffers[1], _samplerBilinear);
+			_linearGaussianBlurPass.render(
+				_blurFramebuffers[1].attachments[static_cast<uint32_t>(BloomAttachments::Bloom)], _blurFramebuffers[0], _blurFramebuffers[1], _samplerBilinear);
 			break;
 		}
 		case (BloomMode::GaussianLinearTruncated):
 		{
-			_truncatedLinearGaussianBlurPass.render(_pingPongTextures[1], _pingPongTextures[0], _blurFramebuffers[0], _blurFramebuffers[1], _samplerBilinear);
+			_truncatedLinearGaussianBlurPass.render(
+				_blurFramebuffers[1].attachments[static_cast<uint32_t>(BloomAttachments::Bloom)], _blurFramebuffers[0], _blurFramebuffers[1], _samplerBilinear);
 			break;
 		}
 		case (BloomMode::Compute):
 		{
-			_computeBlurPass.render(_computePingPongTextures[1], _computePingPongTextures[0], _blurFramebuffers[0], _blurFramebuffers[1], _blurFramebufferDimensions);
+			_computeBlurPass.render(_computeBlurFramebuffers[1].attachments[static_cast<uint32_t>(BloomAttachments::Bloom)], _computeBlurFramebuffers[0],
+				_computeBlurFramebuffers[1], _computeLuminanceColorFormat);
 			break;
 		}
 		case (BloomMode::Kawase):
 		{
-			_kawaseBlurPass.render(_blurFramebuffers[0], _blurFramebuffers[1], _pingPongTextures[1], _pingPongTextures[0], _samplerBilinear);
+			_kawaseBlurPass.render(_blurFramebuffers[1].attachments[static_cast<uint32_t>(BloomAttachments::Bloom)], _blurFramebuffers, 2, _samplerBilinear);
 			break;
 		}
 		case (BloomMode::DualFilter):
 		{
-			_dualFilterBlurPass.render(_luminanceTexture, _offScreenColorTexture, _context->getOnScreenFbo(), _samplerBilinear, _renderOnlyBloom);
+			_dualFilterBlurPass.render(_offScreenFramebuffer.attachments[static_cast<uint32_t>(OffscreenAttachments::Luminance)], _offScreenTexture, _context->getOnScreenFbo(),
+				_samplerBilinear, _renderOnlyBloom, _exposure);
 			break;
 		}
 		case (BloomMode::TentFilter):
 		{
-			_downAndTentFilterBlurPass.render(_luminanceTexture, _offScreenColorTexture, _context->getOnScreenFbo(), _samplerBilinear, _renderOnlyBloom);
+			_downAndTentFilterBlurPass.render(_offScreenFramebuffer.attachments[static_cast<uint32_t>(OffscreenAttachments::Luminance)], _offScreenTexture,
+				_context->getOnScreenFbo(), _samplerBilinear, _renderOnlyBloom, _exposure);
 			break;
 		}
 		case (BloomMode::HybridGaussian):
 		{
-			_hybridGaussianBlurPass.render(
-				_computePingPongTextures[1], _computePingPongTextures[0], _computeBlurFramebuffers[0], _blurFramebuffers[1], _blurFramebufferDimensions, _samplerBilinear);
+			_hybridGaussianBlurPass.render(_computeBlurFramebuffers[1].attachments[static_cast<uint32_t>(BloomAttachments::Bloom)], _computeBlurFramebuffers[0],
+				_computeBlurFramebuffers[1], _samplerBilinear, _computeLuminanceColorFormat);
 			break;
 		}
 		default:
@@ -2488,32 +2541,32 @@ pvr::Result OpenGLESPostProcessing::renderFrame()
 		{
 		case (BloomMode::GaussianOriginal):
 		{
-			blurredTexture = _pingPongTextures[1];
+			blurredTexture = _blurFramebuffers[1].attachments[static_cast<uint32_t>(BloomAttachments::Bloom)];
 			break;
 		}
 		case (BloomMode::GaussianLinear):
 		{
-			blurredTexture = _pingPongTextures[1];
+			blurredTexture = _blurFramebuffers[1].attachments[static_cast<uint32_t>(BloomAttachments::Bloom)];
 			break;
 		}
 		case (BloomMode::GaussianLinearTruncated):
 		{
-			blurredTexture = _pingPongTextures[1];
+			blurredTexture = _blurFramebuffers[1].attachments[static_cast<uint32_t>(BloomAttachments::Bloom)];
 			break;
 		}
 		case (BloomMode::Compute):
 		{
-			blurredTexture = _computePingPongTextures[1];
+			blurredTexture = _computeBlurFramebuffers[1].attachments[static_cast<uint32_t>(BloomAttachments::Bloom)];
 			break;
 		}
 		case (BloomMode::Kawase):
 		{
-			blurredTexture = _pingPongTextures[_kawaseBlurPass.getBlurredImageIndex()];
+			blurredTexture = _blurFramebuffers[_kawaseBlurPass.getBlurredImageIndex()].attachments[static_cast<uint32_t>(BloomAttachments::Bloom)];
 			break;
 		}
 		case (BloomMode::HybridGaussian):
 		{
-			blurredTexture = _pingPongTextures[1];
+			blurredTexture = _computeBlurFramebuffers[1].attachments[static_cast<uint32_t>(BloomAttachments::Bloom)];
 			break;
 		}
 		case (BloomMode::DualFilter):
@@ -2528,14 +2581,7 @@ pvr::Result OpenGLESPostProcessing::renderFrame()
 		}
 		case (BloomMode::NoBloom):
 		{
-			if (_isIMGFramebufferDownsampleSupported)
-			{
-				blurredTexture = _downSampledLuminanceTexture;
-			}
-			else
-			{
-				blurredTexture = _luminanceTexture;
-			}
+			blurredTexture = _blurFramebuffers[1].attachments[static_cast<uint32_t>(BloomAttachments::Bloom)];
 			break;
 		}
 		default:
@@ -2546,7 +2592,7 @@ pvr::Result OpenGLESPostProcessing::renderFrame()
 
 		gl::BindFramebuffer(GL_DRAW_FRAMEBUFFER, _context->getOnScreenFbo());
 		gl::Clear(GL_COLOR_BUFFER_BIT);
-		_postBloomPass.render(blurredTexture, _offScreenColorTexture, _samplerBilinear, _renderOnlyBloom, _blurMode == BloomMode::NoBloom);
+		_postBloomPass.render(blurredTexture, _offScreenTexture, _samplerBilinear, _renderOnlyBloom, _exposure);
 	}
 
 	renderUI();
@@ -2595,7 +2641,8 @@ void OpenGLESPostProcessing::createUiRenderer()
 	_uiRenderer.getDefaultControls()->setText("Left / right: Blur Mode\n"
 											  "Up / Down: Blur Size\n"
 											  "Action 1: Enable/Disable Bloom\n"
-											  "Action 2: Enable/Disable Animation\n");
+											  "Action 2: Enable/Disable Animation\n"
+											  "Action 3: Change Scene\n");
 	_uiRenderer.getDefaultControls()->commitUpdates();
 
 	updateBlurDescription();
@@ -2617,42 +2664,71 @@ void OpenGLESPostProcessing::updateBlurDescription()
 	}
 	case (BloomMode::GaussianOriginal):
 	{
-		_currentBlurString = BloomStrings[static_cast<uint32_t>(_blurMode)] + "\n" + DemoConfigurations::Configurations[_currentDemoConfiguration].gaussianConfig.second;
+		uint32_t numSamples = static_cast<uint32_t>(_gaussianBlurPass.gaussianOffsets[_currentDemoConfiguration].size());
+		_currentBlurString = BloomStrings[static_cast<uint32_t>(_blurMode)] + "\n" +
+			pvr::strings::createFormatted("Kernel Size = %u (%u + %u taps)", DemoConfigurations::Configurations[_currentDemoConfiguration].gaussianConfig, numSamples, numSamples);
 		break;
 	}
 	case (BloomMode::GaussianLinear):
 	{
-		_currentBlurString = BloomStrings[static_cast<uint32_t>(_blurMode)] + "\n" + DemoConfigurations::Configurations[_currentDemoConfiguration].linearGaussianConfig.second;
+		uint32_t numSamples = static_cast<uint32_t>(_linearGaussianBlurPass.gaussianOffsets[_currentDemoConfiguration].size());
+		_currentBlurString = BloomStrings[static_cast<uint32_t>(_blurMode)] + "\n" +
+			pvr::strings::createFormatted(
+				"Kernel Size = %u (%u + %u taps)", DemoConfigurations::Configurations[_currentDemoConfiguration].linearGaussianConfig, numSamples, numSamples);
 		break;
 	}
 	case (BloomMode::GaussianLinearTruncated):
 	{
-		_currentBlurString = BloomStrings[static_cast<uint32_t>(_blurMode)] + "\n" + DemoConfigurations::Configurations[_currentDemoConfiguration].truncatedLinearGaussianConfig.second;
+		uint32_t numSamples = static_cast<uint32_t>(_truncatedLinearGaussianBlurPass.gaussianOffsets[_currentDemoConfiguration].size());
+		_currentBlurString = BloomStrings[static_cast<uint32_t>(_blurMode)] + "\n" +
+			pvr::strings::createFormatted(
+				"Kernel Size = %u (%u + %u taps)", DemoConfigurations::Configurations[_currentDemoConfiguration].truncatedLinearGaussianConfig, numSamples, numSamples);
 		break;
 	}
 	case (BloomMode::Compute):
 	{
-		_currentBlurString = BloomStrings[static_cast<uint32_t>(_blurMode)] + "\n" + DemoConfigurations::Configurations[_currentDemoConfiguration].computeGaussianConfig.second;
+		uint32_t numSamples = static_cast<uint32_t>(_computeBlurPass.gaussianOffsets[_currentDemoConfiguration].size());
+		_currentBlurString = BloomStrings[static_cast<uint32_t>(_blurMode)] + "\n" +
+			pvr::strings::createFormatted(
+				"Kernel Size = %u (Sliding Average)", DemoConfigurations::Configurations[_currentDemoConfiguration].computeGaussianConfig, numSamples, numSamples);
 		break;
 	}
 	case (BloomMode::DualFilter):
 	{
-		_currentBlurString = BloomStrings[static_cast<uint32_t>(_blurMode)] + "\n" + DemoConfigurations::Configurations[_currentDemoConfiguration].dualFilterConfig.second;
+		uint32_t numSamples = _dualFilterBlurPass.blurIterations / 2;
+		_currentBlurString = BloomStrings[static_cast<uint32_t>(_blurMode)] + "\n" +
+			pvr::strings::createFormatted(
+				"Iterations = %u (%u Downsamples, %u Upsamples)", DemoConfigurations::Configurations[_currentDemoConfiguration].dualFilterConfig, numSamples, numSamples);
 		break;
 	}
 	case (BloomMode::TentFilter):
 	{
-		_currentBlurString = BloomStrings[static_cast<uint32_t>(_blurMode)] + "\n" + DemoConfigurations::Configurations[_currentDemoConfiguration].tentFilterConfig.second;
+		uint32_t numSamples = _downAndTentFilterBlurPass.blurIterations / 2;
+		_currentBlurString = BloomStrings[static_cast<uint32_t>(_blurMode)] + "\n" +
+			pvr::strings::createFormatted(
+				"Iterations = %u (%u Downsamples, %u Upsamples)", DemoConfigurations::Configurations[_currentDemoConfiguration].tentFilterConfig, numSamples, numSamples);
 		break;
 	}
 	case (BloomMode::HybridGaussian):
 	{
-		_currentBlurString = BloomStrings[static_cast<uint32_t>(_blurMode)] + "\n" + DemoConfigurations::Configurations[_currentDemoConfiguration].hybridConfig.second;
+		uint32_t numComputeSamples = static_cast<uint32_t>(_hybridGaussianBlurPass.computeBlurPass->gaussianOffsets[_currentDemoConfiguration].size());
+		uint32_t numLinearSamples = static_cast<uint32_t>(_hybridGaussianBlurPass.linearBlurPass->gaussianOffsets[_currentDemoConfiguration].size());
+		_currentBlurString = BloomStrings[static_cast<uint32_t>(_blurMode)] + "\n" +
+			pvr::strings::createFormatted("Horizontal Compute %u taps, Vertical Linear Gaussian %u taps)", numComputeSamples, numLinearSamples);
 		break;
 	}
 	case (BloomMode::Kawase):
 	{
-		_currentBlurString = BloomStrings[static_cast<uint32_t>(_blurMode)] + "\n" + DemoConfigurations::Configurations[_currentDemoConfiguration].kawaseConfig.second;
+		std::string kernelString = "";
+		uint32_t numIterations = _kawaseBlurPass.blurIterations;
+
+		for (uint32_t i = 0; i < numIterations - 1; ++i)
+		{
+			kernelString += pvr::strings::createFormatted("%u,", DemoConfigurations::Configurations[_currentDemoConfiguration].kawaseConfig.kernel[i]);
+		}
+		kernelString += pvr::strings::createFormatted("%u", DemoConfigurations::Configurations[_currentDemoConfiguration].kawaseConfig.kernel[numIterations - 1]);
+
+		_currentBlurString = BloomStrings[static_cast<uint32_t>(_blurMode)] + "\n" + pvr::strings::createFormatted("%u Iterations: %s", numIterations, kernelString.c_str());
 		break;
 	}
 	default:
@@ -2669,7 +2745,6 @@ void OpenGLESPostProcessing::createSceneBuffer()
 	pvr::utils::StructuredMemoryDescription desc;
 	desc.addElement(BufferEntryNames::Scene::InverseViewProjectionMatrix, pvr::GpuDatatypes::mat4x4);
 	desc.addElement(BufferEntryNames::Scene::EyePosition, pvr::GpuDatatypes::vec3);
-	desc.addElement(BufferEntryNames::Scene::LightPosition, pvr::GpuDatatypes::vec3);
 
 	_sceneBufferView.init(desc);
 
@@ -2683,96 +2758,16 @@ void OpenGLESPostProcessing::createSceneBuffer()
 		gl::BindBuffer(GL_COPY_READ_BUFFER, _sceneBuffer);
 		gl::ext::BufferStorageEXT(GL_COPY_READ_BUFFER, (GLsizei)_sceneBufferView.getSize(), 0, GL_MAP_WRITE_BIT_EXT | GL_MAP_PERSISTENT_BIT_EXT | GL_MAP_COHERENT_BIT_EXT);
 
-		void* memory = gl::MapBufferRange(GL_COPY_READ_BUFFER, 0, _sceneBufferView.getSize(), GL_MAP_WRITE_BIT_EXT | GL_MAP_PERSISTENT_BIT_EXT | GL_MAP_COHERENT_BIT_EXT);
+		void* memory = gl::MapBufferRange(
+			GL_COPY_READ_BUFFER, 0, static_cast<GLsizeiptr>(_sceneBufferView.getSize()), GL_MAP_WRITE_BIT_EXT | GL_MAP_PERSISTENT_BIT_EXT | GL_MAP_COHERENT_BIT_EXT);
 		_sceneBufferView.pointToMappedMemory(memory);
 	}
-}
-
-/// <summary>Creates the bloom threshold buffer.</summary>
-void OpenGLESPostProcessing::createBloomThresholdBuffer()
-{
-	pvr::utils::StructuredMemoryDescription desc;
-	desc.addElement(BufferEntryNames::BloomConfig::LuminosityThreshold, pvr::GpuDatatypes::Float);
-
-	_bloomThresholdBufferView.init(desc);
-
-	gl::GenBuffers(1, &_bloomThresholdBuffer);
-	gl::BindBuffer(GL_UNIFORM_BUFFER, _bloomThresholdBuffer);
-	gl::BufferData(GL_UNIFORM_BUFFER, (size_t)_bloomThresholdBufferView.getSize(), nullptr, GL_DYNAMIC_DRAW);
-
-	// if GL_EXT_buffer_storage is supported then map the buffer upfront and never upmap it
-	if (_isBufferStorageExtSupported)
-	{
-		gl::BindBuffer(GL_COPY_READ_BUFFER, _bloomThresholdBuffer);
-		gl::ext::BufferStorageEXT(GL_COPY_READ_BUFFER, (GLsizei)_bloomThresholdBufferView.getSize(), 0, GL_MAP_WRITE_BIT_EXT | GL_MAP_PERSISTENT_BIT_EXT | GL_MAP_COHERENT_BIT_EXT);
-
-		void* memory = gl::MapBufferRange(GL_COPY_READ_BUFFER, 0, _bloomThresholdBufferView.getSize(), GL_MAP_WRITE_BIT_EXT | GL_MAP_PERSISTENT_BIT_EXT | GL_MAP_COHERENT_BIT_EXT);
-		_bloomThresholdBufferView.pointToMappedMemory(memory);
-	}
-}
-
-/// <summary>Creates main application buffers.</summary>
-void OpenGLESPostProcessing::createBuffers()
-{
-	createSceneBuffer();
-	createBloomThresholdBuffer();
-
-	// update the bloom threshold buffer
-	if (_useThreshold)
-	{
-		// This threshold values controls the minimum luminosity value any fragment must have to be used as part of the bloom
-		_bloomLumaThreshold = BloomLumaThreshold;
-	}
-	else
-	{
-		_bloomLumaThreshold = 0.0;
-	}
-
-	void* mappedMemory = nullptr;
-	if (!_isBufferStorageExtSupported)
-	{
-		gl::BindBuffer(GL_UNIFORM_BUFFER, _bloomThresholdBuffer);
-		mappedMemory = gl::MapBufferRange(GL_UNIFORM_BUFFER, 0, (size_t)_bloomThresholdBufferView.getSize(), GL_MAP_WRITE_BIT);
-		_bloomThresholdBufferView.pointToMappedMemory(mappedMemory);
-	}
-
-	_bloomThresholdBufferView.getElementByName(BufferEntryNames::BloomConfig::LuminosityThreshold).setValue(_bloomLumaThreshold);
-
-	if (!_isBufferStorageExtSupported)
-	{
-		gl::UnmapBuffer(GL_UNIFORM_BUFFER);
-	}
-
-	debugThrowOnApiError("createBuffers");
-}
-
-/// <summary>Allocates the various ping pong textures used throughout the demo.</summary>
-void OpenGLESPostProcessing::allocatePingPongTextures()
-{
-	for (uint32_t i = 0; i < 2; ++i)
-	{
-		gl::GenTextures(1, &_pingPongTextures[i]);
-		gl::BindTexture(GL_TEXTURE_2D, _pingPongTextures[i]);
-		gl::TexStorage2D(GL_TEXTURE_2D, 1, _luminanceColorFormat, _blurFramebufferDimensions.x, _blurFramebufferDimensions.y);
-	}
-
-	debugThrowOnApiError("allocatePingPongTextures");
-
-	for (uint32_t i = 0; i < 2; ++i)
-	{
-		gl::GenTextures(1, &_computePingPongTextures[i]);
-		gl::BindTexture(GL_TEXTURE_2D, _computePingPongTextures[i]);
-		gl::TexStorage2D(GL_TEXTURE_2D, 1, _computeLuminanceColorFormat, _blurFramebufferDimensions.x, _blurFramebufferDimensions.y);
-	}
-
-	debugThrowOnApiError("allocateComputePingPongImages");
 }
 
 /// <summary>Creates the various samplers used throughout the demo.</summary>
 void OpenGLESPostProcessing::createSamplers()
 {
 	gl::GenSamplers(1, &_samplerTrilinear);
-	gl::GenSamplers(1, &_irradianceSampler);
 	gl::GenSamplers(1, &_samplerBilinear);
 	gl::GenSamplers(1, &_samplerNearest);
 
@@ -2781,12 +2776,6 @@ void OpenGLESPostProcessing::createSamplers()
 	gl::SamplerParameteri(_samplerTrilinear, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 	gl::SamplerParameteri(_samplerTrilinear, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	gl::SamplerParameteri(_samplerTrilinear, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-	gl::SamplerParameteri(_irradianceSampler, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	gl::SamplerParameteri(_irradianceSampler, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	gl::SamplerParameteri(_irradianceSampler, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-	gl::SamplerParameteri(_irradianceSampler, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	gl::SamplerParameteri(_irradianceSampler, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
 	gl::SamplerParameteri(_samplerBilinear, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	gl::SamplerParameteri(_samplerBilinear, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -2803,32 +2792,51 @@ void OpenGLESPostProcessing::createSamplers()
 	debugThrowOnApiError("createSamplers");
 }
 
+void OpenGLESPostProcessing::createFramebufferAndAttachment(GLuint& framebuffer, GLuint& texture, GLenum attachmentFormat, const glm::ivec2& dimension)
+{
+	gl::GenTextures(1, &texture);
+	gl::BindTexture(GL_TEXTURE_2D, texture);
+	gl::TexStorage2D(GL_TEXTURE_2D, 1, attachmentFormat, dimension.x, dimension.y);
+
+	gl::GenFramebuffers(1, &framebuffer);
+	gl::BindFramebuffer(GL_DRAW_FRAMEBUFFER, framebuffer);
+	gl::FramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);
+	gl::FramebufferParameteri(GL_DRAW_FRAMEBUFFER, GL_FRAMEBUFFER_DEFAULT_WIDTH, dimension.x);
+	gl::FramebufferParameteri(GL_DRAW_FRAMEBUFFER, GL_FRAMEBUFFER_DEFAULT_HEIGHT, dimension.y);
+
+	pvr::utils::checkFboStatus();
+}
+
 /// <summary>Create the framebuffers which will be used in the various bloom passes.</summary>
 void OpenGLESPostProcessing::createBlurFramebuffers()
 {
 	for (uint32_t i = 0; i < 2; ++i)
 	{
-		gl::GenFramebuffers(1, &_blurFramebuffers[i]);
-		gl::BindFramebuffer(GL_DRAW_FRAMEBUFFER, _blurFramebuffers[i]);
-		gl::FramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _pingPongTextures[i], 0);
-		gl::FramebufferParameteri(GL_DRAW_FRAMEBUFFER, GL_FRAMEBUFFER_DEFAULT_WIDTH, _blurFramebufferDimensions.x);
-		gl::FramebufferParameteri(GL_DRAW_FRAMEBUFFER, GL_FRAMEBUFFER_DEFAULT_HEIGHT, _blurFramebufferDimensions.y);
-		pvr::utils::checkFboStatus();
+		// Create the downsized resolution framebuffer used for rendering
+		{
+			_blurFramebuffers[i].attachments.resize(1);
+
+			createFramebufferAndAttachment(_blurFramebuffers[i].framebuffer, _blurFramebuffers[i].attachments[static_cast<uint32_t>(BloomAttachments::Bloom)],
+				_luminanceColorFormat, _blurFramebufferDimensions);
+
+			_blurFramebuffers[i].dimensions.x = _blurFramebufferDimensions.x;
+			_blurFramebuffers[i].dimensions.y = _blurFramebufferDimensions.y;
+		}
+
+		// Create the downsized resolution framebuffer used for compute tasks
+		// This is necessary as _computeLuminanceColorFormat does not match _luminanceColorFormat. The format selected for storing the luminance values
+		// is not supported for image load store so we use a larger sized image format
+		{
+			_computeBlurFramebuffers[i].attachments.resize(1);
+
+			createFramebufferAndAttachment(_computeBlurFramebuffers[i].framebuffer, _computeBlurFramebuffers[i].attachments[static_cast<uint32_t>(BloomAttachments::Bloom)],
+				_computeLuminanceColorFormat, _blurFramebufferDimensions);
+
+			_computeBlurFramebuffers[i].dimensions.x = _blurFramebufferDimensions.x;
+			_computeBlurFramebuffers[i].dimensions.y = _blurFramebufferDimensions.y;
+		}
+		debugThrowOnApiError("createBlurFramebuffers init");
 	}
-
-	debugThrowOnApiError("createBlurFramebuffers init");
-
-	for (uint32_t i = 0; i < 2; ++i)
-	{
-		gl::GenFramebuffers(1, &_computeBlurFramebuffers[i]);
-		gl::BindFramebuffer(GL_DRAW_FRAMEBUFFER, _computeBlurFramebuffers[i]);
-		gl::FramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _computePingPongTextures[i], 0);
-		gl::FramebufferParameteri(GL_DRAW_FRAMEBUFFER, GL_FRAMEBUFFER_DEFAULT_WIDTH, _blurFramebufferDimensions.x);
-		gl::FramebufferParameteri(GL_DRAW_FRAMEBUFFER, GL_FRAMEBUFFER_DEFAULT_HEIGHT, _blurFramebufferDimensions.y);
-		pvr::utils::checkFboStatus();
-	}
-
-	debugThrowOnApiError("createComputeBlurFramebuffers init");
 }
 
 /// <summary>Determine the maximum down scale factor supported by the GL_IMG_framebuffer_downsample extension.</summary>
@@ -2878,67 +2886,76 @@ void OpenGLESPostProcessing::getDownScaleFactor(GLint& xDownscale, GLint& yDowns
 void OpenGLESPostProcessing::createOffScreenFramebuffers()
 {
 	// Offscreen texture
-	gl::GenTextures(1, &_offScreenColorTexture);
-	gl::BindTexture(GL_TEXTURE_2D, _offScreenColorTexture);
+	gl::GenTextures(1, &_offScreenTexture);
+	gl::BindTexture(GL_TEXTURE_2D, _offScreenTexture);
 	gl::TexStorage2D(GL_TEXTURE_2D, 1, _offscreenColorFormat, getWidth(), getHeight());
-
 	debugThrowOnApiError("createOffScreenFramebuffers - created offscreen color texture");
-
-	// Source luminance texture
-	gl::GenTextures(1, &_luminanceTexture);
-	gl::BindTexture(GL_TEXTURE_2D, _luminanceTexture);
-	gl::TexStorage2D(GL_TEXTURE_2D, 1, _luminanceColorFormat, getWidth(), getHeight());
-
-	debugThrowOnApiError("createOffScreenFramebuffers - created luminance texture");
-
-	// Downsampled luminance texture
-	if (_isIMGFramebufferDownsampleSupported)
-	{
-		gl::GenTextures(1, &_downSampledLuminanceTexture);
-		gl::BindTexture(GL_TEXTURE_2D, _downSampledLuminanceTexture);
-		gl::TexStorage2D(GL_TEXTURE_2D, 1, _luminanceColorFormat, getWidth() / _IMGFramebufferScale, getHeight() / _IMGFramebufferScale);
-
-		debugThrowOnApiError("createOffScreenFramebuffers - created downsample luminance texture");
-	}
 
 	gl::GenTextures(1, &_depthStencilTexture);
 	gl::BindTexture(GL_TEXTURE_2D, _depthStencilTexture);
 	gl::TexStorage2D(GL_TEXTURE_2D, 1, GL_DEPTH24_STENCIL8, getWidth(), getHeight());
-
 	debugThrowOnApiError("createOffScreenFramebuffers - created depth stencil texture");
 
-	// Fbo used for the offscreen rendering
-	{
-		gl::GenFramebuffers(1, &_offScreenFramebuffer);
-		gl::BindFramebuffer(GL_DRAW_FRAMEBUFFER, _offScreenFramebuffer);
-		gl::FramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _offScreenColorTexture, 0);
+	// Make use of the previously created textures
+	_offScreenFramebuffer.attachments.resize(static_cast<uint32_t>(OffscreenAttachments::NumAttachments));
+	_offScreenFramebuffer.attachments[static_cast<uint32_t>(OffscreenAttachments::Offscreen)] = _offScreenTexture;
+	_offScreenFramebuffer.attachments[static_cast<uint32_t>(OffscreenAttachments::DepthStencil)] = _depthStencilTexture;
 
-		if (_isIMGFramebufferDownsampleSupported)
-		{
-			gl::ext::FramebufferTexture2DDownsampleIMG(
-				GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, _downSampledLuminanceTexture, 0, _IMGFramebufferScale, _IMGFramebufferScale);
-		}
-		else
-		{
-			gl::FramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, _luminanceTexture, 0);
-		}
+	// Full size luminance texture
+	gl::GenTextures(1, &_offScreenFramebuffer.attachments[static_cast<uint32_t>(OffscreenAttachments::Luminance)]);
+	gl::BindTexture(GL_TEXTURE_2D, _offScreenFramebuffer.attachments[static_cast<uint32_t>(OffscreenAttachments::Luminance)]);
+	gl::TexStorage2D(GL_TEXTURE_2D, 1, _luminanceColorFormat, getWidth(), getHeight());
+	debugThrowOnApiError("createOffScreenFramebuffers - created full size luminance texture");
+
+	// Create the offscreen framebuffer
+	gl::GenFramebuffers(1, &_offScreenFramebuffer.framebuffer);
+	gl::BindFramebuffer(GL_DRAW_FRAMEBUFFER, _offScreenFramebuffer.framebuffer);
+	gl::FramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _offScreenFramebuffer.attachments[static_cast<uint32_t>(OffscreenAttachments::Offscreen)], 0);
+	gl::FramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, _offScreenFramebuffer.attachments[static_cast<uint32_t>(OffscreenAttachments::Luminance)], 0);
+	gl::FramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, _offScreenFramebuffer.attachments[static_cast<uint32_t>(OffscreenAttachments::DepthStencil)], 0);
+
+	_offScreenFramebuffer.dimensions.x = getWidth();
+	_offScreenFramebuffer.dimensions.y = getHeight();
+	gl::FramebufferParameteri(GL_DRAW_FRAMEBUFFER, GL_FRAMEBUFFER_DEFAULT_WIDTH, _offScreenFramebuffer.dimensions.x);
+	gl::FramebufferParameteri(GL_DRAW_FRAMEBUFFER, GL_FRAMEBUFFER_DEFAULT_HEIGHT, _offScreenFramebuffer.dimensions.y);
+
+	debugThrowOnApiError("createOffScreenNoDownsampleFramebuffers - created offscreen Framebuffer");
+	pvr::utils::checkFboStatus();
+
+	// Fbo used for the offscreen rendering
+	if (_isIMGFramebufferDownsampleSupported)
+	{
+		// Make use of the previously created textures
+		_offScreenFramebufferUsingIMGDownsample.attachments.resize(static_cast<uint32_t>(OffscreenWithIMGFramebufferDownsampleAttachments::NumAttachments));
+		_offScreenFramebuffer.attachments[static_cast<uint32_t>(OffscreenWithIMGFramebufferDownsampleAttachments::Offscreen)] = _offScreenTexture;
+		_offScreenFramebuffer.attachments[static_cast<uint32_t>(OffscreenWithIMGFramebufferDownsampleAttachments::DepthStencil)] = _depthStencilTexture;
+
+		// Create the downsampled luminance texture
+		gl::GenTextures(1, &_offScreenFramebufferUsingIMGDownsample.attachments[static_cast<uint32_t>(OffscreenWithIMGFramebufferDownsampleAttachments::DownsampledLuminance)]);
+		gl::BindTexture(
+			GL_TEXTURE_2D, _offScreenFramebufferUsingIMGDownsample.attachments[static_cast<uint32_t>(OffscreenWithIMGFramebufferDownsampleAttachments::DownsampledLuminance)]);
+		gl::TexStorage2D(GL_TEXTURE_2D, 1, _luminanceColorFormat, getWidth() / _IMGFramebufferScale, getHeight() / _IMGFramebufferScale);
+		debugThrowOnApiError("createOffScreenFramebuffers - created downsample luminance texture");
+
+		// Create the offscreen framebuffer which makes use of IMG_framebuffer_downsample for downsampling the luminance directly
+		gl::GenFramebuffers(1, &_offScreenFramebufferUsingIMGDownsample.framebuffer);
+		gl::BindFramebuffer(GL_DRAW_FRAMEBUFFER, _offScreenFramebufferUsingIMGDownsample.framebuffer);
+		gl::FramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
+			_offScreenFramebuffer.attachments[static_cast<uint32_t>(OffscreenWithIMGFramebufferDownsampleAttachments::Offscreen)], 0);
+
+		// Make use of IMG_framebuffer_downsample and attach the lower resolution luminance texture
+		gl::ext::FramebufferTexture2DDownsampleIMG(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D,
+			_offScreenFramebufferUsingIMGDownsample.attachments[static_cast<uint32_t>(OffscreenWithIMGFramebufferDownsampleAttachments::DownsampledLuminance)], 0,
+			_IMGFramebufferScale, _IMGFramebufferScale);
+		gl::FramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
+			_offScreenFramebuffer.attachments[static_cast<uint32_t>(OffscreenWithIMGFramebufferDownsampleAttachments::DepthStencil)], 0);
+
+		_offScreenFramebufferUsingIMGDownsample.dimensions.x = getWidth();
+		_offScreenFramebufferUsingIMGDownsample.dimensions.y = getHeight();
+		gl::FramebufferParameteri(GL_DRAW_FRAMEBUFFER, GL_FRAMEBUFFER_DEFAULT_WIDTH, _offScreenFramebufferUsingIMGDownsample.dimensions.x);
+		gl::FramebufferParameteri(GL_DRAW_FRAMEBUFFER, GL_FRAMEBUFFER_DEFAULT_HEIGHT, _offScreenFramebufferUsingIMGDownsample.dimensions.y);
 
 		debugThrowOnApiError("createOffScreenFramebuffers - created offscreen Framebuffer");
-
-		gl::FramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, _depthStencilTexture, 0);
-		pvr::utils::checkFboStatus();
-	}
-
-	// Fbo used when using Bloom passes which take care of their own downsampling
-	{
-		gl::GenFramebuffers(1, &_offScreenNoDownsampleFramebuffer);
-		gl::BindFramebuffer(GL_DRAW_FRAMEBUFFER, _offScreenNoDownsampleFramebuffer);
-		gl::FramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _offScreenColorTexture, 0);
-		gl::FramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, _luminanceTexture, 0);
-
-		debugThrowOnApiError("createOffScreenNoDownsampleFramebuffers - created offscreen Framebuffer");
-
-		gl::FramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, _depthStencilTexture, 0);
 		pvr::utils::checkFboStatus();
 	}
 
@@ -2950,6 +2967,9 @@ void OpenGLESPostProcessing::updateDynamicSceneData()
 {
 	// Update object animations
 	updateAnimation();
+
+	_exposure = SceneTexFileNames[_currentScene].getLinearExposure();
+	_threshold = SceneTexFileNames[_currentScene].threshold;
 
 	// Update the animation data used in the statue pass
 	_statuePass.updateAnimation(_objectAngleY, _viewProjectionMatrix);
@@ -2965,49 +2985,11 @@ void OpenGLESPostProcessing::updateDynamicSceneData()
 
 		_sceneBufferView.getElementByName(BufferEntryNames::Scene::InverseViewProjectionMatrix).setValue(glm::inverse(_viewProjectionMatrix));
 		_sceneBufferView.getElementByName(BufferEntryNames::Scene::EyePosition).setValue(_camera.getCameraPosition());
-		_sceneBufferView.getElementByName(BufferEntryNames::Scene::LightPosition).setValue(_lightPosition);
 
 		if (!_isBufferStorageExtSupported)
 		{
 			gl::UnmapBuffer(GL_UNIFORM_BUFFER);
 		}
-	}
-
-	if (_mustUpdateDemoConfig)
-	{
-		switch (_blurMode)
-		{
-		case (BloomMode::GaussianOriginal):
-		{
-			_gaussianBlurPass.updateKernelBuffer();
-			break;
-		}
-		case (BloomMode::GaussianLinear):
-		{
-			_linearGaussianBlurPass.updateKernelBuffer();
-			break;
-		}
-		case (BloomMode::GaussianLinearTruncated):
-		{
-			_truncatedLinearGaussianBlurPass.updateKernelBuffer();
-			break;
-		}
-		case (BloomMode::Compute):
-		{
-			_computeBlurPass.updateKernelBuffer();
-			break;
-		}
-		case (BloomMode::HybridGaussian):
-		{
-			_hybridGaussianBlurPass.linearBlurPass->updateKernelBuffer();
-			_hybridGaussianBlurPass.computeBlurPass->updateKernelBuffer();
-			break;
-		}
-		default:
-			break;
-		}
-
-		_mustUpdateDemoConfig = false;
 	}
 }
 
@@ -3061,6 +3043,11 @@ void OpenGLESPostProcessing::updateAnimation()
 				_blurMode = static_cast<BloomMode>(currentBlurMode);
 			}
 
+			if (_blurMode == BloomMode::NoBloom)
+			{
+				(++_currentScene) %= NumScenes;
+			}
+
 			updateBloomConfiguration();
 		}
 	}
@@ -3073,44 +3060,44 @@ void OpenGLESPostProcessing::updateDemoConfigs()
 	{
 	case (BloomMode::GaussianOriginal):
 	{
-		_gaussianBlurPass.updateKernelConfig(DemoConfigurations::Configurations[_currentDemoConfiguration].gaussianConfig.first, false, false);
+		_gaussianBlurPass.updateKernelConfig(_currentDemoConfiguration);
 		break;
 	}
 	case (BloomMode::GaussianLinear):
 	{
-		_linearGaussianBlurPass.updateKernelConfig(DemoConfigurations::Configurations[_currentDemoConfiguration].linearGaussianConfig.first, true, false);
+		_linearGaussianBlurPass.updateKernelConfig(_currentDemoConfiguration);
 		break;
 	}
 	case (BloomMode::GaussianLinearTruncated):
 	{
-		_truncatedLinearGaussianBlurPass.updateKernelConfig(DemoConfigurations::Configurations[_currentDemoConfiguration].truncatedLinearGaussianConfig.first, true, true);
+		_truncatedLinearGaussianBlurPass.updateKernelConfig(_currentDemoConfiguration);
 		break;
 	}
 	case (BloomMode::Kawase):
 	{
-		_kawaseBlurPass.updateConfig(DemoConfigurations::Configurations[_currentDemoConfiguration].kawaseConfig.first.kernel,
-			DemoConfigurations::Configurations[_currentDemoConfiguration].kawaseConfig.first.numIterations);
+		_kawaseBlurPass.updateConfig(DemoConfigurations::Configurations[_currentDemoConfiguration].kawaseConfig.kernel,
+			DemoConfigurations::Configurations[_currentDemoConfiguration].kawaseConfig.numIterations);
 		break;
 	}
 	case (BloomMode::Compute):
 	{
-		_computeBlurPass.updateKernelConfig(DemoConfigurations::Configurations[_currentDemoConfiguration].computeGaussianConfig.first, false, false);
+		_computeBlurPass.updateKernelConfig(_currentDemoConfiguration);
 		break;
 	}
 	case (BloomMode::DualFilter):
 	{
-		_dualFilterBlurPass.updateConfig(DemoConfigurations::Configurations[_currentDemoConfiguration].dualFilterConfig.first);
+		_dualFilterBlurPass.updateConfig(DemoConfigurations::Configurations[_currentDemoConfiguration].dualFilterConfig);
 		break;
 	}
 	case (BloomMode::TentFilter):
 	{
-		_downAndTentFilterBlurPass.updateConfig(DemoConfigurations::Configurations[_currentDemoConfiguration].tentFilterConfig.first);
+		_downAndTentFilterBlurPass.updateConfig(DemoConfigurations::Configurations[_currentDemoConfiguration].dualFilterConfig);
 		break;
 	}
 	case (BloomMode::HybridGaussian):
 	{
-		_truncatedLinearGaussianBlurPass.updateKernelConfig(DemoConfigurations::Configurations[_currentDemoConfiguration].truncatedLinearGaussianConfig.first, true, true);
-		_computeBlurPass.updateKernelConfig(DemoConfigurations::Configurations[_currentDemoConfiguration].computeGaussianConfig.first, false, false);
+		_truncatedLinearGaussianBlurPass.updateKernelConfig(_currentDemoConfiguration);
+		_computeBlurPass.updateKernelConfig(_currentDemoConfiguration);
 		break;
 	}
 	default:
@@ -3127,8 +3114,33 @@ void OpenGLESPostProcessing::updateBloomConfiguration()
 	updateBlurDescription();
 	_uiRenderer.getDefaultDescription()->setText(_currentBlurString);
 	_uiRenderer.getDefaultDescription()->commitUpdates();
+}
 
-	_mustUpdateDemoConfig = true;
+void OpenGLESPostProcessing::handleDesktopInput()
+{
+#ifdef PVR_PLATFORM_IS_DESKTOP
+	if (isKeyPressed(pvr::Keys::PageDown))
+	{
+		SceneTexFileNames[_currentScene].keyValue *= .85f;
+	}
+	if (isKeyPressed(pvr::Keys::PageUp))
+	{
+		SceneTexFileNames[_currentScene].keyValue *= 1.15f;
+	}
+
+	SceneTexFileNames[_currentScene].keyValue = glm::clamp(SceneTexFileNames[_currentScene].keyValue, 0.001f, 100.0f);
+
+	if (isKeyPressed(pvr::Keys::SquareBracketLeft))
+	{
+		SceneTexFileNames[_currentScene].threshold -= 0.05f;
+	}
+	if (isKeyPressed(pvr::Keys::SquareBracketRight))
+	{
+		SceneTexFileNames[_currentScene].threshold += 0.05f;
+	}
+
+	SceneTexFileNames[_currentScene].threshold = glm::clamp(SceneTexFileNames[_currentScene].threshold, 0.05f, 20.0f);
+#endif
 }
 
 /// <summary>Handles user input and updates live variables accordingly.</summary>
@@ -3187,6 +3199,12 @@ void OpenGLESPostProcessing::eventMappedInput(pvr::SimplifiedInput e)
 	case pvr::SimplifiedInput::Action2:
 	{
 		_animateObject = !_animateObject;
+		_animateCamera = !_animateCamera;
+		break;
+	}
+	case pvr::SimplifiedInput::Action3:
+	{
+		(++_currentScene) %= NumScenes;
 		break;
 	}
 	default:

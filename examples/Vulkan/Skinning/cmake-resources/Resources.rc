@@ -1,4 +1,4 @@
-//Microsoft eMbedded Visual C++ generated resource script.
+// Microsoft Visual C++ generated resource script.
 //
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
@@ -58,20 +58,22 @@ END
 // RCDATA
 //
 /////////////////////////////////////////////////////////////////////////////
-// RCDATA: Assets (scenes,  effects, textures...)
-Arm.pvr		RCDATA		"..\\..\\..\\assets\\Robot\\Arm.pvr"
-Grid.pvr		RCDATA		"..\\..\\..\\assets\\Robot\\Grid.pvr"
-Pipes.pvr		RCDATA		"..\\..\\..\\assets\\Robot\\Pipes.pvr"
-RobotDiffuse.pvr		RCDATA		"..\\..\\..\\assets\\Robot\\RobotDiffuse.pvr"
-RobotNormal.pvr		RCDATA		"..\\..\\..\\assets\\Robot\\RobotNormal.pvr"
-Tiles.pvr		RCDATA		"..\\..\\..\\assets\\Robot\\Tiles.pvr"
-Robot.pod		RCDATA		"..\\..\\..\\assets\\Robot\\Robot.pod"
-Skinning.pfx		RCDATA		"..\\Skinning.pfx"
-// RCDATA: Vulkan Spir-V shaders(glsl)
-DefaultFragShader.fsh.spv		RCDATA		"..\\DefaultFragShader.fsh.spv"
-DefaultVertShader.vsh.spv		RCDATA		"..\\DefaultVertShader.vsh.spv"
-SkinnedFragShader.fsh.spv		RCDATA		"..\\SkinnedFragShader.fsh.spv"
-SkinnedVertShader.vsh.spv		RCDATA		"..\\SkinnedVertShader.vsh.spv"
+Arm.pvr RCDATA "..\\..\\..\\assets\\Robot\\Arm.pvr"
+Grid.pvr RCDATA "..\\..\\..\\assets\\Robot\\Grid.pvr"
+Pipes.pvr RCDATA "..\\..\\..\\assets\\Robot\\Pipes.pvr"
+RobotDiffuse.pvr RCDATA "..\\..\\..\\assets\\Robot\\RobotDiffuse.pvr"
+RobotNormal.pvr RCDATA "..\\..\\..\\assets\\Robot\\RobotNormal.pvr"
+Tiles.pvr RCDATA "..\\..\\..\\assets\\Robot\\Tiles.pvr"
+Robot.pod RCDATA "..\\..\\..\\assets\\Robot\\Robot.pod"
+Skinning.pfx RCDATA "..\\Skinning.pfx"
+DefaultFragShader.fsh RCDATA "..\\DefaultFragShader.fsh"
+DefaultVertShader.vsh RCDATA "..\\DefaultVertShader.vsh"
+SkinnedFragShader.fsh RCDATA "..\\SkinnedFragShader.fsh"
+SkinnedVertShader.vsh RCDATA "..\\SkinnedVertShader.vsh"
+DefaultFragShader.fsh.spv RCDATA "..\\DefaultFragShader.fsh.spv"
+DefaultVertShader.vsh.spv RCDATA "..\\DefaultVertShader.vsh.spv"
+SkinnedFragShader.fsh.spv RCDATA "..\\SkinnedFragShader.fsh.spv"
+SkinnedVertShader.vsh.spv RCDATA "..\\SkinnedVertShader.vsh.spv"
 
 #endif    // English (United Kingdom) resources
 /////////////////////////////////////////////////////////////////////////////

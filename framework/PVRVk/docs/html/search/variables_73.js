@@ -1,6 +1,7 @@
 var searchData=
 [
   ['sampler',['sampler',['../structpvrvk_1_1_descriptor_image_info.html#a3f6504ff5124f6d595d9990d9565ff71',1,'pvrvk::DescriptorImageInfo']]],
+  ['secondarycommandbuffer_5f',['SecondaryCommandBuffer_',['../classpvrvk_1_1impl_1_1_secondary_command_buffer___1_1make__shared__enabler.html#a4ee21c3e210c1226803c860907bd82ab',1,'pvrvk::impl::SecondaryCommandBuffer_::make_shared_enabler']]],
   ['signalsemaphore',['signalSemaphore',['../structpvrvk_1_1_bind_sparse_info.html#a778f9d1954594ab0913660908a35e6f8',1,'pvrvk::BindSparseInfo']]],
   ['signalsemaphores',['signalSemaphores',['../structpvrvk_1_1_submit_info.html#ad44c269ea25fe759e719b295a9663295',1,'pvrvk::SubmitInfo']]],
   ['size',['size',['../structpvrvk_1_1_sparse_memory_bind.html#a5ed8724912593bd4a301134260be3ac8',1,'pvrvk::SparseMemoryBind']]],

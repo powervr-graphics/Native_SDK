@@ -1,13 +1,11 @@
 rootProject.name='PowerVR_SDK'
 
-ext['BUILD_ENTIRE_SDK'] = 1
-
 if (!hasProperty('BUILD_OPENGLES_EXAMPLES') && !hasProperty('BUILD_VULKAN_EXAMPLES')) {
-	ext['BUILD_OPENGLES_EXAMPLES'] = 1
-	ext['BUILD_VULKAN_EXAMPLES'] = 1
+	ext.BUILD_OPENGLES_EXAMPLES = 1
+	ext.BUILD_VULKAN_EXAMPLES = 1
 }
 
-def OPENGLES_EXAMPLES = [ 
+ext.OPENGLES_EXAMPLES = [ 
 	'01_HelloAPI',
 	'02_IntroducingPVRShell',
 	'03_IntroducingPVRUtils',
@@ -29,7 +27,7 @@ def OPENGLES_EXAMPLES = [
 	'ImageBasedLighting'
 ]
 
-def VULKAN_EXAMPLES = [ 
+ext.VULKAN_EXAMPLES = [ 
 	'01_HelloAPI',
 	'02_IntroducingPVRShell',
 	'03_IntroducingPVRVk',
@@ -51,8 +49,18 @@ def VULKAN_EXAMPLES = [
 	'Glass',
 	'PVRScopeExample',
 	'PVRScopeRemote',
-	'ImageBasedLighting'
+	'ImageBasedLighting',
+	'IMGTextureFilterCubic'
 ]
+
+include('pugixml')
+project(':pugixml').projectDir=file('../external/pugixml/build-android')
+include('glslang')
+project(':glslang').projectDir=file('../external/glslang/build-android')
+include('glslangValidator')
+project(':glslangValidator').projectDir=file('../external/glslangValidator/build-android')
+include('VulkanMemoryAllocator')
+project(':VulkanMemoryAllocator').projectDir=file('../external/VulkanMemoryAllocator/build-android')
 
 include('PVRCore')
 project(':PVRCore').projectDir=file('../framework/PVRCore/build-android')
@@ -67,9 +75,10 @@ if (hasProperty('BUILD_OPENGLES_EXAMPLES')) {
 	include('PVRUtilsGles')
 	project(':PVRUtilsGles').projectDir=file('../framework/PVRUtils/OpenGLES/build-android')
 
-	OPENGLES_EXAMPLES.each { example ->
-		include(":OpenGLES${example.indexOf('_') == 2 ? example.substring(3) : example}")
-		project(":OpenGLES${example.indexOf('_') == 2 ? example.substring(3) : example}").projectDir=file("../examples/OpenGLES/${example}/build-android")
+	ext.OPENGLES_EXAMPLES.each { example ->
+		def exampleTaskName = "OpenGLES${example.indexOf('_') == 2 ? example.substring(3) : example}"
+		include(":${exampleTaskName}")
+		project(":${exampleTaskName}").projectDir=file("../examples/OpenGLES/${example}/build-android")
 	}
 }
 
@@ -81,8 +90,9 @@ if (hasProperty('BUILD_VULKAN_EXAMPLES')) {
 	include(':PVRPfx')
 	project(':PVRPfx').projectDir=file('../framework/PVRPfx/build-android')
 
-	VULKAN_EXAMPLES.each { example ->
-		include(":Vulkan${example.indexOf('_') == 2 ? example.substring(3) : example}")
-		project(":Vulkan${example.indexOf('_') == 2 ? example.substring(3) : example}").projectDir=file("../examples/Vulkan/${example}/build-android")
+	ext.VULKAN_EXAMPLES.each { example ->	
+		def exampleTaskName = "Vulkan${example.indexOf('_') == 2 ? example.substring(3) : example}"
+		include(":${exampleTaskName}")
+		project(":${exampleTaskName}").projectDir=file("../examples/Vulkan/${example}/build-android")
 	}
 }

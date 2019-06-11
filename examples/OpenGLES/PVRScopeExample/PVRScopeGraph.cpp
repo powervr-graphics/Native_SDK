@@ -84,16 +84,7 @@ bool PVRScopeGraph::init(pvr::EglContext& context, pvr::IAssetProvider& assetPro
 		gl::BindBuffer(GL_ARRAY_BUFFER, _vertexBufferGraphBorder);
 		gl::BufferData(GL_ARRAY_BUFFER, sizeof(glm::vec2) * Configuration::NumVerticesGraphBorder, NULL, GL_STATIC_DRAW);
 
-		if (PVRScopeGetCounters(scopeData, &numCounter, &counters, &reading))
-		{
-			graphCounters.resize(numCounter);
-
-			position(320, 240, pvr::Rectanglei(0, 0, 320, 240));
-		}
-		else
-		{
-			numCounter = 0;
-		}
+		updateCounters();
 	}
 
 	if (!createProgram(context, outMsg))
@@ -164,7 +155,7 @@ void PVRScopeGraph::ping(float dt)
 					if (counters[i].nGroup == activeGroup || counters[i].nGroup == 0xffffffff)
 					{
 						graphCounters[i].writePosCB = 0;
-						memset(graphCounters[i].valueCB.data(), 0, sizeof(graphCounters[i].valueCB[0]) * sizeCB);
+						memset(graphCounters[i].valueCB.data(), 0, sizeof(graphCounters[i].valueCB[0]) * graphCounters[i].valueCB.size());
 					}
 				}
 			}
@@ -183,6 +174,12 @@ void PVRScopeGraph::ping(float dt)
 
 					graphCounters[i].valueCB[graphCounters[i].writePosCB++] = reading.pfValueBuf[ui32Index++];
 				}
+			}
+
+			if (ui32Index < reading.nValueCnt)
+			{
+				printf("%s used only %u of %u values from PVRScopeReadCounters()!\n", __func__, ui32Index, reading.nValueCnt);
+				updateCounters();
 			}
 		}
 		update(dt);
@@ -309,7 +306,7 @@ void PVRScopeGraph::update(float dt)
 			{
 				bool updateThisCounter = mustUpdate;
 				// Set the legend
-				if (activeCounters[ii].legendLabel.isNull())
+				if (activeCounters[ii].legendLabel == nullptr)
 				{
 					activeCounters[ii].legendLabel = _uiRenderer->createText();
 					activeCounters[ii].legendValue = _uiRenderer->createText();
@@ -334,8 +331,8 @@ void PVRScopeGraph::update(float dt)
 
 					activeCounters[ii].legendLabel->setColor(ColorTable[graphCounters[counterId].colorLutIdx]);
 					activeCounters[ii].legendValue->setColor(ColorTable[graphCounters[counterId].colorLutIdx]);
-					activeCounters[ii].legendLabel->setAnchor(pvr::ui::Anchor::TopLeft, glm::vec2(-.98f, 0.5f));
-					activeCounters[ii].legendValue->setAnchor(pvr::ui::Anchor::TopRight, glm::vec2(-.98f, 0.5f));
+					activeCounters[ii].legendLabel->setAnchor(pvr::ui::Anchor::TopLeft, glm::vec2(0.1f, 0.98f));
+					activeCounters[ii].legendValue->setAnchor(pvr::ui::Anchor::TopRight, glm::vec2(0.1f, 0.98f));
 					activeCounters[ii].legendLabel->setPixelOffset(0.0f, -30.0f * ii);
 					activeCounters[ii].legendValue->setPixelOffset(550.0f, -30.0f * ii);
 
@@ -732,17 +729,35 @@ void PVRScopeGraph::position(const uint32_t viewportW, const uint32_t viewportH,
 			this->pixelW = pixelW;
 			this->graphH = graphH;
 
-			for (uint32_t i = 0; i < numCounter; ++i)
-			{
-				graphCounters[i].valueCB.clear();
-				graphCounters[i].valueCB.resize(sizeCB);
-				memset(graphCounters[i].valueCB.data(), 0, sizeof(graphCounters[i].valueCB[0]) * sizeCB);
-				graphCounters[i].writePosCB = 0;
-			}
+			updateCounters();
 		}
 		x = 2 * (static_cast<float>(graph.x) / viewportW) - 1;
 		y = 2 * (static_cast<float>(graph.y) / viewportH) - 1; // flip the y for Vulkan
 		updateBufferLines();
+	}
+}
+
+/*!*********************************************************************************************************************
+\brief  update the counter list
+\return void
+***********************************************************************************************************************/
+void PVRScopeGraph::updateCounters()
+{
+	if (PVRScopeGetCounters(scopeData, &numCounter, &counters, &reading))
+	{
+		graphCounters.resize(numCounter);
+		
+		for (uint32_t i = 0; i < numCounter; ++i)
+		{
+			graphCounters[i].valueCB.clear();
+			graphCounters[i].valueCB.resize(sizeCB);
+			memset(graphCounters[i].valueCB.data(), 0, sizeof(graphCounters[i].valueCB[0]) * sizeCB);
+			graphCounters[i].writePosCB = 0;
+		}
+	}
+	else
+	{
+		numCounter = 0;
 	}
 }
 

@@ -96,7 +96,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a7172ecbf61bf398bc63ce39dbb853d9b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_image_memory_barrier.html#a7172ecbf61bf398bc63ce39dbb853d9b">ImageMemoryBarrier</a> ()</td></tr>
 <tr class="memdesc:a7172ecbf61bf398bc63ce39dbb853d9b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor. All flags are zero initialized, and family indexes set to -1. <a href="#a7172ecbf61bf398bc63ce39dbb853d9b">More...</a><br/></td></tr>
 <tr class="separator:a7172ecbf61bf398bc63ce39dbb853d9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2b3feb967f0b1c841be3479b1343886e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_image_memory_barrier.html#a2b3feb967f0b1c841be3479b1343886e">ImageMemoryBarrier</a> (pvrvk::AccessFlags srcMask, pvrvk::AccessFlags dstMask, const <a class="el" href="namespacepvrvk.html#a0dde8112e297d1089979fbdbdcbbe0f4">Image</a> &amp;image, const ImageSubresourceRange &amp;subresourceRange, pvrvk::ImageLayout oldLayout, pvrvk::ImageLayout newLayout, uint32_t srcQueueFamilyIndex, uint32_t dstQueueFamilyIndex)</td></tr>
+<tr class="memitem:a2b3feb967f0b1c841be3479b1343886e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_image_memory_barrier.html#a2b3feb967f0b1c841be3479b1343886e">ImageMemoryBarrier</a> (pvrvk::AccessFlags srcMask, pvrvk::AccessFlags dstMask, const <a class="el" href="namespacepvrvk.html#a5e7f46cb10bc00fb2407525312b4116b">Image</a> &amp;image, const ImageSubresourceRange &amp;subresourceRange, pvrvk::ImageLayout oldLayout, pvrvk::ImageLayout newLayout, uint32_t srcQueueFamilyIndex, uint32_t dstQueueFamilyIndex)</td></tr>
 <tr class="memdesc:a2b3feb967f0b1c841be3479b1343886e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor. Set all individual elements. <a href="#a2b3feb967f0b1c841be3479b1343886e">More...</a><br/></td></tr>
 <tr class="separator:a2b3feb967f0b1c841be3479b1343886e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0d85169423e10e49a6cfebd8a256ab0e"><td class="memItemLeft" align="right" valign="top">const AccessFlags &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_image_memory_barrier.html#a0d85169423e10e49a6cfebd8a256ab0e">getDstAccessMask</a> () const </td></tr>
@@ -105,7 +105,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a6dd2bd143726b75edec2a9625b8627d9"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_image_memory_barrier.html#a6dd2bd143726b75edec2a9625b8627d9">getDstQueueFamilyIndex</a> () const </td></tr>
 <tr class="memdesc:a6dd2bd143726b75edec2a9625b8627d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the destination queue family index for the image associated with the memory barrier <a href="#a6dd2bd143726b75edec2a9625b8627d9">More...</a><br/></td></tr>
 <tr class="separator:a6dd2bd143726b75edec2a9625b8627d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a077500efa0fc29990702d8873b9669be"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacepvrvk.html#a0dde8112e297d1089979fbdbdcbbe0f4">Image</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_image_memory_barrier.html#a077500efa0fc29990702d8873b9669be">getImage</a> () const </td></tr>
+<tr class="memitem:a077500efa0fc29990702d8873b9669be"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacepvrvk.html#a5e7f46cb10bc00fb2407525312b4116b">Image</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_image_memory_barrier.html#a077500efa0fc29990702d8873b9669be">getImage</a> () const </td></tr>
 <tr class="memdesc:a077500efa0fc29990702d8873b9669be"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get Image <a href="#a077500efa0fc29990702d8873b9669be">More...</a><br/></td></tr>
 <tr class="separator:a077500efa0fc29990702d8873b9669be"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af2bd9babff698b0c69cf93aced03e428"><td class="memItemLeft" align="right" valign="top">const ImageLayout &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_image_memory_barrier.html#af2bd9babff698b0c69cf93aced03e428">getNewLayout</a> () const </td></tr>
@@ -127,9 +127,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:afd586b2b04e0abcef0600f42c1aeae42"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set dstAccessMask <a href="#afd586b2b04e0abcef0600f42c1aeae42">More...</a><br/></td></tr>
 <tr class="separator:afd586b2b04e0abcef0600f42c1aeae42"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a437b219d00bc9b01c43e8a36657661a5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_image_memory_barrier.html#a437b219d00bc9b01c43e8a36657661a5">setDstQueueFamilyIndex</a> (uint32_t dstQueueFamilyIndex)</td></tr>
-<tr class="memdesc:a437b219d00bc9b01c43e8a36657661a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the destination queue family index  <a href="#a437b219d00bc9b01c43e8a36657661a5">More...</a><br/></td></tr>
+<tr class="memdesc:a437b219d00bc9b01c43e8a36657661a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the destination queue family index <a href="#a437b219d00bc9b01c43e8a36657661a5">More...</a><br/></td></tr>
 <tr class="separator:a437b219d00bc9b01c43e8a36657661a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a91e2d47d5c6f708a5f5a3eba84209b7c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_image_memory_barrier.html#a91e2d47d5c6f708a5f5a3eba84209b7c">setImage</a> (const <a class="el" href="namespacepvrvk.html#a0dde8112e297d1089979fbdbdcbbe0f4">Image</a> &amp;image)</td></tr>
+<tr class="memitem:a91e2d47d5c6f708a5f5a3eba84209b7c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_image_memory_barrier.html#a91e2d47d5c6f708a5f5a3eba84209b7c">setImage</a> (const <a class="el" href="namespacepvrvk.html#a5e7f46cb10bc00fb2407525312b4116b">Image</a> &amp;image)</td></tr>
 <tr class="memdesc:a91e2d47d5c6f708a5f5a3eba84209b7c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set Image <a href="#a91e2d47d5c6f708a5f5a3eba84209b7c">More...</a><br/></td></tr>
 <tr class="separator:a91e2d47d5c6f708a5f5a3eba84209b7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a320237d3f4fb9ffb5703bcfa81c81a7f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_image_memory_barrier.html#a320237d3f4fb9ffb5703bcfa81c81a7f">setNewLayout</a> (const ImageLayout &amp;newLayout)</td></tr>
@@ -142,7 +142,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a1ac0b940b7646ae5b67e5cae79514846"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set srcAccessMask <a href="#a1ac0b940b7646ae5b67e5cae79514846">More...</a><br/></td></tr>
 <tr class="separator:a1ac0b940b7646ae5b67e5cae79514846"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6f89e937857108e3046f96331b243e89"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_image_memory_barrier.html#a6f89e937857108e3046f96331b243e89">setSrcQueueFamilyIndex</a> (uint32_t srcQueueFamilyIndex)</td></tr>
-<tr class="memdesc:a6f89e937857108e3046f96331b243e89"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the source queue family index  <a href="#a6f89e937857108e3046f96331b243e89">More...</a><br/></td></tr>
+<tr class="memdesc:a6f89e937857108e3046f96331b243e89"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the source queue family index <a href="#a6f89e937857108e3046f96331b243e89">More...</a><br/></td></tr>
 <tr class="separator:a6f89e937857108e3046f96331b243e89"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a71a59a16c28ed27cde48aeffc0a67679"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_image_memory_barrier.html#a71a59a16c28ed27cde48aeffc0a67679">setSubresourceRange</a> (const ImageSubresourceRange &amp;subresourceRange)</td></tr>
 <tr class="memdesc:a71a59a16c28ed27cde48aeffc0a67679"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the subresource range of the image associated with the memory barrier <a href="#a71a59a16c28ed27cde48aeffc0a67679">More...</a><br/></td></tr>
@@ -198,7 +198,7 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="namespacepvrvk.html#a0dde8112e297d1089979fbdbdcbbe0f4">Image</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespacepvrvk.html#a5e7f46cb10bc00fb2407525312b4116b">Image</a> &amp;&#160;</td>
           <td class="paramname"><em>image</em>, </td>
         </tr>
         <tr>
@@ -322,7 +322,7 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const <a class="el" href="namespacepvrvk.html#a0dde8112e297d1089979fbdbdcbbe0f4">Image</a>&amp; pvrvk::ImageMemoryBarrier::getImage </td>
+          <td class="memname">const <a class="el" href="namespacepvrvk.html#a5e7f46cb10bc00fb2407525312b4116b">Image</a>&amp; pvrvk::ImageMemoryBarrier::getImage </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -524,7 +524,7 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Set the destination queue family index </p>
+<p>Set the destination queue family index</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">dstQueueFamilyIndex</td><td>The destination queue family index of the image associated with the memory barrier</td></tr>
@@ -544,7 +544,7 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">void pvrvk::ImageMemoryBarrier::setImage </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="namespacepvrvk.html#a0dde8112e297d1089979fbdbdcbbe0f4">Image</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespacepvrvk.html#a5e7f46cb10bc00fb2407525312b4116b">Image</a> &amp;&#160;</td>
           <td class="paramname"><em>image</em></td><td>)</td>
           <td></td>
         </tr>
@@ -684,7 +684,7 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Set the source queue family index </p>
+<p>Set the source queue family index</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">srcQueueFamilyIndex</td><td>The source queue family index of the image associated with the memory barrier</td></tr>

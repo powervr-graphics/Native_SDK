@@ -91,7 +91,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 
-<p>Use this class through the Refcounted Framework Object <a class="el" href="namespacepvr_1_1ui.html#af60036230f19f85f7c411a1ef5e7032c" title="A Reference Counted Framework Object wrapping the Text_ interface.">pvr::ui::Text</a>. Represents some text that can be rendered as a normal <a class="el" href="classpvr_1_1ui_1_1impl_1_1_sprite__.html" title="Base sprite class. Use through the Sprite framework object. Represents something that can be rendered...">Sprite_</a> and additionally contains the necessary text manipulation functions. 
+<p>Use this class through the reference counted Framework Object <a class="el" href="namespacepvr_1_1ui.html#a4288ba6e787b12ce8b6dced8253715f9" title="A Reference Counted Framework Object wrapping the Text_ interface.">pvr::ui::Text</a>. Represents some text that can be rendered as a normal <a class="el" href="classpvr_1_1ui_1_1impl_1_1_sprite__.html" title="Base sprite class. Use through the Sprite framework object. Represents something that can be rendered...">Sprite_</a> and additionally contains the necessary text manipulation functions. 
  <a href="classpvr_1_1ui_1_1impl_1_1_text__.html#details">More...</a></p>
 <div class="dynheader">
 Inheritance diagram for pvr::ui::impl::Text_:</div>
@@ -104,10 +104,10 @@ Inheritance diagram for pvr::ui::impl::Text_:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a0c0326e031926879f480f047d76bc9d5"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1ui_1_1impl_1_1_text__.html#a0c0326e031926879f480f047d76bc9d5">~Text_</a> ()</td></tr>
-<tr class="memdesc:a0c0326e031926879f480f047d76bc9d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Virtual Descructor for a <a class="el" href="classpvr_1_1ui_1_1impl_1_1_text__.html" title="Use this class through the Refcounted Framework Object pvr::ui::Text. Represents some text that can b...">Text_</a>. <a href="#a0c0326e031926879f480f047d76bc9d5">More...</a><br/></td></tr>
+<tr class="memdesc:a0c0326e031926879f480f047d76bc9d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Virtual Descructor for a <a class="el" href="classpvr_1_1ui_1_1impl_1_1_text__.html" title="Use this class through the reference counted Framework Object pvr::ui::Text. Represents some text tha...">Text_</a>. <a href="#a0c0326e031926879f480f047d76bc9d5">More...</a><br/></td></tr>
 <tr class="separator:a0c0326e031926879f480f047d76bc9d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0c0326e031926879f480f047d76bc9d5"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1ui_1_1impl_1_1_text__.html#a0c0326e031926879f480f047d76bc9d5">~Text_</a> ()</td></tr>
-<tr class="memdesc:a0c0326e031926879f480f047d76bc9d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Virtual Descructor for a <a class="el" href="classpvr_1_1ui_1_1impl_1_1_text__.html" title="Use this class through the Refcounted Framework Object pvr::ui::Text. Represents some text that can b...">Text_</a>. <a href="#a0c0326e031926879f480f047d76bc9d5">More...</a><br/></td></tr>
+<tr class="memdesc:a0c0326e031926879f480f047d76bc9d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Virtual Descructor for a <a class="el" href="classpvr_1_1ui_1_1impl_1_1_text__.html" title="Use this class through the reference counted Framework Object pvr::ui::Text. Represents some text tha...">Text_</a>. <a href="#a0c0326e031926879f480f047d76bc9d5">More...</a><br/></td></tr>
 <tr class="separator:a0c0326e031926879f480f047d76bc9d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a40f718a9a352c37b8c343f0f20ed545c"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1ui_1_1impl_1_1_sprite__.html#a40f718a9a352c37b8c343f0f20ed545c">commitUpdates</a> () const </td></tr>
 <tr class="memdesc:a40f718a9a352c37b8c343f0f20ed545c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Call this function after changing the sprite in any way, in order to update its internal information. This function should be called before any rendering commands are submitted and before calling functions such as getDimensions, in order to actually process all the changes to the sprite. <a href="#a40f718a9a352c37b8c343f0f20ed545c">More...</a><br/></td></tr>
@@ -139,10 +139,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aaf2c4e36120329771818e8624bcd5b17"><td class="memItemLeft" align="right" valign="top">glm::vec2&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1ui_1_1impl_1_1_sprite__.html#aaf2c4e36120329771818e8624bcd5b17">getDimensions</a> () const </td></tr>
 <tr class="memdesc:aaf2c4e36120329771818e8624bcd5b17"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the Sprite's bounding box. If the sprite has changed, the value returned is only valid after calling the commitUpdates function <a href="#aaf2c4e36120329771818e8624bcd5b17">More...</a><br/></td></tr>
 <tr class="separator:aaf2c4e36120329771818e8624bcd5b17"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9fa0e74e8440e4ba801cd5f8b40771fb"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacepvr_1_1ui.html#abf8a7641dfcc74847a8e706e347c1400">Font</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1ui_1_1impl_1_1_text__.html#a9fa0e74e8440e4ba801cd5f8b40771fb">getFont</a> () const </td></tr>
+<tr class="memitem:a9fa0e74e8440e4ba801cd5f8b40771fb"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacepvr_1_1ui.html#a656cc6313d0e84602721b2f7398f377a">Font</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1ui_1_1impl_1_1_text__.html#a9fa0e74e8440e4ba801cd5f8b40771fb">getFont</a> () const </td></tr>
 <tr class="memdesc:a9fa0e74e8440e4ba801cd5f8b40771fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the text objects current font <a href="#a9fa0e74e8440e4ba801cd5f8b40771fb">More...</a><br/></td></tr>
 <tr class="separator:a9fa0e74e8440e4ba801cd5f8b40771fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9fa0e74e8440e4ba801cd5f8b40771fb"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacepvr_1_1ui.html#abf8a7641dfcc74847a8e706e347c1400">Font</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1ui_1_1impl_1_1_text__.html#a9fa0e74e8440e4ba801cd5f8b40771fb">getFont</a> () const </td></tr>
+<tr class="memitem:a9fa0e74e8440e4ba801cd5f8b40771fb"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacepvr_1_1ui.html#a656cc6313d0e84602721b2f7398f377a">Font</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1ui_1_1impl_1_1_text__.html#a9fa0e74e8440e4ba801cd5f8b40771fb">getFont</a> () const </td></tr>
 <tr class="memdesc:a9fa0e74e8440e4ba801cd5f8b40771fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the text objects current font <a href="#a9fa0e74e8440e4ba801cd5f8b40771fb">More...</a><br/></td></tr>
 <tr class="separator:a9fa0e74e8440e4ba801cd5f8b40771fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a13719882f5533d5b0f2b6d4ca51a2ca8"><td class="memItemLeft" align="right" valign="top">const glm::mat4 &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1ui_1_1impl_1_1_sprite__.html#a13719882f5533d5b0f2b6d4ca51a2ca8">getMatrix</a> () const </td></tr>
@@ -157,19 +157,19 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ac60692d7981a384eaabfc3bd1deba4b7"><td class="memItemLeft" align="right" valign="top">glm::vec2&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1ui_1_1impl_1_1_text__.html#ac60692d7981a384eaabfc3bd1deba4b7">getScaledDimension</a> () const </td></tr>
 <tr class="memdesc:ac60692d7981a384eaabfc3bd1deba4b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the size of this texture after applying scale <a href="#ac60692d7981a384eaabfc3bd1deba4b7">More...</a><br/></td></tr>
 <tr class="separator:ac60692d7981a384eaabfc3bd1deba4b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3dd7b2952fe17a0bfc8fa03961c156e8"><td class="memItemLeft" align="right" valign="top">const std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1ui_1_1impl_1_1_text__.html#a3dd7b2952fe17a0bfc8fa03961c156e8">getSpriteName</a> ()</td></tr>
-<tr class="memdesc:a3dd7b2952fe17a0bfc8fa03961c156e8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the sprite name. <a href="#a3dd7b2952fe17a0bfc8fa03961c156e8">More...</a><br/></td></tr>
-<tr class="separator:a3dd7b2952fe17a0bfc8fa03961c156e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5c87e0f933039fe1281e52f3edf2b5c7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1ui.html#a9a3d1f0a665ee3dc0adba18e20612f26">TextElement</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1ui_1_1impl_1_1_text__.html#a5c87e0f933039fe1281e52f3edf2b5c7">getTextElement</a> ()</td></tr>
+<tr class="memitem:a33f5ae7c749a96c81299669a23c422ee"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1ui_1_1impl_1_1_text__.html#a33f5ae7c749a96c81299669a23c422ee">getSpriteName</a> ()</td></tr>
+<tr class="memdesc:a33f5ae7c749a96c81299669a23c422ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the sprite name. <a href="#a33f5ae7c749a96c81299669a23c422ee">More...</a><br/></td></tr>
+<tr class="separator:a33f5ae7c749a96c81299669a23c422ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c87e0f933039fe1281e52f3edf2b5c7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1ui.html#a36d46f87d846934705c5f459b93fbf18">TextElement</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1ui_1_1impl_1_1_text__.html#a5c87e0f933039fe1281e52f3edf2b5c7">getTextElement</a> ()</td></tr>
 <tr class="memdesc:a5c87e0f933039fe1281e52f3edf2b5c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the text objects current text element <a href="#a5c87e0f933039fe1281e52f3edf2b5c7">More...</a><br/></td></tr>
 <tr class="separator:a5c87e0f933039fe1281e52f3edf2b5c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad567a3da64cb99a4a1494ffeace7ad22"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacepvr_1_1ui.html#a9a3d1f0a665ee3dc0adba18e20612f26">TextElement</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1ui_1_1impl_1_1_text__.html#ad567a3da64cb99a4a1494ffeace7ad22">getTextElement</a> () const </td></tr>
+<tr class="memitem:ad567a3da64cb99a4a1494ffeace7ad22"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacepvr_1_1ui.html#a36d46f87d846934705c5f459b93fbf18">TextElement</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1ui_1_1impl_1_1_text__.html#ad567a3da64cb99a4a1494ffeace7ad22">getTextElement</a> () const </td></tr>
 <tr class="memdesc:ad567a3da64cb99a4a1494ffeace7ad22"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the text objects current text element <a href="#ad567a3da64cb99a4a1494ffeace7ad22">More...</a><br/></td></tr>
 <tr class="separator:ad567a3da64cb99a4a1494ffeace7ad22"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5c87e0f933039fe1281e52f3edf2b5c7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1ui.html#a9a3d1f0a665ee3dc0adba18e20612f26">TextElement</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1ui_1_1impl_1_1_text__.html#a5c87e0f933039fe1281e52f3edf2b5c7">getTextElement</a> ()</td></tr>
+<tr class="memitem:a5c87e0f933039fe1281e52f3edf2b5c7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1ui.html#a36d46f87d846934705c5f459b93fbf18">TextElement</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1ui_1_1impl_1_1_text__.html#a5c87e0f933039fe1281e52f3edf2b5c7">getTextElement</a> ()</td></tr>
 <tr class="memdesc:a5c87e0f933039fe1281e52f3edf2b5c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the text objects current text element <a href="#a5c87e0f933039fe1281e52f3edf2b5c7">More...</a><br/></td></tr>
 <tr class="separator:a5c87e0f933039fe1281e52f3edf2b5c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad567a3da64cb99a4a1494ffeace7ad22"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacepvr_1_1ui.html#a9a3d1f0a665ee3dc0adba18e20612f26">TextElement</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1ui_1_1impl_1_1_text__.html#ad567a3da64cb99a4a1494ffeace7ad22">getTextElement</a> () const </td></tr>
+<tr class="memitem:ad567a3da64cb99a4a1494ffeace7ad22"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacepvr_1_1ui.html#a36d46f87d846934705c5f459b93fbf18">TextElement</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1ui_1_1impl_1_1_text__.html#ad567a3da64cb99a4a1494ffeace7ad22">getTextElement</a> () const </td></tr>
 <tr class="memdesc:ad567a3da64cb99a4a1494ffeace7ad22"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the text objects current text element <a href="#ad567a3da64cb99a4a1494ffeace7ad22">More...</a><br/></td></tr>
 <tr class="separator:ad567a3da64cb99a4a1494ffeace7ad22"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2dc563b38c5f34153f13693ac776a088"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1ui_1_1impl_1_1_text__.html#a2dc563b38c5f34153f13693ac776a088">isSpriteNameDirty</a> () const </td></tr>
@@ -345,7 +345,7 @@ Protected Attributes</h2></td></tr>
 <tr class="separator:a284aee84cb5fa08e6b71264dce129d69"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Use this class through the Refcounted Framework Object <a class="el" href="namespacepvr_1_1ui.html#af60036230f19f85f7c411a1ef5e7032c" title="A Reference Counted Framework Object wrapping the Text_ interface.">pvr::ui::Text</a>. Represents some text that can be rendered as a normal <a class="el" href="classpvr_1_1ui_1_1impl_1_1_sprite__.html" title="Base sprite class. Use through the Sprite framework object. Represents something that can be rendered...">Sprite_</a> and additionally contains the necessary text manipulation functions.</p>
+<div class="textblock"><p>Use this class through the reference counted Framework Object <a class="el" href="namespacepvr_1_1ui.html#a4288ba6e787b12ce8b6dced8253715f9" title="A Reference Counted Framework Object wrapping the Text_ interface.">pvr::ui::Text</a>. Represents some text that can be rendered as a normal <a class="el" href="classpvr_1_1ui_1_1impl_1_1_sprite__.html" title="Base sprite class. Use through the Sprite framework object. Represents something that can be rendered...">Sprite_</a> and additionally contains the necessary text manipulation functions.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="a0c0326e031926879f480f047d76bc9d5"></a>
 <div class="memitem">
@@ -368,7 +368,7 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Virtual Descructor for a <a class="el" href="classpvr_1_1ui_1_1impl_1_1_text__.html" title="Use this class through the Refcounted Framework Object pvr::ui::Text. Represents some text that can b...">Text_</a>.</p>
+<p>Virtual Descructor for a <a class="el" href="classpvr_1_1ui_1_1impl_1_1_text__.html" title="Use this class through the reference counted Framework Object pvr::ui::Text. Represents some text tha...">Text_</a>.</p>
 
 </div>
 </div>
@@ -393,7 +393,7 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Virtual Descructor for a <a class="el" href="classpvr_1_1ui_1_1impl_1_1_text__.html" title="Use this class through the Refcounted Framework Object pvr::ui::Text. Represents some text that can b...">Text_</a>.</p>
+<p>Virtual Descructor for a <a class="el" href="classpvr_1_1ui_1_1impl_1_1_text__.html" title="Use this class through the reference counted Framework Object pvr::ui::Text. Represents some text tha...">Text_</a>.</p>
 
 </div>
 </div>
@@ -668,7 +668,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const <a class="el" href="namespacepvr_1_1ui.html#abf8a7641dfcc74847a8e706e347c1400">Font</a> pvr::ui::impl::Text_::getFont </td>
+          <td class="memname">const <a class="el" href="namespacepvr_1_1ui.html#a656cc6313d0e84602721b2f7398f377a">Font</a> pvr::ui::impl::Text_::getFont </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -694,7 +694,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const <a class="el" href="namespacepvr_1_1ui.html#abf8a7641dfcc74847a8e706e347c1400">Font</a> pvr::ui::impl::Text_::getFont </td>
+          <td class="memname">const <a class="el" href="namespacepvr_1_1ui.html#a656cc6313d0e84602721b2f7398f377a">Font</a> pvr::ui::impl::Text_::getFont </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -820,7 +820,7 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a3dd7b2952fe17a0bfc8fa03961c156e8"></a>
+<a class="anchor" id="a33f5ae7c749a96c81299669a23c422ee"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -828,7 +828,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const std::string pvr::ui::impl::Text_::getSpriteName </td>
+          <td class="memname">const std::string&amp; pvr::ui::impl::Text_::getSpriteName </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -844,7 +844,7 @@ Protected Attributes</h2></td></tr>
 <p>Get the sprite name.</p>
 <dl class="section return"><dt>Returns</dt><dd>The sprites's name</dd></dl>
 
-<p>Reimplemented from <a class="el" href="classpvr_1_1ui_1_1impl_1_1_sprite__.html#aae0c8ba283498a1ec9fa65037b61636c">pvr::ui::impl::Sprite_</a>.</p>
+<p>Reimplemented from <a class="el" href="classpvr_1_1ui_1_1impl_1_1_sprite__.html#a0a8f55dc407d8c7b9f56989dee2c9e8d">pvr::ui::impl::Sprite_</a>.</p>
 
 </div>
 </div>
@@ -856,7 +856,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="namespacepvr_1_1ui.html#a9a3d1f0a665ee3dc0adba18e20612f26">TextElement</a> pvr::ui::impl::Text_::getTextElement </td>
+          <td class="memname"><a class="el" href="namespacepvr_1_1ui.html#a36d46f87d846934705c5f459b93fbf18">TextElement</a> pvr::ui::impl::Text_::getTextElement </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -882,7 +882,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const <a class="el" href="namespacepvr_1_1ui.html#a9a3d1f0a665ee3dc0adba18e20612f26">TextElement</a> pvr::ui::impl::Text_::getTextElement </td>
+          <td class="memname">const <a class="el" href="namespacepvr_1_1ui.html#a36d46f87d846934705c5f459b93fbf18">TextElement</a> pvr::ui::impl::Text_::getTextElement </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -908,7 +908,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="namespacepvr_1_1ui.html#a9a3d1f0a665ee3dc0adba18e20612f26">TextElement</a> pvr::ui::impl::Text_::getTextElement </td>
+          <td class="memname"><a class="el" href="namespacepvr_1_1ui.html#a36d46f87d846934705c5f459b93fbf18">TextElement</a> pvr::ui::impl::Text_::getTextElement </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -934,7 +934,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const <a class="el" href="namespacepvr_1_1ui.html#a9a3d1f0a665ee3dc0adba18e20612f26">TextElement</a> pvr::ui::impl::Text_::getTextElement </td>
+          <td class="memname">const <a class="el" href="namespacepvr_1_1ui.html#a36d46f87d846934705c5f459b93fbf18">TextElement</a> pvr::ui::impl::Text_::getTextElement </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -1128,7 +1128,7 @@ Protected Attributes</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">anchor</td><td>The anchor point</td></tr>
-    <tr><td class="paramname">ndcPos</td><td>The normalized device coordinates (-1..1) where the anchor should be in its group </td></tr>
+    <tr><td class="paramname">ndcPos</td><td>The normalized device coordinates (-1..1) where the anchor should be in its group.</td></tr>
   </table>
   </dd>
 </dl>
@@ -1178,8 +1178,8 @@ Protected Attributes</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">anchor</td><td>The anchor point</td></tr>
-    <tr><td class="paramname">ndcPosX</td><td>The normalized (-1..1) horizontal coordinate where the anchor should be in its group </td></tr>
-    <tr><td class="paramname">ndcPosY</td><td>The normalized (-1..1) vertical coordinate where the anchor should be in its group </td></tr>
+    <tr><td class="paramname">ndcPosX</td><td>The normalized (-1..1) horizontal coordinate where the anchor should be in its group.</td></tr>
+    <tr><td class="paramname">ndcPosY</td><td>The normalized (-1..1) vertical coordinate where the anchor should be in its group.</td></tr>
   </table>
   </dd>
 </dl>

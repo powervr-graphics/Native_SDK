@@ -1,6 +1,9 @@
 var searchData=
 [
-  ['edgeindices',['edgeIndices',['../structpvr_1_1_volume_1_1_volume_triangle.html#ad1e88d50328ef10838b54dbc520922de',1,'pvr::Volume::VolumeTriangle']]],
-  ['effectfile',['effectFile',['../structpvr_1_1assets_1_1_model_1_1_material_1_1_internal_data.html#aa9f40a95824c89894ba631a591a5e1b3',1,'pvr::assets::Model::Material::InternalData']]],
-  ['effectname',['effectName',['../structpvr_1_1assets_1_1_model_1_1_material_1_1_internal_data.html#a054cac2180a500dbe2bc36f7bde864bd',1,'pvr::assets::Model::Material::InternalData']]]
+  ['cachedframe',['cachedFrame',['../classpvr_1_1assets_1_1_model.html#a6473a63f09a8d368f07d2de1a12e2ec9',1,'pvr::assets::Model']]],
+  ['cameras',['cameras',['../structpvr_1_1assets_1_1_model_1_1_internal_data.html#a840b0890df610df3f31179e77765bf18',1,'pvr::assets::Model::InternalData']]],
+  ['clearcolor',['clearColor',['../structpvr_1_1assets_1_1_model_1_1_internal_data.html#a554a0ed5b219a587a7a822eca1d7deca',1,'pvr::assets::Model::InternalData']]],
+  ['color',['color',['../structpvr_1_1assets_1_1_light_1_1_internal_data.html#a885aefffa63ed35233044211be0bfe43',1,'pvr::assets::Light::InternalData']]],
+  ['constantattenuation',['constantAttenuation',['../structpvr_1_1assets_1_1_light_1_1_internal_data.html#ac1e4e850333036361164256517278c52',1,'pvr::assets::Light::InternalData']]],
+  ['currentframe',['currentFrame',['../structpvr_1_1assets_1_1_model_1_1_internal_data.html#aed292f7c520bfb1a3bd1bfc4ac27612a',1,'pvr::assets::Model::InternalData']]]
 ];

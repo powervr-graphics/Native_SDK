@@ -1,4 +1,4 @@
-//Microsoft eMbedded Visual C++ generated resource script.
+// Microsoft Visual C++ generated resource script.
 //
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
@@ -58,14 +58,13 @@ END
 // RCDATA
 //
 /////////////////////////////////////////////////////////////////////////////
-// RCDATA: Assets (scenes,  effects, textures...)
-arial_36.pvr		RCDATA		"..\\..\\..\\assets\\IntroducingUIRenderer\\arial_36.pvr"
-starjout_60.pvr		RCDATA		"..\\..\\..\\assets\\IntroducingUIRenderer\\starjout_60.pvr"
-title_36.pvr		RCDATA		"..\\..\\..\\assets\\IntroducingUIRenderer\\title_36.pvr"
-title_46.pvr		RCDATA		"..\\..\\..\\assets\\IntroducingUIRenderer\\title_46.pvr"
-title_56.pvr		RCDATA		"..\\..\\..\\assets\\IntroducingUIRenderer\\title_56.pvr"
-Text.txt		RCDATA		"..\\..\\..\\assets\\IntroducingUIRenderer\\Text.txt"
-titletext.txt		RCDATA		"..\\..\\..\\assets\\IntroducingUIRenderer\\titletext.txt"
+arial_36.pvr RCDATA "..\\..\\..\\assets\\IntroducingUIRenderer\\arial_36.pvr"
+starjout_60.pvr RCDATA "..\\..\\..\\assets\\IntroducingUIRenderer\\starjout_60.pvr"
+title_36.pvr RCDATA "..\\..\\..\\assets\\IntroducingUIRenderer\\title_36.pvr"
+title_46.pvr RCDATA "..\\..\\..\\assets\\IntroducingUIRenderer\\title_46.pvr"
+title_56.pvr RCDATA "..\\..\\..\\assets\\IntroducingUIRenderer\\title_56.pvr"
+Text.txt RCDATA "..\\..\\..\\assets\\IntroducingUIRenderer\\Text.txt"
+titletext.txt RCDATA "..\\..\\..\\assets\\IntroducingUIRenderer\\titletext.txt"
 
 #endif    // English (United Kingdom) resources
 /////////////////////////////////////////////////////////////////////////////

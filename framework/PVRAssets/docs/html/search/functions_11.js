@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['_7epbrsemantics',['~PBRSemantics',['../classpvr_1_1assets_1_1_model_1_1_material_1_1_p_b_r_semantics.html#a89e1de9d061bc9a8ba2598bac250d9d7',1,'pvr::assets::Model::Material::PBRSemantics']]],
-  ['_7eshadowvolume',['~ShadowVolume',['../classpvr_1_1_shadow_volume.html#ad375982bd94062bf68af87ec39929c5a',1,'pvr::ShadowVolume']]],
-  ['_7evolume',['~Volume',['../classpvr_1_1_volume.html#a7429aefda094acec0bdd90d60df77c74',1,'pvr::Volume']]]
+  ['vertexattributedata',['VertexAttributeData',['../classpvr_1_1assets_1_1_mesh_1_1_vertex_attribute_data.html#aa58043e55d7756f12fa87a2cadc21097',1,'pvr::assets::Mesh::VertexAttributeData::VertexAttributeData()'],['../classpvr_1_1assets_1_1_mesh_1_1_vertex_attribute_data.html#ad6029d78afa7fe7db486e1fd44aedd2e',1,'pvr::assets::Mesh::VertexAttributeData::VertexAttributeData(const StringHash &amp;semantic, DataType type, uint8_t n, uint16_t offset, uint16_t dataIndex)']]],
+  ['volumemesh',['VolumeMesh',['../structpvr_1_1_volume_1_1_volume_mesh.html#a0026dd0820278bffa4815d5cf107c760',1,'pvr::Volume::VolumeMesh']]]
 ];

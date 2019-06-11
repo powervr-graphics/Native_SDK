@@ -9,12 +9,8 @@
 #include "PVRVk/PhysicalDeviceVk.h"
 #include "PVRVk/ExtensionsVk.h"
 #include "PVRVk/LayersVk.h"
-#include "PVRVk/ObjectHandleVk.h"
-#include "PVRVk/DebugMarkerVk.h"
-#include <map>
-#include <set>
-#include <stdlib.h>
-#include <bitset>
+#include "PVRVk/PVRVkObjectBaseVk.h"
+#include "PVRVk/DebugUtilsVk.h"
 
 namespace pvrvk {
 
@@ -23,17 +19,61 @@ namespace pvrvk {
 struct SamplerCreateInfo;
 namespace impl {
 //\cond NO_DOXYGEN
-inline void reportDestroyedAfterDevice(const char* objectName)
+inline void reportDestroyedAfterDevice()
 {
-	Log(LogLevel::Warning, "Attempted to destroy object of type [%s] after its corresponding device", objectName);
+	assert(false && "Attempted to destroy object after its corresponding device");
 }
 //\endcond
 
 /// <summary>GpuDevice implementation that supports Vulkan</summary>
-class Device_ : public PhysicalDeviceObjectHandle<VkDevice>, public EmbeddedRefCount<Device_>
+class Device_ : public PVRVkPhysicalDeviceObjectBase<VkDevice, ObjectType::e_DEVICE>, public std::enable_shared_from_this<Device_>
 {
+private:
+	friend class PhysicalDevice_;
+
+	class make_shared_enabler
+	{
+	protected:
+		make_shared_enabler() {}
+		friend class Device_;
+	};
+
+	static Device constructShared(PhysicalDevice& physicalDevice, const DeviceCreateInfo& createInfo)
+	{
+		return std::make_shared<Device_>(make_shared_enabler{}, physicalDevice, createInfo);
+	}
+
+	struct QueueFamily
+	{
+		uint32_t queueFamily;
+		std::vector<Queue> queues;
+	};
+
+	DeviceExtensionTable _extensionTable;
+	std::vector<QueueFamily> _queueFamilies;
+	DeviceCreateInfo _createInfo;
+	VkDeviceBindings _vkBindings;
+	PhysicalDeviceTransformFeedbackProperties _transformFeedbackProperties;
+	PhysicalDeviceTransformFeedbackFeatures _transformFeedbackFeatures;
+
 public:
+	//!\cond NO_DOXYGEN
 	DECLARE_NO_COPY_SEMANTICS(Device_)
+	Device_(make_shared_enabler, PhysicalDevice& physicalDevice, const DeviceCreateInfo& createInfo);
+
+	~Device_()
+	{
+		_queueFamilies.clear();
+		if (getVkHandle() != VK_NULL_HANDLE)
+		{
+			_vkBindings.vkDestroyDevice(getVkHandle(), nullptr);
+			_vkHandle = VK_NULL_HANDLE;
+		}
+	}
+	//!\endcond
+
+	/// <summary>Retrieve and initialise the list of queues</summary>
+	void retrieveQueues();
 
 	/// <summary>Wait on the host for the completion of outstanding queue operations
 	/// for all queues on this device This is equivalent to calling waitIdle for all
@@ -112,7 +152,7 @@ public:
 	Framebuffer createFramebuffer(const FramebufferCreateInfo& createInfo);
 
 	/// <summary>create renderpass</summary>
-	/// <param name="createInfo">Renderpass createInfo</param>
+	/// <param name="createInfo">RenderPass createInfo</param>
 	/// <returns>return a valid object if success</returns>.
 	RenderPass createRenderPass(const RenderPassCreateInfo& createInfo);
 
@@ -156,7 +196,7 @@ public:
 	/// <param name="fences">Fence to reset</param>
 	void resetFences(uint32_t numFences, const Fence* fences);
 
-	/// <summary> Create commandpool</summary>
+	/// <summary>Create commandpool</summary>
 	/// <param name="createInfo">Command Pool creation info structure</param>
 	/// <returns>Return a valid object if success</returns>.
 	CommandPool createCommandPool(const CommandPoolCreateInfo& createInfo);
@@ -181,13 +221,6 @@ public:
 	/// <returns>return a valid object if success</returns>.
 	QueryPool createQueryPool(const QueryPoolCreateInfo& createInfo);
 
-	/// <summary>Return true if this device support PVRTC image</summary>
-	/// <returns>Return true if supported</returns>
-	bool supportsPVRTC() const
-	{
-		return _supportsPVRTC;
-	}
-
 	/// <summary>Create Swapchain</summary>
 	/// <param name="createInfo">Swapchain createInfo</param>
 	/// <param name="surface">Swapchain's surface</param>
@@ -210,21 +243,18 @@ public:
 		throw ErrorValidationFailedEXT("Request for queue from family id that did not exist.");
 	}
 
-	/// <summary>Return true if the given extension is enabled (const).</summary>
-	/// <param name="extension"></param>
-	/// <returns></returns>
-	bool isExtensionEnabled(const char* extension) const
+	/// <summary>Get a list of enabled extensions which includes names and spec versions</summary>
+	/// <returns>VulkanExtensionList&</returns>
+	const VulkanExtensionList& getEnabledExtensionList()
 	{
-		const auto& it = std::find_if(_createInfo.getEnabledExtensionNames().begin(), _createInfo.getEnabledExtensionNames().end(),
-			[&](const std::string& str) { return strcmp(str.c_str(), extension) == 0; });
-		return it != _createInfo.getEnabledExtensionNames().end();
+		return _createInfo.getExtensionList();
 	}
 
-	/// <summary>Get all the enabled extensions</summary>
-	/// <returns>Extension strings</returns>
-	const std::vector<std::string>& getEnabledExtensions() const
+	/// <summary>Return a table which contains boolean members set to true/false corresponding to whether specific extensions have been enabled</summary>
+	/// <returns>A table of extensions</returns>
+	const DeviceExtensionTable& getEnabledExtensionTable() const
 	{
-		return _createInfo.getEnabledExtensionNames();
+		return _extensionTable;
 	}
 
 	/// <summary>Update Descriptorsets</summary>
@@ -241,33 +271,33 @@ public:
 		return _vkBindings;
 	}
 
-private:
-	friend class Swapchain_;
-	friend class ::pvrvk::impl::PhysicalDevice_;
-	friend class ::pvrvk::EmbeddedRefCount<Device_>;
-
-	void destroyObject()
+	/// <summary>Gets the Transform feedback properties</summary>
+	/// <returns>The physical device transform feedback properties</returns>
+	inline const PhysicalDeviceTransformFeedbackProperties& getTransformFeedbackProperties() const
 	{
-		_queueFamilies.clear();
-		if (getVkHandle() != VK_NULL_HANDLE)
-		{
-			_vkBindings.vkDestroyDevice(getVkHandle(), nullptr);
-			_vkHandle = VK_NULL_HANDLE;
-		}
+		return _transformFeedbackProperties;
 	}
 
-	Device_(PhysicalDeviceWeakPtr physicalDevice, const DeviceCreateInfo& createInfo);
-
-	struct QueueFamily
+	/// <summary>Gets the Transform feedback properties</summary>
+	/// <returns>The physical device transform feedback properties</returns>
+	inline PhysicalDeviceTransformFeedbackProperties getTransformFeedbackProperties()
 	{
-		uint32_t queueFamily;
-		std::vector<Queue> queues;
-	};
+		return _transformFeedbackProperties;
+	}
 
-	std::vector<QueueFamily> _queueFamilies;
-	bool _supportsPVRTC;
-	DeviceCreateInfo _createInfo;
-	VkDeviceBindings _vkBindings;
+	/// <summary>Gets the Transform feedback features</summary>
+	/// <returns>The physical device transform feedback features</returns>
+	inline const PhysicalDeviceTransformFeedbackFeatures& getTransformFeedbackFeatures() const
+	{
+		return _transformFeedbackFeatures;
+	}
+
+	/// <summary>Gets the Transform feedback features</summary>
+	/// <returns>The physical device transform feedback features</returns>
+	inline PhysicalDeviceTransformFeedbackFeatures getTransformFeedbackFeatures()
+	{
+		return _transformFeedbackFeatures;
+	}
 };
 } // namespace impl
 } // namespace pvrvk

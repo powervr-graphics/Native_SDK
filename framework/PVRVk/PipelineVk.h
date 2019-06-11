@@ -16,8 +16,7 @@ namespace pvrvk {
 /// NOTES: The folloowing are required
 ///  - at least one viewport & scissor
 ///  - renderpass
-///  - pipeline layout
-/// </summary>
+///  - pipeline layout</summary>
 template<class PVRVkPipeline>
 struct PipelineCreateInfo
 {
@@ -34,16 +33,16 @@ protected:
 };
 
 namespace impl {
-
 /// <summary>A Graphics Pipeline is a PVRVk adapter to a Vulkan Pipeline to a pipeline created for
 /// VK_PIPELINE_BINDING_POINT_COMPUTE, and as such only supports the part of Vulkan that is
 /// supported for Graphics pipelines.</summary>
 template<class PVRVkPipeline, class PVRVkPipelineCreateInfo>
-class Pipeline : public DeviceObjectHandle<VkPipeline>, public DeviceObjectDebugMarker<Pipeline<PVRVkPipeline, PVRVkPipelineCreateInfo> >
+class Pipeline : public PVRVkDeviceObjectBase<VkPipeline, ObjectType::e_PIPELINE>, public DeviceObjectDebugUtils<Pipeline<PVRVkPipeline, PVRVkPipelineCreateInfo> >
 {
 public:
+	//!\cond NO_DOXYGEN
 	DECLARE_NO_COPY_SEMANTICS(Pipeline)
-
+	//!\endcond
 	/// <summary>Return pipeline layout.</summary>
 	/// <returns>const PipelineLayout&</returns>
 	const PipelineLayout& getPipelineLayout() const
@@ -59,31 +58,27 @@ public:
 	}
 
 protected:
-	template<typename>
-	friend struct ::pvrvk::RefCountEntryIntrusive;
-	friend class ::pvrvk::impl::Device_;
-
+	/// <summary>Destructor for a PVRVk pipeline object.</summary>
 	~Pipeline()
 	{
 		if (_vkHandle != VK_NULL_HANDLE || _pipeCache != VK_NULL_HANDLE)
 		{
-			if (_device.isValid())
+			if (!_device.expired())
 			{
 				if (_vkHandle != VK_NULL_HANDLE)
 				{
-					_device->getVkBindings().vkDestroyPipeline(_device->getVkHandle(), _vkHandle, nullptr);
+					getDevice()->getVkBindings().vkDestroyPipeline(getDevice()->getVkHandle(), _vkHandle, nullptr);
 					_vkHandle = VK_NULL_HANDLE;
 				}
 				if (_pipeCache != VK_NULL_HANDLE)
 				{
-					_device->getVkBindings().vkDestroyPipelineCache(_device->getVkHandle(), _pipeCache, nullptr);
+					getDevice()->getVkBindings().vkDestroyPipelineCache(getDevice()->getVkHandle(), _pipeCache, nullptr);
 					_pipeCache = VK_NULL_HANDLE;
 				}
-				_device.reset();
 			}
 			else
 			{
-				reportDestroyedAfterDevice("Pipeline");
+				reportDestroyedAfterDevice();
 			}
 		}
 		_parent.reset();
@@ -94,9 +89,8 @@ protected:
 	/// <param name="device">The device from which this PVRVk pipeline will be created from.</param>
 	/// <param name="vkPipeline">The Vulkan pipeline object itself.</param>
 	/// <param name="desc">The pipeline creation information.</param>
-	Pipeline(DeviceWeakPtr device, VkPipeline vkPipeline, const PVRVkPipelineCreateInfo& desc)
-		: DeviceObjectHandle<VkPipeline>(device), DeviceObjectDebugMarker<Pipeline<PVRVkPipeline, PVRVkPipelineCreateInfo> >(pvrvk::DebugReportObjectTypeEXT::e_PIPELINE_EXT),
-		  _pipeCache(VK_NULL_HANDLE)
+	Pipeline(const DeviceWeakPtr& device, VkPipeline vkPipeline, const PVRVkPipelineCreateInfo& desc)
+		: PVRVkDeviceObjectBase<VkPipeline, ObjectType::e_PIPELINE>(device), DeviceObjectDebugUtils<Pipeline<PVRVkPipeline, PVRVkPipelineCreateInfo> >(), _pipeCache(VK_NULL_HANDLE)
 	{
 		_vkHandle = vkPipeline;
 		_createInfo = desc;

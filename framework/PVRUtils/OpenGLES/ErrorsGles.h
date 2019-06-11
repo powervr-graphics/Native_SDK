@@ -23,7 +23,7 @@ public:
 	/// <summary>Constructor.</summary>
 	/// <param name="errorCode">The OpenGLES error code to log.</param>
 	/// <param name="message">A message to log alongside the OpenGLES error code.</param>
-	GlError(GLuint errorCode, std::string message) : PvrError(std::string("OpenGL ES Error occured: [") + utils::getGlErrorString(errorCode) + "] -- " + message) {}
+	GlError(GLuint errorCode, const std::string& message) : PvrError(std::string("OpenGL ES Error occured: [") + utils::getGlErrorString(errorCode) + "] -- " + message) {}
 	/// <summary>Constructor.</summary>
 	/// <param name="errorCode">The OpenGLES error code to log.</param>
 	/// <param name="message">A message to log alongside the OpenGLES error code.</param>
@@ -39,11 +39,13 @@ class GlExtensionNotSupportedError : public PvrError
 public:
 	/// <summary>Constructor.</summary>
 	/// <param name="extensionString">The unsunpported OpenGLES extension name to log.</param>
-	GlExtensionNotSupportedError(std::string extensionString) : PvrError("Error: Required extension not supported [" + extensionString + "]") {}
+	GlExtensionNotSupportedError(const std::string& extensionString) : PvrError("Error: Required extension not supported [" + extensionString + "]") {}
 	/// <summary>Constructor.</summary>
 	/// <param name="extensionString">The unsunpported OpenGLES extension name to log.</param>
 	/// <param name="message">A message to log alongside the unsunpported OpenGLES extension name.</param>
-	GlExtensionNotSupportedError(std::string extensionString, std::string message) : PvrError("Error: Required extension not supported [" + extensionString + "] -- " + message) {}
+	GlExtensionNotSupportedError(const std::string& extensionString, const std::string& message)
+		: PvrError("Error: Required extension not supported [" + extensionString + "] -- " + message)
+	{}
 };
 
 namespace utils {

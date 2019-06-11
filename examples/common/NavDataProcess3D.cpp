@@ -1,5 +1,5 @@
 #include "NavDataProcess.h"
-#include "../../external/pugixml/pugixml.hpp"
+#include "pugixml.hpp"
 
 /*!*********************************************************************************************************************
 \return	Return pvr::Result::Success if no error occurred
@@ -115,7 +115,7 @@ pvr::Result NavDataProcess::loadOSMData()
 			Tag tempTag;
 			tempTag.key = currentTag->attribute("k").as_string();
 			tempTag.value = currentTag->attribute("v").as_string();
-			tempTags.push_back(tempTag);
+			tempTags.emplace_back(tempTag);
 		}
 
 		_osm.nodes[tempNode.id] = tempNode;
@@ -155,7 +155,7 @@ pvr::Result NavDataProcess::loadOSMData()
 
 			tempTag.key = currentTag->attribute("k").as_string();
 			tempTag.value = currentTag->attribute("v").as_string();
-			tempWay.tags.push_back(tempTag);
+			tempWay.tags.emplace_back(tempTag);
 
 			if ((tempTag.key == "highway") && (tempTag.value != "footway") && (tempTag.value != "bus_guideway") && (tempTag.value != "raceway") && (tempTag.value != "bridleway") &&
 				(tempTag.value != "steps") && (tempTag.value != "path") && (tempTag.value != "cycleway") && (tempTag.value != "proposed") && (tempTag.value != "construction") &&
@@ -174,15 +174,15 @@ pvr::Result NavDataProcess::loadOSMData()
 
 		for (pugi::xml_named_node_iterator currentNodeId = nodeIds.begin(); currentNodeId != nodeIds.end(); ++currentNodeId)
 		{
-			tempWay.nodeIds.push_back(currentNodeId->attribute("ref").as_ullong());
+			tempWay.nodeIds.emplace_back(currentNodeId->attribute("ref").as_ullong());
 
 			if ((wayType == WayTypes::Road) && !tempWay.area)
 			{
 				Vertex& currentNode = _osm.nodes.find(tempWay.nodeIds.back())->second;
-				currentNode.wayIds.push_back(tempWay.id);
+				currentNode.wayIds.emplace_back(tempWay.id);
 
 				if (currentNode.wayIds.size() == 2)
-					_osm.original_intersections.push_back(currentNode.id);
+					_osm.original_intersections.emplace_back(currentNode.id);
 			}
 		}
 
@@ -205,7 +205,7 @@ pvr::Result NavDataProcess::loadOSMData()
 				Tag name;
 				name.key = "name";
 				name.value = pvr::strings::createFormatted("%dth Street", uid);
-				tempWay.tags.push_back(name);
+				tempWay.tags.emplace_back(name);
 				uid++;
 			}
 			else if (!roadName.empty() && !tempWay.isRoundabout)
@@ -218,7 +218,7 @@ pvr::Result NavDataProcess::loadOSMData()
 					label.scale = static_cast<float>(tempWay.width + tempWay.width / 2.0);
 					label.id = tempWay.id;
 					label.isAmenityLabel = false;
-					_osm.labels[LOD::LabelLOD].push_back(label);
+					_osm.labels[LOD::LabelLOD].emplace_back(label);
 				}
 			}
 			_osm.originalRoadWays[tempWay.id] = tempWay;
@@ -401,7 +401,7 @@ void NavDataProcess::calculateRoute()
 						continue;
 					}
 
-					tempCoords.push_back(std::pair<uint64_t, glm::dvec2>(id, coords));
+					tempCoords.emplace_back(std::pair<uint64_t, glm::dvec2>(id, coords));
 
 					if (!nextJunctionFound)
 					{
@@ -435,7 +435,7 @@ void NavDataProcess::calculateRoute()
 								tempCoords.clear();
 
 								for (uint32_t j = 0; j < way.nodeIds.size(); ++j)
-									tempCoords.push_back(std::pair<uint64_t, glm::dvec2>(way.nodeIds[j], _osm.nodes.find(way.nodeIds[j])->second.coords));
+									tempCoords.emplace_back(std::pair<uint64_t, glm::dvec2>(way.nodeIds[j], _osm.nodes.find(way.nodeIds[j])->second.coords));
 							}
 						}
 						break;
@@ -456,7 +456,7 @@ void NavDataProcess::calculateRoute()
 					data.distanceToNext = 0.0f;
 					data.point = tempCoords[j].second;
 					data.name = getAttributeName(way.tags.data(), way.tags.size());
-					_osm.route.push_back(data);
+					_osm.route.emplace_back(data);
 				}
 
 				lastID = tempCoords.back().first;
@@ -507,7 +507,7 @@ void NavDataProcess::generateIcon(const uint64_t* nodeIds, size_t numNodeIds, co
 		icon.coords = coord;
 		icon.scale = 0.005f;
 		icon.lodLevel = LOD::L2;
-		_osm.icons[LOD::IconLOD].push_back(icon);
+		_osm.icons[LOD::IconLOD].emplace_back(icon);
 
 		// Check if this building has a name, if it does create a label for it.
 		if (!nameEmpty)
@@ -534,7 +534,7 @@ void NavDataProcess::generateIcon(const uint64_t* nodeIds, size_t numNodeIds, co
 					name.insert(pos + 1, "\n");
 				}
 			}
-			_osm.amenityLabels[LOD::AmenityLabelLOD].push_back(label);
+			_osm.amenityLabels[LOD::AmenityLabelLOD].emplace_back(label);
 		}
 	}
 }
@@ -605,7 +605,7 @@ void NavDataProcess::processLabels(const glm::dvec2& mapWorldDim)
 					label.coords = pos;
 					label.rotation = angle;
 					label.maxLodLevel = LOD::L4;
-					temp.push_back(label);
+					temp.emplace_back(label);
 				}
 			}
 		}
@@ -674,7 +674,7 @@ void NavDataProcess::triangulateAllRoads()
 					newIds.insert(newIds.end(), wayIterator->second.nodeIds.begin() + i, wayIterator->second.nodeIds.end());
 					wayIterator->second.nodeIds.erase(wayIterator->second.nodeIds.begin() + i + 1, wayIterator->second.nodeIds.end());
 					uint32_t intersectSize = static_cast<uint32_t>(_osm.nodes.find(newIds[0])->second.wayIds.size());
-					_osm.nodes.find(newIds[0])->second.wayIds.push_back(newWay.id);
+					_osm.nodes.find(newIds[0])->second.wayIds.emplace_back(newWay.id);
 
 					// Update the intersctions for the nodes
 					for (uint32_t j = 1; j < newIds.size(); ++j)
@@ -688,14 +688,14 @@ void NavDataProcess::triangulateAllRoads()
 								break;
 							}
 						}
-						wayIds.push_back(newWay.id);
+						wayIds.emplace_back(newWay.id);
 					}
 
 					newWay.nodeIds = newIds;
 					_osm.originalRoadWays[newWay.id] = newWay;
 
 					if (intersectSize == 2)
-						_osm.original_intersections.push_back(newIds[0]);
+						_osm.original_intersections.emplace_back(newIds[0]);
 
 					break;
 				}
@@ -708,8 +708,8 @@ void NavDataProcess::triangulateAllRoads()
 				{
 					_osm.nodes.find(wayIterator->second.nodeIds[0])->second.wayIds.pop_back();
 					wayIterator->second.nodeIds.erase(wayIterator->second.nodeIds.begin());
-					wayIterator->second.nodeIds.push_back(wayIterator->second.nodeIds[0]);
-					_osm.nodes.find(wayIterator->second.nodeIds[0])->second.wayIds.push_back(wayIterator->first);
+					wayIterator->second.nodeIds.emplace_back(wayIterator->second.nodeIds[0]);
+					_osm.nodes.find(wayIterator->second.nodeIds[0])->second.wayIds.emplace_back(wayIterator->first);
 				}
 				else if ((_osm.nodes.find(wayIterator->second.nodeIds[wayIterator->second.nodeIds.size() - 2])->second.wayIds.size() > 1) &&
 					(_osm.nodes.find(wayIterator->second.nodeIds.back())->second.wayIds.size() == 2))
@@ -717,7 +717,7 @@ void NavDataProcess::triangulateAllRoads()
 					_osm.nodes.find(wayIterator->second.nodeIds.back())->second.wayIds.pop_back();
 					wayIterator->second.nodeIds.pop_back();
 					wayIterator->second.nodeIds.insert(wayIterator->second.nodeIds.begin(), wayIterator->second.nodeIds.back());
-					_osm.nodes.find(wayIterator->second.nodeIds.back())->second.wayIds.push_back(wayIterator->first);
+					_osm.nodes.find(wayIterator->second.nodeIds.back())->second.wayIds.emplace_back(wayIterator->first);
 				}
 
 				// If the break point of the way is next to an intersection, move it onto the intersection
@@ -735,7 +735,7 @@ void NavDataProcess::triangulateAllRoads()
 				newIds.insert(newIds.end(), wayIterator->second.nodeIds.begin() + breakIndex, wayIterator->second.nodeIds.end());
 				wayIterator->second.nodeIds.erase(wayIterator->second.nodeIds.begin() + breakIndex + 1, wayIterator->second.nodeIds.end());
 				uint32_t intersectSize = static_cast<uint32_t>(_osm.nodes.find(newIds[0])->second.wayIds.size());
-				_osm.nodes.find(newIds[0])->second.wayIds.push_back(newWay.id);
+				_osm.nodes.find(newIds[0])->second.wayIds.emplace_back(newWay.id);
 
 				// Update the intersections for the nodes
 				for (uint32_t i = 1; i < newIds.size(); ++i)
@@ -749,14 +749,14 @@ void NavDataProcess::triangulateAllRoads()
 							break;
 						}
 					}
-					wayIds.push_back(newWay.id);
+					wayIds.emplace_back(newWay.id);
 				}
 
 				newWay.nodeIds = newIds;
 				_osm.originalRoadWays[newWay.id] = newWay;
 
 				if (intersectSize == 1)
-					_osm.original_intersections.push_back(newIds[0]);
+					_osm.original_intersections.emplace_back(newIds[0]);
 			}
 
 			_osm.triangulatedRoads[wayIterator->first] = wayIterator->second;
@@ -784,8 +784,8 @@ void NavDataProcess::calculateIntersections()
 		// Determine if the junction involves only the start or end of a way
 		for (uint32_t j = 0; j < n.wayIds.size(); ++j)
 		{
-			originalWays.push_back(_osm.originalRoadWays.find(n.wayIds[j])->second);
-			newWays.push_back(_osm.triangulatedRoads.find(n.wayIds[j])->second);
+			originalWays.emplace_back(_osm.originalRoadWays.find(n.wayIds[j])->second);
+			newWays.emplace_back(_osm.triangulatedRoads.find(n.wayIds[j])->second);
 
 			if ((originalWays.back().nodeIds.front() != _osm.original_intersections[i]) && (originalWays.back().nodeIds.back() != _osm.original_intersections[i]))
 				endsOnly = false;
@@ -829,7 +829,7 @@ void NavDataProcess::calculateIntersections()
 			// Break the way in two
 			newLineStrip.nodeIds.insert(newLineStrip.nodeIds.end(), originalWay.nodeIds.begin() + intersectIndex, originalWay.nodeIds.end());
 			originalWay.nodeIds.erase(originalWay.nodeIds.begin() + intersectIndex + 1, originalWay.nodeIds.end());
-			_osm.nodes.find(originalWay.nodeIds.back())->second.wayIds.push_back(newId);
+			_osm.nodes.find(originalWay.nodeIds.back())->second.wayIds.emplace_back(newId);
 
 			for (uint32_t j = 1; j < newLineStrip.nodeIds.size(); ++j)
 			{
@@ -842,7 +842,7 @@ void NavDataProcess::calculateIntersections()
 						break;
 					}
 				}
-				wayIds.push_back(newId);
+				wayIds.emplace_back(newId);
 			}
 
 			newTriStrip.nodeIds.insert(newTriStrip.nodeIds.end(), newWay.nodeIds.begin() + newIntersectIndex - 1, newWay.nodeIds.end());
@@ -865,7 +865,7 @@ void NavDataProcess::calculateIntersections()
 
 			_osm.originalRoadWays[newId] = newLineStrip;
 			_osm.triangulatedRoads[newId] = newTriStrip;
-			_osm.original_intersections.push_back(originalWay.nodeIds.back());
+			_osm.original_intersections.emplace_back(originalWay.nodeIds.back());
 		}
 		else // If only the ends of ways are involved
 		{
@@ -879,7 +879,7 @@ void NavDataProcess::calculateIntersections()
 			}
 
 			std::vector<Way> orderedWays;
-			orderedWays.push_back(newWays[0]);
+			orderedWays.emplace_back(newWays[0]);
 			glm::dvec2 centrePoint = n.coords;
 			glm::dvec2 currentPoint = _osm.nodes.find(originalWays[0].nodeIds[1])->second.coords;
 			originalWays.erase(originalWays.begin());
@@ -908,11 +908,11 @@ void NavDataProcess::calculateIntersections()
 				}
 
 				currentPoint = _osm.nodes.find(originalWays[wayNum].nodeIds[1])->second.coords;
-				orderedWays.push_back(newWays[wayNum]);
+				orderedWays.emplace_back(newWays[wayNum]);
 				newWays.erase(newWays.begin() + wayNum);
 				originalWays.erase(originalWays.begin() + wayNum);
 			}
-			orderedWays.push_back(newWays[0]);
+			orderedWays.emplace_back(newWays[0]);
 
 			// Find intersections
 			std::vector<uint64_t> newIds;
@@ -957,7 +957,7 @@ void NavDataProcess::calculateIntersections()
 								point1 = newPoint;
 								point3 = newPoint;
 
-								newIds.push_back(orderedWays[j].nodeIds[k]);
+								newIds.emplace_back(orderedWays[j].nodeIds[k]);
 
 								for (uint32_t n = 0; n < k; n += 2)
 								{
@@ -996,7 +996,7 @@ void NavDataProcess::calculateIntersections()
 								point1 = newPoint;
 
 								_osm.nodes.find(orderedWays[wayNum].nodeIds[1])->second.coords = newPoint;
-								newIds.push_back(orderedWays[j].nodeIds[0]);
+								newIds.emplace_back(orderedWays[j].nodeIds[0]);
 
 								for (uint32_t n = 0; n < k; n += 2)
 								{
@@ -1021,7 +1021,7 @@ void NavDataProcess::calculateIntersections()
 					glm::dvec2& point4 = _osm.nodes.find(orderedWays[wayNum].nodeIds[1])->second.coords;
 
 					point4 = point2 = lineIntersect(point1, point2 - point1, point3, point4 - point3);
-					newIds.push_back(orderedWays[j].nodeIds[0]);
+					newIds.emplace_back(orderedWays[j].nodeIds[0]);
 				}
 			}
 
@@ -1034,7 +1034,7 @@ void NavDataProcess::calculateIntersections()
 
 				for (Way& w : orderedWays)
 				{
-					temp.push_back(w.tags);
+					temp.emplace_back(w.tags);
 					if (w.isRoundabout)
 						roundabout = true;
 					if (w.width > width)
@@ -1055,7 +1055,7 @@ void NavDataProcess::calculateIntersections()
 				intersection.isFork = oneWayCount == 2;
 
 				for (uint32_t j = 1; j < (newIds.size() - 1); ++j)
-					intersection.triangulatedIds.push_back(std::array<uint64_t, 3>{ newIds[0], newIds[j], newIds[j + 1] });
+					intersection.triangulatedIds.emplace_back(std::array<uint64_t, 3>{ newIds[0], newIds[j], newIds[j + 1] });
 
 				_osm.convertedRoads[intersection.id] = intersection;
 				_osm.originalRoadWays[intersection.id] = intersection; // To keep track of the new IDs
@@ -1081,8 +1081,8 @@ void NavDataProcess::convertToTriangleList()
 		{
 			for (uint32_t i = 0; i < (wayIterator->second.nodeIds.size() - 1); ++i)
 			{
-				_osm.areaOutlines.push_back(wayIterator->second.nodeIds[i]);
-				_osm.areaOutlines.push_back(wayIterator->second.nodeIds[i + 1]);
+				_osm.areaOutlines.emplace_back(wayIterator->second.nodeIds[i]);
+				_osm.areaOutlines.emplace_back(wayIterator->second.nodeIds[i + 1]);
 			}
 
 			if (checkWinding(wayIterator->second.nodeIds) == pvr::PolygonWindingOrder::FrontFaceCW)
@@ -1092,7 +1092,7 @@ void NavDataProcess::convertToTriangleList()
 
 			for (uint32_t i = 0; i < triangles.size(); ++i)
 			{
-				convertedRoad.triangulatedIds.push_back(triangles[i]);
+				convertedRoad.triangulatedIds.emplace_back(triangles[i]);
 			}
 		}
 		else
@@ -1113,9 +1113,9 @@ void NavDataProcess::convertToTriangleList()
 					{
 						auto nodes = calculateEndCaps(n1, n2, wayIterator->second.width);
 
-						wayIterator->second.nodeIds.push_back(nodes[0]);
-						wayIterator->second.nodeIds.push_back(n2.id); // Need a repeated node to complete triangle list.
-						wayIterator->second.nodeIds.push_back(nodes[1]);
+						wayIterator->second.nodeIds.emplace_back(nodes[0]);
+						wayIterator->second.nodeIds.emplace_back(n2.id); // Need a repeated node to complete triangle list.
+						wayIterator->second.nodeIds.emplace_back(nodes[1]);
 					}
 				}
 				// Start of road segment.
@@ -1141,7 +1141,7 @@ void NavDataProcess::convertToTriangleList()
 				const Vertex& node0 = i % 2 == 0 ? _osm.getNodeById(wayIterator->second.nodeIds[i]) : _osm.getNodeById(wayIterator->second.nodeIds[i + 1]);
 				const Vertex& node1 = i % 2 == 0 ? _osm.getNodeById(wayIterator->second.nodeIds[i + 1]) : _osm.getNodeById(wayIterator->second.nodeIds[i]);
 				const Vertex& node2 = _osm.getNodeById(wayIterator->second.nodeIds[i + 2]);
-				convertedRoad.triangulatedIds.push_back(std::array<uint64_t, 3>{ node0.id, node1.id, node2.id });
+				convertedRoad.triangulatedIds.emplace_back(std::array<uint64_t, 3>{ node0.id, node1.id, node2.id });
 			}
 		}
 		_osm.convertedRoads[convertedRoad.id] = convertedRoad;
@@ -1243,7 +1243,7 @@ void NavDataProcess::sortTiles()
 
 		if (wayIterator->second.inner)
 		{
-			innerWays.push_back(wayIterator->second);
+			innerWays.emplace_back(wayIterator->second);
 			continue;
 		}
 
@@ -1283,7 +1283,7 @@ void NavDataProcess::sortTiles()
 
 		if (wayIterator->second.inner)
 		{
-			innerWays.push_back(wayIterator->second);
+			innerWays.emplace_back(wayIterator->second);
 			continue;
 		}
 
@@ -1476,7 +1476,7 @@ void NavDataProcess::insertWay(std::vector<Way>& insertIn, Way& way)
 	}
 	else
 	{
-		insertIn.push_back(way);
+		insertIn.emplace_back(way);
 	}
 }
 
@@ -1571,12 +1571,12 @@ void NavDataProcess::fillTiles(Vertex startNode, Vertex endNode, const uint64_t 
 	startTile = findTile2(startNode.coords);
 	endTile = findTile2(endNode.coords);
 
-	startNode.wayIds.push_back(wayId);
-	endNode.wayIds.push_back(wayId);
+	startNode.wayIds.emplace_back(wayId);
+	endNode.wayIds.emplace_back(wayId);
 
 	// Add start node to tile
 	_osm.tiles[startTile.x][startTile.y].nodes[startNode.id] = startNode;
-	startWay.nodeIds.push_back(startNode.id);
+	startWay.nodeIds.emplace_back(startNode.id);
 	startWay.id = wayId;
 	startWay.tags = wayTags;
 	startWay.tileBoundWay = startNode.tileBoundNode;
@@ -1594,7 +1594,7 @@ void NavDataProcess::fillTiles(Vertex startNode, Vertex endNode, const uint64_t 
 	{
 		if (_osm.intersectionNodes.rbegin()->second.junctionWays.size() == 0 ||
 			_osm.intersectionNodes.rbegin()->second.junctionWays.rbegin()->first != static_cast<uint32_t>(_osm.tiles[startTile.x][startTile.y].roadWays.size()) - 1)
-			_osm.intersectionNodes.rbegin()->second.junctionWays.push_back(
+			_osm.intersectionNodes.rbegin()->second.junctionWays.emplace_back(
 				std::pair<uint32_t, glm::uvec2>(static_cast<uint32_t>(_osm.tiles[startTile.x][startTile.y].roadWays.size()) - 1, startTile));
 	}
 
@@ -1624,7 +1624,7 @@ void NavDataProcess::fillTiles(Vertex startNode, Vertex endNode, const uint64_t 
 		glm::vec2 weightedTexCoord = glm::mix(currentNode.texCoords, endNode.texCoords, weight);
 
 		newNode.texCoords = weightedTexCoord;
-		newNode.wayIds.push_back(wayId);
+		newNode.wayIds.emplace_back(wayId);
 		newNode.height = 0.0;
 
 		if (wayType == WayTypes::Building && startNode.height > 0.0 && endNode.height > 0.0)
@@ -1635,7 +1635,7 @@ void NavDataProcess::fillTiles(Vertex startNode, Vertex endNode, const uint64_t 
 		_osm.nodes[newNode.id] = newNode;
 		_osm.tiles[currentTile.x][currentTile.y].nodes[newNode.id] = newNode;
 
-		newWay.nodeIds.push_back(newNode.id);
+		newWay.nodeIds.emplace_back(newNode.id);
 		newWay.id = wayId;
 		newWay.tags = wayTags;
 		newWay.tileBoundWay = true;
@@ -1675,7 +1675,7 @@ void NavDataProcess::fillTiles(Vertex startNode, Vertex endNode, const uint64_t 
 		if (isIntersection && !_osm.intersectionNodes.rbegin()->second.isBound)
 		{
 			_osm.intersectionNodes.rbegin()->second.isBound = true;
-			_osm.intersectionNodes.rbegin()->second.junctionWays.push_back(
+			_osm.intersectionNodes.rbegin()->second.junctionWays.emplace_back(
 				std::pair<uint32_t, glm::uvec2>(static_cast<uint32_t>(_osm.tiles[currentTile.x][currentTile.y].roadWays.size()) - 1, currentTile));
 		}
 
@@ -1689,7 +1689,7 @@ void NavDataProcess::fillTiles(Vertex startNode, Vertex endNode, const uint64_t 
 
 		_osm.tiles[endTile.x][endTile.y].nodes[endNode.id] = endNode;
 		_osm.nodes[endNode.id] = endNode;
-		endWay.nodeIds.push_back(endNode.id);
+		endWay.nodeIds.emplace_back(endNode.id);
 		endWay.id = wayId;
 		endWay.tags = wayTags;
 		endWay.tileBoundWay = endNode.tileBoundNode;
@@ -1735,7 +1735,7 @@ void NavDataProcess::addCornerPoints(Tile& tile, std::vector<Way>& way)
 
 				_osm.nodes[newNode.id] = newNode;
 				tile.nodes[newNode.id] = newNode;
-				nodeIds.push_back(newNode.id);
+				nodeIds.emplace_back(newNode.id);
 			}
 			else
 			{
@@ -1761,9 +1761,9 @@ void NavDataProcess::addCornerPoints(Tile& tile, std::vector<Way>& way)
 
 						_osm.nodes[newNode.id] = newNode;
 						tile.nodes[newNode.id] = newNode;
-						newTriangles.push_back(currentNode.id);
-						newTriangles.push_back(newNode.id);
-						newTriangles.push_back(nextNode.id);
+						newTriangles.emplace_back(currentNode.id);
+						newTriangles.emplace_back(newNode.id);
+						newTriangles.emplace_back(nextNode.id);
 					}
 				}
 
@@ -1772,9 +1772,9 @@ void NavDataProcess::addCornerPoints(Tile& tile, std::vector<Way>& way)
 					std::vector<uint64_t> newNodeIds;
 					for (uint32_t j = 1; j < (nodeIds.size() - 1); ++j)
 					{
-						newNodeIds.push_back(nodeIds[0]);
-						newNodeIds.push_back(nodeIds[j]);
-						newNodeIds.push_back(nodeIds[j + 1]);
+						newNodeIds.emplace_back(nodeIds[0]);
+						newNodeIds.emplace_back(nodeIds[j]);
+						newNodeIds.emplace_back(nodeIds[j + 1]);
 					}
 					nodeIds = newNodeIds;
 				}
@@ -1828,7 +1828,7 @@ std::vector<uint64_t> NavDataProcess::tessellate(const std::vector<uint64_t>& ol
 
 			// Add first node if vector is empty.
 			if (newIds.size() == 0)
-				newIds.push_back(node0.id);
+				newIds.emplace_back(node0.id);
 
 			// Compute projection distance for each road segment.
 			double projLenA = glm::length(v1) / 10.0;
@@ -1862,24 +1862,24 @@ std::vector<uint64_t> NavDataProcess::tessellate(const std::vector<uint64_t>& ol
 
 				newNode.coords = lastPointOnCurve = newCoords;
 				_osm.nodes[newNode.id] = newNode;
-				newIds.push_back(newNode.id);
+				newIds.emplace_back(newNode.id);
 			}
 			// Add last node if we have reached the end of oldNodes.
 			if (i == oldNodeIDs.size() - 2)
-				newIds.push_back(node2.id);
+				newIds.emplace_back(node2.id);
 		}
 		else
 		{
 			if (newIds.size() == 0)
-				newIds.push_back(node0.id);
+				newIds.emplace_back(node0.id);
 
 			if (i == middleIndex)
 				index = static_cast<uint32_t>(newIds.size());
 
-			newIds.push_back(node1.id);
+			newIds.emplace_back(node1.id);
 
 			if (i == oldNodeIDs.size() - 2)
-				newIds.push_back(node2.id);
+				newIds.emplace_back(node2.id);
 
 			middleNodeAdded = false;
 		}
@@ -1917,10 +1917,10 @@ std::vector<uint64_t> NavDataProcess::triangulateRoad(const std::vector<uint64_t
 		_osm.nodes[newNode3.id] = newNode3;
 
 		// Create triangles
-		newNodeIds.push_back(newNode0.id);
-		newNodeIds.push_back(newNode1.id);
-		newNodeIds.push_back(newNode2.id);
-		newNodeIds.push_back(newNode3.id);
+		newNodeIds.emplace_back(newNode0.id);
+		newNodeIds.emplace_back(newNode1.id);
+		newNodeIds.emplace_back(newNode2.id);
+		newNodeIds.emplace_back(newNode3.id);
 	}
 	else
 	{
@@ -1943,8 +1943,8 @@ std::vector<uint64_t> NavDataProcess::triangulateRoad(const std::vector<uint64_t
 				_osm.nodes[newNode0.id] = newNode0;
 				_osm.nodes[newNode1.id] = newNode1;
 
-				newNodeIds.push_back(newNode0.id);
-				newNodeIds.push_back(newNode1.id);
+				newNodeIds.emplace_back(newNode0.id);
+				newNodeIds.emplace_back(newNode1.id);
 			}
 
 			Vertex newNode2(++id, secPerps[0], false, glm::vec2(-0.05f, 0.245f));
@@ -1953,8 +1953,8 @@ std::vector<uint64_t> NavDataProcess::triangulateRoad(const std::vector<uint64_t
 			_osm.nodes[newNode2.id] = newNode2;
 			_osm.nodes[newNode3.id] = newNode3;
 
-			newNodeIds.push_back(newNode2.id);
-			newNodeIds.push_back(newNode3.id);
+			newNodeIds.emplace_back(newNode2.id);
+			newNodeIds.emplace_back(newNode3.id);
 
 			// If this is the last entry we also need to perform for the third/last node
 			if (i == (nodeIds.size() - 2))
@@ -1967,8 +1967,8 @@ std::vector<uint64_t> NavDataProcess::triangulateRoad(const std::vector<uint64_t
 				_osm.nodes[newNode4.id] = newNode4;
 				_osm.nodes[newNode5.id] = newNode5;
 
-				newNodeIds.push_back(newNode4.id);
-				newNodeIds.push_back(newNode5.id);
+				newNodeIds.emplace_back(newNode4.id);
+				newNodeIds.emplace_back(newNode5.id);
 			}
 		}
 	}
@@ -2014,7 +2014,7 @@ void NavDataProcess::calculateMapBoundaryTexCoords()
 					// Check if node is on the exterior edge of the map.
 					if (compareReal(nextNode->coords.x, _osm.bounds.min.x) || compareReal(nextNode->coords.x, _osm.bounds.max.x) ||
 						compareReal(nextNode->coords.y, _osm.bounds.min.y) || compareReal(nextNode->coords.y, _osm.bounds.max.y))
-						foundNodes.push_back(nextNode);
+						foundNodes.emplace_back(nextNode);
 				}
 
 				if (foundNodes.size() == 0)
@@ -2066,20 +2066,20 @@ void NavDataProcess::calculateMapBoundaryTexCoords()
 								if (nextTo)
 								{
 									// Place node at the end of the vector.
-									foundNodes.push_back(nextNode);
+									foundNodes.emplace_back(nextNode);
 									innerItr->second.consumed = true;
 								}
 								// Check for absolute distance between nodes and compare to road width.
 								else if (glm::abs(foundNodes[0]->coords.y - nextNode->coords.y) < roadWidth)
 								{
 									// Place node at the end of the vector.
-									foundNodes.push_back(nextNode);
+									foundNodes.emplace_back(nextNode);
 									innerItr->second.consumed = true;
 								}
 								else
 								{
 									// Add to the rejected node array - might be used for later computation.
-									rejectedNodes.push_back(nextNode);
+									rejectedNodes.emplace_back(nextNode);
 								}
 							}
 							else if (nextNode->coords.y < foundNodes[0]->coords.y)
@@ -2099,7 +2099,7 @@ void NavDataProcess::calculateMapBoundaryTexCoords()
 								else
 								{
 									// Add to the rejected node array - might be used for later computation.
-									rejectedNodes.push_back(nextNode);
+									rejectedNodes.emplace_back(nextNode);
 								}
 							}
 							else
@@ -2117,19 +2117,19 @@ void NavDataProcess::calculateMapBoundaryTexCoords()
 								if (nextTo)
 								{
 									// Place node at the end of the vector.
-									foundNodes.push_back(nextNode);
+									foundNodes.emplace_back(nextNode);
 									innerItr->second.consumed = true;
 								}
 								else if (glm::abs(foundNodes[0]->coords.x - nextNode->coords.x) < roadWidth)
 								{
 									// Place node at the end of the vector.
-									foundNodes.push_back(nextNode);
+									foundNodes.emplace_back(nextNode);
 									innerItr->second.consumed = true;
 								}
 								else
 								{
 									// Add to the rejected node array - might be used for later computation.
-									rejectedNodes.push_back(nextNode);
+									rejectedNodes.emplace_back(nextNode);
 								}
 							}
 							else if (nextNode->coords.x < foundNodes[0]->coords.x)
@@ -2150,7 +2150,7 @@ void NavDataProcess::calculateMapBoundaryTexCoords()
 								else
 								{
 									// Add to the rejected node array - might be used for later computation.
-									rejectedNodes.push_back(nextNode);
+									rejectedNodes.emplace_back(nextNode);
 								}
 							}
 							else
@@ -2206,7 +2206,7 @@ void NavDataProcess::calculateMapBoundaryTexCoords()
 						if (node->coords.y <= foundNodes[0]->coords.y)
 							foundNodes.insert(foundNodes.begin(), node);
 						else
-							foundNodes.push_back(node);
+							foundNodes.emplace_back(node);
 					}
 					else if (yEqual)
 					{
@@ -2232,7 +2232,7 @@ void NavDataProcess::calculateMapBoundaryTexCoords()
 						if (node->coords.x <= foundNodes[0]->coords.x)
 							foundNodes.insert(foundNodes.begin(), node);
 						else
-							foundNodes.push_back(node);
+							foundNodes.emplace_back(node);
 					}
 					// Re-calculate distance.
 					t_dist = glm::distance(foundNodes[0]->coords, foundNodes.back()->coords);
@@ -2296,7 +2296,7 @@ void NavDataProcess::calculateJunctionTexCoords()
 
 			// Get reference to way using way index.
 			Way* way = &_osm.tiles[currentTile.x][currentTile.y].roadWays[itr->second.junctionWays[i].first];
-			junctionWays.push_back(std::pair<glm::uvec2, Way*>(currentTile, way));
+			junctionWays.emplace_back(std::pair<glm::uvec2, Way*>(currentTile, way));
 			isRoundabout = way->isRoundabout;
 			isFork = way->isFork;
 
@@ -2340,7 +2340,7 @@ void NavDataProcess::calculateJunctionTexCoords()
 			std::vector<std::pair<Vertex*, Vertex*> > foundNodes;
 			// Move nodes into vector for simpler/faster indexing.
 			for (auto it = uniqueFoundNodes.begin(); it != uniqueFoundNodes.end(); ++it)
-				foundNodes.push_back(it->second);
+				foundNodes.emplace_back(it->second);
 
 			// Check if list of nodes are clockwise wound.
 			if (checkWinding(std::vector<glm::dvec2>() = { foundNodes[0].first->coords, foundNodes[1].first->coords, foundNodes[2].first->coords }) ==
@@ -2406,14 +2406,14 @@ void NavDataProcess::calculateJunctionTexCoords()
 
 				// Insert new nodes into way to create new triangles.
 				// A
-				way->nodeIds.push_back(newNode0.id);
-				way->nodeIds.push_back(newNode1.id);
-				way->nodeIds.push_back(newNode3.id);
+				way->nodeIds.emplace_back(newNode0.id);
+				way->nodeIds.emplace_back(newNode1.id);
+				way->nodeIds.emplace_back(newNode3.id);
 
 				// B
-				way->nodeIds.push_back(newNode3.id);
-				way->nodeIds.push_back(newNode1.id);
-				way->nodeIds.push_back(newNode2.id);
+				way->nodeIds.emplace_back(newNode3.id);
+				way->nodeIds.emplace_back(newNode1.id);
+				way->nodeIds.emplace_back(newNode2.id);
 
 				// Extra triangle needed to cover road line through intersection - check which edge of the intersection has different tex coord's to prevent artefacts.
 				if (!compareReal(foundNodes[index_1].first->texCoords.x, foundNodes[index_1].second->texCoords.x) || roundAboutEdgeCase1 ||
@@ -2430,9 +2430,9 @@ void NavDataProcess::calculateJunctionTexCoords()
 					_osm.tiles[currentTile.x][currentTile.y].nodes[newNode.id] = newNode;
 
 					// A-A
-					way->nodeIds.push_back(newNode.id);
-					way->nodeIds.push_back(newNode1.id);
-					way->nodeIds.push_back(newNode3.id);
+					way->nodeIds.emplace_back(newNode.id);
+					way->nodeIds.emplace_back(newNode1.id);
+					way->nodeIds.emplace_back(newNode3.id);
 				}
 				else if (!compareReal(foundNodes[index_2].first->texCoords.x, foundNodes[index_2].second->texCoords.x) || roundAboutEdgeCase2 ||
 					(texCoordFlippedEdgeCase && compareReal(foundNodes[index_3].first->texCoords.x, foundNodes[index_2].first->texCoords.x)))
@@ -2448,9 +2448,9 @@ void NavDataProcess::calculateJunctionTexCoords()
 					_osm.tiles[currentTile.x][currentTile.y].nodes[newNode.id] = newNode;
 
 					// B-B
-					way->nodeIds.push_back(newNode3.id);
-					way->nodeIds.push_back(newNode1.id);
-					way->nodeIds.push_back(newNode.id);
+					way->nodeIds.emplace_back(newNode3.id);
+					way->nodeIds.emplace_back(newNode1.id);
+					way->nodeIds.emplace_back(newNode.id);
 				}
 				else
 				{
@@ -2464,15 +2464,15 @@ void NavDataProcess::calculateJunctionTexCoords()
 
 					_osm.tiles[currentTile.x][currentTile.y].nodes[newNode.id] = newNode;
 
-					way->nodeIds.push_back(newNode3.id);
-					way->nodeIds.push_back(newNode1.id);
-					way->nodeIds.push_back(newNode.id);
+					way->nodeIds.emplace_back(newNode3.id);
+					way->nodeIds.emplace_back(newNode1.id);
+					way->nodeIds.emplace_back(newNode.id);
 				}
 
 				// C
-				way->nodeIds.push_back(newNode0.id);
-				way->nodeIds.push_back(newNode3.id);
-				way->nodeIds.push_back(newNode2.id);
+				way->nodeIds.emplace_back(newNode0.id);
+				way->nodeIds.emplace_back(newNode3.id);
+				way->nodeIds.emplace_back(newNode2.id);
 			}
 		}
 	}
@@ -2494,7 +2494,7 @@ void NavDataProcess::calculateCrossRoadJunctionTexCoords(std::vector<std::pair<V
 	{
 		for (uint32_t j = i + 1; j < foundNodes.size(); ++j)
 		{
-			vectors.push_back(
+			vectors.emplace_back(
 				std::pair<std::vector<uint32_t>, glm::dvec2>(std::vector<uint32_t>() = { j, i }, glm::normalize(foundNodes[i].first->coords - foundNodes[j].first->coords)));
 		}
 	}
@@ -2596,23 +2596,23 @@ void NavDataProcess::calculateCrossRoadJunctionTexCoords(std::vector<std::pair<V
 		_osm.tiles[currentTile.x][currentTile.y].nodes[newNode7.id] = newNode7;
 
 		/* Quad to fill holes in junction. */
-		way->nodeIds.push_back(newNode4.id);
-		way->nodeIds.push_back(newNode6.id);
-		way->nodeIds.push_back(newNode7.id);
+		way->nodeIds.emplace_back(newNode4.id);
+		way->nodeIds.emplace_back(newNode6.id);
+		way->nodeIds.emplace_back(newNode7.id);
 
-		way->nodeIds.push_back(newNode7.id);
-		way->nodeIds.push_back(newNode5.id);
-		way->nodeIds.push_back(newNode4.id);
+		way->nodeIds.emplace_back(newNode7.id);
+		way->nodeIds.emplace_back(newNode5.id);
+		way->nodeIds.emplace_back(newNode4.id);
 
 		/* 1st new triangle to create junction. */
-		way->nodeIds.push_back(newNode1.id);
-		way->nodeIds.push_back(newNode.id);
-		way->nodeIds.push_back(newNode3.id);
+		way->nodeIds.emplace_back(newNode1.id);
+		way->nodeIds.emplace_back(newNode.id);
+		way->nodeIds.emplace_back(newNode3.id);
 
 		/* 2nd new triangle to create junction. */
-		way->nodeIds.push_back(newNode2.id);
-		way->nodeIds.push_back(newNode.id);
-		way->nodeIds.push_back(newNode0.id);
+		way->nodeIds.emplace_back(newNode2.id);
+		way->nodeIds.emplace_back(newNode.id);
+		way->nodeIds.emplace_back(newNode0.id);
 	}
 }
 

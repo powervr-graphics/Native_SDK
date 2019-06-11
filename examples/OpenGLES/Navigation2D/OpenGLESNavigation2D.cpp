@@ -114,7 +114,7 @@ struct TileRenderingResources
 	GLuint ibo;
 	GLuint vao;
 
-	pvr::RefCountedResource<pvr::ui::UIRenderer> renderer;
+	std::shared_ptr<pvr::ui::UIRenderer> renderer;
 
 	pvr::ui::Font font;
 	pvr::ui::PixelGroup tileGroup[LOD::Count];
@@ -461,8 +461,8 @@ pvr::Result OGLESNavigation2D::initView()
 		_tileRenderingResources[i].resize(_numRows);
 	}
 
-	pvr::VertexAttributeInfo vertexInfo[] = { pvr::VertexAttributeInfo(0, pvr::DataType::Float32, 3, 0, "myVertex"),
-		pvr::VertexAttributeInfo(1, pvr::DataType::Float32, 2, sizeof(float) * 3, "texCoord") };
+	pvr::utils::VertexAttributeInfo vertexInfo[] = { pvr::utils::VertexAttributeInfo(0, pvr::DataType::Float32, 3, 0, "myVertex"),
+		pvr::utils::VertexAttributeInfo(1, pvr::DataType::Float32, 2, sizeof(float) * 3, "texCoord") };
 
 	_deviceResources->vertexConfiguration.addVertexAttribute(0, vertexInfo[0]);
 	_deviceResources->vertexConfiguration.addVertexAttribute(0, vertexInfo[1]);
@@ -705,7 +705,7 @@ void OGLESNavigation2D::bindAndClearFramebuffer()
 
 void OGLESNavigation2D::initializeRenderers(TileRenderingResources* begin, TileRenderingResources* end, const uint32_t col, const uint32_t row)
 {
-	begin->renderer.construct();
+	begin->renderer = std::make_shared<pvr::ui::UIRenderer>();
 	auto& renderer = *begin->renderer;
 	renderer.init(getWidth(), getHeight(), isFullScreen(), getBackBufferColorspace() == pvr::ColorSpace::sRGB);
 
@@ -1387,7 +1387,7 @@ void OGLESNavigation2D::createUIRendererItems()
 						tileResAmenityLabel.group = tileRes.renderer->createPixelGroup();
 
 						tileResAmenityLabel.label.text = tileRes.renderer->createText(amenityLabel.name, tileRes.font);
-						debug_assertion(tileResAmenityLabel.label.text.isValid(), "Amenity label must be a valid UIRenderer Text Element");
+						debug_assertion(tileResAmenityLabel.label.text != nullptr, "Amenity label must be a valid UIRenderer Text Element");
 						tileResAmenityLabel.label.text->setColor(0.f, 0.f, 0.f, 1.f);
 						tileResAmenityLabel.label.text->setAlphaRenderingMode(true);
 
@@ -1415,7 +1415,7 @@ void OGLESNavigation2D::createUIRendererItems()
 						auto& tileResLabel = tileRes.labels[lod].back();
 
 						tileResLabel.text = tileRes.renderer->createText(label.name, tileRes.font);
-						debug_assertion(tileResLabel.text.isValid(), "Label must be a valid UIRenderer Text Element");
+						debug_assertion(tileResLabel.text != nullptr, "Label must be a valid UIRenderer Text Element");
 
 						tileResLabel.text->setColor(0.f, 0.f, 0.f, 1.f);
 						tileResLabel.text->setAlphaRenderingMode(true);
@@ -1475,13 +1475,13 @@ void OGLESNavigation2D::render()
 
 	for (auto&& tile : _deviceResources->renderqueue)
 	{
-		if (tile->renderer.isValid())
+		if (tile->renderer)
 		{
 			renderTile(_OSMdata->getTiles()[tile->col][tile->row], *tile);
 		}
 		for (int lod = _currentScaleLevel; lod < LOD::Count; ++lod)
 		{
-			if (tile->cameraRotateGroup[lod].isValid())
+			if (tile->cameraRotateGroup[lod])
 			{
 				tile->renderer->beginRendering(_stateTracker);
 				tile->cameraRotateGroup[lod]->render();
@@ -1522,14 +1522,14 @@ void OGLESNavigation2D::updateGroups(uint32_t col, uint32_t row)
 
 	for (uint32_t lod = _currentScaleLevel; lod < LOD::Count; ++lod)
 	{
-		if (tileRes.tileGroup[lod].isValid())
+		if (tileRes.tileGroup[lod])
 		{
 			tileRes.tileGroup[lod]->setAnchor(pvr::ui::Anchor::Center, 0, 0);
 			tileRes.tileGroup[lod]->setPixelOffset(pixelOffset.x, pixelOffset.y);
 			tileRes.tileGroup[lod]->setScale(_scale, _scale);
 			tileRes.tileGroup[lod]->commitUpdates();
 		}
-		if (tileRes.cameraRotateGroup[lod].isValid())
+		if (tileRes.cameraRotateGroup[lod])
 		{
 			tileRes.cameraRotateGroup[lod]->setRotation(glm::radians(_rotation + MapScreenAlignRotation));
 			tileRes.cameraRotateGroup[lod]->setAnchor(pvr::ui::Anchor::Center, 0, 0);
@@ -1561,7 +1561,7 @@ void OGLESNavigation2D::updateLabels(uint32_t col, uint32_t row)
 
 			auto& tileLabel = tile.labels[lod][labelIdx];
 			auto& tileResLabel = tileRes.labels[lod][labelIdx];
-			if (tileResLabel.text.isNull())
+			if (tileResLabel.text == nullptr)
 			{
 				continue;
 			}
@@ -1610,7 +1610,7 @@ void OGLESNavigation2D::updateAmenities(uint32_t col, uint32_t row)
 		for (uint32_t amenityIconIndex = 0; amenityIconIndex < tileRes.amenityIcons[lod].size(); ++amenityIconIndex)
 		{
 			AmenityIconGroup& amenityIcon = tileRes.amenityIcons[lod][amenityIconIndex];
-			debug_assertion(amenityIcon.icon.image.isValid(), "Amenity Icon must be a valid UIRenderer Icon");
+			debug_assertion(amenityIcon.icon.image != nullptr, "Amenity Icon must be a valid UIRenderer Icon");
 
 			float iconScale = (1.0f / (_scale * 20.0f));
 			iconScale = glm::clamp(iconScale, amenityIcon.iconData.scale, amenityIcon.iconData.scale * 2.0f);
@@ -1627,7 +1627,7 @@ void OGLESNavigation2D::updateAmenities(uint32_t col, uint32_t row)
 		for (uint32_t amenityLabelIndex = 0; amenityLabelIndex < tileRes.amenityLabels[lod].size(); ++amenityLabelIndex)
 		{
 			AmenityLabelGroup& amenityLabel = tileRes.amenityLabels[lod][amenityLabelIndex];
-			if (amenityLabel.label.text.isNull())
+			if (amenityLabel.label.text == nullptr)
 			{
 				continue;
 			}

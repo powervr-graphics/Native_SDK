@@ -20,18 +20,29 @@ public:
 };
 
 namespace impl {
-/// <summary> Vulkan Computepipeline wrapper<summary>
+/// <summary>Vulkan Computepipeline wrapper<summary>
 class ComputePipeline_ : public Pipeline<ComputePipeline, ComputePipelineCreateInfo>
 {
-public:
-	DECLARE_NO_COPY_SEMANTICS(ComputePipeline_)
-
 private:
-	template<typename>
-	friend struct ::pvrvk::RefCountEntryIntrusive;
-	friend class ::pvrvk::impl::Device_;
+	friend class Device_;
 
-	ComputePipeline_(DeviceWeakPtr device, VkPipeline vkPipeline, const ComputePipelineCreateInfo& desc) : Pipeline(device, vkPipeline, desc) {}
+	class make_shared_enabler
+	{
+	protected:
+		make_shared_enabler() {}
+		friend class ComputePipeline_;
+	};
+
+	static ComputePipeline constructShared(const DeviceWeakPtr& device, VkPipeline vkPipeline, const ComputePipelineCreateInfo& desc)
+	{
+		return std::make_shared<ComputePipeline_>(make_shared_enabler{}, device, vkPipeline, desc);
+	}
+
+public:
+	//!\cond NO_DOXYGEN
+	DECLARE_NO_COPY_SEMANTICS(ComputePipeline_)
+	ComputePipeline_(make_shared_enabler, const DeviceWeakPtr& device, VkPipeline vkPipeline, const ComputePipelineCreateInfo& desc) : Pipeline(device, vkPipeline, desc) {}
+	//!\endcond
 };
 } // namespace impl
 } // namespace pvrvk

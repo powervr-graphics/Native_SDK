@@ -6,13 +6,14 @@
 */
 #pragma once
 #include "PVRVk/HeadersVk.h"
-#include "PVRVk/RefCounted.h"
+#include <memory>
 #include <vector>
 #include <algorithm>
+#include <cassert>
 
 // Disable warning messages for 4351 (https://msdn.microsoft.com/en-us/library/1ywe7hcy.aspx).
 #pragma warning(disable : 4351)
-/// <summary> Internal helper class that is used for unknown size arrays, utilising a small statically
+/// <summary>Internal helper class that is used for unknown size arrays, utilising a small statically
 /// allocated space to avoid dynamic allocations if an array of "less-than" a number of items is required</summary>
 /// <typeparam name="ElementType"> The type of items stored </typeparam>
 /// <typeparam name="static_size"> The amount of statically allocated memory used. If overran, a dynamic allocation takes place.</typeparam>
@@ -23,21 +24,21 @@ class ArrayOrVector
 	ElementType* _ptr;
 
 public:
-	/// <summary> Array indexing operator</summary>
+	/// <summary>Array indexing operator</summary>
 	/// <param name="idx"> Array index</param>
-	/// <returns> The indexed item </returns>
+	/// <returns> The indexed item</returns>
 	ElementType& operator[](size_t idx)
 	{
 		return _ptr[idx];
 	}
-	/// <summary> Array indexing operator</summary>
+	/// <summary>Array indexing operator</summary>
 	/// <param name="idx"> Array index</param>
-	/// <returns> The indexed item </returns>
+	/// <returns> The indexed item</returns>
 	const ElementType& operator[](size_t idx) const
 	{
 		return _ptr[idx];
 	}
-	/// <summary> Constructor. Takes the actual, runtime size of the array.</summary>
+	/// <summary>Constructor. Takes the actual, runtime size of the array.</summary>
 	/// <param name="num_items_required"> The size required for the array</param>
 	ArrayOrVector(size_t num_items_required) : _array{}
 	{
@@ -50,7 +51,7 @@ public:
 			_ptr = _array;
 		}
 	}
-	/// <summary> Destructor</summary>
+	/// <summary>Destructor</summary>
 	~ArrayOrVector()
 	{
 		if (_ptr != _array)
@@ -59,13 +60,13 @@ public:
 		}
 	}
 
-	/// <summary> Returns the pointer to the actual storage used (whether static or dynamic)</summary>
+	/// <summary>Returns the pointer to the actual storage used (whether static or dynamic)</summary>
 	/// <returns> The pointer to the actual storage used.</returns>
 	ElementType* get()
 	{
 		return _ptr;
 	}
-	/// <summary> Returns the pointer to the actual storage used (whether static or dynamic)</summary>
+	/// <summary>Returns the pointer to the actual storage used (whether static or dynamic)</summary>
 	/// <returns> The pointer to the actual storage used.</returns>
 	const ElementType* get() const
 	{
@@ -143,8 +144,8 @@ namespace internal {
 template<typename container, typename val, typename cmp>
 size_t insertSorted_overwrite(container& cont, typename container::iterator begin, typename container::iterator end, const val& item, const cmp& compare)
 {
-	typename container::iterator it = std::lower_bound(begin, end, item, compare);
-	int64_t offset = static_cast<int64_t>(it - begin);
+	auto it = std::lower_bound(begin, end, item, compare);
+	auto offset = static_cast<int64_t>(it - begin);
 	if (it != end && !(compare(*it, item) || compare(item, *it)))
 	{
 		*it = item;
@@ -153,7 +154,7 @@ size_t insertSorted_overwrite(container& cont, typename container::iterator begi
 	{
 		cont.insert(it, item);
 	}
-	return (size_t)offset;
+	return static_cast<size_t>(offset);
 }
 
 /// <summary>Insert an item into its correct place in a sorted container, maintaining the sort,
@@ -203,14 +204,14 @@ size_t insertSorted_overwrite(container& cont, const val& item, const cmp& compa
 const uint32_t SubpassExternal = ~0u; //!< A special constant used as a subpass externl in Subpass dependecies
 
 namespace GpuDatatypesHelper {
-/// <summary> A bit representing if a type is basically of integer or floating point format </summary>
+/// <summary>A bit representing if a type is basically of integer or floating point format</summary>
 enum class BaseType
 {
 	Integer = 0,
 	Float = 1
 };
 
-/// <summary> Two bits, representing the number of vector components (from scalar up to 4)</summary>
+/// <summary>Two bits, representing the number of vector components (from scalar up to 4)</summary>
 enum class VectorWidth
 {
 	Scalar = 0,
@@ -219,7 +220,7 @@ enum class VectorWidth
 	Vec4 = 3,
 };
 
-/// <summary> Three bits, representing the number of matrix columns (from not a matrix to 4)</summary>
+/// <summary>Three bits, representing the number of matrix columns (from not a matrix to 4)</summary>
 enum class MatrixColumns
 {
 	OneCol = 0,
@@ -228,7 +229,7 @@ enum class MatrixColumns
 	Mat4x = 3
 };
 
-/// <summary> Contains bit enums for the expressiveness of the GpuDatatypes class' definition</summary>
+/// <summary>Contains bit enums for the expressiveness of the GpuDatatypes class' definition</summary>
 // clang-format off
 enum class Bits : uint64_t
 {
@@ -335,7 +336,7 @@ public:
 
 	/// <summary>Constructor. Initialize with rgba values</summary>
 	/// <param name="rgba">Pointer to rgba values</param>
-	Color(float rgba[4])
+	Color(const float rgba[4])
 	{
 		color[0] = rgba[0];
 		color[1] = rgba[1];
@@ -372,9 +373,21 @@ public:
 	}
 };
 
+/// <summary>Appends the provided pNext to the last pNext member of the provided base structure pNext chain</summary>
+/// <param name="baseStructure">A pointer to a base structure to append the provided pNext to the end of the pNext chain</param>
+/// <param name="newPNext">An element to append to the pNext chain</param>
+inline void appendPNext(VkBaseInStructure* baseStructure, const void* newPNext)
+{
+	auto currentPNext = const_cast<VkBaseInStructure*>(baseStructure->pNext);
+	while (currentPNext != nullptr)
+	{
+		currentPNext = const_cast<VkBaseInStructure*>(currentPNext->pNext);
+	}
+	currentPNext = (VkBaseInStructure*)newPNext;
+}
+
 /// <summary>Contains clear color values (rgba).
-/// This is used in Commandbuffer::clearColorImage
-/// </summary>
+/// This is used in Commandbuffer::clearColorImage</summary>
 struct ClearColorValue
 {
 private:
@@ -653,7 +666,7 @@ public:
 struct ImageAreaSize : public Extent3D, public ImageLayersSize
 {
 	/// <summary>Constructor. Initialise with default values</summary>
-	ImageAreaSize() {}
+	ImageAreaSize() = default;
 
 	/// <summary>Constructor. Initialise with layer size and extent</summary>
 	/// <param name="layersSize">Image layer size</param>
@@ -671,7 +684,7 @@ struct ImageAreaSize : public Extent3D, public ImageLayersSize
 struct ImageAreaOffset : public ImageSubresource, public Offset3D
 {
 	/// <summary>Constructor. Initialise with default values</summary>
-	ImageAreaOffset() {}
+	ImageAreaOffset() = default;
 
 	/// <summary>Constructor</summary>
 	/// <param name="baseLayers">Image sub resource</param>
@@ -826,15 +839,15 @@ public:
 struct ApplicationInfo
 {
 private:
-	std::string applicationName; //!< NULL or is a pointer to a null-terminated UTF-8 string containing the name of the application
-	uint32_t applicationVersion; //!< Unsigned integer variable containing the developer-supplied version number of the application
-	std::string engineName; //!< NULL or is a pointer to a null-terminated UTF-8 string containing the name of the engine (if any) used to create the application
-	uint32_t engineVersion; //!< Unsigned integer variable containing the developer-supplied version number of the engine used to create the application.
-	uint32_t apiVersion; //!< version of the Vulkan API against which the application expects to run. If apiVersion is 0 the implementation ignore it.
+	std::string applicationName; //!< The name of the application
+	uint32_t applicationVersion; //!< The developer-supplied version number of the application
+	std::string engineName; //!< The name of the engine (if any) used to create the application
+	uint32_t engineVersion; //!< The developer-supplied version number of the engine used to create the application.
+	uint32_t apiVersion; //!< The version of the Vulkan API against which the application expects to run. If apiVersion is 0 the implementation ignore it.
 
 public:
 	/// <summary>Constructor</summary>
-	ApplicationInfo() : applicationVersion(0), engineVersion(0) {}
+	ApplicationInfo() : applicationName("PVRVkExample"), applicationVersion(0), engineName("PVRVk"), engineVersion(0), apiVersion(VK_MAKE_VERSION(1, 0, 0)) {}
 
 	/// <summary>Constructor</summary>
 	/// <param name="applicationName">The name of the application</param>
@@ -842,7 +855,7 @@ public:
 	/// <param name="engineName">The name of the engine</param>
 	/// <param name="engineVersion">The version of the engine</param>
 	/// <param name="apiVersion">The api version to be used by the application</param>
-	ApplicationInfo(const std::string applicationName, uint32_t applicationVersion = 0, const std::string engineName = 0, uint32_t engineVersion = 0, uint32_t apiVersion = 0)
+	ApplicationInfo(const std::string& applicationName, uint32_t applicationVersion = 0, const std::string& engineName = nullptr, uint32_t engineVersion = 0, uint32_t apiVersion = 0)
 	{
 		setApplicationName(applicationName);
 		setApplicationVersion(applicationVersion);
@@ -910,135 +923,6 @@ public:
 	inline void setApiVersion(uint32_t apiVersion)
 	{
 		this->apiVersion = apiVersion;
-	}
-};
-
-/// <summary>Contains instant info used for creating Vulkan instance</summary>
-struct InstanceCreateInfo
-{
-private:
-	InstanceCreateFlags flags; //!< Reserved for future use
-	const ApplicationInfo* applicationInfo; //!< NULL or a pointer to an instance of ApplicationInfo. If not NULL, this information helps implementations recognize behavior
-											//!< inherent to classes of applications.
-	std::vector<std::string> enabledLayerNames; //!<  Array of null-terminated UTF-8 strings containing the names of layers to enable for the created instance
-	std::vector<std::string> enabledExtensionNames; //!<  Array of null-terminated UTF-8 strings containing the names of extensions to enable for the created instance
-
-public:
-	/// <summary>Constructor. Default initialised to 0</summary>
-	InstanceCreateInfo() : flags(InstanceCreateFlags(0)), applicationInfo(nullptr) {}
-
-	/// <summary>Constructor</summary>
-	/// <param name="applicationInfo">A pointer to an application info structure</param>
-	/// <param name="enabledExtensionNames">A set of extensions to enable</param>
-	/// <param name="enabledLayerNames">A set of layers to enable</param>
-	/// <param name="flags">A set of InstanceCreateFlags to use</param>
-	explicit InstanceCreateInfo(const ApplicationInfo* applicationInfo, const std::vector<std::string>& enabledExtensionNames = std::vector<std::string>(),
-		const std::vector<std::string>& enabledLayerNames = std::vector<std::string>(), InstanceCreateFlags flags = InstanceCreateFlags::e_NONE)
-		: flags(InstanceCreateFlags(flags)), applicationInfo(applicationInfo)
-	{
-		setEnabledExtensions(enabledExtensionNames);
-		setEnabledLayers(enabledLayerNames);
-	}
-
-	/// <summary>Get the instance creation flags</summary>
-	/// <returns>The instance creation flags</returns>
-	inline const InstanceCreateFlags& getFlags() const
-	{
-		return flags;
-	}
-	/// <summary>Sets the instance creation flags</summary>
-	/// <param name="flags">A set of InstanceCreateFlags to use</param>
-	inline void setFlags(const InstanceCreateFlags& flags)
-	{
-		this->flags = flags;
-	}
-	/// <summary>Get the instance application info</summary>
-	/// <returns>The instance application info</returns>
-	inline const ApplicationInfo* getApplicationInfo() const
-	{
-		return applicationInfo;
-	}
-	/// <summary>Sets the application info pointer</summary>
-	/// <param name="applicationInfo">A pointer to a new application info structure</param>
-	inline void setApplicationInfo(const ApplicationInfo* applicationInfo)
-	{
-		this->applicationInfo = applicationInfo;
-	}
-	/// <summary>Get the number of enabled instance layers</summary>
-	/// <returns>The number of enabled instance layers</returns>
-	inline uint32_t getNumEnabledLayerNames() const
-	{
-		return static_cast<uint32_t>(enabledLayerNames.size());
-	}
-	/// <summary>Get the enabled instance layers</summary>
-	/// <returns>The enabled instance layers</returns>
-	inline const std::vector<std::string>& getEnabledLayerNames() const
-	{
-		return enabledLayerNames;
-	}
-	/// <summary>Get the enabled instance layer at the index specified</summary>
-	/// <param name="index">The index of the enabled instance layer to retrieve</param>
-	/// <returns>The enabled instance layer</returns>
-	inline const std::string& getEnabledLayerName(uint32_t index) const
-	{
-		return enabledLayerNames[index];
-	}
-	/// <summary>Sets the enabled instance layers list</summary>
-	/// <param name="enabledLayerNames">A list of instance layers to enable</param>
-	inline void setEnabledLayers(const std::vector<std::string>& enabledLayerNames)
-	{
-		this->enabledLayerNames.resize(enabledLayerNames.size());
-		std::copy(enabledLayerNames.begin(), enabledLayerNames.end(), this->enabledLayerNames.begin());
-	}
-	/// <summary>Adds a new instance layers to the list of layers to enable</summary>
-	/// <param name="layer">A new instance layer to add to the existing list of instance layers to enable</param>
-	inline void addEnabledLayer(const std::string& layer)
-	{
-		this->enabledLayerNames.push_back(layer);
-	}
-	/// <summary>Removes a particular instance layers from the list of layers to enable</summary>
-	/// <param name="layer">The instance layer to remove from the existing list of instance layers to enable</param>
-	inline void removeEnabledLayer(const std::string& layer)
-	{
-		this->enabledLayerNames.erase(std::remove(this->enabledLayerNames.begin(), this->enabledLayerNames.end(), layer), this->enabledLayerNames.end());
-	}
-	/// <summary>Get the number of enabled instance extensions</summary>
-	/// <returns>The enabled instance extensions</returns>
-	inline uint32_t getNumEnabledExtensionNames() const
-	{
-		return static_cast<uint32_t>(enabledExtensionNames.size());
-	}
-	/// <summary>Get the list of enabled instance extensions</summary>
-	/// <returns>A list of enabled instance extensions</returns>
-	inline const std::vector<std::string>& getEnabledExtensionNames() const
-	{
-		return enabledExtensionNames;
-	}
-	/// <summary>Retrieve the enabled instance extension at the index specified</summary>
-	/// <param name="index">The index of the instance extension to retrieve</param>
-	/// <returns>The enabled instance extension at the index specified</returns>
-	inline const std::string& getEnabledExtensionName(uint32_t index) const
-	{
-		return enabledExtensionNames[index];
-	}
-	/// <summary>Sets the enabled instance extensions list</summary>
-	/// <param name="enabledExtensionNames">A list of instance extensions to enable</param>
-	inline void setEnabledExtensions(const std::vector<std::string>& enabledExtensionNames)
-	{
-		this->enabledExtensionNames.resize(enabledExtensionNames.size());
-		std::copy(enabledExtensionNames.begin(), enabledExtensionNames.end(), this->enabledExtensionNames.begin());
-	}
-	/// <summary>Adds a new instance extension to the list of extensions to enable</summary>
-	/// <param name="extensionName">A new instance extension to add to the existing list of instance extensions to enable</param>
-	inline void addEnabledExtension(const std::string& extensionName)
-	{
-		this->enabledExtensionNames.push_back(extensionName);
-	}
-	/// <summary>Removes a particular instance extension from the list of extensions to enable</summary>
-	/// <param name="extensionName">The instance extension to remove from the existing list of instance extensions to enable</param>
-	inline void removeEnabledExtension(const std::string& extensionName)
-	{
-		this->enabledExtensionNames.erase(std::remove(this->enabledExtensionNames.begin(), this->enabledExtensionNames.end(), extensionName), this->enabledExtensionNames.end());
 	}
 };
 
@@ -1119,7 +1003,7 @@ public:
 	/// <param name="priority">The queue priority</param>
 	inline void addQueue(float priority = 1.0f)
 	{
-		queuePriorities.push_back(priority);
+		queuePriorities.emplace_back(priority);
 	}
 	/// <summary>Sets a queues priority</summary>
 	/// <param name="index">The index of queue priority to set</param>
@@ -1135,24 +1019,323 @@ public:
 	}
 };
 
+/// <summary>A wrapper for a Vulkan extension and its specification version</summary>
+struct VulkanExtension
+{
+public:
+	/// <summary>Constructor.</summary>
+	/// <param name="name">The name of the Vulkan extension</param>
+	/// <param name="specVersion">The spec version of the Vulkan extension</param>
+	VulkanExtension(std::string name = "", uint32_t specVersion = -1) : _name(name), _specVersion(specVersion) {}
+
+	/// <summary>Get the name of the Vulkan extension</summary>
+	/// <returns>The name of the Vulkan extension</returns>
+	inline const std::string& getName() const
+	{
+		return _name;
+	}
+
+	/// <summary>Set the name of the Vulkan extension</summary>
+	/// <param name="name">The name of the Vulkan extension</param>
+	inline void setName(std::string name)
+	{
+		this->_name = name;
+	}
+
+	/// <summary>Get the spec version of the Vulkan extension</summary>
+	/// <returns>The spec version of the Vulkan extension</returns>
+	inline uint32_t getSpecVersion() const
+	{
+		return _specVersion;
+	}
+
+	/// <summary>Set the spec version of the Vulkan extension</summary>
+	/// <param name="specVersion">The spec version of the Vulkan extension</param>
+	inline void setSpecVersion(uint32_t specVersion)
+	{
+		this->_specVersion = specVersion;
+	}
+
+	/// <summary>Overridden operator==.</summary>
+	/// <param name="rhs">The VulkanLayer to compare against for equality</param>
+	/// <returns>True if the VulkanExtension matches this</returns>
+	bool operator==(const VulkanExtension& rhs) const
+	{
+		return getName() == rhs.getName() && getSpecVersion() == rhs.getSpecVersion();
+	}
+
+private:
+	std::string _name;
+	uint32_t _specVersion;
+};
+
+/// <summary>A wrapper for a Vulkan layer, its specification version, implementation version and its description</summary>
+struct VulkanLayer
+{
+public:
+	/// <summary>Constructor.</summary>
+	/// <param name="name">The name of the Vulkan extension</param>
+	/// <param name="specVersion">The spec version of the Vulkan extension</param>
+	/// <param name="implementationVersion">The implementation version of the Vulkan layer</param>
+	/// <param name="description">The description of the Vulkan layer</param>
+	VulkanLayer(const std::string& name = "", uint32_t specVersion = -1, uint32_t implementationVersion = -1, const std::string& description = "")
+		: _name(name), _specVersion(specVersion), _implementationVersion(implementationVersion), _description(description)
+	{}
+
+	/// <summary>Get the name of the Vulkan layer</summary>
+	/// <returns>The name of the Vulkan layer</returns>
+	inline const std::string& getName() const
+	{
+		return _name;
+	}
+
+	/// <summary>Set the name of the Vulkan layer</summary>
+	/// <param name="name">The name of the Vulkan layer</param>
+	inline void setName(std::string name)
+	{
+		this->_name = name;
+	}
+
+	/// <summary>Get the spec version of the Vulkan layer</summary>
+	/// <returns>The spec version of the Vulkan layer</returns>
+	inline uint32_t getSpecVersion() const
+	{
+		return _specVersion;
+	}
+
+	/// <summary>Set the spec version of the Vulkan layer</summary>
+	/// <param name="specVersion">The spec version of the Vulkan layer</param>
+	inline void setSpecVersion(uint32_t specVersion)
+	{
+		this->_specVersion = specVersion;
+	}
+
+	/// <summary>Get the implementation version of the Vulkan layer</summary>
+	/// <returns>The implementation version of the Vulkan layer</returns>
+	inline uint32_t getImplementationVersion() const
+	{
+		return _implementationVersion;
+	}
+
+	/// <summary>Set the implementation version of the Vulkan layer</summary>
+	/// <param name="implementationVersion">The implementation version of the Vulkan layer</param>
+	inline void setImplementationVersion(uint32_t implementationVersion)
+	{
+		this->_implementationVersion = implementationVersion;
+	}
+
+	/// <summary>Get the description of the Vulkan layer</summary>
+	/// <returns>The description of the Vulkan layer</returns>
+	inline const std::string& getDescription() const
+	{
+		return _description;
+	}
+
+	/// <summary>Set the description of the Vulkan layer</summary>
+	/// <param name="description">The description of the Vulkan layer</param>
+	inline void setDescription(std::string description)
+	{
+		this->_description = description;
+	}
+
+	/// <summary>Overridden operator==.</summary>
+	/// <param name="rhs">The VulkanLayer to compare against for equality</param>
+	/// <returns>True if the VulkanLayer matches this</returns>
+	bool operator==(const VulkanLayer& rhs) const
+	{
+		return getName() == rhs.getName() && getSpecVersion() == rhs.getSpecVersion();
+	}
+
+private:
+	std::string _name;
+	uint32_t _specVersion;
+	uint32_t _implementationVersion;
+	std::string _description;
+};
+
+/// <summary>A wrapper for a list of Vulkan extensions</summary>
+struct VulkanExtensionList
+{
+public:
+	/// <summary>Constructor.</summary>
+	VulkanExtensionList() = default;
+
+	/// <summary>Get the number of extensions</summary>
+	/// <returns>Theextensions</returns>
+	inline uint32_t getNumExtensions() const
+	{
+		return static_cast<uint32_t>(_extensions.size());
+	}
+	/// <summary>Get the list of extensions</summary>
+	/// <returns>A list of extensions</returns>
+	inline const std::vector<VulkanExtension>& getExtensions() const
+	{
+		return _extensions;
+	}
+	/// <summary>Retrieve the extension at the index specified</summary>
+	/// <param name="index">The index of the extension to retrieve</param>
+	/// <returns>The extension at the index specified</returns>
+	inline const VulkanExtension& getExtension(uint32_t index) const
+	{
+		return _extensions[index];
+	}
+	/// <summary>Sets the extensions list</summary>
+	/// <param name="extensions">A list of extensions to enable</param>
+	inline void setExtensions(const std::vector<VulkanExtension>& extensions)
+	{
+		this->_extensions.resize(extensions.size());
+		std::copy(extensions.begin(), extensions.end(), this->_extensions.begin());
+	}
+	/// <summary>Add a new extension</summary>
+	/// <param name="extension">A new extension.</param>
+	inline void addExtension(const VulkanExtension& extension)
+	{
+		this->_extensions.emplace_back(extension);
+	}
+	/// <summary>Add a new extension to add by name</summary>
+	/// <param name="extensionName">A new extension.</param>
+	inline void addExtension(const std::string& extensionName)
+	{
+		this->_extensions.emplace_back(VulkanExtension(extensionName));
+	}
+	/// <summary>Removes a particular extension from the list of extensions</summary>
+	/// <param name="extension">The extension to remove from the existing list of extensions</param>
+	inline void removeExtension(const VulkanExtension& extension)
+	{
+		this->_extensions.erase(std::remove(this->_extensions.begin(), this->_extensions.end(), extension), this->_extensions.end());
+	}
+	/// <summary>Removes a particular extension from the list of extensions using only an extension name</summary>
+	/// <param name="extensionName">The extension to remove from the existing list of extensions using only its name</param>
+	inline void removeExtension(const std::string& extensionName)
+	{
+		auto new_end =
+			std::remove_if(this->_extensions.begin(), this->_extensions.end(), [extensionName](const VulkanExtension& extension) { return extension.getName() == extensionName; });
+		this->_extensions.erase(new_end, this->_extensions.end());
+	}
+
+	/// <summary>Check if extension is enabled</summary>
+	/// <param name="extensionName">Extension name</param>
+	/// <returns>Return true if it is enabled</returns>
+	bool containsExtension(const std::string& extensionName) const
+	{
+		return std::find_if(_extensions.begin(), _extensions.end(), [extensionName](VulkanExtension const& extension) { return extension.getName() == extensionName; }) !=
+			_extensions.end();
+	}
+
+	/// <summary>Check if extension is enabled</summary>
+	/// <param name="extension">Extension</param>
+	/// <returns>Return true if it is enabled</returns>
+	bool containsExtension(const VulkanExtension& extension) const
+	{
+		return std::find(_extensions.begin(), _extensions.end(), extension) != _extensions.end();
+	}
+
+private:
+	std::vector<pvrvk::VulkanExtension> _extensions;
+};
+
+/// <summary>A wrapper for a list of Vulkan layers</summary>
+struct VulkanLayerList
+{
+public:
+	/// <summary>Constructor.</summary>
+	VulkanLayerList() = default;
+
+	/// <summary>Get the number of layers</summary>
+	/// <returns>Thelayers</returns>
+	inline uint32_t getNumLayers() const
+	{
+		return static_cast<uint32_t>(_layers.size());
+	}
+	/// <summary>Get the list of layers</summary>
+	/// <returns>A list of layers</returns>
+	inline const std::vector<VulkanLayer>& getLayers() const
+	{
+		return _layers;
+	}
+	/// <summary>Retrieve the layer at the index specified</summary>
+	/// <param name="index">The index of the layer to retrieve</param>
+	/// <returns>The layer at the index specified</returns>
+	inline const VulkanLayer& getLayer(uint32_t index) const
+	{
+		return _layers[index];
+	}
+	/// <summary>Sets the layers list</summary>
+	/// <param name="layers">A list of layers to enable</param>
+	inline void setLayers(const std::vector<VulkanLayer>& layers)
+	{
+		this->_layers.resize(layers.size());
+		std::copy(layers.begin(), layers.end(), this->_layers.begin());
+	}
+	/// <summary>Add a new layer</summary>
+	/// <param name="layer">A new layer.</param>
+	inline void addLayer(const VulkanLayer& layer)
+	{
+		this->_layers.emplace_back(layer);
+	}
+	/// <summary>Add a new layer to add by name</summary>
+	/// <param name="layerName">A new layer.</param>
+	inline void addLayer(const std::string& layerName)
+	{
+		this->_layers.emplace_back(VulkanLayer(layerName));
+	}
+	/// <summary>Removes a particular layer from the list of layers</summary>
+	/// <param name="layer">The layer to remove from the existing list of layers</param>
+	inline void removeLayer(const VulkanLayer& layer)
+	{
+		this->_layers.erase(std::remove(this->_layers.begin(), this->_layers.end(), layer), this->_layers.end());
+	}
+	/// <summary>Removes a particular layer from the list of layers using only an layer name</summary>
+	/// <param name="layerName">The layer to remove from the existing list of layers using only its name</param>
+	inline void removeLayer(const std::string& layerName)
+	{
+		auto new_end = std::remove_if(this->_layers.begin(), this->_layers.end(), [layerName](const VulkanLayer& layer) { return layer.getName() == layerName; });
+		this->_layers.erase(new_end, this->_layers.end());
+	}
+
+	/// <summary>Check if layer is enabled</summary>
+	/// <param name="layerName">Layer name</param>
+	/// <returns>Return true if enabled</returns>
+	bool containsLayer(const std::string& layerName) const
+	{
+		return std::find_if(_layers.begin(), _layers.end(), [layerName](VulkanLayer const& layer) { return layer.getName() == layerName; }) != _layers.end();
+	}
+
+	/// <summary>Check if layer is enabled</summary>
+	/// <param name="layer">Layer</param>
+	/// <returns>Return true if enabled</returns>
+	bool containsLayer(const VulkanLayer& layer) const
+	{
+		return std::find(_layers.begin(), _layers.end(), layer) != _layers.end();
+	}
+
+private:
+	std::vector<pvrvk::VulkanLayer> _layers;
+};
+
 /// <summary>Containes device create info.</summary>
 struct DeviceCreateInfo
 {
 private:
 	DeviceCreateFlags flags; //!< Reserved for future use
 	std::vector<DeviceQueueCreateInfo> queueCreateInfos; //!< Pointer to an array of DeviceQueueCreateInfo structures describing the queues that are requested to be created along with the logical device
-	std::vector<std::string> enabledExtensionNames; //!< Array of extensions to enable
+	VulkanExtensionList enabledExtensions; //!< Array of extensions to enable
 	const PhysicalDeviceFeatures* enabledFeatures; //!< NULL or a pointer to a PhysicalDeviceFeatures structure that contains boolean indicators of all the features to be enabled
 
 public:
-	/// <summary>Constructor. Default initialised to 0</summary>
+	/// <summary>Constructor for the creation information structure for a Device</summary>
+	/// <param name="queueCreateInfos">A list of pvrvk::DeviceQueueCreateInfo structures specifying which queue families
+	/// should be initialised with the device as well as the number of queues to retrieve from each queue family along with their corresponding priorities.</param>
+	/// <param name="enabledExtensions">A set of Vulkan device extensions to enable for the device.</param>
+	/// <param name="enabledFeatures">A set of Vulkan device features to enable for the device.</param>
+	/// <param name="flags">A set of reserved device creation flags.</param>
 	explicit DeviceCreateInfo(const std::vector<DeviceQueueCreateInfo>& queueCreateInfos = std::vector<DeviceQueueCreateInfo>(),
-		const std::vector<std::string>& enabledExtensionNames = std::vector<std::string>(), const PhysicalDeviceFeatures* enabledFeatures = nullptr,
+		const VulkanExtensionList& enabledExtensions = VulkanExtensionList(), const PhysicalDeviceFeatures* enabledFeatures = nullptr,
 		DeviceCreateFlags flags = DeviceCreateFlags::e_NONE)
 		: flags(flags), enabledFeatures(enabledFeatures)
 	{
 		setDeviceQueueCreateInfos(queueCreateInfos);
-		setEnabledExtensions(enabledExtensionNames);
+		setExtensionList(enabledExtensions);
 	}
 
 	/// <summary>Get the device creation flags</summary>
@@ -1205,7 +1388,7 @@ public:
 	/// <param name="deviceQueueCreateInfo">A DeviceQueueCreateInfo specifying a queue family index and its corresponding queues (and priorites) to create.</param>
 	inline void addDeviceQueue(DeviceQueueCreateInfo deviceQueueCreateInfo = DeviceQueueCreateInfo())
 	{
-		queueCreateInfos.push_back(deviceQueueCreateInfo);
+		queueCreateInfos.emplace_back(deviceQueueCreateInfo);
 	}
 	/// <summary>Adds a new device queue creation info structure at the specified index</summary>
 	/// <param name="index">The index of the device queue create info structure to set.</param>
@@ -1219,43 +1402,17 @@ public:
 	{
 		queueCreateInfos.clear();
 	}
-	/// <summary>Get the number of enabled extension names</summary>
-	/// <returns>The number of enabled extension names</returns>
-	inline uint32_t getNumEnabledExtensionNames() const
+	/// <summary>Get the list of enabled extensions</summary>
+	/// <returns>The list of enabled instance extensions</returns>
+	inline const VulkanExtensionList& getExtensionList() const
 	{
-		return static_cast<uint32_t>(enabledExtensionNames.size());
+		return enabledExtensions;
 	}
-	/// <summary>Get the enabled extension names</summary>
-	/// <returns>The enabled extension names</returns>
-	inline const std::vector<std::string>& getEnabledExtensionNames() const
+	/// <summary>Sets the enabled extension list</summary>
+	/// <param name="enabledExtensions">A VulkanExtensionList</param>
+	inline void setExtensionList(const VulkanExtensionList& enabledExtensions)
 	{
-		return enabledExtensionNames;
-	}
-	/// <summary>Get the enabled extension name at the specified index</summary>
-	/// <param name="index">The specific index of the extension name to set.</param>
-	/// <returns>The enabled extension name at the specified index</returns>
-	inline const std::string& getEnabledExtensionName(uint32_t index) const
-	{
-		return enabledExtensionNames[index];
-	}
-	/// <summary>Setter for the enabled extension names list</summary>
-	/// <param name="enabledExtensionNames">A list of extension names to enable.</param>
-	inline void setEnabledExtensions(const std::vector<std::string>& enabledExtensionNames)
-	{
-		this->enabledExtensionNames.resize(enabledExtensionNames.size());
-		std::copy(enabledExtensionNames.begin(), enabledExtensionNames.end(), this->enabledExtensionNames.begin());
-	}
-	/// <summary>Add a new extension name to enable</summary>
-	/// <param name="extensionName">A new extension name to enable.</param>
-	inline void addEnabledExtension(const std::string& extensionName)
-	{
-		this->enabledExtensionNames.push_back(extensionName);
-	}
-	/// <summary>Removes a particular extension name</summary>
-	/// <param name="extensionName">The extension name to remove.</param>
-	inline void removeEnabledExtension(const std::string& extensionName)
-	{
-		this->enabledExtensionNames.erase(std::remove(this->enabledExtensionNames.begin(), this->enabledExtensionNames.end(), extensionName), this->enabledExtensionNames.end());
+		this->enabledExtensions = enabledExtensions;
 	}
 	/// <summary>Get a pointer to the physical device features structure</summary>
 	/// <returns>A pointer to the enabled physical device features</returns>
@@ -1401,7 +1558,7 @@ public:
 struct ClearAttachment : private VkClearAttachment
 {
 	/// <summary>Constructor. Initialisation undefined.</summary>
-	ClearAttachment() {}
+	ClearAttachment() = default;
 
 	/// <summary>Constructor.</summary>
 	/// <param name="aspectMask">Mask selecting the color, depth and/or stencil aspects of the attachment to be cleared.</param>
@@ -1479,8 +1636,7 @@ struct ClearAttachment : private VkClearAttachment
 	}
 };
 
-/// <summary>Contains attachment configuration of a renderpass (format, loadop, storeop, samples).
-/// </summary>
+/// <summary>Contains attachment configuration of a renderpass (format, loadop, storeop, samples).</summary>
 struct AttachmentDescription : private VkAttachmentDescription
 {
 	/// <summary>Constructor to undefined layouts/clear/store</summary>
@@ -1547,7 +1703,7 @@ struct AttachmentDescription : private VkAttachmentDescription
 	/// <param name="finalLayout">Attachment final layout</param>
 	/// <param name="loadOp">Depth load op.</param>
 	/// <param name="storeOp">Depth store op</param>
-	/// <param name="stencilLoadOp">Stencil load op </param>
+	/// <param name="stencilLoadOp">Stencil load op</param>
 	/// <param name="stencilStoreOp">Stencil store op</param>
 	/// <param name="numSamples">Number of samples</param>
 	/// <returns>AttachmentDescription</returns>
@@ -1789,7 +1945,7 @@ public:
 	/// <returns>Input attachment id</returns>
 	const AttachmentReference& getInputAttachmentReference(uint8_t index) const
 	{
-		assertion(index < _numInputAttachments, "Invalid index");
+		assert(index < _numInputAttachments && "Invalid index");
 		return _inputAttachment[index];
 	}
 
@@ -1805,7 +1961,7 @@ public:
 	/// <returns>Color attachment id</returns>
 	const AttachmentReference& getColorAttachmentReference(uint8_t index) const
 	{
-		assertion(index < _numColorAttachments, "Invalid index");
+		assert(index < _numColorAttachments && "Invalid index");
 		return _colorAttachment[index];
 	}
 
@@ -1814,7 +1970,7 @@ public:
 	/// <returns>Resolve attachment id</returns>
 	const AttachmentReference& getResolveAttachmentReference(uint8_t index) const
 	{
-		assertion(index < _numResolveAttachments, "Invalid index");
+		assert(index < _numResolveAttachments && "Invalid index");
 		return _resolveAttachments[index];
 	}
 
@@ -1823,7 +1979,7 @@ public:
 	/// <returns>Preserve attachment id</returns>
 	uint32_t getPreserveAttachmentReference(uint8_t index) const
 	{
-		assertion(index < _numPreserveAttachments, "Invalid index");
+		assert(index < _numPreserveAttachments && "Invalid index");
 		return _preserveAttachment[index];
 	}
 
@@ -1848,7 +2004,7 @@ public:
 private:
 	uint32_t setAttachment(uint32_t bindingId, const AttachmentReference& newAttachment, AttachmentReference* attachments, uint32_t maxAttachment)
 	{
-		assertion(bindingId < maxAttachment, "Binding Id exceeds the max limit");
+		assert(bindingId < maxAttachment && "Binding Id exceeds the max limit");
 		const uint32_t oldId = attachments[bindingId].getAttachment();
 		attachments[bindingId] = newAttachment;
 		return (oldId == static_cast<uint32_t>(-1) ? 1 : 0);
@@ -2000,6 +2156,342 @@ public:
 private:
 	/// <summary>Flags to use for creating the Semaphore</summary>
 	SemaphoreCreateFlags _flags;
+};
+
+/// <summary>Containes a ValidationFeatures structure which specifies a set of validation features which should be enabled or disabled.</summary>
+struct ValidationFeatures
+{
+private:
+	std::vector<ValidationFeatureEnableEXT> _enabledValidationFeatures;
+	std::vector<ValidationFeatureDisableEXT> _disabledValidationFeatures;
+
+public:
+	/// <summary>Constructor. Default initialised to 0</summary>
+	ValidationFeatures() = default;
+
+	/// <summary>Adds a new Enabled Validation Feature</summary>
+	/// <param name="enabledFeature">A ValidationFeatureEnableEXT which specifies a validation feature to enable.</param>
+	inline void addEnabledValidationFeature(ValidationFeatureEnableEXT enabledFeature)
+	{
+		_enabledValidationFeatures.emplace_back(enabledFeature);
+	}
+
+	/// <summary>Adds a new Disabled Validation Feature</summary>
+	/// <param name="disabledFeature">A ValidationFeatureDisableEXT which specifies a validation feature to disable.</param>
+	inline void addDisabledValidationFeature(ValidationFeatureDisableEXT disabledFeature)
+	{
+		_disabledValidationFeatures.emplace_back(disabledFeature);
+	}
+
+	/// <summary>Get the number of enabled validation features</summary>
+	/// <returns>The number of enabled validation features</returns>
+	inline uint32_t getNumEnabledValidationFeatures() const
+	{
+		return static_cast<uint32_t>(_enabledValidationFeatures.size());
+	}
+
+	/// <summary>Get the number of disabled validation features</summary>
+	/// <returns>The number of disabled validation features</returns>
+	inline uint32_t getNumDisabledValidationFeatures() const
+	{
+		return static_cast<uint32_t>(_disabledValidationFeatures.size());
+	}
+
+	/// <summary>Get the list of enabled validation features (const)</summary>
+	/// <returns>The list of enabled validation features (const)</returns>
+	inline const std::vector<ValidationFeatureEnableEXT>& getEnabledValidationFeatures() const
+	{
+		return _enabledValidationFeatures;
+	}
+
+	/// <summary>Get the list of enabled validation features</summary>
+	/// <returns>The list of enabled validation features</returns>
+	inline std::vector<ValidationFeatureEnableEXT>& getEnabledValidationFeatures()
+	{
+		return _enabledValidationFeatures;
+	}
+
+	/// <summary>Get the the enabled validation feature at index</summary>
+	/// <param name="index">The index of the enabled validation feature to retrieve.</param>
+	/// <returns>The enabled validation feature at index</returns>
+	inline const ValidationFeatureEnableEXT& getEnabledValidationFeature(uint32_t index) const
+	{
+		return _enabledValidationFeatures[index];
+	}
+
+	/// <summary>Get the list of disabled validation features (const)</summary>
+	/// <returns>The list of disabled validation features (const)</returns>
+	inline const std::vector<ValidationFeatureDisableEXT>& getDisabledValidationFeatures() const
+	{
+		return _disabledValidationFeatures;
+	}
+
+	/// <summary>Get the list of disabled validation features</summary>
+	/// <returns>The list of disabled validation features</returns>
+	inline std::vector<ValidationFeatureDisableEXT>& getDisabledValidationFeatures()
+	{
+		return _disabledValidationFeatures;
+	}
+
+	/// <summary>Get the the disabled validation feature at index</summary>
+	/// <param name="index">The index of the disabled validation feature to retrieve.</param>
+	/// <returns>The disabled validation feature at index</returns>
+	inline const ValidationFeatureDisableEXT& getDisabledValidationFeature(uint32_t index) const
+	{
+		return _disabledValidationFeatures[index];
+	}
+
+	/// <summary>Sets the list of enabled validation features</summary>
+	/// <param name="enabledValidationFeatures">A list of validation features to enable.</param>
+	inline void setEnabledValidationFeatures(const std::vector<ValidationFeatureEnableEXT>& enabledValidationFeatures)
+	{
+		this->_enabledValidationFeatures.resize(enabledValidationFeatures.size());
+		std::copy(enabledValidationFeatures.begin(), enabledValidationFeatures.end(), this->_enabledValidationFeatures.begin());
+	}
+
+	/// <summary>Sets the list of disabled validation features</summary>
+	/// <param name="disabledValidationFeatures">A list of validation features to disable.</param>
+	inline void setDisabledValidationFeatures(const std::vector<ValidationFeatureDisableEXT>& disabledValidationFeatures)
+	{
+		this->_disabledValidationFeatures.resize(disabledValidationFeatures.size());
+		std::copy(disabledValidationFeatures.begin(), disabledValidationFeatures.end(), this->_disabledValidationFeatures.begin());
+	}
+
+	/// <summary>Clears the list of validation features to enable</summary>
+	inline void clearEnabledValidationFeatures()
+	{
+		_enabledValidationFeatures.clear();
+	}
+
+	/// <summary>Clears the list of validation features to disable</summary>
+	inline void clearDisabledValidationFeatures()
+	{
+		_disabledValidationFeatures.clear();
+	}
+};
+
+/// <summary>Containes a PhysicalDeviceTransformFeedbackProperties structure which specifies the implementation dependent limits for transform feedback.</summary>
+struct PhysicalDeviceTransformFeedbackProperties
+{
+private:
+	uint32_t _maxTransformFeedbackStreams;
+	uint32_t _maxTransformFeedbackBuffers;
+	VkDeviceSize _maxTransformFeedbackBufferSize;
+	uint32_t _maxTransformFeedbackStreamDataSize;
+	uint32_t _maxTransformFeedbackBufferDataSize;
+	uint32_t _maxTransformFeedbackBufferDataStride;
+	bool _transformFeedbackQueries;
+	bool _transformFeedbackStreamsLinesTriangles;
+	bool _transformFeedbackRasterizationStreamSelect;
+	bool _transformFeedbackDraw;
+
+public:
+	/// <summary>Constructor. Default initialised to 0</summary>
+	PhysicalDeviceTransformFeedbackProperties() = default;
+
+	/// <summary>Constructor.</summary>
+	/// <param name="properties">A VkPhysicalDeviceTransformFeedbackPropertiesEXT which specifies the implementation dependent transform feedback limits.</param>
+	PhysicalDeviceTransformFeedbackProperties(VkPhysicalDeviceTransformFeedbackPropertiesEXT properties)
+	{
+		_maxTransformFeedbackStreams = properties.maxTransformFeedbackStreams;
+		_maxTransformFeedbackBuffers = properties.maxTransformFeedbackBuffers;
+		_maxTransformFeedbackBufferSize = properties.maxTransformFeedbackBufferSize;
+		_maxTransformFeedbackStreamDataSize = properties.maxTransformFeedbackStreamDataSize;
+		_maxTransformFeedbackBufferDataSize = properties.maxTransformFeedbackBufferDataSize;
+		_maxTransformFeedbackBufferDataStride = properties.maxTransformFeedbackBufferDataStride;
+		_transformFeedbackQueries = (properties.transformFeedbackQueries != 0u);
+		_transformFeedbackStreamsLinesTriangles = (properties.transformFeedbackStreamsLinesTriangles != 0u);
+		_transformFeedbackRasterizationStreamSelect = (properties.transformFeedbackRasterizationStreamSelect != 0u);
+		_transformFeedbackDraw = (properties.transformFeedbackDraw != 0u);
+	}
+
+	/// <summary>Sets the maxTransformFeedbackStreams</summary>
+	/// <param name="maxTransformFeedbackStreams">The maxTransformFeedbackStreams.</param>
+	inline void setMaxTransformFeedbackStreams(uint32_t maxTransformFeedbackStreams)
+	{
+		_maxTransformFeedbackStreams = maxTransformFeedbackStreams;
+	}
+
+	/// <summary>Gets the maxTransformFeedbackStreams</summary>
+	/// <returns>The maxTransformFeedbackStreams</returns>
+	inline uint32_t getMaxTransformFeedbackStreams()
+	{
+		return _maxTransformFeedbackStreams;
+	}
+
+	/// <summary>Sets the maxTransformFeedbackBuffers</summary>
+	/// <param name="maxTransformFeedbackBuffers">The maxTransformFeedbackBuffers.</param>
+	inline void setMaxTransformFeedbackBuffers(uint32_t maxTransformFeedbackBuffers)
+	{
+		_maxTransformFeedbackBuffers = maxTransformFeedbackBuffers;
+	}
+
+	/// <summary>Gets the maxTransformFeedbackBuffers</summary>
+	/// <returns>The maxTransformFeedbackBuffers</returns>
+	inline uint32_t getMaxTransformFeedbackBuffers()
+	{
+		return _maxTransformFeedbackBuffers;
+	}
+
+	/// <summary>Sets the maxTransformFeedbackBufferSize</summary>
+	/// <param name="maxTransformFeedbackBufferSize">The maxTransformFeedbackBufferSize.</param>
+	inline void setMaxTransformFeedbackBufferSize(VkDeviceSize maxTransformFeedbackBufferSize)
+	{
+		_maxTransformFeedbackBufferSize = maxTransformFeedbackBufferSize;
+	}
+
+	/// <summary>Gets the maxTransformFeedbackBufferSize</summary>
+	/// <returns>The maxTransformFeedbackBufferSize</returns>
+	inline VkDeviceSize getMaxTransformFeedbackBufferSize()
+	{
+		return _maxTransformFeedbackBufferSize;
+	}
+
+	/// <summary>Sets the maxTransformFeedbackStreamDataSize</summary>
+	/// <param name="maxTransformFeedbackStreamDataSize">The maxTransformFeedbackStreamDataSize.</param>
+	inline void setMaxTransformFeedbackStreamDataSize(uint32_t maxTransformFeedbackStreamDataSize)
+	{
+		_maxTransformFeedbackStreamDataSize = maxTransformFeedbackStreamDataSize;
+	}
+
+	/// <summary>Gets the maxTransformFeedbackStreamDataSize</summary>
+	/// <returns>The maxTransformFeedbackStreamDataSize</returns>
+	inline uint32_t getMaxTransformFeedbackStreamDataSize()
+	{
+		return _maxTransformFeedbackStreamDataSize;
+	}
+
+	/// <summary>Sets the maxTransformFeedbackBufferDataSize</summary>
+	/// <param name="maxTransformFeedbackBufferDataSize">The maxTransformFeedbackBufferDataSize.</param>
+	inline void setMaxTransformFeedbackBufferDataSize(uint32_t maxTransformFeedbackBufferDataSize)
+	{
+		_maxTransformFeedbackBufferDataSize = maxTransformFeedbackBufferDataSize;
+	}
+
+	/// <summary>Gets the maxTransformFeedbackBufferDataSize</summary>
+	/// <returns>The maxTransformFeedbackBufferDataSize</returns>
+	inline uint32_t getMaxTransformFeedbackBufferDataSize()
+	{
+		return _maxTransformFeedbackBufferDataSize;
+	}
+
+	/// <summary>Sets the maxTransformFeedbackBufferDataStride</summary>
+	/// <param name="maxTransformFeedbackBufferDataStride">The maxTransformFeedbackBufferDataStride.</param>
+	inline void setMaxTransformFeedbackBufferDataStride(uint32_t maxTransformFeedbackBufferDataStride)
+	{
+		_maxTransformFeedbackBufferDataStride = maxTransformFeedbackBufferDataStride;
+	}
+
+	/// <summary>Gets the maxTransformFeedbackBufferDataStride</summary>
+	/// <returns>The maxTransformFeedbackBufferDataStride</returns>
+	inline uint32_t getMaxTransformFeedbackBufferDataStride()
+	{
+		return _maxTransformFeedbackBufferDataStride;
+	}
+
+	/// <summary>Sets the transformFeedbackQueries</summary>
+	/// <param name="transformFeedbackQueries">The transformFeedbackQueries.</param>
+	inline void setTransformFeedbackQueries(bool transformFeedbackQueries)
+	{
+		_transformFeedbackQueries = transformFeedbackQueries;
+	}
+
+	/// <summary>Gets the transformFeedbackQueries</summary>
+	/// <returns>The transformFeedbackQueries</returns>
+	inline bool getTransformFeedbackQueries()
+	{
+		return _transformFeedbackQueries;
+	}
+
+	/// <summary>Sets the transformFeedbackStreamsLinesTriangles</summary>
+	/// <param name="transformFeedbackStreamsLinesTriangles">The transformFeedbackStreamsLinesTriangles.</param>
+	inline void setTransformFeedbackStreamsLinesTriangles(bool transformFeedbackStreamsLinesTriangles)
+	{
+		_transformFeedbackStreamsLinesTriangles = transformFeedbackStreamsLinesTriangles;
+	}
+
+	/// <summary>Gets the transformFeedbackStreamsLinesTriangles</summary>
+	/// <returns>The transformFeedbackStreamsLinesTriangles</returns>
+	inline bool getTransformFeedbackStreamsLinesTriangles()
+	{
+		return _transformFeedbackStreamsLinesTriangles;
+	}
+
+	/// <summary>Sets the transformFeedbackRasterizationStreamSelect</summary>
+	/// <param name="transformFeedbackRasterizationStreamSelect">The transformFeedbackRasterizationStreamSelect.</param>
+	inline void setTransformFeedbackRasterizationStreamSelect(bool transformFeedbackRasterizationStreamSelect)
+	{
+		_transformFeedbackRasterizationStreamSelect = transformFeedbackRasterizationStreamSelect;
+	}
+
+	/// <summary>Gets the transformFeedbackRasterizationStreamSelect</summary>
+	/// <returns>The transformFeedbackRasterizationStreamSelect</returns>
+	inline bool getTransformFeedbackRasterizationStreamSelect()
+	{
+		return _transformFeedbackRasterizationStreamSelect;
+	}
+
+	/// <summary>Sets the transformFeedbackDraw</summary>
+	/// <param name="transformFeedbackDraw">The transformFeedbackDraw.</param>
+	inline void setTransformFeedbackDraw(bool transformFeedbackDraw)
+	{
+		_transformFeedbackDraw = transformFeedbackDraw;
+	}
+
+	/// <summary>Gets the transformFeedbackDraw</summary>
+	/// <returns>The transformFeedbackDraw</returns>
+	inline bool getTransformFeedbackDraw()
+	{
+		return _transformFeedbackDraw;
+	}
+};
+
+/// <summary>Containes a PhysicalDeviceTransformFeedbackFeaturesEXT structure which specifies the implementation dependent features for transform feedback.</summary>
+struct PhysicalDeviceTransformFeedbackFeatures
+{
+private:
+	bool _transformFeedback;
+	bool _geometryStreams;
+
+public:
+	/// <summary>Constructor. Default initialised to 0</summary>
+	PhysicalDeviceTransformFeedbackFeatures() = default;
+
+	/// <summary>Constructor.</summary>
+	/// <param name="features">A VkPhysicalDeviceTransformFeedbackFeaturesEXT which specifies the implementation dependent transform feedback features.</param>
+	PhysicalDeviceTransformFeedbackFeatures(VkPhysicalDeviceTransformFeedbackFeaturesEXT features)
+	{
+		_transformFeedback = (features.transformFeedback != 0u);
+		_geometryStreams = (features.geometryStreams != 0u);
+	}
+
+	/// <summary>Sets the transformFeedback</summary>
+	/// <param name="transformFeedback">The transformFeedback.</param>
+	inline void setTransformFeedback(bool transformFeedback)
+	{
+		_transformFeedback = transformFeedback;
+	}
+
+	/// <summary>Gets the transformFeedback</summary>
+	/// <returns>The transformFeedback</returns>
+	inline bool getTransformFeedback()
+	{
+		return _transformFeedback;
+	}
+
+	/// <summary>Sets the geometryStreams</summary>
+	/// <param name="geometryStreams">The geometryStreams.</param>
+	inline void setGeometryStreams(bool geometryStreams)
+	{
+		_geometryStreams = geometryStreams;
+	}
+
+	/// <summary>Gets the geometryStreams</summary>
+	/// <returns>The geometryStreams</returns>
+	inline bool getGeometryStreams()
+	{
+		return _geometryStreams;
+	}
 };
 } // namespace pvrvk
 #undef DEFINE_ENUM_OPERATORS

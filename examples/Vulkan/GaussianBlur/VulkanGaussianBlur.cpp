@@ -47,7 +47,7 @@ void printGaussianWeightsAndOffsets(std::vector<double>& gaussianOffsets, std::v
 struct DeviceResources
 {
 	pvrvk::Instance instance;
-	pvrvk::DebugReportCallback debugCallbacks[2];
+	pvr::utils::DebugUtilsCallbacks debugUtilsCallbacks;
 	pvrvk::Surface surface;
 	pvrvk::Device device;
 	pvrvk::Queue queues[2];
@@ -59,10 +59,9 @@ struct DeviceResources
 
 	pvrvk::Buffer graphicsGaussianConfigBuffer;
 
-	pvrvk::Semaphore semaphoreImageAcquired[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
-	pvrvk::Fence perFrameAcquireFence[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
-	pvrvk::Semaphore semaphorePresent[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
-	pvrvk::Fence perFrameCommandBufferFence[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	pvrvk::Semaphore imageAcquiredSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	pvrvk::Semaphore presentationSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	pvrvk::Fence perFrameResourcesFences[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
 
 	pvr::Multi<pvrvk::Framebuffer> framebuffer;
 	pvr::Multi<pvrvk::CommandBuffer> mainCommandBuffers;
@@ -99,16 +98,14 @@ struct DeviceResources
 
 	~DeviceResources()
 	{
-		if (device.isValid())
+		if (device)
 		{
 			device->waitIdle();
 			uint32_t l = swapchain->getSwapchainLength();
 			for (uint32_t i = 0; i < l; ++i)
 			{
-				if (perFrameAcquireFence[i].isValid())
-					perFrameAcquireFence[i]->wait();
-				if (perFrameCommandBufferFence[i].isValid())
-					perFrameCommandBufferFence[i]->wait();
+				if (perFrameResourcesFences[i])
+					perFrameResourcesFences[i]->wait();
 			}
 		}
 	}
@@ -133,6 +130,7 @@ private:
 	std::vector<double> _gaussianWeights;
 
 	uint32_t _graphicsSsboSize;
+	bool _useMultiQueue;
 
 public:
 	virtual pvr::Result initApplication();
@@ -287,7 +285,7 @@ void VulkanGaussianBlur::updateResources()
 		float inverseImageHeight = 1.0f / _deviceResources->inputImageView->getCreateInfo().getImage()->getHeight();
 		glm::vec2 config = glm::vec2(windowWidth, inverseImageHeight);
 
-		memcpy(static_cast<char*>(_deviceResources->graphicsGaussianConfigBuffer->getDeviceMemory()->getMappedData()), &config, pvr::getSize(pvr::GpuDatatypes::vec2));
+		memcpy(static_cast<char*>(_deviceResources->graphicsGaussianConfigBuffer->getDeviceMemory()->getMappedData()), &config, static_cast<size_t>( pvr::getSize(pvr::GpuDatatypes::vec2) ));
 
 		// if the memory property flags used by the buffers' device memory do not contain e_HOST_COHERENT_BIT then we must flush the memory
 		if (static_cast<uint32_t>(_deviceResources->graphicsGaussianConfigBuffer->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
@@ -366,7 +364,7 @@ void VulkanGaussianBlur::recordCommandBuffer()
 		// Compute Command Buffer
 		{
 			_deviceResources->computeCommandBuffers[i]->begin();
-			_deviceResources->computeCommandBuffers[i]->debugMarkerBeginEXT("Compute Blur Horizontal");
+			pvr::utils::beginCommandBufferDebugLabel(_deviceResources->computeCommandBuffers[i], pvrvk::DebugUtilsLabel("Compute Blur Horizontal"));
 			{
 				pvrvk::MemoryBarrierSet barrierSet;
 
@@ -410,19 +408,19 @@ void VulkanGaussianBlur::recordCommandBuffer()
 					pvrvk::PipelineStageFlags::e_COMPUTE_SHADER_BIT, pvrvk::PipelineStageFlags::e_FRAGMENT_SHADER_BIT, barrierSet);
 			}
 
-			_deviceResources->computeCommandBuffers[i]->debugMarkerEndEXT();
+			pvr::utils::endCommandBufferDebugLabel(_deviceResources->computeCommandBuffers[i]);
 			_deviceResources->computeCommandBuffers[i]->end();
 		}
 
 		// Graphics Command Buffer
 		{
 			_deviceResources->graphicsCommandBuffers[i]->begin(_deviceResources->framebuffer[i], 0, pvrvk::CommandBufferUsageFlags::e_RENDER_PASS_CONTINUE_BIT);
-			_deviceResources->graphicsCommandBuffers[i]->debugMarkerBeginEXT("Linear Gaussian Blur (vertical)");
+			pvr::utils::beginCommandBufferDebugLabel(_deviceResources->graphicsCommandBuffers[i], pvrvk::DebugUtilsLabel("Linear Gaussian Blur (vertical)"));
 			_deviceResources->graphicsCommandBuffers[i]->bindPipeline(_deviceResources->graphicsPipeline);
 			_deviceResources->graphicsCommandBuffers[i]->bindDescriptorSet(
 				pvrvk::PipelineBindPoint::e_GRAPHICS, _deviceResources->graphicsPipelinelayout, 0, _deviceResources->graphicsDescriptorSets[i]);
 			_deviceResources->graphicsCommandBuffers[i]->draw(0, 3);
-			_deviceResources->graphicsCommandBuffers[i]->debugMarkerEndEXT();
+			pvr::utils::endCommandBufferDebugLabel(_deviceResources->graphicsCommandBuffers[i]);
 			_deviceResources->graphicsCommandBuffers[i]->end();
 		}
 
@@ -434,7 +432,7 @@ void VulkanGaussianBlur::recordCommandBuffer()
 		_deviceResources->mainCommandBuffers[i]->executeCommands(_deviceResources->graphicsCommandBuffers[i]);
 		// enqueue the command buffer containing ui renderer commands
 		_deviceResources->mainCommandBuffers[i]->executeCommands(_deviceResources->uiRendererCommandBuffers[i]);
-		// End Renderpass and recording.
+		// End RenderPass and recording.
 		_deviceResources->mainCommandBuffers[i]->endRenderPass();
 		_deviceResources->mainCommandBuffers[i]->end();
 	}
@@ -497,12 +495,8 @@ pvr::Result VulkanGaussianBlur::initView()
 	// Create the surface
 	_deviceResources->surface = pvr::utils::createSurface(_deviceResources->instance, _deviceResources->instance->getPhysicalDevice(0), this->getWindow(), this->getDisplay());
 
-	// Add Debug Report Callbacks
-	// Add a Debug Report Callback for logging messages for events of all supported types.
-	_deviceResources->debugCallbacks[0] = pvr::utils::createDebugReportCallback(_deviceResources->instance);
-	// Add a second Debug Report Callback for throwing exceptions for Error events.
-	_deviceResources->debugCallbacks[1] =
-		pvr::utils::createDebugReportCallback(_deviceResources->instance, pvrvk::DebugReportFlagsEXT::e_ERROR_BIT_EXT, pvr::utils::throwOnErrorDebugReportCallback);
+	// Create a default set of debug utils messengers or debug callbacks using either VK_EXT_debug_utils or VK_EXT_debug_report respectively
+	_deviceResources->debugUtilsCallbacks = pvr::utils::createDebugUtilsCallbacks(_deviceResources->instance);
 
 	pvr::utils::QueuePopulateInfo queueCreateInfos[] = {
 		{ pvrvk::QueueFlags::e_GRAPHICS_BIT | pvrvk::QueueFlags::e_COMPUTE_BIT, _deviceResources->surface }, // Queue 0
@@ -512,7 +506,28 @@ pvr::Result VulkanGaussianBlur::initView()
 	_deviceResources->device = pvr::utils::createDeviceAndQueues(_deviceResources->instance->getPhysicalDevice(0), queueCreateInfos, 2, queueAccessInfos);
 
 	_deviceResources->queues[0] = _deviceResources->device->getQueue(queueAccessInfos[0].familyId, queueAccessInfos[0].queueId);
-	_deviceResources->queues[1] = _deviceResources->device->getQueue(queueAccessInfos[1].familyId, queueAccessInfos[1].queueId);
+
+	// In the future we may want to improve our flexibility wrt. making use of multiple queues but for now to support multi queue the queue must support
+	// Graphics + Compute + WSI support.
+	// Other multi queue approaches may be possible i.e. making use of additional queues which do not support graphics/WSI
+	_useMultiQueue = false;
+	if (queueAccessInfos[1].familyId != -1 && queueAccessInfos[1].queueId != -1)
+	{
+		_useMultiQueue = true;
+		Log(LogLevel::Information, "Multiple queues support e_GRAPHICS_BIT + e_COMPUTE_BIT + WSI. These queues will be used to ping-pong work each frame");
+	}
+	else
+	{
+		Log(LogLevel::Information, "Only a single queue supports e_GRAPHICS_BIT + e_COMPUTE_BIT + WSI. We cannot ping-pong work each frame");
+	}
+
+	if (_useMultiQueue)
+	{
+		_deviceResources->queues[1] = _deviceResources->device->getQueue(queueAccessInfos[1].familyId, queueAccessInfos[1].queueId);
+
+		// Currently we're requiring that both queues use the same queue family id
+		assertion(_deviceResources->queues[0]->getFamilyIndex() == _deviceResources->queues[1]->getFamilyIndex());
+	}
 
 	_deviceResources->vmaAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
 
@@ -529,7 +544,7 @@ pvr::Result VulkanGaussianBlur::initView()
 	_deviceResources->swapchain = pvr::utils::createSwapchain(_deviceResources->device, _deviceResources->surface, getDisplayAttributes(), swapchainImageUsage);
 
 	// create the framebuffers.
-	pvr::utils::createOnscreenFramebufferAndRenderpass(_deviceResources->swapchain, nullptr, _deviceResources->framebuffer);
+	pvr::utils::createOnscreenFramebufferAndRenderPass(_deviceResources->swapchain, nullptr, _deviceResources->framebuffer);
 
 	_deviceResources->commandPool = _deviceResources->device->createCommandPool(
 		pvrvk::CommandPoolCreateInfo(_deviceResources->queues[0]->getFamilyIndex(), pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT));
@@ -545,10 +560,9 @@ pvr::Result VulkanGaussianBlur::initView()
 		_deviceResources->graphicsCommandBuffers[i] = _deviceResources->commandPool->allocateSecondaryCommandBuffer();
 		_deviceResources->computeCommandBuffers[i] = _deviceResources->commandPool->allocateSecondaryCommandBuffer();
 
-		_deviceResources->semaphorePresent[i] = _deviceResources->device->createSemaphore();
-		_deviceResources->semaphoreImageAcquired[i] = _deviceResources->device->createSemaphore();
-		_deviceResources->perFrameCommandBufferFence[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
-		_deviceResources->perFrameAcquireFence[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
+		_deviceResources->presentationSemaphores[i] = _deviceResources->device->createSemaphore();
+		_deviceResources->imageAcquiredSemaphores[i] = _deviceResources->device->createSemaphore();
+		_deviceResources->perFrameResourcesFences[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
 	}
 
 	// Load the textures used by in the demo
@@ -563,7 +577,7 @@ pvr::Result VulkanGaussianBlur::initView()
 	_deviceResources->queues[0]->submit(&submit, 1);
 	_deviceResources->queues[0]->waitIdle();
 
-	_deviceResources->mainCommandBuffers[0]->reset(pvrvk::CommandBufferResetFlags(0));
+	_deviceResources->mainCommandBuffers[0]->reset(pvrvk::CommandBufferResetFlags::e_RELEASE_RESOURCES_BIT);
 
 	// Create the pipeline cache
 	_deviceResources->pipelineCache = _deviceResources->device->createPipelineCache();
@@ -607,25 +621,23 @@ pvr::Result VulkanGaussianBlur::quitApplication()
 /// <returns>Result::Success if no error occurred.</summary>
 pvr::Result VulkanGaussianBlur::renderFrame()
 {
-	_deviceResources->perFrameAcquireFence[_frameId]->wait();
-	_deviceResources->perFrameAcquireFence[_frameId]->reset();
-	_deviceResources->swapchain->acquireNextImage(uint64_t(-1), _deviceResources->semaphoreImageAcquired[_frameId], _deviceResources->perFrameAcquireFence[_frameId]);
+	_deviceResources->swapchain->acquireNextImage(uint64_t(-1), _deviceResources->imageAcquiredSemaphores[_frameId]);
 
 	const uint32_t swapchainIndex = _deviceResources->swapchain->getSwapchainIndex();
 
-	_deviceResources->perFrameCommandBufferFence[swapchainIndex]->wait();
-	_deviceResources->perFrameCommandBufferFence[swapchainIndex]->reset();
+	_deviceResources->perFrameResourcesFences[swapchainIndex]->wait();
+	_deviceResources->perFrameResourcesFences[swapchainIndex]->reset();
 
 	// Submit
 	pvrvk::SubmitInfo submitInfo;
 	pvrvk::PipelineStageFlags pipeWaitStageFlags = pvrvk::PipelineStageFlags::e_ALL_GRAPHICS_BIT | pvrvk::PipelineStageFlags::e_COMPUTE_SHADER_BIT;
 	submitInfo.commandBuffers = &_deviceResources->mainCommandBuffers[swapchainIndex];
 	submitInfo.numCommandBuffers = 1;
-	submitInfo.waitSemaphores = &_deviceResources->semaphoreImageAcquired[_frameId];
+	submitInfo.waitSemaphores = &_deviceResources->imageAcquiredSemaphores[_frameId];
 	submitInfo.numWaitSemaphores = 1;
-	submitInfo.signalSemaphores = &_deviceResources->semaphorePresent[_frameId];
+	submitInfo.signalSemaphores = &_deviceResources->presentationSemaphores[_frameId];
 	submitInfo.numSignalSemaphores = 1;
-	submitInfo.waitDestStages = &pipeWaitStageFlags;
+	submitInfo.waitDstStageMask = &pipeWaitStageFlags;
 
 	// Ping pong between multiple VkQueues
 	// It's important to realise that in Vulkan, pipeline barriers only observe their barriers within the VkQueue they are submitted to.
@@ -643,11 +655,11 @@ pvr::Result VulkanGaussianBlur::renderFrame()
 	// This simple change allows us to observe the following workload scheduling:
 	// Compute Workload              |1----||2----||3----|
 	// Fragment Workload      |1----||2----||3----||4----|
-	_deviceResources->queues[_queueIndex]->submit(&submitInfo, 1, _deviceResources->perFrameCommandBufferFence[swapchainIndex]);
+	_deviceResources->queues[_queueIndex]->submit(&submitInfo, 1, _deviceResources->perFrameResourcesFences[swapchainIndex]);
 
 	if (this->shouldTakeScreenshot())
 	{
-		pvr::utils::takeScreenshot(_deviceResources->swapchain, swapchainIndex, _deviceResources->commandPool, _deviceResources->queues[_queueIndex], this->getScreenshotFileName(),
+		pvr::utils::takeScreenshot(_deviceResources->queues[_queueIndex], _deviceResources->commandPool, _deviceResources->swapchain, swapchainIndex, this->getScreenshotFileName(),
 			&_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
 	}
 
@@ -656,13 +668,17 @@ pvr::Result VulkanGaussianBlur::renderFrame()
 	presentInfo.imageIndices = &swapchainIndex;
 	presentInfo.swapchains = &_deviceResources->swapchain;
 	presentInfo.numWaitSemaphores = 1;
-	presentInfo.waitSemaphores = &_deviceResources->semaphorePresent[_frameId];
+	presentInfo.waitSemaphores = &_deviceResources->presentationSemaphores[_frameId];
 	presentInfo.numSwapchains = 1;
 	// As above we must present using the same VkQueue as submitted to previously
 	_deviceResources->queues[_queueIndex]->present(presentInfo);
 
 	_frameId = (_frameId + 1) % _deviceResources->swapchain->getSwapchainLength();
-	_queueIndex = (_queueIndex + 1) % 2;
+
+	if (_useMultiQueue)
+	{
+		_queueIndex = (_queueIndex + 1) % 2;
+	}
 
 	return pvr::Result::Success;
 }

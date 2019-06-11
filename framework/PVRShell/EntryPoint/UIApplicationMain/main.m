@@ -1,9 +1,9 @@
-/*!****************************************************************************
-\file         PVRShell\EntryPoint/UIApplicationMain/main.m
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief        Entry point for UIKit(iOS) systems.
-******************************************************************************/
+/*!
+\brief Main implementation for the iOS UIKit
+\file PVRShell/EntryPoint/UIApplicationMain/main.m
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #import <UIKit/UIKit.h>
 
 /// <summary>Application entry point for the iOS UIKit. Forwards to UIApplicationMain</summary>

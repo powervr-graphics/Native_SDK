@@ -1,6 +1,6 @@
 /*!
 \brief Contains the implementation for the pvr::platform::ShellOS class on Android systems.
-\file PVRShell\OS/Android/ShellOS.cpp
+\file PVRShell/OS/Android/ShellOS.cpp
 \author PowerVR by Imagination, Developer Technology Team
 \copyright Copyright (c) Imagination Technologies Limited.
 */
@@ -388,7 +388,7 @@ bool ShellOS::init(DisplayAttributes& data)
 	}
 	else
 	{
-		_AppName = pszAppName;
+		_appName = pszAppName;
 		free(pszAppName);
 	}
 
@@ -403,15 +403,15 @@ bool ShellOS::init(DisplayAttributes& data)
 
 		char* dataPath = 0;
 
-		if (!_AppName.empty())
+		if (!_appName.empty())
 		{
-			size_t size = strlen("/data/data/") + _AppName.length() + 2;
+			size_t size = strlen("/data/data/") + _appName.length() + 2;
 
 			dataPath = static_cast<char*>(malloc(size));
 
 			if (dataPath)
 			{
-				snprintf(dataPath, size, "/data/data/%s/", _AppName.c_str());
+				snprintf(dataPath, size, "/data/data/%s/", _appName.c_str());
 			}
 		}
 
@@ -420,20 +420,20 @@ bool ShellOS::init(DisplayAttributes& data)
 			dataPath = const_cast<char*>("/sdcard/");
 		}
 
-		_WritePath = dataPath;
+		_writePath = dataPath;
 
-		if (!_AppName.empty())
+		if (!_appName.empty())
 		{
 			free(dataPath);
 		}
 	}
 	else
 	{
-		_WritePath = internalDataPath;
+		_writePath = internalDataPath;
 	}
 
-	_ReadPaths.clear();
-	_ReadPaths.push_back(_WritePath);
+	_readPaths.clear();
+	_readPaths.push_back(_writePath);
 	return true;
 }
 

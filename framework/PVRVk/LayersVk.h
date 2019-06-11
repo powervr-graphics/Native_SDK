@@ -16,19 +16,16 @@ namespace Layers {
 /// <summary>Filter layers</summary>
 /// <param name="layerProperties"> Supportted layers</param>
 /// <param name="layersToEnable">layers to filter</param>
-/// <param name="layersCount">Number of layers to filter</param>
 /// <returns>Filtered layers</returns>
-std::vector<std::string> filterLayers(const std::vector<pvrvk::LayerProperties>& layerProperties, const std::string* layersToEnable, uint32_t layersCount);
-
-namespace Instance {
-
-/// <summary>Enumerate instance layers strings</summary>
-/// <param name="outLayers">Out strings</param>
-void enumerateInstanceLayersString(std::vector<std::string>& outLayers);
+VulkanLayerList filterLayers(const std::vector<pvrvk::LayerProperties>& layerProperties, const VulkanLayerList& layersToEnable);
 
 /// <summary>Enumerate instance layers</summary>
 /// <param name="outLayers">Out layers</param>
 void enumerateInstanceLayers(std::vector<LayerProperties>& outLayers);
-} // namespace Instance
+
+/// <summary>Query if an Instance Layer is supported</summary>
+/// <param name="layer">The layer string</param>
+/// <returns>True if the instance supports the layer, otherwise false</param>
+bool isInstanceLayerSupported(const std::string& layer);
 } // namespace Layers
 } // namespace pvrvk

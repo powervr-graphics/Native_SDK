@@ -6,6 +6,10 @@ IntroducingUIRenderer
 
 This example introduces the UIRenderer from the PVRUtils library for advanced text tasks.
 
+API
+---
+* Vulkan
+
 Description
 -----------
 The UIRenderer allows the user to create "Sprites" (2D elements) which can be grouped in 2D and/or 3D groups to be displayed as UIs or world text. This includes:
@@ -15,11 +19,6 @@ The UIRenderer allows the user to create "Sprites" (2D elements) which can be gr
 * 3D transformations of groups of sprites
 
 In this example, UIRendererer is used to display images and Unicode text, screen aligned, and with 3D transformations. 
-
-APIs
-----
-* OpenGL ES 2.0+
-* Vulkan
 
 Controls
 --------

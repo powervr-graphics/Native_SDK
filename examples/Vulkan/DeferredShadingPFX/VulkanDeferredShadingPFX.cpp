@@ -202,7 +202,7 @@ enum class LightingSubpassPipeline
 struct DeviceResources
 {
 	pvrvk::Instance instance;
-	pvrvk::DebugReportCallback debugCallbacks[2];
+	pvr::utils::DebugUtilsCallbacks debugUtilsCallbacks;
 	pvrvk::Device device;
 	pvrvk::Surface surface;
 	pvrvk::Queue queue;
@@ -212,10 +212,9 @@ struct DeviceResources
 	pvrvk::CommandPool commandPool;
 	pvrvk::DescriptorPool descriptorPool;
 
-	pvrvk::Semaphore semaphoreImageAcquired[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
-	pvrvk::Fence perFrameAcquireFence[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
-	pvrvk::Semaphore semaphorePresent[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
-	pvrvk::Fence perFrameCommandBufferFence[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	pvrvk::Semaphore imageAcquiredSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	pvrvk::Semaphore presentationSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	pvrvk::Fence perFrameResourcesFences[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
 
 	//// Command Buffers ////
 	// Main Primary Command Buffer
@@ -226,16 +225,14 @@ struct DeviceResources
 	pvr::ui::UIRenderer uiRenderer;
 	~DeviceResources()
 	{
-		if (device.isValid())
+		if (device)
 		{
 			device->waitIdle();
 			uint32_t l = swapchain->getSwapchainLength();
 			for (uint32_t i = 0; i < l; ++i)
 			{
-				if (perFrameAcquireFence[i].isValid())
-					perFrameAcquireFence[i]->wait();
-				if (perFrameCommandBufferFence[i].isValid())
-					perFrameCommandBufferFence[i]->wait();
+				if (perFrameResourcesFences[i])
+					perFrameResourcesFences[i]->wait();
 			}
 		}
 	}
@@ -384,8 +381,7 @@ pvr::Result VulkanDeferredShadingPFX::initApplication()
 
 pvr::assets::ModelHandle VulkanDeferredShadingPFX::createFullScreenQuadMesh()
 {
-	pvr::assets::ModelHandle model;
-	model.construct();
+	pvr::assets::ModelHandle model = std::make_shared<pvr::assets::Model>();
 	model->allocMeshes(_numberOfDirectionalLights);
 	model->allocMeshNodes(_numberOfDirectionalLights);
 	// create a dummy material with a material attribute which will be identified by the pfx.
@@ -423,12 +419,8 @@ pvr::Result VulkanDeferredShadingPFX::initView()
 	// Create the surface
 	_deviceResources->surface = pvr::utils::createSurface(_deviceResources->instance, _deviceResources->instance->getPhysicalDevice(0), this->getWindow(), this->getDisplay());
 
-	// Add Debug Report Callbacks
-	// Add a Debug Report Callback for logging messages for events of all supported types.
-	_deviceResources->debugCallbacks[0] = pvr::utils::createDebugReportCallback(_deviceResources->instance);
-	// Add a second Debug Report Callback for throwing exceptions for Error events.
-	_deviceResources->debugCallbacks[1] =
-		pvr::utils::createDebugReportCallback(_deviceResources->instance, pvrvk::DebugReportFlagsEXT::e_ERROR_BIT_EXT, pvr::utils::throwOnErrorDebugReportCallback);
+	// Create a default set of debug utils messengers or debug callbacks using either VK_EXT_debug_utils or VK_EXT_debug_report respectively
+	_deviceResources->debugUtilsCallbacks = pvr::utils::createDebugUtilsCallbacks(_deviceResources->instance);
 
 	pvr::utils::QueuePopulateInfo queueFlagsInfo[] = {
 		{ pvrvk::QueueFlags::e_GRAPHICS_BIT, _deviceResources->surface },
@@ -485,10 +477,10 @@ pvr::Result VulkanDeferredShadingPFX::initView()
 		_deviceResources->device->createCommandPool(pvrvk::CommandPoolCreateInfo(queueAccessInfo.familyId, pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT));
 
 	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(pvrvk::DescriptorPoolCreateInfo()
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 32)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 32)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 32)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_INPUT_ATTACHMENT, 32)
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 48)
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 48)
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 48)
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_INPUT_ATTACHMENT, 48)
 																						  .setMaxDescriptorSets(32));
 
 	// Initialise lighting structures
@@ -498,10 +490,9 @@ pvr::Result VulkanDeferredShadingPFX::initView()
 	for (uint32_t i = 0; i < _numSwapImages; ++i)
 	{
 		_deviceResources->commandBufferMain[i] = _deviceResources->commandPool->allocateCommandBuffer();
-		_deviceResources->semaphorePresent[i] = _deviceResources->device->createSemaphore();
-		_deviceResources->semaphoreImageAcquired[i] = _deviceResources->device->createSemaphore();
-		_deviceResources->perFrameCommandBufferFence[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
-		_deviceResources->perFrameAcquireFence[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
+		_deviceResources->presentationSemaphores[i] = _deviceResources->device->createSemaphore();
+		_deviceResources->imageAcquiredSemaphores[i] = _deviceResources->device->createSemaphore();
+		_deviceResources->perFrameResourcesFences[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
 
 		if (i == 0)
 		{
@@ -617,14 +608,12 @@ pvr::Result VulkanDeferredShadingPFX::quitApplication()
 ***********************************************************************************************************************/
 pvr::Result VulkanDeferredShadingPFX::renderFrame()
 {
-	_deviceResources->perFrameAcquireFence[_frameId]->wait();
-	_deviceResources->perFrameAcquireFence[_frameId]->reset();
-	_deviceResources->swapchain->acquireNextImage(uint64_t(-1), _deviceResources->semaphoreImageAcquired[_frameId], _deviceResources->perFrameAcquireFence[_frameId]);
+	_deviceResources->swapchain->acquireNextImage(uint64_t(-1), _deviceResources->imageAcquiredSemaphores[_frameId]);
 
 	_swapchainIndex = _deviceResources->swapchain->getSwapchainIndex();
 
-	_deviceResources->perFrameCommandBufferFence[_swapchainIndex]->wait();
-	_deviceResources->perFrameCommandBufferFence[_swapchainIndex]->reset();
+	_deviceResources->perFrameResourcesFences[_swapchainIndex]->wait();
+	_deviceResources->perFrameResourcesFences[_swapchainIndex]->reset();
 
 	//  Handle user input and update object animations
 	updateAnimation();
@@ -642,23 +631,23 @@ pvr::Result VulkanDeferredShadingPFX::renderFrame()
 	pvrvk::PipelineStageFlags pipeWaitStage = pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT;
 	submitInfo.commandBuffers = &_deviceResources->commandBufferMain[_swapchainIndex];
 	submitInfo.numCommandBuffers = 1;
-	submitInfo.waitSemaphores = &_deviceResources->semaphoreImageAcquired[_frameId];
+	submitInfo.waitSemaphores = &_deviceResources->imageAcquiredSemaphores[_frameId];
 	submitInfo.numWaitSemaphores = 1;
-	submitInfo.signalSemaphores = &_deviceResources->semaphorePresent[_frameId];
+	submitInfo.signalSemaphores = &_deviceResources->presentationSemaphores[_frameId];
 	submitInfo.numSignalSemaphores = 1;
-	submitInfo.waitDestStages = &pipeWaitStage;
-	_deviceResources->queue->submit(&submitInfo, 1, _deviceResources->perFrameCommandBufferFence[_swapchainIndex]);
+	submitInfo.waitDstStageMask = &pipeWaitStage;
+	_deviceResources->queue->submit(&submitInfo, 1, _deviceResources->perFrameResourcesFences[_swapchainIndex]);
 
 	if (this->shouldTakeScreenshot())
 	{
-		pvr::utils::takeScreenshot(_deviceResources->swapchain, _swapchainIndex, _deviceResources->commandPool, _deviceResources->queue, this->getScreenshotFileName(),
+		pvr::utils::takeScreenshot(_deviceResources->queue, _deviceResources->commandPool, _deviceResources->swapchain, _swapchainIndex, this->getScreenshotFileName(),
 			&_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
 	}
 
 	//--------------------
 	// present
 	pvrvk::PresentInfo presentInfo;
-	presentInfo.waitSemaphores = &_deviceResources->semaphorePresent[_frameId];
+	presentInfo.waitSemaphores = &_deviceResources->presentationSemaphores[_frameId];
 	presentInfo.numWaitSemaphores = 1;
 	presentInfo.swapchains = &_deviceResources->swapchain;
 	presentInfo.numSwapchains = 1;

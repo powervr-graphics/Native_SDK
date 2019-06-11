@@ -508,7 +508,7 @@ bool OpenGLESParticleSystem::createPrograms()
 pvr::Result OpenGLESParticleSystem::initApplication()
 {
 	// Load the _scene
-	_scene.construct();
+	_scene = std::make_shared<pvr::assets::Model>();
 	pvr::assets::PODReader(getAssetStream(Files::SphereModel)).readAsset(*_scene);
 
 	for (uint32_t i = 0; i < _scene->getNumMeshes(); ++i)

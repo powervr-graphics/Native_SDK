@@ -6,6 +6,7 @@
 */
 #pragma once
 #include "PVRVk/ApiObjectsVk.h"
+#include "PVRCore/Log.h"
 /// <summary>Specifies that function pointers for the Vulkan functions will be retrieved external to VMA.</summary>
 #define VMA_STATIC_VULKAN_FUNCTIONS 0
 #include "PVRVk/pvrvk_vulkan_wrapper.h"
@@ -21,9 +22,6 @@
 #include <atomic> // for std::atomic
 #include <cstdlib>
 
-#if (_WIN32)
-#define snprintf _snprintf
-#endif
 #if (_ANDROID)
 inline void* aligned_alloc(size_t size, size_t alignment)
 {
@@ -36,12 +34,12 @@ namespace pvr {
 namespace utils {
 namespace vma {
 namespace impl {
+//!\cond NO_DOXYGEN
 class Pool_;
 class Allocation_;
 class Allocator_;
 class DeviceMemoryWrapper_;
 class DeviceMemoryCallbackDispatcher_;
-//!\cond NO_DOXYGEN
 #ifdef DEBUG
 // Enable the following defines for improved validation of memory usage in debug builds
 // VMA_DEBUG_INITIALIZE_ALLOCATIONS:
@@ -64,16 +62,26 @@ class DeviceMemoryCallbackDispatcher_;
 //		memory outside of boundaries of the allocation, which indicates a serious bug.
 #define VMA_DEBUG_DETECT_CORRUPTION 1
 #endif
-#include "../../../external/vma/src/vk_mem_alloc.h"
+
+// The v2.2.0 release of VulkanMemoryAllocator uses an incorrect ifdef guard - this issue has already been fixed on master.
+// See here for more details: https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator/issues/52
+#define VMA_USE_STL_SHARED_MUTEX 0
+#include "vk_mem_alloc.h"
 //!\endcond
 } // namespace impl
-  //!\cond NO_DOXYGEN
-typedef pvrvk::EmbeddedRefCountedResource<impl::Pool_> Pool;
-typedef pvrvk::RefCountedResource<impl::Allocation_> Allocation;
-typedef pvrvk::EmbeddedRefCountedResource<impl::Allocator_> Allocator;
-typedef pvrvk::RefCountedWeakReference<impl::Allocator_> AllocatorWeakRef;
-//!\endcond
-//!\cond NO_DOXYGEN
+
+/// <summary>Forwared-declared reference-counted handle to a Pool. For detailed documentation, see below</summary>
+typedef std::shared_ptr<impl::Pool_> Pool;
+/// <summary>Forwared-declared reference-counted handle to a Allocation. For detailed documentation, see below</summary>
+typedef std::shared_ptr<impl::Allocation_> Allocation;
+/// <summary>Forwared-declared reference-counted handle to a Allocator. For detailed documentation, see below</summary>
+typedef std::shared_ptr<impl::Allocator_> Allocator;
+/// <summary>Forwared-declared reference-counted handle to a Allocator. For detailed documentation, see below</summary>
+typedef std::weak_ptr<impl::Allocator_> AllocatorWeakPtr;
+/// <summary>Forwared-declared reference-counted handle to a DeviceMemoryWrapper. For detailed documentation, see below</summary>
+typedef std::shared_ptr<impl::DeviceMemoryWrapper_> DeviceMemoryWrapper;
+
+/// <summary>Provides a bitwise operator for an enum class</summary>
 #define ENUM_CLASS_BITWISE_OPERATOR(type_) \
 	inline type_ operator&(type_ lhs, type_ rhs) \
 	{ \
@@ -83,7 +91,6 @@ typedef pvrvk::RefCountedWeakReference<impl::Allocator_> AllocatorWeakRef;
 	{ \
 		return static_cast<type_>(static_cast<uint32_t>(lhs) | static_cast<uint32_t>(rhs)); \
 	}
-//!\endcond
 
 /// <summary>Callback function called after successful vkAllocateMemory.</summary>
 typedef void(VKAPI_PTR* PFN_AllocateDeviceMemoryFunction)(Allocator allocator, uint32_t memoryType, pvrvk::DeviceMemory memory, VkDeviceSize size);
@@ -116,16 +123,14 @@ enum class AllocationCreateFlags
 	/// simultaneously because otherwise they might end up as regions of the same
 	/// DeviceMemory, while mapping same DeviceMemory multiple times
 	/// simultaneously is illegal.
-	/// You should not use this flag if AllocationCreateInfo::pool is not null.
-	/// </summary>
+	/// You should not use this flag if AllocationCreateInfo::pool is not null.</summary>
 	e_DEDICATED_MEMORY_BIT = impl::VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT,
 
 	/// <summary>
 	/// brief Set this flag to only try to allocate from existing DeviceMemory blocks and never create new such block.
 	/// If new allocation cannot be placed in any of the existing blocks, allocation
 	/// fails with `pvrvk::Error::e_OUT_OF_DEVICE_MEMORY` error. You should not use e_DEDICATED_MEMORY_BIT and
-	/// e_NEVER_ALLOCATE_BIT at the same time. It makes no sense. If VmaAllocationCreateInfo::pool is not null, this flag is implied and ignored.
-	/// </summary>
+	/// e_NEVER_ALLOCATE_BIT at the same time. It makes no sense. If VmaAllocationCreateInfo::pool is not null, this flag is implied and ignored.</summary>
 	e_NEVER_ALLOCATE_BIT = impl::VMA_ALLOCATION_CREATE_NEVER_ALLOCATE_BIT,
 
 	/// <summary>
@@ -139,8 +144,7 @@ enum class AllocationCreateFlags
 	///`HOST_VISIBLE`. This flag is then ignored and memory is not mapped. This is
 	/// useful if you need an allocation that is efficient to use on GPU
 	/// (`DEVICE_LOCAL`) and still want to map it directly if possible on platforms that
-	/// support it (e.g. Intel GPU).
-	/// </summary>
+	/// support it (e.g. Intel GPU).</summary>
 	e_MAPPED_BIT = impl::VMA_ALLOCATION_CREATE_MAPPED_BIT,
 
 	/// <summary>
@@ -149,24 +153,21 @@ enum class AllocationCreateFlags
 	/// must check it before use.
 	/// To check if allocation is not lost, call isAllocationLost() on the allocation.
 	/// For details about supporting lost allocations, see Lost Allocations
-	/// chapter of User Guide on Main Page.
-	/// </summary>
+	/// chapter of User Guide on Main Page.</summary>
 	e_CAN_BECOME_LOST_BIT = impl::VMA_ALLOCATION_CREATE_CAN_BECOME_LOST_BIT,
 
 	/// <summary>
 	/// While creating allocation using this flag, other allocations that were
 	/// created with flag `AllocationCreateFlags::e_CAN_BECOME_LOST_BIT` can become lost.
 	/// For details about supporting lost allocations, see Lost Allocations
-	/// chapter of User Guide on Main Page.
-	/// </summary>
+	/// chapter of User Guide on Main Page.</summary>
 	e_CAN_MAKE_OTHER_LOST_BIT = impl::VMA_ALLOCATION_CREATE_CAN_MAKE_OTHER_LOST_BIT,
 
 	/// <summary>
 	/// Set this flag to treat VmaAllocationCreateInfo::pUserData as pointer to a
 	///	null-terminated string. Instead of copying pointer value, a local copy of the
 	///	string is made and stored in allocation's pUserData. The string is automatically
-	///	freed together with the allocation. It is also used in vmaBuildStatsString().
-	/// </summary>
+	///	freed together with the allocation. It is also used in vmaBuildStatsString().</summary>
 	e_USER_DATA_COPY_STRING_BIT = impl::VMA_ALLOCATION_CREATE_USER_DATA_COPY_STRING_BIT,
 	e_FLAG_BITS_MAX_ENUM = impl::VMA_ALLOCATION_CREATE_FLAG_BITS_MAX_ENUM
 };
@@ -180,8 +181,7 @@ enum class AllocatorCreateFlags
 	/// <summary>
 	/// Allocator and all objects created from it will not be synchronized internally, so you must guarantee they are used from only one thread at a time or synchronized
 	/// externally by you.
-	/// Using this flag may increase performance because internal mutexes are not used.
-	/// </summary>
+	/// Using this flag may increase performance because internal mutexes are not used.</summary>
 	e_EXTERNALLY_SYNCHRONIZED_BIT = impl::VMA_ALLOCATOR_CREATE_EXTERNALLY_SYNCHRONIZED_BIT,
 
 	/// <summary>
@@ -204,8 +204,7 @@ enum class AllocatorCreateFlags
 	/// imported statically.
 	/// When this flag is set, you can experience following warnings reported by Vulkan
 	/// validation layer. You can ignore them.
-	/// vkBindBufferMemory(): Binding memory to buffer 0x2d but vkGetBufferMemoryRequirements() has not been called on that buffer.
-	/// </summary>
+	/// vkBindBufferMemory(): Binding memory to buffer 0x2d but vkGetBufferMemoryRequirements() has not been called on that buffer.</summary>
 	e_KHR_DEDICATED_ALLOCATION_BIT = impl::VMA_ALLOCATOR_CREATE_KHR_DEDICATED_ALLOCATION_BIT,
 
 	e_FLAG_BITS_MAX_ENUM = impl::VMA_ALLOCATOR_CREATE_FLAG_BITS_MAX_ENUM
@@ -215,26 +214,18 @@ ENUM_CLASS_BITWISE_OPERATOR(AllocatorCreateFlags)
 /// <summary>The MemoryUsage enum set provides a high level mechanism for specifying how created memory will be used</summary>
 enum class MemoryUsage
 {
-	/// <summary>
-	/// No intended memory usage specified. Use other members of VmaAllocationCreateInfo to specify your requirements.
-	/// </summary>
+	/// <summary>No intended memory usage specified. Use other members of VmaAllocationCreateInfo to specify your requirements.</summary>
 	e_UNKNOWN = impl::VMA_MEMORY_USAGE_UNKNOWN,
-	/// </summary>
-	/// Memory will be used on device only, so faster access from the device is preferred. No need to be mappable on host.
-	/// </summary>
+	/// <summary>Memory will be used on device only, so faster access from the device is preferred. No need to be mappable on host.</summary>
 	e_GPU_ONLY = impl::VMA_MEMORY_USAGE_GPU_ONLY,
-	/// <summary>
-	/// Memory will be mapped on host. Could be used for transfer to/from device.
-	/// Guarantees to be HOST_VISIBLE` and `HOST_COHERENT.
-	/// </summary>
+	/// <summary>Memory will be mapped on host. Could be used for transfer to/from device.
+	/// Guarantees to be HOST_VISIBLE` and `HOST_COHERENT.</summary>
 	e_CPU_ONLY = impl::VMA_MEMORY_USAGE_CPU_ONLY,
-	/// Memory will be used for frequent (dynamic) updates from host and reads on device (upload).
-	/// Guarantees to be `HOST_VISIBLE`.
+	/// <summary>Memory will be used for frequent (dynamic) updates from host and reads on device (upload).
+	/// Guarantees to be `HOST_VISIBLE`.</summary>
 	e_CPU_TO_GPU = impl::VMA_MEMORY_USAGE_CPU_TO_GPU,
-	/// <summary>
-	/// Memory will be used for frequent writing on device and readback on host (download).
-	/// Guarantees to be HOST_VISIBLE.
-	/// </summary>
+	/// <summary>Memory will be used for frequent writing on device and readback on host (download).
+	/// Guarantees to be HOST_VISIBLE.</summary>
 	e_GPU_TO_CPU = impl::VMA_MEMORY_USAGE_GPU_TO_CPU,
 	e_MAX_ENUM = impl::VMA_MEMORY_USAGE_MAX_ENUM
 };
@@ -256,7 +247,7 @@ enum class PoolCreateFlags
 	/// buffers and linear images or only optimal images out of this pool, use this flag
 	/// to make allocator disregard Buffer-Image Granularity and so make allocations
 	/// more optimal.
-	/// <summary>
+	/// </summary>
 	e_IGNORE_BUFFER_IMAGE_GRANULARITY_BIT = impl::VMA_POOL_CREATE_IGNORE_BUFFER_IMAGE_GRANULARITY_BIT,
 
 	e_FLAG_BITS_MAX_ENUM = impl::VMA_POOL_CREATE_FLAG_BITS_MAX_ENUM
@@ -603,20 +594,49 @@ struct PoolCreateInfo
 	/// become lost, set this value to 0.</summary>
 	uint32_t frameInUseCount;
 
+	/// <summary>Constructor for a pool creation info structure.</summary>
 	PoolCreateInfo() : memoryTypeIndex(-1), flags(PoolCreateFlags(0)), blockSize(0), minBlockCount(0), maxBlockCount(0), frameInUseCount(0) {}
+
+	/// <summary>Constructor for a pool creation info structure.</summary>
+	/// <param name="memoryTypeIndex">Vulkan memory type index to allocate this pool from</param>
+	/// <param name="flags">A set of PoolCreateFlags</param>
+	/// <param name="blockSize">Size of a single `pvrvk::DeviceMemory` block to be allocated as part of this pool, in bytes</param>
+	/// <param name="minBlockCount">Minimum number of blocks to be always allocated in this pool, even if they stay empty.</param>
+	/// <param name="maxBlockCount">Maximum number of blocks that can be allocated in this pool.</param>
+	/// <param name="frameInUseCount">Maximum number of additional frames that are in use at the same time as current frame.</param>
 	PoolCreateInfo(uint32_t memoryTypeIndex, PoolCreateFlags flags, pvrvk::DeviceSize blockSize = 0, size_t minBlockCount = 0, size_t maxBlockCount = 0, uint32_t frameInUseCount = 0)
+		: memoryTypeIndex(memoryTypeIndex), flags(flags), blockSize(blockSize), minBlockCount(minBlockCount), maxBlockCount(maxBlockCount), frameInUseCount(frameInUseCount)
 	{}
 };
-//!\cond NO_DOXYGEN
 namespace impl {
 /// <summary>An embedded ref counted Pool class</summary>
-class Pool_ : public pvrvk::EmbeddedRefCount<Pool_>
+class Pool_
 {
-public:
-	~Pool_()
+private:
+	friend class pvr::utils::vma::impl::Allocator_;
+
+	class make_shared_enabler
 	{
-		destroyObject();
+	public:
+		make_shared_enabler() {}
+		friend class Pool_;
+	};
+
+	static Pool constructShared(const PoolCreateInfo& poolCreateInfo)
+	{
+		return std::make_shared<Pool_>(make_shared_enabler{}, poolCreateInfo);
 	}
+
+	Allocator _allocator;
+	VmaPool _vmaPool;
+
+public:
+	//!\cond NO_DOXYGEN
+	DECLARE_NO_COPY_SEMANTICS(Pool_)
+
+	Pool_(make_shared_enabler, const PoolCreateInfo& createInfo);
+	~Pool_();
+	//!\endcond
 
 	/// <summary>Get pool stats</summary>
 	/// <returns>Returns pool stats</returns>
@@ -626,52 +646,91 @@ public:
 	/// current frame or VmaPoolCreateInfo::frameInUseCount back from now.</summary>
 	/// <returns>Returns number of allocations marked as lost.</returns>
 	size_t makeAllocationsLost();
-
-private:
-	friend class ::pvrvk::EmbeddedRefCount<Pool_>;
-	friend class pvr::utils::vma::impl::Allocator_;
-	Allocator _allocator;
-	Pool_(const PoolCreateInfo& createInfo);
-	void destroyObject();
-	static Pool createNew(const PoolCreateInfo& poolCreateInfo)
-	{
-		return pvrvk::EmbeddedRefCount<Pool_>::createNew(poolCreateInfo);
-	}
-	VmaPool _vmaPool;
 };
 
+/// <summary>A wrapper for device memory</summary>
 class DeviceMemoryWrapper_ : public pvrvk::impl::DeviceMemory_
 {
+private:
+	friend class Allocator_;
+
+	class make_shared_enabler : public DeviceMemory_::make_shared_enabler
+	{
+	protected:
+		make_shared_enabler() : DeviceMemory_::make_shared_enabler() {}
+		friend class DeviceMemoryWrapper_;
+	};
+
+	static DeviceMemoryWrapper constructShared(const pvrvk::DeviceWeakPtr& device, const pvrvk::MemoryAllocationInfo& allocationInfo, pvrvk::MemoryPropertyFlags memPropFlags,
+		VkDeviceMemory vkMemoryHandle = VK_NULL_HANDLE)
+	{
+		return std::make_shared<DeviceMemoryWrapper_>(make_shared_enabler{}, device, allocationInfo, memPropFlags, vkMemoryHandle);
+	}
+
 public:
-	DeviceMemoryWrapper_(
-		pvrvk::DeviceWeakPtr device, const pvrvk::MemoryAllocationInfo& allocationInfo, pvrvk::MemoryPropertyFlags memPropFlags, VkDeviceMemory vkMemoryHandle = VK_NULL_HANDLE)
-		: pvrvk::impl::DeviceMemory_(device, allocationInfo, memPropFlags, vkMemoryHandle)
+	//!\cond NO_DOXYGEN
+	DeviceMemoryWrapper_(make_shared_enabler, const pvrvk::DeviceWeakPtr& device, const pvrvk::MemoryAllocationInfo& allocationInfo, pvrvk::MemoryPropertyFlags memPropFlags,
+		VkDeviceMemory vkMemoryHandle)
+		: pvrvk::impl::DeviceMemory_(make_shared_enabler{}, device, allocationInfo, memPropFlags, vkMemoryHandle)
 	{}
 	virtual ~DeviceMemoryWrapper_()
 	{
 		_vkHandle = VK_NULL_HANDLE; // avoid pvrvk::impl::DeviceMemory_ from calling vkFreeMemory
 	}
 
+	/// <summary>Mapping device memory directly is not supported via VMA and instead the device memory should be mapped using the
+	/// corresponding Device Memory's device memory allocation.</summary>
 	virtual void* map(VkDeviceSize /*offset*/, VkDeviceSize /*size*/, pvrvk::MemoryMapFlags /*memoryMapFlags*/)
 	{
-		throw std::runtime_error("Vma DeviceMemory cannot be mapped, Use Allocation map");
+		throw std::runtime_error("VMA DeviceMemory cannot be mapped, Use Allocation map");
 	}
 
+	/// <summary>Unmapping device memory directly is not supported via VMA and instead the device memory should be unmapped using the
+	/// corresponding Device Memory's device memory allocation.</summary>
 	virtual void unmap()
 	{
-		throw std::runtime_error("Vma DeviceMemory cannot be unmapped, Use Allocation unmap");
+		throw std::runtime_error("VMA DeviceMemory cannot be unmapped, Use Allocation unmap");
 	}
+	//!\endcond
 };
-
-typedef pvrvk::RefCountedResource<DeviceMemoryWrapper_> DeviceMemoryWrapper;
 
 /// <summary>The DeviceMemoryWrapper_. Class Just wraps the Vulkan device memory object allocated by the memory allocatpr.
 /// This class doesn't manages the creation and destruction of vulkan object. It only serves as the
 /// interface to device memory functions.</summary>
 class Allocation_ : public pvrvk::impl::IDeviceMemory_
 {
+private:
+	friend class pvr::utils::vma::impl::Allocator_;
+
+	class make_shared_enabler
+	{
+	private:
+		make_shared_enabler() {}
+		friend class Allocation_;
+	};
+
+	static Allocation constructShared(Allocator& memAllocator, const AllocationCreateInfo& allocCreateInfo, VmaAllocation vmaAllocation, const VmaAllocationInfo& allocInfo)
+	{
+		return std::make_shared<Allocation_>(make_shared_enabler{}, memAllocator, allocCreateInfo, vmaAllocation, allocInfo);
+	}
+
+	void recalculateOffsetAndSize(VkDeviceSize& offset, VkDeviceSize& size) const;
+
+	void updateAllocationInfo() const;
+	Pool _pool;
+	Allocator _memAllocator;
+	VmaAllocation _vmaAllocation;
+	mutable VmaAllocationInfo _allocInfo;
+	AllocationCreateFlags _createFlags;
+	pvrvk::MemoryPropertyFlags _flags;
+	pvrvk::DeviceSize _mappedSize;
+	pvrvk::DeviceSize _mappedOffset;
+
 public:
+	//!\cond NO_DOXYGEN
 	~Allocation_();
+	Allocation_(make_shared_enabler, Allocator& memAllocator, const AllocationCreateInfo& allocCreateInfo, VmaAllocation vmaAllocation, const VmaAllocationInfo& allocInfo);
+	//!\endcond
 
 	/// <summary>Return true if this memory block is mappable by the host (const).</summary>
 	/// <returns>True is this memory block can be mapped, otherwise false.</returns>
@@ -681,16 +740,18 @@ public:
 	/// <returns>pvrvk::MemoryPropertyFlags</returns>
 	pvrvk::MemoryPropertyFlags getMemoryFlags() const;
 
+	/// <summary>Return the memory type</summary>
+	/// <returns>The memory type of the pvrvk::Allocation</returns>
 	uint32_t getMemoryType() const;
 
 	/// <summary>Map the memory allocation. Also you can directly call map on the device memory on you own if you want
 	/// But using this function makes sures correct offset and size is always specified.
 	/// Therefore map and unmap of this object is recommended.
-	/// Do not use it on memory allocated with AllocationCreateFlags::e_PERSISTENT_MAP_BIT as multiple maps to same DeviceMemory is illegal.
-	/// </summary>
-	/// <param name="mappedMemory">Returned mapped data</param>
+	/// Do not use it on memory allocated with AllocationCreateFlags::e_PERSISTENT_MAP_BIT as multiple maps to same DeviceMemory is illegal.</summary>
 	/// <param name="offset">The offset into the device memory to map</param>
 	/// <param name="size">The size of the returned mapped data</param>
+	/// <param name="memoryMapFlags">Memory mapping flags specifying how the mappng will take place</param>
+	/// <returns>Returned mapped data</returns>
 	void* map(VkDeviceSize offset = 0, VkDeviceSize size = VK_WHOLE_SIZE, pvrvk::MemoryMapFlags memoryMapFlags = pvrvk::MemoryMapFlags::e_NONE);
 
 	/// <summary>Function unmaps the memory previously mapped by the mapMemory function</summary>
@@ -727,8 +788,7 @@ public:
 	void setUserData(void* userData);
 
 	/// <summary>Check if this allocation is lost. Allocation created with AllocationCreateFlags::e_CAN_BECOME_LOST_BIT flag
-	/// can become lost as a result of another allocation with AllocationCreateFlags::e_CAN_MAKE_OTHER_LOST_BIT flag, so you must check it before use
-	/// </summary>
+	/// can become lost as a result of another allocation with AllocationCreateFlags::e_CAN_MAKE_OTHER_LOST_BIT flag, so you must check it before use</summary>
 	/// <returns>Returns true if the allocation is lost.</returns>
 	bool isAllocationLost() const;
 
@@ -760,34 +820,50 @@ public:
 	/// <param name="offset">The offset into the device memory to map</param>
 	/// <param name="size">The size of the returned mapped data</param>
 	void invalidateRange(VkDeviceSize offset = 0, VkDeviceSize size = VK_WHOLE_SIZE);
-
-private:
-	void recalculateOffsetAndSize(VkDeviceSize& offset, VkDeviceSize& size) const;
-
-	friend class pvr::utils::vma::impl::Allocator_;
-	template<typename>
-	friend struct ::pvrvk::RefCountEntryIntrusive;
-	Allocation_(Allocator memAllocator, const AllocationCreateInfo& allocCreateInfo, VmaAllocation vmaAllocation, const VmaAllocationInfo& allocInfo);
-
-	void updateAllocationInfo() const;
-	Pool _pool;
-	Allocator _memAllocator;
-	VmaAllocation _vmaAllocation;
-	mutable VmaAllocationInfo _allocInfo;
-	AllocationCreateFlags _createFlags;
-	pvrvk::MemoryPropertyFlags _flags;
-	pvrvk::DeviceSize _mappedSize;
-	pvrvk::DeviceSize _mappedOffset;
 };
 
 /// <summary>The MemoryAllocator_ class./summary>
-class Allocator_ : public pvrvk::EmbeddedRefCount<Allocator_>
+class Allocator_ : public std::enable_shared_from_this<Allocator_>
 {
-public:
-	~Allocator_()
+private:
+	friend class AllocatorCreateFactory;
+	friend class Pool_;
+	friend class Allocation_;
+	friend class DeviceMemoryCallbackDispatcher_;
+
+	class make_shared_enabler
 	{
-		destroyObject();
+	public:
+		make_shared_enabler() {}
+		friend class Allocator_;
+	};
+
+	static Allocator constructShared(const AllocatorCreateInfo& createInfo)
+	{
+		return std::make_shared<Allocator_>(make_shared_enabler{}, createInfo);
 	}
+
+	pvrvk::DeviceWeakPtr _device;
+	VmaAllocator _vmaAllocator;
+	mutable std::vector<pvrvk::DeviceMemory> _deviceMemory;
+	DebugReportFlags _reportFlags;
+
+	Allocation createMemoryAllocation(const AllocationCreateInfo& allocCreateInfo, const VmaAllocationInfo& allocInfo, VmaAllocation vmaAllocation);
+	void onAllocateDeviceMemoryFunction(uint32_t memoryType, VkDeviceMemory memory, pvrvk::DeviceSize size);
+	void onFreeDeviceMemoryFunction(uint32_t memoryType, VkDeviceMemory memory, pvrvk::DeviceSize size);
+
+	DeviceMemoryCallbacks _deviceMemCallbacks;
+
+public:
+	//!\cond NO_DOXYGEN
+	DECLARE_NO_COPY_SEMANTICS(Allocator_)
+
+	~Allocator_();
+	Allocator_(make_shared_enabler, const AllocatorCreateInfo& createInfo);
+	//!\endcond
+
+	/// <summary>Adds a callback dispatcher.</summary>
+	void addCallbackDispatcherContext();
 
 	/// <summary>Allocate memory for an image.</summary>
 	/// <param name="image">The image to allocate memeory for</param>
@@ -798,8 +874,7 @@ public:
 	/// <summary>Allocate memory for buffer. NOTE: It is the calle's responsibility of the allocation's lifetime.</summary>
 	/// <param name="buffer">The buffer the allocation is for</param>
 	/// <param name="createInfo">allocation create info</param>
-	/// <param name="outAllocation">The allocation returns from the function.</param>
-	/// <returns>Return pvrvk::Result::e_SUCCESS  if allocatoin succeed</returns>
+	/// <returns>A successfully allocated allocation</returns>
 	Allocation allocateMemoryForBuffer(pvrvk::Buffer& buffer, const AllocationCreateInfo& createInfo);
 
 	/// <summary>Alloocate memory. Note: It is users resposibility to keep the
@@ -835,8 +910,7 @@ public:
 	/// <summary>Defragment the memory allocations. This function can move allocaion to compact used memory, ensure more continuous free space and possibly also free some
 	/// DeviceMemory. It can work only on allocations made from memory type that is HOST_VISIBLE. Allocations are modified to point to the new DeviceMemory and offset. Data in this
 	/// memory is also memmove-ed to the new place. However, if you have images or buffers bound to these allocations, you need to destroy, recreate, and bind them to the new place
-	/// in memory.
-	/// </summary>
+	/// in memory.</summary>
 	/// <param name="memAllocations">A pointer to a set of device memory allocations to defragment</param>
 	/// <param name="numAllocations">The number of device memory allocations pointed to by memAllocations</param>
 	/// <param name="defragInfo">VmaDefragmentationInfo controlling the defragment operation</param>
@@ -870,44 +944,14 @@ public:
 		vmaCalculateStats(_vmaAllocator, &vmaStats);
 		return Stats(vmaStats);
 	}
-
-private:
-	DECLARE_NO_COPY_SEMANTICS(Allocator_)
-	friend class ::pvrvk::EmbeddedRefCount<Allocator_>;
-	friend struct AllocatorCreateFactory;
-	friend class Pool_;
-	friend class Allocation_;
-	friend class DeviceMemoryCallbackDispatcher_;
-	pvrvk::DeviceWeakPtr _device;
-	VmaAllocator _vmaAllocator;
-	mutable std::vector<pvrvk::DeviceMemory> _deviceMemory;
-	DebugReportFlags _reportFlags;
-	Allocator_(const AllocatorCreateInfo& createInfo);
-	Allocation createMemoryAllocation(const AllocationCreateInfo& allocCreateInfo, const VmaAllocationInfo& allocInfo, VmaAllocation vmaAllocation);
-	void destroyObject();
-	void init(const AllocatorCreateInfo& createInfo);
-	void onAllocateDeviceMemoryFunction(uint32_t memoryType, VkDeviceMemory memory, pvrvk::DeviceSize size);
-	void onFreeDeviceMemoryFunction(uint32_t memoryType, VkDeviceMemory memory, pvrvk::DeviceSize size);
-
-	static Allocator createNew(const AllocatorCreateInfo& createInfo)
-	{
-		return pvrvk::EmbeddedRefCount<Allocator_>::createNew(createInfo);
-	}
-
-	DeviceMemoryCallbacks _deviceMemCallbacks;
 };
-
-///*****************************************************************************
-///						Function Implementations
-///*****************************************************************************
 
 /// <summary>Creates a Pool</summary>
 /// <param name="poolCreateInfo">Specifies how the created pool will be created</param>
 /// <returns>The created Memory Pool.</returns>
 inline Pool Allocator_::createPool(const PoolCreateInfo& poolCreateInfo)
 {
-	Pool pool = Pool_::createNew(poolCreateInfo);
-	return pool;
+	return Pool_::constructShared(poolCreateInfo);
 }
 
 /// <summary>Getter for the allocator's device</summary>
@@ -919,8 +963,8 @@ inline pvrvk::DeviceWeakPtr Allocator_::getDevice()
 
 inline Allocation Allocator_::createMemoryAllocation(const AllocationCreateInfo& allocCreateInfo, const VmaAllocationInfo& allocInfo, VmaAllocation vmaAllocation)
 {
-	Allocation allocation;
-	allocation.construct(this->getReference(), allocCreateInfo, vmaAllocation, allocInfo);
+	Allocator allocator = shared_from_this();
+	Allocation allocation = Allocation_::constructShared(allocator, allocCreateInfo, vmaAllocation, allocInfo);
 	if (uint32_t(_reportFlags & DebugReportFlags::Allocation) != 0)
 	{
 		Log(LogLevel::Debug, "VMA: New Allocation 0x%llx: DeviceMemory 0x%llx, MemoryType %d, Offset %lu bytes, Size %lu bytes", allocation->_vmaAllocation, allocInfo.deviceMemory,
@@ -933,9 +977,9 @@ inline void Allocator_::onAllocateDeviceMemoryFunction(uint32_t memoryType, VkDe
 {
 	VkMemoryPropertyFlags memProp;
 	vmaGetMemoryTypeProperties(_vmaAllocator, memoryType, &memProp);
-	DeviceMemoryWrapper deviceMemory;
-	deviceMemory.construct(getDevice(), pvrvk::MemoryAllocationInfo(size, memoryType), static_cast<pvrvk::MemoryPropertyFlags>(memProp), memory);
-	_deviceMemory.push_back(deviceMemory);
+	DeviceMemoryWrapper deviceMemory =
+		DeviceMemoryWrapper_::constructShared(getDevice(), pvrvk::MemoryAllocationInfo(size, memoryType), static_cast<pvrvk::MemoryPropertyFlags>(memProp), memory);
+	_deviceMemory.emplace_back(deviceMemory);
 
 	if (uint32_t(_reportFlags & DebugReportFlags::DeviceMemory) != 0)
 	{
@@ -944,7 +988,7 @@ inline void Allocator_::onAllocateDeviceMemoryFunction(uint32_t memoryType, VkDe
 
 	if (_deviceMemCallbacks.pfnAllocate)
 	{
-		_deviceMemCallbacks.pfnAllocate(getReference(), memoryType, _deviceMemory.back(), size);
+		_deviceMemCallbacks.pfnAllocate(shared_from_this(), memoryType, _deviceMemory.back(), size);
 	}
 }
 
@@ -959,7 +1003,7 @@ inline void Allocator_::onFreeDeviceMemoryFunction(uint32_t memoryType, VkDevice
 		auto it = std::find_if(_deviceMemory.begin(), _deviceMemory.end(), [&](const pvrvk::DeviceMemory& deviceMemory) { return deviceMemory->getVkHandle() == memory; });
 		if (it != _deviceMemory.end())
 		{
-			_deviceMemCallbacks.pfnAllocate(getWeakReference(), memoryType, *it, size);
+			_deviceMemCallbacks.pfnAllocate(shared_from_this(), memoryType, *it, size);
 		}
 	}
 }
@@ -1006,7 +1050,7 @@ inline void Allocation_::flushRange(pvrvk::DeviceSize offset, pvrvk::DeviceSize 
 	range.memory = getVkHandle();
 	range.offset = offset;
 	range.size = size;
-	pvrvk::impl::vkThrowIfFailed(_device->getVkBindings().vkFlushMappedMemoryRanges(_device->getVkHandle(), 1, &range), "Failed to flush range of memory block");
+	pvrvk::impl::vkThrowIfFailed(_device.lock()->getVkBindings().vkFlushMappedMemoryRanges(_device.lock()->getVkHandle(), 1, &range), "Failed to flush range of memory block");
 }
 
 inline void Allocation_::invalidateRange(VkDeviceSize offset, VkDeviceSize size)
@@ -1025,7 +1069,8 @@ inline void Allocation_::invalidateRange(VkDeviceSize offset, VkDeviceSize size)
 	range.memory = getVkHandle();
 	range.offset = offset;
 	range.size = size;
-	pvrvk::impl::vkThrowIfFailed(_device->getVkBindings().vkInvalidateMappedMemoryRanges(_device->getVkHandle(), 1, &range), "Failed to invalidate range of memory block");
+	pvrvk::impl::vkThrowIfFailed(
+		_device.lock()->getVkBindings().vkInvalidateMappedMemoryRanges(_device.lock()->getVkHandle(), 1, &range), "Failed to invalidate range of memory block");
 }
 
 inline void Allocation_::recalculateOffsetAndSize(VkDeviceSize& offset, VkDeviceSize& size) const
@@ -1074,7 +1119,7 @@ inline Pool Allocation_::getMemoryPool()
 	return _pool;
 }
 } // namespace impl
-//!\endcond
+
 inline pvrvk::DeviceSize PoolStats::getUnusedSize() const
 {
 	return unusedSize;

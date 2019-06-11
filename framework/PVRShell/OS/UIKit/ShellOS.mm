@@ -1,6 +1,6 @@
 /*!
 \brief Implementation of the ShellOS class for the UIKit
-\file PVRShell\OS/UIKit/ShellOS.mm
+\file PVRShell/OS/UIKit/ShellOS.mm
 \author PowerVR by Imagination, Developer Technology Team
 \copyright Copyright (c) Imagination Technologies Limited.
 */
@@ -60,15 +60,15 @@ bool ShellOS::init(DisplayAttributes &data)
 
 	// Setup read and write paths
 	NSString* readPath = [NSString stringWithFormat:@"%@%@", [[NSBundle mainBundle] resourcePath], @"/"];
-	_ReadPaths.push_back([readPath UTF8String]);
+	_readPaths.push_back([readPath UTF8String]);
 
 	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
 	NSString* writePath = [NSString stringWithFormat:@"%@%@", [paths objectAtIndex:0], @"/"];
-	_WritePath = [writePath UTF8String];
+	_writePath = [writePath UTF8String];
 	
 	// Setup the app name
 	NSString* name = [[NSProcessInfo processInfo] processName];
-	_AppName =[name UTF8String];
+	_appName =[name UTF8String];
 	
 	return true;
 }

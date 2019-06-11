@@ -8,7 +8,6 @@ skinned) and material.
 #pragma once
 #include "PVRCore/strings/StringHash.h"
 #include "PVRCore/types/Types.h"
-#include "PVRCore/RefCounted.h"
 #include "PVRCore/types/FreeValue.h"
 #include "PVRAssets/IndexedArray.h"
 
@@ -36,20 +35,20 @@ public:
 
 	/// <summary>Get the UserData of this mesh, if such user data exist.</summary>
 	/// <returns>A pointer to the UserData, as a Reference Counted Void pointer. Cast to appropriate (ref counted)type</returns>
-	const RefCountedResource<void>& getUserDataPtr() const
+	const std::shared_ptr<void>& getUserDataPtr() const
 	{
 		return this->_data.userDataPtr;
 	}
 	/// <summary>Get the UserData of this mesh, if such user data exist.</summary>
 	/// <returns>A pointer to the UserData, as a Reference Counted Void pointer. Cast to appropriate (ref counted)type</returns>
-	RefCountedResource<void> getUserDataPtr()
+	std::shared_ptr<void> getUserDataPtr()
 	{
 		return this->_data.userDataPtr;
 	}
 
-	/// <summary>Set the UserData of this mesh (wrap the data into a RefCountedResource and cast to Ref Counted void pointer.</summary>
-	/// <param name="ptr">The UserData. Must be wrapped in an appropriate RefCountedResource, and then cast into a RefCountedResource to void</param>
-	void setUserDataPtr(const RefCountedResource<void>& ptr)
+	/// <summary>Set the UserData of this mesh (wrap the data into a std::shared_ptr and cast to Ref Counted void pointer.</summary>
+	/// <param name="ptr">The UserData. Must be wrapped in an appropriate std::shared_ptr, and then cast into a std::shared_ptr to void</param>
+	void setUserDataPtr(const std::shared_ptr<void>& ptr)
 	{
 		_data.userDataPtr = ptr;
 	}
@@ -153,8 +152,7 @@ public:
 		}
 	};
 
-	/// <summary>The FaceData class contains the information of the Indices that defines the Faces of a Mesh.
-	/// </summary>
+	/// <summary>The FaceData class contains the information of the Indices that defines the Faces of a Mesh.</summary>
 	class FaceData
 	{
 		friend class Mesh;
@@ -164,7 +162,7 @@ public:
 		UInt8Buffer _data; //!< The data
 
 	public:
-		/// <summary> Constructor </summary>
+		/// <summary>Constructor</summary>
 		FaceData();
 
 		/// <summary>Get the data type of the face data (16-bit or 32 bit integer).</summary>
@@ -226,8 +224,8 @@ public:
 		bool isIndexed; //!< Contains indices (as opposed to being a flat list of vertices)
 		bool isSkinned; //!< Contains indices (as opposed to being a flat list of vertices)
 
-		glm::vec3 min;
-		glm::vec3 max;
+		glm::vec3 min; //!< The minimum vertex
+		glm::vec3 max; //!< The maximum vertex
 
 		/// <summary>Constructor</summary>
 		MeshInfo()
@@ -250,11 +248,12 @@ public:
 		FaceData faces; //!< Faces information
 		MeshInfo primitiveData; //!< Primitive data information
 
-		int32_t skeleton;
+		int32_t skeleton; //!< Skeleton identifier
 
 		glm::mat4x4 unpackMatrix; //!< This matrix is used to move from an int16_t representation to a float
-		RefCountedResource<void> userDataPtr; //!< This is a pointer that is in complete control of the user, used for per-mesh data.
+		std::shared_ptr<void> userDataPtr; //!< This is a pointer that is in complete control of the user, used for per-mesh data.
 
+		/// <summary>Default constructor.</summary>
 		InternalData() : skeleton(-1) {}
 	};
 
@@ -291,8 +290,7 @@ public:
 	/// block and will be queriable with the (getStride) call with the same index as the data.</remarks>
 	int32_t addData(const uint8_t* data, uint32_t size, uint32_t stride); // a size of 0 is supported
 
-	/// <summary>Add a block of vertex data to the mesh at the specified index and (optionally) populate it with data.
-	/// </summary>
+	/// <summary>Add a block of vertex data to the mesh at the specified index and (optionally) populate it with data.</summary>
 	/// <param name="data">A pointer to data that will be copied to the new block. If <paramref name="data"/>is
 	/// NULL, the block remains uninitialized.</param>
 	/// <param name="size">The ordinal of the data block. If no block exists, it will be created along with all the
@@ -302,8 +300,7 @@ public:
 	/// <returns>The index of the block that was just created.</returns>
 	/// <remarks>With this call, a new data block will be added to the specified index of the mesh, and will be
 	/// populated with (size) bytes of data copied from the (data) pointer. (stride) will be saved as metadata with
-	/// the data of the block and will be queriable with the (getStride) call with the same index as the data.
-	/// </remarks>
+	/// the data of the block and will be queriable with the (getStride) call with the same index as the data.</remarks>
 	int32_t addData(const uint8_t* data, uint32_t size, uint32_t stride, uint32_t index); // a size of 0 is supported
 
 	/// <summary>Delete a block of data.</summary>
@@ -392,8 +389,7 @@ public:
 		return _data.primitiveData.numFaces;
 	}
 
-	/// <summary>Get the number of indices that comprise this mesh. Takes TriangleStrips into consideration.
-	/// </summary>
+	/// <summary>Get the number of indices that comprise this mesh. Takes TriangleStrips into consideration.</summary>
 	/// <returns>The number of indexes</returns>
 	uint32_t getNumIndices() const
 	{
@@ -452,6 +448,8 @@ public:
 		return _data.primitiveData;
 	}
 
+	/// <summary>Retrieves the skeleton identifier (const).</summary>
+	/// <returns>The Skeleton identifier</returns>
 	int32_t getSkeletonId() const
 	{
 		return _data.skeleton;
@@ -473,8 +471,7 @@ public:
 	}
 
 	/// <summary>Get all DataBlocks of this Mesh.</summary>
-	/// <returns>The datablocks, as an std::vector of StridedBuffers that additionally have a stride member.
-	/// </returns>
+	/// <returns>The datablocks, as an std::vector of StridedBuffers that additionally have a stride member.</returns>
 	/// <remarks>Use as char arrays and additionally use the getStride() method to get the element stride</remarks>
 	const std::vector<StridedBuffer>& getVertexData() const
 	{
@@ -573,8 +570,7 @@ public:
 	}
 
 	/// <summary>Get the number of Triangle Strips (if any) that comprise this Mesh.</summary>
-	/// <returns>The number of Triangle Strips (if any) that comprise this Mesh. 0 if the Mesh is not made of strips
-	/// </returns>
+	/// <returns>The number of Triangle Strips (if any) that comprise this Mesh. 0 if the Mesh is not made of strips</returns>
 	uint32_t getNumStrips() const
 	{
 		return static_cast<uint32_t>(_data.primitiveData.stripLengths.size());
@@ -598,8 +594,7 @@ public:
 
 	/// <summary>Set the TriangleStrip number and lengths.</summary>
 	/// <param name="numStrips">The number of TriangleStrips</param>
-	/// <param name="lengths">An array of size numStrips containing the length of each TriangleStrip, respectively
-	/// </param>
+	/// <param name="lengths">An array of size numStrips containing the length of each TriangleStrip, respectively</param>
 	void setStripData(uint32_t numStrips, const uint32_t* lengths)
 	{
 		_data.primitiveData.stripLengths.resize(numStrips);

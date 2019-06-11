@@ -83,7 +83,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div class="summary">
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="#pro-attribs">Protected Attributes</a> &#124;
@@ -93,19 +92,19 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 
-<p>A class wrapping the operations necessary to retrieve an asynchronously loaded texture, (e.g. querying if the load is complete, or blocking-wait get the result. Is an EmbeddedRefCounted Resource, so must always be instantiated with <a class="el" href="structpvr_1_1async_1_1_texture_load_future__.html#adb3280b2a4281681fd18c07e0ff2a214" title="Create a new TextureLoadFuture, wrapped in an EmbeddedRefCountedResource. TextureLoadFuture can only ...">createNew()</a> 
+<p>A class wrapping the operations necessary to retrieve an asynchronously loaded texture, (e.g. querying if the load is complete, or blocking-wait get the result. It is a shared reference counted resource 
  <a href="structpvr_1_1async_1_1_texture_load_future__.html#details">More...</a></p>
 <div class="dynheader">
 Inheritance diagram for pvr::async::TextureLoadFuture_:</div>
 <div class="dyncontent">
 <div class="center"><img src="structpvr_1_1async_1_1_texture_load_future____inherit__graph.png" border="0" usemap="#pvr_1_1async_1_1_texture_load_future___inherit__map" alt="Inheritance graph"/></div>
 <map name="pvr_1_1async_1_1_texture_load_future___inherit__map" id="pvr_1_1async_1_1_texture_load_future___inherit__map">
-<area shape="rect" id="node2" href="classpvr_1_1async_1_1_i_framework_async_result.html" title="pvr::async::IFrameworkAsync\lResult\&lt; TexturePtr \&gt;" alt="" coords="261,5,459,46"/><area shape="rect" id="node3" href="classpvr_1_1async_1_1_i_framework_cleanup_object.html" title="pvr::async::IFrameworkCleanup\lObject\&lt; TexturePtr \&gt;" alt="" coords="5,5,213,46"/></map>
+<area shape="rect" id="node2" href="classpvr_1_1async_1_1_i_framework_async_result.html" title="pvr::async::IFrameworkAsync\lResult\&lt; TexturePtr \&gt;" alt="" coords="275,5,472,46"/><area shape="rect" id="node3" href="classpvr_1_1async_1_1_i_framework_cleanup_object.html" title="pvr::async::IFrameworkCleanup\lObject\&lt; TexturePtr \&gt;" alt="" coords="5,5,213,46"/></map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a8416443f9cab22d5b542ebf52e58ae71"><td class="memItemLeft" align="right" valign="top">typedef void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1async_1_1_i_framework_async_result.html#a8416443f9cab22d5b542ebf52e58ae71">Callback</a> )(<a class="el" href="classpvr_1_1async_1_1_i_framework_async_result.html#ac2389a7b868955c43b03f7c14158c039">PointerType</a>)</td></tr>
+<tr class="memitem:a8416443f9cab22d5b542ebf52e58ae71"><td class="memItemLeft" align="right" valign="top">typedef void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1async_1_1_i_framework_async_result.html#a8416443f9cab22d5b542ebf52e58ae71">Callback</a> )(<a class="el" href="classpvr_1_1async_1_1_i_framework_async_result.html#a66968d22333ae07fbe05b241efc5f2db">PointerType</a>)</td></tr>
 <tr class="memdesc:a8416443f9cab22d5b542ebf52e58ae71"><td class="mdescLeft">&#160;</td><td class="mdescRight">A function pointer type that can be used as a callback to call when the return value is ready <a href="#a8416443f9cab22d5b542ebf52e58ae71">More...</a><br/></td></tr>
 <tr class="separator:a8416443f9cab22d5b542ebf52e58ae71"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab0a2354267bb90adac66def0e251f34d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab0a2354267bb90adac66def0e251f34d"></a>
@@ -117,12 +116,11 @@ typedef <a class="el" href="classpvr_1_1async_1_1_i_framework_async_result.html"
 &lt; TexturePtr &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1async_1_1_texture_load_future__.html#ab87cc198bd4f73a6ffe95a5409a98c9c">MyBase</a></td></tr>
 <tr class="memdesc:ab87cc198bd4f73a6ffe95a5409a98c9c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Base class. <br/></td></tr>
 <tr class="separator:ab87cc198bd4f73a6ffe95a5409a98c9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac2389a7b868955c43b03f7c14158c039"><td class="memItemLeft" align="right" valign="top">typedef <br class="typebreak"/>
-EmbeddedRefCountedResource<br class="typebreak"/>
+<tr class="memitem:a66968d22333ae07fbe05b241efc5f2db"><td class="memItemLeft" align="right" valign="top">typedef std::shared_ptr<br class="typebreak"/>
 &lt; <a class="el" href="classpvr_1_1async_1_1_i_framework_async_result.html">IFrameworkAsyncResult</a><br class="typebreak"/>
-&lt; TexturePtr &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1async_1_1_i_framework_async_result.html#ac2389a7b868955c43b03f7c14158c039">PointerType</a></td></tr>
-<tr class="memdesc:ac2389a7b868955c43b03f7c14158c039"><td class="mdescLeft">&#160;</td><td class="mdescRight">A smart pointer to this result object (not the wrapped value) <a href="#ac2389a7b868955c43b03f7c14158c039">More...</a><br/></td></tr>
-<tr class="separator:ac2389a7b868955c43b03f7c14158c039"><td class="memSeparator" colspan="2">&#160;</td></tr>
+&lt; TexturePtr &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1async_1_1_i_framework_async_result.html#a66968d22333ae07fbe05b241efc5f2db">PointerType</a></td></tr>
+<tr class="memdesc:a66968d22333ae07fbe05b241efc5f2db"><td class="mdescLeft">&#160;</td><td class="mdescRight">A smart pointer to this result object (not the wrapped value) <a href="#a66968d22333ae07fbe05b241efc5f2db">More...</a><br/></td></tr>
+<tr class="separator:a66968d22333ae07fbe05b241efc5f2db"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a443532fc20e721cbf2ffa8a15e180f56"><td class="memItemLeft" align="right" valign="top">typedef TexturePtr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1async_1_1_i_framework_async_result.html#a443532fc20e721cbf2ffa8a15e180f56">ValueType</a></td></tr>
 <tr class="memdesc:a443532fc20e721cbf2ffa8a15e180f56"><td class="mdescLeft">&#160;</td><td class="mdescRight">The type of the return value <a href="#a443532fc20e721cbf2ffa8a15e180f56">More...</a><br/></td></tr>
 <tr class="separator:a443532fc20e721cbf2ffa8a15e180f56"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -150,12 +148,6 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="memdesc:a4d4263ecd25214768bdae235faa0c6d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set a function to be called when the texture loading has been finished. <a href="#a4d4263ecd25214768bdae235faa0c6d1">More...</a><br/></td></tr>
 <tr class="separator:a4d4263ecd25214768bdae235faa0c6d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
-Static Public Member Functions</h2></td></tr>
-<tr class="memitem:adb3280b2a4281681fd18c07e0ff2a214"><td class="memItemLeft" align="right" valign="top">static StrongReferenceType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1async_1_1_texture_load_future__.html#adb3280b2a4281681fd18c07e0ff2a214">createNew</a> ()</td></tr>
-<tr class="memdesc:adb3280b2a4281681fd18c07e0ff2a214"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a new TextureLoadFuture, wrapped in an EmbeddedRefCountedResource. TextureLoadFuture can only be instantiated using this function. <a href="#adb3280b2a4281681fd18c07e0ff2a214">More...</a><br/></td></tr>
-<tr class="separator:adb3280b2a4281681fd18c07e0ff2a214"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:a7fef173aeebc5970387f6c9ea22c3da0"><td class="memItemLeft" align="right" valign="top">std::exception_ptr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1async_1_1_texture_load_future__.html#a7fef173aeebc5970387f6c9ea22c3da0">exception</a></td></tr>
@@ -165,27 +157,27 @@ Public Attributes</h2></td></tr>
 std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1async_1_1_texture_load_future__.html#a611c13912be5b0c6191767393a5db12d">filename</a></td></tr>
 <tr class="memdesc:a611c13912be5b0c6191767393a5db12d"><td class="mdescLeft">&#160;</td><td class="mdescRight">The filename from which the texture is loaded. <br/></td></tr>
 <tr class="separator:a611c13912be5b0c6191767393a5db12d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a79153dd15e3c4b505a795ee6eae1c710"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a79153dd15e3c4b505a795ee6eae1c710"></a>
-<a class="el" href="namespacepvr.html#a8be7d779089afe1df56a1bf542134d0d">TextureFileFormat</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1async_1_1_texture_load_future__.html#a79153dd15e3c4b505a795ee6eae1c710">fmt</a></td></tr>
-<tr class="memdesc:a79153dd15e3c4b505a795ee6eae1c710"><td class="mdescLeft">&#160;</td><td class="mdescRight">The format of the texture. <br/></td></tr>
-<tr class="separator:a79153dd15e3c4b505a795ee6eae1c710"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a84e74ad5eb11c0a5ebf6481559614818"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a84e74ad5eb11c0a5ebf6481559614818"></a>
+<a class="el" href="namespacepvr.html#a8be7d779089afe1df56a1bf542134d0d">TextureFileFormat</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1async_1_1_texture_load_future__.html#a84e74ad5eb11c0a5ebf6481559614818">format</a></td></tr>
+<tr class="memdesc:a84e74ad5eb11c0a5ebf6481559614818"><td class="mdescLeft">&#160;</td><td class="mdescRight">The format of the texture. <br/></td></tr>
+<tr class="separator:a84e74ad5eb11c0a5ebf6481559614818"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac6dfaf430f539cc483da22998ff5ac24"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac6dfaf430f539cc483da22998ff5ac24"></a>
 <a class="el" href="classpvr_1_1_i_asset_provider.html">IAssetProvider</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1async_1_1_texture_load_future__.html#ac6dfaf430f539cc483da22998ff5ac24">loader</a></td></tr>
 <tr class="memdesc:ac6dfaf430f539cc483da22998ff5ac24"><td class="mdescLeft">&#160;</td><td class="mdescRight">The AssetProvider to use to load the texture. <br/></td></tr>
 <tr class="separator:ac6dfaf430f539cc483da22998ff5ac24"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3973d95b7c30714e73d0f47da6b6b40f"><td class="memItemLeft" align="right" valign="top">TexturePtr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1async_1_1_texture_load_future__.html#a3973d95b7c30714e73d0f47da6b6b40f">result</a></td></tr>
-<tr class="memdesc:a3973d95b7c30714e73d0f47da6b6b40f"><td class="mdescLeft">&#160;</td><td class="mdescRight">The result of the operation will be stored here  <a href="#a3973d95b7c30714e73d0f47da6b6b40f">More...</a><br/></td></tr>
+<tr class="memdesc:a3973d95b7c30714e73d0f47da6b6b40f"><td class="mdescLeft">&#160;</td><td class="mdescRight">The result of the operation will be stored here <a href="#a3973d95b7c30714e73d0f47da6b6b40f">More...</a><br/></td></tr>
 <tr class="separator:a3973d95b7c30714e73d0f47da6b6b40f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a810d69aa126f378dc151a305dca20e97"><td class="memItemLeft" align="right" valign="top">SemaphorePtr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1async_1_1_texture_load_future__.html#a810d69aa126f378dc151a305dca20e97">resultSema</a></td></tr>
-<tr class="separator:a810d69aa126f378dc151a305dca20e97"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2e9ed85e6ad9daa3262945d16cc3b00b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2e9ed85e6ad9daa3262945d16cc3b00b"></a>
-Semaphore *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1async_1_1_texture_load_future__.html#a2e9ed85e6ad9daa3262945d16cc3b00b">workSema</a></td></tr>
-<tr class="memdesc:a2e9ed85e6ad9daa3262945d16cc3b00b"><td class="mdescLeft">&#160;</td><td class="mdescRight">A pointer to an externally used semaphore (normally the one used by the queue) <br/></td></tr>
-<tr class="separator:a2e9ed85e6ad9daa3262945d16cc3b00b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3c4ac15d6a67ef7882483a824c50de18"><td class="memItemLeft" align="right" valign="top">SemaphorePtr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1async_1_1_texture_load_future__.html#a3c4ac15d6a67ef7882483a824c50de18">resultSemaphore</a></td></tr>
+<tr class="separator:a3c4ac15d6a67ef7882483a824c50de18"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1773671be6459506b27aee99528aced1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1773671be6459506b27aee99528aced1"></a>
+Semaphore *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1async_1_1_texture_load_future__.html#a1773671be6459506b27aee99528aced1">workSemaphore</a></td></tr>
+<tr class="memdesc:a1773671be6459506b27aee99528aced1"><td class="mdescLeft">&#160;</td><td class="mdescRight">A pointer to an externally used semaphore (normally the one used by the queue) <br/></td></tr>
+<tr class="separator:a1773671be6459506b27aee99528aced1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:ad11fe888126058746669ec00b98d33a2"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1async_1_1_i_framework_async_result.html#ad11fe888126058746669ec00b98d33a2">executeCallBack</a> (<a class="el" href="classpvr_1_1async_1_1_i_framework_async_result.html#ac2389a7b868955c43b03f7c14158c039">PointerType</a> thisPtr)</td></tr>
+<tr class="memitem:ad11fe888126058746669ec00b98d33a2"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1async_1_1_i_framework_async_result.html#ad11fe888126058746669ec00b98d33a2">executeCallBack</a> (<a class="el" href="classpvr_1_1async_1_1_i_framework_async_result.html#a66968d22333ae07fbe05b241efc5f2db">PointerType</a> thisPtr)</td></tr>
 <tr class="memdesc:ad11fe888126058746669ec00b98d33a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Execute the callback (overridable) <a href="#ad11fe888126058746669ec00b98d33a2">More...</a><br/></td></tr>
 <tr class="separator:ad11fe888126058746669ec00b98d33a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad9484ee12974a95ce286429f04d82c4b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1async_1_1_i_framework_async_result.html#ad9484ee12974a95ce286429f04d82c4b">setTheCallback</a> (<a class="el" href="classpvr_1_1async_1_1_i_framework_async_result.html#a8416443f9cab22d5b542ebf52e58ae71">Callback</a> completionCallback)</td></tr>
@@ -208,7 +200,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="separator:a2e6065186c0708bf0efabd8dca3d138b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>A class wrapping the operations necessary to retrieve an asynchronously loaded texture, (e.g. querying if the load is complete, or blocking-wait get the result. Is an EmbeddedRefCounted Resource, so must always be instantiated with <a class="el" href="structpvr_1_1async_1_1_texture_load_future__.html#adb3280b2a4281681fd18c07e0ff2a214" title="Create a new TextureLoadFuture, wrapped in an EmbeddedRefCountedResource. TextureLoadFuture can only ...">createNew()</a></p>
+<div class="textblock"><p>A class wrapping the operations necessary to retrieve an asynchronously loaded texture, (e.g. querying if the load is complete, or blocking-wait get the result. It is a shared reference counted resource</p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
 <a class="anchor" id="a8416443f9cab22d5b542ebf52e58ae71"></a>
 <div class="memitem">
@@ -218,7 +210,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">typedef void(* <a class="el" href="classpvr_1_1async_1_1_i_framework_async_result.html">pvr::async::IFrameworkAsyncResult</a>&lt; TexturePtr  &gt;::Callback)(<a class="el" href="classpvr_1_1async_1_1_i_framework_async_result.html#ac2389a7b868955c43b03f7c14158c039">PointerType</a>)</td>
+          <td class="memname">typedef void(* <a class="el" href="classpvr_1_1async_1_1_i_framework_async_result.html">pvr::async::IFrameworkAsyncResult</a>&lt; TexturePtr  &gt;::Callback)(<a class="el" href="classpvr_1_1async_1_1_i_framework_async_result.html#a66968d22333ae07fbe05b241efc5f2db">PointerType</a>)</td>
         </tr>
       </table>
   </td>
@@ -232,7 +224,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 </div>
 </div>
-<a class="anchor" id="ac2389a7b868955c43b03f7c14158c039"></a>
+<a class="anchor" id="a66968d22333ae07fbe05b241efc5f2db"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -240,7 +232,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">typedef EmbeddedRefCountedResource&lt;<a class="el" href="classpvr_1_1async_1_1_i_framework_async_result.html">IFrameworkAsyncResult</a>&lt;TexturePtr &gt; &gt; <a class="el" href="classpvr_1_1async_1_1_i_framework_async_result.html">pvr::async::IFrameworkAsyncResult</a>&lt; TexturePtr  &gt;::PointerType</td>
+          <td class="memname">typedef std::shared_ptr&lt;<a class="el" href="classpvr_1_1async_1_1_i_framework_async_result.html">IFrameworkAsyncResult</a>&lt;TexturePtr &gt; &gt; <a class="el" href="classpvr_1_1async_1_1_i_framework_async_result.html">pvr::async::IFrameworkAsyncResult</a>&lt; TexturePtr  &gt;::<a class="el" href="classpvr_1_1async_1_1_i_framework_async_result.html#a66968d22333ae07fbe05b241efc5f2db">PointerType</a></td>
         </tr>
       </table>
   </td>
@@ -302,32 +294,6 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 </div>
 </div>
-<a class="anchor" id="adb3280b2a4281681fd18c07e0ff2a214"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">static StrongReferenceType pvr::async::TextureLoadFuture_::createNew </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Create a new TextureLoadFuture, wrapped in an EmbeddedRefCountedResource. TextureLoadFuture can only be instantiated using this function.</p>
-<dl class="section return"><dt>Returns</dt><dd>A new <a class="el" href="structpvr_1_1async_1_1_texture_load_future__.html" title="A class wrapping the operations necessary to retrieve an asynchronously loaded texture, (e.g. querying if the load is complete, or blocking-wait get the result. Is an EmbeddedRefCounted Resource, so must always be instantiated with createNew()">TextureLoadFuture_</a></dd></dl>
-
-</div>
-</div>
 <a class="anchor" id="ad11fe888126058746669ec00b98d33a2"></a>
 <div class="memitem">
 <div class="memproto">
@@ -338,7 +304,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
         <tr>
           <td class="memname">virtual void <a class="el" href="classpvr_1_1async_1_1_i_framework_async_result.html">pvr::async::IFrameworkAsyncResult</a>&lt; TexturePtr  &gt;::executeCallBack </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classpvr_1_1async_1_1_i_framework_async_result.html#ac2389a7b868955c43b03f7c14158c039">PointerType</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="classpvr_1_1async_1_1_i_framework_async_result.html#a66968d22333ae07fbe05b241efc5f2db">PointerType</a>&#160;</td>
           <td class="paramname"><em>thisPtr</em></td><td>)</td>
           <td></td>
         </tr>
@@ -526,11 +492,11 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
       </table>
 </div><div class="memdoc">
 
-<p>The result of the operation will be stored here </p>
+<p>The result of the operation will be stored here</p>
 
 </div>
 </div>
-<a class="anchor" id="a810d69aa126f378dc151a305dca20e97"></a>
+<a class="anchor" id="a3c4ac15d6a67ef7882483a824c50de18"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -538,7 +504,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">SemaphorePtr pvr::async::TextureLoadFuture_::resultSema</td>
+          <td class="memname">SemaphorePtr pvr::async::TextureLoadFuture_::resultSemaphore</td>
         </tr>
       </table>
   </td>

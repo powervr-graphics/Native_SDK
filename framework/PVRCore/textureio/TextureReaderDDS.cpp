@@ -1,6 +1,6 @@
 /*!
 \brief Implementation of methods of the TextureReaderDDS class.
-\file PVRCore/textureReaders/TextureReaderDDS.cpp
+\file PVRCore/textureio/TextureReaderDDS.cpp
 \author PowerVR by Imagination, Developer Technology Team
 \copyright Copyright (c) Imagination Technologies Limited.
 */

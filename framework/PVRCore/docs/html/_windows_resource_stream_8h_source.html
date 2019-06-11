@@ -86,7 +86,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="contents">
 <a href="_windows_resource_stream_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;</div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#pragma once</span></div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#include &quot;PVRCore/stream/BufferStream.h&quot;</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#include &quot;<a class="code" href="_buffer_stream_8h.html">PVRCore/stream/BufferStream.h</a>&quot;</span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &lt;string&gt;</span></div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#ifndef WIN32_LEAN_AND_MEAN</span></div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define WIN32_LEAN_AND_MEAN</span></div>
@@ -97,40 +97,41 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#include &lt;Windows.h&gt;</span></div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="keyword">namespace </span>pvr {</div>
-<div class="line"><a name="l00024"></a><span class="lineno"><a class="line" href="classpvr_1_1_windows_resource_stream.html">   24</a></span>&#160;<span class="keyword">class </span><a class="code" href="classpvr_1_1_windows_resource_stream.html">WindowsResourceStream</a> : <span class="keyword">public</span> <a class="code" href="classpvr_1_1_buffer_stream.html">BufferStream</a></div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;{</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00029"></a><span class="lineno"><a class="line" href="classpvr_1_1_windows_resource_stream.html#a94163c7946846c40a6ca014613caff99">   29</a></span>&#160;    <a class="code" href="classpvr_1_1_windows_resource_stream.html#a94163c7946846c40a6ca014613caff99">WindowsResourceStream</a>(<span class="keyword">const</span> std::string&amp; resourceName) : <a class="code" href="classpvr_1_1_buffer_stream.html">BufferStream</a>(resourceName)</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    {</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;        <a class="code" href="classpvr_1_1_stream.html#abf116988b7eb0df69aba44bf579f681b">_isReadable</a> = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;        <span class="comment">// Find a handle to the resource</span></div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;        HRSRC hR = FindResource(GetModuleHandle(NULL), resourceName.c_str(), RT_RCDATA);</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;        <span class="keywordflow">if</span> (!hR)</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;        {</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;            <span class="keywordflow">throw</span> <a class="code" href="classpvr_1_1_file_not_found_error.html">FileNotFoundError</a>(resourceName);</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;        }</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;        <span class="comment">// Get a global handle to the resource data, which allows us to query the data pointer</span></div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;        HGLOBAL hG = LoadResource(NULL, hR);</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;        <span class="keywordflow">if</span> (!hG)</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;        {</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;            <span class="keywordflow">throw</span> <a class="code" href="classpvr_1_1_file_not_found_error.html">FileNotFoundError</a>(resourceName);</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;        }</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;        <span class="comment">// Get the data pointer itself. NB: Does not actually lock anything.</span></div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;        <a class="code" href="classpvr_1_1_buffer_stream.html#aba2ac2694d051fe446002798c88c6644">_originalData</a> = LockResource(hG);</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;        <a class="code" href="classpvr_1_1_buffer_stream.html#af8a53be56d245a30e272bdf857d3ff91">_bufferSize</a> = SizeofResource(NULL, hR);</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    }</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;};</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;} <span class="comment">// namespace pvr</span></div>
-<div class="ttc" id="classpvr_1_1_buffer_stream_html_af8a53be56d245a30e272bdf857d3ff91"><div class="ttname"><a href="classpvr_1_1_buffer_stream.html#af8a53be56d245a30e272bdf857d3ff91">pvr::BufferStream::_bufferSize</a></div><div class="ttdeci">size_t _bufferSize</div><div class="ttdoc">The size of this stream. </div><div class="ttdef"><b>Definition:</b> BufferStream.h:237</div></div>
+<div class="line"><a name="l00023"></a><span class="lineno"><a class="line" href="classpvr_1_1_windows_resource_stream.html">   23</a></span>&#160;<span class="keyword">class </span><a class="code" href="classpvr_1_1_windows_resource_stream.html">WindowsResourceStream</a> : <span class="keyword">public</span> <a class="code" href="classpvr_1_1_buffer_stream.html">BufferStream</a></div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;{</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00028"></a><span class="lineno"><a class="line" href="classpvr_1_1_windows_resource_stream.html#a94163c7946846c40a6ca014613caff99">   28</a></span>&#160;    <a class="code" href="classpvr_1_1_windows_resource_stream.html#a94163c7946846c40a6ca014613caff99">WindowsResourceStream</a>(<span class="keyword">const</span> std::string&amp; resourceName) : <a class="code" href="classpvr_1_1_buffer_stream.html">BufferStream</a>(resourceName)</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    {</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;        <a class="code" href="classpvr_1_1_stream.html#abf116988b7eb0df69aba44bf579f681b">_isReadable</a> = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;        <span class="comment">// Find a handle to the resource</span></div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;        HRSRC hR = FindResource(GetModuleHandle(NULL), resourceName.c_str(), RT_RCDATA);</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;        <span class="keywordflow">if</span> (!hR)</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;        {</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;            <span class="keywordflow">throw</span> <a class="code" href="classpvr_1_1_file_not_found_error.html">FileNotFoundError</a>(resourceName);</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;        }</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;        <span class="comment">// Get a global handle to the resource data, which allows us to query the data pointer</span></div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;        HGLOBAL hG = LoadResource(NULL, hR);</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;        <span class="keywordflow">if</span> (!hG)</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;        {</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;            <span class="keywordflow">throw</span> <a class="code" href="classpvr_1_1_file_not_found_error.html">FileNotFoundError</a>(resourceName);</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;        }</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;        <span class="comment">// Get the data pointer itself. NB: Does not actually lock anything.</span></div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;        <a class="code" href="classpvr_1_1_buffer_stream.html#aba2ac2694d051fe446002798c88c6644">_originalData</a> = LockResource(hG);</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;        <a class="code" href="classpvr_1_1_buffer_stream.html#af8a53be56d245a30e272bdf857d3ff91">_bufferSize</a> = SizeofResource(NULL, hR);</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    }</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;};</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;} <span class="comment">// namespace pvr</span></div>
+<div class="ttc" id="_buffer_stream_8h_html"><div class="ttname"><a href="_buffer_stream_8h.html">BufferStream.h</a></div><div class="ttdoc">A Stream wrapping a block of memory. </div></div>
+<div class="ttc" id="classpvr_1_1_buffer_stream_html_af8a53be56d245a30e272bdf857d3ff91"><div class="ttname"><a href="classpvr_1_1_buffer_stream.html#af8a53be56d245a30e272bdf857d3ff91">pvr::BufferStream::_bufferSize</a></div><div class="ttdeci">size_t _bufferSize</div><div class="ttdoc">The size of this stream. </div><div class="ttdef"><b>Definition:</b> BufferStream.h:234</div></div>
 <div class="ttc" id="classpvr_1_1_buffer_stream_html"><div class="ttname"><a href="classpvr_1_1_buffer_stream.html">pvr::BufferStream</a></div><div class="ttdoc">This class is used to access a block of memory as a Stream.</div><div class="ttdef"><b>Definition:</b> BufferStream.h:13</div></div>
-<div class="ttc" id="classpvr_1_1_buffer_stream_html_aba2ac2694d051fe446002798c88c6644"><div class="ttname"><a href="classpvr_1_1_buffer_stream.html#aba2ac2694d051fe446002798c88c6644">pvr::BufferStream::_originalData</a></div><div class="ttdeci">const void * _originalData</div><div class="ttdoc">The original pointer of the memory this stream accesses. </div><div class="ttdef"><b>Definition:</b> BufferStream.h:235</div></div>
-<div class="ttc" id="classpvr_1_1_windows_resource_stream_html"><div class="ttname"><a href="classpvr_1_1_windows_resource_stream.html">pvr::WindowsResourceStream</a></div><div class="ttdoc">A Stream implementation that is used to access resources built in a MS Windows executable. </div><div class="ttdef"><b>Definition:</b> WindowsResourceStream.h:24</div></div>
-<div class="ttc" id="classpvr_1_1_file_not_found_error_html"><div class="ttname"><a href="classpvr_1_1_file_not_found_error.html">pvr::FileNotFoundError</a></div><div class="ttdoc">A simple std::runtime_error wrapper for throwing exceptions when file not found errors occur...</div><div class="ttdef"><b>Definition:</b> Stream.h:34</div></div>
-<div class="ttc" id="classpvr_1_1_windows_resource_stream_html_a94163c7946846c40a6ca014613caff99"><div class="ttname"><a href="classpvr_1_1_windows_resource_stream.html#a94163c7946846c40a6ca014613caff99">pvr::WindowsResourceStream::WindowsResourceStream</a></div><div class="ttdeci">WindowsResourceStream(const std::string &amp;resourceName)</div><div class="ttdoc">Constructor. Creates a new WindowsResourceStream from a Windows Embedded Resource.</div><div class="ttdef"><b>Definition:</b> WindowsResourceStream.h:29</div></div>
-<div class="ttc" id="classpvr_1_1_stream_html_abf116988b7eb0df69aba44bf579f681b"><div class="ttname"><a href="classpvr_1_1_stream.html#abf116988b7eb0df69aba44bf579f681b">pvr::Stream::_isReadable</a></div><div class="ttdeci">bool _isReadable</div><div class="ttdoc">True if the stream can be read</div><div class="ttdef"><b>Definition:</b> Stream.h:261</div></div>
+<div class="ttc" id="classpvr_1_1_buffer_stream_html_aba2ac2694d051fe446002798c88c6644"><div class="ttname"><a href="classpvr_1_1_buffer_stream.html#aba2ac2694d051fe446002798c88c6644">pvr::BufferStream::_originalData</a></div><div class="ttdeci">const void * _originalData</div><div class="ttdoc">The original pointer of the memory this stream accesses. </div><div class="ttdef"><b>Definition:</b> BufferStream.h:232</div></div>
+<div class="ttc" id="classpvr_1_1_windows_resource_stream_html"><div class="ttname"><a href="classpvr_1_1_windows_resource_stream.html">pvr::WindowsResourceStream</a></div><div class="ttdoc">A Stream implementation that is used to access resources built in a MS Windows executable.</div><div class="ttdef"><b>Definition:</b> WindowsResourceStream.h:23</div></div>
+<div class="ttc" id="classpvr_1_1_file_not_found_error_html"><div class="ttname"><a href="classpvr_1_1_file_not_found_error.html">pvr::FileNotFoundError</a></div><div class="ttdoc">A simple std::runtime_error wrapper for throwing exceptions when file not found errors occur...</div><div class="ttdef"><b>Definition:</b> Stream.h:54</div></div>
+<div class="ttc" id="classpvr_1_1_windows_resource_stream_html_a94163c7946846c40a6ca014613caff99"><div class="ttname"><a href="classpvr_1_1_windows_resource_stream.html#a94163c7946846c40a6ca014613caff99">pvr::WindowsResourceStream::WindowsResourceStream</a></div><div class="ttdeci">WindowsResourceStream(const std::string &amp;resourceName)</div><div class="ttdoc">Constructor. Creates a new WindowsResourceStream from a Windows Embedded Resource.</div><div class="ttdef"><b>Definition:</b> WindowsResourceStream.h:28</div></div>
+<div class="ttc" id="classpvr_1_1_stream_html_abf116988b7eb0df69aba44bf579f681b"><div class="ttname"><a href="classpvr_1_1_stream.html#abf116988b7eb0df69aba44bf579f681b">pvr::Stream::_isReadable</a></div><div class="ttdeci">bool _isReadable</div><div class="ttdoc">True if the stream can be read</div><div class="ttdef"><b>Definition:</b> Stream.h:278</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.4-->
 <!-- start footer part (NON TREEVIEW ONLY!!) -->

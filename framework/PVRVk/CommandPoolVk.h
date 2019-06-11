@@ -51,16 +51,50 @@ private:
 
 namespace impl {
 /// <summary>Vulkan implementation of the Command Pool class.
-/// Destroying the commandpool will also destroys the commandbuffers allocated from this pool
-/// </summary>
-class CommandPool_ : public EmbeddedRefCount<CommandPool_>, public DeviceObjectHandle<VkCommandPool>, public DeviceObjectDebugMarker<CommandPool_>
+/// Destroying the commandpool will also destroys the commandbuffers allocated from this pool</summary>
+class CommandPool_ : public PVRVkDeviceObjectBase<VkCommandPool, ObjectType::e_COMMAND_POOL>,
+					 public DeviceObjectDebugUtils<CommandPool_>,
+					 public std::enable_shared_from_this<CommandPool_>
 {
-	// Implementing EmbeddedRefCount
-	template<typename>
-	friend class ::pvrvk::EmbeddedRefCount;
+private:
+	friend class Device_;
+
+	class make_shared_enabler
+	{
+	protected:
+		make_shared_enabler() {}
+		friend class CommandPool_;
+	};
+
+	static CommandPool constructShared(const DeviceWeakPtr& device, const CommandPoolCreateInfo& createInfo)
+	{
+		return std::make_shared<CommandPool_>(make_shared_enabler{}, device, createInfo);
+	}
+
+	/// <summary>Creation information used when creating the command pool.</summary>
+	CommandPoolCreateInfo _createInfo;
 
 public:
+	//!\cond NO_DOXYGEN
 	DECLARE_NO_COPY_SEMANTICS(CommandPool_)
+	CommandPool_(make_shared_enabler, const DeviceWeakPtr& device, const CommandPoolCreateInfo& createInfo);
+
+	~CommandPool_()
+	{
+		if (getVkHandle() != VK_NULL_HANDLE)
+		{
+			if (!_device.expired())
+			{
+				getDevice()->getVkBindings().vkDestroyCommandPool(getDevice()->getVkHandle(), getVkHandle(), nullptr);
+				_vkHandle = VK_NULL_HANDLE;
+			}
+			else
+			{
+				reportDestroyedAfterDevice();
+			}
+		}
+	}
+	//!\endcond
 
 	/// <summary>Allocate a primary commandBuffer</summary>
 	/// <returns>Return a valid commandbuffer if allocation is successful, otherwise a null CommandBuffer</returns>
@@ -97,32 +131,6 @@ public:
 	/// <param name="flags">VkCommandPoolResetFlags controls the reset operation</param>
 	/// <returns>Return true if success</returns>
 	void reset(pvrvk::CommandPoolResetFlags flags);
-
-private:
-	friend class ::pvrvk::impl::Device_;
-
-	CommandPool_(const DeviceWeakPtr& device, const CommandPoolCreateInfo& createInfo);
-
-	/* IMPLEMENTING EmbeddedResource */
-	void destroyObject()
-	{
-		if (getVkHandle() != VK_NULL_HANDLE)
-		{
-			if (_device.isValid())
-			{
-				_device->getVkBindings().vkDestroyCommandPool(_device->getVkHandle(), getVkHandle(), nullptr);
-				_vkHandle = VK_NULL_HANDLE;
-				_device.reset();
-			}
-			else
-			{
-				reportDestroyedAfterDevice("CommandPool");
-			}
-		}
-	}
-
-	/// <summary>Creation information used when creating the command pool.</summary>
-	CommandPoolCreateInfo _createInfo;
 };
 } // namespace impl
 } // namespace pvrvk

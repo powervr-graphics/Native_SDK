@@ -2,6 +2,7 @@ var searchData=
 [
   ['makepoweroftwohigh',['makePowerOfTwoHigh',['../namespacepvr_1_1math.html#afa79fff0c4934d5ab39edb53695ee3d4',1,'pvr::math']]],
   ['makepoweroftwolow',['makePowerOfTwoLow',['../namespacepvr_1_1math.html#aeb17baa9649bd59237e2e04eb588c5fb',1,'pvr::math']]],
+  ['maplegacyenumtonewformat',['mapLegacyEnumToNewFormat',['../classpvr_1_1asset_readers_1_1_texture_reader_p_v_r.html#a0b85abcc94231bf1ec0d3d44a0076cc0',1,'pvr::assetReaders::TextureReaderPVR']]],
   ['memcopy',['memCopy',['../namespacepvr_1_1utils.html#ad1d2042ec2af243eaf4bcce0a06d6e5e',1,'pvr::utils']]],
   ['memcopyfromvolatile',['memCopyFromVolatile',['../namespacepvr_1_1utils.html#a5cc463ddc39c05eec129ff4264710314',1,'pvr::utils']]],
   ['memcopytovolatile',['memCopyToVolatile',['../namespacepvr_1_1utils.html#ac847f23ce66e96bbbb645d41e9bc54da',1,'pvr::utils']]],

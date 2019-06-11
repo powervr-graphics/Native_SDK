@@ -10,26 +10,31 @@
 namespace pvr {
 namespace assets {
 /// <summary>Represents an Animation that can be applied to different objects.</summary>
-
 struct KeyFrameData
 {
+	/// <summary>Specifies the type of interpolation to use between neighbouring frames of animation data.</summary>
 	enum struct InterpolationType : uint32_t
 	{
 		Step = 0,
 		Linear = 1,
 		CubicSpline = 2,
-
 	};
 
+	/// <summary>The time in seconds at which the key frame takes plcae.</summary>
 	std::vector<float> timeInSeconds;
-	// At Most One of the following is present
+	/// <summary>Scaling matrix.</summary>
 	std::vector<glm::vec3> scale;
+	/// <summary>Rotation matrix.</summary>
 	std::vector<glm::quat> rotate;
+	/// <summary>Translation matrix.</summary>
 	std::vector<glm::vec3> translation;
-	std::vector<glm::mat4> mat4; // ONLY USED IN POD
-	InterpolationType interpolation;
+	/// <summary>Matrix data - note that this is only currently used by POD.</summary>
+	std::vector<glm::mat4> mat4;
+	/// <summary>The interpolation used.</summary>
+	InterpolationType interpolation = InterpolationType::Step;
 };
 
+/// <summary>Specifies animation data.</summary>
 class AnimationData
 {
 public:
@@ -39,7 +44,7 @@ public:
 		// Since the size is shared by all of those items, we are eschewing the use of vectors in order to save the extra space of size and capacity.
 		uint32_t flags; //!< Stores which animation arrays are stored
 
-		// Indices: If you will have loads of repeated values
+		// Indices: If you will have loads of repeated value
 		std::vector<uint32_t> positionIndices; //!< Index to positions
 		std::vector<uint32_t> rotationIndices; //!< Index to rotations
 		std::vector<uint32_t> scaleIndices; //!< Index to scales
@@ -47,53 +52,67 @@ public:
 
 		uint32_t numFrames; //!< The number of frames of animation
 
-		std::string animationName;
+		std::string animationName; //!< The name of the animation
 
-		std::vector<float> timeInSeconds;
+		std::vector<float> timeInSeconds; //!< The time is seconds at which the animation occurs
 
-		// Key Frame animation
-		std::vector<KeyFrameData> keyFrames;
+		std::vector<KeyFrameData> keyFrames; //!< Specifies key frame animation data
 
-		// total durration time of this animation
-		float durationTime;
+		float durationTime; //!< Total durration time of this animation
 
 		/// <summary>Constructor. Initializing.</summary>
 		InternalData() : flags(0), numFrames(0), durationTime(0.0f) {}
 	};
 
 public:
+	/// <summary>Constructor..</summary>
 	AnimationData() : _cacheF1(0), _cacheF2(1) {}
 
-	void setAnimationName(const char* animationName)
+	/// <summary>Setter for the name of the animation.</summary>
+	/// <param name="animationName">The name of the animation</param>
+	void setAnimationName(const std::string& animationName)
 	{
 		_data.animationName = animationName;
 	}
 
+	/// <summary>Getter for the name of the animation.</summary>
+	/// <returns>The name of the animation</returns>
 	const std::string& getAnimationName() const
 	{
 		return _data.animationName;
 	}
 
+	/// <summary>Getter for the number of key frames.</summary>
+	/// <returns>The number of key frames</returns>
 	size_t getNumKeyFrames() const
 	{
 		return _data.keyFrames.size();
 	}
 
+	/// <summary>Allocates a number of key frames.</summary>
+	/// <param name="keyFrames">The number of key frames to allocate</param>
 	void allocateKeyFrames(uint32_t keyFrames)
 	{
 		_data.keyFrames.resize(keyFrames);
 	}
 
+	/// <summary>Getter animation data for a specified key frame.</summary>
+	/// <param name="index">The key frames for which to retrieve animation data</param>
+	/// <returns>The key frame data for the given frame</returns>
 	KeyFrameData& getAnimationData(uint32_t index)
 	{
 		return _data.keyFrames[index];
 	}
 
+	/// <summary>Getter for the total time taken for the animation in seconds</summary>
+	/// <returns>The total time in seconds taken for the animation in seconds</returns>
 	float getTotalTimeInSec()
 	{
 		return _data.durationTime;
 	}
 
+	/// <summary>Getter for the total time taken for the animation in milli seconds</summary>
+	/// <returns>The total time in seconds taken for the animation in milli seconds</returns>
 	float getTotalTimeInMs()
 	{
 		return getTotalTimeInSec() * 1000.f;
@@ -155,8 +174,7 @@ public:
 	/// <param name="data">The position data that will be copied. Must be packed floats, each successive 3 of which
 	/// will be interpreted as x,y,z values.</param>
 	/// <param name="indices">If this array is not NULL, the position data will be indexed. Default NULL.</param>
-	/// <returns>True on success, false if passing the wrong amount of data for the number of frames in the animation
-	/// </returns>
+	/// <returns>True on success, false if passing the wrong amount of data for the number of frames in the animation</returns>
 	void setPositions(uint32_t numFrames, const float* data,
 		const uint32_t* indices = nullptr); // Expects an array of 3 floats
 
@@ -165,8 +183,7 @@ public:
 	/// <param name="data">The rotation data that will be copied. Must be packed floats, each successive 4 of which
 	/// will be interpreted as x,y,z,w quaternion values.</param>
 	/// <param name="indices">If this array is not NULL, the position data will be indexed. Default NULL.</param>
-	/// <returns>True on success, false if passing the wrong amount of data for the number of frames in the animation
-	/// </returns>
+	/// <returns>True on success, false if passing the wrong amount of data for the number of frames in the animation</returns>
 	void setRotations(uint32_t numFrames, const float* const data,
 		const uint32_t* const indices = nullptr); // Expects an array of 4 floats
 
@@ -175,8 +192,7 @@ public:
 	/// <param name="data">The rotation data that will be copied. Must be packed floats, each successive 3 of which
 	/// will be interpreted as x,y,z scale factors</param>
 	/// <param name="indices">If this array is not NULL, the position data will be indexed. Default NULL.</param>
-	/// <returns>True on success, false if passing the wrong amount of data for the number of frames in the animation
-	/// </returns>
+	/// <returns>True on success, false if passing the wrong amount of data for the number of frames in the animation</returns>
 	void setScales(uint32_t numFrames, const float* const data,
 		const uint32_t* const indices = nullptr); // Expects an array of 7 floats
 
@@ -186,13 +202,11 @@ public:
 	/// successive 16 of which will be interpreted as a matrix packed in the usual way (Column-major, with each column
 	/// of the matrix stored successively in</param>
 	/// <param name="indices">If this array is not NULL, the position data will be indexed. Default NULL.</param>
-	/// <returns>True on success, false if passing the wrong amount of data for the number of frames in the animation
-	/// </returns>
+	/// <returns>True on success, false if passing the wrong amount of data for the number of frames in the animation</returns>
 	void setMatrices(uint32_t numFrames, const float* const data,
 		const uint32_t* const indices = nullptr); // Expects an array of 16 floats
 
-	/// <summary>Gets a direct, modifiable pointer to the data representation of this object. Advanced tasks only.
-	/// </summary>
+	/// <summary>Gets a direct, modifiable pointer to the data representation of this object. Advanced tasks only.</summary>
 	/// <returns>A pointer to the internal structure of this object</returns>
 	InternalData& getInternalData(); // If you know what you're doing
 
@@ -202,32 +216,43 @@ private:
 	uint32_t _cacheF1, _cacheF2;
 };
 
+/// <summary>A specific instance of an animation.</summary>
 struct AnimationInstance
 {
+	/// <summary>Key frame channels.</summary>
 	struct KeyframeChannel
 	{
-		std::vector<void*> nodes;
-		// keyframe (Scale/ Rotate/ Translate)
-		uint32_t keyFrame;
+		std::vector<void*> nodes; //!< Nodes of the animation
+
+		uint32_t keyFrame; //!< keyframe (Scale/ Rotate/ Translate)
+
+		/// <summary>Constructor.</summary>
 		KeyframeChannel() : keyFrame(0) {}
 	};
 
-	// the animation data
-	class AnimationData* animationData;
-	std::vector<KeyframeChannel> keyframeChannels;
+	class AnimationData* animationData; //!< Animation data
+	std::vector<KeyframeChannel> keyframeChannels; //!< Key frame data
 
 public:
-	AnimationInstance() {}
+	/// <summary>Constructor.</summary>
+	AnimationInstance() : animationData(nullptr) {}
+
+	/// <summary>Retrieves the time in milli seconds at which the animation will occur.</summary>
+	/// <returns>The time in milli seconds at which the animation will occur</returns>
 	float getTotalTimeInMs() const
 	{
 		return animationData->getTotalTimeInMs();
 	}
+
+	/// <summary>Retrieves the time in seconds at which the animation will occur.</summary>
+	/// <returns>The time in seconds at which the animation will occur</returns>
 	float getTotalTimeInSec() const
 	{
 		return animationData->getTotalTimeInSec();
 	}
 
-	/// <summary> update animation </summary>
+	/// <summary>update animation</summary>
+	/// <param name="timeInMs">The time in milli seconds to set for the animation</param>
 	void updateAnimation(float timeInMs);
 };
 

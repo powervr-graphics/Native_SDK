@@ -42,11 +42,13 @@ public:
 	virtual bool isopen() const;
 	virtual size_t getPosition() const;
 	virtual size_t getSize() const;
-        
-        AAssetManager* getAndroidAssetManager()
-        {
-            return assetManager;
-        }
+    
+	/// <summary>Retrieves the current android asset manager</summary>
+	/// <returns>The current android asset manager</returns>
+	AAssetManager* getAndroidAssetManager()
+	{
+		return assetManager;
+	}
 
 private:
 	AAssetManager* const assetManager;

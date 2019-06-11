@@ -73,142 +73,56 @@
           <div class="body" role="main">
             
   <div class="figure">
-<img alt="../images/WelcomeGraphic.png" src="../images/WelcomeGraphic.png" />
+<img alt="_images/WelcomeGraphic.png" src="_images/WelcomeGraphic.png" />
 </div>
 <div class="section" id="the-powervr-sdk">
 <h1>The PowerVR SDK<a class="headerlink" href="#the-powervr-sdk" title="Permalink to this headline">¶</a></h1>
 <p>The PowerVR SDK is an open source codebase to help with the development of graphics applications for PowerVR and other platforms.
 It consists of two main parts: the Framework, and our examples.</p>
-<p>The Framework is a collection of libraries that aim to make development of OpenGL ES and Vulkan real-time applications much easier, by removing boilerplate code and enhancing productivity. It can be considered to be the lowest-level parts of a graphics engine - the main loop, platform abstraction, and graphical utilities. There are some
-experimental examples of how it is possible to build an actual engine on top of the Framework.</p>
-<p>The Framework exists to make the uninteresting bits smaller, or even make them disappear, with as little boilerplate as possible. This allows more focus on the graphics API calls for drawing something on the screen.</p>
+<p>The Framework is a collection of libraries that aim to make development of OpenGL ES and Vulkan real-time applications much easier, by removing boilerplate code and enhancing productivity. It can be considered to be the lowest-level parts of a graphics engine - the main loop, platform abstraction, and graphical utilities. There are even a couple of
+experimental examples showing how it is possible to build a pseudo-engine on top of the Vulkan Framework using our PVRPfx library.</p>
+<p>The Framework exists to make the sections of uninteresting or boilerplate code smaller, or even make them disappear. This allows more of the focus to be on the key graphics API calls for drawing something on the screen.</p>
 <p>The examples themselves are mostly code samples intended to:</p>
 <ul class="simple">
 <li>Show the basics of OpenGL and Vulkan, with the HelloAPI and IntroducingPVRShell examples.</li>
-<li>Demonstrate optimal implementations for techniques relevant for PowerVR, such as our DeferredShading with Pixel Local Storage/transient attachments, or our Gaussian Blur using Sliding Average compute shader for reducing bandwidth.</li>
-<li>Demonstrate how to use important extensions that may improve performance, such as IMGFramebufferDownsample and IMGTextureFilterCubic.</li>
+<li>Demonstrate optimal implementations for techniques relevant for PowerVR, such as our DeferredShading with Pixel Local Storage/transient attachments, or our Gaussian Blur using a Sliding Average compute shader for reducing bandwidth.</li>
+<li>Demonstrate how to use important extensions that may improve performance, PowerVR specific or otherwise, such as IMGFramebufferDownsample and IMGTextureFilterCubic.</li>
 </ul>
 <p>The examples are built on top of the Framework, and optimised so that only the relevant code is left.</p>
-<p>PVRVFrame provides a set of emulation libraries for Windows, macOS, and Linux.</p>
-<p>Developers can interact with our online Community at <a class="reference external" href="https://www.imgtec.com/developers/">www.imgtec.com/developers</a>. Visit
-our <a class="reference external" href="./Contact.html">Contact</a> page for further details on how to get in touch with us.</p>
-<div class="section" id="release-notes">
-<h2>Release notes<a class="headerlink" href="#release-notes" title="Permalink to this headline">¶</a></h2>
-<p>For the latest version of the Release Notes detailing what has changed in this release, please visit <a class="reference external" href="https://www.imgtec.com/developers/powervr-sdk-tools/whats-new/">Release Notes</a>.</p>
+<p>Developers can interact with our online Community at <a class="reference external" href="https://www.imgtec.com/developers/">www.imgtec.com/developers</a>.</p>
+<div class="section" id="graphics-drivers">
+<h2>Graphics Drivers<a class="headerlink" href="#graphics-drivers" title="Permalink to this headline">¶</a></h2>
+<p>The PowerVR SDK does not provide OpenGL ES or Vulkan API system libraries. Please ask the platform provider for these libraries if they are not present.
+PVRVFrame is provided for platforms without native support for OpenGL ES but where OpenGL is supported.</p>
 </div>
 <div class="section" id="building">
 <h2>Building<a class="headerlink" href="#building" title="Permalink to this headline">¶</a></h2>
-<p>The PowerVR SDK uses CMake for building for any platform, and additionally Gradle for Android.
-Navigate to the root of the SDK or any example, and run CMake from a created folder.
-For Android, navigate to the <code class="docutils literal notranslate"><span class="pre">build-android</span></code> folder of the item to build, and use Gradle.</p>
+<p>The PowerVR SDK uses CMake for building for any platform, and additionally uses Gradle when building for Android.
+To build the SDK navigate to the root of the SDK or alternatively to the root folder for any example, create a cmake binary directory, and run CMake from this created folder.
+For Android, navigate to the <code class="docutils literal notranslate"><span class="pre">build-android</span></code> folder of the item to build, and run the platform specific Gradle wrapper script provided (gradlew.bat/gradlew.sh).</p>
 <p>For detailed instructions for building the SDK, see <a class="reference external" href="Build.html">here</a>.</p>
 </div>
-<div class="section" id="platform-setup">
-<h2>Platform setup<a class="headerlink" href="#platform-setup" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="android">
-<h3>Android<a class="headerlink" href="#android" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="pvrvframe">
+<h2>PVRVFrame<a class="headerlink" href="#pvrvframe" title="Permalink to this headline">¶</a></h2>
+<p>PVRVFrame is included as part of the PowerVR SDK and provides a set of desktop emulation libraries for OpenGL ES wrapping desktop OpenGL allowing deployment of OpenGL ES applications on desktop Windows, macOS, and Linux which can help to speed up development times and improve productivity.
+<strong>*Note:</strong> As  PVRVFrame provides an OpenGL ES wrapper for desktop OpenGL performance and capabilities depend on the 3D acceleration present in the system.
+<strong>*Note:</strong> The PVRVFrame libraries are not intended to be a completely accurate replication of the behaviour of PowerVR hardware.</p>
 <ul class="simple">
-<li>Install the Android SDK</li>
-<li><dl class="first docutils">
-<dt>Through the Android SDK Manager, either via Android Studio or command-line SDK manager, install the following packages:</dt>
-<dd><ul class="first last">
-<li>Android NDK bundle</li>
-<li>Android 26 platform - this is the build version used</li>
-<li>CMake</li>
-<li>LLDB - for on-device debugging</li>
+<li>The PVRVFrame libraries can be found pre-installed in the <code class="docutils literal notranslate"><span class="pre">[path-to-sdk]/libs</span></code> folder.</li>
+<li>If the SDK was installed using the PowerVR SDK installer, the PVRVFrame emulation libraries may already be present in the PATH environment variable if this was requested during installation.</li>
+<li>Otherwise, the PVRVFrame libraries can be manually added to the PATH or can be copied to a DLL-accessible directory prior to running the SDK applications - This may be anywhere in the path, next to the executable, system default folders etc.</li>
 </ul>
-</dd>
-</dl>
-</li>
-<li>If using Android Studio, it will prompt for any missing packages when attempting to build.</li>
-<li>The Gradle build scripts can be found in the <code class="docutils literal notranslate"><span class="pre">[path-to-sdk]/build-android</span></code> folder, and in each example’s corresponding <code class="docutils literal notranslate"><span class="pre">build-android</span></code> folder.</li>
-<li>To build from Android Studio, use the <code class="docutils literal notranslate"><span class="pre">Import</span> <span class="pre">project</span></code> dialog, and select the corresponding <code class="docutils literal notranslate"><span class="pre">build-android</span></code> the first time a solution is opened.</li>
-<li>To build from the command-line, navigate to the <code class="docutils literal notranslate"><span class="pre">build-android</span></code> folder and run <code class="docutils literal notranslate"><span class="pre">gradlew</span> <span class="pre">assemble[Debug/Release]</span></code></li>
-</ul>
-<p>For detailed build instructions, see <a class="reference external" href="Build.html">here</a>.</p>
-</div>
-<div class="section" id="ios">
-<h3>iOS<a class="headerlink" href="#ios" title="Permalink to this headline">¶</a></h3>
+<p><strong>*Note:</strong> To install PVRVFrame system-wide on Windows and run both 32 and 64-bit builds using the PVRVFrame libraries, copy the 64-bit version to <code class="docutils literal notranslate"><span class="pre">%windir%\System32</span></code> and the 32-bit version to <code class="docutils literal notranslate"><span class="pre">%windir%\SysWOW64</span></code> so that they are automatically selected by the corresponding applications. Otherwise, it may be necessary to manually modify the path based on which architecture needs to be run. For instance, if the 32-bit libraries are in the PATH, 64-bit applications cannot be run and vice versa.</p>
+<p>The PVRVFrame library filenames are:</p>
 <ul class="simple">
-<li>Download a version of Apple’s iOS SDK from <a class="reference external" href="http://developer.apple.com/ios/">http://developer.apple.com/ios/</a>. It is necessary to become a member of Apple’s developer program in order to access this page. Details of how to join can be found at <a class="reference external" href="http://developer.apple.com">http://developer.apple.com</a>.</li>
-<li>Install the Apple SDK on the Mac as specified by Apple’s instructions. This will include Xcode and any other development tools required.</li>
-<li>To build for an iOS device, a valid Apple developer certificate is required in the machine’s keychain. The <code class="docutils literal notranslate"><span class="pre">Properties</span> <span class="pre">|</span> <span class="pre">Identifier</span></code> property may need to be changed from <code class="docutils literal notranslate"><span class="pre">Project</span> <span class="pre">|</span> <span class="pre">Edit</span> <span class="pre">Active</span> <span class="pre">Target...</span></code> to match what was set up through Apple’s Program Portal.</li>
-<li>If you do not have a developer certificate from Apple, then it is still possible to build and launch applications in the iOS Simulator. Choose this configuration from the dropdown menu at the top left and then choose Build and Run from the dropdown menu.</li>
-<li>Extract the PowerVR SDK to a local location.</li>
-<li>Install CMake.</li>
-<li>Run CMake and use the corresponding projects. See the detailed build instructions.</li>
-</ul>
-<p><strong>*Note:</strong> The Scheme being built under may need to be set up for the SDK’s projects to run.</p>
-<p>For detailed build instructions, see <a class="reference external" href="Build.html">here</a>.</p>
-</div>
-<div class="section" id="windows">
-<h3>Windows<a class="headerlink" href="#windows" title="Permalink to this headline">¶</a></h3>
-<p><strong>*Note:</strong> PVRVFrame is not intended to be a completely
-accurate replication of the behaviour of PowerVR hardware. These libraries are
-a wrapper around desktop OpenGL ES, so performance and capabilities will
-depend on the 3D acceleration present in the system.</p>
-<ul class="simple">
-<li>Install the PowerVR SDK on the machine in the required location.</li>
-<li>If the SDK was installed with the installer, the PVRVFrame emulation libraries will already be in the PATH environment variable.</li>
-<li>Otherwise, manually add the PVRVFrame libraries to the path. Depending on the type of package, they may be pre-installed in the <code class="docutils literal notranslate"><span class="pre">[path-to-sdk]/libs</span></code> folder</li>
-<li>Run CMake to generate the project files and run the corresponding projects.</li>
-</ul>
-<p><strong>*Note:</strong> If the installer has not added the PVRVFrame directory to the PATH environment variable, copy the PVRVFrame emulation
-libraries to a DLL-accessible directory prior to running the SDK applications. This may be anywhere in the path, next to the executable, or in the Windows default folders.</p>
-<p>To install system-wide and run both 32 and 64-bit builds using the PVRVFrame libraries, copy the 64-bit version to <code class="docutils literal notranslate"><span class="pre">%windir%\System32</span></code> and the 32-bit version to <code class="docutils literal notranslate"><span class="pre">%windir%\SysWOW64</span></code> so that they are automatically selected by the corresponding applications. Otherwise, it may be necessary to manually modify the path based on which architecture needs to be run. For instance, if the 32-bit libraries are in the PATH, 64-bit applications cannot be run and vice versa.</p>
-<p>The driver filenames are:</p>
-<ul class="simple">
-<li><code class="docutils literal notranslate"><span class="pre">libEGL.dll</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">libEGL.dll</span></code>     (EGL)</li>
 <li><code class="docutils literal notranslate"><span class="pre">libGLES_CM.dll</span></code> (OpenGL ES 1.x)</li>
-<li><code class="docutils literal notranslate"><span class="pre">libGLESv2.dll</span></code> (OpenGL ES 2.0 and 3.x)</li>
+<li><code class="docutils literal notranslate"><span class="pre">libGLESv2.dll</span></code>  (OpenGL ES 2.0 and 3.x)</li>
 </ul>
-<p>For detailed build instructions, see <a class="reference external" href="Build.html">here</a>.</p>
 </div>
-</div>
-<div class="section" id="linux">
-<h2>Linux<a class="headerlink" href="#linux" title="Permalink to this headline">¶</a></h2>
-<p><strong>*Note:</strong> API libraries are not distributed with the PowerVR Graphics
-SDK for Linux. Please ask the platform provider for these libraries if
-they are not present. It will also be necessary to install the latest platform
-toolchain on the development machine for the target platform.</p>
-<ul class="simple">
-<li>Ensure the corresponding libraries to build are present. These may include X11 packages, Wayland packages, libc++, and other libraries depending on the build configuration.</li>
-<li>For on-device compiling, it is usually enough to run CMake.</li>
-<li><dl class="first docutils">
-<dt>For cross-compilation, use a CMake toolchain provided in <code class="docutils literal notranslate"><span class="pre">[path-to-sdk]/cmake/toolchains</span></code>. The following architectures are supported:</dt>
-<dd><ul class="first last">
-<li>armv7</li>
-<li>armv7hf</li>
-<li>armv8</li>
-<li>mips_32</li>
-<li>mips_64</li>
-<li>x86_32</li>
-<li>x86_64</li>
-</ul>
-</dd>
-</dl>
-</li>
-<li>Remember to pass the windowing system in the CMake command-line: <code class="docutils literal notranslate"><span class="pre">-DWS=[X11,</span> <span class="pre">Wayland,</span> <span class="pre">NullWS...]</span></code></li>
-<li>Run <code class="docutils literal notranslate"><span class="pre">cmake</span> <span class="pre">[path-to-sdk</span> <span class="pre">or</span> <span class="pre">path-to-example]</span> <span class="pre">[WS=...]</span> <span class="pre">[TOOLCHAIN=...]</span></code></li>
-</ul>
-<p>To run an executable on a desktop development machine:</p>
-<ul class="simple">
-<li>Run the binary as normal. X11 and Wayland binaries should be run from within the corresponding windowing system.</li>
-</ul>
-<p>To run an executable on a PowerVR device:</p>
-<ul class="simple">
-<li>Ensure that the PowerVR drivers are installed on the target device. Please refer to the DDK/driver installation instructions.</li>
-<li>Ensure any libraries being used are installed on the target device. For example: libc, libc++, or libdl.</li>
-<li>Ensure the drivers are running by typing  <code class="docutils literal notranslate"><span class="pre">/etc/init.d/rc/pvr</span> <span class="pre">start</span></code> then running an X session if required.</li>
-<li>Run the binary. Several options can be passed, pass the <code class="docutils literal notranslate"><span class="pre">-help</span></code> parameter to show command-line options.
-For example, X11 window sizes can be specified for the executables using the command-line arguments <code class="docutils literal notranslate"><span class="pre">-posx=n</span></code>
-and <code class="docutils literal notranslate"><span class="pre">-posy=n</span></code> to define the top right hand corner. <code class="docutils literal notranslate"><span class="pre">-width=n</span></code> and <code class="docutils literal notranslate"><span class="pre">-height=n</span></code> are used to define width and height, respectively.</li>
-<li>If an SDK example fails to run with the message:
-“Can’t open display” produced by the X client, then ensure that
-the DISPLAY variable is set with the shell command: “<code class="docutils literal notranslate"><span class="pre">set</span> <span class="pre">\|</span> <span class="pre">grep</span> <span class="pre">-e</span>
-<span class="pre">DISPLAY</span></code>”. If this command does not yield any output then type in
-shell: “<code class="docutils literal notranslate"><span class="pre">DISPLAY=:0.0;</span> <span class="pre">export</span> <span class="pre">DISPLAY</span></code>”</li>
-</ul>
+<div class="section" id="release-notes">
+<h2>Release notes<a class="headerlink" href="#release-notes" title="Permalink to this headline">¶</a></h2>
+<p>For the latest version of the Release Notes detailing what has changed in this release, please visit <a class="reference external" href="https://www.imgtec.com/developers/powervr-sdk-tools/whats-new/">Release Notes</a>.</p>
 </div>
 </div>
 

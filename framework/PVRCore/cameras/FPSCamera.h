@@ -1,6 +1,6 @@
 /*!
 \brief A class representing a First person camera and functionality to manipulate it.
-\file PVRCore/FPSCamera.h
+\file PVRCore/cameras/FPSCamera.h
 \author PowerVR by Imagination, Developer Technology Team
 \copyright Copyright (c) Imagination Technologies Limited.
 */

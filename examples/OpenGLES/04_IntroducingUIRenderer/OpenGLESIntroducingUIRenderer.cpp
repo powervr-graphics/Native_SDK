@@ -418,16 +418,7 @@ void OpenGLESIntroducingUIRenderer::updateCentralText(uint64_t currentTime)
 {
 	glm::mat4 mProjection = glm::mat4(1.0f);
 
-	if (isScreenRotated())
-	{
-		mProjection = pvr::math::perspectiveFov(
-			pvr::Api::OpenGLES31, 0.7f, static_cast<float>(_uiRenderer.getRenderingDimY()), static_cast<float>(_uiRenderer.getRenderingDimX()), 1.0f, 2000.0f);
-	}
-	else
-	{
-		mProjection = pvr::math::perspectiveFov(
-			pvr::Api::OpenGLES31, 0.7f, static_cast<float>(_uiRenderer.getRenderingDimX()), static_cast<float>(_uiRenderer.getRenderingDimY()), 1.0f, 2000.0f);
-	}
+	mProjection = pvr::math::perspectiveFov( pvr::Api::OpenGLES31, 0.7f, static_cast<float>(_uiRenderer.getRenderingDimX()), static_cast<float>(_uiRenderer.getRenderingDimY()), 1.0f, 2000.0f);
 
 	const glm::mat4 mCamera = glm::lookAt(glm::vec3(_uiRenderer.getRenderingDimX() * .5f, -_uiRenderer.getRenderingDimY(), 700.0f),
 		glm::vec3(_uiRenderer.getRenderingDimX() * .5f, 0, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));

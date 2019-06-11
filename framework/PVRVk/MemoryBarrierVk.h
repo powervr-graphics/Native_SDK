@@ -57,8 +57,7 @@ public:
 };
 
 /// <summary>A Buffer memory barrier used only for memory accesses involving a specific range of the specified
-/// buffer object. It is also used to transfer ownership of an buffer range from one queue family to another.
-/// </summary>
+/// buffer object. It is also used to transfer ownership of an buffer range from one queue family to another.</summary>
 struct BufferMemoryBarrier
 {
 private:
@@ -248,7 +247,7 @@ public:
 	{
 		return srcQueueFamilyIndex;
 	}
-	/// <summary>Set the source queue family index </summary>
+	/// <summary>Set the source queue family index</summary>
 	/// <param name="srcQueueFamilyIndex">The source queue family index of the image associated with the memory barrier</param>
 	inline void setSrcQueueFamilyIndex(uint32_t srcQueueFamilyIndex)
 	{
@@ -261,7 +260,7 @@ public:
 	{
 		return dstQueueFamilyIndex;
 	}
-	/// <summary>Set the destination queue family index </summary>
+	/// <summary>Set the destination queue family index</summary>
 	/// <param name="dstQueueFamilyIndex">The destination queue family index of the image associated with the memory barrier</param>
 	inline void setDstQueueFamilyIndex(uint32_t dstQueueFamilyIndex)
 	{
@@ -297,11 +296,11 @@ public:
 
 /// <summary>A memory barrier into the command stream. Used to signify that some types of pending operations
 /// from before the barrier must have finished before the commands after the barrier start executing.</summary>
-class MemoryBarrierSet
+struct MemoryBarrierSet
 {
 private:
-	MemoryBarrierSet(const MemoryBarrierSet&); // deleted
-	MemoryBarrierSet& operator=(const MemoryBarrierSet&); // deleted
+	MemoryBarrierSet(const MemoryBarrierSet&) = delete; // deleted
+	MemoryBarrierSet& operator=(const MemoryBarrierSet&) = delete; // deleted
 
 	std::vector<MemoryBarrier> memBarriers;
 	std::vector<ImageMemoryBarrier> imageBarriers;
@@ -309,7 +308,7 @@ private:
 
 public:
 	/// <summary>Constructor. Empty barrier</summary>
-	MemoryBarrierSet() {}
+	MemoryBarrierSet() = default;
 
 	/// <summary>Clear this object of all barriers</summary>
 	/// <returns>MemoryBarrierSet&</returns>
@@ -350,7 +349,7 @@ public:
 	/// <returns>This object (allow chained calls)</returns>
 	MemoryBarrierSet& addBarrier(MemoryBarrier barrier)
 	{
-		memBarriers.push_back(barrier);
+		memBarriers.emplace_back(barrier);
 		return *this;
 	}
 
@@ -360,7 +359,7 @@ public:
 	/// <returns>This object (allow chained calls)</returns>
 	MemoryBarrierSet& addBarrier(const BufferMemoryBarrier& barrier)
 	{
-		bufferBarriers.push_back(barrier);
+		bufferBarriers.emplace_back(barrier);
 		return *this;
 	}
 
@@ -370,7 +369,7 @@ public:
 	/// <returns>This object (allow chained calls)</returns>
 	MemoryBarrierSet& addBarrier(const ImageMemoryBarrier& barrier)
 	{
-		imageBarriers.push_back(barrier);
+		imageBarriers.emplace_back(barrier);
 		return *this;
 	}
 

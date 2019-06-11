@@ -37,7 +37,7 @@ void Queue_::submit(const SubmitInfo* queueSubmitInfo, uint32_t numSubmitInfos, 
 	{
 		const SubmitInfo& submitInfo = queueSubmitInfo[i];
 		vkSubmitInfos[i].sType = static_cast<VkStructureType>(StructureType::e_SUBMIT_INFO);
-		vkSubmitInfos[i].pWaitDstStageMask = (VkPipelineStageFlags*)submitInfo.waitDestStages;
+		vkSubmitInfos[i].pWaitDstStageMask = (VkPipelineStageFlags*)submitInfo.waitDstStageMask;
 
 		vkSubmitInfos[i].commandBufferCount = submitInfo.numCommandBuffers;
 		if (submitInfo.numCommandBuffers > 0)
@@ -92,7 +92,7 @@ void Queue_::submit(const SubmitInfo* queueSubmitInfo, uint32_t numSubmitInfos, 
 		currentSemaphoreIndex += submitInfo.numWaitSemaphores;
 	}
 
-	vkThrowIfFailed(_device->getVkBindings().vkQueueSubmit(getVkHandle(), numSubmitInfos, vkSubmitInfos.get(), (signalFence.isValid() ? signalFence->getVkHandle() : VK_NULL_HANDLE)),
+	vkThrowIfFailed(getDevice()->getVkBindings().vkQueueSubmit(getVkHandle(), numSubmitInfos, vkSubmitInfos.get(), (signalFence ? signalFence->getVkHandle() : VK_NULL_HANDLE)),
 		"VkQueueSubmit failed");
 }
 
@@ -123,12 +123,12 @@ void Queue_::present(PresentInfo& presentInfo, Result* const results)
 	presentInfoVk.waitSemaphoreCount = presentInfo.numWaitSemaphores;
 	presentInfoVk.pResults = (VkResult*)results;
 
-	vkThrowIfFailed(_device->getVkBindings().vkQueuePresentKHR(getVkHandle(), &presentInfoVk), "Error in queue present");
+	vkThrowIfFailed(getDevice()->getVkBindings().vkQueuePresentKHR(getVkHandle(), &presentInfoVk), "Error in queue present");
 }
 
 void Queue_::waitIdle()
 {
-	vkThrowIfFailed(_device->getVkBindings().vkQueueWaitIdle(getVkHandle()), "Queue::waitIdle - error in preceeding command.");
+	vkThrowIfFailed(getDevice()->getVkBindings().vkQueueWaitIdle(getVkHandle()), "Queue::waitIdle - error in preceeding command.");
 }
 namespace {
 inline void processSparseMemoryBind(const SparseMemoryBind& memoryBind, VkSparseMemoryBind& outVkSparseMemoryBind)
@@ -272,9 +272,41 @@ void Queue_::bindSparse(const BindSparseInfo* bindInfo, uint32_t numBindInfos, F
 		processBindSparseInfo(bindInfo[i], vkSparseBufferMemBindInfo, vkSparseImageMemBindInfo, vkSparseImageOpaqueMemBindInfo, vkSparseImageMemoryBind, vkSparseMemoryBind,
 			semaphores, vkBindSparseInfo[i]);
 	}
-	vkThrowIfFailed(
-		_device->getVkBindings().vkQueueBindSparse(getVkHandle(), numBindInfos, vkBindSparseInfo.data(), (fenceSignal.isValid() ? fenceSignal->getVkHandle() : VK_NULL_HANDLE)),
+	vkThrowIfFailed(getDevice()->getVkBindings().vkQueueBindSparse(getVkHandle(), numBindInfos, vkBindSparseInfo.data(), (fenceSignal ? fenceSignal->getVkHandle() : VK_NULL_HANDLE)),
 		"Failed to bind sparse queue");
+}
+
+void Queue_::beginDebugUtilsLabel(const pvrvk::DebugUtilsLabel& labelInfo)
+{
+	VkDebugUtilsLabelEXT vkLabelInfo = {};
+	vkLabelInfo.sType = static_cast<VkStructureType>(StructureType::e_DEBUG_UTILS_LABEL_EXT);
+	// The color to use for the marked region
+	vkLabelInfo.color[0] = labelInfo.getR();
+	vkLabelInfo.color[1] = labelInfo.getG();
+	vkLabelInfo.color[2] = labelInfo.getB();
+	vkLabelInfo.color[3] = labelInfo.getA();
+	// The label name to give to the marked region
+	vkLabelInfo.pLabelName = labelInfo.getLabelName().c_str();
+	getDevice()->getVkBindings().vkQueueBeginDebugUtilsLabelEXT(getVkHandle(), &vkLabelInfo);
+}
+
+void Queue_::endDebugUtilsLabel()
+{
+	getDevice()->getVkBindings().vkQueueEndDebugUtilsLabelEXT(getVkHandle());
+}
+
+void Queue_::insertDebugUtilsLabel(const pvrvk::DebugUtilsLabel& labelInfo)
+{
+	VkDebugUtilsLabelEXT vkLabelInfo = {};
+	vkLabelInfo.sType = static_cast<VkStructureType>(StructureType::e_DEBUG_UTILS_LABEL_EXT);
+	// The color to use for the marked region
+	vkLabelInfo.color[0] = labelInfo.getR();
+	vkLabelInfo.color[1] = labelInfo.getG();
+	vkLabelInfo.color[2] = labelInfo.getB();
+	vkLabelInfo.color[3] = labelInfo.getA();
+	// The label name to give to the marked region
+	vkLabelInfo.pLabelName = labelInfo.getLabelName().c_str();
+	getDevice()->getVkBindings().vkQueueInsertDebugUtilsLabelEXT(getVkHandle(), &vkLabelInfo);
 }
 } // namespace impl
 } // namespace pvrvk

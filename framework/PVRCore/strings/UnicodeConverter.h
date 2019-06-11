@@ -29,8 +29,7 @@ public:
 };
 
 /// <summary>Use as a namespace (static functions only). Contains functionality to work with Unicode strings:
-/// Conversions between ASCII/UTF8/UTF16/UTF32, parse/count characters in Multibyte systems, validity queries.
-/// </summary>
+/// Conversions between ASCII/UTF8/UTF16/UTF32, parse/count characters in Multibyte systems, validity queries.</summary>
 class UnicodeConverter
 {
 public:
@@ -113,20 +112,17 @@ public:
 
 	/// <summary>Check if a std::string contains only valid UTF-8 characters</summary>
 	/// <param name="unicodeString">A UTF-8 std::string</param>
-	/// <returns>True if the std::string does not contains any characters that are not valid UTF-8, false otherwise
-	/// </returns>
+	/// <returns>True if the std::string does not contains any characters that are not valid UTF-8, false otherwise</returns>
 	static bool isValidUnicode(const utf8* unicodeString);
 
 	/// <summary>Check if a std::string contains only valid UTF-16 characters</summary>
 	/// <param name="unicodeString">A UTF-16 std::string</param>
-	/// <returns>True if the std::string does not contains any characters that are not valid UTF-16, false otherwise
-	/// </returns>
+	/// <returns>True if the std::string does not contains any characters that are not valid UTF-16, false otherwise</returns>
 	static bool isValidUnicode(const utf16* unicodeString);
 
 	/// <summary>Check if a std::string contains only valid UTF-32 characters</summary>
 	/// <param name="unicodeString">A UTF-32 std::string</param>
-	/// <returns>True if the std::string does not contains any characters that are not valid UTF-32, false otherwise
-	/// </returns>
+	/// <returns>True if the std::string does not contains any characters that are not valid UTF-32, false otherwise</returns>
 	static bool isValidUnicode(const utf32* unicodeString);
 
 	/// <summary>Check if a std::string only contains valid Ascii-7 characters</summary>

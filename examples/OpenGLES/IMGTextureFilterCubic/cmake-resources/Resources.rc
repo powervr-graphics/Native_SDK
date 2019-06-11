@@ -1,4 +1,4 @@
-//Microsoft eMbedded Visual C++ generated resource script.
+// Microsoft Visual C++ generated resource script.
 //
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
@@ -58,9 +58,8 @@ END
 // RCDATA
 //
 /////////////////////////////////////////////////////////////////////////////
-// RCDATA: OpenGL ES Textual shaders(glsl)
-FragShader.fsh		RCDATA		"..\\FragShader.fsh"
-VertShader.vsh		RCDATA		"..\\VertShader.vsh"
+FragShader.fsh RCDATA "..\\FragShader.fsh"
+VertShader.vsh RCDATA "..\\VertShader.vsh"
 
 #endif    // English (United Kingdom) resources
 /////////////////////////////////////////////////////////////////////////////

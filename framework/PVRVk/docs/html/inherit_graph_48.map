@@ -1,6 +1,6 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classpvrvk_1_1impl_1_1_object_handle.html" title="Defines a simple interface for a Vulkan object." alt="" coords="5,70,179,111"/>
-<area shape="rect" id="node2" href="$classpvrvk_1_1impl_1_1_device_object_handle.html" title="Defines a simple interface for a Vulkan object which holds a reference to a particular device..." alt="" coords="233,5,407,46"/>
-<area shape="rect" id="node3" href="$classpvrvk_1_1impl_1_1_instance_object_handle.html" title="Defines a simple interface for a Vulkan which holds a reference to a Vulkan instance." alt="" coords="229,70,411,111"/>
-<area shape="rect" id="node4" href="$classpvrvk_1_1impl_1_1_physical_device_object_handle.html" title="Defines a simple interface for a Vulkan which holds a reference to a Vulkan Physical Device..." alt="" coords="227,135,413,177"/>
+<area shape="rect" id="node1" href="$classpvrvk_1_1impl_1_1_device_object_debug_utils.html" title="pvrvk::impl::DeviceObject\lDebugUtils\&lt; Buffer_ \&gt;" alt="" coords="305,5,479,46"/>
+<area shape="rect" id="node2" href="$classpvrvk_1_1impl_1_1_buffer__.html" title="Vulkan implementation of the Buffer." alt="" coords="531,48,667,75"/>
+<area shape="rect" id="node3" href="$classpvrvk_1_1impl_1_1_p_v_r_vk_object_base.html" title="pvrvk::impl::PVRVkObject\lBase\&lt; VkBuffer, PVRVkObjectType \&gt;" alt="" coords="6,77,253,118"/>
+<area shape="rect" id="node4" href="$classpvrvk_1_1impl_1_1_p_v_r_vk_device_object_base.html" title="pvrvk::impl::PVRVkDevice\lObjectBase\&lt; VkBuffer,\l ObjectType::e_BUFFER \&gt;" alt="" coords="301,69,483,125"/>
 </map>

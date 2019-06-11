@@ -392,7 +392,7 @@ public:
 struct DeviceResources
 {
 	pvrvk::Instance instance;
-	pvrvk::DebugReportCallback debugCallbacks[2];
+	pvr::utils::DebugUtilsCallbacks debugUtilsCallbacks;
 	pvrvk::Surface surface;
 	pvrvk::Device device;
 	pvrvk::Queue queue;
@@ -400,10 +400,9 @@ struct DeviceResources
 	pvrvk::Swapchain swapchain;
 	pvrvk::CommandPool commandPool;
 	pvrvk::DescriptorPool descriptorPool;
-	pvrvk::Semaphore semaphoreImageAcquired[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
-	pvrvk::Fence perFrameAcquireFence[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
-	pvrvk::Semaphore semaphorePresent[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
-	pvrvk::Fence perFrameCommandBufferFence[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	pvrvk::Semaphore imageAcquiredSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	pvrvk::Semaphore presentationSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	pvrvk::Fence perFrameResourcesFences[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
 
 	pvrvk::GraphicsPipeline renderQuadPipe;
 	pvrvk::GraphicsPipeline renderWindowTextPipe;
@@ -450,16 +449,14 @@ struct DeviceResources
 
 	~DeviceResources()
 	{
-		if (device.isValid())
+		if (device)
 		{
 			device->waitIdle();
 			uint32_t l = swapchain->getSwapchainLength();
 			for (uint32_t i = 0; i < l; ++i)
 			{
-				if (perFrameAcquireFence[i].isValid())
-					perFrameAcquireFence[i]->wait();
-				if (perFrameCommandBufferFence[i].isValid())
-					perFrameCommandBufferFence[i]->wait();
+				if (perFrameResourcesFences[i])
+					perFrameResourcesFences[i]->wait();
 			}
 		}
 	}
@@ -1063,12 +1060,8 @@ pvr::Result VulkanExampleUI::initView()
 	// Create the surface
 	_deviceResources->surface = pvr::utils::createSurface(_deviceResources->instance, _deviceResources->instance->getPhysicalDevice(0), this->getWindow(), this->getDisplay());
 
-	// Add Debug Report Callbacks
-	// Add a Debug Report Callback for logging messages for events of all supported types.
-	_deviceResources->debugCallbacks[0] = pvr::utils::createDebugReportCallback(_deviceResources->instance);
-	// Add a second Debug Report Callback for throwing exceptions for Error events.
-	_deviceResources->debugCallbacks[1] =
-		pvr::utils::createDebugReportCallback(_deviceResources->instance, pvrvk::DebugReportFlagsEXT::e_ERROR_BIT_EXT, pvr::utils::throwOnErrorDebugReportCallback);
+	// Create a default set of debug utils messengers or debug callbacks using either VK_EXT_debug_utils or VK_EXT_debug_report respectively
+	_deviceResources->debugUtilsCallbacks = pvr::utils::createDebugUtilsCallbacks(_deviceResources->instance);
 
 	// Create the logical device
 	pvr::utils::QueuePopulateInfo queueInfo = { pvrvk::QueueFlags::e_GRAPHICS_BIT, _deviceResources->surface };
@@ -1096,7 +1089,7 @@ pvr::Result VulkanExampleUI::initView()
 
 	_numSwapchain = _deviceResources->swapchain->getSwapchainLength();
 
-	pvr::utils::createOnscreenFramebufferAndRenderpass(_deviceResources->swapchain, &_deviceResources->depthStencil[0], _deviceResources->onScreenFramebuffer);
+	pvr::utils::createOnscreenFramebufferAndRenderPass(_deviceResources->swapchain, &_deviceResources->depthStencil[0], _deviceResources->onScreenFramebuffer);
 
 	// Create the commandpool
 	_deviceResources->commandPool =
@@ -1165,10 +1158,9 @@ pvr::Result VulkanExampleUI::initView()
 	for (uint32_t i = 0; i < _numSwapchain; ++i)
 	{
 		recordSecondaryCommandBuffers(i);
-		_deviceResources->semaphorePresent[i] = _deviceResources->device->createSemaphore();
-		_deviceResources->semaphoreImageAcquired[i] = _deviceResources->device->createSemaphore();
-		_deviceResources->perFrameCommandBufferFence[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
-		_deviceResources->perFrameAcquireFence[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
+		_deviceResources->presentationSemaphores[i] = _deviceResources->device->createSemaphore();
+		_deviceResources->imageAcquiredSemaphores[i] = _deviceResources->device->createSemaphore();
+		_deviceResources->perFrameResourcesFences[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
 	}
 	updateTitleAndDesc((DisplayOption::Enum)_displayOption);
 	return pvr::Result::Success;
@@ -1498,14 +1490,12 @@ void VulkanExampleUI::swipeRight()
 pvr::Result VulkanExampleUI::renderFrame()
 {
 	// begin recording the command buffer
-	_deviceResources->perFrameAcquireFence[_frameId]->wait();
-	_deviceResources->perFrameAcquireFence[_frameId]->reset();
-	_deviceResources->swapchain->acquireNextImage(uint64_t(-1), _deviceResources->semaphoreImageAcquired[_frameId], _deviceResources->perFrameAcquireFence[_frameId]);
+	_deviceResources->swapchain->acquireNextImage(uint64_t(-1), _deviceResources->imageAcquiredSemaphores[_frameId]);
 
 	const uint32_t swapchainIndex = _deviceResources->swapchain->getSwapchainIndex();
 
-	_deviceResources->perFrameCommandBufferFence[swapchainIndex]->wait();
-	_deviceResources->perFrameCommandBufferFence[swapchainIndex]->reset();
+	_deviceResources->perFrameResourcesFences[swapchainIndex]->wait();
+	_deviceResources->perFrameResourcesFences[swapchainIndex]->reset();
 
 	_deviceResources->commandBuffer[swapchainIndex]->begin(pvrvk::CommandBufferUsageFlags::e_ONE_TIME_SUBMIT_BIT);
 	_currTime = this->getTime();
@@ -1558,16 +1548,16 @@ pvr::Result VulkanExampleUI::renderFrame()
 	pvrvk::PipelineStageFlags waitStage = pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT;
 	submitInfo.commandBuffers = &_deviceResources->commandBuffer[swapchainIndex];
 	submitInfo.numCommandBuffers = 1;
-	submitInfo.waitSemaphores = &_deviceResources->semaphoreImageAcquired[_frameId];
+	submitInfo.waitSemaphores = &_deviceResources->imageAcquiredSemaphores[_frameId];
 	submitInfo.numWaitSemaphores = 1;
-	submitInfo.signalSemaphores = &_deviceResources->semaphorePresent[_frameId];
+	submitInfo.signalSemaphores = &_deviceResources->presentationSemaphores[_frameId];
 	submitInfo.numSignalSemaphores = 1;
-	submitInfo.waitDestStages = &waitStage;
-	_deviceResources->queue->submit(&submitInfo, 1, _deviceResources->perFrameCommandBufferFence[swapchainIndex]);
+	submitInfo.waitDstStageMask = &waitStage;
+	_deviceResources->queue->submit(&submitInfo, 1, _deviceResources->perFrameResourcesFences[swapchainIndex]);
 
 	if (this->shouldTakeScreenshot())
 	{
-		pvr::utils::takeScreenshot(_deviceResources->swapchain, swapchainIndex, _deviceResources->commandPool, _deviceResources->queue, this->getScreenshotFileName(),
+		pvr::utils::takeScreenshot(_deviceResources->queue, _deviceResources->commandPool, _deviceResources->swapchain, swapchainIndex, this->getScreenshotFileName(),
 			&_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
 	}
 
@@ -1576,7 +1566,7 @@ pvr::Result VulkanExampleUI::renderFrame()
 	presentInfo.imageIndices = &swapchainIndex;
 	presentInfo.numSwapchains = 1;
 	presentInfo.swapchains = &_deviceResources->swapchain;
-	presentInfo.waitSemaphores = &_deviceResources->semaphorePresent[_frameId];
+	presentInfo.waitSemaphores = &_deviceResources->presentationSemaphores[_frameId];
 	presentInfo.numWaitSemaphores = 1;
 
 	_frameId = (_frameId + 1) % _deviceResources->swapchain->getSwapchainLength();

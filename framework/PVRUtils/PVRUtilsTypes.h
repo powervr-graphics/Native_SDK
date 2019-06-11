@@ -4,10 +4,11 @@
 \author PowerVR by Imagination, Developer Technology Team
 \copyright Copyright (c) Imagination Technologies Limited.
 */
+#pragma once
 #include "PVRCore/types/Types.h"
 
 namespace pvr {
-
+namespace utils {
 /// <summary>Contains a full description of a Vertex Attribute: Index, format, number of elements, offset in the
 /// buffer, optionally name. All values (except attributeName) must be set explicitly.</summary>
 struct VertexAttributeInfo
@@ -42,7 +43,7 @@ struct VertexAttributeInfo
 	/// <summary>Return true if the right hand object is not equal to this</summary>
 	/// <param name=rhs>The right hand side of the operator</param>
 	/// <returns>True if at least one of index, format, width and offset is not equal,
-	/// otherwise false </returns>
+	/// otherwise false</returns>
 	bool operator!=(VertexAttributeInfo const& rhs) const
 	{
 		return !((*this) == rhs);
@@ -91,5 +92,5 @@ struct VertexAttributeInfoWithBinding : public VertexAttributeInfo
 		: VertexAttributeInfo(index, format, width, offsetInBytes, attribName), binding(binding)
 	{}
 };
-
+} // namespace utils
 } // namespace pvr

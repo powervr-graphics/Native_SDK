@@ -79,9 +79,19 @@ inline void convert(VkViewport& vkvp, const Viewport& vp)
 	vkvp.maxDepth = vp.getMaxDepth();
 }
 
-//!\cond NO_DOXYGEN
-inline void populateShaderInfo(const VkShaderModule& shader, pvrvk::ShaderStageFlags vkShaderStage, VkSpecializationInfo& specializationInfo, unsigned char* specializationInfoData,
-	const ShaderConstantInfo* shaderConsts, uint32_t shaderConstCount, VkSpecializationMapEntry* mapEntries, VkPipelineShaderStageCreateInfo& outShader, const char* entryPoint)
+/// <summary>Populate a VkPipelineShaderStageCreateInfo</summary>
+/// <param name="shaderModule">A shader module to use</param>
+/// <param name="shaderStageFlags">The shader stage flag bits</param>
+/// <param name="entryPoint">An std::string to use as the entry point for the pipeline shader stage</param>
+/// <param name="shaderConsts">A number of shader constants to use</param>
+/// <param name="shaderConstCount">The number of shader constants</param>
+/// <param name="specializationInfo">Memory backing for the specialization info structures</param>
+/// <param name="specializationInfoData">The memory backing for the specialization info</param>
+/// <param name="mapEntries">Memory backing for shaderConstCount number of VkSpecializationMapEntry structures</param>
+/// <param name="outShaderCreateInfo">The populated VkPipelineShaderStageCreateInfo</param>
+inline void populateShaderInfo(const VkShaderModule& shaderModule, pvrvk::ShaderStageFlags shaderStageFlags, const std::string& entryPoint, const ShaderConstantInfo* shaderConsts,
+	uint32_t shaderConstCount, VkSpecializationInfo& specializationInfo, unsigned char* specializationInfoData, VkSpecializationMapEntry* mapEntries,
+	VkPipelineShaderStageCreateInfo& outShaderCreateInfo)
 {
 	// caculate the number of size in bytes required.
 	uint32_t specicalizedataSize = 0;
@@ -92,7 +102,7 @@ inline void populateShaderInfo(const VkShaderModule& shader, pvrvk::ShaderStageF
 
 	if (specicalizedataSize)
 	{
-		debug_assertion(specicalizedataSize < FrameworkCaps::MaxSpecialisationInfoDataSize, "Specialised Data out of range.");
+		assert(specicalizedataSize < FrameworkCaps::MaxSpecialisationInfoDataSize && "Specialised Data out of range.");
 		uint32_t dataOffset = 0;
 		for (uint32_t i = 0; i < shaderConstCount; ++i)
 		{
@@ -106,15 +116,14 @@ inline void populateShaderInfo(const VkShaderModule& shader, pvrvk::ShaderStageF
 		specializationInfo.pData = specializationInfoData;
 	}
 
-	outShader.sType = static_cast<VkStructureType>(pvrvk::StructureType::e_PIPELINE_SHADER_STAGE_CREATE_INFO);
-	outShader.pNext = nullptr;
-	outShader.flags = static_cast<VkPipelineShaderStageCreateFlags>(pvrvk::PipelineShaderStageCreateFlags::e_NONE);
-	outShader.pSpecializationInfo = (specicalizedataSize ? &specializationInfo : nullptr);
-	outShader.stage = static_cast<VkShaderStageFlagBits>(vkShaderStage);
-	outShader.module = shader;
-	outShader.pName = entryPoint;
+	outShaderCreateInfo.sType = static_cast<VkStructureType>(pvrvk::StructureType::e_PIPELINE_SHADER_STAGE_CREATE_INFO);
+	outShaderCreateInfo.pNext = nullptr;
+	outShaderCreateInfo.flags = static_cast<VkPipelineShaderStageCreateFlags>(pvrvk::PipelineShaderStageCreateFlags::e_NONE);
+	outShaderCreateInfo.pSpecializationInfo = (specicalizedataSize ? &specializationInfo : nullptr);
+	outShaderCreateInfo.stage = static_cast<VkShaderStageFlagBits>(shaderStageFlags);
+	outShaderCreateInfo.module = shaderModule;
+	outShaderCreateInfo.pName = entryPoint.c_str();
 }
-//!\endcond
 
 /// <summary>Contains everything needed to define a VkGraphicsPipelineCreateInfo, with provision for all memory
 /// required</summary>
@@ -158,38 +167,37 @@ public:
 	/// <returns>Returns return if success</returns>
 	bool init(const GraphicsPipelineCreateInfo& gpcp)
 	{
-		if (!gpcp.pipelineLayout.isValid())
+		if (!gpcp.pipelineLayout)
 		{
-			Log("Invalid Pipeline Layout");
-			assertion(false, "Invalid Pipeline Layout");
+			assert(false && "Invalid Pipeline Layout");
 			return false;
 		}
-		if (!gpcp.renderPass.isValid())
+		if (!gpcp.renderPass)
 		{
-			Log("Invalid Renderpass");
-			assertion(false, "Invalid Renderpass");
+			assert(false && "Invalid RenderPass");
 			return false;
 		}
+
+		VkPipelineRasterizationStateStreamCreateInfoEXT pipelineRasterizationStateStreamCreateInfoEXT = {};
+		pipelineRasterizationStateStreamCreateInfoEXT.sType = static_cast<VkStructureType>(StructureType::e_PIPELINE_RASTERIZATION_STATE_STREAM_CREATE_INFO_EXT);
+
 		{
 			// renderpass validation
-			if (!gpcp.renderPass.isValid())
+			if (!gpcp.renderPass)
 			{
-				assertion(false, "Invalid RenderPass: A Pipeline must have a valid render pass");
-				Log("Invalid RenderPass: A Pipeline must have a valid render pass");
+				assert(false && "Invalid RenderPass: A Pipeline must have a valid render pass");
 				return false;
 			}
 
 			// assert that the vertex & fragment shader stage must be valid else it should be inhertied from the parent
 			if (!gpcp.vertexShader.isActive())
 			{
-				assertion(false, "Graphics Pipeline should either have a valid vertex shader or inherited from its parent");
-				Log("Graphics Pipeline should either have a valid vertex shader or inherited from its parent");
+				assert(false && "Graphics Pipeline should either have a valid vertex shader or inherited from its parent");
 				return false;
 			}
 			if (!gpcp.fragmentShader.isActive())
 			{
-				assertion(false, "Graphics Pipeline should either have a valid fragment shader or inherited from its parent");
-				Log("Graphics Pipeline should either have a valid fragment shader or inherited from its parent");
+				assert(false && "Graphics Pipeline should either have a valid fragment shader or inherited from its parent");
 				return false;
 			}
 
@@ -204,7 +212,7 @@ public:
 			createInfo.pViewportState = &_vp;
 			createInfo.pColorBlendState = &_cb;
 			createInfo.pDepthStencilState = (gpcp.depthStencil.isAllStatesEnabled() ? &_ds : nullptr);
-			createInfo.pTessellationState = (gpcp.tesselationStates.getControlShader().isValid() ? &_tessState : nullptr);
+			createInfo.pTessellationState = (gpcp.tesselationStates.getControlShader() ? &_tessState : nullptr);
 			createInfo.pVertexInputState = &_vertexInput;
 			createInfo.pDynamicState = nullptr;
 			createInfo.layout = gpcp.pipelineLayout->getVkHandle();
@@ -241,12 +249,12 @@ public:
 			_vertexInput.sType = static_cast<VkStructureType>(StructureType::e_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO);
 			_vertexInput.pNext = nullptr;
 			_vertexInput.flags = static_cast<VkPipelineVertexInputStateCreateFlags>(PipelineVertexInputStateCreateFlags::e_NONE);
-			assertion(val.getAttributes().size() <= FrameworkCaps::MaxVertexAttributes);
+			assert(val.getAttributes().size() <= FrameworkCaps::MaxVertexAttributes);
 			for (uint32_t i = 0; i < val.getAttributes().size(); i++)
 			{
 				convert(_vkVertexAttributes[i], val.getAttributes()[i]);
 			}
-			assertion(val.getInputBindings().size() <= FrameworkCaps::MaxVertexBindings);
+			assert(val.getInputBindings().size() <= FrameworkCaps::MaxVertexBindings);
 			for (uint32_t i = 0; i < val.getInputBindings().size(); i++)
 			{
 				convert(_vkVertexBindings[i], val.getInputBindingByIndex(i));
@@ -260,44 +268,44 @@ public:
 			uint32_t shaderIndex = 0;
 			if (gpcp.vertexShader.isActive())
 			{
-				populateShaderInfo(gpcp.vertexShader.getShader()->getVkHandle(), ShaderStageFlags::e_VERTEX_BIT, specializationInfos[0], specializationInfoData[0],
-					gpcp.vertexShader.getAllShaderConstants(), gpcp.vertexShader.getNumShaderConsts(), specilizationEntries[0], _shaders[shaderIndex],
-					gpcp.vertexShader.getEntryPoint());
+				populateShaderInfo(gpcp.vertexShader.getShader()->getVkHandle(), ShaderStageFlags::e_VERTEX_BIT, gpcp.vertexShader.getEntryPoint(),
+					gpcp.vertexShader.getAllShaderConstants(), gpcp.vertexShader.getNumShaderConsts(), specializationInfos[0], specializationInfoData[0], specilizationEntries[0],
+					_shaders[shaderIndex]);
 				++shaderIndex;
 			}
 			if (gpcp.fragmentShader.isActive())
 			{
-				populateShaderInfo(gpcp.fragmentShader.getShader()->getVkHandle(), ShaderStageFlags::e_FRAGMENT_BIT, specializationInfos[1], specializationInfoData[1],
-					gpcp.fragmentShader.getAllShaderConstants(), gpcp.fragmentShader.getNumShaderConsts(), specilizationEntries[1], _shaders[shaderIndex],
-					gpcp.fragmentShader.getEntryPoint());
+				populateShaderInfo(gpcp.fragmentShader.getShader()->getVkHandle(), ShaderStageFlags::e_FRAGMENT_BIT, gpcp.fragmentShader.getEntryPoint(),
+					gpcp.fragmentShader.getAllShaderConstants(), gpcp.fragmentShader.getNumShaderConsts(), specializationInfos[1], specializationInfoData[1],
+					specilizationEntries[1], _shaders[shaderIndex]);
 				++shaderIndex;
 			}
 			if (gpcp.geometryShader.isActive())
 			{
-				populateShaderInfo(gpcp.geometryShader.getShader()->getVkHandle(), ShaderStageFlags::e_GEOMETRY_BIT, specializationInfos[2], specializationInfoData[2],
-					gpcp.geometryShader.getAllShaderConstants(), gpcp.geometryShader.getNumShaderConsts(), specilizationEntries[2], _shaders[shaderIndex],
-					gpcp.geometryShader.getEntryPoint());
+				populateShaderInfo(gpcp.geometryShader.getShader()->getVkHandle(), ShaderStageFlags::e_GEOMETRY_BIT, gpcp.geometryShader.getEntryPoint(),
+					gpcp.geometryShader.getAllShaderConstants(), gpcp.geometryShader.getNumShaderConsts(), specializationInfos[2], specializationInfoData[2],
+					specilizationEntries[2], _shaders[shaderIndex]);
 				++shaderIndex;
 			}
 			if (gpcp.tesselationStates.isControlShaderActive())
 			{
-				populateShaderInfo(gpcp.tesselationStates.getControlShader()->getVkHandle(), ShaderStageFlags::e_TESSELLATION_CONTROL_BIT, specializationInfos[3],
-					specializationInfoData[3], gpcp.tesselationStates.getAllControlShaderConstants(), gpcp.tesselationStates.getNumControlShaderConstants(),
-					specilizationEntries[3], _shaders[shaderIndex], gpcp.tesselationStates.getControlShaderEntryPoint());
+				populateShaderInfo(gpcp.tesselationStates.getControlShader()->getVkHandle(), ShaderStageFlags::e_TESSELLATION_CONTROL_BIT,
+					gpcp.tesselationStates.getControlShaderEntryPoint(), gpcp.tesselationStates.getAllControlShaderConstants(),
+					gpcp.tesselationStates.getNumControlShaderConstants(), specializationInfos[3], specializationInfoData[3], specilizationEntries[3], _shaders[shaderIndex]);
 				++shaderIndex;
 			}
 			if (gpcp.tesselationStates.isEvaluationShaderActive())
 			{
-				populateShaderInfo(gpcp.tesselationStates.getEvaluationShader()->getVkHandle(), ShaderStageFlags::e_TESSELLATION_EVALUATION_BIT, specializationInfos[4],
-					specializationInfoData[4], gpcp.tesselationStates.getAllEvaluationShaderConstants(), gpcp.tesselationStates.getNumEvaluatinonShaderConstants(),
-					specilizationEntries[4], _shaders[shaderIndex], gpcp.tesselationStates.getEvaluationShaderEntryPoint());
+				populateShaderInfo(gpcp.tesselationStates.getEvaluationShader()->getVkHandle(), ShaderStageFlags::e_TESSELLATION_EVALUATION_BIT,
+					gpcp.tesselationStates.getEvaluationShaderEntryPoint(), gpcp.tesselationStates.getAllEvaluationShaderConstants(),
+					gpcp.tesselationStates.getNumEvaluatinonShaderConstants(), specializationInfos[4], specializationInfoData[4], specilizationEntries[4], _shaders[shaderIndex]);
 				++shaderIndex;
 			}
 		}
 		// ColorBlend
 		{
 			auto val = gpcp.colorBlend;
-			assertion(val.getNumAttachmentStates() <= FrameworkCaps::MaxColorAttachments);
+			assert(val.getNumAttachmentStates() <= FrameworkCaps::MaxColorAttachments);
 			// color blend
 			_cb.sType = static_cast<VkStructureType>(StructureType::e_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO);
 			_cb.pNext = nullptr;
@@ -338,7 +346,7 @@ public:
 		}
 		// Viewport
 		{
-			debug_assertion(gpcp.viewport.getNumViewportScissors() > 0, "Pipeline must have atleast one viewport and scissor");
+			assert(gpcp.viewport.getNumViewportScissors() > 0 && "Pipeline must have atleast one viewport and scissor");
 
 			for (uint32_t i = 0; i < gpcp.viewport.getNumViewportScissors(); ++i)
 			{
@@ -372,42 +380,27 @@ public:
 			_rs.depthBiasConstantFactor = val.getDepthBiasConstantFactor();
 			_rs.depthBiasSlopeFactor = val.getDepthBiasSlopeFactor();
 			_rs.lineWidth = val.getLineWidth();
+			if (val.getRasterizationStream() != 0)
+			{
+				pipelineRasterizationStateStreamCreateInfoEXT.rasterizationStream = val.getRasterizationStream();
+				appendPNext((VkBaseInStructure*)&_rs, &pipelineRasterizationStateStreamCreateInfoEXT);
+			}
 		}
 		// Multisample
 		if (!_rs.rasterizerDiscardEnable)
 		{
-			if (gpcp.multiSample.isStateEnabled())
-			{
-				auto val = gpcp.multiSample;
-				static VkSampleMask sampleMask = val.getSampleMask();
-				// multisampling
-				_ms.sType = static_cast<VkStructureType>(StructureType::e_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO);
-				_ms.pNext = nullptr;
-				_ms.flags = static_cast<VkPipelineMultisampleStateCreateFlags>(PipelineMultisampleStateCreateFlags::e_NONE);
-				_ms.rasterizationSamples = static_cast<VkSampleCountFlagBits>(gpcp.multiSample.getRasterizationSamples());
-				_ms.sampleShadingEnable = val.isSampleShadingEnabled();
-				_ms.minSampleShading = val.getMinSampleShading();
-				_ms.pSampleMask = &sampleMask;
-				_ms.alphaToCoverageEnable = val.isAlphaToCoverageEnabled();
-				_ms.alphaToOneEnable = val.isAlphaToOneEnabled();
-				createInfo.pMultisampleState = &_ms;
-			}
-			else
-			{
-				auto val = gpcp.multiSample;
-				static VkSampleMask sampleMask = val.getSampleMask();
-				// multisampling
-				_ms.sType = static_cast<VkStructureType>(StructureType::e_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO);
-				_ms.pNext = nullptr;
-				_ms.flags = static_cast<VkPipelineMultisampleStateCreateFlags>(PipelineMultisampleStateCreateFlags::e_NONE);
-				_ms.rasterizationSamples = static_cast<VkSampleCountFlagBits>(gpcp.multiSample.getRasterizationSamples());
-				_ms.sampleShadingEnable = val.isSampleShadingEnabled();
-				_ms.minSampleShading = val.getMinSampleShading();
-				_ms.pSampleMask = &sampleMask;
-				_ms.alphaToCoverageEnable = val.isAlphaToCoverageEnabled();
-				_ms.alphaToOneEnable = val.isAlphaToOneEnabled();
-				createInfo.pMultisampleState = &_ms;
-			}
+			auto val = gpcp.multiSample;
+			// multisampling
+			_ms.sType = static_cast<VkStructureType>(StructureType::e_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO);
+			_ms.pNext = nullptr;
+			_ms.flags = static_cast<VkPipelineMultisampleStateCreateFlags>(PipelineMultisampleStateCreateFlags::e_NONE);
+			_ms.rasterizationSamples = static_cast<VkSampleCountFlagBits>(gpcp.multiSample.getRasterizationSamples());
+			_ms.sampleShadingEnable = val.isSampleShadingEnabled();
+			_ms.minSampleShading = val.getMinSampleShading();
+			_ms.pSampleMask = &gpcp.multiSample.getSampleMask();
+			_ms.alphaToCoverageEnable = val.isAlphaToCoverageEnabled();
+			_ms.alphaToOneEnable = val.isAlphaToOneEnabled();
+			createInfo.pMultisampleState = &_ms;
 		}
 
 		{
@@ -428,7 +421,7 @@ public:
 			createInfo.pDynamicState = (count != 0 ? &_vkDynamicState : nullptr);
 		}
 		createInfo.basePipelineHandle = VK_NULL_HANDLE;
-		if (gpcp.basePipeline.isValid())
+		if (gpcp.basePipeline)
 		{
 			createInfo.basePipelineHandle = gpcp.basePipeline->getVkHandle();
 		}
@@ -437,8 +430,7 @@ public:
 	}
 };
 
-/// <summary>Contains everything needed to define a VkComputePipelineCreateInfo, with provision for all memory required
-/// </summary>
+/// <summary>Contains everything needed to define a VkComputePipelineCreateInfo, with provision for all memory required</summary>
 struct ComputePipelinePopulate
 {
 	/// <summary>After construction, will contain the ready-to-use create info</summary>
@@ -467,7 +459,7 @@ struct ComputePipelinePopulate
 	/// <returns>Returns return if success</returns>
 	void init(const ComputePipelineCreateInfo& cpcp)
 	{
-		if (cpcp.pipelineLayout.isNull())
+		if (!cpcp.pipelineLayout)
 		{
 			throw ErrorValidationFailedEXT("PipelineLayout must be valid");
 		}
@@ -475,12 +467,12 @@ struct ComputePipelinePopulate
 		createInfo.pNext = nullptr;
 		createInfo.flags = static_cast<VkPipelineCreateFlags>(cpcp.flags);
 		// Set up the pipeline state
-		createInfo.basePipelineHandle = (cpcp.basePipeline.isValid() ? cpcp.basePipeline->getVkHandle() : VK_NULL_HANDLE);
+		createInfo.basePipelineHandle = (cpcp.basePipeline ? cpcp.basePipeline->getVkHandle() : VK_NULL_HANDLE);
 		createInfo.basePipelineIndex = cpcp.basePipelineIndex;
 		createInfo.layout = cpcp.pipelineLayout->getVkHandle();
 
-		populateShaderInfo(cpcp.computeShader.getShader()->getVkHandle(), ShaderStageFlags::e_COMPUTE_BIT, specializationInfos, specializationInfoData,
-			cpcp.computeShader.getAllShaderConstants(), cpcp.computeShader.getNumShaderConsts(), specilizationEntries, _shader, cpcp.computeShader.getEntryPoint());
+		populateShaderInfo(cpcp.computeShader.getShader()->getVkHandle(), ShaderStageFlags::e_COMPUTE_BIT, cpcp.computeShader.getEntryPoint(),
+			cpcp.computeShader.getAllShaderConstants(), cpcp.computeShader.getNumShaderConsts(), specializationInfos, specializationInfoData, specilizationEntries, _shader);
 
 		createInfo.stage = _shader;
 	}

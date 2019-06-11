@@ -1,4 +1,4 @@
-//Microsoft eMbedded Visual C++ generated resource script.
+// Microsoft Visual C++ generated resource script.
 //
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
@@ -58,14 +58,12 @@ END
 // RCDATA
 //
 /////////////////////////////////////////////////////////////////////////////
-// RCDATA: Assets (scenes,  effects, textures...)
-sphere.pod		RCDATA		"..\\..\\..\\assets\\ParticleSystem\\sphere.pod"
-// RCDATA: OpenGL ES Textual shaders(glsl)
-FragShader.fsh		RCDATA		"..\\FragShader.fsh"
-VertShader.vsh		RCDATA		"..\\VertShader.vsh"
-ParticleFragShader.fsh		RCDATA		"..\\ParticleFragShader.fsh"
-ParticleVertShader.vsh		RCDATA		"..\\ParticleVertShader.vsh"
-ParticleSolver.csh		RCDATA		"..\\ParticleSolver.csh"
+sphere.pod RCDATA "..\\..\\..\\assets\\ParticleSystem\\sphere.pod"
+FragShader.fsh RCDATA "..\\FragShader.fsh"
+VertShader.vsh RCDATA "..\\VertShader.vsh"
+ParticleFragShader.fsh RCDATA "..\\ParticleFragShader.fsh"
+ParticleVertShader.vsh RCDATA "..\\ParticleVertShader.vsh"
+ParticleSolver.csh RCDATA "..\\ParticleSolver.csh"
 
 #endif    // English (United Kingdom) resources
 /////////////////////////////////////////////////////////////////////////////

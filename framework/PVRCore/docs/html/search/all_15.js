@@ -1,8 +1,8 @@
 var searchData=
 [
-  ['vaformatstring',['vaFormatString',['../namespacepvr_1_1strings.html#ae082a5c586eac6a45907abb71c1090c8',1,'pvr::strings::vaFormatString(const char *format, va_list argumentList)'],['../namespacepvr_1_1strings.html#aa6f1a057cf9f74fca77731dbee01c8c1',1,'pvr::strings::vaFormatString(const wchar_t *const format, va_list argumentList)']]],
+  ['vaformatstring',['vaFormatString',['../namespacepvr_1_1strings.html#aa6f1a057cf9f74fca77731dbee01c8c1',1,'pvr::strings']]],
   ['val',['val',['../structpvr_1_1platform_1_1_command_line_parser_1_1_parsed_command_line_1_1_option.html#a3add1f9cf48224f18e40a0b88f42ace1',1,'pvr::platform::CommandLineParser::ParsedCommandLine::Option']]],
-  ['value',['value',['../structpvr_1_1effect_1_1_pipeline_condition.html#a642a9495ac4711c4efcd30b3c28e3ea4',1,'pvr::effect::PipelineCondition']]],
+  ['value',['value',['../structpvr_1_1effect_1_1_pipeline_condition.html#a642a9495ac4711c4efcd30b3c28e3ea4',1,'pvr::effect::PipelineCondition::value()'],['../classpvr_1_1hasher__helper_3_01hashvalue_00_01first_01_4.html#a4b440a51e8de766220f18b1e58e73b16',1,'pvr::hasher_helper&lt; hashvalue, first &gt;::value()'],['../classpvr_1_1hasher__helper_3_01hashvalue_00_01first_00_01dummy_8_8_8_4.html#ae795e30ecf74a5560c38269199341e7b',1,'pvr::hasher_helper&lt; hashvalue, first, dummy...&gt;::value()'],['../classpvr_1_1_hash_compile_time.html#a8187eef4c3068f5d194b2d82620c8997',1,'pvr::HashCompileTime::value()']]],
   ['value_5f',['value_',['../classpvr_1_1_free_value_view.html#ab41e2a359c462bfa3de81ab9da59a021',1,'pvr::FreeValueView']]],
   ['valuetype',['ValueType',['../classpvr_1_1async_1_1_i_framework_async_result.html#a443532fc20e721cbf2ffa8a15e180f56',1,'pvr::async::IFrameworkAsyncResult']]],
   ['vaoutput',['vaOutput',['../class_i_logger.html#aaeb26694f5bfd9ce7f5a98c27bd42d20',1,'ILogger::vaOutput()'],['../class_logger.html#a481d0d012ed044493eb79535a8756297',1,'Logger::vaOutput()']]],
@@ -11,6 +11,7 @@ var searchData=
   ['variabletype',['VariableType',['../namespacepvr.html#a6f7777c11dfff8fcf4a03d85e5ab0b98',1,'pvr']]],
   ['vbobinding',['vboBinding',['../structpvr_1_1effect_1_1_attribute_semantic.html#a3eb79423038158f4bc9e5e9efb7e53a6',1,'pvr::effect::AttributeSemantic']]],
   ['vectorwidth',['VectorWidth',['../namespacepvr_1_1_gpu_datatypes_helper.html#aff3aa99e1b21f38c32bce768d56b2198',1,'pvr::GpuDatatypesHelper']]],
+  ['version',['version',['../structpvr_1_1texture__xnb_1_1_file_header.html#a6cabe0a45fcc06b9996ad288cbdaceba',1,'pvr::texture_xnb::FileHeader']]],
   ['versionedpipelines',['versionedPipelines',['../structpvr_1_1effect_1_1_effect.html#aa56753b517965def13089de2b11fe675',1,'pvr::effect::Effect']]],
   ['versionedshaders',['versionedShaders',['../structpvr_1_1effect_1_1_effect.html#adf3effca9509f937cbe6c1d98340f66d',1,'pvr::effect::Effect']]],
   ['versions',['versions',['../structpvr_1_1effect_1_1_effect.html#aaf3ac0bab3e6ada9675cabd434eb4c13',1,'pvr::effect::Effect']]],
@@ -20,6 +21,7 @@ var searchData=
   ['vertexbinding',['vertexBinding',['../structpvr_1_1effect_1_1_pipeline_definition.html#aa966c128ba2fde7cb653e67957798669',1,'pvr::effect::PipelineDefinition']]],
   ['vertexbuffer',['VertexBuffer',['../namespacepvr.html#aa6ac287ad32e4b14937cee7ac81fb85ea10461f19cdb5aadba2fc9986be6400bd',1,'pvr']]],
   ['vertexshader',['VertexShader',['../namespacepvr.html#af5c2a4d46bb7aa6a877a0ed8c5ba3ac8aeb3ca4dac3e206977e0b7d998eefcc33',1,'pvr']]],
+  ['verticalpixelspermeter',['verticalPixelsPerMeter',['../structpvr_1_1texture__bmp_1_1_info_header1.html#a6e14ff045f9115abd45547ea323d22ea',1,'pvr::texture_bmp::InfoHeader1']]],
   ['viewingfrustum',['ViewingFrustum',['../structpvr_1_1math_1_1_viewing_frustum.html',1,'pvr::math']]],
   ['vsyncmode',['vsyncMode',['../classpvr_1_1_display_attributes.html#a0c82b7b18e4f4c91bed9dd268476c21a',1,'pvr::DisplayAttributes::vsyncMode()'],['../namespacepvr.html#a7f3166dd9130684c23ff89682e4b38c8',1,'pvr::VsyncMode()']]]
 ];

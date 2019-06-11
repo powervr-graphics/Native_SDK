@@ -8,11 +8,16 @@ layout(location = 0) out mediump float oColor;
 
 const mediump float weights[9] = float[9](0.25, 0.0625, 0.125, 0.0625, 0.125, 0.0625, 0.125, 0.0625, 0.125);
 
+layout(push_constant) uniform pushConstantsBlock{
+	mediump vec2 upSampleConfigs[8];
+	mediump float exposureBias;
+};
+
 void main()
 {
 	mediump float sum = texture(sDownsampledCurrentMipLevel, vTexCoords[0]).r * weights[0];
 	
-	for(int i = 1; i < 9; ++i)
+	for(int i = 0; i < 9; ++i)
 	{
 		sum += texture(sCurrentBlurredImage, vTexCoords[i]).r * weights[i];
 	}

@@ -104,18 +104,12 @@ Functions</h2></td></tr>
 <tr class="memitem:a9cab32f721c03e5671a86e7755f69c7c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><b>pvrvk::Extensions::enumerateInstanceExtensions</b> (std::vector&lt; ExtensionProperties &gt; &amp;outExtensions)</td></tr>
 <tr class="memdesc:a9cab32f721c03e5671a86e7755f69c7c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get list of all supported instance extension properties <a href="#a9cab32f721c03e5671a86e7755f69c7c">More...</a><br/></td></tr>
 <tr class="separator:a9cab32f721c03e5671a86e7755f69c7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a28791c9b8684e3907844d65a40453f93"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><b>pvrvk::Extensions::enumerateInstanceExtensionsString</b> (std::vector&lt; std::string &gt; &amp;extStr)</td></tr>
-<tr class="memdesc:a28791c9b8684e3907844d65a40453f93"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get list of all supported instance extension strings <a href="#a28791c9b8684e3907844d65a40453f93">More...</a><br/></td></tr>
-<tr class="separator:a28791c9b8684e3907844d65a40453f93"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a168ac0fa64d41e5a49e6647d05a466dc"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>pvrvk::Extensions::filterExtensions</b> (const std::vector&lt; pvrvk::ExtensionProperties &gt; &amp;extensionProperties, const std::string *extensionsToEnable, uint32_t numExtensions)</td></tr>
-<tr class="memdesc:a168ac0fa64d41e5a49e6647d05a466dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Filter the extensions <a href="#a168ac0fa64d41e5a49e6647d05a466dc">More...</a><br/></td></tr>
-<tr class="separator:a168ac0fa64d41e5a49e6647d05a466dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a595acd94929aa757425ed2cf820770ed"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>pvrvk::Extensions::filterInstanceExtensions</b> (const std::string *extensionsToEnable, uint32_t extensionsCount)</td></tr>
-<tr class="memdesc:a595acd94929aa757425ed2cf820770ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Filter instance extensions <a href="#a595acd94929aa757425ed2cf820770ed">More...</a><br/></td></tr>
-<tr class="separator:a595acd94929aa757425ed2cf820770ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a97a41cde80b186bf7ef302af73284bc7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><b>pvrvk::Extensions::isInstanceExtensionSupported</b> (const char *extension)</td></tr>
-<tr class="memdesc:a97a41cde80b186bf7ef302af73284bc7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query if an Instance Extension is supported <a href="#a97a41cde80b186bf7ef302af73284bc7">More...</a><br/></td></tr>
-<tr class="separator:a97a41cde80b186bf7ef302af73284bc7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a79123a711915b2205f541f8da35263cc"><td class="memItemLeft" align="right" valign="top">VulkanExtensionList&#160;</td><td class="memItemRight" valign="bottom"><b>pvrvk::Extensions::filterExtensions</b> (const std::vector&lt; pvrvk::ExtensionProperties &gt; &amp;extensionProperties, const VulkanExtensionList &amp;extensionsToEnable)</td></tr>
+<tr class="memdesc:a79123a711915b2205f541f8da35263cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Filter the extensions <a href="#a79123a711915b2205f541f8da35263cc">More...</a><br/></td></tr>
+<tr class="separator:a79123a711915b2205f541f8da35263cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8951ac153bbaeca192c7959a28055614"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><b>pvrvk::Extensions::isInstanceExtensionSupported</b> (const std::string &amp;extension)</td></tr>
+<tr class="memdesc:a8951ac153bbaeca192c7959a28055614"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query if an Instance Extension is supported <a href="#a8951ac153bbaeca192c7959a28055614">More...</a><br/></td></tr>
+<tr class="separator:a8951ac153bbaeca192c7959a28055614"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Functionality that helps management of Vulkan extensions, such as enumerating, enabling/disabling. </p>

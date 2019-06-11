@@ -90,7 +90,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 
-<p>A class that loads Textures in a (single) different thread and provides futures to them. Create an instance of it, and then just call loadTextureAsync foreach texture to load. When each texture has completed loading, a callback may be called, otherwise you can use all the typical functionality of futures, such as querying if loading is comlete, or using a blocking wait to get the result  
+<p>A class that loads Textures in a (single) different thread and provides futures to them. Create an instance of it, and then just call loadTextureAsync foreach texture to load. When each texture has completed loading, a callback may be called, otherwise you can use all the typical functionality of futures, such as querying if loading is comlete, or using a blocking wait to get the result 
  <a href="classpvr_1_1async_1_1_texture_async_loader.html#details">More...</a></p>
 <div class="dynheader">
 Inheritance diagram for pvr::async::TextureAsyncLoader:</div>
@@ -102,12 +102,11 @@ Inheritance diagram for pvr::async::TextureAsyncLoader:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:af8dc5cb34beb73c7ebc04e94e50f098b"><td class="memItemLeft" align="right" valign="top">typedef <br class="typebreak"/>
-EmbeddedRefCountedResource<br class="typebreak"/>
+<tr class="memitem:a2e69fbb0066ef55fcca43cd95df576b6"><td class="memItemLeft" align="right" valign="top">typedef std::shared_ptr<br class="typebreak"/>
 &lt; <a class="el" href="classpvr_1_1async_1_1_i_framework_async_result.html">IFrameworkAsyncResult</a><br class="typebreak"/>
-&lt; TexturePtr &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1async_1_1_async_scheduler.html#af8dc5cb34beb73c7ebc04e94e50f098b">AsyncResult</a></td></tr>
-<tr class="memdesc:af8dc5cb34beb73c7ebc04e94e50f098b"><td class="mdescLeft">&#160;</td><td class="mdescRight">The type of result throughout this class. <a href="#af8dc5cb34beb73c7ebc04e94e50f098b">More...</a><br/></td></tr>
-<tr class="separator:af8dc5cb34beb73c7ebc04e94e50f098b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+&lt; TexturePtr &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1async_1_1_async_scheduler.html#a2e69fbb0066ef55fcca43cd95df576b6">AsyncResult</a></td></tr>
+<tr class="memdesc:a2e69fbb0066ef55fcca43cd95df576b6"><td class="mdescLeft">&#160;</td><td class="mdescRight">The type of result throughout this class. <a href="#a2e69fbb0066ef55fcca43cd95df576b6">More...</a><br/></td></tr>
+<tr class="separator:a2e69fbb0066ef55fcca43cd95df576b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -117,9 +116,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ad3ff290f8906a799226fbc0fafad617c"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1async_1_1_async_scheduler.html#ad3ff290f8906a799226fbc0fafad617c">getNumQueuedItems</a> ()</td></tr>
 <tr class="memdesc:ad3ff290f8906a799226fbc0fafad617c"><td class="mdescLeft">&#160;</td><td class="mdescRight">The precise number of queued items at the time of calling. Although it is poosible that (if the queue is currently producing or consuming) the number has changed by the time it is used (even if immediately), nevertheless getting the number is synchronized hence precise at the time of querying it. <a href="#ad3ff290f8906a799226fbc0fafad617c">More...</a><br/></td></tr>
 <tr class="separator:ad3ff290f8906a799226fbc0fafad617c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa74f95ceb743fe78dd06d6fda13659dc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpvr_1_1async_1_1_async_scheduler.html#af8dc5cb34beb73c7ebc04e94e50f098b">AsyncResult</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1async_1_1_texture_async_loader.html#aa74f95ceb743fe78dd06d6fda13659dc">loadTextureAsync</a> (const std::string &amp;filename, <a class="el" href="classpvr_1_1_i_asset_provider.html">IAssetProvider</a> *loader, <a class="el" href="namespacepvr.html#a8be7d779089afe1df56a1bf542134d0d">TextureFileFormat</a> fmt, AsyncResult::ElementType::Callback callback=NULL)</td></tr>
-<tr class="memdesc:aa74f95ceb743fe78dd06d6fda13659dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function enqueues a "load texture" on a background thread, and returns an object that can be used to query and wait for the result. <a href="#aa74f95ceb743fe78dd06d6fda13659dc">More...</a><br/></td></tr>
-<tr class="separator:aa74f95ceb743fe78dd06d6fda13659dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9bfabe07e22d5f96d0132edf24032675"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpvr_1_1async_1_1_async_scheduler.html#a2e69fbb0066ef55fcca43cd95df576b6">AsyncResult</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1async_1_1_texture_async_loader.html#a9bfabe07e22d5f96d0132edf24032675">loadTextureAsync</a> (const std::string &amp;filename, <a class="el" href="classpvr_1_1_i_asset_provider.html">IAssetProvider</a> *loader, <a class="el" href="namespacepvr.html#a8be7d779089afe1df56a1bf542134d0d">TextureFileFormat</a> format, AsyncResult::element_type::Callback callback=NULL)</td></tr>
+<tr class="memdesc:a9bfabe07e22d5f96d0132edf24032675"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function enqueues a "load texture" on a background thread, and returns an object that can be used to query and wait for the result. <a href="#a9bfabe07e22d5f96d0132edf24032675">More...</a><br/></td></tr>
+<tr class="separator:a9bfabe07e22d5f96d0132edf24032675"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
@@ -137,9 +136,9 @@ Protected Attributes</h2></td></tr>
 <tr class="separator:a75acf07584edd98f0f5b837d90445f4e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>A class that loads Textures in a (single) different thread and provides futures to them. Create an instance of it, and then just call loadTextureAsync foreach texture to load. When each texture has completed loading, a callback may be called, otherwise you can use all the typical functionality of futures, such as querying if loading is comlete, or using a blocking wait to get the result </p>
+<div class="textblock"><p>A class that loads Textures in a (single) different thread and provides futures to them. Create an instance of it, and then just call loadTextureAsync foreach texture to load. When each texture has completed loading, a callback may be called, otherwise you can use all the typical functionality of futures, such as querying if loading is comlete, or using a blocking wait to get the result</p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
-<a class="anchor" id="af8dc5cb34beb73c7ebc04e94e50f098b"></a>
+<a class="anchor" id="a2e69fbb0066ef55fcca43cd95df576b6"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -147,7 +146,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">typedef EmbeddedRefCountedResource&lt;<a class="el" href="classpvr_1_1async_1_1_i_framework_async_result.html">IFrameworkAsyncResult</a>&lt;TexturePtr &gt; &gt; <a class="el" href="classpvr_1_1async_1_1_async_scheduler.html">pvr::async::AsyncScheduler</a>&lt; TexturePtr , TextureLoadFuture , worker &gt;::<a class="el" href="classpvr_1_1async_1_1_async_scheduler.html#af8dc5cb34beb73c7ebc04e94e50f098b">AsyncResult</a></td>
+          <td class="memname">typedef std::shared_ptr&lt;<a class="el" href="classpvr_1_1async_1_1_i_framework_async_result.html">IFrameworkAsyncResult</a>&lt;TexturePtr &gt; &gt; <a class="el" href="classpvr_1_1async_1_1_async_scheduler.html">pvr::async::AsyncScheduler</a>&lt; TexturePtr , TextureLoadFuture , worker &gt;::<a class="el" href="classpvr_1_1async_1_1_async_scheduler.html#a2e69fbb0066ef55fcca43cd95df576b6">AsyncResult</a></td>
         </tr>
       </table>
   </td>
@@ -214,7 +213,7 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="aa74f95ceb743fe78dd06d6fda13659dc"></a>
+<a class="anchor" id="a9bfabe07e22d5f96d0132edf24032675"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -222,7 +221,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classpvr_1_1async_1_1_async_scheduler.html#af8dc5cb34beb73c7ebc04e94e50f098b">AsyncResult</a> pvr::async::TextureAsyncLoader::loadTextureAsync </td>
+          <td class="memname"><a class="el" href="classpvr_1_1async_1_1_async_scheduler.html#a2e69fbb0066ef55fcca43cd95df576b6">AsyncResult</a> pvr::async::TextureAsyncLoader::loadTextureAsync </td>
           <td>(</td>
           <td class="paramtype">const std::string &amp;&#160;</td>
           <td class="paramname"><em>filename</em>, </td>
@@ -237,12 +236,12 @@ Protected Attributes</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype"><a class="el" href="namespacepvr.html#a8be7d779089afe1df56a1bf542134d0d">TextureFileFormat</a>&#160;</td>
-          <td class="paramname"><em>fmt</em>, </td>
+          <td class="paramname"><em>format</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">AsyncResult::ElementType::Callback&#160;</td>
+          <td class="paramtype">AsyncResult::element_type::Callback&#160;</td>
           <td class="paramname"><em>callback</em> = <code>NULL</code>&#160;</td>
         </tr>
         <tr>
@@ -263,12 +262,12 @@ Protected Attributes</h2></td></tr>
   <table class="params">
     <tr><td class="paramname">filename</td><td>The filename of the texture to load</td></tr>
     <tr><td class="paramname">loader</td><td>A class that provides a "getAssetStream" function to get a <a class="el" href="classpvr_1_1_stream.html" title="This class is used to abstract streams of data (files, blocks of memory, resources etc...">Stream</a> from the filename (usually, the application class itself)</td></tr>
-    <tr><td class="paramname">fmt</td><td>The texture format as which to load the texture.</td></tr>
+    <tr><td class="paramname">format</td><td>The texture format as which to load the texture.</td></tr>
     <tr><td class="paramname">callback</td><td>An optional callback to call immediately after texture loading is complete.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>A future to a texture : TextureLoadFuture </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>A future to a texture : TextureLoadFuture</dd></dl>
 
 </div>
 </div>

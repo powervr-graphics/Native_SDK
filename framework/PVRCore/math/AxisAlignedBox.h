@@ -10,8 +10,7 @@
 #include <cfloat>
 
 namespace pvr {
-/// <summary>Contains mathematical functionality and classes, such as bounding box calculations, intersections etc.
-/// </summary>
+/// <summary>Contains mathematical functionality and classes, such as bounding box calculations, intersections etc.</summary>
 namespace math {
 
 /// <summary>This class provides functionality to handle the volume enclosed by 6 planes, normally the viewing
@@ -26,7 +25,7 @@ struct Frustum
 	glm::vec4 minusZ; //!< The minimum Z (near) plane expressed as normal-distance
 	glm::vec4 plusZ; //!< The maximum Z (far) plane expressed as normal-distance
 
-	glm::vec3 points[8];
+	glm::vec3 points[8]; //!< The set of points making up the frustum
 };
 
 /// <summary>This class provides specialized functionality for when a frustum is a "normal"viewing frustum, that
@@ -40,8 +39,7 @@ struct Frustum
 /// 3) Any point of a positive(negative) part of the frustum has a larger(smaller) corresponding coordinate than
 /// its opposite part
 /// 4) All plane normals point INTO of the frustum
-/// These optimizations allow us to greatly reduce the calculations for a viewing frustum.
-/// </summary>
+/// These optimizations allow us to greatly reduce the calculations for a viewing frustum.</summary>
 struct ViewingFrustum : public Frustum
 {
 	/// <summary>Check if a Viewing Frustum is valid (the viewing frustum conditions hold)</summary>
@@ -101,13 +99,18 @@ inline void getFrustumPlanes(pvr::Api api, const glm::mat4& projection_from_worl
 	frustum_out.plusZ = frustum_out.plusZ * (1 / glm::length(glm::vec3(frustum_out.plusZ)));
 }
 
-inline glm::vec3 IntersectPlanes(glm::vec4 P0, glm::vec4 P1, glm::vec4 P2)
+/// <summary>Retrieves the point at which 3 planes intersect</summary>
+/// <param name="p0">Plane 0</param>
+/// <param name="p1">Plane 1</param>
+/// <param name="p2">Plane 2</param>
+/// <returns>The point at which the 3 planes intersect</returns>
+inline glm::vec3 IntersectPlanes(glm::vec4 p0, glm::vec4 p1, glm::vec4 p2)
 {
-	glm::vec3 bxc = glm::cross(glm::vec3(P1), glm::vec3(P2));
-	glm::vec3 cxa = glm::cross(glm::vec3(P2), glm::vec3(P0));
-	glm::vec3 axb = glm::cross(glm::vec3(P0), glm::vec3(P1));
-	glm::vec3 r = -P0.w * bxc - P1.w * cxa - P2.w * axb;
-	return r * (1 / glm::dot(glm::vec3(P0), bxc));
+	glm::vec3 bxc = glm::cross(glm::vec3(p1), glm::vec3(p2));
+	glm::vec3 cxa = glm::cross(glm::vec3(p2), glm::vec3(p0));
+	glm::vec3 axb = glm::cross(glm::vec3(p0), glm::vec3(p1));
+	glm::vec3 r = -p0.w * bxc - p1.w * cxa - p2.w * axb;
+	return r * (1 / glm::dot(glm::vec3(p0), bxc));
 }
 
 /// <summary>Retrieve the points of a viewing frustum by intersecting planes</summary>
@@ -135,10 +138,7 @@ public:
 	/// <summary>Constructor center/halfextent.</summary>
 	/// <param name="center">The center of the box</param>
 	/// <param name="halfExtent">A vector containing the half-lengths on each axis</param>
-	AxisAlignedBox(const glm::vec3& center = glm::vec3(0.0f), const glm::vec3& halfExtent = glm::vec3(0.f))
-	{
-		set(center, halfExtent);
-	}
+	AxisAlignedBox(const glm::vec3& center = glm::vec3(0.0f), const glm::vec3& halfExtent = glm::vec3(0.f)) : _center(center), _halfExtent(halfExtent) {}
 
 	/// <summary>Sets center and extents to zero.</summary>
 	void clear()
@@ -165,28 +165,6 @@ public:
 		_center = center;
 		_halfExtent = halfExtent;
 	}
-
-	//!\cond NO_DOXYGEN
-	/// <summary>DEPRECATED - do not use</summary>
-	void remove(float x, float y, float z)
-	{
-		remove(glm::vec3(x, y, z));
-	}
-
-	/// <summary>DEPRECATED - do not use</summary>
-	void remove(const AxisAlignedBox& aabb)
-	{
-		remove(aabb.getMin());
-		remove(aabb.getMax());
-	}
-
-	/// <summary>DEPRECATED - do not use</summary>
-	void remove(const glm::vec3& point)
-	{
-		Log("Remove function of AABB is deprecated and must be replaced");
-		setMinMax(glm::max(point, getMin()), glm::min(point, getMax()));
-	}
-	//!\endcond NO_DOXYGEN
 
 	/// <summary>Add a new point to the box. The new box will be the minimum box containing the old box and the new
 	/// point.</summary>

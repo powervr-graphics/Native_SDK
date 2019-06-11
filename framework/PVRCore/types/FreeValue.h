@@ -2,7 +2,7 @@
 \brief Two classes designed to carry values of arbitrary datatypes along with their "reflective" data (datatypes
 etc.) FreeValue is statically allocated but has a fixed (max) size of 64 bytes, while TypedMem stores arbitrary
 sized data.
-\file PVRCore/DataStructures/FreeValue.h
+\file PVRCore/types/FreeValue.h
 \author PowerVR by Imagination, Developer Technology Team
 \copyright Copyright (c) Imagination Technologies Limited.
 */
@@ -754,6 +754,7 @@ public:
 	/// undefined.</summary>
 	/// <param name="rawvalues">The values to set</param>
 	/// <param name="numElements">The number of elmeents to set</param>
+	/// <param name="startArrayIndex">The array index at which to start setting values for</param>
 	template<typename Type_>
 	void setValues(const Type_* rawvalues, uint32_t numElements, uint32_t startArrayIndex = 0)
 	{
@@ -867,8 +868,7 @@ public:
 	}
 
 	/// <summary>Copy a value from a given untyped pointer. The type of the value is ONLY used for the size to copy -
-	/// no conversion is performed - only a bit-for-bit copy. If the value is incompatible, the behaviour is undefined/
-	/// </summary>
+	/// no conversion is performed - only a bit-for-bit copy. If the value is incompatible, the behaviour is undefined/</summary>
 	/// <param name="type">The type of the value to copy.</param>
 	/// <param name="value">The value to copy.</param>
 	void fastSet(GpuDatatypes type, char* value)
@@ -983,7 +983,7 @@ public:
 		}
 	}
 
-	/// <summary> Assuming the contained value is a string, return it, otherwise logs error and returns an empty string.</summary>
+	/// <summary>Assuming the contained value is a string, return it, otherwise logs error and returns an empty string.</summary>
 	/// <returns> The contained string. If the datatype is not a string, returns ""</returns>
 	const char* getValueAsString() const
 	{

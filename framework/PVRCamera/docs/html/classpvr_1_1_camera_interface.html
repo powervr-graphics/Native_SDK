@@ -123,7 +123,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a647bf72c0b4a7e629ccfe46adaf655fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks to see if the projection matrix has changed. <a href="#a647bf72c0b4a7e629ccfe46adaf655fe">More...</a><br/></td></tr>
 <tr class="separator:a647bf72c0b4a7e629ccfe46adaf655fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac00b57938d955f8ae6e0f7220b2f4549"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_camera_interface.html#ac00b57938d955f8ae6e0f7220b2f4549">hasRgbTexture</a> ()</td></tr>
-<tr class="memdesc:ac00b57938d955f8ae6e0f7220b2f4549"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query if this implementation supports a single RGB texture for the camera streaming interface.  <a href="#ac00b57938d955f8ae6e0f7220b2f4549">More...</a><br/></td></tr>
+<tr class="memdesc:ac00b57938d955f8ae6e0f7220b2f4549"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query if this implementation supports a single RGB texture for the camera streaming interface. <a href="#ac00b57938d955f8ae6e0f7220b2f4549">More...</a><br/></td></tr>
 <tr class="separator:ac00b57938d955f8ae6e0f7220b2f4549"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afd9c1a402c945c2ba0f4148f8389d1da"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_camera_interface.html#afd9c1a402c945c2ba0f4148f8389d1da">initializeSession</a> (<a class="el" href="namespacepvr_1_1_h_w_camera.html#a77929091f777ed468df6cb128dbfdb08">HWCamera::Enum</a> eCamera, int preferredResX=0, int preferredResY=0)</td></tr>
 <tr class="memdesc:afd9c1a402c945c2ba0f4148f8389d1da"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the capture session using the given hardware camera, if it is available. <a href="#afd9c1a402c945c2ba0f4148f8389d1da">More...</a><br/></td></tr>
@@ -344,7 +344,7 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Query if this implementation supports a single RGB texture for the camera streaming interface. </p>
+<p>Query if this implementation supports a single RGB texture for the camera streaming interface.</p>
 <dl class="section return"><dt>Returns</dt><dd>True if the implementation supports an RGB texture, false otherwise</dd></dl>
 <p>This function will return true if the <a class="el" href="classpvr_1_1_camera_interface.html#a5f8b3717c0e207de6ae024f921a83c19" title="Retrieves the texture name for the YUV camera texture.">getRgbTexture()</a> can be used. In implementations where this is not supported (e.g. iOS), this function will return false, and the <a class="el" href="classpvr_1_1_camera_interface.html#a5f8b3717c0e207de6ae024f921a83c19" title="Retrieves the texture name for the YUV camera texture.">getRgbTexture()</a> function will return an empty (invalid) texture if used. See <a class="el" href="classpvr_1_1_camera_interface.html#aef1d4aa9955ef0a5b1a3310b6b50adbd" title="Query if this implementation supports YUV (Luma/Chroma)planar textures.">hasLumaChromaTextures()</a>. In implementations where RGB textures are supported (e.g. Android) this function will return true and the <a class="el" href="classpvr_1_1_camera_interface.html#a5f8b3717c0e207de6ae024f921a83c19" title="Retrieves the texture name for the YUV camera texture.">getRgbTexture()</a> will return a valid texture handle (if called after this interface was successfully initialized).</p>
 
@@ -384,7 +384,7 @@ Public Member Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">eCamera</td><td>The hardware camera to attempt to stream from</td></tr>
-    <tr><td class="paramname">preferredResX,preferredResY</td><td>If supported by the implementation, set a preferred resolution </td></tr>
+    <tr><td class="paramname">preferredResX,preferredResY</td><td>If supported by the implementation, set a preferred resolution</td></tr>
   </table>
   </dd>
 </dl>

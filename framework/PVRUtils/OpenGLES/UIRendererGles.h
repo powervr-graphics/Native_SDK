@@ -455,8 +455,7 @@ public:
 	}
 
 	/// <summary>Create Text sprite from wide std::wstring. Uses the Default Font.</summary>
-	/// <param name="text">Wide std::string that this Text object will be initialized with. Will use the Default Font.
-	/// </param>
+	/// <param name="text">Wide std::string that this Text object will be initialized with. Will use the Default Font.</param>
 	/// <returns>Text framework object, Null framework object if failed.</returns>
 	Text createText(const std::wstring& text)
 	{
@@ -750,11 +749,11 @@ private:
 
 	void updateResourceOwnership()
 	{
-		std::for_each(_sprites.begin(), _sprites.end(), [this](SpriteWeakRef& sprite) { sprite->setUIRenderer(this); });
+		std::for_each(_sprites.begin(), _sprites.end(), [this](SpriteWeakRef& sprite) { sprite.lock()->setUIRenderer(this); });
 
-		std::for_each(_fonts.begin(), _fonts.end(), [this](FontWeakRef& font) { font->setUIRenderer(this); });
+		std::for_each(_fonts.begin(), _fonts.end(), [this](FontWeakRef& font) { font.lock()->setUIRenderer(this); });
 
-		std::for_each(_textElements.begin(), _textElements.end(), [this](TextElementWeakRef& textElement) { textElement->setUIRenderer(this); });
+		std::for_each(_textElements.begin(), _textElements.end(), [this](TextElementWeakRef& textElement) { textElement.lock()->setUIRenderer(this); });
 	}
 
 	friend class ::pvr::ui::impl::Image_;

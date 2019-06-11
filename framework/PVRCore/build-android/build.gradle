@@ -1,16 +1,18 @@
 apply plugin: 'com.android.library'
 
+def externalProjects = ["pugixml"]
+
 android {
-	compileSdkVersion 26
+	compileSdkVersion 28
 	defaultConfig {
-		minSdkVersion 16
-		targetSdkVersion 24
+		minSdkVersion 21
+		targetSdkVersion 26
 		versionCode 1
 		versionName "1.0"
 		externalNativeBuild {
 			cmake {
 				cppFlags "-fexceptions"
-				arguments "-DANDROID_STL=c++_static"
+				arguments "-DANDROID_STL=c++_static", "-DUSE_PREBUILT_DEPENDENCIES=ON"
 				targets "PVRCore"
 			}
 		}
@@ -32,7 +34,27 @@ buildscript {
 		jcenter()
 	}
 	dependencies {
-		classpath 'com.android.tools.build:gradle:3.1.0'
+		classpath 'com.android.tools.build:gradle:3.3.0'
+	}
+}
+
+// This block specifies dependencies required to build only the module itself
+dependencies {
+	// Add the dependencies to the external modules
+	externalProjects.each { 
+		s-> implementation project(":${s}")
+	}
+}
+
+tasks.whenTaskAdded { task -> 	
+	// Workaround library native code dependency issue in gradle
+	// This should normally be handled by the dependencies above: (implementation project(':...'))
+	// refer to https://issuetracker.google.com/issues/69616088.
+	// We add a dependency on all external projects' corresponding externalNativeBuild tasks - If these lines are removed, the external is not built as it should be.
+	if (task.name == 'generateJsonModelRelease') {
+		externalProjects.each {s -> task.dependsOn ":${s}:externalNativeBuildRelease" }
+	} else if (task.name == 'generateJsonModelDebug') {
+		externalProjects.each {s -> task.dependsOn ":${s}:externalNativeBuildDebug" }
 	}
 }
 

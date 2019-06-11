@@ -8,8 +8,8 @@
 
 namespace pvrvk {
 namespace impl {
-RenderPass_::RenderPass_(const DeviceWeakPtr& device, const RenderPassCreateInfo& createInfo)
-	: DeviceObjectHandle(device), DeviceObjectDebugMarker(DebugReportObjectTypeEXT::e_RENDER_PASS_EXT)
+//!\cond NO_DOXYGEN
+RenderPass_::RenderPass_(make_shared_enabler, const DeviceWeakPtr& device, const RenderPassCreateInfo& createInfo) : PVRVkDeviceObjectBase(device), DeviceObjectDebugUtils()
 {
 	_createInfo = createInfo;
 	VkRenderPassCreateInfo renderPassInfoVk;
@@ -149,24 +149,24 @@ RenderPass_::RenderPass_(const DeviceWeakPtr& device, const RenderPassCreateInfo
 	} // next subpass dependency
 	renderPassInfoVk.pDependencies = subPassDependenciesVk.data();
 
-	vkThrowIfFailed(_device->getVkBindings().vkCreateRenderPass(_device->getVkHandle(), &renderPassInfoVk, NULL, &_vkHandle), "Create RenderPass Failed");
+	vkThrowIfFailed(getDevice()->getVkBindings().vkCreateRenderPass(getDevice()->getVkHandle(), &renderPassInfoVk, NULL, &_vkHandle), "Create RenderPass Failed");
 }
 
 RenderPass_::~RenderPass_()
 {
 	if (getVkHandle() != VK_NULL_HANDLE)
 	{
-		if (_device.isValid())
+		if (!_device.expired())
 		{
-			_device->getVkBindings().vkDestroyRenderPass(_device->getVkHandle(), getVkHandle(), NULL);
+			getDevice()->getVkBindings().vkDestroyRenderPass(getDevice()->getVkHandle(), getVkHandle(), NULL);
 			_vkHandle = VK_NULL_HANDLE;
-			_device.reset();
 		}
 		else
 		{
-			reportDestroyedAfterDevice("RenderPass");
+			reportDestroyedAfterDevice();
 		}
 	}
 }
+//!\endcond
 } // namespace impl
 } // namespace pvrvk

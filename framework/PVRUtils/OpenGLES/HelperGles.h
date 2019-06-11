@@ -15,6 +15,7 @@
 #include "PVRUtils/OpenGLES/ConvertToGlesTypes.h"
 #include "PVRUtils/OpenGLES/ErrorsGles.h"
 #include "PVRCore/textureio/TGAWriter.h"
+#include "PVRUtils/OpenGLES/PBRUtilsGles.h"
 #include <iterator>
 
 namespace pvr {
@@ -139,7 +140,7 @@ inline Api getCurrentGlesVersion()
 
 /// <summary>Check the currently bound GL_DRAW_FRAMEBUFFER status. On success, return true. On error, log the
 /// actual error log and return false</summary>
-/// <return>True on GL_FRAMEBUFFER_COMPLETE, otherwise false. Additionally logs the error on false</returns>
+/// <returns>True on GL_FRAMEBUFFER_COMPLETE, otherwise false. Additionally logs the error on false</returns>
 inline bool checkFboStatus()
 {
 	// check status
@@ -243,10 +244,31 @@ inline GLuint textureUpload(IAssetProvider& app, const char* file, pvr::Texture&
 	return res.image;
 }
 
+inline GLuint textureUpload(IAssetProvider& app, const std::string& file, pvr::Texture& outTexture, bool isEs2 = false)
+{
+	return textureUpload(app, file.c_str(), outTexture, false);
+}
+
 inline GLuint textureUpload(IAssetProvider& app, const char* file, bool isEs2 = false)
 {
 	pvr::Texture tex;
 	return textureUpload(app, file, tex, isEs2);
+}
+
+inline GLuint textureUpload(IAssetProvider& app, const std::string& file, bool isEs2 = false)
+{
+	return textureUpload(app, file.c_str(), isEs2);
+}
+
+inline TextureUploadResults textureUploadWithResults(IAssetProvider& app, const char* file, pvr::Texture& outTexture, bool isEs2 = false)
+{
+	outTexture = pvr::textureLoad(app.getAssetStream(file), pvr::getTextureFormatFromFilename(file));
+
+	return pvr::utils::textureUpload(outTexture, isEs2, true);
+}
+inline TextureUploadResults textureUploadWithResults(IAssetProvider& app, const char* file, bool isEs2 = false)
+{
+	return pvr::utils::textureUpload(pvr::textureLoad(app.getAssetStream(file), pvr::getTextureFormatFromFilename(file)), isEs2, true);
 }
 
 inline pvr::Texture getTextureData(IAssetProvider& app, const char* file)
@@ -618,82 +640,25 @@ inline void generateTextureAtlas(
 	pvr::utils::throwOnGlError("generateTextureAtlas End");
 }
 
-inline GLuint createShaderProgram(IAssetProvider& app, const char* vertShader, const char* tessCtrlShader, const char* tessEvalShader, const char* geometryShader,
-	const char* fragShader, const char** attribNames, const uint16_t* attribIndices, uint32_t numAttribs, const char* const* defines = 0, uint32_t numDefines = 0)
-{
-	GLuint shaders[5] = { 0 };
-	GLuint program = 0;
-	uint32_t count = 0;
-	if (vertShader)
-	{
-		auto vertShaderSrc = app.getAssetStream(vertShader);
-		shaders[count++] = pvr::utils::loadShader(*vertShaderSrc, pvr::ShaderType::VertexShader, defines, numDefines);
-	}
-
-	if (tessCtrlShader)
-	{
-		auto texCtrShaderSrc = app.getAssetStream(tessCtrlShader);
-		shaders[count++] = pvr::utils::loadShader(*texCtrShaderSrc, pvr::ShaderType::TessControlShader, defines, numDefines);
-	}
-
-	if (tessEvalShader)
-	{
-		auto texEvalShaderSrc = app.getAssetStream(tessEvalShader);
-		shaders[count++] = pvr::utils::loadShader(*texEvalShaderSrc, pvr::ShaderType::TessEvaluationShader, defines, numDefines);
-	}
-
-	if (geometryShader)
-	{
-		auto geometryShaderSrc = app.getAssetStream(geometryShader);
-		shaders[count++] = pvr::utils::loadShader(*geometryShaderSrc, pvr::ShaderType::GeometryShader, defines, numDefines);
-	}
-
-	if (fragShader)
-	{
-		auto fragShaderSrc = app.getAssetStream(fragShader);
-		shaders[count++] = pvr::utils::loadShader(*fragShaderSrc, pvr::ShaderType::FragmentShader, defines, numDefines);
-	}
-
-	program = pvr::utils::createShaderProgram(shaders, count, attribNames, attribIndices, numAttribs);
-	for (uint32_t i = 0; i < count; ++i)
-	{
-		gl::DeleteShader(shaders[i]);
-	}
-
-	return program;
-}
-
-inline GLuint createShaderProgram(IAssetProvider& app, const char* vertShader, const char* fragShader, const char** attribNames, const uint16_t* attribIndices, uint32_t numAttribs,
-	const char* const* defines = 0, uint32_t numDefines = 0)
-{
-	return createShaderProgram(app, vertShader, nullptr, nullptr, nullptr, fragShader, attribNames, attribIndices, numAttribs, defines, numDefines);
-}
-
-inline GLuint createComputeShaderProgram(IAssetProvider& app, const char* compShader, const char* const* defines = 0, uint32_t numDefines = 0)
-{
-	GLuint shader = 0;
-	GLuint program = 0;
-
-	auto compShaderSrc = app.getAssetStream(compShader);
-
-	if (!compShaderSrc)
-	{
-		Log("Failed to open compute shader %s", compShader);
-		return false;
-	}
-
-	shader = pvr::utils::loadShader(*compShaderSrc, pvr::ShaderType::ComputeShader, defines, numDefines);
-
-	program = pvr::utils::createShaderProgram(&shader, 1, 0, 0, 0);
-	gl::DeleteShader(shader);
-
-	return program;
-}
-
 inline bool loadModel(IAssetProvider& app, const char* modelFile, pvr::assets::ModelHandle& model)
 {
 	model = pvr::assets::Model::createWithReader(pvr::assets::PODReader(app.getAssetStream(modelFile)));
-	return model.isValid();
+	return model != nullptr;
+}
+
+inline void deleteTexturesAndZero(GLuint& texture)
+{
+	if (texture != 0)
+	{
+		gl::DeleteTextures(1, &texture);
+		texture = 0;
+	}
+}
+template<typename... Args>
+inline void deleteTexturesAndZero(GLuint& first, Args&... rest)
+{
+	deleteTexturesAndZero(first);
+	deleteTexturesAndZero(rest...);
 }
 
 /// <summary>Represents a shader Explicit binding, tying a Semantic name to an Attribute Index.</summary>
@@ -741,8 +706,7 @@ struct VertexConfiguration
 	std::vector<VertexAttributeInfoWithBinding> attributes;
 	std::vector<VertexInputBindingInfo> bindings;
 
-	/// <summary>Add vertex layout information to a buffer binding index using a VertexAttributeInfo object.
-	/// </summary>
+	/// <summary>Add vertex layout information to a buffer binding index using a VertexAttributeInfo object.</summary>
 	/// <param name="bufferBinding">The binding index to add the vertex attribute information.</param>
 	/// <param name="attrib">Vertex Attribute information object.</param>
 	/// <returns>this object (allows chained calls)</returns>
@@ -752,8 +716,7 @@ struct VertexConfiguration
 		return *this;
 	}
 
-	/// <summary>Add vertex layout information to a buffer binding index using an array of VertexAttributeInfo object.
-	/// </summary>
+	/// <summary>Add vertex layout information to a buffer binding index using an array of VertexAttributeInfo object.</summary>
 	/// <param name="bufferBinding">The binding index to add the vertex attribute information.</param>
 	/// <param name="attrib">Attribute information object.</param>
 	/// <param name="numAttributes">Number of attributues in the array</param>
@@ -785,8 +748,7 @@ struct VertexConfiguration
 	/// <summary>Set the vertex input buffer bindings.</summary>
 	/// <param name="bufferBinding">Vertex buffer binding index</param>
 	/// <param name="strideInBytes">specifies the char offset between consecutive generic vertex attributes. If stride is 0,
-	/// the generic vertex attributes are understood to be tightly packed in the array. The initial value is 0.
-	/// </param>
+	/// the generic vertex attributes are understood to be tightly packed in the array. The initial value is 0.</param>
 	/// <param name="stepRate">The rate at which this binding is incremented (used for Instancing).</param>
 	/// <returns>this object (allows chained calls)</returns>
 	VertexConfiguration& setInputBinding(uint16_t bufferBinding, uint16_t strideInBytes = 0, StepRate stepRate = StepRate::Vertex)
@@ -970,8 +932,7 @@ inline void createMultipleBuffersFromMesh(const assets::Mesh& mesh, std::vector<
 /// <param name="context">The device context where the buffers will be generated on</param>
 /// <param name="meshIter">Iterator for a collection of meshes.</param>
 /// <param name="meshIterEnd">End Iterator for meshIter.</param>
-/// <param name="outVbos">std::inserter for a collection of api::Buffer handles. It will be used to insert one VBO per mesh.
-/// </param>
+/// <param name="outVbos">std::inserter for a collection of api::Buffer handles. It will be used to insert one VBO per mesh.</param>
 /// <param name="outIbos">std::inserter for a collection of api::Buffer handles. It will be used to insert one IBO per mesh.
 /// If face data is not present on the mesh, a null handle will be inserted.</param>
 /// <remarks>This utility function will read all vertex data from a mesh's data elements and create a single VBO.

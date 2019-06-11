@@ -18,7 +18,7 @@ layout(location = 1) in mediump vec3 vNormal;
 layout(location = 2) in highp vec3 vViewPosition;
 
 layout(location = 0) out mediump vec4 oAlbedo;
-layout(location = 1) out mediump vec4 oNormal;
+layout(location = 1) out mediump vec3 oNormal;
 layout(location = 2) out highp float oDepth;
 
 void main()
@@ -26,10 +26,10 @@ void main()
 	// Calculate the albedo
 	mediump vec3 albedo = texture(sTexture, vTexCoord).rgb * vDiffuseColor.rgb;
 	// Pack the specular exponent with the albedo
-	oAlbedo = vec4(albedo, fSpecularStrength);	
+	oAlbedo = vec4(albedo, fSpecularStrength);
 	
-	// Scale the normal range from [-1,1] to [0, 1] to pack it into the RGB_U8 texture
-	oNormal = vec4(normalize(vNormal) * 0.5 + 0.5, 1.0);
+	oNormal = normalize(vNormal);
 	
-	oDepth = vViewPosition.z / fFarClipDistance;
+	// Negate and divide through by the far clip distance to bring the depth into the [0-1] range
+	oDepth = -(vViewPosition.z / fFarClipDistance);
 }

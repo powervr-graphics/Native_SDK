@@ -161,7 +161,7 @@ void UnicodeConverter::convertUTF8ToUTF32(const utf8* unicodeString, vector<utf3
 		// Quick optimisation for ASCII characters
 		while (*currentCharacter && isAsciiChar(*currentCharacter))
 		{
-			unicodeStringOut.push_back(*currentCharacter);
+			unicodeStringOut.emplace_back(*currentCharacter);
 			++currentCharacter;
 		}
 
@@ -202,7 +202,7 @@ void UnicodeConverter::convertUTF8ToUTF32(const utf8* unicodeString, vector<utf3
 				{
 					if (isValidCodePoint(codePoint))
 					{
-						unicodeStringOut.push_back(codePoint);
+						unicodeStringOut.emplace_back(codePoint);
 					}
 					else
 					{
@@ -271,7 +271,7 @@ void UnicodeConverter::convertUTF16ToUTF32(const utf16* unicodeString, vector<ut
 		// Check that the code point is valid
 		if (isValidCodePoint(codePoint))
 		{
-			unicodeStringOut.push_back(codePoint);
+			unicodeStringOut.emplace_back(codePoint);
 		}
 		else
 		{

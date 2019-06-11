@@ -1,6 +1,6 @@
 /*!
 \brief Defines a simple mechanism for handling key frames (time based).
-\file PVRCore/CameraKeyFrame.h
+\file PVRCore/cameras/CameraKeyFrame.h
 \author PowerVR by Imagination, Developer Technology Team
 \copyright Copyright (c) Imagination Technologies Limited.
 */
@@ -132,7 +132,7 @@ struct CameraAnimationController
 		this->keyframes.reserve(numKeyFrames + this->keyframes.size());
 		for (uint32_t i = 0; i < numKeyFrames; ++i)
 		{
-			this->keyframes.push_back(keyFrames[i]);
+			this->keyframes.emplace_back(keyFrames[i]);
 		}
 
 		totalKeyFrameMs = std::max(totalKeyFrameMs, this->keyframes.back().frameMs);

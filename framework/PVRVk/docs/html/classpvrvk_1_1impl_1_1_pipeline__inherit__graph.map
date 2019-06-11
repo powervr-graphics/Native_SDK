@@ -1,5 +1,5 @@
 <map id="pvrvk::impl::Pipeline&lt; PVRVkPipeline, PVRVkPipelineCreateInfo &gt;" name="pvrvk::impl::Pipeline&lt; PVRVkPipeline, PVRVkPipelineCreateInfo &gt;">
-<area shape="rect" id="node2" href="$classpvrvk_1_1impl_1_1_device_object_handle.html" title="pvrvk::impl::DeviceObject\lHandle\&lt; VkPipeline \&gt;" alt="" coords="267,5,440,46"/>
-<area shape="rect" id="node3" href="$classpvrvk_1_1impl_1_1_object_handle.html" title="pvrvk::impl::ObjectHandle\l\&lt; VkPipeline \&gt;" alt="" coords="5,5,179,46"/>
-<area shape="rect" id="node4" href="$classpvrvk_1_1impl_1_1_device_object_debug_marker.html" title="pvrvk::impl::DeviceObject\lDebugMarker\&lt; Pipeline\&lt;\l PVRVkPipeline, PVRVkPipelineCreate\lInfo \&gt; \&gt;" alt="" coords="227,70,480,141"/>
+<area shape="rect" id="node2" href="$classpvrvk_1_1impl_1_1_p_v_r_vk_device_object_base.html" title="pvrvk::impl::PVRVkDevice\lObjectBase\&lt; VkPipeline,\l ObjectType::e_PIPELINE \&gt;" alt="" coords="301,4,489,60"/>
+<area shape="rect" id="node3" href="$classpvrvk_1_1impl_1_1_p_v_r_vk_object_base.html" title="pvrvk::impl::PVRVkObject\lBase\&lt; VkPipeline, PVRVkObject\lType \&gt;" alt="" coords="5,4,221,60"/>
+<area shape="rect" id="node4" href="$classpvrvk_1_1impl_1_1_device_object_debug_utils.html" title="pvrvk::impl::DeviceObject\lDebugUtils\&lt; Pipeline\&lt; PVRVkPipeline,\l PVRVkPipelineCreateInfo \&gt; \&gt;" alt="" coords="269,84,520,140"/>
 </map>

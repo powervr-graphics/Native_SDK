@@ -1,4 +1,4 @@
 <map id="pvrvk::impl::Device_" name="pvrvk::impl::Device_">
-<area shape="rect" id="node2" href="$classpvrvk_1_1impl_1_1_physical_device_object_handle.html" title="pvrvk::impl::PhysicalDevice\lObjectHandle\&lt; VkDevice \&gt;" alt="" coords="5,97,189,138"/>
-<area shape="rect" id="node3" href="$classpvrvk_1_1impl_1_1_object_handle.html" title="pvrvk::impl::ObjectHandle\l\&lt; VkDevice \&gt;" alt="" coords="11,6,184,47"/>
+<area shape="rect" id="node2" href="$classpvrvk_1_1impl_1_1_p_v_r_vk_physical_device_object_base.html" title="pvrvk::impl::PVRVkPhysical\lDeviceObjectBase\&lt; VkDevice,\l ObjectType::e_DEVICE \&gt;" alt="" coords="307,4,511,60"/>
+<area shape="rect" id="node3" href="$classpvrvk_1_1impl_1_1_p_v_r_vk_object_base.html" title="pvrvk::impl::PVRVkObject\lBase\&lt; VkDevice, PVRVkObjectType \&gt;" alt="" coords="6,11,258,53"/>
 </map>

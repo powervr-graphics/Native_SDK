@@ -9,7 +9,8 @@
 
 namespace pvrvk {
 namespace impl {
-DebugReportCallback_::DebugReportCallback_(InstanceWeakPtr instance, const DebugReportCallbackCreateInfo& createInfo) : InstanceObjectHandle(instance)
+//!\cond NO_DOXYGEN
+DebugReportCallback_::DebugReportCallback_(make_shared_enabler, Instance& instance, const DebugReportCallbackCreateInfo& createInfo) : PVRVkInstanceObjectBase(instance)
 {
 	// Setup callback creation information
 	VkDebugReportCallbackCreateInfoEXT callbackCreateInfo = {};
@@ -19,37 +20,26 @@ DebugReportCallback_::DebugReportCallback_(InstanceWeakPtr instance, const Debug
 	callbackCreateInfo.pfnCallback = createInfo.getCallback();
 	callbackCreateInfo.pUserData = createInfo.getPUserData();
 
-	if (_instance->isInstanceExtensionEnabled(VK_EXT_DEBUG_REPORT_EXTENSION_NAME))
-	{
-		// Register the DebugReportCallback
-		vkThrowIfFailed(
-			_instance->getVkBindings().vkCreateDebugReportCallbackEXT(_instance->getVkHandle(), &callbackCreateInfo, nullptr, &_vkHandle), "Failed to create DebugReportCallback");
-		_enabled = true;
-	}
-	else
-	{
-		_enabled = false;
-	}
+	// Register the DebugReportCallback
+	vkThrowIfFailed(
+		instance->getVkBindings().vkCreateDebugReportCallbackEXT(instance->getVkHandle(), &callbackCreateInfo, nullptr, &_vkHandle), "Failed to create DebugReportCallback");
 }
 
 DebugReportCallback_::~DebugReportCallback_()
 {
 	if (getVkHandle() != VK_NULL_HANDLE)
 	{
-		if (_instance.isValid())
+		if (!_instance.expired())
 		{
-			if (isEnabled())
-			{
-				_instance->getVkBindings().vkDestroyDebugReportCallbackEXT(_instance->getVkHandle(), getVkHandle(), nullptr);
-				_vkHandle = VK_NULL_HANDLE;
-			}
-			_instance.reset();
+			getInstance()->getVkBindings().vkDestroyDebugReportCallbackEXT(getInstance()->getVkHandle(), getVkHandle(), nullptr);
+			_vkHandle = VK_NULL_HANDLE;
 		}
 		else
 		{
-			Log(LogLevel::Warning, "Attempted to destroy object of type [%s] after its corresponding instance", "DebugReportCallback");
+			assert(false && "Attempted to destroy object of type DebugReportCallback after its corresponding instance");
 		}
 	}
 }
+//!\endcond
 } // namespace impl
 } // namespace pvrvk

@@ -11,18 +11,18 @@
 
 namespace pvrvk {
 namespace impl {
-DisplayMode_::DisplayMode_(PhysicalDeviceWeakPtr physicalDevice, const DisplayModePropertiesKHR& displayModeProperties)
-	: PhysicalDeviceObjectHandle(physicalDevice, displayModeProperties.getDisplayMode()), _parameters(displayModeProperties.getParameters())
+DisplayMode_::DisplayMode_(make_shared_enabler, const PhysicalDeviceWeakPtr& physicalDevice, const DisplayModePropertiesKHR& displayModeProperties)
+	: PVRVkPhysicalDeviceObjectBase(physicalDevice, displayModeProperties.getDisplayMode()), _parameters(displayModeProperties.getParameters())
 {}
 
-DisplayMode_::DisplayMode_(PhysicalDeviceWeakPtr physicalDevice, pvrvk::Display& display, const pvrvk::DisplayModeCreateInfo& displayModeCreateInfo)
-	: PhysicalDeviceObjectHandle(physicalDevice), _parameters(displayModeCreateInfo.getParameters())
+DisplayMode_::DisplayMode_(make_shared_enabler, const PhysicalDeviceWeakPtr& physicalDevice, pvrvk::Display& display, const pvrvk::DisplayModeCreateInfo& displayModeCreateInfo)
+	: PVRVkPhysicalDeviceObjectBase(physicalDevice), _parameters(displayModeCreateInfo.getParameters())
 {
 	VkDisplayModeCreateInfoKHR createInfo = {};
 	createInfo.sType = VK_STRUCTURE_TYPE_DISPLAY_MODE_CREATE_INFO_KHR;
 	createInfo.flags = static_cast<VkDisplayModeCreateFlagsKHR>(displayModeCreateInfo.getFlags());
 	createInfo.parameters = _parameters.get();
-	physicalDevice->getInstance()->getVkBindings().vkCreateDisplayModeKHR(physicalDevice->getVkHandle(), display->getVkHandle(), &createInfo, nullptr, &_vkHandle);
+	getPhysicalDevice()->getInstance()->getVkBindings().vkCreateDisplayModeKHR(getPhysicalDevice()->getVkHandle(), display->getVkHandle(), &createInfo, nullptr, &_vkHandle);
 }
 } // namespace impl
 } // namespace pvrvk

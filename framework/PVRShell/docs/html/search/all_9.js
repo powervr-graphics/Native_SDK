@@ -1,12 +1,14 @@
 var searchData=
 [
-  ['init',['init',['../classpvr_1_1platform_1_1_state_machine.html#ade72bccc6af2450806ff50e66ce1a3ee',1,'pvr::platform::StateMachine']]],
+  ['init',['init',['../classpvr_1_1platform_1_1_shell_o_s.html#a80d9cecf843a590f1f7ae026e98d8dff',1,'pvr::platform::ShellOS::init()'],['../classpvr_1_1platform_1_1_state_machine.html#ade72bccc6af2450806ff50e66ce1a3ee',1,'pvr::platform::StateMachine::init()']]],
   ['initapplication',['initApplication',['../classpvr_1_1platform_1_1_shell.html#a82e68c454485cea2c5af4a2701e3078f',1,'pvr::platform::Shell']]],
+  ['initializewindow',['initializeWindow',['../classpvr_1_1platform_1_1_shell_o_s.html#a504efc29a6f70e3d43ec3d2590a85ac4',1,'pvr::platform::ShellOS']]],
   ['initview',['initView',['../classpvr_1_1platform_1_1_shell.html#a490e8314c751dff53ce6b9049bc59f33',1,'pvr::platform::Shell']]],
   ['isbuttonpressed',['isButtonPressed',['../classpvr_1_1platform_1_1_shell.html#a62a97b486d460d58d3a734e3292b996d',1,'pvr::platform::Shell']]],
   ['isdragging',['isDragging',['../structpvr_1_1platform_1_1_shell_1_1_pointing_device_state.html#a93d94474d2cb4906d761a00659b2f83a',1,'pvr::platform::Shell::PointingDeviceState']]],
   ['isforcingframetime',['isForcingFrameTime',['../classpvr_1_1platform_1_1_shell.html#a050873597a4aa2219438a3c9847b07b2',1,'pvr::platform::Shell']]],
   ['isfullscreen',['isFullScreen',['../classpvr_1_1platform_1_1_shell.html#a66a6aa614314d7ffc64df613dda69c34',1,'pvr::platform::Shell']]],
+  ['isinitialized',['isInitialized',['../classpvr_1_1platform_1_1_shell_o_s.html#a38012a9f29232dea54d63ef7a8df5eb3',1,'pvr::platform::ShellOS']]],
   ['iskeypressed',['isKeyPressed',['../classpvr_1_1platform_1_1_shell.html#ac2680be831cce7dc6e6c6421e8094761',1,'pvr::platform::Shell']]],
   ['ispaused',['isPaused',['../classpvr_1_1platform_1_1_state_machine.html#a84b4f646556b5622b341d5308ce2c7b8',1,'pvr::platform::StateMachine']]],
   ['ispressed',['isPressed',['../structpvr_1_1platform_1_1_shell_1_1_pointing_device_state.html#a25856d391aa834ef86fff8f1f3c53c27',1,'pvr::platform::Shell::PointingDeviceState']]],

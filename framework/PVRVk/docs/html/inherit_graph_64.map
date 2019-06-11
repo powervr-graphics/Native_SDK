@@ -1,3 +1,12 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$structpvrvk_1_1_memory_barrier.html" title="A Global memory barrier used for memory accesses for all memory objects." alt="" coords="5,5,152,32"/>
+<area shape="rect" id="node1" href="$classpvrvk_1_1impl_1_1_device_object_debug_utils.html" title="pvrvk::impl::DeviceObject\lDebugUtils\&lt; Pipeline\&lt; ComputePipeline,\l ComputePipelineCreateInfo \&gt; \&gt;" alt="" coords="270,5,530,61"/>
+<area shape="rect" id="node2" href="$classpvrvk_1_1impl_1_1_pipeline.html" title="pvrvk::impl::Pipeline\l\&lt; ComputePipeline, ComputePipeline\lCreateInfo \&gt;" alt="" coords="579,25,819,81"/>
+<area shape="rect" id="node3" href="$classpvrvk_1_1impl_1_1_compute_pipeline__.html" title="Vulkan Computepipeline wrapper " alt="" coords="867,40,1067,67"/>
+<area shape="rect" id="node4" href="$classpvrvk_1_1impl_1_1_device_object_debug_utils.html" title="pvrvk::impl::DeviceObject\lDebugUtils\&lt; Pipeline\&lt; Graphics\lPipeline, GraphicsPipelineCreateInfo \&gt; \&gt;" alt="" coords="271,165,529,221"/>
+<area shape="rect" id="node5" href="$classpvrvk_1_1impl_1_1_pipeline.html" title="pvrvk::impl::Pipeline\l\&lt; GraphicsPipeline, Graphics\lPipelineCreateInfo \&gt;" alt="" coords="603,145,795,201"/>
+<area shape="rect" id="node6" href="$classpvrvk_1_1impl_1_1_graphics_pipeline__.html" title="A Graphics Pipeline is a PVRVk adapter to a Vulkan Pipeline to a pipeline created for VK_PIPELINE_BIN..." alt="" coords="867,160,1066,187"/>
+<area shape="rect" id="node7" href="$classpvrvk_1_1impl_1_1_device_object_debug_utils.html" title="pvrvk::impl::DeviceObject\lDebugUtils\&lt; Pipeline\&lt; PVRVkPipeline,\l PVRVkPipelineCreateInfo \&gt; \&gt;" alt="" coords="275,245,525,301"/>
+<area shape="rect" id="node8" href="$classpvrvk_1_1impl_1_1_pipeline.html" title="A Graphics Pipeline is a PVRVk adapter to a Vulkan Pipeline to a pipeline created for VK_PIPELINE_BIN..." alt="" coords="587,225,810,281"/>
+<area shape="rect" id="node9" href="$classpvrvk_1_1impl_1_1_p_v_r_vk_object_base.html" title="pvrvk::impl::PVRVkObject\lBase\&lt; VkPipeline, PVRVkObject\lType \&gt;" alt="" coords="5,85,221,141"/>
+<area shape="rect" id="node10" href="$classpvrvk_1_1impl_1_1_p_v_r_vk_device_object_base.html" title="pvrvk::impl::PVRVkDevice\lObjectBase\&lt; VkPipeline,\l ObjectType::e_PIPELINE \&gt;" alt="" coords="306,85,494,141"/>
 </map>

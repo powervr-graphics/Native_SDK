@@ -1,4 +1,4 @@
-//Microsoft eMbedded Visual C++ generated resource script.
+// Microsoft Visual C++ generated resource script.
 //
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
@@ -58,26 +58,24 @@ END
 // RCDATA
 //
 /////////////////////////////////////////////////////////////////////////////
-// RCDATA: Assets (scenes,  effects, textures...)
-Marble.pvr		RCDATA		"..\\..\\..\\assets\\Satyr\\Marble.pvr"
-MarbleNormalMap.pvr		RCDATA		"..\\..\\..\\assets\\Satyr\\MarbleNormalMap.pvr"
-Table.pvr		RCDATA		"..\\..\\..\\assets\\Satyr\\Table.pvr"
-SatyrAndTable.pod		RCDATA		"..\\..\\..\\assets\\Satyr\\SatyrAndTable.pod"
-pointlight.pod		RCDATA		"..\\..\\..\\assets\\Satyr\\pointlight.pod"
-// RCDATA: OpenGL ES Textual shaders(glsl)
-AttributelessVertexShader.vsh		RCDATA		"..\\AttributelessVertexShader.vsh"
-DirectionalLightFragmentShader.fsh		RCDATA		"..\\DirectionalLightFragmentShader.fsh"
-GBufferFloorFragmentShader.fsh		RCDATA		"..\\GBufferFloorFragmentShader.fsh"
-GBufferFloorVertexShader.vsh		RCDATA		"..\\GBufferFloorVertexShader.vsh"
-GBufferFragmentShader.fsh		RCDATA		"..\\GBufferFragmentShader.fsh"
-GBufferVertexShader.vsh		RCDATA		"..\\GBufferVertexShader.vsh"
-PointLightPass1FragmentShader.fsh		RCDATA		"..\\PointLightPass1FragmentShader.fsh"
-PointLightPass1VertexShader.vsh		RCDATA		"..\\PointLightPass1VertexShader.vsh"
-PointLightPass2FragmentShader.fsh		RCDATA		"..\\PointLightPass2FragmentShader.fsh"
-PointLightPass2VertexShader.vsh		RCDATA		"..\\PointLightPass2VertexShader.vsh"
-PointLightPass3FragmentShader.fsh		RCDATA		"..\\PointLightPass3FragmentShader.fsh"
-PointLightPass3VertexShader.vsh		RCDATA		"..\\PointLightPass3VertexShader.vsh"
-WritePlsToFbo.fsh		RCDATA		"..\\WritePlsToFbo.fsh"
+Marble.pvr RCDATA "..\\..\\..\\assets\\Satyr\\Marble.pvr"
+MarbleNormalMap.pvr RCDATA "..\\..\\..\\assets\\Satyr\\MarbleNormalMap.pvr"
+Table.pvr RCDATA "..\\..\\..\\assets\\Satyr\\Table.pvr"
+SatyrAndTable.pod RCDATA "..\\..\\..\\assets\\Satyr\\SatyrAndTable.pod"
+pointlight.pod RCDATA "..\\..\\..\\assets\\Satyr\\pointlight.pod"
+AttributelessVertexShader.vsh RCDATA "..\\AttributelessVertexShader.vsh"
+DirectionalLightFragmentShader.fsh RCDATA "..\\DirectionalLightFragmentShader.fsh"
+GBufferFloorFragmentShader.fsh RCDATA "..\\GBufferFloorFragmentShader.fsh"
+GBufferFloorVertexShader.vsh RCDATA "..\\GBufferFloorVertexShader.vsh"
+GBufferFragmentShader.fsh RCDATA "..\\GBufferFragmentShader.fsh"
+GBufferVertexShader.vsh RCDATA "..\\GBufferVertexShader.vsh"
+PointLightPass1FragmentShader.fsh RCDATA "..\\PointLightPass1FragmentShader.fsh"
+PointLightPass1VertexShader.vsh RCDATA "..\\PointLightPass1VertexShader.vsh"
+PointLightPass2FragmentShader.fsh RCDATA "..\\PointLightPass2FragmentShader.fsh"
+PointLightPass2VertexShader.vsh RCDATA "..\\PointLightPass2VertexShader.vsh"
+PointLightPass3FragmentShader.fsh RCDATA "..\\PointLightPass3FragmentShader.fsh"
+PointLightPass3VertexShader.vsh RCDATA "..\\PointLightPass3VertexShader.vsh"
+WritePlsToFbo.fsh RCDATA "..\\WritePlsToFbo.fsh"
 
 #endif    // English (United Kingdom) resources
 /////////////////////////////////////////////////////////////////////////////

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.3)
-project (OpenGLES_SDK)
+project (OpenGLESExamples)
 
 set (EXAMPLES 
 	01_HelloAPI

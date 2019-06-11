@@ -22,7 +22,7 @@ Allocation Allocator_::allocateMemoryForImage(pvrvk::Image& image, const Allocat
 	vmaAllocCreateInfo.requiredFlags = (VkMemoryPropertyFlags)createInfo.requiredFlags;
 	vmaAllocCreateInfo.preferredFlags = (VkMemoryPropertyFlags)createInfo.preferredFlags;
 	vmaAllocCreateInfo.pUserData = createInfo.pUserData;
-	vmaAllocCreateInfo.pool = (createInfo.pool.isValid() ? createInfo.pool->_vmaPool : VK_NULL_HANDLE);
+	vmaAllocCreateInfo.pool = (createInfo.pool ? createInfo.pool->_vmaPool : VK_NULL_HANDLE);
 	vmaAllocCreateInfo.memoryTypeBits = createInfo.memoryTypeBits;
 
 	pvrvk::impl::vkThrowIfError(
@@ -41,7 +41,7 @@ Allocation Allocator_::allocateMemoryForBuffer(pvrvk::Buffer& buffer, const Allo
 	vmaAllocCreateInfo.requiredFlags = (VkMemoryPropertyFlags)createInfo.requiredFlags;
 	vmaAllocCreateInfo.preferredFlags = (VkMemoryPropertyFlags)createInfo.preferredFlags;
 	vmaAllocCreateInfo.pUserData = createInfo.pUserData;
-	vmaAllocCreateInfo.pool = (createInfo.pool.isValid() ? createInfo.pool->_vmaPool : VK_NULL_HANDLE);
+	vmaAllocCreateInfo.pool = (createInfo.pool ? createInfo.pool->_vmaPool : VK_NULL_HANDLE);
 	vmaAllocCreateInfo.memoryTypeBits = createInfo.memoryTypeBits;
 
 	pvrvk::impl::vkThrowIfError((pvrvk::Result)vmaAllocateMemoryForBuffer(_vmaAllocator, buffer->getVkHandle(), &vmaAllocCreateInfo, &vmaAllocation, &vmaAllocationInfo),
@@ -59,7 +59,7 @@ Allocation Allocator_::allocateMemory(const pvrvk::MemoryRequirements* vkMemoryR
 	vmaAllocCreateInfo.requiredFlags = (VkMemoryPropertyFlags)createInfo.requiredFlags;
 	vmaAllocCreateInfo.preferredFlags = (VkMemoryPropertyFlags)createInfo.preferredFlags;
 	vmaAllocCreateInfo.pUserData = createInfo.pUserData;
-	vmaAllocCreateInfo.pool = (createInfo.pool.isValid() ? createInfo.pool->_vmaPool : VK_NULL_HANDLE);
+	vmaAllocCreateInfo.pool = (createInfo.pool ? createInfo.pool->_vmaPool : VK_NULL_HANDLE);
 
 	pvrvk::impl::vkThrowIfError(
 		(pvrvk::Result)vmaAllocateMemory(_vmaAllocator, (const VkMemoryRequirements*)vkMemoryRequirements, &vmaAllocCreateInfo, &vmaAllocation, &vmaAllocationInfo),
@@ -80,7 +80,7 @@ void Allocator_::findMemoryTypeIndex(uint32_t memoryTypeBits, const AllocationCr
 
 pvrvk::Buffer Allocator_::createBuffer(const pvrvk::BufferCreateInfo& createInfo, const AllocationCreateInfo& allocationCreateInfo)
 {
-	pvrvk::Buffer outBuffer = _device->createBuffer(createInfo);
+	pvrvk::Buffer outBuffer = _device.lock()->createBuffer(createInfo);
 	Allocation allocation = allocateMemoryForBuffer(outBuffer, allocationCreateInfo);
 	outBuffer->bindMemory(pvrvk::DeviceMemory(allocation), allocation->getOffset());
 	return outBuffer;
@@ -88,7 +88,7 @@ pvrvk::Buffer Allocator_::createBuffer(const pvrvk::BufferCreateInfo& createInfo
 
 pvrvk::Image Allocator_::createImage(const pvrvk::ImageCreateInfo& createInfo, const AllocationCreateInfo& allocationCreateInfo)
 {
-	pvrvk::Image outImage = _device->createImage(createInfo);
+	pvrvk::Image outImage = _device.lock()->createImage(createInfo);
 	Allocation allocation = allocateMemoryForImage(outImage, allocationCreateInfo);
 	outImage->bindMemoryNonSparse(pvrvk::DeviceMemory(allocation), allocation->getOffset());
 	return outImage;
@@ -131,7 +131,7 @@ void Allocator_::defragment(
 	}
 }
 
-void Allocator_::destroyObject()
+Allocator_::~Allocator_()
 {
 	_deviceMemory.clear();
 	if (_vmaAllocator != VK_NULL_HANDLE)
@@ -148,12 +148,12 @@ size_t Pool_::makeAllocationsLost()
 	return numLost;
 }
 
-Pool_::Pool_(const PoolCreateInfo& createInfo) : _vmaPool(VK_NULL_HANDLE)
+Pool_::Pool_(make_shared_enabler, const PoolCreateInfo& createInfo) : _vmaPool(VK_NULL_HANDLE)
 {
 	pvrvk::impl::vkThrowIfError((pvrvk::Result)vmaCreatePool(_allocator->_vmaAllocator, &(VmaPoolCreateInfo&)createInfo, &_vmaPool), "Failed to create Memory Pool");
 }
 
-void Pool_::destroyObject()
+Pool_::~Pool_()
 {
 	if (_vmaPool != VK_NULL_HANDLE)
 	{
@@ -211,7 +211,7 @@ Allocation_::~Allocation_()
 
 void* Allocation_::map(VkDeviceSize offset, VkDeviceSize size, pvrvk::MemoryMapFlags memoryMapFlags)
 {
-	size_t total_offset = offset + getOffset();
+	size_t total_offset = static_cast<size_t>( offset + getOffset());
 	if (!isMappable())
 	{
 		throw pvrvk::ErrorMemoryMapFailed("Cannot map memory block as the memory was created without "
@@ -254,16 +254,14 @@ bool Allocation_::isAllocationLost() const
 	return getVkHandle() == VK_NULL_HANDLE;
 }
 
-Allocation_::Allocation_(Allocator memAllocator, const AllocationCreateInfo& allocCreateInfo, VmaAllocation vmaAllocation, const VmaAllocationInfo& allocInfo)
-	: IDeviceMemory_(memAllocator->getDevice(), allocInfo.deviceMemory), _mappedSize(0), _mappedOffset(0)
+Allocation_::Allocation_(make_shared_enabler, Allocator& memAllocator, const AllocationCreateInfo& allocCreateInfo, VmaAllocation vmaAllocation, const VmaAllocationInfo& allocInfo)
+	: IDeviceMemory_(memAllocator->getDevice(), allocInfo.deviceMemory), _mappedSize(0), _mappedOffset(0), _memAllocator(memAllocator)
 {
 	_vmaAllocation = vmaAllocation;
 	_allocInfo = allocInfo;
 	_createFlags = allocCreateInfo.flags;
 	_pool = allocCreateInfo.pool;
-	_memAllocator = memAllocator;
 	VkMemoryPropertyFlags memFlags;
-	_device = memAllocator->getDevice();
 	vmaGetMemoryTypeProperties(_memAllocator->_vmaAllocator, _allocInfo.memoryType, &memFlags);
 	_flags = static_cast<pvrvk::MemoryPropertyFlags>(memFlags);
 	if (uint32_t(allocCreateInfo.flags & AllocationCreateFlags::e_MAPPED_BIT) != 0)
@@ -287,11 +285,12 @@ void Allocation_::updateAllocationInfo() const
 	}
 }
 
-struct AllocatorCreateFactory
+class AllocatorCreateFactory
 {
-	static Allocator create(const AllocatorCreateInfo& createInfo)
+public:
+	static Allocator createAllocator(const AllocatorCreateInfo& createInfo)
 	{
-		return Allocator_::createNew(createInfo);
+		return Allocator_::constructShared(createInfo);
 	}
 };
 
@@ -302,44 +301,50 @@ public:
 
 private:
 	friend class Allocator_;
-	static std::vector<AllocatorWeakRef> _context;
+	static std::vector<AllocatorWeakPtr> _context;
 
 	static void VKAPI_PTR allocateDeviceMemoryFunction(VmaAllocator allocator, uint32_t memoryType, VkDeviceMemory memory, VkDeviceSize size)
 	{
-		AllocatorWeakRef context = getDispatchContext(allocator);
-		if (context.isValid())
+		AllocatorWeakPtr context = getDispatchContext(allocator);
+		if (!context.expired())
 		{
-			context->onAllocateDeviceMemoryFunction(memoryType, memory, size);
+			context.lock()->onAllocateDeviceMemoryFunction(memoryType, memory, size);
 		}
 	}
 
 	static void VKAPI_PTR freeDeviceMemoryFunction(VmaAllocator allocator, uint32_t memoryType, VkDeviceMemory memory, VkDeviceSize size)
 	{
-		AllocatorWeakRef context = getDispatchContext(allocator);
-		if (context.isValid())
+		AllocatorWeakPtr context = getDispatchContext(allocator);
+		if (!context.expired())
 		{
-			context->onFreeDeviceMemoryFunction(memoryType, memory, size);
+			context.lock()->onFreeDeviceMemoryFunction(memoryType, memory, size);
 		}
 	}
 
-	static AllocatorWeakRef getDispatchContext(VmaAllocator allocator)
+	static AllocatorWeakPtr getDispatchContext(VmaAllocator allocator)
 	{
-		auto it = std::find_if(_context.begin(), _context.end(), [&](const AllocatorWeakRef& context) { return context->_vmaAllocator == allocator; });
+		auto it = std::find_if(_context.begin(), _context.end(), [&](const AllocatorWeakPtr& context) {
+			if (!context.expired())
+			{
+				return context.lock()->_vmaAllocator == allocator;
+			}
+			return false;
+		});
 		if (it != _context.end())
 		{
 			return (*it);
 		}
-		return AllocatorWeakRef();
+		return AllocatorWeakPtr();
 	}
 
-	void addContext(AllocatorWeakRef memAllocator)
+	void addContext(AllocatorWeakPtr memAllocator)
 	{
-		_context.push_back(memAllocator);
+		_context.emplace_back(memAllocator);
 	}
 
 	DeviceMemoryCallbacks _callBacks;
 };
-std::vector<AllocatorWeakRef> DeviceMemoryCallbackDispatcher_::_context;
+std::vector<AllocatorWeakPtr> DeviceMemoryCallbackDispatcher_::_context;
 
 std::shared_ptr<DeviceMemoryCallbackDispatcher_> DeviceMemoryCallbackDispatcher_::getCallbackDispatcher()
 {
@@ -347,13 +352,12 @@ std::shared_ptr<DeviceMemoryCallbackDispatcher_> DeviceMemoryCallbackDispatcher_
 	return dispatcher;
 }
 
-pvr::utils::vma::impl::Allocator_::Allocator_(const AllocatorCreateInfo& createInfo) : _vmaAllocator(VK_NULL_HANDLE)
+pvr::utils::vma::impl::Allocator_::Allocator_(make_shared_enabler, const AllocatorCreateInfo& createInfo) : _vmaAllocator(VK_NULL_HANDLE)
 {
-	destroyObject();
 	_device = createInfo.device;
-	const VkInstanceBindings& instanceBindings = _device->getPhysicalDevice()->getInstance()->getVkBindings();
+	const VkInstanceBindings& instanceBindings = _device.lock()->getPhysicalDevice()->getInstance()->getVkBindings();
 
-	const VkDeviceBindings& deviceBindings = _device->getVkBindings();
+	const VkDeviceBindings& deviceBindings = _device.lock()->getVkBindings();
 	const VmaVulkanFunctions vmaFunctions = {
 		instanceBindings.vkGetPhysicalDeviceProperties,
 		instanceBindings.vkGetPhysicalDeviceMemoryProperties,
@@ -371,6 +375,7 @@ pvr::utils::vma::impl::Allocator_::Allocator_(const AllocatorCreateInfo& createI
 		deviceBindings.vkDestroyBuffer,
 		deviceBindings.vkCreateImage,
 		deviceBindings.vkDestroyImage,
+		deviceBindings.vkCmdCopyBuffer,
 		deviceBindings.vkGetBufferMemoryRequirements2KHR,
 		deviceBindings.vkGetImageMemoryRequirements2KHR,
 	};
@@ -381,18 +386,23 @@ pvr::utils::vma::impl::Allocator_::Allocator_(const AllocatorCreateInfo& createI
 	{
 		_deviceMemCallbacks = *createInfo.pDeviceMemoryCallbacks;
 	}
-	const VmaAllocatorCreateInfo vmaCreateInfo{ static_cast<VmaAllocatorCreateFlags>(createInfo.flags), _device->getPhysicalDevice()->getVkHandle(), _device->getVkHandle(),
-		createInfo.preferredLargeHeapBlockSize, (const VkAllocationCallbacks*)createInfo.pAllocationCallbacks, &vmaDeviceMemCallbacks, createInfo.frameInUseCount,
-		createInfo.pHeapSizeLimit, &vmaFunctions };
+	const VmaAllocatorCreateInfo vmaCreateInfo{ static_cast<VmaAllocatorCreateFlags>(createInfo.flags), _device.lock()->getPhysicalDevice()->getVkHandle(),
+		_device.lock()->getVkHandle(), createInfo.preferredLargeHeapBlockSize, (const VkAllocationCallbacks*)createInfo.pAllocationCallbacks, &vmaDeviceMemCallbacks,
+		createInfo.frameInUseCount, createInfo.pHeapSizeLimit, &vmaFunctions };
 	_reportFlags = createInfo.reportFlags;
 	pvrvk::impl::vkThrowIfFailed(::VkResult(vmaCreateAllocator(&vmaCreateInfo, &_vmaAllocator)), "Failed to create memory allocator");
-	DeviceMemoryCallbackDispatcher_::getCallbackDispatcher()->addContext(getWeakReference());
 }
 
+void pvr::utils::vma::impl::Allocator_::addCallbackDispatcherContext()
+{
+	DeviceMemoryCallbackDispatcher_::getCallbackDispatcher()->addContext(shared_from_this());
+}
 } // namespace impl
 Allocator createAllocator(const AllocatorCreateInfo& createInfo)
 {
-	return impl::AllocatorCreateFactory::create(createInfo);
+	Allocator outAllocator = impl::AllocatorCreateFactory::createAllocator(createInfo);
+	outAllocator->addCallbackDispatcherContext();
+	return outAllocator;
 }
 //!\endcond
 } // namespace vma

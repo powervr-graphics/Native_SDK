@@ -172,7 +172,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a97c3eb5371cc06eb040ff88935616218"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get if a volume is closed <a href="#a97c3eb5371cc06eb040ff88935616218">More...</a><br/></td></tr>
 <tr class="separator:a97c3eb5371cc06eb040ff88935616218"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af0253009d5bd543576e694a2ca7cd272"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_shadow_volume.html#af0253009d5bd543576e694a2ca7cd272">projectSilhouette</a> (uint32_t volumeID, uint32_t flags, const glm::vec3 &amp;lightModel, bool isPointLight, char **externalIndexBuffer=NULL)</td></tr>
-<tr class="memdesc:af0253009d5bd543576e694a2ca7cd272"><td class="mdescLeft">&#160;</td><td class="mdescRight">Find the silhouette of the shadow volume for the specified light and prepare it for projection.  <a href="#af0253009d5bd543576e694a2ca7cd272">More...</a><br/></td></tr>
+<tr class="memdesc:af0253009d5bd543576e694a2ca7cd272"><td class="mdescLeft">&#160;</td><td class="mdescRight">Find the silhouette of the shadow volume for the specified light and prepare it for projection. <a href="#af0253009d5bd543576e694a2ca7cd272">More...</a><br/></td></tr>
 <tr class="separator:af0253009d5bd543576e694a2ca7cd272"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa96594ef8c6eee78c2f9945215281f3d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_shadow_volume.html#aa96594ef8c6eee78c2f9945215281f3d">releaseVolume</a> (uint32_t volumeID)</td></tr>
 <tr class="memdesc:aa96594ef8c6eee78c2f9945215281f3d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Delete the Shadow <a class="el" href="classpvr_1_1_volume.html" title="Represents data for handling volumes of a single Mesh.">Volume</a> with the provided ID. <a href="#aa96594ef8c6eee78c2f9945215281f3d">More...</a><br/></td></tr>
@@ -468,7 +468,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 </div><div class="memdoc">
 
 <p>Get the stride of the Index data, in bytes. Is sizeof(IndexType).</p>
-<dl class="section return"><dt>Returns</dt><dd>The index data stride </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>The index data stride</dd></dl>
 
 </div>
 </div>
@@ -518,7 +518,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>The number of indexes </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>The number of indexes</dd></dl>
 
 </div>
 </div>
@@ -798,7 +798,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>True if successfully initialized, otherwise false</dd></dl>
-<p>This method will pre-process the data in the mesh, to calculate all vertices, edges and faces of the mesh as required. In effect it will extract the POSITION semantic data and the face data and use it to create a "light" and cleaned up version of the mesh that will be then used to calculate extruded volumes as required. </p>
+<p>This method will pre-process the data in the mesh, to calculate all vertices, edges and faces of the mesh as required. In effect it will extract the POSITION semantic data and the face data and use it to create a "light" and cleaned up version of the mesh that will be then used to calculate extruded volumes as required.</p>
 
 </div>
 </div>
@@ -1032,12 +1032,12 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
       </table>
 </div><div class="memdoc">
 
-<p>Find the silhouette of the shadow volume for the specified light and prepare it for projection. </p>
+<p>Find the silhouette of the shadow volume for the specified light and prepare it for projection.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">volumeID</td><td>The Shadow <a class="el" href="classpvr_1_1_volume.html" title="Represents data for handling volumes of a single Mesh.">Volume</a> to prepare. Must have had alllocateShadowVolume called on it</td></tr>
     <tr><td class="paramname">flags</td><td>The properties of the shadow volume to generate (caps, technique)</td></tr>
-    <tr><td class="paramname">lightModel</td><td>The Model-space light. Either point-light(or spot) or directional light supported </td></tr>
+    <tr><td class="paramname">lightModel</td><td>The Model-space light. Either point-light(or spot) or directional light supported</td></tr>
     <tr><td class="paramname">isPointLight</td><td>Pass true for point (or spot) light, false for directional</td></tr>
     <tr><td class="paramname">externalIndexBuffer</td><td>An external buffer that contains custom, user provided index data.</td></tr>
   </table>

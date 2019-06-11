@@ -15,6 +15,117 @@
 // giving default constructors for all Vulkan objects, deterministic lifecycle management through reference counting and in general a clean, modern interface.
 #include "PVRVk/PVRVk.h"
 
+/// <summary>Maps a set of DebugUtilsMessageSeverityFlagsEXT to a particular type of log message.</summary>
+/// <param name="flags">The DebugUtilsMessageSeverityFlagsEXT to map to a LogLevel.</param>
+/// <returns>Returns a LogLevel deemed to correspond to the given pvrvk::DebugUtilsMessageSeverityFlagsEXT.</returns>
+inline LogLevel mapDebugUtilsMessageSeverityFlagsToLogLevel(pvrvk::DebugUtilsMessageSeverityFlagsEXT flags)
+{
+	if ((flags & pvrvk::DebugUtilsMessageSeverityFlagsEXT::e_INFO_BIT_EXT) != 0)
+	{
+		return LogLevel::Information;
+	}
+	if ((flags & pvrvk::DebugUtilsMessageSeverityFlagsEXT::e_WARNING_BIT_EXT) != 0)
+	{
+		return LogLevel::Warning;
+	}
+	if ((flags & pvrvk::DebugUtilsMessageSeverityFlagsEXT::e_VERBOSE_BIT_EXT) != 0)
+	{
+		return LogLevel::Debug;
+	}
+	if ((flags & pvrvk::DebugUtilsMessageSeverityFlagsEXT::e_ERROR_BIT_EXT) != 0)
+	{
+		return LogLevel::Error;
+	}
+	return LogLevel::Information;
+}
+
+namespace {
+std::string debugUtilsMessengerCallbackToString(
+	VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageTypes, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData)
+{
+	std::string messageSeverityString = pvrvk::to_string(static_cast<pvrvk::DebugUtilsMessageSeverityFlagsEXT>(messageSeverity));
+	std::string messageTypeString = pvrvk::to_string(static_cast<pvrvk::DebugUtilsMessageTypeFlagsEXT>(messageTypes));
+
+	std::string exceptionMessage = pvr::strings::createFormatted("%s (%s) - ID: %i, Name: \"%s\":\n\tMESSAGE: %s", messageSeverityString.c_str(), messageTypeString.c_str(),
+		pCallbackData->messageIdNumber, pCallbackData->pMessageIdName, pCallbackData->pMessage);
+
+	if (pCallbackData->objectCount > 0)
+	{
+		exceptionMessage += "\n";
+		std::string objectsMessage = pvr::strings::createFormatted("\tAssociated Objects - (%u)\n", pCallbackData->objectCount);
+
+		for (uint32_t i = 0; i < pCallbackData->objectCount; ++i)
+		{
+			std::string objectType = pvrvk::to_string(static_cast<pvrvk::ObjectType>(pCallbackData->pObjects[i].objectType));
+
+			objectsMessage += pvr::strings::createFormatted("\t\tObject[%u] - Type %s, Value %p, Name \"%s\"\n", i, objectType.c_str(),
+				(void*)(pCallbackData->pObjects[i].objectHandle), pCallbackData->pObjects[i].pObjectName);
+		}
+
+		exceptionMessage += objectsMessage;
+	}
+
+	if (pCallbackData->cmdBufLabelCount > 0)
+	{
+		exceptionMessage += "\n";
+		std::string cmdBufferLabelsMessage = pvr::strings::createFormatted("\tAssociated Command Buffer Labels - (%u)\n", pCallbackData->cmdBufLabelCount);
+
+		for (uint32_t i = 0; i < pCallbackData->cmdBufLabelCount; ++i)
+		{
+			cmdBufferLabelsMessage += pvr::strings::createFormatted("\t\tCommand Buffer Label[%u] - %s, Color: {%f, %f, %f, %f}\n", i, pCallbackData->pCmdBufLabels[i].pLabelName,
+				pCallbackData->pCmdBufLabels[i].color[0], pCallbackData->pCmdBufLabels[i].color[1], pCallbackData->pCmdBufLabels[i].color[2],
+				pCallbackData->pCmdBufLabels[i].color[3]);
+		}
+
+		exceptionMessage += cmdBufferLabelsMessage;
+	}
+
+	if (pCallbackData->queueLabelCount > 0)
+	{
+		exceptionMessage += "\n";
+		std::string queueLabelsMessage = pvr::strings::createFormatted("\tAssociated Queue Labels - (%u)\n", pCallbackData->queueLabelCount);
+
+		for (uint32_t i = 0; i < pCallbackData->queueLabelCount; ++i)
+		{
+			queueLabelsMessage += pvr::strings::createFormatted("\t\tQueue Label[%u] - %s, Color: {%f, %f, %f, %f}\n", i, pCallbackData->pQueueLabels[i].pLabelName,
+				pCallbackData->pQueueLabels[i].color[0], pCallbackData->pQueueLabels[i].color[1], pCallbackData->pQueueLabels[i].color[2], pCallbackData->pQueueLabels[i].color[3]);
+		}
+
+		exceptionMessage += queueLabelsMessage;
+	}
+	return exceptionMessage;
+}
+} // namespace
+
+// An application defined callback used as the callback function specified in as pfnCallback in the
+// create info VkDebugUtilsMessengerCreateInfoEXT used when creating the debug utils messenger callback vkCreateDebugUtilsMessengerEXT
+VKAPI_ATTR VkBool32 VKAPI_CALL throwOnErrorDebugUtilsMessengerCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageTypes,
+	const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData)
+{
+	(void)pUserData;
+
+	// throw an exception if the type of DebugUtilsMessageSeverityFlagsEXT contains the ERROR_BIT
+	if ((static_cast<pvrvk::DebugUtilsMessageSeverityFlagsEXT>(messageSeverity) & (pvrvk::DebugUtilsMessageSeverityFlagsEXT::e_ERROR_BIT_EXT)) !=
+		pvrvk::DebugUtilsMessageSeverityFlagsEXT::e_NONE)
+	{
+		throw pvrvk::ErrorValidationFailedEXT(debugUtilsMessengerCallbackToString(messageSeverity, messageTypes, pCallbackData));
+	}
+	return VK_FALSE;
+}
+
+// The application defined callback used as the callback function specified in as pfnCallback in the
+// create info VkDebugUtilsMessengerCreateInfoEXT used when creating the debug utils messenger callback vkCreateDebugUtilsMessengerEXT
+VKAPI_ATTR VkBool32 VKAPI_CALL logMessageDebugUtilsMessengerCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageTypes,
+	const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData)
+{
+	(void)pUserData;
+
+	Log(mapDebugUtilsMessageSeverityFlagsToLogLevel(static_cast<pvrvk::DebugUtilsMessageSeverityFlagsEXT>(messageSeverity)),
+		debugUtilsMessengerCallbackToString(messageSeverity, messageTypes, pCallbackData).c_str());
+
+	return VK_FALSE;
+}
+
 /// <summary>Map a pvrvk::DebugReportFlagsEXT variable to a corresponding log severity.</summary>
 /// <param name="flags">A set of pvrvk::DebugReportFlagsEXT specifying the type of event which triggered the callback.</param>
 /// <returns>A LogLevel corresponding to the pvrvk::DebugReportFlagsEXT.</returns>
@@ -117,116 +228,83 @@ VKAPI_ATTR VkBool32 VKAPI_CALL logMessageDebugReportCallback(VkDebugReportFlagsE
 
 // Of note is that the 'VK_EXT_XXXX_EXTENSION_NAME' syntax is provided by the vulkan headers as compile-time constants so that extension names can be used unambiguously avoiding
 // typos in querying for them.
-namespace Extensions {
-// Defines the set of global Vulkan instance extensions which may be required depending on the combination of platform and window system in use
-const std::string InstanceExtensions[] = {
-	// The VK_KHR_surface extension declares the VkSurfaceKHR object and provides a function for destroying VkSurfaceKHR objects
-	// note that the creation of VkSurfaceKHR objects is delegated to platform specific extensions but from the applications
-	// point of view the handle is an opaque non-platform-specific type. Specifically for this demo VK_KHR_surface is required for creating VkSurfaceKHR objects which are further
-	// used by the device extension VK_KHR_swapchain.
-	VK_KHR_SURFACE_EXTENSION_NAME,
-	// The VK_KHR_display extension provides the functionality for enumerating display devices and creating VkSurfaceKHR objects that directly
-	// target displays. This extension is particularly important for applications which render directly to display devices without
-	// an intermediate window system such as embedded applications or when running on embedded platforms
-	VK_KHR_DISPLAY_EXTENSION_NAME,
+/// <summary>Container for a list of Instance extensions to be used when initiailising the instance.</summary>
+struct InstanceExtensions : public pvrvk::VulkanExtensionList
+{
+	/// <summary>Initialises a list of instance extensions.</summary>
+	// Defines the set of global Vulkan instance extensions which may be required depending on the combination of platform and window system in use
+	InstanceExtensions()
+	{
+		// The VK_KHR_surface extension declares the VkSurfaceKHR object and provides a function for destroying VkSurfaceKHR objects
+		// note that the creation of VkSurfaceKHR objects is delegated to platform specific extensions but from the applications
+		// point of view the handle is an opaque non-platform-specific type. Specifically for this demo VK_KHR_surface is required for creating VkSurfaceKHR objects which are
+		// further used by the device extension VK_KHR_swapchain.
+		addExtension(VK_KHR_SURFACE_EXTENSION_NAME);
+		// The VK_KHR_display extension provides the functionality for enumerating display devices and creating VkSurfaceKHR objects that directly
+		// target displays. This extension is particularly important for applications which render directly to display devices without
+		// an intermediate window system such as embedded applications or when running on embedded platforms
+		addExtension(VK_KHR_DISPLAY_EXTENSION_NAME);
 #ifdef DEBUG
-	// The VK_EXT_debug_report extension provides the functionaltiy for defining a way in which layers and the implementation can
-	// call back to the application for events of particular interest to the application. By enabling this extension the application
-	// has the opportunity for receiving much more detailed feedback regarding the applications use of Vulkan
-	VK_EXT_DEBUG_REPORT_EXTENSION_NAME,
+		// The VK_EXT_debug_utils and VK_EXT_debug_report extensions provides the functionaltiy for defining a way in which layers and the implementation can
+		// call back to the application for events of particular interest to the application. By enabling this extension the application
+		// has the opportunity for receiving much more detailed feedback regarding the applications use of Vulkan. Note that VK_EXT_debug_report has been deprecated in
+		// favour of the more forward looking extension VK_EXT_debug_utils.
+		addExtension(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+		addExtension(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
 #endif
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
-	// The VK_KHR_win32_surface extension provides the necessary mechanism for creating a VkSurfaceKHR object which refers to a Win32 HWND in addition
-	// to functions for querying the support for rendering to the windows desktop
-	VK_KHR_WIN32_SURFACE_EXTENSION_NAME,
+		// The VK_KHR_win32_surface extension provides the necessary mechanism for creating a VkSurfaceKHR object which refers to a Win32 HWND in addition
+		// to functions for querying the support for rendering to the windows desktop
+		addExtension(VK_KHR_WIN32_SURFACE_EXTENSION_NAME);
 #elif defined(VK_USE_PLATFORM_ANDROID_KHR)
-	// The VK_KHR_android_surface extension provides the necessary mechanism for creating a VkSurfaceKHR object which refers to an ANativeWindow, Android's native surface type
-	VK_KHR_ANDROID_SURFACE_EXTENSION_NAME,
+		// The VK_KHR_android_surface extension provides the necessary mechanism for creating a VkSurfaceKHR object which refers to an ANativeWindow, Android's native surface type
+		addExtension(VK_KHR_ANDROID_SURFACE_EXTENSION_NAME);
 #elif defined(VK_USE_PLATFORM_XLIB_KHR)
-	// The VK_KHR_xlib_surface extension provides the necessary mechanism for creating a VkSurfaceKHR object which refers to an X11 Window using Xlib in addition to functions
-	// for querying the support for rendering via Xlib
-	VK_KHR_XLIB_SURFACE_EXTENSION_NAME,
+		// The VK_KHR_xlib_surface extension provides the necessary mechanism for creating a VkSurfaceKHR object which refers to an X11 Window using Xlib in addition to
+		// functions for querying the support for rendering via Xlib
+		addExtension(VK_KHR_XLIB_SURFACE_EXTENSION_NAME);
 #elif defined(VK_USE_PLATFORM_WAYLAND_KHR)
-	// The VK_KHR_wayland_surface extension provides the necessary mechanism for creating a VkSurfaceKHR object which refers to a Wayland wl_surface in addition to functions
-	// for querying the support for rendering to a Wayland compositor
-	VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME,
+		// The VK_KHR_wayland_surface extension provides the necessary mechanism for creating a VkSurfaceKHR object which refers to a Wayland wl_surface in addition to
+		// functions for querying the support for rendering to a Wayland compositor
+		addExtension(VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME);
 #endif
+	}
 };
 
-// Defines a set of per device specific extensions to check for support
-const std::string DeviceExtensions[] = {
-	// The VK_KHR_swapchain extension is the device specific companion to VK_KHR_surface which introduces VkSwapchainKHR objects
-	// enabling the ability to present render images to specified surfaces
-	VK_KHR_SWAPCHAIN_EXTENSION_NAME,
+/// <summary>Container for a list of Device extensions to be used when creating the Device.</summary>
+struct DeviceExtensions : public pvrvk::VulkanExtensionList
+{
+	/// <summary>Initialises a list of device extensions.</summary>
+	DeviceExtensions()
+	{
+		// The VK_KHR_swapchain extension is the device specific companion to VK_KHR_surface which introduces VkSwapchainKHR objects
+		// enabling the ability to present render images to specified surfaces
+		addExtension(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
+	}
 };
-} // namespace Extensions
 
 // Vulkan is a layered API with layers that may provide additional functionality over core Vulkan but do not add or modify existing Vulkan commands.
 // In Vulkan the validation of correct API usage is left to validation layers so they are of particular importance.
 // When a Vulkan layer is enabled it inserts itself into the call chain for Vulkan commands the specific layer is interested in
 // the concept of using layers allows implementations to avoid peformance penalties incurred for validating application behaviour and API usage
-namespace Layers {
-const std::string InstanceLayers[] = {
+/// <summary>Container for a list of instance layers to be used for initiailising an instance using the helper function 'createInstanceAndSurface'.</summary>
+struct InstanceLayers : public pvrvk::VulkanLayerList
+{
+	InstanceLayers()
+	{
 #ifdef DEBUG
-	// Standard Validation is a meta-layer managed by the LunarG Loader.
-	// Using Standard Validation will cause the loader to load a standard set of validation layers in an optimal order: VK_LAYER_GOOGLE_threading,
-	// VK_LAYER_LUNARG_parameter_validation, VK_LAYER_LUNARG_object_tracker, VK_LAYER_LUNARG_core_validation, and VK_LAYER_GOOGLE_unique_objects
-	"VK_LAYER_LUNARG_standard_validation",
-	// PerfDoc is a Vulkan layer which attempts to identify API usage is may be discouraged primarily by validating applications
-	// against the rules set out in the Mali Application Developer Best Practices document
-	"VK_LAYER_ARM_mali_perf_doc"
-#else
-	""
+		// Standard Validation is a meta-layer managed by the LunarG Loader.
+		// Using Standard Validation will cause the loader to load a standard set of validation layers in an optimal order: VK_LAYER_GOOGLE_threading,
+		// VK_LAYER_LUNARG_parameter_validation, VK_LAYER_LUNARG_object_tracker, VK_LAYER_LUNARG_core_validation, and VK_LAYER_GOOGLE_unique_objects
+		addLayer("VK_LAYER_LUNARG_standard_validation");
+		// PerfDoc is a Vulkan layer which attempts to identify API usage is may be discouraged primarily by validating applications
+		// against the rules set out in the Mali Application Developer Best Practices document
+		addLayer("VK_LAYER_ARM_mali_perf_doc");
 #endif
+	}
 };
 // note that device specific layers have now been deprecated and all layers are enabled during instance creation, with all enabled instance layers able
 // to intercept all commands operating on that instance including any of its child objects i.e. the device or commands operating on a specific device.
-} // namespace Layers
-
-/// <summary>Filters the set of supported extensions "extensionProperties" based on a set of extensions to enable "extensionsToEnable".</summary>
-/// <param name="extensionProperties">A list of extensions supported retrieved via a previous call to vkEnumerateInstanceExtensionProperties.</param>
-/// <param name="extensionsToEnable">A pointer to a list of "numExtensions" to check for support.</param>
-/// <param name="numExtensions">The number of extensions in "extensionsToEnable" to check for support.</param>
-/// <returns>The resulting set of extensions which exist in extensionProperties and extensionsToEnable.</returns>
-std::vector<std::string> filterExtensions(const std::vector<pvrvk::ExtensionProperties>& extensionProperties, const std::string* extensionsToEnable, uint32_t numExtensions)
-{
-	std::vector<std::string> outExtensions;
-	for (uint32_t i = 0; i < extensionProperties.size(); ++i)
-	{
-		for (uint32_t j = 0; j < numExtensions; ++j)
-		{
-			if (!strcmp(extensionsToEnable[j].c_str(), extensionProperties[i].getExtensionName()))
-			{
-				outExtensions.push_back(extensionsToEnable[j]);
-				break;
-			}
-		}
-	}
-	return outExtensions;
-}
-
-/// <summary>Filters a list of pvrvk::LayerProperties supported by a particular device based on a set of application chosen layers to be used in this demo.</summary>
-/// <param name="layerProperties">A list of pvrvk::LayerProperties supported by a particular device which will be used as the base for filtering.</param>
-/// <param name="layersToEnable">A pointer to a list of appication chosen layers to enable.</param>
-/// <param name="layersCount">The number of layers in the array pointed to by layersToEnable.</param>
-/// <returns>A set of device supported layers the application wishes to enable.</returns>
-std::vector<std::string> filterLayers(const std::vector<pvrvk::LayerProperties>& layerProperties, const std::string* layersToEnable, uint32_t layersCount)
-{
-	// For each layer supported by a particular device check whether the application has chosen to enable it. If the chosen layer to enable exists in the list
-	// of layers to enable then add the layer to a list of layers to return to the application.
-	std::vector<std::string> outLayers;
-	for (uint32_t i = 0; i < layerProperties.size(); ++i)
-	{
-		for (uint32_t j = 0; j < layersCount; ++j)
-		{
-			if (!strcmp(layersToEnable[j].c_str(), layerProperties[i].getLayerName()))
-			{
-				outLayers.push_back(layersToEnable[j]);
-			}
-		}
-	}
-	return outLayers;
-}
 
 /// <summary>Retrieves the pvrvk::ImageAspectFlags based on the pvrvk::Format. The pvrvk::ImageAspectFlags specify the aspects of an image for purposes such as identifying a
 /// subresource.</summary>
@@ -284,8 +362,8 @@ inline void getMemoryTypeIndex(const pvrvk::PhysicalDevice& physicalDevice, cons
 	// Attempt to find a valid memory type index based on the optimal memory property flags.
 	outMemoryTypeIndex = physicalDevice->getMemoryTypeIndex(allowedMemoryTypeBits, memoryPropertyFlags, outMemoryPropertyFlags);
 
-	// if the optimal set cannot be found then fallback to the required set. The required set of memory property flags are expected to be supported and found. If not, an exception
-	// will be thrown.
+	// if the optimal set cannot be found then fallback to the required set. The required set of memory property flags are expected to be supported and found. If not, an
+	// exception will be thrown.
 	if (outMemoryTypeIndex == static_cast<uint32_t>(-1))
 	{
 		memoryPropertyFlags = requiredMemoryProperties;
@@ -309,8 +387,11 @@ struct DeviceResources
 	// The Vulkan instance forms the basis for all interactions between the application and the implementation.
 	pvrvk::Instance instance;
 
+	// Stores the set of created Debug Utils Messengers which provide a mechanism for tools, layers and the implementation to call back to the application
+	pvrvk::DebugUtilsMessenger debugUtilsMessengers[2];
+
 	// Stores the set of created Debug Report Callbacks which provide a mechanism for the Vulkan layers and the implementation to call back to the application.
-	pvrvk::DebugReportCallback debugReportCallbacks[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	pvrvk::DebugReportCallback debugReportCallbacks[2];
 
 	// The Vulkan surface handle (pvrvk::Surface) abstracting the native platform surface
 	pvrvk::Surface surface;
@@ -355,8 +436,7 @@ struct DeviceResources
 	// Synchronisation primitives used for specifying dependencies and ordering during rendering frames.
 	pvrvk::Semaphore imageAcquireSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
 	pvrvk::Semaphore presentationSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
-	pvrvk::Fence perFrameAcquisitionFences[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
-	pvrvk::Fence perFrameCommandBufferFences[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	pvrvk::Fence perFrameResourcesFences[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
 
 	// The pvrvk::ImageView handle created for the triangle texture.
 	pvrvk::ImageView triangleImageView;
@@ -382,17 +462,15 @@ struct DeviceResources
 
 	~DeviceResources()
 	{
-		if (device.isValid())
+		if (device)
 		{
 			device->waitIdle();
 		}
 		uint32_t l = swapchain->getSwapchainLength();
 		for (uint32_t i = 0; i < l; ++i)
 		{
-			if (perFrameAcquisitionFences[i].isValid())
-				perFrameAcquisitionFences[i]->wait();
-			if (perFrameCommandBufferFences[i].isValid())
-				perFrameCommandBufferFences[i]->wait();
+			if (perFrameResourcesFences[i])
+				perFrameResourcesFences[i]->wait();
 		}
 	}
 };
@@ -444,6 +522,9 @@ class VulkanIntroducingPVRShell : public pvr::Shell
 	pvrvk::Extent2D _textureDimensions;
 	std::vector<uint8_t> _textureData;
 
+	// Records the number of debug utils messengers created by the application.
+	uint32_t _numDebugUtilsMessengers;
+
 	// Records the number of debug callback functions created by the application.
 	uint32_t _numDebugCallbacks;
 
@@ -457,7 +538,7 @@ public:
 
 	// Application specific functions.
 	void createInstance();
-	void initDebugCallbacks();
+	void initDebugUtilsCallbacks();
 	void createSurface(void* display, void* window);
 	void createLogicalDevice();
 	void createSwapchain();
@@ -493,7 +574,7 @@ public:
 
 		  // initialise the other variables used throughout the demo
 		  _currentFrameIndex(0), _viewport(), _scissor(), _graphicsQueueFamilyIndex(-1), _vboStride(-1), _dynamicBufferAlignedSize(-1), _textureDimensions(), _textureData(0),
-		  _numDebugCallbacks(0)
+		  _numDebugUtilsMessengers(0), _numDebugCallbacks(0)
 	{}
 };
 
@@ -523,8 +604,9 @@ pvr::Result VulkanIntroducingPVRShell::initView()
 	createInstance();
 
 #ifdef DEBUG
-	// If supported enable the use of VkDebugReportCallbacks from VK_EXT_debug_report to enable logging of various validation layer messages.
-	initDebugCallbacks();
+	// If supported enable the use of VkDebugUtilsMessengers from VK_EXT_debug_utils if supported else VkDebugReportCallbacks from VK_EXT_debug_report if supported
+	// to enable logging of various validation layer messages.
+	initDebugUtilsCallbacks();
 #endif
 
 	// Create the various Vulkan resources and objects used throughout this demo
@@ -591,46 +673,39 @@ pvr::Result VulkanIntroducingPVRShell::initView()
 pvr::Result VulkanIntroducingPVRShell::renderFrame()
 {
 	// As discussed in "createSwapchain", the application doesn't actually "own" the presentation images meaning they cannot "just" render to the image
-	// but must acquire an image from the presentation engine prior to making use of it.
-	// Even then, after acquiring an image, the application must use synchronization primitives to ensure that the presentation engine has completely finished with the image.
+	// but must acquire an image from the presentation engine prior to making use of it. The act of acquiring an image from the presentation engine guarantees that
+	// the presentation engine has completely finished with the image.
 
 	// As with various other tasks in Vulkan rendering an image and presenting it to the screen takes some explanation, various commands and a fair amount of thought.
 
-	// We are using a "canonical" way to do synchronization that works in all but the most exotic of cases. The basic strategy
-	// * We track the number of frames in flight separately (this is _currentFrameIndex). This number is independent of *which* image we are rendering to, and is used for our
-	//   vkAcquireNextImage fences
-	// * We use this number to ensure that we never attempt to double-use resources with 2 different ways. The necessity of the two fences (you would expect one to be enought)
-	// stems, mostly, from a combination of two factors: 1) We do not wish to attempt to acquire a fence and then immediately wait for it to be available - we wish to connect the
-	// acquire operation with the rendering via a Semaphore, so we avoid the CPU-wait of the fence. Hence, we want to wait until the last possible moment to do the fence-wait. This
-	// wait ends up being the first wait during the frame 2) At the same time, we do not know which swapchain image we will acquire until after the fence.
+	// We are using a "canonical" way to do synchronization that works in all but the most exotic of cases.
+	// Calls to vkAcquireNextImageKHR, using a timeout of UINT64_MAX, will block until a presentable image from the swapchain can be acquired or will return an error.
+	// Calls to vkAcquireNextImageKHR may return immediately and therefore we cannot rely simply on this call to meter our rendering speed, we instead make use of
+	// The fence _perFrameResourcesFences[_swapchainIndex] to provides us with metered rendering and we make use of a semaphore _imageAcquireSemaphores[_currentFrameIndex] signalled
+	// by the call to vkAcquireNextImageKHR to guarantee that the presentation engine has finished reading from the image meaning it is now safe for the image layout
+	// and contents to be modified. The vkQueueSubmit call used to write to the swapchain image uses the semaphore _imageAcquireSemaphores[_currentFrameIndex] as a wait semaphore meaning
+	// the vkQueueSubmit call will only be executed once the semaphore has been signalled by the vkAcquireNextImageKHR ensuring that the presentation
+	// engine has relinquished control of the image. Only after this can the swapchain be safely modified.
 
 	// A high level overview for rendering and presenting an image to the screen is as follows:
-	//		1). Wait for the current frame's image acquisition fence to have been signalled : This means the presentation engine is finished reading from the image.
-	//		2). Acquire a presentable image from the presentation engine. The index of the next image into which to render will be returned.
-	//		3). Wait for the per frame resources fence to become signalled meaning the resources/command buffers for the current virtual frame are finished with.
-	//		4). Render the image (update variables, vkQueueSubmit). We are using per swapchain pre-recorded command buffers so we only need to submit them on each frame.
-	//		5). Present the acquired and now rendered image. Presenting an image returns ownership of the image back to the presentation engine.
-	//		6). Increment (and wrap) the virtual frame index
+	// 1). Acquire a presentable image from the presentation engine. The index of the next image into which to render will be returned.
+	// 2). Wait for the per frame resources fence to become signalled meaning the resources/command buffers for the current virtual frame are finished with.
+	// 3). Render the image (update variables, vkQueueSubmit). We are using per swapchain pre-recorded command buffers so we only need to submit them on each frame.
+	// 4). Present the acquired and now rendered image. Presenting an image returns ownership of the image back to the presentation engine.
+	// 5). Increment (and wrap) the virtual frame index
 
 	//
-	// 1). Wait for the current frame's image acquisition fence to have been signalled meaning the presentation engine is finished reading from the image.
-	//
-	_deviceResources->perFrameAcquisitionFences[_currentFrameIndex]->wait();
-	_deviceResources->perFrameAcquisitionFences[_currentFrameIndex]->reset();
-
-	//
-	// 2). Acquire a presentable image from the presentation image (note the index of the next image will be returned).
+	// 1). Acquire a presentable image from the presentation engine. The index of the next image into which to render will be returned.
 	//
 	// The order in which images are acquired is implementation-dependent, and may be different than the order the images were presented
-	_deviceResources->swapchain->acquireNextImage(
-		uint64_t(-1), _deviceResources->imageAcquireSemaphores[_currentFrameIndex], _deviceResources->perFrameAcquisitionFences[_currentFrameIndex]);
+	_deviceResources->swapchain->acquireNextImage(uint64_t(-1), _deviceResources->imageAcquireSemaphores[_currentFrameIndex]);
 
 	//
-	// 3). Wait for the per frame resources fence to have been signalled meaning the resources/command buffers for the current virtual frame are finished with.
+	// 2). Wait for the per frame resources fence to have been signalled meaning the resources/command buffers for the current virtual frame are finished with.
 	//
 	// Wait for the command buffer from swapChainLength frames ago to be finished with.
-	_deviceResources->perFrameCommandBufferFences[_deviceResources->swapchain->getSwapchainIndex()]->wait();
-	_deviceResources->perFrameCommandBufferFences[_deviceResources->swapchain->getSwapchainIndex()]->reset();
+	_deviceResources->perFrameResourcesFences[_deviceResources->swapchain->getSwapchainIndex()]->wait();
+	_deviceResources->perFrameResourcesFences[_deviceResources->swapchain->getSwapchainIndex()]->reset();
 
 	// Update the model view projection buffer data
 	{
@@ -643,16 +718,16 @@ pvr::Result VulkanIntroducingPVRShell::renderFrame()
 		// Set the model view projection matrix
 		const auto modelViewProjectionMatrix = _viewProjectionMatrix * _modelMatrix;
 
-		// Update the model view projection matrix buffer data for the current swapchain index. Note that the memory for the whole buffer was mapped just after it was allocated so
-		// care needs to be taken to only modify memory to use with the current swapchain. Other slices of the memory may still be in use.
+		// Update the model view projection matrix buffer data for the current swapchain index. Note that the memory for the whole buffer was mapped just after it was allocated
+		// so care needs to be taken to only modify memory to use with the current swapchain. Other slices of the memory may still be in use.
 
 		memcpy(static_cast<unsigned char*>(_deviceResources->modelViewProjectionBuffer->getDeviceMemory()->getMappedData()) +
 				_dynamicBufferAlignedSize * _deviceResources->swapchain->getSwapchainIndex(),
 			&modelViewProjectionMatrix, sizeof(_viewProjectionMatrix));
 
-		// If the model view projection buffer memory was allocated with pvrvk::MemoryPropertyFlags including pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT indicating that the
-		// host does not need to manage the memory accesses explictly using the host cache management commands vkFlushMappedMemoryRanges and vkInvalidateMappedMemoryRanges to flush
-		// host writes to the device meaning we can safely assume writes have taken place prior to making use of the model view projection buffer memory.
+		// If the model view projection buffer memory was allocated with pvrvk::MemoryPropertyFlags including pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT indicating that
+		// the host does not need to manage the memory accesses explictly using the host cache management commands vkFlushMappedMemoryRanges and vkInvalidateMappedMemoryRanges
+		// to flush host writes to the device meaning we can safely assume writes have taken place prior to making use of the model view projection buffer memory.
 		if ((_deviceResources->modelViewProjectionBuffer->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
 		{
 			// Flush the memory guaranteeing that host writes to the memory ranges specified are made available to the device.
@@ -662,7 +737,7 @@ pvr::Result VulkanIntroducingPVRShell::renderFrame()
 	}
 
 	//
-	// 4). Render the image (vkQueueSubmit).
+	// 3). Render the image (update variables, vkQueueSubmit). We are using per swapchain pre-recorded command buffers so we only need to submit them on each frame.
 	//
 	// Submit the specified command buffer to the given queue.
 	// The queue submission will wait on the corresponding image acquisition semaphore to have been signalled.
@@ -676,11 +751,11 @@ pvr::Result VulkanIntroducingPVRShell::renderFrame()
 	submitInfo.numWaitSemaphores = 1;
 	submitInfo.signalSemaphores = &_deviceResources->presentationSemaphores[_currentFrameIndex];
 	submitInfo.numSignalSemaphores = 1;
-	submitInfo.waitDestStages = &pipeWaitStageFlags;
-	_deviceResources->queue->submit(&submitInfo, 1, _deviceResources->perFrameCommandBufferFences[_deviceResources->swapchain->getSwapchainIndex()]);
+	submitInfo.waitDstStageMask = &pipeWaitStageFlags;
+	_deviceResources->queue->submit(&submitInfo, 1, _deviceResources->perFrameResourcesFences[_deviceResources->swapchain->getSwapchainIndex()]);
 
 	//
-	// 5). Present the acquired and now rendered image.
+	// 4). Present the acquired and now rendered image. Presenting an image returns ownership of the image back to the presentation engine.
 	//
 	// Queues the current swapchain image for presentation.
 	// The queue presentation will wait on the corresponding image presentation semaphore.
@@ -693,7 +768,7 @@ pvr::Result VulkanIntroducingPVRShell::renderFrame()
 	_deviceResources->queue->present(presentInfo);
 
 	//
-	// 6). Increment (and wrap) the virtual frame index
+	// 5). Increment (and wrap) the virtual frame index
 	//
 	_currentFrameIndex = (_currentFrameIndex + 1) % _deviceResources->swapchain->getSwapchainLength();
 
@@ -760,26 +835,35 @@ void VulkanIntroducingPVRShell::createInstance()
 	pvrvk::ApplicationInfo applicationInfo("VulkanIntroducingPVRVk", 1, "VulkanIntroducingPVRVk", 1, VK_MAKE_VERSION(major, minor, patch));
 
 	// Create the instance creation info structure
-	pvrvk::InstanceCreateInfo instanceCreateInfo(&applicationInfo);
+	pvrvk::InstanceCreateInfo instanceCreateInfo(applicationInfo);
+
+	// Print out the supported instance extensions
+	std::vector<pvrvk::ExtensionProperties> extensionProperties;
+	pvrvk::Extensions::enumerateInstanceExtensions(extensionProperties);
+
+	Log(LogLevel::Information, "Supported Instance Extensions:");
+	for (uint32_t i = 0; i < static_cast<uint32_t>(extensionProperties.size()); ++i)
+	{
+		Log(LogLevel::Information, "\t%s : version [%u]", extensionProperties[i].getExtensionName(), extensionProperties[i].getSpecVersion());
+	}
 
 	// Retrieve a list of supported instance extensions and filter them based on a set of requested instance extension to be enabled.
-	if (ARRAY_SIZE(Extensions::InstanceExtensions))
+	InstanceExtensions instanceExtensions;
+	if (instanceExtensions.getNumExtensions())
 	{
-		instanceCreateInfo.setEnabledExtensions(
-			pvrvk::Extensions::filterInstanceExtensions(Extensions::InstanceExtensions, static_cast<uint32_t>(ARRAY_SIZE(Extensions::InstanceExtensions))));
+		instanceCreateInfo.setExtensionList(pvrvk::Extensions::filterExtensions(extensionProperties, instanceExtensions));
 
-		Log(LogLevel::Information, "Supported Instance Extensions:");
-		for (uint32_t i = 0; i < instanceCreateInfo.getNumEnabledExtensionNames(); ++i)
+		Log(LogLevel::Information, "Supported Instance Extensions to be Enabled:");
+		for (uint32_t i = 0; i < instanceCreateInfo.getExtensionList().getNumExtensions(); ++i)
 		{
-			Log(LogLevel::Information, "\t%s", instanceCreateInfo.getEnabledExtensionName(i).c_str());
+			Log(LogLevel::Information, "\t%s", instanceCreateInfo.getExtensionList().getExtension(i).getName().c_str());
 		}
 	}
 
 	// Vulkan, by nature of its minimalistic design, provides very little information to the developer regarding API issues. Error checking and validation of state is minimal.
-	// One of the key principles of Vulkan is that the preparation and submission of work should be highly efficient; removing error checking and validation of state from Vulkan
-	// implementations is one of the many ways in which this was enabled.
-	// Vulkan is a layered API whereby it can optionally make use of additional layers for debugging, validation and other purposes with the core Vulkan layer being the lowest in
-	// the stack.
+	// One of the key principles of Vulkan is that the preparation and submission of work should be highly efficient; removing error checking and validation of state from
+	// Vulkan implementations is one of the many ways in which this was enabled. Vulkan is a layered API whereby it can optionally make use of additional layers for debugging,
+	// validation and other purposes with the core Vulkan layer being the lowest in the stack.
 
 	// Generally implementations assume applications are using the Vulkan API correctly. When an application uses the Vulkan incorrectly core Vulkan may behave in
 	// undefined ways including through program termination.
@@ -791,24 +875,23 @@ void VulkanIntroducingPVRShell::createInstance()
 	// This application makes use of The Khronos Vulkan-LoaderAndValidationLayers: https://github.com/KhronosGroup/Vulkan-LoaderAndValidationLayers
 	// Other layers exist for various other reasons such as VK_LAYER_POWERVR_carbon and VK_LAYER_ARM_mali_perf_doc.
 	std::vector<pvrvk::LayerProperties> layerProperties;
-	pvrvk::Layers::Instance::enumerateInstanceLayers(layerProperties);
+	pvrvk::Layers::enumerateInstanceLayers(layerProperties);
 
-	if (ARRAY_SIZE(Layers::InstanceLayers))
+	Log(LogLevel::Information, "Supported Instance Layers:");
+	for (uint32_t i = 0; i < static_cast<uint32_t>(layerProperties.size()); ++i)
 	{
-		std::vector<std::string> supportedLayers = pvrvk::Layers::filterLayers(layerProperties, Layers::InstanceLayers, static_cast<uint32_t>(ARRAY_SIZE(Layers::InstanceLayers)));
+		Log(LogLevel::Information, "\t%s : Spec version [%u], Implementation version [%u]", layerProperties[i].getLayerName(), layerProperties[i].getSpecVersion(),
+			layerProperties[i].getImplementationVersion());
+	}
 
-		bool requestedStdValidation = false;
+	InstanceLayers layers;
+	if (layers.getNumLayers())
+	{
+		pvrvk::VulkanLayerList supportedLayers = pvrvk::Layers::filterLayers(layerProperties, layers);
+
+		bool requestedStdValidation = layers.containsLayer("VK_LAYER_LUNARG_standard_validation");
 		bool supportsStdValidation = false;
 		uint32_t stdValidationRequiredIndex = -1;
-
-		for (uint32_t i = 0; i < static_cast<uint32_t>(ARRAY_SIZE(Layers::InstanceLayers)); ++i)
-		{
-			if (!strcmp(Layers::InstanceLayers[i].c_str(), "VK_LAYER_LUNARG_standard_validation"))
-			{
-				requestedStdValidation = true;
-				break;
-			}
-		}
 
 		if (requestedStdValidation)
 		{
@@ -821,15 +904,15 @@ void VulkanIntroducingPVRShell::createInstance()
 
 			if (!supportsStdValidation)
 			{
-				for (uint32_t i = 0; stdValidationRequiredIndex == -1 && i < layerProperties.size(); ++i)
+				for (uint32_t i = 0; stdValidationRequiredIndex == static_cast<uint32_t>(-1) && i < layerProperties.size(); ++i)
 				{
-					if (!strcmp(Layers::InstanceLayers[i].c_str(), "VK_LAYER_LUNARG_standard_validation"))
+					if (!strcmp(layers.getLayer(i).getName().c_str(), "VK_LAYER_LUNARG_standard_validation"))
 					{
 						stdValidationRequiredIndex = i;
 					}
 				}
 
-				for (uint32_t j = 0; j < ARRAY_SIZE(Layers::InstanceLayers); ++j)
+				for (uint32_t j = 0; j < layers.getNumLayers(); ++j)
 				{
 					if (stdValidationRequiredIndex == j && !supportsStdValidation)
 					{
@@ -841,7 +924,7 @@ void VulkanIntroducingPVRShell::createInstance()
 							{
 								if (!strcmp(stdValComponents[k], layerProperties[i].getLayerName()))
 								{
-									supportedLayers.push_back(std::string(stdValComponents[k]));
+									supportedLayers.addLayer(pvrvk::VulkanLayer(std::string(stdValComponents[k])));
 									break;
 								}
 							}
@@ -850,30 +933,54 @@ void VulkanIntroducingPVRShell::createInstance()
 				}
 
 				// filter the layers again checking for support for the component layers enabled via VK_LAYER_LUNARG_standard_validation
-				supportedLayers = pvrvk::Layers::filterLayers(layerProperties, supportedLayers.data(), static_cast<uint32_t>(supportedLayers.size()));
+				supportedLayers = pvrvk::Layers::filterLayers(layerProperties, supportedLayers);
 			}
 		}
 
-		instanceCreateInfo.setEnabledLayers(supportedLayers);
+		instanceCreateInfo.setLayerList(supportedLayers);
 
-		Log(LogLevel::Information, "Supported Instance Layers:");
-		for (uint32_t i = 0; i < instanceCreateInfo.getNumEnabledLayerNames(); ++i)
+		Log(LogLevel::Information, "Supported Instance Layers to be Enabled:");
+		for (uint32_t i = 0; i < instanceCreateInfo.getLayerList().getNumLayers(); ++i)
 		{
-			Log(LogLevel::Information, "\t%s", instanceCreateInfo.getEnabledLayerName(i).c_str());
+			Log(LogLevel::Information, "\t%s : Spec version [%u], Spec version [%u]", instanceCreateInfo.getLayerList().getLayer(i).getName().c_str(),
+				instanceCreateInfo.getLayerList().getLayer(i).getSpecVersion(), instanceCreateInfo.getLayerList().getLayer(i).getImplementationVersion());
 		}
 	}
 
 	_deviceResources->instance = pvrvk::createInstance(instanceCreateInfo);
+	_deviceResources->instance->retrievePhysicalDevices();
 }
 
 /// <summary>Creates Debug Report Callbacks which will provide .</summary>
-void VulkanIntroducingPVRShell::initDebugCallbacks()
+void VulkanIntroducingPVRShell::initDebugUtilsCallbacks()
 {
+	// Create debug utils messengers using the VK_EXT_debug_utils extension providing a way for the Vulkan layers and the implementation itself to call back to the application
+	// in particular circumstances.
+	if (_deviceResources->instance->getEnabledExtensionTable().extDebugUtilsEnabled)
+	{
+		Log(LogLevel::Information, "Creating VkDebugUtilsMessengerEXT using VK_EXT_debug_utils");
+
+		// Create a Debug Utils Messenger which will trigger our callback for logging messages for events of warning and error types of all severities
+		pvrvk::DebugUtilsMessengerCreateInfo createInfo(
+			pvrvk::DebugUtilsMessengerCreateInfo(pvrvk::DebugUtilsMessageSeverityFlagsEXT::e_ERROR_BIT_EXT | pvrvk::DebugUtilsMessageSeverityFlagsEXT::e_WARNING_BIT_EXT,
+				pvrvk::DebugUtilsMessageTypeFlagsEXT::e_ALL_BITS, logMessageDebugUtilsMessengerCallback));
+
+		_deviceResources->debugUtilsMessengers[0] = _deviceResources->instance->createDebugUtilsMessenger(createInfo);
+
+		// Create a second Debug Utils Messenger for throwing exceptions for Error events.
+		createInfo.setMessageSeverity(pvrvk::DebugUtilsMessageSeverityFlagsEXT::e_ERROR_BIT_EXT);
+		createInfo.setCallback(throwOnErrorDebugUtilsMessengerCallback);
+
+		_deviceResources->debugUtilsMessengers[1] = _deviceResources->instance->createDebugUtilsMessenger(createInfo);
+
+		_numDebugUtilsMessengers = 2;
+	}
 	// Create debug report callbacks using the VK_EXT_debug_report extension providing a way for the Vulkan layers and the implementation itself to call back to the application
 	// in particular circumstances.
-
-	if (_deviceResources->instance->isInstanceExtensionEnabled(VK_EXT_DEBUG_REPORT_EXTENSION_NAME))
+	else if (_deviceResources->instance->getEnabledExtensionTable().extDebugReportEnabled)
 	{
+		Log(LogLevel::Information, "Creating VkDebugReportCallbackEXT using VK_EXT_debug_report");
+
 		pvrvk::DebugReportCallbackCreateInfo createInfo(pvrvk::DebugReportFlagsEXT::e_ERROR_BIT_EXT | pvrvk::DebugReportFlagsEXT::e_WARNING_BIT_EXT |
 				pvrvk::DebugReportFlagsEXT::e_PERFORMANCE_WARNING_BIT_EXT | pvrvk::DebugReportFlagsEXT::e_DEBUG_BIT_EXT,
 			logMessageDebugReportCallback);
@@ -883,7 +990,7 @@ void VulkanIntroducingPVRShell::initDebugCallbacks()
 
 		// Register the second callback which throws exceptions when events of type VK_DEBUG_REPORT_ERROR_BIT_EXT occur.
 		createInfo.setFlags(pvrvk::DebugReportFlagsEXT::e_ERROR_BIT_EXT);
-		createInfo.setCallback(logMessageDebugReportCallback);
+		createInfo.setCallback(throwOnErrorDebugReportCallback);
 
 		// Register the callback
 		_deviceResources->debugReportCallbacks[1] = _deviceResources->instance->createDebugReportCallback(createInfo);
@@ -982,7 +1089,7 @@ void VulkanIntroducingPVRShell::createSurface(void* display, void* window)
 		pvrvk::DisplayMode displayMode;
 
 		// if a valid display can be found and its supported then make use of it
-		if (display.isValid() && std::find(supportedDisplaysForPlane.begin(), supportedDisplaysForPlane.end(), display) != supportedDisplaysForPlane.end())
+		if (display && std::find(supportedDisplaysForPlane.begin(), supportedDisplaysForPlane.end(), display) != supportedDisplaysForPlane.end())
 		{
 			displayMode = display->getDisplayMode(0);
 		}
@@ -993,7 +1100,7 @@ void VulkanIntroducingPVRShell::createSurface(void* display, void* window)
 			displayMode = currentDisplay->getDisplayMode(0);
 		}
 
-		if (displayMode.isValid())
+		if (displayMode)
 		{
 			pvrvk::DisplayPlaneCapabilitiesKHR capabilities = _deviceResources->instance->getPhysicalDevice(0)->getDisplayPlaneCapabilities(displayMode, i);
 			Log("Capabilities for the chosen display mode for Display Plane [%u]:", i);
@@ -1079,19 +1186,29 @@ void VulkanIntroducingPVRShell::createLogicalDevice()
 
 	// Retrieve a list of supported device extensions and filter them based on a set of requested instance extension to be enabled.
 
-	if (ARRAY_SIZE(Extensions::DeviceExtensions))
+	// Print out the supported device extensions
+	const std::vector<pvrvk::ExtensionProperties>& extensionProperties = _deviceResources->instance->getPhysicalDevice(0)->getDeviceExtensionsProperties();
+
+	Log(LogLevel::Information, "Supported Device Extensions:");
+	for (uint32_t i = 0; i < static_cast<uint32_t>(extensionProperties.size()); ++i)
 	{
-		deviceCreateInfo.setEnabledExtensions(pvrvk::Extensions::filterExtensions(_deviceResources->instance->getPhysicalDevice(0)->getDeviceExtensionsProperties(),
-			Extensions::DeviceExtensions, static_cast<uint32_t>(ARRAY_SIZE(Extensions::DeviceExtensions))));
-		if (deviceCreateInfo.getNumEnabledExtensionNames() != ARRAY_SIZE(Extensions::DeviceExtensions))
+		Log(LogLevel::Information, "\t%s : version [%u]", extensionProperties[i].getExtensionName(), extensionProperties[i].getSpecVersion());
+	}
+
+	DeviceExtensions deviceExtensions;
+	if (deviceExtensions.getNumExtensions())
+	{
+		deviceCreateInfo.setExtensionList(pvrvk::Extensions::filterExtensions(extensionProperties, deviceExtensions));
+
+		if (deviceCreateInfo.getExtensionList().getNumExtensions() != deviceExtensions.getNumExtensions())
 		{
 			Log(LogLevel::Warning, "Not all requested Logical device extensions are supported");
 		}
 
 		Log(LogLevel::Information, "Supported Device Extensions:");
-		for (uint32_t i = 0; i < deviceCreateInfo.getNumEnabledExtensionNames(); ++i)
+		for (uint32_t i = 0; i < deviceCreateInfo.getExtensionList().getNumExtensions(); ++i)
 		{
-			Log(LogLevel::Information, "\t%s", deviceCreateInfo.getEnabledExtensionName(i).c_str());
+			Log(LogLevel::Information, "\t%s", deviceCreateInfo.getExtensionList().getExtension(i).getName().c_str());
 		}
 	}
 
@@ -1104,6 +1221,7 @@ void VulkanIntroducingPVRShell::createLogicalDevice()
 	deviceCreateInfo.setEnabledFeatures(&features);
 
 	_deviceResources->device = _deviceResources->instance->getPhysicalDevice(0)->createDevice(deviceCreateInfo);
+	_deviceResources->device->retrieveQueues();
 
 	// Get the queue
 	_deviceResources->queue = _deviceResources->device->getQueue(_graphicsQueueFamilyIndex, 0);
@@ -1138,8 +1256,8 @@ void correctWindowExtents(const pvrvk::SurfaceCapabilitiesKHR& surfaceCapabiliti
 /// <param name="displayAttributes">A set of display configuration parameters.</param>
 void selectPresentMode(std::vector<pvrvk::PresentModeKHR>& modes, pvrvk::PresentModeKHR& presentationMode, pvr::DisplayAttributes& displayAttributes)
 {
-	// With pvrvk::PresentModeKHR::e_FIFO_KHR the presentation engine will wait for the next vblank (vertical blanking period) to update the current image. When using FIFO tearing
-	// cannot occur. pvrvk::PresentModeKHR::e_FIFO_KHR is required to be supported.
+	// With pvrvk::PresentModeKHR::e_FIFO_KHR the presentation engine will wait for the next vblank (vertical blanking period) to update the current image. When using FIFO
+	// tearing cannot occur. pvrvk::PresentModeKHR::e_FIFO_KHR is required to be supported.
 	presentationMode = pvrvk::PresentModeKHR::e_FIFO_KHR;
 	pvrvk::PresentModeKHR desiredSwapMode = pvrvk::PresentModeKHR::e_FIFO_KHR;
 
@@ -1204,27 +1322,10 @@ void selectPresentMode(std::vector<pvrvk::PresentModeKHR>& modes, pvrvk::Present
 		break;
 	}
 
-	// Set the swapchain length appropriately based on the choice of presentation mode.
+	// Set the swapchain length if it has not already been set.
 	if (!displayAttributes.swapLength)
 	{
-		switch (presentationMode)
-		{
-		case pvrvk::PresentModeKHR::e_IMMEDIATE_KHR:
-			displayAttributes.swapLength = 2;
-			break;
-		case pvrvk::PresentModeKHR::e_MAILBOX_KHR:
-			displayAttributes.swapLength = 3;
-			break;
-		case pvrvk::PresentModeKHR::e_FIFO_KHR:
-			displayAttributes.swapLength = 2;
-			break;
-		case pvrvk::PresentModeKHR::e_FIFO_RELAXED_KHR:
-			displayAttributes.swapLength = 2;
-			break;
-		default:
-			displayAttributes.swapLength = 2;
-			Log(LogLevel::Information, "Unexpected Vsync Mode specified. Defaulting swap chain length to %u", displayAttributes.swapLength);
-		}
+		displayAttributes.swapLength = 3;
 	}
 }
 
@@ -1237,8 +1338,8 @@ void VulkanIntroducingPVRShell::createSwapchain()
 	// (VkSurfaceKHR), to be used for screen rendering.
 
 	// The swapchain provides the necessary functionality for the application to explicitly handle multi buffering (double/triple buffering). The swapchain provides the
-	// functionality to present a single image at a time but also allows the application to queue up other images for presentation. An application will render images and queue them
-	// for presentation to the surface.
+	// functionality to present a single image at a time but also allows the application to queue up other images for presentation. An application will render images and queue
+	// them for presentation to the surface.
 
 	// The physical device surface may well only support a certain set of pvrvk::Formats/pvrvk::ColorSpaceKHR pairs for the presentation images in their presentation engine.
 	// Retrieve the number of pvrvk::Formats/pvrvk::ColorSpaceKHR pairs supported by the physical device surface.
@@ -1266,8 +1367,20 @@ void VulkanIntroducingPVRShell::createSwapchain()
 
 	if (!foundFormat)
 	{
-		throw pvr::PvrError("Failed to find a valid pvrvk::SurfaceFormatKHR to use for the swapchain");
+		// No preference... Get the first one.
+		if (surfaceFormats.size())
+		{
+			foundFormat = true;
+			swapchainColorFormat = surfaceFormats[0];
+		}
+		else
+		{
+			throw pvr::PvrError("Failed to find a valid pvrvk::SurfaceFormatKHR to use for the swapchain");
+		}
 	}
+
+	Log(LogLevel::Information, "Surface format selected: %s with colorspace %s", pvrvk::to_string(swapchainColorFormat.getFormat()).c_str(),
+		pvrvk::to_string(swapchainColorFormat.getColorSpace()).c_str());
 
 	pvrvk::SurfaceCapabilitiesKHR surfaceCapabilities = _deviceResources->device->getPhysicalDevice()->getSurfaceCapabilities(_deviceResources->surface);
 
@@ -1489,11 +1602,11 @@ void VulkanIntroducingPVRShell::allocateCommandBuffers()
 /// <summary>Records the rendering commands into a set of command buffers which can be subsequently submitted to a queue for exection.</summary>
 void VulkanIntroducingPVRShell::recordCommandBuffers()
 {
-	// Record the rendering commands into a set of command buffers upfront (once). These command buffers can then be submitted to a device queue for execution resulting in fewer
-	// state changes and less commands being dispatched to the implementation all resulting in less driver overhead.
+	// Record the rendering commands into a set of command buffers upfront (once). These command buffers can then be submitted to a device queue for execution resulting in
+	// fewer state changes and less commands being dispatched to the implementation all resulting in less driver overhead.
 
-	// Recorded commands will include pipelines to use and their descriptor sets, dynamic state modification commands, rendering commands (draws), compute commands (dispatches),
-	// commands for executing secondary command buffers or commands to copy resources
+	// Recorded commands will include pipelines to use and their descriptor sets, dynamic state modification commands, rendering commands (draws), compute commands
+	// (dispatches), commands for executing secondary command buffers or commands to copy resources
 
 	// Vulkan does not provide any kind of global state machine, neither does it provide any kind of default states this means that each command buffer manages its own state
 	// independently of all other command buffers and each command buffer must independently configure all of the state relevant to its own set of commands.
@@ -1557,8 +1670,8 @@ void VulkanIntroducingPVRShell::createPipelineCache()
 
 	// Once created, a pipeline cache can be conveniently passed to the Vulkan commands vkCreateGraphicsPipelines and vkCreateComputePipelines.
 	// If the pipeline cache passed into these commands is not VK_NULL_HANDLE, the implementation will query it for possible reuse opportunities and update it with new content.
-	// The implementation handles updates to the pipeline cache and the application only needs to make use of the pipeline cache across all pipeline creation calls to achieve the
-	// most possible gains.
+	// The implementation handles updates to the pipeline cache and the application only needs to make use of the pipeline cache across all pipeline creation calls to achieve
+	// the most possible gains.
 
 	// It's heavily recommended to make use of pipeline caches as much as possible as they provide little to no overhead and provide the opportunity for
 	// the implemntation to provide optimisations for us. From the point of view of the application they provide an easy win in terms of work/benefit.
@@ -1599,14 +1712,13 @@ void VulkanIntroducingPVRShell::createPipeline()
 {
 	// Create the graphics pipeline used throughout the demo for rendering the triangle.
 
-	// A pipeline effectively sets up and configures a processing pipeline of a particular type (pvrvk::PipelineBindPoint) which becomes the funnel for which certain sets of Vulkan
-	// commands are sent through.
+	// A pipeline effectively sets up and configures a processing pipeline of a particular type (pvrvk::PipelineBindPoint) which becomes the funnel for which certain sets of
+	// Vulkan commands are sent through.
 
-	// The pipeline used throughout this demo is fundamentally simple in nature but still illustrates how to make use of a graphics pipeline to render a geometric object even if it
-	// is only a triangle. The pipeline makes use of vertex attributes (position, normal and uv), samples a particular texture writing the result in to a color attachment and also
-	// rendering to a depth stencil attachments.
-	// Pipelines are monolithic objects taking account of various bits of state which allow for a great deal of optimization of shaders based on the pipeline description including
-	// shader inputs/outputs and fixed function stages.
+	// The pipeline used throughout this demo is fundamentally simple in nature but still illustrates how to make use of a graphics pipeline to render a geometric object even
+	// if it is only a triangle. The pipeline makes use of vertex attributes (position, normal and uv), samples a particular texture writing the result in to a color attachment
+	// and also rendering to a depth stencil attachments. Pipelines are monolithic objects taking account of various bits of state which allow for a great deal of optimization
+	// of shaders based on the pipeline description including shader inputs/outputs and fixed function stages.
 
 	// The first part of a graphics pipeline will assemble a set of vertices to form geometric objects based on the requested primitive topology. These vertices may then
 	// be transformed using a Vertex Shader computing their position and generating attributes for each of the vertices. The pvrvk::PipelineVertexInputStateCreateInfo and
@@ -1639,8 +1751,8 @@ void VulkanIntroducingPVRShell::createPipeline()
 	// The resulting primitives are clipped and sent to the next pipeline stage...
 
 	// The next stage of the graphics pipeline, Rasterization, produces fragments based on the points, line segments or triangles constructed in the first stage.
-	// Each of the generated fragments will be passed to the fragment shader carrying out the per fragment rendering - this is where the framebuffer operations occur. This stage
-	// includes blending, masking, stenciling and other logical operations.
+	// Each of the generated fragments will be passed to the fragment shader carrying out the per fragment rendering - this is where the framebuffer operations occur. This
+	// stage includes blending, masking, stenciling and other logical operations.
 
 	// The pvrvk::PipelineRasterizationStateCreateInfo structure specifies how various aspects of rasterization occur including cull mode.
 	pvrvk::PipelineRasterizationStateCreateInfo rasterizationInfo;
@@ -1706,9 +1818,9 @@ void VulkanIntroducingPVRShell::createVbo()
 	const uint32_t vboSize = _vboStride * 3;
 
 	// The use of pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT specifies that memory allocated with this memory property type is the most efficient for device access.
-	// Note that memory property flag pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT has not been specified meaning the host application must manage the memory accesses to this
-	// memory explictly using the host cache management commands vkFlushMappedMemoryRanges and vkInvalidateMappedMemoryRanges to flush host writes to the device or make device
-	// writes visible to the host respectively.
+	// Note that memory property flag pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT has not been specified meaning the host application must manage the memory accesses to
+	// this memory explictly using the host cache management commands vkFlushMappedMemoryRanges and vkInvalidateMappedMemoryRanges to flush host writes to the device or make
+	// device writes visible to the host respectively.
 	pvrvk::MemoryPropertyFlags requiredFlags = pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT;
 	pvrvk::MemoryPropertyFlags optimalFlags = requiredFlags | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT;
 	_deviceResources->vbo =
@@ -1721,8 +1833,8 @@ void VulkanIntroducingPVRShell::createVbo()
 	triangle[2] = { glm::vec4(0.0f, 0.577f, 0.0f, 1.0f), { .5f, 1.f } };
 
 	// The use of pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT indicates that memory allocated with this memory property type can be mapped and unmapped enabling host
-	// access using calls to vkMapMemory and vkUnmapMemory respectively. When this memory property type is used we are able to map/update/unmap the memory to update the contents of
-	// the memory.
+	// access using calls to vkMapMemory and vkUnmapMemory respectively. When this memory property type is used we are able to map/update/unmap the memory to update the
+	// contents of the memory.
 	if ((_deviceResources->vbo->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT) != 0)
 	{
 		// Memory created using vkAllocateMemory isn't directly accesible to the host and instead must be mapped manually.
@@ -1821,9 +1933,9 @@ void VulkanIntroducingPVRShell::createUniformBuffers()
 
 	// The use of pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT indicates that memory allocated with this memory property type can be mapped and unmapped enabling host
 	// access using calls to vkMapMemory and vkUnmapMemory respectively. The memory property flag pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT is guaranteed to be available
-	// The use of pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT indicates the host does not need to manage the memory accesses explictly using the host cache management commands
-	// vkFlushMappedMemoryRanges and vkInvalidateMappedMemoryRanges to flush host writes to the device or make device writes visible to the host respectively. This behaviour
-	// is handled by the implementation.
+	// The use of pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT indicates the host does not need to manage the memory accesses explictly using the host cache management
+	// commands vkFlushMappedMemoryRanges and vkInvalidateMappedMemoryRanges to flush host writes to the device or make device writes visible to the host respectively. This
+	// behaviour is handled by the implementation.
 	pvrvk::MemoryPropertyFlags requiredPropertyFlags = pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT;
 	pvrvk::MemoryPropertyFlags optimalPropertyFlags = pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT;
 
@@ -1835,8 +1947,8 @@ void VulkanIntroducingPVRShell::createUniformBuffers()
 
 		// Calculate the size of the dynamic uniform buffer.
 		// This buffer will be updated each frame and must therefore be multi-buffered to avoid issues with using partially updated data, or updating data already in used.
-		// Rather than allocating multiple (swapchain) buffers we instead allocate a larger buffer and will instead use a slice per swapchain. This works as longer as the buffer
-		// is created taking into account the minimum uniform buffer offset alignment.
+		// Rather than allocating multiple (swapchain) buffers we instead allocate a larger buffer and will instead use a slice per swapchain. This works as longer as the
+		// buffer is created taking into account the minimum uniform buffer offset alignment.
 		uint32_t modelViewProjectionBufferSize = _deviceResources->swapchain->getSwapchainLength() * _dynamicBufferAlignedSize;
 
 		// Create the buffer, allocate the device memory and attach the memory to the newly created buffer object.
@@ -1920,8 +2032,8 @@ void VulkanIntroducingPVRShell::allocateDescriptorSets()
 void VulkanIntroducingPVRShell::createDescriptorSetLayouts()
 {
 	// Create the descriptor set layouts used throughout the demo with a descriptor set layout being defined by an array of 0 or more descriptor set layout bindings.
-	// Each descriptor set layout binding corresponds to a type of descriptor, its shader bindings, a set of shader stages which may access the descriptor and a array size count.
-	// A descriptor set layout provides an interface for the resources used by the descriptor set and the interface between shader stages and shader resources.
+	// Each descriptor set layout binding corresponds to a type of descriptor, its shader bindings, a set of shader stages which may access the descriptor and a array size
+	// count. A descriptor set layout provides an interface for the resources used by the descriptor set and the interface between shader stages and shader resources.
 
 	// Create the descriptor set layout for the static resources.
 	{
@@ -1962,8 +2074,8 @@ void VulkanIntroducingPVRShell::createTexture()
 {
 	// Creates a checkerboard texture which will be applied to the triangle during rendering.
 
-	// In Vulkan, uploading an image/texture requires a few more steps than those familiar with older APIs would expect however these steps are required due to the explicit nature
-	// of Vulkan and the control Vulkan affords to the user making possible various performance optimisations. These steps include:
+	// In Vulkan, uploading an image/texture requires a few more steps than those familiar with older APIs would expect however these steps are required due to the explicit
+	// nature of Vulkan and the control Vulkan affords to the user making possible various performance optimisations. These steps include:
 
 	// 1) Create the (CPU side) texture:
 	//	  a) Create the texture data in cpu side memory.
@@ -2151,11 +2263,11 @@ void VulkanIntroducingPVRShell::createRenderPass()
 	// how the attachments are used over the execution of the respective subpasses. A RenderPass allows an application to communicate a high level structure of a frame to the
 	// implementation.
 
-	// RenderPasses are one of the singly most important features included in Vulkan from the point of view of a tiled architecture. Before going into the gritty details of what
-	// RenderPasses are and how they provide a heap of optimization opportunities a (very) brief introduction to tiled architectures - a tiled architecture like any other takes
-	// triangles as input but will bin these triangles to particular tiles corresponding to regions of a Framebuffer and then for each tile in turn it will render the subset of
-	// geometry binned only to that tile meaning the per tile access becomes very coherent and cache friendly. RenderPasses, subpasses and the use of transient attachments (all
-	// explained below) let us exploit and make most of the benefits these kinds of architectures provide.
+	// RenderPasses are one of the singly most important features included in Vulkan from the point of view of a tiled architecture. Before going into the gritty details of
+	// what RenderPasses are and how they provide a heap of optimization opportunities a (very) brief introduction to tiled architectures - a tiled architecture like any other
+	// takes triangles as input but will bin these triangles to particular tiles corresponding to regions of a Framebuffer and then for each tile in turn it will render the
+	// subset of geometry binned only to that tile meaning the per tile access becomes very coherent and cache friendly. RenderPasses, subpasses and the use of transient
+	// attachments (all explained below) let us exploit and make most of the benefits these kinds of architectures provide.
 
 	// For more information on our TBDR (Tile Based Deferred Rendering) architecture check out our blog posts:
 	//		https://www.imgtec.com/blog/a-look-at-the-powervr-graphics-architecture-tile-based-rendering/
@@ -2164,10 +2276,10 @@ void VulkanIntroducingPVRShell::createRenderPass()
 	// Each RenderPass subpass may reference a subset of the RenderPass's Framebuffer attachments for reading or writing where each subpass containing information
 	// about what happens to the attachment data when the subpass begins including whether to clear it, load it from memory or leave it unitialized as well
 	// as what to do with the attachment data when the subpass ends including storing it back to memory or discarding it.
-	// RenderPasses require that applications explicitly set out the dependencies between the subpasses providing an implementation with the know-how to effectively optimize when
-	// it should flush/clear/store memory in way it couldn't before. RenderPasses are a prime example of how Vulkan has replaced implementation guess work with the application
-	// explicitness requiring them to set out their known and understood dependencies - Who is in the better place to properly understand and make decisions as to dependencies
-	// between a particular set of commands, images or resources than the application making use of them?
+	// RenderPasses require that applications explicitly set out the dependencies between the subpasses providing an implementation with the know-how to effectively optimize
+	// when it should flush/clear/store memory in way it couldn't before. RenderPasses are a prime example of how Vulkan has replaced implementation guess work with the
+	// application explicitness requiring them to set out their known and understood dependencies - Who is in the better place to properly understand and make decisions as to
+	// dependencies between a particular set of commands, images or resources than the application making use of them?
 
 	// Another important feature introduced by Vulkan is the use of transient images (specify VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT in the pvrvk::ImageUsageFlags member of their
 	// pvrvk::ImageCreateInfo creation structure).
@@ -2190,8 +2302,8 @@ void VulkanIntroducingPVRShell::createRenderPass()
 	// RenderPasses and the benefits they can provide to a tiled architecture.
 	pvrvk::RenderPassCreateInfo renderPassInfo;
 
-	// An attachment description desribes the structure of an attachment including formats, number of samples, image layout transitions and how the image should be handled at the
-	// beginning and end of the RenderPass including whether to load or clear memory and store or discard memory respectively.
+	// An attachment description desribes the structure of an attachment including formats, number of samples, image layout transitions and how the image should be handled at
+	// the beginning and end of the RenderPass including whether to load or clear memory and store or discard memory respectively.
 	pvrvk::AttachmentDescription attachmentDescriptions[2];
 
 	// A subpass encapsulates a set of rendering commands corresponding to a particular phase of a rendering pass including the reading and writing of a subset of RenderPass
@@ -2231,11 +2343,11 @@ void VulkanIntroducingPVRShell::createRenderPass()
 	// provide the otherwise implicit subpass dependencies.
 	pvrvk::SubpassDependency dependencies[] = {
 		// Adds an explicit subpass dependency from VK_SUBPASS_EXTERNAL to the first subpass that uses an attachment which is the first subpass (0).
-		{ pvrvk::SubpassExternal, 0, pvrvk::PipelineStageFlags::e_TOP_OF_PIPE_BIT, pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT, pvrvk::AccessFlags::e_MEMORY_READ_BIT,
-			pvrvk::AccessFlags::e_COLOR_ATTACHMENT_WRITE_BIT, pvrvk::DependencyFlags::e_BY_REGION_BIT },
+		{ pvrvk::SubpassExternal, 0, pvrvk::PipelineStageFlags::e_BOTTOM_OF_PIPE_BIT, pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT,
+			pvrvk::AccessFlags::e_MEMORY_READ_BIT, pvrvk::AccessFlags::e_COLOR_ATTACHMENT_WRITE_BIT, pvrvk::DependencyFlags::e_BY_REGION_BIT },
 		// Adds an explicit subpass dependency from the first subpass that uses an attachment which is the first subpass (0) to VK_SUBPASS_EXTERNAL.
 		{ 0, pvrvk::SubpassExternal, pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT, pvrvk::PipelineStageFlags::e_BOTTOM_OF_PIPE_BIT,
-			pvrvk::AccessFlags::e_COLOR_ATTACHMENT_WRITE_BIT, pvrvk::AccessFlags::e_MEMORY_READ_BIT, pvrvk::DependencyFlags::e_BY_REGION_BIT },
+			pvrvk::AccessFlags::e_COLOR_ATTACHMENT_WRITE_BIT, pvrvk::AccessFlags::e_NONE, pvrvk::DependencyFlags::e_BY_REGION_BIT },
 	};
 
 	// Add the set of dependencies to the RenderPass creation.
@@ -2256,8 +2368,8 @@ void VulkanIntroducingPVRShell::createFramebuffer()
 	// Note that each element of pAttachments must have dimensions at least as large as the Framebuffer dimensions.
 	framebufferInfo.setNumLayers(1);
 	framebufferInfo.setDimensions(getWidth(), getHeight());
-	// This Framebuffer is comapatible with the application renderPass or with any other renderPass compatible with the application renderPass. For more information on RenderPass
-	// compatbility please refer to the Vulkan spec section "Render Pass Compatibility".
+	// This Framebuffer is comapatible with the application renderPass or with any other renderPass compatible with the application renderPass. For more information on
+	// RenderPass compatbility please refer to the Vulkan spec section "Render Pass Compatibility".
 	framebufferInfo.setRenderPass(_deviceResources->renderPass);
 
 	// Create a Framebuffer per swapchain making use of the per swapchain presentation image and depth stencil image.
@@ -2286,11 +2398,11 @@ void VulkanIntroducingPVRShell::createSynchronisationPrimitives()
 {
 	// Create the fences and semaphores for synchronization throughout the demo.
 
-	// One of the major changes in strategy introduced in Vulkan has been that there are fewer implicit guarantees as to the order in which commands are executed with respect to
-	// other commands on the device and the host itself. Synchronization has now become the responsibility of the application.
+	// One of the major changes in strategy introduced in Vulkan has been that there are fewer implicit guarantees as to the order in which commands are executed with respect
+	// to other commands on the device and the host itself. Synchronization has now become the responsibility of the application.
 
-	// Here we create the fences and semaphores used for synchornizing image acquisition, the use of per frame resources, submission to device queues and finally the presentation
-	// of images. Note that the use of these synchronization primitives are explained in detail in the renderFrame function.
+	// Here we create the fences and semaphores used for synchornizing image acquisition, the use of per frame resources, submission to device queues and finally the
+	// presentation of images. Note that the use of these synchronization primitives are explained in detail in the renderFrame function.
 
 	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
 	{
@@ -2300,8 +2412,7 @@ void VulkanIntroducingPVRShell::createSynchronisationPrimitives()
 
 		// Fences are used for indicating a dependency from the queue to the host.
 		// The fences are created in the signalled state meaning we don't require any special logic for handling the first frame synchronization.
-		_deviceResources->perFrameCommandBufferFences[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
-		_deviceResources->perFrameAcquisitionFences[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
+		_deviceResources->perFrameResourcesFences[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
 	}
 }
 

@@ -81,6 +81,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li class="current"><a href="functions_func_0x67.html#index_g"><span>g</span></a></li>
       <li><a href="functions_func_0x68.html#index_h"><span>h</span></a></li>
       <li><a href="functions_func_0x69.html#index_i"><span>i</span></a></li>
+      <li><a href="functions_func_0x6b.html#index_k"><span>k</span></a></li>
       <li><a href="functions_func_0x6d.html#index_m"><span>m</span></a></li>
       <li><a href="functions_func_0x6f.html#index_o"><span>o</span></a></li>
       <li><a href="functions_func_0x70.html#index_p"><span>p</span></a></li>
@@ -124,10 +125,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 : <a class="el" href="classpvr_1_1assets_1_1_model_1_1_material_1_1_default_material_semantics.html#a8d384c097c5790b8ee2c9c81fbf302ab">pvr::assets::Model::Material::DefaultMaterialSemantics</a>
 </li>
 <li>getAnimationData()
-: <a class="el" href="classpvr_1_1assets_1_1_model.html#a7928b36416aefd9a1084a8ec45689e9c">pvr::assets::Model</a>
+: <a class="el" href="classpvr_1_1assets_1_1_animation_data.html#a09b29e30b938a83397787b9b06b2559a">pvr::assets::AnimationData</a>
+, <a class="el" href="classpvr_1_1assets_1_1_model.html#a7928b36416aefd9a1084a8ec45689e9c">pvr::assets::Model</a>
 </li>
 <li>getAnimationInstance()
-: <a class="el" href="classpvr_1_1assets_1_1_model.html#a0b685af5ddef6aad32d507fa7c35cb16">pvr::assets::Model</a>
+: <a class="el" href="classpvr_1_1assets_1_1_model.html#ac564e59151e476c052ae922162246380">pvr::assets::Model</a>
+</li>
+<li>getAnimationName()
+: <a class="el" href="classpvr_1_1assets_1_1_animation_data.html#a82e7a2e4853a94d4eed041bedcea9ecf">pvr::assets::AnimationData</a>
 </li>
 <li>getBackgroundColor()
 : <a class="el" href="classpvr_1_1assets_1_1_model.html#a15b0773f7189af3aebe6c83b0fdf7091">pvr::assets::Model</a>
@@ -187,9 +192,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 : <a class="el" href="classpvr_1_1assets_1_1_model.html#a22ea6d36fa661ea815e51cc3f0adfe48">pvr::assets::Model</a>
 </li>
 <li>getData()
-: <a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_face_data.html#ac7e17cbf7244602290f266914b9a9d6e">pvr::assets::Mesh::FaceData</a>
+: <a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_face_data.html#a0682b883558a2d50251aa253f1d2cdf8">pvr::assets::Mesh::FaceData</a>
 , <a class="el" href="classpvr_1_1assets_1_1_mesh.html#ab6f9fe4b4705e6dfead28b9b87e27116">pvr::assets::Mesh</a>
-, <a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_face_data.html#a0682b883558a2d50251aa253f1d2cdf8">pvr::assets::Mesh::FaceData</a>
 </li>
 <li>getDataIndex()
 : <a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_vertex_attribute_data.html#a8ce85246a8a49f73094c1998be995600">pvr::assets::Mesh::VertexAttributeData</a>
@@ -257,7 +261,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 : <a class="el" href="structpvr_1_1assets_1_1_model_1_1_node_1_1_internal_data.html#a578537ff15857874a2345738d66befe3">pvr::assets::Model::Node::InternalData</a>
 </li>
 <li>getFrameTranslationAnimation()
-: <a class="el" href="structpvr_1_1assets_1_1_model_1_1_node_1_1_internal_data.html#aa4df658c9a27217e9afa25a5f08a1671">pvr::assets::Model::Node::InternalData</a>
+: <a class="el" href="structpvr_1_1assets_1_1_model_1_1_node_1_1_internal_data.html#ad77c07c5dc02420b8dc79bdab2082a8f">pvr::assets::Model::Node::InternalData</a>
 </li>
 <li>getGlossinessTextureIndex()
 : <a class="el" href="classpvr_1_1assets_1_1_model_1_1_material_1_1_default_material_semantics.html#afb1c140a9852f93a08d1da405b16efd8">pvr::assets::Model::Material::DefaultMaterialSemantics</a>
@@ -356,7 +360,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 : <a class="el" href="classpvr_1_1assets_1_1_camera.html#a66f53f0a5a41db05aa9e1c8db22aed46">pvr::assets::Camera</a>
 </li>
 <li>getNode()
-: <a class="el" href="classpvr_1_1assets_1_1_model.html#a4892e2b2e33b855b77ef8c1983305052">pvr::assets::Model</a>
+: <a class="el" href="classpvr_1_1assets_1_1_model.html#acaeec93405e8c181888e20e90b415854">pvr::assets::Model</a>
 </li>
 <li>getNodeIdForMeshNodeId()
 : <a class="el" href="classpvr_1_1assets_1_1_model.html#a5cafe0bcfc92d76a20760fa81783be16">pvr::assets::Model</a>
@@ -401,13 +405,16 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 : <a class="el" href="classpvr_1_1assets_1_1_mesh.html#a1f92999bddcef4351a470309b287af91">pvr::assets::Mesh</a>
 </li>
 <li>getNumFrames()
-: <a class="el" href="classpvr_1_1assets_1_1_model.html#ab8ed16f4427021bd9949119e8b5f9bce">pvr::assets::Model</a>
+: <a class="el" href="classpvr_1_1assets_1_1_animation_data.html#afec44149aa41ea9177fa1e91a76ac2ba">pvr::assets::AnimationData</a>
 , <a class="el" href="classpvr_1_1assets_1_1_camera.html#a394280fb149392d5804014c6a61441eb">pvr::assets::Camera</a>
-, <a class="el" href="classpvr_1_1assets_1_1_animation_data.html#afec44149aa41ea9177fa1e91a76ac2ba">pvr::assets::AnimationData</a>
+, <a class="el" href="classpvr_1_1assets_1_1_model.html#ab8ed16f4427021bd9949119e8b5f9bce">pvr::assets::Model</a>
 </li>
 <li>getNumIndices()
 : <a class="el" href="classpvr_1_1assets_1_1_mesh.html#a563f695e4cd8d361859ae1d6529e29f7">pvr::assets::Mesh</a>
 , <a class="el" href="classpvr_1_1_shadow_volume.html#afefb0d9bc8ad9149aa7bb4c6420927d3">pvr::ShadowVolume</a>
+</li>
+<li>getNumKeyFrames()
+: <a class="el" href="classpvr_1_1assets_1_1_animation_data.html#ac9d92c810a40dde753614c05eb8d6fc8">pvr::assets::AnimationData</a>
 </li>
 <li>getNumLightNodes()
 : <a class="el" href="classpvr_1_1assets_1_1_model.html#af2ab52f7c2f8f5204462cb4a3abd9ce9">pvr::assets::Model</a>
@@ -476,7 +483,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 : <a class="el" href="classpvr_1_1assets_1_1_model_1_1_material_1_1_default_material_semantics.html#a6d16b19f10490fbc03d125d2573450bd">pvr::assets::Model::Material::DefaultMaterialSemantics</a>
 </li>
 <li>getRotate()
-: <a class="el" href="structpvr_1_1assets_1_1_model_1_1_node_1_1_internal_data.html#a24ee5840a377454f0831069240ffbbba">pvr::assets::Model::Node::InternalData</a>
+: <a class="el" href="structpvr_1_1assets_1_1_model_1_1_node_1_1_internal_data.html#af94039c507358f1307b4a234953cd954">pvr::assets::Model::Node::InternalData</a>
 </li>
 <li>getRotationIndices()
 : <a class="el" href="classpvr_1_1assets_1_1_animation_data.html#a8b38954cee82ee1220bdfb7128a12b62">pvr::assets::AnimationData</a>
@@ -491,7 +498,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 : <a class="el" href="classpvr_1_1assets_1_1_model_1_1_material_1_1_p_b_r_semantics.html#af7eeb0d162e29d2006b44bf199a690c6">pvr::assets::Model::Material::PBRSemantics</a>
 </li>
 <li>getScale()
-: <a class="el" href="structpvr_1_1assets_1_1_model_1_1_node_1_1_internal_data.html#a938147aa67fa5b9d1c9b77922d1eb55f">pvr::assets::Model::Node::InternalData</a>
+: <a class="el" href="structpvr_1_1assets_1_1_model_1_1_node_1_1_internal_data.html#a54a3532af72a6a3ebaa3ad75b67b876d">pvr::assets::Model::Node::InternalData</a>
 </li>
 <li>getScaleIndices()
 : <a class="el" href="classpvr_1_1assets_1_1_animation_data.html#a1b18016e1428ad2146192f2cd9670dcb">pvr::assets::AnimationData</a>
@@ -507,6 +514,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </li>
 <li>getSkeleton()
 : <a class="el" href="classpvr_1_1assets_1_1_model.html#a5989e6d485e476c493c5500d1f5e73c1">pvr::assets::Model</a>
+</li>
+<li>getSkeletonId()
+: <a class="el" href="classpvr_1_1assets_1_1_mesh.html#af679432248190c876d74b342af4c16ac">pvr::assets::Mesh</a>
 </li>
 <li>getSpecular()
 : <a class="el" href="classpvr_1_1assets_1_1_model_1_1_material_1_1_default_material_semantics.html#a3586a676c2af5bdb14e769ba974fce40">pvr::assets::Model::Material::DefaultMaterialSemantics</a>
@@ -541,11 +551,19 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>getTextureIndex()
 : <a class="el" href="classpvr_1_1assets_1_1_model_1_1_material.html#a88afc1bc256c36645e5a3132c91c0a17">pvr::assets::Model::Material</a>
 </li>
+<li>getTotalTimeInMs()
+: <a class="el" href="classpvr_1_1assets_1_1_animation_data.html#af3134f74b667ddee4a8888050c92cc7f">pvr::assets::AnimationData</a>
+, <a class="el" href="structpvr_1_1assets_1_1_animation_instance.html#a5dd5ad75be469395b9681896663d5d1a">pvr::assets::AnimationInstance</a>
+</li>
+<li>getTotalTimeInSec()
+: <a class="el" href="classpvr_1_1assets_1_1_animation_data.html#aa507c78241e8c019d923dbe4b93e159d">pvr::assets::AnimationData</a>
+, <a class="el" href="structpvr_1_1assets_1_1_animation_instance.html#a41ee787caa07d54c095f0f76175b47a3">pvr::assets::AnimationInstance</a>
+</li>
 <li>getTransformationMatrix()
 : <a class="el" href="classpvr_1_1assets_1_1_animation_data.html#ae2e166de2b4a2b291d2a1f086158d085">pvr::assets::AnimationData</a>
 </li>
 <li>getTranslation()
-: <a class="el" href="structpvr_1_1assets_1_1_model_1_1_node_1_1_internal_data.html#ad92559e1fd547a2b8644e74d3c26f5b1">pvr::assets::Model::Node::InternalData</a>
+: <a class="el" href="structpvr_1_1assets_1_1_model_1_1_node_1_1_internal_data.html#a7adcd5d249215d39d4565f28f83b8460">pvr::assets::Model::Node::InternalData</a>
 </li>
 <li>getTriangleCount()
 : <a class="el" href="classpvr_1_1_volume.html#a1385a976b59da81d71bc27058307c2a0">pvr::Volume</a>
@@ -563,8 +581,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 : <a class="el" href="classpvr_1_1assets_1_1_model_1_1_node.html#af044425a843f521fd42bae509c677fd6">pvr::assets::Model::Node</a>
 </li>
 <li>getUserDataPtr()
-: <a class="el" href="classpvr_1_1assets_1_1_model.html#ab968167cfb5ced37b0e91060a534988a">pvr::assets::Model</a>
-, <a class="el" href="classpvr_1_1assets_1_1_mesh.html#abf477d4772b1d169050032d3ed8af003">pvr::assets::Mesh</a>
+: <a class="el" href="classpvr_1_1assets_1_1_model.html#a626344d4f8febcc7d1363483860f5a50">pvr::assets::Model</a>
+, <a class="el" href="classpvr_1_1assets_1_1_mesh.html#ae1cf008b3a2f8b09e5701796c8adcb5b">pvr::assets::Mesh</a>
+, <a class="el" href="classpvr_1_1assets_1_1_model.html#a4c12a1f170313c813f8b85e773daf0a9">pvr::assets::Model</a>
 </li>
 <li>getUserDataSize()
 : <a class="el" href="classpvr_1_1assets_1_1_model_1_1_node.html#a62620c4f1b4c6230f73108a893bc4c09">pvr::assets::Model::Node</a>
@@ -579,14 +598,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 : <a class="el" href="classpvr_1_1assets_1_1_mesh.html#a514add6ba80930e469334ca641ad3f17">pvr::assets::Mesh</a>
 </li>
 <li>getVertexAttributes()
-: <a class="el" href="classpvr_1_1assets_1_1_mesh.html#a40407ad5da4c5bf49064b979f3efe7d9">pvr::assets::Mesh</a>
+: <a class="el" href="classpvr_1_1assets_1_1_mesh.html#a1728791103eaec595819ca93b7918fff">pvr::assets::Mesh</a>
 </li>
 <li>getVertexAttributesSize()
 : <a class="el" href="classpvr_1_1assets_1_1_mesh.html#ae6ffee1763b8400c47ca017425d47953">pvr::assets::Mesh</a>
 </li>
 <li>getVertexData()
-: <a class="el" href="classpvr_1_1_volume.html#a5dfcd860f12326eacd3f3a7e9e688e4b">pvr::Volume</a>
-, <a class="el" href="classpvr_1_1assets_1_1_mesh.html#a489d5d9e5a2a54127623b756e78c4315">pvr::assets::Mesh</a>
+: <a class="el" href="classpvr_1_1assets_1_1_mesh.html#a489d5d9e5a2a54127623b756e78c4315">pvr::assets::Mesh</a>
+, <a class="el" href="classpvr_1_1_volume.html#a5dfcd860f12326eacd3f3a7e9e688e4b">pvr::Volume</a>
 </li>
 <li>getVertexDataExtrudeOffset()
 : <a class="el" href="classpvr_1_1_volume.html#a84be15b69591d7d70a5b84e79ce24b90">pvr::Volume</a>
@@ -616,7 +635,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 : <a class="el" href="classpvr_1_1assets_1_1_model_1_1_material_1_1_g_l_t_f_metallic_roughness_semantics.html#a4e0f9eeea49d8208be91b70ac3bf693a">pvr::assets::Model::Material::GLTFMetallicRoughnessSemantics</a>
 </li>
 <li>GltfReader()
-: <a class="el" href="classpvr_1_1assets_1_1_gltf_reader.html#a3ddd681ee252ddf4df17474e6a21b31f">pvr::assets::GltfReader</a>
+: <a class="el" href="classpvr_1_1assets_1_1_gltf_reader.html#a303f106ce26a76cc6822e7c9468bc51c">pvr::assets::GltfReader</a>
 </li>
 </ul>
 </div><!-- contents -->

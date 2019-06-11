@@ -84,33 +84,42 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">TextureReaderDDS.h</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;</div>
+<a href="_texture_reader_d_d_s_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;</div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#pragma once</span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor"></span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_texture_8h.html">PVRCore/texture/Texture.h</a>&quot;</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &quot;PVRCore/textureio/FileDefinesDDS.h&quot;</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_file_defines_d_d_s_8h.html">PVRCore/textureio/FileDefinesDDS.h</a>&quot;</span></div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_asset_reader_8h.html">PVRCore/stream/AssetReader.h</a>&quot;</span></div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="keyword">namespace </span>pvr {</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="keyword">namespace </span>assetReaders {</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="keyword">class </span>TextureReaderDDS : <span class="keyword">public</span> AssetReader&lt;Texture&gt;</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;{</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    TextureReaderDDS();</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    TextureReaderDDS(<a class="code" href="classpvr_1_1_stream.html#aa0cecaaaa443ce5895d8c3d69dcdeec2">Stream::ptr_type</a> assetStream);</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> isSupportedFile(Stream&amp; assetStream);</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> readAsset_(Texture&amp; asset);</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    uint32_t getDirect3DFormatFromDDSHeader(texture_dds::FileHeader&amp; textureFileHeader);</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    <span class="keywordtype">bool</span> _texturesToLoad;</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;};</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;} <span class="comment">// namespace assetReaders</span></div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;} <span class="comment">// namespace pvr</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="keyword">namespace </span>pvr {</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="keyword">namespace </span>assetReaders {</div>
+<div class="line"><a name="l00016"></a><span class="lineno"><a class="line" href="classpvr_1_1asset_readers_1_1_texture_reader_d_d_s.html">   16</a></span>&#160;<span class="keyword">class </span><a class="code" href="classpvr_1_1asset_readers_1_1_texture_reader_d_d_s.html">TextureReaderDDS</a> : <span class="keyword">public</span> <a class="code" href="classpvr_1_1_asset_reader.html">AssetReader</a>&lt;Texture&gt;</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;{</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    <a class="code" href="classpvr_1_1asset_readers_1_1_texture_reader_d_d_s.html#adab090fb3ca3d8bdd865264b94fca5f8">TextureReaderDDS</a>();</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    <a class="code" href="classpvr_1_1asset_readers_1_1_texture_reader_d_d_s.html#adab090fb3ca3d8bdd865264b94fca5f8">TextureReaderDDS</a>(<a class="code" href="classpvr_1_1_stream.html#aa0cecaaaa443ce5895d8c3d69dcdeec2">Stream::ptr_type</a> assetStream);</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="classpvr_1_1asset_readers_1_1_texture_reader_d_d_s.html#a6acdca2e1371cf1d0fe29a01aeedd5f8">isSupportedFile</a>(<a class="code" href="classpvr_1_1_stream.html">Stream</a>&amp; assetStream);</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> readAsset_(<a class="code" href="classpvr_1_1_texture.html">Texture</a>&amp; asset);</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    uint32_t getDirect3DFormatFromDDSHeader(<a class="code" href="structpvr_1_1texture__dds_1_1_file_header.html">texture_dds::FileHeader</a>&amp; textureFileHeader);</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <span class="keywordtype">bool</span> _texturesToLoad;</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;};</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;} <span class="comment">// namespace assetReaders</span></div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;} <span class="comment">// namespace pvr</span></div>
 <div class="ttc" id="_texture_8h_html"><div class="ttname"><a href="_texture_8h.html">Texture.h</a></div><div class="ttdoc">The main class that represents an Image (Texture). </div></div>
+<div class="ttc" id="classpvr_1_1asset_readers_1_1_texture_reader_d_d_s_html_a6acdca2e1371cf1d0fe29a01aeedd5f8"><div class="ttname"><a href="classpvr_1_1asset_readers_1_1_texture_reader_d_d_s.html#a6acdca2e1371cf1d0fe29a01aeedd5f8">pvr::assetReaders::TextureReaderDDS::isSupportedFile</a></div><div class="ttdeci">virtual bool isSupportedFile(Stream &amp;assetStream)</div><div class="ttdoc">Specifies if the DDS file is supported</div></div>
 <div class="ttc" id="_asset_reader_8h_html"><div class="ttname"><a href="_asset_reader_8h.html">AssetReader.h</a></div><div class="ttdoc">Contains the base class for any AssetReader. </div></div>
-<div class="ttc" id="classpvr_1_1_stream_html_aa0cecaaaa443ce5895d8c3d69dcdeec2"><div class="ttname"><a href="classpvr_1_1_stream.html#aa0cecaaaa443ce5895d8c3d69dcdeec2">pvr::Stream::ptr_type</a></div><div class="ttdeci">std::unique_ptr&lt; Stream &gt; ptr_type</div><div class="ttdoc">The pointer type of the stream. This is the main handle used to pass nullable streams around...</div><div class="ttdef"><b>Definition:</b> Stream.h:61</div></div>
+<div class="ttc" id="classpvr_1_1_stream_html"><div class="ttname"><a href="classpvr_1_1_stream.html">pvr::Stream</a></div><div class="ttdoc">This class is used to abstract streams of data (files, blocks of memory, resources etc...</div><div class="ttdef"><b>Definition:</b> Stream.h:77</div></div>
+<div class="ttc" id="classpvr_1_1_asset_reader_html"><div class="ttname"><a href="classpvr_1_1_asset_reader.html">pvr::AssetReader</a></div><div class="ttdoc">Base class for an AssetReader, a class that can read Assets from a provided Stream.</div><div class="ttdef"><b>Definition:</b> AssetReader.h:17</div></div>
+<div class="ttc" id="classpvr_1_1_stream_html_aa0cecaaaa443ce5895d8c3d69dcdeec2"><div class="ttname"><a href="classpvr_1_1_stream.html#aa0cecaaaa443ce5895d8c3d69dcdeec2">pvr::Stream::ptr_type</a></div><div class="ttdeci">std::unique_ptr&lt; Stream &gt; ptr_type</div><div class="ttdoc">The pointer type of the stream. This is the main handle used to pass nullable streams around...</div><div class="ttdef"><b>Definition:</b> Stream.h:81</div></div>
+<div class="ttc" id="classpvr_1_1asset_readers_1_1_texture_reader_d_d_s_html_adab090fb3ca3d8bdd865264b94fca5f8"><div class="ttname"><a href="classpvr_1_1asset_readers_1_1_texture_reader_d_d_s.html#adab090fb3ca3d8bdd865264b94fca5f8">pvr::assetReaders::TextureReaderDDS::TextureReaderDDS</a></div><div class="ttdeci">TextureReaderDDS()</div><div class="ttdoc">Constructor</div></div>
+<div class="ttc" id="structpvr_1_1texture__dds_1_1_file_header_html"><div class="ttname"><a href="structpvr_1_1texture__dds_1_1_file_header.html">pvr::texture_dds::FileHeader</a></div><div class="ttdoc">File header format for DDS files.</div><div class="ttdef"><b>Definition:</b> FileDefinesDDS.h:42</div></div>
+<div class="ttc" id="classpvr_1_1_texture_html"><div class="ttname"><a href="classpvr_1_1_texture.html">pvr::Texture</a></div><div class="ttdoc">A 2D Texture asset, together with Information, Metadata and actual Pixel data. Only represents the ac...</div><div class="ttdef"><b>Definition:</b> Texture.h:562</div></div>
+<div class="ttc" id="_file_defines_d_d_s_8h_html"><div class="ttname"><a href="_file_defines_d_d_s_8h.html">FileDefinesDDS.h</a></div><div class="ttdoc">Defines used internally by the DDS reader. </div></div>
+<div class="ttc" id="classpvr_1_1asset_readers_1_1_texture_reader_d_d_s_html"><div class="ttname"><a href="classpvr_1_1asset_readers_1_1_texture_reader_d_d_s.html">pvr::assetReaders::TextureReaderDDS</a></div><div class="ttdoc">Experimental DDS Texture reader</div><div class="ttdef"><b>Definition:</b> TextureReaderDDS.h:16</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.4-->
 <!-- start footer part (NON TREEVIEW ONLY!!) -->

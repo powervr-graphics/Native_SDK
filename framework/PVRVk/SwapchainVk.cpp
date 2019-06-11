@@ -14,51 +14,9 @@
 
 namespace pvrvk {
 namespace impl {
-Swapchain_::~Swapchain_()
-{
-	if (getVkHandle() != VK_NULL_HANDLE)
-	{
-		if (_device.isValid())
-		{
-			for (uint32_t i = 0; i < _swapChainLength; ++i)
-			{
-				_colorImageViews[i].reset();
-			}
-
-			_device->getVkBindings().vkDestroySwapchainKHR(_device->getVkHandle(), getVkHandle(), nullptr);
-			_vkHandle = VK_NULL_HANDLE;
-			_device.reset();
-			_surface.reset();
-		}
-		else
-		{
-			reportDestroyedAfterDevice("Swapchain");
-		}
-	}
-}
-
-bool Swapchain_::acquireNextImage(uint64_t timeOut, Semaphore signalSemaphore, Fence signalFence)
-{
-	Result res;
-	vkThrowIfError(
-		res = static_cast<pvrvk::Result>(_device->getVkBindings().vkAcquireNextImageKHR(_device->getVkHandle(), getVkHandle(), timeOut,
-			signalSemaphore.isValid() ? signalSemaphore->getVkHandle() : VK_NULL_HANDLE, signalFence.isValid() ? signalFence->getVkHandle() : VK_NULL_HANDLE, &_swapchainId)),
-		"PlatformContext:PresentBackbuffer AcquireNextImage error");
-	return res == Result::e_SUCCESS;
-}
-
-bool Swapchain_::acquireNextImage(uint64_t timeOut, Semaphore signalSemaphore)
-{
-	Result res;
-	vkThrowIfError(res = static_cast<pvrvk::Result>(_device->getVkBindings().vkAcquireNextImageKHR(
-					   _device->getVkHandle(), getVkHandle(), timeOut, signalSemaphore.isValid() ? signalSemaphore->getVkHandle() : VK_NULL_HANDLE, VK_NULL_HANDLE, &_swapchainId)),
-		"PlatformContext:PresentBackbuffer AcquireNextImage error");
-	return res == Result::e_SUCCESS;
-}
-
-Swapchain_::Swapchain_(DeviceWeakPtr device, Surface surface, const SwapchainCreateInfo& createInfo)
-	: DeviceObjectHandle(device), DeviceObjectDebugMarker(DebugReportObjectTypeEXT::e_SWAPCHAIN_KHR_EXT), _swapchainId(static_cast<uint32_t>(-1)),
-	  _swapChainLength(static_cast<uint32_t>(-1))
+//!\cond NO_DOXYGEN
+Swapchain_::Swapchain_(make_shared_enabler, const DeviceWeakPtr& device, Surface surface, const SwapchainCreateInfo& createInfo)
+	: PVRVkDeviceObjectBase(device), DeviceObjectDebugUtils(), _swapchainId(static_cast<uint32_t>(-1)), _swapChainLength(static_cast<uint32_t>(-1))
 {
 	_createInfo = createInfo;
 	_surface = surface;
@@ -88,26 +46,63 @@ Swapchain_::Swapchain_(DeviceWeakPtr device, Surface surface, const SwapchainCre
 
 	swapchainCreate.pQueueFamilyIndices = queueFamilyIndices.get();
 
-	assertion(swapchainCreate.minImageCount <= static_cast<uint32_t>(FrameworkCaps::MaxSwapChains), "Minimum number of swapchain images is larger than Max set");
+	assert(swapchainCreate.minImageCount <= static_cast<uint32_t>(FrameworkCaps::MaxSwapChains) && "Minimum number of swapchain images is larger than Max set");
 
-	vkThrowIfFailed(_device->getVkBindings().vkCreateSwapchainKHR(_device->getVkHandle(), &swapchainCreate, NULL, &_vkHandle), "Could not create the swap chain");
-	vkThrowIfFailed(_device->getVkBindings().vkGetSwapchainImagesKHR(_device->getVkHandle(), getVkHandle(), &_swapChainLength, NULL), "Could not get swapchain length");
+	vkThrowIfFailed(getDevice()->getVkBindings().vkCreateSwapchainKHR(getDevice()->getVkHandle(), &swapchainCreate, NULL, &_vkHandle), "Could not create the swap chain");
+	vkThrowIfFailed(getDevice()->getVkBindings().vkGetSwapchainImagesKHR(getDevice()->getVkHandle(), getVkHandle(), &_swapChainLength, NULL), "Could not get swapchain length");
 
-	Log(LogLevel::Information, "Swapchain image count: %u ", _swapChainLength);
-
-	assertion(_swapChainLength <= static_cast<uint32_t>(FrameworkCaps::MaxSwapChains), "Number of swapchain images is larger than Max set");
+	assert(_swapChainLength <= static_cast<uint32_t>(FrameworkCaps::MaxSwapChains) && "Number of swapchain images is larger than Max set");
 
 	VkImage swapchainImages[static_cast<uint32_t>(FrameworkCaps::MaxSwapChains)];
-	vkThrowIfFailed(_device->getVkBindings().vkGetSwapchainImagesKHR(_device->getVkHandle(), getVkHandle(), &_swapChainLength, &swapchainImages[0]), "Could not get swapchain images");
+	vkThrowIfFailed(
+		getDevice()->getVkBindings().vkGetSwapchainImagesKHR(getDevice()->getVkHandle(), getVkHandle(), &_swapChainLength, &swapchainImages[0]), "Could not get swapchain images");
 
 	for (uint32_t i = 0; i < _swapChainLength; ++i)
 	{
-		// create the image wrapper
-		SwapchainImage image;
-		image.construct(_device->getWeakReference(), swapchainImages[i], _createInfo.imageFormat,
-			pvrvk::Extent3D(_createInfo.imageExtent.getWidth(), _createInfo.imageExtent.getHeight(), 1), _createInfo.imageArrayLayers, 1, _createInfo.imageUsage);
-		_colorImageViews[i] = _device->createImageView(ImageViewCreateInfo(image));
+		_colorImageViews[i] = getDevice()->createImageView(ImageViewCreateInfo(SwapchainImage_::constructShared(_device, swapchainImages[i], _createInfo.imageFormat,
+			pvrvk::Extent3D(_createInfo.imageExtent.getWidth(), _createInfo.imageExtent.getHeight(), 1), _createInfo.imageArrayLayers, 1, _createInfo.imageUsage)));
 	}
+}
+
+Swapchain_::~Swapchain_()
+{
+	if (getVkHandle() != VK_NULL_HANDLE)
+	{
+		if (!_device.expired())
+		{
+			for (uint32_t i = 0; i < _swapChainLength; ++i)
+			{
+				_colorImageViews[i].reset();
+			}
+
+			getDevice()->getVkBindings().vkDestroySwapchainKHR(getDevice()->getVkHandle(), getVkHandle(), nullptr);
+			_vkHandle = VK_NULL_HANDLE;
+			_surface.reset();
+		}
+		else
+		{
+			reportDestroyedAfterDevice();
+		}
+	}
+}
+//!\endcond
+
+bool Swapchain_::acquireNextImage(uint64_t timeOut, Semaphore signalSemaphore, Fence signalFence)
+{
+	Result res;
+	vkThrowIfError(res = static_cast<pvrvk::Result>(getDevice()->getVkBindings().vkAcquireNextImageKHR(getDevice()->getVkHandle(), getVkHandle(), timeOut,
+					   signalSemaphore ? signalSemaphore->getVkHandle() : VK_NULL_HANDLE, signalFence ? signalFence->getVkHandle() : VK_NULL_HANDLE, &_swapchainId)),
+		"PlatformContext:PresentBackbuffer AcquireNextImage error");
+	return res == Result::e_SUCCESS;
+}
+
+bool Swapchain_::acquireNextImage(uint64_t timeOut, Semaphore signalSemaphore)
+{
+	Result res;
+	vkThrowIfError(res = static_cast<pvrvk::Result>(getDevice()->getVkBindings().vkAcquireNextImageKHR(
+					   getDevice()->getVkHandle(), getVkHandle(), timeOut, signalSemaphore ? signalSemaphore->getVkHandle() : VK_NULL_HANDLE, VK_NULL_HANDLE, &_swapchainId)),
+		"PlatformContext:PresentBackbuffer AcquireNextImage error");
+	return res == Result::e_SUCCESS;
 }
 } // namespace impl
 } // namespace pvrvk

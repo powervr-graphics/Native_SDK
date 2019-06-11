@@ -6,18 +6,16 @@
 */
 
 #pragma once
-#include "PVRVk/ObjectHandleVk.h"
-#include "PVRVk/DebugMarkerVk.h"
+#include "PVRVk/PVRVkObjectBaseVk.h"
 #include "PVRVk/TypesVk.h"
 
 namespace pvrvk {
-
 /// <summary>DebugReportCallback creation descriptor.</summary>
 struct DebugReportCallbackCreateInfo
 {
 public:
 	/// <summary>Constructor (zero initialization)</summary>
-	DebugReportCallbackCreateInfo() : _flags(DebugReportFlagsEXT::e_ALL_BITS), _callback(nullptr), _userData(nullptr) {}
+	DebugReportCallbackCreateInfo() : _flags(DebugReportFlagsEXT::e_NONE), _callback(nullptr), _userData(nullptr) {}
 
 	/// <summary>Constructor</summary>
 	/// <param name="flags">A set of DebugReportFlagsEXT which specify the events causing this callback to be called.</param>
@@ -85,28 +83,29 @@ private:
 
 namespace impl {
 /// <summary>Vulkan DebugReportCallback wrapper</summary>
-class DebugReportCallback_ : public InstanceObjectHandle<VkDebugReportCallbackEXT>
+class DebugReportCallback_ : public PVRVkInstanceObjectBase<VkDebugReportCallbackEXT, ObjectType::e_DEBUG_REPORT_CALLBACK_EXT>
 {
-public:
-	DECLARE_NO_COPY_SEMANTICS(DebugReportCallback_)
+private:
+	friend class Instance_;
 
-	/// <summary>Returns whether the DebugReportCallback object has been enabled.</summary>
-	/// <returns>True if the DebugReportCallback has been enabled.</returns>
-	bool isEnabled()
+	class make_shared_enabler
 	{
-		return _enabled;
+	protected:
+		make_shared_enabler() {}
+		friend class DebugReportCallback_;
+	};
+
+	static DebugReportCallback constructShared(Instance& instance, const DebugReportCallbackCreateInfo& createInfo)
+	{
+		return std::make_shared<DebugReportCallback_>(make_shared_enabler{}, instance, createInfo);
 	}
 
-private:
-	template<typename>
-	friend struct ::pvrvk::RefCountEntryIntrusive;
-	friend class ::pvrvk::impl::Instance_;
-
-	DebugReportCallback_(InstanceWeakPtr instance, const DebugReportCallbackCreateInfo& createInfo);
-
+public:
+	//!\cond NO_DOXYGEN
+	DECLARE_NO_COPY_SEMANTICS(DebugReportCallback_)
 	~DebugReportCallback_();
-
-	bool _enabled;
+	DebugReportCallback_(make_shared_enabler, Instance& instance, const DebugReportCallbackCreateInfo& createInfo);
+	//!\endcond
 };
 } // namespace impl
 } // namespace pvrvk

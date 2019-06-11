@@ -18,24 +18,25 @@ Image_::~Image_()
 	{
 		if (getVkHandle() != VK_NULL_HANDLE)
 		{
-			if (_device.isValid())
+			if (!_device.expired())
 			{
-				_device->getVkBindings().vkDestroyImage(_device->getVkHandle(), getVkHandle(), nullptr);
+				getDevice()->getVkBindings().vkDestroyImage(getDevice()->getVkHandle(), getVkHandle(), nullptr);
 				_vkHandle = VK_NULL_HANDLE;
-				_device.reset();
 			}
 			else
 			{
-				reportDestroyedAfterDevice("Image");
+				reportDestroyedAfterDevice();
 			}
 		}
 	}
 }
 
-Image_::Image_(const DeviceWeakPtr& device, const ImageCreateInfo& createInfo)
-	: DeviceObjectHandle(device), DeviceObjectDebugMarker(DebugReportObjectTypeEXT::e_IMAGE_EXT), _createInfo(createInfo)
+Image_::Image_(make_shared_enabler, const DeviceWeakPtr& device, const ImageCreateInfo& createInfo)
+	: PVRVkDeviceObjectBase(device), DeviceObjectDebugUtils(), _createInfo(createInfo)
 {
-	auto& bindings = _device->getVkBindings();
+	Device deviceSharedPtr = device.lock();
+
+	auto& bindings = deviceSharedPtr->getVkBindings();
 
 	VkImageCreateInfo vkCreateInfo = {};
 	vkCreateInfo.sType = static_cast<VkStructureType>(StructureType::e_IMAGE_CREATE_INFO);
@@ -56,21 +57,25 @@ Image_::Image_(const DeviceWeakPtr& device, const ImageCreateInfo& createInfo)
 	vkCreateInfo.initialLayout = static_cast<VkImageLayout>(_createInfo.getInitialLayout());
 
 #ifdef DEBUG
-	_device->getPhysicalDevice()->getImageFormatProperties(static_cast<pvrvk::Format>(_createInfo.getFormat()), static_cast<pvrvk::ImageType>(_createInfo.getImageType()),
+	deviceSharedPtr->getPhysicalDevice()->getImageFormatProperties(static_cast<pvrvk::Format>(_createInfo.getFormat()), static_cast<pvrvk::ImageType>(_createInfo.getImageType()),
 		static_cast<pvrvk::ImageTiling>(_createInfo.getTiling()), static_cast<pvrvk::ImageUsageFlags>(_createInfo.getUsageFlags()),
 		static_cast<pvrvk::ImageCreateFlags>(_createInfo.getFlags()));
 #endif
 
-	impl::vkThrowIfFailed(bindings.vkCreateImage(device->getVkHandle(), &vkCreateInfo, NULL, &_vkHandle), "ImageVk createImage");
+	impl::vkThrowIfFailed(bindings.vkCreateImage(deviceSharedPtr->getVkHandle(), &vkCreateInfo, NULL, &_vkHandle), "ImageVk createImage");
 
-	bindings.vkGetImageMemoryRequirements(device->getVkHandle(), _vkHandle, (VkMemoryRequirements*)(&_memReqs));
+	bindings.vkGetImageMemoryRequirements(deviceSharedPtr->getVkHandle(), _vkHandle, (VkMemoryRequirements*)(&_memReqs));
+
+#ifdef DEBUG
+	_currentLayout = _createInfo.getInitialLayout();
+#endif
 }
 
 pvrvk::SubresourceLayout Image_::getSubresourceLayout(const pvrvk::ImageSubresource& subresource) const
 {
 	pvrvk::SubresourceLayout layout;
 
-	_device->getVkBindings().vkGetImageSubresourceLayout(_device->getVkHandle(), _vkHandle, &(VkImageSubresource&)subresource, &(VkSubresourceLayout&)layout);
+	getDevice()->getVkBindings().vkGetImageSubresourceLayout(getDevice()->getVkHandle(), _vkHandle, &(VkImageSubresource&)subresource, &(VkSubresourceLayout&)layout);
 	return layout;
 }
 } // namespace impl
@@ -80,17 +85,17 @@ SwapchainImage_::~SwapchainImage_()
 {
 	if (isAllocated())
 	{
-		if (!_device.isValid())
+		if (_device.expired())
 		{
-			reportDestroyedAfterDevice("SwapchainImage");
+			reportDestroyedAfterDevice();
 		}
 	}
 	_vkHandle = VK_NULL_HANDLE;
 }
 
-SwapchainImage_::SwapchainImage_(const DeviceWeakPtr& device, const VkImage& swapchainImage, const Format& format, const Extent3D& extent, uint32_t numArrayLevels,
-	uint32_t numMipLevels, const ImageUsageFlags& usage)
-	: Image_(device)
+SwapchainImage_::SwapchainImage_(make_shared_enabler, const DeviceWeakPtr& device, const VkImage& swapchainImage, const Format& format, const Extent3D& extent,
+	uint32_t numArrayLevels, uint32_t numMipLevels, const ImageUsageFlags& usage)
+	: Image_(make_shared_enabler{}, device)
 {
 	_vkHandle = swapchainImage;
 
@@ -107,8 +112,8 @@ SwapchainImage_::SwapchainImage_(const DeviceWeakPtr& device, const VkImage& swa
 } // namespace impl
 
 namespace impl {
-ImageView_::ImageView_(const DeviceWeakPtr& device, const ImageViewCreateInfo& createInfo)
-	: DeviceObjectHandle(device), DeviceObjectDebugMarker(DebugReportObjectTypeEXT::e_IMAGE_VIEW_EXT), _createInfo(createInfo)
+ImageView_::ImageView_(make_shared_enabler, const DeviceWeakPtr& device, const ImageViewCreateInfo& createInfo)
+	: PVRVkDeviceObjectBase(device), DeviceObjectDebugUtils(), _createInfo(createInfo)
 {
 	VkImageViewCreateInfo vkCreateInfo = {};
 	vkCreateInfo.sType = static_cast<VkStructureType>(StructureType::e_IMAGE_VIEW_CREATE_INFO);
@@ -119,21 +124,20 @@ ImageView_::ImageView_(const DeviceWeakPtr& device, const ImageViewCreateInfo& c
 	vkCreateInfo.components = (VkComponentMapping&)_createInfo.getComponents();
 	vkCreateInfo.subresourceRange = (VkImageSubresourceRange&)_createInfo.getSubresourceRange();
 
-	vkThrowIfFailed(_device->getVkBindings().vkCreateImageView(getDevice()->getVkHandle(), &vkCreateInfo, nullptr, &_vkHandle), "Failed to create ImageView");
+	vkThrowIfFailed(getDevice()->getVkBindings().vkCreateImageView(getDevice()->getVkHandle(), &vkCreateInfo, nullptr, &_vkHandle), "Failed to create ImageView");
 }
 ImageView_::~ImageView_()
 {
 	if (getVkHandle() != VK_NULL_HANDLE)
 	{
-		if (_device.isValid())
+		if (!_device.expired())
 		{
-			_device->getVkBindings().vkDestroyImageView(_device->getVkHandle(), getVkHandle(), nullptr);
+			getDevice()->getVkBindings().vkDestroyImageView(getDevice()->getVkHandle(), getVkHandle(), nullptr);
 			_vkHandle = VK_NULL_HANDLE;
-			_device.reset();
 		}
 		else
 		{
-			reportDestroyedAfterDevice("ImageView");
+			reportDestroyedAfterDevice();
 		}
 	}
 }

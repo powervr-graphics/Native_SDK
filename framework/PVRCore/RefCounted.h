@@ -1,6 +1,7 @@
 /*!
 \brief A smart pointer implementation very close to the spec of std::shared_ptr but with some differences and
 tweaks to make it more suitable for the PowerVR Framework.
+Note that RefCounted.h has now been made deprecated and is unused throughout the PowerVR SDK.
 \file PVRCore/RefCounted.h
 \author PowerVR by Imagination, Developer Technology Team
 \copyright Copyright (c) Imagination Technologies Limited.
@@ -151,8 +152,7 @@ protected:
 /// bookkeeping giving much better memory coherency. It is created when the "construct" method is used to create a
 /// new object inside a smart pointer. This is a much better solution than creating the object yourself and then
 /// just wrapping the pointer you have with a RefCountEntry, as if you use the intrusive class you save one level
-/// of indirection. This class is used when the user does RefCountEntry<MyClass> entry; entry.construct(...);
-/// </remarks>
+/// of indirection. This class is used when the user does RefCountEntry<MyClass> entry; entry.construct(...);</remarks>
 template<typename MyClass_>
 struct RefCountEntryIntrusive : public IRefCountEntry
 {
@@ -258,8 +258,7 @@ public:
 		return _pointee;
 	}
 
-	/// <summary>Tests equality of the pointers of two compatible RefCountedResource. NULL tests equal to NULL.
-	/// </summary>
+	/// <summary>Tests equality of the pointers of two compatible RefCountedResource. NULL tests equal to NULL.</summary>
 	/// <param name="rhs">Right hand side of the operator</param>
 	/// <returns>True if the two RefCountedResources contain equal pointers, otherwise false</param>
 	bool operator==(const Dereferenceable& rhs) const
@@ -267,8 +266,7 @@ public:
 		return _pointee == rhs._pointee;
 	}
 
-	/// <summary>Tests inequality of the pointers of two compatible RefCountedResource. NULL tests equal to NULL.
-	/// </summary>
+	/// <summary>Tests inequality of the pointers of two compatible RefCountedResource. NULL tests equal to NULL.</summary>
 	/// <param name="rhs">Right hand side of the operator</param>
 	/// <returns>True if the two RefCountedResources contain unequal pointers, otherwise false</param>
 	bool operator!=(const Dereferenceable& rhs) const
@@ -276,8 +274,7 @@ public:
 		return _pointee != rhs._pointee;
 	}
 
-	/// <summary>Tests inequality of the pointers of two compatible RefCountedResource. NULL tests equal to NULL.
-	/// </summary>
+	/// <summary>Tests inequality of the pointers of two compatible RefCountedResource. NULL tests equal to NULL.</summary>
 	/// <param name="rhs">Right hand side of the operator</param>
 	/// <returns>True if the pointer to left-hand-side is less than the pointer of right-hand-side, otherwise false</param>
 	bool operator<(const Dereferenceable& rhs) const
@@ -285,8 +282,7 @@ public:
 		return _pointee < rhs._pointee;
 	}
 
-	/// <summary>Tests inequality of the pointers of two compatible RefCountedResource. NULL tests equal to NULL.
-	/// </summary>
+	/// <summary>Tests inequality of the pointers of two compatible RefCountedResource. NULL tests equal to NULL.</summary>
 	/// <param name="rhs">Right hand side of the operator</param>
 	/// <returns>True if the pointer to left-hand-side is greater than the pointer of right-hand-side, otherwise false</param>
 	bool operator>(const Dereferenceable& rhs) const
@@ -294,8 +290,7 @@ public:
 		return _pointee > rhs._pointee;
 	}
 
-	/// <summary>Tests inequality of the pointers of two compatible RefCountedResource. NULL tests equal to NULL.
-	/// </summary>
+	/// <summary>Tests inequality of the pointers of two compatible RefCountedResource. NULL tests equal to NULL.</summary>
 	/// <param name="rhs">Right hand side of the operator</param>
 	/// <returns>True if the pointer to left-hand-side is less than or equal the pointer of right-hand-side, otherwise false</param>
 	bool operator<=(const Dereferenceable& rhs) const
@@ -303,8 +298,7 @@ public:
 		return _pointee <= rhs._pointee;
 	}
 
-	/// <summary>Tests equality of the pointers of two compatible RefCountedResource. NULL tests equal to NULL.
-	/// </summary>
+	/// <summary>Tests equality of the pointers of two compatible RefCountedResource. NULL tests equal to NULL.</summary>
 	/// <param name="rhs">Right hand side of the operator</param>
 	/// <returns>True if the pointer to left-hand-side is greater than or equal the pointer of right-hand-side, otherwise false</param>
 	bool operator>=(const Dereferenceable& rhs) const
@@ -321,15 +315,13 @@ protected:
 	void* _pointee;
 
 public:
-	/// <summary>Tests equality of the pointers of two compatible RefCountedResource. NULL tests equal to NULL.
-	/// </summary>
+	/// <summary>Tests equality of the pointers of two compatible RefCountedResource. NULL tests equal to NULL.</summary>
 	bool operator==(const Dereferenceable& rhs) const
 	{
 		return _pointee == rhs._pointee;
 	}
 
-	/// <summary>Tests inequality of the pointers of two compatible RefCountedResource. NULL tests equal to NULL.
-	/// </summary>
+	/// <summary>Tests inequality of the pointers of two compatible RefCountedResource. NULL tests equal to NULL.</summary>
 	/// <param name="rhs">Right hand side of the operator</param>
 	/// <returns>True if the pointer to left-hand-side is not equal to the pointer of right-hand-side, otherwise false</param>
 	bool operator!=(const Dereferenceable& rhs) const
@@ -337,8 +329,7 @@ public:
 		return _pointee != rhs._pointee;
 	}
 
-	/// <summary>Tests equality of the pointers of two compatible RefCountedResource. NULL tests equal to NULL.
-	/// </summary>
+	/// <summary>Tests equality of the pointers of two compatible RefCountedResource. NULL tests equal to NULL.</summary>
 	/// <param name="rhs">Right hand side of the operator</param>
 	/// <returns>True if the pointer to left-hand-side is less than the pointer of right-hand-side, otherwise false</param>
 	bool operator<(const Dereferenceable& rhs) const
@@ -346,8 +337,7 @@ public:
 		return _pointee < rhs._pointee;
 	}
 
-	/// <summary>Tests equality of the pointers of two compatible RefCountedResource. NULL tests equal to NULL.
-	/// </summary>
+	/// <summary>Tests equality of the pointers of two compatible RefCountedResource. NULL tests equal to NULL.</summary>
 	/// <param name="rhs">Right hand side of the operator</param>
 	/// <returns>True if the pointer to left-hand-side is greater than the pointer of right-hand-side, otherwise false</param>
 	bool operator>(const Dereferenceable& rhs) const
@@ -355,8 +345,7 @@ public:
 		return _pointee > rhs._pointee;
 	}
 
-	/// <summary>Tests equality of the pointers of two compatible RefCountedResource. NULL tests equal to NULL.
-	/// </summary>
+	/// <summary>Tests equality of the pointers of two compatible RefCountedResource. NULL tests equal to NULL.</summary>
 	/// <param name="rhs">Right hand side of the operator</param>
 	/// <returns>True if the pointer to left-hand-side is less than or equal to the pointer of right-hand-side, otherwise false</param>
 	bool operator<=(const Dereferenceable& rhs) const
@@ -364,8 +353,7 @@ public:
 		return _pointee <= rhs._pointee;
 	}
 
-	/// <summary>Tests equality of the pointers of two compatible RefCountedResource. NULL tests equal to NULL.
-	/// </summary>
+	/// <summary>Tests equality of the pointers of two compatible RefCountedResource. NULL tests equal to NULL.</summary>
 	/// <param name="rhs">Right hand side of the operator</param>
 	/// <returns>True if the pointer to left-hand-side is greater than or equal to the pointer of right-hand-side, otherwise false</param>
 	bool operator>=(const Dereferenceable& rhs) const
@@ -411,8 +399,7 @@ protected:
 /// similarly to the C++11 shared_ptr, but with some differences, especially as far as conversions go. The
 /// EmbeddedRefCountedResource is used when the user must not have access to the .construct(...) functions of the
 /// RefCountedResource (especially, when a class is designed around reference counting and cannot stand widthout
-/// it). A RefCountedResource is-a EmbeddedRefCountedResource and is safe to "slice" to it as well (see details).
-/// </summary>
+/// it). A RefCountedResource is-a EmbeddedRefCountedResource and is safe to "slice" to it as well (see details).</summary>
 /// <typeparam name="MyClass_">The type of object held. If a createNew function returning an EmbeddedRefCounted is
 /// called, this must be the type of the object that will be created.</typeparam>
 /// <remarks>In order for objects of a class to be used as EmbeddedRefCountedResource, it will need to inherit
@@ -434,8 +421,7 @@ class EmbeddedRefCountedResource : public Dereferenceable<MyClass_>, public Refc
 	friend class RefCountedWeakReference;
 
 public:
-	/// <summary>Type of the object that this object contains. Can be a superclass of the actual type of the object.
-	/// </summary>
+	/// <summary>Type of the object that this object contains. Can be a superclass of the actual type of the object.</summary>
 	typedef MyClass_ ElementType;
 
 	/// <summary>Check if the object contains a reference to a non-null object (i.e. is safely dereferenceable). Will
@@ -450,8 +436,7 @@ public:
 	/// <summary>Check if the object does not contains a reference to a non-null object (i.e. is safely
 	/// dereferenceable). Will return true for both unallocated strong or weak references, or weak references that
 	/// point to objects without strong references (destroyed). Equivalent to !isValid().</summary>
-	/// <returns>True if this object does not contain a reference to a non-null object (is not safely dereferenceable).
-	/// </returns>
+	/// <returns>True if this object does not contain a reference to a non-null object (is not safely dereferenceable).</returns>
 	bool isNull() const
 	{
 		return RefcountEntryHolder<MyClass_>::refCountEntry == NULL || RefcountEntryHolder<MyClass_>::refCountEntry->count() == 0;
@@ -490,8 +475,7 @@ public:
 	/// <summary>Copy constructor (points to the same object, increments reference count).</summary>
 	/// <param name="rhs">The object to copy the reference from.</param>
 	/// <remarks>The copy constructor and copy assignment operators are the main point of any smart resource class.
-	/// The copy constructor-created object references the same object, and increments the reference-counting by one.
-	/// </remarks>
+	/// The copy constructor-created object references the same object, and increments the reference-counting by one.</remarks>
 	EmbeddedRefCountedResource(const EmbeddedRefCountedResource& rhs) : Dereferenceable<MyClass_>(rhs), RefcountEntryHolder<MyClass_>(rhs)
 	{
 		if (RefcountEntryHolder<MyClass_>::refCountEntry)
@@ -504,8 +488,7 @@ public:
 
 	/// <summary>Wrap an already existing object with a RefCountedResource. Will call delete on a MyPointer_ type when
 	/// the reference count reaches zero.</summary>
-	/// <param name="ref">The pointer to wrap into the RefCountedResource. Will be deleted when refcount reaches zero.
-	/// </param>
+	/// <param name="ref">The pointer to wrap into the RefCountedResource. Will be deleted when refcount reaches zero.</param>
 	/// <typeparam name="MyPointer_">the type of the class pointed to by the pointer. May be a subclass of MyClass_,
 	/// but be careful as delete will be called on this type, so it either needs to be the real type, or the base
 	/// class needs a virtual destructor.</typeparam>
@@ -587,8 +570,7 @@ public:
 		reset();
 	}
 
-	/// <summary>Tests inequality of the pointers of two compatible RefCountedResource. NULL tests equal to NULL.
-	/// </summary>
+	/// <summary>Tests inequality of the pointers of two compatible RefCountedResource. NULL tests equal to NULL.</summary>
 	bool operator!=(const EmbeddedRefCountedResource& rhs) const
 	{
 		return get() != rhs.get();
@@ -690,8 +672,7 @@ public:
 	/// <summary>Wrap an already existing object with a RefCountedResource. Will call delete on a MyPointer_ type when
 	/// the reference count reaches zero. MyPointer_ may be MyClass_ or a subclass of MyClass_. delete MyPointer_ will
 	/// happen, not MyClass_.</summary>
-	/// <param name="ref">The pointer to wrap into the RefCountedResource. Will be deleted when refcount reaches zero.
-	/// </param>
+	/// <param name="ref">The pointer to wrap into the RefCountedResource. Will be deleted when refcount reaches zero.</param>
 	/// <typeparam name="MyPointer_">the type of the class pointed to by the pointer. May be a subclass of MyClass_.
 	/// </typeparam>
 	template<typename MyPointer_>
@@ -763,8 +744,7 @@ public:
 		Dereferenceable<MyClass_>::_pointee = ref;
 	}
 
-	/// <summary>Decrements reference count. If it is the last pointer, destroys the pointed-to object. Else, abandons it.
-	/// </summary>
+	/// <summary>Decrements reference count. If it is the last pointer, destroys the pointed-to object. Else, abandons it.</summary>
 	void reset()
 	{
 		EmbeddedRefCountedResource<MyClass_>::reset();
@@ -915,8 +895,7 @@ public:
 		}
 	}
 
-	/// <summary>Copy assignment operator. Implements normal reference counting (increases Weak reference count).
-	/// </summary>
+	/// <summary>Copy assignment operator. Implements normal reference counting (increases Weak reference count).</summary>
 	RefCountedWeakReference& operator=(RefCountedWeakReference rhs)
 	{
 		swap(rhs);
@@ -1011,8 +990,7 @@ public:
 		}
 	}
 
-	/// <summary>Destructor. Reduces weak references by one, freeing the bookkeeping block if total references reach 0.
-	/// </summary>
+	/// <summary>Destructor. Reduces weak references by one, freeing the bookkeeping block if total references reach 0.</summary>
 	virtual ~RefCountedWeakReference()
 	{
 		release();

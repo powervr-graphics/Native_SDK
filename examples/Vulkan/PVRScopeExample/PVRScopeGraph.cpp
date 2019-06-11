@@ -89,16 +89,7 @@ bool PVRScopeGraph::init(pvrvk::Device& device, const pvrvk::Extent2D& dimension
 				pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 		}
 
-		if (PVRScopeGetCounters(scopeData, &numCounter, &counters, &reading))
-		{
-			graphCounters.resize(numCounter);
-
-			position(320, 240, pvrvk::Rect2D(0, 0, 320, 240));
-		}
-		else
-		{
-			numCounter = 0;
-		}
+		updateCounters();
 	}
 
 	if (!createPipeline(renderPass, dimension, outMsg))
@@ -197,7 +188,7 @@ void PVRScopeGraph::ping(float dt)
 					if (counters[i].nGroup == activeGroup || counters[i].nGroup == 0xffffffff)
 					{
 						graphCounters[i].writePosCB = 0;
-						memset(graphCounters[i].valueCB.data(), 0, sizeof(graphCounters[i].valueCB[0]) * sizeCB);
+						memset(graphCounters[i].valueCB.data(), 0, sizeof(graphCounters[i].valueCB[0]) * graphCounters[i].valueCB.size());
 					}
 				}
 			}
@@ -216,6 +207,12 @@ void PVRScopeGraph::ping(float dt)
 
 					graphCounters[i].valueCB[graphCounters[i].writePosCB++] = reading.pfValueBuf[ui32Index++];
 				}
+			}
+
+			if (ui32Index < reading.nValueCnt)
+			{
+				printf("%s used only %u of %u values from PVRScopeReadCounters()!\n", __func__, ui32Index, reading.nValueCnt);
+				updateCounters();
 			}
 		}
 		_device->waitIdle();
@@ -338,7 +335,7 @@ void PVRScopeGraph::update(float dt)
 			{
 				bool updateThisCounter = mustUpdate;
 				// Set the legend
-				if (activeCounters[ii].legendLabel.isNull())
+				if (activeCounters[ii].legendLabel == nullptr)
 				{
 					activeCounters[ii].legendLabel = _uiRenderer->createText(255);
 					activeCounters[ii].legendValue = _uiRenderer->createText(255);
@@ -363,8 +360,8 @@ void PVRScopeGraph::update(float dt)
 
 					activeCounters[ii].legendLabel->setColor(ColorTable[graphCounters[counterId].colorLutIdx]);
 					activeCounters[ii].legendValue->setColor(ColorTable[graphCounters[counterId].colorLutIdx]);
-					activeCounters[ii].legendLabel->setAnchor(pvr::ui::Anchor::TopLeft, glm::vec2(-0.98f, 0.5f));
-					activeCounters[ii].legendValue->setAnchor(pvr::ui::Anchor::TopRight, glm::vec2(-0.98f, 0.5f));
+					activeCounters[ii].legendLabel->setAnchor(pvr::ui::Anchor::TopLeft, glm::vec2(0.1f, 0.98f));
+					activeCounters[ii].legendValue->setAnchor(pvr::ui::Anchor::TopRight, glm::vec2(0.1f, 0.98f));
 					activeCounters[ii].legendLabel->setPixelOffset(0.0f, -30.0f * ii);
 					activeCounters[ii].legendValue->setPixelOffset(550.0f, -30.0f * ii);
 
@@ -428,9 +425,10 @@ void PVRScopeGraph::update(float dt)
 				verticesGraphContent[iDst].y = flipY * (y + fRatio * graphH); // flip the y for Vulkan
 			}
 		}
+
 		// Possible optimization: MapBuffer for ES3
 		// Need reallocation?
-		if (activeCounters[ii].vbo.isNull() || activeCounters[ii].vbo->getSize() != sizeof(verticesGraphContent[0]) * sizeCB)
+		if (!activeCounters[ii].vbo || activeCounters[ii].vbo->getSize() != sizeof(verticesGraphContent[0]) * sizeCB)
 		{
 			activeCounters[ii].vbo = pvr::utils::createBuffer(_device, sizeof(verticesGraphContent[0]) * sizeCB, pvrvk::BufferUsageFlags::e_VERTEX_BUFFER_BIT,
 				pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
@@ -461,7 +459,7 @@ bool PVRScopeGraph::createPipeline(const pvrvk::RenderPass& renderPass, const pv
 	fragmentShader = _device->createShaderModule(pvrvk::ShaderModuleCreateInfo(_assetProvider->getAssetStream(Configuration::FragShaderFileVK)->readToEnd<uint32_t>()));
 
 	// create the pipeline
-	if (!vertexShader.isValid() || !fragmentShader.isValid())
+	if (!vertexShader || !fragmentShader)
 	{
 		errorStr = "Failed to create the Vulkan Pipeline shaders";
 		return false;
@@ -480,7 +478,7 @@ bool PVRScopeGraph::createPipeline(const pvrvk::RenderPass& renderPass, const pv
 	pipeInfo.colorBlend.setAttachmentState(0, pvrvk::PipelineColorBlendAttachmentState());
 	pipeInfo.flags = pvrvk::PipelineCreateFlags::e_ALLOW_DERIVATIVES_BIT;
 	_pipeDrawLine = _device->createGraphicsPipeline(pipeInfo);
-	if (!_pipeDrawLine.isValid())
+	if (!_pipeDrawLine)
 	{
 		errorStr = "Failed to create Draw Line pipeline";
 		return false;
@@ -491,7 +489,7 @@ bool PVRScopeGraph::createPipeline(const pvrvk::RenderPass& renderPass, const pv
 	pipeInfo.flags = pvrvk::PipelineCreateFlags::e_DERIVATIVE_BIT;
 	pipeInfo.basePipeline = _pipeDrawLine;
 	_pipeDrawLineStrip = _device->createGraphicsPipeline(pipeInfo);
-	if (!_pipeDrawLineStrip.isValid())
+	if (!_pipeDrawLineStrip)
 	{
 		errorStr = "Failed to create Draw Line Strip pipeline";
 		return false;
@@ -686,6 +684,7 @@ float PVRScopeGraph::getStandard3D() const
 {
 	return idx3D < reading.nValueCnt ? reading.pfValueBuf[idx3D] : -1.0f;
 }
+
 int32_t PVRScopeGraph::getStandard3DIndex() const
 {
 	return idx3D;
@@ -786,17 +785,35 @@ void PVRScopeGraph::position(const uint32_t viewportW, const uint32_t viewportH,
 			this->pixelW = pixelW;
 			this->graphH = graphH;
 
-			for (uint32_t i = 0; i < numCounter; ++i)
-			{
-				graphCounters[i].valueCB.clear();
-				graphCounters[i].valueCB.resize(sizeCB);
-				memset(graphCounters[i].valueCB.data(), 0, sizeof(graphCounters[i].valueCB[0]) * sizeCB);
-				graphCounters[i].writePosCB = 0;
-			}
+			updateCounters();
 		}
 		x = 2 * (static_cast<float>(graph.getOffset().getX()) / viewportW) - 1;
 		y = 2 * (static_cast<float>(graph.getOffset().getY()) / viewportH) - 1; // flip the y for Vulkan
 		updateBufferLines();
+	}
+}
+
+/*!*********************************************************************************************************************
+\brief  update the counter list
+\return void
+***********************************************************************************************************************/
+void PVRScopeGraph::updateCounters()
+{
+	if (PVRScopeGetCounters(scopeData, &numCounter, &counters, &reading))
+	{
+		graphCounters.resize(numCounter);
+		
+		for (uint32_t i = 0; i < numCounter; ++i)
+		{
+			graphCounters[i].valueCB.clear();
+			graphCounters[i].valueCB.resize(sizeCB);
+			memset(graphCounters[i].valueCB.data(), 0, sizeof(graphCounters[i].valueCB[0]) * sizeCB);
+			graphCounters[i].writePosCB = 0;
+		}
+	}
+	else
+	{
+		numCounter = 0;
 	}
 }
 

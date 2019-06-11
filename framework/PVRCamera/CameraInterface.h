@@ -33,8 +33,7 @@ public:
 
 	/// <summary>Initializes the capture session using the given hardware camera, if it is available.</summary>
 	/// <param name="eCamera">The hardware camera to attempt to stream from</param>
-	/// <param name="preferredResX,preferredResY">If supported by the implementation, set a preferred resolution
-	/// </param>
+	/// <param name="preferredResX,preferredResY">If supported by the implementation, set a preferred resolution</param>
 	void initializeSession(HWCamera::Enum eCamera, int preferredResX = 0, int preferredResY = 0);
 
 	/// <summary>Shutdown the AV capture session and release associated objects.</summary>
@@ -56,8 +55,7 @@ public:
 	/// <returns>A native API handle that can be used to get the texture.</returns>
 	GLuint getRgbTexture();
 
-	/// <summary>Query if this implementation supports a single RGB texture for the camera streaming interface.
-	/// </summary>
+	/// <summary>Query if this implementation supports a single RGB texture for the camera streaming interface.</summary>
 	/// <returns>True if the implementation supports an RGB texture, false otherwise</returns>
 	/// <remarks>This function will return true if the getRgbTexture() can be used. In implementations where this is
 	/// not supported (e.g. iOS), this function will return false, and the getRgbTexture() function will return an

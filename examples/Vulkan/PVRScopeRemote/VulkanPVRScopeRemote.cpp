@@ -60,7 +60,7 @@ const char* FrameDefs[CounterDefs::NumCounter] = { "Frames", "Frames10" };
 struct DeviceResources
 {
 	pvrvk::Instance instance;
-	pvrvk::DebugReportCallback debugCallbacks[2];
+	pvr::utils::DebugUtilsCallbacks debugUtilsCallbacks;
 	pvrvk::Surface surface;
 	pvrvk::Device device;
 	pvrvk::Swapchain swapchain;
@@ -71,9 +71,9 @@ struct DeviceResources
 
 	pvr::Multi<pvrvk::ImageView> depthStencilImages;
 
-	pvr::Multi<pvrvk::Semaphore> semaphoreAcquire;
-	pvr::Multi<pvrvk::Semaphore> semaphoreSubmit;
-	pvr::Multi<pvrvk::Fence> perFrameFence;
+	pvrvk::Semaphore imageAcquiredSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	pvrvk::Semaphore presentationSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	pvrvk::Fence perFrameResourcesFences[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
 
 	pvrvk::GraphicsPipeline pipeline;
 	pvrvk::ImageView texture;
@@ -105,16 +105,14 @@ struct DeviceResources
 	pvr::ui::UIRenderer uiRenderer;
 	~DeviceResources()
 	{
-		if (device.isValid())
+		if (device)
 		{
 			device->waitIdle();
 			uint32_t l = swapchain->getSwapchainLength();
 			for (uint32_t i = 0; i < l; ++i)
 			{
-				if (perFrameFence[i].isValid())
-					perFrameFence[i]->wait();
-				if (perFrameFence[i].isValid())
-					perFrameFence[i]->wait();
+				if (perFrameResourcesFences[i])
+					perFrameResourcesFences[i]->wait();
 			}
 		}
 	}
@@ -193,17 +191,15 @@ pvr::Result VulkanPVRScopeRemote::initApplication()
 	{
 		_spsCommsData = pplInitialise("PVRScopeRemote", 14);
 		_hasCommunicationError = false;
-		if (_spsCommsData)
-		{
-			// Demonstrate that there is a good chance of the initial data being
-			// lost - the connection is normally completed asynchronously.
-			pplSendMark(_spsCommsData, "lost", static_cast<uint32_t>(strlen("lost")));
 
-			// This is entirely optional. Wait for the connection to succeed, it will
-			// timeout if e.g. PVRPerfServer is not running.
-			int isConnected;
-			pplWaitForConnection(_spsCommsData, &isConnected, 1, 200);
-		}
+		// Demonstrate that there is a good chance of the initial data being
+		// lost - the connection is normally completed asynchronously.
+		pplSendMark(_spsCommsData, "lost", static_cast<uint32_t>(strlen("lost")));
+
+		// This is entirely optional. Wait for the connection to succeed, it will
+		// timeout if e.g. PVRPerfServer is not running.
+		int isConnected;
+		pplWaitForConnection(_spsCommsData, &isConnected, 1, 200);
 	}
 	CPPLProcessingScoped PPLProcessingScoped(_spsCommsData, __FUNCTION__, static_cast<uint32_t>(strlen(__FUNCTION__)), _frameCounter);
 
@@ -332,12 +328,8 @@ pvr::Result VulkanPVRScopeRemote::initView()
 	// Create the surface
 	_deviceResources->surface = pvr::utils::createSurface(_deviceResources->instance, _deviceResources->instance->getPhysicalDevice(0), this->getWindow(), this->getDisplay());
 
-	// Add Debug Report Callbacks
-	// Add a Debug Report Callback for logging messages for events of all supported types.
-	_deviceResources->debugCallbacks[0] = pvr::utils::createDebugReportCallback(_deviceResources->instance);
-	// Add a second Debug Report Callback for throwing exceptions for Error events.
-	_deviceResources->debugCallbacks[1] =
-		pvr::utils::createDebugReportCallback(_deviceResources->instance, pvrvk::DebugReportFlagsEXT::e_ERROR_BIT_EXT, pvr::utils::throwOnErrorDebugReportCallback);
+	// Create a default set of debug utils messengers or debug callbacks using either VK_EXT_debug_utils or VK_EXT_debug_report respectively
+	_deviceResources->debugUtilsCallbacks = pvr::utils::createDebugUtilsCallbacks(_deviceResources->instance);
 
 	pvr::utils::QueuePopulateInfo queuePopulateInfo = { pvrvk::QueueFlags::e_GRAPHICS_BIT, _deviceResources->surface };
 	pvr::utils::QueueAccessInfo queueAccessInfo;
@@ -372,18 +364,15 @@ pvr::Result VulkanPVRScopeRemote::initView()
 																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 16));
 	const uint32_t swapchainLength = _deviceResources->swapchain->getSwapchainLength();
 	_deviceResources->commandBuffer.resize(swapchainLength);
-	_deviceResources->semaphoreAcquire.resize(swapchainLength);
-	_deviceResources->semaphoreSubmit.resize(swapchainLength);
-	_deviceResources->perFrameFence.resize(swapchainLength);
 	for (uint32_t i = 0; i < swapchainLength; ++i)
 	{
 		_deviceResources->commandBuffer[i] = _deviceResources->commandPool->allocateCommandBuffer();
-		_deviceResources->semaphoreAcquire[i] = _deviceResources->device->createSemaphore();
-		_deviceResources->semaphoreSubmit[i] = _deviceResources->device->createSemaphore();
-		_deviceResources->perFrameFence[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
+		_deviceResources->presentationSemaphores[i] = _deviceResources->device->createSemaphore();
+		_deviceResources->imageAcquiredSemaphores[i] = _deviceResources->device->createSemaphore();
+		_deviceResources->perFrameResourcesFences[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
 	}
 
-	pvr::utils::createOnscreenFramebufferAndRenderpass(_deviceResources->swapchain, &_deviceResources->depthStencilImages[0], _deviceResources->onScreenFramebuffer);
+	pvr::utils::createOnscreenFramebufferAndRenderPass(_deviceResources->swapchain, &_deviceResources->depthStencilImages[0], _deviceResources->onScreenFramebuffer);
 
 	CPPLProcessingScoped PPLProcessingScoped(_spsCommsData, __FUNCTION__, static_cast<uint32_t>(strlen(__FUNCTION__)), _frameCounter);
 
@@ -438,8 +427,8 @@ pvr::Result VulkanPVRScopeRemote::initView()
 	// Is the screen rotated?
 	bool isRotated = this->isScreenRotated();
 	_viewMtx = glm::lookAt(glm::vec3(0.f, 0.f, 75.f), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
-	_projectionMtx = pvr::math::perspectiveFov(pvr::Api::Vulkan, glm::pi<float>() / 6, static_cast<float>(getWidth()), static_cast<float>(getHeight()), _scene->getCamera(0).getNear(),
-		_scene->getCamera(0).getFar(), isRotated ? glm::pi<float>() * .5f : 0.0f);
+	_projectionMtx = pvr::math::perspectiveFov(pvr::Api::Vulkan, glm::pi<float>() / 6, static_cast<float>(getWidth()), static_cast<float>(getHeight()),
+		_scene->getCamera(0).getNear(), _scene->getCamera(0).getFar(), isRotated ? glm::pi<float>() * .5f : 0.0f);
 
 	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
 	{
@@ -494,102 +483,94 @@ pvr::Result VulkanPVRScopeRemote::renderFrame()
 	if (_spsCommsData)
 	{
 		_hasCommunicationError |= !pplSendProcessingBegin(_spsCommsData, __FUNCTION__, static_cast<uint32_t>(strlen(__FUNCTION__)), _frameCounter);
-	}
 
-	_deviceResources->perFrameFence[_frameId]->wait();
-	_deviceResources->perFrameFence[_frameId]->reset();
-
-	pvrvk::Semaphore& semaphoreAcquire = _deviceResources->semaphoreAcquire[_frameId];
-	pvrvk::Semaphore& semaphoreSubmit = _deviceResources->semaphoreSubmit[_frameId];
-
-	_deviceResources->swapchain->acquireNextImage(uint64_t(-1), semaphoreAcquire);
-	const uint32_t swapchainIndex = _deviceResources->swapchain->getSwapchainIndex();
-
-	if (_spsCommsData)
-	{
-		// mark every N frames
-		if (!(_frameCounter % 100))
+		if (!_hasCommunicationError)
 		{
-			char buf[128];
-			const int nLen = sprintf(buf, "frame %u", _frameCounter);
-			_hasCommunicationError |= !pplSendMark(_spsCommsData, buf, nLen);
-		}
-
-		// Check for dirty items
-		_hasCommunicationError |= !pplSendProcessingBegin(_spsCommsData, "dirty", static_cast<uint32_t>(strlen("dirty")), _frameCounter);
-		{
-			uint32_t nItem, nNewDataLen;
-			const char* pData;
-			bool recompile = false;
-			while (pplLibraryDirtyGetFirst(_spsCommsData, &nItem, &nNewDataLen, &pData))
+			// mark every N frames
+			if (!(_frameCounter % 100))
 			{
-				Log(LogLevel::Debug, "dirty item %u %u 0x%08x\n", nItem, nNewDataLen, pData);
-				switch (nItem)
+				char buf[128];
+				const int nLen = sprintf(buf, "frame %u", _frameCounter);
+				_hasCommunicationError |= !pplSendMark(_spsCommsData, buf, nLen);
+			}
+
+			// Check for dirty items
+			_hasCommunicationError |= !pplSendProcessingBegin(_spsCommsData, "dirty", static_cast<uint32_t>(strlen("dirty")), _frameCounter);
+			{
+				uint32_t nItem, nNewDataLen;
+				const char* pData;
+				while (pplLibraryDirtyGetFirst(_spsCommsData, &nItem, &nNewDataLen, &pData))
 				{
-				case 0:
-					if (nNewDataLen == sizeof(SSPSCommsLibraryTypeFloat))
+					Log(LogLevel::Debug, "dirty item %u %u 0x%08x\n", nItem, nNewDataLen, pData);
+					switch (nItem)
 					{
-						const SSPSCommsLibraryTypeFloat* const psData = (SSPSCommsLibraryTypeFloat*)pData;
-						_uboMatData.specularExponent = psData->fCurrent;
-						_uboMatData.isDirty = true;
-						Log(LogLevel::Information, "Setting Specular Exponent to value [%6.2f]", _uboMatData.specularExponent);
+					case 0:
+						if (nNewDataLen == sizeof(SSPSCommsLibraryTypeFloat))
+						{
+							const SSPSCommsLibraryTypeFloat* const psData = (SSPSCommsLibraryTypeFloat*)pData;
+							_uboMatData.specularExponent = psData->fCurrent;
+							_uboMatData.isDirty = true;
+							Log(LogLevel::Information, "Setting Specular Exponent to value [%6.2f]", _uboMatData.specularExponent);
+						}
+						break;
+					case 1:
+						if (nNewDataLen == sizeof(SSPSCommsLibraryTypeFloat))
+						{
+							const SSPSCommsLibraryTypeFloat* const psData = (SSPSCommsLibraryTypeFloat*)pData;
+							_uboMatData.metallicity = psData->fCurrent;
+							_uboMatData.isDirty = true;
+							Log(LogLevel::Information, "Setting Metallicity to value [%3.2f]", _uboMatData.metallicity);
+						}
+						break;
+					case 2:
+						if (nNewDataLen == sizeof(SSPSCommsLibraryTypeFloat))
+						{
+							const SSPSCommsLibraryTypeFloat* const psData = (SSPSCommsLibraryTypeFloat*)pData;
+							_uboMatData.reflectivity = psData->fCurrent;
+							_uboMatData.isDirty = true;
+							Log(LogLevel::Information, "Setting Reflectivity to value [%3.2f]", _uboMatData.reflectivity);
+						}
+						break;
+					case 3:
+						if (nNewDataLen == sizeof(SSPSCommsLibraryTypeFloat))
+						{
+							const SSPSCommsLibraryTypeFloat* const psData = (SSPSCommsLibraryTypeFloat*)pData;
+							_uboMatData.albedo.r = psData->fCurrent;
+							_uboMatData.isDirty = true;
+							Log(LogLevel::Information, "Setting Albedo Red channel to value [%3.2f]", _uboMatData.albedo.r);
+						}
+						break;
+					case 4:
+						if (nNewDataLen == sizeof(SSPSCommsLibraryTypeFloat))
+						{
+							const SSPSCommsLibraryTypeFloat* const psData = (SSPSCommsLibraryTypeFloat*)pData;
+							_uboMatData.albedo.g = psData->fCurrent;
+							_uboMatData.isDirty = true;
+							Log(LogLevel::Information, "Setting Albedo Green channel to value [%3.2f]", _uboMatData.albedo.g);
+						}
+						break;
+					case 5:
+						if (nNewDataLen == sizeof(SSPSCommsLibraryTypeFloat))
+						{
+							const SSPSCommsLibraryTypeFloat* const psData = (SSPSCommsLibraryTypeFloat*)pData;
+							_uboMatData.albedo.b = psData->fCurrent;
+							_uboMatData.isDirty = true;
+							Log(LogLevel::Information, "Setting Albedo Blue channel to value [%3.2f]", _uboMatData.albedo.b);
+						}
+						break;
 					}
-					break;
-				case 1:
-					if (nNewDataLen == sizeof(SSPSCommsLibraryTypeFloat))
-					{
-						const SSPSCommsLibraryTypeFloat* const psData = (SSPSCommsLibraryTypeFloat*)pData;
-						_uboMatData.metallicity = psData->fCurrent;
-						_uboMatData.isDirty = true;
-						Log(LogLevel::Information, "Setting Metallicity to value [%3.2f]", _uboMatData.metallicity);
-					}
-					break;
-				case 2:
-					if (nNewDataLen == sizeof(SSPSCommsLibraryTypeFloat))
-					{
-						const SSPSCommsLibraryTypeFloat* const psData = (SSPSCommsLibraryTypeFloat*)pData;
-						_uboMatData.reflectivity = psData->fCurrent;
-						_uboMatData.isDirty = true;
-						Log(LogLevel::Information, "Setting Reflectivity to value [%3.2f]", _uboMatData.reflectivity);
-					}
-					break;
-				case 3:
-					if (nNewDataLen == sizeof(SSPSCommsLibraryTypeFloat))
-					{
-						const SSPSCommsLibraryTypeFloat* const psData = (SSPSCommsLibraryTypeFloat*)pData;
-						_uboMatData.albedo.r = psData->fCurrent;
-						_uboMatData.isDirty = true;
-						Log(LogLevel::Information, "Setting Albedo Red channel to value [%3.2f]", _uboMatData.albedo.r);
-					}
-					break;
-				case 4:
-					if (nNewDataLen == sizeof(SSPSCommsLibraryTypeFloat))
-					{
-						const SSPSCommsLibraryTypeFloat* const psData = (SSPSCommsLibraryTypeFloat*)pData;
-						_uboMatData.albedo.g = psData->fCurrent;
-						_uboMatData.isDirty = true;
-						Log(LogLevel::Information, "Setting Albedo Green channel to value [%3.2f]", _uboMatData.albedo.g);
-					}
-					break;
-				case 5:
-					if (nNewDataLen == sizeof(SSPSCommsLibraryTypeFloat))
-					{
-						const SSPSCommsLibraryTypeFloat* const psData = (SSPSCommsLibraryTypeFloat*)pData;
-						_uboMatData.albedo.b = psData->fCurrent;
-						_uboMatData.isDirty = true;
-						Log(LogLevel::Information, "Setting Albedo Blue channel to value [%3.2f]", _uboMatData.albedo.b);
-					}
-					break;
 				}
 			}
-
-			if (recompile)
-			{
-				Log(LogLevel::Error, "*** Could not recompile the shaders passed from PVRScopeComms ****");
-			}
+			_hasCommunicationError |= !pplSendProcessingEnd(_spsCommsData);
 		}
-		_hasCommunicationError |= !pplSendProcessingEnd(_spsCommsData);
 	}
+
+	_deviceResources->swapchain->acquireNextImage(uint64_t(-1), _deviceResources->imageAcquiredSemaphores[_frameId]);
+
+	const uint32_t swapchainIndex = _deviceResources->swapchain->getSwapchainIndex();
+
+	_deviceResources->perFrameResourcesFences[swapchainIndex]->wait();
+	_deviceResources->perFrameResourcesFences[swapchainIndex]->reset();
 
 	if (_spsCommsData)
 	{
@@ -643,31 +624,32 @@ pvr::Result VulkanPVRScopeRemote::renderFrame()
 
 	// SUBMIT
 	pvrvk::SubmitInfo submitInfo;
+	pvrvk::PipelineStageFlags pipeWaitStageFlags = pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT;
 	submitInfo.commandBuffers = &_deviceResources->commandBuffer[swapchainIndex];
 	submitInfo.numCommandBuffers = 1;
-	submitInfo.waitSemaphores = &semaphoreAcquire;
+	submitInfo.waitSemaphores = &_deviceResources->imageAcquiredSemaphores[_frameId];
 	submitInfo.numWaitSemaphores = 1;
-	submitInfo.signalSemaphores = &semaphoreSubmit;
+	submitInfo.signalSemaphores = &_deviceResources->presentationSemaphores[_frameId];
 	submitInfo.numSignalSemaphores = 1;
-	pvrvk::PipelineStageFlags waitStages = pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT;
-	submitInfo.waitDestStages = &waitStages;
-
-	_deviceResources->queue->submit(&submitInfo, 1, _deviceResources->perFrameFence[_frameId]);
+	submitInfo.waitDstStageMask = &pipeWaitStageFlags;
+	_deviceResources->queue->submit(&submitInfo, 1, _deviceResources->perFrameResourcesFences[swapchainIndex]);
 
 	if (this->shouldTakeScreenshot())
 	{
-		pvr::utils::takeScreenshot(_deviceResources->swapchain, swapchainIndex, _deviceResources->commandPool, _deviceResources->queue, this->getScreenshotFileName(),
+		pvr::utils::takeScreenshot(_deviceResources->queue, _deviceResources->commandPool, _deviceResources->swapchain, swapchainIndex, this->getScreenshotFileName(),
 			&_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
 	}
 
 	// PRESENT
 	pvrvk::PresentInfo presentInfo;
 	presentInfo.swapchains = &_deviceResources->swapchain;
-	presentInfo.imageIndices = &swapchainIndex;
 	presentInfo.numSwapchains = 1;
+	presentInfo.waitSemaphores = &_deviceResources->presentationSemaphores[_frameId];
 	presentInfo.numWaitSemaphores = 1;
-	presentInfo.waitSemaphores = &semaphoreSubmit;
+	presentInfo.imageIndices = &swapchainIndex;
 	_deviceResources->queue->present(presentInfo);
+
+	_frameId = (_frameId + 1) % _deviceResources->swapchain->getSwapchainLength();
 
 	if (_spsCommsData)
 	{
@@ -767,7 +749,7 @@ void VulkanPVRScopeRemote::drawMesh(int nodeIndex, pvrvk::CommandBuffer& command
 	//	- Non-Indexed Triangle strips
 	if (mesh.getNumStrips() == 0)
 	{
-		if (_deviceResources->ibos[meshIndex].isValid())
+		if (_deviceResources->ibos[meshIndex])
 		{
 			// Indexed Triangle list
 			command->bindIndexBuffer(_deviceResources->ibos[meshIndex], 0, pvrvk::IndexType::e_UINT16);
@@ -784,7 +766,7 @@ void VulkanPVRScopeRemote::drawMesh(int nodeIndex, pvrvk::CommandBuffer& command
 		for (uint32_t i = 0; i < mesh.getNumStrips(); ++i)
 		{
 			int offset = 0;
-			if (_deviceResources->ibos[meshIndex].isValid())
+			if (_deviceResources->ibos[meshIndex])
 			{
 				command->bindIndexBuffer(_deviceResources->ibos[meshIndex], 0, pvrvk::IndexType::e_UINT16);
 

@@ -16,10 +16,12 @@
         can write trace files to external storage when recording this application
     --> 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.CAMERA" />
+    <!-- 
+        The CAMERA permission is included for access to the camera
+	-->
+	<uses-permission android:name="android.permission.CAMERA" />
 	<uses-feature android:name="android.hardware.camera" />
 	<uses-feature android:name="android.hardware.camera.autofocus" />
-
     <application
             android:allowBackup="true"
             android:icon="@drawable/ic_launcher_icon"

@@ -74,10 +74,35 @@ public:
 namespace impl {
 /// <summary>The Swapchain is the object wrapping the on - screen rendering Framebuffer images
 /// (aka front/backbuffers)</summary>
-class Swapchain_ : public DeviceObjectHandle<VkSwapchainKHR>, public DeviceObjectDebugMarker<Swapchain_>
+class Swapchain_ : public PVRVkDeviceObjectBase<VkSwapchainKHR, ObjectType::e_SWAPCHAIN_KHR>, public DeviceObjectDebugUtils<Swapchain_>
 {
+private:
+	friend class Device_;
+
+	class make_shared_enabler
+	{
+	protected:
+		make_shared_enabler() = default;
+		friend class Swapchain_;
+	};
+
+	static Swapchain constructShared(const DeviceWeakPtr& device, Surface surface, const SwapchainCreateInfo& createInfo)
+	{
+		return std::make_shared<Swapchain_>(make_shared_enabler{}, device, surface, createInfo);
+	}
+
+	uint32_t _swapchainId;
+	uint32_t _swapChainLength;
+	ImageView _colorImageViews[static_cast<uint32_t>(FrameworkCaps::MaxSwapChains)];
+	Surface _surface;
+	SwapchainCreateInfo _createInfo;
+
 public:
+	//!\cond NO_DOXYGEN
 	DECLARE_NO_COPY_SEMANTICS(Swapchain_)
+	Swapchain_(make_shared_enabler, const DeviceWeakPtr& device, Surface surface, const SwapchainCreateInfo& createInfo);
+	~Swapchain_();
+	//!\endcond
 
 	/// <summary>Acquire next image. The acquired swapchain index can be retrieved by calling getSwapchainIndex.
 	///   Note: The presenation engine may still be consuming the swapchain image, therefore the calle must synchronise it before using it.</summary>
@@ -112,16 +137,33 @@ public:
 	/// <summary>Get swapchain image view</summary>
 	/// <param name="swapchain">swapchain index</param>
 	/// <returns>ImageView</returns>
-	ImageView getImageView(uint32_t swapchain) const
+	const ImageView& getImageView(uint32_t swapchain) const
 	{
-		debug_assertion(swapchain < FrameworkCaps::MaxSwapChains, "Index out of bound");
+		assert(swapchain < FrameworkCaps::MaxSwapChains && "Index out of bound");
+		return _colorImageViews[swapchain];
+	}
+
+	/// <summary>Get swapchain image view</summary>
+	/// <param name="swapchain">swapchain index</param>
+	/// <returns>ImageView</returns>
+	ImageView& getImageView(uint32_t swapchain)
+	{
+		assert(swapchain < FrameworkCaps::MaxSwapChains && "Index out of bound");
 		return _colorImageViews[swapchain];
 	}
 
 	/// <summary>Get swapchain image</summary>
 	/// <param name="swapchain">swapchain index</param>
 	/// <returns>Image</returns>
-	Image getImage(uint32_t swapchain) const
+	const Image& getImage(uint32_t swapchain) const
+	{
+		return getImageView(swapchain)->getImage();
+	}
+
+	/// <summary>Get swapchain image</summary>
+	/// <param name="swapchain">swapchain index</param>
+	/// <returns>Image</returns>
+	Image& getImage(uint32_t swapchain)
 	{
 		return getImageView(swapchain)->getImage();
 	}
@@ -203,7 +245,7 @@ public:
 		std::vector<uint32_t> indices;
 		for (uint32_t i = 0; i < _createInfo.numQueueFamilyIndex; i++)
 		{
-			indices.push_back(_createInfo.queueFamilyIndices[i]);
+			indices.emplace_back(_createInfo.queueFamilyIndices[i]);
 		}
 		return indices;
 	}
@@ -220,26 +262,8 @@ public:
 	/// <returns>True if the swapchain supports the specified image usage</returns>
 	bool supportsUsage(const ImageUsageFlags& imageUsage) const
 	{
-		if (static_cast<uint32_t>(getUsage() & imageUsage) != 0)
-		{
-			return true;
-		}
-		return false;
+		return static_cast<uint32_t>(getUsage() & imageUsage) != 0;
 	}
-
-private:
-	friend class ::pvrvk::impl::Device_;
-	template<typename>
-	friend struct ::pvrvk::RefCountEntryIntrusive;
-	Swapchain_(DeviceWeakPtr device, Surface surface, const SwapchainCreateInfo& createInfo);
-
-	~Swapchain_();
-
-	uint32_t _swapchainId;
-	uint32_t _swapChainLength;
-	ImageView _colorImageViews[static_cast<uint32_t>(FrameworkCaps::MaxSwapChains)];
-	Surface _surface;
-	SwapchainCreateInfo _createInfo;
 };
 } // namespace impl
 } // namespace pvrvk

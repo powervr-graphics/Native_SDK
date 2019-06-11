@@ -10,89 +10,150 @@
 #include "PVRVk/GraphicsPipelineVk.h"
 #include "PVRVk/ComputePipelineVk.h"
 #include "PVRVk/EventVk.h"
+#include "PVRVk/FramebufferVk.h"
+#include "PVRVk/RenderPassVk.h"
 
 namespace pvrvk {
 namespace impl {
 /// <summary>Contains all the commands and states that need to be recorded for later submission to the gpu including pipelines,
 /// textures, descriptor sets. Virtually everything that needs to happen on the GPU is submitted to the CommandBuffer.</summary>
-class CommandBufferBase_ : public DeviceObjectHandle<VkCommandBuffer>, public DeviceObjectDebugMarker<CommandBufferBase_>
+class CommandBufferBase_ : public PVRVkDeviceObjectBase<VkCommandBuffer, ObjectType::e_COMMAND_BUFFER>, public DeviceObjectDebugUtils<CommandBufferBase_>
 {
+protected:
+	/// <summary>A class which restricts the creation of a pvrvk::CommandBufferBase to children or friends of a pvrvk::impl::CommandBufferBase_.</summary>
+	class make_shared_enabler
+	{
+	protected:
+		/// <summary>Constructor for a make_shared_enabler.</summary>
+		make_shared_enabler() = default;
+		friend class CommandBufferBase_;
+	};
+
+	/// <summary>Protected function used to create a pvrvk::CommandBufferBase. Note that this function shouldn't normally be called
+	/// directly and will be called by a friend of CommandBufferBase_ which will generally be a CommandPool.</summary>
+	/// <param name="device">The device used to allocate the command buffer.</param>
+	/// <param name="pool">The pool from which the command buffer will be allocated.</param>
+	/// <param name="myHandle">The vulkan handle for this command buffer.</param>
+	/// <returns>Returns a successfully created pvrvk::CommandBufferBase</returns>
+	static CommandBufferBase constructShared(const DeviceWeakPtr& device, CommandPool& pool, VkCommandBuffer myHandle)
+	{
+		return std::make_shared<CommandBufferBase_>(make_shared_enabler{}, device, pool, myHandle);
+	}
+
+	/// <summary>Holds a list of references to the objects currently in use by this command buffer. This ensures that objects are kept alive through
+	/// reference counting until the command buffer is finished with them.</summary>
+	std::vector<std::shared_ptr<void> /**/> _objectReferences;
+
+	/// <summary>The command pool from which this command buffer was allocated.</summary>
+	CommandPool _pool;
+
+	/// <summary>Specifies whether the command buffer is currently in the recording state which is controlled via calling the begin function.</summary>
+	bool _isRecording;
+
+	/// <summary>Holds a reference to the last bound graphics pipeline. This can be used for optimising binding the same graphics pipeline repeatedly.</summary>
+	GraphicsPipeline _lastBoundGraphicsPipe;
+
+	/// <summary>Holds a reference to the last bound compute pipeline. This can then be used for optimising binding the same compute pipeline repeatedly.</summary>
+	ComputePipeline _lastBoundComputePipe;
+
 public:
+	//!\cond NO_DOXYGEN
 	DECLARE_NO_COPY_SEMANTICS(CommandBufferBase_)
+	/// <summary>Constructor. This constructor shouldn't be called directly and should instead be called indirectly via a call to
+	/// CommandPool::allocateCommandBuffers.</summary>
+	/// <param name="device">The device used to allocate this command buffer.</param>
+	/// <param name="pool">The pool from which the command buffer was allocated.</param>
+	/// <param name="myHandle">The vulkan handle for this command buffer.</param>
+	CommandBufferBase_(make_shared_enabler, const DeviceWeakPtr& device, CommandPool pool, VkCommandBuffer myHandle)
+		: PVRVkDeviceObjectBase(device, myHandle), DeviceObjectDebugUtils(), _pool(pool), _isRecording(false)
+	{}
 
 	/// <summary>Destructor. Virtual (for polymorphic use).</summary>
 	virtual ~CommandBufferBase_();
+	//!\endcond
 
 	/// <summary>Call this function before beginning to record commands.</summary>
 	/// <param name="flags">Flags is a bitmask of CommandBufferUsageFlags specifying usage behavior for the command buffer.</param>
 	void begin(const CommandBufferUsageFlags flags = CommandBufferUsageFlags(0));
 
-	/// <summary>Call this function when you are done recording commands. BeginRecording must be called first.
-	/// </summary>
+	/// <summary>Call this function when you are done recording commands. BeginRecording must be called first.</summary>
 	void end();
 
-	/// <summary>Begins a debug marked region.</summary>
-	/// <param name="markerName">Specifies a name to use for a particular marked region.</param>
-	/// <param name="r">The r value to use for the colored marked region.</param>
-	/// <param name="g">The g value to use for the colored marked region.</param>
-	/// <param name="b">The b value to use for the colored marked region.</param>
-	/// <param name="a">The a value to use for the colored marked region.</param>
-	void debugMarkerBeginEXT(const std::string markerName, float r = 183.0f / 255.0f, float g = 26.0f / 255.0f, float b = 139.0f / 255.0f, float a = 1.0f)
+	/// <summary>Begins identifying a region of work submitted to this command buffer. The calls to beginDebugUtilsLabel and endDebugUtilsLabel must be matched and
+	/// balanced.</summary>
+	/// <param name="labelInfo">Specifies the parameters of the label region to open</param>
+	void beginDebugUtilsLabel(const pvrvk::DebugUtilsLabel& labelInfo)
 	{
-		// if the extension is supported then start the debug marker region
-		if (getDevice()->isExtensionEnabled(VK_EXT_DEBUG_MARKER_EXTENSION_NAME))
-		{
-			VkDebugMarkerMarkerInfoEXT markerInfo = {};
-			markerInfo.sType = static_cast<VkStructureType>(StructureType::e_DEBUG_MARKER_MARKER_INFO_EXT);
-			// The color to use for the marked region
-			markerInfo.color[0] = r;
-			markerInfo.color[1] = g;
-			markerInfo.color[2] = b;
-			markerInfo.color[3] = a;
-			// The name to give to the marked region
-			markerInfo.pMarkerName = markerName.c_str();
-			_device->getVkBindings().vkCmdDebugMarkerBeginEXT(getVkHandle(), &markerInfo);
-		}
-#ifdef DEBUG
-		_debugRegions.push_back(markerName);
-#endif
+		VkDebugUtilsLabelEXT vkLabelInfo = {};
+		vkLabelInfo.sType = static_cast<VkStructureType>(StructureType::e_DEBUG_UTILS_LABEL_EXT);
+		// The color to use for the marked region
+		vkLabelInfo.color[0] = labelInfo.getR();
+		vkLabelInfo.color[1] = labelInfo.getG();
+		vkLabelInfo.color[2] = labelInfo.getB();
+		vkLabelInfo.color[3] = labelInfo.getA();
+		// The label name to give to the marked region
+		vkLabelInfo.pLabelName = labelInfo.getLabelName().c_str();
+		getDevice()->getVkBindings().vkCmdBeginDebugUtilsLabelEXT(getVkHandle(), &vkLabelInfo);
+	}
+
+	/// <summary>Ends a label region of work submitted to this command buffer.</summary>
+	void endDebugUtilsLabel()
+	{
+		getDevice()->getVkBindings().vkCmdEndDebugUtilsLabelEXT(getVkHandle());
+	}
+
+	/// <summary>Inserts a single debug label any time.</summary>
+	/// <param name="labelInfo">Specifies the parameters of the label region to insert</param>
+	void insertDebugUtilsLabel(const pvrvk::DebugUtilsLabel& labelInfo)
+	{
+		VkDebugUtilsLabelEXT vkLabelInfo = {};
+		vkLabelInfo.sType = static_cast<VkStructureType>(StructureType::e_DEBUG_UTILS_LABEL_EXT);
+		// The color to use for the marked region
+		vkLabelInfo.color[0] = labelInfo.getR();
+		vkLabelInfo.color[1] = labelInfo.getG();
+		vkLabelInfo.color[2] = labelInfo.getB();
+		vkLabelInfo.color[3] = labelInfo.getA();
+		// The label name to give to the marked region
+		vkLabelInfo.pLabelName = labelInfo.getLabelName().c_str();
+		getDevice()->getVkBindings().vkCmdInsertDebugUtilsLabelEXT(getVkHandle(), &vkLabelInfo);
+	}
+
+	/// <summary>Begins a debug marked region.</summary>
+	/// <param name="markerInfo">Specifies the creation info for a marked region.</param>
+	void debugMarkerBeginEXT(pvrvk::DebugMarkerMarkerInfo& markerInfo)
+	{
+		VkDebugMarkerMarkerInfoEXT vkMarkerInfo = {};
+		vkMarkerInfo.sType = static_cast<VkStructureType>(StructureType::e_DEBUG_MARKER_MARKER_INFO_EXT);
+		// The color to use for the marked region
+		vkMarkerInfo.color[0] = markerInfo.getR();
+		vkMarkerInfo.color[1] = markerInfo.getG();
+		vkMarkerInfo.color[2] = markerInfo.getB();
+		vkMarkerInfo.color[3] = markerInfo.getA();
+		// The name to give to the marked region
+		vkMarkerInfo.pMarkerName = markerInfo.getMarkerName().c_str();
+		getDevice()->getVkBindings().vkCmdDebugMarkerBeginEXT(getVkHandle(), &vkMarkerInfo);
 	}
 
 	/// <summary>Ends a debug marked region.</summary>
 	void debugMarkerEndEXT()
 	{
-		// if the extension is supported then end the debug marker region
-		if (getDevice()->isExtensionEnabled(VK_EXT_DEBUG_MARKER_EXTENSION_NAME))
-		{
-			_device->getVkBindings().vkCmdDebugMarkerEndEXT(getVkHandle());
-		}
-#ifdef DEBUG
-		_debugRegions.pop_back();
-#endif
+		getDevice()->getVkBindings().vkCmdDebugMarkerEndEXT(getVkHandle());
 	}
 
 	/// <summary>Inserts a debug marker.</summary>
-	/// <param name="markerName">Specifies a name to use for a particular marker.</param>
-	/// <param name="r">The r value to use for the colored marker.</param>
-	/// <param name="g">The g value to use for the colored marker.</param>
-	/// <param name="b">The b value to use for the colored marker.</param>
-	/// <param name="a">The a value to use for the colored marker.</param>
-	void debugMarkerInsertEXT(const std::string markerName, float r = 183.0f / 255.0f, float g = 26.0f / 255.0f, float b = 139.0f / 255.0f, float a = 1.0f)
+	/// <param name="markerInfo">Specifies creation info for the marker.</param>
+	void debugMarkerInsertEXT(pvrvk::DebugMarkerMarkerInfo& markerInfo)
 	{
-		// if the extension is supported then insert the debug marker
-		if (getDevice()->isExtensionEnabled(VK_EXT_DEBUG_MARKER_EXTENSION_NAME))
-		{
-			VkDebugMarkerMarkerInfoEXT markerInfo = {};
-			markerInfo.sType = static_cast<VkStructureType>(StructureType::e_DEBUG_MARKER_MARKER_INFO_EXT);
-			// The color to use for the marked region
-			markerInfo.color[0] = r;
-			markerInfo.color[1] = g;
-			markerInfo.color[2] = b;
-			markerInfo.color[3] = a;
-			// The name to give to the marked region
-			markerInfo.pMarkerName = markerName.c_str();
-			_device->getVkBindings().vkCmdDebugMarkerInsertEXT(getVkHandle(), &markerInfo);
-		}
+		VkDebugMarkerMarkerInfoEXT vkMarkerInfo = {};
+		vkMarkerInfo.sType = static_cast<VkStructureType>(StructureType::e_DEBUG_MARKER_MARKER_INFO_EXT);
+		// The color to use for the marked region
+		vkMarkerInfo.color[0] = markerInfo.getR();
+		vkMarkerInfo.color[1] = markerInfo.getG();
+		vkMarkerInfo.color[2] = markerInfo.getB();
+		vkMarkerInfo.color[3] = markerInfo.getA();
+		// The name to give to the marked region
+		vkMarkerInfo.pMarkerName = markerInfo.getMarkerName().c_str();
+		getDevice()->getVkBindings().vkCmdDebugMarkerInsertEXT(getVkHandle(), &vkMarkerInfo);
 	}
 
 	/// <summary>Resets a particular range of queries for a particular QueryPool and sets their status' to unavailable which also makes their numerical results undefined.</summary>
@@ -144,10 +205,10 @@ public:
 	/// <param name="pipeline">The GraphicsPipeline to bind.</param>
 	void bindPipeline(const GraphicsPipeline& pipeline)
 	{
-		if (!_lastBoundGraphicsPipe.isValid() || _lastBoundGraphicsPipe != pipeline)
+		if (_lastBoundGraphicsPipe || _lastBoundGraphicsPipe != pipeline)
 		{
-			_objectReferences.push_back(pipeline);
-			_device->getVkBindings().vkCmdBindPipeline(getVkHandle(), static_cast<VkPipelineBindPoint>(PipelineBindPoint::e_GRAPHICS), pipeline->getVkHandle());
+			_objectReferences.emplace_back(pipeline);
+			getDevice()->getVkBindings().vkCmdBindPipeline(getVkHandle(), static_cast<VkPipelineBindPoint>(PipelineBindPoint::e_GRAPHICS), pipeline->getVkHandle());
 			_lastBoundGraphicsPipe = pipeline;
 		}
 	}
@@ -156,11 +217,11 @@ public:
 	/// <param name="pipeline">The ComputePipeline to bind</param>
 	void bindPipeline(ComputePipeline& pipeline)
 	{
-		if (!_lastBoundComputePipe.isValid() || _lastBoundComputePipe != pipeline)
+		if (!_lastBoundComputePipe || _lastBoundComputePipe != pipeline)
 		{
 			_lastBoundComputePipe = pipeline;
-			_objectReferences.push_back(pipeline);
-			_device->getVkBindings().vkCmdBindPipeline(getVkHandle(), static_cast<VkPipelineBindPoint>(PipelineBindPoint::e_COMPUTE), pipeline->getVkHandle());
+			_objectReferences.emplace_back(pipeline);
+			getDevice()->getVkBindings().vkCmdBindPipeline(getVkHandle(), static_cast<VkPipelineBindPoint>(PipelineBindPoint::e_COMPUTE), pipeline->getVkHandle());
 		}
 	}
 
@@ -198,11 +259,11 @@ public:
 		VkBuffer native_buffers[static_cast<uint32_t>(FrameworkCaps::MaxVertexBindings)] = { VK_NULL_HANDLE };
 		for (uint32_t i = 0; i < bindingCount; ++i)
 		{
-			_objectReferences.push_back(buffers[i]);
+			_objectReferences.emplace_back(buffers[i]);
 			native_buffers[i] = buffers[i]->getVkHandle();
 		}
 
-		_device->getVkBindings().vkCmdBindVertexBuffers(getVkHandle(), firstBinding, bindingCount, native_buffers, (VkDeviceSize*)offsets);
+		getDevice()->getVkBindings().vkCmdBindVertexBuffers(getVkHandle(), firstBinding, bindingCount, native_buffers, (VkDeviceSize*)offsets);
 	}
 
 	/// <summary>Bind vertex buffer</summary>
@@ -211,9 +272,9 @@ public:
 	/// <param name="bindingIndex">The index of the vertex input binding whose state is updated by the command.</param>
 	void bindVertexBuffer(const Buffer& buffer, uint32_t offset, uint16_t bindingIndex)
 	{
-		_objectReferences.push_back(buffer);
+		_objectReferences.emplace_back(buffer);
 		VkDeviceSize offs = offset;
-		_device->getVkBindings().vkCmdBindVertexBuffers(getVkHandle(), bindingIndex, 1, &buffer->getVkHandle(), &offs);
+		getDevice()->getVkBindings().vkCmdBindVertexBuffers(getVkHandle(), bindingIndex, !!buffer, (buffer ? &buffer->getVkHandle() : NULL), &offs);
 	}
 
 	/// <summary>Bind vertex buffer</summary>
@@ -230,8 +291,8 @@ public:
 	/// <param name="indexType">IndexType</param>
 	void bindIndexBuffer(const Buffer& buffer, uint32_t offset, IndexType indexType)
 	{
-		_objectReferences.push_back(buffer);
-		_device->getVkBindings().vkCmdBindIndexBuffer(getVkHandle(), buffer->getVkHandle(), offset, static_cast<VkIndexType>(indexType));
+		_objectReferences.emplace_back(buffer);
+		getDevice()->getVkBindings().vkCmdBindIndexBuffer(getVkHandle(), buffer->getVkHandle(), offset, static_cast<VkIndexType>(indexType));
 	}
 
 	/// <summary>Add a memory barrier to the command stream, forcing preceeding commands to be written before
@@ -263,8 +324,8 @@ public:
 	/// <param name="pipelineStageFlags">Specifies the src stage mask used to determine when the event is signaled.</param>
 	void setEvent(Event& event, PipelineStageFlags pipelineStageFlags = PipelineStageFlags::e_ALL_COMMANDS_BIT)
 	{
-		_objectReferences.push_back(event);
-		_device->getVkBindings().vkCmdSetEvent(getVkHandle(), event->getVkHandle(), static_cast<VkPipelineStageFlags>(pipelineStageFlags));
+		_objectReferences.emplace_back(event);
+		getDevice()->getVkBindings().vkCmdSetEvent(getVkHandle(), event->getVkHandle(), static_cast<VkPipelineStageFlags>(pipelineStageFlags));
 	}
 
 	/// <summary>Defines an execution dependency on commands that were submitted before it, and defines an event unsignal
@@ -273,18 +334,18 @@ public:
 	/// <param name="pipelineStageFlags">Is a bitmask of PipelineStageFlags specifying the src stage mask used to determine when the event is unsignaled.</param>
 	void resetEvent(Event& event, PipelineStageFlags pipelineStageFlags = PipelineStageFlags::e_ALL_COMMANDS_BIT)
 	{
-		_device->getVkBindings().vkCmdResetEvent(getVkHandle(), event->getVkHandle(), static_cast<VkPipelineStageFlags>(pipelineStageFlags));
+		getDevice()->getVkBindings().vkCmdResetEvent(getVkHandle(), event->getVkHandle(), static_cast<VkPipelineStageFlags>(pipelineStageFlags));
 	}
 
 	/// <summary>Clears this CommandBuffer discarding any previously recorded commands and puts the command buffer in the initial state.
 	/// <param name="resetFlags">Is a bitmask of CommandBufferResetFlagBits controlling the reset operation.</param>
-	void reset(CommandBufferResetFlags resetFlags)
+	void reset(CommandBufferResetFlags resetFlags = CommandBufferResetFlags::e_NONE)
 	{
 		_objectReferences.clear();
 		_lastBoundComputePipe.reset();
 		_lastBoundGraphicsPipe.reset();
 
-		_device->getVkBindings().vkResetCommandBuffer(getVkHandle(), static_cast<VkCommandBufferResetFlagBits>(resetFlags));
+		getDevice()->getVkBindings().vkResetCommandBuffer(getVkHandle(), static_cast<VkCommandBufferResetFlagBits>(resetFlags));
 	}
 
 	/// <summary>Copy data between Images</summary>
@@ -310,12 +371,11 @@ public:
 	/// <param name="numRegions">Number of regions to copy</param>
 	/// <param name="regions">Pointer to an array of BufferCopy structures specifying the regions to copy.
 	/// Each region in pRegions is copied from the source buffer to the same region of the destination buffer.
-	/// srcBuffer and dstBuffer can be the same buffer or alias the same memory, but the result is undefined if the copy regions overlap in memory.
-	/// </param>
+	/// srcBuffer and dstBuffer can be the same buffer or alias the same memory, but the result is undefined if the copy regions overlap in memory.</param>
 	void copyBuffer(const Buffer& srcBuffer, const Buffer& dstBuffer, uint32_t numRegions, const BufferCopy* regions);
 
 	/// <summary>Copy buffer to image</summary>
-	/// <param name="buffer">Source Buffer </param>
+	/// <param name="buffer">Source Buffer</param>
 	/// <param name="image">Destination image</param>
 	/// <param name="dstImageLayout">Destination image's current layout</param>
 	/// <param name="regionsCount">Copy regions</param>
@@ -473,7 +533,7 @@ public:
 	/// <summary>Clear depth image outside of a renderpass instance.</summary>
 	/// <param name="image">Image to clear</param>
 	/// <param name="clearDepth">Clear value</param>
-	/// <param name="baseMipLevel">Base mip map level to clear </param>
+	/// <param name="baseMipLevel">Base mip map level to clear</param>
 	/// <param name="numLevels">Number of mipmap levels to clear</param>
 	/// <param name="baseArrayLayer">Base arraylayer to clear</param>
 	/// <param name="numLayers">Number of array layers to clear</param>
@@ -571,60 +631,134 @@ public:
 	/// <param name="data">An array of size bytes containing the new push constant values.</param>
 	void pushConstants(const PipelineLayout& pipelineLayout, ShaderStageFlags stageFlags, uint32_t offset, uint32_t size, const void* data);
 
+	/// <summary>Binds a transform feedback buffer to the command buffer for use in subsequent draw commands.</summary>
+	/// <param name="buffer">A buffer to bind the command buffer.</param>
+	/// <param name="offset">A buffer offset.</param>
+	/// <param name="size">An optional buffer size, which specifies the maximum number of bytes to capture to the corresponding transform feedback buffer.</param>
+	void bindTransformFeedbackBuffers(pvrvk::Buffer buffer, VkDeviceSize offset, VkDeviceSize size = VK_WHOLE_SIZE);
+
+	/// <summary>Binds a set of transform feedback buffers to the command buffer for use in subsequent draw commands.</summary>
+	/// <param name="firstBinding">The index of the first transform feedback binding whose state is updated by the command.</param>
+	/// <param name="bindingCount">The number of transform feedback bindings whose state is updated by the command.</param>
+	/// <param name="buffers">A list of buffers to bind the command buffer.</param>
+	/// <param name="offsets">Pointer to an array of buffer offsets.</param>
+	/// <param name="sizes">An optional array of buffer sizes, which specifies the maximum number of bytes to capture to the corresponding transform feedback buffer.</param>
+	void bindTransformFeedbackBuffers(uint32_t firstBinding, uint32_t bindingCount, const pvrvk::Buffer* buffers, const VkDeviceSize* offsets, const VkDeviceSize* sizes = nullptr);
+
+	/// <summary>Makes active transform feedback for specific transform feedback buffers.</summary>
+	/// <param name="firstCounterBuffer">Index of the first transform feedback buffer.</param>
+	/// <param name="numCounterBuffers">The number of buffers.</param>
+	/// <param name="counterBuffers">An optional list of buffers where the handles of the buffers correspond to the counter buffers which contain a 4 byte
+	/// integer value representing the byte offset from the start of the corresponding transform feedback buffer from where to start capturing vertex data.</param>
+	/// <param name="counterBufferOffsets">An optional array of offsets within each of the pCounterBuffers where the counter values were previously written.</param>
+	void beginTransformFeedback(
+		uint32_t firstCounterBuffer, uint32_t numCounterBuffers, const pvrvk::Buffer* counterBuffers = nullptr, const VkDeviceSize* counterBufferOffsets = nullptr);
+
+	/// <summary>Makes active transform feedback for specific transform feedback buffers.</summary>
+	/// <param name="counterBuffer">The handle of the buffer correspond to the counter buffer which contains a 4 byte
+	/// integer value representing the byte offset from the start of the corresponding transform feedback buffer from where to start capturing vertex data.</param>
+	/// <param name="counterBufferOffset">An optional offset within the counterBuffer where the counter values were previously written.</param>
+	void beginTransformFeedback(pvrvk::Buffer counterBuffer, VkDeviceSize counterBufferOffset = 0);
+
+	/// <summary>Makes inactive transform feedback for specific transform feedback buffers.</summary>
+	/// <param name="firstCounterBuffer">Index of the first transform feedback buffer.</param>
+	/// <param name="numCounterBuffers">The number of buffers.</param>
+	/// <param name="counterBuffers">An optional list of buffers where the handles of the buffers correspond to the counter buffers which contain a 4 byte
+	/// integer value representing the byte offset from the start of the corresponding transform feedback buffer from where to start capturing vertex data.</param>
+	/// <param name="counterBufferOffsets">An optional array of offsets within each of the pCounterBuffers where the counter values were previously written.</param>
+	void endTransformFeedback(
+		uint32_t firstCounterBuffer, uint32_t numCounterBuffers, const pvrvk::Buffer* counterBuffers = nullptr, const VkDeviceSize* counterBufferOffsets = nullptr);
+
+	/// <summary>Makes inactive transform feedback for specific transform feedback buffers.</summary>
+	/// <param name="counterBuffer">The handle of the buffer correspond to the counter buffer which contains a 4 byte
+	/// integer value representing the byte offset from the start of the corresponding transform feedback buffer from where to start capturing vertex data.</param>
+	/// <param name="counterBufferOffset">An optional offset within the counterBuffer where the counter values were previously written.</param>
+	void endTransformFeedback(pvrvk::Buffer counterBuffer, VkDeviceSize counterBufferOffset = 0);
+
+	/// <summary>Begins a query for a particular QueryPool.</summary>
+	/// <param name="queryPool">Specifies the query pool which will manage the results of the query.</param>
+	/// <param name="queryIndex">The query index within the QueryPool which will contain the results.</param>
+	/// <param name="flags">Specifies the Query Control Flag bits which provide constraints on the type of queries that can be performed.</param>
+	/// <param name="index">The query type specific index.</param>
+	void beginQueryIndexed(QueryPool& queryPool, uint32_t queryIndex, QueryControlFlags flags = QueryControlFlags(0), uint32_t index = 0);
+
+	/// <summary>Ends a query for a particular QueryPool.</summary>
+	/// <param name="queryPool">Specifies the query pool which will manage the results of the query.</param>
+	/// <param name="queryIndex">The query index within the QueryPool which will contain the results.</param>
+	/// <param name="index">The query type specific index.</param>
+	void endQueryIndexed(QueryPool& queryPool, uint32_t queryIndex, uint32_t index = 0);
+
+	/// <summary>Records a non-indexed draw call, where the vertex count is based on a byte count read from a buffer and the passed in vertex stride parameter.</summary>
+	/// <param name="instanceCount">The number of instances to draw.</param>
+	/// <param name="firstInstance">The instance ID of the first instance to draw.</param>
+	/// <param name="counterBuffer">The buffer handle from where the byte count is read.</param>
+	/// <param name="counterBufferOffset">The offset into the buffer used to read the byte count, which is used to calculate the vertex count for this draw call.</param>
+	/// <param name="counterOffset">Is subtracted from the byte count read from the counterBuffer at the counterBufferOffset.</param>
+	/// <param name="vertexStride">The stride in bytes between each element of the vertex data that is used to calculate the vertex count from the counter value</param>
+	void drawIndirectByteCount(
+		uint32_t instanceCount, uint32_t firstInstance, pvrvk::Buffer counterBuffer, VkDeviceSize counterBufferOffset, uint32_t counterOffset, uint32_t vertexStride);
+
 	/// <summary>Const getter for the command pool used to allocate this command buffer.</summary>
 	/// <returns>The command pool used to allocate this command buffer.</returns>
-	const CommandPool& getCommandPool() const
+	const CommandPool getCommandPool() const
 	{
 		return _pool;
 	}
-
-protected:
-	friend class ::pvrvk::impl::CommandPool_;
-
-	/// <summary>Constructor. This constructor shouldn't be called directly and should instead be called indirectly via a call to
-	/// CommandPool::allocateCommandBuffers.</summary>
-	/// <param name="device">The device used to allocate this command buffer.</param>
-	/// <param name="pool">The pool from which the command buffer was allocated.</param>
-	/// <param name="myHandle">The vulkan handle for this command buffer.</param>
-	CommandBufferBase_(DeviceWeakPtr device, CommandPool pool, VkCommandBuffer myHandle)
-		: DeviceObjectHandle(device, myHandle), DeviceObjectDebugMarker(DebugReportObjectTypeEXT::e_COMMAND_BUFFER_EXT)
-	{
-		_pool = pool;
-		_isRecording = false;
-	}
-
-	/// <summary>Holds a list of references to the objects currently in use by this command buffer. This ensures that objects are kept alive through
-	/// reference counting until the command buffer is finished with them.</summary>
-	std::vector<EmbeddedRefCountedResource<void> /**/> _objectReferences;
-
-	/// <summary>The command pool from which this command buffer was allocated.</summary>
-	CommandPool _pool;
-
-	/// <summary>Specifies whether the command buffer is currently in the recording state which is controlled via calling the begin function.</summary>
-	bool _isRecording;
-
-#ifdef DEBUG
-	/// <summary>Specifies the list of debug marker regions currently open.</summary>
-	std::vector<std::string> _debugRegions;
-#endif
-
-	/// <summary>Holds a reference to the last bound graphics pipeline. This can be used for optimising binding the same graphics pipeline repeatedly.</summary>
-	GraphicsPipeline _lastBoundGraphicsPipe;
-
-	/// <summary>Holds a reference to the last bound compute pipeline. This can then be used for optimising binding the same compute pipeline repeatedly.</summary>
-	ComputePipeline _lastBoundComputePipe;
 };
 
 /// <summary>Contains all the commands and states that need to be recorded for later submission to the gpu including pipelines,
 /// textures, descriptor sets. Virtually everything that needs to happen on the GPU is submitted to the CommandBuffer.</summary>
 class CommandBuffer_ : public CommandBufferBase_
 {
-	template<typename MyClass_>
-	friend struct ::pvrvk::RefCountEntryIntrusive;
+protected:
+	friend class CommandPool_;
+
+	/// <summary>A class which restricts the creation of a pvrvk::CommandBuffer to children or friends of a pvrvk::impl::CommandBuffer_.</summary>
+	class make_shared_enabler : public CommandBufferBase_::make_shared_enabler
+	{
+	protected:
+		/// <summary>Constructor for a make_shared_enabler.</summary>
+		make_shared_enabler() : CommandBufferBase_::make_shared_enabler() {}
+		/// <summary>Indicates that a pvrvk::impl::CommandBuffer_ is a friend.</summary>
+		friend CommandBuffer_;
+	};
+
+	/// <summary>Protected function used to create a pvrvk::CommandBuffer. Note that this function shouldn't normally be called
+	/// directly and will be called by a friend of CommandBuffer_ which will generally be a CommandPool</summary>
+	/// <param name="device">The device used to allocate the secondary command buffer.</param>
+	/// <param name="pool">The pool from which the command buffer will be allocated.</param>
+	/// <param name="myHandle">The vulkan handle for this command buffer.</param>
+	/// <returns>Returns a successfully created pvrvk::CommandBuffer</returns>
+	static CommandBuffer constructShared(const DeviceWeakPtr& device, CommandPool pool, VkCommandBuffer myHandle)
+	{
+		return std::make_shared<CommandBuffer_>(make_shared_enabler{}, device, pool, myHandle);
+	}
+
+#ifdef DEBUG
+	//!\cond NO_DOXYGEN
+	pvrvk::Framebuffer _currentlyBoundFramebuffer;
+	uint32_t _currentSubpass;
+	//!\endcond
+#endif
 
 public:
 	//!\cond NO_DOXYGEN
 	DECLARE_NO_COPY_SEMANTICS(CommandBuffer_)
+
+	CommandBuffer_(make_shared_enabler, const DeviceWeakPtr& device, CommandPool pool, VkCommandBuffer myHandle)
+		: CommandBufferBase_(make_shared_enabler{}, device, pool, myHandle)
+#ifdef DEBUG
+	, _currentSubpass(-1)
+#endif
+	{}
+
+	/// <summary>Destructor. Virtual (for polymorphic use).</summary>
+	virtual ~CommandBuffer_()
+	{
+#ifdef DEBUG
+		_currentlyBoundFramebuffer.reset();
+#endif
+	}
 	//!\endcond
 
 	/// <summary>Record commands from the secondary command buffer.</summary>
@@ -638,7 +772,7 @@ public:
 
 	/// <summary>Begins the renderpass for the provided Framebuffer and renderpass and using a specific renderable area.</summary>
 	/// <param name="framebuffer">A Framework wrapped Vulkan Framebuffer object to use as part of the VkRenderPassBeginInfo structure.</param>
-	/// <param name="renderPass">A Framework wrapped Vulkan Renderpass object to use as part of the VkRenderPassBeginInfo structure.</param>
+	/// <param name="renderPass">A Framework wrapped Vulkan RenderPass object to use as part of the VkRenderPassBeginInfo structure.</param>
 	/// <param name="renderArea">Specifies the render area that is affected by the renderpass instance.</param>
 	/// <param name="inlineFirstSubpass">Specifies whether the renderpass uses an inline subpass as its first subpass.</param>
 	/// <param name="clearValues">A pointer to a list of ClearValue structures which will be used as part of the VkRenderPassBeginInfo structure.</param>
@@ -665,35 +799,105 @@ public:
 	/// <summary>Finish the a renderpass (executes the StoreOp).</summary>
 	void endRenderPass()
 	{
-		_device->getVkBindings().vkCmdEndRenderPass(getVkHandle());
+		getDevice()->getVkBindings().vkCmdEndRenderPass(getVkHandle());
+
+#ifdef DEBUG
+		auto& currentRenderPass = _currentlyBoundFramebuffer->getCreateInfo().getRenderPass();
+		assert(currentRenderPass->getCreateInfo().getNumAttachmentDescription() == _currentlyBoundFramebuffer->getNumAttachments());
+
+		for (uint32_t i = 0; i < _currentlyBoundFramebuffer->getNumAttachments(); ++i)
+		{
+			_currentlyBoundFramebuffer->getAttachment(i)->getImage()->setImageLayout(currentRenderPass->getCreateInfo().getAttachmentDescription(i).getFinalLayout());
+		}
+
+		_currentlyBoundFramebuffer.reset();
+		_currentSubpass = -1;
+#endif
 	}
+
+#ifdef DEBUG
+	void updatePerSubpassImageLayouts()
+	{
+		auto& currentRenderPass = _currentlyBoundFramebuffer->getCreateInfo().getRenderPass();
+
+		for (uint8_t i = 0; i < currentRenderPass->getCreateInfo().getSubpass(_currentSubpass).getNumInputAttachmentReference(); ++i)
+		{
+			const AttachmentReference& attachmentReference = currentRenderPass->getCreateInfo().getSubpass(_currentSubpass).getInputAttachmentReference(i);
+			_currentlyBoundFramebuffer->getCreateInfo().getAttachment(attachmentReference.getAttachment())->getImage()->setImageLayout(attachmentReference.getLayout());
+		}
+
+		for (uint8_t i = 0; i < currentRenderPass->getCreateInfo().getSubpass(_currentSubpass).getNumColorAttachmentReference(); ++i)
+		{
+			const AttachmentReference& attachmentReference = currentRenderPass->getCreateInfo().getSubpass(_currentSubpass).getColorAttachmentReference(i);
+			_currentlyBoundFramebuffer->getCreateInfo().getAttachment(attachmentReference.getAttachment())->getImage()->setImageLayout(attachmentReference.getLayout());
+		}
+
+		for (uint8_t i = 0; i < currentRenderPass->getCreateInfo().getSubpass(_currentSubpass).getNumResolveAttachmentReference(); ++i)
+		{
+			const AttachmentReference& attachmentReference = currentRenderPass->getCreateInfo().getSubpass(_currentSubpass).getResolveAttachmentReference(i);
+			_currentlyBoundFramebuffer->getCreateInfo().getAttachment(attachmentReference.getAttachment())->getImage()->setImageLayout(attachmentReference.getLayout());
+		}
+	}
+#endif
 
 	/// <summary>Record next sub pass commands from a secondary-commandbuffer.</summary>
 	/// <param name="contents">Specifies how the commands in the next subpass will be provided, in the same
 	/// fashion as the corresponding parameter of beginRenderPass.</param>
 	void nextSubpass(SubpassContents contents)
 	{
-		_device->getVkBindings().vkCmdNextSubpass(getVkHandle(), static_cast<VkSubpassContents>(contents));
-	}
+		getDevice()->getVkBindings().vkCmdNextSubpass(getVkHandle(), static_cast<VkSubpassContents>(contents));
 
-private:
-	friend class ::pvrvk::impl::CommandPool_;
-	CommandBuffer_(DeviceWeakPtr device, CommandPool pool, VkCommandBuffer myHandle) : CommandBufferBase_(device, pool, myHandle) {}
+#ifdef DEBUG
+		_currentSubpass++;
+		updatePerSubpassImageLayouts();
+#endif
+	}
 };
 
 /// <summary>Contains all the commands and states that need to be submitted to the gpu, including pipeline, texture,
-/// and samplers. Virtually everything that needs to happen on the GPU is submitted to the CommandBuffer.
-/// </summary>
+/// and samplers. Virtually everything that needs to happen on the GPU is submitted to the CommandBuffer.</summary>
 /// <remarks>Secondary command buffers cannot contain RenderPasses, and cannot be submitted to the GPU.
 /// SecondaryCommandBuffers can be submitted to the primaryCommandBuffer -It is invalid to submit commands to a
 /// command buffer while it is not being recorded. -It is invalid to reset a command buffer while it is being
 /// recorded. -It is invalid to submit a command buffer more than once if it is one time submit command buffer
-/// -Draw commands must be between a BeginRenderpass and an EndRenderpass command</remarks>
+/// -Draw commands must be between a BeginRenderPass and an EndRenderPass command</remarks>
 class SecondaryCommandBuffer_ : public CommandBufferBase_
 {
+protected:
+	friend class CommandPool_;
+
+	/// <summary>A class which restricts the creation of a pvrvk::SecondaryCommandBuffer to children or friends of a pvrvk::impl::SecondaryCommandBuffer_.</summary>
+	class make_shared_enabler : public CommandBufferBase_::make_shared_enabler
+	{
+	protected:
+		/// <summary>Constructor for a make_shared_enabler.</summary>
+		make_shared_enabler() : CommandBufferBase_::make_shared_enabler() {}
+		/// <summary>Indicates that a pvrvk::impl::SecondaryCommandBuffer_ is a friend.</summary>
+		friend SecondaryCommandBuffer_;
+	};
+
+	/// <summary>Protected function used to create a pvrvk::SecondaryCommandBuffer. Note that this function shouldn't normally be called
+	/// directly and will be called by a friend of SecondaryCommandBuffer_ which will generally be a CommandPool</summary>
+	/// <param name="device">The device used to allocate the secondary command buffer.</param>
+	/// <param name="pool">The pool from which the command buffer will be allocated.</param>
+	/// <param name="myHandle">The vulkan handle for this command buffer.</param>
+	/// <returns>Returns a successfully created pvrvk::SecondaryCommandBuffer</returns>
+	static SecondaryCommandBuffer constructShared(const DeviceWeakPtr& device, CommandPool pool, VkCommandBuffer myHandle)
+	{
+		return std::make_shared<SecondaryCommandBuffer_>(make_shared_enabler{}, device, pool, myHandle);
+	}
+
 public:
 	//!\cond NO_DOXYGEN
 	DECLARE_NO_COPY_SEMANTICS(SecondaryCommandBuffer_)
+
+	/// <summary>Constructor for a secondary command buffer. This function should not be called directly and instead constructShared should be called.</summary>
+	/// <param name="device">The device used to allocate this secondary command buffer.</param>
+	/// <param name="pool">The pool from which the secondary command buffer will be allocated.</param>
+	/// <param name="myHandle">The vulkan handle for this secondary command buffer.</param>
+	SecondaryCommandBuffer_(make_shared_enabler, const DeviceWeakPtr& device, CommandPool pool, VkCommandBuffer myHandle)
+		: CommandBufferBase_(make_shared_enabler{}, device, pool, myHandle)
+	{}
 	//!\endcond
 
 	using CommandBufferBase_::begin;
@@ -710,12 +914,6 @@ public:
 	/// <param name="subpass">The index of the subpass within the render pass instance that this CommandBuffer will be executed within.</param>
 	/// <param name="flags">Flags is a bitmask of CommandBufferUsageFlagBits specifying usage behavior for the command buffer.</param>
 	void begin(const Framebuffer& framebuffer, uint32_t subpass = 0, const CommandBufferUsageFlags flags = CommandBufferUsageFlags::e_RENDER_PASS_CONTINUE_BIT);
-
-private:
-	friend class ::pvrvk::impl::CommandPool_;
-	template<typename MyClass_>
-	friend struct ::pvrvk::RefCountEntryIntrusive;
-	SecondaryCommandBuffer_(DeviceWeakPtr device, CommandPool pool, VkCommandBuffer myHandle) : CommandBufferBase_(device, pool, myHandle) {}
 };
 } // namespace impl
 } // namespace pvrvk

@@ -9,8 +9,9 @@
 
 namespace pvrvk {
 namespace impl {
-QueryPool_::QueryPool_(const DeviceWeakPtr& device, const QueryPoolCreateInfo& createInfo)
-	: DeviceObjectHandle(device), DeviceObjectDebugMarker(DebugReportObjectTypeEXT::e_QUERY_POOL_EXT), _createInfo(createInfo)
+//!\cond NO_DOXYGEN
+QueryPool_::QueryPool_(make_shared_enabler, const DeviceWeakPtr& device, const QueryPoolCreateInfo& createInfo)
+	: PVRVkDeviceObjectBase(device), DeviceObjectDebugUtils(), _createInfo(createInfo)
 {
 	VkQueryPoolCreateInfo vkCreateInfo = {};
 	vkCreateInfo.sType = static_cast<VkStructureType>(StructureType::e_QUERY_POOL_CREATE_INFO);
@@ -18,8 +19,9 @@ QueryPool_::QueryPool_(const DeviceWeakPtr& device, const QueryPoolCreateInfo& c
 	vkCreateInfo.queryType = static_cast<VkQueryType>(_createInfo.getQueryType());
 	vkCreateInfo.queryCount = _createInfo.getNumQueries();
 	vkCreateInfo.pipelineStatistics = static_cast<VkQueryPipelineStatisticFlags>(_createInfo.getPipelineStatisticFlags());
-	vkThrowIfFailed(static_cast<Result>(_device->getVkBindings().vkCreateQueryPool(_device->getVkHandle(), &vkCreateInfo, nullptr, &_vkHandle)), "Failed to create QueryPool");
+	vkThrowIfFailed(static_cast<Result>(getDevice()->getVkBindings().vkCreateQueryPool(getDevice()->getVkHandle(), &vkCreateInfo, nullptr, &_vkHandle)), "Failed to create QueryPool");
 }
+//!\endcond
 
 bool QueryPool_::getResults(uint32_t queryIndex, size_t dataSize, void* data, QueryResultFlags flags)
 {
@@ -28,8 +30,8 @@ bool QueryPool_::getResults(uint32_t queryIndex, size_t dataSize, void* data, Qu
 
 bool QueryPool_::getResults(uint32_t firstQuery, uint32_t queryCount, size_t dataSize, void* data, VkDeviceSize stride, QueryResultFlags flags)
 {
-	return (_device->getVkBindings().vkGetQueryPoolResults(
-				_device->getVkHandle(), getVkHandle(), firstQuery, queryCount, dataSize, data, stride, static_cast<VkQueryResultFlags>(flags)) == Result::e_SUCCESS);
+	return (getDevice()->getVkBindings().vkGetQueryPoolResults(
+				getDevice()->getVkHandle(), getVkHandle(), firstQuery, queryCount, dataSize, data, stride, static_cast<VkQueryResultFlags>(flags)) == Result::e_SUCCESS);
 }
 } // namespace impl
 } // namespace pvrvk

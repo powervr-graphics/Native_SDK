@@ -14,11 +14,14 @@ var searchData=
   ['internaldata',['InternalData',['../structpvr_1_1assets_1_1_model_1_1_node_1_1_internal_data.html',1,'pvr::assets::Model::Node']]],
   ['internaldata',['InternalData',['../structpvr_1_1assets_1_1_animation_data_1_1_internal_data.html',1,'pvr::assets::AnimationData']]],
   ['internaldata',['InternalData',['../structpvr_1_1assets_1_1_light_1_1_internal_data.html',1,'pvr::assets::Light']]],
-  ['internaldata',['InternalData',['../structpvr_1_1assets_1_1_animation_data_1_1_internal_data.html#a294a25f524767d7a14b8bbe1a3bcac71',1,'pvr::assets::AnimationData::InternalData::InternalData()'],['../structpvr_1_1assets_1_1_model_1_1_internal_data.html#a1bc4a9755a0dcddd6deb8b92735d1fe4',1,'pvr::assets::Model::InternalData::InternalData()']]],
+  ['internaldata',['InternalData',['../structpvr_1_1assets_1_1_animation_data_1_1_internal_data.html#a294a25f524767d7a14b8bbe1a3bcac71',1,'pvr::assets::AnimationData::InternalData::InternalData()'],['../structpvr_1_1assets_1_1_camera_1_1_internal_data.html#adfa1bdaaec454eae206415d2cff70b39',1,'pvr::assets::Camera::InternalData::InternalData()'],['../structpvr_1_1assets_1_1_mesh_1_1_internal_data.html#ad92abba5e89d0f005ac259ceda663dfd',1,'pvr::assets::Mesh::InternalData::InternalData()'],['../structpvr_1_1assets_1_1_model_1_1_node_1_1_internal_data.html#aaa4c0c8579515bee166ff2be3aa486cc',1,'pvr::assets::Model::Node::InternalData::InternalData()'],['../structpvr_1_1assets_1_1_model_1_1_internal_data.html#a1bc4a9755a0dcddd6deb8b92735d1fe4',1,'pvr::assets::Model::InternalData::InternalData()']]],
   ['internaldata',['InternalData',['../structpvr_1_1assets_1_1_mesh_1_1_internal_data.html',1,'pvr::assets::Mesh']]],
   ['internaldata',['InternalData',['../structpvr_1_1assets_1_1_model_1_1_internal_data.html',1,'pvr::assets::Model']]],
   ['internaldata',['InternalData',['../structpvr_1_1assets_1_1_camera_1_1_internal_data.html',1,'pvr::assets::Camera']]],
   ['internaldata',['InternalData',['../structpvr_1_1assets_1_1_model_1_1_material_1_1_internal_data.html',1,'pvr::assets::Model::Material']]],
+  ['interpolation',['interpolation',['../structpvr_1_1assets_1_1_key_frame_data.html#af64153f2e49ca685f6056c574bed74d1',1,'pvr::assets::KeyFrameData']]],
+  ['interpolationtype',['InterpolationType',['../structpvr_1_1assets_1_1_key_frame_data.html#a03db5d4018dba1b4a1b8c530e54feda0',1,'pvr::assets::KeyFrameData']]],
+  ['invbindmatrices',['invBindMatrices',['../structpvr_1_1assets_1_1_skeleton.html#a4f3c54945c738d556bd70cd3f26da59c',1,'pvr::assets::Skeleton']]],
   ['isdoublesided',['isDoubleSided',['../classpvr_1_1assets_1_1_model_1_1_material_1_1_g_l_t_f_metallic_roughness_semantics.html#a32fea2db8301ac8f902ff158e74b4800',1,'pvr::assets::Model::Material::GLTFMetallicRoughnessSemantics']]],
   ['isindexdatainternal',['isIndexDataInternal',['../classpvr_1_1_shadow_volume.html#ab6096d851f94d1183b559d5ac19988c7',1,'pvr::ShadowVolume']]],
   ['isindexed',['isIndexed',['../structpvr_1_1assets_1_1_mesh_1_1_mesh_info.html#a6782580344ae20c13f045dde1cde2f0b',1,'pvr::assets::Mesh::MeshInfo']]],
@@ -26,6 +29,6 @@ var searchData=
   ['issupportedfile',['isSupportedFile',['../classpvr_1_1assets_1_1_p_o_d_reader.html#aaa32cd7609ce8ecd11597d8705878775',1,'pvr::assets::PODReader']]],
   ['isvisible',['isVisible',['../classpvr_1_1_shadow_volume.html#aba84d3c752daca126fc813e652643bb3',1,'pvr::ShadowVolume']]],
   ['isvolumeclosed',['isVolumeClosed',['../classpvr_1_1_volume.html#a97c3eb5371cc06eb040ff88935616218',1,'pvr::Volume']]],
-  ['iterator',['iterator',['../classpvr_1_1_indexed_array_1_1iterator.html',1,'pvr::IndexedArray']]],
-  ['iterator',['iterator',['../classpvr_1_1_indexed_array_1_1iterator.html#ac91d92967abfa61a3d9064f39aa698dc',1,'pvr::IndexedArray::iterator']]]
+  ['iterator',['iterator',['../classpvr_1_1_indexed_array_1_1iterator.html#ac91d92967abfa61a3d9064f39aa698dc',1,'pvr::IndexedArray::iterator']]],
+  ['iterator',['iterator',['../classpvr_1_1_indexed_array_1_1iterator.html',1,'pvr::IndexedArray']]]
 ];

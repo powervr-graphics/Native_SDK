@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['up',['Up',['../namespacepvr.html#a9a6da56806c568a6f9833d118c5c8083a258f49887ef8d14ac268c92b02503aaa',1,'pvr']]]
+  ['updatepointingdevicelocation',['updatePointingDeviceLocation',['../classpvr_1_1platform_1_1_shell_o_s.html#a6d6fdfe3c80e597c6a928c434438dae9',1,'pvr::platform::ShellOS']]]
 ];

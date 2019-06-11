@@ -284,6 +284,14 @@ static inline void initVkDeviceBindings(VkDevice device, VkDeviceBindings *bindi
     bindings->vkGetPastPresentationTimingGOOGLE = (PFN_vkGetPastPresentationTimingGOOGLE) getDeviceProcAddress(device, "vkGetPastPresentationTimingGOOGLE");
     bindings->vkCmdSetDiscardRectangleEXT = (PFN_vkCmdSetDiscardRectangleEXT) getDeviceProcAddress(device, "vkCmdSetDiscardRectangleEXT");
     bindings->vkSetHdrMetadataEXT = (PFN_vkSetHdrMetadataEXT) getDeviceProcAddress(device, "vkSetHdrMetadataEXT");
+    bindings->vkSetDebugUtilsObjectNameEXT = (PFN_vkSetDebugUtilsObjectNameEXT) getDeviceProcAddress(device, "vkSetDebugUtilsObjectNameEXT");
+    bindings->vkSetDebugUtilsObjectTagEXT = (PFN_vkSetDebugUtilsObjectTagEXT) getDeviceProcAddress(device, "vkSetDebugUtilsObjectTagEXT");
+    bindings->vkQueueBeginDebugUtilsLabelEXT = (PFN_vkQueueBeginDebugUtilsLabelEXT) getDeviceProcAddress(device, "vkQueueBeginDebugUtilsLabelEXT");
+    bindings->vkQueueEndDebugUtilsLabelEXT = (PFN_vkQueueEndDebugUtilsLabelEXT) getDeviceProcAddress(device, "vkQueueEndDebugUtilsLabelEXT");
+    bindings->vkQueueInsertDebugUtilsLabelEXT = (PFN_vkQueueInsertDebugUtilsLabelEXT) getDeviceProcAddress(device, "vkQueueInsertDebugUtilsLabelEXT");
+    bindings->vkCmdBeginDebugUtilsLabelEXT = (PFN_vkCmdBeginDebugUtilsLabelEXT) getDeviceProcAddress(device, "vkCmdBeginDebugUtilsLabelEXT");
+    bindings->vkCmdEndDebugUtilsLabelEXT = (PFN_vkCmdEndDebugUtilsLabelEXT) getDeviceProcAddress(device, "vkCmdEndDebugUtilsLabelEXT");
+    bindings->vkCmdInsertDebugUtilsLabelEXT = (PFN_vkCmdInsertDebugUtilsLabelEXT) getDeviceProcAddress(device, "vkCmdInsertDebugUtilsLabelEXT");
 #ifdef VK_USE_PLATFORM_ANDROID_KHR
     bindings->vkGetAndroidHardwareBufferPropertiesANDROID = (PFN_vkGetAndroidHardwareBufferPropertiesANDROID) getDeviceProcAddress(device, "vkGetAndroidHardwareBufferPropertiesANDROID");
 #endif // VK_USE_PLATFORM_ANDROID_KHR
@@ -320,6 +328,7 @@ static inline void initVkDeviceBindings(VkDevice device, VkDeviceBindings *bindi
     bindings->vkCmdSetExclusiveScissorNV = (PFN_vkCmdSetExclusiveScissorNV) getDeviceProcAddress(device, "vkCmdSetExclusiveScissorNV");
     bindings->vkCmdSetCheckpointNV = (PFN_vkCmdSetCheckpointNV) getDeviceProcAddress(device, "vkCmdSetCheckpointNV");
     bindings->vkGetQueueCheckpointDataNV = (PFN_vkGetQueueCheckpointDataNV) getDeviceProcAddress(device, "vkGetQueueCheckpointDataNV");
+    bindings->vkGetBufferDeviceAddressEXT = (PFN_vkGetBufferDeviceAddressEXT) getDeviceProcAddress(device, "vkGetBufferDeviceAddressEXT");
 }
 
 
@@ -430,14 +439,6 @@ static inline void initVkInstanceBindings(VkInstance instance, VkInstanceBinding
 #ifdef VK_USE_PLATFORM_MACOS_MVK
     bindings->vkCreateMacOSSurfaceMVK = (PFN_vkCreateMacOSSurfaceMVK) getinstanceProcAddress(instance, "vkCreateMacOSSurfaceMVK");
 #endif // VK_USE_PLATFORM_MACOS_MVK
-    bindings->vkSetDebugUtilsObjectNameEXT = (PFN_vkSetDebugUtilsObjectNameEXT) getinstanceProcAddress(instance, "vkSetDebugUtilsObjectNameEXT");
-    bindings->vkSetDebugUtilsObjectTagEXT = (PFN_vkSetDebugUtilsObjectTagEXT) getinstanceProcAddress(instance, "vkSetDebugUtilsObjectTagEXT");
-    bindings->vkQueueBeginDebugUtilsLabelEXT = (PFN_vkQueueBeginDebugUtilsLabelEXT) getinstanceProcAddress(instance, "vkQueueBeginDebugUtilsLabelEXT");
-    bindings->vkQueueEndDebugUtilsLabelEXT = (PFN_vkQueueEndDebugUtilsLabelEXT) getinstanceProcAddress(instance, "vkQueueEndDebugUtilsLabelEXT");
-    bindings->vkQueueInsertDebugUtilsLabelEXT = (PFN_vkQueueInsertDebugUtilsLabelEXT) getinstanceProcAddress(instance, "vkQueueInsertDebugUtilsLabelEXT");
-    bindings->vkCmdBeginDebugUtilsLabelEXT = (PFN_vkCmdBeginDebugUtilsLabelEXT) getinstanceProcAddress(instance, "vkCmdBeginDebugUtilsLabelEXT");
-    bindings->vkCmdEndDebugUtilsLabelEXT = (PFN_vkCmdEndDebugUtilsLabelEXT) getinstanceProcAddress(instance, "vkCmdEndDebugUtilsLabelEXT");
-    bindings->vkCmdInsertDebugUtilsLabelEXT = (PFN_vkCmdInsertDebugUtilsLabelEXT) getinstanceProcAddress(instance, "vkCmdInsertDebugUtilsLabelEXT");
     bindings->vkCreateDebugUtilsMessengerEXT = (PFN_vkCreateDebugUtilsMessengerEXT) getinstanceProcAddress(instance, "vkCreateDebugUtilsMessengerEXT");
     bindings->vkDestroyDebugUtilsMessengerEXT = (PFN_vkDestroyDebugUtilsMessengerEXT) getinstanceProcAddress(instance, "vkDestroyDebugUtilsMessengerEXT");
     bindings->vkSubmitDebugUtilsMessageEXT = (PFN_vkSubmitDebugUtilsMessageEXT) getinstanceProcAddress(instance, "vkSubmitDebugUtilsMessageEXT");

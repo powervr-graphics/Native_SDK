@@ -1,6 +1,6 @@
 /*!
 \brief Implementation of methods of the TextureReaderTGA class.
-\file PVRCore/textureReaders/TextureReaderTGA.cpp
+\file PVRCore/textureio/TextureReaderTGA.cpp
 \author PowerVR by Imagination, Developer Technology Team
 \copyright Copyright (c) Imagination Technologies Limited.
 */

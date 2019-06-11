@@ -104,7 +104,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a02291db7745f60a6e690199bea3e7f7e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the far clipping plane distance. <a href="#a02291db7745f60a6e690199bea3e7f7e">More...</a><br/></td></tr>
 <tr class="separator:a02291db7745f60a6e690199bea3e7f7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a27306841fd24db8a345314bc4b88ae3e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_camera.html#a27306841fd24db8a345314bc4b88ae3e">getFOV</a> (float timeInMs=0) const </td></tr>
-<tr class="memdesc:a27306841fd24db8a345314bc4b88ae3e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get field of view for a specific frame (in radians). Interpolates between frames. The interpolation point is between <em>frame</em> and <em>frame</em> +1, with factor <em>interp.</em>  <a href="#a27306841fd24db8a345314bc4b88ae3e">More...</a><br/></td></tr>
+<tr class="memdesc:a27306841fd24db8a345314bc4b88ae3e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get field of view for a specific time in ms <a href="#a27306841fd24db8a345314bc4b88ae3e">More...</a><br/></td></tr>
 <tr class="separator:a27306841fd24db8a345314bc4b88ae3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6eb1a2ab1debef4a31e6cdeb41930582"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structpvr_1_1assets_1_1_camera_1_1_internal_data.html">InternalData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_camera.html#a6eb1a2ab1debef4a31e6cdeb41930582">getInternalData</a> ()</td></tr>
 <tr class="memdesc:a6eb1a2ab1debef4a31e6cdeb41930582"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a reference to the internal data of this object. Handle with care. <a href="#a6eb1a2ab1debef4a31e6cdeb41930582">More...</a><br/></td></tr>
@@ -177,11 +177,10 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Get field of view for a specific frame (in radians). Interpolates between frames. The interpolation point is between <em>frame</em> and <em>frame</em> +1, with factor <em>interp.</em> </p>
+<p>Get field of view for a specific time in ms</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">frame</td><td>The initial frame. Interpolation will be between this frame and the next.</td></tr>
-    <tr><td class="paramname">interp</td><td>Interpolation factor. If zero, frame = <em>frame.</em> If one frame = is <em>frame</em> + 1.</td></tr>
+    <tr><td class="paramname">timeInMs</td><td>The time in ms to retrieve the field of view for.</td></tr>
   </table>
   </dd>
 </dl>
@@ -384,6 +383,7 @@ Public Member Functions</h2></td></tr>
   <table class="params">
     <tr><td class="paramname">numFrames</td><td>The number of frames to set the Fov to.</td></tr>
     <tr><td class="paramname">fovs</td><td>An array of packed floats, which will be interpreted as</td></tr>
+    <tr><td class="paramname">timeInSec</td><td>The time in ms for which to set the fov at</td></tr>
   </table>
   </dd>
 </dl>

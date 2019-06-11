@@ -21,7 +21,7 @@ layout(location = 3) in highp vec3 vBinormal;
 layout(location = 4) in highp vec3 vViewPosition;
 
 layout(location = 0) out mediump vec4 oAlbedo;
-layout(location = 1) out mediump vec4 oNormal;
+layout(location = 1) out mediump vec3 oNormal;
 layout(location = 2) out highp float oDepth;
 
 void main()
@@ -32,10 +32,8 @@ void main()
 	// Calculate viewspace perturbed normal
 	mediump vec3 bumpmap = normalize(texture(sBumpMap, vTexCoord).rgb * 2.0 - 1.0);
 	highp mat3 tangentSpace = mat3(normalize(vTangent), normalize(vBinormal), normalize(vNormal));
-	mediump vec3 normalVS = tangentSpace * bumpmap;
+	oNormal = normalize(tangentSpace * bumpmap);
 
-	// Scale the normal range from [-1,1] to [0, 1] to pack it into the RGB_U8 texture
-	oNormal = vec4(normalVS * 0.5 + 0.5, 1.0);
-	
-	oDepth = vViewPosition.z / fFarClipDistance;
+	// Negate and divide through by the far clip distance to bring the depth into the [0-1] range
+	oDepth = -(vViewPosition.z / fFarClipDistance);
 }

@@ -3,9 +3,9 @@
 layout(set = 0, binding = 1) uniform mediump sampler2D sParaboloids;
 layout(set = 0, binding = 2) uniform mediump samplerCube sSkybox;
 
-layout(location = 0) in mediump vec3 RefractDirRed;
-layout(location = 1) in mediump vec3 RefractDirGreen;
-layout(location = 2) in mediump vec3 RefractDirBlue;
+layout(location = 0) in highp vec3 RefractDirRed;
+layout(location = 1) in highp vec3 RefractDirGreen;
+layout(location = 2) in highp vec3 RefractDirBlue;
 
 layout(location = 0) out mediump vec4 outColor;
 
@@ -21,9 +21,9 @@ void main()
 	mediump vec4 Refraction;
 
 	// Red
-	mediump vec3 vkRefractDirRed = RefractDirRed;
+	highp vec3 vkRefractDirRed = RefractDirRed;
 	vkRefractDirRed.y = -vkRefractDirRed.y;
-	mediump vec3 Normalised = normalize(vkRefractDirRed);
+	highp vec3 Normalised = normalize(vkRefractDirRed);
 	Normalised.xy /= abs(Normalised.z) + 1.0;
 	Normalised.xy = Normalised.xy * 0.495 + 0.5;
 	Normalised.x *= 0.5;
@@ -33,7 +33,7 @@ void main()
 	Refraction.r = mix(RefractSky.r, RefractRed.r, RefractRed.a);
 
 	// Green
-	mediump vec3 vkRefractDirGreen = RefractDirGreen;
+	highp vec3 vkRefractDirGreen = RefractDirGreen;
 	vkRefractDirGreen.y = -vkRefractDirGreen.y;
 	Normalised = normalize(vkRefractDirGreen);
 	Normalised.xy /= abs(Normalised.z) + 1.0;
@@ -45,7 +45,7 @@ void main()
 	Refraction.g = mix(RefractSky.g, RefractGreen.g, RefractGreen.a);
 
 	// Blue
-	mediump vec3 vkRefractDirBlue = RefractDirBlue;
+	highp vec3 vkRefractDirBlue = RefractDirBlue;
 	vkRefractDirBlue.y = -vkRefractDirBlue.y;
 	Normalised = normalize(vkRefractDirBlue);
 	Normalised.xy /= abs(Normalised.z) + 1.0;

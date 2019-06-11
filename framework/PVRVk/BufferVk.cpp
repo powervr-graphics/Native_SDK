@@ -6,7 +6,6 @@
 */
 
 //!\cond NO_DOXYGEN
-
 #include "PVRVk/BufferVk.h"
 namespace pvrvk {
 namespace impl {
@@ -14,22 +13,22 @@ Buffer_::~Buffer_()
 {
 	if (getVkHandle() != VK_NULL_HANDLE)
 	{
-		if (_device.isValid())
+		if (!_device.expired())
 		{
-			_device->getVkBindings().vkDestroyBuffer(_device->getVkHandle(), getVkHandle(), NULL);
+			getDevice()->getVkBindings().vkDestroyBuffer(getDevice()->getVkHandle(), getVkHandle(), NULL);
 			_vkHandle = VK_NULL_HANDLE;
-			_device.reset();
 		}
 		else
 		{
-			reportDestroyedAfterDevice("Buffer");
+			reportDestroyedAfterDevice();
 		}
 	}
 }
 
-Buffer_::Buffer_(DeviceWeakPtr device, const BufferCreateInfo& createInfo)
-	: DeviceObjectHandle(device), DeviceObjectDebugMarker(DebugReportObjectTypeEXT::e_BUFFER_EXT), _createInfo(createInfo)
+Buffer_::Buffer_(make_shared_enabler, const DeviceWeakPtr& device, const BufferCreateInfo& createInfo) : PVRVkDeviceObjectBase(device), DeviceObjectDebugUtils(), _createInfo(createInfo)
 {
+	Device deviceSharedPtr = device.lock();
+
 	VkBufferCreateInfo vkCreateInfo = {};
 	vkCreateInfo.sType = static_cast<VkStructureType>(StructureType::e_BUFFER_CREATE_INFO);
 	vkCreateInfo.size = _createInfo.getSize();
@@ -38,13 +37,14 @@ Buffer_::Buffer_(DeviceWeakPtr device, const BufferCreateInfo& createInfo)
 	vkCreateInfo.sharingMode = static_cast<VkSharingMode>(_createInfo.getSharingMode());
 	vkCreateInfo.pQueueFamilyIndices = _createInfo.getQueueFamilyIndices();
 	vkCreateInfo.queueFamilyIndexCount = _createInfo.getNumQueueFamilyIndices();
-	vkThrowIfFailed(static_cast<Result>(device->getVkBindings().vkCreateBuffer(device->getVkHandle(), &vkCreateInfo, nullptr, &_vkHandle)), "Failed to create Buffer");
+	vkThrowIfFailed(
+		static_cast<Result>(deviceSharedPtr->getVkBindings().vkCreateBuffer(deviceSharedPtr->getVkHandle(), &vkCreateInfo, nullptr, &_vkHandle)), "Failed to create Buffer");
 
-	device->getVkBindings().vkGetBufferMemoryRequirements(device->getVkHandle(), _vkHandle, &_memRequirements.get());
+	deviceSharedPtr->getVkBindings().vkGetBufferMemoryRequirements(deviceSharedPtr->getVkHandle(), _vkHandle, &_memRequirements.get());
 }
 
-BufferView_::BufferView_(const DeviceWeakPtr& device, const BufferViewCreateInfo& createInfo)
-	: DeviceObjectHandle(device), DeviceObjectDebugMarker(DebugReportObjectTypeEXT::e_BUFFER_VIEW_EXT), _createInfo(createInfo)
+BufferView_::BufferView_(make_shared_enabler, const DeviceWeakPtr& device, const BufferViewCreateInfo& createInfo)
+	: PVRVkDeviceObjectBase(device), DeviceObjectDebugUtils(), _createInfo(createInfo)
 {
 	VkBufferViewCreateInfo vkCreateInfo = {};
 	vkCreateInfo.sType = static_cast<VkStructureType>(StructureType::e_BUFFER_VIEW_CREATE_INFO);
@@ -53,26 +53,25 @@ BufferView_::BufferView_(const DeviceWeakPtr& device, const BufferViewCreateInfo
 	vkCreateInfo.format = static_cast<VkFormat>(_createInfo.getFormat());
 	vkCreateInfo.offset = _createInfo.getOffset();
 	vkCreateInfo.range = _createInfo.getRange();
-	vkThrowIfFailed(static_cast<Result>(_device->getVkBindings().vkCreateBufferView(_device->getVkHandle(), &vkCreateInfo, nullptr, &_vkHandle)), "Failed to create BufferView");
+	vkThrowIfFailed(
+		static_cast<Result>(getDevice()->getVkBindings().vkCreateBufferView(getDevice()->getVkHandle(), &vkCreateInfo, nullptr, &_vkHandle)), "Failed to create BufferView");
 }
 
 BufferView_::~BufferView_()
 {
 	if (getVkHandle() != VK_NULL_HANDLE)
 	{
-		if (_device.isValid())
+		if (!_device.expired())
 		{
-			_device->getVkBindings().vkDestroyBufferView(_device->getVkHandle(), getVkHandle(), nullptr);
+			getDevice()->getVkBindings().vkDestroyBufferView(getDevice()->getVkHandle(), getVkHandle(), nullptr);
 			_vkHandle = VK_NULL_HANDLE;
-			_device.reset();
 		}
 		else
 		{
-			reportDestroyedAfterDevice("BufferView");
+			reportDestroyedAfterDevice();
 		}
 	}
 }
 } // namespace impl
 } // namespace pvrvk
-
 //!\endcond

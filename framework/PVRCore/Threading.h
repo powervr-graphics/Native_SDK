@@ -6,7 +6,6 @@ MoodyCamel's BlockingConcurrentQueue, and
 \copyright Copyright (c) Imagination Technologies Limited.
 */
 #pragma once
-#include "PVRCore/RefCounted.h"
 #include "../external/concurrent_queue/blockingconcurrentqueue.h"
 
 #include <thread>
@@ -19,7 +18,7 @@ MoodyCamel's BlockingConcurrentQueue, and
 //  ASYNCHRONOUS FRAMEWORK: Framework async loader base etc //
 namespace pvr {
 namespace async {
-/// <summary> A lightweight semaphore with a small spin-wait (typedef from moodycamel)</summary>
+/// <summary>A lightweight semaphore with a small spin-wait (typedef from moodycamel)</summary>
 typedef moodycamel::details::mpmc_sema::LightweightSemaphore Semaphore;
 
 /// <summary>A simple wrapper for a moodcamel Semaphore object used for synchronising multi threaded access</summary>
@@ -54,10 +53,10 @@ public:
 	}
 };
 
-/// <summary> A reference-counted pointer to a Semaphore</summary>
-typedef RefCountedResource<Semaphore> SemaphorePtr;
+/// <summary>A reference-counted pointer to a Semaphore</summary>
+typedef std::shared_ptr<Semaphore> SemaphorePtr;
 
-/// <summary> A wrapper object with explicit clean up semantics that is intended
+/// <summary>A wrapper object with explicit clean up semantics that is intended
 /// to be used as the return value in functions that may need to wrap multiple items.
 /// For example, it might be the return value for a texture upload function that
 /// returns both a texture object and the fence to know the operatio is complete,
@@ -78,9 +77,9 @@ protected:
 	IFrameworkCleanupObject() : _destroyed(false) {}
 
 public:
-	/// <summary> Virtual destructor to be overriden if required</summary>
+	/// <summary>Virtual destructor to be overriden if required</summary>
 	virtual ~IFrameworkCleanupObject() {}
-	/// <summary> Call this function when you are done using this object.</summary>
+	/// <summary>Call this function when you are done using this object.</summary>
 	void cleanup()
 	{
 		if (!_destroyed)
@@ -91,11 +90,11 @@ public:
 	}
 
 private:
-	/// <summary> Implement this function for your cleanup semantics</summary>
+	/// <summary>Implement this function for your cleanup semantics</summary>
 	virtual void cleanup_() = 0;
 };
 
-/// <summary> An object that is intended to be used as an asynchronous return value.
+/// <summary>An object that is intended to be used as an asynchronous return value.
 /// When you wish to perform a task in another thread, when "kicking" that task you should
 /// "immediately" (before the task is complete) return such an object, and use it to
 /// check when the task is complete, and retrieve its return value.
@@ -113,7 +112,7 @@ public:
 	/// <summary>The type of the return value</summary>
 	typedef T ValueType;
 	/// <summary>A smart pointer to this result object (not the wrapped value)</summary>
-	typedef EmbeddedRefCountedResource<IFrameworkAsyncResult<T> > PointerType;
+	typedef std::shared_ptr<IFrameworkAsyncResult<T> > PointerType;
 	/// <summary>A function pointer type that can be used as a callback to call
 	/// when the return value is ready</summary>
 	typedef void (*Callback)(PointerType);
@@ -200,7 +199,7 @@ class AsyncScheduler
 {
 public:
 	/// <summary>The type of result throughout this class.</summary>
-	typedef EmbeddedRefCountedResource<IFrameworkAsyncResult<ValueType> > AsyncResult;
+	typedef std::shared_ptr<IFrameworkAsyncResult<ValueType> > AsyncResult;
 
 	/// <summary>The approximate number of queued items. (Unsynchronized for performance).</summary>
 	/// <returns>The number of queued items (currently visible to this thread)</returns>
@@ -465,7 +464,7 @@ public:
 	{
 		queue.drainEmpty();
 	}
-	/// <summary> Immediately signal all consumers to unblock and stop, refusing to enqueue any more items.
+	/// <summary>Immediately signal all consumers to unblock and stop, refusing to enqueue any more items.
 	/// The queue will be inconsistent afterwards and should be destroyed.</summary>
 	void done()
 	{

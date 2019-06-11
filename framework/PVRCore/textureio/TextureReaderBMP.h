@@ -1,6 +1,6 @@
 /*!
 \brief An experimental BMP texture reader.
-\file PVRCore/textureReaders/TextureReaderBMP.h
+\file PVRCore/textureio/TextureReaderBMP.h
 \author PowerVR by Imagination, Developer Technology Team
 \copyright Copyright (c) Imagination Technologies Limited.
 */
@@ -9,7 +9,7 @@
 #include "PVRCore/texture/Texture.h"
 #include "PVRCore/textureio/FileDefinesBMP.h"
 #include "PVRCore/stream/AssetReader.h"
-//!\cond NO_DOXYGEN
+
 namespace pvr {
 /// <summary>Contains classes whose purpose is to read specific storage formats (bmp, POD, pfx, pvr etc.) into
 /// PVRAssets classes (Texture, Model, Effect etc.).</summary>
@@ -18,9 +18,16 @@ namespace assetReaders {
 class TextureReaderBMP : public AssetReader<Texture>
 {
 public:
+	/// <summary>Constructor</summary>
 	TextureReaderBMP();
+
+	/// <summary>Constructor</summary>
+	/// <param name="assetStream">An asset stream to read the BMP from</param>
 	TextureReaderBMP(Stream::ptr_type assetStream);
 
+	/// <summary>Specifies if the BMP file is supported</summary>
+	/// <param name="assetStream">An asset stream to read the BMP from</param>
+	/// <returns>True if this reader supports the particular assetStream</returns>
 	virtual bool isSupportedFile(Stream& assetStream);
 
 private:
@@ -47,4 +54,3 @@ private:
 
 } // namespace assetReaders
 } // namespace pvr
-//!\endcond

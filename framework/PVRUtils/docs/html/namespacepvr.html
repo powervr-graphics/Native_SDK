@@ -109,20 +109,8 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_gl_extension_not_supported_error.html">GlExtensionNotSupportedError</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A simple std::runtime_error wrapper for OpenGLES extension not supported error codes. <a href="classpvr_1_1_gl_extension_not_supported_error.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_image_api_async_uploader.html">ImageApiAsyncUploader</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">This class wraps a worker thread that uploads texture to the GPU asynchronously and returns futures to them. This class would normally be used with Texture Futures as well, in order to do both of the operations asynchronously.  <a href="classpvr_1_1_image_api_async_uploader.html#details">More...</a><br/></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_multi.html">Multi</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A small statically allocated array This class represents a small array of items. The array is statically allocated, and has at most 255 items, usually 8. It is not meant to (and cannot) be used to store large numbers of items (use a std::vector instead), rather it is meant to hold small tuples of items. The PowerVR framework utilizes this class to store tuples of one-per-swap-image items <a href="classpvr_1_1_multi.html#details">More...</a><br/></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1_vertex_attribute_info.html">VertexAttributeInfo</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contains a full description of a Vertex Attribute: Index, format, number of elements, offset in the buffer, optionally name. All values (except attributeName) must be set explicitly. <a href="structpvr_1_1_vertex_attribute_info.html#details">More...</a><br/></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1_vertex_attribute_info_with_binding.html">VertexAttributeInfoWithBinding</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A container struct carrying Vertex Attribute information (vertex layout, plus binding point) <a href="structpvr_1_1_vertex_attribute_info_with_binding.html#details">More...</a><br/></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1_vertex_input_binding_info.html">VertexInputBindingInfo</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Information about a Buffer binding: Binding index, stride, (instance) step rate. <a href="structpvr_1_1_vertex_input_binding_info.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
@@ -131,12 +119,6 @@ Typedefs</h2></td></tr>
 &lt; <a class="el" href="classpvr_1_1platform_1_1_egl_context__.html">platform::EglContext_</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#a3340319e831c4d82125a16bf2dbf9e0e">EglContext</a></td></tr>
 <tr class="memdesc:a3340319e831c4d82125a16bf2dbf9e0e"><td class="mdescLeft">&#160;</td><td class="mdescRight">A unique pointer to a <a class="el" href="classpvr_1_1platform_1_1_egl_context__.html" title="The EglContext context is the class wrapping all platform-specific objects required to power an OpenG...">pvr::platform::EglContext_</a> instance. Typdeffed to provide easier access and use of the EGLContext. <a href="#a3340319e831c4d82125a16bf2dbf9e0e">More...</a><br/></td></tr>
 <tr class="separator:a3340319e831c4d82125a16bf2dbf9e0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a51a79c2fd633ef437f19c7af6807f137"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a51a79c2fd633ef437f19c7af6807f137"></a>
-typedef <br class="typebreak"/>
-EmbeddedRefCountedResource<br class="typebreak"/>
-&lt; ImageUploadFuture_ &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#a51a79c2fd633ef437f19c7af6807f137">ImageUploadFuture</a></td></tr>
-<tr class="memdesc:a51a79c2fd633ef437f19c7af6807f137"><td class="mdescLeft">&#160;</td><td class="mdescRight">A ref-counted pointer to a Future of an Image Upload: A class that wraps the texture that "is being uploaded on a separate thread", together with functions to "query if the upload is yet complete" and to "block until the upload is complete, if necessary, and return the result" <br/></td></tr>
-<tr class="separator:a51a79c2fd633ef437f19c7af6807f137"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a779802ae077693e9183007cfbedf47d4"><td class="memItemLeft" align="right" valign="top">typedef Rectangle&lt; int32_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#a779802ae077693e9183007cfbedf47d4">Rectanglei</a></td></tr>
 <tr class="memdesc:a779802ae077693e9183007cfbedf47d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">The Rectanglei typedef is a specialised Rectangle for an int32_t. <a href="#a779802ae077693e9183007cfbedf47d4">More...</a><br/></td></tr>
 <tr class="separator:a779802ae077693e9183007cfbedf47d4"><td class="memSeparator" colspan="2">&#160;</td></tr>

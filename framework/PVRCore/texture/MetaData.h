@@ -15,7 +15,7 @@ namespace pvr {
 class TextureMetaData
 {
 public:
-	/// <summary> Values for each meta data type that we know about. Texture arrays hinge on each surface being identical in all but content,
+	/// <summary>Values for each meta data type that we know about. Texture arrays hinge on each surface being identical in all but content,
 	///  including meta data. If the meta data varies even slightly then a new texture should be used. It is possible to write your own
 	///  extension to get around this however.</summary>
 	enum Identifier

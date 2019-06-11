@@ -95,9 +95,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a4f44ae405a051570877ed170991797a3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1strings.html#a4f44ae405a051570877ed170991797a3">concatenateLinesUntil</a> (std::string &amp;outStr, int &amp;line, const std::vector&lt; std::string &gt; &amp;lines, uint32_t limit, const char *endStr)</td></tr>
 <tr class="memdesc:a4f44ae405a051570877ed170991797a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Outputs a block of text starting from nLine and ending when the std::string endStr is found. <a href="#a4f44ae405a051570877ed170991797a3">More...</a><br/></td></tr>
 <tr class="separator:a4f44ae405a051570877ed170991797a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1c693ebcf2432829dd39503d4230e7ad"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1strings.html#a1c693ebcf2432829dd39503d4230e7ad">createFormatted</a> (const char *format,...)</td></tr>
-<tr class="memdesc:a1c693ebcf2432829dd39503d4230e7ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an std::string with a printf-like command. <a href="#a1c693ebcf2432829dd39503d4230e7ad">More...</a><br/></td></tr>
-<tr class="separator:a1c693ebcf2432829dd39503d4230e7ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a436112c203b5e8de60a67dd5a31cfa7f"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1strings.html#a436112c203b5e8de60a67dd5a31cfa7f">createFormatted</a> (const char *const format,...)</td></tr>
+<tr class="memdesc:a436112c203b5e8de60a67dd5a31cfa7f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an std::string with a printf-like command. <a href="#a436112c203b5e8de60a67dd5a31cfa7f">More...</a><br/></td></tr>
+<tr class="separator:a436112c203b5e8de60a67dd5a31cfa7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a00a2a24a08bc5a219715743b35a4d207"><td class="memItemLeft" align="right" valign="top">std::basic_string&lt; wchar_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1strings.html#a00a2a24a08bc5a219715743b35a4d207">createFormatted</a> (const wchar_t *format,...)</td></tr>
 <tr class="memdesc:a00a2a24a08bc5a219715743b35a4d207"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an std::wstring with a printf-like command. <a href="#a00a2a24a08bc5a219715743b35a4d207">More...</a><br/></td></tr>
 <tr class="separator:a00a2a24a08bc5a219715743b35a4d207"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -113,9 +113,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a662bc5dfb1168d8b046dd767196ea45f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1strings.html#a662bc5dfb1168d8b046dd767196ea45f">endsWith</a> (const char *str, const char *substr)</td></tr>
 <tr class="memdesc:a662bc5dfb1168d8b046dd767196ea45f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tests if a std::string starts with another std::string. <a href="#a662bc5dfb1168d8b046dd767196ea45f">More...</a><br/></td></tr>
 <tr class="separator:a662bc5dfb1168d8b046dd767196ea45f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a248b7586076b29a74970237329ae1831"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a248b7586076b29a74970237329ae1831"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>getFileDirectory</b> (const std::string &amp;fileName, std::string &amp;outFileDir)</td></tr>
-<tr class="separator:a248b7586076b29a74970237329ae1831"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9ba1b2c1c0a92b21e4ce2e7bc9f851c4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1strings.html#a9ba1b2c1c0a92b21e4ce2e7bc9f851c4">getFileDirectory</a> (const std::string &amp;filePath, std::string &amp;outFileDir)</td></tr>
+<tr class="memdesc:a9ba1b2c1c0a92b21e4ce2e7bc9f851c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the file directory for the given file path. <a href="#a9ba1b2c1c0a92b21e4ce2e7bc9f851c4">More...</a><br/></td></tr>
+<tr class="separator:a9ba1b2c1c0a92b21e4ce2e7bc9f851c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa066ce8c2bacd8377644533f21d52328"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1strings.html#aa066ce8c2bacd8377644533f21d52328">getFileNameAndExtension</a> (const std::string &amp;fileAndExtension, std::string &amp;filename, std::string &amp;extension)</td></tr>
 <tr class="memdesc:aa066ce8c2bacd8377644533f21d52328"><td class="mdescLeft">&#160;</td><td class="mdescRight">Separate a filename to name and extension <a href="#aa066ce8c2bacd8377644533f21d52328">More...</a><br/></td></tr>
 <tr class="separator:aa066ce8c2bacd8377644533f21d52328"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -140,9 +140,6 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>getFileDirectory</b> 
 <tr class="memitem:a430dc28a2952155adea11cbe7afd0c34"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1strings.html#a430dc28a2952155adea11cbe7afd0c34">toLower</a> (const std::string &amp;str)</td></tr>
 <tr class="memdesc:a430dc28a2952155adea11cbe7afd0c34"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transforms a std::string to lowercase. <a href="#a430dc28a2952155adea11cbe7afd0c34">More...</a><br/></td></tr>
 <tr class="separator:a430dc28a2952155adea11cbe7afd0c34"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae082a5c586eac6a45907abb71c1090c8"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1strings.html#ae082a5c586eac6a45907abb71c1090c8">vaFormatString</a> (const char *format, va_list argumentList)</td></tr>
-<tr class="memdesc:ae082a5c586eac6a45907abb71c1090c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an std::string from a printf style vararg list. <a href="#ae082a5c586eac6a45907abb71c1090c8">More...</a><br/></td></tr>
-<tr class="separator:ae082a5c586eac6a45907abb71c1090c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa6f1a057cf9f74fca77731dbee01c8c1"><td class="memItemLeft" align="right" valign="top">std::basic_string&lt; wchar_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1strings.html#aa6f1a057cf9f74fca77731dbee01c8c1">vaFormatString</a> (const wchar_t *const format, va_list argumentList)</td></tr>
 <tr class="memdesc:aa6f1a057cf9f74fca77731dbee01c8c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an std::wstring from a printf style vararg list. <a href="#aa6f1a057cf9f74fca77731dbee01c8c1">More...</a><br/></td></tr>
 <tr class="separator:aa6f1a057cf9f74fca77731dbee01c8c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -211,11 +208,11 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>getFileDirectory</b> 
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>true if successful, false if endStr was not found before lines finished or limit was reached </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>true if successful, false if endStr was not found before lines finished or limit was reached</dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="a1c693ebcf2432829dd39503d4230e7ad"></a>
+<a class="anchor" id="a436112c203b5e8de60a67dd5a31cfa7f"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -225,7 +222,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>getFileDirectory</b> 
         <tr>
           <td class="memname">std::string pvr::strings::createFormatted </td>
           <td>(</td>
-          <td class="paramtype">const char *&#160;</td>
+          <td class="paramtype">const char *const&#160;</td>
           <td class="paramname"><em>format</em>, </td>
         </tr>
         <tr>
@@ -350,7 +347,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>getFileDirectory</b> 
 <p>Tests if a std::string ends with another std::string.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">str</td><td>The std::string whose end will be checked. Not null terminated - length is passed explicitly. </td></tr>
+    <tr><td class="paramname">str</td><td>The std::string whose end will be checked. Not null terminated - length is passed explicitly.</td></tr>
     <tr><td class="paramname">lenStr</td><td>The length of str</td></tr>
     <tr><td class="paramname">substr</td><td>The sequence of characters to check if str ends with. Not null terminated - length is passed explicitly.</td></tr>
     <tr><td class="paramname">lenSubstr</td><td>The length of Substr</td></tr>
@@ -493,6 +490,49 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>getFileDirectory</b> 
 
 </div>
 </div>
+<a class="anchor" id="a9ba1b2c1c0a92b21e4ce2e7bc9f851c4"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void pvr::strings::getFileDirectory </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>filePath</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string &amp;&#160;</td>
+          <td class="paramname"><em>outFileDir</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Retrieves the file directory for the given file path.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">filePath</td><td>A file path from which to retrieve the directory.</td></tr>
+    <tr><td class="paramname">outFileDir</td><td>The returned file directory.</td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a class="anchor" id="aa066ce8c2bacd8377644533f21d52328"></a>
 <div class="memitem">
 <div class="memproto">
@@ -569,7 +609,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>getFileDirectory</b> 
 <p>Skips any beginning space, tab or new-line characters, advancing the pointer to the first non-whitespace character</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">myString</td><td>Pointer to a c-style std::string. Will be advanced to the first non-whitespace char (or the null terminator if no other characters exist)</td></tr>
+    <tr><td class="paramname">pszString</td><td>Pointer to a c-style string. Will be advanced to the first non-whitespace char (or the null terminator if no other characters exist)</td></tr>
   </table>
   </dd>
 </dl>
@@ -804,50 +844,6 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>getFileDirectory</b> 
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A string otherwise equal to the param str, but transformed to lowercase</dd></dl>
-
-</div>
-</div>
-<a class="anchor" id="ae082a5c586eac6a45907abb71c1090c8"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::string pvr::strings::vaFormatString </td>
-          <td>(</td>
-          <td class="paramtype">const char *&#160;</td>
-          <td class="paramname"><em>format</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">va_list&#160;</td>
-          <td class="paramname"><em>argumentList</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Creates an std::string from a printf style vararg list.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">format</td><td>printf-style format std::string</td></tr>
-    <tr><td class="paramname">argumentList</td><td>printf-style va_list</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>A formatted string, as if the parameters were passed to printf</dd></dl>
 
 </div>
 </div>

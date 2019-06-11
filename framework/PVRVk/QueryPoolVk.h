@@ -84,16 +84,47 @@ private:
 
 namespace impl {
 /// <summary>Vulkan implementation of the Query Pool class.
-/// Destroying the query pool will also destroy the queries allocated from this pool
-/// </summary>
-class QueryPool_ : public EmbeddedRefCount<QueryPool_>, public DeviceObjectHandle<VkQueryPool>, public DeviceObjectDebugMarker<QueryPool_>
+/// Destroying the query pool will also destroy the queries allocated from this pool</summary>
+class QueryPool_ : public PVRVkDeviceObjectBase<VkQueryPool, ObjectType::e_QUERY_POOL>, public DeviceObjectDebugUtils<QueryPool_>
 {
-	// Implementing EmbeddedRefCount
-	template<typename>
-	friend class ::pvrvk::EmbeddedRefCount;
+private:
+	friend class Device_;
+
+	class make_shared_enabler
+	{
+	protected:
+		make_shared_enabler() {}
+		friend class QueryPool_;
+	};
+
+	static QueryPool constructShared(const DeviceWeakPtr& device, const QueryPoolCreateInfo& createInfo)
+	{
+		return std::make_shared<QueryPool_>(make_shared_enabler{}, device, createInfo);
+	}
+
+	QueryPoolCreateInfo _createInfo;
 
 public:
+	//!\cond NO_DOXYGEN
 	DECLARE_NO_COPY_SEMANTICS(QueryPool_)
+	QueryPool_(make_shared_enabler, const DeviceWeakPtr& device, const QueryPoolCreateInfo& createInfo);
+
+	~QueryPool_()
+	{
+		if (getVkHandle() != VK_NULL_HANDLE)
+		{
+			if (!_device.expired())
+			{
+				getDevice()->getVkBindings().vkDestroyQueryPool(getDevice()->getVkHandle(), getVkHandle(), nullptr);
+				_vkHandle = VK_NULL_HANDLE;
+			}
+			else
+			{
+				reportDestroyedAfterDevice();
+			}
+		}
+	}
+	//!\endcond
 
 	/// <summary>Retrieves the status and results for a particular query</summary>
 	/// <param name="queryIndex">The initial query index</param>
@@ -143,31 +174,6 @@ public:
 	{
 		return _createInfo;
 	}
-
-private:
-	friend class ::pvrvk::impl::Device_;
-
-	QueryPool_(const DeviceWeakPtr& device, const QueryPoolCreateInfo& createInfo);
-
-	/* IMPLEMENTING EmbeddedResource */
-	void destroyObject()
-	{
-		if (getVkHandle() != VK_NULL_HANDLE)
-		{
-			if (_device.isValid())
-			{
-				_device->getVkBindings().vkDestroyQueryPool(_device->getVkHandle(), getVkHandle(), nullptr);
-				_vkHandle = VK_NULL_HANDLE;
-				_device.reset();
-			}
-			else
-			{
-				reportDestroyedAfterDevice("QueryPool");
-			}
-		}
-	}
-
-	QueryPoolCreateInfo _createInfo;
 };
 } // namespace impl
 } // namespace pvrvk

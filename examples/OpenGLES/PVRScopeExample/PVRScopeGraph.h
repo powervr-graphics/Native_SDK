@@ -100,7 +100,7 @@ public:
 	uint32_t getActiveGroup() const { return activeGroup; }
 	float getMaximumOfData(uint32_t nCounter);
 	float getMaximum(uint32_t nCounter);
-	void  setMaximum(uint32_t nCounter, float fMaximum);
+	void setMaximum(uint32_t nCounter, float fMaximum);
 	float getStandardFPS() const;
 	int32_t getStandardFPSIndex() const;
 	float getStandard2D() const;
@@ -120,11 +120,16 @@ public:
 	uint32_t getCounterNum() const { return numCounter; }
 	const char* getCounterName(const uint32_t i) const;
 	int getCounterGroup(const uint32_t i) const;
+
 	void position(const uint32_t nViewportW, const uint32_t nViewportH, pvr::Rectanglei const& graph);
+
 	void setUpdateInterval(const uint32_t nUpdateInverval);
-	bool isInitialized()const { return _isInitialzed; }
+	bool isInitialized() const { return _isInitialzed; }
+
 	bool init(pvr::EglContext& context, pvr::IAssetProvider& assetProvider, pvr::ui::UIRenderer& uiRenderer, std::string& outMsg);
+
 protected:
+	void updateCounters();
 	void updateBufferLines();
 	void update(float dt_millis);
 	bool createProgram(pvr::EglContext& context, std::string& errorStr);

@@ -1,4 +1,4 @@
-//Microsoft eMbedded Visual C++ generated resource script.
+// Microsoft Visual C++ generated resource script.
 //
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
@@ -58,12 +58,13 @@ END
 // RCDATA
 //
 /////////////////////////////////////////////////////////////////////////////
-// RCDATA: Assets (scenes,  effects, textures...)
-Lenna.pvr		RCDATA		"..\\..\\..\\assets\\Lenna.pvr"
-// RCDATA: Vulkan Spir-V shaders(glsl)
-FragShader.fsh.spv		RCDATA		"..\\FragShader.fsh.spv"
-VertShader.vsh.spv		RCDATA		"..\\VertShader.vsh.spv"
-CompShader.csh.spv		RCDATA		"..\\CompShader.csh.spv"
+Lenna.pvr RCDATA "..\\..\\..\\assets\\Lenna.pvr"
+FragShader.fsh RCDATA "..\\FragShader.fsh"
+VertShader.vsh RCDATA "..\\VertShader.vsh"
+CompShader.csh RCDATA "..\\CompShader.csh"
+FragShader.fsh.spv RCDATA "..\\FragShader.fsh.spv"
+VertShader.vsh.spv RCDATA "..\\VertShader.vsh.spv"
+CompShader.csh.spv RCDATA "..\\CompShader.csh.spv"
 
 #endif    // English (United Kingdom) resources
 /////////////////////////////////////////////////////////////////////////////

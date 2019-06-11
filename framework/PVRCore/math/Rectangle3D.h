@@ -84,7 +84,7 @@ struct Rectangle3D
 
 	/// <summary>Expand this rectangle to also contain the given rectangle. Equivalently, set this
 	/// rectangles minimum vertex to the minimum of this and rect's min vertex, and set this rectangle's
-	/// max vertex to the maximum of this rectangle's and </summary>
+	/// max vertex to the maximum of this rectangle's and</summary>
 	/// <param name="rect">The rectangle that we will ensure is covered</param>
 	void expand(const Rectangle3D& rect)
 	{

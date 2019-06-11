@@ -7,30 +7,178 @@
 
 #pragma once
 #include "PVRVk/ExtensionsVk.h"
-#include "PVRVk/ObjectHandleVk.h"
+#include "PVRVk/PVRVkObjectBaseVk.h"
 #include "PVRVk/DebugReportCallbackVk.h"
-#include "PVRVk/DebugMarkerVk.h"
+#include "PVRVk/DebugUtilsMessengerVk.h"
+#include "PVRVk/DebugUtilsVk.h"
 #include "PVRVk/PhysicalDeviceVk.h"
 #include "PVRVk/ForwardDecObjectsVk.h"
 #include "PVRVk/LayersVk.h"
 #include "PVRVk/SurfaceVk.h"
 
 namespace pvrvk {
-namespace impl {
-class InstanceHelperFactory_;
+/// <summary>Contains instant info used for creating Vulkan instance</summary>
+struct InstanceCreateInfo
+{
+private:
+	InstanceCreateFlags flags; //!< Reserved for future use
+	ApplicationInfo applicationInfo; //!< NULL or a pointer to an instance of ApplicationInfo. If not NULL, this information helps implementations recognize behavior
+									 //!< inherent to classes of applications.
+	pvrvk::VulkanLayerList layers; //!<  Array of null-terminated UTF-8 strings containing the names of layers to enable for the created instance
+	pvrvk::VulkanExtensionList extensions; //!<  Array of null-terminated UTF-8 strings containing the names of extensions to enable for the created instance
 
+	DebugUtilsMessengerCreateInfo debugUtilsMessengerCreateInfo; //!<  Used to capture events that occur while creating or destroying an instance
+	ValidationFeatures validationFeatures; //!<  Used to specify particular validation features to use
+
+public:
+	/// <summary>Constructor. Default initialised to 0</summary>
+	InstanceCreateInfo() : flags(InstanceCreateFlags(0)) {}
+
+	/// <summary>Constructor</summary>
+	/// <param name="applicationInfo">A an application info structure</param>
+	/// <param name="extensions">A set of extensions to enable</param>
+	/// <param name="layers">A set of layers to enable</param>
+	/// <param name="flags">A set of InstanceCreateFlags to use</param>
+	/// <param name="debugUtilsMessengerCreateInfo">A creation structure which will optionally make use of a
+	/// debug utils callback for validation of the instance construction</param>
+	explicit InstanceCreateInfo(const ApplicationInfo& applicationInfo, const VulkanExtensionList& extensions = VulkanExtensionList(),
+		const VulkanLayerList& layers = VulkanLayerList(), InstanceCreateFlags flags = InstanceCreateFlags::e_NONE,
+		pvrvk::DebugUtilsMessengerCreateInfo debugUtilsMessengerCreateInfo = pvrvk::DebugUtilsMessengerCreateInfo())
+		: flags(InstanceCreateFlags(flags)), applicationInfo(applicationInfo)
+	{
+		setExtensionList(extensions);
+		setLayerList(layers);
+		setDebugUtilsMessengerCreateInfo(debugUtilsMessengerCreateInfo);
+	}
+
+	/// <summary>Get the DebugUtilsMessengerCreateInfo which will be linked to the pNext element of the VkInstanceCreateInfo structure given to vkCreateInstance</summary>
+	/// <returns>A DebugUtilsMessengerCreateInfo which will be used to determine whether events triggered during instance creation/destruction will be captured</returns>
+	inline const pvrvk::DebugUtilsMessengerCreateInfo getDebugUtilsMessengerCreateInfo() const
+	{
+		return debugUtilsMessengerCreateInfo;
+	}
+	/// <summary>By setting a DebugUtilsMessengerCreateInfo the application will link a VkDebugUtilsMessengerCreateInfoEXT structure to the pNext element of the
+	/// VkInstanceCreateInfo structure given to vkCreateInstance.
+	/// This callback is only valid for the duration of the vkCreateInstance and the vkDestroyInstance call</summary>
+	/// <param name="createInfo">A DebugUtilsMessengerCreateInfo which will determine the extent to which events will be captured when creating/destroying the instance</param>
+	inline void setDebugUtilsMessengerCreateInfo(pvrvk::DebugUtilsMessengerCreateInfo& createInfo)
+	{
+		debugUtilsMessengerCreateInfo = createInfo;
+	}
+
+	/// <summary>Get the ValidationFeatures which will be linked to the pNext element of the VkInstanceCreateInfo structure given to vkCreateInstance</summary>
+	/// <returns>A ValidationFeatures structure which will be used to determine the validation features to use</returns>
+	inline const pvrvk::ValidationFeatures getValidationFeatures() const
+	{
+		return validationFeatures;
+	}
+	/// <summary>By setting a ValidationFeatures the application will link a VkValidationFeaturesEXT structure to the pNext element of the
+	/// VkInstanceCreateInfo structure given to vkCreateInstance. This structure will determine the types of validation used.</summary>
+	/// <param name="validationFeatures">A ValidationFeatures which will determine the types of validation used</param>
+	inline void setValidationFeatures(pvrvk::ValidationFeatures& validationFeatures)
+	{
+		this->validationFeatures = validationFeatures;
+	}
+
+	/// <summary>Get the instance creation flags</summary>
+	/// <returns>The instance creation flags</returns>
+	inline const InstanceCreateFlags& getFlags() const
+	{
+		return flags;
+	}
+	/// <summary>Sets the instance creation flags</summary>
+	/// <param name="flags">A set of InstanceCreateFlags to use</param>
+	inline void setFlags(const InstanceCreateFlags& flags)
+	{
+		this->flags = flags;
+	}
+	/// <summary>Get the instance application info</summary>
+	/// <returns>The instance application info</returns>
+	inline const ApplicationInfo& getApplicationInfo() const
+	{
+		return applicationInfo;
+	}
+	/// <summary>Sets the application info structure</summary>
+	/// <param name="applicationInfo">A new application info structure</param>
+	inline void setApplicationInfo(const ApplicationInfo& applicationInfo)
+	{
+		this->applicationInfo = applicationInfo;
+	}
+	/// <summary>Get the list of extensions</summary>
+	/// <returns>The list of instance extensions</returns>
+	inline const VulkanExtensionList& getExtensionList() const
+	{
+		return extensions;
+	}
+	/// <summary>Sets the extension list</summary>
+	/// <param name="extensions">A VulkanExtensionList</param>
+	inline void setExtensionList(const VulkanExtensionList& extensions)
+	{
+		this->extensions = extensions;
+	}
+	/// <summary>Get the list of layers</summary>
+	/// <returns>The list of instance layers</returns>
+	inline const VulkanLayerList& getLayerList() const
+	{
+		return layers;
+	}
+	/// <summary>Sets the layer list</summary>
+	/// <param name="layers">A VulkanLayerList</param>
+	inline void setLayerList(const VulkanLayerList& layers)
+	{
+		this->layers = layers;
+	}
+};
+
+namespace impl {
 /// <summary>The Instance is a system-wide vulkan "implementation", similar in concept to the
 /// "installation" of Vulkan libraries on a system. Contrast with the "Physical Device" which
 /// for example represents a particular driver implementing Vulkan for a specific Device.
 /// Conceptually, the Instance "Forwards" to the "Physical Device / Device"</summary>
-class Instance_ : public ObjectHandle<VkInstance>, public EmbeddedRefCount<Instance_>
+class Instance_ : public PVRVkObjectBase<VkInstance, ObjectType::e_INSTANCE>, public std::enable_shared_from_this<Instance_>
 {
+private:
+	friend class InstanceHelperFactory_;
+
+	class make_shared_enabler
+	{
+	protected:
+		make_shared_enabler() {}
+		friend class Instance_;
+	};
+
+	static Instance constructShared(const InstanceCreateInfo& instanceCreateInfo)
+	{
+		return std::make_shared<Instance_>(make_shared_enabler{}, instanceCreateInfo);
+	}
+
+	InstanceCreateInfo _createInfo;
+	VkInstanceBindings _vkBindings;
+	InstanceExtensionTable _extensionTable;
+	std::vector<PhysicalDevice> _physicalDevices;
+
 public:
+	//!\cond NO_DOXYGEN
 	DECLARE_NO_COPY_SEMANTICS(Instance_)
+	explicit Instance_(make_shared_enabler, const InstanceCreateInfo& instanceCreateInfo);
+
+	~Instance_()
+	{
+		_physicalDevices.clear();
+		if (getVkHandle() != VK_NULL_HANDLE)
+		{
+			_vkBindings.vkDestroyInstance(getVkHandle(), nullptr);
+			_vkHandle = VK_NULL_HANDLE;
+		}
+	}
+	//!\endcond
+
+	/// <summary>Retrieve and initialise the list of physical devices</summary>
+	void retrievePhysicalDevices();
 
 	/// <summary>Get instance create info(const)</summary>
 	/// <returns>const InstanceCreateInfo&</returns>
-	const InstanceCreateInfo& getInfo() const
+	const InstanceCreateInfo& getCreateInfo() const
 	{
 		return _createInfo;
 	}
@@ -42,9 +190,8 @@ public:
 	/// <returns>Valid AndroidSurface object if success.</returns>
 	AndroidSurface createAndroidSurface(ANativeWindow* window, AndroidSurfaceCreateFlagsKHR flags = AndroidSurfaceCreateFlagsKHR::e_NONE)
 	{
-		AndroidSurface androidSurface;
-		androidSurface.construct(getWeakReference(), window, flags);
-		return androidSurface;
+		Instance instance = shared_from_this();
+		return impl::AndroidSurface_::constructShared(instance, window, flags);
 	}
 #endif
 
@@ -56,9 +203,8 @@ public:
 	/// <returns>Valid Win32Surface object if success.</returns>
 	Win32Surface createWin32Surface(HINSTANCE hInstance, HWND hwnd, Win32SurfaceCreateFlagsKHR flags = Win32SurfaceCreateFlagsKHR::e_NONE)
 	{
-		Win32Surface win32Surface;
-		win32Surface.construct(getWeakReference(), hInstance, hwnd, flags);
-		return win32Surface;
+		Instance instance = shared_from_this();
+		return impl::Win32Surface_::constructShared(instance, hInstance, hwnd, flags);
 	}
 #endif
 
@@ -70,9 +216,8 @@ public:
 	/// <returns>Valid XcbSurface object if success.</returns>
 	XcbSurface createXcbSurface(xcb_connection_t* connection, xcb_window_t window, XcbSurfaceCreateFlagsKHR flags = XcbSurfaceCreateFlagsKHR::e_NONE)
 	{
-		XcbSurface xcbSurface;
-		xcbSurface.construct(getWeakReference(), connection, window, flags);
-		return xcbSurface;
+		Instance instance = shared_from_this();
+		return impl::XcbSurface_::constructShared(instance, connection, window, flags);
 	}
 #endif
 
@@ -84,9 +229,8 @@ public:
 	/// <returns>Valid XlibSurface object if success.</returns>
 	XlibSurface createXlibSurface(::Display* dpy, Window window, XlibSurfaceCreateFlagsKHR flags = XlibSurfaceCreateFlagsKHR::e_NONE)
 	{
-		XlibSurface xlibSurface;
-		xlibSurface.construct(getWeakReference(), dpy, window, flags);
-		return xlibSurface;
+		Instance instance = shared_from_this();
+		return impl::XlibSurface_::constructShared(instance, dpy, window, flags);
 	}
 #endif
 
@@ -98,9 +242,8 @@ public:
 	/// <returns>Valid WaylandSurface object if success.</returns>
 	WaylandSurface createWaylandSurface(wl_display* display, wl_surface* surface, WaylandSurfaceCreateFlagsKHR flags = WaylandSurfaceCreateFlagsKHR::e_NONE)
 	{
-		WaylandSurface waylandSurface;
-		waylandSurface.construct(getWeakReference(), display, surface, flags);
-		return waylandSurface;
+		Instance instance = shared_from_this();
+		return impl::WaylandSurface_::constructShared(instance, display, surface, flags);
 	}
 #endif
 
@@ -118,54 +261,38 @@ public:
 		uint32_t planeIndex = 0, uint32_t planeStackIndex = 0, SurfaceTransformFlagsKHR transformFlags = SurfaceTransformFlagsKHR::e_IDENTITY_BIT_KHR, float globalAlpha = 0.0f,
 		DisplayPlaneAlphaFlagsKHR alphaFlags = DisplayPlaneAlphaFlagsKHR::e_PER_PIXEL_BIT_KHR)
 	{
-		DisplayPlaneSurface displayPlaneSurface;
-		displayPlaneSurface.construct(getWeakReference(), displayMode, imageExtent, flags, planeIndex, planeStackIndex, transformFlags, globalAlpha, alphaFlags);
-		return displayPlaneSurface;
+		Instance instance = shared_from_this();
+		return impl::DisplayPlaneSurface_::constructShared(instance, displayMode, imageExtent, flags, planeIndex, planeStackIndex, transformFlags, globalAlpha, alphaFlags);
 	}
 
-	/// <summary>Get all enabled extensions names</summary>
-	/// <returns>std::vector<const char*>&</returns>
-	const std::vector<std::string>& getEnabledInstanceExtensions()
+	/// <summary>Get a list of enabled extensions which includes names and spec versions</summary>
+	/// <returns>VulkanExtensionList&</returns>
+	const VulkanExtensionList& getEnabledExtensionsList()
 	{
-		return _createInfo.getEnabledExtensionNames();
+		return _createInfo.getExtensionList();
 	}
 
-	/// <summary>Get all enabled layers names</summary>
-	/// <returns>std::vector<const char*>&</returns>
-	const std::vector<const char*>& getEnabledInstanceLayers()
+	/// <summary>Get a list of enabled layers which includes names and spec versions</summary>
+	/// <returns>VulkanLayerList&</returns>
+	const VulkanLayerList& getEnabledLayersList()
 	{
-		return _enabledInstanceLayers;
+		return _createInfo.getLayerList();
 	}
 
-	/// <summary>Check if extension is enabled</summary>
-	/// <param name="extensionName">Extension name</param>
-	/// <returns>Return true if it is enabled</returns>
-	bool isInstanceExtensionEnabled(const char* extensionName) const
+	/// <summary>Return a table which contains boolean members set to true/false corresponding to whether specific extensions have been enabled</summary>
+	/// <returns>A table of extensions</returns>
+	const InstanceExtensionTable& getEnabledExtensionTable() const
 	{
-		for (uint32_t i = 0; i < _createInfo.getNumEnabledExtensionNames(); i++)
-		{
-			if (!strcmp(_createInfo.getEnabledExtensionName(i).c_str(), extensionName))
-			{
-				return true;
-			}
-		}
-
-		return false;
+		return _extensionTable;
 	}
 
-	/// <summary>Check if layer is enabled</summary>
-	/// <param name="layerName">Layer name</param>
-	/// <returns>Return true if enabled</returns>
-	bool isInstanceLayerEnabled(const char* layerName)
+	/// <summary>Creates a debug utils messenger object</summary>
+	/// <param name="createInfo">DebugUtilsMessengerCreateInfo structure specifying how the debug utils messenger should function.</param>
+	/// <returns>Returns the created debug utils messenger object.</returns>
+	inline DebugUtilsMessenger createDebugUtilsMessenger(const DebugUtilsMessengerCreateInfo& createInfo)
 	{
-		for (uint32_t i = 0; i < _enabledInstanceLayers.size(); i++)
-		{
-			if (!strcmp(_enabledInstanceLayers[i], layerName))
-			{
-				return true;
-			}
-		}
-		return false;
+		Instance instance = shared_from_this();
+		return impl::DebugUtilsMessenger_::constructShared(instance, createInfo);
 	}
 
 	/// <summary>Creates a debug report callback object</summary>
@@ -173,9 +300,116 @@ public:
 	/// <returns>Returns the created debug report callback object.</returns>
 	inline DebugReportCallback createDebugReportCallback(const DebugReportCallbackCreateInfo& createInfo)
 	{
-		DebugReportCallback debugCallback;
-		debugCallback.construct(getWeakReference(), createInfo);
-		return debugCallback;
+		Instance instance = shared_from_this();
+		return impl::DebugReportCallback_::constructShared(instance, createInfo);
+	}
+
+	/// <summary>Submits a debug report message directly into the debug stream.</summary>
+	/// <param name="flags">Specifies the DebugReportFlagsEXT classification of this message.</param>
+	/// <param name="objectType">Specifies the type of object being used or created at the time the event was triggered.</param>
+	/// <param name="object">The object where the issue was detected. object can be VK_NULL_HANDLE if there is no object associated with the event.</param>
+	/// <param name="location">An application defined value.</param>
+	/// <param name="messageCode">An application defined value.</param>
+	/// <param name="layerPrefix">The abbreviation of the component making this event/message.</param>
+	/// <param name="message">The message itself detailing the trigger conditions.</param>
+	inline void debugReportMessage(DebugReportFlagsEXT flags, DebugReportObjectTypeEXT objectType, uint64_t object, size_t location, int32_t messageCode,
+		const std::string& layerPrefix, const std::string& message)
+	{
+		_vkBindings.vkDebugReportMessageEXT(getVkHandle(), static_cast<VkDebugReportFlagsEXT>(flags), static_cast<VkDebugReportObjectTypeEXT>(objectType), object, location,
+			messageCode, layerPrefix.c_str(), message.c_str());
+	}
+
+	/// <summary>Submits a debug report message directly into the debug stream.</summary>
+	/// <param name="flags">Specifies the DebugReportFlagsEXT classification of this message.</param>
+	/// <param name="object">A PVRVkObjectBase object where the issue was detected.</param>
+	/// <param name="location">An application defined value.</param>
+	/// <param name="messageCode">An application defined value.</param>
+	/// <param name="layerPrefix">The abbreviation of the component making this event/message.</param>
+	/// <param name="message">The message itself detailing the trigger conditions.</param>
+	inline void debugReportMessage(DebugReportFlagsEXT flags, PVRVkObjectBase object, size_t location, int32_t messageCode, const std::string& layerPrefix, const std::string& message)
+	{
+		debugReportMessage(flags, pvrvk::convertObjectTypeToDebugReportObjectType(object.getObjectType()),
+			*static_cast<const uint64_t*>(static_cast<const void*>(object.getVkHandle())), location, messageCode, layerPrefix, message);
+	}
+
+	/// <summary>Submits a debug utils message directly into the debug stream.</summary>
+	/// <param name="messageSeverity">the DebugUtilsMessageSeverityFlagBitsEXT severity of this event/message.</param>
+	/// <param name="messageTypes">A bitmask of DebugUtilsMessageTypeFlagBitsEXT specifying which type of event(s) to identify with this message.</param>
+	/// <param name="callbackData">Contains all the callback related data in the DebugUtilsMessengerCallbackDataEXT structure.</param>
+	inline void submitDebugUtilsMessage(
+		DebugUtilsMessageSeverityFlagsEXT messageSeverity, DebugUtilsMessageTypeFlagsEXT messageTypes, const DebugUtilsMessengerCallbackData& callbackData)
+	{
+		VkDebugUtilsMessengerCallbackDataEXT vkCallbackData = {};
+		vkCallbackData.sType = static_cast<VkStructureType>(StructureType::e_DEBUG_UTILS_MESSENGER_CALLBACK_DATA_EXT);
+		vkCallbackData.flags = static_cast<VkDebugUtilsMessengerCallbackDataFlagsEXT>(callbackData.getFlags());
+		vkCallbackData.pMessageIdName = callbackData.getMessageIdName().c_str();
+		vkCallbackData.messageIdNumber = callbackData.getMessageIdNumber();
+		vkCallbackData.pMessage = callbackData.getMessage().c_str();
+
+		std::vector<VkDebugUtilsLabelEXT> vkQueueLabels;
+		std::vector<VkDebugUtilsLabelEXT> vkCmdBufLabels;
+		std::vector<VkDebugUtilsObjectNameInfoEXT> vkObjectNames;
+
+		// Add queue labels
+		if (callbackData.getNumQueueLabels())
+		{
+			vkCallbackData.queueLabelCount = callbackData.getNumQueueLabels();
+			vkQueueLabels.resize(vkCallbackData.queueLabelCount);
+			for (uint32_t i = 0; i < callbackData.getNumQueueLabels(); ++i)
+			{
+				DebugUtilsLabel queueLabel = callbackData.getQueueLabel(i);
+
+				vkQueueLabels[i].sType = static_cast<VkStructureType>(StructureType::e_DEBUG_UTILS_LABEL_EXT);
+				vkQueueLabels[i].pLabelName = queueLabel.getLabelName().c_str();
+				vkQueueLabels[i].color[0] = queueLabel.getR();
+				vkQueueLabels[i].color[1] = queueLabel.getG();
+				vkQueueLabels[i].color[2] = queueLabel.getB();
+				vkQueueLabels[i].color[3] = queueLabel.getA();
+			}
+
+			vkCallbackData.pQueueLabels = vkQueueLabels.data();
+		}
+
+		// Add command buffer labels
+		if (callbackData.getNumCmdBufLabels())
+		{
+			vkCallbackData.cmdBufLabelCount = callbackData.getNumCmdBufLabels();
+			vkCmdBufLabels.resize(vkCallbackData.cmdBufLabelCount);
+			for (uint32_t i = 0; i < callbackData.getNumCmdBufLabels(); ++i)
+			{
+				DebugUtilsLabel cmdBufLabel = callbackData.getCmdBufLabel(i);
+
+				vkCmdBufLabels[i].sType = static_cast<VkStructureType>(StructureType::e_DEBUG_UTILS_LABEL_EXT);
+				vkCmdBufLabels[i].pLabelName = cmdBufLabel.getLabelName().c_str();
+				vkCmdBufLabels[i].color[0] = cmdBufLabel.getR();
+				vkCmdBufLabels[i].color[1] = cmdBufLabel.getG();
+				vkCmdBufLabels[i].color[2] = cmdBufLabel.getB();
+				vkCmdBufLabels[i].color[3] = cmdBufLabel.getA();
+			}
+
+			vkCallbackData.pCmdBufLabels = vkCmdBufLabels.data();
+		}
+
+		// Add object names
+		if (callbackData.getNumObjects())
+		{
+			vkCallbackData.objectCount = callbackData.getNumObjects();
+			vkObjectNames.resize(vkCallbackData.objectCount);
+			for (uint32_t i = 0; i < callbackData.getNumObjects(); ++i)
+			{
+				DebugUtilsObjectNameInfo objectName = callbackData.getObject(i);
+
+				vkObjectNames[i].sType = static_cast<VkStructureType>(StructureType::e_DEBUG_UTILS_OBJECT_NAME_INFO_EXT);
+				vkObjectNames[i].pObjectName = objectName.getObjectName().c_str();
+				vkObjectNames[i].objectType = static_cast<VkObjectType>(objectName.getObjectType());
+				vkObjectNames[i].objectHandle = objectName.getObjectHandle();
+			}
+
+			vkCallbackData.pObjects = vkObjectNames.data();
+		}
+
+		_vkBindings.vkSubmitDebugUtilsMessageEXT(
+			getVkHandle(), static_cast<VkDebugUtilsMessageSeverityFlagBitsEXT>(messageSeverity), static_cast<VkDebugUtilsMessageTypeFlagsEXT>(messageTypes), &vkCallbackData);
 	}
 
 	/// <summary>Gets the instance dispatch table</summary>
@@ -205,32 +439,6 @@ public:
 	{
 		return static_cast<uint32_t>(_physicalDevices.size());
 	}
-
-private:
-	friend class InstanceHelperFactory_;
-	friend class ::pvrvk::EmbeddedRefCount<Instance_>;
-
-	void destroyObject()
-	{
-		_physicalDevices.clear();
-		if (getVkHandle() != VK_NULL_HANDLE)
-		{
-			_vkBindings.vkDestroyInstance(getVkHandle(), nullptr);
-			_vkHandle = VK_NULL_HANDLE;
-		}
-	}
-
-	static Instance createNew(const InstanceCreateInfo& instanceCreateInfo)
-	{
-		return EmbeddedRefCount<Instance_>::createNew(instanceCreateInfo);
-	}
-
-	explicit Instance_(const InstanceCreateInfo& instanceCreateInfo);
-
-	std::vector<const char*> _enabledInstanceLayers;
-	InstanceCreateInfo _createInfo;
-	VkInstanceBindings _vkBindings;
-	std::vector<PhysicalDevice> _physicalDevices;
 };
 } // namespace impl
 

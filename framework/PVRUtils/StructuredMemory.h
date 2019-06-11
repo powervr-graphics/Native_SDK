@@ -23,7 +23,7 @@ class StructuredMemoryEntry;
 //!\endcond
 
 /// <summary>Defines a memory element description. The element will be provided with a name,
-/// type and number of array elements. The element itself may also contain child memory elements </summary>
+/// type and number of array elements. The element itself may also contain child memory elements</summary>
 class StructuredMemoryDescription
 {
 private:
@@ -181,7 +181,7 @@ public:
 
 	/// <summary>Gets an element name for the StructuredMemoryDescription.</summary>
 	/// <returns>Returns the name for the StructuredMemoryDescription.</returns>
-	const std::string getName() const
+	const std::string& getName() const
 	{
 		return _name;
 	}
@@ -328,7 +328,7 @@ private:
 		_variableArray = isVariableArray;
 		_parent = parent;
 		this->_type = desc._type;
-		if (desc._children.size()) // isStruct
+		if (!desc._children.empty()) // isStruct
 		{
 			_childEntries.resize(desc._children.size()); // Called once
 			for (uint32_t i = 0; i < desc._children.size(); ++i)
@@ -400,7 +400,9 @@ public:
 	/// <summary>Destructor. Virtual (for polymorphic use).</summary>
 	virtual ~StructuredMemoryEntry() {}
 
-	//!\cond NO_DOXYGEN
+	/// <summary>A swap function for a pvr::utils::StructuredMemoryEntry. Swaps all members of each pvr::utils::StructuredMemoryEntry to the other.</summary>
+	/// <param name="first">The first StructuredMemoryEntry to swap</param>
+	/// <param name="second">The second StructuredMemoryEntry to swap</param>
 	friend void swap(StructuredMemoryEntry& first, StructuredMemoryEntry& second)
 	{
 		std::swap(first._name, second._name);
@@ -412,7 +414,6 @@ public:
 		std::swap(first._arrayMemberSize, second._arrayMemberSize);
 		std::swap(first._offset, second._offset);
 	}
-	//!\endcond
 
 	/// <summary>Move Constructor.</summary>
 	/// <param name="other">The StructuredMemoryEntry to move from</param>
@@ -561,7 +562,9 @@ public:
 		layout(usage, minUboDynamicAlignment, minSsboDynamicAlignment);
 	}
 
-	//!\cond NO_DOXYGEN
+	/// <summary>Prints a preamble for the current StructuredMemoryEntry level</summary>
+	/// <param name="str">The current std::stringstream to print to</param>
+	/// <param name="level">The current level to print a preamble for</param>
 	inline static void printPreamble(std::stringstream& str, uint32_t level)
 	{
 		for (uint32_t i = 0; i < level; ++i)
@@ -570,42 +573,41 @@ public:
 		}
 	}
 
+	/// <summary>Prints a StructuredMemoryEntry to a std::stringstream for the current level</summary>
+	/// <param name="str">The current std::stringstream to print to</param>
+	/// <param name="level">The current level to print a preamble for</param>
 	void printIntoStringStream(std::stringstream& str, int level) const
 	{
+		str << "\n" << std::setw(3) << _offset << ": ";
+		printPreamble(str, level * 2);
+		str << (isStructure() ? "struct" : toString(_type)) << " " << _name.str();
+		if (_numArrayElements > 1)
 		{
-			str << "\n" << std::setw(3) << _offset << ": ";
-			printPreamble(str, level * 2);
-			str << (isStructure() ? "struct" : toString(_type)) << " " << _name.str();
-			if (_numArrayElements > 1)
+			str << "[" << _numArrayElements << "]";
+		}
+		str << ";";
+		if (!isStructure())
+		{
+			str << "\t";
+		}
+		str << "\t baseSz:" << _size / _numArrayElements << "\t size:" << getSize() << "\t baseAlign:" << _baseAlignment << "\t nextOffset" << _offset + getSize();
+		if (isStructure())
+		{
+			str << "\n";
+			printPreamble(str, level * 2 + 5);
+			str << "{";
+			for (auto& child : _childEntries)
 			{
-				str << "[" << _numArrayElements << "]";
+				child.printIntoStringStream(str, level + 1);
 			}
-			str << ";";
-			if (!isStructure())
-			{
-				str << "\t";
-			}
-			str << "\t baseSz:" << _size / _numArrayElements << "\t size:" << getSize() << "\t baseAlign:" << _baseAlignment << "\t nextOffset" << _offset + getSize();
-			if (isStructure())
-			{
-				str << "\n";
-				printPreamble(str, level * 2 + 5);
-				str << "{";
-				for (auto& child : _childEntries)
-				{
-					child.printIntoStringStream(str, level + 1);
-				}
-				str << "\n";
-				printPreamble(str, level * 2 + 5);
-				str << "}";
-			}
+			str << "\n";
+			printPreamble(str, level * 2 + 5);
+			str << "}";
 		}
 	}
-	//!\endcond
 };
 
 //!\cond NO_DOXYGEN
-class StructuredBufferView;
 class StructuredBufferView;
 //!\endcond
 
@@ -744,7 +746,7 @@ public:
 	/// <summary>Gets an element using an index</summary>
 	/// <param name="elementIndex">The index of the element to retrieve</param>
 	/// <returns>Return the StructuredBufferViewElement.</returns>
-	const std::string getElementNameByIndex(uint32_t elementIndex) const
+	const std::string& getElementNameByIndex(uint32_t elementIndex) const
 	{
 		return _prototype.getChild(elementIndex).getName();
 	}
@@ -788,8 +790,9 @@ public:
 	{
 		return _prototype._arrayMemberSize;
 	}
-//!\cond NO_DOXYGEN
+
 // clang-format off
+/// <summary>Contain functions to set values for a number of gpu compatible data types.</summary>
 #define DEFINE_SETVALUE_FOR_TYPE(ParamType)\
   void setValue(const ParamType& value)\
   {\
@@ -800,7 +803,6 @@ public:
   {\
     memcpy(static_cast<char*>(getMappedMemory()) + getOffset(), value, (size_t)getValueSize()); \
   }
-//!\endcond
 	DEFINE_SETVALUE_FOR_TYPE(float)
 	DEFINE_SETVALUE_FOR_TYPE(uint32_t)
 	DEFINE_SETVALUE_FOR_TYPE(uint64_t)
@@ -817,11 +819,8 @@ public:
 	DEFINE_SETVALUE_FOR_TYPE(glm::mat4x2)
 	DEFINE_SETVALUE_FOR_TYPE(glm::mat4x4)
 
-
-//!\cond NO_DOXYGEN
 #undef DEFINE_SETVALUE_FOR_TYPE
 	// clang-format on
-	//!\endcond
 
 	/// <summary>Sets the value (glm::vec3 specific) for this element taking the source by reference</summary>
 	/// <param name="value">The value to set by reference</param>
@@ -993,8 +992,7 @@ public:
 /// } boneBuffer;
 /// getElementByName("BoneCount") = boneBuffer.BoneCount
 /// getElementByName("bones") = boneBuffer.Bone[0]
-/// getElementByName("bones", 1) = boneBuffer.Bone[1]
-/// </summary>
+/// getElementByName("bones", 1) = boneBuffer.Bone[1]</summary>
 class StructuredBufferView
 {
 private:
@@ -1212,7 +1210,8 @@ public:
 		return _root.getIndex(name);
 	}
 
-	//!\cond NO_DOXYGEN
+	/// <summary>Converts the StructuredBufferView to a readable string entry</summary>
+	/// <returns>The human readable string corresponding to the StructuredBufferView</returns>
 	std::string toString()
 	{
 		std::stringstream ss;
@@ -1220,7 +1219,6 @@ public:
 		_root.printIntoStringStream(ss, 0);
 		return ss.str();
 	}
-	//!\endcond
 };
 } // namespace utils
 } // namespace pvr

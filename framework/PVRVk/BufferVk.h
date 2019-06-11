@@ -118,14 +118,40 @@ private:
 /// <summary>Contains internal objects and wrapped versions of the PVRVk module</summary>
 namespace impl {
 /// <summary>Vulkan implementation of the Buffer.</summary>
-class Buffer_ : public DeviceObjectHandle<VkBuffer>, public DeviceObjectDebugMarker<Buffer_>
+class Buffer_ : public PVRVkDeviceObjectBase<VkBuffer, ObjectType::e_BUFFER>, public DeviceObjectDebugUtils<Buffer_>
 {
+private:
+	friend class Device_;
+
+	class make_shared_enabler
+	{
+	protected:
+		make_shared_enabler() {}
+		friend class Buffer_;
+	};
+
+	static Buffer constructShared(const DeviceWeakPtr& device, const BufferCreateInfo& createInfo)
+	{
+		return std::make_shared<Buffer_>(make_shared_enabler{}, device, createInfo);
+	}
+
+	BufferCreateInfo _createInfo;
+	MemoryRequirements _memRequirements;
+	VkDeviceSize _memoryOffset;
+	DeviceMemory _deviceMemory;
+
 public:
+	//!\cond NO_DOXYGEN
 	DECLARE_NO_COPY_SEMANTICS(Buffer_)
+	Buffer_(make_shared_enabler, const DeviceWeakPtr& device, const BufferCreateInfo& createInfo);
+
+	/// <summary>Destructor. Checks if the device is valid</summary>
+	~Buffer_();
+	//!\endcond
 
 	/// <summary>Return the DeviceMemory bound to this buffer. Note</summary>: only nonsparse buffer can have a bound memory block
 	/// <returns>MemoryBlock</returns>
-	DeviceMemory getDeviceMemory()
+	DeviceMemory& getDeviceMemory()
 	{
 		return _deviceMemory;
 	}
@@ -188,7 +214,7 @@ public:
 		return _createInfo.getQueueFamilyIndices();
 	}
 
-	/// <summary> Call only on Non-sparse buffer.
+	/// <summary>Call only on Non-sparse buffer.
 	/// Binds a non-sparse memory block. This function must be called once
 	/// after this buffer creation. Calling second time don't do anything</summary>
 	/// <param name="deviceMemory">Device memory block to bind</param>
@@ -200,14 +226,14 @@ public:
 			throw ErrorValidationFailedEXT("Cannot call bindMemory on a sparse buffer");
 		}
 
-		if (_deviceMemory.isValid())
+		if (_deviceMemory)
 		{
 			throw ErrorValidationFailedEXT("Cannot bind a memory block as Buffer already has a memory block bound");
 		}
 		_memoryOffset = offset;
 		_deviceMemory = deviceMemory;
 
-		vkThrowIfFailed(static_cast<Result>(_device->getVkBindings().vkBindBufferMemory(_device->getVkHandle(), getVkHandle(), _deviceMemory->getVkHandle(), offset)),
+		vkThrowIfFailed(static_cast<Result>(getDevice()->getVkBindings().vkBindBufferMemory(getDevice()->getVkHandle(), getVkHandle(), _deviceMemory->getVkHandle(), offset)),
 			"Failed to bind memory to buffer");
 	}
 
@@ -231,21 +257,6 @@ public:
 	{
 		return _memRequirements;
 	}
-
-private:
-	template<typename>
-	friend struct ::pvrvk::RefCountEntryIntrusive;
-	friend class ::pvrvk::impl::Device_;
-
-	Buffer_(DeviceWeakPtr device, const BufferCreateInfo& createInfo);
-
-	/// <summary>Destructor. Checks if the device is valid</summary>
-	~Buffer_();
-
-	BufferCreateInfo _createInfo;
-	MemoryRequirements _memRequirements;
-	VkDeviceSize _memoryOffset;
-	DeviceMemory _deviceMemory;
 };
 } // namespace impl
 
@@ -265,7 +276,7 @@ public:
 	BufferViewCreateInfo(const Buffer& buffer, Format format, DeviceSize offset = 0, DeviceSize range = VK_WHOLE_SIZE, BufferViewCreateFlags flags = BufferViewCreateFlags::e_NONE)
 		: _buffer(buffer), _format(format), _offset(offset), _range(range), _flags(flags)
 	{
-		assertion(range <= buffer->getSize() - offset);
+		assert(range <= buffer->getSize() - offset);
 	}
 
 	/// <summary>Get the buffer view creation flags</summary>
@@ -344,10 +355,35 @@ private:
 
 namespace impl {
 /// <summary>pvrvk implementation of a BufferView.</summary>
-class BufferView_ : public DeviceObjectHandle<VkBufferView>, public DeviceObjectDebugMarker<BufferView_>
+class BufferView_ : public PVRVkDeviceObjectBase<VkBufferView, ObjectType::e_BUFFER_VIEW>, public DeviceObjectDebugUtils<BufferView_>
 {
+private:
+	friend class Device_;
+
+	class make_shared_enabler
+	{
+	protected:
+		make_shared_enabler() {}
+		friend class BufferView_;
+	};
+
+	static BufferView constructShared(const DeviceWeakPtr& device, const BufferViewCreateInfo& createInfo)
+	{
+		return std::make_shared<BufferView_>(make_shared_enabler{}, device, createInfo);
+	}
+
+	/// <summary>Creation information used when creating the buffer view.</summary>
+	BufferViewCreateInfo _createInfo;
+
 public:
+	//!\cond NO_DOXYGEN
 	DECLARE_NO_COPY_SEMANTICS(BufferView_)
+
+	BufferView_(make_shared_enabler, const DeviceWeakPtr& device, const BufferViewCreateInfo& createInfo);
+
+	/// <summary>Destructor. Will properly release all resources held by this object.</summary>
+	~BufferView_();
+	//!\endcond
 
 	/// <summary>Get the buffer view creation flags</summary>
 	/// <returns>The set of buffer view creation flags</returns>
@@ -381,22 +417,10 @@ public:
 	}
 	/// <summary>Get this buffer view's create flags</summary>
 	/// <returns>BufferViewCreateInfo</returns>
-	BufferViewCreateInfo getCreateInfo() const
+	const BufferViewCreateInfo& getCreateInfo() const
 	{
 		return _createInfo;
 	}
-
-private:
-	template<typename>
-	friend struct ::pvrvk::RefCountEntryIntrusive;
-	friend class ::pvrvk::impl::Device_;
-	BufferView_(const DeviceWeakPtr& device, const BufferViewCreateInfo& createInfo);
-
-	/// <summary>Destructor. Will properly release all resources held by this object.</summary>
-	~BufferView_();
-
-	/// <summary>Creation information used when creating the buffer view.</summary>
-	BufferViewCreateInfo _createInfo;
 };
 } // namespace impl
 } // namespace pvrvk

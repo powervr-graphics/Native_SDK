@@ -1,6 +1,6 @@
 /*!
 \brief Implementation of methods of the TextureReaderPVR class.
-\file PVRCore/textureReaders/TextureReaderPVR.cpp
+\file PVRCore/textureio/TextureReaderPVR.cpp
 \author PowerVR by Imagination, Developer Technology Team
 \copyright Copyright (c) Imagination Technologies Limited.
 */
@@ -46,154 +46,161 @@ void TextureReaderPVR::readAsset_(Texture& asset)
 	// Get the file header to Read.
 	TextureHeader::Header textureFileHeader;
 
-	// Read the texture header version
-	uint32_t version;
-	_assetStream->readExact(sizeof(version), 1, &version);
-
-	if (version == TextureHeader::Header::PVRv3)
+	try
 	{
-		// Read the flags
-		_assetStream->readExact(sizeof(textureFileHeader.flags), 1, &textureFileHeader.flags);
+		// Read the texture header version
+		uint32_t version;
+		_assetStream->readExact(sizeof(version), 1, &version);
 
-		// Read the pixel format
-		_assetStream->readExact(sizeof(textureFileHeader.pixelFormat), 1, &textureFileHeader.pixelFormat);
-
-		// Read the color space
-		_assetStream->readExact(sizeof(textureFileHeader.colorSpace), 1, &textureFileHeader.colorSpace);
-
-		// Read the channel type
-		_assetStream->readExact(sizeof(textureFileHeader.channelType), 1, &textureFileHeader.channelType);
-
-		// Read the height
-		_assetStream->readExact(sizeof(textureFileHeader.height), 1, &textureFileHeader.height);
-
-		// Read the width
-		_assetStream->readExact(sizeof(textureFileHeader.width), 1, &textureFileHeader.width);
-
-		// Read the depth
-		_assetStream->readExact(sizeof(textureFileHeader.depth), 1, &textureFileHeader.depth);
-
-		// Read the number of surfaces
-		_assetStream->readExact(sizeof(textureFileHeader.numSurfaces), 1, &textureFileHeader.numSurfaces);
-
-		// Read the number of faces
-		_assetStream->readExact(sizeof(textureFileHeader.numFaces), 1, &textureFileHeader.numFaces);
-
-		// Read the number of MIP maps
-		_assetStream->readExact(sizeof(textureFileHeader.numMipMaps), 1, &textureFileHeader.numMipMaps);
-
-		// Read the meta data size, but store it for now.
-		uint32_t tempMetaDataSize = 0;
-		_assetStream->readExact(sizeof(tempMetaDataSize), 1, &tempMetaDataSize);
-		// Construct a texture header.
-		// Set the meta data size to 0
-		textureFileHeader.metaDataSize = 0;
-		TextureHeader textureHeader(textureFileHeader, 0, NULL);
-
-		asset.initializeWithHeader(textureHeader);
-		// Read the meta data
-		uint32_t metaDataRead = 0;
-		while (metaDataRead < tempMetaDataSize)
+		if (version == TextureHeader::Header::PVRv3)
 		{
-			TextureMetaData metaDataBlock = loadTextureMetadataFromStream(*_assetStream);
+			// Read the flags
+			_assetStream->readExact(sizeof(textureFileHeader.flags), 1, &textureFileHeader.flags);
 
-			// Add the meta data
-			asset.addMetaData(metaDataBlock);
+			// Read the pixel format
+			_assetStream->readExact(sizeof(textureFileHeader.pixelFormat), 1, &textureFileHeader.pixelFormat);
 
-			// Evaluate the meta data read
-			metaDataRead = asset.getMetaDataSize();
-		}
+			// Read the color space
+			_assetStream->readExact(sizeof(textureFileHeader.colorSpace), 1, &textureFileHeader.colorSpace);
 
-		// Make sure the provided data size wasn't wrong. If it was, there are no guarantees about the contents of the texture data.
-		if (metaDataRead > tempMetaDataSize)
-		{
-			throw InvalidDataError("[TextureReaderPVR::readAsset_] Metadata seems to be corrupted while reading.");
-		}
+			// Read the channel type
+			_assetStream->readExact(sizeof(textureFileHeader.channelType), 1, &textureFileHeader.channelType);
 
-		// Read the texture data
-		_assetStream->readExact(1, asset.getDataSize(), asset.getDataPointer());
-	}
-	else if (version == texture_legacy::c_headerSizeV1 || version == texture_legacy::c_headerSizeV2)
-	{
-		// Read a V2 legacy header
-		texture_legacy::HeaderV2 legacyHeader;
+			// Read the height
+			_assetStream->readExact(sizeof(textureFileHeader.height), 1, &textureFileHeader.height);
 
-		// Read the header size
-		legacyHeader.headerSize = version;
+			// Read the width
+			_assetStream->readExact(sizeof(textureFileHeader.width), 1, &textureFileHeader.width);
 
-		// Read the height
-		_assetStream->readExact(sizeof(legacyHeader.height), 1, &legacyHeader.height);
-
-		// Read the width
-		_assetStream->readExact(sizeof(legacyHeader.width), 1, &legacyHeader.width);
-
-		// Read the MIP map count
-		_assetStream->readExact(sizeof(legacyHeader.numMipMaps), 1, &legacyHeader.numMipMaps);
-
-		// Read the texture flags
-		_assetStream->readExact(sizeof(legacyHeader.pixelFormatAndFlags), 1, &legacyHeader.pixelFormatAndFlags);
-
-		// Read the texture data size
-		_assetStream->readExact(sizeof(legacyHeader.dataSize), 1, &legacyHeader.dataSize);
-
-		// Read the bit count of the texture format
-		_assetStream->readExact(sizeof(legacyHeader.bitCount), 1, &legacyHeader.bitCount);
-
-		// Read the red mask
-		_assetStream->readExact(sizeof(legacyHeader.redBitMask), 1, &legacyHeader.redBitMask);
-
-		// Read the green mask
-		_assetStream->readExact(sizeof(legacyHeader.greenBitMask), 1, &legacyHeader.greenBitMask);
-
-		// Read the blue mask
-		_assetStream->readExact(sizeof(legacyHeader.blueBitMask), 1, &legacyHeader.blueBitMask);
-
-		// Read the alpha mask
-		_assetStream->readExact(sizeof(legacyHeader.alphaBitMask), 1, &legacyHeader.alphaBitMask);
-
-		if (version == texture_legacy::c_headerSizeV2)
-		{
-			// Read the magic number
-			_assetStream->readExact(sizeof(legacyHeader.pvrMagic), 1, &legacyHeader.pvrMagic);
+			// Read the depth
+			_assetStream->readExact(sizeof(textureFileHeader.depth), 1, &textureFileHeader.depth);
 
 			// Read the number of surfaces
-			_assetStream->readExact(sizeof(legacyHeader.numSurfaces), 1, &legacyHeader.numSurfaces);
-		}
-		else
-		{
-			legacyHeader.pvrMagic = texture_legacy::c_identifierV2;
-			legacyHeader.numSurfaces = 1;
-		}
+			_assetStream->readExact(sizeof(textureFileHeader.numSurfaces), 1, &textureFileHeader.numSurfaces);
 
-		// Construct a texture header by converting the old one
-		TextureHeader textureHeader;
-		convertTextureHeader2To3(legacyHeader, textureHeader);
+			// Read the number of faces
+			_assetStream->readExact(sizeof(textureFileHeader.numFaces), 1, &textureFileHeader.numFaces);
 
-		// Copy the texture header to the asset.
-		asset.initializeWithHeader(textureHeader);
+			// Read the number of MIP maps
+			_assetStream->readExact(sizeof(textureFileHeader.numMipMaps), 1, &textureFileHeader.numMipMaps);
 
-		// Write the texture data
-		for (uint32_t surface = 0; surface < asset.getNumArrayMembers(); ++surface)
-		{
-			for (uint32_t depth = 0; depth < asset.getDepth(); ++depth)
+			// Read the meta data size, but store it for now.
+			uint32_t tempMetaDataSize = 0;
+			_assetStream->readExact(sizeof(tempMetaDataSize), 1, &tempMetaDataSize);
+			// Construct a texture header.
+			// Set the meta data size to 0
+			textureFileHeader.metaDataSize = 0;
+			TextureHeader textureHeader(textureFileHeader, 0, NULL);
+
+			asset.initializeWithHeader(textureHeader);
+			// Read the meta data
+			uint32_t metaDataRead = 0;
+			while (metaDataRead < tempMetaDataSize)
 			{
-				for (uint32_t face = 0; face < asset.getNumFaces(); ++face)
-				{
-					for (uint32_t mipMap = 0; mipMap < asset.getNumMipMapLevels(); ++mipMap)
-					{
-						uint32_t surfaceSize = asset.getDataSize(mipMap, false, false) / asset.getDepth();
-						unsigned char* surfacePointer = asset.getDataPointer(mipMap, surface, face) + depth * surfaceSize;
+				TextureMetaData metaDataBlock = loadTextureMetadataFromStream(*_assetStream);
 
-						// Write each surface, one at a time
-						_assetStream->readExact(1, surfaceSize, surfacePointer);
+				// Add the meta data
+				asset.addMetaData(metaDataBlock);
+
+				// Evaluate the meta data read
+				metaDataRead = asset.getMetaDataSize();
+			}
+
+			// Make sure the provided data size wasn't wrong. If it was, there are no guarantees about the contents of the texture data.
+			if (metaDataRead > tempMetaDataSize)
+			{
+				throw InvalidDataError("[TextureReaderPVR::readAsset_] Metadata seems to be corrupted while reading.");
+			}
+
+			// Read the texture data
+			_assetStream->readExact(1, asset.getDataSize(), asset.getDataPointer());
+		}
+		else if (version == texture_legacy::c_headerSizeV1 || version == texture_legacy::c_headerSizeV2)
+		{
+			// Read a V2 legacy header
+			texture_legacy::HeaderV2 legacyHeader;
+
+			// Read the header size
+			legacyHeader.headerSize = version;
+
+			// Read the height
+			_assetStream->readExact(sizeof(legacyHeader.height), 1, &legacyHeader.height);
+
+			// Read the width
+			_assetStream->readExact(sizeof(legacyHeader.width), 1, &legacyHeader.width);
+
+			// Read the MIP map count
+			_assetStream->readExact(sizeof(legacyHeader.numMipMaps), 1, &legacyHeader.numMipMaps);
+
+			// Read the texture flags
+			_assetStream->readExact(sizeof(legacyHeader.pixelFormatAndFlags), 1, &legacyHeader.pixelFormatAndFlags);
+
+			// Read the texture data size
+			_assetStream->readExact(sizeof(legacyHeader.dataSize), 1, &legacyHeader.dataSize);
+
+			// Read the bit count of the texture format
+			_assetStream->readExact(sizeof(legacyHeader.bitCount), 1, &legacyHeader.bitCount);
+
+			// Read the red mask
+			_assetStream->readExact(sizeof(legacyHeader.redBitMask), 1, &legacyHeader.redBitMask);
+
+			// Read the green mask
+			_assetStream->readExact(sizeof(legacyHeader.greenBitMask), 1, &legacyHeader.greenBitMask);
+
+			// Read the blue mask
+			_assetStream->readExact(sizeof(legacyHeader.blueBitMask), 1, &legacyHeader.blueBitMask);
+
+			// Read the alpha mask
+			_assetStream->readExact(sizeof(legacyHeader.alphaBitMask), 1, &legacyHeader.alphaBitMask);
+
+			if (version == texture_legacy::c_headerSizeV2)
+			{
+				// Read the magic number
+				_assetStream->readExact(sizeof(legacyHeader.pvrMagic), 1, &legacyHeader.pvrMagic);
+
+				// Read the number of surfaces
+				_assetStream->readExact(sizeof(legacyHeader.numSurfaces), 1, &legacyHeader.numSurfaces);
+			}
+			else
+			{
+				legacyHeader.pvrMagic = texture_legacy::c_identifierV2;
+				legacyHeader.numSurfaces = 1;
+			}
+
+			// Construct a texture header by converting the old one
+			TextureHeader textureHeader;
+			convertTextureHeader2To3(legacyHeader, textureHeader);
+
+			// Copy the texture header to the asset.
+			asset.initializeWithHeader(textureHeader);
+
+			// Write the texture data
+			for (uint32_t surface = 0; surface < asset.getNumArrayMembers(); ++surface)
+			{
+				for (uint32_t depth = 0; depth < asset.getDepth(); ++depth)
+				{
+					for (uint32_t face = 0; face < asset.getNumFaces(); ++face)
+					{
+						for (uint32_t mipMap = 0; mipMap < asset.getNumMipMapLevels(); ++mipMap)
+						{
+							uint32_t surfaceSize = asset.getDataSize(mipMap, false, false) / asset.getDepth();
+							unsigned char* surfacePointer = asset.getDataPointer(mipMap, surface, face) + depth * surfaceSize;
+
+							// Write each surface, one at a time
+							_assetStream->readExact(1, surfaceSize, surfacePointer);
+						}
 					}
 				}
 			}
 		}
+		else
+		{
+			throw InvalidDataError("[TextureReaderPVR::readAsset_]: Unsupported PVR Version");
+		}
 	}
-	else
+	catch (const FileEOFError&)
 	{
-		throw InvalidOperationError("[TextureReaderPVR::readAsset_]: Unsupported PVR Version");
+		throw InvalidDataError("[TextureReaderPVR::readAsset_]: Not a not a valid PVR file.");
 	}
 }
 

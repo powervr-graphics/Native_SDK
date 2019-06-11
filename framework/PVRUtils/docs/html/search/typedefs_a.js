@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['sprite',['Sprite',['../namespacepvr_1_1ui.html#a433b305afabc90236f8e457cbc231187',1,'pvr::ui']]],
-  ['spriteweakref',['SpriteWeakRef',['../namespacepvr_1_1ui.html#a183b14d8935e6359eec27922d728904e',1,'pvr::ui']]]
+  ['sprite',['Sprite',['../namespacepvr_1_1ui.html#a083abcf9a697107136faca1f20b53b5d',1,'pvr::ui']]],
+  ['spriteweakref',['SpriteWeakRef',['../namespacepvr_1_1ui.html#a88b7ff9e938cdb9f1caa6480d2ac322e',1,'pvr::ui']]]
 ];

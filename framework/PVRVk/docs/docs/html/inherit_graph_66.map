@@ -1,3 +1,6 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$structpvrvk_1_1_offset2_df.html" title="2 dimensional offset which contains the x and y" alt="" coords="6,5,125,32"/>
+<area shape="rect" id="node1" href="$classpvrvk_1_1impl_1_1_device_object_debug_utils.html" title="pvrvk::impl::DeviceObject\lDebugUtils\&lt; PipelineLayout_ \&gt;" alt="" coords="252,5,455,46"/>
+<area shape="rect" id="node2" href="$classpvrvk_1_1impl_1_1_pipeline_layout__.html" title="Vulkan implementation of the PipelineLayout class." alt="" coords="525,48,712,75"/>
+<area shape="rect" id="node3" href="$classpvrvk_1_1impl_1_1_p_v_r_vk_object_base.html" title="pvrvk::impl::PVRVkObject\lBase\&lt; VkPipelineLayout,\l PVRVkObjectType \&gt;" alt="" coords="5,69,181,125"/>
+<area shape="rect" id="node4" href="$classpvrvk_1_1impl_1_1_p_v_r_vk_device_object_base.html" title="pvrvk::impl::PVRVkDevice\lObjectBase\&lt; VkPipelineLayout,\l ObjectType::e_PIPELINE_LAYOUT \&gt;" alt="" coords="229,69,477,125"/>
 </map>

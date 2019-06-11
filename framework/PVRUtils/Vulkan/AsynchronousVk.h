@@ -15,24 +15,25 @@ namespace pvr {
 namespace utils {
 
 /// <summary>Provides a reference counted pointer to a pvr::Texture which will be used for loading API agnostic texture data to disk.</summary>
-typedef RefCountedResource<Texture> TexturePtr;
+typedef std::shared_ptr<Texture> TexturePtr;
 
 /// <summary>Provides a reference counted pointer to a IFrameworkAsyncResult specialised by a TexturePtr which will be used
 /// as the main interface for using API agnostic asynchronous textures.</summary>
-typedef EmbeddedRefCountedResource<async::IFrameworkAsyncResult<TexturePtr> > AsyncTexture;
+typedef std::shared_ptr<async::IFrameworkAsyncResult<TexturePtr> > AsyncTexture;
 
 /// <summary>Provides a reference counted pointer to a IFrameworkAsyncResult specialised by an ImageView which will be used
 /// as the main interface for using API specific asynchronous textures.</summary>
-typedef EmbeddedRefCountedResource<async::IFrameworkAsyncResult<pvrvk::ImageView> > AsyncApiTexture;
+typedef std::shared_ptr<async::IFrameworkAsyncResult<pvrvk::ImageView> > AsyncApiTexture;
 
-//!\cond NO_DOXYGEN
-struct ImageUploadFuture_ : public async::IFrameworkAsyncResult<pvrvk::ImageView>, public EmbeddedRefCount<ImageUploadFuture_>
+/// <summary>This class provides a wrapper for a Image upload future</summary>
+struct ImageUploadFuture_ : public async::IFrameworkAsyncResult<pvrvk::ImageView>, public std::enable_shared_from_this<ImageUploadFuture_>
 {
 public:
-	//!\cond NO_DOXYGEN
-	typedef IFrameworkAsyncResult<pvrvk::ImageView> MyBase;
-	typedef MyBase::Callback CallbackType;
-	//!\endcond
+	/// <summary>The type of the optional callback that is called at the end of the operation</summary>
+	typedef IFrameworkAsyncResult<pvrvk::ImageView>::Callback CallbackType;
+
+	/// <summary>Default constructor for a pvr::utils::ImageUploadFuture_.</summary>
+	ImageUploadFuture_() {}
 
 	/// <summary>A queue to be used to submit image upload operations.</summary>
 	pvrvk::Queue _queue;
@@ -56,7 +57,7 @@ public:
 	mutable async::SemaphorePtr _resultSemaphore;
 
 	/// <summary>Specifies whether the callback should be called prior to signalling the completion of the image upload.</summary>
-	bool _callbackBeforeSignal;
+	bool _callbackBeforeSignal = false;
 
 	/// <summary>Sets a callback which will be called after the image upload has completed.</summary>
 	/// <param name="callback">Specifies a callback to call when the image upload has completed.</param>
@@ -70,7 +71,7 @@ public:
 	{
 		_result = customUploadImage();
 
-		_successful = (_result.isValid());
+		_successful = _result != nullptr;
 		if (_callbackBeforeSignal)
 		{
 			callBack();
@@ -88,11 +89,6 @@ public:
 	const pvrvk::ImageView& getResult()
 	{
 		return _result;
-	}
-
-	static StrongReferenceType createNew()
-	{
-		return MyEmbeddedType::createNew();
 	}
 
 private:
@@ -124,7 +120,7 @@ private:
 
 	void callBack()
 	{
-		executeCallBack(getReference());
+		executeCallBack(shared_from_this());
 	}
 	pvrvk::ImageView _result;
 	pvrvk::ImageView get_() const
@@ -154,23 +150,22 @@ private:
 	void cleanup_() {}
 	void destroyObject() {}
 };
-//!\endcond
 
-/// <summary> A ref-counted pointer to a Future of an Image Upload: A class that wraps the texture that
+/// <summary>A ref-counted pointer to a Future of an Image Upload: A class that wraps the texture that
 /// "is being uploaded on a separate thread", together with functions to "query if the upload is yet complete"
-/// and to "block until the upload is complete, if necessary, and return the result"
-typedef EmbeddedRefCountedResource<ImageUploadFuture_> ImageUploadFuture;
+/// and to "block until the upload is complete, if necessary, and return the result"</summary>
+typedef std::shared_ptr<ImageUploadFuture_> ImageUploadFuture;
 
-//!\cond NO_DOXYGEN
-inline void imageUploadAsyncWorker(ImageUploadFuture params)
+/// <summary>Provides a mechanism for kicking an asynchronous image upload worker</summary>
+/// <param name="uploadFuture">An image upload future to be uploaded on a separate thread.</param>
+inline void imageUploadAsyncWorker(ImageUploadFuture uploadFuture)
 {
-	params->loadNow();
+	uploadFuture->loadNow();
 }
-//!\endcond
 
-/// <summary> This class wraps a worker thread that uploads texture to the GPU asynchronously and returns
+/// <summary>This class wraps a worker thread that uploads texture to the GPU asynchronously and returns
 /// futures to them. This class would normally be used with Texture Futures as well, in order to do both
-/// of the operations asynchronously.
+/// of the operations asynchronously.</summary>
 class ImageApiAsyncUploader : public async::AsyncScheduler<pvrvk::ImageView, ImageUploadFuture, imageUploadAsyncWorker>
 {
 private:
@@ -180,14 +175,12 @@ private:
 	async::Mutex* _cmdQueueMutex;
 
 public:
-	ImageApiAsyncUploader()
+	ImageApiAsyncUploader() : _cmdQueueMutex(nullptr)
 	{
 		_myInfo = "ImageApiAsyncUploader";
 	}
-	/// <summary>Base class of the framework future.</summary>
-	typedef async::IFrameworkAsyncResult<pvrvk::ImageView> MyBase;
 	/// <summary>The type of the optional callback that is called at the end of the operation</summary>
-	typedef MyBase::Callback CallbackType;
+	typedef async::IFrameworkAsyncResult<pvrvk::ImageView>::Callback CallbackType;
 
 	/// <summary>Initialize this AsyncUploader. Do not use the queue and pool unguarded aftewards, as
 	/// they will be accessed from an indeterminate thread at indeterminate times. It is ideal that
@@ -224,20 +217,20 @@ public:
 	/// <returns> A texture upload Future which you can use to query or get the uploaded texture</returns>
 	AsyncApiTexture uploadTextureAsync(const AsyncTexture& texture, bool allowDecompress = true, CallbackType callback = nullptr, bool callbackBeforeSignal = false)
 	{
-		assertion(_queueVk.isValid(), "Context has not been initialized");
-		auto future = ImageUploadFuture::ElementType::createNew();
+		assertion(_queueVk != nullptr, "Queue has not been initialized");
+		auto future = std::make_shared<ImageUploadFuture_>();
 		auto& params = *future;
 		params._allowDecompress = allowDecompress;
 		params._queue = _queueVk;
 		params._device = _device;
 		params._texture = texture;
-		params._resultSemaphore.construct();
+		params._resultSemaphore = std::make_shared<async::Semaphore>();
 		params._cmdPool = _cmdPool;
 		params.setCallBack(callback);
 		params._callbackBeforeSignal = callbackBeforeSignal;
 		params._cmdQueueMutex = _cmdQueueMutex;
 		_queueSemaphore.wait();
-		_queue.push_back(future);
+		_queue.emplace_back(future);
 		_queueSemaphore.signal();
 		_workSemaphore.signal();
 		return future;

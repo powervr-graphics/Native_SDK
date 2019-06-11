@@ -76,20 +76,23 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="namespacepvr.html">pvr</a></li><li class="navelem"><a class="el" href="namespacepvr_1_1platform.html">platform</a></li><li class="navelem"><a class="el" href="classpvr_1_1platform_1_1_state_machine.html">StateMachine</a></li>  </ul>
+<li class="navelem"><b>pvr</b></li><li class="navelem"><a class="el" href="namespacepvr_1_1platform.html">platform</a></li><li class="navelem"><a class="el" href="classpvr_1_1platform_1_1_state_machine.html">StateMachine</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
   <div class="summary">
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
+<a href="#pub-attribs">Public Attributes</a> &#124;
+<a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="classpvr_1_1platform_1_1_state_machine-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">pvr::platform::StateMachine Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p>The <a class="el" href="classpvr_1_1platform_1_1_state_machine.html" title="The StateMachine controlling the PowerVR Shell. Provides the application main loop and callbacks...">StateMachine</a> controlling the PowerVR <a class="el" href="classpvr_1_1platform_1_1_shell.html" title="The PowerVR Shell (pvr::Shell) is the main class that the user will inherit his application from...">Shell</a>. Provides the application main loop and callbacks.  
+<p>The <a class="el" href="classpvr_1_1platform_1_1_state_machine.html" title="The StateMachine controlling the PowerVR Shell. Provides the application main loop and callbacks...">StateMachine</a> controlling the PowerVR <a class="el" href="classpvr_1_1platform_1_1_shell.html" title="The PowerVR Shell (pvr::Shell) is the main class that the user will inherit his application from...">Shell</a>. Provides the application main loop and callbacks. 
  <a href="classpvr_1_1platform_1_1_state_machine.html#details">More...</a></p>
 <div class="dynheader">
 Inheritance diagram for pvr::platform::StateMachine:</div>
@@ -124,6 +127,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a6cb429ae5ab63e81b8cf587d107f32da"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_state_machine.html#a6cb429ae5ab63e81b8cf587d107f32da">StateMachine</a> (OSApplication instance, platform::CommandLineParser &amp;commandLine, OSDATA osdata)</td></tr>
 <tr class="memdesc:a6cb429ae5ab63e81b8cf587d107f32da"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor. Called by the application's entry point (main). <a href="#a6cb429ae5ab63e81b8cf587d107f32da">More...</a><br/></td></tr>
 <tr class="separator:a6cb429ae5ab63e81b8cf587d107f32da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab430c168143c90cd488aba54ff139ca9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell_o_s.html#ab430c168143c90cd488aba54ff139ca9">addReadPath</a> (const std::string &amp;readPaths)</td></tr>
+<tr class="memdesc:ab430c168143c90cd488aba54ff139ca9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the read paths. <a href="#ab430c168143c90cd488aba54ff139ca9">More...</a><br/></td></tr>
+<tr class="separator:ab430c168143c90cd488aba54ff139ca9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a759768f57cf95b7c53f9eebd4d6f730f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell_o_s.html#a759768f57cf95b7c53f9eebd4d6f730f">clearReadPaths</a> ()</td></tr>
+<tr class="memdesc:a759768f57cf95b7c53f9eebd4d6f730f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears the read paths. <a href="#a759768f57cf95b7c53f9eebd4d6f730f">More...</a><br/></td></tr>
+<tr class="separator:a759768f57cf95b7c53f9eebd4d6f730f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa0ceef207e50096836056de3df07a697"><td class="memItemLeft" align="right" valign="top">Result&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_state_machine.html#aa0ceef207e50096836056de3df07a697">execute</a> ()</td></tr>
 <tr class="memdesc:aa0ceef207e50096836056de3df07a697"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called by the application's entry point (main). <a href="#aa0ceef207e50096836056de3df07a697">More...</a><br/></td></tr>
 <tr class="separator:aa0ceef207e50096836056de3df07a697"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -136,27 +145,107 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a9fec54fc1350baad6b33770d38a49a2f"><td class="memItemLeft" align="right" valign="top">Result&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_state_machine.html#a9fec54fc1350baad6b33770d38a49a2f">executeUpTo</a> (const <a class="el" href="classpvr_1_1platform_1_1_state_machine.html#a1ad8cfbd46921c044897d844eafbd04c">State</a> state)</td></tr>
 <tr class="memdesc:a9fec54fc1350baad6b33770d38a49a2f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called internally by the state machine. Executes all code paths between current state and the state requested (naturally reaching that state). For example, executeUpTo(QuitApplication) when current state is RenderFrame, will execute ReleaseView, ReleaseWindow, QuitApplication <a href="#a9fec54fc1350baad6b33770d38a49a2f">More...</a><br/></td></tr>
 <tr class="separator:a9fec54fc1350baad6b33770d38a49a2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a70c2b4d3e63e750fc5ea7a1bdb453460"><td class="memItemLeft" align="right" valign="top">OSApplication&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell_o_s.html#a70c2b4d3e63e750fc5ea7a1bdb453460">getApplication</a> () const </td></tr>
+<tr class="memdesc:a70c2b4d3e63e750fc5ea7a1bdb453460"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the platform specific application. <a href="#a70c2b4d3e63e750fc5ea7a1bdb453460">More...</a><br/></td></tr>
+<tr class="separator:a70c2b4d3e63e750fc5ea7a1bdb453460"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2465d86ed4299bad9b96ebe32aabea33"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell_o_s.html#a2465d86ed4299bad9b96ebe32aabea33">getApplicationName</a> () const </td></tr>
+<tr class="memdesc:a2465d86ed4299bad9b96ebe32aabea33"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the application name. <a href="#a2465d86ed4299bad9b96ebe32aabea33">More...</a><br/></td></tr>
+<tr class="separator:a2465d86ed4299bad9b96ebe32aabea33"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4b5d6b68cf8f2b3229c7411420d49991"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpvr_1_1platform_1_1_state_machine.html#a1ad8cfbd46921c044897d844eafbd04c">State</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_state_machine.html#a4b5d6b68cf8f2b3229c7411420d49991">getCurrentState</a> () const </td></tr>
 <tr class="memdesc:a4b5d6b68cf8f2b3229c7411420d49991"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the current state of the state machine. <a href="#a4b5d6b68cf8f2b3229c7411420d49991">More...</a><br/></td></tr>
 <tr class="separator:a4b5d6b68cf8f2b3229c7411420d49991"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d52db53a917b03550ddeaf69e919382"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell_o_s.html#a5d52db53a917b03550ddeaf69e919382">getDefaultReadPath</a> () const </td></tr>
+<tr class="memdesc:a5d52db53a917b03550ddeaf69e919382"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the default read path. <a href="#a5d52db53a917b03550ddeaf69e919382">More...</a><br/></td></tr>
+<tr class="separator:a5d52db53a917b03550ddeaf69e919382"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae5ceea79ecd69653fabee5b46854f67b"><td class="memItemLeft" align="right" valign="top">OSDisplay&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell_o_s.html#ae5ceea79ecd69653fabee5b46854f67b">getDisplay</a> () const </td></tr>
+<tr class="memdesc:ae5ceea79ecd69653fabee5b46854f67b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the platform specific display. <a href="#ae5ceea79ecd69653fabee5b46854f67b">More...</a><br/></td></tr>
+<tr class="separator:ae5ceea79ecd69653fabee5b46854f67b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a15b8504cf957697dbb8378702f7d9b3b"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; std::string &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell_o_s.html#a15b8504cf957697dbb8378702f7d9b3b">getReadPaths</a> () const </td></tr>
+<tr class="memdesc:a15b8504cf957697dbb8378702f7d9b3b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the read paths. <a href="#a15b8504cf957697dbb8378702f7d9b3b">More...</a><br/></td></tr>
+<tr class="separator:a15b8504cf957697dbb8378702f7d9b3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a634d8ec0a916bb6b22b18a9654462786"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpvr_1_1platform_1_1_shell.html">Shell</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell_o_s.html#a634d8ec0a916bb6b22b18a9654462786">getShell</a> ()</td></tr>
+<tr class="memdesc:a634d8ec0a916bb6b22b18a9654462786"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the shell. <a href="#a634d8ec0a916bb6b22b18a9654462786">More...</a><br/></td></tr>
+<tr class="separator:a634d8ec0a916bb6b22b18a9654462786"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7f480f8e863540d11a5f6e0286bd2181"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpvr_1_1platform_1_1_state_machine.html#a1ad8cfbd46921c044897d844eafbd04c">State</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_state_machine.html#a7f480f8e863540d11a5f6e0286bd2181">getState</a> () const </td></tr>
 <tr class="memdesc:a7f480f8e863540d11a5f6e0286bd2181"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the current state of the <a class="el" href="classpvr_1_1platform_1_1_state_machine.html" title="The StateMachine controlling the PowerVR Shell. Provides the application main loop and callbacks...">StateMachine</a>. <a href="#a7f480f8e863540d11a5f6e0286bd2181">More...</a><br/></td></tr>
 <tr class="separator:a7f480f8e863540d11a5f6e0286bd2181"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a80dddfcca38b68703ca0e796f4107814"><td class="memItemLeft" align="right" valign="top">OSWindow&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell_o_s.html#a80dddfcca38b68703ca0e796f4107814">getWindow</a> () const </td></tr>
+<tr class="memdesc:a80dddfcca38b68703ca0e796f4107814"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the platform specific window. <a href="#a80dddfcca38b68703ca0e796f4107814">More...</a><br/></td></tr>
+<tr class="separator:a80dddfcca38b68703ca0e796f4107814"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9409e848151f8161e539bb43dc8f4b3"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell_o_s.html#ae9409e848151f8161e539bb43dc8f4b3">getWritePath</a> () const </td></tr>
+<tr class="memdesc:ae9409e848151f8161e539bb43dc8f4b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the current write path. <a href="#ae9409e848151f8161e539bb43dc8f4b3">More...</a><br/></td></tr>
+<tr class="separator:ae9409e848151f8161e539bb43dc8f4b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af5b7889a1cb7985de4ac95a87f30623c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell_o_s.html#af5b7889a1cb7985de4ac95a87f30623c">handleOSEvents</a> ()</td></tr>
+<tr class="memdesc:af5b7889a1cb7985de4ac95a87f30623c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handles os specific events. <a href="#af5b7889a1cb7985de4ac95a87f30623c">More...</a><br/></td></tr>
+<tr class="separator:af5b7889a1cb7985de4ac95a87f30623c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ade72bccc6af2450806ff50e66ce1a3ee"><td class="memItemLeft" align="right" valign="top">Result&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_state_machine.html#ade72bccc6af2450806ff50e66ce1a3ee">init</a> ()</td></tr>
 <tr class="memdesc:ade72bccc6af2450806ff50e66ce1a3ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called by the application's entry point (main). <a href="#ade72bccc6af2450806ff50e66ce1a3ee">More...</a><br/></td></tr>
 <tr class="separator:ade72bccc6af2450806ff50e66ce1a3ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a80d9cecf843a590f1f7ae026e98d8dff"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell_o_s.html#a80d9cecf843a590f1f7ae026e98d8dff">init</a> (DisplayAttributes &amp;data)</td></tr>
+<tr class="memdesc:a80d9cecf843a590f1f7ae026e98d8dff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the platform specific shell. Accepts a data struct so it can overide default values. <a href="#a80d9cecf843a590f1f7ae026e98d8dff">More...</a><br/></td></tr>
+<tr class="separator:a80d9cecf843a590f1f7ae026e98d8dff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a504efc29a6f70e3d43ec3d2590a85ac4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell_o_s.html#a504efc29a6f70e3d43ec3d2590a85ac4">initializeWindow</a> (DisplayAttributes &amp;data)</td></tr>
+<tr class="memdesc:a504efc29a6f70e3d43ec3d2590a85ac4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the platform specific window. <a href="#a504efc29a6f70e3d43ec3d2590a85ac4">More...</a><br/></td></tr>
+<tr class="separator:a504efc29a6f70e3d43ec3d2590a85ac4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a38012a9f29232dea54d63ef7a8df5eb3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell_o_s.html#a38012a9f29232dea54d63ef7a8df5eb3">isInitialized</a> ()</td></tr>
+<tr class="memdesc:a38012a9f29232dea54d63ef7a8df5eb3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Indicates whether the platform specific shell has been initiailised. <a href="#a38012a9f29232dea54d63ef7a8df5eb3">More...</a><br/></td></tr>
+<tr class="separator:a38012a9f29232dea54d63ef7a8df5eb3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a84b4f646556b5622b341d5308ce2c7b8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_state_machine.html#a84b4f646556b5622b341d5308ce2c7b8">isPaused</a> () const </td></tr>
 <tr class="memdesc:a84b4f646556b5622b341d5308ce2c7b8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if the <a class="el" href="classpvr_1_1platform_1_1_state_machine.html" title="The StateMachine controlling the PowerVR Shell. Provides the application main loop and callbacks...">StateMachine</a> is paused. <a href="#a84b4f646556b5622b341d5308ce2c7b8">More...</a><br/></td></tr>
 <tr class="separator:a84b4f646556b5622b341d5308ce2c7b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5f23cb83bded076c75de414d8e017da1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_state_machine.html#a5f23cb83bded076c75de414d8e017da1">pause</a> ()</td></tr>
 <tr class="memdesc:a5f23cb83bded076c75de414d8e017da1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pauses the state machine. <a href="#a5f23cb83bded076c75de414d8e017da1">More...</a><br/></td></tr>
 <tr class="separator:a5f23cb83bded076c75de414d8e017da1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae746279537a33d00ccc8505de6cabbf7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell_o_s.html#ae746279537a33d00ccc8505de6cabbf7">popUpMessage</a> (const char *const title, const char *const message,...) const </td></tr>
+<tr class="memdesc:ae746279537a33d00ccc8505de6cabbf7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pops up a message. <a href="#ae746279537a33d00ccc8505de6cabbf7">More...</a><br/></td></tr>
+<tr class="separator:ae746279537a33d00ccc8505de6cabbf7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e1d93d035ce1cf1a9846bdd67cccf51"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell_o_s.html#a8e1d93d035ce1cf1a9846bdd67cccf51">releaseWindow</a> ()</td></tr>
+<tr class="memdesc:a8e1d93d035ce1cf1a9846bdd67cccf51"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases the platform specific window. <a href="#a8e1d93d035ce1cf1a9846bdd67cccf51">More...</a><br/></td></tr>
+<tr class="separator:a8e1d93d035ce1cf1a9846bdd67cccf51"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad9ea3a8d5e394632d0c98ce110021df6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_state_machine.html#ad9ea3a8d5e394632d0c98ce110021df6">resume</a> ()</td></tr>
 <tr class="memdesc:ad9ea3a8d5e394632d0c98ce110021df6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resumes (exits pause state for) the state machine. <a href="#ad9ea3a8d5e394632d0c98ce110021df6">More...</a><br/></td></tr>
 <tr class="separator:ad9ea3a8d5e394632d0c98ce110021df6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4bbc9fa446e1024d9d0ed248ce7c8972"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell_o_s.html#a4bbc9fa446e1024d9d0ed248ce7c8972">setApplicationName</a> (const std::string &amp;applicationName)</td></tr>
+<tr class="memdesc:a4bbc9fa446e1024d9d0ed248ce7c8972"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the application name. <a href="#a4bbc9fa446e1024d9d0ed248ce7c8972">More...</a><br/></td></tr>
+<tr class="separator:a4bbc9fa446e1024d9d0ed248ce7c8972"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6d6fdfe3c80e597c6a928c434438dae9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell_o_s.html#a6d6fdfe3c80e597c6a928c434438dae9">updatePointingDeviceLocation</a> ()</td></tr>
+<tr class="memdesc:a6d6fdfe3c80e597c6a928c434438dae9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Updates the location of the pointing device. <a href="#a6d6fdfe3c80e597c6a928c434438dae9">More...</a><br/></td></tr>
+<tr class="separator:a6d6fdfe3c80e597c6a928c434438dae9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:ac223902ede71b2e5379479051d22ff71"><td class="memItemLeft" align="right" valign="top">static const <a class="el" href="structpvr_1_1platform_1_1_shell_o_s_1_1_capabilities.html">Capabilities</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell_o_s.html#ac223902ede71b2e5379479051d22ff71">getCapabilities</a> ()</td></tr>
+<tr class="memdesc:ac223902ede71b2e5379479051d22ff71"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves OS specific capabilities. <a href="#ac223902ede71b2e5379479051d22ff71">More...</a><br/></td></tr>
+<tr class="separator:ac223902ede71b2e5379479051d22ff71"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
+Public Attributes</h2></td></tr>
+<tr class="memitem:a726a3ca7ea863e4ecd34e398365e2ee1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a726a3ca7ea863e4ecd34e398365e2ee1"></a>
+<a class="el" href="structpvr_1_1platform_1_1_shell_data.html">ShellData</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell_o_s.html#a726a3ca7ea863e4ecd34e398365e2ee1">_shellData</a></td></tr>
+<tr class="memdesc:a726a3ca7ea863e4ecd34e398365e2ee1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Platform specific shell data. <br/></td></tr>
+<tr class="separator:a726a3ca7ea863e4ecd34e398365e2ee1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
+Protected Attributes</h2></td></tr>
+<tr class="memitem:aa9d41efb8121bbe9c42d29388f4464ec"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa9d41efb8121bbe9c42d29388f4464ec"></a>
+std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell_o_s.html#aa9d41efb8121bbe9c42d29388f4464ec">_appName</a></td></tr>
+<tr class="memdesc:aa9d41efb8121bbe9c42d29388f4464ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">The application name. <br/></td></tr>
+<tr class="separator:aa9d41efb8121bbe9c42d29388f4464ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7053bbccf88b74d29699219bf4e802ec"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7053bbccf88b74d29699219bf4e802ec"></a>
+std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell_o_s.html#a7053bbccf88b74d29699219bf4e802ec">_readPaths</a></td></tr>
+<tr class="memdesc:a7053bbccf88b74d29699219bf4e802ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">A list of read paths. <br/></td></tr>
+<tr class="separator:a7053bbccf88b74d29699219bf4e802ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a30f26fe59f27b49e8c067efcb64f1847"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a30f26fe59f27b49e8c067efcb64f1847"></a>
+std::unique_ptr&lt; <a class="el" href="classpvr_1_1platform_1_1_shell.html">Shell</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell_o_s.html#a30f26fe59f27b49e8c067efcb64f1847">_shell</a></td></tr>
+<tr class="memdesc:a30f26fe59f27b49e8c067efcb64f1847"><td class="mdescLeft">&#160;</td><td class="mdescRight">A unique pointer to the shell. <br/></td></tr>
+<tr class="separator:a30f26fe59f27b49e8c067efcb64f1847"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a667807feed932a3f14d954824718ea7e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a667807feed932a3f14d954824718ea7e"></a>
+std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell_o_s.html#a667807feed932a3f14d954824718ea7e">_writePath</a></td></tr>
+<tr class="memdesc:a667807feed932a3f14d954824718ea7e"><td class="mdescLeft">&#160;</td><td class="mdescRight">The current write path. <br/></td></tr>
+<tr class="separator:a667807feed932a3f14d954824718ea7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>The <a class="el" href="classpvr_1_1platform_1_1_state_machine.html" title="The StateMachine controlling the PowerVR Shell. Provides the application main loop and callbacks...">StateMachine</a> controlling the PowerVR <a class="el" href="classpvr_1_1platform_1_1_shell.html" title="The PowerVR Shell (pvr::Shell) is the main class that the user will inherit his application from...">Shell</a>. Provides the application main loop and callbacks. </p>
+<div class="textblock"><p>The <a class="el" href="classpvr_1_1platform_1_1_state_machine.html" title="The StateMachine controlling the PowerVR Shell. Provides the application main loop and callbacks...">StateMachine</a> controlling the PowerVR <a class="el" href="classpvr_1_1platform_1_1_shell.html" title="The PowerVR Shell (pvr::Shell) is the main class that the user will inherit his application from...">Shell</a>. Provides the application main loop and callbacks.</p>
 </div><h2 class="groupheader">Member Enumeration Documentation</h2>
 <a class="anchor" id="a1ad8cfbd46921c044897d844eafbd04c"></a>
 <div class="memitem">
@@ -248,6 +337,63 @@ Public Member Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="ab430c168143c90cd488aba54ff139ca9"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void pvr::platform::ShellOS::addReadPath </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>readPaths</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Retrieves the read paths.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">readPaths</td><td>A new read path to add to the list of read paths.</td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a759768f57cf95b7c53f9eebd4d6f730f"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void pvr::platform::ShellOS::clearReadPaths </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Clears the read paths.</p>
+
+</div>
+</div>
 <a class="anchor" id="aa0ceef207e50096836056de3df07a697"></a>
 <div class="memitem">
 <div class="memproto">
@@ -334,6 +480,84 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a70c2b4d3e63e750fc5ea7a1bdb453460"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">OSApplication pvr::platform::ShellOS::getApplication </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Retrieves the platform specific application.</p>
+<dl class="section return"><dt>Returns</dt><dd>The OS specific application</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a2465d86ed4299bad9b96ebe32aabea33"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string &amp; pvr::platform::ShellOS::getApplicationName </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Retrieves the application name.</p>
+<dl class="section return"><dt>Returns</dt><dd>The application name</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ac223902ede71b2e5379479051d22ff71"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static const <a class="el" href="structpvr_1_1platform_1_1_shell_o_s_1_1_capabilities.html">Capabilities</a>&amp; pvr::platform::ShellOS::getCapabilities </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Retrieves OS specific capabilities.</p>
+<dl class="section return"><dt>Returns</dt><dd>OS Specific capabilities</dd></dl>
+
+</div>
+</div>
 <a class="anchor" id="a4b5d6b68cf8f2b3229c7411420d49991"></a>
 <div class="memitem">
 <div class="memproto">
@@ -357,6 +581,110 @@ Public Member Functions</h2></td></tr>
 
 <p>Gets the current state of the state machine.</p>
 <dl class="section return"><dt>Returns</dt><dd>The current state of the state machine</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a5d52db53a917b03550ddeaf69e919382"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string &amp; pvr::platform::ShellOS::getDefaultReadPath </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Retrieves the default read path.</p>
+<dl class="section return"><dt>Returns</dt><dd>The default read path</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ae5ceea79ecd69653fabee5b46854f67b"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">OSDisplay pvr::platform::ShellOS::getDisplay </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Retrieves the platform specific display.</p>
+<dl class="section return"><dt>Returns</dt><dd>The OS specific display</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a15b8504cf957697dbb8378702f7d9b3b"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; std::string &gt; &amp; pvr::platform::ShellOS::getReadPaths </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Retrieves the read paths.</p>
+<dl class="section return"><dt>Returns</dt><dd>The read paths</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a634d8ec0a916bb6b22b18a9654462786"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classpvr_1_1platform_1_1_shell.html">Shell</a>* pvr::platform::ShellOS::getShell </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Retrieves the shell.</p>
+<dl class="section return"><dt>Returns</dt><dd>A pointer to the shell</dd></dl>
 
 </div>
 </div>
@@ -386,6 +714,84 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a80dddfcca38b68703ca0e796f4107814"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">OSWindow pvr::platform::ShellOS::getWindow </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Retrieves the platform specific window.</p>
+<dl class="section return"><dt>Returns</dt><dd>The OS specific window</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ae9409e848151f8161e539bb43dc8f4b3"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string &amp; pvr::platform::ShellOS::getWritePath </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Retrieves the current write path.</p>
+<dl class="section return"><dt>Returns</dt><dd>The write path</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="af5b7889a1cb7985de4ac95a87f30623c"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool pvr::platform::ShellOS::handleOSEvents </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Handles os specific events.</p>
+<dl class="section return"><dt>Returns</dt><dd>True on success</dd></dl>
+
+</div>
+</div>
 <a class="anchor" id="ade72bccc6af2450806ff50e66ce1a3ee"></a>
 <div class="memitem">
 <div class="memproto">
@@ -401,6 +807,98 @@ Public Member Functions</h2></td></tr>
 
 <p>Called by the application's entry point (main).</p>
 <dl class="section return"><dt>Returns</dt><dd>pvr::Result::Success if successful, otherwise error code.</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a80d9cecf843a590f1f7ae026e98d8dff"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool pvr::platform::ShellOS::init </td>
+          <td>(</td>
+          <td class="paramtype">DisplayAttributes &amp;&#160;</td>
+          <td class="paramname"><em>data</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Initializes the platform specific shell. Accepts a data struct so it can overide default values.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">data</td><td>A set of display attributes which will be set within this function.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True on success</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a504efc29a6f70e3d43ec3d2590a85ac4"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool pvr::platform::ShellOS::initializeWindow </td>
+          <td>(</td>
+          <td class="paramtype">DisplayAttributes &amp;&#160;</td>
+          <td class="paramname"><em>data</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Initializes the platform specific window.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">data</td><td>A set of display attributes which will be set within this function.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True on success</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a38012a9f29232dea54d63ef7a8df5eb3"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool pvr::platform::ShellOS::isInitialized </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Indicates whether the platform specific shell has been initiailised.</p>
+<dl class="section return"><dt>Returns</dt><dd>True on success</dd></dl>
 
 </div>
 </div>
@@ -455,6 +953,82 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="ae746279537a33d00ccc8505de6cabbf7"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool pvr::platform::ShellOS::popUpMessage </td>
+          <td>(</td>
+          <td class="paramtype">const char *const&#160;</td>
+          <td class="paramname"><em>title</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *const&#160;</td>
+          <td class="paramname"><em>message</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>...</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Pops up a message.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">title</td><td>Specifies the title.</td></tr>
+    <tr><td class="paramname">message</td><td>Specifies the message.</td></tr>
+    <tr><td class="paramname">...</td><td>Variable arguments for the format std::string. Printf-style rules</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True on success</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a8e1d93d035ce1cf1a9846bdd67cccf51"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void pvr::platform::ShellOS::releaseWindow </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Releases the platform specific window.</p>
+
+</div>
+</div>
 <a class="anchor" id="ad9ea3a8d5e394632d0c98ce110021df6"></a>
 <div class="memitem">
 <div class="memproto">
@@ -477,6 +1051,63 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Resumes (exits pause state for) the state machine.</p>
+
+</div>
+</div>
+<a class="anchor" id="a4bbc9fa446e1024d9d0ed248ce7c8972"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void pvr::platform::ShellOS::setApplicationName </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>applicationName</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Sets the application name.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">applicationName</td><td>An application name.</td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a6d6fdfe3c80e597c6a928c434438dae9"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void pvr::platform::ShellOS::updatePointingDeviceLocation </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Updates the location of the pointing device.</p>
 
 </div>
 </div>

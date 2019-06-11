@@ -21,7 +21,7 @@ PVRAssets
 ~~~~~~~~~
 `Source code documentation <PVRAssets/docs/Index.html>`__
 
-This is the Framework’s asset code. It includes classes and helpers for scene, mesh, light, camera, animations, and asset loading code.  PVRAssets supports the loading of POD files, PVR and PFX materials format, as well as support for a number of texture formats.
+This is the Framework’s asset code. It includes classes and helpers for scene, mesh, light, camera, animations, and asset loading code.  PVRAssets supports the loading of POD and glTF 2.0 files, PVR and PFX materials format, as well as support for a number of texture formats.
 
 PVRShell
 ~~~~~~~~
@@ -81,7 +81,7 @@ To create a typical application, please follow these steps:
 
 #. Create the application files. For a single CPP file, the includes will usually be:
      +  ``PVRShell/PVRShell.h``
-     +  ``PVRUtils/GLES/PVRUtilsGles.h`` or ``PVRUtils/Vulkan/PVRUtilsVk.h``
+     +  ``PVRUtils/PVRUtilsGles.h`` or ``PVRUtils/PVRUtilsVk.h``
 
 #. Write the skeleton of the application. See description of PVRShell.
 
@@ -89,7 +89,7 @@ Guidelines and Recommendations
 ------------------------------
 Below are a set of guidelines and recommendations to consider when using the PowerVR Framework:
 
-* Use PVRUtils to simplify common, suprisingly complex tasks. This makes them easy, concise and understandable. These tasks include context creation, backbuffer/swapchain setup, and texture uploading. Then step through the code to understand the actual mechanics implemented. This is particularly important for Vulkan tasks that are surprisingly involved, such as texture uploading.
+* Use PVRUtils to simplify common, surprisingly complex tasks. This makes them easy, concise and understandable. These tasks include context creation, backbuffer/swapchain setup, and texture uploading. Then step through the code to understand the actual mechanics implemented. This is particularly important for Vulkan tasks that are surprisingly involved, such as texture uploading.
  
 * The ``pvr::assets::Model`` class contains all the information needed for drawing, including cameras, lights, and effects. Follow a typical PowerVR SDK example such as IntroducingPVRUtils to understand its basic use, including getting information about the data layout of meshes from a model.
  

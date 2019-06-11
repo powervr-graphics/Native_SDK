@@ -1,4 +1,4 @@
-//Microsoft eMbedded Visual C++ generated resource script.
+// Microsoft Visual C++ generated resource script.
 //
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
@@ -58,16 +58,14 @@ END
 // RCDATA
 //
 /////////////////////////////////////////////////////////////////////////////
-// RCDATA: Assets (scenes,  effects, textures...)
-GnomeWood.pvr		RCDATA		"..\\..\\..\\assets\\GnomeToy\\GnomeWood.pvr"
-DarkWood.pvr		RCDATA		"..\\..\\..\\assets\\GnomeToy\\DarkWood.pvr"
-ClearWood.pvr		RCDATA		"..\\..\\..\\assets\\GnomeToy\\ClearWood.pvr"
-GnomeToy.pod		RCDATA		"..\\..\\..\\assets\\GnomeToy\\GnomeToy.pod"
-// RCDATA: OpenGL ES Textual shaders(glsl)
-FragShader_ES3.fsh		RCDATA		"..\\FragShader_ES3.fsh"
-VertShader_ES3.vsh		RCDATA		"..\\VertShader_ES3.vsh"
-TexQuadFragShader_ES3.fsh		RCDATA		"..\\TexQuadFragShader_ES3.fsh"
-TexQuadVertShader_ES3.vsh		RCDATA		"..\\TexQuadVertShader_ES3.vsh"
+GnomeWood.pvr RCDATA "..\\..\\..\\assets\\GnomeToy\\GnomeWood.pvr"
+DarkWood.pvr RCDATA "..\\..\\..\\assets\\GnomeToy\\DarkWood.pvr"
+ClearWood.pvr RCDATA "..\\..\\..\\assets\\GnomeToy\\ClearWood.pvr"
+GnomeToy.pod RCDATA "..\\..\\..\\assets\\GnomeToy\\GnomeToy.pod"
+FragShader_ES3.fsh RCDATA "..\\FragShader_ES3.fsh"
+VertShader_ES3.vsh RCDATA "..\\VertShader_ES3.vsh"
+TexQuadFragShader_ES3.fsh RCDATA "..\\TexQuadFragShader_ES3.fsh"
+TexQuadVertShader_ES3.vsh RCDATA "..\\TexQuadVertShader_ES3.vsh"
 
 #endif    // English (United Kingdom) resources
 /////////////////////////////////////////////////////////////////////////////

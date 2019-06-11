@@ -1,5 +1,5 @@
 <map id="pvrvk::impl::Event_" name="pvrvk::impl::Event_">
-<area shape="rect" id="node2" href="$classpvrvk_1_1impl_1_1_device_object_handle.html" title="pvrvk::impl::DeviceObject\lHandle\&lt; VkEvent \&gt;" alt="" coords="227,5,400,46"/>
-<area shape="rect" id="node3" href="$classpvrvk_1_1impl_1_1_object_handle.html" title="pvrvk::impl::ObjectHandle\l\&lt; VkEvent \&gt;" alt="" coords="5,5,179,46"/>
-<area shape="rect" id="node4" href="$classpvrvk_1_1impl_1_1_device_object_debug_marker.html" title="pvrvk::impl::DeviceObject\lDebugMarker\&lt; Event_ \&gt;" alt="" coords="227,70,400,111"/>
+<area shape="rect" id="node2" href="$classpvrvk_1_1impl_1_1_p_v_r_vk_device_object_base.html" title="pvrvk::impl::PVRVkDevice\lObjectBase\&lt; VkEvent, ObjectType\l::e_EVENT \&gt;" alt="" coords="299,4,525,60"/>
+<area shape="rect" id="node3" href="$classpvrvk_1_1impl_1_1_p_v_r_vk_object_base.html" title="pvrvk::impl::PVRVkObject\lBase\&lt; VkEvent, PVRVkObjectType \&gt;" alt="" coords="5,11,251,53"/>
+<area shape="rect" id="node4" href="$classpvrvk_1_1impl_1_1_device_object_debug_utils.html" title="pvrvk::impl::DeviceObject\lDebugUtils\&lt; Event_ \&gt;" alt="" coords="325,83,499,125"/>
 </map>

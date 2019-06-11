@@ -11,22 +11,22 @@
 
 namespace pvrvk {
 namespace impl {
-Display_::Display_(PhysicalDeviceWeakPtr physicalDevice, const DisplayPropertiesKHR& displayProperties)
-	: PhysicalDeviceObjectHandle(physicalDevice, displayProperties.getDisplay()), _properties(displayProperties)
+Display_::Display_(make_shared_enabler, const PhysicalDeviceWeakPtr& physicalDevice, const DisplayPropertiesKHR& displayProperties)
+	: PVRVkPhysicalDeviceObjectBase(physicalDevice, displayProperties.getDisplay()), _properties(displayProperties)
 {
-	const InstanceWeakPtr& instance = getPhysicalDevice()->getInstance();
-	if (instance->isInstanceExtensionEnabled(VK_KHR_DISPLAY_EXTENSION_NAME))
+	const Instance& instanceSharedPtr = getPhysicalDevice()->getInstance();
+	if (instanceSharedPtr->getEnabledExtensionTable().khrDisplayEnabled)
 	{
 		uint32_t numModes = 0;
-		instance->getVkBindings().vkGetDisplayModePropertiesKHR(getPhysicalDevice()->getVkHandle(), getVkHandle(), &numModes, NULL);
+		instanceSharedPtr->getVkBindings().vkGetDisplayModePropertiesKHR(getPhysicalDevice()->getVkHandle(), getVkHandle(), &numModes, NULL);
 		std::vector<VkDisplayModePropertiesKHR> displayModePropertiesVk;
 		displayModePropertiesVk.resize(numModes);
-		instance->getVkBindings().vkGetDisplayModePropertiesKHR(getPhysicalDevice()->getVkHandle(), getVkHandle(), &numModes, displayModePropertiesVk.data());
+		instanceSharedPtr->getVkBindings().vkGetDisplayModePropertiesKHR(getPhysicalDevice()->getVkHandle(), getVkHandle(), &numModes, displayModePropertiesVk.data());
 
 		for (uint32_t i = 0; i < numModes; ++i)
 		{
 			DisplayModePropertiesKHR displayModeProperties = displayModePropertiesVk[i];
-			_displayModes.push_back(DisplayMode_::createNew(getPhysicalDevice(), displayModeProperties));
+			_displayModes.emplace_back(DisplayMode_::constructShared(physicalDevice, displayModeProperties));
 		}
 	}
 	else

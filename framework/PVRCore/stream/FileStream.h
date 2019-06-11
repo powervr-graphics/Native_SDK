@@ -61,7 +61,7 @@ public:
 		{
 			if (feof(_file) != 0)
 			{
-				throw FileIOError(getFileName(), "[Filestream::read] Was attempting to read past the end of stream.");
+				throw FileEOFError(getFileName(), "[Filestream::read] Was attempting to read past the end of stream.");
 			}
 			else
 			{
@@ -70,8 +70,7 @@ public:
 		}
 	}
 
-	/// <summary>Main write function. Write into the stream the specified amount of items from a provided buffer.
-	/// </summary>
+	/// <summary>Main write function. Write into the stream the specified amount of items from a provided buffer.</summary>
 	/// <param name="elementSize">The size of each element that will be written.</param>
 	/// <param name="numElements">The number of elements to write.</param>
 	/// <param name="buffer">The buffer from which to read the data. If the buffer is smaller than elementSize *
@@ -214,11 +213,9 @@ public:
 	{
 		if (_file)
 		{
-			long originalPosition = ftell(_file);
-			fseek(_file, 0, SeekOriginFromEnd);
+			fseek(_file, 0L, SEEK_END);
 			long fileSize = ftell(_file);
-			fseek(_file, originalPosition, SeekOriginFromStart);
-
+			fseek(_file, 0L, SEEK_SET);
 			return static_cast<size_t>(fileSize);
 		}
 		else
@@ -244,6 +241,23 @@ public:
 		Stream::ptr_type stream(new FileStream(filename, flags, errorOnFileNotFound));
 		stream->open();
 		return stream;
+	}
+
+	/// <summary>Create a new file stream from a filename</summary>
+	/// <param name="filename">The filename to create a stream for</param>
+	/// <param name="flags">The C++ open flags for the file ("r", "w", "a", "r+", "w+", "a+" and optionally "b"), see
+	/// C++ standard.</param>
+	/// <param name="errorOnFileNotFound">OPTIONAL. Set this to false to avoid an error when the file is not found.</param>
+	/// <returns>Return a valid file stream, else Return null if it fails</returns>
+	/// <remarks>Flags correspond the C++ standard for fopen r: Read (read from beginning, preserve contents, fail if
+	/// not exist) w: Write (write from beginning, destroy contents, create if not exist) a: Append (write to end only
+	/// (regardles of file pointer position), preserve contents, create if not exist) r+: Read+ (read/write from
+	/// start, preserve contents, fail if not exist) w+: Write+ (read/write from start, destroy contents, create if
+	/// not exist) a+: Append+ (read/write from end (write only happens to end), preserve contents, create if not
+	/// exist) b: Additional flag: Do no special handling of line break / form feed characters</remarks>
+	static Stream::ptr_type createFileStream(const std::string& filename, const char* flags, bool errorOnFileNotFound = true)
+	{
+		return createFileStream(filename.c_str(), flags, errorOnFileNotFound);
 	}
 
 protected:

@@ -89,7 +89,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 
-<p>An <a class="el" href="classpvr_1_1_asset.html" title="An Asset represents an object that can be stored and loaded. Models, Textures, Effects and similar al...">Asset</a> represents an object that can be stored and loaded. Models, Textures, Effects and similar all inherit from <a class="el" href="classpvr_1_1_asset.html" title="An Asset represents an object that can be stored and loaded. Models, Textures, Effects and similar al...">Asset</a>. The class provides a Handle typedef for convenience, which is a reference-counted PVR Framework object type. Provides convenience functions for loading assets with assetReaders. 
+<p>An <a class="el" href="classpvr_1_1_asset.html" title="An Asset represents an object that can be stored and loaded. Models, Textures, Effects and similar al...">Asset</a> represents an object that can be stored and loaded. Models, Textures, Effects and similar all inherit from <a class="el" href="classpvr_1_1_asset.html" title="An Asset represents an object that can be stored and loaded. Models, Textures, Effects and similar al...">Asset</a>. The class provides a Handle typedef for convenience, which is a reference-counted PVR Framework object type. Provides convenience functions for loading assets with <a class="el" href="namespacepvr_1_1asset_readers.html" title="Contains classes whose purpose is to read specific storage formats (bmp, POD, pfx, pvr etc.) into PVRAssets classes (Texture, Model, Effect etc.).">assetReaders</a>. 
  <a href="classpvr_1_1_asset.html#details">More...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
@@ -114,7 +114,7 @@ Static Public Member Functions</h2></td></tr>
 <div class="textblock"><h3>template&lt;typename AssetType_&gt;<br/>
 class pvr::Asset&lt; AssetType_ &gt;</h3>
 
-<p>An <a class="el" href="classpvr_1_1_asset.html" title="An Asset represents an object that can be stored and loaded. Models, Textures, Effects and similar al...">Asset</a> represents an object that can be stored and loaded. Models, Textures, Effects and similar all inherit from <a class="el" href="classpvr_1_1_asset.html" title="An Asset represents an object that can be stored and loaded. Models, Textures, Effects and similar al...">Asset</a>. The class provides a Handle typedef for convenience, which is a reference-counted PVR Framework object type. Provides convenience functions for loading assets with assetReaders.</p>
+<p>An <a class="el" href="classpvr_1_1_asset.html" title="An Asset represents an object that can be stored and loaded. Models, Textures, Effects and similar al...">Asset</a> represents an object that can be stored and loaded. Models, Textures, Effects and similar all inherit from <a class="el" href="classpvr_1_1_asset.html" title="An Asset represents an object that can be stored and loaded. Models, Textures, Effects and similar al...">Asset</a>. The class provides a Handle typedef for convenience, which is a reference-counted PVR Framework object type. Provides convenience functions for loading assets with <a class="el" href="namespacepvr_1_1asset_readers.html" title="Contains classes whose purpose is to read specific storage formats (bmp, POD, pfx, pvr etc.) into PVRAssets classes (Texture, Model, Effect etc.).">assetReaders</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a class="anchor" id="a6b97831dc9125ac2c5a7ee871152e59d"></a>
 <div class="memitem">
@@ -178,7 +178,7 @@ template&lt;typename AssetType_&gt; </div>
 <p>Create an asset with an <a class="el" href="classpvr_1_1_asset_reader.html" title="Base class for an AssetReader, a class that can read Assets from a provided Stream.">AssetReader</a>, and wrap it into a Handle (reference counted object). Rvalue-ref overload.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">reader</td><td>An (rvalue-ref) <a class="el" href="classpvr_1_1_asset_reader.html" title="Base class for an AssetReader, a class that can read Assets from a provided Stream.">AssetReader</a> of the correct type. Must have a valid <a class="el" href="classpvr_1_1_stream.html" title="This class is used to abstract streams of data (files, blocks of memory, resources etc...">Stream</a> opened. </td></tr>
+    <tr><td class="paramname">reader</td><td>An (rvalue-ref) <a class="el" href="classpvr_1_1_asset_reader.html" title="Base class for an AssetReader, a class that can read Assets from a provided Stream.">AssetReader</a> of the correct type. Must have a valid <a class="el" href="classpvr_1_1_stream.html" title="This class is used to abstract streams of data (files, blocks of memory, resources etc...">Stream</a> opened.</td></tr>
   </table>
   </dd>
 </dl>

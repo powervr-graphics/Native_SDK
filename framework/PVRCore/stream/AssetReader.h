@@ -6,16 +6,13 @@
 */
 #pragma once
 #include "PVRCore/stream/Stream.h"
-#include "PVRCore/RefCounted.h"
 
 namespace pvr {
 
 /// <summary>Base class for an AssetReader, a class that can read Assets from a provided Stream.</summary>
-/// <typeparam name="AssetType">The typename (class) of assets that will be read from this AssetReader.
-/// </typeparam>
+/// <typeparam name="AssetType">The typename (class) of assets that will be read from this AssetReader.</typeparam>
 /// <remarks>A reader of a specific type of assets will normally inherit from an AssetReader of the specified
-/// AssetType. For example, a reader that reads Models from POD files will be: class PODReader:AssetReader<Model>
-/// </remarks>
+/// AssetType. For example, a reader that reads Models from POD files will be: class PODReader:AssetReader\<Model\></remarks>
 template<typename AssetType>
 class AssetReader
 {
@@ -23,8 +20,7 @@ public:
 	/// <summary>Empty asset reader.</summary>
 	AssetReader() : _hasNewAssetStream(true) {}
 
-	/// <summary>Asset reader which will take ownership of the provided Stream object and read Assets from it.
-	/// </summary>
+	/// <summary>Asset reader which will take ownership of the provided Stream object and read Assets from it.</summary>
 	/// <param name="assetStream">stream to read</param>
 	AssetReader(Stream::ptr_type assetStream) : _assetStream(std::move(assetStream)), _hasNewAssetStream(true) {}
 
@@ -33,7 +29,7 @@ public:
 
 	/// <summary>A smart, reference counted, pointer type for the Assets. This will be the typical type that
 	/// readers will use to wrapping the Asset read and return it to the application.</summary>
-	typedef pvr::RefCountedResource<AssetType> AssetHandle;
+	typedef std::shared_ptr<AssetType> AssetHandle;
 
 public:
 	/// <summary>Initialize with a new asset stream without open it.</summary>
@@ -46,6 +42,7 @@ public:
 		_hasNewAssetStream = true;
 	}
 
+	/// <summary>Opens the asset stream if it is not already open.</summary>
 	void openAssetStream()
 	{
 		if (_assetStream.get() && !_assetStream->isopen())
@@ -88,8 +85,7 @@ public:
 	}
 
 	/// <summary>Read asset. Asset stream has to be opended before reading asset.</summary>
-	/// <param name="asset">type type of asset to read</param>
-	/// <returns>true on success</returns>
+	/// <returns>Retrieves the read asset</returns>
 	AssetType readAsset()
 	{
 		if (!hasAssetStream())
@@ -107,8 +103,8 @@ public:
 	}
 
 	/// <summary>Create a new Asset. Uses the (static) AssetType::createWithReader function to create a new
-	/// asset that will be wrapped in a RefCountedResource to that asset.</summary>
-	/// <returns>A RefCountedResource to the handle read with this readed.</returns>
+	/// asset that will be wrapped in a std::shared_ptr to that asset.</summary>
+	/// <returns>A std::shared_ptr to the handle read with this readed.</returns>
 	AssetHandle getAssetHandle()
 	{
 		return AssetType::createWithReader(*this);

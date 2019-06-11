@@ -16,8 +16,7 @@
 #include <Windows.h>
 
 namespace pvr {
-/// <summary>A Stream implementation that is used to access resources built in a MS Windows executable.
-/// </summary>
+/// <summary>A Stream implementation that is used to access resources built in a MS Windows executable.</summary>
 /// <remarks>This Stream abstraction allows the user to easily access the Resources embedded in Microsoft Windows
 /// .exe/.dll files created using Windows Resource Files. This is the default way resources are packed in the MS
 /// Windows version of the PowerVR Examples.</remarks>

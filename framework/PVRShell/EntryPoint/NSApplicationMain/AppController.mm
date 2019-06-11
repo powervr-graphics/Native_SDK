@@ -1,6 +1,6 @@
 /*!
 \brief Implementation for the AppKit version of AppController
-\file PVRShell\EntryPoint/NSApplicationMain/AppController.mm
+\file PVRShell/EntryPoint/NSApplicationMain/AppController.mm
 \author PowerVR by Imagination, Developer Technology Team
 \copyright Copyright (c) Imagination Technologies Limited.
 */

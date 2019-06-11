@@ -20,15 +20,11 @@ const char SceneFile[] = "Robot.pod";
 struct DeviceResources
 {
 	pvrvk::Instance instance;
-	pvrvk::DebugReportCallback debugCallbacks[2];
+	pvr::utils::DebugUtilsCallbacks debugUtilsCallbacks;
 	pvrvk::Device device;
 
-	// Rendering manager, putting together Effects with Models to render things
-	pvr::utils::RenderManager mgr;
-	// Asset loader
-	pvr::Multi<pvrvk::CommandBuffer> commandBuffers;
-	pvrvk::Swapchain swapchain;
 	pvrvk::CommandPool commandPool;
+	pvrvk::Swapchain swapchain;
 	pvrvk::DescriptorPool descriptorPool;
 	pvrvk::Queue queue;
 
@@ -36,27 +32,29 @@ struct DeviceResources
 
 	pvrvk::Surface surface;
 
+	// Rendering manager, putting together Effects with Models to render things
+	pvr::utils::RenderManager mgr;
+	// Asset loader
+	pvr::Multi<pvrvk::CommandBuffer> commandBuffers;
+
 	pvr::Multi<pvrvk::Framebuffer> onScreenFramebuffer;
 	pvr::Multi<pvrvk::ImageView> depthStencilImages;
-	pvrvk::Semaphore semaphoreImageAcquired[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
-	pvrvk::Fence perFrameAcquireFence[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
-	pvrvk::Semaphore semaphorePresent[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
-	pvrvk::Fence perFrameCommandBufferFence[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	pvrvk::Semaphore imageAcquiredSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	pvrvk::Semaphore presentationSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	pvrvk::Fence perFrameResourcesFences[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
 
 	// UIRenderer used to display text
 	pvr::ui::UIRenderer uiRenderer;
 	~DeviceResources()
 	{
-		if (device.isValid())
+		if (device)
 		{
 			device->waitIdle();
 			uint32_t l = swapchain->getSwapchainLength();
 			for (uint32_t i = 0; i < l; ++i)
 			{
-				if (perFrameAcquireFence[i].isValid())
-					perFrameAcquireFence[i]->wait();
-				if (perFrameCommandBufferFence[i].isValid())
-					perFrameCommandBufferFence[i]->wait();
+				if (perFrameResourcesFences[i])
+					perFrameResourcesFences[i]->wait();
 			}
 		}
 	}
@@ -122,7 +120,7 @@ pvr::Result VulkanSkinning::initApplication()
 {
 	this->setStencilBitsPerPixel(0);
 	pvr::assets::PODReader podReader(getAssetStream(Configuration::SceneFile));
-	if ((_scene = pvr::assets::Model::createWithReader(podReader)).isNull())
+	if ((_scene = pvr::assets::Model::createWithReader(podReader)) == nullptr)
 	{
 		setExitMessage("Error: Could not create the _scene file %s.", Configuration::SceneFile);
 		return pvr::Result::InitializationError;
@@ -163,12 +161,8 @@ pvr::Result VulkanSkinning::initView()
 	// Create the surface
 	_deviceResources->surface = pvr::utils::createSurface(_deviceResources->instance, _deviceResources->instance->getPhysicalDevice(0), this->getWindow(), this->getDisplay());
 
-	// Add Debug Report Callbacks
-	// Add a Debug Report Callback for logging messages for events of all supported types.
-	_deviceResources->debugCallbacks[0] = pvr::utils::createDebugReportCallback(_deviceResources->instance);
-	// Add a second Debug Report Callback for throwing exceptions for Error events.
-	_deviceResources->debugCallbacks[1] =
-		pvr::utils::createDebugReportCallback(_deviceResources->instance, pvrvk::DebugReportFlagsEXT::e_ERROR_BIT_EXT, pvr::utils::throwOnErrorDebugReportCallback);
+	// Create a default set of debug utils messengers or debug callbacks using either VK_EXT_debug_utils or VK_EXT_debug_report respectively
+	_deviceResources->debugUtilsCallbacks = pvr::utils::createDebugUtilsCallbacks(_deviceResources->instance);
 
 	// look for graphics queue with presentation support for the given surface
 	const pvr::utils::QueuePopulateInfo queueCreateInfo = {
@@ -181,12 +175,6 @@ pvr::Result VulkanSkinning::initView()
 	_deviceResources->device = pvr::utils::createDeviceAndQueues(_deviceResources->instance->getPhysicalDevice(0), &queueCreateInfo, 1, &queueAccessInfo);
 
 	_deviceResources->queue = _deviceResources->device->getQueue(queueAccessInfo.familyId, queueAccessInfo.queueId);
-
-	if (!_deviceResources->device.isValid())
-	{
-		setExitMessage("failed to create Logical device");
-		return pvr::Result::UnknownError;
-	}
 
 	_deviceResources->vmaAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
 
@@ -222,10 +210,9 @@ pvr::Result VulkanSkinning::initView()
 	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
 	{
 		_deviceResources->commandBuffers[i] = _deviceResources->commandPool->allocateCommandBuffer();
-		_deviceResources->semaphorePresent[i] = _deviceResources->device->createSemaphore();
-		_deviceResources->semaphoreImageAcquired[i] = _deviceResources->device->createSemaphore();
-		_deviceResources->perFrameCommandBufferFence[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
-		_deviceResources->perFrameAcquireFence[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
+		_deviceResources->presentationSemaphores[i] = _deviceResources->device->createSemaphore();
+		_deviceResources->imageAcquiredSemaphores[i] = _deviceResources->device->createSemaphore();
+		_deviceResources->perFrameResourcesFences[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
 	}
 
 	_deviceResources->mgr.init(*this, _deviceResources->swapchain, _deviceResources->descriptorPool);
@@ -240,12 +227,12 @@ pvr::Result VulkanSkinning::initView()
 	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
 	{
 		pvrvk::Framebuffer framebuffer = _deviceResources->mgr.toPass(0, 0).getFramebuffer(i);
-		if (framebuffer->getAttachment(0).isValid())
+		if (framebuffer->getAttachment(0))
 		{
 			pvr::utils::setImageLayout(
 				framebuffer->getAttachment(0)->getImage(), pvrvk::ImageLayout::e_UNDEFINED, pvrvk::ImageLayout::e_PRESENT_SRC_KHR, _deviceResources->commandBuffers[0]);
 		}
-		if (framebuffer->getAttachment(1).isValid())
+		if (framebuffer->getAttachment(1))
 		{
 			pvr::utils::setImageLayout(framebuffer->getAttachment(1)->getImage(), pvrvk::ImageLayout::e_UNDEFINED, pvrvk::ImageLayout::e_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
 				_deviceResources->commandBuffers[0]);
@@ -273,9 +260,11 @@ pvr::Result VulkanSkinning::initView()
 	pvrvk::SubmitInfo submitInfo;
 	submitInfo.commandBuffers = &_deviceResources->commandBuffers[0];
 	submitInfo.numCommandBuffers = 1;
-	_deviceResources->perFrameAcquireFence[0]->reset();
-	_deviceResources->queue->submit(&submitInfo, 1, _deviceResources->perFrameAcquireFence[0]);
-	_deviceResources->perFrameAcquireFence[0]->wait();
+	_deviceResources->perFrameResourcesFences[0]->reset();
+	_deviceResources->queue->submit(&submitInfo, 1, _deviceResources->perFrameResourcesFences[0]);
+	_deviceResources->perFrameResourcesFences[0]->wait();
+
+	_deviceResources->commandBuffers[0]->reset(pvrvk::CommandBufferResetFlags::e_RELEASE_RESOURCES_BIT);
 
 	_deviceResources->uiRenderer.getDefaultTitle()->setText("Skinning");
 	_deviceResources->uiRenderer.getDefaultTitle()->commitUpdates();
@@ -307,14 +296,12 @@ pvr::Result VulkanSkinning::releaseView()
 ***********************************************************************************************************************/
 pvr::Result VulkanSkinning::renderFrame()
 {
-	_deviceResources->perFrameAcquireFence[_frameId]->wait();
-	_deviceResources->perFrameAcquireFence[_frameId]->reset();
-	_deviceResources->swapchain->acquireNextImage(uint64_t(-1), _deviceResources->semaphoreImageAcquired[_frameId], _deviceResources->perFrameAcquireFence[_frameId]);
+	_deviceResources->swapchain->acquireNextImage(uint64_t(-1), _deviceResources->imageAcquiredSemaphores[_frameId]);
 
 	const uint32_t swapchainIndex = _deviceResources->swapchain->getSwapchainIndex();
 
-	_deviceResources->perFrameCommandBufferFence[swapchainIndex]->wait();
-	_deviceResources->perFrameCommandBufferFence[swapchainIndex]->reset();
+	_deviceResources->perFrameResourcesFences[swapchainIndex]->wait();
+	_deviceResources->perFrameResourcesFences[swapchainIndex]->reset();
 
 	const float fDelta = static_cast<float>(getFrameTime());
 	auto& animation = _scene->getAnimationInstance(0);
@@ -363,23 +350,23 @@ pvr::Result VulkanSkinning::renderFrame()
 	pvrvk::PipelineStageFlags pipeWaitStageFlags = pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT;
 	submitInfo.commandBuffers = &_deviceResources->commandBuffers[swapchainIndex];
 	submitInfo.numCommandBuffers = 1;
-	submitInfo.waitSemaphores = &_deviceResources->semaphoreImageAcquired[_frameId];
+	submitInfo.waitSemaphores = &_deviceResources->imageAcquiredSemaphores[_frameId];
 	submitInfo.numWaitSemaphores = 1;
-	submitInfo.signalSemaphores = &_deviceResources->semaphorePresent[_frameId];
+	submitInfo.signalSemaphores = &_deviceResources->presentationSemaphores[_frameId];
 	submitInfo.numSignalSemaphores = 1;
-	submitInfo.waitDestStages = &pipeWaitStageFlags;
-	_deviceResources->queue->submit(&submitInfo, 1, _deviceResources->perFrameCommandBufferFence[swapchainIndex]);
+	submitInfo.waitDstStageMask = &pipeWaitStageFlags;
+	_deviceResources->queue->submit(&submitInfo, 1, _deviceResources->perFrameResourcesFences[swapchainIndex]);
 
 	if (this->shouldTakeScreenshot())
 	{
-		pvr::utils::takeScreenshot(_deviceResources->swapchain, swapchainIndex, _deviceResources->commandPool, _deviceResources->queue, this->getScreenshotFileName(),
+		pvr::utils::takeScreenshot(_deviceResources->queue, _deviceResources->commandPool, _deviceResources->swapchain, swapchainIndex, this->getScreenshotFileName(),
 			&_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
 	}
 
 	pvrvk::PresentInfo presentInfo;
 	presentInfo.swapchains = &_deviceResources->swapchain;
 	presentInfo.numSwapchains = 1;
-	presentInfo.waitSemaphores = &_deviceResources->semaphorePresent[_frameId];
+	presentInfo.waitSemaphores = &_deviceResources->presentationSemaphores[_frameId];
 	presentInfo.numWaitSemaphores = 1;
 	presentInfo.imageIndices = &swapchainIndex;
 	_deviceResources->queue->present(presentInfo);

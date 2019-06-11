@@ -16,19 +16,20 @@ public:
 	/// <summary>Raw internal structure of the Camera.</summary>
 	struct InternalData
 	{
-		int32_t targetNodeIdx; /*!< Index of the target object */ // Should this be a point to the actual node?
-		float farClip; /*!< Far clip plane */
-		float nearClip; /*!< Near clip plane */
+		int32_t targetNodeIdx; //!< Index of the target object
+		float farClip; //!< Far clip plane
+		float nearClip; //!< Near clip plane
 
-		// Contains perframe fov data
+		/// <summary>Contains perframe fov data.</summary>
 		struct FovAnimationData
 		{
-			float timeInSec; // frame time in seconds
-			float fov; // fov
+			float timeInSec; //!< Frame time in seconds
+			float fov; //!< Fov
 		};
 
-		std::vector<FovAnimationData> fovs;
+		std::vector<FovAnimationData> fovs; //!< A list of field of view values to use
 
+		/// <summary>Default constructor.</summary>
 		InternalData() : targetNodeIdx(-1), farClip(5000.0f), nearClip(5.0f) {}
 	};
 
@@ -82,22 +83,19 @@ public:
 		_data.nearClip = nearClip;
 	}
 
-	/// <summary>Get field of view for a specific frame (in radians). Interpolates between frames.
-	/// The interpolation point is between <paramref name="frame"/>and <paramref name="frame"/>+1,
-	/// with factor <paramref name="interp."/></summary>
-	/// <param name="frame">The initial frame. Interpolation will be between this frame and the next.</param>
-	/// <param name="interp">Interpolation factor. If zero, frame = <paramref name="frame."/>If one frame = is
-	/// <paramref name="frame"/>+ 1.</param>
+	/// <summary>Get field of view for a specific time in ms</summary>
+	/// <param name="timeInMs">The time in ms to retrieve the field of view for.</param>
 	/// <returns>The field of vision in radians.</returns>
 	float getFOV(float timeInMs = 0) const;
 
 	/// <summary>Set field of view (Radians)</summary>
-	/// <param name="fov"/>The FOV to set, in radians</param>
+	/// <param name="fov">The FOV to set, in radians</param>
 	void setFOV(float fov);
 
 	/// <summary>Set a field of view animation for a number of frame.</summary>
 	/// <param name="numFrames">The number of frames to set the Fov to.</param>
 	/// <param name="fovs">An array of packed floats, which will be interpreted as</param>
+	/// <param name="timeInSec">The time in ms for which to set the fov at</param>
 	void setFOV(uint32_t numFrames, const float* fovs, const float* timeInSec);
 
 	/// <summary>Get a reference to the internal data of this object. Handle with care.</summary>

@@ -1,5 +1,7 @@
 #version 320 es
 
+layout(constant_id=0) const bool HAS_MATERIAL_TEXTURES = false;
+
 layout(location = 0) in highp vec3 inVertex;
 layout(location = 1) in mediump vec3 inNormal;
 layout(location = 2) in mediump vec2 inTexCoord;
@@ -27,8 +29,9 @@ layout(push_constant) uniform PushConsts {
 
 layout (location = 0) out highp vec3 outWorldPos;
 layout (location = 1) out mediump vec3 outNormal;
-layout (location = 2) out mediump vec2 outTexCoord;
-layout(location = 3) flat out mediump int inInstanceIndex;
+layout(location = 2) flat out mediump int outInstanceIndex;
+
+layout (location = 3) out mediump vec2 outTexCoord;
 layout(location = 4) out mediump vec4 outTangent;
 layout(location = 5) out mediump vec3 outBitTangent;
 
@@ -37,9 +40,13 @@ void main()
 	outWorldPos =  (model[pushConstant.modelMtxId + uint(gl_InstanceIndex)] * vec4(inVertex, 1.0)).xyz;
 	gl_Position = VPMatrix * vec4(outWorldPos, 1.0);
 	outNormal  = normalize(modelInvTranspose[pushConstant.modelMtxId + uint(gl_InstanceIndex)] * inNormal);
-        
-	outTexCoord = inTexCoord;       
-	inInstanceIndex = gl_InstanceIndex;
-	outTangent = inTangent;
-	outBitTangent = cross(inNormal, inTangent.xyz) * inTangent.w;    
+
+	outInstanceIndex = gl_InstanceIndex;
+
+	if (HAS_MATERIAL_TEXTURES)
+	{
+		outTexCoord = inTexCoord;
+		outTangent = inTangent;
+		outBitTangent = cross(inNormal, inTangent.xyz) * inTangent.w;
+	}
 }

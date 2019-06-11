@@ -222,7 +222,7 @@ public:
 	/// <summary>Constructor.</summary>
 	/// <param name="errorCode">The OpenCL error code to stringify.</param>
 	/// <param name="message">A message to log alongside the OpenCL error.</param>
-	OpenCLError(cl_int errorCode, std::string message) : runtime_error(std::string("OpenCL Error [") + getOpenCLError(errorCode) + "] - " + message) {}
+	OpenCLError(cl_int errorCode, const std::string& message) : runtime_error(std::string("OpenCL Error [") + getOpenCLError(errorCode) + "] - " + message) {}
 };
 
 /// <summary>Determines whether the given OpenCL extension is supported.</summary>
@@ -289,16 +289,18 @@ inline void createOpenCLContext(cl_platform_id& outPlatform, cl_device_id& outDe
 	 */
 	cl_uint numPlatforms;
 	errcode = cl::GetPlatformIDs(0, nullptr, &numPlatforms);
+	
+	if (numPlatforms == 0)
+	{
+		throw OpenCLError(errcode, "cl::createOpenCLContext : No OpenCL capable platform found");
+	}
+
 	std::vector<cl_platform_id> platforms(numPlatforms);
 	errcode = cl::GetPlatformIDs(numPlatforms, platforms.data(), NULL);
+
 	if (errcode != CL_SUCCESS)
 	{
 		throw OpenCLError(errcode, "cl::createOpenCLContext : Failed to query platform IDs");
-	}
-
-	if (platforms.size() == 0)
-	{
-		throw OpenCLError(errcode, "cl::createOpenCLContext : No OpenCL capable platform found");
 	}
 
 	/*

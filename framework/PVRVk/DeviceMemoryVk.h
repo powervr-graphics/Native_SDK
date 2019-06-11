@@ -9,69 +9,69 @@
 #include "PVRVk/DeviceVk.h"
 namespace pvrvk {
 
-/// <summary> Implementation of the VkExportMemoryAllocateInfoKHR  class used by the VK_KHR_external_memory extension</summary>
+/// <summary>Implementation of the VkExportMemoryAllocateInfoKHR  class used by the VK_KHR_external_memory extension</summary>
 struct ExportMemoryAllocateInfoKHR
 {
-	ExternalMemoryHandleTypeFlags handleTypes; //!< <summary> HandleTypes member </summary>
-	/// <summary> Constructor. handleTypes are initialized to zero.</summary>
+	ExternalMemoryHandleTypeFlags handleTypes; //!< <summary> HandleTypes member</summary>
+	/// <summary>Constructor. handleTypes are initialized to zero.</summary>
 	ExportMemoryAllocateInfoKHR() : handleTypes(ExternalMemoryHandleTypeFlags::e_NONE) {}
-	/// <summary> Constructor. handleTypes are initialized to the parameter passed.</summary>
+	/// <summary>Constructor. handleTypes are initialized to the parameter passed.</summary>
 	/// <param name="handleTypes"> The ExternalMemoryHandleTypeFlags used to initialise handleTypes.</param>
 	ExportMemoryAllocateInfoKHR(ExternalMemoryHandleTypeFlags handleTypes) : handleTypes(handleTypes) {}
 };
 
-/// <summary> Parameter object used to create a Memory Allocation using the VMA</summary>
+/// <summary>Parameter object used to create a Memory Allocation using the VMA</summary>
 struct MemoryAllocationInfo
 {
 public:
-	/// <summary> Constructor. Initialized to unknown values (size 0, index -1)</summary>
+	/// <summary>Constructor. Initialized to unknown values (size 0, index -1)</summary>
 	MemoryAllocationInfo() : _allocationSize(0), _memoryTypeIndex(uint32_t(-1)) {}
-	/// <summary> Constructor. Initialized by user=provided values</summary>
+	/// <summary>Constructor. Initialized by user=provided values</summary>
 	/// <param name="allocationSize"> The total size of the allocation, in bytes.</param>
 	/// <param name="memoryTypeIndex"> The index of the Vulkan memory type required. (retrieve using the various get memory property functions)</param>
 	MemoryAllocationInfo(DeviceSize allocationSize, uint32_t memoryTypeIndex) : _allocationSize(allocationSize), _memoryTypeIndex(memoryTypeIndex) {}
 
-	/// <summary> Retrieve the size of the allocation.</summary>
+	/// <summary>Retrieve the size of the allocation.</summary>
 	/// <returns> The size of the allocation)</summary>
 	DeviceSize getAllocationSize() const
 	{
 		return _allocationSize;
 	}
-	/// <summary> Set the size of the allocation.</summary>
+	/// <summary>Set the size of the allocation.</summary>
 	/// <param name="sizeInBytes"> The total size of the allocation.</param>
 	void setAllocationSize(DeviceSize sizeInBytes)
 	{
 		_allocationSize = sizeInBytes;
 	}
 
-	/// <summary> Retrieve the Memory Index of the  memory type of the allocation.</summary>
+	/// <summary>Retrieve the Memory Index of the  memory type of the allocation.</summary>
 	/// <returns> The index of the memory type of the allocation)</summary>
 	uint32_t getMemoryTypeIndex() const
 	{
 		return _memoryTypeIndex;
 	}
 
-	/// <summary> Set the memory index of the allocation.</summary>
+	/// <summary>Set the memory index of the allocation.</summary>
 	/// <param name="memoryTypeIndex"> The memory index of the allocation.</param>
 	void setMemoryTypeIndex(uint32_t memoryTypeIndex)
 	{
 		this->_memoryTypeIndex = memoryTypeIndex;
 	}
 
-	/// <summary> Set this field in order to use the VK_KHR_external_memory extension.</summary>
+	/// <summary>Set this field in order to use the VK_KHR_external_memory extension.</summary>
 	/// <param name="info"> The ExportMemoryAllocateInfoKHR object describing the source of the allocation.</param>
 	void setExportMemoryAllocationInfoKHR(const ExportMemoryAllocateInfoKHR& info)
 	{
 		_exportMemoryAllocateInfoKHR = info;
 	}
 
-	/// <summary> Get the ExportMemoryAllocateInfoKHR object used.</summary>
+	/// <summary>Get the ExportMemoryAllocateInfoKHR object used.</summary>
 	/// <returns> The ExportMemoryAllocateInfoKHR object contained.</returns>
 	const ExportMemoryAllocateInfoKHR& getExportMemoryAllocateInfoKHR() const
 	{
 		return _exportMemoryAllocateInfoKHR;
 	}
-	/// <summary> Get the ExportMemoryAllocateInfoKHR object used.</summary>
+	/// <summary>Get the ExportMemoryAllocateInfoKHR object used.</summary>
 	/// <returns> The ExportMemoryAllocateInfoKHR object contained.</returns>
 	ExportMemoryAllocateInfoKHR& getExportMemoryAllocateInfoKHR()
 	{
@@ -86,20 +86,20 @@ private:
 
 namespace impl {
 /// <summary>VkDeviceMemory wrapper</summary>
-class IDeviceMemory_ : public DeviceObjectHandle<VkDeviceMemory>
+class IDeviceMemory_ : public PVRVkDeviceObjectBase<VkDeviceMemory, ObjectType::e_DEVICE_MEMORY>
 {
 public:
 	/// <summary>Constructor.</summary>
-	IDeviceMemory_() : DeviceObjectHandle() {}
+	IDeviceMemory_() : PVRVkDeviceObjectBase() {}
 
 	/// <summary>Constructor.</summary>
 	/// <param name="device">The device to use for allocating the device memory</param>
-	explicit IDeviceMemory_(DeviceWeakPtr device) : DeviceObjectHandle(device) {}
+	explicit IDeviceMemory_(DeviceWeakPtr device) : PVRVkDeviceObjectBase(device) {}
 
 	/// <summary>Constructor.</summary>
 	/// <param name="device">The device to use for allocating the device memory</param>
 	/// <param name="memory">The vulkan device memory object</param>
-	IDeviceMemory_(DeviceWeakPtr device, VkDeviceMemory memory) : DeviceObjectHandle(device, memory) {}
+	IDeviceMemory_(const DeviceWeakPtr& device, VkDeviceMemory memory) : PVRVkDeviceObjectBase(device, memory) {}
 
 	virtual ~IDeviceMemory_() {}
 
@@ -164,10 +164,113 @@ public:
 };
 
 /// <summary>VkDeviceMemory wrapper</summary>
-class DeviceMemory_ : public IDeviceMemory_, public DeviceObjectDebugMarker<DeviceMemory_>
+class DeviceMemory_ : public IDeviceMemory_, public DeviceObjectDebugUtils<DeviceMemory_>
 {
+protected:
+	friend class Device_;
+
+	/// <summary>A class which restricts the creation of a pvrvk::DeviceMemory to children or friends of a pvrvk::impl::DeviceMemory_.</summary>
+	class make_shared_enabler
+	{
+	protected:
+		/// <summary>Constructor for a make_shared_enabler.</summary>
+		make_shared_enabler() {}
+		friend class DeviceMemory_;
+	};
+
+	/// <summary>Protected function used to create a pvrvk::DeviceMemory. Note that this function shouldn't normally be called
+	/// directly and will be called by a friend of DeviceMemory_ which will generally be a Device</summary>
+	/// <param name="device">The device used to allocate the DeviceMemory from.</param>
+	/// <param name="allocationInfo">The allocation information structure.</param>
+	/// <param name="memPropFlags">A set of memory property flags which will define the way in which the allocated memory may be used.</param>
+	/// <param name="vkMemoryHandle">The vulkan handle for this DeviceMemory.</param>
+	/// <returns>Returns a successfully created pvrvk::DeviceMemory</returns>
+	static DeviceMemory constructShared(
+		const DeviceWeakPtr& device, const MemoryAllocationInfo& allocationInfo, pvrvk::MemoryPropertyFlags memPropFlags, VkDeviceMemory vkMemoryHandle = VK_NULL_HANDLE)
+	{
+		return std::make_shared<DeviceMemory_>(make_shared_enabler{}, device, allocationInfo, memPropFlags, vkMemoryHandle);
+	}
+
+private:
+	/// <summary>Allocates device memory with the given properties</summary>
+	/// <param name="device">The device from which the memory allocation will be made.</param>
+	/// <param name="allocationInfo">The memory  memory allocation info.</param>
+	/// <param name="outMemory">The resulting Vulkan device memory object.</param>
+	void allocateDeviceMemory(Device device, const MemoryAllocationInfo& allocationInfo, VkDeviceMemory& outMemory)
+	{
+		// allocate the memory
+		VkMemoryAllocateInfo memAllocInfo = {};
+		memAllocInfo.sType = static_cast<VkStructureType>(StructureType::e_MEMORY_ALLOCATE_INFO);
+		memAllocInfo.pNext = nullptr;
+		memAllocInfo.allocationSize = allocationInfo.getAllocationSize();
+		memAllocInfo.memoryTypeIndex = allocationInfo.getMemoryTypeIndex();
+
+		// handle extension
+		VkExportMemoryAllocateInfoKHR memAllocateInfoKHR = {};
+		if (allocationInfo.getExportMemoryAllocateInfoKHR().handleTypes != ExternalMemoryHandleTypeFlags::e_NONE)
+		{
+			memAllocateInfoKHR.sType = static_cast<VkStructureType>(StructureType::e_EXPORT_MEMORY_ALLOCATE_INFO_KHR);
+			memAllocateInfoKHR.handleTypes = static_cast<VkExternalMemoryHandleTypeFlags>(allocationInfo.getExportMemoryAllocateInfoKHR().handleTypes);
+			memAllocInfo.pNext = &memAllocateInfoKHR;
+		}
+
+		if (memAllocInfo.memoryTypeIndex == static_cast<uint32_t>(-1))
+		{
+			throw ErrorValidationFailedEXT("Device Memory allocation failed: Could not get a Memory Type Index for the specified combination specified memory bits, properties and "
+										   "flags");
+		}
+		vkThrowIfFailed(getDevice()->getVkBindings().vkAllocateMemory(device->getVkHandle(), &memAllocInfo, nullptr, &outMemory), "Failed to allocate device memory");
+	}
+
+	/// <summary>The memory property flags for the device memory</summary>
+	pvrvk::MemoryPropertyFlags _flags;
+
+	/// <summary>The offset into the memory currently being pointed to</summary>
+	VkDeviceSize _mappedOffset;
+
+	/// <summary>The size of the memory pointed to</summary>
+	VkDeviceSize _mappedSize;
+
+	MemoryAllocationInfo _allocationInfo;
+
+	/// <summary>A pointer to the currently mapped memory</summary>
+	void* _mappedMemory;
+
 public:
+	//!\cond NO_DOXYGEN
 	DECLARE_NO_COPY_SEMANTICS(DeviceMemory_)
+	virtual ~DeviceMemory_()
+	{
+		if (getVkHandle() != VK_NULL_HANDLE)
+		{
+			if (!_device.expired())
+			{
+				getDevice()->getVkBindings().vkFreeMemory(getDevice()->getVkHandle(), getVkHandle(), nullptr);
+				_vkHandle = VK_NULL_HANDLE;
+			}
+			else
+			{
+				reportDestroyedAfterDevice();
+			}
+		}
+	}
+
+	/// <summary>Constructor. Allocates device memory with the given properties</summary>
+	/// <param name="device">The device from which the memory allocation will be made.</param>
+	/// <param name="allocationInfo">The memory allocation info</param>
+	/// <param name="memPropFlags">The memory property flags the memory type index supports.</param>
+	/// <param name="vkMemoryHandle">A Vulkan device memory object indicating whether an allocation has already been made.</param>
+	DeviceMemory_(make_shared_enabler, const DeviceWeakPtr& device, const MemoryAllocationInfo& allocationInfo, pvrvk::MemoryPropertyFlags memPropFlags, VkDeviceMemory vkMemoryHandle)
+		: IDeviceMemory_(device), DeviceObjectDebugUtils(), _flags(memPropFlags), _mappedOffset(0), _mappedSize(0), _mappedMemory(nullptr)
+	{
+		_vkHandle = vkMemoryHandle;
+		_allocationInfo = allocationInfo;
+		if (vkMemoryHandle == VK_NULL_HANDLE)
+		{
+			allocateDeviceMemory(getDevice(), allocationInfo, _vkHandle);
+		}
+	}
+	//!\endcond
 
 	/// <summary>Return true if this memory block is mappable by the host (const).</summary>
 	/// <returns>bool</returns>
@@ -242,7 +345,8 @@ public:
 			}
 		}
 
-		vkThrowIfFailed(_device->getVkBindings().vkMapMemory(_device->getVkHandle(), getVkHandle(), offset, size, static_cast<VkMemoryMapFlags>(memoryMapFlags), &_mappedMemory),
+		vkThrowIfFailed(
+			getDevice()->getVkBindings().vkMapMemory(getDevice()->getVkHandle(), getVkHandle(), offset, size, static_cast<VkMemoryMapFlags>(memoryMapFlags), &_mappedMemory),
 			"Failed to map memory block");
 
 		if (_mappedMemory == nullptr)
@@ -267,7 +371,7 @@ public:
 		_mappedSize = 0;
 		_mappedOffset = 0;
 
-		_device->getVkBindings().vkUnmapMemory(_device->getVkHandle(), getVkHandle());
+		getDevice()->getVkBindings().vkUnmapMemory(getDevice()->getVkHandle(), getVkHandle());
 		_mappedMemory = nullptr;
 	}
 
@@ -278,10 +382,7 @@ public:
 	{
 		if (static_cast<uint32_t>(_flags & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) != 0)
 		{
-			Log(LogLevel::Warning,
-				"Flushing memory block 0x%ullx"
-				" created using HOST_COHERENT_BIT memory flags - this is unnecessary.",
-				getVkHandle());
+			assert(false && "Flushing memory block created using HOST_COHERENT_BIT memory flags - this is unnecessary.");
 		}
 
 		VkMappedMemoryRange range = {};
@@ -289,7 +390,7 @@ public:
 		range.memory = getVkHandle();
 		range.offset = offset;
 		range.size = size;
-		vkThrowIfFailed(_device->getVkBindings().vkFlushMappedMemoryRanges(_device->getVkHandle(), 1, &range), "Failed to flush range of memory block");
+		vkThrowIfFailed(getDevice()->getVkBindings().vkFlushMappedMemoryRanges(getDevice()->getVkHandle(), 1, &range), "Failed to flush range of memory block");
 	}
 
 	/// <summary>To invalidate ranges of non-coherent memory from the host caches</summary>
@@ -300,10 +401,7 @@ public:
 	{
 		if (static_cast<uint32_t>(_flags & MemoryPropertyFlags::e_HOST_COHERENT_BIT) != 0)
 		{
-			Log(LogLevel::Warning,
-				"Invalidating range of memory block 0x%ullx"
-				" created using HOST_COHERENT_BIT memory flags - this is unnecessary.",
-				getVkHandle());
+			assert(false && "Invalidating range of memory block created using HOST_COHERENT_BIT memory flags - this is unnecessary.");
 		}
 
 		VkMappedMemoryRange range = {};
@@ -311,97 +409,13 @@ public:
 		range.memory = getVkHandle();
 		range.offset = offset;
 		range.size = size;
-		vkThrowIfFailed(_device->getVkBindings().vkInvalidateMappedMemoryRanges(_device->getVkHandle(), 1, &range), "Failed to invalidate range of memory block");
+		vkThrowIfFailed(getDevice()->getVkBindings().vkInvalidateMappedMemoryRanges(getDevice()->getVkHandle(), 1, &range), "Failed to invalidate range of memory block");
 	}
 
 	uint32_t getMemoryType() const
 	{
 		return _allocationInfo.getMemoryTypeIndex();
 	}
-
-protected:
-	template<typename>
-	friend struct ::pvrvk::RefCountEntryIntrusive;
-	friend class ::pvrvk::impl::Device_;
-
-	virtual ~DeviceMemory_()
-	{
-		if (getVkHandle() != VK_NULL_HANDLE)
-		{
-			if (_device.isValid())
-			{
-				_device->getVkBindings().vkFreeMemory(_device->getVkHandle(), getVkHandle(), nullptr);
-				_vkHandle = VK_NULL_HANDLE;
-				_device.reset();
-			}
-			else
-			{
-				reportDestroyedAfterDevice("DeviceMemory");
-			}
-		}
-	}
-
-	/// <summary>Constructor. Allocates device memory with the given properties</summary>
-	/// <param name="device">The device from which the memory allocation will be made.</param>
-	/// <param name="allocationInfo">The memory allocation info</param>
-	/// <param name="memPropFlags">The memory property flags the memory type index supports.</param>
-	/// <param name="vkMemoryHandle">A Vulkan device memory object indicating whether an allocation has already been made.</param>
-	DeviceMemory_(DeviceWeakPtr device, const MemoryAllocationInfo& allocationInfo, pvrvk::MemoryPropertyFlags memPropFlags, VkDeviceMemory vkMemoryHandle = VK_NULL_HANDLE)
-		: IDeviceMemory_(device), DeviceObjectDebugMarker(pvrvk::DebugReportObjectTypeEXT::e_DEVICE_MEMORY_EXT), _flags(memPropFlags), _mappedOffset(0), _mappedSize(0),
-		  _mappedMemory(nullptr)
-	{
-		_vkHandle = vkMemoryHandle;
-		_allocationInfo = allocationInfo;
-		if (vkMemoryHandle == VK_NULL_HANDLE)
-		{
-			allocateDeviceMemory(_device, allocationInfo, _vkHandle);
-		}
-	}
-
-private:
-	/// <summary>Allocates device memory with the given properties</summary>
-	/// <param name="device">The device from which the memory allocation will be made.</param>
-	/// <param name="allocationInfo">The memory  memory allocation info.</param>
-	/// <param name="outMemory">The resulting Vulkan device memory object.</param>
-	void allocateDeviceMemory(Device device, const MemoryAllocationInfo& allocationInfo, VkDeviceMemory& outMemory)
-	{
-		// allocate the memory
-		VkMemoryAllocateInfo memAllocInfo = {};
-		memAllocInfo.sType = static_cast<VkStructureType>(StructureType::e_MEMORY_ALLOCATE_INFO);
-		memAllocInfo.pNext = nullptr;
-		memAllocInfo.allocationSize = allocationInfo.getAllocationSize();
-		memAllocInfo.memoryTypeIndex = allocationInfo.getMemoryTypeIndex();
-
-		// handle extension
-		VkExportMemoryAllocateInfoKHR memAllocateInfoKHR = {};
-		if (allocationInfo.getExportMemoryAllocateInfoKHR().handleTypes != ExternalMemoryHandleTypeFlags::e_NONE)
-		{
-			memAllocateInfoKHR.sType = static_cast<VkStructureType>(StructureType::e_EXPORT_MEMORY_ALLOCATE_INFO_KHR);
-			memAllocateInfoKHR.handleTypes = static_cast<VkExternalMemoryHandleTypeFlags>(allocationInfo.getExportMemoryAllocateInfoKHR().handleTypes);
-			memAllocInfo.pNext = &memAllocateInfoKHR;
-		}
-
-		if (memAllocInfo.memoryTypeIndex == static_cast<uint32_t>(-1))
-		{
-			throw ErrorValidationFailedEXT("Device Memory allocation failed: Could not get a Memory Type Index for the specified combination specified memory bits, properties and "
-										   "flags");
-		}
-		vkThrowIfFailed(_device->getVkBindings().vkAllocateMemory(device->getVkHandle(), &memAllocInfo, nullptr, &outMemory), "Failed to allocate device memory");
-	}
-
-	/// <summary>The memory property flags for the device memory</summary>
-	pvrvk::MemoryPropertyFlags _flags;
-
-	/// <summary>The offset into the memory currently being pointed to</summary>
-	VkDeviceSize _mappedOffset;
-
-	/// <summary>The size of the memory pointed to</summary>
-	VkDeviceSize _mappedSize;
-
-	MemoryAllocationInfo _allocationInfo;
-
-	/// <summary>A pointer to the currently mapped memory</summary>
-	void* _mappedMemory;
 };
 } // namespace impl
 } // namespace pvrvk

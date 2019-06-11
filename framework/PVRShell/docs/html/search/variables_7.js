@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['resizable',['resizable',['../structpvr_1_1platform_1_1_shell_o_s_1_1_capabilities.html#aee6cf8ed92ccb247b20575865706906d',1,'pvr::platform::ShellOS::Capabilities']]]
+  ['height',['height',['../structpvr_1_1_configure_event.html#a9f761fa7bdcfd3073f8699f7f5fc8141',1,'pvr::ConfigureEvent']]]
 ];

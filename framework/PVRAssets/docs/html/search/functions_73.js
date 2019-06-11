@@ -2,6 +2,7 @@ var searchData=
 [
   ['setalphacutoff',['setAlphaCutOff',['../classpvr_1_1assets_1_1_model_1_1_material_1_1_g_l_t_f_metallic_roughness_semantics.html#add3ffed0a860514fc91640343620e711',1,'pvr::assets::Model::Material::GLTFMetallicRoughnessSemantics']]],
   ['setalphamode',['setAlphaMode',['../classpvr_1_1assets_1_1_model_1_1_material_1_1_g_l_t_f_metallic_roughness_semantics.html#a3519a8ee7579ee85c72e89833f292d13',1,'pvr::assets::Model::Material::GLTFMetallicRoughnessSemantics']]],
+  ['setanimationname',['setAnimationName',['../classpvr_1_1assets_1_1_animation_data.html#a0d63ddd5d984a61326c3110a8810b703',1,'pvr::assets::AnimationData']]],
   ['setbasecolor',['setBaseColor',['../classpvr_1_1assets_1_1_model_1_1_material_1_1_g_l_t_f_metallic_roughness_semantics.html#a7bf791b8b92375fd98ea5872cd936287',1,'pvr::assets::Model::Material::GLTFMetallicRoughnessSemantics']]],
   ['setbasecolortextureindex',['setBaseColorTextureIndex',['../classpvr_1_1assets_1_1_model_1_1_material_1_1_g_l_t_f_metallic_roughness_semantics.html#ade19e7cc98c035feb2ac619977181e03',1,'pvr::assets::Model::Material::GLTFMetallicRoughnessSemantics']]],
   ['setcolor',['setColor',['../classpvr_1_1assets_1_1_light.html#a5ad9db5da05831a76e5111598d411436',1,'pvr::assets::Light']]],
@@ -53,7 +54,7 @@ var searchData=
   ['settype',['setType',['../classpvr_1_1assets_1_1_light.html#a0fd9211cdd659b7f7c5f973cf41ecc21',1,'pvr::assets::Light']]],
   ['setunpackmatrix',['setUnpackMatrix',['../classpvr_1_1assets_1_1_mesh.html#a6511bf2b294ecaf38ebf6f6668b9a4e4',1,'pvr::assets::Mesh']]],
   ['setuserdata',['setUserData',['../classpvr_1_1assets_1_1_model_1_1_node.html#a39e3f1d14e6f4594b8bed6adc43ce6ff',1,'pvr::assets::Model::Node::setUserData()'],['../classpvr_1_1assets_1_1_model.html#aa80335b9a56a8946681482aa26365658',1,'pvr::assets::Model::setUserData()']]],
-  ['setuserdataptr',['setUserDataPtr',['../classpvr_1_1assets_1_1_mesh.html#a8c901debed7dab92c980c1a5961de874',1,'pvr::assets::Mesh::setUserDataPtr()'],['../classpvr_1_1assets_1_1_model.html#a43e54d4b06da4471fc1a72a05605944e',1,'pvr::assets::Model::setUserDataPtr()']]],
+  ['setuserdataptr',['setUserDataPtr',['../classpvr_1_1assets_1_1_mesh.html#a3618393c88d60e2c21643c2e472f4c01',1,'pvr::assets::Mesh::setUserDataPtr()'],['../classpvr_1_1assets_1_1_model.html#a4c4d803ec1e76387716b84071f990cc6',1,'pvr::assets::Model::setUserDataPtr()']]],
   ['setvertexattributeindex',['setVertexAttributeIndex',['../classpvr_1_1assets_1_1_mesh.html#ae96a1c1ff722b758f6c8940b61289d4b',1,'pvr::assets::Mesh']]],
   ['size',['size',['../classpvr_1_1_indexed_array.html#a3ce2ad56e6c1e7245330672175f63545',1,'pvr::IndexedArray']]],
   ['sizewithdeleted',['sizeWithDeleted',['../classpvr_1_1_indexed_array.html#a533135308396e4a89c4daf8d69061976',1,'pvr::IndexedArray']]]

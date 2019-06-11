@@ -1,6 +1,6 @@
 /*!
 \brief Contains the AssetWriter class.
-\file PVRCore/io/AssetWriter.h
+\file PVRCore/stream/AssetWriter.h
 \author PowerVR by Imagination, Developer Technology Team
 \copyright Copyright (c) Imagination Technologies Limited.
 */
@@ -39,8 +39,7 @@ public:
 		return _assetStream.get() != 0;
 	}
 
-	/// <summary>Open an asset stream for writing. Implement this in your concrete AssetWriter implementation.
-	/// </summary>
+	/// <summary>Open an asset stream for writing. Implement this in your concrete AssetWriter implementation.</summary>
 	/// <param name="assetStream">The stream to write to.</param>
 	/// <returns>return Result::Success if successful</returns>
 	void openAssetStream(Stream::ptr_type assetStream)
@@ -61,9 +60,8 @@ public:
 		return (*_assetStream).open();
 	}
 
-	/// <summary>Write out all assets to the Stream. Implement this in your concrete AssetWriter implementation.
-	/// </summary>
-	/// <returns>return Result::Success on success.</returns>
+	/// <summary>Write out all assets to the Stream. Implement this in your concrete AssetWriter implementation.</summary>
+	/// <param name="asset">the asset to write.</param>
 	virtual void writeAsset(const AssetType& asset) = 0;
 
 	/// <summary>Query if this writer can write out the specified asset. Implement this in your concrete AssetWriter
@@ -71,6 +69,12 @@ public:
 	/// <param name="asset">The asset to check for writing.</param>
 	/// <returns>True if this asset is supported.</returns>
 	virtual bool canWriteAsset(const AssetType& asset) = 0;
+
+	/// <summary>Destructor for the AssetWriter which closes the asset stream if not already closed.</summary>
+	virtual ~AssetWriter()
+	{
+		closeAssetStream();
+	}
 
 protected:
 	std::unique_ptr<Stream> _assetStream; //!< The Stream that this writer uses

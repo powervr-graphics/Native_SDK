@@ -5,7 +5,9 @@
 \copyright Copyright (c) Imagination Technologies Limited.
 */
 #pragma once
+#include "PVRCore/Errors.h"
 #include "PVRCore/texture/TextureHeader.h"
+#include <cmath>
 
 namespace pvr {
 
@@ -44,7 +46,61 @@ enum class ImageViewType
 	ImageViewUnknown, //!< 3 dimensional Image View
 };
 
-/// <summary> Map an ImageViewType (2dCube etc) to its base type (1d/2d/3d)</summary>
+/// <summary>Produces a floating point value based on the uint32_t value, the mantissa bits and exponent bits</summary>
+/// <param name="value">The uint32_t value</param>
+/// <param name="mantissaBits">The mantissa bits</param>
+/// <param name="exponentBits">The exponent bits</param>
+/// <param name="exponentBias">The exponent bias</param>
+/// <param name="hasSign">Specifies whether the float has a sign bit</param>
+/// <returns>The resulting floating point value</returns>
+inline float growFloat(const uint32_t& value, const uint8_t& mantissaBits, const uint8_t& exponentBits, const uint8_t& exponentBias, const bool hasSign /*=true*/)
+{
+	// Union to avoid messy casting.
+	union
+	{
+		float fVal;
+		uint32_t uiVal;
+	} intToFloat;
+
+	// Float 32 constants.
+	static const uint8_t f32expBias = 127;
+	static const uint8_t f32signBits = 1;
+	static const uint8_t f32expBits = 8;
+	static const uint8_t f32manBits = 23;
+	static const uint8_t f32totBits = 32;
+
+	// Get the # of sign bits (always 1 or 0)
+	uint8_t signBits = (hasSign ? 1 : 0);
+
+	// Work out the total bits
+	uint8_t totalBits = mantissaBits + exponentBits + signBits;
+
+	// Generate the masks for each bit.
+	uint32_t signMask = ((1 << signBits) - 1) << (exponentBits + mantissaBits);
+	uint32_t expoMask = ((1 << exponentBits) - 1) << mantissaBits;
+	uint32_t mantMask = ((1 << mantissaBits) - 1);
+
+	// Get original exponent.
+	uint32_t originalExponent = ((value & expoMask) >> (mantissaBits));
+	bool originalIsNaN = (originalExponent == (uint32_t)((1 << exponentBits) - 1));
+
+	// Bit shift and edit until
+	uint32_t uSign = (value & signMask) << ((f32totBits - f32signBits) - (totalBits - signBits));
+	uint32_t uExponent = (originalExponent - exponentBias + f32expBias) << f32manBits;
+	uint32_t uMantissa = (value & mantMask) << (f32manBits - mantissaBits);
+
+	// Make sure NaN/Infinity is preserved if original was NaN/Infinity.
+	if (originalIsNaN)
+		uExponent = ((1 << f32expBits) - 1) << f32manBits;
+
+	// Assign the expanded values to the union
+	intToFloat.uiVal = uSign | uExponent | uMantissa;
+
+	// Return the expanded float
+	return intToFloat.fVal;
+}
+
+/// <summary>Map an ImageViewType (2dCube etc) to its base type (1d/2d/3d)</summary>
 /// <param name="viewtype">The ImageViewType</param>
 /// <returns>The base type</returns>
 inline ImageType imageViewTypeToImageBaseType(ImageViewType viewtype)
@@ -69,6 +125,98 @@ inline ImageType imageViewTypeToImageBaseType(ImageViewType viewtype)
 	}
 }
 
+/// <summary>Converts an x, y and z direction to a texture coordinate of a particular cubemap face.</summary>
+/// <param name="x">The x component of te direction.</param>
+/// <param name="y">The y component of te direction.</param>
+/// <param name="z">The z component of te direction.</param>
+/// <param name="face">The cubemap face enumeration retrieved using the x, y, z direction.</param>
+/// <param name="u">The u component of the texture coordinate retrieved.</param>
+/// <param name="v">The v component of the texture coordinate retrieved.</param>
+inline void convertXYZToCubeUV(float x, float y, float z, CubeFace& face, float& u, float& v)
+{
+	float absX = fabs(x);
+	float absY = fabs(y);
+	float absZ = fabs(z);
+
+	if (absX == 0.f && absY == 0.f && absZ == 0.f)
+	{
+		throw new std::runtime_error("Cannot convert the zero vector to a cubemap sample");
+	}
+
+	int isXPositive = x > 0 ? 1 : 0;
+	int isYPositive = y > 0 ? 1 : 0;
+	int isZPositive = z > 0 ? 1 : 0;
+
+	float maxAxis = 0.0f;
+	float uc = 0.0f;
+	float vc = 0.0f;
+
+	// POSITIVE X
+	if (isXPositive && absX >= absY && absX >= absZ)
+	{
+		// u (0 to 1) goes from +z to -z
+		// v (0 to 1) goes from -y to +y
+		maxAxis = absX;
+		uc = -z;
+		vc = -y;
+		face = CubeFace::PositiveX;
+	}
+	// NEGATIVE X
+	if (!isXPositive && absX >= absY && absX >= absZ)
+	{
+		// u (0 to 1) goes from -z to +z
+		// v (0 to 1) goes from -y to +y
+		maxAxis = absX;
+		uc = z;
+		vc = -y;
+		face = CubeFace::NegativeX;
+	}
+	// POSITIVE Y
+	if (isYPositive && absY >= absX && absY >= absZ)
+	{
+		// u (0 to 1) goes from -x to +x
+		// v (0 to 1) goes from +z to -z
+		maxAxis = absY;
+		uc = x;
+		vc = z;
+		face = CubeFace::PositiveY;
+	}
+	// NEGATIVE Y
+	if (!isYPositive && absY >= absX && absY >= absZ)
+	{
+		// u (0 to 1) goes from -x to +x
+		// v (0 to 1) goes from -z to +z
+		maxAxis = absY;
+		uc = x;
+		vc = +z;
+		face = CubeFace::NegativeY;
+	}
+	// POSITIVE Z
+	if (isZPositive && absZ >= absX && absZ >= absY)
+	{
+		// u (0 to 1) goes from -x to +x
+		// v (0 to 1) goes from -y to +y
+		maxAxis = absZ;
+		uc = x;
+		vc = -y;
+		face = CubeFace::PositiveZ;
+	}
+	// NEGATIVE Z
+	if (!isZPositive && absZ >= absX && absZ >= absY)
+	{
+		// u (0 to 1) goes from +x to -x
+		// v (0 to 1) goes from -y to +y
+		maxAxis = absZ;
+		uc = -x;
+		vc = -y;
+		face = CubeFace::NegativeZ;
+	}
+
+	// Convert range from -1 to 1 to 0 to 1
+	u = 0.5f * (uc / maxAxis + 1.0f);
+	v = 0.5f * (vc / maxAxis + 1.0f);
+}
+
 /// <summary>Structure describes the number of array levels and mip levels an image contains</summary>
 struct ImageLayersSize
 {
@@ -82,7 +230,7 @@ struct ImageLayersSize
 };
 
 /// <summary>Represents an image format, including pixel format(channels/bits per channel), datatype and colorspace.
-/// </summary>
+///</summary>
 struct ImageDataFormat
 {
 	PixelFormat format; //!< pixel format
@@ -141,14 +289,15 @@ struct ImageStorageFormat : public ImageDataFormat
 };
 
 /// <summary>Contains a 2d Integer size (width, height)</summary>
+/// <typeparam name="T">The generic type T to use</typeparam>
 template<typename T>
 struct GenericExtent2D
 {
 	T width; //!< Size along X axis
 	T height; //!< Size along Y axis
-			  /// <summary>Constructor by width and height</summary>
-			  /// <param name="width">Horizontal size</param>
-			  /// <param name="height">Vertical size</param>
+	/// <summary>Constructor by width and height</summary>
+	/// <param name="width">Horizontal size</param>
+	/// <param name="height">Vertical size</param>
 	GenericExtent2D(T width = 0, T height = 0) : width(width), height(height) {}
 };
 
@@ -157,15 +306,17 @@ template<typename Txy, typename Tz>
 struct GenericExtent3D : public GenericExtent2D<Txy>
 {
 	Tz depth; //!< Size along Z axis
+
+	/// <summary>Constructor.</summary>
 	GenericExtent3D() {}
 
-	/// <summary>Constructor. Defaults to (1,1,1)</summary>
+	/// <summary>Constructor.</summary>
 	/// <param name="width">Horizontal size (default 1)</param>
 	/// <param name="height">Vertical size (default 1)</param>
 	/// <param name="depth">Depth size (default 1)</param>
 	GenericExtent3D(Txy width, Txy height, Tz depth = 1) : GenericExtent2D<Txy>(width, height), depth(depth) {}
 
-	/// <summary>Constructor from GenericExtent2D)</summary>
+	/// <summary>Constructor from GenericExtent2D</summary>
 	/// <param name="extent2D">Vertical and horizontal size</param>
 	/// <param name="depth">Depth size (default 1)</param>
 	GenericExtent3D(const GenericExtent2D<Txy>& extent2D, Tz depth = 1) : GenericExtent2D<Txy>(extent2D), depth(depth) {}
@@ -177,9 +328,10 @@ struct GenericOffset2D
 {
 	T x; //!< offset in x axis
 	T y; //!< offset in y axis
-		 /// <summary>Constructor. Defaults to (0,0)</summary>
-		 /// <param name="offsetX">Offset in the X direction. (Default 0)</param>
-		 /// <param name="offsetY">Offset in the Y direction. (Default 0)</param>
+
+	/// <summary>Constructor. Defaults to (0,0)</summary>
+	/// <param name="offsetX">Offset in the X direction. (Default 0)</param>
+	/// <param name="offsetY">Offset in the Y direction. (Default 0)</param>
 	GenericOffset2D(T offsetX = 0, T offsetY = 0) : x(offsetX), y(offsetY) {}
 
 	/// <summary>Sum this Offset with an Extent</summary>
@@ -205,11 +357,13 @@ template<typename Txy, typename Tz>
 struct GenericOffset3D : public GenericOffset2D<Txy>
 {
 	Tz z; //!< offset in z axis
-		  /// <summary>Constructor. Defaults to (0,0,0)</summary>
-		  /// <param name="offsetX">Offset in the X direction. (Default 0)</param>
-		  /// <param name="offsetY">Offset in the Y direction. (Default 0)</param>
-		  /// <param name="offsetZ">Offset in the Z direction. (Default 0)</param>
+
+	/// <summary>Constructor. Defaults to (0,0,0)</summary>
+	/// <param name="offsetX">Offset in the X direction. (Default 0)</param>
+	/// <param name="offsetY">Offset in the Y direction. (Default 0)</param>
+	/// <param name="offsetZ">Offset in the Z direction. (Default 0)</param>
 	GenericOffset3D(Txy offsetX = 0, Txy offsetY = 0, Tz offsetZ = 0) : GenericOffset2D<Txy>(offsetX, offsetY), z(offsetZ) {}
+
 	/// <summary>Sum this Offset with an Extent</summary>
 	/// <param name="rhs">The right hand side of the additions</param>
 	/// <returns>The result of this offset plus the extent rhs</returns>
@@ -234,14 +388,14 @@ struct GenericOffset3D : public GenericOffset2D<Txy>
 	GenericOffset3D(const GenericOffset2D<Txy>& offsetXY, Tz offsetZ = 0) : GenericOffset2D<Txy>(offsetXY), z(offsetZ) {}
 };
 
-/// <summary> A 2D, integer Offset typically used for Images</summary>
+/// <summary>A 2D, integer Offset typically used for Images</summary>
 typedef GenericOffset2D<int32_t> Offset2D;
-/// <summary> A 3D, integer Offset typically used for 3D Images</summary>
+/// <summary>A 3D, integer Offset typically used for 3D Images</summary>
 typedef GenericOffset3D<int32_t, int32_t> Offset3D;
 
-/// <summary> A 2D, integer Extent typically used for Images</summary>
+/// <summary>A 2D, integer Extent typically used for Images</summary>
 typedef GenericExtent2D<uint32_t> Extent2D;
-/// <summary> A 3D, integer Extent  typically used for 3D Images</summary>
+/// <summary>A 3D, integer Extent  typically used for 3D Images</summary>
 typedef GenericExtent3D<uint32_t, uint32_t> Extent3D;
 
 /// <summary>Enumeration of the "aspect" (or "semantics") of an image: Color, Depth, Stencil.</summary>
@@ -253,23 +407,38 @@ enum class ImageAspectFlags : uint32_t
 	Metadata = 0x8,
 	DepthAndStencil = Depth | Stencil,
 };
-/*! \brief Macro that defines all common bitwise operators for an enum-class */
 
+/// <summary>Operator|.</summary>
+/// <param name="lhs">The right hand side of the operator</param>
+/// <param name="rhs">The right hand side of the operator</param>
+/// <returns>A set of ImageAspectFlags after applying the operator|.</returns>
 inline ImageAspectFlags operator|(ImageAspectFlags lhs, ImageAspectFlags rhs)
 {
 	return static_cast<ImageAspectFlags>(static_cast<std::underlying_type<ImageAspectFlags>::type /**/>(lhs) | static_cast<std::underlying_type<ImageAspectFlags>::type /**/>(rhs));
 }
 
+/// <summary>Operator|=.</summary>
+/// <param name="lhs">The right hand side of the operator</param>
+/// <param name="rhs">The right hand side of the operator</param>
+/// <returns>A set of ImageAspectFlags after applying the operator|=.</returns>
 inline void operator|=(ImageAspectFlags& lhs, ImageAspectFlags rhs)
 {
 	lhs = static_cast<ImageAspectFlags>(static_cast<std::underlying_type<ImageAspectFlags>::type /**/>(lhs) | static_cast<std::underlying_type<ImageAspectFlags>::type /**/>(rhs));
 }
 
+/// <summary>Operator&.</summary>
+/// <param name="lhs">The right hand side of the operator</param>
+/// <param name="rhs">The right hand side of the operator</param>
+/// <returns>A set of ImageAspectFlags after applying the operator&.</returns>
 inline ImageAspectFlags operator&(ImageAspectFlags lhs, ImageAspectFlags rhs)
 {
 	return static_cast<ImageAspectFlags>(static_cast<std::underlying_type<ImageAspectFlags>::type /**/>(lhs) & static_cast<std::underlying_type<ImageAspectFlags>::type /**/>(rhs));
 }
 
+/// <summary>Operator&=.</summary>
+/// <param name="lhs">The right hand side of the operator</param>
+/// <param name="rhs">The right hand side of the operator</param>
+/// <returns>A set of ImageAspectFlags after applying the operator&=.</returns>
 inline void operator&=(ImageAspectFlags& lhs, ImageAspectFlags rhs)
 {
 	lhs = static_cast<ImageAspectFlags>(static_cast<std::underlying_type<ImageAspectFlags>::type /**/>(lhs) & static_cast<std::underlying_type<ImageAspectFlags>::type /**/>(rhs));
@@ -282,12 +451,13 @@ struct ImageSubresource
 	ImageAspectFlags aspect; //!< The Aspect of the subresource (Color, Depth, Stencil, Depth&Stencil)
 	uint16_t arrayLayerOffset; //!< The index of the array slice. In case of a range, the offset of the first layer.
 	uint16_t mipLevelOffset; //!< The index of the mipmap level. In case of a range, the offset of the first mipmap level.
-							 /// <summary>Constructor. All arguments optional.</summary>
-							 /// <param name="mipLevelOffset">The index of the array slice. In case of a range, the offset of the first layer.
-							 /// (Default 0)</param>
-							 /// <param name="arrayLayerOffset">The index of the mipmap level. In case of a range, the offset of the first
-							 /// mipmap level. (Default 0)</param>
-							 /// <param name="aspectFlags">The aspect(s) of the subresource (Color/Depth/Stencil/DepthStencil)</param>
+
+	/// <summary>Constructor. All arguments optional.</summary>
+	/// <param name="aspectFlags">The aspect(s) of the subresource (Color/Depth/Stencil/DepthStencil)</param>
+	/// <param name="mipLevelOffset">The index of the array slice. In case of a range, the offset of the first layer.
+	/// (Default 0)</param>
+	/// <param name="arrayLayerOffset">The index of the mipmap level. In case of a range, the offset of the first
+	/// mipmap level. (Default 0)</param>
 	ImageSubresource(ImageAspectFlags aspectFlags = ImageAspectFlags::Color, uint16_t mipLevelOffset = 0, uint16_t arrayLayerOffset = 0)
 		: aspect(aspectFlags), arrayLayerOffset(arrayLayerOffset), mipLevelOffset(mipLevelOffset)
 	{}
@@ -405,7 +575,7 @@ public:
 	Texture(const TextureHeader& sHeader, const char* pData = NULL);
 
 	/// <summary>Create a texture using the information from a Texture header and preallocate memory for its data.
-	/// </summary>
+	///</summary>
 	/// <param name="sHeader">A texture header describing the texture</param>
 	/// <remarks>Creates a new texture based on a texture header, pre-allocating the correct amount of memory.</remarks>
 	void initializeWithHeader(const TextureHeader& sHeader);
@@ -414,45 +584,79 @@ public:
 	/// and/or MIP Map levels.</summary>
 	/// <param name="mipMapLevel">The mip map level to get a pointer to (default 0)</param>
 	/// <param name="arrayMember">The array member to get a pointer to (default 0)</param>
-	/// <param name="faceNumber">The cube face to get a pointer to (default 0)</param>
+	/// <param name="face">The cube face to get a pointer to (default 0)</param>
 	/// <returns>Const raw pointer to a location in the texture.</returns>
 	/// <remarks>The data is contiguous so that the entire texture (all mips, array members and faces) can always be
 	/// accessed from any pointer.</remarks>
-	const unsigned char* getDataPointer(uint32_t mipMapLevel = 0, uint32_t arrayMember = 0, uint32_t faceNumber = 0) const;
+	const unsigned char* getDataPointer(uint32_t mipMapLevel = 0, uint32_t arrayMember = 0, uint32_t face = 0) const;
 
 	/// <summary>Returns a pointer into the raw texture's data. Can be offset to a specific array member, face and/or MIP
 	/// Map levels.</summary>
 	/// <param name="mipMapLevel">The mip map level for which to get the data pointer (default 0)</param>
 	/// <param name="arrayMember">The array member for which to get the data pointer (default 0)</param>
-	/// <param name="faceNumber">The face for which to get the data pointer (default 0)</param>
+	/// <param name="face">The face for which to get the data pointer (default 0)</param>
 	/// <returns>Raw pointer to a location in the texture.</returns>
 	/// <remarks>The data is contiguous so that the entire texture (all mips, array members and faces) can always be
 	/// accessed from any pointer.</remarks>
-	unsigned char* getDataPointer(uint32_t mipMapLevel = 0, uint32_t arrayMember = 0, uint32_t faceNumber = 0);
+	unsigned char* getDataPointer(uint32_t mipMapLevel = 0, uint32_t arrayMember = 0, uint32_t face = 0);
 
-	/// <summary>Returns a pointer into the raw texture's data, offset to a specific pixel. DOES NOT WORK FOR COMPRESSED
-	/// TEXTURES.</summary>
+	/// <summary>Returns a pointer into the raw texture's data, offset to a specific pixel. Note that this does not work for compressed textures.</summary>
 	/// <param name="x">The x position of the pointer</param>
 	/// <param name="y">The y position of the pointer</param>
 	/// <param name="z">The z position of the pointer (default 0)</param>
 	/// <param name="mipMapLevel">The mip map level for which to get the data pointer (default 0)</param>
 	/// <param name="arrayMember">The array member for which to get the data pointer (default 0)</param>
-	/// <param name="faceNumber">The face for which to get the data pointer (default 0)</param>
+	/// <param name="face">The face for which to get the data pointer (default 0). The number is equal to the value of the corresponding CubeFace enum.</param>
 	/// <returns>Raw pointer to a location in the texture.</returns>
 	/// <remarks>The data is contiguous so that the entire texture (all mips, array members and faces) can always be
 	/// accessed from any pointer. Equivalent to getDataPointer(mipMapLevel, arrayMember, faceNumber) + [char offset
 	/// of pixel (x,y,z)]</remarks>
-	unsigned char* getPixelPointer(uint32_t x, uint32_t y, uint32_t z = 0, uint32_t mipMapLevel = 0, uint32_t arrayMember = 0, uint32_t faceNumber = 0)
+	unsigned char* getPixelPointer(uint32_t x, uint32_t y, uint32_t z = 0, uint32_t mipMapLevel = 0, uint32_t arrayMember = 0, uint32_t face = 0)
 	{
 		uint8_t pelsize = getPixelSize();
-		size_t idx = (x + y * _header.width * +z * _header.width * _header.height) * pelsize;
-		return getDataPointer(mipMapLevel, arrayMember, faceNumber) + idx;
+		size_t idx = (x + y * _header.width + z * _header.width * _header.height) * pelsize;
+		return getDataPointer(mipMapLevel, arrayMember, face) + idx;
+	}
+
+	/// <summary>Returns the pointer to the data of the closest texel to the provided uvw coordinates (right/down texel returned if coordinate is on a boundary).
+	/// Note that this does not work for compressed textures.</summary>
+	/// <param name="u">The u position [0..1] of the pointer. Clamped to [0..1]</param>
+	/// <param name="v">The v position [0..1] of the pointer. Clamped to [0..1]</param>
+	/// <param name="w">Thew position [0..1] of the pointer (default 0). Clamped to [0..1]</param>
+	/// <param name="mipMapLevel">The mip map level for which to get the data pointer (default 0)</param>
+	/// <param name="arrayMember">The array member for which to get the data pointer (default 0)</param>
+	/// <param name="face">The face for which to get the data pointer (default 0)</param>
+	/// <returns>Raw pointer to a location in the texture.</returns>
+	/// <remarks>The data is contiguous so that the entire texture (all mips, array members and faces) can
+	/// always be accessed from any pointer.</remarks>
+	unsigned char* getPixelPointerByUvw(float u, float v, float w = 0, uint32_t mipMapLevel = 0, uint32_t arrayMember = 0, CubeFace face = (CubeFace)0)
+	{
+		uint32_t x = (u <= 0.f) ? 0 : (u >= 1.f) ? getWidth(mipMapLevel) - 1 : uint32_t(u * getWidth(mipMapLevel));
+		uint32_t y = (v <= 0.f) ? 0 : (v >= 1.f) ? getHeight(mipMapLevel) - 1 : uint32_t(v * getHeight(mipMapLevel));
+		uint32_t z = (w <= 0.f) ? 0 : (w >= 1.f) ? getDepth(mipMapLevel) - 1 : uint32_t(w * getDepth(mipMapLevel));
+
+		return getPixelPointer(x, y, z, mipMapLevel, arrayMember, (uint32_t)face);
+	}
+
+	/// <summary>Returns the pointer to the data for the direction (x,y,z) provided for the specific mip map level and array layer.</summary>
+	/// <param name="x">The x component of the direction</param>
+	/// <param name="y">The y component of the direction</param>
+	/// <param name="z">The z component of the direction</param>
+	/// <param name="mipMapLevel">The mip map level for which to get the data pointer (default 0)</param>
+	/// <param name="arrayMember">The array member for which to get the data pointer (default 0)</param>
+	/// <returns>Raw pointer to the data for the direction specified.</returns>
+	unsigned char* getCubemapPixel(float x, float y, float z, uint32_t mipMapLevel = 0, uint32_t arrayMember = 0)
+	{
+		CubeFace face;
+		float u, v;
+		convertXYZToCubeUV(x, y, z, face, u, v);
+		return getPixelPointerByUvw(u, v, 0, mipMapLevel, arrayMember, face);
 	}
 
 	/// <summary>Get the number of bytes size of each pixel in the texture. Not accurate for many compressed textures
 	/// (e.g. ASTC)</summary>
 	/// <returns>he number of bytes size of each pixel in the texture. May return zero for some compressed formats.
-	/// </returns>
+	///</returns>
 	uint8_t getPixelSize() const;
 
 	/// <summary>Return the base dimensioning type of the image (3D, 2D, 1D).</summary>
@@ -484,7 +688,7 @@ public:
 	/// <remarks>When writing the texture out to a PVR file, it is often desirable to pad the meta data so that the
 	/// start of the texture data aligns to a given boundary. Note - this should be called immediately before saving
 	/// (in any case, before adding any metadata) as the value is worked out based on the current meta data size.
-	/// </remarks>
+	///</remarks>
 	void addPaddingMetaData(uint32_t alignment);
 
 private:

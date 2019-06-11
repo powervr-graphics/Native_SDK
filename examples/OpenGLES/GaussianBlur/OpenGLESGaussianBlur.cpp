@@ -86,6 +86,7 @@ private:
 
 	struct DeviceResources
 	{
+		pvr::EglContext context;
 		// Fbo
 		Framebuffer fbo;
 
@@ -100,8 +101,6 @@ private:
 		GLuint graphicsProgram;
 
 		GLuint graphicsGaussianConfigBuffer;
-
-		pvr::EglContext context;
 
 		// UIRenderer used to display text
 		pvr::ui::UIRenderer uiRenderer;
@@ -244,7 +243,7 @@ void OpenGLESGaussianBlur::updateResources()
 		float inverseImageHeight = 1.0f / _deviceResources->texture.getHeight();
 		glm::vec2 config = glm::vec2(windowWidth, inverseImageHeight);
 
-		memcpy(static_cast<char*>(_mappedGraphicsBufferMemory), &config, pvr::getSize(pvr::GpuDatatypes::vec2));
+		memcpy(static_cast<char*>(_mappedGraphicsBufferMemory), &config, static_cast<size_t>(pvr::getSize(pvr::GpuDatatypes::vec2)));
 
 		gl::UnmapBuffer(GL_UNIFORM_BUFFER);
 	}

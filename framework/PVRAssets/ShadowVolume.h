@@ -39,7 +39,7 @@ public:
 
 	/// <summary>Get the number of indices of the specified shadow volume.</summary>
 	/// <param name="volumeID">Shadow volume id</param>
-	/// <returns>The number of indexes </returns>
+	/// <returns>The number of indexes</returns>
 	uint32_t getNumIndices(uint32_t volumeID);
 
 	/// <summary>Get the indices of the specified shadow volume.</summary>
@@ -61,12 +61,10 @@ public:
 	/// <returns>True if the volume is visible, otherwise false</returns>
 	uint32_t isVisible(const glm::mat4x4 projection, const glm::vec3& lightModel, bool isPointLight, float cameraZProj, float extrudeLength);
 
-	/// <summary>Find the silhouette of the shadow volume for the specified light and prepare it for projection.
-	/// </summary>
+	/// <summary>Find the silhouette of the shadow volume for the specified light and prepare it for projection.</summary>
 	/// <param name="volumeID">The Shadow Volume to prepare. Must have had alllocateShadowVolume called on it</param>
 	/// <param name="flags">The properties of the shadow volume to generate (caps, technique)</param>
-	/// <param name="lightModel">The Model-space light. Either point-light(or spot) or directional light supported
-	/// </param>
+	/// <param name="lightModel">The Model-space light. Either point-light(or spot) or directional light supported</param>
 	/// <param name="isPointLight">Pass true for point (or spot) light, false for directional</param>
 	/// <param name="externalIndexBuffer">An external buffer that contains custom, user provided index data.</param>
 	/// <returns>True if successful, otherwise false</returns>

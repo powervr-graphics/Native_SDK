@@ -290,10 +290,12 @@ inline void logOutput(bool error, const char* const formatString, va_list argume
 #else
 	va_copy(tempList, argumentList);
 #endif
-
-	vsnprintf(buffer, 4095, formatString, argumentList);
-	fprintf(logfile, "%s%s\n", procAddressMessageTypes[static_cast<uint32_t>(error)], buffer);
-	fclose(logfile);
+	if(logfile != NULL)
+	{
+	    vsnprintf(buffer, 4095, formatString, argumentList);
+	    fprintf(logfile, "%s%s\n", procAddressMessageTypes[static_cast<uint32_t>(error)], buffer);
+	    fclose(logfile);
+	}
 #if defined(_WIN32)
 
 	if (IsDebuggerPresent())

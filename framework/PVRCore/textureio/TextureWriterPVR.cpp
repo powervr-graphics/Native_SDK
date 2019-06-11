@@ -1,6 +1,6 @@
 /*!
 \brief Implementation of methods of the TextureWriterPVR class.
-\file PVRAssets/FileIO/TextureWriterPVR.cpp
+\file PVRCore/textureio/TextureWriterPVR.cpp
 \author PowerVR by Imagination, Developer Technology Team
 \copyright Copyright (c) Imagination Technologies Limited.
 */
@@ -69,7 +69,7 @@ bool TextureWriterPVR::canWriteAsset(const Texture&)
 vector<std::string> TextureWriterPVR::getSupportedFileExtensions()
 {
 	vector<std::string> extensions;
-	extensions.push_back("pvr");
+	extensions.emplace_back("pvr");
 	return vector<std::string>(extensions);
 }
 

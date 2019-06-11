@@ -10,30 +10,31 @@
 
 namespace pvrvk {
 namespace impl {
-Semaphore_::Semaphore_(const DeviceWeakPtr& device, const SemaphoreCreateInfo& createInfo)
-	: DeviceObjectHandle(device), DeviceObjectDebugMarker(DebugReportObjectTypeEXT::e_SEMAPHORE_EXT), _createInfo(createInfo)
+//!\cond NO_DOXYGEN
+Semaphore_::Semaphore_(make_shared_enabler, const DeviceWeakPtr& device, const SemaphoreCreateInfo& createInfo)
+	: PVRVkDeviceObjectBase(device), DeviceObjectDebugUtils(), _createInfo(createInfo)
 {
 	VkSemaphoreCreateInfo vkCreateInfo = {};
 	vkCreateInfo.sType = static_cast<VkStructureType>(StructureType::e_SEMAPHORE_CREATE_INFO);
 	vkCreateInfo.flags = static_cast<VkSemaphoreCreateFlags>(_createInfo.getFlags());
-	vkThrowIfFailed(_device->getVkBindings().vkCreateSemaphore(getDevice()->getVkHandle(), &vkCreateInfo, nullptr, &_vkHandle), "Failed to create Semaphore");
+	vkThrowIfFailed(getDevice()->getVkBindings().vkCreateSemaphore(getDevice()->getVkHandle(), &vkCreateInfo, nullptr, &_vkHandle), "Failed to create Semaphore");
 }
 
 Semaphore_::~Semaphore_()
 {
 	if (getVkHandle() != VK_NULL_HANDLE)
 	{
-		if (_device.isValid())
+		if (!_device.expired())
 		{
-			_device->getVkBindings().vkDestroySemaphore(_device->getVkHandle(), getVkHandle(), NULL);
+			getDevice()->getVkBindings().vkDestroySemaphore(getDevice()->getVkHandle(), getVkHandle(), NULL);
 			_vkHandle = VK_NULL_HANDLE;
-			_device.reset();
 		}
 		else
 		{
-			reportDestroyedAfterDevice("Semaphore");
+			reportDestroyedAfterDevice();
 		}
 	}
 }
+//!\endcond
 } // namespace impl
 } // namespace pvrvk

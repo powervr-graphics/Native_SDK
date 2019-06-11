@@ -35,11 +35,10 @@ void main()
 	//
 	// Read GBuffer attributes
 	//
-	mediump vec3 normalTex =  subpassLoad(localMemNormal).xyz;
 	mediump vec4 albedoSpec = subpassLoad(localMemAlbedo);
-	mediump vec3 normal = normalize(normalTex * 2.0 - 1.0);	
+	mediump vec3 normal =  subpassLoad(localMemNormal).xyz;
 	// reconstruct original depth value
-	highp float depth = subpassLoad(localMemDepth).x;
+	highp float depth = -subpassLoad(localMemDepth).x;
 
 	//
 	// Reconstruct view space position 

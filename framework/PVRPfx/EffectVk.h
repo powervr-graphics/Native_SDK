@@ -23,8 +23,7 @@ using pvr::effect::PipelineCondition;
 
 /// <summary>The ObjectSemantic struct. Contains the semantic binding of a descriptor object, i.e. the
 /// connection of a Buffer or Texture, with a semantic "string" understood by the application. This object
-/// does not actually carry the semantic string as this will be the key to a map where it will be stored.
-/// </summary>
+/// does not actually carry the semantic string as this will be the key to a map where it will be stored.</summary>
 struct ObjectSemantic
 {
 	StringHash name; //!< The name(identifier) of the object in the effect. NOT the semantic.
@@ -130,7 +129,7 @@ struct Subpass
 /// may be rendering to intermediate results while the final one writes to the actual render target.</summary>
 struct Pass
 {
-	pvrvk::RenderPass renderPass; //!< The actual Renderpass object to use
+	pvrvk::RenderPass renderPass; //!< The actual RenderPass object to use
 	pvrvk::Framebuffer framebuffers[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)]; //!< The Render Targets to use (one per swapchain)
 	std::vector<Subpass> subpasses; //!< The list of subpasses composing this render pass
 };
@@ -302,8 +301,7 @@ public:
 	}
 
 	/// <summary>Get a reference to one of the effect's passes</summary>
-	/// <param name="passIndex">The index of the pass (the order with which it was defined/added to the effect)
-	/// </param>
+	/// <param name="passIndex">The index of the pass (the order with which it was defined/added to the effect)</param>
 	/// <returns>The pass with the specified index. If it does not exist, undefined behaviour.</returns>
 	const Pass& getPass(uint32_t passIndex) const
 	{
@@ -311,8 +309,7 @@ public:
 	}
 
 	/// <summary>Get a reference to one of the effect's passes</summary>
-	/// <param name="passIndex">The index of the pass (the order with which it was defined/added to the effect)
-	/// </param>
+	/// <param name="passIndex">The index of the pass (the order with which it was defined/added to the effect)</param>
 	/// <returns>The pass with the specified index. If it does not exist, undefined behaviour.</returns>
 	Pass& getPass(uint32_t passIndex)
 	{
@@ -520,7 +517,7 @@ private:
 	void buildRenderObjects(pvrvk::CommandBuffer& texUploadCmdBuffer, IAssetProvider& assetProvider);
 };
 } // namespace impl
-typedef RefCountedResource<impl::Effect_> EffectApi; //!< A smart pointer to an EffectApi
+typedef std::shared_ptr<impl::Effect_> EffectApi; //!< A smart pointer to an EffectApi
 } // namespace effectvk
 } // namespace pvr
 //! endcond NO_DOXYGEN

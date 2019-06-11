@@ -151,10 +151,9 @@ void AnimationInstance::updateAnimation(float time)
 			for (uint32_t i = 0; i < keyframeNodes.nodes.size(); ++i)
 			{
 				pvr::assets::Node::InternalData& internalData = static_cast<Node*>(keyframeNodes.nodes[i])->getInternalData();
-				glm::mat4 transMat4;
-				pvr::math::constructSRT(&internalData.getScale(), &internalData.getRotate(), &internalData.getTranslation(), transMat4);
-				transMat4 = transX * transMat4;
-				memcpy(internalData.frameXform, glm::value_ptr(transMat4), sizeof(glm::mat4));
+				glm::mat4 srtMatrix = pvr::math::constructSRT(internalData.getScale(), internalData.getRotate(), internalData.getTranslation());
+				srtMatrix = transX * srtMatrix;
+				memcpy(internalData.frameXform, glm::value_ptr(srtMatrix), sizeof(glm::mat4));
 			}
 		}
 	}

@@ -6,7 +6,7 @@ var searchData=
   ['semanticname',['semanticName',['../structpvr_1_1utils_1_1_vertex_bindings.html#a74f6b69852fdb3031ef27bdffa5e2c99',1,'pvr::utils::VertexBindings']]],
   ['stenciltest',['stencilTest',['../structpvr_1_1ui_1_1_g_l_state.html#a02f4f8ddbbf93c138ab1c463622687cf',1,'pvr::ui::GLState']]],
   ['stenciltestchanged',['stencilTestChanged',['../structpvr_1_1ui_1_1_g_l_state_tracker.html#a01facd6133a2997148cbb0aebecf9fce',1,'pvr::ui::GLStateTracker']]],
-  ['steprate',['stepRate',['../structpvr_1_1_vertex_input_binding_info.html#af62e3a4af207f28d470349da92cc7c58',1,'pvr::VertexInputBindingInfo']]],
-  ['strideinbytes',['strideInBytes',['../structpvr_1_1_vertex_input_binding_info.html#ad5b16dfe1cef5bc4e0656cd792a6fb63',1,'pvr::VertexInputBindingInfo']]],
+  ['steprate',['stepRate',['../structpvr_1_1utils_1_1_vertex_input_binding_info.html#a4a0ba801a760bfcd833720e2c569fd02',1,'pvr::utils::VertexInputBindingInfo']]],
+  ['strideinbytes',['strideInBytes',['../structpvr_1_1utils_1_1_vertex_input_binding_info.html#a8eb59b416afb7564ea282739d995cc28',1,'pvr::utils::VertexInputBindingInfo']]],
   ['surface',['surface',['../structpvr_1_1utils_1_1_queue_populate_info.html#ab303d9a7f5c55fcd9a13f272ae23b764',1,'pvr::utils::QueuePopulateInfo']]]
 ];

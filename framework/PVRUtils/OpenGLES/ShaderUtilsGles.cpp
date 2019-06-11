@@ -14,32 +14,28 @@
 namespace pvr {
 namespace utils {
 
-GLuint loadShader(const Stream& shaderSource, ShaderType shaderType, const char* const* defines, uint32_t defineCount)
+namespace {
+GLenum getGlslShaderType(ShaderType shaderType)
 {
-	throwOnGlError("loadShader: Error on entry!");
-	shaderSource.open();
-
-	std::string shaderSrc;
-	shaderSource.readIntoString(shaderSrc);
-	GLuint outShader;
+	GLenum glEnum = -1;
 	switch (shaderType)
 	{
 	case ShaderType::VertexShader:
-		outShader = gl::CreateShader(GL_VERTEX_SHADER);
+		glEnum = GL_VERTEX_SHADER;
 		break;
 	case ShaderType::FragmentShader:
-		outShader = gl::CreateShader(GL_FRAGMENT_SHADER);
+		glEnum = GL_FRAGMENT_SHADER;
 		break;
 	case ShaderType::ComputeShader:
 #if defined(GL_COMPUTE_SHADER)
-		outShader = gl::CreateShader(GL_COMPUTE_SHADER);
+		glEnum = GL_COMPUTE_SHADER;
 #else
 		throw InvalidOperationError("loadShader: Compute Shader not supported on this context");
 #endif
 		break;
 	case ShaderType::GeometryShader:
 #if defined(GL_GEOMETRY_SHADER_EXT)
-		outShader = gl::CreateShader(GL_GEOMETRY_SHADER_EXT);
+		glEnum = GL_GEOMETRY_SHADER_EXT;
 #else
 		throw InvalidOperationError("loadShader: Geometry Shader not supported on this context");
 #endif
@@ -47,14 +43,14 @@ GLuint loadShader(const Stream& shaderSource, ShaderType shaderType, const char*
 		break;
 	case ShaderType::TessControlShader:
 #if defined(GL_TESS_CONTROL_SHADER_EXT)
-		outShader = gl::CreateShader(GL_TESS_CONTROL_SHADER_EXT);
+		glEnum = GL_TESS_CONTROL_SHADER_EXT;
 #else
 		throw InvalidOperationError("loadShader: Tessellation not supported on this context");
 #endif
 		break;
 	case ShaderType::TessEvaluationShader:
 #if defined(GL_TESS_EVALUATION_SHADER_EXT)
-		outShader = gl::CreateShader(GL_TESS_EVALUATION_SHADER_EXT);
+		glEnum = GL_TESS_EVALUATION_SHADER_EXT;
 #else
 		throw InvalidOperationError("loadShader: Tessellation not supported on this context");
 #endif
@@ -62,20 +58,32 @@ GLuint loadShader(const Stream& shaderSource, ShaderType shaderType, const char*
 	default:
 		throw InvalidOperationError("loadShader: Unknown shader type requested.");
 	}
-	std::string::size_type versBegin = shaderSrc.find("#version");
-	std::string::size_type versEnd = 0;
+	return glEnum;
+}
+} // namespace
+
+static inline GLuint loadShaderUtil(const std::string& shaderSrc, ShaderType shaderType, const char* const* defines, uint32_t defineCount)
+{
+	throwOnGlError("loadShader: Error on entry!");
+
+	GLuint outShader = gl::CreateShader(getGlslShaderType(shaderType));
+
+	// Determine whether a version string is present
+	std::string::size_type versionBegin = shaderSrc.find("#version");
+	std::string::size_type versionEnd = 0;
 	std::string sourceDataStr;
-	if (versBegin != std::string::npos)
+	// If a version string is present then update the versionBegin variable to the position after the version string
+	if (versionBegin != std::string::npos)
 	{
-		versEnd = shaderSrc.find("\n", versBegin);
-		sourceDataStr.append(shaderSrc.begin() + versBegin, shaderSrc.begin() + versBegin + versEnd);
+		versionEnd = shaderSrc.find("\n", versionBegin);
+		sourceDataStr.append(shaderSrc.begin() + versionBegin, shaderSrc.begin() + versionBegin + versionEnd);
 		sourceDataStr.append("\n");
 	}
 	else
 	{
-		versBegin = 0;
+		versionBegin = 0;
 	}
-	// insert the defines
+	// Insert the defines after the version string if one is present
 	for (uint32_t i = 0; i < defineCount; ++i)
 	{
 		sourceDataStr.append("#define ");
@@ -83,13 +91,21 @@ GLuint loadShader(const Stream& shaderSource, ShaderType shaderType, const char*
 		sourceDataStr.append("\n");
 	}
 	sourceDataStr.append("\n");
-	sourceDataStr.append(shaderSrc.begin() + versBegin + versEnd, shaderSrc.end());
+	sourceDataStr.append(shaderSrc.begin() + versionBegin + versionEnd, shaderSrc.end());
 	const char* pSource = sourceDataStr.c_str();
+
 	gl::ShaderSource(outShader, 1, &pSource, NULL);
 	throwOnGlError("CreateShader::glShaderSource error");
 	gl::CompileShader(outShader);
 
 	throwOnGlError("CreateShader::glCompile error");
+
+	return outShader;
+}
+
+GLuint loadShader(const std::string& shaderSrc, ShaderType shaderType, const char* const* defines, uint32_t defineCount)
+{
+	GLuint outShader = loadShaderUtil(shaderSrc, shaderType, defines, defineCount);
 
 	// error checking
 	GLint glRslt;
@@ -102,15 +118,44 @@ GLuint loadShader(const Stream& shaderSource, ShaderType shaderType, const char*
 		std::vector<char> pLog;
 		pLog.resize(infoLogLength);
 		gl::GetShaderInfoLog(outShader, infoLogLength, &charsWritten, pLog.data());
-		const char* const typestring = (shaderType == ShaderType::VertexShader ? "Vertex"
-																			   : shaderType == ShaderType::FragmentShader ? "Fragment"
-																														  : shaderType == ShaderType::ComputeShader
-						? "Compute"
-						: shaderType == ShaderType::TessControlShader ? "TessellationControl" : shaderType == ShaderType::TessEvaluationShader ? "TessellationEvaluation" : "Unknown");
+		std::string typestring = to_string(shaderType);
+
+		std::string str = strings::createFormatted("Failed to compile %s shader.\n "
+												   "==========Infolog:==========\n%s\n============================",
+			typestring.c_str(), pLog.data());
+		Log(LogLevel::Error, str.c_str());
+		throw InvalidOperationError(str);
+	}
+	throwOnGlError("CreateShader::exit");
+	return outShader;
+}
+
+GLuint loadShader(const Stream& shaderSource, ShaderType shaderType, const char* const* defines, uint32_t defineCount)
+{
+	throwOnGlError("loadShader: Error on entry!");
+	shaderSource.open();
+
+	std::string shaderSrc;
+	shaderSource.readIntoString(shaderSrc);
+
+	GLuint outShader = loadShaderUtil(shaderSrc, shaderType, defines, defineCount);
+
+	// error checking
+	GLint glRslt;
+	gl::GetShaderiv(outShader, GL_COMPILE_STATUS, &glRslt);
+	if (!glRslt)
+	{
+		int infoLogLength, charsWritten;
+		// get the length of the log
+		gl::GetShaderiv(outShader, GL_INFO_LOG_LENGTH, &infoLogLength);
+		std::vector<char> pLog;
+		pLog.resize(infoLogLength);
+		gl::GetShaderInfoLog(outShader, infoLogLength, &charsWritten, pLog.data());
+		std::string typestring = to_string(shaderType);
 
 		std::string str = strings::createFormatted("Failed to compile %s shader: %s.\n "
 												   "==========Infolog:==========\n%s\n============================",
-			typestring, shaderSource.getFileName().c_str(), pLog.data());
+			typestring.c_str(), shaderSource.getFileName().c_str(), pLog.data());
 		Log(LogLevel::Error, str.c_str());
 		throw InvalidOperationError(str);
 	}

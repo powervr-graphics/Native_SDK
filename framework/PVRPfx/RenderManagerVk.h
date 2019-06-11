@@ -149,7 +149,7 @@ struct RendermanMesh
 	RenderManager& backToRenderManager();
 };
 
-/// <summary> A pointer to a function that sets a specific Model Semantic from the model to the
+/// <summary>A pointer to a function that sets a specific Model Semantic from the model to the
 /// provided memory object</summary>
 typedef bool (*ModelSemanticSetter)(TypedMem& mem, const RendermanModel& model);
 
@@ -405,8 +405,7 @@ struct RendermanSubpassMesh
 /// components: The actual buffer, the descriptor set bound to, the layout of the buffer,
 /// the dynamic id (if part of a buffer, which slice this object refers to) and so on.
 /// Will normally be used with the actual Semantic as a key in a map, hence it does
-/// not contain it.
-/// </summary>
+/// not contain it.</summary>
 struct BufferEntrySemantic
 {
 	pvr::utils::StructuredBufferView* structuredBufferView; //!< A pointer to the structuredBufferView describing the layout of the buffer
@@ -507,8 +506,7 @@ struct AutomaticModelUniformSemantic
 /// Unique per rendering node AND mesh bone batch combination. NOTE: if bone batching is used, then multiple nodes will
 /// be generated per meshnode.
 /// Contains a reference to the mesh, the material, and also contains the dynamic offsets required to render with it.
-/// Loop through those to render.
-/// </summary>
+/// Loop through those to render.</summary>
 struct RendermanNode
 {
 	assets::NodeHandle assetNode; //!< Reference to the PVRAssets Node this object refers to
@@ -557,16 +555,14 @@ struct RendermanNode
 		return dynamicOffset[setId][swapchainId];
 	}
 
-	/// <summary>Get a reference of the semantic of this node. The value is saved in a provided memory object.
-	/// </summary>
+	/// <summary>Get a reference of the semantic of this node. The value is saved in a provided memory object.</summary>
 	/// <param name="semantic">The semantic name to get the value of</param>
 	/// <param name="memory">The semantic value is returned here</param>
 	/// <returns>Return true if found, otherwise false</returns>
 	bool getNodeSemantic(const StringHash& semantic, TypedMem& memory) const;
 
 	/// <summary>Get the function object (NodeSemanticSetter) that will be used for a specific semantic</summary>
-	/// <param name="semantic">A node-specific semantic name (WORLDMATRIX, BONECOUNT, BONEMATRIXARRAY0 etc.)
-	/// </param>
+	/// <param name="semantic">A node-specific semantic name (WORLDMATRIX, BONECOUNT, BONEMATRIXARRAY0 etc.)</param>
 	/// <returns>A NodeSemanticSetter function object that can be called to set this node semantic.</returns>
 	NodeSemanticSetter getNodeSemanticSetter(const StringHash& semantic) const;
 
@@ -587,8 +583,7 @@ struct RendermanNode
 	/// <summary>Generates a list of all the semantics that this node's pipeline requires, that are defined per-node (e.g.
 	/// MV/MVP matrices etc). Then, searches the connected asset node (model, mesh, material etc.) for these
 	/// semantics, and creates connections between them so that when updateAutomaticSemantics is called, the updated
-	/// values are updated in the semantics so that they can be read (with setUniformPtr, or updating buffers etc.).
-	/// </summary>
+	/// values are updated in the semantics so that they can be read (with setUniformPtr, or updating buffers etc.).</summary>
 	void createAutomaticSemantics();
 
 	/// <summary>Get the commands necessary to render this node (bind pipeline, descriptor sets, draw commands etc.)
@@ -637,8 +632,7 @@ struct RendermanNode
 struct RendermanSubpassGroup;
 
 /// <summary>Part of RendermanStructure. This class stores RendermanNodes and RendermanMaterialEffects The list of
-/// nodes here references the list of materials. It references the Models in the original RendermanModelStore list.
-/// </summary>
+/// nodes here references the list of materials. It references the Models in the original RendermanModelStore list.</summary>
 struct RendermanSubpassGroupModel
 {
 	RendermanSubpassGroup* renderSubpassGroup_; //!< The SubpassGroup parent of this object
@@ -654,7 +648,7 @@ struct RendermanSubpassGroupModel
 		return static_cast<uint32_t>(nodes.size());
 	}
 
-	/// <summary>Get renderman node </summary>(const)
+	/// <summary>Get renderman node</summary>(const)
 	/// <param name="index">Node id</param>
 	/// <returns>const RendermanNode&</returns>
 	const RendermanNode& toRendermanNode(uint32_t index) const
@@ -673,8 +667,7 @@ struct RendermanSubpassGroupModel
 	}
 
 	/// <summary>Get the commands necessary to render this SubpassModel. All calls are forwarded to the nodes of this
-	/// model. Optimizes bind pipeline etc. calls between nodes. Assumes correctly begun render passes, subpasses etc.
-	/// </summary>
+	/// model. Optimizes bind pipeline etc. calls between nodes. Assumes correctly begun render passes, subpasses etc.</summary>
 	/// <param name="cbuff">A command buffer to record the commands into</param>
 	/// <param name="swapIdx">The current swap chain (framebuffer image) index to record commands for.</param>
 	void recordRenderingCommands(pvrvk::CommandBufferBase cbuff, uint16_t swapIdx);
@@ -903,8 +896,7 @@ struct RendermanPipeline
 	/// matrices, light positions etc). Then, searches the connected asset Model for these semantics, and creates
 	/// connections between them so that when updateAutomaticSemantics is called, the new values are updated in the
 	/// semantics so that they can be read (with setUniformPtr, or updating buffers etc.).</summary>
-	/// <param name="useMainModelId">The model ID to use to read the values from. Default O (the first model).
-	/// </param>
+	/// <param name="useMainModelId">The model ID to use to read the values from. Default O (the first model).</param>
 	/// <returns>true if successful, false on any error</returns>
 	bool createAutomaticModelSemantics(uint32_t useMainModelId = 0);
 
@@ -940,7 +932,7 @@ struct RendermanSubpassGroup
 		return static_cast<uint32_t>(subpassGroupModels.size());
 	}
 
-	/// <summary>Get subpass group model </summary>(const)
+	/// <summary>Get subpass group model</summary>(const)
 	/// <param name="model">Model id</param>
 	/// <returns>const RendermanSubpassGroupModel&</returns>
 	const RendermanSubpassGroupModel& toSubpassGroupModel(uint32_t model) const
@@ -1027,7 +1019,7 @@ struct RendermanSubpassGroup
 	}
 };
 
-/// <summary>Part of RendermanStructure. This struct groups the Renderpass subpass group.</summary>
+/// <summary>Part of RendermanStructure. This struct groups the RenderPass subpass group.</summary>
 struct RendermanSubpass
 {
 	RendermanPass* renderingPass_; //!< The parent Render Pass of this object
@@ -1058,7 +1050,7 @@ struct RendermanSubpass
 	/// <returns>The RendermanEffect to which this object belongs</returns>
 	const RenderManager& backToRenderManager() const;
 
-	/// <summary> Get subpass group(const)</summary>
+	/// <summary>Get subpass group(const)</summary>
 	/// <param name="index">Subpass group index</param>
 	/// <returns>The subpass group with the specified index<returns>
 	const RendermanSubpassGroup& toSubpassGroup(uint32_t index) const
@@ -1099,8 +1091,7 @@ struct RendermanSubpass
 	/// the nextSubpass commands will be recorded, and if the</summary>
 	/// <param name="cbuff">A command buffer to record the commands into.</param>
 	/// <param name="swapIdx">The current swap chain (framebuffer image) index to record commands for.</param>
-	/// <param name="beginWithNextSubpassCommand">Record a nextSubpassInline() command at the beginning of this function.
-	/// </param>
+	/// <param name="beginWithNextSubpassCommand">Record a nextSubpassInline() command at the beginning of this function.</param>
 	/// <remarks>This overload can only be used if you need to create a Primary command buffer. Use the other overload
 	/// of this function to create secondary command buffers.</remarks>
 	void recordRenderingCommands(pvrvk::CommandBuffer& cbuff, uint16_t swapIdx, bool beginWithNextSubpassCommand)
@@ -1498,7 +1489,7 @@ public:
 
 		void advanceNode(RendermanEffect& eff, RendermanPass& pass, RendermanSubpass& spass, RendermanSubpassGroup& group, RendermanSubpassGroupModel& spmodel)
 		{
-			pvrvk::GraphicsPipeline::ElementType* old_pipeline = cached->pipelineMaterial_->pipeline_->apiPipeline.get();
+			pvrvk::GraphicsPipeline old_pipeline = cached->pipelineMaterial_->pipeline_->apiPipeline;
 			subpassChanged_ = false;
 			passChanged_ = false;
 			if (++nodeId == spmodel.nodes.size())
@@ -1510,7 +1501,7 @@ public:
 			{
 				cached = &spmodel.nodes[nodeId];
 			}
-			pipelineChanged_ = (old_pipeline == cached->pipelineMaterial_->pipeline_->apiPipeline.get());
+			pipelineChanged_ = (old_pipeline == cached->pipelineMaterial_->pipeline_->apiPipeline);
 		}
 
 		void advanceModelEffect(RendermanEffect& eff, RendermanPass& pass, RendermanSubpass& spass, RendermanSubpassGroup& group)
@@ -1725,13 +1716,13 @@ public:
 		_swapchain = swapchain;
 		_device = swapchain->getDevice();
 		_descPool = pool;
-		if (pool.isNull())
+		if (!pool)
 		{
 			assertion(false, "Rendermanager - Invalid pvrvk::DescriptorPool");
 			return false;
 		}
 
-		pvrvk::Device device = getDevice()->getReference();
+		pvrvk::Device device = getDevice().lock();
 		_vmaAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(device));
 
 		return true;
@@ -1853,8 +1844,7 @@ public:
 		return _modelStorage[model];
 	}
 
-	/// <summary>Navigate the structure of the Rendermanager. Goes to the Mesh object #'mesh' of the model #'model'.
-	/// </summary>
+	/// <summary>Navigate the structure of the Rendermanager. Goes to the Mesh object #'mesh' of the model #'model'.</summary>
 	/// <param name="model">The index of the rendermodel this mesh belongs to. The index is the order with which it
 	/// was added to the RenderManager.</param>
 	/// <param name="mesh">The index of the rendermesh in the model. The index of the mesh is the same as it was in
@@ -1999,7 +1989,7 @@ public:
 		if (it == _modelStorage.end())
 		{
 			index = static_cast<int32_t>(_modelStorage.size());
-			_modelStorage.push_back(RendermanModel());
+			_modelStorage.emplace_back(RendermanModel());
 			apimodel = &_modelStorage.back();
 			apimodel->mgr_ = this;
 			apimodel->assetModel = model;
@@ -2024,7 +2014,7 @@ public:
 			apimodel = &*it;
 		}
 
-		_renderStructure.effects[effect].passes[pass].subpasses[subpass].groups[subpassGroup].allModels.push_back(apimodel);
+		_renderStructure.effects[effect].passes[pass].subpasses[subpass].groups[subpassGroup].allModels.emplace_back(apimodel);
 		return index;
 	}
 
@@ -2035,17 +2025,16 @@ public:
 	/// error.</returns>
 	uint32_t addEffect(const effect::Effect& effect, pvrvk::CommandBuffer& cmdBuffer)
 	{
-		debug_assertion(cmdBuffer.isValid(), "RenderManager::addEffect - Invalid pvrvk::CommandBuffer");
-		pvrvk::Device device = cmdBuffer->getDevice()->getReference();
+		debug_assertion(cmdBuffer != nullptr, "RenderManager::addEffect - Invalid pvrvk::CommandBuffer");
+		pvrvk::Device device = cmdBuffer->getDevice();
 		// Validate
-		if (device.isNull())
+		if (!device)
 		{
 			assertion(false, "RenderManager: Invalid pvrvk::Device");
 			return static_cast<uint32_t>(-1);
 		}
 		this->_device = device;
-		effectvk::EffectApi effectapi;
-		effectapi.construct(device);
+		effectvk::EffectApi effectapi = std::make_shared<pvr::effectvk::impl::Effect_>(this->_device);
 		effectapi->init(effect, _swapchain, cmdBuffer, getAssetProvider(), _vmaAllocator, _vmaAllocator);
 
 		_renderStructure.effects.resize(_renderStructure.effects.size() + 1);
@@ -2113,8 +2102,7 @@ public:
 	/// <param name="beginEndRenderPass">If set to true, record a beginRenderPass() at the beginning and
 	/// endRenderPass() at the end of this</param>
 	/// <remarks>If finer granularity of rendering commands is required, navigate the RenderStructure's objects
-	/// (potentially using the RenderNodeIterator (call renderables()) and record rendering commands from them.
-	/// </remarks>
+	/// (potentially using the RenderNodeIterator (call renderables()) and record rendering commands from them.</remarks>
 	void recordAllRenderingCommands(pvrvk::CommandBuffer& cbuff, uint16_t swapIdx, bool beginEndRenderPass = true);
 
 	/// <summary>Return number of effects this render manager owns</summary>
@@ -2165,9 +2153,6 @@ public:
 	}
 };
 
-//!\cond NO_DOXYGEN
-
-/////////////////////////// INLINE FUNCTIONS /////////////////////////////////
 // This command is used to update uniform semantics directly into the TypedMem objects
 inline bool recordUpdateUniformSemanticToExternalMemory(pvrvk::CommandBufferBase cbuff, uint32_t uniformLocation, TypedMem& value_ptr)
 {
@@ -2752,6 +2737,5 @@ inline RendermanSubpass& RendermanSubpassGroup::backToSubpass()
 {
 	return *subpass_;
 }
-//!\endcond
 } // namespace utils
 } // namespace pvr

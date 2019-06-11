@@ -101,8 +101,8 @@ Inheritance diagram for pvr::ImageSubresource:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:aeb5082dfca437bc1690fcb074dc9988c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aeb5082dfca437bc1690fcb074dc9988c"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>ImageSubresource</b> (<a class="el" href="namespacepvr.html#aee12f61a84bee4c4513c6bfad5b042d2">ImageAspectFlags</a> aspectFlags=ImageAspectFlags::Color, uint16_t <a class="el" href="structpvr_1_1_image_subresource.html#a27aeab969787ec2894d1def5d9b0b09e">mipLevelOffset</a>=0, uint16_t <a class="el" href="structpvr_1_1_image_subresource.html#a896ba5bc617798c49e61872e20976206">arrayLayerOffset</a>=0)</td></tr>
+<tr class="memitem:aeb5082dfca437bc1690fcb074dc9988c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1_image_subresource.html#aeb5082dfca437bc1690fcb074dc9988c">ImageSubresource</a> (<a class="el" href="namespacepvr.html#aee12f61a84bee4c4513c6bfad5b042d2">ImageAspectFlags</a> aspectFlags=ImageAspectFlags::Color, uint16_t <a class="el" href="structpvr_1_1_image_subresource.html#a27aeab969787ec2894d1def5d9b0b09e">mipLevelOffset</a>=0, uint16_t <a class="el" href="structpvr_1_1_image_subresource.html#a896ba5bc617798c49e61872e20976206">arrayLayerOffset</a>=0)</td></tr>
+<tr class="memdesc:aeb5082dfca437bc1690fcb074dc9988c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor. All arguments optional. <a href="#aeb5082dfca437bc1690fcb074dc9988c">More...</a><br/></td></tr>
 <tr class="separator:aeb5082dfca437bc1690fcb074dc9988c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
@@ -115,30 +115,58 @@ uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <a class="el" href="namespacepvr.html#aee12f61a84bee4c4513c6bfad5b042d2">ImageAspectFlags</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1_image_subresource.html#a2bc5e3925b7c15678a89579a4cbd616b">aspect</a></td></tr>
 <tr class="memdesc:a2bc5e3925b7c15678a89579a4cbd616b"><td class="mdescLeft">&#160;</td><td class="mdescRight">The Aspect of the subresource (Color, Depth, Stencil, Depth&amp;Stencil) <br/></td></tr>
 <tr class="separator:a2bc5e3925b7c15678a89579a4cbd616b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a27aeab969787ec2894d1def5d9b0b09e"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1_image_subresource.html#a27aeab969787ec2894d1def5d9b0b09e">mipLevelOffset</a></td></tr>
-<tr class="memdesc:a27aeab969787ec2894d1def5d9b0b09e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor. All arguments optional. <a href="#a27aeab969787ec2894d1def5d9b0b09e">More...</a><br/></td></tr>
+<tr class="memitem:a27aeab969787ec2894d1def5d9b0b09e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a27aeab969787ec2894d1def5d9b0b09e"></a>
+uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1_image_subresource.html#a27aeab969787ec2894d1def5d9b0b09e">mipLevelOffset</a></td></tr>
+<tr class="memdesc:a27aeab969787ec2894d1def5d9b0b09e"><td class="mdescLeft">&#160;</td><td class="mdescRight">The index of the mipmap level. In case of a range, the offset of the first mipmap level. <br/></td></tr>
 <tr class="separator:a27aeab969787ec2894d1def5d9b0b09e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Describes a single "layer" of an image: a single array layer of a single mip level, or the offset of a layer range.</p>
-</div><h2 class="groupheader">Member Data Documentation</h2>
-<a class="anchor" id="a27aeab969787ec2894d1def5d9b0b09e"></a>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a class="anchor" id="aeb5082dfca437bc1690fcb074dc9988c"></a>
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">uint16_t pvr::ImageSubresource::mipLevelOffset</td>
+          <td class="memname">pvr::ImageSubresource::ImageSubresource </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacepvr.html#aee12f61a84bee4c4513c6bfad5b042d2">ImageAspectFlags</a>&#160;</td>
+          <td class="paramname"><em>aspectFlags</em> = <code>ImageAspectFlags::Color</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint16_t&#160;</td>
+          <td class="paramname"><em>mipLevelOffset</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint16_t&#160;</td>
+          <td class="paramname"><em>arrayLayerOffset</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p>Constructor. All arguments optional.</p>
-<p>The index of the mipmap level. In case of a range, the offset of the first mipmap level.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
+    <tr><td class="paramname">aspectFlags</td><td>The aspect(s) of the subresource (Color/Depth/Stencil/DepthStencil)</td></tr>
     <tr><td class="paramname">mipLevelOffset</td><td>The index of the array slice. In case of a range, the offset of the first layer. (Default 0)</td></tr>
     <tr><td class="paramname">arrayLayerOffset</td><td>The index of the mipmap level. In case of a range, the offset of the first mipmap level. (Default 0)</td></tr>
-    <tr><td class="paramname">aspectFlags</td><td>The aspect(s) of the subresource (Color/Depth/Stencil/DepthStencil)</td></tr>
   </table>
   </dd>
 </dl>

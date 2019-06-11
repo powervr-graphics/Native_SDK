@@ -1,32 +1,31 @@
 /*!
 \brief Defines used internally by the KTX reader.
-\file PVRCore/textureReaders/FileDefinesKTX.h
+\file PVRCore/textureio/FileDefinesKTX.h
 \author PowerVR by Imagination, Developer Technology Team
 \copyright Copyright (c) Imagination Technologies Limited.
 */
 #pragma once
 #include <cstdint>
 
-//!\cond NO_DOXYGEN
 namespace pvr {
 namespace texture_ktx {
-// Khronos texture file header
+/// <summary>Khronos texture file header</summary>
 struct FileHeader
 {
-	uint8_t identifier[12];
-	uint32_t endianness;
-	uint32_t glType;
-	uint32_t glTypeSize;
-	uint32_t glFormat;
-	uint32_t glInternalFormat;
-	uint32_t glBaseInternalFormat;
-	uint32_t pixelWidth;
-	uint32_t pixelHeight;
-	uint32_t pixelDepth;
-	uint32_t numArrayElements;
-	uint32_t numFaces;
-	uint32_t numMipmapLevels;
-	uint32_t bytesOfKeyValueData;
+	uint8_t identifier[12]; //!< The identifier used for KTX files
+	uint32_t endianness; //!< The endianness used
+	uint32_t glType; //!< The gl type
+	uint32_t glTypeSize; //!< The size of the gl type
+	uint32_t glFormat; //!< The gl format
+	uint32_t glInternalFormat; //!< The internal format
+	uint32_t glBaseInternalFormat; //!< The base internal format
+	uint32_t pixelWidth; //!< The width of the KTX in pixels
+	uint32_t pixelHeight; //!< The height of the KTX in pixels
+	uint32_t pixelDepth; //!< The depth of the KTX in pixels
+	uint32_t numArrayElements; //!< The number of array elements
+	uint32_t numFaces; //!< The number of faces
+	uint32_t numMipmapLevels; //!< The number of mip map levels
+	uint32_t bytesOfKeyValueData; //!< The bytes of key value data
 };
 
 // Magic identifier
@@ -42,6 +41,7 @@ static const uint32_t c_expectedHeaderSize = 64;
 static const char c_orientationMetaDataKey[] = "KTXOrientation";
 
 namespace OpenGLFormats {
+/// <summary>Enumerations used by KTX</summary>
 enum Enum
 {
 	/* glTypes */
@@ -284,7 +284,6 @@ enum Enum
 	GL_PALETTE8_RGBA4_OES = 0x8B98,
 	GL_PALETTE8_RGB5_A1_OES = 0x8B99
 };
-}
+} // namespace OpenGLFormats
 } // namespace texture_ktx
 } // namespace pvr
-//!\endcond

@@ -1,4 +1,4 @@
-//Microsoft eMbedded Visual C++ generated resource script.
+// Microsoft Visual C++ generated resource script.
 //
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
@@ -58,12 +58,10 @@ END
 // RCDATA
 //
 /////////////////////////////////////////////////////////////////////////////
-// RCDATA: Assets (scenes,  effects, textures...)
-Lenna.pvr		RCDATA		"..\\..\\..\\assets\\Lenna.pvr"
-// RCDATA: OpenGL ES Textual shaders(glsl)
-QuadFragShader_ES3.fsh		RCDATA		"..\\QuadFragShader_ES3.fsh"
-QuadVertShader_ES3.vsh		RCDATA		"..\\QuadVertShader_ES3.vsh"
-ConvolutionKernel.cl		RCDATA		"..\\ConvolutionKernel.cl"
+Lenna.pvr RCDATA "..\\..\\..\\assets\\Lenna.pvr"
+QuadFragShader_ES3.fsh RCDATA "..\\QuadFragShader_ES3.fsh"
+QuadVertShader_ES3.vsh RCDATA "..\\QuadVertShader_ES3.vsh"
+ConvolutionKernel.cl RCDATA "..\\ConvolutionKernel.cl"
 
 #endif    // English (United Kingdom) resources
 /////////////////////////////////////////////////////////////////////////////

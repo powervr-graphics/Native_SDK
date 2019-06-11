@@ -39,23 +39,24 @@ enum class UboDescSetBindingId
 	Material
 };
 } // namespace
-void UIRenderer::init_CreatePipeline(bool isFrameBufferSrgb)
+void UIRenderer::initCreatePipeline(bool isFrameBufferSrgb)
 {
-	debug_assertion(_device.isValid(), "NULL Context");
 	GraphicsPipelineCreateInfo pipelineDesc;
 	PipelineLayoutCreateInfo pipeLayoutInfo;
 	pipeLayoutInfo.addDescSetLayout(_texDescLayout);
 
-	if (!_uboMvpDescLayout.isNull())
+	if (_uboMvpDescLayout)
 	{
 		pipeLayoutInfo.addDescSetLayout(_uboMvpDescLayout);
 	}
-	if (!_uboMaterialLayout.isNull())
+	if (_uboMaterialLayout)
 	{
 		pipeLayoutInfo.addDescSetLayout(_uboMaterialLayout);
 	}
 
-	_pipelineLayout = _device->createPipelineLayout(pipeLayoutInfo);
+	Device deviceSharedPtr = _device.lock();
+
+	_pipelineLayout = deviceSharedPtr->createPipelineLayout(pipeLayoutInfo);
 
 	_pipelineLayout->setObjectName("PVRUtilsVk::UIRenderer::UI Graphics PipelineLayout");
 	pipelineDesc.pipelineLayout = _pipelineLayout;
@@ -63,8 +64,8 @@ void UIRenderer::init_CreatePipeline(bool isFrameBufferSrgb)
 	ShaderModule vs;
 	ShaderModule fs;
 
-	vs = _device->createShaderModule(ShaderModuleCreateInfo(BufferStream("", spv_UIRendererVertShader, sizeof(spv_UIRendererVertShader)).readToEnd<uint32_t>()));
-	fs = _device->createShaderModule(ShaderModuleCreateInfo(BufferStream("", spv_UIRendererFragShader, sizeof(spv_UIRendererFragShader)).readToEnd<uint32_t>()));
+	vs = deviceSharedPtr->createShaderModule(ShaderModuleCreateInfo(BufferStream("", spv_UIRendererVertShader, sizeof(spv_UIRendererVertShader)).readToEnd<uint32_t>()));
+	fs = deviceSharedPtr->createShaderModule(ShaderModuleCreateInfo(BufferStream("", spv_UIRendererFragShader, sizeof(spv_UIRendererFragShader)).readToEnd<uint32_t>()));
 
 	pipelineDesc.vertexShader.setShader(vs);
 	pipelineDesc.fragmentShader.setShader(fs);
@@ -85,62 +86,61 @@ void UIRenderer::init_CreatePipeline(bool isFrameBufferSrgb)
 	pipelineDesc.renderPass = _renderpass;
 	pipelineDesc.subpass = _subpass;
 	pipelineDesc.flags = pvrvk::PipelineCreateFlags::e_ALLOW_DERIVATIVES_BIT;
+	pipelineDesc.multiSample.setNumRasterizationSamples(_renderpass->getCreateInfo().getAttachmentDescription(0).getSamples());
 
 	const int32_t shaderConst = static_cast<int32_t>(isFrameBufferSrgb);
 	pipelineDesc.fragmentShader.setShaderConstant(0, pvrvk::ShaderConstantInfo(0, &shaderConst, static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::Integer))));
-	_pipeline = _device->createGraphicsPipeline(pipelineDesc, _pipelineCache);
+	_pipeline = deviceSharedPtr->createGraphicsPipeline(pipelineDesc, _pipelineCache);
 	_pipeline->setObjectName("PVRUtilsVk::UIRenderer::UI GraphicsPipeline");
 }
 
-void UIRenderer::init_CreateDescriptorSetLayout()
+void UIRenderer::initCreateDescriptorSetLayout()
 {
-	assertion(_device.isValid(), "NULL GRAPHICS CONTEXT");
 	DescriptorPoolCreateInfo descPoolInfo;
 	descPoolInfo.addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, MaxCombinedImageSampler);
 	descPoolInfo.setMaxDescriptorSets(MaxCombinedImageSampler);
 	descPoolInfo.addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, MaxDescUbo);
 	descPoolInfo.setMaxDescriptorSets(descPoolInfo.getMaxDescriptorSets() + MaxDescUbo);
 
-	_descPool = getDevice()->createDescriptorPool(descPoolInfo);
+	Device deviceSharedPtr = _device.lock();
+
+	_descPool = deviceSharedPtr->createDescriptorPool(descPoolInfo);
 	_descPool->setObjectName("PVRUtilsVk::UIRenderer::DescriptorPool");
 
 	DescriptorSetLayoutCreateInfo layoutInfo;
 
 	// CombinedImagesampler Layout
 	layoutInfo.setBinding(0, pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 1, pvrvk::ShaderStageFlags::e_FRAGMENT_BIT);
-	_texDescLayout = _device->createDescriptorSetLayout(layoutInfo);
+	_texDescLayout = deviceSharedPtr->createDescriptorSetLayout(layoutInfo);
 
 	// Mvp ubo Layout
 	layoutInfo.clear().setBinding(0, pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 1, pvrvk::ShaderStageFlags::e_VERTEX_BIT);
-	_uboMvpDescLayout = _device->createDescriptorSetLayout(layoutInfo);
+	_uboMvpDescLayout = deviceSharedPtr->createDescriptorSetLayout(layoutInfo);
 
 	// material ubo layout
 	layoutInfo.clear().setBinding(0, pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 1, pvrvk::ShaderStageFlags::e_VERTEX_BIT | pvrvk::ShaderStageFlags::e_FRAGMENT_BIT);
-	_uboMaterialLayout = _device->createDescriptorSetLayout(layoutInfo);
+	_uboMaterialLayout = deviceSharedPtr->createDescriptorSetLayout(layoutInfo);
 }
 
 Font UIRenderer::createFont(const ImageView& image, const TextureHeader& tex, const Sampler& sampler)
 {
-	Font font;
-	font.construct(*this, image, tex, sampler);
-	_fonts.push_back(font);
+	Font font = pvr::ui::impl::Font_::constructShared(*this, image, tex, sampler);
+	_fonts.emplace_back(font);
 	return font;
 }
 
 MatrixGroup UIRenderer::createMatrixGroup()
 {
-	MatrixGroup group;
-	group.construct(*this, generateGroupId());
-	_sprites.push_back(group);
+	MatrixGroup group = pvr::ui::impl::MatrixGroup_::constructShared(*this, generateGroupId());
+	_sprites.emplace_back(group);
 	group->commitUpdates();
 	return group;
 }
 
 PixelGroup UIRenderer::createPixelGroup()
 {
-	PixelGroup group;
-	group.construct(*this, generateGroupId());
-	_sprites.push_back(group);
+	PixelGroup group = pvr::ui::impl::PixelGroup_::constructShared(*this, generateGroupId());
+	_sprites.emplace_back(group);
 	group->commitUpdates();
 	return group;
 }
@@ -151,7 +151,7 @@ void UIRenderer::setUpUboPoolLayouts(uint32_t numInstances, uint32_t numSprites)
 		"Maximum number of "
 		"instances must be atleast the same as maximum number of sprites");
 
-	pvrvk::Device device = getDevice()->getReference();
+	pvrvk::Device device = getDevice().lock();
 	// mvp pool
 	_uboMvp.initLayout(device, numInstances);
 	// material pool
@@ -165,7 +165,7 @@ void UIRenderer::setUpUboPools(uint32_t numInstances, uint32_t numSprites)
 		"instances must be atleast the same as maximum number of sprites");
 
 	// mvp pool
-	pvrvk::Device device = getDevice()->getReference();
+	pvrvk::Device device = getDevice().lock();
 	_uboMvp.init(device, _uboMvpDescLayout, getDescriptorPool(), *this);
 	// material pool
 	_uboMaterial.init(device, _uboMaterialLayout, getDescriptorPool(), *this);
@@ -178,9 +178,8 @@ Image UIRenderer::createImage(const ImageView& tex, const Sampler& sampler)
 
 pvr::ui::Image UIRenderer::createImageFromAtlas(const ImageView& tex, const Rect2Df& uv, const Sampler& sampler)
 {
-	Image image;
-	image.construct(*this, tex, tex->getImage()->getWidth(), tex->getImage()->getHeight(), sampler);
-	_sprites.push_back(image);
+	Image image = pvr::ui::impl::Image_::constructShared(*this, tex, tex->getImage()->getWidth(), tex->getImage()->getHeight(), sampler);
+	_sprites.emplace_back(image);
 	// construct the scaling matrix
 	// calculate the scale factor
 	// convert from texel to normalize coord
@@ -191,40 +190,44 @@ pvr::ui::Image UIRenderer::createImageFromAtlas(const ImageView& tex, const Rect
 
 TextElement UIRenderer::createTextElement(const std::wstring& text, const Font& font, uint32_t maxLength)
 {
-	TextElement spriteText;
-	spriteText.construct(*this, text, font);
-	_textElements.push_back(spriteText);
+	TextElement spriteText = pvr::ui::impl::TextElement_::constructShared(*this, text, font);
+	_textElements.emplace_back(spriteText);
+	return spriteText;
+}
+
+TextElement UIRenderer::createTextElement(const std::string& text, const Font& font, uint32_t size)
+{
+	TextElement spriteText = pvr::ui::impl::TextElement_::constructShared(*this, text, font, size);
+	_textElements.emplace_back(spriteText);
 	return spriteText;
 }
 
 Text UIRenderer::createText(const TextElement& textElement)
 {
-	Text text;
-	text.construct(*this, textElement);
-
-	_sprites.push_back(text);
+	Text text = pvr::ui::impl::Text_::constructShared(*this, textElement);
+	_sprites.emplace_back(text);
 	text->commitUpdates();
 	return text;
 }
 
-void UIRenderer::init(uint32_t width, uint32_t height, bool fullscreen, const RenderPass& renderpass, uint32_t subpass, bool isFrameBufferSrgb, CommandPool& cmdPool, Queue& queue,
-	bool createDefaultLogo, bool createDefaultTitle, bool createDefaultFont, uint32_t maxNumInstances, uint32_t maxNumSprites)
+void UIRenderer::init(uint32_t width, uint32_t height, bool fullscreen, const RenderPass& renderpass, uint32_t subpass, bool isFrameBufferSrgb, CommandPool& commandPool,
+	Queue& queue, bool createDefaultLogo, bool createDefaultTitle, bool createDefaultFont, uint32_t maxNumInstances, uint32_t maxNumSprites)
 {
-	destroy();
 	_mustEndCommandBuffer = false;
 	_device = renderpass->getDevice();
+
+	pvr::utils::beginQueueDebugLabel(queue, pvrvk::DebugUtilsLabel("PVRUtilsVk::UIRenderer::Init"));
 
 	// create pool layouts
 	setUpUboPoolLayouts(maxNumInstances, maxNumSprites);
 
 	{
+		pvrvk::Device device = getDevice().lock();
 		// Create a temporary buffer to derive the memory requirements for our buffer allocator.
 		// This buffer will be released at the end of this scope.
-		pvrvk::Buffer tempBuffer = utils::createBuffer(_device, _uboMvp._structuredBufferView.getDynamicSliceSize(),
+		pvrvk::Buffer tempBuffer = utils::createBuffer(device, _uboMvp._structuredBufferView.getDynamicSliceSize(),
 			pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT | pvrvk::BufferUsageFlags::e_INDEX_BUFFER_BIT | pvrvk::BufferUsageFlags::e_VERTEX_BUFFER_BIT,
 			(pvrvk::MemoryPropertyFlags(0)));
-
-		pvrvk::Device device = getDevice()->getReference();
 
 		_vmaAllocator = utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(device, 0));
 	}
@@ -239,32 +242,32 @@ void UIRenderer::init(uint32_t width, uint32_t height, bool fullscreen, const Re
 	}
 
 	// create the commandbuffer
-	CommandBuffer cmdBuffer = cmdPool->allocateCommandBuffer();
-	cmdBuffer->setObjectName("PVRUtilsVk::UIRenderer::Init CommandBuffer");
+	CommandBuffer cmdBuffer = commandPool->allocateCommandBuffer();
+	cmdBuffer->setObjectName("PVRUtilsVk::UIRenderer::initCommandBuffer");
 	cmdBuffer->begin();
-	cmdBuffer->debugMarkerBeginEXT("PVRUtilsVk::UIRenderer::Init UIRenderer");
+	pvr::utils::beginCommandBufferDebugLabel(cmdBuffer, pvrvk::DebugUtilsLabel("PVRUtilsVk::UIRenderer::Batching UIRenderer Resource Upload"));
 
-	init_CreateDescriptorSetLayout();
+	initCreateDescriptorSetLayout();
 
-	_pipelineCache = _device->createPipelineCache();
+	_pipelineCache = _device.lock()->createPipelineCache();
 
-	init_CreatePipeline(isFrameBufferSrgb);
+	initCreatePipeline(isFrameBufferSrgb);
 	setUpUboPools(maxNumInstances, maxNumSprites);
-	init_CreateDefaultSampler();
+	initCreateDefaultSampler();
 
 	if (createDefaultLogo)
 	{
-		init_CreateDefaultSdkLogo(cmdBuffer);
+		initCreateDefaultSdkLogo(cmdBuffer);
 	}
 	if (createDefaultFont)
 	{
-		init_CreateDefaultFont(cmdBuffer);
+		initCreateDefaultFont(cmdBuffer);
 	}
 	if (createDefaultTitle)
 	{
-		init_CreateDefaultTitle();
+		initCreateDefaultTitle();
 	}
-	cmdBuffer->debugMarkerEndEXT();
+	pvr::utils::endCommandBufferDebugLabel(cmdBuffer);
 	cmdBuffer->end();
 
 	Fence fence = queue->getDevice()->createFence();
@@ -274,17 +277,11 @@ void UIRenderer::init(uint32_t width, uint32_t height, bool fullscreen, const Re
 	submitInfo.numCommandBuffers = 1;
 	queue->submit(&submitInfo, 1, fence);
 	fence->wait();
+
+	pvr::utils::endQueueDebugLabel(queue);
 }
 
-TextElement UIRenderer::createTextElement(const std::string& text, const Font& font, uint32_t size)
-{
-	TextElement spriteText;
-	spriteText.construct(*this, text, font, size);
-	_textElements.push_back(spriteText);
-	return spriteText;
-}
-
-void UIRenderer::init_CreateDefaultSampler()
+void UIRenderer::initCreateDefaultSampler()
 {
 	pvrvk::SamplerCreateInfo samplerDesc;
 
@@ -295,28 +292,27 @@ void UIRenderer::init_CreateDefaultSampler()
 	samplerDesc.mipMapMode = pvrvk::SamplerMipmapMode::e_NEAREST;
 	samplerDesc.minFilter = pvrvk::Filter::e_LINEAR;
 	samplerDesc.magFilter = pvrvk::Filter::e_LINEAR;
-	_samplerBilinear = _device->createSampler(samplerDesc);
+	_samplerBilinear = _device.lock()->createSampler(samplerDesc);
 
 	_samplerBilinear->setObjectName("PVRUtilsVk::UIRenderer::Bilinear Sampler");
 	samplerDesc.mipMapMode = pvrvk::SamplerMipmapMode::e_LINEAR;
-	_samplerTrilinear = _device->createSampler(samplerDesc);
+	_samplerTrilinear = _device.lock()->createSampler(samplerDesc);
 	_samplerTrilinear->setObjectName("PVRUtilsVk::UIRenderer::Trilinear Sampler");
 }
 
-void UIRenderer::init_CreateDefaultSdkLogo(CommandBuffer& cmdBuffer)
+void UIRenderer::initCreateDefaultSdkLogo(CommandBuffer& cmdBuffer)
 {
 	ImageView sdkLogoImage;
-	Stream::ptr_type sdkLogo = Stream::ptr_type(new BufferStream("", _PowerVR_512x256_RG_pvr, _PowerVR_512x256_RG_pvr_size));
+	Stream::ptr_type sdkLogo = Stream::ptr_type(new BufferStream("", _PowerVR_Logo_RGBA_pvr, _PowerVR_Logo_RGBA_pvr_size));
 
 	Texture sdkTex;
 	sdkTex = textureLoad(sdkLogo, TextureFileFormat::PVR);
-	sdkTex.setPixelFormat(GeneratePixelType2<'l', 'a', 8, 8>::ID);
-	Device device = getDevice()->getReference();
+	Device device = getDevice().lock();
 
-	cmdBuffer->debugMarkerBeginEXT("PVRUtilsVk::UIRenderer::init_CreateDefaultSdkLogo");
+	pvr::utils::beginCommandBufferDebugLabel(cmdBuffer, pvrvk::DebugUtilsLabel("PVRUtilsVk::UIRenderer::initCreateDefaultSdkLogo"));
 	sdkLogoImage = utils::uploadImageAndView(
 		device, sdkTex, true, cmdBuffer, pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, &getMemoryAllocator(), &getMemoryAllocator());
-	cmdBuffer->debugMarkerEndEXT();
+	pvr::utils::endCommandBufferDebugLabel(cmdBuffer);
 
 	_sdkLogo = createImage(sdkLogoImage, _samplerBilinear);
 	_sdkLogo->setAnchor(Anchor::BottomRight, glm::vec2(.98f, -.98f));
@@ -348,7 +344,7 @@ void UIRenderer::init_CreateDefaultSdkLogo(CommandBuffer& cmdBuffer)
 	_sdkLogo->getImageView()->setObjectName("PVRUtilsVk::UIRenderer::SDK Logo ImageView");
 }
 
-void UIRenderer::init_CreateDefaultTitle()
+void UIRenderer::initCreateDefaultTitle()
 {
 	// Default Title
 	{
@@ -403,9 +399,9 @@ void UIRenderer::init_CreateDefaultTitle()
 	}
 }
 
-void UIRenderer::init_CreateDefaultFont(CommandBuffer& cmdBuffer)
+void UIRenderer::initCreateDefaultFont(CommandBuffer& cmdBuffer)
 {
-	cmdBuffer->debugMarkerBeginEXT("PVRUtilsVk::UIRenderer::init_CreateDefaultFont");
+	pvr::utils::beginCommandBufferDebugLabel(cmdBuffer, pvrvk::DebugUtilsLabel("PVRUtilsVk::UIRenderer::initCeateDefaultFont"));
 	Texture fontTex;
 	Stream::ptr_type arialFontTex;
 	float maxRenderDim = glm::max<float>(getRenderingDimX(), getRenderingDimY());
@@ -425,7 +421,7 @@ void UIRenderer::init_CreateDefaultFont(CommandBuffer& cmdBuffer)
 
 	fontTex = textureLoad(arialFontTex, TextureFileFormat::PVR);
 
-	Device device = getDevice()->getReference();
+	Device device = getDevice().lock();
 
 	pvrvk::ImageView fontImage = device->createImageView(pvrvk::ImageViewCreateInfo(utils::uploadImage(device, fontTex, true, cmdBuffer, pvrvk::ImageUsageFlags::e_SAMPLED_BIT,
 																						pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, &getMemoryAllocator(), &getMemoryAllocator()),
@@ -434,7 +430,7 @@ void UIRenderer::init_CreateDefaultFont(CommandBuffer& cmdBuffer)
 	_defaultFont = createFont(fontImage, fontTex);
 	fontImage->setObjectName("PVRUtilsVk::UIRenderer::Default Font ImageView");
 
-	cmdBuffer->debugMarkerEndEXT();
+	pvr::utils::endCommandBufferDebugLabel(cmdBuffer);
 }
 
 void UIRenderer::UboMaterial::initLayout(Device& device, uint32_t numArrayId)
@@ -458,13 +454,13 @@ void UIRenderer::UboMaterial::init(Device& device, DescriptorSetLayout& descLayo
 		&uirenderer._vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
 	_structuredBufferView.pointToMappedMemory(_buffer->getDeviceMemory()->getMappedData());
-	if (!_buffer.isValid())
+	if (!_buffer)
 	{
 		Log("Failed to create UIRenderer Material buffer");
 	}
 	_buffer->setObjectName("PVRUtilsVk::UIRenderer::UboMaterial");
 
-	if (!_uboDescSetSet.isValid())
+	if (!_uboDescSetSet)
 	{
 		_uboDescSetSet = pool->allocateDescriptorSet(descLayout);
 	}
@@ -494,7 +490,7 @@ void UIRenderer::UboMvp::init(Device& device, DescriptorSetLayout& descLayout, D
 
 	_structuredBufferView.pointToMappedMemory(_buffer->getDeviceMemory()->getMappedData());
 
-	if (!_uboDescSetSet.isValid())
+	if (!_uboDescSetSet)
 	{
 		_uboDescSetSet = pool->allocateDescriptorSet(descLayout);
 	}

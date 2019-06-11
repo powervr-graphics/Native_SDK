@@ -8,8 +8,8 @@
 #pragma once
 #include "PVRVk/ForwardDecObjectsVk.h"
 #include "PVRVk/PhysicalDeviceVk.h"
-#include "PVRVk/ObjectHandleVk.h"
-#include "PVRVk/DebugMarkerVk.h"
+#include "PVRVk/PVRVkObjectBaseVk.h"
+#include "PVRVk/DebugUtilsVk.h"
 
 namespace pvrvk {
 /// <summary>Display Mode creation descriptor.</summary>
@@ -67,37 +67,44 @@ private:
 
 namespace impl {
 /// <summary>Each display has one or more supported modes associated with it by default. These are called the display modes.</summary>
-class DisplayMode_ : public PhysicalDeviceObjectHandle<VkDisplayModeKHR>, public EmbeddedRefCount<DisplayMode_>
+class DisplayMode_ : public PVRVkPhysicalDeviceObjectBase<VkDisplayModeKHR, ObjectType::e_DISPLAY_MODE_KHR>
 {
+private:
+	friend class PhysicalDevice_;
+	friend class Display_;
+
+	class make_shared_enabler
+	{
+	protected:
+		make_shared_enabler() {}
+		friend class DisplayMode_;
+	};
+
+	static DisplayMode constructShared(const PhysicalDeviceWeakPtr& physicalDevice, const DisplayModePropertiesKHR& displayModeProperties)
+	{
+		return std::make_shared<DisplayMode_>(make_shared_enabler{}, physicalDevice, displayModeProperties);
+	}
+
+	static DisplayMode constructShared(const PhysicalDeviceWeakPtr& physicalDevice, pvrvk::Display& display, const pvrvk::DisplayModeCreateInfo& displayModeCreateInfo)
+	{
+		return std::make_shared<DisplayMode_>(make_shared_enabler{}, physicalDevice, display, displayModeCreateInfo);
+	}
+
+	DisplayModeParametersKHR _parameters;
+
 public:
+	//!\cond NO_DOXYGEN
+	DECLARE_NO_COPY_SEMANTICS(DisplayMode_)
+	DisplayMode_(make_shared_enabler, const PhysicalDeviceWeakPtr& physicalDevice, const DisplayModePropertiesKHR& displayModeProperties);
+	DisplayMode_(make_shared_enabler, const PhysicalDeviceWeakPtr& physicalDevice, pvrvk::Display& display, const pvrvk::DisplayModeCreateInfo& displayModeCreateInfo);
+	//!\endcond
+
 	/// <summary>Returns the display mode parameters</summary>
 	/// <returns>A DisplayModeParametersKHR structure specifying the display mode parameters for the display mode</returns>
 	DisplayModeParametersKHR getParameters() const
 	{
 		return _parameters;
 	}
-
-private:
-	friend class pvrvk::impl::PhysicalDevice_;
-	friend class pvrvk::impl::Display_;
-	friend class pvrvk::EmbeddedRefCount<DisplayMode_>;
-
-	DisplayMode_(PhysicalDeviceWeakPtr physicalDevice, const DisplayModePropertiesKHR& displayModeProperties);
-	DisplayMode_(PhysicalDeviceWeakPtr physicalDevice, pvrvk::Display& display, const pvrvk::DisplayModeCreateInfo& displayModeCreateInfo);
-
-	static DisplayMode createNew(PhysicalDeviceWeakPtr physicalDevice, const DisplayModePropertiesKHR& displayModeProperties)
-	{
-		return EmbeddedRefCount<DisplayMode_>::createNew(physicalDevice, displayModeProperties);
-	}
-
-	static DisplayMode createNew(PhysicalDeviceWeakPtr physicalDevice, pvrvk::Display& display, const DisplayModeCreateInfo& displayModeCreateInfo)
-	{
-		return EmbeddedRefCount<DisplayMode_>::createNew(physicalDevice, display, displayModeCreateInfo);
-	}
-
-	void destroyObject() {}
-
-	DisplayModeParametersKHR _parameters;
 };
 } // namespace impl
 } // namespace pvrvk

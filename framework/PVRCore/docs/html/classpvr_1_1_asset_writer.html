@@ -94,6 +94,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:a39c960cd5962649d3a215d59f932cd96"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_asset_writer.html#a39c960cd5962649d3a215d59f932cd96">~AssetWriter</a> ()</td></tr>
+<tr class="memdesc:a39c960cd5962649d3a215d59f932cd96"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructor for the <a class="el" href="classpvr_1_1_asset_writer.html" title="Base class for Classes that can be used to write back effects to disk.">AssetWriter</a> which closes the asset stream if not already closed. <a href="#a39c960cd5962649d3a215d59f932cd96">More...</a><br/></td></tr>
+<tr class="separator:a39c960cd5962649d3a215d59f932cd96"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7adac83bde32692e5e4fdfecca643164"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_asset_writer.html#a7adac83bde32692e5e4fdfecca643164">canWriteAsset</a> (const AssetType &amp;asset)=0</td></tr>
 <tr class="memdesc:a7adac83bde32692e5e4fdfecca643164"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query if this writer can write out the specified asset. Implement this in your concrete <a class="el" href="classpvr_1_1_asset_writer.html" title="Base class for Classes that can be used to write back effects to disk.">AssetWriter</a> implementation. <a href="#a7adac83bde32692e5e4fdfecca643164">More...</a><br/></td></tr>
 <tr class="separator:a7adac83bde32692e5e4fdfecca643164"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -107,10 +110,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a971fbfd19a9c69185be2c31fba3b5baf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize with a new asset stream without open it. <a href="#a971fbfd19a9c69185be2c31fba3b5baf">More...</a><br/></td></tr>
 <tr class="separator:a971fbfd19a9c69185be2c31fba3b5baf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3672beded73a9e801631f41d3ea0a689"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_asset_writer.html#a3672beded73a9e801631f41d3ea0a689">openAssetStream</a> (<a class="el" href="classpvr_1_1_stream.html#aa0cecaaaa443ce5895d8c3d69dcdeec2">Stream::ptr_type</a> assetStream)</td></tr>
-<tr class="memdesc:a3672beded73a9e801631f41d3ea0a689"><td class="mdescLeft">&#160;</td><td class="mdescRight">Open an asset stream for writing. Implement this in your concrete <a class="el" href="classpvr_1_1_asset_writer.html" title="Base class for Classes that can be used to write back effects to disk.">AssetWriter</a> implementation.  <a href="#a3672beded73a9e801631f41d3ea0a689">More...</a><br/></td></tr>
+<tr class="memdesc:a3672beded73a9e801631f41d3ea0a689"><td class="mdescLeft">&#160;</td><td class="mdescRight">Open an asset stream for writing. Implement this in your concrete <a class="el" href="classpvr_1_1_asset_writer.html" title="Base class for Classes that can be used to write back effects to disk.">AssetWriter</a> implementation. <a href="#a3672beded73a9e801631f41d3ea0a689">More...</a><br/></td></tr>
 <tr class="separator:a3672beded73a9e801631f41d3ea0a689"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7b828da283e6f0c684c183df8a83d0f8"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_asset_writer.html#a7b828da283e6f0c684c183df8a83d0f8">writeAsset</a> (const AssetType &amp;asset)=0</td></tr>
-<tr class="memdesc:a7b828da283e6f0c684c183df8a83d0f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write out all assets to the <a class="el" href="classpvr_1_1_stream.html" title="This class is used to abstract streams of data (files, blocks of memory, resources etc...">Stream</a>. Implement this in your concrete <a class="el" href="classpvr_1_1_asset_writer.html" title="Base class for Classes that can be used to write back effects to disk.">AssetWriter</a> implementation.  <a href="#a7b828da283e6f0c684c183df8a83d0f8">More...</a><br/></td></tr>
+<tr class="memdesc:a7b828da283e6f0c684c183df8a83d0f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write out all assets to the <a class="el" href="classpvr_1_1_stream.html" title="This class is used to abstract streams of data (files, blocks of memory, resources etc...">Stream</a>. Implement this in your concrete <a class="el" href="classpvr_1_1_asset_writer.html" title="Base class for Classes that can be used to write back effects to disk.">AssetWriter</a> implementation. <a href="#a7b828da283e6f0c684c183df8a83d0f8">More...</a><br/></td></tr>
 <tr class="separator:a7b828da283e6f0c684c183df8a83d0f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
@@ -125,12 +128,40 @@ std::unique_ptr&lt; <a class="el" href="classpvr_1_1_stream.html">Stream</a> &gt
 class pvr::AssetWriter&lt; AssetType &gt;</h3>
 
 <p>Base class for Classes that can be used to write back effects to disk.</p>
-</div><h2 class="groupheader">Member Function Documentation</h2>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a class="anchor" id="a39c960cd5962649d3a215d59f932cd96"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename AssetType&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classpvr_1_1_asset_writer.html">pvr::AssetWriter</a>&lt; AssetType &gt;::~<a class="el" href="classpvr_1_1_asset_writer.html">AssetWriter</a> </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Destructor for the <a class="el" href="classpvr_1_1_asset_writer.html" title="Base class for Classes that can be used to write back effects to disk.">AssetWriter</a> which closes the asset stream if not already closed.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
 <a class="anchor" id="a7adac83bde32692e5e4fdfecca643164"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename AssetType &gt; </div>
+template&lt;typename AssetType&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -159,13 +190,15 @@ template&lt;typename AssetType &gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>True if this asset is supported.</dd></dl>
 
+<p>Implemented in <a class="el" href="classpvr_1_1asset_writers_1_1_texture_writer_p_v_r.html#a7dbcb1ba9996203066ef9ccfbbfae226">pvr::assetWriters::TextureWriterPVR</a>.</p>
+
 </div>
 </div>
 <a class="anchor" id="ac67021b0476b7f16e2fe359e90581e01"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename AssetType &gt; </div>
+template&lt;typename AssetType&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -192,7 +225,7 @@ template&lt;typename AssetType &gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename AssetType &gt; </div>
+template&lt;typename AssetType&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -220,7 +253,7 @@ template&lt;typename AssetType &gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename AssetType &gt; </div>
+template&lt;typename AssetType&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -255,7 +288,7 @@ template&lt;typename AssetType &gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename AssetType &gt; </div>
+template&lt;typename AssetType&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -275,7 +308,7 @@ template&lt;typename AssetType &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>Open an asset stream for writing. Implement this in your concrete <a class="el" href="classpvr_1_1_asset_writer.html" title="Base class for Classes that can be used to write back effects to disk.">AssetWriter</a> implementation. </p>
+<p>Open an asset stream for writing. Implement this in your concrete <a class="el" href="classpvr_1_1_asset_writer.html" title="Base class for Classes that can be used to write back effects to disk.">AssetWriter</a> implementation.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">assetStream</td><td>The stream to write to.</td></tr>
@@ -290,7 +323,7 @@ template&lt;typename AssetType &gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename AssetType &gt; </div>
+template&lt;typename AssetType&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -310,8 +343,15 @@ template&lt;typename AssetType &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>Write out all assets to the <a class="el" href="classpvr_1_1_stream.html" title="This class is used to abstract streams of data (files, blocks of memory, resources etc...">Stream</a>. Implement this in your concrete <a class="el" href="classpvr_1_1_asset_writer.html" title="Base class for Classes that can be used to write back effects to disk.">AssetWriter</a> implementation. </p>
-<dl class="section return"><dt>Returns</dt><dd>return Result::Success on success.</dd></dl>
+<p>Write out all assets to the <a class="el" href="classpvr_1_1_stream.html" title="This class is used to abstract streams of data (files, blocks of memory, resources etc...">Stream</a>. Implement this in your concrete <a class="el" href="classpvr_1_1_asset_writer.html" title="Base class for Classes that can be used to write back effects to disk.">AssetWriter</a> implementation.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">asset</td><td>the asset to write.</td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Implemented in <a class="el" href="classpvr_1_1asset_writers_1_1_texture_writer_p_v_r.html#a5bcc395137f85655ca3b06573d15bb6f">pvr::assetWriters::TextureWriterPVR</a>.</p>
 
 </div>
 </div>

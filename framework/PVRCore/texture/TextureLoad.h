@@ -1,6 +1,6 @@
 /*!
 \brief Functionality for loading a texture from disk or other sources
-\file PVRAssets/TextureLoad.h
+\file PVRCore/texture/TextureLoad.h
 \author PowerVR by Imagination, Developer Technology Team
 \copyright Copyright (c) Imagination Technologies Limited.
 */
@@ -65,7 +65,6 @@ inline Texture textureLoad(Stream::ptr_type& textureStream, TextureFileFormat ty
 
 /// <summary>Load a texture from binary data. Synchronous.</summary>
 /// <param name="textureStream">A stream from which to load the binary data</param>
-/// <param name="type">The type of the texture. Several supported formats.</param>
 /// <returns>True if successful, otherwise false</returns>
 inline Texture textureLoad(Stream::ptr_type& textureStream)
 {
@@ -73,7 +72,6 @@ inline Texture textureLoad(Stream::ptr_type& textureStream)
 }
 /// <summary>Load a texture from binary data. Synchronous.</summary>
 /// <param name="textureStream">A stream from which to load the binary data</param>
-/// <param name="type">The type of the texture. Several supported formats.</param>
 /// <returns>True if successful, otherwise false</returns>
 inline Texture textureLoad(Stream::ptr_type&& textureStream)
 {

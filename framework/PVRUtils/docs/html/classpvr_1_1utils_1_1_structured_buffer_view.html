@@ -88,7 +88,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 
-<p>A structured buffer view is a class that can be used to define an explicit structure to an object that is usually accessed as raw memory. For example, a GPU-side buffer is mapped to a void pointer, but a <a class="el" href="classpvr_1_1utils_1_1_structured_buffer_view.html" title="A structured buffer view is a class that can be used to define an explicit structure to an object tha...">StructuredBufferView</a> can be used to create a runtime structure for it, and set its entries one by one. Example usage for accessing a <a class="el" href="classpvr_1_1utils_1_1_structured_buffer_view.html" title="A structured buffer view is a class that can be used to define an explicit structure to an object tha...">StructuredBufferView</a> defined for the buffer bonesUbo defined below: struct Bone{ highp mat4 boneMatrix; highp mat3 boneMatrixIT; }; layout(std140, binding = i) uniform bonesUbo { mediump int BoneCount; // a name or index can be used to retrieve a particular element Bone bones[]; // elementArrayIndex is used to index into an arrays of elements } boneBuffer; getElementByName("BoneCount") = boneBuffer.BoneCount getElementByName("bones") = boneBuffer.Bone[0] getElementByName("bones", 1) = boneBuffer.Bone[1]  
+<p>A structured buffer view is a class that can be used to define an explicit structure to an object that is usually accessed as raw memory. For example, a GPU-side buffer is mapped to a void pointer, but a <a class="el" href="classpvr_1_1utils_1_1_structured_buffer_view.html" title="A structured buffer view is a class that can be used to define an explicit structure to an object tha...">StructuredBufferView</a> can be used to create a runtime structure for it, and set its entries one by one. Example usage for accessing a <a class="el" href="classpvr_1_1utils_1_1_structured_buffer_view.html" title="A structured buffer view is a class that can be used to define an explicit structure to an object tha...">StructuredBufferView</a> defined for the buffer bonesUbo defined below: struct Bone{ highp mat4 boneMatrix; highp mat3 boneMatrixIT; }; layout(std140, binding = i) uniform bonesUbo { mediump int BoneCount; // a name or index can be used to retrieve a particular element Bone bones[]; // elementArrayIndex is used to index into an arrays of elements } boneBuffer; getElementByName("BoneCount") = boneBuffer.BoneCount getElementByName("bones") = boneBuffer.Bone[0] getElementByName("bones", 1) = boneBuffer.Bone[1] 
  <a href="classpvr_1_1utils_1_1_structured_buffer_view.html#details">More...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
@@ -168,9 +168,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a848dff1ad2bb7cf4b93b4595b72325eb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1utils_1_1_structured_buffer_view.html#a848dff1ad2bb7cf4b93b4595b72325eb">setLastElementArraySize</a> (uint32_t arraySize)</td></tr>
 <tr class="memdesc:a848dff1ad2bb7cf4b93b4595b72325eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the element array size for the last entry in the <a class="el" href="classpvr_1_1utils_1_1_structured_buffer_view_element.html" title="Defines a StructuredBufferViewElement. A StructuredBufferViewElement handles the public interface use...">StructuredBufferViewElement</a>. Only the last element in the <a class="el" href="classpvr_1_1utils_1_1_structured_buffer_view_element.html" title="Defines a StructuredBufferViewElement. A StructuredBufferViewElement handles the public interface use...">StructuredBufferViewElement</a> may have its size set from the api <a href="#a848dff1ad2bb7cf4b93b4595b72325eb">More...</a><br/></td></tr>
 <tr class="separator:a848dff1ad2bb7cf4b93b4595b72325eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1632b0e7c2e6084df6e7c9740940f808"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1utils_1_1_structured_buffer_view.html#a1632b0e7c2e6084df6e7c9740940f808">toString</a> ()</td></tr>
+<tr class="memdesc:a1632b0e7c2e6084df6e7c9740940f808"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts the <a class="el" href="classpvr_1_1utils_1_1_structured_buffer_view.html" title="A structured buffer view is a class that can be used to define an explicit structure to an object tha...">StructuredBufferView</a> to a readable string entry <a href="#a1632b0e7c2e6084df6e7c9740940f808">More...</a><br/></td></tr>
+<tr class="separator:a1632b0e7c2e6084df6e7c9740940f808"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>A structured buffer view is a class that can be used to define an explicit structure to an object that is usually accessed as raw memory. For example, a GPU-side buffer is mapped to a void pointer, but a <a class="el" href="classpvr_1_1utils_1_1_structured_buffer_view.html" title="A structured buffer view is a class that can be used to define an explicit structure to an object tha...">StructuredBufferView</a> can be used to create a runtime structure for it, and set its entries one by one. Example usage for accessing a <a class="el" href="classpvr_1_1utils_1_1_structured_buffer_view.html" title="A structured buffer view is a class that can be used to define an explicit structure to an object tha...">StructuredBufferView</a> defined for the buffer bonesUbo defined below: struct Bone{ highp mat4 boneMatrix; highp mat3 boneMatrixIT; }; layout(std140, binding = i) uniform bonesUbo { mediump int BoneCount; // a name or index can be used to retrieve a particular element Bone bones[]; // elementArrayIndex is used to index into an arrays of elements } boneBuffer; getElementByName("BoneCount") = boneBuffer.BoneCount getElementByName("bones") = boneBuffer.Bone[0] getElementByName("bones", 1) = boneBuffer.Bone[1] </p>
+<div class="textblock"><p>A structured buffer view is a class that can be used to define an explicit structure to an object that is usually accessed as raw memory. For example, a GPU-side buffer is mapped to a void pointer, but a <a class="el" href="classpvr_1_1utils_1_1_structured_buffer_view.html" title="A structured buffer view is a class that can be used to define an explicit structure to an object tha...">StructuredBufferView</a> can be used to create a runtime structure for it, and set its entries one by one. Example usage for accessing a <a class="el" href="classpvr_1_1utils_1_1_structured_buffer_view.html" title="A structured buffer view is a class that can be used to define an explicit structure to an object tha...">StructuredBufferView</a> defined for the buffer bonesUbo defined below: struct Bone{ highp mat4 boneMatrix; highp mat3 boneMatrixIT; }; layout(std140, binding = i) uniform bonesUbo { mediump int BoneCount; // a name or index can be used to retrieve a particular element Bone bones[]; // elementArrayIndex is used to index into an arrays of elements } boneBuffer; getElementByName("BoneCount") = boneBuffer.BoneCount getElementByName("bones") = boneBuffer.Bone[0] getElementByName("bones", 1) = boneBuffer.Bone[1]</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="a72590090482e9b08dce38672b4b4756a"></a>
 <div class="memitem">
@@ -1121,6 +1124,32 @@ Public Member Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a class="anchor" id="a1632b0e7c2e6084df6e7c9740940f808"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string pvr::utils::StructuredBufferView::toString </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Converts the <a class="el" href="classpvr_1_1utils_1_1_structured_buffer_view.html" title="A structured buffer view is a class that can be used to define an explicit structure to an object tha...">StructuredBufferView</a> to a readable string entry</p>
+<dl class="section return"><dt>Returns</dt><dd>The human readable string corresponding to the <a class="el" href="classpvr_1_1utils_1_1_structured_buffer_view.html" title="A structured buffer view is a class that can be used to define an explicit structure to an object tha...">StructuredBufferView</a></dd></dl>
 
 </div>
 </div>

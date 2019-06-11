@@ -202,7 +202,7 @@ void Image_::onRender(uint64_t parentId) const
 	debugThrowOnApiError("Image_::onRender draw");
 }
 
-Image_::Image_(UIRenderer& uiRenderer, const GLuint& texture, uint32_t width, uint32_t height, bool useMipmaps, const GLuint& sampler)
+Image_::Image_(make_shared_enabler, UIRenderer& uiRenderer, const GLuint& texture, uint32_t width, uint32_t height, bool useMipmaps, const GLuint& sampler)
 	: Sprite_(uiRenderer), _texW(width), _texH(height), _texture(texture), _sampler(sampler), _isTextureDirty(true)
 {
 	if (_uiRenderer->_uiStateTracker.activeTextureUnit != GL_TEXTURE7)
@@ -351,7 +351,7 @@ int32_t Font_::kerningCompFunc(const void* a, const void* b)
 	return 0;
 }
 
-Font_::Font_(UIRenderer& uiRenderer, const GLuint& tex2D, const Texture& tex, const GLuint& sampler)
+Font_::Font_(make_shared_enabler, UIRenderer& uiRenderer, const GLuint& tex2D, const Texture& tex, const GLuint& sampler)
 {
 	setUIRenderer(&uiRenderer);
 	_texture = tex2D;
@@ -672,7 +672,7 @@ void Text_::onRender(uint64_t parentId) const
 	_textElement->onRender();
 }
 
-Text_::Text_(UIRenderer& uiRenderer, const TextElement& textElement) : Sprite_(uiRenderer), _textElement(textElement)
+Text_::Text_(make_shared_enabler, UIRenderer& uiRenderer, const TextElement& textElement) : Sprite_(uiRenderer), _textElement(textElement)
 {
 	_alphaMode = _textElement->getFont()->isAlphaRendering();
 }
@@ -717,7 +717,7 @@ TextElement_& TextElement_::setText(std::wstring&& str)
 	return *this;
 }
 
-MatrixGroup_::MatrixGroup_(UIRenderer& uiRenderer, uint64_t id) : Group_(uiRenderer, id) {}
+MatrixGroup_::MatrixGroup_(make_shared_enabler, UIRenderer& uiRenderer, uint64_t id) : Group_(uiRenderer, id) {}
 
 void MatrixGroup_::commitUpdates() const
 {
@@ -794,7 +794,7 @@ void PixelGroup_::calculateMvp(uint64_t parentIds, const glm::mat4& srt, const g
 
 Group_* Group_::add(const Sprite& sprite)
 {
-	_children.push_back(sprite);
+	_children.emplace_back(sprite);
 	_boundingRect.add(sprite->getDimensions().x, sprite->getDimensions().y, 0.0f);
 	return this;
 }

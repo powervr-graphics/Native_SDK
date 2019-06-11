@@ -1,6 +1,6 @@
 /*!
 \brief Implementation of methods of the TextureReaderBMP class.
-\file PVRCore/textureReaders/TextureReaderBMP.cpp
+\file PVRCore/textureio/TextureReaderBMP.cpp
 \author PowerVR by Imagination, Developer Technology Team
 \copyright Copyright (c) Imagination Technologies Limited.
 */

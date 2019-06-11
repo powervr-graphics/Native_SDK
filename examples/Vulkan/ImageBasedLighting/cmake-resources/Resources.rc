@@ -1,4 +1,4 @@
-//Microsoft eMbedded Visual C++ generated resource script.
+// Microsoft Visual C++ generated resource script.
 //
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
@@ -58,32 +58,28 @@ END
 // RCDATA
 //
 /////////////////////////////////////////////////////////////////////////////
-// RCDATA: Assets (scenes,  effects, textures...)
-Default_albedo.pvr		RCDATA		"..\\..\\..\\assets\\damagedHelmet\\Default_albedo.pvr"
-Default_AO.pvr		RCDATA		"..\\..\\..\\assets\\damagedHelmet\\Default_AO.pvr"
-Default_emissive.pvr		RCDATA		"..\\..\\..\\assets\\damagedHelmet\\Default_emissive.pvr"
-Default_MetalSmooth_converted_metalRoughness.pvr		RCDATA		"..\\..\\..\\assets\\damagedHelmet\\Default_MetalSmooth_converted_metalRoughness.pvr"
-Default_normal.pvr		RCDATA		"..\\..\\..\\assets\\damagedHelmet\\Default_normal.pvr"
-MonValley.pvr		RCDATA		"..\\..\\..\\assets\\MonValley\\MonValley.pvr"
-MonValley_baked_lightmap.pvr		RCDATA		"..\\..\\..\\assets\\MonValley\\MonValley_baked_lightmap.pvr"
-Lightmap.pvr		RCDATA		"..\\..\\..\\assets\\MonValley\\Lightmap.pvr"
-PrefilterEnvMap.pvr		RCDATA		"..\\..\\..\\assets\\MonValley\\PrefilterEnvMap.pvr"
-PrefilterL0MipMap.pvr		RCDATA		"..\\..\\..\\assets\\MonValley\\PrefilterL0MipMap.pvr"
-DiffuseIrradianceMap.pvr		RCDATA		"..\\..\\..\\assets\\MonValley\\DiffuseIrradianceMap.pvr"
-brdfLUT.pvr		RCDATA		"..\\..\\..\\assets\\brdfLUT.pvr"
-damagedHelmet.bin		RCDATA		"..\\..\\..\\assets\\damagedHelmet\\damagedHelmet.bin"
-damagedHelmet.gltf		RCDATA		"..\\..\\..\\assets\\damagedHelmet\\damagedHelmet.gltf"
-sphere.pod		RCDATA		"..\\..\\..\\assets\\ParticleSystem\\sphere.pod"
-// RCDATA: Vulkan Spir-V shaders(glsl)
-IrradianceFragShader.fsh.spv		RCDATA		"..\\IrradianceFragShader.fsh.spv"
-IrradianceVertShader.vsh.spv		RCDATA		"..\\IrradianceVertShader.vsh.spv"
-PBRFragShader.fsh.spv		RCDATA		"..\\PBRFragShader.fsh.spv"
-PBRMaterialTextureFragShader.fsh.spv		RCDATA		"..\\PBRMaterialTextureFragShader.fsh.spv"
-PreFilterFragShader.fsh.spv		RCDATA		"..\\PreFilterFragShader.fsh.spv"
-SkyboxFragShader.fsh.spv		RCDATA		"..\\SkyboxFragShader.fsh.spv"
-SkyboxVertShader.vsh.spv		RCDATA		"..\\SkyboxVertShader.vsh.spv"
-VertShader.vsh.spv		RCDATA		"..\\VertShader.vsh.spv"
-SimpleVertShader.vsh.spv		RCDATA		"..\\SimpleVertShader.vsh.spv"
+Default_albedo.pvr RCDATA "..\\..\\..\\assets\\damagedHelmet\\Default_albedo.pvr"
+Default_emissive.pvr RCDATA "..\\..\\..\\assets\\damagedHelmet\\Default_emissive.pvr"
+Default_occlusionRoughnessMetallic.pvr RCDATA "..\\..\\..\\assets\\damagedHelmet\\Default_occlusionRoughnessMetallic.pvr"
+Default_normal.pvr RCDATA "..\\..\\..\\assets\\damagedHelmet\\Default_normal.pvr"
+misty_pines_rgb9e5.pvr RCDATA "..\\..\\..\\assets\\HdrScenes\\misty_pines_rgb9e5.pvr"
+misty_pines_rgb9e5_Irradiance.pvr RCDATA "..\\..\\..\\assets\\HdrScenes\\misty_pines_rgb9e5_Irradiance.pvr"
+misty_pines_rgb9e5_Prefiltered.pvr RCDATA "..\\..\\..\\assets\\HdrScenes\\misty_pines_rgb9e5_Prefiltered.pvr"
+satara_night_scale_0.305_rgb9e5.pvr RCDATA "..\\..\\..\\assets\\HdrScenes\\satara_night_scale_0.305_rgb9e5.pvr"
+satara_night_scale_0.305_rgb9e5_Irradiance.pvr RCDATA "..\\..\\..\\assets\\HdrScenes\\satara_night_scale_0.305_rgb9e5_Irradiance.pvr"
+satara_night_scale_0.305_rgb9e5_Prefiltered.pvr RCDATA "..\\..\\..\\assets\\HdrScenes\\satara_night_scale_0.305_rgb9e5_Prefiltered.pvr"
+brdfLUT.pvr RCDATA "..\\..\\..\\assets\\brdfLUT.pvr"
+damagedHelmet.bin RCDATA "..\\..\\..\\assets\\damagedHelmet\\damagedHelmet.bin"
+damagedHelmet.gltf RCDATA "..\\..\\..\\assets\\damagedHelmet\\damagedHelmet.gltf"
+sphere.pod RCDATA "..\\..\\..\\assets\\ParticleSystem\\sphere.pod"
+PBRFragShader.fsh RCDATA "..\\PBRFragShader.fsh"
+SkyboxFragShader.fsh RCDATA "..\\SkyboxFragShader.fsh"
+SkyboxVertShader.vsh RCDATA "..\\SkyboxVertShader.vsh"
+VertShader.vsh RCDATA "..\\VertShader.vsh"
+PBRFragShader.fsh.spv RCDATA "..\\PBRFragShader.fsh.spv"
+SkyboxFragShader.fsh.spv RCDATA "..\\SkyboxFragShader.fsh.spv"
+SkyboxVertShader.vsh.spv RCDATA "..\\SkyboxVertShader.vsh.spv"
+VertShader.vsh.spv RCDATA "..\\VertShader.vsh.spv"
 
 #endif    // English (United Kingdom) resources
 /////////////////////////////////////////////////////////////////////////////

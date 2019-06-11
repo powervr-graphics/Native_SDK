@@ -647,11 +647,11 @@ void getOpenGLFormat(PixelFormat pixelFormat, pvr::ColorSpace colorSpace, pvr::V
 		switch (dataType)
 		{
 		case VariableType::UnsignedFloat:
-			if (pixelFormat.getPixelTypeId() == GeneratePixelType3<'b', 'g', 'r', 10, 11, 11>::ID)
+			if (pixelFormat.getPixelTypeId() == GeneratePixelType3<'b', 'g', 'r', 10, 11, 11>::ID || pixelFormat.getPixelTypeId() == GeneratePixelType3<'r', 'g', 'b', 11, 11, 10>::ID)
 			{
 				glTypeSize = 4;
 				glType = GL_UNSIGNED_INT_10F_11F_11F_REV;
-				glFormat = GL_R11F_G11F_B10F;
+				glFormat = GL_RGB;
 				glInternalFormat = GL_R11F_G11F_B10F;
 				return;
 			}
@@ -1508,7 +1508,7 @@ void getOpenGLStorageFormat(PixelFormat pixelFormat, pvr::ColorSpace colorSpace,
 		switch (dataType)
 		{
 		case VariableType::UnsignedFloat:
-			if (pixelFormat.getPixelTypeId() == GeneratePixelType3<'r', 'g', 'b', 11, 11, 10>::ID)
+			if (pixelFormat.getPixelTypeId() == GeneratePixelType3<'r', 'g', 'b', 11, 11, 10>::ID || pixelFormat.getPixelTypeId() == GeneratePixelType3<'b', 'g', 'r', 10, 11, 10>::ID)
 			{
 				glInternalFormat = GL_R11F_G11F_B10F;
 				return;

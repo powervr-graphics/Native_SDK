@@ -5,13 +5,13 @@
 namespace pvr {
 /// <summary>Groups functionality that has to do with bit calculations/sizes/offsets of glsl types</summary>
 namespace GpuDatatypesHelper {
-/// <summary> A bit representing if a type is basically of integer or floating point format </summary>
+/// <summary>A bit representing if a type is basically of integer or floating point format</summary>
 enum class BaseType
 {
 	Integer = 0,
 	Float = 1
 };
-/// <summary> Two bits, representing the number of vector components (from scalar up to 4)</summary>
+/// <summary>Two bits, representing the number of vector components (from scalar up to 4)</summary>
 enum class VectorWidth
 {
 	Scalar = 0,
@@ -19,7 +19,7 @@ enum class VectorWidth
 	Vec3 = 2,
 	Vec4 = 3,
 };
-/// <summary> Three bits, representing the number of matrix columns (from not a matrix to 4)</summary>
+/// <summary>Three bits, representing the number of matrix columns (from not a matrix to 4)</summary>
 enum class MatrixColumns
 {
 	OneCol = 0,
@@ -28,7 +28,7 @@ enum class MatrixColumns
 	Mat4x = 3
 };
 
-/// <summary> Contains bit enums for the expressiveness of the GpuDatatypes class' definition</summary>
+/// <summary>Contains bit enums for the expressiveness of the GpuDatatypes class' definition</summary>
 enum class Bits : uint32_t
 {
 	Integer = 0,
@@ -52,27 +52,39 @@ enum class Bits : uint32_t
 	NotMaskCols = static_cast<uint32_t>(~MaskCols)
 };
 
-/*! \brief Macro that defines all common bitwise operators for an enum-class */
+/// <summary>Operator| for a set of bits</summary>
+/// <param name="lhs">Left hand side</param>
+/// <param name="rhs">Right hand side</param>
+/// <returns>The bits after applying the operator</returns>
 inline Bits operator|(Bits lhs, Bits rhs)
 {
 	return static_cast<Bits>(static_cast<std::underlying_type<Bits>::type /**/>(lhs) | static_cast<std::underlying_type<Bits>::type /**/>(rhs));
 }
 
+/// <summary>Operator|= for a set of bits</summary>
+/// <param name="lhs">Left hand side</param>
+/// <param name="rhs">Right hand side</param>
 inline void operator|=(Bits& lhs, Bits rhs)
 {
 	lhs = static_cast<Bits>(static_cast<std::underlying_type<Bits>::type /**/>(lhs) | static_cast<std::underlying_type<Bits>::type /**/>(rhs));
 }
 
+/// <summary>Operator& for a set of bits</summary>
+/// <param name="lhs">Left hand side</param>
+/// <param name="rhs">Right hand side</param>
+/// <returns>The bits after applying the operator</returns>
 inline Bits operator&(Bits lhs, Bits rhs)
 {
 	return static_cast<Bits>(static_cast<std::underlying_type<Bits>::type /**/>(lhs) & static_cast<std::underlying_type<Bits>::type /**/>(rhs));
 }
 
+/// <summary>Operator&= for a set of bits</summary>
+/// <param name="lhs">Left hand side</param>
+/// <param name="rhs">Right hand side</param>
 inline void operator&=(Bits& lhs, Bits rhs)
 {
 	lhs = static_cast<Bits>(static_cast<std::underlying_type<Bits>::type /**/>(lhs) & static_cast<std::underlying_type<Bits>::type /**/>(rhs));
 }
-
 } // namespace GpuDatatypesHelper
 
 /// <summary>A (normally hardware-supported) GPU datatype (e.g. vec4 etc.)</summary>
@@ -332,8 +344,7 @@ inline uint64_t getCpuPackedSize(GpuDatatypes type, uint32_t arrayElements = 1)
 /// <summary>Aligns an address/offset with the alignment of a type -- equivalently,
 /// assuming you want to place a type after a known offset (i.e. calculating the
 /// offset of an item inside a struct having already calculated its previous element)
-/// (i.e. aligning a vec4 after an item that ends at 30 bytes returns 32 bytes...)
-/// </summary>
+/// (i.e. aligning a vec4 after an item that ends at 30 bytes returns 32 bytes...)</summary>
 /// <param name="type">The datatype to test</param>
 /// <param name="previousTotalSize">The address/offset to align for that type</param>
 /// <returns><paramRef name="previousTotalSize"/> aligned to the requirements of

@@ -83,6 +83,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
+<a href="#friends">Friends</a> &#124;
 <a href="classpvr_1_1utils_1_1_structured_memory_entry-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">pvr::utils::StructuredMemoryEntry Class Reference</div>  </div>
@@ -151,9 +153,24 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ae729e23caa457edc3917a359f35e69cd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpvr_1_1utils_1_1_structured_memory_entry.html">StructuredMemoryEntry</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1utils_1_1_structured_memory_entry.html#ae729e23caa457edc3917a359f35e69cd">operator=</a> (<a class="el" href="classpvr_1_1utils_1_1_structured_memory_entry.html">StructuredMemoryEntry</a> other)</td></tr>
 <tr class="memdesc:ae729e23caa457edc3917a359f35e69cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy Assignment operator. <a href="#ae729e23caa457edc3917a359f35e69cd">More...</a><br/></td></tr>
 <tr class="separator:ae729e23caa457edc3917a359f35e69cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f519545b65d5d893f3f31ed50158808"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1utils_1_1_structured_memory_entry.html#a6f519545b65d5d893f3f31ed50158808">printIntoStringStream</a> (std::stringstream &amp;str, int level) const </td></tr>
+<tr class="memdesc:a6f519545b65d5d893f3f31ed50158808"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints a <a class="el" href="classpvr_1_1utils_1_1_structured_memory_entry.html" title="Defines a StructuredMemoryEntry element. A StructuredMemoryEntry defines an actual element entry in a...">StructuredMemoryEntry</a> to a std::stringstream for the current level <a href="#a6f519545b65d5d893f3f31ed50158808">More...</a><br/></td></tr>
+<tr class="separator:a6f519545b65d5d893f3f31ed50158808"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae3b0741801b201dd4cc41b883e387fae"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1utils_1_1_structured_memory_entry.html#ae3b0741801b201dd4cc41b883e387fae">setLastElementArraySize</a> (uint32_t arraySize)</td></tr>
 <tr class="memdesc:ae3b0741801b201dd4cc41b883e387fae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the element array size for the last entry in the <a class="el" href="classpvr_1_1utils_1_1_structured_memory_entry.html" title="Defines a StructuredMemoryEntry element. A StructuredMemoryEntry defines an actual element entry in a...">StructuredMemoryEntry</a>. Only the last element in the <a class="el" href="classpvr_1_1utils_1_1_structured_memory_entry.html" title="Defines a StructuredMemoryEntry element. A StructuredMemoryEntry defines an actual element entry in a...">StructuredMemoryEntry</a> may have its size set from the api <a href="#ae3b0741801b201dd4cc41b883e387fae">More...</a><br/></td></tr>
 <tr class="separator:ae3b0741801b201dd4cc41b883e387fae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:a0c4f11f2102b1ad1b461db08da1c4717"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1utils_1_1_structured_memory_entry.html#a0c4f11f2102b1ad1b461db08da1c4717">printPreamble</a> (std::stringstream &amp;str, uint32_t level)</td></tr>
+<tr class="memdesc:a0c4f11f2102b1ad1b461db08da1c4717"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints a preamble for the current <a class="el" href="classpvr_1_1utils_1_1_structured_memory_entry.html" title="Defines a StructuredMemoryEntry element. A StructuredMemoryEntry defines an actual element entry in a...">StructuredMemoryEntry</a> level <a href="#a0c4f11f2102b1ad1b461db08da1c4717">More...</a><br/></td></tr>
+<tr class="separator:a0c4f11f2102b1ad1b461db08da1c4717"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="friends"></a>
+Friends</h2></td></tr>
+<tr class="memitem:ad41f40c0b7d7ca93e6dea3685c57cbb1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1utils_1_1_structured_memory_entry.html#ad41f40c0b7d7ca93e6dea3685c57cbb1">swap</a> (<a class="el" href="classpvr_1_1utils_1_1_structured_memory_entry.html">StructuredMemoryEntry</a> &amp;first, <a class="el" href="classpvr_1_1utils_1_1_structured_memory_entry.html">StructuredMemoryEntry</a> &amp;second)</td></tr>
+<tr class="memdesc:ad41f40c0b7d7ca93e6dea3685c57cbb1"><td class="mdescLeft">&#160;</td><td class="mdescRight">A swap function for a <a class="el" href="classpvr_1_1utils_1_1_structured_memory_entry.html" title="Defines a StructuredMemoryEntry element. A StructuredMemoryEntry defines an actual element entry in a...">pvr::utils::StructuredMemoryEntry</a>. Swaps all members of each <a class="el" href="classpvr_1_1utils_1_1_structured_memory_entry.html" title="Defines a StructuredMemoryEntry element. A StructuredMemoryEntry defines an actual element entry in a...">pvr::utils::StructuredMemoryEntry</a> to the other. <a href="#ad41f40c0b7d7ca93e6dea3685c57cbb1">More...</a><br/></td></tr>
+<tr class="separator:ad41f40c0b7d7ca93e6dea3685c57cbb1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Defines a <a class="el" href="classpvr_1_1utils_1_1_structured_memory_entry.html" title="Defines a StructuredMemoryEntry element. A StructuredMemoryEntry defines an actual element entry in a...">StructuredMemoryEntry</a> element. A <a class="el" href="classpvr_1_1utils_1_1_structured_memory_entry.html" title="Defines a StructuredMemoryEntry element. A StructuredMemoryEntry defines an actual element entry in a...">StructuredMemoryEntry</a> defines an actual element entry in a structured buffer view. WARNING: Arrays of size 1 not supported - they are considered non-arrays. WARNING: Due to pointers to parents, no reallocations must <em>ever</em> happen. Once initialized, the lists must be final. WARNING: THE ENTIRE PUBLIC INTERFACE OF THIS CLASS EXCEPT FOR INIT, IS CONST. WARNING: IT IS NOT INTENDED FOR THIS CLASS TO BE EVER MODIFIABLE.</p>
@@ -728,6 +745,92 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a6f519545b65d5d893f3f31ed50158808"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void pvr::utils::StructuredMemoryEntry::printIntoStringStream </td>
+          <td>(</td>
+          <td class="paramtype">std::stringstream &amp;&#160;</td>
+          <td class="paramname"><em>str</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>level</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Prints a <a class="el" href="classpvr_1_1utils_1_1_structured_memory_entry.html" title="Defines a StructuredMemoryEntry element. A StructuredMemoryEntry defines an actual element entry in a...">StructuredMemoryEntry</a> to a std::stringstream for the current level</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">str</td><td>The current std::stringstream to print to</td></tr>
+    <tr><td class="paramname">level</td><td>The current level to print a preamble for</td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a0c4f11f2102b1ad1b461db08da1c4717"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void pvr::utils::StructuredMemoryEntry::printPreamble </td>
+          <td>(</td>
+          <td class="paramtype">std::stringstream &amp;&#160;</td>
+          <td class="paramname"><em>str</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>level</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Prints a preamble for the current <a class="el" href="classpvr_1_1utils_1_1_structured_memory_entry.html" title="Defines a StructuredMemoryEntry element. A StructuredMemoryEntry defines an actual element entry in a...">StructuredMemoryEntry</a> level</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">str</td><td>The current std::stringstream to print to</td></tr>
+    <tr><td class="paramname">level</td><td>The current level to print a preamble for</td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a class="anchor" id="ae3b0741801b201dd4cc41b883e387fae"></a>
 <div class="memitem">
 <div class="memproto">
@@ -754,6 +857,50 @@ Public Member Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">arraySize</td><td>The size of the array</td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<h2 class="groupheader">Friends And Related Function Documentation</h2>
+<a class="anchor" id="ad41f40c0b7d7ca93e6dea3685c57cbb1"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void swap </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classpvr_1_1utils_1_1_structured_memory_entry.html">StructuredMemoryEntry</a> &amp;&#160;</td>
+          <td class="paramname"><em>first</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classpvr_1_1utils_1_1_structured_memory_entry.html">StructuredMemoryEntry</a> &amp;&#160;</td>
+          <td class="paramname"><em>second</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>A swap function for a <a class="el" href="classpvr_1_1utils_1_1_structured_memory_entry.html" title="Defines a StructuredMemoryEntry element. A StructuredMemoryEntry defines an actual element entry in a...">pvr::utils::StructuredMemoryEntry</a>. Swaps all members of each <a class="el" href="classpvr_1_1utils_1_1_structured_memory_entry.html" title="Defines a StructuredMemoryEntry element. A StructuredMemoryEntry defines an actual element entry in a...">pvr::utils::StructuredMemoryEntry</a> to the other.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">first</td><td>The first <a class="el" href="classpvr_1_1utils_1_1_structured_memory_entry.html" title="Defines a StructuredMemoryEntry element. A StructuredMemoryEntry defines an actual element entry in a...">StructuredMemoryEntry</a> to swap</td></tr>
+    <tr><td class="paramname">second</td><td>The second <a class="el" href="classpvr_1_1utils_1_1_structured_memory_entry.html" title="Defines a StructuredMemoryEntry element. A StructuredMemoryEntry defines an actual element entry in a...">StructuredMemoryEntry</a> to swap</td></tr>
   </table>
   </dd>
 </dl>

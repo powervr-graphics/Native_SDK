@@ -6,15 +6,15 @@ layout(std140, set = 0, binding = 0) uniform Buffer
 {
 	highp mat4 MVPMatrix;
 	mediump mat3 MMatrix;
-	mediump vec4 EyePos;
+	highp vec4 EyePos;
 };
 
 layout(location = 0) in highp vec3 inVertex;
 layout(location = 1) in mediump vec3 inNormal;
 
-layout(location = 0) out mediump vec3 RefractDirRed;
-layout(location = 1) out mediump vec3 RefractDirGreen;
-layout(location = 2) out mediump vec3 RefractDirBlue;
+layout(location = 0) out highp vec3 RefractDirRed;
+layout(location = 1) out highp vec3 RefractDirGreen;
+layout(location = 2) out highp vec3 RefractDirBlue;
 
 void main()
 {

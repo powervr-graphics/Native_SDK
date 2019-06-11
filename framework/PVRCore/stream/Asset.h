@@ -1,13 +1,12 @@
 /*!
 \brief Definition of an Asset class template, with common functionality to interoperate with the AssetReader class
 templates.
-\file PVRCore/io/Asset.h
+\file PVRCore/stream/Asset.h
 \author PowerVR by Imagination, Developer Technology Team
 \copyright Copyright (c) Imagination Technologies Limited.
 */
 #pragma once
 #include "PVRCore/stream/AssetReader.h"
-#include "PVRCore/RefCounted.h"
 
 namespace pvr {
 /// <summary>An Asset represents an object that can be stored and loaded. Models, Textures, Effects and similar
@@ -16,7 +15,7 @@ namespace pvr {
 template<typename AssetType_>
 class Asset
 {
-	typedef RefCountedResource<AssetType_> Handle;
+	typedef std::shared_ptr<AssetType_> Handle;
 
 public:
 	/// <summary>Create asset with reader.</summary>
@@ -24,21 +23,18 @@ public:
 	/// <returns>A handle to the new Asset. Will be null if failed to load.</returns>
 	static Handle createWithReader(AssetReader<AssetType_>& reader)
 	{
-		Handle handle;
-		handle.construct();
+		Handle handle = std::make_shared<AssetType_>();
 		reader.readAsset(*handle);
 		return handle;
 	}
 
 	/// <summary>Create an asset with an AssetReader, and wrap it into a Handle (reference counted object). Rvalue-ref
 	/// overload.</summary>
-	/// <param name="reader">An (rvalue-ref) AssetReader of the correct type. Must have a valid Stream opened.
-	/// </param>
+	/// <param name="reader">An (rvalue-ref) AssetReader of the correct type. Must have a valid Stream opened.</param>
 	/// <returns>A handle of the new Asset. Will be null if failed to load.</returns>
 	static Handle createWithReader(AssetReader<AssetType_>&& reader)
 	{
-		Handle handle;
-		handle.construct();
+		Handle handle = std::make_shared<AssetType_>();
 		reader.readAsset(*handle);
 		return handle;
 	}

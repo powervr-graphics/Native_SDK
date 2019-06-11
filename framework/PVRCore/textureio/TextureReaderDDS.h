@@ -1,6 +1,6 @@
 /*!
 \brief An experimental DDS texture reader.
-\file PVRCore/textureReaders/TextureReaderDDS.h
+\file PVRCore/textureio/TextureReaderDDS.h
 \author PowerVR by Imagination, Developer Technology Team
 \copyright Copyright (c) Imagination Technologies Limited.
 */
@@ -10,16 +10,22 @@
 #include "PVRCore/textureio/FileDefinesDDS.h"
 #include "PVRCore/stream/AssetReader.h"
 
-//!\cond NO_DOXYGEN
 namespace pvr {
 namespace assetReaders {
 /// <summary>Experimental DDS Texture reader</summary>
 class TextureReaderDDS : public AssetReader<Texture>
 {
 public:
+	/// <summary>Constructor</summary>
 	TextureReaderDDS();
+
+	/// <summary>Constructor</summary>
+	/// <param name="assetStream">An asset stream to read the DDS from</param>
 	TextureReaderDDS(Stream::ptr_type assetStream);
 
+	/// <summary>Specifies if the DDS file is supported</summary>
+	/// <param name="assetStream">An asset stream to read the DDS from</param>
+	/// <returns>True if this reader supports the particular assetStream</returns>
 	virtual bool isSupportedFile(Stream& assetStream);
 
 private:
@@ -29,4 +35,3 @@ private:
 };
 } // namespace assetReaders
 } // namespace pvr
-//!\endcond

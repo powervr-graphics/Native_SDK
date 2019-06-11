@@ -21,8 +21,7 @@ public:
 	/// resources etc.).</summary>
 	/// <param name="filename">The name of the asset. May contain a path or not. Platform-specific paths and built-in
 	/// resources should be searched.</param>
-	/// <param name="logErrorOnNotFound">OPTIONAL. Set this to false to avoid logging an error when the file is not found.
-	/// </param>
+	/// <param name="logErrorOnNotFound">OPTIONAL. Set this to false to avoid logging an error when the file is not found.</param>
 	/// <returns>A pointer to a Stream. NULL if the asset is not found.</returns>
 	/// <remarks>If the file is not found, this function will return a NULL function pointer, and log an error. In
 	/// cases where file not found is to be expected (for example, testing for different files due to convention), set

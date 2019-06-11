@@ -47,7 +47,7 @@ public:
 	/// <returns>Subpas</returns>
 	const SubpassDescription& getSubpass(uint32_t index) const
 	{
-		debug_assertion(index < getNumSubpasses(), "Invalid subpass index");
+		assert(index < getNumSubpasses() && "Invalid subpass index");
 		return _subpass[index];
 	}
 
@@ -63,7 +63,7 @@ public:
 	/// <returns>SubpassDependency</returns>
 	const SubpassDependency& getSubpassDependency(uint32_t index) const
 	{
-		debug_assertion(index < getNumSubpassDependencies(), "Invalid subpass dependency index");
+		assert(index < getNumSubpassDependencies() && "Invalid subpass dependency index");
 		return _subpassDependency[index];
 	}
 
@@ -79,7 +79,7 @@ public:
 	/// <returns>RenderPassColorInfo</returns>
 	const AttachmentDescription& getAttachmentDescription(uint32_t index) const
 	{
-		debug_assertion(index < getNumAttachmentDescription(), "Invalid color info index");
+		assert(index < getNumAttachmentDescription() && "Invalid color info index");
 		return _attachmentDescriptions[index];
 	}
 
@@ -91,8 +91,7 @@ public:
 	{
 		if (index >= total_max_attachments)
 		{
-			debug_assertion(false, "AttachmentDescription exceeds the max attachment limit");
-			Log("AttachmentDescription exceeds the max attachment limit %d", total_max_attachments);
+			assert(false && "AttachmentDescription exceeds the max attachment limit");
 		}
 		_numAttachmentDescription += static_cast<uint32_t>(this->_attachmentDescriptions[index].getFormat() == pvrvk::Format::e_UNDEFINED);
 		this->_attachmentDescriptions[index] = attachmentDescription;
@@ -120,9 +119,9 @@ public:
 	{
 		if ((subPassDependency.getSrcSubpass() != pvrvk::SubpassExternal) && (subPassDependency.getSrcSubpass() > subPassDependency.getDstSubpass()))
 		{
-			debug_assertion(false, " Source Sub pass must be less than or equal to destination Sub pass");
+			assert(false && " Source Sub pass must be less than or equal to destination Sub pass");
 		}
-		_subpassDependency.push_back(subPassDependency);
+		_subpassDependency.emplace_back(subPassDependency);
 		return *this;
 	}
 
@@ -155,10 +154,33 @@ namespace impl {
 /// descriptions - Load and store operations in attachment descriptions - Image layout in attachment references A
 /// framebuffer is compatible with a render pass if it was created using the same render pass or a compatible
 /// render pass.</summary>
-class RenderPass_ : public DeviceObjectHandle<VkRenderPass>, public DeviceObjectDebugMarker<RenderPass_>
+class RenderPass_ : public PVRVkDeviceObjectBase<VkRenderPass, ObjectType::e_RENDER_PASS>, public DeviceObjectDebugUtils<RenderPass_>
 {
+private:
+	friend class Device_;
+
+	class make_shared_enabler
+	{
+	protected:
+		make_shared_enabler() = default;
+		friend class RenderPass_;
+	};
+
+	static RenderPass constructShared(const DeviceWeakPtr& device, const RenderPassCreateInfo& createInfo)
+	{
+		return std::make_shared<RenderPass_>(make_shared_enabler{}, device, createInfo);
+	}
+
+	RenderPassCreateInfo _createInfo;
+
 public:
+	//!\cond NO_DOXYGEN
 	DECLARE_NO_COPY_SEMANTICS(RenderPass_)
+	RenderPass_(make_shared_enabler, const DeviceWeakPtr& device, const RenderPassCreateInfo& createInfo);
+
+	/// <summary>destructor</summary>
+	~RenderPass_();
+	//!\endcond
 
 	/// <summary>getCreateInfo</summary>
 	/// <returns></returns>
@@ -166,18 +188,6 @@ public:
 	{
 		return _createInfo;
 	}
-
-private:
-	template<typename>
-	friend struct ::pvrvk::RefCountEntryIntrusive;
-	friend class ::pvrvk::impl::Device_;
-
-	RenderPass_(const DeviceWeakPtr& device, const RenderPassCreateInfo& createInfo);
-
-	/// <summary>destructor</summary>
-	~RenderPass_();
-
-	RenderPassCreateInfo _createInfo;
 };
 } // namespace impl
 } // namespace pvrvk

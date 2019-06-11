@@ -275,7 +275,7 @@ struct Material
 struct DeviceResources
 {
 	pvrvk::Instance instance;
-	pvrvk::DebugReportCallback debugCallbacks[2];
+	pvr::utils::DebugUtilsCallbacks debugUtilsCallbacks;
 	pvrvk::Device device;
 	pvrvk::Surface surface;
 	pvrvk::Queue queue;
@@ -388,10 +388,9 @@ struct DeviceResources
 	pvr::utils::StructuredBufferView dynamicDirectionalLightBufferView;
 	pvrvk::Buffer dynamicDirectionalLightBuffer;
 
-	pvrvk::Semaphore semaphoreImageAcquired[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
-	pvrvk::Fence perFrameAcquireFence[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
-	pvrvk::Semaphore semaphorePresent[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
-	pvrvk::Fence perFrameCommandBufferFence[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	pvrvk::Semaphore imageAcquiredSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	pvrvk::Semaphore presentationSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	pvrvk::Fence perFrameResourcesFences[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
 
 	RenderData renderInfo;
 
@@ -401,16 +400,14 @@ struct DeviceResources
 	pvr::ui::UIRenderer uiRenderer;
 	~DeviceResources()
 	{
-		if (device.isValid())
+		if (device)
 		{
 			device->waitIdle();
 			uint32_t l = swapchain->getSwapchainLength();
 			for (uint32_t i = 0; i < l; ++i)
 			{
-				if (perFrameAcquireFence[i].isValid())
-					perFrameAcquireFence[i]->wait();
-				if (perFrameCommandBufferFence[i].isValid())
-					perFrameCommandBufferFence[i]->wait();
+				if (perFrameResourcesFences[i])
+					perFrameResourcesFences[i]->wait();
 			}
 		}
 	}
@@ -471,7 +468,7 @@ public:
 	virtual pvr::Result quitApplication();
 	virtual pvr::Result renderFrame();
 
-	void createFramebufferAndRenderpass();
+	void createFramebufferAndRenderPass();
 	void createPipelines();
 	void createModelPipelines();
 	void createDirectionalLightingPipeline();
@@ -582,12 +579,8 @@ pvr::Result VulkanDeferredShading::initView()
 	// Create the surface
 	_deviceResources->surface = pvr::utils::createSurface(_deviceResources->instance, _deviceResources->instance->getPhysicalDevice(0), this->getWindow(), this->getDisplay());
 
-	// Add Debug Report Callbacks
-	// Add a Debug Report Callback for logging messages for events of all supported types.
-	_deviceResources->debugCallbacks[0] = pvr::utils::createDebugReportCallback(_deviceResources->instance);
-	// Add a second Debug Report Callback for throwing exceptions for Error events.
-	_deviceResources->debugCallbacks[1] =
-		pvr::utils::createDebugReportCallback(_deviceResources->instance, pvrvk::DebugReportFlagsEXT::e_ERROR_BIT_EXT, pvr::utils::throwOnErrorDebugReportCallback);
+	// Create a default set of debug utils messengers or debug callbacks using either VK_EXT_debug_utils or VK_EXT_debug_report respectively
+	_deviceResources->debugUtilsCallbacks = pvr::utils::createDebugUtilsCallbacks(_deviceResources->instance);
 
 	pvr::utils::QueuePopulateInfo queueFlagsInfo[] = {
 		{ pvrvk::QueueFlags::e_GRAPHICS_BIT, _deviceResources->surface },
@@ -648,11 +641,11 @@ pvr::Result VulkanDeferredShading::initView()
 		_deviceResources->device->createCommandPool(pvrvk::CommandPoolCreateInfo(queueAccessInfo.familyId, pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT));
 
 	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(pvrvk::DescriptorPoolCreateInfo()
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 32)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 32)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 32)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_INPUT_ATTACHMENT, 32)
-																						  .setMaxDescriptorSets(16));
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 48)
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 48)
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 48)
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_INPUT_ATTACHMENT, 48)
+																						  .setMaxDescriptorSets(32));
 
 	// setup command buffers
 	for (uint32_t i = 0; i < _numSwapImages; ++i)
@@ -666,14 +659,13 @@ pvr::Result VulkanDeferredShading::initView()
 		// Subpass 1
 		_deviceResources->commandBufferLighting[i] = _deviceResources->commandPool->allocateSecondaryCommandBuffer();
 
-		_deviceResources->semaphorePresent[i] = _deviceResources->device->createSemaphore();
-		_deviceResources->semaphoreImageAcquired[i] = _deviceResources->device->createSemaphore();
-		_deviceResources->perFrameCommandBufferFence[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
-		_deviceResources->perFrameAcquireFence[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
+		_deviceResources->presentationSemaphores[i] = _deviceResources->device->createSemaphore();
+		_deviceResources->imageAcquiredSemaphores[i] = _deviceResources->device->createSemaphore();
+		_deviceResources->perFrameResourcesFences[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
 	}
 
 	// Create the renderpass using subpasses
-	createFramebufferAndRenderpass();
+	createFramebufferAndRenderPass();
 
 	// Initialise lighting structures
 	allocateLights();
@@ -774,14 +766,12 @@ pvr::Result VulkanDeferredShading::quitApplication()
 ***********************************************************************************************************************/
 pvr::Result VulkanDeferredShading::renderFrame()
 {
-	_deviceResources->perFrameAcquireFence[_frameId]->wait();
-	_deviceResources->perFrameAcquireFence[_frameId]->reset();
-	_deviceResources->swapchain->acquireNextImage(uint64_t(-1), _deviceResources->semaphoreImageAcquired[_frameId], _deviceResources->perFrameAcquireFence[_frameId]);
+	_deviceResources->swapchain->acquireNextImage(uint64_t(-1), _deviceResources->imageAcquiredSemaphores[_frameId]);
 
 	_swapchainIndex = _deviceResources->swapchain->getSwapchainIndex();
 
-	_deviceResources->perFrameCommandBufferFence[_swapchainIndex]->wait();
-	_deviceResources->perFrameCommandBufferFence[_swapchainIndex]->reset();
+	_deviceResources->perFrameResourcesFences[_swapchainIndex]->wait();
+	_deviceResources->perFrameResourcesFences[_swapchainIndex]->reset();
 
 	//  Handle user input and update object animations
 	updateAnimation();
@@ -795,23 +785,23 @@ pvr::Result VulkanDeferredShading::renderFrame()
 	pvrvk::PipelineStageFlags pipeWaitStage = pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT;
 	submitInfo.commandBuffers = &_deviceResources->commandBufferMain[_swapchainIndex];
 	submitInfo.numCommandBuffers = 1;
-	submitInfo.waitSemaphores = &_deviceResources->semaphoreImageAcquired[_frameId];
+	submitInfo.waitSemaphores = &_deviceResources->imageAcquiredSemaphores[_frameId];
 	submitInfo.numWaitSemaphores = 1;
-	submitInfo.signalSemaphores = &_deviceResources->semaphorePresent[_frameId];
+	submitInfo.signalSemaphores = &_deviceResources->presentationSemaphores[_frameId];
 	submitInfo.numSignalSemaphores = 1;
-	submitInfo.waitDestStages = &pipeWaitStage;
-	_deviceResources->queue->submit(&submitInfo, 1, _deviceResources->perFrameCommandBufferFence[_swapchainIndex]);
+	submitInfo.waitDstStageMask = &pipeWaitStage;
+	_deviceResources->queue->submit(&submitInfo, 1, _deviceResources->perFrameResourcesFences[_swapchainIndex]);
 
 	if (this->shouldTakeScreenshot())
 	{
-		pvr::utils::takeScreenshot(_deviceResources->swapchain, _swapchainIndex, _deviceResources->commandPool, _deviceResources->queue, this->getScreenshotFileName(),
+		pvr::utils::takeScreenshot(_deviceResources->queue, _deviceResources->commandPool, _deviceResources->swapchain, _swapchainIndex, this->getScreenshotFileName(),
 			&_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
 	}
 
 	//--------------------
 	// Present
 	pvrvk::PresentInfo presentInfo;
-	presentInfo.waitSemaphores = &_deviceResources->semaphorePresent[_frameId];
+	presentInfo.waitSemaphores = &_deviceResources->presentationSemaphores[_frameId];
 	presentInfo.numWaitSemaphores = 1;
 	presentInfo.swapchains = &_deviceResources->swapchain;
 	presentInfo.numSwapchains = 1;
@@ -1199,12 +1189,12 @@ void VulkanDeferredShading::createMaterialsAndDescriptorSets(pvrvk::CommandBuffe
 				pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, _deviceResources->materials[i].materialDescriptorSet[j], 1)
 					.setBufferInfo(0, pvrvk::DescriptorBufferInfo(_deviceResources->modelMatrixBuffer, 0, _deviceResources->modelMatrixBufferView.getDynamicSliceSize())));
 
-			if (diffuseMap.isValid())
+			if (diffuseMap)
 			{
 				writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, _deviceResources->materials[i].materialDescriptorSet[j], 2)
 											.setImageInfo(0, pvrvk::DescriptorImageInfo(diffuseMap, samplerTrilinear, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL)));
 			}
-			if (bumpMap.isValid())
+			if (bumpMap)
 			{
 				writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, _deviceResources->materials[i].materialDescriptorSet[j], 3)
 											.setImageInfo(0, pvrvk::DescriptorImageInfo(bumpMap, samplerTrilinear, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL)));
@@ -1585,7 +1575,7 @@ void VulkanDeferredShading::createPipelines()
 /*!*********************************************************************************************************************
 \brief  Create the renderpass using local memory for this example
 ***********************************************************************************************************************/
-void VulkanDeferredShading::createFramebufferAndRenderpass()
+void VulkanDeferredShading::createFramebufferAndRenderPass()
 {
 	pvrvk::RenderPassCreateInfo renderPassInfo;
 
@@ -1594,10 +1584,19 @@ void VulkanDeferredShading::createFramebufferAndRenderpass()
 		pvrvk::AttachmentDescription::createColorDescription(_deviceResources->swapchain->getImageFormat(), pvrvk::ImageLayout::e_UNDEFINED, pvrvk::ImageLayout::e_PRESENT_SRC_KHR,
 			pvrvk::AttachmentLoadOp::e_CLEAR, pvrvk::AttachmentStoreOp::e_STORE, pvrvk::SampleCountFlags::e_1_BIT));
 
+	pvrvk::Format normalFormat = pvrvk::Format::e_B10G11R11_UFLOAT_PACK32;
+	pvrvk::FormatProperties prop = _deviceResources->instance->getPhysicalDevice(0)->getFormatProperties(normalFormat);
+	if ((prop.getOptimalTilingFeatures() & pvrvk::FormatFeatureFlags::e_COLOR_ATTACHMENT_BIT) == 0)
+	{
+		normalFormat = pvrvk::Format::e_R16G16B16A16_SFLOAT;
+	}
+
+	Log(LogLevel::Information, "Using a format of %s for the normals attachment\n", pvrvk::to_string(normalFormat).c_str());
+
 	const pvrvk::Format renderpassStorageFormats[FramebufferGBufferAttachments::Count] = {
 		pvrvk::Format::e_R8G8B8A8_UNORM, // albedo
-		pvrvk::Format::e_R16G16B16A16_SFLOAT, // normal
-		pvrvk::Format::e_R32_SFLOAT, // depth attachment
+		normalFormat, // normal
+		pvrvk::Format::e_R16_SFLOAT, // depth attachment
 	};
 
 	renderPassInfo.setAttachmentDescription(1,
@@ -1631,7 +1630,7 @@ void VulkanDeferredShading::createFramebufferAndRenderpass()
 	localMemorySubpasses[RenderPassSubpasses::Lighting].setInputAttachmentReference(0, pvrvk::AttachmentReference(1, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL));
 	localMemorySubpasses[RenderPassSubpasses::Lighting].setInputAttachmentReference(1, pvrvk::AttachmentReference(2, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL));
 	localMemorySubpasses[RenderPassSubpasses::Lighting].setInputAttachmentReference(2, pvrvk::AttachmentReference(3, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL));
-	localMemorySubpasses[RenderPassSubpasses::Lighting].setDepthStencilAttachmentReference(pvrvk::AttachmentReference(4, pvrvk::ImageLayout::e_DEPTH_STENCIL_ATTACHMENT_OPTIMAL));
+	localMemorySubpasses[RenderPassSubpasses::Lighting].setDepthStencilAttachmentReference(pvrvk::AttachmentReference(4, pvrvk::ImageLayout::e_DEPTH_STENCIL_READ_ONLY_OPTIMAL));
 	localMemorySubpasses[RenderPassSubpasses::Lighting].setColorAttachmentReference(0, pvrvk::AttachmentReference(0, pvrvk::ImageLayout::e_COLOR_ATTACHMENT_OPTIMAL));
 
 	// add subpasses to the renderpass
@@ -1655,12 +1654,12 @@ void VulkanDeferredShading::createFramebufferAndRenderpass()
 
 	// Add external subpass dependencies to avoid the overly cautious implicit subpass depedencies
 	pvrvk::SubpassDependency externalDependencies[2];
-	externalDependencies[0] = pvrvk::SubpassDependency(pvrvk::SubpassExternal, RenderPassSubpasses::GBuffer, pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT,
+	externalDependencies[0] = pvrvk::SubpassDependency(pvrvk::SubpassExternal, RenderPassSubpasses::GBuffer, pvrvk::PipelineStageFlags::e_BOTTOM_OF_PIPE_BIT,
 		pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT, pvrvk::AccessFlags::e_MEMORY_READ_BIT,
 		pvrvk::AccessFlags::e_COLOR_ATTACHMENT_READ_BIT | pvrvk::AccessFlags::e_COLOR_ATTACHMENT_WRITE_BIT, pvrvk::DependencyFlags::e_BY_REGION_BIT);
 	externalDependencies[1] = pvrvk::SubpassDependency(RenderPassSubpasses::Lighting, pvrvk::SubpassExternal, pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT,
-		pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT, pvrvk::AccessFlags::e_COLOR_ATTACHMENT_READ_BIT | pvrvk::AccessFlags::e_COLOR_ATTACHMENT_WRITE_BIT,
-		pvrvk::AccessFlags::e_MEMORY_READ_BIT, pvrvk::DependencyFlags::e_BY_REGION_BIT);
+		pvrvk::PipelineStageFlags::e_BOTTOM_OF_PIPE_BIT, pvrvk::AccessFlags::e_COLOR_ATTACHMENT_READ_BIT | pvrvk::AccessFlags::e_COLOR_ATTACHMENT_WRITE_BIT,
+		pvrvk::AccessFlags::e_NONE, pvrvk::DependencyFlags::e_BY_REGION_BIT);
 
 	renderPassInfo.addSubpassDependency(externalDependencies[0]);
 	renderPassInfo.addSubpassDependency(externalDependencies[1]);

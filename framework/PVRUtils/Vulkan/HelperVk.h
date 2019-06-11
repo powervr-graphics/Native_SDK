@@ -28,11 +28,205 @@
 
 namespace pvr {
 namespace utils {
-//!\cond NO_DOXYGEN
+/// <summary>Convert pvrvk sample count to the number of samples it is equivalent to</summary>
+/// <param name="sampleCountFlags">The pvrvk sample count to determine the number of samples for</param>
+/// <returns>The number of samples equivalent to the pvrvk sample count flags</returns>
+inline uint8_t getNumSamplesFromSampleCountFlags(pvrvk::SampleCountFlags sampleCountFlags)
+{
+	uint8_t numSamples = 0;
+	if (static_cast<uint32_t>(sampleCountFlags & pvrvk::SampleCountFlags::e_1_BIT) != 0)
+	{
+		numSamples += 1;
+	}
+	if (static_cast<uint32_t>(sampleCountFlags & pvrvk::SampleCountFlags::e_2_BIT) != 0)
+	{
+		numSamples += 2;
+	}
+	if (static_cast<uint32_t>(sampleCountFlags & pvrvk::SampleCountFlags::e_4_BIT) != 0)
+	{
+		numSamples += 4;
+	}
+	if (static_cast<uint32_t>(sampleCountFlags & pvrvk::SampleCountFlags::e_8_BIT) != 0)
+	{
+		numSamples += 8;
+	}
+	if (static_cast<uint32_t>(sampleCountFlags & pvrvk::SampleCountFlags::e_16_BIT) != 0)
+	{
+		numSamples += 16;
+	}
+	if (static_cast<uint32_t>(sampleCountFlags & pvrvk::SampleCountFlags::e_32_BIT) != 0)
+	{
+		numSamples += 32;
+	}
+	if (static_cast<uint32_t>(sampleCountFlags & pvrvk::SampleCountFlags::e_64_BIT) != 0)
+	{
+		numSamples += 64;
+	}
+
+	return numSamples;
+}
+
+/// <summary>Infers the pvrvk::ImageAspectFlags from the pvrvk::Format.</summary>
+/// <param name="format">A format to infer pvrvk::ImageAspectFlags from</param>
+/// <returns>pvrvk::ImageAspectFlags inferred based on the pvrvk::Format provided</returns>
 pvrvk::ImageAspectFlags inferAspectFromFormat(pvrvk::Format format);
+
+/// <summary>Determines the number of color bits per pixel for the given pvrvk::Format.</summary>
+/// <param name="format">A format to calculate the number of bits for</param>
+/// <param name="redBits">The number of red bits per pixel</param>
+/// <param name="greenBits">The number of green bits per pixel</param>
+/// <param name="blueBits">The number of blue bits per pixel</param>
+/// <param name="alphaBits">The number of alpha channel bits per pixel</param>
 void getColorBits(pvrvk::Format format, uint32_t& redBits, uint32_t& greenBits, uint32_t& blueBits, uint32_t& alphaBits);
+
+/// <summary>Determines the number of depth and stencil bits per pixel for the given pvrvk::Format.</summary>
+/// <param name="format">A format to calculate the number of bits for</param>
+/// <param name="depthBits">The number of depth bits per pixel</param>
+/// <param name="stencilBits">The number of stencil bits per pixel</param>
 void getDepthStencilBits(pvrvk::Format format, uint32_t& depthBits, uint32_t& stencilBits);
-//!\endcond
+
+/// <summary>A simple wrapper structure which provides a more abstract representation of a set of debug utils messengers or debug callbacks when using
+/// either VK_EXT_debug_utils or VK_EXT_debug_report respectively.</summary>
+struct DebugUtilsCallbacks
+{
+public:
+	/// <summary>A set of debug utils messengers which may be used when VK_EXT_debug_utils is supported and enabled via the Vulkan instance.</summary>
+	pvrvk::DebugUtilsMessenger debugUtilsMessengers[2];
+	/// <summary>A set of debug report callbacks which may be used when VK_EXT_debug_report is supported and enabled via the Vulkan instance.</summary>
+	pvrvk::DebugReportCallback debugCallbacks[2];
+};
+
+/// <summary>Creates a default set of debug utils messengers or debug callbacks using either VK_EXT_debug_utils or VK_EXT_debug_report respectively.
+/// The first callback will trigger an exception to be thrown when an error message is returned. The second callback will Log a message for errors and warnings.</summary>
+/// <param name="instance">The instance from which the debug utils messengers or debug callbacks will be created depending on support for VK_EXT_debug_utils or VK_EXT_debug_report
+/// respectively.</param>
+/// <returns>A pvr::utils::DebugUtilsCallbacks structure which keeps alive the debug utils callbacks created.</returns>
+DebugUtilsCallbacks createDebugUtilsCallbacks(pvrvk::Instance& instance);
+
+/// <summary>Begins identifying a region of work submitted to this queue. The calls to beginDebugUtilsLabel and endDebugUtilsLabel must be matched and
+/// balanced.</summary>
+/// <param name="queue">The queue to which the debug label region should be opened</param>
+/// <param name="labelInfo">Specifies the parameters of the label region to open</param>
+inline void beginQueueDebugLabel(pvrvk::Queue queue, const pvrvk::DebugUtilsLabel& labelInfo)
+{
+	// if the VK_EXT_debug_utils extension is supported then start the queue label region
+	if (queue->getDevice()->getPhysicalDevice()->getInstance()->getEnabledExtensionTable().extDebugUtilsEnabled)
+	{
+		queue->beginDebugUtilsLabel(labelInfo);
+	}
+}
+
+/// <summary>Ends a label region of work submitted to this queue.</summary>
+/// <param name="queue">The queue to which the debug label region should be ended</param>
+inline void endQueueDebugLabel(pvrvk::Queue queue)
+{
+	// if the VK_EXT_debug_utils extension is supported then end the queue label region
+	if (queue->getDevice()->getPhysicalDevice()->getInstance()->getEnabledExtensionTable().extDebugUtilsEnabled)
+	{
+		queue->endDebugUtilsLabel();
+	}
+}
+
+/// <summary>Begins identifying a region of work submitted to this command buffer. The calls to beginDebugUtilsLabel and endDebugUtilsLabel must be matched and
+/// balanced.</summary>
+/// <param name="commandBufferBase">The command buffer base to which the debug label region should be opened</param>
+/// <param name="labelInfo">Specifies the parameters of the label region to open</param>
+inline void beginCommandBufferDebugLabel(pvrvk::CommandBufferBase commandBufferBase, const pvrvk::DebugUtilsLabel& labelInfo)
+{
+	// if the VK_EXT_debug_utils extension is supported then start the queue label region
+	if (commandBufferBase->getDevice()->getPhysicalDevice()->getInstance()->getEnabledExtensionTable().extDebugUtilsEnabled)
+	{
+		commandBufferBase->beginDebugUtilsLabel(labelInfo);
+	}
+	// else if the VK_EXT_debug_marker extension is supported then start the debug marker region
+	else if (commandBufferBase->getDevice()->getEnabledExtensionTable().extDebugMarkerEnabled)
+	{
+		pvrvk::DebugMarkerMarkerInfo markerInfo(labelInfo.getLabelName(), labelInfo.getR(), labelInfo.getG(), labelInfo.getB(), labelInfo.getA());
+		commandBufferBase->debugMarkerBeginEXT(markerInfo);
+	}
+}
+
+/// <summary>Ends a label region of work submitted to this base command buffer.</summary>
+/// <param name="commandBufferBase">The command buffer base to which the debug label region should be ended</param>
+inline void endCommandBufferDebugLabel(pvrvk::CommandBufferBase commandBufferBase)
+{
+	// if the VK_EXT_debug_utils extension is supported then end the command buffer label region
+	if (commandBufferBase->getDevice()->getPhysicalDevice()->getInstance()->getEnabledExtensionTable().extDebugUtilsEnabled)
+	{
+		commandBufferBase->endDebugUtilsLabel();
+	}
+	// else if the VK_EXT_debug_marker extension is supported then end the debug marker region
+	else if (commandBufferBase->getDevice()->getEnabledExtensionTable().extDebugMarkerEnabled)
+	{
+		commandBufferBase->debugMarkerEndEXT();
+	}
+}
+
+/// <summary>Inserts a single debug label any time.</summary>
+/// <param name="commandBufferBase">The base command buffer to which the debug label should be inserted</param>
+/// <param name="labelInfo">Specifies the parameters of the label region to insert</param>
+inline void insertDebugUtilsLabel(pvrvk::CommandBufferBase commandBufferBase, const pvrvk::DebugUtilsLabel& labelInfo)
+{
+	// if the VK_EXT_debug_utils extension is supported then insert the queue label region
+	if (commandBufferBase->getDevice()->getPhysicalDevice()->getInstance()->getEnabledExtensionTable().extDebugUtilsEnabled)
+	{
+		commandBufferBase->insertDebugUtilsLabel(labelInfo);
+	}
+	// else if the VK_EXT_debug_marker extension is supported then insert the debug marker
+	else if (commandBufferBase->getDevice()->getEnabledExtensionTable().extDebugMarkerEnabled)
+	{
+		pvrvk::DebugMarkerMarkerInfo markerInfo(labelInfo.getLabelName(), labelInfo.getR(), labelInfo.getG(), labelInfo.getB(), labelInfo.getA());
+		commandBufferBase->debugMarkerInsertEXT(markerInfo);
+	}
+}
+
+/// <summary>Begins identifying a region of work submitted to this command buffer. The calls to beginDebugUtilsLabel and endDebugUtilsLabel must be matched and
+/// balanced.</summary>
+/// <param name="commandBuffer">The command buffer to which the debug label region should be opened</param>
+/// <param name="labelInfo">Specifies the parameters of the label region to open</param>
+inline void beginCommandBufferDebugLabel(pvrvk::CommandBuffer& commandBuffer, const pvrvk::DebugUtilsLabel& labelInfo)
+{
+	beginCommandBufferDebugLabel(static_cast<pvrvk::CommandBufferBase>(commandBuffer), labelInfo);
+}
+
+/// <summary>Begins identifying a region of work submitted to this secondary command buffer. The calls to beginDebugUtilsLabel and endDebugUtilsLabel must be matched and
+/// balanced.</summary>
+/// <param name="secondaryCommandBuffer">The secondary command buffer to which the debug label region should be opened</param>
+/// <param name="labelInfo">Specifies the parameters of the label region to open</param>
+inline void beginCommandBufferDebugLabel(pvrvk::SecondaryCommandBuffer& secondaryCommandBuffer, const pvrvk::DebugUtilsLabel& labelInfo)
+{
+	beginCommandBufferDebugLabel(static_cast<pvrvk::CommandBufferBase>(secondaryCommandBuffer), labelInfo);
+}
+
+/// <summary>Ends a label region of work submitted to this command buffer.</summary>
+/// <param name="commandBuffer">The command buffer to which the debug label region should be ended</param>
+inline void endCommandBufferDebugLabel(pvrvk::CommandBuffer& commandBuffer)
+{
+	endCommandBufferDebugLabel(static_cast<pvrvk::CommandBufferBase>(commandBuffer));
+}
+
+/// <summary>Ends a label region of work submitted to this secondary command buffer.</summary>
+/// <param name="secondaryCommandBuffer">The secondary command buffer to which the debug label region should be ended</param>
+inline void endCommandBufferDebugLabel(pvrvk::SecondaryCommandBuffer& secondaryCommandBuffer)
+{
+	endCommandBufferDebugLabel(static_cast<pvrvk::CommandBufferBase>(secondaryCommandBuffer));
+}
+
+/// <summary>Inserts a single debug label any time.</summary>
+/// <param name="commandBuffer">The command buffer to which the debug label should be inserted</param>
+/// <param name="labelInfo">Specifies the parameters of the label region to insert</param>
+inline void insertDebugUtilsLabel(pvrvk::CommandBuffer& commandBuffer, const pvrvk::DebugUtilsLabel& labelInfo)
+{
+	insertDebugUtilsLabel(static_cast<pvrvk::CommandBufferBase>(commandBuffer), labelInfo);
+}
+
+/// <summary>Inserts a single debug label any time.</summary>
+/// <param name="secondaryCommandBuffer">The secondary command buffer to which the debug label should be inserted</param>
+/// <param name="labelInfo">Specifies the parameters of the label region to insert</param>
+inline void insertDebugUtilsLabel(pvrvk::SecondaryCommandBuffer& secondaryCommandBuffer, const pvrvk::DebugUtilsLabel& labelInfo)
+{
+	insertDebugUtilsLabel(static_cast<pvrvk::CommandBufferBase>(secondaryCommandBuffer), labelInfo);
+}
 
 /// <summary>Create a new buffer object and (optionally) allocate and bind memory for it</summary>
 /// <param name="device">The device on which to create the buffer</param>
@@ -124,7 +318,7 @@ inline glm::mat4 getPerspectiveMatrix(float fovy, float aspect, float near1, flo
 /// <param name="numArrayLayers">The number of array layers of the image to transition</param>
 /// <param name="aspect">The pvrvk::ImageAspectFlags of the image to transition</param>
 void setImageLayoutAndQueueFamilyOwnership(pvrvk::CommandBufferBase srccmd, pvrvk::CommandBufferBase dstcmd, uint32_t srcQueueFamily, uint32_t dstQueueFamily,
-	pvrvk::ImageLayout oldLayout, pvrvk::ImageLayout newLayout, pvrvk::Image image, uint32_t baseMipLevel, uint32_t numMipLevels, uint32_t baseArrayLayer, uint32_t numArrayLayers,
+	pvrvk::ImageLayout oldLayout, pvrvk::ImageLayout newLayout, pvrvk::Image& image, uint32_t baseMipLevel, uint32_t numMipLevels, uint32_t baseArrayLayer, uint32_t numArrayLayers,
 	pvrvk::ImageAspectFlags aspect);
 
 /// <summary>Set image layout</summary>
@@ -132,17 +326,17 @@ void setImageLayoutAndQueueFamilyOwnership(pvrvk::CommandBufferBase srccmd, pvrv
 /// <param name="oldLayout">An old image layout to transition from</param>
 /// <param name="newLayout">A new image layout to transition to</param>
 /// <param name="transitionCmdBuffer">A command buffer to add the pipelineBarrier for the image transition.</param>
-inline void setImageLayout(pvrvk::Image image, pvrvk::ImageLayout oldLayout, pvrvk::ImageLayout newLayout, pvrvk::CommandBufferBase transitionCmdBuffer)
+inline void setImageLayout(pvrvk::Image& image, pvrvk::ImageLayout oldLayout, pvrvk::ImageLayout newLayout, pvrvk::CommandBufferBase transitionCmdBuffer)
 {
 	setImageLayoutAndQueueFamilyOwnership(transitionCmdBuffer, pvrvk::CommandBufferBase(), static_cast<uint32_t>(-1), static_cast<uint32_t>(-1), oldLayout, newLayout, image, 0,
-		image->getNumMipLevels(), 0, static_cast<uint32_t>(image->getNumArrayLayers() * (1 + image->isCubeMap() * 5)), inferAspectFromFormat(image->getFormat()));
+		image->getNumMipLevels(), 0, static_cast<uint32_t>(image->getNumArrayLayers()), inferAspectFromFormat(image->getFormat()));
 }
 
 /// <summary>Uploads an image to GPU memory and returns the created image view and associated image.</summary>
 /// <param name="device">The device to use to create the image and image view.</param>
 /// <param name="texture">The source pvr::Texture object from which to take the texture data.</param>
 /// <param name="allowDecompress">Specifies whether the texture can be decompressed as part of the image upload.</param>
-/// <param name="cmdPool">A command pool from which to allocate a temporary command buffer to carry out the upload operations.</param>
+/// <param name="commandPool">A command pool from which to allocate a temporary command buffer to carry out the upload operations.</param>
 /// <param name="queue">A queue to which the upload operations should be submitted to.</param>
 /// <param name="usageFlags">A set of image usage flags for which the created image can be used for.</param>
 /// <param name="finalLayout">The final image layout the image will be transitioned to.</param>
@@ -152,7 +346,7 @@ inline void setImageLayout(pvrvk::Image image, pvrvk::ImageLayout oldLayout, pvr
 /// <param name="imageAllocationCreateFlags">VMA Allocation creation flags. These flags can be used to control how and where the memory is allocated from.
 /// Valid flags include e_DEDICATED_MEMORY_BIT and e_MAPPED_BIT. e_DEDICATED_MEMORY_BIT indicates that the allocation should have its own memory block.
 /// e_MAPPED_BIT indicates memory will be persistently mapped respectively.</param>
-pvrvk::ImageView uploadImageAndViewSubmit(pvrvk::Device& device, const Texture& texture, bool allowDecompress, pvrvk::CommandPool& cmdPool, pvrvk::Queue& queue,
+pvrvk::ImageView uploadImageAndViewSubmit(pvrvk::Device& device, const Texture& texture, bool allowDecompress, pvrvk::CommandPool& commandPool, pvrvk::Queue& queue,
 	pvrvk::ImageUsageFlags usageFlags = pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout finalLayout = pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL,
 	vma::Allocator* stagingBufferAllocator = nullptr, vma::Allocator* imageAllocator = nullptr,
 	vma::AllocationCreateFlags imageAllocationCreateFlags = vma::AllocationCreateFlags::e_NONE);
@@ -260,6 +454,27 @@ pvrvk::Image loadAndUploadImage(pvrvk::Device& device, const char* fileName, boo
 /// <param name="device">The device to use to create the image and image view.</param>
 /// <param name="fileName">The filename of a source texture from which to take the texture data.</param>
 /// <param name="allowDecompress">Specifies whether the texture can be decompressed as part of the image upload.</param>
+/// <param name="commandBuffer">A command buffer to which the upload operations should be added. Note that the upload will not
+/// be guranteed to be complete until the command buffer is submitted to a queue with appropriate synchronisation.</param>
+/// <param name="assetProvider">Specifies an asset provider to use for loading the texture from system memory.</param>
+/// <param name="usageFlags">Specifies the usage flags for the image being created.</param>
+/// <param name="finalLayout">The final image layout the image will be transitioned to.</param>
+/// <param name="outAssetTexture">A pointer to a created pvr::texture.</param>
+/// <param name="stagingBufferAllocator">A VMA allocator used to allocate memory for the created staging buffer.</param>
+/// <param name="imageAllocator">A VMA allocator used to allocate memory for the created image.</param>
+/// <param name="imageAllocationCreateFlags">VMA Allocation creation flags. These flags can be used to control how and where the memory is allocated from.
+/// Valid flags include e_DEDICATED_MEMORY_BIT and e_MAPPED_BIT. e_DEDICATED_MEMORY_BIT indicates that the allocation should have its own memory block.
+/// e_MAPPED_BIT indicates memory will be persistently mapped respectively.</param>
+/// <returns>The Image Object uploaded.</returns>
+pvrvk::Image loadAndUploadImage(pvrvk::Device& device, const std::string& fileName, bool allowDecompress, pvrvk::CommandBuffer& commandBuffer, IAssetProvider& assetProvider,
+	pvrvk::ImageUsageFlags usageFlags = pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout finalLayout = pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL,
+	Texture* outAssetTexture = nullptr, vma::Allocator* stagingBufferAllocator = nullptr, vma::Allocator* imageAllocator = nullptr,
+	vma::AllocationCreateFlags imageAllocationCreateFlags = vma::AllocationCreateFlags::e_NONE);
+
+/// <summary>Load and upload image to gpu. The upload command and staging buffers are recorded in the commandbuffer.</summary>
+/// <param name="device">The device to use to create the image and image view.</param>
+/// <param name="fileName">The filename of a source texture from which to take the texture data.</param>
+/// <param name="allowDecompress">Specifies whether the texture can be decompressed as part of the image upload.</param>
 /// <param name="commandBuffer">A secondary command buffer to which the upload operations should be added. Note that the upload will not
 /// be guranteed to be complete until the command buffer is submitted to a queue with appropriate synchronisation.</param>
 /// <param name="assetProvider">Specifies an asset provider to use for loading the texture from system memory.</param>
@@ -336,13 +551,13 @@ struct ImageUpdateInfo
 /// <param name="device">The device used to create the image</param>
 /// <param name="transferCommandBuffer">The command buffer into which the image update operations will be added.</param>
 /// <param name="updateInfos">This object is a c-style array of areas and the data to upload.</param>
-/// <param name="numUpdateInfos">The number of ImageUpdateInfo objects in </param>
+/// <param name="numUpdateInfos">The number of ImageUpdateInfo objects in</param>
 /// <param name="format">The format of the image.</param>
 /// <param name="layout">The final image layout for the image being updated.</param>
 /// <param name="isCubeMap">Is the image a cubemap</param>
 /// <param name="image">The image to update</param>
 /// <param name="bufferAllocator">A VMA allocator used to allocate memory for the created buffer.</param>
-/// <returns>Returns an pvrvk::Image update results structure - ImageUpdateResults</returns>
+/// <returns>Returns a pvrvk::Image update results structure - ImageUpdateResults</returns>
 void updateImage(pvrvk::Device& device, pvrvk::CommandBufferBase transferCommandBuffer, ImageUpdateInfo* updateInfos, uint32_t numUpdateInfos, pvrvk::Format format,
 	pvrvk::ImageLayout layout, bool isCubeMap, pvrvk::Image& image, vma::Allocator* bufferAllocator = nullptr);
 
@@ -400,6 +615,8 @@ inline void updateBufferUsingStagingBuffer(pvrvk::Device& device, pvrvk::Buffer&
 	//		2. map the staging buffer memory, update the memory, then unmap the buffer memory
 	//		3. Copy from the staging buffer to the target buffer
 
+	pvr::utils::beginCommandBufferDebugLabel(uploadCmdBuffer, pvrvk::DebugUtilsLabel("PVRUtilsVk::updateBufferUsingStagingBuffer"));
+
 	// 1. Create a staging buffer
 	pvrvk::MemoryPropertyFlags memoryFlags = pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT;
 	pvrvk::Buffer stagingBuffer = pvr::utils::createBuffer(device, size, pvrvk::BufferUsageFlags::e_TRANSFER_SRC_BIT, memoryFlags, memoryFlags, stagingBufferAllocator);
@@ -410,6 +627,8 @@ inline void updateBufferUsingStagingBuffer(pvrvk::Device& device, pvrvk::Buffer&
 	// 3. Copy from the staging buffer to the target buffer
 	const pvrvk::BufferCopy bufferCopy(0, offset, size);
 	uploadCmdBuffer->copyBuffer(stagingBuffer, buffer, 1, &bufferCopy);
+
+	pvr::utils::endCommandBufferDebugLabel(uploadCmdBuffer);
 }
 
 /// <summary>Utility function for generating a texture atlas based on a set of images.</summary>
@@ -465,71 +684,37 @@ struct QueueAccessInfo
 
 	/// <summary>The queue identifier for the retrieved queue in queue family with identifier familyId.</summary>
 	uint32_t queueId;
-};
 
-/// <summary>Container for a list of device extensions to be used for initiailising a device using the helper function 'createDeviceAndQueues'.</summary>
-struct DeviceExtensions
-{
-	std::vector<std::string> extensionStrings; //!< A list of device extensions
-	/// <summary>Default constructor. Initialises a list of device extensions to be used by default when using the Framework.</summary>
-	DeviceExtensions()
-	{
-#ifdef VK_KHR_swapchain
-		// enable the swap chain extension
-		extensionStrings.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
-#endif
-
-#ifdef VK_IMG_format_pvrtc
-		// attempt to enable pvrtc extension
-		extensionStrings.push_back(VK_IMG_FORMAT_PVRTC_EXTENSION_NAME);
-#endif
-
-#ifdef VK_IMG_filter_cubic
-		// attempt to enable IMG cubic filtering
-		extensionStrings.push_back(VK_IMG_FILTER_CUBIC_EXTENSION_NAME);
-#endif
-
-#ifdef DEBUG
-#ifdef VK_EXT_debug_marker
-		// if the build is Debug then enable the DEBUG_MARKER extension to aid with debugging
-		extensionStrings.push_back(VK_EXT_DEBUG_MARKER_EXTENSION_NAME);
-#endif
-#endif
-	}
+	/// <summary>Constructor for a QueueAccessInfo which sets family id and queue id to invalid values.</summary>
+	QueueAccessInfo() : familyId(-1), queueId(-1) {}
 };
 
 /// <summary>Container for a list of instance layers to be used for initiailising an instance using the helper function 'createInstanceAndSurface'.</summary>
-struct InstanceLayers
+struct InstanceLayers : public pvrvk::VulkanLayerList
 {
-	/// <summary>A list of instance layers.</summary>
-	std::vector<std::string> layersStrings;
-
 	/// <summary>Default constructor. Initialises the list of instance layers based on whether the build is Debug/Release.</summary>
 	/// <param name="forceLayers">A boolean flag which can be used to force the use of VK_LAYER_LUNARG_standard_validation even when in Releae builds.
 	/// Note that the VK_LAYER_LUNARG_standard_validation layers will be enabled by default in Debug builds.</param>
 	InstanceLayers(bool forceLayers =
 #ifdef DEBUG
-					   true)
+					   true);
 #else
-					   false)
+					   false);
 #endif
-	{
-		// if the build is Debug then enable the LUNARG_standard_validation layer to aid with debugging
-		if (forceLayers)
-		{
-			layersStrings.push_back("VK_LAYER_LUNARG_standard_validation");
-			layersStrings.push_back("VK_LAYER_ARM_mali_perf_doc");
-		}
-	}
 };
 
 /// <summary>Container for a list of instance extensions to be used for initiailising an instance using the helper function 'createInstanceAndSurface'.</summary>
-struct InstanceExtensions
+struct InstanceExtensions : public pvrvk::VulkanExtensionList
 {
-	std::vector<std::string> extensionStrings; //!< A list of instance extensions
-
 	/// <summary>Default constructor. Initialises a list of instance extensions to be used by default when using the Framework.</summary>
 	InstanceExtensions();
+};
+
+/// <summary>Container for a list of device extensions to be used for initiailising a device using the helper function 'createDeviceAndQueues'.</summary>
+struct DeviceExtensions : public pvrvk::VulkanExtensionList
+{
+	/// <summary>Default constructor. Initialises a list of device extensions to be used by default when using the Framework.</summary>
+	DeviceExtensions();
 };
 
 /// <summary>Create the pvrvk::Device and the queues</summary>
@@ -538,7 +723,6 @@ struct InstanceExtensions
 /// <param name="numQueueCreateInfos">The number of QueuePopulateInfo structures provided.</param>
 /// <param name="outAccessInfo">A pointer to a list of QueueAccessInfo structures specifying the properties for each of the queues retrieved.</param>
 /// <param name="deviceExtensions">A DeviceExtensions structure which specifyies a list device extensions to try to enable.</param>
-/// another.</param>
 /// <returns>Returns the created device</returns>
 pvrvk::Device createDeviceAndQueues(pvrvk::PhysicalDevice physicalDevice, const QueuePopulateInfo* queueCreateInfos, uint32_t numQueueCreateInfos, QueueAccessInfo* outAccessInfo,
 	const DeviceExtensions& deviceExtensions = DeviceExtensions());
@@ -549,13 +733,13 @@ pvrvk::Device createDeviceAndQueues(pvrvk::PhysicalDevice physicalDevice, const 
 /// <param name="surface">A pvrvk::Surface from which surface capabilities, supported formats and presentation modes will be derived.</param>
 /// <param name="displayAttributes">A set of display attributes from which certain properties will be taken such as width, height, vsync mode and
 /// preferences for the number of pixels per channel.</param>
-/// <param name="preferredColorFormats">A pointer to a list of preferred color formats from which the pvrvk::Swapchain color image format will be taken. Note that this
+/// <param name="preferredColorFormats">A list of preferred color formats from which the pvrvk::Swapchain color image format will be taken. Note that this
 /// list must be exhaustive as if none are supported then no pvrvk::Swapchain will be created.</param>
-/// <param name="numColorFormats">The number of color formats specified in the array pointed to by preferredColorFormats.</param>
 /// <param name="swapchainImageUsageFlags">Specifies for what the swapchain images can be used for.</param>
 /// <returns>Return the created pvrvk::Swapchain</returns>
-pvrvk::Swapchain createSwapchain(pvrvk::Device& device, const pvrvk::Surface& surface, pvr::DisplayAttributes& displayAttributes, pvrvk::Format* preferredColorFormats,
-	uint32_t numColorFormats, pvrvk::ImageUsageFlags swapchainImageUsageFlags = pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT);
+pvrvk::Swapchain createSwapchain(pvrvk::Device& device, const pvrvk::Surface& surface, pvr::DisplayAttributes& displayAttributes,
+	const std::vector<pvrvk::Format>& preferredColorFormats = std::vector<pvrvk::Format>(),
+	pvrvk::ImageUsageFlags swapchainImageUsageFlags = pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT);
 
 /// <summary>Create a pvrvk::Swapchain using a pre-initialised pvrvk::Device and pvrvk::Surface.</summary>
 /// <param name="device">A logical device to use for creating the pvrvk::Swapchain.</param>
@@ -574,13 +758,10 @@ pvrvk::Swapchain createSwapchain(pvrvk::Device& device, const pvrvk::Surface& su
 /// <param name="displayAttributes">A set of display attributes from which certain properties will be taken such as width, height, vsync mode and
 /// preferences for the number of pixels per channel.</param>
 /// <param name="outSwapchain">The created swapchain will be returned by reference.</param>
-/// <param name="outDepthStencil">A Multi<pvrvk::ImageView> containing the created depth stencil images. This Multi will have size equal to the number of swapchain images.</param>
-/// <param name="preferredColorFormats">A pointer to a list of preferred color formats from which the pvrvk::Swapchain color image format will be taken. Note that this
-/// list must be exhaustive as if none are supported then no pvrvk::Swapchain will be created.</param>
-/// <param name="numColorFormats">The number of color formats specified in the array pointed to by preferredColorFormats.</param>
-/// <param name="preferredDepthStencilFormats">A pointer to a list of preferred depth stencil formats from which the depth stencil image format will be taken. Note that this
-/// list must be exhaustive as if none are supported then no depth stencil images will be created.</param>
-/// <param name="numDepthStencilFormats">The number of depth stencil formats specified in the array pointed to by preferredDepthStencilFormats.</param>
+/// <param name="outDepthStencilImages">A Multi<pvrvk::ImageView> containing the created depth stencil images. This Multi will have size equal to the number of swapchain
+/// images.</param> <param name="preferredColorFormats">A list of preferred color formats from which the pvrvk::Swapchain color image format will be taken. Note that this list must
+/// be exhaustive as if none are supported then no pvrvk::Swapchain will be created.</param> <param name="preferredDepthStencilFormats">A list of preferred depth stencil formats
+/// from which the depth stencil image format will be taken. Note that this list must be exhaustive as if none are supported then no depth stencil images will be created.</param>
 /// <param name="swapchainImageUsageFlags">Specifies for what the swapchain images can be used for.</param>
 /// <param name="dsImageUsageFlags">Specifies for what the depth stencil images can be used for.</param>
 /// <param name="dsImageAllocator">A VMA allocator used to allocate memory for the created image.</param>
@@ -588,8 +769,9 @@ pvrvk::Swapchain createSwapchain(pvrvk::Device& device, const pvrvk::Surface& su
 /// Valid flags include e_DEDICATED_MEMORY_BIT and e_MAPPED_BIT. e_DEDICATED_MEMORY_BIT indicates that the allocation should have its own memory block.
 /// e_MAPPED_BIT indicates memory will be persistently mapped respectively.</param>
 void createSwapchainAndDepthStencilImageAndViews(pvrvk::Device& device, const pvrvk::Surface& surface, pvr::DisplayAttributes& displayAttributes, pvrvk::Swapchain& outSwapchain,
-	Multi<pvrvk::ImageView>& outDepthStencil, pvrvk::Format* preferredColorFormats, uint32_t numColorFormats, pvrvk::Format* preferredDepthStencilFormats,
-	uint32_t numDepthStencilFormats, const pvrvk::ImageUsageFlags& swapchainImageUsageFlags = pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT,
+	Multi<pvrvk::ImageView>& outDepthStencilImages, const std::vector<pvrvk::Format>& preferredColorFormats = std::vector<pvrvk::Format>(),
+	const std::vector<pvrvk::Format>& preferredDepthStencilFormats = std::vector<pvrvk::Format>(),
+	const pvrvk::ImageUsageFlags& swapchainImageUsageFlags = pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT,
 	const pvrvk::ImageUsageFlags& dsImageUsageFlags = pvrvk::ImageUsageFlags::e_DEPTH_STENCIL_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_TRANSIENT_ATTACHMENT_BIT,
 	vma::Allocator* dsImageAllocator = nullptr, vma::AllocationCreateFlags dsImageAllocationCreateFlags = vma::AllocationCreateFlags::e_DEDICATED_MEMORY_BIT);
 
@@ -599,7 +781,7 @@ void createSwapchainAndDepthStencilImageAndViews(pvrvk::Device& device, const pv
 /// <param name="displayAttributes">A set of display attributes from which certain properties will be taken such as width, height, vsync mode and
 /// preferences for the number of pixels per channel.</param>
 /// <param name="outSwapchain">The created swapchain will be returned by reference.</param>
-/// <param name="outDepthStencil">A Multi<pvrvk::ImageView> containing the created depth stencil images. This Multi will have size equal to the number of swapchain images.</param>
+/// <param name="outDepthStencilImages">A Multi<pvrvk::ImageView> containing the created depth stencil images. This Multi will have size equal to the number of swapchain images.</param>
 /// <param name="swapchainImageUsageFlags">Specifies for what the swapchain images can be used for.</param>
 /// <param name="dsImageUsageFlags">Specifies for what the depth stencil images can be used for.</param>
 /// <param name="dsImageAllocator">A VMA allocator used to allocate memory for the created image.</param>
@@ -607,12 +789,12 @@ void createSwapchainAndDepthStencilImageAndViews(pvrvk::Device& device, const pv
 /// Valid flags include e_DEDICATED_MEMORY_BIT and e_MAPPED_BIT. e_DEDICATED_MEMORY_BIT indicates that the allocation should have its own memory block.
 /// e_MAPPED_BIT indicates memory will be persistently mapped respectively.</param>
 void createSwapchainAndDepthStencilImageAndViews(pvrvk::Device& device, const pvrvk::Surface& surface, pvr::DisplayAttributes& displayAttributes, pvrvk::Swapchain& outSwapchain,
-	Multi<pvrvk::ImageView>& outDepthStencil, const pvrvk::ImageUsageFlags& swapchainImageUsageFlags = pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT,
+	Multi<pvrvk::ImageView>& outDepthStencilImages, const pvrvk::ImageUsageFlags& swapchainImageUsageFlags = pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT,
 	const pvrvk::ImageUsageFlags& dsImageUsageFlags = pvrvk::ImageUsageFlags::e_DEPTH_STENCIL_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_TRANSIENT_ATTACHMENT_BIT,
 	vma::Allocator* dsImageAllocator = nullptr, vma::AllocationCreateFlags dsImageAllocationCreateFlags = vma::AllocationCreateFlags::e_DEDICATED_MEMORY_BIT);
 
-/// <summary> Create a pvrvk::Framebuffer and Renderpass to use for 'default' rendering to the 'onscreen' color images with following config
-/// Renderpass:
+/// <summary>Create a pvrvk::Framebuffer and RenderPass to use for 'default' rendering to the 'onscreen' color images with following config
+/// RenderPass:
 ///     Attachment0: ColorAttachment
 ///         swapchain image,
 ///         finalLayout - PresentSrcKHR
@@ -621,8 +803,7 @@ void createSwapchainAndDepthStencilImageAndViews(pvrvk::Device& device, const pv
 ///     Attachment1: DepthStencilAttachment
 ///         finalLayout - DepthStencilAttachmentOptimal
 ///         LoadOp - Clear
-///         StoreOp - Store
-/// </summary>
+///         StoreOp - Store</summary>
 /// <param name="swapchain">A pre-created swapchain object from which the device will be taken for creating the framebuffer and renderpass. The swapchain
 /// image formats and dimensions will also be taken from the swapchain.</param>
 /// <param name="depthStencilImages">A pointer to an array of pvrvk::ImageView objects corresponding to an image to use as the depth stencil image per swap chain.</param>
@@ -636,11 +817,11 @@ void createSwapchainAndDepthStencilImageAndViews(pvrvk::Device& device, const pv
 /// <param name="colorStoreOp">Attachment store operation for the color attachment</param>
 /// <param name="depthStencilLoadOp">Attachment load operation for the depth stencil attachment</param>
 /// <param name="depthStencilStoreOp">Attachment store operation for the depth stencil attachment</param>
-inline void createOnscreenFramebufferAndRenderpass(pvrvk::Swapchain& swapchain, pvrvk::ImageView* depthStencilImages, Multi<pvrvk::Framebuffer>& outFramebuffers,
+inline void createOnscreenFramebufferAndRenderPass(pvrvk::Swapchain& swapchain, pvrvk::ImageView* depthStencilImages, Multi<pvrvk::Framebuffer>& outFramebuffers,
 	pvrvk::RenderPass& outRenderPass, pvrvk::ImageLayout initialSwapchainLayout = pvrvk::ImageLayout::e_UNDEFINED,
 	pvrvk::ImageLayout initialDepthStencilLayout = pvrvk::ImageLayout::e_UNDEFINED, pvrvk::AttachmentLoadOp colorLoadOp = pvrvk::AttachmentLoadOp::e_CLEAR,
 	pvrvk::AttachmentStoreOp colorStoreOp = pvrvk::AttachmentStoreOp::e_STORE, pvrvk::AttachmentLoadOp depthStencilLoadOp = pvrvk::AttachmentLoadOp::e_CLEAR,
-	pvrvk::AttachmentStoreOp depthStencilStoreOp = pvrvk::AttachmentStoreOp::e_STORE)
+	pvrvk::AttachmentStoreOp depthStencilStoreOp = pvrvk::AttachmentStoreOp::e_DONT_CARE)
 {
 	pvrvk::FramebufferCreateInfo framebufferInfos[pvrvk::FrameworkCaps::MaxSwapChains];
 	pvrvk::RenderPassCreateInfo rpInfo;
@@ -657,19 +838,18 @@ inline void createOnscreenFramebufferAndRenderpass(pvrvk::Swapchain& swapchain, 
 		subpass.setDepthStencilAttachmentReference(pvrvk::AttachmentReference(1, pvrvk::ImageLayout::e_DEPTH_STENCIL_ATTACHMENT_OPTIMAL));
 	}
 
-	pvrvk::SubpassDependency dependencies[2] = { pvrvk::SubpassDependency(pvrvk::SubpassExternal, 0, pvrvk::PipelineStageFlags::e_BOTTOM_OF_PIPE_BIT,
-													 pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT, pvrvk::AccessFlags::e_MEMORY_READ_BIT,
-													 pvrvk::AccessFlags::e_COLOR_ATTACHMENT_READ_BIT | pvrvk::AccessFlags::e_COLOR_ATTACHMENT_WRITE_BIT,
-													 pvrvk::DependencyFlags::e_BY_REGION_BIT),
+	pvrvk::SubpassDependency dependencies[2];
+	dependencies[0] = pvrvk::SubpassDependency(pvrvk::SubpassExternal, 0, pvrvk::PipelineStageFlags::e_BOTTOM_OF_PIPE_BIT, pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT,
+		pvrvk::AccessFlags::e_MEMORY_READ_BIT, pvrvk::AccessFlags::e_COLOR_ATTACHMENT_READ_BIT | pvrvk::AccessFlags::e_COLOR_ATTACHMENT_WRITE_BIT,
+		pvrvk::DependencyFlags::e_BY_REGION_BIT);
+	dependencies[1] = pvrvk::SubpassDependency(0, pvrvk::SubpassExternal, pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT, pvrvk::PipelineStageFlags::e_BOTTOM_OF_PIPE_BIT,
+		pvrvk::AccessFlags::e_COLOR_ATTACHMENT_READ_BIT | pvrvk::AccessFlags::e_COLOR_ATTACHMENT_WRITE_BIT, pvrvk::AccessFlags::e_NONE, pvrvk::DependencyFlags::e_BY_REGION_BIT);
 
-		pvrvk::SubpassDependency(0, pvrvk::SubpassExternal, pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT, pvrvk::PipelineStageFlags::e_BOTTOM_OF_PIPE_BIT,
-			pvrvk::AccessFlags::e_COLOR_ATTACHMENT_READ_BIT | pvrvk::AccessFlags::e_COLOR_ATTACHMENT_WRITE_BIT, pvrvk::AccessFlags::e_MEMORY_READ_BIT,
-			pvrvk::DependencyFlags::e_BY_REGION_BIT) };
 	rpInfo.addSubpassDependencies(dependencies, ARRAY_SIZE(dependencies));
 
 	rpInfo.setSubpass(0, subpass);
 	outRenderPass = swapchain->getDevice()->createRenderPass(rpInfo);
-	outRenderPass->setObjectName("PVRUtilsVk::OnScreenRenderpass");
+	outRenderPass->setObjectName("PVRUtilsVk::OnScreenRenderPass");
 
 	for (uint32_t i = 0; i < swapchain->getSwapchainLength(); ++i)
 	{
@@ -685,8 +865,8 @@ inline void createOnscreenFramebufferAndRenderpass(pvrvk::Swapchain& swapchain, 
 	}
 }
 
-/// <summary> Create a pvrvk::Framebuffer and Renderpass to use for 'default' rendering to the 'onscreen' color images with following config
-/// Renderpass:
+/// <summary>Create a pvrvk::Framebuffer and RenderPass to use for 'default' rendering to the 'onscreen' color images with following config
+/// RenderPass:
 ///     ColorAttachment0:
 ///         swapchain image,
 ///         finalLayout - PresentSrcKHR
@@ -696,8 +876,7 @@ inline void createOnscreenFramebufferAndRenderpass(pvrvk::Swapchain& swapchain, 
 ///         finalLayout - DepthStencilAttachmentOptimal
 ///         LoadOp - Clear
 ///         StoreOp - Store
-/// Subpass0
-/// </summary>
+/// Subpass0</summary>
 /// <param name="swapchain">A pre-created swapchain object from which the device will be taken for creating the framebuffer and renderpass. The swapchain
 /// image formats and dimensions will also be taken from the swapchain.</param>
 /// <param name="depthStencilImages">A pointer to an array of pvrvk::ImageView objects corresponding to an image to use as the depth stencil image per swap chain.</param>
@@ -712,14 +891,14 @@ inline void createOnscreenFramebufferAndRenderpass(pvrvk::Swapchain& swapchain, 
 /// <param name="colorStoreOp">Attachment store operation for the color attachment</param>
 /// <param name="depthStencilLoadOp">Attachment load operation for the depth stencil attachment</param>
 /// <param name="depthStencilStoreOp">Attachment store operation for the depth stencil attachment</param>
-/// <remarks>The renderpass will not be returned directly but can instead be retrieved via a call to outFramebuffers[i].getRenderpass()</remarks>
-inline void createOnscreenFramebufferAndRenderpass(pvrvk::Swapchain& swapchain, pvrvk::ImageView* depthStencilImages, Multi<pvrvk::Framebuffer>& outFramebuffers,
+/// <remarks>The renderpass will not be returned directly but can instead be retrieved via a call to outFramebuffers[i].getRenderPass()</remarks>
+inline void createOnscreenFramebufferAndRenderPass(pvrvk::Swapchain& swapchain, pvrvk::ImageView* depthStencilImages, Multi<pvrvk::Framebuffer>& outFramebuffers,
 	pvrvk::ImageLayout initialSwapchainLayout = pvrvk::ImageLayout::e_UNDEFINED, pvrvk::ImageLayout initialDepthStencilLayout = pvrvk::ImageLayout::e_UNDEFINED,
 	pvrvk::AttachmentLoadOp colorLoadOp = pvrvk::AttachmentLoadOp::e_CLEAR, pvrvk::AttachmentStoreOp colorStoreOp = pvrvk::AttachmentStoreOp::e_STORE,
-	pvrvk::AttachmentLoadOp depthStencilLoadOp = pvrvk::AttachmentLoadOp::e_CLEAR, pvrvk::AttachmentStoreOp depthStencilStoreOp = pvrvk::AttachmentStoreOp::e_STORE)
+	pvrvk::AttachmentLoadOp depthStencilLoadOp = pvrvk::AttachmentLoadOp::e_CLEAR, pvrvk::AttachmentStoreOp depthStencilStoreOp = pvrvk::AttachmentStoreOp::e_DONT_CARE)
 {
 	pvrvk::RenderPass dummy;
-	createOnscreenFramebufferAndRenderpass(swapchain, depthStencilImages, outFramebuffers, dummy, initialSwapchainLayout, initialDepthStencilLayout, colorLoadOp, colorStoreOp,
+	createOnscreenFramebufferAndRenderPass(swapchain, depthStencilImages, outFramebuffers, dummy, initialSwapchainLayout, initialDepthStencilLayout, colorLoadOp, colorStoreOp,
 		depthStencilLoadOp, depthStencilStoreOp);
 }
 
@@ -755,12 +934,11 @@ struct VertexBindings_Name
 
 /// <summary>Fills out input assembly and vertex input state structures using a mesh and a list of corresponding VertexBindings.</summary>
 /// <param name="mesh">A mesh from which to retrieve vertex attributes, vertex buffer strides and primitive topology information from.</param>
-/// <param name="bindingMap">A pointer to an array of VertexBindings structures which specify the semantic names and binding indices of any vertex attributes to retrieve.</param>
-/// <param name="numBindings">Specifies the number of VertexBindings structures in the array pointed to by bindingMap.</param>
-/// <param name="vertexCreateInfo">A pvrvk::PipelineVertexInputStateCreateInfo structure which will be filled by this utility function.</param>
-/// <param name="inputAssemblerCreateInfo">A pvrvk::InputAssemblerStateCreateInfo structure which will be filled by this utility function.</param>
-/// <param name="numOutBuffers">A pointer to an unsigned integer which will set to specify the number of buffers required to create
-/// buffers for to use the mesh vertex attributes.</param>
+/// <param name="bindingMap">A pointer to an array of VertexBindings structures which specify the semantic names and binding indices of any vertex attributes to
+/// retrieve.</param> <param name="numBindings">Specifies the number of VertexBindings structures in the array pointed to by bindingMap.</param> <param
+/// name="vertexCreateInfo">A pvrvk::PipelineVertexInputStateCreateInfo structure which will be filled by this utility function.</param> <param
+/// name="inputAssemblerCreateInfo">A pvrvk::InputAssemblerStateCreateInfo structure which will be filled by this utility function.</param> <param name="numOutBuffers">A
+/// pointer to an unsigned integer which will set to specify the number of buffers required to create buffers for to use the mesh vertex attributes.</param>
 inline void populateInputAssemblyFromMesh(const assets::Mesh& mesh, const VertexBindings* bindingMap, uint16_t numBindings,
 	pvrvk::PipelineVertexInputStateCreateInfo& vertexCreateInfo, pvrvk::PipelineInputAssemblerStateCreateInfo& inputAssemblerCreateInfo, uint16_t* numOutBuffers = nullptr)
 {
@@ -847,17 +1025,15 @@ inline void populateInputAssemblyFromMesh(const assets::Mesh& mesh, const Vertex
 /// <param name="mesh">The mesh whose data will populate the buffers</param>
 /// <param name="outVbo">The VBO handle where the data will be put.</param>
 /// <param name="outIbo">The IBO handle where the data will be put. If no face data is present on the mesh, the handle will be null.</param>
-/// <param name="uploadCmdBuffer">A command buffer into which commands may be recorded for uploading mesh data to the created buffers. This command buffer will only be used when
-/// memory without e_HOST_VISIBLE_BIT memory property flags was allocated for the vbos or ibos.</param>
-/// <param name="requiresCommandBufferSubmission">Indicates whether commands have been recorded into the given command buffer.</param>
-/// <param name="bufferAllocator">A VMA allocator used to allocate memory for the created buffer.</param>
-/// <param name="vmaAllocationCreateFlags">VMA Allocation creation flags. These flags can be used to control how and where the memory is allocated from.
-/// Valid flags include e_DEDICATED_MEMORY_BIT and e_MAPPED_BIT. e_DEDICATED_MEMORY_BIT indicates that the allocation should have its own memory block.
-/// e_MAPPED_BIT indicates memory will be persistently mapped respectively.
-/// The default vma::AllocationCreateFlags::e_MAPPED_BIT is valid even if HOST_VISIBLE is not used - these flags will be ignored in this case.</param>
-/// <remarks> This utility function will read all vertex data from a mesh's data elements and create a single VBO. It is commonly used for a single set of interleaved data.
-/// If data are not interleaved, they will be packed on the same VBO, each interleaved block (Data element on the mesh) will be appended at the end of the buffer, and the offsets
-/// will need to be calculated by the user when binding the buffer.</remarks>
+/// <param name="uploadCmdBuffer">A command buffer into which commands may be recorded for uploading mesh data to the created buffers. This command buffer will only be used
+/// when memory without e_HOST_VISIBLE_BIT memory property flags was allocated for the vbos or ibos.</param> <param name="requiresCommandBufferSubmission">Indicates whether
+/// commands have been recorded into the given command buffer.</param> <param name="bufferAllocator">A VMA allocator used to allocate memory for the created buffer.</param> <param
+/// name="vmaAllocationCreateFlags">VMA Allocation creation flags. These flags can be used to control how and where the memory is allocated from. Valid flags include
+/// e_DEDICATED_MEMORY_BIT and e_MAPPED_BIT. e_DEDICATED_MEMORY_BIT indicates that the allocation should have its own memory block. e_MAPPED_BIT indicates memory will be
+/// persistently mapped respectively. The default vma::AllocationCreateFlags::e_MAPPED_BIT is valid even if HOST_VISIBLE is not used - these flags will be ignored in this
+/// case.</param> <remarks> This utility function will read all vertex data from a mesh's data elements and create a single VBO. It is commonly used for a single set of
+/// interleaved data. If data are not interleaved, they will be packed on the same VBO, each interleaved block (Data element on the mesh) will be appended at the end of the
+/// buffer, and the offsets will need to be calculated by the user when binding the buffer.</remarks>
 inline void createSingleBuffersFromMesh(pvrvk::Device& device, const assets::Mesh& mesh, pvrvk::Buffer& outVbo, pvrvk::Buffer& outIbo, pvrvk::CommandBuffer& uploadCmdBuffer,
 	bool& requiresCommandBufferSubmission, vma::Allocator* bufferAllocator = nullptr, vma::AllocationCreateFlags vmaAllocationCreateFlags = vma::AllocationCreateFlags::e_MAPPED_BIT)
 {
@@ -931,17 +1107,14 @@ inline void createSingleBuffersFromMesh(pvrvk::Device& device, const assets::Mes
 /// at the end.</param>
 /// <param name="outIbo">The IBO handle where the data will be put. No buffer needs to have been created on the
 /// handle. If no face data is present on the mesh, the handle will be null.</param>
-/// <param name="uploadCmdBuffer">A command buffer into which commands may be recorded for uploading mesh data to the created buffers. This command buffer will only be used when
-/// memory without e_HOST_VISIBLE_BIT memory property flags was allocated for the vbos or ibos.</param>
-/// <param name="requiresCommandBufferSubmission">Indicates whether commands have been recorded into the given command buffer.</param>
-/// <param name="bufferAllocator">A VMA allocator used to allocate memory for the created buffer.</param>
-/// <param name="vmaAllocationCreateFlags">VMA Allocation creation flags. These flags can be used to control how and where the memory is allocated from.
-/// Valid flags include e_DEDICATED_MEMORY_BIT and e_MAPPED_BIT. e_DEDICATED_MEMORY_BIT indicates that the allocation should have its own memory block.
-/// e_MAPPED_BIT indicates memory will be persistently mapped respectively.
-/// The default vma::AllocationCreateFlags::e_MAPPED_BIT is valid even if HOST_VISIBLE is not used - these flags will be ignored in this case.</param>
-/// <remarks>This utility function will read all vertex data from the mesh and create one pvrvk::Buffer for each data
-/// element (block of interleaved data) in the mesh. It is thus commonly used for for meshes containing multiple
-/// sets of interleaved data (for example, a VBO with static and a VBO with streaming data).</remarks>
+/// <param name="uploadCmdBuffer">A command buffer into which commands may be recorded for uploading mesh data to the created buffers. This command buffer will only be used
+/// when memory without e_HOST_VISIBLE_BIT memory property flags was allocated for the vbos or ibos.</param> <param name="requiresCommandBufferSubmission">Indicates whether
+/// commands have been recorded into the given command buffer.</param> <param name="bufferAllocator">A VMA allocator used to allocate memory for the created buffer.</param> <param
+/// name="vmaAllocationCreateFlags">VMA Allocation creation flags. These flags can be used to control how and where the memory is allocated from. Valid flags include
+/// e_DEDICATED_MEMORY_BIT and e_MAPPED_BIT. e_DEDICATED_MEMORY_BIT indicates that the allocation should have its own memory block. e_MAPPED_BIT indicates memory will be
+/// persistently mapped respectively. The default vma::AllocationCreateFlags::e_MAPPED_BIT is valid even if HOST_VISIBLE is not used - these flags will be ignored in this
+/// case.</param> <remarks>This utility function will read all vertex data from the mesh and create one pvrvk::Buffer for each data element (block of interleaved data) in the
+/// mesh. It is thus commonly used for for meshes containing multiple sets of interleaved data (for example, a VBO with static and a VBO with streaming data).</remarks>
 inline void createMultipleBuffersFromMesh(pvrvk::Device& device, const assets::Mesh& mesh, std::vector<pvrvk::Buffer>& outVbos, pvrvk::Buffer& outIbo,
 	pvrvk::CommandBuffer& uploadCmdBuffer, bool& requiresCommandBufferSubmission, vma::Allocator* bufferAllocator,
 	vma::AllocationCreateFlags vmaAllocationCreateFlags = vma::AllocationCreateFlags::e_MAPPED_BIT)
@@ -952,7 +1125,7 @@ inline void createMultipleBuffersFromMesh(pvrvk::Device& device, const assets::M
 	{
 		pvrvk::MemoryPropertyFlags requiredMemoryFlags = pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT;
 		pvrvk::MemoryPropertyFlags optimalMemoryFlags = requiredMemoryFlags;
-		outVbos.push_back(createBuffer(device, static_cast<uint32_t>(mesh.getDataSize(i)), pvrvk::BufferUsageFlags::e_VERTEX_BUFFER_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT,
+		outVbos.emplace_back(createBuffer(device, static_cast<uint32_t>(mesh.getDataSize(i)), pvrvk::BufferUsageFlags::e_VERTEX_BUFFER_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT,
 			requiredMemoryFlags, optimalMemoryFlags, bufferAllocator, vmaAllocationCreateFlags));
 
 		bool isBufferHostVisible = (outVbos.back()->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT) != 0;
@@ -1001,31 +1174,26 @@ inline void createMultipleBuffersFromMesh(pvrvk::Device& device, const assets::M
 /// <param name="device">The device where the buffers will be generated on</param>
 /// <param name="meshIter">Iterator for a collection of meshes.</param>
 /// <param name="meshIterEnd">End Iterator for meshIter.</param>
-/// <param name="outVbos">std::inserter for a collection of pvrvk::Buffer handles. It will be used to insert one VBO per mesh.
-/// </param>
+/// <param name="outVbos">std::inserter for a collection of pvrvk::Buffer handles. It will be used to insert one VBO per mesh.</param>
 /// <param name="outIbos">std::inserter for a collection of pvrvk::Buffer handles. It will be used to insert one IBO per mesh.
 /// If face data is not present on the mesh, a null handle will be inserted.</param>
-/// <param name="uploadCmdBuffer">A command buffer into which commands may be recorded for uploading mesh data to the created buffers. This command buffer will only be used when
-/// memory without e_HOST_VISIBLE_BIT memory property flags was allocated for the vbos or ibos.</param>
-/// <param name="requiresCommandBufferSubmission">Indicates whether commands have been recorded into the given command buffer.</param>
-/// <param name="bufferAllocator">A VMA allocator used to allocate memory for the created buffer.</param>
-/// <param name="vmaAllocationCreateFlags">VMA Allocation creation flags. These flags can be used to control how and where the memory is allocated from.
-/// Valid flags include e_DEDICATED_MEMORY_BIT and e_MAPPED_BIT. e_DEDICATED_MEMORY_BIT indicates that the allocation should have its own memory block.
-/// e_MAPPED_BIT indicates memory will be persistently mapped respectively.
-/// The default vma::AllocationCreateFlags::e_MAPPED_BIT is valid even if HOST_VISIBLE is not used - these flags will be ignored in this case.</param>
-/// <remarks>This utility function will read all vertex data from a mesh's data elements and create a single VBO.
-/// It is commonly used for a single set of interleaved data (mesh.getNumDataElements() == 1). If more data
-/// elements are present (i.e. more than a single interleaved data element) , they will be packed in the sameVBO,
-/// with each interleaved block (Data element ) appended at the end of the buffer. It is then the user's
-/// responsibility to use the buffer correctly with the API (for example use bindbufferbase and similar) with the
-/// correct offsets. The std::inserter this function requires can be created from any container with an insert()
-/// function with (for example, for insertion at the end of a vector) std::inserter(std::vector,
-/// std::vector::end()) .</remarks>
+/// <param name="uploadCmdBuffer">A command buffer into which commands may be recorded for uploading mesh data to the created buffers. This command buffer will only be used
+/// when memory without e_HOST_VISIBLE_BIT memory property flags was allocated for the vbos or ibos.</param> <param name="requiresCommandBufferSubmission">Indicates whether
+/// commands have been recorded into the given command buffer.</param> <param name="bufferAllocator">A VMA allocator used to allocate memory for the created buffer.</param> <param
+/// name="vmaAllocationCreateFlags">VMA Allocation creation flags. These flags can be used to control how and where the memory is allocated from. Valid flags include
+/// e_DEDICATED_MEMORY_BIT and e_MAPPED_BIT. e_DEDICATED_MEMORY_BIT indicates that the allocation should have its own memory block. e_MAPPED_BIT indicates memory will be
+/// persistently mapped respectively. The default vma::AllocationCreateFlags::e_MAPPED_BIT is valid even if HOST_VISIBLE is not used - these flags will be ignored in this
+/// case.</param> <remarks>This utility function will read all vertex data from a mesh's data elements and create a single VBO. It is commonly used for a single set of
+/// interleaved data (mesh.getNumDataElements() == 1). If more data elements are present (i.e. more than a single interleaved data element) , they will be packed in the
+/// sameVBO, with each interleaved block (Data element ) appended at the end of the buffer. It is then the user's responsibility to use the buffer correctly with the API (for
+/// example use bindbufferbase and similar) with the correct offsets. The std::inserter this function requires can be created from any container with an insert() function with
+/// (for example, for insertion at the end of a vector) std::inserter(std::vector, std::vector::end()) .</remarks>
 template<typename MeshIterator_, typename VboInsertIterator_, typename IboInsertIterator_>
 inline void createSingleBuffersFromMeshes(pvrvk::Device& device, MeshIterator_ meshIter, MeshIterator_ meshIterEnd, VboInsertIterator_ outVbos, IboInsertIterator_ outIbos,
 	pvrvk::CommandBuffer& uploadCmdBuffer, bool& requiresCommandBufferSubmission, vma::Allocator* bufferAllocator = nullptr,
 	vma::AllocationCreateFlags vmaAllocationCreateFlags = vma::AllocationCreateFlags::e_MAPPED_BIT)
 {
+	pvr::utils::beginCommandBufferDebugLabel(uploadCmdBuffer, pvrvk::DebugUtilsLabel("PVRUtilsVk::createSingleBuffersFromMeshes"));
 	requiresCommandBufferSubmission = false;
 
 	while (meshIter != meshIterEnd)
@@ -1102,6 +1270,7 @@ inline void createSingleBuffersFromMeshes(pvrvk::Device& device, MeshIterator_ m
 		++outIbos;
 		++meshIter;
 	}
+	pvr::utils::endCommandBufferDebugLabel(uploadCmdBuffer);
 }
 
 /// <summary>Auto generates a set of VBOs and a set of IBOs from the vertex data of multiple meshes and insert them
@@ -1114,20 +1283,16 @@ inline void createSingleBuffersFromMeshes(pvrvk::Device& device, MeshIterator_ m
 /// not present on the mesh, a null handle will be inserted.</param>
 /// <param name="vbos_where">Iterator on outVbos - the position where the insertion will happen.</param>
 /// <param name="ibos_where">Iterator on outIbos - the position where the insertion will happen.</param>
-/// <param name="uploadCmdBuffer">A command buffer into which commands may be recorded for uploading mesh data to the created buffers. This command buffer will only be used when
-/// memory without e_HOST_VISIBLE_BIT memory property flags was allocated for the vbos or ibos.</param>
-/// <param name="requiresCommandBufferSubmission">Indicates whether commands have been recorded into the given command buffer.</param>
-/// <param name="bufferAllocator">A VMA allocator used to allocate memory for the created buffer.</param>
-/// <param name="vmaAllocationCreateFlags">VMA Allocation creation flags. These flags can be used to control how and where the memory is allocated from.
-/// Valid flags include e_DEDICATED_MEMORY_BIT and e_MAPPED_BIT. e_DEDICATED_MEMORY_BIT indicates that the allocation should have its own memory block.
-/// e_MAPPED_BIT indicates memory will be persistently mapped respectively.
-/// The default vma::AllocationCreateFlags::e_MAPPED_BIT is valid even if HOST_VISIBLE is not used - these flags will be ignored in this case.</param>
-/// <remarks>This utility function will read all vertex data from a mesh's data elements and create a single VBO.
-/// It is commonly used for a single set of interleaved data (mesh.getNumDataElements() == 1). If more data
-/// elements are present (i.e. more than a single interleaved data element) , they will be packed in the sameVBO,
-/// with each interleaved block (Data element ) appended at the end of the buffer. It is then the user's
-/// responsibility to use the buffer correctly with the API (for example use bindbufferbase and similar) with the
-/// correct offsets.</remarks>
+/// <param name="uploadCmdBuffer">A command buffer into which commands may be recorded for uploading mesh data to the created buffers. This command buffer will only be used
+/// when memory without e_HOST_VISIBLE_BIT memory property flags was allocated for the vbos or ibos.</param> <param name="requiresCommandBufferSubmission">Indicates whether
+/// commands have been recorded into the given command buffer.</param> <param name="bufferAllocator">A VMA allocator used to allocate memory for the created buffer.</param> <param
+/// name="vmaAllocationCreateFlags">VMA Allocation creation flags. These flags can be used to control how and where the memory is allocated from. Valid flags include
+/// e_DEDICATED_MEMORY_BIT and e_MAPPED_BIT. e_DEDICATED_MEMORY_BIT indicates that the allocation should have its own memory block. e_MAPPED_BIT indicates memory will be
+/// persistently mapped respectively. The default vma::AllocationCreateFlags::e_MAPPED_BIT is valid even if HOST_VISIBLE is not used - these flags will be ignored in this
+/// case.</param> <remarks>This utility function will read all vertex data from a mesh's data elements and create a single VBO. It is commonly used for a single set of
+/// interleaved data (mesh.getNumDataElements() == 1). If more data elements are present (i.e. more than a single interleaved data element) , they will be packed in the
+/// sameVBO, with each interleaved block (Data element ) appended at the end of the buffer. It is then the user's responsibility to use the buffer correctly with the API (for
+/// example use bindbufferbase and similar) with the correct offsets.</remarks>
 template<typename MeshIterator_, typename VboContainer_, typename IboContainer_>
 inline void createSingleBuffersFromMeshes(pvrvk::Device& device, MeshIterator_ meshIter, MeshIterator_ meshIterEnd, VboContainer_& outVbos,
 	typename VboContainer_::iterator vbos_where, IboContainer_& outIbos, typename IboContainer_::iterator ibos_where, pvrvk::CommandBuffer& uploadCmdBuffer,
@@ -1143,17 +1308,14 @@ inline void createSingleBuffersFromMeshes(pvrvk::Device& device, MeshIterator_ m
 /// <param name="model">The model whose meshes will be used to generate the Buffers</param>
 /// <param name="vbos">An insert iterator to a std::pvrvk::Buffer container for the VBOs. Vbos will be inserted using this iterator.</param>
 /// <param name="ibos">An insert iterator to an std::pvrvk::Buffer container for the IBOs. Ibos will be inserted using this iterator.</param>
-/// <param name="uploadCmdBuffer">A command buffer into which commands may be recorded for uploading mesh data to the created buffers. This command buffer will only be used when
-/// memory without e_HOST_VISIBLE_BIT memory property flags was allocated for the vbos or ibos.</param>
-/// <param name="requiresCommandBufferSubmission">Indicates whether commands have been recorded into the given command buffer.</param>
-/// <param name="bufferAllocator">A VMA allocator used to allocate memory for the created buffer.</param>
-/// <param name="vmaAllocationCreateFlags">VMA Allocation creation flags. These flags can be used to control how and where the memory is allocated from.
-/// Valid flags include e_DEDICATED_MEMORY_BIT and e_MAPPED_BIT. e_DEDICATED_MEMORY_BIT indicates that the allocation should have its own memory block.
-/// e_MAPPED_BIT indicates memory will be persistently mapped respectively.
-/// The default vma::AllocationCreateFlags::e_MAPPED_BIT is valid even if HOST_VISIBLE is not used - these flags will be ignored in this case.</param>
-/// <remarks>This utility function will read all vertex data from the VBO. It is usually preferred for meshes
-/// meshes containing a single set of interleaved data. If multiple data elements (i.e. sets of interleaved data),
-/// each block will be successively placed after the other. The std::inserter this function requires can be created
+/// <param name="uploadCmdBuffer">A command buffer into which commands may be recorded for uploading mesh data to the created buffers. This command buffer will only be used
+/// when memory without e_HOST_VISIBLE_BIT memory property flags was allocated for the vbos or ibos.</param> <param name="requiresCommandBufferSubmission">Indicates whether
+/// commands have been recorded into the given command buffer.</param> <param name="bufferAllocator">A VMA allocator used to allocate memory for the created buffer.</param> <param
+/// name="vmaAllocationCreateFlags">VMA Allocation creation flags. These flags can be used to control how and where the memory is allocated from. Valid flags include
+/// e_DEDICATED_MEMORY_BIT and e_MAPPED_BIT. e_DEDICATED_MEMORY_BIT indicates that the allocation should have its own memory block. e_MAPPED_BIT indicates memory will be
+/// persistently mapped respectively. The default vma::AllocationCreateFlags::e_MAPPED_BIT is valid even if HOST_VISIBLE is not used - these flags will be ignored in this
+/// case.</param> <remarks>This utility function will read all vertex data from the VBO. It is usually preferred for meshes meshes containing a single set of interleaved data.
+/// If multiple data elements (i.e. sets of interleaved data), each block will be successively placed after the other. The std::inserter this function requires can be created
 /// from any container with an insert() function with (for example, for insertion at the end of a vector)
 /// std::inserter(std::vector, std::vector::end()) .</remarks>
 template<typename VboInsertIterator_, typename IboInsertIterator_>
@@ -1170,17 +1332,14 @@ inline void createSingleBuffersFromModel(pvrvk::Device& device, const assets::Mo
 /// <param name="model">The model whose meshes will be used to generate the Buffers</param>
 /// <param name="vbos">A container of pvrvk::Buffer handles. The VBOs will be inserted at the end of this container.</param>
 /// <param name="ibos">A container of pvrvk::Buffer handles. The IBOs will be inserted at the end of this container.</param>
-/// <param name="uploadCmdBuffer">A command buffer into which commands may be recorded for uploading mesh data to the created buffers. This command buffer will only be used when
-/// memory without e_HOST_VISIBLE_BIT memory property flags was allocated for the vbos or ibos.</param>
-/// <param name="requiresCommandBufferSubmission">Indicates whether commands have been recorded into the given command buffer.</param>
-/// <param name="bufferAllocator">A VMA allocator used to allocate memory for the created buffer.</param>
-/// <param name="vmaAllocationCreateFlags">VMA Allocation creation flags. These flags can be used to control how and where the memory is allocated from.
-/// Valid flags include e_DEDICATED_MEMORY_BIT and e_MAPPED_BIT. e_DEDICATED_MEMORY_BIT indicates that the allocation should have its own memory block.
-/// e_MAPPED_BIT indicates memory will be persistently mapped respectively.
-/// The default vma::AllocationCreateFlags::e_MAPPED_BIT is valid even if HOST_VISIBLE is not used - these flags will be ignored in this case.</param>
-/// <remarks>This utility function will read all vertex data from the VBO. It is usually preferred for meshes
-/// meshes containing a single set of interleaved data. If multiple data elements (i.e. sets of interleaved data),
-/// each block will be successively placed after the other.</remarks>
+/// <param name="uploadCmdBuffer">A command buffer into which commands may be recorded for uploading mesh data to the created buffers. This command buffer will only be used
+/// when memory without e_HOST_VISIBLE_BIT memory property flags was allocated for the vbos or ibos.</param> <param name="requiresCommandBufferSubmission">Indicates whether
+/// commands have been recorded into the given command buffer.</param> <param name="bufferAllocator">A VMA allocator used to allocate memory for the created buffer.</param> <param
+/// name="vmaAllocationCreateFlags">VMA Allocation creation flags. These flags can be used to control how and where the memory is allocated from. Valid flags include
+/// e_DEDICATED_MEMORY_BIT and e_MAPPED_BIT. e_DEDICATED_MEMORY_BIT indicates that the allocation should have its own memory block. e_MAPPED_BIT indicates memory will be
+/// persistently mapped respectively. The default vma::AllocationCreateFlags::e_MAPPED_BIT is valid even if HOST_VISIBLE is not used - these flags will be ignored in this
+/// case.</param> <remarks>This utility function will read all vertex data from the VBO. It is usually preferred for meshes meshes containing a single set of interleaved data.
+/// If multiple data elements (i.e. sets of interleaved data), each block will be successively placed after the other.</remarks>
 template<typename VboContainer_, typename IboContainer_>
 inline void appendSingleBuffersFromModel(pvrvk::Device& device, const assets::Model& model, VboContainer_& vbos, IboContainer_& ibos, pvrvk::CommandBuffer& uploadCmdBuffer,
 	bool& requiresCommandBufferSubmission, vma::Allocator* bufferAllocator = nullptr, vma::AllocationCreateFlags vmaAllocationCreateFlags = vma::AllocationCreateFlags::e_MAPPED_BIT)
@@ -1199,31 +1358,49 @@ inline void appendSingleBuffersFromModel(pvrvk::Device& device, const assets::Mo
 /// <param name="outMesh">The generated pvr::assets::Mesh.</param>
 void create3dPlaneMesh(uint32_t width, uint32_t depth, bool generateTexCoords, bool generateNormalCoords, assets::Mesh& outMesh);
 
+/// <summary>Retrieves and returns the contents of a particular image region. Note that the image must have been created with the pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT
+/// set.</summary>
+/// <param name="queue">A queue to submit the generated command buffer to. This queue must be compatible with the command pool provided.</param>
+/// <param name="commandPool">A command pool from which to allocate a temporary command buffer to carry out the transfer operations.</param>
+/// <param name="image">The image from which the specified region will be retrieved.</param>
+/// <param name="srcOffset">The offset into the specified image from which to begin the region to capture.</param>
+/// <param name="srcExtent">The extent of the region to capture.</param>
+/// <param name="destinationImageFormat">The format to use for the saved image. Valid format conversions will be applied using vkCmdBlitImage.</param>
+/// <param name="imageInitialLayout">The initial layout of the image from which a transition will be made to pvrvk::ImageLayout::e_TRANSFER_SRC_OPTIMAL.</param>
+/// <param name="imageFinalLayout">The final layout of the image to which a transition will be made.</param>
+/// <param name="bufferAllocator">A VMA allocator used to allocate memory for the created the buffer used as the target of an imageToBufferCopy.</param>
+/// <param name="imageAllocator">A VMA allocator used to allocate memory for the created image.</param>
+/// <returns>A vector containing the retrieved image data</returns>
+std::vector<unsigned char> captureImageRegion(pvrvk::Queue& queue, pvrvk::CommandPool& commandPool, pvrvk::Image& image, pvrvk::Offset3D srcOffset = pvrvk::Offset3D(0, 0, 0),
+	pvrvk::Extent3D srcExtent = pvrvk::Extent3D(-1, -1, -1), pvrvk::Format destinationImageFormat = pvrvk::Format::e_UNDEFINED,
+	pvrvk::ImageLayout imageInitialLayout = pvrvk::ImageLayout::e_TRANSFER_SRC_OPTIMAL, pvrvk::ImageLayout imageFinalLayout = pvrvk::ImageLayout::e_TRANSFER_DST_OPTIMAL,
+	vma::Allocator* bufferAllocator = nullptr, vma::Allocator* imageAllocator = nullptr);
+
 /// <summary>Saves the input image as a TGA file with the filename specified. Note that the image must have been created with the
 /// pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT set.</summary>
+/// <param name="queue">A queue to submit the generated command buffer to. This queue must be compatible with the command pool provided.</param>
+/// <param name="commandPool">A command pool from which to allocate a temporary command buffer to carry out the transfer operations.</param>
 /// <param name="image">The image to save as a TGA file.</param>
 /// <param name="imageInitialLayout">The initial layout of the image from which a transition will be made to pvrvk::ImageLayout::e_TRANSFER_SRC_OPTIMAL.</param>
 /// <param name="imageFinalLayout">The final layout of the image to which a transition will be made.</param>
-/// <param name="pool">A command pool from which to allocate a temporary command buffer to carry out the transfer operations.</param>
-/// <param name="queue">A queue to submit the generated command buffer to. This queue must be compatible with the command pool provided.</param>
 /// <param name="filename">The filename to use for the saved TGA image.</param>
 /// <param name="bufferAllocator">A VMA allocator used to allocate memory for the created the buffer used as the target of an imageToBufferCopy.</param>
 /// <param name="imageAllocator">A VMA allocator used to allocate memory for the created image.</param>
 /// <param name="screenshotScale">A scaling factor to use for increasing the size of the saved screenshot.</param>
-void saveImage(pvrvk::Image image, const pvrvk::ImageLayout imageInitialLayout, const pvrvk::ImageLayout imageFinalLayout, pvrvk::CommandPool& pool, pvrvk::Queue& queue,
+void saveImage(pvrvk::Queue& queue, pvrvk::CommandPool& commandPool, pvrvk::Image& image, const pvrvk::ImageLayout imageInitialLayout, const pvrvk::ImageLayout imageFinalLayout,
 	const std::string& filename, vma::Allocator* bufferAllocator = nullptr, vma::Allocator* imageAllocator = nullptr, const uint32_t screenshotScale = 1);
 
-/// <summary>Saves a particular swapchain image corresponding to the swapchain image at index swapIndex for the swapChain.</summary>
-/// <param name="swapChain">The swapchain from which a particular image will be saved.</param>
-/// <param name="swapIndex">The swapchain image at index swapIndex will be saved as a TGA file.</param>
-/// <param name="pool">A command pool from which to allocate a temporary command buffer to carry out the transfer operations.</param>
+/// <summary>Saves a particular swapchain image corresponding to the swapchain image at index swapIndex for the swapchain.</summary>
 /// <param name="queue">A queue to submit the generated command buffer to. This queue must be compatible with the command pool provided.</param>
+/// <param name="commandPool">A command pool from which to allocate a temporary command buffer to carry out the transfer operations.</param>
+/// <param name="swapchain">The swapchain from which a particular image will be saved.</param>
+/// <param name="swapIndex">The swapchain image at index swapIndex will be saved as a TGA file.</param>
 /// <param name="screenshotFileName">The filename to use for the saved TGA image.</param>
 /// <param name="bufferAllocator">A VMA allocator used to allocate memory for the created the buffer used as the target of an imageToBufferCopy.</param>
 /// <param name="imageAllocator">A VMA allocator used to allocate memory for the created image.</param>
 /// <param name="screenshotScale">A scaling factor to use for increasing the size of the saved screenshot.</param>
 /// <returns>True if the screenshot could be taken successfully</returns>
-bool takeScreenshot(pvrvk::Swapchain& swapChain, const uint32_t swapIndex, pvrvk::CommandPool& pool, pvrvk::Queue& queue, const std::string& screenshotFileName,
+bool takeScreenshot(pvrvk::Queue& queue, pvrvk::CommandPool& commandPool, pvrvk::Swapchain& swapchain, const uint32_t swapIndex, const std::string& screenshotFileName,
 	vma::Allocator* bufferAllocator = nullptr, vma::Allocator* imageAllocator = nullptr, const uint32_t screenshotScale = 1);
 
 /// <summary>Return true if the format is a depth stencil format</summary>
@@ -1258,10 +1435,34 @@ inline void populateClearValues(
 	}
 }
 
-/// <summary>Maps a set of VkDebugReportFlagsEXT to a particular type of log message.</summary>
-/// <param name="flags">The VkDebugReportFlagsEXT to map to a LogLevel.</param>
+/// <summary>Maps a set of DebugUtilsMessageSeverityFlagsEXT to a particular type of log message.</summary>
+/// <param name="flags">The DebugUtilsMessageSeverityFlagsEXT to map to a LogLevel.</param>
+/// <returns>Returns a LogLevel deemed to correspond to the given pvrvk::DebugUtilsMessageSeverityFlagsEXT.</returns>
+inline LogLevel mapDebugUtilsMessageSeverityFlagsToLogLevel(pvrvk::DebugUtilsMessageSeverityFlagsEXT flags)
+{
+	if ((flags & pvrvk::DebugUtilsMessageSeverityFlagsEXT::e_INFO_BIT_EXT) != 0)
+	{
+		return LogLevel::Information;
+	}
+	if ((flags & pvrvk::DebugUtilsMessageSeverityFlagsEXT::e_WARNING_BIT_EXT) != 0)
+	{
+		return LogLevel::Warning;
+	}
+	if ((flags & pvrvk::DebugUtilsMessageSeverityFlagsEXT::e_VERBOSE_BIT_EXT) != 0)
+	{
+		return LogLevel::Debug;
+	}
+	if ((flags & pvrvk::DebugUtilsMessageSeverityFlagsEXT::e_ERROR_BIT_EXT) != 0)
+	{
+		return LogLevel::Error;
+	}
+	return LogLevel::Information;
+}
+
+/// <summary>Maps a set of DebugReportFlagsEXT to a particular type of log message.</summary>
+/// <param name="flags">The DebugReportFlagsEXT to map to a LogLevel.</param>
 /// <returns>Returns a LogLevel deemed to correspond to the given pvrvk::DebugReportFlagsEXT.</returns>
-inline LogLevel mapValidationTypeToLogLevel(pvrvk::DebugReportFlagsEXT flags)
+inline LogLevel mapDebugReportFlagsToLogLevel(pvrvk::DebugReportFlagsEXT flags)
 {
 	if ((flags & pvrvk::DebugReportFlagsEXT::e_INFORMATION_BIT_EXT) != 0)
 	{
@@ -1286,13 +1487,36 @@ inline LogLevel mapValidationTypeToLogLevel(pvrvk::DebugReportFlagsEXT flags)
 	return LogLevel::Information;
 }
 
+/// <summary>An application DebugUtilsMessengerCallback function providing logging for various events. The callback will also throw an exception when VkDebugUtilsMessageSeverityFlagBitsEXT includes the
+/// VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT.</summary>
+/// <param name="messageSeverity">Indicates the VkDebugUtilsMessageSeverityFlagBitsEXT which define the severity of any message.</param>
+/// <param name="messageTypes">A set of VkDebugUtilsMessageTypeFlagsEXT which define the type of the message.</param>
+/// <param name="pCallbackData">Contains all the callback related data in the VkDebugUtilsMessengerCallbackDataEXT structure</param>
+/// <param name="pUserData">The user data provided when the VkDebugUtilsMessengerEXT was created</param>
+/// <returns>Returns an indication to the calling layer as to whether the Vulkan call should be aborted or not. Applications should always return VK_FALSE so that they see the same behavior with and without validation layers enabled.</returns>
+VKAPI_ATTR VkBool32 VKAPI_CALL throwOnErrorDebugUtilsMessengerCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageTypes,
+	const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData);
+
+/// <summary>An application DebugUtilsMessengerCallback function providing logging for various events.</summary>
+/// <param name="messageSeverity">Indicates the VkDebugUtilsMessageSeverityFlagBitsEXT which define the severity of any message.</param>
+/// <param name="messageTypes">A set of VkDebugUtilsMessageTypeFlagsEXT which define the type of the message.</param>
+/// <param name="pCallbackData">Contains all the callback related data in the VkDebugUtilsMessengerCallbackDataEXT structure</param>
+/// <param name="pUserData">The user data provided when the VkDebugUtilsMessengerEXT was created</param>
+/// <returns>Returns an indication to the calling layer as to whether the Vulkan call should be aborted or not. Applications should always return VK_FALSE so that they see the same behavior with and without validation layers enabled.</returns>
+VKAPI_ATTR VkBool32 VKAPI_CALL logMessageDebugUtilsMessengerCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageTypes,
+	const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData);
+
 /// <summary>An application DebugReportCallback function providing logging for various events. The callback will also throw an exception when VkDebugReportFlagsEXT includes the
-/// VK_DEBUG_REPORT_ERROR_BIT_EXT.</summary> <param name="flags">Indicates the VkDebugReportFlagsEXT triggering the callback.</param> <param name="objectType">The type of the
-/// object being used/created when the event was triggered.</param> <param name="object">The object where the issue was detected</param> <param name="location">A component defined
-/// value indicating the location of the trigger</param> <param name="messageCode">A layer defined value indicating the test which triggered the callback</param> <param
-/// name="pLayerPrefix">Abbreviation of the component making the callback</param> <param name="pMessage">String detailing the trigger conditions</param> <param
-/// name="pUserData">User data given when the callback was created</param> <returns>Returns an indication to the calling layer as to whether the Vulkan call should be aborted or
-/// not. Applications should always return VK_FALSE so that they see the same behavior with and without validation layers enabled.</returns>
+/// VK_DEBUG_REPORT_ERROR_BIT_EXT.</summary>
+/// <param name="flags">Indicates the VkDebugReportFlagsEXT triggering the callback.</param>
+/// <param name="objectType">The type of the object being used/created when the event was triggered.</param>
+/// <param name="object">The object where the issue was detected</param>
+/// <param name="location">A component defined value indicating the location of the trigger</param>
+/// <param name="messageCode">A layer defined value indicating the test which triggered the callback</param>
+/// <param name="pLayerPrefix">Abbreviation of the component making the callback</param>
+/// <param name="pMessage">String detailing the trigger conditions</param>
+/// <param name="pUserData">User data given when the callback was created</param>
+/// <returns>Returns an indication to the calling layer as to whether the Vulkan call should be aborted or not. Applications should always return VK_FALSE so that they see the same behavior with and without validation layers enabled.</returns>
 VKAPI_ATTR VkBool32 VKAPI_CALL throwOnErrorDebugReportCallback(VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT objectType, uint64_t object, size_t location,
 	int32_t messageCode, const char* pLayerPrefix, const char* pMessage, void* pUserData);
 
@@ -1305,21 +1529,10 @@ VKAPI_ATTR VkBool32 VKAPI_CALL throwOnErrorDebugReportCallback(VkDebugReportFlag
 /// <param name="pLayerPrefix">Abbreviation of the component making the callback</param>
 /// <param name="pMessage">String detailing the trigger conditions</param>
 /// <param name="pUserData">User data given when the callback was created</param>
-/// <returns>Returns an indication to the calling layer as to whether the Vulkan call should be aborted or not. Applications should always return VK_FALSE so that they see the same
-/// behavior with and without validation layers enabled.</returns>
+/// <returns>Returns an indication to the calling layer as to whether the Vulkan call should be aborted or not. Applications should always return VK_FALSE so that they see the
+/// same behavior with and without validation layers enabled.</returns>
 VKAPI_ATTR VkBool32 VKAPI_CALL logMessageDebugReportCallback(VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT objectType, uint64_t object, size_t location,
 	int32_t messageCode, const char* pLayerPrefix, const char* pMessage, void* pUserData);
-
-/// <summary>Create a DebugReportCallback providing an application callback for events of interest to the application.</summary>
-/// <param name="instance">The instance to create the DebugReportCallback from.</param>
-/// <param name="flags">The flags specifying the events the application is interested in receiving a callback for.</param>
-/// <param name="callback">The application callback function</param>
-/// <param name="userData">User data which will be passed to the callback</param>
-/// <returns>A pvrvk::DebugReportCallback object</returns>
-pvrvk::DebugReportCallback createDebugReportCallback(pvrvk::Instance& instance,
-	pvrvk::DebugReportFlagsEXT flags = pvrvk::DebugReportFlagsEXT::e_ERROR_BIT_EXT | pvrvk::DebugReportFlagsEXT::e_PERFORMANCE_WARNING_BIT_EXT |
-		pvrvk::DebugReportFlagsEXT::e_WARNING_BIT_EXT,
-	PFN_vkDebugReportCallbackEXT callback = pvr::utils::logMessageDebugReportCallback, void* userData = nullptr);
 
 /// <summary>The VulkanVersion structure provides an easy mechanism for constructing the Vulkan version for use when creating a Vulkan instance.</summary>
 struct VulkanVersion

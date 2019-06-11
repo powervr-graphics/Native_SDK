@@ -10,17 +10,15 @@
 #include <array>
 
 namespace pvrvk {
-/// <summary>Pipeline Layout create information. The descriptor set layouts must be known to create a Pipeline layout.
-/// </summary>
+/// <summary>Pipeline Layout create information. The descriptor set layouts must be known to create a Pipeline layout.</summary>
 struct PipelineLayoutCreateInfo
 {
-	/// <summary>Add a descriptor set layout to this pipeline layout. Added to the end of the list of layouts.
-	/// </summary>
+	/// <summary>Add a descriptor set layout to this pipeline layout. Added to the end of the list of layouts.</summary>
 	/// <param name="descLayout">A descriptor set layout</param>
 	/// <returns>this (allow chaining)</returns>
 	PipelineLayoutCreateInfo& addDescSetLayout(const DescriptorSetLayout& descLayout)
 	{
-		assertion(size < static_cast<uint32_t>(FrameworkCaps::MaxDescriptorSetBindings), "PipelineLayoutCreateInfo: Descriptor Set index cannot be 4 or greater");
+		assert(size < static_cast<uint32_t>(FrameworkCaps::MaxDescriptorSetBindings) && "PipelineLayoutCreateInfo: Descriptor Set index cannot be 4 or greater");
 		_descLayout[size++] = descLayout;
 		return *this;
 	}
@@ -34,8 +32,7 @@ struct PipelineLayoutCreateInfo
 #ifdef DEBUG
 		if (index >= static_cast<uint32_t>(FrameworkCaps::MaxDescriptorSetBindings))
 		{
-			assertion(index < static_cast<uint32_t>(FrameworkCaps::MaxDescriptorSetBindings), "PipelineLayoutCreateInfo: Descriptor Set index cannot be 4 or greater");
-			Log("PipelineLayoutCreateInfo::getDescriptorSetLayout - Invalid DescriptorSetLayout Index");
+			assert(index < static_cast<uint32_t>(FrameworkCaps::MaxDescriptorSetBindings) && "PipelineLayoutCreateInfo: Descriptor Set index cannot be 4 or greater");
 		}
 #endif
 		if (index >= static_cast<uint32_t>(size))
@@ -61,8 +58,7 @@ struct PipelineLayoutCreateInfo
 #ifdef DEBUG
 		if (index >= size)
 		{
-			assertion(false, "Invalid DescriptorSetLayout Index");
-			Log("PipelineLayoutCreateInfo::getDescriptorSetLayout - Invalid DescriptorSetLayout Index");
+			assert(false && "Invalid DescriptorSetLayout Index");
 		}
 #endif
 		return _descLayout[index];
@@ -79,8 +75,7 @@ struct PipelineLayoutCreateInfo
 	}
 
 	/// <summary>Get all descriptor set layouts</summary>
-	/// <returns>An array of 4 descriptor set layouts. Unused one will be empty references (isNull() returns true)
-	/// </returns>
+	/// <returns>An array of 4 descriptor set layouts. Unused one will be empty references (isNull() returns true)</returns>
 	const std::array<DescriptorSetLayout, FrameworkCaps::MaxDescriptorSetBindings>& getDescriptorSetLayouts() const
 	{
 		return _descLayout;
@@ -112,13 +107,12 @@ struct PipelineLayoutCreateInfo
 	{
 		if (pushConstantRange.getSize() == 0)
 		{
-			debug_assertion(false, "Push constant range size must not be be 0");
-			Log("Push constant range size must not be be 0");
+			assert(false && "Push constant range size must not be be 0");
 		}
 
 		if (index >= _pushConstantRange.size())
 		{
-			_pushConstantRange.resize((index + 1) - _pushConstantRange.size());
+			_pushConstantRange.resize(index + 1);
 		}
 		_pushConstantRange[index] = pushConstantRange;
 	}
@@ -155,17 +149,55 @@ private:
 
 namespace impl {
 /// <summary>Vulkan implementation of the PipelineLayout class.</summary>
-class PipelineLayout_ : public DeviceObjectHandle<VkPipelineLayout>, public DeviceObjectDebugMarker<PipelineLayout_>
+class PipelineLayout_ : public PVRVkDeviceObjectBase<VkPipelineLayout, ObjectType::e_PIPELINE_LAYOUT>, public DeviceObjectDebugUtils<PipelineLayout_>
 {
+private:
+	friend class Device_;
+
+	class make_shared_enabler
+	{
+	protected:
+		make_shared_enabler() {}
+		friend class PipelineLayout_;
+	};
+
+	static PipelineLayout constructShared(const DeviceWeakPtr& device, const PipelineLayoutCreateInfo& createInfo)
+	{
+		return std::make_shared<PipelineLayout_>(make_shared_enabler{}, device, createInfo);
+	}
+
+	PipelineLayoutCreateInfo _createInfo;
+
 public:
+	//!\cond NO_DOXYGEN
 	DECLARE_NO_COPY_SEMANTICS(PipelineLayout_)
+	/// <summary>dtor</summary>
+	~PipelineLayout_()
+	{
+		if (getVkHandle() != VK_NULL_HANDLE)
+		{
+			if (!_device.expired())
+			{
+				getDevice()->getVkBindings().vkDestroyPipelineLayout(getDevice()->getVkHandle(), getVkHandle(), nullptr);
+				_vkHandle = VK_NULL_HANDLE;
+			}
+			else
+			{
+				reportDestroyedAfterDevice();
+			}
+		}
+	}
+
+	/// <summary>INTERNAL. Use context->createPipelineLayout to create this object</summary>
+	PipelineLayout_(make_shared_enabler, const DeviceWeakPtr& device, const PipelineLayoutCreateInfo& createInfo);
+	//!\endcond
 
 	/// <summary>Get a descriptor set layout used by this pipeline layout</summary>
 	/// <param name="index">Layout index</param>
 	/// <returns>std::vector<pvrvk::api::DescriptorSetLayout>&</returns>
 	const DescriptorSetLayout& getDescriptorSetLayout(uint32_t index) const
 	{
-		assertion(index < _createInfo.size && "Invalid Index");
+		assert(index < _createInfo.size && "Invalid Index");
 		return _createInfo._descLayout[index];
 	}
 
@@ -189,34 +221,6 @@ public:
 	{
 		return _createInfo;
 	}
-
-private:
-	template<typename>
-	friend struct ::pvrvk::RefCountEntryIntrusive;
-	friend class ::pvrvk::impl::Device_;
-
-	/// <summary>dtor</summary>
-	~PipelineLayout_()
-	{
-		if (getVkHandle() != VK_NULL_HANDLE)
-		{
-			if (_device.isValid())
-			{
-				_device->getVkBindings().vkDestroyPipelineLayout(_device->getVkHandle(), getVkHandle(), nullptr);
-				_vkHandle = VK_NULL_HANDLE;
-				_device.reset();
-			}
-			else
-			{
-				reportDestroyedAfterDevice("PipelineLayout");
-			}
-		}
-	}
-
-	/// <summary>INTERNAL. Use context->createPipelineLayout to create this object</summary>
-	PipelineLayout_(const DeviceWeakPtr& device, const PipelineLayoutCreateInfo& createInfo);
-
-	PipelineLayoutCreateInfo _createInfo;
 };
 } // namespace impl
 } // namespace pvrvk

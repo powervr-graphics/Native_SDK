@@ -1,6 +1,6 @@
 /*!
 \brief UIApplication delegate functioning as the application controller for UIKit implementation of Shell(iOS)
-\file PVRShell\EntryPoint/UIApplicationMain/AppController.h
+\file PVRShell/EntryPoint/UIApplicationMain/AppController.h
 \author PowerVR by Imagination, Developer Technology Team
 \copyright Copyright (c) Imagination Technologies Limited.
 */

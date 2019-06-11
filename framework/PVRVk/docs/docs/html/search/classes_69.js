@@ -10,9 +10,5 @@ var searchData=
   ['imageview_5f',['ImageView_',['../classpvrvk_1_1impl_1_1_image_view__.html',1,'pvrvk::impl']]],
   ['imageviewcreateinfo',['ImageViewCreateInfo',['../structpvrvk_1_1_image_view_create_info.html',1,'pvrvk']]],
   ['instance_5f',['Instance_',['../classpvrvk_1_1impl_1_1_instance__.html',1,'pvrvk::impl']]],
-  ['instancecreateinfo',['InstanceCreateInfo',['../structpvrvk_1_1_instance_create_info.html',1,'pvrvk']]],
-  ['instanceobjecthandle',['InstanceObjectHandle',['../classpvrvk_1_1impl_1_1_instance_object_handle.html',1,'pvrvk::impl']]],
-  ['instanceobjecthandle_3c_20vkdebugreportcallbackext_20_3e',['InstanceObjectHandle&lt; VkDebugReportCallbackEXT &gt;',['../classpvrvk_1_1impl_1_1_instance_object_handle.html',1,'pvrvk::impl']]],
-  ['instanceobjecthandle_3c_20vkphysicaldevice_20_3e',['InstanceObjectHandle&lt; VkPhysicalDevice &gt;',['../classpvrvk_1_1impl_1_1_instance_object_handle.html',1,'pvrvk::impl']]],
-  ['instanceobjecthandle_3c_20vksurfacekhr_20_3e',['InstanceObjectHandle&lt; VkSurfaceKHR &gt;',['../classpvrvk_1_1impl_1_1_instance_object_handle.html',1,'pvrvk::impl']]]
+  ['instancecreateinfo',['InstanceCreateInfo',['../structpvrvk_1_1_instance_create_info.html',1,'pvrvk']]]
 ];

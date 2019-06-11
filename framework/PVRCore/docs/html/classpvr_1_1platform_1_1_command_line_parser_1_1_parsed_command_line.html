@@ -96,7 +96,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1platform_1_1_command_line_parser_1_1_parsed_command_line_1_1_option.html">Option</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A c-style std::string name-value pair that represents command line argument (arg: name, val: value)  <a href="structpvr_1_1platform_1_1_command_line_parser_1_1_parsed_command_line_1_1_option.html#details">More...</a><br/></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A c-style std::string name-value pair that represents command line argument (arg: name, val: value) <a href="structpvr_1_1platform_1_1_command_line_parser_1_1_parsed_command_line_1_1_option.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
@@ -108,8 +108,11 @@ typedef std::vector&lt; <a class="el" href="structpvr_1_1platform_1_1_command_li
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:aa590d686bafee82e2c1f8d13317c5131"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa590d686bafee82e2c1f8d13317c5131"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>ParsedCommandLine</b> (int argc, char **argv)</td></tr>
+<tr class="memitem:a241ef6bc24945b7edc5ff818f3f17554"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_command_line_parser_1_1_parsed_command_line.html#a241ef6bc24945b7edc5ff818f3f17554">ParsedCommandLine</a> ()=default</td></tr>
+<tr class="memdesc:a241ef6bc24945b7edc5ff818f3f17554"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default constructor for a command line parser. <a href="#a241ef6bc24945b7edc5ff818f3f17554">More...</a><br/></td></tr>
+<tr class="separator:a241ef6bc24945b7edc5ff818f3f17554"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa590d686bafee82e2c1f8d13317c5131"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_command_line_parser_1_1_parsed_command_line.html#aa590d686bafee82e2c1f8d13317c5131">ParsedCommandLine</a> (int argc, char **argv)</td></tr>
+<tr class="memdesc:aa590d686bafee82e2c1f8d13317c5131"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor for a command line parser. <a href="#aa590d686bafee82e2c1f8d13317c5131">More...</a><br/></td></tr>
 <tr class="separator:aa590d686bafee82e2c1f8d13317c5131"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ade4cc71180f06ebcc5227af79fb688fb"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_command_line_parser_1_1_parsed_command_line.html#ade4cc71180f06ebcc5227af79fb688fb">getBoolOptionSetFalseIfPresent</a> (const char *name, bool &amp;outValue) const </td></tr>
 <tr class="memdesc:ade4cc71180f06ebcc5227af79fb688fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">If a specific argument was present, set outValue to False. <a href="#ade4cc71180f06ebcc5227af79fb688fb">More...</a><br/></td></tr>
@@ -138,7 +141,76 @@ Public Member Functions</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>This class provides access to the command line arguments of a <a class="el" href="classpvr_1_1platform_1_1_command_line_parser.html" title="This class parses, abstracts, stores and handles command line options passed on application launch...">CommandLineParser</a>. Its lifecycle is tied to the commandLineParser.</p>
-</div><h2 class="groupheader">Member Function Documentation</h2>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a class="anchor" id="a241ef6bc24945b7edc5ff818f3f17554"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">pvr::platform::CommandLineParser::ParsedCommandLine::ParsedCommandLine </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Default constructor for a command line parser.</p>
+
+</div>
+</div>
+<a class="anchor" id="aa590d686bafee82e2c1f8d13317c5131"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">pvr::platform::CommandLineParser::ParsedCommandLine::ParsedCommandLine </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>argc</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char **&#160;</td>
+          <td class="paramname"><em>argv</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Constructor for a command line parser.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">argc</td><td>The number of arguments to parse</td></tr>
+    <tr><td class="paramname">argv</td><td>A list of argc arguments to parse</td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
 <a class="anchor" id="ade4cc71180f06ebcc5227af79fb688fb"></a>
 <div class="memitem">
 <div class="memproto">
@@ -263,7 +335,7 @@ Public Member Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">name</td><td>The command line argument (e.g. "-captureFrames")</td></tr>
-    <tr><td class="paramname">outValue</td><td>The value passed with the argument interpreted as a float. If the name was not present, it remains unchanged. If it was not representing a float, it silently returns zero (0.0).</td></tr>
+    <tr><td class="paramname">outValue</td><td>The value passed with the argument interpreted as a float. If the name was not present, or no value was passed with the name,it remains unchanged. If it was not representing a float, it silently returns zero (0.0).</td></tr>
   </table>
   </dd>
 </dl>
@@ -307,7 +379,7 @@ Public Member Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">name</td><td>The command line argument (e.g. "-captureFrames")</td></tr>
-    <tr><td class="paramname">outValue</td><td>The value passed with the argument interpreted as an integer. If the name was not present, it remains unchanged. If it was not representing a float, it silently returns zero (0).</td></tr>
+    <tr><td class="paramname">outValue</td><td>The value passed with the argument interpreted as an integer. If the name was not present, or no value was passed with the name, it remains unchanged. If it was not representing a float, it silently returns zero (0).</td></tr>
   </table>
   </dd>
 </dl>
@@ -421,7 +493,7 @@ Public Member Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">name</td><td>The command line argument (e.g. "-captureFrames")</td></tr>
-    <tr><td class="paramname">values</td><td>A std::vector of strings where all values will be appended/</td></tr>
+    <tr><td class="paramname">outValues</td><td>A std::vector of strings where all values will be appended/</td></tr>
   </table>
   </dd>
 </dl>

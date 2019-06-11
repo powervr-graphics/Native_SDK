@@ -250,6 +250,22 @@ pvr::Result OpenGLESPVRScopeRemote::initApplication()
 	// set angle of rotation
 	_angleY = 0.0f;
 
+	// We want a data connection to PVRPerfServer
+	{
+		_spsCommsData = pplInitialise("PVRScopeRemote", 14);
+		_hasCommunicationError = false;
+
+		// Demonstrate that there is a good chance of the initial data being
+		// lost - the connection is normally completed asynchronously.
+		pplSendMark(_spsCommsData, "lost", static_cast<uint32_t>(strlen("lost")));
+
+		// This is entirely optional. Wait for the connection to succeed, it will
+		// timeout if e.g. PVRPerfServer is not running.
+		int isConnected;
+		pplWaitForConnection(_spsCommsData, &isConnected, 1, 200);
+	}
+	CPPLProcessingScoped PPLProcessingScoped(_spsCommsData, __FUNCTION__, static_cast<uint32_t>(strlen(__FUNCTION__)), _frameCounter);
+
 	return pvr::Result::Success;
 }
 
@@ -294,22 +310,6 @@ pvr::Result OpenGLESPVRScopeRemote::initView()
 
 	_deviceResources->shaders[0] = 0;
 	_deviceResources->shaders[1] = 0;
-
-	// We want a data connection to PVRPerfServer
-	{
-		_spsCommsData = pplInitialise("PVRScopeRemote", 14);
-		_hasCommunicationError = false;
-
-		// Demonstrate that there is a good chance of the initial data being
-		// lost - the connection is normally completed asynchronously.
-		pplSendMark(_spsCommsData, "lost", static_cast<uint32_t>(strlen("lost")));
-
-		// This is entirely optional. Wait for the connection to succeed, it will
-		// timeout if e.g. PVRPerfServer is not running.
-		int isConnected;
-		pplWaitForConnection(_spsCommsData, &isConnected, 1, 200);
-	}
-	CPPLProcessingScoped PPLProcessingScoped(_spsCommsData, __FUNCTION__, static_cast<uint32_t>(strlen(__FUNCTION__)), _frameCounter);
 
 	//  Remotely editable library items
 	if (_spsCommsData)
@@ -505,102 +505,105 @@ pvr::Result OpenGLESPVRScopeRemote::renderFrame()
 	{
 		_hasCommunicationError |= !pplSendProcessingBegin(_spsCommsData, __FUNCTION__, static_cast<uint32_t>(strlen(__FUNCTION__)), _frameCounter);
 
-		// mark every N frames
-		if (!(_frameCounter % 100))
+		if (!_hasCommunicationError)
 		{
-			char buf[128];
-			const int nLen = sprintf(buf, "frame %u", _frameCounter);
-			_hasCommunicationError |= !pplSendMark(_spsCommsData, buf, nLen);
-		}
-
-		// Check for dirty items
-		_hasCommunicationError |= !pplSendProcessingBegin(_spsCommsData, "dirty", static_cast<uint32_t>(strlen("dirty")), _frameCounter);
-		{
-			uint32_t nItem, nNewDataLen;
-			const char* pData;
-			bool recompile = false;
-			while (pplLibraryDirtyGetFirst(_spsCommsData, &nItem, &nNewDataLen, &pData))
+			// mark every N frames
+			if (!(_frameCounter % 100))
 			{
-				Log(LogLevel::Debug, "dirty item %u %u 0x%08x\n", nItem, nNewDataLen, pData);
-				switch (nItem)
-				{
-				case 0:
-					_vertShaderSrc.assign(pData, pData + nNewDataLen);
-					_vertShaderSrc.push_back(0);
-					recompile = true;
-					break;
-
-				case 1:
-					_fragShaderSrc.assign(pData, pData + nNewDataLen);
-					_fragShaderSrc.push_back(0);
-					recompile = true;
-					break;
-
-				case 2:
-					if (nNewDataLen == sizeof(SSPSCommsLibraryTypeFloat))
-					{
-						const SSPSCommsLibraryTypeFloat* const psData = (SSPSCommsLibraryTypeFloat*)pData;
-						_progUniforms.specularExponent = psData->fCurrent;
-						Log(LogLevel::Information, "Setting Specular Exponent to value [%6.2f]", _progUniforms.specularExponent);
-					}
-					break;
-				case 3:
-					if (nNewDataLen == sizeof(SSPSCommsLibraryTypeFloat))
-					{
-						const SSPSCommsLibraryTypeFloat* const psData = (SSPSCommsLibraryTypeFloat*)pData;
-						_progUniforms.metallicity = psData->fCurrent;
-						Log(LogLevel::Information, "Setting Metallicity to value [%3.2f]", _progUniforms.metallicity);
-					}
-					break;
-				case 4:
-					if (nNewDataLen == sizeof(SSPSCommsLibraryTypeFloat))
-					{
-						const SSPSCommsLibraryTypeFloat* const psData = (SSPSCommsLibraryTypeFloat*)pData;
-						_progUniforms.reflectivity = psData->fCurrent;
-						Log(LogLevel::Information, "Setting Reflectivity to value [%3.2f]", _progUniforms.reflectivity);
-					}
-					break;
-				case 5:
-					if (nNewDataLen == sizeof(SSPSCommsLibraryTypeFloat))
-					{
-						const SSPSCommsLibraryTypeFloat* const psData = (SSPSCommsLibraryTypeFloat*)pData;
-						_progUniforms.albedo.r = psData->fCurrent;
-						Log(LogLevel::Information, "Setting Albedo Red channel to value [%3.2f]", _progUniforms.albedo.r);
-					}
-					break;
-				case 6:
-					if (nNewDataLen == sizeof(SSPSCommsLibraryTypeFloat))
-					{
-						const SSPSCommsLibraryTypeFloat* const psData = (SSPSCommsLibraryTypeFloat*)pData;
-						_progUniforms.albedo.g = psData->fCurrent;
-						Log(LogLevel::Information, "Setting Albedo Green channel to value [%3.2f]", _progUniforms.albedo.g);
-					}
-					break;
-				case 7:
-					if (nNewDataLen == sizeof(SSPSCommsLibraryTypeFloat))
-					{
-						const SSPSCommsLibraryTypeFloat* const psData = (SSPSCommsLibraryTypeFloat*)pData;
-						_progUniforms.albedo.b = psData->fCurrent;
-						Log(LogLevel::Information, "Setting Albedo Blue channel to value [%3.2f]", _progUniforms.albedo.b);
-					}
-					break;
-				}
+				char buf[128];
+				const int nLen = sprintf(buf, "frame %u", _frameCounter);
+				_hasCommunicationError |= !pplSendMark(_spsCommsData, buf, nLen);
 			}
 
-			if (recompile)
+			// Check for dirty items
+			_hasCommunicationError |= !pplSendProcessingBegin(_spsCommsData, "dirty", static_cast<uint32_t>(strlen("dirty")), _frameCounter);
 			{
-				try
+				uint32_t nItem, nNewDataLen;
+				const char* pData;
+				bool recompile = false;
+				while (pplLibraryDirtyGetFirst(_spsCommsData, &nItem, &nNewDataLen, &pData))
 				{
-					createProgram(&_fragShaderSrc[0], &_vertShaderSrc[0], true);
+					Log(LogLevel::Debug, "dirty item %u %u 0x%08x\n", nItem, nNewDataLen, pData);
+					switch (nItem)
+					{
+					case 0:
+						_vertShaderSrc.assign(pData, pData + nNewDataLen);
+						_vertShaderSrc.push_back(0);
+						recompile = true;
+						break;
+
+					case 1:
+						_fragShaderSrc.assign(pData, pData + nNewDataLen);
+						_fragShaderSrc.push_back(0);
+						recompile = true;
+						break;
+
+					case 2:
+						if (nNewDataLen == sizeof(SSPSCommsLibraryTypeFloat))
+						{
+							const SSPSCommsLibraryTypeFloat* const psData = (SSPSCommsLibraryTypeFloat*)pData;
+							_progUniforms.specularExponent = psData->fCurrent;
+							Log(LogLevel::Information, "Setting Specular Exponent to value [%6.2f]", _progUniforms.specularExponent);
+						}
+						break;
+					case 3:
+						if (nNewDataLen == sizeof(SSPSCommsLibraryTypeFloat))
+						{
+							const SSPSCommsLibraryTypeFloat* const psData = (SSPSCommsLibraryTypeFloat*)pData;
+							_progUniforms.metallicity = psData->fCurrent;
+							Log(LogLevel::Information, "Setting Metallicity to value [%3.2f]", _progUniforms.metallicity);
+						}
+						break;
+					case 4:
+						if (nNewDataLen == sizeof(SSPSCommsLibraryTypeFloat))
+						{
+							const SSPSCommsLibraryTypeFloat* const psData = (SSPSCommsLibraryTypeFloat*)pData;
+							_progUniforms.reflectivity = psData->fCurrent;
+							Log(LogLevel::Information, "Setting Reflectivity to value [%3.2f]", _progUniforms.reflectivity);
+						}
+						break;
+					case 5:
+						if (nNewDataLen == sizeof(SSPSCommsLibraryTypeFloat))
+						{
+							const SSPSCommsLibraryTypeFloat* const psData = (SSPSCommsLibraryTypeFloat*)pData;
+							_progUniforms.albedo.r = psData->fCurrent;
+							Log(LogLevel::Information, "Setting Albedo Red channel to value [%3.2f]", _progUniforms.albedo.r);
+						}
+						break;
+					case 6:
+						if (nNewDataLen == sizeof(SSPSCommsLibraryTypeFloat))
+						{
+							const SSPSCommsLibraryTypeFloat* const psData = (SSPSCommsLibraryTypeFloat*)pData;
+							_progUniforms.albedo.g = psData->fCurrent;
+							Log(LogLevel::Information, "Setting Albedo Green channel to value [%3.2f]", _progUniforms.albedo.g);
+						}
+						break;
+					case 7:
+						if (nNewDataLen == sizeof(SSPSCommsLibraryTypeFloat))
+						{
+							const SSPSCommsLibraryTypeFloat* const psData = (SSPSCommsLibraryTypeFloat*)pData;
+							_progUniforms.albedo.b = psData->fCurrent;
+							Log(LogLevel::Information, "Setting Albedo Blue channel to value [%3.2f]", _progUniforms.albedo.b);
+						}
+						break;
+					}
 				}
-				catch (std::runtime_error& e)
+
+				if (recompile)
 				{
-					_deviceResources->uiRenderer.getDefaultControls()->setText(std::string("*** Could not recompile the shaders passed from PVRScopeComms **** ") + e.what());
-					Log("*** Could not recompile the shaders passed from PVRScopeComms **** %s", e.what());
+					try
+					{
+						createProgram(&_fragShaderSrc[0], &_vertShaderSrc[0], true);
+					}
+					catch (std::runtime_error& e)
+					{
+						_deviceResources->uiRenderer.getDefaultControls()->setText(std::string("*** Could not recompile the shaders passed from PVRScopeComms **** ") + e.what());
+						Log("*** Could not recompile the shaders passed from PVRScopeComms **** %s", e.what());
+					}
 				}
 			}
+			_hasCommunicationError |= !pplSendProcessingEnd(_spsCommsData);
 		}
-		_hasCommunicationError |= !pplSendProcessingEnd(_spsCommsData);
 	}
 
 	if (_spsCommsData)
@@ -628,7 +631,6 @@ pvr::Result OpenGLESPVRScopeRemote::renderFrame()
 	if (_spsCommsData)
 	{
 		_hasCommunicationError |= !pplSendProcessingEnd(_spsCommsData);
-
 		_hasCommunicationError |= !pplSendProcessingBegin(_spsCommsData, "UIRenderer", static_cast<uint32_t>(strlen("UIRenderer")), _frameCounter);
 	}
 

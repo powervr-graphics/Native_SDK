@@ -1,6 +1,5 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classpvrvk_1_1impl_1_1_device_object_debug_marker.html" title="pvrvk::impl::DeviceObject\lDebugMarker\&lt; Sampler_ \&gt;" alt="" coords="227,5,405,46"/>
-<area shape="rect" id="node2" href="$classpvrvk_1_1impl_1_1_sampler__.html" title="SamplerVk_ implementation that wraps the vulkan sampler" alt="" coords="453,45,603,72"/>
-<area shape="rect" id="node3" href="$classpvrvk_1_1impl_1_1_object_handle.html" title="pvrvk::impl::ObjectHandle\l\&lt; VkSampler \&gt;" alt="" coords="5,70,179,111"/>
-<area shape="rect" id="node4" href="$classpvrvk_1_1impl_1_1_device_object_handle.html" title="pvrvk::impl::DeviceObject\lHandle\&lt; VkSampler \&gt;" alt="" coords="229,70,403,111"/>
+<area shape="rect" id="node1" href="$classpvrvk_1_1impl_1_1_p_v_r_vk_object_base.html" title="pvrvk::impl::PVRVkObject\lBase\&lt; VkDisplayModeKHR,\l PVRVkObjectType \&gt;" alt="" coords="5,4,195,60"/>
+<area shape="rect" id="node2" href="$classpvrvk_1_1impl_1_1_p_v_r_vk_physical_device_object_base.html" title="pvrvk::impl::PVRVkPhysical\lDeviceObjectBase\&lt; VkDisplayMode\lKHR, ObjectType::e_DISPLAY_MODE_KHR \&gt;" alt="" coords="243,4,543,60"/>
+<area shape="rect" id="node3" href="$classpvrvk_1_1impl_1_1_display_mode__.html" title="Each display has one or more supported modes associated with it by default. These are called the disp..." alt="" coords="593,19,770,45"/>
 </map>

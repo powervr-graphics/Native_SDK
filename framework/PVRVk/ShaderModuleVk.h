@@ -13,11 +13,28 @@ namespace pvrvk {
 struct ShaderModuleCreateInfo
 {
 public:
+	/// <summary>Default Constructor</summary>
+	/// <param name="flags">A set of pvrvk::ShaderModuleCreateFlags defining how the ShaderModule will be created</param>
+	inline ShaderModuleCreateInfo(ShaderModuleCreateFlags flags = ShaderModuleCreateFlags::e_NONE) : _flags(flags) {}
+
 	/// <summary>Constructor</summary>
 	/// <param name="shaderSources">Points to code that is used to create the shader module</param>
 	/// <param name="flags">A set of pvrvk::ShaderModuleCreateFlags defining how the ShaderModule will be created</param>
 	inline ShaderModuleCreateInfo(const std::vector<uint32_t>& shaderSources, ShaderModuleCreateFlags flags = ShaderModuleCreateFlags::e_NONE)
 		: _flags(flags), _shaderSources(shaderSources)
+	{
+		if (_shaderSources.empty())
+		{
+			throw ErrorValidationFailedEXT("Attempted to create ShaderModuleCreateInfo with empty shader source.");
+		}
+	}
+
+	/// <summary>Constructor</summary>
+	/// <param name="shaderSources">Points to code that is used to create the shader module</param>
+	/// <param name="shaderSourcesSize">The size of the shader sources in bytes</param>
+	/// <param name="flags">A set of pvrvk::ShaderModuleCreateFlags defining how the ShaderModule will be created</param>
+	inline ShaderModuleCreateInfo(const uint32_t* shaderSources, uint32_t shaderSourcesSize, ShaderModuleCreateFlags flags = ShaderModuleCreateFlags::e_NONE)
+		: _flags(flags), _shaderSources(shaderSources, shaderSources + shaderSourcesSize)
 	{
 		if (_shaderSources.empty())
 		{
@@ -41,7 +58,7 @@ public:
 	/// <returns>The size of shader sources</returns>
 	inline uint32_t getCodeSize() const
 	{
-		return static_cast<uint32_t>(_shaderSources.size());
+		return static_cast<uint32_t>(_shaderSources.size() * 4.0);
 	}
 	/// <summary>Get the shader sources</summary>
 	/// <returns>The set of shader sources</returns>
@@ -64,10 +81,33 @@ private:
 };
 namespace impl {
 /// <summary>Vulkan shader module wrapper</summary>
-class ShaderModule_ : public DeviceObjectHandle<VkShaderModule>, public DeviceObjectDebugMarker<ShaderModule_>
+class ShaderModule_ : public PVRVkDeviceObjectBase<VkShaderModule, ObjectType::e_SHADER_MODULE>, public DeviceObjectDebugUtils<ShaderModule_>
 {
+private:
+	friend class Device_;
+
+	class make_shared_enabler
+	{
+	protected:
+		make_shared_enabler() {}
+		friend class ShaderModule_;
+	};
+
+	static ShaderModule constructShared(const DeviceWeakPtr& device, const ShaderModuleCreateInfo& createInfo)
+	{
+		return std::make_shared<ShaderModule_>(make_shared_enabler{}, device, createInfo);
+	}
+
+	/// <summary>Creation information used when creating the shader module.</summary>
+	ShaderModuleCreateInfo _createInfo;
+
 public:
+	//!\cond NO_DOXYGEN
 	DECLARE_NO_COPY_SEMANTICS(ShaderModule_)
+	ShaderModule_(make_shared_enabler, const DeviceWeakPtr& device, const ShaderModuleCreateInfo& createInfo);
+
+	~ShaderModule_();
+	//!\endcond
 
 	/// <summary>Get the ShaderModule creation flags</summary>
 	/// <returns>The set of ShaderModule creation flags</returns>
@@ -93,18 +133,6 @@ public:
 	{
 		return _createInfo;
 	}
-
-private:
-	template<typename>
-	friend struct ::pvrvk::RefCountEntryIntrusive;
-	friend class ::pvrvk::impl::Device_;
-
-	ShaderModule_(const DeviceWeakPtr& device, const ShaderModuleCreateInfo& createInfo);
-
-	~ShaderModule_();
-
-	/// <summary>Creation information used when creating the shader module.</summary>
-	ShaderModuleCreateInfo _createInfo;
 };
 } // namespace impl
 } // namespace pvrvk

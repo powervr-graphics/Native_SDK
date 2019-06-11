@@ -153,8 +153,7 @@ public:
 	}
 
 	/// <summary>Equality Operator. This function performs a strcmp(), so it is orders of magnitude slower than comparing
-	/// to another StringHash, but still much faster than creating a temporary StringHash for one comparison.
-	/// </summary>
+	/// to another StringHash, but still much faster than creating a temporary StringHash for one comparison.</summary>
 	/// <param name="str">A std::string to compare with</param>
 	/// <returns>True if they are the same.</returns>
 	bool operator==(const char* str) const

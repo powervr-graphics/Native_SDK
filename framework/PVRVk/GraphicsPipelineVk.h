@@ -17,8 +17,7 @@ namespace pvrvk {
 /// NOTES: The folloowing are required
 ///  - at least one viewport & scissor
 ///  - renderpass
-///  - pipeline layout
-/// </summary>
+///  - pipeline layout</summary>
 struct GraphicsPipelineCreateInfo : public PipelineCreateInfo<GraphicsPipeline>
 {
 public:
@@ -34,7 +33,7 @@ public:
 	TesselationStageCreateInfo tesselationStates; //!< Tesselation Control and evaluation shader information
 	PipelineMultisampleStateCreateInfo multiSample; //!< Multisampling information
 	DynamicStatesCreateInfo dynamicStates; //!< Dynamic state Information
-	RenderPass renderPass; //!< The Renderpass
+	RenderPass renderPass; //!< The RenderPass
 	uint32_t subpass; //!< The subpass index
 
 	GraphicsPipelineCreateInfo() : PipelineCreateInfo(), subpass(0) {}
@@ -46,15 +45,26 @@ namespace impl {
 /// supported for Graphics pipelines.</summary>
 class GraphicsPipeline_ : public Pipeline<GraphicsPipeline, GraphicsPipelineCreateInfo>
 {
-public:
-	DECLARE_NO_COPY_SEMANTICS(GraphicsPipeline_)
-
 private:
-	template<typename>
-	friend struct ::pvrvk::RefCountEntryIntrusive;
-	friend class ::pvrvk::impl::Device_;
+	friend class Device_;
 
-	GraphicsPipeline_(DeviceWeakPtr device, VkPipeline vkPipeline, const GraphicsPipelineCreateInfo& desc) : Pipeline(device, vkPipeline, desc) {}
+	class make_shared_enabler
+	{
+	protected:
+		make_shared_enabler() {}
+		friend class GraphicsPipeline_;
+	};
+
+	static GraphicsPipeline constructShared(const DeviceWeakPtr& device, VkPipeline vkPipeline, const GraphicsPipelineCreateInfo& desc)
+	{
+		return std::make_shared<GraphicsPipeline_>(make_shared_enabler{}, device, vkPipeline, desc);
+	}
+
+public:
+	//!\cond NO_DOXYGEN
+	DECLARE_NO_COPY_SEMANTICS(GraphicsPipeline_)
+	GraphicsPipeline_(make_shared_enabler, const DeviceWeakPtr& device, VkPipeline vkPipeline, const GraphicsPipelineCreateInfo& desc) : Pipeline(device, vkPipeline, desc) {}
+	//!\endcond
 };
 } // namespace impl
 } // namespace pvrvk

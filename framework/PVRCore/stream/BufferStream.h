@@ -1,6 +1,6 @@
 /*!
 \brief A Stream wrapping a block of memory.
-\file PVRCore/io/BufferStream.h
+\file PVRCore/stream/BufferStream.h
 \author PowerVR by Imagination, Developer Technology Team
 \copyright Copyright (c) Imagination Technologies Limited.
 */
@@ -16,8 +16,7 @@ public:
 	/// <summary>The pointer type normally used to wrap a Stream interface.</summary>
 	typedef std::unique_ptr<BufferStream> ptr_type;
 	/// <summary>Create a BufferStream from a buffer and associate it with an (arbitrary) filename.</summary>
-	/// <param name="fileName">The created stream will have this filename. Arbitrary - not used to access anything.
-	/// </param>
+	/// <param name="fileName">The created stream will have this filename. Arbitrary - not used to access anything.</param>
 	/// <param name="buffer">Pointer to the memory that this stream will be used to access. Must be kept live from the
 	/// point the stream is opened until the stream is closed</param>
 	/// <param name="bufferSize">The size, in bytes, of the buffer</param>
@@ -35,10 +34,8 @@ public:
 		close();
 	}
 
-	/// <summary>Create a BufferStream from a read only buffer and associate it with an (arbitrary) filename. Read only.
-	/// </summary>
-	/// <param name="fileName">The created stream will have this filename. Arbitrary - not used to access anything.
-	/// </param>
+	/// <summary>Create a BufferStream from a read only buffer and associate it with an (arbitrary) filename. Read only.</summary>
+	/// <param name="fileName">The created stream will have this filename. Arbitrary - not used to access anything.</param>
 	/// <param name="buffer">Pointer to the memory that this stream will be used to access. Must be kept live from the
 	/// point the stream is opened until the stream is closed</param>
 	/// <param name="bufferSize">The size, in bytes, of the buffer</param>
@@ -86,8 +83,7 @@ public:
 		}
 	}
 
-	/// <summary>Main write function. Write into the stream the specified amount of items from a provided buffer.
-	/// </summary>
+	/// <summary>Main write function. Write into the stream the specified amount of items from a provided buffer.</summary>
 	/// <param name="elementSize">The size of each element that will be written.</param>
 	/// <param name="numElements">The number of elements to write.</param>
 	/// <param name="buffer">The buffer from which to read the data. If the buffer is smaller than elementSize *
@@ -128,6 +124,7 @@ public:
 		}
 	}
 
+	/// <summary>Provides a simple clamping of val between values minim and maxim.</summary>
 #define CLAMP(val, minim, maxim) ((val < minim) ? minim : ((val > maxim) ? maxim : val))
 
 	/// <summary>Seek a specific point for random access streams. After successful call, subsequent operation will

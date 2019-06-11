@@ -65,7 +65,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li class="current"><a href="functions.html"><span>All</span></a></li>
       <li><a href="functions_func.html"><span>Functions</span></a></li>
       <li><a href="functions_vars.html"><span>Variables</span></a></li>
-      <li><a href="functions_type.html"><span>Typedefs</span></a></li>
     </ul>
   </div>
   <div id="navrow4" class="tabs3">
@@ -124,11 +123,21 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 : <a class="el" href="classpvrvk_1_1impl_1_1_secondary_command_buffer__.html#a09d9e885485c1753a0b13f9ab07a78f6">pvrvk::impl::SecondaryCommandBuffer_</a>
 , <a class="el" href="classpvrvk_1_1impl_1_1_command_buffer_base__.html#a6d449edb8cf90b9c237f940f0b561a9c">pvrvk::impl::CommandBufferBase_</a>
 </li>
+<li>beginDebugUtilsLabel()
+: <a class="el" href="classpvrvk_1_1impl_1_1_command_buffer_base__.html#a45afc2b8a3f4fe54db79d82e1dc42ac6">pvrvk::impl::CommandBufferBase_</a>
+, <a class="el" href="classpvrvk_1_1impl_1_1_queue__.html#af73e1a0e6c19e240224df465de7726a6">pvrvk::impl::Queue_</a>
+</li>
 <li>beginQuery()
 : <a class="el" href="classpvrvk_1_1impl_1_1_command_buffer_base__.html#a862a03340dc1812389fca32ceaffa881">pvrvk::impl::CommandBufferBase_</a>
 </li>
+<li>beginQueryIndexed()
+: <a class="el" href="classpvrvk_1_1impl_1_1_command_buffer_base__.html#acd9c026fda6f898ed9195b8bcf7ec2b1">pvrvk::impl::CommandBufferBase_</a>
+</li>
 <li>beginRenderPass()
-: <a class="el" href="classpvrvk_1_1impl_1_1_command_buffer__.html#aea052999bfa9e0f3a7e97565f343fc61">pvrvk::impl::CommandBuffer_</a>
+: <a class="el" href="classpvrvk_1_1impl_1_1_command_buffer__.html#a603d49d2da660f187ad2f99993c1f06b">pvrvk::impl::CommandBuffer_</a>
+</li>
+<li>beginTransformFeedback()
+: <a class="el" href="classpvrvk_1_1impl_1_1_command_buffer_base__.html#a06530f4a0a7b0e10705650ca23d96b2b">pvrvk::impl::CommandBufferBase_</a>
 </li>
 <li>bindDescriptorSet()
 : <a class="el" href="classpvrvk_1_1impl_1_1_command_buffer_base__.html#a37e81e963a89f7b2b16112acb4c01d54">pvrvk::impl::CommandBufferBase_</a>
@@ -146,18 +155,21 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 : <a class="el" href="classpvrvk_1_1impl_1_1_image__.html#a6fead2ab34caa492a133bdf61e34e482">pvrvk::impl::Image_</a>
 </li>
 <li>bindPipeline()
-: <a class="el" href="classpvrvk_1_1impl_1_1_command_buffer_base__.html#a79d2f3d38f2aad3fa3ba4b7b793d1421">pvrvk::impl::CommandBufferBase_</a>
+: <a class="el" href="classpvrvk_1_1impl_1_1_command_buffer_base__.html#adfc394932317683fb0582841423527b2">pvrvk::impl::CommandBufferBase_</a>
 </li>
 <li>binds
-: <a class="el" href="structpvrvk_1_1_sparse_buffer_memory_bind_info.html#adbd4895f9be47041d846352377b8ea82">pvrvk::SparseBufferMemoryBindInfo</a>
-, <a class="el" href="structpvrvk_1_1_sparse_image_opaque_memory_bind_info.html#a8c7f461650eae834a9864d783b11fad6">pvrvk::SparseImageOpaqueMemoryBindInfo</a>
+: <a class="el" href="structpvrvk_1_1_sparse_image_opaque_memory_bind_info.html#a8c7f461650eae834a9864d783b11fad6">pvrvk::SparseImageOpaqueMemoryBindInfo</a>
+, <a class="el" href="structpvrvk_1_1_sparse_buffer_memory_bind_info.html#adbd4895f9be47041d846352377b8ea82">pvrvk::SparseBufferMemoryBindInfo</a>
 , <a class="el" href="structpvrvk_1_1_sparse_image_memory_bind_info.html#a01a3af71aa81c3edbdef82e3811523c5">pvrvk::SparseImageMemoryBindInfo</a>
 </li>
 <li>bindSparse()
 : <a class="el" href="classpvrvk_1_1impl_1_1_queue__.html#afbd160d82b479b8563768bb512e9bbc3">pvrvk::impl::Queue_</a>
 </li>
+<li>bindTransformFeedbackBuffers()
+: <a class="el" href="classpvrvk_1_1impl_1_1_command_buffer_base__.html#a8ef32304c508552915c284f6764bdd47">pvrvk::impl::CommandBufferBase_</a>
+</li>
 <li>bindVertexBuffer()
-: <a class="el" href="classpvrvk_1_1impl_1_1_command_buffer_base__.html#a2382fc789d3e96d50693f9e5483ff0b0">pvrvk::impl::CommandBufferBase_</a>
+: <a class="el" href="classpvrvk_1_1impl_1_1_command_buffer_base__.html#a2853f758e9e70e100e3140405fc8e03c">pvrvk::impl::CommandBufferBase_</a>
 </li>
 <li>bindVertexBuffers()
 : <a class="el" href="classpvrvk_1_1impl_1_1_command_buffer_base__.html#a40c135444b1cab09ac85b642323155cb">pvrvk::impl::CommandBufferBase_</a>
@@ -169,20 +181,20 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 : <a class="el" href="structpvrvk_1_1_sampler_create_info.html#a5128734e080c6e3dc3dc0e5989433322">pvrvk::SamplerCreateInfo</a>
 </li>
 <li>buffer
-: <a class="el" href="structpvrvk_1_1_descriptor_buffer_info.html#a72503e25cf737b2adfe9a4fe90679001">pvrvk::DescriptorBufferInfo</a>
-, <a class="el" href="structpvrvk_1_1_sparse_buffer_memory_bind_info.html#ae43f2b3d9a50ec857ad8f3f463143029">pvrvk::SparseBufferMemoryBindInfo</a>
+: <a class="el" href="structpvrvk_1_1_sparse_buffer_memory_bind_info.html#ae43f2b3d9a50ec857ad8f3f463143029">pvrvk::SparseBufferMemoryBindInfo</a>
+, <a class="el" href="structpvrvk_1_1_descriptor_buffer_info.html#a72503e25cf737b2adfe9a4fe90679001">pvrvk::DescriptorBufferInfo</a>
 </li>
 <li>bufferBinds
 : <a class="el" href="structpvrvk_1_1_bind_sparse_info.html#ac84fac261497cee4bc1e523e457d9f84">pvrvk::BindSparseInfo</a>
 </li>
 <li>BufferCreateInfo()
-: <a class="el" href="structpvrvk_1_1_buffer_create_info.html#aade5d3061d94954e2233759f86b91b5f">pvrvk::BufferCreateInfo</a>
+: <a class="el" href="structpvrvk_1_1_buffer_create_info.html#a713ea294a72444ffa33704f8f8aa790a">pvrvk::BufferCreateInfo</a>
 </li>
 <li>BufferMemoryBarrier()
-: <a class="el" href="structpvrvk_1_1_buffer_memory_barrier.html#a58710302950c143ef48adb54ed8bad4c">pvrvk::BufferMemoryBarrier</a>
+: <a class="el" href="structpvrvk_1_1_buffer_memory_barrier.html#aaf656d82ff6de74839c4de5734d4f94a">pvrvk::BufferMemoryBarrier</a>
 </li>
 <li>BufferViewCreateInfo()
-: <a class="el" href="structpvrvk_1_1_buffer_view_create_info.html#a4bb1dd9dc21fc7a5ab6b413ed6b26032">pvrvk::BufferViewCreateInfo</a>
+: <a class="el" href="structpvrvk_1_1_buffer_view_create_info.html#a8e7e86363302b3630bb26507a065c94e">pvrvk::BufferViewCreateInfo</a>
 </li>
 </ul>
 </div><!-- contents -->

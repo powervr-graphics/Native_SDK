@@ -87,6 +87,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">pvr::assets::GltfReader Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>This class creates <a class="el" href="classpvr_1_1assets_1_1_model.html" title="The Model class represents an entire Scene, or Model. It is mainly a Node structure, allowing various different kinds of data to be stored in the Nodes. The class contains a tree-like structure of Nodes. Each Node can be a Mesh node (containing a Mesh), Camera node or Light node. The tree-structure assumes transformational hierarchy (as usual). Transformations are expressed through Animation objects (a static transform is an animation with a single frame) There is an implicit order in the nodes - First in the array the Mesh nodes will be laid out, then Camera and Light nodes.">pvr::assets::Model</a> object from Streams of GLTF <a class="el" href="classpvr_1_1assets_1_1_model.html" title="The Model class represents an entire Scene, or Model. It is mainly a Node structure, allowing various different kinds of data to be stored in the Nodes. The class contains a tree-like structure of Nodes. Each Node can be a Mesh node (containing a Mesh), Camera node or Light node. The tree-structure assumes transformational hierarchy (as usual). Transformations are expressed through Animation objects (a static transform is an animation with a single frame) There is an implicit order in the nodes - First in the array the Mesh nodes will be laid out, then Camera and Light nodes.">Model</a> data. Use the readAsset method to create <a class="el" href="classpvr_1_1assets_1_1_model.html" title="The Model class represents an entire Scene, or Model. It is mainly a Node structure, allowing various different kinds of data to be stored in the Nodes. The class contains a tree-like structure of Nodes. Each Node can be a Mesh node (containing a Mesh), Camera node or Light node. The tree-structure assumes transformational hierarchy (as usual). Transformations are expressed through Animation objects (a static transform is an animation with a single frame) There is an implicit order in the nodes - First in the array the Mesh nodes will be laid out, then Camera and Light nodes.">Model</a> objects from the data in your stream. 
+ <a href="classpvr_1_1assets_1_1_gltf_reader.html#details">More...</a></p>
 <div class="dynheader">
 Inheritance diagram for pvr::assets::GltfReader:</div>
 <div class="dyncontent">
@@ -104,7 +107,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a3ddd681ee252ddf4df17474e6a21b31f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct reader from the specified stream. <a href="#a3ddd681ee252ddf4df17474e6a21b31f">More...</a><br/></td></tr>
 <tr class="separator:a3ddd681ee252ddf4df17474e6a21b31f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>This class creates <a class="el" href="classpvr_1_1assets_1_1_model.html" title="The Model class represents an entire Scene, or Model. It is mainly a Node structure, allowing various different kinds of data to be stored in the Nodes. The class contains a tree-like structure of Nodes. Each Node can be a Mesh node (containing a Mesh), Camera node or Light node. The tree-structure assumes transformational hierarchy (as usual). Transformations are expressed through Animation objects (a static transform is an animation with a single frame) There is an implicit order in the nodes - First in the array the Mesh nodes will be laid out, then Camera and Light nodes.">pvr::assets::Model</a> object from Streams of GLTF <a class="el" href="classpvr_1_1assets_1_1_model.html" title="The Model class represents an entire Scene, or Model. It is mainly a Node structure, allowing various different kinds of data to be stored in the Nodes. The class contains a tree-like structure of Nodes. Each Node can be a Mesh node (containing a Mesh), Camera node or Light node. The tree-structure assumes transformational hierarchy (as usual). Transformations are expressed through Animation objects (a static transform is an animation with a single frame) There is an implicit order in the nodes - First in the array the Mesh nodes will be laid out, then Camera and Light nodes.">Model</a> data. Use the readAsset method to create <a class="el" href="classpvr_1_1assets_1_1_model.html" title="The Model class represents an entire Scene, or Model. It is mainly a Node structure, allowing various different kinds of data to be stored in the Nodes. The class contains a tree-like structure of Nodes. Each Node can be a Mesh node (containing a Mesh), Camera node or Light node. The tree-structure assumes transformational hierarchy (as usual). Transformations are expressed through Animation objects (a static transform is an animation with a single frame) There is an implicit order in the nodes - First in the array the Mesh nodes will be laid out, then Camera and Light nodes.">Model</a> objects from the data in your stream.</p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="a303f106ce26a76cc6822e7c9468bc51c"></a>
 <div class="memitem">
 <div class="memproto">
@@ -128,6 +133,12 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Construct empty reader.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">assetProvider</td><td>The asset provider to use for working with gltf files</td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -167,6 +178,7 @@ Public Member Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">assetStream</td><td>The stream to read from</td></tr>
+    <tr><td class="paramname">assetProvider</td><td>The asset provider to use for working with gltf files</td></tr>
   </table>
   </dd>
 </dl>

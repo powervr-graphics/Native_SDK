@@ -1,6 +1,6 @@
 /*!
 \brief Class necessary for the entry point of the AppKit based implementation of PVRShell.
-\file PVRShell\EntryPoint/NSApplicationMain/AppController.h
+\file PVRShell/EntryPoint/NSApplicationMain/AppController.h
 \author PowerVR by Imagination, Developer Technology Team
 \copyright Copyright (c) Imagination Technologies Limited.
 */

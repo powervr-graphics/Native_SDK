@@ -6,6 +6,10 @@ Navigation2D
 
 Demonstrates parsing, processing and rendering of raw OSM data as a 2D navigational map.
 
+API
+---
+* Vulkan
+
 Description
 -----------
 The 2D navigation example shows the complete process of creating a navigational map from raw data, in this 
@@ -24,11 +28,6 @@ This example also shows several rendering techniques such as:
 * anti-aliased lines with outline for roads 
 * UI elements for road names and places of interest
 * an effective tile-based approach to batching and culling the geometry. 
-
-APIs
-----
-* OpenGL ES 2.0+
-* Vulkan
 
 Controls
 --------

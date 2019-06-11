@@ -11,38 +11,47 @@ bottom of this file or of any Demo file for the newDemo function the user must i
 #include "PVRCore/IAssetProvider.h"
 #include "PVRCore/stream/BufferStream.h"
 #include "PVRCore/Log.h"
+#include "PVRCore/strings/StringFunctions.h"
 #include <queue>
 #include <bitset>
 
-/// <summary>Main namespace for the PowerVR Framework</summary>
 namespace pvr {
-
-//!\cond NO_DOXYGEN
+/// <summary>A storage structure for the pointer location</summary>
 struct PointerLocationStore
 {
-	int16_t x;
-	int16_t y;
+	int16_t x; //!< The x position
+	int16_t y; //!< The y position
+
+	/// <summary>Operator+</summary>
+	/// <param name="rhs">Another PointerLocationStore.</param>
+	/// <returns>The new PointerLocationStore</returns>
 	PointerLocationStore operator+(const PointerLocationStore& rhs)
 	{
 		return PointerLocationStore{ static_cast<int16_t>(x + rhs.x), static_cast<int16_t>(y + rhs.y) };
 	}
 
+	/// <summary>Operator-</summary>
+	/// <param name="rhs">Another PointerLocationStore.</param>
+	/// <returns>The new PointerLocationStore</returns>
 	PointerLocationStore operator-(const PointerLocationStore& rhs)
 	{
 		return PointerLocationStore{ static_cast<int16_t>(x - rhs.x), static_cast<int16_t>(y - rhs.y) };
 	}
 
+	/// <summary>Operator+=</summary>
+	/// <param name="rhs">Another PointerLocationStore.</param>
 	void operator+=(const PointerLocationStore& rhs)
 	{
 		*this = *this + rhs;
 	}
 
+	/// <summary>Operator-=</summary>
+	/// <param name="rhs">Another PointerLocationStore.</param>
 	void operator-=(const PointerLocationStore& rhs)
 	{
 		*this = *this - rhs;
 	}
 };
-//!\endcond
 
 /// <summary>Mouse pointer coordinates.</summary>
 class PointerLocation : public PointerLocationStore
@@ -91,9 +100,8 @@ enum class SystemEvent
 /// <summary>Enumeration representing a Keyboard Key.</summary>
 enum class Keys : uint8_t
 {
-	//!\cond NO_DOXYGEN
 	// clang-format off
-//Whenever possible, keys get ASCII values of their default (non-shifted) values of a default US keyboard.
+	//Whenever possible, keys get ASCII values of their default (non-shifted) values of a default US keyboard.
 	Backspace = 0x08,
 	Tab = 0x09,
 	Return = 0x0D,
@@ -142,10 +150,9 @@ enum class Keys : uint8_t
 	MaxNumKeyCodes,
 	Unknown = 0xFF
 	// clang-format on
-	//!\endcond
 };
 
-/// <summary> A window configuration event (e.g. resize)</summary>
+/// <summary>A window configuration event (e.g. resize)</summary>
 struct ConfigureEvent
 {
 	int x; ///< x coordinate of the left of the window
@@ -173,8 +180,8 @@ struct ShellEvent
 		KeyUp ///< Fired when a key is lifted
 	} type; ///< The type of the event
 
-	/// <summary> Unnamed union storing the event data. Depending on event type, different
-	/// members can/should be accessed </summary>
+	/// <summary>Unnamed union storing the event data. Depending on event type, different
+	/// members can/should be accessed</summary>
 	union
 	{
 		PointerLocationStore location; ///< The location of the mouse/touch, if a mouse/touch event
@@ -186,8 +193,7 @@ struct ShellEvent
 
 struct ShellData;
 class ShellOS;
-/// <summary>The PowerVR Shell (pvr::Shell) is the main class that the user will inherit his application from.
-/// </summary>
+/// <summary>The PowerVR Shell (pvr::Shell) is the main class that the user will inherit his application from.</summary>
 /// <remarks>This class abstracts the platform for the user and provides a unified interface to it. The user will
 /// normally write his application as a class inheriting from the Shell. This way the user can have specific and
 /// easy to use places to write his code - Application start, window initialisation, per frame, cleanup. All
@@ -309,11 +315,9 @@ protected:
 	/// signal the end of frames.</remarks>
 	virtual Result renderFrame() = 0;
 
-	/// <summary>IMPLEMENT THIS FUNCTION IN YOUR APPLICATION CLASS. This event represents graphics context released.
-	/// </summary>
+	/// <summary>IMPLEMENT THIS FUNCTION IN YOUR APPLICATION CLASS. This event represents graphics context released.</summary>
 	/// <returns>When implementing, return a suitable error code to signify failure. If pvr::Result::Success is not
-	/// returned, the Shell will detect that, clean up, and exit. If the shell was exiting, this will happen anyway.
-	/// </returns>
+	/// returned, the Shell will detect that, clean up, and exit. If the shell was exiting, this will happen anyway.</returns>
 	/// <remarks>This function must be implemented in the user's application class. It will be fired once before the
 	/// main Graphics Context is lost. The user should use this callback as his main callback to release all API
 	/// objects as they will be invalid afterwards. In simple applications where all objects are created in initView,
@@ -357,16 +361,14 @@ protected:
 	/// touchscreen).</summary>
 	/// <param name="buttonIdx">The index of the button (LMB:0, RMB:1, MMB:2, Touch:0).</param>
 	/// <param name="location">The location of the click.</param>
-	/// <remarks>This event will be fired after a movement of more than a few pixels is detected with a button down.
-	/// </remarks>
+	/// <remarks>This event will be fired after a movement of more than a few pixels is detected with a button down.</remarks>
 	virtual void eventDragStart(int buttonIdx, PointerLocation location)
 	{
 		(void)location;
 		(void)buttonIdx;
 	}
 
-	/// <summary>Override in your class to handle the initial press (down) of the main input device (mouse, touchscreen).
-	/// </summary>
+	/// <summary>Override in your class to handle the initial press (down) of the main input device (mouse, touchscreen).</summary>
 	/// <param name="buttonIdx">The index of the button (LMB:0, RMB:1, MMB:2, Touch:0)</param>
 	/// <remarks>This event will be fired on pressing any button.</remarks>
 	virtual void eventButtonDown(int buttonIdx)
@@ -374,8 +376,7 @@ protected:
 		(void)buttonIdx;
 	}
 
-	/// <summary>Override in your class to handle the release (up) of the main input device (mouse, touchscreen).
-	/// </summary>
+	/// <summary>Override in your class to handle the release (up) of the main input device (mouse, touchscreen).</summary>
 	/// <param name="buttonIdx">The index of the button (LMB:0, RMB:1, MMB:2, Touch:0)</param>
 	/// <remarks>This event will be fired on releasing any button.</remarks>
 	virtual void eventButtonUp(int buttonIdx)
@@ -408,8 +409,7 @@ protected:
 		(void)key;
 	}
 
-	/// <summary>Override in your class to handle a unified interface for input across different platforms and devices.
-	/// </summary>
+	/// <summary>Override in your class to handle a unified interface for input across different platforms and devices.</summary>
 	/// <param name="key">The Simplified Unified Event</param>
 	/// <remarks>This event abstracts, maps and unifies several input devices, in a way with a mind to unify several
 	/// platforms and input devices. The Left/Right/Up/Down keyboard key, Swipe Left/Right/Up/Down both cause
@@ -523,10 +523,9 @@ public:
 	/// <returns>The underlying Window object of this shell</returns>
 	/// <remarks>OSManager interface implementation.</remarks>
 	OSWindow getWindow();
-	/* END IMPLEMENT OSManager*/
 
 private:
-	/* called by our friend the State Machine */
+	// called by the State Machine
 
 	bool init(ShellData* data);
 	Result shellInitApplication();
@@ -546,8 +545,7 @@ public:
 
 	/// <summary>Query if a key is pressed.</summary>
 	/// <param name="buttonIndex">The number of the button to check (LMB:0, RMB:1, MMB:2)</param>
-	/// <returns>True if a mouse/touchscreen exists and the button with this is index pressed. Simple touch is 0.
-	/// </returns>
+	/// <returns>True if a mouse/touchscreen exists and the button with this is index pressed. Simple touch is 0.</returns>
 	bool isButtonPressed(int8_t buttonIndex)
 	{
 		return buttonIndex > 7 ? false : _pointerState.isPressed(buttonIndex);
@@ -616,8 +614,7 @@ public:
 	/// <returns>True if the application is running in full screen. False otherwise.</returns>
 	bool isFullScreen() const;
 
-	/// <summary>Get the width of the application area (window width for windowed, or screen width for full screen).
-	/// </summary>
+	/// <summary>Get the width of the application area (window width for windowed, or screen width for full screen).</summary>
 	/// <returns>The width of the application area.</returns>
 	uint32_t getWidth() const;
 
@@ -638,8 +635,7 @@ public:
 	/// <returns>The minimum api type requested.</returns>
 	Api getMinApi() const;
 
-	/// <summary>ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Set the window size, or resolution for fullscreen.
-	/// </summary>
+	/// <summary>ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Set the window size, or resolution for fullscreen.</summary>
 	/// <param name="w">The width of the window / horizontal resolution</param>
 	/// <param name="h">The height of the window / vertical resolution</param>
 	/// <returns>pvr::Result::Success if successful. pvr::Result::UnsupportedRequest if unsuccessful.</returns>
@@ -653,8 +649,7 @@ public:
 	/// <returns>The window position Y coordinate. (0 for fullscreen)</returns>
 	uint32_t getPositionY() const;
 
-	/// <summary>ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Set the window position. Not supported in all platforms.
-	/// </summary>
+	/// <summary>ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Set the window position. Not supported in all platforms.</summary>
 	/// <param name="x">x-coordinate (Distance of the left of the window to the left of the screen)</param>
 	/// <param name="y">y-coordinate (Distance of the top of the window to the top of the screen)</param>
 	/// <returns>pvr::Result::Success if successful. pvr::Result::UnsupportedRequest if unsuccessful.</returns>
@@ -665,8 +660,7 @@ public:
 	/// <returns>The frame after which the application is set to quit. If not set, returns -1</returns>
 	int32_t getQuitAfterFrame() const;
 
-	/// <summary>ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Set a frame after which the application will quit.
-	/// </summary>
+	/// <summary>ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Set a frame after which the application will quit.</summary>
 	/// <param name="value">The frame after which the application is set to quit. Set to -1 to disable.</param>
 	void setQuitAfterFrame(uint32_t value);
 
@@ -675,8 +669,7 @@ public:
 	/// <returns>The time after which the application will quit. If not set, returns -1</returns>
 	float getQuitAfterTime() const;
 
-	/// <summary>ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Set a time after which the application will quit.
-	/// </summary>
+	/// <summary>ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Set a time after which the application will quit.</summary>
 	/// <param name="value">The time (seconds) after which the application will quit. Set to -1 to disable.</param>
 	void setQuitAfterTime(float value);
 
@@ -737,8 +730,7 @@ public:
 	/// <param name="colorSpace">the desired framebuffer colorspace (either lRgb or sRgb)</param>
 	void setBackBufferColorspace(ColorSpace colorSpace);
 
-	/// <summary>ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Set the number of framebuffer color bits per pixel.
-	/// </summary>
+	/// <summary>ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Set the number of framebuffer color bits per pixel.</summary>
 	/// <param name="r">The Red framebuffer channel color bits</param>
 	/// <param name="g">The Green framebuffer channel color bits</param>
 	/// <param name="b">The Blue framebuffer channel color bits</param>
@@ -747,8 +739,7 @@ public:
 	/// check the actual number obtained</remarks>
 	void setColorBitsPerPixel(uint32_t r, uint32_t g, uint32_t b, uint32_t a);
 
-	/// <summary>ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Set the number of framebuffer Depth bits per pixel.
-	/// </summary>
+	/// <summary>ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Set the number of framebuffer Depth bits per pixel.</summary>
 	/// <param name="value">The desired framebuffer Depth channel bits.</param>
 	/// <remarks>Actual number obtained may vary per implementation. Query with getDepthBitsPerPixel after initView to
 	/// check the actual number obtained</remarks>
@@ -856,19 +847,28 @@ public:
 	/// <summary>Set a message to be displayed on application exit. Normally used to display critical error messages
 	/// that might be missed if displayed as just logs.</summary>
 	/// <param name="format">A printf-style format std::string</param>
-	/// <param name="...">Printf-style variable arguments</param>
-	void setExitMessage(const char* const format, ...);
+	/// <param name="args">Printf-style variable arguments</param>
+	template<typename... Args>
+	void setExitMessage(const char* const format, Args... args)
+	{
+		_data->exitMessage = strings::createFormatted(format, args...);
+		Log(LogLevel::Information, strings::createFormatted("Exit message set to: %s", _data->exitMessage.c_str()).c_str());
+	}
 
 	/// <summary>Sets the application name.</summary>
 	/// <param name="format">A printf-style format std::string</param>
-	/// <param name="...">Printf-style variable parameters</param>
-	void setApplicationName(const char* const format, ...);
+	/// <param name="args">Printf-style variable parameters</param>
+	template<typename... Args>
+	void setApplicationName(const char* const format, Args... args);
 
-	/// <summary>Sets the window title. Will only be actually displayed If used on or before initApplication.
-	/// </summary>
+	/// <summary>Sets the window title. Will only be actually displayed If used on or before initApplication.</summary>
 	/// <param name="format">A printf-style format std::string</param>
-	/// <param name="...">Printf-style variable parameters</param>
-	void setTitle(const char* const format, ...);
+	/// <param name="args">Printf-style variable parameters</param>
+	template<typename... Args>
+	void setTitle(const char* const format, Args... args)
+	{
+		_data->attributes.windowTitle = strings::createFormatted(format, args...);
+	}
 
 	/// <summary>Get the exit message set by the user.</summary>
 	/// <returns>The exit message set by the user.</returns>
@@ -883,8 +883,7 @@ public:
 	const std::string& getDefaultReadPath() const;
 
 	/// <summary>Get a list of all paths that will be tried when looking for loading files.</summary>
-	/// <returns>The a list of all the read paths that will successively be tried when looking to read a file.
-	/// </returns>
+	/// <returns>The a list of all the read paths that will successively be tried when looking to read a file.</returns>
 	const std::vector<std::string>& getReadPaths() const;
 
 	/// <summary>Get the path where any files will be saved.</summary>
@@ -892,20 +891,17 @@ public:
 	const std::string& getWritePath() const;
 
 	/// <summary>Signifies the application to clean up and exit. Will go through the normal StateMachine cycle and exit
-	/// cleanly, exactly like returning ExitRenderFrame from RenderFrame. Will skip the next RenderFrame execution.
-	/// </summary>
+	/// cleanly, exactly like returning ExitRenderFrame from RenderFrame. Will skip the next RenderFrame execution.</summary>
 	void exitShell();
 
 	/// <summary>Create and return a Stream object for a specific filename. Uses platform dependent lookup rules to
 	/// create the stream from the filesystem or a platform-specific store (Windows resources, Android .apk assets)
 	/// etc. Will first try the filesystem (if available) and then the built-in stores, in order to allow the user to
 	/// easily override built-in assets.</summary>
-	/// <param name="filename">The name of the file to load. Is usually a raw filename, but may contain a path.
-	/// </param>
+	/// <param name="filename">The name of the file to load. Is usually a raw filename, but may contain a path.</param>
 	/// <param name="errorIfFileNotFound">Set this to false if file-not-found are expected and should not be logged as
 	/// errors.</param>
-	/// <returns>A unique pointer to the Stream returned if successful, an Empty unique pointer if failed.
-	/// </returns>
+	/// <returns>A unique pointer to the Stream returned if successful, an Empty unique pointer if failed.</returns>
 	Stream::ptr_type getAssetStream(const std::string& filename, bool errorIfFileNotFound = true);
 
 	/// <summary>Gets the ShellOS object owned by this shell.</summary>
@@ -922,6 +918,10 @@ public:
 	/// <summary>Generates and returns a potential screenshot name based on the shell write path, frame number and appication name</summary>
 	/// <returns>Returns a potential screenshot name based on the shell write path, frame number and application name.</returns>
 	std::string getScreenshotFileName();
+
+	/// <summary>Adds a new path to the set of read paths</summary>
+	/// <param name="readPath">A new read path to add to the set of read paths.</param>
+	void addReadPath(const std::string& readPath);
 
 private:
 	bool _dragging;

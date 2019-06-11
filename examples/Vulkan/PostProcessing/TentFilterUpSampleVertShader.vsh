@@ -2,6 +2,7 @@
 
 layout(push_constant) uniform pushConstantsBlock{
 	mediump vec2 upSampleConfigs[8];
+	mediump float exposureBias;
 };
 
 layout(location = 0) out mediump vec2 vTexCoords[9];

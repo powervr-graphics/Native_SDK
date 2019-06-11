@@ -1,8 +1,7 @@
 rootProject.name='OpenGLESIntroducingPVRShell'
-if (!hasProperty('NO_FRAMEWORK_BUILD')) {
-	print "=== OpenGLESIntroducingPVRShell: Building framework projects. Pass -PNO_FRAMEWORK_BUILD to the gradle command line to skip building ==="
-	include('PVRCore')
-	project(':PVRCore').projectDir=file('../../../../framework/PVRCore/build-android')
-	include('PVRShell')
-	project(':PVRShell').projectDir=file('../../../../framework/PVRShell/build-android')
-}
+include('pugixml')
+project(':pugixml').projectDir=file('../../../../external/pugixml/build-android')
+include('PVRCore')
+project(':PVRCore').projectDir=file('../../../../framework/PVRCore/build-android')
+include('PVRShell')
+project(':PVRShell').projectDir=file('../../../../framework/PVRShell/build-android')

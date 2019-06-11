@@ -1,6 +1,6 @@
 /*!
 \brief Contains a function to write TGA data to a file
-\file PVRCore/TGAWriter.h
+\file PVRCore/textureio/TGAWriter.h
 \author PowerVR by Imagination, Developer Technology Team
 \copyright Copyright (c) Imagination Technologies Limited.
 */
@@ -98,9 +98,9 @@ inline void writeTGA(const char* filename, uint32_t w, uint32_t h, const unsigne
 /// <param name="filename">C-style string with the filename to write the TGA.</param>
 /// <param name="w">The width of the image</param>
 /// <param name="h">The height of the image</param>
-/// <param name="imageData">Pointer to the RED channel image data</param>
-/// <param name="imageData">Pointer to the GREEN channel image data</param>
-/// <param name="imageData">Pointer to the BLUE channel image data</param>
+/// <param name="imageDataR">Pointer to the RED channel image data</param>
+/// <param name="imageDataG">Pointer to the GREEN channel image data</param>
+/// <param name="imageDataB">Pointer to the BLUE channel image data</param>
 /// <param name="stride">Size in bytes of each pixel</param>
 /// <param name="pixelReplicate">Upscale factor.</param>
 /// <returns>True if successfuly completed, otherwise False. (log error on false)</returns>

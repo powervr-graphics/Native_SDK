@@ -1,7 +1,7 @@
 /*!
 \brief A pvr::assets::Effect is the description of the entire rendering setup and can be used to create
 objects and use them for rendering.
-\file PVRAssets/Effect_2.h
+\file PVRCore/pfx/Effect.h
 \author PowerVR by Imagination, Developer Technology Team
 \copyright Copyright (c) Imagination Technologies Limited.
 */
@@ -14,7 +14,7 @@ objects and use them for rendering.
 #include <set>
 
 namespace pvr {
-/// <summary> The possible scope, or frequency of change, of a variable</summary>
+/// <summary>The possible scope, or frequency of change, of a variable</summary>
 enum class VariableScope
 {
 	Unknown, ///< Scope is unknown, undefined, or custom
@@ -285,13 +285,12 @@ struct SubpassGroup
 /// the same subpass.</summary>
 struct Subpass
 {
-	//!\cond NO_DOXYGEN
+	/// <summary>Specifies maximum values which can be used for Subpasses.</summary>
 	enum
 	{
 		MaxTargets = 4,
 		MaxInputs = 4
 	};
-	//!\endcond
 	StringHash targets[MaxTargets]; ///< The targets of this subpass. May be intermediate textures/attachments, or the final render target
 	StringHash inputs[MaxInputs]; ///< The inputs to this subpass (normally outputs from a previous subpass)
 	bool useDepthStencil; ///< If this subpass has the depth/stencil buffer enabled
@@ -334,7 +333,7 @@ struct Effect : public Asset<Effect>
 		{
 			for (auto it = versionedPipelines.begin(); it != versionedPipelines.end(); ++it)
 			{
-				versions.push_back(it->first);
+				versions.emplace_back(it->first);
 			}
 		}
 		return versions;

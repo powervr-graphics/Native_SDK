@@ -1,8 +1,12 @@
 <map id="/usr/buildxl/buildroot/sdk/branch/SDK/framework/PVRCore/pfx" name="/usr/buildxl/buildroot/sdk/branch/SDK/framework/PVRCore/pfx">
-<area shape="rect" id="node1" href="dir_4a93cf7dc76b50713eea0596a9cf7d38.html" title="pfx" alt="" coords="53,52,125,100"/>
-<area shape="rect" id="node2" href="dir_e4381132991b37e0560c6fda970c8178.html" title="strings" alt="" coords="5,148,77,196"/>
-<area shape="rect" id="edge1-headlabel" href="dir_000007_000009.html" title="1" alt="" coords="65,128,73,143"/>
-<area shape="rect" id="node3" href="dir_233d40f8a91d7f87a473a984557214de.html" title="texture" alt="" coords="101,148,173,196"/>
-<area shape="rect" id="edge2-headlabel" href="dir_000007_000010.html" title="1" alt="" coords="121,121,129,135"/>
-<area shape="rect" id="clust1" href="dir_72a2a6c70dc66b6caf7d035656739fa9.html" title="PVRCore" alt="" coords="43,16,136,111"/>
+<area shape="rect" id="node1" href="dir_4a93cf7dc76b50713eea0596a9cf7d38.html" title="pfx" alt="" coords="149,52,221,100"/>
+<area shape="rect" id="node2" href="dir_487fbd5a972b9cabcd98dc17e3fa209a.html" title="types" alt="" coords="5,148,77,196"/>
+<area shape="rect" id="edge1-headlabel" href="dir_000007_000012.html" title="1" alt="" coords="93,138,101,152"/>
+<area shape="rect" id="node3" href="dir_e4381132991b37e0560c6fda970c8178.html" title="strings" alt="" coords="101,148,173,196"/>
+<area shape="rect" id="edge2-headlabel" href="dir_000007_000009.html" title="1" alt="" coords="161,128,169,143"/>
+<area shape="rect" id="node4" href="dir_233d40f8a91d7f87a473a984557214de.html" title="texture" alt="" coords="197,148,269,196"/>
+<area shape="rect" id="edge3-headlabel" href="dir_000007_000010.html" title="1" alt="" coords="217,121,225,135"/>
+<area shape="rect" id="node5" href="dir_1db9d34783bc71f5d5641f59cacc80d7.html" title="stream" alt="" coords="293,148,365,196"/>
+<area shape="rect" id="edge4-headlabel" href="dir_000007_000008.html" title="1" alt="" coords="279,123,287,138"/>
+<area shape="rect" id="clust1" href="dir_72a2a6c70dc66b6caf7d035656739fa9.html" title="PVRCore" alt="" coords="139,16,232,111"/>
 </map>

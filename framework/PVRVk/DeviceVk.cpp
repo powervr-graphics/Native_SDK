@@ -59,7 +59,7 @@ std::vector<const char*> filterExtensions(const std::vector<VkExtensionPropertie
 		{
 			if (!strcmp(vec[i].extensionName, filters[j]))
 			{
-				retval.push_back(filters[j]);
+				retval.emplace_back(filters[j]);
 				break;
 			}
 		}
@@ -76,7 +76,7 @@ std::vector<const char*> filterLayers(const std::vector<VkLayerProperties>& vec,
 		{
 			if (!strcmp(vec[i].layerName, filters[j]))
 			{
-				retval.push_back(filters[j]);
+				retval.emplace_back(filters[j]);
 			}
 		}
 	}
@@ -93,12 +93,11 @@ pvrvk::GraphicsPipeline Device_::createGraphicsPipeline(const GraphicsPipelineCr
 		return GraphicsPipeline();
 	}
 	vkThrowIfFailed(getVkBindings().vkCreateGraphicsPipelines(
-						getVkHandle(), pipelineCache.isValid() ? pipelineCache->getVkHandle() : VK_NULL_HANDLE, 1, &pipelineFactory.getVkCreateInfo(), nullptr, &vkPipeline),
+						getVkHandle(), pipelineCache ? pipelineCache->getVkHandle() : VK_NULL_HANDLE, 1, &pipelineFactory.getVkCreateInfo(), nullptr, &vkPipeline),
 		"Create GraphicsPipeline Failed.");
 
-	GraphicsPipeline pipeline;
-	pipeline.construct(getWeakReference(), vkPipeline, createInfo);
-	return pipeline;
+	Device device = shared_from_this();
+	return GraphicsPipeline_::constructShared(device, vkPipeline, createInfo);
 }
 
 void Device_::createGraphicsPipelines(const GraphicsPipelineCreateInfo* createInfos, uint32_t numCreateInfos, const PipelineCache& pipelineCache, GraphicsPipeline* outPipelines)
@@ -113,13 +112,14 @@ void Device_::createGraphicsPipelines(const GraphicsPipelineCreateInfo* createIn
 		vkCreateInfos[i] = pipelineFactories[i].getVkCreateInfo();
 	}
 	vkThrowIfFailed(getVkBindings().vkCreateGraphicsPipelines(
-						getVkHandle(), pipelineCache.isValid() ? pipelineCache->getVkHandle() : VK_NULL_HANDLE, numCreateInfos, vkCreateInfos.get(), nullptr, vkPipelines.get()),
+						getVkHandle(), pipelineCache ? pipelineCache->getVkHandle() : VK_NULL_HANDLE, numCreateInfos, vkCreateInfos.get(), nullptr, vkPipelines.get()),
 		"Create GraphicsPipeline Failed");
 
+	Device device = shared_from_this();
 	// create the pipeline wrapper
 	for (uint32_t i = 0; i < numCreateInfos; ++i)
 	{
-		outPipelines[i].construct(getWeakReference(), vkPipelines[i], createInfos[i]);
+		outPipelines[i] = GraphicsPipeline_::constructShared(device, vkPipelines[i], createInfos[i]);
 	}
 }
 
@@ -129,13 +129,12 @@ ComputePipeline Device_::createComputePipeline(const ComputePipelineCreateInfo& 
 	VkPipeline vkPipeline;
 
 	pipelineFactory.init(createInfo);
-	vkThrowIfFailed(getVkBindings().vkCreateComputePipelines(
-						getVkHandle(), pipelineCache.isValid() ? pipelineCache->getVkHandle() : VK_NULL_HANDLE, 1, &pipelineFactory.createInfo, nullptr, &vkPipeline),
+	vkThrowIfFailed(
+		getVkBindings().vkCreateComputePipelines(getVkHandle(), pipelineCache ? pipelineCache->getVkHandle() : VK_NULL_HANDLE, 1, &pipelineFactory.createInfo, nullptr, &vkPipeline),
 		"Create ComputePipeline Failed.");
 
-	ComputePipeline pipeline;
-	pipeline.construct(getWeakReference(), vkPipeline, createInfo);
-	return pipeline;
+	Device device = shared_from_this();
+	return ComputePipeline_::constructShared(device, vkPipeline, createInfo);
 }
 
 void Device_::createComputePipelines(const ComputePipelineCreateInfo* createInfos, uint32_t numCreateInfos, const PipelineCache& pipelineCache, ComputePipeline* outPipelines)
@@ -149,22 +148,22 @@ void Device_::createComputePipelines(const ComputePipelineCreateInfo* createInfo
 		pipelineFactories[i].init(createInfos[i]);
 		vkCreateInfos[i] = pipelineFactories[i].createInfo;
 	}
-	vkThrowIfFailed(getVkBindings().vkCreateComputePipelines(getVkHandle(), pipelineCache.isValid() ? pipelineCache->getVkHandle() : VK_NULL_HANDLE,
+	vkThrowIfFailed(getVkBindings().vkCreateComputePipelines(getVkHandle(), pipelineCache ? pipelineCache->getVkHandle() : VK_NULL_HANDLE,
 						static_cast<uint32_t>(vkCreateInfos.size()), vkCreateInfos.data(), nullptr, vkPipelines.data()),
 		"Create ComputePipelines Failed");
 
+	Device device = shared_from_this();
 	// create the pipeline wrapper
 	for (uint32_t i = 0; i < numCreateInfos; ++i)
 	{
-		outPipelines[i].construct(getWeakReference(), vkPipelines[i], createInfos[i]);
+		outPipelines[i] = ComputePipeline_::constructShared(device, vkPipelines[i], createInfos[i]);
 	}
 }
 
 pvrvk::Image Device_::createImage(const ImageCreateInfo& createInfo)
 {
-	Image image;
-	image.construct(getWeakReference(), createInfo);
-	return image;
+	Device device = shared_from_this();
+	return Image_::constructShared(device, createInfo);
 }
 
 void Device_::updateDescriptorSets(const WriteDescriptorSet* writeDescSets, uint32_t numWriteDescSets, const CopyDescriptorSet* copyDescSets, uint32_t numCopyDescSets)
@@ -179,25 +178,71 @@ void Device_::updateDescriptorSets(const WriteDescriptorSet* writeDescSets, uint
 		if ((writeDescSets[i].getDescriptorType() >= DescriptorType::e_SAMPLER && writeDescSets[i].getDescriptorType() <= DescriptorType::e_STORAGE_IMAGE) ||
 			writeDescSets[i].getDescriptorType() == DescriptorType::e_INPUT_ATTACHMENT)
 		{
-			// Validate the bindings
+#ifdef DEBUG
+			if (writeDescSets[i].getDescriptorType() == DescriptorType::e_SAMPLER)
+			{
+				// Validate the Sampler bindings
+				std::for_each(writeDescSets[i]._infos.begin(), writeDescSets[i]._infos.end(), [](const WriteDescriptorSet::DescriptorInfos& infos) {
+					if (infos.isValid())
+					{
+						assert(infos.imageInfo.sampler && "Sampler Must be valid");
+					}
+				});
+			}
+			else if (writeDescSets[i].getDescriptorType() == DescriptorType::e_COMBINED_IMAGE_SAMPLER)
+			{
+				// Validate the ImageView and Sampler bindings
+				std::for_each(writeDescSets[i]._infos.begin(), writeDescSets[i]._infos.end(), [](const WriteDescriptorSet::DescriptorInfos& infos) {
+					if (infos.isValid())
+					{
+						assert(infos.imageInfo.imageView && "ImageView Must be valid");
+						assert(infos.imageInfo.sampler && "Sampler Must be valid");
+					}
+				});
+			}
+			else
+			{
+				// Validate the ImageView bindings
+				std::for_each(writeDescSets[i]._infos.begin(), writeDescSets[i]._infos.end(), [](const WriteDescriptorSet::DescriptorInfos& infos) {
+					if (infos.isValid())
+					{
+						assert(infos.imageInfo.imageView && "ImageView Must be valid");
+					}
+				});
+			}
+#endif
 			numImageInfos += writeDescSets[i].getNumDescriptors();
 		}
 		else if (writeDescSets[i].getDescriptorType() >= DescriptorType::e_UNIFORM_BUFFER && writeDescSets[i].getDescriptorType() <= DescriptorType::e_STORAGE_BUFFER_DYNAMIC)
 		{
 #ifdef DEBUG
-			std::for_each(writeDescSets[i]._infos.begin(), writeDescSets[i]._infos.end(),
-				[](const WriteDescriptorSet::Infos& infos) { debug_assertion(infos.bufferInfo.buffer.isValid(), "Buffer Must be valid"); });
+			// Validate the Buffer bindings
+			std::for_each(writeDescSets[i]._infos.begin(), writeDescSets[i]._infos.end(), [](const WriteDescriptorSet::DescriptorInfos& infos) {
+				if (infos.isValid())
+				{
+					assert(infos.bufferInfo.buffer && "Buffer Must be valid");
+				}
+			});
 #endif
 			numBufferInfos += writeDescSets[i].getNumDescriptors();
 		}
 		else if (writeDescSets[i].getDescriptorType() == DescriptorType::e_UNIFORM_TEXEL_BUFFER ||
 			writeDescSets[i].getDescriptorType() <= DescriptorType::e_STORAGE_TEXEL_BUFFER) // Texel buffer
 		{
+#ifdef DEBUG
+			// Validate the BufferView bindings
+			std::for_each(writeDescSets[i]._infos.begin(), writeDescSets[i]._infos.end(), [](const WriteDescriptorSet::DescriptorInfos& infos) {
+				if (infos.isValid())
+				{
+					assert(infos.texelBuffer->getBuffer() && "Buffer Must be valid");
+				}
+			});
+#endif
 			numTexelBufferView += writeDescSets[i].getNumDescriptors();
 		}
 		else
 		{
-			debug_assertion(false, "");
+			assert(false && "Unsupported Descriptor type");
 		}
 	}
 
@@ -226,7 +271,7 @@ void Device_::updateDescriptorSets(const WriteDescriptorSet* writeDescSets, uint
 		{
 			vkWriteDescSet.pBufferInfo = bufferInfoVk.data() + vkBufferInfoOffset;
 			std::transform(writeDescSet._infos.begin(), writeDescSet._infos.end(), bufferInfoVk.begin() + vkBufferInfoOffset,
-				[&](const WriteDescriptorSet::Infos& writeDescSet) -> VkDescriptorBufferInfo {
+				[&](const WriteDescriptorSet::DescriptorInfos& writeDescSet) -> VkDescriptorBufferInfo {
 					return VkDescriptorBufferInfo{ writeDescSet.bufferInfo.buffer->getVkHandle(), writeDescSet.bufferInfo.offset, writeDescSet.bufferInfo.range };
 				});
 			vkWriteDescSet.descriptorCount = writeDescSet._infos.size();
@@ -236,9 +281,9 @@ void Device_::updateDescriptorSets(const WriteDescriptorSet* writeDescSets, uint
 		{
 			vkWriteDescSet.pImageInfo = imageInfoVk.data() + vkImageInfoOffset;
 			std::transform(writeDescSet._infos.begin(), writeDescSet._infos.end(), imageInfoVk.begin() + vkImageInfoOffset,
-				[&](const WriteDescriptorSet::Infos& writeDescSet) -> VkDescriptorImageInfo {
-					return VkDescriptorImageInfo{ (writeDescSet.imageInfo.sampler.isValid() ? writeDescSet.imageInfo.sampler->getVkHandle() : VK_NULL_HANDLE),
-						(writeDescSet.imageInfo.imageView.isValid() ? writeDescSet.imageInfo.imageView->getVkHandle() : VK_NULL_HANDLE),
+				[&](const WriteDescriptorSet::DescriptorInfos& writeDescSet) -> VkDescriptorImageInfo {
+					return VkDescriptorImageInfo{ (writeDescSet.imageInfo.sampler ? writeDescSet.imageInfo.sampler->getVkHandle() : VK_NULL_HANDLE),
+						(writeDescSet.imageInfo.imageView ? writeDescSet.imageInfo.imageView->getVkHandle() : VK_NULL_HANDLE),
 						static_cast<VkImageLayout>(writeDescSet.imageInfo.imageLayout) };
 				});
 			vkWriteDescSet.descriptorCount = writeDescSet._infos.size();
@@ -259,99 +304,88 @@ void Device_::updateDescriptorSets(const WriteDescriptorSet* writeDescSets, uint
 
 ImageView Device_::createImageView(const ImageViewCreateInfo& createInfo)
 {
-	ImageView imageView;
-	imageView.construct(getWeakReference(), createInfo);
-	return imageView;
+	Device device = shared_from_this();
+	return ImageView_::constructShared(device, createInfo);
 }
 
 Framebuffer Device_::createFramebuffer(const FramebufferCreateInfo& createInfo)
 {
-	Framebuffer framebuffer;
-	framebuffer.construct(getWeakReference(), createInfo);
-	return framebuffer;
+	Device device = shared_from_this();
+	return Framebuffer_::constructShared(device, createInfo);
 }
 
 Fence Device_::createFence(const FenceCreateInfo& createInfo)
 {
-	Fence fence;
-	fence.construct(getWeakReference(), createInfo);
-	return fence;
+	Device device = shared_from_this();
+	return Fence_::constructShared(device, createInfo);
 }
 
 Event Device_::createEvent(const EventCreateInfo& createInfo)
 {
-	Event event;
-	event.construct(getWeakReference(), createInfo);
-	return event;
+	Device device = shared_from_this();
+	return Event_::constructShared(device, createInfo);
 }
 
 Semaphore Device_::createSemaphore(const SemaphoreCreateInfo& createInfo)
 {
-	Semaphore semaphore;
-	semaphore.construct(getWeakReference(), createInfo);
-	return semaphore;
+	Device device = shared_from_this();
+	return Semaphore_::constructShared(device, createInfo);
 }
 
 Buffer Device_::createBuffer(const BufferCreateInfo& createInfo)
 {
-	Buffer buffer;
-	buffer.construct(getWeakReference(), createInfo);
-	return buffer;
+	Device device = shared_from_this();
+	return Buffer_::constructShared(device, createInfo);
 }
 
 DeviceMemory Device_::allocateMemory(const MemoryAllocationInfo& allocationInfo)
 {
-	debug_assertion(allocationInfo.getMemoryTypeIndex() != uint32_t(-1) && allocationInfo.getAllocationSize() > 0u, "Invalid MemoryAllocationInfo");
-	DeviceMemoryImpl mem;
-	const MemoryPropertyFlags memFlags = _physicalDevice->getMemoryProperties().getMemoryTypes()[allocationInfo.getMemoryTypeIndex()].getPropertyFlags();
-	mem.construct(getWeakReference(), allocationInfo, memFlags);
-	return mem;
+	assert(allocationInfo.getMemoryTypeIndex() != uint32_t(-1) && allocationInfo.getAllocationSize() > 0u && "Invalid MemoryAllocationInfo");
+	const MemoryPropertyFlags memFlags = getPhysicalDevice()->getMemoryProperties().getMemoryTypes()[allocationInfo.getMemoryTypeIndex()].getPropertyFlags();
+	Device device = shared_from_this();
+	return DeviceMemory_::constructShared(device, allocationInfo, memFlags);
 }
 
 ShaderModule Device_::createShaderModule(const ShaderModuleCreateInfo& createInfo)
 {
-	ShaderModule shaderModule;
-	shaderModule.construct(getWeakReference(), createInfo);
-	return shaderModule;
+	Device device = shared_from_this();
+	return ShaderModule_::constructShared(device, createInfo);
 }
 
 Sampler Device_::createSampler(const SamplerCreateInfo& createInfo)
 {
-	Sampler sampler;
-	sampler.construct(getWeakReference(), createInfo);
-	return sampler;
+	Device device = shared_from_this();
+	return Sampler_::constructShared(device, createInfo);
 }
 
 RenderPass Device_::createRenderPass(const RenderPassCreateInfo& createInfo)
 {
-	RenderPass renderPass;
-	renderPass.construct(getReference(), createInfo);
-	return renderPass;
+	Device device = shared_from_this();
+	return RenderPass_::constructShared(device, createInfo);
 }
 
 BufferView Device_::createBufferView(const BufferViewCreateInfo& createInfo)
 {
-	BufferView bufferview;
-	bufferview.construct(getWeakReference(), createInfo);
-	return bufferview;
+	Device device = shared_from_this();
+	return BufferView_::constructShared(device, createInfo);
 }
 
 DescriptorPool Device_::createDescriptorPool(const DescriptorPoolCreateInfo& createInfo)
 {
-	DescriptorPool descPool = impl::DescriptorPool_::createNew(getWeakReference(), createInfo);
-	return descPool;
+	Device device = shared_from_this();
+	return DescriptorPool_::constructShared(device, createInfo);
 }
 
 CommandPool Device_::createCommandPool(const CommandPoolCreateInfo& createInfo)
 {
-	return impl::CommandPool_::createNew(getWeakReference(), createInfo);
+	Device device = shared_from_this();
+	return CommandPool_::constructShared(device, createInfo);
 }
 
 PipelineLayout Device_::createPipelineLayout(const PipelineLayoutCreateInfo& createInfo)
 {
-	PipelineLayout pipelayout;
-	pipelayout.construct(getWeakReference(), createInfo);
-	return pipelayout;
+	Device device = shared_from_this();
+	return PipelineLayout_::constructShared(device, createInfo);
 }
 
 bool Device_::waitForFences(uint32_t numFences, const Fence* const fences, const bool waitAll, const uint64_t timeout)
@@ -376,7 +410,7 @@ bool Device_::waitForFences(uint32_t numFences, const Fence* const fences, const
 	{
 		return true;
 	}
-	debug_assertion(res == Result::e_TIMEOUT, "WaitForFences returned neither success nor timeout, yet did not throw!");
+	assert(res == Result::e_TIMEOUT && "WaitForFences returned neither success nor timeout, yet did not throw!");
 	return false;
 }
 
@@ -401,16 +435,14 @@ void Device_::resetFences(uint32_t numFences, const Fence* const fences)
 
 pvrvk::DescriptorSetLayout Device_::createDescriptorSetLayout(const DescriptorSetLayoutCreateInfo& createInfo)
 {
-	DescriptorSetLayout layout;
-	layout.construct(getWeakReference(), createInfo);
-	return layout;
+	Device device = shared_from_this();
+	return DescriptorSetLayout_::constructShared(device, createInfo);
 }
 
 PipelineCache Device_::createPipelineCache(const PipelineCacheCreateInfo& createInfo)
 {
-	PipelineCache pipelineCache;
-	pipelineCache.construct(getWeakReference(), createInfo);
-	return pipelineCache;
+	Device device = shared_from_this();
+	return PipelineCache_::constructShared(device, createInfo);
 }
 
 void Device_::mergePipelineCache(const PipelineCache* srcPipeCaches, uint32_t numSrcPipeCaches, PipelineCache destPipeCache)
@@ -423,15 +455,14 @@ void Device_::mergePipelineCache(const PipelineCache* srcPipeCaches, uint32_t nu
 
 Swapchain Device_::createSwapchain(const SwapchainCreateInfo& createInfo, const Surface& surface)
 {
-	Swapchain swapchain;
-	swapchain.construct(getWeakReference(), surface, createInfo);
-	return swapchain;
+	Device device = shared_from_this();
+	return Swapchain_::constructShared(device, surface, createInfo);
 }
 
 QueryPool Device_::createQueryPool(const QueryPoolCreateInfo& createInfo)
 {
-	QueryPool queryPool = impl::QueryPool_::createNew(getWeakReference(), createInfo);
-	return queryPool;
+	Device device = shared_from_this();
+	return QueryPool_::constructShared(device, createInfo);
 }
 
 void Device_::waitIdle()
@@ -450,11 +481,38 @@ struct QueueFamilyCreateInfo
 	{}
 };
 
-Device_::Device_(PhysicalDeviceWeakPtr physicalDevice, const DeviceCreateInfo& createInfo) : PhysicalDeviceObjectHandle(physicalDevice)
+void Device_::retrieveQueues()
+{
+	// Retrieve device queues
+	const std::vector<QueueFamilyProperties>& queueFamProps = getPhysicalDevice()->getQueueFamilyProperties();
+
+	uint32_t queueFamilyIndex;
+	uint32_t queueIndex;
+	float queuePriority;
+	for (uint32_t i = 0; i < _createInfo.getNumDeviceQueueCreateInfos(); ++i)
+	{
+		const DeviceQueueCreateInfo& queueCreateInfo = _createInfo.getDeviceQueueCreateInfo(i);
+		queueFamilyIndex = queueCreateInfo.getQueueFamilyIndex();
+
+		_queueFamilies.emplace_back(QueueFamily());
+		_queueFamilies.back().queueFamily = queueFamilyIndex;
+		_queueFamilies.back().queues.resize(queueCreateInfo.getNumQueues());
+		VkQueue vkQueue;
+		Device device = shared_from_this();
+		for (queueIndex = 0; queueIndex < queueCreateInfo.getNumQueues(); ++queueIndex)
+		{
+			queuePriority = queueCreateInfo.getQueuePriority(queueIndex);
+			getVkBindings().vkGetDeviceQueue(getVkHandle(), queueFamilyIndex, queueIndex, &vkQueue);
+			_queueFamilies.back().queues[queueIndex] = Queue_::constructShared(device, vkQueue, queueFamProps[queueFamilyIndex].getQueueFlags(), queueFamilyIndex, queuePriority);
+		}
+	}
+}
+
+Device_::Device_(make_shared_enabler, PhysicalDevice& physicalDevice, const DeviceCreateInfo& createInfo) : PVRVkPhysicalDeviceObjectBase(physicalDevice)
 {
 	_createInfo = createInfo;
 
-	debug_assertion(_physicalDevice->getQueueFamilyProperties().size() >= static_cast<size_t>(1), "A Vulkan device must support at least 1 queue family.");
+	assert(getPhysicalDevice()->getQueueFamilyProperties().size() >= static_cast<size_t>(1) && "A Vulkan device must support at least 1 queue family.");
 
 	ArrayOrVector<VkDeviceQueueCreateInfo, 4> queueCreateInfos(_createInfo.getNumDeviceQueueCreateInfos());
 	for (uint32_t i = 0; i < _createInfo.getNumDeviceQueueCreateInfos(); ++i)
@@ -479,42 +537,55 @@ Device_::Device_(PhysicalDeviceWeakPtr physicalDevice, const DeviceCreateInfo& c
 
 	// Extensions
 	std::vector<const char*> enabledExtensions;
-	if (_createInfo.getNumEnabledExtensionNames())
+	if (_createInfo.getExtensionList().getNumExtensions())
 	{
-		for (uint32_t i = 0; i < _createInfo.getNumEnabledExtensionNames(); ++i)
+		for (uint32_t i = 0; i < _createInfo.getExtensionList().getNumExtensions(); ++i)
 		{
-			enabledExtensions.push_back(_createInfo.getEnabledExtensionName(i).c_str());
+			enabledExtensions.emplace_back(_createInfo.getExtensionList().getExtension(i).getName().c_str());
 		}
 
 		deviceCreateInfo.enabledExtensionCount = static_cast<uint32_t>(enabledExtensions.size());
 		deviceCreateInfo.ppEnabledExtensionNames = enabledExtensions.data();
 	}
 
-	vkThrowIfFailed(
-		_physicalDevice->getInstance()->getVkBindings().vkCreateDevice(_physicalDevice->getVkHandle(), &deviceCreateInfo, nullptr, &_vkHandle), "Vulkan Device Creation failed");
+	vkThrowIfFailed(getPhysicalDevice()->getInstance()->getVkBindings().vkCreateDevice(getPhysicalDevice()->getVkHandle(), &deviceCreateInfo, nullptr, &_vkHandle),
+		"Vulkan Device Creation failed");
 
-	// CHECK PVRTC SUPPORT
-	_supportsPVRTC = isExtensionEnabled("VK_IMG_format_pvrtc");
+	initVkDeviceBindings(getVkHandle(), &_vkBindings, getPhysicalDevice()->getInstance()->getVkBindings().vkGetDeviceProcAddr);
 
-	initVkDeviceBindings(getVkHandle(), &_vkBindings, _physicalDevice->getInstance()->getVkBindings().vkGetDeviceProcAddr);
-	const std::vector<QueueFamilyProperties>& queueFamProps = _physicalDevice->getQueueFamilyProperties();
+	// setup the extension table which can be used to cheaply determine support for extensions
+	_extensionTable.setEnabledExtensions(enabledExtensions);
 
-	uint32_t queueFamilyIndex;
-	uint32_t queueIndex;
-	float queuePriority;
-	for (uint32_t i = 0; i < _createInfo.getNumDeviceQueueCreateInfos(); ++i)
+	if (getEnabledExtensionTable().extTransformFeedbackEnabled)
 	{
-		queueFamilyIndex = queueCreateInfos[i].queueFamilyIndex;
-
-		_queueFamilies.push_back(QueueFamily());
-		_queueFamilies.back().queueFamily = queueFamilyIndex;
-		_queueFamilies.back().queues.resize(queueCreateInfos[i].queueCount);
-		VkQueue vkQueue;
-		for (queueIndex = 0; queueIndex < queueCreateInfos[i].queueCount; ++queueIndex)
+		// use VK_KHR_get_physical_device_properties2 if the extension is supported
+		if (getPhysicalDevice()->getInstance()->getEnabledExtensionTable().khrGetPhysicalDeviceProperties2Enabled)
 		{
-			queuePriority = queueCreateInfos[i].pQueuePriorities[queueIndex];
-			getVkBindings().vkGetDeviceQueue(getVkHandle(), queueFamilyIndex, queueIndex, &vkQueue);
-			_queueFamilies.back().queues[queueIndex].construct(getWeakReference(), vkQueue, queueFamProps[queueFamilyIndex].getQueueFlags(), queueFamilyIndex, queuePriority);
+			{
+				VkPhysicalDeviceTransformFeedbackFeaturesEXT physicalDeviceTransformFeedbackFeaturesEXT = {};
+
+				VkPhysicalDeviceFeatures2KHR deviceFeatures = {};
+				deviceFeatures.sType = static_cast<VkStructureType>(StructureType::e_PHYSICAL_DEVICE_FEATURES_2_KHR);
+				deviceFeatures.pNext = &physicalDeviceTransformFeedbackFeaturesEXT;
+				getPhysicalDevice()->getInstance()->getVkBindings().vkGetPhysicalDeviceFeatures2KHR(getPhysicalDevice()->getVkHandle(), &deviceFeatures);
+
+				// Bypass the VkBaseInStructure part of the returned properties
+				uint32_t offset = sizeof(VkBaseInStructure);
+				memcpy(&_transformFeedbackFeatures, &physicalDeviceTransformFeedbackFeaturesEXT + offset, sizeof(physicalDeviceTransformFeedbackFeaturesEXT) - offset);
+			}
+
+			{
+				VkPhysicalDeviceTransformFeedbackPropertiesEXT physicalDeviceTransformFeedbackPropertiesEXT = {};
+
+				VkPhysicalDeviceProperties2KHR deviceProperties = {};
+				deviceProperties.sType = static_cast<VkStructureType>(StructureType::e_PHYSICAL_DEVICE_PROPERTIES_2_KHR);
+				deviceProperties.pNext = &physicalDeviceTransformFeedbackPropertiesEXT;
+				getPhysicalDevice()->getInstance()->getVkBindings().vkGetPhysicalDeviceProperties2(getPhysicalDevice()->getVkHandle(), &deviceProperties);
+
+				// Bypass the VkBaseInStructure part of the returned properties
+				uint32_t offset = sizeof(VkBaseInStructure);
+				memcpy(&_transformFeedbackProperties, &physicalDeviceTransformFeedbackPropertiesEXT + offset, sizeof(physicalDeviceTransformFeedbackPropertiesEXT) - offset);
+			}
 		}
 	}
 }

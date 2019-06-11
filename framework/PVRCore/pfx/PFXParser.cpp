@@ -1,9 +1,10 @@
 /*!
 \brief Implementation of methods of the PFXReader class.
-\file PVRAssets/fileio/PFXParser.cpp
+\file PVRCore/pfx/PFXParser.cpp
 \author PowerVR by Imagination, Developer Technology Team
 \copyright Copyright (c) Imagination Technologies Limited.
 */
+
 //!\cond NO_DOXYGEN
 #include "PVRCore/pfx/PFXParser.h"
 #include "PVRCore/strings/StringFunctions.h"
@@ -531,7 +532,7 @@ void addEntryToBuffer(effect::BufferDefinition& buffer, pugi::xml_node& entry_no
 	}
 	entry.semantic = entry_node.attribute("semantic").value();
 	entry.dataType = dataTypeFromString(entry_node.attribute("dataType").value());
-	buffer.entries.push_back(std::move(entry));
+	buffer.entries.emplace_back(std::move(entry));
 }
 
 void addBuffers(effect::Effect& effect, pugi::xml_named_node_iterator begin, pugi::xml_named_node_iterator end)
@@ -706,7 +707,7 @@ void addPipelineAttribute(effect::Effect&, const StringHash&, effect::PipelineDe
 	semantic.semantic = attribute_element.attribute("semantic").value();
 	semantic.variableName = attribute_element.attribute("variable").value();
 	semantic.vboBinding = static_cast<uint8_t>(attribute_element.attribute("vboBinding").as_int());
-	pipeline.attributes.push_back(std::move(semantic));
+	pipeline.attributes.emplace_back(std::move(semantic));
 }
 
 void addPipelineUniform(effect::Effect&, const StringHash&, effect::PipelineDefinition& pipeline, pugi::xml_node& attribute_element)
@@ -723,7 +724,7 @@ void addPipelineUniform(effect::Effect&, const StringHash&, effect::PipelineDefi
 	semantic.scope = scopeFromString(attribute_element.attribute("scope"));
 	semantic.set = static_cast<uint8_t>(attribute_element.attribute("set").as_int());
 	semantic.binding = static_cast<uint8_t>(attribute_element.attribute("binding").as_int());
-	pipeline.uniforms.push_back(semantic);
+	pipeline.uniforms.emplace_back(semantic);
 }
 
 void addPipelineShader(effect::Effect& effect, const StringHash& apiName, effect::PipelineDefinition& pipeline, pugi::xml_node& attribute_element)
@@ -733,7 +734,7 @@ void addPipelineShader(effect::Effect& effect, const StringHash& apiName, effect
 	auto it = effect.versionedShaders[apiName].find(shader.name);
 	if (it != effect.versionedShaders[apiName].end())
 	{
-		pipeline.shaders.push_back(&(it->second));
+		pipeline.shaders.emplace_back(&(it->second));
 	}
 	else
 	{
@@ -764,7 +765,7 @@ void addPipelineBuffer(effect::Effect& effect, const StringHash&, effect::Pipeli
 		ref.bufferName = name;
 		it->second.allSupportedBindings = it->second.allSupportedBindings | descriptorTypeToBufferUsage(ref.type);
 		it->second.isDynamic = pvr::isDescriptorTypeDynamic(ref.type);
-		pipeline.buffers.push_back(ref);
+		pipeline.buffers.emplace_back(ref);
 	}
 	else
 	{
@@ -778,7 +779,7 @@ void addPipelineInputAttachment(effect::Effect&, const StringHash&, effect::Pipe
 	ref.binding = static_cast<int8_t>(attribute_element.attribute("binding").as_int());
 	ref.set = static_cast<int8_t>(attribute_element.attribute("set").as_int(-1));
 	ref.targetIndex = static_cast<int8_t>(attribute_element.attribute("targetIndex").as_int(-1));
-	pipeline.inputAttachments.push_back(ref);
+	pipeline.inputAttachments.emplace_back(ref);
 }
 
 void addPipelineTexture(effect::Effect& effect, const StringHash&, effect::PipelineDefinition& pipeline, pugi::xml_node& attribute_element)
@@ -807,7 +808,7 @@ void addPipelineTexture(effect::Effect& effect, const StringHash&, effect::Pipel
 	ref.wrapT = wrapFromAttribute(attribute_element.attribute("wrap_z"), ref.wrapT);
 	ref.variableName = attribute_element.attribute("variable").value();
 	ref.textureName = name;
-	pipeline.textures.push_back(ref);
+	pipeline.textures.emplace_back(ref);
 }
 
 void addPipelineBlending(effect::Effect&, const StringHash&, effect::PipelineDefinition& pipeline, pugi::xml_node& attribute_element)
@@ -974,7 +975,7 @@ void addPipelineRasterization(effect::Effect&, const StringHash&, effect::Pipeli
 
 void addPipelineVertexInputBinding(effect::Effect&, const StringHash&, effect::PipelineDefinition& pipeline, pugi::xml_node& attribute_element)
 {
-	pipeline.vertexBinding.push_back(
+	pipeline.vertexBinding.emplace_back(
 		effect::PipelineVertexBinding(attribute_element.attribute("index").as_uint(), stepRateFromString(attribute_element.attribute("stepRate").as_string(""), StepRate::Vertex)));
 }
 

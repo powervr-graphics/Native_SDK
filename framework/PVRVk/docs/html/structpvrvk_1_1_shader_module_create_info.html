@@ -93,9 +93,15 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:a470f0e3934c20c19c8fe21b2bb8ce040"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_shader_module_create_info.html#a470f0e3934c20c19c8fe21b2bb8ce040">ShaderModuleCreateInfo</a> (ShaderModuleCreateFlags flags=ShaderModuleCreateFlags::e_NONE)</td></tr>
+<tr class="memdesc:a470f0e3934c20c19c8fe21b2bb8ce040"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default Constructor <a href="#a470f0e3934c20c19c8fe21b2bb8ce040">More...</a><br/></td></tr>
+<tr class="separator:a470f0e3934c20c19c8fe21b2bb8ce040"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2111bd4c426a51637d4390ce895a35c6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_shader_module_create_info.html#a2111bd4c426a51637d4390ce895a35c6">ShaderModuleCreateInfo</a> (const std::vector&lt; uint32_t &gt; &amp;shaderSources, ShaderModuleCreateFlags flags=ShaderModuleCreateFlags::e_NONE)</td></tr>
 <tr class="memdesc:a2111bd4c426a51637d4390ce895a35c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor <a href="#a2111bd4c426a51637d4390ce895a35c6">More...</a><br/></td></tr>
 <tr class="separator:a2111bd4c426a51637d4390ce895a35c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa8f5e0e22d14d302020d1fbb4a24af17"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_shader_module_create_info.html#aa8f5e0e22d14d302020d1fbb4a24af17">ShaderModuleCreateInfo</a> (const uint32_t *shaderSources, uint32_t shaderSourcesSize, ShaderModuleCreateFlags flags=ShaderModuleCreateFlags::e_NONE)</td></tr>
+<tr class="memdesc:aa8f5e0e22d14d302020d1fbb4a24af17"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor <a href="#aa8f5e0e22d14d302020d1fbb4a24af17">More...</a><br/></td></tr>
+<tr class="separator:aa8f5e0e22d14d302020d1fbb4a24af17"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a436a3e505f66930f6d384d9cdf0bab9a"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_shader_module_create_info.html#a436a3e505f66930f6d384d9cdf0bab9a">getCodeSize</a> () const </td></tr>
 <tr class="memdesc:a436a3e505f66930f6d384d9cdf0bab9a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the size of the shader sources <a href="#a436a3e505f66930f6d384d9cdf0bab9a">More...</a><br/></td></tr>
 <tr class="separator:a436a3e505f66930f6d384d9cdf0bab9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -115,6 +121,38 @@ Public Member Functions</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>ShaderModule creation descriptor.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a class="anchor" id="a470f0e3934c20c19c8fe21b2bb8ce040"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">pvrvk::ShaderModuleCreateInfo::ShaderModuleCreateInfo </td>
+          <td>(</td>
+          <td class="paramtype">ShaderModuleCreateFlags&#160;</td>
+          <td class="paramname"><em>flags</em> = <code>ShaderModuleCreateFlags::e_NONE</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Default Constructor</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">flags</td><td>A set of pvrvk::ShaderModuleCreateFlags defining how the ShaderModule will be created</td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a class="anchor" id="a2111bd4c426a51637d4390ce895a35c6"></a>
 <div class="memitem">
 <div class="memproto">
@@ -151,6 +189,56 @@ Public Member Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">shaderSources</td><td>Points to code that is used to create the shader module</td></tr>
+    <tr><td class="paramname">flags</td><td>A set of pvrvk::ShaderModuleCreateFlags defining how the ShaderModule will be created</td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="aa8f5e0e22d14d302020d1fbb4a24af17"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">pvrvk::ShaderModuleCreateInfo::ShaderModuleCreateInfo </td>
+          <td>(</td>
+          <td class="paramtype">const uint32_t *&#160;</td>
+          <td class="paramname"><em>shaderSources</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>shaderSourcesSize</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">ShaderModuleCreateFlags&#160;</td>
+          <td class="paramname"><em>flags</em> = <code>ShaderModuleCreateFlags::e_NONE</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Constructor</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">shaderSources</td><td>Points to code that is used to create the shader module</td></tr>
+    <tr><td class="paramname">shaderSourcesSize</td><td>The size of the shader sources in bytes</td></tr>
     <tr><td class="paramname">flags</td><td>A set of pvrvk::ShaderModuleCreateFlags defining how the ShaderModule will be created</td></tr>
   </table>
   </dd>

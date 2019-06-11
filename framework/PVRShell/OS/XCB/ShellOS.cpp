@@ -271,12 +271,12 @@ bool ShellOS::init(DisplayAttributes& data)
 		exePath[res] = '\0'; // Null-terminate readlink's result
 		FilePath filepath(exePath);
 		setApplicationName(filepath.getFilenameNoExtension());
-		_WritePath = filepath.getDirectory() + FilePath::getDirectorySeparator();
-		_ReadPaths.clear();
-		_ReadPaths.push_back(filepath.getDirectory() + FilePath::getDirectorySeparator());
-		_ReadPaths.push_back(std::string(".") + FilePath::getDirectorySeparator());
-		_ReadPaths.push_back(filepath.getDirectory() + FilePath::getDirectorySeparator() + "Assets" + FilePath::getDirectorySeparator());
-		_ReadPaths.push_back(filepath.getDirectory() + FilePath::getDirectorySeparator() + "Assets_" + filepath.getFilenameNoExtension() + FilePath::getDirectorySeparator());
+		_writePath = filepath.getDirectory() + FilePath::getDirectorySeparator();
+		_readPaths.clear();
+		_readPaths.push_back(filepath.getDirectory() + FilePath::getDirectorySeparator());
+		_readPaths.push_back(std::string(".") + FilePath::getDirectorySeparator());
+		_readPaths.push_back(filepath.getDirectory() + FilePath::getDirectorySeparator() + "Assets" + FilePath::getDirectorySeparator());
+		_readPaths.push_back(filepath.getDirectory() + FilePath::getDirectorySeparator() + "Assets_" + filepath.getFilenameNoExtension() + FilePath::getDirectorySeparator());
 	}
 
 	delete[] exePath;

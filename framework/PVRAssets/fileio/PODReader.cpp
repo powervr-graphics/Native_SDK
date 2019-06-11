@@ -684,7 +684,7 @@ void readNodeBlock(Stream& stream, pvr::assets::Model& model, assets::Model::Nod
 			{
 				if (nodeKeyframe[i].nodes.size())
 				{
-					animationInstance.keyframeChannels.push_back(nodeKeyframe[i]);
+					animationInstance.keyframeChannels.emplace_back(nodeKeyframe[i]);
 				}
 			}
 
@@ -731,10 +731,10 @@ void readNodeBlock(Stream& stream, pvr::assets::Model& model, assets::Model::Nod
 			transformArraySize = dataLength / sizeof(float) / 3;
 			if (transformArraySize > 1)
 			{
-				animationData.getInternalData().keyFrames.push_back(pvr::assets::KeyFrameData());
+				animationData.getInternalData().keyFrames.emplace_back(pvr::assets::KeyFrameData());
 				keyFrameData = &animationData.getInternalData().keyFrames.back();
 
-				nodeKeyframe[2].nodes.push_back(&node);
+				nodeKeyframe[2].nodes.emplace_back(&node);
 				nodeKeyframe[2].keyFrame = static_cast<uint32_t>(animationData.getInternalData().keyFrames.size()) - 1;
 
 				keyFrameData->translation.resize(transformArraySize);
@@ -758,9 +758,9 @@ void readNodeBlock(Stream& stream, pvr::assets::Model& model, assets::Model::Nod
 			read4ByteArrayIntoVector<float, float>(stream, transformationData, dataLength / sizeof(float));
 			if (transformArraySize > 1)
 			{
-				animationData.getInternalData().keyFrames.push_back(pvr::assets::KeyFrameData());
+				animationData.getInternalData().keyFrames.emplace_back(pvr::assets::KeyFrameData());
 				keyFrameData = &animationData.getInternalData().keyFrames.back();
-				nodeKeyframe[1].nodes.push_back(&node);
+				nodeKeyframe[1].nodes.emplace_back(&node);
 				nodeKeyframe[1].keyFrame = static_cast<uint32_t>(animationData.getInternalData().keyFrames.size()) - 1;
 
 				keyFrameData->rotate.resize(transformArraySize);
@@ -789,9 +789,9 @@ void readNodeBlock(Stream& stream, pvr::assets::Model& model, assets::Model::Nod
 			read4ByteArrayIntoVector<float, float>(stream, transformationData, dataLength / sizeof(float));
 			if (transformArraySize > 1)
 			{
-				animationData.getInternalData().keyFrames.push_back(pvr::assets::KeyFrameData());
+				animationData.getInternalData().keyFrames.emplace_back(pvr::assets::KeyFrameData());
 				keyFrameData = &animationData.getInternalData().keyFrames.back();
-				nodeKeyframe[0].nodes.push_back(&node);
+				nodeKeyframe[0].nodes.emplace_back(&node);
 				nodeKeyframe[0].keyFrame = static_cast<uint32_t>(animationData.getInternalData().keyFrames.size()) - 1;
 
 				keyFrameData->scale.resize(transformArraySize);
@@ -819,9 +819,9 @@ void readNodeBlock(Stream& stream, pvr::assets::Model& model, assets::Model::Nod
 			transformArraySize = dataLength / sizeof(float) / 16;
 			if (transformArraySize > 1)
 			{
-				animationData.getInternalData().keyFrames.push_back(pvr::assets::KeyFrameData());
+				animationData.getInternalData().keyFrames.emplace_back(pvr::assets::KeyFrameData());
 				keyFrameData = &animationData.getInternalData().keyFrames.back();
-				nodeKeyframe[0].nodes.push_back(&node);
+				nodeKeyframe[0].nodes.emplace_back(&node);
 				nodeKeyframe[0].keyFrame = static_cast<uint32_t>(animationData.getInternalData().keyFrames.size()) - 1;
 				keyFrameData->mat4.resize(transformArraySize);
 				for (uint32_t m = 0; m < transformArraySize; m++)
@@ -1177,7 +1177,7 @@ void readMeshBlock(Stream& stream, assets::Mesh& mesh, assets::Model& model)
 			// Create a skeleton
 			if (boneBatches.batches.size())
 			{
-				model.getInternalData().skeletons.push_back(Skeleton());
+				model.getInternalData().skeletons.emplace_back(Skeleton());
 				Skeleton& skeleton = model.getInternalData().skeletons.back();
 
 				mesh.getInternalData().skeleton = static_cast<uint32_t>(model.getInternalData().skeletons.size()) - 1;
@@ -1518,7 +1518,7 @@ bool PODReader::isSupportedFile(Stream& assetStream)
 vector<std::string> PODReader::getSupportedFileExtensions()
 {
 	vector<std::string> extensions;
-	extensions.push_back("pvr");
+	extensions.emplace_back("pvr");
 	return vector<std::string>(extensions);
 }
 

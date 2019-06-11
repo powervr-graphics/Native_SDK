@@ -10,7 +10,6 @@
 #include "PVRCore/stream/FilePath.h"
 #include "PVRShell/OS/ShellOS.h"
 #include "PVRCore/stream/FileStream.h"
-#include "PVRCore/strings/StringFunctions.h"
 #include "PVRCore/types/Types.h"
 #include "PVRCore/Log.h"
 #include <cstdlib>
@@ -682,32 +681,10 @@ Stream::ptr_type Shell::getAssetStream(const std::string& filename, bool errorIf
 	return Stream::ptr_type((Stream::ptr_type::element_type*)0);
 }
 
-void Shell::setExitMessage(const char* const format, ...)
+template<typename... Args>
+void Shell::setApplicationName(const char* const format, Args... args)
 {
-	va_list argumentList;
-
-	va_start(argumentList, format);
-	_data->exitMessage = strings::vaFormatString(format, argumentList);
-	Log(LogLevel::Information, ("Exit message set to: " + _data->exitMessage).c_str());
-	va_end(argumentList);
-}
-
-void Shell::setApplicationName(const char* const format, ...)
-{
-	va_list argumentList;
-
-	va_start(argumentList, format);
-	getOS().setApplicationName(strings::vaFormatString(format, argumentList).c_str());
-	va_end(argumentList);
-}
-
-void Shell::setTitle(const char* const format, ...)
-{
-	va_list argumentList;
-
-	va_start(argumentList, format);
-	_data->attributes.windowTitle = strings::vaFormatString(format, argumentList);
-	va_end(argumentList);
+	getOS().setApplicationName(strings::createFormatted(format, args...).c_str());
 }
 
 const std::string& Shell::getExitMessage() const
@@ -728,6 +705,11 @@ const std::string& Shell::getDefaultReadPath() const
 const std::vector<std::string>& Shell::getReadPaths() const
 {
 	return getOS().getReadPaths();
+}
+
+void Shell::addReadPath(const std::string& readPaths)
+{
+	getOS().addReadPath(readPaths);
 }
 
 const std::string& Shell::getWritePath() const

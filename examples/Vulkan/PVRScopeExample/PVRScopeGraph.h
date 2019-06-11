@@ -88,7 +88,6 @@ protected:
 
 public:
 	PVRScopeGraph();
-
 	~PVRScopeGraph();
 
 	// Disallow copying
@@ -104,14 +103,10 @@ public:
 	bool isCounterBeingDrawn(uint32_t nCounter) const;
 	bool isCounterPercentage(const uint32_t nCounter) const;
 	bool setActiveGroup(const uint32_t nActiveGroup);
-	uint32_t getActiveGroup() const
-	{
-		return activeGroup;
-	}
+	uint32_t getActiveGroup() const { return activeGroup; }
 	float getMaximumOfData(uint32_t nCounter);
 	float getMaximum(uint32_t nCounter);
 	void setMaximum(uint32_t nCounter, float fMaximum);
-
 	float getStandardFPS() const;
 	int32_t getStandardFPSIndex() const;
 	float getStandard2D() const;
@@ -128,27 +123,20 @@ public:
 	int32_t getStandardShaderVertexIndex() const;
 	float getStandardShaderCompute() const;
 	int32_t getStandardShaderComputeIndex() const;
-
-	uint32_t getCounterNum() const
-	{
-		return numCounter;
-	}
-
+	uint32_t getCounterNum() const { return numCounter; }
 	const char* getCounterName(const uint32_t i) const;
 	int getCounterGroup(const uint32_t i) const;
 
 	void position(const uint32_t nViewportW, const uint32_t nViewportH, pvrvk::Rect2D const& graph);
 
 	void setUpdateInterval(const uint32_t nUpdateInverval);
-	bool isInitialized() const
-	{
-		return _isInitialzed;
-	}
+	bool isInitialized() const { return _isInitialzed; }
 
 	bool init(pvrvk::Device& device, const pvrvk::Extent2D& dimension, pvrvk::DescriptorPool& descPool, pvr::IAssetProvider& assetProvider, pvr::ui::UIRenderer& uiRenderer,
 		const pvrvk::RenderPass& renderPass, pvr::utils::vma::Allocator& vmaAllocator, std::string& outMsg);
 
 protected:
+	void updateCounters();
 	void updateBufferLines();
 	void update(float dt_millis);
 	bool createPipeline(const pvrvk::RenderPass& renderPass, const pvrvk::Extent2D& dimension, std::string& errorStr);

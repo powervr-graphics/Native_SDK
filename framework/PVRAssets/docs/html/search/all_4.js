@@ -5,5 +5,6 @@ var searchData=
   ['defaultsemantics',['defaultSemantics',['../classpvr_1_1assets_1_1_model_1_1_material.html#a6778028ada61337cd887a90d8d87751e',1,'pvr::assets::Model::Material']]],
   ['deleteditemscount',['deletedItemsCount',['../classpvr_1_1_indexed_array.html#a169d593aa4356c676922aa02565d9493',1,'pvr::IndexedArray']]],
   ['destroy',['destroy',['../classpvr_1_1assets_1_1_model.html#abc81369c3ebc723a7ba82f122753f2c4',1,'pvr::assets::Model']]],
-  ['directional',['Directional',['../classpvr_1_1assets_1_1_light.html#a6c46cd62c805c31bdc99f79137e1421bae17b59e435ef806a8ecdbb945fd58d53',1,'pvr::assets::Light']]]
+  ['directional',['Directional',['../classpvr_1_1assets_1_1_light.html#a6c46cd62c805c31bdc99f79137e1421bae17b59e435ef806a8ecdbb945fd58d53',1,'pvr::assets::Light']]],
+  ['durationtime',['durationTime',['../structpvr_1_1assets_1_1_animation_data_1_1_internal_data.html#ac5b8a04cf7c9c5e780fe2e5caab7acd8',1,'pvr::assets::AnimationData::InternalData']]]
 ];

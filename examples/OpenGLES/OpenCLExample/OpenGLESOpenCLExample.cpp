@@ -85,7 +85,10 @@ class OpenGLESOpenCLExample : public pvr::Shell
 		// UIRenderer used to display text
 		pvr::ui::UIRenderer uiRenderer;
 
-		DeviceResources() : progDefault() {}
+				
+		DeviceResources() : progDefault(0), sharedImageGl(0), sharedImageEgl(0), imageCl_Input(0),
+			imageCl_ClToGl(0), imageCl_Backup(0), samplerCl(0)
+		{}
 		~DeviceResources()
 		{
 			if (vbos.size())
@@ -105,14 +108,32 @@ class OpenGLESOpenCLExample : public pvr::Shell
 				progDefault = 0;
 			}
 
-			cl::ReleaseSampler(samplerCl);
-			cl::ReleaseMemObject(imageCl_Input);
-			cl::ReleaseMemObject(imageCl_ClToGl);
-			cl::ReleaseMemObject(imageCl_Backup);
+			if (samplerCl)
+			{
+				cl::ReleaseSampler(samplerCl);
+			}
 
-			gl::DeleteTextures(1, &sharedImageGl);
+			if (imageCl_Input)
+			{
+				cl::ReleaseMemObject(imageCl_Input);
+			}
+			if (imageCl_ClToGl)
+			{
+				cl::ReleaseMemObject(imageCl_ClToGl);
+			}
+			if (imageCl_Backup)
+			{
+				cl::ReleaseMemObject(imageCl_Backup);
+			}
 
-			egl::ext::DestroyImageKHR(egl::GetCurrentDisplay(), sharedImageEgl);
+			if (sharedImageGl)
+			{
+				gl::DeleteTextures(1, &sharedImageGl);
+			}
+			if (sharedImageEgl)
+			{
+				egl::ext::DestroyImageKHR(egl::GetCurrentDisplay(), sharedImageEgl);
+			}
 		}
 	};
 

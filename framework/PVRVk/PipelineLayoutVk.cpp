@@ -10,9 +10,9 @@
 #include <vector>
 namespace pvrvk {
 namespace impl {
-
-PipelineLayout_::PipelineLayout_(const DeviceWeakPtr& device, const PipelineLayoutCreateInfo& createInfo)
-	: DeviceObjectHandle(device), DeviceObjectDebugMarker(DebugReportObjectTypeEXT::e_PIPELINE_LAYOUT_EXT)
+//!\cond NO_DOXYGEN
+PipelineLayout_::PipelineLayout_(make_shared_enabler, const DeviceWeakPtr& device, const PipelineLayoutCreateInfo& createInfo)
+	: PVRVkDeviceObjectBase(device), DeviceObjectDebugUtils()
 {
 	VkPipelineLayoutCreateInfo pipeLayoutInfo = {};
 	VkDescriptorSetLayout bindings[4] = { VK_NULL_HANDLE, VK_NULL_HANDLE, VK_NULL_HANDLE, VK_NULL_HANDLE };
@@ -21,7 +21,7 @@ PipelineLayout_::PipelineLayout_(const DeviceWeakPtr& device, const PipelineLayo
 	for (uint32_t i = 0; i < createInfo.getNumDescriptorSetLayouts(); ++i)
 	{
 		auto& ref = createInfo.getDescriptorSetLayout(i);
-		if (ref.isValid())
+		if (ref)
 		{
 			bindings[i] = ref->getVkHandle();
 			++numLayouts;
@@ -49,8 +49,9 @@ PipelineLayout_::PipelineLayout_(const DeviceWeakPtr& device, const PipelineLayo
 	}
 	pipeLayoutInfo.pushConstantRangeCount = static_cast<uint32_t>(vkPushConstantRange.size());
 	pipeLayoutInfo.pPushConstantRanges = vkPushConstantRange.size() ? vkPushConstantRange.data() : NULL;
-	vkThrowIfFailed(
-		_device->getVkBindings().vkCreatePipelineLayout(_device->getVkHandle(), &pipeLayoutInfo, NULL, &_vkHandle), "PipelineLayout constructor: Failed to create pipeline layout");
+	vkThrowIfFailed(getDevice()->getVkBindings().vkCreatePipelineLayout(getDevice()->getVkHandle(), &pipeLayoutInfo, NULL, &_vkHandle),
+		"PipelineLayout constructor: Failed to create pipeline layout");
 }
+//!\endcond
 } // namespace impl
 } // namespace pvrvk

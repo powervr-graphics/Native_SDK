@@ -90,7 +90,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 
-<p>A <a class="el" href="classpvr_1_1_stream.html" title="This class is used to abstract streams of data (files, blocks of memory, resources etc...">Stream</a> implementation that is used to access resources built in a MS Windows executable.  
+<p>A <a class="el" href="classpvr_1_1_stream.html" title="This class is used to abstract streams of data (files, blocks of memory, resources etc...">Stream</a> implementation that is used to access resources built in a MS Windows executable. 
  <a href="classpvr_1_1_windows_resource_stream.html#details">More...</a></p>
 <div class="dynheader">
 Inheritance diagram for pvr::WindowsResourceStream:</div>
@@ -116,13 +116,13 @@ Public Types</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a94163c7946846c40a6ca014613caff99"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_windows_resource_stream.html#a94163c7946846c40a6ca014613caff99">WindowsResourceStream</a> (const std::string &amp;resourceName)</td></tr>
-<tr class="memdesc:a94163c7946846c40a6ca014613caff99"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor. Creates a new <a class="el" href="classpvr_1_1_windows_resource_stream.html" title="A Stream implementation that is used to access resources built in a MS Windows executable. ">WindowsResourceStream</a> from a Windows Embedded Resource. <a href="#a94163c7946846c40a6ca014613caff99">More...</a><br/></td></tr>
+<tr class="memdesc:a94163c7946846c40a6ca014613caff99"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor. Creates a new <a class="el" href="classpvr_1_1_windows_resource_stream.html" title="A Stream implementation that is used to access resources built in a MS Windows executable.">WindowsResourceStream</a> from a Windows Embedded Resource. <a href="#a94163c7946846c40a6ca014613caff99">More...</a><br/></td></tr>
 <tr class="separator:a94163c7946846c40a6ca014613caff99"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a604199e4c586bbd366c98dad5712d1e7"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_buffer_stream.html#a604199e4c586bbd366c98dad5712d1e7">close</a> ()</td></tr>
 <tr class="memdesc:a604199e4c586bbd366c98dad5712d1e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Closes the stream. <a href="#a604199e4c586bbd366c98dad5712d1e7">More...</a><br/></td></tr>
 <tr class="separator:a604199e4c586bbd366c98dad5712d1e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac579aa0c43b68fe2002aaf73af5b4afe"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_stream.html#ac579aa0c43b68fe2002aaf73af5b4afe">getFileName</a> () const </td></tr>
-<tr class="memdesc:ac579aa0c43b68fe2002aaf73af5b4afe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the filename of the file that this std::string represents, if such exists. Otherwise, empty std::string.  <a href="#ac579aa0c43b68fe2002aaf73af5b4afe">More...</a><br/></td></tr>
+<tr class="memdesc:ac579aa0c43b68fe2002aaf73af5b4afe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the filename of the file that this std::string represents, if such exists. Otherwise, empty std::string. <a href="#ac579aa0c43b68fe2002aaf73af5b4afe">More...</a><br/></td></tr>
 <tr class="separator:ac579aa0c43b68fe2002aaf73af5b4afe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab82888748a24c8c535801b70d7335c14"><td class="memItemLeft" align="right" valign="top">virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_buffer_stream.html#ab82888748a24c8c535801b70d7335c14">getPosition</a> () const </td></tr>
 <tr class="memdesc:ab82888748a24c8c535801b70d7335c14"><td class="mdescLeft">&#160;</td><td class="mdescRight">If suppored, check the current position in the stream. <a href="#ab82888748a24c8c535801b70d7335c14">More...</a><br/></td></tr>
@@ -172,7 +172,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:ae72c20f28afd076dc22c9d143c6e8103"><td class="mdescLeft">&#160;</td><td class="mdescRight">Seek a specific point for random access streams. After successful call, subsequent operation will happen in the specified point. <a href="#ae72c20f28afd076dc22c9d143c6e8103">More...</a><br/></td></tr>
 <tr class="separator:ae72c20f28afd076dc22c9d143c6e8103"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2f32b6932a7986d3ccbb64f5f7f9c21a"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_buffer_stream.html#a2f32b6932a7986d3ccbb64f5f7f9c21a">write</a> (size_t elementSize, size_t numElements, const void *buffer, size_t &amp;dataWritten)</td></tr>
-<tr class="memdesc:a2f32b6932a7986d3ccbb64f5f7f9c21a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Main write function. Write into the stream the specified amount of items from a provided buffer.  <a href="#a2f32b6932a7986d3ccbb64f5f7f9c21a">More...</a><br/></td></tr>
+<tr class="memdesc:a2f32b6932a7986d3ccbb64f5f7f9c21a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Main write function. Write into the stream the specified amount of items from a provided buffer. <a href="#a2f32b6932a7986d3ccbb64f5f7f9c21a">More...</a><br/></td></tr>
 <tr class="separator:a2f32b6932a7986d3ccbb64f5f7f9c21a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab85ae1faa95aa242b1df1154fb2399d8"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_stream.html#ab85ae1faa95aa242b1df1154fb2399d8">writeExact</a> (size_t elementSize, size_t numElements, const void *buffer)</td></tr>
 <tr class="memdesc:ab85ae1faa95aa242b1df1154fb2399d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Main write function. Write into the stream exactly the specified amount of items from a provided buffer, otherwise throw error <a href="#ab85ae1faa95aa242b1df1154fb2399d8">More...</a><br/></td></tr>
@@ -207,7 +207,7 @@ const void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 <tr class="separator:aba2ac2694d051fe446002798c88c6644"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>A <a class="el" href="classpvr_1_1_stream.html" title="This class is used to abstract streams of data (files, blocks of memory, resources etc...">Stream</a> implementation that is used to access resources built in a MS Windows executable. </p>
+<div class="textblock"><p>A <a class="el" href="classpvr_1_1_stream.html" title="This class is used to abstract streams of data (files, blocks of memory, resources etc...">Stream</a> implementation that is used to access resources built in a MS Windows executable.</p>
 <p>This <a class="el" href="classpvr_1_1_stream.html" title="This class is used to abstract streams of data (files, blocks of memory, resources etc...">Stream</a> abstraction allows the user to easily access the Resources embedded in Microsoft Windows .exe/.dll files created using Windows Resource Files. This is the default way resources are packed in the MS Windows version of the PowerVR Examples.</p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
 <a class="anchor" id="a06da2b86907df2ceb86577d5e004a6a6"></a>
@@ -278,7 +278,7 @@ const void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 </table>
 </div><div class="memdoc">
 
-<p>Constructor. Creates a new <a class="el" href="classpvr_1_1_windows_resource_stream.html" title="A Stream implementation that is used to access resources built in a MS Windows executable. ">WindowsResourceStream</a> from a Windows Embedded Resource.</p>
+<p>Constructor. Creates a new <a class="el" href="classpvr_1_1_windows_resource_stream.html" title="A Stream implementation that is used to access resources built in a MS Windows executable.">WindowsResourceStream</a> from a Windows Embedded Resource.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">resourceName</td><td>The "filename". must be the same as the identifier of the Windows Embedded Resource</td></tr>
@@ -337,8 +337,8 @@ const void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 </table>
 </div><div class="memdoc">
 
-<p>Get the filename of the file that this std::string represents, if such exists. Otherwise, empty std::string. </p>
-<dl class="section return"><dt>Returns</dt><dd>The filename of the file that this std::string represents, if such exists. Otherwise, empty std::string. </dd></dl>
+<p>Get the filename of the file that this std::string represents, if such exists. Otherwise, empty std::string.</p>
+<dl class="section return"><dt>Returns</dt><dd>The filename of the file that this std::string represents, if such exists. Otherwise, empty std::string.</dd></dl>
 
 </div>
 </div>
@@ -762,12 +762,7 @@ template&lt;typename T_ &gt; </div>
 </div><div class="memdoc">
 
 <p>Convenience function that reads all data in the stream into a std::string</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">outString</td><td>The string where the stream's data will all be saved</td></tr>
-  </table>
-  </dd>
-</dl>
+<dl class="section return"><dt>Returns</dt><dd>A string containing the stream's data</dd></dl>
 
 </div>
 </div>
@@ -894,7 +889,7 @@ template&lt;typename Type_ &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>Main write function. Write into the stream the specified amount of items from a provided buffer. </p>
+<p>Main write function. Write into the stream the specified amount of items from a provided buffer.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">elementSize</td><td>The size of each element that will be written.</td></tr>

@@ -96,7 +96,7 @@ inline void addTexture(Effect_& effect, const effect::TextureReference& textureR
 	}
 	pipeDef->descSetExists[textureRef.set] = true;
 	ImageView view;
-	Device device = effect.getDevice()->getReference();
+	Device device = effect.getDevice().lock();
 	if (!textureRef.textureName.empty())
 	{
 		const effect::TextureDefinition& textureDef = effect.getEffectAsset().textures.find(textureRef.textureName)->second;
@@ -144,7 +144,7 @@ inline void addBuffer(Effect_& effect, PipelineDef& pipedef, const BufferRef& bu
 		pipedef.descSetIsMultibuffered[bufferRef.set] = assetBufferDef.multibuffering;
 		if (bufferdef.scope == VariableScope::Unknown) // First time this buffer is being referenced.
 		{
-			assertion(bufferdef.buffer.isNull());
+			assertion(bufferdef.buffer == nullptr);
 
 			bufferdef.allSupportedBindings = assetBufferDef.allSupportedBindings;
 			bufferdef.isDynamic = assetBufferDef.isDynamic;
@@ -256,7 +256,7 @@ const effect::PipelineDefinition* getPipeline(const effect::Effect& effect, cons
 bool getRenderPassAndFramebufferForPass(Effect_& effect, const effect::Effect& effectAsset, const effect::Pass& pass, Framebuffer* framebuffers, RenderPass& rp,
 	std::vector<std::pair<StringHash, uint32_t> /**/>& colorAttachmentIndex)
 {
-	DeviceWeakPtr device = effect.getDevice();
+	Device device = effect.getDevice().lock();
 	FramebufferCreateInfo framebufferInfo[FrameworkCaps::MaxSwapChains];
 	RenderPassCreateInfo rpInfo;
 	Swapchain swapchain = effect.getSwapchain();
@@ -389,7 +389,7 @@ bool getRenderPassAndFramebufferForPass(Effect_& effect, const effect::Effect& e
 					rpInfo.setAttachmentDescription(i,
 						AttachmentDescription::createColorDescription(
 							fmt, pvrvk::ImageLayout::e_UNDEFINED, pvrvk::ImageLayout::e_COLOR_ATTACHMENT_OPTIMAL, pvrvk::AttachmentLoadOp::e_CLEAR, storeOp));
-					colorAttachmentIndex.push_back(std::make_pair(texDef.name, i));
+					colorAttachmentIndex.emplace_back(std::make_pair(texDef.name, i));
 				}
 			}
 		} // next color attachment
@@ -420,12 +420,12 @@ bool getRenderPassAndFramebufferForPass(Effect_& effect, const effect::Effect& e
 				pvrvk::Format depthStencilFormat = utils::convertToPVRVk(found->second.fmt);
 
 				std::vector<pvrvk::Format> depthStencilFormats;
-				depthStencilFormats.push_back(pvrvk::Format::e_D32_SFLOAT_S8_UINT);
-				depthStencilFormats.push_back(pvrvk::Format::e_D24_UNORM_S8_UINT);
-				depthStencilFormats.push_back(pvrvk::Format::e_D16_UNORM_S8_UINT);
-				depthStencilFormats.push_back(pvrvk::Format::e_D32_SFLOAT);
-				depthStencilFormats.push_back(pvrvk::Format::e_X8_D24_UNORM_PACK32);
-				depthStencilFormats.push_back(pvrvk::Format::e_D16_UNORM);
+				depthStencilFormats.emplace_back(pvrvk::Format::e_D32_SFLOAT_S8_UINT);
+				depthStencilFormats.emplace_back(pvrvk::Format::e_D24_UNORM_S8_UINT);
+				depthStencilFormats.emplace_back(pvrvk::Format::e_D16_UNORM_S8_UINT);
+				depthStencilFormats.emplace_back(pvrvk::Format::e_D32_SFLOAT);
+				depthStencilFormats.emplace_back(pvrvk::Format::e_X8_D24_UNORM_PACK32);
+				depthStencilFormats.emplace_back(pvrvk::Format::e_D16_UNORM);
 
 				std::vector<pvrvk::Format> aspectFlagSpecificDepthStencilFormats;
 
@@ -434,23 +434,23 @@ bool getRenderPassAndFramebufferForPass(Effect_& effect, const effect::Effect& e
 				// Depth + Stencil format requested
 				if (aspectFlags == (pvrvk::ImageAspectFlags::e_DEPTH_BIT | pvrvk::ImageAspectFlags::e_STENCIL_BIT))
 				{
-					aspectFlagSpecificDepthStencilFormats.push_back(pvrvk::Format::e_D32_SFLOAT_S8_UINT);
-					aspectFlagSpecificDepthStencilFormats.push_back(pvrvk::Format::e_D24_UNORM_S8_UINT);
-					aspectFlagSpecificDepthStencilFormats.push_back(pvrvk::Format::e_D16_UNORM_S8_UINT);
+					aspectFlagSpecificDepthStencilFormats.emplace_back(pvrvk::Format::e_D32_SFLOAT_S8_UINT);
+					aspectFlagSpecificDepthStencilFormats.emplace_back(pvrvk::Format::e_D24_UNORM_S8_UINT);
+					aspectFlagSpecificDepthStencilFormats.emplace_back(pvrvk::Format::e_D16_UNORM_S8_UINT);
 				}
 				// Depth only format requested
 				else if (aspectFlags == pvrvk::ImageAspectFlags::e_DEPTH_BIT)
 				{
-					aspectFlagSpecificDepthStencilFormats.push_back(pvrvk::Format::e_D32_SFLOAT);
-					aspectFlagSpecificDepthStencilFormats.push_back(pvrvk::Format::e_X8_D24_UNORM_PACK32);
-					aspectFlagSpecificDepthStencilFormats.push_back(pvrvk::Format::e_D16_UNORM);
+					aspectFlagSpecificDepthStencilFormats.emplace_back(pvrvk::Format::e_D32_SFLOAT);
+					aspectFlagSpecificDepthStencilFormats.emplace_back(pvrvk::Format::e_X8_D24_UNORM_PACK32);
+					aspectFlagSpecificDepthStencilFormats.emplace_back(pvrvk::Format::e_D16_UNORM);
 				}
 				// Stencil only format requested
 				else if (aspectFlags == pvrvk::ImageAspectFlags::e_STENCIL_BIT)
 				{
-					aspectFlagSpecificDepthStencilFormats.push_back(pvrvk::Format::e_D32_SFLOAT_S8_UINT);
-					aspectFlagSpecificDepthStencilFormats.push_back(pvrvk::Format::e_D24_UNORM_S8_UINT);
-					aspectFlagSpecificDepthStencilFormats.push_back(pvrvk::Format::e_D16_UNORM_S8_UINT);
+					aspectFlagSpecificDepthStencilFormats.emplace_back(pvrvk::Format::e_D32_SFLOAT_S8_UINT);
+					aspectFlagSpecificDepthStencilFormats.emplace_back(pvrvk::Format::e_D24_UNORM_S8_UINT);
+					aspectFlagSpecificDepthStencilFormats.emplace_back(pvrvk::Format::e_D16_UNORM_S8_UINT);
 				}
 
 				bool foundSuitableDepthStencilFormat = false;
@@ -633,7 +633,7 @@ bool getRenderPassAndFramebufferForPass(Effect_& effect, const effect::Effect& e
 		}
 
 		rp = device->createRenderPass(rpInfo);
-		if (!rp.isValid())
+		if (!rp)
 		{
 			Log("EffectApi: Failed to create a renderpass for the pass: %s", pass.name.c_str());
 			return false;
@@ -643,13 +643,13 @@ bool getRenderPassAndFramebufferForPass(Effect_& effect, const effect::Effect& e
 		{
 			framebufferInfo[i].setDimensions(framebufferWidth, framebufferHeight);
 			framebufferInfo[i].setRenderPass(rp);
-			if (dsAttachments[i].isValid())
+			if (dsAttachments[i])
 			{
 				framebufferInfo[i].setAttachment(depthStencilAttachmentIndex, dsAttachments[i]);
 			}
 			framebuffers[i] = device->createFramebuffer(framebufferInfo[i]);
 		}
-		return framebuffers[0].isValid();
+		return framebuffers[0] != nullptr;
 	}
 	return false;
 }
@@ -788,7 +788,7 @@ void createPasses(Effect_& effect, std::vector<Pass>& passes, std::map<StringHas
 						Log("EffectApi initialization: Could not find a layout for pipeline [%s] referenced in pass #%d", pipe_it->pipelineName.c_str(), pass_idx);
 						continue;
 					}
-					else if (layouts_it->second.isNull())
+					else if (!layouts_it->second)
 					{
 						Log("EffectApi initialization: Layout for pipeline [%s] referenced in pass #%d was null", pipe_it->pipelineName.c_str(), pass_idx);
 						continue;
@@ -831,11 +831,12 @@ void createPasses(Effect_& effect, std::vector<Pass>& passes, std::map<StringHas
 					}
 
 					/////// CONFIGURE SHADERS ETC ///////
+					pvrvk::Device device = effect.getDevice().lock();
 					for (auto shader_it = pipedef->shaders.begin(); shader_it != pipedef->shaders.end(); ++shader_it)
 					{
-						ShaderModule shader = effect.getDevice()->createShaderModule(
+						ShaderModule shader = device->createShaderModule(
 							pvrvk::ShaderModuleCreateInfo(BufferStream("VertexShader", (*shader_it)->source.data(), (*shader_it)->source.length()).readToEnd<uint32_t>()));
-						if (shader.isNull())
+						if (!shader)
 						{
 							Log("EffectApi initialization: Failed to create shader with name [%s]", (*shader_it)->name.c_str());
 							continue;
@@ -905,7 +906,7 @@ void createLayouts(Effect_& effect, std::map<StringHash, PipelineLayout>& pipeLa
 {
 	// This function will iterate over the effect in order to detect all pipeline layouts, detect any duplicates,
 	// only create layouts for the ones required, and then map each pipeline to one of them.
-	DeviceWeakPtr& device = effect.getDevice();
+	Device device = effect.getDevice().lock();
 
 	const effect::Effect& assetEffect = effect.getEffectAsset();
 
@@ -962,7 +963,7 @@ void createLayouts(Effect_& effect, std::map<StringHash, PipelineLayout>& pipeLa
 				// Add it to our list...
 				sets_with_pipe_ids.resize(sets_with_pipe_ids.size() + 1);
 				sets_with_pipe_ids.back().desclayout = device->createDescriptorSetLayout(current_set.desclayoutcreateparam);
-				sets_with_pipe_ids.back().pipeids_setnos.push_back(TempPipeIdAndSetNo(static_cast<uint16_t>(outer), static_cast<uint16_t>(outer_set)));
+				sets_with_pipe_ids.back().pipeids_setnos.emplace_back(TempPipeIdAndSetNo(static_cast<uint16_t>(outer), static_cast<uint16_t>(outer_set)));
 
 				// ...and remove any duplicates:
 				// ...Traverse the rest of the sets...
@@ -977,7 +978,7 @@ void createLayouts(Effect_& effect, std::map<StringHash, PipelineLayout>& pipeLa
 							{
 								current_inner_set.active = false;
 								current_inner_set.desclayoutcreateparam.clear();
-								sets_with_pipe_ids.back().pipeids_setnos.push_back(TempPipeIdAndSetNo(static_cast<uint16_t>(inner), static_cast<uint16_t>(inner_set)));
+								sets_with_pipe_ids.back().pipeids_setnos.emplace_back(TempPipeIdAndSetNo(static_cast<uint16_t>(inner), static_cast<uint16_t>(inner_set)));
 							}
 						}
 					}
@@ -998,14 +999,14 @@ void createLayouts(Effect_& effect, std::map<StringHash, PipelineLayout>& pipeLa
 		}
 	}
 
-	// The actual pipeline layouts! Shared refcounting makes sure of no duplication.
+	// The actual pipeline layouts! Shared reference counting makes sure of no duplication.
 	std::vector<PipelineLayout> pipeLayouts;
 	pipeLayouts.resize(pipeLayoutCps.size());
 
 	// Inner loop: We traverse the list twice
 	for (size_t outer = 0; outer < pipeLayoutCps.size(); ++outer)
 	{
-		if (pipeLayouts[outer].isNull())
+		if (!pipeLayouts[outer])
 		{
 			// Create a new layout if one does not exist, else, do nothing.
 			pipeLayouts[outer] = device->createPipelineLayout(pipeLayoutCps[outer]);
@@ -1050,7 +1051,7 @@ struct TempListOfSamplersEntry
 
 void createSamplers(Effect_& effect, std::map<StringHash, std::map<StringHash, TextureInfo> /**/>& textureInfoByPipeAndTex)
 {
-	DeviceWeakPtr device = effect.getDevice();
+	Device device = effect.getDevice().lock();
 
 	const effect::Effect& assetEffect = effect.getEffectAsset();
 
@@ -1061,7 +1062,7 @@ void createSamplers(Effect_& effect, std::map<StringHash, std::map<StringHash, T
 	std::vector<TempSamplers> all_samplers_with_duplicates;
 	all_samplers_with_duplicates.reserve(asset_pipes.size() * 2); // Just a starting number... No point in multiple allocations.
 
-	Sampler defaultSampler = effect.getDevice()->createSampler(pvrvk::SamplerCreateInfo());
+	Sampler defaultSampler = device->createSampler(pvrvk::SamplerCreateInfo());
 
 	uint16_t pipe_idx = 0;
 	for (auto it_pipe = asset_pipes.begin(); it_pipe != asset_pipes.end(); ++it_pipe)
@@ -1070,7 +1071,7 @@ void createSamplers(Effect_& effect, std::map<StringHash, std::map<StringHash, T
 		all_samplers_with_duplicates.back().pipe_tmp_asset_idx = pipe_idx;
 		for (auto it_tex = it_pipe->second.textures.begin(); it_tex != it_pipe->second.textures.end(); ++it_tex)
 		{
-			all_samplers_with_duplicates.back().samplerPerTextureInOrder.push_back(it_tex->samplerFilter);
+			all_samplers_with_duplicates.back().samplerPerTextureInOrder.emplace_back(it_tex->samplerFilter);
 		}
 		++pipe_idx;
 	}
@@ -1100,7 +1101,7 @@ void createSamplers(Effect_& effect, std::map<StringHash, std::map<StringHash, T
 				samplers_with_pipe_ids.resize(samplers_with_pipe_ids.size() + 1);
 				Sampler sampler = device->createSampler(param);
 				samplers_with_pipe_ids.back().sampler = sampler;
-				samplers_with_pipe_ids.back().pipeids_texturenos.push_back(TempPipeIdAndTextureNo(static_cast<uint16_t>(outer), static_cast<uint16_t>(outer_tex)));
+				samplers_with_pipe_ids.back().pipeids_texturenos.emplace_back(TempPipeIdAndTextureNo(static_cast<uint16_t>(outer), static_cast<uint16_t>(outer_tex)));
 
 				// ...and remove any duplicates:
 				// ...Traverse the rest of the list...
@@ -1118,7 +1119,7 @@ void createSamplers(Effect_& effect, std::map<StringHash, std::map<StringHash, T
 								// Add a reference to the original list - which item this one will be referring to.
 								current_inner_sampler = PackedSamplerFilter(-1); // Deactivate it
 								// And add a reference to it in the sampler's list.
-								samplers_with_pipe_ids.back().pipeids_texturenos.push_back(TempPipeIdAndTextureNo(static_cast<uint16_t>(inner), static_cast<uint16_t>(inner_tex)));
+								samplers_with_pipe_ids.back().pipeids_texturenos.emplace_back(TempPipeIdAndTextureNo(static_cast<uint16_t>(inner), static_cast<uint16_t>(inner_tex)));
 							}
 						}
 					}
@@ -1177,13 +1178,13 @@ void createFixedDescriptorSets(Effect_& effect, std::map<StringHash, PipelineDef
 
 		auto& pipelayout = layout_it->second;
 
-		assertion(pipelayout.isValid(), strings::createFormatted("Effectvk::init Pipeline layout was not created correctly for pipeline[%s]", pipeDef.first.c_str()));
+		assertion(pipelayout != nullptr, strings::createFormatted("Effectvk::init Pipeline layout was not created correctly for pipeline[%s]", pipeDef.first.c_str()));
 
 		uint32_t count = pipelayout->getNumDescriptorSetLayouts();
 		for (uint32_t i = 0; i < count; ++i)
 		{
 			auto& setlayout = pipelayout->getDescriptorSetLayout(i);
-			assertion(setlayout.isValid(),
+			assertion(setlayout != nullptr,
 				strings::createFormatted("Effectvk::init Descriptor set layout [%d] for pipeline[%s] was \"Fixed\", "
 										 "but it had not been created",
 					i, pipeDef.first.c_str()));
@@ -1194,7 +1195,7 @@ void createFixedDescriptorSets(Effect_& effect, std::map<StringHash, PipelineDef
 				uint32_t numsets = pipeDef.second.descSetIsMultibuffered[i] ? swapchainLength : 1;
 				for (uint32_t swapindex = 0; swapindex < numsets; ++swapindex)
 				{
-					if (set[swapindex].isNull())
+					if (!set[swapindex])
 					{
 						set[swapindex] = effect.getDescriptorPool()->allocateDescriptorSet(setlayout);
 					}
@@ -1231,18 +1232,18 @@ void Effect_::buildRenderObjects(CommandBuffer& texUploadCmdBuffer, IAssetProvid
 	createLayouts(*this, pipeLayoutsIndexed);
 	createSamplers(*this, samplersIndexedByPipeAndTexture);
 	// Create the pipeline cache
-	_pipelineCache = _device->createPipelineCache();
+	_pipelineCache = _device.lock()->createPipelineCache();
 	createPasses(*this, _passes, pipeLayoutsIndexed, _pipelineDefinitions, samplersIndexedByPipeAndTexture, _swapchain->getSwapchainLength());
 	createTextures(*this, _textures, texUploadCmdBuffer, assetProvider);
 	createBuffers(*this, _pipelineDefinitions, _bufferDefinitions, _swapchain->getSwapchainLength());
 
-	_descriptorPool = _device->createDescriptorPool(DescriptorPoolCreateInfo()
-														.addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 32)
-														.addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 16)
-														.addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 16)
-														.addDescriptorInfo(pvrvk::DescriptorType::e_STORAGE_BUFFER, 16)
-														.addDescriptorInfo(pvrvk::DescriptorType::e_STORAGE_BUFFER_DYNAMIC, 16)
-														.addDescriptorInfo(pvrvk::DescriptorType::e_INPUT_ATTACHMENT, 16));
+	_descriptorPool = _device.lock()->createDescriptorPool(DescriptorPoolCreateInfo()
+															   .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 32)
+															   .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 16)
+															   .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 16)
+															   .addDescriptorInfo(pvrvk::DescriptorType::e_STORAGE_BUFFER, 16)
+															   .addDescriptorInfo(pvrvk::DescriptorType::e_STORAGE_BUFFER_DYNAMIC, 16)
+															   .addDescriptorInfo(pvrvk::DescriptorType::e_INPUT_ATTACHMENT, 16));
 
 	createFixedDescriptorSets(*this, _pipelineDefinitions, pipeLayoutsIndexed, _swapchain->getSwapchainLength());
 }

@@ -24,7 +24,7 @@ enum
 
 /// <summary>A class mirroring the PVR Texture container format header, and which can in general represent any
 /// Texture asset. Contains accessors functions to facilitate using the Texture data in application code.
-/// </summary>
+///</summary>
 class TextureHeader
 {
 public:
@@ -199,7 +199,7 @@ public:
 	/// <param name="mipMapLevel">Specifies a MIP level to check, 'c_pvrTextureAllMIPMapLevels' can be passed to Get the
 	/// size of all MIP levels.</param>
 	/// <param name="allSurfaces">The Size of all surfaces is calculated if true, only a single surface if false.
-	/// </param>
+	///</param>
 	/// <param name="allFaces">The Size of all faces is calculated if true, only a single face if false.</param>
 	/// <returns>Return the size in PIXELS of the specified texture area.</returns>
 	/// <remarks>User can retrieve the total size of either all surfaces or a single surface, all faces or a single
@@ -213,7 +213,7 @@ public:
 	/// <param name="mipLevel">Specifies a mip level to check, 'c_pvrTextureAllMIPMapLevels' can be passed to Get the size
 	/// of all MIP levels.</param>
 	/// <param name="allSurfaces">The Size of all surfaces is calculated if true, only a single surface if false.
-	/// </param>
+	///</param>
 	/// <param name="allFaces">The Size of all faces is calculated if true, only a single face if false.</param>
 	/// <returns>Return the size in BYTES of the specified texture area.</returns>
 	/// <remarks>User can retrieve the size of either all surfaces or a single surface, all faces or a single face and

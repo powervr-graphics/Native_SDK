@@ -390,11 +390,3 @@ static uint32_t spv_UIRendererVertShader[] =
     0x0100fd,
     0x010038,
 };
-static VkShaderModuleCreateInfo shaderModuleCreateInfo_UIRendererVertShader = 
-{
-    static_cast<VkStructureType>(pvrvk::StructureType::e_SHADER_MODULE_CREATE_INFO),
-    nullptr,
-    VkShaderModuleCreateFlags(0),
-    sizeof(spv_UIRendererVertShader),
-    spv_UIRendererVertShader,
-};

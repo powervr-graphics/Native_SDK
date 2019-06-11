@@ -1,6 +1,6 @@
 /*!
 \brief Hash functions inmplementations.
-\file PVRCore/Base/Hash_.h
+\file PVRCore/strings/CompileTimeHash.h
 \author PowerVR by Imagination, Developer Technology Team.
 \copyright Copyright (c) Imagination Technologies Limited.
 */
@@ -51,33 +51,44 @@ inline uint32_t hash32_bytes(const void* bytes, size_t count)
 
 /// <summary>Class template denoting a hash. Specializations only - no default implementation.
 /// (int32_t/int64_t/uint32_t/uint64_t/string)</summary>
-/// <typeparam name="The">type of the value to hash.</typeparam>
+/// <typeparam name="T">type of the value to hash.</typeparam>
 template<typename T>
 struct hash
 {};
 
-//!\cond NO_DOXYGEN
+/// <summary>Template specialization of hash specifically for uint32_t</summary>
 template<>
 struct hash<uint32_t>
 {
+	/// <summary>Hashes the given uint32_t.</summary>
+	/// <param name="value">A uint32_t value to hash</param>
+	/// <returns>The hash value</returns>
 	uint32_t operator()(uint32_t value)
 	{
 		return hash32_32(value);
 	}
 };
 
+/// <summary>Template specialization of hash specifically for int32_t</summary>
 template<>
 struct hash<int32_t>
 {
-	uint32_t operator()(uint32_t value)
+	/// <summary>Hashes the given int32_t.</summary>
+	/// <param name="value">A int32_t value to hash</param>
+	/// <returns>The hash value</returns>
+	uint32_t operator()(int32_t value)
 	{
 		return hash32_32(value);
 	}
 };
 
+/// <summary>Template specialization of hash specifically for uint64_t</summary>
 template<>
 struct hash<uint64_t>
 {
+	/// <summary>Hashes the given uint64_t.</summary>
+	/// <param name="value">A uint64_t value to hash</param>
+	/// <returns>The hash value</returns>
 	uint32_t operator()(uint64_t value)
 	{
 		uint32_t a = static_cast<uint32_t>((value >> 32) | (value & 0x00000000FFFFFFFFull));
@@ -85,19 +96,27 @@ struct hash<uint64_t>
 	}
 };
 
+/// <summary>Template specialization of hash specifically for int64_t</summary>
 template<>
 struct hash<int64_t>
 {
-	uint32_t operator()(uint64_t value)
+	/// <summary>Hashes the given int64_t.</summary>
+	/// <param name="value">A int64_t value to hash</param>
+	/// <returns>The hash value</returns>
+	uint32_t operator()(int64_t value)
 	{
-		uint32_t a = static_cast<uint32_t>((value >> 32) | (value & 0x00000000FFFFFFFFull));
+		uint32_t a = static_cast<int32_t>((value >> 32) | (value & 0x00000000FFFFFFFFull));
 		return hash32_32(a);
 	}
 };
 
+/// <summary>Template specialization of hash specifically for an std::basic_string</summary>
 template<typename T>
 struct hash<std::basic_string<T> >
 {
+	/// <summary>Hashes the given string.</summary>
+	/// <param name="t">A string value to hash</param>
+	/// <returns>The hash value</returns>
 	uint32_t operator()(const std::string& t) const
 	{
 		return hash32_bytes(t.data(), sizeof(T) * t.size());
@@ -106,33 +125,33 @@ struct hash<std::basic_string<T> >
 
 #pragma warning(push)
 #pragma warning(disable : 4307)
-// COMPILE TIME HASHING //
-// WARNING - MUST GIVE THE SAME RESULTS AS THE HASH32BYTES ALGORITHM OTHERWISE
-// MANY CLASSES AROUND THE FRAMEWORK WILL BREAK. IT IS USED TO OPTIMISE COMPILE-TIME
-// SWITCH STATEMENTS.
+// Compile time hashing - warning this must give the same results as the hash 32 bytes alogithm otherwise classes around the framework may break. This is used to optimise compiler time switch statements
+/// <summary>A dummy helper.</summary>
 template<uint32_t hashvalue, unsigned char... dummy>
 class hasher_helper;
 
+/// <summary>Template specialization for uint32_t values.</summary>
 template<uint32_t hashvalue, unsigned char first>
 class hasher_helper<hashvalue, first>
 {
 public:
-	static const uint32_t value = hashvalue * 16777619U ^ first;
+	static const uint32_t value = hashvalue * 16777619U ^ first; //!< A hashed value
 };
+
+/// <summary>Template specialization for uint32_t values.</summary>
 template<uint32_t hashvalue, unsigned char first, unsigned char... dummy>
 class hasher_helper<hashvalue, first, dummy...>
 {
 public:
-	static const uint32_t value = hasher_helper<hashvalue * 16777619U ^ first, dummy...>::value;
+	static const uint32_t value = hasher_helper<hashvalue * 16777619U ^ first, dummy...>::value; //!< A hashed value
 };
 
+/// <summary>Template specialization for unsigned char values.</summary>
 template<unsigned char... chars>
 class HashCompileTime
 {
 public:
-	static const uint32_t value = hasher_helper<2166136261U, chars...>::value;
+	static const uint32_t value = hasher_helper<2166136261U, chars...>::value; //!< A hashed value
 };
 #pragma warning(pop)
-
-//!\endcond
 } // namespace pvr

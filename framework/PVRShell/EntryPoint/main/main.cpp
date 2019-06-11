@@ -1,6 +1,6 @@
 /*!
 \brief Generic entry point, normally used for Linux based systems.
-\file PVRShell\EntryPoint/main/main.cpp
+\file PVRShell/EntryPoint/main/main.cpp
 \author PowerVR by Imagination, Developer Technology Team
 \copyright Copyright (c) Imagination Technologies Limited.
 */

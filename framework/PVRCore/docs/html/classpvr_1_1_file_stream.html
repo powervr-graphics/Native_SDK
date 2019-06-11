@@ -122,7 +122,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a0137c5b604cb7ed57f87fc0302f61f6c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Closes the stream. <a href="#a0137c5b604cb7ed57f87fc0302f61f6c">More...</a><br/></td></tr>
 <tr class="separator:a0137c5b604cb7ed57f87fc0302f61f6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac579aa0c43b68fe2002aaf73af5b4afe"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_stream.html#ac579aa0c43b68fe2002aaf73af5b4afe">getFileName</a> () const </td></tr>
-<tr class="memdesc:ac579aa0c43b68fe2002aaf73af5b4afe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the filename of the file that this std::string represents, if such exists. Otherwise, empty std::string.  <a href="#ac579aa0c43b68fe2002aaf73af5b4afe">More...</a><br/></td></tr>
+<tr class="memdesc:ac579aa0c43b68fe2002aaf73af5b4afe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the filename of the file that this std::string represents, if such exists. Otherwise, empty std::string. <a href="#ac579aa0c43b68fe2002aaf73af5b4afe">More...</a><br/></td></tr>
 <tr class="separator:ac579aa0c43b68fe2002aaf73af5b4afe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a16a0176e83b7d708afc77a09481cd264"><td class="memItemLeft" align="right" valign="top">virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_file_stream.html#a16a0176e83b7d708afc77a09481cd264">getPosition</a> () const </td></tr>
 <tr class="memdesc:a16a0176e83b7d708afc77a09481cd264"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query the current position in the stream <a href="#a16a0176e83b7d708afc77a09481cd264">More...</a><br/></td></tr>
@@ -172,7 +172,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a073ae68984a2b59a4e8f696c8a5d8e48"><td class="mdescLeft">&#160;</td><td class="mdescRight">Seek a specific point for random access streams. After successful call, subsequent operation will happen in the specified point. <a href="#a073ae68984a2b59a4e8f696c8a5d8e48">More...</a><br/></td></tr>
 <tr class="separator:a073ae68984a2b59a4e8f696c8a5d8e48"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2f9d48adedb14567077e3eeab9fce0d1"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_file_stream.html#a2f9d48adedb14567077e3eeab9fce0d1">write</a> (size_t elementSize, size_t numElements, const void *buffer, size_t &amp;dataWritten)</td></tr>
-<tr class="memdesc:a2f9d48adedb14567077e3eeab9fce0d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Main write function. Write into the stream the specified amount of items from a provided buffer.  <a href="#a2f9d48adedb14567077e3eeab9fce0d1">More...</a><br/></td></tr>
+<tr class="memdesc:a2f9d48adedb14567077e3eeab9fce0d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Main write function. Write into the stream the specified amount of items from a provided buffer. <a href="#a2f9d48adedb14567077e3eeab9fce0d1">More...</a><br/></td></tr>
 <tr class="separator:a2f9d48adedb14567077e3eeab9fce0d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab85ae1faa95aa242b1df1154fb2399d8"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_stream.html#ab85ae1faa95aa242b1df1154fb2399d8">writeExact</a> (size_t elementSize, size_t numElements, const void *buffer)</td></tr>
 <tr class="memdesc:ab85ae1faa95aa242b1df1154fb2399d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Main write function. Write into the stream exactly the specified amount of items from a provided buffer, otherwise throw error <a href="#ab85ae1faa95aa242b1df1154fb2399d8">More...</a><br/></td></tr>
@@ -183,6 +183,9 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memitem:ad421028fae90053fd8af2e24b89cede6"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classpvr_1_1_stream.html#aa0cecaaaa443ce5895d8c3d69dcdeec2">Stream::ptr_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_file_stream.html#ad421028fae90053fd8af2e24b89cede6">createFileStream</a> (const char *filename, const char *flags, bool errorOnFileNotFound=true)</td></tr>
 <tr class="memdesc:ad421028fae90053fd8af2e24b89cede6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a new file stream from a filename <a href="#ad421028fae90053fd8af2e24b89cede6">More...</a><br/></td></tr>
 <tr class="separator:ad421028fae90053fd8af2e24b89cede6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef797ab4e518a3ceb9672419eab7005b"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classpvr_1_1_stream.html#aa0cecaaaa443ce5895d8c3d69dcdeec2">Stream::ptr_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_file_stream.html#aef797ab4e518a3ceb9672419eab7005b">createFileStream</a> (const std::string &amp;filename, const char *flags, bool errorOnFileNotFound=true)</td></tr>
+<tr class="memdesc:aef797ab4e518a3ceb9672419eab7005b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a new file stream from a filename <a href="#aef797ab4e518a3ceb9672419eab7005b">More...</a><br/></td></tr>
+<tr class="separator:aef797ab4e518a3ceb9672419eab7005b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
@@ -385,6 +388,58 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="aef797ab4e518a3ceb9672419eab7005b"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="classpvr_1_1_stream.html#aa0cecaaaa443ce5895d8c3d69dcdeec2">Stream::ptr_type</a> pvr::FileStream::createFileStream </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>filename</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>flags</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>errorOnFileNotFound</em> = <code>true</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Create a new file stream from a filename</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">filename</td><td>The filename to create a stream for</td></tr>
+    <tr><td class="paramname">flags</td><td>The C++ open flags for the file ("r", "w", "a", "r+", "w+", "a+" and optionally "b"), see C++ standard.</td></tr>
+    <tr><td class="paramname">errorOnFileNotFound</td><td>OPTIONAL. Set this to false to avoid an error when the file is not found.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Return a valid file stream, else Return null if it fails</dd></dl>
+<p>Flags correspond the C++ standard for fopen r: Read (read from beginning, preserve contents, fail if not exist) w: Write (write from beginning, destroy contents, create if not exist) a: Append (write to end only (regardles of file pointer position), preserve contents, create if not exist) r+: Read+ (read/write from start, preserve contents, fail if not exist) w+: Write+ (read/write from start, destroy contents, create if not exist) a+: Append+ (read/write from end (write only happens to end), preserve contents, create if not exist) b: Additional flag: Do no special handling of line break / form feed characters</p>
+
+</div>
+</div>
 <a class="anchor" id="ac579aa0c43b68fe2002aaf73af5b4afe"></a>
 <div class="memitem">
 <div class="memproto">
@@ -406,8 +461,8 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Get the filename of the file that this std::string represents, if such exists. Otherwise, empty std::string. </p>
-<dl class="section return"><dt>Returns</dt><dd>The filename of the file that this std::string represents, if such exists. Otherwise, empty std::string. </dd></dl>
+<p>Get the filename of the file that this std::string represents, if such exists. Otherwise, empty std::string.</p>
+<dl class="section return"><dt>Returns</dt><dd>The filename of the file that this std::string represents, if such exists. Otherwise, empty std::string.</dd></dl>
 
 </div>
 </div>
@@ -833,12 +888,7 @@ template&lt;typename T_ &gt; </div>
 </div><div class="memdoc">
 
 <p>Convenience function that reads all data in the stream into a std::string</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">outString</td><td>The string where the stream's data will all be saved</td></tr>
-  </table>
-  </dd>
-</dl>
+<dl class="section return"><dt>Returns</dt><dd>A string containing the stream's data</dd></dl>
 
 </div>
 </div>
@@ -966,7 +1016,7 @@ template&lt;typename Type_ &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>Main write function. Write into the stream the specified amount of items from a provided buffer. </p>
+<p>Main write function. Write into the stream the specified amount of items from a provided buffer.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">elementSize</td><td>The size of each element that will be written.</td></tr>

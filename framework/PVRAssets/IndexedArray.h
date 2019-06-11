@@ -24,8 +24,7 @@ namespace pvr {
 /// contiguousness until compact() is called. CAUTION: To manually reclaim all memory and guarantee contiguous
 /// allocation, call compact(). Calling compact invalidates all indices, which must then be retrieved anew by
 /// "getInxdex". Calling getIndex on an unknown key returns (size_t)(-1) Accessing an unknown item by index is
-/// undefined. Accessing an index not retrieved by getIndex since the last compact() operation is undefined.
-/// </remarks>
+/// undefined. Accessing an index not retrieved by getIndex since the last compact() operation is undefined.</remarks>
 template<typename ValueType_, typename IndexType_ = std::string>
 class IndexedArray
 {
@@ -436,8 +435,7 @@ public:
 
 	/// <summary>Compacts the backing array by removing existing items from the end of the vector and putting them in the
 	/// place of deleted items, and then updating their index, until no more positions marked as deleted are left.
-	/// Will ensure the contiguousness of the backing vector, but will invalidate previously gotten item indices.
-	/// </summary>
+	/// Will ensure the contiguousness of the backing vector, but will invalidate previously gotten item indices.</summary>
 	void compact()
 	{
 		// We can do that because the last remove() tears down all datastructures used.
@@ -585,7 +583,7 @@ private:
 		if (myDeletedItems.empty())
 		{
 			retval = mystorage.size();
-			mystorage.push_back(StorageItem_());
+			mystorage.emplace_back(StorageItem_());
 			mystorage.back().isUnused = false;
 			mystorage.back().key = key;
 			mystorage.back().value = val;

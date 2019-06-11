@@ -1,6 +1,6 @@
 /*!
 \brief Entry point for Android systems (android_main).
-\file PVRShell\EntryPoint/android_main/main.cpp
+\file PVRShell/EntryPoint/android_main/main.cpp
 \author PowerVR by Imagination, Developer Technology Team
 \copyright Copyright (c) Imagination Technologies Limited.
 */

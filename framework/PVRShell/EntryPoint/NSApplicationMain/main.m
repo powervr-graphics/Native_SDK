@@ -1,9 +1,9 @@
-/*!****************************************************************************
-\file         PVRShell/EntryPoint/NSApplicationMain/main.m
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief		  Entry Point for the AppKit implementation of the Shell
-******************************************************************************/
+/*!
+\brief Main implementation for the AppKit version of AppController
+\file PVRShell/EntryPoint/NSApplicationMain/main.m
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #import <AppKit/NSApplication.h>
 
 /// <summary>Application entry point for the macOS Appkit. Forwards to NSApplicationMain</summary>

@@ -9,7 +9,6 @@ Graphics context.
 
 #include "PVRCore/stream/Stream.h"
 #include "PVRCore/math/Rectangle.h"
-#include "PVRCore/RefCounted.h"
 #include "PVRCore/strings/StringFunctions.h"
 #if TARGET_OS_IPHONE
 #include "PVRUtils/EAGL/EaglPlatformHandles.h"
@@ -33,6 +32,11 @@ public:
 	EglContext_()
 		: _platformContextHandles(), _swapInterval(-2), _initialized(false), _preInitialized(false), _apiType(Api::Unspecified), _maxApiVersion(Api::Unspecified), _attributes(0)
 	{}
+
+	virtual ~EglContext_()
+	{
+		release();
+	}
 
 	/// <summary>Release this object</summary>
 	void release();

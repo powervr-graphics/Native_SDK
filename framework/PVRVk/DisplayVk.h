@@ -8,16 +8,44 @@
 #pragma once
 #include "PVRVk/ForwardDecObjectsVk.h"
 #include "PVRVk/PhysicalDeviceVk.h"
-#include "PVRVk/ObjectHandleVk.h"
-#include "PVRVk/DebugMarkerVk.h"
+#include "PVRVk/PVRVkObjectBaseVk.h"
+#include "PVRVk/DebugUtilsVk.h"
 #include "PVRVk/DisplayModeVk.h"
 
 namespace pvrvk {
 namespace impl {
 /// <summary>A display device can in some environments be used directly for Vulkan rendering without using intermediate windowing systems.</summary>
-class Display_ : public PhysicalDeviceObjectHandle<VkDisplayKHR>, public EmbeddedRefCount<Display_>
+class Display_ : public PVRVkPhysicalDeviceObjectBase<VkDisplayKHR, ObjectType::e_DISPLAY_KHR>
 {
+private:
+	friend class PhysicalDevice_;
+
+	class make_shared_enabler
+	{
+	protected:
+		make_shared_enabler() {}
+		friend class Display_;
+	};
+
+	static Display constructShared(const PhysicalDeviceWeakPtr& physicalDevice, const DisplayPropertiesKHR& displayProperties)
+	{
+		return std::make_shared<Display_>(make_shared_enabler{}, physicalDevice, displayProperties);
+	}
+
+	std::vector<DisplayMode> _displayModes;
+	DisplayPropertiesKHR _properties;
+
 public:
+	//!\cond NO_DOXYGEN
+	DECLARE_NO_COPY_SEMANTICS(Display_)
+	Display_(make_shared_enabler, const PhysicalDeviceWeakPtr& physicalDevice, const DisplayPropertiesKHR& displayProperties);
+
+	~Display_()
+	{
+		_displayModes.clear();
+	}
+	//!\endcond
+
 	/// <summary>Get the number of supported display modes</summary>
 	/// <returns>Returns the number of supported display modes</returns>
 	size_t getNumDisplayModes() const
@@ -82,26 +110,6 @@ public:
 	{
 		return _properties.getPersistentContent() != 0;
 	}
-
-private:
-	friend class pvrvk::impl::PhysicalDevice_;
-	friend class pvrvk::impl::DisplayMode_;
-	friend class pvrvk::EmbeddedRefCount<Display_>;
-
-	Display_(PhysicalDeviceWeakPtr physicalDevice, const DisplayPropertiesKHR& displayProperties);
-
-	static Display createNew(PhysicalDeviceWeakPtr physicalDevice, const DisplayPropertiesKHR& displayProperties)
-	{
-		return EmbeddedRefCount<Display_>::createNew(physicalDevice, displayProperties);
-	}
-
-	void destroyObject()
-	{
-		_displayModes.clear();
-	}
-
-	std::vector<DisplayMode> _displayModes;
-	DisplayPropertiesKHR _properties;
 };
 } // namespace impl
 } // namespace pvrvk

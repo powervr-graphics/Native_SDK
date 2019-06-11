@@ -1,16 +1,33 @@
-cmake_minimum_required(VERSION 3.4)
+cmake_minimum_required(VERSION 3.3)
+project (PVRPfx)
 
-project(PVRPfx)
+set(PVRPfx_SRC
+	   ${CMAKE_CURRENT_LIST_DIR}/EffectVk.cpp
+	   ${CMAKE_CURRENT_LIST_DIR}/EffectVk.h
+	   ${CMAKE_CURRENT_LIST_DIR}/RenderManagerVk.cpp
+	   ${CMAKE_CURRENT_LIST_DIR}/RenderManagerVk.h)
 
-include (../../cmake/Common.cmake)
+set(PVRPfx_LINK_LIBS PowerVR_SDK PVRUtilsVk)
+	   
+get_directory_property(HAS_PARENT PARENT_DIRECTORY)
+if(HAS_PARENT AND USE_PREBUILT_DEPENDENCIES)
+add_library(PVRPfx STATIC IMPORTED GLOBAL)
 
-file(GLOB PVRRENDERMANAGER_SRC
-	   ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp
-	   ${CMAKE_CURRENT_SOURCE_DIR}/*.h
-	)
+# add the subdirectory after the add_library so that the target exists
+add_subdirectory(../.. ${CMAKE_CURRENT_BINARY_DIR}/sdk EXCLUDE_FROM_ALL)
 
-ADD_LIBRARY( PVRPfx STATIC ${PVRRENDERMANAGER_SRC} )
+set_target_properties(PVRPfx PROPERTIES
+	IMPORTED_LOCATION_DEBUG ${FRAMEWORK_LIB_FOLDER}/${CMAKE_STATIC_LIBRARY_PREFIX}PVRPfx${CMAKE_STATIC_LIBRARY_SUFFIX}
+	IMPORTED_LOCATION_RELEASE ${FRAMEWORK_LIB_FOLDER}/${CMAKE_STATIC_LIBRARY_PREFIX}PVRPfx${CMAKE_STATIC_LIBRARY_SUFFIX}
+	INTERFACE_LINK_LIBRARIES "${PVRPfx_LINK_LIBS}")
+else()
+add_library(PVRPfx STATIC EXCLUDE_FROM_ALL ${PVRPfx_SRC})
 
-target_link_libraries(PVRPfx PVRUtilsVk)
-target_include_directories(PVRPfx PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/..)
-target_compile_definitions(PVRPfx PUBLIC  $<$<CONFIG:Debug>:DEBUG=1> $<$<NOT:$<CONFIG:Debug>>:NDEBUG=1 RELEASE=1> )
+# add the subdirectory after the add_library so that the target exists
+add_subdirectory(../.. ${CMAKE_CURRENT_BINARY_DIR}/sdk EXCLUDE_FROM_ALL)
+
+target_link_libraries(PVRPfx ${PVRPfx_LINK_LIBS})
+set_target_properties(PVRPfx PROPERTIES 
+	ARCHIVE_OUTPUT_DIRECTORY ${FRAMEWORK_LIB_FOLDER}
+	LIBRARY_OUTPUT_DIRECTORY ${FRAMEWORK_LIB_FOLDER})
+endif()

@@ -81,6 +81,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="classpvrvk_1_1impl_1_1_queue__-members.html">List of all members</a>  </div>
@@ -96,51 +97,63 @@ Inheritance diagram for pvrvk::impl::Queue_:</div>
 <div class="dyncontent">
 <div class="center"><img src="classpvrvk_1_1impl_1_1_queue____inherit__graph.png" border="0" usemap="#pvrvk_1_1impl_1_1_queue___inherit__map" alt="Inheritance graph"/></div>
 <map name="pvrvk_1_1impl_1_1_queue___inherit__map" id="pvrvk_1_1impl_1_1_queue___inherit__map">
-<area shape="rect" id="node2" href="classpvrvk_1_1impl_1_1_device_object_handle.html" title="pvrvk::impl::DeviceObject\lHandle\&lt; VkQueue \&gt;" alt="" coords="227,5,400,46"/><area shape="rect" id="node3" href="classpvrvk_1_1impl_1_1_object_handle.html" title="pvrvk::impl::ObjectHandle\l\&lt; VkQueue \&gt;" alt="" coords="5,5,179,46"/><area shape="rect" id="node4" href="classpvrvk_1_1impl_1_1_device_object_debug_marker.html" title="pvrvk::impl::DeviceObject\lDebugMarker\&lt; Queue_ \&gt;" alt="" coords="227,70,400,111"/></map>
+<area shape="rect" id="node2" href="classpvrvk_1_1impl_1_1_p_v_r_vk_device_object_base.html" title="pvrvk::impl::PVRVkDevice\lObjectBase\&lt; VkQueue, ObjectType\l::e_DEVICE \&gt;" alt="" coords="305,4,535,60"/><area shape="rect" id="node3" href="classpvrvk_1_1impl_1_1_p_v_r_vk_object_base.html" title="pvrvk::impl::PVRVkObject\lBase\&lt; VkQueue, PVRVkObjectType \&gt;" alt="" coords="6,11,255,53"/><area shape="rect" id="node4" href="classpvrvk_1_1impl_1_1_device_object_debug_utils.html" title="pvrvk::impl::DeviceObject\lDebugUtils\&lt; Queue_ \&gt;" alt="" coords="333,83,507,125"/></map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:afbd160d82b479b8563768bb512e9bbc3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_queue__.html#afbd160d82b479b8563768bb512e9bbc3">bindSparse</a> (const <a class="el" href="structpvrvk_1_1_bind_sparse_info.html">BindSparseInfo</a> *bindInfo, uint32_t numBindInfos, <a class="el" href="namespacepvrvk.html#a8d71f5cb38d17c7a8d6ae36a33d07f17">Fence</a> &amp;fenceSignal)</td></tr>
+<tr class="memitem:af73e1a0e6c19e240224df465de7726a6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_queue__.html#af73e1a0e6c19e240224df465de7726a6">beginDebugUtilsLabel</a> (const <a class="el" href="structpvrvk_1_1_debug_utils_label.html">pvrvk::DebugUtilsLabel</a> &amp;labelInfo)</td></tr>
+<tr class="memdesc:af73e1a0e6c19e240224df465de7726a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Begins identifying a region of work submitted to this queue. The calls to beginDebugUtilsLabel and endDebugUtilsLabel must be matched and balanced. <a href="#af73e1a0e6c19e240224df465de7726a6">More...</a><br/></td></tr>
+<tr class="separator:af73e1a0e6c19e240224df465de7726a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afbd160d82b479b8563768bb512e9bbc3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_queue__.html#afbd160d82b479b8563768bb512e9bbc3">bindSparse</a> (const <a class="el" href="structpvrvk_1_1_bind_sparse_info.html">BindSparseInfo</a> *bindInfo, uint32_t numBindInfos, <a class="el" href="namespacepvrvk.html#a4d9493b1af7b59ff4928f0bd5f4102aa">Fence</a> &amp;fenceSignal)</td></tr>
 <tr class="memdesc:afbd160d82b479b8563768bb512e9bbc3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Submit sparse binding operations. <a href="#afbd160d82b479b8563768bb512e9bbc3">More...</a><br/></td></tr>
 <tr class="separator:afbd160d82b479b8563768bb512e9bbc3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a29d79599ff2851f03e72df701b411fd1"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacepvrvk.html#a8dd5932a80187b088ce6b591712dc2c2">DeviceWeakPtr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_device_object_handle.html#a29d79599ff2851f03e72df701b411fd1">getDevice</a> () const</td></tr>
-<tr class="memdesc:a29d79599ff2851f03e72df701b411fd1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get Device (const) <a href="#a29d79599ff2851f03e72df701b411fd1">More...</a><br/></td></tr>
-<tr class="separator:a29d79599ff2851f03e72df701b411fd1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa78f66f58571440f57204a645383c279"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvrvk.html#a8dd5932a80187b088ce6b591712dc2c2">DeviceWeakPtr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_device_object_handle.html#aa78f66f58571440f57204a645383c279">getDevice</a> ()</td></tr>
-<tr class="memdesc:aa78f66f58571440f57204a645383c279"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get Device <a href="#aa78f66f58571440f57204a645383c279">More...</a><br/></td></tr>
-<tr class="separator:aa78f66f58571440f57204a645383c279"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af44dac67098ecdcb9245082061dfe56b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_queue__.html#af44dac67098ecdcb9245082061dfe56b">endDebugUtilsLabel</a> ()</td></tr>
+<tr class="memdesc:af44dac67098ecdcb9245082061dfe56b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ends a label region of work submitted to this queue. <a href="#af44dac67098ecdcb9245082061dfe56b">More...</a><br/></td></tr>
+<tr class="separator:af44dac67098ecdcb9245082061dfe56b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af6593b9f7bf426811d4639b8358f3437"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacepvrvk.html#a48baa2a10fcb9f1bafd42e398fdbce61">Device</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_p_v_r_vk_device_object_base.html#af6593b9f7bf426811d4639b8358f3437">getDevice</a> () const</td></tr>
+<tr class="memdesc:af6593b9f7bf426811d4639b8358f3437"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get Device (const) <a href="#af6593b9f7bf426811d4639b8358f3437">More...</a><br/></td></tr>
+<tr class="separator:af6593b9f7bf426811d4639b8358f3437"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5fac1d61fb53bcce751d3386d97a41d1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvrvk.html#a48baa2a10fcb9f1bafd42e398fdbce61">Device</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_p_v_r_vk_device_object_base.html#a5fac1d61fb53bcce751d3386d97a41d1">getDevice</a> ()</td></tr>
+<tr class="memdesc:a5fac1d61fb53bcce751d3386d97a41d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get Device <a href="#a5fac1d61fb53bcce751d3386d97a41d1">More...</a><br/></td></tr>
+<tr class="separator:a5fac1d61fb53bcce751d3386d97a41d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a394f29f8232577e9e855d9a13a393467"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_queue__.html#a394f29f8232577e9e855d9a13a393467">getFamilyIndex</a> () const </td></tr>
 <tr class="memdesc:a394f29f8232577e9e855d9a13a393467"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get family id <a href="#a394f29f8232577e9e855d9a13a393467">More...</a><br/></td></tr>
 <tr class="separator:a394f29f8232577e9e855d9a13a393467"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a19a5b8d975138e8806189f05e3d2666a"><td class="memItemLeft" align="right" valign="top">pvrvk::QueueFlags&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_queue__.html#a19a5b8d975138e8806189f05e3d2666a">getFlags</a> () const </td></tr>
 <tr class="memdesc:a19a5b8d975138e8806189f05e3d2666a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return supported queue flags <a href="#a19a5b8d975138e8806189f05e3d2666a">More...</a><br/></td></tr>
 <tr class="separator:a19a5b8d975138e8806189f05e3d2666a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af9cd7d892ba5d3d7988b9ecae846f5bf"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_device_object_debug_marker.html#af9cd7d892ba5d3d7988b9ecae846f5bf">getObjectName</a> () const</td></tr>
-<tr class="memdesc:af9cd7d892ba5d3d7988b9ecae846f5bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the Debug Marker name. <a href="#af9cd7d892ba5d3d7988b9ecae846f5bf">More...</a><br/></td></tr>
-<tr class="separator:af9cd7d892ba5d3d7988b9ecae846f5bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac76498acd2c21abc91403f55db935163"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_device_object_debug_utils.html#ac76498acd2c21abc91403f55db935163">getObjectName</a> () const</td></tr>
+<tr class="memdesc:ac76498acd2c21abc91403f55db935163"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the Debug Marker name. <a href="#ac76498acd2c21abc91403f55db935163">More...</a><br/></td></tr>
+<tr class="separator:ac76498acd2c21abc91403f55db935163"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e8a3543c48cdc939fa0eeed3a9e85c9"><td class="memItemLeft" align="right" valign="top">ObjectType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_p_v_r_vk_object_base.html#a3e8a3543c48cdc939fa0eeed3a9e85c9">getObjectType</a> () const</td></tr>
+<tr class="memdesc:a3e8a3543c48cdc939fa0eeed3a9e85c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the specified object's type. <a href="#a3e8a3543c48cdc939fa0eeed3a9e85c9">More...</a><br/></td></tr>
+<tr class="separator:a3e8a3543c48cdc939fa0eeed3a9e85c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9d1463407d46a02d8dce9208db5676d6"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_queue__.html#a9d1463407d46a02d8dce9208db5676d6">getPriority</a> () const </td></tr>
 <tr class="memdesc:a9d1463407d46a02d8dce9208db5676d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the queues priority <a href="#a9d1463407d46a02d8dce9208db5676d6">More...</a><br/></td></tr>
 <tr class="separator:a9d1463407d46a02d8dce9208db5676d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4f27eddb1090fc657f3af1966d353e0b"><td class="memItemLeft" align="right" valign="top">const VkQueue &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_object_handle.html#a4f27eddb1090fc657f3af1966d353e0b">getVkHandle</a> () const</td></tr>
-<tr class="memdesc:a4f27eddb1090fc657f3af1966d353e0b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get vulkan object (const) <a href="#a4f27eddb1090fc657f3af1966d353e0b">More...</a><br/></td></tr>
-<tr class="separator:a4f27eddb1090fc657f3af1966d353e0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5bdea0f8bea6d2335934b10ff3d64285"><td class="memItemLeft" align="right" valign="top">const VkQueue &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_p_v_r_vk_object_base.html#a5bdea0f8bea6d2335934b10ff3d64285">getVkHandle</a> () const</td></tr>
+<tr class="memdesc:a5bdea0f8bea6d2335934b10ff3d64285"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get vulkan object (const) <a href="#a5bdea0f8bea6d2335934b10ff3d64285">More...</a><br/></td></tr>
+<tr class="separator:a5bdea0f8bea6d2335934b10ff3d64285"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a761611bf8f9c481612b7a354c103e234"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_queue__.html#a761611bf8f9c481612b7a354c103e234">insertDebugUtilsLabel</a> (const <a class="el" href="structpvrvk_1_1_debug_utils_label.html">pvrvk::DebugUtilsLabel</a> &amp;labelInfo)</td></tr>
+<tr class="memdesc:a761611bf8f9c481612b7a354c103e234"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inserts a single debug label any time. <a href="#a761611bf8f9c481612b7a354c103e234">More...</a><br/></td></tr>
+<tr class="separator:a761611bf8f9c481612b7a354c103e234"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a96d61de7eafc6be73b6d591abe93c73e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_queue__.html#a96d61de7eafc6be73b6d591abe93c73e">present</a> (<a class="el" href="structpvrvk_1_1_present_info.html">PresentInfo</a> &amp;presentInfo, Result *const results=nullptr)</td></tr>
 <tr class="memdesc:a96d61de7eafc6be73b6d591abe93c73e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Present <a href="#a96d61de7eafc6be73b6d591abe93c73e">More...</a><br/></td></tr>
 <tr class="separator:a96d61de7eafc6be73b6d591abe93c73e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0d5fc2fba19956e2923f87641cd3811e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_device_object_debug_marker.html#a0d5fc2fba19956e2923f87641cd3811e">resetObjectName</a> ()</td></tr>
-<tr class="memdesc:a0d5fc2fba19956e2923f87641cd3811e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resets the name of a specified object using the extension VK_EXT_debug_marker. <a href="#a0d5fc2fba19956e2923f87641cd3811e">More...</a><br/></td></tr>
-<tr class="separator:a0d5fc2fba19956e2923f87641cd3811e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae323b1f0833e0e90489612e897c78821"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_device_object_debug_marker.html#ae323b1f0833e0e90489612e897c78821">setObjectName</a> (const std::string &amp;objectName)</td></tr>
-<tr class="memdesc:ae323b1f0833e0e90489612e897c78821"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes use of the extension VK_EXT_debug_marker to provide a name for a specified object. <a href="#ae323b1f0833e0e90489612e897c78821">More...</a><br/></td></tr>
-<tr class="separator:ae323b1f0833e0e90489612e897c78821"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a90a2912d1e2fb065219b50eb55fbfd34"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_device_object_debug_marker.html#a90a2912d1e2fb065219b50eb55fbfd34">setObjectTag</a> (uint64_t tagName, size_t tagSize, const void *tag)</td></tr>
-<tr class="memdesc:a90a2912d1e2fb065219b50eb55fbfd34"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes use of the extension VK_EXT_debug_marker to provide a tag for a specified object. <a href="#a90a2912d1e2fb065219b50eb55fbfd34">More...</a><br/></td></tr>
-<tr class="separator:a90a2912d1e2fb065219b50eb55fbfd34"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a17cc9c4b1a6ce0d561fa0da2748dc5a0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_queue__.html#a17cc9c4b1a6ce0d561fa0da2748dc5a0">submit</a> (const <a class="el" href="structpvrvk_1_1_submit_info.html">SubmitInfo</a> &amp;queueSubmitInfo, <a class="el" href="namespacepvrvk.html#a8d71f5cb38d17c7a8d6ae36a33d07f17">Fence</a> signalFence=<a class="el" href="namespacepvrvk.html#a8d71f5cb38d17c7a8d6ae36a33d07f17">Fence</a>())</td></tr>
+<tr class="memitem:ac34022a1a96759902c41c68a33264576"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_device_object_debug_utils.html#ac34022a1a96759902c41c68a33264576">resetObjectName</a> ()</td></tr>
+<tr class="memdesc:ac34022a1a96759902c41c68a33264576"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resets the name of a specified object using the extension VK_EXT_debug_marker or VK_EXT_debug_utils. <a href="#ac34022a1a96759902c41c68a33264576">More...</a><br/></td></tr>
+<tr class="separator:ac34022a1a96759902c41c68a33264576"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a93cc55657dbc15c87bc158960f5ececd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_device_object_debug_utils.html#a93cc55657dbc15c87bc158960f5ececd">setObjectName</a> (const std::string &amp;objectName)</td></tr>
+<tr class="memdesc:a93cc55657dbc15c87bc158960f5ececd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes use of the extension VK_EXT_debug_marker or VK_EXT_debug_utils to provide a name for a specified object. <a href="#a93cc55657dbc15c87bc158960f5ececd">More...</a><br/></td></tr>
+<tr class="separator:a93cc55657dbc15c87bc158960f5ececd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4f3e93927c6dfb8e82ef548282462f03"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_device_object_debug_utils.html#a4f3e93927c6dfb8e82ef548282462f03">setObjectTag</a> (uint64_t tagName, size_t tagSize, const void *tag)</td></tr>
+<tr class="memdesc:a4f3e93927c6dfb8e82ef548282462f03"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes use of the extension VK_EXT_debug_marker or VK_EXT_debug_utils to provide a tag for a specified object. <a href="#a4f3e93927c6dfb8e82ef548282462f03">More...</a><br/></td></tr>
+<tr class="separator:a4f3e93927c6dfb8e82ef548282462f03"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a17cc9c4b1a6ce0d561fa0da2748dc5a0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_queue__.html#a17cc9c4b1a6ce0d561fa0da2748dc5a0">submit</a> (const <a class="el" href="structpvrvk_1_1_submit_info.html">SubmitInfo</a> &amp;queueSubmitInfo, <a class="el" href="namespacepvrvk.html#a4d9493b1af7b59ff4928f0bd5f4102aa">Fence</a> signalFence=<a class="el" href="namespacepvrvk.html#a4d9493b1af7b59ff4928f0bd5f4102aa">Fence</a>())</td></tr>
 <tr class="memdesc:a17cc9c4b1a6ce0d561fa0da2748dc5a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Submit <a href="#a17cc9c4b1a6ce0d561fa0da2748dc5a0">More...</a><br/></td></tr>
 <tr class="separator:a17cc9c4b1a6ce0d561fa0da2748dc5a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa5aab402bba04cacd0318fd4a7ab5aa5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_queue__.html#aa5aab402bba04cacd0318fd4a7ab5aa5">submit</a> (const <a class="el" href="structpvrvk_1_1_submit_info.html">SubmitInfo</a> *queueSubmitInfo, uint32_t numSubmitInfos, <a class="el" href="namespacepvrvk.html#a8d71f5cb38d17c7a8d6ae36a33d07f17">Fence</a> signalFence=<a class="el" href="namespacepvrvk.html#a8d71f5cb38d17c7a8d6ae36a33d07f17">Fence</a>())</td></tr>
+<tr class="memitem:aa5aab402bba04cacd0318fd4a7ab5aa5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_queue__.html#aa5aab402bba04cacd0318fd4a7ab5aa5">submit</a> (const <a class="el" href="structpvrvk_1_1_submit_info.html">SubmitInfo</a> *queueSubmitInfo, uint32_t numSubmitInfos, <a class="el" href="namespacepvrvk.html#a4d9493b1af7b59ff4928f0bd5f4102aa">Fence</a> signalFence=<a class="el" href="namespacepvrvk.html#a4d9493b1af7b59ff4928f0bd5f4102aa">Fence</a>())</td></tr>
 <tr class="memdesc:aa5aab402bba04cacd0318fd4a7ab5aa5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Submit <a href="#aa5aab402bba04cacd0318fd4a7ab5aa5">More...</a><br/></td></tr>
 <tr class="separator:aa5aab402bba04cacd0318fd4a7ab5aa5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac87ea2d214b4e1f6d1ac2a64fa3c5b61"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_queue__.html#ac87ea2d214b4e1f6d1ac2a64fa3c5b61">waitIdle</a> ()</td></tr>
@@ -149,16 +162,43 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
-<tr class="memitem:aa6ff16a7e0728a785f1367dfb33d6099"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvrvk.html#a8dd5932a80187b088ce6b591712dc2c2">DeviceWeakPtr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_device_object_handle.html#aa6ff16a7e0728a785f1367dfb33d6099">_device</a></td></tr>
-<tr class="memdesc:aa6ff16a7e0728a785f1367dfb33d6099"><td class="mdescLeft">&#160;</td><td class="mdescRight">The device which was used to create this DeviceObject <a href="#aa6ff16a7e0728a785f1367dfb33d6099">More...</a><br/></td></tr>
-<tr class="separator:aa6ff16a7e0728a785f1367dfb33d6099"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a41f43268ad1a7d2d3bde2a228fbcac03"><td class="memItemLeft" align="right" valign="top">VkQueue&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_object_handle.html#a41f43268ad1a7d2d3bde2a228fbcac03">_vkHandle</a></td></tr>
-<tr class="memdesc:a41f43268ad1a7d2d3bde2a228fbcac03"><td class="mdescLeft">&#160;</td><td class="mdescRight">The Vulkan object handle representing the Vulkan object at an API level. <a href="#a41f43268ad1a7d2d3bde2a228fbcac03">More...</a><br/></td></tr>
-<tr class="separator:a41f43268ad1a7d2d3bde2a228fbcac03"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e34537906b05ee353451b35dac332ca"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvrvk.html#aecbfc9aca0ecd8de47ccb6137aafcabd">DeviceWeakPtr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_p_v_r_vk_device_object_base.html#a7e34537906b05ee353451b35dac332ca">_device</a></td></tr>
+<tr class="memdesc:a7e34537906b05ee353451b35dac332ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">The device which was used to create this DeviceObject <a href="#a7e34537906b05ee353451b35dac332ca">More...</a><br/></td></tr>
+<tr class="separator:a7e34537906b05ee353451b35dac332ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4f6a5283158daab0cdc032c0c6925f37"><td class="memItemLeft" align="right" valign="top">ObjectType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_p_v_r_vk_object_base.html#a4f6a5283158daab0cdc032c0c6925f37">_objectType</a></td></tr>
+<tr class="memdesc:a4f6a5283158daab0cdc032c0c6925f37"><td class="mdescLeft">&#160;</td><td class="mdescRight">The Vulkan object type. <a href="#a4f6a5283158daab0cdc032c0c6925f37">More...</a><br/></td></tr>
+<tr class="separator:a4f6a5283158daab0cdc032c0c6925f37"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a674fbf75f66ed66d68aa03d32e6114bd"><td class="memItemLeft" align="right" valign="top">VkQueue&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_p_v_r_vk_object_base.html#a674fbf75f66ed66d68aa03d32e6114bd">_vkHandle</a></td></tr>
+<tr class="memdesc:a674fbf75f66ed66d68aa03d32e6114bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">The Vulkan object handle representing the Vulkan object at an API level. <a href="#a674fbf75f66ed66d68aa03d32e6114bd">More...</a><br/></td></tr>
+<tr class="separator:a674fbf75f66ed66d68aa03d32e6114bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Wraps vulkan queue object.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="af73e1a0e6c19e240224df465de7726a6"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void pvrvk::impl::Queue_::beginDebugUtilsLabel </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structpvrvk_1_1_debug_utils_label.html">pvrvk::DebugUtilsLabel</a> &amp;&#160;</td>
+          <td class="paramname"><em>labelInfo</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Begins identifying a region of work submitted to this queue. The calls to beginDebugUtilsLabel and endDebugUtilsLabel must be matched and balanced.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">labelInfo</td><td>Specifies the parameters of the label region to open</td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a class="anchor" id="afbd160d82b479b8563768bb512e9bbc3"></a>
 <div class="memitem">
 <div class="memproto">
@@ -178,7 +218,7 @@ Protected Attributes</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacepvrvk.html#a8d71f5cb38d17c7a8d6ae36a33d07f17">Fence</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacepvrvk.html#a4d9493b1af7b59ff4928f0bd5f4102aa">Fence</a> &amp;&#160;</td>
           <td class="paramname"><em>fenceSignal</em>&#160;</td>
         </tr>
         <tr>
@@ -201,7 +241,24 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a29d79599ff2851f03e72df701b411fd1"></a>
+<a class="anchor" id="af44dac67098ecdcb9245082061dfe56b"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void pvrvk::impl::Queue_::endDebugUtilsLabel </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Ends a label region of work submitted to this queue.</p>
+
+</div>
+</div>
+<a class="anchor" id="af6593b9f7bf426811d4639b8358f3437"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -209,7 +266,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const <a class="el" href="namespacepvrvk.html#a8dd5932a80187b088ce6b591712dc2c2">DeviceWeakPtr</a> <a class="el" href="classpvrvk_1_1impl_1_1_device_object_handle.html">pvrvk::impl::DeviceObjectHandle</a>&lt; VkQueue  &gt;::getDevice </td>
+          <td class="memname">const <a class="el" href="namespacepvrvk.html#a48baa2a10fcb9f1bafd42e398fdbce61">Device</a> <a class="el" href="classpvrvk_1_1impl_1_1_p_v_r_vk_device_object_base.html">pvrvk::impl::PVRVkDeviceObjectBase</a>&lt; VkQueue , PVRVkObjectType &gt;::getDevice </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -227,7 +284,7 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="aa78f66f58571440f57204a645383c279"></a>
+<a class="anchor" id="a5fac1d61fb53bcce751d3386d97a41d1"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -235,7 +292,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="namespacepvrvk.html#a8dd5932a80187b088ce6b591712dc2c2">DeviceWeakPtr</a> <a class="el" href="classpvrvk_1_1impl_1_1_device_object_handle.html">pvrvk::impl::DeviceObjectHandle</a>&lt; VkQueue  &gt;::getDevice </td>
+          <td class="memname"><a class="el" href="namespacepvrvk.html#a48baa2a10fcb9f1bafd42e398fdbce61">Device</a> <a class="el" href="classpvrvk_1_1impl_1_1_p_v_r_vk_device_object_base.html">pvrvk::impl::PVRVkDeviceObjectBase</a>&lt; VkQueue , PVRVkObjectType &gt;::getDevice </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -306,7 +363,7 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="af9cd7d892ba5d3d7988b9ecae846f5bf"></a>
+<a class="anchor" id="ac76498acd2c21abc91403f55db935163"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -314,7 +371,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const std::string&amp; <a class="el" href="classpvrvk_1_1impl_1_1_device_object_debug_marker.html">pvrvk::impl::DeviceObjectDebugMarker</a>&lt; <a class="el" href="classpvrvk_1_1impl_1_1_queue__.html">Queue_</a>  &gt;::getObjectName </td>
+          <td class="memname">const std::string&amp; <a class="el" href="classpvrvk_1_1impl_1_1_device_object_debug_utils.html">pvrvk::impl::DeviceObjectDebugUtils</a>&lt; <a class="el" href="classpvrvk_1_1impl_1_1_queue__.html">Queue_</a>  &gt;::getObjectName </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -329,6 +386,32 @@ Protected Attributes</h2></td></tr>
 
 <p>Gets the Debug Marker name.</p>
 <dl class="section return"><dt>Returns</dt><dd>The object name</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a3e8a3543c48cdc939fa0eeed3a9e85c9"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">ObjectType <a class="el" href="classpvrvk_1_1impl_1_1_p_v_r_vk_object_base.html">pvrvk::impl::PVRVkObjectBase</a>&lt; VkQueue , PVRVkObjectType &gt;::getObjectType </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the specified object's type.</p>
+<dl class="section return"><dt>Returns</dt><dd>The object type</dd></dl>
 
 </div>
 </div>
@@ -358,7 +441,7 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a4f27eddb1090fc657f3af1966d353e0b"></a>
+<a class="anchor" id="a5bdea0f8bea6d2335934b10ff3d64285"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -366,7 +449,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const VkQueue &amp; <a class="el" href="classpvrvk_1_1impl_1_1_object_handle.html">pvrvk::impl::ObjectHandle</a>&lt; VkQueue  &gt;::getVkHandle </td>
+          <td class="memname">const VkQueue &amp; <a class="el" href="classpvrvk_1_1impl_1_1_p_v_r_vk_object_base.html">pvrvk::impl::PVRVkObjectBase</a>&lt; VkQueue , PVRVkObjectType &gt;::getVkHandle </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -381,6 +464,30 @@ Protected Attributes</h2></td></tr>
 
 <p>Get vulkan object (const)</p>
 <dl class="section return"><dt>Returns</dt><dd>Returns the templated 'HandleType'</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a761611bf8f9c481612b7a354c103e234"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void pvrvk::impl::Queue_::insertDebugUtilsLabel </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structpvrvk_1_1_debug_utils_label.html">pvrvk::DebugUtilsLabel</a> &amp;&#160;</td>
+          <td class="paramname"><em>labelInfo</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Inserts a single debug label any time.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">labelInfo</td><td>Specifies the parameters of the label region to insert</td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -419,7 +526,7 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a0d5fc2fba19956e2923f87641cd3811e"></a>
+<a class="anchor" id="ac34022a1a96759902c41c68a33264576"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -427,7 +534,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classpvrvk_1_1impl_1_1_device_object_debug_marker.html">pvrvk::impl::DeviceObjectDebugMarker</a>&lt; <a class="el" href="classpvrvk_1_1impl_1_1_queue__.html">Queue_</a>  &gt;::resetObjectName </td>
+          <td class="memname">void <a class="el" href="classpvrvk_1_1impl_1_1_device_object_debug_utils.html">pvrvk::impl::DeviceObjectDebugUtils</a>&lt; <a class="el" href="classpvrvk_1_1impl_1_1_queue__.html">Queue_</a>  &gt;::resetObjectName </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -440,11 +547,11 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Resets the name of a specified object using the extension VK_EXT_debug_marker.</p>
+<p>Resets the name of a specified object using the extension VK_EXT_debug_marker or VK_EXT_debug_utils.</p>
 
 </div>
 </div>
-<a class="anchor" id="ae323b1f0833e0e90489612e897c78821"></a>
+<a class="anchor" id="a93cc55657dbc15c87bc158960f5ececd"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -452,7 +559,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classpvrvk_1_1impl_1_1_device_object_debug_marker.html">pvrvk::impl::DeviceObjectDebugMarker</a>&lt; <a class="el" href="classpvrvk_1_1impl_1_1_queue__.html">Queue_</a>  &gt;::setObjectName </td>
+          <td class="memname">void <a class="el" href="classpvrvk_1_1impl_1_1_device_object_debug_utils.html">pvrvk::impl::DeviceObjectDebugUtils</a>&lt; <a class="el" href="classpvrvk_1_1impl_1_1_queue__.html">Queue_</a>  &gt;::setObjectName </td>
           <td>(</td>
           <td class="paramtype">const std::string &amp;&#160;</td>
           <td class="paramname"><em>objectName</em></td><td>)</td>
@@ -466,7 +573,7 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Makes use of the extension VK_EXT_debug_marker to provide a name for a specified object.</p>
+<p>Makes use of the extension VK_EXT_debug_marker or VK_EXT_debug_utils to provide a name for a specified object.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">objectName</td><td>The name to use for the object</td></tr>
@@ -476,7 +583,7 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a90a2912d1e2fb065219b50eb55fbfd34"></a>
+<a class="anchor" id="a4f3e93927c6dfb8e82ef548282462f03"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -484,7 +591,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classpvrvk_1_1impl_1_1_device_object_debug_marker.html">pvrvk::impl::DeviceObjectDebugMarker</a>&lt; <a class="el" href="classpvrvk_1_1impl_1_1_queue__.html">Queue_</a>  &gt;::setObjectTag </td>
+          <td class="memname">void <a class="el" href="classpvrvk_1_1impl_1_1_device_object_debug_utils.html">pvrvk::impl::DeviceObjectDebugUtils</a>&lt; <a class="el" href="classpvrvk_1_1impl_1_1_queue__.html">Queue_</a>  &gt;::setObjectTag </td>
           <td>(</td>
           <td class="paramtype">uint64_t&#160;</td>
           <td class="paramname"><em>tagName</em>, </td>
@@ -514,7 +621,7 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Makes use of the extension VK_EXT_debug_marker to provide a tag for a specified object.</p>
+<p>Makes use of the extension VK_EXT_debug_marker or VK_EXT_debug_utils to provide a tag for a specified object.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">tagName</td><td>A numerical identifier of the tag for the object</td></tr>
@@ -542,8 +649,8 @@ Protected Attributes</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacepvrvk.html#a8d71f5cb38d17c7a8d6ae36a33d07f17">Fence</a>&#160;</td>
-          <td class="paramname"><em>signalFence</em> = <code><a class="el" href="namespacepvrvk.html#a8d71f5cb38d17c7a8d6ae36a33d07f17">Fence</a>()</code>&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacepvrvk.html#a4d9493b1af7b59ff4928f0bd5f4102aa">Fence</a>&#160;</td>
+          <td class="paramname"><em>signalFence</em> = <code><a class="el" href="namespacepvrvk.html#a4d9493b1af7b59ff4928f0bd5f4102aa">Fence</a>()</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -588,8 +695,8 @@ Protected Attributes</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacepvrvk.html#a8d71f5cb38d17c7a8d6ae36a33d07f17">Fence</a>&#160;</td>
-          <td class="paramname"><em>signalFence</em> = <code><a class="el" href="namespacepvrvk.html#a8d71f5cb38d17c7a8d6ae36a33d07f17">Fence</a>()</code>&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacepvrvk.html#a4d9493b1af7b59ff4928f0bd5f4102aa">Fence</a>&#160;</td>
+          <td class="paramname"><em>signalFence</em> = <code><a class="el" href="namespacepvrvk.html#a4d9493b1af7b59ff4928f0bd5f4102aa">Fence</a>()</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -629,7 +736,7 @@ Protected Attributes</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
-<a class="anchor" id="aa6ff16a7e0728a785f1367dfb33d6099"></a>
+<a class="anchor" id="a7e34537906b05ee353451b35dac332ca"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -637,7 +744,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="namespacepvrvk.html#a8dd5932a80187b088ce6b591712dc2c2">DeviceWeakPtr</a> <a class="el" href="classpvrvk_1_1impl_1_1_device_object_handle.html">pvrvk::impl::DeviceObjectHandle</a>&lt; VkQueue  &gt;::_device</td>
+          <td class="memname"><a class="el" href="namespacepvrvk.html#aecbfc9aca0ecd8de47ccb6137aafcabd">DeviceWeakPtr</a> <a class="el" href="classpvrvk_1_1impl_1_1_p_v_r_vk_device_object_base.html">pvrvk::impl::PVRVkDeviceObjectBase</a>&lt; VkQueue , PVRVkObjectType &gt;::_device</td>
         </tr>
       </table>
   </td>
@@ -651,7 +758,7 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a41f43268ad1a7d2d3bde2a228fbcac03"></a>
+<a class="anchor" id="a4f6a5283158daab0cdc032c0c6925f37"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -659,7 +766,29 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">VkQueue  <a class="el" href="classpvrvk_1_1impl_1_1_object_handle.html">pvrvk::impl::ObjectHandle</a>&lt; VkQueue  &gt;::_vkHandle</td>
+          <td class="memname">ObjectType <a class="el" href="classpvrvk_1_1impl_1_1_p_v_r_vk_object_base.html">pvrvk::impl::PVRVkObjectBase</a>&lt; VkQueue , PVRVkObjectType &gt;::_objectType</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>The Vulkan object type.</p>
+
+</div>
+</div>
+<a class="anchor" id="a674fbf75f66ed66d68aa03d32e6114bd"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">VkQueue  <a class="el" href="classpvrvk_1_1impl_1_1_p_v_r_vk_object_base.html">pvrvk::impl::PVRVkObjectBase</a>&lt; VkQueue , PVRVkObjectType &gt;::_vkHandle</td>
         </tr>
       </table>
   </td>

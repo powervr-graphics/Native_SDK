@@ -11,39 +11,53 @@
 namespace pvrvk {
 namespace Extensions {
 
-std::vector<std::string> filterExtensions(const std::vector<ExtensionProperties>& extensionProperties, const std::string* extensionsToEnable, uint32_t numExtensions)
+VulkanExtensionList filterExtensions(const std::vector<ExtensionProperties>& extensionProperties, const VulkanExtensionList& extensionsToEnable)
 {
-	std::vector<std::string> outExtensions;
-	for (uint32_t i = 0; i < extensionProperties.size(); ++i)
+	VulkanExtensionList outExtensions;
+	for (uint32_t i = 0; i < extensionsToEnable.getNumExtensions(); ++i)
 	{
-		for (uint32_t j = 0; j < numExtensions; ++j)
+		const VulkanExtension& currentRequestedExtension = extensionsToEnable.getExtension(i);
+		bool foundExtension = false;
+		for (uint32_t j = 0; j < extensionProperties.size(); ++j)
 		{
-			if (!strcmp(extensionsToEnable[j].c_str(), extensionProperties[i].getExtensionName()))
+			// Determine whether the extension names match
+			if (!strcmp(currentRequestedExtension.getName().c_str(), extensionProperties[j].getExtensionName()))
 			{
-				outExtensions.push_back(extensionsToEnable[j]);
-				break;
+				// If a spec version has been provided then ensure the spec versions match
+				if (currentRequestedExtension.getSpecVersion() != -1)
+				{
+					if (extensionProperties[j].getSpecVersion() == currentRequestedExtension.getSpecVersion())
+					{
+						outExtensions.addExtension(currentRequestedExtension);
+						foundExtension = true;
+						break;
+					}
+				}
+				// If a spec version of -1 has been provided then accept the highest supported version of the extension
+				else
+				{
+					// If the extension is already present then determine whether the new element has a higher spec version
+					if (foundExtension)
+					{
+						// Get the last added extension
+						const VulkanExtension& lastAddedExtension = outExtensions.getExtension(outExtensions.getNumExtensions() - 1);
+						if (extensionProperties[j].getSpecVersion() > lastAddedExtension.getSpecVersion())
+						{
+							outExtensions.removeExtension(lastAddedExtension);
+							outExtensions.addExtension(VulkanExtension(extensionProperties[j].getExtensionName(), extensionProperties[j].getSpecVersion()));
+						}
+					}
+					else
+					{
+						outExtensions.addExtension(VulkanExtension(extensionProperties[j].getExtensionName(), extensionProperties[j].getSpecVersion()));
+					}
+
+					foundExtension = true;
+				}
 			}
 		}
 	}
 	return outExtensions;
-}
-
-std::vector<std::string> filterInstanceExtensions(const std::string* extensionsToEnable, uint32_t numExtensions)
-{
-	std::vector<ExtensionProperties> extprops;
-	enumerateInstanceExtensions(extprops);
-	return Extensions::filterExtensions(extprops, extensionsToEnable, numExtensions);
-}
-
-void enumerateInstanceExtensionsString(std::vector<std::string>& extStr)
-{
-	std::vector<ExtensionProperties> extensionProps;
-	enumerateInstanceExtensions(extensionProps);
-	extStr.resize(extensionProps.size());
-	for (uint32_t i = 0; i < extensionProps.size(); i++)
-	{
-		extStr[i] = extensionProps[i].getExtensionName();
-	}
 }
 
 void enumerateInstanceExtensions(std::vector<ExtensionProperties>& outExtensionProps)
@@ -57,13 +71,13 @@ void enumerateInstanceExtensions(std::vector<ExtensionProperties>& outExtensionP
 		"ExtensionsVk::Failed to enumerate instance extension properties");
 }
 
-bool isInstanceExtensionSupported(const char* extension)
+bool isInstanceExtensionSupported(const std::string& extension)
 {
 	std::vector<ExtensionProperties> extensions;
 	enumerateInstanceExtensions(extensions);
 	for (uint32_t i = 0; i < extensions.size(); ++i)
 	{
-		if (!strcmp(extensions[i].getExtensionName(), extension))
+		if (!strcmp(extensions[i].getExtensionName(), extension.c_str()))
 		{
 			return true;
 		}
@@ -72,5 +86,4 @@ bool isInstanceExtensionSupported(const char* extension)
 }
 } // namespace Extensions
 } // namespace pvrvk
-
 //!\endcond

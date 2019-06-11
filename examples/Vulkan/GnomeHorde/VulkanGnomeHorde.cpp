@@ -291,7 +291,7 @@ struct TileInfo
 struct DeviceResources
 {
 	pvrvk::Instance instance;
-	pvrvk::DebugReportCallback debugCallbacks[2];
+	pvr::utils::DebugUtilsCallbacks debugUtilsCallbacks;
 	pvrvk::Device device;
 	pvr::utils::vma::Allocator vmaAllocator;
 	pvrvk::Swapchain swapchain;
@@ -328,10 +328,9 @@ struct DeviceResources
 	LineTasksQueue::ProducerToken lineQproducerToken;
 	TileResultsQueue::ConsumerToken drawQconsumerToken;
 
-	pvrvk::Semaphore semaphoreImageAcquired[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
-	pvrvk::Fence perFrameAcquireFence[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
-	pvrvk::Semaphore semaphorePresent[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
-	pvrvk::Fence perFrameCommandBufferFence[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	pvrvk::Semaphore imageAcquiredSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	pvrvk::Semaphore presentationSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	pvrvk::Fence perFrameResourcesFences[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
 
 	// UIRenderer used to display text
 	pvr::ui::UIRenderer uiRenderer;
@@ -341,16 +340,14 @@ struct DeviceResources
 	DeviceResources(LineTasksQueue& lineQ, TileResultsQueue& drawQ) : lineQproducerToken(lineQ.getProducerToken()), drawQconsumerToken(drawQ.getConsumerToken()) {}
 	~DeviceResources()
 	{
-		if (device.isValid())
+		if (device)
 		{
 			device->waitIdle();
 			uint32_t l = swapchain->getSwapchainLength();
 			for (uint32_t i = 0; i < l; ++i)
 			{
-				if (perFrameAcquireFence[i].isValid())
-					perFrameAcquireFence[i]->wait();
-				if (perFrameCommandBufferFence[i].isValid())
-					perFrameCommandBufferFence[i]->wait();
+				if (perFrameResourcesFences[i])
+					perFrameResourcesFences[i]->wait();
 			}
 		}
 	}
@@ -474,7 +471,7 @@ void GnomeHordeTileThreadData::garbageCollectPreviousFrameFreeCommandBuffers(uin
 	{
 		for (auto it = freeCmd.begin(); it != freeCmd.end(); ++it)
 		{
-			if (it->refcount() > 1)
+			if (it->use_count() > 1)
 			{
 				return;
 			}
@@ -501,7 +498,7 @@ pvrvk::SecondaryCommandBuffer GnomeHordeTileThreadData::getFreeCommandBuffer(uin
 			threadApiObj->freeCmdBuffers[_swapchainIndex].pop_back();
 		}
 	}
-	if (retval.isNull())
+	if (!retval)
 	{
 		if (threadApiObj->commandPools.size() == 0)
 		{
@@ -513,7 +510,7 @@ pvrvk::SecondaryCommandBuffer GnomeHordeTileThreadData::getFreeCommandBuffer(uin
 			std::unique_lock<std::mutex> lock(threadApiObj->poolMutex);
 			retval = threadApiObj->commandPools.back()->allocateSecondaryCommandBuffer();
 		}
-		if (retval.isNull())
+		if (!retval)
 		{
 			Log(LogLevel::Error,
 				"[THREAD %ull] Command buffer allocation failed, "
@@ -528,7 +525,7 @@ pvrvk::SecondaryCommandBuffer GnomeHordeTileThreadData::getFreeCommandBuffer(uin
 				std::unique_lock<std::mutex> lock(threadApiObj->poolMutex);
 				retval = threadApiObj->commandPools.back()->allocateSecondaryCommandBuffer();
 			}
-			if (retval.isNull())
+			if (!retval)
 			{
 				Log(LogLevel::Critical, "COMMAND BUFFER ALLOCATION FAILED ON FRESH COMMAND POOL.");
 			}
@@ -598,8 +595,8 @@ pvr::Result VulkanGnomeHorde::initApplication()
 
 	uint32_t thread_factor = std::max(num_cores - THREAD_FACTOR_RELAXATION, 1u);
 
-	_numVisibilityThreads = std::min(thread_factor, static_cast<uint32_t>(MAX_NUMBER_OF_THREADS));
-	_numTileThreads = std::min(thread_factor, static_cast<uint32_t>(MAX_NUMBER_OF_THREADS));
+	_numVisibilityThreads = static_cast <uint8_t>(std::min(thread_factor, static_cast<uint32_t>(MAX_NUMBER_OF_THREADS)));
+	_numTileThreads = static_cast <uint8_t>(std::min(thread_factor, static_cast<uint32_t>(MAX_NUMBER_OF_THREADS)));
 	Log(LogLevel::Information, "Hardware concurreny reported: %u cores. Enabling %u visibility threads plus %u tile processing threads\n", num_cores, _numVisibilityThreads,
 		_numTileThreads);
 
@@ -665,12 +662,8 @@ pvr::Result VulkanGnomeHorde::initView()
 	// Create the surface
 	pvrvk::Surface surface = pvr::utils::createSurface(_deviceResources->instance, _deviceResources->instance->getPhysicalDevice(0), this->getWindow(), this->getDisplay());
 
-	// Add Debug Report Callbacks
-	// Add a Debug Report Callback for logging messages for events of all supported types.
-	_deviceResources->debugCallbacks[0] = pvr::utils::createDebugReportCallback(_deviceResources->instance);
-	// Add a second Debug Report Callback for throwing exceptions for Error events.
-	_deviceResources->debugCallbacks[1] =
-		pvr::utils::createDebugReportCallback(_deviceResources->instance, pvrvk::DebugReportFlagsEXT::e_ERROR_BIT_EXT, pvr::utils::throwOnErrorDebugReportCallback);
+	// Create a default set of debug utils messengers or debug callbacks using either VK_EXT_debug_utils or VK_EXT_debug_report respectively
+	_deviceResources->debugUtilsCallbacks = pvr::utils::createDebugUtilsCallbacks(_deviceResources->instance);
 
 	// create the device and the queue
 	// look for  a queue that supports graphics, transfer and presentation
@@ -699,7 +692,7 @@ pvr::Result VulkanGnomeHorde::initView()
 
 	//--------------------
 	// Create the on screen framebuffer
-	pvr::utils::createOnscreenFramebufferAndRenderpass(_deviceResources->swapchain, &_deviceResources->depthStencilImages[0], _deviceResources->onScreenFramebuffer);
+	pvr::utils::createOnscreenFramebufferAndRenderPass(_deviceResources->swapchain, &_deviceResources->depthStencilImages[0], _deviceResources->onScreenFramebuffer);
 
 	//--------------------
 	// Create the commandpool
@@ -720,11 +713,9 @@ pvr::Result VulkanGnomeHorde::initView()
 	// create per swapchain resources
 	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
 	{
-		_deviceResources->semaphorePresent[i] = _deviceResources->device->createSemaphore();
-		_deviceResources->semaphoreImageAcquired[i] = _deviceResources->device->createSemaphore();
-		_deviceResources->perFrameCommandBufferFence[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
-		_deviceResources->perFrameAcquireFence[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
-
+		_deviceResources->presentationSemaphores[i] = _deviceResources->device->createSemaphore();
+		_deviceResources->imageAcquiredSemaphores[i] = _deviceResources->device->createSemaphore();
+		_deviceResources->perFrameResourcesFences[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
 		_deviceResources->multiBuffering[i].commandBuffer = _deviceResources->commandPool->allocateCommandBuffer();
 	}
 
@@ -884,7 +875,7 @@ pvr::Result VulkanGnomeHorde::releaseView()
 
 	// waitIdle is being called to make sure the command buffers we will be destroying
 	// are not being referenced.
-	if (_deviceResources.get() && _deviceResources->device.isValid())
+	if (_deviceResources.get() && _deviceResources->device)
 	{
 		_deviceResources->device->waitIdle();
 	}
@@ -1059,7 +1050,7 @@ void GnomeHordeVisibilityThreadData::determineLineVisibility(const int32_t* line
 			{
 				for (uint32_t i = 0; i < app->_deviceResources->swapchain->getSwapchainLength(); ++i) // First, free its pre-existing command buffers (just mark free)
 				{
-					if (tile.cbs[i].first.isValid())
+					if (tile.cbs[i].first)
 					{
 						app->_deviceResources->tileThreadData[tile.threadId].freeCommandBuffer(tile.cbs[i].first, i);
 						tile.cbs[i].first.reset();
@@ -1104,14 +1095,12 @@ pvr::Result VulkanGnomeHorde::renderFrame()
 {
 	const pvrvk::ClearValue clearVals[] = { pvrvk::ClearValue(0.0f, 0.128f, 0.0f, 1.0f), pvrvk::ClearValue(1.0f, 0u) };
 
-	_deviceResources->perFrameAcquireFence[_frameId]->wait();
-	_deviceResources->perFrameAcquireFence[_frameId]->reset();
-	_deviceResources->swapchain->acquireNextImage(uint64_t(-1), _deviceResources->semaphoreImageAcquired[_frameId], _deviceResources->perFrameAcquireFence[_frameId]);
+	_deviceResources->swapchain->acquireNextImage(uint64_t(-1), _deviceResources->imageAcquiredSemaphores[_frameId]);
 
 	_swapchainIndex = _deviceResources->swapchain->getSwapchainIndex();
 
-	_deviceResources->perFrameCommandBufferFence[_swapchainIndex]->wait();
-	_deviceResources->perFrameCommandBufferFence[_swapchainIndex]->reset();
+	_deviceResources->perFrameResourcesFences[_swapchainIndex]->wait();
+	_deviceResources->perFrameResourcesFences[_swapchainIndex]->reset();
 
 	float dt = getFrameTime() * 0.001f;
 	_animDetails.logicTime += dt;
@@ -1212,16 +1201,16 @@ pvr::Result VulkanGnomeHorde::renderFrame()
 	pvrvk::PipelineStageFlags waitStage = pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT;
 	submitInfo.commandBuffers = &cb;
 	submitInfo.numCommandBuffers = 1;
-	submitInfo.waitSemaphores = &_deviceResources->semaphoreImageAcquired[_frameId];
+	submitInfo.waitSemaphores = &_deviceResources->imageAcquiredSemaphores[_frameId];
 	submitInfo.numWaitSemaphores = 1;
-	submitInfo.signalSemaphores = &_deviceResources->semaphorePresent[_frameId];
+	submitInfo.signalSemaphores = &_deviceResources->presentationSemaphores[_frameId];
 	submitInfo.numSignalSemaphores = 1;
-	submitInfo.waitDestStages = &waitStage;
-	_deviceResources->queue->submit(&submitInfo, 1, _deviceResources->perFrameCommandBufferFence[_swapchainIndex]);
+	submitInfo.waitDstStageMask = &waitStage;
+	_deviceResources->queue->submit(&submitInfo, 1, _deviceResources->perFrameResourcesFences[_swapchainIndex]);
 
 	if (this->shouldTakeScreenshot())
 	{
-		pvr::utils::takeScreenshot(_deviceResources->swapchain, _swapchainIndex, _deviceResources->commandPool, _deviceResources->queue, this->getScreenshotFileName(),
+		pvr::utils::takeScreenshot(_deviceResources->queue, _deviceResources->commandPool, _deviceResources->swapchain, _swapchainIndex, this->getScreenshotFileName(),
 			&_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
 	}
 
@@ -1233,7 +1222,7 @@ pvr::Result VulkanGnomeHorde::renderFrame()
 	presentInfo.numSwapchains = 1;
 	presentInfo.imageIndices = &swapIdx;
 	presentInfo.numWaitSemaphores = 1;
-	presentInfo.waitSemaphores = &_deviceResources->semaphorePresent[_frameId];
+	presentInfo.waitSemaphores = &_deviceResources->presentationSemaphores[_frameId];
 	_deviceResources->queue->present(presentInfo);
 	printLog();
 	_frameId = (_frameId + 1) % _deviceResources->swapchain->getSwapchainLength();
@@ -1460,7 +1449,7 @@ MeshLod VulkanGnomeHorde::loadLodMesh(const pvr::StringHash& filename, const pvr
 		Log(LogLevel::Information, "Loading model:%s mesh:%s\n", path.c_str(), mesh.c_str());
 		pvr::assets::ModelHandle model = pvr::assets::Model::createWithReader(pvr::assets::PODReader(getAssetStream(path)));
 
-		if (model.isNull())
+		if (model == nullptr)
 		{
 			assertion(false, pvr::strings::createFormatted("Failed to load model file %s", path.c_str()).c_str());
 		}

@@ -33,6 +33,12 @@ public:
 	FramebufferCreateInfo() : _numAttachments(0), _layers(1), _width(0), _height(0) {}
 
 	/// <summary>Constructor (zero initialization)</summary>
+	/// <param name="width">The width of the framebuffer to create</param>
+	/// <param name="height">The height of the framebuffer to create</param>
+	/// <param name="layers">The number of array layers which will be used by the framebuffer to create</param>
+	/// <param name="renderPass">The renderPass which will be used by the framebuffer</param>
+	/// <param name="numAttachments">The number of attachments used by the framebuffer to create</param>
+	/// <param name="attachments">The numAttachments size list of pvrvk::ImageView elements to be used as framebuffer attachments</param>
 	FramebufferCreateInfo(uint32_t width, uint32_t height, uint32_t layers, const RenderPass& renderPass, uint32_t numAttachments = 0, ImageView* attachments = nullptr)
 		: _numAttachments(numAttachments), _layers(layers), _width(width), _height(height), _renderPass(renderPass)
 	{
@@ -43,7 +49,7 @@ public:
 	}
 
 	/// <summary>Return number of color attachment</summary>
-	/// <returns>Number of color _attachments</returns>
+	/// <returns>Number of color attachments</returns>
 	uint32_t getNumAttachments() const
 	{
 		return _numAttachments;
@@ -54,7 +60,7 @@ public:
 	/// <returns>This object</returns>
 	const ImageView& getAttachment(uint32_t index) const
 	{
-		debug_assertion(index < _numAttachments, " Invalid attachment index");
+		assert(index < _numAttachments && "Invalid attachment index");
 		return _attachments[index];
 	}
 	/// <summary>Get a color attachment TextureView</summary>
@@ -62,19 +68,19 @@ public:
 	/// <returns>This object</returns>
 	ImageView& getAttachment(uint32_t index)
 	{
-		debug_assertion(index < _numAttachments, " Invalid attachment index");
+		assert(index < _numAttachments && "Invalid attachment index");
 		return _attachments[index];
 	}
 
-	/// <summary>Get the Renderpass (const)</summary>
-	/// <returns>The Renderpass (const)</summary>
+	/// <summary>Get the RenderPass (const)</summary>
+	/// <returns>The RenderPass (const)</summary>
 	const RenderPass& getRenderPass() const
 	{
 		return _renderPass;
 	}
 
-	/// <summary>Get the Renderpass</summary>
-	/// <returns>The Renderpass</summary>
+	/// <summary>Get the RenderPass</summary>
+	/// <returns>The RenderPass</summary>
 	RenderPass& getRenderPass()
 	{
 		return _renderPass;
@@ -114,7 +120,7 @@ public:
 	/// <returns>this (allow chaining)</returns>
 	FramebufferCreateInfo& setAttachment(uint32_t index, const ImageView& colorView)
 	{
-		debug_assertion(index < total_max_attachments, "Index out-of-bound");
+		assert(index < total_max_attachments && "Index out-of-bound");
 		if (index >= _numAttachments)
 		{
 			_numAttachments = index + 1;
@@ -130,8 +136,8 @@ public:
 		return _layers;
 	}
 
-	/// <summary>Set the number of _layers.</summary>
-	/// <param name="numLayers">The number of array _layers.</param>
+	/// <summary>Set the number of layers.</summary>
+	/// <param name="numLayers">The number of array_layers.</param>
 	/// <returns>this (allow chaining)</returns>
 	FramebufferCreateInfo& setNumLayers(uint32_t numLayers)
 	{
@@ -139,7 +145,7 @@ public:
 		return *this;
 	}
 
-	/// <summary>Set the Renderpass which this Framebuffer will be invoking when bound.</summary>
+	/// <summary>Set the RenderPass which this Framebuffer will be invoking when bound.</summary>
 	/// <param name="_renderPass">A renderpass. When binding this Framebuffer, this renderpass will be the one to be bound.</param>
 	/// <returns>this (allow chaining)</returns>
 	FramebufferCreateInfo& setRenderPass(const RenderPass& _renderPass)
@@ -168,14 +174,32 @@ private:
 
 namespace impl {
 /// <summary>Vulkan implementation of the Framebuffer (Framebuffer object) class.</summary>
-class Framebuffer_ : public DeviceObjectHandle<VkFramebuffer>, public DeviceObjectDebugMarker<Framebuffer_>
+class Framebuffer_ : public PVRVkDeviceObjectBase<VkFramebuffer, ObjectType::e_FRAMEBUFFER>, public DeviceObjectDebugUtils<Framebuffer_>
 {
-	template<typename>
-	friend struct ::pvrvk::RefCountEntryIntrusive;
-	friend class ::pvrvk::impl::Device_;
+private:
+	friend class Device_;
+
+	class make_shared_enabler
+	{
+	protected:
+		make_shared_enabler() {}
+		friend class Framebuffer_;
+	};
+
+	static Framebuffer constructShared(const DeviceWeakPtr& device, const FramebufferCreateInfo& createInfo)
+	{
+		return std::make_shared<Framebuffer_>(make_shared_enabler{}, device, createInfo);
+	}
+
+	FramebufferCreateInfo _createInfo;
 
 public:
+	//!\cond NO_DOXYGEN
 	DECLARE_NO_COPY_SEMANTICS(Framebuffer_)
+	Framebuffer_(make_shared_enabler, const DeviceWeakPtr& device, const FramebufferCreateInfo& createInfo);
+	~Framebuffer_();
+	//!\endcond
+
 	/// <summary>Return the renderpass that this framebuffer uses.</summary>
 	/// <returns>The renderpass that this Framebuffer uses.</returns>
 	const RenderPass& getRenderPass() const
@@ -214,16 +238,11 @@ public:
 	}
 
 	/// <summary>getNumAttachments</summary>
-	/// <returns>Get number of _attachments</returns>
+	/// <returns>Get number of attachments</returns>
 	uint32_t getNumAttachments() const
 	{
 		return _createInfo.getNumAttachments();
 	}
-
-private:
-	Framebuffer_(const DeviceWeakPtr& device, const FramebufferCreateInfo& createInfo);
-	~Framebuffer_();
-	FramebufferCreateInfo _createInfo;
 };
 } // namespace impl
 } // namespace pvrvk

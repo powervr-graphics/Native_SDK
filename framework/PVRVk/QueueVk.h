@@ -67,7 +67,7 @@ struct BindSparseInfo
 /// <summary>Queue submit info. Contains the commandbuffers to be summited to the queue.</summary>
 struct SubmitInfo
 {
-	const PipelineStageFlags* waitDestStages; //!< pointer to an array of pipeline stages at which each corresponding semaphore wait will occur
+	const PipelineStageFlags* waitDstStageMask; //!< pointer to an array of pipeline stages at which each corresponding semaphore wait will occur
 	const CommandBuffer* commandBuffers; //!< Pointer to an array of command buffers to execute in the batch
 	uint32_t numCommandBuffers; //!< The number of command buffers to execute in the batch
 	const Semaphore* waitSemaphores; //!<  Pointer to an array of semaphores upon which to wait before the command buffers for this batch begin execution
@@ -77,20 +77,20 @@ struct SubmitInfo
 
 	/// <summary>Constructor. Default initialised to 0.</summary>
 	SubmitInfo()
-		: waitDestStages(nullptr), commandBuffers(nullptr), numCommandBuffers(0), waitSemaphores(nullptr), numWaitSemaphores(0), signalSemaphores(nullptr), numSignalSemaphores(0)
+		: waitDstStageMask(nullptr), commandBuffers(nullptr), numCommandBuffers(0), waitSemaphores(nullptr), numWaitSemaphores(0), signalSemaphores(nullptr), numSignalSemaphores(0)
 	{}
 
 	/// <summary>Constructor. Initialise with inidividual values</summary>
-	/// <param name="waitDestStages">pointer to an array of pipeline stages at which each corresponding semaphore wait will occur</param>
+	/// <param name="waitDstStageMask">pointer to an array of pipeline stages at which each corresponding semaphore wait will occur</param>
 	/// <param name="commandBuffers">Pointer to an array of command buffers to execute in the batch</param>
 	/// <param name="numCommandBuffers">The number of command buffers to execute in the batch</param>
 	/// <param name="waitSemaphores">ointer to an array of semaphores upon which to wait before the command buffers for this batch begin execution</param>
 	/// <param name="numWaitSemaphores">The number of semaphores upon which to wait before executing the command buffers for the batch</param>
 	/// <param name="signalSemaphores">Pointer to an array of semaphores which will be signaled when the command buffers for this batch have completed execution</param>
 	/// <param name="numSignalSemaphores">Number of semaphores to be signaled once the commands specified in pCommandBuffers have completed execution</param>
-	SubmitInfo(const pvrvk::PipelineStageFlags* waitDestStages, const CommandBuffer* commandBuffers, uint32_t numCommandBuffers, const Semaphore* waitSemaphores,
+	SubmitInfo(const pvrvk::PipelineStageFlags* waitDstStageMask, const CommandBuffer* commandBuffers, uint32_t numCommandBuffers, const Semaphore* waitSemaphores,
 		uint32_t numWaitSemaphores, const Semaphore* signalSemaphores, uint32_t numSignalSemaphores)
-		: waitDestStages(waitDestStages), commandBuffers(commandBuffers), numCommandBuffers(numCommandBuffers), waitSemaphores(waitSemaphores),
+		: waitDstStageMask(waitDstStageMask), commandBuffers(commandBuffers), numCommandBuffers(numCommandBuffers), waitSemaphores(waitSemaphores),
 		  numWaitSemaphores(numWaitSemaphores), signalSemaphores(signalSemaphores), numSignalSemaphores(numSignalSemaphores)
 	{}
 };
@@ -120,10 +120,34 @@ struct PresentInfo
 
 namespace impl {
 /// <summary>Wraps vulkan queue object.</summary>
-class Queue_ : public DeviceObjectHandle<VkQueue>, public DeviceObjectDebugMarker<Queue_>
+class Queue_ : public PVRVkDeviceObjectBase<VkQueue, ObjectType::e_DEVICE>, public DeviceObjectDebugUtils<Queue_>
 {
+private:
+	friend class Device_;
+
+	class make_shared_enabler
+	{
+	protected:
+		make_shared_enabler() {}
+		friend class Queue_;
+	};
+
+	static Queue constructShared(const DeviceWeakPtr& device, VkQueue queue, pvrvk::QueueFlags flags, uint32_t familyIndex, float priority)
+	{
+		return std::make_shared<Queue_>(make_shared_enabler{}, device, queue, flags, familyIndex, priority);
+	}
+
+	pvrvk::QueueFlags _flags;
+	uint32_t _familyIndex;
+	float _priority;
+
 public:
+	//!\cond NO_DOXYGEN
 	DECLARE_NO_COPY_SEMANTICS(Queue_)
+	Queue_(make_shared_enabler, const DeviceWeakPtr& device, VkQueue queue, pvrvk::QueueFlags flags, uint32_t familyIndex, float priority)
+		: PVRVkDeviceObjectBase(device, queue), DeviceObjectDebugUtils(), _flags(flags), _familyIndex(familyIndex), _priority(priority)
+	{}
+	//!\endcond
 
 	/// <summary>Submit</summary>
 	/// <param name="queueSubmitInfo">Queue submit info</param>
@@ -176,18 +200,16 @@ public:
 		return _familyIndex;
 	}
 
-private:
-	template<typename>
-	friend struct ::pvrvk::RefCountEntryIntrusive;
-	friend class ::pvrvk::impl::Device_;
+	/// <summary>Begins identifying a region of work submitted to this queue. The calls to beginDebugUtilsLabel and endDebugUtilsLabel must be matched and balanced.</summary>
+	/// <param name="labelInfo">Specifies the parameters of the label region to open</param>
+	void beginDebugUtilsLabel(const pvrvk::DebugUtilsLabel& labelInfo);
 
-	Queue_(DeviceWeakPtr device, VkQueue queue, pvrvk::QueueFlags flags, uint32_t familyIndex, float priority)
-		: DeviceObjectHandle(device, queue), DeviceObjectDebugMarker(pvrvk::DebugReportObjectTypeEXT::e_QUEUE_EXT), _flags(flags), _familyIndex(familyIndex), _priority(priority)
-	{}
+	/// <summary>Ends a label region of work submitted to this queue.</summary>
+	void endDebugUtilsLabel();
 
-	pvrvk::QueueFlags _flags;
-	uint32_t _familyIndex;
-	float _priority;
+	/// <summary>Inserts a single debug label any time.</summary>
+	/// <param name="labelInfo">Specifies the parameters of the label region to insert</param>
+	void insertDebugUtilsLabel(const pvrvk::DebugUtilsLabel& labelInfo);
 };
 } // namespace impl
 } // namespace pvrvk

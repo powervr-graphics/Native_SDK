@@ -20,7 +20,7 @@ const char VertShaderSrcFile[] = "VertShader.vsh.spv";
 // PVR texture files
 const char TextureFile[] = "Marble.pvr";
 
-// POD _scene files
+// POD scene files
 const char SceneFile[] = "Satyr.pod";
 enum
 {
@@ -49,7 +49,7 @@ std::pair<pvr::StringHash, pvr::GpuDatatypes> Mapping[Count] = {
 struct DeviceResources
 {
 	pvrvk::Instance instance;
-	pvrvk::DebugReportCallback debugCallbacks[2];
+	pvr::utils::DebugUtilsCallbacks debugUtilsCallbacks;
 	pvrvk::Device device;
 	pvrvk::Swapchain swapchain;
 	pvrvk::Queue queue;
@@ -58,12 +58,12 @@ struct DeviceResources
 	pvr::utils::vma::Allocator vmaAllocator;
 	pvr::Multi<pvrvk::Framebuffer> onScreenFramebuffer;
 	pvr::Multi<pvrvk::ImageView> depthStencilImages;
-	pvr::Multi<pvrvk::Semaphore> semaphoreAcquire;
-	pvr::Multi<pvrvk::Semaphore> semaphoreSubmit;
-	pvr::Multi<pvrvk::Fence> perFrameFence;
 	pvr::Multi<pvrvk::DescriptorSet> mvpDescriptor;
 	pvr::Multi<pvrvk::DescriptorSet> materialDescriptor;
 	pvr::Multi<pvrvk::CommandBuffer> commandBuffer;
+	pvrvk::Semaphore imageAcquiredSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	pvrvk::Semaphore presentationSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	pvrvk::Fence perFrameResourcesFences[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
 	pvrvk::GraphicsPipeline pipeline;
 	pvrvk::ImageView texture;
 	std::vector<pvrvk::Buffer> ibos;
@@ -85,16 +85,14 @@ struct DeviceResources
 
 	~DeviceResources()
 	{
-		if (device.isValid())
+		if (device)
 		{
 			device->waitIdle();
 			uint32_t l = swapchain->getSwapchainLength();
 			for (uint32_t i = 0; i < l; ++i)
 			{
-				if (perFrameFence[i].isValid())
-					perFrameFence[i]->wait();
-				if (perFrameFence[i].isValid())
-					perFrameFence[i]->wait();
+				if (perFrameResourcesFences[i])
+					perFrameResourcesFences[i]->wait();
 			}
 		}
 	}
@@ -142,6 +140,7 @@ class VulkanPVRScopeExample : public pvr::Shell
 
 	// Variables for the graphing code
 	int32_t _selectedCounter;
+	int32_t _selectedGroup;
 	int32_t _interval;
 	glm::mat4 _projMtx;
 	glm::mat4 _viewMtx;
@@ -176,17 +175,15 @@ void VulkanPVRScopeExample::eventMappedInput(pvr::SimplifiedInput key)
 	switch (key)
 	{
 	case pvr::SimplifiedInput::Up:
-	case pvr::SimplifiedInput::Right:
 	{
 		_selectedCounter++;
-		if (_selectedCounter > static_cast<int32_t>(_deviceResources->scopeGraph.getCounterNum()))
+		if (_selectedCounter >= static_cast<int32_t>(_deviceResources->scopeGraph.getCounterNum()))
 		{
-			_selectedCounter = _deviceResources->scopeGraph.getCounterNum();
+			_selectedCounter = _deviceResources->scopeGraph.getCounterNum() - 1;
 		}
 	}
 	break;
 	case pvr::SimplifiedInput::Down:
-	case pvr::SimplifiedInput::Left:
 	{
 		_selectedCounter--;
 		if (_selectedCounter < 0)
@@ -201,13 +198,18 @@ void VulkanPVRScopeExample::eventMappedInput(pvr::SimplifiedInput key)
 	}
 	break;
 	// Keyboard input (cursor left/right to change active group)
+	case pvr::SimplifiedInput::Right:
+		_deviceResources->scopeGraph.setActiveGroup(_deviceResources->scopeGraph.getActiveGroup() + 1);
+		break;
+	case pvr::SimplifiedInput::Left:
+		_deviceResources->scopeGraph.setActiveGroup(_deviceResources->scopeGraph.getActiveGroup() - 1);
+		break;
 	case pvr::SimplifiedInput::ActionClose:
 		exitShell();
 		break;
 	default:
 		break;
 	}
-
 	updateDescription();
 }
 
@@ -408,6 +410,7 @@ pvr::Result VulkanPVRScopeExample::initApplication()
 
 	// At the time of writing, this counter is the USSE load for vertex + pixel processing
 	_selectedCounter = 0;
+	_selectedGroup = 0;
 	_interval = 0;
 	_angleY = 0.0f;
 
@@ -418,7 +421,8 @@ pvr::Result VulkanPVRScopeExample::initApplication()
 	{
 		const pvr::CommandLine commandline = getCommandLine();
 		commandline.getIntOption("-counter", _selectedCounter);
-		commandline.getIntOption("-_interval", _interval);
+		commandline.getIntOption("-group", _selectedGroup);
+		commandline.getIntOption("-interval", _interval);
 	}
 	return pvr::Result::Success;
 }
@@ -426,7 +430,7 @@ pvr::Result VulkanPVRScopeExample::initApplication()
 /*!*********************************************************************************************************************
 \return Return Result::Success if no error occurred
 \brief  Code in quitApplication() will be called by Shell once per run, just before exiting
-	  the program. If the rendering context is lost, quitApplication() will not be called.x
+	  the program. If the rendering context is lost, quitApplication() will not be called.
 ***********************************************************************************************************************/
 pvr::Result VulkanPVRScopeExample::quitApplication()
 {
@@ -455,12 +459,8 @@ pvr::Result VulkanPVRScopeExample::initView()
 	// Create the surface
 	pvrvk::Surface surface = pvr::utils::createSurface(_deviceResources->instance, _deviceResources->instance->getPhysicalDevice(0), this->getWindow(), this->getDisplay());
 
-	// Add Debug Report Callbacks
-	// Add a Debug Report Callback for logging messages for events of all supported types.
-	_deviceResources->debugCallbacks[0] = pvr::utils::createDebugReportCallback(_deviceResources->instance);
-	// Add a second Debug Report Callback for throwing exceptions for Error events.
-	_deviceResources->debugCallbacks[1] =
-		pvr::utils::createDebugReportCallback(_deviceResources->instance, pvrvk::DebugReportFlagsEXT::e_ERROR_BIT_EXT, pvr::utils::throwOnErrorDebugReportCallback);
+	// Create a default set of debug utils messengers or debug callbacks using either VK_EXT_debug_utils or VK_EXT_debug_report respectively
+	_deviceResources->debugUtilsCallbacks = pvr::utils::createDebugUtilsCallbacks(_deviceResources->instance);
 
 	//--------------------
 	// Create the logical device and the queues
@@ -492,7 +492,7 @@ pvr::Result VulkanPVRScopeExample::initView()
 	//--------------------
 	// Create the framebuffer
 	pvrvk::RenderPass rp;
-	pvr::utils::createOnscreenFramebufferAndRenderpass(_deviceResources->swapchain, &_deviceResources->depthStencilImages[0], _deviceResources->onScreenFramebuffer, rp);
+	pvr::utils::createOnscreenFramebufferAndRenderPass(_deviceResources->swapchain, &_deviceResources->depthStencilImages[0], _deviceResources->onScreenFramebuffer, rp);
 
 	//--------------------
 	// Create the pools
@@ -521,9 +521,9 @@ pvr::Result VulkanPVRScopeExample::initView()
 	// Prepare per swachain resources and set the acttachments inital layouts
 	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
 	{
-		_deviceResources->semaphoreAcquire[i] = _deviceResources->device->createSemaphore();
-		_deviceResources->semaphoreSubmit[i] = _deviceResources->device->createSemaphore();
-		_deviceResources->perFrameFence[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
+		_deviceResources->presentationSemaphores[i] = _deviceResources->device->createSemaphore();
+		_deviceResources->imageAcquiredSemaphores[i] = _deviceResources->device->createSemaphore();
+		_deviceResources->perFrameResourcesFences[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
 		_deviceResources->commandBuffer[i] = _deviceResources->commandPool->allocateCommandBuffer();
 		if (i == 0)
 		{
@@ -573,18 +573,21 @@ pvr::Result VulkanPVRScopeExample::initView()
 				(static_cast<uint32_t>(getHeight() * 0.96f) / 3)));
 
 		// Output the current active group and a list of all the counters
-		Log(LogLevel::Information, "PVRScope Number of Hardware Counters: %i\n", _deviceResources->scopeGraph.getCounterNum());
-		Log(LogLevel::Information, "Counters\n-ID---Name-------------------------------------------\n");
+		Log(LogLevel::Information, "Active Group %i\nPVRScope Number of Hardware Counters: %i", _deviceResources->scopeGraph.getActiveGroup(),
+			_deviceResources->scopeGraph.getCounterNum());
+		Log(LogLevel::Information, "Counters\n-ID---Name-------------------------------------------");
 
 		for (uint32_t i = 0; i < _deviceResources->scopeGraph.getCounterNum(); ++i)
 		{
-			Log(LogLevel::Information, "[%2i] %s %s\n", i, _deviceResources->scopeGraph.getCounterName(i),
+			Log(LogLevel::Information, "[%2i] %s Group %i %s", i, _deviceResources->scopeGraph.getCounterName(i), _deviceResources->scopeGraph.getCounterGroup(i),
 				_deviceResources->scopeGraph.isCounterPercentage(i) ? "percentage" : "absolute");
-
 			_deviceResources->scopeGraph.showCounter(i, false);
 		}
 
 		_deviceResources->scopeGraph.ping(1);
+		// Set the active group to 0
+		_deviceResources->scopeGraph.setActiveGroup(_selectedGroup);
+
 		// Tell the graph to show initial counters
 		_deviceResources->scopeGraph.showCounter(_deviceResources->scopeGraph.getStandard3DIndex(), true);
 		_deviceResources->scopeGraph.showCounter(_deviceResources->scopeGraph.getStandardTAIndex(), true);
@@ -603,7 +606,8 @@ pvr::Result VulkanPVRScopeExample::initView()
 				_deviceResources->scopeGraph.showCounter(i, true);
 			}
 		}
-		// Set the update _interval: number of updates [frames] before updating the graph
+
+		// Set the update interval: number of updates [frames] before updating the graph
 		_deviceResources->scopeGraph.setUpdateInterval(_interval);
 	}
 
@@ -620,6 +624,7 @@ pvr::Result VulkanPVRScopeExample::initView()
 ***********************************************************************************************************************/
 pvr::Result VulkanPVRScopeExample::releaseView()
 {
+	// Instructs the Asset Store to free all resources
 	_deviceResources.reset();
 	return pvr::Result::Success;
 }
@@ -630,41 +635,41 @@ pvr::Result VulkanPVRScopeExample::releaseView()
 ***********************************************************************************************************************/
 pvr::Result VulkanPVRScopeExample::renderFrame()
 {
-	//--------------------
-	// MAKE SURE THE COMMANDBUFFER AND THE SEMAPHORE ARE FREE TO USE
-	_deviceResources->perFrameFence[_frameId]->wait();
-	_deviceResources->perFrameFence[_frameId]->reset();
+	_deviceResources->swapchain->acquireNextImage(uint64_t(-1), _deviceResources->imageAcquiredSemaphores[_frameId]);
 
-	_deviceResources->swapchain->acquireNextImage(uint64_t(-1), _deviceResources->semaphoreAcquire[_frameId]);
 	const uint32_t swapchainIndex = _deviceResources->swapchain->getSwapchainIndex();
+
+	_deviceResources->perFrameResourcesFences[swapchainIndex]->wait();
+	_deviceResources->perFrameResourcesFences[swapchainIndex]->reset();
+
 	updateMVPMatrix(swapchainIndex);
 	_deviceResources->scopeGraph.ping(static_cast<float>(getFrameTime()));
 	recordCommandBuffer(swapchainIndex);
 
 	pvrvk::SubmitInfo submitInfo;
-	pvrvk::PipelineStageFlags waitStages = pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT;
+	pvrvk::PipelineStageFlags pipeWaitStageFlags = pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT;
 	submitInfo.commandBuffers = &_deviceResources->commandBuffer[swapchainIndex];
 	submitInfo.numCommandBuffers = 1;
-	submitInfo.numSignalSemaphores = 1;
+	submitInfo.waitSemaphores = &_deviceResources->imageAcquiredSemaphores[_frameId];
 	submitInfo.numWaitSemaphores = 1;
-	submitInfo.waitSemaphores = &_deviceResources->semaphoreAcquire[_frameId];
-	submitInfo.signalSemaphores = &_deviceResources->semaphoreSubmit[_frameId];
-	submitInfo.waitDestStages = &waitStages;
-	_deviceResources->queue->submit(&submitInfo, 1, _deviceResources->perFrameFence[_frameId]);
+	submitInfo.signalSemaphores = &_deviceResources->presentationSemaphores[_frameId];
+	submitInfo.numSignalSemaphores = 1;
+	submitInfo.waitDstStageMask = &pipeWaitStageFlags;
+	_deviceResources->queue->submit(&submitInfo, 1, _deviceResources->perFrameResourcesFences[swapchainIndex]);
 
 	if (this->shouldTakeScreenshot())
 	{
-		pvr::utils::takeScreenshot(_deviceResources->swapchain, swapchainIndex, _deviceResources->commandPool, _deviceResources->queue, this->getScreenshotFileName(),
+		pvr::utils::takeScreenshot(_deviceResources->queue, _deviceResources->commandPool, _deviceResources->swapchain, swapchainIndex, this->getScreenshotFileName(),
 			&_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
 	}
 
 	//--------------------
 	// Presents
 	pvrvk::PresentInfo presentInfo;
-	presentInfo.waitSemaphores = &_deviceResources->semaphoreSubmit[_frameId];
-	presentInfo.numWaitSemaphores = 1;
 	presentInfo.swapchains = &_deviceResources->swapchain;
 	presentInfo.numSwapchains = 1;
+	presentInfo.waitSemaphores = &_deviceResources->presentationSemaphores[_frameId];
+	presentInfo.numWaitSemaphores = 1;
 	presentInfo.imageIndices = &swapchainIndex;
 	_deviceResources->queue->present(presentInfo);
 
@@ -691,7 +696,7 @@ void VulkanPVRScopeExample::drawMesh(int32_t nodeIndex, pvrvk::CommandBuffer& co
 	// - Non-Indexed Triangle strips
 	if (mesh.getNumStrips() == 0)
 	{
-		if (_deviceResources->ibos[node.getObjectId()].isValid())
+		if (_deviceResources->ibos[node.getObjectId()])
 		{
 			// Indexed Triangle list
 			command->bindIndexBuffer(_deviceResources->ibos[node.getObjectId()], 0, pvr::utils::convertToPVRVk(mesh.getFaces().getDataType()));
@@ -708,7 +713,7 @@ void VulkanPVRScopeExample::drawMesh(int32_t nodeIndex, pvrvk::CommandBuffer& co
 		for (uint32_t i = 0; i < mesh.getNumStrips(); ++i)
 		{
 			int offset = 0;
-			if (_deviceResources->ibos[node.getObjectId()].isValid())
+			if (_deviceResources->ibos[node.getObjectId()])
 			{
 				// Indexed Triangle strips
 				command->bindIndexBuffer(_deviceResources->ibos[node.getObjectId()], 0, pvr::utils::convertToPVRVk(mesh.getFaces().getDataType()));
@@ -778,6 +783,7 @@ void VulkanPVRScopeExample::recordCommandBuffer(uint32_t swapchain)
 void VulkanPVRScopeExample::updateDescription()
 {
 	static char description[256];
+
 	if (_deviceResources->scopeGraph.getCounterNum())
 	{
 		float maximum = _deviceResources->scopeGraph.getMaximumOfData(_selectedCounter);
@@ -791,24 +797,28 @@ void VulkanPVRScopeExample::updateDescription()
 		}
 		bool isPercentage = _deviceResources->scopeGraph.isCounterPercentage(_selectedCounter);
 
-		const char* standard = "Use up-down to select a counter, click to enable/disable it\n"
-							   "Counter [%i]\n"
+		const char* standard = "Use up-down to select a counter\n  click to enable/disable it\n  left-right to change group\n\n"
+							   "Active Group: %i\n\n"
+							   "Counter %i/%i  Group: %i\n"
 							   "Name: %s\n"
 							   "Shown: %s\n"
 							   "user y-axis: %.2f  max: %.2f\n";
-		const char* percentage = "Use up-down to select a counter, click to enable/disable it\n"
-								 "Counter [%i]\n"
+		const char* percentage = "Use up-down to select a counter\n  click to enable/disable it\n  left-right to change group\n\n"
+								 "Active Group: %i\n\n"
+								 "Counter %i/%i  Group: %i\n"
 								 "Name: %s\n"
 								 "Shown: %s\n"
 								 "user y-axis: %.2f%%  max: %.2f%%\n";
-		const char* kilo = "Use up-down to select a counter, click to enable/disable it\n"
-						   "Counter [%i]\n"
+		const char* kilo = "Use up-down to select a counter\n  click to enable/disable it\n  left-right to change group\n\n"
+						   "Active Group: %i\n\n"
+						   "Counter %i/%i  Group: %i\n"
 						   "Name: %s\n"
 						   "Shown: %s\n"
 						   "user y-axis: %.0fK  max: %.0fK\n";
 
-		sprintf(description, isKilos ? kilo : isPercentage ? percentage : standard, _selectedCounter, _deviceResources->scopeGraph.getCounterName(_selectedCounter),
-			_deviceResources->scopeGraph.isCounterShown(_selectedCounter) ? "Yes" : "No", userY, maximum);
+		sprintf(description, isKilos ? kilo : isPercentage ? percentage : standard, _deviceResources->scopeGraph.getActiveGroup(), _selectedCounter + 1,
+			_deviceResources->scopeGraph.getCounterNum(), _deviceResources->scopeGraph.getCounterGroup(_selectedCounter),
+			_deviceResources->scopeGraph.getCounterName(_selectedCounter), _deviceResources->scopeGraph.isCounterShown(_selectedCounter) ? "Yes" : "No", userY, maximum);
 		_deviceResources->uiRenderer.getDefaultDescription()->setColor(glm::vec4(1.f));
 	}
 	else

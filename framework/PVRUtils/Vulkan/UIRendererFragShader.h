@@ -592,11 +592,3 @@ static uint32_t spv_UIRendererFragShader[] =
     0x0100fd,
     0x010038,
 };
-static VkShaderModuleCreateInfo shaderModuleCreateInfo_UIRendererFragShader = 
-{
-    static_cast<VkStructureType>(pvrvk::StructureType::e_SHADER_MODULE_CREATE_INFO),
-    nullptr,
-    VkShaderModuleCreateFlags(0),
-    sizeof(spv_UIRendererFragShader),
-    spv_UIRendererFragShader,
-};

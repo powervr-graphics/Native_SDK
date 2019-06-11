@@ -6,6 +6,10 @@ PostProcessing
 
 This example demonstrates a set of heavily-optimised bloom post-processing implementations.
 
+API
+---
+* OpenGL ES 3.0+
+
 Description
 -----------
 This example demonstrates a set of heavily optimised bloom post-processing implementations including:
@@ -24,11 +28,6 @@ Other than the Dual Filter and Tent Filter, the bloom post-processing implementa
 1. Downsampling the brighter regions of an input image to a lower resolution. 
 2. Several post-process passes, each working from the output of the previous pass, rendering to intermediate textures. 
 3. The resulting blurred image is then composited onto the original image to create a smooth bloom around the brighter regions.
-
-APIs
-----
-* OpenGL ES 3.0+
-* Vulkan
 
 Controls
 --------

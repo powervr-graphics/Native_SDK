@@ -8,32 +8,30 @@
 #include "PVRVk/DeviceVk.h"
 #include "PVRVk/ImageVk.h"
 #include "PVRVk/RenderPassVk.h"
-
 namespace pvrvk {
 namespace impl {
+//!\cond NO_DOXYGEN
 Framebuffer_::~Framebuffer_()
 {
 	if (getVkHandle() != VK_NULL_HANDLE)
 	{
-		if (_device.isValid())
+		if (!_device.expired())
 		{
-			_device->getVkBindings().vkDestroyFramebuffer(_device->getVkHandle(), getVkHandle(), nullptr);
+			getDevice()->getVkBindings().vkDestroyFramebuffer(getDevice()->getVkHandle(), getVkHandle(), nullptr);
 			_vkHandle = VK_NULL_HANDLE;
-			_device.reset();
 		}
 		else
 		{
-			reportDestroyedAfterDevice("Framebuffer");
+			reportDestroyedAfterDevice();
 		}
 	}
 	_createInfo.clear();
 }
 
-Framebuffer_::Framebuffer_(const DeviceWeakPtr& device, const FramebufferCreateInfo& createInfo)
-	: DeviceObjectHandle(device), DeviceObjectDebugMarker(DebugReportObjectTypeEXT::e_FRAMEBUFFER_EXT)
+Framebuffer_::Framebuffer_(make_shared_enabler, const DeviceWeakPtr& device, const FramebufferCreateInfo& createInfo) : PVRVkDeviceObjectBase(device), DeviceObjectDebugUtils()
 {
 	// validate
-	assertion(createInfo.getRenderPass().isValid(), "Invalid RenderPass");
+	assert(createInfo.getRenderPass() && "Invalid RenderPass");
 	// validate the dimension.
 	if (createInfo.getDimensions().getWidth() == 0 || createInfo.getDimensions().getHeight() == 0)
 	{
@@ -58,7 +56,8 @@ Framebuffer_::Framebuffer_(const DeviceWeakPtr& device, const FramebufferCreateI
 	{
 		imageViews[i] = createInfo.getAttachment(i)->getVkHandle();
 	}
-	vkThrowIfFailed(_device->getVkBindings().vkCreateFramebuffer(_device->getVkHandle(), &framebufferCreateInfo, NULL, &_vkHandle), "Create Framebuffer Failed");
+	vkThrowIfFailed(getDevice()->getVkBindings().vkCreateFramebuffer(getDevice()->getVkHandle(), &framebufferCreateInfo, NULL, &_vkHandle), "Create Framebuffer Failed");
 }
+//!\endcond
 } // namespace impl
 } // namespace pvrvk

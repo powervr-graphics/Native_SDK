@@ -1,6 +1,6 @@
 /*!
 \brief An AssetReader that parses and reads PFX effect files into pvr::assets::Effect objects.
-\file PVRAssets/fileio/PFXParser.h
+\file PVRCore/pfx/PFXParser.h
 \author PowerVR by Imagination, Developer Technology Team
 \copyright Copyright (c) Imagination Technologies Limited.
 */
@@ -8,7 +8,7 @@
 #include "PVRCore/IAssetProvider.h"
 #include "PVRCore/pfx/Effect.h"
 
-#include "../external/pugixml/pugixml.hpp"
+#include "pugixml.hpp"
 
 namespace pvr {
 // Forward Declarations

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.3)
-project (Vulkan_SDK)
+project (VulkanExamples)
 
 set (EXAMPLES 
 	01_HelloAPI
@@ -24,7 +24,12 @@ set (EXAMPLES
 	PVRScopeExample
 	PVRScopeRemote
 	ImageBasedLighting
+	IMGTextureFilterCubic
 )
+
+if (NOT ANDROID AND NOT IOS)
+	list(APPEND EXAMPLES ImageBasedLightingMapGenerator)
+endif()
 
 foreach(EXAMPLE ${EXAMPLES})
 	message ("==>CMake generation for Vulkan_${EXAMPLE}...")

@@ -10,7 +10,7 @@ layout(location = NORMAL_ARRAY) in mediump vec3 inNormal;
 layout(location = TEXCOORD_ARRAY) in mediump vec2 inTexCoord;
 layout(location = TANGENT_ARRAY) in mediump vec3 inTangent;
 
-layout(set = 0, binding = 4) uniform PerMesh
+layout(set = 0, binding = 3) uniform PerMesh
 {
 	highp mat4 mvpMatrix;
 	highp mat4 worldMatrix;

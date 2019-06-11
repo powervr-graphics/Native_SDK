@@ -6,7 +6,6 @@ layout(std140, set = 0, binding = 1) uniform SceneBuffer
 {
 	highp mat4 inverseViewProjectionMatrix;
 	mediump vec3 eyePosition;
-	mediump vec3 lightPosition;
 };
 
 void main()

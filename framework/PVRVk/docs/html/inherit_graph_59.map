@@ -1,6 +1,6 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classpvrvk_1_1impl_1_1_device_object_debug_marker.html" title="pvrvk::impl::DeviceObject\lDebugMarker\&lt; ShaderModule_ \&gt;" alt="" coords="227,5,442,46"/>
-<area shape="rect" id="node2" href="$classpvrvk_1_1impl_1_1_shader_module__.html" title="Vulkan shader module wrapper" alt="" coords="491,45,675,72"/>
-<area shape="rect" id="node3" href="$classpvrvk_1_1impl_1_1_object_handle.html" title="pvrvk::impl::ObjectHandle\l\&lt; VkShaderModule \&gt;" alt="" coords="5,70,179,111"/>
-<area shape="rect" id="node4" href="$classpvrvk_1_1impl_1_1_device_object_handle.html" title="pvrvk::impl::DeviceObject\lHandle\&lt; VkShaderModule \&gt;" alt="" coords="241,70,428,111"/>
+<area shape="rect" id="node1" href="$classpvrvk_1_1impl_1_1_device_object_debug_utils.html" title="pvrvk::impl::DeviceObject\lDebugUtils\&lt; Fence_ \&gt;" alt="" coords="329,5,503,46"/>
+<area shape="rect" id="node2" href="$classpvrvk_1_1impl_1_1_fence__.html" title="Vulkan implementation of the Fence class Fence can be used by the host to determine completion of exe..." alt="" coords="579,48,717,75"/>
+<area shape="rect" id="node3" href="$classpvrvk_1_1impl_1_1_p_v_r_vk_object_base.html" title="pvrvk::impl::PVRVkObject\lBase\&lt; VkFence, PVRVkObjectType \&gt;" alt="" coords="6,77,253,118"/>
+<area shape="rect" id="node4" href="$classpvrvk_1_1impl_1_1_p_v_r_vk_device_object_base.html" title="pvrvk::impl::PVRVkDevice\lObjectBase\&lt; VkFence, ObjectType\l::e_FENCE \&gt;" alt="" coords="301,69,531,125"/>
 </map>

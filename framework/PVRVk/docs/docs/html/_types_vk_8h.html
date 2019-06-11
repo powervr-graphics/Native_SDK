@@ -85,6 +85,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a href="#namespaces">Namespaces</a> &#124;
 <a href="#define-members">Macros</a> &#124;
 <a href="#enum-members">Enumerations</a> &#124;
+<a href="#func-members">Functions</a> &#124;
 <a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
 <div class="title">TypesVk.h File Reference</div>  </div>
@@ -105,13 +106,13 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Containes application info used for creating vulkan instance <a href="structpvrvk_1_1_application_info.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_attachment_description.html">pvrvk::AttachmentDescription</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contains attachment configuration of a renderpass (format, loadop, storeop, samples).  <a href="structpvrvk_1_1_attachment_description.html#details">More...</a><br/></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contains attachment configuration of a renderpass (format, loadop, storeop, samples). <a href="structpvrvk_1_1_attachment_description.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_clear_attachment.html">pvrvk::ClearAttachment</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="structpvrvk_1_1_clear_attachment.html" title="ClearAttachment structures defining the attachments to clear and the clear values to use...">ClearAttachment</a> structures defining the attachments to clear and the clear values to use. Used in Commandbuffer::ClearAttachments command <a href="structpvrvk_1_1_clear_attachment.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_clear_color_value.html">pvrvk::ClearColorValue</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contains clear color values (rgba). This is used in Commandbuffer::clearColorImage  <a href="structpvrvk_1_1_clear_color_value.html#details">More...</a><br/></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contains clear color values (rgba). This is used in Commandbuffer::clearColorImage <a href="structpvrvk_1_1_clear_color_value.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_clear_value.html">pvrvk::ClearValue</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The <a class="el" href="structpvrvk_1_1_clear_value.html" title="The ClearValue struct. Color or depth/stencil value to clear the attachment to.">ClearValue</a> struct. <a class="el" href="structpvrvk_1_1_color.html" title="Floating point Color data (rgba). Values from 0-1 inclusive">Color</a> or depth/stencil value to clear the attachment to. <a href="structpvrvk_1_1_clear_value.html#details">More...</a><br/></td></tr>
@@ -143,11 +144,14 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_image_layers_size.html">pvrvk::ImageLayersSize</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents the geometric size (number of rows/columns/slices in x-y-z) and number of array and mipmap layers of an image. <a href="structpvrvk_1_1_image_layers_size.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_instance_create_info.html">pvrvk::InstanceCreateInfo</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contains instant info used for creating Vulkan instance <a href="structpvrvk_1_1_instance_create_info.html#details">More...</a><br/></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_offset2_df.html">pvrvk::Offset2Df</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">2 dimensional offset which contains the x and y <a href="structpvrvk_1_1_offset2_df.html#details">More...</a><br/></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_physical_device_transform_feedback_features.html">pvrvk::PhysicalDeviceTransformFeedbackFeatures</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Containes a PhysicalDeviceTransformFeedbackFeaturesEXT structure which specifies the implementation dependent features for transform feedback. <a href="structpvrvk_1_1_physical_device_transform_feedback_features.html#details">More...</a><br/></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_physical_device_transform_feedback_properties.html">pvrvk::PhysicalDeviceTransformFeedbackProperties</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Containes a <a class="el" href="structpvrvk_1_1_physical_device_transform_feedback_properties.html" title="Containes a PhysicalDeviceTransformFeedbackProperties structure which specifies the implementation de...">PhysicalDeviceTransformFeedbackProperties</a> structure which specifies the implementation dependent limits for transform feedback. <a href="structpvrvk_1_1_physical_device_transform_feedback_properties.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_pipeline_cache_create_info.html">pvrvk::PipelineCacheCreateInfo</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pipeline cache creation descriptor. <a href="structpvrvk_1_1_pipeline_cache_create_info.html#details">More...</a><br/></td></tr>
@@ -160,6 +164,21 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_subpass_description.html">pvrvk::SubpassDescription</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Render pass subpass. Subpasses allow intermediate draws to be chained and communicating with techniques like Pixel Local Storage without outputting to the FrameBuffer until the end of the RenderPass. <a href="structpvrvk_1_1_subpass_description.html#details">More...</a><br/></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_validation_features.html">pvrvk::ValidationFeatures</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Containes a <a class="el" href="structpvrvk_1_1_validation_features.html" title="Containes a ValidationFeatures structure which specifies a set of validation features which should be...">ValidationFeatures</a> structure which specifies a set of validation features which should be enabled or disabled. <a href="structpvrvk_1_1_validation_features.html#details">More...</a><br/></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_vulkan_extension.html">pvrvk::VulkanExtension</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A wrapper for a Vulkan extension and its specification version <a href="structpvrvk_1_1_vulkan_extension.html#details">More...</a><br/></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_vulkan_extension_list.html">pvrvk::VulkanExtensionList</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A wrapper for a list of Vulkan extensions <a href="structpvrvk_1_1_vulkan_extension_list.html#details">More...</a><br/></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_vulkan_layer.html">pvrvk::VulkanLayer</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A wrapper for a Vulkan layer, its specification version, implementation version and its description <a href="structpvrvk_1_1_vulkan_layer.html#details">More...</a><br/></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_vulkan_layer_list.html">pvrvk::VulkanLayerList</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A wrapper for a list of Vulkan layers <a href="structpvrvk_1_1_vulkan_layer_list.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
@@ -185,7 +204,7 @@ Enumerations</h2></td></tr>
 <tr class="memitem:a66f173c8b8fa76f82096bc650b80167e"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><b>BaseType</b> { <b>Integer</b> = 0, 
 <b>Float</b> = 1
  }</td></tr>
-<tr class="memdesc:a66f173c8b8fa76f82096bc650b80167e"><td class="mdescLeft">&#160;</td><td class="mdescRight">A bit representing if a type is basically of integer or floating point format  <a href="namespacepvrvk_1_1_gpu_datatypes_helper.html#a66f173c8b8fa76f82096bc650b80167e">More...</a><br/></td></tr>
+<tr class="memdesc:a66f173c8b8fa76f82096bc650b80167e"><td class="mdescLeft">&#160;</td><td class="mdescRight">A bit representing if a type is basically of integer or floating point format <a href="namespacepvrvk_1_1_gpu_datatypes_helper.html#a66f173c8b8fa76f82096bc650b80167e">More...</a><br/></td></tr>
 <tr class="separator:a66f173c8b8fa76f82096bc650b80167e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaf79c4a350a8ea0209edab72839622f5"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><b>Bits</b> : uint64_t { <br/>
 &#160;&#160;<b>Integer</b> = 0, 
@@ -325,6 +344,12 @@ Enumerations</h2></td></tr>
  }</td></tr>
 <tr class="memdesc:a5ad26046edfeb84f9bfaac09032a5b09"><td class="mdescLeft">&#160;</td><td class="mdescRight">Two bits, representing the number of vector components (from scalar up to 4) <a href="namespacepvrvk_1_1_gpu_datatypes_helper.html#a5ad26046edfeb84f9bfaac09032a5b09">More...</a><br/></td></tr>
 <tr class="separator:a5ad26046edfeb84f9bfaac09032a5b09"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:afa9b8625ffd2579ff4b28c76b05dc501"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvrvk.html#afa9b8625ffd2579ff4b28c76b05dc501">pvrvk::appendPNext</a> (VkBaseInStructure *baseStructure, const void *newPNext)</td></tr>
+<tr class="memdesc:afa9b8625ffd2579ff4b28c76b05dc501"><td class="mdescLeft">&#160;</td><td class="mdescRight">Appends the provided pNext to the last pNext member of the provided base structure pNext chain <a href="#afa9b8625ffd2579ff4b28c76b05dc501">More...</a><br/></td></tr>
+<tr class="separator:afa9b8625ffd2579ff4b28c76b05dc501"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>

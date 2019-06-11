@@ -23,7 +23,7 @@ private:
 		uint16_t descriptorCount;
 		pvrvk::ShaderStageFlags stageFlags;
 		Sampler immutableSampler;
-		DescriptorSetLayoutBinding() : descriptorCount(1), stageFlags(pvrvk::ShaderStageFlags::e_ALL) {}
+		DescriptorSetLayoutBinding() : descriptorCount(1), stageFlags(pvrvk::ShaderStageFlags::e_ALL), descriptorType(pvrvk::DescriptorType::e_MAX_ENUM) {}
 		DescriptorSetLayoutBinding(uint16_t bindIndex, pvrvk::DescriptorType descType, uint16_t descriptorCount = 1,
 			pvrvk::ShaderStageFlags stageFlags = pvrvk::ShaderStageFlags::e_ALL, const Sampler& immutableSampler = Sampler())
 			: binding(bindIndex), descriptorType(descType), descriptorCount(descriptorCount), stageFlags(stageFlags), immutableSampler(immutableSampler)
@@ -53,15 +53,14 @@ public:
 		pvrvk::ShaderStageFlags stageFlags = pvrvk::ShaderStageFlags::e_ALL, Sampler immutableSampler = Sampler())
 	{
 		const DescriptorSetLayoutBinding layoutBinding(binding, descriptorType, descriptorCount, stageFlags, immutableSampler);
-		std::vector<DescriptorSetLayoutBinding>::iterator it =
-			std::find_if(descLayoutInfo.begin(), descLayoutInfo.end(), [&](const DescriptorSetLayoutBinding& info) { return info.binding == layoutBinding.binding; });
+		auto it = std::find_if(descLayoutInfo.begin(), descLayoutInfo.end(), [&](const DescriptorSetLayoutBinding& info) { return info.binding == layoutBinding.binding; });
 		if (it != descLayoutInfo.end())
 		{
 			(*it) = layoutBinding;
 		}
 		else
 		{
-			descLayoutInfo.push_back(layoutBinding);
+			descLayoutInfo.emplace_back(layoutBinding);
 		}
 		return *this;
 	}
@@ -78,7 +77,7 @@ public:
 	/// <returns>the number of images in this object</returns>
 	uint16_t getNumBindings() const
 	{
-		return (uint16_t)descLayoutInfo.size();
+		return static_cast<uint16_t>(descLayoutInfo.size());
 	}
 
 	/// <summary>Equality operator. Does deep comparison of the contents.</summary>
@@ -127,10 +126,31 @@ private:
 
 namespace impl {
 /// <summary>Constructor. . Vulkan implementation of a DescriptorSet.</summary>
-class DescriptorSetLayout_ : public DeviceObjectHandle<VkDescriptorSetLayout>, public DeviceObjectDebugMarker<DescriptorSetLayout_>
+class DescriptorSetLayout_ : public PVRVkDeviceObjectBase<VkDescriptorSetLayout, ObjectType::e_DESCRIPTOR_SET_LAYOUT>, public DeviceObjectDebugUtils<DescriptorSetLayout_>
 {
+private:
+	friend class Device_;
+
+	class make_shared_enabler
+	{
+	protected:
+		make_shared_enabler() = default;
+		friend class DescriptorSetLayout_;
+	};
+
+	static DescriptorSetLayout constructShared(const DeviceWeakPtr& device, const DescriptorSetLayoutCreateInfo& createInfo)
+	{
+		return std::make_shared<DescriptorSetLayout_>(make_shared_enabler{}, device, createInfo);
+	}
+
+	DescriptorSetLayoutCreateInfo _createInfo;
+
 public:
+	//!\cond NO_DOXYGEN
 	DECLARE_NO_COPY_SEMANTICS(DescriptorSetLayout_)
+	~DescriptorSetLayout_();
+	DescriptorSetLayout_(make_shared_enabler, const DeviceWeakPtr& device, const DescriptorSetLayoutCreateInfo& createInfo);
+	//!\endcond
 
 	/// <summary>Get the DescriptorSetCreateInfo object that was used to create this layout.</summary>
 	/// <returns>The DescriptorSetCreateInfo object that was used to create this layout.</returns>
@@ -144,17 +164,6 @@ public:
 	{
 		_createInfo.clear();
 	}
-
-private:
-	template<typename>
-	friend struct ::pvrvk::RefCountEntryIntrusive;
-	friend class ::pvrvk::impl::Device_;
-
-	~DescriptorSetLayout_();
-
-	DescriptorSetLayout_(const DeviceWeakPtr& device, const DescriptorSetLayoutCreateInfo& createInfo);
-
-	DescriptorSetLayoutCreateInfo _createInfo;
 };
 
 /// <summary>Internal class</summary>
@@ -163,77 +172,92 @@ class DescriptorStore
 {
 	//!\cond NO_DOXYGEN
 public:
-	DescriptorStore()
+	DescriptorStore() : _ptr(_tArray), _numItems(0) {}
+
+	// Copy Constructor
+	DescriptorStore(const DescriptorStore& descStore) : _numItems(descStore._numItems), _tVector(descStore._tVector)
 	{
-		_ptr = _tArray;
-		_numItems = 0;
+		// Copy _tArray elements
+		std::copy(std::begin(descStore._tArray), std::end(descStore._tArray), _tArray);
+		// Point towards _tVector.data() if _tVector is being used else point towards _tArray
+		_ptr = !_tVector.empty() ? _tVector.data() : _tArray;
 	}
 
-	DescriptorStore(const DescriptorStore& descStore)
+	// Destructor
+	~DescriptorStore() = default;
+
+	// Add swap functionality
+	friend void swap(DescriptorStore& first, DescriptorStore& second)
 	{
-		_numItems = descStore._numItems;
-		_tVec = descStore._tVec;
-		for (uint32_t i = 0; i < ArraySize; ++i)
-		{
-			_tArray[i] = descStore._tArray[i];
-		}
-		if (_tVec.size())
-		{
-			_ptr = _tVec.data();
-		}
-		else
-		{
-			_ptr = _tArray;
-		}
+		using std::swap;
+
+		// IF second._ptr is pointing to the array then point to MY array
+		// If second._ptr is pointing to the vector then point to seconds vector
+		T* tempPtr1 = second._ptr == second._tArray ? first._tArray : second._tVector.data();
+		first._ptr = tempPtr1;
+
+		// IF first._ptr is pointing to the array then point to MY array
+		// If first._ptr is pointing to the vector then point to firsts vector
+		T* tempPtr2 = first._ptr == first._tArray ? second._tArray : first._tVector.data();
+		second._ptr = tempPtr2;
+
+		swap(first._numItems, second._numItems);
+		swap(first._tVector, second._tVector);
+		swap(first._tArray, second._tArray);
 	}
 
-	DescriptorStore& operator=(const DescriptorStore& descStore)
+	// Assignment Operator
+	DescriptorStore& operator=(DescriptorStore other)
 	{
-		if (this == &descStore)
-		{
-			return *this;
-		}
-		_numItems = descStore._numItems;
-		_tVec = descStore._tVec;
-		for (uint32_t i = 0; i < ArraySize; ++i)
-		{
-			_tArray[i] = descStore._tArray[i];
-		}
-		if (_tVec.size())
-		{
-			_ptr = _tVec.size();
-		}
-		else
-		{
-			_ptr = _tArray;
-		}
+		swap(*this, other);
+		return *this;
+	}
+
+	// Move Assignment Operator
+	DescriptorStore& operator=(DescriptorStore&& other)
+	{
+		swap(other);
+		return *this;
+	}
+
+	// Move constructor
+	DescriptorStore(DescriptorStore&& other) noexcept : DescriptorStore()
+	{
+		swap(*this, other);
 	}
 
 	void clear()
 	{
-		for (uint32_t i = 0; i < _numItems; ++i)
-		{
-			*(_ptr + i) = T();
-		}
+		// Reset each of the items
+		std::fill(std::begin(_tArray), std::end(_tArray), T());
+		_tVector.clear();
 		_ptr = _tArray;
 		_numItems = 0;
-		_tVec.clear();
 	}
 
 	void set(uint32_t index, const T& obj)
 	{
-		if (index >= ArraySize)
+		// Move to overflow when the number of items reaches the limit of the limited storage array
+		if (_tVector.empty() && index >= ArraySize)
 		{
+			// Move the limited storage array into the vector
 			moveToOverFlow();
-			_ptr = &_tVec[0];
 		}
-		else if (index > _tVec.size() && _tVec.size() != 0)
+		// Determine whether we should grow the container
+		if (!_tVector.empty() && index >= _tVector.size())
 		{
-			_tVec.resize(index + 1);
+			// Grow by ArraySize to reduce the number of times we call resize
+			_tVector.resize(index + ArraySize);
+			_ptr = _tVector.data();
 		}
-		_numItems += uint32_t(!_ptr[index].isValid());
+
+		_numItems = std::max(_numItems, index + 1);
+
 		_ptr[index] = obj;
-		_ptr[index] = obj;
+
+		// Ensure _ptr is pointing at either _tArray or _tVector.data() depending on the index currently being set
+		assert(index < ArraySize ? _ptr == _tArray : true && "Pointer must be pointing at _tArray");
+		assert(index >= ArraySize ? _ptr == _tVector.data() : true && "Pointer must be pointing at _tVector.data()");
 	}
 
 	uint32_t size() const
@@ -263,12 +287,14 @@ public:
 private:
 	void moveToOverFlow()
 	{
-		_tVec.reserve(ArraySize * 2);
-		_tVec.assign(_tArray, _tArray + ArraySize);
+		_tVector.reserve(ArraySize * 2);
+		_tVector.assign(std::begin(_tArray), std::end(_tArray));
+		// The pointer now points to the head of the vector
+		_ptr = _tVector.data();
 	}
 
 	T _tArray[ArraySize];
-	std::vector<T> _tVec;
+	std::vector<T> _tVector;
 	T* _ptr;
 	uint32_t _numItems;
 	//!\endcond
@@ -388,7 +414,7 @@ struct DescriptorImageInfo
 	/// <param name="sampler">Sampler handle, and is used in descriptor updates for types
 	/// pvrvk::DescriptorType::e_SAMPLER and pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER if the binding being
 	/// updated does not use immutable samplers</param>
-	explicit DescriptorImageInfo(const Sampler& sampler) : sampler(sampler) {}
+	explicit DescriptorImageInfo(const Sampler& sampler) : sampler(sampler), imageLayout(pvrvk::ImageLayout::e_UNDEFINED) {}
 
 	/// <summary>Constructor from all elements</summary>
 	/// <param name="imageView">Image view handle, and is used in descriptor updates for types
@@ -438,7 +464,7 @@ struct DescriptorBufferInfo
 struct WriteDescriptorSet
 {
 	/// <summary>Constructor. Undefined values</summary>
-	WriteDescriptorSet() {}
+	WriteDescriptorSet() : _infos() {}
 
 	/// <summary>Constructor. Initializes with a specified descriptor into a set</summary>
 	/// <param name="descType">The descriptor type of this write</param>
@@ -447,7 +473,7 @@ struct WriteDescriptorSet
 	/// <param name="descType">The descriptor type of this write</param>
 	/// <param name="dstArrayElement">If the destination is an array, the array index to update</param>
 	WriteDescriptorSet(pvrvk::DescriptorType descType, DescriptorSet descSet, uint32_t dstBinding = 0, uint32_t dstArrayElement = 0)
-		: _descType(descType), _descSet(descSet), _dstBinding(dstBinding), _dstArrayElement(dstArrayElement)
+		: _descType(descType), _descSet(descSet), _dstBinding(dstBinding), _dstArrayElement(dstArrayElement), _infos()
 	{
 		set(descType, descSet, dstBinding, dstArrayElement);
 	}
@@ -472,7 +498,7 @@ struct WriteDescriptorSet
 		}
 		else
 		{
-			debug_assertion(false, "Cannot resolve Info type from descriptor type");
+			assert(false && "Cannot resolve Info type from descriptor type");
 		}
 		return *this;
 	}
@@ -527,14 +553,15 @@ struct WriteDescriptorSet
 	/// <returns>This object (allow chaining)</returns>
 	WriteDescriptorSet& setImageInfo(uint32_t arrayIndex, const DescriptorImageInfo& imageInfo)
 	{
+#ifdef DEBUG
 		// VALIDATE DESCRIPTOR TYPE
-		assertion(
-			((_descType >= pvrvk::DescriptorType::e_SAMPLER) && (_descType <= pvrvk::DescriptorType::e_STORAGE_IMAGE)) || (_descType == pvrvk::DescriptorType::e_INPUT_ATTACHMENT));
+		assert(((_descType >= pvrvk::DescriptorType::e_SAMPLER) && (_descType <= pvrvk::DescriptorType::e_STORAGE_IMAGE)) || (_descType == pvrvk::DescriptorType::e_INPUT_ATTACHMENT));
 		if (_descType == pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER)
 		{
-			debug_assertion(imageInfo.sampler.isValid() && imageInfo.imageView.isValid(), "Sampler and ImageView must be valid");
+			assert(imageInfo.sampler && imageInfo.imageView && "Sampler and ImageView must be valid");
 		}
-		Infos info;
+#endif
+		DescriptorInfos info;
 		info.imageInfo = imageInfo;
 		_infos.set(arrayIndex, info);
 		return *this;
@@ -546,9 +573,11 @@ struct WriteDescriptorSet
 	/// <returns>This object(allow chaining)</returns>
 	WriteDescriptorSet& setBufferInfo(uint32_t arrayIndex, const DescriptorBufferInfo& bufferInfo)
 	{
-		assertion(_descType >= pvrvk::DescriptorType::e_UNIFORM_BUFFER && _descType <= pvrvk::DescriptorType::e_STORAGE_BUFFER_DYNAMIC);
-		debug_assertion(bufferInfo.buffer.isValid(), "Buffer must be valid");
-		Infos info;
+#ifdef DEBUG
+		assert(_descType >= pvrvk::DescriptorType::e_UNIFORM_BUFFER && _descType <= pvrvk::DescriptorType::e_STORAGE_BUFFER_DYNAMIC);
+		assert(bufferInfo.buffer && "Buffer must be valid");
+#endif
+		DescriptorInfos info;
 		info.bufferInfo = bufferInfo;
 		_infos.set(arrayIndex, info);
 		return *this;
@@ -560,9 +589,11 @@ struct WriteDescriptorSet
 	/// <returns>This object(allow chaining)</returns>
 	WriteDescriptorSet& setTexelBufferInfo(uint32_t arrayIndex, const BufferView& bufferView)
 	{
-		assertion(_descType >= pvrvk::DescriptorType::e_UNIFORM_TEXEL_BUFFER && _descType <= pvrvk::DescriptorType::e_STORAGE_TEXEL_BUFFER);
-		debug_assertion(bufferView.isValid(), "Texel BufferView must be valid");
-		Infos info;
+#ifdef DEBUG
+		assert(_descType >= pvrvk::DescriptorType::e_UNIFORM_TEXEL_BUFFER && _descType <= pvrvk::DescriptorType::e_STORAGE_TEXEL_BUFFER);
+		assert(bufferView && "Texel BufferView must be valid");
+#endif
+		DescriptorInfos info;
 		info.texelBuffer = bufferView;
 		_infos.set(arrayIndex, info);
 		return *this;
@@ -619,35 +650,32 @@ struct WriteDescriptorSet
 	}
 
 private:
-	template<typename>
-	friend struct ::pvrvk::RefCountEntryIntrusive;
 	friend class ::pvrvk::impl::Device_;
 
 	pvrvk::DescriptorType _descType;
 	DescriptorSet _descSet;
 	uint32_t _dstBinding;
 	uint32_t _dstArrayElement;
-	struct Infos
+	struct DescriptorInfos
 	{
 		DescriptorImageInfo imageInfo;
 		DescriptorBufferInfo bufferInfo;
 		BufferView texelBuffer;
 
-		Infos() {}
+		DescriptorInfos() = default;
 		bool isValid() const
 		{
-			return imageInfo.imageView.isValid() || imageInfo.sampler.isValid() || bufferInfo.buffer.isValid() || texelBuffer.isValid();
+			return imageInfo.imageView || imageInfo.sampler || bufferInfo.buffer || texelBuffer;
 		}
 	};
 
-	impl::DescriptorStore<Infos, 16> _infos;
+	impl::DescriptorStore<DescriptorInfos, 4> _infos;
 
 	enum InfoType
 	{
 		ImageInfo,
 		BufferInfo,
-		TexelBufferView,
-		RayExecutables
+		TexelBufferView
 	};
 	InfoType _infoType;
 
@@ -669,48 +697,123 @@ struct CopyDescriptorSet
 
 namespace impl {
 /// <summary>A descriptor pool - an object used to allocate (and recycle) Descriptor Sets.</summary>
-class DescriptorPool_ : public EmbeddedRefCount<DescriptorPool_>, public DeviceObjectHandle<VkDescriptorPool>, public DeviceObjectDebugMarker<DescriptorPool_>
+class DescriptorPool_ : public PVRVkDeviceObjectBase<VkDescriptorPool, ObjectType::e_DESCRIPTOR_POOL>,
+						public DeviceObjectDebugUtils<DescriptorPool_>,
+						public std::enable_shared_from_this<DescriptorPool_>
 {
+private:
+	friend class Device_;
+
+	class make_shared_enabler
+	{
+	protected:
+		make_shared_enabler() = default;
+		friend class DescriptorPool_;
+	};
+
+	static DescriptorPool constructShared(const DeviceWeakPtr& device, const DescriptorPoolCreateInfo& createInfo)
+	{
+		return std::make_shared<DescriptorPool_>(make_shared_enabler{}, device, createInfo);
+	}
+
+	DescriptorPoolCreateInfo _createInfo;
+
 public:
+	//!\cond NO_DOXYGEN
+	DECLARE_NO_COPY_SEMANTICS(DescriptorPool_)
+	~DescriptorPool_();
+	DescriptorPool_(make_shared_enabler, const DeviceWeakPtr& device, const DescriptorPoolCreateInfo& createInfo);
+	//!\endcond
+
 	/// <summary>Allocate descriptor set</summary>
 	/// <param name="layout">Descriptor set layout</param>
 	/// <returns>Return DescriptorSet else null if fails.</returns>
 	DescriptorSet allocateDescriptorSet(const DescriptorSetLayout& layout);
 
-private:
-	DECLARE_NO_COPY_SEMANTICS(DescriptorPool_)
-	// Implementing EmbeddedRefCount
-	template<typename>
-	friend class ::pvrvk::EmbeddedRefCount;
-	friend class ::pvrvk::impl::Device_;
-
-	void destroy();
-
-	~DescriptorPool_()
+		/// <summary>Return the descriptor pool create info from which this descriptor pool was allocated</summary>
+	/// <returns>The descriptor pool create info</returns>
+	const DescriptorPoolCreateInfo& getCreateInfo() const
 	{
-		destroy();
-	}
-
-	static DescriptorPool createNew(const DeviceWeakPtr& device, const DescriptorPoolCreateInfo& createInfo)
-	{
-		return EmbeddedRefCount<DescriptorPool_>::createNew(device, createInfo);
-	}
-
-	DescriptorPool_(const DeviceWeakPtr& device, const DescriptorPoolCreateInfo& createInfo);
-
-	/* IMPLEMENTING EmbeddedResource */
-	void destroyObject()
-	{
-		destroy();
+		return _createInfo;
 	}
 };
 
 /// <summary>Vulkan implementation of a DescriptorSet.</summary>
-class DescriptorSet_ : public DeviceObjectHandle<VkDescriptorSet>, public DeviceObjectDebugMarker<DescriptorSet_>
+class DescriptorSet_ : public PVRVkDeviceObjectBase<VkDescriptorSet, ObjectType::e_DESCRIPTOR_SET>, public DeviceObjectDebugUtils<DescriptorSet_>
 {
+private:
+	friend struct ::pvrvk::WriteDescriptorSet;
+	friend class DescriptorPool_;
+
+	class make_shared_enabler
+	{
+	protected:
+		make_shared_enabler() = default;
+		friend class DescriptorSet_;
+	};
+
+	static DescriptorSet constructShared(const DescriptorSetLayout& descSetLayout, DescriptorPool& pool)
+	{
+		return std::make_shared<DescriptorSet_>(make_shared_enabler{}, descSetLayout, pool);
+	}
+
+	mutable std::vector<std::vector<std::shared_ptr<void> /**/> /**/> _keepAlive;
+	DescriptorSetLayout _descSetLayout;
+	DescriptorPool _descPool;
+
 public:
-	typedef uint16_t IndexType; //!< The datatype used for Indexes into descriptor sets.
+	//!\cond NO_DOXYGEN
 	DECLARE_NO_COPY_SEMANTICS(DescriptorSet_)
+
+	DescriptorSet_(make_shared_enabler, const DescriptorSetLayout& descSetLayout, DescriptorPool& pool)
+		: PVRVkDeviceObjectBase(pool->getDevice()), DeviceObjectDebugUtils(), _descSetLayout(descSetLayout), _descPool(pool)
+	{
+		// Create the Vulkan VkDescriptorSetAllocateInfo structure
+		VkDescriptorSetAllocateInfo allocInfo = {};
+		allocInfo.sType = static_cast<VkStructureType>(pvrvk::StructureType::e_DESCRIPTOR_SET_ALLOCATE_INFO);
+		allocInfo.pSetLayouts = &getDescriptorSetLayout()->getVkHandle();
+		allocInfo.descriptorSetCount = 1;
+		allocInfo.descriptorPool = getDescriptorPool()->getVkHandle();
+
+		// For appropriate smart reference counting we need to keep alive the bindings
+		const auto& allBindings = _descSetLayout->getCreateInfo().getAllBindings();
+		uint16_t maxBinding = 0;
+		uint32_t i = 0, size = _descSetLayout->getCreateInfo().getNumBindings();
+		// Loop through the descriptor set bindings and determine the maximum binding
+		for (; i < size; ++i)
+		{
+			maxBinding = std::max(allBindings[i].binding, maxBinding);
+		}
+		// Use the maximum binding + 1 to resize the keepAlive array
+		_keepAlive.resize(maxBinding + 1);
+		// Now use the descriptor count for each descriptor binding to determine the total number of entries
+		for (i = 0; i < size; ++i)
+		{
+			auto& entry = allBindings[i];
+			auto& aliveEntry = _keepAlive[entry.binding];
+			aliveEntry.resize(entry.descriptorCount);
+		}
+		vkThrowIfFailed(getDevice()->getVkBindings().vkAllocateDescriptorSets(_descSetLayout->getDevice()->getVkHandle(), &allocInfo, &_vkHandle), "Allocate Descriptor Set failed");
+	}
+
+	~DescriptorSet_()
+	{
+		_keepAlive.clear();
+		if (getVkHandle() != VK_NULL_HANDLE)
+		{
+			if (getDescriptorPool()->getDevice())
+			{
+				getDevice()->getVkBindings().vkFreeDescriptorSets(getDescriptorPool()->getDevice()->getVkHandle(), getDescriptorPool()->getVkHandle(), 1, &getVkHandle());
+				_vkHandle = VK_NULL_HANDLE;
+			}
+			else
+			{
+				reportDestroyedAfterDevice();
+			}
+			_descSetLayout.reset();
+		}
+	}
+	//!\endcond
 
 	/// <summary>Return the layout of this DescriptorSet.</summary>
 	/// <returns>This DescriptorSet's DescriptorSetLayout</returns>
@@ -732,92 +835,55 @@ public:
 	{
 		return _descPool;
 	}
-
-private:
-	friend struct ::pvrvk::WriteDescriptorSet;
-	friend class ::pvrvk::impl::DescriptorPool_;
-	template<typename>
-	friend struct ::pvrvk::RefCountEntryIntrusive;
-	friend class ::pvrvk::impl::Device_;
-
-	~DescriptorSet_()
-	{
-		_keepAlive.clear();
-		if (getVkHandle() != VK_NULL_HANDLE)
-		{
-			if (_descPool->getDevice().isValid())
-			{
-				_device->getVkBindings().vkFreeDescriptorSets(_descPool->getDevice()->getVkHandle(), _descPool->getVkHandle(), 1, &getVkHandle());
-				_vkHandle = VK_NULL_HANDLE;
-				_descPool->getDevice().reset();
-			}
-			else
-			{
-				reportDestroyedAfterDevice("DescriptorSet");
-			}
-			_descPool.reset();
-			_descSetLayout.reset();
-		}
-	}
-
-	DescriptorSet_(const DescriptorSetLayout& descSetLayout, const DescriptorPool& pool)
-		: DeviceObjectHandle(pool->getDevice()), DeviceObjectDebugMarker(pvrvk::DebugReportObjectTypeEXT::e_DESCRIPTOR_SET_EXT), _descSetLayout(descSetLayout), _descPool(pool)
-	{
-		VkDescriptorSetAllocateInfo allocInfo = {};
-		allocInfo.sType = static_cast<VkStructureType>(pvrvk::StructureType::e_DESCRIPTOR_SET_ALLOCATE_INFO);
-		allocInfo.pSetLayouts = &getDescriptorSetLayout()->getVkHandle();
-		allocInfo.descriptorSetCount = 1;
-		allocInfo.descriptorPool = getDescriptorPool()->getVkHandle();
-		const auto& it = _descSetLayout->getCreateInfo().getAllBindings();
-		uint16_t maxbinding = 0;
-		uint32_t i = 0, size = _descSetLayout->getCreateInfo().getNumBindings();
-		for (; i < size; ++i)
-		{
-			maxbinding = std::max(it[i].binding, maxbinding);
-		}
-		_keepAlive.resize(maxbinding + 1);
-		for (i = 0; i < size; ++i)
-		{
-			auto& entry = it[i];
-			auto& aliveentry = _keepAlive[entry.binding];
-			aliveentry.resize(entry.descriptorCount);
-		}
-		vkThrowIfFailed(_device->getVkBindings().vkAllocateDescriptorSets(_descSetLayout->getDevice()->getVkHandle(), &allocInfo, &_vkHandle), "Allocate Descriptor Set failed");
-	}
-
-	mutable std::vector<std::vector<RefCountedResource<void> /**/> /**/> _keepAlive;
-	DescriptorSetLayout _descSetLayout;
-	DescriptorPool _descPool;
 };
 
 } // namespace impl
 
+// For smart pointer reference counting we need to keep alive the descriptor set binding entries to do this we place them in an array kept alive by the DescriptorSet itself
+// This means that the caller application can let resources go out scope and the Descriptor set "keepAlive" array will keep them alive as long as needed
 inline void WriteDescriptorSet::updateKeepAliveIntoDestinationDescriptorSet() const
 {
-	auto& keepalive = getDescriptorSet()->_keepAlive[this->_dstBinding];
+	// Get the keep alive entry for the current binding
+	auto& keepAlive = getDescriptorSet()->_keepAlive[this->_dstBinding];
+
+	// Handle BufferInfo entries
 	if (_infoType == InfoType::BufferInfo)
 	{
 		for (uint32_t i = 0; i < _infos.size(); ++i)
 		{
-			keepalive[i] = _infos[i].bufferInfo.buffer;
+			// Ensure the into entry is valid
+			if (_infos[i].isValid())
+			{
+				keepAlive[i] = _infos[i].bufferInfo.buffer;
+			}
 		}
 	}
+	// Handle ImageInfo entries
 	else if (_infoType == InfoType::ImageInfo)
 	{
 		for (uint32_t i = 0; i < _infos.size(); ++i)
 		{
-			auto newpair = RefCountedResource<std::pair<Sampler, ImageView> /**/>();
-			newpair.construct();
-			newpair->first = _infos[i].imageInfo.sampler;
-			newpair->second = _infos[i].imageInfo.imageView;
-			keepalive[i] = newpair;
+			// Ensure the into entry is valid
+			if (_infos[i].isValid())
+			{
+				auto newpair = std::make_shared<std::pair<Sampler, ImageView> /**/>();
+				newpair->first = _infos[i].imageInfo.sampler;
+				newpair->second = _infos[i].imageInfo.imageView;
+
+				keepAlive[i] = newpair;
+			}
 		}
 	}
+	// Handle TexelBufferView entries
 	else if (_infoType == InfoType::TexelBufferView)
 	{
 		for (uint32_t i = 0; i < _infos.size(); ++i)
 		{
-			keepalive[i] = _infos[i].texelBuffer;
+			// Ensure the into entry is valid
+			if (_infos[i].isValid())
+			{
+				keepAlive[i] = _infos[i].texelBuffer;
+			}
 		}
 	}
 }

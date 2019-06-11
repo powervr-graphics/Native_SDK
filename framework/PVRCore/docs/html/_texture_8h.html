@@ -114,7 +114,7 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The <a class="el" href="structpvr_1_1_generic_offset3_d.html" title="The GenericOffset3D contains the offsets in 3 dimension (offsetX, offsetY, offsetZ)">GenericOffset3D</a> contains the offsets in 3 dimension (offsetX, offsetY, offsetZ) <a href="structpvr_1_1_generic_offset3_d.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1_image_data_format.html">pvr::ImageDataFormat</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents an image format, including pixel format(channels/bits per channel), datatype and colorspace.  <a href="structpvr_1_1_image_data_format.html#details">More...</a><br/></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents an image format, including pixel format(channels/bits per channel), datatype and colorspace. /summary&gt;  <a href="structpvr_1_1_image_data_format.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1_image_layers_size.html">pvr::ImageLayersSize</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Structure describes the number of array levels and mip levels an image contains <a href="structpvr_1_1_image_layers_size.html#details">More...</a><br/></td></tr>
@@ -235,24 +235,29 @@ Enumerations</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:ad604ae533aa5f192cf745d3b37e1f7e1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#ad604ae533aa5f192cf745d3b37e1f7e1">pvr::convertXYZToCubeUV</a> (float x, float y, float z, CubeFace &amp;face, float &amp;u, float &amp;v)</td></tr>
+<tr class="memdesc:ad604ae533aa5f192cf745d3b37e1f7e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts an x, y and z direction to a texture coordinate of a particular cubemap face. <a href="#ad604ae533aa5f192cf745d3b37e1f7e1">More...</a><br/></td></tr>
+<tr class="separator:ad604ae533aa5f192cf745d3b37e1f7e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5486ebd5e2197fa607b0fc29c7850742"><td class="memItemLeft" align="right" valign="top">TextureFileFormat&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#a5486ebd5e2197fa607b0fc29c7850742">pvr::getTextureFormatFromFilename</a> (const char *assetname)</td></tr>
 <tr class="memdesc:a5486ebd5e2197fa607b0fc29c7850742"><td class="mdescLeft">&#160;</td><td class="mdescRight">Infer the texture format from a filename. <a href="#a5486ebd5e2197fa607b0fc29c7850742">More...</a><br/></td></tr>
 <tr class="separator:a5486ebd5e2197fa607b0fc29c7850742"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a43f0a8e74fd2e53e456ced76b3a9ac"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#a1a43f0a8e74fd2e53e456ced76b3a9ac">pvr::growFloat</a> (const uint32_t &amp;value, const uint8_t &amp;mantissaBits, const uint8_t &amp;exponentBits, const uint8_t &amp;exponentBias, const bool hasSign)</td></tr>
+<tr class="memdesc:a1a43f0a8e74fd2e53e456ced76b3a9ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Produces a floating point value based on the uint32_t value, the mantissa bits and exponent bits <a href="#a1a43f0a8e74fd2e53e456ced76b3a9ac">More...</a><br/></td></tr>
+<tr class="separator:a1a43f0a8e74fd2e53e456ced76b3a9ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a128900aeb6815de42a6d6d2c59f67a6e"><td class="memItemLeft" align="right" valign="top">ImageType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#a128900aeb6815de42a6d6d2c59f67a6e">pvr::imageViewTypeToImageBaseType</a> (ImageViewType viewtype)</td></tr>
 <tr class="memdesc:a128900aeb6815de42a6d6d2c59f67a6e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Map an ImageViewType (2dCube etc) to its base type (1d/2d/3d) <a href="#a128900aeb6815de42a6d6d2c59f67a6e">More...</a><br/></td></tr>
 <tr class="separator:a128900aeb6815de42a6d6d2c59f67a6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3a657a3b9bf986f2d0a195cf5182145d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3a657a3b9bf986f2d0a195cf5182145d"></a>
-ImageAspectFlags&#160;</td><td class="memItemRight" valign="bottom"><b>pvr::operator&amp;</b> (ImageAspectFlags lhs, ImageAspectFlags rhs)</td></tr>
+<tr class="memitem:a3a657a3b9bf986f2d0a195cf5182145d"><td class="memItemLeft" align="right" valign="top">ImageAspectFlags&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#a3a657a3b9bf986f2d0a195cf5182145d">pvr::operator&amp;</a> (ImageAspectFlags lhs, ImageAspectFlags rhs)</td></tr>
+<tr class="memdesc:a3a657a3b9bf986f2d0a195cf5182145d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Operator&amp;. <a href="#a3a657a3b9bf986f2d0a195cf5182145d">More...</a><br/></td></tr>
 <tr class="separator:a3a657a3b9bf986f2d0a195cf5182145d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9724b862751802480a1d70bd5b3688ee"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9724b862751802480a1d70bd5b3688ee"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>pvr::operator&amp;=</b> (ImageAspectFlags &amp;lhs, ImageAspectFlags rhs)</td></tr>
+<tr class="memitem:a9724b862751802480a1d70bd5b3688ee"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#a9724b862751802480a1d70bd5b3688ee">pvr::operator&amp;=</a> (ImageAspectFlags &amp;lhs, ImageAspectFlags rhs)</td></tr>
+<tr class="memdesc:a9724b862751802480a1d70bd5b3688ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Operator&amp;=. <a href="#a9724b862751802480a1d70bd5b3688ee">More...</a><br/></td></tr>
 <tr class="separator:a9724b862751802480a1d70bd5b3688ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af90306acc1aaa07ed01111e86229dd02"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af90306acc1aaa07ed01111e86229dd02"></a>
-ImageAspectFlags&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#af90306acc1aaa07ed01111e86229dd02">pvr::operator|</a> (ImageAspectFlags lhs, ImageAspectFlags rhs)</td></tr>
-<tr class="memdesc:af90306acc1aaa07ed01111e86229dd02"><td class="mdescLeft">&#160;</td><td class="mdescRight">Macro that defines all common bitwise operators for an enum-class. <br/></td></tr>
+<tr class="memitem:af90306acc1aaa07ed01111e86229dd02"><td class="memItemLeft" align="right" valign="top">ImageAspectFlags&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#af90306acc1aaa07ed01111e86229dd02">pvr::operator|</a> (ImageAspectFlags lhs, ImageAspectFlags rhs)</td></tr>
+<tr class="memdesc:af90306acc1aaa07ed01111e86229dd02"><td class="mdescLeft">&#160;</td><td class="mdescRight">Operator|. <a href="#af90306acc1aaa07ed01111e86229dd02">More...</a><br/></td></tr>
 <tr class="separator:af90306acc1aaa07ed01111e86229dd02"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad9b7e5a5c13f5eb605d551685cff1be7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad9b7e5a5c13f5eb605d551685cff1be7"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>pvr::operator|=</b> (ImageAspectFlags &amp;lhs, ImageAspectFlags rhs)</td></tr>
+<tr class="memitem:ad9b7e5a5c13f5eb605d551685cff1be7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#ad9b7e5a5c13f5eb605d551685cff1be7">pvr::operator|=</a> (ImageAspectFlags &amp;lhs, ImageAspectFlags rhs)</td></tr>
+<tr class="memdesc:ad9b7e5a5c13f5eb605d551685cff1be7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Operator|=. <a href="#ad9b7e5a5c13f5eb605d551685cff1be7">More...</a><br/></td></tr>
 <tr class="separator:ad9b7e5a5c13f5eb605d551685cff1be7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>

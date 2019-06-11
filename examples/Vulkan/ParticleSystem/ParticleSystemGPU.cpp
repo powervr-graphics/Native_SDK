@@ -168,7 +168,7 @@ void ParticleSystemGPU::setNumberOfParticles(uint32_t numParticles, pvrvk::Queue
 	submitInfo.numCommandBuffers = 1;
 
 	pvrvk::PipelineStageFlags pipeWaitStageFlags = pvrvk::PipelineStageFlags::e_ALL_BITS;
-	submitInfo.waitDestStages = &pipeWaitStageFlags;
+	submitInfo.waitDstStageMask = &pipeWaitStageFlags;
 	queue->submit(&submitInfo, 1, stagingFence);
 	stagingFence->wait();
 	stagingFence->reset();
@@ -231,10 +231,11 @@ void ParticleSystemGPU::setCollisionSpheres(const Sphere* spheres, uint32_t numS
 ***********************************************************************************************************************/
 void ParticleSystemGPU::recordCommandBuffer(uint8_t swapchain)
 {
-	if (!commandBuffer[swapchain].isValid())
+	if (!commandBuffer[swapchain])
 	{
 		commandBuffer[swapchain] = commandPool->allocateSecondaryCommandBuffer();
 	}
+	commandBuffer[swapchain]->reset();
 	commandBuffer[swapchain]->begin();
 	commandBuffer[swapchain]->bindPipeline(pipe);
 	commandBuffer[swapchain]->bindDescriptorSets(pvrvk::PipelineBindPoint::e_COMPUTE, pipe->getPipelineLayout(), 0, &multiBuffer.descSets[swapchain], 1);

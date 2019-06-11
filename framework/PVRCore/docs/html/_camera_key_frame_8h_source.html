@@ -84,7 +84,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">CameraKeyFrame.h</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;</div>
+<a href="_camera_key_frame_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;</div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#pragma once</span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#include &lt;vector&gt;</span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &quot;PVRCore/glm.h&quot;</span></div>
@@ -184,7 +184,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;        this-&gt;<a class="code" href="structpvr_1_1_camera_animation_controller.html#a6ca13943477af9bd6e8a046cea0b7c1a">keyframes</a>.reserve(numKeyFrames + this-&gt;<a class="code" href="structpvr_1_1_camera_animation_controller.html#a6ca13943477af9bd6e8a046cea0b7c1a">keyframes</a>.size());</div>
 <div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;        <span class="keywordflow">for</span> (uint32_t i = 0; i &lt; numKeyFrames; ++i)</div>
 <div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;        {</div>
-<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;            this-&gt;<a class="code" href="structpvr_1_1_camera_animation_controller.html#a6ca13943477af9bd6e8a046cea0b7c1a">keyframes</a>.push_back(keyFrames[i]);</div>
+<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;            this-&gt;<a class="code" href="structpvr_1_1_camera_animation_controller.html#a6ca13943477af9bd6e8a046cea0b7c1a">keyframes</a>.emplace_back(keyFrames[i]);</div>
 <div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;        }</div>
 <div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;</div>
 <div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;        <a class="code" href="structpvr_1_1_camera_animation_controller.html#a9277bd7152d82525cf3064d51fc64d2a">totalKeyFrameMs</a> = std::max(<a class="code" href="structpvr_1_1_camera_animation_controller.html#a9277bd7152d82525cf3064d51fc64d2a">totalKeyFrameMs</a>, this-&gt;<a class="code" href="structpvr_1_1_camera_animation_controller.html#a6ca13943477af9bd6e8a046cea0b7c1a">keyframes</a>.back().frameMs);</div>

@@ -11,10 +11,33 @@ namespace pvrvk {
 namespace impl {
 /// <summary>Vulkan implementation of the Semaphore class.
 /// Use to "serialize" access between CommandBuffer submissions and /Queues</summary>
-class Semaphore_ : public DeviceObjectHandle<VkSemaphore>, public DeviceObjectDebugMarker<Semaphore_>
+class Semaphore_ : public PVRVkDeviceObjectBase<VkSemaphore, ObjectType::e_SEMAPHORE>, public DeviceObjectDebugUtils<Semaphore_>
 {
+private:
+	friend class Device_;
+
+	class make_shared_enabler
+	{
+	protected:
+		make_shared_enabler() {}
+		friend class Semaphore_;
+	};
+
+	static Semaphore constructShared(const DeviceWeakPtr& device, const SemaphoreCreateInfo& createInfo)
+	{
+		return std::make_shared<Semaphore_>(make_shared_enabler{}, device, createInfo);
+	}
+
+	/// <summary>Creation information used when creating the Semaphore.</summary>
+	SemaphoreCreateInfo _createInfo;
+
 public:
+	//!\cond NO_DOXYGEN
 	DECLARE_NO_COPY_SEMANTICS(Semaphore_)
+	Semaphore_(make_shared_enabler, const DeviceWeakPtr& device, const SemaphoreCreateInfo& createInfo);
+
+	~Semaphore_();
+	//!\endcond
 
 	/// <summary>Get the Semaphore creation flags</summary>
 	/// <returns>The set of Semaphore creation flags</returns>
@@ -29,18 +52,6 @@ public:
 	{
 		return _createInfo;
 	}
-
-private:
-	template<typename>
-	friend struct ::pvrvk::RefCountEntryIntrusive;
-	friend class ::pvrvk::impl::Device_;
-
-	Semaphore_(const DeviceWeakPtr& device, const SemaphoreCreateInfo& createInfo);
-
-	~Semaphore_();
-
-	/// <summary>Creation information used when creating the Semaphore.</summary>
-	SemaphoreCreateInfo _createInfo;
 };
 } // namespace impl
 } // namespace pvrvk

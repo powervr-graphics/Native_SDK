@@ -26,5 +26,6 @@ var searchData=
   ['blendopmin',['BlendOpMin',['../classpvr_1_1assets_1_1_model_1_1_material.html#adc74eac948295f7211c8b6058006f6a1ab89bcd9b84ed7c1f710669dae302afac',1,'pvr::assets::Model::Material']]],
   ['blendopreversesubtract',['BlendOpReverseSubtract',['../classpvr_1_1assets_1_1_model_1_1_material.html#adc74eac948295f7211c8b6058006f6a1a358e8cfd35f9a403f4ca08fbb25ce898',1,'pvr::assets::Model::Material']]],
   ['blendopsubtract',['BlendOpSubtract',['../classpvr_1_1assets_1_1_model_1_1_material.html#adc74eac948295f7211c8b6058006f6a1adb0c6374a15167c09a7ff38b11f55be0',1,'pvr::assets::Model::Material']]],
+  ['bones',['bones',['../structpvr_1_1assets_1_1_skeleton.html#a32786e3ab340f0fbe9817157884543e5',1,'pvr::assets::Skeleton']]],
   ['boundingbox_2eh',['BoundingBox.h',['../_bounding_box_8h.html',1,'']]]
 ];

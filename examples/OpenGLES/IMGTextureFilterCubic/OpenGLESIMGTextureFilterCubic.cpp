@@ -40,11 +40,11 @@ class OpenGLESIMGTextureFilterCubic : public pvr::Shell
 		uint32_t uiMVPMatrixLoc;
 		uint32_t uiWidthLoc;
 		Program() : handle(0), uiMVPMatrixLoc(-1), uiWidthLoc(-1) {}
-	} _ShaderProgram;
+	} _shaderProgram;
 
-	// Variables to handle the animation in a time-based manner
-	float _frame;
 	glm::mat4 _projection;
+	glm::mat4 _viewProjection;
+	glm::mat4 _modelViewProjection;
 
 	// UIRenderer class used to display text
 	pvr::ui::UIRenderer _uiRenderer;
@@ -60,7 +60,7 @@ public:
 	virtual pvr::Result renderFrame();
 
 	void loadShaders();
-	void LoadVbos();
+	void loadVbo();
 };
 
 /*!*********************************************************************************************************************
@@ -71,8 +71,6 @@ If the rendering context is lost, InitApplication() will not be called again.
 ***********************************************************************************************************************/
 pvr::Result OpenGLESIMGTextureFilterCubic::initApplication()
 {
-	// Initialize variables used for the animation
-	_frame = 0;
 	return pvr::Result::Success;
 }
 
@@ -86,6 +84,7 @@ pvr::Result OpenGLESIMGTextureFilterCubic::initView()
 	_context = pvr::createEglContext();
 	_context->init(getWindow(), getDisplay(), getDisplayAttributes(), pvr::Api::OpenGLES2);
 
+	// Check whether the extension GL_IMG_texture_filter_cubic is supported
 	if (!gl::isGlExtensionSupported("GL_IMG_texture_filter_cubic"))
 	{
 		throw pvr::GlExtensionNotSupportedError("GL_IMG_texture_filter_cubic");
@@ -93,7 +92,7 @@ pvr::Result OpenGLESIMGTextureFilterCubic::initView()
 
 	_quadVbo = 0;
 
-	LoadVbos();
+	loadVbo();
 	loadShaders();
 
 	_uiRenderer.init(getWidth(), getHeight(), isFullScreen(), getBackBufferColorspace() == pvr::ColorSpace::sRGB);
@@ -107,7 +106,8 @@ pvr::Result OpenGLESIMGTextureFilterCubic::initView()
 	// Enable backface culling and depth test
 	gl::CullFace(GL_BACK);
 	gl::Enable(GL_CULL_FACE);
-	gl::Enable(GL_DEPTH_TEST);
+	gl::Disable(GL_DEPTH_TEST);
+	gl::Disable(GL_BLEND);
 
 	glm::vec3 clearColorLinearSpace(0.0f, 0.45f, 0.41f);
 	glm::vec3 clearColor = clearColorLinearSpace;
@@ -120,7 +120,21 @@ pvr::Result OpenGLESIMGTextureFilterCubic::initView()
 	// Use a nice bright blue as clear color
 	gl::ClearColor(clearColor.r, clearColor.g, clearColor.b, 1.0f);
 
-	_projection = glm::perspectiveFov(45.0f, static_cast<float>(this->getWidth()), static_cast<float>(this->getHeight()), 0.1f, 250.0f);
+	// Is the screen rotated
+	const bool bRotate = this->isScreenRotated();
+
+	//  Calculate the projection and rotate it by 90 degree if the screen is rotated.
+	_projection =
+		(bRotate ? pvr::math::perspectiveFov(
+					   pvr::Api::OpenGLESMaxVersion, 45.0f, static_cast<float>(this->getHeight()), static_cast<float>(this->getWidth()), 0.01f, 100.0f, glm::pi<float>() * .5f)
+				 : pvr::math::perspectiveFov(pvr::Api::OpenGLESMaxVersion, 45.0f, static_cast<float>(this->getWidth()), static_cast<float>(this->getHeight()), 0.01f, 100.0f));
+
+	// Set up the view and _projection matrices from the camera
+	glm::mat4 mView;
+	// We can build the model view matrix from the camera position, target and an up vector.
+	// For this we use glm::lookAt()
+	mView = glm::lookAt(glm::vec3(0.0, 0.1, 1.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
+	_viewProjection = _projection * mView;
 
 	std::vector<unsigned char> img(this->getWidth() * this->getHeight() * 4);
 
@@ -164,6 +178,7 @@ pvr::Result OpenGLESIMGTextureFilterCubic::initView()
 
 	gl::GenTextures(1, &_cubicTex);
 	gl::BindTexture(GL_TEXTURE_2D, _cubicTex);
+	// Make use of the cubic sampling mode using the GLEnum GL_CUBIC_IMG
 	gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_CUBIC_IMG);
 	gl::TexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, this->getWidth(), this->getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, img.data());
@@ -181,32 +196,21 @@ pvr::Result OpenGLESIMGTextureFilterCubic::initView()
 
 /*!*********************************************************************************************************************
 \return Result::Success if no error occurred
-\brief  Main rendering loop function of the program. The shell will call this function every _frame.
+\brief  Main rendering loop function of the program. The shell will call this function every frame.
 ***********************************************************************************************************************/
 pvr::Result OpenGLESIMGTextureFilterCubic::renderFrame()
 {
-	// Set up the view and _projection matrices from the camera
-	glm::mat4 mView;
-
-	gl::Disable(GL_CULL_FACE);
-	gl::Disable(GL_DEPTH_TEST);
-	gl::Enable(GL_BLEND);
-
-	// We can build the model view matrix from the camera position, target and an up vector.
-	// For this we use glm::lookAt()
-	mView = glm::lookAt(glm::vec3(0.0, 0.1, 1.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
-	glm::mat4 vp = _projection * mView;
-
-	//////////////////////////////////////////////////////
-	// Blit to screen
+	// Render the textures to the screen
 
 	gl::Viewport(0, 0, this->getWidth(), this->getHeight());
 	gl::BindFramebuffer(GL_FRAMEBUFFER, _context->getOnScreenFbo());
-	gl::Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	gl::Clear(GL_COLOR_BUFFER_BIT);
 
 	// Use shader program
-	gl::UseProgram(_ShaderProgram.handle);
-	gl::UniformMatrix4fv(_ShaderProgram.uiMVPMatrixLoc, 1, GL_FALSE, glm::value_ptr(vp));
+	gl::UseProgram(_shaderProgram.handle);
+	_modelViewProjection = _viewProjection * glm::rotate(glm::radians(-90.f), glm::vec3(1.0f, 0.0f, 0.f));
+
+	gl::UniformMatrix4fv(_shaderProgram.uiMVPMatrixLoc, 1, GL_FALSE, glm::value_ptr(_modelViewProjection));
 
 	gl::ActiveTexture(GL_TEXTURE0);
 	gl::BindTexture(GL_TEXTURE_2D, _tex);
@@ -256,8 +260,8 @@ pvr::Result OpenGLESIMGTextureFilterCubic::releaseView()
 		gl::BindTexture(GL_TEXTURE_2D, _cubicTex);
 	if (_quadVbo)
 		gl::DeleteBuffers(1, &_quadVbo);
-	if (_ShaderProgram.handle)
-		gl::DeleteProgram(_ShaderProgram.handle);
+	if (_shaderProgram.handle)
+		gl::DeleteProgram(_shaderProgram.handle);
 
 	return pvr::Result::Success;
 }
@@ -276,25 +280,18 @@ pvr::Result OpenGLESIMGTextureFilterCubic::quitApplication()
 \brief  Loads the mesh data required for this training course into vertex buffer objects
 \return Return true if no error occurred
 ***********************************************************************************************************************/
-void OpenGLESIMGTextureFilterCubic::LoadVbos()
+void OpenGLESIMGTextureFilterCubic::loadVbo()
 {
 	{
-		_vertices.clear();
 		_vertices.reserve(6);
 
-		_vertices.push_back(glm::vec3(-10.0f, 0.0f, -5.0f));
-		_vertices.push_back(glm::vec3(10.0f, 0.0f, -5.0f));
-		_vertices.push_back(glm::vec3(-10.0f, 0.0f, 5.0f));
+		_vertices.push_back(glm::vec3(-10.0f, 10.0f, 0.0f));
+		_vertices.push_back(glm::vec3(-10.0f, -10.0f, 0.0f));
+		_vertices.push_back(glm::vec3(10.0f, 10.0f, 0.0f));
 
-		_vertices.push_back(glm::vec3(-10.0f, 0.0f, 5.0f));
-		_vertices.push_back(glm::vec3(10.0f, 0.0f, -5.0f));
-		_vertices.push_back(glm::vec3(10.0f, 0.0f, 5.0f));
-
-		if (_quadVbo)
-		{
-			gl::DeleteBuffers(1, &_quadVbo);
-			_quadVbo = 0;
-		}
+		_vertices.push_back(glm::vec3(10.0f, 10.0f, 0.0f));
+		_vertices.push_back(glm::vec3(-10.0f, -10.0f, 0.0f));
+		_vertices.push_back(glm::vec3(10.0f, -10.0f, 0.0f));
 
 		gl::GenBuffers(1, &_quadVbo);
 		gl::BindBuffer(GL_ARRAY_BUFFER, _quadVbo);
@@ -323,19 +320,19 @@ void OpenGLESIMGTextureFilterCubic::loadShaders()
 		numDefines = 0;
 	}
 
-	_ShaderProgram.handle = pvr::utils::createShaderProgram(*this, VertShaderSrcFile, FragShaderSrcFile, attributes, attributeIndices, 1, defines, numDefines);
+	_shaderProgram.handle = pvr::utils::createShaderProgram(*this, VertShaderSrcFile, FragShaderSrcFile, attributes, attributeIndices, 1, defines, numDefines);
 
-	gl::UseProgram(_ShaderProgram.handle);
+	gl::UseProgram(_shaderProgram.handle);
 	// Store the location of uniforms for later use
-	_ShaderProgram.uiMVPMatrixLoc = gl::GetUniformLocation(_ShaderProgram.handle, "MVPMatrix");
-	_ShaderProgram.uiWidthLoc = gl::GetUniformLocation(_ShaderProgram.handle, "WindowWidth");
+	_shaderProgram.uiMVPMatrixLoc = gl::GetUniformLocation(_shaderProgram.handle, "MVPMatrix");
+	_shaderProgram.uiWidthLoc = gl::GetUniformLocation(_shaderProgram.handle, "WindowWidth");
 
-	gl::Uniform1f(_ShaderProgram.uiWidthLoc, (GLfloat)this->getWidth());
+	gl::Uniform1f(_shaderProgram.uiWidthLoc, (GLfloat)this->getWidth());
 
-	gl::Uniform1i(gl::GetUniformLocation(_ShaderProgram.handle, "tex"), 0);
-	gl::Uniform1i(gl::GetUniformLocation(_ShaderProgram.handle, "cubicTex"), 1);
+	gl::Uniform1i(gl::GetUniformLocation(_shaderProgram.handle, "tex"), 0);
+	gl::Uniform1i(gl::GetUniformLocation(_shaderProgram.handle, "cubicTex"), 1);
 
-	pvr::utils::throwOnGlError("[OpenGLESIMGTextureFilterCubic::LoadVbos] - Failed to create shaders and programs");
+	pvr::utils::throwOnGlError("[OpenGLESIMGTextureFilterCubic::loadShaders] - Failed to create shaders and programs");
 }
 
 /// <summary>This function must be implemented by the user of the shell. The user should return its pvr::Shell object defining the behaviour of the application.</summary>

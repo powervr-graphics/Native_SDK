@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['binding',['binding',['../structpvr_1_1_vertex_attribute_info_with_binding.html#ace0ec1528e6b3360e59a346699921df0',1,'pvr::VertexAttributeInfoWithBinding']]],
-  ['bindingid',['bindingId',['../structpvr_1_1_vertex_input_binding_info.html#adc5e1075fbc902032830fa11604c3fc8',1,'pvr::VertexInputBindingInfo']]],
+  ['binding',['binding',['../structpvr_1_1utils_1_1_vertex_attribute_info_with_binding.html#a330753e99fb414fd823b56aa4b6a9e1b',1,'pvr::utils::VertexAttributeInfoWithBinding']]],
+  ['bindingid',['bindingId',['../structpvr_1_1utils_1_1_vertex_input_binding_info.html#a1e5d2abeaf8bbbe92322bf7af4bbfb42',1,'pvr::utils::VertexInputBindingInfo']]],
   ['blenddstalpha',['blendDstAlpha',['../structpvr_1_1ui_1_1_g_l_state.html#af6b6616ef34e6f5abb8dd0a7f82e26ee',1,'pvr::ui::GLState']]],
   ['blenddstalphachanged',['blendDstAlphaChanged',['../structpvr_1_1ui_1_1_g_l_state_tracker.html#aeb99104deed1e265fae7b7b7e7f9054d',1,'pvr::ui::GLStateTracker']]],
   ['blenddstrgb',['blendDstRgb',['../structpvr_1_1ui_1_1_g_l_state.html#a81100ca3deb239de81902ecd25d8db60',1,'pvr::ui::GLState']]],

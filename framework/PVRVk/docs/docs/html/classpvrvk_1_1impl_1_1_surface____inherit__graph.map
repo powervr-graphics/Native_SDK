@@ -1,5 +1,5 @@
 <map id="pvrvk::impl::Surface_" name="pvrvk::impl::Surface_">
-<area shape="rect" id="node4" href="$classpvrvk_1_1impl_1_1_display_plane_surface__.html" title="A DisplayPlane Surface." alt="" coords="11,262,181,303"/>
-<area shape="rect" id="node2" href="$classpvrvk_1_1impl_1_1_instance_object_handle.html" title="pvrvk::impl::InstanceObject\lHandle\&lt; VkSurfaceKHR \&gt;" alt="" coords="5,97,187,138"/>
-<area shape="rect" id="node3" href="$classpvrvk_1_1impl_1_1_object_handle.html" title="pvrvk::impl::ObjectHandle\l\&lt; VkSurfaceKHR \&gt;" alt="" coords="9,6,183,47"/>
+<area shape="rect" id="node4" href="$classpvrvk_1_1impl_1_1_display_plane_surface__.html" title="A DisplayPlane Surface." alt="" coords="41,289,212,330"/>
+<area shape="rect" id="node2" href="$classpvrvk_1_1impl_1_1_p_v_r_vk_instance_object_base.html" title="pvrvk::impl::PVRVkInstance\lObjectBase\&lt; VkSurfaceKHR,\l ObjectType::e_SURFACE_KHR \&gt;" alt="" coords="13,109,240,165"/>
+<area shape="rect" id="node3" href="$classpvrvk_1_1impl_1_1_p_v_r_vk_object_base.html" title="pvrvk::impl::PVRVkObject\lBase\&lt; VkSurfaceKHR, PVRVkObject\lType \&gt;" alt="" coords="5,5,248,61"/>
 </map>

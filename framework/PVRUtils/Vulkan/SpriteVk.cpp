@@ -95,7 +95,7 @@ void Image_::updateTextureDescriptorSet() const
 		WriteDescriptorSet writeDescSet(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, _texDescSet, 0);
 		writeDescSet.setImageInfo(0, DescriptorImageInfo(getImageView(), getSampler(), ImageLayout::e_SHADER_READ_ONLY_OPTIMAL));
 
-		_uiRenderer->getDevice()->updateDescriptorSets(&writeDescSet, 1, nullptr, 0);
+		_uiRenderer->getDevice().lock()->updateDescriptorSets(&writeDescSet, 1, nullptr, 0);
 		_isTextureDirty = false;
 	}
 }
@@ -170,13 +170,13 @@ void Image_::calculateMvp(uint64_t parentIds, const glm::mat4& srt, const glm::m
 
 void Image_::onRender(CommandBufferBase& commandBuffer, uint64_t parentId)
 {
-	commandBuffer->debugMarkerBeginEXT("Rendering: (" + getSpriteName() + ")");
+	pvr::utils::beginCommandBufferDebugLabel(commandBuffer, pvrvk::DebugUtilsLabel("Rendering: (" + getSpriteName() + ")"));
 	commandBuffer->bindDescriptorSet(PipelineBindPoint::e_GRAPHICS, _uiRenderer->getPipelineLayout(), 0, getTexDescriptorSet(), nullptr, 0);
 	_uiRenderer->getUbo().bindUboDynamic(commandBuffer, _uiRenderer->getPipelineLayout(), _mvpData[parentId].bufferArrayId);
 	_uiRenderer->getMaterial().bindUboDynamic(commandBuffer, _uiRenderer->getPipelineLayout(), _materialData.bufferArrayId);
 	commandBuffer->bindVertexBuffer(_uiRenderer->getImageVbo(), 0, 0);
 	commandBuffer->draw(0, 6);
-	commandBuffer->debugMarkerEndEXT();
+	pvr::utils::endCommandBufferDebugLabel(commandBuffer);
 }
 
 void Image_::onAddInstance(uint64_t parentId)
@@ -203,10 +203,10 @@ void Image_::onRemoveInstance(uint64_t parentId)
 	}
 }
 
-Image_::Image_(UIRenderer& uiRenderer, const ImageView& imageView, uint32_t width, uint32_t height, const Sampler& sampler)
+Image_::Image_(make_shared_enabler, UIRenderer& uiRenderer, const ImageView& imageView, uint32_t width, uint32_t height, const Sampler& sampler)
 	: Sprite_(uiRenderer), _texW(width), _texH(height), _imageView(imageView), _sampler(sampler), _isTextureDirty(true)
 {
-	if (!_sampler.isValid())
+	if (!_sampler)
 	{
 		_sampler = imageView->getImage()->getNumMipLevels() > 1 ? uiRenderer.getSamplerTrilinear() : uiRenderer.getSamplerBilinear();
 	}
@@ -342,7 +342,7 @@ int32_t Font_::kerningCompFunc(const void* a, const void* b)
 	return 0;
 }
 
-Font_::Font_(UIRenderer& uiRenderer, const pvrvk::ImageView& tex2D, const TextureHeader& textureHeader, const pvrvk::Sampler& sampler)
+Font_::Font_(make_shared_enabler, UIRenderer& uiRenderer, const pvrvk::ImageView& tex2D, const TextureHeader& textureHeader, const pvrvk::Sampler& sampler)
 {
 	setUIRenderer(&uiRenderer);
 	_imageView = tex2D;
@@ -355,8 +355,8 @@ Font_::Font_(UIRenderer& uiRenderer, const pvrvk::ImageView& tex2D, const Textur
 	_texDescSet = uiRenderer.getDescriptorPool()->allocateDescriptorSet(uiRenderer.getTexDescriptorSetLayout());
 	// update the texture descriptor set
 	WriteDescriptorSet writeDescSet(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, _texDescSet, 0, 0);
-	writeDescSet.setImageInfo(0, DescriptorImageInfo(_imageView, (sampler.isValid() ? sampler : uiRenderer.getSamplerBilinear()), pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL));
-	uiRenderer.getDevice()->updateDescriptorSets(&writeDescSet, 1, nullptr, 0);
+	writeDescSet.setImageInfo(0, DescriptorImageInfo(_imageView, (sampler ? sampler : uiRenderer.getSamplerBilinear()), pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL));
+	uiRenderer.getDevice().lock()->updateDescriptorSets(&writeDescSet, 1, nullptr, 0);
 }
 
 uint32_t TextElement_::updateVertices(float fZPos, float xPos, float yPos, const std::vector<uint32_t>& text, Vertex* const pVertices) const
@@ -475,11 +475,11 @@ void Text_::onAddInstance(uint64_t parentId)
 
 void TextElement_::createBuffers()
 {
-	_vbo = utils::createBuffer(_uiRenderer->getDevice(), static_cast<uint32_t>(sizeof(Vertex) * _maxLength * 4), pvrvk::BufferUsageFlags::e_VERTEX_BUFFER_BIT,
+	_vbo = utils::createBuffer(_uiRenderer->getDevice().lock(), static_cast<uint32_t>(sizeof(Vertex) * _maxLength * 4), pvrvk::BufferUsageFlags::e_VERTEX_BUFFER_BIT,
 		pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, &_uiRenderer->getMemoryAllocator(),
 		pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
-	_drawIndirectBuffer = utils::createBuffer(_uiRenderer->getDevice(), sizeof(VkDrawIndexedIndirectCommand), pvrvk::BufferUsageFlags::e_INDIRECT_BUFFER_BIT,
+	_drawIndirectBuffer = utils::createBuffer(_uiRenderer->getDevice().lock(), sizeof(VkDrawIndexedIndirectCommand), pvrvk::BufferUsageFlags::e_INDIRECT_BUFFER_BIT,
 		pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 		pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT | pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT |
 			pvrvk::MemoryPropertyFlags::e_HOST_CACHED_BIT,
@@ -520,7 +520,6 @@ void TextElement_::regenerateText() const
 
 void TextElement_::updateVbo() const
 {
-	Device deviceTemp = _uiRenderer->getDevice();
 	if (_vertices.size())
 	{
 		pvr::utils::updateHostVisibleBuffer(_vbo, _vertices.data(), 0, static_cast<uint32_t>(sizeof(Vertex) * _vertices.size()), true);
@@ -537,7 +536,7 @@ void TextElement_::updateVbo() const
 
 void TextElement_::onRender(CommandBufferBase& commands)
 {
-	if (_vbo.isValid())
+	if (_vbo)
 	{
 		commands->bindVertexBuffer(_vbo, 0, 0);
 		commands->bindIndexBuffer(_uiRenderer->getFontIbo(), 0, pvrvk::IndexType::e_UINT16);
@@ -631,14 +630,14 @@ void Text_::updateUbo(uint64_t parentIds) const
 void Text_::onRender(CommandBufferBase& commandBuffer, uint64_t parentId)
 {
 	updateUbo(parentId);
-	commandBuffer->debugMarkerBeginEXT("Rendering: (" + getSpriteName() + ")");
+	pvr::utils::beginCommandBufferDebugLabel(commandBuffer, pvrvk::DebugUtilsLabel("Rendering: (" + getSpriteName() + ")"));
 	commandBuffer->bindDescriptorSet(pvrvk::PipelineBindPoint::e_GRAPHICS, _uiRenderer->getPipelineLayout(), 0, getTexDescriptorSet(), nullptr, 0);
 
 	_uiRenderer->getUbo().bindUboDynamic(commandBuffer, _uiRenderer->getPipelineLayout(), _mvpData[parentId].bufferArrayId);
 	_uiRenderer->getMaterial().bindUboDynamic(commandBuffer, _uiRenderer->getPipelineLayout(), _materialData.bufferArrayId);
 
 	_textElement->onRender(commandBuffer);
-	commandBuffer->debugMarkerEndEXT();
+	pvr::utils::endCommandBufferDebugLabel(commandBuffer);
 }
 
 void Text_::onRemoveInstance(uint64_t parentId)
@@ -652,7 +651,8 @@ void Text_::onRemoveInstance(uint64_t parentId)
 	}
 }
 
-Text_::Text_(UIRenderer& uiRenderer, const TextElement& textElement) : Sprite_(uiRenderer), _textElement(textElement), _imageViewObjectName(""), _vboObjectName("")
+Text_::Text_(make_shared_enabler, UIRenderer& uiRenderer, const TextElement& textElement)
+	: Sprite_(uiRenderer), _textElement(textElement), _imageViewObjectName(""), _vboObjectName("")
 {
 	_alphaMode = textElement->getFont()->isAlphaRendering();
 	if (_materialData.bufferArrayId == -1)
@@ -738,7 +738,7 @@ TextElement_& TextElement_::setText(std::wstring&& str)
 	return *this;
 }
 
-MatrixGroup_::MatrixGroup_(UIRenderer& uiRenderer, uint64_t id) : Group_(uiRenderer, id) {}
+MatrixGroup_::MatrixGroup_(make_shared_enabler, UIRenderer& uiRenderer, uint64_t id) : Group_(uiRenderer, id) {}
 
 void MatrixGroup_::commitUpdates() const
 {
@@ -815,7 +815,7 @@ void PixelGroup_::calculateMvp(uint64_t parentIds, const glm::mat4& srt, const g
 
 Group_* Group_::add(const Sprite& sprite)
 {
-	_children.push_back(sprite);
+	_children.emplace_back(sprite);
 	_boundingRect.add(sprite->getDimensions().x, sprite->getDimensions().y, 0.0f);
 	try
 	{

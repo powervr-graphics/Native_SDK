@@ -10,6 +10,7 @@
 #include "PVRUtils/PVRUtilsGles.h"
 #include "PVRUtils/OpenGLES/HelperGles.h"
 #include "PVRScopeGraph.h"
+
 #if !defined(_WIN32) || defined(__WINSCW__)
 #define _stricmp strcasecmp
 #endif
@@ -49,6 +50,7 @@ class OpenGLESPVRScopeExample : public pvr::Shell
 
 	// 3D Model
 	pvr::assets::ModelHandle _scene;
+
 	// Projection and view matrices
 	pvr::utils::VertexConfiguration _vertexConfig;
 	// Group shader programs and their uniform locations together
@@ -83,10 +85,9 @@ class OpenGLESPVRScopeExample : public pvr::Shell
 	// The translation and Rotate parameter of Model
 	float _angleY;
 
-	// The PVRScopeGraph variable
-
 	// Variables for the graphing code
 	int32_t _selectedCounter;
+	int32_t _selectedGroup;
 	int32_t _interval;
 
 public:
@@ -116,17 +117,15 @@ void OpenGLESPVRScopeExample::eventMappedInput(pvr::SimplifiedInput key)
 	switch (key)
 	{
 	case pvr::SimplifiedInput::Up:
-	case pvr::SimplifiedInput::Right:
 	{
 		_selectedCounter++;
-		if (_selectedCounter > static_cast<int32_t>(_deviceResources->scopeGraph.getCounterNum()))
+		if (_selectedCounter >= static_cast<int32_t>(_deviceResources->scopeGraph.getCounterNum()))
 		{
-			_selectedCounter = _deviceResources->scopeGraph.getCounterNum();
+			_selectedCounter = _deviceResources->scopeGraph.getCounterNum() - 1;
 		}
 	}
 	break;
 	case pvr::SimplifiedInput::Down:
-	case pvr::SimplifiedInput::Left:
 	{
 		_selectedCounter--;
 		if (_selectedCounter < 0)
@@ -141,6 +140,12 @@ void OpenGLESPVRScopeExample::eventMappedInput(pvr::SimplifiedInput key)
 	}
 	break;
 	// Keyboard input (cursor left/right to change active group)
+	case pvr::SimplifiedInput::Right:
+		_deviceResources->scopeGraph.setActiveGroup(_deviceResources->scopeGraph.getActiveGroup() + 1);
+		break;
+	case pvr::SimplifiedInput::Left:
+		_deviceResources->scopeGraph.setActiveGroup(_deviceResources->scopeGraph.getActiveGroup() - 1);
+		break;
 	case pvr::SimplifiedInput::ActionClose:
 		exitShell();
 		break;
@@ -237,8 +242,10 @@ pvr::Result OpenGLESPVRScopeExample::initApplication()
 
 	// At the time of writing, this counter is the USSE load for vertex + pixel processing
 	_selectedCounter = 0;
+	_selectedGroup = 0;
 	_interval = 0;
 	_angleY = 0.0f;
+
 	// Load the _scene
 	if (!pvr::utils::loadModel(*this, SceneFile, _scene))
 	{
@@ -250,6 +257,7 @@ pvr::Result OpenGLESPVRScopeExample::initApplication()
 	{
 		const pvr::CommandLine commandline = getCommandLine();
 		commandline.getIntOption("-counter", _selectedCounter);
+		commandline.getIntOption("-group", _selectedGroup);
 		commandline.getIntOption("-interval", _interval);
 	}
 	return pvr::Result::Success;
@@ -318,17 +326,21 @@ pvr::Result OpenGLESPVRScopeExample::initView()
 				static_cast<uint32_t>(getHeight() * 0.96f) / 3));
 
 		// Output the current active group and a list of all the counters
-		Log(LogLevel::Information, "PVRScope Number of Hardware Counters: %i\n", _deviceResources->scopeGraph.getCounterNum());
-		Log(LogLevel::Information, "Counters\n-ID---Name-------------------------------------------\n");
+		Log(LogLevel::Information, "Active Group %i\nPVRScope Number of Hardware Counters: %i", _deviceResources->scopeGraph.getActiveGroup(),
+			_deviceResources->scopeGraph.getCounterNum());
+		Log(LogLevel::Information, "Counters\n-ID---Name-------------------------------------------");
 
 		for (uint32_t i = 0; i < _deviceResources->scopeGraph.getCounterNum(); ++i)
 		{
-			Log(LogLevel::Information, "[%2i] %s %s\n", i, _deviceResources->scopeGraph.getCounterName(i),
+			Log(LogLevel::Information, "[%2i] %s Group %i %s", i, _deviceResources->scopeGraph.getCounterName(i), _deviceResources->scopeGraph.getCounterGroup(i),
 				_deviceResources->scopeGraph.isCounterPercentage(i) ? "percentage" : "absolute");
 			_deviceResources->scopeGraph.showCounter(i, false);
 		}
 
 		_deviceResources->scopeGraph.ping(1);
+		// Set the active group to 0
+		_deviceResources->scopeGraph.setActiveGroup(_selectedGroup);
+
 		// Tell the graph to show initial counters
 		_deviceResources->scopeGraph.showCounter(_deviceResources->scopeGraph.getStandard3DIndex(), true);
 		_deviceResources->scopeGraph.showCounter(_deviceResources->scopeGraph.getStandardTAIndex(), true);
@@ -406,6 +418,7 @@ pvr::Result OpenGLESPVRScopeExample::renderFrame()
 	_progUniforms.lightDirView = glm::normalize(glm::vec3(1., 1., -1.));
 
 	_deviceResources->scopeGraph.ping(static_cast<float>(getFrameTime()));
+	updateDescription();
 	executeGlCommands();
 
 	if (this->shouldTakeScreenshot())
@@ -548,24 +561,28 @@ void OpenGLESPVRScopeExample::updateDescription()
 		}
 		bool isPercentage = _deviceResources->scopeGraph.isCounterPercentage(_selectedCounter);
 
-		const char* standard = "Use up-down to select a counter, click to enable/disable it\n"
-							   "Counter [%i]\n"
+		const char* standard = "Use up-down to select a counter\n  click to enable/disable it\n  left-right to change group\n\n"
+							   "Active Group: %i\n\n"
+							   "Counter %i/%i  Group: %i\n"
 							   "Name: %s\n"
 							   "Shown: %s\n"
 							   "user y-axis: %.2f  max: %.2f\n";
-		const char* percentage = "Use up-down to select a counter, click to enable/disable it\n"
-								 "Counter [%i]\n"
+		const char* percentage = "Use up-down to select a counter\n  click to enable/disable it\n  left-right to change group\n\n"
+								 "Active Group: %i\n\n"
+								 "Counter %i/%i  Group: %i\n"
 								 "Name: %s\n"
 								 "Shown: %s\n"
 								 "user y-axis: %.2f%%  max: %.2f%%\n";
-		const char* kilo = "Use up-down to select a counter, click to enable/disable it\n"
-						   "Counter [%i]\n"
+		const char* kilo = "Use up-down to select a counter\n  click to enable/disable it\n  left-right to change group\n\n"
+						   "Active Group: %i\n\n"
+						   "Counter %i/%i  Group: %i\n"
 						   "Name: %s\n"
 						   "Shown: %s\n"
 						   "user y-axis: %.0fK  max: %.0fK\n";
 
-		sprintf(description, isKilos ? kilo : isPercentage ? percentage : standard, _selectedCounter, _deviceResources->scopeGraph.getCounterName(_selectedCounter),
-			_deviceResources->scopeGraph.isCounterShown(_selectedCounter) ? "Yes" : "No", userY, maximum);
+		sprintf(description, isKilos ? kilo : isPercentage ? percentage : standard, _deviceResources->scopeGraph.getActiveGroup(), _selectedCounter + 1,
+			_deviceResources->scopeGraph.getCounterNum(), _deviceResources->scopeGraph.getCounterGroup(_selectedCounter),
+			_deviceResources->scopeGraph.getCounterName(_selectedCounter), _deviceResources->scopeGraph.isCounterShown(_selectedCounter) ? "Yes" : "No", userY, maximum);
 		_deviceResources->uiRenderer.getDefaultDescription()->setColor(glm::vec4(1.f));
 	}
 	else

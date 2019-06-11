@@ -1,16 +1,17 @@
 var searchData=
 [
-  ['debugreportcallback',['DebugReportCallback',['../namespacepvrvk.html#aa8cf6c85ce1a6b41873d6881569bf022',1,'pvrvk']]],
-  ['descriptorpool',['DescriptorPool',['../namespacepvrvk.html#a59d8d2d45d33d613ac2c8c956fa2020a',1,'pvrvk']]],
-  ['descriptorset',['DescriptorSet',['../namespacepvrvk.html#afaa5d3390eb48fd21197430158a7d5ac',1,'pvrvk']]],
-  ['descriptorsetlayout',['DescriptorSetLayout',['../namespacepvrvk.html#a4e213601eac04718affbe0b7a4c72160',1,'pvrvk']]],
+  ['debugreportcallback',['DebugReportCallback',['../namespacepvrvk.html#a7acee5838bd4ee1112bc37b66f0a986b',1,'pvrvk']]],
+  ['debugutilsmessenger',['DebugUtilsMessenger',['../namespacepvrvk.html#a525a1372604e42f974bc544323d8740c',1,'pvrvk']]],
+  ['descriptorpool',['DescriptorPool',['../namespacepvrvk.html#aa34cf237c64bfb5e0bf019a82be5ee97',1,'pvrvk']]],
+  ['descriptorset',['DescriptorSet',['../namespacepvrvk.html#aad7d79ce674b1d4114eafb17a5914133',1,'pvrvk']]],
+  ['descriptorsetlayout',['DescriptorSetLayout',['../namespacepvrvk.html#a58640ccc90614ff30e116a685a155f70',1,'pvrvk']]],
   ['descriptorsetlayoutset',['DescriptorSetLayoutSet',['../namespacepvrvk.html#afcee36b759377454e71548c88a7dd2f4',1,'pvrvk']]],
-  ['device',['Device',['../namespacepvrvk.html#a794b7de3c94b91535ce105918d4c4f5a',1,'pvrvk']]],
-  ['devicememory',['DeviceMemory',['../namespacepvrvk.html#a634be07eff8c3efd7788c1429c8ff129',1,'pvrvk']]],
-  ['devicememoryimpl',['DeviceMemoryImpl',['../namespacepvrvk.html#a9864647e3f4d5c73a72e4508e805e91d',1,'pvrvk']]],
-  ['deviceweakptr',['DeviceWeakPtr',['../namespacepvrvk.html#a8dd5932a80187b088ce6b591712dc2c2',1,'pvrvk']]],
-  ['display',['Display',['../namespacepvrvk.html#af2d7c17d852b7a8e69318f43645e78b6',1,'pvrvk']]],
-  ['displaymode',['DisplayMode',['../namespacepvrvk.html#ab5ba29fcbf296b97d02b438dbaf54d9f',1,'pvrvk']]],
-  ['displaymodeweakptr',['DisplayModeWeakPtr',['../namespacepvrvk.html#aacf4bddf2c3773622a2279e3a6ee8848',1,'pvrvk']]],
-  ['displayplanesurface',['DisplayPlaneSurface',['../namespacepvrvk.html#a2da411ed80d2d84b0e9f72767dbf014a',1,'pvrvk']]]
+  ['device',['Device',['../namespacepvrvk.html#a48baa2a10fcb9f1bafd42e398fdbce61',1,'pvrvk']]],
+  ['devicememory',['DeviceMemory',['../namespacepvrvk.html#a5f5c47d6dc912e104bafd3c3aba2a0a3',1,'pvrvk']]],
+  ['devicememoryimpl',['DeviceMemoryImpl',['../namespacepvrvk.html#ab2ed30c83078e77cec45c4540763f897',1,'pvrvk']]],
+  ['deviceweakptr',['DeviceWeakPtr',['../namespacepvrvk.html#aecbfc9aca0ecd8de47ccb6137aafcabd',1,'pvrvk']]],
+  ['display',['Display',['../namespacepvrvk.html#af7a7ca2d28a631027a495e01719e51fe',1,'pvrvk']]],
+  ['displaymode',['DisplayMode',['../namespacepvrvk.html#a5a2ebd98d968e79a3abb667486b594c9',1,'pvrvk']]],
+  ['displaymodeweakptr',['DisplayModeWeakPtr',['../namespacepvrvk.html#a06f8492701bbc16eb0191365bca3e128',1,'pvrvk']]],
+  ['displayplanesurface',['DisplayPlaneSurface',['../namespacepvrvk.html#a08d4d0b0638df55df43e2ce83ac5cab3',1,'pvrvk']]]
 ];

@@ -10,9 +10,59 @@
 namespace pvrvk {
 namespace impl {
 /// <summary>A PVRVk pipeline cache object which allows the result of pipeline construction to be reused between pipelines and between runs of an application</summary>
-class PipelineCache_ : public DeviceObjectHandle<VkPipelineCache>, public DeviceObjectDebugMarker<PipelineCache_>
+class PipelineCache_ : public PVRVkDeviceObjectBase<VkPipelineCache, ObjectType::e_PIPELINE_CACHE>, public DeviceObjectDebugUtils<PipelineCache_>
 {
+private:
+	friend class Device_;
+
+	class make_shared_enabler
+	{
+	protected:
+		make_shared_enabler() {}
+		friend class PipelineCache_;
+	};
+
+	static PipelineCache constructShared(const DeviceWeakPtr& device, const PipelineCacheCreateInfo& createInfo)
+	{
+		return std::make_shared<PipelineCache_>(make_shared_enabler{}, device, createInfo);
+	}
+
+	PipelineCacheCreateInfo _createInfo;
+
 public:
+	//!\cond NO_DOXYGEN
+	DECLARE_NO_COPY_SEMANTICS(PipelineCache_)
+	PipelineCache_(make_shared_enabler, const DeviceWeakPtr& device, const PipelineCacheCreateInfo& createInfo) : PVRVkDeviceObjectBase(device), DeviceObjectDebugUtils()
+	{
+		_createInfo = createInfo;
+
+		VkPipelineCacheCreateInfo vkCreateInfo = {};
+		vkCreateInfo.sType = static_cast<VkStructureType>(StructureType::e_PIPELINE_CACHE_CREATE_INFO);
+		vkCreateInfo.flags = static_cast<VkPipelineCacheCreateFlags>(_createInfo.getFlags());
+		vkCreateInfo.initialDataSize = _createInfo.getInitialDataSize();
+		vkCreateInfo.pInitialData = _createInfo.getInitialData();
+
+		vkThrowIfFailed(getDevice()->getVkBindings().vkCreatePipelineCache(getDevice()->getVkHandle(), &vkCreateInfo, nullptr, &_vkHandle), "Failed to create Pipeline Cache");
+	}
+
+	/// <summary>destructor</summary>
+	~PipelineCache_()
+	{
+		if (getVkHandle() != VK_NULL_HANDLE)
+		{
+			if (!_device.expired())
+			{
+				getDevice()->getVkBindings().vkDestroyPipelineCache(getDevice()->getVkHandle(), getVkHandle(), nullptr);
+				_vkHandle = VK_NULL_HANDLE;
+			}
+			else
+			{
+				reportDestroyedAfterDevice();
+			}
+		}
+	}
+	//!\endcond
+
 	/// <summary>Get the pipeline cache creation flags</summary>
 	/// <returns>The set of pipeline cache creation flags</returns>
 	inline PipelineCacheCreateFlags getFlags() const
@@ -37,7 +87,7 @@ public:
 	size_t getCacheMaxDataSize() const
 	{
 		size_t dataSize;
-		_device->getVkBindings().vkGetPipelineCacheData(_device->getVkHandle(), getVkHandle(), &dataSize, nullptr);
+		getDevice()->getVkBindings().vkGetPipelineCacheData(getDevice()->getVkHandle(), getVkHandle(), &dataSize, nullptr);
 		return dataSize;
 	}
 
@@ -47,9 +97,9 @@ public:
 	/// <returns>Returns the amount of data actually written to the buffer</returns>
 	size_t getCacheData(size_t size, void* inOutData) const
 	{
-		debug_assertion(size && inOutData, "size and the data must be valid");
+		assert(size && inOutData && "size and the data must be valid");
 		size_t mySize = size;
-		_device->getVkBindings().vkGetPipelineCacheData(_device->getVkHandle(), getVkHandle(), &mySize, inOutData);
+		getDevice()->getVkBindings().vkGetPipelineCacheData(getDevice()->getVkHandle(), getVkHandle(), &mySize, inOutData);
 		return mySize;
 	}
 
@@ -59,46 +109,6 @@ public:
 	{
 		return _createInfo;
 	}
-
-private:
-	template<typename>
-	friend struct ::pvrvk::RefCountEntryIntrusive;
-	friend class ::pvrvk::impl::Device_;
-	DECLARE_NO_COPY_SEMANTICS(PipelineCache_)
-
-	PipelineCache_(DeviceWeakPtr device, const PipelineCacheCreateInfo& createInfo)
-		: DeviceObjectHandle(device), DeviceObjectDebugMarker(DebugReportObjectTypeEXT::e_PIPELINE_CACHE_EXT)
-	{
-		_createInfo = createInfo;
-
-		VkPipelineCacheCreateInfo vkCreateInfo = {};
-		vkCreateInfo.sType = static_cast<VkStructureType>(StructureType::e_PIPELINE_CACHE_CREATE_INFO);
-		vkCreateInfo.flags = static_cast<VkPipelineCacheCreateFlags>(_createInfo.getFlags());
-		vkCreateInfo.initialDataSize = _createInfo.getInitialDataSize();
-		vkCreateInfo.pInitialData = _createInfo.getInitialData();
-
-		vkThrowIfFailed(_device->getVkBindings().vkCreatePipelineCache(getDevice()->getVkHandle(), &vkCreateInfo, nullptr, &_vkHandle), "Failed to create Pipeline Cache");
-	}
-
-	/// <summary>destructor</summary>
-	~PipelineCache_()
-	{
-		if (getVkHandle() != VK_NULL_HANDLE)
-		{
-			if (_device.isValid())
-			{
-				_device->getVkBindings().vkDestroyPipelineCache(getDevice()->getVkHandle(), getVkHandle(), nullptr);
-				_vkHandle = VK_NULL_HANDLE;
-				_device.reset();
-			}
-			else
-			{
-				reportDestroyedAfterDevice("PipelineCache");
-			}
-		}
-	}
-
-	PipelineCacheCreateInfo _createInfo;
 };
 } // namespace impl
 } // namespace pvrvk

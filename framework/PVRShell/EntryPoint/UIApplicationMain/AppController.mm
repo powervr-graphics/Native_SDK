@@ -1,6 +1,6 @@
 /*!
 \brief Implementation of the AppController for the UIKit based (iOS) implementation of PVRShell.
-\file PVRShell\EntryPoint/UIApplicationMain/AppController.mm
+\file PVRShell/EntryPoint/UIApplicationMain/AppController.mm
 \author PowerVR by Imagination, Developer Technology Team
 \copyright Copyright (c) Imagination Technologies Limited.
 */

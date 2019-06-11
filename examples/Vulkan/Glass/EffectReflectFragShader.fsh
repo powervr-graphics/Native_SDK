@@ -2,16 +2,16 @@
 
 layout(set = 0, binding = 1) uniform mediump sampler2D sParaboloids;
 layout(set = 0, binding = 2) uniform mediump samplerCube sSkybox;
-layout(location = 0) in mediump vec3 ReflectDir;
+layout(location = 0) in highp vec3 ReflectDir;
 layout(location = 0) out mediump vec4 outColor;
 void main()
 {
 	// Sample reflection to skybox
 	mediump vec4 ReflectSky = texture(sSkybox, ReflectDir);
 
-	mediump vec3 vkReflectDir = ReflectDir;
+	highp vec3 vkReflectDir = ReflectDir;
 	vkReflectDir.y = -vkReflectDir.y;
-	mediump vec3 Normalised = normalize(vkReflectDir);
+	highp vec3 Normalised = normalize(vkReflectDir);
 	Normalised.xy /= abs(Normalised.z) + 1.0;
 	Normalised.xy = Normalised.xy * 0.495 + 0.5;
 	Normalised.x *= 0.5;

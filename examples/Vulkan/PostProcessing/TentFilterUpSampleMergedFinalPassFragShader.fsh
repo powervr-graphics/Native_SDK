@@ -16,18 +16,21 @@ const mediump float VignetteRadius = 0.85;
 // Soft for our vignette, between 0.0 and 1.0
 const mediump float VignetteSoftness = 0.35;
 
-const mediump float ExposureBias = 4.0;
+layout(push_constant) uniform pushConstantsBlock{
+	mediump vec2 upSampleConfigs[8];
+	mediump float linearExposure;
+};
 
 void main()
 {	
-	mediump float blurredColor = texture(sDownsampledCurrentMipLevel, vTexCoords[0]).r * weights[0];
+	highp float blurredColor = texture(sDownsampledCurrentMipLevel, vTexCoords[0]).r * weights[0];
 	
-	for(int i = 1; i < 9; ++i)
+	for(int i = 0; i < 9; ++i)
 	{
 		blurredColor += texture(sCurrentBlurredImage, vTexCoords[i]).r * weights[i];
 	}
 
-	mediump vec3 hdrColor;
+	highp vec3 hdrColor;
 
 	if(RenderBloom == 1)
 	{
@@ -35,15 +38,15 @@ void main()
 	}
 	else
 	{
-		mediump vec3 offscreenTexture = texture(sOffScreenTexture, vTexCoords[0]).rgb;
+		// Retrieve the original hdr color attachment and combine it with the blurred image
+		highp vec3 offscreenTexture = texture(sOffScreenTexture, vTexCoords[0]).rgb;
 
-		hdrColor = offscreenTexture + vec3(blurredColor);
+		hdrColor = offscreenTexture * linearExposure + vec3(blurredColor);
 	}
 
 	// http://filmicworlds.com/blog/filmic-tonemapping-operators/
 	// Reinhard tonemapping
-	mediump vec3 ldrColor = hdrColor * ExposureBias;
-	ldrColor = ldrColor / (1.0 + ldrColor);
+	mediump vec3 ldrColor = hdrColor / (1.0 + hdrColor);
 
 	// apply a simple vignette
 	mediump vec2 vtc = vec2(vTexCoords[0] - vec2(0.5));

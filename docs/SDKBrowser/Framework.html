@@ -80,7 +80,7 @@
 <p>The majority of the code is written in C++ and tested across different compilers (Visual Studio 2013-2017, GNU Compiler Collection, and Clang) using modern C++ style. It provides a complete framework for application development. There is also supporting per-platform code such as Objective-C code for iOS and macOS, and Java code for Android. CMake files are also supplied.</p>
 <p>The Framework consists of libraries divided by functionality, as shown in the figure below. These modules are provided to be configured as static libraries, but they can be used differently if required.</p>
 <div class="figure">
-<img alt="../images/PowerVRFrameworkComponents.png" src="../images/PowerVRFrameworkComponents.png" />
+<img alt="_images/PowerVRFrameworkComponents.png" src="_images/PowerVRFrameworkComponents.png" />
 </div>
 <div class="section" id="pvrcore">
 <h3>PVRCore<a class="headerlink" href="#pvrcore" title="Permalink to this headline">¶</a></h3>
@@ -90,7 +90,7 @@
 <div class="section" id="pvrassets">
 <h3>PVRAssets<a class="headerlink" href="#pvrassets" title="Permalink to this headline">¶</a></h3>
 <p><a class="reference external" href="../../framework/PVRAssets/docs/Index.html">Source code documentation</a></p>
-<p>This is the Framework’s asset code. It includes classes and helpers for scene, mesh, light, camera, animations, and asset loading code.  PVRAssets supports the loading of POD files, PVR and PFX materials format, as well as support for a number of texture formats.</p>
+<p>This is the Framework’s asset code. It includes classes and helpers for scene, mesh, light, camera, animations, and asset loading code.  PVRAssets supports the loading of POD and glTF 2.0 files, PVR and PFX materials format, as well as support for a number of texture formats.</p>
 </div>
 <div class="section" id="pvrshell">
 <h3>PVRShell<a class="headerlink" href="#pvrshell" title="Permalink to this headline">¶</a></h3>
@@ -165,7 +165,7 @@
 <dt>Create the application files. For a single CPP file, the includes will usually be:</dt>
 <dd><ul class="first last simple">
 <li><code class="docutils literal notranslate"><span class="pre">PVRShell/PVRShell.h</span></code></li>
-<li><code class="docutils literal notranslate"><span class="pre">PVRUtils/GLES/PVRUtilsGles.h</span></code> or <code class="docutils literal notranslate"><span class="pre">PVRUtils/Vulkan/PVRUtilsVk.h</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">PVRUtils/PVRUtilsGles.h</span></code> or <code class="docutils literal notranslate"><span class="pre">PVRUtils/PVRUtilsVk.h</span></code></li>
 </ul>
 </dd>
 </dl>
@@ -178,7 +178,7 @@
 <h2>Guidelines and Recommendations<a class="headerlink" href="#guidelines-and-recommendations" title="Permalink to this headline">¶</a></h2>
 <p>Below are a set of guidelines and recommendations to consider when using the PowerVR Framework:</p>
 <ul class="simple">
-<li>Use PVRUtils to simplify common, suprisingly complex tasks. This makes them easy, concise and understandable. These tasks include context creation, backbuffer/swapchain setup, and texture uploading. Then step through the code to understand the actual mechanics implemented. This is particularly important for Vulkan tasks that are surprisingly involved, such as texture uploading.</li>
+<li>Use PVRUtils to simplify common, surprisingly complex tasks. This makes them easy, concise and understandable. These tasks include context creation, backbuffer/swapchain setup, and texture uploading. Then step through the code to understand the actual mechanics implemented. This is particularly important for Vulkan tasks that are surprisingly involved, such as texture uploading.</li>
 <li>The <code class="docutils literal notranslate"><span class="pre">pvr::assets::Model</span></code> class contains all the information needed for drawing, including cameras, lights, and effects. Follow a typical PowerVR SDK example such as IntroducingPVRUtils to understand its basic use, including getting information about the data layout of meshes from a model.</li>
 <li>There are many utility functions that simplify complex tasks between Assets and the underlying API. For example, the <code class="docutils literal notranslate"><span class="pre">pvr::utils::createInputAssemblyFromXXXXXX</span></code> functions will populate a Vulkan pipeline’s vertex configuration with the correct vertex configuration of a mesh. Similarly, the <code class="docutils literal notranslate"><span class="pre">createXXXXBufferFromXXXX</span></code> functions will auto-generate and upload VBOs for a mesh. Browse the <code class="docutils literal notranslate"><span class="pre">pvr::utils</span></code> namespace for such helpers.</li>
 <li>Use and understand what <code class="docutils literal notranslate"><span class="pre">pvr::utils::StructuredBufferView</span></code> can do. It is a class that allows precise description of a Shader Interface Block, which is a UBO/SSBO definition in the shader. It then automatically calculates all the sizes, offsets, and required paddings of every single one of its members, and CPU-side layout. It aligns everything based on STD140, takes into account dynamic offsets, provides helpers for directly setting values to mapped memory, and essentially makes working with buffers much easier. All examples that use UBOs or SSBOs use the <code class="docutils literal notranslate"><span class="pre">StructuredMemoryView</span></code> to define and set values.</li>

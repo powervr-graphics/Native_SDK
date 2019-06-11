@@ -15,19 +15,19 @@ inline ImageViewType convertToPVRVkImageViewType(ImageType baseType, uint32_t nu
 	// if it is a cube map it has to be 2D Texture base
 	if (isCubeMap && baseType != ImageType::e_2D)
 	{
-		assertion(baseType == ImageType::e_2D, "Cubemap texture must be 2D");
+		assert(baseType == ImageType::e_2D && "Cubemap texture must be 2D");
 		return ImageViewType::e_MAX_ENUM;
 	}
 	// array must be atleast 1
 	if (!numArrayLayers)
 	{
-		assertion(false, "Number of array layers must be greater than equal to 0");
+		assert(false && "Number of array layers must be greater than equal to 0");
 		return ImageViewType::e_MAX_ENUM;
 	}
 	// if it is array it must be 1D or 2D texture base
 	if ((numArrayLayers > 1) && (baseType > ImageType::e_2D))
 	{
-		assertion(false, "1D and 2D image type supports array texture");
+		assert(false && "1D and 2D image type supports array texture");
 		return ImageViewType::e_MAX_ENUM;
 	}
 
@@ -279,12 +279,70 @@ private:
 
 namespace impl {
 /// <summary>ImageVk implementation that wraps the Vulkan Texture object</summary>
-class Image_ : public DeviceObjectHandle<VkImage>, public DeviceObjectDebugMarker<Image_>
+class Image_ : public PVRVkDeviceObjectBase<VkImage, ObjectType::e_IMAGE>, public DeviceObjectDebugUtils<Image_>
 {
+protected:
+	friend class Device_;
+
+	/// <summary>A class which restricts the creation of a pvrvk::Image to children or friends of a pvrvk::impl::Image_.</summary>
+	class make_shared_enabler
+	{
+	protected:
+		/// <summary>Constructor for a make_shared_enabler.</summary>
+		make_shared_enabler() {}
+		friend class Image_;
+	};
+
+	/// <summary>Protected function used to construct a pvrvk::Image. Note that this function shouldn't normally be called
+	/// directly and will be called by a friend of Image_ which will generally be a Device</summary>
+	/// <param name="device">The Device from which the image will be creted</param>
+	/// <param name="createInfo">The ImageCreateInfo descriptor specifying creation parameters</param>
+	/// <returns>Returns a successfully created pvrvk::Image</returns>
+	static Image constructShared(const DeviceWeakPtr& device, const ImageCreateInfo& createInfo)
+	{
+		return std::make_shared<Image_>(make_shared_enabler{}, device, createInfo);
+	}
+
+	/// <summary>Protected function used to construct a pvrvk::Image. Note that this function shouldn't normally be called
+	/// directly and will be called by a friend of Image_ which will generally be a Device</summary>
+	/// <param name="device">The Device from which the image will be creted</param>
+	/// <returns>Returns a successfully created pvrvk::Image</returns>
+	static Image constructShared(const DeviceWeakPtr& device)
+	{
+		return std::make_shared<Image_>(make_shared_enabler{}, device);
+	}
+
+	/// <summary>Image specific memory requirements</summary>
+	pvrvk::MemoryRequirements _memReqs;
+	/// <summary>Device memory bound to this image (Only for non sparse image).</summary>
+	DeviceMemory _memory;
+	/// <summary>Creation information used when creating the image.</summary>
+	pvrvk::ImageCreateInfo _createInfo;
+
+#ifdef DEBUG
+	//!\cond NO_DOXYGEN
+	pvrvk::ImageLayout _currentLayout;
+	//!\endcond
+#endif
+
 public:
+	//!\cond NO_DOXYGEN
 	DECLARE_NO_COPY_SEMANTICS(Image_)
+	/// <summary>Destructor. Will properly release all resources held by this object.</summary>
+	virtual ~Image_();
+
+	/// <summary>Constructor.</summary>
+	/// <param name="device">The Device from which the image will be created</param>
+	/// <param name="createInfo">The ImageCreateInfo descriptor specifying creation parameters</param>
+	Image_(make_shared_enabler, const DeviceWeakPtr& device, const ImageCreateInfo& createInfo);
+
+	/// <summary>Constructor.</summary>
+	/// <param name="device">The Devices from which to create the image from</param>
+	Image_(make_shared_enabler, const DeviceWeakPtr& device) : PVRVkDeviceObjectBase(device), DeviceObjectDebugUtils() {}
+	//!\endcond
 
 	/// <summary>Query and return a SubresourceLayout object describing the layout of the image</summary>
+	/// <param name="subresource">A subresource used to retrieve a subresource layout</param>
 	/// <returns>The SubresourceLayout of the image</returns>
 	pvrvk::SubresourceLayout getSubresourceLayout(const pvrvk::ImageSubresource& subresource) const;
 
@@ -414,8 +472,7 @@ public:
 		return static_cast<uint16_t>(_createInfo.getExtent().getHeight());
 	}
 
-	/// <summary>Get the depth of this texture (number of (non-array) layers of texels in the lowest mipmap)
-	/// </summary>
+	/// <summary>Get the depth of this texture (number of (non-array) layers of texels in the lowest mipmap)</summary>
 	/// <returns>Texture depth</returns>
 	uint16_t getDepth() const
 	{
@@ -444,13 +501,13 @@ public:
 		{
 			throw ErrorValidationFailedEXT("Cannot bind memory: Image is Sparce so cannot have bound memory.");
 		}
-		if (_memory.isValid())
+		if (_memory)
 		{
 			throw ErrorValidationFailedEXT("Cannot bind memory: A memory block is already bound");
 		}
 
-		vkThrowIfFailed(
-			_device->getVkBindings().vkBindImageMemory(_device->getVkHandle(), getVkHandle(), memory->getVkHandle(), offset), "Failed to bind a memory block to this image");
+		vkThrowIfFailed(getDevice()->getVkBindings().vkBindImageMemory(getDevice()->getVkHandle(), getVkHandle(), memory->getVkHandle(), offset),
+			"Failed to bind a memory block to this image");
 		_memory = memory;
 	}
 
@@ -461,46 +518,63 @@ public:
 		return _memReqs;
 	}
 
-protected:
-	/// <summary>Destructor. Will properly release all resources held by this object.</summary>
-	virtual ~Image_();
+#ifdef DEBUG
+	//!\cond NO_DOXYGEN
+	/// <summary>Gets the current image layout of the image</summary>
+	/// <returns>The current image layout of the image</returns>
+	pvrvk::ImageLayout getImageLayout()
+	{
+		return _currentLayout;
+	}
 
-	/// <summary>Constructor.</summary>
-	/// <param name="device">The Devices from which to create the image from</param>
-	/// <param name="createInfo">The ImageCreateInfo descriptor specifying creation parameters</param>
-	Image_(const DeviceWeakPtr& device, const ImageCreateInfo& createInfo);
-
-	/// <summary>Constructor.</summary>
-	/// <param name="device">The Devices from which to create the image from</param>
-	explicit Image_(const DeviceWeakPtr& device) : DeviceObjectHandle(device), DeviceObjectDebugMarker(pvrvk::DebugReportObjectTypeEXT::e_IMAGE_EXT) {}
-
-	/// <summary>Image specific memory requirements</summary>
-	pvrvk::MemoryRequirements _memReqs;
-	/// <summary>Device memory bound to this image (Only for non sparse image).</summary>
-	DeviceMemory _memory;
-	/// <summary>Creation information used when creating the image.</summary>
-	pvrvk::ImageCreateInfo _createInfo;
-
-private:
-	template<typename>
-	friend struct ::pvrvk::RefCountEntryIntrusive;
-	friend class ::pvrvk::impl::Device_;
+	/// <summary>Gets the current image layout of the image</summary>
+	/// <param name="imageLayout">The new image layout for the image</param>
+	void setImageLayout(pvrvk::ImageLayout imageLayout)
+	{
+		_currentLayout = imageLayout;
+	}
+	//!\endcond
+#endif
 };
 
 /// <summary>The Specialized image for swapchain</summary>
 class SwapchainImage_ : public Image_
 {
-public:
-	DECLARE_NO_COPY_SEMANTICS(SwapchainImage_)
 private:
-	template<typename>
-	friend struct ::pvrvk::RefCountEntryIntrusive;
-	friend class ::pvrvk::impl::Device_;
 	friend class ::pvrvk::impl::Swapchain_;
+
+	/// <summary>A class which restricts the creation of a pvrvk::SwapchainImage to children or friends of a pvrvk::impl::SwapchainImage_.</summary>
+	class make_shared_enabler : public Image_::make_shared_enabler
+	{
+	private:
+		make_shared_enabler() : Image_::make_shared_enabler() {}
+		friend class SwapchainImage_;
+	};
+
+	/// <summary>Protected function used to construct a pvrvk::SwapchainImage. Note that this function shouldn't normally be called
+	/// directly and will be called by a friend of SwapchainImage_ which will generally be a Device</summary>
+	/// <param name="device">The Device from which the Swapchain image will be creted</param>
+	/// <param name="swapchainImage">The Swapchain image handle</param>
+	/// <param name="format">The format of the Swapchain image</param>
+	/// <param name="extent">The extent of the Swapchain image</param>
+	/// <param name="numArrayLevels">The number of array levels of the Swapchain image</param>
+	/// <param name="numMipLevels">The number of mipmap levels of the Swapchain image</param>
+	/// <param name="usage">The usage flags supported by the Swapchain image</param>
+	/// <returns>Returns a successfully created pvrvk::SwapchainImage</returns>
+	static SwapchainImage constructShared(const DeviceWeakPtr& device, const VkImage& swapchainImage, const Format& format, const Extent3D& extent, uint32_t numArrayLevels,
+		uint32_t numMipLevels, const ImageUsageFlags& usage)
+	{
+		return std::make_shared<SwapchainImage_>(make_shared_enabler{}, device, swapchainImage, format, extent, numArrayLevels, numMipLevels, usage);
+	}
+
+public:
+	//!\cond NO_DOXYGEN
+	DECLARE_NO_COPY_SEMANTICS(SwapchainImage_)
 	~SwapchainImage_();
 
-	SwapchainImage_(const DeviceWeakPtr& device, const VkImage& swapchainImage, const Format& format, const Extent3D& extent, uint32_t numArrayLevels, uint32_t numMipLevels,
-		const ImageUsageFlags& usage);
+	SwapchainImage_(make_shared_enabler, const DeviceWeakPtr& device, const VkImage& swapchainImage, const Format& format, const Extent3D& extent, uint32_t numArrayLevels,
+		uint32_t numMipLevels, const ImageUsageFlags& usage);
+	//!\endcond
 };
 } // namespace impl
 
@@ -632,10 +706,40 @@ private:
 
 namespace impl {
 /// <summary>pvrvk::ImageView implementation of a Vulkan VkImageView</summary>
-class ImageView_ : public DeviceObjectHandle<VkImageView>, public DeviceObjectDebugMarker<ImageView_>
+class ImageView_ : public PVRVkDeviceObjectBase<VkImageView, ObjectType::e_IMAGE_VIEW>, public DeviceObjectDebugUtils<ImageView_>
 {
+private:
+	friend class Device_;
+
+	/// <summary>A class which restricts the creation of a pvrvk::ImageView to children or friends of a pvrvk::impl::ImageView_.</summary>
+	class make_shared_enabler
+	{
+	protected:
+		/// <summary>Constructor for a make_shared_enabler.</summary>
+		make_shared_enabler() {}
+		friend class ImageView_;
+	};
+
+	/// <summary>Protected function used to create a pvrvk::ImageView. Note that this function shouldn't normally be called
+	/// directly and will be called by a friend of ImageView_ which will generally be a Device</summary>
+	/// <param name="device">The device used to allocate the ImageView.</param>
+	/// <param name="createInfo">The creation info structure which defines how the ImageView will be created.</param>
+	/// <returns>Returns a successfully created pvrvk::ImageView</returns>
+	static ImageView constructShared(const DeviceWeakPtr& device, const ImageViewCreateInfo& createInfo)
+	{
+		return std::make_shared<ImageView_>(make_shared_enabler{}, device, createInfo);
+	}
+
+	/// <summary>Creation information used when creating the image view.</summary>
+	ImageViewCreateInfo _createInfo;
+
 public:
+	//!\cond NO_DOXYGEN
 	DECLARE_NO_COPY_SEMANTICS(ImageView_)
+	ImageView_(make_shared_enabler, const DeviceWeakPtr& device, const ImageViewCreateInfo& createInfo);
+
+	~ImageView_();
+	//!\endcond
 
 	/// <summary>Get Image view creation Flags</summary>
 	/// <returns>Image view creation flags (ImageViewCreateFlags)</returns>
@@ -685,18 +789,6 @@ public:
 	{
 		return _createInfo;
 	}
-
-private:
-	template<typename>
-	friend struct ::pvrvk::RefCountEntryIntrusive;
-	friend class ::pvrvk::impl::Device_;
-
-	ImageView_(const DeviceWeakPtr& device, const ImageViewCreateInfo& createInfo);
-
-	~ImageView_();
-
-	/// <summary>Creation information used when creating the image view.</summary>
-	ImageViewCreateInfo _createInfo;
 };
 } // namespace impl
 } // namespace pvrvk

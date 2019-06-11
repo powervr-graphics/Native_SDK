@@ -12,11 +12,11 @@ var indexSectionsWithContent =
   2: "p",
   3: "abcehmopstu",
   4: "abcdefgilmnopqrstuv~",
-  5: "_abcdefilmnopqrstuvwxyz",
+  5: "_abcdfilmnopqrstuvwxyz",
   6: "acefgimnprst",
   7: "au",
-  8: "c",
-  9: "dnpvw",
+  8: "cs",
+  9: "denpuvw",
   10: "p"
 };
 

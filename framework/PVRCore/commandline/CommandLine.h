@@ -1,6 +1,6 @@
 /*!
 \brief Contains the CommandLine class.
-\file PVRShell/CommandLine.h
+\file PVRCore/commandline/CommandLine.h
 \author PowerVR by Imagination, Developer Technology Team
 \copyright Copyright (c) Imagination Technologies Limited.
 */
@@ -23,8 +23,7 @@
 namespace pvr {
 namespace platform {
 
-/// <summary>This class parses, abstracts, stores and handles command line options passed on application launch.
-/// </summary>
+/// <summary>This class parses, abstracts, stores and handles command line options passed on application launch.</summary>
 class CommandLineParser
 {
 public:
@@ -33,15 +32,18 @@ public:
 	class ParsedCommandLine
 	{
 	public:
-		ParsedCommandLine() {}
+		/// <summary>Default constructor for a command line parser.</summary>
+		ParsedCommandLine() = default;
+		/// <summary>Constructor for a command line parser.</summary>
+		/// <param name="argc">The number of arguments to parse</param>
+		/// <param name="argv">A list of argc arguments to parse</param>
 		ParsedCommandLine(int argc, char** argv)
 		{
 			CommandLineParser parser(argc, argv);
 			*this = parser.getParsedCommandLine();
 		}
 
-		/// <summary>A c-style std::string name-value pair that represents command line argument (arg: name, val: value)
-		/// </summary>
+		/// <summary>A c-style std::string name-value pair that represents command line argument (arg: name, val: value)</summary>
 		struct Option
 		{
 			const char* arg; //!< Argument name (i.e. -Width)
@@ -100,13 +102,15 @@ public:
 		/// unchanged if the value is not present, allowing easy use of default arguments. Otherwise, tokenizes and adds the values
 		/// to the provided list of strings.</summary>
 		/// <param name="name">The command line argument (e.g. "-captureFrames")</param>
-		/// <param name="values">A std::vector of strings where all values will be appended/</param>
+		/// <param name="outValues">A std::vector of strings where all values will be appended/</param>
 		/// <returns>True if the argument <paramRef name="name"/> was present, false otherwise</returns>
 		bool getStringOptionList(const char* name, std::vector<std::string>& outValues) const
 		{
 			std::string tmp;
 			if (!getStringOption(name, tmp))
+			{
 				return false;
+			}
 
 			if (!tmp.empty())
 			{
@@ -114,7 +118,7 @@ public:
 				std::string output;
 				while (std::getline(iss, output, ','))
 				{
-					outValues.push_back(output);
+					outValues.emplace_back(output);
 				}
 			}
 			return true;
@@ -123,13 +127,13 @@ public:
 		/// <summary>Get an argument's value as a float value. Returns false and leaves the value unchanged if the value
 		/// is not present, allowing very easy use of default arguments.</summary>
 		/// <param name="name">The command line argument (e.g. "-captureFrames")</param>
-		/// <param name="outValue">The value passed with the argument interpreted as a float. If the name was not present,
-		/// it remains unchanged. If it was not representing a float, it silently returns zero (0.0).</param>
+		/// <param name="outValue">The value passed with the argument interpreted as a float. If the name was not present, or no value was passed with the name,it remains
+		/// unchanged. If it was not representing a float, it silently returns zero (0.0).</param>
 		/// <returns>True if the argument "name" was present, false otherwise</returns>
 		bool getFloatOption(const char* name, float& outValue) const
 		{
 			auto it = std::find(_options.begin(), _options.end(), name);
-			if (it == _options.end())
+			if (it == _options.end() || it->val == NULL)
 			{
 				return false;
 			}
@@ -141,12 +145,12 @@ public:
 		/// value is not present, allowing very easy use of default arguments.</summary>
 		/// <param name="name">The command line argument (e.g. "-captureFrames")</param>
 		/// <param name="outValue">The value passed with the argument interpreted as an integer. If the name was not
-		/// present, it remains unchanged. If it was not representing a float, it silently returns zero (0).</param>
+		/// present, or no value was passed with the name, it remains unchanged. If it was not representing a float, it silently returns zero (0).</param>
 		/// <returns>True if the argument "name" was present, false otherwise</returns>
 		bool getIntOption(const char* name, int32_t& outValue) const
 		{
 			auto it = std::find(_options.begin(), _options.end(), name);
-			if (it == _options.end())
+			if (it == _options.end() || it->val == NULL)
 			{
 				return false;
 			}
@@ -193,6 +197,8 @@ public:
 	CommandLineParser() : _data(0) {}
 
 	/// <summary>Constructor from C++ main arguments</summary>
+	/// <param name="argc">The number of arguments to parse</param>
+	/// <param name="argv">A list of argc arguments to parse</param>
 	CommandLineParser(int argc, char** argv) : _data(0)
 	{
 		set(argc, argv);
@@ -209,7 +215,7 @@ public:
 	/// <param name="cmdLine">The new (wide) std::string to set the command line to</param>
 	void set(const wchar_t* cmdLine)
 	{
-		if (!cmdLine)
+		if (cmdLine == nullptr)
 		{
 			return;
 		}
@@ -219,7 +225,7 @@ public:
 		std::vector<char> tmp;
 		tmp.resize(length);
 
-		while (length)
+		while (length != 0u)
 		{
 			--length;
 			tmp[length] = static_cast<char>(cmdLine[length]);
@@ -285,7 +291,7 @@ public:
 	/// <param name="cmdLine">A std::string containing the data to prepend to this command line</param>
 	void prefix(const wchar_t* cmdLine)
 	{
-		if (_commandLine._options.size())
+		if (!_commandLine._options.empty() != 0u)
 		{
 			CommandLineParser tmp;
 			tmp.set(cmdLine);
@@ -302,7 +308,7 @@ public:
 	/// <param name="argv">The list of arguments</param>
 	void prefix(int argc, char** argv)
 	{
-		if (_commandLine._options.size())
+		if (!_commandLine._options.empty() != 0u)
 		{
 			CommandLineParser tmp;
 			tmp.set(argc, argv);
@@ -318,7 +324,7 @@ public:
 	/// <param name="cmdLine">The std::string whose data to prepend to the command line</param>
 	void prefix(const char* cmdLine)
 	{
-		if (_commandLine._options.size())
+		if (!_commandLine._options.empty() != 0u)
 		{
 			CommandLineParser tmp;
 			tmp.set(cmdLine);
@@ -334,7 +340,7 @@ public:
 	/// <param name="cmdLine">The command line from which to prepend the data</param>
 	void prefix(const CommandLineParser& cmdLine)
 	{
-		if (cmdLine._commandLine._options.size() == 0)
+		if (cmdLine._commandLine._options.empty())
 		{
 			return;
 		}
@@ -374,7 +380,7 @@ public:
 	/// <param name="cmdLine">A std::string containing the data to append to this command line</param>
 	void append(const wchar_t* cmdLine)
 	{
-		if (_commandLine._options.size())
+		if (!_commandLine._options.empty() != 0u)
 		{
 			CommandLineParser tmp;
 			tmp.set(cmdLine);
@@ -391,7 +397,7 @@ public:
 	/// <param name="argv">The list of arguments</param>
 	void append(int argc, char** argv)
 	{
-		if (_commandLine._options.size())
+		if (!_commandLine._options.empty() != 0u)
 		{
 			CommandLineParser tmp;
 			tmp.set(argc, argv);
@@ -407,7 +413,7 @@ public:
 	/// <param name="cmdLine">The std::string whose data to append to the command line</param>
 	void append(const char* cmdLine)
 	{
-		if (_commandLine._options.size())
+		if (!_commandLine._options.empty() != 0u)
 		{
 			CommandLineParser tmp;
 			tmp.set(cmdLine);
@@ -423,7 +429,7 @@ public:
 	/// <param name="cmdLine">The command line from which to append the data</param>
 	void append(const CommandLineParser& cmdLine)
 	{
-		if (cmdLine._commandLine._options.size() == 0)
+		if (cmdLine._commandLine._options.empty())
 		{
 			return;
 		}
@@ -468,7 +474,7 @@ protected:
 		bool bInQuotes;
 		ParsedCommandLine::Option opt;
 
-		if (!cmdLine)
+		if (cmdLine == nullptr)
 		{
 			return;
 		}
@@ -481,8 +487,8 @@ protected:
 
 		// Break the command line into options
 		bInQuotes = false;
-		opt.arg = NULL;
-		opt.val = NULL;
+		opt.arg = nullptr;
+		opt.val = nullptr;
 		nIn = -1;
 		nOut = 0;
 		do
@@ -496,7 +502,7 @@ protected:
 			{
 				if (bInQuotes && cmdLine[nIn] != 0)
 				{
-					if (!opt.arg)
+					if (opt.arg == nullptr)
 					{
 						opt.arg = &_data[nOut];
 					}
@@ -516,18 +522,18 @@ protected:
 					case '\t':
 					case '\0':
 						_data[nOut++] = 0;
-						if (opt.arg || opt.val)
+						if ((opt.arg != nullptr) || (opt.val != nullptr))
 						{
 							// Add option to list
-							_commandLine._options.push_back(opt);
+							_commandLine._options.emplace_back(opt);
 
-							opt.arg = NULL;
-							opt.val = NULL;
+							opt.arg = nullptr;
+							opt.val = nullptr;
 						}
 						break;
 
 					default:
-						if (!opt.arg)
+						if (opt.arg == nullptr)
 						{
 							opt.arg = &_data[nOut];
 						}
@@ -537,7 +543,7 @@ protected:
 					}
 				}
 			}
-		} while (cmdLine[nIn]);
+		} while (cmdLine[nIn] != 0);
 	}
 
 	/// <summary>Parse a single argument as passed by the C/C++ style argc/argv command line format.</summary>
@@ -548,11 +554,13 @@ protected:
 		size_t j;
 
 		// Hunt for an = symbol
-		for (j = 0; arg[j] && arg[j] != '='; ++j)
+		for (j = 0; (arg[j] != 0) && arg[j] != '='; ++j)
+		{
 			;
+		}
 
 		opt.arg = arg;
-		if (arg[j])
+		if (arg[j] != 0)
 		{
 			// terminate the arg std::string, set value std::string
 			arg[j] = 0;
@@ -561,11 +569,11 @@ protected:
 		else
 		{
 			// no value specified
-			opt.val = 0;
+			opt.val = nullptr;
 		}
 
 		// Add option to list
-		_commandLine._options.push_back(opt);
+		_commandLine._options.emplace_back(opt);
 	}
 
 private:
@@ -595,12 +603,9 @@ private:
 		{
 			return false;
 		}
-		else
-		{
-			// a flag must have no value
-			bVal = _commandLine._options[nIdx].val ? false : true;
-			return true;
-		}
+		// a flag must have no value
+		bVal = _commandLine._options[nIdx].val != nullptr ? false : true;
+		return true;
 	}
 	bool readUint(const char* arg, unsigned int& val) const
 	{
@@ -610,11 +615,8 @@ private:
 		{
 			return false;
 		}
-		else
-		{
-			val = atoi(_commandLine._options[nIdx].val);
-			return true;
-		}
+		val = atoi(_commandLine._options[nIdx].val);
+		return true;
 	}
 	bool readFloat(const char* arg, float& val) const
 	{
@@ -624,11 +626,8 @@ private:
 		{
 			return false;
 		}
-		else
-		{
-			val = static_cast<float>(atof(_commandLine._options[nIdx].val));
-			return true;
-		}
+		val = static_cast<float>(atof(_commandLine._options[nIdx].val));
+		return true;
 	}
 	std::vector<char> _data;
 	ParsedCommandLine _commandLine;

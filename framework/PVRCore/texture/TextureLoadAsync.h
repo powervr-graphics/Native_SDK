@@ -1,6 +1,6 @@
 /*!
 \brief Contains classes and functions to load textures on a worker thread. Only contains functionality for loading into CPU-side memory (not API textures)
-\file PVRAssets/TextureLoadAsync.h
+\file PVRCore/texture/TextureLoadAsync.h
 \author PowerVR by Imagination, Developer Technology Team
 \copyright Copyright (c) Imagination Technologies Limited.
 */
@@ -8,35 +8,34 @@
 #pragma once
 #include "PVRCore/texture/TextureLoad.h"
 #include "PVRCore/Threading.h"
+#include "PVRCore/IAssetProvider.h"
 
 namespace pvr {
 namespace async {
 
 /// <summary>A ref counted pointer to a Texture object  Used to return and pass a dynamically allocated textures</summary>
-typedef RefCountedResource<Texture> TexturePtr;
+typedef std::shared_ptr<Texture> TexturePtr;
 
 /// <summary>A class wrapping the operations necessary to retrieve an asynchronously loaded texture, (e.g. querying
-/// if the load is complete, or blocking-wait get the result. Is an EmbeddedRefCounted Resource, so must always be
-/// instantiated with createNew()</summary>
-struct TextureLoadFuture_ : public IFrameworkAsyncResult<TexturePtr>, public EmbeddedRefCount<TextureLoadFuture_>
+/// if the load is complete, or blocking-wait get the result. It is a shared reference counted resource</summary>
+struct TextureLoadFuture_ : public IFrameworkAsyncResult<TexturePtr>, public std::enable_shared_from_this<TextureLoadFuture_>
 {
-private:
-	friend class EmbeddedRefCount<TextureLoadFuture_>;
-	TextureLoadFuture_() {}
-
 public:
 	typedef IFrameworkAsyncResult<TexturePtr> MyBase; ///< Base class
 	typedef MyBase::Callback CallbackType; ///< The type of function that can be used as a completion callback
-public:
-	Semaphore* workSema; ///< A pointer to an externally used semaphore (normally the one used by the queue)
+
+	TextureLoadFuture_() {}
+
+	Semaphore* workSemaphore; ///< A pointer to an externally used semaphore (normally the one used by the queue)
 	std::string filename; ///< The filename from which the texture is loaded
 	IAssetProvider* loader; ///< The AssetProvider to use to load the texture
-	TextureFileFormat fmt; ///< The format of the texture
-	mutable SemaphorePtr resultSema; ///< The semaphore that is used to wait for the result
-	/// <summary> The result of the operation will be stored here </summary>
+	TextureFileFormat format; ///< The format of the texture
+	mutable SemaphorePtr resultSemaphore; ///< The semaphore that is used to wait for the result
+	/// <summary>The result of the operation will be stored here</summary>
 	TexturePtr result;
 	/// <summary>A pointer to an exception to throw</summary>
 	std::exception_ptr exception;
+
 	/// <summary>Load the texture synchronously and signal the result semaphore. Normally called by the worker thread</summary>
 	void loadNow()
 	{
@@ -44,7 +43,7 @@ public:
 		_successful = false;
 		try
 		{
-			*result = textureLoad(stream, fmt);
+			*result = textureLoad(stream, format);
 			_successful = true;
 		}
 		catch (...)
@@ -53,8 +52,8 @@ public:
 			_successful = false;
 		}
 
-		resultSema->signal();
-		executeCallBack(getReference());
+		resultSemaphore->signal();
+		executeCallBack(shared_from_this());
 	}
 	/// <summary>Set a function to be called when the texture loading has been finished.</summary>
 	/// <param name="callback">Set a function to be called when the texture loading has been finished.</param>
@@ -62,29 +61,22 @@ public:
 	{
 		setTheCallback(callback);
 	}
-	/// <summary>Create a new TextureLoadFuture, wrapped in an EmbeddedRefCountedResource. TextureLoadFuture
-	/// can only be instantiated using this function.</summary>
-	/// <returns>A new TextureLoadFuture_</summary>
-	static StrongReferenceType createNew()
-	{
-		return MyEmbeddedType::createNew();
-	}
 
 private:
 	TexturePtr get_() const
 	{
 		if (!_inCallback)
 		{
-			resultSema->wait();
-			resultSema->signal();
+			resultSemaphore->wait();
+			resultSemaphore->signal();
 		}
 		return result;
 	}
 	bool isComplete_() const
 	{
-		if (resultSema->tryWait())
+		if (resultSemaphore->tryWait())
 		{
-			resultSema->signal();
+			resultSemaphore->signal();
 			return true;
 		}
 		return false;
@@ -95,22 +87,21 @@ private:
 
 /// <summary>A reference counted handle to a TextureLoadFuture_. A TextureLoadFuture_ can only
 /// be handled using this class</summary>
-typedef EmbeddedRefCountedResource<TextureLoadFuture_> TextureLoadFuture;
+typedef std::shared_ptr<TextureLoadFuture_> TextureLoadFuture;
 
-//!\cond NO_DOXYGEN
 namespace impl {
 /// <summary>internal</summary>
-inline void textureLoadAsyncWorker(TextureLoadFuture params)
+/// <param name="future">The Texture load future to kick work for</param>
+inline void textureLoadAsyncWorker(TextureLoadFuture future)
 {
-	params->loadNow();
+	future->loadNow();
 }
 } // namespace impl
-//!\endcond
 
-/// <summary> A class that loads Textures in a (single) different thread and provides futures to them.
+/// <summary>A class that loads Textures in a (single) different thread and provides futures to them.
 /// Create an instance of it, and then just call loadTextureAsync foreach texture to load. When each texture
 /// has completed loading, a callback may be called, otherwise you can use all the typical functionality
-/// of futures, such as querying if loading is comlete, or using a blocking wait to get the result </summary>
+/// of futures, such as querying if loading is comlete, or using a blocking wait to get the result</summary>
 class TextureAsyncLoader : public AsyncScheduler<TexturePtr, TextureLoadFuture, &impl::textureLoadAsyncWorker>
 {
 public:
@@ -122,22 +113,22 @@ public:
 	/// that can be used to query and wait for the result.</summary>
 	/// <param name="filename">The filename of the texture to load</param>
 	/// <param name="loader">A class that provides a "getAssetStream" function to get a Stream from the filename (usually, the application class itself)</param>
-	/// <param name="fmt">The texture format as which to load the texture.</param>
+	/// <param name="format">The texture format as which to load the texture.</param>
 	/// <param name="callback">An optional callback to call immediately after texture loading is complete.</param>
-	/// <returns> A future to a texture : TextureLoadFuture </returns>
-	AsyncResult loadTextureAsync(const std::string& filename, IAssetProvider* loader, TextureFileFormat fmt, AsyncResult::ElementType::Callback callback = NULL)
+	/// <returns> A future to a texture : TextureLoadFuture</returns>
+	AsyncResult loadTextureAsync(const std::string& filename, IAssetProvider* loader, TextureFileFormat format, AsyncResult::element_type::Callback callback = NULL)
 	{
-		auto future = TextureLoadFuture::ElementType::createNew();
+		auto future = std::make_shared<TextureLoadFuture_>();
 		auto& params = *future;
 		params.filename = filename;
-		params.fmt = fmt;
+		params.format = format;
 		params.loader = loader;
-		params.result.construct();
-		params.resultSema.construct();
-		params.workSema = &_workSemaphore;
+		params.result = std::make_shared<Texture>();
+		params.resultSemaphore = std::make_shared<Semaphore>();
+		params.workSemaphore = &_workSemaphore;
 		params.setCallBack(callback);
 		_queueSemaphore.wait();
-		_queue.push_back(future);
+		_queue.emplace_back(future);
 		_queueSemaphore.signal();
 		_workSemaphore.signal();
 		return future;

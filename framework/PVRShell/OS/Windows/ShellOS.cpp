@@ -102,8 +102,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_QUIT:
 		return 0;
 	case WM_MOVE:
-	{
-	}
+	{}
 	break;
 	case WM_LBUTTONDOWN:
 		if (hWnd != GetCapture())
@@ -213,12 +212,12 @@ bool ShellOS::init(DisplayAttributes& /*data*/)
 
 		FilePath filepath(moduleFilename);
 		setApplicationName(filepath.getFilenameNoExtension());
-		_WritePath = filepath.getDirectory() + FilePath::getDirectorySeparator();
-		_ReadPaths.clear();
-		_ReadPaths.push_back(filepath.getDirectory() + FilePath::getDirectorySeparator());
-		_ReadPaths.push_back(std::string(".") + FilePath::getDirectorySeparator());
-		_ReadPaths.push_back(filepath.getDirectory() + FilePath::getDirectorySeparator() + "Assets" + FilePath::getDirectorySeparator());
-		_ReadPaths.push_back(filepath.getDirectory() + FilePath::getDirectorySeparator() + "Assets_" + filepath.getFilenameNoExtension() + FilePath::getDirectorySeparator());
+		_writePath = filepath.getDirectory() + FilePath::getDirectorySeparator();
+		_readPaths.clear();
+		_readPaths.emplace_back(filepath.getDirectory() + FilePath::getDirectorySeparator());
+		_readPaths.emplace_back(std::string(".") + FilePath::getDirectorySeparator());
+		_readPaths.emplace_back(filepath.getDirectory() + FilePath::getDirectorySeparator() + "Assets" + FilePath::getDirectorySeparator());
+		_readPaths.emplace_back(filepath.getDirectory() + FilePath::getDirectorySeparator() + "Assets_" + filepath.getFilenameNoExtension() + FilePath::getDirectorySeparator());
 	}
 
 	return true;

@@ -10,8 +10,5 @@ var searchData=
   ['statereleaseview',['StateReleaseView',['../classpvr_1_1platform_1_1_state_machine.html#a1ad8cfbd46921c044897d844eafbd04caed988beb79a884a40269d57cb4a9a639',1,'pvr::platform::StateMachine']]],
   ['statereleasewindow',['StateReleaseWindow',['../classpvr_1_1platform_1_1_state_machine.html#a1ad8cfbd46921c044897d844eafbd04ca4e535950d9843b733b7950b286bb5a30',1,'pvr::platform::StateMachine']]],
   ['staterenderscene',['StateRenderScene',['../classpvr_1_1platform_1_1_state_machine.html#a1ad8cfbd46921c044897d844eafbd04caedadc56cd639cae7dec3adf411a2ed4e',1,'pvr::platform::StateMachine']]],
-  ['systemevent',['SystemEvent',['../structpvr_1_1platform_1_1_shell_event.html#af8661c4c8bc20079eebc3c00ce2e6d87ab06a43fb1c6a64a4d334eaaa0ee3e6bc',1,'pvr::platform::ShellEvent']]],
-  ['systemevent_5fgainfocus',['SystemEvent_GainFocus',['../namespacepvr.html#ae4c92053860fcd90c8ae00f40354965aaa0e0e77dc785987e0c19e569aebcd95e',1,'pvr']]],
-  ['systemevent_5flosefocus',['SystemEvent_LoseFocus',['../namespacepvr.html#ae4c92053860fcd90c8ae00f40354965aa8ff2f70fbb209fc6ca4bf6294d2ac13d',1,'pvr']]],
-  ['systemevent_5fquit',['SystemEvent_Quit',['../namespacepvr.html#ae4c92053860fcd90c8ae00f40354965aad43d29a17e53d5d2be1be389517e611a',1,'pvr']]]
+  ['systemevent',['SystemEvent',['../structpvr_1_1platform_1_1_shell_event.html#af8661c4c8bc20079eebc3c00ce2e6d87ab06a43fb1c6a64a4d334eaaa0ee3e6bc',1,'pvr::platform::ShellEvent']]]
 ];

@@ -52,12 +52,7 @@ struct VertexBindingInfoPred_BindingEqual
 		return nfo.getBinding() == binding;
 	}
 };
-
 //!\endcond
-//!\cond NO_DOXYGEN
-typedef std::vector<VertexInputBindingDescription> VertexInputBindingMap;
-typedef std::vector<VertexInputAttributeDescription> VertexAttributeMap;
-//!\endcond NO_DOXYGEN
 
 /// <summary>Contains parameters needed to set depth stencil states to a pipeline create params. This object can be
 /// added to a PipelineCreateInfo to set a depth-stencil state to values other than their defaults.</summary>
@@ -276,20 +271,20 @@ struct PipelineVertexInputStateCreateInfo
 private:
 	friend class ::pvrvk::impl::GraphicsPipeline_;
 
-	VertexInputBindingMap _inputBindings;
-	VertexAttributeMap _attributes;
+	std::vector<VertexInputBindingDescription> _inputBindings;
+	std::vector<VertexInputAttributeDescription> _attributes;
 
 public:
 	/// <summary>Return the input bindings</summary>
-	/// <returns>const VertexInputBindingMap&</returns>
-	const VertexInputBindingMap& getInputBindings() const
+	/// <returns>const std::vector<VertexInputBindingDescription>&</returns>
+	const std::vector<VertexInputBindingDescription>& getInputBindings() const
 	{
 		return _inputBindings;
 	}
 
 	/// <summary>Return the vertex attributes</summary>
-	/// <returns>const VertexAttributeMap&</returns>
-	const VertexAttributeMap& getAttributes() const
+	/// <returns>const std::vector<VertexInputAttributeDescription>&</returns>
+	const std::vector<VertexInputAttributeDescription>& getAttributes() const
 	{
 		return _attributes;
 	}
@@ -472,7 +467,7 @@ public:
 		PipelineColorBlendAttachmentState* attachmentStates, uint32_t numAttachmentStates)
 		: _numAttachmentStates(0), _alphaToCoverageEnable(alphaToCoverageEnable), _logicOpEnable(logicOpEnable), _logicOp(logicOp), _colorBlendConstants(colorBlendConstants)
 	{
-		debug_assertion(numAttachmentStates < FrameworkCaps::MaxColorAttachments, "Blend Attachments out of range.");
+		assert(numAttachmentStates < FrameworkCaps::MaxColorAttachments && "Blend Attachments out of range.");
 		for (uint32_t i = 0; i < numAttachmentStates; i++)
 		{
 			_attachmentStates[i] = attachmentStates[i];
@@ -566,7 +561,7 @@ public:
 	/// <returns>this object (allows chained calls)</returns>
 	PipelineColorBlendStateCreateInfo& setAttachmentState(uint32_t index, const PipelineColorBlendAttachmentState& state)
 	{
-		debug_assertion(index < FrameworkCaps::MaxColorAttachments, "Blend config out of range.");
+		assert(index < FrameworkCaps::MaxColorAttachments && "Blend config out of range.");
 		_attachmentStates[index] = state;
 		if (index >= _numAttachmentStates)
 		{
@@ -581,7 +576,7 @@ public:
 	/// <returns>this object (allows chained calls)</returns>
 	PipelineColorBlendStateCreateInfo& setAttachmentStates(uint32_t count, PipelineColorBlendAttachmentState const* state)
 	{
-		debug_assertion(count < FrameworkCaps::MaxColorAttachments, "Blend config out of range.");
+		assert(count < FrameworkCaps::MaxColorAttachments && "Blend config out of range.");
 		for (uint32_t i = 0; i < count; i++)
 		{
 			_attachmentStates[i] = state[i];
@@ -633,7 +628,7 @@ public:
 	/// <returns>return this object (allows chained calls)</returns>
 	PipelineViewportStateCreateInfo& setViewportAndScissor(uint32_t index, const Viewport& viewport, const Rect2D& scissor)
 	{
-		debug_assertion(index < FrameworkCaps::MaxScissorViewports, "Scissor Viewport out of range.");
+		assert(index < FrameworkCaps::MaxScissorViewports && "Scissor Viewport out of range.");
 		_scissorViewports[index].first = scissor;
 		_scissorViewports[index].second = viewport;
 		_numScissorViewports++;
@@ -693,9 +688,9 @@ private:
 	float _depthBiasClamp;
 	float _depthBiasConstantFactor;
 	float _depthBiasSlopeFactor;
-
 	pvrvk::PolygonMode _fillMode;
 	float _lineWidth;
+	uint32_t _rasterizationStream;
 	friend class ::pvrvk::impl::GraphicsPipeline_;
 
 public:
@@ -713,17 +708,18 @@ public:
 	/// <param name="depthBiasClamp">If depth bias is enabled, the clamping value for depth bias (default 0)</param>
 	/// <param name="depthBiasConstantFactor">If depth bias is enabled, the constant value by which to bias depth(default 0)</param>
 	/// <param name="depthBiasSlopeFactor">If depth bias is enabled, the slope value by which to bias depth(default:0)</param>
+	/// <param name="rasterizationStream">Controls the use of vertex shader based transform feedback</param>
 	explicit PipelineRasterizationStateCreateInfo(pvrvk::CullModeFlags cullFace = pvrvk::CullModeFlags::e_NONE,
 		pvrvk::FrontFace frontFaceWinding = pvrvk::FrontFace::e_COUNTER_CLOCKWISE, bool enableDepthClip = true, bool enableRasterizerDiscard = false,
 		bool enableProgramPointSize = false, pvrvk::PolygonMode fillMode = pvrvk::PolygonMode::e_FILL, float lineWidth = 1.0f, bool enableDepthBias = false,
-		float depthBiasClamp = 0.f, float depthBiasConstantFactor = 0.f, float depthBiasSlopeFactor = 0.f)
+		float depthBiasClamp = 0.f, float depthBiasConstantFactor = 0.f, float depthBiasSlopeFactor = 0.f, uint32_t rasterizationStream = 0)
 		: _cullFace(cullFace), _frontFaceWinding(frontFaceWinding), _enableDepthClip(enableDepthClip), _enableRasterizerDiscard(enableRasterizerDiscard),
 		  _enableProgramPointSize(enableProgramPointSize), _enableDepthBias(enableDepthBias), _depthBiasClamp(depthBiasClamp), _depthBiasConstantFactor(depthBiasConstantFactor),
-		  _depthBiasSlopeFactor(depthBiasSlopeFactor), _fillMode(fillMode), _lineWidth(lineWidth)
+		  _depthBiasSlopeFactor(depthBiasSlopeFactor), _fillMode(fillMode), _lineWidth(lineWidth), _rasterizationStream(rasterizationStream)
 	{}
 
 	/// <summary>Set the face that will be culled (front/back/both/none).</summary>
-	/// <param name="face">Cull face </param>
+	/// <param name="face">Cull face</param>
 	/// <returns>this object (allows chained calls)</returns>
 	PipelineRasterizationStateCreateInfo& setCullMode(pvrvk::CullModeFlags face)
 	{
@@ -737,6 +733,15 @@ public:
 	PipelineRasterizationStateCreateInfo& setLineWidth(float lineWidth)
 	{
 		_lineWidth = lineWidth;
+		return *this;
+	}
+
+	/// <summary>Set the Rasterization stream</summary>
+	/// <param name="rasterizationStream">The vertex stream selected for rasterization. This parameter controls usage of transform feedback if it is supported.</param>
+	/// <returns>Return this object (allows chained calls)</returns>
+	PipelineRasterizationStateCreateInfo& setRasterizationStream(uint32_t rasterizationStream)
+	{
+		_rasterizationStream = rasterizationStream;
 		return *this;
 	}
 
@@ -841,8 +846,7 @@ public:
 		return _enableProgramPointSize;
 	}
 
-	/// <summary>Check if depth bias is enabled. (If enabled, clamp, constant factor and slope factor can be checked)
-	/// </summary>
+	/// <summary>Check if depth bias is enabled. (If enabled, clamp, constant factor and slope factor can be checked)</summary>
 	/// <returns>True if depth bias is enabled, otherwise false.</returns>
 	bool isDepthBiasEnabled() const
 	{
@@ -883,6 +887,13 @@ public:
 	{
 		return _lineWidth;
 	}
+
+	/// <summary>Get the vertex stream selected for rasterization</summary>
+	/// <returns>The vertex stream selected for rasterization</returns>
+	uint32_t getRasterizationStream() const
+	{
+		return _rasterizationStream;
+	}
 };
 
 /// <summary>Pipeline Multisampling state configuration: Number of samples, alpha to coverage, alpha to one,
@@ -892,13 +903,12 @@ struct PipelineMultisampleStateCreateInfo
 {
 private:
 	friend class ::pvrvk::impl::GraphicsPipeline_;
-	bool _stateEnabled;
 	bool _sampleShadingEnable;
 	bool _alphaToCoverageEnable;
 	bool _alphaToOneEnable;
 	pvrvk::SampleCountFlags _numRasterizationSamples;
 	float _minSampleShading;
-	uint32_t _sampleMask;
+	pvrvk::SampleMask _sampleMask;
 
 public:
 	/// <summary>Constructor. Create a multisampling configuration.</summary>
@@ -910,19 +920,10 @@ public:
 	/// <param name="minSampleShading">The minimum sample Shading (default 0)</param>
 	/// <param name="sampleMask">sampleMask (default 0)</param>
 	explicit PipelineMultisampleStateCreateInfo(bool stateEnabled = false, bool sampleShadingEnable = false, bool alphaToCoverageEnable = false, bool alphaToOneEnable = false,
-		pvrvk::SampleCountFlags rasterizationSamples = pvrvk::SampleCountFlags::e_1_BIT, float minSampleShading = 0.f, uint32_t sampleMask = 0xffffffff)
-		: _stateEnabled(stateEnabled), _sampleShadingEnable(sampleShadingEnable), _alphaToCoverageEnable(alphaToCoverageEnable), _alphaToOneEnable(alphaToOneEnable),
+		pvrvk::SampleCountFlags rasterizationSamples = pvrvk::SampleCountFlags::e_1_BIT, float minSampleShading = 0.f, pvrvk::SampleMask sampleMask = 0xffffffff)
+		: _sampleShadingEnable(sampleShadingEnable), _alphaToCoverageEnable(alphaToCoverageEnable), _alphaToOneEnable(alphaToOneEnable),
 		  _numRasterizationSamples(rasterizationSamples), _minSampleShading(minSampleShading), _sampleMask(sampleMask)
 	{}
-
-	/// <summary>Enable/disable multisampling</summary>
-	/// <param name="active">true enable, false disable if the pipeline has rasterization disabled.</param>
-	/// <returns>this (allow chaining)</returns>
-	PipelineMultisampleStateCreateInfo& enableAllStates(bool active)
-	{
-		_stateEnabled = active;
-		return *this;
-	}
 
 	/// <summary>Enable/ Disable alpha to coverage</summary>
 	/// <param name="enable">True to enable Alpha to Coverage, false to Disable</param>
@@ -942,8 +943,7 @@ public:
 		return *this;
 	}
 
-	/// <summary>Controls whether the alpha component of the fragment's first color output is replaced with one
-	/// </summary>
+	/// <summary>Controls whether the alpha component of the fragment's first color output is replaced with one</summary>
 	/// <param name="enable">true enable alpha to one, false disable</param>
 	/// <returns>this (allow chaining)</returns>
 	PipelineMultisampleStateCreateInfo& setAlphaToOne(bool enable)
@@ -974,7 +974,7 @@ public:
 	/// during rasterization.</summary>
 	/// <param name="mask">The sample mask. See the corresponding API spec for exact bit usage of the mask.</param>
 	/// <returns>this (allow chaining)</returns>
-	PipelineMultisampleStateCreateInfo& setSampleMask(uint32_t mask)
+	PipelineMultisampleStateCreateInfo& setSampleMask(pvrvk::SampleMask mask)
 	{
 		_sampleMask = mask;
 		return *this;
@@ -982,7 +982,7 @@ public:
 
 	/// <summary>Get the sample mask</summary>
 	/// <returns>The sample mask</returns>
-	uint32_t getSampleMask() const
+	const pvrvk::SampleMask& getSampleMask() const
 	{
 		return _sampleMask;
 	}
@@ -1020,13 +1020,6 @@ public:
 	bool isAlphaToOneEnabled() const
 	{
 		return _alphaToOneEnable;
-	}
-
-	/// <summary>Return true if multisampling state is enabled</summary>
-	/// <returns>true if multisampling state is enabled</returns>
-	bool isStateEnabled() const
-	{
-		return _stateEnabled;
 	}
 };
 
@@ -1101,17 +1094,16 @@ struct PipelineShaderStageCreateInfo
 
 private:
 	pvrvk::ShaderModule _shaderModule;
-	ShaderConstantInfo _shaderConsts[static_cast<uint32_t>(FrameworkCaps::MaxSpecialisationInfos)];
-	uint32_t _numShaderConsts;
+	std::vector<ShaderConstantInfo> _shaderConsts;
 	std::string _entryPoint;
 
 public:
 	/// <summary>Constructor.</summary>
-	PipelineShaderStageCreateInfo() : _numShaderConsts(0), _entryPoint("main") {}
+	PipelineShaderStageCreateInfo() : _entryPoint("main") {}
 
 	/// <summary>Construct from a pvrvk::ShaderModule object</summary>
 	/// <param name="shader">A vertex shader</param>
-	PipelineShaderStageCreateInfo(const ShaderModule& shader) : _shaderModule(shader), _numShaderConsts(0), _entryPoint("main") {}
+	PipelineShaderStageCreateInfo(const ShaderModule& shader) : _shaderModule(shader), _entryPoint("main") {}
 
 	/// <summary>Get the shader of this shader stage object</summary>
 	/// <returns>The shader</returns>
@@ -1124,7 +1116,7 @@ public:
 	/// <returns>True if valid, otherwise false</returns>
 	bool isActive() const
 	{
-		return _shaderModule.isValid();
+		return _shaderModule != nullptr;
 	}
 
 	/// <summary>Set the shader.</summary>
@@ -1136,16 +1128,16 @@ public:
 
 	/// <summary>Set the shader entry point function (default: "main"). Only supported for specific APIs</summary>
 	/// <param name="entryPoint">A name of a function that will be used as an entry point in the shader</param>
-	void setEntryPoint(const char* entryPoint)
+	void setEntryPoint(const std::string& entryPoint)
 	{
 		_entryPoint = entryPoint;
 	}
 
 	/// <summary>Get the entry point of the shader</summary>
 	/// <returns>The entry point of the shader</returns>
-	const char* getEntryPoint() const
+	const std::string& getEntryPoint() const
 	{
-		return _entryPoint.c_str();
+		return _entryPoint;
 	}
 
 	/// <summary>operator =</summary>
@@ -1163,10 +1155,9 @@ public:
 	/// <returns>Return this (allow chaining)</returns>
 	PipelineShaderStageCreateInfo& setShaderConstant(uint32_t index, const ShaderConstantInfo& shaderConst)
 	{
-		debug_assertion(index < static_cast<uint32_t>(FrameworkCaps::MaxSpecialisationInfos), "Specialisation index is invalid.");
-		if (!_shaderConsts[index].isValid())
+		if (_shaderConsts.size() < index + 1)
 		{
-			_numShaderConsts++;
+			_shaderConsts.resize(index + 1);
 		}
 		_shaderConsts[index] = shaderConst;
 		return *this;
@@ -1179,13 +1170,10 @@ public:
 	/// <remarks>Uses better memory reservation than the setShaderConstant counterpart.</remarks>
 	PipelineShaderStageCreateInfo& setShaderConstants(const ShaderConstantInfo* shaderConsts, uint32_t numConstants)
 	{
-		debug_assertion(numConstants < static_cast<uint32_t>(FrameworkCaps::MaxSpecialisationInfos), "Specialisation index is invalid.");
-
-		_numShaderConsts = 0;
+		_shaderConsts.resize(numConstants);
 		for (uint32_t i = 0; i < numConstants; i++)
 		{
 			_shaderConsts[i] = shaderConsts[i];
-			_numShaderConsts++;
 		}
 		return *this;
 	}
@@ -1195,7 +1183,6 @@ public:
 	/// <returns>The shader constant</returns>
 	const ShaderConstantInfo& getShaderConstant(uint32_t index) const
 	{
-		debug_assertion(index < static_cast<uint32_t>(FrameworkCaps::MaxSpecialisationInfos), "Specialisation index is invalid.");
 		return _shaderConsts[index];
 	}
 
@@ -1203,14 +1190,14 @@ public:
 	/// <returns>Return an array of all defined shader constants</returns>
 	const ShaderConstantInfo* getAllShaderConstants() const
 	{
-		return &_shaderConsts[0];
+		return _shaderConsts.data();
 	}
 
 	/// <summary>Get the number of shader constants</summary>
 	/// <returns>The number of shader constants</returns>
 	uint32_t getNumShaderConsts() const
 	{
-		return _numShaderConsts;
+		return (uint32_t)_shaderConsts.size();
 	}
 };
 
@@ -1222,19 +1209,16 @@ struct TesselationStageCreateInfo
 private:
 	ShaderModule _controlShader, _evalShader;
 	uint32_t _patchControlPoints;
-	ShaderConstantInfo _shaderConstsTessCtrl[static_cast<uint32_t>(FrameworkCaps::MaxSpecialisationInfos)];
-	uint32_t _numShaderConstsTessCtrl;
+	std::vector<ShaderConstantInfo> _shaderConstsTessCtrl;
 
-	ShaderConstantInfo _shaderConstTessEval[static_cast<uint32_t>(FrameworkCaps::MaxSpecialisationInfos)];
-	uint32_t _numShaderConstTessEval;
+	std::vector<ShaderConstantInfo> _shaderConstTessEval;
 
 	std::string _controlShaderEntryPoint;
 	std::string _evalShaderEntryPoint;
 
 public:
 	/// <summary>Constructor</summary>
-	TesselationStageCreateInfo() : _patchControlPoints(3), _numShaderConstsTessCtrl(0), _numShaderConstTessEval(0), _controlShaderEntryPoint("main"), _evalShaderEntryPoint("main")
-	{}
+	TesselationStageCreateInfo() : _patchControlPoints(3), _controlShaderEntryPoint("main"), _evalShaderEntryPoint("main") {}
 
 	/// <summary>Get the Tessellation Control shader</summary>
 	/// <returns>The Tessellation Control shader</returns>
@@ -1254,14 +1238,14 @@ public:
 	/// <returns>true if the Tessellation Control shader has been set</returns>
 	bool isControlShaderActive() const
 	{
-		return _controlShader.isValid();
+		return _controlShader != nullptr;
 	}
 
 	/// <summary>Check if the Tessellation Evaluation shader has been set</summary>
 	/// <returns>true if the Tessellation Evaluation shader has been set</returns>
 	bool isEvaluationShaderActive() const
 	{
-		return _evalShader.isValid();
+		return _evalShader != nullptr;
 	}
 
 	/// <summary>Set the control shader.</summary>
@@ -1322,9 +1306,12 @@ public:
 	/// <returns>Return this for chaining</returns>
 	TesselationStageCreateInfo& setControlShaderConstant(uint32_t index, const ShaderConstantInfo& shaderConst)
 	{
-		debug_assertion(index < static_cast<uint32_t>(FrameworkCaps::MaxSpecialisationInfos), "Control ShaderModule constants out of range.");
+		if (_shaderConstsTessCtrl.size() < index + 1)
+		{
+			_shaderConstsTessCtrl.resize(index + 1);
+		}
+
 		_shaderConstsTessCtrl[index] = shaderConst;
-		_numShaderConstsTessCtrl++;
 		return *this;
 	}
 
@@ -1335,12 +1322,15 @@ public:
 	/// <remarks>Uses better memory reservation than the setShaderConstant counterpart.</remarks>
 	TesselationStageCreateInfo& setControlShaderConstants(const ShaderConstantInfo* shaderConsts, uint32_t numConstants)
 	{
-		debug_assertion(numConstants < static_cast<uint32_t>(FrameworkCaps::MaxSpecialisationInfos), "Control ShaderModule constants out of range.");
+		if (_shaderConstsTessCtrl.size() != numConstants)
+		{
+			_shaderConstsTessCtrl.resize(numConstants);
+		}
+
 		for (uint32_t i = 0; i < numConstants; i++)
 		{
 			_shaderConstsTessCtrl[i] = shaderConsts[numConstants];
 		}
-		_numShaderConstsTessCtrl = numConstants;
 		return *this;
 	}
 
@@ -1350,7 +1340,6 @@ public:
 	/// <returns>The Constant to get</returns>
 	const ShaderConstantInfo& getControlShaderConstant(uint32_t index) const
 	{
-		debug_assertion(index < static_cast<uint32_t>(FrameworkCaps::MaxSpecialisationInfos), "Control ShaderModule constants out of range.");
 		return _shaderConstsTessCtrl[index];
 	}
 
@@ -1358,14 +1347,14 @@ public:
 	/// <returns>C-style array of all shader constants</returns>
 	const ShaderConstantInfo* getAllControlShaderConstants() const
 	{
-		return &_shaderConstsTessCtrl[0];
+		return _shaderConstsTessCtrl.data();
 	}
 
 	/// <summary>Return number of control shader constants</summary>
 	/// <returns>uint32_t</returns>
 	uint32_t getNumControlShaderConstants() const
 	{
-		return _numShaderConstsTessCtrl;
+		return (uint32_t)_shaderConstsTessCtrl.size();
 	}
 
 	/// <summary>Set a shader constant for the Tessellation Evaluation shader</summary>
@@ -1374,9 +1363,11 @@ public:
 	/// <returns>Return this for chaining</returns>
 	void setEvaluationShaderConstant(uint32_t index, const ShaderConstantInfo& shaderConst)
 	{
-		debug_assertion(index < static_cast<uint32_t>(FrameworkCaps::MaxSpecialisationInfos), "Evaluation ShaderModule constants out of range.");
+		if (_shaderConstTessEval.size() < index + 1)
+		{
+			_shaderConstTessEval.resize(index + 1);
+		}
 		_shaderConstTessEval[index] = shaderConst;
-		_numShaderConstTessEval++;
 	}
 
 	/// <summary>Set all Tessellation Evaluation shader constants.</summary>
@@ -1386,12 +1377,15 @@ public:
 	/// <remarks>Uses better memory reservation than the setShaderConstant counterpart.</remarks>
 	TesselationStageCreateInfo& setEvaluationShaderConstants(const ShaderConstantInfo* shaderConsts, uint32_t numConstants)
 	{
-		debug_assertion(numConstants < static_cast<uint32_t>(FrameworkCaps::MaxSpecialisationInfos), "Evaluation ShaderModule constants out of range.");
+		if (_shaderConstTessEval.size() != numConstants)
+		{
+			_shaderConstTessEval.resize(numConstants);
+		}
+
 		for (uint32_t i = 0; i < numConstants; i++)
 		{
 			_shaderConstTessEval[i] = shaderConsts[numConstants];
 		}
-		_numShaderConstTessEval = numConstants;
 		return *this;
 	}
 
@@ -1408,14 +1402,14 @@ public:
 	/// <returns>const ShaderConstantInfo*</returns>
 	const ShaderConstantInfo* getAllEvaluationShaderConstants() const
 	{
-		return &_shaderConstTessEval[0];
+		return _shaderConstTessEval.data();
 	}
 
 	/// <summary>Return number of evaluatinon shader constants</summary>
 	/// <returns>The number of evaluatinon shader constants</returns>
 	uint32_t getNumEvaluatinonShaderConstants() const
 	{
-		return _numShaderConstTessEval;
+		return (uint32_t)_shaderConstTessEval.size();
 	}
 
 	/// <summary>Get evaluation shader entry point</summary>

@@ -12,11 +12,32 @@ namespace impl {
 /// <summary>Vulkan implementation of the Event class.
 /// Event can be used by the host to do fine-grained synchronization of commands, and it
 /// can be signalled either from the host (calling set()) or the device (submitting a setEvent() command).</summary>
-class Event_ : public DeviceObjectHandle<VkEvent>, public DeviceObjectDebugMarker<Event_>
+class Event_ : public PVRVkDeviceObjectBase<VkEvent, ObjectType::e_EVENT>, public DeviceObjectDebugUtils<Event_>
 {
-public:
-	DECLARE_NO_COPY_SEMANTICS(Event_)
+private:
+	friend class Device_;
 
+	class make_shared_enabler
+	{
+	protected:
+		make_shared_enabler() {}
+		friend class Event_;
+	};
+
+	static Event constructShared(const DeviceWeakPtr& device, const EventCreateInfo& createInfo)
+	{
+		return std::make_shared<Event_>(make_shared_enabler{}, device, createInfo);
+	}
+
+	/// <summary>Creation information used when creating the event.</summary>
+	EventCreateInfo _createInfo;
+
+public:
+	//!\cond NO_DOXYGEN
+	DECLARE_NO_COPY_SEMANTICS(Event_)
+	Event_(make_shared_enabler, const DeviceWeakPtr& device, const EventCreateInfo& createInfo);
+	~Event_();
+	//!\endcond
 	/// <summary>Set this event</summary>
 	void set();
 
@@ -40,18 +61,6 @@ public:
 	{
 		return _createInfo;
 	}
-
-private:
-	template<typename>
-	friend struct ::pvrvk::RefCountEntryIntrusive;
-	friend class ::pvrvk::impl::Device_;
-
-	Event_(const DeviceWeakPtr& device, const EventCreateInfo& createInfo);
-
-	~Event_();
-
-	/// <summary>Creation information used when creating the event.</summary>
-	EventCreateInfo _createInfo;
 };
 } // namespace impl
 } // namespace pvrvk

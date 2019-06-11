@@ -8,8 +8,8 @@
 
 namespace pvrvk {
 namespace impl {
-Sampler_::Sampler_(const DeviceWeakPtr& device, const pvrvk::SamplerCreateInfo& samplerDesc)
-	: DeviceObjectHandle(device), DeviceObjectDebugMarker(DebugReportObjectTypeEXT::e_SAMPLER_EXT)
+//!\cond NO_DOXYGEN
+Sampler_::Sampler_(make_shared_enabler, const DeviceWeakPtr& device, const pvrvk::SamplerCreateInfo& samplerDesc) : PVRVkDeviceObjectBase(device), DeviceObjectDebugUtils()
 {
 	VkSamplerCreateInfo samplerInfo = {};
 	samplerInfo.sType = static_cast<VkStructureType>(StructureType::e_SAMPLER_CREATE_INFO);
@@ -28,25 +28,24 @@ Sampler_::Sampler_(const DeviceWeakPtr& device, const pvrvk::SamplerCreateInfo& 
 	samplerInfo.mipLodBias = samplerDesc.lodBias;
 	samplerInfo.mipmapMode = static_cast<VkSamplerMipmapMode>(samplerDesc.mipMapMode);
 	samplerInfo.unnormalizedCoordinates = samplerDesc.unnormalizedCoordinates;
-	vkThrowIfFailed(_device->getVkBindings().vkCreateSampler(_device->getVkHandle(), &samplerInfo, nullptr, &_vkHandle), "Sampler Creation failed");
+	vkThrowIfFailed(getDevice()->getVkBindings().vkCreateSampler(getDevice()->getVkHandle(), &samplerInfo, nullptr, &_vkHandle), "Sampler Creation failed");
 }
 
 Sampler_::~Sampler_()
 {
 	if (getVkHandle() != VK_NULL_HANDLE)
 	{
-		if (_device.isValid())
+		if (!_device.expired())
 		{
-			_device->getVkBindings().vkDestroySampler(_device->getVkHandle(), getVkHandle(), nullptr);
+			getDevice()->getVkBindings().vkDestroySampler(getDevice()->getVkHandle(), getVkHandle(), nullptr);
 			_vkHandle = VK_NULL_HANDLE;
-			_device.reset();
 		}
 		else
 		{
-			reportDestroyedAfterDevice("Sampler");
+			reportDestroyedAfterDevice();
 		}
 	}
 }
-
+//!\endcond
 } // namespace impl
 } // namespace pvrvk

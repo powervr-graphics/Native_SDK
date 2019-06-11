@@ -1,8 +1,10 @@
 var searchData=
 [
   ['mailbox',['Mailbox',['../namespacepvr.html#a7f3166dd9130684c23ff89682e4b38c8a2dcff8c037093c5d3552ad532e603f9f',1,'pvr']]],
+  ['makefourcc',['MakeFourCC',['../classpvr_1_1texture__dds_1_1_make_four_c_c.html',1,'pvr::texture_dds']]],
   ['makepoweroftwohigh',['makePowerOfTwoHigh',['../namespacepvr_1_1math.html#afa79fff0c4934d5ab39edb53695ee3d4',1,'pvr::math']]],
   ['makepoweroftwolow',['makePowerOfTwoLow',['../namespacepvr_1_1math.html#aeb17baa9649bd59237e2e04eb588c5fb',1,'pvr::math']]],
+  ['maplegacyenumtonewformat',['mapLegacyEnumToNewFormat',['../classpvr_1_1asset_readers_1_1_texture_reader_p_v_r.html#a0b85abcc94231bf1ec0d3d44a0076cc0',1,'pvr::assetReaders::TextureReaderPVR']]],
   ['mathutils_2eh',['MathUtils.h',['../_math_utils_8h.html',1,'']]],
   ['matrixcolumns',['MatrixColumns',['../namespacepvr_1_1_gpu_datatypes_helper.html#a1a443ed852f4fa9bd3cc3cc446ed1499',1,'pvr::GpuDatatypesHelper']]],
   ['max',['Max',['../namespacepvr.html#a78be6b6f15903b90d6a9d575ebf6d353a6a061313d22e51e0f25b7cd4dc065233',1,'pvr']]],
@@ -23,6 +25,8 @@ var searchData=
   ['mipleveloffset',['mipLevelOffset',['../structpvr_1_1_image_subresource.html#a27aeab969787ec2894d1def5d9b0b09e',1,'pvr::ImageSubresource']]],
   ['mirrorclamptoedge',['MirrorClampToEdge',['../namespacepvr.html#aedec1ca92cba055434a2a27da89f5643a01f488e80fc32761aecfbeb3d1c8f26b',1,'pvr']]],
   ['mirrorrepeat',['MirrorRepeat',['../namespacepvr.html#aedec1ca92cba055434a2a27da89f5643a39a681a9d5ccc902bebd16a343dd7b74',1,'pvr']]],
+  ['miscflags',['miscFlags',['../structpvr_1_1texture__dds_1_1_file_header_d_x10.html#a9e7ae7a79313cede02901bbbf9c52ca7',1,'pvr::texture_dds::FileHeaderDX10']]],
+  ['miscflags2',['miscFlags2',['../structpvr_1_1texture__dds_1_1_file_header_d_x10.html#acf974af5649bfe5ca48c28801371018b',1,'pvr::texture_dds::FileHeaderDX10']]],
   ['model',['Model',['../namespacepvr.html#a7449705e04c8fe948e390ea793106107aa559b87068921eec05086ce5485e9784',1,'pvr']]],
   ['movex',['moveX',['../classpvr_1_1_f_p_s_camera.html#ad47f57eddf5fe13c34b64099d9d9ca99',1,'pvr::FPSCamera']]],
   ['movez',['moveZ',['../classpvr_1_1_f_p_s_camera.html#a93935a91f58b08898399f93b8949ec86',1,'pvr::FPSCamera']]],

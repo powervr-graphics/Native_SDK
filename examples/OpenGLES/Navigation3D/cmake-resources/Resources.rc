@@ -1,4 +1,4 @@
-//Microsoft eMbedded Visual C++ generated resource script.
+// Microsoft Visual C++ generated resource script.
 //
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
@@ -58,18 +58,16 @@ END
 // RCDATA
 //
 /////////////////////////////////////////////////////////////////////////////
-// RCDATA: Assets (scenes,  effects, textures...)
-font.pvr		RCDATA		"..\\..\\..\\assets\\Navigation3D\\font.pvr"
-Road.pvr		RCDATA		"..\\..\\..\\assets\\Navigation3D\\Road.pvr"
-map.osm		RCDATA		"..\\..\\..\\assets\\Navigation3D\\map.osm"
-// RCDATA: OpenGL ES Textual shaders(glsl)
-AA_VertShader_ES2.vsh		RCDATA		"..\\AA_VertShader_ES2.vsh"
-AA_FragShader_ES2.fsh		RCDATA		"..\\AA_FragShader_ES2.fsh"
-VertShader_ES2.vsh		RCDATA		"..\\VertShader_ES2.vsh"
-FragShader_ES2.fsh		RCDATA		"..\\FragShader_ES2.fsh"
-PlanarShadow_VertShader_ES2.vsh		RCDATA		"..\\PlanarShadow_VertShader_ES2.vsh"
-PlanarShadow_FragShader_ES2.fsh		RCDATA		"..\\PlanarShadow_FragShader_ES2.fsh"
-PerVertexLight_VertShader_ES2.vsh		RCDATA		"..\\PerVertexLight_VertShader_ES2.vsh"
+font.pvr RCDATA "..\\..\\..\\assets\\Navigation3D\\font.pvr"
+Road.pvr RCDATA "..\\..\\..\\assets\\Navigation3D\\Road.pvr"
+map.osm RCDATA "..\\..\\..\\assets\\Navigation3D\\map.osm"
+AA_VertShader_ES2.vsh RCDATA "..\\AA_VertShader_ES2.vsh"
+AA_FragShader_ES2.fsh RCDATA "..\\AA_FragShader_ES2.fsh"
+VertShader_ES2.vsh RCDATA "..\\VertShader_ES2.vsh"
+FragShader_ES2.fsh RCDATA "..\\FragShader_ES2.fsh"
+PlanarShadow_VertShader_ES2.vsh RCDATA "..\\PlanarShadow_VertShader_ES2.vsh"
+PlanarShadow_FragShader_ES2.fsh RCDATA "..\\PlanarShadow_FragShader_ES2.fsh"
+PerVertexLight_VertShader_ES2.vsh RCDATA "..\\PerVertexLight_VertShader_ES2.vsh"
 
 #endif    // English (United Kingdom) resources
 /////////////////////////////////////////////////////////////////////////////

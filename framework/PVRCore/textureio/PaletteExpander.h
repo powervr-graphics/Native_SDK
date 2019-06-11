@@ -1,6 +1,6 @@
 /*!
 \brief Internally used by some texture readers.
-\file PVRAssets/fileio/PaletteExpander.h
+\file PVRCore/textureio/PaletteExpander.h
 \author PowerVR by Imagination, Developer Technology Team
 \copyright Copyright (c) Imagination Technologies Limited.
 */

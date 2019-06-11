@@ -12,34 +12,56 @@
 
 namespace pvrvk {
 namespace Layers {
-std::vector<std::string> filterLayers(const std::vector<LayerProperties>& layerProperties, const std::string* layersToEnable, uint32_t layersCount)
+VulkanLayerList filterLayers(const std::vector<LayerProperties>& layerProperties, const VulkanLayerList& layersToEnable)
 {
-	std::vector<std::string> outLayers;
-
-	for (uint32_t j = 0; j < layersCount; ++j)
+	VulkanLayerList outLayers;
+	for (uint32_t i = 0; i < layersToEnable.getNumLayers(); ++i)
 	{
-		for (uint32_t i = 0; i < layerProperties.size(); ++i)
+		const VulkanLayer& currentRequestedLayer = layersToEnable.getLayer(i);
+		bool foundLayer = false;
+		for (uint32_t j = 0; j < layerProperties.size(); ++j)
 		{
-			if (!strcmp(layersToEnable[j].c_str(), layerProperties[i].getLayerName()))
+			// Determine whether the layers names match
+			if (!strcmp(currentRequestedLayer.getName().c_str(), layerProperties[j].getLayerName()))
 			{
-				outLayers.push_back(layersToEnable[j]);
-				break;
+				// If a spec version has been provided then ensure the spec versions match
+				if (currentRequestedLayer.getSpecVersion() != -1)
+				{
+					if (layerProperties[j].getSpecVersion() == currentRequestedLayer.getSpecVersion())
+					{
+						outLayers.addLayer(VulkanLayer(layerProperties[j].getLayerName(), layerProperties[j].getSpecVersion(), layerProperties[j].getImplementationVersion(),
+							layerProperties[j].getDescription()));
+						foundLayer = true;
+						break;
+					}
+				}
+				// If a spec version of -1 has been provided then accept the highest supported version of the layer
+				else
+				{
+					// If the extension is already present then determine whether the new element has a higher spec version
+					if (foundLayer)
+					{
+						// Get the last added layer
+						const VulkanLayer& lastAddedLayer = outLayers.getLayer(outLayers.getNumLayers() - 1);
+						if (layerProperties[j].getSpecVersion() > lastAddedLayer.getSpecVersion())
+						{
+							outLayers.removeLayer(lastAddedLayer);
+							outLayers.addLayer(VulkanLayer(layerProperties[j].getLayerName(), layerProperties[j].getSpecVersion(), layerProperties[j].getImplementationVersion(),
+								layerProperties[j].getDescription()));
+						}
+					}
+					else
+					{
+						outLayers.addLayer(VulkanLayer(layerProperties[j].getLayerName(), layerProperties[j].getSpecVersion(), layerProperties[j].getImplementationVersion(),
+							layerProperties[j].getDescription()));
+					}
+
+					foundLayer = true;
+				}
 			}
 		}
 	}
 	return outLayers;
-}
-
-namespace Instance {
-
-void enumerateInstanceLayersString(std::vector<std::string>& outLayers)
-{
-	std::vector<LayerProperties> layers;
-	enumerateInstanceLayers(layers);
-	for (uint32_t i = 0; i < layers.size(); i++)
-	{
-		outLayers.push_back(layers[i].getLayerName());
-	}
 }
 
 void enumerateInstanceLayers(std::vector<LayerProperties>& outLayers)
@@ -52,7 +74,20 @@ void enumerateInstanceLayers(std::vector<LayerProperties>& outLayers)
 	pvrvk::impl::vkThrowIfFailed(
 		vkBindings.vkEnumerateInstanceLayerProperties(&numItems, (VkLayerProperties*)outLayers.data()), "LayersVk::Failed to enumerate instance layer properties");
 }
-} // namespace Instance
+
+bool isInstanceLayerSupported(const std::string& layer)
+{
+	std::vector<LayerProperties> layers;
+	enumerateInstanceLayers(layers);
+	for (uint32_t i = 0; i < layers.size(); ++i)
+	{
+		if (!strcmp(layers[i].getLayerName(), layer.c_str()))
+		{
+			return true;
+		}
+	}
+	return false;
+}
 } // namespace Layers
 } // namespace pvrvk
 //!\endcond

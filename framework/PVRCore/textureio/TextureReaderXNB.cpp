@@ -1,6 +1,6 @@
 /*!
 \brief Implementation of methods of the TextureWriterXNB class.
-\file PVRCore/textureReaders/TextureReaderXNB.cpp
+\file PVRCore/textureio/TextureReaderXNB.cpp
 \author PowerVR by Imagination, Developer Technology Team
 \copyright Copyright (c) Imagination Technologies Limited.
 */

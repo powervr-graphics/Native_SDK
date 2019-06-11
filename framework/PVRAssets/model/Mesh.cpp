@@ -55,7 +55,7 @@ void Mesh::FaceData::setData(const uint8_t* data, uint32_t size, const IndexType
 
 int32_t Mesh::addData(const uint8_t* data, uint32_t size, uint32_t stride)
 {
-	_data.vertexAttributeDataBlocks.push_back(StridedBuffer());
+	_data.vertexAttributeDataBlocks.emplace_back(StridedBuffer());
 	_data.vertexAttributeDataBlocks.back().stride = static_cast<uint16_t>(stride);
 	UInt8Buffer& last_element = _data.vertexAttributeDataBlocks.back();
 	last_element.resize(size);

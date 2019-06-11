@@ -83,8 +83,7 @@ public:
 	/// <summary>Set the verbosity threshold below which messages will not be output.</summary>
 	/// <param name="minimumLevelToOutput">The minimum level to actually output.</param>
 	/// <remarks>Messages with a severity less than this will be silently discarded. For example, if using a "Warning"
-	/// level, Critical, Error and Warning will be displayed, while Information, Verbose and Debug will be discarded.
-	/// </remarks>
+	/// level, Critical, Error and Warning will be displayed, while Information, Verbose and Debug will be discarded.</remarks>
 	void setVerbosity(const LogLevel minimumLevelToOutput)
 	{
 		_verbosityThreshold = minimumLevelToOutput;
@@ -92,8 +91,7 @@ public:
 	/// <summary>Get the verbosity threshold below which messages will not be output.</summary>
 	/// <returns>The minimum level that is currently output.</returns>
 	/// <remarks>Messages with a severity less than this will be silently discarded. For example, if using a "Warning"
-	/// level, Critical, Error and Warning will be displayed, while Information, Verbose and Debug will be discarded.
-	/// </remarks>
+	/// level, Critical, Error and Warning will be displayed, while Information, Verbose and Debug will be discarded.</remarks>
 	LogLevel getVerbosity() const
 	{
 		return _verbosityThreshold;

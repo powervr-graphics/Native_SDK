@@ -48,7 +48,7 @@ public:
 	/// <returns>The pvrvk::Buffer corresponding to the Font index buffer.</returns>
 	const pvrvk::Buffer& getFontIbo()
 	{
-		if (!_fontIbo.isValid())
+		if (!_fontIbo)
 		{
 			// create the FontIBO
 			std::vector<uint16_t> fontFaces;
@@ -65,9 +65,8 @@ public:
 				fontFaces[i * 6 + 5] = static_cast<uint16_t>(2 + i * 4);
 			}
 
-			_fontIbo = utils::createBuffer(getDevice(), sizeof(fontFaces[0]) * impl::Font_::FontElement, pvrvk::BufferUsageFlags::e_INDEX_BUFFER_BIT,
+			_fontIbo = utils::createBuffer(getDevice().lock(), sizeof(fontFaces[0]) * impl::Font_::FontElement, pvrvk::BufferUsageFlags::e_INDEX_BUFFER_BIT,
 				pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, &_vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
-			pvrvk::Device deviceTemp = getDevice()->getReference();
 			pvr::utils::updateHostVisibleBuffer(_fontIbo, &fontFaces[0], 0, static_cast<uint32_t>(sizeof(fontFaces[0]) * fontFaces.size()), true);
 		}
 		return _fontIbo;
@@ -77,7 +76,7 @@ public:
 	/// <returns>The pvrvk::Buffer corresponding to the Image vertex buffer.</returns>
 	const pvrvk::Buffer& getImageVbo()
 	{
-		if (_imageVbo.isNull())
+		if (!_imageVbo)
 		{
 			// create the image vbo
 			const float verts[] = {
@@ -89,9 +88,8 @@ public:
 				1.f, -1.f, 0.f, 1.0f, 1.f, 0.0f, // lower right
 				1.f, 1.f, 0.f, 1.0f, 1.f, 1.f, // upper right
 			};
-			_imageVbo = utils::createBuffer(getDevice(), sizeof(verts), pvrvk::BufferUsageFlags::e_VERTEX_BUFFER_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
+			_imageVbo = utils::createBuffer(getDevice().lock(), sizeof(verts), pvrvk::BufferUsageFlags::e_VERTEX_BUFFER_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 				pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, &_vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
-			pvrvk::Device deviceTemp = getDevice()->getReference();
 			pvr::utils::updateHostVisibleBuffer(_imageVbo, static_cast<const void*>(verts), 0, sizeof(verts), true);
 		}
 		return _imageVbo;
@@ -161,12 +159,6 @@ public:
 	UIRenderer(UIRenderer& rhs) = delete;
 	//!\endcond
 
-	/// <summary>Destructor for the UIRenderer which will release all resources currently in use.</summary>
-	~UIRenderer()
-	{
-		destroy();
-	}
-
 	/// <summary>Return thedevice the UIRenderer was initialized with. If the UIrenderer was not initialized,
 	/// behaviour is undefined.</summary>
 	/// <returns>The pvrvk::Device which was used to initialise the UIRenderer.</returns>
@@ -222,8 +214,7 @@ public:
 	/// MUST BE called exactly once before use, after a valid
 	/// graphics context is available (usually, during initView).
 	/// Initialising creates its Default Text Font and PowerVR SDK logo. Therefore
-	/// the calle must handle the texture uploads via assetLoader.
-	/// </summary>
+	/// the calle must handle the texture uploads via assetLoader.</summary>
 	/// <param name="width">The width of the screen used for rendering.</param>
 	/// <param name="height">The height of the screen used for rendering</param>
 	/// <param name="fullscreen">Indicates whether the rendering is occuring in full screen mode.</param>
@@ -242,41 +233,36 @@ public:
 	void init(uint32_t width, uint32_t height, bool fullscreen, const pvrvk::RenderPass& renderpass, uint32_t subpass, bool isFrameBufferSrgb, pvrvk::CommandPool& commandPool,
 		pvrvk::Queue& queue, bool createDefaultLogo = true, bool createDefaultTitle = true, bool createDefaultFont = true, uint32_t maxNumInstances = 64, uint32_t maxNumSprites = 64);
 
-	/// <summary>Release the engine and its resources. Must be called once after we are done with the UIRenderer.
-	/// (usually, during releaseView).</summary>
-	void destroy()
+	/// <summary>Destructor for the UIRenderer which will release all resources currently in use.</summary>
+	~UIRenderer()
 	{
-		_renderpass.reset();
 		_defaultFont.reset();
 		_defaultTitle.reset();
 		_defaultDescription.reset();
 		_defaultControls.reset();
 		_sdkLogo.reset();
-
 		_uboMaterial.reset();
 		_uboMvp.reset();
-
 		_texDescLayout.reset();
 		_uboMvpDescLayout.reset();
 		_uboMaterialLayout.reset();
 		_pipelineLayout.reset();
 		_pipeline.reset();
+		_pipelineCache.reset();
 		_samplerBilinear.reset();
 		_samplerTrilinear.reset();
 		_activeCommandBuffer.reset();
 		_fontIbo.reset();
 		_imageVbo.reset();
-
-		_descPool.reset();
-
 		_sprites.clear();
 		_fonts.clear();
 		_textElements.clear();
-		_vmaAllocator.reset();
-		_device.reset();
-
 		_screenRotation = .0f;
 		_numSprites = 0;
+		_renderpass.reset();
+		_vmaAllocator.reset();
+		_descPool.reset();
+		_device.reset();
 	}
 
 	/// <summary>Create a Text sprite. Initialize with std::string. Uses default font.</summary>
@@ -380,10 +366,9 @@ public:
 	}
 
 	/// <summary>Create Text sprite from wide std::string.</summary>
-	/// <param name="font">The font that the text will be using. The font must belong to the same UIrenderer object.
+	/// <param name="font">The font that the text will be using. The font must belong to the same UIrenderer object.</param>
 	/// <param name="text">text to be rendered.</param>
 	/// <param name="maxLength">The maximum length of characters for the text element.</param>
-	/// </param>
 	/// <returns>Text framework object.</returns>
 	Text createText(const Font& font, const std::wstring& text, uint32_t maxLength = 0)
 	{
@@ -437,8 +422,7 @@ public:
 		_screenDimensions.y = value;
 	}
 
-	/// <summary>Create a font from a given texture (use PVRTexTool to create the font texture from a font file).
-	/// </summary>
+	/// <summary>Create a font from a given texture (use PVRTexTool to create the font texture from a font file).</summary>
 	/// <param name="image">An ImageView object of the font texture file, which will be used directly.</param>
 	/// <param name="textureHeader">A pvr::TextureHeader of the same object. Necessary for the texture metadata.</param>
 	/// <param name="sampler">(Optional) A specific sampler object to use for this font.</param>
@@ -490,15 +474,15 @@ public:
 	/// Must be called to render sprites. DO NOT update sprites after calling this function before calling endRendering.</summary>
 	/// <param name="commandBuffer">The SecondaryCommandBuffer object where all the rendering commands will be put into.</param>
 	/// <param name="framebuffer">A framebuffer object which will be used to begin the command buffer.</param>
-	/// <param name="useRenderpass">Specifies whether a renderpass should be used to begin the command buffer.</param>
+	/// <param name="useRenderPass">Specifies whether a RenderPass should be used to begin the command buffer.</param>
 	/// <remarks>THIS METHOD OR ITS OVERLOAD MUST BE CALLED BEFORE RENDERING ANY SPRITES THAT BELONG TO A SPECIFIC
 	/// UIRenderer. The sequence must always be beginRendering, render ..., endRendering. Always try to group as many
 	/// rendering commands as possible between begin and end, to avoid needless state changes.</remarks>
-	void beginRendering(pvrvk::SecondaryCommandBuffer& commandBuffer, const pvrvk::Framebuffer& framebuffer, bool useRenderpass = false)
+	void beginRendering(pvrvk::SecondaryCommandBuffer& commandBuffer, const pvrvk::Framebuffer& framebuffer, bool useRenderPass = false)
 	{
 		if (!commandBuffer->isRecording())
 		{
-			if (useRenderpass)
+			if (useRenderPass)
 			{
 				commandBuffer->begin(_renderpass, _subpass);
 			}
@@ -512,7 +496,7 @@ public:
 		{
 			_mustEndCommandBuffer = false;
 		}
-		commandBuffer->debugMarkerBeginEXT("PVRUtilsVk::UIRenderer::Rendering");
+		pvr::utils::beginCommandBufferDebugLabel(commandBuffer, pvrvk::DebugUtilsLabel("PVRUtilsVk::UIRenderer::Rendering"));
 		commandBuffer->bindPipeline(getPipeline()); // bind the uirenderer pipeline
 		_activeCommandBuffer = commandBuffer;
 	}
@@ -528,14 +512,13 @@ public:
 		debug_assertion(commandBuffer->isRecording(),
 			"UIRenderer: If a Primary command buffer is passed to the UIRenderer,"
 			" it must be in the Recording state");
-		commandBuffer->debugMarkerBeginEXT("PVRUtilsVk::UIRenderer::Rendering");
+		pvr::utils::beginCommandBufferDebugLabel(commandBuffer, pvrvk::DebugUtilsLabel("PVRUtilsVk::UIRenderer::Rendering"));
 		_mustEndCommandBuffer = false;
 		commandBuffer->bindPipeline(getPipeline()); // bind the uirenderer pipeline
 		_activeCommandBuffer = commandBuffer;
 	}
 
-	/// <summary>Begin rendering to a specific CommandBuffer, with a custom user-provided GraphicsPipeline.
-	/// </summary>
+	/// <summary>Begin rendering to a specific CommandBuffer, with a custom user-provided GraphicsPipeline.</summary>
 	/// <param name="commandBuffer">The SecondaryCommandBuffer object where all the rendering commands will be put into.</param>
 	/// <param name="pipe">The GraphicsPipeline to use for rendering.</param>
 	/// <remarks>THIS METHOD OR ITS OVERLOAD MUST BE CALLED BEFORE RENDERING ANY SPRITES THAT BELONG TO A SPECIFIC
@@ -547,21 +530,20 @@ public:
 		beginRendering(commandBuffer, pipe, pvrvk::Framebuffer(), true);
 	}
 
-	/// <summary>Begin rendering to a specific CommandBuffer, with a custom user-provided GraphicsPipeline.
-	/// </summary>
+	/// <summary>Begin rendering to a specific CommandBuffer, with a custom user-provided GraphicsPipeline.</summary>
 	/// <param name="commandBuffer">The SecondaryCommandBuffer object where all the rendering commands will be put into.</param>
 	/// <param name="pipe">The GraphicsPipeline to use for rendering.</param>
 	/// <param name="framebuffer">A framebuffer object which will be used to begin the command buffer.</param>
-	/// <param name="useRenderpass">Specifies whether a renderpass should be used to begin the command buffer.</param>
+	/// <param name="useRenderPass">Specifies whether a RenderPass should be used to begin the command buffer.</param>
 	/// <remarks>THIS METHOD OR ITS OVERLOAD MUST BE CALLED BEFORE RENDERING ANY SPRITES THAT BELONG TO A SPECIFIC
 	/// UIRenderer. The sequence must always be beginRendering, render ..., endRendering. Always try to group as many
 	/// rendering commands as possible between beginRendering and endRendering, to avoid needless state changes. Use
 	/// this overload to render with a custom GraphicsPipeline.</remarks>
-	void beginRendering(pvrvk::SecondaryCommandBuffer commandBuffer, pvrvk::GraphicsPipeline& pipe, const pvrvk::Framebuffer& framebuffer, bool useRenderpass = false)
+	void beginRendering(pvrvk::SecondaryCommandBuffer commandBuffer, pvrvk::GraphicsPipeline& pipe, const pvrvk::Framebuffer& framebuffer, bool useRenderPass = false)
 	{
 		if (!commandBuffer->isRecording())
 		{
-			if (useRenderpass)
+			if (useRenderPass)
 			{
 				commandBuffer->begin(_renderpass, _subpass);
 			}
@@ -575,15 +557,13 @@ public:
 		{
 			_mustEndCommandBuffer = false;
 		}
-		commandBuffer->debugMarkerBeginEXT("PVRUtilsVk::UIRenderer::Rendering");
+		pvr::utils::beginCommandBufferDebugLabel(commandBuffer, pvrvk::DebugUtilsLabel("PVRUtilsVk::UIRenderer::Rendering"));
 		commandBuffer->bindPipeline(pipe);
 		_activeCommandBuffer = commandBuffer;
 	}
 
-	/// <summary>Begin rendering to a specific CommandBuffer, with a custom user-provided GraphicsPipeline.
-	/// </summary>
-	/// <param name="commandBuffer">The CommandBuffer object where all the rendering commands will be put into.
-	/// </param>
+	/// <summary>Begin rendering to a specific CommandBuffer, with a custom user-provided GraphicsPipeline.</summary>
+	/// <param name="commandBuffer">The CommandBuffer object where all the rendering commands will be put into.</param>
 	/// <param name="pipe">The GraphicsPipeline to use for rendering.</param>
 	/// <remarks>THIS METHOD OR ITS OVERLOAD MUST BE CALLED BEFORE RENDERING ANY SPRITES THAT BELONG TO A SPECIFIC
 	/// UIRenderer. The sequence must always be beginRendering, render ..., endRendering. Always try to group as many
@@ -594,7 +574,7 @@ public:
 		debug_assertion(commandBuffer->isRecording(),
 			"UIRenderer: If a Primary command buffer is passed to the UIRenderer,"
 			" it must be in the Recording state");
-		commandBuffer->debugMarkerBeginEXT("PVRUtilsVk::UIRenderer::Rendering");
+		pvr::utils::beginCommandBufferDebugLabel(commandBuffer, pvrvk::DebugUtilsLabel("PVRUtilsVk::UIRenderer::Rendering"));
 		_mustEndCommandBuffer = false;
 		commandBuffer->bindPipeline(pipe);
 		_activeCommandBuffer = commandBuffer;
@@ -606,9 +586,9 @@ public:
 	/// commands (preferably all) between beginRendering and endRendering.</remarks>
 	void endRendering()
 	{
-		if (_activeCommandBuffer.isValid())
+		if (_activeCommandBuffer)
 		{
-			_activeCommandBuffer->debugMarkerEndEXT();
+			pvr::utils::endCommandBufferDebugLabel(_activeCommandBuffer);
 			if (_mustEndCommandBuffer)
 			{
 				_mustEndCommandBuffer = false;
@@ -679,8 +659,7 @@ public:
 	/// <summary>The UIRenderer has a built-in pvr::ui::Text positioned and sized for use as a description (subtitle)
 	/// (top-left, below DefaultTitle, small)) for convenience. Set the text of this sprite and use it as normal. Can
 	/// be resized and repositioned at will. Used throughout the PowerVR SDK Examples.</summary>
-	/// <returns>The Default descritption pvr::ui::Text. Originally empty (use setText on it). Constant overload.
-	/// </returns>
+	/// <returns>The Default descritption pvr::ui::Text. Originally empty (use setText on it). Constant overload.</returns>
 	const Text& getDefaultDescription() const
 	{
 		return _defaultDescription;
@@ -698,8 +677,7 @@ public:
 	/// <summary>The UIRenderer has a built-in pvr::ui::Text positioned and sized for use as a controls display
 	/// (bottom-left, small text) for convenience. You can set the text of this sprite and use it as normal. Can be
 	/// resized and repositioned at will. Used throughout the PowerVR SDK Examples.</summary>
-	/// <returns>The Default Controls pvr::ui::Text. Originally empty (use setText on it). Constant overload.
-	/// </returns>
+	/// <returns>The Default Controls pvr::ui::Text. Originally empty (use setText on it). Constant overload.</returns>
 	const Text& getDefaultControls() const
 	{
 		return _defaultControls;
@@ -818,11 +796,11 @@ public:
 private:
 	void updateResourceOwnsership()
 	{
-		std::for_each(_sprites.begin(), _sprites.end(), [this](SpriteWeakRef& sprite) { sprite->setUIRenderer(this); });
+		std::for_each(_sprites.begin(), _sprites.end(), [this](SpriteWeakRef& sprite) { sprite.lock()->setUIRenderer(this); });
 
-		std::for_each(_fonts.begin(), _fonts.end(), [this](FontWeakRef& font) { font->setUIRenderer(this); });
+		std::for_each(_fonts.begin(), _fonts.end(), [this](FontWeakRef& font) { font.lock()->setUIRenderer(this); });
 
-		std::for_each(_textElements.begin(), _textElements.end(), [this](TextElementWeakRef& textElement) { textElement->setUIRenderer(this); });
+		std::for_each(_textElements.begin(), _textElements.end(), [this](TextElementWeakRef& textElement) { textElement.lock()->setUIRenderer(this); });
 	}
 
 	friend class pvr::ui::impl::Image_;
@@ -867,7 +845,7 @@ private:
 		void releaseBufferSlice(uint32_t id)
 		{
 			debug_assertion(id < _numArrayId, "Invalid id");
-			_freeArrayIds.push_back(id);
+			_freeArrayIds.emplace_back(id);
 		}
 
 		void bindUboDynamic(pvrvk::CommandBufferBase& cb, const pvrvk::PipelineLayout& pipelayout, uint32_t mvpBufferSlice)
@@ -922,7 +900,7 @@ private:
 		void releaseBufferArray(uint32_t id)
 		{
 			debug_assertion(id < _numArrayId, "Invalid id");
-			_freeArrayIds.push_back(id);
+			_freeArrayIds.emplace_back(id);
 		}
 
 		void bindUboDynamic(pvrvk::CommandBufferBase& cb, const pvrvk::PipelineLayout& pipelayout, uint32_t bufferSlice)
@@ -958,12 +936,12 @@ private:
 	void setUpUboPoolLayouts(uint32_t numInstances, uint32_t numSprites);
 	void setUpUboPools(uint32_t numInstances, uint32_t numSprites);
 
-	void init_CreateDefaultFont(pvrvk::CommandBuffer& cmdBuffer);
-	void init_CreateDefaultSdkLogo(pvrvk::CommandBuffer& cmdBuffer);
-	void init_CreateDefaultSampler();
-	void init_CreateDefaultTitle();
-	void init_CreatePipeline(bool isFramebufferSrgb);
-	void init_CreateDescriptorSetLayout();
+	void initCreateDefaultFont(pvrvk::CommandBuffer& cmdBuffer);
+	void initCreateDefaultSdkLogo(pvrvk::CommandBuffer& cmdBuffer);
+	void initCreateDefaultSampler();
+	void initCreateDefaultTitle();
+	void initCreatePipeline(bool isFramebufferSrgb);
+	void initCreateDescriptorSetLayout();
 
 	pvr::utils::vma::Allocator _vmaAllocator;
 	std::vector<SpriteWeakRef> _sprites;

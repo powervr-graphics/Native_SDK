@@ -1,18 +1,15 @@
 /*!
 \brief Defines used by the PVR reader.
-\file PVRCore/textureReaders/FileDefinesPVR.h
+\file PVRCore/textureio/FileDefinesPVR.h
 \author PowerVR by Imagination, Developer Technology Team
 \copyright Copyright (c) Imagination Technologies Limited.
 */
 #pragma once
 
 #include <cstdint>
-//!\cond NO_DOXYGEN
 namespace pvr {
 namespace texture_legacy {
-///////////////////////// Legacy PVR file headers /////////////////////////
-
-// Version 1 of the PVR file format
+/// <summary>Version 1 of the PVR file format</summary>
 struct HeaderV1
 {
 	uint32_t headerSize; //!< size of the structure
@@ -28,15 +25,14 @@ struct HeaderV1
 	uint32_t alphaBitMask; //!< mask for alpha channel
 };
 
-// Version 2 of the PVR file format
+/// <summary>Version 2 of the PVR file format</summary>
 struct HeaderV2 : public HeaderV1
 {
 	uint32_t pvrMagic; /*!< magic number identifying pvr file */
 	uint32_t numSurfaces; /*!< the number of surfaces present in the pvr */
 };
 
-////////////////////////// Legacy enumerations //////////////////////////
-// Pixel types
+/// <summary>Pixel types</summary>
 enum PixelFormat
 {
 	// MGL Formats
@@ -214,7 +210,7 @@ enum PixelFormat
 	InvalidType = 0xffffffff
 };
 
-// Target APIs, used to write to specific API targets.
+/// <summary>Target APIs, used to write to specific API targets.</summary>
 enum API
 {
 	ApiOGLES = 1,
@@ -226,8 +222,6 @@ enum API
 	ApiOVG,
 	ApiMGL
 };
-
-///////////////////////////// Legacy constants /////////////////////////////
 
 // Flags for Legacy TextureHeader versions
 static const uint32_t c_flagMipMap = (1 << 8); // Texture has MIP Map levels
@@ -248,4 +242,3 @@ static const uint32_t c_headerSizeV1 = 44;
 static const uint32_t c_headerSizeV2 = 52;
 } // namespace texture_legacy
 } // namespace pvr
-//!\endcond

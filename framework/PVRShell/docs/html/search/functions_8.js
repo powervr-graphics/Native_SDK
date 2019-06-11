@@ -1,8 +1,4 @@
 var searchData=
 [
-  ['pause',['pause',['../classpvr_1_1platform_1_1_state_machine.html#a5f23cb83bded076c75de414d8e017da1',1,'pvr::platform::StateMachine']]],
-  ['pointerlocation',['PointerLocation',['../classpvr_1_1_pointer_location.html#a598e65be809f329d8eb09fae940933d0',1,'pvr::PointerLocation::PointerLocation()'],['../classpvr_1_1_pointer_location.html#a4f956da4fd9838635527bc539d77991d',1,'pvr::PointerLocation::PointerLocation(const PointerLocationStore &amp;st)'],['../classpvr_1_1_pointer_location.html#a4bff2ca9ce40b7bca262ce11a6bb27d4',1,'pvr::PointerLocation::PointerLocation(int16_t x, int16_t y)']]],
-  ['pointernormalisedlocation',['PointerNormalisedLocation',['../structpvr_1_1platform_1_1_shell_1_1_pointer_normalised_location.html#a1fd7fa3bc13ab645889fd622ab854f7d',1,'pvr::platform::Shell::PointerNormalisedLocation']]],
-  ['pointingdevicestate',['PointingDeviceState',['../structpvr_1_1platform_1_1_shell_1_1_pointing_device_state.html#a9850c339f9b459042cda837a8ea1a17d',1,'pvr::platform::Shell::PointingDeviceState']]],
-  ['position',['position',['../structpvr_1_1platform_1_1_shell_1_1_pointing_device_state.html#a2fcfb4a27a2391b558d7863797ccbce7',1,'pvr::platform::Shell::PointingDeviceState']]]
+  ['main',['main',['../main_2main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627',1,'main(int argc, char **argv):&#160;main.cpp'],['../_n_s_application_main_2main_8m.html#a0ddf1224851353fc92bfbff6f499fa97',1,'main(int argc, char *argv[]):&#160;main.m'],['../_u_i_application_main_2main_8m.html#a0ddf1224851353fc92bfbff6f499fa97',1,'main(int argc, char *argv[]):&#160;main.m']]]
 ];

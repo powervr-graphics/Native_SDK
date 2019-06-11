@@ -1,82 +1,114 @@
+# This file provides various functions used by the PowerVR SDK build files
 
-function (copy_file_if_changed input output)
-	add_custom_command(OUTPUT ${output} COMMAND ${CMAKE_COMMAND} -E copy ${input} ${output} MAIN_DEPENDENCY ${input})
-endfunction(copy_file_if_changed)
-
-function (add_subdirectory_if_not_already_included TARGET SUBDIR_FOLDER SUBDIR_BIN_FOLDER)
+function(add_subdirectory_if_not_already_included TARGET SUBDIR_FOLDER SUBDIR_BIN_FOLDER)
 	if (NOT TARGET ${TARGET})
-		add_subdirectory(${SUBDIR_FOLDER} ${SUBDIR_BIN_FOLDER})
+		add_subdirectory(${SUBDIR_FOLDER} ${SUBDIR_BIN_FOLDER} EXCLUDE_FROM_ALL)
 	endif()
 endfunction(add_subdirectory_if_not_already_included)
 
-macro (add_platform_specific_resource_files SRC_FILES RESOURCE_FILES)
+function(add_platform_specific_resource_files INPUT_SRC_FILES INPUT_RESOURCE_FILES)
 	if (WIN32)
-		list (APPEND SRC_FILES  #Add the resource files needed for windows (icons, asset files etc).
-		"${SDK_ROOT}/res/Windows/shared.rc"
-		"${SDK_ROOT}/res/Windows/resource.h"
-		"${CMAKE_CURRENT_SOURCE_DIR}/cmake-resources/Resources.rc")
+		set(RESOURCE_LIST "")
+		foreach(RESOURCE ${${INPUT_RESOURCE_FILES}})
+			get_filename_component(RESOURCE_NAME ${RESOURCE} NAME)
+			file(RELATIVE_PATH RESOURCE ${CMAKE_CURRENT_SOURCE_DIR}/cmake-resources ${RESOURCE})
+			file(TO_NATIVE_PATH "${RESOURCE}" RESOURCE)
+			string(REPLACE "\\" "\\\\" RESOURCE "${RESOURCE}")
+			set(RESOURCE_LIST ${RESOURCE_LIST} "${RESOURCE_NAME} RCDATA \"${RESOURCE}\"\n")
+		endforeach()
+		string(REPLACE ";" "" RESOURCE_LIST "${RESOURCE_LIST}")
+		configure_file(${SDK_ROOT}/res/Windows/Resources.rc.in ${CMAKE_CURRENT_SOURCE_DIR}/cmake-resources/Resources.rc)
+		#Add the resource files needed for windows (icons, asset files etc).
+		list(APPEND ${INPUT_SRC_FILES}
+			"${SDK_ROOT}/res/Windows/shared.rc"
+			"${SDK_ROOT}/res/Windows/resource.h"
+			"${CMAKE_CURRENT_SOURCE_DIR}/cmake-resources/Resources.rc")
 	elseif(APPLE)
 		if (IOS)
-			set(INFO_PLIST_FILE "${CMAKE_CURRENT_SOURCE_DIR}/cmake-resources/iOS_Info.plist")
+			set(INFO_PLIST_FILE "${CMAKE_CURRENT_SOURCE_DIR}/cmake-resources/iOS_Info.plist" PARENT_SCOPE)
 			file(GLOB ICONS LIST_DIRECTORIES false ${SDK_ROOT}/res/iOS/* ${SDK_ROOT}/res/iOS/OpenGLES/*)
-			list(APPEND RESOURCE_FILES ${ICONS})
+			list(APPEND ${INPUT_RESOURCE_FILES} ${ICONS})
 		else()
-			set(INFO_PLIST_FILE "${CMAKE_CURRENT_SOURCE_DIR}/cmake-resources/macOS_Info.plist")
+			set(INFO_PLIST_FILE "${CMAKE_CURRENT_SOURCE_DIR}/cmake-resources/macOS_Info.plist" PARENT_SCOPE)
+			list(APPEND ${INPUT_RESOURCE_FILES} "${CMAKE_CURRENT_SOURCE_DIR}/cmake-resources/MainMenu.xib")
+		endif()
+		source_group(Resources FILES ${${INPUT_RESOURCE_FILES}})
+		set_source_files_properties(${${INPUT_RESOURCE_FILES}} PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
+	endif()
+	SET(${INPUT_SRC_FILES} ${${INPUT_SRC_FILES}} PARENT_SCOPE)
+	SET(${INPUT_RESOURCE_FILES} ${${INPUT_RESOURCE_FILES}} PARENT_SCOPE)
+endfunction()
+
+function(add_platform_specific_executable EXECUTABLE_NAME INPUT_SRC_FILES INPUT_RESOURCE_FILES)
+	if (WIN32)
+		add_executable(${EXECUTABLE_NAME} WIN32 ${INPUT_SRC_FILES})
+	elseif (ANDROID)
+		add_library(${EXECUTABLE_NAME} SHARED ${INPUT_SRC_FILES})
+		# Force export ANativeActivity_onCreate(),
+		# Refer to: https://github.com/android-ndk/ndk/issues/381
+		set_target_properties(${EXECUTABLE_NAME} PROPERTIES LINK_FLAGS " -u ANativeActivity_onCreate")
+	elseif (APPLE)
+		if (IOS) 
+			add_executable(${EXECUTABLE_NAME} MACOSX_BUNDLE ${INPUT_SRC_FILES} ${INPUT_RESOURCE_FILES})
+		else ()
 			list(APPEND FRAMEWORK_FILES "${EXTERNAL_LIB_FOLDER}/libEGL.dylib" "${EXTERNAL_LIB_FOLDER}/libGLESv2.dylib")
 			set_source_files_properties(${FRAMEWORK_FILES} PROPERTIES MACOSX_PACKAGE_LOCATION Frameworks)
 			source_group(Frameworks FILES ${FRAMEWORK_FILES})
-			list(APPEND RESOURCE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/cmake-resources/MainMenu.xib")
-		endif()
-		source_group(Resources FILES ${RESOURCE_FILES})
-		set_source_files_properties(${RESOURCE_FILES} PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
+			add_executable(${EXECUTABLE_NAME} MACOSX_BUNDLE ${INPUT_SRC_FILES} ${INPUT_RESOURCE_FILES} ${FRAMEWORK_FILES})
+		endif ()
+		set_target_properties(${EXECUTABLE_NAME} PROPERTIES RESOURCE "${INPUT_RESOURCE_FILES}")
+		set_target_properties(${EXECUTABLE_NAME} PROPERTIES MACOSX_BUNDLE_INFO_PLIST "${INFO_PLIST_FILE}")
+	elseif (UNIX OR QNX)
+		add_executable(${EXECUTABLE_NAME} ${INPUT_SRC_FILES})
 	endif()
-endmacro()
+endfunction()
 
 # CAUTION - For this rule to work, the asset files must actually be added as sources to the executable
-macro(add_rule_copy_assets_to_asset_folder RESOURCE_FILES OUTPUT_FOLDER)
+function(add_rule_copy_assets_to_asset_folder INPUT_RESOURCE_FILES INPUT_OUTPUT_FOLDER)
 	if (UNIX OR QNX)
 		#Copy all assets to the Assets folder in order for the executable to be able to locate it
-		foreach (ASSET_FILE_PATH ${RESOURCE_FILES})
+		foreach(ASSET_FILE_PATH ${INPUT_RESOURCE_FILES})
 			get_filename_component(ASSET_FILE_NAME ${ASSET_FILE_PATH} NAME)
 			add_custom_command(
-				OUTPUT ${OUTPUT_FOLDER}/${ASSET_FILE_NAME} 
+				OUTPUT ${INPUT_OUTPUT_FOLDER}/${ASSET_FILE_NAME} 
 				PRE_BUILD 
 				MAIN_DEPENDENCY ${ASSET_FILE_PATH} 
-				COMMAND ${CMAKE_COMMAND} -E copy ${ASSET_FILE_PATH} ${OUTPUT_FOLDER}/${ASSET_FILE_NAME}
-				COMMENT "${CMAKE_PROJECT_NAME}: Copying ${ASSET_FILE_PATH} to ${OUTPUT_FOLDER}/${ASSET_FILE_NAME}"
+				COMMAND ${CMAKE_COMMAND} -E copy ${ASSET_FILE_PATH} ${INPUT_OUTPUT_FOLDER}/${ASSET_FILE_NAME}
+				COMMENT "${CMAKE_PROJECT_NAME}: Copying ${ASSET_FILE_PATH} to ${INPUT_OUTPUT_FOLDER}/${ASSET_FILE_NAME}"
 				)
 		endforeach()
 	endif() #All other platforms package: Windows resources, MacOS package, Android Assets etc.
-endmacro()
+endfunction()
 
-function(get_glslang_validator_type out_glslang_validator_type SHADER_NAME)
-		if (${SHADER_NAME} MATCHES ".fsh$")
-			set(${out_glslang_validator_type} frag PARENT_SCOPE)
-		elseif (${SHADER_NAME} MATCHES ".vsh$")
-			set(${out_glslang_validator_type} vert PARENT_SCOPE)
-		elseif (${SHADER_NAME} MATCHES ".csh$")
-			set(${out_glslang_validator_type} comp PARENT_SCOPE)
-		elseif (${SHADER_NAME} MATCHES ".gsh$")
-			set(${out_glslang_validator_type} geom PARENT_SCOPE)
-		elseif (${SHADER_NAME} MATCHES ".tcsh$")
-			set(${out_glslang_validator_type} tesc PARENT_SCOPE)
-		elseif (${SHADER_NAME} MATCHES ".tesh$")
-			set(${out_glslang_validator_type} tese PARENT_SCOPE)
-		endif()
+function(get_glslang_validator_type out_glslang_validator_type INPUT_SHADER_NAME)
+	if(${INPUT_SHADER_NAME} MATCHES ".fsh$")
+		set(${out_glslang_validator_type} frag PARENT_SCOPE)
+	elseif(${INPUT_SHADER_NAME} MATCHES ".vsh$")
+		set(${out_glslang_validator_type} vert PARENT_SCOPE)
+	elseif(${INPUT_SHADER_NAME} MATCHES ".csh$")
+		set(${out_glslang_validator_type} comp PARENT_SCOPE)
+	elseif(${INPUT_SHADER_NAME} MATCHES ".gsh$")
+		set(${out_glslang_validator_type} geom PARENT_SCOPE)
+	elseif(${INPUT_SHADER_NAME} MATCHES ".tcsh$")
+		set(${out_glslang_validator_type} tesc PARENT_SCOPE)
+	elseif(${INPUT_SHADER_NAME} MATCHES ".tesh$")
+		set(${out_glslang_validator_type} tese PARENT_SCOPE)
+	endif()
 endfunction(get_glslang_validator_type)
 
-function(add_rule_generate_spirv_from_shaders SHADER_NAMES)
+function(add_rule_generate_spirv_from_shaders INPUT_SHADER_NAMES)
 	#GENERATE A PRE-BUILD STEP FOR COMPILING GLSL TO SPIRV
-	foreach (SHADER ${SHADER_NAMES})
+	foreach(SHADER ${INPUT_SHADER_NAMES})
 		get_filename_component(SHADER_NAME ${SHADER} NAME)
-		get_glslang_validator_type(SHADER_TYPE ${SHADER})
-		set (SPIRV_COMPILE_CURRENT_COMMAND ${SPIRV_COMPILER} -V ${CMAKE_CURRENT_SOURCE_DIR}/${SHADER_NAME} -o ${CMAKE_CURRENT_SOURCE_DIR}/${SHADER_NAME}.spv -S ${SHADER_TYPE})
+		get_glslang_validator_type(SHADER_TYPE SHADER_NAME)
 		add_custom_command(
+			DEPENDS glslangValidator
 			OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/${SHADER_NAME}.spv 
 			PRE_BUILD 
 			MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/${SHADER_NAME}
-			COMMAND echo ${SPIRV_COMPILE_CURRENT_COMMAND} && ${SPIRV_COMPILE_CURRENT_COMMAND}
+			COMMAND echo glslangValidator -V ${CMAKE_CURRENT_SOURCE_DIR}/${SHADER_NAME} -o ${CMAKE_CURRENT_SOURCE_DIR}/${SHADER_NAME}.spv -S ${SHADER_TYPE}
+			COMMAND glslangValidator -V ${CMAKE_CURRENT_SOURCE_DIR}/${SHADER_NAME} -o ${CMAKE_CURRENT_SOURCE_DIR}/${SHADER_NAME}.spv -S ${SHADER_TYPE}
 			COMMENT "${CMAKE_PROJECT_NAME}: Compiling ${SHADER_NAME} to ${SHADER_NAME}.spv"
-			)
+		)
 	endforeach()
 endfunction(add_rule_generate_spirv_from_shaders)

@@ -1,6 +1,6 @@
 /*!
 \brief Implementation of the OS specific part of the PVRShell class for the AppKit macOS implementation
-\file PVRShell\OS/AppKit/ShellOS.mm
+\file PVRShell/OS/AppKit/ShellOS.mm
 \author PowerVR by Imagination, Developer Technology Team
 \copyright Copyright (c) Imagination Technologies Limited.
 */
@@ -56,13 +56,13 @@ bool ShellOS::init(DisplayAttributes &data)
 	// Setup read and write paths
 	NSString* readPath = [NSString stringWithFormat:@"%@%@", [[NSBundle mainBundle] resourcePath], @"/"];
 	//_Strings[eReadPath] = [readPath UTF8String];
-    _ReadPaths.push_back([readPath UTF8String]);
+    _readPaths.push_back([readPath UTF8String]);
     NSString* writePath = [NSString stringWithFormat:@"%@%@", [[[NSBundle mainBundle] bundlePath] stringByDeletingLastPathComponent], @"/"];
-    _WritePath = [writePath UTF8String];
+    _writePath = [writePath UTF8String];
 	// Setup the app name
     NSString* name = [[NSProcessInfo processInfo] processName];
     
-    _AppName =[name UTF8String];
+    _appName =[name UTF8String];
 	return true;
 }
 

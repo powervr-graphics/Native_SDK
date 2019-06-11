@@ -17,28 +17,16 @@ namespace Extensions {
 /// <summary>Filter the extensions</summary>
 /// <param name="extensionProperties">Extension properties</param>
 /// <param name="extensionsToEnable">Extensions to enable</param>
-/// <param name="numExtensions">Number of extensions to enable</param>
-/// <returns>std::vector<std::string></returns>
-extern std::vector<std::string> filterExtensions(const std::vector<pvrvk::ExtensionProperties>& extensionProperties, const std::string* extensionsToEnable, uint32_t numExtensions);
-
-/// <summary>Filter instance extensions</summary>
-/// <param name="extensionsToEnable">Pointer to extensions to filter</param>
-/// <param name="extensionsCount">Number of extensions to filter</param>
-/// <returns>Filtered extensions</returns>
-std::vector<std::string> filterInstanceExtensions(const std::string* extensionsToEnable, uint32_t extensionsCount);
+/// <returns>VulkanExtensionList</returns>
+extern VulkanExtensionList filterExtensions(const std::vector<pvrvk::ExtensionProperties>& extensionProperties, const VulkanExtensionList& extensionsToEnable);
 
 /// <summary>Get list of all supported instance extension properties</summary>
 /// <param name="outExtensions">Returned extensions</param>
 void enumerateInstanceExtensions(std::vector<ExtensionProperties>& outExtensions);
 
-/// <summary>Get list of all supported instance extension strings</summary>
-/// <param name="extStr">Returned extensions</param>
-void enumerateInstanceExtensionsString(std::vector<std::string>& extStr);
-
 /// <summary>Query if an Instance Extension is supported</summary>
 /// <param name="extension">The extension string</param>
 /// <returns>True if the instance supports the extension, otherwise false</param>
-bool isInstanceExtensionSupported(const char* extension);
-
+bool isInstanceExtensionSupported(const std::string& extension);
 } // namespace Extensions
 } // namespace pvrvk

@@ -65,32 +65,31 @@ IBL Description
 
 #include "PVRShell/PVRShell.h"
 #include "PVRUtils/PVRUtilsVk.h"
+#include "PVRUtils/Vulkan/PBRUtilsVk.h"
 #include "PVRCore/cameras/TPSCamera.h"
 #include "PVRCore/textureio/TextureWriterPVR.h"
-#include "PVRCore/texture/TextureUtils.h"
 #include "PVRAssets/fileio/GltfReader.h"
 
 // Content file names
 // Shaders
 const char VertShaderFileName[] = "VertShader.vsh.spv";
-const char SimpleVertShaderFileName[] = "SimpleVertShader.vsh.spv";
-const char PBRMaterialFragShaderFileName[] = "PBRMaterialTextureFragShader.fsh.spv";
 const char PBRFragShaderFileName[] = "PBRFragShader.fsh.spv";
 const char SkyboxVertShaderFileName[] = "SkyboxVertShader.vsh.spv";
 const char SkyboxFragShaderFileName[] = "SkyboxFragShader.fsh.spv";
-const char IrradianceVertShaderFileName[] = "IrradianceVertShader.vsh.spv";
-const char IrradianceFragShaderFileName[] = "IrradianceFragShader.fsh.spv";
-const char PreFilterFragShaderFileName[] = "PreFilterFragShader.fsh.spv";
 
-// Scenes
-const char HelmetSceneFileName[] = "damagedHelmet.gltf";
-const char SphereSceneFileName[] = "sphere.pod";
+// Models
+const char HelmetModelFileName[] = "damagedHelmet.gltf";
+const char SphereModelFileName[] = "sphere.pod";
 
+uint32_t currentSkybox = 0;
 // Textures
-const char SkyboxTexFile[] = "MonValley_baked_lightmap.pvr";
-const char DiffuseIrradianceMapTexFile[] = "DiffuseIrradianceMap.pvr";
-const char PrefilterEnvMapTexFile[] = "PrefilterEnvMap.pvr";
-const char PrefilterL0MipMapTexFile[] = "PrefilterL0MipMap.pvr";
+const std::string SkyboxTexFile[] = {
+	"satara_night_scale_0.305_rgb9e5", //
+	"misty_pines_rgb9e5", //
+};
+
+uint32_t numSkyBoxes = sizeof(SkyboxTexFile) / sizeof(SkyboxTexFile[0]);
+
 const char BrdfLUTTexFile[] = "brdfLUT.pvr";
 
 const uint32_t IrradianceMapDim = 64;
@@ -100,13 +99,12 @@ const uint32_t NumSphereRows = 4;
 const uint32_t NumSphereColumns = 6;
 const uint32_t NumInstances = NumSphereRows * NumSphereColumns;
 
-const bool LoadIrradianceMap = true;
-const bool LoadPrefilteredMap = true;
-const bool LoadBRDFLUT = true;
+const float rotationSpeed = .01f;
 
-const glm::vec3 lightDir[1] = {
-	glm::normalize(glm::vec3(0.0f, -0.5f, 0.5f)),
-};
+float fov = 65.f;
+
+const glm::vec3 lightDir = glm::normalize(glm::vec3(-0.5f, -0.5f, -0.5f));
+const glm::vec3 lightColor = glm::vec3(0.f, 0.f, 0.f);
 
 struct UBO
 {
@@ -114,86 +112,74 @@ struct UBO
 	pvrvk::Buffer buffer;
 };
 
-struct Pushconstant
-{
-	uint32_t modelMtxId;
-	uint32_t materialIndex;
-};
-
-enum class SceneMode
+enum class Models
 {
 	Helmet,
 	Sphere,
-	NumScenes
+	NumModels
 };
 
 class SkyBoxPass
 {
 public:
-	void init(pvr::IAssetProvider& assetProvider, pvrvk::Device& device, pvrvk::DescriptorPool& descPool, pvrvk::CommandPool& cmdPool, pvrvk::Queue& queue,
+	void init(pvr::IAssetProvider& assetProvider, pvrvk::Device& device, pvrvk::DescriptorPool& descPool, pvrvk::CommandPool& commandPool, pvrvk::Queue& queue,
 		const pvrvk::RenderPass& renderpass, const pvrvk::PipelineCache& pipelineCache, uint32_t numSwapchains, const pvrvk::Extent2D& viewportDim, const pvrvk::Sampler& sampler,
-		pvr::utils::vma::Allocator& allocator, bool loadIrradianceMap, bool loadPrefilteredMap)
+		pvr::utils::vma::Allocator& allocator)
 	{
-		createScreenSpaceQuad(device, allocator);
-		createUbo(device, numSwapchains, allocator);
+		// /// CREATE THE UBO that holds the information necessary to render the skybox /// //
+		pvr::utils::StructuredMemoryDescription desc;
+		desc.addElement("InvVPMatrix", pvr::GpuDatatypes::mat4x4);
+		desc.addElement("EyePos", pvr::GpuDatatypes::vec4);
+		desc.addElement("exposure", pvr::GpuDatatypes::Float);
 
-		// create the pipeline layout
-		pvrvk::DescriptorSetLayout descSetLayout = initDescriptorSetLayout(device);
+		uboView.initDynamic(desc, numSwapchains, pvr::BufferUsageFlags::UniformBuffer,
+			static_cast<uint32_t>(device->getPhysicalDevice()->getProperties().getLimits().getMinUniformBufferOffsetAlignment()));
+
+		ubo = pvr::utils::createBuffer(device, uboView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
+			pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT | pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, &allocator);
+		uboView.pointToMappedMemory(ubo->getDeviceMemory()->getMappedData());
+
+		// /// CREATE THE PIPELINE OBJECT FOR THE SKYBOX /// //
+		// create skybox descriptor set layout
+		pvrvk::DescriptorSetLayoutCreateInfo descSetLayoutInfo;
+		descSetLayoutInfo.setBinding(0, pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 1, pvrvk::ShaderStageFlags::e_FRAGMENT_BIT);
+		descSetLayoutInfo.setBinding(1, pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 1, pvrvk::ShaderStageFlags::e_VERTEX_BIT | pvrvk::ShaderStageFlags::e_FRAGMENT_BIT);
+
+		pvrvk::DescriptorSetLayout descSetLayout = device->createDescriptorSetLayout(descSetLayoutInfo);
+
 		pvrvk::PipelineLayoutCreateInfo pipelineLayoutInfo;
 		pipelineLayoutInfo.setDescSetLayout(0, descSetLayout);
 
 		pvrvk::PipelineLayout pipeLayout = device->createPipelineLayout(pipelineLayoutInfo);
 		createPipeline(assetProvider, device, renderpass, viewportDim, pipeLayout);
 
-		pvrvk::CommandBuffer cmdBuffer = cmdPool->allocateCommandBuffer();
+		// /// CREATE THE SKYBOX DESCRIPTOR SET /// //
+		descSet = descPool->allocateDescriptorSet(descSetLayout);
+
+		setSkyboxImage(assetProvider, queue, commandPool, descPool, allocator, sampler);
+	}
+
+	void setSkyboxImage(pvr::IAssetProvider& assetProvider, pvrvk::Queue queue, pvrvk::CommandPool commandPool, pvrvk::DescriptorPool descPool,
+		pvr::utils::vma::Allocator& allocator, const pvrvk::Sampler& sampler)
+	{
+		// /// LOAD THE SKYBOX TEXTURE /// //
+		pvrvk::CommandBuffer cmdBuffer = commandPool->allocateCommandBuffer();
+		pvrvk::Device device = commandPool->getDevice();
+
 		cmdBuffer->begin();
-		loadTexture(assetProvider, device, cmdBuffer, allocator);
+
+		skyBoxMap = device->createImageView(pvrvk::ImageViewCreateInfo(pvr::utils::loadAndUploadImage(device, SkyboxTexFile[currentSkybox] + ".pvr", true, cmdBuffer, assetProvider,
+			pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, nullptr, &allocator, &allocator)));
+
+		cmdBuffer->end();
 
 		pvrvk::SubmitInfo submitInfo;
 		submitInfo.commandBuffers = &cmdBuffer;
 		submitInfo.numCommandBuffers = 1;
-
-		if (!loadIrradianceMap || !loadPrefilteredMap)
-		{
-			cmdBuffer->end();
-			queue->submit(&submitInfo, 1);
-			queue->waitIdle();
-			cmdBuffer->begin();
-		}
-
-		if (loadIrradianceMap)
-		{
-			irradianceMap = pvr::utils::loadAndUploadImageAndView(device, DiffuseIrradianceMapTexFile, true, cmdBuffer, assetProvider, pvrvk::ImageUsageFlags::e_SAMPLED_BIT,
-				pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, nullptr, &allocator, &allocator);
-		}
-		else
-		{
-			irradianceMap = device->createImageView(
-				pvrvk::ImageViewCreateInfo(generateIrradianceMap(assetProvider, device, cmdPool, descPool, sampler, queue, DiffuseIrradianceMapTexFile, allocator)));
-		}
-		if (loadPrefilteredMap)
-		{
-			prefilteredMap = pvr::utils::loadAndUploadImageAndView(device, PrefilterEnvMapTexFile, true, cmdBuffer, assetProvider, pvrvk::ImageUsageFlags::e_SAMPLED_BIT,
-				pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, nullptr, &allocator, &allocator);
-			prefilteredL0MipMap = pvr::utils::loadAndUploadImageAndView(device, PrefilterL0MipMapTexFile, true, cmdBuffer, assetProvider, pvrvk::ImageUsageFlags::e_SAMPLED_BIT,
-				pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, nullptr, &allocator, &allocator);
-		}
-		else
-		{
-			pvrvk::Image cubemaps[2];
-			generatePrefilteredMap(
-				assetProvider, device, cmdPool, descPool, sampler, queue, pipelineCache, PrefilterEnvMapTexFile, PrefilterL0MipMapTexFile, allocator, cubemaps[0], cubemaps[1]);
-			prefilteredMap = device->createImageView(pvrvk::ImageViewCreateInfo(cubemaps[0]));
-			prefilteredL0MipMap = device->createImageView(pvrvk::ImageViewCreateInfo(cubemaps[1]));
-		}
-
-		numPrefilteredMipLevels = prefilteredMap->getImage()->getNumMipLevels();
-		cmdBuffer->end();
 		queue->submit(&submitInfo, 1);
 		queue->waitIdle();
 
-		// create a descriptor set
-		descSet = descPool->allocateDescriptorSet(descSetLayout);
+		cmdBuffer->begin();
 
 		pvrvk::WriteDescriptorSet writeDescSets[2];
 		writeDescSets[0]
@@ -203,6 +189,22 @@ public:
 		writeDescSets[1].set(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, descSet, 1).setBufferInfo(0, pvrvk::DescriptorBufferInfo(ubo, 0, uboView.getDynamicSliceSize()));
 
 		device->updateDescriptorSets(writeDescSets, ARRAY_SIZE(writeDescSets), nullptr, 0);
+
+		// Load (or generate) the other image based lighting files (diffuse/irradiance, specular/prefiltered)
+
+		std::string diffuseMapFilename = SkyboxTexFile[currentSkybox] + "_Irradiance.pvr";
+		std::string prefilteredMapFilename = SkyboxTexFile[currentSkybox] + "_Prefiltered.pvr";
+
+		irradianceMap = pvr::utils::loadAndUploadImageAndView(device, diffuseMapFilename.c_str(), true, cmdBuffer, assetProvider, pvrvk::ImageUsageFlags::e_SAMPLED_BIT,
+			pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, nullptr, &allocator, &allocator);
+		prefilteredMap = pvr::utils::loadAndUploadImageAndView(device, prefilteredMapFilename.c_str(), true, cmdBuffer, assetProvider, pvrvk::ImageUsageFlags::e_SAMPLED_BIT,
+			pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, nullptr, &allocator, &allocator);
+
+		numPrefilteredMipLevels = prefilteredMap->getImage()->getNumMipLevels();
+
+		cmdBuffer->end();
+		queue->submit(&submitInfo, 1);
+		queue->waitIdle();
 	}
 
 	uint32_t getNumPrefilteredMipLevels() const
@@ -222,17 +224,18 @@ public:
 
 	pvrvk::ImageView getPrefilteredMipMap()
 	{
-		return prefilteredL0MipMap;
+		return skyBoxMap;
 	}
 
 	/// <summary>Update Per frame.</summary>
 	/// <param name="swapchainIndex">current swapchain index</param>
 	/// <param name="invViewProj">inverse view projection matrix.</param>
 	/// <param name="eyePos">camera position</param>
-	void update(uint32_t swapchainIndex, const glm::mat4& invViewProj, const glm::vec3& eyePos)
+	void update(uint32_t swapchainIndex, const glm::mat4& invViewProj, const glm::vec3& eyePos, float exposure)
 	{
 		uboView.getElement(0, 0, swapchainIndex).setValue(invViewProj);
 		uboView.getElement(1, 0, swapchainIndex).setValue(glm::vec4(eyePos, 0.0f));
+		uboView.getElement(2, 0, swapchainIndex).setValue(exposure);
 		if (uint32_t(ubo->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
 		{
 			ubo->getDeviceMemory()->flushRange(uboView.getDynamicSliceOffset(swapchainIndex), uboView.getDynamicSliceSize());
@@ -245,7 +248,6 @@ public:
 	void recordCommands(pvrvk::CommandBuffer& cmdBuffer, uint32_t swapchainIndex)
 	{
 		cmdBuffer->bindPipeline(pipeline);
-		cmdBuffer->bindVertexBuffer(vbo, 0, 0);
 		uint32_t offset = uboView.getDynamicSliceOffset(swapchainIndex);
 		cmdBuffer->bindDescriptorSet(pvrvk::PipelineBindPoint::e_GRAPHICS, pipeline->getPipelineLayout(), 0, descSet, &offset, 1);
 
@@ -253,66 +255,11 @@ public:
 	}
 
 private:
-	void createScreenSpaceQuad(pvrvk::Device& device, pvr::utils::vma::Allocator& allocator)
-	{
-		const float quadVertices[] = {
-			-1, -1, 1.f, // upper left
-			-1, 1, 1.f, // lower left
-			1, -1, 1.f, // upper right
-			1, -1, 1.f, // upper right
-			-1, 1, 1.f, // lower left
-			1, 1, 1.f // lower right
-		};
-
-		vbo = pvr::utils::createBuffer(device, sizeof(quadVertices), pvrvk::BufferUsageFlags::e_VERTEX_BUFFER_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
-			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, &allocator);
-		pvr::utils::updateHostVisibleBuffer(vbo, quadVertices, 0, sizeof(quadVertices), true);
-	}
-
 	/// <summary>Create uniform buffer objects</summary>
 	/// <param name="device">The device the vulkan resources allocated from.</param>
 	/// <param name="numSwapchains">Number of swapchains.</param>
 	/// <param name="allocator">buffer memory allocator.</param>
-	void createUbo(pvrvk::Device& device, uint32_t numSwapchains, pvr::utils::vma::Allocator& allocator)
-	{
-		// create the structured memory view
-		pvr::utils::StructuredMemoryDescription desc;
-		desc.addElement("InvVPMatrix", pvr::GpuDatatypes::mat4x4);
-		desc.addElement("EyePos", pvr::GpuDatatypes::vec4);
-
-		uboView.initDynamic(desc, numSwapchains, pvr::BufferUsageFlags::UniformBuffer,
-			static_cast<uint32_t>(device->getPhysicalDevice()->getProperties().getLimits().getMinUniformBufferOffsetAlignment()));
-
-		ubo = pvr::utils::createBuffer(device, uboView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
-			pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT | pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, &allocator);
-		uboView.pointToMappedMemory(ubo->getDeviceMemory()->getMappedData());
-	}
-
-	/// <summary>Load skybox texture and its lightmap</summary>
-	/// <param name="device">The device the vulkan resources allocated from.</param>
-	/// <param name="uploadCmdBuffer">Commandbuffer used for uploading the textures.</param>
-	/// <param name="assetProvider">Assetprovider for loading textures from disk.</param>
-	/// <param name="allocator">Image memory alloator.</param>
-	void loadTexture(pvr::IAssetProvider& assetProvider, pvrvk::Device& device, pvrvk::CommandBuffer& uploadCmdBuffer, pvr::utils::vma::Allocator& allocator)
-	{
-		// load the  skybox texture
-		skyBoxMap = device->createImageView(pvrvk::ImageViewCreateInfo(pvr::utils::loadAndUploadImage(device, SkyboxTexFile, true, uploadCmdBuffer, assetProvider,
-			pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, nullptr, &allocator, &allocator)));
-	}
-
-	pvrvk::DescriptorSetLayout initDescriptorSetLayout(pvrvk::Device& device)
-	{
-		// create skybox descriptor set layout
-		pvrvk::DescriptorSetLayoutCreateInfo descSetLayout;
-
-		// combined image sampler descriptor
-		descSetLayout.setBinding(0, pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 1, pvrvk::ShaderStageFlags::e_FRAGMENT_BIT);
-
-		// uniform buffer
-		descSetLayout.setBinding(1, pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 1, pvrvk::ShaderStageFlags::e_VERTEX_BIT);
-
-		return device->createDescriptorSetLayout(descSetLayout);
-	}
+	void createUbo(pvrvk::Device& device, uint32_t numSwapchains, pvr::utils::vma::Allocator& allocator) {}
 
 	void createPipeline(pvr::IAssetProvider& assetProvider, pvrvk::Device& device, const pvrvk::RenderPass& renderpass, const pvrvk::Extent2D& viewportDim,
 		const pvrvk::PipelineLayout& pipelineLayout)
@@ -342,8 +289,6 @@ private:
 
 		// vertex attributes and bindings
 		pipeInfo.vertexInput.clear();
-		pipeInfo.vertexInput.addInputBinding(pvrvk::VertexInputBindingDescription(0, sizeof(float) * 3));
-		pipeInfo.vertexInput.addInputAttribute(pvrvk::VertexInputAttributeDescription(0, 0, pvrvk::Format::e_R32G32B32_SFLOAT, 0));
 
 		pipeInfo.viewport.setViewportAndScissor(0, pvrvk::Viewport(0.0f, 0.0f, static_cast<float>(viewportDim.getWidth()), static_cast<float>(viewportDim.getHeight())),
 			pvrvk::Rect2D(0, 0, viewportDim.getWidth(), viewportDim.getHeight()));
@@ -351,637 +296,10 @@ private:
 		pipeline = device->createGraphicsPipeline(pipeInfo);
 	}
 
-	/// <summary>Generate specular irradiance map. Each level of the specular mip map get blured corresponding the roughness value from 0 to 1.0.
-	/// The biggest disadvantage to is that we are losing the actual mipmap ing technique and the top mipmap level produces shimmerish artifacts.
-	/// Apart from reducing its resolution and loosing its quality we using separate texture with mip mapping for level 0.
-	/// So in the fragment shader, sample from the mip mapped texture if the material's roughness value is below 1.0 and mixes with the prefiltered map fixes this issue.
-	/// see file: PBRFragShader.fsh  function: prefilteredReflection </summary>
-	/// <param name="device">Device the resource allocated from.</param>
-	/// <param name="cmdPool">upload commandbuffer allocation pool.</param>
-	/// <param name="descPool">descriptor set allocation pool.</param>
-	/// <param name="sampler">Trilinear sampler</param>
-	/// <param name="queue">upload submission queue.</param>
-	/// <param name="assetProvider">Asset provider to read/ write from disk.</param>
-	/// <param name="prefilterEnvMapFile">name of the prefiltered map file</param>
-	/// <param name="prefilteredEnvL0MipMap">name of the level 0 mipmap file</param>
-	/// <param name="allocator">vulkan memory allocator for image and buffers</param>
-	/// <param name="outPreFilteredCubeMap">returned prefiltered map</param>
-	/// <param name="outMipCubeMap">returned mipmap texture.</param>
-	void generatePrefilteredMap(pvr::IAssetProvider& assetProvider, pvrvk::Device& device, pvrvk::CommandPool& cmdPool, pvrvk::DescriptorPool& descPool,
-		const pvrvk::Sampler& sampler, pvrvk::Queue& queue, const pvrvk::PipelineCache& pipelineCache, const char* prefilterEnvMapFile, const char* prefilteredEnvL0MipMap,
-		pvr::utils::vma::Allocator& allocator, pvrvk::Image& outPreFilteredCubeMap, pvrvk::Image& outMipCubeMap)
-	{
-		const uint32_t numFaces = 6;
-		pvrvk::Image renderTarget[2]; // fbo attachments, prfiltered map and mipmaping texture
-		pvrvk::ImageView imageView[2];
-
-		// Discard the last two mipmaps. From our experimentation keeping the last miplevel 4x4 avoids blocky texel artifacts for materials with roughness values of 1.0.
-		const uint32_t DISCARD_SPECULAR_MIP_LEVELS = 2;
-
-		// calculate number of mip map levels
-		const uint32_t numMipLevels = static_cast<uint32_t>(log2(static_cast<float>(PrefilterEnvMapDim)) + 1.0f - DISCARD_SPECULAR_MIP_LEVELS); // prefilterMap
-
-		struct PushConstant
-		{
-			float roughnesess;
-		};
-
-		// calculate level dimensions.
-		std::vector<uint32_t> mipLevelDimensions(numMipLevels);
-		for (size_t i = 0; i < mipLevelDimensions.size(); ++i)
-		{
-			mipLevelDimensions[i] = static_cast<uint32_t>(pow(2, numMipLevels + DISCARD_SPECULAR_MIP_LEVELS - i - 1));
-		}
-
-		pvrvk::CommandBuffer cmdBuffer = cmdPool->allocateCommandBuffer();
-
-		// Create descriptor set
-		// create skybox descriptor set layout
-		pvrvk::DescriptorSetLayoutCreateInfo descSetLayout;
-
-		descSetLayout.setBinding(0, pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 1, pvrvk::ShaderStageFlags::e_FRAGMENT_BIT); // skybox
-		descSetLayout.setBinding(1, pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 1, pvrvk::ShaderStageFlags::e_VERTEX_BIT); // uniform buffer
-		pvrvk::DescriptorSetLayout setLayout = device->createDescriptorSetLayout(descSetLayout);
-		pvrvk::DescriptorSet descSet = descPool->allocateDescriptorSet(setLayout);
-
-		///////////////////////////////////////////////
-		// UBO BUFFER AND VIEW
-		pvr::utils::StructuredBufferView uboView;
-		pvr::utils::StructuredMemoryDescription viewDesc;
-		viewDesc.addElement("rotateMtx", pvr::GpuDatatypes::mat4x4);
-		uboView.initDynamic(viewDesc, numFaces, pvr::BufferUsageFlags::UniformBuffer, device->getPhysicalDevice()->getProperties().getLimits().getMinUniformBufferOffsetAlignment());
-
-		pvrvk::Buffer uboBuffer = pvr::utils::createBuffer(device, uboView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
-			pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT | pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, &allocator);
-		uboView.pointToMappedMemory(uboBuffer->getDeviceMemory()->getMappedData());
-
-		// To draw the skybox, we are using a full screen quad with different oritenation matrices for each faces.
-		// Face matrices.
-		const glm::mat4 cubeView[numFaces] = {
-			glm::scale(glm::vec3(1.f, -1.f, 1.f)) * glm::rotate(glm::radians(90.f), glm::vec3(0.0f, 1.0f, 0.f)), // +X
-			glm::scale(glm::vec3(1.f, -1.f, 1.f)) * glm::rotate(glm::radians(-90.f), glm::vec3(0.0f, 1.0f, 0.f)), // -X
-			glm::scale(glm::vec3(1.f, -1.f, 1.f)) * glm::rotate(glm::radians(90.f), glm::vec3(1.0f, .0f, 0.f)), // +Y
-			glm::scale(glm::vec3(1.f, -1.f, 1.f)) * glm::rotate(glm::radians(-90.f), glm::vec3(1.0f, .0f, 0.f)), // -Y
-			glm::scale(glm::vec3(1.0f, -1.0f, 1.f)), // +Z
-			glm::scale(glm::vec3(-1.0f, -1.0f, -1.f)), // -Z
-		};
-
-		uboView.getElement(0, 0, 0).setValue(cubeView[0]);
-		uboView.getElement(0, 0, 1).setValue(cubeView[1]);
-		uboView.getElement(0, 0, 2).setValue(cubeView[2]);
-		uboView.getElement(0, 0, 3).setValue(cubeView[3]);
-		uboView.getElement(0, 0, 4).setValue(cubeView[4]);
-		uboView.getElement(0, 0, 5).setValue(cubeView[5]);
-
-		if (uint32_t(uboBuffer->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
-		{
-			uboBuffer->getDeviceMemory()->flushRange();
-		}
-
-		const pvrvk::ClearValue clearValues[] = {
-			pvrvk::ClearValue(0.f, 0.f, 0.f, 0.0f),
-			pvrvk::ClearValue(0.f, 0.f, 0.f, 0.0f),
-		};
-
-		const pvrvk::Format format = pvrvk::Format::e_R8G8B8A8_UNORM;
-		const uint32_t stride = sizeof(uint8_t) * 4;
-
-		pvrvk::RenderPass renderpass;
-		pvrvk::Framebuffer fbo;
-		pvrvk::GraphicsPipeline pipelines;
-
-		cmdBuffer->begin(pvrvk::CommandBufferUsageFlags::e_ONE_TIME_SUBMIT_BIT);
-		cmdBuffer->bindVertexBuffer(vbo, 0, 0);
-
-		// Create two buffers (size=numFaces * stride * maxImageDimension)for each cubemaps
-
-		const VkDeviceSize bufferSize = numMipLevels * 6 * stride * mipLevelDimensions[0] * mipLevelDimensions[0];
-
-		pvrvk::Buffer imageDataBuffer[2] = { pvr::utils::createBuffer(device, bufferSize, pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
-												 pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT | pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, &allocator),
-
-			pvr::utils::createBuffer(device, bufferSize, pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
-				pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT | pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, &allocator) };
-
-		pvrvk::WriteDescriptorSet descSetUpdate[] = {
-			pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, descSet, 0),
-			pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, descSet, 1),
-		};
-		descSetUpdate[0].setImageInfo(0, pvrvk::DescriptorImageInfo(skyBoxMap, sampler, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL));
-		descSetUpdate[1].setBufferInfo(0, pvrvk::DescriptorBufferInfo(uboBuffer, 0, uboView.getDynamicSliceSize()));
-
-		device->updateDescriptorSets(descSetUpdate, ARRAY_SIZE(descSetUpdate), nullptr, 0);
-
-		// prefiltered target
-		renderTarget[0] = pvr::utils::createImage(device, pvrvk::ImageType::e_2D, format, pvrvk::Extent3D(mipLevelDimensions[0], mipLevelDimensions[0], 1),
-			pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT, pvrvk::ImageCreateFlags::e_NONE, pvrvk::ImageLayersSize(1, 1),
-			pvrvk::SampleCountFlags::e_1_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, &allocator);
-
-		// mip target
-		renderTarget[1] = pvr::utils::createImage(device, pvrvk::ImageType::e_2D, format, pvrvk::Extent3D(mipLevelDimensions[0], mipLevelDimensions[0], 1),
-			pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT, pvrvk::ImageCreateFlags::e_NONE, pvrvk::ImageLayersSize(1, 1),
-			pvrvk::SampleCountFlags::e_1_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, &allocator);
-
-		imageView[0] = device->createImageView(pvrvk::ImageViewCreateInfo(renderTarget[0]));
-		imageView[1] = device->createImageView(pvrvk::ImageViewCreateInfo(renderTarget[1]));
-
-		// create the cubemap image
-
-		outPreFilteredCubeMap = pvr::utils::createImage(device, pvrvk::ImageType::e_2D, format, pvrvk::Extent3D(mipLevelDimensions[0], mipLevelDimensions[0], 1),
-			pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_TRANSFER_DST_BIT | pvrvk::ImageUsageFlags::e_SAMPLED_BIT,
-			pvrvk::ImageCreateFlags::e_CUBE_COMPATIBLE_BIT, pvrvk::ImageLayersSize(6, numMipLevels), pvrvk::SampleCountFlags::e_1_BIT,
-			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, &allocator);
-		pvr::utils::setImageLayout(outPreFilteredCubeMap, pvrvk::ImageLayout::e_UNDEFINED, pvrvk::ImageLayout::e_TRANSFER_DST_OPTIMAL, cmdBuffer);
-
-		outMipCubeMap = pvr::utils::createImage(device, pvrvk::ImageType::e_2D, format, pvrvk::Extent3D(mipLevelDimensions[0], mipLevelDimensions[0], 1),
-			pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_TRANSFER_DST_BIT | pvrvk::ImageUsageFlags::e_SAMPLED_BIT,
-			pvrvk::ImageCreateFlags::e_CUBE_COMPATIBLE_BIT, pvrvk::ImageLayersSize(6, numMipLevels), pvrvk::SampleCountFlags::e_1_BIT,
-			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, &allocator);
-		pvr::utils::setImageLayout(outMipCubeMap, pvrvk::ImageLayout::e_UNDEFINED, pvrvk::ImageLayout::e_TRANSFER_DST_OPTIMAL, cmdBuffer);
-
-		// create the renderpass
-		pvrvk::RenderPassCreateInfo rpInfo;
-		rpInfo.setAttachmentDescription(0,
-			pvrvk::AttachmentDescription::createColorDescription(
-				format, pvrvk::ImageLayout::e_UNDEFINED, pvrvk::ImageLayout::e_TRANSFER_SRC_OPTIMAL, pvrvk::AttachmentLoadOp::e_DONT_CARE, pvrvk::AttachmentStoreOp::e_STORE));
-
-		rpInfo.setAttachmentDescription(1,
-			pvrvk::AttachmentDescription::createColorDescription(
-				format, pvrvk::ImageLayout::e_UNDEFINED, pvrvk::ImageLayout::e_TRANSFER_SRC_OPTIMAL, pvrvk::AttachmentLoadOp::e_DONT_CARE, pvrvk::AttachmentStoreOp::e_STORE));
-
-		pvrvk::SubpassDescription subpassDesc;
-		subpassDesc.setColorAttachmentReference(0, pvrvk::AttachmentReference(0, pvrvk::ImageLayout::e_COLOR_ATTACHMENT_OPTIMAL));
-		subpassDesc.setColorAttachmentReference(1, pvrvk::AttachmentReference(1, pvrvk::ImageLayout::e_COLOR_ATTACHMENT_OPTIMAL));
-
-		const pvrvk::SubpassDependency dependencies[] = {
-
-			pvrvk::SubpassDependency(pvrvk::SubpassExternal, 0, pvrvk::PipelineStageFlags::e_TOP_OF_PIPE_BIT, pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT,
-				pvrvk::AccessFlags::e_MEMORY_READ_BIT, pvrvk::AccessFlags::e_COLOR_ATTACHMENT_READ_BIT | pvrvk::AccessFlags::e_COLOR_ATTACHMENT_WRITE_BIT,
-				pvrvk::DependencyFlags::e_BY_REGION_BIT),
-
-			pvrvk::SubpassDependency(0, pvrvk::SubpassExternal, pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT, pvrvk::PipelineStageFlags::e_BOTTOM_OF_PIPE_BIT,
-				pvrvk::AccessFlags::e_COLOR_ATTACHMENT_READ_BIT | pvrvk::AccessFlags::e_COLOR_ATTACHMENT_WRITE_BIT, pvrvk::AccessFlags::e_MEMORY_READ_BIT,
-				pvrvk::DependencyFlags::e_BY_REGION_BIT),
-
-			pvrvk::SubpassDependency(pvrvk::SubpassExternal, 1, pvrvk::PipelineStageFlags::e_TOP_OF_PIPE_BIT, pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT,
-				pvrvk::AccessFlags::e_MEMORY_READ_BIT, pvrvk::AccessFlags::e_COLOR_ATTACHMENT_READ_BIT | pvrvk::AccessFlags::e_COLOR_ATTACHMENT_WRITE_BIT,
-				pvrvk::DependencyFlags::e_BY_REGION_BIT),
-
-			pvrvk::SubpassDependency(1, pvrvk::SubpassExternal, pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT, pvrvk::PipelineStageFlags::e_BOTTOM_OF_PIPE_BIT,
-				pvrvk::AccessFlags::e_COLOR_ATTACHMENT_READ_BIT | pvrvk::AccessFlags::e_COLOR_ATTACHMENT_WRITE_BIT, pvrvk::AccessFlags::e_MEMORY_READ_BIT,
-				pvrvk::DependencyFlags::e_BY_REGION_BIT),
-
-		};
-		rpInfo.addSubpassDependencies(dependencies, ARRAY_SIZE(dependencies));
-		rpInfo.setSubpass(0, subpassDesc);
-		renderpass = device->createRenderPass(rpInfo);
-
-		// Create the fbo
-		pvrvk::FramebufferCreateInfo fboInfo;
-		fboInfo.setAttachment(0, imageView[0]); // prefilterd map
-		fboInfo.setAttachment(1, imageView[1]); // mip map
-		fboInfo.setDimensions(mipLevelDimensions[0], mipLevelDimensions[0]);
-		fboInfo.setRenderPass(renderpass);
-		fbo = device->createFramebuffer(fboInfo);
-
-		pvrvk::GraphicsPipelineCreateInfo pipelineInfo;
-		pipelineInfo.depthStencil.enableAllStates(false);
-
-		pipelineInfo.vertexShader = device->createShaderModule(pvrvk::ShaderModuleCreateInfo(assetProvider.getAssetStream(IrradianceVertShaderFileName)->readToEnd<uint32_t>()));
-		pipelineInfo.fragmentShader = device->createShaderModule(pvrvk::ShaderModuleCreateInfo(assetProvider.getAssetStream(PreFilterFragShaderFileName)->readToEnd<uint32_t>()));
-
-		// depth stencil state
-		pipelineInfo.depthStencil.enableDepthWrite(false);
-		pipelineInfo.depthStencil.enableDepthTest(false);
-
-		// rasterizer state
-		pipelineInfo.rasterizer.setCullMode(pvrvk::CullModeFlags::e_BACK_BIT);
-		pipelineInfo.rasterizer.setFrontFaceWinding(pvrvk::FrontFace::e_COUNTER_CLOCKWISE);
-		// blend state
-		pipelineInfo.colorBlend.setAttachmentState(0, pvrvk::PipelineColorBlendAttachmentState());
-		pipelineInfo.colorBlend.setAttachmentState(1, pvrvk::PipelineColorBlendAttachmentState());
-		// input assembler
-		pipelineInfo.inputAssembler.setPrimitiveTopology(pvrvk::PrimitiveTopology::e_TRIANGLE_LIST);
-		pipelineInfo.renderPass = renderpass;
-
-		// vertex attributes and bindings
-		pipelineInfo.vertexInput.clear();
-		pipelineInfo.vertexInput.addInputBinding(pvrvk::VertexInputBindingDescription(0, sizeof(float) * 3));
-		pipelineInfo.vertexInput.addInputAttribute(pvrvk::VertexInputAttributeDescription(0, 0, pvrvk::Format::e_R32G32B32_SFLOAT, 0));
-		pipelineInfo.viewport.setViewportAndScissor(0, pvrvk::Viewport(), pvrvk::Rect2D());
-
-		pvrvk::PipelineLayoutCreateInfo pipeLayoutInfo;
-		pipeLayoutInfo.addDescSetLayout(descSet->getDescriptorSetLayout());
-		pipeLayoutInfo.setPushConstantRange(0, pvrvk::PushConstantRange(pvrvk::ShaderStageFlags::e_FRAGMENT_BIT, 0, sizeof(PushConstant)));
-
-		pipelineInfo.pipelineLayout = device->createPipelineLayout(pipeLayoutInfo);
-		pipelineInfo.dynamicStates.setDynamicState(pvrvk::DynamicState::e_VIEWPORT, true);
-		pipelineInfo.dynamicStates.setDynamicState(pvrvk::DynamicState::e_SCISSOR, true);
-
-		pipelines = device->createGraphicsPipeline(pipelineInfo, pipelineCache);
-
-		cmdBuffer->debugMarkerBeginEXT("Generate cubemap");
-		cmdBuffer->bindPipeline(pipelines);
-
-		VkDeviceSize bufferOffset = 0;
-		for (uint32_t level = 0; level < numMipLevels; ++level)
-		{
-			uint32_t dim = mipLevelDimensions[level];
-			cmdBuffer->debugMarkerBeginEXT("Cubemap level");
-			// set the viewport of the current dimension
-			cmdBuffer->setViewport(pvrvk::Viewport(0.0f, 0.0f, static_cast<float>(dim), static_cast<float>(dim)));
-			const pvrvk::Rect2D scissor(pvrvk::Offset2D(), pvrvk::Extent2D(dim, dim));
-			cmdBuffer->setScissor(0, 1, &scissor);
-
-			// set the roughness value
-			const PushConstant pushConst = { static_cast<float>(level) / static_cast<float>(numMipLevels) };
-			cmdBuffer->pushConstants(pipelines->getPipelineLayout(), pvrvk::ShaderStageFlags::e_FRAGMENT_BIT, 0, sizeof(pushConst), &pushConst);
-
-			// draw each face
-			for (uint32_t j = 0; j < numFaces; ++j)
-			{
-				uint32_t offset = uboView.getDynamicSliceOffset(j); // select the right orientation matrix
-				cmdBuffer->bindDescriptorSet(pvrvk::PipelineBindPoint::e_GRAPHICS, pipelines->getPipelineLayout(), 0, descSet, &offset, 1);
-
-				// calculate the mip level dimension
-				cmdBuffer->beginRenderPass(fbo, true, clearValues, ARRAY_SIZE(clearValues));
-
-				cmdBuffer->draw(0, 6);
-				cmdBuffer->endRenderPass();
-
-				// prepear both attachment for transfer src read operation.
-				pvrvk::MemoryBarrierSet barriers;
-				barriers.addBarrier(pvrvk::ImageMemoryBarrier(pvrvk::AccessFlags::e_MEMORY_READ_BIT, pvrvk::AccessFlags::e_TRANSFER_READ_BIT, renderTarget[0],
-					pvrvk::ImageSubresourceRange(pvrvk::ImageAspectFlags::e_COLOR_BIT), pvrvk::ImageLayout::e_TRANSFER_SRC_OPTIMAL, pvrvk::ImageLayout::e_TRANSFER_SRC_OPTIMAL,
-					queue->getFamilyIndex(), queue->getFamilyIndex()));
-
-				barriers.addBarrier(pvrvk::ImageMemoryBarrier(pvrvk::AccessFlags::e_MEMORY_READ_BIT, pvrvk::AccessFlags::e_TRANSFER_READ_BIT, renderTarget[1],
-					pvrvk::ImageSubresourceRange(pvrvk::ImageAspectFlags::e_COLOR_BIT), pvrvk::ImageLayout::e_TRANSFER_SRC_OPTIMAL, pvrvk::ImageLayout::e_TRANSFER_SRC_OPTIMAL,
-					queue->getFamilyIndex(), queue->getFamilyIndex()));
-
-				cmdBuffer->pipelineBarrier(pvrvk::PipelineStageFlags::e_BOTTOM_OF_PIPE_BIT, pvrvk::PipelineStageFlags::e_TRANSFER_BIT, barriers);
-
-				// copy it in to the buffer for  writing the texture in to a file.
-				const pvrvk::BufferImageCopy regions(bufferOffset, 0, 0, pvrvk::ImageSubresourceLayers(), pvrvk::Offset3D(), pvrvk::Extent3D(dim, dim, 1));
-				cmdBuffer->copyImageToBuffer(renderTarget[0], pvrvk::ImageLayout::e_TRANSFER_SRC_OPTIMAL, imageDataBuffer[0], &regions, 1);
-				cmdBuffer->copyImageToBuffer(renderTarget[1], pvrvk::ImageLayout::e_TRANSFER_SRC_OPTIMAL, imageDataBuffer[1], &regions, 1);
-
-				// copy it in to the final out image
-				const pvrvk::ImageCopy blit(pvrvk::ImageSubresourceLayers(pvrvk::ImageAspectFlags::e_COLOR_BIT, 0, 0, 1), pvrvk::Offset3D(),
-					pvrvk::ImageSubresourceLayers(pvrvk::ImageAspectFlags::e_COLOR_BIT, level, j, 1), pvrvk::Offset3D(), pvrvk::Extent3D(dim, dim, 1));
-
-				cmdBuffer->copyImage(renderTarget[0], outPreFilteredCubeMap, pvrvk::ImageLayout::e_TRANSFER_SRC_OPTIMAL, pvrvk::ImageLayout::e_TRANSFER_DST_OPTIMAL, 1, &blit);
-				cmdBuffer->copyImage(renderTarget[1], outMipCubeMap, pvrvk::ImageLayout::e_TRANSFER_SRC_OPTIMAL, pvrvk::ImageLayout::e_TRANSFER_DST_OPTIMAL, 1, &blit);
-
-				barriers.clearAllBarriers();
-				barriers.addBarrier(pvrvk::ImageMemoryBarrier(pvrvk::AccessFlags::e_TRANSFER_READ_BIT, pvrvk::AccessFlags::e_NONE, renderTarget[0],
-					pvrvk::ImageSubresourceRange(pvrvk::ImageAspectFlags::e_COLOR_BIT), pvrvk::ImageLayout::e_TRANSFER_SRC_OPTIMAL, pvrvk::ImageLayout::e_TRANSFER_SRC_OPTIMAL,
-					queue->getFamilyIndex(), queue->getFamilyIndex()));
-
-				barriers.addBarrier(pvrvk::ImageMemoryBarrier(pvrvk::AccessFlags::e_TRANSFER_READ_BIT, pvrvk::AccessFlags::e_NONE, renderTarget[1],
-					pvrvk::ImageSubresourceRange(pvrvk::ImageAspectFlags::e_COLOR_BIT), pvrvk::ImageLayout::e_TRANSFER_SRC_OPTIMAL, pvrvk::ImageLayout::e_TRANSFER_SRC_OPTIMAL,
-					queue->getFamilyIndex(), queue->getFamilyIndex()));
-
-				cmdBuffer->pipelineBarrier(pvrvk::PipelineStageFlags::e_TRANSFER_BIT, pvrvk::PipelineStageFlags::e_TOP_OF_PIPE_BIT, barriers);
-				bufferOffset += stride * dim * dim;
-			}
-			cmdBuffer->debugMarkerEndEXT();
-		}
-		pvr::utils::setImageLayout(outPreFilteredCubeMap, pvrvk::ImageLayout::e_TRANSFER_DST_OPTIMAL, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, cmdBuffer);
-		pvr::utils::setImageLayout(outMipCubeMap, pvrvk::ImageLayout::e_TRANSFER_DST_OPTIMAL, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, cmdBuffer);
-
-		cmdBuffer->debugMarkerEndEXT();
-
-		cmdBuffer->end();
-
-		pvrvk::SubmitInfo submitInfo;
-		submitInfo.commandBuffers = &cmdBuffer;
-		submitInfo.numCommandBuffers = 1;
-
-		pvrvk::Fence fence = device->createFence();
-		queue->submit(submitInfo, fence);
-		fence->wait();
-		// Read the diffuse irradiance texture from the buffer and save it in to the file.
-		void* data;
-
-		// Read the specular irradiance texture from the buffer and save it in to the file.
-		if (imageDataBuffer[0].isValid())
-		{
-			data = imageDataBuffer[0]->getDeviceMemory()->getMappedData();
-			pvr::TextureHeader texHeader;
-			texHeader.setChannelType(pvr::VariableType::UnsignedByteNorm);
-			texHeader.setColorSpace(pvr::ColorSpace::lRGB);
-			texHeader.setDepth(1);
-			texHeader.setWidth(mipLevelDimensions[0]);
-			texHeader.setHeight(mipLevelDimensions[0]);
-			texHeader.setNumMipMapLevels(numMipLevels);
-			texHeader.setNumFaces(numFaces);
-			texHeader.setNumArrayMembers(1);
-			texHeader.setPixelFormat(pvr::PixelFormat::RGBA_8888());
-
-			pvr::Texture tex(texHeader, static_cast<const char*>(data));
-
-			pvr::Stream::ptr_type fileStream = pvr::FileStream::createFileStream(prefilterEnvMapFile, "w");
-			pvr::assetWriters::TextureWriterPVR writerPVR;
-			writerPVR.openAssetStream(std::move(fileStream));
-			writerPVR.writeAsset(tex);
-		}
-
-		if (imageDataBuffer[1].isValid())
-		{
-			data = imageDataBuffer[1]->getDeviceMemory()->getMappedData();
-			pvr::TextureHeader texHeader;
-			texHeader.setChannelType(pvr::VariableType::UnsignedByteNorm);
-			texHeader.setColorSpace(pvr::ColorSpace::lRGB);
-			texHeader.setDepth(1);
-			texHeader.setWidth(mipLevelDimensions[0]);
-			texHeader.setHeight(mipLevelDimensions[0]);
-			texHeader.setNumMipMapLevels(numMipLevels);
-			texHeader.setNumFaces(numFaces);
-			texHeader.setNumArrayMembers(1);
-			texHeader.setPixelFormat(pvr::PixelFormat::RGBA_8888());
-
-			pvr::Texture tex(texHeader, static_cast<const char*>(data));
-
-			pvr::Stream::ptr_type fileStream = pvr::FileStream::createFileStream(prefilteredEnvL0MipMap, "w");
-			pvr::assetWriters::TextureWriterPVR writerPVR;
-			writerPVR.openAssetStream(std::move(fileStream));
-
-			writerPVR.writeAsset(tex);
-		}
-	}
-
-	// Generate the Diffuse and specular irradiance map.
-	pvrvk::Image generateIrradianceMap(pvr::IAssetProvider& assetProvider, pvrvk::Device& device, pvrvk::CommandPool& cmdPool, pvrvk::DescriptorPool& descPool,
-		const pvrvk::Sampler& sampler, pvrvk::Queue& queue, const char* irradianceCubeMapFile, pvr::utils::vma::Allocator& allocator)
-	{
-		const uint32_t numFaces = 6;
-		pvrvk::Image renderTarget;
-		pvrvk::Image cubeMap;
-
-		uint32_t numMipLevels = static_cast<uint32_t>(log2(static_cast<float>(IrradianceMapDim)) + 1.0);
-
-		// calculate the mip level dimensions.
-		std::vector<uint32_t> mipLevelDimensions(numMipLevels);
-		for (uint32_t i = 0; i < mipLevelDimensions.size(); ++i)
-		{
-			mipLevelDimensions[i] = static_cast<uint32_t>(pow(2, numMipLevels - i - 1));
-		}
-
-		pvrvk::CommandBuffer cmdBuffer = cmdPool->allocateCommandBuffer();
-
-		// create skybox descriptor set layout
-		pvrvk::DescriptorSetLayoutCreateInfo descSetLayoutInfo;
-
-		// combined image sampler descriptor
-		descSetLayoutInfo.setBinding(0, pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 1, pvrvk::ShaderStageFlags::e_FRAGMENT_BIT);
-		// uniform buffer
-		descSetLayoutInfo.setBinding(1, pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 1, pvrvk::ShaderStageFlags::e_VERTEX_BIT);
-
-		pvrvk::DescriptorSetLayout setLayout = device->createDescriptorSetLayout(descSetLayoutInfo);
-		// Create the descriptor set
-		pvrvk::DescriptorSet descSet = descPool->allocateDescriptorSet(setLayout);
-
-		///////////////////////////////////////////////
-		// UBO BUFFER AND VIEW
-		pvr::utils::StructuredBufferView uboView;
-		pvr::utils::StructuredMemoryDescription viewDesc;
-		viewDesc.addElement("rotateMtx", pvr::GpuDatatypes::mat4x4);
-		uboView.initDynamic(viewDesc, numFaces, pvr::BufferUsageFlags::UniformBuffer, device->getPhysicalDevice()->getProperties().getLimits().getMinUniformBufferOffsetAlignment());
-
-		pvrvk::Buffer uboBuffer = pvr::utils::createBuffer(device, uboView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
-			pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT | pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, &allocator);
-		uboView.pointToMappedMemory(uboBuffer->getDeviceMemory()->getMappedData());
-
-		const glm::mat4 cubeView[numFaces] = {
-			glm::scale(glm::vec3(1.f, -1.f, 1.f)) * glm::rotate(glm::radians(90.f), glm::vec3(0.0f, 1.0f, 0.f)), // +X
-			glm::scale(glm::vec3(1.f, -1.f, 1.f)) * glm::rotate(glm::radians(-90.f), glm::vec3(0.0f, 1.0f, 0.f)), // -X
-			glm::scale(glm::vec3(1.f, -1.f, 1.f)) * glm::rotate(glm::radians(90.f), glm::vec3(1.0f, .0f, 0.f)), // +Y
-			glm::scale(glm::vec3(1.f, -1.f, 1.f)) * glm::rotate(glm::radians(-90.f), glm::vec3(1.0f, .0f, 0.f)), // -Y
-			glm::scale(glm::vec3(1.0f, -1.0f, 1.f)), // +Z
-			glm::scale(glm::vec3(-1.0f, -1.0f, -1.f)), // -Z
-		};
-
-		uboView.getElement(0, 0, 0).setValue(cubeView[0]);
-		uboView.getElement(0, 0, 1).setValue(cubeView[1]);
-		uboView.getElement(0, 0, 2).setValue(cubeView[2]);
-		uboView.getElement(0, 0, 3).setValue(cubeView[3]);
-		uboView.getElement(0, 0, 4).setValue(cubeView[4]);
-		uboView.getElement(0, 0, 5).setValue(cubeView[5]);
-
-		if (uint32_t(uboBuffer->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
-		{
-			uboBuffer->getDeviceMemory()->flushRange();
-		}
-
-		const pvrvk::ClearValue clearValues[] = {
-			pvrvk::ClearValue(1.f, 1.f, 0.f, 1.0f),
-			pvrvk::ClearValue(1.f, 1.f, 0.f, 1.0f),
-			pvrvk::ClearValue(1.f, 1.f, 0.f, 1.0f),
-			pvrvk::ClearValue(1.f, 1.f, 0.f, 1.0f),
-			pvrvk::ClearValue(1.f, 1.f, 0.f, 1.0f),
-			pvrvk::ClearValue(1.f, 1.f, 0.f, 1.0f),
-		};
-
-		const pvrvk::Format formats = { pvrvk::Format::e_R8G8B8A8_UNORM };
-		const uint32_t stride = sizeof(uint8_t) * 4;
-		pvrvk::ImageView imageViews = {};
-		pvrvk::RenderPass renderpass;
-		pvrvk::Framebuffer fbo;
-		// Create two buffers (size=numFaces * stride * maxImageDimension)for each cubemaps
-
-		const uint32_t bufferSize = mipLevelDimensions[0] * mipLevelDimensions[0] * 6 * stride * numMipLevels;
-
-		// create the image data buffer for cpu read.
-		pvrvk::Buffer imageDataBuffer = pvr::utils::createBuffer(device, static_cast<VkDeviceSize>(bufferSize), pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT,
-			pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT | pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, &allocator);
-
-		pvrvk::WriteDescriptorSet descSetUpdate[] = {
-			pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, descSet, 0),
-			pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, descSet, 1),
-		};
-		descSetUpdate[0].setImageInfo(0, pvrvk::DescriptorImageInfo(skyBoxMap, sampler, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL)); // environment map
-		descSetUpdate[1].setBufferInfo(0, pvrvk::DescriptorBufferInfo(uboBuffer, 0, uboView.getDynamicSliceSize())); // ubo
-
-		device->updateDescriptorSets(descSetUpdate, ARRAY_SIZE(descSetUpdate), nullptr, 0);
-
-		// create the cubemap image
-		pvrvk::Format format = formats;
-		renderTarget = pvr::utils::createImage(device, pvrvk::ImageType::e_2D, format, pvrvk::Extent3D(IrradianceMapDim, IrradianceMapDim, 1),
-			pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT, pvrvk::ImageCreateFlags::e_NONE, pvrvk::ImageLayersSize(1, 1),
-			pvrvk::SampleCountFlags::e_1_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, &allocator);
-
-		imageViews = device->createImageView(pvrvk::ImageViewCreateInfo(renderTarget));
-
-		cubeMap = pvr::utils::createImage(device, pvrvk::ImageType::e_2D, format, pvrvk::Extent3D(IrradianceMapDim, IrradianceMapDim, 1),
-			pvrvk::ImageUsageFlags::e_TRANSFER_DST_BIT | pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageCreateFlags::e_CUBE_COMPATIBLE_BIT,
-			pvrvk::ImageLayersSize(6, numMipLevels), pvrvk::SampleCountFlags::e_1_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT,
-			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, &allocator);
-
-		// create the renderpass
-		pvrvk::RenderPassCreateInfo rpInfo;
-		rpInfo.setAttachmentDescription(0,
-			pvrvk::AttachmentDescription::createColorDescription(
-				format, pvrvk::ImageLayout::e_UNDEFINED, pvrvk::ImageLayout::e_TRANSFER_SRC_OPTIMAL, pvrvk::AttachmentLoadOp::e_DONT_CARE, pvrvk::AttachmentStoreOp::e_STORE));
-
-		pvrvk::SubpassDescription subpassDesc;
-		subpassDesc.setColorAttachmentReference(0, pvrvk::AttachmentReference(0, pvrvk::ImageLayout::e_COLOR_ATTACHMENT_OPTIMAL));
-
-		const pvrvk::SubpassDependency dependencies[] = {
-
-			pvrvk::SubpassDependency(pvrvk::SubpassExternal, 0, pvrvk::PipelineStageFlags::e_TOP_OF_PIPE_BIT, pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT,
-				pvrvk::AccessFlags::e_TRANSFER_READ_BIT, pvrvk::AccessFlags::e_COLOR_ATTACHMENT_READ_BIT | pvrvk::AccessFlags::e_COLOR_ATTACHMENT_WRITE_BIT,
-				pvrvk::DependencyFlags::e_BY_REGION_BIT),
-
-			pvrvk::SubpassDependency(0, pvrvk::SubpassExternal, pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT, pvrvk::PipelineStageFlags::e_BOTTOM_OF_PIPE_BIT,
-				pvrvk::AccessFlags::e_COLOR_ATTACHMENT_READ_BIT | pvrvk::AccessFlags::e_COLOR_ATTACHMENT_WRITE_BIT, pvrvk::AccessFlags::e_TRANSFER_READ_BIT,
-				pvrvk::DependencyFlags::e_BY_REGION_BIT),
-		};
-		rpInfo.addSubpassDependencies(dependencies, ARRAY_SIZE(dependencies));
-		rpInfo.setSubpass(0, subpassDesc);
-		renderpass = device->createRenderPass(rpInfo);
-
-		// Create the fbo
-		pvrvk::FramebufferCreateInfo fboInfo;
-		fboInfo.setAttachment(0, imageViews);
-		fboInfo.setDimensions(IrradianceMapDim, IrradianceMapDim);
-		fboInfo.setRenderPass(renderpass);
-		fbo = device->createFramebuffer(fboInfo);
-
-		// create graphics pipeline.
-		pvrvk::GraphicsPipeline pipeline;
-		pvrvk::GraphicsPipelineCreateInfo pipelineInfo;
-		pipelineInfo.depthStencil.enableAllStates(false);
-
-		pipelineInfo.vertexShader = device->createShaderModule(pvrvk::ShaderModuleCreateInfo(assetProvider.getAssetStream(IrradianceVertShaderFileName)->readToEnd<uint32_t>()));
-		pipelineInfo.fragmentShader = device->createShaderModule(pvrvk::ShaderModuleCreateInfo(assetProvider.getAssetStream(IrradianceFragShaderFileName)->readToEnd<uint32_t>()));
-
-		// depth stencil state
-		pipelineInfo.depthStencil.enableDepthWrite(false);
-		pipelineInfo.depthStencil.enableDepthTest(false);
-
-		// rasterizer state
-		pipelineInfo.rasterizer.setCullMode(pvrvk::CullModeFlags::e_BACK_BIT);
-		pipelineInfo.rasterizer.setFrontFaceWinding(pvrvk::FrontFace::e_COUNTER_CLOCKWISE);
-		// blend state
-		pipelineInfo.colorBlend.setAttachmentState(0, pvrvk::PipelineColorBlendAttachmentState());
-		// input assembler
-		pipelineInfo.inputAssembler.setPrimitiveTopology(pvrvk::PrimitiveTopology::e_TRIANGLE_LIST);
-		pipelineInfo.renderPass = renderpass;
-
-		// vertex attributes and bindings
-		pipelineInfo.vertexInput.clear();
-		pipelineInfo.vertexInput.addInputBinding(pvrvk::VertexInputBindingDescription(0, sizeof(float) * 3));
-		pipelineInfo.vertexInput.addInputAttribute(pvrvk::VertexInputAttributeDescription(0, 0, pvrvk::Format::e_R32G32B32_SFLOAT, 0));
-		pipelineInfo.viewport.setViewportAndScissor(0, pvrvk::Viewport(), pvrvk::Rect2D());
-
-		pvrvk::PipelineLayoutCreateInfo pipeLayoutInfo;
-		pipeLayoutInfo.addDescSetLayout(descSet->getDescriptorSetLayout());
-
-		pipelineInfo.pipelineLayout = device->createPipelineLayout(pipeLayoutInfo);
-		pipelineInfo.dynamicStates.setDynamicState(pvrvk::DynamicState::e_VIEWPORT, true);
-		pipelineInfo.dynamicStates.setDynamicState(pvrvk::DynamicState::e_SCISSOR, true);
-
-		pipeline = device->createGraphicsPipeline(pipelineInfo);
-
-		// record commands
-		cmdBuffer->begin(pvrvk::CommandBufferUsageFlags::e_ONE_TIME_SUBMIT_BIT);
-
-		// prepare the cubemap for trasnfer dest.
-		pvr::utils::setImageLayout(cubeMap, pvrvk::ImageLayout::e_UNDEFINED, pvrvk::ImageLayout::e_TRANSFER_DST_OPTIMAL, cmdBuffer);
-
-		cmdBuffer->bindVertexBuffer(vbo, 0, 0);
-		cmdBuffer->debugMarkerBeginEXT("Generate cubemap");
-		cmdBuffer->bindPipeline(pipeline);
-
-		VkDeviceSize bufferOffset = 0;
-		for (uint32_t level = 0; level < numMipLevels; ++level)
-		{
-			uint32_t dim = mipLevelDimensions[level];
-			cmdBuffer->debugMarkerBeginEXT("Cubemap level");
-			cmdBuffer->setViewport(pvrvk::Viewport(0.0f, 0.0f, static_cast<float>(dim), static_cast<float>(dim)));
-			const pvrvk::Rect2D scissor(pvrvk::Offset2D(), pvrvk::Extent2D(dim, dim));
-			cmdBuffer->setScissor(0, 1, &scissor);
-
-			// draw each face
-			for (uint32_t j = 0; j < numFaces; ++j)
-			{
-				uint32_t offset = uboView.getDynamicSliceOffset(j);
-				cmdBuffer->bindDescriptorSet(pvrvk::PipelineBindPoint::e_GRAPHICS, pipeline->getPipelineLayout(), 0, descSet, &offset, 1);
-
-				// calculate the mip level dimension
-				cmdBuffer->beginRenderPass(fbo, true, clearValues, ARRAY_SIZE(clearValues));
-
-				cmdBuffer->draw(0, 6);
-				cmdBuffer->endRenderPass();
-
-				// Prepare the render target for src transfer.
-				pvrvk::MemoryBarrierSet barriers;
-
-				// copy it in to the buffer.
-				const pvrvk::BufferImageCopy regions(bufferOffset, 0, 0, pvrvk::ImageSubresourceLayers(), pvrvk::Offset3D(), pvrvk::Extent3D(dim, dim, 1));
-				cmdBuffer->copyImageToBuffer(renderTarget, pvrvk::ImageLayout::e_TRANSFER_SRC_OPTIMAL, imageDataBuffer, &regions, 1);
-
-				// copy it in to the final image
-				const pvrvk::ImageCopy blit(pvrvk::ImageSubresourceLayers(pvrvk::ImageAspectFlags::e_COLOR_BIT, 0, 0, 1), pvrvk::Offset3D(),
-					pvrvk::ImageSubresourceLayers(pvrvk::ImageAspectFlags::e_COLOR_BIT, level, j, 1), pvrvk::Offset3D(), pvrvk::Extent3D(dim, dim, 1));
-
-				cmdBuffer->copyImage(renderTarget, cubeMap, pvrvk::ImageLayout::e_TRANSFER_SRC_OPTIMAL, pvrvk::ImageLayout::e_TRANSFER_DST_OPTIMAL, 1, &blit);
-
-				barriers.clearAllBarriers();
-				barriers.addBarrier(pvrvk::ImageMemoryBarrier(pvrvk::AccessFlags::e_TRANSFER_READ_BIT, pvrvk::AccessFlags::e_NONE, renderTarget,
-					pvrvk::ImageSubresourceRange(pvrvk::ImageAspectFlags::e_COLOR_BIT), pvrvk::ImageLayout::e_TRANSFER_SRC_OPTIMAL, pvrvk::ImageLayout::e_TRANSFER_SRC_OPTIMAL,
-					queue->getFamilyIndex(), queue->getFamilyIndex()));
-				cmdBuffer->pipelineBarrier(pvrvk::PipelineStageFlags::e_TRANSFER_BIT, pvrvk::PipelineStageFlags::e_TOP_OF_PIPE_BIT, barriers);
-				bufferOffset += stride * dim * dim;
-			}
-			cmdBuffer->debugMarkerEndEXT();
-		}
-		pvr::utils::setImageLayout(cubeMap, pvrvk::ImageLayout::e_TRANSFER_DST_OPTIMAL, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, cmdBuffer);
-		cmdBuffer->debugMarkerEndEXT();
-
-		cmdBuffer->end();
-
-		pvrvk::SubmitInfo submitInfo;
-		submitInfo.commandBuffers = &cmdBuffer;
-		submitInfo.numCommandBuffers = 1;
-
-		pvrvk::Fence fence = device->createFence();
-		queue->submit(submitInfo, fence);
-		fence->wait();
-		// Read the diffuse irradiance texture from the buffer and save it in to the file.
-		void* data;
-		if (imageDataBuffer.isValid())
-		{
-			data = imageDataBuffer->getDeviceMemory()->getMappedData();
-			// save the map.
-			pvr::TextureHeader texHeader;
-			texHeader.setChannelType(pvr::VariableType::UnsignedByteNorm);
-			texHeader.setColorSpace(pvr::ColorSpace::lRGB);
-			texHeader.setDepth(1);
-			texHeader.setWidth(IrradianceMapDim);
-			texHeader.setHeight(IrradianceMapDim);
-			texHeader.setNumMipMapLevels(numMipLevels);
-			texHeader.setNumFaces(6);
-			texHeader.setNumArrayMembers(1);
-			texHeader.setPixelFormat(pvr::PixelFormat::RGBA_8888());
-
-			pvr::Texture tex(texHeader, static_cast<const char*>(data));
-			pvr::Stream::ptr_type fileStream = pvr::FileStream::createFileStream(irradianceCubeMapFile, "w");
-			pvr::assetWriters::TextureWriterPVR writerPVR;
-			writerPVR.openAssetStream(std::move(fileStream));
-
-			writerPVR.writeAsset(tex);
-		}
-		return cubeMap;
-	}
-
 	pvrvk::GraphicsPipeline pipeline;
 	pvrvk::ImageView skyBoxMap;
-	pvrvk::ImageView irradianceMap, prefilteredMap, prefilteredL0MipMap;
+	pvrvk::ImageView irradianceMap, prefilteredMap;
 	pvrvk::DescriptorSet descSet;
-	pvrvk::Buffer vbo;
-	pvrvk::Buffer ibo;
 	pvr::utils::StructuredBufferView uboView;
 	pvrvk::Buffer ubo;
 	uint32_t numPrefilteredMipLevels;
@@ -999,14 +317,14 @@ public:
 	void init(pvr::IAssetProvider& assetProvider, pvrvk::Device& device, const pvrvk::GraphicsPipeline& basePipeline, const pvrvk::PipelineCache& pipelineCache,
 		pvr::utils::vma::Allocator& allocator, pvrvk::CommandBuffer& uploadCmdBuffer, bool& requireSubmission)
 	{
-		scene = pvr::assets::Model::createWithReader(pvr::assets::PODReader(assetProvider.getAssetStream(SphereSceneFileName)));
+		model = pvr::assets::Model::createWithReader(pvr::assets::PODReader(assetProvider.getAssetStream(SphereModelFileName)));
 
-		pvr::utils::appendSingleBuffersFromModel(device, *scene, vbos, ibos, uploadCmdBuffer, requireSubmission, &allocator);
+		pvr::utils::appendSingleBuffersFromModel(device, *model, vbos, ibos, uploadCmdBuffer, requireSubmission, &allocator);
 
 		createPipeline(assetProvider, device, basePipeline, pipelineCache);
 	}
 
-	/// <summary>Record commands for rendering the sphere scene</summary>
+	/// <summary>Record commands for rendering the sphere model</summary>
 	/// <param name="cmdBuffer">A command buffer to which sphere commands will be added</param>
 	void recordCommands(pvrvk::CommandBuffer& cmdBuffer)
 	{
@@ -1016,10 +334,10 @@ public:
 			static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::uinteger)), &one);
 		cmdBuffer->pushConstants(pipeline->getPipelineLayout(), pvrvk::ShaderStageFlags::e_VERTEX_BIT | pvrvk::ShaderStageFlags::e_FRAGMENT_BIT,
 			static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::uinteger)), static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::uinteger)), &one);
-		for (uint32_t i = 0; i < scene->getNumMeshNodes(); ++i)
+		for (uint32_t i = 0; i < model->getNumMeshNodes(); ++i)
 		{
-			pvr::assets::Node& node = scene->getMeshNode(i);
-			pvr::assets::Mesh& mesh = scene->getMesh(static_cast<uint32_t>(node.getObjectId()));
+			pvr::assets::Node& node = model->getMeshNode(i);
+			pvr::assets::Mesh& mesh = model->getMesh(static_cast<uint32_t>(node.getObjectId()));
 
 			cmdBuffer->bindVertexBuffer(vbos[i], 0, 0);
 			cmdBuffer->bindIndexBuffer(ibos[i], 0, mesh.getFaces().getDataType() == pvr::IndexType::IndexType16Bit ? pvrvk::IndexType::e_UINT16 : pvrvk::IndexType::e_UINT32);
@@ -1035,16 +353,22 @@ private:
 		pvr::utils::VertexBindings bindingName[] = { { "POSITION", 0 }, { "NORMAL", 1 } };
 
 		pipeDesc.vertexInput.clear();
-		pvr::utils::populateInputAssemblyFromMesh(scene->getMesh(0), bindingName, ARRAY_SIZE(bindingName), pipeDesc.vertexInput, pipeDesc.inputAssembler);
+		pvr::utils::populateInputAssemblyFromMesh(model->getMesh(0), bindingName, ARRAY_SIZE(bindingName), pipeDesc.vertexInput, pipeDesc.inputAssembler);
+		pipeDesc.vertexInput.addInputAttribute(pvrvk::VertexInputAttributeDescription(2, 0, pvrvk::Format::e_R32G32_SFLOAT, 0)); // THIS WILL NOT BE USED BUT MUST BE PROVIDED
+		pipeDesc.vertexInput.addInputAttribute(pvrvk::VertexInputAttributeDescription(3, 0, pvrvk::Format::e_R32G32B32A32_SFLOAT, 0)); // THIS WILL NOT BE USED BUT MUST BE PROVIDED
 
-		pipeDesc.vertexShader = device->createShaderModule(pvrvk::ShaderModuleCreateInfo(assetProvider.getAssetStream(SimpleVertShaderFileName)->readToEnd<uint32_t>()));
-
+		pipeDesc.vertexShader = device->createShaderModule(pvrvk::ShaderModuleCreateInfo(assetProvider.getAssetStream(VertShaderFileName)->readToEnd<uint32_t>()));
 		pipeDesc.fragmentShader = device->createShaderModule(pvrvk::ShaderModuleCreateInfo(assetProvider.getAssetStream(PBRFragShaderFileName)->readToEnd<uint32_t>()));
+
+		// SET SPECIALIZATION CONSTANTS
+		static VkBool32 shaderConstantHasTextures = false;
+		pipeDesc.fragmentShader.setShaderConstant(0, pvrvk::ShaderConstantInfo(0, &shaderConstantHasTextures, sizeof(VkBool32)));
+		pipeDesc.vertexShader.setShaderConstant(0, pvrvk::ShaderConstantInfo(0, &shaderConstantHasTextures, sizeof(VkBool32)));
 
 		pipeline = device->createGraphicsPipeline(pipeDesc, pipelineCache);
 	}
 
-	pvr::assets::ModelHandle scene;
+	pvr::assets::ModelHandle model;
 	std::vector<pvrvk::Buffer> vbos;
 	std::vector<pvrvk::Buffer> ibos;
 	pvrvk::GraphicsPipeline pipeline;
@@ -1056,13 +380,13 @@ public:
 	void init(pvr::IAssetProvider& assetProvider, pvrvk::Device& device, const pvrvk::Framebuffer& framebuffer, const pvrvk::PipelineLayout& pipelineLayout,
 		const pvrvk::PipelineCache& pipelineCache, pvr::utils::vma::Allocator& allocator, pvrvk::CommandBuffer& uploadCmdBuffer, bool requireSubmission)
 	{
-		scene = pvr::assets::Model::createWithReader(pvr::assets::GltfReader(assetProvider.getAssetStream(HelmetSceneFileName), assetProvider));
+		model = pvr::assets::Model::createWithReader(pvr::assets::GltfReader(assetProvider.getAssetStream(HelmetModelFileName), assetProvider));
 
 		// create the vbo and ibo for the meshes.
-		vbos.resize(scene->getNumMeshes());
-		ibos.resize(scene->getNumMeshes());
+		vbos.resize(model->getNumMeshes());
+		ibos.resize(model->getNumMeshes());
 
-		pvr::utils::createSingleBuffersFromMesh(device, scene->getMesh(0), vbos[0], ibos[0], uploadCmdBuffer, requireSubmission, &allocator);
+		pvr::utils::createSingleBuffersFromMesh(device, model->getMesh(0), vbos[0], ibos[0], uploadCmdBuffer, requireSubmission, &allocator);
 
 		// Load the texture
 		loadTextures(assetProvider, device, uploadCmdBuffer, allocator);
@@ -1075,9 +399,9 @@ public:
 		return pipeline;
 	}
 
-	pvr::assets::ModelHandle& getScene()
+	pvr::assets::ModelHandle& getModel()
 	{
-		return scene;
+		return model;
 	}
 
 	const pvrvk::ImageView& getAlbedoMap()
@@ -1085,7 +409,7 @@ public:
 		return images[0];
 	}
 
-	const pvrvk::ImageView& getMetallicRoughnessMap()
+	const pvrvk::ImageView& getOcclusionMetallicRoughnessMap()
 	{
 		return images[1];
 	}
@@ -1104,7 +428,7 @@ public:
 	{
 		cmd->bindPipeline(pipeline);
 
-		const uint32_t numMeshes = scene->getNumMeshes();
+		const uint32_t numMeshes = model->getNumMeshes();
 		// set the model matrix and material id.
 		uint32_t zero = 0;
 		cmd->pushConstants(pipeline->getPipelineLayout(), pvrvk::ShaderStageFlags::e_VERTEX_BIT | pvrvk::ShaderStageFlags::e_FRAGMENT_BIT, 0,
@@ -1114,7 +438,7 @@ public:
 
 		for (uint32_t j = 0; j < numMeshes; ++j)
 		{
-			const pvr::assets::Mesh& mesh = scene->getMesh(j);
+			const pvr::assets::Mesh& mesh = model->getMesh(j);
 			// find the texture descriptor set which matches the current material
 
 			// bind the vbo and ibos for the current mesh node
@@ -1136,11 +460,14 @@ private:
 		pvr::utils::VertexBindings bindingName[] = { { "POSITION", 0 }, { "NORMAL", 1 }, { "UV0", 2 }, { "TANGENT", 3 } };
 
 		pvr::utils::populateViewportStateCreateInfo(framebuffer, pipeDesc.viewport);
-		pvr::utils::populateInputAssemblyFromMesh(getScene()->getMesh(0), bindingName, ARRAY_SIZE(bindingName), pipeDesc.vertexInput, pipeDesc.inputAssembler);
+		pvr::utils::populateInputAssemblyFromMesh(getModel()->getMesh(0), bindingName, ARRAY_SIZE(bindingName), pipeDesc.vertexInput, pipeDesc.inputAssembler);
 
 		pipeDesc.vertexShader.setShader(device->createShaderModule(pvrvk::ShaderModuleCreateInfo(assetProvider.getAssetStream(VertShaderFileName)->readToEnd<uint32_t>())));
-		pipeDesc.fragmentShader.setShader(
-			device->createShaderModule(pvrvk::ShaderModuleCreateInfo(assetProvider.getAssetStream(PBRMaterialFragShaderFileName)->readToEnd<uint32_t>())));
+		pipeDesc.fragmentShader.setShader(device->createShaderModule(pvrvk::ShaderModuleCreateInfo(assetProvider.getAssetStream(PBRFragShaderFileName)->readToEnd<uint32_t>())));
+
+		static VkBool32 shaderConstantHasTextures = 1;
+		pipeDesc.vertexShader.setShaderConstant(0, pvrvk::ShaderConstantInfo(0, &shaderConstantHasTextures, sizeof(VkBool32)));
+		pipeDesc.fragmentShader.setShaderConstant(0, pvrvk::ShaderConstantInfo(0, &shaderConstantHasTextures, sizeof(VkBool32)));
 
 		pipeDesc.renderPass = framebuffer->getRenderPass();
 		pipeDesc.depthStencil.enableDepthTest(true);
@@ -1157,9 +484,9 @@ private:
 
 	void loadTextures(pvr::IAssetProvider& assetProvider, pvrvk::Device& device, pvrvk::CommandBuffer& uploadCmdBuffer, pvr::utils::vma::Allocator& allocator)
 	{
-		for (uint32_t i = 0; i < scene->getNumTextures(); ++i)
+		for (uint32_t i = 0; i < model->getNumTextures(); ++i)
 		{
-			pvr::Stream::ptr_type stream = assetProvider.getAssetStream(scene->getTexture(i).getName());
+			pvr::Stream::ptr_type stream = assetProvider.getAssetStream(model->getTexture(i).getName());
 			pvr::Texture tex = pvr::textureLoad(stream, pvr::TextureFileFormat::PVR);
 			images.push_back(pvr::utils::uploadImageAndView(device, tex, true, uploadCmdBuffer, pvrvk::ImageUsageFlags::e_SAMPLED_BIT,
 				pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, &allocator, &allocator, pvr::utils::vma::AllocationCreateFlags::e_DEDICATED_MEMORY_BIT));
@@ -1169,27 +496,28 @@ private:
 	std::vector<pvrvk::ImageView> images;
 	std::vector<pvrvk::Buffer> vbos;
 	std::vector<pvrvk::Buffer> ibos;
-	pvr::assets::ModelHandle scene;
+	pvr::assets::ModelHandle model;
 	pvrvk::GraphicsPipeline pipeline;
 };
 
 /*!*********************************************************************************************************************
  Class implementing the pvr::Shell functions.
 ***********************************************************************************************************************/
-class VulkanIBL : public pvr::Shell
+class VulkanImageBasedLighting : public pvr::Shell
 {
 	typedef std::pair<int32_t, pvrvk::DescriptorSet> MaterialDescSet;
 
 	enum DescSetIndex
 	{
 		PerFrame,
-		Scene,
+		Model,
 		Material,
 	};
 
 	struct DeviceResources
 	{
 		pvrvk::Instance instance;
+		pvr::utils::DebugUtilsCallbacks debugUtilsCallbacks;
 		pvrvk::Surface surface;
 		pvrvk::Device device;
 		pvrvk::Swapchain swapchain;
@@ -1200,10 +528,9 @@ class VulkanIBL : public pvr::Shell
 		pvrvk::CommandPool commandPool;
 		pvrvk::DescriptorPool descriptorPool;
 
-		pvrvk::Semaphore semaphoreImageAcquired[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
-		pvrvk::Fence perFrameAcquireFence[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
-		pvrvk::Semaphore semaphorePresent[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
-		pvrvk::Fence perFrameCommandBufferFence[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+		pvrvk::Semaphore imageAcquiredSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+		pvrvk::Semaphore presentationSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+		pvrvk::Fence perFrameResourcesFences[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
 
 		// the framebuffer used in the demo
 		pvr::Multi<pvrvk::Framebuffer> onScreenFramebuffer;
@@ -1221,7 +548,7 @@ class VulkanIBL : public pvr::Shell
 		UBO uboPerFrame, uboLights, uboMaterial, uboWorld;
 
 		// samplers
-		pvrvk::Sampler samplerBilinear, samplerTrilinear;
+		pvrvk::Sampler samplerBilinear, samplerTrilinear, samplerTrilinearLodClamped;
 
 		// descriptor set layouts
 		pvrvk::DescriptorSetLayout descSetLayouts[3];
@@ -1238,17 +565,15 @@ class VulkanIBL : public pvr::Shell
 
 		~DeviceResources()
 		{
-			if (device.isValid())
+			if (device)
 			{
 				device->waitIdle();
 			}
 			uint32_t l = swapchain->getSwapchainLength();
 			for (uint32_t i = 0; i < l; ++i)
 			{
-				if (perFrameAcquireFence[i].isValid())
-					perFrameAcquireFence[i]->wait();
-				if (perFrameCommandBufferFence[i].isValid())
-					perFrameCommandBufferFence[i]->wait();
+				if (perFrameResourcesFences[i])
+					perFrameResourcesFences[i]->wait();
 			}
 		}
 	};
@@ -1256,6 +581,7 @@ class VulkanIBL : public pvr::Shell
 	std::unique_ptr<DeviceResources> _deviceResources;
 
 	bool _updateCommands[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	bool _updateDescriptors = false;
 
 	// Projection and Model View matrices
 	glm::mat4 _projMtx;
@@ -1263,10 +589,10 @@ class VulkanIBL : public pvr::Shell
 	float _frame;
 	uint32_t _frameId;
 
-	pvr::TPSCamera _camera;
-	SceneMode _currentScene;
+	pvr::TPSOrbitCamera _camera;
+	Models _currentModel = Models::Helmet;
 	bool _pause = false;
-	float _cameraLookAngle = 0.0f;
+	float exposure = 1.f;
 
 public:
 	virtual pvr::Result initApplication();
@@ -1277,40 +603,48 @@ public:
 
 	void createDescriptorSetLayouts();
 	void createUbos();
-	void createDescriptorSets();
+	void updateDescriptors();
 	void recordCommandBuffers(uint32_t swapIndex);
 	void createPipelineLayout();
-	void generateBRDFLUT(pvrvk::CommandBuffer uploadCmdBufffer);
 
 	virtual void eventMappedInput(pvr::SimplifiedInput action)
 	{
+		float oldexposure = exposure;
 		switch (action)
 		{
-		case pvr::SimplifiedInput::Left:
-		{
-			uint32_t currentScene = static_cast<uint32_t>(_currentScene);
-			currentScene -= 1;
-			currentScene = (currentScene + static_cast<uint32_t>(SceneMode::NumScenes)) % static_cast<uint32_t>(SceneMode::NumScenes);
-			_currentScene = static_cast<SceneMode>(currentScene);
-			memset(_updateCommands, 1, sizeof(_updateCommands));
-			break;
-		}
-		case pvr::SimplifiedInput::Right:
-		{
-			uint32_t currentScene = static_cast<uint32_t>(_currentScene);
-			currentScene += 1;
-			currentScene = (currentScene + static_cast<uint32_t>(SceneMode::NumScenes)) % static_cast<uint32_t>(SceneMode::NumScenes);
-			_currentScene = static_cast<SceneMode>(currentScene);
-			memset(_updateCommands, 1, sizeof(_updateCommands));
-			break;
-		}
-		case pvr::SimplifiedInput::Action1:
-		{
+		case pvr::SimplifiedInput::Action1: {
 			_pause = !_pause;
 			break;
 		}
-		case pvr::SimplifiedInput::ActionClose:
-		{
+		case pvr::SimplifiedInput::Action2: {
+			uint32_t currentModel = static_cast<uint32_t>(_currentModel);
+			currentModel += 1;
+			currentModel = (currentModel + static_cast<uint32_t>(Models::NumModels)) % static_cast<uint32_t>(Models::NumModels);
+			_currentModel = static_cast<Models>(currentModel);
+			memset(_updateCommands, 1, sizeof(_updateCommands));
+			break;
+		}
+		case pvr::SimplifiedInput::Action3: {
+			(++currentSkybox) %= numSkyBoxes;
+			_deviceResources->skyBoxPass.setSkyboxImage(*this, _deviceResources->queue, _deviceResources->commandPool, _deviceResources->descriptorPool,
+				_deviceResources->vmaAllocator, _deviceResources->samplerTrilinear);
+			memset(_updateCommands, 1, sizeof(_updateCommands));
+			_updateDescriptors = true;
+			break;
+		}
+		case pvr::SimplifiedInput::Left: {
+			exposure *= .75;
+			if (oldexposure > 1.f && exposure < 1.f)
+				exposure = 1.f;
+			break;
+		}
+		case pvr::SimplifiedInput::Right: {
+			exposure *= 1.25;
+			if (oldexposure < 1.f && exposure > 1.f)
+				exposure = 1.f;
+			break;
+		}
+		case pvr::SimplifiedInput::ActionClose: {
 			this->exitShell();
 			break;
 		}
@@ -1323,20 +657,19 @@ public:
 /// <summary>
 /// Code in initApplication() will be called by Shell once per run, before the rendering context is created.
 /// Used to initialize variables that are not dependent on it (e.g. external modules, loading meshes, etc.). If the rendering
-/// context is lost, initApplication() will not be called again.
-/// </summary>
-pvr::Result VulkanIBL::initApplication()
+/// context is lost, initApplication() will not be called again.</summary>
+pvr::Result VulkanImageBasedLighting::initApplication()
 {
 	_frame = 0;
 	_frameId = 0;
-	_currentScene = SceneMode::Helmet;
+	setBackBufferColorspace(pvr::ColorSpace::lRGB);
 	return pvr::Result::Success;
 }
 
 /// <summary>Code in quitApplication() will be called by Shell once per run, just before exiting the program.
 /// quitApplication() will not be called every time the rendering context is lost, only before application exit.</summary>
 /// <returns>Result::Success if no error occurred.</returns>
-pvr::Result VulkanIBL::quitApplication()
+pvr::Result VulkanImageBasedLighting::quitApplication()
 {
 	return pvr::Result::Success;
 }
@@ -1344,13 +677,16 @@ pvr::Result VulkanIBL::quitApplication()
 /// <summary>Code in initView() will be called by Shell upon initialization or after a change in the rendering context.
 /// Used to initialize variables that are dependent on the rendering context(e.g.textures, vertex buffers, etc.)</summary>
 /// <returns>Result::Success if no error occurred.</returns>
-pvr::Result VulkanIBL::initView()
+pvr::Result VulkanImageBasedLighting::initView()
 {
 	_deviceResources = std::unique_ptr<DeviceResources>(new DeviceResources());
 
 	// Create vulkan instance and surface
 	_deviceResources->instance = pvr::utils::createInstance(this->getApplicationName());
 	_deviceResources->surface = pvr::utils::createSurface(_deviceResources->instance, _deviceResources->instance->getPhysicalDevice(0), this->getWindow(), this->getDisplay());
+
+	// Create a default set of debug utils messengers or debug callbacks using either VK_EXT_debug_utils or VK_EXT_debug_report respectively
+	_deviceResources->debugUtilsCallbacks = pvr::utils::createDebugUtilsCallbacks(_deviceResources->instance);
 
 	pvrvk::PhysicalDevice physicalDevice = _deviceResources->instance->getPhysicalDevice(0);
 
@@ -1382,12 +718,12 @@ pvr::Result VulkanIBL::initView()
 
 	// Create the framebuffer
 	pvrvk::RenderPass rp;
-	pvr::utils::createOnscreenFramebufferAndRenderpass(_deviceResources->swapchain, &_deviceResources->depthStencilImages[0], _deviceResources->onScreenFramebuffer, rp);
+	pvr::utils::createOnscreenFramebufferAndRenderPass(_deviceResources->swapchain, &_deviceResources->depthStencilImages[0], _deviceResources->onScreenFramebuffer, rp);
 
 	// Create the Commandpool & Descriptorpool
 	_deviceResources->commandPool =
 		_deviceResources->device->createCommandPool(pvrvk::CommandPoolCreateInfo(queueAccessInfo.familyId, pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT));
-	if (!_deviceResources->commandPool.isValid())
+	if (!_deviceResources->commandPool)
 	{
 		return pvr::Result::UnknownError;
 	}
@@ -1399,7 +735,7 @@ pvr::Result VulkanIBL::initView()
 																						  .addDescriptorInfo(pvrvk::DescriptorType::e_STORAGE_IMAGE, 2)
 																						  .setMaxDescriptorSets(16));
 
-	if (!_deviceResources->descriptorPool.isValid())
+	if (!_deviceResources->descriptorPool)
 	{
 		return pvr::Result::UnknownError;
 	}
@@ -1407,10 +743,9 @@ pvr::Result VulkanIBL::initView()
 	// Create synchronization objects and commandbuffers
 	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
 	{
-		_deviceResources->semaphorePresent[i] = _deviceResources->device->createSemaphore();
-		_deviceResources->semaphoreImageAcquired[i] = _deviceResources->device->createSemaphore();
-		_deviceResources->perFrameCommandBufferFence[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
-		_deviceResources->perFrameAcquireFence[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
+		_deviceResources->presentationSemaphores[i] = _deviceResources->device->createSemaphore();
+		_deviceResources->imageAcquiredSemaphores[i] = _deviceResources->device->createSemaphore();
+		_deviceResources->perFrameResourcesFences[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
 		_deviceResources->commandBuffers[i] = _deviceResources->commandPool->allocateCommandBuffer();
 		_updateCommands[i] = true;
 	}
@@ -1429,27 +764,34 @@ pvr::Result VulkanIBL::initView()
 	samplerInfo.mipMapMode = pvrvk::SamplerMipmapMode::e_LINEAR;
 	_deviceResources->samplerTrilinear = _deviceResources->device->createSampler(samplerInfo);
 
+	// trilinear with max lod clamping
+	samplerInfo.lodMinimum = 2.f;
+	_deviceResources->samplerTrilinearLodClamped = _deviceResources->device->createSampler(samplerInfo);
+
 	_deviceResources->commandBuffers[0]->begin();
 
-	if (LoadBRDFLUT)
-	{
-		_deviceResources->brdfLUT = _deviceResources->device->createImageView(
-			pvrvk::ImageViewCreateInfo(pvr::utils::loadAndUploadImage(_deviceResources->device, BrdfLUTTexFile, true, _deviceResources->commandBuffers[0], *this,
-				pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, nullptr, &_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator)));
-	}
-	else
-	{
-		generateBRDFLUT(_deviceResources->commandBuffers[0]);
-	}
+	// BRDF is of course pre-generated. To generate it
+	// pvr::Texture brdflut = pvr::utils::generateCookTorranceBRDFLUT();
+	// pvr::assetWriters::AssetWriterPVR(pvr::FileStream::createFileStream(BrdfLUTTexFile, "w")).writeAsset(brdflut);
+	// See Calculating Assets example
+
+	_deviceResources->brdfLUT = _deviceResources->device->createImageView(
+		pvrvk::ImageViewCreateInfo(pvr::utils::loadAndUploadImage(_deviceResources->device, BrdfLUTTexFile, true, _deviceResources->commandBuffers[0], *this,
+			pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, nullptr, &_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator)));
 
 	createDescriptorSetLayouts();
 	createPipelineLayout();
+
+	// Create Descriptor Sets
+	_deviceResources->descSets[0] = _deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->descSetLayouts[0]);
+	_deviceResources->descSets[1] = _deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->descSetLayouts[1]);
+	_deviceResources->descSets[2] = _deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->descSetLayouts[2]);
 
 	bool requireSubmission = false;
 
 	_deviceResources->skyBoxPass.init(*this, _deviceResources->device, _deviceResources->descriptorPool, _deviceResources->commandPool, _deviceResources->queue,
 		_deviceResources->onScreenFramebuffer[0]->getRenderPass(), _deviceResources->pipelineCache, _deviceResources->swapchain->getSwapchainLength(),
-		pvrvk::Extent2D(getWidth(), getHeight()), _deviceResources->samplerTrilinear, _deviceResources->vmaAllocator, LoadIrradianceMap, LoadPrefilteredMap);
+		pvrvk::Extent2D(getWidth(), getHeight()), _deviceResources->samplerTrilinear, _deviceResources->vmaAllocator);
 
 	_deviceResources->helmetPass.init(*this, _deviceResources->device, _deviceResources->onScreenFramebuffer[0], _deviceResources->pipelineLayout, _deviceResources->pipelineCache,
 		_deviceResources->vmaAllocator, _deviceResources->commandBuffers[0], requireSubmission);
@@ -1458,7 +800,8 @@ pvr::Result VulkanIBL::initView()
 		_deviceResources->commandBuffers[0], requireSubmission);
 
 	createUbos();
-	createDescriptorSets();
+
+	updateDescriptors(); // Actually populate the data
 
 	_deviceResources->uiRenderer.init(getWidth(), getHeight(), isFullScreen(), _deviceResources->onScreenFramebuffer[0]->getRenderPass(), 0,
 		getBackBufferColorspace() == pvr::ColorSpace::sRGB, _deviceResources->commandPool, _deviceResources->queue);
@@ -1468,6 +811,7 @@ pvr::Result VulkanIBL::initView()
 	pvrvk::SubmitInfo submitInfo;
 	submitInfo.commandBuffers = &_deviceResources->commandBuffers[0];
 	submitInfo.numCommandBuffers = 1;
+
 	// submit the queue and wait for it to become idle
 	_deviceResources->queue->submit(&submitInfo, 1);
 	_deviceResources->queue->waitIdle();
@@ -1478,39 +822,29 @@ pvr::Result VulkanIBL::initView()
 	if (isRotated)
 	{
 		_projMtx = pvr::math::perspective(
-			pvr::Api::Vulkan, glm::radians(45.f), static_cast<float>(this->getHeight()) / static_cast<float>(this->getWidth()), 1.f, 2000.f, glm::pi<float>() * .5f);
+			pvr::Api::Vulkan, glm::radians(fov), static_cast<float>(this->getHeight()) / static_cast<float>(this->getWidth()), 1.f, 2000.f, glm::pi<float>() * .5f);
 	}
 	else
 	{
-		_projMtx = pvr::math::perspective(pvr::Api::Vulkan, glm::radians(45.f), static_cast<float>(this->getWidth()) / static_cast<float>(this->getHeight()), 1.f, 2000.f);
+		_projMtx = pvr::math::perspective(pvr::Api::Vulkan, glm::radians(fov), static_cast<float>(this->getWidth()) / static_cast<float>(this->getHeight()), 1.f, 2000.f);
 	}
 
 	_deviceResources->uiRenderer.getDefaultTitle()->setText("ImageBasedLighting").commitUpdates();
-	_deviceResources->uiRenderer.getDefaultControls()->setText("Left / Right: to change the scene\n"
-															   "Action 1: Enable/Disable Animation\n");
+	_deviceResources->uiRenderer.getDefaultControls()->setText("Action 1: Pause\n"
+															   "Action 2: Change model\n"
+															   "Action 3: Change scene\n");
 	_deviceResources->uiRenderer.getDefaultControls()->commitUpdates();
 
 	// setup the camera
-	_camera.setDistanceFromTarget(60.f);
-	_camera.setHeight(10.f);
+	_camera.setDistanceFromTarget(50.f);
+	_camera.setInclination(10.f);
 
 	return pvr::Result::Success;
 }
 
-/// <summary>Generates a BRDF integration LUT which stores roughness/ nDotV</summary>
-/// <param name="uploadCmdBufffer">Command buffer to which commands may be recorded for loading/generating the BRDF LUT.</param>
-/// <param name="loadFromFile">Determines whether regeneration should occur.</param>
-void VulkanIBL::generateBRDFLUT(pvrvk::CommandBuffer uploadCmdBufffer)
-{
-	pvr::Texture tex;
-	pvr::assets::generateBRDFLUT(tex);
-	_deviceResources->brdfLUT = pvr::utils::uploadImageAndView(_deviceResources->device, tex, true, uploadCmdBufffer, pvrvk::ImageUsageFlags::e_SAMPLED_BIT,
-		pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, &_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
-}
-
 /// <summary>Code in releaseView() will be called by Shell when the application quits or before a change in the rendering context.</summary>
 /// <returns>Result::Success if no error occurred.</returns>
-pvr::Result VulkanIBL::releaseView()
+pvr::Result VulkanImageBasedLighting::releaseView()
 {
 	_deviceResources.reset();
 	return pvr::Result::Success;
@@ -1518,22 +852,25 @@ pvr::Result VulkanIBL::releaseView()
 
 /// <summary>Main rendering loop function of the program. The shell will call this function every frame</summary>
 /// <returns>Result::Success if no error occurred.</summary>
-pvr::Result VulkanIBL::renderFrame()
+pvr::Result VulkanImageBasedLighting::renderFrame()
 {
 	static float emissiveScale = 0.0f;
 	static float emissiveStrength = 1.;
 
-	_deviceResources->perFrameAcquireFence[_frameId]->wait();
-	_deviceResources->perFrameAcquireFence[_frameId]->reset();
-
-	_deviceResources->swapchain->acquireNextImage(uint64_t(-1), _deviceResources->semaphoreImageAcquired[_frameId], _deviceResources->perFrameAcquireFence[_frameId]);
+	_deviceResources->swapchain->acquireNextImage(uint64_t(-1), _deviceResources->imageAcquiredSemaphores[_frameId]);
 
 	const uint32_t swapchainIndex = _deviceResources->swapchain->getSwapchainIndex();
 
-	_deviceResources->perFrameCommandBufferFence[swapchainIndex]->wait();
-	_deviceResources->perFrameCommandBufferFence[swapchainIndex]->reset();
+	_deviceResources->perFrameResourcesFences[swapchainIndex]->wait();
+	_deviceResources->perFrameResourcesFences[swapchainIndex]->reset();
 
-	// Rerecord the commandbuffer if the scene has changed.
+	if (_updateDescriptors)
+	{
+		updateDescriptors();
+		_updateDescriptors = false;
+	}
+
+	// Re-record the commandbuffer if the model has changed.
 	if (_updateCommands[swapchainIndex])
 	{
 		recordCommandBuffers(swapchainIndex);
@@ -1550,16 +887,25 @@ pvr::Result VulkanIBL::renderFrame()
 
 	if (!_pause)
 	{
-		_cameraLookAngle += 0.15f;
+		_camera.addAzimuth(getFrameTime() * rotationSpeed);
 	}
 
-	if (_cameraLookAngle >= 360.0f)
+	if (this->isKeyPressed(pvr::Keys::A))
 	{
-		_cameraLookAngle = _cameraLookAngle - 360.f;
+		_camera.addAzimuth(getFrameTime() * -.1f);
 	}
-	if (!_pause)
+	if (this->isKeyPressed(pvr::Keys::D))
 	{
-		_camera.setTargetLookAngle(_cameraLookAngle);
+		_camera.addAzimuth(getFrameTime() * .1f);
+	}
+
+	if (this->isKeyPressed(pvr::Keys::W))
+	{
+		_camera.addInclination(getFrameTime() * .1f);
+	}
+	if (this->isKeyPressed(pvr::Keys::S))
+	{
+		_camera.addInclination(getFrameTime() * -.1f);
 	}
 
 	glm::mat4 viewMtx = _camera.getViewMatrix();
@@ -1573,6 +919,7 @@ pvr::Result VulkanIBL::renderFrame()
 		_deviceResources->uboPerFrame.view.getElement(1, 0, swapchainIndex).setValue(tempMtx); // view proj
 		_deviceResources->uboPerFrame.view.getElement(2, 0, swapchainIndex).setValue(cameraPos); // camera position.
 		_deviceResources->uboPerFrame.view.getElement(3, 0, swapchainIndex).setValue(emissiveScale);
+		_deviceResources->uboPerFrame.view.getElement(4, 0, swapchainIndex).setValue(exposure);
 
 		// flush if the buffer memory doesn't support host coherent.
 		if (uint32_t(_deviceResources->uboPerFrame.buffer->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
@@ -1583,31 +930,31 @@ pvr::Result VulkanIBL::renderFrame()
 	}
 
 	// update the skybox
-	_deviceResources->skyBoxPass.update(swapchainIndex, glm::inverse(_projMtx * viewMtx), cameraPos);
+	_deviceResources->skyBoxPass.update(swapchainIndex, glm::inverse(_projMtx * viewMtx), cameraPos, exposure);
 
 	// submit the commandbuffer
 	pvrvk::SubmitInfo submitInfo;
 	pvrvk::PipelineStageFlags waitStage = pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT;
 	submitInfo.commandBuffers = &_deviceResources->commandBuffers[swapchainIndex];
 	submitInfo.numCommandBuffers = 1;
-	submitInfo.waitDestStages = &waitStage;
-	submitInfo.waitSemaphores = &_deviceResources->semaphoreImageAcquired[_frameId]; // wait for the acquire to be finished.
+	submitInfo.waitDstStageMask = &waitStage;
+	submitInfo.waitSemaphores = &_deviceResources->imageAcquiredSemaphores[_frameId]; // wait for the acquire to be finished.
 	submitInfo.numWaitSemaphores = 1;
-	submitInfo.signalSemaphores = &_deviceResources->semaphorePresent[_frameId]; // signal the semaphore when it is finish with rendering to the swapchain.
+	submitInfo.signalSemaphores = &_deviceResources->presentationSemaphores[_frameId]; // signal the semaphore when it is finish with rendering to the swapchain.
 	submitInfo.numSignalSemaphores = 1;
 
 	// submit
-	_deviceResources->queue->submit(&submitInfo, 1, _deviceResources->perFrameCommandBufferFence[swapchainIndex]);
+	_deviceResources->queue->submit(&submitInfo, 1, _deviceResources->perFrameResourcesFences[swapchainIndex]);
 
 	if (this->shouldTakeScreenshot())
 	{
-		pvr::utils::takeScreenshot(_deviceResources->swapchain, swapchainIndex, _deviceResources->commandPool, _deviceResources->queue, this->getScreenshotFileName(),
+		pvr::utils::takeScreenshot(_deviceResources->queue, _deviceResources->commandPool, _deviceResources->swapchain, swapchainIndex, this->getScreenshotFileName(),
 			&_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
 	}
 
 	// present
 	pvrvk::PresentInfo presentInfo;
-	presentInfo.waitSemaphores = &_deviceResources->semaphorePresent[_frameId];
+	presentInfo.waitSemaphores = &_deviceResources->presentationSemaphores[_frameId];
 	presentInfo.numWaitSemaphores = 1;
 	presentInfo.numSwapchains = 1;
 	presentInfo.swapchains = &_deviceResources->swapchain;
@@ -1622,7 +969,7 @@ pvr::Result VulkanIBL::renderFrame()
 /*!*********************************************************************************************************************
 \brief  Pre-record the rendering commands
 ***********************************************************************************************************************/
-void VulkanIBL::recordCommandBuffers(uint32_t swapIndex)
+void VulkanImageBasedLighting::recordCommandBuffers(uint32_t swapIndex)
 {
 	const pvrvk::ClearValue clearValues[] = { pvrvk::ClearValue(0.0f, 0.0f, 0.0f, 1.0f), pvrvk::ClearValue(1.f, 0) };
 
@@ -1644,7 +991,7 @@ void VulkanIBL::recordCommandBuffers(uint32_t swapIndex)
 	_deviceResources->commandBuffers[swapIndex]->bindDescriptorSets(
 		pvrvk::PipelineBindPoint::e_GRAPHICS, _deviceResources->pipelineLayout, 0, _deviceResources->descSets, ARRAY_SIZE(_deviceResources->descSets), offsets, 1);
 
-	if (_currentScene == SceneMode::Helmet)
+	if (_currentModel == Models::Helmet)
 	{
 		_deviceResources->helmetPass.recordCommands(_deviceResources->commandBuffers[swapIndex]);
 	}
@@ -1664,11 +1011,11 @@ void VulkanIBL::recordCommandBuffers(uint32_t swapIndex)
 	_deviceResources->commandBuffers[swapIndex]->end();
 }
 
-void VulkanIBL::createDescriptorSetLayouts()
+void VulkanImageBasedLighting::createDescriptorSetLayouts()
 {
 	// Create the descriptor set layouts
 
-	// dynamic ubo
+	// Dynamic UBO: Transformation matrix etc.
 	{
 		pvrvk::DescriptorSetLayoutCreateInfo descSetInfo;
 		descSetInfo.setBinding(0, pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 1, pvrvk::ShaderStageFlags::e_VERTEX_BIT | pvrvk::ShaderStageFlags::e_FRAGMENT_BIT); // binding 0
@@ -1676,30 +1023,30 @@ void VulkanIBL::createDescriptorSetLayouts()
 		_deviceResources->descSetLayouts[DescSetIndex::PerFrame] = _deviceResources->device->createDescriptorSetLayout(descSetInfo);
 	}
 
-	// create the ubo descriptor set layouts
+	// "Static" UBO: Scene maps (environment, irradiance)
 	{
 		pvrvk::DescriptorSetLayoutCreateInfo descSetInfo;
 		descSetInfo.setBinding(0, pvrvk::DescriptorType::e_UNIFORM_BUFFER, 1, pvrvk::ShaderStageFlags::e_FRAGMENT_BIT); // binding 0
 		descSetInfo.setBinding(1, pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 1, pvrvk::ShaderStageFlags::e_FRAGMENT_BIT); // binding 2: Diffuse irradianceMap
 		descSetInfo.setBinding(2, pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 1, pvrvk::ShaderStageFlags::e_FRAGMENT_BIT); // binding 3: Specular irradianceMap
-		descSetInfo.setBinding(3, pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 1, pvrvk::ShaderStageFlags::e_FRAGMENT_BIT); // binding 4: Specular irradiance mip Map
+		descSetInfo.setBinding(3, pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 1, pvrvk::ShaderStageFlags::e_FRAGMENT_BIT); // binding 4: Environment map (for perfect reflections)
 		descSetInfo.setBinding(4, pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 1, pvrvk::ShaderStageFlags::e_FRAGMENT_BIT); // binding 5: brdfLUTmap
-		_deviceResources->descSetLayouts[DescSetIndex::Scene] = _deviceResources->device->createDescriptorSetLayout(descSetInfo);
+		_deviceResources->descSetLayouts[DescSetIndex::Model] = _deviceResources->device->createDescriptorSetLayout(descSetInfo);
 	}
 
-	// textures
+	// Material textures textures
 	{
 		pvrvk::DescriptorSetLayoutCreateInfo descSetInfo;
-		descSetInfo.setBinding(0, pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 1, pvrvk::ShaderStageFlags::e_FRAGMENT_BIT); // binding 0: albedo
-		descSetInfo.setBinding(1, pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 1, pvrvk::ShaderStageFlags::e_FRAGMENT_BIT); // binding 1: metallicRoughness
-		descSetInfo.setBinding(2, pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 1, pvrvk::ShaderStageFlags::e_FRAGMENT_BIT); // binding 2: emissiveTex
-		descSetInfo.setBinding(3, pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 1, pvrvk::ShaderStageFlags::e_FRAGMENT_BIT); // binding 3: normal
+		descSetInfo.setBinding(0, pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 1, pvrvk::ShaderStageFlags::e_FRAGMENT_BIT); // binding 0: Albedo
+		descSetInfo.setBinding(1, pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 1, pvrvk::ShaderStageFlags::e_FRAGMENT_BIT); // binding 1: MetallicRoughness
+		descSetInfo.setBinding(2, pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 1, pvrvk::ShaderStageFlags::e_FRAGMENT_BIT); // binding 2: Normal
+		descSetInfo.setBinding(3, pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 1, pvrvk::ShaderStageFlags::e_FRAGMENT_BIT); // binding 3: Emissive
 		descSetInfo.setBinding(4, pvrvk::DescriptorType::e_UNIFORM_BUFFER, 1, pvrvk::ShaderStageFlags::e_FRAGMENT_BIT); // binding 1
 		_deviceResources->descSetLayouts[DescSetIndex::Material] = _deviceResources->device->createDescriptorSetLayout(descSetInfo);
 	}
 }
 
-void VulkanIBL::createPipelineLayout()
+void VulkanImageBasedLighting::createPipelineLayout()
 {
 	// create the pipeline layout
 	pvrvk::PipelineLayoutCreateInfo pipeLayoutInfo;
@@ -1717,7 +1064,7 @@ void VulkanIBL::createPipelineLayout()
 /*!*********************************************************************************************************************
 \brief  Creates the buffers used throughout the demo.
 ***********************************************************************************************************************/
-void VulkanIBL::createUbos()
+void VulkanImageBasedLighting::createUbos()
 {
 	// Per frame
 	{
@@ -1726,6 +1073,7 @@ void VulkanIBL::createUbos()
 		desc.addElement("MVP", pvr::GpuDatatypes::mat4x4);
 		desc.addElement("camPos", pvr::GpuDatatypes::vec3);
 		desc.addElement("emissiveScale", pvr::GpuDatatypes::Float);
+		desc.addElement("exposure", pvr::GpuDatatypes::Float);
 
 		_deviceResources->uboPerFrame.view.initDynamic(desc, _deviceResources->swapchain->getSwapchainLength(), pvr::BufferUsageFlags::UniformBuffer,
 			static_cast<uint32_t>(_deviceResources->device->getPhysicalDevice()->getProperties().getLimits().getMinUniformBufferOffsetAlignment()));
@@ -1799,7 +1147,7 @@ void VulkanIBL::createUbos()
 
 		_deviceResources->uboLights.view.pointToMappedMemory(_deviceResources->uboLights.buffer->getDeviceMemory()->getMappedData());
 
-		_deviceResources->uboLights.view.getElement(0).setValue(lightDir[0]);
+		_deviceResources->uboLights.view.getElement(0).setValue(lightDir);
 		_deviceResources->uboLights.view.getElement(1).setValue(_deviceResources->skyBoxPass.getNumPrefilteredMipLevels());
 
 		if (uint32_t(_deviceResources->uboLights.buffer->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
@@ -1810,9 +1158,8 @@ void VulkanIBL::createUbos()
 
 	// ubo material
 	{
-		const pvr::utils::StructuredMemoryDescription materialDesc("material", NumInstances + 1,
-			{ { "roughness", pvr::GpuDatatypes::Float }, { "metallic", pvr::GpuDatatypes::Float }, { "rgb", pvr::GpuDatatypes::vec3 },
-				{ "hasMaterialTextures", pvr::GpuDatatypes::boolean } });
+		const pvr::utils::StructuredMemoryDescription materialDesc(
+			"material", NumInstances + 1, { { "roughness", pvr::GpuDatatypes::Float }, { "metallic", pvr::GpuDatatypes::Float }, { "rgb", pvr::GpuDatatypes::vec3 } });
 
 		_deviceResources->uboMaterial.view.init(pvr::utils::StructuredMemoryDescription("materials", 1, { materialDesc }));
 
@@ -1823,7 +1170,7 @@ void VulkanIBL::createUbos()
 		_deviceResources->uboMaterial.view.pointToMappedMemory(_deviceResources->uboMaterial.buffer->getDeviceMemory()->getMappedData());
 
 		// update the material buffer
-		pvr::assets::Material& material = _deviceResources->helmetPass.getScene()->getMaterial(0);
+		pvr::assets::Material& material = _deviceResources->helmetPass.getModel()->getMaterial(0);
 		pvr::assets::Material::GLTFMetallicRoughnessSemantics metallicRoughness(material);
 
 		// Helmet material
@@ -1831,7 +1178,6 @@ void VulkanIBL::createUbos()
 		helmetView.getElement(0).setValue(metallicRoughness.getRoughness());
 		helmetView.getElement(1).setValue(metallicRoughness.getMetallicity());
 		helmetView.getElement(2).setValue(metallicRoughness.getBaseColor());
-		helmetView.getElement(3).setValue(true);
 
 		// Spheres materials
 
@@ -1839,11 +1185,11 @@ void VulkanIBL::createUbos()
 		const glm::vec3 color[] = {
 			glm::vec3(0.971519, 0.959915, 0.915324), // Silver Metallic
 			glm::vec3(1, 0.765557, 0.336057), // Gold Metallic
-			glm::vec3(1.0), // White Plastic
-			glm::vec3(.05f, .05f, 0.3), // Yellow Plastic
+			glm::vec3(.75f), // White Plastic
+			glm::vec3(.01f, .05f, .2f), // Blue Plastic
 		};
 
-		const float roughness[NumSphereColumns] = { 1.f, 0.8f, 0.45f, 0.3f, 0.15f, 0.0f };
+		const float roughness[NumSphereColumns] = { .9f, 0.6f, 0.35f, 0.25f, 0.15f, 0.0f };
 
 		// set the per sphere materiual property.
 		for (uint32_t i = 0; i < NumSphereRows; ++i)
@@ -1854,7 +1200,6 @@ void VulkanIBL::createUbos()
 				sphereView.getElement(0).setValue(roughness[j]);
 				sphereView.getElement(1).setValue(float(i < 2) * 1.0f); // set the first 2 row metalicity and the remaining to 0.0
 				sphereView.getElement(2).setValue(color[i]);
-				sphereView.getElement(3).setValue(false);
 			}
 		}
 
@@ -1869,24 +1214,22 @@ void VulkanIBL::createUbos()
 \brief  Create combined texture and sampler descriptor set for the materials in the _scene
 \return Return true on success
 ***********************************************************************************************************************/
-void VulkanIBL::createDescriptorSets()
+void VulkanImageBasedLighting::updateDescriptors()
 {
 	// Update the descriptor sets
 
 	std::vector<pvrvk::WriteDescriptorSet> writeDescSets;
-	// PerFrame
+	// Dynamic ubo (per frame/object data) : Transformation matrices
 	{
-		_deviceResources->descSets[0] = _deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->descSetLayouts[0]);
 		writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, _deviceResources->descSets[0], 0));
 		writeDescSets.back().setBufferInfo(0, pvrvk::DescriptorBufferInfo(_deviceResources->uboPerFrame.buffer, 0, _deviceResources->uboPerFrame.view.getDynamicSliceSize()));
 
 		writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_UNIFORM_BUFFER, _deviceResources->descSets[0], 1));
 		writeDescSets.back().setBufferInfo(0, pvrvk::DescriptorBufferInfo(_deviceResources->uboWorld.buffer, 0, _deviceResources->uboWorld.view.getSize()));
 	}
-	// Per Scene
-	{
-		_deviceResources->descSets[1] = _deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->descSetLayouts[1]);
 
+	// Static ubo (per scene data) : Environment maps etc., BRDF
+	{
 		// Light
 		writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_UNIFORM_BUFFER, _deviceResources->descSets[1], 0));
 		writeDescSets.back().setBufferInfo(0, pvrvk::DescriptorBufferInfo(_deviceResources->uboLights.buffer, 0, _deviceResources->uboLights.view.getDynamicSliceSize()));
@@ -1901,18 +1244,18 @@ void VulkanIBL::createDescriptorSets()
 		writeDescSets.back().setImageInfo(
 			0, pvrvk::DescriptorImageInfo(_deviceResources->skyBoxPass.getPrefilteredMap(), _deviceResources->samplerTrilinear, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL));
 
+		// Environment map
 		writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, _deviceResources->descSets[1], 3));
-		writeDescSets.back().setImageInfo(
-			0, pvrvk::DescriptorImageInfo(_deviceResources->skyBoxPass.getPrefilteredMipMap(), _deviceResources->samplerTrilinear, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL));
+		writeDescSets.back().setImageInfo(0,
+			pvrvk::DescriptorImageInfo(
+				_deviceResources->skyBoxPass.getPrefilteredMipMap(), _deviceResources->samplerTrilinearLodClamped, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL));
 
 		// BRDF LUT
 		writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, _deviceResources->descSets[1], 4));
 		writeDescSets.back().setImageInfo(0, pvrvk::DescriptorImageInfo(_deviceResources->brdfLUT, _deviceResources->samplerBilinear, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL));
 	}
-	// Material Textures
+	// Per object ubo: Material textures.
 	{
-		_deviceResources->descSets[2] = _deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->descSetLayouts[2]);
-
 		// Albedo Map
 		writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, _deviceResources->descSets[2], 0));
 		writeDescSets.back().setImageInfo(
@@ -1920,7 +1263,8 @@ void VulkanIBL::createDescriptorSets()
 
 		writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, _deviceResources->descSets[2], 1));
 		writeDescSets.back().setImageInfo(0,
-			pvrvk::DescriptorImageInfo(_deviceResources->helmetPass.getMetallicRoughnessMap(), _deviceResources->samplerBilinear, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL));
+			pvrvk::DescriptorImageInfo(
+				_deviceResources->helmetPass.getOcclusionMetallicRoughnessMap(), _deviceResources->samplerBilinear, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL));
 
 		writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, _deviceResources->descSets[2], 2));
 		writeDescSets.back().setImageInfo(
@@ -1942,5 +1286,5 @@ void VulkanIBL::createDescriptorSets()
 /// <returns>Return a unique ptr to the demo supplied by the user.</returns>
 std::unique_ptr<pvr::Shell> pvr::newDemo()
 {
-	return std::unique_ptr<pvr::Shell>(new VulkanIBL());
+	return std::unique_ptr<pvr::Shell>(new VulkanImageBasedLighting());
 }

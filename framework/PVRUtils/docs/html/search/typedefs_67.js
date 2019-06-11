@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['group',['Group',['../namespacepvr_1_1ui.html#a06a160d1e335e15532a1133a8685bf55',1,'pvr::ui']]]
+  ['group',['Group',['../namespacepvr_1_1ui.html#add33fb03a8708233c8efc71f2666c35c',1,'pvr::ui']]]
 ];

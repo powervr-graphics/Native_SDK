@@ -1,4 +1,4 @@
-//Microsoft eMbedded Visual C++ generated resource script.
+// Microsoft Visual C++ generated resource script.
 //
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
@@ -58,14 +58,12 @@ END
 // RCDATA
 //
 /////////////////////////////////////////////////////////////////////////////
-// RCDATA: Assets (scenes,  effects, textures...)
-GnomeWood.pvr		RCDATA		"..\\..\\..\\assets\\GnomeToy\\GnomeWood.pvr"
-DarkWood.pvr		RCDATA		"..\\..\\..\\assets\\GnomeToy\\DarkWood.pvr"
-ClearWood.pvr		RCDATA		"..\\..\\..\\assets\\GnomeToy\\ClearWood.pvr"
-GnomeToy.pod		RCDATA		"..\\..\\..\\assets\\GnomeToy\\GnomeToy.pod"
-// RCDATA: OpenGL ES Textual shaders(glsl)
-FragShader.fsh		RCDATA		"..\\FragShader.fsh"
-VertShader.vsh		RCDATA		"..\\VertShader.vsh"
+GnomeWood.pvr RCDATA "..\\..\\..\\assets\\GnomeToy\\GnomeWood.pvr"
+DarkWood.pvr RCDATA "..\\..\\..\\assets\\GnomeToy\\DarkWood.pvr"
+ClearWood.pvr RCDATA "..\\..\\..\\assets\\GnomeToy\\ClearWood.pvr"
+GnomeToy.pod RCDATA "..\\..\\..\\assets\\GnomeToy\\GnomeToy.pod"
+FragShader.fsh RCDATA "..\\FragShader.fsh"
+VertShader.vsh RCDATA "..\\VertShader.vsh"
 
 #endif    // English (United Kingdom) resources
 /////////////////////////////////////////////////////////////////////////////

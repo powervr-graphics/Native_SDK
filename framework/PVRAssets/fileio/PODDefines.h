@@ -7,10 +7,10 @@
 #pragma once
 #include <cstdint>
 
-//!\cond NO_DOXYGEN
 namespace pvr {
 namespace pod {
 
+/// <summary>Enum identifiers for pod files.</summary>
 enum PodTagConstants : uint32_t
 {
 	c_startTagMask = 0x00000000,
@@ -166,4 +166,3 @@ enum PODIdentifiers
 };
 } // namespace pod
 } // namespace pvr
-//!\endcond

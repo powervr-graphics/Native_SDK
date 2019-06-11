@@ -136,17 +136,16 @@ void OpenGLESIMGFramebufferDownsample::updateSubtitleText()
 {
 	if (_useHalfAndHalf)
 	{
-		_uiRenderer.getDefaultDescription()->setText("Rendering the object using GL_IMG_framebuffer_downsample.\nLeft: Samples from the full size texture.\nRight: Samples from "
-													 "the half size texture created using GL_IMG_framebuffer_downsample.");
+		_uiRenderer.getDefaultDescription()->setText("Using GL_IMG_framebuffer_downsample.\nLeft: Samples full-res texture.\nRight: Samples half-res texture "
+													 "(GL_IMG_framebuffer_downsample)");
 	}
 	else if (_useFullDimensionFramebuffer)
 	{
-		_uiRenderer.getDefaultDescription()->setText("Rendering the object using GL_IMG_framebuffer_downsample.\nSamples from the full size texture.");
+		_uiRenderer.getDefaultDescription()->setText("Not using GL_IMG_framebuffer_downsample.\nSamples full-res texture.");
 	}
 	else
 	{
-		_uiRenderer.getDefaultDescription()->setText("Rendering the object using GL_IMG_framebuffer_downsample.\nSamples from the half size texture created using "
-													 "GL_IMG_framebuffer_downsample.");
+		_uiRenderer.getDefaultDescription()->setText("Using GL_IMG_framebuffer_downsample.\nSamples half-res texture (GL_IMG_framebuffer_downsample)");
 	}
 
 	_uiRenderer.getDefaultDescription()->commitUpdates();

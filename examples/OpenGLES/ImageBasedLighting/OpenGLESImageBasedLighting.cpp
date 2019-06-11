@@ -1,6 +1,6 @@
 /*!*********************************************************************************************************************
-\File         OpenGLESIBL.cpp
-\Title        Introducing Physcially Based Rendering
+\File         OpenGLESImageBasedLighting.cpp
+\Title        Introducing Physically Based Rendering
 \Author       PowerVR by Imagination, Developer Technology Team
 \Copyright    Copyright (c) Imagination Technologies Limited.
 \brief		  This example demonstrates how to use Physically based rendering using Metallic-Roughness work flow showcasing 2 scenes (helmet and sphere) with Image based lighting
@@ -12,9 +12,9 @@
 	Material: Metallic-Roughness
 	============================
 	- Albedo map: This is a raw color of the material. This map shouldn't contains any shading information like Ambient Occlusion which is
-	very often baked in the diffuse map for phong model.
+	very often baked in the diffuse map for Phong model.
 	It does not only influence the diffuse color, but also the specular color of the material as well.
-	When the metallness is one(metallic material) the base color is the specular.
+	When the metalness is one(metallic material) the base color is the specular.
 
 	- MetallicRoughness map: The metallic-roughness texture.
 	The metalness values are sampled from the B channel and roughness values are sampled from the G channel, other channels are ignored.
@@ -25,53 +25,53 @@
 	f = Cdiff / PI
 	Cdiff: Diffuse albedo of the material.
 
-	*Specular BRDF: Cook-Torance
+	*Specular BRDF: Cook-Torrance
 	f = D * F * G / (4 * (N.L) * (N.V));
-	D: NDF (Normal Distribution function), It computes the distribution of the microfacets for the shaded surface
+	D: NDF (Normal Distribution function), It computes the distribution of the micro-facets for the shaded surface
 	F: Describes how light reflects and refracts at the intersection of two different media (most often in computer graphics : Air and the shaded surface)
-	G: Defines the shadowing from the microfacets
+	G: Defines the shadowing from the micro-facets
 	N.L:  is the dot product between the normal of the shaded surface and the light direction.
 	N.V is the dot product between the normal of the shaded surface and the view direction.
 
-	IBL workflow
+	IBL work-flow
 	============
-	IBL is one of the most common technique for implmenting global illumination. The idea is that using environmap as light source.
+	IBL is one of the most common technique for implementing global illumination. The basic idea is to make use of environment maps as light source.
 
 	IBL Diffuse:
-	The application load/ generates a diffuse Irradiance map: This is normally done in offline but the code is left here for education
-	purpose. Normally when lambert diffuse is used in games, it is the light color multiplied by the visibility factor( N dot L).
-	But when using Indirectional lighting (IBL)  the visibility factor is not considered because the light is coming from every where.
+	Normally when Lambert diffuse is used in games, it is the light color multiplied by the visibility factor( N dot L).
+	But when using In-directional lighting (IBL) the visibility factor is not considered because the light is coming from everywhere.
 	So the diffuse factor is the light color.
+
 	All the pixels in the environment map is a light source, so when shading a point it has to be lit by many pixels from the environment map.
-	Sampling multiple texels for shading a single point is not practical for realtime application. Therefore these samples are precomputed
+	Sampling multiple texels for shading a single point is not practical for real-time application. Therefore these samples are precomputed
 	in the diffuse irradiance map. So at run time it would be a single texture fetch for the given reflection direction.
 
 	IBL Specular & BRDF_LUT:
-	Specular reflections looks shiny when the roughness values is low and it becames blurry when the roughness value is high.
+	Specular reflections look shiny when the roughness values is low and it become blurry when the roughness value is high.
 	This is encoded in the specular irradiance texture.
+
 	We use the same technique, Split-Sum-Approximation presented by Epics Games, each mip level of this image contains the environment map specular reflectance.
-	Mip level 0 contains samples for roughness value 0, and the remaining miplevels get blurry for each mip level as the roughness value increases to 1.
+	Mip level 0 contains samples for roughness value 0, and the remaining mip levels get blurry for each mip level as the roughness value increases to 1.
 
-	The samples encoded in this map is the result of the specular BRDF of the environment map. For each pixels in the environemt map,
-	computes the Cook-Torrentz microfacet BRDF and stores those results.
+	The samples encoded in this map is the result of the specular BRDF of the environment map. For each pixels in the environment map,
+	computes the Cook-Torrance micro-facet BRDF and stores those results.
 
-	Using the mip map for storing blured images for each roughness value has one draw backs, Specular antialising.
-	This happens for the level 0. Since we are using the mip map for different purpose, we can't use mipmapping technique
-	to solve the aliasing artifact for high resoultion texture which is level0 of the specular irradiance map.
-	Other mip map levels doesn'y have this issue as they are blured and low res.
-
-	To solve this issue we use another texture for doing mipmaping for level 0 of the specular Irradiance map.
+	Using the mipmap for storing blurred images for each roughness value has one draw back, Specular aliasing.
+	This is most pronounced for level 0. Since we are using the mipmap for storing different roughnesses, mipmaps cannot combat this.
+	For this reason, we are using the environment map itself as the first level. This adds an additional texture read, but eliminates the worst
+	of specular aliasing. Other mipmap levels doesn't have this issue as they are blurred and low res.
 */
 
 #include "PVRShell/PVRShell.h"
 #include "PVRUtils/PVRUtilsGles.h"
+#include "PVRUtils/OpenGLES/PBRUtilsGles.h"
 #include "PVRAssets/fileio/GltfReader.h"
 #include "PVRCore/cameras/TPSCamera.h"
 #include "PVRCore/textureio/TextureWriterPVR.h"
-#include "PVRCore/texture/TextureUtils.h"
 
 // Content file names
 // Shaders
+
 const char PBRVertShaderFileName[] = "PBRVertShader.vsh";
 const char PBRFragShaderFileName[] = "PBRFragShader.fsh";
 const char SkyboxVertShaderFileName[] = "SkyboxVertShader.vsh";
@@ -81,15 +81,21 @@ const char IrradianceFragShaderFileName[] = "IrradianceFragShader.fsh";
 const char PreFilterFragShaderFileName[] = "PreFilterFragShader.fsh";
 
 // Scenes
-const char HelmetSceneFileName[] = "damagedHelmet.gltf";
-const char SphereSceneFileName[] = "sphere.pod";
+const char HelmetModelFileName[] = "damagedHelmet.gltf";
+const char SphereModelFileName[] = "sphere.pod";
 
 // Textures
-const char SkyboxTexFile[] = "MonValley_baked_lightmap.pvr";
-const char DiffuseIrradianceMapTexFile[] = "DiffuseIrradianceMap.pvr";
-const char PrefilterEnvMapTexFile[] = "PrefilterEnvMap.pvr";
-const char PrefilterL0MipMapTexFile[] = "PrefilterL0MipMap.pvr";
-const char BrdfLUTTexFile[] = "brdfLUT.pvr";
+const std::string SkyboxTexFileName[] = {
+	"satara_night_scale_0.305_rgb9e5", //
+	"misty_pines_rgb9e5", //
+};
+const int numSkyBoxes = sizeof SkyboxTexFileName / sizeof SkyboxTexFileName[0];
+int currentSkybox = 0;
+
+const std::string SkyboxTexFileExtension = ".pvr";
+const std::string DiffuseIrradianceMapTexFileSuffix = "_Irradiance.pvr";
+const std::string PrefilteredEnvMapTexFileSuffix = "_Prefiltered.pvr";
+const std::string BrdfLUTTexFile = "brdfLUT.pvr";
 
 const uint32_t IrradianceMapDim = 64;
 const uint32_t PrefilterEnvMapDim = 256;
@@ -98,93 +104,90 @@ const uint32_t NumSphereRows = 4;
 const uint32_t NumSphereColumns = 6;
 const uint32_t NumInstances = NumSphereRows * NumSphereColumns;
 
-const bool LoadIrradianceMap = true;
-const bool LoadPrefilteredMap = true;
-const bool LoadBRDFLUT = true;
+const float rotationSpeed = .01f;
 
-const glm::vec3 lightDir[1] = {
-	glm::normalize(glm::vec3(0.0f, -0.5f, 0.5f)),
-};
+const float fov = 65.f;
 
-enum class SceneMode
+const glm::vec3 lightDir = glm::normalize(glm::vec3(-0.5f, -0.5f, -0.5f));
+const glm::vec3 lightColor = glm::vec3(0.f, 0.f, 0.f);
+
+float exposure = 1.;
+
+enum class Models
 {
 	Helmet,
 	Sphere,
-	NumScenes
+	NumModels
 };
 
 class SkyboxPass
 {
 public:
-	void init(pvr::IAssetProvider& assetProvider, bool loadIrradianceMap, bool loadPrefilteredMap, bool srgbFramebuffer, bool isBufferStorageExtSupported)
+	SkyboxPass() : program(0), skyBoxMap(0), irradianceMap(0), prefilteredMap(0), numPrefilteredMipLevels(0), uboBuffer(0), isBufferStorageExtSupported(false) {}
+	void init(pvr::IAssetProvider& assetProvider, bool srgbFramebuffer, bool isBufferStorageExtSupported)
 	{
+		cleanup();
+
+		GLint viewport_data[4];
+
+		gl::GetIntegerv(GL_VIEWPORT, viewport_data);
+
 		this->isBufferStorageExtSupported = isBufferStorageExtSupported;
 
 		// load the environment map.
-		skyBoxMap = pvr::utils::textureUpload(assetProvider, SkyboxTexFile, true);
+		skyBoxMap = pvr::utils::textureUpload(assetProvider, SkyboxTexFileName[currentSkybox] + SkyboxTexFileExtension);
 
-		gl::ActiveTexture(GL_TEXTURE0);
-		gl::BindTexture(GL_TEXTURE_CUBE_MAP, skyBoxMap);
-		gl::TexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		gl::TexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		gl::TexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		gl::TexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		gl::TexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+		debugThrowOnApiError("Setting skybox params");
+		std::string irradianceFileName = SkyboxTexFileName[currentSkybox] + DiffuseIrradianceMapTexFileSuffix;
 
-		if (loadIrradianceMap)
+		// irradianceMap = pvr::utils::textureUpload(assetProvider, irradianceFileName, irradianceMapData);
+
+		// Generating the irradiance map very well happen online, possible in a once-off step, but because it may take some time,
+		// it is better to happen beforehand. This could look like this:
+
+		try
 		{
-			irradianceMap = pvr::utils::textureUpload(assetProvider, DiffuseIrradianceMapTexFile, false);
+			irradianceMap = pvr::utils::textureUpload(assetProvider, irradianceFileName);
 		}
-		else
+		catch (const pvr::FileNotFoundError&) // Not exists
 		{
-			irradianceMap = generateIrradianceMap(assetProvider, DiffuseIrradianceMapTexFile);
-		}
-
-		gl::BindTexture(GL_TEXTURE_CUBE_MAP, irradianceMap);
-		// set the mip map interpolates to linear so that if the roughness value is not right on the mip level,
-		// it will interpolate between the two closest mip levels.
-		gl::TexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-		gl::TexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		gl::TexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		gl::TexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		gl::TexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-
-		if (loadPrefilteredMap)
-		{
-			pvr::Texture envTexture;
-			prefilteredMap = pvr::utils::textureUpload(assetProvider, PrefilterEnvMapTexFile, envTexture, false);
-			prefilteredL0MipMap = pvr::utils::textureUpload(assetProvider, PrefilterL0MipMapTexFile, envTexture, false);
-
-			numPrefilteredMipLevels = envTexture.getNumMipMapLevels();
-		}
-		else
-		{
-			generatePrefilteredMap(assetProvider, PrefilterEnvMapTexFile, PrefilterL0MipMapTexFile, prefilteredMap, prefilteredL0MipMap);
+			pvr::Texture irradianceMapData;
+			pvr::utils::generateIrradianceMap(skyBoxMap, irradianceMapData, irradianceMap);
+			pvr::assetWriters::TextureWriterPVR writerPVR;
+			writerPVR.openAssetStream(pvr::FileStream::createFileStream(irradianceFileName, "wb"));
+			writerPVR.writeAsset(irradianceMapData);
+			writerPVR.closeAssetStream();
 		}
 
-		gl::BindTexture(GL_TEXTURE_CUBE_MAP, prefilteredMap);
-		// set the mip map interpolates to linear so that if the roughness value is not right on the mip level,
-		// it will interpolate between the two closest mip levels.
-		gl::TexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-		gl::TexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		gl::TexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		gl::TexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		gl::TexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+		std::string preFilteredMap = SkyboxTexFileName[currentSkybox] + PrefilteredEnvMapTexFileSuffix;
 
-		gl::BindTexture(GL_TEXTURE_CUBE_MAP, prefilteredL0MipMap);
-		// set the mip map interpolates to linear so that if the roughness value is not right on the mip level,
-		// it will interpolate between the two closest mip levels.
-		gl::TexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-		gl::TexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		gl::TexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		gl::TexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		gl::TexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+		// Same with the PreFiltered map
+
+		try
+		{
+			pvr::Texture preFilteredMapData;
+			prefilteredMap = pvr::utils::textureUpload(assetProvider, preFilteredMap, preFilteredMapData);
+			numPrefilteredMipLevels = preFilteredMapData.getNumMipMapLevels();
+		}
+		catch (pvr::FileNotFoundError&)
+		{
+			pvr::Texture preFilteredMapData;
+			// Discard the last two mipmaps. From our experimentation throwing away "a few" miplevels, keeping the last as 16x16~4x4 avoids the worst of
+			// blocky texel artifacts for materials with roughness values close to 1.0 and with large smoothly curved surfaces (e.g. a rough sphere).
+			// However, the more mipmaps that are discarded, the less accurate the blurring of the mipmap.
+			const uint32_t DISCARD_SPECULAR_MIP_LEVELS = 4;
+			pvr::utils::generatePreFilteredMapMipMapStyle(skyBoxMap, preFilteredMapData, prefilteredMap, PrefilterEnvMapDim, false, DISCARD_SPECULAR_MIP_LEVELS);
+			numPrefilteredMipLevels = preFilteredMapData.getNumMipMapLevels();
+
+			pvr::Stream::ptr_type fileStream = pvr::FileStream::createFileStream(preFilteredMap, "wb");
+			pvr::assetWriters::TextureWriterPVR writerPVR;
+			writerPVR.openAssetStream(std::move(fileStream));
+			writerPVR.writeAsset(preFilteredMapData);
+			writerPVR.closeAssetStream();
+		}
 
 		std::vector<const char*> defines;
-		if (srgbFramebuffer)
-		{
-			defines.push_back("FRAMEBUFFER_SRGB");
-		}
+		// Note that the tone mapping that we use does not work with (or need) SRGB gamma correction
 
 		// create the program
 		program = pvr::utils::createShaderProgram(
@@ -198,7 +201,7 @@ public:
 
 		gl::GenBuffers(1, &uboBuffer);
 		gl::BindBuffer(GL_UNIFORM_BUFFER, uboBuffer);
-		gl::BufferData(GL_UNIFORM_BUFFER, uboView.getSize(), nullptr, GL_DYNAMIC_DRAW);
+		gl::BufferData(GL_UNIFORM_BUFFER, static_cast<GLsizeiptr>(uboView.getSize()), nullptr, GL_DYNAMIC_DRAW);
 
 		// if GL_EXT_buffer_storage is supported then map the buffer upfront and never unmap it
 		if (isBufferStorageExtSupported)
@@ -206,8 +209,26 @@ public:
 			gl::BindBuffer(GL_COPY_READ_BUFFER, uboBuffer);
 			gl::ext::BufferStorageEXT(GL_COPY_READ_BUFFER, (GLsizei)uboView.getSize(), nullptr, GL_MAP_WRITE_BIT_EXT | GL_MAP_PERSISTENT_BIT_EXT | GL_MAP_COHERENT_BIT_EXT);
 
-			void* memory = gl::MapBufferRange(GL_COPY_READ_BUFFER, 0, uboView.getSize(), GL_MAP_WRITE_BIT_EXT | GL_MAP_PERSISTENT_BIT_EXT | GL_MAP_COHERENT_BIT_EXT);
+			void* memory = gl::MapBufferRange(GL_COPY_READ_BUFFER, 0, static_cast<GLsizeiptr>(uboView.getSize()), GL_MAP_WRITE_BIT_EXT | GL_MAP_PERSISTENT_BIT_EXT | GL_MAP_COHERENT_BIT_EXT);
 			uboView.pointToMappedMemory(memory);
+		}
+
+		gl::Viewport(viewport_data[0], viewport_data[1], viewport_data[2], viewport_data[3]);
+	}
+
+	void cleanup()
+	{
+		pvr::utils::deleteTexturesAndZero(skyBoxMap, irradianceMap, prefilteredMap);
+
+		if (program)
+		{
+			gl::DeleteProgram(program);
+			program = 0;
+		}
+
+		if (uboBuffer)
+		{
+			gl::DeleteBuffers(1, &uboBuffer);
 		}
 	}
 
@@ -225,20 +246,19 @@ public:
 	{
 		return prefilteredMap;
 	}
-
-	GLuint getPrefilteredMipMap()
+	GLuint getEnvironmentMap()
 	{
-		return prefilteredL0MipMap;
+		return skyBoxMap;
 	}
 
 	void render(const glm::mat4& viewProjMtx, const glm::vec3& eyePos)
 	{
-		gl::ActiveTexture(GL_TEXTURE8);
+		gl::ActiveTexture(GL_TEXTURE9);
 		gl::BindTexture(GL_TEXTURE_CUBE_MAP, skyBoxMap);
 
 		// Disable the depth testing, no need.
 		gl::Disable(GL_DEPTH_TEST);
-		gl::BindBufferRange(GL_UNIFORM_BUFFER, 0, uboBuffer, 0, uboView.getSize());
+		gl::BindBufferRange(GL_UNIFORM_BUFFER, 0, uboBuffer, 0, static_cast<GLsizeiptr>(uboView.getSize()));
 
 		void* mappedMemory = nullptr;
 		if (!isBufferStorageExtSupported)
@@ -257,294 +277,27 @@ public:
 		}
 
 		gl::UseProgram(program);
+		gl::Uniform1f(3, exposure);
 		gl::DrawArrays(GL_TRIANGLES, 0, 6);
 	}
 
 	~SkyboxPass()
 	{
-		gl::DeleteProgram(program);
-		gl::DeleteTextures(1, &skyBoxMap);
-		gl::DeleteTextures(1, &irradianceMap);
-		gl::DeleteTextures(1, &prefilteredMap);
-		gl::DeleteTextures(1, &prefilteredL0MipMap);
-		gl::DeleteBuffers(1, &uboBuffer);
+		cleanup();
 	}
 
 private:
 	// Generates specular irradiance map.
-	void generatePrefilteredMap(pvr::IAssetProvider& assetProvider, const char* specIrradianceMap, const char* specIrrL0Mipmap, GLuint& prefilteredMap, GLuint& prefilteredL0MipMap)
-	{
-		// Create the quad vertices.
-		const float quadVertices[] = {
-			-1, 1, 1.f, // upper left
-			-1, -1, 1.f, // lower left
-			1, 1, 1.f, // upper right
-			1, 1, 1.f, // upper right
-			-1, -1, 1.f, // lower left
-			1, -1, 1.f // lower right
-		};
-
-		GLuint vbo;
-		gl::GenBuffers(1, &vbo);
-		gl::BindBuffer(GL_ARRAY_BUFFER, vbo);
-		gl::BufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
-		gl::EnableVertexAttribArray(0);
-		gl::VertexAttribPointer(0, 3, GL_FLOAT, false, 0, (void*)0);
-		const GLenum texFormat = GL_RGBA8;
-		const uint32_t formatStride = sizeof(uint8_t) * 4;
-
-		// Discard the last two mipmaps. From our experimentation keeping the last miplevel 4x4 avoids blocky texel artifacts for materials with roughness values of 1.0.
-		const uint32_t DISCARD_SPECULAR_MIP_LEVELS = 2;
-
-		// calculate number of mip map levels
-		const uint32_t numMipLevels = static_cast<uint32_t>(log2(static_cast<float>(PrefilterEnvMapDim)) + 1.0f - DISCARD_SPECULAR_MIP_LEVELS); // prefilterMap
-
-		std::vector<uint32_t> mipLevelDimensions(numMipLevels);
-
-		// Compute the mip level size
-		for (uint32_t i = 0; i < mipLevelDimensions.size(); ++i)
-		{
-			mipLevelDimensions[i] = static_cast<uint32_t>(pow(2, numMipLevels + DISCARD_SPECULAR_MIP_LEVELS - 1 - i));
-		}
-
-		// create the program
-		GLuint program = pvr::utils::createShaderProgram(assetProvider, IrradianceVertShaderFileName, IrradianceFragShaderFileName, nullptr, nullptr, 0);
-		debugThrowOnApiError("ERROR");
-
-		// Create the framebuffer and render target
-		GLuint rtRoughness;
-		gl::GenTextures(1, &rtRoughness);
-		debugThrowOnApiError("ERROR");
-		gl::BindTexture(GL_TEXTURE_CUBE_MAP, rtRoughness);
-		gl::TexStorage2D(GL_TEXTURE_CUBE_MAP, numMipLevels, texFormat, static_cast<GLsizei>(PrefilterEnvMapDim), static_cast<GLsizei>(PrefilterEnvMapDim));
-		debugThrowOnApiError("ERROR");
-
-		GLuint rtFullMip;
-		gl::GenTextures(1, &rtFullMip);
-		debugThrowOnApiError("ERROR");
-		gl::BindTexture(GL_TEXTURE_CUBE_MAP, rtFullMip);
-		gl::TexStorage2D(GL_TEXTURE_CUBE_MAP, numMipLevels, texFormat, static_cast<GLsizei>(PrefilterEnvMapDim), static_cast<GLsizei>(PrefilterEnvMapDim));
-		debugThrowOnApiError("ERROR");
-
-		std::vector<char> texDataIrrRoughness(formatStride * PrefilterEnvMapDim * PrefilterEnvMapDim * numMipLevels * 6);
-		std::vector<char> texDataIrrMip(formatStride * PrefilterEnvMapDim * PrefilterEnvMapDim * numMipLevels * 6);
-		uint32_t dataOffset = 0;
-
-		const glm::mat4 cubeView[6] = {
-			glm::scale(glm::vec3(1.f, -1.f, 1.f)) * glm::rotate(glm::radians(90.f), glm::vec3(0.0f, 1.0f, 0.f)), // +X
-			glm::scale(glm::vec3(1.f, -1.f, 1.f)) * glm::rotate(glm::radians(-90.f), glm::vec3(0.0f, 1.0f, 0.f)), // -X
-			glm::scale(glm::vec3(1.f, -1.f, 1.f)) * glm::rotate(glm::radians(90.f), glm::vec3(1.0f, .0f, 0.f)), // +Y
-			glm::scale(glm::vec3(1.f, -1.f, 1.f)) * glm::rotate(glm::radians(-90.f), glm::vec3(1.0f, .0f, 0.f)), // -Y
-			glm::scale(glm::vec3(1.0f, -1.0f, 1.f)), // +Z
-			glm::scale(glm::vec3(-1.0f, -1.0f, -1.f)), // -Z
-		};
-
-		gl::UseProgram(program);
-		debugThrowOnApiError("ERROR");
-
-		gl::ActiveTexture(GL_TEXTURE0);
-		debugThrowOnApiError("ERROR");
-
-		gl::BindTexture(GL_TEXTURE_CUBE_MAP, skyBoxMap);
-		debugThrowOnApiError("ERROR");
-
-		gl::ActiveTexture(GL_TEXTURE1);
-		debugThrowOnApiError("ERROR");
-
-		for (uint32_t i = 0; i < numMipLevels; ++i)
-		{
-			for (uint32_t j = 0; j < 6; ++j)
-			{
-				gl::UniformMatrix4fv(0, 1, false, glm::value_ptr(cubeView[j]));
-				GLuint fbo;
-				gl::GenFramebuffers(1, &fbo);
-				gl::BindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo);
-				gl::FramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + j, rtRoughness, i);
-				gl::FramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_CUBE_MAP_POSITIVE_X + j, rtFullMip, i);
-				debug_assertion(gl::CheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Invalid fbo");
-
-				GLenum bufs[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
-				gl::DrawBuffers(ARRAY_SIZE(bufs), bufs);
-				gl::Viewport(0, 0, mipLevelDimensions[i], mipLevelDimensions[i]);
-				gl::Uniform1f(1, static_cast<float>(i) / static_cast<float>(numMipLevels - 1));
-				debugThrowOnApiError("ERROR");
-				gl::Uniform1f(2, static_cast<GLfloat>(IrradianceMapDim));
-				debugThrowOnApiError("ERROR");
-				gl::DrawArrays(GL_TRIANGLES, 0, 6);
-				debugThrowOnApiError("ERROR");
-
-				gl::BindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
-				gl::ReadBuffer(GL_COLOR_ATTACHMENT0);
-				gl::ReadPixels(0, 0, mipLevelDimensions[i], mipLevelDimensions[i], GL_RGBA, GL_UNSIGNED_BYTE, texDataIrrRoughness.data() + dataOffset);
-
-				gl::ReadBuffer(GL_COLOR_ATTACHMENT1);
-				gl::ReadPixels(0, 0, mipLevelDimensions[i], mipLevelDimensions[i], GL_RGBA, GL_UNSIGNED_BYTE, texDataIrrMip.data() + dataOffset);
-
-				dataOffset += formatStride * mipLevelDimensions[i] * mipLevelDimensions[i];
-				gl::DeleteFramebuffers(1, &fbo);
-				debugThrowOnApiError("ERROR");
-			}
-		}
-
-		gl::DeleteBuffers(1, &vbo);
-		gl::DeleteProgram(program);
-
-		{
-			// store it in to the file.
-			pvr::TextureHeader texHeader;
-			texHeader.setChannelType(pvr::VariableType::UnsignedByteNorm);
-			texHeader.setColorSpace(pvr::ColorSpace::lRGB);
-			texHeader.setDepth(1);
-			texHeader.setWidth(IrradianceMapDim);
-			texHeader.setHeight(IrradianceMapDim);
-			texHeader.setNumMipMapLevels(numMipLevels);
-			texHeader.setNumFaces(6);
-			texHeader.setNumArrayMembers(1);
-			texHeader.setPixelFormat(pvr::PixelFormat::RGBA_8888());
-
-			pvr::Texture tex(texHeader, (const char*)texDataIrrRoughness.data());
-			pvr::Stream::ptr_type fileStream = pvr::FileStream::createFileStream(specIrradianceMap, "w");
-			pvr::assetWriters::TextureWriterPVR writerPVR;
-			writerPVR.openAssetStream(std::move(fileStream));
-			writerPVR.writeAsset(tex);
-			prefilteredMap = rtRoughness;
-		}
-
-		{
-			// store it in to the file.
-			pvr::TextureHeader texHeader;
-			texHeader.setChannelType(pvr::VariableType::UnsignedByteNorm);
-			texHeader.setColorSpace(pvr::ColorSpace::lRGB);
-			texHeader.setDepth(1);
-			texHeader.setWidth(IrradianceMapDim);
-			texHeader.setHeight(IrradianceMapDim);
-			texHeader.setNumMipMapLevels(numMipLevels);
-			texHeader.setNumFaces(6);
-			texHeader.setNumArrayMembers(1);
-			texHeader.setPixelFormat(pvr::PixelFormat::RGBA_8888());
-
-			pvr::Texture tex(texHeader, texDataIrrMip.data());
-			pvr::Stream::ptr_type fileStream = pvr::FileStream::createFileStream(specIrrL0Mipmap, "w");
-			pvr::assetWriters::TextureWriterPVR writerPVR;
-			writerPVR.openAssetStream(std::move(fileStream));
-			writerPVR.writeAsset(tex);
-			prefilteredL0MipMap = rtFullMip;
-		}
-
-		numPrefilteredMipLevels = numMipLevels;
-	}
-
-	GLuint generateIrradianceMap(pvr::IAssetProvider& assetProvider, const char* fileName)
-	{
-		// Create the quad vertices.
-		const float quadVertices[] = {
-			-1, 1, 1.f, // upper left
-			-1, -1, 1.f, // lower left
-			1, 1, 1.f, // upper right
-			1, 1, 1.f, // upper right
-			-1, -1, 1.f, // lower left
-			1, -1, 1.f // lower right
-		};
-
-		GLuint vbo;
-		gl::GenBuffers(1, &vbo);
-		gl::BindBuffer(GL_ARRAY_BUFFER, vbo);
-		gl::BufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
-		gl::EnableVertexAttribArray(0);
-		gl::VertexAttribPointer(0, 3, GL_FLOAT, false, 0, (void*)0);
-
-		const uint32_t numMipLevels = static_cast<uint32_t>(log2(static_cast<float>(IrradianceMapDim)) + 1.0);
-
-		// calcuate the mip level dimensions.
-		std::vector<uint32_t> mipLevelDimensions(numMipLevels);
-		for (uint32_t i = 0; i < mipLevelDimensions.size(); ++i)
-		{
-			mipLevelDimensions[i] = static_cast<uint32_t>(pow(2, numMipLevels - i - 1));
-		}
-
-		GLuint program = pvr::utils::createShaderProgram(assetProvider, IrradianceVertShaderFileName, IrradianceFragShaderFileName, nullptr, nullptr, 0);
-		GLuint renderTarget;
-		gl::GenTextures(1, &renderTarget);
-		gl::ActiveTexture(GL_TEXTURE0);
-		gl::BindTexture(GL_TEXTURE_CUBE_MAP, renderTarget);
-
-		GLenum texFormat = GL_RGBA8;
-		const uint32_t formatStride = sizeof(uint8_t) * 4;
-		gl::TexStorage2D(GL_TEXTURE_CUBE_MAP, numMipLevels, texFormat, IrradianceMapDim, IrradianceMapDim);
-		std::vector<char> texData(formatStride * IrradianceMapDim * IrradianceMapDim * numMipLevels * 6);
-		uint32_t dataOffset = 0;
-
-		const glm::mat4 cubeView[6] = {
-			glm::scale(glm::vec3(1.f, -1.f, 1.f)) * glm::rotate(glm::radians(90.f), glm::vec3(0.0f, 1.0f, 0.f)), // +X
-			glm::scale(glm::vec3(1.f, -1.f, 1.f)) * glm::rotate(glm::radians(-90.f), glm::vec3(0.0f, 1.0f, 0.f)), // -X
-			glm::scale(glm::vec3(1.f, -1.f, 1.f)) * glm::rotate(glm::radians(90.f), glm::vec3(1.0f, .0f, 0.f)), // +Y
-			glm::scale(glm::vec3(1.f, -1.f, 1.f)) * glm::rotate(glm::radians(-90.f), glm::vec3(1.0f, .0f, 0.f)), // -Y
-			glm::scale(glm::vec3(1.0f, -1.0f, 1.f)), // +Z
-			glm::scale(glm::vec3(-1.0f, -1.0f, -1.f)), // -Z
-		};
-
-		gl::UseProgram(program);
-		gl::ActiveTexture(GL_TEXTURE0);
-		gl::BindTexture(GL_TEXTURE_CUBE_MAP, skyBoxMap);
-		gl::ActiveTexture(GL_TEXTURE1);
-		for (uint32_t i = 0; i < numMipLevels; ++i)
-		{
-			for (uint32_t j = 0; j < 6; ++j)
-			{
-				gl::UniformMatrix4fv(0, 1, false, glm::value_ptr(cubeView[j]));
-				GLuint fbo;
-				gl::GenFramebuffers(1, &fbo);
-				gl::BindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo);
-				gl::FramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + j, renderTarget, i);
-				debug_assertion(gl::CheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Invalid fbo");
-				debugThrowOnApiError("ERROR");
-				gl::Viewport(0, 0, mipLevelDimensions[i], mipLevelDimensions[i]);
-				gl::DrawArrays(GL_TRIANGLES, 0, 6);
-				debugThrowOnApiError("ERROR");
-
-				gl::BindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
-				gl::ReadBuffer(GL_COLOR_ATTACHMENT0);
-				gl::ReadPixels(0, 0, mipLevelDimensions[i], mipLevelDimensions[i], GL_RGBA, GL_UNSIGNED_BYTE, texData.data() + dataOffset);
-				debugThrowOnApiError("ERROR");
-
-				dataOffset += formatStride * mipLevelDimensions[i] * mipLevelDimensions[i];
-				gl::DeleteFramebuffers(1, &fbo);
-				debugThrowOnApiError("ERROR");
-			}
-		}
-		gl::DeleteBuffers(1, &vbo);
-		gl::DeleteProgram(program);
-
-		// copy it in to the file.
-		pvr::TextureHeader texHeader;
-		texHeader.setChannelType(pvr::VariableType::UnsignedByteNorm);
-		texHeader.setColorSpace(pvr::ColorSpace::lRGB);
-		texHeader.setDepth(1);
-		texHeader.setWidth(IrradianceMapDim);
-		texHeader.setHeight(IrradianceMapDim);
-		texHeader.setNumMipMapLevels(numMipLevels);
-		texHeader.setNumFaces(6);
-		texHeader.setNumArrayMembers(1);
-		texHeader.setPixelFormat(pvr::PixelFormat::RGBA_8888());
-
-		pvr::Texture tex(texHeader, (const char*)texData.data());
-		pvr::Stream::ptr_type fileStream = pvr::FileStream::createFileStream(fileName, "w");
-		pvr::assetWriters::TextureWriterPVR writerPVR;
-		writerPVR.openAssetStream(std::move(fileStream));
-		writerPVR.writeAsset(tex);
-
-		return renderTarget;
-	}
-
 	GLuint program;
 	GLuint skyBoxMap;
 	GLuint irradianceMap; // Diffsue irradiance
 	GLuint prefilteredMap; // specular filtered map.
-	GLuint prefilteredL0MipMap;
 	uint32_t numPrefilteredMipLevels;
 	pvr::utils::StructuredBufferView uboView;
 	GLuint uboBuffer;
 	bool isBufferStorageExtSupported;
+
+public:
 };
 
 class SpherePass
@@ -566,9 +319,9 @@ public:
 		program =
 			pvr::utils::createShaderProgram(assetProvider, PBRVertShaderFileName, PBRFragShaderFileName, nullptr, nullptr, 0, defines.data(), static_cast<uint32_t>(defines.size()));
 
-		scene = pvr::assets::Model::createWithReader(pvr::assets::PODReader(assetProvider.getAssetStream(SphereSceneFileName)));
-		pvr::utils::appendSingleBuffersFromModel(*scene, vbos, ibos);
-		vertexConfiguration = createInputAssemblyFromMesh(scene->getMesh(0), vertexBindings, ARRAY_SIZE(vertexBindings));
+		model = pvr::assets::Model::createWithReader(pvr::assets::PODReader(assetProvider.getAssetStream(SphereModelFileName)));
+		pvr::utils::appendSingleBuffersFromModel(*model, vbos, ibos);
+		vertexConfiguration = createInputAssemblyFromMesh(model->getMesh(0), vertexBindings, ARRAY_SIZE(vertexBindings));
 	}
 
 	/// <summary>Destructor for the sphere pass</summary>
@@ -584,15 +337,16 @@ public:
 	{
 		debugThrowOnApiError("begin Render Sphere Scene");
 		gl::UseProgram(program);
+		gl::Uniform1f(3, exposure);
 		debugThrowOnApiError("bind sphere pass program");
 
-		for (uint32_t node = 0; node < scene->getNumMeshNodes(); ++node)
+		for (uint32_t node = 0; node < model->getNumMeshNodes(); ++node)
 		{
-			uint32_t meshId = scene->getMeshNode(node).getObjectId();
+			uint32_t meshId = model->getMeshNode(node).getObjectId();
 			gl::BindBuffer(GL_ARRAY_BUFFER, vbos[meshId]);
 			gl::BindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibos[meshId]);
 
-			const pvr::assets::Mesh& mesh = scene->getMesh(meshId);
+			const pvr::assets::Mesh& mesh = model->getMesh(meshId);
 			for (uint32_t i = 0; i < vertexConfiguration.attributes.size(); ++i)
 			{
 				auto& attrib = vertexConfiguration.attributes[i];
@@ -614,7 +368,7 @@ public:
 	}
 
 private:
-	pvr::assets::ModelHandle scene;
+	pvr::assets::ModelHandle model;
 	GLuint program;
 	std::vector<GLuint> vbos;
 	std::vector<GLuint> ibos;
@@ -626,9 +380,9 @@ class HelmetPass
 public:
 	void init(pvr::IAssetProvider& assetProvider, bool srgbFramebuffer)
 	{
-		scene = pvr::assets::Model::createWithReader(pvr::assets::GltfReader(assetProvider.getAssetStream(HelmetSceneFileName), assetProvider));
+		model = pvr::assets::Model::createWithReader(pvr::assets::GltfReader(assetProvider.getAssetStream(HelmetModelFileName), assetProvider));
 
-		pvr::utils::appendSingleBuffersFromModel(*scene, vbos, ibos);
+		pvr::utils::appendSingleBuffersFromModel(*model, vbos, ibos);
 
 		// Load the texture
 		loadTextures(assetProvider);
@@ -641,9 +395,9 @@ public:
 		return program;
 	}
 
-	pvr::assets::ModelHandle& getScene()
+	pvr::assets::ModelHandle& getModel()
 	{
-		return scene;
+		return model;
 	}
 
 	GLuint getAlbedoMap()
@@ -651,7 +405,7 @@ public:
 		return textures[0];
 	}
 
-	GLuint getMetallicRoughnessMap()
+	GLuint getOcclusionMetallicRoughnessMap()
 	{
 		return textures[1];
 	}
@@ -706,14 +460,15 @@ public:
 
 		// render the helmet
 		gl::UseProgram(program);
+		gl::Uniform1f(3, exposure);
 		// The scene has only on material.
-		auto& material = scene->getMaterial(0);
+		auto& material = model->getMaterial(0);
 		pvr::assets::Model::Material::GLTFMetallicRoughnessSemantics pbrMetallicRoughness(material);
 		gl::Uniform2f(0, pbrMetallicRoughness.getMetallicity(), pbrMetallicRoughness.getRoughness());
 		const glm::vec4 baseColor = pbrMetallicRoughness.getBaseColor();
 		gl::Uniform3f(1, baseColor.r, baseColor.g, baseColor.b);
 
-		for (uint32_t i = 0; i < scene->getNumMeshNodes(); ++i)
+		for (uint32_t i = 0; i < model->getNumMeshNodes(); ++i)
 		{
 			renderMesh(i);
 		}
@@ -722,42 +477,11 @@ public:
 private:
 	void loadTextures(pvr::IAssetProvider& assetProvider)
 	{
-		for (uint32_t i = 0; i < scene->getNumTextures(); ++i)
+		for (uint32_t i = 0; i < model->getNumTextures(); ++i)
 		{
-			pvr::Stream::ptr_type stream = assetProvider.getAssetStream(scene->getTexture(i).getName());
+			pvr::Stream::ptr_type stream = assetProvider.getAssetStream(model->getTexture(i).getName());
 			pvr::Texture tex = pvr::textureLoad(stream, pvr::TextureFileFormat::PVR);
 			textures.push_back(pvr::utils::textureUpload(tex, false, true).image);
-
-			bool isCubemap = tex.getNumFaces() > 1;
-			bool hasMipMaps = tex.getNumMipMapLevels() > 1;
-
-			GLenum targetType;
-			GLenum minFilter;
-
-			if (isCubemap)
-			{
-				targetType = GL_TEXTURE_CUBE_MAP;
-			}
-			else
-			{
-				targetType = GL_TEXTURE_2D;
-			}
-
-			if (hasMipMaps)
-			{
-				minFilter = GL_LINEAR_MIPMAP_LINEAR;
-			}
-			else
-			{
-				minFilter = GL_LINEAR;
-			}
-
-			gl::BindTexture(targetType, textures[i]);
-			gl::TexParameteri(targetType, GL_TEXTURE_MIN_FILTER, minFilter);
-			gl::TexParameteri(targetType, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-			gl::TexParameteri(targetType, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-			gl::TexParameteri(targetType, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-			gl::TexParameteri(targetType, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 		}
 	}
 
@@ -774,7 +498,7 @@ private:
 
 		program =
 			pvr::utils::createShaderProgram(assetProvider, PBRVertShaderFileName, PBRFragShaderFileName, nullptr, nullptr, 0, defines.data(), static_cast<uint32_t>(defines.size()));
-		const pvr::assets::Mesh& mesh = scene->getMesh(0);
+		const pvr::assets::Mesh& mesh = model->getMesh(0);
 		const pvr::utils::VertexBindings_Name vertexBindings[] = { { "POSITION", "inVertex" }, { "NORMAL", "inNormal" }, { "UV0", "inTexCoord" }, { "TANGENT", "tangent" } };
 		vertexConfiguration = createInputAssemblyFromMesh(mesh, vertexBindings, ARRAY_SIZE(vertexBindings));
 	}
@@ -782,10 +506,10 @@ private:
 	void renderMesh(uint32_t meshNodeId)
 	{
 		debugThrowOnApiError("ERROR: renderMesh begin");
-		const pvr::assets::Model::Node* pNode = &scene->getMeshNode(meshNodeId);
+		const pvr::assets::Model::Node* pNode = &model->getMeshNode(meshNodeId);
 		const uint32_t meshId = pNode->getObjectId();
 		// Gets pMesh referenced by the pNode
-		const pvr::assets::Mesh* pMesh = &scene->getMesh(meshId);
+		const pvr::assets::Mesh* pMesh = &model->getMesh(meshId);
 
 		// bind the vertex and index buffer
 		gl::BindBuffer(GL_ARRAY_BUFFER, vbos[meshId]);
@@ -813,7 +537,7 @@ private:
 		debugThrowOnApiError("ERROR");
 	}
 
-	pvr::assets::ModelHandle scene;
+	pvr::assets::ModelHandle model;
 	pvr::utils::VertexConfiguration vertexConfiguration;
 	std::vector<GLuint> vbos;
 	std::vector<GLuint> ibos;
@@ -824,7 +548,7 @@ private:
 /*!*********************************************************************************************************************
  Class implementing the pvr::Shell functions.
 ***********************************************************************************************************************/
-class OpenGLESIBL : public pvr::Shell
+class OpenGLESImageBasedLighting : public pvr::Shell
 {
 	struct DeviceResources
 	{
@@ -833,6 +557,9 @@ class OpenGLESIBL : public pvr::Shell
 		GLuint uboStatic; // static UBO
 		GLuint uboPerFrame; // static UBO
 		GLuint uboPerModel;
+		GLuint samplerBilinear; // Sampler to use for the BRDF
+		GLuint samplerTrilinearFull; // Sampler to use for "normal" textures
+		GLuint samplerTrilinearLodClamped; // Sampler to use for the reflections
 
 		// UIRenderer used to display text
 		pvr::ui::UIRenderer uiRenderer;
@@ -848,6 +575,10 @@ class OpenGLESIBL : public pvr::Shell
 		{
 			gl::DeleteBuffers(1, &uboStatic);
 			gl::DeleteBuffers(1, &uboPerFrame);
+			gl::DeleteBuffers(1, &uboPerModel);
+			gl::DeleteSamplers(1, &samplerBilinear);
+			gl::DeleteSamplers(1, &samplerTrilinearFull);
+			gl::DeleteSamplers(1, &samplerTrilinearLodClamped);
 		}
 	};
 
@@ -860,11 +591,9 @@ class OpenGLESIBL : public pvr::Shell
 	std::vector<char> _uboModelData;
 	std::vector<char> _uboMaterialData;
 	glm::mat4 _projMtx;
-	pvr::TPSCamera _camera;
-	SceneMode _currentScene;
-	bool _sceneChanged = false;
+	pvr::TPSOrbitCamera _camera;
+	Models _currentModel = Models::Helmet;
 	bool _pause = false;
-	float _cameraLookAngle = 0.0f;
 	bool _isBufferStorageExtSupported;
 
 public:
@@ -873,31 +602,36 @@ public:
 	virtual pvr::Result releaseView();
 	virtual pvr::Result quitApplication();
 	virtual pvr::Result renderFrame();
-	void generateBRDFLUT(pvr::Texture& outTexture);
 	void createUbo();
-	void updateUbo(SceneMode scene);
+	void updateUbo(Models model);
 	void setDefaultOpenglState();
 
 	virtual void eventMappedInput(pvr::SimplifiedInput key)
 	{
+		float oldexposure = exposure;
 		switch (key)
 		{
 		case pvr::SimplifiedInput::Left:
-		{
-			uint32_t currentScene = static_cast<uint32_t>(_currentScene);
-			currentScene -= 1;
-			currentScene = currentScene % static_cast<uint32_t>(SceneMode::NumScenes);
-			_currentScene = static_cast<SceneMode>(currentScene);
-			_sceneChanged = true;
+			exposure *= .75;
+			if (oldexposure > 1.f && exposure < 1.f)
+			{
+				exposure = 1.f;
+			}
 			break;
-		}
 		case pvr::SimplifiedInput::Right:
+			exposure *= 1.25;
+			if (oldexposure < 1.f && exposure > 1.f)
+			{
+				exposure = 1.f;
+			}
+			break;
+
+		case pvr::SimplifiedInput::Action2:
 		{
-			uint32_t currentScene = static_cast<uint32_t>(_currentScene);
-			currentScene += 1;
-			currentScene = currentScene % static_cast<uint32_t>(SceneMode::NumScenes);
-			_currentScene = static_cast<SceneMode>(currentScene);
-			_sceneChanged = true;
+			uint32_t currentModel = static_cast<uint32_t>(_currentModel);
+			currentModel -= 1;
+			currentModel = currentModel % static_cast<uint32_t>(Models::NumModels);
+			_currentModel = static_cast<Models>(currentModel);
 			break;
 		}
 		case pvr::SimplifiedInput::Action1:
@@ -905,6 +639,14 @@ public:
 			_pause = !_pause;
 			break;
 		}
+		case pvr::SimplifiedInput::Action3:
+		{
+			(++currentSkybox) %= numSkyBoxes;
+
+			_deviceResources->skyboxPass.init(*this, getBackBufferColorspace() == pvr::ColorSpace::sRGB, _isBufferStorageExtSupported);
+			break;
+		}
+
 		case pvr::SimplifiedInput::ActionClose:
 		{
 			this->exitShell();
@@ -921,18 +663,18 @@ public:
 /// <summary>
 /// Code in initApplication() will be called by Shell once per run, before the rendering context is created.
 /// Used to initialize variables that are not dependent on it (e.g. external modules, loading meshes, etc.). If the rendering
-/// context is lost, initApplication() will not be called again.
-/// </summary>
-pvr::Result OpenGLESIBL::initApplication()
+/// context is lost, initApplication() will not be called again.</summary>
+pvr::Result OpenGLESImageBasedLighting::initApplication()
 {
-	_currentScene = SceneMode::Helmet;
+	// The tone mapping that we use does not work with (or need) SRGB gamma correction
+	setBackBufferColorspace(pvr::ColorSpace::lRGB);
 	return pvr::Result::Success;
 }
 
 /// <summary>Code in quitApplication() will be called by Shell once per run, just before exiting the program.
 /// quitApplication() will not be called every time the rendering context is lost, only before application exit.</summary>
 /// <returns>Result::Success if no error occurred.</returns>
-pvr::Result OpenGLESIBL::quitApplication()
+pvr::Result OpenGLESImageBasedLighting::quitApplication()
 {
 	return pvr::Result::Success;
 }
@@ -940,13 +682,13 @@ pvr::Result OpenGLESIBL::quitApplication()
 /// <summary>Code in initView() will be called by Shell upon initialization or after a change in the rendering context.
 /// Used to initialize variables that are dependent on the rendering context(e.g.textures, vertex buffers, etc.)</summary>
 /// <returns>Result::Success if no error occurred.</returns>
-pvr::Result OpenGLESIBL::initView()
+pvr::Result OpenGLESImageBasedLighting::initView()
 {
 	_deviceResources = std::unique_ptr<DeviceResources>(new DeviceResources());
 	_deviceResources->context = pvr::createEglContext();
 
 	// Create the context. The minimum OpenGLES version must be OpenGL ES 3.0
-	_deviceResources->context->init(getWindow(), getDisplay(), getDisplayAttributes(), pvr::Api::OpenGLES3);
+	_deviceResources->context->init(getWindow(), getDisplay(), getDisplayAttributes(), pvr::Api::OpenGLES31);
 
 	// We make use of GL_EXT_buffer_storage wherever possible
 	_isBufferStorageExtSupported = gl::isGlExtensionSupported("GL_EXT_buffer_storage");
@@ -954,12 +696,13 @@ pvr::Result OpenGLESIBL::initView()
 	// Initialise the uirenderer
 	_deviceResources->uiRenderer.init(getWidth(), getHeight(), isFullScreen(), getBackBufferColorspace() == pvr::ColorSpace::sRGB);
 	_deviceResources->uiRenderer.getDefaultTitle()->setText("ImageBasedLighting");
-	_deviceResources->uiRenderer.getDefaultControls()->setText("Left / Right: to change the scene\n"
-															   "Action 1: Enable/Disable Animation\n");
+	_deviceResources->uiRenderer.getDefaultControls()->setText("Action 1: Pause\n"
+															   "Action 2: Change model\n"
+															   "Action 3: Change scene\n");
 	_deviceResources->uiRenderer.getDefaultTitle()->commitUpdates();
 	_deviceResources->uiRenderer.getDefaultControls()->commitUpdates();
 
-	_deviceResources->skyboxPass.init(*this, LoadIrradianceMap, LoadPrefilteredMap, getBackBufferColorspace() == pvr::ColorSpace::sRGB, _isBufferStorageExtSupported);
+	_deviceResources->skyboxPass.init(*this, getBackBufferColorspace() == pvr::ColorSpace::sRGB, _isBufferStorageExtSupported);
 	_deviceResources->helmetPass.init(*this, getBackBufferColorspace() == pvr::ColorSpace::sRGB);
 	_deviceResources->spherePass.init(*this, getBackBufferColorspace() == pvr::ColorSpace::sRGB);
 
@@ -968,71 +711,95 @@ pvr::Result OpenGLESIBL::initView()
 
 	// create the static ubo
 	createUbo();
-	updateUbo(_currentScene);
+	updateUbo(_currentModel);
 
-	if (LoadBRDFLUT)
-	{
-		_deviceResources->brdfLUT = pvr::utils::textureUpload(*this, BrdfLUTTexFile, false);
-	}
-	else
-	{
-		pvr::Texture brdfLut;
-		generateBRDFLUT(brdfLut);
-		_deviceResources->brdfLUT = pvr::utils::textureUpload(brdfLut, false, true).image;
-	}
+	_deviceResources->brdfLUT = pvr::utils::textureUpload(*this, BrdfLUTTexFile, false);
 
-	// set the BRDF LUT texture sampler
-	gl::BindTexture(GL_TEXTURE_2D, _deviceResources->brdfLUT);
-	gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	// BRDF is of course pre-generated. To generate it
+	// pvr::Texture brdflut = pvr::utils::generateCookTorranceBRDFLUT();
+	// pvr::assetWriters::AssetWriterPVR(pvr::FileStream::createFileStream(BrdfLUTTexFile, "w")).writeAsset(brdflut);
 
-	debugThrowOnApiError("ERROR");
+	gl::GenSamplers(1, &_deviceResources->samplerTrilinearFull);
+	gl::GenSamplers(1, &_deviceResources->samplerTrilinearLodClamped);
+	gl::GenSamplers(1, &_deviceResources->samplerBilinear);
+	debugThrowOnApiError("Error generating samplers");
+
+	gl::SamplerParameteri(_deviceResources->samplerTrilinearFull, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	gl::SamplerParameteri(_deviceResources->samplerTrilinearFull, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	gl::SamplerParameteri(_deviceResources->samplerTrilinearFull, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	gl::SamplerParameteri(_deviceResources->samplerTrilinearFull, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+	gl::SamplerParameteri(_deviceResources->samplerTrilinearLodClamped, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	gl::SamplerParameteri(_deviceResources->samplerTrilinearLodClamped, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	gl::SamplerParameteri(_deviceResources->samplerTrilinearLodClamped, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	gl::SamplerParameteri(_deviceResources->samplerTrilinearLodClamped, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	gl::SamplerParameterf(_deviceResources->samplerTrilinearLodClamped, GL_TEXTURE_MIN_LOD, 2.f); // 256
+
+	gl::SamplerParameteri(_deviceResources->samplerBilinear, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	gl::SamplerParameteri(_deviceResources->samplerBilinear, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	gl::SamplerParameteri(_deviceResources->samplerBilinear, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	gl::SamplerParameteri(_deviceResources->samplerBilinear, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	debugThrowOnApiError("Error defining sampler parameters");
+
+	gl::BindSampler(0, _deviceResources->samplerTrilinearFull); // Material:
+	gl::BindSampler(1, _deviceResources->samplerTrilinearFull); // ...
+	gl::BindSampler(2, _deviceResources->samplerTrilinearFull); // ...
+	gl::BindSampler(3, _deviceResources->samplerTrilinearFull); // ...
+	gl::BindSampler(4, _deviceResources->samplerTrilinearFull); // ...
+	gl::BindSampler(5, _deviceResources->samplerTrilinearFull); // Environment: Irradiance
+	gl::BindSampler(6, _deviceResources->samplerTrilinearFull); // Environment: Prefiltered reflection map
+
+	gl::BindSampler(7, _deviceResources->samplerBilinear); // BRDF: No mipmaps!
+
+	gl::BindSampler(8, _deviceResources->samplerTrilinearLodClamped); // Environment map, used for Reflections
+
+	gl::BindSampler(9, _deviceResources->samplerTrilinearFull); // Environment map, used for Rendering
+	debugThrowOnApiError("Error binding samplers");
 
 	if (isScreenRotated())
 	{
 		_projMtx = pvr::math::perspectiveFov(
-			pvr::Api::OpenGLES31, glm::radians(45.f), static_cast<float>(this->getHeight()), static_cast<float>(this->getWidth()), 0.1f, 2000.f, glm::pi<float>() * .5f);
+			pvr::Api::OpenGLES31, glm::radians(fov), static_cast<float>(this->getHeight()), static_cast<float>(this->getWidth()), 0.1f, 2000.f, glm::pi<float>() * .5f);
 	}
 	else
 	{
-		_projMtx = pvr::math::perspectiveFov(pvr::Api::OpenGLES31, glm::radians(45.f), static_cast<float>(this->getWidth()), static_cast<float>(this->getHeight()), 0.1f, 2000.f);
+		_projMtx = pvr::math::perspectiveFov(pvr::Api::OpenGLES31, glm::radians(fov), static_cast<float>(this->getWidth()), static_cast<float>(this->getHeight()), 0.1f, 2000.f);
 	}
 
 	// setup the camera
-	_camera.setDistanceFromTarget(60.f);
-	_camera.setHeight(10.f);
+	_camera.setDistanceFromTarget(50.f);
+	_camera.setInclination(10.f);
 	setDefaultOpenglState();
 	return pvr::Result::Success;
 }
 
-void OpenGLESIBL::setDefaultOpenglState()
+void OpenGLESImageBasedLighting::setDefaultOpenglState()
 {
 	gl::DepthMask(GL_TRUE);
 	gl::CullFace(GL_BACK);
 	gl::FrontFace(GL_CCW);
+	gl::Enable(GL_CULL_FACE);
 	gl::Enable(GL_DEPTH_TEST);
 }
 
-void OpenGLESIBL::updateUbo(SceneMode scene)
+void OpenGLESImageBasedLighting::updateUbo(Models model)
 {
 	gl::BindBuffer(GL_UNIFORM_BUFFER, _deviceResources->uboPerModel);
 
 	void* mappedMemory = nullptr;
 	if (!_isBufferStorageExtSupported)
 	{
-		mappedMemory = gl::MapBufferRange(GL_UNIFORM_BUFFER, 0, _uboPerModelBufferView.getSize(), GL_MAP_WRITE_BIT);
+		mappedMemory = gl::MapBufferRange(GL_UNIFORM_BUFFER, 0, static_cast<GLsizeiptr>(_uboPerModelBufferView.getSize()), GL_MAP_WRITE_BIT);
 		_uboPerModelBufferView.pointToMappedMemory(mappedMemory);
 	}
 
-	if (scene == SceneMode::Helmet)
+	if (model == Models::Helmet)
 	{
-		_uboPerModelBufferView.getElement(0, 0, static_cast<uint32_t>(scene)).setValue(glm::eulerAngleXY(glm::radians(0.f), glm::radians(120.f)) * glm::scale(glm::vec3(22.0f)));
+		_uboPerModelBufferView.getElement(0, 0, static_cast<uint32_t>(model)).setValue(glm::eulerAngleXY(glm::radians(0.f), glm::radians(120.f)) * glm::scale(glm::vec3(22.0f)));
 	}
 	else
 	{
-		_uboPerModelBufferView.getElement(0, 0, static_cast<uint32_t>(scene)).setValue(glm::scale(glm::vec3(4.5f)));
+		_uboPerModelBufferView.getElement(0, 0, static_cast<uint32_t>(model)).setValue(glm::scale(glm::vec3(4.5f)));
 	}
 
 	static float emissiveScale = 0.0f;
@@ -1044,7 +811,7 @@ void OpenGLESIBL::updateUbo(SceneMode scene)
 	}
 
 	emissiveScale = std::abs(glm::cos(emissiveStrength)) + .75f;
-	_uboPerModelBufferView.getElement(1, 0, static_cast<uint32_t>(scene)).setValue(emissiveScale);
+	_uboPerModelBufferView.getElement(1, 0, static_cast<uint32_t>(model)).setValue(emissiveScale);
 	if (!_isBufferStorageExtSupported)
 	{
 		gl::UnmapBuffer(GL_UNIFORM_BUFFER);
@@ -1053,7 +820,7 @@ void OpenGLESIBL::updateUbo(SceneMode scene)
 
 /// <summary>Code in releaseView() will be called by Shell when the application quits or before a change in the rendering context.</summary>
 /// <returns>Result::Success if no error occurred.</returns>
-pvr::Result OpenGLESIBL::releaseView()
+pvr::Result OpenGLESImageBasedLighting::releaseView()
 {
 	_deviceResources.reset();
 	return pvr::Result::Success;
@@ -1061,28 +828,36 @@ pvr::Result OpenGLESIBL::releaseView()
 
 /// <summary>Main rendering loop function of the program. The shell will call this function every frame</summary>
 /// <returns>Result::Success if no error occurred.</summary>
-pvr::Result OpenGLESIBL::renderFrame()
+pvr::Result OpenGLESImageBasedLighting::renderFrame()
 {
 	debugThrowOnApiError("Begin Frame");
 
 	gl::Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	if (_sceneChanged)
-	{
-		updateUbo(_currentScene);
-	}
+	
+	updateUbo(_currentModel);
+	
 
 	if (!_pause)
 	{
-		_cameraLookAngle += 0.15f;
+		_camera.addAzimuth(getFrameTime() * rotationSpeed);
 	}
 
-	if (_cameraLookAngle >= 360.0f)
+	if (this->isKeyPressed(pvr::Keys::A))
 	{
-		_cameraLookAngle = _cameraLookAngle - 360.f;
+		_camera.addAzimuth(getFrameTime() * -.1f);
 	}
-	if (!_pause)
+	if (this->isKeyPressed(pvr::Keys::D))
 	{
-		_camera.setTargetLookAngle(_cameraLookAngle);
+		_camera.addAzimuth(getFrameTime() * .1f);
+	}
+
+	if (this->isKeyPressed(pvr::Keys::W))
+	{
+		_camera.addInclination(getFrameTime() * .1f);
+	}
+	if (this->isKeyPressed(pvr::Keys::S))
+	{
+		_camera.addInclination(getFrameTime() * -.1f);
 	}
 
 	gl::BindBuffer(GL_UNIFORM_BUFFER, _deviceResources->uboPerFrame);
@@ -1106,32 +881,32 @@ pvr::Result OpenGLESIBL::renderFrame()
 	gl::Enable(GL_DEPTH_TEST);
 
 	// bind the diffuse irradiance map
-	gl::ActiveTexture(GL_TEXTURE4);
+	gl::ActiveTexture(GL_TEXTURE5);
 	gl::BindTexture(GL_TEXTURE_CUBE_MAP, _deviceResources->skyboxPass.getDiffuseIrradianceMap());
 
 	// bind the specular irradiance map
-	gl::ActiveTexture(GL_TEXTURE5);
+	gl::ActiveTexture(GL_TEXTURE6);
 	gl::BindTexture(GL_TEXTURE_CUBE_MAP, _deviceResources->skyboxPass.getPrefilteredMap());
 
 	// bind the brdf lut texture
-	gl::ActiveTexture(GL_TEXTURE6);
+	gl::ActiveTexture(GL_TEXTURE7);
 	gl::BindTexture(GL_TEXTURE_2D, _deviceResources->brdfLUT);
 
-	// bind the specular irradiance map
-	gl::ActiveTexture(GL_TEXTURE7);
-	gl::BindTexture(GL_TEXTURE_CUBE_MAP, _deviceResources->skyboxPass.getPrefilteredMipMap());
+	// bind the environment map
+	gl::ActiveTexture(GL_TEXTURE8);
+	gl::BindTexture(GL_TEXTURE_CUBE_MAP, _deviceResources->skyboxPass.getEnvironmentMap());
 
-	gl::BindBufferRange(GL_UNIFORM_BUFFER, 0, _deviceResources->uboStatic, 0, _uboPerSceneBufferView.getSize());
+	gl::BindBufferRange(GL_UNIFORM_BUFFER, 0, _deviceResources->uboStatic, 0, static_cast<GLsizeiptr>(_uboPerSceneBufferView.getSize()));
 	debugThrowOnApiError("ERROR");
 
-	gl::BindBufferRange(GL_UNIFORM_BUFFER, 1, _deviceResources->uboPerFrame, 0, _uboPerFrameBufferView.getSize());
+	gl::BindBufferRange(GL_UNIFORM_BUFFER, 1, _deviceResources->uboPerFrame, 0, static_cast<GLsizeiptr>(_uboPerFrameBufferView.getSize()));
 	debugThrowOnApiError("ERROR");
 
-	gl::BindBufferRange(GL_UNIFORM_BUFFER, 2, _deviceResources->uboPerModel, _uboPerModelBufferView.getDynamicSliceOffset(static_cast<uint32_t>(_currentScene)),
-		_uboPerModelBufferView.getDynamicSliceSize());
+	gl::BindBufferRange(GL_UNIFORM_BUFFER, 2, _deviceResources->uboPerModel, _uboPerModelBufferView.getDynamicSliceOffset(static_cast<uint32_t>(_currentModel)),
+		static_cast<GLsizeiptr>(_uboPerModelBufferView.getDynamicSliceSize()));
 	debugThrowOnApiError("ERROR");
 
-	if (_currentScene == SceneMode::Helmet)
+	if (_currentModel == Models::Helmet)
 	{
 		_deviceResources->helmetPass.render();
 	}
@@ -1150,22 +925,12 @@ pvr::Result OpenGLESIBL::renderFrame()
 	{
 		pvr::utils::takeScreenshot(this->getScreenshotFileName(), this->getWidth(), this->getHeight());
 	}
-
+	
 	_deviceResources->context->swapBuffers();
 	return pvr::Result::Success;
 }
 
-// Generate BRDF Look up table using CPU. This is normally done offline and the code is left here for educational purpose.
-void OpenGLESIBL::generateBRDFLUT(pvr::Texture& outTexture)
-{
-	pvr::assets::generateBRDFLUT(outTexture);
-	pvr::Stream::ptr_type fileStream = pvr::FileStream::createFileStream(BrdfLUTTexFile, "w");
-	pvr::assetWriters::TextureWriterPVR writerPVR;
-	writerPVR.openAssetStream(std::move(fileStream));
-	writerPVR.writeAsset(outTexture);
-}
-
-void OpenGLESIBL::createUbo()
+void OpenGLESImageBasedLighting::createUbo()
 {
 	debugThrowOnApiError("ERROR");
 	{
@@ -1173,16 +938,18 @@ void OpenGLESIBL::createUbo()
 		// The following elements are static therefore they get updated once in the initial step.
 		pvr::utils::StructuredMemoryDescription memDesc;
 		memDesc.addElement("lightDir", pvr::GpuDatatypes::vec3);
+		memDesc.addElement("lightColor", pvr::GpuDatatypes::vec3);
 		memDesc.addElement("numPrefilteredMipLevels", pvr::GpuDatatypes::uinteger);
 		_uboPerSceneBufferView.init(memDesc);
 		gl::GenBuffers(1, &_deviceResources->uboStatic);
 		gl::BindBuffer(GL_UNIFORM_BUFFER, _deviceResources->uboStatic);
-		gl::BufferData(GL_UNIFORM_BUFFER, _uboPerSceneBufferView.getSize(), nullptr, GL_DYNAMIC_DRAW);
-		// if GL_EXT_buffer_storage is supported then map the buffer upfront and never upmap it
+		gl::BufferData(GL_UNIFORM_BUFFER, static_cast<GLsizeiptr>(_uboPerSceneBufferView.getSize()), nullptr, GL_DYNAMIC_DRAW);
+
 		void* memory = gl::MapBufferRange(GL_UNIFORM_BUFFER, 0, (size_t)_uboPerSceneBufferView.getSize(), GL_MAP_WRITE_BIT);
 		_uboPerSceneBufferView.pointToMappedMemory(memory);
 		_uboPerSceneBufferView.getElement(0).setValue(lightDir);
-		_uboPerSceneBufferView.getElement(1).setValue(_deviceResources->skyboxPass.getNumPrefilteredMipLevels());
+		_uboPerSceneBufferView.getElement(1).setValue(lightColor);
+		_uboPerSceneBufferView.getElement(2).setValue(_deviceResources->skyboxPass.getNumPrefilteredMipLevels());
 		gl::UnmapBuffer(GL_UNIFORM_BUFFER);
 	}
 	debugThrowOnApiError("ERROR");
@@ -1195,11 +962,11 @@ void OpenGLESIBL::createUbo()
 		GLint uniformAlignment = 0;
 		gl::GetIntegerv(GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT, &uniformAlignment);
 		_uboPerModelBufferView.initDynamic(memDesc, 2, pvr::BufferUsageFlags::UniformBuffer, uniformAlignment);
-		_uboModelData.resize(_uboPerModelBufferView.getSize());
+		_uboModelData.resize(static_cast<const unsigned int>(_uboPerModelBufferView.getSize()));
 
 		gl::GenBuffers(1, &_deviceResources->uboPerModel);
 		gl::BindBuffer(GL_UNIFORM_BUFFER, _deviceResources->uboPerModel);
-		gl::BufferData(GL_UNIFORM_BUFFER, _uboPerModelBufferView.getSize(), nullptr, GL_DYNAMIC_DRAW);
+		gl::BufferData(GL_UNIFORM_BUFFER, static_cast<GLsizeiptr>(_uboPerModelBufferView.getSize()), nullptr, GL_DYNAMIC_DRAW);
 
 		// if GL_EXT_buffer_storage is supported then map the buffer upfront and never upmap it
 		if (_isBufferStorageExtSupported)
@@ -1208,7 +975,7 @@ void OpenGLESIBL::createUbo()
 			gl::ext::BufferStorageEXT(
 				GL_COPY_READ_BUFFER, (GLsizei)_uboPerModelBufferView.getSize(), nullptr, GL_MAP_WRITE_BIT_EXT | GL_MAP_PERSISTENT_BIT_EXT | GL_MAP_COHERENT_BIT_EXT);
 
-			void* memory = gl::MapBufferRange(GL_COPY_READ_BUFFER, 0, _uboPerModelBufferView.getSize(), GL_MAP_WRITE_BIT_EXT | GL_MAP_PERSISTENT_BIT_EXT | GL_MAP_COHERENT_BIT_EXT);
+			void* memory = gl::MapBufferRange(GL_COPY_READ_BUFFER, 0, static_cast<GLsizeiptr>(_uboPerModelBufferView.getSize()), GL_MAP_WRITE_BIT_EXT | GL_MAP_PERSISTENT_BIT_EXT | GL_MAP_COHERENT_BIT_EXT);
 			_uboPerModelBufferView.pointToMappedMemory(memory);
 		}
 	}
@@ -1218,10 +985,10 @@ void OpenGLESIBL::createUbo()
 		memDesc.addElement("camPos", pvr::GpuDatatypes::vec3);
 		memDesc.addElement("VPMatrix", pvr::GpuDatatypes::mat4x4);
 		_uboPerFrameBufferView.init(memDesc);
-		_uboDynamicData.resize(_uboPerFrameBufferView.getSize());
+		_uboDynamicData.resize(static_cast<const unsigned int>(_uboPerFrameBufferView.getSize()));
 		gl::GenBuffers(1, &_deviceResources->uboPerFrame);
 		gl::BindBuffer(GL_UNIFORM_BUFFER, _deviceResources->uboPerFrame);
-		gl::BufferData(GL_UNIFORM_BUFFER, _uboPerFrameBufferView.getSize(), nullptr, GL_DYNAMIC_DRAW);
+		gl::BufferData(GL_UNIFORM_BUFFER, static_cast<GLsizeiptr>(_uboPerFrameBufferView.getSize()), nullptr, GL_DYNAMIC_DRAW);
 
 		// if GL_EXT_buffer_storage is supported then map the buffer upfront and never upmap it
 		if (_isBufferStorageExtSupported)
@@ -1230,7 +997,8 @@ void OpenGLESIBL::createUbo()
 			gl::ext::BufferStorageEXT(
 				GL_COPY_READ_BUFFER, (GLsizei)_uboPerFrameBufferView.getSize(), nullptr, GL_MAP_WRITE_BIT_EXT | GL_MAP_PERSISTENT_BIT_EXT | GL_MAP_COHERENT_BIT_EXT);
 
-			void* memory = gl::MapBufferRange(GL_COPY_READ_BUFFER, 0, _uboPerFrameBufferView.getSize(), GL_MAP_WRITE_BIT_EXT | GL_MAP_PERSISTENT_BIT_EXT | GL_MAP_COHERENT_BIT_EXT);
+			void* memory = gl::MapBufferRange(
+				GL_COPY_READ_BUFFER, 0, static_cast<GLsizeiptr>(_uboPerFrameBufferView.getSize()), GL_MAP_WRITE_BIT_EXT | GL_MAP_PERSISTENT_BIT_EXT | GL_MAP_COHERENT_BIT_EXT);
 			_uboPerFrameBufferView.pointToMappedMemory(memory);
 		}
 	}
@@ -1241,5 +1009,5 @@ void OpenGLESIBL::createUbo()
 /// <returns>Return a unique ptr to the demo supplied by the user.</returns>
 std::unique_ptr<pvr::Shell> pvr::newDemo()
 {
-	return std::unique_ptr<pvr::Shell>(new OpenGLESIBL());
+	return std::unique_ptr<pvr::Shell>(new OpenGLESImageBasedLighting());
 }

@@ -6,6 +6,10 @@ GnomeHorde
 
 This example shows a very efficient technique for multithreaded command buffer generation and rendering.
 
+API
+---
+* Vulkan
+
 Description
 -----------
 The GnomeHorde example divides its world into tiles, each containing a small number of objects.
@@ -25,10 +29,6 @@ As required, command buffers are:
 The communication of the threads is abstracted using Producer-Consumer Queues passing the co-ordinates of tiles as parameters.
 
 When all generation is done, the main thread collects all secondary command buffers and submits them to the GPU rendering queue.
-
-APIs
-----
-* Vulkan
 
 Controls
 --------

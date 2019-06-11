@@ -270,12 +270,12 @@ bool ShellOS::init(DisplayAttributes& data)
 		exePath[res] = '\0'; // Null-terminate readlink's result
 		FilePath filepath(exePath);
 		setApplicationName(filepath.getFilenameNoExtension());
-		_WritePath = filepath.getDirectory() + FilePath::getDirectorySeparator();
-		_ReadPaths.clear();
-		_ReadPaths.push_back(filepath.getDirectory() + FilePath::getDirectorySeparator());
-		_ReadPaths.push_back(std::string(".") + FilePath::getDirectorySeparator());
-		_ReadPaths.push_back(filepath.getDirectory() + FilePath::getDirectorySeparator() + "Assets" + FilePath::getDirectorySeparator());
-		_ReadPaths.push_back(filepath.getDirectory() + FilePath::getDirectorySeparator() + "Assets_" + filepath.getFilenameNoExtension() + FilePath::getDirectorySeparator());
+		_writePath = filepath.getDirectory() + FilePath::getDirectorySeparator();
+		_readPaths.clear();
+		_readPaths.push_back(filepath.getDirectory() + FilePath::getDirectorySeparator());
+		_readPaths.push_back(std::string(".") + FilePath::getDirectorySeparator());
+		_readPaths.push_back(filepath.getDirectory() + FilePath::getDirectorySeparator() + "Assets" + FilePath::getDirectorySeparator());
+		_readPaths.push_back(filepath.getDirectory() + FilePath::getDirectorySeparator() + "Assets_" + filepath.getFilenameNoExtension() + FilePath::getDirectorySeparator());
 	}
 
 	delete[] exePath;
@@ -377,9 +377,11 @@ bool ShellOS::initializeWindow(DisplayAttributes& data)
 			&WinAttibutes); // Attributes
 
 		// Set the window position
-		sh.flags = USPosition;
+		sh.flags = USPosition | PMinSize | PMaxSize;
 		sh.x = data.x;
 		sh.y = data.y;
+		sh.min_width = sh.max_width = data.width;
+		sh.min_height = sh.max_height = data.height;
 		XSetStandardProperties(display, window, data.windowTitle.c_str(), getApplicationName().c_str(), 0, 0, 0, &sh);
 
 		// Map and then wait till mapped
@@ -471,13 +473,11 @@ bool ShellOS::handleOSEvents()
 			XFree(atoms);
 			break;
 
-		case ButtonRelease:
-		{
+		case ButtonRelease: {
 			XButtonEvent* button_event = ((XButtonEvent*)&event);
 			switch (button_event->button)
 			{
-			case 1:
-			{
+			case 1: {
 				_shell->onPointingDeviceUp(0);
 			}
 			break;
@@ -486,13 +486,11 @@ bool ShellOS::handleOSEvents()
 			}
 			break;
 		}
-		case ButtonPress:
-		{
+		case ButtonPress: {
 			XButtonEvent* button_event = ((XButtonEvent*)&event);
 			switch (button_event->button)
 			{
-			case 1:
-			{
+			case 1: {
 				_shell->onPointingDeviceDown(0);
 			}
 			break;
@@ -502,8 +500,7 @@ bool ShellOS::handleOSEvents()
 			break;
 		}
 		case MotionNotify:
-		case KeyPress:
-		{
+		case KeyPress: {
 			XKeyEvent* key_event = ((XKeyEvent*)&event);
 			Log(LogLevel::Debug, "%d", key_event->keycode);
 			if (getKeyFromX11Code(key_event->keycode) == Keys::Escape)
@@ -517,15 +514,13 @@ bool ShellOS::handleOSEvents()
 			_shell->onKeyDown(getKeyFromX11Code(key_event->keycode));
 		}
 		break;
-		case KeyRelease:
-		{
+		case KeyRelease: {
 			XKeyEvent* key_event = ((XKeyEvent*)&event);
 			_shell->onKeyUp(getKeyFromX11Code(key_event->keycode));
 		}
 		break;
 
-		case ConfigureNotify:
-		{
+		case ConfigureNotify: {
 			static XConfigureEvent* configure_event = NULL;
 			configure_event = ((XConfigureEvent*)&event);
 			_shell->onConfigureEvent(ConfigureEvent{ configure_event->x, configure_event->y, configure_event->width, configure_event->height, configure_event->border_width });

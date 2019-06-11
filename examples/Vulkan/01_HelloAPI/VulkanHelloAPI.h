@@ -24,10 +24,6 @@
 // The Surface Data structure is different based on the platform we're using
 // here we define the structure and its members inside Vulkan provided preprocessors
 
-#ifndef NDEBUG
-#define DEBUG
-#endif
-
 #ifdef VK_USE_PLATFORM_WIN32_KHR
 struct SurfaceData
 {

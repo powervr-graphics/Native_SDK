@@ -4,8 +4,6 @@
 \author PowerVR by Imagination, Developer Technology Team
 \copyright Copyright (c) Imagination Technologies Limited.
 */
-
-//!\cond NO_DOXYGEN
 #pragma once
 ///**********************************************************************
 ///     NOTE
@@ -43,6 +41,15 @@ PVR_DECLARE_DIRECT_MAPPING(::pvrvk::DescriptorType, ::pvr::DescriptorType)
 PVR_DECLARE_DIRECT_MAPPING(::pvrvk::CullModeFlags, ::pvr::Face)
 PVR_DECLARE_DIRECT_MAPPING(::pvrvk::FrontFace, ::pvr::PolygonWindingOrder)
 
+/// <summary>Specifies that the format is unsupported.</summary>
+/// <param name="fmt">Pixel format</param>
+#define UNSUPPORTED_FORMAT(fmt) \
+	case static_cast<uint64_t>(CompressedPixelFormat::fmt): \
+		return pvrvk::Format::e_UNDEFINED;
+
+/// <summary>Convert a pvr::IndexType to its Native, Vulkan representation.</summary>
+/// <param name="type">A pvr::IndexType to convert to its Vulkan representation</param>
+/// <returns>A pvrvk::IndexType corresponding to the pvr::IndexType</returns>
 inline pvrvk::IndexType convertToPVRVk(IndexType type)
 {
 	return (type == IndexType::IndexType16Bit ? pvrvk::IndexType::e_UINT16 : pvrvk::IndexType::e_UINT32);
@@ -80,12 +87,12 @@ inline pvrvk::VertexInputRate convertToPVRVk(StepRate stepRate)
 	return (stepRate == StepRate::Vertex ? pvrvk::VertexInputRate::e_VERTEX : pvrvk::VertexInputRate::e_INSTANCE);
 }
 
-/// <summary>Convert to pvrvk vertex input rate</summary>
-/// <param name="stepRate">The step rate of the vertex input(Vertex, Instance)</param>
-/// <returns>A pvrvk::VertexInputRate (pvrvk::VertexInputRate::e_VERTEX, pvrvk::VertexInputRate::e_INSTANCE)</returns>
+/// <summary>Convert to pvrvk Data type</summary>
+/// <param name="dataType">The pvr::DataType to convert to Vulkan type</param>
+/// <returns>A pvrvk::DataType</returns>
 inline pvrvk::DataType convertToPVRVk(DataType dataType)
 {
-	return (pvrvk::DataType)dataType;
+	return static_cast<pvrvk::DataType>(dataType);
 }
 
 /// <summary>Convert to pvrvk sample count</summary>
@@ -93,8 +100,10 @@ inline pvrvk::DataType convertToPVRVk(DataType dataType)
 /// <returns>A pvrvk::SampleCountFlags (pvrvk::SampleCountFlags::e_1_BIT, pvrvk::SampleCountFlags::e_2_BIT, etc)</returns>
 inline pvrvk::SampleCountFlags convertToPVRVkNumSamples(uint8_t numSamples)
 {
-	return (numSamples < 8 ? (numSamples < 2 ? pvrvk::SampleCountFlags::e_1_BIT : numSamples < 4 ? pvrvk::SampleCountFlags::e_2_BIT : pvrvk::SampleCountFlags::e_4_BIT)
-						   : (numSamples < 16 ? pvrvk::SampleCountFlags::e_8_BIT : numSamples < 32 ? pvrvk::SampleCountFlags::e_16_BIT : pvrvk::SampleCountFlags::e_32_BIT));
+	return (numSamples < 8
+			? (numSamples < 2 ? pvrvk::SampleCountFlags::e_1_BIT : numSamples < 4 ? pvrvk::SampleCountFlags::e_2_BIT : pvrvk::SampleCountFlags::e_4_BIT)
+			: (numSamples < 16 ? pvrvk::SampleCountFlags::e_8_BIT
+							   : numSamples < 32 ? pvrvk::SampleCountFlags::e_16_BIT : numSamples < 64 ? pvrvk::SampleCountFlags::e_32_BIT : pvrvk::SampleCountFlags::e_64_BIT));
 }
 
 /// <summary>Convert to pvrvk sampler mip-map mode</summary>
@@ -245,10 +254,6 @@ inline pvrvk::Format convertToPVRVkPixelFormat(PixelFormat format, ColorSpace co
 		case static_cast<uint64_t>(CompressedPixelFormat::ASTC_8x8):
 			return (isSrgb ? pvrvk::Format::e_ASTC_8x8_SRGB_BLOCK : pvrvk::Format::e_ASTC_8x8_UNORM_BLOCK);
 
-#define UNSUPPORTED_FORMAT(fmt) \
-	case static_cast<uint64_t>(CompressedPixelFormat::fmt): \
-		return pvrvk::Format::e_UNDEFINED;
-
 			///////// UNSUPPORTED FORMATS
 			UNSUPPORTED_FORMAT(ETC1);
 			UNSUPPORTED_FORMAT(DXT2)
@@ -269,7 +274,6 @@ inline pvrvk::Format convertToPVRVkPixelFormat(PixelFormat format, ColorSpace co
 			UNSUPPORTED_FORMAT(ASTC_6x5x5)
 			UNSUPPORTED_FORMAT(ASTC_6x6x5)
 			UNSUPPORTED_FORMAT(ASTC_6x6x6)
-#undef UNSUPPORTED_FORMAT
 		}
 	}
 	else
@@ -547,11 +551,21 @@ inline pvrvk::Format convertToPVRVkPixelFormat(PixelFormat format, ColorSpace co
 	return pvrvk::Format::e_UNDEFINED;
 }
 
+/// <summary>Created a packed sampler filter</summary>
+/// <param name="mini">The minification filter</param>
+/// <param name="magni">The magnification filter</param>
+/// <param name="mip">The sampler mipmap mode</param>
+/// <returns>The packed sampler filter</returns>
 inline PackedSamplerFilter packSamplerFilter(pvrvk::Filter mini, pvrvk::Filter magni, pvrvk::SamplerMipmapMode mip)
 {
 	return PackedSamplerFilter((PackedSamplerFilter)mini + ((PackedSamplerFilter)magni << 2) + ((PackedSamplerFilter)mip << 4));
 }
 
+/// <summary>Unpack a packed sampler filter</summary>
+/// <param name="packed">The packed sampler filter</param>
+/// <param name="mini">The minification filter</param>
+/// <param name="magni">The magnification filter</param>
+/// <param name="mip">The sampler mipmap mode</param>
 inline void unpackSamplerFilter(PackedSamplerFilter packed, pvrvk::Filter& mini, pvrvk::Filter& magni, pvrvk::SamplerMipmapMode& mip)
 {
 	mini = (pvrvk::Filter)(packed & 3);
@@ -579,12 +593,18 @@ inline pvrvk::Format convertToPVRVkPixelFormat(PixelFormat format, ColorSpace co
 	return convertToPVRVkPixelFormat(format, colorSpace, dataType);
 }
 
+/// <summary>Convert to pvrvk StencilOpState</summary>
+/// <param name="op">The pvr::StencilState to convert</param>
+/// <returns>A pvrvk::StencilOpState representing the StencilState</returns>
 inline pvrvk::StencilOpState convertToPVRVk(const StencilState& op)
 {
 	return pvrvk::StencilOpState(
 		convertToPVRVk(op.opStencilFail), convertToPVRVk(op.opDepthPass), convertToPVRVk(op.opDepthFail), convertToPVRVk(op.compareOp), op.compareMask, op.writeMask, op.reference);
 }
 
+/// <summary>Convert to pvrvk PipelineColorBlendAttachmentState</summary>
+/// <param name="config">The pvr::BlendingConfig to convert</param>
+/// <returns>A pvrvk::PipelineColorBlendAttachmentState representing the BlendingConfig</returns>
 inline pvrvk::PipelineColorBlendAttachmentState convertToPVRVk(const BlendingConfig& config)
 {
 	return pvrvk::PipelineColorBlendAttachmentState(config.blendEnable, convertToPVRVk(config.srcBlendColor), convertToPVRVk(config.dstBlendColor),
@@ -592,36 +612,54 @@ inline pvrvk::PipelineColorBlendAttachmentState convertToPVRVk(const BlendingCon
 		convertToPVRVk(config.channelWriteMask));
 }
 
+/// <summary>Convert to pvrvk VertexInputAttributeDescription</summary>
+/// <param name="info">The pvr::VertexAttributeInfo to convert</param>
+/// <param name="binding">The binding index to use as part of the pvrvk::VertexInputAttributeDescription</param>
+/// <returns>A pvrvk::VertexInputAttributeDescription representing the VertexAttributeInfo with corresponding binding index</returns>
 inline pvrvk::VertexInputAttributeDescription convertToPVRVk(const VertexAttributeInfo& info, uint32_t binding)
 {
 	return pvrvk::VertexInputAttributeDescription(info.index, binding, convertToPVRVkVertexInputFormat(info.format, info.width), info.offsetInBytes);
 }
 
+/// <summary>Convert to pvrvk VertexInputBindingDescription</summary>
+/// <param name="info">The pvr::VertexInputBindingInfo to convert</param>
+/// <returns>A pvrvk::VertexInputBindingDescription representing the VertexInputBindingInfo</returns>
 inline pvrvk::VertexInputBindingDescription convertToPVRVk(const VertexInputBindingInfo& info)
 {
 	return pvrvk::VertexInputBindingDescription(info.bindingId, info.strideInBytes, convertToPVRVk(info.stepRate));
 }
 
+/// <summary>Convert to pvrvk Extent3D</summary>
+/// <param name="extent">The pvr::Extent3D to convert</param>
+/// <returns>A pvrvk::Extent3D representing the Extent3D</returns>
 inline pvrvk::Extent3D convertToPVRVk(const Extent3D& extent)
 {
 	return pvrvk::Extent3D{ extent.width, extent.height, extent.depth };
 }
 
+/// <summary>Convert to pvrvk Extent2D</summary>
+/// <param name="extent">The pvr::Extent2D to convert</param>
+/// <returns>A pvrvk::Extent2D representing the Extent2D</returns>
 inline pvrvk::Extent2D convertToPVRVk(const Extent2D& extent)
 {
 	return pvrvk::Extent2D{ extent.width, extent.height };
 }
 
-inline pvrvk::Offset3D convertToPVRVk(const Offset3D& extent)
+/// <summary>Convert to pvrvk Offset3D</summary>
+/// <param name="offset">The pvr::Offset3D to convert</param>
+/// <returns>A pvrvk::Offset3D representing the Offset3D</returns>
+inline pvrvk::Offset3D convertToPVRVk(const Offset3D& offset)
 {
-	return pvrvk::Offset3D{ extent.x, extent.y, extent.z };
+	return pvrvk::Offset3D{ offset.x, offset.y, offset.z };
 }
 
-inline pvrvk::Offset2D convertToPVRVk(const Offset2D& extent)
+/// <summary>Convert to pvrvk Offset2D</summary>
+/// <param name="offset">The pvr::Offset2D to convert</param>
+/// <returns>A pvrvk::Offset2D representing the Offset2D</returns>
+inline pvrvk::Offset2D convertToPVRVk(const Offset2D& offset)
 {
-	return pvrvk::Offset2D{ extent.x, extent.y };
+	return pvrvk::Offset2D{ offset.x, offset.y };
 }
+#undef UNSUPPORTED_FORMAT
 } // namespace utils
 } // namespace pvr
-
-//!\endcond

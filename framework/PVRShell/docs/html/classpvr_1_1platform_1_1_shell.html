@@ -76,7 +76,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="namespacepvr.html">pvr</a></li><li class="navelem"><a class="el" href="namespacepvr_1_1platform.html">platform</a></li><li class="navelem"><a class="el" href="classpvr_1_1platform_1_1_shell.html">Shell</a></li>  </ul>
+<li class="navelem"><b>pvr</b></li><li class="navelem"><a class="el" href="namespacepvr_1_1platform.html">platform</a></li><li class="navelem"><a class="el" href="classpvr_1_1platform_1_1_shell.html">Shell</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -91,7 +91,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 
-<p>The PowerVR <a class="el" href="classpvr_1_1platform_1_1_shell.html" title="The PowerVR Shell (pvr::Shell) is the main class that the user will inherit his application from...">Shell</a> (pvr::Shell) is the main class that the user will inherit his application from.  
+<p>The PowerVR <a class="el" href="classpvr_1_1platform_1_1_shell.html" title="The PowerVR Shell (pvr::Shell) is the main class that the user will inherit his application from...">Shell</a> (pvr::Shell) is the main class that the user will inherit his application from. 
  <a href="classpvr_1_1platform_1_1_shell.html#details">More...</a></p>
 <div class="dynheader">
 Inheritance diagram for pvr::platform::Shell:</div>
@@ -115,8 +115,11 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ad53e03eb253c06ad0977e07f7b53c938"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell.html#ad53e03eb253c06ad0977e07f7b53c938">~Shell</a> ()</td></tr>
 <tr class="memdesc:ad53e03eb253c06ad0977e07f7b53c938"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructor. <a href="#ad53e03eb253c06ad0977e07f7b53c938">More...</a><br/></td></tr>
 <tr class="separator:ad53e03eb253c06ad0977e07f7b53c938"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1314e305118d798c2ba0ef0b6dc0664b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell.html#a1314e305118d798c2ba0ef0b6dc0664b">addReadPath</a> (const std::string &amp;readPath)</td></tr>
+<tr class="memdesc:a1314e305118d798c2ba0ef0b6dc0664b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a new path to the set of read paths <a href="#a1314e305118d798c2ba0ef0b6dc0664b">More...</a><br/></td></tr>
+<tr class="separator:a1314e305118d798c2ba0ef0b6dc0664b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4167538c72b7eae18d00a73f9f72a753"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell.html#a4167538c72b7eae18d00a73f9f72a753">exitShell</a> ()</td></tr>
-<tr class="memdesc:a4167538c72b7eae18d00a73f9f72a753"><td class="mdescLeft">&#160;</td><td class="mdescRight">Signifies the application to clean up and exit. Will go through the normal <a class="el" href="classpvr_1_1platform_1_1_state_machine.html" title="The StateMachine controlling the PowerVR Shell. Provides the application main loop and callbacks...">StateMachine</a> cycle and exit cleanly, exactly like returning ExitRenderFrame from RenderFrame. Will skip the next RenderFrame execution.  <a href="#a4167538c72b7eae18d00a73f9f72a753">More...</a><br/></td></tr>
+<tr class="memdesc:a4167538c72b7eae18d00a73f9f72a753"><td class="mdescLeft">&#160;</td><td class="mdescRight">Signifies the application to clean up and exit. Will go through the normal <a class="el" href="classpvr_1_1platform_1_1_state_machine.html" title="The StateMachine controlling the PowerVR Shell. Provides the application main loop and callbacks...">StateMachine</a> cycle and exit cleanly, exactly like returning ExitRenderFrame from RenderFrame. Will skip the next RenderFrame execution. <a href="#a4167538c72b7eae18d00a73f9f72a753">More...</a><br/></td></tr>
 <tr class="separator:a4167538c72b7eae18d00a73f9f72a753"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae07b1caa59d76f1e46b4f8061e2ba6c6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell.html#ae07b1caa59d76f1e46b4f8061e2ba6c6">forceReinitView</a> ()</td></tr>
 <tr class="memdesc:ae07b1caa59d76f1e46b4f8061e2ba6c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">EFFECTIVE IF CALLED DURING RenderFrame. Force the shell to ReleaseView and then InitView again after this frame. <a href="#ae07b1caa59d76f1e46b4f8061e2ba6c6">More...</a><br/></td></tr>
@@ -236,7 +239,7 @@ platform::CommandLineParser::ParsedCommandLine &amp;&#160;</td><td class="memIte
 <tr class="memdesc:ab0d7168d3151eaff02271fcda7a90dc7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the vertical synchronization mode. <a href="#ab0d7168d3151eaff02271fcda7a90dc7">More...</a><br/></td></tr>
 <tr class="separator:ab0d7168d3151eaff02271fcda7a90dc7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a438048dfd0dc52a648f1b5d15cb2efbb"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell.html#a438048dfd0dc52a648f1b5d15cb2efbb">getWidth</a> () const </td></tr>
-<tr class="memdesc:a438048dfd0dc52a648f1b5d15cb2efbb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the width of the application area (window width for windowed, or screen width for full screen).  <a href="#a438048dfd0dc52a648f1b5d15cb2efbb">More...</a><br/></td></tr>
+<tr class="memdesc:a438048dfd0dc52a648f1b5d15cb2efbb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the width of the application area (window width for windowed, or screen width for full screen). <a href="#a438048dfd0dc52a648f1b5d15cb2efbb">More...</a><br/></td></tr>
 <tr class="separator:a438048dfd0dc52a648f1b5d15cb2efbb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a789f0558bbd23cdafebdb6909aa14480"><td class="memItemLeft" align="right" valign="top">OSWindow&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell.html#a789f0558bbd23cdafebdb6909aa14480">getWindow</a> ()</td></tr>
 <tr class="memdesc:a789f0558bbd23cdafebdb6909aa14480"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the underlying Window object of this shell <a href="#a789f0558bbd23cdafebdb6909aa14480">More...</a><br/></td></tr>
@@ -253,7 +256,7 @@ platform::CommandLineParser::ParsedCommandLine &amp;&#160;</td><td class="memIte
 <tr class="memitem:a66a6aa614314d7ffc64df613dda69c34"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell.html#a66a6aa614314d7ffc64df613dda69c34">isFullScreen</a> () const </td></tr>
 <tr class="memdesc:a66a6aa614314d7ffc64df613dda69c34"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get if the application is running in full screen. <a href="#a66a6aa614314d7ffc64df613dda69c34">More...</a><br/></td></tr>
 <tr class="separator:a66a6aa614314d7ffc64df613dda69c34"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac2680be831cce7dc6e6c6421e8094761"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell.html#ac2680be831cce7dc6e6c6421e8094761">isKeyPressed</a> (<a class="el" href="namespacepvr.html#aae1e7e12498a4bbe055ddce646b8ac46">Keys</a> key)</td></tr>
+<tr class="memitem:ac2680be831cce7dc6e6c6421e8094761"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell.html#ac2680be831cce7dc6e6c6421e8094761">isKeyPressed</a> (Keys key)</td></tr>
 <tr class="memdesc:ac2680be831cce7dc6e6c6421e8094761"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query if a key is pressed. <a href="#ac2680be831cce7dc6e6c6421e8094761">More...</a><br/></td></tr>
 <tr class="separator:ac2680be831cce7dc6e6c6421e8094761"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9bd03f862841dd44e626f1de9d36b853"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell.html#a9bd03f862841dd44e626f1de9d36b853">isScreenLandscape</a> () const </td></tr>
@@ -271,10 +274,10 @@ platform::CommandLineParser::ParsedCommandLine &amp;&#160;</td><td class="memIte
 <tr class="memitem:a80dfb24016eb6aa37d01b422d4dee22f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell.html#a80dfb24016eb6aa37d01b422d4dee22f">onConfigureEvent</a> (const <a class="el" href="structpvr_1_1_configure_event.html">ConfigureEvent</a> &amp;configureEvent)</td></tr>
 <tr class="memdesc:a80dfb24016eb6aa37d01b422d4dee22f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called by some OS (X11) to record the movement of the mouse. <a href="#a80dfb24016eb6aa37d01b422d4dee22f">More...</a><br/></td></tr>
 <tr class="separator:a80dfb24016eb6aa37d01b422d4dee22f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a56e93594310a55610c3b65252726051d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell.html#a56e93594310a55610c3b65252726051d">onKeyDown</a> (<a class="el" href="namespacepvr.html#aae1e7e12498a4bbe055ddce646b8ac46">Keys</a> key)</td></tr>
+<tr class="memitem:a56e93594310a55610c3b65252726051d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell.html#a56e93594310a55610c3b65252726051d">onKeyDown</a> (Keys key)</td></tr>
 <tr class="memdesc:a56e93594310a55610c3b65252726051d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Used externally to signify events to the <a class="el" href="classpvr_1_1platform_1_1_shell.html" title="The PowerVR Shell (pvr::Shell) is the main class that the user will inherit his application from...">Shell</a>. Do not use. <a href="#a56e93594310a55610c3b65252726051d">More...</a><br/></td></tr>
 <tr class="separator:a56e93594310a55610c3b65252726051d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af3cfca84a66074f6bad4ce6d14d60e94"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell.html#af3cfca84a66074f6bad4ce6d14d60e94">onKeyUp</a> (<a class="el" href="namespacepvr.html#aae1e7e12498a4bbe055ddce646b8ac46">Keys</a> key)</td></tr>
+<tr class="memitem:af3cfca84a66074f6bad4ce6d14d60e94"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell.html#af3cfca84a66074f6bad4ce6d14d60e94">onKeyUp</a> (Keys key)</td></tr>
 <tr class="memdesc:af3cfca84a66074f6bad4ce6d14d60e94"><td class="mdescLeft">&#160;</td><td class="mdescRight">Used externally to signify events to the <a class="el" href="classpvr_1_1platform_1_1_shell.html" title="The PowerVR Shell (pvr::Shell) is the main class that the user will inherit his application from...">Shell</a>. Do not use. <a href="#af3cfca84a66074f6bad4ce6d14d60e94">More...</a><br/></td></tr>
 <tr class="separator:af3cfca84a66074f6bad4ce6d14d60e94"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afbbc5912ee936c0da8d47a33631cdd77"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell.html#afbbc5912ee936c0da8d47a33631cdd77">onPointingDeviceDown</a> (uint8_t buttonIdx)</td></tr>
@@ -283,15 +286,16 @@ platform::CommandLineParser::ParsedCommandLine &amp;&#160;</td><td class="memIte
 <tr class="memitem:af5edfb7a5aa71ff6aade4b9876d356b3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell.html#af5edfb7a5aa71ff6aade4b9876d356b3">onPointingDeviceUp</a> (uint8_t buttonIdx)</td></tr>
 <tr class="memdesc:af5edfb7a5aa71ff6aade4b9876d356b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Used externally to signify events to the <a class="el" href="classpvr_1_1platform_1_1_shell.html" title="The PowerVR Shell (pvr::Shell) is the main class that the user will inherit his application from...">Shell</a>. Do not use. <a href="#af5edfb7a5aa71ff6aade4b9876d356b3">More...</a><br/></td></tr>
 <tr class="separator:af5edfb7a5aa71ff6aade4b9876d356b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1112fb5c192dcab32438f3a7df87febd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell.html#a1112fb5c192dcab32438f3a7df87febd">onSystemEvent</a> (<a class="el" href="namespacepvr.html#ae4c92053860fcd90c8ae00f40354965a">SystemEvent</a> systemEvent)</td></tr>
+<tr class="memitem:a1112fb5c192dcab32438f3a7df87febd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell.html#a1112fb5c192dcab32438f3a7df87febd">onSystemEvent</a> (SystemEvent systemEvent)</td></tr>
 <tr class="memdesc:a1112fb5c192dcab32438f3a7df87febd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Used externally to signify events to the <a class="el" href="classpvr_1_1platform_1_1_shell.html" title="The PowerVR Shell (pvr::Shell) is the main class that the user will inherit his application from...">Shell</a>. Do not use. <a href="#a1112fb5c192dcab32438f3a7df87febd">More...</a><br/></td></tr>
 <tr class="separator:a1112fb5c192dcab32438f3a7df87febd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8a3fea11c2afd9d517d73b9b24cc5413"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell.html#a8a3fea11c2afd9d517d73b9b24cc5413">setAASamples</a> (uint32_t value)</td></tr>
 <tr class="memdesc:a8a3fea11c2afd9d517d73b9b24cc5413"><td class="mdescLeft">&#160;</td><td class="mdescRight">ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Set the Anti-Aliasing samples. <a href="#a8a3fea11c2afd9d517d73b9b24cc5413">More...</a><br/></td></tr>
 <tr class="separator:a8a3fea11c2afd9d517d73b9b24cc5413"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a721ae2f199a6f58fd678819d147079ac"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell.html#a721ae2f199a6f58fd678819d147079ac">setApplicationName</a> (const char *const format,...)</td></tr>
-<tr class="memdesc:a721ae2f199a6f58fd678819d147079ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the application name. <a href="#a721ae2f199a6f58fd678819d147079ac">More...</a><br/></td></tr>
-<tr class="separator:a721ae2f199a6f58fd678819d147079ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac4f05fe1ee37da3ebb4c69be0be5a0a3"><td class="memTemplParams" colspan="2">template&lt;typename... Args&gt; </td></tr>
+<tr class="memitem:ac4f05fe1ee37da3ebb4c69be0be5a0a3"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell.html#ac4f05fe1ee37da3ebb4c69be0be5a0a3">setApplicationName</a> (const char *const format, Args...args)</td></tr>
+<tr class="memdesc:ac4f05fe1ee37da3ebb4c69be0be5a0a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the application name. <a href="#ac4f05fe1ee37da3ebb4c69be0be5a0a3">More...</a><br/></td></tr>
+<tr class="separator:ac4f05fe1ee37da3ebb4c69be0be5a0a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3c4e5b34aaa471ec416c940d54936c4e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell.html#a3c4e5b34aaa471ec416c940d54936c4e">setBackBufferColorspace</a> (ColorSpace colorSpace)</td></tr>
 <tr class="memdesc:a3c4e5b34aaa471ec416c940d54936c4e"><td class="mdescLeft">&#160;</td><td class="mdescRight">ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Specify the colorspace of the backbuffer. Default is a (linear) RGB BackBuffer. Use this to specifically request an sRGB backbuffer. Since the support of backbuffer colorspace is an extension in many implementations, if you use this function, you must call getBackBufferColorspace after initApplication (in initView) to determine the actual backBuffer colorspace that was obtained. <a href="#a3c4e5b34aaa471ec416c940d54936c4e">More...</a><br/></td></tr>
 <tr class="separator:a3c4e5b34aaa471ec416c940d54936c4e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -302,23 +306,24 @@ platform::CommandLineParser::ParsedCommandLine &amp;&#160;</td><td class="memIte
 <tr class="memdesc:a30baa68e55618f673e3b83a773ea5f61"><td class="mdescLeft">&#160;</td><td class="mdescRight">ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Sets the upscale factor of the screenshots. Upscaling only. <a href="#a30baa68e55618f673e3b83a773ea5f61">More...</a><br/></td></tr>
 <tr class="separator:a30baa68e55618f673e3b83a773ea5f61"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad48af0cbd59cd0672d82b3a4821e3fa2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell.html#ad48af0cbd59cd0672d82b3a4821e3fa2">setColorBitsPerPixel</a> (uint32_t r, uint32_t g, uint32_t b, uint32_t a)</td></tr>
-<tr class="memdesc:ad48af0cbd59cd0672d82b3a4821e3fa2"><td class="mdescLeft">&#160;</td><td class="mdescRight">ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Set the number of framebuffer color bits per pixel.  <a href="#ad48af0cbd59cd0672d82b3a4821e3fa2">More...</a><br/></td></tr>
+<tr class="memdesc:ad48af0cbd59cd0672d82b3a4821e3fa2"><td class="mdescLeft">&#160;</td><td class="mdescRight">ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Set the number of framebuffer color bits per pixel. <a href="#ad48af0cbd59cd0672d82b3a4821e3fa2">More...</a><br/></td></tr>
 <tr class="separator:ad48af0cbd59cd0672d82b3a4821e3fa2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0ee62a0e4db43f2c735bdf592b3b80bf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell.html#a0ee62a0e4db43f2c735bdf592b3b80bf">setContextPriority</a> (uint32_t value)</td></tr>
 <tr class="memdesc:a0ee62a0e4db43f2c735bdf592b3b80bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. If supported, sets a ContextPriority that the shell will attempt to use when creating the main Graphics Context used for the window. Initial value:High. <a href="#a0ee62a0e4db43f2c735bdf592b3b80bf">More...</a><br/></td></tr>
 <tr class="separator:a0ee62a0e4db43f2c735bdf592b3b80bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a223bc1c8fa124a04ce212e61c011497c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell.html#a223bc1c8fa124a04ce212e61c011497c">setDepthBitsPerPixel</a> (uint32_t value)</td></tr>
-<tr class="memdesc:a223bc1c8fa124a04ce212e61c011497c"><td class="mdescLeft">&#160;</td><td class="mdescRight">ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Set the number of framebuffer Depth bits per pixel.  <a href="#a223bc1c8fa124a04ce212e61c011497c">More...</a><br/></td></tr>
+<tr class="memdesc:a223bc1c8fa124a04ce212e61c011497c"><td class="mdescLeft">&#160;</td><td class="mdescRight">ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Set the number of framebuffer Depth bits per pixel. <a href="#a223bc1c8fa124a04ce212e61c011497c">More...</a><br/></td></tr>
 <tr class="separator:a223bc1c8fa124a04ce212e61c011497c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afacfeaa31b94649995237a25f1e499d5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell.html#afacfeaa31b94649995237a25f1e499d5">setDesiredConfig</a> (uint32_t value)</td></tr>
 <tr class="memdesc:afacfeaa31b94649995237a25f1e499d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. If supported by the platform/API, sets a specific Context Configuration ID to be used. <a href="#afacfeaa31b94649995237a25f1e499d5">More...</a><br/></td></tr>
 <tr class="separator:afacfeaa31b94649995237a25f1e499d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad3f63b6943c65466efbcf5ef5d5f7a1a"><td class="memItemLeft" align="right" valign="top">Result&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell.html#ad3f63b6943c65466efbcf5ef5d5f7a1a">setDimensions</a> (uint32_t w, uint32_t h)</td></tr>
-<tr class="memdesc:ad3f63b6943c65466efbcf5ef5d5f7a1a"><td class="mdescLeft">&#160;</td><td class="mdescRight">ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Set the window size, or resolution for fullscreen.  <a href="#ad3f63b6943c65466efbcf5ef5d5f7a1a">More...</a><br/></td></tr>
+<tr class="memdesc:ad3f63b6943c65466efbcf5ef5d5f7a1a"><td class="mdescLeft">&#160;</td><td class="mdescRight">ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Set the window size, or resolution for fullscreen. <a href="#ad3f63b6943c65466efbcf5ef5d5f7a1a">More...</a><br/></td></tr>
 <tr class="separator:ad3f63b6943c65466efbcf5ef5d5f7a1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a38e14777e568449a366bc00dbb1daa80"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell.html#a38e14777e568449a366bc00dbb1daa80">setExitMessage</a> (const char *const format,...)</td></tr>
-<tr class="memdesc:a38e14777e568449a366bc00dbb1daa80"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set a message to be displayed on application exit. Normally used to display critical error messages that might be missed if displayed as just logs. <a href="#a38e14777e568449a366bc00dbb1daa80">More...</a><br/></td></tr>
-<tr class="separator:a38e14777e568449a366bc00dbb1daa80"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab70fcc93c56c7cafdb17fd13bbb2ff4e"><td class="memTemplParams" colspan="2">template&lt;typename... Args&gt; </td></tr>
+<tr class="memitem:ab70fcc93c56c7cafdb17fd13bbb2ff4e"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell.html#ab70fcc93c56c7cafdb17fd13bbb2ff4e">setExitMessage</a> (const char *const format, Args...args)</td></tr>
+<tr class="memdesc:ab70fcc93c56c7cafdb17fd13bbb2ff4e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set a message to be displayed on application exit. Normally used to display critical error messages that might be missed if displayed as just logs. <a href="#ab70fcc93c56c7cafdb17fd13bbb2ff4e">More...</a><br/></td></tr>
+<tr class="separator:ab70fcc93c56c7cafdb17fd13bbb2ff4e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac65c620b25ceb162e6eb529912ad8fa7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell.html#ac65c620b25ceb162e6eb529912ad8fa7">setFakeFrameTime</a> (uint32_t value)</td></tr>
 <tr class="memdesc:ac65c620b25ceb162e6eb529912ad8fa7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets a time delta that will be used as frame time to increment the application clock instead of real time. This number will be returned as the frame time. <a href="#ac65c620b25ceb162e6eb529912ad8fa7">More...</a><br/></td></tr>
 <tr class="separator:ac65c620b25ceb162e6eb529912ad8fa7"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -329,16 +334,16 @@ platform::CommandLineParser::ParsedCommandLine &amp;&#160;</td><td class="memIte
 <tr class="memdesc:ae61ef050b4e5dfd2df56c8a0c0380f0b"><td class="mdescLeft">&#160;</td><td class="mdescRight">ONLY EFFECTIVE AT INIT APPLICATION. Set the application to run at full screen mode. Not all platforms support this option. <a href="#ae61ef050b4e5dfd2df56c8a0c0380f0b">More...</a><br/></td></tr>
 <tr class="separator:ae61ef050b4e5dfd2df56c8a0c0380f0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6fa10bf4ee8f68e7a09243ebf514530b"><td class="memItemLeft" align="right" valign="top">Result&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell.html#a6fa10bf4ee8f68e7a09243ebf514530b">setPosition</a> (uint32_t x, uint32_t y)</td></tr>
-<tr class="memdesc:a6fa10bf4ee8f68e7a09243ebf514530b"><td class="mdescLeft">&#160;</td><td class="mdescRight">ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Set the window position. Not supported in all platforms.  <a href="#a6fa10bf4ee8f68e7a09243ebf514530b">More...</a><br/></td></tr>
+<tr class="memdesc:a6fa10bf4ee8f68e7a09243ebf514530b"><td class="mdescLeft">&#160;</td><td class="mdescRight">ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Set the window position. Not supported in all platforms. <a href="#a6fa10bf4ee8f68e7a09243ebf514530b">More...</a><br/></td></tr>
 <tr class="separator:a6fa10bf4ee8f68e7a09243ebf514530b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a567bef45518f3cf5f42cfe04ef4fdcf3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell.html#a567bef45518f3cf5f42cfe04ef4fdcf3">setPreferredSwapChainLength</a> (uint32_t swapChainLength)</td></tr>
 <tr class="memdesc:a567bef45518f3cf5f42cfe04ef4fdcf3"><td class="mdescLeft">&#160;</td><td class="mdescRight">ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Set a desired number of swap images (number of framebuffers). This number will be clamped between the minimum and the maximum number supported by the platform, so that if a small (0-1) or large (8+) number is requested, the minimum/maximum of the platform will always be providedd <a href="#a567bef45518f3cf5f42cfe04ef4fdcf3">More...</a><br/></td></tr>
 <tr class="separator:a567bef45518f3cf5f42cfe04ef4fdcf3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa34f32f4a0a5a74506a3cddf6de5a1ac"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell.html#aa34f32f4a0a5a74506a3cddf6de5a1ac">setQuitAfterFrame</a> (uint32_t value)</td></tr>
-<tr class="memdesc:aa34f32f4a0a5a74506a3cddf6de5a1ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Set a frame after which the application will quit.  <a href="#aa34f32f4a0a5a74506a3cddf6de5a1ac">More...</a><br/></td></tr>
+<tr class="memdesc:aa34f32f4a0a5a74506a3cddf6de5a1ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Set a frame after which the application will quit. <a href="#aa34f32f4a0a5a74506a3cddf6de5a1ac">More...</a><br/></td></tr>
 <tr class="separator:aa34f32f4a0a5a74506a3cddf6de5a1ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2f0afd080b5acd4b244422d2e7a74649"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell.html#a2f0afd080b5acd4b244422d2e7a74649">setQuitAfterTime</a> (float value)</td></tr>
-<tr class="memdesc:a2f0afd080b5acd4b244422d2e7a74649"><td class="mdescLeft">&#160;</td><td class="mdescRight">ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Set a time after which the application will quit.  <a href="#a2f0afd080b5acd4b244422d2e7a74649">More...</a><br/></td></tr>
+<tr class="memdesc:a2f0afd080b5acd4b244422d2e7a74649"><td class="mdescLeft">&#160;</td><td class="mdescRight">ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Set a time after which the application will quit. <a href="#a2f0afd080b5acd4b244422d2e7a74649">More...</a><br/></td></tr>
 <tr class="separator:a2f0afd080b5acd4b244422d2e7a74649"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad8304aca84d29e9d2b73de294c5d2141"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell.html#ad8304aca84d29e9d2b73de294c5d2141">setShowFPS</a> (bool showFPS)</td></tr>
 <tr class="memdesc:ad8304aca84d29e9d2b73de294c5d2141"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets if the Frames Per Second are to be output periodically. <a href="#ad8304aca84d29e9d2b73de294c5d2141">More...</a><br/></td></tr>
@@ -346,9 +351,10 @@ platform::CommandLineParser::ParsedCommandLine &amp;&#160;</td><td class="memIte
 <tr class="memitem:a1b44312671d27e254ea6cee92f4b7052"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell.html#a1b44312671d27e254ea6cee92f4b7052">setStencilBitsPerPixel</a> (uint32_t value)</td></tr>
 <tr class="memdesc:a1b44312671d27e254ea6cee92f4b7052"><td class="mdescLeft">&#160;</td><td class="mdescRight">ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Set the number of Stencil bits per pixel. <a href="#a1b44312671d27e254ea6cee92f4b7052">More...</a><br/></td></tr>
 <tr class="separator:a1b44312671d27e254ea6cee92f4b7052"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4e092886f625a95212cc51a23c2ce658"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell.html#a4e092886f625a95212cc51a23c2ce658">setTitle</a> (const char *const format,...)</td></tr>
-<tr class="memdesc:a4e092886f625a95212cc51a23c2ce658"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the window title. Will only be actually displayed If used on or before initApplication.  <a href="#a4e092886f625a95212cc51a23c2ce658">More...</a><br/></td></tr>
-<tr class="separator:a4e092886f625a95212cc51a23c2ce658"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a0f0ba7f94bfd6bc12dfd76cd5035b8"><td class="memTemplParams" colspan="2">template&lt;typename... Args&gt; </td></tr>
+<tr class="memitem:a5a0f0ba7f94bfd6bc12dfd76cd5035b8"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell.html#a5a0f0ba7f94bfd6bc12dfd76cd5035b8">setTitle</a> (const char *const format, Args...args)</td></tr>
+<tr class="memdesc:a5a0f0ba7f94bfd6bc12dfd76cd5035b8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the window title. Will only be actually displayed If used on or before initApplication. <a href="#a5a0f0ba7f94bfd6bc12dfd76cd5035b8">More...</a><br/></td></tr>
+<tr class="separator:a5a0f0ba7f94bfd6bc12dfd76cd5035b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac463c721743516e42c0df1df1b2a9a4d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell.html#ac463c721743516e42c0df1df1b2a9a4d">setVsyncMode</a> (VsyncMode mode)</td></tr>
 <tr class="memdesc:ac463c721743516e42c0df1df1b2a9a4d"><td class="mdescLeft">&#160;</td><td class="mdescRight">ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Set the Vertical Syncchronization mode(vertical sync). Default is On(Fifo). <a href="#ac463c721743516e42c0df1df1b2a9a4d">More...</a><br/></td></tr>
 <tr class="separator:ac463c721743516e42c0df1df1b2a9a4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -368,13 +374,13 @@ Static Public Member Functions</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
 <tr class="memitem:a8823ff36848a13ebad921e9d3b2aedeb"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell.html#a8823ff36848a13ebad921e9d3b2aedeb">Shell</a> ()</td></tr>
-<tr class="memdesc:a8823ff36848a13ebad921e9d3b2aedeb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default constructor. Do not instantiate a <a class="el" href="classpvr_1_1platform_1_1_shell.html" title="The PowerVR Shell (pvr::Shell) is the main class that the user will inherit his application from...">Shell</a> class directly - extend as your application and then provide the <a class="el" href="namespacepvr.html#a15d374c8fd1cd116fb0e98111335a0a5" title="—IMPLEMENT THIS FUNCTION IN YOUR MAIN CODE FILE TO POWER YOUR APPLICATION—">newDemo()</a> function returning your application instance. See bottom of this file. <a href="#a8823ff36848a13ebad921e9d3b2aedeb">More...</a><br/></td></tr>
+<tr class="memdesc:a8823ff36848a13ebad921e9d3b2aedeb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default constructor. Do not instantiate a <a class="el" href="classpvr_1_1platform_1_1_shell.html" title="The PowerVR Shell (pvr::Shell) is the main class that the user will inherit his application from...">Shell</a> class directly - extend as your application and then provide the newDemo() function returning your application instance. See bottom of this file. <a href="#a8823ff36848a13ebad921e9d3b2aedeb">More...</a><br/></td></tr>
 <tr class="separator:a8823ff36848a13ebad921e9d3b2aedeb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ace40c1791026bfb17d90ae9e005f28d8"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell.html#ace40c1791026bfb17d90ae9e005f28d8">eventButtonDown</a> (int buttonIdx)</td></tr>
-<tr class="memdesc:ace40c1791026bfb17d90ae9e005f28d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Override in your class to handle the initial press (down) of the main input device (mouse, touchscreen).  <a href="#ace40c1791026bfb17d90ae9e005f28d8">More...</a><br/></td></tr>
+<tr class="memdesc:ace40c1791026bfb17d90ae9e005f28d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Override in your class to handle the initial press (down) of the main input device (mouse, touchscreen). <a href="#ace40c1791026bfb17d90ae9e005f28d8">More...</a><br/></td></tr>
 <tr class="separator:ace40c1791026bfb17d90ae9e005f28d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af7f59b78bb6d0da1da9339b87b695f1d"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell.html#af7f59b78bb6d0da1da9339b87b695f1d">eventButtonUp</a> (int buttonIdx)</td></tr>
-<tr class="memdesc:af7f59b78bb6d0da1da9339b87b695f1d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Override in your class to handle the release (up) of the main input device (mouse, touchscreen).  <a href="#af7f59b78bb6d0da1da9339b87b695f1d">More...</a><br/></td></tr>
+<tr class="memdesc:af7f59b78bb6d0da1da9339b87b695f1d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Override in your class to handle the release (up) of the main input device (mouse, touchscreen). <a href="#af7f59b78bb6d0da1da9339b87b695f1d">More...</a><br/></td></tr>
 <tr class="separator:af7f59b78bb6d0da1da9339b87b695f1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8bb36fe97c5f88408421c601fbbe2698"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell.html#a8bb36fe97c5f88408421c601fbbe2698">eventClick</a> (int buttonIdx, <a class="el" href="classpvr_1_1_pointer_location.html">PointerLocation</a> location)</td></tr>
 <tr class="memdesc:a8bb36fe97c5f88408421c601fbbe2698"><td class="mdescLeft">&#160;</td><td class="mdescRight">Override in your class to handle the "Click" or "Touch" event of the main input device (mouse or touchscreen). <a href="#a8bb36fe97c5f88408421c601fbbe2698">More...</a><br/></td></tr>
@@ -385,17 +391,17 @@ Protected Member Functions</h2></td></tr>
 <tr class="memitem:a3f5d3ccde2d3dae7f799212f2b5be7c4"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell.html#a3f5d3ccde2d3dae7f799212f2b5be7c4">eventDragStart</a> (int buttonIdx, <a class="el" href="classpvr_1_1_pointer_location.html">PointerLocation</a> location)</td></tr>
 <tr class="memdesc:a3f5d3ccde2d3dae7f799212f2b5be7c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Override in your class to handle the start of a "Drag" event of the main input device (mouse, touchscreen). <a href="#a3f5d3ccde2d3dae7f799212f2b5be7c4">More...</a><br/></td></tr>
 <tr class="separator:a3f5d3ccde2d3dae7f799212f2b5be7c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a35e933adb4460841204b58b36bb79d79"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell.html#a35e933adb4460841204b58b36bb79d79">eventKeyDown</a> (<a class="el" href="namespacepvr.html#aae1e7e12498a4bbe055ddce646b8ac46">Keys</a> key)</td></tr>
+<tr class="memitem:a35e933adb4460841204b58b36bb79d79"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell.html#a35e933adb4460841204b58b36bb79d79">eventKeyDown</a> (Keys key)</td></tr>
 <tr class="memdesc:a35e933adb4460841204b58b36bb79d79"><td class="mdescLeft">&#160;</td><td class="mdescRight">Override in your class to handle the press of a key of the keyboard. <a href="#a35e933adb4460841204b58b36bb79d79">More...</a><br/></td></tr>
 <tr class="separator:a35e933adb4460841204b58b36bb79d79"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afe4c6f24ff198e9d2b2772cbd00da007"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell.html#afe4c6f24ff198e9d2b2772cbd00da007">eventKeyStroke</a> (<a class="el" href="namespacepvr.html#aae1e7e12498a4bbe055ddce646b8ac46">Keys</a> key)</td></tr>
+<tr class="memitem:afe4c6f24ff198e9d2b2772cbd00da007"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell.html#afe4c6f24ff198e9d2b2772cbd00da007">eventKeyStroke</a> (Keys key)</td></tr>
 <tr class="memdesc:afe4c6f24ff198e9d2b2772cbd00da007"><td class="mdescLeft">&#160;</td><td class="mdescRight">Override in your class to handle a keystroke of the keyboard. <a href="#afe4c6f24ff198e9d2b2772cbd00da007">More...</a><br/></td></tr>
 <tr class="separator:afe4c6f24ff198e9d2b2772cbd00da007"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7fd1296cb45dffdac831bfff5bd9c730"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell.html#a7fd1296cb45dffdac831bfff5bd9c730">eventKeyUp</a> (<a class="el" href="namespacepvr.html#aae1e7e12498a4bbe055ddce646b8ac46">Keys</a> key)</td></tr>
+<tr class="memitem:a7fd1296cb45dffdac831bfff5bd9c730"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell.html#a7fd1296cb45dffdac831bfff5bd9c730">eventKeyUp</a> (Keys key)</td></tr>
 <tr class="memdesc:a7fd1296cb45dffdac831bfff5bd9c730"><td class="mdescLeft">&#160;</td><td class="mdescRight">Override in your class to handle the release (up) of a key of of the keyboard. <a href="#a7fd1296cb45dffdac831bfff5bd9c730">More...</a><br/></td></tr>
 <tr class="separator:a7fd1296cb45dffdac831bfff5bd9c730"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5e9a69685418d9328fa2415476319f06"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell.html#a5e9a69685418d9328fa2415476319f06">eventMappedInput</a> (<a class="el" href="namespacepvr.html#a9a6da56806c568a6f9833d118c5c8083">SimplifiedInput</a> key)</td></tr>
-<tr class="memdesc:a5e9a69685418d9328fa2415476319f06"><td class="mdescLeft">&#160;</td><td class="mdescRight">Override in your class to handle a unified interface for input across different platforms and devices.  <a href="#a5e9a69685418d9328fa2415476319f06">More...</a><br/></td></tr>
+<tr class="memitem:a5e9a69685418d9328fa2415476319f06"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell.html#a5e9a69685418d9328fa2415476319f06">eventMappedInput</a> (SimplifiedInput key)</td></tr>
+<tr class="memdesc:a5e9a69685418d9328fa2415476319f06"><td class="mdescLeft">&#160;</td><td class="mdescRight">Override in your class to handle a unified interface for input across different platforms and devices. <a href="#a5e9a69685418d9328fa2415476319f06">More...</a><br/></td></tr>
 <tr class="separator:a5e9a69685418d9328fa2415476319f06"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a82e68c454485cea2c5af4a2701e3078f"><td class="memItemLeft" align="right" valign="top">virtual Result&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell.html#a82e68c454485cea2c5af4a2701e3078f">initApplication</a> ()=0</td></tr>
 <tr class="memdesc:a82e68c454485cea2c5af4a2701e3078f"><td class="mdescLeft">&#160;</td><td class="mdescRight">IMPLEMENT THIS FUNCTION IN YOUR APPLICATION CLASS. This event represents application start. <a href="#a82e68c454485cea2c5af4a2701e3078f">More...</a><br/></td></tr>
@@ -407,14 +413,14 @@ Protected Member Functions</h2></td></tr>
 <tr class="memdesc:a83c09cd21a42a07fc26d38d63d4df9b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">IMPLEMENT THIS FUNCTION IN YOUR APPLICATION CLASS. This event represents application exit. <a href="#a83c09cd21a42a07fc26d38d63d4df9b0">More...</a><br/></td></tr>
 <tr class="separator:a83c09cd21a42a07fc26d38d63d4df9b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a13b25c8aa3c7cfa1d8841b23ed663345"><td class="memItemLeft" align="right" valign="top">virtual Result&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell.html#a13b25c8aa3c7cfa1d8841b23ed663345">releaseView</a> ()=0</td></tr>
-<tr class="memdesc:a13b25c8aa3c7cfa1d8841b23ed663345"><td class="mdescLeft">&#160;</td><td class="mdescRight">IMPLEMENT THIS FUNCTION IN YOUR APPLICATION CLASS. This event represents graphics context released.  <a href="#a13b25c8aa3c7cfa1d8841b23ed663345">More...</a><br/></td></tr>
+<tr class="memdesc:a13b25c8aa3c7cfa1d8841b23ed663345"><td class="mdescLeft">&#160;</td><td class="mdescRight">IMPLEMENT THIS FUNCTION IN YOUR APPLICATION CLASS. This event represents graphics context released. <a href="#a13b25c8aa3c7cfa1d8841b23ed663345">More...</a><br/></td></tr>
 <tr class="separator:a13b25c8aa3c7cfa1d8841b23ed663345"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae04c377cf200a2c68cbc9c7145066f1b"><td class="memItemLeft" align="right" valign="top">virtual Result&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell.html#ae04c377cf200a2c68cbc9c7145066f1b">renderFrame</a> ()=0</td></tr>
 <tr class="memdesc:ae04c377cf200a2c68cbc9c7145066f1b"><td class="mdescLeft">&#160;</td><td class="mdescRight">IMPLEMENT THIS FUNCTION IN YOUR APPLICATION CLASS. This event is called every frame. <a href="#ae04c377cf200a2c68cbc9c7145066f1b">More...</a><br/></td></tr>
 <tr class="separator:ae04c377cf200a2c68cbc9c7145066f1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>The PowerVR <a class="el" href="classpvr_1_1platform_1_1_shell.html" title="The PowerVR Shell (pvr::Shell) is the main class that the user will inherit his application from...">Shell</a> (pvr::Shell) is the main class that the user will inherit his application from. </p>
+<div class="textblock"><p>The PowerVR <a class="el" href="classpvr_1_1platform_1_1_shell.html" title="The PowerVR Shell (pvr::Shell) is the main class that the user will inherit his application from...">Shell</a> (pvr::Shell) is the main class that the user will inherit his application from.</p>
 <p>This class abstracts the platform for the user and provides a unified interface to it. The user will normally write his application as a class inheriting from the <a class="el" href="classpvr_1_1platform_1_1_shell.html" title="The PowerVR Shell (pvr::Shell) is the main class that the user will inherit his application from...">Shell</a>. This way the user can have specific and easy to use places to write his code - Application start, window initialisation, per frame, cleanup. All platform queries and settings can be done on the shell (set the required Graphics API required, window size etc.). Specific callbacks and queries are provided for system events (keyboard, mouse, touch) as well as a unified simplified input interface provided such abstracted input events as "Left", "Right", "Action1", "Quit" across different platforms.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="a8823ff36848a13ebad921e9d3b2aedeb"></a>
@@ -438,7 +444,7 @@ Protected Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Default constructor. Do not instantiate a <a class="el" href="classpvr_1_1platform_1_1_shell.html" title="The PowerVR Shell (pvr::Shell) is the main class that the user will inherit his application from...">Shell</a> class directly - extend as your application and then provide the <a class="el" href="namespacepvr.html#a15d374c8fd1cd116fb0e98111335a0a5" title="—IMPLEMENT THIS FUNCTION IN YOUR MAIN CODE FILE TO POWER YOUR APPLICATION—">newDemo()</a> function returning your application instance. See bottom of this file.</p>
+<p>Default constructor. Do not instantiate a <a class="el" href="classpvr_1_1platform_1_1_shell.html" title="The PowerVR Shell (pvr::Shell) is the main class that the user will inherit his application from...">Shell</a> class directly - extend as your application and then provide the newDemo() function returning your application instance. See bottom of this file.</p>
 
 </div>
 </div>
@@ -468,6 +474,30 @@ Protected Member Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="a1314e305118d798c2ba0ef0b6dc0664b"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void pvr::platform::Shell::addReadPath </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>readPath</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Adds a new path to the set of read paths</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">readPath</td><td>A new read path to add to the set of read paths.</td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a class="anchor" id="ace40c1791026bfb17d90ae9e005f28d8"></a>
 <div class="memitem">
 <div class="memproto">
@@ -490,7 +520,7 @@ Protected Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Override in your class to handle the initial press (down) of the main input device (mouse, touchscreen). </p>
+<p>Override in your class to handle the initial press (down) of the main input device (mouse, touchscreen).</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">buttonIdx</td><td>The index of the button (LMB:0, RMB:1, MMB:2, Touch:0)</td></tr>
@@ -523,7 +553,7 @@ Protected Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Override in your class to handle the release (up) of the main input device (mouse, touchscreen). </p>
+<p>Override in your class to handle the release (up) of the main input device (mouse, touchscreen).</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">buttonIdx</td><td>The index of the button (LMB:0, RMB:1, MMB:2, Touch:0)</td></tr>
@@ -651,7 +681,7 @@ Protected Member Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<p>This event will be fired after a movement of more than a few pixels is detected with a button down. </p>
+<p>This event will be fired after a movement of more than a few pixels is detected with a button down.</p>
 
 </div>
 </div>
@@ -665,7 +695,7 @@ Protected Member Functions</h2></td></tr>
         <tr>
           <td class="memname">virtual void pvr::platform::Shell::eventKeyDown </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacepvr.html#aae1e7e12498a4bbe055ddce646b8ac46">Keys</a>&#160;</td>
+          <td class="paramtype">Keys&#160;</td>
           <td class="paramname"><em>key</em></td><td>)</td>
           <td></td>
         </tr>
@@ -698,7 +728,7 @@ Protected Member Functions</h2></td></tr>
         <tr>
           <td class="memname">virtual void pvr::platform::Shell::eventKeyStroke </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacepvr.html#aae1e7e12498a4bbe055ddce646b8ac46">Keys</a>&#160;</td>
+          <td class="paramtype">Keys&#160;</td>
           <td class="paramname"><em>key</em></td><td>)</td>
           <td></td>
         </tr>
@@ -731,7 +761,7 @@ Protected Member Functions</h2></td></tr>
         <tr>
           <td class="memname">virtual void pvr::platform::Shell::eventKeyUp </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacepvr.html#aae1e7e12498a4bbe055ddce646b8ac46">Keys</a>&#160;</td>
+          <td class="paramtype">Keys&#160;</td>
           <td class="paramname"><em>key</em></td><td>)</td>
           <td></td>
         </tr>
@@ -764,7 +794,7 @@ Protected Member Functions</h2></td></tr>
         <tr>
           <td class="memname">virtual void pvr::platform::Shell::eventMappedInput </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacepvr.html#a9a6da56806c568a6f9833d118c5c8083">SimplifiedInput</a>&#160;</td>
+          <td class="paramtype">SimplifiedInput&#160;</td>
           <td class="paramname"><em>key</em></td><td>)</td>
           <td></td>
         </tr>
@@ -776,7 +806,7 @@ Protected Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Override in your class to handle a unified interface for input across different platforms and devices. </p>
+<p>Override in your class to handle a unified interface for input across different platforms and devices.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">key</td><td>The Simplified Unified Event</td></tr>
@@ -800,7 +830,7 @@ Protected Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Signifies the application to clean up and exit. Will go through the normal <a class="el" href="classpvr_1_1platform_1_1_state_machine.html" title="The StateMachine controlling the PowerVR Shell. Provides the application main loop and callbacks...">StateMachine</a> cycle and exit cleanly, exactly like returning ExitRenderFrame from RenderFrame. Will skip the next RenderFrame execution. </p>
+<p>Signifies the application to clean up and exit. Will go through the normal <a class="el" href="classpvr_1_1platform_1_1_state_machine.html" title="The StateMachine controlling the PowerVR Shell. Provides the application main loop and callbacks...">StateMachine</a> cycle and exit cleanly, exactly like returning ExitRenderFrame from RenderFrame. Will skip the next RenderFrame execution.</p>
 
 </div>
 </div>
@@ -884,12 +914,12 @@ Protected Member Functions</h2></td></tr>
 <p>Create and return a Stream object for a specific filename. Uses platform dependent lookup rules to create the stream from the filesystem or a platform-specific store (Windows resources, Android .apk assets) etc. Will first try the filesystem (if available) and then the built-in stores, in order to allow the user to easily override built-in assets.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">filename</td><td>The name of the file to load. Is usually a raw filename, but may contain a path. </td></tr>
+    <tr><td class="paramname">filename</td><td>The name of the file to load. Is usually a raw filename, but may contain a path.</td></tr>
     <tr><td class="paramname">errorIfFileNotFound</td><td>Set this to false if file-not-found are expected and should not be logged as errors.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>A unique pointer to the Stream returned if successful, an Empty unique pointer if failed. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>A unique pointer to the Stream returned if successful, an Empty unique pointer if failed.</dd></dl>
 
 </div>
 </div>
@@ -1463,7 +1493,7 @@ Protected Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Get a list of all paths that will be tried when looking for loading files.</p>
-<dl class="section return"><dt>Returns</dt><dd>The a list of all the read paths that will successively be tried when looking to read a file. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>The a list of all the read paths that will successively be tried when looking to read a file.</dd></dl>
 
 </div>
 </div>
@@ -1596,7 +1626,7 @@ Protected Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Get the width of the application area (window width for windowed, or screen width for full screen). </p>
+<p>Get the width of the application area (window width for windowed, or screen width for full screen).</p>
 <dl class="section return"><dt>Returns</dt><dd>The width of the application area.</dd></dl>
 
 </div>
@@ -1721,7 +1751,7 @@ Protected Member Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>True if a mouse/touchscreen exists and the button with this is index pressed. Simple touch is 0. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>True if a mouse/touchscreen exists and the button with this is index pressed. Simple touch is 0.</dd></dl>
 
 </div>
 </div>
@@ -1771,7 +1801,7 @@ Protected Member Functions</h2></td></tr>
         <tr>
           <td class="memname">bool pvr::platform::Shell::isKeyPressed </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacepvr.html#aae1e7e12498a4bbe055ddce646b8ac46">Keys</a>&#160;</td>
+          <td class="paramtype">Keys&#160;</td>
           <td class="paramname"><em>key</em></td><td>)</td>
           <td></td>
         </tr>
@@ -1908,7 +1938,7 @@ Protected Member Functions</h2></td></tr>
         <tr>
           <td class="memname">void pvr::platform::Shell::onKeyDown </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacepvr.html#aae1e7e12498a4bbe055ddce646b8ac46">Keys</a>&#160;</td>
+          <td class="paramtype">Keys&#160;</td>
           <td class="paramname"><em>key</em></td><td>)</td>
           <td></td>
         </tr>
@@ -1940,7 +1970,7 @@ Protected Member Functions</h2></td></tr>
         <tr>
           <td class="memname">void pvr::platform::Shell::onKeyUp </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacepvr.html#aae1e7e12498a4bbe055ddce646b8ac46">Keys</a>&#160;</td>
+          <td class="paramtype">Keys&#160;</td>
           <td class="paramname"><em>key</em></td><td>)</td>
           <td></td>
         </tr>
@@ -2036,7 +2066,7 @@ Protected Member Functions</h2></td></tr>
         <tr>
           <td class="memname">void pvr::platform::Shell::onSystemEvent </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacepvr.html#ae4c92053860fcd90c8ae00f40354965a">SystemEvent</a>&#160;</td>
+          <td class="paramtype">SystemEvent&#160;</td>
           <td class="paramname"><em>systemEvent</em></td><td>)</td>
           <td></td>
         </tr>
@@ -2106,8 +2136,8 @@ Protected Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>IMPLEMENT THIS FUNCTION IN YOUR APPLICATION CLASS. This event represents graphics context released. </p>
-<dl class="section return"><dt>Returns</dt><dd>When implementing, return a suitable error code to signify failure. If pvr::Result::Success is not returned, the <a class="el" href="classpvr_1_1platform_1_1_shell.html" title="The PowerVR Shell (pvr::Shell) is the main class that the user will inherit his application from...">Shell</a> will detect that, clean up, and exit. If the shell was exiting, this will happen anyway. </dd></dl>
+<p>IMPLEMENT THIS FUNCTION IN YOUR APPLICATION CLASS. This event represents graphics context released.</p>
+<dl class="section return"><dt>Returns</dt><dd>When implementing, return a suitable error code to signify failure. If pvr::Result::Success is not returned, the <a class="el" href="classpvr_1_1platform_1_1_shell.html" title="The PowerVR Shell (pvr::Shell) is the main class that the user will inherit his application from...">Shell</a> will detect that, clean up, and exit. If the shell was exiting, this will happen anyway.</dd></dl>
 <p>This function must be implemented in the user's application class. It will be fired once before the main Graphics Context is lost. The user should use this callback as his main callback to release all API objects as they will be invalid afterwards. In simple applications where all objects are created in initView, it should release all objects acquired in initView. This callback will be called when the application is exiting, but not only then - losing (and later re-acquiring) the Graphics Context will lead to this callback being fired, followed by an initView callback, renderFrame etc.</p>
 
 </div>
@@ -2163,9 +2193,11 @@ Protected Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a721ae2f199a6f58fd678819d147079ac"></a>
+<a class="anchor" id="ac4f05fe1ee37da3ebb4c69be0be5a0a3"></a>
 <div class="memitem">
 <div class="memproto">
+<div class="memtemplate">
+template&lt;typename... Args&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">void pvr::platform::Shell::setApplicationName </td>
@@ -2176,8 +2208,8 @@ Protected Member Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>...</em>&#160;</td>
+          <td class="paramtype">Args...&#160;</td>
+          <td class="paramname"><em>args</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -2191,7 +2223,7 @@ Protected Member Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">format</td><td>A printf-style format std::string</td></tr>
-    <tr><td class="paramname">...</td><td>Printf-style variable parameters</td></tr>
+    <tr><td class="paramname">args</td><td>Printf-style variable parameters</td></tr>
   </table>
   </dd>
 </dl>
@@ -2317,7 +2349,7 @@ Protected Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Set the number of framebuffer color bits per pixel. </p>
+<p>ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Set the number of framebuffer color bits per pixel.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">r</td><td>The Red framebuffer channel color bits</td></tr>
@@ -2369,7 +2401,7 @@ Protected Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Set the number of framebuffer Depth bits per pixel. </p>
+<p>ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Set the number of framebuffer Depth bits per pixel.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">value</td><td>The desired framebuffer Depth channel bits.</td></tr>
@@ -2428,7 +2460,7 @@ Protected Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Set the window size, or resolution for fullscreen. </p>
+<p>ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Set the window size, or resolution for fullscreen.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">w</td><td>The width of the window / horizontal resolution</td></tr>
@@ -2440,9 +2472,14 @@ Protected Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a38e14777e568449a366bc00dbb1daa80"></a>
+<a class="anchor" id="ab70fcc93c56c7cafdb17fd13bbb2ff4e"></a>
 <div class="memitem">
 <div class="memproto">
+<div class="memtemplate">
+template&lt;typename... Args&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">void pvr::platform::Shell::setExitMessage </td>
@@ -2453,8 +2490,8 @@ Protected Member Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>...</em>&#160;</td>
+          <td class="paramtype">Args...&#160;</td>
+          <td class="paramname"><em>args</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -2462,13 +2499,18 @@ Protected Member Functions</h2></td></tr>
           <td></td><td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p>Set a message to be displayed on application exit. Normally used to display critical error messages that might be missed if displayed as just logs.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">format</td><td>A printf-style format std::string</td></tr>
-    <tr><td class="paramname">...</td><td>Printf-style variable arguments</td></tr>
+    <tr><td class="paramname">args</td><td>Printf-style variable arguments</td></tr>
   </table>
   </dd>
 </dl>
@@ -2571,7 +2613,7 @@ Protected Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Set the window position. Not supported in all platforms. </p>
+<p>ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Set the window position. Not supported in all platforms.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">x</td><td>x-coordinate (Distance of the left of the window to the left of the screen)</td></tr>
@@ -2621,7 +2663,7 @@ Protected Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Set a frame after which the application will quit. </p>
+<p>ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Set a frame after which the application will quit.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">value</td><td>The frame after which the application is set to quit. Set to -1 to disable.</td></tr>
@@ -2645,7 +2687,7 @@ Protected Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Set a time after which the application will quit. </p>
+<p>ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Set a time after which the application will quit.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">value</td><td>The time (seconds) after which the application will quit. Set to -1 to disable.</td></tr>
@@ -2704,9 +2746,14 @@ Protected Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a4e092886f625a95212cc51a23c2ce658"></a>
+<a class="anchor" id="a5a0f0ba7f94bfd6bc12dfd76cd5035b8"></a>
 <div class="memitem">
 <div class="memproto">
+<div class="memtemplate">
+template&lt;typename... Args&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">void pvr::platform::Shell::setTitle </td>
@@ -2717,8 +2764,8 @@ Protected Member Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>...</em>&#160;</td>
+          <td class="paramtype">Args...&#160;</td>
+          <td class="paramname"><em>args</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -2726,13 +2773,18 @@ Protected Member Functions</h2></td></tr>
           <td></td><td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
-<p>Sets the window title. Will only be actually displayed If used on or before initApplication. </p>
+<p>Sets the window title. Will only be actually displayed If used on or before initApplication.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">format</td><td>A printf-style format std::string</td></tr>
-    <tr><td class="paramname">...</td><td>Printf-style variable parameters</td></tr>
+    <tr><td class="paramname">args</td><td>Printf-style variable parameters</td></tr>
   </table>
   </dd>
 </dl>

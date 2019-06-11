@@ -1,12 +1,15 @@
 var searchData=
 [
   ['majorv',['majorV',['../structpvr_1_1utils_1_1_vulkan_version.html#ae034e617f8481394b0d37b6ddaa228fd',1,'pvr::utils::VulkanVersion']]],
+  ['makeallocationslost',['makeAllocationsLost',['../classpvr_1_1utils_1_1vma_1_1impl_1_1_pool__.html#aca62579caacf41df6af5f663eea8010d',1,'pvr::utils::vma::impl::Pool_']]],
   ['makecurrent',['makeCurrent',['../classpvr_1_1platform_1_1_egl_context__.html#a27fe87cd8e21677df6fe69754e479049',1,'pvr::platform::EglContext_']]],
   ['makesharedcontextcurrent',['makeSharedContextCurrent',['../classpvr_1_1platform_1_1_shared_egl_context__.html#a3d91df1766fae5f97b954e00ea359033',1,'pvr::platform::SharedEglContext_']]],
-  ['mapvalidationtypetologlevel',['mapValidationTypeToLogLevel',['../namespacepvr_1_1utils.html#adca914d6eedd686a81a4f0e4cbbc3390',1,'pvr::utils']]],
+  ['map',['map',['../classpvr_1_1utils_1_1vma_1_1impl_1_1_allocation__.html#add681936918645046df692d853d788bf',1,'pvr::utils::vma::impl::Allocation_']]],
+  ['mapdebugreportflagstologlevel',['mapDebugReportFlagsToLogLevel',['../namespacepvr_1_1utils.html#aee21903727c73558ad8e3cf936917344',1,'pvr::utils']]],
+  ['mapdebugutilsmessageseverityflagstologlevel',['mapDebugUtilsMessageSeverityFlagsToLogLevel',['../namespacepvr_1_1utils.html#abbd1f30f49a0d36c9d932437e902d2bb',1,'pvr::utils']]],
   ['materialubodata',['MaterialUboData',['../structpvr_1_1ui_1_1impl_1_1_image___1_1_material_ubo_data.html',1,'pvr::ui::impl::Image_']]],
   ['materialubodata',['MaterialUboData',['../structpvr_1_1ui_1_1impl_1_1_image___1_1_material_ubo_data.html#a2e9c82ce5caa0090fead3509ca00a63b',1,'pvr::ui::impl::Image_::MaterialUboData']]],
-  ['matrixgroup',['MatrixGroup',['../namespacepvr_1_1ui.html#af77cfd259bccad2c592ef01fee4217a8',1,'pvr::ui']]],
+  ['matrixgroup',['MatrixGroup',['../namespacepvr_1_1ui.html#a6134d76dcf66e127eb755958695f6653',1,'pvr::ui']]],
   ['matrixgroup_5f',['MatrixGroup_',['../classpvr_1_1ui_1_1impl_1_1_matrix_group__.html',1,'pvr::ui::impl']]],
   ['maxblockcount',['maxBlockCount',['../structpvr_1_1utils_1_1vma_1_1_pool_create_info.html#a470bcea6c9b314471cecf2d2b81996b2',1,'pvr::utils::vma::PoolCreateInfo']]],
   ['memoryallocator_2ecpp',['MemoryAllocator.cpp',['../_memory_allocator_8cpp.html',1,'']]],
@@ -18,16 +21,15 @@ var searchData=
   ['minblockcount',['minBlockCount',['../structpvr_1_1utils_1_1vma_1_1_pool_create_info.html#ab7b2f27e0a949c78b410f65ad1b1b77c',1,'pvr::utils::vma::PoolCreateInfo']]],
   ['minorv',['minorV',['../structpvr_1_1utils_1_1_vulkan_version.html#a6c8a350c06cf3c659a092f0688f860b2',1,'pvr::utils::VulkanVersion']]],
   ['miplevel',['mipLevel',['../structpvr_1_1utils_1_1_image_update_info.html#a1b452f639a4e507f7d3bdfaf529da029',1,'pvr::utils::ImageUpdateInfo']]],
-  ['modelgles',['ModelGles',['../classpvr_1_1utils_1_1_model_gles.html#a8e7cc0b0f69f8918d5aad1278ea99033',1,'pvr::utils::ModelGles']]],
   ['modelgles',['ModelGles',['../classpvr_1_1utils_1_1_model_gles.html',1,'pvr::utils']]],
+  ['modelgles',['ModelGles',['../classpvr_1_1utils_1_1_model_gles.html#a8e7cc0b0f69f8918d5aad1278ea99033',1,'pvr::utils::ModelGles']]],
   ['modelgles_2eh',['ModelGles.h',['../_model_gles_8h.html',1,'']]],
-  ['multi',['Multi',['../classpvr_1_1_multi.html',1,'pvr']]],
   ['multi',['Multi',['../classpvr_1_1_multi.html#a7a384d36093b365a9904d34c4aba6dc5',1,'pvr::Multi::Multi()'],['../classpvr_1_1_multi.html#a1fc657cb4d9772072e37e10e0a21743d',1,'pvr::Multi::Multi(const ElementType &amp;element)'],['../classpvr_1_1_multi.html#a2852bcd151de703b0dc3bc05430dfd42',1,'pvr::Multi::Multi(const ElementType *elements, const uint32_t count)']]],
+  ['multi',['Multi',['../classpvr_1_1_multi.html',1,'pvr']]],
   ['multiobject_2eh',['MultiObject.h',['../_multi_object_8h.html',1,'']]],
   ['mvp',['mvp',['../structpvr_1_1ui_1_1impl_1_1_image___1_1_mvp_data.html#acb2cf898208f523a7a2a0732302ad379',1,'pvr::ui::impl::Image_::MvpData::mvp()'],['../structpvr_1_1ui_1_1impl_1_1_image___1_1_mvp_ubo_data.html#a6275e70c6e63ed35b40c7be9cbf296c8',1,'pvr::ui::impl::Image_::MvpUboData::mvp()']]],
-  ['mvpdata',['MvpData',['../structpvr_1_1ui_1_1impl_1_1_image___1_1_mvp_data.html',1,'pvr::ui::impl::Image_']]],
   ['mvpdata',['MvpData',['../structpvr_1_1ui_1_1impl_1_1_image___1_1_mvp_data.html#a38b16b07154ff3b5c047863bbf69e723',1,'pvr::ui::impl::Image_::MvpData']]],
-  ['mvpubodata',['MvpUboData',['../structpvr_1_1ui_1_1impl_1_1_image___1_1_mvp_ubo_data.html#ac43c6321285d474cda14e9dc40d52b05',1,'pvr::ui::impl::Image_::MvpUboData']]],
+  ['mvpdata',['MvpData',['../structpvr_1_1ui_1_1impl_1_1_image___1_1_mvp_data.html',1,'pvr::ui::impl::Image_']]],
   ['mvpubodata',['MvpUboData',['../structpvr_1_1ui_1_1impl_1_1_image___1_1_mvp_ubo_data.html',1,'pvr::ui::impl::Image_']]],
-  ['mybase',['MyBase',['../classpvr_1_1_image_api_async_uploader.html#ae5bba4ad9f1842628022dd0c8f25b6b8',1,'pvr::ImageApiAsyncUploader']]]
+  ['mvpubodata',['MvpUboData',['../structpvr_1_1ui_1_1impl_1_1_image___1_1_mvp_ubo_data.html#ac43c6321285d474cda14e9dc40d52b05',1,'pvr::ui::impl::Image_::MvpUboData']]]
 ];

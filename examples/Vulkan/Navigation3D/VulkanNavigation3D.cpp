@@ -45,7 +45,7 @@ static uint32_t routeIndex = 0;
 struct DeviceResources
 {
 	pvrvk::Instance instance;
-	pvrvk::DebugReportCallback debugCallbacks[2];
+	pvr::utils::DebugUtilsCallbacks debugUtilsCallbacks;
 	pvrvk::Surface surface;
 	pvrvk::Device device;
 	pvrvk::Swapchain swapchain;
@@ -53,7 +53,7 @@ struct DeviceResources
 
 	pvr::utils::vma::Allocator vmaAllocator;
 
-	pvrvk::CommandPool cmdPool;
+	pvrvk::CommandPool commandPool;
 	pvrvk::DescriptorPool descPool;
 
 	struct Ubo
@@ -97,13 +97,13 @@ struct DeviceResources
 
 	~DeviceResources()
 	{
-		if (device.isValid())
+		if (device)
 		{
 			device->waitIdle();
 			uint32_t l = swapchain->getSwapchainLength();
 			for (uint32_t i = 0; i < l; ++i)
 			{
-				if (fencePerFrame[i].isValid())
+				if (fencePerFrame[i])
 					fencePerFrame[i]->wait();
 			}
 		}
@@ -319,12 +319,8 @@ pvr::Result VulkanNavigation3D::initView()
 	// Create the surface
 	_deviceResources->surface = pvr::utils::createSurface(_deviceResources->instance, _deviceResources->instance->getPhysicalDevice(0), this->getWindow(), this->getDisplay());
 
-	// Add Debug Report Callbacks
-	// Add a Debug Report Callback for logging messages for events of all supported types.
-	_deviceResources->debugCallbacks[0] = pvr::utils::createDebugReportCallback(_deviceResources->instance);
-	// Add a second Debug Report Callback for throwing exceptions for Error events.
-	_deviceResources->debugCallbacks[1] =
-		pvr::utils::createDebugReportCallback(_deviceResources->instance, pvrvk::DebugReportFlagsEXT::e_ERROR_BIT_EXT, pvr::utils::throwOnErrorDebugReportCallback);
+	// Create a default set of debug utils messengers or debug callbacks using either VK_EXT_debug_utils or VK_EXT_debug_report respectively
+	_deviceResources->debugUtilsCallbacks = pvr::utils::createDebugUtilsCallbacks(_deviceResources->instance);
 
 	const pvr::utils::QueuePopulateInfo queuePopulate = {
 		pvrvk::QueueFlags::e_GRAPHICS_BIT, _deviceResources->surface, // One queue supoorting Graphics and presentation
@@ -334,12 +330,6 @@ pvr::Result VulkanNavigation3D::initView()
 	// create the device
 	_deviceResources->device = pvr::utils::createDeviceAndQueues(_deviceResources->instance->getPhysicalDevice(0), &queuePopulate, 1, &queueAccessInfo);
 
-	if (_deviceResources->device.isNull())
-	{
-		setExitMessage("Failed to create devices");
-		return pvr::Result::UnknownError;
-	}
-
 	// get the queue
 	_deviceResources->queue = _deviceResources->device->getQueue(queueAccessInfo.familyId, queueAccessInfo.queueId);
 
@@ -347,7 +337,7 @@ pvr::Result VulkanNavigation3D::initView()
 	_deviceResources->vmaAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
 
 	// Create the commandpool
-	_deviceResources->cmdPool =
+	_deviceResources->commandPool =
 		_deviceResources->device->createCommandPool(pvrvk::CommandPoolCreateInfo(queueAccessInfo.familyId, pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT));
 
 	pvrvk::SurfaceCapabilitiesKHR surfaceCapabilities = _deviceResources->instance->getPhysicalDevice(0)->getSurfaceCapabilities(_deviceResources->surface);
@@ -369,7 +359,7 @@ pvr::Result VulkanNavigation3D::initView()
 
 	// Initialise uiRenderer
 	_deviceResources->uiRenderer.init(getWidth(), getHeight(), isFullScreen(), _deviceResources->fbo[0]->getRenderPass(), 0, getBackBufferColorspace() == pvr::ColorSpace::sRGB,
-		_deviceResources->cmdPool, _deviceResources->queue, true, true, true, 4 + _deviceResources->swapchain->getSwapchainLength(),
+		_deviceResources->commandPool, _deviceResources->queue, true, true, true, 4 + _deviceResources->swapchain->getSwapchainLength(),
 		4 + _deviceResources->swapchain->getSwapchainLength());
 
 	_windowWidth = static_cast<uint32_t>(_deviceResources->uiRenderer.getRenderingDimX());
@@ -394,8 +384,8 @@ pvr::Result VulkanNavigation3D::initView()
 	// Create primary command buffers.
 	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
 	{
-		_deviceResources->cbos.add(_deviceResources->cmdPool->allocateCommandBuffer());
-		_deviceResources->uiElementsCbo.add(_deviceResources->cmdPool->allocateSecondaryCommandBuffer());
+		_deviceResources->cbos.add(_deviceResources->commandPool->allocateCommandBuffer());
+		_deviceResources->uiElementsCbo.add(_deviceResources->commandPool->allocateSecondaryCommandBuffer());
 		_deviceResources->fencePerFrame[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
 		_deviceResources->acquireSemaphore[i] = _deviceResources->device->createSemaphore();
 		_deviceResources->submitSemaphore[i] = _deviceResources->device->createSemaphore();
@@ -719,7 +709,7 @@ void VulkanNavigation3D::createBuffers(pvrvk::CommandBuffer& uploadCmd)
 			for (uint32_t i = 0; i < swapchainLength; ++i)
 			{
 				uint32_t offset = 0;
-				_tileRenderingResources[col][row]->secCbo.add(_deviceResources->cmdPool->allocateSecondaryCommandBuffer());
+				_tileRenderingResources[col][row]->secCbo.add(_deviceResources->commandPool->allocateSecondaryCommandBuffer());
 				pvrvk::SecondaryCommandBuffer& cmdBuffer = _tileRenderingResources[col][row]->secCbo[i];
 
 				uboOffset = _deviceResources->uboDynamic.bufferView.getDynamicSliceOffset(i);
@@ -952,12 +942,12 @@ pvr::Result VulkanNavigation3D::renderFrame()
 	submitInfo.numCommandBuffers = 1;
 	// Only wait for the semaphore when writing to the color output, threfore the other stage can run before that.
 	pvrvk::PipelineStageFlags waitStage = pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT;
-	submitInfo.waitDestStages = &waitStage;
+	submitInfo.waitDstStageMask = &waitStage;
 	_deviceResources->queue->submit(&submitInfo, 1, _deviceResources->fencePerFrame[_frameId]);
 
 	if (this->shouldTakeScreenshot())
 	{
-		pvr::utils::takeScreenshot(_deviceResources->swapchain, swapchainIndex, _deviceResources->cmdPool, _deviceResources->queue, getScreenshotFileName(),
+		pvr::utils::takeScreenshot(_deviceResources->queue, _deviceResources->commandPool, _deviceResources->swapchain, swapchainIndex, getScreenshotFileName(),
 			&_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
 	}
 
@@ -1165,7 +1155,7 @@ bool VulkanNavigation3D::inFrustum(glm::vec2 min, glm::vec2 max)
 
 void VulkanNavigation3D::createFboAndRenderPass(pvr::Multi<pvrvk::ImageView>& dsImages)
 {
-	pvr::utils::createOnscreenFramebufferAndRenderpass(_deviceResources->swapchain, &dsImages[0], _deviceResources->fbo);
+	pvr::utils::createOnscreenFramebufferAndRenderPass(_deviceResources->swapchain, &dsImages[0], _deviceResources->fbo);
 }
 
 bool VulkanNavigation3D::createPipelines()
@@ -1260,8 +1250,7 @@ bool VulkanNavigation3D::createPipelines()
 	_deviceResources->buildingPipe = _deviceResources->device->createGraphicsPipeline(buildingInfo, _deviceResources->pipelineCache);
 	_deviceResources->planarShadowPipe = _deviceResources->device->createGraphicsPipeline(planarShadowInfo, _deviceResources->pipelineCache);
 
-	return _deviceResources->roadPipe.isValid() && _deviceResources->fillPipe.isValid() && _deviceResources->outlinePipe.isValid() && _deviceResources->buildingPipe.isValid() &&
-		_deviceResources->planarShadowPipe.isValid();
+	return _deviceResources->roadPipe && _deviceResources->fillPipe && _deviceResources->outlinePipe && _deviceResources->buildingPipe && _deviceResources->planarShadowPipe;
 }
 
 void VulkanNavigation3D::recordUICommands()

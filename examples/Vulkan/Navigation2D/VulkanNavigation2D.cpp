@@ -130,7 +130,7 @@ inline float wrapToSignedAngle(float angle)
 struct DeviceResources
 {
 	pvrvk::Instance instance;
-	pvrvk::DebugReportCallback debugCallbacks[2];
+	pvr::utils::DebugUtilsCallbacks debugUtilsCallbacks;
 	pvrvk::Surface surface;
 	pvrvk::Device device;
 	pvrvk::Swapchain swapchain;
@@ -140,9 +140,9 @@ struct DeviceResources
 
 	pvrvk::CommandPool commandPool;
 	pvrvk::DescriptorPool descriptorPool;
-	pvrvk::Semaphore semaphoreImageAcquired[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
-	pvrvk::Semaphore semaphorePresent[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
-	pvrvk::Fence perFrameCommandBufferFence[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	pvrvk::Semaphore imageAcquiredSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	pvrvk::Semaphore presentationSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	pvrvk::Fence perFrameResourcesFences[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
 
 	struct Ubo
 	{
@@ -188,14 +188,14 @@ struct DeviceResources
 
 	~DeviceResources()
 	{
-		if (device.isValid())
+		if (device)
 		{
 			device->waitIdle();
 			uint32_t l = swapchain->getSwapchainLength();
 			for (uint32_t i = 0; i < l; ++i)
 			{
-				if (perFrameCommandBufferFence[i].isValid())
-					perFrameCommandBufferFence[i]->wait();
+				if (perFrameResourcesFences[i])
+					perFrameResourcesFences[i]->wait();
 			}
 		}
 	}
@@ -224,7 +224,7 @@ struct PerSwapTileResources
 
 	bool tileWasVisible;
 	bool uiWasVisible;
-	pvr::RefCountedResource<pvr::ui::UIRenderer> renderer;
+	std::shared_ptr<pvr::ui::UIRenderer> renderer;
 	pvr::ui::Font font;
 	pvr::ui::PixelGroup tileGroup[LOD::Count];
 	pvr::ui::PixelGroup cameraRotateGroup[LOD::Count];
@@ -323,8 +323,7 @@ public:
 	/// Code in initApplication() will be called by the Shell once per run,
 	/// before the rendering context is created.Used to initialize variables that
 	/// are not dependent on it(e.g.external modules, loading meshes, etc.) If the
-	/// rendering context is lost, initApplication() will not be called again.
-	/// </summary>
+	/// rendering context is lost, initApplication() will not be called again.</summary>
 	pvr::Result initApplication() override;
 	pvr::Result quitApplication() override;
 
@@ -333,16 +332,15 @@ public:
 	/// Code in initView() will be called by PVRShell upon initialization or
 	/// after a change in the rendering context. Used to initialize variables that
 	/// are dependent on the rendering context (e.g. textures, vertex buffers,
-	/// etc.)
-	/// </summary>
+	/// etc.)</summary>
 	pvr::Result initView() override;
 	pvr::Result releaseView() override;
 	pvr::Result renderFrame() override;
 
-	bool initializeRenderers(TileRenderingResources* begin, TileRenderingResources* end, Tile& tile);
-	bool createDescriptorSets();
+	void initializeRenderers(TileRenderingResources* begin, TileRenderingResources* end, Tile& tile);
+	void createDescriptorSets();
 	void createBuffers(pvrvk::CommandBuffer& uploadCmd);
-	bool createUbos();
+	void createUbos();
 	void loadTexture(pvrvk::CommandBuffer& uploadCmd);
 	void setColors();
 	void initRoute();
@@ -366,7 +364,7 @@ public:
 	pvrvk::SecondaryCommandBuffer getOrCreateTileUiCommandBuffer(TileRenderingResources& tile, uint32_t swapIdx, uint32_t lod)
 	{
 		auto& retval = tile.swapResources[swapIdx].uicbuff[lod];
-		if (retval.isNull())
+		if (!retval)
 		{
 			retval = _deviceResources->commandPool->allocateSecondaryCommandBuffer();
 		}
@@ -498,14 +496,8 @@ pvr::Result VulkanNavigation2D::initView()
 	// Create the surface
 	_deviceResources->surface = pvr::utils::createSurface(_deviceResources->instance, _deviceResources->instance->getPhysicalDevice(0), this->getWindow(), this->getDisplay());
 
-	// Add Debug Report Callbacks
-	// Add a Debug Report Callback for logging messages for events of all
-	// supported types.
-	_deviceResources->debugCallbacks[0] = pvr::utils::createDebugReportCallback(_deviceResources->instance);
-	// Add a second Debug Report Callback for throwing exceptions for Error
-	// events.
-	_deviceResources->debugCallbacks[1] =
-		pvr::utils::createDebugReportCallback(_deviceResources->instance, pvrvk::DebugReportFlagsEXT::e_ERROR_BIT_EXT, pvr::utils::throwOnErrorDebugReportCallback);
+	// Create a default set of debug utils messengers or debug callbacks using either VK_EXT_debug_utils or VK_EXT_debug_report respectively
+	_deviceResources->debugUtilsCallbacks = pvr::utils::createDebugUtilsCallbacks(_deviceResources->instance);
 
 	// Populate a queue with graphics and presentation support.
 	const pvr::utils::QueuePopulateInfo queuePopulate = { pvrvk::QueueFlags::e_GRAPHICS_BIT, _deviceResources->surface };
@@ -530,25 +522,15 @@ pvr::Result VulkanNavigation2D::initView()
 	// Create the swapchain
 	_deviceResources->swapchain = pvr::utils::createSwapchain(_deviceResources->device, _deviceResources->surface, getDisplayAttributes(), swapchainImageUsage);
 
-	if (!_deviceResources->swapchain.isValid())
-	{
-		setExitMessage("Failed to create Swapchain");
-		return pvr::Result::UnknownError;
-	}
-
 	recalculateTheScale();
 	resetCameraVariables();
 
 	_numSwapchains = _deviceResources->swapchain->getSwapchainLength();
 
 	// create the fbo and the render pass for rendering.
-	pvr::utils::createOnscreenFramebufferAndRenderpass(_deviceResources->swapchain, nullptr, _deviceResources->framebuffer);
+	pvr::utils::createOnscreenFramebufferAndRenderPass(_deviceResources->swapchain, nullptr, _deviceResources->framebuffer);
 
-	if (!createDescriptorSets())
-	{
-		setExitMessage("Failed to create Descriptor Sets");
-		return pvr::Result::UnknownError;
-	}
+	createDescriptorSets();
 
 	// Create the commandpool
 	_deviceResources->commandPool =
@@ -585,17 +567,13 @@ pvr::Result VulkanNavigation2D::initView()
 	}
 
 	// Craate the uniform buffer objects.
-	if (!createUbos())
-	{
-		setExitMessage("Failed to create the Ubos");
-		return pvr::Result::UnknownError;
-	}
+	createUbos();
 
 	for (uint32_t i = 0; i < _numSwapchains; ++i)
 	{
-		_deviceResources->semaphorePresent[i] = _deviceResources->device->createSemaphore();
-		_deviceResources->semaphoreImageAcquired[i] = _deviceResources->device->createSemaphore();
-		_deviceResources->perFrameCommandBufferFence[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
+		_deviceResources->presentationSemaphores[i] = _deviceResources->device->createSemaphore();
+		_deviceResources->imageAcquiredSemaphores[i] = _deviceResources->device->createSemaphore();
+		_deviceResources->perFrameResourcesFences[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
 	}
 
 	// Create the pipeline cache
@@ -692,7 +670,7 @@ pvr::Result VulkanNavigation2D::renderFrame()
 	handleInput();
 	// wait for the swapchain fence from previous submission and then reset.
 	// Acquire the next image for rendering.
-	_deviceResources->swapchain->acquireNextImage(uint64_t(-1), _deviceResources->semaphoreImageAcquired[_frameId]);
+	_deviceResources->swapchain->acquireNextImage(uint64_t(-1), _deviceResources->imageAcquiredSemaphores[_frameId]);
 	uint32_t swapchainIndex = _deviceResources->swapchain->getSwapchainIndex();
 	updateAnimation();
 	const float rotation = glm::radians(_rotation + MapScreenAlignRotation);
@@ -711,8 +689,8 @@ pvr::Result VulkanNavigation2D::renderFrame()
 
 	// Update commands
 	// wait for the commandbuffer before reusing them from previous submission.
-	_deviceResources->perFrameCommandBufferFence[swapchainIndex]->wait();
-	_deviceResources->perFrameCommandBufferFence[swapchainIndex]->reset();
+	_deviceResources->perFrameResourcesFences[swapchainIndex]->wait();
+	_deviceResources->perFrameResourcesFences[swapchainIndex]->reset();
 	_deviceResources->uboMvp.bufferView.getElement(0, 0, swapchainIndex).setValue(_mapMVPMtx);
 	if (uint32_t(_deviceResources->uboMvp.buffer->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
 	{
@@ -727,20 +705,20 @@ pvr::Result VulkanNavigation2D::renderFrame()
 	pvrvk::SubmitInfo submitInfo;
 	submitInfo.commandBuffers = &_deviceResources->commandBuffers[swapchainIndex];
 	submitInfo.numCommandBuffers = 1;
-	submitInfo.waitSemaphores = &_deviceResources->semaphoreImageAcquired[_frameId]; // wait for the image acquire
+	submitInfo.waitSemaphores = &_deviceResources->imageAcquiredSemaphores[_frameId]; // wait for the image acquire
 																					 // before executing the
 																					 // commands.
 	submitInfo.numWaitSemaphores = 1;
-	submitInfo.signalSemaphores = &_deviceResources->semaphorePresent[_frameId]; // signal a semaphore which the
+	submitInfo.signalSemaphores = &_deviceResources->presentationSemaphores[_frameId]; // signal a semaphore which the
 																				 // presentation can wait on.
 	submitInfo.numSignalSemaphores = 1;
 	pvrvk::PipelineStageFlags waitStage = pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT;
-	submitInfo.waitDestStages = &waitStage;
-	_deviceResources->queue->submit(&submitInfo, 1, _deviceResources->perFrameCommandBufferFence[swapchainIndex]);
+	submitInfo.waitDstStageMask = &waitStage;
+	_deviceResources->queue->submit(&submitInfo, 1, _deviceResources->perFrameResourcesFences[swapchainIndex]);
 
 	if (this->shouldTakeScreenshot())
 	{
-		pvr::utils::takeScreenshot(_deviceResources->swapchain, swapchainIndex, _deviceResources->commandPool, _deviceResources->queue, this->getScreenshotFileName(),
+		pvr::utils::takeScreenshot(_deviceResources->queue, _deviceResources->commandPool, _deviceResources->swapchain, swapchainIndex, this->getScreenshotFileName(),
 			&_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
 	}
 
@@ -749,7 +727,7 @@ pvr::Result VulkanNavigation2D::renderFrame()
 	presentInfo.imageIndices = &swapchainIndex;
 	presentInfo.swapchains = &_deviceResources->swapchain;
 	presentInfo.numSwapchains = 1;
-	presentInfo.waitSemaphores = &_deviceResources->semaphorePresent[_frameId]; // wait for the semaphore that get
+	presentInfo.waitSemaphores = &_deviceResources->presentationSemaphores[_frameId]; // wait for the semaphore that get
 																				// signaled after finished rendering
 																				// to the swapchain image.
 	presentInfo.numWaitSemaphores = 1;
@@ -856,7 +834,7 @@ void VulkanNavigation2D::eventMappedInput(pvr::SimplifiedInput e)
 	}
 }
 
-bool VulkanNavigation2D::initializeRenderers(TileRenderingResources* begin, TileRenderingResources* end, Tile& tile)
+void VulkanNavigation2D::initializeRenderers(TileRenderingResources* begin, TileRenderingResources* end, Tile& tile)
 {
 	// determine the number of sprites for the current tile
 	uint32_t numSprites = 0;
@@ -887,7 +865,7 @@ bool VulkanNavigation2D::initializeRenderers(TileRenderingResources* begin, Tile
 
 		if (begin->numSpriteInstances > 0 && begin->numSprites > 0)
 		{
-			begin->swapResources[swapIndex].renderer.construct();
+			begin->swapResources[swapIndex].renderer = std::make_shared<pvr::ui::UIRenderer>();
 			auto& renderer = *begin->swapResources[swapIndex].renderer;
 
 			renderer.init(getWidth(), getHeight(), isFullScreen(), _deviceResources->framebuffer[0]->getRenderPass(), 0, getBackBufferColorspace() == pvr::ColorSpace::sRGB,
@@ -930,10 +908,9 @@ bool VulkanNavigation2D::initializeRenderers(TileRenderingResources* begin, Tile
 			}
 		}
 	}
-	return true;
 }
 
-bool VulkanNavigation2D::createDescriptorSets()
+void VulkanNavigation2D::createDescriptorSets()
 {
 	// In general it is a good idea for performance reasons to a) separate static
 	// data from dynamic data in layouts, and b) separate the objects in frequency
@@ -942,29 +919,16 @@ bool VulkanNavigation2D::createDescriptorSets()
 	staticUboLayoutDesc.setBinding(0, pvrvk::DescriptorType::e_UNIFORM_BUFFER, 1, pvrvk::ShaderStageFlags::e_VERTEX_BIT);
 	_deviceResources->uboMvp.layout = _deviceResources->device->createDescriptorSetLayout(staticUboLayoutDesc);
 
-	if (!_deviceResources->uboMvp.layout.isValid())
-	{
-		Log(LogLevel::Critical, "Failed to create static UBO descriptor set.");
-		return false;
-	}
-
 	// DYNAMIC UBO LAYOUT
 	pvrvk::DescriptorSetLayoutCreateInfo dynamicUboLayoutDesc;
 	dynamicUboLayoutDesc.setBinding(0, pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 1, pvrvk::ShaderStageFlags::e_FRAGMENT_BIT);
 	_deviceResources->uboColor.layout = _deviceResources->device->createDescriptorSetLayout(dynamicUboLayoutDesc);
-
-	if (!_deviceResources->uboColor.layout.isValid())
-	{
-		Log(LogLevel::Critical, "Failed to create dynamic UBO descriptor set layout.");
-		return false;
-	}
 
 	// create the pipeline layout
 	pvrvk::PipelineLayoutCreateInfo pipeLayoutInfo;
 	pipeLayoutInfo.addDescSetLayout(_deviceResources->uboMvp.layout); // Set 0
 	pipeLayoutInfo.addDescSetLayout(_deviceResources->uboColor.layout); // Set 1
 	_deviceResources->pipeLayout = _deviceResources->device->createPipelineLayout(pipeLayoutInfo);
-	return true;
 }
 
 /*!*********************************************************************************************************************
@@ -972,7 +936,7 @@ bool VulkanNavigation2D::createDescriptorSets()
 and is updated once per frame. Dynamic UBO is used to hold color data for map
 elements and is only updated once during initialisation.
 ***********************************************************************************************************************/
-bool VulkanNavigation2D::createUbos()
+void VulkanNavigation2D::createUbos()
 {
 	// Create the uniform buffer object. UBOs are created using the vma allocator
 	// for optimal allocation. The allocation are created with mapped bit which
@@ -1066,8 +1030,6 @@ bool VulkanNavigation2D::createUbos()
 			.setBufferInfo(0, pvrvk::DescriptorBufferInfo(uboColor.buffer, 0, uboColor.bufferView.getDynamicSliceSize()));
 	}
 	_deviceResources->device->updateDescriptorSets(writeDescSet, _numSwapchains + 1, nullptr, 0);
-
-	return true;
 }
 
 /*!*********************************************************************************************************************
@@ -1601,7 +1563,7 @@ void VulkanNavigation2D::createUIRendererItems()
 							tileResAmenityLabel.group = tileRes.swapResources[swapIndex].renderer->createPixelGroup();
 
 							tileResAmenityLabel.label.text = tileRes.swapResources[swapIndex].renderer->createText(tileRes.swapResources[swapIndex].font, amenityLabel.name);
-							debug_assertion(tileResAmenityLabel.label.text.isValid(), "Amenity label must be a valid UIRenderer Text Element");
+							debug_assertion(tileResAmenityLabel.label.text != nullptr, "Amenity label must be a valid UIRenderer Text Element");
 							tileResAmenityLabel.label.text->setColor(0.f, 0.f, 0.f, 1.f);
 							tileResAmenityLabel.label.text->setAlphaRenderingMode(true);
 
@@ -1627,7 +1589,7 @@ void VulkanNavigation2D::createUIRendererItems()
 							auto& tileResLabel = tileRes.swapResources[swapIndex].labels[lod].back();
 
 							tileResLabel.text = tileRes.swapResources[swapIndex].renderer->createText(tileRes.swapResources[swapIndex].font, label.name);
-							debug_assertion(tileResLabel.text.isValid(), "Label must be a valid UIRenderer Text Element");
+							debug_assertion(tileResLabel.text != nullptr, "Label must be a valid UIRenderer Text Element");
 
 							tileResLabel.text->setColor(0.f, 0.f, 0.f, 1.f);
 							tileResLabel.text->setAlphaRenderingMode(true);
@@ -1748,14 +1710,14 @@ void VulkanNavigation2D::updateCommandBuffer(pvrvk::CommandBuffer& cbo, uint32_t
 
 		for (auto&& tile : renderqueue)
 		{
-			if (tile->swapResources[swapchainIndex].secCbo.isValid())
+			if (tile->swapResources[swapchainIndex].secCbo)
 			{
 				cbo->executeCommands(tile->swapResources[swapchainIndex].secCbo);
 			}
 
 			for (uint16_t lod = _currentScaleLevel; lod < LOD::Count; ++lod)
 			{
-				if (tile->swapResources[swapchainIndex].uicbuff[lod].isValid())
+				if (tile->swapResources[swapchainIndex].uicbuff[lod])
 				{
 					cbo->executeCommands(tile->swapResources[swapchainIndex].uicbuff[lod]);
 				}
@@ -1801,14 +1763,14 @@ void VulkanNavigation2D::updateGroups(uint32_t col, uint32_t row, uint32_t swapi
 
 	for (uint32_t lod = _currentScaleLevel; lod < LOD::Count; ++lod)
 	{
-		if (tileRes.swapResources[swapindex].tileGroup[lod].isValid())
+		if (tileRes.swapResources[swapindex].tileGroup[lod])
 		{
 			tileRes.swapResources[swapindex].tileGroup[lod]->setAnchor(pvr::ui::Anchor::Center, 0, 0);
 			tileRes.swapResources[swapindex].tileGroup[lod]->setPixelOffset(pixelOffset.x, pixelOffset.y);
 			tileRes.swapResources[swapindex].tileGroup[lod]->setScale(_scale, _scale);
 			tileRes.swapResources[swapindex].tileGroup[lod]->commitUpdates();
 		}
-		if (tileRes.swapResources[swapindex].cameraRotateGroup[lod].isValid())
+		if (tileRes.swapResources[swapindex].cameraRotateGroup[lod])
 		{
 			tileRes.swapResources[swapindex].cameraRotateGroup[lod]->setRotation(glm::radians(_rotation + MapScreenAlignRotation));
 			tileRes.swapResources[swapindex].cameraRotateGroup[lod]->setAnchor(pvr::ui::Anchor::Center, 0, 0);
@@ -1841,7 +1803,7 @@ void VulkanNavigation2D::updateLabels(uint32_t col, uint32_t row, uint32_t swapc
 
 			auto& tileLabel = tile.labels[lod][labelIdx];
 			auto& tileResLabel = tileRes.swapResources[swapchainIndex].labels[lod][labelIdx];
-			if (tileResLabel.text.isNull())
+			if (tileResLabel.text == nullptr)
 			{
 				continue;
 			}
@@ -1898,7 +1860,7 @@ void VulkanNavigation2D::updateAmenities(uint32_t col, uint32_t row, uint32_t sw
 		for (uint32_t amenityIconIndex = 0; amenityIconIndex < tileRes.swapResources[swapchainIndex].amenityIcons[lod].size(); ++amenityIconIndex)
 		{
 			AmenityIconGroup& amenityIcon = tileRes.swapResources[swapchainIndex].amenityIcons[lod][amenityIconIndex];
-			debug_assertion(amenityIcon.icon.image.isValid(), "Amenity Icon must be a valid UIRenderer Icon");
+			debug_assertion(amenityIcon.icon.image != nullptr, "Amenity Icon must be a valid UIRenderer Icon");
 
 			float iconScale = (1.0f / (_scale * 20.0f));
 			iconScale = glm::clamp(iconScale, amenityIcon.iconData.scale, amenityIcon.iconData.scale * 2.0f);
@@ -1915,7 +1877,7 @@ void VulkanNavigation2D::updateAmenities(uint32_t col, uint32_t row, uint32_t sw
 		for (uint32_t amenityLabelIndex = 0; amenityLabelIndex < tileRes.swapResources[swapchainIndex].amenityLabels[lod].size(); ++amenityLabelIndex)
 		{
 			AmenityLabelGroup& amenityLabel = tileRes.swapResources[swapchainIndex].amenityLabels[lod][amenityLabelIndex];
-			if (amenityLabel.label.text.isNull())
+			if (amenityLabel.label.text == nullptr)
 			{
 				continue;
 			}

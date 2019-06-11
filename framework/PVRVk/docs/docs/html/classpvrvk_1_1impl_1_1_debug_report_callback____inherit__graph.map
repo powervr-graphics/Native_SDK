@@ -1,4 +1,4 @@
 <map id="pvrvk::impl::DebugReportCallback_" name="pvrvk::impl::DebugReportCallback_">
-<area shape="rect" id="node2" href="$classpvrvk_1_1impl_1_1_instance_object_handle.html" title="pvrvk::impl::InstanceObject\lHandle\&lt; VkDebugReportCallbackEXT \&gt;" alt="" coords="5,97,261,138"/>
-<area shape="rect" id="node3" href="$classpvrvk_1_1impl_1_1_object_handle.html" title="pvrvk::impl::ObjectHandle\l\&lt; VkDebugReportCallbackEXT \&gt;" alt="" coords="25,6,241,47"/>
+<area shape="rect" id="node2" href="$classpvrvk_1_1impl_1_1_p_v_r_vk_instance_object_base.html" title="pvrvk::impl::PVRVkInstance\lObjectBase\&lt; VkDebugReportCallback\lEXT, ObjectType::e_DEBUG_REPORT\l_CALLBACK_EXT \&gt;" alt="" coords="293,5,549,75"/>
+<area shape="rect" id="node3" href="$classpvrvk_1_1impl_1_1_p_v_r_vk_object_base.html" title="pvrvk::impl::PVRVkObject\lBase\&lt; VkDebugReportCallbackEXT,\l PVRVkObjectType \&gt;" alt="" coords="6,12,245,68"/>
 </map>

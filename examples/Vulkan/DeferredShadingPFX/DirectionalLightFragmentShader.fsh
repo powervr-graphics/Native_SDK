@@ -25,8 +25,7 @@ void main()
 	
 	// Fetch required gbuffer attributes
 	mediump vec4 albedoSpec = subpassLoad(localMemAlbedo);
-	mediump vec3 normalTex = subpassLoad(localMemNormal).rgb;
-	mediump vec3 normal = normalize(normalTex.xyz * 2.0 - 1.0);
+	mediump vec3 normal = subpassLoad(localMemNormal).rgb;
 	
 	mediump vec3 lightdir = normalize(-vViewDirection.xyz);
 

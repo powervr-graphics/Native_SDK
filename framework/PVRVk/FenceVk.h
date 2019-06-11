@@ -13,10 +13,32 @@ namespace impl {
 /// Fence can be used by the host to determine completion of execution of subimmisions to queues. The host
 /// can be polled for the fence signal
 /// .</summary>
-class Fence_ : public DeviceObjectHandle<VkFence>, public DeviceObjectDebugMarker<Fence_>
+class Fence_ : public PVRVkDeviceObjectBase<VkFence, ObjectType::e_FENCE>, public DeviceObjectDebugUtils<Fence_>
 {
+private:
+	friend class Device_;
+
+	class make_shared_enabler
+	{
+	protected:
+		make_shared_enabler() {}
+		friend class Fence_;
+	};
+
+	static Fence constructShared(const DeviceWeakPtr& device, const FenceCreateInfo& createInfo)
+	{
+		return std::make_shared<Fence_>(make_shared_enabler{}, device, createInfo);
+	}
+
+	/// <summary>Creation information used when creating the fence.</summary>
+	FenceCreateInfo _createInfo;
+
 public:
+	//!\cond NO_DOXYGEN
 	DECLARE_NO_COPY_SEMANTICS(Fence_)
+	Fence_(make_shared_enabler, const DeviceWeakPtr& device, const FenceCreateInfo& createInfo);
+	~Fence_();
+	//!\endcond
 
 	/// <summary>Host to wait for this fence to be signaled</summary>
 	/// <param name="timeoutNanos">Time out period in nanoseconds</param>
@@ -43,17 +65,6 @@ public:
 	{
 		return _createInfo;
 	}
-
-private:
-	template<typename>
-	friend struct ::pvrvk::RefCountEntryIntrusive;
-	friend class ::pvrvk::impl::Device_;
-
-	Fence_(const DeviceWeakPtr& device, const FenceCreateInfo& createInfo);
-	~Fence_();
-
-	/// <summary>Creation information used when creating the fence.</summary>
-	FenceCreateInfo _createInfo;
 };
 } // namespace impl
 } // namespace pvrvk

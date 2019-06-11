@@ -125,15 +125,18 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ad7f3a0e6a241a373e9a9c4cfed6c5346"><td class="memItemLeft" align="right" valign="top">const std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#ad7f3a0e6a241a373e9a9c4cfed6c5346">getCubeMapOrder</a> () const </td></tr>
 <tr class="memdesc:ad7f3a0e6a241a373e9a9c4cfed6c5346"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the cube map face order. <a href="#ad7f3a0e6a241a373e9a9c4cfed6c5346">More...</a><br/></td></tr>
 <tr class="separator:ad7f3a0e6a241a373e9a9c4cfed6c5346"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a21098a02ff1c57c9c1830a953c47df20"><td class="memItemLeft" align="right" valign="top">unsigned char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture.html#a21098a02ff1c57c9c1830a953c47df20">getCubemapPixel</a> (float x, float y, float z, uint32_t mipMapLevel=0, uint32_t arrayMember=0)</td></tr>
+<tr class="memdesc:a21098a02ff1c57c9c1830a953c47df20"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the pointer to the data for the direction (x,y,z) provided for the specific mip map level and array layer. <a href="#a21098a02ff1c57c9c1830a953c47df20">More...</a><br/></td></tr>
+<tr class="separator:a21098a02ff1c57c9c1830a953c47df20"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5c15051b3b6ad90a1716e5b54340535f"><td class="memItemLeft" align="right" valign="top">ptrdiff_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#a5c15051b3b6ad90a1716e5b54340535f">getDataOffset</a> (uint32_t mipMapLevel=0, uint32_t arrayMember=0, uint32_t face=0) const </td></tr>
 <tr class="memdesc:a5c15051b3b6ad90a1716e5b54340535f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a offset in the data <a href="#a5c15051b3b6ad90a1716e5b54340535f">More...</a><br/></td></tr>
 <tr class="separator:a5c15051b3b6ad90a1716e5b54340535f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a27807cdd0b4c909281e9fc7b32c9ee59"><td class="memItemLeft" align="right" valign="top">const unsigned char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture.html#a27807cdd0b4c909281e9fc7b32c9ee59">getDataPointer</a> (uint32_t mipMapLevel=0, uint32_t arrayMember=0, uint32_t faceNumber=0) const </td></tr>
-<tr class="memdesc:a27807cdd0b4c909281e9fc7b32c9ee59"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a (const) pointer into the raw texture's data. Can be offset to a specific array member, face and/or MIP Map levels. <a href="#a27807cdd0b4c909281e9fc7b32c9ee59">More...</a><br/></td></tr>
-<tr class="separator:a27807cdd0b4c909281e9fc7b32c9ee59"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a33f7b902245f989a616a6f5e6f9b1187"><td class="memItemLeft" align="right" valign="top">unsigned char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture.html#a33f7b902245f989a616a6f5e6f9b1187">getDataPointer</a> (uint32_t mipMapLevel=0, uint32_t arrayMember=0, uint32_t faceNumber=0)</td></tr>
-<tr class="memdesc:a33f7b902245f989a616a6f5e6f9b1187"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a pointer into the raw texture's data. Can be offset to a specific array member, face and/or MIP Map levels. <a href="#a33f7b902245f989a616a6f5e6f9b1187">More...</a><br/></td></tr>
-<tr class="separator:a33f7b902245f989a616a6f5e6f9b1187"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae68530de0566d807ec92d0db0286c0fc"><td class="memItemLeft" align="right" valign="top">const unsigned char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture.html#ae68530de0566d807ec92d0db0286c0fc">getDataPointer</a> (uint32_t mipMapLevel=0, uint32_t arrayMember=0, uint32_t face=0) const </td></tr>
+<tr class="memdesc:ae68530de0566d807ec92d0db0286c0fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a (const) pointer into the raw texture's data. Can be offset to a specific array member, face and/or MIP Map levels. <a href="#ae68530de0566d807ec92d0db0286c0fc">More...</a><br/></td></tr>
+<tr class="separator:ae68530de0566d807ec92d0db0286c0fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a45c3d7c47fe8507e1730a27039ba8b6d"><td class="memItemLeft" align="right" valign="top">unsigned char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture.html#a45c3d7c47fe8507e1730a27039ba8b6d">getDataPointer</a> (uint32_t mipMapLevel=0, uint32_t arrayMember=0, uint32_t face=0)</td></tr>
+<tr class="memdesc:a45c3d7c47fe8507e1730a27039ba8b6d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a pointer into the raw texture's data. Can be offset to a specific array member, face and/or MIP Map levels. <a href="#a45c3d7c47fe8507e1730a27039ba8b6d">More...</a><br/></td></tr>
+<tr class="separator:a45c3d7c47fe8507e1730a27039ba8b6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aeaf3f77da40c8245ea90df73ff1111e9"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#aeaf3f77da40c8245ea90df73ff1111e9">getDataSize</a> (int32_t mipLevel=pvrTextureAllMipMaps, bool allSurfaces=true, bool allFaces=true) const </td></tr>
 <tr class="memdesc:aeaf3f77da40c8245ea90df73ff1111e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the size in BYTES of the texture, given various input parameters. <a href="#aeaf3f77da40c8245ea90df73ff1111e9">More...</a><br/></td></tr>
 <tr class="separator:aeaf3f77da40c8245ea90df73ff1111e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -190,9 +193,12 @@ std::map&lt; uint32_t, <br class="typebreak"/>
 <tr class="memitem:a8cc8abcb39a043540ee5806b89294e84"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpvr_1_1_pixel_format.html">PixelFormat</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#a8cc8abcb39a043540ee5806b89294e84">getPixelFormat</a> () const </td></tr>
 <tr class="memdesc:a8cc8abcb39a043540ee5806b89294e84"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the pixel type ID of the texture. <a href="#a8cc8abcb39a043540ee5806b89294e84">More...</a><br/></td></tr>
 <tr class="separator:a8cc8abcb39a043540ee5806b89294e84"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abae2a69b2d557736af9ff050893d3a75"><td class="memItemLeft" align="right" valign="top">unsigned char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture.html#abae2a69b2d557736af9ff050893d3a75">getPixelPointer</a> (uint32_t x, uint32_t y, uint32_t z=0, uint32_t mipMapLevel=0, uint32_t arrayMember=0, uint32_t faceNumber=0)</td></tr>
-<tr class="memdesc:abae2a69b2d557736af9ff050893d3a75"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a pointer into the raw texture's data, offset to a specific pixel. DOES NOT WORK FOR COMPRESSED TEXTURES. <a href="#abae2a69b2d557736af9ff050893d3a75">More...</a><br/></td></tr>
-<tr class="separator:abae2a69b2d557736af9ff050893d3a75"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a88f9c1662ea35506822a33412deaf92c"><td class="memItemLeft" align="right" valign="top">unsigned char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture.html#a88f9c1662ea35506822a33412deaf92c">getPixelPointer</a> (uint32_t x, uint32_t y, uint32_t z=0, uint32_t mipMapLevel=0, uint32_t arrayMember=0, uint32_t face=0)</td></tr>
+<tr class="memdesc:a88f9c1662ea35506822a33412deaf92c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a pointer into the raw texture's data, offset to a specific pixel. Note that this does not work for compressed textures. <a href="#a88f9c1662ea35506822a33412deaf92c">More...</a><br/></td></tr>
+<tr class="separator:a88f9c1662ea35506822a33412deaf92c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b7e020e0919fcc69c7b7da72cb20b74"><td class="memItemLeft" align="right" valign="top">unsigned char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture.html#a4b7e020e0919fcc69c7b7da72cb20b74">getPixelPointerByUvw</a> (float u, float v, float w=0, uint32_t mipMapLevel=0, uint32_t arrayMember=0, <a class="el" href="namespacepvr.html#a87b409df225dee78541eb74988f4e20c">CubeFace</a> face=(<a class="el" href="namespacepvr.html#a87b409df225dee78541eb74988f4e20c">CubeFace</a>) 0)</td></tr>
+<tr class="memdesc:a4b7e020e0919fcc69c7b7da72cb20b74"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the pointer to the data of the closest texel to the provided uvw coordinates (right/down texel returned if coordinate is on a boundary). Note that this does not work for compressed textures. <a href="#a4b7e020e0919fcc69c7b7da72cb20b74">More...</a><br/></td></tr>
+<tr class="separator:a4b7e020e0919fcc69c7b7da72cb20b74"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a381d806b509c4b07cdb9229924fdf468"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture.html#a381d806b509c4b07cdb9229924fdf468">getPixelSize</a> () const </td></tr>
 <tr class="memdesc:a381d806b509c4b07cdb9229924fdf468"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the number of bytes size of each pixel in the texture. Not accurate for many compressed textures (e.g. ASTC) <a href="#a381d806b509c4b07cdb9229924fdf468">More...</a><br/></td></tr>
 <tr class="separator:a381d806b509c4b07cdb9229924fdf468"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -203,7 +209,14 @@ std::map&lt; uint32_t, <br class="typebreak"/>
 <tr class="memdesc:ade2e6da795c11aefc2bc8ae98f95ba25"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the width of the user specified MIP-Map level for the texture. <a href="#ade2e6da795c11aefc2bc8ae98f95ba25">More...</a><br/></td></tr>
 <tr class="separator:ade2e6da795c11aefc2bc8ae98f95ba25"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac5bda057c26fb767772415ed46c49998"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture.html#ac5bda057c26fb767772415ed46c49998">initializeWithHeader</a> (const <a class="el" href="classpvr_1_1_texture_header.html">TextureHeader</a> &amp;sHeader)</td></tr>
-<tr class="memdesc:ac5bda057c26fb767772415ed46c49998"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a texture using the information from a <a class="el" href="classpvr_1_1_texture.html" title="A 2D Texture asset, together with Information, Metadata and actual Pixel data. Only represents the ac...">Texture</a> header and preallocate memory for its data.  <a href="#ac5bda057c26fb767772415ed46c49998">More...</a><br/></td></tr>
+<tr class="memdesc:ac5bda057c26fb767772415ed46c49998"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a texture using the information from a <a class="el" href="classpvr_1_1_texture.html" title="A 2D Texture asset, together with Information, Metadata and actual Pixel data. Only represents the ac...">Texture</a> header and preallocate memory for its data. /summary&gt; </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">sHeader</td><td>A texture header describing the texture</td></tr>
+  </table>
+  </dd>
+</dl>
+ <a href="#ac5bda057c26fb767772415ed46c49998">More...</a><br/></td></tr>
 <tr class="separator:ac5bda057c26fb767772415ed46c49998"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a65e47c2529adeb18f7f6c78dc7133598"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#a65e47c2529adeb18f7f6c78dc7133598">isBumpMap</a> () const </td></tr>
 <tr class="memdesc:a65e47c2529adeb18f7f6c78dc7133598"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if this texture is bumpmap <a href="#a65e47c2529adeb18f7f6c78dc7133598">More...</a><br/></td></tr>
@@ -379,7 +392,7 @@ std::map&lt; uint32_t, std::map<br class="typebreak"/>
   </table>
   </dd>
 </dl>
-<p>When writing the texture out to a PVR file, it is often desirable to pad the meta data so that the start of the texture data aligns to a given boundary. Note - this should be called immediately before saving (in any case, before adding any metadata) as the value is worked out based on the current meta data size. </p>
+<p>When writing the texture out to a PVR file, it is often desirable to pad the meta data so that the start of the texture data aligns to a given boundary. Note - this should be called immediately before saving (in any case, before adding any metadata) as the value is worked out based on the current meta data size. /remarks&gt; </p>
 
 </div>
 </div>
@@ -488,6 +501,71 @@ std::map&lt; uint32_t, std::map<br class="typebreak"/>
 
 </div>
 </div>
+<a class="anchor" id="a21098a02ff1c57c9c1830a953c47df20"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned char* pvr::Texture::getCubemapPixel </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>mipMapLevel</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>arrayMember</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the pointer to the data for the direction (x,y,z) provided for the specific mip map level and array layer.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">x</td><td>The x component of the direction</td></tr>
+    <tr><td class="paramname">y</td><td>The y component of the direction</td></tr>
+    <tr><td class="paramname">z</td><td>The z component of the direction</td></tr>
+    <tr><td class="paramname">mipMapLevel</td><td>The mip map level for which to get the data pointer (default 0)</td></tr>
+    <tr><td class="paramname">arrayMember</td><td>The array member for which to get the data pointer (default 0)</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Raw pointer to the data for the direction specified.</dd></dl>
+
+</div>
+</div>
 <a class="anchor" id="a5c15051b3b6ad90a1716e5b54340535f"></a>
 <div class="memitem">
 <div class="memproto">
@@ -539,7 +617,7 @@ std::map&lt; uint32_t, std::map<br class="typebreak"/>
 
 </div>
 </div>
-<a class="anchor" id="a27807cdd0b4c909281e9fc7b32c9ee59"></a>
+<a class="anchor" id="ae68530de0566d807ec92d0db0286c0fc"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -559,7 +637,7 @@ std::map&lt; uint32_t, std::map<br class="typebreak"/>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">uint32_t&#160;</td>
-          <td class="paramname"><em>faceNumber</em> = <code>0</code>&#160;</td>
+          <td class="paramname"><em>face</em> = <code>0</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -574,7 +652,7 @@ std::map&lt; uint32_t, std::map<br class="typebreak"/>
   <table class="params">
     <tr><td class="paramname">mipMapLevel</td><td>The mip map level to get a pointer to (default 0)</td></tr>
     <tr><td class="paramname">arrayMember</td><td>The array member to get a pointer to (default 0)</td></tr>
-    <tr><td class="paramname">faceNumber</td><td>The cube face to get a pointer to (default 0)</td></tr>
+    <tr><td class="paramname">face</td><td>The cube face to get a pointer to (default 0)</td></tr>
   </table>
   </dd>
 </dl>
@@ -583,7 +661,7 @@ std::map&lt; uint32_t, std::map<br class="typebreak"/>
 
 </div>
 </div>
-<a class="anchor" id="a33f7b902245f989a616a6f5e6f9b1187"></a>
+<a class="anchor" id="a45c3d7c47fe8507e1730a27039ba8b6d"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -603,7 +681,7 @@ std::map&lt; uint32_t, std::map<br class="typebreak"/>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">uint32_t&#160;</td>
-          <td class="paramname"><em>faceNumber</em> = <code>0</code>&#160;</td>
+          <td class="paramname"><em>face</em> = <code>0</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -618,7 +696,7 @@ std::map&lt; uint32_t, std::map<br class="typebreak"/>
   <table class="params">
     <tr><td class="paramname">mipMapLevel</td><td>The mip map level for which to get the data pointer (default 0)</td></tr>
     <tr><td class="paramname">arrayMember</td><td>The array member for which to get the data pointer (default 0)</td></tr>
-    <tr><td class="paramname">faceNumber</td><td>The face for which to get the data pointer (default 0)</td></tr>
+    <tr><td class="paramname">face</td><td>The face for which to get the data pointer (default 0)</td></tr>
   </table>
   </dd>
 </dl>
@@ -669,12 +747,17 @@ std::map&lt; uint32_t, std::map<br class="typebreak"/>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">mipLevel</td><td>Specifies a mip level to check, 'c_pvrTextureAllMIPMapLevels' can be passed to Get the size of all MIP levels.</td></tr>
-    <tr><td class="paramname">allSurfaces</td><td>The Size of all surfaces is calculated if true, only a single surface if false. </td></tr>
+    <tr><td class="paramname">allSurfaces</td><td>The Size of all surfaces is calculated if true, only a single surface if false. /param&gt; <dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
     <tr><td class="paramname">allFaces</td><td>The Size of all faces is calculated if true, only a single face if false.</td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Return the size in BYTES of the specified texture area.</dd></dl>
+</td></tr>
+  </table>
+  </dd>
+</dl>
 <p>User can retrieve the size of either all surfaces or a single surface, all faces or a single face and all MIP-Maps or a single specified MIP level.</p>
 
 </div>
@@ -1198,7 +1281,7 @@ std::map&lt; uint32_t, std::map<br class="typebreak"/>
 
 </div>
 </div>
-<a class="anchor" id="abae2a69b2d557736af9ff050893d3a75"></a>
+<a class="anchor" id="a88f9c1662ea35506822a33412deaf92c"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -1239,7 +1322,7 @@ std::map&lt; uint32_t, std::map<br class="typebreak"/>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">uint32_t&#160;</td>
-          <td class="paramname"><em>faceNumber</em> = <code>0</code>&#160;</td>
+          <td class="paramname"><em>face</em> = <code>0</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1254,7 +1337,7 @@ std::map&lt; uint32_t, std::map<br class="typebreak"/>
 </table>
 </div><div class="memdoc">
 
-<p>Returns a pointer into the raw texture's data, offset to a specific pixel. DOES NOT WORK FOR COMPRESSED TEXTURES.</p>
+<p>Returns a pointer into the raw texture's data, offset to a specific pixel. Note that this does not work for compressed textures.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">x</td><td>The x position of the pointer</td></tr>
@@ -1262,12 +1345,85 @@ std::map&lt; uint32_t, std::map<br class="typebreak"/>
     <tr><td class="paramname">z</td><td>The z position of the pointer (default 0)</td></tr>
     <tr><td class="paramname">mipMapLevel</td><td>The mip map level for which to get the data pointer (default 0)</td></tr>
     <tr><td class="paramname">arrayMember</td><td>The array member for which to get the data pointer (default 0)</td></tr>
-    <tr><td class="paramname">faceNumber</td><td>The face for which to get the data pointer (default 0)</td></tr>
+    <tr><td class="paramname">face</td><td>The face for which to get the data pointer (default 0). The number is equal to the value of the corresponding CubeFace enum.</td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Raw pointer to a location in the texture.</dd></dl>
 <p>The data is contiguous so that the entire texture (all mips, array members and faces) can always be accessed from any pointer. Equivalent to getDataPointer(mipMapLevel, arrayMember, faceNumber) + [char offset of pixel (x,y,z)]</p>
+
+</div>
+</div>
+<a class="anchor" id="a4b7e020e0919fcc69c7b7da72cb20b74"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned char* pvr::Texture::getPixelPointerByUvw </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>u</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>v</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>w</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>mipMapLevel</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>arrayMember</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacepvr.html#a87b409df225dee78541eb74988f4e20c">CubeFace</a>&#160;</td>
+          <td class="paramname"><em>face</em> = <code>(<a class="el" href="namespacepvr.html#a87b409df225dee78541eb74988f4e20c">CubeFace</a>)0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the pointer to the data of the closest texel to the provided uvw coordinates (right/down texel returned if coordinate is on a boundary). Note that this does not work for compressed textures.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">u</td><td>The u position [0..1] of the pointer. Clamped to [0..1]</td></tr>
+    <tr><td class="paramname">v</td><td>The v position [0..1] of the pointer. Clamped to [0..1]</td></tr>
+    <tr><td class="paramname">w</td><td>Thew position [0..1] of the pointer (default 0). Clamped to [0..1]</td></tr>
+    <tr><td class="paramname">mipMapLevel</td><td>The mip map level for which to get the data pointer (default 0)</td></tr>
+    <tr><td class="paramname">arrayMember</td><td>The array member for which to get the data pointer (default 0)</td></tr>
+    <tr><td class="paramname">face</td><td>The face for which to get the data pointer (default 0)</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Raw pointer to a location in the texture.</dd></dl>
+<p>The data is contiguous so that the entire texture (all mips, array members and faces) can always be accessed from any pointer.</p>
 
 </div>
 </div>
@@ -1285,7 +1441,7 @@ std::map&lt; uint32_t, std::map<br class="typebreak"/>
 </div><div class="memdoc">
 
 <p>Get the number of bytes size of each pixel in the texture. Not accurate for many compressed textures (e.g. ASTC)</p>
-<dl class="section return"><dt>Returns</dt><dd>he number of bytes size of each pixel in the texture. May return zero for some compressed formats. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>he number of bytes size of each pixel in the texture. May return zero for some compressed formats. /returns&gt; </dd></dl>
 
 </div>
 </div>
@@ -1331,12 +1487,17 @@ std::map&lt; uint32_t, std::map<br class="typebreak"/>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">mipMapLevel</td><td>Specifies a MIP level to check, 'c_pvrTextureAllMIPMapLevels' can be passed to Get the size of all MIP levels.</td></tr>
-    <tr><td class="paramname">allSurfaces</td><td>The Size of all surfaces is calculated if true, only a single surface if false. </td></tr>
+    <tr><td class="paramname">allSurfaces</td><td>The Size of all surfaces is calculated if true, only a single surface if false. /param&gt; <dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
     <tr><td class="paramname">allFaces</td><td>The Size of all faces is calculated if true, only a single face if false.</td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Return the size in PIXELS of the specified texture area.</dd></dl>
+</td></tr>
+  </table>
+  </dd>
+</dl>
 <p>User can retrieve the total size of either all surfaces or a single surface, all faces or a single face and all MIP-Maps or a single specified MIP level. All of these</p>
 
 </div>
@@ -1388,13 +1549,14 @@ std::map&lt; uint32_t, std::map<br class="typebreak"/>
       </table>
 </div><div class="memdoc">
 
-<p>Create a texture using the information from a <a class="el" href="classpvr_1_1_texture.html" title="A 2D Texture asset, together with Information, Metadata and actual Pixel data. Only represents the ac...">Texture</a> header and preallocate memory for its data. </p>
+<p>Create a texture using the information from a <a class="el" href="classpvr_1_1_texture.html" title="A 2D Texture asset, together with Information, Metadata and actual Pixel data. Only represents the ac...">Texture</a> header and preallocate memory for its data. /summary&gt; </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">sHeader</td><td>A texture header describing the texture</td></tr>
   </table>
   </dd>
 </dl>
+</p>
 <p>Creates a new texture based on a texture header, pre-allocating the correct amount of memory.</p>
 
 </div>

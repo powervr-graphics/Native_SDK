@@ -101,16 +101,14 @@ struct NativeWindowHandle_
 	}
 };
 
-/// <summary>Pointer to a struct of platform handles. Used to pass around the undefined NativePlatformHandles_ struct.
-/// </summary>
-typedef RefCountedResource<NativePlatformHandles_> NativePlatformHandles;
+/// <summary>Pointer to a struct of platform handles. Used to pass around the undefined NativePlatformHandles_ struct.</summary>
+typedef std::shared_ptr<NativePlatformHandles_> NativePlatformHandles;
 
-/// <summary>Pointer to a struct of platform handles. Used to pass around the undefined NativePlatformHandles_ struct.
-/// </summary>
-typedef RefCountedResource<NativeDisplayHandle_> NativeDisplayHandle;
+/// <summary>Pointer to a struct of platform handles. Used to pass around the undefined NativePlatformHandles_ struct.</summary>
+typedef std::shared_ptr<NativeDisplayHandle_> NativeDisplayHandle;
 
 /// <summary>Pointer to a struct of Shared context handles. Used to pass around the undefined NativeSharedPlatformHandles_
 /// struct</summary>
-typedef RefCountedResource<NativeSharedPlatformHandles_> NativeSharedPlatformHandles;
+typedef std::shared_ptr<NativeSharedPlatformHandles_> NativeSharedPlatformHandles;
 } // namespace platform
 } // namespace pvr

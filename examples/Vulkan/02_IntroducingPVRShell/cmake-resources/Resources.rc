@@ -1,4 +1,4 @@
-//Microsoft eMbedded Visual C++ generated resource script.
+// Microsoft Visual C++ generated resource script.
 //
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
@@ -58,9 +58,10 @@ END
 // RCDATA
 //
 /////////////////////////////////////////////////////////////////////////////
-// RCDATA: Vulkan Spir-V shaders(glsl)
-FragShader.fsh.spv		RCDATA		"..\\FragShader.fsh.spv"
-VertShader.vsh.spv		RCDATA		"..\\VertShader.vsh.spv"
+FragShader.fsh RCDATA "..\\FragShader.fsh"
+VertShader.vsh RCDATA "..\\VertShader.vsh"
+FragShader.fsh.spv RCDATA "..\\FragShader.fsh.spv"
+VertShader.vsh.spv RCDATA "..\\VertShader.vsh.spv"
 
 #endif    // English (United Kingdom) resources
 /////////////////////////////////////////////////////////////////////////////

@@ -90,7 +90,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 
-<p>Raw internal structure of the <a class="el" href="classpvr_1_1assets_1_1_model_1_1_node.html" title="The Node represents a Mesh, Camera or Light. A Node has its own parenting, material, animation and custom user data. The tree-structure assumes transformational hierarchy (as usual), so parent transformations should be applied to children. Transformations are expressed through Animation objects (a static transform is an animation with a single frame). Note: Node ID and MeshID can sometimes be confusing: They will always be the same (when a MeshID makes sense) because Meshes are always laid out first in the internal list of Nodes. ">Node</a>. 
+<p>Raw internal structure of the <a class="el" href="classpvr_1_1assets_1_1_model_1_1_node.html" title="The Node represents a Mesh, Camera or Light. A Node has its own parenting, material, animation and custom user data. The tree-structure assumes transformational hierarchy (as usual), so parent transformations should be applied to children. Transformations are expressed through Animation objects (a static transform is an animation with a single frame). Note: Node ID and MeshID can sometimes be confusing: They will always be the same (when a MeshID makes sense) because Meshes are always laid out first in the internal list of Nodes.">Node</a>. 
  <a href="structpvr_1_1assets_1_1_model_1_1_node_1_1_internal_data.html#details">More...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
@@ -102,13 +102,17 @@ Public Types</h2></td></tr>
 <a class="el" href="structpvr_1_1assets_1_1_model_1_1_node_1_1_internal_data.html#a701ea5273f31220a00b09fc2979d07acaf77612a713ad5bd566de4aa8b3479c21">Translate</a> = 0x04, 
 <br/>
 &#160;&#160;<a class="el" href="structpvr_1_1assets_1_1_model_1_1_node_1_1_internal_data.html#a701ea5273f31220a00b09fc2979d07acaca4a5378aedd97731e3438e8848796e7">SRT</a> = Scale | Rotate | Translate, 
-<b>Matrix</b> = 64
+<a class="el" href="structpvr_1_1assets_1_1_model_1_1_node_1_1_internal_data.html#a701ea5273f31220a00b09fc2979d07acae5e76c9e9b3ba0ff4be849251110cbb8">Matrix</a> = 64
 <br/>
  }</td></tr>
+<tr class="memdesc:a701ea5273f31220a00b09fc2979d07ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transformation flags. <a href="structpvr_1_1assets_1_1_model_1_1_node_1_1_internal_data.html#a701ea5273f31220a00b09fc2979d07ac">More...</a><br/></td></tr>
 <tr class="separator:a701ea5273f31220a00b09fc2979d07ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:aaa4c0c8579515bee166ff2be3aa486cc"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1assets_1_1_model_1_1_node_1_1_internal_data.html#aaa4c0c8579515bee166ff2be3aa486cc">InternalData</a> ()</td></tr>
+<tr class="memdesc:aaa4c0c8579515bee166ff2be3aa486cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default constructor <a href="#aaa4c0c8579515bee166ff2be3aa486cc">More...</a><br/></td></tr>
+<tr class="separator:aaa4c0c8579515bee166ff2be3aa486cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8b7233b7d2872ea85c25080180d5645a"><td class="memItemLeft" align="right" valign="top">glm::quat &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1assets_1_1_model_1_1_node_1_1_internal_data.html#a8b7233b7d2872ea85c25080180d5645a">getFrameRotationAnimation</a> ()</td></tr>
 <tr class="memdesc:a8b7233b7d2872ea85c25080180d5645a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get current frame rotation animation <a href="#a8b7233b7d2872ea85c25080180d5645a">More...</a><br/></td></tr>
 <tr class="separator:a8b7233b7d2872ea85c25080180d5645a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -153,7 +157,8 @@ float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="str
 <tr class="memdesc:a5e18a4df3a2bdf54dd735004b6f119c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">contains interpolated SRT or Matrix for an frame else single Matrix for non animated node. Rotations are stored as quaternion in the format xyzw <br/></td></tr>
 <tr class="separator:a5e18a4df3a2bdf54dd735004b6f119c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aed6e8ac90e9e9de2f9cc4ef0d6c93791"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aed6e8ac90e9e9de2f9cc4ef0d6c93791"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasAnimation</b></td></tr>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1assets_1_1_model_1_1_node_1_1_internal_data.html#aed6e8ac90e9e9de2f9cc4ef0d6c93791">hasAnimation</a></td></tr>
+<tr class="memdesc:aed6e8ac90e9e9de2f9cc4ef0d6c93791"><td class="mdescLeft">&#160;</td><td class="mdescRight">Has animation data. <br/></td></tr>
 <tr class="separator:aed6e8ac90e9e9de2f9cc4ef0d6c93791"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aca192418ea4f9b8c24b5706c62cd2599"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aca192418ea4f9b8c24b5706c62cd2599"></a>
 uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1assets_1_1_model_1_1_node_1_1_internal_data.html#aca192418ea4f9b8c24b5706c62cd2599">materialIndex</a></td></tr>
@@ -165,19 +170,19 @@ StringHash&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href
 <tr class="separator:af76d8f173d35b7a999da2373a798da57"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a72f9ae63672cb73682d7e8ac68728d3c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a72f9ae63672cb73682d7e8ac68728d3c"></a>
 uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1assets_1_1_model_1_1_node_1_1_internal_data.html#a72f9ae63672cb73682d7e8ac68728d3c">objectIndex</a></td></tr>
-<tr class="memdesc:a72f9ae63672cb73682d7e8ac68728d3c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Index into mesh, light or camera array, depending on which object list contains this <a class="el" href="classpvr_1_1assets_1_1_model_1_1_node.html" title="The Node represents a Mesh, Camera or Light. A Node has its own parenting, material, animation and custom user data. The tree-structure assumes transformational hierarchy (as usual), so parent transformations should be applied to children. Transformations are expressed through Animation objects (a static transform is an animation with a single frame). Note: Node ID and MeshID can sometimes be confusing: They will always be the same (when a MeshID makes sense) because Meshes are always laid out first in the internal list of Nodes. ">Node</a>. <br/></td></tr>
+<tr class="memdesc:a72f9ae63672cb73682d7e8ac68728d3c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Index into mesh, light or camera array, depending on which object list contains this <a class="el" href="classpvr_1_1assets_1_1_model_1_1_node.html" title="The Node represents a Mesh, Camera or Light. A Node has its own parenting, material, animation and custom user data. The tree-structure assumes transformational hierarchy (as usual), so parent transformations should be applied to children. Transformations are expressed through Animation objects (a static transform is an animation with a single frame). Note: Node ID and MeshID can sometimes be confusing: They will always be the same (when a MeshID makes sense) because Meshes are always laid out first in the internal list of Nodes.">Node</a>. <br/></td></tr>
 <tr class="separator:a72f9ae63672cb73682d7e8ac68728d3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0baf9be88dab02f2b4aef047a29b4ec7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0baf9be88dab02f2b4aef047a29b4ec7"></a>
 uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1assets_1_1_model_1_1_node_1_1_internal_data.html#a0baf9be88dab02f2b4aef047a29b4ec7">parentIndex</a></td></tr>
-<tr class="memdesc:a0baf9be88dab02f2b4aef047a29b4ec7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Index into <a class="el" href="classpvr_1_1assets_1_1_model_1_1_node.html" title="The Node represents a Mesh, Camera or Light. A Node has its own parenting, material, animation and custom user data. The tree-structure assumes transformational hierarchy (as usual), so parent transformations should be applied to children. Transformations are expressed through Animation objects (a static transform is an animation with a single frame). Note: Node ID and MeshID can sometimes be confusing: They will always be the same (when a MeshID makes sense) because Meshes are always laid out first in the internal list of Nodes. ">Node</a> array; recursively apply ancestor's transforms after this instance's. <br/></td></tr>
+<tr class="memdesc:a0baf9be88dab02f2b4aef047a29b4ec7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Index into <a class="el" href="classpvr_1_1assets_1_1_model_1_1_node.html" title="The Node represents a Mesh, Camera or Light. A Node has its own parenting, material, animation and custom user data. The tree-structure assumes transformational hierarchy (as usual), so parent transformations should be applied to children. Transformations are expressed through Animation objects (a static transform is an animation with a single frame). Note: Node ID and MeshID can sometimes be confusing: They will always be the same (when a MeshID makes sense) because Meshes are always laid out first in the internal list of Nodes.">Node</a> array; recursively apply ancestor's transforms after this instance's. <br/></td></tr>
 <tr class="separator:a0baf9be88dab02f2b4aef047a29b4ec7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af821c70558ddcb10d83df7f194b07b16"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af821c70558ddcb10d83df7f194b07b16"></a>
 glm::quat&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1assets_1_1_model_1_1_node_1_1_internal_data.html#af821c70558ddcb10d83df7f194b07b16">rotation</a></td></tr>
-<tr class="memdesc:af821c70558ddcb10d83df7f194b07b16"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classpvr_1_1assets_1_1_model_1_1_node.html" title="The Node represents a Mesh, Camera or Light. A Node has its own parenting, material, animation and custom user data. The tree-structure assumes transformational hierarchy (as usual), so parent transformations should be applied to children. Transformations are expressed through Animation objects (a static transform is an animation with a single frame). Note: Node ID and MeshID can sometimes be confusing: They will always be the same (when a MeshID makes sense) because Meshes are always laid out first in the internal list of Nodes. ">Node</a>'s local space rotation. <br/></td></tr>
+<tr class="memdesc:af821c70558ddcb10d83df7f194b07b16"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classpvr_1_1assets_1_1_model_1_1_node.html" title="The Node represents a Mesh, Camera or Light. A Node has its own parenting, material, animation and custom user data. The tree-structure assumes transformational hierarchy (as usual), so parent transformations should be applied to children. Transformations are expressed through Animation objects (a static transform is an animation with a single frame). Note: Node ID and MeshID can sometimes be confusing: They will always be the same (when a MeshID makes sense) because Meshes are always laid out first in the internal list of Nodes.">Node</a>'s local space rotation. <br/></td></tr>
 <tr class="separator:af821c70558ddcb10d83df7f194b07b16"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad5c1857dda5bd703c0cbba9a0239bd4a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad5c1857dda5bd703c0cbba9a0239bd4a"></a>
 glm::vec3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1assets_1_1_model_1_1_node_1_1_internal_data.html#ad5c1857dda5bd703c0cbba9a0239bd4a">scale</a></td></tr>
-<tr class="memdesc:ad5c1857dda5bd703c0cbba9a0239bd4a"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classpvr_1_1assets_1_1_model_1_1_node.html" title="The Node represents a Mesh, Camera or Light. A Node has its own parenting, material, animation and custom user data. The tree-structure assumes transformational hierarchy (as usual), so parent transformations should be applied to children. Transformations are expressed through Animation objects (a static transform is an animation with a single frame). Note: Node ID and MeshID can sometimes be confusing: They will always be the same (when a MeshID makes sense) because Meshes are always laid out first in the internal list of Nodes. ">Node</a>'s local space scale. <br/></td></tr>
+<tr class="memdesc:ad5c1857dda5bd703c0cbba9a0239bd4a"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classpvr_1_1assets_1_1_model_1_1_node.html" title="The Node represents a Mesh, Camera or Light. A Node has its own parenting, material, animation and custom user data. The tree-structure assumes transformational hierarchy (as usual), so parent transformations should be applied to children. Transformations are expressed through Animation objects (a static transform is an animation with a single frame). Note: Node ID and MeshID can sometimes be confusing: They will always be the same (when a MeshID makes sense) because Meshes are always laid out first in the internal list of Nodes.">Node</a>'s local space scale. <br/></td></tr>
 <tr class="separator:ad5c1857dda5bd703c0cbba9a0239bd4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a384f8d7b5188213b0466ca01e6dc64be"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a384f8d7b5188213b0466ca01e6dc64be"></a>
 int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1assets_1_1_model_1_1_node_1_1_internal_data.html#a384f8d7b5188213b0466ca01e6dc64be">skin</a></td></tr>
@@ -189,7 +194,7 @@ uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <tr class="separator:a4b1f87ae329441c3879fcc8021689866"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab82ad841034d2f103c2c35f89e569c9f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab82ad841034d2f103c2c35f89e569c9f"></a>
 glm::vec3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1assets_1_1_model_1_1_node_1_1_internal_data.html#ab82ad841034d2f103c2c35f89e569c9f">translation</a></td></tr>
-<tr class="memdesc:ab82ad841034d2f103c2c35f89e569c9f"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classpvr_1_1assets_1_1_model_1_1_node.html" title="The Node represents a Mesh, Camera or Light. A Node has its own parenting, material, animation and custom user data. The tree-structure assumes transformational hierarchy (as usual), so parent transformations should be applied to children. Transformations are expressed through Animation objects (a static transform is an animation with a single frame). Note: Node ID and MeshID can sometimes be confusing: They will always be the same (when a MeshID makes sense) because Meshes are always laid out first in the internal list of Nodes. ">Node</a>'s local space translation. <br/></td></tr>
+<tr class="memdesc:ab82ad841034d2f103c2c35f89e569c9f"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classpvr_1_1assets_1_1_model_1_1_node.html" title="The Node represents a Mesh, Camera or Light. A Node has its own parenting, material, animation and custom user data. The tree-structure assumes transformational hierarchy (as usual), so parent transformations should be applied to children. Transformations are expressed through Animation objects (a static transform is an animation with a single frame). Note: Node ID and MeshID can sometimes be confusing: They will always be the same (when a MeshID makes sense) because Meshes are always laid out first in the internal list of Nodes.">Node</a>'s local space translation. <br/></td></tr>
 <tr class="separator:ab82ad841034d2f103c2c35f89e569c9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa806e568e8f9adee167c9fa759a0d003"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa806e568e8f9adee167c9fa759a0d003"></a>
 UInt8Buffer&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1assets_1_1_model_1_1_node_1_1_internal_data.html#aa806e568e8f9adee167c9fa759a0d003">userData</a></td></tr>
@@ -197,7 +202,7 @@ UInt8Buffer&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 <tr class="separator:aa806e568e8f9adee167c9fa759a0d003"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Raw internal structure of the <a class="el" href="classpvr_1_1assets_1_1_model_1_1_node.html" title="The Node represents a Mesh, Camera or Light. A Node has its own parenting, material, animation and custom user data. The tree-structure assumes transformational hierarchy (as usual), so parent transformations should be applied to children. Transformations are expressed through Animation objects (a static transform is an animation with a single frame). Note: Node ID and MeshID can sometimes be confusing: They will always be the same (when a MeshID makes sense) because Meshes are always laid out first in the internal list of Nodes. ">Node</a>.</p>
+<div class="textblock"><p>Raw internal structure of the <a class="el" href="classpvr_1_1assets_1_1_model_1_1_node.html" title="The Node represents a Mesh, Camera or Light. A Node has its own parenting, material, animation and custom user data. The tree-structure assumes transformational hierarchy (as usual), so parent transformations should be applied to children. Transformations are expressed through Animation objects (a static transform is an animation with a single frame). Note: Node ID and MeshID can sometimes be confusing: They will always be the same (when a MeshID makes sense) because Meshes are always laid out first in the internal list of Nodes.">Node</a>.</p>
 </div><h2 class="groupheader">Member Enumeration Documentation</h2>
 <a class="anchor" id="a701ea5273f31220a00b09fc2979d07ac"></a>
 <div class="memitem">
@@ -208,6 +213,8 @@ UInt8Buffer&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Transformation flags.</p>
 <table class="fieldtable">
 <tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><em><a class="anchor" id="a701ea5273f31220a00b09fc2979d07aca9cdb824ec6882736796c1c84c162efd2"></a>Identity</em>&#160;</td><td class="fielddoc">
 <p>Transformation Identity. </p>
@@ -224,7 +231,36 @@ UInt8Buffer&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 <tr><td class="fieldname"><em><a class="anchor" id="a701ea5273f31220a00b09fc2979d07acaca4a5378aedd97731e3438e8848796e7"></a>SRT</em>&#160;</td><td class="fielddoc">
 <p>SRT. </p>
 </td></tr>
+<tr><td class="fieldname"><em><a class="anchor" id="a701ea5273f31220a00b09fc2979d07acae5e76c9e9b3ba0ff4be849251110cbb8"></a>Matrix</em>&#160;</td><td class="fielddoc">
+<p>has matrix </p>
+</td></tr>
 </table>
+
+</div>
+</div>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a class="anchor" id="aaa4c0c8579515bee166ff2be3aa486cc"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structpvr_1_1assets_1_1_model_1_1_node_1_1_internal_data.html">pvr::assets::Model::Node::InternalData::InternalData</a> </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Default constructor</p>
 
 </div>
 </div>

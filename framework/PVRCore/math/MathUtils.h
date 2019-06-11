@@ -13,30 +13,6 @@ needs.
 #include "PVRCore/glm.h"
 
 namespace pvr {
-//!\cond NO_DOXYGEN
-#if (0)
-namespace internal {
-typedef glm::simdMat4 optimizedMat4;
-typedef glm::simdVec4 optimizedVec4;
-inline glm::mat4x4 toMat4(const optimizedMat4& mat)
-{
-	return glm::mat4_cast(mat);
-}
-} // namespace internal
-#else
-
-namespace internal {
-typedef glm::mat4 optimizedMat4;
-typedef glm::vec4 optimizedVec4;
-inline glm::mat4x4 toMat4(const optimizedMat4& mat)
-{
-	return mat;
-}
-
-} // namespace internal
-#endif
-//!\endcond
-
 namespace math {
 
 /// <summary>Calculate the Greatest Common Divisor of two numbers (the larger number that,
@@ -125,10 +101,8 @@ inline int32_t makePowerOfTwoLow(int32_t iVal)
 	iTmp >>= 1;
 }
 
-/// <summary>Convert a normalized device coordinate (-1..1) to a number of pixels from the start (left or top)
-/// </summary>
-/// <param name="ndc">The normalised coordinate along the direction in question (same direction as screenSize)
-/// </param>
+/// <summary>Convert a normalized device coordinate (-1..1) to a number of pixels from the start (left or top)</summary>
+/// <param name="ndc">The normalised coordinate along the direction in question (same direction as screenSize)</param>
 /// <param name="screenSize">The size of the screen along the direction in question (same as ndc)</param>
 /// <returns>Pixel coordinates from normalized device coordinates</returns>
 inline int32_t ndcToPixel(float ndc, int32_t screenSize)
@@ -146,8 +120,7 @@ inline float pixelToNdc(int32_t pixelCoord, int32_t screenSize)
 	return (2.f / screenSize) * (pixelCoord - screenSize * .5f);
 }
 
-/// <summary>Performs quadratic interpolation between two points, beginning with a faster rate and slowing down.
-/// </summary>
+/// <summary>Performs quadratic interpolation between two points, beginning with a faster rate and slowing down.</summary>
 /// <param name="start">The starting point.</param>
 /// <param name="end">The end point</param>
 /// <param name="factor">Current LINEAR interpolation factor, from 0..1</param>0
@@ -159,8 +132,7 @@ inline float quadraticEaseOut(float start, float end, float factor)
 	return ((start - end) * fTInv * fTInv) + end;
 }
 
-/// <summary>Performs quadratic interpolation between two points, beginning with a slow rate and speeding up.
-/// </summary>
+/// <summary>Performs quadratic interpolation between two points, beginning with a slow rate and speeding up.</summary>
 /// <param name="start">The starting point.</param>
 /// <param name="end">The end point</param>
 /// <param name="factor">Interpolation factor. At 0, returns start. At 1, returns end. Closer to 0, the rate of change is
@@ -171,7 +143,7 @@ inline float quadraticEaseIn(float start, float end, float factor)
 	return ((end - start) * factor * factor) + start;
 }
 
-/// <summary>Performs line -to - plane intersection </summary>
+/// <summary>Performs line -to - plane intersection</summary>
 /// <typeparam name="genType">A glm:: vector type. Otherwise, a type with the following
 /// operations defined: A typename member value_type (type of scalar), +/- (vector add/mul), / (divide
 /// by scalar), and a dot() function in either the global or glm:: namespace</typeparam>
@@ -183,7 +155,7 @@ inline float quadraticEaseIn(float start, float end, float factor)
 /// will contain the signed distance from <paramRef name="origin"> towards <paramRef name="dir"> of
 /// the intersection point.</param>
 /// <param name="epsilon">For any comparison calculations, any value smaller than that will be considered
-/// zero (otherwise, if two numbers difference is smaller than this, they are considered equal) </param>
+/// zero (otherwise, if two numbers difference is smaller than this, they are considered equal)</param>
 /// <returns>True if the line and plane intersect, otherwise false</returns>
 template<typename genType>
 bool intersectLinePlane(genType const& origin, genType const& dir, genType const& planeOrigin, genType const& planeNormal, typename genType::value_type& intersectionDistance,
@@ -270,25 +242,23 @@ namespace {
 inline void addCoefficients(const uint64_t pascalSum, const uint32_t halfCoefficientsMinusOne, const uint32_t numCoefficients, const std::vector<uint64_t>& coefficients,
 	std::vector<double>& weights, std::vector<double>& offsets)
 {
+	// Handle cases where the coefficients vector contains coefficients which are to be truncated. i.e. we get rid of the outer set of coefficients
 	uint32_t unneededCoefficients = static_cast<uint32_t>((coefficients.size() - numCoefficients) / 2);
 	uint32_t i = unneededCoefficients;
 	for (; i < halfCoefficientsMinusOne; i++)
 	{
-		double currentWeight = static_cast<double>(coefficients[i]) / pascalSum;
-		weights.push_back(currentWeight);
+		weights.emplace_back(static_cast<double>(coefficients[i]) / pascalSum);
 		double offset = static_cast<int32_t>(i) - static_cast<int32_t>(halfCoefficientsMinusOne);
-		offsets.push_back(offset);
+		offsets.emplace_back(offset);
 	}
 
-	double currentWeight = static_cast<double>(coefficients[i]) / pascalSum;
-	weights.push_back(currentWeight);
-	offsets.push_back(static_cast<double>(0));
+	weights.emplace_back(static_cast<double>(coefficients[i]) / pascalSum);
+	offsets.emplace_back(static_cast<double>(0));
 
 	for (i = halfCoefficientsMinusOne + 1; i < numCoefficients + unneededCoefficients; i++)
 	{
-		double currentWeight = static_cast<double>(coefficients[i]) / pascalSum;
-		weights.push_back(currentWeight);
-		offsets.push_back(static_cast<double>(i - halfCoefficientsMinusOne));
+		weights.emplace_back(static_cast<double>(coefficients[i]) / pascalSum);
+		offsets.emplace_back(static_cast<double>(i - halfCoefficientsMinusOne));
 	}
 }
 } // namespace
@@ -310,20 +280,19 @@ inline uint64_t generatePascalTriangleRow(const uint32_t row, std::vector<uint64
 	//       1 1    row 1 ... sum = 2
 	//      1 2 1   row 2 ... sum = 4
 	//     1 3 3 1  row 3 ... sum = 8
-
-	pascalCoefficients.push_back(1);
+	pascalCoefficients.emplace_back(1);
 	uint64_t sum = pascalCoefficients.back();
 	for (uint32_t i = 0; i < row; i++)
 	{
 		uint64_t val = pascalCoefficients[i] * (row - i) / (i + 1);
-		pascalCoefficients.push_back(val);
+		pascalCoefficients.emplace_back(val);
 		sum += pascalCoefficients.back();
 	}
 
 	return sum;
 }
 
-/// <summary>Adjust a given set of Gaussian weights and offset to be "linearly samplerable" meaning we can achieve the same Gaussian Blur using fewer texture samples using Linear
+/// <summary>Adjust a given set of Gaussian weights and offset to be "linearly samplable" meaning we can achieve the same Gaussian Blur using fewer texture samples using Linear
 /// Sampling than would be required if not using Linear Sampling when sampling using the offsets</summary>
 /// <param name="halfCoefficientsMinusOne">The row of the Pascal to generate coefficients with the first row being the 0th.</param>
 /// <param name="weights">A vector containing the Gaussian weights for the given kernel size.</param>
@@ -337,21 +306,21 @@ inline void adjustOffsetsAndWeightsForLinearSampling(const uint32_t halfCoeffici
 	if (halfCoefficientsMinusOne % 2 == 0)
 	{
 		uint32_t i = 0;
-		for (; i < halfCoefficientsMinusOne - 1; i += 2)
+		for (; i < static_cast<uint32_t>(std::max(static_cast<int32_t>(halfCoefficientsMinusOne) - 1, 0)); i += 2)
 		{
-			adjustedWeights.push_back(weights[i] + weights[i + 1]);
+			adjustedWeights.emplace_back(weights[i] + weights[i + 1]);
 			double adjustedOffset = ((offsets[i] * weights[i]) + (offsets[i + 1] * weights[i + 1])) / adjustedWeights.back();
-			adjustedOffsets.push_back(adjustedOffset);
+			adjustedOffsets.emplace_back(adjustedOffset);
 		}
 
-		adjustedWeights.push_back(weights[halfCoefficientsMinusOne]);
-		adjustedOffsets.push_back(0.0f);
+		adjustedWeights.emplace_back(weights[halfCoefficientsMinusOne]);
+		adjustedOffsets.emplace_back(0.0f);
 
 		for (i = halfCoefficientsMinusOne + 1; i < offsets.size(); i += 2)
 		{
-			adjustedWeights.push_back(weights[i] + weights[i + 1]);
+			adjustedWeights.emplace_back(weights[i] + weights[i + 1]);
 			double adjustedOffset = ((offsets[i] * weights[i]) + (offsets[i + 1] * weights[i + 1])) / adjustedWeights.back();
-			adjustedOffsets.push_back(adjustedOffset);
+			adjustedOffsets.emplace_back(adjustedOffset);
 		}
 	}
 	else // otherwise we have to duplicate the central sample *but* this means we can handle 3x3 using 2x2 samples
@@ -362,15 +331,15 @@ inline void adjustOffsetsAndWeightsForLinearSampling(const uint32_t halfCoeffici
 			double adjustedOffset = 0.0;
 			if (i == halfCoefficientsMinusOne - 1)
 			{
-				adjustedWeights.push_back(weights[i] + weights[i + 1] * 0.5);
+				adjustedWeights.emplace_back(weights[i] + weights[i + 1] * 0.5);
 				adjustedOffset = ((offsets[i] * weights[i]) + (offsets[i + 1] * weights[i + 1] * 0.5)) / adjustedWeights.back();
 			}
 			else
 			{
-				adjustedWeights.push_back(weights[i] + weights[i + 1]);
+				adjustedWeights.emplace_back(weights[i] + weights[i + 1]);
 				adjustedOffset = ((offsets[i] * weights[i]) + (offsets[i + 1] * weights[i + 1])) / adjustedWeights.back();
 			}
-			adjustedOffsets.push_back(adjustedOffset);
+			adjustedOffsets.emplace_back(adjustedOffset);
 		}
 
 		for (i = halfCoefficientsMinusOne; i < offsets.size(); i += 2)
@@ -378,15 +347,15 @@ inline void adjustOffsetsAndWeightsForLinearSampling(const uint32_t halfCoeffici
 			double adjustedOffset = 0.0;
 			if (i == halfCoefficientsMinusOne)
 			{
-				adjustedWeights.push_back(weights[i] * 0.5 + weights[i + 1]);
+				adjustedWeights.emplace_back(weights[i] * 0.5 + weights[i + 1]);
 				adjustedOffset = ((offsets[i] * weights[i] * 0.5) + (offsets[i + 1] * weights[i + 1])) / adjustedWeights.back();
 			}
 			else
 			{
-				adjustedWeights.push_back(weights[i] + weights[i + 1]);
+				adjustedWeights.emplace_back(weights[i] + weights[i + 1]);
 				adjustedOffset = ((offsets[i] * weights[i]) + (offsets[i + 1] * weights[i + 1])) / adjustedWeights.back();
 			}
-			adjustedOffsets.push_back(adjustedOffset);
+			adjustedOffsets.emplace_back(adjustedOffset);
 		}
 	}
 
@@ -395,8 +364,8 @@ inline void adjustOffsetsAndWeightsForLinearSampling(const uint32_t halfCoeffici
 
 	for (uint32_t i = 0; i < adjustedWeights.size(); i++)
 	{
-		offsets.push_back(adjustedOffsets[i]);
-		weights.push_back(adjustedWeights[i]);
+		offsets.emplace_back(adjustedOffsets[i]);
+		weights.emplace_back(adjustedWeights[i]);
 	}
 }
 
@@ -421,11 +390,10 @@ inline void adjustOffsetsAndWeightsForLinearSampling(const uint32_t halfCoeffici
 inline void generateGaussianKernelWeightsAndOffsets(uint32_t kernelSize, bool truncateCoefficients, bool useLinearSamplerOptimization, std::vector<double>& weights,
 	std::vector<double>& offsets, float minimumAcceptableCoefficient = 0.0001f)
 {
-	// The specified kernel size must be odd
-	// Note that it would be possible to extend this utility function to support even sized kernel sizes or even fractional kernel sizes
+	// Odd kernel sizes are a requirement
 	assert((kernelSize % 2) == 1);
 
-	// the starting row of the Pascal Triangle being used
+	// The starting row of the Pascal Triangle being used
 	uint32_t pascalRow = kernelSize - 1;
 
 	// The number of coefficients minus 1 halved
@@ -439,9 +407,17 @@ inline void generateGaussianKernelWeightsAndOffsets(uint32_t kernelSize, bool tr
 	// the number of coefficients skipped due to minimum coefficient checks
 	uint32_t numCoefficientsSkipped = 0;
 
+	// The simple case
+	if (!truncateCoefficients)
+	{
+		// Generate the Pascal Triangle row and calculate the sum of the row
+		uint64_t pascalSum = generatePascalTriangleRow(pascalRow, pascalCoefficients);
+		// Store the Pascal Triangle coefficients for the given row
+		addCoefficients(pascalSum, halfCoefficientsMinusOne, static_cast<uint32_t>(pascalCoefficients.size()), pascalCoefficients, weights, offsets);
+	}
+	else
 	// Ignoring negligible coefficients - we'll now attempt to find a row which provides enough coefficients for the given kernel size whilst not falling below the
 	// given minimal coefficient value.
-	if (truncateCoefficients)
 	{
 		uint32_t currentRow = pascalRow;
 		bool foundSuitableRow = false;
@@ -497,13 +473,6 @@ inline void generateGaussianKernelWeightsAndOffsets(uint32_t kernelSize, bool tr
 			foundSuitableRow = true;
 		}
 	}
-	else
-	{
-		// Generate the Pascal Triangle row and
-		uint64_t pascalSum = generatePascalTriangleRow(pascalRow, pascalCoefficients);
-		// Store the Pascal Triangle coefficients for the given row
-		addCoefficients(pascalSum, halfCoefficientsMinusOne, static_cast<uint32_t>(pascalCoefficients.size()), pascalCoefficients, weights, offsets);
-	}
 
 	// If using the Linear Sampling optimisation then adjust the Gaussian weights and offsets accordingly
 	if (useLinearSamplerOptimization)
@@ -512,20 +481,14 @@ inline void generateGaussianKernelWeightsAndOffsets(uint32_t kernelSize, bool tr
 	}
 }
 
-inline void constructSRT(const glm::vec3* scale, const glm::quat* rotate, const glm::vec3* trans, glm::mat4& outMtx)
+/// <summary>Constructs a scale rotate translation matrix.</summary>
+/// <param name="scale">Scaling vector.</param>
+/// <param name="rotate">A quaternion handling the rotation.</param>
+/// <param name="translation">The translation vector.</param>
+/// <returns>The resulting SRT matrix.</param>
+inline glm::mat4 constructSRT(const glm::vec3& scale, const glm::quat& rotate, const glm::vec3& translation)
 {
-	if (trans)
-	{
-		outMtx = glm::translate(*trans);
-	}
-	if (rotate)
-	{
-		outMtx = outMtx * glm::toMat4(*rotate);
-	}
-	if (scale)
-	{
-		outMtx = outMtx * glm::scale(*scale);
-	}
+	return glm::translate(translation) * glm::toMat4(rotate) * glm::scale(scale);
 }
 } // namespace math
 } // namespace pvr

@@ -154,7 +154,7 @@ void EglContext::release()
 		egl::MakeCurrent(egl::GetCurrentDisplay(), EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
 	}
 
-	// These are all refcounted, so these can be safely deleted.
+	// These are all reference counted, so these can be safely deleted.
 	if (_platformContextHandles.display)
 	{
 		if (_platformContextHandles.context)

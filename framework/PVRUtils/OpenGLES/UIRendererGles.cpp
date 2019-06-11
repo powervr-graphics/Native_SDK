@@ -522,9 +522,8 @@ Font UIRenderer::createFont(const Texture& tex, GLuint sampler)
 
 Font UIRenderer::createFont(GLuint texture, const TextureHeader& texHeader, GLuint sampler)
 {
-	Font font;
-	font.construct(*this, texture, texHeader, sampler);
-	_fonts.push_back(font);
+	Font font = pvr::ui::impl::Font_::constructShared(*this, texture, texHeader, sampler);
+	_fonts.emplace_back(font);
 	return font;
 }
 
@@ -554,18 +553,16 @@ Image UIRenderer::createImage(const Texture& texture, GLuint sampler)
 
 MatrixGroup UIRenderer::createMatrixGroup()
 {
-	MatrixGroup group;
-	group.construct(*this, generateGroupId());
-	_sprites.push_back(group);
+	MatrixGroup group = pvr::ui::impl::MatrixGroup_::constructShared(*this, generateGroupId());
+	_sprites.emplace_back(group);
 	group->commitUpdates();
 	return group;
 }
 
 PixelGroup UIRenderer::createPixelGroup()
 {
-	PixelGroup group;
-	group.construct(*this, generateGroupId());
-	_sprites.push_back(group);
+	PixelGroup group = pvr::ui::impl::PixelGroup_::constructShared(*this, generateGroupId());
+	_sprites.emplace_back(group);
 	group->commitUpdates();
 	return group;
 }
@@ -577,9 +574,8 @@ Image UIRenderer::createImage(GLuint tex, int32_t width, int32_t height, bool us
 
 pvr::ui::Image UIRenderer::createImageFromAtlas(GLuint texture, const Rectanglef& uv, uint32_t atlasWidth, uint32_t atlasHeight, bool useMipmaps, GLuint sampler)
 {
-	Image image;
-	image.construct(*this, texture, atlasWidth, atlasHeight, useMipmaps, sampler);
-	_sprites.push_back(image);
+	Image image = pvr::ui::impl::Image_::constructShared(*this, texture, atlasWidth, atlasHeight, useMipmaps, sampler);
+	_sprites.emplace_back(image);
 	// construct the scaling matrix
 	// calculate the scale factor
 	// convert from texel to normalize coord
@@ -590,27 +586,24 @@ pvr::ui::Image UIRenderer::createImageFromAtlas(GLuint texture, const Rectanglef
 
 TextElement UIRenderer::createTextElement(const std::wstring& text, const Font& font)
 {
-	TextElement spriteText;
-	spriteText.construct(*this, text, font);
-	_textElements.push_back(spriteText);
+	TextElement spriteText = pvr::ui::impl::TextElement_::constructShared(*this, text, font);
+	_textElements.emplace_back(spriteText);
+	return spriteText;
+}
+
+TextElement UIRenderer::createTextElement(const std::string& text, const Font& font)
+{
+	TextElement spriteText = pvr::ui::impl::TextElement_::constructShared(*this, text, font);
+	_textElements.emplace_back(spriteText);
 	return spriteText;
 }
 
 Text UIRenderer::createText(const TextElement& textElement)
 {
-	Text text;
-	text.construct(*this, textElement);
-	_sprites.push_back(text);
+	Text text = pvr::ui::impl::Text_::constructShared(*this, textElement);
+	_sprites.emplace_back(text);
 	text->commitUpdates();
 	return text;
-}
-
-TextElement UIRenderer::createTextElement(const std::string& text, const Font& font)
-{
-	TextElement spriteText;
-	spriteText.construct(*this, text, font);
-	_textElements.push_back(spriteText);
-	return spriteText;
 }
 
 namespace {
@@ -727,11 +720,9 @@ void UIRenderer::init_CreateDefaultSampler()
 
 void UIRenderer::init_CreateDefaultSdkLogo()
 {
-	Stream::ptr_type sdkLogo = Stream::ptr_type(new BufferStream("", _PowerVR_512x256_RG_pvr, _PowerVR_512x256_RG_pvr_size));
+	Stream::ptr_type sdkLogo = Stream::ptr_type(new BufferStream("", _PowerVR_Logo_RGBA_pvr, _PowerVR_Logo_RGBA_pvr_size));
 	Texture sdkTex;
 	sdkTex = textureLoad(sdkLogo, TextureFileFormat::PVR);
-
-	sdkTex.setPixelFormat(GeneratePixelType2<'l', 'a', 8, 8>::ID);
 
 	_sdkLogo = createImage(sdkTex);
 

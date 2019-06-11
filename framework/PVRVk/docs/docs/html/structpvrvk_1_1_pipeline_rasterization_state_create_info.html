@@ -93,9 +93,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a57176984336e94e2fdd7ea3c0b0a88db"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_pipeline_rasterization_state_create_info.html#a57176984336e94e2fdd7ea3c0b0a88db">PipelineRasterizationStateCreateInfo</a> (pvrvk::CullModeFlags cullFace=pvrvk::CullModeFlags::e_NONE, pvrvk::FrontFace frontFaceWinding=pvrvk::FrontFace::e_COUNTER_CLOCKWISE, bool enableDepthClip=true, bool enableRasterizerDiscard=false, bool enableProgramPointSize=false, pvrvk::PolygonMode fillMode=pvrvk::PolygonMode::e_FILL, float lineWidth=1.0f, bool enableDepthBias=false, float depthBiasClamp=0.f, float depthBiasConstantFactor=0.f, float depthBiasSlopeFactor=0.f)</td></tr>
-<tr class="memdesc:a57176984336e94e2fdd7ea3c0b0a88db"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a rasterization and polygon state configuration. <a href="#a57176984336e94e2fdd7ea3c0b0a88db">More...</a><br/></td></tr>
-<tr class="separator:a57176984336e94e2fdd7ea3c0b0a88db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc5b01bde09450f9eeea339be0209a42"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_pipeline_rasterization_state_create_info.html#abc5b01bde09450f9eeea339be0209a42">PipelineRasterizationStateCreateInfo</a> (pvrvk::CullModeFlags cullFace=pvrvk::CullModeFlags::e_NONE, pvrvk::FrontFace frontFaceWinding=pvrvk::FrontFace::e_COUNTER_CLOCKWISE, bool enableDepthClip=true, bool enableRasterizerDiscard=false, bool enableProgramPointSize=false, pvrvk::PolygonMode fillMode=pvrvk::PolygonMode::e_FILL, float lineWidth=1.0f, bool enableDepthBias=false, float depthBiasClamp=0.f, float depthBiasConstantFactor=0.f, float depthBiasSlopeFactor=0.f, uint32_t rasterizationStream=0)</td></tr>
+<tr class="memdesc:abc5b01bde09450f9eeea339be0209a42"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a rasterization and polygon state configuration. <a href="#abc5b01bde09450f9eeea339be0209a42">More...</a><br/></td></tr>
+<tr class="separator:abc5b01bde09450f9eeea339be0209a42"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a67fe5da02f9f487be19e5fcaf87837ea"><td class="memItemLeft" align="right" valign="top">pvrvk::CullModeFlags&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_pipeline_rasterization_state_create_info.html#a67fe5da02f9f487be19e5fcaf87837ea">getCullFace</a> () const </td></tr>
 <tr class="memdesc:a67fe5da02f9f487be19e5fcaf87837ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get which of the faces (Front/Back/None/Both) will not be rendered (will be culled) <a href="#a67fe5da02f9f487be19e5fcaf87837ea">More...</a><br/></td></tr>
 <tr class="separator:a67fe5da02f9f487be19e5fcaf87837ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -117,8 +117,11 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a4c698f2eba876ff425bbdc9314ef315a"><td class="memItemLeft" align="right" valign="top">pvrvk::PolygonMode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_pipeline_rasterization_state_create_info.html#a4c698f2eba876ff425bbdc9314ef315a">getPolygonMode</a> () const </td></tr>
 <tr class="memdesc:a4c698f2eba876ff425bbdc9314ef315a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the slope factor of depth bias <a href="#a4c698f2eba876ff425bbdc9314ef315a">More...</a><br/></td></tr>
 <tr class="separator:a4c698f2eba876ff425bbdc9314ef315a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a97fcff33fb10af9aacf74c6274eabc2b"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_pipeline_rasterization_state_create_info.html#a97fcff33fb10af9aacf74c6274eabc2b">getRasterizationStream</a> () const </td></tr>
+<tr class="memdesc:a97fcff33fb10af9aacf74c6274eabc2b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the vertex stream selected for rasterization <a href="#a97fcff33fb10af9aacf74c6274eabc2b">More...</a><br/></td></tr>
+<tr class="separator:a97fcff33fb10af9aacf74c6274eabc2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ada6ffe64f45fc1cb6c4c628fd2576f17"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_pipeline_rasterization_state_create_info.html#ada6ffe64f45fc1cb6c4c628fd2576f17">isDepthBiasEnabled</a> () const </td></tr>
-<tr class="memdesc:ada6ffe64f45fc1cb6c4c628fd2576f17"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if depth bias is enabled. (If enabled, clamp, constant factor and slope factor can be checked)  <a href="#ada6ffe64f45fc1cb6c4c628fd2576f17">More...</a><br/></td></tr>
+<tr class="memdesc:ada6ffe64f45fc1cb6c4c628fd2576f17"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if depth bias is enabled. (If enabled, clamp, constant factor and slope factor can be checked) <a href="#ada6ffe64f45fc1cb6c4c628fd2576f17">More...</a><br/></td></tr>
 <tr class="separator:ada6ffe64f45fc1cb6c4c628fd2576f17"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0c89972df652e9bbc4bf3543848c07a3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_pipeline_rasterization_state_create_info.html#a0c89972df652e9bbc4bf3543848c07a3">isDepthClipEnabled</a> () const </td></tr>
 <tr class="memdesc:a0c89972df652e9bbc4bf3543848c07a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if depth clipping is enabled (i.e. depth clamping disabled). If disabled, polygons will not be clipped against the front and back clipping plane clipping planes: instead, the primitives' depth will be clamped to min and max depth instead. <a href="#a0c89972df652e9bbc4bf3543848c07a3">More...</a><br/></td></tr>
@@ -150,6 +153,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a1217f2f2085d30284b54d57367e791ed"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structpvrvk_1_1_pipeline_rasterization_state_create_info.html">PipelineRasterizationStateCreateInfo</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_pipeline_rasterization_state_create_info.html#a1217f2f2085d30284b54d57367e791ed">setProgramPointSize</a> (bool enable)</td></tr>
 <tr class="memdesc:a1217f2f2085d30284b54d57367e791ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable/disable Program Point Size. <a href="#a1217f2f2085d30284b54d57367e791ed">More...</a><br/></td></tr>
 <tr class="separator:a1217f2f2085d30284b54d57367e791ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b3d2e1d70ee09bd3702e1c54525b391"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structpvrvk_1_1_pipeline_rasterization_state_create_info.html">PipelineRasterizationStateCreateInfo</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_pipeline_rasterization_state_create_info.html#a4b3d2e1d70ee09bd3702e1c54525b391">setRasterizationStream</a> (uint32_t rasterizationStream)</td></tr>
+<tr class="memdesc:a4b3d2e1d70ee09bd3702e1c54525b391"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the Rasterization stream <a href="#a4b3d2e1d70ee09bd3702e1c54525b391">More...</a><br/></td></tr>
+<tr class="separator:a4b3d2e1d70ee09bd3702e1c54525b391"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4a3e10b301379e154b3c7348d9ea58f9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structpvrvk_1_1_pipeline_rasterization_state_create_info.html">PipelineRasterizationStateCreateInfo</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvrvk_1_1_pipeline_rasterization_state_create_info.html#a4a3e10b301379e154b3c7348d9ea58f9">setRasterizerDiscard</a> (bool enable)</td></tr>
 <tr class="memdesc:a4a3e10b301379e154b3c7348d9ea58f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Disable all phases after transform feedback (rasterization and later) <a href="#a4a3e10b301379e154b3c7348d9ea58f9">More...</a><br/></td></tr>
 <tr class="separator:a4a3e10b301379e154b3c7348d9ea58f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -158,7 +164,7 @@ Public Member Functions</h2></td></tr>
 <div class="textblock"><p>Pipeline Rasterisation, clipping and culling state configuration. Culling, winding order, depth clipping, raster discard, point size, fill mode, provoking vertex.</p>
 <p>Defaults: Cull face: back, Front face: CounterClockWise, Depth Clipping: true, Rasterizer Discard: false, Program Point Size: false, Point Origin: Lower left, Fill Mode: Front&amp;Back, Provoking Vertex: First</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a class="anchor" id="a57176984336e94e2fdd7ea3c0b0a88db"></a>
+<a class="anchor" id="abc5b01bde09450f9eeea339be0209a42"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -229,7 +235,13 @@ Public Member Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">float&#160;</td>
-          <td class="paramname"><em>depthBiasSlopeFactor</em> = <code>0.f</code>&#160;</td>
+          <td class="paramname"><em>depthBiasSlopeFactor</em> = <code>0.f</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>rasterizationStream</em> = <code>0</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -259,6 +271,7 @@ Public Member Functions</h2></td></tr>
     <tr><td class="paramname">depthBiasClamp</td><td>If depth bias is enabled, the clamping value for depth bias (default 0)</td></tr>
     <tr><td class="paramname">depthBiasConstantFactor</td><td>If depth bias is enabled, the constant value by which to bias depth(default 0)</td></tr>
     <tr><td class="paramname">depthBiasSlopeFactor</td><td>If depth bias is enabled, the slope value by which to bias depth(default:0)</td></tr>
+    <tr><td class="paramname">rasterizationStream</td><td>Controls the use of vertex shader based transform feedback</td></tr>
   </table>
   </dd>
 </dl>
@@ -448,6 +461,32 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a97fcff33fb10af9aacf74c6274eabc2b"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t pvrvk::PipelineRasterizationStateCreateInfo::getRasterizationStream </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get the vertex stream selected for rasterization</p>
+<dl class="section return"><dt>Returns</dt><dd>The vertex stream selected for rasterization</dd></dl>
+
+</div>
+</div>
 <a class="anchor" id="ada6ffe64f45fc1cb6c4c628fd2576f17"></a>
 <div class="memitem">
 <div class="memproto">
@@ -469,7 +508,7 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Check if depth bias is enabled. (If enabled, clamp, constant factor and slope factor can be checked) </p>
+<p>Check if depth bias is enabled. (If enabled, clamp, constant factor and slope factor can be checked)</p>
 <dl class="section return"><dt>Returns</dt><dd>True if depth bias is enabled, otherwise false.</dd></dl>
 
 </div>
@@ -577,7 +616,7 @@ Public Member Functions</h2></td></tr>
 <p>Set the face that will be culled (front/back/both/none).</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">face</td><td>Cull face </td></tr>
+    <tr><td class="paramname">face</td><td>Cull face</td></tr>
   </table>
   </dd>
 </dl>
@@ -805,6 +844,39 @@ Public Member Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>this object (allows chained calls)</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a4b3d2e1d70ee09bd3702e1c54525b391"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structpvrvk_1_1_pipeline_rasterization_state_create_info.html">PipelineRasterizationStateCreateInfo</a>&amp; pvrvk::PipelineRasterizationStateCreateInfo::setRasterizationStream </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>rasterizationStream</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set the Rasterization stream</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">rasterizationStream</td><td>The vertex stream selected for rasterization. This parameter controls usage of transform feedback if it is supported.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Return this object (allows chained calls)</dd></dl>
 
 </div>
 </div>

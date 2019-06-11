@@ -30,6 +30,26 @@ public:
 	/// <param name="message">A message to log alongside the exception message.</param>
 	FileIOError(std::string filename, std::string message) : PvrError("[" + filename + "]: File IO operation failed - " + message) {}
 };
+
+/// <summary>A simple std::runtime_error wrapper for throwing exceptions when attempting to read past the End Of File</summary>
+class FileEOFError : public PvrError
+{
+public:
+	/// <summary>Constructor.</summary>
+	explicit FileEOFError(const Stream& stream);
+	/// <summary>Constructor.</summary>
+	/// <param name="stream">The stream being used.</param>
+	/// <param name="message">A message to log alongside the exception message.</param>
+	FileEOFError(const Stream& stream, std::string message);
+	/// <summary>Constructor.</summary>
+	/// <param name="filenameOrMessage">A message to log alongside the exception message.</param>
+	explicit FileEOFError(std::string filenameOrMessage) : PvrError("[" + filenameOrMessage + "]: Attempted to read past the end of file.") {}
+	/// <summary>Constructor.</summary>
+	/// <param name="filename">The filenae of the file being used.</param>
+	/// <param name="message">A message to log alongside the exception message.</param>
+	FileEOFError(std::string filename, std::string message) : PvrError("[" + filename + "]: Attempted to read past the end of file - " + message) {}
+};
+
 /// <summary>A simple std::runtime_error wrapper for throwing exceptions when file not found errors occur</summary>
 class FileNotFoundError : public std::runtime_error
 {
@@ -69,7 +89,7 @@ public:
 	};
 
 	/// <summary>Destructor (virtual, this class can and should be used polymorphically).</summary>
-	virtual ~Stream() {}
+	virtual ~Stream() = default;
 
 	/// <summary>Return true if this stream can be read from.</summary>
 	/// <returns>True if this stream can be read from.</returns>
@@ -85,10 +105,8 @@ public:
 		return _isWritable;
 	}
 
-	/// <summary>Get the filename of the file that this std::string represents, if such exists. Otherwise, empty std::string.
-	/// </summary>
-	/// <returns>The filename of the file that this std::string represents, if such exists. Otherwise, empty std::string.
-	/// </returns>
+	/// <summary>Get the filename of the file that this std::string represents, if such exists. Otherwise, empty std::string.</summary>
+	/// <returns>The filename of the file that this std::string represents, if such exists. Otherwise, empty std::string.</returns>
 	const std::string& getFileName() const
 	{
 		return _fileName;
@@ -112,14 +130,13 @@ public:
 		read(elementSize, numElements, buffer, dataRead);
 		if (dataRead != numElements)
 		{
-			throw FileIOError(*this,
+			throw FileEOFError(*this,
 				std::string("Stream::readExact: Failed to read specified number of elements. Size of element: [" + std::to_string(elementSize) + "]. Attempted to read [" +
 					std::to_string(numElements) + "] but got [" + std::to_string(dataRead) + "]"));
 		}
 	}
 
-	/// <summary>Main write function. Write into the stream the specified amount of items from a provided buffer.
-	/// </summary>
+	/// <summary>Main write function. Write into the stream the specified amount of items from a provided buffer.</summary>
 	/// <param name="elementSize">The size of each element that will be written.</param>
 	/// <param name="numElements">The number of elements to write.</param>
 	/// <param name="buffer">The buffer from which to read the data. If the buffer is smaller than elementSize *
@@ -178,10 +195,10 @@ public:
 		std::vector<Type_> ret;
 		open();
 		size_t mySize = getSize() - getPosition();
-		size_t myElements = mySize / sizeof(Type_);
-		ret.resize(mySize);
+		size_t numElements = mySize / sizeof(Type_);
+		ret.resize(numElements);
 		size_t actuallyRead;
-		read(sizeof(Type_), myElements, ret.data(), actuallyRead);
+		read(sizeof(Type_), numElements, ret.data(), actuallyRead);
 		return ret;
 	}
 
@@ -237,7 +254,7 @@ public:
 		}
 	}
 	/// <summary>Convenience function that reads all data in the stream into a std::string</summary>
-	/// <param name="outString">The string where the stream's data will all be saved</param>
+	/// <returns>A string containing the stream's data</returns>
 	std::string readString() const
 	{
 		open();
@@ -266,8 +283,8 @@ protected:
 
 private:
 	// Disable copying and assign.
-	void operator=(const Stream&);
-	Stream(const Stream&);
+	void operator=(const Stream&) = delete;
+	Stream(const Stream&) = delete;
 };
 
 /// <summary>Constructor</summary>
@@ -277,6 +294,15 @@ inline FileIOError::FileIOError(const Stream& stream) : PvrError("[" + stream.ge
 /// <param name="stream">The stream being used.</param>
 /// <param name="message">A message to log alongside the exception message.</param>
 inline FileIOError::FileIOError(const Stream& stream, std::string message) : PvrError("[" + stream.getFileName() + "] : File IO operation failed - " + message) {}
+
+/// <summary>Constructor</summary>
+/// <param name="stream">The stream being used.</param>
+inline FileEOFError::FileEOFError(const Stream& stream) : PvrError("[" + stream.getFileName() + "]: File IO operation failed") {}
+/// <summary>Constructor</summary>
+/// <param name="stream">The stream being used.</param>
+/// <param name="message">A message to log alongside the exception message.</param>
+inline FileEOFError::FileEOFError(const Stream& stream, std::string message) : PvrError("[" + stream.getFileName() + "] : File IO operation failed - " + message) {}
+
 /// <summary>Constructor</summary>
 /// <param name="stream">The stream being used.</param>
 inline FileNotFoundError::FileNotFoundError(Stream& stream) : std::runtime_error("[" + stream.getFileName() + "]: File not found.") {}

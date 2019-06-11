@@ -136,6 +136,20 @@ public:
 	/// <summary>Constructor.</summary>
 	InvalidOperationError() : PvrError("Specified operation could not be performed on this object.") {}
 };
+
+/// <summary>A simple std::runtime_error wrapper for throwing exceptions when invalid operations are attempted</summary>
+class TextureDecompressionError : public PvrError
+{
+public:
+	/// <summary>Constructor.</summary>
+	/// <param name="message">A message to log.</param>
+	/// <param name="format">The source format of the texture decompression.</param>
+	TextureDecompressionError(const std::string& message, const std::string& format) : PvrError("Texture Decompression to format [" + format + "] Failed:" + message) {}
+	/// <summary>Constructor.</summary>
+	/// <param name="format">The source format of the texture decompression.</param>
+	TextureDecompressionError(const std::string& format) : PvrError("Texture Decompression to format [" + format + "] Failed") {}
+};
+
 /// <summary>A simple std::runtime_error wrapper for throwing exceptions when operations fail</summary>
 class OperationFailedError : public PvrError
 {

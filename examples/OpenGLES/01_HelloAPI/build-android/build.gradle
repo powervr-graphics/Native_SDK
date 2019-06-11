@@ -1,17 +1,48 @@
+// Applies the Android plugin for Gradle to this build and makes the android block available to specify Android-specific build options
 apply plugin: 'com.android.application'
 
 def hasSigningDefined = project.hasProperty('KEYSTORE_FILE') &&  project.hasProperty('KEYSTORE_PASSWORD') &&  project.hasProperty('KEY_ALIAS') && project.hasProperty('KEY_PASSWORD')
+def binOutput = project.hasProperty('BUILD_ENTIRE_SDK') ? '../../../../build-android/bin' : 'bin'
+
+// This block configures the repositories and dependencies for Gradle itself. Here we add a dependency for the Android plugin for Gradle as it provides
+// the additional instructions Gradle needs to build Android app modules
+buildscript {
+	repositories {
+		google()
+		jcenter()
+	}
+
+	// Adds the Android plugin for Gradle version 3.3.0 as a classpath dependency
+	dependencies {
+		classpath 'com.android.tools.build:gradle:3.3.0'
+	}
+}
+
+// This block configures the repositories and dependencies used by all modules in the project
+allprojects {
+	repositories {
+		google()
+		jcenter()
+	}
+}
 
 android {
-	compileSdkVersion 26
+	compileSdkVersion 28
 	defaultConfig {
 		applicationId "com.powervr.OpenGLESHelloAPI"
-		minSdkVersion 16
-		targetSdkVersion 24
+		minSdkVersion 21
+		targetSdkVersion 26
 		externalNativeBuild {
 			cmake {
 				cppFlags "-fexceptions"
-				arguments "-DANDROID_STL=c++_static"
+				if(project.hasProperty('BUILD_ENTIRE_SDK'))
+				{
+					arguments "-DANDROID_STL=c++_static"
+				}
+				else
+				{
+					arguments "-DANDROID_STL=c++_static"
+				}
 			}
 		}
 		ndk
@@ -19,6 +50,7 @@ android {
 			abiFilters "$ANDROID_ABI".replace(" ", "").split(",")
 		}
 	}
+	
 	if (!project.hasProperty('NOSIGN') && hasSigningDefined) {
 		signingConfigs {
 			release {
@@ -30,9 +62,10 @@ android {
 		}
 	}
 
+    // This block configures our build types
 	buildTypes {
 		release {
-			minifyEnabled true
+			minifyEnabled false
 			proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
 			zipAlignEnabled true
 			if (!project.hasProperty('NOSIGN') && hasSigningDefined) {
@@ -46,7 +79,7 @@ android {
 		}
 	}
 	
-	//Runs before ndk building tasks
+	// Ensure that the icons are copied early - we do this by making the preBuild task depends on the copyIcons task
 	task copyIcons(type: Copy) {
 		from file("${project.projectDir}/../../../../res/Android/OpenGLES")
 		into sourceSets.main.res.srcDirs[0]
@@ -55,21 +88,13 @@ android {
 	preBuild.dependsOn copyIcons
 }
 
+// This block specifies dependencies required to build only the module itself
 dependencies {
+	// Dependency on local binaries
 	implementation fileTree(dir: 'libs', include: ['*.jar'])
 }
 
-buildscript {
-
-	repositories {
-		google()
-		jcenter()
-	}
-	dependencies {
-		classpath 'com.android.tools.build:gradle:3.1.0'
-	}
-}
-
+// For release builds ensure that signing has taken place appropriately
 task checkReleaseSigning() {
 	doLast{
 		if (!hasSigningDefined && !project.hasProperty('NOSIGN')) {
@@ -84,14 +109,13 @@ task checkReleaseSigning() {
 	}
 }
 
-def binOutput = hasProperty('BUILD_ENTIRE_SDK') ? '../../../../build-android/bin' : 'bin'
-
 //Copy outputs to the bin/ folder
 task copyToBinDebug(type: Copy) {
 	from 'build/outputs/apk/debug'
 	into "${binOutput}"
 	include('*.apk')
 }
+// Copy outputs to the bin/ folder and remove the "-release" suffix
 task copyToBinRelease(type: Copy) {
 	from 'build/outputs/apk/release'
 	into "${binOutput}"
@@ -99,23 +123,13 @@ task copyToBinRelease(type: Copy) {
 	rename('(.*)-release.apk', '$1.apk')
 }
 
-tasks.whenTaskAdded { task ->
-	//Copy the binary to the final bin folder. Check for signing params as well
+tasks.whenTaskAdded { task -> 	
+	// Copy the binary to the final bin folder.
 	if (task.name == 'packageRelease') {
 		task.dependsOn(checkReleaseSigning)
-		task.doFirst() { delete fileTree('bin') { include {'*.apk'} exclude {'*-debug.apk'} } }
 		task.finalizedBy copyToBinRelease
 	}
 	if (task.name == 'packageDebug') {
-		task.doFirst() { delete fileTree('bin') { include '*-debug.apk'} }
 		task.finalizedBy copyToBinDebug
-	}
-}
-
-allprojects {
-	repositories {
-		google()
-		jcenter()
-		mavenCentral()
 	}
 }

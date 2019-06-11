@@ -305,11 +305,11 @@ struct PassSkyBox
 		for (uint32_t i = 0; i < numSwapchain; ++i)
 		{
 			_descriptorSets.add(descriptorPool->allocateDescriptorSet(_descriptorSetLayout));
-			writeDescSets[i * numSwapchain]
+			writeDescSets[i * 2]
 				.set(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, _descriptorSets[i], 0)
 				.setImageInfo(0, pvrvk::DescriptorImageInfo(_skyboxTex, sampler, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL));
 
-			writeDescSets[i * numSwapchain + 1]
+			writeDescSets[i * 2 + 1]
 				.set(pvrvk::DescriptorType::e_UNIFORM_BUFFER, _descriptorSets[i], 1)
 				.setBufferInfo(0, pvrvk::DescriptorBufferInfo(_buffer, _bufferMemoryView.getDynamicSliceOffset(i), _bufferMemoryView.getDynamicSliceSize()));
 		}
@@ -1103,7 +1103,7 @@ struct PassStatue : public IModelPass
 	void recordCommands(pvrvk::Device& device, pvrvk::CommandPool& commandPool, uint32_t pipeEffect, pvrvk::Framebuffer& framebuffer, uint32_t swapchain)
 	{
 		// create the command buffer if it does not already exist
-		if (!_secondaryCommandBuffers[swapchain].isValid())
+		if (!_secondaryCommandBuffers[swapchain])
 		{
 			_secondaryCommandBuffers[swapchain] = commandPool->allocateSecondaryCommandBuffer();
 		}
@@ -1169,9 +1169,15 @@ const std::pair<pvr::StringHash, pvr::GpuDatatypes> PassStatue::UboElementsNames
 struct DeviceResources
 {
 	pvrvk::Instance instance;
-	pvrvk::DebugReportCallback debugCallbacks[2];
+	pvr::utils::DebugUtilsCallbacks debugUtilsCallbacks;
 	pvrvk::Device device;
 	pvr::utils::vma::Allocator vmaAllocator;
+
+	pvrvk::CommandPool commandPool;
+	pvrvk::DescriptorPool descriptorPool;
+	pvrvk::Swapchain swapchain;
+	pvrvk::Surface surface;
+	pvrvk::Queue queue;
 
 	pvrvk::PipelineCache pipelineCache;
 
@@ -1191,25 +1197,20 @@ struct DeviceResources
 	pvr::Multi<pvrvk::ImageView> depthStencilImages;
 	pvrvk::Sampler samplerTrilinear;
 
-	pvrvk::CommandPool commandPool;
-	pvrvk::DescriptorPool descriptorPool;
-	pvrvk::Swapchain swapchain;
-	pvrvk::Surface surface;
-	pvrvk::Queue queue;
 	pvrvk::Semaphore semaphoreAcquire[uint32_t(pvrvk::FrameworkCaps::MaxSwapChains)];
 	pvrvk::Semaphore semaphoreSubmit[uint32_t(pvrvk::FrameworkCaps::MaxSwapChains)];
 	pvrvk::Fence perFrameFence[uint32_t(pvrvk::FrameworkCaps::MaxSwapChains)];
 	~DeviceResources()
 	{
-		if (device.isValid())
+		if (device)
 		{
 			device->waitIdle();
 			uint32_t l = swapchain->getSwapchainLength();
 			for (uint32_t i = 0; i < l; ++i)
 			{
-				if (perFrameFence[i].isValid())
+				if (perFrameFence[i])
 					perFrameFence[i]->wait();
-				if (perFrameFence[i].isValid())
+				if (perFrameFence[i])
 					perFrameFence[i]->wait();
 			}
 		}
@@ -1346,12 +1347,8 @@ pvr::Result VulkanGlass::initView()
 	// Create the surface
 	_deviceResources->surface = pvr::utils::createSurface(_deviceResources->instance, _deviceResources->instance->getPhysicalDevice(0), this->getWindow(), this->getDisplay());
 
-	// Add Debug Report Callbacks
-	// Add a Debug Report Callback for logging messages for events of all supported types.
-	_deviceResources->debugCallbacks[0] = pvr::utils::createDebugReportCallback(_deviceResources->instance);
-	// Add a second Debug Report Callback for throwing exceptions for Error events.
-	_deviceResources->debugCallbacks[1] =
-		pvr::utils::createDebugReportCallback(_deviceResources->instance, pvrvk::DebugReportFlagsEXT::e_ERROR_BIT_EXT, pvr::utils::throwOnErrorDebugReportCallback);
+	// Create a default set of debug utils messengers or debug callbacks using either VK_EXT_debug_utils or VK_EXT_debug_report respectively
+	_deviceResources->debugUtilsCallbacks = pvr::utils::createDebugUtilsCallbacks(_deviceResources->instance);
 
 	// create the logical device and the queues
 	const pvr::utils::QueuePopulateInfo populateInfo = { pvrvk::QueueFlags::e_GRAPHICS_BIT, _deviceResources->surface };
@@ -1379,7 +1376,7 @@ pvr::Result VulkanGlass::initView()
 		&_deviceResources->vmaAllocator);
 
 	// create the framebuffer
-	pvr::utils::createOnscreenFramebufferAndRenderpass(_deviceResources->swapchain, &_deviceResources->depthStencilImages[0], _deviceResources->onScreenFramebuffer);
+	pvr::utils::createOnscreenFramebufferAndRenderPass(_deviceResources->swapchain, &_deviceResources->depthStencilImages[0], _deviceResources->onScreenFramebuffer);
 
 	//---------------
 	// Create the commandpool
@@ -1492,14 +1489,14 @@ pvr::Result VulkanGlass::renderFrame()
 	submitInfo.numCommandBuffers = 1;
 	submitInfo.numWaitSemaphores = 1;
 	submitInfo.waitSemaphores = &_deviceResources->semaphoreAcquire[_frameId];
-	submitInfo.waitDestStages = &waitStage;
+	submitInfo.waitDstStageMask = &waitStage;
 	submitInfo.signalSemaphores = &_deviceResources->semaphoreSubmit[_frameId];
 	submitInfo.numSignalSemaphores = 1;
 	_deviceResources->queue->submit(&submitInfo, 1, _deviceResources->perFrameFence[_frameId]);
 
 	if (this->shouldTakeScreenshot())
 	{
-		pvr::utils::takeScreenshot(_deviceResources->swapchain, swapchainIndex, _deviceResources->commandPool, _deviceResources->queue, this->getScreenshotFileName(),
+		pvr::utils::takeScreenshot(_deviceResources->queue, _deviceResources->commandPool, _deviceResources->swapchain, swapchainIndex, this->getScreenshotFileName(),
 			&_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
 	}
 

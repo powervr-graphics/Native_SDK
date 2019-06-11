@@ -95,7 +95,7 @@ void EglContext_::release()
 			egl::MakeCurrent(egl::GetCurrentDisplay(), EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
 		}
 
-		// These are all refcounted, so these can be safely deleted.
+		// These are all reference counted, so these can be safely deleted.
 		if (_platformContextHandles->display)
 		{
 			if (_platformContextHandles->context)
@@ -1018,9 +1018,9 @@ inline EGLNativeDisplayType ptrToEGLNativeDisplayType(void* ptr)
 
 static inline void preInitialize(OSDisplay osdisplay, NativePlatformHandles& handles)
 {
-	if (!handles.get())
+	if (!handles)
 	{
-		handles.construct();
+		handles = std::make_shared<NativePlatformHandles_>();
 	}
 
 	// Associate the display with EGL.

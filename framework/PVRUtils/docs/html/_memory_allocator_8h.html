@@ -111,6 +111,18 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1utils_1_1vma_1_1_device_memory_callbacks.html">pvr::utils::vma::DeviceMemoryCallbacks</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The <a class="el" href="structpvr_1_1utils_1_1vma_1_1_device_memory_callbacks.html" title="The DeviceMemoryCallbacks struct defines a set of callbacks that the library will call for vkAllocate...">DeviceMemoryCallbacks</a> struct defines a set of callbacks that the library will call for <code>vkAllocateMemory</code> and <code>vkFreeMemory</code>. Provided for informative purpose, e.g. to gather statistics about number of allocations or total amount of memory allocated in Vulkan. Used in <a class="el" href="structpvr_1_1utils_1_1vma_1_1_allocator_create_info.html#aa65f3b2a40f467ae3e9806e973f77238" title="Informative callbacks for vkAllocateMemory, vkFreeMemory. Optional, can be null.">AllocatorCreateInfo::pDeviceMemoryCallbacks</a>. <a href="structpvr_1_1utils_1_1vma_1_1_device_memory_callbacks.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1utils_1_1vma_1_1impl_1_1_allocation__.html">pvr::utils::vma::impl::Allocation_</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The <a class="el" href="classpvr_1_1utils_1_1vma_1_1impl_1_1_device_memory_wrapper__.html" title="A wrapper for device memory">DeviceMemoryWrapper_</a>. Class Just wraps the Vulkan device memory object allocated by the memory allocatpr. This class doesn't manages the creation and destruction of vulkan object. It only serves as the interface to device memory functions. <a href="classpvr_1_1utils_1_1vma_1_1impl_1_1_allocation__.html#details">More...</a><br/></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1utils_1_1vma_1_1impl_1_1_allocator__.html">pvr::utils::vma::impl::Allocator_</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The MemoryAllocator_ class./summary&gt;  <a href="classpvr_1_1utils_1_1vma_1_1impl_1_1_allocator__.html#details">More...</a><br/></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1utils_1_1vma_1_1impl_1_1_device_memory_wrapper__.html">pvr::utils::vma::impl::DeviceMemoryWrapper_</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A wrapper for device memory <a href="classpvr_1_1utils_1_1vma_1_1impl_1_1_device_memory_wrapper__.html#details">More...</a><br/></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1utils_1_1vma_1_1impl_1_1_pool__.html">pvr::utils::vma::impl::Pool_</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">An embedded ref counted Pool class <a href="classpvr_1_1utils_1_1vma_1_1impl_1_1_pool__.html#details">More...</a><br/></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1utils_1_1vma_1_1_pool_create_info.html">pvr::utils::vma::PoolCreateInfo</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="structpvr_1_1utils_1_1vma_1_1_pool_create_info.html" title="PoolCreateInfo">PoolCreateInfo</a> <a href="structpvr_1_1utils_1_1vma_1_1_pool_create_info.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -135,18 +147,41 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
+<tr class="memitem:a5f44254c26ac63ef00921cc89fb379ea"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_memory_allocator_8h.html#a5f44254c26ac63ef00921cc89fb379ea">ENUM_CLASS_BITWISE_OPERATOR</a>(type_)</td></tr>
+<tr class="memdesc:a5f44254c26ac63ef00921cc89fb379ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Provides a bitwise operator for an enum class <a href="#a5f44254c26ac63ef00921cc89fb379ea">More...</a><br/></td></tr>
+<tr class="separator:a5f44254c26ac63ef00921cc89fb379ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a95b1c7528a1c18cffad6ec26332213a5"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_memory_allocator_8h.html#a95b1c7528a1c18cffad6ec26332213a5">VMA_STATIC_VULKAN_FUNCTIONS</a>&#160;&#160;&#160;0</td></tr>
 <tr class="memdesc:a95b1c7528a1c18cffad6ec26332213a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Specifies that function pointers for the Vulkan functions will be retrieved external to VMA. <a href="#a95b1c7528a1c18cffad6ec26332213a5">More...</a><br/></td></tr>
 <tr class="separator:a95b1c7528a1c18cffad6ec26332213a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
+<tr class="memitem:a546f21e9dc87bcbcc78cd4ff0d74e730"><td class="memItemLeft" align="right" valign="top">typedef std::shared_ptr<br class="typebreak"/>
+&lt; impl::Allocation_ &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>pvr::utils::vma::Allocation</b></td></tr>
+<tr class="memdesc:a546f21e9dc87bcbcc78cd4ff0d74e730"><td class="mdescLeft">&#160;</td><td class="mdescRight">Forwared-declared reference-counted handle to a Allocation. For detailed documentation, see below <a href="#a546f21e9dc87bcbcc78cd4ff0d74e730">More...</a><br/></td></tr>
+<tr class="separator:a546f21e9dc87bcbcc78cd4ff0d74e730"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aad694c017b2fdbb822163769e1ebeb64"><td class="memItemLeft" align="right" valign="top">typedef std::shared_ptr<br class="typebreak"/>
+&lt; impl::Allocator_ &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>pvr::utils::vma::Allocator</b></td></tr>
+<tr class="memdesc:aad694c017b2fdbb822163769e1ebeb64"><td class="mdescLeft">&#160;</td><td class="mdescRight">Forwared-declared reference-counted handle to a Allocator. For detailed documentation, see below <a href="#aad694c017b2fdbb822163769e1ebeb64">More...</a><br/></td></tr>
+<tr class="separator:aad694c017b2fdbb822163769e1ebeb64"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a848b558237eba2923c479c9c8ec6af3b"><td class="memItemLeft" align="right" valign="top">typedef std::weak_ptr<br class="typebreak"/>
+&lt; impl::Allocator_ &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>pvr::utils::vma::AllocatorWeakPtr</b></td></tr>
+<tr class="memdesc:a848b558237eba2923c479c9c8ec6af3b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Forwared-declared reference-counted handle to a Allocator. For detailed documentation, see below <a href="#a848b558237eba2923c479c9c8ec6af3b">More...</a><br/></td></tr>
+<tr class="separator:a848b558237eba2923c479c9c8ec6af3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e21f8880a80be865a4840666eb8d03a"><td class="memItemLeft" align="right" valign="top">typedef std::shared_ptr<br class="typebreak"/>
+&lt; impl::DeviceMemoryWrapper_ &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>pvr::utils::vma::DeviceMemoryWrapper</b></td></tr>
+<tr class="memdesc:a3e21f8880a80be865a4840666eb8d03a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Forwared-declared reference-counted handle to a DeviceMemoryWrapper. For detailed documentation, see below <a href="#a3e21f8880a80be865a4840666eb8d03a">More...</a><br/></td></tr>
+<tr class="separator:a3e21f8880a80be865a4840666eb8d03a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a99ed075d8a97f802db8f53ac0b2cdf06"><td class="memItemLeft" align="right" valign="top">typedef void(VKAPI_PTR *&#160;</td><td class="memItemRight" valign="bottom"><b>pvr::utils::vma::PFN_AllocateDeviceMemoryFunction</b> )(Allocator allocator, uint32_t memoryType, pvrvk::DeviceMemory memory, VkDeviceSize size)</td></tr>
 <tr class="memdesc:a99ed075d8a97f802db8f53ac0b2cdf06"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function called after successful vkAllocateMemory. <a href="#a99ed075d8a97f802db8f53ac0b2cdf06">More...</a><br/></td></tr>
 <tr class="separator:a99ed075d8a97f802db8f53ac0b2cdf06"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae73d60bab3a78c63a610da2705aeef89"><td class="memItemLeft" align="right" valign="top">typedef void(VKAPI_PTR *&#160;</td><td class="memItemRight" valign="bottom"><b>pvr::utils::vma::PFN_FreeDeviceMemoryFunction</b> )(Allocator allocator, uint32_t memoryType, pvrvk::DeviceMemory memory, VkDeviceSize size)</td></tr>
 <tr class="memdesc:ae73d60bab3a78c63a610da2705aeef89"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function called before vkFreeMemory. <a href="#ae73d60bab3a78c63a610da2705aeef89">More...</a><br/></td></tr>
 <tr class="separator:ae73d60bab3a78c63a610da2705aeef89"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a051249917c1db8bb2293be50881591cd"><td class="memItemLeft" align="right" valign="top">typedef std::shared_ptr<br class="typebreak"/>
+&lt; impl::Pool_ &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>pvr::utils::vma::Pool</b></td></tr>
+<tr class="memdesc:a051249917c1db8bb2293be50881591cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Forwared-declared reference-counted handle to a Pool. For detailed documentation, see below <a href="#a051249917c1db8bb2293be50881591cd">More...</a><br/></td></tr>
+<tr class="separator:a051249917c1db8bb2293be50881591cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
 Enumerations</h2></td></tr>
@@ -210,6 +245,32 @@ Functions</h2></td></tr>
 <div class="textblock"><dl class="section author"><dt>Author</dt><dd>PowerVR by Imagination, Developer Technology Team </dd></dl>
 <dl class="section user"><dt>Copyright:</dt><dd>Copyright (c) Imagination Technologies Limited. </dd></dl>
 </div><h2 class="groupheader">Macro Definition Documentation</h2>
+<a class="anchor" id="a5f44254c26ac63ef00921cc89fb379ea"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define ENUM_CLASS_BITWISE_OPERATOR</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">type_</td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Value:</b><div class="fragment"><div class="line"><span class="keyword">inline</span> type_ operator&amp;(type_ lhs, type_ rhs) \</div>
+<div class="line">    { \</div>
+<div class="line">        return <span class="keyword">static_cast&lt;</span>type_<span class="keyword">&gt;</span>(<span class="keyword">static_cast&lt;</span>uint32_t<span class="keyword">&gt;</span>(lhs) &amp; static_cast&lt;uint32_t&gt;(rhs)); \</div>
+<div class="line">    } \</div>
+<div class="line">    inline type_ operator|(type_ lhs, type_ rhs) \</div>
+<div class="line">    { \</div>
+<div class="line">        return <span class="keyword">static_cast&lt;</span>type_<span class="keyword">&gt;</span>(<span class="keyword">static_cast&lt;</span>uint32_t<span class="keyword">&gt;</span>(lhs) | static_cast&lt;uint32_t&gt;(rhs)); \</div>
+<div class="line">    }</div>
+</div><!-- fragment -->
+<p>Provides a bitwise operator for an enum class</p>
+
+</div>
+</div>
 <a class="anchor" id="a95b1c7528a1c18cffad6ec26332213a5"></a>
 <div class="memitem">
 <div class="memproto">

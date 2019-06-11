@@ -1,4 +1,4 @@
-//Microsoft eMbedded Visual C++ generated resource script.
+// Microsoft Visual C++ generated resource script.
 //
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
@@ -58,15 +58,19 @@ END
 // RCDATA
 //
 /////////////////////////////////////////////////////////////////////////////
-// RCDATA: Assets (scenes,  effects, textures...)
-sphere.pod		RCDATA		"..\\..\\..\\assets\\ParticleSystem\\sphere.pod"
-// RCDATA: Vulkan Spir-V shaders(glsl)
-FragShader.fsh.spv		RCDATA		"..\\FragShader.fsh.spv"
-VertShader.vsh.spv		RCDATA		"..\\VertShader.vsh.spv"
-ParticleFragShader.fsh.spv		RCDATA		"..\\ParticleFragShader.fsh.spv"
-ParticleVertShader.vsh.spv		RCDATA		"..\\ParticleVertShader.vsh.spv"
-ParticleSolver.csh.spv		RCDATA		"..\\ParticleSolver.csh.spv"
-FloorVertShader.vsh.spv		RCDATA		"..\\FloorVertShader.vsh.spv"
+sphere.pod RCDATA "..\\..\\..\\assets\\ParticleSystem\\sphere.pod"
+FragShader.fsh RCDATA "..\\FragShader.fsh"
+VertShader.vsh RCDATA "..\\VertShader.vsh"
+ParticleFragShader.fsh RCDATA "..\\ParticleFragShader.fsh"
+ParticleVertShader.vsh RCDATA "..\\ParticleVertShader.vsh"
+ParticleSolver.csh RCDATA "..\\ParticleSolver.csh"
+FloorVertShader.vsh RCDATA "..\\FloorVertShader.vsh"
+FragShader.fsh.spv RCDATA "..\\FragShader.fsh.spv"
+VertShader.vsh.spv RCDATA "..\\VertShader.vsh.spv"
+ParticleFragShader.fsh.spv RCDATA "..\\ParticleFragShader.fsh.spv"
+ParticleVertShader.vsh.spv RCDATA "..\\ParticleVertShader.vsh.spv"
+ParticleSolver.csh.spv RCDATA "..\\ParticleSolver.csh.spv"
+FloorVertShader.vsh.spv RCDATA "..\\FloorVertShader.vsh.spv"
 
 #endif    // English (United Kingdom) resources
 /////////////////////////////////////////////////////////////////////////////

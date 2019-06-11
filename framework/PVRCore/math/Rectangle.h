@@ -11,8 +11,7 @@
 template<typename>
 struct GenericOffset2D;
 namespace pvr {
-/// <summary>A class representing an axis-aligned rectangle. Internal representation TopLeft and size.
-/// </summary>
+/// <summary>A class representing an axis-aligned rectangle. Internal representation TopLeft and size.</summary>
 /// <typeparam name="TYPE">The datatype of the units of the rectangle (int, float etc.)</typeparam>
 template<typename TYPE>
 struct Rectangle

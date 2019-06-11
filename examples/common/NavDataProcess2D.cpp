@@ -1,6 +1,6 @@
 #include "NavDataProcess.h"
 #include "../external/glm/gtx/intersect.hpp"
-#include "../external/pugixml/pugixml.hpp"
+#include "pugixml.hpp"
 
 const float TexUVLeft = -1.f;
 const float TexUVRight = 1.f;
@@ -225,7 +225,7 @@ pvr::Result NavDataProcess::loadOSMData()
 			Tag& tempTag = tempWay->tags.back();
 			tempTag.key = currentTag->attribute("k").as_string();
 			tempTag.value = currentTag->attribute("v").as_string();
-			tempWay->tags.push_back(tempTag);
+			tempWay->tags.emplace_back(tempTag);
 		}
 
 		// Get node IDs
@@ -233,16 +233,16 @@ pvr::Result NavDataProcess::loadOSMData()
 
 		for (pugi::xml_named_node_iterator currentNodeId = nodeIds.begin(); currentNodeId != nodeIds.end(); ++currentNodeId)
 		{
-			tempWay->nodeIds.push_back(currentNodeId->attribute("ref").as_ullong());
+			tempWay->nodeIds.emplace_back(currentNodeId->attribute("ref").as_ullong());
 
 			if ((wayType == WayTypes::Road) && !tempWay->area)
 			{
 				Vertex& currentNode = _osm.getNodeById(tempWay->nodeIds.back());
-				currentNode.wayIds.push_back(tempWay->id);
+				currentNode.wayIds.emplace_back(tempWay->id);
 
 				if (currentNode.wayIds.size() == 2)
 				{
-					_osm.original_intersections.push_back(currentNode.id);
+					_osm.original_intersections.emplace_back(currentNode.id);
 				}
 			}
 		}
@@ -266,7 +266,7 @@ pvr::Result NavDataProcess::loadOSMData()
 				Tag name;
 				name.key = "name";
 				name.value = pvr::strings::createFormatted("%dth Street", uid);
-				tempWay->tags.push_back(name);
+				tempWay->tags.emplace_back(name);
 				uid++;
 			}
 			else if (!roadName.empty() && !tempWay->isRoundabout)
@@ -278,7 +278,7 @@ pvr::Result NavDataProcess::loadOSMData()
 					label.name = roadName;
 					label.scale = static_cast<float>(tempWay->width);
 					label.id = tempWay->id;
-					_osm.labels[LOD::LabelLOD].push_back(label);
+					_osm.labels[LOD::LabelLOD].emplace_back(label);
 				}
 			}
 			break;
@@ -443,7 +443,7 @@ void NavDataProcess::calculateRoute()
 						continue;
 					}
 
-					tempCoords.push_back(std::pair<uint64_t, glm::dvec2>(id, coords));
+					tempCoords.emplace_back(std::pair<uint64_t, glm::dvec2>(id, coords));
 
 					if (!nextJunctionFound)
 					{
@@ -478,7 +478,7 @@ void NavDataProcess::calculateRoute()
 
 								for (uint32_t j = 0; j < way.nodeIds.size(); ++j)
 								{
-									tempCoords.push_back(std::pair<uint64_t, glm::dvec2>(way.nodeIds[j], _osm.getNodeById(way.nodeIds[j]).coords));
+									tempCoords.emplace_back(std::pair<uint64_t, glm::dvec2>(way.nodeIds[j], _osm.getNodeById(way.nodeIds[j]).coords));
 								}
 							}
 						}
@@ -500,7 +500,7 @@ void NavDataProcess::calculateRoute()
 					data.distanceToNext = 0.0f;
 					data.point = tempCoords[j].second;
 
-					_osm.route.push_back(data);
+					_osm.route.emplace_back(data);
 				}
 
 				lastID = tempCoords.back().first;
@@ -555,7 +555,7 @@ void NavDataProcess::generateIcon(const uint64_t* nodeIds, size_t numNodeIds, co
 		icon.coords = coord;
 		icon.scale = 0.005f;
 		icon.id = id;
-		_osm.icons[LOD::IconLOD].push_back(icon);
+		_osm.icons[LOD::IconLOD].emplace_back(icon);
 
 		// Check if this building has a name, if it does create a label for it.
 		if (!nameEmpty)
@@ -583,7 +583,7 @@ void NavDataProcess::generateIcon(const uint64_t* nodeIds, size_t numNodeIds, co
 				}
 			}
 
-			_osm.amenityLabels[LOD::AmenityLabelLOD].push_back(label);
+			_osm.amenityLabels[LOD::AmenityLabelLOD].emplace_back(label);
 		}
 	}
 }
@@ -652,7 +652,7 @@ void NavDataProcess::processLabels(const glm::dvec2& mapWorldDim)
 
 					label.rotation = angle;
 					label.coords = pos;
-					temp.push_back(label);
+					temp.emplace_back(label);
 				}
 			}
 		}
@@ -819,7 +819,7 @@ void breakUpAllIntersectionWays(OSM& _osm, uint64_t intersection_id)
 			// CAUTION - the intersection now belongs to BOTH.
 
 			auto& newlastnode = _osm.getNodeById(originalWay.nodeIds.back());
-			newlastnode.wayIds.push_back(newWayId);
+			newlastnode.wayIds.emplace_back(newWayId);
 
 			// For the "new" road that we just created, for each of its nodes, erase the "previous" way id, add the way id
 			// we just created.
@@ -834,7 +834,7 @@ void breakUpAllIntersectionWays(OSM& _osm, uint64_t intersection_id)
 						wayIds.erase(wayIds.begin() + k);
 						if (addOnlyOnce)
 						{
-							wayIds.push_back(newWayId);
+							wayIds.emplace_back(newWayId);
 							addOnlyOnce = true;
 						}
 					}
@@ -849,7 +849,7 @@ void breakUpAllIntersectionWays(OSM& _osm, uint64_t intersection_id)
 			createNewWayWithIntersection(_osm, newNonTriangulatedRoad, newTriangulatedRoad, newWayId);
 			if (isLoop) // If it is a loop, we will enter a short recursion to break its second, newly created, part.
 			{
-				_osm.original_intersections.push_back(originalWay.nodeIds[originalIntersectIndex]);
+				_osm.original_intersections.emplace_back(originalWay.nodeIds[originalIntersectIndex]);
 				breakUpAllIntersectionWays(_osm, originalWay.nodeIds[originalIntersectIndex]); // Add it to the back of the queue...
 			}
 		}
@@ -889,13 +889,13 @@ void sortIntersectionWaysByAngle(OSM& _osm, std::vector<Way>& nonTriangulatedWay
 				wayNum = j;
 			}
 		}
-		triangulatedWays.push_back(triangulatedWaysCopy[wayNum]);
-		nonTriangulatedWays.push_back(nonTriangulatedWaysCopy[wayNum]);
+		triangulatedWays.emplace_back(triangulatedWaysCopy[wayNum]);
+		nonTriangulatedWays.emplace_back(nonTriangulatedWaysCopy[wayNum]);
 		triangulatedWaysCopy.erase(triangulatedWaysCopy.begin() + wayNum);
 		nonTriangulatedWaysCopy.erase(nonTriangulatedWaysCopy.begin() + wayNum);
 	}
-	triangulatedWays.push_back(triangulatedWaysCopy[0]); // just adding the one left in the array...
-	nonTriangulatedWays.push_back(nonTriangulatedWaysCopy[0]); // just adding the one left in the array...
+	triangulatedWays.emplace_back(triangulatedWaysCopy[0]); // just adding the one left in the array...
+	nonTriangulatedWays.emplace_back(nonTriangulatedWaysCopy[0]); // just adding the one left in the array...
 }
 
 void processIntersection(OSM& _osm, uint64_t intersection_id)
@@ -909,8 +909,8 @@ void processIntersection(OSM& _osm, uint64_t intersection_id)
 	// Determine if the junction involves only the start or end of a way
 	for (uint32_t j = 0; j < intersection_vertex.wayIds.size(); ++j)
 	{
-		nonTriangulatedWays.push_back(_osm.getOriginalRoadWay(intersection_vertex.wayIds[j]));
-		triangulatedWays.push_back(_osm.getTriangulatedRoadWay(intersection_vertex.wayIds[j]));
+		nonTriangulatedWays.emplace_back(_osm.getOriginalRoadWay(intersection_vertex.wayIds[j]));
+		triangulatedWays.emplace_back(_osm.getTriangulatedRoadWay(intersection_vertex.wayIds[j]));
 	}
 	for (uint32_t j = 0; j < nonTriangulatedWays.size(); ++j)
 	{
@@ -1016,7 +1016,7 @@ void processIntersection(OSM& _osm, uint64_t intersection_id)
 		{
 			bool intersection_point_found = false;
 			glm::dvec2 intersection_point; // The point where the right side of the current road crosses with the left side of the current road
-			newIntersectionTriangles.push_back(std::array<NodeId, 3>{ intersectionCenterId, currentWay.nodeIds[0], currentWay.nodeIds[1] });
+			newIntersectionTriangles.emplace_back(std::array<NodeId, 3>{ intersectionCenterId, currentWay.nodeIds[0], currentWay.nodeIds[1] });
 
 			// Iterate the nodes of the current and the next road (as far as required), but we need to have at least one segment left (hence the +1).
 			for (uint32_t current_node_idx = 0, next_node_idx = 0; current_node_idx + 1 < nonTriangulatedWays[currentWayNum].nodeIds.size() &&
@@ -1114,7 +1114,7 @@ void processIntersection(OSM& _osm, uint64_t intersection_id)
 
 		for (Way& w : triangulatedWays)
 		{
-			temp.push_back(std::make_pair(w.tags.data(), w.tags.size()));
+			temp.emplace_back(std::make_pair(w.tags.data(), w.tags.size()));
 			if (w.isRoundabout)
 			{
 				roundabout = true;
@@ -1175,7 +1175,7 @@ void NavDataProcess::calculateIntersections()
 
 		if (intersection_vertex.wayIds.size() > 1)
 		{
-			processed_intersections.push_back(intersection_id);
+			processed_intersections.emplace_back(intersection_id);
 		}
 	}
 
@@ -1212,7 +1212,7 @@ void NavDataProcess::convertToTriangleList()
 
 			for (uint32_t i = 0; i < triangles.size(); ++i)
 			{
-				convertedRoad.triangulatedIds.push_back(triangles[i]);
+				convertedRoad.triangulatedIds.emplace_back(triangles[i]);
 			}
 		}
 		else
@@ -1233,9 +1233,9 @@ void NavDataProcess::convertToTriangleList()
 					{
 						auto nodes = calculateEndCaps(n1, n2, wayIterator->second.width);
 
-						wayIterator->second.nodeIds.push_back(nodes[0]);
-						wayIterator->second.nodeIds.push_back(n2.id); // Need a repeated node to complete triangle list.
-						wayIterator->second.nodeIds.push_back(nodes[1]);
+						wayIterator->second.nodeIds.emplace_back(nodes[0]);
+						wayIterator->second.nodeIds.emplace_back(n2.id); // Need a repeated node to complete triangle list.
+						wayIterator->second.nodeIds.emplace_back(nodes[1]);
 					}
 				}
 				// Start of road segment.
@@ -1261,7 +1261,7 @@ void NavDataProcess::convertToTriangleList()
 				const Vertex& node0 = i % 2 == 0 ? _osm.getNodeById(wayIterator->second.nodeIds[i]) : _osm.getNodeById(wayIterator->second.nodeIds[i + 1]);
 				const Vertex& node1 = i % 2 == 0 ? _osm.getNodeById(wayIterator->second.nodeIds[i + 1]) : _osm.getNodeById(wayIterator->second.nodeIds[i]);
 				const Vertex& node2 = _osm.getNodeById(wayIterator->second.nodeIds[i + 2]);
-				convertedRoad.triangulatedIds.push_back(std::array<uint64_t, 3>{ node0.id, node1.id, node2.id });
+				convertedRoad.triangulatedIds.emplace_back(std::array<uint64_t, 3>{ node0.id, node1.id, node2.id });
 			}
 		}
 		_osm.convertedRoads[convertedRoad.id] = convertedRoad;
@@ -1326,7 +1326,7 @@ void NavDataProcess::sortTiles()
 
 		if (way.inner)
 		{
-			innerWays.push_back(way);
+			innerWays.emplace_back(way);
 			continue;
 		}
 
@@ -1356,7 +1356,7 @@ void NavDataProcess::sortTiles()
 
 		if (way.inner)
 		{
-			innerWays.push_back(way);
+			innerWays.emplace_back(way);
 			continue;
 		}
 
@@ -1400,11 +1400,11 @@ void NavDataProcess::insertWay(std::vector<Way>& insertIn, Way& way)
 {
 	if ((!insertIn.empty() && (insertIn.rbegin()->id == way.id)))
 	{
-		std::for_each(way.nodeIds.begin(), way.nodeIds.end(), [&](uint64_t nodeId) { insertIn.rbegin()->nodeIds.push_back(nodeId); });
+		std::for_each(way.nodeIds.begin(), way.nodeIds.end(), [&](uint64_t nodeId) { insertIn.rbegin()->nodeIds.emplace_back(nodeId); });
 	}
 	else
 	{
-		insertIn.push_back(way);
+		insertIn.emplace_back(way);
 	}
 }
 // The range of angles at which a bend should be tessellated - no need to tessellate almost flat road segments.
@@ -1425,7 +1425,7 @@ std::vector<uint64_t> NavDataProcess::tessellate(const std::vector<uint64_t>& ol
 
 	glm::dvec2 lastPointOnCurve;
 	bool middleNodeAdded = false;
-	newIds.push_back(oldNodeIDs.front());
+	newIds.emplace_back(oldNodeIDs.front());
 
 	for (uint32_t i = 1; i < (oldNodeIDs.size() - 1); ++i)
 	{
@@ -1502,16 +1502,16 @@ std::vector<uint64_t> NavDataProcess::tessellate(const std::vector<uint64_t>& ol
 
 				newNode.coords = lastPointOnCurve = newCoords;
 				_osm.insertOrOverwriteNode(std::move(newNode));
-				newIds.push_back(newNode.id);
+				newIds.emplace_back(newNode.id);
 			}
 		}
 		else
 		{
-			newIds.push_back(node1.id);
+			newIds.emplace_back(node1.id);
 			middleNodeAdded = false;
 		}
 	}
-	newIds.push_back(oldNodeIDs.back());
+	newIds.emplace_back(oldNodeIDs.back());
 	return newIds;
 }
 
@@ -1545,10 +1545,10 @@ std::vector<uint64_t> NavDataProcess::triangulateRoad(const std::vector<uint64_t
 		_osm.insertOrOverwriteNode(std::move(newNode3));
 
 		// Create triangles
-		newNodeIds.push_back(newNode0.id);
-		newNodeIds.push_back(newNode1.id);
-		newNodeIds.push_back(newNode2.id);
-		newNodeIds.push_back(newNode3.id);
+		newNodeIds.emplace_back(newNode0.id);
+		newNodeIds.emplace_back(newNode1.id);
+		newNodeIds.emplace_back(newNode2.id);
+		newNodeIds.emplace_back(newNode3.id);
 	}
 	else
 	{
@@ -1560,8 +1560,8 @@ std::vector<uint64_t> NavDataProcess::triangulateRoad(const std::vector<uint64_t
 			Vertex newNode1(++id, firstPerps[1], false, glm::vec2(TexUVRight, TexUVUp));
 			_osm.insertOrOverwriteNode(std::move(newNode0));
 			_osm.insertOrOverwriteNode(std::move(newNode1));
-			newNodeIds.push_back(newNode0.id);
-			newNodeIds.push_back(newNode1.id);
+			newNodeIds.emplace_back(newNode0.id);
+			newNodeIds.emplace_back(newNode1.id);
 		}
 
 		for (uint32_t i = 1; i < (nodeIds.size() - 1); ++i)
@@ -1580,8 +1580,8 @@ std::vector<uint64_t> NavDataProcess::triangulateRoad(const std::vector<uint64_t
 			_osm.insertOrOverwriteNode(std::move(newNode2));
 			_osm.insertOrOverwriteNode(std::move(newNode3));
 
-			newNodeIds.push_back(newNode2.id);
-			newNodeIds.push_back(newNode3.id);
+			newNodeIds.emplace_back(newNode2.id);
+			newNodeIds.emplace_back(newNode3.id);
 		}
 
 		{
@@ -1595,8 +1595,8 @@ std::vector<uint64_t> NavDataProcess::triangulateRoad(const std::vector<uint64_t
 			_osm.insertOrOverwriteNode(std::move(newNode4));
 			_osm.insertOrOverwriteNode(std::move(newNode5));
 
-			newNodeIds.push_back(newNode4.id);
-			newNodeIds.push_back(newNode5.id);
+			newNodeIds.emplace_back(newNode4.id);
+			newNodeIds.emplace_back(newNode5.id);
 		}
 	}
 	for (auto&& newNodeId : newNodeIds)
@@ -1976,19 +1976,19 @@ void NavDataProcess::clipRoad(
 			{
 				auto& tmp = tile.nodes[nodeId] = vertex0;
 				tmp.id = nodeId;
-				newWay.nodeIds.push_back(nodeId);
+				newWay.nodeIds.emplace_back(nodeId);
 				_osm.nodes[nodeId++] = vertex0;
 			}
 			{
 				auto& tmp = tile.nodes[nodeId] = vertex1;
 				tmp.id = nodeId;
-				newWay.nodeIds.push_back(nodeId);
+				newWay.nodeIds.emplace_back(nodeId);
 				_osm.nodes[nodeId++] = vertex1;
 			}
 			{
 				auto& tmp = tile.nodes[nodeId] = vertex2;
 				tmp.id = nodeId;
-				newWay.nodeIds.push_back(nodeId);
+				newWay.nodeIds.emplace_back(nodeId);
 				_osm.nodes[nodeId++] = vertex2;
 			}
 

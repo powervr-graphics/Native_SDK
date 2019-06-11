@@ -124,16 +124,15 @@ inline bool isVariableTypeNormalized(VariableType item)
 	return (static_cast<uint32_t>(item) < 10) && !(static_cast<uint32_t>(item) & 2);
 }
 
-/// <summary>The PixelFormat class fully defines a Pixel Format (channels, format, compression, bit width etc.).
-/// </summary>
+/// <summary>The PixelFormat class fully defines a Pixel Format (channels, format, compression, bit width etc.).</summary>
 class PixelFormat
 {
 public:
 	/// <summary>64 bit Integer representation as 32 lower bits and 32 higher bits</summary>
 	struct LowHigh
 	{
-		uint32_t Low; //!<  Lower 32-bits of the pixel format storage
-		uint32_t High; //!<  Higher 32-bits of the pixel format storage
+		uint32_t Low; //!< Lower 32-bits of the pixel format storage
+		uint32_t High; //!< Higher 32-bits of the pixel format storage
 	};
 
 	/// <summary>Default Constructor. Creates an empty pixeltype.</summary>
@@ -167,8 +166,7 @@ public:
 	/// <summary>Returns the "content", or "name" of a channel, as a character. (normally r,g,b,a,d,s,l,i)</summary>
 	/// <param name="channel">The zero-indexed channel of the texture(0, 1, 2, 3)</param>
 	/// <returns>Return a character describing the channel contents</returns>
-	/// <remarks>For example, the format d24s8 would return 'd' for channel:0, 's' for channel:1, NULL otherwise
-	/// </remarks>
+	/// <remarks>For example, the format d24s8 would return 'd' for channel:0, 's' for channel:1, NULL otherwise</remarks>
 	char getChannelContent(uint8_t channel) const
 	{
 		if (channel >= 4)
@@ -248,7 +246,9 @@ public:
 	/// <returns>Return the number of bits per pixel</returns>
 	uint8_t getBitsPerPixel() const
 	{
-		return _format._pixelTypeChar[4] + _format._pixelTypeChar[5] + _format._pixelTypeChar[6] + _format._pixelTypeChar[7];
+		return (_format.Part.High == 0 && _format.Part.Low == static_cast<uint32_t>(CompressedPixelFormat::SharedExponentR9G9B9E5))
+			? 32
+			: _format._pixelTypeChar[4] + _format._pixelTypeChar[5] + _format._pixelTypeChar[6] + _format._pixelTypeChar[7];
 	}
 
 	/// <summary>operator==, validate if a given pixel format is same as this.</summary>
@@ -313,132 +313,232 @@ private:
 	PixelFormatImpl _format;
 
 public:
-	// List of common used pixel formats
+	/// <summary>Retrieves a pixel format for Intensity 8.</summary>
+	/// <returns>An 8 bit intensity value</returns>
 	static const PixelFormat Intensity8()
 	{
 		return PixelFormat('i', '\0', '\0', '\0', 8, 0, 0, 0);
 	}
 
+	/// <summary>Retrieves a pixel format for red 8.</summary>
+	/// <returns>An 8 bit red value</returns>
 	static const PixelFormat R_8()
 	{
 		return PixelFormat('r', '\0', '\0', '\0', 8, 0, 0, 0);
 	}
+
+	/// <summary>Retrieves a pixel format for red and green channels with 8 bits per channel.</summary>
+	/// <returns>An 8 bit red and green channel</returns>
 	static const PixelFormat RG_88()
 	{
 		return PixelFormat('r', 'g', '\0', '\0', 8, 8, 0, 0);
 	}
+
+	/// <summary>Retrieves a pixel format for red, green and blue channels with 8 bits per channel.</summary>
+	/// <returns>An 8 bit red, green and blue channel</returns>
 	static const PixelFormat RGB_888()
 	{
 		return PixelFormat('r', 'g', 'b', '\0', 8, 8, 8, 0);
 	}
+
+	/// <summary>Retrieves a pixel format for red, green, blue and alpha channels with 8 bits per channel.</summary>
+	/// <returns>An 8 bit red, green, blue and alpha channel</returns>
 	static const PixelFormat RGBA_8888()
 	{
 		return PixelFormat('r', 'g', 'b', 'a', 8, 8, 8, 8);
 	}
 
+	/// <summary>Retrieves a pixel format for alpha, blue, green and red channels with 8 bits per channel.</summary>
+	/// <returns>An 8 bit alpha, blue, green, red channel</returns>
 	static const PixelFormat ABGR_8888()
 	{
 		return PixelFormat('a', 'b', 'g', 'r', 8, 8, 8, 8);
 	}
 
+	/// <summary>Retrieves a pixel format for red with 16 bits.</summary>
+	/// <returns>An 16 bit red value</returns>
 	static const PixelFormat R_16()
 	{
 		return PixelFormat('r', '\0', '\0', '\0', 16, 0, 0, 0);
 	}
+
+	/// <summary>Retrieves a pixel format for red and green channels with 16 bits per channel.</summary>
+	/// <returns>An 16 bit red and green channel</returns>
 	static const PixelFormat RG_1616()
 	{
 		return PixelFormat('r', 'g', '\0', '\0', 16, 16, 0, 0);
 	}
 
+	/// <summary>Retrieves a pixel format for red with 32 bits.</summary>
+	/// <returns>An 32 bit red value</returns>
 	static const PixelFormat R_32()
 	{
 		return PixelFormat('r', '\0', '\0', '\0', 32, 0, 0, 0);
 	}
+
+	/// <summary>Retrieves a pixel format for red and green channels with 32 bits per channel.</summary>
+	/// <returns>An 32 bit red and green channel</returns>
 	static const PixelFormat RG_3232()
 	{
 		return PixelFormat('r', 'g', '\0', '\0', 32, 32, 0, 0);
 	}
+
+	/// <summary>Retrieves a pixel format for red, green and blue channels with 32 bits per channel.</summary>
+	/// <returns>An 32 bit red, green and blue channel</returns>
 	static const PixelFormat RGB_323232()
 	{
 		return PixelFormat('r', 'g', 'b', '\0', 32, 32, 32, 0);
 	}
+
+	/// <summary>Retrieves a pixel format for red, green, blue and alpha channels with 32 bits per channel.</summary>
+	/// <returns>An 32 bit red, green, blue and alpha channel</returns>
 	static const PixelFormat RGBA_32323232()
 	{
 		return PixelFormat('r', 'g', 'b', 'a', 32, 32, 32, 32);
 	}
 
+	/// <summary>Retrieves a pixel format for red, green and blue channels with 5 bits for the red and blue channels and 6 bits for the green channel.</summary>
+	/// <returns>An red, green and blue pixel format with 5 bits for the red and blue channels and 6 bits for the green channel</returns>
 	static const PixelFormat RGB_565()
 	{
 		return PixelFormat('r', 'g', 'b', '\0', 5, 6, 5, 0);
 	}
+
+	/// <summary>Retrieves a pixel format for red, green, blue and alpha channels with 4 bits per channel.</summary>
+	/// <returns>An 4 bit red, green, blue and alpha channel</returns>
 	static const PixelFormat RGBA_4444()
 	{
 		return PixelFormat('r', 'g', 'b', 'a', 4, 4, 4, 4);
 	}
+
+	/// <summary>Retrieves a pixel format for red, green, blue and alpha channels with 5 bits per channel for the red, green and blue channels with 1 bit for alpha.</summary>
+	/// <returns>An 32 bit red, green, blue and alpha channel</returns>
 	static const PixelFormat RGBA_5551()
 	{
 		return PixelFormat('r', 'g', 'b', 'a', 5, 5, 5, 1);
 	}
 
+	/// <summary>Retrieves a pixel format for blue, green and red channels with 8 bits per channel.</summary>
+	/// <returns>An 8 bit blue, green and red channel pixel format</returns>
 	static const PixelFormat BGR_888()
 	{
 		return PixelFormat('b', 'g', 'r', '\0', 8, 8, 8, 0);
 	}
+
+	/// <summary>Retrieves a pixel format for blue, green, red and alpha channels with 8 bits per channel.</summary>
+	/// <returns>An 8 bit blue, green, red and alpha channel pixel format</returns>
 	static const PixelFormat BGRA_8888()
 	{
 		return PixelFormat('b', 'g', 'r', 'a', 8, 8, 8, 8);
 	}
 
+	/// <summary>Retrieves a pixel format for depth with 8 bits.</summary>
+	/// <returns>An 8 bit depth channel pixel format</returns>
 	static const PixelFormat Depth8()
 	{
 		return PixelFormat('d', '\0', '\0', '\0', 8, 0, 0, 0);
 	}
+
+	/// <summary>Retrieves a pixel format for depth with 16 bits.</summary>
+	/// <returns>An 16 bit depth channel pixel format</returns>
 	static const PixelFormat Depth16()
 	{
 		return PixelFormat('d', '\0', '\0', '\0', 16, 0, 0, 0);
 	}
+
+	/// <summary>Retrieves a pixel format for depth with 24 bits.</summary>
+	/// <returns>An 24 bit depth channel pixel format</returns>
 	static const PixelFormat Depth24()
 	{
 		return PixelFormat('d', '\0', '\0', '\0', 24, 0, 0, 0);
 	}
+
+	/// <summary>Retrieves a pixel format for depth with 32 bits.</summary>
+	/// <returns>An 32 bit depth channel pixel format</returns>
 	static const PixelFormat Depth32()
 	{
 		return PixelFormat('d', '\0', '\0', '\0', 32, 0, 0, 0);
 	}
+
+	/// <summary>Retrieves a pixel format for depth with 16 bits and stencil with 8 bits.</summary>
+	/// <returns>A 16 bit depth channel with 8 bits for stencil pixel format</returns>
 	static const PixelFormat Depth16Stencil8()
 	{
 		return PixelFormat('d', 's', '\0', '\0', 16, 8, 0, 0);
 	}
+
+	/// <summary>Retrieves a pixel format for depth with 24 bits and stencil with 8 bits.</summary>
+	/// <returns>A 24 bit depth channel with 8 bits for stencil pixel format</returns>
 	static const PixelFormat Depth24Stencil8()
 	{
 		return PixelFormat('d', 's', '\0', '\0', 24, 8, 0, 0);
 	}
+
+	/// <summary>Retrieves a pixel format for depth with 32 bits and stencil with 8 bits.</summary>
+	/// <returns>A 32 bit depth channel with 8 bits for stencil pixel format</returns>
 	static const PixelFormat Depth32Stencil8()
 	{
 		return PixelFormat('d', 's', '\0', '\0', 32, 8, 0, 0);
 	}
+
+	/// <summary>Retrieves a pixel format for stencil with 8 bits.</summary>
+	/// <returns>An 8 bit stencil channel pixel format</returns>
 	static const PixelFormat Stencil8()
 	{
 		return PixelFormat('s', '\0', '\0', '\0', 8, 0, 0, 0);
 	}
 
+	/// <summary>Retrieves a pixel format for luminance with 32 bits.</summary>
+	/// <returns>An 32 bit luminance channel pixel format</returns>
 	static const PixelFormat L_32()
 	{
 		return PixelFormat('l', '\0', '\0', '\0', 32, 0, 0, 0);
 	}
+
+	/// <summary>Retrieves a pixel format for luminance and alpha channels with 16 bits per channel.</summary>
+	/// <returns>An 16 bit luminance and alpha channel pixel format</returns>
 	static const PixelFormat LA_1616()
 	{
 		return PixelFormat('l', 'a', '\0', '\0', 16, 16, 0, 0);
 	}
+
+	/// <summary>Retrieves a pixel format for luminance and alpha channels with 32 bits per channel.</summary>
+	/// <returns>An 32 bit luminance and alpha channel pixel format</returns>
 	static const PixelFormat LA_3232()
 	{
 		return PixelFormat('l', 'a', '\0', '\0', 32, 32, 0, 0);
 	}
 
+	/// <summary>Retrieves a pixel format for red, green, blue and alpha channels with 16 bits per channel.</summary>
+	/// <returns>An 16 bit red, green, blue and alpha channel</returns>
 	static const PixelFormat RGBA_16161616()
 	{
 		return PixelFormat('r', 'g', 'b', 'a', 16, 16, 16, 16);
 	}
+
+	/// <summary>Retrieves a pixel format for red, green and blue channels with 16 bits per channel.</summary>
+	/// <returns>An 16 bit red, green and blue channel</returns>
+	static const PixelFormat RGB_161616()
+	{
+		return PixelFormat('r', 'g', 'b', '\0', 16, 16, 16, 0);
+	}
+
+	/// <summary>Retrieves a packed pixel format for blue, green and red channels with 10 bits for the blue and 11 bits for the green and red channel. This pixel format is
+	/// identical to BGR111110.</summary> <returns>An blue, green and red pixel format with 10 bits for the blue and 11 bits for the green and red channel</returns>
+	static const PixelFormat RGB_111110()
+	{
+		return PixelFormat('b', 'g', 'r', '\0', 10, 11, 11, 0);
+	}
+
+	/// <summary>Retrieves a packed pixel format for blue, green and red channels with 10 bits for the blue and 11 bits for the green and red channel. This pixel format is
+	/// identical to RGB111110.</summary> <returns>An blue, green and red pixel format with 10 bits for the blue and 11 bits for the green and red channel</returns>
+	static const PixelFormat BGR_101111()
+	{
+		return RGB_111110();
+	}
+
+	/// <summary>Retrieves an unknown pixel format.</summary>
+	/// <returns>An unknown pixel format</returns>
 	static const PixelFormat Unknown()
 	{
 		return PixelFormat(0, 0, 0, 0, 0, 0, 0, 0);
@@ -476,8 +576,7 @@ public:
 /// <param name="C3Bits">The number of bits of the 3rd channel</param>
 /// <remarks>Use this template class to generate a 3 channel PixelID (64-bit identifier for a pixel format used
 /// throughout PVR Assets from the channel information. Simply define the template parameters for your class and
-/// get the ID member. EXAMPLE USE: <code>uint64_t myPixelID = GeneratePixelType3&lt;'r','g','b',8,8,8&gt::ID</code>
-/// </remarks>
+/// get the ID member. EXAMPLE USE: <code>uint64_t myPixelID = GeneratePixelType3&lt;'r','g','b',8,8,8&gt::ID</code></remarks>
 template<char C1Name, char C2Name, char C3Name, uint8_t C1Bits, uint8_t C2Bits, uint8_t C3Bits>
 class GeneratePixelType3
 {
@@ -494,8 +593,7 @@ public:
 /// <param name="C2Bits">The number of bits of the 2nd channel</param>
 /// <remarks>Use this template class to generate a 2 channel PixelID (64-bit identifier for a pixel format used
 /// throughout PVR Assets from the channel information. Simply define the template parameters for your class and
-/// get the ID member. EXAMPLE USE: <code>uint64_t myPixelID = GeneratePixelType2&lt;'r','a',8,8&gt::ID</code>
-/// </remarks>
+/// get the ID member. EXAMPLE USE: <code>uint64_t myPixelID = GeneratePixelType2&lt;'r','a',8,8&gt::ID</code></remarks>
 template<char C1Name, char C2Name, uint8_t C1Bits, uint8_t C2Bits>
 class GeneratePixelType2
 {

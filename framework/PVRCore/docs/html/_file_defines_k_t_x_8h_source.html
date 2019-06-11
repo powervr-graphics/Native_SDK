@@ -84,44 +84,43 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">FileDefinesKTX.h</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;</div>
+<a href="_file_defines_k_t_x_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;</div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#pragma once</span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="keyword">namespace </span>pvr {</div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="keyword">namespace </span>texture_ktx {</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="comment">// Khronos texture file header</span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="keyword">struct </span>FileHeader</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;{</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;    uint8_t identifier[12];</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;    uint32_t endianness;</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    uint32_t glType;</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    uint32_t glTypeSize;</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    uint32_t glFormat;</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    uint32_t glInternalFormat;</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    uint32_t glBaseInternalFormat;</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    uint32_t pixelWidth;</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    uint32_t pixelHeight;</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    uint32_t pixelDepth;</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    uint32_t numArrayElements;</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    uint32_t numFaces;</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    uint32_t numMipmapLevels;</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    uint32_t bytesOfKeyValueData;</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;};</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="comment">// Magic identifier</span></div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="keyword">static</span> <span class="keyword">const</span> uint8_t c_identifier[] = { 0xAB, 0x4B, 0x54, 0x58, 0x20, 0x31, 0x31, 0xBB, 0x0D, 0x0A, 0x1A, 0x0A };</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="comment">// Reference number to verify endianness of a file</span></div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="keyword">static</span> <span class="keyword">const</span> uint32_t c_endianReference = 0x04030201;</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="comment">// Expected size of a header in file</span></div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="keyword">static</span> <span class="keyword">const</span> uint32_t c_expectedHeaderSize = 64;</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="comment">// Identifier for the orientation meta data</span></div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;<span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">char</span> c_orientationMetaDataKey[] = <span class="stringliteral">&quot;KTXOrientation&quot;</span>;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;<span class="keyword">namespace </span>OpenGLFormats {</div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="keyword">namespace </span>pvr {</div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="keyword">namespace </span>texture_ktx {</div>
+<div class="line"><a name="l00013"></a><span class="lineno"><a class="line" href="structpvr_1_1texture__ktx_1_1_file_header.html">   13</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structpvr_1_1texture__ktx_1_1_file_header.html">FileHeader</a></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;{</div>
+<div class="line"><a name="l00015"></a><span class="lineno"><a class="line" href="structpvr_1_1texture__ktx_1_1_file_header.html#acae2aa7f96273a2553680d2234087ad2">   15</a></span>&#160;    uint8_t <a class="code" href="structpvr_1_1texture__ktx_1_1_file_header.html#acae2aa7f96273a2553680d2234087ad2">identifier</a>[12]; </div>
+<div class="line"><a name="l00016"></a><span class="lineno"><a class="line" href="structpvr_1_1texture__ktx_1_1_file_header.html#a3fe6ad4cfe7de3a180ebeab26c4d2938">   16</a></span>&#160;    uint32_t <a class="code" href="structpvr_1_1texture__ktx_1_1_file_header.html#a3fe6ad4cfe7de3a180ebeab26c4d2938">endianness</a>; </div>
+<div class="line"><a name="l00017"></a><span class="lineno"><a class="line" href="structpvr_1_1texture__ktx_1_1_file_header.html#a1634bbd9159c23dbf8efbd1a9e5663ac">   17</a></span>&#160;    uint32_t <a class="code" href="structpvr_1_1texture__ktx_1_1_file_header.html#a1634bbd9159c23dbf8efbd1a9e5663ac">glType</a>; </div>
+<div class="line"><a name="l00018"></a><span class="lineno"><a class="line" href="structpvr_1_1texture__ktx_1_1_file_header.html#a915ef7c905e8bf3af02ffecb268ed103">   18</a></span>&#160;    uint32_t <a class="code" href="structpvr_1_1texture__ktx_1_1_file_header.html#a915ef7c905e8bf3af02ffecb268ed103">glTypeSize</a>; </div>
+<div class="line"><a name="l00019"></a><span class="lineno"><a class="line" href="structpvr_1_1texture__ktx_1_1_file_header.html#a1b59bac3b189a49300a83ffd8317a3f6">   19</a></span>&#160;    uint32_t <a class="code" href="structpvr_1_1texture__ktx_1_1_file_header.html#a1b59bac3b189a49300a83ffd8317a3f6">glFormat</a>; </div>
+<div class="line"><a name="l00020"></a><span class="lineno"><a class="line" href="structpvr_1_1texture__ktx_1_1_file_header.html#a6bb58bc8dec3ce00028110c9a4b46994">   20</a></span>&#160;    uint32_t <a class="code" href="structpvr_1_1texture__ktx_1_1_file_header.html#a6bb58bc8dec3ce00028110c9a4b46994">glInternalFormat</a>; </div>
+<div class="line"><a name="l00021"></a><span class="lineno"><a class="line" href="structpvr_1_1texture__ktx_1_1_file_header.html#a45cf938d276c8ceb464d1d29b8952c02">   21</a></span>&#160;    uint32_t <a class="code" href="structpvr_1_1texture__ktx_1_1_file_header.html#a45cf938d276c8ceb464d1d29b8952c02">glBaseInternalFormat</a>; </div>
+<div class="line"><a name="l00022"></a><span class="lineno"><a class="line" href="structpvr_1_1texture__ktx_1_1_file_header.html#aabbc110d2d8a0cf6d8d399fe5d4155d9">   22</a></span>&#160;    uint32_t <a class="code" href="structpvr_1_1texture__ktx_1_1_file_header.html#aabbc110d2d8a0cf6d8d399fe5d4155d9">pixelWidth</a>; </div>
+<div class="line"><a name="l00023"></a><span class="lineno"><a class="line" href="structpvr_1_1texture__ktx_1_1_file_header.html#ae24a7341737befc899d564702d6e2002">   23</a></span>&#160;    uint32_t <a class="code" href="structpvr_1_1texture__ktx_1_1_file_header.html#ae24a7341737befc899d564702d6e2002">pixelHeight</a>; </div>
+<div class="line"><a name="l00024"></a><span class="lineno"><a class="line" href="structpvr_1_1texture__ktx_1_1_file_header.html#a675feaacbf44bc3b6430a727bc23e007">   24</a></span>&#160;    uint32_t <a class="code" href="structpvr_1_1texture__ktx_1_1_file_header.html#a675feaacbf44bc3b6430a727bc23e007">pixelDepth</a>; </div>
+<div class="line"><a name="l00025"></a><span class="lineno"><a class="line" href="structpvr_1_1texture__ktx_1_1_file_header.html#a167e3fbc45a403a68319c0e34e8b93bf">   25</a></span>&#160;    uint32_t <a class="code" href="structpvr_1_1texture__ktx_1_1_file_header.html#a167e3fbc45a403a68319c0e34e8b93bf">numArrayElements</a>; </div>
+<div class="line"><a name="l00026"></a><span class="lineno"><a class="line" href="structpvr_1_1texture__ktx_1_1_file_header.html#ab962b4f95078c6c6f3030c1306455d7d">   26</a></span>&#160;    uint32_t <a class="code" href="structpvr_1_1texture__ktx_1_1_file_header.html#ab962b4f95078c6c6f3030c1306455d7d">numFaces</a>; </div>
+<div class="line"><a name="l00027"></a><span class="lineno"><a class="line" href="structpvr_1_1texture__ktx_1_1_file_header.html#a9e0d52ac2ec68dfc15d2e2d91f8abe96">   27</a></span>&#160;    uint32_t <a class="code" href="structpvr_1_1texture__ktx_1_1_file_header.html#a9e0d52ac2ec68dfc15d2e2d91f8abe96">numMipmapLevels</a>; </div>
+<div class="line"><a name="l00028"></a><span class="lineno"><a class="line" href="structpvr_1_1texture__ktx_1_1_file_header.html#ad848723b936356e02a25f547b76376f2">   28</a></span>&#160;    uint32_t <a class="code" href="structpvr_1_1texture__ktx_1_1_file_header.html#ad848723b936356e02a25f547b76376f2">bytesOfKeyValueData</a>; </div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;};</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="comment">// Magic identifier</span></div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="keyword">static</span> <span class="keyword">const</span> uint8_t c_identifier[] = { 0xAB, 0x4B, 0x54, 0x58, 0x20, 0x31, 0x31, 0xBB, 0x0D, 0x0A, 0x1A, 0x0A };</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="comment">// Reference number to verify endianness of a file</span></div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="keyword">static</span> <span class="keyword">const</span> uint32_t c_endianReference = 0x04030201;</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="comment">// Expected size of a header in file</span></div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="keyword">static</span> <span class="keyword">const</span> uint32_t c_expectedHeaderSize = 64;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="comment">// Identifier for the orientation meta data</span></div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">char</span> c_orientationMetaDataKey[] = <span class="stringliteral">&quot;KTXOrientation&quot;</span>;</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="keyword">namespace </span>OpenGLFormats {</div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="keyword">enum</span> Enum</div>
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;{</div>
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <span class="comment">/* glTypes */</span></div>
@@ -364,9 +363,24 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;    GL_PALETTE8_RGBA4_OES = 0x8B98,</div>
 <div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;    GL_PALETTE8_RGB5_A1_OES = 0x8B99</div>
 <div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;};</div>
-<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;}</div>
+<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;} <span class="comment">// namespace OpenGLFormats</span></div>
 <div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;} <span class="comment">// namespace texture_ktx</span></div>
 <div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;} <span class="comment">// namespace pvr</span></div>
+<div class="ttc" id="structpvr_1_1texture__ktx_1_1_file_header_html_ad848723b936356e02a25f547b76376f2"><div class="ttname"><a href="structpvr_1_1texture__ktx_1_1_file_header.html#ad848723b936356e02a25f547b76376f2">pvr::texture_ktx::FileHeader::bytesOfKeyValueData</a></div><div class="ttdeci">uint32_t bytesOfKeyValueData</div><div class="ttdoc">The bytes of key value data. </div><div class="ttdef"><b>Definition:</b> FileDefinesKTX.h:28</div></div>
+<div class="ttc" id="structpvr_1_1texture__ktx_1_1_file_header_html_a167e3fbc45a403a68319c0e34e8b93bf"><div class="ttname"><a href="structpvr_1_1texture__ktx_1_1_file_header.html#a167e3fbc45a403a68319c0e34e8b93bf">pvr::texture_ktx::FileHeader::numArrayElements</a></div><div class="ttdeci">uint32_t numArrayElements</div><div class="ttdoc">The number of array elements. </div><div class="ttdef"><b>Definition:</b> FileDefinesKTX.h:25</div></div>
+<div class="ttc" id="structpvr_1_1texture__ktx_1_1_file_header_html_a915ef7c905e8bf3af02ffecb268ed103"><div class="ttname"><a href="structpvr_1_1texture__ktx_1_1_file_header.html#a915ef7c905e8bf3af02ffecb268ed103">pvr::texture_ktx::FileHeader::glTypeSize</a></div><div class="ttdeci">uint32_t glTypeSize</div><div class="ttdoc">The size of the gl type. </div><div class="ttdef"><b>Definition:</b> FileDefinesKTX.h:18</div></div>
+<div class="ttc" id="structpvr_1_1texture__ktx_1_1_file_header_html_a9e0d52ac2ec68dfc15d2e2d91f8abe96"><div class="ttname"><a href="structpvr_1_1texture__ktx_1_1_file_header.html#a9e0d52ac2ec68dfc15d2e2d91f8abe96">pvr::texture_ktx::FileHeader::numMipmapLevels</a></div><div class="ttdeci">uint32_t numMipmapLevels</div><div class="ttdoc">The number of mip map levels. </div><div class="ttdef"><b>Definition:</b> FileDefinesKTX.h:27</div></div>
+<div class="ttc" id="structpvr_1_1texture__ktx_1_1_file_header_html_a1634bbd9159c23dbf8efbd1a9e5663ac"><div class="ttname"><a href="structpvr_1_1texture__ktx_1_1_file_header.html#a1634bbd9159c23dbf8efbd1a9e5663ac">pvr::texture_ktx::FileHeader::glType</a></div><div class="ttdeci">uint32_t glType</div><div class="ttdoc">The gl type. </div><div class="ttdef"><b>Definition:</b> FileDefinesKTX.h:17</div></div>
+<div class="ttc" id="structpvr_1_1texture__ktx_1_1_file_header_html_aabbc110d2d8a0cf6d8d399fe5d4155d9"><div class="ttname"><a href="structpvr_1_1texture__ktx_1_1_file_header.html#aabbc110d2d8a0cf6d8d399fe5d4155d9">pvr::texture_ktx::FileHeader::pixelWidth</a></div><div class="ttdeci">uint32_t pixelWidth</div><div class="ttdoc">The width of the KTX in pixels. </div><div class="ttdef"><b>Definition:</b> FileDefinesKTX.h:22</div></div>
+<div class="ttc" id="structpvr_1_1texture__ktx_1_1_file_header_html_a6bb58bc8dec3ce00028110c9a4b46994"><div class="ttname"><a href="structpvr_1_1texture__ktx_1_1_file_header.html#a6bb58bc8dec3ce00028110c9a4b46994">pvr::texture_ktx::FileHeader::glInternalFormat</a></div><div class="ttdeci">uint32_t glInternalFormat</div><div class="ttdoc">The internal format. </div><div class="ttdef"><b>Definition:</b> FileDefinesKTX.h:20</div></div>
+<div class="ttc" id="structpvr_1_1texture__ktx_1_1_file_header_html_a675feaacbf44bc3b6430a727bc23e007"><div class="ttname"><a href="structpvr_1_1texture__ktx_1_1_file_header.html#a675feaacbf44bc3b6430a727bc23e007">pvr::texture_ktx::FileHeader::pixelDepth</a></div><div class="ttdeci">uint32_t pixelDepth</div><div class="ttdoc">The depth of the KTX in pixels. </div><div class="ttdef"><b>Definition:</b> FileDefinesKTX.h:24</div></div>
+<div class="ttc" id="structpvr_1_1texture__ktx_1_1_file_header_html_a45cf938d276c8ceb464d1d29b8952c02"><div class="ttname"><a href="structpvr_1_1texture__ktx_1_1_file_header.html#a45cf938d276c8ceb464d1d29b8952c02">pvr::texture_ktx::FileHeader::glBaseInternalFormat</a></div><div class="ttdeci">uint32_t glBaseInternalFormat</div><div class="ttdoc">The base internal format. </div><div class="ttdef"><b>Definition:</b> FileDefinesKTX.h:21</div></div>
+<div class="ttc" id="structpvr_1_1texture__ktx_1_1_file_header_html_ae24a7341737befc899d564702d6e2002"><div class="ttname"><a href="structpvr_1_1texture__ktx_1_1_file_header.html#ae24a7341737befc899d564702d6e2002">pvr::texture_ktx::FileHeader::pixelHeight</a></div><div class="ttdeci">uint32_t pixelHeight</div><div class="ttdoc">The height of the KTX in pixels. </div><div class="ttdef"><b>Definition:</b> FileDefinesKTX.h:23</div></div>
+<div class="ttc" id="structpvr_1_1texture__ktx_1_1_file_header_html_ab962b4f95078c6c6f3030c1306455d7d"><div class="ttname"><a href="structpvr_1_1texture__ktx_1_1_file_header.html#ab962b4f95078c6c6f3030c1306455d7d">pvr::texture_ktx::FileHeader::numFaces</a></div><div class="ttdeci">uint32_t numFaces</div><div class="ttdoc">The number of faces. </div><div class="ttdef"><b>Definition:</b> FileDefinesKTX.h:26</div></div>
+<div class="ttc" id="structpvr_1_1texture__ktx_1_1_file_header_html"><div class="ttname"><a href="structpvr_1_1texture__ktx_1_1_file_header.html">pvr::texture_ktx::FileHeader</a></div><div class="ttdoc">Khronos texture file header</div><div class="ttdef"><b>Definition:</b> FileDefinesKTX.h:13</div></div>
+<div class="ttc" id="structpvr_1_1texture__ktx_1_1_file_header_html_acae2aa7f96273a2553680d2234087ad2"><div class="ttname"><a href="structpvr_1_1texture__ktx_1_1_file_header.html#acae2aa7f96273a2553680d2234087ad2">pvr::texture_ktx::FileHeader::identifier</a></div><div class="ttdeci">uint8_t identifier[12]</div><div class="ttdoc">The identifier used for KTX files. </div><div class="ttdef"><b>Definition:</b> FileDefinesKTX.h:15</div></div>
+<div class="ttc" id="structpvr_1_1texture__ktx_1_1_file_header_html_a3fe6ad4cfe7de3a180ebeab26c4d2938"><div class="ttname"><a href="structpvr_1_1texture__ktx_1_1_file_header.html#a3fe6ad4cfe7de3a180ebeab26c4d2938">pvr::texture_ktx::FileHeader::endianness</a></div><div class="ttdeci">uint32_t endianness</div><div class="ttdoc">The endianness used. </div><div class="ttdef"><b>Definition:</b> FileDefinesKTX.h:16</div></div>
+<div class="ttc" id="structpvr_1_1texture__ktx_1_1_file_header_html_a1b59bac3b189a49300a83ffd8317a3f6"><div class="ttname"><a href="structpvr_1_1texture__ktx_1_1_file_header.html#a1b59bac3b189a49300a83ffd8317a3f6">pvr::texture_ktx::FileHeader::glFormat</a></div><div class="ttdeci">uint32_t glFormat</div><div class="ttdoc">The gl format. </div><div class="ttdef"><b>Definition:</b> FileDefinesKTX.h:19</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.4-->
 <!-- start footer part (NON TREEVIEW ONLY!!) -->

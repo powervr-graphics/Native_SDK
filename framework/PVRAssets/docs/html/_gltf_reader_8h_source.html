@@ -89,43 +89,43 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="keyword">namespace </span>pvr {</div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="keyword">namespace </span>assets {</div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="keyword">class </span>Model;</div>
-<div class="line"><a name="l00006"></a><span class="lineno"><a class="line" href="classpvr_1_1assets_1_1_gltf_reader.html">    6</a></span>&#160;<span class="keyword">class </span><a class="code" href="classpvr_1_1assets_1_1_gltf_reader.html">GltfReader</a> : <span class="keyword">public</span> AssetReader&lt;Model&gt;</div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;{</div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;    <a class="code" href="classpvr_1_1assets_1_1_gltf_reader.html#a303f106ce26a76cc6822e7c9468bc51c">GltfReader</a>(IAssetProvider&amp; assetProvider);</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;    <a class="code" href="classpvr_1_1assets_1_1_gltf_reader.html#a303f106ce26a76cc6822e7c9468bc51c">GltfReader</a>(Stream::ptr_type assetStream, IAssetProvider&amp; assetProvider);</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;    <span class="keywordtype">void</span> readAsset_(<a class="code" href="classpvr_1_1assets_1_1_model.html">Model</a>&amp; asset);</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    <span class="keywordtype">size_t</span> _fileNameBeginPos;</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    IAssetProvider&amp; _assetProvider;</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;};</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;</div>
-<div class="line"><a name="l00022"></a><span class="lineno"><a class="line" href="classpvr_1_1assets_1_1_gltf_reader.html#a303f106ce26a76cc6822e7c9468bc51c">   22</a></span>&#160;<span class="keyword">inline</span> <a class="code" href="classpvr_1_1assets_1_1_gltf_reader.html#a303f106ce26a76cc6822e7c9468bc51c">GltfReader::GltfReader</a>(IAssetProvider&amp; assetProvider) : _assetProvider(assetProvider) {}</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;</div>
-<div class="line"><a name="l00024"></a><span class="lineno"><a class="line" href="classpvr_1_1assets_1_1_gltf_reader.html#a3ddd681ee252ddf4df17474e6a21b31f">   24</a></span>&#160;<span class="keyword">inline</span> <a class="code" href="classpvr_1_1assets_1_1_gltf_reader.html#a303f106ce26a76cc6822e7c9468bc51c">GltfReader::GltfReader</a>(Stream::ptr_type assetStream, IAssetProvider&amp; assetProvider) : AssetReader&lt;<a class="code" href="classpvr_1_1assets_1_1_model.html">Model</a>&gt;(std::move(assetStream)), _assetProvider(assetProvider)</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;{</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    <span class="keyword">const</span> std::string&amp; path = _assetStream-&gt;getFileName();</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    _fileNameBeginPos = path.find_last_of(</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;#ifdef _WIN32gltfStream</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;        <span class="charliteral">&#39;\\&#39;</span></div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;#<span class="keywordflow">else</span></div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;        <span class="charliteral">&#39;/&#39;</span></div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;#endif</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    );</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <span class="keywordflow">if</span> (_fileNameBeginPos != std::string::npos)</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    {</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;        _fileNameBeginPos += 1;</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    }</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;}</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;} <span class="comment">// namespace assets</span></div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;} <span class="comment">// namespace pvr</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno"><a class="line" href="classpvr_1_1assets_1_1_gltf_reader.html">    8</a></span>&#160;<span class="keyword">class </span><a class="code" href="classpvr_1_1assets_1_1_gltf_reader.html">GltfReader</a> : <span class="keyword">public</span> AssetReader&lt;Model&gt;</div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;{</div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;    <a class="code" href="classpvr_1_1assets_1_1_gltf_reader.html#a303f106ce26a76cc6822e7c9468bc51c">GltfReader</a>(IAssetProvider&amp; assetProvider);</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    <a class="code" href="classpvr_1_1assets_1_1_gltf_reader.html#a303f106ce26a76cc6822e7c9468bc51c">GltfReader</a>(Stream::ptr_type assetStream, IAssetProvider&amp; assetProvider);</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    <span class="keywordtype">void</span> readAsset_(<a class="code" href="classpvr_1_1assets_1_1_model.html">Model</a>&amp; asset);</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    <span class="keywordtype">size_t</span> _fileNameBeginPos;</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    IAssetProvider&amp; _assetProvider;</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;};</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;</div>
+<div class="line"><a name="l00026"></a><span class="lineno"><a class="line" href="classpvr_1_1assets_1_1_gltf_reader.html#a303f106ce26a76cc6822e7c9468bc51c">   26</a></span>&#160;<span class="keyword">inline</span> <a class="code" href="classpvr_1_1assets_1_1_gltf_reader.html#a303f106ce26a76cc6822e7c9468bc51c">GltfReader::GltfReader</a>(IAssetProvider&amp; assetProvider) : _assetProvider(assetProvider), _fileNameBeginPos(0) {}</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;</div>
+<div class="line"><a name="l00028"></a><span class="lineno"><a class="line" href="classpvr_1_1assets_1_1_gltf_reader.html#a3ddd681ee252ddf4df17474e6a21b31f">   28</a></span>&#160;<span class="keyword">inline</span> <a class="code" href="classpvr_1_1assets_1_1_gltf_reader.html#a303f106ce26a76cc6822e7c9468bc51c">GltfReader::GltfReader</a>(Stream::ptr_type assetStream, IAssetProvider&amp; assetProvider) : AssetReader&lt;<a class="code" href="classpvr_1_1assets_1_1_model.html">Model</a>&gt;(std::move(assetStream)), _assetProvider(assetProvider)</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;{</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    <span class="keyword">const</span> std::string&amp; path = _assetStream-&gt;getFileName();</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    _fileNameBeginPos = path.find_last_of(</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;#ifdef _WIN32gltfStream</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;        <span class="charliteral">&#39;\\&#39;</span></div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;#<span class="keywordflow">else</span></div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;        <span class="charliteral">&#39;/&#39;</span></div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;#endif</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    );</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    <span class="keywordflow">if</span> (_fileNameBeginPos != std::string::npos)</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    {</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;        _fileNameBeginPos += 1;</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    }</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;}</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;} <span class="comment">// namespace assets</span></div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;} <span class="comment">// namespace pvr</span></div>
 <div class="ttc" id="_p_v_r_assets_8h_html"><div class="ttname"><a href="_p_v_r_assets_8h.html">PVRAssets.h</a></div><div class="ttdoc">Include this file if you wish to use the PVRAssets functionality. </div></div>
-<div class="ttc" id="classpvr_1_1assets_1_1_gltf_reader_html_a303f106ce26a76cc6822e7c9468bc51c"><div class="ttname"><a href="classpvr_1_1assets_1_1_gltf_reader.html#a303f106ce26a76cc6822e7c9468bc51c">pvr::assets::GltfReader::GltfReader</a></div><div class="ttdeci">GltfReader(IAssetProvider &amp;assetProvider)</div><div class="ttdoc">Construct empty reader.</div><div class="ttdef"><b>Definition:</b> GltfReader.h:22</div></div>
-<div class="ttc" id="classpvr_1_1assets_1_1_gltf_reader_html"><div class="ttname"><a href="classpvr_1_1assets_1_1_gltf_reader.html">pvr::assets::GltfReader</a></div><div class="ttdef"><b>Definition:</b> GltfReader.h:6</div></div>
-<div class="ttc" id="classpvr_1_1assets_1_1_model_html"><div class="ttname"><a href="classpvr_1_1assets_1_1_model.html">pvr::assets::Model</a></div><div class="ttdoc">The Model class represents an entire Scene, or Model. It is mainly a Node structure, allowing various different kinds of data to be stored in the Nodes. The class contains a tree-like structure of Nodes. Each Node can be a Mesh node (containing a Mesh), Camera node or Light node. The tree-structure assumes transformational hierarchy (as usual). Transformations are expressed through Animation objects (a static transform is an animation with a single frame) There is an implicit order in the nodes - First in the array the Mesh nodes will be laid out, then Camera and Light nodes.</div><div class="ttdef"><b>Definition:</b> Model.h:48</div></div>
+<div class="ttc" id="classpvr_1_1assets_1_1_gltf_reader_html_a303f106ce26a76cc6822e7c9468bc51c"><div class="ttname"><a href="classpvr_1_1assets_1_1_gltf_reader.html#a303f106ce26a76cc6822e7c9468bc51c">pvr::assets::GltfReader::GltfReader</a></div><div class="ttdeci">GltfReader(IAssetProvider &amp;assetProvider)</div><div class="ttdoc">Construct empty reader.</div><div class="ttdef"><b>Definition:</b> GltfReader.h:26</div></div>
+<div class="ttc" id="classpvr_1_1assets_1_1_gltf_reader_html"><div class="ttname"><a href="classpvr_1_1assets_1_1_gltf_reader.html">pvr::assets::GltfReader</a></div><div class="ttdoc">This class creates pvr::assets::Model object from Streams of GLTF Model data. Use the readAsset metho...</div><div class="ttdef"><b>Definition:</b> GltfReader.h:8</div></div>
+<div class="ttc" id="classpvr_1_1assets_1_1_model_html"><div class="ttname"><a href="classpvr_1_1assets_1_1_model.html">pvr::assets::Model</a></div><div class="ttdoc">The Model class represents an entire Scene, or Model. It is mainly a Node structure, allowing various different kinds of data to be stored in the Nodes. The class contains a tree-like structure of Nodes. Each Node can be a Mesh node (containing a Mesh), Camera node or Light node. The tree-structure assumes transformational hierarchy (as usual). Transformations are expressed through Animation objects (a static transform is an animation with a single frame) There is an implicit order in the nodes - First in the array the Mesh nodes will be laid out, then Camera and Light nodes.</div><div class="ttdef"><b>Definition:</b> Model.h:51</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.4-->
 <!-- start footer part (NON TREEVIEW ONLY!!) -->

@@ -10,7 +10,6 @@
 #include "PVRCore/math/AxisAlignedBox.h"
 #include "PVRCore/strings/StringFunctions.h"
 #include "PVRCore/texture/Texture.h"
-#include "PVRCore/RefCounted.h"
 
 //!\cond NO_DOXYGEN
 #define NUM_BITS_GROUP_ID 8
@@ -22,7 +21,7 @@ namespace pvr {
 class Texture;
 //!\endcond
 /// <summary>Main namespace for the PVRUtils Library. Contains the UIRenderer and the several Sprite classes.
-/// </summary>
+///</summary>
 namespace ui {
 //!\cond NO_DOXYGEN
 class UIRenderer;
@@ -58,57 +57,56 @@ public:
 
 /// <summary>A Reference Counted Framework Object wrapping the Group_ class. Groups several sprites to apply
 /// some transformation to them and render them all together.</summary>
-typedef RefCountedResource<impl::Group_> Group;
+typedef std::shared_ptr<impl::Group_> Group;
 
 /// <summary>A Reference Counted Framework Object wrapping the MatrixGroup_ class. Groups several sprites to apply
 /// some matrix transformation to them and render them all together.</summary>
-typedef RefCountedResource<impl::MatrixGroup_> MatrixGroup;
+typedef std::shared_ptr<impl::MatrixGroup_> MatrixGroup;
 
 /// <summary>A Reference Counted Framework Object wrapping the PixelGroup_ class. Groups several sprites to apply
 /// intuitive 2D operations and layouts to them.</summary>
-typedef RefCountedResource<impl::PixelGroup_> PixelGroup;
+typedef std::shared_ptr<impl::PixelGroup_> PixelGroup;
 
 /// <summary>A Reference Counted Framework Object wrapping the Sprite_ interface. Represents anything you can
 /// use with the UIRenderer (Font, Text, Image, Group).</summary>
-typedef RefCountedResource<impl::Sprite_> Sprite;
+typedef std::shared_ptr<impl::Sprite_> Sprite;
 
 /// <summary>A weak reference Counted Framework Object wrapping the Sprite_ interface. Represents anything you can
 /// use with the UIRenderer (Font, Text, Image, Group).</summary>
-typedef RefCountedWeakReference<impl::Sprite_> SpriteWeakRef;
+typedef std::weak_ptr<impl::Sprite_> SpriteWeakRef;
 
 /// <summary>A Reference Counted Framework Object wrapping the Text_ interface.</summary>
-typedef RefCountedResource<impl::Text_> Text;
+typedef std::shared_ptr<impl::Text_> Text;
 
 /// <summary>A weak reference Counted Framework Object wrapping the Text_ interface.</summary>
-typedef RefCountedWeakReference<impl::Text_> TextWeakRef;
+typedef std::weak_ptr<impl::Text_> TextWeakRef;
 
 /// <summary>A Reference Counted Framework Object wrapping the Font_ class. Is an Image object augmented by font
 /// metadata. Is used by the Text class.</summary>
-typedef RefCountedResource<impl::Font_> Font;
+typedef std::shared_ptr<impl::Font_> Font;
 
 /// <summary>A weak reference Counted Framework Object wrapping the Font_ class. Is an Image object augmented by font
 /// metadata. Is used by the Text class.</summary>
-typedef RefCountedWeakReference<impl::Font_> FontWeakRef;
+typedef std::weak_ptr<impl::Font_> FontWeakRef;
 
 /// <summary>A Reference Counted Framework Object wrapping the TextElement_ class. The TextElement is a Sprite and contains a
 /// std::string of characters to be displayed with the Font that it uses.</summary>
-typedef RefCountedResource<impl::TextElement_> TextElement;
+typedef std::shared_ptr<impl::TextElement_> TextElement;
 
 /// <summary>A weak reference Counted Framework Object wrapping the TextElement_ class. The TextElement is a Sprite and contains a
 /// std::string of characters to be displayed with the Font that it uses.</summary>
-typedef RefCountedWeakReference<impl::TextElement_> TextElementWeakRef;
+typedef std::weak_ptr<impl::TextElement_> TextElementWeakRef;
 
 /// <summary>A Reference Counted Framework Object wrapping the Image_ class. The Image is a Sprite and contains
 /// a 2D texture that can be displayed.</summary>
-typedef RefCountedResource<impl::Image_> Image;
+typedef std::shared_ptr<impl::Image_> Image;
 
 /// <summary>A weak Reference Counted Framework Object wrapping the Image_ class. The Image is a Sprite and contains
 /// a 2D texture that can be displayed.</summary>
-typedef RefCountedWeakReference<impl::Image_> ImageWeakRef;
+typedef std::weak_ptr<impl::Image_> ImageWeakRef;
 
 /// <summary>An Enumeration of all the Anchor points that can be used to position a Sprite. An anchor point is
-/// the point to which all positioning will be relative to. Use this to facilitate the laying out of UIs.
-/// </summary>
+/// the point to which all positioning will be relative to. Use this to facilitate the laying out of UIs.</summary>
 enum class Anchor
 {
 	TopLeft,
@@ -139,8 +137,6 @@ private:
 	friend class pvr::ui::impl::Image_;
 	friend class pvr::ui::impl::TextElement_;
 	friend class pvr::ui::impl::Text_;
-	template<typename>
-	friend struct ::pvr::RefCountEntryIntrusive;
 
 	/// <summary>Do not call directly. CommitUpdates will call this function. If writing new sprite classes,
 	/// implement this function to calculate the mvp matrix of the sprite from any other possible representation that
@@ -287,7 +283,7 @@ public:
 
 	/// <summary>Get the sprite name.</summary>
 	/// <returns>The sprites's name</returns>
-	virtual const std::string getSpriteName()
+	virtual const std::string& getSpriteName()
 	{
 		if (isSpriteNameDirty())
 		{
@@ -337,8 +333,6 @@ private:
 	friend class pvr::ui::impl::PixelGroup_;
 	friend class pvr::ui::impl::Text_;
 	friend class pvr::ui::impl::Image_;
-	template<typename>
-	friend struct ::pvr::RefCountEntryIntrusive;
 
 	I2dComponent()
 		: _anchor(Anchor::Center), _position(0.f, 0.f), _scale(1.f, 1.f), _rotation(0.f), _isPositioningDirty(true), _pixelOffset(0, 0), _uv(0.0f, 0.0f, 1.0, 1.0f), _isUVDirty(true)
@@ -462,18 +456,24 @@ public:
 	}
 };
 
-/// <summary>Use this class through the Refcounted Framework Object pvr::ui::Image. Represents a 2D Image (aka
-/// Texture). Can be used like all Sprites and additionally contains methods required for working with Images.
-/// </summary>
+/// <summary>Use this class through the reference counted Framework Object pvr::ui::Image. Represents a 2D Image (aka
+/// Texture). Can be used like all Sprites and additionally contains methods required for working with Images.</summary>
 class Image_ : public Sprite_, public I2dComponent
 {
 private:
-	template<typename>
-	friend struct ::pvr::RefCountEntryIntrusive;
 	friend class pvr::ui::UIRenderer;
 
-	/// <summary>Internal</summary>
-	Image_(UIRenderer& uiRenderer, const pvrvk::ImageView& imageView, uint32_t width, uint32_t height, const pvrvk::Sampler& sampler);
+	class make_shared_enabler
+	{
+	protected:
+		make_shared_enabler() {}
+		friend class Image_;
+	};
+
+	static Image constructShared(UIRenderer& uiRenderer, const pvrvk::ImageView& imageView, uint32_t width, uint32_t height, const pvrvk::Sampler& sampler)
+	{
+		return std::make_shared<Image_>(make_shared_enabler{}, uiRenderer, imageView, width, height, sampler);
+	}
 
 	/// <summary>Function that will be automatically called by the uiRenderer. Do not call.</summary>
 	void calculateMvp(uint64_t parentIds, const glm::mat4& srt, const glm::mat4& viewProj, const pvrvk::Rect2D& viewport) const;
@@ -542,6 +542,11 @@ protected:
 	mutable bool _isTextureDirty;
 
 public:
+	//!\cond NO_DOXYGEN
+	/// <summary>Internal</summary>
+	Image_(make_shared_enabler, UIRenderer& uiRenderer, const pvrvk::ImageView& imageView, uint32_t width, uint32_t height, const pvrvk::Sampler& sampler);
+	//!\endcond
+
 	/// <summary>Virtual Descructor for a Image_.</summary>
 	virtual ~Image_()
 	{
@@ -607,7 +612,7 @@ public:
 
 	/// <summary>Get the sprite name.</summary>
 	/// <returns>The sprites's name</returns>
-	const std::string getSpriteName()
+	const std::string& getSpriteName()
 	{
 		if (isSpriteNameDirty())
 		{
@@ -617,7 +622,7 @@ public:
 	}
 };
 
-/// <summary>Use this class through the Refcounted Framework Object pvr::ui::Font. Is an Image_ containing font
+/// <summary>Use this class through the reference counted Framework Object pvr::ui::Font. Is an Image_ containing font
 /// characters along with the metadata necessary for rendering text with them. Although it can be used like an
 /// Image_, this does not make some sense since it would just display the characters as a texture atlas. Text
 /// objects will contain a reference to a Font to render with.</summary>
@@ -662,14 +667,21 @@ public:
 
 private:
 	friend class pvr::ui::UIRenderer;
-	template<typename>
-	friend struct ::pvr::RefCountEntryIntrusive;
 
 	static int32_t characterCompFunc(const void* a, const void* b);
 	static int32_t kerningCompFunc(const void* a, const void* b);
 
-	/// <summary>Constructor. Do not use - use the UIRenderer::createFont.</summary>
-	Font_(UIRenderer& uiRenderer, const pvrvk::ImageView& tex2D, const TextureHeader& textureHeader, const pvrvk::Sampler& sampler);
+	class make_shared_enabler
+	{
+	protected:
+		make_shared_enabler() {}
+		friend class Font_;
+	};
+
+	static Font constructShared(UIRenderer& uiRenderer, const pvrvk::ImageView& tex2D, const TextureHeader& textureHeader, const pvrvk::Sampler& sampler)
+	{
+		return std::make_shared<Font_>(make_shared_enabler{}, uiRenderer, tex2D, textureHeader, sampler);
+	}
 
 	void setUIRenderer(UIRenderer* uiRenderer)
 	{
@@ -706,6 +718,11 @@ private:
 	UIRenderer* _uiRenderer;
 
 public:
+	//!\cond NO_DOXYGEN
+	/// <summary>Constructor. Do not use - use the UIRenderer::createFont.</summary>
+	Font_(make_shared_enabler, UIRenderer& uiRenderer, const pvrvk::ImageView& tex2D, const TextureHeader& textureHeader, const pvrvk::Sampler& sampler);
+	//!\endcond
+
 	/// <summary>Load the font data from the font texture.</summary>
 	/// <param name="texture">The pvr::Texture texture to load font data from.</param>
 	/// <returns>Returns 'True' if the font was loaded successfully.</returns>
@@ -720,13 +737,11 @@ public:
 	/// <summary>Apply kerning to two characters (give the offset required by the specific pair).</summary>
 	/// <param name="charA">The first (left) character of the pair.</param>
 	/// <param name="charB">The second (right) character of the pair.</param>
-	/// <param name="offset">Output parameter, the offset that must be applied to the second character due to kerning.
-	/// </param>
+	/// <param name="offset">Output parameter, the offset that must be applied to the second character due to kerning.</param>
 	void applyKerning(uint32_t charA, uint32_t charB, float& offset);
 
 	/// <summary>Get the character metrix of this font</summary>
-	/// <param name="index">The internal index of the character. Use findCharacter to get the index of a specific
-	/// known character.</param>
+	/// <param name="index">The internal index of the character. Use findCharacter to get the index of a specific known character.</param>
 	/// <returns>A CharMetrics object representing the character metrics of the character with that index.</returns>
 	const CharMetrics& getCharMetrics(uint32_t index) const
 	{
@@ -837,7 +852,7 @@ struct Vertex
 	}
 };
 
-/// <summary>The TextElement class should be used through the Refcounted Framework Object pvr::ui::TextElement. The TextElement_ class handles the
+/// <summary>The TextElement class should be used through the reference counted Framework Object pvr::ui::TextElement. The TextElement_ class handles the
 /// implementation specifics for creating, managing and rendering text elements to the screen including buffer creation, updates and deletion
 /// as well as the rendering of the text element.</summary>
 class TextElement_
@@ -845,48 +860,27 @@ class TextElement_
 private:
 	friend class pvr::ui::impl::Text_;
 	friend class pvr::ui::UIRenderer;
-	template<typename>
-	friend struct ::pvr::RefCountEntryIntrusive;
 
-	/// <summary>Constructor for a Text element. Do not use - use the UIRenderer::createTextElement</summary>
-	/// <param name="uiRenderer">The UIRenderer to use when creating the Font.</param>
-	/// <param name="font">The font to use for the text element.</param>
-	/// <param name="maxTextLength">The maximum number of characters for the text element.</param>
-	TextElement_(UIRenderer& uiRenderer, const Font& font, uint32_t maxTextLength = 255) : _isTextDirty(true), _font(font), _maxLength(maxTextLength), _uiRenderer(&uiRenderer)
+	class make_shared_enabler
 	{
-		_maxLength = _maxLength ? _maxLength : 255;
-		createBuffers();
-		updateText();
+	protected:
+		make_shared_enabler() {}
+		friend class TextElement_;
+	};
+
+	static TextElement constructShared(UIRenderer& uiRenderer, const Font& font, uint32_t maxTextLength = 255)
+	{
+		return std::make_shared<TextElement_>(make_shared_enabler{}, uiRenderer, font, maxTextLength);
 	}
 
-	/// <summary>Constructor for a Text element. Do not use - use the UIRenderer::createTextElement</summary>
-	/// <param name="uiRenderer">The UIRenderer to use when creating the Font.</param>
-	/// <param name="str">The Text string to use for the text element.</param>
-	/// <param name="font">The font to use for the text element.</param>
-	/// <param name="maxTextLength">The maximum number of characters for the text element. If less than strlen(str),
-	/// it is implicitly set to strlen(<paramref name="str"/>)</param>
-	TextElement_(UIRenderer& uiRenderer, const std::string& str, const Font& font, uint32_t maxTextLength = 0)
-		: _isTextDirty(true), _font(font), _maxLength(std::max<uint32_t>(static_cast<uint32_t>(str.length()), maxTextLength)), _uiRenderer(&uiRenderer)
+	static TextElement constructShared(UIRenderer& uiRenderer, const std::wstring& str, const Font& font, uint32_t maxTextLength = 0)
 	{
-		_maxLength = _maxLength ? _maxLength : 255;
-		createBuffers();
-		setText(str);
-		updateText();
+		return std::make_shared<TextElement_>(make_shared_enabler{}, uiRenderer, str, font, maxTextLength);
 	}
 
-	/// <summary>Constructor for a Text element. Do not use - use the UIRenderer::createTextElement</summary>
-	/// <param name="uiRenderer">The UIRenderer to use when creating the Font.</param>
-	/// <param name="str">The Text string to use for the text element.</param>
-	/// <param name="font">The font to use for the text element.</param>
-	/// <param name="maxTextLength">The maximum number of characters for the text element. If less than strlen(str),
-	/// it is implicitly set to strlen(<paramref name="str"/>)</param>
-	TextElement_(UIRenderer& uiRenderer, const std::wstring& str, const Font& font, uint32_t maxTextLength = 0)
-		: _isTextDirty(true), _font(font), _maxLength(std::max<uint32_t>(static_cast<uint32_t>(str.length()), maxTextLength)), _uiRenderer(&uiRenderer)
+	static TextElement constructShared(UIRenderer& uiRenderer, const std::string& str, const Font& font, uint32_t maxTextLength = 0)
 	{
-		_maxLength = _maxLength ? _maxLength : 255;
-		createBuffers();
-		setText(str);
-		updateText();
+		return std::make_shared<TextElement_>(make_shared_enabler{}, uiRenderer, str, font, maxTextLength);
 	}
 
 	bool updateText() const
@@ -930,6 +924,50 @@ private:
 	UIRenderer* _uiRenderer;
 
 public:
+	//!\cond NO_DOXYGEN
+	/// <summary>Constructor for a Text element. Do not use - use the UIRenderer::createTextElement</summary>
+	/// <param name="uiRenderer">The UIRenderer to use when creating the Font.</param>
+	/// <param name="font">The font to use for the text element.</param>
+	/// <param name="maxTextLength">The maximum number of characters for the text element.</param>
+	TextElement_(make_shared_enabler, UIRenderer& uiRenderer, const Font& font, uint32_t maxTextLength)
+		: _isTextDirty(true), _font(font), _maxLength(maxTextLength), _uiRenderer(&uiRenderer)
+	{
+		_maxLength = _maxLength ? _maxLength : 255;
+		createBuffers();
+		updateText();
+	}
+
+	/// <summary>Constructor for a Text element. Do not use - use the UIRenderer::createTextElement</summary>
+	/// <param name="uiRenderer">The UIRenderer to use when creating the Font.</param>
+	/// <param name="str">The Text string to use for the text element.</param>
+	/// <param name="font">The font to use for the text element.</param>
+	/// <param name="maxTextLength">The maximum number of characters for the text element. If less than strlen(str),
+	/// it is implicitly set to strlen(<paramref name="str"/>)</param>
+	TextElement_(make_shared_enabler, UIRenderer& uiRenderer, const std::string& str, const Font& font, uint32_t maxTextLength = 0)
+		: _isTextDirty(true), _font(font), _maxLength(std::max<uint32_t>(static_cast<uint32_t>(str.length()), maxTextLength)), _uiRenderer(&uiRenderer)
+	{
+		_maxLength = _maxLength ? _maxLength : 255;
+		createBuffers();
+		setText(str);
+		updateText();
+	}
+
+	/// <summary>Constructor for a Text element. Do not use - use the UIRenderer::createTextElement</summary>
+	/// <param name="uiRenderer">The UIRenderer to use when creating the Font.</param>
+	/// <param name="str">The Text string to use for the text element.</param>
+	/// <param name="font">The font to use for the text element.</param>
+	/// <param name="maxTextLength">The maximum number of characters for the text element. If less than strlen(str),
+	/// it is implicitly set to strlen(<paramref name="str"/>)</param>
+	TextElement_(make_shared_enabler, UIRenderer& uiRenderer, const std::wstring& str, const Font& font, uint32_t maxTextLength = 0)
+		: _isTextDirty(true), _font(font), _maxLength(std::max<uint32_t>(static_cast<uint32_t>(str.length()), maxTextLength)), _uiRenderer(&uiRenderer)
+	{
+		_maxLength = _maxLength ? _maxLength : 255;
+		createBuffers();
+		setText(str);
+		updateText();
+	}
+	//!\endcond
+
 	/// <summary>The maximum number of letters supported by a TextElement</summary>
 	enum
 	{
@@ -994,19 +1032,26 @@ public:
 	}
 };
 
-/// <summary>Use this class through the Refcounted Framework Object pvr::ui::Text. Represents some text that can
+/// <summary>Use this class through the reference counted Framework Object pvr::ui::Text. Represents some text that can
 /// be rendered as a normal Sprite_ and additionally contains the necessary text manipulation functions.</summary>
 class Text_ : public Sprite_, public I2dComponent
 {
 private:
-	template<typename>
-	friend struct ::pvr::RefCountEntryIntrusive;
 	friend class pvr::ui::UIRenderer;
 
-	void onRemoveInstance(uint64_t parentId);
+	class make_shared_enabler
+	{
+	protected:
+		make_shared_enabler() {}
+		friend class Text_;
+	};
 
-	/// <summary>Constructor. Do not use - use UIRenderer::createText</summary>
-	Text_(UIRenderer& uiRenderer, const TextElement& textElement);
+	static Text constructShared(UIRenderer& uiRenderer, const TextElement& textElement)
+	{
+		return std::make_shared<Text_>(make_shared_enabler{}, uiRenderer, textElement);
+	}
+
+	void onRemoveInstance(uint64_t parentId);
 
 	struct MvpUboData
 	{
@@ -1042,6 +1087,11 @@ private:
 	std::string _drawIndirectBufferObjectName;
 
 public:
+	//!\cond NO_DOXYGEN
+	/// <summary>Constructor. Do not use - use UIRenderer::createText</summary>
+	Text_(make_shared_enabler, UIRenderer& uiRenderer, const TextElement& textElement);
+	//!\endcond
+
 	/// <summary>Virtual Descructor for a Text_.</summary>
 	virtual ~Text_()
 	{
@@ -1121,7 +1171,7 @@ public:
 
 	/// <summary>Get the sprite name.</summary>
 	/// <returns>The sprites's name</returns>
-	const std::string getSpriteName()
+	const std::string& getSpriteName()
 	{
 		if (isSpriteNameDirty())
 		{
@@ -1145,8 +1195,6 @@ class Group_ : public Sprite_
 private:
 	friend class pvr::ui::impl::PixelGroup_;
 	friend class pvr::ui::impl::MatrixGroup_;
-	template<typename>
-	friend struct ::pvr::RefCountEntryIntrusive;
 
 	/// <summary>Internal function that is triggered when all item transformations have been applied and the final matrices can be calculated.</summary>
 	/// <param name="parentId">The groups parent's id.</param>
@@ -1220,14 +1268,14 @@ protected:
 public:
 	/// <summary>Add a Sprite (Text, Image etc.) to this Group. All sprites in the group will be transformed together
 	/// when calling Render on the group.
-	/// NOTE: Adding  Sprites in to group requires re-recording the commandbuffer </summary>
+	/// NOTE: Adding  Sprites in to group requires re-recording the commandbuffer</summary>
 	/// <param name="sprite">The Sprite to add.</param>
 	/// <returns>Pointer to this object, in order to easily chan add commands.</returns>
 	Group_* add(const Sprite& sprite);
 
 	/// <summary>Adds number of Sprites (Text, Image etc.) to this Group. All sprites in the group will be transformed together
 	/// when calling Render on the group.
-	/// NOTE: Adding  Sprites in to group requires re-recording the commandbuffer </summary>
+	/// NOTE: Adding  Sprites in to group requires re-recording the commandbuffer</summary>
 	/// <param name="sprites">A pointer to an array of Sprites to add.</param>
 	/// <param name="numSprites">The number of sprites to add from the array pointed to by sprites.</param>
 	/// <returns>Pointer to this object, in order to easily chan add commands.</returns>
@@ -1243,7 +1291,6 @@ public:
 		ChildContainer::iterator it = std::find_if(_children.begin(), _children.end(), SpriteEntryEquals(sprite));
 		if (it != _children.end())
 		{
-			_boundingRect.remove((*it)->getBoundingBox());
 			(*it)->onRemoveInstance(_id);
 			_children.erase(it);
 		}
@@ -1267,19 +1314,27 @@ public:
 	}
 };
 
-/// <summary>This class is wrapped into the pvr::ui::Group Refcounted Framework Object. Use to apply a
+/// <summary>This class is wrapped into the pvr::ui::Group reference counted Framework Object. Use to apply a
 /// transformation to several Sprites and render them together (for example, layout some sprites to form a UI and
 /// then apply translation or rotation effects to all of them to change the page).</summary>
 class MatrixGroup_ : public Group_
 {
 private:
-	template<typename>
-	friend struct ::pvr::RefCountEntryIntrusive;
+	friend class pvr::ui::UIRenderer;
 
 	glm::mat4 _viewProj;
 
-	/// <summary>Constructor. Do not call - use UIRenderer::createGroup.</summary>
-	MatrixGroup_(UIRenderer& uiRenderer, uint64_t id);
+	class make_shared_enabler
+	{
+	protected:
+		make_shared_enabler() {}
+		friend class MatrixGroup_;
+	};
+
+	static MatrixGroup constructShared(UIRenderer& uiRenderer, uint64_t id)
+	{
+		return std::make_shared<MatrixGroup_>(make_shared_enabler{}, uiRenderer, id);
+	}
 
 	/// <summary>Internal function that is triggered when all item transformations have been applied and the final matrices can be calculated.</summary>
 	/// <param name="parentId">The groups parent's id.</param>
@@ -1297,6 +1352,11 @@ private:
 	}
 
 public:
+	//!\cond NO_DOXYGEN
+	/// <summary>Constructor. Do not call - use UIRenderer::createGroup.</summary>
+	MatrixGroup_(make_shared_enabler, UIRenderer& uiRenderer, uint64_t id);
+	//!\endcond
+
 	/// <summary>Set the scale/rotation/translation matrix of this group. If other transformations are added to this
 	/// matrix, unexpected results may occur when rendering the sprites.</summary>
 	/// <param name="srt">The scale/rotation/translation matrix of this group</param>
@@ -1317,22 +1377,35 @@ public:
 	void commitUpdates() const;
 };
 
-/// <summary>This class is wrapped into the pvr::ui::Group Refcounted Framework Object. Use to apply a
+/// <summary>This class is wrapped into the pvr::ui::Group reference counted Framework Object. Use to apply a
 /// transformation to several Sprites and render them together (for example, layout some sprites to form a UI and
 /// then apply translation or rotation effects to all of them to change the page).</summary>
 class PixelGroup_ : public Group_, public I2dComponent
 {
 private:
-	template<typename>
-	friend struct ::pvr::RefCountEntryIntrusive;
+	friend class pvr::ui::UIRenderer;
+
+	class make_shared_enabler
+	{
+	protected:
+		make_shared_enabler() {}
+		friend class PixelGroup_;
+	};
+
+	static PixelGroup constructShared(UIRenderer& uiRenderer, uint64_t id)
+	{
+		return std::make_shared<PixelGroup_>(make_shared_enabler{}, uiRenderer, id);
+	}
 
 	/// <summary>Internal function that UIRenderer calls to render. Do not call directly.</summary>
 	void calculateMvp(uint64_t parentIds, glm::mat4 const& srt, const glm::mat4& viewProj, pvrvk::Rect2D const& viewport) const;
 
-	/// <summary>Constructor. Do not call - use UIRenderer::createGroup.</summary>
-	PixelGroup_(UIRenderer& uiRenderer, uint64_t id) : Group_(uiRenderer, id) {}
-
 public:
+	//!\cond NO_DOXYGEN
+	/// <summary>Constructor. Do not call - use UIRenderer::createGroup.</summary>
+	PixelGroup_(make_shared_enabler, UIRenderer& uiRenderer, uint64_t id) : Group_(uiRenderer, id) {}
+	//!\endcond
+
 	/// <summary>Set the size (extent) of this pixel group</summary>
 	/// <param name="size">The size of this pixel group, used to position the items it contains. It DOES NOT perform
 	/// clipping - items can very well be placed outside the size of the group, and they will be rendered correctly as

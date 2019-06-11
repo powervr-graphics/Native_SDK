@@ -58,10 +58,33 @@ struct SamplerCreateInfo
 
 namespace impl {
 /// <summary>SamplerVk_ implementation that wraps the vulkan sampler</summary>
-class Sampler_ : public DeviceObjectHandle<VkSampler>, public DeviceObjectDebugMarker<Sampler_>
+class Sampler_ : public PVRVkDeviceObjectBase<VkSampler, ObjectType::e_SAMPLER>, public DeviceObjectDebugUtils<Sampler_>
 {
+private:
+	friend class Device_;
+
+	class make_shared_enabler
+	{
+	protected:
+		make_shared_enabler() {}
+		friend class Sampler_;
+	};
+
+	static Sampler constructShared(const DeviceWeakPtr& device, const SamplerCreateInfo& createInfo)
+	{
+		return std::make_shared<Sampler_>(make_shared_enabler{}, device, createInfo);
+	}
+
+	SamplerCreateInfo _createInfo;
+
 public:
+	//!\cond NO_DOXYGEN
 	DECLARE_NO_COPY_SEMANTICS(Sampler_)
+	Sampler_(make_shared_enabler, const DeviceWeakPtr& device, const pvrvk::SamplerCreateInfo& desc);
+
+	/// <summary>destructor</summary>
+	~Sampler_();
+	//!\endcond
 
 	/// <summary>Get sampler create info (const)</summary>
 	/// <returns>SamplerCreateInfo&</returns>
@@ -69,18 +92,6 @@ public:
 	{
 		return _createInfo;
 	}
-
-private:
-	template<typename>
-	friend struct ::pvrvk::RefCountEntryIntrusive;
-	friend class ::pvrvk::impl::Device_;
-
-	Sampler_(const DeviceWeakPtr& device, const pvrvk::SamplerCreateInfo& desc);
-
-	/// <summary>destructor</summary>
-	~Sampler_();
-
-	SamplerCreateInfo _createInfo;
 };
 } // namespace impl
 } // namespace pvrvk

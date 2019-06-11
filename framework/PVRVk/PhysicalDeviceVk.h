@@ -8,9 +8,9 @@
 #pragma once
 #include "PVRVk/ForwardDecObjectsVk.h"
 #include "PVRVk/InstanceVk.h"
-#include "PVRVk/ObjectHandleVk.h"
+#include "PVRVk/PVRVkObjectBaseVk.h"
 #include "PVRVk/TypesVk.h"
-#include "PVRVk/DebugMarkerVk.h"
+#include "PVRVk/DebugUtilsVk.h"
 
 namespace pvrvk {
 namespace impl {
@@ -19,10 +19,62 @@ namespace impl {
 /// which is a local, logical part of it). A Physical device is "determined", or "found", or
 /// "enumerated", (while a logical device is "created"). You can use the physical device to
 /// create logical Devices, determine Extensions etc. See Vulkan spec.</summary>
-class PhysicalDevice_ : public InstanceObjectHandle<VkPhysicalDevice>, public EmbeddedRefCount<PhysicalDevice_>
+class PhysicalDevice_ : public PVRVkInstanceObjectBase<VkPhysicalDevice, ObjectType::e_PHYSICAL_DEVICE>, public std::enable_shared_from_this<PhysicalDevice_>
 {
+private:
+	friend class Instance_;
+
+	/// <summary>A class which restricts the creation of a pvrvk::PhysicalDevice to children or friends of a pvrvk::impl::PhysicalDevice_.</summary>
+	class make_shared_enabler
+	{
+	protected:
+		/// <summary>Constructor for a make_shared_enabler.</summary>
+		make_shared_enabler() {}
+		friend class PhysicalDevice_;
+	};
+
+	/// <summary>Protected function used to create a pvrvk::PhysicalDevice. Note that this function shouldn't normally be called
+	/// directly and will be called by a friend of PhysicalDevice_ which will generally be a Instance.</summary>
+	/// <param name="instance">The instance used to retrieve the physical device.</param>
+	/// <param name="vkPhysicalDevice">The vulkan handle for this physical device.</param>
+	static PhysicalDevice constructShared(Instance& instance, const VkPhysicalDevice& vkPhysicalDevice)
+	{
+		return std::make_shared<PhysicalDevice_>(make_shared_enabler{}, instance, vkPhysicalDevice);
+	}
+
+	void updateDisplayPlaneProperties();
+
+	/// <summary>Retrieve and initialise the list of displays</summary>
+	void retrieveDisplays();
+
+	std::vector<QueueFamilyProperties> _queueFamilyPropeties;
+	PhysicalDeviceProperties _deviceProperties;
+	std::vector<Display> _displays;
+	std::vector<DisplayPlanePropertiesKHR> _displayPlaneProperties;
+	PhysicalDeviceMemoryProperties _deviceMemoryProperties;
+	PhysicalDeviceFeatures _deviceFeatures;
+	std::vector<FormatProperties> _supportedFormats;
+	std::vector<ExtensionProperties> _deviceExtensions;
+	uint32_t _graphicsQueueIndex;
+	uint32_t _universalQueueFamilyId;
+
 public:
+	//!\cond NO_DOXYGEN
 	DECLARE_NO_COPY_SEMANTICS(PhysicalDevice_)
+
+	/// <summary>Constructor for a pvrvk::PhysicalDevice. This should not be called directly and instead constructShared should be called</summary>
+	/// <param name="instance">The Instance from which the physical device has been retrieved</param>
+	/// <param name="vkPhysicalDevice">The handle of the physical device retrieved from the given instance</param>
+	PhysicalDevice_(make_shared_enabler, Instance& instance, const VkPhysicalDevice& vkPhysicalDevice);
+
+	~PhysicalDevice_()
+	{
+		_vkHandle = VK_NULL_HANDLE;
+
+		_supportedFormats.clear();
+		_deviceExtensions.clear();
+	}
+	//!\endcond
 
 	/// <summary>Get device properties</summary>
 	/// <returns>Returns PhysicalDeviceProperties</returns>
@@ -43,7 +95,7 @@ public:
 	/// <summary>Get Display (const)</summary>
 	/// <param name="id">Display id</param>
 	/// <returns>const Display&</returns>
-	Display getDisplay(uint32_t id);
+	Display& getDisplay(uint32_t id);
 
 	/// <summary>Get the number of displays</summary>
 	/// <returns>Returns the number of supported displays</returns>
@@ -88,7 +140,7 @@ public:
 	/// <returns>The created DisplayMode</returns>
 	DisplayMode createDisplayMode(pvrvk::Display& display, const pvrvk::DisplayModeCreateInfo& displayModeCreateInfo);
 
-	/// <summary> create gpu device.</summary>
+	/// <summary>create gpu device.</summary>
 	/// <param name="deviceCreateInfo">Device create info</param>
 	/// <returns>Device</returns>
 	Device createDevice(const DeviceCreateInfo& deviceCreateInfo);
@@ -165,47 +217,6 @@ public:
 	/// <param name="planeIndex">The display plane index to check for supported displays.</param>
 	/// <returns>The list of supported displays for the given plane.</returns>
 	DisplayPlaneCapabilitiesKHR getDisplayPlaneCapabilities(DisplayMode& mode, uint32_t planeIndex);
-
-private:
-	friend class pvrvk::impl::Instance_;
-	friend class pvrvk::EmbeddedRefCount<PhysicalDevice_>;
-	PhysicalDevice_(InstanceWeakPtr instance, const VkPhysicalDevice& vkPhysicalDevice);
-
-	static PhysicalDevice createNew(InstanceWeakPtr instance, const VkPhysicalDevice& vkPhysicalDevice)
-	{
-		return EmbeddedRefCount<PhysicalDevice_>::createNew(instance, vkPhysicalDevice);
-	}
-
-	void updateDisplayPlaneProperties();
-
-	void destroyObject()
-	{
-		if (getVkHandle() != VK_NULL_HANDLE)
-		{
-			if (_instance.isValid() || _instance.isInDestructor())
-			{
-				_vkHandle = VK_NULL_HANDLE;
-				_instance.reset();
-			}
-			else
-			{
-				Log(LogLevel::Warning, "Attempted to destroy object of type [%s] after its corresponding instance", "Physical Device");
-			}
-		}
-		_supportedFormats.clear();
-		_deviceExtensions.clear();
-	}
-
-	std::vector<QueueFamilyProperties> _queueFamilyPropeties;
-	PhysicalDeviceProperties _deviceProperties;
-	std::vector<Display> _displays;
-	std::vector<DisplayPlanePropertiesKHR> _displayPlaneProperties;
-	PhysicalDeviceMemoryProperties _deviceMemoryProperties;
-	PhysicalDeviceFeatures _deviceFeatures;
-	std::vector<FormatProperties> _supportedFormats;
-	std::vector<ExtensionProperties> _deviceExtensions;
-	uint32_t _graphicsQueueIndex;
-	uint32_t _universalQueueFamilyId;
 };
 } // namespace impl
 } // namespace pvrvk

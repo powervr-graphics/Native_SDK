@@ -1229,7 +1229,7 @@ void OpenGLESDeferredShading::createModelBuffers()
 				GL_COPY_READ_BUFFER, (GLsizei)_deviceResources->modelMaterialBufferView.getSize(), 0, GL_MAP_WRITE_BIT_EXT | GL_MAP_PERSISTENT_BIT_EXT | GL_MAP_COHERENT_BIT_EXT);
 
 			void* memory = gl::MapBufferRange(
-				GL_COPY_READ_BUFFER, 0, _deviceResources->modelMaterialBufferView.getSize(), GL_MAP_WRITE_BIT_EXT | GL_MAP_PERSISTENT_BIT_EXT | GL_MAP_COHERENT_BIT_EXT);
+				GL_COPY_READ_BUFFER, 0, static_cast<GLsizeiptr>(_deviceResources->modelMaterialBufferView.getSize()), GL_MAP_WRITE_BIT_EXT | GL_MAP_PERSISTENT_BIT_EXT | GL_MAP_COHERENT_BIT_EXT);
 			_deviceResources->modelMaterialBufferView.pointToMappedMemory(memory);
 		}
 	}
@@ -1242,7 +1242,7 @@ void OpenGLESDeferredShading::createModelBuffers()
 
 		gl::GenBuffers(1, &_deviceResources->modelMatrixUbo);
 		gl::BindBuffer(GL_UNIFORM_BUFFER, _deviceResources->modelMatrixUbo);
-		gl::BufferData(GL_UNIFORM_BUFFER, _deviceResources->modelMatrixBufferView.getSize(), nullptr, GL_DYNAMIC_DRAW);
+		gl::BufferData(GL_UNIFORM_BUFFER, static_cast<GLsizeiptr>(_deviceResources->modelMatrixBufferView.getSize()), nullptr, GL_DYNAMIC_DRAW);
 
 		if (_bufferStorageExtSupported)
 		{

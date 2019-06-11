@@ -65,7 +65,7 @@ pvr::PolygonWindingOrder NavDataProcess::checkWinding(const std::vector<uint64_t
 
 	for (uint32_t i = 0; i < nodeIds.size(); ++i)
 	{
-		points.push_back(_osm.getNodeById(nodeIds[i]).coords);
+		points.emplace_back(_osm.getNodeById(nodeIds[i]).coords);
 	}
 
 	double area = calculateTriangleArea(points);
@@ -181,7 +181,7 @@ void NavDataProcess::triangulate(std::vector<uint64_t>& nodeIds, std::vector<std
 			}
 
 			// Add the new triangle and remove the necessary point
-			triangles.push_back(std::array<uint64_t, 3>{ prevNode.id, currentNode.id, nextNode.id });
+			triangles.emplace_back(std::array<uint64_t, 3>{ prevNode.id, currentNode.id, nextNode.id });
 			nodeIds.erase(nodeIds.begin() + i);
 			break;
 		}
@@ -454,7 +454,7 @@ void NavDataProcess::fillLabelTiles(LabelData& label, uint32_t lod)
 	glm::uvec2 tileCoords = findTile2(label.coords);
 	processLabelBoundary(label, tileCoords);
 
-	_osm.tiles[tileCoords.x][tileCoords.y].labels[lod].push_back(label);
+	_osm.tiles[tileCoords.x][tileCoords.y].labels[lod].emplace_back(label);
 }
 
 /*!*********************************************************************************************************************
@@ -497,13 +497,13 @@ void NavDataProcess::insert(const glm::uvec2& tileCoords, WayTypes::WayTypes typ
 	}
 	case WayTypes::PolygonOutline:
 	{
-		_osm.tiles[tileCoords.x][tileCoords.y].polygonOutlineIds.push_back(id);
+		_osm.tiles[tileCoords.x][tileCoords.y].polygonOutlineIds.emplace_back(id);
 		break;
 	}
 	case WayTypes::AreaOutline:
 	{
 		if (w->area)
-			_osm.tiles[tileCoords.x][tileCoords.y].areaOutlineIds.push_back(id);
+			_osm.tiles[tileCoords.x][tileCoords.y].areaOutlineIds.emplace_back(id);
 		break;
 	}
 	default:
@@ -527,7 +527,7 @@ void NavDataProcess::fillIconTiles(IconData& icon, uint32_t lod)
 
 	glm::uvec2 tileCoords = findTile2(icon.coords);
 
-	_osm.tiles[tileCoords.x][tileCoords.y].icons[lod].push_back(icon);
+	_osm.tiles[tileCoords.x][tileCoords.y].icons[lod].emplace_back(icon);
 }
 
 void NavDataProcess::fillAmenityTiles(AmenityLabelData& label, uint32_t lod)
@@ -540,7 +540,7 @@ void NavDataProcess::fillAmenityTiles(AmenityLabelData& label, uint32_t lod)
 
 	glm::uvec2 tileCoords = findTile2(label.coords);
 	processLabelBoundary(label, tileCoords);
-	_osm.tiles[tileCoords.x][tileCoords.y].amenityLabels[lod].push_back(label);
+	_osm.tiles[tileCoords.x][tileCoords.y].amenityLabels[lod].emplace_back(label);
 }
 
 /*!*********************************************************************************************************************
