@@ -1,6 +1,3 @@
------------------------------------------------
-POWERVR SDK SOFTWARE END USER LICENSE AGREEMENT
------------------------------------------------
 The MIT License (MIT)
 Copyright (c) Imagination Technologies Ltd.
 
