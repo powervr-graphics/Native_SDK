@@ -162,7 +162,7 @@ if __name__ == "__main__":
     print "Time elapsed: ",(time.time() - start)
     print "Saved processed image as: " + filename
     print '== PVRTexTool Wrap Raw Data settings =='
-    print '= Width x Height : %d x %d' % (imgIn.shape[0]/4 , imgIn.shape[0]/4)
+    print '= Width x Height : %d x %d' % (imgIn.shape[0]/2 , imgIn.shape[0]/2)
     print '= Variable type  : "Signed Floating Point"'
     print '= Colour space   : Linear RGB'
     print '= Faces          : 6'
