@@ -1,3 +1,9 @@
+.. image:: https://img.shields.io/github/tag-date/powervr-graphics/Native_SDK.svg
+   :target: https://github.com/powervr-graphics/Native_SDK/releases
+   
+.. image:: https://img.shields.io/github/license/powervr-graphics/Native_SDK.svg
+    :target: https://github.com/powervr-graphics/Native_SDK/blob/master/LICENSE.md
+
 .. image:: https://travis-ci.org/powervr-graphics/Native_SDK.svg?branch=master
     :target: https://travis-ci.org/powervr-graphics/Native_SDK
     
