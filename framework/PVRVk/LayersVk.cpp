@@ -7,7 +7,6 @@
 //!\cond NO_DOXYGEN
 
 #include "PVRVk/LayersVk.h"
-#include "PVRCore/Log.h"
 #include <sstream>
 
 namespace pvrvk {

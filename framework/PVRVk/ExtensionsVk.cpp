@@ -7,7 +7,6 @@
 
 //!\cond NO_DOXYGEN
 #include "PVRVk/ExtensionsVk.h"
-#include "PVRCore/Log.h"
 namespace pvrvk {
 namespace Extensions {
 
