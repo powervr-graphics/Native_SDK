@@ -1,4 +1,5 @@
 # This file provides various functions used by the PowerVR SDK build files
+set(FUNCTIONS_INTERNAL_DIR ${CMAKE_CURRENT_LIST_DIR} CACHE INTERNAL "")
 
 function(add_subdirectory_if_not_already_included TARGET SUBDIR_FOLDER SUBDIR_BIN_FOLDER)
 	if (NOT TARGET ${TARGET})
@@ -101,14 +102,38 @@ function(add_rule_generate_spirv_from_shaders INPUT_SHADER_NAMES)
 	foreach(SHADER ${INPUT_SHADER_NAMES})
 		get_filename_component(SHADER_NAME ${SHADER} NAME)
 		get_glslang_validator_type(SHADER_TYPE SHADER_NAME)
+		set (GLSLANG_VALIDATOR_COMPILE_CURRENT_COMMAND glslangValidator -V ${CMAKE_CURRENT_SOURCE_DIR}/${SHADER_NAME} -o ${CMAKE_CURRENT_SOURCE_DIR}/${SHADER_NAME}.spv -S ${SHADER_TYPE})
 		add_custom_command(
 			DEPENDS glslangValidator
 			OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/${SHADER_NAME}.spv 
 			PRE_BUILD 
 			MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/${SHADER_NAME}
-			COMMAND echo glslangValidator -V ${CMAKE_CURRENT_SOURCE_DIR}/${SHADER_NAME} -o ${CMAKE_CURRENT_SOURCE_DIR}/${SHADER_NAME}.spv -S ${SHADER_TYPE}
-			COMMAND glslangValidator -V ${CMAKE_CURRENT_SOURCE_DIR}/${SHADER_NAME} -o ${CMAKE_CURRENT_SOURCE_DIR}/${SHADER_NAME}.spv -S ${SHADER_TYPE}
-			COMMENT "${CMAKE_PROJECT_NAME}: Compiling ${SHADER_NAME} to ${SHADER_NAME}.spv"
+			COMMAND echo ${GLSLANG_VALIDATOR_COMPILE_CURRENT_COMMAND}
+			COMMAND ${GLSLANG_VALIDATOR_COMPILE_CURRENT_COMMAND}
+			COMMENT "${PROJECT_NAME}: Compiling ${SHADER_NAME} to ${SHADER_NAME}.spv"
 		)
 	endforeach()
 endfunction(add_rule_generate_spirv_from_shaders)
+
+function(download_external_project external_project_name external_project_cmake_files_dir external_project_src_dir external_project_download_dir external_project_url external_project_byproducts)
+	# See here for details: https://crascit.com/2015/07/25/cmake-gtest/
+	configure_file(${FUNCTIONS_INTERNAL_DIR}/external_project_download.cmake ${external_project_cmake_files_dir}/CMakeLists.txt)
+
+	execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" -D "CMAKE_MAKE_PROGRAM:FILE=${CMAKE_MAKE_PROGRAM}" .
+					WORKING_DIRECTORY "${external_project_cmake_files_dir}" 
+					RESULT_VARIABLE download_configure_result 
+					OUTPUT_VARIABLE download_configure_output
+					ERROR_VARIABLE download_configure_output)
+	if(download_configure_result)
+		message(FATAL_ERROR "${external_project_name} download configure step failed (${download_configure_result}): ${download_configure_output}")
+	endif()
+
+	execute_process(COMMAND ${CMAKE_COMMAND} --build .
+					WORKING_DIRECTORY "${external_project_cmake_files_dir}"
+					RESULT_VARIABLE download_build_result 
+					OUTPUT_VARIABLE download_build_output
+					ERROR_VARIABLE download_build_output)
+	if(download_build_result)
+		message(FATAL_ERROR "${external_project_name} download build step failed (${download_build_result}): ${download_build_output}")
+	endif()
+endfunction(download_external_project)
