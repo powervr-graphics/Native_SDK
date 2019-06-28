@@ -17,7 +17,7 @@ layout(location = 1) in mediump vec3 inNormal;
 
 layout(location = 0) out highp vec3 ReflectDir;
 layout(location = 1) out highp vec3 RefractDir;
-layout(location = 2) out mediump float ReflectFactor;
+layout(location = 2) out highp float ReflectFactor;
 
 void main()
 {
