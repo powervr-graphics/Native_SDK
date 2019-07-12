@@ -92,6 +92,21 @@ struct SurfaceData
 };
 #endif
 
+#ifdef VK_USE_PLATFORM_MACOS_MVK
+struct SurfaceData
+{
+    float width, height;
+
+    void* view;
+    
+    SurfaceData()
+    {
+        width = height = 0;
+        view = NULL;
+    }
+};
+#endif
+
 #ifdef USE_PLATFORM_NULLWS
 struct SurfaceData
 {

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.3)
 project(VulkanSkinning)
-if(APPLE)
-	message ("Vulkan is not supported on Apple platforms.")
+if(IOS)
+	message ("Skipping VulkanSkinning : Not supported on iOS")
 	return()
 endif()
 add_subdirectory(../../.. ${CMAKE_CURRENT_BINARY_DIR}/sdk)
@@ -12,8 +12,6 @@ set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT V
 
 set(SRC_FILES VulkanSkinning.cpp)
 
-set(ASSET_FOLDER ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Assets_VulkanSkinning)
-
 # ASSET FILES (textures, scene files, textures etc) - Packaged with the executable for runtime use
 set(ASSET_FILES
 	${CMAKE_CURRENT_SOURCE_DIR}/../../assets/Robot/Arm.pvr
@@ -23,7 +21,7 @@ set(ASSET_FILES
 	${CMAKE_CURRENT_SOURCE_DIR}/../../assets/Robot/RobotNormal.pvr
 	${CMAKE_CURRENT_SOURCE_DIR}/../../assets/Robot/Tiles.pvr
 	${CMAKE_CURRENT_SOURCE_DIR}/../../assets/Robot/Robot.pod
-	${CMAKE_CURRENT_SOURCE_DIR}/Skinning.pfx
+	${CMAKE_CURRENT_SOURCE_DIR}/../../Vulkan/Skinning/Skinning.pfx
 	)
 list(APPEND SRC_FILES ${ASSET_FILES})
 source_group("assets" FILES ${ASSET_FILES})
@@ -57,7 +55,13 @@ add_rule_generate_spirv_from_shaders("${SHADER_NAMES}")
 add_platform_specific_executable(VulkanSkinning "${SRC_FILES}" "${RESOURCE_FILES}")
 
 # Copies the assets to our assets folder
-add_rule_copy_assets_to_asset_folder("${RESOURCE_FILES}" "${ASSET_FOLDER}")
+if(APPLE)
+	source_group(Resources FILES ${RESOURCE_FILES})
+	set_source_files_properties(${RESOURCE_FILES} PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
+else()
+	set(ASSET_FOLDER ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Assets_VulkanSkinning)
+	add_rule_copy_assets_to_asset_folder("${RESOURCE_FILES}" "${ASSET_FOLDER}")
+endif()
 
 target_link_libraries(VulkanSkinning
 	PVRShell

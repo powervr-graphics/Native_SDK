@@ -12,7 +12,7 @@ if(EXISTS ${CMAKE_CURRENT_LIST_DIR}/PVRUtils/OpenGLES/CMakeLists.txt)
 	add_subdirectory_if_not_already_included(PVRUtilsGles PVRUtils/OpenGLES ${FRAMEWORK_CMAKE_FILES_FOLDER}/PVRUtilsGles)
 endif()
 
-if(NOT APPLE AND NOT CMAKE_SYSTEM_NAME MATCHES "QNX")
+if(NOT IOS AND NOT CMAKE_SYSTEM_NAME MATCHES "QNX")
 	if(EXISTS ${CMAKE_CURRENT_LIST_DIR}/PVRVk/CMakeLists.txt)
 		add_subdirectory_if_not_already_included(PVRVk PVRVk ${FRAMEWORK_CMAKE_FILES_FOLDER}/PVRVk)
 	endif()

@@ -267,6 +267,9 @@ struct InstanceExtensions : public pvrvk::VulkanExtensionList
 		// The VK_KHR_wayland_surface extension provides the necessary mechanism for creating a VkSurfaceKHR object which refers to a Wayland wl_surface in addition to
 		// functions for querying the support for rendering to a Wayland compositor
 		addExtension(VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME);
+#elif defined(VK_USE_PLATFORM_MACOS_MVK)
+        // The VK_MVK_macos_surface extension provides the necessary mechanism for creating a VkSurfaceKHR object which refers to a CAMetalLayer backed NSView
+        addExtension(VK_MVK_MACOS_SURFACE_EXTENSION_NAME);
 #endif
 	}
 };
@@ -1050,6 +1053,9 @@ void VulkanIntroducingPVRShell::createSurface(void* display, void* window)
 #elif defined(VK_USE_PLATFORM_WAYLAND_KHR)
 	// Creates a pvrvk::Surface object for a Wayland surface.
 	_deviceResources->surface = pvrvk::Surface(_deviceResources->instance->createWaylandSurface(reinterpret_cast<wl_display*>(display), reinterpret_cast<wl_surface*>(window)));
+#elif defined(VK_USE_PLATFORM_MACOS_MVK)
+    // Creates a pvrvk::Surface object for an MacOS Surface.
+    _deviceResources->surface = pvrvk::Surface(_deviceResources->instance->createMacOSSurface(window));
 #else
 	Log("%u Displays supported by the physical device", _deviceResources->instance->getPhysicalDevice(0)->getNumDisplays());
 	Log("Display properties:");

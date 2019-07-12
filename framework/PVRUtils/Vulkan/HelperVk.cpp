@@ -2193,10 +2193,10 @@ pvrvk::Instance createInstance(const std::string& applicationName, VulkanVersion
 		uint32_t devicePatch = VK_VERSION_PATCH(physicalDeviceProperties.getApiVersion());
 
 		Log(LogLevel::Information, "	Device Name: %s.", physicalDeviceProperties.getDeviceName());
-		Log(LogLevel::Information, "	Device ID: %d.", physicalDeviceProperties.getDeviceID());
+		Log(LogLevel::Information, "	Device ID: 0x%X.", physicalDeviceProperties.getDeviceID());
 		Log(LogLevel::Information, "	Api Version Supported: %d / ([%d].[%d].[%d]).", physicalDeviceProperties.getApiVersion(), deviceMajor, deviceMinor, devicePatch);
 		Log(LogLevel::Information, "	Device Type: %s.", pvrvk::to_string(physicalDeviceProperties.getDeviceType()).c_str());
-		Log(LogLevel::Information, "	Driver version: %d.", physicalDeviceProperties.getDriverVersion());
+		Log(LogLevel::Information, "	Driver version: 0x%X.", physicalDeviceProperties.getDriverVersion());
 		Log(LogLevel::Information, "	Vendor ID: %d.", physicalDeviceProperties.getVendorID());
 
 		Log(LogLevel::Information, "	Memory Configuration:");
@@ -2258,6 +2258,12 @@ pvrvk::Surface createSurface(pvrvk::Instance& instance, pvrvk::PhysicalDevice& p
 	{
 		return pvrvk::Surface(instance->createWaylandSurface(reinterpret_cast<wl_display*>(display), reinterpret_cast<wl_surface*>(window)));
 	}
+#elif defined(VK_USE_PLATFORM_MACOS_MVK)
+    (void)display;
+    if (instance->getEnabledExtensionTable().mmacosSurfaceEnabled)
+    {
+        return pvrvk::Surface(instance->createMacOSSurface(window));
+    }
 #else // NullWS
 	Log("%u Displays supported by the physical device", physicalDevice->getNumDisplays());
 	Log("Display properties:");
@@ -2436,6 +2442,8 @@ InstanceExtensions::InstanceExtensions()
 	addExtension(pvrvk::VulkanExtension(VK_KHR_XLIB_SURFACE_EXTENSION_NAME, -1));
 #elif defined(VK_USE_PLATFORM_WAYLAND_KHR)
 	addExtension(pvrvk::VulkanExtension(VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME, -1));
+#elif defined(VK_USE_PLATFORM_MACOS_MVK)
+	addExtension(pvrvk::VulkanExtension(VK_MVK_MACOS_SURFACE_EXTENSION_NAME, -1));
 #elif defined(VK_KHR_display) // NullWS
 	addExtension(pvrvk::VulkanExtension(VK_KHR_DISPLAY_EXTENSION_NAME, -1));
 #endif

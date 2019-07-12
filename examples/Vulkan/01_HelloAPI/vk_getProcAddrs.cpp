@@ -22,6 +22,9 @@ PVR_VULKAN_FUNCTION_POINTER_DEFINITION(CreateXlibSurfaceKHR)
 #ifdef VK_USE_PLATFORM_WAYLAND_KHR
 PVR_VULKAN_FUNCTION_POINTER_DEFINITION(CreateWaylandSurfaceKHR)
 #endif
+#ifdef VK_USE_PLATFORM_MACOS_MVK
+PVR_VULKAN_FUNCTION_POINTER_DEFINITION(CreateMacOSSurfaceMVK)
+#endif
 
 #ifdef USE_PLATFORM_NULLWS
 PVR_VULKAN_FUNCTION_POINTER_DEFINITION(GetPhysicalDeviceDisplayPropertiesKHR)
@@ -192,18 +195,24 @@ static NativeLibrary& vkglueLib()
 #if _LINUX || _ANDROID
 	static NativeLibrary mylib("libvulkan.so");
 #endif
+#if _APPLE
+    static NativeLibrary mylib("libvulkan.dylib");
+#endif
 	return mylib;
 }
 
 bool vk::initVulkan()
 {
 	GetInstanceProcAddr = (PFN_vkGetInstanceProcAddr)vkglueLib().getFunction("vkGetInstanceProcAddr");
-	EnumerateInstanceExtensionProperties = (PFN_vkEnumerateInstanceExtensionProperties)vkglueLib().getFunction("vkEnumerateInstanceExtensionProperties");
-	EnumerateInstanceLayerProperties = (PFN_vkEnumerateInstanceLayerProperties)vkglueLib().getFunction("vkEnumerateInstanceLayerProperties");
-	CreateInstance = (PFN_vkCreateInstance)vkglueLib().getFunction("vkCreateInstance");
-	DestroyInstance = (PFN_vkDestroyInstance)vkglueLib().getFunction("vkDestroyInstance");
 
-	if (!GetInstanceProcAddr || !EnumerateInstanceExtensionProperties || !EnumerateInstanceLayerProperties || !CreateInstance || !DestroyInstance)
+    if(GetInstanceProcAddr)
+    {
+        PVR_VULKAN_GET_INSTANCE_POINTER(VK_NULL_HANDLE, EnumerateInstanceExtensionProperties);
+        PVR_VULKAN_GET_INSTANCE_POINTER(VK_NULL_HANDLE, EnumerateInstanceLayerProperties);
+        PVR_VULKAN_GET_INSTANCE_POINTER(VK_NULL_HANDLE, CreateInstance);
+    }
+
+	if (!GetInstanceProcAddr || !EnumerateInstanceExtensionProperties || !EnumerateInstanceLayerProperties || !CreateInstance)
 	{
 		return false;
 	}
@@ -225,12 +234,16 @@ bool vk::initVulkanInstance(VkInstance instance)
 #ifdef VK_USE_PLATFORM_WAYLAND_KHR
 	PVR_VULKAN_GET_INSTANCE_POINTER(instance, CreateWaylandSurfaceKHR)
 #endif
+#ifdef VK_USE_PLATFORM_MACOS_MVK
+    PVR_VULKAN_GET_INSTANCE_POINTER(instance, CreateMacOSSurfaceMVK)
+#endif
 #ifdef USE_PLATFORM_NULLWS
 	PVR_VULKAN_GET_INSTANCE_POINTER(instance, GetPhysicalDeviceDisplayPropertiesKHR)
 	PVR_VULKAN_GET_INSTANCE_POINTER(instance, GetDisplayModePropertiesKHR)
 	PVR_VULKAN_GET_INSTANCE_POINTER(instance, CreateDisplayPlaneSurfaceKHR)
 #endif
 
+	PVR_VULKAN_GET_INSTANCE_POINTER(instance, DestroyInstance)
 	PVR_VULKAN_GET_INSTANCE_POINTER(instance, EnumerateDeviceLayerProperties)
 	PVR_VULKAN_GET_INSTANCE_POINTER(instance, EnumerateDeviceExtensionProperties)
 	PVR_VULKAN_GET_INSTANCE_POINTER(instance, GetPhysicalDeviceSurfaceCapabilitiesKHR)
@@ -253,7 +266,12 @@ bool vk::initVulkanInstance(VkInstance instance)
 	PVR_VULKAN_GET_INSTANCE_POINTER(instance, DebugReportMessageEXT)
 	PVR_VULKAN_GET_INSTANCE_POINTER(instance, DestroyDebugReportCallbackEXT)
 
-	return true;
+    if (!DestroyInstance || !EnumerateDeviceLayerProperties || !EnumerateDeviceExtensionProperties || !GetPhysicalDeviceSurfaceCapabilitiesKHR || !GetPhysicalDeviceSurfaceFormatsKHR || !EnumeratePhysicalDevices || !GetPhysicalDeviceQueueFamilyProperties || !GetPhysicalDeviceFeatures || !CreateDevice || !GetDeviceProcAddr || !GetPhysicalDeviceMemoryProperties || !GetPhysicalDeviceSurfacePresentModesKHR || !GetPhysicalDeviceSurfaceSupportKHR || !GetPhysicalDeviceFormatProperties || !GetPhysicalDeviceProperties || !DestroySurfaceKHR || !GetPhysicalDeviceImageFormatProperties || !GetPhysicalDeviceSparseImageFormatProperties)
+    {
+        return false;
+    }
+    
+    return true;
 }
 
 bool vk::initVulkanDevice(VkDevice device)

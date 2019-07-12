@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.3)
 project(VulkanHelloAPI)
 
-if(APPLE)
-	message ("Vulkan is not supported on Apple platforms.")
+if(IOS)
+	message ("Skipping VulkanHelloAPI : Not supported on iOS")
 	return()
 endif()
 
@@ -50,6 +50,41 @@ elseif (ANDROID)
 	# Force export ANativeActivity_onCreate(),
 	# Refer to: https://github.com/android-ndk/ndk/issues/381
 	set_property(TARGET VulkanHelloAPI APPEND_STRING PROPERTY LINK_FLAGS " -u ANativeActivity_onCreate")
+elseif (APPLE)
+	set(PLATFORM_FOLDER macOS_x86)
+	set(BUILDS_LIB_FOLDER "${SDK_ROOT}/lib/${PLATFORM_FOLDER}")
+	list(APPEND SRC_FILES MainMacOS.mm ${SDK_ROOT}/framework/PVRShell/OS/AppKit/ViewMVK.mm)
+	set(INFO_PLIST_FILE "${CMAKE_CURRENT_SOURCE_DIR}/cmake-resources/macOS_Info.plist")
+	find_library(lib-AppKit AppKit)
+	list(APPEND PLATFORM_LIBS ${lib-AppKit})
+	find_library(lib-QuartzCore QuartzCore)
+	list(APPEND PLATFORM_LIBS ${lib-QuartzCore})
+	find_library(lib-Metal Metal)
+	list(APPEND PLATFORM_LIBS ${lib-Metal})
+	list(APPEND ASSET_FILES "${CMAKE_CURRENT_SOURCE_DIR}/cmake-resources/MainMenu.xib")
+
+	if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
+		set(CMAKE_C_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
+		set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "c++11")
+		set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY "libc++")
+	endif()
+
+	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -all_load") # PREVENT THE LINKER FROM STRIPPING OUT THE FUNCTIONS THAT macOS CALLS REFLECTIVELY
+
+	source_group(Resources FILES ${ASSET_FILES})
+	set_source_files_properties(${ASSET_FILES} PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
+
+	if(EXISTS "${EXTERNAL_LIB_FOLDER}/libvulkan.dylib")
+		list(APPEND FRAMEWORK_FILES "${EXTERNAL_LIB_FOLDER}/libvulkan.dylib")
+	endif()
+
+	set_source_files_properties(${FRAMEWORK_FILES} PROPERTIES MACOSX_PACKAGE_LOCATION Frameworks)
+	source_group(Frameworks FILES ${FRAMEWORK_FILES})
+
+	add_executable(VulkanHelloAPI MACOSX_BUNDLE ${SRC_FILES} ${ASSET_FILES} ${FRAMEWORK_FILES})
+	set_target_properties(VulkanHelloAPI PROPERTIES MACOSX_BUNDLE_INFO_PLIST "${INFO_PLIST_FILE}")
+	set_target_properties(VulkanHelloAPI PROPERTIES RESOURCE "${ASSET_FILES}")
 elseif (UNIX)
 	set(WS_DEFINE "")
 	if(NOT WS) #We support building for several Windowing Systems. Typical desktop systems support X11 and Wayland is catching on. NullWS is used by some development platforms/ testchip.

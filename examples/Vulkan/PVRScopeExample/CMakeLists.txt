@@ -1,19 +1,7 @@
 cmake_minimum_required(VERSION 3.3)
 project(VulkanPVRScopeExample)
-if(APPLE)
-	if(IOS)
-		message("Skipping VulkanPVRScopeExample : Not supported on iOS")
-		return()
-	endif()
-endif()
-if(APPLE)
-	if (NOT IOS)
-		message("Skipping VulkanPVRScopeExample : Not supported on macOS")
-		return()
-	endif()
-endif()
-if(APPLE)
-	message ("Vulkan is not supported on Apple platforms.")
+if(IOS)
+	message ("Skipping VulkanPVRScopeExample : Not supported on iOS")
 	return()
 endif()
 add_subdirectory(../../.. ${CMAKE_CURRENT_BINARY_DIR}/sdk)
@@ -23,8 +11,6 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT VulkanPVRScopeExample)
 
 set(SRC_FILES VulkanPVRScopeExample.cpp PVRScopeGraph.cpp PVRScopeGraph.h)
-
-set(ASSET_FOLDER ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Assets_VulkanPVRScopeExample)
 
 # ASSET FILES (textures, scene files, textures etc) - Packaged with the executable for runtime use
 set(ASSET_FILES
@@ -63,7 +49,13 @@ add_rule_generate_spirv_from_shaders("${SHADER_NAMES}")
 add_platform_specific_executable(VulkanPVRScopeExample "${SRC_FILES}" "${RESOURCE_FILES}")
 
 # Copies the assets to our assets folder
-add_rule_copy_assets_to_asset_folder("${RESOURCE_FILES}" "${ASSET_FOLDER}")
+if(APPLE)
+	source_group(Resources FILES ${RESOURCE_FILES})
+	set_source_files_properties(${RESOURCE_FILES} PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
+else()
+	set(ASSET_FOLDER ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Assets_VulkanPVRScopeExample)
+	add_rule_copy_assets_to_asset_folder("${RESOURCE_FILES}" "${ASSET_FOLDER}")
+endif()
 
 target_link_libraries(VulkanPVRScopeExample
 	PVRShell

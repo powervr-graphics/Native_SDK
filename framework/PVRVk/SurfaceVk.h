@@ -279,6 +279,42 @@ public:
 };
 #endif
 
+#if defined(VK_USE_PLATFORM_MACOS_MVK)
+/// <summary>A MacOS Surface.</summary>
+class MacOSSurface_ : public Surface_
+{
+private:
+    friend class Instance_;
+    
+    class make_shared_enabler
+    {
+    protected:
+        make_shared_enabler() {}
+        friend MacOSSurface_;
+    };
+    
+    static MacOSSurface constructShared(Instance& instance, void* view)
+    {
+        return std::make_shared<MacOSSurface_>(make_shared_enabler{}, instance, view);
+    }
+    
+    void* _view;
+    
+public:
+    //!\cond NO_DOXYGEN
+    DECLARE_NO_COPY_SEMANTICS(MacOSSurface_)
+    MacOSSurface_(make_shared_enabler, Instance& instance, void* view);
+    //!\endcond
+    
+    /// <summary>Get view</summary>
+    /// <returns>void*</returns>
+    const void* getView() const
+    {
+        return _view;
+    }
+};
+#endif
+
 /// <summary>A DisplayPlane Surface.</summary>
 class DisplayPlaneSurface_ : public Surface_
 {

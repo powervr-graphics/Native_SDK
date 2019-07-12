@@ -283,6 +283,9 @@ const std::string InstanceExtensions[] = {
 	// The VK_KHR_wayland_surface extension provides the necessary mechanism for creating a VkSurfaceKHR object which refers to a Wayland wl_surface in addition to functions
 	// for querying the support for rendering to a Wayland compositor
 	VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME,
+#elif defined(VK_USE_PLATFORM_MACOS_MVK)
+    // The VK_MVK_macos_surface extension provides the necessary mechanism for creating a VkSurfaceKHR object which refers to a CAMetalLayer backed NSView
+    VK_MVK_MACOS_SURFACE_EXTENSION_NAME,
 #endif
 };
 
@@ -1549,6 +1552,19 @@ void VulkanIntroducingPVRShell::createSurface(void* display, void* window)
 	{
 		throw pvr::PvrError("Wayland surface instance extensions not supported");
 	}
+#elif defined(VK_USE_PLATFORM_MACOS_MVK)
+    // Creates a VkSurfaceKHR object from an NSView
+    if (isExtensionEnabled(_enabledInstanceExtensionNames, VK_MVK_MACOS_SURFACE_EXTENSION_NAME))
+    {
+        VkMacOSSurfaceCreateInfoMVK surfaceInfo = {};
+        surfaceInfo.sType = VK_STRUCTURE_TYPE_MACOS_SURFACE_CREATE_INFO_MVK;
+        surfaceInfo.pNext = 0;
+        surfaceInfo.flags = 0;
+        // pView must be a valid NSView and must be backed by a CALayer instance of type CAMetalLayer.
+        surfaceInfo.pView = window;
+
+        vulkanSuccessOrDie(_instanceVkFunctions.vkCreateMacOSSurfaceMVK(_instance, &surfaceInfo, NULL, &_surface), "Could not create Xlib Window Surface");
+    }
 #else
 	if (isExtensionEnabled(_enabledInstanceExtensionNames, VK_KHR_DISPLAY_EXTENSION_NAME))
 	{

@@ -48,6 +48,7 @@ class Win32Surface_;
 class XcbSurface_;
 class XlibSurface_;
 class WaylandSurface_;
+class MacOSSurface_;
 class DisplayPlaneSurface_;
 class Queue_;
 class PipelineCache_;
@@ -193,6 +194,9 @@ typedef std::shared_ptr<impl::XlibSurface_> XlibSurface;
 
 /// <summary>Forwared-declared reference-counted handle to a WaylandSurface. For detailed documentation, see PVRVk module</summary>
 typedef std::shared_ptr<impl::WaylandSurface_> WaylandSurface;
+
+/// <summary>Forwared-declared reference-counted handle to a MacOSSurface. For detailed documentation, see PVRVk module</summary>
+typedef std::shared_ptr<impl::MacOSSurface_> MacOSSurface;
 
 /// <summary>Forwared-declared reference-counted handle to a DisplayPlaneSurface. For detailed documentation, see PVRVk module</summary>
 typedef std::shared_ptr<impl::DisplayPlaneSurface_> DisplayPlaneSurface;

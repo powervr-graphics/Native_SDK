@@ -400,6 +400,9 @@ static inline void initVkInstanceBindings(VkInstance instance, VkInstanceBinding
 #ifdef VK_USE_PLATFORM_WIN32_KHR
     bindings->vkGetPhysicalDeviceWin32PresentationSupportKHR = (PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR) getinstanceProcAddress(instance, "vkGetPhysicalDeviceWin32PresentationSupportKHR");
 #endif // VK_USE_PLATFORM_WIN32_KHR
+#ifdef VK_USE_PLATFORM_MACOS_MVK
+    bindings->vkCreateMacOSSurfaceMVK = (PFN_vkCreateMacOSSurfaceMVK) getinstanceProcAddress(instance, "vkCreateMacOSSurfaceMVK");
+#endif // VK_USE_PLATFORM_MACOS_MVK
     bindings->vkGetPhysicalDeviceFeatures2KHR = (PFN_vkGetPhysicalDeviceFeatures2KHR) getinstanceProcAddress(instance, "vkGetPhysicalDeviceFeatures2KHR");
     bindings->vkGetPhysicalDeviceProperties2KHR = (PFN_vkGetPhysicalDeviceProperties2KHR) getinstanceProcAddress(instance, "vkGetPhysicalDeviceProperties2KHR");
     bindings->vkGetPhysicalDeviceFormatProperties2KHR = (PFN_vkGetPhysicalDeviceFormatProperties2KHR) getinstanceProcAddress(instance, "vkGetPhysicalDeviceFormatProperties2KHR");

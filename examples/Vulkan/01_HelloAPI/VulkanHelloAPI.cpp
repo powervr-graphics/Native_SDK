@@ -164,6 +164,9 @@ std::vector<std::string> VulkanHelloAPI::initInstanceExtensions()
 #ifdef VK_USE_PLATFORM_WAYLAND_KHR
 	extensionNames.emplace_back(VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME);
 #endif
+#ifdef VK_USE_PLATFORM_MACOS_MVK
+    extensionNames.emplace_back(VK_MVK_MACOS_SURFACE_EXTENSION_NAME);
+#endif
 #ifdef USE_PLATFORM_NULLWS
 	extensionNames.emplace_back(VK_KHR_DISPLAY_EXTENSION_NAME);
 #endif
@@ -261,8 +264,8 @@ void VulkanHelloAPI::initPhysicalDevice()
 		vk::GetPhysicalDeviceProperties(device, &deviceProperties);
 
 		Log(false, "Device Name: %s", deviceProperties.deviceName);
-		Log(false, "Device ID: %d", deviceProperties.deviceID);
-		Log(false, "Device Driver Version: %d", deviceProperties.driverVersion);
+		Log(false, "Device ID: 0x%X", deviceProperties.deviceID);
+		Log(false, "Device Driver Version: 0x%X", deviceProperties.driverVersion);
 		Log(false, "%s", "--------------------------------------");
 
 		// Features are more in-depth information that is not needed right now so these are not outputted.
@@ -432,6 +435,21 @@ void VulkanHelloAPI::initSurface()
 	// Create the wayland surface that will be presented on.
 	debugAssertFunctionResult(vk::CreateWaylandSurfaceKHR(appManager.instance, &surfaceInfo, NULL, &appManager.surface), "Wayland Surface Creation");
 
+#endif
+    
+#ifdef VK_USE_PLATFORM_MACOS_MVK
+
+    // Create the macos surface info, passing the NSView handle
+    VkMacOSSurfaceCreateInfoMVK surfaceInfo = {};
+    surfaceInfo.sType = VK_STRUCTURE_TYPE_MACOS_SURFACE_CREATE_INFO_MVK;
+    surfaceInfo.pNext = 0;
+    surfaceInfo.flags = 0;
+    // pView must be a valid NSView and must be backed by a CALayer instance of type CAMetalLayer.
+    surfaceInfo.pView = surfaceData.view;
+
+    // Create the macos surface that will be presented on.
+    debugAssertFunctionResult(vk::CreateMacOSSurfaceMVK(appManager.instance, &surfaceInfo, NULL, &appManager.surface), "MacOS Surface Creation");
+    
 #endif
 
 #ifdef USE_PLATFORM_NULLWS

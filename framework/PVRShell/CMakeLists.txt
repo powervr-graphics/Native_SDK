@@ -32,7 +32,9 @@ elseif (APPLE)
 			${CMAKE_CURRENT_LIST_DIR}/EntryPoint/NSApplicationMain/AppController.h
 			${CMAKE_CURRENT_LIST_DIR}/EntryPoint/NSApplicationMain/AppController.mm
 			${CMAKE_CURRENT_LIST_DIR}/EntryPoint/NSApplicationMain/main.m
-			${CMAKE_CURRENT_LIST_DIR}/OS/AppKit/ShellOS.mm)
+			${CMAKE_CURRENT_LIST_DIR}/OS/AppKit/ShellOS.mm
+			${CMAKE_CURRENT_LIST_DIR}/OS/AppKit/ViewMVK.h
+			${CMAKE_CURRENT_LIST_DIR}/OS/AppKit/ViewMVK.mm)
 	endif()
 elseif(ANDROID)
 	set(PVRShellOS_SRC

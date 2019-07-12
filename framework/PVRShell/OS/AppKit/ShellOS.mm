@@ -6,12 +6,12 @@
 */
 //!\cond NO_DOXYGEN
 #include "PVRShell/OS/ShellOS.h"
+#include "PVRShell/OS/AppKit/ViewMVK.h"
 #include "PVRCore/stream/FilePath.h"
 #include <mach/mach_time.h>
 #include <Foundation/Foundation.h>
 #include <AppKit/NSWindow.h>
 #include <AppKit/NSScreen.h>
-#include <AppKit/NSView.h>
 #include <AppKit/NSAlert.h>
 
 @interface AppWindow : NSWindow < NSWindowDelegate> // The implementation appears at the bottom of this file
@@ -25,7 +25,7 @@ namespace pvr{namespace platform{
 struct InternalOS
 {
 	AppWindow* window;
-	NSView* view;
+	ViewMVK* view;
 
 	InternalOS() : window(nil), view(nil)
 	{
@@ -118,7 +118,7 @@ bool ShellOS::initializeWindow(DisplayAttributes &data)
     [_OSImplementation->window setTitle:[NSString stringWithUTF8String:data.windowTitle.c_str()]];
     
     // Now create the view that we'll render to
-    _OSImplementation->view = [[NSView alloc] initWithFrame:frame];
+    _OSImplementation->view = [[ViewMVK alloc] initWithFrame:frame];
     
     if(!_OSImplementation->view)
     {
@@ -143,6 +143,7 @@ void ShellOS::releaseWindow()
 {
 	if(_OSImplementation->window)
 	{
+		[_OSImplementation->view release];
         _OSImplementation->view = nil;
 	}
 }

@@ -6,7 +6,7 @@ project (external)
 # Setup the external_pugixml target
 add_subdirectory_if_not_already_included(pugixml pugixml ${EXTERNAL_CMAKE_FILES_FOLDER}/external_pugixml)
 
-if(NOT APPLE AND NOT CMAKE_SYSTEM_NAME MATCHES "QNX")
+if(NOT IOS AND NOT CMAKE_SYSTEM_NAME MATCHES "QNX")
 	# Setup the external_glslang target
 	add_subdirectory_if_not_already_included(glslang glslang ${EXTERNAL_CMAKE_FILES_FOLDER}/external_glslang)
 

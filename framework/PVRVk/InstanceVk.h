@@ -247,6 +247,17 @@ public:
 	}
 #endif
 
+#if defined(VK_USE_PLATFORM_MACOS_MVK)
+    /// <summary>Create a MacOS surface</summary>
+    /// <param name="view">A CAMetalLayer backed NSView</param>
+    /// <returns>Valid MacOSSurface object if success.</returns>
+    MacOSSurface createMacOSSurface(void* view)
+    {
+        Instance instance = shared_from_this();
+        return impl::MacOSSurface_::constructShared(instance, view);
+    }
+#endif
+
 	/// <summary>Create a DisplayPlane surface</summary>
 	/// <param name="displayMode">A display mode to use for creating the DisplayPlane Surface</param>
 	/// <param name="imageExtent">The image extent to use for creating the DisplayPlane Surface</param>

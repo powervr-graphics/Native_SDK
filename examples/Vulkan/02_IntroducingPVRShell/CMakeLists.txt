@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.3)
 project(VulkanIntroducingPVRShell)
-if(APPLE)
-	message ("Vulkan is not supported on Apple platforms.")
+if(IOS)
+	message ("Skipping VulkanIntroducingPVRShell : Not supported on iOS")
 	return()
 endif()
 add_subdirectory(../../.. ${CMAKE_CURRENT_BINARY_DIR}/sdk)
@@ -11,8 +11,6 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT VulkanIntroducingPVRShell)
 
 set(SRC_FILES VulkanIntroducingPVRShell.cpp)
-
-set(ASSET_FOLDER ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Assets_VulkanIntroducingPVRShell)
 
 # SHADER SOURCE FILES (Vulkan) - Compiled to spir-v at build-time
 set(SHADER_NAMES
@@ -41,7 +39,13 @@ add_rule_generate_spirv_from_shaders("${SHADER_NAMES}")
 add_platform_specific_executable(VulkanIntroducingPVRShell "${SRC_FILES}" "${RESOURCE_FILES}")
 
 # Copies the assets to our assets folder
-add_rule_copy_assets_to_asset_folder("${RESOURCE_FILES}" "${ASSET_FOLDER}")
+if(APPLE)
+	source_group(Resources FILES ${RESOURCE_FILES})
+	set_source_files_properties(${RESOURCE_FILES} PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
+else()
+	set(ASSET_FOLDER ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Assets_VulkanIntroducingPVRShell)
+	add_rule_copy_assets_to_asset_folder("${RESOURCE_FILES}" "${ASSET_FOLDER}")
+endif()
 
 target_link_libraries(VulkanIntroducingPVRShell
 	PVRShell

@@ -36,9 +36,15 @@ elseif (APPLE)
 	else()
 		find_library(lib-appkit AppKit)
 		list(APPEND PlatformInterface_Link_LIBS ${lib-appkit})
+        find_library(lib-QuartzCore QuartzCore)
+        list(APPEND PlatformInterface_Link_LIBS ${lib-QuartzCore})
+        find_library(lib-Metal Metal)
+        list(APPEND PlatformInterface_Link_LIBS ${lib-Metal})
 		
 		find_library(lib-opencl OpenCL)
 		list(APPEND OpenGLESPlatformInterface_LINK_LIBS ${lib-opencl})
+
+        set(VulkanPlatformInterface_COMPILE_DEFINITIONS "${VulkanPlatformInterface_COMPILE_DEFINITIONS}" "VK_USE_PLATFORM_MACOS_MVK")
 	endif()
 elseif (UNIX) # Mainly, add the windowing system libraries and include folders
 	set(WS_DEFINE "" CACHE INTERNAL "")

@@ -60,7 +60,22 @@ typedef void* LIBTYPE;
 typedef HMODULE LIBTYPE;
 #endif
 
-#if !defined(VK_USE_PLATFORM_WIN32_KHR) && !defined(VK_USE_PLATFORM_ANDROID_KHR) && !defined(VK_USE_PLATFORM_XLIB_KHR) && !defined(VK_USE_PLATFORM_WAYLAND_KHR)
+#if defined(__APPLE__)
+#define _APPLE 1
+#define VK_USE_PLATFORM_MACOS_MVK
+#include <unistd.h>
+#include <dlfcn.h>
+#include <cstring>
+#include <memory>
+#include "CoreFoundation/CoreFoundation.h"
+static const char* g_pszEnvVar = "PVRTRACE_LIB_PATH";
+#define LOGI(...) ((void)printf(__VA_ARGS__))
+#define LOGW(...) ((void)fprintf(stderr, __VA_ARGS__))
+#define LOGE(...) ((void)fprintf(stderr, __VA_ARGS__))
+typedef void* LIBTYPE;
+#endif
+
+#if !defined(VK_USE_PLATFORM_WIN32_KHR) && !defined(VK_USE_PLATFORM_ANDROID_KHR) && !defined(VK_USE_PLATFORM_XLIB_KHR) && !defined(VK_USE_PLATFORM_WAYLAND_KHR) && !defined(VK_USE_PLATFORM_MACOS_MVK)
 #define USE_PLATFORM_NULLWS
 #endif
 
@@ -104,6 +119,9 @@ public:
 #endif
 #ifdef VK_USE_PLATFORM_WAYLAND_KHR
 	PVR_VULKAN_FUNCTION_POINTER_DECLARATION(CreateWaylandSurfaceKHR)
+#endif
+#ifdef VK_USE_PLATFORM_MACOS_MVK
+    PVR_VULKAN_FUNCTION_POINTER_DECLARATION(CreateMacOSSurfaceMVK)
 #endif
 
 #ifdef USE_PLATFORM_NULLWS
@@ -391,6 +409,71 @@ public:
 		}
 		LOGI("Host library '%s' loaded\n", LibPath.c_str());
 #endif
+#if _APPLE
+        const char* pszPath = LibPath.c_str();
+        CFBundleRef mainBundle = CFBundleGetMainBundle();
+        CFURLRef resourceURL = CFBundleCopyPrivateFrameworksURL(mainBundle);
+        char path[PATH_MAX];
+        if (CFURLGetFileSystemRepresentation(resourceURL, TRUE, (UInt8*)path, PATH_MAX))
+        {
+            CFRelease(resourceURL);
+
+            // --- Set a global environment variable to point to this path (for VFrame usage)
+            const char* slash = strrchr(pszPath, '/');
+            if (slash)
+            {
+                char szPath[FILENAME_MAX];
+                memset(szPath, 0, sizeof(szPath));
+                strncpy(szPath, pszPath, slash - pszPath);
+                setenv(g_pszEnvVar, szPath, 1);
+            }
+            else
+            {
+                // Use the current bundle path
+                std::string framework = std::string(path) + "/../Frameworks/";
+                setenv(g_pszEnvVar, framework.c_str(), 1);
+            }
+            
+            // --- Make a temp symlink
+            char szTempFile[FILENAME_MAX];
+            memset(szTempFile, 0, sizeof(szTempFile));
+            
+            char tmpdir[PATH_MAX];
+            size_t n = confstr(_CS_DARWIN_USER_TEMP_DIR, tmpdir, sizeof(tmpdir));
+            if ((n <= 0) || (n >= sizeof(tmpdir)))
+            {
+                strlcpy(tmpdir, getenv("TMPDIR"), sizeof(tmpdir));
+            }
+            
+            strcat(szTempFile, tmpdir);
+            strcat(szTempFile, "tmp.XXXXXX");
+            
+            if (mkstemp(szTempFile))
+            {
+                if (symlink(pszPath, szTempFile) == 0)
+                {
+                    _hostLib = dlopen(szTempFile, RTLD_LAZY | RTLD_GLOBAL);
+                    remove(szTempFile);
+                }
+            }
+            
+            // --- Can't find the lib? Check the application framework folder instead.
+            if (!_hostLib)
+            {
+                std::string framework = std::string(path) + std::string("/") + pszPath;
+                _hostLib = dlopen(framework.c_str(), RTLD_LAZY | RTLD_GLOBAL);
+                
+                if (!_hostLib)
+                {
+                    const char* err = dlerror();
+                    if (err)
+                    {
+                        // NSLog(@"dlopen failed with error: %s => %@", err, framework);
+                    }
+                }
+            }
+        }
+#endif
 #if _ANDROID
 		size_t start = 0;
 		std::string tmp;
@@ -453,7 +536,7 @@ public:
 			}
 #endif
 
-#if _LINUX || _ANDROID
+#if _LINUX || _ANDROID || _APPLE
 			void* pFn = dlsym(_hostLib, functionName);
 			if (pFn == NULL)
 			{
@@ -487,7 +570,7 @@ public:
 #if _WIN32
 			FreeLibrary(_hostLib);
 #endif
-#if _LINUX || _ANDROID
+#if _LINUX || _ANDROID || _APPLE
 			dlclose(_hostLib);
 #endif
 			_hostLib = 0;
