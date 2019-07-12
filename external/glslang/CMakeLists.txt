@@ -85,7 +85,7 @@ else()
 	set(ENABLE_HLSL OFF CACHE INTERNAL "")
 
 	# If CMAKE_CROSSCOMPILING then do not build glslangValidator using normal add_subdirectory logic
-	if(CMAKE_CROSSCOMPILING)
+	if(CMAKE_CROSSCOMPILING OR APPLE)
 		# See glslangValidator/CMakeLists.txt for how glslangValidator is built when cross-compiling
 		set(ENABLE_GLSLANG_BINARIES OFF CACHE INTERNAL "")
 	else()
@@ -111,7 +111,7 @@ else()
 		LIBRARY_OUTPUT_DIRECTORY ${EXTERNAL_LIB_CONFIG_FOLDER})	
 		
 	# If CMAKE_CROSSCOMPILING then we configure glslangValidator separately and import the executable
-	if(CMAKE_CROSSCOMPILING)
+	if(CMAKE_CROSSCOMPILING OR APPLE)
 		# Don't download if it is already present - this handles cases where internet connectivity may be limited but all packages are already available
 		if(NOT EXISTS ${glslangValidator_RELEASE_EXECUTABLE})
 			set(glslangValidator_base_URL "https://github.com/KhronosGroup/glslang/releases/download/${external_glslang_VERSION}")
