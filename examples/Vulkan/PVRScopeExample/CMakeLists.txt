@@ -68,8 +68,8 @@ add_rule_copy_assets_to_asset_folder("${RESOURCE_FILES}" "${ASSET_FOLDER}")
 target_link_libraries(VulkanPVRScopeExample
 	PVRShell
 	PVRUtilsVk
-	${SCOPE_LIB_FOLDER}/${CMAKE_STATIC_LIBRARY_PREFIX}PVRScopeDeveloper${CMAKE_STATIC_LIBRARY_SUFFIX}
+	${SCOPE_LIB_FOLDER}/${SCOPE_STATIC_LIBRARY_PREFIX}PVRScopeDeveloper${SCOPE_STATIC_LIBRARY_SUFFIX}
 )
 if(WIN32)
-	add_custom_command(TARGET VulkanPVRScopeExample POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different "${SCOPE_LIB_FOLDER}/${CMAKE_SHARED_LIBRARY_PREFIX}PVRScopeDeveloper${CMAKE_SHARED_LIBRARY_SUFFIX}" $<TARGET_FILE_DIR:VulkanPVRScopeExample>)
+	add_custom_command(TARGET VulkanPVRScopeExample POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different "${SCOPE_LIB_FOLDER}/${SCOPE_SHARED_LIBRARY_PREFIX}PVRScopeDeveloper${SCOPE_SHARED_LIBRARY_SUFFIX}" $<TARGET_FILE_DIR:VulkanPVRScopeExample>)
 endif()

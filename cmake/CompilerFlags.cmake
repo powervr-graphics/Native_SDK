@@ -2,28 +2,48 @@
 
 option(USE_SANITIZER_FLAGS "Use sanitzer flags" OFF)
 
+include(CheckCXXCompilerFlag)
+
 #some optimizations for windows
 if (WIN32)
-	#Get rid of the "this function is unsafe" warning in Visual Studio
-	add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+	if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+		#Get rid of the "this function is unsafe" warning in Visual Studio
+		add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+		
+		#Enable Link Time Code Generation/Whole program optimization
+		set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /LTCG" CACHE INTERNAL "")
+		set(CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO "${CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO} /LTCG" CACHE INTERNAL "")
+		set(CMAKE_EXE_LINKER_FLAGS_MINSIZEREL "${CMAKE_EXE_LINKER_FLAGS_MINSIZEREL} /LTCG" CACHE INTERNAL "")
+		set(CMAKE_STATIC_LINKER_FLAGS_RELEASE "${CMAKE_STATIC_LINKER_FLAGS_RELEASE} /LTCG" CACHE INTERNAL "")
+		set(CMAKE_STATIC_LINKER_FLAGS_RELWITHDEBINFO "${CMAKE_STATIC_LINKER_FLAGS_RELWITHDEBINFO} /LTCG" CACHE INTERNAL "")
+		set(CMAKE_STATIC_LINKER_FLAGS_MINSIZEREL "${CMAKE_STATIC_LINKER_FLAGS_MINSIZEREL} /LTCG" CACHE INTERNAL "")
+		add_compile_options("$<$<NOT:$<CONFIG:DEBUG>>:/GL>")
+		
+		# Support parallel builds
+		add_compile_options("/MP")
 	
-	#Enable Link Time Code Generation/Whole program optimization
-	set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /LTCG" CACHE INTERNAL "")
-	set(CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO "${CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO} /LTCG" CACHE INTERNAL "")
-	set(CMAKE_EXE_LINKER_FLAGS_MINSIZEREL "${CMAKE_EXE_LINKER_FLAGS_MINSIZEREL} /LTCG" CACHE INTERNAL "")
-	set(CMAKE_STATIC_LINKER_FLAGS_RELEASE "${CMAKE_STATIC_LINKER_FLAGS_RELEASE} /LTCG" CACHE INTERNAL "")
-	set(CMAKE_STATIC_LINKER_FLAGS_RELWITHDEBINFO "${CMAKE_STATIC_LINKER_FLAGS_RELWITHDEBINFO} /LTCG" CACHE INTERNAL "")
-	set(CMAKE_STATIC_LINKER_FLAGS_MINSIZEREL "${CMAKE_STATIC_LINKER_FLAGS_MINSIZEREL} /LTCG" CACHE INTERNAL "")
-	add_compile_options("$<$<NOT:$<CONFIG:DEBUG>>:/GL>")
-	add_definitions(/MP)
+		# Enable "Just My Code" feature introduced in MSVC 15.8 (Visual Studio 2017)
+		# See https://blogs.msdn.microsoft.com/vcblog/2018/06/29/announcing-jmc-stepping-in-visual-studio/
+		#
+		# For MSVC version numbering used here, see:
+		# https://en.wikipedia.org/wiki/Microsoft_Visual_C%2B%2B#Internal_version_numbering
+		if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "19.15" )
+			add_compile_options("$<$<CONFIG:DEBUG>:/JMC>")
+		endif()
 	
-	# Enable "Just My Code" feature introduced in MSVC 15.8 (Visual Studio 2017)
-	# See https://blogs.msdn.microsoft.com/vcblog/2018/06/29/announcing-jmc-stepping-in-visual-studio/
-	#
-	# For MSVC version numbering used here, see:
-	# https://en.wikipedia.org/wiki/Microsoft_Visual_C%2B%2B#Internal_version_numbering
-	if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "19.15" )
-		add_compile_options("$<$<CONFIG:DEBUG>:/JMC>")
+		# Add the all-important fast-math flag
+		CHECK_CXX_COMPILER_FLAG(/fp:fast COMPILER_SUPPORTS_FAST_MATH)
+		if(COMPILER_SUPPORTS_FAST_MATH)
+			add_compile_options("$<$<CONFIG:RELEASE>:/fp:fast>")
+		endif()
+	endif()
+	
+	if(MINGW)
+		SET(_WIN32_WINNT 0x0600 CACHE INTERNAL "Setting _WIN32_WINNT to 0x0600 for Windows Vista APIs")
+		SET(WINVER 0x0600 CACHE INTERNAL "Setting WINVER to 0x0600 for Windows Vista APIs")
+	
+		add_definitions(-D_WIN32_WINNT=${_WIN32_WINNT})
+		add_definitions(-DWINVER=${WINVER})
 	endif()
 else()
 	if (APPLE)
@@ -45,7 +65,7 @@ else()
 
 	#Make sure we are not getting the "reorder constructor parameters" warning
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations -Wno-reorder" CACHE INTERNAL "")
-	include(CheckCXXCompilerFlag)
+
 	# workaround an issue observed when using the optimation flag "-ftree-slp-vectorize" which is enabled when using the optimisation level "-O3" with gcc versions < 4.9.
 	if(CMAKE_COMPILER_IS_GNUCXX AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.9)
 		CHECK_CXX_COMPILER_FLAG(-fno-tree-slp-vectorize COMPILER_SUPPORTS_TREE_SLP_VECTORIZE)
@@ -54,9 +74,11 @@ else()
 		endif()
 	endif()
 	# Add the all-important fast-math flag
-	CHECK_CXX_COMPILER_FLAG(-ffast-math COMPILER_SUPPORTS_FAST_MATH)
-	if(COMPILER_SUPPORTS_FAST_MATH)
-		set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -ffast-math" CACHE INTERNAL "")
+	if((CMAKE_CXX_COMPILER_ID MATCHES "Clang") OR (CMAKE_CXX_COMPILER_ID MATCHES "GNU"))
+		CHECK_CXX_COMPILER_FLAG(-ffast-math COMPILER_SUPPORTS_FAST_MATH)
+		if(COMPILER_SUPPORTS_FAST_MATH)
+			add_compile_options("$<$<CONFIG:RELEASE>:-ffast-math>")
+		endif()
 	endif()
 	
 	# Use Gold Linker by default when it is supported

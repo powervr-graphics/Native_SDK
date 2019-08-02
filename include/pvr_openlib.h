@@ -9,8 +9,12 @@
 #endif
 
 #if defined(_WIN32)
-#define WIN32_LEAN_AND_MIN_AND_MAX
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#ifndef NOMINMAX
 #define NOMINMAX
+#endif
 #include <Windows.h>
 #include <tchar.h>
 #include <Winbase.h>
@@ -24,9 +28,9 @@
 #if defined(__ANDROID__)
 #define _ANDROID 1
 #include <android/log.h>
-#define Log_Info(...) ((void)__android_log_print(ANDROID_LOG_INFO, "com.imgtec.vk", __VA_ARGS__))
-#define Log_Warning(...) ((void)__android_log_print(ANDROID_LOG_WARN, "com.imgtec.vk", __VA_ARGS__))
-#define Log_Error(...) ((void)__android_log_print(ANDROID_LOG_ERROR, "com.imgtec.vk", __VA_ARGS__))
+#define Log_Info(...) ((void)__android_log_print(ANDROID_LOG_INFO, "com.imgtec", __VA_ARGS__))
+#define Log_Warning(...) ((void)__android_log_print(ANDROID_LOG_WARN, "com.imgtec", __VA_ARGS__))
+#define Log_Error(...) ((void)__android_log_print(ANDROID_LOG_ERROR, "com.imgtec", __VA_ARGS__))
 #elif defined(_WIN32)
 static const char* procAddressMessageTypes[] = {
 	"INFORMATION: ",
@@ -143,11 +147,7 @@ inline void* getLibraryFunction(pvr::lib::LIBTYPE hostLib, const char* pszName)
 {
 	if (hostLib)
 	{
-#if defined(UNDER_CE)
-		return win32::GetProcAddressA(hostLib, pszName);
-#else
-		return GetProcAddress(hostLib, pszName);
-#endif
+		return reinterpret_cast<void*>(GetProcAddress(hostLib, pszName));
 	}
 	return nullptr;
 }

@@ -86,6 +86,16 @@ elseif (APPLE)
 	add_executable(OpenGLESHelloAPI MACOSX_BUNDLE ${SRC_FILES} ${ASSET_FILES} ${FRAMEWORK_FILES})
 	set_target_properties(OpenGLESHelloAPI PROPERTIES MACOSX_BUNDLE_INFO_PLIST  "${INFO_PLIST_FILE}")
 	set_target_properties(OpenGLESHelloAPI PROPERTIES RESOURCE "${ASSET_FILES}")
+	
+	if(IOS)
+		if(CODE_SIGN_IDENTITY)
+			set_target_properties(OpenGLESHelloAPI PROPERTIES XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "${CODE_SIGN_IDENTITY}")
+		endif()
+		if(DEVELOPMENT_TEAM_ID)
+			set_target_properties(OpenGLESHelloAPI PROPERTIES XCODE_ATTRIBUTE_DEVELOPMENT_TEAM "${DEVELOPMENT_TEAM_ID}")
+		endif()
+	endif()
+	
 elseif (UNIX)
 	set(WS_DEFINE "")
 	if(NOT WS) #We support building for several Windowing Systems. Typical desktop systems support X11 and Wayland is catching on. NullWS is used by some development platforms/ testchip.

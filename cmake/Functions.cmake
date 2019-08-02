@@ -2,13 +2,13 @@
 set(FUNCTIONS_INTERNAL_DIR ${CMAKE_CURRENT_LIST_DIR} CACHE INTERNAL "")
 
 function(add_subdirectory_if_not_already_included TARGET SUBDIR_FOLDER SUBDIR_BIN_FOLDER)
-	if (NOT TARGET ${TARGET})
+	if(NOT TARGET ${TARGET})
 		add_subdirectory(${SUBDIR_FOLDER} ${SUBDIR_BIN_FOLDER} EXCLUDE_FROM_ALL)
 	endif()
 endfunction(add_subdirectory_if_not_already_included)
 
 function(add_platform_specific_resource_files INPUT_SRC_FILES INPUT_RESOURCE_FILES)
-	if (WIN32)
+	if(WIN32)
 		set(RESOURCE_LIST "")
 		foreach(RESOURCE ${${INPUT_RESOURCE_FILES}})
 			get_filename_component(RESOURCE_NAME ${RESOURCE} NAME)
@@ -22,10 +22,12 @@ function(add_platform_specific_resource_files INPUT_SRC_FILES INPUT_RESOURCE_FIL
 		#Add the resource files needed for windows (icons, asset files etc).
 		list(APPEND ${INPUT_SRC_FILES}
 			"${SDK_ROOT}/res/Windows/shared.rc"
-			"${SDK_ROOT}/res/Windows/resource.h"
-			"${CMAKE_CURRENT_SOURCE_DIR}/cmake-resources/Resources.rc")
+			"${SDK_ROOT}/res/Windows/resource.h")
+		if (NOT(RESOURCE_LIST STREQUAL ""))
+			list(APPEND ${INPUT_SRC_FILES} "${CMAKE_CURRENT_SOURCE_DIR}/cmake-resources/Resources.rc")
+		endif()
 	elseif(APPLE)
-		if (IOS)
+		if(IOS)
 			set(INFO_PLIST_FILE "${CMAKE_CURRENT_SOURCE_DIR}/cmake-resources/iOS_Info.plist" PARENT_SCOPE)
 			file(GLOB ICONS LIST_DIRECTORIES false ${SDK_ROOT}/res/iOS/* ${SDK_ROOT}/res/iOS/OpenGLES/*)
 			list(APPEND ${INPUT_RESOURCE_FILES} ${ICONS})
@@ -41,32 +43,43 @@ function(add_platform_specific_resource_files INPUT_SRC_FILES INPUT_RESOURCE_FIL
 endfunction()
 
 function(add_platform_specific_executable EXECUTABLE_NAME INPUT_SRC_FILES INPUT_RESOURCE_FILES)
-	if (WIN32)
+	if(WIN32)
 		add_executable(${EXECUTABLE_NAME} WIN32 ${INPUT_SRC_FILES})
-	elseif (ANDROID)
+		if(MINGW)
+			# The following fixes "crt0_c.c:(.text.startup+0x2e): undefined reference to `WinMain'" seen when linking with mingw.
+			# Without the following mingw fails to find WinMain as it is defined in PVRShell but the symbol has not been marked as an unresolved symbol. The fix is to mark WinMain as unresolved which ensures that WinMain is not stripped. 
+			set_target_properties(${EXECUTABLE_NAME} PROPERTIES LINK_FLAGS " -u WinMain")
+		endif()
+	elseif(ANDROID)
 		add_library(${EXECUTABLE_NAME} SHARED ${INPUT_SRC_FILES})
 		# Force export ANativeActivity_onCreate(),
 		# Refer to: https://github.com/android-ndk/ndk/issues/381
 		set_target_properties(${EXECUTABLE_NAME} PROPERTIES LINK_FLAGS " -u ANativeActivity_onCreate")
-	elseif (APPLE)
-		if (IOS) 
-			add_executable(${EXECUTABLE_NAME} MACOSX_BUNDLE ${INPUT_SRC_FILES} ${INPUT_RESOURCE_FILES})
+	elseif(APPLE)
+		if(IOS) 
+			add_executable(${EXECUTABLE_NAME} MACOSX_BUNDLE ${INPUT_SRC_FILES} ${INPUT_RESOURCE_FILES})	
+			if (CODE_SIGN_IDENTITY)
+				set_target_properties (${EXECUTABLE_NAME} PROPERTIES XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "${CODE_SIGN_IDENTITY}")
+			endif()
+			if (DEVELOPMENT_TEAM_ID)
+				set_target_properties (${EXECUTABLE_NAME} PROPERTIES XCODE_ATTRIBUTE_DEVELOPMENT_TEAM "${DEVELOPMENT_TEAM_ID}")
+			endif()
 		else ()
 			list(APPEND FRAMEWORK_FILES "${EXTERNAL_LIB_FOLDER}/libEGL.dylib" "${EXTERNAL_LIB_FOLDER}/libGLESv2.dylib")
 			set_source_files_properties(${FRAMEWORK_FILES} PROPERTIES MACOSX_PACKAGE_LOCATION Frameworks)
 			source_group(Frameworks FILES ${FRAMEWORK_FILES})
 			add_executable(${EXECUTABLE_NAME} MACOSX_BUNDLE ${INPUT_SRC_FILES} ${INPUT_RESOURCE_FILES} ${FRAMEWORK_FILES})
-		endif ()
+		endif()
 		set_target_properties(${EXECUTABLE_NAME} PROPERTIES RESOURCE "${INPUT_RESOURCE_FILES}")
 		set_target_properties(${EXECUTABLE_NAME} PROPERTIES MACOSX_BUNDLE_INFO_PLIST "${INFO_PLIST_FILE}")
-	elseif (UNIX OR QNX)
+	elseif(UNIX OR QNX)
 		add_executable(${EXECUTABLE_NAME} ${INPUT_SRC_FILES})
 	endif()
 endfunction()
 
 # CAUTION - For this rule to work, the asset files must actually be added as sources to the executable
 function(add_rule_copy_assets_to_asset_folder INPUT_RESOURCE_FILES INPUT_OUTPUT_FOLDER)
-	if (UNIX OR QNX)
+	if((UNIX OR QNX) AND NOT APPLE)
 		#Copy all assets to the Assets folder in order for the executable to be able to locate it
 		foreach(ASSET_FILE_PATH ${INPUT_RESOURCE_FILES})
 			get_filename_component(ASSET_FILE_NAME ${ASSET_FILE_PATH} NAME)

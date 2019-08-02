@@ -446,7 +446,7 @@ public:
 		if (_hostLib)
 		{
 #if _WIN32
-			void* pFn = GetProcAddress(_hostLib, functionName);
+			void* pFn = reinterpret_cast<void*>(GetProcAddress(_hostLib, functionName));
 			if (pFn == NULL)
 			{
 				Log(true, "Could not get function %s", functionName);

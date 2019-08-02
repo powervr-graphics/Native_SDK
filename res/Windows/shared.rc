@@ -55,7 +55,7 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-ICON                    ICON    DISCARDABLE     "sdk.ico"
+SDK_ICON ICON DISCARDABLE "sdk.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //

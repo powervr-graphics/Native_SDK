@@ -7,6 +7,8 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT OpenGLESIntroducingPVRShell)
 
+set(ASSET_FOLDER ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Assets_OpenGLESIntroducingPVRShell)
+
 set(SRC_FILES EglContext.h OpenGLESIntroducingPVRShell.cpp)
 
 if(IOS)
@@ -14,8 +16,6 @@ if(IOS)
 else()
 	list(APPEND SRC_FILES EglContext.cpp)
 endif()
-
-set(ASSET_FOLDER ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Assets_OpenGLESIntroducingPVRShell)
 
 # Adds Windows resouces.rc, macOS plists etc. For MacOS/iOS, also set the opengl dynamic libs in the "frameworks" group
 add_platform_specific_resource_files(SRC_FILES RESOURCE_FILES)
