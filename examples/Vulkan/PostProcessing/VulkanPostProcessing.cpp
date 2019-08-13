@@ -3778,14 +3778,11 @@ pvr::Result VulkanPostProcessing::initView()
 		pvrvk::CommandPoolCreateInfo(_deviceResources->queues[0]->getFamilyIndex(), pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT));
 
 	// This demo application makes use of quite a large number of Images and Buffers and therefore we're making possible for the descriptor pool to allocate descriptors with various limits.maxDescriptorSet*
-	_deviceResources->descriptorPool =
-		_deviceResources->device->createDescriptorPool(pvrvk::DescriptorPoolCreateInfo()
-														   .setMaxDescriptorSets(125)
-														   .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER,
-															   _deviceResources->device->getPhysicalDevice()->getProperties().getLimits().getMaxDescriptorSetSampledImages())
-														   .addDescriptorInfo(pvrvk::DescriptorType::e_STORAGE_IMAGE, 20)
-														   .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER,
-															   _deviceResources->device->getPhysicalDevice()->getProperties().getLimits().getMaxDescriptorSetUniformBuffers()));
+		_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(pvrvk::DescriptorPoolCreateInfo()
+												      .setMaxDescriptorSets(150)
+												      .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 200)
+												      .addDescriptorInfo(pvrvk::DescriptorType::e_STORAGE_IMAGE, 20)
+												      .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 200));
 
 	// create the utility commandbuffer which will be used for image layout transitions and buffer/image uploads.
 	_deviceResources->utilityCommandBuffer = _deviceResources->commandPool->allocateCommandBuffer();
