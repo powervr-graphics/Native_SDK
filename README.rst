@@ -23,7 +23,7 @@ The Framework exists to make the sections of uninteresting or boilerplate code s
 
 The examples themselves are mostly code samples intended to:
 
-* Show the basics of OpenGL and Vulkan, with the HelloAPI and IntroducingPVRShell examples.
+* Show the basics of OpenGL ES and Vulkan, with the HelloAPI and IntroducingPVRShell examples.
 * Demonstrate optimal implementations for techniques relevant for PowerVR, such as our DeferredShading with Pixel Local Storage/transient attachments, or our Gaussian Blur using a Sliding Average compute shader for reducing bandwidth.
 * Demonstrate how to use important extensions that may improve performance, PowerVR specific or otherwise, such as IMGFramebufferDownsample and IMGTextureFilterCubic.
 
