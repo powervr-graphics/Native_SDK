@@ -21,17 +21,11 @@ public:
 	DECLARE_NO_COPY_SEMANTICS(PVRVkObjectBase)
 	/// <summary>Get vulkan object (const)</summary>
 	/// <returns>Returns the templated 'HandleType'</returns>
-	inline const VkHandleType& getVkHandle() const
-	{
-		return _vkHandle;
-	}
+	inline const VkHandleType& getVkHandle() const { return _vkHandle; }
 
 	/// <summary>Returns the specified object's type.</summary>
 	/// <returns>The object type</returns>
-	inline ObjectType getObjectType() const
-	{
-		return _objectType;
-	}
+	inline ObjectType getObjectType() const { return _objectType; }
 
 protected:
 	/// <summary>The Vulkan object handle representing the Vulkan object at an API level.</summary>
@@ -45,10 +39,7 @@ protected:
 
 	/// <summary>Constructor for an object handle initialising the Vulkan object handle</summary>
 	/// <param name="handle">The Vulkan object handle given to the Vulkan object.</param>
-	explicit PVRVkObjectBase(const VkHandleType& handle) : _vkHandle(handle), _objectType(PVRVkObjectType)
-	{
-		assert(_objectType != ObjectType::e_UNKNOWN);
-	}
+	explicit PVRVkObjectBase(const VkHandleType& handle) : _vkHandle(handle), _objectType(PVRVkObjectType) { assert(_objectType != ObjectType::e_UNKNOWN); }
 };
 
 /// <summary>Defines a simple interface for a Vulkan which holds a reference to a Vulkan instance.</summary>
@@ -60,17 +51,11 @@ public:
 
 	/// <summary>Get instance (const)</summary>
 	/// <returns>Instance</returns>
-	inline const Instance getInstance() const
-	{
-		return _instance.lock();
-	}
+	inline const Instance getInstance() const { return _instance.lock(); }
 
 	/// <summary>Get instance</summary>
 	/// <returns>Instance</returns>
-	inline Instance getInstance()
-	{
-		return _instance.lock();
-	}
+	inline Instance getInstance() { return _instance.lock(); }
 
 protected:
 	/// <summary>The instance which was used to create this InstanceObject</summary>
@@ -99,17 +84,11 @@ public:
 
 	/// <summary>Get physical device (const)</summary>
 	/// <returns>PhysicalDevice</returns>
-	inline const PhysicalDevice getPhysicalDevice() const
-	{
-		return _physicalDevice.lock();
-	}
+	inline const PhysicalDevice getPhysicalDevice() const { return _physicalDevice.lock(); }
 
 	/// <summary>Get physical device</summary>
 	/// <returns>PhysicalDevice</returns>
-	inline PhysicalDevice getPhysicalDevice()
-	{
-		return _physicalDevice.lock();
-	}
+	inline PhysicalDevice getPhysicalDevice() { return _physicalDevice.lock(); }
 
 protected:
 	/// <summary>The physical device which was used to create this PhysicalDeviceObject</summary>
@@ -140,17 +119,11 @@ public:
 
 	/// <summary>Get Device (const)</summary>
 	/// <returns>DeviceWeakPtr</returns>
-	inline const Device getDevice() const
-	{
-		return _device.lock();
-	}
+	inline const Device getDevice() const { return _device.lock(); }
 
 	/// <summary>Get Device</summary>
 	/// <returns>DeviceWeakPtr</returns>
-	inline Device getDevice()
-	{
-		return _device.lock();
-	}
+	inline Device getDevice() { return _device.lock(); }
 
 protected:
 	/// <summary>The device which was used to create this DeviceObject</summary>

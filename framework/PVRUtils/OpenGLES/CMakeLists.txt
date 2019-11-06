@@ -1,67 +1,137 @@
 cmake_minimum_required(VERSION 3.3)
-project (PVRUtilsGles)
+project(PVRUtilsGles)
 
+include(GNUInstallDirs)
+include(CMakeFindDependencyMacro)
+include(../../../cmake/CompilerFunctions.cmake)
+
+set(PVRUtils_HEADERS 
+	../ArialBoldFont.h
+	../MultiObject.h
+	../PowerVRLogo.h
+	../PBRUtils.h
+	../PVRUtilsGles.h
+	../PVRUtilsTypes.h
+	../StructuredMemory.h)
+
+# PVRUtilsGles include files
+set(PVRUtilsGles_HEADERS 
+	../../../include/DynamicEgl.h
+	../../../include/DynamicGles.h
+	BindingsGles.h
+	ConvertToGlesTypes.h
+	ErrorsGles.h
+	HelperGles.h
+	ModelGles.h
+	PBRUtilsGles.h
+	ShaderUtilsGles.h
+	SpriteGles.h
+	TextureUtilsGles.h
+	UIRendererGles.h
+	UIRendererShaders_ES.h)
+
+# PVRUtilsGles sources
 set(PVRUtilsGles_SRC 
-    ${CMAKE_CURRENT_LIST_DIR}/../ArialBoldFont.h
-    ${CMAKE_CURRENT_LIST_DIR}/../MultiObject.h
-    ${CMAKE_CURRENT_LIST_DIR}/../PowerVRLogo.h
-	${CMAKE_CURRENT_LIST_DIR}/../PBRUtils.h
-    ${CMAKE_CURRENT_LIST_DIR}/../PVRUtilsGles.h
-    ${CMAKE_CURRENT_LIST_DIR}/../PVRUtilsTypes.h
-    ${CMAKE_CURRENT_LIST_DIR}/../StructuredMemory.h
-	${CMAKE_CURRENT_LIST_DIR}/../OpenCL/OpenCLUtils.h
-	${CMAKE_CURRENT_LIST_DIR}/BindingsGles.h
-	${CMAKE_CURRENT_LIST_DIR}/ConvertToGlesTypes.cpp
-	${CMAKE_CURRENT_LIST_DIR}/ConvertToGlesTypes.h
-	${CMAKE_CURRENT_LIST_DIR}/ErrorsGles.cpp
-	${CMAKE_CURRENT_LIST_DIR}/ErrorsGles.h
-	${CMAKE_CURRENT_LIST_DIR}/HelperGles.h
-	${CMAKE_CURRENT_LIST_DIR}/ModelGles.cpp
-	${CMAKE_CURRENT_LIST_DIR}/ModelGles.h
-	${CMAKE_CURRENT_LIST_DIR}/PBRUtilsGles.cpp
-	${CMAKE_CURRENT_LIST_DIR}/PBRUtilsGles.h
-	${CMAKE_CURRENT_LIST_DIR}/ShaderUtilsGles.cpp
-	${CMAKE_CURRENT_LIST_DIR}/ShaderUtilsGles.h
-	${CMAKE_CURRENT_LIST_DIR}/SpriteGles.cpp
-	${CMAKE_CURRENT_LIST_DIR}/SpriteGles.h
-	${CMAKE_CURRENT_LIST_DIR}/TextureUtilsGles.cpp
-	${CMAKE_CURRENT_LIST_DIR}/TextureUtilsGles.h
-	${CMAKE_CURRENT_LIST_DIR}/UIRendererGles.cpp
-	${CMAKE_CURRENT_LIST_DIR}/UIRendererGles.h
-	${CMAKE_CURRENT_LIST_DIR}/UIRendererShaders_ES.h)
+	ConvertToGlesTypes.cpp
+	ErrorsGles.cpp
+	ModelGles.cpp
+	PBRUtilsGles.cpp
+	ShaderUtilsGles.cpp
+	SpriteGles.cpp
+	TextureUtilsGles.cpp
+	UIRendererGles.cpp)
 
+# Platform specific PVRUtilsGles sources
 if (IOS)
 	list(APPEND PVRUtilsGles_SRC
-		${CMAKE_CURRENT_LIST_DIR}/../EAGL/EaglPlatformContext.mm
-		${CMAKE_CURRENT_LIST_DIR}/../EAGL/EaglPlatformHandles.h)
+		../EAGL/EaglPlatformContext.mm)
+	list(APPEND PVRUtilsGles_EAGL_HEADERS
+		../EAGL/EaglPlatformHandles.h)
 else()
 	list(APPEND PVRUtilsGles_SRC
-		${CMAKE_CURRENT_LIST_DIR}/../EGL/EglPlatformContext.cpp
-		${CMAKE_CURRENT_LIST_DIR}/../EGL/EglPlatformContext.h
-		${CMAKE_CURRENT_LIST_DIR}/../EGL/EglPlatformHandles.h)
+		../EGL/EglPlatformContext.cpp)
+	list(APPEND PVRUtilsGles_EGL_HEADERS
+		../EGL/EglPlatformContext.h
+		../EGL/EglPlatformHandles.h)
 endif()
 
-set(PVRUtilsGles_LINK_LIBS PowerVR_SDK PVRAssets PVRCore OpenGLESPlatformInterface)
+set(PVRUtilsGles_PRIVATE_LINK_LIBS "")
+set(PVRUtilsGles_INCLUDE_DIRECTORIES 
+	${CMAKE_CURRENT_LIST_DIR}/../../../include
+	${CMAKE_CURRENT_LIST_DIR}/../../)
+set(PVRUtilsGles_PRIVATE_INCLUDE_DIRECTORIES "")
 
-get_directory_property(HAS_PARENT PARENT_DIRECTORY)
-if(HAS_PARENT AND USE_PREBUILT_DEPENDENCIES)
-add_library(PVRUtilsGles STATIC IMPORTED GLOBAL)
-
-# add the subdirectory after the add_library so that the target exists
-add_subdirectory(../../.. ${CMAKE_CURRENT_BINARY_DIR}/sdk EXCLUDE_FROM_ALL)
-
-set_target_properties(PVRUtilsGles PROPERTIES
-	IMPORTED_LOCATION_DEBUG ${FRAMEWORK_LIB_FOLDER}/${CMAKE_STATIC_LIBRARY_PREFIX}PVRUtilsGles${CMAKE_STATIC_LIBRARY_SUFFIX}
-	IMPORTED_LOCATION_RELEASE ${FRAMEWORK_LIB_FOLDER}/${CMAKE_STATIC_LIBRARY_PREFIX}PVRUtilsGles${CMAKE_STATIC_LIBRARY_SUFFIX}
-	INTERFACE_LINK_LIBRARIES "${PVRUtilsGles_LINK_LIBS}")
-else()
-add_library(PVRUtilsGles STATIC EXCLUDE_FROM_ALL ${PVRUtilsGles_SRC})
-
-# add the subdirectory after the add_library so that the target exists
-add_subdirectory(../../.. ${CMAKE_CURRENT_BINARY_DIR}/sdk EXCLUDE_FROM_ALL)
-
-target_link_libraries(PVRUtilsGles ${PVRUtilsGles_LINK_LIBS})
-set_target_properties(PVRUtilsGles PROPERTIES 
-	ARCHIVE_OUTPUT_DIRECTORY ${FRAMEWORK_LIB_FOLDER}
-	LIBRARY_OUTPUT_DIRECTORY ${FRAMEWORK_LIB_FOLDER})
+# Handle any platform specific api specific libraries
+if(ANDROID)
+elseif(APPLE)
+	if (IOS)
+		find_library(lib-gles OpenGLES)
+		list(APPEND PVRUtilsGles_PRIVATE_LINK_LIBS ${lib-gles})
+	endif()
+elseif(UNIX)
+	if(PVR_WINDOW_SYSTEM AND ("${PVR_WINDOW_SYSTEM}" STREQUAL Wayland))
+		list(APPEND PVRUtilsGles_PRIVATE_LINK_LIBS ${WAYLAND_EGL_LIBRARIES})
+		list(APPEND PVRUtilsGles_PRIVATE_INCLUDE_DIRECTORIES ${WAYLAND_EGL_INCLUDE_DIR})
+	endif()
 endif()
+
+# Create the library
+add_library(PVRUtilsGles STATIC 
+	${PVRUtilsGles_SRC} 
+	${PVRUtilsGles_HEADERS}
+	${PVRUtils_HEADERS} 
+	${PVRUtilsGles_EAGL_HEADERS}
+	${PVRUtilsGles_EGL_HEADERS})
+
+if(PVR_PREBUILT_DEPENDENCIES)
+	list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/../../../cmake/modules")
+	find_dependency(PVRCore MODULE REQUIRED)
+	find_dependency(PVRAssets MODULE REQUIRED)
+endif()
+
+apply_compile_options_to_target(PVRUtilsGles)
+
+target_link_libraries(PVRUtilsGles 
+	PUBLIC
+		PVRAssets 
+		PVRCore
+	PRIVATE
+		${PVRUtilsGles_PRIVATE_LINK_LIBS})
+
+	if(WS OR PVR_WINDOW_SYSTEM)
+		if(WS AND NOT PVR_WINDOW_SYSTEM)
+			set(PVR_WINDOW_SYSTEM ${WS})
+			message("The WS variable has been deprecated. Please move to using PVR_WINDOW_SYSTEM instead.")
+		endif()
+		
+		set(PVR_WINDOW_SYSTEM_DEFINE "" CACHE INTERNAL "")
+		# Validate the use of -DPVR_WINDOW_SYSTEM
+		if(${PVR_WINDOW_SYSTEM} STREQUAL X11 OR ${PVR_WINDOW_SYSTEM} STREQUAL XCB OR ${PVR_WINDOW_SYSTEM} STREQUAL Wayland OR ${PVR_WINDOW_SYSTEM} STREQUAL NullWS OR ${PVR_WINDOW_SYSTEM} STREQUAL Screen)
+			set(PVR_WINDOW_SYSTEM_DEFINE "${PVR_WINDOW_SYSTEM}" CACHE INTERNAL "")
+		else()
+			message(FATAL_ERROR "Unrecognised PVR_WINDOW_SYSTEM: Valid values are NullWS, X11, XCB, Wayland, Screen.")
+		endif()
+		target_compile_definitions(PVRUtilsGles PUBLIC ${PVR_WINDOW_SYSTEM_DEFINE})
+	endif()
+
+target_include_directories(PVRUtilsGles 
+	PUBLIC 
+		"$<BUILD_INTERFACE:${PVRUtilsGles_INCLUDE_DIRECTORIES}>"
+		$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+	
+install(TARGETS PVRUtilsGles EXPORT PVRUtilsGlesTargets
+	ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+	RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+	OPTIONAL)
+install(FILES ${PVRUtils_HEADERS} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/PVRUtils OPTIONAL)
+install(FILES ${PVRUtilsGles_HEADERS} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/PVRUtils/OpenGLES OPTIONAL)
+install(FILES ${PVRUtilsGles_EAGL_HEADERS} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/PVRUtils/EAGL OPTIONAL)
+install(FILES ${PVRUtilsGles_EGL_HEADERS} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/PVRUtils/EGL OPTIONAL)
+install(EXPORT PVRUtilsGlesTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/PVRUtilsGles OPTIONAL)
+
+export(EXPORT PVRUtilsGlesTargets FILE "${CMAKE_CURRENT_BINARY_DIR}/PVRUtilsGles/PVRUtilsGlesTargets.cmake")
+# build tree package config
+file(COPY cmake/PVRUtilsGlesConfig.cmake.in DESTINATION "${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/PVRUtilsGles/" NO_SOURCE_PERMISSIONS)
+configure_file("${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/PVRUtilsGles/PVRUtilsGlesConfig.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/PVRUtilsGles/PVRUtilsGlesConfig.cmake" COPYONLY)
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/PVRUtilsGles/PVRUtilsGlesTargets.cmake" DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/PVRUtilsGles OPTIONAL)

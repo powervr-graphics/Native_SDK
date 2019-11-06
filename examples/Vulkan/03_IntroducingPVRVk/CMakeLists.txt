@@ -1,10 +1,17 @@
 cmake_minimum_required(VERSION 3.3)
 project(VulkanIntroducingPVRVk)
-if(APPLE)
-	message ("Vulkan is not supported on Apple platforms.")
+if(IOS)
+	message ("Skipping VulkanIntroducingPVRVk : Vulkan is not supported on iOS.")
 	return()
 endif()
+
 add_subdirectory(../../.. ${CMAKE_CURRENT_BINARY_DIR}/sdk)
+
+if(PVR_PREBUILT_DEPENDENCIES)
+	find_package(PVRShell REQUIRED MODULE)
+	find_package(PVRAssets REQUIRED MODULE)
+	find_package(PVRVk REQUIRED MODULE)
+endif()
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
@@ -14,37 +21,40 @@ set(SRC_FILES VulkanIntroducingPVRVk.cpp)
 
 set(ASSET_FOLDER ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Assets_VulkanIntroducingPVRVk)
 
-# SHADER SOURCE FILES (Vulkan) - Compiled to spir-v at build-time
-set(SHADER_NAMES
-VertShader.vsh
-FragShader.fsh
-	)
+# Adds an executable (or ndk library for Android) and necessary files like plists for Mac/iOS etc.
+add_platform_specific_executable(VulkanIntroducingPVRVk ${SRC_FILES})
 
-foreach (SHADER_FILE ${SHADER_NAMES})
-	list(APPEND SHADER_SOURCE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/${SHADER_FILE}")
-	list(APPEND SHADER_GENERATED_FILES "${CMAKE_CURRENT_SOURCE_DIR}/${SHADER_FILE}.spv")
-endforeach()
-list(APPEND SRC_FILES ${SHADER_SOURCE_FILES})
-list(APPEND SRC_FILES ${SHADER_GENERATED_FILES})
-source_group("shaders_source" FILES ${SHADER_SOURCE_FILES})
-source_group("shaders_generated" FILES ${SHADER_GENERATED_FILES})
+#################################### ASSET FILES ##########################################
+# For platforms supporting it, will be packaged with the executable for runtime use.
+# Will be accessible from the app with their "relative path". One call per base path
 
-set(RESOURCE_FILES ${ASSET_FILES} ${SHADER_SOURCE_FILES} ${SHADER_GENERATED_FILES})
+### Shaders that need to be compiled to SpirV (Vulkan) ###
+# During build time, glslangvalidator will be called to create a "<shadername.extension>.spv" file
+add_spirv_shaders_to_target(VulkanIntroducingPVRVk 
+	SOURCE_GROUP "shaders_source" 
+	SPIRV_SOURCE_GROUP "shaders_generated"
+	ASSET_FOLDER ${ASSET_FOLDER} 
+	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/
+	FILE_LIST
+		VertShader.vsh
+		FragShader.fsh)
 
-# Adds Windows resouces.rc, macOS plists etc. For macOS/iOS, also set the opengl dynamic libs in the "frameworks" group
-add_platform_specific_resource_files(SRC_FILES RESOURCE_FILES)
+# Create and adds a Windows resource file (Resources.rc) with all the assets that have been added to the target with the previous functions
+add_assets_resource_file(VulkanIntroducingPVRVk)
+###########################################################################################
 
-# Generate a pre-build step for compiling glsl shaders to spir-v
-add_rule_generate_spirv_from_shaders("${SHADER_NAMES}")
-
-# Adds a platform specific executable
-add_platform_specific_executable(VulkanIntroducingPVRVk "${SRC_FILES}" "${RESOURCE_FILES}")
-
-# Copies the assets to our assets folder
-add_rule_copy_assets_to_asset_folder("${RESOURCE_FILES}" "${ASSET_FOLDER}")
+# Apply SDK example specific compile and linker options
+apply_example_compile_options_to_target(VulkanIntroducingPVRVk)
 
 target_link_libraries(VulkanIntroducingPVRVk
 	PVRShell
 	PVRAssets
 	PVRVk
 )
+if(APPLE AND NOT IOS)
+	find_package(MoltenVK REQUIRED)
+	if (${MOLTENVK_FOUND})
+		list(APPEND PVRUtilsVk_PRIVATE_LINK_LIBS ${MVK_LIBRARIES})
+		list(APPEND PVRUtilsVk_INCLUDE_DIRECTORIES ${MVK_INCLUDE_DIR})
+	endif()
+endif()

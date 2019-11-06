@@ -95,10 +95,7 @@ inline void populateShaderInfo(const VkShaderModule& shaderModule, pvrvk::Shader
 {
 	// caculate the number of size in bytes required.
 	uint32_t specicalizedataSize = 0;
-	for (uint32_t i = 0; i < shaderConstCount; ++i)
-	{
-		specicalizedataSize += shaderConsts[i].sizeInBytes;
-	}
+	for (uint32_t i = 0; i < shaderConstCount; ++i) { specicalizedataSize += shaderConsts[i].sizeInBytes; }
 
 	if (specicalizedataSize)
 	{
@@ -157,10 +154,7 @@ public:
 
 	/// <summary>Returns the underlying vulkan object</summary>
 	/// <returns>The vulkan object</returns>
-	const VkGraphicsPipelineCreateInfo& getVkCreateInfo() const
-	{
-		return createInfo;
-	}
+	const VkGraphicsPipelineCreateInfo& getVkCreateInfo() const { return createInfo; }
 
 	/// <summary>Initialize this graphics pipeline</summary>
 	/// <param name="gpcp">A framework graphics pipeline create param to be generated from</param>
@@ -220,8 +214,8 @@ public:
 
 			createInfo.subpass = gpcp.subpass;
 
-			createInfo.stageCount = (gpcp.vertexShader.isActive() ? 1 : 0) + (gpcp.fragmentShader.isActive() ? 1 : 0) + (gpcp.tesselationStates.isControlShaderActive() ? 1 : 0) +
-				(gpcp.tesselationStates.isEvaluationShaderActive() ? 1 : 0) + (gpcp.geometryShader.isActive() ? 1 : 0);
+			createInfo.stageCount = (uint32_t)((gpcp.vertexShader.isActive() ? 1 : 0) + (gpcp.fragmentShader.isActive() ? 1 : 0) +
+				(gpcp.tesselationStates.isControlShaderActive() ? 1 : 0) + (gpcp.tesselationStates.isEvaluationShaderActive() ? 1 : 0) + (gpcp.geometryShader.isActive() ? 1 : 0));
 			createInfo.pStages = &_shaders[0];
 		}
 
@@ -250,15 +244,9 @@ public:
 			_vertexInput.pNext = nullptr;
 			_vertexInput.flags = static_cast<VkPipelineVertexInputStateCreateFlags>(PipelineVertexInputStateCreateFlags::e_NONE);
 			assert(val.getAttributes().size() <= FrameworkCaps::MaxVertexAttributes);
-			for (uint32_t i = 0; i < val.getAttributes().size(); i++)
-			{
-				convert(_vkVertexAttributes[i], val.getAttributes()[i]);
-			}
+			for (uint32_t i = 0; i < val.getAttributes().size(); i++) { convert(_vkVertexAttributes[i], val.getAttributes()[i]); }
 			assert(val.getInputBindings().size() <= FrameworkCaps::MaxVertexBindings);
-			for (uint32_t i = 0; i < val.getInputBindings().size(); i++)
-			{
-				convert(_vkVertexBindings[i], val.getInputBindingByIndex(i));
-			}
+			for (uint32_t i = 0; i < val.getInputBindings().size(); i++) { convert(_vkVertexBindings[i], val.getInputBindingByIndex(i)); }
 			_vertexInput.vertexBindingDescriptionCount = static_cast<uint32_t>(val.getInputBindings().size());
 			_vertexInput.pVertexBindingDescriptions = static_cast<uint32_t>(val.getInputBindings().size()) == 0u ? nullptr : &_vkVertexBindings[0];
 			_vertexInput.vertexAttributeDescriptionCount = static_cast<uint32_t>(val.getAttributes().size());
@@ -318,10 +306,7 @@ public:
 				_cb.blendConstants[2] = val.getColorBlendConst().getB();
 				_cb.blendConstants[3] = val.getColorBlendConst().getA();
 			}
-			for (uint32_t i = 0; i < val.getNumAttachmentStates(); i++)
-			{
-				convert(_vkBlendAttachments[i], val.getAttachmentState(i));
-			}
+			for (uint32_t i = 0; i < val.getNumAttachmentStates(); i++) { convert(_vkBlendAttachments[i], val.getAttachmentState(i)); }
 			_cb.pAttachments = &_vkBlendAttachments[0];
 			_cb.attachmentCount = static_cast<uint32_t>(val.getNumAttachmentStates());
 		}
@@ -421,10 +406,7 @@ public:
 			createInfo.pDynamicState = (count != 0 ? &_vkDynamicState : nullptr);
 		}
 		createInfo.basePipelineHandle = VK_NULL_HANDLE;
-		if (gpcp.basePipeline)
-		{
-			createInfo.basePipelineHandle = gpcp.basePipeline->getVkHandle();
-		}
+		if (gpcp.basePipeline) { createInfo.basePipelineHandle = gpcp.basePipeline->getVkHandle(); }
 		createInfo.basePipelineIndex = gpcp.basePipelineIndex;
 		return true;
 	}
@@ -450,19 +432,13 @@ struct ComputePipelinePopulate
 
 	/// <summary>Dereference operator - returns the underlying vulkan object</summary>
 	/// <returns>The vulkan object</returns>
-	VkComputePipelineCreateInfo& operator*()
-	{
-		return createInfo;
-	}
+	VkComputePipelineCreateInfo& operator*() { return createInfo; }
 	/// <summary>Initialize this compute pipeline</summary>
 	/// <param name="cpcp">A framework compute pipeline create param to be generated from</param>
 	/// <returns>Returns return if success</returns>
 	void init(const ComputePipelineCreateInfo& cpcp)
 	{
-		if (!cpcp.pipelineLayout)
-		{
-			throw ErrorValidationFailedEXT("PipelineLayout must be valid");
-		}
+		if (!cpcp.pipelineLayout) { throw ErrorValidationFailedEXT("PipelineLayout must be valid"); }
 		createInfo.sType = static_cast<VkStructureType>(StructureType::e_COMPUTE_PIPELINE_CREATE_INFO);
 		createInfo.pNext = nullptr;
 		createInfo.flags = static_cast<VkPipelineCreateFlags>(cpcp.flags);

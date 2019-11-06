@@ -67,7 +67,7 @@ public:
 		CompositeAlphaFlagsKHR compositeAlpha = CompositeAlphaFlagsKHR::e_OPAQUE_BIT_KHR, bool clipped = true, Swapchain oldSwapchain = Swapchain())
 		: flags(flags), surface(surface), minImageCount(minImageCount), imageFormat(imageFormat), imageColorSpace(imageColorSpace), imageExtent(imageExtent),
 		  imageArrayLayers(imageArrayLayers), imageUsage(imageUsage), imageSharingMode(imageSharingMode), numQueueFamilyIndex(numQueueFamilyIndex),
-		  queueFamilyIndices(queueFamilyIndices), preTransform(preTransform), compositeAlpha(compositeAlpha), presentMode(presentMode), clipped(true), oldSwapchain(oldSwapchain)
+		  queueFamilyIndices(queueFamilyIndices), preTransform(preTransform), compositeAlpha(compositeAlpha), presentMode(presentMode), clipped(clipped), oldSwapchain(oldSwapchain)
 	{}
 };
 
@@ -121,18 +121,12 @@ public:
 
 	/// <summary>Get swapchain length</summary>
 	/// <returns>uint</returns>32_t
-	uint32_t getSwapchainLength() const
-	{
-		return _swapChainLength;
-	}
+	uint32_t getSwapchainLength() const { return _swapChainLength; }
 
 	/// <summary>Get the acquired swapchain index. Note: The presenation engine may still be consuming
 	///   the swapchain image, therefore the calle must synchronise it before using it.  swapchain index</summary>
 	/// <returns></returns>
-	const uint32_t& getSwapchainIndex() const
-	{
-		return _swapchainId;
-	}
+	const uint32_t& getSwapchainIndex() const { return _swapchainId; }
 
 	/// <summary>Get swapchain image view</summary>
 	/// <param name="swapchain">swapchain index</param>
@@ -155,115 +149,70 @@ public:
 	/// <summary>Get swapchain image</summary>
 	/// <param name="swapchain">swapchain index</param>
 	/// <returns>Image</returns>
-	const Image& getImage(uint32_t swapchain) const
-	{
-		return getImageView(swapchain)->getImage();
-	}
+	const Image& getImage(uint32_t swapchain) const { return getImageView(swapchain)->getImage(); }
 
 	/// <summary>Get swapchain image</summary>
 	/// <param name="swapchain">swapchain index</param>
 	/// <returns>Image</returns>
-	Image& getImage(uint32_t swapchain)
-	{
-		return getImageView(swapchain)->getImage();
-	}
+	Image& getImage(uint32_t swapchain) { return getImageView(swapchain)->getImage(); }
 
 	/// <summary>Get dimension</summary>
 	/// <returns>Extent</returns>
-	Extent2D getDimension() const
-	{
-		return Extent2D(_createInfo.imageExtent.getWidth(), _createInfo.imageExtent.getHeight());
-	}
+	Extent2D getDimension() const { return Extent2D(_createInfo.imageExtent.getWidth(), _createInfo.imageExtent.getHeight()); }
 
 	/// <summary>Gets whether the swapchain images are clipped</summary>
 	/// <returns>True if the swapchain images are clipped</returns>
-	bool isClipped() const
-	{
-		return _createInfo.clipped;
-	}
+	bool isClipped() const { return _createInfo.clipped; }
 
 	/// <summary>Gets the CompositeAlphaFlagsKHR of the swapchain images</summary>
 	/// <returns>The CompositeAlphaFlagsKHR for the swapchain image</returns>
-	CompositeAlphaFlagsKHR getCompositeAlphaFlags() const
-	{
-		return _createInfo.compositeAlpha;
-	}
+	CompositeAlphaFlagsKHR getCompositeAlphaFlags() const { return _createInfo.compositeAlpha; }
 
 	/// <summary>Gets the number of array layers of the swapchain images</summary>
 	/// <returns>The number of array layers of the swapchain images</returns>
-	uint32_t getNumArrayLayers() const
-	{
-		return _createInfo.imageArrayLayers;
-	}
+	uint32_t getNumArrayLayers() const { return _createInfo.imageArrayLayers; }
 
 	/// <summary>Get swapchain image format</summary>
 	/// <returns>Format</returns>
-	Format getImageFormat() const
-	{
-		return _createInfo.imageFormat;
-	}
+	Format getImageFormat() const { return _createInfo.imageFormat; }
 
 	/// <summary>Gets the color space of the swapchain images</summary>
 	/// <returns>The color space of the swapchain images</returns>
-	ColorSpaceKHR getColorSpace() const
-	{
-		return _createInfo.imageColorSpace;
-	}
+	ColorSpaceKHR getColorSpace() const { return _createInfo.imageColorSpace; }
 
 	/// <summary>Gets the surface transform flags of the swapchain images</summary>
 	/// <returns>The surface transform flags of the swapchain images</returns>
-	SurfaceTransformFlagsKHR getTransformFlags() const
-	{
-		return _createInfo.preTransform;
-	}
+	SurfaceTransformFlagsKHR getTransformFlags() const { return _createInfo.preTransform; }
 
 	/// <summary>Gets the image sharing mode of the swapchain images</summary>
 	/// <returns>The image sharing mode of the swapchain images</returns>
-	SharingMode getSharingMode() const
-	{
-		return _createInfo.imageSharingMode;
-	}
+	SharingMode getSharingMode() const { return _createInfo.imageSharingMode; }
 
 	/// <summary>Gets the presentation mode of the swapchain images</summary>
 	/// <returns>The presentation mode of the swapchain images</returns>
-	PresentModeKHR getPresentationMode() const
-	{
-		return _createInfo.presentMode;
-	}
+	PresentModeKHR getPresentationMode() const { return _createInfo.presentMode; }
 
 	/// <summary>Gets the number of queue families which can make use of the swapchain images</summary>
 	/// <returns>The number of queue families which can make use of the swapchain images</returns>
-	uint32_t getNumQueueFamilyIndices() const
-	{
-		return _createInfo.numQueueFamilyIndex;
-	}
+	uint32_t getNumQueueFamilyIndices() const { return _createInfo.numQueueFamilyIndex; }
 
 	/// <summary>Gets the queue family indicies for the queues which can make use of the swapchain images</summary>
 	/// <returns>The queue family indicies for the queues which can make use of the swapchain images</returns>
 	std::vector<uint32_t> getQueueFamilyIndices() const
 	{
 		std::vector<uint32_t> indices;
-		for (uint32_t i = 0; i < _createInfo.numQueueFamilyIndex; i++)
-		{
-			indices.emplace_back(_createInfo.queueFamilyIndices[i]);
-		}
+		for (uint32_t i = 0; i < _createInfo.numQueueFamilyIndex; i++) { indices.emplace_back(_createInfo.queueFamilyIndices[i]); }
 		return indices;
 	}
 
 	/// <summary>Gets the swapchain image usage flags</summary>
 	/// <returns>The swapchain image usage</returns>
-	ImageUsageFlags getUsage() const
-	{
-		return _createInfo.imageUsage;
-	}
+	ImageUsageFlags getUsage() const { return _createInfo.imageUsage; }
 
 	/// <summary>Returns whether the swapchain supports the specified image usage flag bits</summary>
 	/// <param name="imageUsage">The ImageUsageFlags bits to check for support</param>
 	/// <returns>True if the swapchain supports the specified image usage</returns>
-	bool supportsUsage(const ImageUsageFlags& imageUsage) const
-	{
-		return static_cast<uint32_t>(getUsage() & imageUsage) != 0;
-	}
+	bool supportsUsage(const ImageUsageFlags& imageUsage) const { return static_cast<uint32_t>(getUsage() & imageUsage) != 0; }
 };
 } // namespace impl
 } // namespace pvrvk

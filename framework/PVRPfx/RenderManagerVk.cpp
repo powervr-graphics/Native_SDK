@@ -25,19 +25,13 @@ typedef std::vector<utils::AttributeLayout> AttributeConfiguration;
 struct PipelineSet
 {
 	std::vector<StringHash> pipelines;
-	bool operator<(const PipelineSet& rhs) const
-	{
-		return std::lexicographical_compare(pipelines.begin(), pipelines.end(), rhs.pipelines.begin(), rhs.pipelines.end());
-	}
+	bool operator<(const PipelineSet& rhs) const { return std::lexicographical_compare(pipelines.begin(), pipelines.end(), rhs.pipelines.begin(), rhs.pipelines.end()); }
 	PipelineSet() {}
 	PipelineSet(std::set<StringHash>& set)
 	{
 		pipelines.resize(static_cast<uint32_t>(set.size()));
 		uint32_t count = 0;
-		for (auto& setitem : set)
-		{
-			pipelines[count++] = setitem;
-		}
+		for (auto& setitem : set) { pipelines[count++] = setitem; }
 	}
 };
 
@@ -60,26 +54,14 @@ inline std::pair<StringHash, effectvk::PipelineDef*> selectPipelineForSubpassGro
 			// and cond_pipe_it will be the first compatible pipeline.
 			switch (condition->type)
 			{
-			case effect::PipelineCondition::AttributeRequired:
-				incompatible = (mesh.getVertexAttributeByName(condition->value) == 0);
-				break;
-			case effect::PipelineCondition::AttributeRequiredNo:
-				incompatible = (mesh.getVertexAttributeByName(condition->value) != 0);
-				break;
-			case effect::PipelineCondition::UniformRequired:
-				incompatible = !material.hasSemantic(condition->value);
-				break;
-			case effect::PipelineCondition::UniformRequiredNo:
-				incompatible = material.hasSemantic(condition->value);
-				break;
-			default:
-				Log(LogLevel::Warning, "Unsupported effect::PipelineCondition used.");
+			case effect::PipelineCondition::AttributeRequired: incompatible = (mesh.getVertexAttributeByName(condition->value) == 0); break;
+			case effect::PipelineCondition::AttributeRequiredNo: incompatible = (mesh.getVertexAttributeByName(condition->value) != 0); break;
+			case effect::PipelineCondition::UniformRequired: incompatible = !material.hasSemantic(condition->value); break;
+			case effect::PipelineCondition::UniformRequiredNo: incompatible = material.hasSemantic(condition->value); break;
+			default: Log(LogLevel::Warning, "Unsupported effect::PipelineCondition used.");
 			}
 		}
-		if (!incompatible)
-		{
-			break;
-		}
+		if (!incompatible) { break; }
 	}
 
 	if (!incompatible) // cond_pipe_it!=pass.subpasses[subpass].pipelines.end()
@@ -124,14 +106,8 @@ void attribToAttrib(uint8_t* to, uint8_t* from, uint32_t toOffset, uint32_t from
 			*reinterpret_cast<Totype*>(tmpTo + vec * sizeof(Totype)) = to_value;
 		}
 
-		for (; vec < 3 && vec < toWidth; ++vec)
-		{
-			*reinterpret_cast<Totype*>(tmpTo + vec * sizeof(Totype)) = (Totype)0;
-		}
-		for (; vec < toWidth; ++vec)
-		{
-			*reinterpret_cast<Totype*>(tmpTo + vec * sizeof(Totype)) = (Totype)1;
-		}
+		for (; vec < 3 && vec < toWidth; ++vec) { *reinterpret_cast<Totype*>(tmpTo + vec * sizeof(Totype)) = (Totype)0; }
+		for (; vec < toWidth; ++vec) { *reinterpret_cast<Totype*>(tmpTo + vec * sizeof(Totype)) = (Totype)1; }
 	}
 }
 
@@ -156,88 +132,61 @@ Reswizzler selectReswizzler(DataType fromType, DataType toType)
 	case DataType::Float32:
 		switch (toType)
 		{
-		case DataType::Float32:
-			return &(attribToAttrib<float, float>);
+		case DataType::Float32: return &(attribToAttrib<float, float>);
 		case DataType::Int32:
-		case DataType::UInt32:
-			return &(attribToAttrib<float, int32_t>);
+		case DataType::UInt32: return &(attribToAttrib<float, int32_t>);
 		case DataType::Int16:
-		case DataType::UInt16:
-			return &(attribToAttrib<float, int16_t>);
+		case DataType::UInt16: return &(attribToAttrib<float, int16_t>);
 		case DataType::Int8:
-		case DataType::UInt8:
-			return &(attribToAttrib<float, int8_t>);
+		case DataType::UInt8: return &(attribToAttrib<float, int8_t>);
 
-		default:
-			assertion(false, "Unsupported POD Vertex Datatype");
-			break;
+		default: assertion(false, "Unsupported POD Vertex Datatype"); break;
 		}
 	case DataType::Int32:
 	case DataType::UInt32:
 		switch (toType)
 		{
-		case DataType::Float32:
-			return &(attribToAttrib<int32_t, float>);
+		case DataType::Float32: return &(attribToAttrib<int32_t, float>);
 		case DataType::Int32:
-		case DataType::UInt32:
-			return &(attribToAttrib<int32_t, int32_t>);
+		case DataType::UInt32: return &(attribToAttrib<int32_t, int32_t>);
 		case DataType::Int16:
-		case DataType::UInt16:
-			return &(attribToAttrib<int32_t, int16_t>);
+		case DataType::UInt16: return &(attribToAttrib<int32_t, int16_t>);
 		case DataType::Int8:
-		case DataType::UInt8:
-			return &(attribToAttrib<int32_t, int8_t>);
-			break;
+		case DataType::UInt8: return &(attribToAttrib<int32_t, int8_t>); break;
 
-		default:
-			assertion(false, "Unsupported POD Vertex Datatype");
-			break;
+		default: assertion(false, "Unsupported POD Vertex Datatype"); break;
 		}
 	case DataType::Int16:
 	case DataType::UInt16:
 		switch (toType)
 		{
-		case DataType::Float32:
-			return &(attribToAttrib<int16_t, float>);
+		case DataType::Float32: return &(attribToAttrib<int16_t, float>);
 		case DataType::Int32:
-		case DataType::UInt32:
-			return &(attribToAttrib<int16_t, int32_t>);
+		case DataType::UInt32: return &(attribToAttrib<int16_t, int32_t>);
 		case DataType::Int16:
-		case DataType::UInt16:
-			return &(attribToAttrib<int16_t, int16_t>);
+		case DataType::UInt16: return &(attribToAttrib<int16_t, int16_t>);
 		case DataType::Int8:
-		case DataType::UInt8:
-			return &(attribToAttrib<int16_t, int8_t>);
+		case DataType::UInt8: return &(attribToAttrib<int16_t, int8_t>);
 
-		default:
-			assertion(false, "Unsupported POD Vertex Datatype");
-			break;
+		default: assertion(false, "Unsupported POD Vertex Datatype"); break;
 		}
 	case DataType::Int8:
 	case DataType::UInt8:
 		switch (toType)
 		{
-		case DataType::Float32:
-			return &(attribToAttrib<int8_t, float>);
+		case DataType::Float32: return &(attribToAttrib<int8_t, float>);
 		case DataType::Int32:
-		case DataType::UInt32:
-			return &(attribToAttrib<int8_t, int32_t>);
+		case DataType::UInt32: return &(attribToAttrib<int8_t, int32_t>);
 		case DataType::Int16:
-		case DataType::UInt16:
-			return &(attribToAttrib<int8_t, int16_t>);
+		case DataType::UInt16: return &(attribToAttrib<int8_t, int16_t>);
 		case DataType::Int8:
-		case DataType::UInt8:
-			return &(attribToAttrib<int8_t, int8_t>);
+		case DataType::UInt8: return &(attribToAttrib<int8_t, int8_t>);
 
-		default:
-			assertion(false, "Unsupported POD Vertex Datatype");
-			break;
+		default: assertion(false, "Unsupported POD Vertex Datatype"); break;
 		}
 		break;
 
-	default:
-		assertion(false, "Unsupported POD Vertex Datatype");
-		break;
+	default: assertion(false, "Unsupported POD Vertex Datatype"); break;
 	}
 	return NULL;
 }
@@ -248,10 +197,7 @@ inline void populateVbos(AttributeConfiguration& attribConfig, std::vector<Buffe
 	uint32_t numVertices = mesh.getNumVertices();
 
 	std::vector<uint8_t> ptrs[16];
-	for (uint32_t i = 0; i < vbos.size(); ++i)
-	{
-		ptrs[i].resize(!vbos[i] ? (size_t)0 : (size_t)vbos[i]->getSize());
-	}
+	for (uint32_t i = 0; i < vbos.size(); ++i) { ptrs[i].resize(!vbos[i] ? (size_t)0 : (size_t)vbos[i]->getSize()); }
 
 	for (uint32_t binding = 0; binding < attribConfig.size(); ++binding)
 	{
@@ -260,10 +206,7 @@ inline void populateVbos(AttributeConfiguration& attribConfig, std::vector<Buffe
 			auto& attrib = attribConfig[binding][attribute];
 			const auto& mattrib = mesh.getVertexAttributeByName(attrib.semantic);
 
-			if (mattrib == NULL)
-			{
-				continue;
-			}
+			if (mattrib == NULL) { continue; }
 			uint32_t mbinding = mattrib->getDataIndex();
 			DataType mdatatype = mattrib->getVertexLayout().dataType;
 			uint32_t mwidth = mattrib->getVertexLayout().width;
@@ -279,10 +222,7 @@ inline void populateVbos(AttributeConfiguration& attribConfig, std::vector<Buffe
 
 	for (uint32_t i = 0; i < vbos.size(); ++i)
 	{
-		if (vbos[i])
-		{
-			pvr::utils::updateHostVisibleBuffer(vbos[i], ptrs[i].data(), 0, vbos[i]->getSize(), true);
-		}
+		if (vbos[i]) { pvr::utils::updateHostVisibleBuffer(vbos[i], ptrs[i].data(), 0, vbos[i]->getSize(), true); }
 	}
 }
 
@@ -310,10 +250,10 @@ inline void createVbos(utils::RenderManager& renderman, const std::map<assets::M
 
 			if (mesh.getFaces().getDataSize() > 0)
 			{
-				apimesh.ibo =
-					pvr::utils::createBuffer(device, mesh.getFaces().getDataSize(), pvrvk::BufferUsageFlags::e_INDEX_BUFFER_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
-						pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
-						&renderman.getAllocator(), pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+				apimesh.ibo = pvr::utils::createBuffer(device, pvrvk::BufferCreateInfo(mesh.getFaces().getDataSize(), pvrvk::BufferUsageFlags::e_INDEX_BUFFER_BIT),
+					pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
+					pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
+					&renderman.getAllocator(), pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 				apimesh.indexType = mesh.getFaces().getDataType();
 
 				assertion(apimesh.ibo != nullptr, strings::createFormatted("RenderManager: Could not create IBO for mesh [%d] of model [%d]", mesh_id, model_id));
@@ -325,15 +265,13 @@ inline void createVbos(utils::RenderManager& renderman, const std::map<assets::M
 			apimesh.vbos.resize(size);
 			for (uint32_t vbo_id = 0; vbo_id < size; ++vbo_id)
 			{
-				if (attribConfig[vbo_id].size() == 0)
-				{
-					continue;
-				} // empty binding
+				if (attribConfig[vbo_id].size() == 0) { continue; } // empty binding
 				uint32_t vboSize = attribConfig[vbo_id].stride * mesh.getNumVertices();
 
-				apimesh.vbos[vbo_id] = pvr::utils::createBuffer(device, vboSize, pvrvk::BufferUsageFlags::e_VERTEX_BUFFER_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
-					pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
-					&renderman.getAllocator(), pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+				apimesh.vbos[vbo_id] =
+					pvr::utils::createBuffer(device, pvrvk::BufferCreateInfo(vboSize, pvrvk::BufferUsageFlags::e_VERTEX_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
+						pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
+						&renderman.getAllocator(), pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 				populateVbos(attribConfig, apimesh.vbos, mesh);
 				assertion(apimesh.vbos[vbo_id] != nullptr, strings::createFormatted("RenderManager: Could not create VBO[%d] for mesh [%d] of model [%d]", mesh_id, model_id));
 			}
@@ -348,15 +286,9 @@ inline void addVertexAttributesToVboLayout(std::vector<StringHash>& inner, const
 		bool found = false;
 		for (auto it_inner = inner.begin(); !found && it_inner < inner.end(); ++it_inner)
 		{
-			if (*it_outer == *it_inner)
-			{
-				found = true;
-			}
+			if (*it_outer == *it_inner) { found = true; }
 		}
-		if (!found)
-		{
-			inner.emplace_back(std::move(*it_outer));
-		}
+		if (!found) { inner.emplace_back(std::move(*it_outer)); }
 	}
 }
 
@@ -400,16 +332,10 @@ inline AttributeConfiguration getVertexBindingsForPipeNoStride(const effectvk::E
 	for (auto it = pipe.attributes.begin(); it != pipe.attributes.end(); ++it)
 	{
 		uint16_t binding = it->vboBinding;
-		if (binding >= retval.size())
-		{
-			retval.resize(it->vboBinding + 1);
-		}
+		if (binding >= retval.size()) { retval.resize(it->vboBinding + 1u); }
 		uint32_t width = getNumMatrixColumns(it->dataType) * getNumVecElements(it->dataType);
 		DataType datatype = DataType::None;
-		if (retval[binding].size() <= it->location)
-		{
-			retval[binding].resize(it->location + 1);
-		}
+		if (retval[binding].size() <= it->location) { retval[binding].resize(it->location + 1); }
 		retval[binding][it->location] = utils::Attribute(it->semantic, datatype, static_cast<uint16_t>(width), static_cast<uint16_t>(retval[binding].stride), it->variableName);
 	}
 	return retval;
@@ -425,10 +351,7 @@ inline AttributeConfiguration getVertexBindingsForPipe(const effectvk::EffectApi
 	for (auto it = pipe.attributes.begin(); it != pipe.attributes.end(); ++it)
 	{
 		uint16_t binding = it->vboBinding;
-		if (binding >= retval.size())
-		{
-			retval.resize(it->vboBinding + 1);
-		}
+		if (binding >= retval.size()) { retval.resize(it->vboBinding + 1); }
 
 		uint32_t width = getNumMatrixColumns(it->dataType) * getNumVecElements(it->dataType);
 		DataType datatype = toDataType(it->dataType);
@@ -437,8 +360,6 @@ inline AttributeConfiguration getVertexBindingsForPipe(const effectvk::EffectApi
 		// the "stride" is the offset of the last one...
 		retval[binding][count[binding]++] = utils::Attribute(it->semantic, datatype, static_cast<uint16_t>(width), static_cast<uint16_t>(retval[binding].stride), it->variableName);
 		retval[binding].stride += width * dataTypeSize(datatype); // 4 - we only support float, int32_t;
-
-#pragma warning TODO_MUST_CHANGE_DATATYPE_FROM_THE_MESH_ALWAYS_ASSUMING_32_BIT_MUST_CHANGE
 	}
 	return retval;
 }
@@ -522,10 +443,7 @@ inline void createAttributeConfigurations(RenderManager& renderman, std::map<Pip
 				for (uint32_t binding = 0; binding < pipe2bindings.size(); ++binding)
 					if (pipe2bindings.size() >= binding)
 					{
-						if (binding >= finalLayout.size())
-						{
-							finalLayout.resize(static_cast<uint32_t>(binding) + 1);
-						}
+						if (binding >= finalLayout.size()) { finalLayout.resize(static_cast<uint32_t>(binding) + 1); }
 
 						mergeAttributeLayouts(finalLayout[binding], pipe2bindings[binding]);
 					}
@@ -546,10 +464,7 @@ inline void createAttributeConfigurations(RenderManager& renderman, std::map<Pip
 				{
 					assets::Mesh& mesh = *apiModels[model_id].meshes[mesh_id].assetMesh;
 					const auto& found = meshAttribConfig.find(&mesh);
-					if (found == meshAttribConfig.end())
-					{
-						continue;
-					}
+					if (found == meshAttribConfig.end()) { continue; }
 					auto& attribConfig = *found->second;
 
 					for (uint32_t binding = 0; binding < attribConfig.size(); ++binding)
@@ -559,10 +474,7 @@ inline void createAttributeConfigurations(RenderManager& renderman, std::map<Pip
 							auto& attrib = attribConfig[binding][attribute];
 							const auto mattrib = mesh.getVertexAttributeByName(attrib.semantic);
 
-							if (mattrib == NULL)
-							{
-								continue;
-							}
+							if (mattrib == NULL) { continue; }
 							else
 							{
 								fixVertexLayoutDatatypes(attrib, *mattrib);
@@ -604,10 +516,7 @@ inline void addSemanticLists(
 			debug_assertion(false,
 				strings::createFormatted("DUPLICATE BUFFER SEMANTIC DETECTED: Buff: [%s] Semantic [%s]", buff.bufferDefinition->name.c_str(), buff.semantic.c_str()).c_str());
 		}
-		if (it == bufferDefinitions.end())
-		{
-			bufferDefinitions[buff.semantic] = &buff.bufferDefinition->structuredBufferView;
-		}
+		if (it == bufferDefinitions.end()) { bufferDefinitions[buff.semantic] = &buff.bufferDefinition->structuredBufferView; }
 	}
 	auto& structuredBufferView = buff.bufferDefinition->structuredBufferView;
 	uint32_t numElements = buff.bufferDefinition->memoryDescription.getNumChildren();
@@ -615,10 +524,7 @@ inline void addSemanticLists(
 	for (uint32_t i = 0; i < numElements; ++i)
 	{
 		const StructuredMemoryDescription& memDesc = buff.bufferDefinition->memoryDescription.getElement(i);
-		if (memDesc.getName().empty())
-		{
-			continue;
-		}
+		if (memDesc.getName().empty()) { continue; }
 		auto it = bufferEntries.find(memDesc.getName());
 		if (checkDuplicates && it != bufferEntries.end())
 		{
@@ -639,8 +545,7 @@ inline void addSemanticLists(
 	}
 }
 
-inline void addUniformSemanticLists(
-	std::map<StringHash, effectvk::UniformSemantic>& effectlist, std::map<StringHash, UniformSemantic>& newlist, bool checkDuplicates, VariableScope scope)
+inline void addUniformSemanticLists(std::map<StringHash, effectvk::UniformSemantic>& effectlist, std::map<StringHash, UniformSemantic>& newlist, bool checkDuplicates, VariableScope scope)
 {
 	for (auto& uniform : effectlist)
 	{
@@ -656,8 +561,6 @@ inline void addUniformSemanticLists(
 } // namespace
 
 /////////  PIPELINES /////////////
-#pragma warning TODO_MAKE_DIFFERENT_PIPE_BASED_ON_PRIMITIVE_TOPOLOGY
-
 inline void createPipelines(RenderManager& renderman, const std::map<StringHash, AttributeConfiguration*>& vertexConfigs)
 {
 	std::map<StringHash, GraphicsPipeline> pipelineApis;
@@ -671,10 +574,7 @@ inline void createPipelines(RenderManager& renderman, const std::map<StringHash,
 		{
 			// per-pipe config
 			auto pipedef = effect->getPipelineDefinition(pipeline->first);
-			if (pipedef == nullptr)
-			{
-				continue;
-			}
+			if (pipedef == nullptr) { continue; }
 			// COPY
 			GraphicsPipelineCreateInfo pipecp = pipedef->createParam;
 
@@ -685,10 +585,7 @@ inline void createPipelines(RenderManager& renderman, const std::map<StringHash,
 				for (uint16_t binding = 0; binding < attributeConfig.size(); ++binding)
 				{
 					auto& vbo = attributeConfig[binding];
-					if (vbo.size() == 0)
-					{
-						continue;
-					} // Empty VBO binding
+					if (vbo.size() == 0) { continue; } // Empty VBO binding
 					const VertexInputBindingDescription* inputBindingInfo = pipecp.vertexInput.getInputBinding(binding);
 
 					pipecp.vertexInput.addInputBinding(
@@ -735,10 +632,7 @@ inline void createPipelines(RenderManager& renderman, const std::map<StringHash,
 			{
 				for (auto&& subpassGroup_effect : subpass_effect.groups)
 				{
-					for (auto&& pipeline_effect : subpassGroup_effect.pipelines)
-					{
-						pipeline_effect.apiPipeline = pipelineApis.find(pipeline_effect.name)->second;
-					}
+					for (auto&& pipeline_effect : subpassGroup_effect.pipelines) { pipeline_effect.apiPipeline = pipelineApis.find(pipeline_effect.name)->second; }
 				}
 			}
 		}
@@ -856,7 +750,7 @@ inline bool createBuffers(RenderManager& renderman)
 			Log(LogLevel::Information, "\tnumDynamicClients %d", bufdef.numDynamicClients);
 			Log(LogLevel::Information, "\tbuffer size %d", bufdef.structuredBufferView.getSize());
 #endif
-			bufdef.buffer = pvr::utils::createBuffer(device, bufdef.structuredBufferView.getSize(), pvr::utils::convertToPVRVk(bufdef.allSupportedBindings),
+			bufdef.buffer = pvr::utils::createBuffer(device, pvrvk::BufferCreateInfo(bufdef.structuredBufferView.getSize(), pvr::utils::convertToPVRVk(bufdef.allSupportedBindings)),
 				pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 				pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
 				&renderman.getAllocator(), pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
@@ -871,6 +765,7 @@ inline bool createBuffers(RenderManager& renderman)
 inline void createDescriptorSets(
 	RenderManager& renderman, const std::map<assets::Mesh*, AttributeConfiguration*>& meshAttribConfig, DescriptorPool& pool, uint32_t swapchainLength, CommandBuffer cmdBuffer)
 {
+	(void)meshAttribConfig;
 	Device device = renderman.getDevice().lock();
 	debug_assertion(device != nullptr, "Rendermanager - Invalid Device");
 	RendermanStructure& renderstruct = renderman.renderObjects();
@@ -890,46 +785,23 @@ inline void createDescriptorSets(
 						{
 							for (auto& materialpipeline : materialeffect.materialSubpassPipelines)
 							{
-								if (materialpipeline.pipeline_ == nullptr || !materialpipeline.pipeline_->apiPipeline)
-								{
-									continue;
-								}
+								if (materialpipeline.pipeline_ == nullptr || !materialpipeline.pipeline_->apiPipeline) { continue; }
 								auto& pipeline = *materialpipeline.pipeline_;
 								auto& pipelayout = pipeline.apiPipeline->getPipelineLayout();
 								auto& pipedef = *pipeline.pipelineInfo;
 								int16_t set_max = -1;
-								for (auto& item : pipedef.textureSamplersByTexName)
-								{
-									set_max = std::max(static_cast<int16_t>(item.second.set), set_max);
-								}
-								for (auto& item : pipedef.textureSamplersByTexSemantic)
-								{
-									set_max = std::max(static_cast<int16_t>(item.second.set), set_max);
-								}
-								for (auto& item : pipedef.modelScopeBuffers)
-								{
-									set_max = std::max(static_cast<int16_t>(item.second.set), set_max);
-								}
-								for (auto& item : pipedef.effectScopeBuffers)
-								{
-									set_max = std::max(static_cast<int16_t>(item.second.set), set_max);
-								}
-								for (auto& item : pipedef.nodeScopeBuffers)
-								{
-									set_max = std::max(static_cast<int16_t>(item.second.set), set_max);
-								}
-								for (auto& item : pipedef.inputAttachments[0])
-								{
-									set_max = std::max(static_cast<int16_t>(item.second.set), set_max);
-								}
+								for (auto& item : pipedef.textureSamplersByTexName) { set_max = std::max(static_cast<int16_t>(item.second.set), set_max); }
+								for (auto& item : pipedef.textureSamplersByTexSemantic) { set_max = std::max(static_cast<int16_t>(item.second.set), set_max); }
+								for (auto& item : pipedef.modelScopeBuffers) { set_max = std::max(static_cast<int16_t>(item.second.set), set_max); }
+								for (auto& item : pipedef.effectScopeBuffers) { set_max = std::max(static_cast<int16_t>(item.second.set), set_max); }
+								for (auto& item : pipedef.nodeScopeBuffers) { set_max = std::max(static_cast<int16_t>(item.second.set), set_max); }
+								for (auto& item : pipedef.inputAttachments[0]) { set_max = std::max(static_cast<int16_t>(item.second.set), set_max); }
 								for (uint16_t set_id = 0; set_id < set_max + 1; ++set_id)
 								{
 									if (pipedef.descSetExists[set_id])
 									{
 										if (pipedef.descSetIsFixed[set_id]) // Descriptor set is "fixed", meaning it is shared by all renderables in the pipeline.
-										{
-											materialpipeline.sets[set_id] = pipedef.fixedDescSet[set_id];
-										}
+										{ materialpipeline.sets[set_id] = pipedef.fixedDescSet[set_id]; }
 										else // Otherwise, create the descriptor set for this pipeline/material combination
 										{
 											const DescriptorSetLayout& descsetlayout = pipelayout->getDescriptorSetLayout(set_id);
@@ -940,9 +812,7 @@ inline void createDescriptorSets(
 
 											uint32_t swaplength = (pipedef.descSetIsMultibuffered[set_id] ? swapchainLength : 1);
 											for (uint32_t swapchain = 0; swapchain < swaplength; ++swapchain)
-											{
-												materialpipeline.sets[set_id][swapchain] = pool->allocateDescriptorSet(descsetlayout);
-											}
+											{ materialpipeline.sets[set_id][swapchain] = pool->allocateDescriptorSet(descsetlayout); }
 										}
 									}
 								}
@@ -998,7 +868,6 @@ inline void createDescriptorSets(
 											"RenderManager: Texture semantic [%s] was not found in model material [%s]. "
 											"The texture will need to be populated by the application",
 											tex.first.c_str(), materialeffect.material->assetMaterial->getName().c_str());
-#pragma warning populate_non_automatic_semantics
 									}
 								}
 
@@ -1050,10 +919,7 @@ inline RendermanBufferBinding makeRendermanBufferBinding(const StringHash& name,
 	{
 		const StringHash& name;
 		BufferNameEquals(const StringHash& name) : name(name) {}
-		bool operator()(const RendermanBufferDefinition& rhs) const
-		{
-			return name == rhs.name;
-		}
+		bool operator()(const RendermanBufferDefinition& rhs) const { return name == rhs.name; }
 	};
 
 	bufferbinding.bufferDefinition = &*std::find_if(definitions.begin(), definitions.end(), BufferNameEquals(name));
@@ -1067,10 +933,7 @@ size_t addRendermanPipelineIfNotExists(RendermanSubpassGroup& subpassGroup, effe
 	{
 		effectvk::PipelineDef* ptr;
 		cmppipe(effectvk::PipelineDef* ptr) : ptr(ptr) {}
-		bool operator()(const RendermanPipeline& rhs)
-		{
-			return rhs.pipelineInfo == ptr;
-		}
+		bool operator()(const RendermanPipeline& rhs) { return rhs.pipelineInfo == ptr; }
 	};
 
 	auto& container = subpassGroup.pipelines;
@@ -1137,10 +1000,7 @@ inline size_t addRendermanMaterialEffectIfNotExists(Container& model, RendermanM
 	{
 		RendermanMaterial* ptr;
 		cmppipe(RendermanMaterial* ptr) : ptr(ptr) {}
-		bool operator()(const RendermanSubpassMaterial& rhs)
-		{
-			return rhs.material == ptr;
-		}
+		bool operator()(const RendermanSubpassMaterial& rhs) { return rhs.material == ptr; }
 	};
 
 	auto found_item = std::find_if(model.materialEffects.begin(), model.materialEffects.end(), cmppipe(material));
@@ -1170,10 +1030,7 @@ inline size_t addRendermanMeshEffectIfNotExists(Container& model, RendermanMesh*
 	{
 		RendermanMesh* ptr;
 		cmppipe(RendermanMesh* ptr) : ptr(ptr) {}
-		bool operator()(const RendermanSubpassMesh& rhs)
-		{
-			return rhs.rendermesh_ == ptr;
-		}
+		bool operator()(const RendermanSubpassMesh& rhs) { return rhs.rendermesh_ == ptr; }
 	};
 
 	auto found_item = std::find_if(model.subpassMeshes.begin(), model.subpassMeshes.end(), cmppipe(mesh));
@@ -1203,10 +1060,7 @@ inline size_t addRendermanModelEffectIfNotExists(Container& container, Renderman
 	{
 		RendermanModel* ptr;
 		cmppipe(RendermanModel* ptr) : ptr(ptr) {}
-		bool operator()(const RendermanSubpassGroupModel& rhs)
-		{
-			return rhs.renderModel_ == ptr;
-		}
+		bool operator()(const RendermanSubpassGroupModel& rhs) { return rhs.renderModel_ == ptr; }
 	};
 
 	auto found_item = std::find_if(container.begin(), container.end(), cmppipe(model));
@@ -1233,10 +1087,7 @@ inline size_t connectMaterialEffectWithPipeline(RendermanSubpassMaterial& rms, R
 	{
 		RendermanPipeline* pipe;
 		cmp(RendermanPipeline& pipe) : pipe(&pipe) {}
-		bool operator()(RendermanMaterialSubpassPipeline& rmpipe)
-		{
-			return rmpipe.pipeline_ == pipe;
-		}
+		bool operator()(RendermanMaterialSubpassPipeline& rmpipe) { return rmpipe.pipeline_ == pipe; }
 	};
 	auto found = std::find_if(rms.materialSubpassPipelines.begin(), rms.materialSubpassPipelines.end(), cmp(pipe));
 	size_t pipe_index = found - rms.materialSubpassPipelines.begin();
@@ -1283,9 +1134,7 @@ void addNodeDynamicClientToBuffers(RendermanSubpassGroupModel&, RendermanNode& n
 		if ((buffer.bufferDefinition->scope == VariableScope::Node || buffer.bufferDefinition->scope == VariableScope::BoneBatch ||
 				buffer.bufferDefinition->scope == VariableScope::Effect) &&
 			(buffer.type == pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC || buffer.type == pvrvk::DescriptorType::e_STORAGE_BUFFER_DYNAMIC))
-		{
-			++current_buffer[buffer.set];
-		}
+		{ ++current_buffer[buffer.set]; }
 	}
 
 	for (uint32_t set = 0; set < FrameworkCaps::MaxDescriptorSetBindings; ++set)
@@ -1301,17 +1150,11 @@ void addNodeDynamicClientToBuffers(RendermanSubpassGroupModel&, RendermanNode& n
 	}
 
 	std::vector<RendermanBufferBinding> sortedBuffer;
-	for (auto buffer_it = pipeline.bufferBindings.begin(); buffer_it != pipeline.bufferBindings.end(); ++buffer_it)
-	{
-		sortedBuffer.emplace_back(buffer_it->second);
-	}
+	for (auto buffer_it = pipeline.bufferBindings.begin(); buffer_it != pipeline.bufferBindings.end(); ++buffer_it) { sortedBuffer.emplace_back(buffer_it->second); }
 
 	// sort the buffer based on set and binding
 	std::sort(sortedBuffer.begin(), sortedBuffer.end(), [&](const RendermanBufferBinding& a, const RendermanBufferBinding& b) {
-		if (a.set < b.set || (a.set == b.set && a.binding < b.binding))
-		{
-			return true;
-		}
+		if (a.set < b.set || (a.set == b.set && a.binding < b.binding)) { return true; }
 		return false;
 	});
 
@@ -1323,10 +1166,7 @@ void addNodeDynamicClientToBuffers(RendermanSubpassGroupModel&, RendermanNode& n
 			if (buffer.bufferDefinition->scope == VariableScope::Node || buffer.bufferDefinition->scope == VariableScope::BoneBatch)
 			{
 				uint32_t clientId = 0;
-				if (buffer.bufferDefinition->scope == VariableScope::Node)
-				{
-					clientId = buffer.bufferDefinition->numDynamicClients++;
-				}
+				if (buffer.bufferDefinition->scope == VariableScope::Node) { clientId = buffer.bufferDefinition->numDynamicClients++; }
 				else if (buffer.bufferDefinition->scope == VariableScope::BoneBatch)
 				{
 					clientId = node.batchId;
@@ -1353,8 +1193,7 @@ void addNodeDynamicClientToBuffers(RendermanSubpassGroupModel&, RendermanNode& n
 	}
 }
 
-inline void prepareDataStructures(
-	RenderManager& renderman, std::map<assets::Mesh*, AttributeConfiguration*>& meshAttributeLayout, std::map<PipelineSet, AttributeConfiguration>& pipeSets)
+inline void prepareDataStructures(RenderManager& renderman, std::map<assets::Mesh*, AttributeConfiguration*>& meshAttributeLayout, std::map<PipelineSet, AttributeConfiguration>& pipeSets)
 {
 	RendermanStructure& renderStructure = renderman.renderObjects();
 	// PREPARE DATA STRUCTURES
@@ -1408,10 +1247,7 @@ inline void prepareDataStructures(
 
 							std::pair<StringHash, effectvk::PipelineDef*> pipe = selectPipelineForSubpassGroupMeshMaterial(effectapi, effectSubpassGroup, assetmesh, assetmaterial);
 
-							if (!pipe.second)
-							{
-								continue;
-							}
+							if (!pipe.second) { continue; }
 							// Add this pipeline as one used by this mesh. Needed? YES, because meshes are NOT
 							// arranged with their pipes - nodes are. We need this so that if a mesh is rendered
 							// by different pipes (Think of a scene with a glass sphere and a wood sphere...)
@@ -1480,10 +1316,7 @@ inline void prepareDataStructures(
 	// In case you are wondering, the second part either inserts or ignores the key (i.e. the set
 	// of pipelines we are looking for), and returns the address to it in the set. So we remove
 	// all duplication this way.
-	for (auto it = setOfAllPipesUsedPerMesh.begin(); it != setOfAllPipesUsedPerMesh.end(); ++it)
-	{
-		meshAttributeLayout[it->first] = &pipeSets[it->second];
-	}
+	for (auto it = setOfAllPipesUsedPerMesh.begin(); it != setOfAllPipesUsedPerMesh.end(); ++it) { meshAttributeLayout[it->first] = &pipeSets[it->second]; }
 }
 } // namespace
 
@@ -1791,9 +1624,7 @@ inline bool getModelViewProjectionMatrix(TypedMem& mem, const RendermanNode& nod
 	getWorldMatrix(mem, node);
 	TypedMem viewprojmtx;
 	if (node.subpassMesh_->rendermesh_->renderModel_->getModelSemantic(VIEWPROJECTIONMATRIX_STR, viewprojmtx))
-	{
-		mem.interpretValueAs<glm::mat4>() = viewprojmtx.interpretValueAs<glm::mat4>() * mem.interpretValueAs<glm::mat4>();
-	}
+	{ mem.interpretValueAs<glm::mat4>() = viewprojmtx.interpretValueAs<glm::mat4>() * mem.interpretValueAs<glm::mat4>(); }
 	return true;
 }
 } // namespace
@@ -1802,10 +1633,7 @@ inline bool getModelViewProjectionMatrix(TypedMem& mem, const RendermanNode& nod
 
 // RENDERNODE
 
-bool RendermanNode::getNodeSemantic(const StringHash& semantic, TypedMem& mem) const
-{
-	return getNodeSemanticSetter(semantic)(mem, *this);
-}
+bool RendermanNode::getNodeSemantic(const StringHash& semantic, TypedMem& mem) const { return getNodeSemanticSetter(semantic)(mem, *this); }
 
 NodeSemanticSetter RendermanNode::getNodeSemanticSetter(const StringHash& semantic) const
 {
@@ -1914,14 +1742,10 @@ ModelSemanticSetter RendermanModel::getModelSemanticSetter(const StringHash& sem
 	case HashCompileTime<'P', 'R', 'O', 'J', 'E', 'C', 'T', 'I', 'O', 'N'>::value:
 	case HashCompileTime<'P', 'E', 'R', 'S', 'P', 'E', 'C', 'T', 'I', 'V', 'E', 'M', 'A', 'T', 'R', 'I', 'X'>::value:
 	case HashCompileTime<'P', 'E', 'R', 'S', 'P', 'E', 'C', 'T', 'I', 'V', 'E', 'M', 'T', 'X'>::value:
-	case HashCompileTime<'P', 'E', 'R', 'S', 'P', 'E', 'C', 'T', 'I', 'V', 'E'>::value:
-		return &getPerspectiveMatrix0;
-		break;
+	case HashCompileTime<'P', 'E', 'R', 'S', 'P', 'E', 'C', 'T', 'I', 'V', 'E'>::value: return &getPerspectiveMatrix0; break;
 	case HashCompileTime<'V', 'I', 'E', 'W', 'M', 'A', 'T', 'R', 'I', 'X'>::value:
 	case HashCompileTime<'V', 'I', 'E', 'W', 'M', 'T', 'X'>::value:
-	case HashCompileTime<'V', 'I', 'E', 'W'>::value:
-		return &getViewMatrix0;
-		break;
+	case HashCompileTime<'V', 'I', 'E', 'W'>::value: return &getViewMatrix0; break;
 	case HashCompileTime<'V', 'I', 'E', 'W', 'P', 'R', 'O', 'J', 'E', 'C', 'T', 'I', 'O', 'N', 'M', 'A', 'T', 'R', 'I', 'X'>::value:
 	case HashCompileTime<'V', 'I', 'E', 'W', 'P', 'R', 'O', 'J', 'E', 'C', 'T', 'I', 'O', 'N', 'M', 'T', 'X'>::value:
 	case HashCompileTime<'V', 'I', 'E', 'W', 'P', 'R', 'O', 'J', 'E', 'C', 'T', 'I', 'O', 'N'>::value:
@@ -1934,21 +1758,16 @@ ModelSemanticSetter RendermanModel::getModelSemanticSetter(const StringHash& sem
 		// Expands to definitions like the above, but suffixed with a character: VIEWPROJECTION0,VIEWPROJECTION1,VIEWMATRIX0,VIEWMATRIX1 etc, each referencing a different camera.
 		CAMERA('0', 0) CAMERA('1', 1) CAMERA('2', 2) CAMERA('3', 3) CAMERA('4', 4) CAMERA('5', 5) CAMERA('6', 6) CAMERA('7', 7) CAMERA('8', 8) CAMERA('9', 9) break;
 	case HashCompileTime<'L', 'I', 'G', 'H', 'T', 'P', 'O', 'S', 'I', 'T', 'I', 'O', 'N'>::value:
-	case HashCompileTime<'L', 'I', 'G', 'H', 'T', 'P', 'O', 'S'>::value:
-		return &getLightPosition0;
-		break;
+	case HashCompileTime<'L', 'I', 'G', 'H', 'T', 'P', 'O', 'S'>::value: return &getLightPosition0; break;
 	case HashCompileTime<'L', 'I', 'G', 'H', 'T', 'D', 'I', 'R', 'E', 'C', 'T', 'I', 'O', 'N'>::value:
-	case HashCompileTime<'L', 'I', 'G', 'H', 'T', 'D', 'I', 'R'>::value:
-		return &getLightDirection0;
-		break;
+	case HashCompileTime<'L', 'I', 'G', 'H', 'T', 'D', 'I', 'R'>::value: return &getLightDirection0; break;
 	case HashCompileTime<'L', 'I', 'G', 'H', 'T', 'C', 'O', 'L', 'O', 'R'>::value:
 	case HashCompileTime<'L', 'I', 'G', 'H', 'T', 'C', 'O', 'L', 'O', 'U', 'R'>::value:
 		return &getLightColor0;
 		break;
 		LIGHT0_9('0', 0)
 		LIGHT0_9('1', 1) LIGHT0_9('2', 2) LIGHT0_9('3', 3) LIGHT0_9('4', 4) LIGHT0_9('5', 5) LIGHT0_9('6', 6) LIGHT0_9('7', 7) LIGHT0_9('8', 8) LIGHT0_9('9', 9) break;
-	default:
-		break;
+	default: break;
 	}
 	return NULL;
 }
@@ -1961,23 +1780,17 @@ bool RendermanModel::getModelSemantic(const StringHash& semantic, TypedMem& memo
 
 /////////// RENDERING COMMANDS - (various classes of the RenderManager) ///////////
 
-void RenderManager::recordAllRenderingCommands(CommandBuffer& cbuff, uint16_t swapIdx, bool recordBeginEndRenderPass)
+void RenderManager::recordAllRenderingCommands(CommandBuffer& cmdBuffer, uint16_t swapIdx, bool recordBeginEndRenderPass)
 {
-	for (auto& effect : _renderStructure.effects)
-	{
-		effect.recordRenderingCommands(cbuff, swapIdx, recordBeginEndRenderPass);
-	}
+	for (auto& effect : _renderStructure.effects) { effect.recordRenderingCommands(cmdBuffer, swapIdx, recordBeginEndRenderPass); }
 }
 
-void RendermanEffect::recordRenderingCommands(CommandBuffer& cbuff, uint16_t swapIdx, bool beginEndRenderPass)
+void RendermanEffect::recordRenderingCommands(CommandBuffer& cmdBuffer, uint16_t swapIdx, bool beginEndRenderPass)
 {
-	for (auto& pass : passes)
-	{
-		pass.recordRenderingCommands(cbuff, swapIdx, beginEndRenderPass);
-	}
+	for (auto& pass : passes) { pass.recordRenderingCommands(cmdBuffer, swapIdx, beginEndRenderPass); }
 }
 
-void RendermanPass::recordRenderingCommands(CommandBuffer& cbuff, uint16_t swapIdx, bool beginEndRendermanPass)
+void RendermanPass::recordRenderingCommands(CommandBuffer& cmdBuffer, uint16_t swapIdx, bool beginEndRendermanPass)
 {
 	if (beginEndRendermanPass)
 	{
@@ -1999,43 +1812,37 @@ void RendermanPass::recordRenderingCommands(CommandBuffer& cbuff, uint16_t swapI
 			}
 		}
 
-		recordRenderingCommandsWithClearColor(cbuff, swapIdx, clearColor);
+		recordRenderingCommandsWithClearColor(cmdBuffer, swapIdx, clearColor);
 	}
 	else
 	{
-		recordRenderingCommands_(cbuff, swapIdx, nullptr, 0);
+		recordRenderingCommands_(cmdBuffer, swapIdx, nullptr, 0);
 	}
 }
 
-void RendermanPass::recordRenderingCommands_(CommandBuffer& cbuff, uint16_t swapIdx, const ClearValue* clearValues, uint32_t numClearValues)
+void RendermanPass::recordRenderingCommands_(CommandBuffer& cmdBuffer, uint16_t swapIdx, const ClearValue* clearValues, uint32_t numClearValues)
 {
 	if (clearValues)
 	{
-		cbuff->beginRenderPass(framebuffer[swapIdx], framebuffer[swapIdx]->getRenderPass(),
+		cmdBuffer->beginRenderPass(framebuffer[swapIdx], framebuffer[swapIdx]->getRenderPass(),
 			pvrvk::Rect2D(pvrvk::Offset2D(0, 0), pvrvk::Extent2D(framebuffer[swapIdx]->getDimensions().getWidth(), framebuffer[swapIdx]->getDimensions().getHeight())), true,
 			clearValues, numClearValues);
 	}
 	bool first = true;
 	for (auto& subpass : subpasses)
 	{
-		subpass.recordRenderingCommands(cbuff, swapIdx, !first);
+		subpass.recordRenderingCommands(cmdBuffer, swapIdx, !first);
 		first = false;
 	}
-	if (clearValues)
-	{
-		cbuff->endRenderPass();
-	}
+	if (clearValues) { cmdBuffer->endRenderPass(); }
 }
 
-void RendermanSubpassGroup::recordRenderingCommands(CommandBufferBase cbuff, uint16_t swapIdx)
+void RendermanSubpassGroup::recordRenderingCommands(CommandBufferBase cmdBuffer, uint16_t swapIdx)
 {
-	for (auto& spmodels : subpassGroupModels)
-	{
-		spmodels.recordRenderingCommands(cbuff, swapIdx);
-	}
+	for (auto& spmodels : subpassGroupModels) { spmodels.recordRenderingCommands(cmdBuffer, swapIdx); }
 }
 
-void RendermanSubpassGroupModel::recordRenderingCommands(CommandBufferBase cbuff, uint16_t swapIdx)
+void RendermanSubpassGroupModel::recordRenderingCommands(CommandBufferBase cmdBuffer, uint16_t swapIdx)
 {
 	DescriptorSet prev_sets[4] = {};
 
@@ -2074,47 +1881,35 @@ void RendermanSubpassGroupModel::recordRenderingCommands(CommandBufferBase cbuff
 		Log(LogLevel::Information, "RendermanSubpassGroupModel::recordRenderingCommands nodeid: %d, pipeline name: %s", nodeId, renderpipeline.name.c_str());
 #endif
 		++nodeId;
-		node.recordRenderingCommands(cbuff, swapIdx, bindPipeline, bindSets);
+		node.recordRenderingCommands(cmdBuffer, swapIdx, bindPipeline, bindSets);
 	}
 }
 
 void RendermanNode::recordRenderingCommands(
-	CommandBufferBase cbuff, uint16_t swapidx, bool recordBindPipeline, bool* recordBindDescriptorSets, bool recordBindVboIbo, bool recordDrawCalls)
+	CommandBufferBase cmdBuffer, uint16_t swapidx, bool recordBindPipeline, bool* recordBindDescriptorSets, bool recordBindVboIbo, bool recordDrawCalls)
 {
 	auto& pipe = toRendermanPipeline();
 	auto& rmesh = toRendermanMesh();
-	if (!pipe.apiPipeline)
-	{
-		return;
-	}
-	if (recordBindPipeline)
-	{
-		cbuff->bindPipeline(pipe.apiPipeline);
-	}
+	if (!pipe.apiPipeline) { return; }
+	if (recordBindPipeline) { cmdBuffer->bindPipeline(pipe.apiPipeline); }
 
 	for (uint32_t setid = 0; setid < FrameworkCaps::MaxDescriptorSetBindings; ++setid)
 	{
 		if (!recordBindDescriptorSets || recordBindDescriptorSets[setid])
 		{
-			if (!pipe.pipelineInfo->descSetExists[setid])
-			{
-				continue;
-			}
+			if (!pipe.pipelineInfo->descSetExists[setid]) { continue; }
 			uint32_t setswapid = pipe.pipelineInfo->descSetIsMultibuffered[setid] ? swapidx : 0;
-			const std::vector<uint32_t>& dynamicOffset = getDynamicOffsets(setid, setswapid);
+			const std::vector<uint32_t>& dynamicOffset2 = getDynamicOffsets(setid, setswapid);
 
 #ifdef PVR_RENDERMANAGER_DEBUG_RENDERING_COMMANDS
 			Log(LogLevel::Information, "RendermanNode bindDescriptorSet");
 			Log(LogLevel::Information, "\tsetId %d", setid);
 			Log(LogLevel::Information, "\tsetswapId %d", setswapid);
-			for (uint32_t offsetId = 0; offsetId < dynamicOffset.size(); ++offsetId)
-			{
-				Log(LogLevel::Information, "\toffset %d: %d", offsetId, dynamicOffset[offsetId]);
-			}
+			for (uint32_t offsetId = 0; offsetId < dynamicOffset2.size(); ++offsetId) { Log(LogLevel::Information, "\toffset %d: %d", offsetId, dynamicOffset2[offsetId]); }
 #endif
 
-			cbuff->bindDescriptorSet(pvrvk::PipelineBindPoint::e_GRAPHICS, pipe.apiPipeline->getPipelineLayout(), setid, pipelineMaterial_->sets[setid][setswapid],
-				dynamicOffset.data(), static_cast<uint32_t>(dynamicOffset.size()));
+			cmdBuffer->bindDescriptorSet(pvrvk::PipelineBindPoint::e_GRAPHICS, pipe.apiPipeline->getPipelineLayout(), setid, pipelineMaterial_->sets[setid][setswapid],
+				dynamicOffset2.data(), static_cast<uint32_t>(dynamicOffset2.size()));
 
 			setswapid = pipe.pipelineInfo->descSetIsMultibuffered[setid] ? swapidx : 0;
 		}
@@ -2122,26 +1917,17 @@ void RendermanNode::recordRenderingCommands(
 
 	if (recordBindVboIbo)
 	{
-		if (rmesh.vbos.size() > 0)
-		{
-			cbuff->bindVertexBuffer(rmesh.vbos[0], 0, 0);
-		}
-		if (rmesh.ibo)
-		{
-			cbuff->bindIndexBuffer(rmesh.ibo, 0, convertToPVRVk(rmesh.indexType));
-		}
+		if (rmesh.vbos.size() > 0) { cmdBuffer->bindVertexBuffer(rmesh.vbos[0], 0, 0); }
+		if (rmesh.ibo) { cmdBuffer->bindIndexBuffer(rmesh.ibo, 0, convertToPVRVk(rmesh.indexType)); }
 	}
 
 	if (recordDrawCalls)
 	{
 		pvr::assets::Mesh& mesh = *rmesh.assetMesh;
-		if (rmesh.ibo)
-		{
-			cbuff->drawIndexed(0, mesh.getNumFaces() * 3);
-		}
+		if (rmesh.ibo) { cmdBuffer->drawIndexed(0, mesh.getNumFaces() * 3); }
 		else
 		{
-			cbuff->draw(0, mesh.getNumVertices());
+			cmdBuffer->draw(0, mesh.getNumVertices());
 		}
 	}
 }

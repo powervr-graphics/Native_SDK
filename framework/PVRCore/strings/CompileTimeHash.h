@@ -8,6 +8,8 @@
 #include "PVRCore/Utils.h"
 #include <string>
 #include <cwchar>
+#pragma warning(push)
+#pragma warning(disable : 4307)
 
 namespace pvr {
 /// <summary>Function object hashing to 32 bit values into a 32 bit unsigned Integer.</summary>
@@ -63,10 +65,7 @@ struct hash<uint32_t>
 	/// <summary>Hashes the given uint32_t.</summary>
 	/// <param name="value">A uint32_t value to hash</param>
 	/// <returns>The hash value</returns>
-	uint32_t operator()(uint32_t value)
-	{
-		return hash32_32(value);
-	}
+	uint32_t operator()(uint32_t value) { return hash32_32(value); }
 };
 
 /// <summary>Template specialization of hash specifically for int32_t</summary>
@@ -76,10 +75,7 @@ struct hash<int32_t>
 	/// <summary>Hashes the given int32_t.</summary>
 	/// <param name="value">A int32_t value to hash</param>
 	/// <returns>The hash value</returns>
-	uint32_t operator()(int32_t value)
-	{
-		return hash32_32(value);
-	}
+	uint32_t operator()(int32_t value) { return hash32_32(value); }
 };
 
 /// <summary>Template specialization of hash specifically for uint64_t</summary>
@@ -105,26 +101,21 @@ struct hash<int64_t>
 	/// <returns>The hash value</returns>
 	uint32_t operator()(int64_t value)
 	{
-		uint32_t a = static_cast<int32_t>((value >> 32) | (value & 0x00000000FFFFFFFFull));
+		uint32_t a = static_cast<uint32_t>((value >> 32) | (value & 0x00000000FFFFFFFFull));
 		return hash32_32(a);
 	}
 };
 
 /// <summary>Template specialization of hash specifically for an std::basic_string</summary>
 template<typename T>
-struct hash<std::basic_string<T> >
+struct hash<std::basic_string<T>>
 {
 	/// <summary>Hashes the given string.</summary>
 	/// <param name="t">A string value to hash</param>
 	/// <returns>The hash value</returns>
-	uint32_t operator()(const std::string& t) const
-	{
-		return hash32_bytes(t.data(), sizeof(T) * t.size());
-	}
+	uint32_t operator()(const std::string& t) const { return hash32_bytes(t.data(), sizeof(T) * t.size()); }
 };
 
-#pragma warning(push)
-#pragma warning(disable : 4307)
 // Compile time hashing - warning this must give the same results as the hash 32 bytes alogithm otherwise classes around the framework may break. This is used to optimise compiler time switch statements
 /// <summary>A dummy helper.</summary>
 template<uint32_t hashvalue, unsigned char... dummy>
@@ -153,5 +144,5 @@ class HashCompileTime
 public:
 	static const uint32_t value = hasher_helper<2166136261U, chars...>::value; //!< A hashed value
 };
-#pragma warning(pop)
 } // namespace pvr
+#pragma warning(pop)

@@ -116,7 +116,7 @@ class OpenGLESSkinning : public pvr::Shell
 public:
 	OpenGLESSkinning() : _isPaused(false), _currentFrame(0) {}
 
-	void renderNode(uint32_t nodeId, const glm::mat4& viewMatrix, const glm::mat4& viewProjMatrix, bool& optimizer);
+	void renderNode(uint32_t nodeId, const glm::mat4& viewProjMatrix, bool& optimizer);
 
 	pvr::Result initApplication();
 	pvr::Result initView();
@@ -138,14 +138,9 @@ void OpenGLESSkinning::eventMappedInput(pvr::SimplifiedInput action)
 	{
 	case pvr::SimplifiedInput::Action1:
 	case pvr::SimplifiedInput::Action2:
-	case pvr::SimplifiedInput::Action3:
-		_isPaused = !_isPaused;
-		break;
-	case pvr::SimplifiedInput::ActionClose:
-		exitShell();
-		break;
-	default:
-		break;
+	case pvr::SimplifiedInput::Action3: _isPaused = !_isPaused; break;
+	case pvr::SimplifiedInput::ActionClose: exitShell(); break;
+	default: break;
 	}
 }
 
@@ -157,12 +152,7 @@ void OpenGLESSkinning::eventMappedInput(pvr::SimplifiedInput action)
 ***********************************************************************************************************************/
 pvr::Result OpenGLESSkinning::initApplication()
 {
-	pvr::assets::PODReader podReader(getAssetStream(Configuration::SceneFile));
-	if ((_scene = pvr::assets::Model::createWithReader(podReader)) == nullptr)
-	{
-		setExitMessage("Error: Could not create the _scene file %s.", Configuration::SceneFile);
-		return pvr::Result::InitializationError;
-	}
+	_scene = pvr::assets::loadModel(*this, Configuration::SceneFile);
 
 	// The cameras are stored in the file. We check it contains at least one.
 	if (_scene->getNumCameras() == 0)
@@ -199,7 +189,7 @@ pvr::Result OpenGLESSkinning::quitApplication()
 ***********************************************************************************************************************/
 pvr::Result OpenGLESSkinning::initView()
 {
-	_deviceResources = std::unique_ptr<DeviceResources>(new DeviceResources());
+	_deviceResources = std::make_unique<DeviceResources>();
 
 	_currentFrame = 0.;
 	_deviceResources->context = pvr::createEglContext();
@@ -234,10 +224,7 @@ pvr::Result OpenGLESSkinning::initView()
 
 	const char* defines[] = { "FRAMEBUFFER_SRGB" };
 	uint32_t numDefines = 1;
-	if (getBackBufferColorspace() != pvr::ColorSpace::sRGB)
-	{
-		numDefines = 0;
-	}
+	if (getBackBufferColorspace() != pvr::ColorSpace::sRGB) { numDefines = 0; }
 
 	// Load the shaders, create the programs
 	_deviceResources->programDefault = pvr::utils::createShaderProgram(*this, Configuration::DefaultVertShaderFile, Configuration::DefaultFragShaderFile,
@@ -246,13 +233,9 @@ pvr::Result OpenGLESSkinning::initView()
 		Configuration::SkinnedAttributeNames, Configuration::SkinnedAttributeIndices, 7, defines, numDefines);
 
 	for (uint32_t i = 0; i < static_cast<uint32_t>(DefaultUniforms::Count); ++i)
-	{
-		_defaultUniformLocations[i] = gl::GetUniformLocation(_deviceResources->programDefault, Configuration::DefaultUniformNames[i]);
-	}
+	{ _defaultUniformLocations[i] = gl::GetUniformLocation(_deviceResources->programDefault, Configuration::DefaultUniformNames[i]); }
 	for (uint32_t i = 0; i < static_cast<uint32_t>(SkinnedUniforms::Count); ++i)
-	{
-		_skinnedUniformLocations[i] = gl::GetUniformLocation(_deviceResources->programSkinned, Configuration::SkinnedUniformNames[i]);
-	}
+	{ _skinnedUniformLocations[i] = gl::GetUniformLocation(_deviceResources->programSkinned, Configuration::SkinnedUniformNames[i]); }
 	gl::UseProgram(_deviceResources->programDefault);
 	gl::Uniform1i(_defaultUniformLocations[static_cast<uint32_t>(DefaultUniforms::TextureDiffuse)], 0);
 	gl::UseProgram(_deviceResources->programSkinned);
@@ -361,14 +344,8 @@ pvr::Result OpenGLESSkinning::renderFrame()
 	{
 		if (fDelta > 0.0001f)
 		{
-			if (!_isPaused)
-			{
-				_currentFrame += fDelta;
-			}
-			if (_currentFrame > animInst.getTotalTimeInMs())
-			{
-				_currentFrame = 0;
-			}
+			if (!_isPaused) { _currentFrame += fDelta; }
+			if (_currentFrame > animInst.getTotalTimeInMs()) { _currentFrame = 0; }
 		}
 	}
 
@@ -424,10 +401,7 @@ pvr::Result OpenGLESSkinning::renderFrame()
 	// Bind vertex buffer
 	// Bind index buffer
 	// Enable/disable vertex attributes
-	for (uint32_t i = 0; i < _scene->getNumMeshNodes(); ++i)
-	{
-		renderNode(i, viewMatrix, viewProjMatrix, lastMeshRenderedWasSkinned);
-	}
+	for (uint32_t i = 0; i < _scene->getNumMeshNodes(); ++i) { renderNode(i, viewProjMatrix, lastMeshRenderedWasSkinned); }
 
 	_deviceResources->uiRenderer.beginRendering();
 	_deviceResources->uiRenderer.getDefaultDescription()->render();
@@ -436,17 +410,14 @@ pvr::Result OpenGLESSkinning::renderFrame()
 	_deviceResources->uiRenderer.getDefaultControls()->render();
 	_deviceResources->uiRenderer.endRendering();
 
-	if (this->shouldTakeScreenshot())
-	{
-		pvr::utils::takeScreenshot(this->getScreenshotFileName(), this->getWidth(), this->getHeight());
-	}
+	if (this->shouldTakeScreenshot()) { pvr::utils::takeScreenshot(this->getScreenshotFileName(), this->getWidth(), this->getHeight()); }
 
 	_deviceResources->context->swapBuffers();
 
 	return pvr::Result::Success;
 }
 
-void OpenGLESSkinning::renderNode(uint32_t nodeId, const glm::mat4& viewMatrix, const glm::mat4& viewProjMatrix, bool& lastRenderWasSkinned)
+void OpenGLESSkinning::renderNode(uint32_t nodeId, const glm::mat4& viewProjMatrix, bool& lastRenderWasSkinned)
 {
 	debugThrowOnApiError("OpenGLESSkinning::renderNode Enter");
 	auto& node = _scene->getNode(nodeId);
@@ -498,10 +469,7 @@ void OpenGLESSkinning::renderNode(uint32_t nodeId, const glm::mat4& viewMatrix, 
 		gl::BindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, _deviceResources->ssbos[meshId]);
 
 		void* bones = gl::MapBufferRange(GL_SHADER_STORAGE_BUFFER, 0, static_cast<GLsizeiptr>(_deviceResources->ssboView.getSize()), GL_MAP_WRITE_BIT);
-		if (!bones)
-		{
-			debugThrowOnApiError("OpenGLESSkinning::renderNode Mapping");
-		}
+		if (!bones) { debugThrowOnApiError("OpenGLESSkinning::renderNode Mapping"); }
 		_deviceResources->ssboView.pointToMappedMemory(bones);
 		auto root = _deviceResources->ssboView;
 		for (uint32_t boneId = 0; boneId < numBones; ++boneId)
@@ -569,7 +537,4 @@ void OpenGLESSkinning::renderNode(uint32_t nodeId, const glm::mat4& viewMatrix, 
 
 /// <summary>This function must be implemented by the user of the shell. The user should return its pvr::Shell object defining the behaviour of the application.</summary>
 /// <returns>Return a unique ptr to the demo supplied by the user.</returns>
-std::unique_ptr<pvr::Shell> pvr::newDemo()
-{
-	return std::unique_ptr<pvr::Shell>(new OpenGLESSkinning());
-}
+std::unique_ptr<pvr::Shell> pvr::newDemo() { return std::make_unique<OpenGLESSkinning>(); }

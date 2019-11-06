@@ -1,17 +1,9 @@
 cmake_minimum_required(VERSION 3.3)
 project(OpenGLESHelloAPI)
 
-set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-
-set (CMAKE_CXX_STANDARD 14)
-set (SDK_ROOT ${CMAKE_CURRENT_LIST_DIR}/../../..)
-
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(SDK_ROOT ${CMAKE_CURRENT_LIST_DIR}/../../..)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${SDK_ROOT}/cmake/modules")  #for find_package
-
-if (WIN32)
-	#Get rid of the "this function is unsafe" warning in Visual Studio
-	add_definitions(-D_CRT_SECURE_NO_WARNINGS)
-endif()
 
 if(NOT CMAKE_BUILD_TYPE) #Default to release if the user passes nothing.
 	set(CMAKE_BUILD_TYPE "Release")
@@ -21,16 +13,17 @@ set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT O
 
 set(HelloAPI_INCLUDE_DIRECTORIES ${SDK_ROOT}/include/)
 
-list(APPEND PLATFORM_LIBS ${CMAKE_DL_LIBS})
+set(PLATFORM_LIBS ${CMAKE_DL_LIBS})
 
-if (WIN32)
-	set (SRC_FILES 
+if(WIN32)
+	set(SRC_FILES 
 		 OpenGLESHelloAPI_Windows.cpp
 		"${SDK_ROOT}/res/Windows/shared.rc"
 		"${SDK_ROOT}/res/Windows/resource.h")
 	add_executable(OpenGLESHelloAPI WIN32 ${SRC_FILES})
-elseif (ANDROID)
-	set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -u ANativeActivity_onCreate") #This is to prevent the compiler for stripping out our "main" function
+	# Get rid of the "this function is unsafe" warning in Visual Studio
+	target_compile_definitions(OpenGLESHelloAPI PUBLIC _CRT_SECURE_NO_WARNINGS)
+elseif(ANDROID)
 	find_library(lib-android android) #The following lines add Android specific libraries
 	find_library(lib-log log)
 	list(APPEND PLATFORM_LIBS ${lib-android} ${lib-log})
@@ -43,8 +36,8 @@ elseif (ANDROID)
 	# Force export ANativeActivity_onCreate(),
 	# Refer to: https://github.com/android-ndk/ndk/issues/381
 	set_property(TARGET OpenGLESHelloAPI APPEND_STRING PROPERTY LINK_FLAGS " -u ANativeActivity_onCreate")
-elseif (APPLE)
-	if (IOS)
+elseif(APPLE)
+	if(IOS)
 		set(SRC_FILES OpenGLESHelloAPI_iOS.mm)
 		set(INFO_PLIST_FILE "${CMAKE_CURRENT_SOURCE_DIR}/cmake-resources/iOS_Info.plist")
 		file(GLOB ICONS LIST_DIRECTORIES false ${SDK_ROOT}/SDK/res/iOS/* ${SDK_ROOT}/SDK/res/iOS/OpenGLES3/*)
@@ -68,24 +61,19 @@ elseif (APPLE)
 		list(APPEND ASSET_FILES "${CMAKE_CURRENT_SOURCE_DIR}/cmake-resources/MainMenu.xib")
 	endif()
 	
-	if (IOS) #Kill some annoying warnings
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-return-type" CACHE STRING "")
-		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-return-type" CACHE STRING "")
-		set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wno-return-type" CACHE STRING "")
-	elseif(CMAKE_SYSTEM_NAME MATCHES "Darwin")
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
-		set(CMAKE_C_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
-		set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "c++11")
-		set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY "libc++")
-	endif()
-	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -all_load") # PREVENT THE LINKER FROM STRIPPING OUT THE FUNCTIONS THAT macOS CALLS REFLECTIVELY
-	
 	source_group(Resources FILES ${ASSET_FILES})
 	set_source_files_properties(${ASSET_FILES} PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
 
 	add_executable(OpenGLESHelloAPI MACOSX_BUNDLE ${SRC_FILES} ${ASSET_FILES} ${FRAMEWORK_FILES})
 	set_target_properties(OpenGLESHelloAPI PROPERTIES MACOSX_BUNDLE_INFO_PLIST  "${INFO_PLIST_FILE}")
 	set_target_properties(OpenGLESHelloAPI PROPERTIES RESOURCE "${ASSET_FILES}")
+	
+	if(IOS)
+		target_compile_options(OpenGLESHelloAPI INTERFACE -Wno-return-type)
+		set_target_properties(OpenGLESHelloAPI PROPERTIES LINK_OPTIONS "-Wno-return-type")
+	endif()
+	# Prevent the linker from stripping out the functions that macOS calls reflectively
+	set_target_properties(OpenGLESHelloAPI PROPERTIES LINK_OPTIONS "-all_load")
 	
 	if(IOS)
 		if(CODE_SIGN_IDENTITY)
@@ -96,39 +84,55 @@ elseif (APPLE)
 		endif()
 	endif()
 	
-elseif (UNIX)
-	set(WS_DEFINE "")
-	if(NOT WS) #We support building for several Windowing Systems. Typical desktop systems support X11 and Wayland is catching on. NullWS is used by some development platforms/ testchip.
-		message ("WS Variable not set. Assuming NullWS. If you wish to build for X11, Wayland or another supported windowing system, please pass -DWS=X11, -DWS=Wayland etc. to CMake")
-		set(WS "NullWS")
-		set(WS_DEFINE "${WS}")
+elseif(UNIX)
+	if(NOT WS AND NOT PVR_WINDOW_SYSTEM)
+		message(FATAL_ERROR "PVR_WINDOW_SYSTEM (Window System) Variable not set. Supported windowing systems can be enabled by passing: -DPVR_WINDOW_SYSTEM=NullWS, -DPVR_WINDOW_SYSTEM=X11, -DPVR_WINDOW_SYSTEM=XCB, -DPVR_WINDOW_SYSTEM=Wayland, -DPVR_WINDOW_SYSTEM=Screen to CMake")
+	endif()
+	
+	if(WS AND NOT PVR_WINDOW_SYSTEM)
+		set(PVR_WINDOW_SYSTEM ${WS})
+		message("The WS variable has been deprecated. Please move to using PVR_WINDOW_SYSTEM instead.")
 	endif()
 	
 	if(NOT DEFINED CMAKE_PREFIX_PATH)
 		set(CMAKE_PREFIX_PATH $ENV{CMAKE_PREFIX_PATH})
 	endif()
 	
-	if (${WS} STREQUAL X11 OR ${WS} STREQUAL XCB OR ${WS} STREQUAL NullWS OR ${WS} STREQUAL Screen)
-		set(WS_DEFINE "${WS}")
-	elseif(${WS} STREQUAL Wayland)
-		set(WS_DEFINE "WAYLAND")
-	else()
-		message( FATAL_ERROR "Unrecognised WS: Valid values are NullWS(default), X11, Wayland, Screen." )
-	endif()
-	add_definitions (-D${WS_DEFINE}) # Add a compiler definition so that our header files know what we're building for
-	
-	if (${WS} STREQUAL X11) #The following lines add the specified windowing system libraries
+	# X11 OR XCB is to be used
+	if(${PVR_WINDOW_SYSTEM} STREQUAL X11 OR ${PVR_WINDOW_SYSTEM} STREQUAL XCB)
 		find_package(X11 REQUIRED)
 		
 		if(NOT ${X11_FOUND})
 			message(FATAL_ERROR "X11 libraries could not be found. Please try setting: -DCMAKE_PREFIX_PATH pointing towards your X11 libraries")
 		endif()
 		
-		list (APPEND PLATFORM_LIBS ${X11_LIBRARIES})
-		include_directories(${X11_INCLUDE_DIR})
+		list(APPEND PLATFORM_LIBS ${X11_LIBRARIES})
+		list(APPEND HelloAPI_INCLUDE_DIRECTORIES ${X11_INCLUDE_DIR})
 		
-		set(SRC_FILES OpenGLESHelloAPI_LinuxX11.cpp)
-	elseif(${WS} STREQUAL Wayland)
+		# X11 is to be used
+		if(${PVR_WINDOW_SYSTEM} STREQUAL X11)
+			set(SRC_FILES OpenGLESHelloAPI_LinuxX11.cpp)
+		endif()
+		
+		# XCB is to be used. Xlib-xcb is also used for XCB
+		if(${PVR_WINDOW_SYSTEM} STREQUAL XCB)
+			find_package(XCB REQUIRED)
+			
+			if(NOT ${XCB_FOUND})
+				message(FATAL_ERROR "XCB libraries could not be found. Please try setting: -DCMAKE_PREFIX_PATH pointing towards your XCB libraries")
+			endif()
+			
+			find_package(X11_XCB)
+			if(NOT ${X11_XCB_FOUND})
+				message(FATAL_ERROR "XCB libraries could not be found. Please try setting: -DCMAKE_PREFIX_PATH pointing towards your X11-XCB libraries")
+			endif()
+			
+			list(APPEND PLATFORM_LIBS ${XCB_LIBRARIES} ${X11_XCB_LIBRARIES})
+			list(APPEND HelloAPI_INCLUDE_DIRECTORIES ${XCB_INCLUDE_DIRS})
+			
+			set(SRC_FILES OpenGLESHelloAPI_LinuxXCB.cpp)
+		endif()
+	elseif(${PVR_WINDOW_SYSTEM} STREQUAL Wayland)
 		find_package(Wayland REQUIRED)
 		find_library(lib-ffi ffi HINTS ${PKG_WAYLAND_LIBRARY_DIRS})
 		
@@ -136,33 +140,31 @@ elseif (UNIX)
 			message("Wayland libraries could not be found. Please try setting: -DCMAKE_PREFIX_PATH pointing towards your Wayland libraries")
 		endif()
 		
-		list (APPEND PLATFORM_LIBS ${WAYLAND_CLIENT_LIBRARIES} ${WAYLAND_EGL_LIBRARIES} ${lib-ffi})
-		include_directories(${WAYLAND_CLIENT_INCLUDE_DIR} ${WAYLAND_EGL_INCLUDE_DIR})
+		list(APPEND PLATFORM_LIBS ${WAYLAND_CLIENT_LIBRARIES} ${WAYLAND_EGL_LIBRARIES} ${lib-ffi})
+		list(APPEND HelloAPI_INCLUDE_DIRECTORIES ${WAYLAND_CLIENT_INCLUDE_DIR} ${WAYLAND_EGL_INCLUDE_DIR})
 		
 		set(SRC_FILES OpenGLESHelloAPI_LinuxWayland.cpp)
-	elseif(${WS} STREQUAL NullWS)
+	elseif(${PVR_WINDOW_SYSTEM} STREQUAL NullWS)
 		set(SRC_FILES OpenGLESHelloAPI_NullWS.cpp)
-	elseif(${WS} STREQUAL Screen)
+	elseif(${PVR_WINDOW_SYSTEM} STREQUAL Screen)
 		if(CMAKE_SYSTEM_NAME MATCHES "QNX")
-			list (APPEND PLATFORM_LIBS "screen")
+			list(APPEND PLATFORM_LIBS "screen")
 			set(SRC_FILES OpenGLESHelloAPI_QNXScreen.cpp)
 		endif()
 	else()
-		message( FATAL_ERROR "Unrecognised WS: Valid values are NullWS(default), X11, Wayland, Screen." )
+		message( FATAL_ERROR "Unrecognised PVR_WINDOW_SYSTEM: Valid values are NullWS(default), X11, XCB, Wayland, Screen." )
 	endif()
 	
-	if(CMAKE_SYSTEM_NAME MATCHES "QNX")
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-ignored-attributes")
-	endif()
-
-	add_definitions(-D${WS}) #Add a compiler definition so that our header files know what we're building for
 	add_executable(OpenGLESHelloAPI ${SRC_FILES})
+	
+	if(CMAKE_SYSTEM_NAME MATCHES "QNX")
+		target_compile_options(OpenGLESHelloAPI PUBLIC -Wno-ignored-attributes)
+	endif()
 endif()
 
-if(PLATFORM_LIBS)
-	target_link_libraries(OpenGLESHelloAPI ${PLATFORM_LIBS})
-endif()
+set_target_properties(OpenGLESHelloAPI PROPERTIES
+    CXX_STANDARD 14)
 
+target_link_libraries(OpenGLESHelloAPI ${PLATFORM_LIBS})
 target_include_directories(OpenGLESHelloAPI PUBLIC ${HelloAPI_INCLUDE_DIRECTORIES})
-
 target_compile_definitions(OpenGLESHelloAPI PUBLIC $<$<CONFIG:Debug>:DEBUG=1> $<$<NOT:$<CONFIG:Debug>>:RELEASE=1> ) #Defines DEBUG=1 or RELEASE=1

@@ -6,12 +6,12 @@
 */
 //!\cond NO_DOXYGEN
 #include "PVRShell/OS/ShellOS.h"
+#include "PVRShell/OS/AppKit/ViewMTL.h"
 #include "PVRCore/stream/FilePath.h"
 #include <mach/mach_time.h>
 #include <Foundation/Foundation.h>
 #include <AppKit/NSWindow.h>
 #include <AppKit/NSScreen.h>
-#include <AppKit/NSView.h>
 #include <AppKit/NSAlert.h>
 
 @interface AppWindow : NSWindow < NSWindowDelegate> // The implementation appears at the bottom of this file
@@ -22,10 +22,11 @@ pvr::Shell* eventQueue;
 @end
 using namespace ::pvr::platform;
 namespace pvr{namespace platform{
-struct InternalOS
+class InternalOS
 {
+public:
 	AppWindow* window;
-	NSView* view;
+	ViewMTL* view;
 
 	InternalOS() : window(nil), view(nil)
 	{
@@ -41,13 +42,10 @@ const pvr::platform::ShellOS::Capabilities pvr::platform::ShellOS::_capabilities
 
 ShellOS::ShellOS(/*NSObject<NSApplicationDelegate>*/void* hInstance, OSDATA osdata) : _instance(hInstance)
 {
-	_OSImplementation = new InternalOS;
+	_OSImplementation = std::make_unique<InternalOS>();
 }
 
-ShellOS::~ShellOS()
-{
-	delete _OSImplementation;
-}
+ShellOS::~ShellOS() {}
 
 bool ShellOS::init(DisplayAttributes &data)
 {
@@ -118,7 +116,7 @@ bool ShellOS::initializeWindow(DisplayAttributes &data)
     [_OSImplementation->window setTitle:[NSString stringWithUTF8String:data.windowTitle.c_str()]];
     
     // Now create the view that we'll render to
-    _OSImplementation->view = [[NSView alloc] initWithFrame:frame];
+    _OSImplementation->view = [[ViewMTL alloc] initWithFrame:frame];
     
     if(!_OSImplementation->view)
     {
@@ -143,6 +141,7 @@ void ShellOS::releaseWindow()
 {
 	if(_OSImplementation->window)
 	{
+		[_OSImplementation->view release];
         _OSImplementation->view = nil;
 	}
 }
@@ -150,6 +149,11 @@ void ShellOS::releaseWindow()
 pvr::OSApplication ShellOS::getApplication() const
 {
 	return NULL;
+}
+
+pvr::OSConnection ShellOS::getConnection() const
+{
+	return nullptr;
 }
 
 pvr::OSDisplay ShellOS::getDisplay() const

@@ -37,10 +37,7 @@ public:
 
 	/// <summary>Return number of subpasses (const)</summary>
 	/// <returns>Number of subpasses</returns>
-	uint32_t getNumSubpasses() const
-	{
-		return static_cast<uint32_t>(_subpass.size());
-	}
+	uint32_t getNumSubpasses() const { return static_cast<uint32_t>(_subpass.size()); }
 
 	/// <summary>Get subpass (const)</summary>
 	/// <param name="index">Subpass index</param>
@@ -53,10 +50,7 @@ public:
 
 	/// <summary>Get number of subpass dependencies (const)</summary>
 	/// <returns>Number of subpass dependencies</returns>
-	uint32_t getNumSubpassDependencies() const
-	{
-		return static_cast<uint32_t>(_subpassDependency.size());
-	}
+	uint32_t getNumSubpassDependencies() const { return static_cast<uint32_t>(_subpassDependency.size()); }
 
 	/// <summary>Get subpass dependency (const)</summary>
 	/// <param name="index">Subpass dependency index</param>
@@ -69,10 +63,7 @@ public:
 
 	/// <summary>Return number of color attachments (const)</summary>
 	/// <returns>Number of color attachments</returns>
-	uint32_t getNumAttachmentDescription() const
-	{
-		return _numAttachmentDescription;
-	}
+	uint32_t getNumAttachmentDescription() const { return _numAttachmentDescription; }
 
 	/// <summary>Get render pass color info (const)</summary>
 	/// <param name="index">Color info index</param>
@@ -89,10 +80,7 @@ public:
 	/// <returns>Reference to this object. (allow chaining)</returns>
 	RenderPassCreateInfo& setAttachmentDescription(uint32_t index, const AttachmentDescription& attachmentDescription)
 	{
-		if (index >= total_max_attachments)
-		{
-			assert(false && "AttachmentDescription exceeds the max attachment limit");
-		}
+		if (index >= total_max_attachments) { assert(false && "AttachmentDescription exceeds the max attachment limit"); }
 		_numAttachmentDescription += static_cast<uint32_t>(this->_attachmentDescriptions[index].getFormat() == pvrvk::Format::e_UNDEFINED);
 		this->_attachmentDescriptions[index] = attachmentDescription;
 		return *this;
@@ -104,10 +92,7 @@ public:
 	/// <returns>Reference to this object. (allow chaining)</returns>
 	RenderPassCreateInfo& setSubpass(uint32_t index, const SubpassDescription& subpass)
 	{
-		if (index >= this->_subpass.size())
-		{
-			this->_subpass.resize(index + 1);
-		}
+		if (index >= this->_subpass.size()) { this->_subpass.resize(index + 1); }
 		this->_subpass[index] = subpass;
 		return *this;
 	}
@@ -118,10 +103,7 @@ public:
 	RenderPassCreateInfo& addSubpassDependency(const SubpassDependency& subPassDependency)
 	{
 		if ((subPassDependency.getSrcSubpass() != pvrvk::SubpassExternal) && (subPassDependency.getSrcSubpass() > subPassDependency.getDstSubpass()))
-		{
-			assert(false && " Source Sub pass must be less than or equal to destination Sub pass");
-		}
-		_subpassDependency.emplace_back(subPassDependency);
+		{ assert(false && " Source Sub pass must be less than or equal to destination Sub pass"); } _subpassDependency.emplace_back(subPassDependency);
 		return *this;
 	}
 
@@ -131,10 +113,7 @@ public:
 	/// <returns>Return this.</returns>
 	RenderPassCreateInfo& addSubpassDependencies(const SubpassDependency* subPassDependencies, uint32_t numDependencies)
 	{
-		for (uint32_t i = 0; i < numDependencies; ++i)
-		{
-			addSubpassDependency(subPassDependencies[i]);
-		}
+		for (uint32_t i = 0; i < numDependencies; ++i) { addSubpassDependency(subPassDependencies[i]); }
 		return *this;
 	}
 };
@@ -184,10 +163,7 @@ public:
 
 	/// <summary>getCreateInfo</summary>
 	/// <returns></returns>
-	const RenderPassCreateInfo& getCreateInfo() const
-	{
-		return _createInfo;
-	}
+	const RenderPassCreateInfo& getCreateInfo() const { return _createInfo; }
 };
 } // namespace impl
 } // namespace pvrvk

@@ -29,10 +29,7 @@ public:
 	/// <returns>Returns a reference to the indexed item.</returns>
 	ElementType& operator[](uint32_t idx)
 	{
-		if (idx >= numItems)
-		{
-			numItems = idx + 1;
-		}
+		if (idx >= numItems) { numItems = idx + 1; }
 		return container[idx];
 	}
 	/// <summary>Const Indexing operator</summary>
@@ -46,31 +43,19 @@ public:
 
 	/// <summary>Get a reference to the actually held items (a C-array of the specified max number of items)</summary>
 	/// <returns>The array of items.</returns>
-	ContainerType& getContainer()
-	{
-		return container;
-	}
+	ContainerType& getContainer() { return container; }
 
 	/// <summary>Get a reference to the last item</summary>
 	/// <returns>The last object. If it is out of range, the behaviour is undefined.</returns>
-	ElementType& back()
-	{
-		return container[numItems - 1];
-	}
+	ElementType& back() { return container[numItems - 1]; }
 
 	/// <summary>Get a reference to the last item</summary>
 	/// <returns>The last object. If it is out of range, the behaviour is undefined.</returns>
-	const ElementType& back() const
-	{
-		return container[numItems - 1];
-	}
+	const ElementType& back() const { return container[numItems - 1]; }
 
 	/// <summary>Number of items currently held in the object</summary>
 	/// <returns>Number of items currently held in the object</returns>
-	size_t size() const
-	{
-		return numItems;
-	}
+	size_t size() const { return numItems; }
 
 	/// <summary>Set the number of items held in the object</summary>
 	/// <param name="newsize">The new size. Clears unused items by default-initializing.</param>
@@ -85,10 +70,7 @@ public:
 	}
 
 	/// <summary>Empty the object</summary>
-	void clear()
-	{
-		resize(0);
-	}
+	void clear() { resize(0); }
 
 	/// <summary>Constructor. Constructs empty object.</summary>
 	Multi() : numItems(0) {}
@@ -97,10 +79,7 @@ public:
 	/// <param name="element">The element to copy into all entries of the container</param>
 	explicit Multi(const ElementType& element) : numItems(MAX_ITEMS)
 	{
-		for (size_t i = 0; i < numItems; ++i)
-		{
-			container[i] = element;
-		}
+		for (size_t i = 0; i < numItems; ++i) { container[i] = element; }
 	}
 
 	/// <summary>Constructor. Copy the initial objects from a c-style array</summary>
@@ -109,10 +88,7 @@ public:
 	Multi(const ElementType* elements, const uint32_t count) : numItems(count)
 	{
 		assertion(count <= MAX_ITEMS, "Multi<T>: Index out of range");
-		for (size_t i = 0; i < count; ++i)
-		{
-			container[i] = elements[i];
-		}
+		for (size_t i = 0; i < count; ++i) { container[i] = elements[i]; }
 	}
 
 	/// <summary>Add an item past the current end of the array.</summary>
@@ -128,10 +104,7 @@ public:
 	void add(const ElementType* element, const uint32_t count)
 	{
 		assertion(numItems + count <= MAX_ITEMS, "Multi<T>: Index out of range");
-		for (uint32_t i = 0; i < count; ++i)
-		{
-			container[numItems++] = element[i];
-		}
+		for (uint32_t i = 0; i < count; ++i) { container[numItems++] = element[i]; }
 	}
 };
 } // namespace pvr

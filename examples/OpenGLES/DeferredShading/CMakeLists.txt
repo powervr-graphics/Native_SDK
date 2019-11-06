@@ -1,12 +1,16 @@
 cmake_minimum_required(VERSION 3.3)
 project(OpenGLESDeferredShading)
-if(APPLE)
-	if(IOS)
-		message("Skipping OpenGLESDeferredShading : Not supported on iOS")
-		return()
-	endif()
+if(IOS)	
+	message("Skipping OpenGLESDeferredShading : Not supported on iOS")
+	return()
 endif()
+
 add_subdirectory(../../.. ${CMAKE_CURRENT_BINARY_DIR}/sdk)
+
+if(PVR_PREBUILT_DEPENDENCIES)
+	find_package(PVRShell REQUIRED MODULE)
+	find_package(PVRUtilsGles REQUIRED MODULE)
+endif()
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
@@ -16,46 +20,51 @@ set(SRC_FILES OpenGLESDeferredShading.cpp)
 
 set(ASSET_FOLDER ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Assets_OpenGLESDeferredShading)
 
-# ASSET FILES (textures, scene files, textures etc) - Packaged with the executable for runtime use
-set(ASSET_FILES
-	${CMAKE_CURRENT_SOURCE_DIR}/../../assets/Satyr/Marble.pvr
-	${CMAKE_CURRENT_SOURCE_DIR}/../../assets/Satyr/MarbleNormalMap.pvr
-	${CMAKE_CURRENT_SOURCE_DIR}/../../assets/Satyr/Table.pvr
-	${CMAKE_CURRENT_SOURCE_DIR}/../../assets/Satyr/SatyrAndTable.pod
-	${CMAKE_CURRENT_SOURCE_DIR}/../../assets/Satyr/pointlight.pod
-	)
-list(APPEND SRC_FILES ${ASSET_FILES})
-source_group("assets" FILES ${ASSET_FILES})
+# Adds an executable (or ndk library for Android) and necessary files like plists for Mac/iOS etc.
+add_platform_specific_executable(OpenGLESDeferredShading ${SRC_FILES})
 
-# TEXTUAL SHADER FILES (OpenGL ES) - Packaged with the executable for runtime use
-set(SHADER_FILES
-	${CMAKE_CURRENT_SOURCE_DIR}/AttributelessVertexShader.vsh
-	${CMAKE_CURRENT_SOURCE_DIR}/DirectionalLightFragmentShader.fsh
-	${CMAKE_CURRENT_SOURCE_DIR}/GBufferFloorFragmentShader.fsh
-	${CMAKE_CURRENT_SOURCE_DIR}/GBufferFloorVertexShader.vsh
-	${CMAKE_CURRENT_SOURCE_DIR}/GBufferFragmentShader.fsh
-	${CMAKE_CURRENT_SOURCE_DIR}/GBufferVertexShader.vsh
-	${CMAKE_CURRENT_SOURCE_DIR}/PointLightPass1FragmentShader.fsh
-	${CMAKE_CURRENT_SOURCE_DIR}/PointLightPass1VertexShader.vsh
-	${CMAKE_CURRENT_SOURCE_DIR}/PointLightPass2FragmentShader.fsh
-	${CMAKE_CURRENT_SOURCE_DIR}/PointLightPass2VertexShader.vsh
-	${CMAKE_CURRENT_SOURCE_DIR}/PointLightPass3FragmentShader.fsh
-	${CMAKE_CURRENT_SOURCE_DIR}/PointLightPass3VertexShader.vsh
-	${CMAKE_CURRENT_SOURCE_DIR}/WritePlsToFbo.fsh
-	)
-list(APPEND SRC_FILES ${SHADER_FILES})
-source_group("shaders" FILES ${SHADER_FILES})
+#################################### ASSET FILES ##########################################
+# For platforms supporting it, will be packaged with the executable for runtime use.
+# Will be accessible from the app with their "relative path". One call per base path
 
-set(RESOURCE_FILES ${ASSET_FILES} ${SHADER_FILES})
+### Textures, scene files, generic resources... ###
+add_assets_to_target(OpenGLESDeferredShading
+	SOURCE_GROUP "assets" 
+	ASSET_FOLDER ${ASSET_FOLDER} 
+	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/Satyr
+	FILE_LIST 
+		Marble.pvr
+		MarbleNormalMap.pvr
+		Table.pvr
+		SatyrAndTable.pod
+		pointlight.pod)
 
-# Adds Windows resouces.rc, macOS plists etc. For macOS/iOS, also set the opengl dynamic libs in the "frameworks" group
-add_platform_specific_resource_files(SRC_FILES RESOURCE_FILES)
+### Textural shaders (OpenGL ES) ###
+add_assets_to_target(OpenGLESDeferredShading 
+	SOURCE_GROUP "shaders" 
+	ASSET_FOLDER ${ASSET_FOLDER} 
+	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/
+	FILE_LIST 
+		AttributelessVertexShader.vsh
+		DirectionalLightFragmentShader.fsh
+		GBufferFloorFragmentShader.fsh
+		GBufferFloorVertexShader.vsh
+		GBufferFragmentShader.fsh
+		GBufferVertexShader.vsh
+		PointLightPass1FragmentShader.fsh
+		PointLightPass1VertexShader.vsh
+		PointLightPass2FragmentShader.fsh
+		PointLightPass2VertexShader.vsh
+		PointLightPass3FragmentShader.fsh
+		PointLightPass3VertexShader.vsh
+		WritePlsToFbo.fsh)
 
-# Adds a platform specific executable
-add_platform_specific_executable(OpenGLESDeferredShading "${SRC_FILES}" "${RESOURCE_FILES}")
+# Create and adds a Windows resource file (Resources.rc) with all the assets that have been added to the target with the previous functions
+add_assets_resource_file(OpenGLESDeferredShading)
+###########################################################################################
 
-# Copies the assets to our assets folder
-add_rule_copy_assets_to_asset_folder("${RESOURCE_FILES}" "${ASSET_FOLDER}")
+# Apply SDK example specific compile and linker options
+apply_example_compile_options_to_target(OpenGLESDeferredShading)
 
 target_link_libraries(OpenGLESDeferredShading
 	PVRShell

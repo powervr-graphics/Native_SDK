@@ -10,28 +10,16 @@
 #include "PVRAssets/model/Light.h"
 #include "PVRAssets/model/Mesh.h"
 #include "PVRCore/stream/Stream.h"
-#include "../../../external/glm/gtx/quaternion.hpp"
+#include "glm/gtx/quaternion.hpp"
 namespace pvr {
 namespace assets {
-void Model::allocCameras(uint32_t no)
-{
-	_data.cameras.resize(no);
-}
+void Model::allocCameras(uint32_t no) { _data.cameras.resize(no); }
 
-void Model::allocLights(uint32_t no)
-{
-	_data.lights.resize(no);
-}
+void Model::allocLights(uint32_t no) { _data.lights.resize(no); }
 
-void Model::allocMeshes(uint32_t no)
-{
-	_data.meshes.resize(no);
-}
+void Model::allocMeshes(uint32_t no) { _data.meshes.resize(no); }
 
-void Model::allocNodes(uint32_t no)
-{
-	_data.nodes.resize(no);
-}
+void Model::allocNodes(uint32_t no) { _data.nodes.resize(no); }
 
 void Model::allocMeshNodes(uint32_t no)
 {
@@ -44,17 +32,15 @@ glm::mat4x4 Model::getBoneWorldMatrix(uint32_t skinNodeId, uint32_t boneIndex) c
 	// Back transform bone from frame 0 position using the skin's transformation
 	const Mesh& mesh = getMesh(getNode(skinNodeId).getObjectId());
 	debug_assertion(mesh.getSkeletonId() >= 0, "Invalid Skeleton index");
-	const Skeleton& skeleton = getSkeleton(mesh.getSkeletonId());
+	const Skeleton& skeleton = getSkeleton(static_cast<uint32_t>(mesh.getSkeletonId()));
 
 	const Node::InternalData& nodeData = getNode(skinNodeId).getInternalData();
 	glm::mat4 nodeWorld(1.f);
 	if (nodeData.transformFlags & pvr::assets::Node::InternalData::TransformFlags::SRT)
-	{
-		nodeWorld = pvr::math::constructSRT(nodeData.getScale(), nodeData.getRotate(), nodeData.getTranslation());
-	}
+	{ nodeWorld = pvr::math::constructSRT(nodeData.getScale(), nodeData.getRotate(), nodeData.getTranslation()); }
 	else if (nodeData.transformFlags == pvr::assets::Node::InternalData::TransformFlags::Matrix)
 	{
-		nodeWorld = *(glm::mat4*)nodeData.frameXform;
+		nodeWorld = *(glm::mat4*)nodeData.frameTransform;
 	}
 	return getWorldMatrix(skeleton.bones[boneIndex]) * skeleton.invBindMatrices[boneIndex] * nodeWorld;
 }
@@ -62,13 +48,13 @@ glm::mat4x4 Model::getBoneWorldMatrix(uint32_t skinNodeId, uint32_t boneIndex) c
 glm::mat4x4 Model::getWorldMatrix(uint32_t id) const
 {
 	const Node& node = _data.nodes[id];
-	int32_t parentID = _data.nodes[id].getParentID();
+	uint32_t parentID = _data.nodes[id].getParentID();
 	const auto& nodeData = node.getInternalData();
 
 	glm::mat4 srtMatrix = glm::mat4(1.0f);
 	if (nodeData.transformFlags == Node::InternalData::TransformFlags::Matrix)
 	{
-		srtMatrix = *(glm::mat4*)nodeData.frameXform;
+		srtMatrix = *(glm::mat4*)nodeData.frameTransform;
 		debug_assertion(!nodeData.hasAnimation, "Node cannot have transformation matrix and animation data");
 	}
 	else if (nodeData.hasAnimation)
@@ -78,48 +64,27 @@ glm::mat4x4 Model::getWorldMatrix(uint32_t id) const
 	}
 	else if ((nodeData.transformFlags & Node::InternalData::TransformFlags::SRT))
 	{
-		if (nodeData.transformFlags & Node::InternalData::TransformFlags::Scale)
-		{
-			srtMatrix = glm::scale(nodeData.getScale());
-		}
-		if (nodeData.transformFlags & Node::InternalData::TransformFlags::Rotate)
-		{
-			srtMatrix = glm::toMat4(nodeData.getRotate()) * srtMatrix;
-		}
-		if (nodeData.transformFlags & Node::InternalData::TransformFlags::Translate)
-		{
-			srtMatrix = glm::translate(nodeData.getTranslation()) * srtMatrix;
-		}
+		if (nodeData.transformFlags & Node::InternalData::TransformFlags::Scale) { srtMatrix = glm::scale(nodeData.getScale()); }
+		if (nodeData.transformFlags & Node::InternalData::TransformFlags::Rotate) { srtMatrix = glm::toMat4(nodeData.getRotate()) * srtMatrix; }
+		if (nodeData.transformFlags & Node::InternalData::TransformFlags::Translate) { srtMatrix = glm::translate(nodeData.getTranslation()) * srtMatrix; }
 	}
 
 	// Concatenate with parent transformation if one exist.
-	if (parentID < 0)
-	{
-		return srtMatrix;
-	}
+	if (parentID == static_cast<uint32_t>(-1)) { return srtMatrix; }
 	else
 	{
 		return getWorldMatrix(parentID) * srtMatrix;
 	}
 }
 
-glm::vec3 Model::getLightPosition(uint32_t lightNodeId) const
-{
-	return glm::vec3(getWorldMatrix(getNodeIdFromLightNodeId(0))[3]);
-}
+glm::vec3 Model::getLightPosition(uint32_t lightNodeId) const { return glm::vec3(getWorldMatrix(getNodeIdFromLightNodeId(lightNodeId))[3]); }
 
-float Model::getCurrentFrame()
-{
-	return _data.currentFrame;
-}
+float Model::getCurrentFrame() { return _data.currentFrame; }
 
 void Model::setUserData(uint32_t size, const char* const data)
 {
 	_data.userData.resize(data ? size : 0);
-	if (data && size)
-	{
-		memcpy(_data.userData.data(), data, size);
-	}
+	if (data && size) { memcpy(_data.userData.data(), data, size); }
 }
 
 void Model::getCameraProperties(uint32_t index, float& fov, glm::vec3& from, glm::vec3& to, glm::vec3& up, float& nearClip, float& farClip, float frameTimeInMs) const

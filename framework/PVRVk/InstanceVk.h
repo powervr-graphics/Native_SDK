@@ -17,6 +17,12 @@
 #include "PVRVk/SurfaceVk.h"
 
 namespace pvrvk {
+
+/// <summary>Singleton global that returns vulkan non instance/device function pointers
+/// (vkGetInstanceProcAddr, vkCreateInstance, vkEnumerateInstanceExtensionProperties, etc) </summary>
+/// <returns>A reference to the singleton VkBindings object</returns>
+VkBindings& getVkBindings();
+
 /// <summary>Contains instant info used for creating Vulkan instance</summary>
 struct InstanceCreateInfo
 {
@@ -53,81 +59,45 @@ public:
 
 	/// <summary>Get the DebugUtilsMessengerCreateInfo which will be linked to the pNext element of the VkInstanceCreateInfo structure given to vkCreateInstance</summary>
 	/// <returns>A DebugUtilsMessengerCreateInfo which will be used to determine whether events triggered during instance creation/destruction will be captured</returns>
-	inline const pvrvk::DebugUtilsMessengerCreateInfo getDebugUtilsMessengerCreateInfo() const
-	{
-		return debugUtilsMessengerCreateInfo;
-	}
+	inline const pvrvk::DebugUtilsMessengerCreateInfo getDebugUtilsMessengerCreateInfo() const { return debugUtilsMessengerCreateInfo; }
 	/// <summary>By setting a DebugUtilsMessengerCreateInfo the application will link a VkDebugUtilsMessengerCreateInfoEXT structure to the pNext element of the
 	/// VkInstanceCreateInfo structure given to vkCreateInstance.
 	/// This callback is only valid for the duration of the vkCreateInstance and the vkDestroyInstance call</summary>
 	/// <param name="createInfo">A DebugUtilsMessengerCreateInfo which will determine the extent to which events will be captured when creating/destroying the instance</param>
-	inline void setDebugUtilsMessengerCreateInfo(pvrvk::DebugUtilsMessengerCreateInfo& createInfo)
-	{
-		debugUtilsMessengerCreateInfo = createInfo;
-	}
+	inline void setDebugUtilsMessengerCreateInfo(pvrvk::DebugUtilsMessengerCreateInfo& createInfo) { debugUtilsMessengerCreateInfo = createInfo; }
 
 	/// <summary>Get the ValidationFeatures which will be linked to the pNext element of the VkInstanceCreateInfo structure given to vkCreateInstance</summary>
 	/// <returns>A ValidationFeatures structure which will be used to determine the validation features to use</returns>
-	inline const pvrvk::ValidationFeatures getValidationFeatures() const
-	{
-		return validationFeatures;
-	}
+	inline const pvrvk::ValidationFeatures getValidationFeatures() const { return validationFeatures; }
 	/// <summary>By setting a ValidationFeatures the application will link a VkValidationFeaturesEXT structure to the pNext element of the
 	/// VkInstanceCreateInfo structure given to vkCreateInstance. This structure will determine the types of validation used.</summary>
-	/// <param name="validationFeatures">A ValidationFeatures which will determine the types of validation used</param>
-	inline void setValidationFeatures(pvrvk::ValidationFeatures& validationFeatures)
-	{
-		this->validationFeatures = validationFeatures;
-	}
+	/// <param name="inValidationFeatures">A ValidationFeatures which will determine the types of validation used</param>
+	inline void setValidationFeatures(pvrvk::ValidationFeatures& inValidationFeatures) { this->validationFeatures = inValidationFeatures; }
 
 	/// <summary>Get the instance creation flags</summary>
 	/// <returns>The instance creation flags</returns>
-	inline const InstanceCreateFlags& getFlags() const
-	{
-		return flags;
-	}
+	inline const InstanceCreateFlags& getFlags() const { return flags; }
 	/// <summary>Sets the instance creation flags</summary>
-	/// <param name="flags">A set of InstanceCreateFlags to use</param>
-	inline void setFlags(const InstanceCreateFlags& flags)
-	{
-		this->flags = flags;
-	}
+	/// <param name="inFlags">A set of InstanceCreateFlags to use</param>
+	inline void setFlags(const InstanceCreateFlags& inFlags) { this->flags = inFlags; }
 	/// <summary>Get the instance application info</summary>
 	/// <returns>The instance application info</returns>
-	inline const ApplicationInfo& getApplicationInfo() const
-	{
-		return applicationInfo;
-	}
+	inline const ApplicationInfo& getApplicationInfo() const { return applicationInfo; }
 	/// <summary>Sets the application info structure</summary>
-	/// <param name="applicationInfo">A new application info structure</param>
-	inline void setApplicationInfo(const ApplicationInfo& applicationInfo)
-	{
-		this->applicationInfo = applicationInfo;
-	}
+	/// <param name="inApplicationInfo">A new application info structure</param>
+	inline void setApplicationInfo(const ApplicationInfo& inApplicationInfo) { this->applicationInfo = inApplicationInfo; }
 	/// <summary>Get the list of extensions</summary>
 	/// <returns>The list of instance extensions</returns>
-	inline const VulkanExtensionList& getExtensionList() const
-	{
-		return extensions;
-	}
+	inline const VulkanExtensionList& getExtensionList() const { return extensions; }
 	/// <summary>Sets the extension list</summary>
-	/// <param name="extensions">A VulkanExtensionList</param>
-	inline void setExtensionList(const VulkanExtensionList& extensions)
-	{
-		this->extensions = extensions;
-	}
+	/// <param name="inExtensions">A VulkanExtensionList</param>
+	inline void setExtensionList(const VulkanExtensionList& inExtensions) { this->extensions = inExtensions; }
 	/// <summary>Get the list of layers</summary>
 	/// <returns>The list of instance layers</returns>
-	inline const VulkanLayerList& getLayerList() const
-	{
-		return layers;
-	}
+	inline const VulkanLayerList& getLayerList() const { return layers; }
 	/// <summary>Sets the layer list</summary>
-	/// <param name="layers">A VulkanLayerList</param>
-	inline void setLayerList(const VulkanLayerList& layers)
-	{
-		this->layers = layers;
-	}
+	/// <param name="inLayers">A VulkanLayerList</param>
+	inline void setLayerList(const VulkanLayerList& inLayers) { this->layers = inLayers; }
 };
 
 namespace impl {
@@ -147,10 +117,7 @@ private:
 		friend class Instance_;
 	};
 
-	static Instance constructShared(const InstanceCreateInfo& instanceCreateInfo)
-	{
-		return std::make_shared<Instance_>(make_shared_enabler{}, instanceCreateInfo);
-	}
+	static Instance constructShared(const InstanceCreateInfo& instanceCreateInfo) { return std::make_shared<Instance_>(make_shared_enabler{}, instanceCreateInfo); }
 
 	InstanceCreateInfo _createInfo;
 	VkInstanceBindings _vkBindings;
@@ -178,10 +145,7 @@ public:
 
 	/// <summary>Get instance create info(const)</summary>
 	/// <returns>const InstanceCreateInfo&</returns>
-	const InstanceCreateInfo& getCreateInfo() const
-	{
-		return _createInfo;
-	}
+	const InstanceCreateInfo& getCreateInfo() const { return _createInfo; }
 
 #if defined(VK_USE_PLATFORM_ANDROID_KHR)
 	/// <summary>Create an android surface</summary>
@@ -247,6 +211,17 @@ public:
 	}
 #endif
 
+#if defined(VK_USE_PLATFORM_MACOS_MVK)
+	/// <summary>Create a MacOS surface</summary>
+	/// <param name="view">A CAMetalLayer backed NSView</param>
+	/// <returns>Valid MacOSSurface object if success.</returns>
+	MacOSSurface createMacOSSurface(void* view)
+	{
+		Instance instance = shared_from_this();
+		return impl::MacOSSurface_::constructShared(instance, view);
+	}
+#endif
+
 	/// <summary>Create a DisplayPlane surface</summary>
 	/// <param name="displayMode">A display mode to use for creating the DisplayPlane Surface</param>
 	/// <param name="imageExtent">The image extent to use for creating the DisplayPlane Surface</param>
@@ -267,24 +242,15 @@ public:
 
 	/// <summary>Get a list of enabled extensions which includes names and spec versions</summary>
 	/// <returns>VulkanExtensionList&</returns>
-	const VulkanExtensionList& getEnabledExtensionsList()
-	{
-		return _createInfo.getExtensionList();
-	}
+	const VulkanExtensionList& getEnabledExtensionsList() { return _createInfo.getExtensionList(); }
 
 	/// <summary>Get a list of enabled layers which includes names and spec versions</summary>
 	/// <returns>VulkanLayerList&</returns>
-	const VulkanLayerList& getEnabledLayersList()
-	{
-		return _createInfo.getLayerList();
-	}
+	const VulkanLayerList& getEnabledLayersList() { return _createInfo.getLayerList(); }
 
 	/// <summary>Return a table which contains boolean members set to true/false corresponding to whether specific extensions have been enabled</summary>
 	/// <returns>A table of extensions</returns>
-	const InstanceExtensionTable& getEnabledExtensionTable() const
-	{
-		return _extensionTable;
-	}
+	const InstanceExtensionTable& getEnabledExtensionTable() const { return _extensionTable; }
 
 	/// <summary>Creates a debug utils messenger object</summary>
 	/// <param name="createInfo">DebugUtilsMessengerCreateInfo structure specifying how the debug utils messenger should function.</param>
@@ -333,31 +299,30 @@ public:
 	}
 
 	/// <summary>Submits a debug utils message directly into the debug stream.</summary>
-	/// <param name="messageSeverity">the DebugUtilsMessageSeverityFlagBitsEXT severity of this event/message.</param>
-	/// <param name="messageTypes">A bitmask of DebugUtilsMessageTypeFlagBitsEXT specifying which type of event(s) to identify with this message.</param>
-	/// <param name="callbackData">Contains all the callback related data in the DebugUtilsMessengerCallbackDataEXT structure.</param>
+	/// <param name="inMessageSeverity">the DebugUtilsMessageSeverityFlagBitsEXT severity of this event/message.</param>
+	/// <param name="inMessageTypes">A bitmask of DebugUtilsMessageTypeFlagBitsEXT specifying which type of event(s) to identify with this message.</param>
+	/// <param name="inCallbackData">Contains all the callback related data in the DebugUtilsMessengerCallbackDataEXT structure.</param>
 	inline void submitDebugUtilsMessage(
-		DebugUtilsMessageSeverityFlagsEXT messageSeverity, DebugUtilsMessageTypeFlagsEXT messageTypes, const DebugUtilsMessengerCallbackData& callbackData)
+		DebugUtilsMessageSeverityFlagsEXT inMessageSeverity, DebugUtilsMessageTypeFlagsEXT inMessageTypes, const DebugUtilsMessengerCallbackData& inCallbackData)
 	{
 		VkDebugUtilsMessengerCallbackDataEXT vkCallbackData = {};
 		vkCallbackData.sType = static_cast<VkStructureType>(StructureType::e_DEBUG_UTILS_MESSENGER_CALLBACK_DATA_EXT);
-		vkCallbackData.flags = static_cast<VkDebugUtilsMessengerCallbackDataFlagsEXT>(callbackData.getFlags());
-		vkCallbackData.pMessageIdName = callbackData.getMessageIdName().c_str();
-		vkCallbackData.messageIdNumber = callbackData.getMessageIdNumber();
-		vkCallbackData.pMessage = callbackData.getMessage().c_str();
+		vkCallbackData.flags = static_cast<VkDebugUtilsMessengerCallbackDataFlagsEXT>(inCallbackData.getFlags());
+		vkCallbackData.pMessageIdName = inCallbackData.getMessageIdName().c_str();
+		vkCallbackData.messageIdNumber = inCallbackData.getMessageIdNumber();
+		vkCallbackData.pMessage = inCallbackData.getMessage().c_str();
 
-		std::vector<VkDebugUtilsLabelEXT> vkQueueLabels;
-		std::vector<VkDebugUtilsLabelEXT> vkCmdBufLabels;
-		std::vector<VkDebugUtilsObjectNameInfoEXT> vkObjectNames;
+		pvrvk::ArrayOrVector<VkDebugUtilsLabelEXT, 4> vkQueueLabels(inCallbackData.getNumQueueLabels());
+		pvrvk::ArrayOrVector<VkDebugUtilsLabelEXT, 4> vkCmdBufLabels(inCallbackData.getNumCmdBufLabels());
+		pvrvk::ArrayOrVector<VkDebugUtilsObjectNameInfoEXT, 4> vkObjectNames(inCallbackData.getNumObjects());
 
 		// Add queue labels
-		if (callbackData.getNumQueueLabels())
+		if (inCallbackData.getNumQueueLabels())
 		{
-			vkCallbackData.queueLabelCount = callbackData.getNumQueueLabels();
-			vkQueueLabels.resize(vkCallbackData.queueLabelCount);
-			for (uint32_t i = 0; i < callbackData.getNumQueueLabels(); ++i)
+			vkCallbackData.queueLabelCount = inCallbackData.getNumQueueLabels();
+			for (uint32_t i = 0; i < inCallbackData.getNumQueueLabels(); ++i)
 			{
-				DebugUtilsLabel queueLabel = callbackData.getQueueLabel(i);
+				DebugUtilsLabel queueLabel = inCallbackData.getQueueLabel(i);
 
 				vkQueueLabels[i].sType = static_cast<VkStructureType>(StructureType::e_DEBUG_UTILS_LABEL_EXT);
 				vkQueueLabels[i].pLabelName = queueLabel.getLabelName().c_str();
@@ -367,17 +332,16 @@ public:
 				vkQueueLabels[i].color[3] = queueLabel.getA();
 			}
 
-			vkCallbackData.pQueueLabels = vkQueueLabels.data();
+			vkCallbackData.pQueueLabels = vkQueueLabels.get();
 		}
 
 		// Add command buffer labels
-		if (callbackData.getNumCmdBufLabels())
+		if (inCallbackData.getNumCmdBufLabels())
 		{
-			vkCallbackData.cmdBufLabelCount = callbackData.getNumCmdBufLabels();
-			vkCmdBufLabels.resize(vkCallbackData.cmdBufLabelCount);
-			for (uint32_t i = 0; i < callbackData.getNumCmdBufLabels(); ++i)
+			vkCallbackData.cmdBufLabelCount = inCallbackData.getNumCmdBufLabels();
+			for (uint32_t i = 0; i < inCallbackData.getNumCmdBufLabels(); ++i)
 			{
-				DebugUtilsLabel cmdBufLabel = callbackData.getCmdBufLabel(i);
+				DebugUtilsLabel cmdBufLabel = inCallbackData.getCmdBufLabel(i);
 
 				vkCmdBufLabels[i].sType = static_cast<VkStructureType>(StructureType::e_DEBUG_UTILS_LABEL_EXT);
 				vkCmdBufLabels[i].pLabelName = cmdBufLabel.getLabelName().c_str();
@@ -387,17 +351,16 @@ public:
 				vkCmdBufLabels[i].color[3] = cmdBufLabel.getA();
 			}
 
-			vkCallbackData.pCmdBufLabels = vkCmdBufLabels.data();
+			vkCallbackData.pCmdBufLabels = vkCmdBufLabels.get();
 		}
 
 		// Add object names
-		if (callbackData.getNumObjects())
+		if (inCallbackData.getNumObjects())
 		{
-			vkCallbackData.objectCount = callbackData.getNumObjects();
-			vkObjectNames.resize(vkCallbackData.objectCount);
-			for (uint32_t i = 0; i < callbackData.getNumObjects(); ++i)
+			vkCallbackData.objectCount = inCallbackData.getNumObjects();
+			for (uint32_t i = 0; i < inCallbackData.getNumObjects(); ++i)
 			{
-				DebugUtilsObjectNameInfo objectName = callbackData.getObject(i);
+				DebugUtilsObjectNameInfo objectName = inCallbackData.getObject(i);
 
 				vkObjectNames[i].sType = static_cast<VkStructureType>(StructureType::e_DEBUG_UTILS_OBJECT_NAME_INFO_EXT);
 				vkObjectNames[i].pObjectName = objectName.getObjectName().c_str();
@@ -405,19 +368,16 @@ public:
 				vkObjectNames[i].objectHandle = objectName.getObjectHandle();
 			}
 
-			vkCallbackData.pObjects = vkObjectNames.data();
+			vkCallbackData.pObjects = vkObjectNames.get();
 		}
 
 		_vkBindings.vkSubmitDebugUtilsMessageEXT(
-			getVkHandle(), static_cast<VkDebugUtilsMessageSeverityFlagBitsEXT>(messageSeverity), static_cast<VkDebugUtilsMessageTypeFlagsEXT>(messageTypes), &vkCallbackData);
+			getVkHandle(), static_cast<VkDebugUtilsMessageSeverityFlagBitsEXT>(inMessageSeverity), static_cast<VkDebugUtilsMessageTypeFlagsEXT>(inMessageTypes), &vkCallbackData);
 	}
 
 	/// <summary>Gets the instance dispatch table</summary>
 	/// <returns>The instance dispatch table</returns>
-	inline const VkInstanceBindings& getVkBindings() const
-	{
-		return _vkBindings;
-	}
+	inline const VkInstanceBindings& getVkBindings() const { return _vkBindings; }
 
 	/// <summary>Get the list of physical devices (const)</summary>
 	/// <returns>const PhysicalDevice&</returns>
@@ -435,10 +395,7 @@ public:
 
 	/// <summary>Get number of physcial device available</summary>
 	/// <returns>uint32_t</returns>
-	uint32_t getNumPhysicalDevices() const
-	{
-		return static_cast<uint32_t>(_physicalDevices.size());
-	}
+	uint32_t getNumPhysicalDevices() const { return static_cast<uint32_t>(_physicalDevices.size()); }
 };
 } // namespace impl
 

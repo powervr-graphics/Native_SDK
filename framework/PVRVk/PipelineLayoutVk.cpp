@@ -35,20 +35,18 @@ PipelineLayout_::PipelineLayout_(make_shared_enabler, const DeviceWeakPtr& devic
 	pipeLayoutInfo.sType = static_cast<VkStructureType>(StructureType::e_PIPELINE_LAYOUT_CREATE_INFO);
 	pipeLayoutInfo.pSetLayouts = bindings;
 	pipeLayoutInfo.setLayoutCount = numLayouts;
-	std::vector<VkPushConstantRange> vkPushConstantRange(createInfo.getNumPushConstantRanges());
+	pvrvk::ArrayOrVector<VkPushConstantRange, 2> vkPushConstantRange(createInfo.getNumPushConstantRanges());
 	for (uint32_t i = 0; i < createInfo.getNumPushConstantRanges(); ++i)
 	{
 		if (createInfo.getPushConstantRange(i).getSize() == 0)
-		{
-			throw ErrorValidationFailedEXT("PipelineLayout constructor: Push constant range index must be consecutive and have valid data");
-		}
+		{ throw ErrorValidationFailedEXT("PipelineLayout constructor: Push constant range index must be consecutive and have valid data"); }
 
 		vkPushConstantRange[i].stageFlags = static_cast<VkShaderStageFlags>(createInfo.getPushConstantRange(i).getStageFlags());
 		vkPushConstantRange[i].offset = createInfo.getPushConstantRange(i).getOffset();
 		vkPushConstantRange[i].size = createInfo.getPushConstantRange(i).getSize();
 	}
-	pipeLayoutInfo.pushConstantRangeCount = static_cast<uint32_t>(vkPushConstantRange.size());
-	pipeLayoutInfo.pPushConstantRanges = vkPushConstantRange.size() ? vkPushConstantRange.data() : NULL;
+	pipeLayoutInfo.pushConstantRangeCount = static_cast<uint32_t>(createInfo.getNumPushConstantRanges());
+	pipeLayoutInfo.pPushConstantRanges = vkPushConstantRange.get();
 	vkThrowIfFailed(getDevice()->getVkBindings().vkCreatePipelineLayout(getDevice()->getVkHandle(), &pipeLayoutInfo, NULL, &_vkHandle),
 		"PipelineLayout constructor: Failed to create pipeline layout");
 }

@@ -15,7 +15,7 @@ namespace pvrvk {
 /// Samplers, Uniform Buffer Objects, and Shader Storage Buffer Objects bound for any shader stage.</summary>
 struct DescriptorSetLayoutCreateInfo
 {
-private:
+public:
 	struct DescriptorSetLayoutBinding
 	{
 		uint16_t binding;
@@ -34,14 +34,31 @@ private:
 			return binding == rhs.binding && descriptorType == rhs.descriptorType && descriptorCount == rhs.descriptorCount && stageFlags == rhs.stageFlags;
 		}
 
-		bool operator!=(const DescriptorSetLayoutBinding& rhs) const
-		{
-			return !(*this == rhs);
-		}
+		bool operator!=(const DescriptorSetLayoutBinding& rhs) const { return !(*this == rhs); }
 	};
+
+private:
 	std::vector<DescriptorSetLayoutBinding> descLayoutInfo;
 
 public:
+	DescriptorSetLayoutCreateInfo() = default;
+	DescriptorSetLayoutCreateInfo(std::initializer_list<DescriptorSetLayoutBinding> bindingList)
+	{
+		for (auto& it : bindingList) { setBinding(it); }
+	}
+
+	DescriptorSetLayoutCreateInfo& setBinding(const DescriptorSetLayoutBinding& layoutBinding)
+	{
+		auto it =
+			std::find_if(descLayoutInfo.begin(), descLayoutInfo.end(), [&layoutBinding](const DescriptorSetLayoutBinding& info) { return info.binding == layoutBinding.binding; });
+		if (it != descLayoutInfo.end()) { (*it) = layoutBinding; }
+		else
+		{
+			descLayoutInfo.emplace_back(layoutBinding);
+		}
+		return *this;
+	}
+
 	/// <summary>Set the buffer binding of Descriptor Objects in the specified shader stages.</summary>
 	/// <param name="binding">The index to which the binding will be added</param>
 	/// <param name="descriptorType">The type of descriptor</param>
@@ -52,17 +69,7 @@ public:
 	DescriptorSetLayoutCreateInfo& setBinding(uint16_t binding, pvrvk::DescriptorType descriptorType, uint16_t descriptorCount = 1,
 		pvrvk::ShaderStageFlags stageFlags = pvrvk::ShaderStageFlags::e_ALL, Sampler immutableSampler = Sampler())
 	{
-		const DescriptorSetLayoutBinding layoutBinding(binding, descriptorType, descriptorCount, stageFlags, immutableSampler);
-		auto it = std::find_if(descLayoutInfo.begin(), descLayoutInfo.end(), [&](const DescriptorSetLayoutBinding& info) { return info.binding == layoutBinding.binding; });
-		if (it != descLayoutInfo.end())
-		{
-			(*it) = layoutBinding;
-		}
-		else
-		{
-			descLayoutInfo.emplace_back(layoutBinding);
-		}
-		return *this;
+		return setBinding(DescriptorSetLayoutBinding(binding, descriptorType, descriptorCount, stageFlags, immutableSampler));
 	}
 
 	/// <summary>Clear all entries</summary>
@@ -75,26 +82,17 @@ public:
 
 	/// <summary>Return the number of images in this object</summary>
 	/// <returns>the number of images in this object</returns>
-	uint16_t getNumBindings() const
-	{
-		return static_cast<uint16_t>(descLayoutInfo.size());
-	}
+	uint16_t getNumBindings() const { return static_cast<uint16_t>(descLayoutInfo.size()); }
 
 	/// <summary>Equality operator. Does deep comparison of the contents.</summary>
 	/// <param name="rhs">The right-hand side argument of the operator.</param>
 	/// <returns>True if the layouts have identical bindings</returns>
 	bool operator==(const DescriptorSetLayoutCreateInfo& rhs) const
 	{
-		if (getNumBindings() != rhs.getNumBindings())
-		{
-			return false;
-		}
+		if (getNumBindings() != rhs.getNumBindings()) { return false; }
 		for (uint32_t i = 0; i < getNumBindings(); ++i)
 		{
-			if (descLayoutInfo[i] != rhs.descLayoutInfo[i])
-			{
-				return false;
-			}
+			if (descLayoutInfo[i] != rhs.descLayoutInfo[i]) { return false; }
 		}
 		return true;
 	}
@@ -105,19 +103,13 @@ public:
 	const DescriptorSetLayoutBinding* getBinding(uint16_t bindingId) const
 	{
 		auto it = std::find_if(descLayoutInfo.begin(), descLayoutInfo.end(), [&](const DescriptorSetLayoutBinding& info) { return info.binding == bindingId; });
-		if (it != descLayoutInfo.end())
-		{
-			return &(*it);
-		}
+		if (it != descLayoutInfo.end()) { return &(*it); }
 		return nullptr;
 	}
 
 	/// <summary>Get all layout bindings</summary>
 	/// <returns>const DescriptorSetLayoutBinding*</returns>
-	const DescriptorSetLayoutBinding* getAllBindings() const
-	{
-		return descLayoutInfo.data();
-	}
+	const DescriptorSetLayoutBinding* getAllBindings() const { return descLayoutInfo.data(); }
 
 private:
 	friend class ::pvrvk::impl::DescriptorSetLayout_;
@@ -154,16 +146,10 @@ public:
 
 	/// <summary>Get the DescriptorSetCreateInfo object that was used to create this layout.</summary>
 	/// <returns>The DescriptorSetCreateInfo object that was used to create this layout.</returns>
-	const DescriptorSetLayoutCreateInfo& getCreateInfo() const
-	{
-		return _createInfo;
-	}
+	const DescriptorSetLayoutCreateInfo& getCreateInfo() const { return _createInfo; }
 
 	/// <summary>Clear the descriptor set layout create param list.</summary>
-	void clearCreateInfo()
-	{
-		_createInfo.clear();
-	}
+	void clearCreateInfo() { _createInfo.clear(); }
 };
 
 /// <summary>Internal class</summary>
@@ -221,10 +207,7 @@ public:
 	}
 
 	// Move constructor
-	DescriptorStore(DescriptorStore&& other) noexcept : DescriptorStore()
-	{
-		swap(*this, other);
-	}
+	DescriptorStore(DescriptorStore&& other) noexcept : DescriptorStore() { swap(*this, other); }
 
 	void clear()
 	{
@@ -260,29 +243,14 @@ public:
 		assert(index >= ArraySize ? _ptr == _tVector.data() : true && "Pointer must be pointing at _tVector.data()");
 	}
 
-	uint32_t size() const
-	{
-		return _numItems;
-	}
+	uint32_t size() const { return _numItems; }
 
-	const T* begin() const
-	{
-		return _ptr;
-	}
-	const T* end() const
-	{
-		return _ptr + _numItems;
-	}
+	const T* begin() const { return _ptr; }
+	const T* end() const { return _ptr + _numItems; }
 
-	const T& operator[](uint32_t index) const
-	{
-		return get(index);
-	}
+	const T& operator[](uint32_t index) const { return get(index); }
 
-	const T& get(uint32_t index) const
-	{
-		return _ptr[index];
-	}
+	const T& get(uint32_t index) const { return _ptr[index]; }
 
 private:
 	void moveToOverFlow()
@@ -305,13 +273,13 @@ private:
 struct DescriptorPoolCreateInfo
 {
 private:
-	std::pair<pvrvk::DescriptorType, uint16_t> _descriptorTypes[static_cast<uint32_t>(pvrvk::DescriptorType::e_RANGE_SIZE)];
-	uint16_t _numDescriptorTypes;
+	std::array<pvrvk::DescriptorPoolSize, static_cast<uint32_t>(pvrvk::DescriptorType::e_RANGE_SIZE)> _descriptorPoolSizes;
+	uint16_t _numDescriptors;
 	uint16_t _maxSets;
 
 public:
 	/// <summary>Constructor</summary>
-	DescriptorPoolCreateInfo() : _numDescriptorTypes(0), _maxSets(200) {}
+	DescriptorPoolCreateInfo() : _numDescriptors(0), _maxSets(200) {}
 
 	/// <summary>Constructor</summary>
 	/// <param name="maxSets">The maximum number of descriptor sets which can be allocated by this descriptor pool</param>
@@ -324,44 +292,33 @@ public:
 	/// pool.</param>
 	explicit DescriptorPoolCreateInfo(uint16_t maxSets, uint16_t combinedImageSamplers = 32, uint16_t inputAttachments = 0, uint16_t staticUbos = 32, uint16_t dynamicUbos = 32,
 		uint16_t staticSsbos = 0, uint16_t dynamicSsbos = 0)
-		: _numDescriptorTypes(0), _maxSets(maxSets)
+		: _numDescriptors(0), _maxSets(maxSets)
 	{
-		if (combinedImageSamplers != 0)
-		{
-			addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, combinedImageSamplers);
-		}
-		if (inputAttachments != 0)
-		{
-			addDescriptorInfo(pvrvk::DescriptorType::e_INPUT_ATTACHMENT, inputAttachments);
-		}
-		if (staticUbos != 0)
-		{
-			addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, staticUbos);
-		}
-		if (dynamicUbos != 0)
-		{
-			addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, dynamicUbos);
-		}
-		if (staticSsbos != 0)
-		{
-			addDescriptorInfo(pvrvk::DescriptorType::e_STORAGE_BUFFER, staticSsbos);
-		}
-		if (dynamicSsbos != 0)
-		{
-			addDescriptorInfo(pvrvk::DescriptorType::e_STORAGE_BUFFER_DYNAMIC, dynamicSsbos);
-		}
+		if (combinedImageSamplers != 0) { addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, combinedImageSamplers); }
+		if (inputAttachments != 0) { addDescriptorInfo(pvrvk::DescriptorType::e_INPUT_ATTACHMENT, inputAttachments); }
+		if (staticUbos != 0) { addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, staticUbos); }
+		if (dynamicUbos != 0) { addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, dynamicUbos); }
+		if (staticSsbos != 0) { addDescriptorInfo(pvrvk::DescriptorType::e_STORAGE_BUFFER, staticSsbos); }
+		if (dynamicSsbos != 0) { addDescriptorInfo(pvrvk::DescriptorType::e_STORAGE_BUFFER_DYNAMIC, dynamicSsbos); }
+	}
+
+	explicit DescriptorPoolCreateInfo(std::initializer_list<pvrvk::DescriptorPoolSize> descriptorPoolSizes, uint16_t maxSets = 200) : _numDescriptors(0), _maxSets(maxSets)
+	{
+		for (auto& it : descriptorPoolSizes) { addDescriptorInfo(it); }
+	}
+
+	DescriptorPoolCreateInfo& addDescriptorInfo(const pvrvk::DescriptorPoolSize& descriptorPoolSize)
+	{
+		_descriptorPoolSizes[_numDescriptors] = descriptorPoolSize;
+		_numDescriptors++;
+		return *this;
 	}
 
 	/// <summary>Add the maximum number of the specified descriptor types that the pool will contain.</summary>
 	/// <param name="descType">Descriptor type</param>
 	/// <param name="count">Maximum number of descriptors of (type)</param>
 	/// <returns>this (allow chaining)</returns>
-	DescriptorPoolCreateInfo& addDescriptorInfo(pvrvk::DescriptorType descType, uint16_t count)
-	{
-		_descriptorTypes[_numDescriptorTypes] = std::make_pair(descType, count);
-		_numDescriptorTypes++;
-		return *this;
-	}
+	DescriptorPoolCreateInfo& addDescriptorInfo(pvrvk::DescriptorType descType, uint16_t count) { return addDescriptorInfo(pvrvk::DescriptorPoolSize(descType, count)); }
 
 	/// <summary>Set the maximum number of descriptor sets.</summary>
 	/// <param name="maxSets">The maximum number of descriptor sets</param>
@@ -375,24 +332,18 @@ public:
 	/// <summary>Get the number of allocations of a descriptor type is supported on this pool (const).</summary>
 	/// <param name="descType">DescriptorType</param>
 	/// <returns>Number of allocations.</returns>
-	uint16_t getNumDescriptorTypes(pvrvk::DescriptorType descType) const
+	uint32_t getNumDescriptorTypes(pvrvk::DescriptorType descType) const
 	{
-		for (uint16_t i = 0; i < _numDescriptorTypes; i++)
+		for (uint16_t i = 0; i < _numDescriptors; i++)
 		{
-			if (_descriptorTypes[i].first == descType)
-			{
-				return _descriptorTypes[i].second;
-			}
+			if (_descriptorPoolSizes[i].getType() == descType) { return _descriptorPoolSizes[i].getDescriptorCount(); }
 		}
 		return 0;
 	}
 
 	/// <summary>Get maximum sets supported on this pool.</summary>
 	/// <returns>uint32_t</returns>
-	uint16_t getMaxDescriptorSets() const
-	{
-		return _maxSets;
-	}
+	uint32_t getMaxDescriptorSets() const { return _maxSets; }
 };
 
 /// <summary>This class contains all the information necessary to populate a Descriptor Set with the actual API
@@ -470,7 +421,6 @@ struct WriteDescriptorSet
 	/// <param name="descType">The descriptor type of this write</param>
 	/// <param name="descSet">The descriptor set which to update</param>
 	/// <param name="dstBinding">The binding to update</param>
-	/// <param name="descType">The descriptor type of this write</param>
 	/// <param name="dstArrayElement">If the destination is an array, the array index to update</param>
 	WriteDescriptorSet(pvrvk::DescriptorType descType, DescriptorSet descSet, uint32_t dstBinding = 0, uint32_t dstArrayElement = 0)
 		: _descType(descType), _descSet(descSet), _dstBinding(dstBinding), _dstArrayElement(dstArrayElement), _infos()
@@ -485,9 +435,7 @@ struct WriteDescriptorSet
 	{
 		_descType = descType;
 		if ((_descType >= pvrvk::DescriptorType::e_SAMPLER && _descType <= pvrvk::DescriptorType::e_STORAGE_IMAGE) || _descType == pvrvk::DescriptorType::e_INPUT_ATTACHMENT)
-		{
-			_infoType = InfoType::ImageInfo;
-		}
+		{ _infoType = InfoType::ImageInfo; }
 		else if (_descType >= pvrvk::DescriptorType::e_UNIFORM_BUFFER && _descType <= pvrvk::DescriptorType::e_STORAGE_BUFFER_DYNAMIC)
 		{
 			_infoType = InfoType::BufferInfo;
@@ -556,10 +504,7 @@ struct WriteDescriptorSet
 #ifdef DEBUG
 		// VALIDATE DESCRIPTOR TYPE
 		assert(((_descType >= pvrvk::DescriptorType::e_SAMPLER) && (_descType <= pvrvk::DescriptorType::e_STORAGE_IMAGE)) || (_descType == pvrvk::DescriptorType::e_INPUT_ATTACHMENT));
-		if (_descType == pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER)
-		{
-			assert(imageInfo.sampler && imageInfo.imageView && "Sampler and ImageView must be valid");
-		}
+		if (_descType == pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER) { assert(imageInfo.sampler && imageInfo.imageView && "Sampler and ImageView must be valid"); }
 #endif
 		DescriptorInfos info;
 		info.imageInfo = imageInfo;
@@ -609,45 +554,27 @@ struct WriteDescriptorSet
 
 	/// <summary>Get the number of descriptors being updated</summary>
 	/// <returns>The the number of descriptors</returns>
-	uint32_t getNumDescriptors() const
-	{
-		return _infos.size();
-	}
+	uint32_t getNumDescriptors() const { return _infos.size(); }
 
 	/// <summary>Get descriptor type</summary>
 	/// <returns>The descriptor type</returns>
-	pvrvk::DescriptorType getDescriptorType() const
-	{
-		return _descType;
-	}
+	pvrvk::DescriptorType getDescriptorType() const { return _descType; }
 
 	/// <summary>Get descriptor set to update</summary>
 	/// <returns>The descriptor set</returns>
-	DescriptorSet getDescriptorSet()
-	{
-		return _descSet;
-	}
+	DescriptorSet getDescriptorSet() { return _descSet; }
 
 	/// <summary>Get the descriptor set to update</summary>
 	/// <returns>The descriptor set</returns>
-	const DescriptorSet& getDescriptorSet() const
-	{
-		return _descSet;
-	}
+	const DescriptorSet& getDescriptorSet() const { return _descSet; }
 
 	/// <summary>If an array, get the destination array element</summary>
 	/// <returns>The destination array element</returns>
-	uint32_t getDestArrayElement() const
-	{
-		return _dstArrayElement;
-	}
+	uint32_t getDestArrayElement() const { return _dstArrayElement; }
 
 	/// <summary>Get the destination binding indiex</summary>
 	/// <returns>The destination binding index</returns>
-	uint32_t getDestBinding() const
-	{
-		return _dstBinding;
-	}
+	uint32_t getDestBinding() const { return _dstBinding; }
 
 private:
 	friend class ::pvrvk::impl::Device_;
@@ -663,10 +590,7 @@ private:
 		BufferView texelBuffer;
 
 		DescriptorInfos() = default;
-		bool isValid() const
-		{
-			return imageInfo.imageView || imageInfo.sampler || bufferInfo.buffer || texelBuffer;
-		}
+		bool isValid() const { return imageInfo.imageView || imageInfo.sampler || bufferInfo.buffer || texelBuffer; }
 	};
 
 	impl::DescriptorStore<DescriptorInfos, 4> _infos;
@@ -730,12 +654,9 @@ public:
 	/// <returns>Return DescriptorSet else null if fails.</returns>
 	DescriptorSet allocateDescriptorSet(const DescriptorSetLayout& layout);
 
-		/// <summary>Return the descriptor pool create info from which this descriptor pool was allocated</summary>
+	/// <summary>Return the descriptor pool create info from which this descriptor pool was allocated</summary>
 	/// <returns>The descriptor pool create info</returns>
-	const DescriptorPoolCreateInfo& getCreateInfo() const
-	{
-		return _createInfo;
-	}
+	const DescriptorPoolCreateInfo& getCreateInfo() const { return _createInfo; }
 };
 
 /// <summary>Vulkan implementation of a DescriptorSet.</summary>
@@ -780,12 +701,9 @@ public:
 		uint16_t maxBinding = 0;
 		uint32_t i = 0, size = _descSetLayout->getCreateInfo().getNumBindings();
 		// Loop through the descriptor set bindings and determine the maximum binding
-		for (; i < size; ++i)
-		{
-			maxBinding = std::max(allBindings[i].binding, maxBinding);
-		}
+		for (; i < size; ++i) { maxBinding = std::max(allBindings[i].binding, maxBinding); }
 		// Use the maximum binding + 1 to resize the keepAlive array
-		_keepAlive.resize(maxBinding + 1);
+		_keepAlive.resize(maxBinding + 1u);
 		// Now use the descriptor count for each descriptor binding to determine the total number of entries
 		for (i = 0; i < size; ++i)
 		{
@@ -817,24 +735,15 @@ public:
 
 	/// <summary>Return the layout of this DescriptorSet.</summary>
 	/// <returns>This DescriptorSet's DescriptorSetLayout</returns>
-	const DescriptorSetLayout& getDescriptorSetLayout() const
-	{
-		return _descSetLayout;
-	}
+	const DescriptorSetLayout& getDescriptorSetLayout() const { return _descSetLayout; }
 
 	/// <summary>Return the descriptor pool from which this descriptor set was allocated</summary>
 	/// <returns>The descriptor pool</returns>
-	const DescriptorPool& getDescriptorPool() const
-	{
-		return _descPool;
-	}
+	const DescriptorPool& getDescriptorPool() const { return _descPool; }
 
 	/// <summary>Return the descriptor pool from which this descriptor set was allocated</summary>
 	/// <returns>The descriptor pool</returns>
-	DescriptorPool& getDescriptorPool()
-	{
-		return _descPool;
-	}
+	DescriptorPool& getDescriptorPool() { return _descPool; }
 };
 
 } // namespace impl
@@ -852,10 +761,7 @@ inline void WriteDescriptorSet::updateKeepAliveIntoDestinationDescriptorSet() co
 		for (uint32_t i = 0; i < _infos.size(); ++i)
 		{
 			// Ensure the into entry is valid
-			if (_infos[i].isValid())
-			{
-				keepAlive[i] = _infos[i].bufferInfo.buffer;
-			}
+			if (_infos[i].isValid()) { keepAlive[i] = _infos[i].bufferInfo.buffer; }
 		}
 	}
 	// Handle ImageInfo entries
@@ -880,10 +786,7 @@ inline void WriteDescriptorSet::updateKeepAliveIntoDestinationDescriptorSet() co
 		for (uint32_t i = 0; i < _infos.size(); ++i)
 		{
 			// Ensure the into entry is valid
-			if (_infos[i].isValid())
-			{
-				keepAlive[i] = _infos[i].texelBuffer;
-			}
+			if (_infos[i].isValid()) { keepAlive[i] = _infos[i].texelBuffer; }
 		}
 	}
 }

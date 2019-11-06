@@ -4,9 +4,8 @@
 \Author       PowerVR by Imagination, Developer Technology Team
 \Copyright    Copyright (c) Imagination Technologies Limited.
 \brief        Basic Tutorial that shows step-by-step how to initialize OpenGL ES 2.0, use it for drawing a triangle and terminate it.
-              Entry Point: main
+			  Entry Point: main
 ***********************************************************************************************************************/
-
 
 #define DYNAMICGLES_NO_NAMESPACE
 #define DYNAMICEGL_NO_NAMESPACE
@@ -16,7 +15,7 @@
 #include <stdio.h>
 
 // Index to bind the attributes to vertex shaders
-const unsigned int VertexArray	= 0;
+const unsigned int VertexArray = 0;
 
 /*!*********************************************************************************************************************
 \param[in]			functionLastCalled          Function which triggered the error
@@ -44,9 +43,9 @@ bool testEGLError(const char* functionLastCalled)
 ***********************************************************************************************************************/
 bool testGLError(const char* functionLastCalled)
 {
-    //	glGetError returns the last error that occurred using OpenGL ES, not necessarily the status of the last called function. The user
-    //	has to check after every single OpenGL ES call or at least once every frame. Usually this would be for debugging only, but for this
-    //	example it is enabled always
+	//	glGetError returns the last error that occurred using OpenGL ES, not necessarily the status of the last called function. The user
+	//	has to check after every single OpenGL ES call or at least once every frame. Usually this would be for debugging only, but for this
+	//	example it is enabled always
 
 	GLenum lastError = glGetError();
 	if (lastError != GL_NO_ERROR)
@@ -69,11 +68,11 @@ bool testGLError(const char* functionLastCalled)
 ***********************************************************************************************************************/
 bool createEGLDisplay(EGLDisplay& eglDisplay)
 {
-    //	Get an EGL display.
-    //	EGL uses the concept of a "display" which in most environments corresponds to a single physical screen. After creating a native
-    //	display for a given windowing system, EGL can use this handle to get a corresponding EGLDisplay handle to it for use in rendering.
-    //	Should this fail, EGL is usually able to provide access to a default display. For Null window systems, there is no display so NULL
-    //	is passed the this function.
+	//	Get an EGL display.
+	//	EGL uses the concept of a "display" which in most environments corresponds to a single physical screen. After creating a native
+	//	display for a given windowing system, EGL can use this handle to get a corresponding EGLDisplay handle to it for use in rendering.
+	//	Should this fail, EGL is usually able to provide access to a default display. For Null window systems, there is no display so NULL
+	//	is passed the this function.
 
 	eglDisplay = eglGetDisplay((EGLNativeDisplayType)0);
 	if (eglDisplay == EGL_NO_DISPLAY)
@@ -82,11 +81,11 @@ bool createEGLDisplay(EGLDisplay& eglDisplay)
 		return false;
 	}
 
-    //	Initialize EGL.
-    //	EGL has to be initialized with the display obtained in the previous step. All EGL functions other than eglGetDisplay
-    //	and eglGetError need an initialized EGLDisplay.
-    //	If an application is not interested in the EGL version number it can just pass NULL for the second and third parameters, but they
-    //	are queried here for illustration purposes.
+	//	Initialize EGL.
+	//	EGL has to be initialized with the display obtained in the previous step. All EGL functions other than eglGetDisplay
+	//	and eglGetError need an initialized EGLDisplay.
+	//	If an application is not interested in the EGL version number it can just pass NULL for the second and third parameters, but they
+	//	are queried here for illustration purposes.
 
 	EGLint eglMajorVersion = 0;
 	EGLint eglMinorVersion = 0;
@@ -95,16 +94,13 @@ bool createEGLDisplay(EGLDisplay& eglDisplay)
 		printf("Failed to initialize the EGLDisplay");
 		return false;
 	}
-	
+
 	// Bind the correct API
 	int result = EGL_FALSE;
 
 	result = eglBindAPI(EGL_OPENGL_ES_API);
 
-	if (result != EGL_TRUE)
-	{
-		return false;
-	}
+	if (result != EGL_TRUE) { return false; }
 
 	return true;
 }
@@ -117,28 +113,23 @@ bool createEGLDisplay(EGLDisplay& eglDisplay)
 ***********************************************************************************************************************/
 bool chooseEGLConfig(EGLDisplay eglDisplay, EGLConfig& eglConfig)
 {
-    //	Specify the required configuration attributes.
-    //	An EGL "configuration" describes the capabilities an application requires and the type of surfaces that can be used for drawing.
-    //	Each implementation exposes a number of different configurations, and an application needs to describe to EGL what capabilities it
-    //	requires so that an appropriate one can be chosen. The first step in doing this is to create an attribute list, which is an array
-    //	of key/value pairs which describe particular capabilities requested. In this application nothing special is required so we can query
-    //	the minimum of needing it to render to a window, and being OpenGL ES 2.0 capable.
+	//	Specify the required configuration attributes.
+	//	An EGL "configuration" describes the capabilities an application requires and the type of surfaces that can be used for drawing.
+	//	Each implementation exposes a number of different configurations, and an application needs to describe to EGL what capabilities it
+	//	requires so that an appropriate one can be chosen. The first step in doing this is to create an attribute list, which is an array
+	//	of key/value pairs which describe particular capabilities requested. In this application nothing special is required so we can query
+	//	the minimum of needing it to render to a window, and being OpenGL ES 2.0 capable.
 
-	const EGLint configurationAttributes[] =
-	{
-		EGL_SURFACE_TYPE,		EGL_WINDOW_BIT,
-		EGL_RENDERABLE_TYPE,	EGL_OPENGL_ES2_BIT,
-		EGL_NONE
-	};
+	const EGLint configurationAttributes[] = { EGL_SURFACE_TYPE, EGL_WINDOW_BIT, EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT, EGL_NONE };
 
-    //	Find a suitable EGLConfig
-    //	eglChooseConfig is provided by EGL to provide an easy way to select an appropriate configuration. It takes in the capabilities
-    //	specified in the attribute list, and returns a list of available configurations that match or exceed the capabilities requested.
-    //	Details of all the possible attributes and how they are selected for by this function are available in the EGL reference pages here:
-    //	http://www.khronos.org/registry/egl/sdk/docs/man/xhtml/eglChooseConfig.html
-    //	It is also possible to simply get the entire list of configurations and use a custom algorithm to choose a suitable one, as many
-    //	advanced applications choose to do. For this application however, taking the first EGLConfig that the function returns suits
-    //	its needs perfectly, so we limit it to returning a single EGLConfig.
+	//	Find a suitable EGLConfig
+	//	eglChooseConfig is provided by EGL to provide an easy way to select an appropriate configuration. It takes in the capabilities
+	//	specified in the attribute list, and returns a list of available configurations that match or exceed the capabilities requested.
+	//	Details of all the possible attributes and how they are selected for by this function are available in the EGL reference pages here:
+	//	http://www.khronos.org/registry/egl/sdk/docs/man/xhtml/eglChooseConfig.html
+	//	It is also possible to simply get the entire list of configurations and use a custom algorithm to choose a suitable one, as many
+	//	advanced applications choose to do. For this application however, taking the first EGLConfig that the function returns suits
+	//	its needs perfectly, so we limit it to returning a single EGLConfig.
 	EGLint configsReturned;
 	if (!eglChooseConfig(eglDisplay, configurationAttributes, &eglConfig, 1, &configsReturned) || (configsReturned != 1))
 	{
@@ -168,7 +159,7 @@ bool createEGLSurface(EGLDisplay eglDisplay, EGLConfig eglConfig, EGLSurface& eg
 	//	surface used will be a window surface as performed below. For NULL window systems, there are no actual windows, so NULL is passed
 	//	to this function.
 	eglSurface = eglCreateWindowSurface(eglDisplay, eglConfig, (EGLNativeWindowType)0, NULL);
-	if (!testEGLError("eglCreateWindowSurface")){	return false;	}
+	if (!testEGLError("eglCreateWindowSurface")) { return false; }
 	return true;
 }
 
@@ -186,7 +177,7 @@ bool setupEGLContext(EGLDisplay eglDisplay, EGLConfig eglConfig, EGLSurface eglS
 	// EGL needs a way to know that any subsequent EGL calls are going to be affecting OpenGL ES,
 	// rather than any other API (such as OpenVG).
 	eglBindAPI(EGL_OPENGL_ES_API);
-	if (!testEGLError("eglBindAPI")){	return false;	}
+	if (!testEGLError("eglBindAPI")) { return false; }
 
 	//	Create a context.
 	//	EGL has to create what is known as a context for OpenGL ES. The concept of a context is OpenGL ES's way of encapsulating any
@@ -194,25 +185,21 @@ bool setupEGLContext(EGLDisplay eglDisplay, EGLConfig eglConfig, EGLSurface eglS
 	//	is required for any operations in OpenGL ES.
 	//	Similar to an EGLConfig, a context takes in a list of attributes specifying some of its capabilities. However in most cases this
 	//	is limited to just requiring the version of the OpenGL ES context required - In this case, OpenGL ES 2.0.
-	EGLint contextAttributes[] =
-	{
-		EGL_CONTEXT_CLIENT_VERSION, 2,
-		EGL_NONE
-	};
+	EGLint contextAttributes[] = { EGL_CONTEXT_CLIENT_VERSION, 2, EGL_NONE };
 
 	// Create the context with the context attributes supplied
 	context = eglCreateContext(eglDisplay, eglConfig, NULL, contextAttributes);
-	if (!testEGLError("eglCreateContext")){	return false;	}
+	if (!testEGLError("eglCreateContext")) { return false; }
 
 	//	Bind the context to the current thread.
 	//	Due to the way OpenGL uses global functions, contexts need to be made current so that any function call can operate on the correct
-	//	context. Specifically, make current will bind the context to the current rendering thread it's called from. If the calling thread already 
+	//	context. Specifically, make current will bind the context to the current rendering thread it's called from. If the calling thread already
 	//  has a current rendering context then that context is flushed and marked as no longer current. It is not valid to call eglMakeCurrent with a context
-	//  which is current on another thread. 
+	//  which is current on another thread.
 	//  To use multiple contexts at the same time, users should use multiple threads and synchronise between them.eglMakeCurrent(eglDisplay, eglSurface, eglSurface, context);
 	eglMakeCurrent(eglDisplay, eglSurface, eglSurface, context);
-	
-	if (!testEGLError("eglMakeCurrent")){	return false;	}
+
+	if (!testEGLError("eglMakeCurrent")) { return false; }
 	return true;
 }
 
@@ -238,9 +225,8 @@ bool initializeBuffer(GLuint& vertexBuffer)
 
 	// Vertex data containing the positions of each point of the triangle
 	GLfloat vertexData[] = { -0.4f, -0.4f, 0.0f, // Bottom Left
-	                         0.4f, -0.4f, 0.0f, // Bottom Right
-	                         0.0f, 0.4f, 0.0f
-	                       }; // Top Middle
+		0.4f, -0.4f, 0.0f, // Bottom Right
+		0.0f, 0.4f, 0.0f }; // Top Middle
 
 	// Generate a buffer object
 	glGenBuffers(1, &vertexBuffer);
@@ -252,7 +238,7 @@ bool initializeBuffer(GLuint& vertexBuffer)
 	//	Note the last argument - GL_STATIC_DRAW. This tells the driver that we intend to read from the buffer on the GPU, and don't intend
 	//	to modify the data until we're done with it.
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertexData), vertexData, GL_STATIC_DRAW);
-	if (!testGLError("glBufferData")){	return false;	}
+	if (!testGLError("glBufferData")) { return false; }
 	return true;
 }
 
@@ -306,7 +292,8 @@ bool initializeShaders(GLuint& fragmentShader, GLuint& vertexShader, GLuint& sha
 		glGetShaderiv(fragmentShader, GL_INFO_LOG_LENGTH, &infoLogLength);
 
 		// Allocate enough space for the message and retrieve it
-		std::vector<char> infoLog; infoLog.resize(infoLogLength);
+		std::vector<char> infoLog;
+		infoLog.resize(infoLogLength);
 		glGetShaderInfoLog(fragmentShader, infoLogLength, &charactersWritten, infoLog.data());
 
 		// Display the error in a dialog box
@@ -346,7 +333,8 @@ bool initializeShaders(GLuint& fragmentShader, GLuint& vertexShader, GLuint& sha
 		glGetShaderiv(vertexShader, GL_INFO_LOG_LENGTH, &infoLogLength);
 
 		// Allocate enough space for the message and retrieve it
-		std::vector<char> infoLog; infoLog.resize(infoLogLength);
+		std::vector<char> infoLog;
+		infoLog.resize(infoLogLength);
 		glGetShaderInfoLog(vertexShader, infoLogLength, &charactersWritten, infoLog.data());
 
 		// Display the error in a dialog box
@@ -377,7 +365,8 @@ bool initializeShaders(GLuint& fragmentShader, GLuint& vertexShader, GLuint& sha
 		glGetProgramiv(shaderProgram, GL_INFO_LOG_LENGTH, &infoLogLength);
 
 		// Allocate enough space for the message and retrieve it
-		std::vector<char> infoLog; infoLog.resize(infoLogLength);
+		std::vector<char> infoLog;
+		infoLog.resize(infoLogLength);
 		glGetProgramInfoLog(shaderProgram, infoLogLength, &charactersWritten, infoLog.data());
 
 		// Display the error in a dialog box
@@ -392,7 +381,7 @@ bool initializeShaders(GLuint& fragmentShader, GLuint& vertexShader, GLuint& sha
 	//	be active at once, so in a multi-program application this function would be called in the render loop. Since this application only
 	//	uses one program it can be installed in the current state and left there.
 	glUseProgram(shaderProgram);
-	if (!testGLError("glUseProgram")){	return false;	}
+	if (!testGLError("glUseProgram")) { return false; }
 	return true;
 }
 
@@ -423,24 +412,18 @@ bool renderScene(GLuint shaderProgram, EGLDisplay eglDisplay, EGLSurface eglSurf
 	int matrixLocation = glGetUniformLocation(shaderProgram, "transformationMatrix");
 
 	// Matrix used to specify the orientation of the triangle on screen.
-	const float transformationMatrix[] =
-	{
-		1.0f, 0.0f, 0.0f, 0.0f,
-		0.0f, 1.0f, 0.0f, 0.0f,
-		0.0f, 0.0f, 1.0f, 0.0f,
-		0.0f, 0.0f, 0.0f, 1.0f
-	};
+	const float transformationMatrix[] = { 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f };
 
 	// Pass the transformationMatrix to the shader using its location
 	glUniformMatrix4fv(matrixLocation, 1, GL_FALSE, transformationMatrix);
-	if (!testGLError("glUniformMatrix4fv")){	return false;	}
+	if (!testGLError("glUniformMatrix4fv")) { return false; }
 
 	// Enable the user-defined vertex array
 	glEnableVertexAttribArray(VertexArray);
 
 	// Sets the vertex data to this attribute index, with the number of floats in each position
 	glVertexAttribPointer(VertexArray, 3, GL_FLOAT, GL_FALSE, 0, 0);
-	if (!testGLError("glVertexAttribPointer")){	return false; }
+	if (!testGLError("glVertexAttribPointer")) { return false; }
 
 	//	Draw the triangle
 	//	glDrawArrays is a draw call, and executes the shader program using the vertices and other state set by the user. Draw calls are the
@@ -451,7 +434,7 @@ bool renderScene(GLuint shaderProgram, EGLDisplay eglDisplay, EGLSurface eglSurf
 	//	Others include versions of the above that allow the user to draw the same object multiple times with slightly different data, and
 	//	a version of glDrawElements which allows a user to restrict the actual indices accessed.
 	glDrawArrays(GL_TRIANGLES, 0, 3);
-	if (!testGLError("glDrawArrays")){	return false;	}
+	if (!testGLError("glDrawArrays")) { return false; }
 
 	// Invalidate the contents of the specified buffers for the framebuffer to allow the implementation further optimization opportunities.
 	// The following is taken from https://www.khronos.org/registry/OpenGL/extensions/EXT/EXT_discard_framebuffer.txt
@@ -463,14 +446,14 @@ bool renderScene(GLuint shaderProgram, EGLDisplay eglDisplay, EGLSurface eglSurf
 	// Even without this extension, if a frame of rendering begins with a full-screen Clear, an OpenGL ES implementation may optimize away the loading
 	// of framebuffer contents prior to rendering the frame.  With this extension, an application can use DiscardFramebufferEXT to signal that framebuffer
 	// contents will no longer be needed.  In this case an OpenGL ES implementation may also optimize away the storing back of framebuffer contents after rendering the frame.
-if(isGlExtensionSupported("GL_EXT_discard_framebuffer"))
+	if (isGlExtensionSupported("GL_EXT_discard_framebuffer"))
 	{
 		GLenum invalidateAttachments[2];
 		invalidateAttachments[0] = GL_DEPTH_EXT;
 		invalidateAttachments[1] = GL_STENCIL_EXT;
-		
+
 		glDiscardFramebufferEXT(GL_FRAMEBUFFER, 2, &invalidateAttachments[0]);
-		if (!testGLError("glDiscardFramebufferEXT")){	return false;	}
+		if (!testGLError("glDiscardFramebufferEXT")) { return false; }
 	}
 
 	//	Present the display data to the screen.
@@ -527,40 +510,40 @@ void releaseEGLState(EGLDisplay eglDisplay)
 int main(int /*argc*/, char** /*argv*/)
 {
 	// EGL variables
-	EGLDisplay			eglDisplay = NULL;
-	EGLConfig			eglConfig = NULL;
-	EGLSurface			eglSurface = NULL;
-	EGLContext			context = NULL;
+	EGLDisplay eglDisplay = NULL;
+	EGLConfig eglConfig = NULL;
+	EGLSurface eglSurface = NULL;
+	EGLContext context = NULL;
 
 	// Handles for the two shaders used to draw the triangle, and the program handle which combines them.
 	GLuint fragmentShader = 0, vertexShader = 0;
 	GLuint shaderProgram = 0;
 
 	// A vertex buffer object to store our model data.
-	GLuint	vertexBuffer = 0;
+	GLuint vertexBuffer = 0;
 
 	// Create and Initialize an EGLDisplay
-	if (!createEGLDisplay(eglDisplay)){	goto cleanup;}
+	if (!createEGLDisplay(eglDisplay)) { goto cleanup; }
 
 	// Choose an EGLConfig for the application, used when setting up the rendering surface and EGLContext
-	if (!chooseEGLConfig(eglDisplay, eglConfig)){ goto cleanup;	}
+	if (!chooseEGLConfig(eglDisplay, eglConfig)) { goto cleanup; }
 
 	// Create an EGLSurface for rendering
-	if (!createEGLSurface(eglDisplay, eglConfig, eglSurface)){	goto cleanup;	}
+	if (!createEGLSurface(eglDisplay, eglConfig, eglSurface)) { goto cleanup; }
 
 	// Setup the EGL Context from the other EGL constructs created so far, so that the application is ready to submit OpenGL ES commands
-	if (!setupEGLContext(eglDisplay, eglConfig, eglSurface, context)){	goto cleanup;	}
+	if (!setupEGLContext(eglDisplay, eglConfig, eglSurface, context)) { goto cleanup; }
 
 	// Initialize the vertex data in the application
-	if (!initializeBuffer(vertexBuffer)){	goto cleanup;	}
+	if (!initializeBuffer(vertexBuffer)) { goto cleanup; }
 
 	// Initialize the fragment and vertex shaders used in the application
-	if (!initializeShaders(fragmentShader, vertexShader, shaderProgram)){	goto cleanup;	}
+	if (!initializeShaders(fragmentShader, vertexShader, shaderProgram)) { goto cleanup; }
 
 	// Renders a triangle for 800 frames using the state setup in the previous function
 	for (int i = 0; i < 800; ++i)
 	{
-		if (!renderScene(shaderProgram, eglDisplay, eglSurface)){	break;	}
+		if (!renderScene(shaderProgram, eglDisplay, eglSurface)) { break; }
 	}
 
 	// Release any resources we created in the Initialize functions

@@ -25,32 +25,20 @@ struct PointerLocationStore
 	/// <summary>Operator+</summary>
 	/// <param name="rhs">Another PointerLocationStore.</param>
 	/// <returns>The new PointerLocationStore</returns>
-	PointerLocationStore operator+(const PointerLocationStore& rhs)
-	{
-		return PointerLocationStore{ static_cast<int16_t>(x + rhs.x), static_cast<int16_t>(y + rhs.y) };
-	}
+	PointerLocationStore operator+(const PointerLocationStore& rhs) { return PointerLocationStore{ static_cast<int16_t>(x + rhs.x), static_cast<int16_t>(y + rhs.y) }; }
 
 	/// <summary>Operator-</summary>
 	/// <param name="rhs">Another PointerLocationStore.</param>
 	/// <returns>The new PointerLocationStore</returns>
-	PointerLocationStore operator-(const PointerLocationStore& rhs)
-	{
-		return PointerLocationStore{ static_cast<int16_t>(x - rhs.x), static_cast<int16_t>(y - rhs.y) };
-	}
+	PointerLocationStore operator-(const PointerLocationStore& rhs) { return PointerLocationStore{ static_cast<int16_t>(x - rhs.x), static_cast<int16_t>(y - rhs.y) }; }
 
 	/// <summary>Operator+=</summary>
 	/// <param name="rhs">Another PointerLocationStore.</param>
-	void operator+=(const PointerLocationStore& rhs)
-	{
-		*this = *this + rhs;
-	}
+	void operator+=(const PointerLocationStore& rhs) { *this = *this + rhs; }
 
 	/// <summary>Operator-=</summary>
 	/// <param name="rhs">Another PointerLocationStore.</param>
-	void operator-=(const PointerLocationStore& rhs)
-	{
-		*this = *this - rhs;
-	}
+	void operator-=(const PointerLocationStore& rhs) { *this = *this - rhs; }
 };
 
 /// <summary>Mouse pointer coordinates.</summary>
@@ -80,9 +68,9 @@ enum class SimplifiedInput
 {
 	NONE = 0, //!< No action - avoid using
 	Left = 1, //!< Left arrow, Swipe left
-	Right = 2, //!< Right arrow, Swipe left
-	Up = 3, //!< Up arrow, Swipe left
-	Down = 4, //!< Down arrow, Swipe left
+	Right = 2, //!< Right arrow, Swipe right
+	Up = 3, //!< Up arrow, Swipe up
+	Down = 4, //!< Down arrow, Swipe down
 	ActionClose = 5, //!< Esc, Q, Android back, iOS home
 	Action1 = 6, //!< Space, Enter, Touch screen center
 	Action2 = 7, //!< Key 1, Touch screen left side
@@ -101,7 +89,7 @@ enum class SystemEvent
 enum class Keys : uint8_t
 {
 	// clang-format off
-	//Whenever possible, keys get ASCII values of their default (non-shifted) values of a default US keyboard.
+	// Whenever possible, keys get ASCII values of their default (non-shifted) values of a default US keyboard (101 layout).
 	Backspace = 0x08,
 	Tab = 0x09,
 	Return = 0x0D,
@@ -120,26 +108,25 @@ enum class Keys : uint8_t
 
 	Insert = 0x2D, Delete = 0x2E,
 
-	//ASCII-Based
+	// ASCII-Based
 	Key0 = 0x30, Key1, Key2, Key3, Key4, Key5, Key6, Key7, Key8, Key9,
 
 	A = 0x41, B, C, D, E, F, G, H, I, J, K, L, M,
 	N = 0x4E, O, P, Q, R, S, T, U, V, W, X, Y, Z,
-
 
 	Num0 = 0x60, Num1, Num2, Num3, Num4, Num5, Num6, Num7, Num8, Num9, NumPeriod,
 
 	F1 = 0x70, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12,
 
 	SystemKey1 = 0x5B, SystemKey2 = 0x5D,
-	WindowsKey = 0x5B, MenuKey = 0x5D, //ALIASES
+	WindowsKey = 0x5B, MenuKey = 0x5D, // Aliases
 
 	NumMul = 0x6A, NumAdd = 0x6B, NumSub = 0x6D, NumDiv = 0x6E,
 	NumLock = 0x90, ScrollLock = 0x91,
 
 	Semicolon = 0xBA, Equals = 0xBB, Minus = 0xBD,
 
-	Slash = 0xBF,
+	Slash = 0xBF, 
 
 	Comma = 0xBC, Period = 0xBE,
 
@@ -151,6 +138,113 @@ enum class Keys : uint8_t
 	Unknown = 0xFF
 	// clang-format on
 };
+
+inline std::string to_string(Keys key)
+{
+	switch (key)
+	{
+	case Keys::Backspace: return "Backspace";
+	case Keys::Tab: return "Tab";
+	case Keys::Return: return "Return";
+	case Keys::Shift: return "Shift";
+	case Keys::Control: return "Control";
+	case Keys::Alt: return "Alt";
+	case Keys::Pause: return "Pause";
+	case Keys::PrintScreen: return "PrintScreen";
+	case Keys::CapsLock: return "CapsLock";
+	case Keys::Escape: return "Escape";
+	case Keys::Space: return "Space";
+	case Keys::PageUp: return "PageUp";
+	case Keys::PageDown: return "PageDown";
+	case Keys::End: return "End";
+	case Keys::Home: return "Home";
+	case Keys::Left: return "Left";
+	case Keys::Up: return "Up";
+	case Keys::Right: return "Right";
+	case Keys::Down: return "Down";
+	case Keys::Insert: return "Insert";
+	case Keys::Delete: return "Delete";
+	case Keys::Key0: return "Key0";
+	case Keys::Key1: return "Key1";
+	case Keys::Key2: return "Key2";
+	case Keys::Key3: return "Key3";
+	case Keys::Key4: return "Key4";
+	case Keys::Key5: return "Key5";
+	case Keys::Key6: return "Key6";
+	case Keys::Key7: return "Key7";
+	case Keys::Key8: return "Key8";
+	case Keys::Key9: return "Key9";
+	case Keys::A: return "A";
+	case Keys::B: return "B";
+	case Keys::C: return "C";
+	case Keys::D: return "D";
+	case Keys::E: return "E";
+	case Keys::F: return "F";
+	case Keys::G: return "G";
+	case Keys::H: return "H";
+	case Keys::I: return "I";
+	case Keys::J: return "J";
+	case Keys::K: return "K";
+	case Keys::L: return "L";
+	case Keys::M: return "M";
+	case Keys::N: return "N";
+	case Keys::O: return "O";
+	case Keys::P: return "P";
+	case Keys::Q: return "Q";
+	case Keys::R: return "R";
+	case Keys::S: return "S";
+	case Keys::T: return "T";
+	case Keys::U: return "U";
+	case Keys::V: return "V";
+	case Keys::W: return "W";
+	case Keys::X: return "X";
+	case Keys::Y: return "Y";
+	case Keys::Z: return "Z";
+	case Keys::Num0: return "Num0";
+	case Keys::Num1: return "Num1";
+	case Keys::Num2: return "Num2";
+	case Keys::Num3: return "Num3";
+	case Keys::Num4: return "Num4";
+	case Keys::Num5: return "Num5";
+	case Keys::Num6: return "Num6";
+	case Keys::Num7: return "Num7";
+	case Keys::Num8: return "Num9";
+	case Keys::F1: return "F1";
+	case Keys::F2: return "F2";
+	case Keys::F3: return "F3";
+	case Keys::F4: return "F4";
+	case Keys::F5: return "F5";
+	case Keys::F6: return "F6";
+	case Keys::F7: return "F7";
+	case Keys::F8: return "F8";
+	case Keys::F9: return "F9";
+	case Keys::F10: return "F10";
+	case Keys::F11: return "F11";
+	case Keys::F12: return "F12";
+	case Keys::SystemKey1: return "SystemKey1";
+	case Keys::SystemKey2: return "SystemKey2";
+	case Keys::NumMul: return "NumMul";
+	case Keys::NumAdd: return "NumAdd";
+	case Keys::NumSub: return "NumSub";
+	case Keys::NumDiv: return "NumDiv";
+	case Keys::NumLock: return "NumLock";
+	case Keys::ScrollLock: return "ScrollLock";
+	case Keys::Semicolon: return "Semicolon";
+	case Keys::Equals: return "Equals";
+	case Keys::Minus: return "Minus";
+	case Keys::Slash: return "Slash";
+	case Keys::Comma: return "Comma";
+	case Keys::Period: return "Period";
+	case Keys::Backquote: return "Backquote";
+	case Keys::SquareBracketLeft: return "SquareBracketLeft";
+	case Keys::SquareBracketRight: return "SquareBracketRight";
+	case Keys::Quote: return "Quote";
+	case Keys::Backslash: return "Backslash";
+	case Keys::Unknown: return "Unknown";
+
+	default: return "Unknown";
+	}
+}
 
 /// <summary>A window configuration event (e.g. resize)</summary>
 struct ConfigureEvent
@@ -231,31 +325,19 @@ public:
 		PointingDeviceState() : _pointerLocation(0, 0), _dragStartLocation(0, 0), _buttons(0) {}
 		/// <summary>Get the current (i.e. last known) location of the mouse/pointing device pointer.</summary>
 		/// <returns>The location of the pointer.</returns>
-		PointerLocation position()
-		{
-			return _pointerLocation;
-		}
+		PointerLocation position() const { return _pointerLocation; }
 
 		/// <summary>Get the location of the mouse/pointing device pointer when the last drag started.</summary>
 		/// <returns>The location of a drag action's starting point.</returns>
-		PointerLocation dragStartPosition()
-		{
-			return _dragStartLocation;
-		}
+		PointerLocation dragStartPosition() const { return _dragStartLocation; }
 
 		/// <summary>Query if a specific button is pressed.</summary>
 		/// <param name="buttonIndex">The index of the button (0 up to 6).</param>
 		/// <returns>True if the button exists and is pressed. False otherwise.</returns>
-		bool isPressed(int8_t buttonIndex)
-		{
-			return (_buttons & (1 << buttonIndex)) != 0;
-		}
+		bool isPressed(int8_t buttonIndex) const { return (_buttons & (1 << buttonIndex)) != 0; }
 		/// <summary>Check if a drag action has started.</summary>
 		/// <returns>True if during a dragging action.</returns>
-		bool isDragging()
-		{
-			return (_buttons & 0x80) != 0;
-		}
+		bool isDragging() const { return (_buttons & 0x80) != 0; }
 	};
 
 private:
@@ -266,19 +348,10 @@ private:
 			_buttons |= 0x80;
 			_dragStartLocation = _pointerLocation;
 		}
-		void endDragging()
-		{
-			_buttons &= 0x7F;
-		}
+		void endDragging() { _buttons &= 0x7F; }
 
-		void setButton(int8_t buttonIndex, bool pressed)
-		{
-			_buttons = (_buttons & ~(1 << buttonIndex)) | (pressed << buttonIndex);
-		}
-		void setPointerLocation(PointerLocation pointerLocation)
-		{
-			this->_pointerLocation = pointerLocation;
-		}
+		void setButton(int8_t buttonIndex, bool pressed) { _buttons = (_buttons & ~(1 << buttonIndex)) | (pressed << buttonIndex); }
+		void setPointerLocation(PointerLocation pointerLocation) { this->_pointerLocation = pointerLocation; }
 	};
 
 protected:
@@ -352,10 +425,7 @@ protected:
 	/// <param name="location">The location of the click.</param>
 	/// <remarks>This event will be fired on releasing the button, and the mouse pointer has not moved more than a few
 	/// pixels since the button was pressed.</remarks>
-	virtual void eventDragFinished(PointerLocation location)
-	{
-		(void)location;
-	}
+	virtual void eventDragFinished(PointerLocation location) { (void)location; }
 
 	/// <summary>Override in your class to handle the start of a "Drag" event of the main input device (mouse,
 	/// touchscreen).</summary>
@@ -371,43 +441,28 @@ protected:
 	/// <summary>Override in your class to handle the initial press (down) of the main input device (mouse, touchscreen).</summary>
 	/// <param name="buttonIdx">The index of the button (LMB:0, RMB:1, MMB:2, Touch:0)</param>
 	/// <remarks>This event will be fired on pressing any button.</remarks>
-	virtual void eventButtonDown(int buttonIdx)
-	{
-		(void)buttonIdx;
-	}
+	virtual void eventButtonDown(int buttonIdx) { (void)buttonIdx; }
 
 	/// <summary>Override in your class to handle the release (up) of the main input device (mouse, touchscreen).</summary>
 	/// <param name="buttonIdx">The index of the button (LMB:0, RMB:1, MMB:2, Touch:0)</param>
 	/// <remarks>This event will be fired on releasing any button.</remarks>
-	virtual void eventButtonUp(int buttonIdx)
-	{
-		(void)buttonIdx;
-	}
+	virtual void eventButtonUp(int buttonIdx) { (void)buttonIdx; }
 
 	/// <summary>Override in your class to handle the press of a key of the keyboard.</summary>
 	/// <param name="key">The key pressed</param>
 	/// <remarks>This event will be fired on pressing any key.</remarks>
-	virtual void eventKeyDown(Keys key)
-	{
-		(void)key;
-	}
+	virtual void eventKeyDown(Keys key) { (void)key; }
 
 	/// <summary>Override in your class to handle a keystroke of the keyboard.</summary>
 	/// <param name="key">The key pressed</param>
 	/// <remarks>This event will normally be fired multiple times during a key press, as controlled by the key repeat
 	/// of the operating system.</remarks>
-	virtual void eventKeyStroke(Keys key)
-	{
-		(void)key;
-	}
+	virtual void eventKeyStroke(Keys key) { (void)key; }
 
 	/// <summary>Override in your class to handle the release (up) of a key of of the keyboard.</summary>
 	/// <param name="key">The key released</param>
 	/// <remarks>This event will be fired once, when releasing a key.</remarks>
-	virtual void eventKeyUp(Keys key)
-	{
-		(void)key;
-	}
+	virtual void eventKeyUp(Keys key) { (void)key; }
 
 	/// <summary>Override in your class to handle a unified interface for input across different platforms and devices.</summary>
 	/// <param name="key">The Simplified Unified Event</param>
@@ -422,11 +477,8 @@ protected:
 	{
 		switch (key)
 		{
-		case SimplifiedInput::ActionClose:
-			exitShell();
-			break;
-		default:
-			break;
+		case SimplifiedInput::ActionClose: exitShell(); break;
+		default: break;
 		}
 	}
 
@@ -487,10 +539,7 @@ public:
 
 	/// <summary>Called by some OS (X11) to record the movement of the mouse.</summary>
 	/// <param name="configureEvent">Mouse data.</param>
-	void onConfigureEvent(const ConfigureEvent& configureEvent)
-	{
-		_configureEvent = configureEvent;
-	}
+	void onConfigureEvent(const ConfigureEvent& configureEvent) { _configureEvent = configureEvent; }
 
 private:
 	/// <summary>Used externally to signify events to the Shell. Do not use.</summary>
@@ -514,15 +563,25 @@ public:
 	/// <remarks>OSManager interface implementation.</remarks>
 	DisplayAttributes& getDisplayAttributes();
 
+	/// <summary>Get the display attributes (width, height, bpp, AA, etc) of this pvr::Shell</summary>
+	/// <returns>The display attributes (width, height, bpp, AA, etc) of this pvr::Shell</returns>
+	/// <remarks>OSManager interface implementation.</remarks>
+	const DisplayAttributes& getDisplayAttributes() const;
+
+	/// <summary>Get the underlying connection object of this shell</summary>
+	/// <returns>The underlying connection object of this shell</returns>
+	/// <remarks>OSManager interface implementation.</remarks>
+	OSConnection getConnection() const;
+
 	/// <summary>Get the underlying Display object of this shell</summary>
 	/// <returns>The underlying Display object of this shell</returns>
 	/// <remarks>OSManager interface implementation.</remarks>
-	OSDisplay getDisplay();
+	OSDisplay getDisplay() const;
 
 	/// <summary>Get the underlying Window object of this shell</summary>
 	/// <returns>The underlying Window object of this shell</returns>
 	/// <remarks>OSManager interface implementation.</remarks>
-	OSWindow getWindow();
+	OSWindow getWindow() const;
 
 private:
 	// called by the State Machine
@@ -538,29 +597,20 @@ public:
 	/// <summary>Query if a key is pressed.</summary>
 	/// <param name="key">The key to check</param>
 	/// <returns>True if a keyboard exists and the key is pressed</returns>
-	bool isKeyPressed(Keys key)
-	{
-		return isKeyPressedVal(key);
-	}
+	bool isKeyPressed(Keys key) const { return isKeyPressedVal(key); }
 
 	/// <summary>Query if a key is pressed.</summary>
 	/// <param name="buttonIndex">The number of the button to check (LMB:0, RMB:1, MMB:2)</param>
 	/// <returns>True if a mouse/touchscreen exists and the button with this is index pressed. Simple touch is 0.</returns>
-	bool isButtonPressed(int8_t buttonIndex)
-	{
-		return buttonIndex > 7 ? false : _pointerState.isPressed(buttonIndex);
-	}
+	bool isButtonPressed(int8_t buttonIndex) const { return buttonIndex > 7 ? false : _pointerState.isPressed(buttonIndex); }
 
 	/// <summary>Query the pointer location in pixels.</summary>
 	/// <returns>The location of the pointer in pixels.</returns>
-	PointerLocation getPointerAbsolutePosition()
-	{
-		return _pointerState.position();
-	}
+	PointerLocation getPointerAbsolutePosition() const { return _pointerState.position(); }
 
 	/// <summary>Query the pointer relative position.</summary>
 	/// <returns>The relative pointer location in pixels.</returns>
-	PointerLocation getPointerRelativePosition()
+	PointerLocation getPointerRelativePosition() const
 	{
 		PointerLocation pointerloc = getPointerAbsolutePosition();
 		pointerloc.x -= static_cast<uint16_t>(_configureEvent.x);
@@ -570,7 +620,7 @@ public:
 
 	/// <summary>Query the pointer location in normalised coordinates (0..1).</summary>
 	/// <returns>The location of the pointer in normalised coordinates (0..1).</returns>
-	PointerNormalisedLocation getPointerNormalisedPosition()
+	PointerNormalisedLocation getPointerNormalisedPosition() const
 	{
 		PointerNormalisedLocation pos;
 		pos.x = _pointerState.position().x / static_cast<float>(getWidth());
@@ -580,21 +630,18 @@ public:
 
 	/// <summary>Query the state of the pointing device (Mouse, Touchscreend).</summary>
 	/// <returns>A PointingDeviceState struct containing the state of the pointing device.</returns>
-	PointingDeviceState& getPointingDeviceState()
-	{
-		return _pointerState;
-	}
+	const PointingDeviceState& getPointingDeviceState() const { return _pointerState; }
 	/* End Input Handling :  Queried */
 
 	/// <summary>Get the total time (from the same arbitrary starting point as getTimeAtInitApplication ), in
 	/// milliseconds.</summary>
 	/// <returns>The total time in milliseconds.</returns>
-	uint64_t getTime();
+	uint64_t getTime() const;
 
 	/// <summary>The duration of the last frame to pass, in milliseconds. This is the time to use to advance app
 	/// logic.</summary>
 	/// <returns>The duration of the last frame, in milliseconds.</returns>
-	uint64_t getFrameTime();
+	uint64_t getFrameTime() const;
 
 	/// <summary>Get the total time (from the same arbitrary starting point as getTime ), in milliseconds.</summary>
 	/// <returns>The time at init application, in milliseconds.</returns>
@@ -696,7 +743,11 @@ public:
 
 	/// <summary>EFFECTIVE IF CALLED DURING RenderFrame. Force the shell to ReleaseView and then InitView again after this
 	/// frame.</summary>
-	void forceReinitView();
+	void forceReleaseInitView();
+
+	/// <summary>EFFECTIVE IF CALLED DURING RenderFrame. Force the shell to ReleaseView and then InitView again after this
+	/// frame.</summary>
+	void forceReleaseInitWindow();
 
 	/// <summary>Get the number of anti-aliasing samples.</summary>
 	/// <returns>The number of anti-aliasing samples.</returns>
@@ -720,7 +771,7 @@ public:
 
 	/// <summary>Get the Colorspace of the main window framebuffer (linear RGB or sRGB).</summary>
 	/// <returns>The Colorspace of the main window framebuffer (linear RGB or sRGB).</returns>
-	ColorSpace getBackBufferColorspace();
+	ColorSpace getBackBufferColorspace() const;
 
 	/// <summary>ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Specify the colorspace of the backbuffer. Default is a
 	/// (linear) RGB BackBuffer. Use this to specifically request an sRGB backbuffer. Since the support of backbuffer
@@ -758,7 +809,7 @@ public:
 
 	/// <summary>Check if frame time is forced (forceFrameTime(true) has been called)</summary>
 	/// <returns>True if forcing frame time.</returns>
-	bool isForcingFrameTime();
+	bool isForcingFrameTime() const;
 
 	/// <summary>Check if screen is rotated. By convention, we consider "landscape" to be the default, non-rotated and "portrait" to be rotated.</summary>
 	/// <returns>True if screen is Portrait (height > width) on a full-screen device, false otherwise</returns>
@@ -773,7 +824,7 @@ public:
 	bool isScreenLandscape() const;
 
 	/// <summary>Print out general information about this Shell (application name, sdk version, cmd line etc.</summary>
-	void showOutputInfo();
+	void showOutputInfo() const;
 
 	/// <summary>ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Captures the frames between start and stop and saves
 	/// them as TGA screenshots.</summary>
@@ -839,10 +890,7 @@ public:
 
 	/// <summary>Get the current version of the PowerVR SDK.</summary>
 	/// <returns>The current version of the PowerVR SDK.</returns>
-	static const char* getSDKVersion()
-	{
-		return PVRSDK_BUILD;
-	}
+	static const char* getSDKVersion() { return PVRSDK_BUILD; }
 
 	/// <summary>Set a message to be displayed on application exit. Normally used to display critical error messages
 	/// that might be missed if displayed as just logs.</summary>
@@ -902,7 +950,7 @@ public:
 	/// <param name="errorIfFileNotFound">Set this to false if file-not-found are expected and should not be logged as
 	/// errors.</param>
 	/// <returns>A unique pointer to the Stream returned if successful, an Empty unique pointer if failed.</returns>
-	Stream::ptr_type getAssetStream(const std::string& filename, bool errorIfFileNotFound = true);
+	std::unique_ptr<Stream> getAssetStream(const std::string& filename, bool errorIfFileNotFound = true) const;
 
 	/// <summary>Gets the ShellOS object owned by this shell.</summary>
 	/// <returns>The ShellOS object owned by this shell.</returns>
@@ -910,14 +958,11 @@ public:
 
 	/// <summary>Returns whether a screenshot should be taken for the current frame making use of command line arguments.</summary>
 	/// <returns>True if a screenshot was requested for this frame, otherwise returns false</returns>
-	bool shouldTakeScreenshot()
-	{
-		return getFrameNumber() >= getCaptureFrameStart() && getFrameNumber() <= getCaptureFrameStop();
-	}
+	bool shouldTakeScreenshot() const { return getFrameNumber() >= getCaptureFrameStart() && getFrameNumber() <= getCaptureFrameStop(); }
 
 	/// <summary>Generates and returns a potential screenshot name based on the shell write path, frame number and appication name</summary>
 	/// <returns>Returns a potential screenshot name based on the shell write path, frame number and application name.</returns>
-	std::string getScreenshotFileName();
+	std::string getScreenshotFileName() const;
 
 	/// <summary>Adds a new path to the set of read paths</summary>
 	/// <param name="readPath">A new read path to add to the set of read paths.</param>
@@ -929,39 +974,22 @@ private:
 	PrivatePointerState _pointerState;
 	ShellData* _data;
 	ConfigureEvent _configureEvent;
-	SimplifiedInput MapKeyToMainInput(Keys key)
+	SimplifiedInput MapKeyToMainInput(Keys key) const
 	{
 		switch (key)
 		{
 		case Keys::Space:
-		case Keys::Return:
-			return SimplifiedInput::Action1;
-			break;
+		case Keys::Return: return SimplifiedInput::Action1; break;
 		case Keys::Escape:
-		case Keys::Q:
-			return SimplifiedInput::ActionClose;
-			break;
-		case Keys::Key1:
-			return SimplifiedInput::Action2;
-			break;
-		case Keys::Key2:
-			return SimplifiedInput::Action3;
-			break;
+		case Keys::Q: return SimplifiedInput::ActionClose; break;
+		case Keys::Key1: return SimplifiedInput::Action2; break;
+		case Keys::Key2: return SimplifiedInput::Action3; break;
 
-		case Keys::Left:
-			return SimplifiedInput::Left;
-			break;
-		case Keys::Right:
-			return SimplifiedInput::Right;
-			break;
-		case Keys::Up:
-			return SimplifiedInput::Up;
-			break;
-		case Keys::Down:
-			return SimplifiedInput::Down;
-			break;
-		default:
-			return SimplifiedInput::NONE;
+		case Keys::Left: return SimplifiedInput::Left; break;
+		case Keys::Right: return SimplifiedInput::Right; break;
+		case Keys::Up: return SimplifiedInput::Up; break;
+		case Keys::Down: return SimplifiedInput::Down; break;
+		default: return SimplifiedInput::NONE;
 		}
 	}
 	bool setKeyPressedVal(Keys key, char val)
@@ -970,22 +998,15 @@ private:
 		_keystate[static_cast<uint32_t>(key)] = (val != 0);
 		return temp;
 	}
-	bool isKeyPressedVal(Keys key)
-	{
-		return _keystate[static_cast<uint32_t>(key)];
-	}
-	SimplifiedInput MapPointingDeviceButtonToSimpleInput(int buttonIdx)
+	bool isKeyPressedVal(Keys key) const { return _keystate[static_cast<uint32_t>(key)]; }
+	SimplifiedInput MapPointingDeviceButtonToSimpleInput(int buttonIdx) const
 	{
 		switch (buttonIdx)
 		{
-		case 0:
-			return SimplifiedInput::Action1;
-		case 1:
-			return SimplifiedInput::Action2;
-		case 2:
-			return SimplifiedInput::Action3;
-		default:
-			return SimplifiedInput::NONE;
+		case 0: return SimplifiedInput::Action1;
+		case 1: return SimplifiedInput::Action2;
+		case 2: return SimplifiedInput::Action3;
+		default: return SimplifiedInput::NONE;
 		}
 	}
 };
@@ -993,8 +1014,7 @@ private:
 } // namespace platform
 using pvr::platform::Shell;
 /// <summary>---IMPLEMENT THIS FUNCTION IN YOUR MAIN CODE FILE TO POWER YOUR APPLICATION---</summary>
-/// <returns>The implementation of this function is typically a single, simple line: return
-/// std::unique_ptr<pvr::Shell>(new MyApplicationClass());</returns>
+/// <returns>The implementation of this function is typically a single, simple line: return std::make_unique<MyApplicationClass>();</returns>
 /// <remarks>You must return an std::unique_ptr to pvr::Shell, that will be wrapping a pointer to an instance of
 /// your Application class. The implementation is usually trivial.</remarks>
 std::unique_ptr<pvr::Shell> newDemo();

@@ -27,7 +27,7 @@ Download the platform specific PowerVR SDK Installer from ``https://www.imgtec.c
 
 Repository Dependencies
 -----------------------
-Other than the platform specific build tools specified below the SDK satifies all of its own required dependencies internally either by distributing them as part of the SDK or via the use of cmake external projects (externalproject_add).
+Other than the platform specific build tools specified below the SDK satisfies all of its own required dependencies internally either by distributing them as part of the SDK or via the use of cmake external projects (externalproject_add).
 
 Platform setup
 --------------
@@ -37,9 +37,10 @@ Android
 * Through the Android SDK Manager, either via Android Studio or command-line SDK manager, install the following packages:
      * Android NDK bundle
      * The Android SDK Platform package for API level 26 (used as our targetSdkVersion)
-	 * The Android SDK Build-Tools version 28 (used as our compileSdkVersion)
+	 * The Android SDK Build-Tools version 29 (used as our compileSdkVersion)
      * CMake
      * LLDB [optional] - only required for on-device debugging
+     * If you plan on using gradleW from the command-line make sure that %JavaHome% points to a valid Java JDK directory 
 
 Windows, Linux and macOS
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -49,18 +50,18 @@ Windows, Linux and macOS
 Windows
 .......
 * Download and install Visual Studio
-	* Versions supports 2015, 2017, 2019
+	* Versions known to be supported 2015, 2017, 2019
 	* Community versions should suffice with more capable versions also being supported. 
-* The SDK has been built and tested on Windows 10 using Visual Studio versions 2015, 2017 and 2019.
+* The SDK has been built and tested on Windows 10 using Visual Studio versions 2015, 2017 and 2019 as well as MinGW.
 	* Other versions of Windows may also work.
-	* Other Windows-based build systems may also work - Makefiles etc..
+	* Other Windows-based build systems may also work.
 	
 Linux
 .....
 * Ensure system installed packages including build tools, window systems etc. are installed appropriately
 	* This may include X11 packages, Wayland packages, libc++, libdl, and other libraries depending on the build configuration.
 * The SDK has been built and tested on Ubuntu 16.04 and Ubuntu 18.04 LTS versions.
-	* Other Linux distributions may also work natively else adaptions should be straightforward.
+	* Other Linux distributions may also work else adaptions to the SDK should be straightforward.
 	
 macOS
 .....
@@ -81,25 +82,27 @@ The following build options can be passed to CMake via the command line using th
 .. _table1:
 .. table:: CMake Build Options
 
-    ==================================== ============== ============== ==============
-     **Option**                           **Platform**   **Default**    **Comment**
-    ==================================== ============== ============== ==============
-     ``CMAKE_BUILD_TYPE``                 All            ``Release``    The build variant. Supported values: [Debug, Release, MinSizeRel, RelWithDebInfo]
-    ------------------------------------ -------------- -------------- --------------
-     ``BUILD_EXAMPLES``                   All            ``On``         Determines whether the PowerVR SDK examples are built
-    ------------------------------------ -------------- -------------- --------------
-     ``BUILD_FRAMEWORK``                  All            ``On``         Determines whether the PowerVR SDK framework modules are built
-    ------------------------------------ -------------- -------------- --------------
-     ``BUILD_OPENGLES_EXAMPLES``          All            N/A            Pass this parameter if both Vulkan and OpenGL examples are downloaded but, for whatever reason, only a solution for the OpenGL ES ones is required
-    ------------------------------------ -------------- -------------- --------------
-     ``BUILD_VULKAN_EXAMPLES``            All            N/A            Pass this parameter if both Vulkan and OpenGL examples are downloaded but, for whatever reason, only a solution for the Vulkan ones is required
-    ------------------------------------ -------------- -------------- --------------
-     ``WS``                               Linux/QNX      N/A            Can be used to control the windowing system used. Supported values: [NullWS, X11, Wayland, Screen]. Usually, desktop Linux systems will be running an X11/XCB or using a Wayland server. Development platforms often use a NullWS system which is where the GPU renders to the screen directly without using a windowing system. Screen is commonly used on QNX.
-    ------------------------------------ -------------- -------------- --------------
-     ``GLSLANG_INSTALL_DIR``              All            N/A            This parameter can be used to provide a directory containing a set of prebuilt glslang libraries which will be used instead of rebuilding them from source
-    ------------------------------------ -------------- -------------- --------------
-     ``GLSLANG_VALIDATOR_INSTALL_DIR``    All            N/A            This parameter can be used to provide a directory containing a glslangValidator binary which will be used instead of rebuilding it from source
-    ==================================== ============== ============== ==============
+    ======================================================= ============== ============== ==============
+     **Option**                                              **Platform**   **Default**    **Comment**
+    ======================================================= ============== ============== ==============
+     ``CMAKE_BUILD_TYPE``                                    All            ``Release``    The build variant. Supported values: [Debug, Release, MinSizeRel, RelWithDebInfo]
+    ------------------------------------------------------- -------------- -------------- --------------
+     ``PVR_BUILD_EXAMPLES``                                  All            ``On``         Determines whether the PowerVR SDK examples are built
+    ------------------------------------------------------- -------------- -------------- --------------
+     ``PVR_BUILD_FRAMEWORK``                                 All            ``On``         Determines whether the PowerVR SDK framework modules are built
+    ------------------------------------------------------- -------------- -------------- --------------
+     ``PVR_BUILD_OPENGLES_EXAMPLES``                         All            N/A            Pass this parameter if both Vulkan and OpenGL examples are downloaded but, for whatever reason, only a solution for the OpenGL ES ones is required
+    ------------------------------------------------------- -------------- -------------- --------------
+     ``PVR_BUILD_VULKAN_EXAMPLES``                           All            N/A            Pass this parameter if both Vulkan and OpenGL examples are downloaded but, for whatever reason, only a solution for the Vulkan ones is required
+    ------------------------------------------------------- -------------- -------------- --------------
+     ``WS`` (Deprecated - Please prefer PVR_WINDOW_SYSTEM)   Linux/QNX      N/A            Can be used to control the windowing system used. Supported values: [NullWS, X11, Wayland, Screen]. Usually, desktop Linux systems will be running an X11/XCB or using a Wayland server. Development platforms often use a NullWS system which is where the GPU renders to the screen directly without using a windowing system. Screen is commonly used on QNX.
+    ------------------------------------------------------- -------------- -------------- --------------
+     ``PVR_WINDOW_SYSTEM``                                   Linux/QNX      N/A            Can be used to control the windowing system used. Supported values: [NullWS, X11, Wayland, Screen]. Usually, desktop Linux systems will be running an X11/XCB or using a Wayland server. Development platforms often use a NullWS system which is where the GPU renders to the screen directly without using a windowing system. Screen is commonly used on QNX.
+    ------------------------------------------------------- -------------- -------------- --------------
+     ``PVR_GLSLANG_VALIDATOR_INSTALL_DIR``                   All            N/A            This parameter can be used to provide a directory containing a glslangValidator binary which will be used instead of rebuilding it from source
+    ------------------------------------------------------- -------------- -------------- --------------
+     ``PVR_PREBUILT_DEPENDENCIES``                           All            N/A            This parameter can be used to avoid building the dependencies for the current module or example on which this option was used instead the dependency will be found using cmake's find_package logic. This parameter should not generally be used and is primarily used for optimising android builds.
+    ======================================================= ============== ============== ==============
 
 The following build options can be passed via gradle using the ``-P[PARAM_NAME]=[PARAM_VALUE]`` syntax.
 
@@ -173,7 +176,7 @@ CMake Configuration Instructions
 
 For example: from ``[path-to-sdk]/cmake-build/``, or from ``[path-to-sdk]/examples/[example_api]/[example_name]/cmake-build/`` folder:
 
-  ``cmake ..`` (optionally specifying the CMake Generator i.e. ``-G`` Unix Makefiles, Visual Studio 15, Xcode, Eclipse etc. and architecture)
+  ``cmake ..`` (optionally specifying the CMake Generator i.e. ``-G`` Unix Makefiles, Visual Studio, Xcode, Eclipse, Ninja etc. and architecture)
 
 Windows Visual Studio
 .....................
@@ -196,13 +199,14 @@ The generated project files can be opened with Xcode as normal, or built from co
 
 Xcode (when targeting iOS)
 ..........................
-The instructions for iOS are the same as for macOS except a CMake toolchain file needs to be passed, as iOS is a cross-compiled target. The PowerVR SDK provides an iOS toolchain file: ``[path-to-sdk]/cmake/toolchains/Darwin-gcc-ios.cmake``. 
+The instructions for iOS are the same as for macOS except a CMake toolchain file needs to be passed, as iOS is a cross-compiled target, and a code sign identity needs to be specified. The PowerVR SDK provides an iOS toolchain file: ``[path-to-sdk]/cmake/toolchains/Darwin-gcc-ios.cmake``. 
 To appropriately compile the SDK the following options must be set in the toolchain file ``ENABLE_ARC=0`` and ``IOS_PLATFORM=OS64`` which are used for disabling Automatic Reference Counting (ARC) and for targeting only 64bit platforms including arm64 and arm64e iPhoneOS respectively. 
+To specify a code sign identity the following options must to be set ``CODE_SIGN_IDENTITY=[IDENTITY]`` and ``DEVELOPMENT_TEAM_ID=[TEAM_ID]``. These options can also be set at a later time from the Xcode IDE.
 
 Generate the Xcode projects with:
 
 ``cmake [path-to-directory-containing-CMakeLists.txt] -G Xcode -DCMAKE_TOOLCHAIN_FILE=[path-to-sdk]/cmake/toolchains/Darwin-gcc-ios.cmake -DENABLE_ARC=0 -DIOS_PLATFORM=OS64``
-  
+
 Building Generated Projects
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 The projects can be built as usual based on the types of projects selected, such as through Visual Studio or calling ``make`` for the makefiles or alternatively can be built using ``cmake -- build .``
@@ -211,7 +215,7 @@ Binaries are output to the ``bin`` subfolder of the CMake binary folder or ``and
 
 Unix Makefiles
 ..............
-Unix makefiles are the default way to build on on Linux, but also work anywhere a ``make`` program exists.
+Unix makefiles are the default way to build on Linux, but also work anywhere a ``make`` program exists.
 Building the project is performed by calling ``make [-j8 , other options]``
 
 **Note:** The use of multithreaded builds using ``-j[some number]`` is recommended when building with makefiles as it can speed up the build *considerably*.

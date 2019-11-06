@@ -108,14 +108,14 @@ int main(int argc, char** argv)
 				  << " Diffuse  map - Size: " << mapSizeDiffuse << "x" << mapSizeDiffuse << "  - Number of Samples: " << numSamplesDiffuse << "\n"
 				  << " Specular map - Size: " << mapSizeSpecular << "x" << mapSizeSpecular << "  - Number of Samples: " << numSamplesSpecular << "\n";
 
-		pvr::Stream::ptr_type inputFile;
+		std::unique_ptr<pvr::Stream> inputFile;
 		pvr::Texture inputTexture;
 
 		std::string inputName = argv[1];
 
 		try
 		{
-			inputTexture = pvr::textureLoad(pvr::FileStream::createFileStream(inputName, "rb"));
+			inputTexture = pvr::textureLoad(*pvr::FileStream::createFileStream(inputName, "rb"));
 		}
 		catch (pvr::FileNotFoundError&)
 		{
@@ -171,9 +171,7 @@ int main(int argc, char** argv)
 			irradianceTexture = pvr::utils::generateIrradianceMap(
 				queue, environmentMap, pvr::PixelFormat::RGBA_16161616(), pvr::VariableType::SignedFloat, mapSizeDiffuse, uint32_t(sqrtf(float(numSamplesDiffuse))));
 			cout << "DONE!\n";
-			pvr::assetWriters::TextureWriterPVR irradianceMapWriter(pvr::FileStream::createFileStream(outputNameIrradiance, "wb"));
-			irradianceMapWriter.writeAsset(irradianceTexture);
-			irradianceMapWriter.closeAssetStream();
+			pvr::assetWriters::writePVR(irradianceTexture, pvr::FileStream(outputNameIrradiance, "wb"));
 		}
 		if (!skipSpecular)
 		{
@@ -181,9 +179,7 @@ int main(int argc, char** argv)
 			preFilteredTexture = pvr::utils::generatePreFilteredMapMipmapStyle(
 				queue, environmentMap, pvr::PixelFormat::RGBA_16161616(), pvr::VariableType::SignedFloat, mapSizeSpecular, true, 2, numSamplesSpecular);
 			cout << "DONE!\n";
-			pvr::assetWriters::TextureWriterPVR preFilteredWriter(pvr::FileStream::createFileStream(outputNamePrefiltered, "wb"));
-			preFilteredWriter.writeAsset(preFilteredTexture);
-			preFilteredWriter.closeAssetStream();
+			pvr::assetWriters::writePVR(preFilteredTexture, pvr::FileStream(outputNamePrefiltered, "wb"));
 		}
 	}
 	catch (std::runtime_error& err)

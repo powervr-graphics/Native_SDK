@@ -39,17 +39,12 @@ public:
 	glm::mat4 projectionMatrix;
 	bool hasProjectionMatrixChanged;
 
-	CameraInterfaceImpl() : texture(0), hasProjectionMatrixChanged(true)
-	{
-		memset(glm::value_ptr(projectionMatrix), 0, sizeof(projectionMatrix));
-	}
+	CameraInterfaceImpl() : texture(0), hasProjectionMatrixChanged(true) { memset(glm::value_ptr(projectionMatrix), 0, sizeof(projectionMatrix)); }
 
 	void initializeSession(HWCamera::Enum eCamera, int width, int height)
 	{
 		if (strstr((const char*)gl::GetString(GL_EXTENSIONS), "OES_EGL_image_external") == 0)
-		{
-			throw InvalidOperationError("CameraInterface - NativeExtension OES_EGL_image_external not found.");
-		}
+		{ throw InvalidOperationError("CameraInterface - NativeExtension OES_EGL_image_external not found."); }
 
 		// Create an EGLImage External texture
 		// Create a http://www.khronos.org/registry/gles/extensions/OES/OES_EGL_image_external.txt
@@ -60,10 +55,7 @@ public:
 		JNIEnv* env = 0;
 		jint res = cachedVM->AttachCurrentThread(&env, 0);
 
-		if ((res != 0) || (env == 0))
-		{
-			throw InvalidOperationError("CameraInterface - NativeAttachCurrentThread failed.");
-		}
+		if ((res != 0) || (env == 0)) { throw InvalidOperationError("CameraInterface - NativeAttachCurrentThread failed."); }
 
 		jclass clazz = 0;
 		clazz = env->GetObjectClass(jobj);
@@ -182,10 +174,7 @@ public:
 	}
 };
 
-JNIEXPORT void JNICALL Java_com_powervr_PVRCamera_CameraInterface_cacheJavaObject(JNIEnv* env, jobject obj)
-{
-	jobj = env->NewGlobalRef(obj);
-}
+JNIEXPORT void JNICALL Java_com_powervr_PVRCamera_CameraInterface_cacheJavaObject(JNIEnv* env, jobject obj) { jobj = env->NewGlobalRef(obj); }
 
 JNIEXPORT void JNICALL Java_com_powervr_PVRCamera_CameraInterface_setTexCoordsProjMatrix(JNIEnv* env, jobject obj, jfloatArray ptr)
 {
@@ -231,57 +220,27 @@ void pvr::CameraInterface::initializeSession(HWCamera::Enum camera, int width, i
 
 bool global_dummy = false;
 
-pvr::CameraInterface::CameraInterface()
-{
-	pImpl = static_cast<void*>(new CameraInterfaceImpl());
-}
+pvr::CameraInterface::CameraInterface() { pImpl = static_cast<void*>(new CameraInterfaceImpl()); }
 pvr::CameraInterface::~CameraInterface()
 {
 	delete static_cast<pvr::CameraInterfaceImpl*>(pImpl);
 	activeSession = NULL;
 }
 
-bool pvr::CameraInterface::hasProjectionMatrixChanged()
-{
-	return static_cast<pvr::CameraInterfaceImpl*>(pImpl)->hasProjectionMatrixChanged;
-}
+bool pvr::CameraInterface::hasProjectionMatrixChanged() { return static_cast<pvr::CameraInterfaceImpl*>(pImpl)->hasProjectionMatrixChanged; }
 
-void pvr::CameraInterface::getCameraResolution(uint32_t& x, uint32_t& y)
-{
-	return static_cast<pvr::CameraInterfaceImpl*>(pImpl)->getCameraResolution(x, y);
-}
+void pvr::CameraInterface::getCameraResolution(uint32_t& x, uint32_t& y) { return static_cast<pvr::CameraInterfaceImpl*>(pImpl)->getCameraResolution(x, y); }
 
-void pvr::CameraInterface::destroySession()
-{
-	activeSession = NULL;
-}
+void pvr::CameraInterface::destroySession() { activeSession = NULL; }
 
-GLuint pvr::CameraInterface::getRgbTexture()
-{
-	return static_cast<pvr::CameraInterfaceImpl*>(pImpl)->texture;
-}
+GLuint pvr::CameraInterface::getRgbTexture() { return static_cast<pvr::CameraInterfaceImpl*>(pImpl)->texture; }
 
 GLuint dummy_texture(0);
-GLuint pvr::CameraInterface::getLuminanceTexture()
-{
-	return dummy_texture;
-}
-GLuint pvr::CameraInterface::getChrominanceTexture()
-{
-	return dummy_texture;
-}
-bool pvr::CameraInterface::hasRgbTexture()
-{
-	return true;
-}
-bool pvr::CameraInterface::hasLumaChromaTextures()
-{
-	return false;
-}
-bool pvr::CameraInterface::updateImage()
-{
-	return static_cast<pvr::CameraInterfaceImpl*>(pImpl)->updateImage();
-}
+GLuint pvr::CameraInterface::getLuminanceTexture() { return dummy_texture; }
+GLuint pvr::CameraInterface::getChrominanceTexture() { return dummy_texture; }
+bool pvr::CameraInterface::hasRgbTexture() { return true; }
+bool pvr::CameraInterface::hasLumaChromaTextures() { return false; }
+bool pvr::CameraInterface::updateImage() { return static_cast<pvr::CameraInterfaceImpl*>(pImpl)->updateImage(); }
 
 const glm::mat4& pvr::CameraInterface::getProjectionMatrix()
 {

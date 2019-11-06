@@ -51,9 +51,16 @@ layout(std140, binding=CONFIG_UNIFORM_BINDING) uniform UboData
 	highp float fTotalTime;
 };
 
-layout(std140, binding = PARTICLES_SSBO_BINDING_IN) buffer SsboParticlesInOut
+// Read only copy of the particle system. Acts as an input to the particle system update.
+layout(std140, binding = PARTICLES_SSBO_BINDING_IN) readonly buffer SsboParticlesIn
 {
-    Particle aParticlesInOut[];
+    Particle aParticlesIn[];
+};
+
+// Write only copy of the particle system. Acts as an output of the current particle system update.
+layout(std140, binding = PARTICLES_SSBO_BINDING_OUT) writeonly buffer SsboParticlesOut 
+{ 
+	Particle aParticlesOut[];
 };
 
 int last_random;
@@ -103,12 +110,15 @@ void main()
 
 	seed_random(int(fTotalTime * 13579846.) + int(gid + 10000u) * 145);
 	
+	// Read as input the current particle, based on the global invocation id, which will have its state updated
+	Particle currentParticle = aParticlesIn[gid];
+
 	/*We remove the following bounds check because our code has made sure that the particles are a multiple of our workgroup*/
 	//const uint numParticles = 131072; //or numParticles passed as a uniform, or as a compile-time constant
 	//if (gid >= numParticles) return; 
 
 	// Load a particle's values in a register.
-    mediump float life = aParticlesInOut[gid].fLife;
+    mediump float life = currentParticle.fLife;
 
 	// Reduce it's lifetime ( 0 < life < in the order of 1)
 	life -= fDt * TIME_FACTOR;
@@ -117,12 +127,12 @@ void main()
 	if (life < .0)
 	{
 	    EmitParticle(emitter.mTransformation, emitter.fHeight, emitter.fRadius,
-		            aParticlesInOut[gid].vPosition, aParticlesInOut[gid].vVelocity, aParticlesInOut[gid].fLife);
+		            currentParticle.vPosition, currentParticle.vVelocity, currentParticle.fLife);
 		life = randf() * MAX_ADDITIONAL_TTL + MIN_TTL;
 	}
 	else
 	{
-		mediump vec3 v = aParticlesInOut[gid].vVelocity;
+		mediump vec3 v = currentParticle.vVelocity;
 
 		//Simulate particle movement:
 		//Semi-implicit euler is the best of the "completely basic", forward integration methods - it has better
@@ -137,7 +147,7 @@ void main()
 		v = (vG * fDt) + v;
 
 		//Do the last part of the semi-implicit Euler : 
-		aParticlesInOut[gid].vPosition = v * fDt + aParticlesInOut[gid].vPosition;
+		currentParticle.vPosition = v * fDt + currentParticle.vPosition;
 
 		//Then, collide against the spheres (very fake, but looks convincing)
 		for (uint i=0u; i < numSpheres; i++)
@@ -148,7 +158,7 @@ void main()
 			//Check whether particle penetrated the sphere. Reuse calculations as much as possible.
 			//Normally, we would just go ahead and use length(), but at this point we will probably
 			//be using a lot of the intermediates as well.
-			highp vec3 sphere_to_particle = aParticlesInOut[gid].vPosition - sphereDef.xyz;
+			highp vec3 sphere_to_particle = currentParticle.vPosition - sphereDef.xyz;
 			highp float distanceSq = dot(sphere_to_particle, sphere_to_particle);
 
 			//If inside the sphere
@@ -157,26 +167,29 @@ void main()
 				highp float rDist = inversesqrt(distanceSq);
 				//Project it back to sphere surface and do a very simple and fast velocity inversion
 				vec3 dir_to_circle = sphere_to_particle * rDist;
-				aParticlesInOut[gid].vPosition = dir_to_circle * sphereDef.w + sphereDef.xyz; //Move it ON the sphere
+				currentParticle.vPosition = dir_to_circle * sphereDef.w + sphereDef.xyz; //Move it ON the sphere
 				v = reflect(v, dir_to_circle) * .7; //Velocity pointing outwards of the sphere
 				break;
 			}			
 		}
 		
 		// Collide against ground plane
-		if (aParticlesInOut[gid].vPosition.y < 0.0f)
+		if (currentParticle.vPosition.y < 0.0f)
 		{
 		//	//x & z coeffs represent a sort of friction, y represents reflection -- As always, we can
 		//	//use a model that is as physically correct or incorrect as is appropriate for our use
 			const vec3 reflectCoeffs = vec3(0.4f, -0.3f, 0.4f);
-			aParticlesInOut[gid].vPosition.y = -aParticlesInOut[gid].vPosition.y;
+			currentParticle.vPosition.y = -currentParticle.vPosition.y;
 			v *= reflectCoeffs;
 		}
 
 		//Pack velocity back
-		aParticlesInOut[gid].vVelocity = v;
+		currentParticle.vVelocity = v;
 	}
 	//Pack life back
-	aParticlesInOut[gid].fLife = life;
+	currentParticle.fLife = life;
 	//We do not synchronize as there is absolutely no interaction between particles in that case
+
+	// Write out the updated particle to the output particle system
+	aParticlesOut[gid] = currentParticle;
 }

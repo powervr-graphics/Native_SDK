@@ -8,7 +8,17 @@
 #pragma once
 #include "PVRShell/Shell.h"
 
-// MAIN DOCUMENTATION PAGE //
+#if defined(__QNXNTO__)
+#if not(defined(Screen) || defined(NullWS))
+#error Please define a valid window system to compile PVRShell for QNX - Supported window systems are NullWS or Screen. Please pass the desired window system using -DPVR_WINDOW_SYSTEM=[NullWS,Screen].
+#endif
+#elif defined(__linux__)
+#if not defined(__ANDROID__)
+#if not(defined(X11) || defined(XCB) || defined(Wayland) || defined(NullWS))
+#error Please define a valid window system to compile PVRShell for Linux - Supported window systems are X11, XCB, Wayland, or NullWS. Please pass the desired window system using -DPVR_WINDOW_SYSTEM=[NullWS,X11,XCB,Wayland].
+#endif
+#endif
+#endif
 
 /*****************************************************************************/
 /*! \mainpage PVRShell

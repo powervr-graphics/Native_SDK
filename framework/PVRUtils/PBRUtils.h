@@ -24,10 +24,7 @@ inline glm::vec2 hammersley(uint32_t i, uint32_t N)
 	return glm::vec2(float(i) / float(N), rdi);
 }
 
-inline float G1(float k, float NoV)
-{
-	return NoV / (NoV * (1.0f - k) + k);
-}
+inline float G1(float k, float NoV) { return NoV / (NoV * (1.0f - k) + k); }
 
 // Geometric Shadowing function
 float gSmith(float NoL, float NoV, float roughness)
@@ -75,11 +72,11 @@ glm::vec2 integrateBRDF(float roughness, float NoV)
 		{
 			float NoH = glm::max(glm::dot(N, H), 0.001f);
 			float VoH = glm::max(glm::dot(V, H), 0.001f);
-			float NoV = glm::max(glm::dot(N, V), 0.001f);
+			float currentNoV = glm::max(glm::dot(N, V), 0.001f);
 
-			const float G = gSmith(NoL, NoV, roughness);
+			const float G = gSmith(NoL, currentNoV, roughness);
 
-			const float G_Vis = (G * VoH) / (NoH * NoV /*avoid division by zero*/);
+			const float G_Vis = (G * VoH) / (NoH * currentNoV /*avoid division by zero*/);
 			const float Fc = pow(1.0f - VoH, 5.0f);
 
 			A += (1.0f - Fc) * G_Vis;

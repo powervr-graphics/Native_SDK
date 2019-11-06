@@ -1,15 +1,13 @@
 var searchData=
 [
-  ['cachedframe',['cachedFrame',['../classpvr_1_1assets_1_1_model.html#a6473a63f09a8d368f07d2de1a12e2ec9',1,'pvr::assets::Model']]],
   ['camera',['Camera',['../classpvr_1_1assets_1_1_camera.html',1,'pvr::assets']]],
   ['camera_2ecpp',['Camera.cpp',['../_camera_8cpp.html',1,'']]],
   ['camera_2eh',['Camera.h',['../_camera_8h.html',1,'']]],
   ['camerahandle',['CameraHandle',['../namespacepvr_1_1assets.html#a0fd9def01f4890f3747000482d3d79f6',1,'pvr::assets']]],
   ['cameras',['cameras',['../structpvr_1_1assets_1_1_model_1_1_internal_data.html#a840b0890df610df3f31179e77765bf18',1,'pvr::assets::Model::InternalData']]],
-  ['canhavemultipleassets',['canHaveMultipleAssets',['../classpvr_1_1assets_1_1_p_o_d_reader.html#ae41f2273d82d543d0b515304c08917ab',1,'pvr::assets::PODReader']]],
   ['cap_5fback',['Cap_back',['../classpvr_1_1_shadow_volume.html#a26e4418ab016fa8dd0e2d2cea9b5a52ea5ab4f380ff80f11066790c7010dcaf15',1,'pvr::ShadowVolume']]],
   ['cap_5ffront',['Cap_front',['../classpvr_1_1_shadow_volume.html#a26e4418ab016fa8dd0e2d2cea9b5a52ea66e365df8866e60572a47d4599d601d6',1,'pvr::ShadowVolume']]],
-  ['capacity',['capacity',['../classpvr_1_1_indexed_array.html#ae3b168c894a48a739230d7e94bc2f596',1,'pvr::IndexedArray']]],
+  ['capacity',['capacity',['../classpvr_1_1_indexed_array.html#a9ec5ba281a4a0607f8a88c89e00eaf20',1,'pvr::IndexedArray']]],
   ['clear',['clear',['../classpvr_1_1_indexed_array.html#aa3b86079a6fdbec384a6c948521a143f',1,'pvr::IndexedArray']]],
   ['clearalldata',['clearAllData',['../classpvr_1_1assets_1_1_mesh.html#ae320f2a19d317b96675e82d626482cfc',1,'pvr::assets::Mesh']]],
   ['clearcolor',['clearColor',['../structpvr_1_1assets_1_1_model_1_1_internal_data.html#a554a0ed5b219a587a7a822eca1d7deca',1,'pvr::assets::Model::InternalData']]],
@@ -20,5 +18,6 @@ var searchData=
   ['const_5findex_5fiterator',['const_index_iterator',['../classpvr_1_1_indexed_array.html#afb0ccad7d43d3e6845cc40624a8ad076',1,'pvr::IndexedArray']]],
   ['const_5fiterator',['const_iterator',['../classpvr_1_1_indexed_array_1_1const__iterator.html',1,'pvr::IndexedArray']]],
   ['constantattenuation',['constantAttenuation',['../structpvr_1_1assets_1_1_light_1_1_internal_data.html#ac1e4e850333036361164256517278c52',1,'pvr::assets::Light::InternalData']]],
+  ['createskybox',['createSkyBox',['../_geometry_8h.html#a032c6ab4c9d0c89ede88b226f9c7f6d9',1,'pvr::tool']]],
   ['currentframe',['currentFrame',['../structpvr_1_1assets_1_1_model_1_1_internal_data.html#aed292f7c520bfb1a3bd1bfc4ac27612a',1,'pvr::assets::Model::InternalData']]]
 ];

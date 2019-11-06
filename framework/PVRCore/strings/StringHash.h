@@ -30,10 +30,7 @@ public:
 
 	/// <summary>Conversion to std::string reference. No-op.</summary>
 	/// <returns>A std::string representatation of this hash</returns>
-	operator const std::string&() const
-	{
-		return _String;
-	}
+	operator const std::string&() const { return _String; }
 
 	/// <summary>Default constructor. Empty std::string.</summary>
 	StringHash() : _String(""), _Hash(HashFn()(_String)) {}
@@ -101,30 +98,18 @@ public:
 
 	/// <summary>Return the length of this std::string hash</summary>
 	/// <returns>Length of this std::string hash</returns>
-	size_t size() const
-	{
-		return _String.size();
-	}
+	size_t size() const { return _String.size(); }
 
 	/// <summary>Return the length of this std::string hash</summary>
 	/// <returns>Length of this std::string hash</returns>
-	size_t length() const
-	{
-		return _String.length();
-	}
+	size_t length() const { return _String.length(); }
 
 	/// <summary>Return if the std::string is empty</summary>
 	/// <returns>true if the std::string is emtpy (length=0), false otherwise</returns>
-	bool empty() const
-	{
-		return _String.empty();
-	}
+	bool empty() const { return _String.empty(); }
 
 	/// <summary>Clear this std::string hash</summary>
-	void clear()
-	{
-		assign(std::string());
-	}
+	void clear() { assign(std::string()); }
 
 	/// <summary>== Operator. Compares hash values. Extremely fast.</summary>
 	/// <param name="str">A hashed std::string to compare with</param>
@@ -156,28 +141,19 @@ public:
 	/// to another StringHash, but still much faster than creating a temporary StringHash for one comparison.</summary>
 	/// <param name="str">A std::string to compare with</param>
 	/// <returns>True if they are the same.</returns>
-	bool operator==(const char* str) const
-	{
-		return (_String.compare(str) == 0);
-	}
+	bool operator==(const char* str) const { return (_String.compare(str) == 0); }
 
 	/// <summary>Equality Operator. This function performs a std::string comparison so it is orders of magnitude slower than
 	/// comparing to another StringHash, but still much faster than creating a temporary StringHash for one
 	/// comparison.</summary>
 	/// <param name="str">A std::string to compare with</param>
 	/// <returns>True if they are the same.</returns>
-	bool operator==(const std::string& str) const
-	{
-		return _String == str;
-	}
+	bool operator==(const std::string& str) const { return _String == str; }
 
 	/// <summary>Inequality Operator. Compares hash values. Extremely fast.</summary>
 	/// <param name="str">A StringHash to compare with</param>
 	/// <returns>True if they don't match</returns>
-	bool operator!=(const StringHash& str) const
-	{
-		return !(*this == str);
-	}
+	bool operator!=(const StringHash& str) const { return !(*this == str); }
 
 	/// <summary>Less than Operator. Compares hash values, except on debug builds where it checks for collisions. Extremely fast.</summary>
 	/// <param name="str">A StringHash to compare with</param>
@@ -186,57 +162,37 @@ public:
 	{
 #ifdef DEBUG // Collision detection
 		if (_Hash == str.getHash() && _String != str._String)
-		{
-			throw InvalidDataError(strings::createFormatted("HASH COLLISION DETECTED with %s and %s", _String.c_str(), str._String.c_str()).c_str());
-		}
-#endif
+		{ throw InvalidDataError(strings::createFormatted("HASH COLLISION DETECTED with %s and %s", _String.c_str(), str._String.c_str()).c_str()); }
+		#endif
 		return _Hash < str.getHash() || (_Hash == str.getHash() && _String < str._String);
 	}
 
 	/// <summary>Greater-than operator</summary>
 	/// <param name="str">Right hand side of the operator (StringHash)</param>
 	/// <returns>Return true if left-hand side is greater than right-hand side</returns>
-	bool operator>(const StringHash& str) const
-	{
-		return str < *this;
-	}
+	bool operator>(const StringHash& str) const { return str < *this; }
 
 	/// <summary>Less-than or equal operator</summary>
 	/// <param name="str">Right hand side of the operator (StringHash)</param>
 	/// <returns>Return true if left-hand side is less than or equal to the right-hand side</returns>
-	bool operator<=(const StringHash& str) const
-	{
-		return !(str > *this);
-	}
+	bool operator<=(const StringHash& str) const { return !(str > *this); }
 
 	/// <summary>Greater-than or equal operator</summary>
 	/// <param name="str">Right hand side of the operator (StringHash)</param>
 	/// <returns>Return true if left-hand side is greater-than or equal to the right-hand side</returns>
-	bool operator>=(const StringHash& str) const
-	{
-		return !(str < *this);
-	}
+	bool operator>=(const StringHash& str) const { return !(str < *this); }
 
 	/// <summary>Get the base string object used by this StringHash object</summary>
 	/// <returns>The base string object contained in this std::string hash.</returns>
-	const std::string& str() const
-	{
-		return _String;
-	}
+	const std::string& str() const { return _String; }
 
 	/// <summary>Get the base string object used by this StringHash object</summary>
 	/// <returns>The hash value of this StringHash.</returns>
-	std::size_t getHash() const
-	{
-		return _Hash;
-	}
+	std::size_t getHash() const { return _Hash; }
 
 	/// <summary>Get the base string object used by this StringHash object</summary>
 	/// <returns>A c-string representation of the contained std::string.</returns>
-	const char* c_str() const
-	{
-		return _String.c_str();
-	}
+	const char* c_str() const { return _String.c_str(); }
 
 private:
 	std::string _String;

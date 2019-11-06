@@ -42,73 +42,43 @@ public:
 
 	/// <summary>Get the marker</summary>
 	/// <returns>The marker name</returns>
-	const std::string& getMarkerName() const
-	{
-		return _markerName;
-	}
+	const std::string& getMarkerName() const { return _markerName; }
 
 	/// <summary>Set the label</summary>
 	/// <param name="markerName">A new marker name</param>
-	void setMarkerName(const std::string& markerName)
-	{
-		this->_markerName = markerName;
-	}
+	void setMarkerName(const std::string& markerName) { this->_markerName = markerName; }
 
 	/// <summary>Get red floating point component</summary>
 	/// <returns>Red component</returns>
-	float getR() const
-	{
-		return _color[0];
-	}
+	float getR() const { return _color[0]; }
 
 	/// <summary>Set red floating point component</summary>
 	/// <param name="r">Red component</param>
-	void setR(const float r)
-	{
-		this->_color[0] = r;
-	}
+	void setR(const float r) { this->_color[0] = r; }
 
 	/// <summary>Get green floating point component</summary>
 	/// <returns>Green component</returns>
-	float getG() const
-	{
-		return _color[1];
-	}
+	float getG() const { return _color[1]; }
 
 	/// <summary>Set green floating point component</summary>
 	/// <param name="g">green component</param>
-	void setG(const float g)
-	{
-		this->_color[1] = g;
-	}
+	void setG(const float g) { this->_color[1] = g; }
 
 	/// <summary>Get blue floating point component</summary>
 	/// <returns>Blue component</returns>
-	float getB() const
-	{
-		return _color[2];
-	}
+	float getB() const { return _color[2]; }
 
 	/// <summary>Set blue floating point component</summary>
 	/// <param name="b">Blue component</param>
-	void setB(const float b)
-	{
-		this->_color[2] = b;
-	}
+	void setB(const float b) { this->_color[2] = b; }
 
 	/// <summary>Get alpha floating point component</summary>
 	/// <returns>Alpha component</returns>
-	float getA() const
-	{
-		return _color[3];
-	}
+	float getA() const { return _color[3]; }
 
 	/// <summary>Set alpha floating point component</summary>
 	/// <param name="a">Alpha component</param>
-	void setA(const float a)
-	{
-		this->_color[3] = a;
-	}
+	void setA(const float a) { this->_color[3] = a; }
 
 private:
 	std::string _markerName;
@@ -148,24 +118,15 @@ public:
 	/// <param name="device">The device from which the object having its name reset was created</param>
 	/// <param name="vkHandle">The Vulkan object handle of the object having its name reset.</param>
 	/// <param name="objectType">The object type of the object being named</param>
-	void resetObjectName(const Device_& device, uint64_t vkHandle, ObjectType objectType)
-	{
-		setObjectName(device, vkHandle, objectType, "");
-	}
+	void resetObjectName(const Device_& device, uint64_t vkHandle, ObjectType objectType) { setObjectName(device, vkHandle, objectType, ""); }
 
 	/// <summary>Returns whether the specified object has already been provided with a name.</summary>
 	/// <returns>True if the object has a name, otherwise false.</returns>
-	bool hasName() const
-	{
-		return _objectName.length() > 0;
-	}
+	bool hasName() const { return _objectName.length() > 0; }
 
 	/// <summary>Returns the specified object's name.</summary>
 	/// <returns>The object name</returns>
-	const std::string& getName() const
-	{
-		return _objectName;
-	}
+	const std::string& getName() const { return _objectName; }
 
 private:
 	/// <summary>Default Constructor for a DebugUtilsImpl.</summary>
@@ -193,17 +154,13 @@ public:
 
 	/// <summary>Gets the Debug Marker name.</summary>
 	/// <returns>The object name</returns>
-	const std::string& getObjectName() const
-	{
-		return _debugUtils.getName();
-	}
+	const std::string& getObjectName() const { return _debugUtils.getName(); }
 
 	/// <summary>Resets the name of a specified object using the extension VK_EXT_debug_marker or VK_EXT_debug_utils.</summary>
 	void resetObjectName()
 	{
 		_debugUtils.setObjectName(*static_cast<PVRVkDeviceObject&>(*this).getDevice().get(),
-			*static_cast<const uint64_t*>(static_cast<const void*>(&static_cast<PVRVkDeviceObject&>(*this).getVkHandle())), static_cast<PVRVkDeviceObject&>(*this).getObjectType(),
-			"");
+			*static_cast<const uint64_t*>(static_cast<const void*>(&static_cast<PVRVkDeviceObject&>(*this).getVkHandle())), static_cast<PVRVkDeviceObject&>(*this).getObjectType(), "");
 	}
 
 	/// <summary>Makes use of the extension VK_EXT_debug_marker or VK_EXT_debug_utils to provide a tag for a specified object.</summary>

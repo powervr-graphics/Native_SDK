@@ -85,10 +85,7 @@ SwapchainImage_::~SwapchainImage_()
 {
 	if (isAllocated())
 	{
-		if (_device.expired())
-		{
-			reportDestroyedAfterDevice();
-		}
+		if (_device.expired()) { reportDestroyedAfterDevice(); }
 	}
 	_vkHandle = VK_NULL_HANDLE;
 }

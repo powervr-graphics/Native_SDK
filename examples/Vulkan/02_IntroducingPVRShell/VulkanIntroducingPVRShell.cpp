@@ -7,16 +7,10 @@
 \copyright Copyright (c) Imagination Technologies Limited.
 */
 
-// platform and window system specific definitions to use for conditionally building the example. The VK_USE_PLATFORM_* defines are used by the Vulkan headers for
-// enabling/disabling platform specific functionality. This example will primarily be using these defines for platform specific surface creation and making available
+// Platform and window system specific definitions to use for conditionally building the example.The VK_USE_PLATFORM_* defines are used by the Vulkan headers for
+// enabling / disabling platform specific functionality.This example will primarily be using these defines for platform specific surface creation and making available
 // the relevant functions required for this.
-#ifdef ANDROID
-#define VK_USE_PLATFORM_ANDROID_KHR
-#elif defined(_WIN32)
-#define VK_USE_PLATFORM_WIN32_KHR
-#define WIN32_LEAN_AND_MEAN
-#define NOMINMAX
-#endif
+// The VK_USE_PLATFORM_* functions are set in CMakeLists.txt
 
 // Include files
 // defines a set of Vulkan function pointer tables (Vulkan, instance and device) and includes vulkan_IMG.h
@@ -40,26 +34,11 @@
 LogLevel mapValidationTypeToLogType(VkDebugReportFlagsEXT flags)
 {
 	// Simply map the VkDebugReportFlagsEXT to a particular LogLevel.
-	if ((flags & VK_DEBUG_REPORT_INFORMATION_BIT_EXT) != 0)
-	{
-		return LogLevel::Information;
-	}
-	if ((flags & VK_DEBUG_REPORT_WARNING_BIT_EXT) != 0)
-	{
-		return LogLevel::Warning;
-	}
-	if ((flags & VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT) != 0)
-	{
-		return LogLevel::Performance;
-	}
-	if ((flags & VK_DEBUG_REPORT_ERROR_BIT_EXT) != 0)
-	{
-		return LogLevel::Error;
-	}
-	if ((flags & VK_DEBUG_REPORT_DEBUG_BIT_EXT) != 0)
-	{
-		return LogLevel::Debug;
-	}
+	if ((flags & VK_DEBUG_REPORT_INFORMATION_BIT_EXT) != 0) { return LogLevel::Information; }
+	if ((flags & VK_DEBUG_REPORT_WARNING_BIT_EXT) != 0) { return LogLevel::Warning; }
+	if ((flags & VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT) != 0) { return LogLevel::Performance; }
+	if ((flags & VK_DEBUG_REPORT_ERROR_BIT_EXT) != 0) { return LogLevel::Error; }
+	if ((flags & VK_DEBUG_REPORT_DEBUG_BIT_EXT) != 0) { return LogLevel::Debug; }
 
 	return LogLevel::Information;
 }
@@ -72,109 +51,41 @@ std::string mapDebugReportObjectTypeToString(VkDebugReportObjectTypeEXT objectTy
 	// Simply maps the object type to a string matching the object type.
 	switch (objectType)
 	{
-	case VK_DEBUG_REPORT_OBJECT_TYPE_INSTANCE_EXT:
-		return "INSTANCE_EXT";
-		break;
-	case VK_DEBUG_REPORT_OBJECT_TYPE_PHYSICAL_DEVICE_EXT:
-		return "PHYSICAL_DEVICE_EXT";
-		break;
-	case VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT:
-		return "DEVICE_EXT";
-		break;
-	case VK_DEBUG_REPORT_OBJECT_TYPE_QUEUE_EXT:
-		return "QUEUE_EXT";
-		break;
-	case VK_DEBUG_REPORT_OBJECT_TYPE_SEMAPHORE_EXT:
-		return "SEMAPHORE_EXT";
-		break;
-	case VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT:
-		return "COMMAND_BUFFER_EXT";
-		break;
-	case VK_DEBUG_REPORT_OBJECT_TYPE_FENCE_EXT:
-		return "FENCE_EXT";
-		break;
-	case VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_MEMORY_EXT:
-		return "DEVICE_MEMORY_EXT";
-		break;
-	case VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT:
-		return "BUFFER_EXT";
-		break;
-	case VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT:
-		return "IMAGE_EXT";
-		break;
-	case VK_DEBUG_REPORT_OBJECT_TYPE_EVENT_EXT:
-		return "EVENT_EXT";
-		break;
-	case VK_DEBUG_REPORT_OBJECT_TYPE_QUERY_POOL_EXT:
-		return "QUERY_POOL_EXT";
-		break;
-	case VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_VIEW_EXT:
-		return "BUFFER_VIEW_EXT";
-		break;
-	case VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_VIEW_EXT:
-		return "IMAGE_VIEW_EXT";
-		break;
-	case VK_DEBUG_REPORT_OBJECT_TYPE_SHADER_MODULE_EXT:
-		return "SHADER_MODULE_EXT";
-		break;
-	case VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_CACHE_EXT:
-		return "PIPELINE_CACHE_EXT";
-		break;
-	case VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_LAYOUT_EXT:
-		return "PIPELINE_LAYOUT_EXT";
-		break;
-	case VK_DEBUG_REPORT_OBJECT_TYPE_RENDER_PASS_EXT:
-		return "RENDER_PASS_EXT";
-		break;
-	case VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_EXT:
-		return "PIPELINE_EXT";
-		break;
-	case VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_SET_LAYOUT_EXT:
-		return "DESCRIPTOR_SET_LAYOUT_EXT";
-		break;
-	case VK_DEBUG_REPORT_OBJECT_TYPE_SAMPLER_EXT:
-		return "SAMPLER_EXT";
-		break;
-	case VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_POOL_EXT:
-		return "DESCRIPTOR_POOL_EXT";
-		break;
-	case VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_SET_EXT:
-		return "DESCRIPTOR_SET_EXT";
-		break;
-	case VK_DEBUG_REPORT_OBJECT_TYPE_FRAMEBUFFER_EXT:
-		return "FRAMEBUFFER_EXT";
-		break;
-	case VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_POOL_EXT:
-		return "COMMAND_POOL_EXT";
-		break;
-	case VK_DEBUG_REPORT_OBJECT_TYPE_SURFACE_KHR_EXT:
-		return "SURFACE_KHR_EXT";
-		break;
-	case VK_DEBUG_REPORT_OBJECT_TYPE_SWAPCHAIN_KHR_EXT:
-		return "SWAPCHAIN_KHR_EXT";
-		break;
-	case VK_DEBUG_REPORT_OBJECT_TYPE_DEBUG_REPORT_CALLBACK_EXT_EXT:
-		return "DEBUG_REPORT_CALLBACK_EXT_EXT";
-		break;
-	case VK_DEBUG_REPORT_OBJECT_TYPE_DISPLAY_KHR_EXT:
-		return "DISPLAY_KHR_EXT";
-		break;
-	case VK_DEBUG_REPORT_OBJECT_TYPE_DISPLAY_MODE_KHR_EXT:
-		return "DISPLAY_MODE_KHR_EXT";
-		break;
-	case VK_DEBUG_REPORT_OBJECT_TYPE_OBJECT_TABLE_NVX_EXT:
-		return "OBJECT_TABLE_NVX_EXT";
-		break;
-	case VK_DEBUG_REPORT_OBJECT_TYPE_INDIRECT_COMMANDS_LAYOUT_NVX_EXT:
-		return "INDIRECT_COMMANDS_LAYOUT_NVX_EXT";
-		break;
-	case VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_UPDATE_TEMPLATE_KHR_EXT:
-		return "DESCRIPTOR_UPDATE_TEMPLATE_KHR_EXT";
-		break;
+	case VK_DEBUG_REPORT_OBJECT_TYPE_INSTANCE_EXT: return "INSTANCE_EXT"; break;
+	case VK_DEBUG_REPORT_OBJECT_TYPE_PHYSICAL_DEVICE_EXT: return "PHYSICAL_DEVICE_EXT"; break;
+	case VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT: return "DEVICE_EXT"; break;
+	case VK_DEBUG_REPORT_OBJECT_TYPE_QUEUE_EXT: return "QUEUE_EXT"; break;
+	case VK_DEBUG_REPORT_OBJECT_TYPE_SEMAPHORE_EXT: return "SEMAPHORE_EXT"; break;
+	case VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT: return "COMMAND_BUFFER_EXT"; break;
+	case VK_DEBUG_REPORT_OBJECT_TYPE_FENCE_EXT: return "FENCE_EXT"; break;
+	case VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_MEMORY_EXT: return "DEVICE_MEMORY_EXT"; break;
+	case VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT: return "BUFFER_EXT"; break;
+	case VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT: return "IMAGE_EXT"; break;
+	case VK_DEBUG_REPORT_OBJECT_TYPE_EVENT_EXT: return "EVENT_EXT"; break;
+	case VK_DEBUG_REPORT_OBJECT_TYPE_QUERY_POOL_EXT: return "QUERY_POOL_EXT"; break;
+	case VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_VIEW_EXT: return "BUFFER_VIEW_EXT"; break;
+	case VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_VIEW_EXT: return "IMAGE_VIEW_EXT"; break;
+	case VK_DEBUG_REPORT_OBJECT_TYPE_SHADER_MODULE_EXT: return "SHADER_MODULE_EXT"; break;
+	case VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_CACHE_EXT: return "PIPELINE_CACHE_EXT"; break;
+	case VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_LAYOUT_EXT: return "PIPELINE_LAYOUT_EXT"; break;
+	case VK_DEBUG_REPORT_OBJECT_TYPE_RENDER_PASS_EXT: return "RENDER_PASS_EXT"; break;
+	case VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_EXT: return "PIPELINE_EXT"; break;
+	case VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_SET_LAYOUT_EXT: return "DESCRIPTOR_SET_LAYOUT_EXT"; break;
+	case VK_DEBUG_REPORT_OBJECT_TYPE_SAMPLER_EXT: return "SAMPLER_EXT"; break;
+	case VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_POOL_EXT: return "DESCRIPTOR_POOL_EXT"; break;
+	case VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_SET_EXT: return "DESCRIPTOR_SET_EXT"; break;
+	case VK_DEBUG_REPORT_OBJECT_TYPE_FRAMEBUFFER_EXT: return "FRAMEBUFFER_EXT"; break;
+	case VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_POOL_EXT: return "COMMAND_POOL_EXT"; break;
+	case VK_DEBUG_REPORT_OBJECT_TYPE_SURFACE_KHR_EXT: return "SURFACE_KHR_EXT"; break;
+	case VK_DEBUG_REPORT_OBJECT_TYPE_SWAPCHAIN_KHR_EXT: return "SWAPCHAIN_KHR_EXT"; break;
+	case VK_DEBUG_REPORT_OBJECT_TYPE_DEBUG_REPORT_CALLBACK_EXT_EXT: return "DEBUG_REPORT_CALLBACK_EXT_EXT"; break;
+	case VK_DEBUG_REPORT_OBJECT_TYPE_DISPLAY_KHR_EXT: return "DISPLAY_KHR_EXT"; break;
+	case VK_DEBUG_REPORT_OBJECT_TYPE_DISPLAY_MODE_KHR_EXT: return "DISPLAY_MODE_KHR_EXT"; break;
+	case VK_DEBUG_REPORT_OBJECT_TYPE_OBJECT_TABLE_NVX_EXT: return "OBJECT_TABLE_NVX_EXT"; break;
+	case VK_DEBUG_REPORT_OBJECT_TYPE_INDIRECT_COMMANDS_LAYOUT_NVX_EXT: return "INDIRECT_COMMANDS_LAYOUT_NVX_EXT"; break;
+	case VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_UPDATE_TEMPLATE_KHR_EXT: return "DESCRIPTOR_UPDATE_TEMPLATE_KHR_EXT"; break;
 	case VK_DEBUG_REPORT_OBJECT_TYPE_UNKNOWN_EXT:
-	default:
-		return "UNKNOWN_EXT";
-		break;
+	default: return "UNKNOWN_EXT"; break;
 	}
 }
 
@@ -203,9 +114,7 @@ VKAPI_ATTR VkBool32 VKAPI_CALL throwOnErrorDebugReportCallback(VkDebugReportFlag
 
 	// Throw an exception if the type of VkDebugReportFlagsEXT contains the ERROR_BIT.
 	if ((flags & (VK_DEBUG_REPORT_ERROR_BIT_EXT)) != VkDebugReportFlagsEXT(0))
-	{
-		throw pvr::PvrError(std::string(mapDebugReportObjectTypeToString(objectType) + std::string(". VULKAN_LAYER_VALIDATION: ") + pMessage));
-	}
+	{ throw pvr::PvrError(std::string(mapDebugReportObjectTypeToString(objectType) + std::string(". VULKAN_LAYER_VALIDATION: ") + pMessage)); }
 	// Return false so that there is no differences in the behaviour observed with or without validation layers enabled.
 	return VK_FALSE;
 }
@@ -283,6 +192,9 @@ const std::string InstanceExtensions[] = {
 	// The VK_KHR_wayland_surface extension provides the necessary mechanism for creating a VkSurfaceKHR object which refers to a Wayland wl_surface in addition to functions
 	// for querying the support for rendering to a Wayland compositor
 	VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME,
+#elif defined(VK_USE_PLATFORM_MACOS_MVK)
+	// The VK_MVK_macos_surface extension provides the necessary mechanism for creating a VkSurfaceKHR object which refers to a CAMetalLayer backed NSView
+	VK_MVK_MACOS_SURFACE_EXTENSION_NAME,
 #endif
 };
 
@@ -301,9 +213,12 @@ const std::string DeviceExtensions[] = {
 namespace Layers {
 const std::string InstanceLayers[] = {
 #ifdef DEBUG
-	// Standard Validation is a meta-layer managed by the LunarG Loader.
-	// Using Standard Validation will cause the loader to load a standard set of validation layers in an optimal order: VK_LAYER_GOOGLE_threading,
+	// Khronos Validation is a layer which encompasses all of the functionality that used to be contained in VK_LAYER_GOOGLE_threading,
 	// VK_LAYER_LUNARG_parameter_validation, VK_LAYER_LUNARG_object_tracker, VK_LAYER_LUNARG_core_validation, and VK_LAYER_GOOGLE_unique_objects
+	"VK_LAYER_KHRONOS_validation",
+	// Standard Validation is a (now deprecated) meta-layer managed by the LunarG Loader.
+	// Using Standard Validation will cause the loader to load a standard set of validation layers in an optimal order: VK_LAYER_GOOGLE_threading,
+	// VK_LAYER_LUNARG_parameter_validation, VK_LAYER_LUNARG_object_tracker, VK_LAYER_LUNARG_core_validation, and VK_LAYER_GOOGLE_unique_objects.
 	"VK_LAYER_LUNARG_standard_validation",
 	// PerfDoc is a Vulkan layer which attempts to identify API usage is may be discouraged primarily by validating applications
 	// against the rules set out in the Mali Application Developer Best Practices document
@@ -324,10 +239,7 @@ bool isExtensionEnabled(const std::vector<std::string>& enabledExtensionNames, c
 {
 	for (uint32_t i = 0; i < enabledExtensionNames.size(); i++)
 	{
-		if (!strcmp(enabledExtensionNames[i].c_str(), extensionName))
-		{
-			return true;
-		}
+		if (!strcmp(enabledExtensionNames[i].c_str(), extensionName)) { return true; }
 	}
 
 	return false;
@@ -369,10 +281,7 @@ std::vector<std::string> filterLayers(const std::vector<VkLayerProperties>& laye
 	{
 		for (uint32_t j = 0; j < layersCount; ++j)
 		{
-			if (!strcmp(layersToEnable[j].c_str(), layerProperties[i].layerName))
-			{
-				outLayers.push_back(layersToEnable[j]);
-			}
+			if (!strcmp(layersToEnable[j].c_str(), layerProperties[i].layerName)) { outLayers.push_back(layersToEnable[j]); }
 		}
 	}
 	return outLayers;
@@ -384,10 +293,7 @@ std::vector<std::string> filterLayers(const std::vector<VkLayerProperties>& laye
 /// <param name="msg">Print msg if the error code is not VK_SUCCESS and exit the application.</param>
 inline void vulkanSuccessOrDie(VkResult result, const char* msg)
 {
-	if (result != VK_SUCCESS)
-	{
-		throw pvr::PvrError("Vulkan Raised an error: " + std::string(msg));
-	}
+	if (result != VK_SUCCESS) { throw pvr::PvrError("Vulkan Raised an error: " + std::string(msg)); }
 }
 
 /// <summary>Attempts to find a suitable memory type for the specified set of allowed bits and memory property flags.</summary>
@@ -408,10 +314,7 @@ inline uint32_t getMemoryTypeIndexHelper(const VkPhysicalDeviceMemoryProperties&
 		usedMemoryProperties = deviceMemProps.memoryTypes[memoryIndex].propertyFlags;
 		const bool hasRequiredProperties = static_cast<uint32_t>(usedMemoryProperties & requiredMemoryProperties) == requiredMemoryProperties;
 
-		if (isRequiredMemoryType && hasRequiredProperties)
-		{
-			return static_cast<uint32_t>(memoryIndex);
-		}
+		if (isRequiredMemoryType && hasRequiredProperties) { return static_cast<uint32_t>(memoryIndex); }
 	}
 
 	// Failed to find a suitable memory type index for the given arguments.
@@ -445,10 +348,7 @@ inline void getMemoryTypeIndex(const VkPhysicalDeviceMemoryProperties& deviceMem
 	{
 		memoryPropertyFlags = requiredMemoryProperties;
 		outMemoryTypeIndex = getMemoryTypeIndexHelper(deviceMemProps, allowedMemoryTypeBits, memoryPropertyFlags, outMemoryPropertyFlags);
-		if (outMemoryTypeIndex == static_cast<uint32_t>(-1))
-		{
-			throw pvr::PvrError("Cannot find suitable memory type index for the set of VkMemoryPropertyFlags.");
-		}
+		if (outMemoryTypeIndex == static_cast<uint32_t>(-1)) { throw pvr::PvrError("Cannot find suitable memory type index for the set of VkMemoryPropertyFlags."); }
 	}
 }
 
@@ -462,16 +362,10 @@ inline VkImageAspectFlags formatToImageAspect(VkFormat format)
 	// Attempt to find a set of VkImageAspectFlags compatible with the VkFormat specified as input
 
 	// Undefined formats do not have compatible VkImageAspectFlags.
-	if (format == VK_FORMAT_UNDEFINED)
-	{
-		throw pvr::PvrError("Cannot retrieve VkImageAspectFlags from an undefined VkFormat");
-	}
+	if (format == VK_FORMAT_UNDEFINED) { throw pvr::PvrError("Cannot retrieve VkImageAspectFlags from an undefined VkFormat"); }
 
 	// For VkFormats which correspond to anything other than the set of Depth/Stencil formats then the VkImageAspectFlags can be assumed to be VK_IMAGE_ASPECT_COLOR_BIT.
-	if (format < VK_FORMAT_D16_UNORM || format > VK_FORMAT_D32_SFLOAT_S8_UINT)
-	{
-		return VK_IMAGE_ASPECT_COLOR_BIT;
-	}
+	if (format < VK_FORMAT_D16_UNORM || format > VK_FORMAT_D32_SFLOAT_S8_UINT) { return VK_IMAGE_ASPECT_COLOR_BIT; }
 
 	// If the VkFormat is one of the Depth/Stencil formats then determine whether the compatible VkImageAspectFlags includes VK_IMAGE_ASPECT_DEPTH_BIT or
 	// VK_IMAGE_ASPECT_STENCIL_BIT or both.
@@ -643,7 +537,7 @@ class VulkanIntroducingPVRShell : public pvr::Shell
 	VkCommandPool _commandPool;
 
 	// The commands buffers to which commands are rendered. The commands can then be submitted together.
-	VkCommandBuffer _commandBuffers[MAX_SWAPCHAIN_IMAGES];
+	VkCommandBuffer _cmdBuffers[MAX_SWAPCHAIN_IMAGES];
 
 	// The layout specifying the descriptors used by the graphics pipeline.
 	VkPipelineLayout _pipelineLayout;
@@ -699,7 +593,7 @@ public:
 	void createInstance();
 	void initDebugCallbacks();
 	void retrievePhysicalDevices();
-	void createSurface(void* display, void* window);
+	void createSurface(void* window, void* display, void* connection);
 	void createLogicalDevice();
 	void createSwapchain();
 	void createDepthStencilImages();
@@ -758,7 +652,7 @@ public:
 			_imageAcquireSemaphores[i] = VK_NULL_HANDLE;
 			_presentationSemaphores[i] = VK_NULL_HANDLE;
 			_perFrameResourcesFences[i] = VK_NULL_HANDLE;
-			_commandBuffers[i] = VK_NULL_HANDLE;
+			_cmdBuffers[i] = VK_NULL_HANDLE;
 			_debugReportCallbacks[i] = VK_NULL_HANDLE;
 		}
 	}
@@ -794,7 +688,7 @@ pvr::Result VulkanIntroducingPVRShell::initView()
 
 	// Retrieve and create the various Vulkan resources and objects used throughout this demo
 	retrievePhysicalDevices();
-	createSurface(getDisplay(), getWindow());
+	createSurface(getWindow(), getDisplay(), getConnection());
 	createLogicalDevice();
 	createSwapchain();
 	createDepthStencilImages();
@@ -813,10 +707,7 @@ pvr::Result VulkanIntroducingPVRShell::initView()
 
 	float aspect = 0.0f;
 	// the screen is rotated
-	if (isScreenRotated())
-	{
-		aspect = static_cast<float>(getHeight()) / static_cast<float>(getWidth());
-	}
+	if (isScreenRotated()) { aspect = static_cast<float>(getHeight()) / static_cast<float>(getWidth()); }
 	else
 	{
 		aspect = static_cast<float>(getWidth()) / static_cast<float>(getHeight());
@@ -936,7 +827,7 @@ pvr::Result VulkanIntroducingPVRShell::renderFrame()
 	VkSubmitInfo submitInfo = {};
 	VkPipelineStageFlags waitStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-	submitInfo.pCommandBuffers = &_commandBuffers[_swapchainIndex];
+	submitInfo.pCommandBuffers = &_cmdBuffers[_swapchainIndex];
 	submitInfo.pWaitSemaphores = &_imageAcquireSemaphores[_currentFrameIndex]; // wait for the image acquire to finish
 	submitInfo.waitSemaphoreCount = 1;
 	submitInfo.pSignalSemaphores = &_presentationSemaphores[_currentFrameIndex]; // signal submit
@@ -976,10 +867,7 @@ pvr::Result VulkanIntroducingPVRShell::releaseView()
 	// Cleanly release all resources prior to exitting the application.
 
 	// Wait for the device to finish with the resources prior to releasing them.
-	if (_device)
-	{
-		vulkanSuccessOrDie(_deviceVkFunctions.vkDeviceWaitIdle(_device), "Failed to wait for the device to become idle");
-	}
+	if (_device) { vulkanSuccessOrDie(_deviceVkFunctions.vkDeviceWaitIdle(_device), "Failed to wait for the device to become idle"); }
 
 	for (uint32_t i = 0; i < _swapchainLength; ++i)
 	{
@@ -1123,10 +1011,10 @@ pvr::Result VulkanIntroducingPVRShell::releaseView()
 
 	if (_commandPool)
 	{
-		if (_commandBuffers[0])
+		if (_cmdBuffers[0])
 		{
-			_deviceVkFunctions.vkFreeCommandBuffers(_device, _commandPool, _swapchainLength, &_commandBuffers[0]);
-			_commandBuffers[0] = VK_NULL_HANDLE; // Only checking the first one
+			_deviceVkFunctions.vkFreeCommandBuffers(_device, _commandPool, _swapchainLength, &_cmdBuffers[0]);
+			_cmdBuffers[0] = VK_NULL_HANDLE; // Only checking the first one
 		}
 		_deviceVkFunctions.vkDestroyCommandPool(_device, _commandPool, nullptr);
 		_commandPool = VK_NULL_HANDLE;
@@ -1169,10 +1057,7 @@ pvr::Result VulkanIntroducingPVRShell::releaseView()
 
 /// <summary>Code in quitApplication() will be called by pvr::Shell once per run, just before exiting the program.</summary>
 /// <returns>Result::Success if no error occurred</returns>.
-pvr::Result VulkanIntroducingPVRShell::quitApplication()
-{
-	return pvr::Result::Success;
-}
+pvr::Result VulkanIntroducingPVRShell::quitApplication() { return pvr::Result::Success; }
 
 /// <summary>Create the Vulkan application instance.</summary>
 void VulkanIntroducingPVRShell::createInstance()
@@ -1184,10 +1069,7 @@ void VulkanIntroducingPVRShell::createInstance()
 	// In vk_bindings_helper.h the function pointer for vkGetInstanceProcAddr is obtained using GetProcAddress, dlsym etc.
 	// The function pointer vkGetInstanceProcAddr is then used to retrieve the following additional Vulkan commands:
 	// vkEnumerateInstanceExtensionProperties, vkEnumerateInstanceLayerProperties and vkCreateInstance
-	if (!initVkBindings(&_vkBindings))
-	{
-		throw pvr::PvrError("Unable to initialise Vulkan.");
-	}
+	if (!initVkBindings(&_vkBindings)) { throw pvr::PvrError("Unable to initialise Vulkan."); }
 
 	uint32_t major = -1;
 	uint32_t minor = -1;
@@ -1255,6 +1137,7 @@ void VulkanIntroducingPVRShell::createInstance()
 
 	bool requestedStdValidation = false;
 	bool supportsStdValidation = false;
+	bool supportsKhronosValidation = false;
 	uint32_t stdValidationRequiredIndex = -1;
 
 	for (uint32_t i = 0; i < ARRAY_SIZE(Layers::InstanceLayers); ++i)
@@ -1266,23 +1149,26 @@ void VulkanIntroducingPVRShell::createInstance()
 		}
 	}
 
-	if (requestedStdValidation)
+	for (const auto& SupportedInstanceLayer : _enabledLayerNames)
+	{
+		if (!strcmp(SupportedInstanceLayer.c_str(), "VK_LAYER_LUNARG_standard_validation")) { supportsStdValidation = true; }
+		if (!strcmp(SupportedInstanceLayer.c_str(), "VK_LAYER_KHRONOS_validation")) { supportsKhronosValidation = true; }
+	}
+
+	// This code is to cover cases where VK_LAYER_LUNARG_standard_validation is requested but is not supported, where on some platforms the
+	// component layers enabled via VK_LAYER_LUNARG_standard_validation may still be supported even though VK_LAYER_LUNARG_standard_validation is not.
+	// Only perform the expansion if VK_LAYER_LUNARG_standard_validation is requested and not supported and the newer equivalent layer VK_LAYER_KHRONOS_validation is also not supported
+	if (requestedStdValidation && !supportsStdValidation && !supportsKhronosValidation)
 	{
 		// This code is to cover cases where VK_LAYER_LUNARG_standard_validation is requested but is not supported, where on some platforms the
 		// component layers enabled via VK_LAYER_LUNARG_standard_validation may still be supported even though VK_LAYER_LUNARG_standard_validation is not.
 		for (auto it = layerProps.begin(); !supportsStdValidation && it != layerProps.end(); ++it)
-		{
-			supportsStdValidation = !strcmp(it->layerName, "VK_LAYER_LUNARG_standard_validation");
-		}
-
+		{ supportsStdValidation = !strcmp(it->layerName, "VK_LAYER_LUNARG_standard_validation"); }
 		if (!supportsStdValidation)
 		{
 			for (uint32_t i = 0; stdValidationRequiredIndex == static_cast<uint32_t>(-1) && i < layerProps.size(); ++i)
 			{
-				if (!strcmp(Layers::InstanceLayers[i].c_str(), "VK_LAYER_LUNARG_standard_validation"))
-				{
-					stdValidationRequiredIndex = i;
-				}
+				if (!strcmp(Layers::InstanceLayers[i].c_str(), "VK_LAYER_LUNARG_standard_validation")) { stdValidationRequiredIndex = i; }
 			}
 
 			for (uint32_t j = 0; j < ARRAY_SIZE(Layers::InstanceLayers); ++j)
@@ -1315,16 +1201,10 @@ void VulkanIntroducingPVRShell::createInstance()
 	std::vector<const char*> enableLayers;
 
 	enabledExtensions.resize(_enabledInstanceExtensionNames.size());
-	for (uint32_t i = 0; i < _enabledInstanceExtensionNames.size(); ++i)
-	{
-		enabledExtensions[i] = _enabledInstanceExtensionNames[i].c_str();
-	}
+	for (uint32_t i = 0; i < _enabledInstanceExtensionNames.size(); ++i) { enabledExtensions[i] = _enabledInstanceExtensionNames[i].c_str(); }
 
 	enableLayers.resize(_enabledLayerNames.size());
-	for (uint32_t i = 0; i < _enabledLayerNames.size(); ++i)
-	{
-		enableLayers[i] = _enabledLayerNames[i].c_str();
-	}
+	for (uint32_t i = 0; i < _enabledLayerNames.size(); ++i) { enableLayers[i] = _enabledLayerNames[i].c_str(); }
 
 	// Here we create our Instance Info and assign our app info to it
 	// along with our instance layers and extensions.
@@ -1388,10 +1268,7 @@ void VulkanIntroducingPVRShell::retrievePhysicalDevices()
 	vulkanSuccessOrDie(_instanceVkFunctions.vkEnumeratePhysicalDevices(_instance, &physicalDeviceCount, nullptr), "Failed to enumerate the physical devices");
 
 	// The number of physical devices must be larger than or equal to 1 in this demo.
-	if (physicalDeviceCount == 0)
-	{
-		throw pvr::PvrError("Physical Device Count must be 1 or greater");
-	}
+	if (physicalDeviceCount == 0) { throw pvr::PvrError("Physical Device Count must be 1 or greater"); }
 
 	VkPhysicalDevice physicalDevices[16];
 
@@ -1431,9 +1308,10 @@ void VulkanIntroducingPVRShell::retrievePhysicalDevices()
 }
 
 /// <summary>Creates the surface used by the demo.</summary>
-/// <param name="display">A platform agnostic display.</param>
 /// <param name="window">A platform agnostic window.</param>
-void VulkanIntroducingPVRShell::createSurface(void* display, void* window)
+/// <param name="display">A platform agnostic display.</param>
+/// <param name="connection">A platform agnostic connection.</param>
+void VulkanIntroducingPVRShell::createSurface(void* window, void* display, void* connection)
 {
 	// Create the native platform surface abstracted via a VkSurfaceKHR object which this application will make use of in particular with the VK_KHR_swapchain extension.
 	// Applications may also, on some platforms, present rendered images directly to display devices without the need for an intermediate Window System. The extension
@@ -1464,6 +1342,8 @@ void VulkanIntroducingPVRShell::createSurface(void* display, void* window)
 		throw pvr::PvrError("Android surface instance extensions not supported");
 	}
 #elif defined VK_USE_PLATFORM_WIN32_KHR
+	(void)connection;
+	(void)display;
 	// Creates a VkSurfaceKHR object for a Win32 window
 	if (isExtensionEnabled(_enabledInstanceExtensionNames, VK_KHR_WIN32_SURFACE_EXTENSION_NAME))
 	{
@@ -1483,46 +1363,17 @@ void VulkanIntroducingPVRShell::createSurface(void* display, void* window)
 	// Creates a VkSurfaceKHR object for an X11 window, using the XCB client-side library.
 	if (isExtensionEnabled(_enabledInstanceExtensionNames, VK_KHR_XCB_SURFACE_EXTENSION_NAME))
 	{
-		typedef xcb_connection_t* (*PFN_XGetXCBConnection)(Display*);
-		void* dlHandle = dlopen("libX11-xcb.so.1;libX11-xcb.so", RTLD_LAZY);
-
-		if (dlHandle)
-		{
-			PFN_XGetXCBConnection fn_XGetXCBConnection = (PFN_XGetXCBConnection)dlsym(dlHandle, "XGetXCBConnection");
-			if (fn_XGetXCBConnection == nullptr)
-			{
-				dlclose(dlHandle);
-				throw pvr::PvrError("Failed to retrieve XGetXCBConnection function pointer. libX11-xcb probably not installed on the system");
-			}
-			// to do load the x11-xcb library.
-			VkXcbSurfaceCreateInfoKHR surfaceInfo = {};
-			surfaceInfo.sType = VK_STRUCTURE_TYPE_XCB_SURFACE_CREATE_INFO_KHR;
-			surfaceInfo.pNext = nullptr;
-			surfaceInfo.connection = fn_XGetXCBConnection((Display*)display);
-			surfaceInfo.window = (Window)window;
-			dlclose(dlHandle);
-			vulkanSuccessOrDie(_instanceVkFunctions.vkCreateXcbSurfaceKHR(_instance, &surfaceInfo, nullptr, &_surface), "Could not create Xcb Window Surface");
-			return;
-		}
-		else
-		{
-			Log("Failed to dlopen libX11-xcb. Please check your libX11-xcb installation on the target system");
-		}
-	}
-
-#if defined(VK_USE_PLATFORM_XLIB_KHR)
-	Log(LogLevel::Information, "Using xlib protocol");
-	// Creates a VkSurfaceKHR object for an X11 window, using the Xlib client-side library.
-	if (isExtensionEnabled(_enabledInstanceExtensionNames, VK_KHR_XLIB_SURFACE_EXTENSION_NAME))
-	{
-		VkXlibSurfaceCreateInfoKHR surfaceInfo = {};
-		surfaceInfo.sType = VK_STRUCTURE_TYPE_XLIB_SURFACE_CREATE_INFO_KHR;
+		VkXcbSurfaceCreateInfoKHR surfaceInfo = {};
+		surfaceInfo.sType = VK_STRUCTURE_TYPE_XCB_SURFACE_CREATE_INFO_KHR;
 		surfaceInfo.pNext = nullptr;
-		surfaceInfo.dpy = (Display*)display;
-		surfaceInfo.window = (Window)window;
-		vulkanSuccessOrDie(_instanceVkFunctions.vkCreateXlibSurfaceKHR(_instance, &surfaceInfo, NULL, &_surface), "Could not create Xlib Window Surface");
+		surfaceInfo.connection = static_cast<xcb_connection_t*>(connection);
+		surfaceInfo.window = *((xcb_window_t*)(&window));
+		vulkanSuccessOrDie(_instanceVkFunctions.vkCreateXcbSurfaceKHR(_instance, &surfaceInfo, nullptr, &_surface), "Could not create XCB Window Surface");
 	}
-#endif
+	else
+	{
+		throw pvr::PvrError("XCB surface instance extensions not supported");
+	}
 #elif defined(VK_USE_PLATFORM_XLIB_KHR)
 	// Creates a VkSurfaceKHR object for an X11 window, using the Xlib client-side library.
 	if (isExtensionEnabled(_enabledInstanceExtensionNames, VK_KHR_XLIB_SURFACE_EXTENSION_NAME))
@@ -1533,6 +1384,10 @@ void VulkanIntroducingPVRShell::createSurface(void* display, void* window)
 		surfaceInfo.dpy = (Display*)display;
 		surfaceInfo.window = (Window)window;
 		vulkanSuccessOrDie(_instanceVkFunctions.vkCreateXlibSurfaceKHR(_instance, &surfaceInfo, NULL, &_surface), "Could not create Xlib Window Surface");
+	}
+	else
+	{
+		throw pvr::PvrError("XLib surface instance extensions not supported");
 	}
 #elif defined(VK_USE_PLATFORM_WAYLAND_KHR)
 	// Creates a VkSurfaceKHR object for a Wayland surface.
@@ -1549,6 +1404,19 @@ void VulkanIntroducingPVRShell::createSurface(void* display, void* window)
 	{
 		throw pvr::PvrError("Wayland surface instance extensions not supported");
 	}
+#elif defined(VK_USE_PLATFORM_MACOS_MVK)
+	// Creates a VkSurfaceKHR object from an NSView
+	if (isExtensionEnabled(_enabledInstanceExtensionNames, VK_MVK_MACOS_SURFACE_EXTENSION_NAME))
+	{
+		VkMacOSSurfaceCreateInfoMVK surfaceInfo = {};
+		surfaceInfo.sType = VK_STRUCTURE_TYPE_MACOS_SURFACE_CREATE_INFO_MVK;
+		surfaceInfo.pNext = 0;
+		surfaceInfo.flags = 0;
+		// pView must be a valid NSView and must be backed by a CALayer instance of type CAMetalLayer.
+		surfaceInfo.pView = window;
+
+		vulkanSuccessOrDie(_instanceVkFunctions.vkCreateMacOSSurfaceMVK(_instance, &surfaceInfo, NULL, &_surface), "Could not create Xlib Window Surface");
+	}
 #else
 	if (isExtensionEnabled(_enabledInstanceExtensionNames, VK_KHR_DISPLAY_EXTENSION_NAME))
 	{
@@ -1557,10 +1425,7 @@ void VulkanIntroducingPVRShell::createSurface(void* display, void* window)
 		uint32_t propertiesCount = 0;
 
 		vulkanSuccessOrDie(_instanceVkFunctions.vkGetPhysicalDeviceDisplayPropertiesKHR(_physicalDevice, &propertiesCount, NULL), "Could not get physical device display properties");
-		if (propertiesCount != 1)
-		{
-			throw pvr::PvrError("Only a single display is supported");
-		}
+		if (propertiesCount != 1) { throw pvr::PvrError("Only a single display is supported"); }
 		vulkanSuccessOrDie(
 			_instanceVkFunctions.vkGetPhysicalDeviceDisplayPropertiesKHR(_physicalDevice, &propertiesCount, &properties), "Could not get physical device display properties");
 
@@ -1570,8 +1435,7 @@ void VulkanIntroducingPVRShell::createSurface(void* display, void* window)
 		vulkanSuccessOrDie(_instanceVkFunctions.vkGetDisplayModePropertiesKHR(_physicalDevice, nativeDisplay, &modeCount, NULL), "Could not get display mode properties");
 		std::vector<VkDisplayModePropertiesKHR> modeProperties;
 		modeProperties.resize(modeCount);
-		vulkanSuccessOrDie(
-			_instanceVkFunctions.vkGetDisplayModePropertiesKHR(_physicalDevice, nativeDisplay, &modeCount, modeProperties.data()), "Could not get display mode properties");
+		vulkanSuccessOrDie(_instanceVkFunctions.vkGetDisplayModePropertiesKHR(_physicalDevice, nativeDisplay, &modeCount, modeProperties.data()), "Could not get display mode properties");
 
 		VkDisplaySurfaceCreateInfoKHR surfaceInfo = {};
 		surfaceInfo.sType = VK_STRUCTURE_TYPE_DISPLAY_SURFACE_CREATE_INFO_KHR;
@@ -1619,10 +1483,7 @@ uint32_t VulkanIntroducingPVRShell::getCompatibleQueueFamily()
 	{
 		vulkanSuccessOrDie(_instanceVkFunctions.vkGetPhysicalDeviceSurfaceSupportKHR(_physicalDevice, i, _surface, &queueFamilySupportsPresentation[i]),
 			"Unable to determine whether the specified queue family suports presentation for the given surface");
-		if (((queueFamilyProperties[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) != 0) && queueFamilySupportsPresentation[i])
-		{
-			return i;
-		}
+		if (((queueFamilyProperties[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) != 0) && queueFamilySupportsPresentation[i]) { return i; }
 	}
 
 	throw pvr::PvrError("Could not find a compatible queue family supporting both graphics capabilities and presentation to the screen");
@@ -1690,10 +1551,7 @@ void VulkanIntroducingPVRShell::createLogicalDevice()
 	std::vector<const char*> enabledExtensions;
 
 	enabledExtensions.resize(_enabledDeviceExtensionNames.size());
-	for (uint32_t i = 0; i < _enabledDeviceExtensionNames.size(); ++i)
-	{
-		enabledExtensions[i] = _enabledDeviceExtensionNames[i].c_str();
-	}
+	for (uint32_t i = 0; i < _enabledDeviceExtensionNames.size(); ++i) { enabledExtensions[i] = _enabledDeviceExtensionNames[i].c_str(); }
 
 	deviceInfo.enabledExtensionCount = static_cast<uint32_t>(enabledExtensions.size());
 	deviceInfo.ppEnabledExtensionNames = enabledExtensions.data();
@@ -1730,14 +1588,8 @@ void VulkanIntroducingPVRShell::createLogicalDevice()
 void correctWindowExtents(const VkSurfaceCapabilitiesKHR& surfaceCapabilities, pvr::DisplayAttributes& attr)
 {
 	// Retrieves a set of correct window extents based on the requested width, height and surface capabilities.
-	if (attr.width == 0)
-	{
-		attr.width = surfaceCapabilities.currentExtent.width;
-	}
-	if (attr.height == 0)
-	{
-		attr.height = surfaceCapabilities.currentExtent.height;
-	}
+	if (attr.width == 0) { attr.width = surfaceCapabilities.currentExtent.width; }
+	if (attr.height == 0) { attr.height = surfaceCapabilities.currentExtent.height; }
 
 	attr.width = std::max<uint32_t>(surfaceCapabilities.minImageExtent.width, std::min<uint32_t>(attr.width, surfaceCapabilities.maxImageExtent.width));
 
@@ -1760,20 +1612,14 @@ void selectPresentMode(const pvr::DisplayAttributes& displayAttributes, std::vec
 	// We make use of PVRShell for handling command line arguments for configuring vsync modes using the -vsync command line argument.
 	switch (displayAttributes.vsyncMode)
 	{
-	case pvr::VsyncMode::Off:
-		desiredSwapMode = VK_PRESENT_MODE_IMMEDIATE_KHR;
-		break;
-	case pvr::VsyncMode::Mailbox:
-		desiredSwapMode = VK_PRESENT_MODE_MAILBOX_KHR;
-		break;
+	case pvr::VsyncMode::Off: desiredSwapMode = VK_PRESENT_MODE_IMMEDIATE_KHR; break;
+	case pvr::VsyncMode::Mailbox: desiredSwapMode = VK_PRESENT_MODE_MAILBOX_KHR; break;
 	case pvr::VsyncMode::Relaxed:
 		desiredSwapMode = VK_PRESENT_MODE_FIFO_RELAXED_KHR;
 		break;
 		// Default vsync mode.
-	case pvr::VsyncMode::On:
-		break;
-	default:
-		Log(LogLevel::Information, "Unexpected Vsync Mode specified. Defaulting to VK_PRESENT_MODE_FIFO_KHR");
+	case pvr::VsyncMode::On: break;
+	default: Log(LogLevel::Information, "Unexpected Vsync Mode specified. Defaulting to VK_PRESENT_MODE_FIFO_KHR");
 	}
 
 	// Verify that the desired presentation mode is present in the list of supported VkPresentModeKHRs.
@@ -1789,40 +1635,21 @@ void selectPresentMode(const pvr::DisplayAttributes& displayAttributes, std::vec
 		}
 		// Secondary matches : Immediate and Mailbox are better fits for each other than FIFO, so set them as secondaries
 		// If the user asked for Mailbox, and we found Immediate, set it (in case Mailbox is not found) and keep looking
-		if ((desiredSwapMode == VK_PRESENT_MODE_MAILBOX_KHR) && (currentPresentMode == VK_PRESENT_MODE_IMMEDIATE_KHR))
-		{
-			presentationMode = VK_PRESENT_MODE_IMMEDIATE_KHR;
-		}
+		if ((desiredSwapMode == VK_PRESENT_MODE_MAILBOX_KHR) && (currentPresentMode == VK_PRESENT_MODE_IMMEDIATE_KHR)) { presentationMode = VK_PRESENT_MODE_IMMEDIATE_KHR; }
 		// ... And vice versa: If the user asked for Immediate, and we found Mailbox, set it (in case Immediate is not found) and keep looking
-		if ((desiredSwapMode == VK_PRESENT_MODE_IMMEDIATE_KHR) && (currentPresentMode == VK_PRESENT_MODE_MAILBOX_KHR))
-		{
-			presentationMode = VK_PRESENT_MODE_MAILBOX_KHR;
-		}
+		if ((desiredSwapMode == VK_PRESENT_MODE_IMMEDIATE_KHR) && (currentPresentMode == VK_PRESENT_MODE_MAILBOX_KHR)) { presentationMode = VK_PRESENT_MODE_MAILBOX_KHR; }
 	}
 	switch (presentationMode)
 	{
-	case VK_PRESENT_MODE_IMMEDIATE_KHR:
-		Log(LogLevel::Information, "Presentation mode: Immediate (Vsync OFF)");
-		break;
-	case VK_PRESENT_MODE_MAILBOX_KHR:
-		Log(LogLevel::Information, "Presentation mode: Mailbox (Triple-buffering)");
-		break;
-	case VK_PRESENT_MODE_FIFO_KHR:
-		Log(LogLevel::Information, "Presentation mode: FIFO (Vsync ON)");
-		break;
-	case VK_PRESENT_MODE_FIFO_RELAXED_KHR:
-		Log(LogLevel::Information, "Presentation mode: Relaxed FIFO (Relaxed Vsync)");
-		break;
-	default:
-		assertion(false, "Unrecognised presentation mode");
-		break;
+	case VK_PRESENT_MODE_IMMEDIATE_KHR: Log(LogLevel::Information, "Presentation mode: Immediate (Vsync OFF)"); break;
+	case VK_PRESENT_MODE_MAILBOX_KHR: Log(LogLevel::Information, "Presentation mode: Mailbox (Triple-buffering)"); break;
+	case VK_PRESENT_MODE_FIFO_KHR: Log(LogLevel::Information, "Presentation mode: FIFO (Vsync ON)"); break;
+	case VK_PRESENT_MODE_FIFO_RELAXED_KHR: Log(LogLevel::Information, "Presentation mode: Relaxed FIFO (Relaxed Vsync)"); break;
+	default: assertion(false, "Unrecognised presentation mode"); break;
 	}
 
 	// Set the swapchain length if it has not already been set.
-	if (!displayAttributes.swapLength)
-	{
-		swapLength = 3;
-	}
+	if (!displayAttributes.swapLength) { swapLength = 3; }
 }
 
 /// <summary>Creates swapchain to present images on the surface.</summary>
@@ -1840,8 +1667,7 @@ void VulkanIntroducingPVRShell::createSwapchain()
 	// The physical device surface may well only support a certain set of VkFormats/VkColorSpaceKHR pairs for the presentation images in their presentation engine.
 	uint32_t formatCount;
 	// Retrieve the number of VkFormats/VkColorSpaceKHR pairs supported by the physical device surface.
-	vulkanSuccessOrDie(
-		_instanceVkFunctions.vkGetPhysicalDeviceSurfaceFormatsKHR(_physicalDevice, _surface, &formatCount, nullptr), "Failed to retrieved physical device surface formats");
+	vulkanSuccessOrDie(_instanceVkFunctions.vkGetPhysicalDeviceSurfaceFormatsKHR(_physicalDevice, _surface, &formatCount, nullptr), "Failed to retrieved physical device surface formats");
 	// Retrieve the list of formatCount VkFormats/VkColorSpaceKHR pairs supported by the physical device surface.
 	std::vector<VkSurfaceFormatKHR> surfaceFormats(formatCount);
 	vulkanSuccessOrDie(_instanceVkFunctions.vkGetPhysicalDeviceSurfaceFormatsKHR(_physicalDevice, _surface, &formatCount, surfaceFormats.data()),
@@ -1888,8 +1714,7 @@ void VulkanIntroducingPVRShell::createSwapchain()
 
 	// Get the surface capabilities from the surface and physical device.
 	VkSurfaceCapabilitiesKHR surfaceCaps;
-	vulkanSuccessOrDie(
-		_instanceVkFunctions.vkGetPhysicalDeviceSurfaceCapabilitiesKHR(_physicalDevice, _surface, &surfaceCaps), "Failed to retrieve physical device surface capabilities");
+	vulkanSuccessOrDie(_instanceVkFunctions.vkGetPhysicalDeviceSurfaceCapabilitiesKHR(_physicalDevice, _surface, &surfaceCaps), "Failed to retrieve physical device surface capabilities");
 
 	// Get a set of "corrected" extents (dimensions) for the surface window based on the pvr::Shell window width/height and surface capabilities.
 	correctWindowExtents(surfaceCaps, this->getDisplayAttributes());
@@ -1897,10 +1722,7 @@ void VulkanIntroducingPVRShell::createSwapchain()
 	// Retrieve the number of presentation modes supported by the physical device surface.
 	uint32_t numPresentMode;
 	vulkanSuccessOrDie(_instanceVkFunctions.vkGetPhysicalDeviceSurfacePresentModesKHR(_physicalDevice, _surface, &numPresentMode, nullptr), "Failed to retrieve presentation modes");
-	if (numPresentMode == 0)
-	{
-		throw pvr::PvrError("This application requires more than one presentation mode");
-	}
+	if (numPresentMode == 0) { throw pvr::PvrError("This application requires more than one presentation mode"); }
 	// Retrieve the numPresentMode presentation modes supported by the physical device surface.
 	std::vector<VkPresentModeKHR> presentModes(numPresentMode);
 	vulkanSuccessOrDie(
@@ -1920,9 +1742,7 @@ void VulkanIntroducingPVRShell::createSwapchain()
 	swapChainInfo.imageFormat = _swapchainColorFormat;
 	swapChainInfo.preTransform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
 	if ((surfaceCaps.supportedTransforms & VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR) == 0)
-	{
-		throw new pvr::InvalidOperationError("Vulkan Surface does not support VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR transformation");
-	}
+	{ throw pvr::InvalidOperationError("Vulkan Surface does not support VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR transformation"); }
 	swapChainInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
 	swapChainInfo.clipped = VK_TRUE;
 	swapChainInfo.imageExtent.width = displayAttributes.width;
@@ -1943,10 +1763,7 @@ void VulkanIntroducingPVRShell::createSwapchain()
 	// Retrieve the number of presentation images used by the presentation engine.
 	vulkanSuccessOrDie(_deviceVkFunctions.vkGetSwapchainImagesKHR(_device, _swapchain, &_swapchainLength, nullptr), "Failed to get swapchain images");
 
-	if (_swapchainLength <= 1 || _swapchainLength > 8)
-	{
-		throw pvr::PvrError("This application requires between 2 and 8 swapchain images");
-	}
+	if (_swapchainLength <= 1 || _swapchainLength > 8) { throw pvr::PvrError("This application requires between 2 and 8 swapchain images"); }
 
 	// Retrieve the _swapchainLength presentation images used by the presentation engine.
 	vulkanSuccessOrDie(_deviceVkFunctions.vkGetSwapchainImagesKHR(_device, _swapchain, &_swapchainLength, &_swapchainImages[0]), "Failed to get swapchain images");
@@ -2140,10 +1957,7 @@ void VulkanIntroducingPVRShell::allocateDeviceMemory(VkDevice& device, VkMemoryR
 	// Device memory is memory which is visible to the device i.e. the contents of buffers or images which devices can make use of.
 	VkMemoryAllocateInfo memAllocateInfo = {};
 
-	if (memoryRequirements.memoryTypeBits == 0)
-	{
-		throw pvr::PvrError("Allowed memory Bits must not be 0");
-	}
+	if (memoryRequirements.memoryTypeBits == 0) { throw pvr::PvrError("Allowed memory Bits must not be 0"); }
 
 	memAllocateInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 	memAllocateInfo.allocationSize = memoryRequirements.size;
@@ -2154,11 +1968,7 @@ void VulkanIntroducingPVRShell::allocateDeviceMemory(VkDevice& device, VkMemoryR
 	// resource consuming resources from the heap indicated by that memory type's heap index.
 	getMemoryTypeIndex(physicalDeviceMemoryProperties, memoryRequirements.memoryTypeBits, requiredMemFlags, optimalMemFlags, memAllocateInfo.memoryTypeIndex, outMemFlags);
 	if (memAllocateInfo.memoryTypeIndex == static_cast<uint32_t>(-1))
-	{
-		throw pvr::PvrError("Could not get a Memory Type Index for the specified combination specified memory bits, properties and flags");
-	}
-
-	// Allocate the device memory.
+	{ throw pvr::PvrError("Could not get a Memory Type Index for the specified combination specified memory bits, properties and flags"); } // Allocate the device memory.
 	vulkanSuccessOrDie(_deviceVkFunctions.vkAllocateMemory(device, &memAllocateInfo, nullptr, &outMemory), "Failed to allocate buffer memory");
 }
 
@@ -2173,7 +1983,7 @@ void VulkanIntroducingPVRShell::loadAndCreateShaderModules(const char* const sha
 	// Windows resources, Android .apk assets etc.
 	// A shader itself specifies the programmable operations executed for a particular type of task - vertex, control point, tessellated vertex, primitive, fragment or compute
 	// workgroup
-	pvr::Stream::ptr_type stream = getAssetStream(shaderName);
+	std::unique_ptr<pvr::Stream> stream = getAssetStream(shaderName);
 	assertion(stream.get() != nullptr && "Invalid Shader source");
 	std::vector<uint32_t> readData(stream->getSize());
 	size_t dataReadSize;
@@ -2204,7 +2014,7 @@ void VulkanIntroducingPVRShell::allocateCommandBuffers()
 	sAllocateInfo.commandBufferCount = _swapchainLength;
 
 	// Allocate _swapchainLength command buffers
-	vulkanSuccessOrDie(_deviceVkFunctions.vkAllocateCommandBuffers(_device, &sAllocateInfo, &_commandBuffers[0]), "Failed to allocate command buffers");
+	vulkanSuccessOrDie(_deviceVkFunctions.vkAllocateCommandBuffers(_device, &sAllocateInfo, &_cmdBuffers[0]), "Failed to allocate command buffers");
 }
 
 /// <summary>Records the rendering commands into a set of command buffers which can be subsequently submitted to a queue for exection.</summary>
@@ -2220,8 +2030,8 @@ void VulkanIntroducingPVRShell::recordCommandBuffers()
 	// independently of all other command buffers and each command buffer must independently configure all of the state relevant to its own set of commands.
 
 	// Setup the VkCommandBufferBeginInfo
-	VkCommandBufferBeginInfo commandBufferBeginInfo = {};
-	commandBufferBeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+	VkCommandBufferBeginInfo cmdBufferBeginInfo = {};
+	cmdBufferBeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
 	// Specify the clear values used by the RenderPass for clearing the specified framebuffer attachments
 	VkClearValue clearVals[2] = { { 0 } };
@@ -2247,14 +2057,14 @@ void VulkanIntroducingPVRShell::recordCommandBuffers()
 	for (uint32_t i = 0; i < _swapchainLength; ++i)
 	{
 		// Commands may only be recorded once the command buffer is in the recording state.
-		vulkanSuccessOrDie(_deviceVkFunctions.vkBeginCommandBuffer(_commandBuffers[i], &commandBufferBeginInfo), "Failed to begin the command buffer");
+		vulkanSuccessOrDie(_deviceVkFunctions.vkBeginCommandBuffer(_cmdBuffers[i], &cmdBufferBeginInfo), "Failed to begin the command buffer");
 
 		// Specify the per swapchain framebuffer to use as part of the VkRenderPassBeginInfo
 		renderPassBeginInfo.framebuffer = _framebuffers[i];
 
 		// Initiates the start of a renderPass.
 		// From this point until either vkCmdNextSubpass or vkCmdEndRenderPass is called commands will be recorded for the first subpass of the specified renderPass.
-		_deviceVkFunctions.vkCmdBeginRenderPass(_commandBuffers[i], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+		_deviceVkFunctions.vkCmdBeginRenderPass(_cmdBuffers[i], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 
 		// Setup a list of descriptor sets which will be used for subsequent pipelines.
 		VkDescriptorSet descriptorSets[] = { _staticDescriptorSet, _dynamicDescriptorSet };
@@ -2263,23 +2073,23 @@ void VulkanIntroducingPVRShell::recordCommandBuffers()
 		uint32_t dynamicOffset = static_cast<uint32_t>(_dynamicBufferAlignedSize * i);
 
 		// Bind the list of descriptor sets using the dynamic offset.
-		_deviceVkFunctions.vkCmdBindDescriptorSets(_commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelineLayout, 0, 2, descriptorSets, 1, &dynamicOffset);
+		_deviceVkFunctions.vkCmdBindDescriptorSets(_cmdBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelineLayout, 0, 2, descriptorSets, 1, &dynamicOffset);
 
 		// Bind the graphics pipeline through which commands will be funneled.
-		_deviceVkFunctions.vkCmdBindPipeline(_commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, _graphicsPipeline);
+		_deviceVkFunctions.vkCmdBindPipeline(_cmdBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, _graphicsPipeline);
 
 		// Bind the vertex buffer used for sourcing the triangle vertices
 		VkDeviceSize vertexOffset = 0;
-		_deviceVkFunctions.vkCmdBindVertexBuffers(_commandBuffers[i], 0, 1, &_vbo, &vertexOffset);
+		_deviceVkFunctions.vkCmdBindVertexBuffers(_cmdBuffers[i], 0, 1, &_vbo, &vertexOffset);
 
 		// Record a non-indexed draw command specifying the number of vertices
-		_deviceVkFunctions.vkCmdDraw(_commandBuffers[i], 3, 1, 0, 0);
+		_deviceVkFunctions.vkCmdDraw(_cmdBuffers[i], 3, 1, 0, 0);
 
 		// Ends the current renderPass instance.
-		_deviceVkFunctions.vkCmdEndRenderPass(_commandBuffers[i]);
+		_deviceVkFunctions.vkCmdEndRenderPass(_cmdBuffers[i]);
 
 		// Ends the recording for the specified command buffer
-		vulkanSuccessOrDie(_deviceVkFunctions.vkEndCommandBuffer(_commandBuffers[i]), "Failed to end the command buffer");
+		vulkanSuccessOrDie(_deviceVkFunctions.vkEndCommandBuffer(_cmdBuffers[i]), "Failed to end the command buffer");
 	}
 }
 
@@ -2634,7 +2444,7 @@ void VulkanIntroducingPVRShell::createVbo()
 		}
 
 		// We create a command buffer to execute the copy operation from our command pool.
-		VkCommandBuffer commandBuffer;
+		VkCommandBuffer cmdBuffers;
 		VkCommandBufferAllocateInfo commandAllocateInfo = {};
 		commandAllocateInfo.commandPool = _commandPool;
 		commandAllocateInfo.pNext = nullptr;
@@ -2643,26 +2453,26 @@ void VulkanIntroducingPVRShell::createVbo()
 		commandAllocateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
 
 		// We Allocate the command buffer from the command pool's memory.
-		vulkanSuccessOrDie(_deviceVkFunctions.vkAllocateCommandBuffers(_device, &commandAllocateInfo, &commandBuffer), "Allocate Command Buffers");
+		vulkanSuccessOrDie(_deviceVkFunctions.vkAllocateCommandBuffers(_device, &commandAllocateInfo, &cmdBuffers), "Allocate Command Buffers");
 
 		// We start recording our command buffer operation
-		VkCommandBufferBeginInfo commandBufferBeginInfo = {};
-		commandBufferBeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-		commandBufferBeginInfo.flags = 0;
-		commandBufferBeginInfo.pNext = nullptr;
-		commandBufferBeginInfo.pInheritanceInfo = nullptr;
+		VkCommandBufferBeginInfo cmdBufferBeginInfo = {};
+		cmdBufferBeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+		cmdBufferBeginInfo.flags = 0;
+		cmdBufferBeginInfo.pNext = nullptr;
+		cmdBufferBeginInfo.pInheritanceInfo = nullptr;
 
-		vulkanSuccessOrDie(_deviceVkFunctions.vkBeginCommandBuffer(commandBuffer, &commandBufferBeginInfo), "Begin Staging Buffer Copy to Buffer Command Buffer Recording");
+		vulkanSuccessOrDie(_deviceVkFunctions.vkBeginCommandBuffer(cmdBuffers, &cmdBufferBeginInfo), "Begin Staging Buffer Copy to Buffer Command Buffer Recording");
 
 		VkBufferCopy bufferCopy = {};
 		bufferCopy.srcOffset = 0;
 		bufferCopy.dstOffset = 0;
 		bufferCopy.size = sizeof(triangle);
 
-		_deviceVkFunctions.vkCmdCopyBuffer(commandBuffer, stagingBuffer, _vbo, 1, &bufferCopy);
+		_deviceVkFunctions.vkCmdCopyBuffer(cmdBuffers, stagingBuffer, _vbo, 1, &bufferCopy);
 
 		// We end the recording of our command buffer.
-		vulkanSuccessOrDie(_deviceVkFunctions.vkEndCommandBuffer(commandBuffer), "End Staging Buffer Copy to Vbo Command Buffer Recording");
+		vulkanSuccessOrDie(_deviceVkFunctions.vkEndCommandBuffer(cmdBuffers), "End Staging Buffer Copy to Vbo Command Buffer Recording");
 
 		// We create a fence to make sure that the command buffer is synchronized correctly.
 		VkFence copyFence;
@@ -2684,7 +2494,7 @@ void VulkanIntroducingPVRShell::createVbo()
 		submitInfo.signalSemaphoreCount = 0;
 		submitInfo.pSignalSemaphores = nullptr;
 		submitInfo.commandBufferCount = 1;
-		submitInfo.pCommandBuffers = &commandBuffer;
+		submitInfo.pCommandBuffers = &cmdBuffers;
 
 		vulkanSuccessOrDie(_deviceVkFunctions.vkQueueSubmit(_queue, 1, &submitInfo, copyFence), "Submit Staging Buffer to Vbo Copy Command Buffer");
 
@@ -2693,7 +2503,7 @@ void VulkanIntroducingPVRShell::createVbo()
 
 		// We clean up all the temporary data we created for this operation.
 		_deviceVkFunctions.vkDestroyFence(_device, copyFence, nullptr);
-		_deviceVkFunctions.vkFreeCommandBuffers(_device, _commandPool, 1, &commandBuffer);
+		_deviceVkFunctions.vkFreeCommandBuffers(_device, _commandPool, 1, &cmdBuffers);
 		_deviceVkFunctions.vkFreeMemory(_device, stagingBufferMemory, nullptr);
 		_deviceVkFunctions.vkDestroyBuffer(_device, stagingBuffer, nullptr);
 	}
@@ -2745,8 +2555,7 @@ void VulkanIntroducingPVRShell::createUniformBuffers()
 		// Memory created using vkAllocateMemory isn't directly accessible to the -host and instead must be mapped manually.
 		// Note that only memory created with the memory property flag VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT can be mapped.
 		// vkMapMemory retrieves a host virtual address pointer to a region of a mappable memory object.
-		vulkanSuccessOrDie(
-			_deviceVkFunctions.vkMapMemory(_device, _modelViewProjectionMemory, 0, _modelViewProjectionBufferSize, VkMemoryMapFlags(0), &_modelViewProjectionMappedMemory),
+		vulkanSuccessOrDie(_deviceVkFunctions.vkMapMemory(_device, _modelViewProjectionMemory, 0, _modelViewProjectionBufferSize, VkMemoryMapFlags(0), &_modelViewProjectionMappedMemory),
 			"Could not map the uniform buffer.");
 	}
 }
@@ -2760,14 +2569,8 @@ void VulkanIntroducingPVRShell::generateTexture()
 		for (uint32_t y = 0; y < _textureDimensions.height; ++y)
 		{
 			float g = 0.3f;
-			if (x % 128 < 64 && y % 128 < 64)
-			{
-				g = 1;
-			}
-			if (x % 128 >= 64 && y % 128 >= 64)
-			{
-				g = 1;
-			}
+			if (x % 128 < 64 && y % 128 < 64) { g = 1; }
+			if (x % 128 >= 64 && y % 128 >= 64) { g = 1; }
 
 			uint8_t* pixel = _textureData.data() + (x * _textureDimensions.height * 4) + (y * 4);
 			pixel[0] = static_cast<uint8_t>(100 * g);
@@ -2839,9 +2642,7 @@ void VulkanIntroducingPVRShell::allocateDescriptorSets()
 	{
 		// Check the physical device limit specifying the maximum number of descriptor sets using dynamic buffers.
 		if (_physicalDeviceProperties.limits.maxDescriptorSetUniformBuffersDynamic < 1)
-		{
-			throw pvr::PvrError("The physical device must support at least 1 dynamic uniform buffer");
-		}
+		{ throw pvr::PvrError("The physical device must support at least 1 dynamic uniform buffer"); }
 
 		// We use this info struct to define the info we'll be using to write the actual data to the descriptor set we created (we take info from uniform buffer).
 		descriptorSetWrites[1] = {};
@@ -3086,7 +2887,7 @@ void VulkanIntroducingPVRShell::createTexture()
 	copyRegion.bufferOffset = 0;
 
 	// We create command buffer to execute the copy operation from our command pool.
-	VkCommandBuffer commandBuffer;
+	VkCommandBuffer cmdBuffers;
 	VkCommandBufferAllocateInfo commandAllocateInfo = {};
 	commandAllocateInfo.commandPool = _commandPool;
 	commandAllocateInfo.pNext = nullptr;
@@ -3095,16 +2896,16 @@ void VulkanIntroducingPVRShell::createTexture()
 	commandAllocateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
 
 	// We Allocate the command buffer from the command pool's memory.
-	vulkanSuccessOrDie(_deviceVkFunctions.vkAllocateCommandBuffers(_device, &commandAllocateInfo, &commandBuffer), "Allocate Command Buffers");
+	vulkanSuccessOrDie(_deviceVkFunctions.vkAllocateCommandBuffers(_device, &commandAllocateInfo, &cmdBuffers), "Allocate Command Buffers");
 
 	// We start recording our command buffer operation
-	VkCommandBufferBeginInfo commandBufferBeginInfo = {};
-	commandBufferBeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-	commandBufferBeginInfo.flags = 0;
-	commandBufferBeginInfo.pNext = nullptr;
-	commandBufferBeginInfo.pInheritanceInfo = nullptr;
+	VkCommandBufferBeginInfo cmdBufferBeginInfo = {};
+	cmdBufferBeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+	cmdBufferBeginInfo.flags = 0;
+	cmdBufferBeginInfo.pNext = nullptr;
+	cmdBufferBeginInfo.pInheritanceInfo = nullptr;
 
-	vulkanSuccessOrDie(_deviceVkFunctions.vkBeginCommandBuffer(commandBuffer, &commandBufferBeginInfo), "Begin Staging Buffer to Image Copy Command Buffer Recording");
+	vulkanSuccessOrDie(_deviceVkFunctions.vkBeginCommandBuffer(cmdBuffers, &cmdBufferBeginInfo), "Begin Staging Buffer to Image Copy Command Buffer Recording");
 
 	// We specify the sub resource range of our Image. In the case our Image the parameters are default as our image is very simple.
 	VkImageSubresourceRange subResourceRange = {};
@@ -3124,10 +2925,10 @@ void VulkanIntroducingPVRShell::createTexture()
 	copyMemoryBarrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
 
 	// We use a pipeline barrier to change the image layout to accommodate the transfer operation
-	_deviceVkFunctions.vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, 0, 0, nullptr, 0, nullptr, 1, &copyMemoryBarrier);
+	_deviceVkFunctions.vkCmdPipelineBarrier(cmdBuffers, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, 0, 0, nullptr, 0, nullptr, 1, &copyMemoryBarrier);
 
 	// We copy the staging buffer data to memory bound to the image we just created.
-	_deviceVkFunctions.vkCmdCopyBufferToImage(commandBuffer, stagingBuffer, _triangleImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &copyRegion);
+	_deviceVkFunctions.vkCmdCopyBufferToImage(cmdBuffers, stagingBuffer, _triangleImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &copyRegion);
 
 	// We create a barrier to make sure that the Image layout is Shader read only.
 	VkImageMemoryBarrier layoutMemoryBarrier = {};
@@ -3140,10 +2941,10 @@ void VulkanIntroducingPVRShell::createTexture()
 	layoutMemoryBarrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
 
 	// We use a pipeline barrier to change the image layout to be optimized to be read by the shader.
-	_deviceVkFunctions.vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, 0, 0, nullptr, 0, nullptr, 1, &layoutMemoryBarrier);
+	_deviceVkFunctions.vkCmdPipelineBarrier(cmdBuffers, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, 0, 0, nullptr, 0, nullptr, 1, &layoutMemoryBarrier);
 
 	// We end the recording of our command buffer.
-	vulkanSuccessOrDie(_deviceVkFunctions.vkEndCommandBuffer(commandBuffer), "End Staging Buffer to Image Copy Command Buffer Recording");
+	vulkanSuccessOrDie(_deviceVkFunctions.vkEndCommandBuffer(cmdBuffers), "End Staging Buffer to Image Copy Command Buffer Recording");
 
 	// We create a fence to make sure that the command buffer is synchronized correctly.
 	VkFence copyFence;
@@ -3165,7 +2966,7 @@ void VulkanIntroducingPVRShell::createTexture()
 	submitInfo.signalSemaphoreCount = 0;
 	submitInfo.pSignalSemaphores = nullptr;
 	submitInfo.commandBufferCount = 1;
-	submitInfo.pCommandBuffers = &commandBuffer;
+	submitInfo.pCommandBuffers = &cmdBuffers;
 
 	vulkanSuccessOrDie(_deviceVkFunctions.vkQueueSubmit(_queue, 1, &submitInfo, copyFence), "Submit Staging Buffer Copy to Image Command Buffer");
 
@@ -3231,7 +3032,7 @@ void VulkanIntroducingPVRShell::createTexture()
 
 	// We clean up all the temporary data we created for this operation.
 	_deviceVkFunctions.vkDestroyFence(_device, copyFence, nullptr);
-	_deviceVkFunctions.vkFreeCommandBuffers(_device, _commandPool, 1, &commandBuffer);
+	_deviceVkFunctions.vkFreeCommandBuffers(_device, _commandPool, 1, &cmdBuffers);
 	_deviceVkFunctions.vkFreeMemory(_device, stagingBufferMemory, nullptr);
 	_deviceVkFunctions.vkDestroyBuffer(_device, stagingBuffer, nullptr);
 }
@@ -3342,17 +3143,30 @@ void VulkanIntroducingPVRShell::createRenderPass()
 	// an attachment to VK_SUBPASS_EXTERNAL.
 	// As described above the application is in the best position to understand and make decisions about all of the memory dependencies and so we choose to explicitly
 	// provide the otherwise implicit subpass dependencies.
-	VkSubpassDependency dependencies[] = {
-		// Adds an explicit subpass dependency from VK_SUBPASS_EXTERNAL to the first subpass that uses an attachment which is the first subpass (0).
-		{ VK_SUBPASS_EXTERNAL, 0, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_ACCESS_MEMORY_READ_BIT, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-			VK_DEPENDENCY_BY_REGION_BIT },
-		// Adds an explicit subpass dependency from the first subpass that uses an attachment which is the first subpass (0) to VK_SUBPASS_EXTERNAL.
-		{ 0, VK_SUBPASS_EXTERNAL, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-			VK_ACCESS_MEMORY_READ_BIT, VK_DEPENDENCY_BY_REGION_BIT },
-	};
+	VkSubpassDependency subpassDependencies[2];
+
+	// Adds an explicit subpass dependency from VK_SUBPASS_EXTERNAL to the first subpass that uses an attachment which is the first subpass (0).
+	subpassDependencies[0] = {};
+	subpassDependencies[0].srcSubpass = VK_SUBPASS_EXTERNAL;
+	subpassDependencies[0].dstSubpass = 0;
+	subpassDependencies[0].srcStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+	subpassDependencies[0].dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+	subpassDependencies[0].srcAccessMask = 0;
+	subpassDependencies[0].dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+	subpassDependencies[0].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
+
+	// Adds an explicit subpass dependency from the first subpass that uses an attachment which is the first subpass (0) to VK_SUBPASS_EXTERNAL.
+	subpassDependencies[1] = {};
+	subpassDependencies[1].srcSubpass = 0;
+	subpassDependencies[1].dstSubpass = VK_SUBPASS_EXTERNAL;
+	subpassDependencies[1].srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+	subpassDependencies[1].dstStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+	subpassDependencies[1].srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+	subpassDependencies[1].dstAccessMask = 0;
+	subpassDependencies[1].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
 
 	// Add the set of dependencies to the RenderPass creation.
-	renderPassInfo.pDependencies = dependencies;
+	renderPassInfo.pDependencies = subpassDependencies;
 	renderPassInfo.dependencyCount = 2;
 	vulkanSuccessOrDie(_deviceVkFunctions.vkCreateRenderPass(_device, &renderPassInfo, nullptr, &_renderPass), "Failed to create the renderPass");
 }
@@ -3431,7 +3245,4 @@ void VulkanIntroducingPVRShell::createSynchronisationPrimitives()
 
 /// <summary>This function must be implemented by the user of the shell. The user should return its pvr::Shell object defining the behaviour of the application.</summary>
 /// <returns>Return a unique ptr to the demo supplied by the user.</returns>
-std::unique_ptr<pvr::Shell> pvr::newDemo()
-{
-	return std::unique_ptr<pvr::Shell>(new VulkanIntroducingPVRShell());
-}
+std::unique_ptr<pvr::Shell> pvr::newDemo() { return std::make_unique<VulkanIntroducingPVRShell>(); }

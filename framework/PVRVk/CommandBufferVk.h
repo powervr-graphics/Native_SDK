@@ -97,10 +97,7 @@ public:
 	}
 
 	/// <summary>Ends a label region of work submitted to this command buffer.</summary>
-	void endDebugUtilsLabel()
-	{
-		getDevice()->getVkBindings().vkCmdEndDebugUtilsLabelEXT(getVkHandle());
-	}
+	void endDebugUtilsLabel() { getDevice()->getVkBindings().vkCmdEndDebugUtilsLabelEXT(getVkHandle()); }
 
 	/// <summary>Inserts a single debug label any time.</summary>
 	/// <param name="labelInfo">Specifies the parameters of the label region to insert</param>
@@ -135,10 +132,7 @@ public:
 	}
 
 	/// <summary>Ends a debug marked region.</summary>
-	void debugMarkerEndEXT()
-	{
-		getDevice()->getVkBindings().vkCmdDebugMarkerEndEXT(getVkHandle());
-	}
+	void debugMarkerEndEXT() { getDevice()->getVkBindings().vkCmdDebugMarkerEndEXT(getVkHandle()); }
 
 	/// <summary>Inserts a debug marker.</summary>
 	/// <param name="markerInfo">Specifies creation info for the marker.</param>
@@ -196,10 +190,7 @@ public:
 
 	/// <summary>Queries if a command buffer is in the recording state</summary>
 	/// <returns>True if recording, false otherwise</returns>
-	bool isRecording()
-	{
-		return _isRecording;
-	}
+	bool isRecording() { return _isRecording; }
 
 	/// <summary>Bind a graphics pipeline.</summary>
 	/// <param name="pipeline">The GraphicsPipeline to bind.</param>
@@ -406,10 +397,7 @@ public:
 	/// <summary>Clears a particular attachment using a provided region whilst inside of a renderpass.</summary>
 	/// <param name="clearAttachment">A single ClearAttachment structure defining the attachment to clear and the clear value to use</param>
 	/// <param name="clearRectangle">A ClearRect structure defining a region within the attachment to clear</param>
-	void clearAttachment(const ClearAttachment& clearAttachment, const ClearRect& clearRectangle)
-	{
-		clearAttachments(1, &clearAttachment, 1, &clearRectangle);
-	}
+	void clearAttachment(const ClearAttachment& clearAttachment, const ClearRect& clearRectangle) { clearAttachments(1, &clearAttachment, 1, &clearRectangle); }
 
 	/// <summary>Non-indexed drawing command.</summary>
 	/// <param name="firstVertex">The index of the first vertex to draw.</param>
@@ -424,7 +412,7 @@ public:
 	/// <param name="vertexOffset">The value added to the vertex index before indexining into the vertex buffer.</param>
 	/// <param name="firstInstance">The instance ID of the first instance to draw.</param>
 	/// <param name="numInstances">The number of instances to draw.</param>
-	void drawIndexed(uint32_t firstIndex, uint32_t numIndices, uint32_t vertexOffset = 0, uint32_t firstInstance = 0, uint32_t numInstances = 1);
+	void drawIndexed(uint32_t firstIndex, uint32_t numIndices, int32_t vertexOffset = 0, uint32_t firstInstance = 0, uint32_t numInstances = 1);
 
 	/// <summary>Non-indexed indirect drawing command.</summary>
 	/// <param name="buffer">The buffer containing draw parameters.</param>
@@ -666,8 +654,7 @@ public:
 	/// <param name="counterBuffers">An optional list of buffers where the handles of the buffers correspond to the counter buffers which contain a 4 byte
 	/// integer value representing the byte offset from the start of the corresponding transform feedback buffer from where to start capturing vertex data.</param>
 	/// <param name="counterBufferOffsets">An optional array of offsets within each of the pCounterBuffers where the counter values were previously written.</param>
-	void endTransformFeedback(
-		uint32_t firstCounterBuffer, uint32_t numCounterBuffers, const pvrvk::Buffer* counterBuffers = nullptr, const VkDeviceSize* counterBufferOffsets = nullptr);
+	void endTransformFeedback(uint32_t firstCounterBuffer, uint32_t numCounterBuffers, const pvrvk::Buffer* counterBuffers = nullptr, const VkDeviceSize* counterBufferOffsets = nullptr);
 
 	/// <summary>Makes inactive transform feedback for specific transform feedback buffers.</summary>
 	/// <param name="counterBuffer">The handle of the buffer correspond to the counter buffer which contains a 4 byte
@@ -700,10 +687,7 @@ public:
 
 	/// <summary>Const getter for the command pool used to allocate this command buffer.</summary>
 	/// <returns>The command pool used to allocate this command buffer.</returns>
-	const CommandPool getCommandPool() const
-	{
-		return _pool;
-	}
+	const CommandPool getCommandPool() const { return _pool; }
 };
 
 /// <summary>Contains all the commands and states that need to be recorded for later submission to the gpu including pipelines,
@@ -748,7 +732,8 @@ public:
 	CommandBuffer_(make_shared_enabler, const DeviceWeakPtr& device, CommandPool pool, VkCommandBuffer myHandle)
 		: CommandBufferBase_(make_shared_enabler{}, device, pool, myHandle)
 #ifdef DEBUG
-	, _currentSubpass(-1)
+		  ,
+		  _currentSubpass(static_cast<uint32_t>(-1))
 #endif
 	{}
 
@@ -786,8 +771,7 @@ public:
 	/// <param name="inlineFirstSubpass">Specifies whether the renderpass uses an inline subpass as its first subpass.</param>
 	/// <param name="clearValues">A pointer to a list of ClearValue structures which will be used as part of the VkRenderPassBeginInfo structure.</param>
 	/// <param name="numClearValues">The number or ClearValue structures passed to the VkRenderPassBeginInfo structure.</param>
-	void beginRenderPass(
-		const Framebuffer& framebuffer, const Rect2D& renderArea, bool inlineFirstSubpass = false, const ClearValue* clearValues = nullptr, uint32_t numClearValues = 0);
+	void beginRenderPass(const Framebuffer& framebuffer, const Rect2D& renderArea, bool inlineFirstSubpass = false, const ClearValue* clearValues = nullptr, uint32_t numClearValues = 0);
 
 	/// <summary>Begins a renderpass for the provided Framebuffer taking the renderpass from the provided Framebuffer and taking the renderable area from the Framebuffer.</summary>
 	/// <param name="framebuffer">A Framework wrapped Vulkan Framebuffer object to use as part of the VkRenderPassBeginInfo structure.</param>
@@ -806,12 +790,10 @@ public:
 		assert(currentRenderPass->getCreateInfo().getNumAttachmentDescription() == _currentlyBoundFramebuffer->getNumAttachments());
 
 		for (uint32_t i = 0; i < _currentlyBoundFramebuffer->getNumAttachments(); ++i)
-		{
-			_currentlyBoundFramebuffer->getAttachment(i)->getImage()->setImageLayout(currentRenderPass->getCreateInfo().getAttachmentDescription(i).getFinalLayout());
-		}
+		{ _currentlyBoundFramebuffer->getAttachment(i)->getImage()->setImageLayout(currentRenderPass->getCreateInfo().getAttachmentDescription(i).getFinalLayout()); }
 
 		_currentlyBoundFramebuffer.reset();
-		_currentSubpass = -1;
+		_currentSubpass = static_cast<uint32_t>(-1);
 #endif
 	}
 

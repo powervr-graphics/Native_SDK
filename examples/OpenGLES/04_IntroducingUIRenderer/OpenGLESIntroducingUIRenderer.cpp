@@ -9,8 +9,8 @@
 #include "PVRUtils/PVRUtilsGles.h"
 
 // PVR font files
-const char CentralTextFontFile[] = "arial_36_rgb.pvr";
-const char CentralTitleFontFile[] = "starjout_60_rgb.pvr";
+const char CentralTextFontFile[] = "arial_36.pvr";
+const char CentralTitleFontFile[] = "starjout_60.pvr";
 const char CentralTextFile[] = "Text.txt";
 
 namespace FontSize {
@@ -24,9 +24,9 @@ enum Enum
 }
 
 const char* SubTitleFontFiles[FontSize::Count] = {
-	"title_36_rgb.pvr",
-	"title_46_rgb.pvr",
-	"title_56_rgb.pvr",
+	"title_36.pvr",
+	"title_46.pvr",
+	"title_56.pvr",
 };
 
 const uint32_t IntroTime = 4000;
@@ -88,7 +88,7 @@ public:
 	void generateBackgroundTexture(uint32_t screenWidth, uint32_t screenHeight);
 	void updateCentralTitle(uint64_t currentTime);
 	void updateSubTitle(uint64_t currentTime);
-	void updateCentralText(uint64_t currentTime);
+	void updateCentralText();
 };
 
 /*!******************************************************************************************************************
@@ -103,7 +103,7 @@ pvr::Result OpenGLESIntroducingUIRenderer::initApplication()
 	// we are instead using an external resource file which contains all of the _text to be
 	// rendered. This allows complete control over the encoding of the resource file which
 	// in this case is encoded as UTF-8.
-	pvr::Stream::ptr_type textStream = getAssetStream(CentralTextFile);
+	std::unique_ptr<pvr::Stream> textStream = getAssetStream(CentralTextFile);
 
 	// The following code simply pulls out each line in the resource file and adds it
 	// to an array so we can render each line separately. ReadIntoCharBuffer null-terminates the std::string
@@ -115,20 +115,11 @@ pvr::Result OpenGLESIntroducingUIRenderer::initApplication()
 		const char* start = _text.data() + current;
 
 		_textLines.push_back(start);
-		while (current < _text.size() && _text[current] != '\0' && _text[current] != '\n' && _text[current] != '\r')
-		{
-			++current;
-		}
+		while (current < _text.size() && _text[current] != '\0' && _text[current] != '\n' && _text[current] != '\r') { ++current; }
 
-		if (current < _text.size() && (_text[current] == '\r'))
-		{
-			_text[current++] = '\0';
-		}
+		if (current < _text.size() && (_text[current] == '\r')) { _text[current++] = '\0'; }
 		// null-term the strings!!!
-		if (current < _text.size() && (_text[current] == '\n' || _text[current] == '\0'))
-		{
-			_text[current++] = '\0';
-		}
+		if (current < _text.size() && (_text[current] == '\n' || _text[current] == '\0')) { _text[current++] = '\0'; }
 	}
 
 	_titleLang = Language::English;
@@ -140,10 +131,7 @@ pvr::Result OpenGLESIntroducingUIRenderer::initApplication()
 \brief    Code in quitApplication() will be called by PVRShell once per run, just before exiting the program.
 	  If the rendering context is lost, quitApplication() will not be called.
 *********************************************************************************************************************/
-pvr::Result OpenGLESIntroducingUIRenderer::quitApplication()
-{
-	return pvr::Result::Success;
-}
+pvr::Result OpenGLESIntroducingUIRenderer::quitApplication() { return pvr::Result::Success; }
 
 /*!******************************************************************************************************************
 \brief  Generates a simple background texture procedurally.
@@ -172,7 +160,7 @@ void OpenGLESIntroducingUIRenderer::generateBackgroundTexture(uint32_t screenWid
 			if (!(rand() % 200))
 			{
 				int brightness = rand() % 255;
-				textureData[width * j + i] = glm::clamp(textureData[width * j + i] + brightness, 0, 255);
+				textureData[width * j + i] = (unsigned char)glm::clamp(textureData[width * j + i] + brightness, 0, 255);
 			}
 		}
 	}
@@ -192,9 +180,9 @@ inline void loadFontFromResources(pvr::Shell& streamManager, const char* filenam
 	// the AssetStore is unsuitable for loading the font, because it does not keep the actual texture data that we need.
 	// The assetStore immediately releases the texture data as soon as it creates the API objects and the texture header.
 	// Hence we use texture load.
-	pvr::Stream::ptr_type fontFile = streamManager.getAssetStream(filename);
+	std::unique_ptr<pvr::Stream> fontFile = streamManager.getAssetStream(filename);
 	pvr::Texture tmpTexture;
-	tmpTexture = pvr::textureLoad(fontFile, pvr::getTextureFormatFromFilename(filename));
+	tmpTexture = pvr::textureLoad(*fontFile, pvr::getTextureFormatFromFilename(filename));
 	font = uirenderer.createFont(tmpTexture);
 }
 
@@ -220,10 +208,7 @@ pvr::Result OpenGLESIntroducingUIRenderer::initView()
 		// Determine which size title font to use.
 		uint32_t screenShortDimension = std::min(getWidth(), getHeight());
 		const char* titleFontFileName = NULL;
-		if (screenShortDimension >= 720)
-		{
-			titleFontFileName = SubTitleFontFiles[FontSize::n_56];
-		}
+		if (screenShortDimension >= 720) { titleFontFileName = SubTitleFontFiles[FontSize::n_56]; }
 		else if (screenShortDimension >= 640)
 		{
 			titleFontFileName = SubTitleFontFiles[FontSize::n_46];
@@ -234,13 +219,6 @@ pvr::Result OpenGLESIntroducingUIRenderer::initView()
 		}
 		loadFontFromResources(*this, titleFontFileName, _uiRenderer, subTitleFont);
 	}
-	gl::BindTexture(GL_TEXTURE_2D, subTitleFont->getTexture());
-	gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, GL_RED);
-	gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_ONE);
-	gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_ONE);
-	gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_ONE);
-
-	gl::BindTexture(GL_TEXTURE_2D, 0);
 
 	_centralTextGroup = _uiRenderer.createMatrixGroup();
 	_titleText1 = _uiRenderer.createText(subTitleFont);
@@ -317,27 +295,18 @@ pvr::Result OpenGLESIntroducingUIRenderer::renderFrame()
 	// Render the 3D text.
 	else
 	{
-		updateCentralText(currentTime);
+		updateCentralText();
 		// Tells uiRenderer to do all the pending text rendering now
 		_centralTextGroup->render();
 		// Tells uiRenderer to do all the pending text rendering now
 	}
 
-	if (_titleText1->getColor().a > 0.0f)
-	{
-		_titleText1->render();
-	}
-	if (_titleText2->getColor().a > 0.0f)
-	{
-		_titleText2->render();
-	}
+	if (_titleText1->getColor().a > 0.0f) { _titleText1->render(); }
+	if (_titleText2->getColor().a > 0.0f) { _titleText2->render(); }
 	_uiRenderer.getSdkLogo()->render();
 	_uiRenderer.endRendering();
 
-	if (this->shouldTakeScreenshot())
-	{
-		pvr::utils::takeScreenshot(this->getScreenshotFileName(), this->getWidth(), this->getHeight());
-	}
+	if (this->shouldTakeScreenshot()) { pvr::utils::takeScreenshot(this->getScreenshotFileName(), this->getWidth(), this->getHeight()); }
 
 	_context->swapBuffers();
 	return pvr::Result::Success;
@@ -395,10 +364,7 @@ void OpenGLESIntroducingUIRenderer::updateCentralTitle(uint64_t currentTime)
 	float fadeAmount = 1.0f;
 
 	// Fade in
-	if (currentTime < IntroFadeTime)
-	{
-		fadeAmount = currentTime / (float)IntroFadeTime;
-	}
+	if (currentTime < IntroFadeTime) { fadeAmount = currentTime / (float)IntroFadeTime; }
 	// Fade out
 	else if (currentTime > IntroTime - IntroFadeTime)
 	{
@@ -414,11 +380,12 @@ void OpenGLESIntroducingUIRenderer::updateCentralTitle(uint64_t currentTime)
 /*!******************************************************************************************************************
 \brief  Draws the 3D _text and scrolls in to the screen.
 *********************************************************************************************************************/
-void OpenGLESIntroducingUIRenderer::updateCentralText(uint64_t currentTime)
+void OpenGLESIntroducingUIRenderer::updateCentralText()
 {
 	glm::mat4 mProjection = glm::mat4(1.0f);
 
-	mProjection = pvr::math::perspectiveFov( pvr::Api::OpenGLES31, 0.7f, static_cast<float>(_uiRenderer.getRenderingDimX()), static_cast<float>(_uiRenderer.getRenderingDimY()), 1.0f, 2000.0f);
+	mProjection =
+		pvr::math::perspectiveFov(pvr::Api::OpenGLES31, 0.7f, static_cast<float>(_uiRenderer.getRenderingDimX()), static_cast<float>(_uiRenderer.getRenderingDimY()), 1.0f, 2000.0f);
 
 	const glm::mat4 mCamera = glm::lookAt(glm::vec3(_uiRenderer.getRenderingDimX() * .5f, -_uiRenderer.getRenderingDimY(), 700.0f),
 		glm::vec3(_uiRenderer.getRenderingDimX() * .5f, 0, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
@@ -431,15 +398,9 @@ void OpenGLESIntroducingUIRenderer::updateCentralText(uint64_t currentTime)
 
 	// Move the _text. Progressively speed up.
 	float fSpeedInc = 0.0f;
-	if (_textOffset > 0.0f)
-	{
-		fSpeedInc = _textOffset / _textEndY;
-	}
+	if (_textOffset > 0.0f) { fSpeedInc = _textOffset / _textEndY; }
 	_textOffset += (0.75f + (1.0f * fSpeedInc)) * fFPSScale;
-	if (_textOffset > static_cast<float>(_textEndY))
-	{
-		_textOffset = static_cast<float>(_textStartY);
-	}
+	if (_textOffset > static_cast<float>(_textEndY)) { _textOffset = static_cast<float>(_textStartY); }
 
 	glm::mat4 trans = glm::translate(glm::vec3(0.0f, _textOffset, 0.0f));
 
@@ -475,7 +436,4 @@ void OpenGLESIntroducingUIRenderer::updateCentralText(uint64_t currentTime)
 
 /// <summary>This function must be implemented by the user of the shell. The user should return its pvr::Shell object defining the behaviour of the application.</summary>
 /// <returns>Return a unique ptr to the demo supplied by the user.</returns>
-std::unique_ptr<pvr::Shell> pvr::newDemo()
-{
-	return std::unique_ptr<pvr::Shell>(new OpenGLESIntroducingUIRenderer());
-}
+std::unique_ptr<pvr::Shell> pvr::newDemo() { return std::make_unique<OpenGLESIntroducingUIRenderer>(); }

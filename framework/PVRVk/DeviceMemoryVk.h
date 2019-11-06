@@ -33,50 +33,29 @@ public:
 
 	/// <summary>Retrieve the size of the allocation.</summary>
 	/// <returns> The size of the allocation)</summary>
-	DeviceSize getAllocationSize() const
-	{
-		return _allocationSize;
-	}
+	DeviceSize getAllocationSize() const { return _allocationSize; }
 	/// <summary>Set the size of the allocation.</summary>
 	/// <param name="sizeInBytes"> The total size of the allocation.</param>
-	void setAllocationSize(DeviceSize sizeInBytes)
-	{
-		_allocationSize = sizeInBytes;
-	}
+	void setAllocationSize(DeviceSize sizeInBytes) { _allocationSize = sizeInBytes; }
 
 	/// <summary>Retrieve the Memory Index of the  memory type of the allocation.</summary>
 	/// <returns> The index of the memory type of the allocation)</summary>
-	uint32_t getMemoryTypeIndex() const
-	{
-		return _memoryTypeIndex;
-	}
+	uint32_t getMemoryTypeIndex() const { return _memoryTypeIndex; }
 
 	/// <summary>Set the memory index of the allocation.</summary>
 	/// <param name="memoryTypeIndex"> The memory index of the allocation.</param>
-	void setMemoryTypeIndex(uint32_t memoryTypeIndex)
-	{
-		this->_memoryTypeIndex = memoryTypeIndex;
-	}
+	void setMemoryTypeIndex(uint32_t memoryTypeIndex) { this->_memoryTypeIndex = memoryTypeIndex; }
 
 	/// <summary>Set this field in order to use the VK_KHR_external_memory extension.</summary>
 	/// <param name="info"> The ExportMemoryAllocateInfoKHR object describing the source of the allocation.</param>
-	void setExportMemoryAllocationInfoKHR(const ExportMemoryAllocateInfoKHR& info)
-	{
-		_exportMemoryAllocateInfoKHR = info;
-	}
+	void setExportMemoryAllocationInfoKHR(const ExportMemoryAllocateInfoKHR& info) { _exportMemoryAllocateInfoKHR = info; }
 
 	/// <summary>Get the ExportMemoryAllocateInfoKHR object used.</summary>
 	/// <returns> The ExportMemoryAllocateInfoKHR object contained.</returns>
-	const ExportMemoryAllocateInfoKHR& getExportMemoryAllocateInfoKHR() const
-	{
-		return _exportMemoryAllocateInfoKHR;
-	}
+	const ExportMemoryAllocateInfoKHR& getExportMemoryAllocateInfoKHR() const { return _exportMemoryAllocateInfoKHR; }
 	/// <summary>Get the ExportMemoryAllocateInfoKHR object used.</summary>
 	/// <returns> The ExportMemoryAllocateInfoKHR object contained.</returns>
-	ExportMemoryAllocateInfoKHR& getExportMemoryAllocateInfoKHR()
-	{
-		return _exportMemoryAllocateInfoKHR;
-	}
+	ExportMemoryAllocateInfoKHR& getExportMemoryAllocateInfoKHR() { return _exportMemoryAllocateInfoKHR; }
 
 private:
 	DeviceSize _allocationSize;
@@ -118,10 +97,7 @@ public:
 	/// <summary>Indicates whether the device memory's property flags includes the given flag</summary>
 	/// <param name="flags">A device memory property flag</param>
 	/// <returns>True if the device memory's property flags includes the given flag</returns>
-	bool hasPropertyFlag(pvrvk::MemoryPropertyFlags flags) const
-	{
-		return (getMemoryFlags() & flags) == flags;
-	}
+	bool hasPropertyFlag(pvrvk::MemoryPropertyFlags flags) const { return (getMemoryFlags() & flags) == flags; }
 
 	/// <summary>Return this mapped memory offset (const)</summary>
 	/// <returns>The offset of the mapped range, if any.</returns>
@@ -265,10 +241,7 @@ public:
 	{
 		_vkHandle = vkMemoryHandle;
 		_allocationInfo = allocationInfo;
-		if (vkMemoryHandle == VK_NULL_HANDLE)
-		{
-			allocateDeviceMemory(getDevice(), allocationInfo, _vkHandle);
-		}
+		if (vkMemoryHandle == VK_NULL_HANDLE) { allocateDeviceMemory(getDevice(), allocationInfo, _vkHandle); }
 	}
 	//!\endcond
 
@@ -282,45 +255,27 @@ public:
 
 	/// <summary>Return the memory flags(const)</summary>
 	/// <returns>pvrvk::MemoryPropertyFlags</returns>
-	pvrvk::MemoryPropertyFlags getMemoryFlags() const
-	{
-		return _flags;
-	}
+	pvrvk::MemoryPropertyFlags getMemoryFlags() const { return _flags; }
 
 	/// <summary>Return this mapped memory offset (const)</summary>
 	/// <returns>VkDeviceSize</returns>
-	VkDeviceSize getMappedOffset() const
-	{
-		return _mappedOffset;
-	}
+	VkDeviceSize getMappedOffset() const { return _mappedOffset; }
 
 	/// <summary>Return a pointer to the mapped memory</summary>
 	/// <returns>Mapped memory</returns>
-	virtual void* getMappedData()
-	{
-		return _mappedMemory;
-	}
+	virtual void* getMappedData() { return _mappedMemory; }
 
 	/// <summary>Return this mapped memory size (const)</summary>
 	/// <returns>VkDeviceSize</returns>
-	VkDeviceSize getMappedSize() const
-	{
-		return _mappedSize;
-	}
+	VkDeviceSize getMappedSize() const { return _mappedSize; }
 
 	/// <summary>Return this memory size (const)</summary>
 	/// <returns>uint64_t</returns>
-	VkDeviceSize getSize() const
-	{
-		return _allocationInfo.getAllocationSize();
-	}
+	VkDeviceSize getSize() const { return _allocationInfo.getAllocationSize(); }
 
 	/// <summary>Return true if this memory is being mapped by the host (const)</summary>
 	/// <returns>VkDeviceSize</returns>
-	bool isMapped() const
-	{
-		return _mappedSize > 0;
-	}
+	bool isMapped() const { return _mappedSize > 0; }
 
 	/// <summary>map this memory. NOTE: Only memory created with HostVisible flag can be mapped and unmapped</summary>
 	/// <param name="offset">Zero-based byte offset from the beginning of the memory object.</param>
@@ -333,26 +288,16 @@ public:
 			throw ErrorMemoryMapFailed("Cannot map memory block as the memory was created without "
 									   "HOST_VISIBLE_BIT or HOST_COHERENT_BIT memory flags");
 		}
-		if (_mappedSize)
-		{
-			throw ErrorMemoryMapFailed("Cannot map memory block as the memory is already mapped");
-		}
+		if (_mappedSize) { throw ErrorMemoryMapFailed("Cannot map memory block as the memory is already mapped"); }
 		if (size != VK_WHOLE_SIZE)
 		{
-			if (offset + size > getSize())
-			{
-				throw ErrorMemoryMapFailed("Cannot map map memory block : offset + size range greater than the memory block size");
-			}
+			if (offset + size > getSize()) { throw ErrorMemoryMapFailed("Cannot map map memory block : offset + size range greater than the memory block size"); }
 		}
 
-		vkThrowIfFailed(
-			getDevice()->getVkBindings().vkMapMemory(getDevice()->getVkHandle(), getVkHandle(), offset, size, static_cast<VkMemoryMapFlags>(memoryMapFlags), &_mappedMemory),
+		vkThrowIfFailed(getDevice()->getVkBindings().vkMapMemory(getDevice()->getVkHandle(), getVkHandle(), offset, size, static_cast<VkMemoryMapFlags>(memoryMapFlags), &_mappedMemory),
 			"Failed to map memory block");
 
-		if (_mappedMemory == nullptr)
-		{
-			throw ErrorMemoryMapFailed("Failed to map memory block");
-		}
+		if (_mappedMemory == nullptr) { throw ErrorMemoryMapFailed("Failed to map memory block"); }
 
 		// store the mapped offset and mapped size
 		_mappedOffset = offset;
@@ -363,10 +308,7 @@ public:
 	/// <summary>Unmap this memory block</summary>
 	virtual void unmap()
 	{
-		if (!_mappedSize)
-		{
-			throw ErrorMemoryMapFailed("Cannot unmap memory block as the memory is not mapped");
-		}
+		if (!_mappedSize) { throw ErrorMemoryMapFailed("Cannot unmap memory block as the memory is not mapped"); }
 
 		_mappedSize = 0;
 		_mappedOffset = 0;
@@ -381,10 +323,7 @@ public:
 	void flushRange(VkDeviceSize offset = 0, VkDeviceSize size = VK_WHOLE_SIZE)
 	{
 		if (static_cast<uint32_t>(_flags & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) != 0)
-		{
-			assert(false && "Flushing memory block created using HOST_COHERENT_BIT memory flags - this is unnecessary.");
-		}
-
+		{ assert(false && "Flushing memory block created using HOST_COHERENT_BIT memory flags - this is unnecessary."); }
 		VkMappedMemoryRange range = {};
 		range.sType = static_cast<VkStructureType>(StructureType::e_MAPPED_MEMORY_RANGE);
 		range.memory = getVkHandle();
@@ -400,10 +339,7 @@ public:
 	void invalidateRange(VkDeviceSize offset = 0, VkDeviceSize size = VK_WHOLE_SIZE)
 	{
 		if (static_cast<uint32_t>(_flags & MemoryPropertyFlags::e_HOST_COHERENT_BIT) != 0)
-		{
-			assert(false && "Invalidating range of memory block created using HOST_COHERENT_BIT memory flags - this is unnecessary.");
-		}
-
+		{ assert(false && "Invalidating range of memory block created using HOST_COHERENT_BIT memory flags - this is unnecessary."); }
 		VkMappedMemoryRange range = {};
 		range.sType = static_cast<VkStructureType>(StructureType::e_MAPPED_MEMORY_RANGE);
 		range.memory = getVkHandle();
@@ -412,10 +348,7 @@ public:
 		vkThrowIfFailed(getDevice()->getVkBindings().vkInvalidateMappedMemoryRanges(getDevice()->getVkHandle(), 1, &range), "Failed to invalidate range of memory block");
 	}
 
-	uint32_t getMemoryType() const
-	{
-		return _allocationInfo.getMemoryTypeIndex();
-	}
+	uint32_t getMemoryType() const { return _allocationInfo.getMemoryTypeIndex(); }
 };
 } // namespace impl
 } // namespace pvrvk

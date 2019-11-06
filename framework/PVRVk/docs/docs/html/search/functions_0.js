@@ -20,13 +20,13 @@ var searchData=
   ['addsubpassdependencies',['addSubpassDependencies',['../structpvrvk_1_1_render_pass_create_info.html#a422d70f4cb19571b355b5b6bdd68b4ee',1,'pvrvk::RenderPassCreateInfo']]],
   ['addsubpassdependency',['addSubpassDependency',['../structpvrvk_1_1_render_pass_create_info.html#a420d2ea7c7e25611a8bf9228fd7527e3',1,'pvrvk::RenderPassCreateInfo']]],
   ['allocatecommandbuffer',['allocateCommandBuffer',['../classpvrvk_1_1impl_1_1_command_pool__.html#a98718a0f0fb8dddf28c2c26a929c5788',1,'pvrvk::impl::CommandPool_']]],
-  ['allocatecommandbuffers',['allocateCommandBuffers',['../classpvrvk_1_1impl_1_1_command_pool__.html#ae4671fbcfb8fa82eed868a36a81673ff',1,'pvrvk::impl::CommandPool_']]],
+  ['allocatecommandbuffers',['allocateCommandBuffers',['../classpvrvk_1_1impl_1_1_command_pool__.html#a59af14b0b8efb8b36239bca1656b1188',1,'pvrvk::impl::CommandPool_']]],
   ['allocatedescriptorset',['allocateDescriptorSet',['../classpvrvk_1_1impl_1_1_descriptor_pool__.html#a609bb437f24b568ed2f1a1545df59b2d',1,'pvrvk::impl::DescriptorPool_']]],
   ['allocatememory',['allocateMemory',['../classpvrvk_1_1impl_1_1_device__.html#ac2f19ae7b8db5dfed0cd70b250f72c86',1,'pvrvk::impl::Device_']]],
   ['allocatesecondarycommandbuffer',['allocateSecondaryCommandBuffer',['../classpvrvk_1_1impl_1_1_command_pool__.html#a0514c05058d416e80df3e2bf01ccb9c3',1,'pvrvk::impl::CommandPool_']]],
-  ['allocatesecondarycommandbuffers',['allocateSecondaryCommandBuffers',['../classpvrvk_1_1impl_1_1_command_pool__.html#a634ae49a72fda317760e6432ebf02950',1,'pvrvk::impl::CommandPool_']]],
+  ['allocatesecondarycommandbuffers',['allocateSecondaryCommandBuffers',['../classpvrvk_1_1impl_1_1_command_pool__.html#a7fb33595db0a4c0a6b10de98a4e6089f',1,'pvrvk::impl::CommandPool_']]],
   ['appendpnext',['appendPNext',['../namespacepvrvk.html#afa9b8625ffd2579ff4b28c76b05dc501',1,'pvrvk']]],
   ['applicationinfo',['ApplicationInfo',['../structpvrvk_1_1_application_info.html#acf09175fc73bb47298acaba5064a76f0',1,'pvrvk::ApplicationInfo::ApplicationInfo()'],['../structpvrvk_1_1_application_info.html#a911695111f1abe122cd0935ac714ad18',1,'pvrvk::ApplicationInfo::ApplicationInfo(const std::string &amp;applicationName, uint32_t applicationVersion=0, const std::string &amp;engineName=nullptr, uint32_t engineVersion=0, uint32_t apiVersion=0)']]],
-  ['arrayorvector',['ArrayOrVector',['../class_array_or_vector.html#a4ed1685d89af81f096132ce9890ed063',1,'ArrayOrVector']]],
+  ['arrayorvector',['ArrayOrVector',['../classpvrvk_1_1_array_or_vector.html#aa5cf9550022f8dd1062e6742ef1dda49',1,'pvrvk::ArrayOrVector']]],
   ['attachmentdescription',['AttachmentDescription',['../structpvrvk_1_1_attachment_description.html#a91f7632938934e5b0ab2b91206da2952',1,'pvrvk::AttachmentDescription::AttachmentDescription()'],['../structpvrvk_1_1_attachment_description.html#a24b49c48a11631c4d12bfc218b593b15',1,'pvrvk::AttachmentDescription::AttachmentDescription(pvrvk::Format format, pvrvk::ImageLayout initialLayout, pvrvk::ImageLayout finalLayout, pvrvk::AttachmentLoadOp loadOp, pvrvk::AttachmentStoreOp storeOp, pvrvk::AttachmentLoadOp stencilLoadOp, pvrvk::AttachmentStoreOp stencilStoreOp, pvrvk::SampleCountFlags numSamples)']]]
 ];

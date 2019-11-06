@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.3)
-project (VulkanExamples)
+project(VulkanExamples)
 
-set (EXAMPLES 
+set(EXAMPLES 
 	01_HelloAPI
 	02_IntroducingPVRShell
 	03_IntroducingPVRVk
@@ -25,13 +25,11 @@ set (EXAMPLES
 	PVRScopeRemote
 	ImageBasedLighting
 	IMGTextureFilterCubic
+	ImageBasedLightingMapGenerator
+	GameOfLife
 )
 
-if (NOT ANDROID AND NOT IOS)
-	list(APPEND EXAMPLES ImageBasedLightingMapGenerator)
-endif()
-
 foreach(EXAMPLE ${EXAMPLES})
-	message ("==>CMake generation for Vulkan_${EXAMPLE}...")
+	message ("==>CMake generation for Vulkan/${EXAMPLE}...")
 	add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/${EXAMPLE}")
 endforeach()

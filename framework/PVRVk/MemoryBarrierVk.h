@@ -29,31 +29,19 @@ public:
 
 	/// <summary>Get srcAccessMask</summary>
 	/// <returns>An AccessFlags structure specifying the source memory barrier access flags</returns>
-	inline const AccessFlags& getSrcAccessMask() const
-	{
-		return srcAccessMask;
-	}
+	inline const AccessFlags& getSrcAccessMask() const { return srcAccessMask; }
 
 	/// <summary>Set srcAccessMask</summary>
-	/// <param name="srcAccessMask">An AccessFlags structure specifying the source memory barrier access flags</param>
-	inline void setSrcAccessMask(const AccessFlags& srcAccessMask)
-	{
-		this->srcAccessMask = srcAccessMask;
-	}
+	/// <param name="inSrcAccessMask">An AccessFlags structure specifying the source memory barrier access flags</param>
+	inline void setSrcAccessMask(const AccessFlags& inSrcAccessMask) { this->srcAccessMask = inSrcAccessMask; }
 
 	/// <summary>Get dstAccessMask</summary>
 	/// <returns>An AccessFlags structure specifying the destination memory barrier access flags</returns>
-	inline const AccessFlags& getDstAccessMask() const
-	{
-		return dstAccessMask;
-	}
+	inline const AccessFlags& getDstAccessMask() const { return dstAccessMask; }
 
 	/// <summary>Set dstAccessMask</summary>
-	/// <param name="dstAccessMask">An AccessFlags structure specifying the destination memory barrier access flags</param>
-	inline void setDstAccessMask(const AccessFlags& dstAccessMask)
-	{
-		this->dstAccessMask = dstAccessMask;
-	}
+	/// <param name="inDstAccessMask">An AccessFlags structure specifying the destination memory barrier access flags</param>
+	inline void setDstAccessMask(const AccessFlags& inDstAccessMask) { this->dstAccessMask = inDstAccessMask; }
 };
 
 /// <summary>A Buffer memory barrier used only for memory accesses involving a specific range of the specified
@@ -71,7 +59,7 @@ public:
 	/// <summary>Constructor, zero initialization</summary>
 	BufferMemoryBarrier() : srcAccessMask(pvrvk::AccessFlags(0)), dstAccessMask(pvrvk::AccessFlags(0)) {}
 
-	/// <summary>Constructor, individual elementssummary>
+	/// <summary>Constructor, individual elements</summary>
 	/// <param name="srcAccessMask">Bitmask of pvrvk::AccessFlagBits specifying a source access mask.</param>
 	/// <param name="dstAccessMask">Bitmask of pvrvk::AccessFlagBits specifying a destination access mask.</param>
 	/// <param name="buffer">Handle to the buffer whose backing memory is affected by the barrier.</param>
@@ -83,71 +71,43 @@ public:
 
 	/// <summary>Get srcAccessMask</summary>
 	/// <returns>An AccessFlags structure specifying the source memory barrier access flags</returns>
-	inline const AccessFlags& getSrcAccessMask() const
-	{
-		return srcAccessMask;
-	}
+	inline const AccessFlags& getSrcAccessMask() const { return srcAccessMask; }
 
 	/// <summary>Set srcAccessMask</summary>
-	/// <param name="srcAccessMask">An AccessFlags structure specifying the source memory barrier access flags</param>
-	inline void setSrcAccessMask(const AccessFlags& srcAccessMask)
-	{
-		this->srcAccessMask = srcAccessMask;
-	}
+	/// <param name="inSrcAccessMask">An AccessFlags structure specifying the source memory barrier access flags</param>
+	inline void setSrcAccessMask(const AccessFlags& inSrcAccessMask) { this->srcAccessMask = inSrcAccessMask; }
 
 	/// <summary>Get dstAccessMask</summary>
 	/// <returns>An AccessFlags structure specifying the destination memory barrier access flags</returns>
-	inline const AccessFlags& getDstAccessMask() const
-	{
-		return dstAccessMask;
-	}
+	inline const AccessFlags& getDstAccessMask() const { return dstAccessMask; }
 
 	/// <summary>Set dstAccessMask</summary>
-	/// <param name="dstAccessMask">An AccessFlags structure specifying the destination memory barrier access flags</param>
-	inline void setDstAccessMask(const AccessFlags& dstAccessMask)
-	{
-		this->dstAccessMask = dstAccessMask;
-	}
+	/// <param name="inDstAccessMask">An AccessFlags structure specifying the destination memory barrier access flags</param>
+	inline void setDstAccessMask(const AccessFlags& inDstAccessMask) { this->dstAccessMask = inDstAccessMask; }
 
 	/// <summary>Get Buffer associated with the memory barrier</summary>
 	/// <returns>The PVRVk::Buffer associated with the memory barrier</returns>
-	inline const Buffer& getBuffer() const
-	{
-		return buffer;
-	}
+	inline const Buffer& getBuffer() const { return buffer; }
 
 	/// <summary>Set buffer associated with the memory barrier</summary>
-	/// <param name="buffer">The PVRVk::Buffer associated with the memory barrier</param>
-	inline void setBuffer(const Buffer& buffer)
-	{
-		this->buffer = buffer;
-	}
+	/// <param name="inBuffer">The PVRVk::Buffer associated with the memory barrier</param>
+	inline void setBuffer(const Buffer& inBuffer) { this->buffer = inBuffer; }
 
 	/// <summary>Get size corresponding to the slice of the Buffer associated with the memory barrier</summary>
 	/// <returns>The size of the range of the PVRVk::Buffer associated with the memory barrier</returns>
-	inline uint32_t getSize() const
-	{
-		return size;
-	}
+	inline uint32_t getSize() const { return size; }
+
 	/// <summary>Set the size of the slice of the buffer associated with the memory barrier</summary>
-	/// <param name="size">The size of the slice of the PVRVk::Buffer associated with the memory barrier</param>
-	inline void setSize(uint32_t size)
-	{
-		this->size = size;
-	}
+	/// <param name="inSize">The size of the slice of the PVRVk::Buffer associated with the memory barrier</param>
+	inline void setSize(uint32_t inSize) { this->size = inSize; }
 
 	/// <summary>Get the offset into the Buffer associated with the memory barrier</summary>
 	/// <returns>The offset into PVRVk::Buffer associated with the memory barrier</returns>
-	inline uint32_t getOffset() const
-	{
-		return offset;
-	}
+	inline uint32_t getOffset() const { return offset; }
+
 	/// <summary>Set the offset into the buffer associated with the memory barrier</summary>
-	/// <param name="offset">The offset into the PVRVk::Buffer associated with the memory barrier</param>
-	inline void setOffset(uint32_t offset)
-	{
-		this->offset = offset;
-	}
+	/// <param name="inOffset">The offset into the PVRVk::Buffer associated with the memory barrier</param>
+	inline void setOffset(uint32_t inOffset) { this->offset = inOffset; }
 };
 
 /// <summary>A Image memory barrier used only for memory accesses involving a specific subresource range of the
@@ -189,109 +149,66 @@ public:
 
 	/// <summary>Get srcAccessMask</summary>
 	/// <returns>AcceAn AccessFlags structure specifying the source memory barrier access flagsssFlags</returns>
-	inline const AccessFlags& getSrcAccessMask() const
-	{
-		return srcAccessMask;
-	}
+	inline const AccessFlags& getSrcAccessMask() const { return srcAccessMask; }
 
 	/// <summary>Set srcAccessMask</summary>
-	/// <param name="srcAccessMask">An AccessFlags structure specifying the source memory barrier access flags</param>
-	inline void setSrcAccessMask(const AccessFlags& srcAccessMask)
-	{
-		this->srcAccessMask = srcAccessMask;
-	}
+	/// <param name="inSrcAccessMask">An AccessFlags structure specifying the source memory barrier access flags</param>
+	inline void setSrcAccessMask(const AccessFlags& inSrcAccessMask) { this->srcAccessMask = inSrcAccessMask; }
 
 	/// <summary>Get dstAccessMask</summary>
 	/// <returns>An AccessFlags structure specifying the destination memory barrier access flags</returns>
-	inline const AccessFlags& getDstAccessMask() const
-	{
-		return dstAccessMask;
-	}
+	inline const AccessFlags& getDstAccessMask() const { return dstAccessMask; }
 
 	/// <summary>Set dstAccessMask</summary>
-	/// <param name="dstAccessMask">An AccessFlags structure specifying the destination memory barrier access flags</param>
-	inline void setDstAccessMask(const AccessFlags& dstAccessMask)
-	{
-		this->dstAccessMask = dstAccessMask;
-	}
+	/// <param name="inDstAccessMask">An AccessFlags structure specifying the destination memory barrier access flags</param>
+	inline void setDstAccessMask(const AccessFlags& inDstAccessMask) { this->dstAccessMask = inDstAccessMask; }
 
 	/// <summary>Get the old image layout of the image associated with the memory barrier</summary>
 	/// <returns>The old image layout of the image associated with the memory barrier</returns>
-	inline const ImageLayout& getOldLayout() const
-	{
-		return oldLayout;
-	}
+	inline const ImageLayout& getOldLayout() const { return oldLayout; }
 	/// <summary>Set old image layout</summary>
-	/// <param name="oldLayout">The old image layout of the image associated memory barrier</param>
-	inline void setOldLayout(const ImageLayout& oldLayout)
-	{
-		this->oldLayout = oldLayout;
-	}
+	/// <param name="inOldLayout">The old image layout of the image associated memory barrier</param>
+	inline void setOldLayout(const ImageLayout& inOldLayout) { this->oldLayout = inOldLayout; }
 
 	/// <summary>Get the new image layout of the image associated with the memory barrier</summary>
 	/// <returns>The new image layout of the image associated with the memory barrier</returns>
-	inline const ImageLayout& getNewLayout() const
-	{
-		return newLayout;
-	}
+	inline const ImageLayout& getNewLayout() const { return newLayout; }
+
 	/// <summary>Set new image layout</summary>
-	/// <param name="newLayout">The new image layout of the image associated memory barrier</param>
-	inline void setNewLayout(const ImageLayout& newLayout)
-	{
-		this->newLayout = newLayout;
-	}
+	/// <param name="inNewLayout">The new image layout of the image associated memory barrier</param>
+	inline void setNewLayout(const ImageLayout& inNewLayout) { this->newLayout = inNewLayout; }
 
 	/// <summary>Get the source queue family index for the image associated with the memory barrier</summary>
 	/// <returns>The source queue family index of the image associated with the memory barrier</returns>
-	inline uint32_t getSrcQueueFamilyIndex() const
-	{
-		return srcQueueFamilyIndex;
-	}
+	inline uint32_t getSrcQueueFamilyIndex() const { return srcQueueFamilyIndex; }
+
 	/// <summary>Set the source queue family index</summary>
-	/// <param name="srcQueueFamilyIndex">The source queue family index of the image associated with the memory barrier</param>
-	inline void setSrcQueueFamilyIndex(uint32_t srcQueueFamilyIndex)
-	{
-		this->srcQueueFamilyIndex = srcQueueFamilyIndex;
-	}
+	/// <param name="inSrcQueueFamilyIndex">The source queue family index of the image associated with the memory barrier</param>
+	inline void setSrcQueueFamilyIndex(uint32_t inSrcQueueFamilyIndex) { this->srcQueueFamilyIndex = inSrcQueueFamilyIndex; }
 
 	/// <summary>Get the destination queue family index for the image associated with the memory barrier</summary>
 	/// <returns>The destination queue family index of the image associated with the memory barrier</returns>
-	inline uint32_t getDstQueueFamilyIndex() const
-	{
-		return dstQueueFamilyIndex;
-	}
+	inline uint32_t getDstQueueFamilyIndex() const { return dstQueueFamilyIndex; }
+
 	/// <summary>Set the destination queue family index</summary>
-	/// <param name="dstQueueFamilyIndex">The destination queue family index of the image associated with the memory barrier</param>
-	inline void setDstQueueFamilyIndex(uint32_t dstQueueFamilyIndex)
-	{
-		this->dstQueueFamilyIndex = dstQueueFamilyIndex;
-	}
+	/// <param name="inDstQueueFamilyIndex">The destination queue family index of the image associated with the memory barrier</param>
+	inline void setDstQueueFamilyIndex(uint32_t inDstQueueFamilyIndex) { this->dstQueueFamilyIndex = inDstQueueFamilyIndex; }
 
 	/// <summary>Get Image</summary>
 	/// <returns>The PVRVk::Image associated with the memory barrier</returns>
-	inline const Image& getImage() const
-	{
-		return image;
-	}
+	inline const Image& getImage() const { return image; }
+
 	/// <summary>Set Image</summary>
-	/// <param name="image">The PVRVk::Image associated with the memory barrier</param>
-	inline void setImage(const Image& image)
-	{
-		this->image = image;
-	}
+	/// <param name="inImage">The PVRVk::Image associated with the memory barrier</param>
+	inline void setImage(const Image& inImage) { this->image = inImage; }
 
 	/// <summary>Get the subresource range of the image associated with the memory barrier</summary>
 	/// <returns>The subresource range of the image associated with the memory barrier</returns>
-	inline const ImageSubresourceRange& getSubresourceRange() const
-	{
-		return subresourceRange;
-	}
+	inline const ImageSubresourceRange& getSubresourceRange() const { return subresourceRange; }
+
 	/// <summary>Set the subresource range of the image associated with the memory barrier</summary>
-	/// <param name="subresourceRange">The subresource range of the image associated with the memory barrier</param>
-	inline void setSubresourceRange(const ImageSubresourceRange& subresourceRange)
-	{
-		this->subresourceRange = subresourceRange;
-	}
+	/// <param name="inSubresourceRange">The subresource range of the image associated with the memory barrier</param>
+	inline void setSubresourceRange(const ImageSubresourceRange& inSubresourceRange) { this->subresourceRange = inSubresourceRange; }
 };
 
 /// <summary>A memory barrier into the command stream. Used to signify that some types of pending operations
@@ -375,23 +292,14 @@ public:
 
 	/// <summary>Get an array of the MemoryBarrier object of this set.</summary>
 	/// <returns>All MemoryBarrier objects that this object contains</returns>
-	const std::vector<MemoryBarrier>& getMemoryBarriers() const
-	{
-		return this->memBarriers;
-	}
+	const std::vector<MemoryBarrier>& getMemoryBarriers() const { return this->memBarriers; }
 
 	/// <summary>Get an array of the Image Barriers of this set.</summary>
 	/// <returns>All MemoryBarrier objects that this object contains</returns>
-	const std::vector<ImageMemoryBarrier>& getImageBarriers() const
-	{
-		return this->imageBarriers;
-	}
+	const std::vector<ImageMemoryBarrier>& getImageBarriers() const { return this->imageBarriers; }
 
 	/// <summary>Get an array of the Buffer Barriers of this set.</summary>
 	/// <returns>All MemoryBarrier objects that this object contains</returns>
-	const std::vector<BufferMemoryBarrier>& getBufferBarriers() const
-	{
-		return this->bufferBarriers;
-	}
+	const std::vector<BufferMemoryBarrier>& getBufferBarriers() const { return this->bufferBarriers; }
 };
 } // namespace pvrvk

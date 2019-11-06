@@ -26,24 +26,15 @@ struct Rectangle3D
 	/// <summary>The offset of the rectangle is the minimum vertex (the vertex with the smalles coordinate in each of the
 	/// x,y,z components</summary>
 	/// <returns>The minimum vertex (usually this means "bottom"-"left"-"back")</returns>
-	glm::tvec3<TYPE, glm::highp> offset() const
-	{
-		return glm::tvec3<TYPE, glm::highp>(x, y, z);
-	}
+	glm::tvec3<TYPE, glm::highp> offset() const { return glm::tvec3<TYPE, glm::highp>(x, y, z); }
 
 	/// <summary>The extent (aka size, aka width/height/depth) of the cuboid.</summary>
 	/// <returns>The extent, a 3D vector composed of the size at x,y,z: (width, height, depth)</returns>
-	glm::tvec3<TYPE, glm::highp> extent() const
-	{
-		return glm::tvec3<TYPE, glm::highp>(width, height, depth);
-	}
+	glm::tvec3<TYPE, glm::highp> extent() const { return glm::tvec3<TYPE, glm::highp>(width, height, depth); }
 
 	/// <summary>The position of the center of the cuboid.</summary>
 	/// <returns>The center of the cuboid</returns>
-	glm::tvec3<TYPE, glm::highp> center() const
-	{
-		return offset() + extent() / TYPE(2);
-	}
+	glm::tvec3<TYPE, glm::highp> center() const { return offset() + extent() / TYPE(2); }
 	/// <summary>Create a 3d rectangle with uninitialized values.</summary>
 	Rectangle3D() {}
 
@@ -68,19 +59,13 @@ struct Rectangle3D
 	/// <summary>Equality operator (exact).</summary>
 	/// <param name="rhs">The right hand side of the operator</param>
 	/// <returns>True if the rectangles coincide (all vertices exactly equal), otherwise false.</returns>
-	bool operator==(const Rectangle3D& rhs) const
-	{
-		return (x == rhs.x) && (y == rhs.y) && (z == rhs.z) && (width == rhs.width) && (height == rhs.height) && (depth == rhs.depth);
-	}
+	bool operator==(const Rectangle3D& rhs) const { return (x == rhs.x) && (y == rhs.y) && (z == rhs.z) && (width == rhs.width) && (height == rhs.height) && (depth == rhs.depth); }
 
 	/// <summary>Inequality operator (exact).</summary>
 	/// <param name="rhs">The right hand side of the operator</param>
 	/// <returns>True if the two rectangles do not exactly coincide (at least one vertex not exactly
 	/// equal), otherwise false.</returns>
-	bool operator!=(const Rectangle3D& rhs) const
-	{
-		return !(*this == rhs);
-	}
+	bool operator!=(const Rectangle3D& rhs) const { return !(*this == rhs); }
 
 	/// <summary>Expand this rectangle to also contain the given rectangle. Equivalently, set this
 	/// rectangles minimum vertex to the minimum of this and rect's min vertex, and set this rectangle's

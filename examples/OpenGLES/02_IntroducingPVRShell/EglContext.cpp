@@ -14,7 +14,7 @@ enum
 	retry_DepthBpp,
 	retry_DONE
 };
-const char* retries_string[] = { "RemoveDebugBit", "DisableAA", "ReduceStencilBpp", "NoStencil", "ColorBpp", "ReduceAlphaBpp", "NoAlpha", "DepthBpp" };
+const char* retries_string[] = { "RemoveDebugBit", "DisableAA", "ReduceStencilBpp", "NoStencil", "StencilBpp", "ColorBpp", "ReduceAlphaBpp", "NoAlpha", "DepthBpp" };
 
 void fixAttributes(const pvr::DisplayAttributes& origAttr, pvr::DisplayAttributes& attr, uint32_t* retries, bool& debugBit)
 {
@@ -33,24 +33,15 @@ void fixAttributes(const pvr::DisplayAttributes& origAttr, pvr::DisplayAttribute
 	if (!(retries[retry_reduceAlphaBpp] == 3) && !(retries[retry_NoAlpha] == 3)) // fixed. leave it alone..
 	{
 		if (retries[retry_reduceAlphaBpp] == 0 && retries[retry_NoAlpha] == 0) // reset.
-		{
-			attr.alphaBits = origAttr.alphaBits;
-		} // mutually exclusiv
-
-		if (retries[retry_reduceAlphaBpp] == 1) // test one
+		{ attr.alphaBits = origAttr.alphaBits; } // mutually exclusiv if (retries[retry_reduceAlphaBpp] == 1) // test one
 		{
 			attr.alphaBits = 1;
 		} // mutually exclusive
 		if (retries[retry_NoAlpha] == 1) // test two
-		{
-			attr.alphaBits = 0;
-		} // mutually exclusive
+		{ attr.alphaBits = 0; } // mutually exclusive
 	}
 
-	if (retries[retry_DepthBpp] == 1)
-	{
-		attr.depthBPP = 1;
-	}
+	if (retries[retry_DepthBpp] == 1) { attr.depthBPP = 1; }
 	else if (retries[retry_DepthBpp] == 0)
 	{
 		attr.depthBPP = origAttr.depthBPP;
@@ -58,18 +49,11 @@ void fixAttributes(const pvr::DisplayAttributes& origAttr, pvr::DisplayAttribute
 	if (!(retries[retry_ReduceStencilBpp] == 3) && !(retries[retry_NoStencil] == 3)) // fixed. leave it alone..
 	{
 		if (retries[retry_ReduceStencilBpp] == 0 && retries[retry_NoStencil] == 0) // reset.
-		{
-			attr.stencilBPP = origAttr.stencilBPP;
-		} // mutually exclusiv
-
+		{ attr.stencilBPP = origAttr.stencilBPP; } // mutually exclusive
 		if (retries[retry_ReduceStencilBpp] == 1) // test one
-		{
-			attr.stencilBPP = 1;
-		} // mutually exclusive
+		{ attr.stencilBPP = 1; } // mutually exclusive
 		if (retries[retry_NoStencil] == 1) // test two
-		{
-			attr.stencilBPP = 0;
-		} // mutually exclusive
+		{ attr.stencilBPP = 0; } // mutually exclusive
 	}
 
 	if (retries[retry_DisableAA] == 1)
@@ -89,10 +73,7 @@ void fixAttributes(const pvr::DisplayAttributes& origAttr, pvr::DisplayAttribute
 #else
 	bool ORIG_DEBUG_BIT = false;
 #endif
-	if (retries[retry_RemoveDebugBit] == 1)
-	{
-		debugBit = false;
-	}
+	if (retries[retry_RemoveDebugBit] == 1) { debugBit = false; }
 	else if (retries[retry_RemoveDebugBit] == 0)
 	{
 		debugBit = ORIG_DEBUG_BIT;
@@ -103,38 +84,22 @@ char const* eglErrorToStr(EGLint errorCode)
 {
 	switch (errorCode)
 	{
-	case EGL_SUCCESS:
-		return "EGL_SUCCESS";
-	case EGL_NOT_INITIALIZED:
-		return "EGL_NOT_INITIALIZED";
-	case EGL_BAD_ACCESS:
-		return "EGL_BAD_ACCESS";
-	case EGL_BAD_ALLOC:
-		return "EGL_BAD_ALLOC";
-	case EGL_BAD_ATTRIBUTE:
-		return "EGL_BAD_ATTRIBUTE";
-	case EGL_BAD_CONTEXT:
-		return "EGL_BAD_CONTEXT";
-	case EGL_BAD_CONFIG:
-		return "EGL_BAD_CONFIG";
-	case EGL_BAD_CURRENT_SURFACE:
-		return "EGL_BAD_CURRENT_SURFACE";
-	case EGL_BAD_DISPLAY:
-		return "EGL_BAD_DISPLAY";
-	case EGL_BAD_SURFACE:
-		return "EGL_BAD_SURFACE";
-	case EGL_BAD_MATCH:
-		return "EGL_BAD_MATCH";
-	case EGL_BAD_PARAMETER:
-		return "EGL_BAD_PARAMETER";
-	case EGL_BAD_NATIVE_PIXMAP:
-		return "EGL_BAD_NATIVE_PIXMAP";
-	case EGL_BAD_NATIVE_WINDOW:
-		return "EGL_BAD_NATIVE_WINDOW";
-	case EGL_CONTEXT_LOST:
-		return "EGL_CONTEXT_LOST";
-	default:
-		return "EGL_SUCCESS";
+	case EGL_SUCCESS: return "EGL_SUCCESS";
+	case EGL_NOT_INITIALIZED: return "EGL_NOT_INITIALIZED";
+	case EGL_BAD_ACCESS: return "EGL_BAD_ACCESS";
+	case EGL_BAD_ALLOC: return "EGL_BAD_ALLOC";
+	case EGL_BAD_ATTRIBUTE: return "EGL_BAD_ATTRIBUTE";
+	case EGL_BAD_CONTEXT: return "EGL_BAD_CONTEXT";
+	case EGL_BAD_CONFIG: return "EGL_BAD_CONFIG";
+	case EGL_BAD_CURRENT_SURFACE: return "EGL_BAD_CURRENT_SURFACE";
+	case EGL_BAD_DISPLAY: return "EGL_BAD_DISPLAY";
+	case EGL_BAD_SURFACE: return "EGL_BAD_SURFACE";
+	case EGL_BAD_MATCH: return "EGL_BAD_MATCH";
+	case EGL_BAD_PARAMETER: return "EGL_BAD_PARAMETER";
+	case EGL_BAD_NATIVE_PIXMAP: return "EGL_BAD_NATIVE_PIXMAP";
+	case EGL_BAD_NATIVE_WINDOW: return "EGL_BAD_NATIVE_WINDOW";
+	case EGL_CONTEXT_LOST: return "EGL_CONTEXT_LOST";
+	default: return "EGL_SUCCESS";
 	}
 }
 inline EGLNativeDisplayType ptrToEGLNativeDisplayType(void* ptr)
@@ -150,28 +115,15 @@ void EglContext::release()
 	if (_platformContextHandles.display == egl::GetCurrentDisplay() && _platformContextHandles.display != EGL_NO_DISPLAY &&
 		_platformContextHandles.drawSurface == egl::GetCurrentSurface(EGL_DRAW) && _platformContextHandles.readSurface == egl::GetCurrentSurface(EGL_READ) &&
 		_platformContextHandles.context == egl::GetCurrentContext())
-	{
-		egl::MakeCurrent(egl::GetCurrentDisplay(), EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
-	}
-
-	// These are all reference counted, so these can be safely deleted.
+	{ egl::MakeCurrent(egl::GetCurrentDisplay(), EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT); } // These are all reference counted, so these can be safely deleted.
 	if (_platformContextHandles.display)
 	{
-		if (_platformContextHandles.context)
-		{
-			egl::DestroyContext(_platformContextHandles.display, _platformContextHandles.context);
-		}
+		if (_platformContextHandles.context) { egl::DestroyContext(_platformContextHandles.display, _platformContextHandles.context); }
 
-		if (_platformContextHandles.drawSurface)
-		{
-			egl::DestroySurface(_platformContextHandles.display, _platformContextHandles.drawSurface);
-		}
+		if (_platformContextHandles.drawSurface) { egl::DestroySurface(_platformContextHandles.display, _platformContextHandles.drawSurface); }
 
 		if (_platformContextHandles.readSurface && _platformContextHandles.readSurface != _platformContextHandles.drawSurface)
-		{
-			egl::DestroySurface(_platformContextHandles.display, _platformContextHandles.readSurface);
-		}
-
+		{ egl::DestroySurface(_platformContextHandles.display, _platformContextHandles.readSurface); }
 		egl::Terminate(_platformContextHandles.display);
 	}
 }
@@ -198,10 +150,7 @@ bool EglContext::swapBuffers()
 	if (_isDiscardSupported)
 	{
 		gl::BindFramebuffer(GL_FRAMEBUFFER, 0);
-		if (_apiType >= pvr::Api::OpenGLES3)
-		{
-			gl::InvalidateFramebuffer(GL_FRAMEBUFFER, 1, attachments);
-		}
+		if (_apiType >= pvr::Api::OpenGLES3) { gl::InvalidateFramebuffer(GL_FRAMEBUFFER, 1, attachments); }
 		else
 		{
 			gl::ext::DiscardFramebufferEXT(GL_FRAMEBUFFER, 1, attachments);
@@ -233,8 +182,7 @@ EGLContext getContextForConfig(EGLDisplay display, EGLConfig config, pvr::Api gr
 		requestedMajorVersion = 3;
 		requestedMinorVersion = 1;
 		break;
-	default:
-		return EGL_NO_CONTEXT;
+	default: return EGL_NO_CONTEXT;
 	}
 
 #ifdef DEBUG
@@ -292,10 +240,7 @@ bool EglContext::isGlesVersionSupported(EGLDisplay display, pvr::Api graphicsapi
 {
 #if defined(TARGET_OS_MAC)
 	/* Max Api supported on macOS is OpenGLES3*/
-	if (graphicsapi > pvr::Api::OpenGLES3)
-	{
-		return false;
-	}
+	if (graphicsapi > pvr::Api::OpenGLES3) { return false; }
 #endif
 
 	isSupported = false;
@@ -320,9 +265,7 @@ bool EglContext::isGlesVersionSupported(EGLDisplay display, pvr::Api graphicsapi
 			configAttributes[i++] = EGL_RENDERABLE_TYPE;
 			configAttributes[i++] = EGL_OPENGL_ES3_BIT_KHR;
 			break;
-		default:
-			return false;
-			break;
+		default: return false; break;
 		}
 	}
 
@@ -405,31 +348,19 @@ bool EglContext::preInitialize(pvr::OSDisplay osdisplay, NativePlatformHandle& h
 	// Associate the display with EGL.
 	handles.display = egl::GetDisplay(ptrToEGLNativeDisplayType(osdisplay));
 
-	if (handles.display == EGL_NO_DISPLAY)
-	{
-		handles.display = egl::GetDisplay(static_cast<EGLNativeDisplayType>(EGL_DEFAULT_DISPLAY));
-	}
+	if (handles.display == EGL_NO_DISPLAY) { handles.display = egl::GetDisplay(static_cast<EGLNativeDisplayType>(EGL_DEFAULT_DISPLAY)); }
 
-	if (handles.display == EGL_NO_DISPLAY)
-	{
-		return false;
-	}
+	if (handles.display == EGL_NO_DISPLAY) { return false; }
 
 	// Initialize the display
-	if (egl::Initialize(handles.display, NULL, NULL) != EGL_TRUE)
-	{
-		return false;
-	}
+	if (egl::Initialize(handles.display, NULL, NULL) != EGL_TRUE) { return false; }
 
 	//  // Bind the correct API
 	int result = EGL_FALSE;
 
 	result = egl::BindAPI(EGL_OPENGL_ES_API);
 
-	if (result != EGL_TRUE)
-	{
-		return false;
-	}
+	if (result != EGL_TRUE) { return false; }
 	return true;
 }
 
@@ -457,15 +388,11 @@ bool EglContext::initializeContext(bool wantWindow, pvr::DisplayAttributes& orig
 		requestedMajorVersion = 3;
 		requestedMinorVersion = 1;
 		break;
-	default:
-		break;
+	default: break;
 	}
 
 	bool create_context_supported = egl::isEglExtensionSupported(handles.display, "EGL_KHR_create_context");
-	if (create_context_supported)
-	{
-		Log(LogLevel::Information, "EGL context creation: EGL_KHR_create_context supported...");
-	}
+	if (create_context_supported) { Log(LogLevel::Information, "EGL context creation: EGL_KHR_create_context supported..."); }
 	else
 	{
 		Log(requestedMinorVersion ? LogLevel::Warning : LogLevel::Information,
@@ -480,15 +407,9 @@ bool EglContext::initializeContext(bool wantWindow, pvr::DisplayAttributes& orig
 	{
 		switch (original_attributes.contextPriority)
 		{
-		case 0:
-			Log(LogLevel::Information, "EGL context creation: EGL_IMG_context_priority supported! Setting context LOW priority...");
-			break;
-		case 1:
-			Log(LogLevel::Information, "EGL context creation: EGL_IMG_context_priority supported! Setting context MEDIUM priority...");
-			break;
-		default:
-			Log(LogLevel::Information, "EGL context creation: EGL_IMG_context_priority supported! Setting context HIGH priority (default)...");
-			break;
+		case 0: Log(LogLevel::Information, "EGL context creation: EGL_IMG_context_priority supported! Setting context LOW priority..."); break;
+		case 1: Log(LogLevel::Information, "EGL context creation: EGL_IMG_context_priority supported! Setting context MEDIUM priority..."); break;
+		default: Log(LogLevel::Information, "EGL context creation: EGL_IMG_context_priority supported! Setting context HIGH priority (default)..."); break;
 		}
 	}
 	else
@@ -503,38 +424,14 @@ bool EglContext::initializeContext(bool wantWindow, pvr::DisplayAttributes& orig
 	debugBit = true;
 #endif
 
-	if (!debugBit)
-	{
-		retries[retry_RemoveDebugBit] = 4;
-	}
-	if (attributes.aaSamples == 0)
-	{
-		retries[retry_DisableAA] = 3;
-	}
-	if (attributes.alphaBits == 0)
-	{
-		retries[retry_reduceAlphaBpp] = 3;
-	}
-	if (attributes.alphaBits == 0)
-	{
-		retries[retry_NoAlpha] = 3;
-	}
-	if (attributes.stencilBPP == 0)
-	{
-		retries[retry_StencilBpp] = 3;
-	}
-	if (attributes.stencilBPP == 0)
-	{
-		retries[retry_NoStencil] = 3;
-	}
-	if (attributes.depthBPP == 0)
-	{
-		retries[retry_DepthBpp] = 3;
-	}
-	if (attributes.forceColorBPP)
-	{
-		retries[retry_ColorBpp] = 3;
-	}
+	if (!debugBit) { retries[retry_RemoveDebugBit] = 4; }
+	if (attributes.aaSamples == 0) { retries[retry_DisableAA] = 3; }
+	if (attributes.alphaBits == 0) { retries[retry_reduceAlphaBpp] = 3; }
+	if (attributes.alphaBits == 0) { retries[retry_NoAlpha] = 3; }
+	if (attributes.stencilBPP == 0) { retries[retry_StencilBpp] = 3; }
+	if (attributes.stencilBPP == 0) { retries[retry_NoStencil] = 3; }
+	if (attributes.depthBPP == 0) { retries[retry_DepthBpp] = 3; }
+	if (attributes.forceColorBPP) { retries[retry_ColorBpp] = 3; }
 
 	for (;;)
 	{
@@ -595,8 +492,7 @@ bool EglContext::initializeContext(bool wantWindow, pvr::DisplayAttributes& orig
 				configAttributes[i++] = EGL_RENDERABLE_TYPE;
 				configAttributes[i++] = EGL_OPENGL_ES3_BIT_KHR;
 				break;
-			default:
-				break;
+			default: break;
 			}
 
 			// Append number of number of samples depending on AA samples value set
@@ -625,17 +521,11 @@ bool EglContext::initializeContext(bool wantWindow, pvr::DisplayAttributes& orig
 
 		if (attributes.forceColorBPP)
 		{
-			if (configsSize == 0)
-			{
-				return false;
-			}
+			if (configsSize == 0) { return false; }
 		}
 		else
 		{
-			if (configsSize > 1)
-			{
-				configsSize = 1;
-			}
+			if (configsSize > 1) { configsSize = 1; }
 		}
 		numConfigs = configsSize;
 		if (configsSize)
@@ -644,8 +534,7 @@ bool EglContext::initializeContext(bool wantWindow, pvr::DisplayAttributes& orig
 
 			if (egl::ChooseConfig(handles.display, configAttributes, configs.data(), configsSize, &numConfigs) != EGL_TRUE)
 			{
-				Log("EGL context creation: initializeContext Error choosing egl config. %x.    Expected number of configs: %d    Actual: %d.", egl::GetError(), numConfigs,
-					configsSize);
+				Log("EGL context creation: initializeContext Error choosing egl config. %x.    Expected number of configs: %d    Actual: %d.", egl::GetError(), numConfigs, configsSize);
 				return false;
 			}
 		}
@@ -666,9 +555,7 @@ bool EglContext::initializeContext(bool wantWindow, pvr::DisplayAttributes& orig
 						(egl::GetConfigAttrib(handles.display, configs[configIdx], EGL_GREEN_SIZE, &value) && value == static_cast<EGLint>(original_attributes.greenBits)) &&
 						(egl::GetConfigAttrib(handles.display, configs[configIdx], EGL_BLUE_SIZE, &value) && value == static_cast<EGLint>(original_attributes.blueBits)) &&
 						(egl::GetConfigAttrib(handles.display, configs[configIdx], EGL_ALPHA_SIZE, &value) && value == static_cast<EGLint>(original_attributes.alphaBits)))
-					{
-						break;
-					}
+					{ break; }
 				}
 			}
 
@@ -705,15 +592,9 @@ bool EglContext::initializeContext(bool wantWindow, pvr::DisplayAttributes& orig
 
 				switch (attributes.contextPriority)
 				{
-				case 0:
-					contextAttributes[i++] = EGL_CONTEXT_PRIORITY_LOW_IMG;
-					break;
-				case 1:
-					contextAttributes[i++] = EGL_CONTEXT_PRIORITY_MEDIUM_IMG;
-					break;
-				default:
-					contextAttributes[i++] = EGL_CONTEXT_PRIORITY_HIGH_IMG;
-					break;
+				case 0: contextAttributes[i++] = EGL_CONTEXT_PRIORITY_LOW_IMG; break;
+				case 1: contextAttributes[i++] = EGL_CONTEXT_PRIORITY_MEDIUM_IMG; break;
+				default: contextAttributes[i++] = EGL_CONTEXT_PRIORITY_HIGH_IMG; break;
 				}
 			}
 			contextAttributes[i] = EGL_NONE;
@@ -771,10 +652,7 @@ bool EglContext::initializeContext(bool wantWindow, pvr::DisplayAttributes& orig
 
 			// clear the EGL error
 			eglerror = egl::GetError();
-			if (eglerror != EGL_SUCCESS)
-			{
-				Log(LogLevel::Debug, "Context not created yet. Clearing EGL errors.");
-			}
+			if (eglerror != EGL_SUCCESS) { Log(LogLevel::Debug, "Context not created yet. Clearing EGL errors."); }
 		} // eglChooseConfif failed.
 
 		//// FAILURE ////
@@ -807,10 +685,7 @@ bool EglContext::initializeContext(bool wantWindow, pvr::DisplayAttributes& orig
 			}
 		}
 
-		if (must_retry)
-		{
-			fixAttributes(original_attributes, attributes, retries, debugBit);
-		}
+		if (must_retry) { fixAttributes(original_attributes, attributes, retries, debugBit); }
 		else
 		{
 			// Nothing else we can remove, fail
@@ -824,21 +699,12 @@ bool EglContext::initializeContext(bool wantWindow, pvr::DisplayAttributes& orig
 
 bool EglContext::init(pvr::OSWindow window, pvr::OSDisplay display, pvr::DisplayAttributes& attributes, pvr::Api minApi, pvr::Api maxApi)
 {
-	if (!preInitialize(display, _platformContextHandles))
-	{
-		return false;
-	}
+	if (!preInitialize(display, _platformContextHandles)) { return false; }
 
 	populateMaxApiVersion();
 
-	if (maxApi == pvr::Api::Unspecified)
-	{
-		maxApi = _maxApiVersion;
-	}
-	if (minApi == pvr::Api::Unspecified)
-	{
-		minApi = pvr::Api::OpenGLES2;
-	}
+	if (maxApi == pvr::Api::Unspecified) { maxApi = _maxApiVersion; }
+	if (minApi == pvr::Api::Unspecified) { minApi = pvr::Api::OpenGLES2; }
 	else
 	{
 		maxApi = std::min(maxApi, _maxApiVersion);
@@ -867,18 +733,12 @@ bool EglContext::init(pvr::OSWindow window, pvr::OSDisplay display, pvr::Display
 	}
 
 	EGLConfig config;
-	if (!initializeContext(true, attributes, _platformContextHandles, config, _apiType))
-	{
-		return false;
-	}
+	if (!initializeContext(true, attributes, _platformContextHandles, config, _apiType)) { return false; }
 
 	// CREATE THE WINDOW SURFACE
-#if defined(WAYLAND)
+#if defined(Wayland)
 	_platformContextHandles.eglWindow = wl_egl_window_create((wl_surface*)window, attributes.width, attributes.height);
-	if (_platformContextHandles.eglWindow == EGL_NO_SURFACE)
-	{
-		Log("Can't create egl window\n");
-	}
+	if (_platformContextHandles.eglWindow == EGL_NO_SURFACE) { Log("Can't create egl window\n"); }
 	else
 	{
 		Log(LogLevel::Information, "Created wl egl window\n");
@@ -903,7 +763,7 @@ bool EglContext::init(pvr::OSWindow window, pvr::OSDisplay display, pvr::Display
 	}
 
 	_platformContextHandles.drawSurface = _platformContextHandles.readSurface = egl::CreateWindowSurface(_platformContextHandles.display, config,
-#if defined(WAYLAND)
+#if defined(Wayland)
 		_platformContextHandles.eglWindow,
 #else
 		reinterpret_cast<EGLNativeWindowType>(window),
@@ -923,18 +783,11 @@ bool EglContext::init(pvr::OSWindow window, pvr::OSDisplay display, pvr::Display
 	_swapInterval = 1;
 	switch (attributes.vsyncMode)
 	{
-	case pvr::VsyncMode::Half:
-		_swapInterval = 2;
-		break;
+	case pvr::VsyncMode::Half: _swapInterval = 2; break;
 	case pvr::VsyncMode::Mailbox:
-	case pvr::VsyncMode::Off:
-		_swapInterval = 0;
-		break;
-	case pvr::VsyncMode::Relaxed:
-		_swapInterval = -1;
-		break;
-	default:
-		break;
+	case pvr::VsyncMode::Off: _swapInterval = 0; break;
+	case pvr::VsyncMode::Relaxed: _swapInterval = -1; break;
+	default: break;
 	}
 
 	_isDiscardSupported = ((_apiType >= pvr::Api::OpenGLES3) || egl::isEglExtensionSupported("GL_EXT_discard_framebuffer"));

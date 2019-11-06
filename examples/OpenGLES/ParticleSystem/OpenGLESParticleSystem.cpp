@@ -149,7 +149,7 @@ private:
 		GLuint floorVao;
 		GLuint floorVbo;
 
-		// OPENGL BUFFER OBJECTS
+		// Manually ghosted buffer objects
 		GLuint particleBuffers[NumBuffers];
 		GLuint particleVaos[NumBuffers];
 		GLuint particleConfigUbo, spheresUbo;
@@ -184,10 +184,7 @@ private:
 			ComputeProgram() : program(0) {}
 		} programParticlesCompute;
 
-		DeviceResources() : sphereVbo(0), sphereIbo(0), floorVbo(0)
-		{
-			memset(particleBuffers, 0, sizeof(particleBuffers));
-		}
+		DeviceResources() : sphereVbo(0), sphereIbo(0), floorVbo(0) { memset(particleBuffers, 0, sizeof(particleBuffers)); }
 	};
 	std::unique_ptr<DeviceResources> _deviceResources;
 
@@ -226,13 +223,10 @@ public:
 	void updateParticleUniforms();
 	void useSimplePipelineProgramAndSetState();
 	void useFloorPipelineProgramAndSetState();
-	void useComputePassProgram();
 	void useParticleRenderingProgramAndSetState();
-	void executeComputePass(uint32_t idx);
-	void executeSceneRenderingPass();
-	void executeParticlesRenderingPass(uint32_t idx);
-	void bindParticleBuffers(uint32_t idx);
-	void initializeParticles(uint32_t _numParticles);
+	void renderScene();
+	void renderParticles();
+	void initializeParticles();
 };
 
 /*!*********************************************************************************************************************
@@ -248,7 +242,7 @@ void OpenGLESParticleSystem::eventMappedInput(pvr::SimplifiedInput key)
 		if (_numParticles / 2 >= Configuration::MinNoParticles)
 		{
 			_numParticles /= 2;
-			initializeParticles(_numParticles);
+			initializeParticles();
 			_deviceResources->uiRenderer.getDefaultDescription()->setText(pvr::strings::createFormatted("No. of Particles: %d", _numParticles));
 			_deviceResources->uiRenderer.getDefaultDescription()->commitUpdates();
 		}
@@ -259,23 +253,16 @@ void OpenGLESParticleSystem::eventMappedInput(pvr::SimplifiedInput key)
 		if (_numParticles * 2 <= Configuration::MaxNoParticles)
 		{
 			_numParticles *= 2;
-			initializeParticles(_numParticles);
+			initializeParticles();
 			_deviceResources->uiRenderer.getDefaultDescription()->setText(pvr::strings::createFormatted("No. of Particles: %d", _numParticles));
 			_deviceResources->uiRenderer.getDefaultDescription()->commitUpdates();
 		}
 	}
 	break;
-	case pvr::SimplifiedInput::Action1:
-		_isCameraPaused = !_isCameraPaused;
-		break;
-	case pvr::SimplifiedInput::Action2:
-		_blendModeAdditive = !_blendModeAdditive;
-		break;
-	case pvr::SimplifiedInput::ActionClose:
-		exitShell();
-		break;
-	default:
-		break;
+	case pvr::SimplifiedInput::Action1: _isCameraPaused = !_isCameraPaused; break;
+	case pvr::SimplifiedInput::Action2: _blendModeAdditive = !_blendModeAdditive; break;
+	case pvr::SimplifiedInput::ActionClose: exitShell(); break;
+	default: break;
 	}
 }
 
@@ -391,22 +378,6 @@ void OpenGLESParticleSystem::useParticleRenderingProgramAndSetState()
 	gl::BlendEquation(GL_FUNC_ADD);
 }
 
-void OpenGLESParticleSystem::bindParticleBuffers(uint32_t idx)
-{
-	int id_in = idx % NumBuffers;
-	int id_out = (idx + 1) % NumBuffers;
-
-	gl::BindBufferBase(GL_UNIFORM_BUFFER, PARTICLE_CONFIG_UBO_BINDING_INDEX, _deviceResources->particleConfigUbo);
-	gl::BindBufferBase(GL_UNIFORM_BUFFER, SPHERES_UBO_BINDING_INDEX, _deviceResources->spheresUbo);
-	gl::BindBufferBase(GL_SHADER_STORAGE_BUFFER, PARTICLES_SSBO_BINDING_INDEX_IN, _deviceResources->particleBuffers[id_in]);
-	gl::BindBufferBase(GL_SHADER_STORAGE_BUFFER, PARTICLES_SSBO_BINDING_INDEX_OUT, _deviceResources->particleBuffers[id_out]);
-}
-
-void OpenGLESParticleSystem::useComputePassProgram()
-{
-	gl::UseProgram(_deviceResources->programParticlesCompute.program);
-}
-
 /*!*********************************************************************************************************************
 \return Return pvr::Result::Success if no error occured
 \brief  Loads and compiles the shaders and links the shader programs required for this training course
@@ -414,12 +385,9 @@ void OpenGLESParticleSystem::useComputePassProgram()
 bool OpenGLESParticleSystem::createPrograms()
 {
 	// Enable or disable gamma correction based on if it is automatically performed on the framebuffer or we need to do it in the shader.
-	const char* defines[] = { "FRAMEBUFFER_SRGB" };
+	const char* graphicsDefines[] = { "FRAMEBUFFER_SRGB" };
 	uint32_t numDefines = 1;
-	if (getBackBufferColorspace() != pvr::ColorSpace::sRGB)
-	{
-		numDefines = 0;
-	}
+	if (getBackBufferColorspace() != pvr::ColorSpace::sRGB) { numDefines = 0; }
 	// Simple Pipeline
 	{
 		pvr::utils::VertexAttributeInfoGles attributes[2];
@@ -439,7 +407,7 @@ bool OpenGLESParticleSystem::createPrograms()
 		const uint16_t simplePipeAttributeIndices[] = { Attributes::VertexArray, Attributes::NormalArray };
 
 		_deviceResources->programSimple.program =
-			pvr::utils::createShaderProgram(*this, Files::VertShader, Files::FragShader, simplePipeAttributes, simplePipeAttributeIndices, 2, defines, numDefines);
+			pvr::utils::createShaderProgram(*this, Files::VertShader, Files::FragShader, simplePipeAttributes, simplePipeAttributeIndices, 2, graphicsDefines, numDefines);
 
 		useSimplePipelineProgramAndSetState();
 
@@ -455,7 +423,7 @@ bool OpenGLESParticleSystem::createPrograms()
 		const uint16_t floorPipeAttributeIndices[] = { Attributes::VertexArray, Attributes::NormalArray };
 
 		_deviceResources->programFloor.program =
-			pvr::utils::createShaderProgram(*this, Files::VertShader, Files::FragShader, floorPipeAttributes, floorPipeAttributeIndices, 2, defines, numDefines);
+			pvr::utils::createShaderProgram(*this, Files::VertShader, Files::FragShader, floorPipeAttributes, floorPipeAttributeIndices, 2, graphicsDefines, numDefines);
 
 		_deviceResources->programFloor.mvMatrixLoc = gl::GetUniformLocation(_deviceResources->programFloor.program, "uModelViewMatrix");
 		_deviceResources->programFloor.mvITMatrixLoc = gl::GetUniformLocation(_deviceResources->programFloor.program, "uModelViewITMatrix");
@@ -469,7 +437,7 @@ bool OpenGLESParticleSystem::createPrograms()
 		const uint16_t particleAttribIndices[] = { 0, 1 };
 
 		_deviceResources->programParticle.program =
-			pvr::utils::createShaderProgram(*this, Files::ParticleVertShader, Files::ParticleFragShader, particleAttribs, particleAttribIndices, 2, defines, numDefines);
+			pvr::utils::createShaderProgram(*this, Files::ParticleVertShader, Files::ParticleFragShader, particleAttribs, particleAttribIndices, 2, graphicsDefines, numDefines);
 		_deviceResources->programParticle.mvpMatrixLoc = gl::GetUniformLocation(_deviceResources->programParticle.program, "uModelViewProjectionMatrix");
 	}
 
@@ -508,8 +476,7 @@ bool OpenGLESParticleSystem::createPrograms()
 pvr::Result OpenGLESParticleSystem::initApplication()
 {
 	// Load the _scene
-	_scene = std::make_shared<pvr::assets::Model>();
-	pvr::assets::PODReader(getAssetStream(Files::SphereModel)).readAsset(*_scene);
+	_scene = pvr::assets::loadModel(*this, Files::SphereModel);
 
 	for (uint32_t i = 0; i < _scene->getNumMeshes(); ++i)
 	{
@@ -539,12 +506,9 @@ pvr::Result OpenGLESParticleSystem::quitApplication()
 ***********************************************************************************************************************/
 pvr::Result OpenGLESParticleSystem::initView()
 {
-	if (this->getMinApi() < pvr::Api::OpenGLES31)
-	{
-		Log(LogLevel::Information, "This demo requires a minimum api of OpenGLES31.");
-	}
+	if (this->getMinApi() < pvr::Api::OpenGLES31) { Log(LogLevel::Information, "This demo requires a minimum api of OpenGLES31."); }
 
-	_deviceResources = std::unique_ptr<DeviceResources>(new DeviceResources());
+	_deviceResources = std::make_unique<DeviceResources>();
 	_deviceResources->context = pvr::createEglContext();
 	_deviceResources->context->init(getWindow(), getDisplay(), getDisplayAttributes(), pvr::Api::OpenGLES31);
 
@@ -552,16 +516,10 @@ pvr::Result OpenGLESParticleSystem::initView()
 	_deviceResources->uiRenderer.init(getWidth(), getHeight(), isFullScreen(), getBackBufferColorspace() == pvr::ColorSpace::sRGB);
 
 	//  Create the Buffers
-	if (!createBuffers())
-	{
-		return pvr::Result::UnknownError;
-	}
+	if (!createBuffers()) { return pvr::Result::UnknownError; }
 
 	//  Load and compile the shaders & link programs
-	if (!createPrograms())
-	{
-		return pvr::Result::UnknownError;
-	}
+	if (!createPrograms()) { return pvr::Result::UnknownError; }
 
 	// Set the gravity
 	_particleConfigData.gravity = glm::vec3(0.f, -9.81f, 0.f);
@@ -573,7 +531,7 @@ pvr::Result OpenGLESParticleSystem::initView()
 	_particleConfigData.minLifespan = .5f;
 	_particleConfigData.maxLifespan = 1.5f;
 
-	initializeParticles(_numParticles);
+	initializeParticles();
 
 	// Creates the projection matrix.
 	_projMtx = glm::perspectiveFov(glm::pi<float>() / 3.0f, static_cast<float>(getWidth()), static_cast<float>(getHeight()), Configuration::CameraNear, Configuration::CameraFar);
@@ -607,10 +565,7 @@ pvr::Result OpenGLESParticleSystem::renderFrame()
 	gl::DepthMask(GL_TRUE);
 	gl::Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	_currentBufferIdx++;
-	if (_currentBufferIdx >= NumBuffers)
-	{
-		_currentBufferIdx = 0;
-	}
+	if (_currentBufferIdx >= NumBuffers) { _currentBufferIdx = 0; }
 	debugThrowOnApiError("OpenGLESParticleSystem::renderFrame Enter");
 	updateParticleUniforms();
 
@@ -627,11 +582,27 @@ pvr::Result OpenGLESParticleSystem::renderFrame()
 	updateFloorProgramUniforms();
 	updateSphereProgramUniforms(_projMtx, _viewMtx);
 
-	executeComputePass(_currentBufferIdx);
+	{
+		gl::UseProgram(_deviceResources->programParticlesCompute.program);
+
+		gl::BindBufferBase(GL_UNIFORM_BUFFER, PARTICLE_CONFIG_UBO_BINDING_INDEX, _deviceResources->particleConfigUbo);
+		gl::BindBufferBase(GL_UNIFORM_BUFFER, SPHERES_UBO_BINDING_INDEX, _deviceResources->spheresUbo);
+
+		int inputBuffer = _currentBufferIdx % NumBuffers;
+		int outputBuffer = (_currentBufferIdx + 1) % NumBuffers;
+
+		gl::BindBufferBase(GL_SHADER_STORAGE_BUFFER, PARTICLES_SSBO_BINDING_INDEX_IN, _deviceResources->particleBuffers[inputBuffer]);
+		gl::BindBufferBase(GL_SHADER_STORAGE_BUFFER, PARTICLES_SSBO_BINDING_INDEX_OUT, _deviceResources->particleBuffers[outputBuffer]);
+
+		// Accesses to shader storage blocks after this barrier will reflect writes prior to the barrier.
+		gl::DispatchCompute(_numParticles / Configuration::workgroupSize, 1, 1);
+	}
+
+	// Vertex data sourced after this barrier will reflect data written by shaders prior to the barrier
 	gl::MemoryBarrier(GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT | GL_SHADER_STORAGE_BARRIER_BIT);
 
-	executeSceneRenderingPass();
-	executeParticlesRenderingPass(_currentBufferIdx);
+	renderScene();
+	renderParticles();
 
 	gl::BindVertexArray(0);
 
@@ -643,10 +614,7 @@ pvr::Result OpenGLESParticleSystem::renderFrame()
 	_deviceResources->uiRenderer.endRendering();
 	debugThrowOnApiError("OpenGLESParticleSystem::renderFrame Exit");
 
-	if (this->shouldTakeScreenshot())
-	{
-		pvr::utils::takeScreenshot(this->getScreenshotFileName(), this->getWidth(), this->getHeight());
-	}
+	if (this->shouldTakeScreenshot()) { pvr::utils::takeScreenshot(this->getScreenshotFileName(), this->getWidth(), this->getHeight()); }
 
 	_deviceResources->context->swapBuffers();
 
@@ -714,18 +682,9 @@ void OpenGLESParticleSystem::updateParticleUniforms()
 	debugThrowOnApiError("OpenGLESParticleSystem::updateParticleUniforms Exit");
 }
 
-void OpenGLESParticleSystem::executeComputePass(uint32_t idx)
+void OpenGLESParticleSystem::renderScene()
 {
-	debugThrowOnApiError("OpenGLESParticleSystem::executeComputePass Enter");
-	useComputePassProgram();
-	bindParticleBuffers(idx);
-	gl::DispatchCompute(_numParticles / Configuration::workgroupSize, 1, 1);
-	debugThrowOnApiError("OpenGLESParticleSystem::executeComputePass Exit");
-}
-
-void OpenGLESParticleSystem::executeSceneRenderingPass()
-{
-	debugThrowOnApiError("OpenGLESParticleSystem::executeSceneRenderingPass Enter");
+	debugThrowOnApiError("OpenGLESParticleSystem::renderScene Enter");
 	static const pvr::assets::Mesh& mesh = _scene->getMesh(0);
 	// Render Spheres
 	useSimplePipelineProgramAndSetState();
@@ -750,20 +709,22 @@ void OpenGLESParticleSystem::executeSceneRenderingPass()
 	gl::Uniform3fv(_deviceResources->programFloor.lightPositionLoc, 1, glm::value_ptr(_lightPos));
 
 	gl::DrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-	debugThrowOnApiError("OpenGLESParticleSystem::executeSceneRenderingPass Exit");
+	gl::BindVertexArray(0);
+	debugThrowOnApiError("OpenGLESParticleSystem::renderScene Exit");
 }
 
-void OpenGLESParticleSystem::executeParticlesRenderingPass(uint32_t idx)
+void OpenGLESParticleSystem::renderParticles()
 {
-	debugThrowOnApiError("OpenGLESParticleSystem::executeParticlesRenderingPass Enter");
+	debugThrowOnApiError("OpenGLESParticleSystem::renderParticles Enter");
 	useParticleRenderingProgramAndSetState();
-	gl::BindVertexArray(_deviceResources->particleVaos[idx]);
+	gl::BindVertexArray(_deviceResources->particleVaos[_currentBufferIdx]);
 	gl::UniformMatrix4fv(_deviceResources->programParticle.mvpMatrixLoc, 1, GL_FALSE, glm::value_ptr(_viewProjMtx));
 	gl::DrawArrays(GL_POINTS, 0, _numParticles);
-	debugThrowOnApiError("OpenGLESParticleSystem::executeParticlesRenderingPass Exit");
+	gl::BindVertexArray(0);
+	debugThrowOnApiError("OpenGLESParticleSystem::renderParticles Exit");
 }
 
-void OpenGLESParticleSystem::initializeParticles(uint32_t _numParticles)
+void OpenGLESParticleSystem::initializeParticles()
 {
 	_particleArrayData.resize(_numParticles);
 
@@ -775,6 +736,7 @@ void OpenGLESParticleSystem::initializeParticles(uint32_t _numParticles)
 		_particleArrayData[i].vPosition.z = 1.0f;
 		_particleArrayData[i].vVelocity = glm::vec3(0.0f);
 	}
+
 	for (uint32_t i = 0; i < NumBuffers; ++i)
 	{
 		gl::BindBuffer(GL_SHADER_STORAGE_BUFFER, _deviceResources->particleBuffers[i]);
@@ -786,7 +748,4 @@ void OpenGLESParticleSystem::initializeParticles(uint32_t _numParticles)
 \return Return a smart pointer to the application class.
 \brief  This function must be implemented by the user of the shell. It should return the Application class (a class inheriting from pvr::Shell.
 ***********************************************************************************************************************/
-std::unique_ptr<pvr::Shell> pvr::newDemo()
-{
-	return std::unique_ptr<pvr::Shell>(new OpenGLESParticleSystem());
-}
+std::unique_ptr<pvr::Shell> pvr::newDemo() { return std::make_unique<OpenGLESParticleSystem>(); }

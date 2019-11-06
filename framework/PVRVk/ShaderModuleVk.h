@@ -23,10 +23,7 @@ public:
 	inline ShaderModuleCreateInfo(const std::vector<uint32_t>& shaderSources, ShaderModuleCreateFlags flags = ShaderModuleCreateFlags::e_NONE)
 		: _flags(flags), _shaderSources(shaderSources)
 	{
-		if (_shaderSources.empty())
-		{
-			throw ErrorValidationFailedEXT("Attempted to create ShaderModuleCreateInfo with empty shader source.");
-		}
+		if (_shaderSources.empty()) { throw ErrorValidationFailedEXT("Attempted to create ShaderModuleCreateInfo with empty shader source."); }
 	}
 
 	/// <summary>Constructor</summary>
@@ -36,42 +33,24 @@ public:
 	inline ShaderModuleCreateInfo(const uint32_t* shaderSources, uint32_t shaderSourcesSize, ShaderModuleCreateFlags flags = ShaderModuleCreateFlags::e_NONE)
 		: _flags(flags), _shaderSources(shaderSources, shaderSources + shaderSourcesSize)
 	{
-		if (_shaderSources.empty())
-		{
-			throw ErrorValidationFailedEXT("Attempted to create ShaderModuleCreateInfo with empty shader source.");
-		}
+		if (_shaderSources.empty()) { throw ErrorValidationFailedEXT("Attempted to create ShaderModuleCreateInfo with empty shader source."); }
 	}
 
 	/// <summary>Get the ShaderModule creation flags</summary>
 	/// <returns>The set of ShaderModule creation flags</returns>
-	inline ShaderModuleCreateFlags getFlags() const
-	{
-		return _flags;
-	}
+	inline ShaderModuleCreateFlags getFlags() const { return _flags; }
 	/// <summary>Set the ShaderModule creation flags</summary>
 	/// <param name="flags">The ShaderModule creation flags</param>
-	inline void setFlags(ShaderModuleCreateFlags flags)
-	{
-		this->_flags = flags;
-	}
+	inline void setFlags(ShaderModuleCreateFlags flags) { this->_flags = flags; }
 	/// <summary>Get the size of the shader sources</summary>
 	/// <returns>The size of shader sources</returns>
-	inline uint32_t getCodeSize() const
-	{
-		return static_cast<uint32_t>(_shaderSources.size() * 4.0);
-	}
+	inline uint32_t getCodeSize() const { return static_cast<uint32_t>(_shaderSources.size() * 4.0); }
 	/// <summary>Get the shader sources</summary>
 	/// <returns>The set of shader sources</returns>
-	inline const std::vector<uint32_t>& getShaderSources() const
-	{
-		return _shaderSources;
-	}
+	inline const std::vector<uint32_t>& getShaderSources() const { return _shaderSources; }
 	/// <summary>Set the shader sources to use for creating a shader module</summary>
 	/// <param name="shaderSources">Shader sources to use for creating a shader module</param>
-	inline void setShaderSources(const std::vector<uint32_t>& shaderSources)
-	{
-		this->_shaderSources = shaderSources;
-	}
+	inline void setShaderSources(const std::vector<uint32_t>& shaderSources) { this->_shaderSources = shaderSources; }
 
 private:
 	/// <summary>Flags to use for creating the ShaderModule</summary>
@@ -111,28 +90,16 @@ public:
 
 	/// <summary>Get the ShaderModule creation flags</summary>
 	/// <returns>The set of ShaderModule creation flags</returns>
-	inline ShaderModuleCreateFlags getFlags() const
-	{
-		return _createInfo.getFlags();
-	}
+	inline ShaderModuleCreateFlags getFlags() const { return _createInfo.getFlags(); }
 	/// <summary>Get the size of the shader sources</summary>
 	/// <returns>The size of shader sources</returns>
-	inline uint32_t getCodeSize() const
-	{
-		return _createInfo.getCodeSize();
-	}
+	inline uint32_t getCodeSize() const { return _createInfo.getCodeSize(); }
 	/// <summary>Get the shader sources</summary>
 	/// <returns>The set of shader sources</returns>
-	inline const std::vector<uint32_t>& getShaderSources() const
-	{
-		return _createInfo.getShaderSources();
-	}
+	inline const std::vector<uint32_t>& getShaderSources() const { return _createInfo.getShaderSources(); }
 	/// <summary>Get this shader modules's create flags</summary>
 	/// <returns>ShaderModuleCreateInfo</returns>
-	ShaderModuleCreateInfo getCreateInfo() const
-	{
-		return _createInfo;
-	}
+	ShaderModuleCreateInfo getCreateInfo() const { return _createInfo; }
 };
 } // namespace impl
 } // namespace pvrvk

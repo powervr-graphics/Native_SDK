@@ -25,7 +25,8 @@ Buffer_::~Buffer_()
 	}
 }
 
-Buffer_::Buffer_(make_shared_enabler, const DeviceWeakPtr& device, const BufferCreateInfo& createInfo) : PVRVkDeviceObjectBase(device), DeviceObjectDebugUtils(), _createInfo(createInfo)
+Buffer_::Buffer_(make_shared_enabler, const DeviceWeakPtr& device, const BufferCreateInfo& createInfo)
+	: PVRVkDeviceObjectBase(device), DeviceObjectDebugUtils(), _createInfo(createInfo)
 {
 	Device deviceSharedPtr = device.lock();
 
@@ -37,8 +38,7 @@ Buffer_::Buffer_(make_shared_enabler, const DeviceWeakPtr& device, const BufferC
 	vkCreateInfo.sharingMode = static_cast<VkSharingMode>(_createInfo.getSharingMode());
 	vkCreateInfo.pQueueFamilyIndices = _createInfo.getQueueFamilyIndices();
 	vkCreateInfo.queueFamilyIndexCount = _createInfo.getNumQueueFamilyIndices();
-	vkThrowIfFailed(
-		static_cast<Result>(deviceSharedPtr->getVkBindings().vkCreateBuffer(deviceSharedPtr->getVkHandle(), &vkCreateInfo, nullptr, &_vkHandle)), "Failed to create Buffer");
+	vkThrowIfFailed(static_cast<Result>(deviceSharedPtr->getVkBindings().vkCreateBuffer(deviceSharedPtr->getVkHandle(), &vkCreateInfo, nullptr, &_vkHandle)), "Failed to create Buffer");
 
 	deviceSharedPtr->getVkBindings().vkGetBufferMemoryRequirements(deviceSharedPtr->getVkHandle(), _vkHandle, &_memRequirements.get());
 }
@@ -53,8 +53,7 @@ BufferView_::BufferView_(make_shared_enabler, const DeviceWeakPtr& device, const
 	vkCreateInfo.format = static_cast<VkFormat>(_createInfo.getFormat());
 	vkCreateInfo.offset = _createInfo.getOffset();
 	vkCreateInfo.range = _createInfo.getRange();
-	vkThrowIfFailed(
-		static_cast<Result>(getDevice()->getVkBindings().vkCreateBufferView(getDevice()->getVkHandle(), &vkCreateInfo, nullptr, &_vkHandle)), "Failed to create BufferView");
+	vkThrowIfFailed(static_cast<Result>(getDevice()->getVkBindings().vkCreateBufferView(getDevice()->getVkHandle(), &vkCreateInfo, nullptr, &_vkHandle)), "Failed to create BufferView");
 }
 
 BufferView_::~BufferView_()

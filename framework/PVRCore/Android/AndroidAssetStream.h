@@ -22,33 +22,22 @@ public:
 	/// <summary>Constructor from Android NDK Asset manager and a filename</summary>
 	/// <param name="assetManager">The Android Asset manager object the app will use</param>
 	/// <param name="filename">The file (asset) to open</param>
-	AndroidAssetStream(AAssetManager* assetManager, const std::string& filename): Stream(filename), assetManager(assetManager), _asset(NULL)
-	{
-		_isReadable = true;
-	}
+	AndroidAssetStream(AAssetManager* assetManager, const std::string& filename) : Stream(filename, true, false, true), assetManager(assetManager), _asset(NULL) { open(); }
 
 	/// <summary>Destructor. Releases this object</summary>
-	~AndroidAssetStream()
-	{
-		close();
-	}
+	~AndroidAssetStream() { close(); }
 
-	void read(size_t size, size_t count, void* const outData, size_t& outElementsRead) const;
-	void write(size_t size, size_t count, const void* data, size_t& dataWritten);
-	void seek(long offset, SeekOrigin origin) const;
+	void _read(size_t size, size_t count, void* const outData, size_t& outElementsRead) const override;
+	void _write(size_t size, size_t count, const void* data, size_t& dataWritten) override;
+	void _seek(long offset, SeekOrigin origin) const override;
+	uint64_t _getPosition() const override;
+	uint64_t _getSize() const override;
 	void open() const;
 	void close();
 
-	virtual bool isopen() const;
-	virtual size_t getPosition() const;
-	virtual size_t getSize() const;
-    
 	/// <summary>Retrieves the current android asset manager</summary>
 	/// <returns>The current android asset manager</returns>
-	AAssetManager* getAndroidAssetManager()
-	{
-		return assetManager;
-	}
+	AAssetManager* getAndroidAssetManager() { return assetManager; }
 
 private:
 	AAssetManager* const assetManager;

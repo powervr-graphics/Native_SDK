@@ -21,36 +21,24 @@ struct VertexAttributeInfoPred_BindingEquals
 {
 	uint16_t binding;
 	VertexAttributeInfoPred_BindingEquals(uint16_t binding) : binding(binding) {}
-	bool operator()(const VertexInputAttributeDescription& nfo) const
-	{
-		return nfo.getBinding() == binding;
-	}
+	bool operator()(const VertexInputAttributeDescription& nfo) const { return nfo.getBinding() == binding; }
 };
 
 struct VertexBindingInfoCmp_BindingLess
 {
-	bool operator()(const VertexInputBindingDescription& lhs, const VertexInputBindingDescription& rhs) const
-	{
-		return lhs.getBinding() < rhs.getBinding();
-	}
+	bool operator()(const VertexInputBindingDescription& lhs, const VertexInputBindingDescription& rhs) const { return lhs.getBinding() < rhs.getBinding(); }
 };
 
 struct VertexBindingInfoPred_BindingLess
 {
-	bool operator()(uint16_t lhs, const VertexInputBindingDescription& rhs) const
-	{
-		return lhs < rhs.getBinding();
-	}
+	bool operator()(uint16_t lhs, const VertexInputBindingDescription& rhs) const { return lhs < rhs.getBinding(); }
 };
 
 struct VertexBindingInfoPred_BindingEqual
 {
 	uint16_t binding;
 	VertexBindingInfoPred_BindingEqual(uint16_t binding) : binding(binding) {}
-	bool operator()(const VertexInputBindingDescription& nfo) const
-	{
-		return nfo.getBinding() == binding;
-	}
+	bool operator()(const VertexInputBindingDescription& nfo) const { return nfo.getBinding() == binding; }
 };
 //!\endcond
 
@@ -95,59 +83,35 @@ public:
 
 	/// <summary>Return true if depth test is enable</summary>
 	/// <returns>bool</returns>
-	bool isDepthTestEnable() const
-	{
-		return _depthTest;
-	}
+	bool isDepthTestEnable() const { return _depthTest; }
 
 	/// <summary>Return true if depth write is enable</summary>
 	/// <returns>bool</returns>
-	bool isDepthWriteEnable() const
-	{
-		return _depthWrite;
-	}
+	bool isDepthWriteEnable() const { return _depthWrite; }
 
 	/// <summary>Return true if depth bound is enable</summary>
 	/// <returns>bool</returns>
-	bool isDepthBoundTestEnable() const
-	{
-		return _depthBoundTest;
-	}
+	bool isDepthBoundTestEnable() const { return _depthBoundTest; }
 
 	/// <summary>Return true if stencil test is enable</summary>
 	/// <returns>bool</returns>
-	bool isStencilTestEnable() const
-	{
-		return _stencilTestEnable;
-	}
+	bool isStencilTestEnable() const { return _stencilTestEnable; }
 
 	/// <summary>Return minimum depth value</summary>
 	/// <returns>float</returns>
-	float getMinDepth() const
-	{
-		return _minDepth;
-	}
+	float getMinDepth() const { return _minDepth; }
 
 	/// <summary>Return maximum depth value</summary>
 	/// <returns>float</returns>
-	float getMaxDepth() const
-	{
-		return _maxDepth;
-	}
+	float getMaxDepth() const { return _maxDepth; }
 
 	/// <summary>Return depth comparison operator</summary>
 	/// <returns>pvrvk::CompareOp</returns>
-	pvrvk::CompareOp getDepthComapreOp() const
-	{
-		return _depthCmpOp;
-	}
+	pvrvk::CompareOp getDepthComapreOp() const { return _depthCmpOp; }
 
 	/// <summary>Return true if this state is enabled.</summary>
 	/// <returns>bool</returns>
-	bool isAllStatesEnabled() const
-	{
-		return _enableDepthStencilState;
-	}
+	bool isAllStatesEnabled() const { return _enableDepthStencilState; }
 
 	/// <summary>Enable/ Disale the entire state</summary>
 	/// <param name="flag">True:enable, False:disable</param>
@@ -223,17 +187,11 @@ public:
 
 	/// <summary>Return stencil front state</summary>
 	/// <returns>const StencilOpState&</returns>
-	const StencilOpState& getStencilFront() const
-	{
-		return _stencilFront;
-	}
+	const StencilOpState& getStencilFront() const { return _stencilFront; }
 
 	/// <summary>Return stencil back state</summary>
 	/// <returns>const StencilOpState&</returns>
-	const StencilOpState& getStencilBack() const
-	{
-		return _stencilBack;
-	}
+	const StencilOpState& getStencilBack() const { return _stencilBack; }
 
 	/// <summary>Enable/ Disable depth bound testing</summary>
 	/// <param name="enabled">True:enable, False:disable</param>
@@ -277,17 +235,11 @@ private:
 public:
 	/// <summary>Return the input bindings</summary>
 	/// <returns>const std::vector<VertexInputBindingDescription>&</returns>
-	const std::vector<VertexInputBindingDescription>& getInputBindings() const
-	{
-		return _inputBindings;
-	}
+	const std::vector<VertexInputBindingDescription>& getInputBindings() const { return _inputBindings; }
 
 	/// <summary>Return the vertex attributes</summary>
 	/// <returns>const std::vector<VertexInputAttributeDescription>&</returns>
-	const std::vector<VertexInputAttributeDescription>& getAttributes() const
-	{
-		return _attributes;
-	}
+	const std::vector<VertexInputAttributeDescription>& getAttributes() const { return _attributes; }
 
 	/// <summary>Clear this object.</summary>
 	/// <returns>this object (allows chained calls)</returns>
@@ -314,10 +266,7 @@ public:
 	{
 		for (const VertexInputBindingDescription& it : _inputBindings)
 		{
-			if (it.getBinding() == bufferBinding)
-			{
-				return &it;
-			}
+			if (it.getBinding() == bufferBinding) { return &it; }
 		}
 		return nullptr;
 	}
@@ -325,10 +274,7 @@ public:
 	/// <summary>Returns an input binding at a given index.</summary>
 	/// <param name="index">The index of the VertexInputBindingDescription to retrieve.</param>
 	/// <returns>const VertexInputBindingDescription&</returns>
-	const VertexInputBindingDescription& getInputBindingByIndex(uint32_t index) const
-	{
-		return _inputBindings[index];
-	}
+	const VertexInputBindingDescription& getInputBindingByIndex(uint32_t index) const { return _inputBindings[index]; }
 
 	/// <summary>Add vertex layout information to a buffer binding index using a VertexAttributeInfo object.</summary>
 	/// <param name="attributeInfo">Vertex attribute info.</param>
@@ -345,10 +291,7 @@ public:
 	/// <returns>this object (allows chained calls)</returns>
 	PipelineVertexInputStateCreateInfo& addInputAttributes(const VertexInputAttributeDescription* attributeInfo, uint32_t numAttributes)
 	{
-		for (uint32_t i = 0; i < numAttributes; ++i)
-		{
-			internal::insertSorted_overwrite(_attributes, attributeInfo[i], VertexAttributeInfoCmp_BindingLess_IndexLess());
-		}
+		for (uint32_t i = 0; i < numAttributes; ++i) { internal::insertSorted_overwrite(_attributes, attributeInfo[i], VertexAttributeInfoCmp_BindingLess_IndexLess()); }
 		return *this;
 	}
 };
@@ -408,31 +351,19 @@ public:
 
 	/// <summary>Check if Vertex Reuse is disabled</summary>
 	/// <returns>True if vertex reuse is disabled, otherwise false</returns>
-	bool isVertexReuseDisabled() const
-	{
-		return _disableVertexReuse;
-	}
+	bool isVertexReuseDisabled() const { return _disableVertexReuse; }
 
 	/// <summary>Check if primitive restart is enabled</summary>
 	/// <returns>True if primitive restart is enabled, otherwise false</returns>
-	bool isPrimitiveRestartEnabled() const
-	{
-		return _primitiveRestartEnable;
-	}
+	bool isPrimitiveRestartEnabled() const { return _primitiveRestartEnable; }
 
 	/// <summary>Get the primitive restart index</summary>
 	/// <returns>The primitive restart index</returns>
-	uint32_t getPrimitiveRestartIndex() const
-	{
-		return _primitiveRestartIndex;
-	}
+	uint32_t getPrimitiveRestartIndex() const { return _primitiveRestartIndex; }
 
 	/// <summary>Get primitive topology</summary>
 	/// <returns>Returns primitive topology.</returns>
-	pvrvk::PrimitiveTopology getPrimitiveTopology() const
-	{
-		return _topology;
-	}
+	pvrvk::PrimitiveTopology getPrimitiveTopology() const { return _topology; }
 };
 
 /// <summary>Pipeline Color blending state configuration (alphaToCoverage, logicOp).</summary>
@@ -451,10 +382,7 @@ private:
 public:
 	/// <summary>Get color blend attachment states</summary>
 	/// <returns>const PipelineColorBlendAttachmentState*</returns>
-	const PipelineColorBlendAttachmentState* getAttachmentStates() const
-	{
-		return _attachmentStates;
-	}
+	const PipelineColorBlendAttachmentState* getAttachmentStates() const { return _attachmentStates; }
 
 	/// <summary>Create a Color Blend state object.</summary>
 	/// <param name="alphaToCoverageEnable">enable/ disable alpa to coverage (default:disable)</param>
@@ -468,10 +396,7 @@ public:
 		: _numAttachmentStates(0), _alphaToCoverageEnable(alphaToCoverageEnable), _logicOpEnable(logicOpEnable), _logicOp(logicOp), _colorBlendConstants(colorBlendConstants)
 	{
 		assert(numAttachmentStates < FrameworkCaps::MaxColorAttachments && "Blend Attachments out of range.");
-		for (uint32_t i = 0; i < numAttachmentStates; i++)
-		{
-			_attachmentStates[i] = attachmentStates[i];
-		}
+		for (uint32_t i = 0; i < numAttachmentStates; i++) { _attachmentStates[i] = attachmentStates[i]; }
 		_numAttachmentStates = numAttachmentStates;
 	}
 
@@ -496,25 +421,16 @@ public:
 
 	/// <summary>Get the constant for color blending</summary>
 	/// <returns>The color blend constant</returns>
-	const Color& getColorBlendConst() const
-	{
-		return _colorBlendConstants;
-	}
+	const Color& getColorBlendConst() const { return _colorBlendConstants; }
 
 	/// <summary>Get color-blend attachment state (const).</summary>
 	/// <param name="index">attachment index</param>
 	/// <returns>const PipelineColorBlendAttachmentState&</returns>
-	const PipelineColorBlendAttachmentState& getAttachmentState(uint32_t index) const
-	{
-		return _attachmentStates[index];
-	}
+	const PipelineColorBlendAttachmentState& getAttachmentState(uint32_t index) const { return _attachmentStates[index]; }
 
 	/// <summary>Get number of attachment states</summary>
 	/// <returns>uint32_t</returns>
-	uint32_t getNumAttachmentStates() const
-	{
-		return _numAttachmentStates;
-	}
+	uint32_t getNumAttachmentStates() const { return _numAttachmentStates; }
 
 	/// <summary>Enable/ disable alpha to coverage.</summary>
 	/// <param name="alphaToCoverageEnable">Boolean flags indicating to enable/ disable alpha coverage</param>
@@ -547,10 +463,7 @@ public:
 	/// <returns>this object (allows chained calls)</returns>
 	PipelineColorBlendStateCreateInfo& clearAttachments()
 	{
-		for (uint32_t i = 0; i < FrameworkCaps::MaxColorAttachments; i++)
-		{
-			_attachmentStates[i] = PipelineColorBlendAttachmentState();
-		}
+		for (uint32_t i = 0; i < FrameworkCaps::MaxColorAttachments; i++) { _attachmentStates[i] = PipelineColorBlendAttachmentState(); }
 		_numAttachmentStates = 0;
 		return *this;
 	}
@@ -563,10 +476,7 @@ public:
 	{
 		assert(index < FrameworkCaps::MaxColorAttachments && "Blend config out of range.");
 		_attachmentStates[index] = state;
-		if (index >= _numAttachmentStates)
-		{
-			_numAttachmentStates = index + 1;
-		}
+		if (index >= _numAttachmentStates) { _numAttachmentStates = index + 1; }
 		return *this;
 	}
 
@@ -577,34 +487,22 @@ public:
 	PipelineColorBlendStateCreateInfo& setAttachmentStates(uint32_t count, PipelineColorBlendAttachmentState const* state)
 	{
 		assert(count < FrameworkCaps::MaxColorAttachments && "Blend config out of range.");
-		for (uint32_t i = 0; i < count; i++)
-		{
-			_attachmentStates[i] = state[i];
-		}
+		for (uint32_t i = 0; i < count; i++) { _attachmentStates[i] = state[i]; }
 		_numAttachmentStates = count;
 		return *this;
 	}
 
 	/// <summary>Check if Alpha to Coverage is enabled</summary>
 	/// <returns>True if enabled, otherwise false</returns>
-	bool isAlphaToCoverageEnabled() const
-	{
-		return _alphaToCoverageEnable;
-	}
+	bool isAlphaToCoverageEnabled() const { return _alphaToCoverageEnable; }
 
 	/// <summary>Check if Logic Op is enabled</summary>
 	/// <returns>True if enabled, otherwise false</returns>
-	bool isLogicOpEnabled() const
-	{
-		return _logicOpEnable;
-	}
+	bool isLogicOpEnabled() const { return _logicOpEnable; }
 
 	/// <summary>Get the Logic Op (regardless if enabled or not)</summary>
 	/// <returns>The logic op</returns>
-	pvrvk::LogicOp getLogicOp() const
-	{
-		return _logicOp;
-	}
+	pvrvk::LogicOp getLogicOp() const { return _logicOp; }
 };
 
 /// <summary>Pipeline Viewport state descriptor. Sets the base configuration of all viewports.</summary>
@@ -651,25 +549,16 @@ public:
 	/// <summary>Get the scissor rectangle for the specified attachment intex</summary>
 	/// <param name="index">The index for which to return the scissor rectangle</param>
 	/// <returns>Get the scissor rectangle for the specified attachment intex</returns>
-	const Rect2D& getScissor(uint32_t index) const
-	{
-		return _scissorViewports[index].first;
-	}
+	const Rect2D& getScissor(uint32_t index) const { return _scissorViewports[index].first; }
 
 	/// <summary>Get the viewport for the specified attachment intex</summary>
 	/// <param name="index">The index for which to return the scissor rectangle</param>
 	/// <returns>Get the scissor rectangle for the specified attachment intex</returns>
-	const Viewport& getViewport(uint32_t index) const
-	{
-		return _scissorViewports[index].second;
-	}
+	const Viewport& getViewport(uint32_t index) const { return _scissorViewports[index].second; }
 
 	/// <summary>Return number of viewport and scissor</summary>
 	/// <returns>uint32_t</returns>
-	uint32_t getNumViewportScissors() const
-	{
-		return _numScissorViewports;
-	}
+	uint32_t getNumViewportScissors() const { return _numScissorViewports; }
 };
 
 /// <summary>Pipeline Rasterisation, clipping and culling state configuration. Culling, winding order, depth clipping,
@@ -809,91 +698,55 @@ public:
 
 	/// <summary>Get which of the faces (Front/Back/None/Both) will not be rendered (will be culled)</summary>
 	/// <returns>The faces that will be culled ("None" means everything drawn, "Both" means nothing drawn)</returns>
-	pvrvk::CullModeFlags getCullFace() const
-	{
-		return _cullFace;
-	}
+	pvrvk::CullModeFlags getCullFace() const { return _cullFace; }
 
 	/// <summary>Get which winding order is considered the FRONT face (CCW means front faces are the counterclockwise,
 	/// CW clockwise)</summary>
 	/// <returns>The winding order that is considered FRONT facing</returns>
-	pvrvk::FrontFace getFrontFaceWinding() const
-	{
-		return _frontFaceWinding;
-	}
+	pvrvk::FrontFace getFrontFaceWinding() const { return _frontFaceWinding; }
 
 	/// <summary>Check if depth clipping is enabled (i.e. depth clamping disabled). If disabled, polygons will not be
 	/// clipped against the front and back clipping plane clipping planes: instead, the primitives' depth will be
 	/// clamped to min and max depth instead.</summary>
 	/// <returns>True if depth clipping is enabled (depth clamping is disabled). False if depth clamping is enabled
 	/// (depth clipping disabled).</returns>
-	bool isDepthClipEnabled() const
-	{
-		return _enableDepthClip;
-	}
+	bool isDepthClipEnabled() const { return _enableDepthClip; }
 
 	/// <summary>Check if rasterization is skipped (so all parts of the pipeline after transform feedback)</summary>
 	/// <returns>True if rasterization discard is enabled, false for normal rendering.</returns>
-	bool isRasterizerDiscardEnabled() const
-	{
-		return _enableRasterizerDiscard;
-	}
+	bool isRasterizerDiscardEnabled() const { return _enableRasterizerDiscard; }
 
 	/// <summary>Check if program point size is enabled</summary>
 	/// <returns>True if program point size is enabled, otherwise false</returns>
-	bool isProgramPointSizeEnabled() const
-	{
-		return _enableProgramPointSize;
-	}
+	bool isProgramPointSizeEnabled() const { return _enableProgramPointSize; }
 
 	/// <summary>Check if depth bias is enabled. (If enabled, clamp, constant factor and slope factor can be checked)</summary>
 	/// <returns>True if depth bias is enabled, otherwise false.</returns>
-	bool isDepthBiasEnabled() const
-	{
-		return _enableDepthBias;
-	}
+	bool isDepthBiasEnabled() const { return _enableDepthBias; }
 
 	/// <summary>Get the maximum(minimum) value of depth bias</summary>
 	/// <returns>The maximum(minimum) value of depth bias</returns>
-	float getDepthBiasClamp() const
-	{
-		return _depthBiasClamp;
-	}
+	float getDepthBiasClamp() const { return _depthBiasClamp; }
 
 	/// <summary>Get the constant factor of depth bias</summary>
 	/// <returns>The constant factor depth bias</returns>
-	float getDepthBiasConstantFactor() const
-	{
-		return _depthBiasConstantFactor;
-	}
+	float getDepthBiasConstantFactor() const { return _depthBiasConstantFactor; }
 
 	/// <summary>Get the slope factor of depth bias</summary>
 	/// <returns>The slope factor depth bias</returns>
-	float getDepthBiasSlopeFactor() const
-	{
-		return _depthBiasSlopeFactor;
-	}
+	float getDepthBiasSlopeFactor() const { return _depthBiasSlopeFactor; }
 
 	/// <summary>Get the slope factor of depth bias</summary>
 	/// <returns>The slope factor depth bias</returns>
-	pvrvk::PolygonMode getPolygonMode() const
-	{
-		return _fillMode;
-	}
+	pvrvk::PolygonMode getPolygonMode() const { return _fillMode; }
 
 	/// <summary>Get the slope factor of depth bias</summary>
 	/// <returns>The slope factor depth bias</returns>
-	float getLineWidth() const
-	{
-		return _lineWidth;
-	}
+	float getLineWidth() const { return _lineWidth; }
 
 	/// <summary>Get the vertex stream selected for rasterization</summary>
 	/// <returns>The vertex stream selected for rasterization</returns>
-	uint32_t getRasterizationStream() const
-	{
-		return _rasterizationStream;
-	}
+	uint32_t getRasterizationStream() const { return _rasterizationStream; }
 };
 
 /// <summary>Pipeline Multisampling state configuration: Number of samples, alpha to coverage, alpha to one,
@@ -912,14 +765,13 @@ private:
 
 public:
 	/// <summary>Constructor. Create a multisampling configuration.</summary>
-	/// <param name="stateEnabled">Enable/disable multisampling (default false)</param>
 	/// <param name="sampleShadingEnable">Enable/disable sample shading (defalt false)</param>
 	/// <param name="alphaToCoverageEnable">Enable/disable alpha-to-coverage</param>
 	/// <param name="alphaToOneEnable">Enable/disable alpha-to-one</param>
 	/// <param name="rasterizationSamples">The number of rasterization samples (default 1)</param>
 	/// <param name="minSampleShading">The minimum sample Shading (default 0)</param>
 	/// <param name="sampleMask">sampleMask (default 0)</param>
-	explicit PipelineMultisampleStateCreateInfo(bool stateEnabled = false, bool sampleShadingEnable = false, bool alphaToCoverageEnable = false, bool alphaToOneEnable = false,
+	explicit PipelineMultisampleStateCreateInfo(bool sampleShadingEnable = false, bool alphaToCoverageEnable = false, bool alphaToOneEnable = false,
 		pvrvk::SampleCountFlags rasterizationSamples = pvrvk::SampleCountFlags::e_1_BIT, float minSampleShading = 0.f, pvrvk::SampleMask sampleMask = 0xffffffff)
 		: _sampleShadingEnable(sampleShadingEnable), _alphaToCoverageEnable(alphaToCoverageEnable), _alphaToOneEnable(alphaToOneEnable),
 		  _numRasterizationSamples(rasterizationSamples), _minSampleShading(minSampleShading), _sampleMask(sampleMask)
@@ -982,45 +834,27 @@ public:
 
 	/// <summary>Get the sample mask</summary>
 	/// <returns>The sample mask</returns>
-	const pvrvk::SampleMask& getSampleMask() const
-	{
-		return _sampleMask;
-	}
+	const pvrvk::SampleMask& getSampleMask() const { return _sampleMask; }
 
 	/// <summary>Return the number of rasterization (MSAA) samples</summary>
 	/// <returns>The number of rasterization samples</returns>
-	pvrvk::SampleCountFlags getRasterizationSamples() const
-	{
-		return _numRasterizationSamples;
-	}
+	pvrvk::SampleCountFlags getRasterizationSamples() const { return _numRasterizationSamples; }
 
 	/// <summary>Get the number of minimum samples</summary>
 	/// <returns>The number of minimum samples</returns>
-	float getMinSampleShading() const
-	{
-		return _minSampleShading;
-	}
+	float getMinSampleShading() const { return _minSampleShading; }
 
 	/// <summary>Get the sample shading state</summary>
 	/// <returns>true if sample shading enabled, false if disabled</returns>
-	bool isSampleShadingEnabled() const
-	{
-		return _sampleShadingEnable;
-	}
+	bool isSampleShadingEnabled() const { return _sampleShadingEnable; }
 
 	/// <summary>Get alpha to coverage state</summary>
 	/// <returns>True if enabled, false if disabled</returns>
-	bool isAlphaToCoverageEnabled() const
-	{
-		return _alphaToCoverageEnable;
-	}
+	bool isAlphaToCoverageEnabled() const { return _alphaToCoverageEnable; }
 
 	/// <summary>Get alpha to one state</summary>
 	/// <returns>Return true if alpha to one is enabled, false if disabled</returns>
-	bool isAlphaToOneEnabled() const
-	{
-		return _alphaToOneEnable;
-	}
+	bool isAlphaToOneEnabled() const { return _alphaToOneEnable; }
 };
 
 /// <summary>Create params for Pipeline Dynamic states. Enable each state that you want to be able to dynamically
@@ -1032,18 +866,12 @@ private:
 
 public:
 	/// <summary>Constructor</summary>
-	DynamicStatesCreateInfo()
-	{
-		memset(_dynamicStates, 0, sizeof(_dynamicStates));
-	}
+	DynamicStatesCreateInfo() { memset(_dynamicStates, 0, sizeof(_dynamicStates)); }
 
 	/// <summary>Check if a specific dynamic state is enabled.</summary>
 	/// <param name="state">The state to check</param>
 	/// <returns>true if <paramref name="state"/>is enabled, otherwise false</returns>
-	bool isDynamicStateEnabled(pvrvk::DynamicState state) const
-	{
-		return (_dynamicStates[static_cast<uint32_t>(state)]);
-	}
+	bool isDynamicStateEnabled(pvrvk::DynamicState state) const { return (_dynamicStates[static_cast<uint32_t>(state)]); }
 
 	/// <summary>Enable/disable a dynamic state</summary>
 	/// <param name="state">The state to enable or disable</param>
@@ -1064,17 +892,11 @@ struct ShaderConstantInfo
 	uint32_t sizeInBytes; //!< Data size in bytes
 
 	/// <summary>Constructor (Zero initialization)</summary>
-	ShaderConstantInfo() : constantId(0), sizeInBytes(0)
-	{
-		memset(data, 0, sizeof(data));
-	}
+	ShaderConstantInfo() : constantId(0), sizeInBytes(0) { memset(data, 0, sizeof(data)); }
 
 	/// <summary>Return if this is a valid constant info</summary>
 	/// <returns>bool</returns>
-	bool isValid() const
-	{
-		return (sizeInBytes <= 64 && sizeInBytes > 0);
-	}
+	bool isValid() const { return (sizeInBytes <= 64 && sizeInBytes > 0); }
 
 	/// <summary>Constructor. Initialise with inidividual values</summary>
 	/// <param name="constantId">ID of the specialization constant in SPIR-V.</param>
@@ -1107,38 +929,23 @@ public:
 
 	/// <summary>Get the shader of this shader stage object</summary>
 	/// <returns>The shader</returns>
-	const ShaderModule& getShader() const
-	{
-		return _shaderModule;
-	}
+	const ShaderModule& getShader() const { return _shaderModule; }
 
 	/// <summary>Return true if this state is active (contains a shader)</summary>
 	/// <returns>True if valid, otherwise false</returns>
-	bool isActive() const
-	{
-		return _shaderModule != nullptr;
-	}
+	bool isActive() const { return _shaderModule != nullptr; }
 
 	/// <summary>Set the shader.</summary>
 	/// <param name="shader">A shader</param>
-	void setShader(const ShaderModule& shader)
-	{
-		_shaderModule = shader;
-	}
+	void setShader(const ShaderModule& shader) { _shaderModule = shader; }
 
 	/// <summary>Set the shader entry point function (default: "main"). Only supported for specific APIs</summary>
 	/// <param name="entryPoint">A name of a function that will be used as an entry point in the shader</param>
-	void setEntryPoint(const std::string& entryPoint)
-	{
-		_entryPoint = entryPoint;
-	}
+	void setEntryPoint(const std::string& entryPoint) { _entryPoint = entryPoint; }
 
 	/// <summary>Get the entry point of the shader</summary>
 	/// <returns>The entry point of the shader</returns>
-	const std::string& getEntryPoint() const
-	{
-		return _entryPoint;
-	}
+	const std::string& getEntryPoint() const { return _entryPoint; }
 
 	/// <summary>operator =</summary>
 	/// <param name="shader">ShaderModule object</param>
@@ -1155,10 +962,7 @@ public:
 	/// <returns>Return this (allow chaining)</returns>
 	PipelineShaderStageCreateInfo& setShaderConstant(uint32_t index, const ShaderConstantInfo& shaderConst)
 	{
-		if (_shaderConsts.size() < index + 1)
-		{
-			_shaderConsts.resize(index + 1);
-		}
+		if (_shaderConsts.size() < index + 1) { _shaderConsts.resize(index + 1); }
 		_shaderConsts[index] = shaderConst;
 		return *this;
 	}
@@ -1171,34 +975,22 @@ public:
 	PipelineShaderStageCreateInfo& setShaderConstants(const ShaderConstantInfo* shaderConsts, uint32_t numConstants)
 	{
 		_shaderConsts.resize(numConstants);
-		for (uint32_t i = 0; i < numConstants; i++)
-		{
-			_shaderConsts[i] = shaderConsts[i];
-		}
+		for (uint32_t i = 0; i < numConstants; i++) { _shaderConsts[i] = shaderConsts[i]; }
 		return *this;
 	}
 
 	/// <summary>Retrieve a ShaderConstant by index</summary>
 	/// <param name="index">The index of the ShaderConstant to retrieve</param>
 	/// <returns>The shader constant</returns>
-	const ShaderConstantInfo& getShaderConstant(uint32_t index) const
-	{
-		return _shaderConsts[index];
-	}
+	const ShaderConstantInfo& getShaderConstant(uint32_t index) const { return _shaderConsts[index]; }
 
 	/// <summary>Get all shader constants</summary>
 	/// <returns>Return an array of all defined shader constants</returns>
-	const ShaderConstantInfo* getAllShaderConstants() const
-	{
-		return _shaderConsts.data();
-	}
+	const ShaderConstantInfo* getAllShaderConstants() const { return _shaderConsts.data(); }
 
 	/// <summary>Get the number of shader constants</summary>
 	/// <returns>The number of shader constants</returns>
-	uint32_t getNumShaderConsts() const
-	{
-		return (uint32_t)_shaderConsts.size();
-	}
+	uint32_t getNumShaderConsts() const { return (uint32_t)_shaderConsts.size(); }
 };
 
 /// <summary>Creation parameters for all Tesselation shaders</summary>
@@ -1222,31 +1014,19 @@ public:
 
 	/// <summary>Get the Tessellation Control shader</summary>
 	/// <returns>The Tessellation Control shader</returns>
-	const ShaderModule& getControlShader() const
-	{
-		return _controlShader;
-	}
+	const ShaderModule& getControlShader() const { return _controlShader; }
 
 	/// <summary>Get the Tessellation Evaluation shader</summary>
 	/// <returns>The Tessellation Evaluation shader</returns>
-	const ShaderModule& getEvaluationShader() const
-	{
-		return _evalShader;
-	}
+	const ShaderModule& getEvaluationShader() const { return _evalShader; }
 
 	/// <summary>Check if the Tessellation Control shader has been set</summary>
 	/// <returns>true if the Tessellation Control shader has been set</returns>
-	bool isControlShaderActive() const
-	{
-		return _controlShader != nullptr;
-	}
+	bool isControlShaderActive() const { return _controlShader != nullptr; }
 
 	/// <summary>Check if the Tessellation Evaluation shader has been set</summary>
 	/// <returns>true if the Tessellation Evaluation shader has been set</returns>
-	bool isEvaluationShaderActive() const
-	{
-		return _evalShader != nullptr;
-	}
+	bool isEvaluationShaderActive() const { return _evalShader != nullptr; }
 
 	/// <summary>Set the control shader.</summary>
 	/// <param name="shader">A shader to set to the Tessellation Control stage</param>
@@ -1295,10 +1075,7 @@ public:
 
 	/// <summary>Get number of control points</summary>
 	/// <returns>The number of patch control points</returns>
-	uint32_t getNumPatchControlPoints() const
-	{
-		return _patchControlPoints;
-	}
+	uint32_t getNumPatchControlPoints() const { return _patchControlPoints; }
 
 	/// <summary>Set a shader constant for the Tessellation Control shader</summary>
 	/// <param name="index">Index of the constant to set</param>
@@ -1306,10 +1083,7 @@ public:
 	/// <returns>Return this for chaining</returns>
 	TesselationStageCreateInfo& setControlShaderConstant(uint32_t index, const ShaderConstantInfo& shaderConst)
 	{
-		if (_shaderConstsTessCtrl.size() < index + 1)
-		{
-			_shaderConstsTessCtrl.resize(index + 1);
-		}
+		if (_shaderConstsTessCtrl.size() < index + 1) { _shaderConstsTessCtrl.resize(index + 1); }
 
 		_shaderConstsTessCtrl[index] = shaderConst;
 		return *this;
@@ -1322,15 +1096,9 @@ public:
 	/// <remarks>Uses better memory reservation than the setShaderConstant counterpart.</remarks>
 	TesselationStageCreateInfo& setControlShaderConstants(const ShaderConstantInfo* shaderConsts, uint32_t numConstants)
 	{
-		if (_shaderConstsTessCtrl.size() != numConstants)
-		{
-			_shaderConstsTessCtrl.resize(numConstants);
-		}
+		if (_shaderConstsTessCtrl.size() != numConstants) { _shaderConstsTessCtrl.resize(numConstants); }
 
-		for (uint32_t i = 0; i < numConstants; i++)
-		{
-			_shaderConstsTessCtrl[i] = shaderConsts[numConstants];
-		}
+		for (uint32_t i = 0; i < numConstants; i++) { _shaderConstsTessCtrl[i] = shaderConsts[numConstants]; }
 		return *this;
 	}
 
@@ -1338,24 +1106,15 @@ public:
 	/// <param name="index">The index of the constant to get. It is undefined to retrieve a constant that does not
 	/// exist.</param>
 	/// <returns>The Constant to get</returns>
-	const ShaderConstantInfo& getControlShaderConstant(uint32_t index) const
-	{
-		return _shaderConstsTessCtrl[index];
-	}
+	const ShaderConstantInfo& getControlShaderConstant(uint32_t index) const { return _shaderConstsTessCtrl[index]; }
 
 	/// <summary>Return all control shader constants as a c-style array</summary>
 	/// <returns>C-style array of all shader constants</returns>
-	const ShaderConstantInfo* getAllControlShaderConstants() const
-	{
-		return _shaderConstsTessCtrl.data();
-	}
+	const ShaderConstantInfo* getAllControlShaderConstants() const { return _shaderConstsTessCtrl.data(); }
 
 	/// <summary>Return number of control shader constants</summary>
 	/// <returns>uint32_t</returns>
-	uint32_t getNumControlShaderConstants() const
-	{
-		return (uint32_t)_shaderConstsTessCtrl.size();
-	}
+	uint32_t getNumControlShaderConstants() const { return (uint32_t)_shaderConstsTessCtrl.size(); }
 
 	/// <summary>Set a shader constant for the Tessellation Evaluation shader</summary>
 	/// <param name="index">Index of the constant to set</param>
@@ -1363,10 +1122,7 @@ public:
 	/// <returns>Return this for chaining</returns>
 	void setEvaluationShaderConstant(uint32_t index, const ShaderConstantInfo& shaderConst)
 	{
-		if (_shaderConstTessEval.size() < index + 1)
-		{
-			_shaderConstTessEval.resize(index + 1);
-		}
+		if (_shaderConstTessEval.size() < index + 1) { _shaderConstTessEval.resize(index + 1); }
 		_shaderConstTessEval[index] = shaderConst;
 	}
 
@@ -1377,15 +1133,9 @@ public:
 	/// <remarks>Uses better memory reservation than the setShaderConstant counterpart.</remarks>
 	TesselationStageCreateInfo& setEvaluationShaderConstants(const ShaderConstantInfo* shaderConsts, uint32_t numConstants)
 	{
-		if (_shaderConstTessEval.size() != numConstants)
-		{
-			_shaderConstTessEval.resize(numConstants);
-		}
+		if (_shaderConstTessEval.size() != numConstants) { _shaderConstTessEval.resize(numConstants); }
 
-		for (uint32_t i = 0; i < numConstants; i++)
-		{
-			_shaderConstTessEval[i] = shaderConsts[numConstants];
-		}
+		for (uint32_t i = 0; i < numConstants; i++) { _shaderConstTessEval[i] = shaderConsts[numConstants]; }
 		return *this;
 	}
 
@@ -1393,37 +1143,22 @@ public:
 	/// <param name="index">The index of the constant to retrieve. It is undefined to retrieve a constant that does
 	/// not exist.</param>
 	/// <returns>The ShaderConstantInfo at index <paramref name="index"/></returns>
-	const ShaderConstantInfo& getEvaluationlShaderConstant(uint32_t index) const
-	{
-		return _shaderConstTessEval[index];
-	}
+	const ShaderConstantInfo& getEvaluationlShaderConstant(uint32_t index) const { return _shaderConstTessEval[index]; }
 
 	/// <summary>Return all evaluationshader constants</summary>
 	/// <returns>const ShaderConstantInfo*</returns>
-	const ShaderConstantInfo* getAllEvaluationShaderConstants() const
-	{
-		return _shaderConstTessEval.data();
-	}
+	const ShaderConstantInfo* getAllEvaluationShaderConstants() const { return _shaderConstTessEval.data(); }
 
 	/// <summary>Return number of evaluatinon shader constants</summary>
 	/// <returns>The number of evaluatinon shader constants</returns>
-	uint32_t getNumEvaluatinonShaderConstants() const
-	{
-		return (uint32_t)_shaderConstTessEval.size();
-	}
+	uint32_t getNumEvaluatinonShaderConstants() const { return (uint32_t)_shaderConstTessEval.size(); }
 
 	/// <summary>Get evaluation shader entry point</summary>
 	/// <returns>const char*</returns>
-	const char* getEvaluationShaderEntryPoint() const
-	{
-		return _evalShaderEntryPoint.c_str();
-	}
+	const char* getEvaluationShaderEntryPoint() const { return _evalShaderEntryPoint.c_str(); }
 
 	/// <summary>Get control shader entry point</summary>
 	/// <returns>const char*</returns>
-	const char* getControlShaderEntryPoint() const
-	{
-		return _controlShaderEntryPoint.c_str();
-	}
+	const char* getControlShaderEntryPoint() const { return _controlShaderEntryPoint.c_str(); }
 };
 } // namespace pvrvk

@@ -4,6 +4,7 @@
 <dict>
 	<key>CFBundleIconFile</key>
 	<string></string>
+
 	<key>Icon files</key>
 	<array>
 		<string>Icon.png</string>
@@ -16,7 +17,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleDisplayName</key>
-	<string>IntroducingPVRShell</string>
+	<string>@PROJECT_NAME@</string>
 	<key>CFBundleExecutable</key>
 	<string>$${DUMMY}{EXECUTABLE_NAME}</string>
 	<key>CFBundleIdentifier</key>

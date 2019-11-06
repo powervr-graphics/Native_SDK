@@ -12,6 +12,7 @@
 #include "PVRCore/stream/BufferStream.h"
 #include "PVRCore/texture/Texture.h"
 #include "PVRCore/Log.h"
+#include "pugixml.hpp"
 #include <set>
 
 namespace pvr {
@@ -150,10 +151,7 @@ inline GpuDatatypes dataTypeFromString(const std::string& mystr)
 	(void)initialize_map;
 	auto it = datatype_strings.find(strings::toLower(mystr));
 
-	if (it == datatype_strings.end())
-	{
-		Log(LogLevel::Warning, "Unrecognized datatype [%s] reading PFX file", mystr.c_str());
-	}
+	if (it == datatype_strings.end()) { Log(LogLevel::Warning, "Unrecognized datatype [%s] reading PFX file", mystr.c_str()); }
 	return it == datatype_strings.end() ? GpuDatatypes::none : it->second;
 }
 
@@ -167,10 +165,7 @@ const std::string dynamicstorage_str("dynamicstorage");
 inline DescriptorType bufferDescriptorTypeFromString(const std::string& mystr)
 {
 	const std::string str = strings::toLower(mystr);
-	if (str == uniform_str)
-	{
-		return DescriptorType::UniformBuffer;
-	}
+	if (str == uniform_str) { return DescriptorType::UniformBuffer; }
 	else if (str == storage_str)
 	{
 		return DescriptorType::StorageBuffer;
@@ -204,10 +199,7 @@ inline Filter filterFromAttribute(const pugi::xml_attribute& attr, Filter defaul
 	if (!attr.empty())
 	{
 		const std::string value = strings::toLower(attr.value());
-		if (value == nearest_str)
-		{
-			ret = Filter::Nearest;
-		}
+		if (value == nearest_str) { ret = Filter::Nearest; }
 		else if (value == linear_str)
 		{
 			ret = Filter::Linear;
@@ -230,10 +222,7 @@ inline SamplerMipmapMode mipMapModeFromAttribute(const pugi::xml_attribute& attr
 	if (!attr.empty())
 	{
 		const std::string value = strings::toLower(attr.value());
-		if (value == nearest_str)
-		{
-			ret = SamplerMipmapMode::Nearest;
-		}
+		if (value == nearest_str) { ret = SamplerMipmapMode::Nearest; }
 		else if (value == linear_str)
 		{
 			ret = SamplerMipmapMode::Linear;
@@ -250,10 +239,7 @@ inline SamplerAddressMode wrapFromAttribute(const pugi::xml_attribute& attr, Sam
 	if (!attr.empty())
 	{
 		const std::string value = strings::toLower(attr.value());
-		if (value == clamp_str)
-		{
-			ret = SamplerAddressMode::ClampToEdge;
-		}
+		if (value == clamp_str) { ret = SamplerAddressMode::ClampToEdge; }
 		else if (value == repeat_str)
 		{
 			ret = SamplerAddressMode::Repeat;
@@ -275,10 +261,7 @@ inline effect::PipelineCondition::ConditionType conditionFromAttribute(const pug
 	if (!attr.empty())
 	{
 		const std::string value = strings::toLower(attr.value());
-		if (value == requiresUniformSemantic_str)
-		{
-			ret = effect::PipelineCondition::UniformRequired;
-		}
+		if (value == requiresUniformSemantic_str) { ret = effect::PipelineCondition::UniformRequired; }
 		else if (value == requiresUniformSemanticNotPresent_str)
 		{
 			ret = effect::PipelineCondition::UniformRequiredNo;
@@ -316,10 +299,7 @@ inline ShaderType shaderTypeFromString(pugi::xml_attribute& attr)
 	if (!attr.empty())
 	{
 		const std::string value = strings::toLower(attr.value());
-		if (value == vertex_str)
-		{
-			ret = ShaderType::VertexShader;
-		}
+		if (value == vertex_str) { ret = ShaderType::VertexShader; }
 		else if (value == fragment_str)
 		{
 			ret = ShaderType::FragmentShader;
@@ -360,10 +340,7 @@ inline VariableScope scopeFromString(const pugi::xml_attribute& attr)
 	if (!attr.empty())
 	{
 		const std::string value = strings::toLower(attr.value());
-		if (value == automatic_str || value == auto_str)
-		{
-			ret = VariableScope::Automatic;
-		}
+		if (value == automatic_str || value == auto_str) { ret = VariableScope::Automatic; }
 		else if (value == effect_str)
 		{
 			ret = VariableScope::Effect;
@@ -419,10 +396,7 @@ inline BlendOp blendOpFromString(const pugi::xml_attribute& attr)
 	const std::string value = strings::toLower(attr.value());
 	if (!value.empty())
 	{
-		if (value == blend_op_str[0])
-		{
-			ret = BlendOp::Add;
-		}
+		if (value == blend_op_str[0]) { ret = BlendOp::Add; }
 		else if (value == blend_op_str[1])
 		{
 			ret = BlendOp::Subtract;
@@ -449,34 +423,16 @@ inline BlendOp blendOpFromString(const pugi::xml_attribute& attr)
 
 ColorChannelFlags blendChannelWriteMaskFromString(const pugi::xml_attribute& attr)
 {
-	if (strlen(attr.value()) == 0)
-	{
-		return ColorChannelFlags::All;
-	}
+	if (strlen(attr.value()) == 0) { return ColorChannelFlags::All; }
 	const std::string value(strings::toLower(attr.value()));
 
-	if (value == "none")
-	{
-		return ColorChannelFlags::None;
-	}
+	if (value == "none") { return ColorChannelFlags::None; }
 
 	ColorChannelFlags bits = ColorChannelFlags(0);
-	if (value.find_first_of('r') != std::string::npos)
-	{
-		bits |= ColorChannelFlags::R;
-	}
-	if (value.find_first_of('g') != std::string::npos)
-	{
-		bits |= ColorChannelFlags::G;
-	}
-	if (value.find_first_of('b') != std::string::npos)
-	{
-		bits |= ColorChannelFlags::B;
-	}
-	if (value.find_first_of('a') != std::string::npos)
-	{
-		bits |= ColorChannelFlags::A;
-	}
+	if (value.find_first_of('r') != std::string::npos) { bits |= ColorChannelFlags::R; }
+	if (value.find_first_of('g') != std::string::npos) { bits |= ColorChannelFlags::G; }
+	if (value.find_first_of('b') != std::string::npos) { bits |= ColorChannelFlags::B; }
+	if (value.find_first_of('a') != std::string::npos) { bits |= ColorChannelFlags::A; }
 	return bits;
 }
 
@@ -515,9 +471,9 @@ void addTextures(effect::Effect& effect, pugi::xml_named_node_iterator begin, pu
 		effect::TextureDefinition tex;
 		tex.name = it->attribute("name") ? it->attribute("name").value() : StringHash();
 		tex.path = it->attribute("path") ? it->attribute("path").value() : StringHash();
-		tex.height = it->attribute("height") ? it->attribute("height").as_int() : 0;
-		tex.width = it->attribute("width") ? it->attribute("width").as_int() : 0;
-		tex.fmt = getFormat(it->attribute("format"));
+		tex.height = it->attribute("height") ? static_cast<uint32_t>(it->attribute("height").as_int()) : 0u;
+		tex.width = it->attribute("width") ? static_cast<uint32_t>(it->attribute("width").as_int()) : 0;
+		tex.format = getFormat(it->attribute("format"));
 		effect.addTexture(std::move(tex));
 	}
 }
@@ -526,10 +482,7 @@ void addEntryToBuffer(effect::BufferDefinition& buffer, pugi::xml_node& entry_no
 {
 	effect::BufferDefinition::Entry entry;
 	entry.arrayElements = 1;
-	if (entry_node.attribute("arrayElements"))
-	{
-		entry.arrayElements = entry_node.attribute("arrayElements").as_int();
-	}
+	if (entry_node.attribute("arrayElements")) { entry.arrayElements = entry_node.attribute("arrayElements").as_int(); }
 	entry.semantic = entry_node.attribute("semantic").value();
 	entry.dataType = dataTypeFromString(entry_node.attribute("dataType").value());
 	buffer.entries.emplace_back(std::move(entry));
@@ -546,39 +499,29 @@ void addBuffers(effect::Effect& effect, pugi::xml_named_node_iterator begin, pug
 
 		buff.multibuffering = it->attribute("multibuffering").as_bool();
 
-		for (auto child = it->children().begin(); child != it->children().end(); ++child)
-		{
-			addEntryToBuffer(buff, *child);
-		}
+		for (auto child = it->children().begin(); child != it->children().end(); ++child) { addEntryToBuffer(buff, *child); }
 		effect.addBuffer(std::move(buff));
 	}
 }
 
-Stream::ptr_type getStream(const std::string& filename, IAssetProvider* assetProvider)
+std::unique_ptr<Stream> getStream(const std::string& filename, const IAssetProvider* assetProvider)
 {
-	if (assetProvider)
-	{
-		return assetProvider->getAssetStream(filename);
-	}
+	if (assetProvider) { return assetProvider->getAssetStream(filename); }
 	else
 	{
-		return Stream::ptr_type(new FileStream(filename, "r"));
+		return std::make_unique<FileStream>(filename, "r");
 	}
 }
 
-void addFileCodeSourceToVector(std::vector<char>& shaderSource, const char* filename, IAssetProvider* assetProvider)
+void addFileCodeSourceToVector(std::vector<char>& shaderSource, const char* filename, const IAssetProvider* assetProvider)
 {
-	Stream::ptr_type str = getStream(filename, assetProvider);
-	str->open();
-	if (!str->isReadable())
-	{
-		throw FileIOError(filename, "PfxParser: - File not found");
-	}
+	std::unique_ptr<Stream> str = getStream(filename, assetProvider);
+	if (!str->isReadable()) { throw FileIOError(filename, "PfxParser: - File not found"); }
 	str->readIntoBuffer(shaderSource);
 }
 
 void addShaderCodeToVectors(const StringHash& /*name*/, ShaderType shaderType, std::map<StringHash, std::pair<ShaderType, std::vector<char> /**/> /**/>& versionedShaders,
-	const pugi::xml_node& node, const StringHash& apiVersion, bool isFile, bool addToAll, IAssetProvider* assetProvider)
+	const pugi::xml_node& node, const StringHash& apiVersion, bool isFile, bool addToAll, const IAssetProvider* assetProvider)
 {
 	// The next two lines will select either running the for-loop just once for the value matching versionedShaders,
 	// or for all values in versionedShaders (i.e. was "apiVersion" nothing?)
@@ -616,10 +559,7 @@ void addShaderCodeToVectors(const StringHash& /*name*/, ShaderType shaderType, s
 	{
 		for (auto it = versionedShaders.begin(); it != versionedShaders.end(); ++it)
 		{
-			if (&it->second.second == &rawData_vector)
-			{
-				continue;
-			} // Skip yourself!
+			if (&it->second.second == &rawData_vector) { continue; } // Skip yourself!
 			// Append the additional data to the node's vector
 			it->second.second.resize(it->second.second.size() + value_size);
 			memcpy(it->second.second.data() + (it->second.second.size() - value_size), rawData_vector.data() + initial_size, value_size);
@@ -627,7 +567,7 @@ void addShaderCodeToVectors(const StringHash& /*name*/, ShaderType shaderType, s
 	}
 }
 
-void addShaders(effect::Effect& theEffect, pugi::xml_named_node_iterator begin, pugi::xml_named_node_iterator end, IAssetProvider* assetProvider)
+void addShaders(effect::Effect& theEffect, pugi::xml_named_node_iterator begin, pugi::xml_named_node_iterator end, const IAssetProvider* assetProvider)
 {
 	// For each shader element, we will create one per version...
 	for (auto shader = begin; shader != end; ++shader)
@@ -639,14 +579,8 @@ void addShaders(effect::Effect& theEffect, pugi::xml_named_node_iterator begin, 
 		// Get its name
 		for (auto it2 = shader->attributes_begin(); it2 != shader->attributes_end(); ++it2)
 		{
-			if (std::string(it2->name()) == std::string("name"))
-			{
-				shaderName = it2->value();
-			}
-			if (std::string(it2->name()) == std::string("type"))
-			{
-				shaderType = shaderTypeFromString(*it2);
-			}
+			if (std::string(it2->name()) == std::string("name")) { shaderName = it2->value(); }
+			if (std::string(it2->name()) == std::string("type")) { shaderType = shaderTypeFromString(*it2); }
 		}
 		if (shaderType == ShaderType::UnknownShader)
 		{
@@ -665,10 +599,7 @@ void addShaders(effect::Effect& theEffect, pugi::xml_named_node_iterator begin, 
 		for (auto child = shader->children().begin(); child != shader->children().end(); ++child)
 		{
 			const auto& apiVersionAttr = child->attribute("apiVersion");
-			if (apiVersionAttr)
-			{
-				versionedShaders[apiVersionAttr.value()];
-			}
+			if (apiVersionAttr) { versionedShaders[apiVersionAttr.value()]; }
 			else
 			{
 				versionedShaders[StringHash()];
@@ -693,9 +624,7 @@ void addShaders(effect::Effect& theEffect, pugi::xml_named_node_iterator begin, 
 		}
 		// One last bit! Actually add them to the effect. Note - they are character arrays without null-terminators...
 		for (auto entry = versionedShaders.begin(); entry != versionedShaders.end(); ++entry)
-		{
-			theEffect.addShader(entry->first, effect::Shader(StringHash(shaderName), entry->second.first, std::string(entry->second.second.begin(), entry->second.second.end())));
-		}
+		{ theEffect.addShader(entry->first, effect::Shader(StringHash(shaderName), entry->second.first, std::string(entry->second.second.begin(), entry->second.second.end()))); }
 	}
 }
 
@@ -715,10 +644,7 @@ void addPipelineUniform(effect::Effect&, const StringHash&, effect::PipelineDefi
 	effect::UniformSemantic semantic;
 	semantic.dataType = dataTypeFromString(attribute_element.attribute("dataType").value());
 	semantic.arrayElements = attribute_element.attribute("arrayElements").as_int();
-	if (semantic.arrayElements == 0)
-	{
-		semantic.arrayElements = 1;
-	}
+	if (semantic.arrayElements == 0) { semantic.arrayElements = 1; }
 	semantic.semantic = attribute_element.attribute("semantic").value();
 	semantic.variableName = attribute_element.attribute("variable").value();
 	semantic.scope = scopeFromString(attribute_element.attribute("scope"));
@@ -732,10 +658,7 @@ void addPipelineShader(effect::Effect& effect, const StringHash& apiName, effect
 	effect::Shader shader;
 	shader.name = attribute_element.attribute("name").value();
 	auto it = effect.versionedShaders[apiName].find(shader.name);
-	if (it != effect.versionedShaders[apiName].end())
-	{
-		pipeline.shaders.emplace_back(&(it->second));
-	}
+	if (it != effect.versionedShaders[apiName].end()) { pipeline.shaders.emplace_back(&(it->second)); }
 	else
 	{
 		if (!apiName.empty())
@@ -785,18 +708,14 @@ void addPipelineInputAttachment(effect::Effect&, const StringHash&, effect::Pipe
 void addPipelineTexture(effect::Effect& effect, const StringHash&, effect::PipelineDefinition& pipeline, pugi::xml_node& attribute_element)
 {
 	StringHash name = attribute_element.attribute("name").value();
-	if (effect.textures.find(name) != effect.textures.end())
-	{
-		return;
-	}
+	if (effect.textures.find(name) != effect.textures.end()) { return; }
 
 	effect::TextureReference ref;
 	ref.binding = static_cast<int8_t>(attribute_element.attribute("binding").as_int());
 	ref.set = static_cast<int8_t>(attribute_element.attribute("set").as_int(-1));
 	ref.semantic = attribute_element.attribute("semantic").value();
 	ref.samplerFilter = packSamplerFilter(filterFromAttribute(attribute_element.attribute("minification"), Filter::Nearest),
-		filterFromAttribute(attribute_element.attribute("magnification"), Filter::Nearest),
-		mipMapModeFromAttribute(attribute_element.attribute("mipmap"), SamplerMipmapMode::Nearest));
+		filterFromAttribute(attribute_element.attribute("magnification"), Filter::Nearest), mipMapModeFromAttribute(attribute_element.attribute("mipmap"), SamplerMipmapMode::Nearest));
 	ref.wrapR = wrapFromAttribute(attribute_element.attribute("wrap_r"), SamplerAddressMode::ClampToEdge);
 	ref.wrapS = wrapFromAttribute(attribute_element.attribute("wrap_s"), SamplerAddressMode::ClampToEdge);
 	ref.wrapT = wrapFromAttribute(attribute_element.attribute("wrap_t"), SamplerAddressMode::ClampToEdge);
@@ -825,10 +744,7 @@ void addPipelineBlending(effect::Effect&, const StringHash&, effect::PipelineDef
 
 inline StencilOp stencilOpFromString(const std::string& str, StencilOp dflt)
 {
-	if (str == "keep")
-	{
-		return StencilOp::Keep;
-	}
+	if (str == "keep") { return StencilOp::Keep; }
 	else if (str == "zero")
 	{
 		return StencilOp::Zero;
@@ -868,10 +784,10 @@ void addPipelineDepthStencil(effect::Effect&, const StringHash&, effect::Pipelin
 	//--- Depth
 	pipeline.depthCmpFunc = comparisonModeFromString(attribute_element.attribute("depthFunc").as_string(""), CompareOp::DefaultDepthFunc);
 
-	pipeline.enableDepthTest = attribute_element.attribute("depthTest").as_bool("false");
-	pipeline.enableDepthWrite = attribute_element.attribute("depthWrite").as_bool("true");
+	pipeline.enableDepthTest = attribute_element.attribute("depthTest").as_bool(false);
+	pipeline.enableDepthWrite = attribute_element.attribute("depthWrite").as_bool(true);
 
-	pipeline.enableStencilTest = attribute_element.attribute("stencilTest").as_bool("true");
+	pipeline.enableStencilTest = attribute_element.attribute("stencilTest").as_bool(true);
 
 	//---- Stencil, check for common
 	pipeline.stencilFront.opDepthFail = stencilOpFromString(strings::toLower(attribute_element.attribute("stencilOpDepthFail").as_string("")), StencilOp::Keep);
@@ -917,10 +833,7 @@ void addPipelineDepthStencil(effect::Effect&, const StringHash&, effect::Pipelin
 
 inline Face faceFromString(const std::string& str, Face defaultFace)
 {
-	if (str.empty())
-	{
-		return defaultFace;
-	}
+	if (str.empty()) { return defaultFace; }
 	else if ("none" == str)
 	{
 		return Face::None;
@@ -943,10 +856,7 @@ inline Face faceFromString(const std::string& str, Face defaultFace)
 inline StepRate stepRateFromString(const char* str, StepRate defaultStepRate)
 {
 	const std::string str_l(strings::toLower(str));
-	if (str_l == "vertex")
-	{
-		return StepRate::Vertex;
-	}
+	if (str_l == "vertex") { return StepRate::Vertex; }
 	else if (str_l == "instance")
 	{
 		return StepRate::Instance;
@@ -956,10 +866,7 @@ inline StepRate stepRateFromString(const char* str, StepRate defaultStepRate)
 
 inline PolygonWindingOrder polygonWindingOrderFromString(const std::string& str)
 {
-	if (str == "cw" || str == "clockwise")
-	{
-		return PolygonWindingOrder::FrontFaceCW;
-	}
+	if (str == "cw" || str == "clockwise") { return PolygonWindingOrder::FrontFaceCW; }
 	else if (str == "ccw" || str == "counterclockwise")
 	{
 		return PolygonWindingOrder::FrontFaceCCW;
@@ -990,10 +897,7 @@ void addElementsToPipelines(effect::Effect& effect, std::map<StringHash, effect:
 	}
 	else
 	{
-		for (auto versions = pipelines.begin(); versions != pipelines.end(); ++versions)
-		{
-			adder(effect, versions->first, versions->second, pipe_element);
-		}
+		for (auto versions = pipelines.begin(); versions != pipelines.end(); ++versions) { adder(effect, versions->first, versions->second, pipe_element); }
 	}
 }
 
@@ -1005,91 +909,47 @@ bool processPipeline(effect::Effect& effect, pugi::xml_node& pipe_element, const
 
 	for (auto it = pipe_element.children().begin(); it != pipe_element.children().end(); ++it)
 	{
-		if (it->attribute("apiVersion"))
-		{
-			pipelines[it->attribute("apiVersion").value()].name = name;
-		}
+		if (it->attribute("apiVersion")) { pipelines[it->attribute("apiVersion").value()].name = name; }
 	}
 
-	for (auto it = effect.getVersions().begin(); it != effect.getVersions().end(); ++it)
-	{
-		pipelines[it->c_str()].name = name;
-	}
+	for (auto it = effect.getVersions().begin(); it != effect.getVersions().end(); ++it) { pipelines[it->c_str()].name = name; }
 
 	// add attributes
 	for (auto it = pipe_element.children("attribute").begin(); it != pipe_element.children("attribute").end(); ++it)
-	{
-		addElementsToPipelines(effect, pipelines, *it, &addPipelineAttribute);
-	}
-
-	// add uniforms
+	{ addElementsToPipelines(effect, pipelines, *it, &addPipelineAttribute); } // add uniforms
 	for (auto it = pipe_element.children("uniform").begin(); it != pipe_element.children("uniform").end(); ++it)
-	{
-		addElementsToPipelines(effect, pipelines, *it, &addPipelineUniform);
-	}
-
-	// add shaders
+	{ addElementsToPipelines(effect, pipelines, *it, &addPipelineUniform); } // add shaders
 	for (auto it = pipe_element.children("shader").begin(); it != pipe_element.children("shader").end(); ++it)
-	{
-		addElementsToPipelines(effect, pipelines, *it, &addPipelineShader);
-	}
-
-	// add buffers
+	{ addElementsToPipelines(effect, pipelines, *it, &addPipelineShader); } // add buffers
 	for (auto it = pipe_element.children("buffer").begin(); it != pipe_element.children("buffer").end(); ++it)
-	{
-		addElementsToPipelines(effect, pipelines, *it, &addPipelineBuffer);
-	}
-
-	// add textures
+	{ addElementsToPipelines(effect, pipelines, *it, &addPipelineBuffer); } // add textures
 	for (auto it = pipe_element.children("texture").begin(); it != pipe_element.children("texture").end(); ++it)
-	{
-		addElementsToPipelines(effect, pipelines, *it, &addPipelineTexture);
-	}
-
-	// add input attachments
+	{ addElementsToPipelines(effect, pipelines, *it, &addPipelineTexture); } // add input attachments
 	for (auto it = pipe_element.children("inputattachment").begin(); it != pipe_element.children("inputattachment").end(); ++it)
-	{
-		addElementsToPipelines(effect, pipelines, *it, &addPipelineInputAttachment);
-	}
-
-	// add the blending
+	{ addElementsToPipelines(effect, pipelines, *it, &addPipelineInputAttachment); } // add the blending
 	for (auto it = pipe_element.children("blending").begin(); it != pipe_element.children("blending").end(); ++it)
 	{
 		addElementsToPipelines(effect, pipelines, *it, &addPipelineBlending);
-	}
-
-	// add the depth stencil
-	// add a default if depthStencil children not found
+	} // add the depth stencil
+	  // add a default if depthStencil children not found
 
 	for (auto it = pipe_element.children("depthstencil").begin(); it != pipe_element.children("depthstencil").end(); ++it)
 	{
 		addElementsToPipelines(effect, pipelines, *it, &addPipelineDepthStencil);
-	}
-
-	// add the raster states
-	// add defaults if rasterization children not found
+	} // add the raster states
+	  // add defaults if rasterization children not found
 	if (pipe_element.children("rasterization").begin() == pipe_element.children("rasterization").end())
-	{
-		addElementsToPipelines(effect, pipelines, pipe_element, &addPipelineRasterization);
-	}
+	{ addElementsToPipelines(effect, pipelines, pipe_element, &addPipelineRasterization); }
 	else
 	{
 		for (auto it = pipe_element.children("rasterization").begin(); it != pipe_element.children("rasterization").end(); ++it)
-		{
-			addElementsToPipelines(effect, pipelines, *it, &addPipelineRasterization);
-		}
+		{ addElementsToPipelines(effect, pipelines, *it, &addPipelineRasterization); }
 	}
 
 	// add the pipeline binding
 	for (auto it = pipe_element.children("vbobinding").begin(); it != pipe_element.children("vbobinding").end(); ++it)
-	{
-		addElementsToPipelines(effect, pipelines, *it, &addPipelineVertexInputBinding);
-	}
-
-	for (auto it = pipelines.begin(); it != pipelines.end(); ++it)
-	{
-		effect.versionedPipelines[it->first][it->second.name] = it->second;
-	}
+	{ addElementsToPipelines(effect, pipelines, *it, &addPipelineVertexInputBinding); }
+	for (auto it = pipelines.begin(); it != pipelines.end(); ++it) { effect.versionedPipelines[it->first][it->second.name] = it->second; }
 	return true;
 }
 
@@ -1103,10 +963,7 @@ void addPipelines(effect::Effect& effect, pugi::xml_named_node_iterator begin, p
 		// Get its name
 		for (auto it2 = pipe_element->attributes_begin(); it2 != pipe_element->attributes_end(); ++it2)
 		{
-			if (std::string(it2->name()) == std::string("name"))
-			{
-				pipelineName = it2->value();
-			}
+			if (std::string(it2->name()) == std::string("name")) { pipelineName = it2->value(); }
 		}
 		processPipeline(effect, *pipe_element, pipelineName);
 	}
@@ -1126,10 +983,7 @@ void addSubpassGroup(effect::SubpassGroup& outGroup, pugi::xml_node& subpassgrou
 		auto condition_begin = pipeline->children("condition").begin();
 		auto condition_end = pipeline->children("condition").end();
 		// unfortunately no operator "-" exists for those iterators - they are not random access, so we'll traverse twice. No big deal.
-		for (auto conditions = condition_begin; conditions != condition_end; ++conditions)
-		{
-			++counter;
-		}
+		for (auto conditions = condition_begin; conditions != condition_end; ++conditions) { ++counter; }
 		ref.conditions.resize(counter);
 		counter = 0;
 		for (auto condition = pipeline->children("condition").begin(); condition != pipeline->children("condition").end(); ++condition)
@@ -1141,16 +995,10 @@ void addSubpassGroup(effect::SubpassGroup& outGroup, pugi::xml_node& subpassgrou
 		counter = 0;
 		auto identifiers_begin = pipeline->children("exportIdentifier").begin();
 		auto identifiers_end = pipeline->children("exportIdentifier").end();
-		for (auto identifier = identifiers_begin; identifier != identifiers_end; ++identifier)
-		{
-			++counter;
-		}
-		ref.identifiers.resize(counter);
+		for (auto identifier = identifiers_begin; identifier != identifiers_end; ++identifier) { ++counter; }
+		ref.identifiers.resize(static_cast<size_t>(counter));
 		counter = 0;
-		for (auto identifier = identifiers_begin; identifier != identifiers_end; ++identifier)
-		{
-			ref.identifiers[counter++] = identifier->attribute("name").value();
-		}
+		for (auto identifier = identifiers_begin; identifier != identifiers_end; ++identifier) { ref.identifiers[counter++] = identifier->attribute("name").value(); }
 	}
 }
 
@@ -1184,9 +1032,7 @@ void addSubpass(effect::Subpass& outSubpass, pugi::xml_node& subpass_element)
 		outSubpass.groups.resize(subpass_element.select_nodes("subpassgroup").size());
 		uint32_t groupIndex = 0;
 		for (auto walk = subpass_element.children("subpassgroup").begin(); walk != subpass_element.children("subpassgroup").end(); ++walk, ++groupIndex)
-		{
-			addSubpassGroup(outSubpass.groups[groupIndex], *walk);
-		}
+		{ addSubpassGroup(outSubpass.groups[groupIndex], *walk); }
 	}
 }
 
@@ -1207,7 +1053,7 @@ void addPass(effect::Effect& effect, pugi::xml_node& pass_element, bool& depthSt
 			tex.path = StringHash();
 			tex.height = 0;
 			tex.width = 0;
-			tex.fmt = ImageDataFormat(PixelFormat::Depth32(), VariableType::UnsignedInteger, ColorSpace::lRGB);
+			tex.format = ImageDataFormat(PixelFormat::Depth32(), VariableType::UnsignedInteger, ColorSpace::lRGB);
 			effect.addTexture(std::move(tex));
 			depthStencilCreated = true;
 		}
@@ -1220,10 +1066,7 @@ void addPass(effect::Effect& effect, pugi::xml_node& pass_element, bool& depthSt
 	pass.subpasses.resize(size);
 
 	// if we have no supass then create one.
-	if (subpass_begin == subpass_end)
-	{
-		addSubpass(pass.subpasses[0], pass_element);
-	}
+	if (subpass_begin == subpass_end) { addSubpass(pass.subpasses[0], pass_element); }
 	else
 	{
 		effect::Subpass* subpass = &pass.subpasses[0];
@@ -1244,24 +1087,16 @@ void addEffects(effect::Effect& effect, pugi::xml_named_node_iterator begin, pug
 		// Get its name
 		for (auto it2 = effect_element->attributes_begin(); it2 != effect_element->attributes_end(); ++it2)
 		{
-			if (std::string(it2->name()) == std::string("name"))
-			{
-				effect.name = it2->value();
-			}
+			if (std::string(it2->name()) == std::string("name")) { effect.name = it2->value(); }
 		}
 
 		auto pass_begin = effect_element->children("pass").begin();
 		auto pass_end = effect_element->children("pass").end();
 		if (pass_begin == pass_end) // If there is only one pass, it is allowed skip the "pass" elements and put the rest straight into the pass.
-		{
-			addPass(effect, *effect_element, depthStencilCreated);
-		}
+		{ addPass(effect, *effect_element, depthStencilCreated); }
 		else
 		{
-			for (auto pass = pass_begin; pass != pass_end; ++pass)
-			{
-				addPass(effect, *pass, depthStencilCreated);
-			}
+			for (auto pass = pass_begin; pass != pass_end; ++pass) { addPass(effect, *pass, depthStencilCreated); }
 		}
 	}
 }
@@ -1270,10 +1105,7 @@ void findVersions(effect::Effect& effect, std::set<StringHash>& apiversions, pug
 {
 	for (auto it = root.children().begin(); it != root.children().end(); ++it)
 	{
-		if (it->attribute("apiVersion"))
-		{
-			apiversions.insert(it->attribute("apiVersion").value());
-		}
+		if (it->attribute("apiVersion")) { apiversions.insert(it->attribute("apiVersion").value()); }
 		findVersions(effect, apiversions, *it);
 	}
 }
@@ -1285,76 +1117,28 @@ void addVersions(effect::Effect& effect, pugi::xml_node root)
 
 	findVersions(effect, apiversions, root);
 
-	for (auto it = apiversions.begin(); it != apiversions.end(); ++it)
-	{
-		effect.addVersion(*it);
-	}
+	for (auto it = apiversions.begin(); it != apiversions.end(); ++it) { effect.addVersion(*it); }
 }
 
 } // namespace
-/// <summary>Constructor. The OSManager is used to load files in a platform-specific way. If the OSManager is NULL, then
-/// only a FileStreams from the current directory will be attempted to be loaded.</summary>
-PfxParser::PfxParser(const std::string& pfxFilename, IAssetProvider* assetProvider) : assetProvider(assetProvider)
-{
-	if (!assetProvider)
-	{
-		Log(LogLevel::Warning,
-			"PfxParser: Asset provider was not passed on construction, so a fallback path that can only "
-			"create FileStreams is used. This is not enough to function on many mobile platforms. "
-			"You should pass the Application class (itself deriving from pvr::Shell, which is an IAssetProvider "
-			"as the asset provider, otherwise consider writing a custom pvr::IAssetProvider.");
-	}
 
-	Stream::ptr_type stream(getStream(pfxFilename, assetProvider));
-	if (stream.get())
-	{
-		newAssetStream(std::move(stream));
-	}
-	else
-	{
-		Log("PfxParser: PFX Filename [%s] was not be found", pfxFilename.c_str());
-	}
+effect::Effect readPFX(const ::pvr::Stream& stream, const ::pvr::IAssetProvider* assetProvider)
+{
+	effect::Effect asset;
+	readPFX(stream, assetProvider, asset);
+	return asset;
 }
 
-/// <summary>Constructor. The OSManager is used to load pfxFilename and any shader files in a platform-specific way. If the
-/// OSManager is NULL, then only FileStreams will be attempted to be loaded.</summary>
-PfxParser::PfxParser(Stream::ptr_type pfxStream, IAssetProvider* assetProvider) : assetProvider(assetProvider)
+void readPFX(const ::pvr::Stream& stream, const ::pvr::IAssetProvider* assetProvider, effect::Effect& asset)
 {
-	if (!assetProvider)
-	{
-		Log(LogLevel::Warning,
-			"PfxParser: Asset provider was not passed on construction, so a fallback path that can only "
-			"create FileStreams is used. This is not enough to function on many mobile platforms. "
-			"You should pass the Application class (itself deriving from pvr::Shell, which is an IAssetProvider "
-			"as the asset provider, otherwise consider writing a custom pvr::IAssetProvider.");
-	}
-	if (pfxStream.get())
-	{
-		newAssetStream(std::move(pfxStream));
-	}
-	else
-	{
-		Log("PfxParser: PFX stream provided was not open.");
-	}
-}
-
-void PfxParser::readAsset_(effect::Effect& asset)
-{
-	asset.clear();
-	std::vector<char> v = _assetStream->readToEnd<char>();
+	std::vector<char> v = stream.readToEnd<char>();
 
 	pugi::xml_document doc;
 	pugi::xml_parse_result result = doc.load_buffer_inplace(v.data(), v.size());
 
-	if (result.status != pugi::xml_parse_status::status_ok || !doc || !doc.root())
-	{
-		throw InvalidDataError("[PfxParser::readAsset_]: Failed to parse PFX file - not valid XML");
-	}
+	if (result.status != pugi::xml_parse_status::status_ok || !doc || !doc.root()) { throw InvalidDataError("[PfxParser::readAsset_]: Failed to parse PFX file - not valid XML"); }
 	if (!doc.root().first_child() || std::string(doc.root().first_child().name()) != std::string("pfx"))
-	{
-		throw InvalidDataError("[PfxParser::readAsset_]: Failed to parse PFX file - root <pfx> element not found");
-	}
-
+	{ throw InvalidDataError("[PfxParser::readAsset_]: Failed to parse PFX file - root <pfx> element not found"); }
 	const auto& root = doc.root().first_child();
 	auto textures = root.children("texture");
 	auto shaders = root.children("shader");
@@ -1363,10 +1147,7 @@ void PfxParser::readAsset_(effect::Effect& asset)
 	auto effects = root.children("effect");
 
 	//*** Load header attributes ***//
-	for (auto it = root.attributes_begin(); it != root.attributes_end(); ++it)
-	{
-		asset.headerAttributes[it->name()] = it->value();
-	}
+	for (auto it = root.attributes_begin(); it != root.attributes_end(); ++it) { asset.headerAttributes[it->name()] = it->value(); }
 
 	//*** Load Textures ***//
 	addVersions(asset, root); // Pre-process a list of all different version flavors.

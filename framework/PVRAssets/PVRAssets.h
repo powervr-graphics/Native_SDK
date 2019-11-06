@@ -7,6 +7,9 @@
 #pragma once
 #include "PVRAssets/Model.h"
 #include "PVRAssets/fileio/PODReader.h"
+#include "PVRAssets/fileio/GltfReader.h"
+#include "PVRAssets/BoundingBox.h"
+#include "PVRAssets/Geometry.h"
 #include "PVRAssets/Helper.h"
 
 /*****************************************************************************/

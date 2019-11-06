@@ -70,53 +70,32 @@ public:
 
 	/// <summary>Setter for the name of the animation.</summary>
 	/// <param name="animationName">The name of the animation</param>
-	void setAnimationName(const std::string& animationName)
-	{
-		_data.animationName = animationName;
-	}
+	void setAnimationName(const std::string& animationName) { _data.animationName = animationName; }
 
 	/// <summary>Getter for the name of the animation.</summary>
 	/// <returns>The name of the animation</returns>
-	const std::string& getAnimationName() const
-	{
-		return _data.animationName;
-	}
+	const std::string& getAnimationName() const { return _data.animationName; }
 
 	/// <summary>Getter for the number of key frames.</summary>
 	/// <returns>The number of key frames</returns>
-	size_t getNumKeyFrames() const
-	{
-		return _data.keyFrames.size();
-	}
+	size_t getNumKeyFrames() const { return _data.keyFrames.size(); }
 
 	/// <summary>Allocates a number of key frames.</summary>
 	/// <param name="keyFrames">The number of key frames to allocate</param>
-	void allocateKeyFrames(uint32_t keyFrames)
-	{
-		_data.keyFrames.resize(keyFrames);
-	}
+	void allocateKeyFrames(uint32_t keyFrames) { _data.keyFrames.resize(keyFrames); }
 
 	/// <summary>Getter animation data for a specified key frame.</summary>
 	/// <param name="index">The key frames for which to retrieve animation data</param>
 	/// <returns>The key frame data for the given frame</returns>
-	KeyFrameData& getAnimationData(uint32_t index)
-	{
-		return _data.keyFrames[index];
-	}
+	KeyFrameData& getAnimationData(uint32_t index) { return _data.keyFrames[index]; }
 
 	/// <summary>Getter for the total time taken for the animation in seconds</summary>
 	/// <returns>The total time in seconds taken for the animation in seconds</returns>
-	float getTotalTimeInSec()
-	{
-		return _data.durationTime;
-	}
+	float getTotalTimeInSec() { return _data.durationTime; }
 
 	/// <summary>Getter for the total time taken for the animation in milli seconds</summary>
 	/// <returns>The total time in seconds taken for the animation in milli seconds</returns>
-	float getTotalTimeInMs()
-	{
-		return getTotalTimeInSec() * 1000.f;
-	}
+	float getTotalTimeInMs() { return getTotalTimeInSec() * 1000.f; }
 
 	/// <summary>Get the transformation matrix of specific frame and amount of interpolation.</summary>
 	/// <param name="frame">The first frame for which the transformation matrix will be returned</param>
@@ -239,17 +218,11 @@ public:
 
 	/// <summary>Retrieves the time in milli seconds at which the animation will occur.</summary>
 	/// <returns>The time in milli seconds at which the animation will occur</returns>
-	float getTotalTimeInMs() const
-	{
-		return animationData->getTotalTimeInMs();
-	}
+	float getTotalTimeInMs() const { return animationData->getTotalTimeInMs(); }
 
 	/// <summary>Retrieves the time in seconds at which the animation will occur.</summary>
 	/// <returns>The time in seconds at which the animation will occur</returns>
-	float getTotalTimeInSec() const
-	{
-		return animationData->getTotalTimeInSec();
-	}
+	float getTotalTimeInSec() const { return animationData->getTotalTimeInSec(); }
 
 	/// <summary>update animation</summary>
 	/// <param name="timeInMs">The time in milli seconds to set for the animation</param>

@@ -21,8 +21,9 @@
 @end
 namespace pvr{
 namespace platform{
-struct InternalOS
+class InternalOS
 {
+public:
 	AppWindow* window;
 
 	InternalOS() : window(nil)
@@ -40,13 +41,10 @@ const ShellOS::Capabilities ShellOS::_capabilities = { Capability::Immutable, Ca
 
 ShellOS::ShellOS(/*NSObject<NSApplicationDelegate>*/void* hInstance, OSDATA osdata) : _instance(hInstance)
 {
-	_OSImplementation = new InternalOS;
+	_OSImplementation = std::make_unique<InternalOS>();
 }
 
-ShellOS::~ShellOS()
-{
-	delete _OSImplementation;
-}
+ShellOS::~ShellOS() {}
 
 void ShellOS::updatePointingDeviceLocation()
 {
@@ -120,6 +118,11 @@ void ShellOS::releaseWindow()
 OSApplication ShellOS::getApplication() const
 {
 	return NULL;
+}
+
+OSConnection ShellOS::getConnection() const
+{
+    return nullptr;
 }
 
 OSDisplay ShellOS::getDisplay() const

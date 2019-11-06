@@ -36,52 +36,31 @@ public:
 public:
 	/// <summary>If the camera points to a specific point, get index to the target node.</summary>
 	/// <returns>The target node index</returns>
-	inline int32_t getTargetNodeIndex() const
-	{
-		return _data.targetNodeIdx;
-	}
+	inline int32_t getTargetNodeIndex() const { return _data.targetNodeIdx; }
 
 	/// <summary>Sets the specified node as the look-at target of the camera.</summary>
 	/// <param name="idx">Node index of the desired target.</param>
-	inline void setTargetNodeIndex(int32_t idx)
-	{
-		_data.targetNodeIdx = idx;
-	}
+	inline void setTargetNodeIndex(int32_t idx) { _data.targetNodeIdx = idx; }
 
 	/// <summary>Get the number of frames that this camera's animation supports.</summary>
 	/// <returns>The number of frames</returns>
-	inline uint32_t getNumFrames() const
-	{
-		return static_cast<uint32_t>(_data.fovs.size());
-	}
+	inline uint32_t getNumFrames() const { return static_cast<uint32_t>(_data.fovs.size()); }
 
 	/// <summary>Get the far clipping plane distance.</summary>
 	/// <returns>The far clipping plane distance (z)</returns>
-	inline float getFar() const
-	{
-		return _data.farClip;
-	}
+	inline float getFar() const { return _data.farClip; }
 
 	/// <summary>Get the near clipping plane distance.</summary>
 	/// <param name="farClip">The Z coord (distance) of the far clipping plane</param>
-	inline void setFar(float farClip)
-	{
-		_data.farClip = farClip;
-	}
+	inline void setFar(float farClip) { _data.farClip = farClip; }
 
 	/// <summary>Get near clip plan distance.</summary>
 	/// <returns>The near clipping plane distance (z)</returns>
-	inline float getNear() const
-	{
-		return _data.nearClip;
-	}
+	inline float getNear() const { return _data.nearClip; }
 
 	/// <summary>Set the near clipping plane distance.</summary>
 	/// <param name="nearClip">The Z coord (distance) of the near clipping plane</param>
-	inline void setNear(float nearClip)
-	{
-		_data.nearClip = nearClip;
-	}
+	inline void setNear(float nearClip) { _data.nearClip = nearClip; }
 
 	/// <summary>Get field of view for a specific time in ms</summary>
 	/// <param name="timeInMs">The time in ms to retrieve the field of view for.</param>
@@ -100,10 +79,7 @@ public:
 
 	/// <summary>Get a reference to the internal data of this object. Handle with care.</summary>
 	/// <returns>A (modifiable) reference to the internal data.
-	inline InternalData& getInternalData()
-	{
-		return _data;
-	}
+	inline InternalData& getInternalData() { return _data; }
 
 private:
 	InternalData _data;

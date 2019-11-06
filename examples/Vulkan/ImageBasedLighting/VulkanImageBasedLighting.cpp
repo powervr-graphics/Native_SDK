@@ -135,8 +135,8 @@ public:
 		uboView.initDynamic(desc, numSwapchains, pvr::BufferUsageFlags::UniformBuffer,
 			static_cast<uint32_t>(device->getPhysicalDevice()->getProperties().getLimits().getMinUniformBufferOffsetAlignment()));
 
-		ubo = pvr::utils::createBuffer(device, uboView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
-			pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT | pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, &allocator);
+		ubo = pvr::utils::createBuffer(device, pvrvk::BufferCreateInfo(uboView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT),
+			pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT | pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, &allocator);
 		uboView.pointToMappedMemory(ubo->getDeviceMemory()->getMappedData());
 
 		// /// CREATE THE PIPELINE OBJECT FOR THE SKYBOX /// //
@@ -151,7 +151,7 @@ public:
 		pipelineLayoutInfo.setDescSetLayout(0, descSetLayout);
 
 		pvrvk::PipelineLayout pipeLayout = device->createPipelineLayout(pipelineLayoutInfo);
-		createPipeline(assetProvider, device, renderpass, viewportDim, pipeLayout);
+		createPipeline(assetProvider, device, renderpass, viewportDim, pipeLayout, pipelineCache);
 
 		// /// CREATE THE SKYBOX DESCRIPTOR SET /// //
 		descSet = descPool->allocateDescriptorSet(descSetLayout);
@@ -207,25 +207,13 @@ public:
 		queue->waitIdle();
 	}
 
-	uint32_t getNumPrefilteredMipLevels() const
-	{
-		return numPrefilteredMipLevels;
-	}
+	uint32_t getNumPrefilteredMipLevels() const { return numPrefilteredMipLevels; }
 
-	pvrvk::ImageView getDiffuseIrradianceMap()
-	{
-		return irradianceMap;
-	}
+	pvrvk::ImageView getDiffuseIrradianceMap() { return irradianceMap; }
 
-	pvrvk::ImageView getPrefilteredMap()
-	{
-		return prefilteredMap;
-	}
+	pvrvk::ImageView getPrefilteredMap() { return prefilteredMap; }
 
-	pvrvk::ImageView getPrefilteredMipMap()
-	{
-		return skyBoxMap;
-	}
+	pvrvk::ImageView getPrefilteredMipMap() { return skyBoxMap; }
 
 	/// <summary>Update Per frame.</summary>
 	/// <param name="swapchainIndex">current swapchain index</param>
@@ -237,9 +225,7 @@ public:
 		uboView.getElement(1, 0, swapchainIndex).setValue(glm::vec4(eyePos, 0.0f));
 		uboView.getElement(2, 0, swapchainIndex).setValue(exposure);
 		if (uint32_t(ubo->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
-		{
-			ubo->getDeviceMemory()->flushRange(uboView.getDynamicSliceOffset(swapchainIndex), uboView.getDynamicSliceSize());
-		}
+		{ ubo->getDeviceMemory()->flushRange(uboView.getDynamicSliceOffset(swapchainIndex), uboView.getDynamicSliceSize()); }
 	}
 
 	/// <summary>Record commands.</summary>
@@ -255,14 +241,8 @@ public:
 	}
 
 private:
-	/// <summary>Create uniform buffer objects</summary>
-	/// <param name="device">The device the vulkan resources allocated from.</param>
-	/// <param name="numSwapchains">Number of swapchains.</param>
-	/// <param name="allocator">buffer memory allocator.</param>
-	void createUbo(pvrvk::Device& device, uint32_t numSwapchains, pvr::utils::vma::Allocator& allocator) {}
-
 	void createPipeline(pvr::IAssetProvider& assetProvider, pvrvk::Device& device, const pvrvk::RenderPass& renderpass, const pvrvk::Extent2D& viewportDim,
-		const pvrvk::PipelineLayout& pipelineLayout)
+		const pvrvk::PipelineLayout& pipelineLayout, const pvrvk::PipelineCache& pipelineCache)
 	{
 		pvrvk::GraphicsPipelineCreateInfo pipeInfo;
 
@@ -293,7 +273,7 @@ private:
 		pipeInfo.viewport.setViewportAndScissor(0, pvrvk::Viewport(0.0f, 0.0f, static_cast<float>(viewportDim.getWidth()), static_cast<float>(viewportDim.getHeight())),
 			pvrvk::Rect2D(0, 0, viewportDim.getWidth(), viewportDim.getHeight()));
 
-		pipeline = device->createGraphicsPipeline(pipeInfo);
+		pipeline = device->createGraphicsPipeline(pipeInfo, pipelineCache);
 	}
 
 	pvrvk::GraphicsPipeline pipeline;
@@ -317,7 +297,7 @@ public:
 	void init(pvr::IAssetProvider& assetProvider, pvrvk::Device& device, const pvrvk::GraphicsPipeline& basePipeline, const pvrvk::PipelineCache& pipelineCache,
 		pvr::utils::vma::Allocator& allocator, pvrvk::CommandBuffer& uploadCmdBuffer, bool& requireSubmission)
 	{
-		model = pvr::assets::Model::createWithReader(pvr::assets::PODReader(assetProvider.getAssetStream(SphereModelFileName)));
+		model = pvr::assets::loadModel(assetProvider, SphereModelFileName);
 
 		pvr::utils::appendSingleBuffersFromModel(device, *model, vbos, ibos, uploadCmdBuffer, requireSubmission, &allocator);
 
@@ -329,11 +309,6 @@ public:
 	void recordCommands(pvrvk::CommandBuffer& cmdBuffer)
 	{
 		cmdBuffer->bindPipeline(pipeline);
-		uint32_t one = 1;
-		cmdBuffer->pushConstants(pipeline->getPipelineLayout(), pvrvk::ShaderStageFlags::e_VERTEX_BIT | pvrvk::ShaderStageFlags::e_FRAGMENT_BIT, 0,
-			static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::uinteger)), &one);
-		cmdBuffer->pushConstants(pipeline->getPipelineLayout(), pvrvk::ShaderStageFlags::e_VERTEX_BIT | pvrvk::ShaderStageFlags::e_FRAGMENT_BIT,
-			static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::uinteger)), static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::uinteger)), &one);
 		for (uint32_t i = 0; i < model->getNumMeshNodes(); ++i)
 		{
 			pvr::assets::Node& node = model->getMeshNode(i);
@@ -380,7 +355,7 @@ public:
 	void init(pvr::IAssetProvider& assetProvider, pvrvk::Device& device, const pvrvk::Framebuffer& framebuffer, const pvrvk::PipelineLayout& pipelineLayout,
 		const pvrvk::PipelineCache& pipelineCache, pvr::utils::vma::Allocator& allocator, pvrvk::CommandBuffer& uploadCmdBuffer, bool requireSubmission)
 	{
-		model = pvr::assets::Model::createWithReader(pvr::assets::GltfReader(assetProvider.getAssetStream(HelmetModelFileName), assetProvider));
+		model = pvr::assets::loadModel(assetProvider, HelmetModelFileName);
 
 		// create the vbo and ibo for the meshes.
 		vbos.resize(model->getNumMeshes());
@@ -394,47 +369,22 @@ public:
 		createPipeline(assetProvider, device, framebuffer, pipelineLayout, pipelineCache);
 	}
 
-	const pvrvk::GraphicsPipeline& getPipeline()
-	{
-		return pipeline;
-	}
+	const pvrvk::GraphicsPipeline& getPipeline() { return pipeline; }
 
-	pvr::assets::ModelHandle& getModel()
-	{
-		return model;
-	}
+	pvr::assets::ModelHandle& getModel() { return model; }
 
-	const pvrvk::ImageView& getAlbedoMap()
-	{
-		return images[0];
-	}
+	const pvrvk::ImageView& getAlbedoMap() { return images[0]; }
 
-	const pvrvk::ImageView& getOcclusionMetallicRoughnessMap()
-	{
-		return images[1];
-	}
+	const pvrvk::ImageView& getOcclusionMetallicRoughnessMap() { return images[1]; }
 
-	const pvrvk::ImageView& getNormalMap()
-	{
-		return images[2];
-	}
+	const pvrvk::ImageView& getNormalMap() { return images[2]; }
 
-	const pvrvk::ImageView& getEmissiveMap()
-	{
-		return images[3];
-	}
+	const pvrvk::ImageView& getEmissiveMap() { return images[3]; }
 
 	void recordCommands(pvrvk::CommandBuffer& cmd)
 	{
 		cmd->bindPipeline(pipeline);
-
 		const uint32_t numMeshes = model->getNumMeshes();
-		// set the model matrix and material id.
-		uint32_t zero = 0;
-		cmd->pushConstants(pipeline->getPipelineLayout(), pvrvk::ShaderStageFlags::e_VERTEX_BIT | pvrvk::ShaderStageFlags::e_FRAGMENT_BIT, 0,
-			static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::uinteger)), &zero);
-		cmd->pushConstants(pipeline->getPipelineLayout(), pvrvk::ShaderStageFlags::e_VERTEX_BIT | pvrvk::ShaderStageFlags::e_FRAGMENT_BIT,
-			static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::uinteger)), static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::uinteger)), &zero);
 
 		for (uint32_t j = 0; j < numMeshes; ++j)
 		{
@@ -479,15 +429,15 @@ private:
 
 		pipeDesc.pipelineLayout = pipelineLayout;
 
-		pipeline = device->createGraphicsPipeline(pipeDesc);
+		pipeline = device->createGraphicsPipeline(pipeDesc, pipelineCache);
 	}
 
 	void loadTextures(pvr::IAssetProvider& assetProvider, pvrvk::Device& device, pvrvk::CommandBuffer& uploadCmdBuffer, pvr::utils::vma::Allocator& allocator)
 	{
 		for (uint32_t i = 0; i < model->getNumTextures(); ++i)
 		{
-			pvr::Stream::ptr_type stream = assetProvider.getAssetStream(model->getTexture(i).getName());
-			pvr::Texture tex = pvr::textureLoad(stream, pvr::TextureFileFormat::PVR);
+			std::unique_ptr<pvr::Stream> stream = assetProvider.getAssetStream(model->getTexture(i).getName());
+			pvr::Texture tex = pvr::textureLoad(*stream, pvr::TextureFileFormat::PVR);
 			images.push_back(pvr::utils::uploadImageAndView(device, tex, true, uploadCmdBuffer, pvrvk::ImageUsageFlags::e_SAMPLED_BIT,
 				pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, &allocator, &allocator, pvr::utils::vma::AllocationCreateFlags::e_DEDICATED_MEMORY_BIT));
 		}
@@ -536,7 +486,7 @@ class VulkanImageBasedLighting : public pvr::Shell
 		pvr::Multi<pvrvk::Framebuffer> onScreenFramebuffer;
 
 		// main command buffer used to store rendering commands
-		pvr::Multi<pvrvk::CommandBuffer> commandBuffers;
+		pvr::Multi<pvrvk::CommandBuffer> cmdBuffers;
 
 		// Pipeline cache
 		pvrvk::PipelineCache pipelineCache;
@@ -565,15 +515,11 @@ class VulkanImageBasedLighting : public pvr::Shell
 
 		~DeviceResources()
 		{
-			if (device)
-			{
-				device->waitIdle();
-			}
+			if (device) { device->waitIdle(); }
 			uint32_t l = swapchain->getSwapchainLength();
 			for (uint32_t i = 0; i < l; ++i)
 			{
-				if (perFrameResourcesFences[i])
-					perFrameResourcesFences[i]->wait();
+				if (perFrameResourcesFences[i]) perFrameResourcesFences[i]->wait();
 			}
 		}
 	};
@@ -612,11 +558,13 @@ public:
 		float oldexposure = exposure;
 		switch (action)
 		{
-		case pvr::SimplifiedInput::Action1: {
+		case pvr::SimplifiedInput::Action1:
+		{
 			_pause = !_pause;
 			break;
 		}
-		case pvr::SimplifiedInput::Action2: {
+		case pvr::SimplifiedInput::Action2:
+		{
 			uint32_t currentModel = static_cast<uint32_t>(_currentModel);
 			currentModel += 1;
 			currentModel = (currentModel + static_cast<uint32_t>(Models::NumModels)) % static_cast<uint32_t>(Models::NumModels);
@@ -624,7 +572,8 @@ public:
 			memset(_updateCommands, 1, sizeof(_updateCommands));
 			break;
 		}
-		case pvr::SimplifiedInput::Action3: {
+		case pvr::SimplifiedInput::Action3:
+		{
 			(++currentSkybox) %= numSkyBoxes;
 			_deviceResources->skyBoxPass.setSkyboxImage(*this, _deviceResources->queue, _deviceResources->commandPool, _deviceResources->descriptorPool,
 				_deviceResources->vmaAllocator, _deviceResources->samplerTrilinear);
@@ -632,24 +581,24 @@ public:
 			_updateDescriptors = true;
 			break;
 		}
-		case pvr::SimplifiedInput::Left: {
+		case pvr::SimplifiedInput::Left:
+		{
 			exposure *= .75;
-			if (oldexposure > 1.f && exposure < 1.f)
-				exposure = 1.f;
+			if (oldexposure > 1.f && exposure < 1.f) exposure = 1.f;
 			break;
 		}
-		case pvr::SimplifiedInput::Right: {
+		case pvr::SimplifiedInput::Right:
+		{
 			exposure *= 1.25;
-			if (oldexposure < 1.f && exposure > 1.f)
-				exposure = 1.f;
+			if (oldexposure < 1.f && exposure > 1.f) exposure = 1.f;
 			break;
 		}
-		case pvr::SimplifiedInput::ActionClose: {
+		case pvr::SimplifiedInput::ActionClose:
+		{
 			this->exitShell();
 			break;
 		}
-		default:
-			break;
+		default: break;
 		}
 	}
 };
@@ -669,21 +618,19 @@ pvr::Result VulkanImageBasedLighting::initApplication()
 /// <summary>Code in quitApplication() will be called by Shell once per run, just before exiting the program.
 /// quitApplication() will not be called every time the rendering context is lost, only before application exit.</summary>
 /// <returns>Result::Success if no error occurred.</returns>
-pvr::Result VulkanImageBasedLighting::quitApplication()
-{
-	return pvr::Result::Success;
-}
+pvr::Result VulkanImageBasedLighting::quitApplication() { return pvr::Result::Success; }
 
 /// <summary>Code in initView() will be called by Shell upon initialization or after a change in the rendering context.
 /// Used to initialize variables that are dependent on the rendering context(e.g.textures, vertex buffers, etc.)</summary>
 /// <returns>Result::Success if no error occurred.</returns>
 pvr::Result VulkanImageBasedLighting::initView()
 {
-	_deviceResources = std::unique_ptr<DeviceResources>(new DeviceResources());
+	_deviceResources = std::make_unique<DeviceResources>();
 
 	// Create vulkan instance and surface
 	_deviceResources->instance = pvr::utils::createInstance(this->getApplicationName());
-	_deviceResources->surface = pvr::utils::createSurface(_deviceResources->instance, _deviceResources->instance->getPhysicalDevice(0), this->getWindow(), this->getDisplay());
+	_deviceResources->surface =
+		pvr::utils::createSurface(_deviceResources->instance, _deviceResources->instance->getPhysicalDevice(0), this->getWindow(), this->getDisplay(), this->getConnection());
 
 	// Create a default set of debug utils messengers or debug callbacks using either VK_EXT_debug_utils or VK_EXT_debug_report respectively
 	_deviceResources->debugUtilsCallbacks = pvr::utils::createDebugUtilsCallbacks(_deviceResources->instance);
@@ -723,10 +670,7 @@ pvr::Result VulkanImageBasedLighting::initView()
 	// Create the Commandpool & Descriptorpool
 	_deviceResources->commandPool =
 		_deviceResources->device->createCommandPool(pvrvk::CommandPoolCreateInfo(queueAccessInfo.familyId, pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT));
-	if (!_deviceResources->commandPool)
-	{
-		return pvr::Result::UnknownError;
-	}
+	if (!_deviceResources->commandPool) { return pvr::Result::UnknownError; }
 
 	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(pvrvk::DescriptorPoolCreateInfo()
 																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 16)
@@ -735,10 +679,7 @@ pvr::Result VulkanImageBasedLighting::initView()
 																						  .addDescriptorInfo(pvrvk::DescriptorType::e_STORAGE_IMAGE, 2)
 																						  .setMaxDescriptorSets(16));
 
-	if (!_deviceResources->descriptorPool)
-	{
-		return pvr::Result::UnknownError;
-	}
+	if (!_deviceResources->descriptorPool) { return pvr::Result::UnknownError; }
 
 	// Create synchronization objects and commandbuffers
 	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
@@ -746,7 +687,7 @@ pvr::Result VulkanImageBasedLighting::initView()
 		_deviceResources->presentationSemaphores[i] = _deviceResources->device->createSemaphore();
 		_deviceResources->imageAcquiredSemaphores[i] = _deviceResources->device->createSemaphore();
 		_deviceResources->perFrameResourcesFences[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
-		_deviceResources->commandBuffers[i] = _deviceResources->commandPool->allocateCommandBuffer();
+		_deviceResources->cmdBuffers[i] = _deviceResources->commandPool->allocateCommandBuffer();
 		_updateCommands[i] = true;
 	}
 
@@ -768,7 +709,7 @@ pvr::Result VulkanImageBasedLighting::initView()
 	samplerInfo.lodMinimum = 2.f;
 	_deviceResources->samplerTrilinearLodClamped = _deviceResources->device->createSampler(samplerInfo);
 
-	_deviceResources->commandBuffers[0]->begin();
+	_deviceResources->cmdBuffers[0]->begin();
 
 	// BRDF is of course pre-generated. To generate it
 	// pvr::Texture brdflut = pvr::utils::generateCookTorranceBRDFLUT();
@@ -776,7 +717,7 @@ pvr::Result VulkanImageBasedLighting::initView()
 	// See Calculating Assets example
 
 	_deviceResources->brdfLUT = _deviceResources->device->createImageView(
-		pvrvk::ImageViewCreateInfo(pvr::utils::loadAndUploadImage(_deviceResources->device, BrdfLUTTexFile, true, _deviceResources->commandBuffers[0], *this,
+		pvrvk::ImageViewCreateInfo(pvr::utils::loadAndUploadImage(_deviceResources->device, BrdfLUTTexFile, true, _deviceResources->cmdBuffers[0], *this,
 			pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, nullptr, &_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator)));
 
 	createDescriptorSetLayouts();
@@ -794,10 +735,10 @@ pvr::Result VulkanImageBasedLighting::initView()
 		pvrvk::Extent2D(getWidth(), getHeight()), _deviceResources->samplerTrilinear, _deviceResources->vmaAllocator);
 
 	_deviceResources->helmetPass.init(*this, _deviceResources->device, _deviceResources->onScreenFramebuffer[0], _deviceResources->pipelineLayout, _deviceResources->pipelineCache,
-		_deviceResources->vmaAllocator, _deviceResources->commandBuffers[0], requireSubmission);
+		_deviceResources->vmaAllocator, _deviceResources->cmdBuffers[0], requireSubmission);
 
 	_deviceResources->spherePass.init(*this, _deviceResources->device, _deviceResources->helmetPass.getPipeline(), _deviceResources->pipelineCache, _deviceResources->vmaAllocator,
-		_deviceResources->commandBuffers[0], requireSubmission);
+		_deviceResources->cmdBuffers[0], requireSubmission);
 
 	createUbos();
 
@@ -806,16 +747,16 @@ pvr::Result VulkanImageBasedLighting::initView()
 	_deviceResources->uiRenderer.init(getWidth(), getHeight(), isFullScreen(), _deviceResources->onScreenFramebuffer[0]->getRenderPass(), 0,
 		getBackBufferColorspace() == pvr::ColorSpace::sRGB, _deviceResources->commandPool, _deviceResources->queue);
 
-	_deviceResources->commandBuffers[0]->end();
+	_deviceResources->cmdBuffers[0]->end();
 
 	pvrvk::SubmitInfo submitInfo;
-	submitInfo.commandBuffers = &_deviceResources->commandBuffers[0];
+	submitInfo.commandBuffers = &_deviceResources->cmdBuffers[0];
 	submitInfo.numCommandBuffers = 1;
 
 	// submit the queue and wait for it to become idle
 	_deviceResources->queue->submit(&submitInfo, 1);
 	_deviceResources->queue->waitIdle();
-	_deviceResources->commandBuffers[0]->reset(pvrvk::CommandBufferResetFlags::e_RELEASE_RESOURCES_BIT);
+	_deviceResources->cmdBuffers[0]->reset(pvrvk::CommandBufferResetFlags::e_RELEASE_RESOURCES_BIT);
 
 	// Calculates the projection matrix
 	bool isRotated = this->isScreenRotated() && this->isFullScreen();
@@ -838,6 +779,16 @@ pvr::Result VulkanImageBasedLighting::initView()
 	// setup the camera
 	_camera.setDistanceFromTarget(50.f);
 	_camera.setInclination(10.f);
+
+	if (_currentModel == Models::Helmet)
+	{ _deviceResources->uboWorld.view.getElement(0, 0).setValue(glm::eulerAngleXY(glm::radians(0.f), glm::radians(120.f)) * glm::scale(glm::vec3(22.0f))); }
+	else
+	{
+		_deviceResources->uboWorld.view.getElement(0, 0).setValue(glm::scale(glm::vec3(4.5f)));
+	}
+
+	if ((_deviceResources->uboWorld.buffer->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
+	{ _deviceResources->uboWorld.buffer->getDeviceMemory()->flushRange(); }
 
 	return pvr::Result::Success;
 }
@@ -864,9 +815,29 @@ pvr::Result VulkanImageBasedLighting::renderFrame()
 	_deviceResources->perFrameResourcesFences[swapchainIndex]->wait();
 	_deviceResources->perFrameResourcesFences[swapchainIndex]->reset();
 
+	if (_currentModel == Models::Helmet)
+	{ _deviceResources->uboWorld.view.getElement(0, 0).setValue(glm::eulerAngleXY(glm::radians(0.f), glm::radians(120.f)) * glm::scale(glm::vec3(22.0f))); }
+	else
+	{
+		_deviceResources->uboWorld.view.getElement(0, 0).setValue(glm::scale(glm::vec3(4.5f)));
+	}
+
+	if ((_deviceResources->uboWorld.buffer->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
+	{ _deviceResources->uboWorld.buffer->getDeviceMemory()->flushRange(); }
+
 	if (_updateDescriptors)
 	{
 		updateDescriptors();
+
+		if (_currentModel == Models::Helmet)
+		{ _deviceResources->uboWorld.view.getElement(0, 0).setValue(glm::eulerAngleXY(glm::radians(0.f), glm::radians(120.f)) * glm::scale(glm::vec3(22.0f))); }
+		else
+		{
+			_deviceResources->uboWorld.view.getElement(0, 0).setValue(glm::scale(glm::vec3(4.5f)));
+		}
+
+		if ((_deviceResources->uboWorld.buffer->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
+		{ _deviceResources->uboWorld.buffer->getDeviceMemory()->flushRange(); }
 		_updateDescriptors = false;
 	}
 
@@ -878,35 +849,17 @@ pvr::Result VulkanImageBasedLighting::renderFrame()
 	}
 
 	emissiveStrength += .15f;
-	if (emissiveStrength >= glm::pi<float>())
-	{
-		emissiveStrength = 0.0f;
-	}
+	if (emissiveStrength >= glm::pi<float>()) { emissiveStrength = 0.0f; }
 
 	emissiveScale = std::abs(glm::cos(emissiveStrength)) + .75f;
 
-	if (!_pause)
-	{
-		_camera.addAzimuth(getFrameTime() * rotationSpeed);
-	}
+	if (!_pause) { _camera.addAzimuth(getFrameTime() * rotationSpeed); }
 
-	if (this->isKeyPressed(pvr::Keys::A))
-	{
-		_camera.addAzimuth(getFrameTime() * -.1f);
-	}
-	if (this->isKeyPressed(pvr::Keys::D))
-	{
-		_camera.addAzimuth(getFrameTime() * .1f);
-	}
+	if (this->isKeyPressed(pvr::Keys::A)) { _camera.addAzimuth(getFrameTime() * -.1f); }
+	if (this->isKeyPressed(pvr::Keys::D)) { _camera.addAzimuth(getFrameTime() * .1f); }
 
-	if (this->isKeyPressed(pvr::Keys::W))
-	{
-		_camera.addInclination(getFrameTime() * .1f);
-	}
-	if (this->isKeyPressed(pvr::Keys::S))
-	{
-		_camera.addInclination(getFrameTime() * -.1f);
-	}
+	if (this->isKeyPressed(pvr::Keys::W)) { _camera.addInclination(getFrameTime() * .1f); }
+	if (this->isKeyPressed(pvr::Keys::S)) { _camera.addInclination(getFrameTime() * -.1f); }
 
 	glm::mat4 viewMtx = _camera.getViewMatrix();
 	glm::vec3 cameraPos = _camera.getCameraPosition();
@@ -915,11 +868,10 @@ pvr::Result VulkanImageBasedLighting::renderFrame()
 	{
 		// only update the current swapchain ubo
 		const glm::mat4 tempMtx = _projMtx * viewMtx;
-		_deviceResources->uboPerFrame.view.getElement(0, 0, swapchainIndex).setValue(viewMtx); // view matrix
-		_deviceResources->uboPerFrame.view.getElement(1, 0, swapchainIndex).setValue(tempMtx); // view proj
-		_deviceResources->uboPerFrame.view.getElement(2, 0, swapchainIndex).setValue(cameraPos); // camera position.
-		_deviceResources->uboPerFrame.view.getElement(3, 0, swapchainIndex).setValue(emissiveScale);
-		_deviceResources->uboPerFrame.view.getElement(4, 0, swapchainIndex).setValue(exposure);
+		_deviceResources->uboPerFrame.view.getElement(0, 0, swapchainIndex).setValue(tempMtx); // view proj
+		_deviceResources->uboPerFrame.view.getElement(1, 0, swapchainIndex).setValue(cameraPos); // camera position.
+		_deviceResources->uboPerFrame.view.getElement(2, 0, swapchainIndex).setValue(emissiveScale);
+		_deviceResources->uboPerFrame.view.getElement(3, 0, swapchainIndex).setValue(exposure);
 
 		// flush if the buffer memory doesn't support host coherent.
 		if (uint32_t(_deviceResources->uboPerFrame.buffer->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
@@ -935,7 +887,7 @@ pvr::Result VulkanImageBasedLighting::renderFrame()
 	// submit the commandbuffer
 	pvrvk::SubmitInfo submitInfo;
 	pvrvk::PipelineStageFlags waitStage = pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT;
-	submitInfo.commandBuffers = &_deviceResources->commandBuffers[swapchainIndex];
+	submitInfo.commandBuffers = &_deviceResources->cmdBuffers[swapchainIndex];
 	submitInfo.numCommandBuffers = 1;
 	submitInfo.waitDstStageMask = &waitStage;
 	submitInfo.waitSemaphores = &_deviceResources->imageAcquiredSemaphores[_frameId]; // wait for the acquire to be finished.
@@ -974,41 +926,38 @@ void VulkanImageBasedLighting::recordCommandBuffers(uint32_t swapIndex)
 	const pvrvk::ClearValue clearValues[] = { pvrvk::ClearValue(0.0f, 0.0f, 0.0f, 1.0f), pvrvk::ClearValue(1.f, 0) };
 
 	// begin recording commands
-	_deviceResources->commandBuffers[swapIndex]->begin();
+	_deviceResources->cmdBuffers[swapIndex]->begin();
 
 	// begin the renderpass
-	_deviceResources->commandBuffers[swapIndex]->beginRenderPass(
+	_deviceResources->cmdBuffers[swapIndex]->beginRenderPass(
 		_deviceResources->onScreenFramebuffer[swapIndex], pvrvk::Rect2D(0, 0, getWidth(), getHeight()), true, clearValues, ARRAY_SIZE(clearValues));
 
 	// Render the sky box
-	_deviceResources->skyBoxPass.recordCommands(_deviceResources->commandBuffers[swapIndex], swapIndex);
+	_deviceResources->skyBoxPass.recordCommands(_deviceResources->cmdBuffers[swapIndex], swapIndex);
 
 	uint32_t offsets[1];
 	// get the matrix array offset
 	offsets[0] = _deviceResources->uboPerFrame.view.getDynamicSliceOffset(swapIndex);
 
 	// bind the descriptor sets
-	_deviceResources->commandBuffers[swapIndex]->bindDescriptorSets(
+	_deviceResources->cmdBuffers[swapIndex]->bindDescriptorSets(
 		pvrvk::PipelineBindPoint::e_GRAPHICS, _deviceResources->pipelineLayout, 0, _deviceResources->descSets, ARRAY_SIZE(_deviceResources->descSets), offsets, 1);
 
-	if (_currentModel == Models::Helmet)
-	{
-		_deviceResources->helmetPass.recordCommands(_deviceResources->commandBuffers[swapIndex]);
-	}
+	if (_currentModel == Models::Helmet) { _deviceResources->helmetPass.recordCommands(_deviceResources->cmdBuffers[swapIndex]); }
 	else
 	{
-		_deviceResources->spherePass.recordCommands(_deviceResources->commandBuffers[swapIndex]);
+		_deviceResources->spherePass.recordCommands(_deviceResources->cmdBuffers[swapIndex]);
 	}
 
 	// record the ui renderer.
-	_deviceResources->uiRenderer.beginRendering(_deviceResources->commandBuffers[swapIndex]);
+	_deviceResources->uiRenderer.beginRendering(_deviceResources->cmdBuffers[swapIndex]);
 	_deviceResources->uiRenderer.getDefaultTitle()->render();
 	_deviceResources->uiRenderer.getDefaultControls()->render();
 	_deviceResources->uiRenderer.getSdkLogo()->render();
 	_deviceResources->uiRenderer.endRendering();
 
-	_deviceResources->commandBuffers[swapIndex]->endRenderPass();
-	_deviceResources->commandBuffers[swapIndex]->end();
+	_deviceResources->cmdBuffers[swapIndex]->endRenderPass();
+	_deviceResources->cmdBuffers[swapIndex]->end();
 }
 
 void VulkanImageBasedLighting::createDescriptorSetLayouts()
@@ -1069,19 +1018,18 @@ void VulkanImageBasedLighting::createUbos()
 	// Per frame
 	{
 		pvr::utils::StructuredMemoryDescription desc;
-		desc.addElement("view", pvr::GpuDatatypes::mat4x4);
-		desc.addElement("MVP", pvr::GpuDatatypes::mat4x4);
+		desc.addElement("VPMatrix", pvr::GpuDatatypes::mat4x4);
 		desc.addElement("camPos", pvr::GpuDatatypes::vec3);
-		desc.addElement("emissiveScale", pvr::GpuDatatypes::Float);
+		desc.addElement("emissiveIntensity", pvr::GpuDatatypes::Float);
 		desc.addElement("exposure", pvr::GpuDatatypes::Float);
 
 		_deviceResources->uboPerFrame.view.initDynamic(desc, _deviceResources->swapchain->getSwapchainLength(), pvr::BufferUsageFlags::UniformBuffer,
 			static_cast<uint32_t>(_deviceResources->device->getPhysicalDevice()->getProperties().getLimits().getMinUniformBufferOffsetAlignment()));
 
 		const pvrvk::DeviceSize size = _deviceResources->uboPerFrame.view.getSize();
-		_deviceResources->uboPerFrame.buffer =
-			pvr::utils::createBuffer(_deviceResources->device, size, pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
-				pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT | pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, &_deviceResources->vmaAllocator);
+		_deviceResources->uboPerFrame.buffer = pvr::utils::createBuffer(_deviceResources->device, pvrvk::BufferCreateInfo(size, pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT),
+			pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT | pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT,
+			&_deviceResources->vmaAllocator);
 
 		_deviceResources->uboPerFrame.view.pointToMappedMemory(_deviceResources->uboPerFrame.buffer->getDeviceMemory()->getMappedData());
 	}
@@ -1089,82 +1037,52 @@ void VulkanImageBasedLighting::createUbos()
 	// World matrices (Helmet and spheres)
 	{
 		pvr::utils::StructuredMemoryDescription desc;
-		desc.addElement("model", pvr::GpuDatatypes::mat4x4, NumInstances + 1);
-		desc.addElement("modelInvTranspose", pvr::GpuDatatypes::mat3x3, NumInstances + 1);
+		desc.addElement("modelMatrix", pvr::GpuDatatypes::mat4x4);
 
 		_deviceResources->uboWorld.view.init(desc);
 
 		const pvrvk::DeviceSize size = _deviceResources->uboWorld.view.getSize();
-		_deviceResources->uboWorld.buffer =
-			pvr::utils::createBuffer(_deviceResources->device, size, pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
-				pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT | pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, &_deviceResources->vmaAllocator);
+		_deviceResources->uboWorld.buffer = pvr::utils::createBuffer(_deviceResources->device, pvrvk::BufferCreateInfo(size, pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT),
+			pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT | pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT,
+			&_deviceResources->vmaAllocator);
 		_deviceResources->uboWorld.view.pointToMappedMemory(_deviceResources->uboWorld.buffer->getDeviceMemory()->getMappedData());
-		// set the helmet matrix
-
-		glm::mat4 model = glm::eulerAngleXY(glm::radians(0.f), glm::radians(120.f)) * glm::scale(glm::vec3(22.0f));
-		_deviceResources->uboWorld.view.getElement(0).setValue(model);
-		_deviceResources->uboWorld.view.getElement(1).setValue(glm::inverseTranspose(model));
-
-		// set the sphere matrices
-		float positionOffsetX = -25.f;
-		float positionOffsetY = 15.f;
-
-		for (uint32_t i = 0; i < NumInstances; ++i)
-		{
-			if ((i % NumSphereColumns) == 0)
-			{
-				positionOffsetX = -25.0f;
-			}
-
-			if ((i != 0) && (i % NumSphereColumns == 0))
-			{
-				positionOffsetY -= 10.f;
-			}
-
-			const glm::mat4 model = glm::translate(glm::vec3(positionOffsetX, positionOffsetY, 0.0f)) * glm::scale(glm::vec3(4.5f));
-			positionOffsetX += 10.f;
-			_deviceResources->uboWorld.view.getElement(0, i + 1).setValue(model);
-			_deviceResources->uboWorld.view.getElement(1, i + 1).setValue(glm::inverseTranspose(model));
-		}
-
-		if ((_deviceResources->uboWorld.buffer->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
-		{
-			_deviceResources->uboWorld.buffer->getDeviceMemory()->flushRange();
-		}
 	}
 
 	// Ubo lights
 	{
 		pvr::utils::StructuredMemoryDescription desc;
-		desc.addElement("lights", pvr::GpuDatatypes::vec3);
+		desc.addElement("lightDirection", pvr::GpuDatatypes::vec3);
+		desc.addElement("lightColor", pvr::GpuDatatypes::vec3);
 		desc.addElement("numSpecularIrrMapMipLevels", pvr::GpuDatatypes::uinteger);
 
 		_deviceResources->uboLights.view.init(desc);
-		const pvrvk::DeviceSize size = _deviceResources->uboLights.view.getSize();
-		_deviceResources->uboLights.buffer =
-			pvr::utils::createBuffer(_deviceResources->device, size, pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
-				pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT | pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, &_deviceResources->vmaAllocator);
+		_deviceResources->uboLights.buffer = pvr::utils::createBuffer(_deviceResources->device,
+			pvrvk::BufferCreateInfo(_deviceResources->uboLights.view.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
+			pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT | pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, &_deviceResources->vmaAllocator);
 
 		_deviceResources->uboLights.view.pointToMappedMemory(_deviceResources->uboLights.buffer->getDeviceMemory()->getMappedData());
 
 		_deviceResources->uboLights.view.getElement(0).setValue(lightDir);
-		_deviceResources->uboLights.view.getElement(1).setValue(_deviceResources->skyBoxPass.getNumPrefilteredMipLevels());
+		_deviceResources->uboLights.view.getElement(1).setValue(glm::vec3(1.f, 1.f, 1.f));
+		_deviceResources->uboLights.view.getElement(2).setValue(_deviceResources->skyBoxPass.getNumPrefilteredMipLevels());
 
 		if (uint32_t(_deviceResources->uboLights.buffer->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
-		{
-			_deviceResources->uboLights.buffer->getDeviceMemory()->flushRange();
-		}
+		{ _deviceResources->uboLights.buffer->getDeviceMemory()->flushRange(); }
 	}
 
 	// ubo material
 	{
-		const pvr::utils::StructuredMemoryDescription materialDesc(
-			"material", NumInstances + 1, { { "roughness", pvr::GpuDatatypes::Float }, { "metallic", pvr::GpuDatatypes::Float }, { "rgb", pvr::GpuDatatypes::vec3 } });
+		const pvr::utils::StructuredMemoryDescription materialDesc("material", NumInstances + 1,
+			{
+				{ "albedo", pvr::GpuDatatypes::vec3 },
+				{ "roughness", pvr::GpuDatatypes::Float },
+				{ "metallic", pvr::GpuDatatypes::Float },
+			});
 
 		_deviceResources->uboMaterial.view.init(pvr::utils::StructuredMemoryDescription("materials", 1, { materialDesc }));
 
-		_deviceResources->uboMaterial.buffer = pvr::utils::createBuffer(_deviceResources->device, _deviceResources->uboMaterial.view.getSize(),
-			pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
+		_deviceResources->uboMaterial.buffer = pvr::utils::createBuffer(_deviceResources->device,
+			pvrvk::BufferCreateInfo(_deviceResources->uboMaterial.view.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 			pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT | pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, &_deviceResources->vmaAllocator);
 
 		_deviceResources->uboMaterial.view.pointToMappedMemory(_deviceResources->uboMaterial.buffer->getDeviceMemory()->getMappedData());
@@ -1175,9 +1093,9 @@ void VulkanImageBasedLighting::createUbos()
 
 		// Helmet material
 		auto helmetView = _deviceResources->uboMaterial.view.getElement(0, 0);
-		helmetView.getElement(0).setValue(metallicRoughness.getRoughness());
-		helmetView.getElement(1).setValue(metallicRoughness.getMetallicity());
-		helmetView.getElement(2).setValue(metallicRoughness.getBaseColor());
+		helmetView.getElement(0).setValue(metallicRoughness.getBaseColor());
+		helmetView.getElement(1).setValue(metallicRoughness.getRoughness());
+		helmetView.getElement(2).setValue(metallicRoughness.getMetallicity());
 
 		// Spheres materials
 
@@ -1191,22 +1109,20 @@ void VulkanImageBasedLighting::createUbos()
 
 		const float roughness[NumSphereColumns] = { .9f, 0.6f, 0.35f, 0.25f, 0.15f, 0.0f };
 
-		// set the per sphere materiual property.
+		// Set the per sphere material property.
 		for (uint32_t i = 0; i < NumSphereRows; ++i)
 		{
 			for (uint32_t j = 0; j < NumSphereColumns; ++j)
 			{
-				auto sphereView = _deviceResources->uboMaterial.view.getElement(0, i * NumSphereColumns + j + 1);
-				sphereView.getElement(0).setValue(roughness[j]);
-				sphereView.getElement(1).setValue(float(i < 2) * 1.0f); // set the first 2 row metalicity and the remaining to 0.0
-				sphereView.getElement(2).setValue(color[i]);
+				auto sphereView = _deviceResources->uboMaterial.view.getElement(0, i * NumSphereColumns + j);
+				sphereView.getElement(0).setValue(color[i]);
+				sphereView.getElement(1).setValue(roughness[j]);
+				sphereView.getElement(2).setValue(float(i < 2) * 1.0f); // set the first 2 row metalicity and the remaining to 0.0
 			}
 		}
 
 		if ((_deviceResources->uboMaterial.buffer->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
-		{
-			_deviceResources->uboMaterial.buffer->getDeviceMemory()->flushRange();
-		}
+		{ _deviceResources->uboMaterial.buffer->getDeviceMemory()->flushRange(); }
 	}
 }
 
@@ -1247,8 +1163,7 @@ void VulkanImageBasedLighting::updateDescriptors()
 		// Environment map
 		writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, _deviceResources->descSets[1], 3));
 		writeDescSets.back().setImageInfo(0,
-			pvrvk::DescriptorImageInfo(
-				_deviceResources->skyBoxPass.getPrefilteredMipMap(), _deviceResources->samplerTrilinearLodClamped, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL));
+			pvrvk::DescriptorImageInfo(_deviceResources->skyBoxPass.getPrefilteredMipMap(), _deviceResources->samplerTrilinearLodClamped, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL));
 
 		// BRDF LUT
 		writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, _deviceResources->descSets[1], 4));
@@ -1284,7 +1199,4 @@ void VulkanImageBasedLighting::updateDescriptors()
 
 /// <summary>This function must be implemented by the user of the shell. The user should return its pvr::Shell object defining the behaviour of the application.</summary>
 /// <returns>Return a unique ptr to the demo supplied by the user.</returns>
-std::unique_ptr<pvr::Shell> pvr::newDemo()
-{
-	return std::unique_ptr<pvr::Shell>(new VulkanImageBasedLighting());
-}
+std::unique_ptr<pvr::Shell> pvr::newDemo() { return std::make_unique<VulkanImageBasedLighting>(); }

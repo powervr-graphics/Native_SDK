@@ -1,8 +1,6 @@
 var searchData=
 [
   ['half',['Half',['../namespacepvr.html#a7f3166dd9130684c23ff89682e4b38c8ac48615a1bc4197056d522af276aa5a85',1,'pvr']]],
-  ['hasassetslefttoload',['hasAssetsLeftToLoad',['../classpvr_1_1pfx_1_1_pfx_parser.html#aee58da63e3635adf8e18becb1c6523ec',1,'pvr::pfx::PfxParser']]],
-  ['hasassetstream',['hasAssetStream',['../classpvr_1_1_asset_reader.html#a5fbc7964da3f45757f07a7fc903e71de',1,'pvr::AssetReader::hasAssetStream()'],['../classpvr_1_1_asset_writer.html#a79e9376a3282dd9fb4e7a3ed4497de6f',1,'pvr::AssetWriter::hasAssetStream()']]],
   ['hash',['hash',['../structpvr_1_1hash.html',1,'pvr']]],
   ['hash32_5f32',['hash32_32',['../namespacepvr.html#ade5ae06be9adae4c32d10aa679b5731e',1,'pvr']]],
   ['hash32_5fbytes',['hash32_bytes',['../namespacepvr.html#a18b97ab7a969dcd477d5e6c236a0bec4',1,'pvr']]],
@@ -14,8 +12,8 @@ var searchData=
   ['hashcompiletime',['HashCompileTime',['../classpvr_1_1_hash_compile_time.html',1,'pvr']]],
   ['hasher_5fhelper',['hasher_helper',['../classpvr_1_1hasher__helper.html',1,'pvr']]],
   ['hasher_5fhelper_3c_20hashvalue_2c_20first_20_3e',['hasher_helper&lt; hashvalue, first &gt;',['../classpvr_1_1hasher__helper_3_01hashvalue_00_01first_01_4.html',1,'pvr']]],
-  ['hasher_5fhelper_3c_20hashvalue_2c_20first_2c_20dummy_2e_2e_2e_3e',['hasher_helper&lt; hashvalue, first, dummy...&gt;',['../classpvr_1_1hasher__helper_3_01hashvalue_00_01first_00_01dummy_8_8_8_4.html',1,'pvr']]],
-  ['hasoption',['hasOption',['../classpvr_1_1platform_1_1_command_line_parser_1_1_parsed_command_line.html#a57dfd2cd746bfdb8cdcb18a61255bc5a',1,'pvr::platform::CommandLineParser::ParsedCommandLine']]],
+  ['hasher_5fhelper_3c_20hashvalue_2c_20first_2c_20dummy_2e_2e_2e_20_3e',['hasher_helper&lt; hashvalue, first, dummy... &gt;',['../classpvr_1_1hasher__helper_3_01hashvalue_00_01first_00_01dummy_8_8_8_01_4.html',1,'pvr']]],
+  ['hasoption',['hasOption',['../classpvr_1_1platform_1_1_command_line_parser_1_1_parsed_command_line.html#afe23f0f5bc697c46f3324f26bdda9311',1,'pvr::platform::CommandLineParser::ParsedCommandLine']]],
   ['header',['Header',['../structpvr_1_1_texture_header_1_1_header.html',1,'pvr::TextureHeader']]],
   ['headerattributes',['headerAttributes',['../structpvr_1_1effect_1_1_effect.html#a945efa6f242670e579b67f3428082dbe',1,'pvr::effect::Effect']]],
   ['headersize',['headerSize',['../structpvr_1_1texture__bmp_1_1_core_header.html#a68e2d2df3b96e41611d1b192910ab421',1,'pvr::texture_bmp::CoreHeader::headerSize()'],['../structpvr_1_1texture__bmp_1_1_info_header1.html#a6054db89ee71545f9d6d9deb79c5bfbc',1,'pvr::texture_bmp::InfoHeader1::headerSize()'],['../structpvr_1_1texture__legacy_1_1_header_v1.html#a8dde0d98f95853ecb23f8ab29cba1587',1,'pvr::texture_legacy::HeaderV1::headerSize()']]],

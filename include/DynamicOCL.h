@@ -186,17 +186,11 @@ inline void* getClFunction(CLFunctions::Enum func)
 	if (CLFunctionTable[0] == NULL)
 	{
 		pvr::lib::LIBTYPE lib = pvr::lib::openlib(clLibName);
-		if (lib)
-		{
-			Log_Info("OpenCL Bindings: Successfully loaded library %s for OpenCL", clLibName);
-		}
+		if (lib) { Log_Info("OpenCL Bindings: Successfully loaded library %s for OpenCL", clLibName); }
 		else
 		{
 			lib = pvr::lib::openlib(clLibAltName);
-			if (lib)
-			{
-				Log_Info("OpenCL Bindings: Successfully loaded alternative library %s for OpenCL, after %s failed", clLibAltName, clLibName);
-			}
+			if (lib) { Log_Info("OpenCL Bindings: Successfully loaded alternative library %s for OpenCL, after %s failed", clLibAltName, clLibName); }
 			else
 			{
 				Log_Error("OpenCL Bindings: Failed to open library %s", clLibName);
@@ -329,10 +323,7 @@ inline void* getClFunction(CLFunctions::Enum func)
 }
 } // namespace internals
 
-bool testFunctionExists(CLFunctions::Enum function)
-{
-	return internals::getClFunction(function) != 0;
-}
+bool testFunctionExists(CLFunctions::Enum function) { return internals::getClFunction(function) != 0; }
 
 } // namespace cl
 #ifndef DYNAMICCL_NO_NAMESPACE
@@ -480,8 +471,7 @@ inline cl_mem CL_API_CALL DEFINE_CL_FUNCTION_NAME(CreateBuffer)(cl_context conte
 inline cl_mem CL_API_CALL DEFINE_CL_FUNCTION_NAME(CreateSubBuffer)(
 	cl_mem buffer, cl_mem_flags flags, cl_buffer_create_type buffer_create_type, const void* buffer_create_info, cl_int* errcode_ret) CL_API_SUFFIX__VERSION_1_1
 {
-	typedef cl_mem(CL_API_CALL * PFNclCreateSubBuffer)(
-		cl_mem buffer, cl_mem_flags flags, cl_buffer_create_type buffer_create_type, const void* buffer_create_info, cl_int* errcode_ret);
+	typedef cl_mem(CL_API_CALL * PFNclCreateSubBuffer)(cl_mem buffer, cl_mem_flags flags, cl_buffer_create_type buffer_create_type, const void* buffer_create_info, cl_int* errcode_ret);
 	static PFNclCreateSubBuffer _clCreateSubBuffer = (PFNclCreateSubBuffer)cl::internals::getClFunction(cl::CLFunctions::CreateSubBuffer);
 	return _clCreateSubBuffer(buffer, flags, buffer_create_type, buffer_create_info, errcode_ret);
 }
@@ -558,11 +548,11 @@ inline void CL_API_CALL DEFINE_CL_FUNCTION_NAME(SVMFree)(cl_context context, voi
 	return _clSVMFree(context, svm_pointer);
 }
 inline cl_sampler CL_API_CALL DEFINE_CL_FUNCTION_NAME(CreateSamplerWithProperties)(
-	cl_context context, const cl_sampler_properties* normalized_coords, cl_int* errcode_ret) CL_API_SUFFIX__VERSION_2_0
+	cl_context context, const cl_sampler_properties* sampler_properties, cl_int* errcode_ret) CL_API_SUFFIX__VERSION_2_0
 {
 	typedef cl_sampler(CL_API_CALL * PFNclCreateSamplerWithProperties)(cl_context context, const cl_sampler_properties* normalized_coords, cl_int* errcode_ret);
 	PFNclCreateSamplerWithProperties _clCreateSamplerWithProperties = (PFNclCreateSamplerWithProperties)cl::internals::getClFunction(cl::CLFunctions::CreateSamplerWithProperties);
-	return _clCreateSamplerWithProperties(context, normalized_coords, errcode_ret);
+	return _clCreateSamplerWithProperties(context, sampler_properties, errcode_ret);
 }
 #endif
 inline cl_int CL_API_CALL DEFINE_CL_FUNCTION_NAME(SetMemObjectDestructorCallback)(
@@ -745,8 +735,7 @@ inline cl_int CL_API_CALL DEFINE_CL_FUNCTION_NAME(SetKernelArgSVMPointer)(cl_ker
 	static PFNclSetKernelArgSVMPointer _clSetKernelArgSVMPointer = (PFNclSetKernelArgSVMPointer)cl::internals::getClFunction(cl::CLFunctions::SetKernelArgSVMPointer);
 	return _clSetKernelArgSVMPointer(kernel, arg_index, arg_value);
 }
-inline cl_int CL_API_CALL DEFINE_CL_FUNCTION_NAME(SetKernelExecInfo)(
-	cl_kernel kernel, cl_kernel_exec_info param_name, size_t param_value_size, const void* param_value) CL_API_SUFFIX__VERSION_2_0
+inline cl_int CL_API_CALL DEFINE_CL_FUNCTION_NAME(SetKernelExecInfo)(cl_kernel kernel, cl_kernel_exec_info param_name, size_t param_value_size, const void* param_value) CL_API_SUFFIX__VERSION_2_0
 {
 	typedef cl_int(CL_API_CALL * PFNclSetKernelExecInfo)(cl_kernel kernel, cl_kernel_exec_info param_name, size_t param_value_size, const void* param_value);
 	static PFNclSetKernelExecInfo _clSetKernelExecInfo = (PFNclSetKernelExecInfo)cl::internals::getClFunction(cl::CLFunctions::SetKernelExecInfo);
@@ -1006,8 +995,7 @@ inline cl_int CL_API_CALL DEFINE_CL_FUNCTION_NAME(EnqueueNDRangeKernel)(cl_comma
 	return _clEnqueueNDRangeKernel(command_queue, kernel, work_dim, global_work_offset, global_work_size, local_work_size, num_events_in_wait_list, event_wait_list, event);
 }
 inline cl_int CL_API_CALL DEFINE_CL_FUNCTION_NAME(EnqueueNativeKernel)(cl_command_queue command_queue, void(CL_CALLBACK* user_func)(void*), void* args, size_t cb_args,
-	cl_uint num_mem_objects, const cl_mem* mem_list, const void** args_mem_loc, cl_uint num_events_in_wait_list, const cl_event* event_wait_list,
-	cl_event* event) CL_API_SUFFIX__VERSION_1_0
+	cl_uint num_mem_objects, const cl_mem* mem_list, const void** args_mem_loc, cl_uint num_events_in_wait_list, const cl_event* event_wait_list, cl_event* event) CL_API_SUFFIX__VERSION_1_0
 {
 	typedef cl_int(CL_API_CALL * PFNclEnqueueNativeKernel)(cl_command_queue command_queue, void(CL_CALLBACK * user_func)(void*), void* args, size_t cb_args,
 		cl_uint num_mem_objects, const cl_mem* mem_list, const void** args_mem_loc, cl_uint num_events_in_wait_list, const cl_event* event_wait_list, cl_event* event);
@@ -1066,8 +1054,7 @@ inline cl_int CL_API_CALL DEFINE_CL_FUNCTION_NAME(EnqueueSVMMap)(cl_command_queu
 inline cl_int CL_API_CALL DEFINE_CL_FUNCTION_NAME(EnqueueSVMUnmap)(
 	cl_command_queue command_queue, void* svm_ptr, cl_uint num_events_in_wait_list, const cl_event* event_wait_list, cl_event* event) CL_API_SUFFIX__VERSION_2_0
 {
-	typedef cl_int(CL_API_CALL * PFNclEnqueueSVMUnmap)(
-		cl_command_queue command_queue, void* svm_ptr, cl_uint num_events_in_wait_list, const cl_event* event_wait_list, cl_event* event);
+	typedef cl_int(CL_API_CALL * PFNclEnqueueSVMUnmap)(cl_command_queue command_queue, void* svm_ptr, cl_uint num_events_in_wait_list, const cl_event* event_wait_list, cl_event* event);
 	static PFNclEnqueueSVMUnmap _clEnqueueSVMUnmap = (PFNclEnqueueSVMUnmap)cl::internals::getClFunction(cl::CLFunctions::EnqueueSVMUnmap);
 	return _clEnqueueSVMUnmap(command_queue, svm_ptr, num_events_in_wait_list, event_wait_list, event);
 }
@@ -1250,7 +1237,7 @@ enum Enum
 	NUMBER_OF_CL_EXT_FUNCTIONS
 };
 
-static const std::pair<uint16_t, const char* const> OpenCLExtFunctionNamePairs[] = {
+static const std::pair<uint32_t, const char* const> OpenCLExtFunctionNamePairs[] = {
 	{ CreateFromEGLImageKHR, "clCreateFromEGLImageKHR" },
 	{ EnqueueAcquireEGLObjectsKHR, "clEnqueueAcquireEGLObjectsKHR" },
 	{ EnqueueReleaseEGLObjectsKHR, "clEnqueueReleaseEGLObjectsKHR" },
@@ -1258,10 +1245,7 @@ static const std::pair<uint16_t, const char* const> OpenCLExtFunctionNamePairs[]
 };
 } // namespace CLExtFunctions
 
-static inline void* GetClExtensionFunction(cl_platform_id platform, const char* funcName)
-{
-	return (void*)cl::GetExtensionFunctionAddressForPlatform(platform, funcName);
-}
+static inline void* GetClExtensionFunction(cl_platform_id platform, const char* funcName) { return (void*)cl::GetExtensionFunctionAddressForPlatform(platform, funcName); }
 
 inline void* getClExtFunction(cl_platform_id platform, CLFunctions::Enum func, bool reset = false)
 {
@@ -1270,8 +1254,9 @@ inline void* getClExtFunction(cl_platform_id platform, CLFunctions::Enum func, b
 	if (!CLFunctionTable[CLExtFunctions::NUMBER_OF_CL_EXT_FUNCTIONS] || reset)
 	{
 		uint32_t numExtensionStrings = sizeof(CLExtFunctions::OpenCLExtFunctionNamePairs) / sizeof(CLExtFunctions::OpenCLExtFunctionNamePairs[0]);
+#if DEBUG
 		uint32_t numExtensionEnums = CLExtFunctions::NUMBER_OF_CL_EXT_FUNCTIONS;
-
+#endif
 		assert(numExtensionStrings == numExtensionEnums);
 
 		for (uint32_t i = 0; i < numExtensionStrings; i++)

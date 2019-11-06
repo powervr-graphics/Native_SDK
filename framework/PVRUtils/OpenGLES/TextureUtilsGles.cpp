@@ -20,10 +20,7 @@ TextureUploadResults textureUpload(const Texture& texture, bool isEs2, bool allo
 {
 	TextureUploadResults retval;
 	// Check that the texture is valid.
-	if (!texture.getDataSize())
-	{
-		throw InvalidDataError("[textureUpload]: Invalid texture supplied, please verify inputs.\n");
-	}
+	if (!texture.getDataSize()) { throw InvalidDataError("[textureUpload]: Invalid texture supplied, please verify inputs.\n"); }
 
 	std::string extensionString;
 
@@ -174,7 +171,7 @@ TextureUploadResults textureUpload(const Texture& texture, bool isEs2, bool allo
 						{
 							for (uint32_t uiFace = 0; uiFace < textureToUse->getNumFaces(); ++uiFace)
 							{
-								PVRTDecompressPVRTC(textureToUse->getDataPointer(uiMIPLevel, uiArray, uiFace), (textureToUse->getBitsPerPixel() == 2 ? 1 : 0),
+								PVRTDecompressPVRTC(textureToUse->getDataPointer(uiMIPLevel, uiArray, uiFace), (textureToUse->getBitsPerPixel() == 2 ? 1u : 0u),
 									textureToUse->getWidth(uiMIPLevel), textureToUse->getHeight(uiMIPLevel), cDecompressedTexture.getDataPointer(uiMIPLevel, uiArray, uiFace));
 							}
 						}
@@ -234,7 +231,7 @@ TextureUploadResults textureUpload(const Texture& texture, bool isEs2, bool allo
 						{
 							for (uint32_t uiFace = 0; uiFace < textureToUse->getNumFaces(); ++uiFace)
 							{
-								PVRTDecompressPVRTC(textureToUse->getDataPointer(uiMIPLevel, uiArray, uiFace), (textureToUse->getBitsPerPixel() == 2 ? 1 : 0),
+								PVRTDecompressPVRTC(textureToUse->getDataPointer(uiMIPLevel, uiArray, uiFace), (textureToUse->getBitsPerPixel() == 2 ? 1u : 0u),
 									textureToUse->getWidth(uiMIPLevel), textureToUse->getHeight(uiMIPLevel), cDecompressedTexture.getDataPointer(uiMIPLevel, uiArray, uiFace));
 							}
 						}
@@ -262,9 +259,7 @@ TextureUploadResults textureUpload(const Texture& texture, bool isEs2, bool allo
 		case GL_COMPRESSED_SRGB_ALPHA_PVRTC_4BPPV2_IMG:
 		{
 			if (!gl::isGlExtensionSupported("GL_IMG_texture_compression_pvrtc2"))
-			{
-				throw GlExtensionNotSupportedError("GL_IMG_texture_compression_pvrtc2", "[textureUplodad] Format was unsupported in this implementation.");
-			}
+			{ throw GlExtensionNotSupportedError("GL_IMG_texture_compression_pvrtc2", "[textureUplodad] Format was unsupported in this implementation."); }
 			break;
 		}
 #endif
@@ -272,9 +267,7 @@ TextureUploadResults textureUpload(const Texture& texture, bool isEs2, bool allo
 		case GL_ETC1_RGB8_OES:
 		{
 			if (!gl::isGlExtensionSupported("GL_OES_compressed_ETC1_RGB8_texture"))
-			{
-				throw GlExtensionNotSupportedError("GL_OES_compressed_ETC1_RGB8_texture", "[textureUplodad] Format was unsupported in this implementation.");
-			}
+			{ throw GlExtensionNotSupportedError("GL_OES_compressed_ETC1_RGB8_texture", "[textureUplodad] Format was unsupported in this implementation."); }
 			break;
 		}
 #endif
@@ -283,25 +276,19 @@ TextureUploadResults textureUpload(const Texture& texture, bool isEs2, bool allo
 		case GL_COMPRESSED_RGBA_S3TC_DXT1_EXT:
 		{
 			if (!gl::isGlExtensionSupported("GL_EXT_texture_compression_dxt1"))
-			{
-				throw GlExtensionNotSupportedError("GL_EXT_texture_compression_dxt1", "[textureUplodad] Format was unsupported in this implementation.");
-			}
+			{ throw GlExtensionNotSupportedError("GL_EXT_texture_compression_dxt1", "[textureUplodad] Format was unsupported in this implementation."); }
 			break;
 		}
 		case GL_COMPRESSED_RGBA_S3TC_DXT3_ANGLE:
 		{
 			if (!gl::isGlExtensionSupported("GL_ANGLE_texture_compression_dxt3"))
-			{
-				throw GlExtensionNotSupportedError("GL_ANGLE_texture_compression_dxt3", "[textureUplodad] Format was unsupported in this implementation.");
-			}
+			{ throw GlExtensionNotSupportedError("GL_ANGLE_texture_compression_dxt3", "[textureUplodad] Format was unsupported in this implementation."); }
 			break;
 		}
 		case GL_COMPRESSED_RGBA_S3TC_DXT5_ANGLE:
 		{
 			if (!gl::isGlExtensionSupported("GL_ANGLE_texture_compression_dxt5"))
-			{
-				throw GlExtensionNotSupportedError("GL_ANGLE_texture_compression_dxt5", "[textureUplodad] Format was unsupported in this implementation.");
-			}
+			{ throw GlExtensionNotSupportedError("GL_ANGLE_texture_compression_dxt5", "[textureUplodad] Format was unsupported in this implementation."); }
 			break;
 		}
 #endif
@@ -333,9 +320,7 @@ TextureUploadResults textureUpload(const Texture& texture, bool isEs2, bool allo
 				(glInternalFormat >= GL_COMPRESSED_SRGB8_ALPHA8_ASTC_3x3x3_OES && glInternalFormat <= GL_COMPRESSED_SRGB8_ALPHA8_ASTC_6x6x6_OES))
 			{
 				if (!gl::isGlExtensionSupported("GL_OES_texture_compression_astc"))
-				{
-					throw GlExtensionNotSupportedError("GL_OES_texture_compression_astc", "[textureUplodad] Format was unsupported in this implementation.");
-				}
+				{ throw GlExtensionNotSupportedError("GL_OES_texture_compression_astc", "[textureUplodad] Format was unsupported in this implementation."); }
 			}
 #endif
 #if defined(GL_COMPRESSED_RGBA_ASTC_4x4_KHR) || defined(GL_COMPRESSED_RGBA_ASTC_12x12_KHR) || defined(GL_COMPRESSED_SRGB8_ALPHA8_ASTC_4x4_KHR) || \
@@ -361,10 +346,7 @@ TextureUploadResults textureUpload(const Texture& texture, bool isEs2, bool allo
 		{
 #if defined(GL_TEXTURE_2D_ARRAY)
 			// Make sure it's not also a cube map or 3D texture, as this is unsupported.
-			if (textureToUse->getNumFaces() > 1)
-			{
-				throw InvalidDataError("[textureUpload]: Texture arrays with multiple faces not supported.");
-			}
+			if (textureToUse->getNumFaces() > 1) { throw InvalidDataError("[textureUpload]: Texture arrays with multiple faces not supported."); }
 			else if (textureToUse->getDepth() > 1)
 			{
 				throw InvalidDataError("[textureUpload]: 3D Texture arrays not supported.");
@@ -380,10 +362,7 @@ TextureUploadResults textureUpload(const Texture& texture, bool isEs2, bool allo
 		{
 #if defined(GL_TEXTURE_3D)
 			// Make sure it's not also a cube map, as this is unsupported. We've already checked for arrays so no need to check again.
-			if (textureToUse->getNumFaces() > 1)
-			{
-				throw InvalidDataError("[textureUpload]: 3-Dimensional textures with multiple faces not supported.");
-			}
+			if (textureToUse->getNumFaces() > 1) { throw InvalidDataError("[textureUpload]: 3-Dimensional textures with multiple faces not supported."); }
 			retval.target = GL_TEXTURE_3D;
 #else
 			throw InvalidDataError("[textureUpload]: 3-Dimensional textures not supported.");
@@ -422,10 +401,10 @@ TextureUploadResults textureUpload(const Texture& texture, bool isEs2, bool allo
 
 		if (needsSwizzling)
 		{
-			gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, swizzle_r);
-			gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, swizzle_g);
-			gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, swizzle_b);
-			gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, swizzle_a);
+			gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, static_cast<GLint>(swizzle_r));
+			gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, static_cast<GLint>(swizzle_g));
+			gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, static_cast<GLint>(swizzle_b));
+			gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, static_cast<GLint>(swizzle_a));
 			utils::throwOnGlError("[textureUpload]: GL has raised error attempting to swizzle a texture.");
 		}
 
@@ -443,21 +422,23 @@ TextureUploadResults textureUpload(const Texture& texture, bool isEs2, bool allo
 				// Use tex storage if available, to generate an immutable texture.
 				if (useTexStorage)
 				{
-					gl::TexStorage2D(retval.target, textureToUse->getNumMipMapLevels(), glInternalFormat, textureToUse->getWidth(), textureToUse->getHeight());
+					gl::TexStorage2D(retval.target, static_cast<GLsizei>(textureToUse->getNumMipMapLevels()), glInternalFormat, static_cast<GLsizei>(textureToUse->getWidth()),
+						static_cast<GLsizei>(textureToUse->getHeight()));
 					utils::throwOnGlError("[textureUpload]:glTexStorage2D failed");
 
 					for (uint32_t uiMIPLevel = 0; uiMIPLevel < textureToUse->getNumMipMapLevels(); ++uiMIPLevel)
 					{
 						if (isCompressedFormat)
 						{
-							gl::CompressedTexSubImage2D(retval.target, uiMIPLevel, 0, 0, textureToUse->getWidth(uiMIPLevel), textureToUse->getHeight(uiMIPLevel), glInternalFormat,
-								textureToUse->getDataSize(uiMIPLevel, false, false), textureToUse->getDataPointer(uiMIPLevel, 0, 0));
+							gl::CompressedTexSubImage2D(retval.target, static_cast<GLint>(uiMIPLevel), 0, 0, static_cast<GLsizei>(textureToUse->getWidth(uiMIPLevel)),
+								static_cast<GLsizei>(textureToUse->getHeight(uiMIPLevel)), glInternalFormat,
+								static_cast<GLsizei>(textureToUse->getDataSize(uiMIPLevel, false, false)), textureToUse->getDataPointer(uiMIPLevel, 0, 0));
 							utils::throwOnGlError("[textureUpload]: glCompressedTexSubImage2D");
 						}
 						else
 						{
-							gl::TexSubImage2D(retval.target, uiMIPLevel, 0, 0, textureToUse->getWidth(uiMIPLevel), textureToUse->getHeight(uiMIPLevel), glFormat, glType,
-								textureToUse->getDataPointer(uiMIPLevel, 0, 0));
+							gl::TexSubImage2D(retval.target, static_cast<GLint>(uiMIPLevel), 0, 0, static_cast<GLsizei>(textureToUse->getWidth(uiMIPLevel)),
+								static_cast<GLsizei>(textureToUse->getHeight(uiMIPLevel)), glFormat, glType, textureToUse->getDataPointer(uiMIPLevel, 0, 0));
 							utils::throwOnGlError("[textureUpload]: glTexSubImage2D failed");
 						}
 					}
@@ -468,18 +449,16 @@ TextureUploadResults textureUpload(const Texture& texture, bool isEs2, bool allo
 					{
 						if (isCompressedFormat)
 						{
-							gl::CompressedTexImage2D(retval.target, uiMIPLevel, glInternalFormat, textureToUse->getWidth(uiMIPLevel), textureToUse->getHeight(uiMIPLevel), 0,
-								textureToUse->getDataSize(uiMIPLevel, false, false), textureToUse->getDataPointer(uiMIPLevel, 0, 0));
+							gl::CompressedTexImage2D(retval.target, static_cast<GLint>(uiMIPLevel), glInternalFormat, static_cast<GLsizei>(textureToUse->getWidth(uiMIPLevel)),
+								static_cast<GLsizei>(textureToUse->getHeight(uiMIPLevel)), 0, textureToUse->getDataSize(uiMIPLevel, false, false),
+								textureToUse->getDataPointer(uiMIPLevel, 0, 0));
 							utils::throwOnGlError("[textureUpload]: glCompressedTexImage2D");
 						}
 						else
 						{
-							if (isEs2)
-							{
-								glInternalFormat = glFormat;
-							}
-							gl::TexImage2D(retval.target, uiMIPLevel, glInternalFormat, textureToUse->getWidth(uiMIPLevel), textureToUse->getHeight(uiMIPLevel), 0, glFormat,
-								glType, textureToUse->getDataPointer(uiMIPLevel, 0, 0));
+							if (isEs2) { glInternalFormat = glFormat; }
+							gl::TexImage2D(retval.target, static_cast<GLint>(uiMIPLevel), glInternalFormat, static_cast<GLsizei>(textureToUse->getWidth(uiMIPLevel)),
+								static_cast<GLsizei>(textureToUse->getHeight(uiMIPLevel)), 0, glFormat, glType, textureToUse->getDataPointer(uiMIPLevel, 0, 0));
 							utils::throwOnGlError("[textureUpload]: glTexImage2D");
 						}
 					}
@@ -491,7 +470,8 @@ TextureUploadResults textureUpload(const Texture& texture, bool isEs2, bool allo
 				if (useTexStorage)
 				{
 					// Use tex storage, to generate an immutable texture.
-					gl::TexStorage2D(retval.target, textureToUse->getNumMipMapLevels(), glInternalFormat, textureToUse->getWidth(), textureToUse->getHeight());
+					gl::TexStorage2D(retval.target, static_cast<GLint>(textureToUse->getNumMipMapLevels()), glInternalFormat, static_cast<GLsizei>(textureToUse->getWidth()),
+						static_cast<GLsizei>(textureToUse->getHeight()));
 					utils::throwOnGlError("[textureUpload]:(cubemap) glTexStorage2D failed");
 
 					for (uint32_t uiMIPLevel = 0; uiMIPLevel < textureToUse->getNumMipMapLevels(); ++uiMIPLevel)
@@ -504,8 +484,9 @@ TextureUploadResults textureUpload(const Texture& texture, bool isEs2, bool allo
 							if (isCompressedFormat)
 							{
 								// Make sure to wrap texture faces around if there are fewer faces than 6 in a compressed texture.
-								gl::CompressedTexSubImage2D(eTexImageTarget + uiFace, uiMIPLevel, 0, 0, textureToUse->getWidth(uiMIPLevel), textureToUse->getHeight(uiMIPLevel),
-									glInternalFormat, textureToUse->getDataSize(uiMIPLevel, false, false),
+								gl::CompressedTexSubImage2D(eTexImageTarget + uiFace, static_cast<GLint>(uiMIPLevel), 0, 0,
+									static_cast<GLsizei>(textureToUse->getWidth(uiMIPLevel)), static_cast<GLsizei>(textureToUse->getHeight(uiMIPLevel)), glInternalFormat,
+									static_cast<GLsizei>(textureToUse->getDataSize(uiMIPLevel, false, false)),
 									textureToUse->getDataPointer(uiMIPLevel, 0, uiFace % textureToUse->getNumFaces()));
 								utils::throwOnGlError("[textureUpload]:(cubemap face) glCompressedTexSubImage2D Failed");
 							}
@@ -513,8 +494,9 @@ TextureUploadResults textureUpload(const Texture& texture, bool isEs2, bool allo
 							{
 								// No need to wrap faces for uncompressed textures, as gl will handle a NULL pointer, which Texture::getDataPtr will do when requesting a
 								// non-existant face.
-								gl::TexSubImage2D(eTexImageTarget + uiFace, uiMIPLevel, 0, 0, textureToUse->getWidth(uiMIPLevel), textureToUse->getHeight(uiMIPLevel), glFormat,
-									glType, textureToUse->getDataPointer(uiMIPLevel, 0, uiFace % textureToUse->getNumFaces()));
+								gl::TexSubImage2D(eTexImageTarget + uiFace, static_cast<GLint>(uiMIPLevel), 0, 0, static_cast<GLsizei>(textureToUse->getWidth(uiMIPLevel)),
+									static_cast<GLsizei>(textureToUse->getHeight(uiMIPLevel)), glFormat, glType,
+									textureToUse->getDataPointer(uiMIPLevel, 0, uiFace % textureToUse->getNumFaces()));
 								utils::throwOnGlError("[textureUpload]:(cubemap face) glTexSubImage2D Failed");
 							}
 						}
@@ -532,8 +514,9 @@ TextureUploadResults textureUpload(const Texture& texture, bool isEs2, bool allo
 							if (isCompressedFormat)
 							{
 								// Make sure to wrap texture faces around if there are fewer faces than 6 in a compressed texture.
-								gl::CompressedTexImage2D(eTexImageTarget + uiFace, uiMIPLevel, glInternalFormat, textureToUse->getWidth(uiMIPLevel),
-									textureToUse->getHeight(uiMIPLevel), 0, textureToUse->getDataSize(uiMIPLevel, false, false),
+								gl::CompressedTexImage2D(eTexImageTarget + uiFace, static_cast<GLint>(uiMIPLevel), glInternalFormat,
+									static_cast<GLsizei>(textureToUse->getWidth(uiMIPLevel)), static_cast<GLsizei>(textureToUse->getHeight(uiMIPLevel)), 0,
+									static_cast<GLsizei>(textureToUse->getDataSize(uiMIPLevel, false, false)),
 									textureToUse->getDataPointer(uiMIPLevel, 0, uiFace % textureToUse->getNumFaces()));
 								utils::throwOnGlError("[textureUpload]:(cubemap face) glCompressedTexImage2D Failed");
 							}
@@ -541,8 +524,9 @@ TextureUploadResults textureUpload(const Texture& texture, bool isEs2, bool allo
 							{
 								// No need to wrap faces for uncompressed textures, as gl will handle a NULL pointer, which Texture::getDataPtr will do when requesting a
 								// non-existant face.
-								gl::TexImage2D(eTexImageTarget + uiFace, uiMIPLevel, glInternalFormat, textureToUse->getWidth(uiMIPLevel), textureToUse->getHeight(uiMIPLevel), 0,
-									glFormat, glType, textureToUse->getDataPointer(uiMIPLevel, 0, uiFace % textureToUse->getNumFaces()));
+								gl::TexImage2D(eTexImageTarget + uiFace, static_cast<GLint>(uiMIPLevel), glInternalFormat, static_cast<GLsizei>(textureToUse->getWidth(uiMIPLevel)),
+									static_cast<GLsizei>(textureToUse->getHeight(uiMIPLevel)), 0, glFormat, glType,
+									textureToUse->getDataPointer(uiMIPLevel, 0, uiFace % textureToUse->getNumFaces()));
 								utils::throwOnGlError("[textureUpload]:(cubemap face) glTexImage2D Failed");
 							}
 						}
@@ -556,22 +540,23 @@ TextureUploadResults textureUpload(const Texture& texture, bool isEs2, bool allo
 				if (useTexStorage)
 				{
 					// Use tex storage, to generate an immutable texture.
-					gl::TexStorage3D(
-						retval.target, textureToUse->getNumMipMapLevels(), glInternalFormat, textureToUse->getWidth(), textureToUse->getHeight(), textureToUse->getDepth());
+					gl::TexStorage3D(retval.target, static_cast<GLint>(textureToUse->getNumMipMapLevels()), glInternalFormat, static_cast<GLsizei>(textureToUse->getWidth()),
+						static_cast<GLsizei>(textureToUse->getHeight()), static_cast<GLsizei>(textureToUse->getDepth()));
 					utils::throwOnGlError("[textureUpload]:(cubemap face) glTexStorage3D Failed");
 					for (uint32_t uiMIPLevel = 0; uiMIPLevel < textureToUse->getNumMipMapLevels(); ++uiMIPLevel)
 					{
 						if (isCompressedFormat)
 						{
-							gl::CompressedTexSubImage3D(retval.target, uiMIPLevel, 0, 0, 0, textureToUse->getWidth(uiMIPLevel), textureToUse->getHeight(uiMIPLevel),
-								textureToUse->getDepth(uiMIPLevel), glInternalFormat, textureToUse->getDataSize(uiMIPLevel, false, false),
-								textureToUse->getDataPointer(uiMIPLevel, 0, 0));
+							gl::CompressedTexSubImage3D(retval.target, static_cast<GLint>(uiMIPLevel), 0, 0, 0, static_cast<GLsizei>(textureToUse->getWidth(uiMIPLevel)),
+								static_cast<GLsizei>(textureToUse->getHeight(uiMIPLevel)), textureToUse->getDepth(uiMIPLevel), glInternalFormat,
+								static_cast<GLsizei>(textureToUse->getDataSize(uiMIPLevel, false, false)), textureToUse->getDataPointer(uiMIPLevel, 0, 0));
 							utils::throwOnGlError("[textureUpload]:(cubemap face) glCompressedTexSubImage3D Failed");
 						}
 						else
 						{
-							gl::TexSubImage3D(retval.target, uiMIPLevel, 0, 0, 0, textureToUse->getWidth(uiMIPLevel), textureToUse->getHeight(uiMIPLevel),
-								textureToUse->getDepth(uiMIPLevel), glFormat, glType, textureToUse->getDataPointer(uiMIPLevel, 0, 0));
+							gl::TexSubImage3D(retval.target, static_cast<GLint>(uiMIPLevel), 0, 0, 0, static_cast<GLsizei>(textureToUse->getWidth(uiMIPLevel)),
+								static_cast<GLsizei>(textureToUse->getHeight(uiMIPLevel)), textureToUse->getDepth(uiMIPLevel), glFormat, glType,
+								textureToUse->getDataPointer(uiMIPLevel, 0, 0));
 							utils::throwOnGlError("[textureUpload]:(cubemap face) glTexSubImage3D Failed");
 						}
 					}
@@ -582,14 +567,16 @@ TextureUploadResults textureUpload(const Texture& texture, bool isEs2, bool allo
 					{
 						if (isCompressedFormat)
 						{
-							gl::CompressedTexImage3D(retval.target, uiMIPLevel, glInternalFormat, textureToUse->getWidth(uiMIPLevel), textureToUse->getHeight(uiMIPLevel),
-								textureToUse->getDepth(uiMIPLevel), 0, textureToUse->getDataSize(uiMIPLevel, false, false), textureToUse->getDataPointer(uiMIPLevel, 0, 0));
+							gl::CompressedTexImage3D(retval.target, static_cast<GLint>(uiMIPLevel), glInternalFormat, static_cast<GLsizei>(textureToUse->getWidth(uiMIPLevel)),
+								static_cast<GLsizei>(textureToUse->getHeight(uiMIPLevel)), static_cast<GLsizei>(textureToUse->getDepth(uiMIPLevel)), 0,
+								static_cast<GLsizei>(textureToUse->getDataSize(uiMIPLevel, false, false)), textureToUse->getDataPointer(uiMIPLevel, 0, 0));
 							utils::throwOnGlError("[textureUpload]: glCompressedTexImage3D Failed");
 						}
 						else
 						{
-							gl::TexImage3D(retval.target, uiMIPLevel, glInternalFormat, textureToUse->getWidth(uiMIPLevel), textureToUse->getHeight(uiMIPLevel),
-								textureToUse->getDepth(uiMIPLevel), 0, glFormat, glType, textureToUse->getDataPointer(uiMIPLevel, 0, 0));
+							gl::TexImage3D(retval.target, static_cast<GLint>(uiMIPLevel), glInternalFormat, static_cast<GLsizei>(textureToUse->getWidth(uiMIPLevel)),
+								static_cast<GLsizei>(textureToUse->getHeight(uiMIPLevel)), static_cast<GLsizei>(textureToUse->getDepth(uiMIPLevel)), 0, glFormat, glType,
+								textureToUse->getDataPointer(uiMIPLevel, 0, 0));
 							utils::throwOnGlError("[textureUpload]: glTexImage3D Failed");
 						}
 					}
@@ -603,22 +590,23 @@ TextureUploadResults textureUpload(const Texture& texture, bool isEs2, bool allo
 				if (useTexStorage)
 				{
 					// Use tex storage, to generate an immutable texture.
-					gl::TexStorage3D(retval.target, textureToUse->getNumMipMapLevels(), glInternalFormat, textureToUse->getWidth(), textureToUse->getHeight(),
-						textureToUse->getNumArrayMembers());
+					gl::TexStorage3D(retval.target, static_cast<GLint>(textureToUse->getNumMipMapLevels()), glInternalFormat, static_cast<GLsizei>(textureToUse->getWidth()),
+						static_cast<GLsizei>(textureToUse->getHeight()), static_cast<GLsizei>(textureToUse->getNumArrayMembers()));
 
 					for (uint32_t uiMIPLevel = 0; uiMIPLevel < textureToUse->getNumMipMapLevels(); ++uiMIPLevel)
 					{
 						if (isCompressedFormat)
 						{
-							gl::CompressedTexSubImage3D(retval.target, uiMIPLevel, 0, 0, 0, textureToUse->getWidth(uiMIPLevel), textureToUse->getHeight(uiMIPLevel),
-								textureToUse->getNumArrayMembers(), glInternalFormat, textureToUse->getDataSize(uiMIPLevel, false, false),
-								textureToUse->getDataPointer(uiMIPLevel, 0, 0));
+							gl::CompressedTexSubImage3D(retval.target, static_cast<GLint>(uiMIPLevel), 0, 0, 0, static_cast<GLsizei>(textureToUse->getWidth(uiMIPLevel)),
+								static_cast<GLsizei>(textureToUse->getHeight(uiMIPLevel)), static_cast<GLsizei>(textureToUse->getNumArrayMembers()), glInternalFormat,
+								static_cast<GLsizei>(textureToUse->getDataSize(uiMIPLevel, false, false)), textureToUse->getDataPointer(uiMIPLevel, 0, 0));
 							utils::throwOnGlError("[textureUpload]: glCompressedTexSubImage3D Failed");
 						}
 						else
 						{
-							gl::TexSubImage3D(retval.target, uiMIPLevel, 0, 0, 0, textureToUse->getWidth(uiMIPLevel), textureToUse->getHeight(uiMIPLevel),
-								textureToUse->getNumArrayMembers(), glFormat, glType, textureToUse->getDataPointer(uiMIPLevel, 0, 0));
+							gl::TexSubImage3D(retval.target, static_cast<GLint>(uiMIPLevel), 0, 0, 0, static_cast<GLsizei>(textureToUse->getWidth(uiMIPLevel)),
+								static_cast<GLsizei>(textureToUse->getHeight(uiMIPLevel)), static_cast<GLsizei>(textureToUse->getNumArrayMembers()), glFormat, glType,
+								textureToUse->getDataPointer(uiMIPLevel, 0, 0));
 							utils::throwOnGlError("[textureUpload]: glTexSubImage3D Failed");
 						}
 					}
@@ -629,14 +617,16 @@ TextureUploadResults textureUpload(const Texture& texture, bool isEs2, bool allo
 					{
 						if (isCompressedFormat)
 						{
-							gl::CompressedTexImage3D(retval.target, uiMIPLevel, glInternalFormat, textureToUse->getWidth(uiMIPLevel), textureToUse->getHeight(uiMIPLevel),
-								textureToUse->getNumArrayMembers(), 0, textureToUse->getDataSize(uiMIPLevel, false, false), textureToUse->getDataPointer(uiMIPLevel, 0, 0));
+							gl::CompressedTexImage3D(retval.target, static_cast<GLint>(uiMIPLevel), glInternalFormat, static_cast<GLsizei>(textureToUse->getWidth(uiMIPLevel)),
+								static_cast<GLsizei>(textureToUse->getHeight(uiMIPLevel)), static_cast<GLsizei>(textureToUse->getNumArrayMembers()), 0,
+								static_cast<GLsizei>(textureToUse->getDataSize(uiMIPLevel, false, false)), textureToUse->getDataPointer(uiMIPLevel, 0, 0));
 							utils::throwOnGlError("[textureUpload]: glCompressedTexImage3D Failed");
 						}
 						else
 						{
-							gl::TexImage3D(retval.target, uiMIPLevel, glInternalFormat, textureToUse->getWidth(uiMIPLevel), textureToUse->getHeight(uiMIPLevel),
-								textureToUse->getNumArrayMembers(), 0, glFormat, glType, textureToUse->getDataPointer(uiMIPLevel, 0, 0));
+							gl::TexImage3D(retval.target, static_cast<GLint>(uiMIPLevel), glInternalFormat, static_cast<GLsizei>(textureToUse->getWidth(uiMIPLevel)),
+								static_cast<GLsizei>(textureToUse->getHeight(uiMIPLevel)), static_cast<GLsizei>(textureToUse->getNumArrayMembers()), 0, glFormat, glType,
+								textureToUse->getDataPointer(uiMIPLevel, 0, 0));
 							utils::throwOnGlError("[textureUpload]: glTexImage3D Failed");
 						}
 					}

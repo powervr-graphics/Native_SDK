@@ -56,8 +56,7 @@ int checkApiError(std::string* errOutStr = NULL);
 
 /// <summary>Checks and logs api errors if appropriate.</summary>
 /// <param name="note">A c-style std::string that will be prepended to the error description if an error is found.</param>
-/// <param name="severity">that the error will be reported with, if an error is found</param>
-void throwOnGlError(const char* note, LogLevel severity = LogLevel::Error);
+void throwOnGlError(const char* note);
 } // namespace utils
 } // namespace pvr
 

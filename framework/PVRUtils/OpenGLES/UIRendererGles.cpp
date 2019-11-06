@@ -41,12 +41,15 @@ void GLState::storeCurrentGlState(Api api)
 	gl::GetIntegerv(GL_CULL_FACE, &cullingEnabled);
 	gl::GetIntegerv(GL_CULL_FACE_MODE, &culling);
 	gl::GetIntegerv(GL_FRONT_FACE, &windingOrder);
-	gl::GetIntegerv(GL_SAMPLER_BINDING, &sampler7);
 	gl::GetIntegerv(GL_ARRAY_BUFFER_BINDING, &vbo);
 	gl::GetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &ibo);
+	debugThrowOnApiError("glState::storeCurrentGlState: 1");
 	if (api > Api::OpenGLES2)
 	{
 		gl::GetIntegerv(GL_VERTEX_ARRAY_BINDING, &vao);
+		if (activeTextureUnit != 7) { gl::ActiveTexture(GL_TEXTURE7); }
+		gl::GetIntegerv(GL_SAMPLER_BINDING, &sampler7);
+		if (activeTextureUnit != 7) { gl::ActiveTexture(activeTextureUnit); }
 	}
 	else
 	{
@@ -55,22 +58,20 @@ void GLState::storeCurrentGlState(Api api)
 
 	if (vao != 0)
 	{
-		if (api > Api::OpenGLES2)
-		{
-			gl::BindVertexArray(0);
-		}
+		if (api > Api::OpenGLES2) { gl::BindVertexArray(0); }
 		else
 		{
 			gl::ext::BindVertexArrayOES(0);
 		}
 	}
+	debugThrowOnApiError("glState::storeCurrentGlState: 2");
 
 	for (uint32_t i = 0; i < 8; i++)
 	{
 		GLint enabled;
 		gl::GetVertexAttribiv(i, GL_VERTEX_ATTRIB_ARRAY_ENABLED, &enabled);
 		vertexAttribArray[i] = enabled == 1 ? GL_TRUE : GL_FALSE;
-		debugThrowOnApiError("glState::storeCurrentGlState Exit");
+		debugThrowOnApiError("glState::storeCurrentGlState: 3");
 
 		if (vertexAttribArray[i])
 		{
@@ -83,7 +84,7 @@ void GLState::storeCurrentGlState(Api api)
 				gl::GetVertexAttribiv(i, GL_VERTEX_ATTRIB_BINDING, &attribBinding);
 				vertexAttribBindings[i] = attribBinding;
 				vertexAttribArray[i] = true; // enable it back.
-				debugThrowOnApiError("glState::storeCurrentGlState Exit");
+				debugThrowOnApiError("glState::storeCurrentGlState:4");
 			}
 #endif
 
@@ -137,23 +138,11 @@ void GLStateTracker::checkStateChanged(const GLState& currentGlState)
 	windingOrderChanged = windingOrder != currentGlState.windingOrder;
 
 	sampler7Changed = sampler7 != currentGlState.sampler7;
-	if (vbo != -1)
-	{
-		vboChanged = vbo != currentGlState.vbo;
-	}
-	if (ibo != -1)
-	{
-		iboChanged = ibo != currentGlState.ibo;
-	}
-	if (vao != -1)
-	{
-		vaoChanged = vao != currentGlState.vao;
-	}
+	if (vbo != -1) { vboChanged = vbo != currentGlState.vbo; }
+	if (ibo != -1) { iboChanged = ibo != currentGlState.ibo; }
+	if (vao != -1) { vaoChanged = vao != currentGlState.vao; }
 
-	if (currentGlState.vao != 0)
-	{
-		vaoChanged = true;
-	}
+	if (currentGlState.vao != 0) { vaoChanged = true; }
 
 	colorMaskChanged = ((colorMask[0] != currentGlState.colorMask[0]) || (colorMask[1] != currentGlState.colorMask[1]) || (colorMask[2] != currentGlState.colorMask[2]) ||
 		(colorMask[3] != currentGlState.colorMask[3]));
@@ -194,23 +183,11 @@ void GLStateTracker::checkStateChanged(const GLStateTracker& stateTracker)
 	windingOrderChanged = stateTracker.windingOrderChanged;
 
 	sampler7Changed = stateTracker.sampler7Changed;
-	if (vbo != -1)
-	{
-		vboChanged = stateTracker.vboChanged;
-	}
-	if (ibo != -1)
-	{
-		iboChanged = stateTracker.iboChanged;
-	}
-	if (vao != -1)
-	{
-		vaoChanged = stateTracker.vaoChanged;
-	}
+	if (vbo != -1) { vboChanged = stateTracker.vboChanged; }
+	if (ibo != -1) { iboChanged = stateTracker.iboChanged; }
+	if (vao != -1) { vaoChanged = stateTracker.vaoChanged; }
 
-	if (stateTracker.vao != 0)
-	{
-		vaoChanged = true;
-	}
+	if (stateTracker.vao != 0) { vaoChanged = true; }
 
 	colorMaskChanged = stateTracker.colorMaskChanged;
 
@@ -224,82 +201,31 @@ void GLStateTracker::checkStateChanged(const GLStateTracker& stateTracker)
 void GLStateTracker::setUiState(Api api)
 {
 	debugThrowOnApiError("GLStateTracker::setState Enter");
-	if (activeProgramChanged)
-	{
-		gl::UseProgram(activeProgram);
-	}
-	if (activeTextureUnitChanged)
-	{
-		gl::ActiveTexture(activeTextureUnit);
-	}
-	if (boundTextureChanged)
-	{
-		gl::BindTexture(GL_TEXTURE_2D, boundTexture);
-	}
-	if (blendEnabledChanged)
-	{
-		blendEnabled ? gl::Enable(GL_BLEND) : gl::Disable(GL_BLEND);
-	}
-	if (blendSrcRgbChanged || blendSrcAlphaChanged || blendDstRgbChanged || blendDstAlphaChanged)
-	{
-		gl::BlendFuncSeparate(blendSrcRgb, blendDstRgb, blendSrcAlpha, blendDstAlpha);
-	}
-	if (blendEqationRgbChanged || blendEqationAlphaChanged)
-	{
-		gl::BlendEquationSeparate(blendEqationRgb, blendEqationAlpha);
-	}
+	if (activeProgramChanged) { gl::UseProgram(static_cast<GLuint>(activeProgram)); }
+	if (activeTextureUnitChanged) { gl::ActiveTexture(static_cast<GLenum>(activeTextureUnit)); }
+	if (boundTextureChanged) { gl::BindTexture(GL_TEXTURE_2D, static_cast<GLuint>(boundTexture)); }
+	if (blendEnabledChanged) { blendEnabled ? gl::Enable(GL_BLEND) : gl::Disable(GL_BLEND); }
+	if (blendSrcRgbChanged || blendSrcAlphaChanged || blendDstRgbChanged || blendDstAlphaChanged) { gl::BlendFuncSeparate(blendSrcRgb, blendDstRgb, blendSrcAlpha, blendDstAlpha); }
+	if (blendEqationRgbChanged || blendEqationAlphaChanged) { gl::BlendEquationSeparate(blendEqationRgb, blendEqationAlpha); }
 
-	if (colorMaskChanged)
-	{
-		gl::ColorMask(colorMask[0], colorMask[1], colorMask[2], colorMask[3]);
-	}
-	if (depthTestChanged)
-	{
-		depthTest ? gl::Enable(GL_DEPTH_TEST) : gl::Disable(GL_DEPTH_TEST);
-	}
-	if (depthMaskChanged)
-	{
-		gl::DepthMask(depthMask);
-	}
-	if (stencilTestChanged)
-	{
-		stencilTest ? gl::Enable(GL_STENCIL_TEST) : gl::Disable(GL_STENCIL_TEST);
-	}
-	if (cullingEnabledChanged)
-	{
-		cullingEnabled ? gl::Enable(GL_CULL_FACE) : gl::Disable(GL_CULL_FACE);
-	}
-	if (cullingChanged)
-	{
-		gl::CullFace(culling);
-	}
-	if (windingOrderChanged)
-	{
-		gl::DepthMask(windingOrder);
-	}
-	if (sampler7Changed)
-	{
-		gl::BindSampler(7, sampler7);
-	}
+	if (colorMaskChanged) { gl::ColorMask(colorMask[0], colorMask[1], colorMask[2], colorMask[3]); }
+	if (depthTestChanged) { depthTest ? gl::Enable(GL_DEPTH_TEST) : gl::Disable(GL_DEPTH_TEST); }
+	if (depthMaskChanged) { gl::DepthMask(depthMask); }
+	if (stencilTestChanged) { stencilTest ? gl::Enable(GL_STENCIL_TEST) : gl::Disable(GL_STENCIL_TEST); }
+	if (cullingEnabledChanged) { cullingEnabled ? gl::Enable(GL_CULL_FACE) : gl::Disable(GL_CULL_FACE); }
+	if (cullingChanged) { gl::CullFace(culling); }
+	if (windingOrderChanged) { gl::FrontFace(windingOrder); }
+	if (sampler7Changed) { gl::BindSampler(7, sampler7); }
 	if (vaoChanged)
 	{
-		if (api > Api::OpenGLES2)
-		{
-			gl::BindVertexArray(0);
-		}
+		if (api > Api::OpenGLES2) { gl::BindVertexArray(0); }
 		else
 		{
 			gl::ext::BindVertexArrayOES(0);
 		}
 	}
-	if (vboChanged)
-	{
-		gl::BindBuffer(GL_ARRAY_BUFFER, vbo);
-	}
-	if (iboChanged)
-	{
-		gl::BindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-	}
+	if (vboChanged) { gl::BindBuffer(GL_ARRAY_BUFFER, static_cast<GLuint>(vbo)); }
+	if (iboChanged) { gl::BindBuffer(GL_ELEMENT_ARRAY_BUFFER, static_cast<GLuint>(ibo)); }
 
 	for (uint32_t i = 0; i < 8; i++)
 	{
@@ -330,17 +256,17 @@ void GLStateTracker::restoreState(const GLState& currentGlState, Api api)
 	debugThrowOnApiError("glState::restoreState Enter");
 	if (activeProgramChanged)
 	{
-		gl::UseProgram(currentGlState.activeProgram);
+		gl::UseProgram(static_cast<GLuint>(currentGlState.activeProgram));
 		debugThrowOnApiError("glState::restoreState Exit");
 	}
 	if (activeTextureUnitChanged)
 	{
-		gl::ActiveTexture(currentGlState.activeTextureUnit);
+		gl::ActiveTexture(static_cast<GLenum>(currentGlState.activeTextureUnit));
 		debugThrowOnApiError("glState::restoreState Exit");
 	}
 	if (boundTextureChanged)
 	{
-		gl::BindTexture(GL_TEXTURE_2D, currentGlState.boundTexture);
+		gl::BindTexture(GL_TEXTURE_2D, static_cast<GLuint>(currentGlState.boundTexture));
 		debugThrowOnApiError("glState::restoreState Exit");
 	}
 	if (blendEnabledChanged)
@@ -386,28 +312,28 @@ void GLStateTracker::restoreState(const GLState& currentGlState, Api api)
 	}
 	if (cullingChanged)
 	{
-		gl::CullFace(currentGlState.culling);
+		gl::CullFace(static_cast<GLenum>(currentGlState.culling));
 		debugThrowOnApiError("glState::restoreState Exit");
 	}
 
 	if (windingOrder)
 	{
-		gl::FrontFace(currentGlState.windingOrder);
+		gl::FrontFace(static_cast<GLenum>(currentGlState.windingOrder));
 		debugThrowOnApiError("glState::restoreState Exit");
 	}
 	if (sampler7Changed)
 	{
-		gl::BindSampler(7, currentGlState.sampler7);
+		gl::BindSampler(7, static_cast<GLuint>(currentGlState.sampler7));
 		debugThrowOnApiError("glState::restoreState Exit");
 	}
 	if (vboChanged)
 	{
-		gl::BindBuffer(GL_ARRAY_BUFFER, currentGlState.vbo);
+		gl::BindBuffer(GL_ARRAY_BUFFER, static_cast<GLuint>(currentGlState.vbo));
 		debugThrowOnApiError("glState::restoreState Exit");
 	}
 	if (iboChanged)
 	{
-		gl::BindBuffer(GL_ELEMENT_ARRAY_BUFFER, currentGlState.ibo);
+		gl::BindBuffer(GL_ELEMENT_ARRAY_BUFFER, static_cast<GLuint>(currentGlState.ibo));
 		debugThrowOnApiError("glState::restoreState Exit");
 	}
 
@@ -438,12 +364,12 @@ void GLStateTracker::restoreState(const GLState& currentGlState, Api api)
 	{
 		if (api > Api::OpenGLES2)
 		{
-			gl::BindVertexArray(currentGlState.vao);
+			gl::BindVertexArray(static_cast<GLuint>(currentGlState.vao));
 			debugThrowOnApiError("glState::restoreState Exit");
 		}
 		else
 		{
-			gl::ext::BindVertexArrayOES(currentGlState.vao);
+			gl::ext::BindVertexArrayOES(static_cast<GLuint>(currentGlState.vao));
 			debugThrowOnApiError("glState::restoreState Exit");
 		}
 	}
@@ -451,33 +377,19 @@ void GLStateTracker::restoreState(const GLState& currentGlState, Api api)
 	debugThrowOnApiError("glState::restoreState Exit");
 }
 
-void UIRenderer::checkStateChanged(const GLStateTracker& stateTracker)
-{
-	_uiStateTracker.checkStateChanged(stateTracker);
-}
+void UIRenderer::checkStateChanged(const GLStateTracker& stateTracker) { _uiStateTracker.checkStateChanged(stateTracker); }
 
-void UIRenderer::checkStateChanged()
-{
-	_uiStateTracker.checkStateChanged(_currentState);
-}
+void UIRenderer::checkStateChanged() { _uiStateTracker.checkStateChanged(_currentState); }
 
-void UIRenderer::restoreState()
-{
-	_uiStateTracker.restoreState(_currentState, _api);
-}
+void UIRenderer::restoreState() { _uiStateTracker.restoreState(_currentState, _api); }
 
-void UIRenderer::storeCurrentGlState()
-{
-	_currentState.storeCurrentGlState(_api);
-}
+void UIRenderer::storeCurrentGlState() { _currentState.storeCurrentGlState(_api); }
 
-void UIRenderer::setUiState()
-{
-	_uiStateTracker.setUiState(_api);
-}
+void UIRenderer::setUiState() { _uiStateTracker.setUiState(_api); }
 
 void UIRenderer::init_CreateShaders(bool framebufferSRGB)
 {
+	debugThrowOnApiError("UIRenderer::init_CreateShaders entry");
 	// Text_ pipe
 	GLuint shaders[] = { 0, 0 };
 
@@ -512,6 +424,7 @@ void UIRenderer::init_CreateShaders(bool framebufferSRGB)
 	_programData.uniforms[UIRenderer::ProgramData::UniformUVmtx] = gl::GetUniformLocation(_program, "myUVMatrix");
 
 	gl::Uniform1i(_programData.uniforms[UIRenderer::ProgramData::UniformFontTexture], 7);
+	debugThrowOnApiError("UIRenderer::init_CreateShaders exit");
 }
 
 Font UIRenderer::createFont(const Texture& tex, GLuint sampler)
@@ -613,12 +526,10 @@ inline Api getCurrentGlesVersion()
 	int major, minor;
 	sscanf(apistring, "OpenGL ES %d.%d", &major, &minor);
 
-	if (major == 2)
-		return Api::OpenGLES2;
+	if (major == 2) return Api::OpenGLES2;
 	if (major == 3)
 	{
-		if (minor == 0)
-			return Api::OpenGLES3;
+		if (minor == 0) return Api::OpenGLES3;
 		return Api::OpenGLES31;
 	}
 	throw "";
@@ -634,10 +545,7 @@ void UIRenderer::init(uint32_t width, uint32_t height, bool fullscreen, bool isF
 	release();
 	_screenDimensions = glm::vec2(width, height);
 	// screen rotated?
-	if (_screenDimensions.y > _screenDimensions.x && fullscreen)
-	{
-		rotateScreen90degreeCCW();
-	}
+	if (_screenDimensions.y > _screenDimensions.x && fullscreen) { rotateScreen90degreeCCW(); }
 
 	debugThrowOnApiError("UIRenderer::init 1");
 	storeCurrentGlState();
@@ -720,19 +628,16 @@ void UIRenderer::init_CreateDefaultSampler()
 
 void UIRenderer::init_CreateDefaultSdkLogo()
 {
-	Stream::ptr_type sdkLogo = Stream::ptr_type(new BufferStream("", _PowerVR_Logo_RGBA_pvr, _PowerVR_Logo_RGBA_pvr_size));
+	std::unique_ptr<Stream> sdkLogo = std::make_unique<BufferStream>("", _PowerVR_Logo_RGBA_pvr, static_cast<size_t>(_PowerVR_Logo_RGBA_pvr_size));
 	Texture sdkTex;
-	sdkTex = textureLoad(sdkLogo, TextureFileFormat::PVR);
+	sdkTex = textureLoad(*sdkLogo, TextureFileFormat::PVR);
 
 	_sdkLogo = createImage(sdkTex);
 
 	_sdkLogo->setAnchor(Anchor::BottomRight, glm::vec2(.98f, -.98f));
 	float scalefactor = .3f * getRenderingDim().x / BaseScreenDim.x;
 
-	if (scalefactor > 1.f)
-	{
-		scalefactor = 1.f;
-	}
+	if (scalefactor > 1.f) { scalefactor = 1.f; }
 	else if (scalefactor > .5f)
 	{
 		scalefactor = .5f;
@@ -778,33 +683,31 @@ void UIRenderer::init_CreateDefaultTitle()
 void UIRenderer::init_CreateDefaultFont()
 {
 	Texture fontTex;
-	Stream::ptr_type arialFontTex;
+	std::unique_ptr<Stream> arialFontTex;
 	float maxRenderDim = glm::max<float>(getRenderingDimX(), getRenderingDimY());
 	// pick the right font size of this resolution.
-	if (maxRenderDim <= 800)
-	{
-		arialFontTex = Stream::ptr_type(new BufferStream("", _arialbd_36_rgb888_pvr, _arialbd_36_rgb888_pvr_size));
-	}
+	if (maxRenderDim <= 800) { arialFontTex = std::make_unique<BufferStream>("", _arialbd_36_a8_pvr, _arialbd_36_a8_pvr_size); }
 	else if (maxRenderDim <= 1000)
 	{
-		arialFontTex = Stream::ptr_type(new BufferStream("", _arialbd_46_rgb888_pvr, _arialbd_46_rgb888_pvr_size));
+		arialFontTex = std::make_unique<BufferStream>("", _arialbd_46_a8_pvr, _arialbd_46_a8_pvr_size);
 	}
 	else
 	{
-		arialFontTex = Stream::ptr_type(new BufferStream("", _arialbd_56_rgb888_pvr, _arialbd_56_rgb888_pvr_size));
+		arialFontTex = std::make_unique<BufferStream>("", _arialbd_56_a8_pvr, _arialbd_56_a8_pvr_size);
 	}
 
-	fontTex = textureLoad(arialFontTex, TextureFileFormat::PVR);
+	fontTex = textureLoad(*arialFontTex, TextureFileFormat::PVR);
 
 	_defaultFont = createFont(fontTex);
 
-	// Font Textures are encoded as sRGB 3 channels because one/ teo channel sRGb textures are not supported in OpenGLES.
-	// Therefore set G,B and Alpha to value from the Red channel.
-	gl::BindTexture(GL_TEXTURE_2D, _defaultFont->getTexture());
-	gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_RED);
-	gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_RED);
-	gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_RED);
-	gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, GL_RED);
+	if (_api > Api::OpenGLES2)
+	{
+		gl::BindTexture(GL_TEXTURE_2D, _defaultFont->getTexture());
+		gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_RED);
+		gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_RED);
+		gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_RED);
+		gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, GL_RED);
+	}
 	gl::BindTexture(GL_TEXTURE_2D, 0);
 }
 } // namespace ui

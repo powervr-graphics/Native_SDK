@@ -1,12 +1,16 @@
 cmake_minimum_required(VERSION 3.3)
 project(OpenGLESImageBasedLighting)
-if(APPLE)
-	if(IOS)
-		message("Skipping OpenGLESImageBasedLighting : Not supported on iOS")
-		return()
-	endif()
+if(IOS)	
+	message("Skipping OpenGLESImageBasedLighting : Not supported on iOS")
+	return()
 endif()
+
 add_subdirectory(../../.. ${CMAKE_CURRENT_BINARY_DIR}/sdk)
+
+if(PVR_PREBUILT_DEPENDENCIES)
+	find_package(PVRShell REQUIRED MODULE)
+	find_package(PVRUtilsGles REQUIRED MODULE)
+endif()
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
@@ -16,46 +20,69 @@ set(SRC_FILES OpenGLESImageBasedLighting.cpp)
 
 set(ASSET_FOLDER ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Assets_OpenGLESImageBasedLighting)
 
-# ASSET FILES (textures, scene files, textures etc) - Packaged with the executable for runtime use
-set(ASSET_FILES
-	${CMAKE_CURRENT_SOURCE_DIR}/../../assets/damagedHelmet/Default_albedo.pvr
-	${CMAKE_CURRENT_SOURCE_DIR}/../../assets/damagedHelmet/Default_emissive.pvr
-	${CMAKE_CURRENT_SOURCE_DIR}/../../assets/damagedHelmet/Default_occlusionRoughnessMetallic.pvr
-	${CMAKE_CURRENT_SOURCE_DIR}/../../assets/damagedHelmet/Default_normal.pvr
-	${CMAKE_CURRENT_SOURCE_DIR}/../../assets/HdrScenes/misty_pines_rgb9e5.pvr
-	${CMAKE_CURRENT_SOURCE_DIR}/../../assets/HdrScenes/misty_pines_rgb9e5_Irradiance.pvr
-	${CMAKE_CURRENT_SOURCE_DIR}/../../assets/HdrScenes/misty_pines_rgb9e5_Prefiltered.pvr
-	${CMAKE_CURRENT_SOURCE_DIR}/../../assets/HdrScenes/satara_night_scale_0.305_rgb9e5.pvr
-	${CMAKE_CURRENT_SOURCE_DIR}/../../assets/HdrScenes/satara_night_scale_0.305_rgb9e5_Irradiance.pvr
-	${CMAKE_CURRENT_SOURCE_DIR}/../../assets/HdrScenes/satara_night_scale_0.305_rgb9e5_Prefiltered.pvr
-	${CMAKE_CURRENT_SOURCE_DIR}/../../assets/brdfLUT.pvr
-	${CMAKE_CURRENT_SOURCE_DIR}/../../assets/damagedHelmet/damagedHelmet.bin
-	${CMAKE_CURRENT_SOURCE_DIR}/../../assets/damagedHelmet/damagedHelmet.gltf
-	${CMAKE_CURRENT_SOURCE_DIR}/../../assets/ParticleSystem/sphere.pod
-	)
-list(APPEND SRC_FILES ${ASSET_FILES})
-source_group("assets" FILES ${ASSET_FILES})
+# Adds an executable (or ndk library for Android) and necessary files like plists for Mac/iOS etc.
+add_platform_specific_executable(OpenGLESImageBasedLighting ${SRC_FILES})
 
-# TEXTUAL SHADER FILES (OpenGL ES) - Packaged with the executable for runtime use
-set(SHADER_FILES
-	${CMAKE_CURRENT_SOURCE_DIR}/PBRFragShader.fsh
-	${CMAKE_CURRENT_SOURCE_DIR}/PBRVertShader.vsh
-	${CMAKE_CURRENT_SOURCE_DIR}/SkyboxFragShader.fsh
-	${CMAKE_CURRENT_SOURCE_DIR}/SkyboxVertShader.vsh
-	)
-list(APPEND SRC_FILES ${SHADER_FILES})
-source_group("shaders" FILES ${SHADER_FILES})
+#################################### ASSET FILES ##########################################
+# For platforms supporting it, will be packaged with the executable for runtime use.
+# Will be accessible from the app with their "relative path". One call per base path
 
-set(RESOURCE_FILES ${ASSET_FILES} ${SHADER_FILES})
+### Textures, scene files, generic resources... ###
+add_assets_to_target(OpenGLESImageBasedLighting
+	SOURCE_GROUP "assets" 
+	ASSET_FOLDER ${ASSET_FOLDER} 
+	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/damagedHelmet
+	FILE_LIST 
+		Default_albedo.pvr
+		Default_emissive.pvr
+		Default_occlusionRoughnessMetallic.pvr
+		Default_normal.pvr
+		damagedHelmet.bin
+		damagedHelmet.gltf)
 
-# Adds Windows resouces.rc, macOS plists etc. For macOS/iOS, also set the opengl dynamic libs in the "frameworks" group
-add_platform_specific_resource_files(SRC_FILES RESOURCE_FILES)
+add_assets_to_target(OpenGLESImageBasedLighting
+	SOURCE_GROUP "assets" 
+	ASSET_FOLDER ${ASSET_FOLDER} 
+	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/HdrScenes
+	FILE_LIST 
+		misty_pines_rgb9e5.pvr
+		misty_pines_rgb9e5_Irradiance.pvr
+		misty_pines_rgb9e5_Prefiltered.pvr
+		satara_night_scale_0.305_rgb9e5.pvr
+		satara_night_scale_0.305_rgb9e5_Irradiance.pvr
+		satara_night_scale_0.305_rgb9e5_Prefiltered.pvr)
 
-# Adds a platform specific executable
-add_platform_specific_executable(OpenGLESImageBasedLighting "${SRC_FILES}" "${RESOURCE_FILES}")
+add_assets_to_target(OpenGLESImageBasedLighting
+	SOURCE_GROUP "assets" 
+	ASSET_FOLDER ${ASSET_FOLDER} 
+	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets
+	FILE_LIST 
+		brdfLUT.pvr)
 
-# Copies the assets to our assets folder
-add_rule_copy_assets_to_asset_folder("${RESOURCE_FILES}" "${ASSET_FOLDER}")
+add_assets_to_target(OpenGLESImageBasedLighting
+	SOURCE_GROUP "assets" 
+	ASSET_FOLDER ${ASSET_FOLDER} 
+	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/ParticleSystem
+	FILE_LIST 
+		sphere.pod)
+
+### Textural shaders (OpenGL ES) ###
+add_assets_to_target(OpenGLESImageBasedLighting 
+	SOURCE_GROUP "shaders" 
+	ASSET_FOLDER ${ASSET_FOLDER} 
+	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/
+	FILE_LIST 
+		PBRFragShader.fsh
+		PBRVertShader.vsh
+		SkyboxFragShader.fsh
+		SkyboxVertShader.vsh)
+
+# Create and adds a Windows resource file (Resources.rc) with all the assets that have been added to the target with the previous functions
+add_assets_resource_file(OpenGLESImageBasedLighting)
+###########################################################################################
+
+# Apply SDK example specific compile and linker options
+apply_example_compile_options_to_target(OpenGLESImageBasedLighting)
 
 target_link_libraries(OpenGLESImageBasedLighting
 	PVRShell

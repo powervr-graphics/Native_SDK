@@ -10,116 +10,127 @@
 #include "PVRCore/Log.h"
 #include <android_native_app_glue.h>
 
+const char* to_cmd_string(int32_t cmd)
+{
+#define case_statement_stringify(WORD) \
+	case WORD: return #WORD;
+	switch (cmd)
+	{
+		case_statement_stringify(APP_CMD_INPUT_CHANGED);
+		case_statement_stringify(APP_CMD_INIT_WINDOW);
+		case_statement_stringify(APP_CMD_TERM_WINDOW);
+		case_statement_stringify(APP_CMD_WINDOW_RESIZED);
+		case_statement_stringify(APP_CMD_WINDOW_REDRAW_NEEDED);
+		case_statement_stringify(APP_CMD_CONTENT_RECT_CHANGED);
+		case_statement_stringify(APP_CMD_GAINED_FOCUS);
+		case_statement_stringify(APP_CMD_LOST_FOCUS);
+		case_statement_stringify(APP_CMD_CONFIG_CHANGED);
+		case_statement_stringify(APP_CMD_LOW_MEMORY);
+		case_statement_stringify(APP_CMD_START);
+		case_statement_stringify(APP_CMD_RESUME);
+		case_statement_stringify(APP_CMD_SAVE_STATE);
+		case_statement_stringify(APP_CMD_PAUSE);
+		case_statement_stringify(APP_CMD_STOP);
+		case_statement_stringify(APP_CMD_DESTROY);
+	}
+	return "UNKNOWN";
+#undef case_statement_stringify
+}
+
+static void checkState(android_app* app, pvr::platform::StateMachine* stateMachine, bool& has_error, bool windowInitialised, bool started, bool paused)
+{
+#ifdef DEBUG
+	Log(LogLevel::Debug, "CheckState: - started:%s - windowInitialised:%s - paused:%s", started ? "true" : "false", windowInitialised ? "true" : "false", paused ? "true" : "false");
+#endif
+	pvr::Result result = pvr::Result::Success;
+	pvr::Result resulttmp = pvr::Result::Success; // Ensure, that if winding down, we do not actually overwrite a failed result.
+	// clang-format off
+	using pvr::platform::StateMachine;
+	if (started)                                 { 	resulttmp = stateMachine->executeUpTo(StateMachine::StateAppInitialised); }
+	if (resulttmp != pvr::Result::Success && result == pvr::Result::Success) { result = resulttmp; started = false; paused = true; windowInitialised = false; has_error = true; }
+	
+	//if (started && windowInitialised)            { result = stateMachine->executeUpTo(StateMachine::StateWindowInitialised); }
+	
+	if (started && windowInitialised && !paused) { resulttmp = stateMachine->executeUpTo(StateMachine::StateReady); }
+	if (resulttmp != pvr::Result::Success && result == pvr::Result::Success) { result = resulttmp; started = false; paused = true; windowInitialised = false; has_error = true; }
+	
+	if (!windowInitialised || paused)            { resulttmp = stateMachine->executeDownTo(StateMachine::StateAppInitialised); }
+	if (resulttmp != pvr::Result::Success && result == pvr::Result::Success) {  result = resulttmp; started = false; paused = true; windowInitialised = false; has_error = true; }
+	
+	if (!started)                                { resulttmp = stateMachine->executeDownTo(StateMachine::StateInitialised); }
+	if (resulttmp != pvr::Result::Success && result == pvr::Result::Success) {  result = resulttmp; started = false; paused = true; windowInitialised = false; has_error = true; }
+	
+	if (result != pvr::Result::Success) { has_error = true; Log(LogLevel::Debug, "checkState: Requesting Native Activity finish."); ANativeActivity_finish(app->activity); }
+	// clang-format on
+}
+
 /// <summary>A function to handle the android OS system messages. Used for lifecycle management.</summary>
 /// <param name="app">The android application.</param>
 /// <param name="cmd">The command type (android predetermined).</param>
 static void handle_cmd(struct android_app* app, int32_t cmd)
 {
+#ifdef DEBUG
+	Log(LogLevel::Debug, "[MAIN]: handle_cmd %s !", to_cmd_string(cmd));
+#endif
 	pvr::platform::StateMachine* stateMachinePtr = static_cast<pvr::platform::StateMachine*>(app->userData);
-	pvr::Result result;
+
+	static bool windowInitialised = false;
+	static bool started = false;
+	static bool paused = true;
+	static bool has_error = false;
+
+	if (has_error)
+	{
+		started = false;
+		paused = true;
+		windowInitialised = false;
+	}
 	switch (cmd)
 	{
 	case APP_CMD_START:
-		Log(LogLevel::Debug, "APP_CMD_START");
-		result = pvr::Result::Success;
-
-		if (stateMachinePtr->getCurrentState() == pvr::platform::StateMachine::StateNotInitialized)
-		{
-			Log(LogLevel::Debug, "Initializing State Machine");
-			if ((result = stateMachinePtr->init()) != pvr::Result::Success)
-			{
-				Log(LogLevel::Error, "Error: Failed to initialize main State Machine with code %s", getResultCodeString(result));
-				ANativeActivity_finish(app->activity);
-				return;
-			}
-		}
-		else
-		{
-			Log(LogLevel::Debug, "State Machine already Initialized");
-		}
-		if (stateMachinePtr->getCurrentState() == pvr::platform::StateMachine::StateInitApplication ||
-			stateMachinePtr->getCurrentState() > pvr::platform::StateMachine::StateQuitApplication)
-		{
-			Log(LogLevel::Debug, "Executing Init Application");
-			if ((result = stateMachinePtr->executeOnce(pvr::platform::StateMachine::StateInitApplication)) != pvr::Result::Success)
-			{
-				ANativeActivity_finish(app->activity);
-				return;
-			}
-		}
-		else
-		{
-			Log(LogLevel::Debug, "Skipped Init Application.");
-		}
+		started = true;
+		checkState(app, stateMachinePtr, has_error, windowInitialised, started, paused);
 		break;
 	case APP_CMD_PAUSE:
-		Log(LogLevel::Debug, "APP_CMD_PAUSE");
-		stateMachinePtr->pause();
+	case APP_CMD_LOST_FOCUS:
+		paused = true;
+		checkState(app, stateMachinePtr, has_error, windowInitialised, started, paused);
 		break;
 	case APP_CMD_RESUME:
-		Log(LogLevel::Debug, "APP_CMD_RESUME");
-		stateMachinePtr->resume();
+	case APP_CMD_GAINED_FOCUS:
+		paused = false;
+		checkState(app, stateMachinePtr, has_error, windowInitialised, started, paused);
+		break;
+	case APP_CMD_WINDOW_RESIZED:
+		if (windowInitialised && !paused) // will only cause release/init if everything was ready - otherwise it will happen naturally
+		{
+			checkState(app, stateMachinePtr, has_error, false, started, paused);
+			if (!has_error) (checkState(app, stateMachinePtr, has_error, true, started, paused));
+		}
+		break;
+	case APP_CMD_WINDOW_REDRAW_NEEDED: break;
+	case APP_CMD_CONTENT_RECT_CHANGED:
+		if (windowInitialised && !paused) // will only cause release/init if everything was ready - otherwise it will happen naturally
+		{
+			checkState(app, stateMachinePtr, has_error, false, started, paused);
+			if (!has_error) (checkState(app, stateMachinePtr, has_error, true, started, paused));
+		}
 		break;
 	case APP_CMD_INIT_WINDOW:
-		Log(LogLevel::Debug, "APP_CMD_INIT_WINDOW");
-		stateMachinePtr->resume();
-
-		if (stateMachinePtr->getCurrentState() != pvr::platform::StateMachine::StateInitWindow && stateMachinePtr->getCurrentState() < pvr::platform::StateMachine::StateReleaseView)
-		{
-			Log(LogLevel::Debug, "APP_CMD_INIT_WINDOW Was the wrong state: %d", stateMachinePtr->getCurrentState());
-			ANativeActivity_finish(app->activity);
-			return;
-		}
-		if (stateMachinePtr->executeOnce(pvr::platform::StateMachine::StateInitWindow) != pvr::Result::Success)
-		{
-			Log(LogLevel::Debug, "APP_CMD_INIT_WINDOW failed to reach InitWindow");
-			ANativeActivity_finish(app->activity);
-			return;
-		}
-
-		if (stateMachinePtr->executeUpTo(pvr::platform::StateMachine::StateRenderScene) != pvr::Result::Success)
-		{
-			Log(LogLevel::Debug, "APP_CMD_INIT_WINDOW failed to reach RenderScene");
-			ANativeActivity_finish(app->activity);
-			return;
-		}
-
+		windowInitialised = true;
+		checkState(app, stateMachinePtr, has_error, windowInitialised, started, paused);
 		break;
 	case APP_CMD_TERM_WINDOW:
-		Log(LogLevel::Debug, "APP_CMD_TERM_WINDOW");
-		stateMachinePtr->resume();
-
-		if (stateMachinePtr->getState() < pvr::platform::StateMachine::StateReleaseView)
-		{
-			if (stateMachinePtr->executeOnce(pvr::platform::StateMachine::StateReleaseView) != pvr::Result::Success)
-			{
-				ANativeActivity_finish(app->activity);
-				return;
-			}
-			Log(LogLevel::Debug, "APP_CMD_TERM_WINDOW:ReleaseViewDone");
-		}
-		if (stateMachinePtr->executeUpTo(pvr::platform::StateMachine::StateQuitApplication) != pvr::Result::Success)
-		{
-			Log(LogLevel::Debug, "APP_CMD_TERM_WINDOW:Failed release window.");
-			ANativeActivity_finish(app->activity);
-			return;
-		}
-		Log(LogLevel::Debug, "APP_CMD_TERM_WINDOW:Release window done");
-		break;
 	case APP_CMD_STOP:
-		Log(LogLevel::Debug, "APP_CMD_STOP");
+		windowInitialised = false;
+		checkState(app, stateMachinePtr, has_error, windowInitialised, started, paused);
 		break;
 	case APP_CMD_DESTROY:
-		Log(LogLevel::Debug, "APP_CMD_DESTROY");
-		stateMachinePtr->resume();
-		if (stateMachinePtr->executeUpTo(pvr::platform::StateMachine::StateExit) != pvr::Result::Success)
-		{
-			ANativeActivity_finish(app->activity);
-			return;
-		}
+		started = false;
+		windowInitialised = false;
+		checkState(app, stateMachinePtr, has_error, windowInitialised, started, paused);
 		break;
-	default:
-		return;
+	default: return;
 	};
 }
 
@@ -170,7 +181,13 @@ void android_main(struct android_app* state)
 		activity->vm->DetachCurrentThread();
 	}
 
+	Log(LogLevel::Debug, "MAIN: Initializing state machine.");
 	pvr::platform::StateMachine stateMachine(state, commandLine, NULL);
+	if (stateMachine.init() != pvr::Result::Success)
+	{
+		Log(LogLevel::Error, "MAIN: Failed to initialise the StateMachine. Exiting application.");
+		return;
+	}
 
 	state->userData = &stateMachine;
 	state->onAppCmd = &handle_cmd;
@@ -179,38 +196,57 @@ void android_main(struct android_app* state)
 	int events;
 	struct android_poll_source* source;
 
+	Log(LogLevel::Debug, "MAIN: Entering main loop state machine.");
+
 	//	Initialize our window/run/shutdown
 	while (true)
 	{
-		while (ALooper_pollAll((stateMachine.getState() == pvr::platform::StateMachine::StateRenderScene && !stateMachine.isPaused()) ? 0 : -1, NULL, &events, (void**)&source) >= 0)
+		while (ALooper_pollAll((state->destroyRequested || (stateMachine.getState() == pvr::platform::StateMachine::StateReady && !stateMachine.isPaused())) ? 0 : 10000, NULL,
+				   &events, (void**)&source) >= 0)
 		{
 			// Process this event.
-			if (source != NULL)
+			if (source != NULL) { source->process(state, source); }
+			else
 			{
-				source->process(state, source);
-			}
-
-			// Check if we are exiting.
-			if (state->destroyRequested != 0)
-			{
-				Log(LogLevel::Debug, "MAIN: Destroy requested. Exiting applications");
-				return;
+				Log(LogLevel::Debug, "[MAIN]: Event handling: Null Source.");
 			}
 		}
 
-		// Render our scene
-		do
+		// Check if we are exiting.
+		if (state->destroyRequested != 0)
 		{
-			if (stateMachine.executeOnce() != pvr::Result::Success)
+			Log(LogLevel::Debug, "[MAIN]: android_main - Destroy requested. Deinitialising application.");
+			stateMachine.executeDownTo(pvr::platform::StateMachine::StateInitialised);
+			Log(LogLevel::Debug, "[MAIN]: android_main - App deinitialise complete. Exiting native thread.");
+			return;
+		}
+
+		// Avoid infinite loop:
+		// Render our scene
+		if (stateMachine.getState() == pvr::platform::StateMachine::StateReady && !stateMachine.isPaused())
+		{
+			// Log(LogLevel::Debug, "[MAIN]: Executing main loop render frame.");
+			pvr::Result result;
+			do
 			{
-				Log(LogLevel::Debug, "MAIN: Requesting main finish...");
+				result = stateMachine.executeNext();
+			} while (result == pvr::Result::Success && stateMachine.getState() != pvr::platform::StateMachine::StateReady);
+
+			if (result != pvr::Result::Success)
+			{
+				if (result != pvr::Result::ExitRenderFrame) { Log(LogLevel::Debug, "[MAIN]: android_main - RenderFrame execution result was %d. Requesting app finish.", result); }
+				else
+				{
+					Log(LogLevel::Debug, "[MAIN]: android_main - ExitRenderFrame requested...");
+				}
+				stateMachine.pause();
 				ANativeActivity_finish(state->activity);
-				break;
 			}
-			if (stateMachine.getState() == pvr::platform::StateMachine::StateExit)
-			{
-				return;
-			}
-		} while (stateMachine.getState() != pvr::platform::StateMachine::StateRenderScene);
+		}
+		else
+		{
+			Log(LogLevel::Debug, "[MAIN]: android_main - Skipped execution. Current state is: %d", stateMachine.getState());
+		}
 	}
+	Log(LogLevel::Debug, "[MAIN]: android_main - MAIN RETURNING - Ndk thread exiting.");
 }

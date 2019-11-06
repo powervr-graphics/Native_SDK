@@ -19,7 +19,7 @@ struct PVRGraphCounter
 	uint32_t colorLutIdx; // color lookup table index
 	float maximum;
 
-	PVRGraphCounter() : writePosCB(0), showGraph(true), maximum(0.0f) {}
+	PVRGraphCounter() : writePosCB(0), showGraph(), maximum(0.0f) {}
 };
 
 namespace Configuration {
@@ -57,7 +57,7 @@ protected:
 
 	std::vector<PVRGraphCounter> graphCounters;
 	std::vector<ActiveCounter> activeCounters;
-	std::vector<uint16_t> activeCounterIds;
+	std::vector<uint32_t> activeCounterIds;
 
 	float x, y, pixelW, graphH;
 

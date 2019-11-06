@@ -7,6 +7,8 @@
 //!\cond NO_DOXYGEN
 #include "PVRCore/textureio/TextureReaderDDS.h"
 #include "PVRCore/Log.h"
+#include "PVRCore/textureio/FileDefinesDDS.h"
+
 using std::string;
 using std::vector;
 
@@ -931,77 +933,162 @@ bool setDirectXGIFormat(pvr::TextureHeader& hd, uint32_t dxgiFormat)
 
 namespace pvr {
 namespace assetReaders {
-TextureReaderDDS::TextureReaderDDS() : _texturesToLoad(true) {}
-TextureReaderDDS::TextureReaderDDS(Stream::ptr_type assetStream) : AssetReader<Texture>(std::move(assetStream)), _texturesToLoad(true) {}
-
-void TextureReaderDDS::readAsset_(Texture& asset)
+uint32_t getDirect3DFormatFromDDSHeader(texture_dds::FileHeader& textureFileHeader)
 {
-	if (_assetStream->getSize() < texture_dds::c_expectedDDSSize)
+	// First check for FourCC formats as these are easy to handle
+	if (textureFileHeader.pixelFormat.flags & texture_dds::e_fourCC) { return textureFileHeader.pixelFormat.fourCC; }
+
+	// Otherwise it's an uncompressed format using the rather awkward bit masks...
+	if (textureFileHeader.pixelFormat.flags & texture_dds::e_rgb)
 	{
-		throw InvalidDataError("[TextureReaderDDS::readAsset_]: Asset read had a size less than the DDS size.");
+		switch (textureFileHeader.pixelFormat.bitCount)
+		{
+		case 32:
+			if (textureFileHeader.pixelFormat.flags & texture_dds::e_alphaPixels)
+			{
+				if (textureFileHeader.pixelFormat.alphaMask == 0xff000000 && textureFileHeader.pixelFormat.redMask == 0x00ff0000 &&
+					textureFileHeader.pixelFormat.greenMask == 0x0000ff00 && textureFileHeader.pixelFormat.blueMask == 0x000000ff)
+				{ return texture_dds::D3DFMT_A8R8G8B8; }
+				if (textureFileHeader.pixelFormat.alphaMask == 0xc0000000 && textureFileHeader.pixelFormat.redMask == 0x3ff00000 &&
+					textureFileHeader.pixelFormat.greenMask == 0x000ffc00 && textureFileHeader.pixelFormat.blueMask == 0x000003ff)
+				{ return texture_dds::D3DFMT_A2B10G10R10; }
+				if (textureFileHeader.pixelFormat.alphaMask == 0xc0000000 && textureFileHeader.pixelFormat.blueMask == 0x3ff00000 &&
+					textureFileHeader.pixelFormat.greenMask == 0x000ffc00 && textureFileHeader.pixelFormat.redMask == 0x000003ff)
+				{ return (texture_dds::D3DFMT_A2R10G10B10); }
+			}
+			else
+			{
+				if (textureFileHeader.pixelFormat.greenMask == 0xffff0000 && textureFileHeader.pixelFormat.redMask == 0x0000ffff) { return (texture_dds::D3DFMT_G16R16); }
+			}
+			break;
+		case 24:
+			if (textureFileHeader.pixelFormat.redMask == 0x00ff0000 && textureFileHeader.pixelFormat.greenMask == 0x0000ff00 && textureFileHeader.pixelFormat.blueMask == 0x000000ff)
+			{ return (texture_dds::D3DFMT_R8G8B8); }
+			break;
+		case 16:
+			if (textureFileHeader.pixelFormat.flags & texture_dds::e_alphaPixels)
+			{
+				if (textureFileHeader.pixelFormat.alphaMask == 0x0000F000 && textureFileHeader.pixelFormat.redMask == 0x00000F00 &&
+					textureFileHeader.pixelFormat.greenMask == 0x000000F0 && textureFileHeader.pixelFormat.blueMask == 0x0000000F)
+				{ return (texture_dds::D3DFMT_A4R4G4B4); }
+				if (textureFileHeader.pixelFormat.alphaMask == 0x0000FF00 && textureFileHeader.pixelFormat.redMask == 0x000000E0 &&
+					textureFileHeader.pixelFormat.greenMask == 0x0000001C && textureFileHeader.pixelFormat.blueMask == 0x00000003)
+				{ return (texture_dds::D3DFMT_A8R3G3B2); }
+				if (textureFileHeader.pixelFormat.alphaMask == 0x00008000 && textureFileHeader.pixelFormat.redMask == 0x00007C00 &&
+					textureFileHeader.pixelFormat.greenMask == 0x000003E0 && textureFileHeader.pixelFormat.blueMask == 0x0000001F)
+				{ return (texture_dds::D3DFMT_A1R5G5B5); }
+			}
+			else
+			{
+				if (textureFileHeader.pixelFormat.redMask == 0x0000F800 && textureFileHeader.pixelFormat.greenMask == 0x000007E0 && textureFileHeader.pixelFormat.blueMask == 0x0000001F)
+				{ return (texture_dds::D3DFMT_R5G6B5); }
+				if (textureFileHeader.pixelFormat.redMask == 0x00007C00 && textureFileHeader.pixelFormat.greenMask == 0x000003E0 && textureFileHeader.pixelFormat.blueMask == 0x0000001F)
+				{ return (texture_dds::D3DFMT_X1R5G5B5); }
+			}
+			break;
+		case 8:
+			if (textureFileHeader.pixelFormat.redMask == 0x000000E0 && textureFileHeader.pixelFormat.greenMask == 0x0000001C && textureFileHeader.pixelFormat.blueMask == 0x00000003)
+			{ return (texture_dds::D3DFMT_R3G3B2); }
+			break;
+		}
+	}
+	else if (textureFileHeader.pixelFormat.flags & texture_dds::e_unknownBump1)
+	{
+		if (textureFileHeader.pixelFormat.bitCount == 32 && textureFileHeader.pixelFormat.redMask == 0x000000ff && textureFileHeader.pixelFormat.greenMask == 0x0000ff00 &&
+			textureFileHeader.pixelFormat.blueMask == 0x00ff0000)
+		{ return (texture_dds::D3DFMT_X8L8V8U8); }
+		if (textureFileHeader.pixelFormat.bitCount == 16 && textureFileHeader.pixelFormat.redMask == 0x0000001f && textureFileHeader.pixelFormat.greenMask == 0x000003e0 &&
+			textureFileHeader.pixelFormat.blueMask == 0x0000fc00)
+		{ return (texture_dds::D3DFMT_L6V5U5); }
+	}
+	else if (textureFileHeader.pixelFormat.flags & texture_dds::e_unknownBump2)
+	{
+		if (textureFileHeader.pixelFormat.bitCount == 32)
+		{
+			if (textureFileHeader.pixelFormat.alphaMask == 0xff000000 && textureFileHeader.pixelFormat.redMask == 0x000000ff &&
+				textureFileHeader.pixelFormat.greenMask == 0x0000ff00 && textureFileHeader.pixelFormat.blueMask == 0x00ff0000)
+			{ return (texture_dds::D3DFMT_Q8W8V8U8); }
+			if (textureFileHeader.pixelFormat.alphaMask == 0xc0000000 && textureFileHeader.pixelFormat.redMask == 0x3ff00000 &&
+				textureFileHeader.pixelFormat.greenMask == 0x000ffc00 && textureFileHeader.pixelFormat.blueMask == 0x000003ff)
+			{ return (texture_dds::D3DFMT_A2W10V10U10); }
+			if (textureFileHeader.pixelFormat.redMask == 0x0000ffff && textureFileHeader.pixelFormat.greenMask == 0xffff0000) { return (texture_dds::D3DFMT_V16U16); }
+		}
+		else if (textureFileHeader.pixelFormat.bitCount == 16)
+		{
+			if (textureFileHeader.pixelFormat.redMask == 0x000000ff && textureFileHeader.pixelFormat.greenMask == 0x0000ff00) { return (texture_dds::D3DFMT_V8U8); }
+		}
+	}
+	else if (textureFileHeader.pixelFormat.flags & texture_dds::e_luminance)
+	{
+		if (textureFileHeader.pixelFormat.bitCount == 8 && textureFileHeader.pixelFormat.redMask == 0xff) { return (texture_dds::D3DFMT_L8); }
+		if ((textureFileHeader.pixelFormat.flags & texture_dds::e_alphaPixels) && textureFileHeader.pixelFormat.bitCount == 16 && textureFileHeader.pixelFormat.redMask == 0x00ff &&
+			textureFileHeader.pixelFormat.alphaMask == 0xff00)
+		{ return (texture_dds::D3DFMT_A8L8); }
+		if ((textureFileHeader.pixelFormat.flags & texture_dds::e_alphaPixels) && textureFileHeader.pixelFormat.bitCount == 8 && textureFileHeader.pixelFormat.redMask == 0x0f &&
+			textureFileHeader.pixelFormat.alphaMask == 0xf0)
+		{ return (texture_dds::D3DFMT_A4L4); }
+		if (textureFileHeader.pixelFormat.bitCount == 16 && textureFileHeader.pixelFormat.redMask == 0xffff) { return (texture_dds::D3DFMT_L16); }
+	}
+	else if (textureFileHeader.pixelFormat.flags & texture_dds::e_alpha)
+	{
+		if (textureFileHeader.pixelFormat.bitCount == 8 && textureFileHeader.pixelFormat.alphaMask == 0xff) { return (texture_dds::D3DFMT_A8); }
 	}
 
-	// Acknowledge that once this function has returned the user won't be able load a texture from the file.
-	_texturesToLoad = false;
+	return texture_dds::D3DFMT_UNKNOWN;
+}
+
+Texture readDDS(const ::pvr::Stream& stream)
+{
+	if (stream.getSize() < texture_dds::c_expectedDDSSize) { throw InvalidDataError("[TextureReaderDDS::readAsset_]: Asset read had a size less than the DDS size."); }
 
 	texture_dds::FileHeader ddsFileHeader;
 
 	// Read the magic identifier
 	uint32_t magic;
-	_assetStream->readExact(sizeof(magic), 1, &magic);
+	stream.readExact(sizeof(magic), 1, &magic);
 
-	if (magic != texture_dds::c_magicIdentifier)
-	{
-		throw InvalidDataError("[TextureReaderDDS::readAsset_]: Asset read did not have the correct magic identifier.");
-	}
+	if (magic != texture_dds::c_magicIdentifier) { throw InvalidDataError("[TextureReaderDDS::readAsset_]: Asset read did not have the correct magic identifier."); }
 
 	// Read the header size
-	_assetStream->readExact(sizeof(ddsFileHeader.size), 1, &ddsFileHeader.size);
+	stream.readExact(sizeof(ddsFileHeader.size), 1, &ddsFileHeader.size);
 
 	// Check that the size matches what's expected
-	if (ddsFileHeader.size != texture_dds::c_expectedDDSSize)
-	{
-		throw InvalidDataError("[TextureReaderDDS::readAsset_]: Asset read did not have the correct DDS Header size.");
-	}
+	if (ddsFileHeader.size != texture_dds::c_expectedDDSSize) { throw InvalidDataError("[TextureReaderDDS::readAsset_]: Asset read did not have the correct DDS Header size."); }
 
 	// Read the flags
-	_assetStream->readExact(sizeof(ddsFileHeader.flags), 1, &ddsFileHeader.flags);
+	stream.readExact(sizeof(ddsFileHeader.flags), 1, &ddsFileHeader.flags);
 	// Read the width
-	_assetStream->readExact(sizeof(ddsFileHeader.width), 1, &ddsFileHeader.width);
+	stream.readExact(sizeof(ddsFileHeader.width), 1, &ddsFileHeader.width);
 	// Read the height
-	_assetStream->readExact(sizeof(ddsFileHeader.height), 1, &ddsFileHeader.height);
+	stream.readExact(sizeof(ddsFileHeader.height), 1, &ddsFileHeader.height);
 	// Read the pitchOrLinearSize
-	_assetStream->readExact(sizeof(ddsFileHeader.pitchOrLinearSize), 1, &ddsFileHeader.pitchOrLinearSize);
+	stream.readExact(sizeof(ddsFileHeader.pitchOrLinearSize), 1, &ddsFileHeader.pitchOrLinearSize);
 	// Read the depth
-	_assetStream->readExact(sizeof(ddsFileHeader.depth), 1, &ddsFileHeader.depth);
+	stream.readExact(sizeof(ddsFileHeader.depth), 1, &ddsFileHeader.depth);
 	// Read the number of MIP Map levels
-	_assetStream->readExact(sizeof(ddsFileHeader.numMipMaps), 1, &ddsFileHeader.numMipMaps);
+	stream.readExact(sizeof(ddsFileHeader.numMipMaps), 1, &ddsFileHeader.numMipMaps);
 	// Read the first chunk of "reserved" data (11 * uint32_t)
-	_assetStream->readExact(sizeof(ddsFileHeader.reserved[0]), 11, &ddsFileHeader.reserved);
+	stream.readExact(sizeof(ddsFileHeader.reserved[0]), 11, &ddsFileHeader.reserved);
 	// Read the Pixel Format size
-	_assetStream->readExact(sizeof(ddsFileHeader.pixelFormat.size), 1, &ddsFileHeader.pixelFormat.size);
+	stream.readExact(sizeof(ddsFileHeader.pixelFormat.size), 1, &ddsFileHeader.pixelFormat.size);
 	// Check that the Pixel Format size is correct
 	if (ddsFileHeader.pixelFormat.size != texture_dds::c_expectedPixelFormatSize)
-	{
-		throw InvalidDataError("[TextureReaderDDS::readAsset_]: Asset read did not have a supported Pixel Format.");
-	}
-
-	// Read the rest of the pixel format structure
-	_assetStream->readExact(sizeof(ddsFileHeader.pixelFormat.flags), 1, &ddsFileHeader.pixelFormat.flags);
-	_assetStream->readExact(sizeof(ddsFileHeader.pixelFormat.fourCC), 1, &ddsFileHeader.pixelFormat.fourCC);
-	_assetStream->readExact(sizeof(ddsFileHeader.pixelFormat.bitCount), 1, &ddsFileHeader.pixelFormat.bitCount);
-	_assetStream->readExact(sizeof(ddsFileHeader.pixelFormat.redMask), 1, &ddsFileHeader.pixelFormat.redMask);
-	_assetStream->readExact(sizeof(ddsFileHeader.pixelFormat.greenMask), 1, &ddsFileHeader.pixelFormat.greenMask);
-	_assetStream->readExact(sizeof(ddsFileHeader.pixelFormat.blueMask), 1, &ddsFileHeader.pixelFormat.blueMask);
-	_assetStream->readExact(sizeof(ddsFileHeader.pixelFormat.alphaMask), 1, &ddsFileHeader.pixelFormat.alphaMask);
+	{ throw InvalidDataError("[TextureReaderDDS::readAsset_]: Asset read did not have a supported Pixel Format."); } // Read the rest of the pixel format structure
+	stream.readExact(sizeof(ddsFileHeader.pixelFormat.flags), 1, &ddsFileHeader.pixelFormat.flags);
+	stream.readExact(sizeof(ddsFileHeader.pixelFormat.fourCC), 1, &ddsFileHeader.pixelFormat.fourCC);
+	stream.readExact(sizeof(ddsFileHeader.pixelFormat.bitCount), 1, &ddsFileHeader.pixelFormat.bitCount);
+	stream.readExact(sizeof(ddsFileHeader.pixelFormat.redMask), 1, &ddsFileHeader.pixelFormat.redMask);
+	stream.readExact(sizeof(ddsFileHeader.pixelFormat.greenMask), 1, &ddsFileHeader.pixelFormat.greenMask);
+	stream.readExact(sizeof(ddsFileHeader.pixelFormat.blueMask), 1, &ddsFileHeader.pixelFormat.blueMask);
+	stream.readExact(sizeof(ddsFileHeader.pixelFormat.alphaMask), 1, &ddsFileHeader.pixelFormat.alphaMask);
 
 	// Read the Capabilities2 structure
-	_assetStream->readExact(sizeof(ddsFileHeader.Capabilities1), 1, &ddsFileHeader.Capabilities1);
-	_assetStream->readExact(sizeof(ddsFileHeader.Capabilities2), 1, &ddsFileHeader.Capabilities2);
-	_assetStream->readExact(sizeof(ddsFileHeader.reserved[0]), 2, &ddsFileHeader.reserved);
+	stream.readExact(sizeof(ddsFileHeader.Capabilities1), 1, &ddsFileHeader.Capabilities1);
+	stream.readExact(sizeof(ddsFileHeader.Capabilities2), 1, &ddsFileHeader.Capabilities2);
+	stream.readExact(sizeof(ddsFileHeader.reserved[0]), 2, &ddsFileHeader.reserved);
 
 	// Read the final miscFlags2 value
-	_assetStream->readExact(sizeof(ddsFileHeader.reserved2), 1, &ddsFileHeader.reserved2);
+	stream.readExact(sizeof(ddsFileHeader.reserved2), 1, &ddsFileHeader.reserved2);
 
 	bool hasDX10Header = (ddsFileHeader.pixelFormat.flags & texture_dds::e_fourCC) && ddsFileHeader.pixelFormat.fourCC == texture_dds::MakeFourCC<'D', 'X', '1', '0'>::FourCC;
 
@@ -1010,11 +1097,11 @@ void TextureReaderDDS::readAsset_(Texture& asset)
 	if (hasDX10Header)
 	{
 		// Read the DX10 header
-		_assetStream->readExact(sizeof(dx10FileHeader.dxgiFormat), 1, &dx10FileHeader.dxgiFormat);
-		_assetStream->readExact(sizeof(dx10FileHeader.resourceDimension), 1, &dx10FileHeader.resourceDimension);
-		_assetStream->readExact(sizeof(dx10FileHeader.miscFlags), 1, &dx10FileHeader.miscFlags);
-		_assetStream->readExact(sizeof(dx10FileHeader.arraySize), 1, &dx10FileHeader.arraySize);
-		_assetStream->readExact(sizeof(dx10FileHeader.miscFlags2), 1, &dx10FileHeader.miscFlags2);
+		stream.readExact(sizeof(dx10FileHeader.dxgiFormat), 1, &dx10FileHeader.dxgiFormat);
+		stream.readExact(sizeof(dx10FileHeader.resourceDimension), 1, &dx10FileHeader.resourceDimension);
+		stream.readExact(sizeof(dx10FileHeader.miscFlags), 1, &dx10FileHeader.miscFlags);
+		stream.readExact(sizeof(dx10FileHeader.arraySize), 1, &dx10FileHeader.arraySize);
+		stream.readExact(sizeof(dx10FileHeader.miscFlags2), 1, &dx10FileHeader.miscFlags2);
 	}
 
 	// Construct the texture asset's header
@@ -1028,47 +1115,24 @@ void TextureReaderDDS::readAsset_(Texture& asset)
 		// Set the dimensions
 		switch (dx10FileHeader.resourceDimension)
 		{
-		case texture_dds::e_texture3D:
-			textureHeader.setDepth(ddsFileHeader.depth);
-		case texture_dds::e_texture2D:
-			textureHeader.setHeight(ddsFileHeader.height);
-		case texture_dds::e_texture1D:
-			textureHeader.setWidth(ddsFileHeader.width);
+		case texture_dds::e_texture3D: textureHeader.setDepth(ddsFileHeader.depth);
+		case texture_dds::e_texture2D: textureHeader.setHeight(ddsFileHeader.height);
+		case texture_dds::e_texture1D: textureHeader.setWidth(ddsFileHeader.width);
 		}
 
 		if ((ddsFileHeader.flags & texture_dds::e_numMipMaps) || (ddsFileHeader.Capabilities1 & texture_dds::e_mipMaps))
-		{
-			textureHeader.setNumMipMapLevels(ddsFileHeader.numMipMaps);
-		}
-		if (dx10FileHeader.miscFlags & texture_dds::e_textureCube)
-		{
-			textureHeader.setNumFaces(6);
-		}
+		{ textureHeader.setNumMipMapLevels(ddsFileHeader.numMipMaps); }
+		if (dx10FileHeader.miscFlags & texture_dds::e_textureCube) { textureHeader.setNumFaces(6); }
 		textureHeader.setNumArrayMembers((dx10FileHeader.arraySize == 0) ? 1 : dx10FileHeader.arraySize);
 
-		if (dx10FileHeader.miscFlags2 == texture_dds::e_premultiplied)
-		{
-			textureHeader.setIsPreMultiplied(true);
-		}
+		if (dx10FileHeader.miscFlags2 == texture_dds::e_premultiplied) { textureHeader.setIsPreMultiplied(true); }
 		else if (dx10FileHeader.miscFlags2 == texture_dds::e_custom)
 		{
 			PixelFormat pixelType = textureHeader.getPixelFormat();
-			if (pixelType.getPixelTypeChar()[0] == 'a')
-			{
-				pixelType.getPixelTypeChar()[0] = 'x';
-			}
-			if (pixelType.getPixelTypeChar()[1] == 'a')
-			{
-				pixelType.getPixelTypeChar()[1] = 'x';
-			}
-			if (pixelType.getPixelTypeChar()[2] == 'a')
-			{
-				pixelType.getPixelTypeChar()[2] = 'x';
-			}
-			if (pixelType.getPixelTypeChar()[3] == 'a')
-			{
-				pixelType.getPixelTypeChar()[3] = 'x';
-			}
+			if (pixelType.getPixelTypeChar()[0] == 'a') { pixelType.getPixelTypeChar()[0] = 'x'; }
+			if (pixelType.getPixelTypeChar()[1] == 'a') { pixelType.getPixelTypeChar()[1] = 'x'; }
+			if (pixelType.getPixelTypeChar()[2] == 'a') { pixelType.getPixelTypeChar()[2] = 'x'; }
+			if (pixelType.getPixelTypeChar()[3] == 'a') { pixelType.getPixelTypeChar()[3] = 'x'; }
 		}
 	}
 	else
@@ -1077,14 +1141,9 @@ void TextureReaderDDS::readAsset_(Texture& asset)
 		setDirect3DFormat(textureHeader, d3dFormat);
 		textureHeader.setWidth(ddsFileHeader.width);
 		textureHeader.setHeight(ddsFileHeader.height);
-		if ((ddsFileHeader.flags & texture_dds::e_depth) || (ddsFileHeader.Capabilities2 & texture_dds::e_volume))
-		{
-			textureHeader.setDepth(ddsFileHeader.depth);
-		}
+		if ((ddsFileHeader.flags & texture_dds::e_depth) || (ddsFileHeader.Capabilities2 & texture_dds::e_volume)) { textureHeader.setDepth(ddsFileHeader.depth); }
 		if ((ddsFileHeader.flags & texture_dds::e_numMipMaps) || (ddsFileHeader.Capabilities1 & texture_dds::e_mipMaps))
-		{
-			textureHeader.setNumMipMapLevels(ddsFileHeader.numMipMaps);
-		}
+		{ textureHeader.setNumMipMapLevels(ddsFileHeader.numMipMaps); }
 		if (ddsFileHeader.Capabilities2 & texture_dds::e_cubeMap)
 		{
 			uint32_t numFaces = 0;
@@ -1127,7 +1186,7 @@ void TextureReaderDDS::readAsset_(Texture& asset)
 	}
 
 	// Initialize the texture to allocate data
-	asset = Texture(textureHeader, NULL);
+	Texture asset(textureHeader, NULL);
 
 	// Read in the texture data
 	for (uint32_t surface = 0; surface < asset.getNumArrayMembers(); ++surface)
@@ -1137,193 +1196,25 @@ void TextureReaderDDS::readAsset_(Texture& asset)
 			for (uint32_t mipMapLevel = 0; mipMapLevel < asset.getNumMipMapLevels(); ++mipMapLevel)
 			{
 				// Read in the texture data.
-				_assetStream->readExact(asset.getDataSize(mipMapLevel, false, false), 1, asset.getDataPointer(mipMapLevel, surface, face));
+				stream.readExact(asset.getDataSize(mipMapLevel, false, false), 1, asset.getDataPointer(mipMapLevel, surface, face));
 			}
 		}
 	}
+	return asset;
 }
 
-uint32_t TextureReaderDDS::getDirect3DFormatFromDDSHeader(texture_dds::FileHeader& textureFileHeader)
+bool isDDS(const Stream& assetStream)
 {
-	// First check for FourCC formats as these are easy to handle
-	if (textureFileHeader.pixelFormat.flags & texture_dds::e_fourCC)
-	{
-		return textureFileHeader.pixelFormat.fourCC;
-	}
-
-	// Otherwise it's an uncompressed format using the rather awkward bit masks...
-	if (textureFileHeader.pixelFormat.flags & texture_dds::e_rgb)
-	{
-		switch (textureFileHeader.pixelFormat.bitCount)
-		{
-		case 32:
-			if (textureFileHeader.pixelFormat.flags & texture_dds::e_alphaPixels)
-			{
-				if (textureFileHeader.pixelFormat.alphaMask == 0xff000000 && textureFileHeader.pixelFormat.redMask == 0x00ff0000 &&
-					textureFileHeader.pixelFormat.greenMask == 0x0000ff00 && textureFileHeader.pixelFormat.blueMask == 0x000000ff)
-				{
-					return texture_dds::D3DFMT_A8R8G8B8;
-				}
-				if (textureFileHeader.pixelFormat.alphaMask == 0xc0000000 && textureFileHeader.pixelFormat.redMask == 0x3ff00000 &&
-					textureFileHeader.pixelFormat.greenMask == 0x000ffc00 && textureFileHeader.pixelFormat.blueMask == 0x000003ff)
-				{
-					return texture_dds::D3DFMT_A2B10G10R10;
-				}
-				if (textureFileHeader.pixelFormat.alphaMask == 0xc0000000 && textureFileHeader.pixelFormat.blueMask == 0x3ff00000 &&
-					textureFileHeader.pixelFormat.greenMask == 0x000ffc00 && textureFileHeader.pixelFormat.redMask == 0x000003ff)
-				{
-					return (texture_dds::D3DFMT_A2R10G10B10);
-				}
-			}
-			else
-			{
-				if (textureFileHeader.pixelFormat.greenMask == 0xffff0000 && textureFileHeader.pixelFormat.redMask == 0x0000ffff)
-				{
-					return (texture_dds::D3DFMT_G16R16);
-				}
-			}
-			break;
-		case 24:
-			if (textureFileHeader.pixelFormat.redMask == 0x00ff0000 && textureFileHeader.pixelFormat.greenMask == 0x0000ff00 && textureFileHeader.pixelFormat.blueMask == 0x000000ff)
-			{
-				return (texture_dds::D3DFMT_R8G8B8);
-			}
-			break;
-		case 16:
-			if (textureFileHeader.pixelFormat.flags & texture_dds::e_alphaPixels)
-			{
-				if (textureFileHeader.pixelFormat.alphaMask == 0x0000F000 && textureFileHeader.pixelFormat.redMask == 0x00000F00 &&
-					textureFileHeader.pixelFormat.greenMask == 0x000000F0 && textureFileHeader.pixelFormat.blueMask == 0x0000000F)
-				{
-					return (texture_dds::D3DFMT_A4R4G4B4);
-				}
-				if (textureFileHeader.pixelFormat.alphaMask == 0x0000FF00 && textureFileHeader.pixelFormat.redMask == 0x000000E0 &&
-					textureFileHeader.pixelFormat.greenMask == 0x0000001C && textureFileHeader.pixelFormat.blueMask == 0x00000003)
-				{
-					return (texture_dds::D3DFMT_A8R3G3B2);
-				}
-				if (textureFileHeader.pixelFormat.alphaMask == 0x00008000 && textureFileHeader.pixelFormat.redMask == 0x00007C00 &&
-					textureFileHeader.pixelFormat.greenMask == 0x000003E0 && textureFileHeader.pixelFormat.blueMask == 0x0000001F)
-				{
-					return (texture_dds::D3DFMT_A1R5G5B5);
-				}
-			}
-			else
-			{
-				if (textureFileHeader.pixelFormat.redMask == 0x0000F800 && textureFileHeader.pixelFormat.greenMask == 0x000007E0 && textureFileHeader.pixelFormat.blueMask == 0x0000001F)
-				{
-					return (texture_dds::D3DFMT_R5G6B5);
-				}
-				if (textureFileHeader.pixelFormat.redMask == 0x00007C00 && textureFileHeader.pixelFormat.greenMask == 0x000003E0 && textureFileHeader.pixelFormat.blueMask == 0x0000001F)
-				{
-					return (texture_dds::D3DFMT_X1R5G5B5);
-				}
-			}
-			break;
-		case 8:
-			if (textureFileHeader.pixelFormat.redMask == 0x000000E0 && textureFileHeader.pixelFormat.greenMask == 0x0000001C && textureFileHeader.pixelFormat.blueMask == 0x00000003)
-			{
-				return (texture_dds::D3DFMT_R3G3B2);
-			}
-			break;
-		}
-	}
-	else if (textureFileHeader.pixelFormat.flags & texture_dds::e_unknownBump1)
-	{
-		if (textureFileHeader.pixelFormat.bitCount == 32 && textureFileHeader.pixelFormat.redMask == 0x000000ff && textureFileHeader.pixelFormat.greenMask == 0x0000ff00 &&
-			textureFileHeader.pixelFormat.blueMask == 0x00ff0000)
-		{
-			return (texture_dds::D3DFMT_X8L8V8U8);
-		}
-		if (textureFileHeader.pixelFormat.bitCount == 16 && textureFileHeader.pixelFormat.redMask == 0x0000001f && textureFileHeader.pixelFormat.greenMask == 0x000003e0 &&
-			textureFileHeader.pixelFormat.blueMask == 0x0000fc00)
-		{
-			return (texture_dds::D3DFMT_L6V5U5);
-		}
-	}
-	else if (textureFileHeader.pixelFormat.flags & texture_dds::e_unknownBump2)
-	{
-		if (textureFileHeader.pixelFormat.bitCount == 32)
-		{
-			if (textureFileHeader.pixelFormat.alphaMask == 0xff000000 && textureFileHeader.pixelFormat.redMask == 0x000000ff &&
-				textureFileHeader.pixelFormat.greenMask == 0x0000ff00 && textureFileHeader.pixelFormat.blueMask == 0x00ff0000)
-			{
-				return (texture_dds::D3DFMT_Q8W8V8U8);
-			}
-			if (textureFileHeader.pixelFormat.alphaMask == 0xc0000000 && textureFileHeader.pixelFormat.redMask == 0x3ff00000 &&
-				textureFileHeader.pixelFormat.greenMask == 0x000ffc00 && textureFileHeader.pixelFormat.blueMask == 0x000003ff)
-			{
-				return (texture_dds::D3DFMT_A2W10V10U10);
-			}
-			if (textureFileHeader.pixelFormat.redMask == 0x0000ffff && textureFileHeader.pixelFormat.greenMask == 0xffff0000)
-			{
-				return (texture_dds::D3DFMT_V16U16);
-			}
-		}
-		else if (textureFileHeader.pixelFormat.bitCount == 16)
-		{
-			if (textureFileHeader.pixelFormat.redMask == 0x000000ff && textureFileHeader.pixelFormat.greenMask == 0x0000ff00)
-			{
-				return (texture_dds::D3DFMT_V8U8);
-			}
-		}
-	}
-	else if (textureFileHeader.pixelFormat.flags & texture_dds::e_luminance)
-	{
-		if (textureFileHeader.pixelFormat.bitCount == 8 && textureFileHeader.pixelFormat.redMask == 0xff)
-		{
-			return (texture_dds::D3DFMT_L8);
-		}
-		if ((textureFileHeader.pixelFormat.flags & texture_dds::e_alphaPixels) && textureFileHeader.pixelFormat.bitCount == 16 && textureFileHeader.pixelFormat.redMask == 0x00ff &&
-			textureFileHeader.pixelFormat.alphaMask == 0xff00)
-		{
-			return (texture_dds::D3DFMT_A8L8);
-		}
-		if ((textureFileHeader.pixelFormat.flags & texture_dds::e_alphaPixels) && textureFileHeader.pixelFormat.bitCount == 8 && textureFileHeader.pixelFormat.redMask == 0x0f &&
-			textureFileHeader.pixelFormat.alphaMask == 0xf0)
-		{
-			return (texture_dds::D3DFMT_A4L4);
-		}
-		if (textureFileHeader.pixelFormat.bitCount == 16 && textureFileHeader.pixelFormat.redMask == 0xffff)
-		{
-			return (texture_dds::D3DFMT_L16);
-		}
-	}
-	else if (textureFileHeader.pixelFormat.flags & texture_dds::e_alpha)
-	{
-		if (textureFileHeader.pixelFormat.bitCount == 8 && textureFileHeader.pixelFormat.alphaMask == 0xff)
-		{
-			return (texture_dds::D3DFMT_A8);
-		}
-	}
-
-	return texture_dds::D3DFMT_UNKNOWN;
-}
-
-bool TextureReaderDDS::isSupportedFile(Stream& assetStream)
-{
-	// Try to open the stream
-	assetStream.open();
 	size_t dataRead;
 	// Read the magic identifier
 	uint32_t magic;
 	assetStream.read(sizeof(magic), 1, &magic, dataRead);
 
 	// Make sure it read ok, if not it's probably not a usable stream.
-	if (dataRead != 1)
-	{
-		assetStream.close();
-		return false;
-	}
-
-	// Reset the file
-	assetStream.close();
+	if (dataRead != 1) { return false; }
 
 	// Finally, check the magic value is correct for a DDS file.
-	if (magic != texture_dds::c_magicIdentifier)
-	{
-		return false;
-	}
+	if (magic != texture_dds::c_magicIdentifier) { return false; }
 
 	return true;
 }

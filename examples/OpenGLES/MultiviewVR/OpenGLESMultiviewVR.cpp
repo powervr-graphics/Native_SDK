@@ -140,21 +140,11 @@ void MultiviewVR::createMultiViewFbo()
 			const char* errorStr = NULL;
 			switch (result)
 			{
-			case GL_FRAMEBUFFER_UNDEFINED:
-				errorStr = "GL_FRAMEBUFFER_UNDEFINED";
-				break;
-			case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
-				errorStr = "GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT";
-				break;
-			case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
-				errorStr = "GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT";
-				break;
-			case GL_FRAMEBUFFER_UNSUPPORTED:
-				errorStr = "GL_FRAMEBUFFER_UNSUPPORTED";
-				break;
-			case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE:
-				errorStr = "GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE";
-				break;
+			case GL_FRAMEBUFFER_UNDEFINED: errorStr = "GL_FRAMEBUFFER_UNDEFINED"; break;
+			case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT: errorStr = "GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT"; break;
+			case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT: errorStr = "GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT"; break;
+			case GL_FRAMEBUFFER_UNSUPPORTED: errorStr = "GL_FRAMEBUFFER_UNSUPPORTED"; break;
+			case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE: errorStr = "GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE"; break;
 			}
 
 			// Unbind the  framebuffer.
@@ -198,10 +188,7 @@ void MultiviewVR::loadShaders()
 	// Enable or disable gamma correction based on if it is automatically performed on the framebuffer or we need to do it in the shader.
 	const char* defines[] = { "FRAMEBUFFER_SRGB" };
 	uint32_t numDefines = 1;
-	if (getBackBufferColorspace() != pvr::ColorSpace::sRGB)
-	{
-		numDefines = 0;
-	}
+	if (getBackBufferColorspace() != pvr::ColorSpace::sRGB) { numDefines = 0; }
 
 	// Load and compile the shaders from files.
 	{
@@ -319,19 +306,13 @@ void MultiviewVR::LoadVbos()
 pvr::Result MultiviewVR::initApplication()
 {
 	// Load the scene
-	pvr::utils::loadModel(*this, SceneFile, _scene);
+	_scene = pvr::assets::loadModel(*this, SceneFile);
 
 	// The cameras are stored in the file. We check it contains at least one.
-	if (_scene->getNumCameras() == 0)
-	{
-		throw pvr::InvalidDataError("ERROR: The scene does not contain a camera. Please add one and re-export.");
-	}
+	if (_scene->getNumCameras() == 0) { throw pvr::InvalidDataError("ERROR: The scene does not contain a camera. Please add one and re-export."); }
 
 	// We also check that the _scene contains at least one light
-	if (_scene->getNumLights() == 0)
-	{
-		throw pvr::InvalidDataError("ERROR: The _scene does not contain a light. Please add one and re-export.");
-	}
+	if (_scene->getNumLights() == 0) { throw pvr::InvalidDataError("ERROR: The _scene does not contain a light. Please add one and re-export."); }
 
 	// Initialize variables used for the animation
 	_frame = 0;
@@ -343,10 +324,7 @@ pvr::Result MultiviewVR::initApplication()
 \brief  Code in quitApplication() will be called by Shell once per run, just before exiting the program.
 		If the rendering context is lost, quitApplication() will not be called.
 ***********************************************************************************************************************/
-pvr::Result MultiviewVR::quitApplication()
-{
-	return pvr::Result::Success;
-}
+pvr::Result MultiviewVR::quitApplication() { return pvr::Result::Success; }
 
 /*!*********************************************************************************************************************
 \return Result::Success if no error occurred
@@ -361,10 +339,7 @@ pvr::Result MultiviewVR::initView()
 
 	std::string ErrorStr;
 	// Initialize the PowerVR OpenGL bindings. Must be called before using any of the gl:: commands.
-	if (!gl::isGlExtensionSupported("GL_OVR_multiview"))
-	{
-		throw pvr::GlExtensionNotSupportedError("GL_OVR_multiview");
-	}
+	if (!gl::isGlExtensionSupported("GL_OVR_multiview")) { throw pvr::GlExtensionNotSupportedError("GL_OVR_multiview"); }
 
 	glm::vec3 clearColorLinearSpace(0.0f, 0.45f, 0.41f);
 	_clearColor = clearColorLinearSpace;
@@ -441,30 +416,22 @@ pvr::Result MultiviewVR::initView()
 pvr::Result MultiviewVR::releaseView()
 {
 	// Deletes the textures
-	if (_texDiffuse.size())
-		gl::DeleteTextures(static_cast<GLuint>(_texDiffuse.size()), _texDiffuse.data());
+	if (_texDiffuse.size()) gl::DeleteTextures(static_cast<GLuint>(_texDiffuse.size()), _texDiffuse.data());
 
 	// Delete program and shader objects
-	if (_multiViewProgram.handle)
-		gl::DeleteProgram(_multiViewProgram.handle);
-	if (_texQuadProgram.handle)
-		gl::DeleteProgram(_texQuadProgram.handle);
+	if (_multiViewProgram.handle) gl::DeleteProgram(_multiViewProgram.handle);
+	if (_texQuadProgram.handle) gl::DeleteProgram(_texQuadProgram.handle);
 
 	// Delete buffer objects
 	_scene->destroy();
-	if (_vbo.size())
-		gl::DeleteBuffers(static_cast<GLuint>(_vbo.size()), _vbo.data());
-	if (_indexVbo.size())
-		gl::DeleteBuffers(static_cast<GLuint>(_indexVbo.size()), _indexVbo.data());
-	if (_vboQuad)
-		gl::DeleteBuffers(1, &_vboQuad);
-	if (_iboQuad)
-		gl::DeleteBuffers(1, &_iboQuad);
+	if (_vbo.size()) gl::DeleteBuffers(static_cast<GLuint>(_vbo.size()), _vbo.data());
+	if (_indexVbo.size()) gl::DeleteBuffers(static_cast<GLuint>(_indexVbo.size()), _indexVbo.data());
+	if (_vboQuad) gl::DeleteBuffers(1, &_vboQuad);
+	if (_iboQuad) gl::DeleteBuffers(1, &_iboQuad);
 
 	_uiRenderer.release();
 
-	if (_context.get())
-		_context->release();
+	if (_context.get()) _context->release();
 
 	return pvr::Result::Success;
 }
@@ -485,10 +452,7 @@ void MultiviewVR::renderToMultiViewFbo()
 	// get the time in milliseconds.
 	_frame += static_cast<float>(getFrameTime()); /*design-time target fps for animation*/
 	pvr::assets::AnimationInstance& animInstance = _scene->getAnimationInstance(0);
-	if (_frame > animInstance.getTotalTimeInMs())
-	{
-		_frame = 0;
-	}
+	if (_frame > animInstance.getTotalTimeInMs()) { _frame = 0; }
 
 	// Sets the scene animation to this _frame
 	animInstance.updateAnimation(_frame);
@@ -596,10 +560,7 @@ pvr::Result MultiviewVR::renderFrame()
 		_uiRenderer.endRendering();
 	}
 
-	if (this->shouldTakeScreenshot())
-	{
-		pvr::utils::takeScreenshot(this->getScreenshotFileName(), this->getWidth(), this->getHeight());
-	}
+	if (this->shouldTakeScreenshot()) { pvr::utils::takeScreenshot(this->getScreenshotFileName(), this->getWidth(), this->getHeight()); }
 
 	GLenum attach = GL_DEPTH;
 	gl::InvalidateFramebuffer(GL_FRAMEBUFFER, 1, &attach);
@@ -615,7 +576,7 @@ pvr::Result MultiviewVR::renderFrame()
 ***********************************************************************************************************************/
 void MultiviewVR::drawMesh(int nodeIndex)
 {
-	int meshIndex = _scene->getMeshNode(nodeIndex).getObjectId();
+	uint32_t meshIndex = _scene->getMeshNode(nodeIndex).getObjectId();
 	const pvr::assets::Mesh& mesh = _scene->getMesh(meshIndex);
 	const int32_t matId = _scene->getMeshNode(nodeIndex).getMaterialIndex();
 	debugThrowOnApiError("before BindTexture");
@@ -745,7 +706,4 @@ void MultiviewVR::drawHighLowResQuad()
 
 /// <summary>This function must be implemented by the user of the shell. The user should return its pvr::Shell object defining the behaviour of the application.</summary>
 /// <returns>Return a unique ptr to the demo supplied by the user.</returns>
-std::unique_ptr<pvr::Shell> pvr::newDemo()
-{
-	return std::unique_ptr<pvr::Shell>(new MultiviewVR());
-}
+std::unique_ptr<pvr::Shell> pvr::newDemo() { return std::make_unique<MultiviewVR>(); }

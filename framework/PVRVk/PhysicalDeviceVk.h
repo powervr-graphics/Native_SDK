@@ -78,10 +78,7 @@ public:
 
 	/// <summary>Get device properties</summary>
 	/// <returns>Returns PhysicalDeviceProperties</returns>
-	const PhysicalDeviceProperties& getProperties() const
-	{
-		return _deviceProperties;
-	}
+	const PhysicalDeviceProperties& getProperties() const { return _deviceProperties; }
 
 	/// <summary>Get the list of displays (const)</summary>
 	/// <returns>const std::vector<Display>&</returns>
@@ -99,17 +96,11 @@ public:
 
 	/// <summary>Get the number of displays</summary>
 	/// <returns>Returns the number of supported displays</returns>
-	uint32_t getNumDisplays() const
-	{
-		return static_cast<uint32_t>(_displays.size());
-	}
+	uint32_t getNumDisplays() const { return static_cast<uint32_t>(_displays.size()); }
 
 	/// <summary>Get supported memory properties (const)</summary>
 	/// <returns>PhysicalDeviceMemoryProperties</returns>
-	const PhysicalDeviceMemoryProperties& getMemoryProperties() const
-	{
-		return _deviceMemoryProperties;
-	}
+	const PhysicalDeviceMemoryProperties& getMemoryProperties() const { return _deviceMemoryProperties; }
 
 	/// <summary>Determine whether the specified surface supports presentation</summary>
 	/// <param name="queueFamilyIndex">The queue family to check for WSI support</param>
@@ -129,10 +120,7 @@ public:
 
 	/// <summary>Get This physical device features</summary>
 	/// <returns>PhysicalDeviceFeatures</returns>
-	const PhysicalDeviceFeatures& getFeatures() const
-	{
-		return _deviceFeatures;
-	}
+	const PhysicalDeviceFeatures& getFeatures() const { return _deviceFeatures; }
 
 	/// <summary>Create a display mode</summary>
 	/// <param name="display">The display from which to create a display mode</param>
@@ -147,10 +135,7 @@ public:
 
 	/// <summary>Get the list of queue family properties</summary>
 	/// <returns>A list of QueueFamilyProperties for the physical device</returns>
-	const std::vector<QueueFamilyProperties>& getQueueFamilyProperties() const
-	{
-		return _queueFamilyPropeties;
-	}
+	const std::vector<QueueFamilyProperties>& getQueueFamilyProperties() const { return _queueFamilyPropeties; }
 
 	/// <summary>Retrieves the set of supported surface presentation modes</summary>
 	/// <param name="surface">The surface to retrieve supported presentation modes for</param>
@@ -196,10 +181,7 @@ public:
 
 	/// <summary>Returns the number of supported display planes.</summary>
 	/// <returns>The number of supported display planes.</returns>
-	uint32_t getNumDisplayPlanes()
-	{
-		return static_cast<uint32_t>(_displayPlaneProperties.size());
-	}
+	uint32_t getNumDisplayPlanes() { return static_cast<uint32_t>(_displayPlaneProperties.size()); }
 
 	/// <summary>Attempts to find the display plane properties for a given display.</summary>
 	/// <param name="displayPlaneIndex">The display plane index to get display plane properties for.</param>

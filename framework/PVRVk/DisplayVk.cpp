@@ -19,9 +19,8 @@ Display_::Display_(make_shared_enabler, const PhysicalDeviceWeakPtr& physicalDev
 	{
 		uint32_t numModes = 0;
 		instanceSharedPtr->getVkBindings().vkGetDisplayModePropertiesKHR(getPhysicalDevice()->getVkHandle(), getVkHandle(), &numModes, NULL);
-		std::vector<VkDisplayModePropertiesKHR> displayModePropertiesVk;
-		displayModePropertiesVk.resize(numModes);
-		instanceSharedPtr->getVkBindings().vkGetDisplayModePropertiesKHR(getPhysicalDevice()->getVkHandle(), getVkHandle(), &numModes, displayModePropertiesVk.data());
+		pvrvk::ArrayOrVector<VkDisplayModePropertiesKHR, 4> displayModePropertiesVk(numModes);
+		instanceSharedPtr->getVkBindings().vkGetDisplayModePropertiesKHR(getPhysicalDevice()->getVkHandle(), getVkHandle(), &numModes, displayModePropertiesVk.get());
 
 		for (uint32_t i = 0; i < numModes; ++i)
 		{

@@ -24,52 +24,28 @@ public:
 
 	/// <summary>Get the query pool creation flags</summary>
 	/// <returns>The set of query pool creation flags</returns>
-	inline QueryPoolCreateFlags getFlags() const
-	{
-		return _flags;
-	}
+	inline QueryPoolCreateFlags getFlags() const { return _flags; }
 	/// <summary>Set the query pool creation flags</summary>
 	/// <param name="flags">The query pool creation flags</param>
-	inline void setFlags(QueryPoolCreateFlags flags)
-	{
-		this->_flags = flags;
-	}
+	inline void setFlags(QueryPoolCreateFlags flags) { this->_flags = flags; }
 	/// <summary>Get the set of counters which will be returned in queries on the pool</summary>
 	/// <returns>The set of counters which will be returned in queries on the pool</returns>
-	inline QueryPipelineStatisticFlags getPipelineStatisticFlags() const
-	{
-		return _pipelineStatistics;
-	}
+	inline QueryPipelineStatisticFlags getPipelineStatisticFlags() const { return _pipelineStatistics; }
 	/// <summary>Set the set counters will be returned in queries on the pool</summary>
 	/// <param name="pipelineStatistics">The set of counters which will be returned in queries on the pool</param>
-	inline void setPipelineStatisticFlags(QueryPipelineStatisticFlags pipelineStatistics)
-	{
-		this->_pipelineStatistics = pipelineStatistics;
-	}
+	inline void setPipelineStatisticFlags(QueryPipelineStatisticFlags pipelineStatistics) { this->_pipelineStatistics = pipelineStatistics; }
 	/// <summary>Get the type of queries managed by this query pool</summary>
 	/// <returns>The type of queries managed by this query pool</returns>
-	inline QueryType getQueryType() const
-	{
-		return _queryType;
-	}
+	inline QueryType getQueryType() const { return _queryType; }
 	/// <summary>Set the type of queries this query pool can manage</summary>
 	/// <param name="queryType">The type of queries the query pool can manage</param>
-	inline void setQueryType(QueryType queryType)
-	{
-		this->_queryType = queryType;
-	}
+	inline void setQueryType(QueryType queryType) { this->_queryType = queryType; }
 	/// <summary>Get the number of queries managed by the pool</summary>
 	/// <returns>The number of queries managed by the pool</returns>
-	inline uint32_t getNumQueries() const
-	{
-		return _queryCount;
-	}
+	inline uint32_t getNumQueries() const { return _queryCount; }
 	/// <summary>Set the number queries managed by the pool</summary>
 	/// <param name="queryCount">The number of queries to be managed by the pool</param>
-	inline void setNumQueries(uint32_t queryCount)
-	{
-		this->_queryCount = queryCount;
-	}
+	inline void setNumQueries(uint32_t queryCount) { this->_queryCount = queryCount; }
 
 private:
 	/// <summary>Flags to use for creating the query pool</summary>
@@ -146,34 +122,19 @@ public:
 
 	/// <summary>Get the query pool creation flags</summary>
 	/// <returns>The set of query pool creation flags</returns>
-	inline QueryPoolCreateFlags getFlags() const
-	{
-		return _createInfo.getFlags();
-	}
+	inline QueryPoolCreateFlags getFlags() const { return _createInfo.getFlags(); }
 	/// <summary>Get the set of counters which will be returned in queries on the pool</summary>
 	/// <returns>The set of counters which will be returned in queries on the pool</returns>
-	inline QueryPipelineStatisticFlags getQueryPipelineStatisticFlags() const
-	{
-		return _createInfo.getPipelineStatisticFlags();
-	}
+	inline QueryPipelineStatisticFlags getQueryPipelineStatisticFlags() const { return _createInfo.getPipelineStatisticFlags(); }
 	/// <summary>Get the type of queries managed by this query pool</summary>
 	/// <returns>The type of queries managed by this query pool</returns>
-	inline QueryType getQueryType() const
-	{
-		return _createInfo.getQueryType();
-	}
+	inline QueryType getQueryType() const { return _createInfo.getQueryType(); }
 	/// <summary>Get the number of queries managed by the pool</summary>
 	/// <returns>The number of queries managed by the pool</returns>
-	inline uint32_t getNumQueries() const
-	{
-		return _createInfo.getNumQueries();
-	}
+	inline uint32_t getNumQueries() const { return _createInfo.getNumQueries(); }
 	/// <summary>Get this query pool's create flags</summary>
 	/// <returns>QueryPoolCreateInfo</returns>
-	QueryPoolCreateInfo getCreateInfo() const
-	{
-		return _createInfo;
-	}
+	QueryPoolCreateInfo getCreateInfo() const { return _createInfo; }
 };
 } // namespace impl
 } // namespace pvrvk

@@ -15,6 +15,7 @@ var searchData=
   ['descriptorpoolcreateinfo',['DescriptorPoolCreateInfo',['../structpvrvk_1_1_descriptor_pool_create_info.html',1,'pvrvk']]],
   ['descriptorset_5f',['DescriptorSet_',['../classpvrvk_1_1impl_1_1_descriptor_set__.html',1,'pvrvk::impl']]],
   ['descriptorsetlayout_5f',['DescriptorSetLayout_',['../classpvrvk_1_1impl_1_1_descriptor_set_layout__.html',1,'pvrvk::impl']]],
+  ['descriptorsetlayoutbinding',['DescriptorSetLayoutBinding',['../structpvrvk_1_1_descriptor_set_layout_create_info_1_1_descriptor_set_layout_binding.html',1,'pvrvk::DescriptorSetLayoutCreateInfo']]],
   ['descriptorsetlayoutcreateinfo',['DescriptorSetLayoutCreateInfo',['../structpvrvk_1_1_descriptor_set_layout_create_info.html',1,'pvrvk']]],
   ['descriptorstore',['DescriptorStore',['../classpvrvk_1_1impl_1_1_descriptor_store.html',1,'pvrvk::impl']]],
   ['descriptorstore_3c_20descriptorinfos_2c_204_20_3e',['DescriptorStore&lt; DescriptorInfos, 4 &gt;',['../classpvrvk_1_1impl_1_1_descriptor_store.html',1,'pvrvk::impl']]],

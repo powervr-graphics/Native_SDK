@@ -88,10 +88,7 @@ public:
 
 	/// <summary>Get sampler create info (const)</summary>
 	/// <returns>SamplerCreateInfo&</returns>
-	const SamplerCreateInfo& getCreateInfo() const
-	{
-		return _createInfo;
-	}
+	const SamplerCreateInfo& getCreateInfo() const { return _createInfo; }
 };
 } // namespace impl
 } // namespace pvrvk

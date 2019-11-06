@@ -25,19 +25,13 @@ public:
 	/// <summary>Constructs a plane from normal and a point on this plane.</summary>
 	/// <param name="normal">The normal of this plane. If it is not normalized, unexpected results may occur.</param>
 	/// <param name="pointOnPlane">Any point belonging to this plane</param>
-	Plane3d(const glm::vec3& normal, const glm::vec3& pointOnPlane) : _norm(normal)
-	{
-		_dist = glm::length(pointOnPlane);
-	}
+	Plane3d(const glm::vec3& normal, const glm::vec3& pointOnPlane) : _norm(normal) { _dist = glm::length(pointOnPlane); }
 
 	/// <summary>Constructs a plane from three points.</summary>
 	/// <param name="point0">A point belonging to the plane</param>
 	/// <param name="point1">A point belonging to the plane</param>
 	/// <param name="point2">A point belonging to the plane</param>
-	Plane3d(const glm::vec3& point0, const glm::vec3& point1, const glm::vec3& point2)
-	{
-		set(point0, point1, point2);
-	}
+	Plane3d(const glm::vec3& point0, const glm::vec3& point1, const glm::vec3& point2) { set(point0, point1, point2); }
 
 	/// <summary>Sets a plane from normal and distance. Distance is the scalar number that is the distance of this
 	/// plane from (0,0,0).</summary>
@@ -46,10 +40,7 @@ public:
 	/// <param name="dist">The signed distance, along the plane's normal direction, between the coordinate start and
 	/// (0,0,0). This number is defined as the number that the normal must be multiplied with so that the normal's
 	/// coordinates define a point on the plane.</param>
-	void set(const glm::vec3& normal, float dist)
-	{
-		_norm = normal, _dist = dist;
-	}
+	void set(const glm::vec3& normal, float dist) { _norm = normal, _dist = dist; }
 
 	/// <summary>Sets a plane from normal and a point on this plane.</summary>
 	/// <param name="normal">The normal of this plane. If it is not normalized, unexpected results may occur.</param>
@@ -77,31 +68,19 @@ public:
 	/// negative means distance opposite to the normal's direction.</summary>
 	/// <param name="point">The point</param>
 	/// <returns>The signed distance between the point and this plane.</returns>
-	float distanceTo(const glm::vec3& point)
-	{
-		return glm::dot(_norm, point) - _dist;
-	}
+	float distanceTo(const glm::vec3& point) { return glm::dot(_norm, point) - _dist; }
 
 	/// <summary>Get the distance of this plane to the coordinate start (0,0,0).</summary>
 	/// <returns>The distance of this plane to the coordinate start (0,0,0)</returns>
-	float getDistance() const
-	{
-		return _dist;
-	}
+	float getDistance() const { return _dist; }
 
 	/// <summary>Get the normal of this plane.</summary>
 	/// <returns>The normal of this plane.</returns>
-	glm::vec3 getNormal() const
-	{
-		return _norm;
-	}
+	glm::vec3 getNormal() const { return _norm; }
 
 	/// <summary>Transform the plane with a transformation matrix.</summary>
 	/// <param name="transMtx">The matrix to transform this plane with.</param>
-	void transform(glm::mat4& transMtx)
-	{
-		glm::transpose(glm::inverse(transMtx)) * glm::vec4(_norm, _dist);
-	}
+	void transform(glm::mat4& transMtx) { glm::transpose(glm::inverse(transMtx)) * glm::vec4(_norm, _dist); }
 
 private:
 	glm::vec3 _norm;

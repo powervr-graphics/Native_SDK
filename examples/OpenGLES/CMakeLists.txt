@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.3)
-project (OpenGLESExamples)
+project(OpenGLESExamples)
 
-set (EXAMPLES 
+set(EXAMPLES 
 	01_HelloAPI
 	02_IntroducingPVRShell
 	03_IntroducingPVRUtils
@@ -24,6 +24,6 @@ set (EXAMPLES
 )
 
 foreach(EXAMPLE ${EXAMPLES})
-	message ("==>CMake generation for OpenGLES_${EXAMPLE}...")
+	message ("==>CMake generation for OpenGLES/${EXAMPLE}...")
 	add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/${EXAMPLE}")
 endforeach()

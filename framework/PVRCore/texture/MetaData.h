@@ -70,10 +70,7 @@ public:
 			_fourCC = fourCC;
 			_key = key;
 			_dataSize = dataSize;
-			if (data)
-			{
-				memcpy(_data, data, _dataSize);
-			}
+			if (data) { memcpy(_data, data, _dataSize); }
 		}
 	}
 
@@ -92,10 +89,7 @@ public:
 			_fourCC = rhs._fourCC;
 			_key = rhs._key;
 			_dataSize = rhs._dataSize;
-			if (rhs._data)
-			{
-				memcpy(_data, rhs._data, _dataSize);
-			}
+			if (rhs._data) { memcpy(_data, rhs._data, _dataSize); }
 		}
 	}
 	/// <summary>Copy Constructor</summary>
@@ -113,10 +107,7 @@ public:
 			_fourCC = rhs._fourCC;
 			_key = rhs._key;
 			_dataSize = rhs._dataSize;
-			if (rhs._data)
-			{
-				memcpy(_data, rhs._data, _dataSize);
-			}
+			if (rhs._data) { memcpy(_data, rhs._data, _dataSize); }
 		}
 	}
 
@@ -136,10 +127,7 @@ public:
 	TextureMetaData& operator=(const TextureMetaData& rhs)
 	{
 		// If it equals itself, return early.
-		if (&rhs == this)
-		{
-			return *this;
-		}
+		if (&rhs == this) { return *this; }
 
 		// Initialize
 		_fourCC = _key = _dataSize = 0;
@@ -158,10 +146,7 @@ public:
 			_fourCC = rhs._fourCC;
 			_key = rhs._key;
 			_dataSize = rhs._dataSize;
-			if (rhs._data)
-			{
-				memcpy(_data, rhs._data, _dataSize);
-			}
+			if (rhs._data) { memcpy(_data, rhs._data, _dataSize); }
 		}
 
 		return *this;
@@ -170,46 +155,28 @@ public:
 	/// <summary>Get the 4cc descriptor of the data type's creator. Values equating to values between 'P' 'V' 'R' 0
 	/// and 'P' 'V' 'R' 255 will be used by our headers.</summary>
 	/// <returns>Return 4cc descriptor of the data type's creator.</returns>
-	uint32_t getFourCC() const
-	{
-		return _fourCC;
-	}
+	uint32_t getFourCC() const { return _fourCC; }
 
 	/// <summary>Get the data size of this meta data</summary>
 	/// <returns>Return the size of the meta data</returns>
-	uint32_t getDataSize() const
-	{
-		return _dataSize;
-	}
+	uint32_t getDataSize() const { return _dataSize; }
 
 	/// <summary>Get the enumeration key identifying the data type.</summary>
 	/// <returns>Return the enumeration key.</returns>
-	uint32_t getKey() const
-	{
-		return _key;
-	}
+	uint32_t getKey() const { return _key; }
 
 	/// <summary>Get the data, can be absolutely anything, the loader needs to know how to handle it based on fourCC
 	/// and key.</summary>
 	/// <returns>Return the data</returns>
-	const unsigned char* getData() const
-	{
-		return _data;
-	}
+	const unsigned char* getData() const { return _data; }
 	/// <summary>Get the data, can be absolutely anything, the loader needs to know how to handle it based on fourCC
 	/// and key.</summary>
 	/// <returns>Return the data</returns>
-	unsigned char* getData()
-	{
-		return _data;
-	}
+	unsigned char* getData() { return _data; }
 
 	/// <summary>Get the data total size in memory</summary>
 	/// <returns>Return the data total size in memory</returns>
-	uint32_t getTotalSizeInMemory() const
-	{
-		return sizeof(_fourCC) + sizeof(_key) + sizeof(_dataSize) + _dataSize;
-	}
+	uint32_t getTotalSizeInMemory() const { return sizeof(_fourCC) + sizeof(_key) + sizeof(_dataSize) + _dataSize; }
 
 private:
 	uint32_t _fourCC; // A 4cc descriptor of the data type's creator.

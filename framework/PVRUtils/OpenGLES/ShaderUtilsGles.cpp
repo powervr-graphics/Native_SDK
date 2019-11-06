@@ -17,15 +17,11 @@ namespace utils {
 namespace {
 GLenum getGlslShaderType(ShaderType shaderType)
 {
-	GLenum glEnum = -1;
+	GLenum glEnum = static_cast<GLenum>(-1);
 	switch (shaderType)
 	{
-	case ShaderType::VertexShader:
-		glEnum = GL_VERTEX_SHADER;
-		break;
-	case ShaderType::FragmentShader:
-		glEnum = GL_FRAGMENT_SHADER;
-		break;
+	case ShaderType::VertexShader: glEnum = GL_VERTEX_SHADER; break;
+	case ShaderType::FragmentShader: glEnum = GL_FRAGMENT_SHADER; break;
 	case ShaderType::ComputeShader:
 #if defined(GL_COMPUTE_SHADER)
 		glEnum = GL_COMPUTE_SHADER;
@@ -55,8 +51,7 @@ GLenum getGlslShaderType(ShaderType shaderType)
 		throw InvalidOperationError("loadShader: Tessellation not supported on this context");
 #endif
 		break;
-	default:
-		throw InvalidOperationError("loadShader: Unknown shader type requested.");
+	default: throw InvalidOperationError("loadShader: Unknown shader type requested.");
 	}
 	return glEnum;
 }
@@ -132,8 +127,11 @@ GLuint loadShader(const std::string& shaderSrc, ShaderType shaderType, const cha
 
 GLuint loadShader(const Stream& shaderSource, ShaderType shaderType, const char* const* defines, uint32_t defineCount)
 {
+#ifdef DEBUG
+	static int idx = 0;
+	Log(LogLevel::Information, "Compiling shader %d", idx++);
+#endif
 	throwOnGlError("loadShader: Error on entry!");
-	shaderSource.open();
 
 	std::string shaderSrc;
 	shaderSource.readIntoString(shaderSrc);
@@ -176,10 +174,7 @@ GLuint createShaderProgram(const GLuint pShaders[], uint32_t count, const char**
 	}
 	if (sAttribs && attribCount)
 	{
-		for (uint32_t i = 0; i < attribCount; ++i)
-		{
-			gl::BindAttribLocation(outShaderProg, attribIndex[i], sAttribs[i]);
-		}
+		for (uint32_t i = 0; i < attribCount; ++i) { gl::BindAttribLocation(outShaderProg, attribIndex[i], sAttribs[i]); }
 	}
 	pvr::utils::throwOnGlError("createShaderProgram begin linkProgram");
 	gl::LinkProgram(outShaderProg);

@@ -45,18 +45,12 @@ void printGaussianWeightsAndOffsets(std::vector<double>& gaussianOffsets, std::v
 
 	Log(LogLevel::Information, "Weights =");
 	Log(LogLevel::Information, "{");
-	for (uint32_t i = 0; i < gaussianWeights.size(); i++)
-	{
-		Log(LogLevel::Information, "%.15f,", gaussianWeights[i]);
-	}
+	for (uint32_t i = 0; i < gaussianWeights.size(); i++) { Log(LogLevel::Information, "%.15f,", gaussianWeights[i]); }
 	Log(LogLevel::Information, "};");
 
 	Log(LogLevel::Information, "Offsets =");
 	Log(LogLevel::Information, "{");
-	for (uint32_t i = 0; i < gaussianOffsets.size(); i++)
-	{
-		Log(LogLevel::Information, "%.15f,", gaussianOffsets[i]);
-	}
+	for (uint32_t i = 0; i < gaussianOffsets.size(); i++) { Log(LogLevel::Information, "%.15f,", gaussianOffsets[i]); }
 	Log(LogLevel::Information, "};");
 }
 
@@ -158,10 +152,7 @@ void OpenGLESGaussianBlur::createResources()
 	// Enable or disable gamma correction based on if it is automatically performed on the framebuffer or we need to do it in the shader.
 	const char* defines[] = { "FRAMEBUFFER_SRGB" };
 	uint32_t numDefines = 1;
-	if (getBackBufferColorspace() != pvr::ColorSpace::sRGB)
-	{
-		numDefines = 0;
-	}
+	if (getBackBufferColorspace() != pvr::ColorSpace::sRGB) { numDefines = 0; }
 
 	// Load the fragment and vertex shaders and create the associated programs.
 	_deviceResources->graphicsProgram = pvr::utils::createShaderProgram(*this, VertShaderSrcFile, FragShaderSrcFile, attribNames, attribIndices, 2, defines, numDefines);
@@ -290,7 +281,7 @@ pvr::Result OpenGLESGaussianBlur::initApplication()
 pvr::Result OpenGLESGaussianBlur::initView()
 {
 	// initialize the device resources object
-	_deviceResources = std::unique_ptr<DeviceResources>(new DeviceResources());
+	_deviceResources = std::make_unique<DeviceResources>();
 
 	// create an OpenGLES context
 	_deviceResources->context = pvr::createEglContext();
@@ -332,10 +323,7 @@ pvr::Result OpenGLESGaussianBlur::releaseView()
 /// <summary>Code in quitApplication() will be called by Shell once per run, just before exiting the program.
 /// quitApplication() will not be called every time the rendering context is lost, only before application exit.</summary>
 /// <returns>Result::Success if no error occurred.</returns>
-pvr::Result OpenGLESGaussianBlur::quitApplication()
-{
-	return pvr::Result::Success;
-}
+pvr::Result OpenGLESGaussianBlur::quitApplication() { return pvr::Result::Success; }
 
 /// <summary>Main rendering loop function of the program. The shell will call this function every frame</summary>
 /// <returns>Result::Success if no error occurred.</summary>
@@ -352,10 +340,7 @@ pvr::Result OpenGLESGaussianBlur::renderFrame()
 	renderUI();
 	debugThrowOnApiError("Frame end");
 
-	if (this->shouldTakeScreenshot())
-	{
-		pvr::utils::takeScreenshot(this->getScreenshotFileName(), this->getWidth(), this->getHeight());
-	}
+	if (this->shouldTakeScreenshot()) { pvr::utils::takeScreenshot(this->getScreenshotFileName(), this->getWidth(), this->getHeight()); }
 
 	_deviceResources->context->swapBuffers();
 	return pvr::Result::Success;
@@ -363,7 +348,4 @@ pvr::Result OpenGLESGaussianBlur::renderFrame()
 
 /// <summary>This function must be implemented by the user of the shell. The user should return its pvr::Shell object defining the behaviour of the application.</summary>
 /// <returns>Return a unique ptr to the demo supplied by the user.</returns>
-std::unique_ptr<pvr::Shell> pvr::newDemo()
-{
-	return std::unique_ptr<pvr::Shell>(new OpenGLESGaussianBlur());
-}
+std::unique_ptr<pvr::Shell> pvr::newDemo() { return std::make_unique<OpenGLESGaussianBlur>(); }

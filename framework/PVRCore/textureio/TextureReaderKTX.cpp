@@ -8,13 +8,9 @@
 #include "PVRCore/textureio/TextureReaderKTX.h"
 #include "PVRCore/textureio/FileDefinesKTX.h"
 #include "PVRCore/texture/TextureDefines.h"
-#include "PVRCore/Log.h"
 
 namespace {
-inline uint64_t textureOffset3D(uint64_t x, uint64_t y, uint64_t z, uint64_t width, uint64_t height)
-{
-	return ((x) + (y * width) + (z * width * height));
-}
+inline uint64_t textureOffset3D(uint64_t x, uint64_t y, uint64_t z, uint64_t width, uint64_t height) { return ((x) + (y * width) + (z * width * height)); }
 bool setopenGLFormat(pvr::TextureHeader& hd, uint32_t glInternalFormat, uint32_t, uint32_t glType)
 {
 	/*  Try to determine the format. This code is naive, and only checks the data that matters (e.g. glInternalFormat first, then glType
@@ -1042,74 +1038,60 @@ bool setopenGLFormat(pvr::TextureHeader& hd, uint32_t glInternalFormat, uint32_t
 using std::vector;
 namespace pvr {
 namespace assetReaders {
-TextureReaderKTX::TextureReaderKTX() : _texturesToLoad(true) {}
-TextureReaderKTX::TextureReaderKTX(Stream::ptr_type assetStream) : AssetReader<Texture>(std::move(assetStream)), _texturesToLoad(true) {}
 
-void TextureReaderKTX::readAsset_(Texture& asset)
+Texture readKTX(const pvr::Stream& stream)
 {
-	if (_assetStream->getSize() < texture_ktx::c_expectedHeaderSize)
-	{
-		throw InvalidOperationError("[TextureReaderKTX::readAsset_]: File stream was shorter than KTX file length");
-	}
+	if (!stream.isReadable()) { throw InvalidOperationError("[pvr::assetReaders::readKTX] Attempted to read a non-readable assetStream"); }
 
+	if (stream.getSize() < texture_ktx::c_expectedHeaderSize) { throw InvalidOperationError("[TextureReaderKTX::readAsset_]: File stream was shorter than KTX file length"); }
 	texture_ktx::FileHeader ktxFileHeader;
 
-	// Acknowledge that once this function has returned the user won't be able load a texture from the file.
-	_texturesToLoad = false;
-
 	// Read the identifier
-	_assetStream->readExact(1, sizeof(ktxFileHeader.identifier), ktxFileHeader.identifier);
+	stream.readExact(1, sizeof(ktxFileHeader.identifier), ktxFileHeader.identifier);
 
 	// Check that the identifier matches
 	if (memcmp(ktxFileHeader.identifier, texture_ktx::c_identifier, sizeof(ktxFileHeader.identifier)) != 0)
-	{
-		throw InvalidOperationError("[TextureReaderKTX::readAsset_]: Stream did not contain a valid KTX file identifier");
-	}
-
-	// Read the endianness
-	_assetStream->readExact(sizeof(ktxFileHeader.endianness), 1, &ktxFileHeader.endianness);
+	{ throw InvalidOperationError("[TextureReaderKTX::readAsset_]: Stream did not contain a valid KTX file identifier"); } // Read the endianness
+	stream.readExact(sizeof(ktxFileHeader.endianness), 1, &ktxFileHeader.endianness);
 
 	// Check the endianness of the file
-	if (ktxFileHeader.endianness != texture_ktx::c_endianReference)
-	{
-		throw InvalidOperationError("[TextureReaderKTX::readAsset_]: Stream did not match KTX file endianness");
-	}
+	if (ktxFileHeader.endianness != texture_ktx::c_endianReference) { throw InvalidOperationError("[TextureReaderKTX::readAsset_]: Stream did not match KTX file endianness"); }
 
 	// Read the openGL type
-	_assetStream->readExact(sizeof(ktxFileHeader.glType), 1, &ktxFileHeader.glType);
+	stream.readExact(sizeof(ktxFileHeader.glType), 1, &ktxFileHeader.glType);
 
 	// Read the openGL type size
-	_assetStream->readExact(sizeof(ktxFileHeader.glTypeSize), 1, &ktxFileHeader.glTypeSize);
+	stream.readExact(sizeof(ktxFileHeader.glTypeSize), 1, &ktxFileHeader.glTypeSize);
 
 	// Read the openGL format
-	_assetStream->readExact(sizeof(ktxFileHeader.glFormat), 1, &ktxFileHeader.glFormat);
+	stream.readExact(sizeof(ktxFileHeader.glFormat), 1, &ktxFileHeader.glFormat);
 
 	// Read the openGL internal format
-	_assetStream->readExact(sizeof(ktxFileHeader.glInternalFormat), 1, &ktxFileHeader.glInternalFormat);
+	stream.readExact(sizeof(ktxFileHeader.glInternalFormat), 1, &ktxFileHeader.glInternalFormat);
 
 	// Read the openGL base (unsized) internal format
-	_assetStream->readExact(sizeof(ktxFileHeader.glBaseInternalFormat), 1, &ktxFileHeader.glBaseInternalFormat);
+	stream.readExact(sizeof(ktxFileHeader.glBaseInternalFormat), 1, &ktxFileHeader.glBaseInternalFormat);
 
 	// Read the width
-	_assetStream->readExact(sizeof(ktxFileHeader.pixelWidth), 1, &ktxFileHeader.pixelWidth);
+	stream.readExact(sizeof(ktxFileHeader.pixelWidth), 1, &ktxFileHeader.pixelWidth);
 
 	// Read the height
-	_assetStream->readExact(sizeof(ktxFileHeader.pixelHeight), 1, &ktxFileHeader.pixelHeight);
+	stream.readExact(sizeof(ktxFileHeader.pixelHeight), 1, &ktxFileHeader.pixelHeight);
 
 	// Read the depth
-	_assetStream->readExact(sizeof(ktxFileHeader.pixelDepth), 1, &ktxFileHeader.pixelDepth);
+	stream.readExact(sizeof(ktxFileHeader.pixelDepth), 1, &ktxFileHeader.pixelDepth);
 
 	// Read the number of array elements
-	_assetStream->readExact(sizeof(ktxFileHeader.numArrayElements), 1, &ktxFileHeader.numArrayElements);
+	stream.readExact(sizeof(ktxFileHeader.numArrayElements), 1, &ktxFileHeader.numArrayElements);
 
 	// Read the number of faces
-	_assetStream->readExact(sizeof(ktxFileHeader.numFaces), 1, &ktxFileHeader.numFaces);
+	stream.readExact(sizeof(ktxFileHeader.numFaces), 1, &ktxFileHeader.numFaces);
 
 	// Read the number of MIP Map levels
-	_assetStream->readExact(sizeof(ktxFileHeader.numMipmapLevels), 1, &ktxFileHeader.numMipmapLevels);
+	stream.readExact(sizeof(ktxFileHeader.numMipmapLevels), 1, &ktxFileHeader.numMipmapLevels);
 
 	// Read the meta data size
-	_assetStream->readExact(sizeof(ktxFileHeader.bytesOfKeyValueData), 1, &ktxFileHeader.bytesOfKeyValueData);
+	stream.readExact(sizeof(ktxFileHeader.bytesOfKeyValueData), 1, &ktxFileHeader.bytesOfKeyValueData);
 
 	// Read the meta data
 	uint32_t metaDataRead = 0;
@@ -1125,14 +1107,14 @@ void TextureReaderKTX::readAsset_(Texture& asset)
 		{
 			// Read the amount of meta data in this block.
 			uint32_t keyAndValueSize = 0;
-			_assetStream->readExact(sizeof(keyAndValueSize), 1, &keyAndValueSize);
+			stream.readExact(sizeof(keyAndValueSize), 1, &keyAndValueSize);
 
 			// Allocate enough memory to read in the meta data.
 			std::vector<unsigned char> keyAndData;
 			keyAndData.resize(keyAndValueSize);
 
 			// Read in the meta data.
-			_assetStream->readExact(1, keyAndValueSize, keyAndData.data());
+			stream.readExact(1, keyAndValueSize, keyAndData.data());
 
 			// Setup the key pointer
 			std::string keyString(reinterpret_cast<char*>(keyAndData.data()));
@@ -1148,41 +1130,26 @@ void TextureReaderKTX::readAsset_(Texture& asset)
 				std::string orientationString(reinterpret_cast<char*>(data), dataSize);
 
 				// Search for and set non-default orientations.
-				if (orientationString.find("T=u") != std::string::npos)
-				{
-					orientation |= TextureMetaData::AxisOrientationUp;
-				}
-				if (orientationString.find("S=l") != std::string::npos)
-				{
-					orientation |= TextureMetaData::AxisOrientationLeft;
-				}
-				if (orientationString.find("R=o") != std::string::npos)
-				{
-					orientation |= TextureMetaData::AxisOrientationOut;
-				}
+				if (orientationString.find("T=u") != std::string::npos) { orientation |= TextureMetaData::AxisOrientationUp; }
+				if (orientationString.find("S=l") != std::string::npos) { orientation |= TextureMetaData::AxisOrientationLeft; }
+				if (orientationString.find("R=o") != std::string::npos) { orientation |= TextureMetaData::AxisOrientationOut; }
 			}
 
 			// Work out the padding.
 			uint32_t padding = 0;
 
 			// If it needs padding
-			if (keyAndValueSize % 4)
-			{
-				padding = 4 - (keyAndValueSize % 4);
-			}
+			if (keyAndValueSize % 4) { padding = 4 - (keyAndValueSize % 4); }
 
 			// Skip to the next meta data.
-			_assetStream->seek(padding, Stream::SeekOriginFromCurrent);
+			stream.seek(padding, Stream::SeekOriginFromCurrent);
 
 			// Increase the meta data read value
 			metaDataRead += keyAndValueSize + padding;
-		} while (_assetStream->getPosition() < (ktxFileHeader.bytesOfKeyValueData + texture_ktx::c_expectedHeaderSize));
+		} while (stream.getPosition() < (ktxFileHeader.bytesOfKeyValueData + texture_ktx::c_expectedHeaderSize));
 
 		// Make sure the meta data size wasn't completely wrong. If it was, there are no guarantees about the contents of the texture data.
-		if (metaDataRead > ktxFileHeader.bytesOfKeyValueData)
-		{
-			throw InvalidOperationError("[TextureReaderKTX::readAsset_]: Stream metadata were invalid");
-		}
+		if (metaDataRead > ktxFileHeader.bytesOfKeyValueData) { throw InvalidOperationError("[TextureReaderKTX::readAsset_]: Stream metadata were invalid"); }
 	}
 
 	// Construct the texture asset's header
@@ -1197,40 +1164,32 @@ void TextureReaderKTX::readAsset_(Texture& asset)
 	textureHeader.setOrientation(static_cast<TextureMetaData::AxisOrientation>(orientation));
 
 	// Initialize the texture to allocate data
-	asset = Texture(textureHeader, NULL);
+	Texture asset(textureHeader);
 
 	// Seek to the start of the texture data, just in case.
-	_assetStream->seek(ktxFileHeader.bytesOfKeyValueData + texture_ktx::c_expectedHeaderSize, Stream::SeekOriginFromStart);
+	stream.seek(ktxFileHeader.bytesOfKeyValueData + texture_ktx::c_expectedHeaderSize, Stream::SeekOriginFromStart);
 
 	// Read in the texture data
 	for (uint32_t mipMapLevel = 0; mipMapLevel < ktxFileHeader.numMipmapLevels; ++mipMapLevel)
 	{
 		// Read the stored size of the MIP Map.
 		uint32_t mipMapSize = 0;
-		_assetStream->readExact(sizeof(mipMapSize), 1, &mipMapSize);
+		stream.readExact(sizeof(mipMapSize), 1, &mipMapSize);
 
 		// Sanity check the size - regular cube maps are a slight exception
 		if (asset.getNumFaces() == 6 && asset.getNumArrayMembers() == 1)
 		{
 			if (mipMapSize != asset.getDataSize(mipMapLevel, false, false))
-			{
-				throw InvalidOperationError("[TextureReaderKTX::readAsset_]: Mipmap size read was not expected size.");
-			}
+			{ throw InvalidOperationError("[TextureReaderKTX::readAsset_]: Mipmap size read was not expected size."); }
 		}
 		else
 		{
-			if (mipMapSize != asset.getDataSize(mipMapLevel))
-			{
-				throw InvalidOperationError("[TextureReaderKTX::readAsset_]: Mipmap size read was not expected size.");
-			}
+			if (mipMapSize != asset.getDataSize(mipMapLevel)) { throw InvalidOperationError("[TextureReaderKTX::readAsset_]: Mipmap size read was not expected size."); }
 		}
 
 		// Work out the Cube Map padding.
 		uint32_t cubePadding = 0;
-		if (asset.getDataSize(mipMapLevel, false, false) % 4)
-		{
-			cubePadding = 4 - (asset.getDataSize(mipMapLevel, false, false) % 4);
-		}
+		if (asset.getDataSize(mipMapLevel, false, false) % 4) { cubePadding = 4 - (asset.getDataSize(mipMapLevel, false, false) % 4); }
 
 		// Compressed images are written without scan line padding.
 		if (asset.getPixelFormat().getPart().High == 0 && asset.getPixelFormat().getPixelTypeId() != static_cast<uint64_t>(CompressedPixelFormat::SharedExponentR9G9B9E5))
@@ -1240,13 +1199,10 @@ void TextureReaderKTX::readAsset_(Texture& asset)
 				for (uint32_t iFace = 0; iFace < asset.getNumFaces(); ++iFace)
 				{
 					// Read in the texture data.
-					_assetStream->readExact(asset.getDataSize(mipMapLevel, false, false), 1, asset.getDataPointer(mipMapLevel, iSurface, iFace));
+					stream.readExact(asset.getDataSize(mipMapLevel, false, false), 1, asset.getDataPointer(mipMapLevel, iSurface, iFace));
 
 					// Advance past the cube face padding
-					if (cubePadding && asset.getNumFaces() == 6 && asset.getNumArrayMembers() == 1)
-					{
-						_assetStream->seek(cubePadding, Stream::SeekOriginFromCurrent);
-					}
+					if (cubePadding && asset.getNumFaces() == 6 && asset.getNumArrayMembers() == 1) { stream.seek(cubePadding, Stream::SeekOriginFromCurrent); }
 				}
 			}
 		}
@@ -1265,25 +1221,18 @@ void TextureReaderKTX::readAsset_(Texture& asset)
 							uint64_t scanLineOffset =
 								(textureOffset3D(0, texHeight, texDepth, asset.getWidth(mipMapLevel), asset.getHeight(mipMapLevel)) * (asset.getBitsPerPixel() / 8));
 							// Read in the texture data for the current scan line.
-							_assetStream->readExact(
-								(asset.getBitsPerPixel() / 8) * asset.getWidth(mipMapLevel), 1, asset.getDataPointer(mipMapLevel, iSurface, iFace) + scanLineOffset);
+							stream.readExact((asset.getBitsPerPixel() / 8) * asset.getWidth(mipMapLevel), 1, asset.getDataPointer(mipMapLevel, iSurface, iFace) + scanLineOffset);
 
 							// Work out the amount of scan line padding.
 							uint32_t scanLinePadding = (static_cast<uint32_t>(-1) * ((asset.getBitsPerPixel() / 8) * asset.getWidth(mipMapLevel))) % 4;
 
 							// Advance past the scan line padding
-							if (scanLinePadding)
-							{
-								_assetStream->seek(scanLinePadding, Stream::SeekOriginFromCurrent);
-							}
+							if (scanLinePadding) { stream.seek(scanLinePadding, Stream::SeekOriginFromCurrent); }
 						}
 					}
 
 					// Advance past the cube face padding
-					if (cubePadding && asset.getNumFaces() == 6 && asset.getNumArrayMembers() == 1)
-					{
-						_assetStream->seek(cubePadding, Stream::SeekOriginFromCurrent);
-					}
+					if (cubePadding && asset.getNumFaces() == 6 && asset.getNumArrayMembers() == 1) { stream.seek(static_cast<long>(cubePadding), Stream::SeekOriginFromCurrent); }
 				}
 			}
 		}
@@ -1292,38 +1241,10 @@ void TextureReaderKTX::readAsset_(Texture& asset)
 		uint32_t mipMapPadding = (3 - ((mipMapSize + 3) % 4));
 
 		// Advance past the MIP Map padding if appropriate
-		if (mipMapPadding)
-		{
-			_assetStream->seek(mipMapPadding, Stream::SeekOriginFromCurrent);
-		}
+		if (mipMapPadding) { stream.seek(mipMapPadding, Stream::SeekOriginFromCurrent); }
 	}
+	return asset;
 }
-
-bool TextureReaderKTX::isSupportedFile(Stream& assetStream)
-{
-	// Try to open the stream
-	assetStream.open();
-
-	size_t dataRead;
-	// Read the magic identifier
-	char magic[12];
-	assetStream.read(1, sizeof(magic), &magic, dataRead);
-	assetStream.close();
-
-	// Make sure it read ok, if not it's probably not a usable stream.
-	if (dataRead != sizeof(magic))
-	{
-		return false;
-	}
-	// Check that the identifier matches
-	if (memcmp(magic, texture_ktx::c_identifier, sizeof(magic)) != 0)
-	{
-		return false;
-	}
-
-	return true;
-}
-
 } // namespace assetReaders
 } // namespace pvr
 //!\endcond

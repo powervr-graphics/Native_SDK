@@ -65,7 +65,7 @@ public:
 				fontFaces[i * 6 + 5] = static_cast<uint16_t>(2 + i * 4);
 			}
 
-			_fontIbo = utils::createBuffer(getDevice().lock(), sizeof(fontFaces[0]) * impl::Font_::FontElement, pvrvk::BufferUsageFlags::e_INDEX_BUFFER_BIT,
+			_fontIbo = utils::createBuffer(getDevice().lock(), pvrvk::BufferCreateInfo(sizeof(fontFaces[0]) * impl::Font_::FontElement, pvrvk::BufferUsageFlags::e_INDEX_BUFFER_BIT),
 				pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, &_vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 			pvr::utils::updateHostVisibleBuffer(_fontIbo, &fontFaces[0], 0, static_cast<uint32_t>(sizeof(fontFaces[0]) * fontFaces.size()), true);
 		}
@@ -88,8 +88,8 @@ public:
 				1.f, -1.f, 0.f, 1.0f, 1.f, 0.0f, // lower right
 				1.f, 1.f, 0.f, 1.0f, 1.f, 1.f, // upper right
 			};
-			_imageVbo = utils::createBuffer(getDevice().lock(), sizeof(verts), pvrvk::BufferUsageFlags::e_VERTEX_BUFFER_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
-				pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, &_vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+			_imageVbo = utils::createBuffer(getDevice().lock(), pvrvk::BufferCreateInfo(sizeof(verts), pvrvk::BufferUsageFlags::e_VERTEX_BUFFER_BIT),
+				pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, &_vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 			pvr::utils::updateHostVisibleBuffer(_imageVbo, static_cast<const void*>(verts), 0, sizeof(verts), true);
 		}
 		return _imageVbo;
@@ -109,7 +109,6 @@ public:
 		  _imageVbo(std::move(rhs._imageVbo)), _screenDimensions(std::move(rhs._screenDimensions)), _screenRotation(std::move(rhs._screenRotation)),
 		  _groupId(std::move(rhs._groupId)), _uboMvp(std::move(rhs._uboMvp)), _uboMaterial(std::move(rhs._uboMaterial)), _numSprites(std::move(rhs._numSprites)),
 		  _sprites(std::move(rhs._sprites)), _textElements(std::move(rhs._textElements)), _fonts(std::move(rhs._fonts))
-
 	{
 		updateResourceOwnsership();
 	}
@@ -119,10 +118,7 @@ public:
 	/// <returns>this object (allow chaining commands with ->)</returns>
 	UIRenderer& operator=(UIRenderer&& rhs)
 	{
-		if (this == &rhs)
-		{
-			return *this;
-		}
+		if (this == &rhs) { return *this; }
 		_renderpass = std::move(rhs._renderpass);
 		_subpass = std::move(rhs._subpass);
 		_programData = std::move(rhs._programData);
@@ -162,53 +158,32 @@ public:
 	/// <summary>Return thedevice the UIRenderer was initialized with. If the UIrenderer was not initialized,
 	/// behaviour is undefined.</summary>
 	/// <returns>The pvrvk::Device which was used to initialise the UIRenderer.</returns>
-	pvrvk::DeviceWeakPtr& getDevice()
-	{
-		return _device;
-	}
+	pvrvk::DeviceWeakPtr& getDevice() { return _device; }
 
 	/// <summary>Return the device the UIRenderer was initialized with. If the UIrenderer was not initialized,
 	/// behaviour is undefined.</summary>
 	/// <returns>The pvrvk::Device which was used to initialise the UIRenderer.</returns>
-	const pvrvk::DeviceWeakPtr& getDevice() const
-	{
-		return _device;
-	}
+	const pvrvk::DeviceWeakPtr& getDevice() const { return _device; }
 
 	/// <summary>Returns the ProgramData used by this UIRenderer.</summary>
 	/// <returns>The ProgramData structure used by the UIRenderer.</returns>
-	const ProgramData& getProgramData()
-	{
-		return _programData;
-	}
+	const ProgramData& getProgramData() { return _programData; }
 
 	/// <summary>Returns the GraphicsPipeline object used by this UIRenderer.</summary>
 	/// <returns>The graphics pipeline being used by the UIRenderer.</returns>
-	pvrvk::GraphicsPipeline getPipeline()
-	{
-		return _pipeline;
-	}
+	pvrvk::GraphicsPipeline getPipeline() { return _pipeline; }
 
 	/// <summary>Returns the VMA allocator object used by this UIRenderer.</summary>
 	/// <returns>The VMA allocator being used by the UIRenderer.</returns>
-	pvr::utils::vma::Allocator& getMemoryAllocator()
-	{
-		return _vmaAllocator;
-	}
+	pvr::utils::vma::Allocator& getMemoryAllocator() { return _vmaAllocator; }
 
 	/// <summary>Returns the VMA allocator object used by this UIRenderer.</summary>
 	/// <returns>The VMA allocator being used by the UIRenderer.</returns>
-	const pvr::utils::vma::Allocator& getMemoryAllocator() const
-	{
-		return _vmaAllocator;
-	}
+	const pvr::utils::vma::Allocator& getMemoryAllocator() const { return _vmaAllocator; }
 
 	/// <summary>Check that we have called beginRendering() and not called endRendering. See the beginRendering() method.</summary>
 	/// <returns>True if the command buffer is currently recording.</returns>
-	bool isRendering()
-	{
-		return _activeCommandBuffer->isRecording();
-	}
+	bool isRendering() { return _activeCommandBuffer->isRecording(); }
 
 	/// <summary>Initialize the UIRenderer with a graphics context.
 	/// MUST BE called exactly once before use, after a valid
@@ -269,10 +244,7 @@ public:
 	/// <param name="text">std::string object that this Text object will be initialized with</param>
 	/// <param name="maxLength">The maximum length of characters for the text element.</param>
 	/// <returns>Text framework object.</returns>
-	TextElement createTextElement(const std::string& text, uint32_t maxLength)
-	{
-		return createTextElement(text, _defaultFont, maxLength);
-	}
+	TextElement createTextElement(const std::string& text, uint32_t maxLength) { return createTextElement(text, _defaultFont, maxLength); }
 
 	/// <summary>Create Text sprite from std::string.</summary>
 	/// <param name="text">String object that this Text object will be initialized with</param>
@@ -285,19 +257,13 @@ public:
 	/// <param name="font">The font that the text element will be using. The font must belong to the same UIrenderer object.</param>
 	/// <param name="maxLength">The maximum length of characters for the text element.</param>
 	/// <returns>Text framework object.</returns>
-	TextElement createTextElement(const Font& font, uint32_t maxLength)
-	{
-		return createTextElement(std::string(""), font, maxLength);
-	}
+	TextElement createTextElement(const Font& font, uint32_t maxLength) { return createTextElement(std::string(""), font, maxLength); }
 
 	/// <summary>Create Text sprite from wide std::wstring. Uses the Default Font.</summary>
 	/// <param name="text">Wide std::string that this Text object will be initialized with. Will use the Default Font.</param>
 	/// <param name="maxLength">The maximum length of characters for the text element.</param>
 	/// <returns>Text framework object.</returns>
-	TextElement createTextElement(const std::wstring& text, uint32_t maxLength)
-	{
-		return createTextElement(text, _defaultFont, maxLength);
-	}
+	TextElement createTextElement(const std::wstring& text, uint32_t maxLength) { return createTextElement(text, _defaultFont, maxLength); }
 
 	/// <summary>Create Text sprite from wide std::string.</summary>
 	/// <param name="text">text to be rendered.</param>
@@ -314,90 +280,60 @@ public:
 	/// <summary>Create an empty Text sprite. Initialize with std::string. Uses default font.</summary>
 	/// <param name="maxLength">The maximum length of characters for the text element.</param>
 	/// <returns>Text framework object.</returns>
-	Text createText(uint32_t maxLength = 255)
-	{
-		return createText(createTextElement("", maxLength));
-	}
+	Text createText(uint32_t maxLength = 255) { return createText(createTextElement("", maxLength)); }
 
 	/// <summary>Create a Text sprite. Initialize with std::string. Uses default font.</summary>
 	/// <param name="text">std::string object that this Text object will be initialized with</param>
 	/// <param name="maxLength">The maximum length of characters for the text element.</param>
 	/// <returns>Text framework object.</returns>
-	Text createText(const std::string& text, uint32_t maxLength = 0)
-	{
-		return createText(createTextElement(text, maxLength));
-	}
+	Text createText(const std::string& text, uint32_t maxLength = 0) { return createText(createTextElement(text, maxLength)); }
 
 	/// <summary>Create Text sprite from std::string.</summary>
 	/// <param name="font">The font that the text will be using. The font must belong to the same UIrenderer object.</param>
 	/// <param name="text">String object that this Text object will be initialized with</param>
 	/// <param name="maxLength">The maximum length of characters for the text element.</param>
 	/// <returns>Text framework object.</returns>
-	Text createText(const Font& font, const std::string& text, uint32_t maxLength = 0)
-	{
-		return createText(createTextElement(text, font, maxLength));
-	}
+	Text createText(const Font& font, const std::string& text, uint32_t maxLength = 0) { return createText(createTextElement(text, font, maxLength)); }
 
 	/// <summary>Create Text sprite from std::string.</summary>
 	/// <param name="font">The font that the text will be using. The font must belong to the same UIrenderer object.</param>
 	/// <param name="maxLength">The maximum length of characters for the text element.</param>
 	/// <returns>Text framework object.</returns>
-	Text createText(const Font& font, uint32_t maxLength = 255)
-	{
-		return createText(createTextElement("", font, maxLength));
-	}
+	Text createText(const Font& font, uint32_t maxLength = 255) { return createText(createTextElement("", font, maxLength)); }
 
 	/// <summary>Create Text sprite from wide std::string. Uses the Default Font.</summary>
 	/// <param name="text">Wide std::string that this Text object will be initialized with. Will use the Default Font.</param>
 	/// <param name="maxLength">The maximum length of characters for the text element.</param>
 	/// <returns>Text framework object.</returns>
-	Text createText(const std::wstring& text, uint32_t maxLength = 0)
-	{
-		return createText(createTextElement(text, maxLength));
-	}
+	Text createText(const std::wstring& text, uint32_t maxLength = 0) { return createText(createTextElement(text, maxLength)); }
 
 	/// <summary>Create Text sprite from wide std::string.</summary>
 	/// <param name="font">The font that the text will be using. The font must belong to the same UIrenderer object.</param>
 	/// <param name="text">text to be rendered.</param>
 	/// <returns>Text framework object.</returns>
-	Text createText(const Font& font, const std::wstring& text)
-	{
-		return createText(createTextElement(text, font, static_cast<uint32_t>(text.length())));
-	}
+	Text createText(const Font& font, const std::wstring& text) { return createText(createTextElement(text, font, static_cast<uint32_t>(text.length()))); }
 
 	/// <summary>Create Text sprite from wide std::string.</summary>
 	/// <param name="font">The font that the text will be using. The font must belong to the same UIrenderer object.</param>
 	/// <param name="text">text to be rendered.</param>
 	/// <param name="maxLength">The maximum length of characters for the text element.</param>
 	/// <returns>Text framework object.</returns>
-	Text createText(const Font& font, const std::wstring& text, uint32_t maxLength = 0)
-	{
-		return createText(createTextElement(text, font, maxLength));
-	}
+	Text createText(const Font& font, const std::wstring& text, uint32_t maxLength = 0) { return createText(createTextElement(text, font, maxLength)); }
 
 	/// <summary>Get the X dimension of the rectangle the UIRenderer is rendering to in order to scale UI elements.
 	/// Initial value is the Screen Width.</summary>
 	/// <returns>Render width of the rectangle the UIRenderer is using for rendering.</returns>
-	float getRenderingDimX() const
-	{
-		return _screenDimensions.x;
-	}
+	float getRenderingDimX() const { return _screenDimensions.x; }
 
 	/// <summary>Get the Y dimension of the rectangle the UIRenderer is rendering to in order to scale UI elements.
 	/// Initial value is the Screen Height.</summary>
 	/// <returns>Render height of the rectangle the UIRenderer is using for rendering.</returns>
-	float getRenderingDimY() const
-	{
-		return _screenDimensions.y;
-	}
+	float getRenderingDimY() const { return _screenDimensions.y; }
 
 	/// <summary>Get the rendering dimensions of the rectangle the UIRenderer is rendering to in order to scale UI elements.
 	/// Initial value is the Screen Width and Screen Height.</summary>
 	/// <returns>Render width and height of the rectangle the UIRenderer is using for rendering.</returns>
-	glm::vec2 getRenderingDim() const
-	{
-		return _screenDimensions;
-	}
+	glm::vec2 getRenderingDim() const { return _screenDimensions; }
 
 	/// <summary>Get the viewport of the rectangle the UIRenderer is rendering to. Initial value is the Screen Width and Screen Height.</summary>
 	/// <returns>Viewport width and height of the rectangle the UIRenderer is using for rendering.</returns>
@@ -409,18 +345,12 @@ public:
 	/// <summary>Set the X dimension of the rectangle the UIRenderer is rendering to in order to scale UI elements.
 	/// Initial value is the Screen Width.</summary>
 	/// <param name="value">The new rendering width.</param>
-	void setRenderingDimX(float value)
-	{
-		_screenDimensions.x = value;
-	}
+	void setRenderingDimX(float value) { _screenDimensions.x = value; }
 
 	/// <summary>Set the Y dimension of the rectangle the UIRenderer is rendering to in order to scale UI elements.
 	/// Initial value is the Screen Height.</summary>
 	/// <param name="value">The new rendering height.</param>
-	void setRenderingDimY(float value)
-	{
-		_screenDimensions.y = value;
-	}
+	void setRenderingDimY(float value) { _screenDimensions.y = value; }
 
 	/// <summary>Create a font from a given texture (use PVRTexTool to create the font texture from a font file).</summary>
 	/// <param name="image">An ImageView object of the font texture file, which will be used directly.</param>
@@ -465,10 +395,7 @@ public:
 	/// <remarks>THIS METHOD OR ITS OVERLOAD MUST BE CALLED BEFORE RENDERING ANY SPRITES THAT BELONG TO A SPECIFIC
 	/// UIRenderer. The sequence must always be beginRendering, render ..., endRendering. Always try to group as many
 	/// rendering commands as possible between begin and end, to avoid needless state changes.</remarks>
-	void beginRendering(pvrvk::SecondaryCommandBuffer& commandBuffer)
-	{
-		beginRendering(commandBuffer, pvrvk::Framebuffer(), true);
-	}
+	void beginRendering(pvrvk::SecondaryCommandBuffer& commandBuffer) { beginRendering(commandBuffer, pvrvk::Framebuffer(), true); }
 
 	/// <summary>Begin rendering to a specific CommandBuffer, using a specific Framebuffer and optionally a renderpass.
 	/// Must be called to render sprites. DO NOT update sprites after calling this function before calling endRendering.</summary>
@@ -482,10 +409,7 @@ public:
 	{
 		if (!commandBuffer->isRecording())
 		{
-			if (useRenderPass)
-			{
-				commandBuffer->begin(_renderpass, _subpass);
-			}
+			if (useRenderPass) { commandBuffer->begin(_renderpass, _subpass); }
 			else
 			{
 				commandBuffer->begin(framebuffer, _subpass);
@@ -525,10 +449,7 @@ public:
 	/// UIRenderer. The sequence must always be beginRendering, render ..., endRendering. Always try to group as many
 	/// rendering commands as possible between beginRendering and endRendering, to avoid needless state changes. Use
 	/// this overload to render with a custom GraphicsPipeline.</remarks>
-	void beginRendering(pvrvk::SecondaryCommandBuffer commandBuffer, pvrvk::GraphicsPipeline& pipe)
-	{
-		beginRendering(commandBuffer, pipe, pvrvk::Framebuffer(), true);
-	}
+	void beginRendering(pvrvk::SecondaryCommandBuffer commandBuffer, pvrvk::GraphicsPipeline& pipe) { beginRendering(commandBuffer, pipe, pvrvk::Framebuffer(), true); }
 
 	/// <summary>Begin rendering to a specific CommandBuffer, with a custom user-provided GraphicsPipeline.</summary>
 	/// <param name="commandBuffer">The SecondaryCommandBuffer object where all the rendering commands will be put into.</param>
@@ -543,10 +464,7 @@ public:
 	{
 		if (!commandBuffer->isRecording())
 		{
-			if (useRenderPass)
-			{
-				commandBuffer->begin(_renderpass, _subpass);
-			}
+			if (useRenderPass) { commandBuffer->begin(_renderpass, _subpass); }
 			else
 			{
 				commandBuffer->begin(framebuffer, _subpass);
@@ -601,111 +519,72 @@ public:
 	/// <summary>Get the CommandBuffer that is being used to currently render.</summary>
 	/// <returns>If between a beginRendering and endRendering, the CommandBuffer used at beginRendering. Otherwise,
 	/// null.</returns>
-	pvrvk::CommandBufferBase& getActiveCommandBuffer()
-	{
-		return _activeCommandBuffer;
-	}
+	pvrvk::CommandBufferBase& getActiveCommandBuffer() { return _activeCommandBuffer; }
 
 	/// <summary>The UIRenderer has a built-in default pvr::ui::Font that can always be used when the UIRenderer is
 	/// initialized. Used throughout the PowerVR SDK Examples.</summary>
 	/// <returns>The default font. Constant overload.</returns>
-	const Font& getDefaultFont() const
-	{
-		return _defaultFont;
-	}
+	const Font& getDefaultFont() const { return _defaultFont; }
 
 	/// <summary>The UIRenderer has a built-in default pvr::ui::Font that can always be used when the UIRenderer is
 	/// initialized. Used throughout the PowerVR SDK Examples.</summary>
 	/// <returns>A pvr::ui::Font object of the default font.</returns>
-	Font& getDefaultFont()
-	{
-		return _defaultFont;
-	}
+	Font& getDefaultFont() { return _defaultFont; }
 
 	/// <summary>The UIRenderer has a built-in pvr::ui::Image of the PowerVR SDK logo that can always be used when the
 	/// UIRenderer is initialized. Used throughout the PowerVR SDK Examples.</summary>
 	/// <returns>The PowerVR SDK pvr::ui::Image. Constant overload.</returns>
-	const Image& getSdkLogo() const
-	{
-		return _sdkLogo;
-	}
+	const Image& getSdkLogo() const { return _sdkLogo; }
 
 	/// <summary>The UIRenderer has a built-in pvr::ui::Image of the PowerVR SDK logo that can always be used when the
 	/// UIRenderer is initialized. Used throughout the PowerVR SDK Examples.</summary>
 	/// <returns>The PowerVR SDK pvr::ui::Image.</returns>
-	Image& getSdkLogo()
-	{
-		return _sdkLogo;
-	}
+	Image& getSdkLogo() { return _sdkLogo; }
 
 	/// <summary>The UIRenderer has a built-in pvr::ui::Text positioned and sized for used as a title (top-left,
 	/// large) for convenience. Set the text of this sprite and use it as normal. Can be resized and repositioned at
 	/// will. Used throughout the PowerVR SDK Examples.</summary>
 	/// <returns>The Default title pvr::ui::Text. Originally empty (use setText on it). Constant overload.</returns>
-	const Text& getDefaultTitle() const
-	{
-		return _defaultTitle;
-	}
+	const Text& getDefaultTitle() const { return _defaultTitle; }
 
 	/// <summary>The UIRenderer has a built-in pvr::ui::Text positioned and sized for used as a title (top-left,
 	/// large) for convenience. Set the text of this sprite and use it as normal. Can be resized and repositioned at
 	/// will. Used throughout the PowerVR SDK Examples.</summary>
 	/// <returns>The Default title pvr::ui::Text. Originally empty (use setText on it).</returns>
-	Text& getDefaultTitle()
-	{
-		return _defaultTitle;
-	}
+	Text& getDefaultTitle() { return _defaultTitle; }
 
 	/// <summary>The UIRenderer has a built-in pvr::ui::Text positioned and sized for use as a description (subtitle)
 	/// (top-left, below DefaultTitle, small)) for convenience. Set the text of this sprite and use it as normal. Can
 	/// be resized and repositioned at will. Used throughout the PowerVR SDK Examples.</summary>
 	/// <returns>The Default descritption pvr::ui::Text. Originally empty (use setText on it). Constant overload.</returns>
-	const Text& getDefaultDescription() const
-	{
-		return _defaultDescription;
-	}
+	const Text& getDefaultDescription() const { return _defaultDescription; }
 
 	/// <summary>The UIRenderer has a built-in pvr::ui::Text positioned and sized for used as a description (subtitle
 	/// (top-left, below DefaultTitle, small)) for convenience. Set the text of this sprite and use it as normal. Can
 	/// be resized and repositioned at will. Used throughout the PowerVR SDK Examples.</summary>
 	/// <returns>The Default descritption pvr::ui::Text. Originally empty (use setText on it).</returns>
-	Text& getDefaultDescription()
-	{
-		return _defaultDescription;
-	}
+	Text& getDefaultDescription() { return _defaultDescription; }
 
 	/// <summary>The UIRenderer has a built-in pvr::ui::Text positioned and sized for use as a controls display
 	/// (bottom-left, small text) for convenience. You can set the text of this sprite and use it as normal. Can be
 	/// resized and repositioned at will. Used throughout the PowerVR SDK Examples.</summary>
 	/// <returns>The Default Controls pvr::ui::Text. Originally empty (use setText on it). Constant overload.</returns>
-	const Text& getDefaultControls() const
-	{
-		return _defaultControls;
-	}
+	const Text& getDefaultControls() const { return _defaultControls; }
 
 	/// <summary>The UIRenderer has a built-in pvr::ui::Text positioned and sized for use as a controls display
 	/// (bottom-left, small text) for convenience. You can set the text of this sprite and use it as normal. Can be
 	/// resized and repositioned at will. Used throughout the PowerVR SDK Examples.</summary>
 	/// <returns>The Default Controls pvr::ui::Text. Originally empty (use setText on it).</returns>
-	Text& getDefaultControls()
-	{
-		return _defaultControls;
-	}
+	Text& getDefaultControls() { return _defaultControls; }
 
 	/// <summary>Return the PipelineLayout object of the internal Pipeline object used by this
 	/// UIRenderer.</summary>
 	/// <returns>The PipelineLayout.</returns>
-	pvrvk::PipelineLayout getPipelineLayout()
-	{
-		return _pipelineLayout;
-	}
+	pvrvk::PipelineLayout getPipelineLayout() { return _pipelineLayout; }
 
 	/// <summary>Returns the projection matrix</summary>
 	/// <returns>The UIRenderer projection matrix</returns>
-	glm::mat4 getProjection() const
-	{
-		return pvr::math::ortho(Api::Vulkan, 0.0, getRenderingDimX(), 0.0f, getRenderingDimY());
-	}
+	glm::mat4 getProjection() const { return pvr::math::ortho(Api::Vulkan, 0.0, getRenderingDimX(), 0.0f, getRenderingDimY()); }
 
 	/// <summary>return the default DescriptorSetLayout. ONLY to be used by the Sprites</summary>
 	/// <returns>const pvrvk::DescriptorSetLayout&</returns>
@@ -725,73 +604,43 @@ public:
 
 	/// <summary>return the default DescriptorSetLayout. ONLY to be used by the Sprites</summary>
 	/// <returns>const pvrvk::DescriptorSetLayout&</returns>
-	glm::mat4 getScreenRotation() const
-	{
-		return glm::rotate(_screenRotation, glm::vec3(0.0f, 0.0f, 1.f));
-	}
+	glm::mat4 getScreenRotation() const { return glm::rotate(_screenRotation, glm::vec3(0.0f, 0.0f, 1.f)); }
 
 	/// <summary>return the default DescriptorSetLayout. ONLY to be used by the Sprites</summary>
 	/// <returns>const pvrvk::DescriptorSetLayout&</returns>
-	const pvrvk::DescriptorSetLayout& getTexDescriptorSetLayout() const
-	{
-		return _texDescLayout;
-	}
+	const pvrvk::DescriptorSetLayout& getTexDescriptorSetLayout() const { return _texDescLayout; }
 
 	/// <summary>return the default DescriptorSetLayout. ONLY to be used by the Sprites</summary>
 	/// <returns>const pvrvk::DescriptorSetLayout&</returns>
-	const pvrvk::DescriptorSetLayout& getUboDescSetLayout() const
-	{
-		return _uboMvpDescLayout;
-	}
+	const pvrvk::DescriptorSetLayout& getUboDescSetLayout() const { return _uboMvpDescLayout; }
 
 	/// <summary>Returns maximum renderable sprites (Text and Images)</summary>
 	/// <returns>The maximum number of renderable sprites</returns>
-	uint32_t getMaxRenderableSprites() const
-	{
-		return _uboMaterial._numArrayId;
-	}
+	uint32_t getMaxRenderableSprites() const { return _uboMaterial._numArrayId; }
 
 	/// <summary>Return maximum number of instances supported (including sprites and groups)</summary>
 	/// <returns>The maximum number of instances</returns>
-	uint32_t getMaxInstances() const
-	{
-		return _uboMvp._numArrayId;
-	}
+	uint32_t getMaxInstances() const { return _uboMvp._numArrayId; }
 
 	/// <summary>return the number of available renderable sprites (Image and Text)</summary>
 	/// <returns>The number of remaining sprite slots</returns>
-	uint32_t getNumAvailableSprites() const
-	{
-		return _uboMaterial.getNumAvailableBufferArrays();
-	}
+	uint32_t getNumAvailableSprites() const { return _uboMaterial.getNumAvailableBufferArrays(); }
 
 	/// <summary>return the number of availble instance</summary>
 	/// <returns>The number of remaining instance slots</returns>
-	uint32_t getNumAvailableInstances() const
-	{
-		return _uboMvp.getNumAvailableBufferArrays();
-	}
+	uint32_t getNumAvailableInstances() const { return _uboMvp.getNumAvailableBufferArrays(); }
 
 	/// <summary>return the default DescriptorSetLayout. ONLY to be used by the Sprites</summary>
 	/// <returns>const pvrvk::DescriptorSetLayout&</returns>
-	pvrvk::DescriptorPool& getDescriptorPool()
-	{
-		return _descPool;
-	}
+	pvrvk::DescriptorPool& getDescriptorPool() { return _descPool; }
 
 	/// <summary>Return the bilinear sampler used by the UIRenderer</summary>
 	/// <returns>The bilinear sampler used by the UIRenderer</returns>
-	pvrvk::Sampler& getSamplerBilinear()
-	{
-		return _samplerBilinear;
-	}
+	pvrvk::Sampler& getSamplerBilinear() { return _samplerBilinear; }
 
 	/// <summary>Return the trilinear sampler used by the UIRenderer</summary>
 	/// <returns>The trilinear sampler used by the UIRenderer</returns>
-	pvrvk::Sampler& getSamplerTrilinear()
-	{
-		return _samplerTrilinear;
-	}
+	pvrvk::Sampler& getSamplerTrilinear() { return _samplerTrilinear; }
 
 private:
 	void updateResourceOwnsership()
@@ -811,10 +660,7 @@ private:
 
 	/// <summary>return the default DescriptorSetLayout. ONLY to be used by the Sprites</summary>
 	/// <returns>const pvrvk::DescriptorSetLayout&</returns>
-	uint64_t generateGroupId()
-	{
-		return _groupId++;
-	}
+	uint64_t generateGroupId() { return _groupId++; }
 
 	struct UboMvp
 	{
@@ -837,9 +683,9 @@ private:
 			{
 				const uint32_t id = _freeArrayIds.back();
 				_freeArrayIds.pop_back();
-				return id;
+				return static_cast<int32_t>(id);
 			}
-			return (_freeArrayId < _numArrayId ? _freeArrayId++ : -1);
+			return (_freeArrayId < _numArrayId ? static_cast<int32_t>(_freeArrayId++) : -1);
 		}
 
 		void releaseBufferSlice(uint32_t id)
@@ -854,10 +700,7 @@ private:
 			cb->bindDescriptorSet(pvrvk::PipelineBindPoint::e_GRAPHICS, pipelayout, 1, _uboDescSetSet, dynamicOffsets, ARRAY_SIZE(dynamicOffsets));
 		}
 
-		uint32_t getNumAvailableBufferArrays() const
-		{
-			return static_cast<uint32_t>((_numArrayId - _freeArrayId) + _freeArrayIds.size());
-		}
+		uint32_t getNumAvailableBufferArrays() const { return static_cast<uint32_t>((_numArrayId - _freeArrayId) + _freeArrayIds.size()); }
 
 	private:
 		uint32_t _freeArrayId;
@@ -892,9 +735,9 @@ private:
 			{
 				const uint32_t id = _freeArrayIds.back();
 				_freeArrayIds.pop_back();
-				return id;
+				return static_cast<int32_t>(id);
 			}
-			return (_freeArrayId < _numArrayId ? _freeArrayId++ : -1);
+			return (_freeArrayId < _numArrayId ? static_cast<int32_t>(_freeArrayId++) : -1);
 		}
 
 		void releaseBufferArray(uint32_t id)
@@ -909,10 +752,7 @@ private:
 			cb->bindDescriptorSet(pvrvk::PipelineBindPoint::e_GRAPHICS, pipelayout, 2, _uboDescSetSet, dynamicOffsets, ARRAY_SIZE(dynamicOffsets));
 		}
 
-		uint32_t getNumAvailableBufferArrays() const
-		{
-			return static_cast<uint32_t>(((_numArrayId - _freeArrayId) + _freeArrayIds.size()));
-		}
+		uint32_t getNumAvailableBufferArrays() const { return static_cast<uint32_t>(((_numArrayId - _freeArrayId) + _freeArrayIds.size())); }
 
 	private:
 		pvrvk::DescriptorSet _uboDescSetSet;
@@ -923,15 +763,9 @@ private:
 		std::vector<uint32_t> _freeArrayIds;
 	};
 
-	UboMvp& getUbo()
-	{
-		return _uboMvp;
-	}
+	UboMvp& getUbo() { return _uboMvp; }
 
-	UboMaterial& getMaterial()
-	{
-		return _uboMaterial;
-	}
+	UboMaterial& getMaterial() { return _uboMaterial; }
 
 	void setUpUboPoolLayouts(uint32_t numInstances, uint32_t numSprites);
 	void setUpUboPools(uint32_t numInstances, uint32_t numSprites);
@@ -977,6 +811,15 @@ private:
 	UboMvp _uboMvp;
 	UboMaterial _uboMaterial;
 	uint32_t _numSprites;
+
+	// Methods and Members related to MoltenVK support.
+#ifdef VK_USE_PLATFORM_MACOS_MVK
+
+	MVKConfiguration mvkConfig;
+	size_t sizeOfMVK = 0;
+	bool isFullImageViewSwizzleMVK = false;
+
+#endif
 };
 } // namespace ui
 } // namespace pvr

@@ -8,10 +8,11 @@ delegated to platform-specific ShellOS.cpp files. Do not access or use directly.
 #pragma once
 #include "PVRShell/ShellData.h"
 #include "PVRShell/Shell.h"
+#include <memory>
 namespace pvr {
 namespace platform {
 // Forward declaration of internal implementation.
-struct InternalOS;
+class InternalOS;
 
 /// <summary>Internal class Implements a lot of the functionality and forwards to the platform from PVRShell. Don't use directly,
 /// instead use the pvr::Shell class.</summary>
@@ -56,6 +57,10 @@ public:
 	/// <returns>The OS specific application</returns>
 	OSApplication getApplication() const;
 
+	/// <summary>Retrieves the window specific connection.</summary>
+	/// <returns>The window system specific connection</returns>
+	OSConnection getConnection() const;
+
 	/// <summary>Retrieves the platform specific display.</summary>
 	/// <returns>The OS specific display</returns>
 	OSDisplay getDisplay() const;
@@ -73,21 +78,19 @@ public:
 	const std::vector<std::string>& getReadPaths() const;
 
 	/// <summary>Retrieves the read paths.</summary>
-	/// <param name="readPaths">A new read path to add to the list of read paths.</param>
-	void addReadPath(const std::string& readPaths)
-	{
-		_readPaths.emplace_back(readPaths);
-	}
+	/// <param name="readPath">A new read path to add to the list of read paths.</param>
+	void addReadPath(const std::string& readPath) { _readPaths.emplace_back(readPath); }
 
 	/// <summary>Clears the read paths.</summary>
-	void clearReadPaths()
-	{
-		_readPaths.clear();
-	}
+	void clearReadPaths() { _readPaths.clear(); }
 
 	/// <summary>Retrieves the current write path.</summary>
 	/// <returns>The write path</returns>
 	const std::string& getWritePath() const;
+
+	/// <summary>Sets the current write path.</summary>
+	/// <param name="writePath">A new write path to use as the current write path.</param>
+	void setWritePath(const std::string& writePath) { _writePath = writePath; }
 
 	/// <summary>Retrieves the application name.</summary>
 	/// <returns>The application name</returns>
@@ -103,10 +106,7 @@ public:
 
 	/// <summary>Retrieves OS specific capabilities.</summary>
 	/// <returns>OS Specific capabilities</returns>
-	static const Capabilities& getCapabilities()
-	{
-		return _capabilities;
-	}
+	static const Capabilities& getCapabilities() { return _capabilities; }
 
 	/// <summary>Pops up a message.</summary>
 	/// <param name="title">Specifies the title.</param>
@@ -117,10 +117,7 @@ public:
 
 	/// <summary>Retrieves the shell.</summary>
 	/// <returns>A pointer to the shell</returns>
-	Shell* getShell()
-	{
-		return _shell.get();
-	}
+	Shell* getShell() { return _shell.get(); }
 
 	/// <summary>Updates the location of the pointing device.</summary>
 	void updatePointingDeviceLocation();
@@ -133,28 +130,13 @@ protected:
 
 private:
 	OSApplication _instance;
-	InternalOS* _OSImplementation;
+	std::unique_ptr<InternalOS> _OSImplementation;
 	static const Capabilities _capabilities;
 };
-inline const std::string& ShellOS::getApplicationName() const
-{
-	return _appName;
-}
-inline void ShellOS::setApplicationName(const std::string& applicationName)
-{
-	_appName = applicationName;
-}
-inline const std::string& ShellOS::getDefaultReadPath() const
-{
-	return _readPaths[0];
-}
-inline const std::vector<std::string>& ShellOS::getReadPaths() const
-{
-	return _readPaths;
-}
-inline const std::string& ShellOS::getWritePath() const
-{
-	return _writePath;
-}
+inline const std::string& ShellOS::getApplicationName() const { return _appName; }
+inline void ShellOS::setApplicationName(const std::string& applicationName) { _appName = applicationName; }
+inline const std::string& ShellOS::getDefaultReadPath() const { return _readPaths[0]; }
+inline const std::vector<std::string>& ShellOS::getReadPaths() const { return _readPaths; }
+inline const std::string& ShellOS::getWritePath() const { return _writePath; }
 } // namespace platform
 } // namespace pvr

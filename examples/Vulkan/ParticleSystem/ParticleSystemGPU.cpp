@@ -1,10 +1,9 @@
-/*!*********************************************************************************************************************
-\File         ParticleSystemGPU.cpp
-\Title        ParticleSystemGPU
-\Author       PowerVR by Imagination, Developer Technology Team
-\Copyright    Copyright (c) Imagination Technologies Limited.
-\brief      Particle system implemented using GPU Compute SHaders. Uses direct access to the VBOs as SSBOs
-***********************************************************************************************************************/
+/*!
+\brief Particle system implemented using GPU Compute Shaders.
+\file ParticleSystemGPU.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #include "ParticleSystemGPU.h"
 #include "PVRVk/ComputePipelineVk.h"
 #include "PVRVk/CommandPoolVk.h"
@@ -12,133 +11,155 @@
 #include "PVRVk/PipelineLayoutVk.h"
 #include "PVRVk/QueueVk.h"
 
-#define SPHERES_UBO_BINDING 0
-#define CONFIG_UNIFORM_BINDING 1
-#define PARTICLES_SSBO_BINDING_IN_OUT 2
-/*!*********************************************************************************************************************
-\brief ctor
-***********************************************************************************************************************/
 ParticleSystemGPU::ParticleSystemGPU(pvr::Shell& assetLoader)
 	: computeShaderSrcFile("ParticleSolver.csh"), gravity(0.0f), numParticles(0), workgroupSize(32), numSpheres(0), assetProvider(assetLoader)
 {
 	memset(&particleConfigData, 0, sizeof(ParticleConfig));
 }
 
-/*!*********************************************************************************************************************
-\brief  Cleans up any resources that were constructed by this class
-***********************************************************************************************************************/
-ParticleSystemGPU::~ParticleSystemGPU() {}
-
-/*!*********************************************************************************************************************
-\param[in]  ErrorStr  In case of error, any error messages will be stored in this std::string
-\return true if successfully completed, false otherwise.
-\brief  Initializes any state that needs to be created by the class itself.
-	Init WILL NOT initialize objects that need to be set by a caller, most importantly:
-	- The vertex buffer that will contain the actual particles
-	- The actual Spheres
-	- The actual number of particles (SetNumberOfParticles actually allocates memory for the particles)
-***********************************************************************************************************************/
-void ParticleSystemGPU::init(uint32_t maxParticles, const Sphere* spheres, uint32_t numSpheres, pvrvk::Device& device, pvrvk::CommandPool& commandPool,
-	pvrvk::DescriptorPool& descriptorPool, uint32_t numSwapchains, pvr::utils::vma::Allocator& allocator, pvrvk::PipelineCache& pipelineCache)
+ParticleSystemGPU::~ParticleSystemGPU()
 {
-	this->commandPool = commandPool;
-	this->device = device;
-	swapchainLength = numSwapchains;
-
-	createComputePipeline(pipelineCache);
-	setCollisionSpheres(spheres, numSpheres, allocator);
-	// create the ssbo buffer
+	if (device) { device->waitIdle(); }
+	for (uint32_t i = 0; i < MultiBuffers; ++i)
 	{
-		particleBufferViewSsbos = pvr::utils::createBuffer(device, sizeof(Particle) * maxParticles,
-			pvrvk::BufferUsageFlags::e_VERTEX_BUFFER_BIT | pvrvk::BufferUsageFlags::e_STORAGE_BUFFER_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT,
+		if (perStepResourcesFences[i]) perStepResourcesFences[i]->wait();
+	}
+}
+
+void ParticleSystemGPU::init(uint32_t inMaxParticles, const std::vector<Sphere> spheres, pvrvk::Device& inDevice, pvrvk::Queue& inQueue, pvrvk::DescriptorPool& descriptorPool,
+	pvr::utils::vma::Allocator& inAllocator, pvrvk::PipelineCache& inPipelineCache, const std::vector<pvrvk::Semaphore> waitSemaphores)
+{
+	this->device = inDevice;
+	this->queue = inQueue;
+
+	// Verify that the given queue supports compute capabilities
+	if (static_cast<uint32_t>(queue->getFlags() & pvrvk::QueueFlags::e_COMPUTE_BIT) == 0) { Log(LogLevel::Error, "Queue must support Compute capabilities"); }
+
+	this->commandPool = device->createCommandPool(pvrvk::CommandPoolCreateInfo(queue->getFamilyIndex(), pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT));
+	this->maxParticles = inMaxParticles;
+	this->allocator = inAllocator;
+	this->pipelineCache = inPipelineCache;
+	this->externalWaitSemaphores = waitSemaphores;
+	this->externalWaitSemaphoreIndices.resize(this->externalWaitSemaphores.size());
+
+	emitterSet = false;
+	gravitySet = false;
+	numParticlesSet = false;
+
+	currentResourceIndex = 0;
+	previousResourceIndex = 0;
+	stepCount = 0;
+	externalWaitFrameIndex = 0;
+	currentExternalWaitFrameIndex = 0;
+
+	createDescriptorSetLayout();
+	createComputePipeline();
+	createCommandBuffers();
+	setCollisionSpheres(spheres);
+
+	// Create the particle system buffers
+	// The particle system buffers will be allocated large enough for the maximum number of particles
+	particleSystemBufferSliceSize = sizeof(Particle) * maxParticles;
+	for (uint8_t i = 0; i < MultiBuffers; ++i)
+	{
+		particleSystemBuffers[i] = pvr::utils::createBuffer(device,
+			pvrvk::BufferCreateInfo(static_cast<VkDeviceSize>(particleSystemBufferSliceSize),
+				pvrvk::BufferUsageFlags::e_VERTEX_BUFFER_BIT | pvrvk::BufferUsageFlags::e_STORAGE_BUFFER_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT),
 			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, &allocator, pvr::utils::vma::AllocationCreateFlags::e_NONE);
 	}
 
+	// Create a configuration buffer for the particle system to be used for controlling the particle system behaviour
 	{
-		particleConfigUboBufferView.initDynamic(ParticleConfigViewMapping, swapchainLength, pvr::BufferUsageFlags::UniformBuffer,
+		particleConfigUboBufferView.initDynamic(ParticleConfigViewMapping, MultiBuffers, pvr::BufferUsageFlags::UniformBuffer,
 			static_cast<uint32_t>(device->getPhysicalDevice()->getProperties().getLimits().getMinUniformBufferOffsetAlignment()));
 
-		particleConfigUbo =
-			pvr::utils::createBuffer(device, particleConfigUboBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
-				pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT, &allocator,
-				pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+		particleConfigUbo = pvr::utils::createBuffer(device, pvrvk::BufferCreateInfo(particleConfigUboBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT),
+			pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
+			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT, &allocator,
+			pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
 		particleConfigUboBufferView.pointToMappedMemory(particleConfigUbo->getDeviceMemory()->getMappedData());
 	}
 
+	// Create the particle system descriptor sets and update them using the previously allocated resources
 	std::vector<pvrvk::WriteDescriptorSet> writeDescSets;
-	for (uint8_t i = 0; i < swapchainLength; ++i)
+	for (uint8_t i = 0; i < MultiBuffers; ++i)
 	{
-		multiBuffer.descSets[i] = descriptorPool->allocateDescriptorSet(pipe->getPipelineLayout()->getDescriptorSetLayout(0));
-		// update
-		writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_UNIFORM_BUFFER, multiBuffer.descSets[i], BufferBindingPoint::SPHERES_UBO_BINDING_INDEX)
+		descSets[i] = descriptorPool->allocateDescriptorSet(descriptorSetLayout);
+
+		writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_UNIFORM_BUFFER, descSets[i], BufferBindingPoint::SPHERES_UBO_BINDING_INDEX)
 									.setBufferInfo(0, pvrvk::DescriptorBufferInfo(collisonSpheresUbo, 0, collisonSpheresUboBufferView.getDynamicSliceSize())));
 
 		writeDescSets.push_back(
-			pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_UNIFORM_BUFFER, multiBuffer.descSets[i], BufferBindingPoint::PARTICLE_CONFIG_UBO_BINDING_INDEX)
+			pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_UNIFORM_BUFFER, descSets[i], BufferBindingPoint::PARTICLE_CONFIG_UBO_BINDING_INDEX)
 				.setBufferInfo(
 					0, pvrvk::DescriptorBufferInfo(particleConfigUbo, particleConfigUboBufferView.getDynamicSliceOffset(i), particleConfigUboBufferView.getDynamicSliceSize())));
 
-		writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_STORAGE_BUFFER, multiBuffer.descSets[i], BufferBindingPoint::PARTICLES_SSBO_BINDING_INDEX_IN_OUT)
-									.setBufferInfo(0, pvrvk::DescriptorBufferInfo(particleBufferViewSsbos, 0, particleBufferViewSsbos->getSize())));
+		uint32_t inputIndex = i % MultiBuffers;
+		uint32_t outputIndex = (i + 1) % MultiBuffers;
+
+		writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_STORAGE_BUFFER, descSets[i], BufferBindingPoint::PARTICLES_SSBO_BINDING_INDEX_IN)
+									.setBufferInfo(0, pvrvk::DescriptorBufferInfo(particleSystemBuffers[inputIndex], 0, particleSystemBufferSliceSize)));
+
+		writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_STORAGE_BUFFER, descSets[i], BufferBindingPoint::PARTICLES_SSBO_BINDING_INDEX_OUT)
+									.setBufferInfo(0, pvrvk::DescriptorBufferInfo(particleSystemBuffers[outputIndex], 0, particleSystemBufferSliceSize)));
 	}
 	device->updateDescriptorSets(writeDescSets.data(), static_cast<uint32_t>(writeDescSets.size()), nullptr, 0);
 
-	stagingBuffer = pvr::utils::createBuffer(device, particleBufferViewSsbos->getSize(), pvrvk::BufferUsageFlags::e_TRANSFER_SRC_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
-		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT, &allocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+	stagingBuffer = pvr::utils::createBuffer(device, pvrvk::BufferCreateInfo(particleSystemBuffers[0]->getSize(), pvrvk::BufferUsageFlags::e_TRANSFER_SRC_BIT),
+		pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT, &allocator,
+		pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
 	stagingFence = device->createFence();
 	commandStaging = commandPool->allocateCommandBuffer();
+
+	for (uint8_t i = 0; i < MultiBuffers; ++i)
+	{
+		particleSystemSemaphores[i] = device->createSemaphore();
+		outputSemaphores[i] = device->createSemaphore();
+		perStepResourcesFences[i] = device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
+	}
 }
 
-/*!*********************************************************************************************************************
-\brief  create the compute pipeline used for this example
-\return true if success
-\param[in]  std::string & errorStr
-***********************************************************************************************************************/
-void ParticleSystemGPU::createComputePipeline(pvrvk::PipelineCache& pipelineCache)
+void ParticleSystemGPU::createDescriptorSetLayout()
 {
 	pvrvk::DescriptorSetLayoutCreateInfo descSetLayoutInfo;
+	descSetLayoutInfo.setBinding(BufferBindingPoint::SPHERES_UBO_BINDING_INDEX, pvrvk::DescriptorType::e_UNIFORM_BUFFER, 1, pvrvk::ShaderStageFlags::e_COMPUTE_BIT)
+		.setBinding(BufferBindingPoint::PARTICLE_CONFIG_UBO_BINDING_INDEX, pvrvk::DescriptorType::e_UNIFORM_BUFFER, 1, pvrvk::ShaderStageFlags::e_COMPUTE_BIT)
+		.setBinding(BufferBindingPoint::PARTICLES_SSBO_BINDING_INDEX_IN, pvrvk::DescriptorType::e_STORAGE_BUFFER, 1, pvrvk::ShaderStageFlags::e_COMPUTE_BIT)
+		.setBinding(BufferBindingPoint::PARTICLES_SSBO_BINDING_INDEX_OUT, pvrvk::DescriptorType::e_STORAGE_BUFFER, 1, pvrvk::ShaderStageFlags::e_COMPUTE_BIT);
+	descriptorSetLayout = device->createDescriptorSetLayout(descSetLayoutInfo);
+
 	pvrvk::PipelineLayoutCreateInfo pipeLayoutInfo;
+	pipeLayoutInfo.setDescSetLayout(0, descriptorSetLayout);
+	pipelineLayout = device->createPipelineLayout(pipeLayoutInfo);
+}
 
-	descSetLayoutInfo.setBinding(SPHERES_UBO_BINDING, pvrvk::DescriptorType::e_UNIFORM_BUFFER, 1, pvrvk::ShaderStageFlags::e_COMPUTE_BIT)
-		.setBinding(CONFIG_UNIFORM_BINDING, pvrvk::DescriptorType::e_UNIFORM_BUFFER, 1, pvrvk::ShaderStageFlags::e_COMPUTE_BIT)
-		.setBinding(PARTICLES_SSBO_BINDING_IN_OUT, pvrvk::DescriptorType::e_STORAGE_BUFFER, 1, pvrvk::ShaderStageFlags::e_COMPUTE_BIT);
-
-	pipeLayoutInfo.setDescSetLayout(0, device->createDescriptorSetLayout(descSetLayoutInfo));
-
+void ParticleSystemGPU::createComputePipeline()
+{
 	pvrvk::ComputePipelineCreateInfo pipeCreateInfo;
 	pvrvk::ShaderModule shader = device->createShaderModule(pvrvk::ShaderModuleCreateInfo(assetProvider.getAssetStream(ComputeShaderFileName)->readToEnd<uint32_t>()));
 	pipeCreateInfo.computeShader.setShader(shader);
-	pipeCreateInfo.pipelineLayout = device->createPipelineLayout(pipeLayoutInfo);
-	pipe = device->createComputePipeline(pipeCreateInfo, pipelineCache);
+	pipeCreateInfo.pipelineLayout = pipelineLayout;
+	pipeline = device->createComputePipeline(pipeCreateInfo, pipelineCache);
 }
 
-/*!*********************************************************************************************************************
-\brief      Updates the common uniforms (notably time)
-\param    dt  Elapsed time from last iteration (frame)
-\details  Advances the simulation by dt. Invalidates the following OpenGL state:Current program, GL_UNIFORM_BUFFER binding
-***********************************************************************************************************************/
-void ParticleSystemGPU::updateUniforms(uint32_t swapchain, float dt)
+void ParticleSystemGPU::updateTime(float dt)
 {
 	dt *= 0.001f;
 	particleConfigData.fDt = dt;
 	particleConfigData.fTotalTime += dt;
 
-	particleConfigData.updateBufferView(particleConfigUboBufferView, particleConfigUbo, swapchain);
+	particleConfigData.updateBufferView(particleConfigUboBufferView, particleConfigUbo, currentResourceIndex);
 }
 
-/*!*********************************************************************************************************************
-\param[in]  numParticles  Set the number of particles to this number
-\brief  Allocates memory for the actual particles and configures the simulation accordingly.
-		Invalidates the following OpenGL state:
-	GL_SHADER_STORAGE_BUFFER binding. Call this at least once to create storage for the particles.
-***********************************************************************************************************************/
-void ParticleSystemGPU::setNumberOfParticles(uint32_t numParticles, pvrvk::Queue& queue, pvr::utils::vma::Allocator allocator)
+void ParticleSystemGPU::setNumberOfParticles(uint32_t numParticles_)
 {
-	// create and fill the staging buffer
-	this->numParticles = numParticles;
+	assertion(numParticles_ <= this->maxParticles);
 
+	this->numParticles = numParticles_;
+
+	// Default initialise the particles in the staging buffer
 	Particle* tmpData = (Particle*)stagingBuffer->getDeviceMemory()->getMappedData();
 	for (uint32_t i = 0; i < numParticles; ++i)
 	{
@@ -149,18 +170,21 @@ void ParticleSystemGPU::setNumberOfParticles(uint32_t numParticles, pvrvk::Queue
 		tmpData[i].fTimeToLive = pvr::randomrange(0.0f, 1.5f);
 	}
 
-	// flush the memory if required
+	// Flush the memory if required
 	if ((stagingBuffer->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
-	{
-		stagingBuffer->getDeviceMemory()->flushRange(0, stagingBuffer->getSize());
-	}
+	{ stagingBuffer->getDeviceMemory()->flushRange(0, stagingBuffer->getSize()); }
 
-	// Copy the new set of particles to the destination buffer
+	// Effectively resets the particle system buffers ready for simulation of numParticles
+	// First fill the particle system buffers with 0's for the entire buffer
+	// Then copy from the staging buffer to the particle system buffers
 	commandStaging->begin();
-	// Fill the destination buffer with 0's
-	commandStaging->fillBuffer(particleBufferViewSsbos, 0, 0, particleBufferViewSsbos->getSize());
-	const pvrvk::BufferCopy bufferCopy(0, 0, sizeof(Particle) * numParticles);
-	commandStaging->copyBuffer(stagingBuffer, particleBufferViewSsbos, 1, &bufferCopy);
+	for (uint32_t i = 0; i < MultiBuffers; ++i)
+	{
+		commandStaging->fillBuffer(particleSystemBuffers[i], 0, 0, particleSystemBuffers[i]->getSize());
+		pvrvk::BufferCopy bufferCopy = pvrvk::BufferCopy(0, 0, sizeof(Particle) * numParticles);
+		// Second copy the staging buffer contents up into the particle system buffers
+		commandStaging->copyBuffer(stagingBuffer, particleSystemBuffers[i], 1, &bufferCopy);
+	}
 	commandStaging->end();
 
 	pvrvk::SubmitInfo submitInfo;
@@ -173,72 +197,125 @@ void ParticleSystemGPU::setNumberOfParticles(uint32_t numParticles, pvrvk::Queue
 	stagingFence->wait();
 	stagingFence->reset();
 
-	for (uint32_t i = 0; i < swapchainLength; ++i)
-	{
-		recordCommandBuffer(i);
-	}
+	// Re-records commands for numParticles
+	recordCommandBuffers();
+
+	numParticlesSet = true;
 }
 
-/*!*********************************************************************************************************************
-\param[in]  emitter Set Emitter state to this
-\brief  Sets the transformation, height and radius of the active emitter to this state
-***********************************************************************************************************************/
 void ParticleSystemGPU::setEmitter(const Emitter& emitter)
 {
 	particleConfigData.emitter = emitter;
+	emitterSet = true;
 }
 
-/*!*********************************************************************************************************************
- \param[in] g A 3D vector that is the gravity of the simulation (m*sec^-2)
-***********************************************************************************************************************/
 void ParticleSystemGPU::setGravity(const glm::vec3& g)
 {
 	particleConfigData.vG = g;
+	gravitySet = true;
 }
 
-/*!*********************************************************************************************************************
-\param[in]      pSpheres  Pointer to an array of Sphere structs
-\param[in]      uiNumSpheres  The number of spheres
-\brief  Sets the physical model of the collision spheres and initializes them.
-***********************************************************************************************************************/
-void ParticleSystemGPU::setCollisionSpheres(const Sphere* spheres, uint32_t numSpheres, pvr::utils::vma::Allocator allocator)
+void ParticleSystemGPU::setCollisionSpheres(const std::vector<Sphere> spheres)
 {
-	if (numSpheres)
+	collisonSpheresUboBufferView.init(SphereViewMapping);
+
+	collisonSpheresUbo = pvr::utils::createBuffer(device, pvrvk::BufferCreateInfo(collisonSpheresUboBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT),
+		pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
+		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT, &allocator,
+		pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+
+	collisonSpheresUboBufferView.pointToMappedMemory(collisonSpheresUbo->getDeviceMemory()->getMappedData());
+	for (uint32_t i = 0; i < numSpheres; ++i)
+	{ collisonSpheresUboBufferView.getElement(SphereViewElements::PositionRadius, i).setValue(glm::vec4(spheres[i].vPosition, spheres[i].fRadius)); }
+}
+
+void ParticleSystemGPU::recordCommandBuffers()
+{
+	for (uint8_t i = 0; i < MultiBuffers; ++i)
 	{
-		collisonSpheresUboBufferView.init(SphereViewMapping);
+		computeCommandBuffers[i]->reset();
+		computeCommandBuffers[i]->begin();
+		computeCommandBuffers[i]->bindPipeline(pipeline);
+		computeCommandBuffers[i]->bindDescriptorSets(pvrvk::PipelineBindPoint::e_COMPUTE, pipelineLayout, 0, &descSets[i], 1);
+		computeCommandBuffers[i]->dispatch(numParticles / workgroupSize, 1, 1);
+		computeCommandBuffers[i]->end();
 
-		collisonSpheresUbo =
-			pvr::utils::createBuffer(device, collisonSpheresUboBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
-				pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT, &allocator,
-				pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
-
-		collisonSpheresUboBufferView.pointToMappedMemory(collisonSpheresUbo->getDeviceMemory()->getMappedData());
-		for (uint32_t i = 0; i < numSpheres; ++i)
-		{
-			collisonSpheresUboBufferView.getElement(SphereViewElements::PositionRadius, i).setValue(glm::vec4(spheres[i].vPosition, spheres[i].fRadius));
-		}
+		mainCommandBuffers[i]->begin();
+		mainCommandBuffers[i]->executeCommands(computeCommandBuffers[i]);
+		mainCommandBuffers[i]->end();
 	}
+}
+
+void ParticleSystemGPU::createCommandBuffers()
+{
+	for (uint8_t i = 0; i < MultiBuffers; ++i)
+	{
+		computeCommandBuffers[i] = commandPool->allocateSecondaryCommandBuffer();
+		mainCommandBuffers[i] = commandPool->allocateCommandBuffer();
+	}
+}
+
+const pvrvk::Semaphore& ParticleSystemGPU::step(uint32_t waitSemaphoreIndex)
+{
+	assertion(emitterSet);
+	assertion(gravitySet);
+	assertion(numParticlesSet);
+
+	assertion(waitSemaphoreIndex < externalWaitSemaphores.size());
+	// Handle out of order steps
+	externalWaitSemaphoreIndices[externalWaitFrameIndex] = waitSemaphoreIndex;
+
+	// Wait for and reset the fence for set of current resources to be free from perStepResourcesFences.size() steps ago
+	perStepResourcesFences[currentResourceIndex]->wait();
+	perStepResourcesFences[currentResourceIndex]->reset();
+
+	pvrvk::SubmitInfo submitInfo;
+	pvrvk::PipelineStageFlags pipeWaitStageFlags[2];
+
+	submitInfo.commandBuffers = &mainCommandBuffers[currentResourceIndex];
+	submitInfo.numCommandBuffers = 1;
+
+	pvrvk::Semaphore waitSemaphores[2];
+
+	// When the particle system has advanced at least once we add a semaphore on the previous particle system step to ensure prior to completion
+	if (stepCount > 0)
+	{
+		waitSemaphores[0] = particleSystemSemaphores[previousResourceIndex];
+		submitInfo.numWaitSemaphores++;
+		pipeWaitStageFlags[0] = pvrvk::PipelineStageFlags::e_COMPUTE_SHADER_BIT;
+	}
+
+	// Once the particle system has advanced at least MultiBuffers times we add another semaphore using the waitSemaphoreIndex from externalWaitSemaphores.size() steps ago
+	if (stepCount >= MultiBuffers)
+	{
+		waitSemaphores[1] = externalWaitSemaphores[externalWaitSemaphoreIndices[currentExternalWaitFrameIndex]];
+		submitInfo.numWaitSemaphores++;
+		pipeWaitStageFlags[1] = pvrvk::PipelineStageFlags::e_COMPUTE_SHADER_BIT;
+	}
+	submitInfo.waitSemaphores = waitSemaphores;
+	submitInfo.waitDstStageMask = pipeWaitStageFlags;
+
+	// The particle system will signal two semaphores:
+	// 1. An internal semaphore used to serial particle system steps
+	// 2. An external semaphore used by external commands used to ensure that the particle system step has fully completed
+	pvrvk::Semaphore signalSemaphores[] = { particleSystemSemaphores[currentResourceIndex], outputSemaphores[currentResourceIndex] };
+	submitInfo.signalSemaphores = signalSemaphores;
+	submitInfo.numSignalSemaphores = 2;
+	queue->submit(&submitInfo, 1, perStepResourcesFences[currentResourceIndex]);
+
+	// Update current/previous resource indices
+	previousResourceIndex = currentResourceIndex;
+	currentResourceIndex = (currentResourceIndex + 1) % MultiBuffers;
+
+	// Update the external wait semaphore indices
+	if (stepCount < MultiBuffers) { stepCount++; }
 	else
 	{
-		throw std::runtime_error("Incorrect number of collision spheres - cannot be zero.");
+		currentExternalWaitFrameIndex = (currentExternalWaitFrameIndex + 1) % externalWaitSemaphores.size();
 	}
-}
 
-/*!*********************************************************************************************************************
-\brief  record compute commands
-\param  pvr::api::CommandBufferBase commandBuffer
-\param  uint8_t swapchain
-***********************************************************************************************************************/
-void ParticleSystemGPU::recordCommandBuffer(uint8_t swapchain)
-{
-	if (!commandBuffer[swapchain])
-	{
-		commandBuffer[swapchain] = commandPool->allocateSecondaryCommandBuffer();
-	}
-	commandBuffer[swapchain]->reset();
-	commandBuffer[swapchain]->begin();
-	commandBuffer[swapchain]->bindPipeline(pipe);
-	commandBuffer[swapchain]->bindDescriptorSets(pvrvk::PipelineBindPoint::e_COMPUTE, pipe->getPipelineLayout(), 0, &multiBuffer.descSets[swapchain], 1);
-	commandBuffer[swapchain]->dispatch(numParticles / workgroupSize, 1, 1);
-	commandBuffer[swapchain]->end();
+	externalWaitFrameIndex = (externalWaitFrameIndex + 1) % externalWaitSemaphores.size();
+
+	// Return the external semaphore based on the current step call. Uses previousResourceIndex because current/previous resource indices have already been updated
+	return outputSemaphores[previousResourceIndex];
 }

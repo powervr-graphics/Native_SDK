@@ -83,7 +83,7 @@ struct GLState
 		  blendEqationAlpha(GL_FUNC_ADD), blendEqationRgb(GL_FUNC_ADD), blendSrcAlpha(GL_ZERO), blendSrcRgb(GL_SRC_ALPHA), depthMask(GL_FALSE), depthTest(GL_FALSE),
 		  stencilTest(GL_FALSE), cullingEnabled(GL_FALSE), culling(GL_BACK), windingOrder(GL_CCW), ibo(-1), sampler7(0), vbo(-1), vao(-1), vertexAttribArray(8, GL_FALSE),
 		  vertexAttribBindings(8, -1), vertexAttribSizes(8, -1), vertexAttribTypes(8, -1), vertexAttribNormalized(8, -1), vertexAttribStride(8, -1),
-		  vertexAttribOffset(8, static_cast<void*>(nullptr))
+		  vertexAttribOffset(8, static_cast<GLvoid*>(nullptr))
 	{
 		colorMask[0] = GL_TRUE;
 		colorMask[1] = GL_TRUE;
@@ -213,13 +213,13 @@ public:
 
 			for (uint32_t i = 0; i < impl::Font_::MaxRenderableLetters; ++i)
 			{
-				fontFaces[i * 6] = 0 + i * 4;
-				fontFaces[i * 6 + 1] = 3 + i * 4;
-				fontFaces[i * 6 + 2] = 1 + i * 4;
+				fontFaces[i * 6u] = static_cast<uint16_t>(0u + i * 4u);
+				fontFaces[i * 6u + 1u] = static_cast<uint16_t>(3u + i * 4u);
+				fontFaces[i * 6u + 2u] = static_cast<uint16_t>(1u + i * 4u);
 
-				fontFaces[i * 6 + 3] = 3 + i * 4;
-				fontFaces[i * 6 + 4] = 0 + i * 4;
-				fontFaces[i * 6 + 5] = 2 + i * 4;
+				fontFaces[i * 6u + 3u] = static_cast<uint16_t>(3u + i * 4u);
+				fontFaces[i * 6u + 4u] = static_cast<uint16_t>(0u + i * 4u);
+				fontFaces[i * 6u + 5u] = static_cast<uint16_t>(2u + i * 4u);
 			}
 			GLint binding;
 			gl::GetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &binding);
@@ -290,10 +290,7 @@ public:
 	/// <returns>this object (allow chaining commands with ->)</returns>
 	UIRenderer& operator=(UIRenderer&& rhs)
 	{
-		if (this == &rhs)
-		{
-			return *this;
-		}
+		if (this == &rhs) { return *this; }
 		_program = std::move(rhs._program);
 		rhs._program = 0;
 		_programData = std::move(rhs._programData);
@@ -321,17 +318,11 @@ public:
 	//!\endcond
 
 	/// <summary>Destructor for the UIRenderer which will release all resources currently in use.</summary>
-	~UIRenderer()
-	{
-		release();
-	}
+	~UIRenderer() { release(); }
 
 	/// <summary>Returns the ProgramData used by this UIRenderer.</summary>
 	/// <returns>The ProgramData structure used by the UIRenderer.</returns>
-	const ProgramData& getProgramData()
-	{
-		return _programData;
-	}
+	const ProgramData& getProgramData() { return _programData; }
 
 	/// <summary>Initialize the UIRenderer with window dimensions. MUST BE called exactly once before use, after a valid
 	/// graphics context is available (usually, during initView).</summary>
@@ -356,24 +347,12 @@ public:
 		_fonts.clear();
 		_textElements.clear();
 
-		if (_fontIboCreated && _fontIbo != static_cast<uint32_t>(-1))
-		{
-			gl::DeleteBuffers(1, &_fontIbo);
-		}
-		if (_imageVboCreated && _imageVbo != static_cast<uint32_t>(-1))
-		{
-			gl::DeleteBuffers(1, &_imageVbo);
-		}
+		if (_fontIboCreated && _fontIbo != static_cast<uint32_t>(-1)) { gl::DeleteBuffers(1, &_fontIbo); }
+		if (_imageVboCreated && _imageVbo != static_cast<uint32_t>(-1)) { gl::DeleteBuffers(1, &_imageVbo); }
 		if (_api != Api::OpenGLES2)
 		{
-			if (_samplerBilinearCreated && _samplerBilinear != static_cast<uint32_t>(-1))
-			{
-				gl::DeleteSamplers(1, &_samplerBilinear);
-			}
-			if (_samplerTrilinearCreated && _samplerTrilinear != static_cast<uint32_t>(-1))
-			{
-				gl::DeleteSamplers(1, &_samplerTrilinear);
-			}
+			if (_samplerBilinearCreated && _samplerBilinear != static_cast<uint32_t>(-1)) { gl::DeleteSamplers(1, &_samplerBilinear); }
+			if (_samplerTrilinearCreated && _samplerTrilinear != static_cast<uint32_t>(-1)) { gl::DeleteSamplers(1, &_samplerTrilinear); }
 		}
 
 		_screenRotation = .0f;
@@ -382,19 +361,16 @@ public:
 		_imageVboCreated = false;
 		_samplerBilinearCreated = false;
 		_samplerTrilinearCreated = false;
-		_samplerBilinear = -1;
-		_samplerTrilinear = -1;
-		_fontIbo = -1;
-		_imageVbo = -1;
+		_samplerBilinear = static_cast<GLuint>(-1);
+		_samplerTrilinear = static_cast<GLuint>(-1);
+		_fontIbo = static_cast<GLuint>(-1);
+		_imageVbo = static_cast<GLuint>(-1);
 	}
 
 	/// <summary>Create a Text sprite. Initialize with std::string. Uses default font.</summary>
 	/// <param name="text">std::string object that this Text object will be initialized with</param>
 	/// <returns>Text Element framework object, Null framework object if failed.</returns>
-	TextElement createTextElement(const std::string& text = "")
-	{
-		return createTextElement(text, _defaultFont);
-	}
+	TextElement createTextElement(const std::string& text = "") { return createTextElement(text, _defaultFont); }
 
 	/// <summary>Create Text sprite from std::string and pvr::ui::Font.</summary>
 	/// <param name="text">String object that this Text object will be initialized with</param>
@@ -405,18 +381,12 @@ public:
 	/// <summary>Create a Text Element sprite from a pvr::ui::Font. A default string will be used</summary>
 	/// <param name="font">The font that the text element will be using. The font must belong to the same UIrenderer object.</param>
 	/// <returns>Text framework object, Null framework object if failed.</returns>
-	TextElement createTextElement(const Font& font)
-	{
-		return createTextElement(std::string(""), font);
-	}
+	TextElement createTextElement(const Font& font) { return createTextElement(std::string(""), font); }
 
 	/// <summary>Create Text sprite from wide std::string. Uses the Default Font.</summary>
 	/// <param name="text">Wide std::string that this Text object will be initialized with. Will use the Default Font.</param>
 	/// <returns>Text framework object, Null framework object if failed.</returns>
-	TextElement createTextElement(const std::wstring& text)
-	{
-		return createTextElement(text, _defaultFont);
-	}
+	TextElement createTextElement(const std::wstring& text) { return createTextElement(text, _defaultFont); }
 
 	/// <summary>Create Text sprite from wide std::wstring and a pvr::ui::Font.</summary>
 	/// <param name="text">text to be rendered.</param>
@@ -432,91 +402,58 @@ public:
 	/// <summary>Create a Text sprite. Initialize with std::string. Uses default font.</summary>
 	/// <param name="text">std::string object that this Text object will be initialized with</param>
 	/// <returns>Text framework object, Null framework object if failed.</returns>
-	Text createText(const std::string& text = "")
-	{
-		return createText(createTextElement(text));
-	}
+	Text createText(const std::string& text = "") { return createText(createTextElement(text)); }
 
 	/// <summary>Create Text sprite from std::string.</summary>
 	/// <param name="text">String object that this Text object will be initialized with</param>
 	/// <param name="font">The font that the text will be using. The font must belong to the same UIrenderer object.</param>
 	/// <returns>Text framework object, Null framework object if failed.</returns>
-	Text createText(const std::string& text, const Font& font)
-	{
-		return createText(createTextElement(text, font));
-	}
+	Text createText(const std::string& text, const Font& font) { return createText(createTextElement(text, font)); }
 
 	/// <summary>Create a Text sprite from a pvr::ui::Font. Uses a default text string</summary>
 	/// <param name="font">The font that the text will be using. The font must belong to the same UIrenderer object.</param>
 	/// <returns>Text framework object, Null framework object if failed.</returns>
-	Text createText(const Font& font)
-	{
-		return createText(createTextElement(font));
-	}
+	Text createText(const Font& font) { return createText(createTextElement(font)); }
 
 	/// <summary>Create Text sprite from wide std::wstring. Uses the Default Font.</summary>
 	/// <param name="text">Wide std::string that this Text object will be initialized with. Will use the Default Font.</param>
 	/// <returns>Text framework object, Null framework object if failed.</returns>
-	Text createText(const std::wstring& text)
-	{
-		return createText(createTextElement(text));
-	}
+	Text createText(const std::wstring& text) { return createText(createTextElement(text)); }
 
 	/// <summary>Create Text sprite from wide std::string.</summary>
 	/// <param name="text">text to be rendered.</param>
 	/// <param name="font">The font that the text will be using. The font must belong to the same UIrenderer object.</param>
 	/// <returns>Text framework object, Null framework object if failed.</returns>
-	Text createText(const std::wstring& text, const Font& font)
-	{
-		return createText(createTextElement(text, font));
-	}
+	Text createText(const std::wstring& text, const Font& font) { return createText(createTextElement(text, font)); }
 
 	/// <summary>Get the X dimension of the rectangle the UIRenderer is rendering to in order to scale UI elements.
 	/// Initial value is the Screen Width.</summary>
 	/// <returns>Render width of the rectangle the UIRenderer is using for rendering.</returns>
-	float getRenderingDimX() const
-	{
-		return _screenDimensions.x;
-	}
+	float getRenderingDimX() const { return _screenDimensions.x; }
 
 	/// <summary>Get the Y dimension of the rectangle the UIRenderer is rendering to in order to scale UI elements.
 	/// Initial value is the Screen Height.</summary>
 	/// <returns>Render height of the rectangle the UIRenderer is using for rendering.</returns>
-	float getRenderingDimY() const
-	{
-		return _screenDimensions.y;
-	}
+	float getRenderingDimY() const { return _screenDimensions.y; }
 
 	/// <summary>Get the rendering dimensions of the rectangle the UIRenderer is rendering to in order to scale UI elements.
 	/// Initial value is the Screen Width and Screen Height.</summary>
 	/// <returns>Render width and height of the rectangle the UIRenderer is using for rendering.</returns>
-	glm::vec2 getRenderingDim() const
-	{
-		return _screenDimensions;
-	}
+	glm::vec2 getRenderingDim() const { return _screenDimensions; }
 
 	/// <summary>Get the viewport of the rectangle the UIRenderer is rendering to. Initial value is the Screen Width and Screen Height.</summary>
 	/// <returns>Viewport width and height of the rectangle the UIRenderer is using for rendering.</returns>
-	Rectanglei getViewport() const
-	{
-		return Rectanglei(0, 0, static_cast<int32_t>(getRenderingDimX()), static_cast<int32_t>(getRenderingDimY()));
-	}
+	Rectanglei getViewport() const { return Rectanglei(0, 0, static_cast<int32_t>(getRenderingDimX()), static_cast<int32_t>(getRenderingDimY())); }
 
 	/// <summary>Set the X dimension of the rectangle the UIRenderer is rendering to in order to scale UI elements.
 	/// Initial value is the Screen Width.</summary>
 	/// <param name="value">The new rendering width.</param>
-	void setRenderingDimX(float value)
-	{
-		_screenDimensions.x = value;
-	}
+	void setRenderingDimX(float value) { _screenDimensions.x = value; }
 
 	/// <summary>Set the Y dimension of the rectangle the UIRenderer is rendering to in order to scale UI elements.
 	/// Initial value is the Screen Height.</summary>
 	/// <param name="value">The new rendering height.</param>
-	void setRenderingDimY(float value)
-	{
-		_screenDimensions.y = value;
-	}
+	void setRenderingDimY(float value) { _screenDimensions.y = value; }
 
 	/// <summary>Create a font from a given texture (use PVRTexTool to create the font texture from a font file).</summary>
 	/// <param name="texture">An OpenGL ES texture handle. Must be 2D. It will be used directly.</param>
@@ -605,103 +542,67 @@ public:
 	/// <summary>Ends rendering and fills out the GLStateTracker structure which can be used by the caller for more efficient state tracking management.</summary>
 	/// <param name="stateTracker">A GLStateTracker structure which stores the current OpenGL ES state as well as indicating which states have been changed
 	/// since the last time the caller called beginRendering. The Caller has the responsibility of restoring and managing the OpenGL ES state.</param>
-	void endRendering(GLStateTracker& stateTracker)
-	{
-		stateTracker = _uiStateTracker;
-	}
+	void endRendering(GLStateTracker& stateTracker) { stateTracker = _uiStateTracker; }
 
 	/// <summary>The UIRenderer has a built-in default pvr::ui::Font that can always be used when the UIRenderer is
 	/// initialized. Used throughout the PowerVR SDK Examples.</summary>
 	/// <returns>The default font. Constant overload.</returns>
-	const Font& getDefaultFont() const
-	{
-		return _defaultFont;
-	}
+	const Font& getDefaultFont() const { return _defaultFont; }
 
 	/// <summary>The UIRenderer has a built-in default pvr::ui::Font that can always be used when the UIRenderer is
 	/// initialized. Used throughout the PowerVR SDK Examples.</summary>
 	/// <returns>A pvr::ui::Font object of the default font.</returns>
-	Font& getDefaultFont()
-	{
-		return _defaultFont;
-	}
+	Font& getDefaultFont() { return _defaultFont; }
 
 	/// <summary>The UIRenderer has a built-in pvr::ui::Image of the PowerVR SDK logo that can always be used when the
 	/// UIRenderer is initialized. Used throughout the PowerVR SDK Examples.</summary>
 	/// <returns>The PowerVR SDK pvr::ui::Image. Constant overload.</returns>
-	const Image& getSdkLogo() const
-	{
-		return _sdkLogo;
-	}
+	const Image& getSdkLogo() const { return _sdkLogo; }
 
 	/// <summary>The UIRenderer has a built-in pvr::ui::Image of the PowerVR SDK logo that can always be used when the
 	/// UIRenderer is initialized. Used throughout the PowerVR SDK Examples.</summary>
 	/// <returns>The PowerVR SDK pvr::ui::Image.</returns>
-	Image& getSdkLogo()
-	{
-		return _sdkLogo;
-	}
+	Image& getSdkLogo() { return _sdkLogo; }
 
 	/// <summary>The UIRenderer has a built-in pvr::ui::Text positioned and sized for used as a title (top-left,
 	/// large) for convenience. Set the text of this sprite and use it as normal. Can be resized and repositioned at
 	/// will. Used throughout the PowerVR SDK Examples.</summary>
 	/// <returns>The Default title pvr::ui::Text. Originally empty (use setText on it). Constant overload.</returns>
-	const Text& getDefaultTitle() const
-	{
-		return _defaultTitle;
-	}
+	const Text& getDefaultTitle() const { return _defaultTitle; }
 
 	/// <summary>The UIRenderer has a built-in pvr::ui::Text positioned and sized for used as a title (top-left,
 	/// large) for convenience. Set the text of this sprite and use it as normal. Can be resized and repositioned at
 	/// will. Used throughout the PowerVR SDK Examples.</summary>
 	/// <returns>The Default title pvr::ui::Text. Originally empty (use setText on it).</returns>
-	Text& getDefaultTitle()
-	{
-		return _defaultTitle;
-	}
+	Text& getDefaultTitle() { return _defaultTitle; }
 
 	/// <summary>The UIRenderer has a built-in pvr::ui::Text positioned and sized for use as a description (subtitle)
 	/// (top-left, below DefaultTitle, small)) for convenience. Set the text of this sprite and use it as normal. Can
 	/// be resized and repositioned at will. Used throughout the PowerVR SDK Examples.</summary>
 	/// <returns>The Default descritption pvr::ui::Text. Originally empty (use setText on it). Constant overload.</returns>
-	const Text& getDefaultDescription() const
-	{
-		return _defaultDescription;
-	}
+	const Text& getDefaultDescription() const { return _defaultDescription; }
 
 	/// <summary>The UIRenderer has a built-in pvr::ui::Text positioned and sized for used as a description (subtitle
 	/// (top-left, below DefaultTitle, small)) for convenience. Set the text of this sprite and use it as normal. Can
 	/// be resized and repositioned at will. Used throughout the PowerVR SDK Examples.</summary>
 	/// <returns>The Default descritption pvr::ui::Text. Originally empty (use setText on it).</returns>
-	Text& getDefaultDescription()
-	{
-		return _defaultDescription;
-	}
+	Text& getDefaultDescription() { return _defaultDescription; }
 
 	/// <summary>The UIRenderer has a built-in pvr::ui::Text positioned and sized for use as a controls display
 	/// (bottom-left, small text) for convenience. You can set the text of this sprite and use it as normal. Can be
 	/// resized and repositioned at will. Used throughout the PowerVR SDK Examples.</summary>
 	/// <returns>The Default Controls pvr::ui::Text. Originally empty (use setText on it). Constant overload.</returns>
-	const Text& getDefaultControls() const
-	{
-		return _defaultControls;
-	}
+	const Text& getDefaultControls() const { return _defaultControls; }
 
 	/// <summary>The UIRenderer has a built-in pvr::ui::Text positioned and sized for use as a controls display
 	/// (bottom-left, small text) for convenience. You can set the text of this sprite and use it as normal. Can be
 	/// resized and repositioned at will. Used throughout the PowerVR SDK Examples.</summary>
 	/// <returns>The Default Controls pvr::ui::Text. Originally empty (use setText on it).</returns>
-	Text& getDefaultControls()
-	{
-		return _defaultControls;
-	}
+	Text& getDefaultControls() { return _defaultControls; }
 
 	/// <summary>Returns the projection matrix</summary>
 	/// <returns>The UIRenderer projection matrix</returns>
-	glm::mat4 getProjection() const
-	{
-		return pvr::math::ortho(Api::OpenGLES2, 0.0, getRenderingDimX(), 0.0f, getRenderingDimY());
-	}
+	glm::mat4 getProjection() const { return pvr::math::ortho(Api::OpenGLES2, 0.0, getRenderingDimX(), 0.0f, getRenderingDimY()); }
 
 	/// <summary>return the default DescriptorSetLayout. ONLY to be used by the Sprites</summary>
 	/// <returns>const api::DescriptorSetLayout&</returns>
@@ -721,24 +622,15 @@ public:
 
 	/// <summary>Return the default DescriptorSetLayout. ONLY to be used by the Sprites</summary>
 	/// <returns>const api::DescriptorSetLayout&</returns>
-	glm::mat4 getScreenRotation() const
-	{
-		return glm::rotate(_screenRotation, glm::vec3(0.0f, 0.0f, 1.f));
-	}
+	glm::mat4 getScreenRotation() const { return glm::rotate(_screenRotation, glm::vec3(0.0f, 0.0f, 1.f)); }
 
 	/// <summary>Return the state tracker used by the ui renderer for tracking changed states</summary>
 	/// <returns>pvr::ui::GLStateTracker</returns>
-	GLStateTracker getStateTracker() const
-	{
-		return _uiStateTracker;
-	}
+	GLStateTracker getStateTracker() const { return _uiStateTracker; }
 
 	/// <summary>Return the OpenGL ES version assumed by the UIRenderer (the bound context version from when it was created)</summary>
 	/// <returns>The API version assumed by the UIRenderer.</returns>
-	Api getApiVersion()
-	{
-		return _api;
-	}
+	Api getApiVersion() { return _api; }
 
 private:
 	void storeCurrentGlState();
@@ -766,20 +658,11 @@ private:
 
 	/// <summary>return the default DescriptorSetLayout. ONLY to be used by the Sprites</summary>
 	/// <returns>const api::DescriptorSetLayout&</returns>
-	uint64_t generateGroupId()
-	{
-		return _groupId++;
-	}
+	uint64_t generateGroupId() { return _groupId++; }
 
-	GLuint getSamplerBilinear() const
-	{
-		return _samplerBilinear;
-	}
+	GLuint getSamplerBilinear() const { return _samplerBilinear; }
 
-	GLuint getSamplerTrilinear() const
-	{
-		return _samplerTrilinear;
-	}
+	GLuint getSamplerTrilinear() const { return _samplerTrilinear; }
 
 	void init_CreateDefaultFont();
 	void init_CreateDefaultSampler();

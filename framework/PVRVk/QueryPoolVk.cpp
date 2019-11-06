@@ -23,10 +23,7 @@ QueryPool_::QueryPool_(make_shared_enabler, const DeviceWeakPtr& device, const Q
 }
 //!\endcond
 
-bool QueryPool_::getResults(uint32_t queryIndex, size_t dataSize, void* data, QueryResultFlags flags)
-{
-	return getResults(queryIndex, 1, dataSize, data, 0, flags);
-}
+bool QueryPool_::getResults(uint32_t queryIndex, size_t dataSize, void* data, QueryResultFlags flags) { return getResults(queryIndex, 1, dataSize, data, 0, flags); }
 
 bool QueryPool_::getResults(uint32_t firstQuery, uint32_t queryCount, size_t dataSize, void* data, VkDeviceSize stride, QueryResultFlags flags)
 {

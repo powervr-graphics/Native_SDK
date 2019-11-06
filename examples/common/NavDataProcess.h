@@ -131,7 +131,7 @@ struct Tag
 struct IntersectionData
 {
 	std::vector<uint64_t> nodes;
-	std::vector<std::pair<uint32_t, glm::uvec2> > junctionWays;
+	std::vector<std::pair<uint32_t, glm::uvec2>> junctionWays;
 	bool isBound;
 };
 
@@ -264,7 +264,7 @@ public:
 class ConvertedWay : public Way
 {
 public:
-	std::vector<std::array<uint64_t, 3> > triangulatedIds;
+	std::vector<std::array<uint64_t, 3>> triangulatedIds;
 
 	ConvertedWay(uint64_t userId = 0, bool userArea = false, const std::vector<Tag>& userTags = std::vector<Tag>{}, RoadTypes::RoadTypes type = RoadTypes::None,
 		double roadWidth = 0, bool intersection = false, bool roundabout = false, bool fork = false)
@@ -326,7 +326,7 @@ struct OSM
 	Bounds bounds;
 	std::map<uint64_t, Vertex> nodes;
 	std::vector<uint64_t> original_intersections;
-	std::vector<std::vector<std::map<uint64_t, BoundaryData> > > boundaryNodes;
+	std::vector<std::vector<std::map<uint64_t, BoundaryData>>> boundaryNodes;
 	std::map<uint64_t, IntersectionData> intersectionNodes;
 	std::vector<LabelData> labels[LOD::Count];
 	std::vector<AmenityLabelData> amenityLabels[LOD::Count];
@@ -342,44 +342,17 @@ struct OSM
 
 	std::vector<RouteData> route;
 
-	std::vector<std::vector<Tile> > tiles;
+	std::vector<std::vector<Tile>> tiles;
 
-	Way& getOriginalRoadWay(uint64_t wayId)
-	{
-		return originalRoadWays.find(wayId)->second;
-	}
-	const Way& getOriginalRoadWay(uint64_t wayId) const
-	{
-		return originalRoadWays.find(wayId)->second;
-	}
-	Way& getTriangulatedRoadWay(uint64_t wayId)
-	{
-		return triangulatedRoads.find(wayId)->second;
-	}
-	const Way& getTriangulatedRoadWay(uint64_t wayId) const
-	{
-		return triangulatedRoads.find(wayId)->second;
-	}
-	const Vertex& getNodeById(uint64_t nodeId) const
-	{
-		return nodes.find(nodeId)->second;
-	}
-	Vertex& getNodeById(uint64_t nodeId)
-	{
-		return nodes.find(nodeId)->second;
-	}
-	Tile& getTile(uint32_t x, uint32_t y)
-	{
-		return tiles[x][y];
-	}
-	Tile& getTile(glm::uvec2 tileCoords)
-	{
-		return tiles[tileCoords.x][tileCoords.y];
-	}
-	Vertex& insertOrOverwriteNode(Vertex&& node)
-	{
-		return (nodes[node.id] = std::move(node));
-	}
+	Way& getOriginalRoadWay(uint64_t wayId) { return originalRoadWays.find(wayId)->second; }
+	const Way& getOriginalRoadWay(uint64_t wayId) const { return originalRoadWays.find(wayId)->second; }
+	Way& getTriangulatedRoadWay(uint64_t wayId) { return triangulatedRoads.find(wayId)->second; }
+	const Way& getTriangulatedRoadWay(uint64_t wayId) const { return triangulatedRoads.find(wayId)->second; }
+	const Vertex& getNodeById(uint64_t nodeId) const { return nodes.find(nodeId)->second; }
+	Vertex& getNodeById(uint64_t nodeId) { return nodes.find(nodeId)->second; }
+	Tile& getTile(uint32_t x, uint32_t y) { return tiles[x][y]; }
+	Tile& getTile(glm::uvec2 tileCoords) { return tiles[tileCoords.x][tileCoords.y]; }
+	Vertex& insertOrOverwriteNode(Vertex&& node) { return (nodes[node.id] = std::move(node)); }
 	Vertex& createNode(uint64_t id)
 	{
 		Vertex& node = nodes[id];
@@ -391,7 +364,7 @@ struct OSM
 
 // Remap an old co-ordinate into a new coordinate system.
 template<typename T>
-inline T remap(const T valueToRemap, const T oldmin, const T oldmax, const T newmin, const T newmax)
+inline T remap(T valueToRemap, T oldmin, T oldmax, T newmin, T newmax)
 {
 	return ((valueToRemap - oldmin) / (oldmax - oldmin)) * (newmax - newmin) + newmin;
 }
@@ -404,10 +377,7 @@ const double boundaryBufferX = 0.05;
 const double boundaryBufferY = 0.05;
 
 // Calculate the rotate time in millisec
-inline float cameraRotationTimeInMs(float angleDeg, float ms360)
-{
-	return glm::abs(angleDeg / 360.f * ms360);
-}
+inline float cameraRotationTimeInMs(float angleDeg, float ms360) { return glm::abs(angleDeg / 360.f * ms360); }
 
 /*!*****************************************************************************
 Class NavDataProcess This class handles the loading of OSM data from an XML file
@@ -452,34 +422,13 @@ public:
 	void clipAgainst(const Vertex& vertex0, const Vertex& vertex1, const Vertex& vertex2, glm::vec2 planeOrigin, const glm::vec2& planeNorm, Vertex* triFront, Vertex* triBack,
 		uint32_t& numTriFront, uint32_t& numTriBack);
 
-	std::vector<std::vector<Tile> >& getTiles()
-	{
-		return _osm.tiles;
-	}
-	uint32_t getNumRows() const
-	{
-		return _osm.numRows;
-	}
-	uint32_t getNumCols() const
-	{
-		return _osm.numCols;
-	}
-	std::vector<RouteData>& getRouteData()
-	{
-		return _osm.route;
-	}
-	glm::dvec2 getBoundsMin() const
-	{
-		return _osm.bounds.min;
-	}
-	glm::dvec2 getBoundsMax() const
-	{
-		return _osm.bounds.max;
-	}
-	const OSM& getOsm() const
-	{
-		return _osm;
-	}
+	std::vector<std::vector<Tile>>& getTiles() { return _osm.tiles; }
+	uint32_t getNumRows() const { return _osm.numRows; }
+	uint32_t getNumCols() const { return _osm.numCols; }
+	std::vector<RouteData>& getRouteData() { return _osm.route; }
+	glm::dvec2 getBoundsMin() const { return _osm.bounds.min; }
+	glm::dvec2 getBoundsMax() const { return _osm.bounds.max; }
+	const OSM& getOsm() const { return _osm; }
 	void processLabelBoundary(LabelData& label, glm::uvec2& tileCoords);
 
 	/*!*********************************************************************************************************************
@@ -498,7 +447,7 @@ private:
 
 	// Raw data handling fuctions
 	pvr::Result loadOSMData();
-	glm::dvec2 lonLatToMetres(const glm::dvec2 origin, const glm::dvec2 point) const;
+	glm::dvec2 lonLatToMetres(glm::dvec2 origin, glm::dvec2 point) const;
 	void generateIcon(const uint64_t* nodeIds, size_t numNodeIds, const Tag* tags, size_t numTags, uint64_t id);
 	void processLabels(const glm::dvec2& mapWorldDim);
 	void cleanData();
@@ -508,7 +457,7 @@ private:
 	std::string getAttributeRef(const std::vector<Tag>& tags) const;
 	BuildingType::BuildingType getBuildingType(const Tag* tags, uint32_t numTags) const;
 	RoadTypes::RoadTypes getIntersectionRoadType(const std::vector<Way>& ways) const;
-	std::string getIntersectionRoadName(const std::vector<std::vector<Tag> >& tags) const;
+	std::string getIntersectionRoadName(const std::vector<std::vector<Tag>>& tags) const;
 	double getRoadWidth(const std::vector<Tag>& tags, RoadTypes::RoadTypes& outType) const;
 	bool isRoadRoundabout(const std::vector<Tag>& tags) const;
 	bool isRoadOneWay(const std::vector<Tag>& tags) const;
@@ -526,7 +475,7 @@ private:
 			\brief  Provides two points on the perpendicular line at distance
 	   "width" apart.
 			***********************************************************************************************************************/
-	std::array<glm::dvec2, 2> findPerpendicularPoints(const glm::dvec2 firstPoint, const glm::dvec2 secPoint, const double width, const int pointNum) const;
+	std::array<glm::dvec2, 2> findPerpendicularPoints(glm::dvec2 firstPoint, glm::dvec2 secPoint, double width, int pointNum) const;
 
 	/*!*********************************************************************************************************************
 	\return Return array of 2 new points. Left points (with respect to way
@@ -538,18 +487,18 @@ private:
 	\brief  Provides two points on the perpendicular line at distance "width"
 	apart for the middle point.
 	***********************************************************************************************************************/
-	std::array<glm::dvec2, 2> findPerpendicularPoints(const glm::dvec2 firstPoint, const glm::dvec2 secPoint, const glm::dvec2 thirdPoint, const double width) const;
+	std::array<glm::dvec2, 2> findPerpendicularPoints(glm::dvec2 firstPoint, glm::dvec2 secPoint, glm::dvec2 thirdPoint, double width) const;
 
-	std::array<glm::dvec2, 2> circleIntersects(const glm::vec2 centre, const double r, const double m, const double constant) const;
-	glm::dvec2 lineIntersect(const glm::dvec2 p1, const glm::dvec2 d1, const glm::dvec2 p2, const glm::dvec2 d2) const;
-	glm::dvec3 findIntersect(const glm::dvec2 minBounds, const glm::dvec2 maxBounds, const glm::dvec2 inPoint, const glm::dvec2 outPoint) const;
+	std::array<glm::dvec2, 2> circleIntersects(glm::vec2 centre, double r, double m, double constant) const;
+	glm::dvec2 lineIntersect(glm::dvec2 p1, glm::dvec2 d1, glm::dvec2 p2, glm::dvec2 d2) const;
+	glm::dvec3 findIntersect(glm::dvec2 minBounds, glm::dvec2 maxBounds, glm::dvec2 inPoint, glm::dvec2 outPoint) const;
 	glm::dvec2 calculateMidPoint(glm::dvec2 p1, glm::dvec2 p2, glm::dvec2 p3) const;
 
 	// Road triangulation functions
 	void triangulateAllRoads();
 	void calculateIntersections();
 	void convertToTriangleList();
-	std::vector<uint64_t> triangulateRoad(const std::vector<uint64_t>& nodeIds, const double width);
+	std::vector<uint64_t> triangulateRoad(const std::vector<uint64_t>& nodeIds, double width);
 	std::vector<uint64_t> tessellate(const std::vector<uint64_t>& nodeIds, uint32_t& index, bool splitWay = false);
 	std::vector<uint64_t> tessellate(const std::vector<uint64_t>& oldNodeIDs, Real width);
 	// Polygon triangulation functions
@@ -560,7 +509,7 @@ private:
 	   wound).
 			\brief  Triangluates an anti-clockwise wound closed way.
 			***********************************************************************************************************************/
-	void triangulate(std::vector<uint64_t>& nodeIds, std::vector<std::array<uint64_t, 3> >& outTriangulates) const;
+	void triangulate(std::vector<uint64_t>& nodeIds, std::vector<std::array<uint64_t, 3>>& outTriangulates) const;
 
 	pvr::PolygonWindingOrder checkWinding(const std::vector<uint64_t>& nodeIds) const;
 	pvr::PolygonWindingOrder checkWinding(const std::vector<glm::dvec2>& points) const;
@@ -569,9 +518,8 @@ private:
 	// Map tiling functions
 	void initialiseTiles();
 	void sortTiles();
-	void fillTiles(Vertex startNode, Vertex endNode, const uint64_t wayId, const std::vector<Tag> wayTags, const WayTypes::WayTypes wayType, double height = 0,
-		const bool addEnd = false, const bool area = false, RoadTypes::RoadTypes type = RoadTypes::None, double width = 0.0, bool isIntersection = false, bool isRoundabout = false,
-		bool isFork = false);
+	void fillTiles(Vertex startNode, Vertex endNode, uint64_t wayId, const std::vector<Tag>& wayTags, WayTypes::WayTypes wayType, double height = 0, bool addEnd = false,
+		bool area = false, RoadTypes::RoadTypes type = RoadTypes::None, double width = 0.0, bool isIntersection = false, bool isRoundabout = false, bool isFork = false);
 
 	/*!*********************************************************************************************************************
 	\brief	Fill tiles with label data.
@@ -606,40 +554,28 @@ private:
 	// Texture co-ordinate calculation functions
 	void calculateMapBoundaryTexCoords();
 	void calculateJunctionTexCoords();
-	void calculateCrossRoadJunctionTexCoords(std::vector<std::pair<Vertex*, Vertex*> >& foundNodes, std::vector<std::pair<glm::uvec2, Way*> >& junctionWays);
-	uint32_t calculateRoundaboutTexCoordIndices(std::map<uint64_t, Way*>& foundWays, std::vector<std::pair<Vertex*, Vertex*> >& foundNodes);
-	uint32_t calculateT_JunctionTexCoordIndices(std::map<uint64_t, Way*>& foundWays, std::vector<std::pair<Vertex*, Vertex*> >& foundNodes, Way* way);
+	void calculateCrossRoadJunctionTexCoords(std::vector<std::pair<Vertex*, Vertex*>>& foundNodes, std::vector<std::pair<glm::uvec2, Way*>>& junctionWays);
+	uint32_t calculateRoundaboutTexCoordIndices(std::map<uint64_t, Way*>& foundWays, std::vector<std::pair<Vertex*, Vertex*>>& foundNodes);
+	uint32_t calculateT_JunctionTexCoordIndices(std::map<uint64_t, Way*>& foundWays, std::vector<std::pair<Vertex*, Vertex*>>& foundNodes, Way* way);
 	std::array<uint64_t, 2> calculateEndCaps(Vertex& first, Vertex& second, double width);
 
 	// Comparator functions
 	template<typename T>
-	inline static bool compareReal(const T a, const T b)
+	inline static bool compareReal(T a, T b)
 	{
 		return glm::abs(a - b) < std::numeric_limits<T>::epsilon();
 	}
-	inline static bool compareX(const Vertex* const a, const Vertex* const b)
-	{
-		return a->coords.x < b->coords.x;
-	}
-	inline static bool compareY(const Vertex* const a, const Vertex* const b)
-	{
-		return a->coords.y < b->coords.y;
-	}
-	inline static bool compareRoadTypes(const Way& a, const Way& b)
-	{
-		return (int(a.roadType) < int(b.roadType));
-	}
-	inline static bool compareID(const Vertex* const a, const Vertex* const b)
-	{
-		return a->id == b->id;
-	}
+	inline static bool compareX(const Vertex* const a, const Vertex* const b) { return a->coords.x < b->coords.x; }
+	inline static bool compareY(const Vertex* const a, const Vertex* const b) { return a->coords.y < b->coords.y; }
+	inline static bool compareRoadTypes(const Way& a, const Way& b) { return (int(a.roadType) < int(b.roadType)); }
+	inline static bool compareID(const Vertex* const a, const Vertex* const b) { return a->id == b->id; }
 };
 
 static const float epsilon = 0.00001f;
 
 // Comparator functions
 template<typename T>
-inline bool isRealEqual(const T a, const T b)
+inline bool isRealEqual(T a, T b)
 {
 	return glm::abs(a - b) < epsilon;
 }
@@ -650,22 +586,10 @@ inline bool isVectorEqual(Vec2 a, Vec2 b)
 	return isRealEqual(a.x, b.x) && isRealEqual(a.y, b.y);
 }
 
-inline bool compareX(const Vertex* const a, const Vertex* const b)
-{
-	return a->coords.x < b->coords.x;
-}
-inline bool compareY(const Vertex* const a, const Vertex* const b)
-{
-	return a->coords.y < b->coords.y;
-}
-inline bool compareRoadTypes(const Way& a, const Way& b)
-{
-	return (int(a.roadType) < int(b.roadType));
-}
-inline bool compareID(const Vertex* const a, const Vertex* const b)
-{
-	return a->id == b->id;
-}
+inline bool compareX(const Vertex* const a, const Vertex* const b) { return a->coords.x < b->coords.x; }
+inline bool compareY(const Vertex* const a, const Vertex* const b) { return a->coords.y < b->coords.y; }
+inline bool compareRoadTypes(const Way& a, const Way& b) { return (int(a.roadType) < int(b.roadType)); }
+inline bool compareID(const Vertex* const a, const Vertex* const b) { return a->id == b->id; }
 
 /*!*********************************************************************************************************************
 \return Find intersection point of 2 lines.
@@ -681,15 +605,9 @@ inline bool rayIntersect(const Vec2& p0, const Vec2& d0, const Vec2& p1, const V
 	typedef glm::tvec3<typename Vec2::value_type, glm::precision::defaultp> Vec3;
 	outIntersectionPoint = p0;
 	outDistanceD0 = 0;
-	if (isVectorEqual(p0, p1))
-	{
-		return true;
-	}
+	if (isVectorEqual(p0, p1)) { return true; }
 	bool retval = pvr::math::intersectLinePlane(p0, d0, p1, -pvr::math::getPerpendicular(d1), outDistanceD0, epsilon);
-	if (retval)
-	{
-		outIntersectionPoint = p0 + d0 * outDistanceD0;
-	}
+	if (retval) { outIntersectionPoint = p0 + d0 * outDistanceD0; }
 	else if (glm::length(glm::cross(Vec3(p0 - p1, 0), Vec3(d0, 0))) < epsilon) // COINCIDENT!
 	{
 		outDistanceD0 = 0.5;
@@ -714,12 +632,9 @@ inline bool rayIntersect(const Vec2& p0, const Vec2& d0, const Vec2& p1, const V
 	return rayIntersect(p0, d0, p1, d1, dummy, outIntersectionPoint);
 }
 
-inline float distanceToPlane(const glm::vec2 pointToCheck, float planeDist, glm::vec2 planeNorm)
-{
-	return glm::dot(glm::vec2(planeNorm), pointToCheck) - planeDist;
-}
+inline float distanceToPlane(glm::vec2 pointToCheck, float planeDist, glm::vec2 planeNorm) { return glm::dot(glm::vec2(planeNorm), pointToCheck) - planeDist; }
 
-inline float distanceToPlane(const glm::vec2 pointToCheck, glm::vec2 anyPlanePoint, glm::vec2 planeNorm)
+inline float distanceToPlane(glm::vec2 pointToCheck, glm::vec2 anyPlanePoint, glm::vec2 planeNorm)
 {
 	return glm::dot(glm::vec2(planeNorm), pointToCheck) - glm::dot(anyPlanePoint, planeNorm);
 }
@@ -816,10 +731,7 @@ inline bool isRoadRoundabout(const std::vector<Tag>& tags)
 {
 	for (auto& tag : tags)
 	{
-		if (tag.key.compare("junction") == 0 && tag.value.compare("roundabout") == 0)
-		{
-			return true;
-		}
+		if (tag.key.compare("junction") == 0 && tag.value.compare("roundabout") == 0) { return true; }
 	}
 	return false;
 }
@@ -872,7 +784,7 @@ inline std::string getAttributeName(const Tag* tags, size_t numTags)
 holds the tags for each way that makes up an intersection.
 \brief  Finds the dominant road name for a given intersection.
 ***********************************************************************************************************************/
-inline const std::string& getIntersectionRoadName(const std::vector<std::pair<Tag*, size_t> >& tags)
+inline const std::string& getIntersectionRoadName(const std::vector<std::pair<Tag*, size_t>>& tags)
 {
 	std::map<std::string, uint32_t> nameCount;
 	uint32_t currentCount = 0;
@@ -880,11 +792,8 @@ inline const std::string& getIntersectionRoadName(const std::vector<std::pair<Ta
 
 	for (auto& t : tags)
 	{
-		std::string name = getAttributeName(t.first, t.second);
-		if (!name.empty())
-		{
-			nameCount[name]++;
-		}
+		std::string attributeName = getAttributeName(t.first, t.second);
+		if (!attributeName.empty()) { nameCount[attributeName]++; }
 	}
 
 	for (auto it = nameCount.begin(); it != nameCount.end(); ++it)
@@ -913,10 +822,7 @@ inline RoadTypes::RoadTypes getIntersectionRoadType(const std::vector<Way>& ways
 	RoadTypes::RoadTypes current = RoadTypes::Service;
 
 	// Iterate through way and find which road type occurs the most.
-	for (auto& way : tempWays)
-	{
-		current = std::min(current, way.roadType);
-	}
+	for (auto& way : tempWays) { current = std::min(current, way.roadType); }
 	return current;
 }
 
@@ -929,10 +835,7 @@ inline bool isRoadOneWay(const std::vector<Tag>& tags)
 {
 	for (auto& tag : tags)
 	{
-		if (tag.key.compare("oneway") == 0 && tag.value.compare("yes") == 0)
-		{
-			return true;
-		}
+		if (tag.key.compare("oneway") == 0 && tag.value.compare("yes") == 0) { return true; }
 	}
 	return false;
 }
@@ -983,6 +886,7 @@ inline BuildingType::BuildingType getBuildingType(Tag* tags, size_t numTags)
 	static std::map<std::string, BuildingType::BuildingType> strings;
 
 	static bool used_to_initialize = initializeBuildingTypesMap(strings);
+	(void)used_to_initialize;
 
 	for (size_t i = 0; i < numTags; ++i)
 	{
@@ -990,10 +894,7 @@ inline BuildingType::BuildingType getBuildingType(Tag* tags, size_t numTags)
 		if (tag.key.compare("amenity") == 0 || tag.key.compare("shop") == 0)
 		{
 			auto it = strings.find(tag.value);
-			if (it != strings.end())
-			{
-				return it->second;
-			}
+			if (it != strings.end()) { return it->second; }
 			break;
 		}
 	}
@@ -1148,8 +1049,7 @@ inline void remapItemCoordinates(NavDataProcess& navDataProcess, uint32_t& numCo
 
 				for (auto&& icon : tile.icons[lod])
 				{
-					icon.coords =
-						remap(icon.coords, navDataProcess.getTiles()[0][0].min, navDataProcess.getTiles()[numCols - 1][numRows - 1].max, -mapWorldDim * .5, mapWorldDim * .5);
+					icon.coords = remap(icon.coords, navDataProcess.getTiles()[0][0].min, navDataProcess.getTiles()[numCols - 1][numRows - 1].max, -mapWorldDim * .5, mapWorldDim * .5);
 				}
 			}
 		}
@@ -1167,10 +1067,7 @@ inline double calculateAngleBetweenPoints(glm::dvec2 start, glm::dvec2 end)
 	double theta = std::atan2(dy, dx); // range [-PI, PI]
 	theta = glm::degrees(theta); // rads to degs, range [-180, 180]
 	// range [0, 360)
-	if (theta < 0)
-	{
-		theta = 360 + theta;
-	}
+	if (theta < 0) { theta = 360 + theta; }
 	return theta;
 }
 
@@ -1180,8 +1077,8 @@ inline double calculateAngleBetweenPoints(glm::dvec2 start, glm::dvec2 end)
 inline void NavDataProcess::initialiseTiles()
 {
 	// Tiles will be the same size regardless of the map
-	_osm.numCols = int(glm::ceil((_osm.maxLonLat.x - _osm.minLonLat.x) / _osm.lonTileScale));
-	_osm.numRows = int(glm::ceil((_osm.maxLonLat.y - _osm.minLonLat.y) / _osm.latTileScale));
+	_osm.numCols = static_cast<uint32_t>(glm::ceil((_osm.maxLonLat.x - _osm.minLonLat.x) / _osm.lonTileScale));
+	_osm.numRows = static_cast<uint32_t>(glm::ceil((_osm.maxLonLat.y - _osm.minLonLat.y) / _osm.latTileScale));
 	double tileScaleX = _osm.bounds.max.x / double(_osm.numCols);
 	double tileScaleY = _osm.bounds.max.y / double(_osm.numRows);
 
@@ -1255,8 +1152,7 @@ inline bool NavDataProcess::isRoadRoundabout(const std::vector<Tag>& tags) const
 {
 	for (auto& tag : tags)
 	{
-		if (tag.key.compare("junction") == 0 && tag.value.compare("roundabout") == 0)
-			return true;
+		if (tag.key.compare("junction") == 0 && tag.value.compare("roundabout") == 0) return true;
 	}
 	return false;
 }
@@ -1270,8 +1166,7 @@ inline bool NavDataProcess::isRoadOneWay(const std::vector<Tag>& tags) const
 {
 	for (auto& tag : tags)
 	{
-		if (tag.key.compare("oneway") == 0 && tag.value.compare("yes") == 0)
-			return true;
+		if (tag.key.compare("oneway") == 0 && tag.value.compare("yes") == 0) return true;
 	}
 	return false;
 }
@@ -1279,10 +1174,7 @@ inline bool NavDataProcess::isRoadOneWay(const std::vector<Tag>& tags) const
 /*!*********************************************************************************************************************
 \brief	Clears data no longer needed from the osm object.
 ***********************************************************************************************************************/
-inline void NavDataProcess::cleanData()
-{
-	_osm.cleanData();
-}
+inline void NavDataProcess::cleanData() { _osm.cleanData(); }
 
 /*!*********************************************************************************************************************
 \return	Return the 2 points that intersect with the circle.
@@ -1293,7 +1185,7 @@ inline void NavDataProcess::cleanData()
 \brief	Find the 2 intersections of a line with a circle (assumes they
 intersect).
 ***********************************************************************************************************************/
-inline std::array<glm::dvec2, 2> NavDataProcess::circleIntersects(const glm::vec2 centre, const double r, const double m, const double constant) const
+inline std::array<glm::dvec2, 2> NavDataProcess::circleIntersects(glm::vec2 centre, double r, double m, double constant) const
 {
 	const double a = glm::pow(m, 2.0) + 1.0;
 	const double b = 2.0 * m * (constant - centre.y) - 2.0 * centre.x;
@@ -1329,16 +1221,14 @@ inline pvr::PolygonWindingOrder NavDataProcess::checkWinding(const std::vector<g
 \param	d2	Direction vector of line 2.
 \brief	Find intersection point of 2 lines (assumes they intersect).
 ***********************************************************************************************************************/
-inline glm::dvec2 NavDataProcess::lineIntersect(const glm::dvec2 p1, const glm::dvec2 d1, const glm::dvec2 p2, const glm::dvec2 d2) const
+inline glm::dvec2 NavDataProcess::lineIntersect(glm::dvec2 p1, glm::dvec2 d1, glm::dvec2 p2, glm::dvec2 d2) const
 {
-	if (compareReal(p1.x, p2.x) && compareReal(p1.y, p2.y))
-		return p1;
+	if (compareReal(p1.x, p2.x) && compareReal(p1.y, p2.y)) return p1;
 
 	double num = glm::length(glm::cross(glm::dvec3(p2 - p1, 0), glm::dvec3(d2, 0)));
 	double denom = glm::length(glm::cross(glm::dvec3(d1, 0), glm::dvec3(d2, 0)));
 
-	if (denom == 0.0)
-		return p1;
+	if (denom == 0.0) return p1;
 
 	double a = num / denom;
 	return p1 + a * d1;
@@ -1370,10 +1260,7 @@ inline bool NavDataProcess::isOutOfBounds(const glm::dvec2& point) const
 	return ((point.x < _osm.bounds.min.x) || (point.y < _osm.bounds.min.y) || (point.x > _osm.bounds.max.x) || (point.y > _osm.bounds.max.y));
 }
 
-inline float calulateTimeInMillisec(float distance, float speed)
-{
-	return distance / speed * 1000.f;
-}
+inline float calulateTimeInMillisec(float distance, float speed) { return distance / speed * 1000.f; }
 
 // Calculate the key frametime between one point to another.
 inline float calculateRouteKeyFrameTime(const glm::dvec2& start, const glm::dvec2& end, float totalDistance, float speed)

@@ -1,8 +1,19 @@
 var searchData=
 [
-  ['empty',['empty',['../classpvr_1_1_string_hash.html#a1bf9a89cb3efdaac68cb40f48e0fe5a2',1,'pvr::StringHash']]],
-  ['endswith',['endsWith',['../namespacepvr_1_1strings.html#aaa0e8f333ab40593dc78c2181522c970',1,'pvr::strings::endsWith(const char *str, int32_t lenStr, const char *substr, int32_t lenSubstr)'],['../namespacepvr_1_1strings.html#a56cd6fbe15f0ed14e6a315ed02882626',1,'pvr::strings::endsWith(const std::string &amp;str, const std::string &amp;substr)'],['../namespacepvr_1_1strings.html#a40577b78311441b647229a8124803ced',1,'pvr::strings::endsWith(const std::string &amp;str, const char *substr)'],['../namespacepvr_1_1strings.html#a662bc5dfb1168d8b046dd767196ea45f',1,'pvr::strings::endsWith(const char *str, const char *substr)']]],
-  ['executecallback',['executeCallBack',['../classpvr_1_1async_1_1_i_framework_async_result.html#ad11fe888126058746669ec00b98d33a2',1,'pvr::async::IFrameworkAsyncResult']]],
-  ['expand',['expand',['../structpvr_1_1_rectangle.html#a77d3b2163ce51239e04a413380dc558a',1,'pvr::Rectangle::expand()'],['../structpvr_1_1_rectangle3_d.html#aef02c9b5d0990d68bba75ae608470a4a',1,'pvr::Rectangle3D::expand()']]],
-  ['extent',['extent',['../structpvr_1_1_rectangle.html#a89b9d90ebade35ac3c170e2d52d99f17',1,'pvr::Rectangle::extent()'],['../structpvr_1_1_rectangle3_d.html#a9f0005821ac1d7c5f398b772fdccc8c9',1,'pvr::Rectangle3D::extent()']]]
+  ['datasize',['dataSize',['../classpvr_1_1_free_value_view.html#a34e67fecfeafdf8db696da1ba4a6bbb8',1,'pvr::FreeValueView']]],
+  ['datatype',['dataType',['../classpvr_1_1_free_value_view.html#ac39b7136564f7eb47f3c5f3df65f9140',1,'pvr::FreeValueView']]],
+  ['datatypeisnormalised',['dataTypeIsNormalised',['../namespacepvr.html#a32304b6fe8a8ebcfdaa03d5b227da809',1,'pvr']]],
+  ['datatypesize',['dataTypeSize',['../namespacepvr.html#a4bbe49ea1e5ffbeaf1463379ff1adcfc',1,'pvr']]],
+  ['defaultlogger',['DefaultLogger',['../_log_8h.html#ad7a6a053610e0fd44cfa07a42a7d9975',1,'Log.h']]],
+  ['depth16',['Depth16',['../classpvr_1_1_pixel_format.html#a16c026d05c24e5cce3a8438578fd15fa',1,'pvr::PixelFormat']]],
+  ['depth16stencil8',['Depth16Stencil8',['../classpvr_1_1_pixel_format.html#a602b8974e464b55ee630072f3baed211',1,'pvr::PixelFormat']]],
+  ['depth24',['Depth24',['../classpvr_1_1_pixel_format.html#a3135d37635259f93978827a754d6d831',1,'pvr::PixelFormat']]],
+  ['depth24stencil8',['Depth24Stencil8',['../classpvr_1_1_pixel_format.html#ad94b8a61ff2bf8594c99c6c58bdabf2e',1,'pvr::PixelFormat']]],
+  ['depth32',['Depth32',['../classpvr_1_1_pixel_format.html#a9587c0746c50d89fe90ffd67803941a8',1,'pvr::PixelFormat']]],
+  ['depth32stencil8',['Depth32Stencil8',['../classpvr_1_1_pixel_format.html#a37fa02d401feb01f259aa35dadbdab4d',1,'pvr::PixelFormat']]],
+  ['depth8',['Depth8',['../classpvr_1_1_pixel_format.html#a134a86f12aee091e91366da5947f673f',1,'pvr::PixelFormat']]],
+  ['descriptortypetobufferusage',['descriptorTypeToBufferUsage',['../namespacepvr.html#af4676d56d2f795d4c4f5b7a094af90c9',1,'pvr']]],
+  ['distancepointtoplane',['distancePointToPlane',['../namespacepvr_1_1math.html#a604fa4c3a5bcbcdd7ea87858b235e780',1,'pvr::math']]],
+  ['distanceto',['distanceTo',['../classpvr_1_1_plane3d.html#a6d5f4fd659d0b18994d4f439b6c90047',1,'pvr::Plane3d']]],
+  ['done',['done',['../classpvr_1_1_locked_queue.html#a67dcdfb780c3e09e50b868d5938b1430',1,'pvr::LockedQueue']]]
 ];

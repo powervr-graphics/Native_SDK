@@ -1,5 +1,6 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classpvr_1_1async_1_1_i_framework_cleanup_object.html" title="pvr::async::IFrameworkCleanup\lObject\&lt; TexturePtr \&gt;" alt="" coords="5,5,213,46"/>
-<area shape="rect" id="node2" href="$classpvr_1_1async_1_1_i_framework_async_result.html" title="pvr::async::IFrameworkAsync\lResult\&lt; TexturePtr \&gt;" alt="" coords="261,5,459,46"/>
-<area shape="rect" id="node3" href="$structpvr_1_1async_1_1_texture_load_future__.html" title="A class wrapping the operations necessary to retrieve an asynchronously loaded texture, (e.g. querying if the load is complete, or blocking&#45;wait get the result. It is a shared reference counted resource" alt="" coords="507,41,714,68"/>
+<area shape="rect" id="node2" href="$structpvr_1_1effect_1_1_buffer_definition.html" title="Information about a Buffer" alt="" coords="199,5,398,32"/>
+<area shape="rect" id="node3" href="$structpvr_1_1effect_1_1_pipeline_definition.html" title="A definition of a pipeline object/configuration." alt="" coords="193,56,404,83"/>
+<area shape="rect" id="node4" href="$structpvr_1_1effect_1_1_shader.html" title="Store effect data from the shader block." alt="" coords="228,107,369,133"/>
+<area shape="rect" id="node5" href="$structpvr_1_1effect_1_1_texture_definition.html" title="Stores effect texture information." alt="" coords="195,157,402,184"/>
 </map>

@@ -1,5 +1,7 @@
 var searchData=
 [
+  ['capabilities1flags',['Capabilities1Flags',['../_file_defines_d_d_s_8h.html#a60a2351775193fa8c1b346ca63dd06bd',1,'pvr::texture_dds']]],
+  ['capabilities2flags',['Capabilities2Flags',['../_file_defines_d_d_s_8h.html#a046baf2af8252c4fbce982f1f6452520',1,'pvr::texture_dds']]],
   ['capability',['Capability',['../namespacepvr.html#af9ca1aead0a3149b0af3842d03bc6cd4',1,'pvr']]],
   ['colorchannelflags',['ColorChannelFlags',['../namespacepvr.html#a675b14a2f2079f7f72e7f2ad35d13de7',1,'pvr']]],
   ['colorspace',['ColorSpace',['../namespacepvr.html#a1b94afe6b8a7c21e8f8ddee1f7b5cb91',1,'pvr']]],

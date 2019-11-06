@@ -1,13 +1,10 @@
 var searchData=
 [
-  ['uirenderer',['UIRenderer',['../classpvr_1_1ui_1_1_u_i_renderer.html',1,'pvr::ui']]],
-  ['uirenderer',['UIRenderer',['../classpvr_1_1ui_1_1_u_i_renderer.html#ab299f307c02ca5625f130394cdfaaf05',1,'pvr::ui::UIRenderer::UIRenderer()'],['../classpvr_1_1ui_1_1_u_i_renderer.html#a250a5492ac864d8e129a0c5f64c9b6a0',1,'pvr::ui::UIRenderer::UIRenderer(UIRenderer &amp;&amp;rhs)'],['../classpvr_1_1ui_1_1_u_i_renderer.html#ab299f307c02ca5625f130394cdfaaf05',1,'pvr::ui::UIRenderer::UIRenderer()'],['../classpvr_1_1ui_1_1_u_i_renderer.html#a250a5492ac864d8e129a0c5f64c9b6a0',1,'pvr::ui::UIRenderer::UIRenderer(UIRenderer &amp;&amp;rhs)']]],
-  ['uirenderererror',['UIRendererError',['../classpvr_1_1ui_1_1_u_i_renderer_error.html',1,'pvr::ui']]],
-  ['uirenderererror',['UIRendererError',['../classpvr_1_1ui_1_1_u_i_renderer_error.html#ad77bb52e1d5302645fe8281d2adaf97a',1,'pvr::ui::UIRendererError']]],
+  ['uirenderer',['UIRenderer',['../classpvr_1_1ui_1_1_u_i_renderer.html',1,'pvr::ui::UIRenderer'],['../classpvr_1_1ui_1_1_u_i_renderer.html#ab299f307c02ca5625f130394cdfaaf05',1,'pvr::ui::UIRenderer::UIRenderer()'],['../classpvr_1_1ui_1_1_u_i_renderer.html#a250a5492ac864d8e129a0c5f64c9b6a0',1,'pvr::ui::UIRenderer::UIRenderer(UIRenderer &amp;&amp;rhs)'],['../classpvr_1_1ui_1_1_u_i_renderer.html#ab299f307c02ca5625f130394cdfaaf05',1,'pvr::ui::UIRenderer::UIRenderer()'],['../classpvr_1_1ui_1_1_u_i_renderer.html#a250a5492ac864d8e129a0c5f64c9b6a0',1,'pvr::ui::UIRenderer::UIRenderer(UIRenderer &amp;&amp;rhs)']]],
+  ['uirenderererror',['UIRendererError',['../classpvr_1_1ui_1_1_u_i_renderer_error.html',1,'pvr::ui::UIRendererError'],['../classpvr_1_1ui_1_1_u_i_renderer_error.html#ad77bb52e1d5302645fe8281d2adaf97a',1,'pvr::ui::UIRendererError::UIRendererError()']]],
   ['uirenderergles_2ecpp',['UIRendererGles.cpp',['../_u_i_renderer_gles_8cpp.html',1,'']]],
   ['uirenderergles_2eh',['UIRendererGles.h',['../_u_i_renderer_gles_8h.html',1,'']]],
-  ['uirendererinstancemaxerror',['UIRendererInstanceMaxError',['../classpvr_1_1ui_1_1_u_i_renderer_instance_max_error.html#a5bbb57184b608bb1c8f78bcff71b10e2',1,'pvr::ui::UIRendererInstanceMaxError']]],
-  ['uirendererinstancemaxerror',['UIRendererInstanceMaxError',['../classpvr_1_1ui_1_1_u_i_renderer_instance_max_error.html',1,'pvr::ui']]],
+  ['uirendererinstancemaxerror',['UIRendererInstanceMaxError',['../classpvr_1_1ui_1_1_u_i_renderer_instance_max_error.html',1,'pvr::ui::UIRendererInstanceMaxError'],['../classpvr_1_1ui_1_1_u_i_renderer_instance_max_error.html#a5bbb57184b608bb1c8f78bcff71b10e2',1,'pvr::ui::UIRendererInstanceMaxError::UIRendererInstanceMaxError()']]],
   ['uirenderershaders_5fes_2eh',['UIRendererShaders_ES.h',['../_u_i_renderer_shaders___e_s_8h.html',1,'']]],
   ['uirenderervk_2ecpp',['UIRendererVk.cpp',['../_u_i_renderer_vk_8cpp.html',1,'']]],
   ['uirenderervk_2eh',['UIRendererVk.h',['../_u_i_renderer_vk_8h.html',1,'']]],

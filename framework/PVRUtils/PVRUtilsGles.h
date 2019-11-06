@@ -14,3 +14,4 @@
 #include "PVRUtils/OpenGLES/ErrorsGles.h"
 #include "PVRUtils/OpenGLES/ConvertToGlesTypes.h"
 #include "PVRUtils/OpenGLES/TextureUtilsGles.h"
+#include "PVRAssets/Helper.h"

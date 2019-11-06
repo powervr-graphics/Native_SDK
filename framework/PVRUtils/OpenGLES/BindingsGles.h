@@ -40,6 +40,6 @@ typedef void(GL_APIENTRY* GLDEBUGPROCKHR)(GLenum source, GLenum type, GLuint id,
 #endif
 #ifndef NOMINMAX
 /// <summary>Instructs Windows.h to not define the min and max macros.</summary>
-#define NOMINMAX 1
+#define NOMINMAX
 #endif
 #include "PVRUtils/EGL/EglPlatformContext.h"

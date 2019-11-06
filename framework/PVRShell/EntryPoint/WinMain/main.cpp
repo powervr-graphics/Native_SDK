@@ -8,6 +8,12 @@
 #define WIN32_LEAN_AND_MEAN
 #endif
 
+#if defined(_WIN32) && defined(_DEBUG)
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+#endif
+
 #include "PVRShell/OS/ShellOS.h"
 #include "PVRShell/StateMachine.h"
 #include "PVRShell/OS/Windows/WindowsOSData.h"
@@ -23,12 +29,24 @@
 /// <returns>0 on no error, otherwise 1</returns>
 int CALLBACK WinMain(_In_ HINSTANCE hInstance, _In_ HINSTANCE, _In_ LPSTR lpCmdLine, _In_ int nCmdShow)
 {
+#if defined(_WIN32) && defined(_DEBUG)
+	// Enable memory-leak reports
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF | _CRTDBG_CHECK_EVERY_128_DF);
+
+	/*
+		To break on a specific block use
+
+			_CrtSetBreakAlloc(block);
+
+		Where block is 30145 in the below example
+
+		{30145} normal block at 0x0000019947F28DD0, 56 bytes long.
+		Data: <   G       G    > D0 8D F2 47 99 01 00 00 D0 8D F2 47 99 01 00 00
+	*/
+	//_CrtSetBreakAlloc(30145);
+#endif
 	int retval;
 	{
-#if defined(_WIN32) && defined(_DEBUG)
-		// Enable memory-leak reports
-		_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF | _CRTDBG_CHECK_EVERY_128_DF);
-#endif
 		pvr::platform::WindowsOSData data;
 		data.cmdShow = nCmdShow;
 

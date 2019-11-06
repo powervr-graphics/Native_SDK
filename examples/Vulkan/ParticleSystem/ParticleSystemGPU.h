@@ -10,9 +10,10 @@
 #include "PVRShell/PVRShell.h"
 #include "PVRCore/strings/StringHash.h"
 #include "PVRUtils/PVRUtilsVk.h"
+
+// Compute shader kernel to be used to update the particle system each frame
 const char* const ComputeShaderFileName = "ParticleSolver.csh.spv";
-const uint32_t NumBuffers(2);
-const uint32_t MaxSwapChains = uint32_t(pvrvk::FrameworkCaps::MaxSwapChains);
+
 // The particle structure will be kept packed. We will have to be careful with strides
 struct Particle
 {
@@ -94,20 +95,19 @@ struct ParticleConfig
 	// enough data for it to be a multiple of vec4(i.e. 4floats/16 bytes : 25->28)
 	ParticleConfig() : vG(glm::vec3(0.0f)), fDt(0.0f), fTotalTime(0.0f) {}
 
-	void updateBufferView(pvr::utils::StructuredBufferView& view, pvrvk::Buffer& buffer, uint32_t swapidx)
+	// Update the particle system configuration for the specified version of the particle system
+	void updateBufferView(pvr::utils::StructuredBufferView& view, pvrvk::Buffer& buffer, uint32_t index)
 	{
-		view.getElement(ParticleConfigViewElements::EmitterTransform, 0, swapidx).setValue(emitter.mTransformation);
-		view.getElement(ParticleConfigViewElements::EmitterHeight, 0, swapidx).setValue(emitter.fHeight);
-		view.getElement(ParticleConfigViewElements::EmitterRadius, 0, swapidx).setValue(emitter.fRadius);
-		view.getElement(ParticleConfigViewElements::Gravity, 0, swapidx).setValue(vG);
-		view.getElement(ParticleConfigViewElements::DeltaTime, 0, swapidx).setValue(fDt);
-		view.getElement(ParticleConfigViewElements::TotalTime, 0, swapidx).setValue(fTotalTime);
+		view.getElement(ParticleConfigViewElements::EmitterTransform, 0, index).setValue(emitter.mTransformation);
+		view.getElement(ParticleConfigViewElements::EmitterHeight, 0, index).setValue(emitter.fHeight);
+		view.getElement(ParticleConfigViewElements::EmitterRadius, 0, index).setValue(emitter.fRadius);
+		view.getElement(ParticleConfigViewElements::Gravity, 0, index).setValue(vG);
+		view.getElement(ParticleConfigViewElements::DeltaTime, 0, index).setValue(fDt);
+		view.getElement(ParticleConfigViewElements::TotalTime, 0, index).setValue(fTotalTime);
 
 		// if the memory property flags used by the buffers' device memory do not contain e_HOST_COHERENT_BIT then we must flush the memory
 		if (static_cast<uint32_t>(buffer->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
-		{
-			buffer->getDeviceMemory()->flushRange(view.getDynamicSliceOffset(swapidx), view.getDynamicSliceSize());
-		}
+		{ buffer->getDeviceMemory()->flushRange(view.getDynamicSliceOffset(index), view.getDynamicSliceSize()); }
 	}
 };
 
@@ -117,54 +117,92 @@ public:
 	ParticleSystemGPU(pvr::Shell& assetLoader);
 	~ParticleSystemGPU();
 
-	void init(uint32_t maxParticles, const Sphere* spheres, uint32_t numSpheres, pvrvk::Device& device, pvrvk::CommandPool& commandPool, pvrvk::DescriptorPool& descriptorPool,
-		uint32_t numSwapchains, pvr::utils::vma::Allocator& allocator, pvrvk::PipelineCache& pipelineCache);
+	/// <summary>Initialise the particle system.</summary>
+	/// <param name="inMaxParticles">The maximum number of particles the particle system can simulate. The maximum particle count will be used for resource allocation size.</param>
+	/// <param name="spheres">A list of spheres which will be used to make more interesting the particle system and can be collided into by particles.</param>
+	/// <param name="inDevice">The Vulkan device from which resources will be allocated.</param>
+	/// <param name="inQueue">The Vulkan queue to which comands will be submitted.</param>
+	/// <param name="descriptorPool">A Vulkan descriptor pool from which descriptors will be allocated.</param>
+	/// <param name="inAllocator">A Vulkan allocator from which memory will be allocated.</param>
+	/// <param name="inPipelineCache">A pipeline cache used to optimise the creation of pipelines.</param>
+	/// <param name="waitSemaphores">A list of semaphores on which the particle system update may wait.</param>
+	void init(uint32_t inMaxParticles, const std::vector<Sphere> spheres, pvrvk::Device& inDevice, pvrvk::Queue& inQueue, pvrvk::DescriptorPool& descriptorPool,
+		pvr::utils::vma::Allocator& inAllocator, pvrvk::PipelineCache& inPipelineCache, const std::vector<pvrvk::Semaphore> waitSemaphores);
 
-	void updateUniforms(uint32_t swapchain, float dt);
-	void setNumberOfParticles(uint32_t numParticles, pvrvk::Queue& queue, pvr::utils::vma::Allocator allocator);
-	uint32_t getNumberOfParticles() const
-	{
-		return numParticles;
-	}
+	/// <summary>Sets the current number of particles being simulated by the particle system.</summary>
+	/// <param name="numParticles">The current number of particles being simulated by the particle system. Note that this value must be less than the provided maximum number of paticles.</param>
+	void setNumberOfParticles(uint32_t numParticles);
+
+	/// <summary>Sets the current number of particles being simulated by the particle system.</summary>
+	/// <returns>Retrieves the current number of particles being simulated by the particle system.</param>
+	uint32_t getNumberOfParticles() const { return numParticles; }
+
+	/// <summary>Sets the emitter used by the particle system.</summary>
+	/// <param name="emitter">The emitter for the particle system to use.</param>
 	void setEmitter(const Emitter& emitter);
-	void setGravity(const glm::vec3& g);
-	uint32_t getWorkGroupSize() const
-	{
-		return workgroupSize;
-	}
-	void setCollisionSpheres(const Sphere* spheres, uint32_t numSpheres, pvr::utils::vma::Allocator allocator);
-	pvrvk::Buffer getParticleBufferView() const
-	{
-		return particleBufferViewSsbos;
-	}
-	void recordCommandBuffer(uint8_t swapchain);
 
-	pvrvk::SecondaryCommandBuffer& getCommandBuffer(uint32_t swapIndex)
-	{
-		return commandBuffer[swapIndex];
-	}
+	/// <summary>Sets the gravity used by the particle system.</summary>
+	/// <param name="gravity">The gravity used for the particle system simulation.</param>
+	void setGravity(const glm::vec3& gravity);
+
+	/// <summary>Advances the simulation by a specified amount.</summary>
+	/// <param name="dt">The amount of time to update the simulation by.</param>
+	void updateTime(float dt);
+
+	/// <summary>Retrieves the current particle system buffer. The 'current' here refers to retrieving the particle system corresponding to the last step call made.</summary>
+	/// <returns>The current particle system buffer.</param>
+	const pvrvk::Buffer& getParticleSystemBuffer() const { return particleSystemBuffers[currentResourceIndex]; }
+
+	/// <summary>Advances the particle system simulation by a single step.</summary>
+	/// <param name="waitSemaphoreIndex">The index into the array of wait semaphores provided to the particle system at initialisation on which the current step should wait prior
+	/// to advancing.</param>
+	/// <returns>Returns a semaphore on which any users of the particle system should wait on before making use of the particle system resources.</param>
+	const pvrvk::Semaphore& step(uint32_t waitSemaphoreIndex);
 
 private:
-	void createComputePipeline(pvrvk::PipelineCache& pipelineCache);
+	void recordCommandBuffers();
+	void createDescriptorSetLayout();
+	void createComputePipeline();
+	void createCommandBuffers();
+
+	/// <summary>Sets the Spheres used for collision in the particle system simulation.</summary>
+	/// <param name="spheres">The spheres for the collisions in the particle system simulation.</param>
+	void setCollisionSpheres(const std::vector<Sphere> spheres);
+
+	const static uint8_t MultiBuffers = 2u;
 
 	enum BufferBindingPoint
 	{
 		SPHERES_UBO_BINDING_INDEX = 0,
 		PARTICLE_CONFIG_UBO_BINDING_INDEX = 1,
-		PARTICLES_SSBO_BINDING_INDEX_IN_OUT = 2
+		PARTICLES_SSBO_BINDING_INDEX_IN = 2,
+		PARTICLES_SSBO_BINDING_INDEX_OUT = 3
 	};
 
 	// SHADERS
 	const char* computeShaderSrcFile;
-	pvrvk::ComputePipeline pipe;
+	pvrvk::ComputePipeline pipeline;
+	pvrvk::PipelineLayout pipelineLayout;
+	pvrvk::PipelineCache pipelineCache;
+	pvrvk::DescriptorSetLayout descriptorSetLayout;
+	pvr::utils::vma::Allocator allocator;
 
 	// SIMULATION DATA
 	glm::vec3 gravity;
 	uint32_t numParticles;
+	uint32_t maxParticles;
 	uint32_t workgroupSize;
 	uint32_t numSpheres;
-	uint32_t swapchainLength;
+	uint32_t particleSystemBufferSliceSize;
+	uint32_t currentResourceIndex;
+	uint32_t previousResourceIndex;
+	uint32_t stepCount;
+	uint32_t currentExternalWaitFrameIndex;
+	uint32_t externalWaitFrameIndex;
 	ParticleConfig particleConfigData;
+
+	std::vector<uint32_t> externalWaitSemaphoreIndices;
+	std::vector<pvrvk::Semaphore> externalWaitSemaphores;
 
 	// OPENGL BUFFER OBJECTS
 	pvr::utils::StructuredBufferView collisonSpheresUboBufferView;
@@ -172,23 +210,29 @@ private:
 	pvr::IAssetProvider& assetProvider;
 
 	pvrvk::Buffer stagingBuffer;
-	pvrvk::Buffer particleBufferViewSsbos;
-	struct MultiBuffer
-	{
-		pvrvk::DescriptorSet descSets[MaxSwapChains];
-	};
+	pvrvk::Buffer particleSystemBuffers[MultiBuffers];
+	pvrvk::DescriptorSet descSets[MultiBuffers];
 
 	pvr::utils::StructuredBufferView particleConfigUboBufferView;
 	pvrvk::Buffer particleConfigUbo;
 
 	pvrvk::CommandBuffer commandStaging;
-	MultiBuffer multiBuffer;
 	pvrvk::Fence stagingFence;
-	pvrvk::SecondaryCommandBuffer commandBuffer[MaxSwapChains];
+	pvrvk::SecondaryCommandBuffer computeCommandBuffers[MultiBuffers];
+	pvrvk::CommandBuffer mainCommandBuffers[MultiBuffers];
+	pvrvk::Queue queue;
 	pvrvk::CommandPool commandPool;
 	pvrvk::Device device;
 
-	// DISABLE COPY CONSTRUCT AND ASSIGN
+	pvrvk::Semaphore particleSystemSemaphores[MultiBuffers];
+	pvrvk::Semaphore outputSemaphores[MultiBuffers];
+	pvrvk::Fence perStepResourcesFences[MultiBuffers];
+
+	bool emitterSet;
+	bool gravitySet;
+	bool numParticlesSet;
+
+	// Disable copy construction and assignment operator
 	ParticleSystemGPU(ParticleSystemGPU&);
 	ParticleSystemGPU& operator=(ParticleSystemGPU&);
 };

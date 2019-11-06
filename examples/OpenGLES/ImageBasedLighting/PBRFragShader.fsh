@@ -5,11 +5,11 @@
 
 layout(location = 0) in highp vec3 inWorldPos;
 layout(location = 1) in mediump vec3 inNormal;
-layout(location = 2) in mediump vec2 inTexCoord;
-layout(location = 3) in mediump vec2 inMetallicRoughness;// r: metallic, g: roughness
-layout(location = 4) in mediump vec3 rgb;
-layout(location = 5) in mediump vec3 inTangent;
-layout(location = 6) in mediump vec3 inBitTangent;
+layout(location = 2) flat in mediump int inInstanceIndex;
+
+layout(location = 3) in mediump vec2 inTexCoord;
+layout(location = 4) in mediump vec3 inTangent;
+layout(location = 5) in mediump vec3 inBitTangent;
 
 #ifdef MATERIAL_TEXTURES
 layout(binding = 0) uniform mediump sampler2D albedoMap;
@@ -25,8 +25,6 @@ layout(binding = 8) uniform mediump samplerCube environmentMap;
 
 layout(location = 0) out mediump vec4 outColor;
 
-layout(location = 3) uniform mediump float exposure;
-
 layout(std140, binding = 0) uniform UboStatic
 {
 	mediump vec3 lightDir;
@@ -36,15 +34,23 @@ layout(std140, binding = 0) uniform UboStatic
 
 layout(std140, binding = 1) uniform UboDynamic
 {
-	highp vec3 camPos;
 	highp mat4 VPMatrix;
+	highp vec3 camPos;
+	mediump float emissiveIntensity;
+	mediump float exposure;
 } uboDynamic;
 
-layout(std140, binding = 2) uniform UboPerModel
+struct Material
 {
-	highp mat4 ModelMatrix;
-	mediump float emissiveScale;
-} uboPerModel;
+	mediump vec3 albedo;
+	mediump float roughness;
+	mediump float metallic;
+};
+
+layout(std140, binding = 3) uniform Materials
+{
+	Material mat[25];
+} materials;
 
 #define MEDIUMP_FLT_MAX 65504.0
 
@@ -199,12 +205,12 @@ void main()
 
 	mediump vec4 albedo = texture(albedoMap, inTexCoord);
 
-	mediump vec3 emissive = texture(emissiveMap, inTexCoord).rgb * uboPerModel.emissiveScale;
+	mediump vec3 emissive = texture(emissiveMap, inTexCoord).rgb * uboDynamic.emissiveIntensity;
 #else
-	mediump float metallic = inMetallicRoughness.r;
-	mediump float roughness = inMetallicRoughness.g;
+	mediump float metallic = materials.mat[inInstanceIndex].metallic;
+	mediump float roughness = materials.mat[inInstanceIndex].roughness;
 
-	mediump vec4 albedo = vec4(rgb, 1.0);
+	mediump vec4 albedo = vec4(materials.mat[inInstanceIndex].albedo, 1.0);
 #endif
 
 
@@ -223,10 +229,10 @@ void main()
 	// IBL
 	mediump vec3 envLighting = computeEnvironmentLighting(N, V, R, albedo.rgb, F0, metallic, roughness);
 
- #ifdef MATERIAL_TEXTURES
+#ifdef MATERIAL_TEXTURES
 	envLighting = envLighting * vec3(occlusion);
 	color += emissive;
- #endif
+#endif
 
 	color += envLighting;
 
@@ -238,8 +244,8 @@ void main()
 	// It is important to remember that this clamping must only happen last minute, as we need to have
 	// the full brightness available for postprocessing calculations (e.g. bloom)
 
-	mediump vec3 finalColor = min(color.rgb, 50. / exposure);
-	finalColor *= exposure;
+	mediump vec3 finalColor = min(color.rgb, 50. / uboDynamic.exposure);
+	finalColor *= uboDynamic.exposure;
 
 	// http://filmicworlds.com/blog/filmic-tonemapping-operators/
 	// Our favorite is the optimized formula by Jim Hejl and Richard Burgess-Dawson

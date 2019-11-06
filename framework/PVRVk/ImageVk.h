@@ -33,23 +33,14 @@ inline ImageViewType convertToPVRVkImageViewType(ImageType baseType, uint32_t nu
 
 	ImageViewType vkType[] = { ImageViewType::e_1D, ImageViewType::e_1D_ARRAY, ImageViewType::e_2D, ImageViewType::e_2D_ARRAY, ImageViewType::e_3D, ImageViewType::e_CUBE,
 		ImageViewType::e_CUBE_ARRAY };
-	if (isCubeMap)
-	{
-		numArrayLayers = (numArrayLayers > 6) * 6;
-	}
+	if (isCubeMap) { numArrayLayers = (numArrayLayers > 6u) * 6u; }
 	return vkType[(static_cast<uint32_t>(baseType) * 2) + (isCubeMap ? 3 : 0) + (numArrayLayers > 1 ? 1 : 0)];
 }
 
 inline ImageAspectFlags formatToImageAspect(Format format)
 {
-	if (format == Format::e_UNDEFINED)
-	{
-		throw ErrorUnknown("Cannot retrieve VkImageAspectFlags from an undefined VkFormat");
-	}
-	if (format < Format::e_D16_UNORM || format > Format::e_D32_SFLOAT_S8_UINT)
-	{
-		return ImageAspectFlags::e_COLOR_BIT;
-	}
+	if (format == Format::e_UNDEFINED) { throw ErrorUnknown("Cannot retrieve VkImageAspectFlags from an undefined VkFormat"); }
+	if (format < Format::e_D16_UNORM || format > Format::e_D32_SFLOAT_S8_UINT) { return ImageAspectFlags::e_COLOR_BIT; }
 	const ImageAspectFlags formats[] = {
 		ImageAspectFlags::e_DEPTH_BIT, // VkFormat::e_D16_UNORM
 		ImageAspectFlags::e_DEPTH_BIT, // VkFormat::e_X8_D24_UNORM_PACK32
@@ -79,19 +70,19 @@ public:
 	/// <param name="format">Image creation format (Format)</param>
 	/// <param name="extent">Image creation extent (Extent3D)</param>
 	/// <param name="usage">Image creation usage (ImageUsageFlags)</param>
-	/// <param name="flags">Image creation flags (ImageCreateFlags)</param>
 	/// <param name="numMipLevels">The number of Image mip map levels</param>
 	/// <param name="numArrayLayers">The number of Image array layers</param>
 	/// <param name="samples">The number of Image samples (SampleCountFlags)</param>
+	/// <param name="flags">Image creation flags (ImageCreateFlags)</param>
 	/// <param name="tiling">The Image tiling mode (ImageTiling)</param>
 	/// <param name="sharingMode">The Image sharing mode (SharingMode)</param>
 	/// <param name="initialLayout">The initial layout of the Image (ImageLayout)</param>
 	/// <param name="queueFamilyIndices">A pointer to a list of queue family indices specifying the list of queue families which can make use of the image</param>
 	/// <param name="numQueueFamilyIndices">The number of queue family indices pointed to by queueFamilyIndices</param>
-	ImageCreateInfo(ImageType imageType, pvrvk::Format format, const pvrvk::Extent3D& extent, pvrvk::ImageUsageFlags usage,
-		pvrvk::ImageCreateFlags flags = pvrvk::ImageCreateFlags::e_NONE, uint32_t numMipLevels = 1, uint32_t numArrayLayers = 1,
-		pvrvk::SampleCountFlags samples = pvrvk::SampleCountFlags::e_1_BIT, ImageTiling tiling = ImageTiling::e_OPTIMAL, SharingMode sharingMode = SharingMode::e_EXCLUSIVE,
-		ImageLayout initialLayout = ImageLayout::e_UNDEFINED, const uint32_t* queueFamilyIndices = nullptr, uint32_t numQueueFamilyIndices = 0)
+	ImageCreateInfo(ImageType imageType, pvrvk::Format format, const pvrvk::Extent3D& extent, pvrvk::ImageUsageFlags usage, uint32_t numMipLevels = 1, uint32_t numArrayLayers = 1,
+		pvrvk::SampleCountFlags samples = pvrvk::SampleCountFlags::e_1_BIT, pvrvk::ImageCreateFlags flags = pvrvk::ImageCreateFlags::e_NONE,
+		ImageTiling tiling = ImageTiling::e_OPTIMAL, SharingMode sharingMode = SharingMode::e_EXCLUSIVE, ImageLayout initialLayout = ImageLayout::e_UNDEFINED,
+		const uint32_t* queueFamilyIndices = nullptr, uint32_t numQueueFamilyIndices = 0)
 		: _flags(flags), _imageType(imageType), _extent(extent), _numMipLevels(numMipLevels), _numArrayLayers(numArrayLayers), _numSamples(samples), _format(format),
 		  _sharingMode(sharingMode), _usageFlags(usage), _initialLayout(initialLayout), _tiling(tiling), _numQueueFamilyIndices(numQueueFamilyIndices),
 		  _queueFamilyIndices(queueFamilyIndices)
@@ -99,154 +90,79 @@ public:
 
 	/// <summary>Get Image creation Flags</summary>
 	/// <returns>Image creation flags (ImageCreateFlags)</returns>
-	inline ImageCreateFlags getFlags() const
-	{
-		return _flags;
-	}
+	inline ImageCreateFlags getFlags() const { return _flags; }
 	/// <summary>Set PVRVk Image creation flags</summary>
 	/// <param name="flags">Flags to use for creating a PVRVk image</param>
-	inline void setFlags(ImageCreateFlags flags)
-	{
-		this->_flags = flags;
-	}
+	inline void setFlags(ImageCreateFlags flags) { this->_flags = flags; }
 	/// <summary>Get Image creation type</summary>
 	/// <returns>Image creation type (ImageType)</returns>
-	inline ImageType getImageType() const
-	{
-		return _imageType;
-	}
+	inline ImageType getImageType() const { return _imageType; }
 	/// <summary>Set PVRVk Image creation image type</summary>
 	/// <param name="imageType">ImageType to use for creating a PVRVk image</param>
-	inline void setImageType(ImageType imageType)
-	{
-		this->_imageType = imageType;
-	}
+	inline void setImageType(ImageType imageType) { this->_imageType = imageType; }
 	/// <summary>Get Extent</summary>
 	/// <returns>Extent</returns>
-	inline const Extent3D& getExtent() const
-	{
-		return _extent;
-	}
+	inline const Extent3D& getExtent() const { return _extent; }
 	/// <summary>Set PVRVk Image creation image extents</summary>
 	/// <param name="extent">extent to use for creating a PVRVk image</param>
-	inline void setExtent(Extent3D extent)
-	{
-		this->_extent = extent;
-	}
+	inline void setExtent(Extent3D extent) { this->_extent = extent; }
 	/// <summary>Get the number of Image mip map levels</summary>
 	/// <returns>Image mip map levels</returns>
-	inline uint32_t getNumMipLevels() const
-	{
-		return _numMipLevels;
-	}
+	inline uint32_t getNumMipLevels() const { return _numMipLevels; }
 	/// <summary>Set the number of mipmap levels for PVRVk Image creation</summary>
 	/// <param name="numMipLevels">The number of mipmap levels to use for creating a PVRVk image</param>
-	inline void setNumMipLevels(uint32_t numMipLevels)
-	{
-		this->_numMipLevels = numMipLevels;
-	}
+	inline void setNumMipLevels(uint32_t numMipLevels) { this->_numMipLevels = numMipLevels; }
 	/// <summary>Get the number of Image array layers</summary>
 	/// <returns>Image array layers</returns>
-	inline uint32_t getNumArrayLayers() const
-	{
-		return _numArrayLayers;
-	}
+	inline uint32_t getNumArrayLayers() const { return _numArrayLayers; }
 	/// <summary>Set the number of array layers for PVRVk Image creation</summary>
 	/// <param name="numArrayLayers">The number of array layers to use for creating a PVRVk image</param>
-	inline void setNumArrayLayers(uint32_t numArrayLayers)
-	{
-		this->_numArrayLayers = numArrayLayers;
-	}
+	inline void setNumArrayLayers(uint32_t numArrayLayers) { this->_numArrayLayers = numArrayLayers; }
 	/// <summary>Get the number of samples taken for the Image</summary>
 	/// <returns>Image number of samples (SampleCountFlags)</returns>
-	inline SampleCountFlags getNumSamples() const
-	{
-		return _numSamples;
-	}
+	inline SampleCountFlags getNumSamples() const { return _numSamples; }
 	/// <summary>Set the number of samples for PVRVk Image creation</summary>
 	/// <param name="numSamples">The number of samples to use for creating a PVRVk image</param>
-	inline void setNumSamples(SampleCountFlags numSamples)
-	{
-		this->_numSamples = numSamples;
-	}
+	inline void setNumSamples(SampleCountFlags numSamples) { this->_numSamples = numSamples; }
 	/// <summary>Get Image format</summary>
 	/// <returns>Image format (Format)</returns>
-	inline Format getFormat() const
-	{
-		return _format;
-	}
+	inline Format getFormat() const { return _format; }
 	/// <summary>Set the Image format for PVRVk Image creation</summary>
 	/// <param name="format">The image format to use for creating a PVRVk image</param>
-	inline void setFormat(Format format)
-	{
-		this->_format = format;
-	}
+	inline void setFormat(Format format) { this->_format = format; }
 	/// <summary>Get Image sharing mode</summary>
 	/// <returns>Image sharing mode (SharingMode)</returns>
-	inline SharingMode getSharingMode() const
-	{
-		return _sharingMode;
-	}
+	inline SharingMode getSharingMode() const { return _sharingMode; }
 	/// <summary>Set the Image sharing mode for PVRVk Image creation</summary>
 	/// <param name="sharingMode">The image sharing mode to use for creating a PVRVk image</param>
-	inline void setSharingMode(SharingMode sharingMode)
-	{
-		this->_sharingMode = sharingMode;
-	}
+	inline void setSharingMode(SharingMode sharingMode) { this->_sharingMode = sharingMode; }
 	/// <summary>Get Image usage flags</summary>
 	/// <returns>Image usage flags (ImageUsageFlags)</returns>
-	inline ImageUsageFlags getUsageFlags() const
-	{
-		return _usageFlags;
-	}
+	inline ImageUsageFlags getUsageFlags() const { return _usageFlags; }
 	/// <summary>Set the Image usage flags for PVRVk Image creation</summary>
 	/// <param name="usageFlags">The image usage flags to use for creating a PVRVk image</param>
-	inline void setUsageFlags(ImageUsageFlags usageFlags)
-	{
-		this->_usageFlags = usageFlags;
-	}
+	inline void setUsageFlags(ImageUsageFlags usageFlags) { this->_usageFlags = usageFlags; }
 	/// <summary>Get Image initial layout</summary>
 	/// <returns>Image initial layout (ImageLayout)</returns>
-	inline ImageLayout getInitialLayout() const
-	{
-		return _initialLayout;
-	}
+	inline ImageLayout getInitialLayout() const { return _initialLayout; }
 	/// <summary>Set the Image initial layout for PVRVk Image creation</summary>
 	/// <param name="initialLayout">The image initial layout to use for creating a PVRVk image</param>
-	inline void setInitialLayout(ImageLayout initialLayout)
-	{
-		this->_initialLayout = initialLayout;
-	}
+	inline void setInitialLayout(ImageLayout initialLayout) { this->_initialLayout = initialLayout; }
 	/// <summary>Get Image tiling mode</summary>
 	/// <returns>Image initial tiling mode (ImageTiling)</returns>
-	inline ImageTiling getTiling() const
-	{
-		return _tiling;
-	}
+	inline ImageTiling getTiling() const { return _tiling; }
 	/// <summary>Set the Image tiling for PVRVk Image creation</summary>
 	/// <param name="tiling">The image tiling to use for creating a PVRVk image</param>
-	inline void setTiling(ImageTiling tiling)
-	{
-		this->_tiling = tiling;
-	}
+	inline void setTiling(ImageTiling tiling) { this->_tiling = tiling; }
 	/// <summary>Get the number of queue family inidices for the image</summary>
 	/// <returns>The number of Image queue families</returns>
-	inline uint32_t getNumQueueFamilyIndices() const
-	{
-		return _numQueueFamilyIndices;
-	}
+	inline uint32_t getNumQueueFamilyIndices() const { return _numQueueFamilyIndices; }
 	/// <summary>Set the number of queue family inidices specifying the number of queue families which can use the PVRVk Image</summary>
 	/// <param name="numQueueFamilyIndices">The number of queue family inidices specifying the number of queue families which can use the PVRVk Image</param>
-	inline void setNumQueueFamilyIndices(uint32_t numQueueFamilyIndices)
-	{
-		this->_numQueueFamilyIndices = numQueueFamilyIndices;
-	}
+	inline void setNumQueueFamilyIndices(uint32_t numQueueFamilyIndices) { this->_numQueueFamilyIndices = numQueueFamilyIndices; }
 	/// <summary>Get a pointer to a list of queue family inidices for the image</summary>
 	/// <returns>A pointer to the list of Image queue families</returns>
-	inline const uint32_t* getQueueFamilyIndices() const
-	{
-		return _queueFamilyIndices;
-	}
+	inline const uint32_t* getQueueFamilyIndices() const { return _queueFamilyIndices; }
 
 private:
 	/// <summary>Flags to use for creating the image</summary>
@@ -298,19 +214,13 @@ protected:
 	/// <param name="device">The Device from which the image will be creted</param>
 	/// <param name="createInfo">The ImageCreateInfo descriptor specifying creation parameters</param>
 	/// <returns>Returns a successfully created pvrvk::Image</returns>
-	static Image constructShared(const DeviceWeakPtr& device, const ImageCreateInfo& createInfo)
-	{
-		return std::make_shared<Image_>(make_shared_enabler{}, device, createInfo);
-	}
+	static Image constructShared(const DeviceWeakPtr& device, const ImageCreateInfo& createInfo) { return std::make_shared<Image_>(make_shared_enabler{}, device, createInfo); }
 
 	/// <summary>Protected function used to construct a pvrvk::Image. Note that this function shouldn't normally be called
 	/// directly and will be called by a friend of Image_ which will generally be a Device</summary>
 	/// <param name="device">The Device from which the image will be creted</param>
 	/// <returns>Returns a successfully created pvrvk::Image</returns>
-	static Image constructShared(const DeviceWeakPtr& device)
-	{
-		return std::make_shared<Image_>(make_shared_enabler{}, device);
-	}
+	static Image constructShared(const DeviceWeakPtr& device) { return std::make_shared<Image_>(make_shared_enabler{}, device); }
 
 	/// <summary>Image specific memory requirements</summary>
 	pvrvk::MemoryRequirements _memReqs;
@@ -348,149 +258,86 @@ public:
 
 	/// <summary>Return a reference to the creation descriptor of the image</summary>
 	/// <returns>The reference to the ImageCreateInfo</returns>
-	pvrvk::ImageCreateInfo getCreateInfo() const
-	{
-		return _createInfo;
-	}
+	pvrvk::ImageCreateInfo getCreateInfo() const { return _createInfo; }
 
 	/// <summary>Get Image creation Flags</summary>
 	/// <returns>Image creation flags (ImageCreateFlags)</returns>
-	inline ImageCreateFlags getFlags() const
-	{
-		return _createInfo.getFlags();
-	}
+	inline ImageCreateFlags getFlags() const { return _createInfo.getFlags(); }
 
 	/// <summary>Get Image creation type</summary>
 	/// <returns>Image creation type (ImageType)</returns>
-	inline ImageType getImageType() const
-	{
-		return _createInfo.getImageType();
-	}
+	inline ImageType getImageType() const { return _createInfo.getImageType(); }
 
 	/// <summary>Get Extent</summary>
 	/// <returns>Extent</returns>
-	inline Extent3D getExtent() const
-	{
-		return _createInfo.getExtent();
-	}
+	inline Extent3D getExtent() const { return _createInfo.getExtent(); }
 
 	/// <summary>Get the number of Image mip map levels</summary>
 	/// <returns>Image mip map levels</returns>
-	inline uint32_t getNumMipLevels() const
-	{
-		return _createInfo.getNumMipLevels();
-	}
+	inline uint32_t getNumMipLevels() const { return _createInfo.getNumMipLevels(); }
 
 	/// <summary>Get the number of Image array layers</summary>
 	/// <returns>Image array layers</returns>
-	inline uint32_t getNumArrayLayers() const
-	{
-		return _createInfo.getNumArrayLayers();
-	}
+	inline uint32_t getNumArrayLayers() const { return _createInfo.getNumArrayLayers(); }
 
 	/// <summary>Get the number of samples taken for the Image</summary>
 	/// <returns>Image number of samples (SampleCountFlags)</returns>
-	inline SampleCountFlags getNumSamples() const
-	{
-		return _createInfo.getNumSamples();
-	}
+	inline SampleCountFlags getNumSamples() const { return _createInfo.getNumSamples(); }
 
 	/// <summary>Get Image format</summary>
 	/// <returns>Image format (Format)</returns>
-	inline Format getFormat() const
-	{
-		return _createInfo.getFormat();
-	}
+	inline Format getFormat() const { return _createInfo.getFormat(); }
 
 	/// <summary>Get Image sharing mode</summary>
 	/// <returns>Image sharing mode (SharingMode)</returns>
-	inline SharingMode getSharingMode() const
-	{
-		return _createInfo.getSharingMode();
-	}
+	inline SharingMode getSharingMode() const { return _createInfo.getSharingMode(); }
 
 	/// <summary>Get Image usage flags</summary>
 	/// <returns>Image usage flags (ImageUsageFlags)</returns>
-	inline ImageUsageFlags getUsageFlags() const
-	{
-		return _createInfo.getUsageFlags();
-	}
+	inline ImageUsageFlags getUsageFlags() const { return _createInfo.getUsageFlags(); }
 
 	/// <summary>Get Image initial layout</summary>
 	/// <returns>Image initial layout (ImageLayout)</returns>
-	inline ImageLayout getInitialLayout() const
-	{
-		return _createInfo.getInitialLayout();
-	}
+	inline ImageLayout getInitialLayout() const { return _createInfo.getInitialLayout(); }
 
 	/// <summary>Get Image tiling mode</summary>
 	/// <returns>Image initial tiling mode (ImageTiling)</returns>
-	inline ImageTiling getTiling() const
-	{
-		return _createInfo.getTiling();
-	}
+	inline ImageTiling getTiling() const { return _createInfo.getTiling(); }
 
 	/// <summary>Get the number of queue family inidices for the image</summary>
 	/// <returns>The number of Image queue families</returns>
-	inline uint32_t getNumQueueFamilyIndices() const
-	{
-		return _createInfo.getNumQueueFamilyIndices();
-	}
+	inline uint32_t getNumQueueFamilyIndices() const { return _createInfo.getNumQueueFamilyIndices(); }
 
 	/// <summary>Get a pointer to a list of queue family inidices for the image</summary>
 	/// <returns>A pointer to the list of Image queue families</returns>
-	inline const uint32_t* const getQueueFamilyIndices() const
-	{
-		return _createInfo.getQueueFamilyIndices();
-	}
+	inline const uint32_t* const getQueueFamilyIndices() const { return _createInfo.getQueueFamilyIndices(); }
 
 	/// <summary>Check if this texture is a cubemap</summary>
 	/// <returns>true if the texture is a cubemap, otherwise false</returns>
-	bool isCubeMap() const
-	{
-		return (_createInfo.getFlags() & pvrvk::ImageCreateFlags::e_CUBE_COMPATIBLE_BIT) == pvrvk::ImageCreateFlags::e_CUBE_COMPATIBLE_BIT;
-	}
+	bool isCubeMap() const { return (_createInfo.getFlags() & pvrvk::ImageCreateFlags::e_CUBE_COMPATIBLE_BIT) == pvrvk::ImageCreateFlags::e_CUBE_COMPATIBLE_BIT; }
 
 	/// <summary>Check if this texture is allocated.</summary>
 	/// <returns>true if the texture is allocated. Otherwise, the texture is empty and must be constructed.</returns>
-	bool isAllocated() const
-	{
-		return (getVkHandle() != VK_NULL_HANDLE);
-	}
+	bool isAllocated() const { return (getVkHandle() != VK_NULL_HANDLE); }
 
 	/// <summary>Get the width of this texture (number of columns of texels in the lowest mipmap)</summary>
 	/// <returns>Texture width</returns>
-	uint16_t getWidth() const
-	{
-		return static_cast<uint16_t>(_createInfo.getExtent().getWidth());
-	}
+	uint16_t getWidth() const { return static_cast<uint16_t>(_createInfo.getExtent().getWidth()); }
 
 	/// <summary>Get the height of this texture (number of rows of texels in the lowest mipmap)</summary>
 	/// <returns>Texture height</returns>
-	uint16_t getHeight() const
-	{
-		return static_cast<uint16_t>(_createInfo.getExtent().getHeight());
-	}
+	uint16_t getHeight() const { return static_cast<uint16_t>(_createInfo.getExtent().getHeight()); }
 
 	/// <summary>Get the depth of this texture (number of (non-array) layers of texels in the lowest mipmap)</summary>
 	/// <returns>Texture depth</returns>
-	uint16_t getDepth() const
-	{
-		return static_cast<uint16_t>(_createInfo.getExtent().getDepth());
-	}
+	uint16_t getDepth() const { return static_cast<uint16_t>(_createInfo.getExtent().getDepth()); }
 
 	/// <summary>If a memory object has been bound to the object, return it. Otherwise, return empty device memory.</summary>
 	/// <returns>If a memory object has been bound to the object, the memory object. Otherwise, empty device memory.</returns>
-	const DeviceMemory& getDeviceMemory() const
-	{
-		return _memory;
-	}
+	const DeviceMemory& getDeviceMemory() const { return _memory; }
 	/// <summary>If a memory object has been bound to the object, return it. Otherwise, return empty device memory.</summary>
 	/// <returns>If a memory object has been bound to the object, the memory object. Otherwise, empty device memory.</returns>
-	DeviceMemory& getDeviceMemory()
-	{
-		return _memory;
-	}
+	DeviceMemory& getDeviceMemory() { return _memory; }
 	/// <summary>Bind memory to this non sparse image.</summary>
 	/// <param name="memory">The memory to attach to the given image object</param>
 	/// <param name="offset">The offset into the given memory to attach to the given image object</param>
@@ -498,14 +345,8 @@ public:
 	{
 		if ((_createInfo.getFlags() &
 				(pvrvk::ImageCreateFlags::e_SPARSE_ALIASED_BIT | pvrvk::ImageCreateFlags::e_SPARSE_BINDING_BIT | pvrvk::ImageCreateFlags::e_SPARSE_RESIDENCY_BIT)) != 0)
-		{
-			throw ErrorValidationFailedEXT("Cannot bind memory: Image is Sparce so cannot have bound memory.");
-		}
-		if (_memory)
-		{
-			throw ErrorValidationFailedEXT("Cannot bind memory: A memory block is already bound");
-		}
-
+		{ throw ErrorValidationFailedEXT("Cannot bind memory: Image is Sparce so cannot have bound memory."); }
+		if (_memory) { throw ErrorValidationFailedEXT("Cannot bind memory: A memory block is already bound"); }
 		vkThrowIfFailed(getDevice()->getVkBindings().vkBindImageMemory(getDevice()->getVkHandle(), getVkHandle(), memory->getVkHandle(), offset),
 			"Failed to bind a memory block to this image");
 		_memory = memory;
@@ -513,26 +354,17 @@ public:
 
 	/// <summary>Get the memory requirements of the image</summary>
 	/// <returns>The memory requirements of the image (MemoryRequirements)</returns>
-	const pvrvk::MemoryRequirements& getMemoryRequirement() const
-	{
-		return _memReqs;
-	}
+	const pvrvk::MemoryRequirements& getMemoryRequirement() const { return _memReqs; }
 
 #ifdef DEBUG
 	//!\cond NO_DOXYGEN
 	/// <summary>Gets the current image layout of the image</summary>
 	/// <returns>The current image layout of the image</returns>
-	pvrvk::ImageLayout getImageLayout()
-	{
-		return _currentLayout;
-	}
+	pvrvk::ImageLayout getImageLayout() { return _currentLayout; }
 
 	/// <summary>Gets the current image layout of the image</summary>
 	/// <param name="imageLayout">The new image layout for the image</param>
-	void setImageLayout(pvrvk::ImageLayout imageLayout)
-	{
-		_currentLayout = imageLayout;
-	}
+	void setImageLayout(pvrvk::ImageLayout imageLayout) { _currentLayout = imageLayout; }
 	//!\endcond
 #endif
 };
@@ -612,82 +444,43 @@ public:
 
 	/// <summary>Get Image view creation Flags</summary>
 	/// <returns>Image view creation flags (ImageViewCreateFlags)</returns>
-	inline ImageViewCreateFlags getFlags() const
-	{
-		return _flags;
-	}
+	inline ImageViewCreateFlags getFlags() const { return _flags; }
 	/// <summary>Set PVRVk Image view creation flags</summary>
 	/// <param name="flags">Flags to use for creating a PVRVk image view</param>
-	inline void setFlags(ImageViewCreateFlags flags)
-	{
-		this->_flags = flags;
-	}
+	inline void setFlags(ImageViewCreateFlags flags) { this->_flags = flags; }
 	/// <summary>Get Image</summary>
 	/// <returns>The Image used in the image view</returns>
-	inline Image& getImage()
-	{
-		return _image;
-	}
+	inline Image& getImage() { return _image; }
 	/// <summary>Get Image</summary>
 	/// <returns>The Image used in the image view</returns>
-	inline const Image& getImage() const
-	{
-		return _image;
-	}
+	inline const Image& getImage() const { return _image; }
 	/// <summary>Set PVRVk Image view creation image</summary>
 	/// <param name="image">Image to use for creating a PVRVk image view</param>
-	inline void setImage(const Image& image)
-	{
-		this->_image = image;
-	}
+	inline void setImage(const Image& image) { this->_image = image; }
 	/// <summary>Get Image view creation type</summary>
 	/// <returns>Image view creation image view type (ImageViewType)</returns>
-	inline ImageViewType getViewType() const
-	{
-		return _viewType;
-	}
+	inline ImageViewType getViewType() const { return _viewType; }
 	/// <summary>Set PVRVk Image view creation view type</summary>
 	/// <param name="viewType">Flags to use for creating a PVRVk image view</param>
-	inline void setViewType(ImageViewType viewType)
-	{
-		this->_viewType = viewType;
-	}
+	inline void setViewType(ImageViewType viewType) { this->_viewType = viewType; }
 	/// <summary>Get Image view format</summary>
 	/// <returns>Image view format (Format)</returns>
-	inline Format getFormat() const
-	{
-		return _format;
-	}
+	inline Format getFormat() const { return _format; }
 	/// <summary>Set the Image view format for PVRVk Image creation</summary>
 	/// <param name="format">The image view format to use for creating a PVRVk image</param>
-	inline void setFormat(Format format)
-	{
-		this->_format = format;
-	}
+	inline void setFormat(Format format) { this->_format = format; }
 	/// <summary>Get Image view components</summary>
 	/// <returns>The Image view components used for remapping color components</returns>
-	inline const ComponentMapping& getComponents() const
-	{
-		return _components;
-	}
+	inline const ComponentMapping& getComponents() const { return _components; }
 	/// <summary>Set PVRVk Image view creation components</summary>
 	/// <param name="components">Specifies a set of remappings of color components</param>
-	inline void setComponents(const ComponentMapping& components)
-	{
-		this->_components = components;
-	}
+	inline void setComponents(const ComponentMapping& components) { this->_components = components; }
 	/// <summary>Get Image view sub resource range</summary>
 	/// <returns>The Image view sub resource range used for selecting mipmap levels and array layers to be accessible to the view</returns>
-	inline const ImageSubresourceRange& getSubresourceRange() const
-	{
-		return _subresourceRange;
-	}
+	inline const ImageSubresourceRange& getSubresourceRange() const { return _subresourceRange; }
 	/// <summary>Set PVRVk Image view creation sub resource range</summary>
 	/// <param name="subresourceRange">Selects the set of mipmap levels and array layers to be accessible to the view</param>
-	inline void setSubresourceRange(const ImageSubresourceRange& subresourceRange)
-	{
-		this->_subresourceRange = subresourceRange;
-	}
+	inline void setSubresourceRange(const ImageSubresourceRange& subresourceRange) { this->_subresourceRange = subresourceRange; }
 
 private:
 	/// <summary>The image to use in the image view</summary>
@@ -743,52 +536,28 @@ public:
 
 	/// <summary>Get Image view creation Flags</summary>
 	/// <returns>Image view creation flags (ImageViewCreateFlags)</returns>
-	inline ImageViewCreateFlags getFlags() const
-	{
-		return _createInfo.getFlags();
-	}
+	inline ImageViewCreateFlags getFlags() const { return _createInfo.getFlags(); }
 	/// <summary>Get Image</summary>
 	/// <returns>The Image used in the image view</returns>
-	inline Image& getImage()
-	{
-		return _createInfo.getImage();
-	}
+	inline Image& getImage() { return _createInfo.getImage(); }
 	/// <summary>Get Image</summary>
 	/// <returns>The Image used in the image view</returns>
-	inline const Image& getImage() const
-	{
-		return _createInfo.getImage();
-	}
+	inline const Image& getImage() const { return _createInfo.getImage(); }
 	/// <summary>Get Image view creation type</summary>
 	/// <returns>Image view creation image view type (ImageViewType)</returns>
-	inline ImageViewType getViewType() const
-	{
-		return _createInfo.getViewType();
-	}
+	inline ImageViewType getViewType() const { return _createInfo.getViewType(); }
 	/// <summary>Get Image view format</summary>
 	/// <returns>Image view format (Format)</returns>
-	inline Format getFormat() const
-	{
-		return _createInfo.getFormat();
-	}
+	inline Format getFormat() const { return _createInfo.getFormat(); }
 	/// <summary>Get Image view components</summary>
 	/// <returns>The Image view components used for remapping color components</returns>
-	inline const ComponentMapping& getComponents() const
-	{
-		return _createInfo.getComponents();
-	}
+	inline const ComponentMapping& getComponents() const { return _createInfo.getComponents(); }
 	/// <summary>Get Image view sub resource range</summary>
 	/// <returns>The Image view sub resource range used for selecting mipmap levels and array layers to be accessible to the view</returns>
-	inline const ImageSubresourceRange& getSubresourceRange() const
-	{
-		return _createInfo.getSubresourceRange();
-	}
+	inline const ImageSubresourceRange& getSubresourceRange() const { return _createInfo.getSubresourceRange(); }
 	/// <summary>Get this images view's create flags</summary>
 	/// <returns>BufferViewCreateInfo</returns>
-	ImageViewCreateInfo getCreateInfo() const
-	{
-		return _createInfo;
-	}
+	ImageViewCreateInfo getCreateInfo() const { return _createInfo; }
 };
 } // namespace impl
 } // namespace pvrvk

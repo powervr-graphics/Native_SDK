@@ -44,10 +44,7 @@ public:
 	}
 	/// <summary>Get the camera target position i.e. the 'lookat' value.</summary>
 	/// <returns>The target's position</returns>
-	const glm::vec3& getTargetPosition()
-	{
-		return _targetPos;
-	}
+	const glm::vec3& getTargetPosition() { return _targetPos; }
 
 	/// <summary>Update the camera target position i.e. the 'lookat' value.</summary>
 	/// <param name="pos">The targets new position</param>
@@ -76,10 +73,7 @@ public:
 
 	/// <summary>Get the camera target look angle. Tn this implementation, angle 0 means the camera is facing the north.</summary>
 	/// <returns>The camera's angle in degrees</returns>
-	float getTargetLookAngle()
-	{
-		return _azimuth;
-	}
+	float getTargetLookAngle() { return _azimuth; }
 
 	/// <summary>Calculates and returns the camera view matrix based on the most up to date camera properties if they have been updated (are dirty) or returns the last view matrix
 	/// caluclated.</summary>
@@ -137,23 +131,14 @@ public:
 
 	/// <summary>Get the azimuth of the camera around the target (angle around the Z axis). Angle zero is on the X axis.</summary>
 	/// <returns>The camera's azimuth in degrees</returns>
-	float getAzimuth()
-	{
-		return _azimuth;
-	}
+	float getAzimuth() { return _azimuth; }
 
 	/// <summary>Set the azimuth of the camera along the target's XZ plane. 0 is on the X axis.</summary>
 	/// <param name="azimuth">The azimuth of the camera along the target's XZ plane</param>
 	void setAzimuth(float azimuth)
 	{
-		while (azimuth < -180.f)
-		{
-			azimuth += 360.f;
-		}
-		while (azimuth > 180.f)
-		{
-			azimuth -= 360.f;
-		}
+		while (azimuth < -180.f) { azimuth += 360.f; }
+		while (azimuth > 180.f) { azimuth -= 360.f; }
 		_azimuth = azimuth;
 		_updatePosition = true;
 		_updateView = true;
@@ -161,31 +146,19 @@ public:
 
 	/// <summary>Increase or decrease the azimuth of the camera by a (positive or negative) delta amount.</summary>
 	/// <param name="deltaAzimuth">The increase or decrease in azimuth</param>
-	void addAzimuth(float deltaAzimuth)
-	{
-		setAzimuth(_azimuth + deltaAzimuth);
-	}
+	void addAzimuth(float deltaAzimuth) { setAzimuth(_azimuth + deltaAzimuth); }
 
 	/// <summary>Get the inclination of the camera (vertical angle). 90 is top, -90 is bottom, 0 is horizontal.</summary>
 	/// <returns>The camera's inclination in the range of -90..90</returns>
-	float getInclination()
-	{
-		return _inclination;
-	}
+	float getInclination() { return _inclination; }
 
 	/// <summary>Set the vertical angle of the camera. 0 is on the target's XZ plane, -90 is below the target, 90 is above the target. Values over 90 or under -90 are
 	/// clamped.</summary>
 	/// <param name="inclination">height</param>
 	void setInclination(float inclination)
 	{
-		if (inclination > 90 - epsilon)
-		{
-			inclination = 90 - epsilon;
-		}
-		if (inclination < -90 + epsilon)
-		{
-			inclination = -90 + epsilon;
-		}
+		if (inclination > 90 - epsilon) { inclination = 90 - epsilon; }
+		if (inclination < -90 + epsilon) { inclination = -90 + epsilon; }
 		_inclination = inclination;
 		_updatePosition = true;
 		_updateView = true;
@@ -194,19 +167,13 @@ public:
 	/// <summary>Increase or decrease the inclination of the camera by a (positive or negative) delta amount. Resulting inclinations smaller than (-90 + epsilon)
 	/// or greater than (90-epsilon) are clamped.</summary>
 	/// <param name="deltaInclination">An inclination to add to the vertical angle of the camera.</param>
-	void addInclination(float deltaInclination)
-	{
-		setInclination(_inclination + deltaInclination);
-	}
+	void addInclination(float deltaInclination) { setInclination(_inclination + deltaInclination); }
 
 	/// <summary>Set the camera distance from the target</summary>
 	/// <param name="distance">The distance from the target</param>
 	void setDistanceFromTarget(float distance)
 	{
-		if (distance < epsilon)
-		{
-			distance = epsilon;
-		}
+		if (distance < epsilon) { distance = epsilon; }
 		_distance = distance;
 		_updatePosition = true;
 		_updateView = true;
@@ -214,10 +181,7 @@ public:
 
 	/// <summary>Add a delta amount (positive or negative) to the distance of the camera from the target. Resulting distances smaller than epsilon are clamped to epsilon.</summary>
 	/// <param name="deltaDistance">The distance from the target</param>
-	void addDistanceFromTarget(float deltaDistance)
-	{
-		setDistanceFromTarget(_distance + deltaDistance);
-	}
+	void addDistanceFromTarget(float deltaDistance) { setDistanceFromTarget(_distance + deltaDistance); }
 
 	/// <summary>Set the camera target position i.e. the 'lookat' value.</summary>
 	/// <param name="targetPos">Target position</param>
@@ -230,17 +194,11 @@ public:
 
 	/// <summary>Get the camera target position i.e. the 'lookat' value.</summary>
 	/// <returns>The target's position</returns>
-	const glm::vec3& getTargetPosition()
-	{
-		return _targetPos;
-	}
+	const glm::vec3& getTargetPosition() { return _targetPos; }
 
 	/// <summary>Update the camera target position i.e. the 'lookat' value by a delta amount.</summary>
 	/// <param name="pos">The targets new position</param>
-	void addTargetPosition(const glm::vec3& pos)
-	{
-		setTargetPosition(_targetPos + pos);
-	}
+	void addTargetPosition(const glm::vec3& pos) { setTargetPosition(_targetPos + pos); }
 
 	/// <summary>Calculates and returns the camera view matrix based on the most up to date camera properties if they have been updated (are dirty) or returns the last view matrix
 	/// caluclated.</summary>

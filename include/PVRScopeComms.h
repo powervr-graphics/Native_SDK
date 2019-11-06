@@ -9,7 +9,7 @@
 #ifndef _PVRSCOPECOMMS_H_
 #define _PVRSCOPECOMMS_H_
 
-#ifdef WIN32
+#ifdef _WIN32
 #define PVRSCOPE_EXPORT
 #else
 #define PVRSCOPE_EXPORT __attribute__((visibility("default")))

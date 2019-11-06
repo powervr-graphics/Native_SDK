@@ -99,10 +99,7 @@ pvr::Result OpenGLESIntroducingPVRShell::initApplication()
 \brief  Code in quitApplication() will be called by pvr::Shell once per run, just before exiting the program.
 		If the rendering context is lost, QuitApplication() will not be called.
 ***********************************************************************************************************************/
-pvr::Result OpenGLESIntroducingPVRShell::quitApplication()
-{
-	return pvr::Result::Success;
-}
+pvr::Result OpenGLESIntroducingPVRShell::quitApplication() { return pvr::Result::Success; }
 
 /*!*********************************************************************************************************************
 \return Return Result::Success if no error occured
@@ -245,16 +242,12 @@ pvr::Result OpenGLESIntroducingPVRShell::initView()
 pvr::Result OpenGLESIntroducingPVRShell::releaseView()
 {
 	// Release Vertex buffer object.
-	if (_vbo)
-		gl::DeleteBuffers(1, &_vbo);
+	if (_vbo) gl::DeleteBuffers(1, &_vbo);
 
 	// Frees the OpenGL handles for the program and the 2 shaders
-	if (_program)
-		gl::DeleteProgram(_program);
-	if (_vertexShader)
-		gl::DeleteShader(_vertexShader);
-	if (_fragShader)
-		gl::DeleteShader(_fragShader);
+	if (_program) gl::DeleteProgram(_program);
+	if (_vertexShader) gl::DeleteShader(_vertexShader);
+	if (_fragShader) gl::DeleteShader(_fragShader);
 
 	_context.release();
 
@@ -323,7 +316,4 @@ pvr::Result OpenGLESIntroducingPVRShell::renderFrame()
 
 /// <summary>This function must be implemented by the user of the shell. The user should return its pvr::Shell object defining the behaviour of the application.</summary>
 /// <returns>Return a unique ptr to the demo supplied by the user.</returns>
-std::unique_ptr<pvr::Shell> pvr::newDemo()
-{
-	return std::unique_ptr<pvr::Shell>(new OpenGLESIntroducingPVRShell());
-}
+std::unique_ptr<pvr::Shell> pvr::newDemo() { return std::make_unique<OpenGLESIntroducingPVRShell>(); }

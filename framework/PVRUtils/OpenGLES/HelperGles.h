@@ -80,10 +80,7 @@ size_t insertSorted_overwrite(container& cont, typename container::iterator begi
 {
 	typename container::iterator it = std::lower_bound(begin, end, item, compare);
 	int64_t offset = static_cast<int64_t>(it - begin);
-	if (it != end && !(compare(*it, item) || compare(item, *it)))
-	{
-		*it = item;
-	}
+	if (it != end && !(compare(*it, item) || compare(item, *it))) { *it = item; }
 	else
 	{
 		cont.insert(it, item);
@@ -125,14 +122,13 @@ inline Api getCurrentGlesVersion()
 {
 	const char* apistring = (const char*)gl::GetString(GL_VERSION);
 	int major, minor;
-	sscanf(apistring, "OpenGL ES %d.%d", &major, &minor);
+	int s = sscanf(apistring, "OpenGL ES %d.%d", &major, &minor);
+	(void)s;
 
-	if (major == 2)
-		return Api::OpenGLES2;
+	if (major == 2) return Api::OpenGLES2;
 	if (major == 3)
 	{
-		if (minor == 0)
-			return Api::OpenGLES3;
+		if (minor == 0) return Api::OpenGLES3;
 		return Api::OpenGLES31;
 	}
 	throw "";
@@ -171,8 +167,7 @@ inline bool checkFboStatus()
 		assertion(0);
 		break;
 #endif
-	case GL_FRAMEBUFFER_COMPLETE:
-		return true;
+	case GL_FRAMEBUFFER_COMPLETE: return true;
 	default:
 		Log(LogLevel::Error, "Fbo_::checkFboStatus UNKNOWN ERROR");
 		assertion(0);
@@ -191,15 +186,12 @@ inline bool checkFboStatus()
 /// <param name="screenshotScale">A scaling factor to use for increasing the size of the saved screenshot.</param>
 inline void takeScreenshot(const std::string& screenshotFileName, const uint32_t width, const uint32_t height, const uint32_t screenshotScale = 1)
 {
-	unsigned char* pBuffer = static_cast<unsigned char*>(calloc(1, width * height * 4));
-	gl::ReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, static_cast<void*>(pBuffer));
+	std::vector<unsigned char> pBuffer(width * height * 4);
+	gl::ReadPixels(0, 0, static_cast<GLsizei>(width), static_cast<GLsizei>(height), GL_RGBA, GL_UNSIGNED_BYTE, pBuffer.data());
 
 	GLenum err = gl::GetError();
 
-	if (err != GL_NO_ERROR)
-	{
-		Log(LogLevel::Information, "Screenshot was not taken successfully, filename %s.", screenshotFileName.c_str());
-	}
+	if (err != GL_NO_ERROR) { Log(LogLevel::Information, "Screenshot was not taken successfully, filename %s.", screenshotFileName.c_str()); }
 	else
 	{
 		uint32_t size = width * height * 4;
@@ -207,23 +199,18 @@ inline void takeScreenshot(const std::string& screenshotFileName, const uint32_t
 		// Switch the red and blue channels to convert to BGRA
 		for (uint32_t i = 0; i < size; i += 4)
 		{
-			const char tmp = pBuffer[i];
+			const unsigned char tmp = pBuffer[i];
 			pBuffer[i] = pBuffer[i + 2];
 			pBuffer[i + 2] = tmp;
 		}
 
 		Log(LogLevel::Information, "Writing TGA screenshot, filename %s.", screenshotFileName.c_str());
-		writeTGA(screenshotFileName.c_str(), width, height, static_cast<unsigned char*>(pBuffer), 4, screenshotScale);
+		writeTGA(screenshotFileName.c_str(), width, height, pBuffer.data(), 4, screenshotScale);
 	}
 
 	err = gl::GetError();
 
-	if (err != GL_NO_ERROR)
-	{
-		Log(LogLevel::Information, "Screenshot was not taken successfully, filename %s.", screenshotFileName.c_str());
-	}
-
-	free(pBuffer);
+	if (err != GL_NO_ERROR) { Log(LogLevel::Information, "Screenshot was not taken successfully, filename %s.", screenshotFileName.c_str()); }
 }
 
 /// <summary>Reads a block of pixel data from the frame buffer using the dimensions width and height as the dimensions of the
@@ -235,45 +222,42 @@ inline void takeScreenshot(const std::string& screenshotFileName, const uint32_t
 /// <param name="height">The width of the pixel rectangle retrieved.</param>
 /// <param name="screenshotScale">A scaling factor to use for increasing the size of the saved screenshot.</param>
 /// <returns>A scaling factor to use for increasing the size of the saved screenshot.</returns>
-inline GLuint textureUpload(IAssetProvider& app, const char* file, pvr::Texture& outTexture, bool isEs2 = false)
+inline GLuint textureUpload(const IAssetProvider& app, const char* file, pvr::Texture& outTexture, bool isEs2 = false)
 {
-	outTexture = pvr::textureLoad(app.getAssetStream(file), pvr::getTextureFormatFromFilename(file));
+	outTexture = pvr::textureLoad(*app.getAssetStream(file), pvr::getTextureFormatFromFilename(file));
 
 	auto res = pvr::utils::textureUpload(outTexture, isEs2, true);
 
 	return res.image;
 }
 
-inline GLuint textureUpload(IAssetProvider& app, const std::string& file, pvr::Texture& outTexture, bool isEs2 = false)
+inline GLuint textureUpload(const IAssetProvider& app, const std::string& file, pvr::Texture& outTexture, bool isEs2 = false)
 {
-	return textureUpload(app, file.c_str(), outTexture, false);
+	return textureUpload(app, file.c_str(), outTexture, isEs2);
 }
 
-inline GLuint textureUpload(IAssetProvider& app, const char* file, bool isEs2 = false)
+inline GLuint textureUpload(const IAssetProvider& app, const char* file, bool isEs2 = false)
 {
 	pvr::Texture tex;
 	return textureUpload(app, file, tex, isEs2);
 }
 
-inline GLuint textureUpload(IAssetProvider& app, const std::string& file, bool isEs2 = false)
-{
-	return textureUpload(app, file.c_str(), isEs2);
-}
+inline GLuint textureUpload(const IAssetProvider& app, const std::string& file, bool isEs2 = false) { return textureUpload(app, file.c_str(), isEs2); }
 
-inline TextureUploadResults textureUploadWithResults(IAssetProvider& app, const char* file, pvr::Texture& outTexture, bool isEs2 = false)
+inline TextureUploadResults textureUploadWithResults(const IAssetProvider& app, const char* file, pvr::Texture& outTexture, bool isEs2 = false)
 {
-	outTexture = pvr::textureLoad(app.getAssetStream(file), pvr::getTextureFormatFromFilename(file));
+	outTexture = pvr::textureLoad(*app.getAssetStream(file), pvr::getTextureFormatFromFilename(file));
 
 	return pvr::utils::textureUpload(outTexture, isEs2, true);
 }
-inline TextureUploadResults textureUploadWithResults(IAssetProvider& app, const char* file, bool isEs2 = false)
+inline TextureUploadResults textureUploadWithResults(const IAssetProvider& app, const char* file, bool isEs2 = false)
 {
-	return pvr::utils::textureUpload(pvr::textureLoad(app.getAssetStream(file), pvr::getTextureFormatFromFilename(file)), isEs2, true);
+	return pvr::utils::textureUpload(pvr::textureLoad(*app.getAssetStream(file), pvr::getTextureFormatFromFilename(file)), isEs2, true);
 }
 
-inline pvr::Texture getTextureData(IAssetProvider& app, const char* file)
+inline pvr::Texture getTextureData(const IAssetProvider& app, const char* file)
 {
-	Texture outTexture = pvr::textureLoad(app.getAssetStream(file), pvr::getTextureFormatFromFilename(file));
+	Texture outTexture = pvr::textureLoad(*app.getAssetStream(file), pvr::getTextureFormatFromFilename(file));
 
 	// Is the texture compressed? RGB9E5 is treated as an uncompressed texture in OpenGL/ES so is a special case.
 	bool isCompressedFormat =
@@ -328,7 +312,7 @@ inline pvr::Texture getTextureData(IAssetProvider& app, const char* file)
 				{
 					for (uint32_t uiFace = 0; uiFace < outTexture.getNumFaces(); ++uiFace)
 					{
-						pvr::PVRTDecompressPVRTC(outTexture.getDataPointer(uiMIPLevel, uiArray, uiFace), (outTexture.getBitsPerPixel() == 2 ? 1 : 0),
+						pvr::PVRTDecompressPVRTC(outTexture.getDataPointer(uiMIPLevel, uiArray, uiFace), (outTexture.getBitsPerPixel() == 2u ? 1u : 0u),
 							outTexture.getWidth(uiMIPLevel), outTexture.getHeight(uiMIPLevel), cDecompressedTexture.getDataPointer(uiMIPLevel, uiArray, uiFace));
 					}
 				}
@@ -343,7 +327,7 @@ inline pvr::Texture getTextureData(IAssetProvider& app, const char* file)
 }
 
 inline void generateTextureAtlas(
-	IAssetProvider& app, const StringHash* fileNames, Rectanglef* outUVs, uint32_t numTextures, GLuint* outTexture, TextureHeader* outDescriptor, bool isEs2 = false)
+	const IAssetProvider& app, const StringHash* fileNames, Rectanglef* outUVs, uint32_t numTextures, GLuint* outTexture, TextureHeader* outDescriptor, bool isEs2 = false)
 {
 	struct SortedImage
 	{
@@ -387,14 +371,8 @@ inline void generateTextureAtlas(
 		}
 
 	public:
-		Area(uint32_t width, uint32_t height) : x(0), y(0), isFilled(false), right(NULL), left(NULL)
-		{
-			setSize(width, height);
-		}
-		Area() : x(0), y(0), isFilled(false), right(NULL), left(NULL)
-		{
-			setSize(0, 0);
-		}
+		Area(uint32_t width, uint32_t height) : x(0), y(0), isFilled(false), right(NULL), left(NULL) { setSize(width, height); }
+		Area() : x(0), y(0), isFilled(false), right(NULL), left(NULL) { setSize(0, 0); }
 
 		Area* insert(uint32_t width, uint32_t height)
 		{
@@ -404,27 +382,15 @@ inline void generateTextureAtlas(
 			{
 				Area* tempPtr = NULL;
 				tempPtr = left->insert(width, height);
-				if (tempPtr != NULL)
-				{
-					return tempPtr;
-				}
+				if (tempPtr != NULL) { return tempPtr; }
 			}
 			// Now check right
-			if (right)
-			{
-				return right->insert(width, height);
-			}
+			if (right) { return right->insert(width, height); }
 			// Already filled!
-			if (isFilled)
-			{
-				return NULL;
-			}
+			if (isFilled) { return NULL; }
 
 			// Too small
-			if (size < width * height || w < width || h < height)
-			{
-				return NULL;
-			}
+			if (size < width * height || w < width || h < height) { return NULL; }
 
 			// Just right!
 			if (size == width * height && w == width && h == height)
@@ -482,28 +448,16 @@ inline void generateTextureAtlas(
 			{
 				if (left->left != NULL)
 				{
-					if (!left->deleteArea())
-					{
-						return false;
-					}
-					if (!right->deleteArea())
-					{
-						return false;
-					}
+					if (!left->deleteArea()) { return false; }
+					if (!right->deleteArea()) { return false; }
 				}
 			}
 			if (right != NULL)
 			{
 				if (right->left != NULL)
 				{
-					if (!left->deleteArea())
-					{
-						return false;
-					}
-					if (!right->deleteArea())
-					{
-						return false;
-					}
+					if (!left->deleteArea()) { return false; }
+					if (!right->deleteArea()) { return false; }
 				}
 			}
 			delete right;
@@ -526,9 +480,7 @@ inline void generateTextureAtlas(
 		if (sortedImage[i].texture.getPixelFormat().getPixelTypeId() == static_cast<uint64_t>(pvr::CompressedPixelFormat::PVRTCI_2bpp_RGBA) ||
 			sortedImage[i].texture.getPixelFormat().getPixelTypeId() == static_cast<uint64_t>(pvr::CompressedPixelFormat::PVRTCI_4bpp_RGBA) || pixelString[0] == 'a' ||
 			pixelString[1] == 'a' || pixelString[2] == 'a' || pixelString[3] == 'a')
-		{
-			sortedImage[i].hasAlpha = true;
-		}
+		{ sortedImage[i].hasAlpha = true; }
 		else
 		{
 			sortedImage[i].hasAlpha = false;
@@ -546,19 +498,10 @@ inline void generateTextureAtlas(
 	const uint32_t totalBorder = atlasPixelBorder * 2;
 	uint32_t i = 0;
 	// calculate the total area
-	for (; i < sortedImage.size(); ++i)
-	{
-		area += (sortedImage[i].width + totalBorder) * (sortedImage[i].height + totalBorder);
-	}
+	for (; i < sortedImage.size(); ++i) { area += (sortedImage[i].width + totalBorder) * (sortedImage[i].height + totalBorder); }
 	i = 0;
-	while ((preferredDim[i] * preferredDim[i]) < area && i < sizeof(preferredDim) / sizeof(preferredDim[0]))
-	{
-		++i;
-	}
-	if (i >= sizeof(preferredDim) / sizeof(preferredDim[0]))
-	{
-		throw InvalidDataError("Cannot find a best size for texture atlas");
-	}
+	while ((preferredDim[i] * preferredDim[i]) < area && i < sizeof(preferredDim) / sizeof(preferredDim[0])) { ++i; }
+	if (i >= sizeof(preferredDim) / sizeof(preferredDim[0])) { throw InvalidDataError("Cannot find a best size for texture atlas"); }
 	width = height = preferredDim[i];
 	float oneOverWidth = 1.f / width;
 	float oneOverHeight = 1.f / height;
@@ -587,21 +530,19 @@ inline void generateTextureAtlas(
 	utils::getOpenGLFormat(sortedImage[0].texture.getPixelFormat(), sortedImage[0].texture.getColorSpace(), sortedImage[0].texture.getChannelType(), glInternalFormat, glFormat,
 		glType, glTypeSize, unused);
 
-	if (useTexStorage)
-	{
-		gl::TexStorage2D(GL_TEXTURE_2D, 1, glInternalFormat, width, height);
-	}
+	if (useTexStorage) { gl::TexStorage2D(GL_TEXTURE_2D, 1, glInternalFormat, static_cast<GLsizei>(width), static_cast<GLsizei>(height)); }
 	else
 	{
-		gl::TexImage2D(GL_TEXTURE_2D, 0, glInternalFormat, width, height, 0, glFormat, glType, NULL);
+		if (isEs2) glInternalFormat = glFormat;
+		gl::TexImage2D(GL_TEXTURE_2D, 0, glInternalFormat, static_cast<GLsizei>(width), static_cast<GLsizei>(height), 0, glFormat, glType, NULL);
 	}
 
 	pvr::utils::throwOnGlError("generateTextureAtlas Generate output texture");
 
-	for (uint32_t i = 0; i < numTextures; ++i)
+	for (uint32_t textureIndex = 0; textureIndex < numTextures; ++textureIndex)
 	{
-		const SortedImage& image = sortedImage[i];
-		pRtrn = head->insert(sortedImage[i].width + totalBorder, sortedImage[i].height + totalBorder);
+		const SortedImage& image = sortedImage[textureIndex];
+		pRtrn = head->insert(sortedImage[textureIndex].width + totalBorder, sortedImage[textureIndex].height + totalBorder);
 		if (!pRtrn)
 		{
 			head->deleteArea();
@@ -612,16 +553,17 @@ inline void generateTextureAtlas(
 		dstOffset[0].y = static_cast<uint16_t>(pRtrn->y + atlasPixelBorder);
 		dstOffset[0].z = 0;
 
-		dstOffset[1].x = static_cast<uint16_t>(dstOffset[0].x + sortedImage[i].width);
-		dstOffset[1].y = static_cast<uint16_t>(dstOffset[0].y + sortedImage[i].height);
+		dstOffset[1].x = static_cast<uint16_t>(dstOffset[0].x + sortedImage[textureIndex].width);
+		dstOffset[1].y = static_cast<uint16_t>(dstOffset[0].y + sortedImage[textureIndex].height);
 		dstOffset[1].z = 1;
 
 		outUVs[image.id].x = dstOffset[0].x * oneOverWidth;
 		outUVs[image.id].y = dstOffset[0].y * oneOverHeight;
-		outUVs[image.id].width = sortedImage[i].width * oneOverWidth;
-		outUVs[image.id].height = sortedImage[i].height * oneOverHeight;
+		outUVs[image.id].width = sortedImage[textureIndex].width * oneOverWidth;
+		outUVs[image.id].height = sortedImage[textureIndex].height * oneOverHeight;
 
-		gl::TexSubImage2D(GL_TEXTURE_2D, 0, dstOffset[0].x, dstOffset[0].y, sortedImage[i].width, sortedImage[i].height, glFormat, glType, image.texture.getDataPointer());
+		gl::TexSubImage2D(GL_TEXTURE_2D, 0, static_cast<GLint>(dstOffset[0].x), static_cast<GLint>(dstOffset[0].y), static_cast<GLsizei>(sortedImage[textureIndex].width),
+			static_cast<GLsizei>(sortedImage[textureIndex].height), glFormat, glType, image.texture.getDataPointer());
 	}
 	if (outDescriptor)
 	{
@@ -632,18 +574,16 @@ inline void generateTextureAtlas(
 		outDescriptor->setDepth(1);
 		outDescriptor->setPixelFormat(outFmt.format);
 	}
-	gl::FenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0x00000000);
+	if (isEs2) { gl::Finish(); }
+	else
+	{
+		gl::FenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0x00000000);
+	}
 
 	head->deleteArea();
 	delete head;
 
 	pvr::utils::throwOnGlError("generateTextureAtlas End");
-}
-
-inline bool loadModel(IAssetProvider& app, const char* modelFile, pvr::assets::ModelHandle& model)
-{
-	model = pvr::assets::Model::createWithReader(pvr::assets::PODReader(app.getAssetStream(modelFile)));
-	return model != nullptr;
 }
 
 inline void deleteTexturesAndZero(GLuint& texture)
@@ -665,7 +605,7 @@ inline void deleteTexturesAndZero(GLuint& first, Args&... rest)
 struct VertexBindings
 {
 	std::string semanticName; //< effect semantic
-	int16_t binding; //< binding id
+	uint16_t binding; //< binding id
 };
 
 /// <summary>Represents a shader Reflective binding, tying a Semantic name to an Attribute variable name.</summary>
@@ -685,18 +625,12 @@ struct VertexAttributeInfoCmp_BindingLess_IndexLess
 };
 struct VertexBindingInfoCmp_BindingLess
 {
-	bool operator()(const VertexInputBindingInfo& lhs, const VertexInputBindingInfo& rhs) const
-	{
-		return lhs.bindingId < rhs.bindingId;
-	}
+	bool operator()(const VertexInputBindingInfo& lhs, const VertexInputBindingInfo& rhs) const { return lhs.bindingId < rhs.bindingId; }
 };
 
 struct VertexBindingInfoPred_BindingLess
 {
-	bool operator()(uint16_t lhs, const VertexInputBindingInfo& rhs) const
-	{
-		return lhs < rhs.bindingId;
-	}
+	bool operator()(uint16_t lhs, const VertexInputBindingInfo& rhs) const { return lhs < rhs.bindingId; }
 };
 } // namespace
 
@@ -724,9 +658,7 @@ struct VertexConfiguration
 	VertexConfiguration& addVertexAttributes(uint16_t bufferBinding, const VertexAttributeInfo* attrib, uint32_t numAttributes)
 	{
 		for (uint32_t i = 0; i < numAttributes; ++i)
-		{
-			pvr::utils::insertSorted_overwrite(attributes, VertexAttributeInfoWithBinding(attrib[i], bufferBinding), VertexAttributeInfoCmp_BindingLess_IndexLess());
-		}
+		{ pvr::utils::insertSorted_overwrite(attributes, VertexAttributeInfoWithBinding(attrib[i], bufferBinding), VertexAttributeInfoCmp_BindingLess_IndexLess()); }
 		return *this;
 	}
 
@@ -775,10 +707,7 @@ struct VertexAttributeInfoGles
 		  offset(reinterpret_cast<void*>(static_cast<size_t>(attr.offsetInBytes)))
 	{}
 
-	void callVertexAttribPtr()
-	{
-		gl::VertexAttribPointer(index, size, format, false, stride, offset);
-	}
+	void callVertexAttribPtr() { gl::VertexAttribPointer(index, size, format, false, static_cast<GLsizei>(stride), offset); }
 };
 
 /// <summary>A container struct carrying Vertex Attribute information (vertex layout, plus binding point)
@@ -794,10 +723,7 @@ struct VertexBindingInfoGles
 inline VertexConfiguration createInputAssemblyFromMesh(const assets::Mesh& mesh, const VertexBindings* bindingMap, uint16_t numBindings, uint16_t* outNumBuffers = NULL)
 {
 	VertexConfiguration retval;
-	if (outNumBuffers)
-	{
-		*outNumBuffers = 0;
-	}
+	if (outNumBuffers) { *outNumBuffers = 0; }
 	int16_t current = 0;
 	while (current < numBindings)
 	{
@@ -806,11 +732,9 @@ inline VertexConfiguration createInputAssemblyFromMesh(const assets::Mesh& mesh,
 		{
 			VertexAttributeLayout layout = attr->getVertexLayout();
 			uint32_t stride = mesh.getStride(attr->getDataIndex());
-			if (outNumBuffers)
-			{
-				*outNumBuffers = static_cast<uint16_t>(std::max<int32_t>(attr->getDataIndex() + 1, *outNumBuffers));
-			}
-			retval.addVertexAttribute(bindingMap[current].binding, attr->getDataIndex(), layout).setInputBinding(attr->getDataIndex(), stride, StepRate::Vertex);
+			if (outNumBuffers) { *outNumBuffers = (uint16_t)std::max<uint32_t>(attr->getDataIndex() + 1u, *outNumBuffers); }
+			retval.addVertexAttribute(bindingMap[current].binding, static_cast<uint16_t>(attr->getDataIndex()), layout)
+				.setInputBinding(static_cast<uint16_t>(attr->getDataIndex()), static_cast<uint16_t>(stride), StepRate::Vertex);
 		}
 		else
 		{
@@ -825,11 +749,8 @@ inline VertexConfiguration createInputAssemblyFromMesh(const assets::Mesh& mesh,
 inline VertexConfiguration createInputAssemblyFromMesh(const assets::Mesh& mesh, const VertexBindings_Name* bindingMap, uint16_t numBindings, uint16_t* outNumBuffers = NULL)
 {
 	VertexConfiguration retval;
-	if (outNumBuffers)
-	{
-		*outNumBuffers = 0;
-	}
-	int16_t current = 0;
+	if (outNumBuffers) { *outNumBuffers = 0; }
+	uint16_t current = 0;
 	// In this scenario, we will be using our own indices instead of user provided ones, correlating them by names.
 	while (current < numBindings)
 	{
@@ -839,11 +760,9 @@ inline VertexConfiguration createInputAssemblyFromMesh(const assets::Mesh& mesh,
 			VertexAttributeLayout layout = attr->getVertexLayout();
 			uint32_t stride = mesh.getStride(attr->getDataIndex());
 
-			if (outNumBuffers)
-			{
-				*outNumBuffers = static_cast<uint16_t>(std::max<int32_t>(attr->getDataIndex() + 1, *outNumBuffers));
-			}
-			retval.addVertexAttribute(current, attr->getDataIndex(), layout, bindingMap[current].variableName.c_str()).setInputBinding(attr->getDataIndex(), stride, StepRate::Vertex);
+			if (outNumBuffers) { *outNumBuffers = (uint16_t)std::max<uint32_t>(attr->getDataIndex() + 1u, *outNumBuffers); }
+			retval.addVertexAttribute(current, (uint16_t)attr->getDataIndex(), layout, bindingMap[current].variableName.c_str())
+				.setInputBinding((uint16_t)attr->getDataIndex(), (uint16_t)stride, StepRate::Vertex);
 			retval.topology = mesh.getMeshInfo().primitiveType;
 		}
 		else
@@ -871,14 +790,11 @@ inline VertexConfiguration createInputAssemblyFromMesh(const assets::Mesh& mesh,
 inline void createSingleBuffersFromMesh(const assets::Mesh& mesh, GLuint& outVbo, GLuint& outIbo)
 {
 	size_t total = 0;
-	for (uint32_t i = 0; i < mesh.getNumDataElements(); ++i)
-	{
-		total += mesh.getDataSize(i);
-	}
+	for (uint32_t i = 0; i < mesh.getNumDataElements(); ++i) { total += mesh.getDataSize(i); }
 
 	gl::GenBuffers(1, &outVbo);
 	gl::BindBuffer(GL_ARRAY_BUFFER, outVbo);
-	gl::BufferData(GL_ARRAY_BUFFER, total, NULL, GL_STATIC_DRAW);
+	gl::BufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(total), NULL, GL_STATIC_DRAW);
 
 	size_t current = 0;
 	for (uint32_t i = 0; i < mesh.getNumDataElements(); ++i)
@@ -949,10 +865,7 @@ inline void createSingleBuffersFromMeshes(MeshIterator_ meshIter, MeshIterator_ 
 	while (meshIter != meshIterEnd)
 	{
 		size_t total = 0;
-		for (uint32_t ii = 0; ii < meshIter->getNumDataElements(); ++ii)
-		{
-			total += meshIter->getDataSize(ii);
-		}
+		for (uint32_t ii = 0; ii < meshIter->getNumDataElements(); ++ii) { total += meshIter->getDataSize(ii); }
 
 		GLuint vbo;
 		gl::GenBuffers(1, &vbo);
@@ -1096,10 +1009,7 @@ inline void create3dPlaneMesh(uint32_t width, uint32_t length, bool vertexAttrib
 		outMesh.addVertexAttribute("NORMAL", DataType::Float32, 3, offset, 0);
 		offset += sizeof(float) * 2;
 	}
-	if (vertexAttribTex)
-	{
-		outMesh.addVertexAttribute("UV0", DataType::Float32, 2, offset, 0);
-	}
+	if (vertexAttribTex) { outMesh.addVertexAttribute("UV0", DataType::Float32, 2, offset, 0); }
 	outMesh.setPrimitiveType(PrimitiveTopology::TriangleList);
 	outMesh.setStride(0, stride);
 	outMesh.setNumFaces(ARRAY_SIZE(indexData) / 3);

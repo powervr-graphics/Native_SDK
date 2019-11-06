@@ -15,14 +15,10 @@ RenderPass_::RenderPass_(make_shared_enabler, const DeviceWeakPtr& device, const
 	VkRenderPassCreateInfo renderPassInfoVk;
 	memset(&renderPassInfoVk, 0, sizeof(renderPassInfoVk));
 	renderPassInfoVk.sType = static_cast<VkStructureType>(StructureType::e_RENDER_PASS_CREATE_INFO);
-	std::vector<VkAttachmentDescription> attachmentDescVk;
-	std::vector<VkSubpassDescription> subPassesVk;
-	std::vector<VkSubpassDependency> subPassDependenciesVk;
 
-	//--- Attachments
 	renderPassInfoVk.attachmentCount = createInfo.getNumAttachmentDescription();
+	pvrvk::ArrayOrVector<VkAttachmentDescription, 4> attachmentDescVk(renderPassInfoVk.attachmentCount);
 
-	attachmentDescVk.resize(renderPassInfoVk.attachmentCount);
 	for (uint32_t attachmentIndex = 0; attachmentIndex < createInfo.getNumAttachmentDescription(); ++attachmentIndex)
 	{
 		const AttachmentDescription& attachmentDesc = createInfo.getAttachmentDescription(attachmentIndex);
@@ -30,9 +26,7 @@ RenderPass_::RenderPass_(make_shared_enabler, const DeviceWeakPtr& device, const
 		attachmentDescVk[attachmentIndex].samples = static_cast<VkSampleCountFlagBits>(attachmentDesc.getSamples());
 
 		if ((attachmentDescVk[attachmentIndex].format = static_cast<VkFormat>(attachmentDesc.getFormat())) == Format::e_UNDEFINED)
-		{
-			throw ErrorValidationFailedEXT("RenderPassVk: Unsupported Color VkFormat");
-		}
+		{ throw ErrorValidationFailedEXT("RenderPassVk: Unsupported Color VkFormat"); }
 		attachmentDescVk[attachmentIndex].loadOp = static_cast<VkAttachmentLoadOp>(attachmentDesc.getLoadOp());
 		attachmentDescVk[attachmentIndex].storeOp = static_cast<VkAttachmentStoreOp>(attachmentDesc.getStoreOp());
 		attachmentDescVk[attachmentIndex].initialLayout = static_cast<VkImageLayout>(attachmentDesc.getInitialLayout());
@@ -41,30 +35,28 @@ RenderPass_::RenderPass_(make_shared_enabler, const DeviceWeakPtr& device, const
 		attachmentDescVk[attachmentIndex].stencilStoreOp = static_cast<VkAttachmentStoreOp>(attachmentDesc.getStencilStoreOp());
 	} // next attachment
 
-	renderPassInfoVk.pAttachments = attachmentDescVk.data();
+	renderPassInfoVk.pAttachments = attachmentDescVk.get();
 
-	//--------------------
-	//--- Subpass
+	// Subpass
 	renderPassInfoVk.subpassCount = createInfo.getNumSubpasses();
-	std::vector<VkAttachmentReference> attachmentReferenceVk;
-	// calc the attachmentRefs total sizes
-	{
-		uint32_t totalNumAttachmentRef = 0;
+	pvrvk::ArrayOrVector<VkSubpassDescription, 2> subPassesVk(renderPassInfoVk.subpassCount);
 
-		for (uint32_t i = 0; i < createInfo.getNumSubpasses(); ++i)
-		{
-			const SubpassDescription& subpass = createInfo.getSubpass(i);
-			totalNumAttachmentRef += subpass.getNumColorAttachmentReference();
-			totalNumAttachmentRef += subpass.getNumInputAttachmentReference();
-			totalNumAttachmentRef += static_cast<uint32_t>(subpass.getDepthStencilAttachmentReference().getLayout() != ImageLayout::e_UNDEFINED);
-			totalNumAttachmentRef += subpass.getNumResolveAttachmentReference();
-			totalNumAttachmentRef += subpass.getNumPreserveAttachmentReference();
-		}
-		attachmentReferenceVk.resize(totalNumAttachmentRef);
+	// calculate the attachmentRefs total sizes
+	uint32_t totalNumAttachmentRef = 0;
+
+	for (uint32_t i = 0; i < renderPassInfoVk.subpassCount; ++i)
+	{
+		const SubpassDescription& subpass = createInfo.getSubpass(i);
+		totalNumAttachmentRef += subpass.getNumColorAttachmentReference();
+		totalNumAttachmentRef += subpass.getNumInputAttachmentReference();
+		totalNumAttachmentRef += static_cast<uint32_t>(subpass.getDepthStencilAttachmentReference().getLayout() != ImageLayout::e_UNDEFINED);
+		totalNumAttachmentRef += subpass.getNumResolveAttachmentReference();
+		totalNumAttachmentRef += subpass.getNumPreserveAttachmentReference();
 	}
-	subPassesVk.resize(renderPassInfoVk.subpassCount);
+	pvrvk::ArrayOrVector<VkAttachmentReference, 4> attachmentReferenceVk(totalNumAttachmentRef);
+
 	uint32_t attachmentOffset = 0;
-	for (uint32_t subpassId = 0; subpassId < createInfo.getNumSubpasses(); ++subpassId)
+	for (uint32_t subpassId = 0; subpassId < renderPassInfoVk.subpassCount; ++subpassId)
 	{
 		const SubpassDescription& subpass = createInfo.getSubpass(subpassId);
 		VkSubpassDescription subPassVk = {};
@@ -125,11 +117,11 @@ RenderPass_::RenderPass_(make_shared_enabler, const DeviceWeakPtr& device, const
 		}
 		subPassesVk[subpassId] = subPassVk;
 	} // next subpass
-	renderPassInfoVk.pSubpasses = subPassesVk.data();
+	renderPassInfoVk.pSubpasses = subPassesVk.get();
 
-	//--- Sub pass dependencies
+	// Sub pass dependencies
 	renderPassInfoVk.dependencyCount = createInfo.getNumSubpassDependencies();
-	subPassDependenciesVk.resize(renderPassInfoVk.dependencyCount);
+	pvrvk::ArrayOrVector<VkSubpassDependency, 4> subPassDependenciesVk(renderPassInfoVk.dependencyCount);
 
 	for (uint32_t attachmentIndex = 0; attachmentIndex < createInfo.getNumSubpassDependencies(); ++attachmentIndex)
 	{
@@ -147,7 +139,7 @@ RenderPass_::RenderPass_(make_shared_enabler, const DeviceWeakPtr& device, const
 
 		subPassDependenciesVk[attachmentIndex] = subPassDependencyVk;
 	} // next subpass dependency
-	renderPassInfoVk.pDependencies = subPassDependenciesVk.data();
+	renderPassInfoVk.pDependencies = subPassDependenciesVk.get();
 
 	vkThrowIfFailed(getDevice()->getVkBindings().vkCreateRenderPass(getDevice()->getVkHandle(), &renderPassInfoVk, NULL, &_vkHandle), "Create RenderPass Failed");
 }

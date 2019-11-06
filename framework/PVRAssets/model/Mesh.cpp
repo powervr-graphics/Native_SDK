@@ -17,31 +17,16 @@ namespace pvr {
 namespace assets {
 class SemanticLessThan
 {
-	inline bool operator()(const Mesh::VertexAttributeData& lhs, const Mesh::VertexAttributeData rhs)
-	{
-		return lhs.getSemantic() < rhs.getSemantic();
-	}
+	inline bool operator()(const Mesh::VertexAttributeData& lhs, const Mesh::VertexAttributeData rhs) { return lhs.getSemantic() < rhs.getSemantic(); }
 };
 
-void Mesh::VertexAttributeData::setDataType(DataType type)
-{
-	_layout.dataType = type;
-}
+void Mesh::VertexAttributeData::setDataType(DataType type) { _layout.dataType = type; }
 
-void Mesh::VertexAttributeData::setOffset(uint32_t offset)
-{
-	_layout.offset = static_cast<uint16_t>(offset);
-}
+void Mesh::VertexAttributeData::setOffset(uint32_t offset) { _layout.offset = static_cast<uint16_t>(offset); }
 
-void Mesh::VertexAttributeData::setN(uint8_t n)
-{
-	_layout.width = n;
-}
+void Mesh::VertexAttributeData::setN(uint8_t n) { _layout.width = n; }
 
-void Mesh::VertexAttributeData::setDataIndex(uint16_t dataIndex)
-{
-	_dataIndex = dataIndex;
-}
+void Mesh::VertexAttributeData::setDataIndex(uint16_t dataIndex) { _dataIndex = dataIndex; }
 
 // CFaceData
 Mesh::FaceData::FaceData() : _indexType(IndexType::IndexType16Bit) {}
@@ -59,35 +44,23 @@ int32_t Mesh::addData(const uint8_t* data, uint32_t size, uint32_t stride)
 	_data.vertexAttributeDataBlocks.back().stride = static_cast<uint16_t>(stride);
 	UInt8Buffer& last_element = _data.vertexAttributeDataBlocks.back();
 	last_element.resize(size);
-	if (data)
-	{
-		memcpy(last_element.data(), data, size);
-	}
-	return static_cast<uint32_t>(_data.vertexAttributeDataBlocks.size()) - 1;
+	if (data) { memcpy(last_element.data(), data, size); }
+	return static_cast<int32_t>(_data.vertexAttributeDataBlocks.size()) - 1;
 }
 
 int32_t Mesh::addData(const uint8_t* data, uint32_t size, uint32_t stride, uint32_t index)
 {
-	if (_data.vertexAttributeDataBlocks.size() <= index)
-	{
-		_data.vertexAttributeDataBlocks.resize(index + 1);
-	}
+	if (_data.vertexAttributeDataBlocks.size() <= index) { _data.vertexAttributeDataBlocks.resize(index + 1); }
 	StridedBuffer& last_element = _data.vertexAttributeDataBlocks[index];
 	last_element.stride = static_cast<uint16_t>(stride);
 	last_element.resize(size);
-	if (data)
-	{
-		memcpy(last_element.data(), data, size);
-	}
-	return static_cast<uint32_t>(_data.vertexAttributeDataBlocks.size()) - 1;
+	if (data) { memcpy(last_element.data(), data, size); }
+	return static_cast<int32_t>(_data.vertexAttributeDataBlocks.size()) - 1;
 }
 
 void Mesh::setStride(uint32_t index, uint32_t stride)
 {
-	if (_data.vertexAttributeDataBlocks.size() <= index)
-	{
-		_data.vertexAttributeDataBlocks.resize(index + 1);
-	}
+	if (_data.vertexAttributeDataBlocks.size() <= index) { _data.vertexAttributeDataBlocks.resize(index + 1); }
 	_data.vertexAttributeDataBlocks[index].stride = static_cast<uint16_t>(stride);
 }
 
@@ -103,10 +76,7 @@ void Mesh::removeData(uint32_t index)
 	{
 		uint32_t idx = walk->value.getDataIndex();
 
-		if (idx > index)
-		{
-			walk->value.setDataIndex(static_cast<uint16_t>(idx--));
-		}
+		if (idx > index) { walk->value.setDataIndex(static_cast<uint16_t>(idx--)); }
 		else if (idx == index)
 		{
 			walk->value.setDataIndex(static_cast<uint16_t>(-1));
@@ -118,16 +88,10 @@ void Mesh::removeData(uint32_t index)
 int32_t Mesh::addVertexAttribute(const VertexAttributeData& element, bool forceReplace)
 {
 	VertexAttributeContainer::index_iterator it = _data.vertexAttributes.indexed_find(element.getSemantic());
-	if (it == _data.vertexAttributes.indexed_end())
-	{
-		return static_cast<int32_t>(_data.vertexAttributes.insert(element.getSemantic(), element));
-	}
+	if (it == _data.vertexAttributes.indexed_end()) { return static_cast<int32_t>(_data.vertexAttributes.insert(element.getSemantic(), element)); }
 	else
 	{
-		if (forceReplace)
-		{
-			_data.vertexAttributes[it->first] = element;
-		}
+		if (forceReplace) { _data.vertexAttributes[it->first] = element; }
 		else
 		{
 			return -1;
@@ -148,9 +112,7 @@ int32_t Mesh::addVertexAttribute(const StringHash& semanticName, const DataType&
 	else
 	{
 		if (forceReplace)
-		{
-			_data.vertexAttributes[index] = VertexAttributeData(semanticName, type, static_cast<uint8_t>(n), static_cast<uint16_t>(offset), static_cast<uint16_t>(dataIndex));
-		}
+		{ _data.vertexAttributes[index] = VertexAttributeData(semanticName, type, static_cast<uint8_t>(n), static_cast<uint16_t>(offset), static_cast<uint16_t>(dataIndex)); }
 		else
 		{
 			return -1;
@@ -163,25 +125,16 @@ void Mesh::addFaces(const uint8_t* data, uint32_t size, IndexType indexType)
 {
 	_data.faces.setData(data, size, indexType);
 
-	if (size)
-	{
-		_data.primitiveData.numFaces = size / (indexType == IndexType::IndexType32Bit ? 4 : 2) / 3;
-	}
+	if (size) { _data.primitiveData.numFaces = size / (indexType == IndexType::IndexType32Bit ? 4 : 2) / 3; }
 	else
 	{
 		_data.primitiveData.numFaces = 0;
 	}
 }
 
-void Mesh::removeVertexAttribute(const StringHash& semantic)
-{
-	_data.vertexAttributes.erase(semantic);
-}
+void Mesh::removeVertexAttribute(const StringHash& semantic) { _data.vertexAttributes.erase(semantic); }
 
-void Mesh::removeAllVertexAttributes(void)
-{
-	_data.vertexAttributes.clear();
-}
+void Mesh::removeAllVertexAttributes(void) { _data.vertexAttributes.clear(); }
 
 namespace {
 struct DataCarrier

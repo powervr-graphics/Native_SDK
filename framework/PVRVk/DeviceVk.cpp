@@ -74,10 +74,7 @@ std::vector<const char*> filterLayers(const std::vector<VkLayerProperties>& vec,
 	{
 		for (uint32_t j = 0; j < numfilters; ++j)
 		{
-			if (!strcmp(vec[i].layerName, filters[j]))
-			{
-				retval.emplace_back(filters[j]);
-			}
+			if (!strcmp(vec[i].layerName, filters[j])) { retval.emplace_back(filters[j]); }
 		}
 	}
 	return retval;
@@ -88,10 +85,7 @@ pvrvk::GraphicsPipeline Device_::createGraphicsPipeline(const GraphicsPipelineCr
 	GraphicsPipelinePopulate pipelineFactory;
 	VkPipeline vkPipeline;
 
-	if (!pipelineFactory.init(createInfo))
-	{
-		return GraphicsPipeline();
-	}
+	if (!pipelineFactory.init(createInfo)) { return GraphicsPipeline(); }
 	vkThrowIfFailed(getVkBindings().vkCreateGraphicsPipelines(
 						getVkHandle(), pipelineCache ? pipelineCache->getVkHandle() : VK_NULL_HANDLE, 1, &pipelineFactory.getVkCreateInfo(), nullptr, &vkPipeline),
 		"Create GraphicsPipeline Failed.");
@@ -117,10 +111,7 @@ void Device_::createGraphicsPipelines(const GraphicsPipelineCreateInfo* createIn
 
 	Device device = shared_from_this();
 	// create the pipeline wrapper
-	for (uint32_t i = 0; i < numCreateInfos; ++i)
-	{
-		outPipelines[i] = GraphicsPipeline_::constructShared(device, vkPipelines[i], createInfos[i]);
-	}
+	for (uint32_t i = 0; i < numCreateInfos; ++i) { outPipelines[i] = GraphicsPipeline_::constructShared(device, vkPipelines[i], createInfos[i]); }
 }
 
 ComputePipeline Device_::createComputePipeline(const ComputePipelineCreateInfo& createInfo, const PipelineCache& pipelineCache)
@@ -139,25 +130,22 @@ ComputePipeline Device_::createComputePipeline(const ComputePipelineCreateInfo& 
 
 void Device_::createComputePipelines(const ComputePipelineCreateInfo* createInfos, uint32_t numCreateInfos, const PipelineCache& pipelineCache, ComputePipeline* outPipelines)
 {
-	std::vector<ComputePipelinePopulate> pipelineFactories(numCreateInfos);
-	std::vector<VkComputePipelineCreateInfo> vkCreateInfos(numCreateInfos);
-	std::vector<VkPipeline> vkPipelines(numCreateInfos, VK_NULL_HANDLE);
+	pvrvk::ArrayOrVector<ComputePipelinePopulate, 2> pipelineFactories(numCreateInfos);
+	pvrvk::ArrayOrVector<VkComputePipelineCreateInfo, 2> vkCreateInfos(numCreateInfos);
+	pvrvk::ArrayOrVector<VkPipeline, 2> vkPipelines(numCreateInfos);
 
 	for (uint32_t i = 0; i < numCreateInfos; ++i)
 	{
 		pipelineFactories[i].init(createInfos[i]);
 		vkCreateInfos[i] = pipelineFactories[i].createInfo;
 	}
-	vkThrowIfFailed(getVkBindings().vkCreateComputePipelines(getVkHandle(), pipelineCache ? pipelineCache->getVkHandle() : VK_NULL_HANDLE,
-						static_cast<uint32_t>(vkCreateInfos.size()), vkCreateInfos.data(), nullptr, vkPipelines.data()),
+	vkThrowIfFailed(getVkBindings().vkCreateComputePipelines(getVkHandle(), pipelineCache ? pipelineCache->getVkHandle() : VK_NULL_HANDLE, static_cast<uint32_t>(numCreateInfos),
+						vkCreateInfos.get(), nullptr, vkPipelines.get()),
 		"Create ComputePipelines Failed");
 
 	Device device = shared_from_this();
 	// create the pipeline wrapper
-	for (uint32_t i = 0; i < numCreateInfos; ++i)
-	{
-		outPipelines[i] = ComputePipeline_::constructShared(device, vkPipelines[i], createInfos[i]);
-	}
+	for (uint32_t i = 0; i < numCreateInfos; ++i) { outPipelines[i] = ComputePipeline_::constructShared(device, vkPipelines[i], createInfos[i]); }
 }
 
 pvrvk::Image Device_::createImage(const ImageCreateInfo& createInfo)
@@ -169,7 +157,7 @@ pvrvk::Image Device_::createImage(const ImageCreateInfo& createInfo)
 void Device_::updateDescriptorSets(const WriteDescriptorSet* writeDescSets, uint32_t numWriteDescSets, const CopyDescriptorSet* copyDescSets, uint32_t numCopyDescSets)
 {
 	// WRITE DESCRIPTORSET
-	std::vector<VkWriteDescriptorSet> vkWriteDescSets(numWriteDescSets);
+	pvrvk::ArrayOrVector<VkWriteDescriptorSet, 4> vkWriteDescSets(numWriteDescSets);
 	// Count number of image, buffer and texel buffer view needed
 	uint32_t numImageInfos = 0, numBufferInfos = 0, numTexelBufferView = 0;
 
@@ -183,10 +171,7 @@ void Device_::updateDescriptorSets(const WriteDescriptorSet* writeDescSets, uint
 			{
 				// Validate the Sampler bindings
 				std::for_each(writeDescSets[i]._infos.begin(), writeDescSets[i]._infos.end(), [](const WriteDescriptorSet::DescriptorInfos& infos) {
-					if (infos.isValid())
-					{
-						assert(infos.imageInfo.sampler && "Sampler Must be valid");
-					}
+					if (infos.isValid()) { assert(infos.imageInfo.sampler && "Sampler Must be valid"); }
 				});
 			}
 			else if (writeDescSets[i].getDescriptorType() == DescriptorType::e_COMBINED_IMAGE_SAMPLER)
@@ -204,10 +189,7 @@ void Device_::updateDescriptorSets(const WriteDescriptorSet* writeDescSets, uint
 			{
 				// Validate the ImageView bindings
 				std::for_each(writeDescSets[i]._infos.begin(), writeDescSets[i]._infos.end(), [](const WriteDescriptorSet::DescriptorInfos& infos) {
-					if (infos.isValid())
-					{
-						assert(infos.imageInfo.imageView && "ImageView Must be valid");
-					}
+					if (infos.isValid()) { assert(infos.imageInfo.imageView && "ImageView Must be valid"); }
 				});
 			}
 #endif
@@ -218,24 +200,17 @@ void Device_::updateDescriptorSets(const WriteDescriptorSet* writeDescSets, uint
 #ifdef DEBUG
 			// Validate the Buffer bindings
 			std::for_each(writeDescSets[i]._infos.begin(), writeDescSets[i]._infos.end(), [](const WriteDescriptorSet::DescriptorInfos& infos) {
-				if (infos.isValid())
-				{
-					assert(infos.bufferInfo.buffer && "Buffer Must be valid");
-				}
+				if (infos.isValid()) { assert(infos.bufferInfo.buffer && "Buffer Must be valid"); }
 			});
 #endif
 			numBufferInfos += writeDescSets[i].getNumDescriptors();
 		}
-		else if (writeDescSets[i].getDescriptorType() == DescriptorType::e_UNIFORM_TEXEL_BUFFER ||
-			writeDescSets[i].getDescriptorType() <= DescriptorType::e_STORAGE_TEXEL_BUFFER) // Texel buffer
+		else if (writeDescSets[i].getDescriptorType() == DescriptorType::e_UNIFORM_TEXEL_BUFFER || writeDescSets[i].getDescriptorType() <= DescriptorType::e_STORAGE_TEXEL_BUFFER) // Texel buffer
 		{
 #ifdef DEBUG
 			// Validate the BufferView bindings
 			std::for_each(writeDescSets[i]._infos.begin(), writeDescSets[i]._infos.end(), [](const WriteDescriptorSet::DescriptorInfos& infos) {
-				if (infos.isValid())
-				{
-					assert(infos.texelBuffer->getBuffer() && "Buffer Must be valid");
-				}
+				if (infos.isValid()) { assert(infos.texelBuffer->getBuffer() && "Buffer Must be valid"); }
 			});
 #endif
 			numTexelBufferView += writeDescSets[i].getNumDescriptors();
@@ -247,9 +222,9 @@ void Device_::updateDescriptorSets(const WriteDescriptorSet* writeDescSets, uint
 	}
 
 	// now allocate
-	std::vector<VkDescriptorBufferInfo> bufferInfoVk(numBufferInfos);
-	std::vector<VkDescriptorImageInfo> imageInfoVk(numImageInfos);
-	std::vector<VkBufferView> texelBufferVk(numTexelBufferView);
+	pvrvk::ArrayOrVector<VkDescriptorBufferInfo, 4> bufferInfoVk(numBufferInfos);
+	pvrvk::ArrayOrVector<VkDescriptorImageInfo, 4> imageInfoVk(numImageInfos);
+	pvrvk::ArrayOrVector<VkBufferView, 4> texelBufferVk(numTexelBufferView);
 	uint32_t vkImageInfoOffset = 0;
 	uint32_t vkBufferInfoOffset = 0;
 
@@ -269,8 +244,8 @@ void Device_::updateDescriptorSets(const WriteDescriptorSet* writeDescSets, uint
 		// Do the buffer info
 		if (writeDescSet._infoType == WriteDescriptorSet::InfoType::BufferInfo)
 		{
-			vkWriteDescSet.pBufferInfo = bufferInfoVk.data() + vkBufferInfoOffset;
-			std::transform(writeDescSet._infos.begin(), writeDescSet._infos.end(), bufferInfoVk.begin() + vkBufferInfoOffset,
+			vkWriteDescSet.pBufferInfo = bufferInfoVk.get() + vkBufferInfoOffset;
+			std::transform(writeDescSet._infos.begin(), writeDescSet._infos.end(), bufferInfoVk.get() + vkBufferInfoOffset,
 				[&](const WriteDescriptorSet::DescriptorInfos& writeDescSet) -> VkDescriptorBufferInfo {
 					return VkDescriptorBufferInfo{ writeDescSet.bufferInfo.buffer->getVkHandle(), writeDescSet.bufferInfo.offset, writeDescSet.bufferInfo.range };
 				});
@@ -279,8 +254,8 @@ void Device_::updateDescriptorSets(const WriteDescriptorSet* writeDescSets, uint
 		}
 		else if (writeDescSet._infoType == WriteDescriptorSet::InfoType::ImageInfo)
 		{
-			vkWriteDescSet.pImageInfo = imageInfoVk.data() + vkImageInfoOffset;
-			std::transform(writeDescSet._infos.begin(), writeDescSet._infos.end(), imageInfoVk.begin() + vkImageInfoOffset,
+			vkWriteDescSet.pImageInfo = imageInfoVk.get() + vkImageInfoOffset;
+			std::transform(writeDescSet._infos.begin(), writeDescSet._infos.end(), imageInfoVk.get() + vkImageInfoOffset,
 				[&](const WriteDescriptorSet::DescriptorInfos& writeDescSet) -> VkDescriptorImageInfo {
 					return VkDescriptorImageInfo{ (writeDescSet.imageInfo.sampler ? writeDescSet.imageInfo.sampler->getVkHandle() : VK_NULL_HANDLE),
 						(writeDescSet.imageInfo.imageView ? writeDescSet.imageInfo.imageView->getVkHandle() : VK_NULL_HANDLE),
@@ -292,14 +267,14 @@ void Device_::updateDescriptorSets(const WriteDescriptorSet* writeDescSets, uint
 	}
 
 	// COPY DESCRIPTOR SET
-	std::vector<VkCopyDescriptorSet> vkCopyDescriptorSets(numCopyDescSets);
-	std::transform(copyDescSets, copyDescSets + numCopyDescSets, vkCopyDescriptorSets.begin(), [&](const CopyDescriptorSet& copyDescSet) {
+	pvrvk::ArrayOrVector<VkCopyDescriptorSet, 4> vkCopyDescriptorSets(numCopyDescSets);
+	std::transform(copyDescSets, copyDescSets + numCopyDescSets, vkCopyDescriptorSets.get(), [&](const CopyDescriptorSet& copyDescSet) {
 		return VkCopyDescriptorSet{ static_cast<VkStructureType>(StructureType::e_COPY_DESCRIPTOR_SET), nullptr, copyDescSet.srcSet->getVkHandle(), copyDescSet.srcBinding,
 			copyDescSet.srcArrayElement, copyDescSet.dstSet->getVkHandle(), copyDescSet.dstBinding, copyDescSet.dstArrayElement, copyDescSet.descriptorCount };
 	});
 
 	getVkBindings().vkUpdateDescriptorSets(
-		getVkHandle(), static_cast<uint32_t>(vkWriteDescSets.size()), vkWriteDescSets.data(), static_cast<uint32_t>(vkCopyDescriptorSets.size()), vkCopyDescriptorSets.data());
+		getVkHandle(), static_cast<uint32_t>(numWriteDescSets), vkWriteDescSets.get(), static_cast<uint32_t>(numCopyDescSets), vkCopyDescriptorSets.get());
 }
 
 ImageView Device_::createImageView(const ImageViewCreateInfo& createInfo)
@@ -390,47 +365,24 @@ PipelineLayout Device_::createPipelineLayout(const PipelineLayoutCreateInfo& cre
 
 bool Device_::waitForFences(uint32_t numFences, const Fence* const fences, const bool waitAll, const uint64_t timeout)
 {
-	VkFence vkFenceArray[10];
-	std::vector<VkFence> vkFenceVec(0);
-	VkFence* vkFences = vkFenceArray;
-	if (numFences > sizeof(vkFenceArray) / sizeof(vkFenceArray[0]))
-	{
-		vkFenceVec.resize(numFences);
-		vkFences = vkFenceVec.data();
-	}
+	pvrvk::ArrayOrVector<VkFence, 4> vkFences(numFences);
 
-	for (uint32_t i = 0; i < numFences; i++)
-	{
-		vkFences[i] = fences[i]->getVkHandle();
-	}
+	for (uint32_t i = 0; i < numFences; i++) { vkFences[i] = fences[i]->getVkHandle(); }
 
 	Result res;
-	vkThrowIfError(res = static_cast<pvrvk::Result>(getVkBindings().vkWaitForFences(getVkHandle(), numFences, vkFences, waitAll, timeout)), "WaitForFences failed");
-	if (res == Result::e_SUCCESS)
-	{
-		return true;
-	}
+	vkThrowIfError(res = static_cast<pvrvk::Result>(getVkBindings().vkWaitForFences(getVkHandle(), numFences, vkFences.get(), waitAll, timeout)), "WaitForFences failed");
+	if (res == Result::e_SUCCESS) { return true; }
 	assert(res == Result::e_TIMEOUT && "WaitForFences returned neither success nor timeout, yet did not throw!");
 	return false;
 }
 
 void Device_::resetFences(uint32_t numFences, const Fence* const fences)
 {
-	VkFence vkFenceArray[10];
-	std::vector<VkFence> vkFenceVec(0);
-	VkFence* vkFences = vkFenceArray;
-	if (numFences > sizeof(vkFenceArray) / sizeof(vkFenceArray[0]))
-	{
-		vkFenceVec.resize(numFences);
-		vkFences = vkFenceVec.data();
-	}
+	pvrvk::ArrayOrVector<VkFence, 4> vkFences(numFences);
 
-	for (uint32_t i = 0; i < numFences; i++)
-	{
-		vkFences[i] = fences[i]->getVkHandle();
-	}
+	for (uint32_t i = 0; i < numFences; i++) { vkFences[i] = fences[i]->getVkHandle(); }
 
-	vkThrowIfFailed(getVkBindings().vkResetFences(getVkHandle(), numFences, vkFences), "Reset fences failed");
+	vkThrowIfFailed(getVkBindings().vkResetFences(getVkHandle(), numFences, vkFences.get()), "Reset fences failed");
 }
 
 pvrvk::DescriptorSetLayout Device_::createDescriptorSetLayout(const DescriptorSetLayoutCreateInfo& createInfo)
@@ -447,10 +399,10 @@ PipelineCache Device_::createPipelineCache(const PipelineCacheCreateInfo& create
 
 void Device_::mergePipelineCache(const PipelineCache* srcPipeCaches, uint32_t numSrcPipeCaches, PipelineCache destPipeCache)
 {
-	std::vector<VkPipelineCache> vkSrcPipeCaches(numSrcPipeCaches);
-	std::transform(srcPipeCaches, srcPipeCaches + numSrcPipeCaches, vkSrcPipeCaches.begin(), [&](const PipelineCache& pipelineCache) { return pipelineCache->getVkHandle(); });
+	pvrvk::ArrayOrVector<VkPipelineCache, 4> vkSrcPipeCaches(numSrcPipeCaches);
+	std::transform(srcPipeCaches, srcPipeCaches + numSrcPipeCaches, vkSrcPipeCaches.get(), [&](const PipelineCache& pipelineCache) { return pipelineCache->getVkHandle(); });
 
-	vkThrowIfFailed(getVkBindings().vkMergePipelineCaches(getVkHandle(), destPipeCache->getVkHandle(), numSrcPipeCaches, vkSrcPipeCaches.data()), "Failed to merge Pipeline Caches");
+	vkThrowIfFailed(getVkBindings().vkMergePipelineCaches(getVkHandle(), destPipeCache->getVkHandle(), numSrcPipeCaches, vkSrcPipeCaches.get()), "Failed to merge Pipeline Caches");
 }
 
 Swapchain Device_::createSwapchain(const SwapchainCreateInfo& createInfo, const Surface& surface)
@@ -465,10 +417,7 @@ QueryPool Device_::createQueryPool(const QueryPoolCreateInfo& createInfo)
 	return QueryPool_::constructShared(device, createInfo);
 }
 
-void Device_::waitIdle()
-{
-	getVkBindings().vkDeviceWaitIdle(getVkHandle());
-}
+void Device_::waitIdle() { getVkBindings().vkDeviceWaitIdle(getVkHandle()); }
 
 // CAUTION - We will be abusing queueFamilyProperties[...].numQueues as a counter for queues remaining.
 struct QueueFamilyCreateInfo
@@ -514,7 +463,7 @@ Device_::Device_(make_shared_enabler, PhysicalDevice& physicalDevice, const Devi
 
 	assert(getPhysicalDevice()->getQueueFamilyProperties().size() >= static_cast<size_t>(1) && "A Vulkan device must support at least 1 queue family.");
 
-	ArrayOrVector<VkDeviceQueueCreateInfo, 4> queueCreateInfos(_createInfo.getNumDeviceQueueCreateInfos());
+	ArrayOrVector<VkDeviceQueueCreateInfo, 2> queueCreateInfos(_createInfo.getNumDeviceQueueCreateInfos());
 	for (uint32_t i = 0; i < _createInfo.getNumDeviceQueueCreateInfos(); ++i)
 	{
 		const DeviceQueueCreateInfo& queueCreateInfo = _createInfo.getDeviceQueueCreateInfo(i);
@@ -540,9 +489,7 @@ Device_::Device_(make_shared_enabler, PhysicalDevice& physicalDevice, const Devi
 	if (_createInfo.getExtensionList().getNumExtensions())
 	{
 		for (uint32_t i = 0; i < _createInfo.getExtensionList().getNumExtensions(); ++i)
-		{
-			enabledExtensions.emplace_back(_createInfo.getExtensionList().getExtension(i).getName().c_str());
-		}
+		{ enabledExtensions.emplace_back(_createInfo.getExtensionList().getExtension(i).getName().c_str()); }
 
 		deviceCreateInfo.enabledExtensionCount = static_cast<uint32_t>(enabledExtensions.size());
 		deviceCreateInfo.ppEnabledExtensionNames = enabledExtensions.data();

@@ -4,7 +4,7 @@
 \Author       PowerVR by Imagination, Developer Technology Team
 \Copyright    Copyright (c) Imagination Technologies Limited.
 \brief  Basic Tutorial that shows step-by-step how to initialize OpenGL ES 2.0, use it for drawing a triangle and terminate it.
-               Entry Point: android_main
+			   Entry Point: android_main
 ***********************************************************************************************************************/
 #define DYNAMICGLES_NO_NAMESPACE
 #define DYNAMICEGL_NO_NAMESPACE
@@ -18,7 +18,7 @@
 #include <vector>
 
 // Name of the application
-const char* const ApplicationName  = "HelloAPI";
+const char* const ApplicationName = "HelloAPI";
 
 // Index to bind the attributes to vertex shaders
 unsigned int VertexArray(0);
@@ -27,28 +27,27 @@ unsigned int VertexArray(0);
 struct HelloAPIData
 {
 	// EGL variables
-	EGLDisplay          eglDisplay;
-	EGLConfig			eglConfig;
-	EGLContext          context;
-	EGLSurface          eglSurface;
+	EGLDisplay eglDisplay;
+	EGLConfig eglConfig;
+	EGLContext context;
+	EGLSurface eglSurface;
 
 	// Handles for the two shaders used to draw the triangle, and the program handle which combines them.
 	GLuint fragmentShader, vertexShader;
 	GLuint shaderProgram;
 
 	// Handles for the vertex buffer object
-	GLuint              vertexBuffer;
+	GLuint vertexBuffer;
 
 	// Should the app still be animating?
-	bool                isAnimating;
+	bool isAnimating;
 
 	// Is everything required initialized?
-	bool				isInitialized;
+	bool isInitialized;
 
 	// Has an error occurred?
-	bool				errorOccurred;
+	bool errorOccurred;
 };
-
 
 /*!*********************************************************************************************************************
 \param[in]		functionLastCalled          Function which triggered the error
@@ -118,17 +117,14 @@ bool CreateEGLDisplay(EGLDisplay& eglDisplay)
 		__android_log_print(ANDROID_LOG_ERROR, ApplicationName, "Failed to initialize the EGLDisplay");
 		return false;
 	}
-	
+
 	// Bind the correct API
 	int result = EGL_FALSE;
 
 	result = eglBindAPI(EGL_OPENGL_ES_API);
 
-	if (result != EGL_TRUE)
-	{
-		return false;
-	}
-	
+	if (result != EGL_TRUE) { return false; }
+
 	return true;
 }
 
@@ -146,12 +142,7 @@ bool ChooseEGLConfig(EGLDisplay eglDisplay, EGLConfig& eglConfig)
 	//	requires so that an appropriate one can be chosen. The first step in doing this is to create an attribute list, which is an array
 	//	of key/value pairs which describe particular capabilities requested. In this application nothing special is required so we can query
 	//	the minimum of needing it to render to a window, and being OpenGL ES 2.0 capable.
-	const EGLint configurationAttributes[] =
-	{
-		EGL_SURFACE_TYPE,		EGL_WINDOW_BIT,
-		EGL_RENDERABLE_TYPE,	EGL_OPENGL_ES2_BIT,
-		EGL_NONE
-	};
+	const EGLint configurationAttributes[] = { EGL_SURFACE_TYPE, EGL_WINDOW_BIT, EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT, EGL_NONE };
 
 	//	Find a suitable EGLConfig
 	//	eglChooseConfig is provided by EGL to provide an easy way to select an appropriate configuration. It takes in the capabilities
@@ -189,7 +180,7 @@ bool CreateEGLSurface(ANativeWindow* nativeWindow, EGLDisplay eglDisplay, EGLCon
 	//	The offscreen surfaces are useful for non-rendering contexts and in certain other scenarios, but for most applications the main
 	//	surface used will be a window surface as performed below.
 	eglSurface = eglCreateWindowSurface(eglDisplay, eglConfig, (EGLNativeWindowType)nativeWindow, NULL);
-	if (!testEGLError("eglCreateWindowSurface")){	return false;	}
+	if (!testEGLError("eglCreateWindowSurface")) { return false; }
 	return true;
 }
 
@@ -208,7 +199,7 @@ bool SetupEGLContext(EGLDisplay eglDisplay, EGLConfig eglConfig, EGLSurface eglS
 	// EGL needs a way to know that any subsequent EGL calls are going to be affecting OpenGL ES,
 	// rather than any other API (such as OpenVG).
 	eglBindAPI(EGL_OPENGL_ES_API);
-	if (!testEGLError("eglBindAPI")){	return false;	}
+	if (!testEGLError("eglBindAPI")) { return false; }
 
 	//	Create a context.
 	//	EGL has to create what is known as a context for OpenGL ES. The concept of a context is OpenGL ES's way of encapsulating any
@@ -217,25 +208,21 @@ bool SetupEGLContext(EGLDisplay eglDisplay, EGLConfig eglConfig, EGLSurface eglS
 	//	Similar to an EGLConfig, a context takes in a list of attributes specifying some of its capabilities. However in most cases this
 	//	is limited to just requiring the version of the OpenGL ES context required - In this case, OpenGL ES 2.0.
 
-	EGLint contextAttributes[] =
-	{
-		EGL_CONTEXT_CLIENT_VERSION, 2,
-		EGL_NONE
-	};
+	EGLint contextAttributes[] = { EGL_CONTEXT_CLIENT_VERSION, 2, EGL_NONE };
 
 	// Create the context with the context attributes supplied
 	context = eglCreateContext(eglDisplay, eglConfig, NULL, contextAttributes);
-	if (!testEGLError("eglCreateContext")){	return false; }
+	if (!testEGLError("eglCreateContext")) { return false; }
 
 	//	Bind the context to the current thread.
 	//	Due to the way OpenGL uses global functions, contexts need to be made current so that any function call can operate on the correct
-	//	context. Specifically, make current will bind the context to the current rendering thread it's called from. If the calling thread already 
+	//	context. Specifically, make current will bind the context to the current rendering thread it's called from. If the calling thread already
 	//  has a current rendering context then that context is flushed and marked as no longer current. It is not valid to call eglMakeCurrent with a context
-	//  which is current on another thread. 
+	//  which is current on another thread.
 	//  To use multiple contexts at the same time, users should use multiple threads and synchronise between them.
 	eglMakeCurrent(eglDisplay, eglSurface, eglSurface, context);
-	
-	if (!testEGLError("eglMakeCurrent")){	return false;	}
+
+	if (!testEGLError("eglMakeCurrent")) { return false; }
 	return true;
 }
 
@@ -251,7 +238,6 @@ bool InitializeBuffer(GLuint& vertexBuffer)
 	//	it is. The data used to do this is referred to as vertices, points in 3D space which are usually collected into groups of three
 	//	to render as triangles. Fundamentally, any advanced 3D shape in OpenGL ES is constructed from a series of these vertices - each
 	//	vertex representing one corner of a polygon.
-	
 
 	//	Concept: Buffer Objects
 	//	To operate on any data, OpenGL first needs to be able to access it. The GPU maintains a separate pool of memory it uses independent
@@ -261,11 +247,9 @@ bool InitializeBuffer(GLuint& vertexBuffer)
 	//	a buffer and giving it some data we can tell the GPU how to render a triangle.
 
 	// Vertex data containing the positions of each point of the triangle
-	GLfloat vertexData[] = { 
-                            -0.4f, -0.4f, 0.0f, // Bottom Left
-	                         0.4f, -0.4f, 0.0f, // Bottom Right
-	                         0.0f, 0.4f, 0.0f
-	                       }; // Top Middle
+	GLfloat vertexData[] = { -0.4f, -0.4f, 0.0f, // Bottom Left
+		0.4f, -0.4f, 0.0f, // Bottom Right
+		0.0f, 0.4f, 0.0f }; // Top Middle
 
 	// Generate a buffer object
 	glGenBuffers(1, &vertexBuffer);
@@ -277,7 +261,7 @@ bool InitializeBuffer(GLuint& vertexBuffer)
 	//	Note the last argument - GL_STATIC_DRAW. This tells the driver that we intend to read from the buffer on the GPU, and don't intend
 	//	to modify the data until we're done with it.
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertexData), vertexData, GL_STATIC_DRAW);
-	if (!TestGLError("glBufferData")){	return false; }
+	if (!TestGLError("glBufferData")) { return false; }
 	return true;
 }
 
@@ -298,7 +282,6 @@ bool InitializeShaders(GLuint& fragmentShader, GLuint& vertexShader, GLuint& sha
 	//	which is usually abbreviated to simply "GLSL ES".
 	//	Each shader is compiled on-device and then linked into a shader program, which combines a vertex and fragment shader into a form
 	//	that the OpenGL ES implementation can execute.
-	
 
 	//	Concept: Fragment Shaders
 	//	In a final buffer of image data, each individual point is referred to as a pixel. Fragment shaders are the part of the pipeline
@@ -307,7 +290,7 @@ bool InitializeShaders(GLuint& fragmentShader, GLuint& vertexShader, GLuint& sha
 	//	The reason these are called "fragment" shaders instead of "pixel" shaders is due to a small technical difference between the two
 	//	concepts. When you color a fragment, it may not be the final color which ends up on screen. This is particularly true when
 	//	performing blending, where multiple fragments can contribute to the final pixel color.
-	
+
 	const char* const fragmentShaderSource = "\
 											 void main (void)\
 											 {\
@@ -333,14 +316,12 @@ bool InitializeShaders(GLuint& fragmentShader, GLuint& vertexShader, GLuint& sha
 		glGetShaderiv(fragmentShader, GL_INFO_LOG_LENGTH, &infoLogLength);
 
 		// Allocate enough space for the message and retrieve it
-		std::vector<char> infoLog; infoLog.resize(infoLogLength);
+		std::vector<char> infoLog;
+		infoLog.resize(infoLogLength);
 		glGetShaderInfoLog(fragmentShader, infoLogLength, &charactersWritten, infoLog.data());
 
 		// Display the error in a dialog box
-		if (infoLogLength > 1)
-		{
-			__android_log_print(ANDROID_LOG_ERROR, ApplicationName, "%s", infoLog.data());
-		}
+		if (infoLogLength > 1) { __android_log_print(ANDROID_LOG_ERROR, ApplicationName, "%s", infoLog.data()); }
 		else
 		{
 			__android_log_print(ANDROID_LOG_ERROR, ApplicationName, "Failed to compile fragment shader.");
@@ -381,14 +362,12 @@ bool InitializeShaders(GLuint& fragmentShader, GLuint& vertexShader, GLuint& sha
 		glGetShaderiv(vertexShader, GL_INFO_LOG_LENGTH, &infoLogLength);
 
 		// Allocate enough space for the message and retrieve it
-		std::vector<char> infoLog; infoLog.resize(infoLogLength);
+		std::vector<char> infoLog;
+		infoLog.resize(infoLogLength);
 		glGetShaderInfoLog(vertexShader, infoLogLength, &charactersWritten, infoLog.data());
 
 		// Display the error in a dialog box
-		if (infoLogLength > 1)
-		{
-			__android_log_print(ANDROID_LOG_ERROR, ApplicationName, "%s", infoLog.data());
-		}
+		if (infoLogLength > 1) { __android_log_print(ANDROID_LOG_ERROR, ApplicationName, "%s", infoLog.data()); }
 		else
 		{
 			__android_log_print(ANDROID_LOG_ERROR, ApplicationName, "Failed to compile vertex shader.");
@@ -420,14 +399,12 @@ bool InitializeShaders(GLuint& fragmentShader, GLuint& vertexShader, GLuint& sha
 		glGetProgramiv(shaderProgram, GL_INFO_LOG_LENGTH, &infoLogLength);
 
 		// Allocate enough space for the message and retrieve it
-		std::vector<char> infoLog; infoLog.resize(infoLogLength);
+		std::vector<char> infoLog;
+		infoLog.resize(infoLogLength);
 		glGetProgramInfoLog(shaderProgram, infoLogLength, &charactersWritten, infoLog.data());
 
 		// Display the error in a dialog box
-		if (infoLogLength > 1)
-		{
-			__android_log_print(ANDROID_LOG_ERROR, ApplicationName, "%s", infoLog.data());
-		}
+		if (infoLogLength > 1) { __android_log_print(ANDROID_LOG_ERROR, ApplicationName, "%s", infoLog.data()); }
 		else
 		{
 			__android_log_print(ANDROID_LOG_ERROR, ApplicationName, "Failed to link shader program.");
@@ -442,7 +419,7 @@ bool InitializeShaders(GLuint& fragmentShader, GLuint& vertexShader, GLuint& sha
 	//	be active at once, so in a multi-program application this function would be called in the render loop. Since this application only
 	//	uses one program it can be installed in the current state and left there.
 	glUseProgram(shaderProgram);
-	if (!TestGLError("glUseProgram")){	return false;	}
+	if (!TestGLError("glUseProgram")) { return false; }
 	return true;
 }
 
@@ -475,24 +452,18 @@ bool RenderScene(GLuint shaderProgram, EGLDisplay eglDisplay, EGLSurface eglSurf
 	int matrixLocation = glGetUniformLocation(shaderProgram, "transformationMatrix");
 
 	// Matrix used to specify the orientation of the triangle on screen.
-	const float transformationMatrix[] =
-	{
-		1.0f, 0.0f, 0.0f, 0.0f,
-		0.0f, 1.0f, 0.0f, 0.0f,
-		0.0f, 0.0f, 1.0f, 0.0f,
-		0.0f, 0.0f, 0.0f, 1.0f
-	};
+	const float transformationMatrix[] = { 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f };
 
 	// Pass the transformationMatrix to the shader using its location
 	glUniformMatrix4fv(matrixLocation, 1, GL_FALSE, transformationMatrix);
-	if (!TestGLError("glUniformMatrix4fv"))	{	return false;	}
+	if (!TestGLError("glUniformMatrix4fv")) { return false; }
 
 	// Enable the user-defined vertex array
 	glEnableVertexAttribArray(VertexArray);
 
 	// Sets the vertex data to this attribute index, with the number of floats in each position
 	glVertexAttribPointer(VertexArray, 3, GL_FLOAT, GL_FALSE, 0, 0);
-	if (!TestGLError("glVertexAttribPointer")){	return false;  }
+	if (!TestGLError("glVertexAttribPointer")) { return false; }
 
 	//	Draw the triangle
 	//	glDrawArrays is a draw call, and executes the shader program using the vertices and other state set by the user. Draw calls are the
@@ -502,9 +473,9 @@ bool RenderScene(GLuint shaderProgram, EGLDisplay eglDisplay, EGLSurface eglSurf
 	//	some vertices are accessed multiple times, without copying the vertex multiple times.
 	//	Others include versions of the above that allow the user to draw the same object multiple times with slightly different data, and
 	//	a version of glDrawElements which allows a user to restrict the actual indices accessed.
-	
+
 	glDrawArrays(GL_TRIANGLES, 0, 3);
-	if (!TestGLError("glDrawArrays")){	return false;	}
+	if (!TestGLError("glDrawArrays")) { return false; }
 
 	// Invalidate the contents of the specified buffers for the framebuffer to allow the implementation further optimization opportunities.
 	// The following is taken from https://www.khronos.org/registry/OpenGL/extensions/EXT/EXT_discard_framebuffer.txt
@@ -516,14 +487,14 @@ bool RenderScene(GLuint shaderProgram, EGLDisplay eglDisplay, EGLSurface eglSurf
 	// Even without this extension, if a frame of rendering begins with a full-screen Clear, an OpenGL ES implementation may optimize away the loading
 	// of framebuffer contents prior to rendering the frame.  With this extension, an application can use DiscardFramebufferEXT to signal that framebuffer
 	// contents will no longer be needed.  In this case an OpenGL ES implementation may also optimize away the storing back of framebuffer contents after rendering the frame.
-	if(isGlExtensionSupported("GL_EXT_discard_framebuffer"))
+	if (isGlExtensionSupported("GL_EXT_discard_framebuffer"))
 	{
 		GLenum invalidateAttachments[2];
 		invalidateAttachments[0] = GL_DEPTH_EXT;
 		invalidateAttachments[1] = GL_STENCIL_EXT;
-		
+
 		glDiscardFramebufferEXT(GL_FRAMEBUFFER, 2, &invalidateAttachments[0]);
-		if (!TestGLError("glDiscardFramebufferEXT")){	return false;	}
+		if (!TestGLError("glDiscardFramebufferEXT")) { return false; }
 	}
 
 	//	Present the display data to the screen.
@@ -532,7 +503,7 @@ bool RenderScene(GLuint shaderProgram, EGLDisplay eglDisplay, EGLSurface eglSurf
 	//	that OpenGL ES 2.0 has finished rendering a scene, and that the display should now draw to the screen from the new data. At the same
 	//	time, the front buffer is made available for OpenGL ES 2.0 to start rendering to. In effect, this call swaps the front and back
 	//	buffers.
-	
+
 	if (!eglSwapBuffers(eglDisplay, eglSurface))
 	{
 		testEGLError("eglSwapBuffers");
@@ -590,48 +561,25 @@ static void HandleAndroidCommands(struct android_app* application, int32_t comma
 		// The window is being shown, get it ready.
 		if (application->window != NULL)
 		{
-			if (!CreateEGLDisplay(applicationData->eglDisplay))
-			{
-				applicationData->errorOccurred = true;
-			}
+			if (!CreateEGLDisplay(applicationData->eglDisplay)) { applicationData->errorOccurred = true; }
 
 			if (applicationData->errorOccurred != true)
 			{
-				if (!ChooseEGLConfig(applicationData->eglDisplay, applicationData->eglConfig))
-				{
-					applicationData->errorOccurred = true;
-				}
+				if (!ChooseEGLConfig(applicationData->eglDisplay, applicationData->eglConfig)) { applicationData->errorOccurred = true; }
 
 				if (applicationData->errorOccurred != true)
 				{
-					if (!CreateEGLSurface(application->window, applicationData->eglDisplay,
-					                      applicationData->eglConfig, applicationData->eglSurface))
+					if (!CreateEGLSurface(application->window, applicationData->eglDisplay, applicationData->eglConfig, applicationData->eglSurface))
+					{ applicationData->errorOccurred = true; } if (applicationData->errorOccurred != true)
 					{
-						applicationData->errorOccurred = true;
-					}
-
-					if (applicationData->errorOccurred != true)
-					{
-						if (!SetupEGLContext(applicationData->eglDisplay, applicationData->eglConfig,
-						                     applicationData->eglSurface, applicationData->context))
+						if (!SetupEGLContext(applicationData->eglDisplay, applicationData->eglConfig, applicationData->eglSurface, applicationData->context))
+						{ applicationData->errorOccurred = true; } if (applicationData->errorOccurred != true)
 						{
-							applicationData->errorOccurred = true;
-						}
-
-						if (applicationData->errorOccurred != true)
-						{
-							if (!InitializeBuffer(applicationData->vertexBuffer))
-							{
-								applicationData->errorOccurred = true;
-							}
+							if (!InitializeBuffer(applicationData->vertexBuffer)) { applicationData->errorOccurred = true; }
 							if (applicationData->errorOccurred != true)
 							{
-								if (!InitializeShaders(applicationData->fragmentShader, applicationData->vertexShader,
-								                       applicationData->shaderProgram))
-								{
-									applicationData->errorOccurred = true;
-								}
-								else
+								if (!InitializeShaders(applicationData->fragmentShader, applicationData->vertexShader, applicationData->shaderProgram))
+								{ applicationData->errorOccurred = true; } else
 								{
 									applicationData->isInitialized = true;
 								}
@@ -641,23 +589,18 @@ static void HandleAndroidCommands(struct android_app* application, int32_t comma
 				}
 			}
 		}
-	case APP_CMD_RESUME:
-		applicationData->isAnimating = true;
-		break;
+	case APP_CMD_RESUME: applicationData->isAnimating = true; break;
 
 	case APP_CMD_TERM_WINDOW:
 	{
-		DeInitializeGLState(applicationData->fragmentShader, applicationData->vertexShader,
-		                    applicationData->shaderProgram, applicationData->vertexBuffer);
+		DeInitializeGLState(applicationData->fragmentShader, applicationData->vertexShader, applicationData->shaderProgram, applicationData->vertexBuffer);
 
 		ReleaseEGLState(applicationData->eglDisplay);
 
 		applicationData->isInitialized = false;
 	}
 	case APP_CMD_PAUSE:
-	case APP_CMD_SAVE_STATE:
-		applicationData->isAnimating = false;
-		break;
+	case APP_CMD_SAVE_STATE: applicationData->isAnimating = false; break;
 	}
 }
 
@@ -668,19 +611,7 @@ static void HandleAndroidCommands(struct android_app* application, int32_t comma
 void android_main(struct android_app* application)
 {
 	// Application Data
-	HelloAPIData applicationData =
-	{
-		NULL,
-		NULL,
-		NULL,
-		NULL,
-		0, 0,
-		0,
-		0,
-		false,
-		false,
-		false
-	};
+	HelloAPIData applicationData = { NULL, NULL, NULL, NULL, 0, 0, 0, 0, false, false, false };
 
 	// Set the user data of the application to our application data.
 	application->userData = &applicationData;
@@ -699,17 +630,13 @@ void android_main(struct android_app* application)
 		// Block while there are events to process or if we're not animating
 		while ((eventIdentifier = ALooper_pollAll(applicationData.isInitialized && applicationData.isAnimating ? 0 : -1, NULL, &events, (void**)&pollSource)) >= 0)
 		{
-			if (pollSource != NULL)
-			{
-				pollSource->process(application, pollSource);
-			}
+			if (pollSource != NULL) { pollSource->process(application, pollSource); }
 
 			// Check for early exit that hasn't been handled by the android commands system
 			if (application->destroyRequested != 0)
 			{
 				// Release the GL vertex buffer
-				DeInitializeGLState(applicationData.fragmentShader, applicationData.vertexShader,
-				                    applicationData.shaderProgram, applicationData.vertexBuffer);
+				DeInitializeGLState(applicationData.fragmentShader, applicationData.vertexShader, applicationData.shaderProgram, applicationData.vertexBuffer);
 
 				// Release EGL
 				ReleaseEGLState(applicationData.eglDisplay);
@@ -720,10 +647,7 @@ void android_main(struct android_app* application)
 		// Once events are processed, and assuming that animation is going to occur, continue animating
 		if (applicationData.isAnimating)
 		{
-			if (!RenderScene(applicationData.shaderProgram, applicationData.eglDisplay, applicationData.eglSurface))
-			{
-				break;
-			}
+			if (!RenderScene(applicationData.shaderProgram, applicationData.eglDisplay, applicationData.eglSurface)) { break; }
 		}
 	}
 }

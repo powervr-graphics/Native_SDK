@@ -116,41 +116,25 @@ void OpenGLESPVRScopeExample::eventMappedInput(pvr::SimplifiedInput key)
 	// Keyboard input (cursor up/down to cycle through counters)
 	switch (key)
 	{
-	case pvr::SimplifiedInput::Up:
-	{
+	case pvr::SimplifiedInput::Up: {
 		_selectedCounter++;
-		if (_selectedCounter >= static_cast<int32_t>(_deviceResources->scopeGraph.getCounterNum()))
-		{
-			_selectedCounter = _deviceResources->scopeGraph.getCounterNum() - 1;
-		}
+		if (_selectedCounter >= static_cast<int32_t>(_deviceResources->scopeGraph.getCounterNum())) { _selectedCounter = _deviceResources->scopeGraph.getCounterNum() - 1; }
 	}
 	break;
-	case pvr::SimplifiedInput::Down:
-	{
+	case pvr::SimplifiedInput::Down: {
 		_selectedCounter--;
-		if (_selectedCounter < 0)
-		{
-			_selectedCounter = 0;
-		}
+		if (_selectedCounter < 0) { _selectedCounter = 0; }
 	}
 	break;
-	case pvr::SimplifiedInput::Action1:
-	{
+	case pvr::SimplifiedInput::Action1: {
 		_deviceResources->scopeGraph.showCounter(_selectedCounter, !_deviceResources->scopeGraph.isCounterShown(_selectedCounter));
 	}
 	break;
 	// Keyboard input (cursor left/right to change active group)
-	case pvr::SimplifiedInput::Right:
-		_deviceResources->scopeGraph.setActiveGroup(_deviceResources->scopeGraph.getActiveGroup() + 1);
-		break;
-	case pvr::SimplifiedInput::Left:
-		_deviceResources->scopeGraph.setActiveGroup(_deviceResources->scopeGraph.getActiveGroup() - 1);
-		break;
-	case pvr::SimplifiedInput::ActionClose:
-		exitShell();
-		break;
-	default:
-		break;
+	case pvr::SimplifiedInput::Right: _deviceResources->scopeGraph.setActiveGroup(_deviceResources->scopeGraph.getActiveGroup() + 1); break;
+	case pvr::SimplifiedInput::Left: _deviceResources->scopeGraph.setActiveGroup(_deviceResources->scopeGraph.getActiveGroup() - 1); break;
+	case pvr::SimplifiedInput::ActionClose: exitShell(); break;
+	default: break;
 	}
 	updateDescription();
 }
@@ -221,10 +205,7 @@ void OpenGLESPVRScopeExample::createProgram()
 /*!*********************************************************************************************************************
 \brief Loads the mesh data required for this training course into vertex buffer objects
 ***********************************************************************************************************************/
-void OpenGLESPVRScopeExample::loadVbos()
-{
-	pvr::utils::appendSingleBuffersFromModel(*_scene, _deviceResources->vbos, _deviceResources->ibos);
-}
+void OpenGLESPVRScopeExample::loadVbos() { pvr::utils::appendSingleBuffersFromModel(*_scene, _deviceResources->vbos, _deviceResources->ibos); }
 
 /*!*********************************************************************************************************************
 \return pvr::Result::Success if no error occurred
@@ -247,11 +228,7 @@ pvr::Result OpenGLESPVRScopeExample::initApplication()
 	_angleY = 0.0f;
 
 	// Load the _scene
-	if (!pvr::utils::loadModel(*this, SceneFile, _scene))
-	{
-		this->setExitMessage("ERROR: Couldn't load the .pod file\n");
-		return pvr::Result::NotInitialized;
-	}
+	_scene = pvr::assets::loadModel(*this, SceneFile);
 
 	// Process the command line
 	{
@@ -281,7 +258,7 @@ pvr::Result OpenGLESPVRScopeExample::quitApplication()
 ***********************************************************************************************************************/
 pvr::Result OpenGLESPVRScopeExample::initView()
 {
-	_deviceResources = std::unique_ptr<DeviceResources>(new DeviceResources());
+	_deviceResources = std::make_unique<DeviceResources>();
 	_deviceResources->context = pvr::createEglContext();
 
 	_deviceResources->context->init(getWindow(), getDisplay(), getDisplayAttributes());
@@ -318,7 +295,7 @@ pvr::Result OpenGLESPVRScopeExample::initView()
 	// Initialize the graphing code
 
 	std::string errorStr;
-	if (_deviceResources->scopeGraph.init(_deviceResources->context, *this, _deviceResources->uiRenderer, errorStr))
+	if (_deviceResources->scopeGraph.init(_deviceResources->context, *this, _deviceResources->uiRenderer))
 	{
 		// Position the graph
 		_deviceResources->scopeGraph.position(getWidth(), getHeight(),
@@ -350,14 +327,8 @@ pvr::Result OpenGLESPVRScopeExample::initView()
 		{
 			std::string s(std::string(_deviceResources->scopeGraph.getCounterName(i))); // Better safe than sorry - get a copy...
 			pvr::strings::toLower(s);
-			if (pvr::strings::startsWith(s, "hsr efficiency"))
-			{
-				_deviceResources->scopeGraph.showCounter(i, true);
-			}
-			if (pvr::strings::startsWith(s, "shaded pixels per second"))
-			{
-				_deviceResources->scopeGraph.showCounter(i, true);
-			}
+			if (pvr::strings::startsWith(s, "hsr efficiency")) { _deviceResources->scopeGraph.showCounter(i, true); }
+			if (pvr::strings::startsWith(s, "shaded pixels per second")) { _deviceResources->scopeGraph.showCounter(i, true); }
 		}
 
 		// Set the update interval: number of updates [frames] before updating the graph
@@ -372,7 +343,7 @@ pvr::Result OpenGLESPVRScopeExample::initView()
 
 	updateDescription();
 
-	gl::BindFramebuffer(GL_DRAW_FRAMEBUFFER, _deviceResources->onScreenFbo);
+	gl::BindFramebuffer(GL_FRAMEBUFFER, _deviceResources->onScreenFbo);
 	return pvr::Result::Success;
 }
 
@@ -421,10 +392,7 @@ pvr::Result OpenGLESPVRScopeExample::renderFrame()
 	updateDescription();
 	executeGlCommands();
 
-	if (this->shouldTakeScreenshot())
-	{
-		pvr::utils::takeScreenshot(this->getScreenshotFileName(), this->getWidth(), this->getHeight());
-	}
+	if (this->shouldTakeScreenshot()) { pvr::utils::takeScreenshot(this->getScreenshotFileName(), this->getWidth(), this->getHeight()); }
 
 	_deviceResources->context->swapBuffers();
 
@@ -490,10 +458,7 @@ void OpenGLESPVRScopeExample::drawMesh(uint32_t nodeIndex)
 			offset += mesh.getStripLength(i) + 2;
 		}
 	}
-	for (auto it = _vertexConfig.attributes.begin(), end = _vertexConfig.attributes.end(); it != end; ++it)
-	{
-		gl::DisableVertexAttribArray(it->index);
-	}
+	for (auto it = _vertexConfig.attributes.begin(), end = _vertexConfig.attributes.end(); it != end; ++it) { gl::DisableVertexAttribArray(it->index); }
 }
 
 /*!*********************************************************************************************************************
@@ -501,7 +466,7 @@ void OpenGLESPVRScopeExample::drawMesh(uint32_t nodeIndex)
 ***********************************************************************************************************************/
 void OpenGLESPVRScopeExample::executeGlCommands()
 {
-	gl::BindFramebuffer(GL_DRAW_FRAMEBUFFER, _deviceResources->onScreenFbo);
+	gl::BindFramebuffer(GL_FRAMEBUFFER, _deviceResources->onScreenFbo);
 	gl::ClearColor(ClearColor.r, ClearColor.g, ClearColor.b, 1.f);
 	gl::Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	gl::Enable(GL_CULL_FACE);
@@ -550,8 +515,8 @@ void OpenGLESPVRScopeExample::updateDescription()
 
 	if (_deviceResources->scopeGraph.getCounterNum())
 	{
-		float maximum = _deviceResources->scopeGraph.getMaximumOfData(_selectedCounter);
-		float userY = _deviceResources->scopeGraph.getMaximum(_selectedCounter);
+		float maximum = _deviceResources->scopeGraph.getMaximumOfData(static_cast<uint32_t>(_selectedCounter));
+		float userY = _deviceResources->scopeGraph.getMaximum(static_cast<uint32_t>(_selectedCounter));
 		bool isKilos = false;
 		if (maximum > 10000)
 		{
@@ -597,7 +562,4 @@ void OpenGLESPVRScopeExample::updateDescription()
 
 /// <summary>This function must be implemented by the user of the shell. The user should return its pvr::Shell object defining the behaviour of the application.</summary>
 /// <returns>Return a unique ptr to the demo supplied by the user.</returns>
-std::unique_ptr<pvr::Shell> pvr::newDemo()
-{
-	return std::unique_ptr<pvr::Shell>(new OpenGLESPVRScopeExample());
-}
+std::unique_ptr<pvr::Shell> pvr::newDemo() { return std::make_unique<OpenGLESPVRScopeExample>(); }

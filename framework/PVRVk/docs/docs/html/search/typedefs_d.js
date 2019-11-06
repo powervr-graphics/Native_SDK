@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['xcbsurface',['XcbSurface',['../namespacepvrvk.html#a56c0f2f959f281d27cd2416466245875',1,'pvrvk']]],
-  ['xlibsurface',['XlibSurface',['../namespacepvrvk.html#a2a060e0f318c47cde03b84dea6e8682a',1,'pvrvk']]]
+  ['waylandsurface',['WaylandSurface',['../namespacepvrvk.html#aa6fb3e3cb08fb89393ff388f88dfe96c',1,'pvrvk']]],
+  ['win32surface',['Win32Surface',['../namespacepvrvk.html#a300fdb33b7f8603fccd24ccd2b218a05',1,'pvrvk']]]
 ];

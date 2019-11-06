@@ -44,10 +44,7 @@ void Queue_::submit(const SubmitInfo* queueSubmitInfo, uint32_t numSubmitInfos, 
 		{
 			vkSubmitInfos[i].pCommandBuffers = &commandBuffersVk[currentCommandbufferIndex];
 
-			for (uint32_t j = 0; j < submitInfo.numCommandBuffers; ++j)
-			{
-				commandBuffersVk[currentCommandbufferIndex + j] = submitInfo.commandBuffers[j]->getVkHandle();
-			}
+			for (uint32_t j = 0; j < submitInfo.numCommandBuffers; ++j) { commandBuffersVk[currentCommandbufferIndex + j] = submitInfo.commandBuffers[j]->getVkHandle(); }
 		}
 		else
 		{
@@ -62,10 +59,7 @@ void Queue_::submit(const SubmitInfo* queueSubmitInfo, uint32_t numSubmitInfos, 
 		{
 			vkSubmitInfos[i].pSignalSemaphores = &semaphoresVk[currentSemaphoreIndex];
 
-			for (uint32_t j = 0; j < submitInfo.numSignalSemaphores; ++j)
-			{
-				semaphoresVk[currentSemaphoreIndex + j] = submitInfo.signalSemaphores[j]->getVkHandle();
-			}
+			for (uint32_t j = 0; j < submitInfo.numSignalSemaphores; ++j) { semaphoresVk[currentSemaphoreIndex + j] = submitInfo.signalSemaphores[j]->getVkHandle(); }
 		}
 		else
 		{
@@ -79,10 +73,7 @@ void Queue_::submit(const SubmitInfo* queueSubmitInfo, uint32_t numSubmitInfos, 
 		{
 			vkSubmitInfos[i].pWaitSemaphores = &semaphoresVk[currentSemaphoreIndex];
 
-			for (uint32_t j = 0; j < submitInfo.numWaitSemaphores; ++j)
-			{
-				semaphoresVk[currentSemaphoreIndex + j] = submitInfo.waitSemaphores[j]->getVkHandle();
-			}
+			for (uint32_t j = 0; j < submitInfo.numWaitSemaphores; ++j) { semaphoresVk[currentSemaphoreIndex + j] = submitInfo.waitSemaphores[j]->getVkHandle(); }
 		}
 		else
 		{
@@ -96,7 +87,7 @@ void Queue_::submit(const SubmitInfo* queueSubmitInfo, uint32_t numSubmitInfos, 
 		"VkQueueSubmit failed");
 }
 
-void Queue_::present(PresentInfo& presentInfo, Result* const results)
+void Queue_::present(const PresentInfo& presentInfo, Result* const results)
 {
 	VkSwapchainKHR swapchainsVector[FrameworkCaps::MaxSwapChains];
 	uint32_t imageIndices[FrameworkCaps::MaxSwapChains];
@@ -109,10 +100,7 @@ void Queue_::present(PresentInfo& presentInfo, Result* const results)
 
 	ArrayOrVector<VkSemaphore, 4> waitSemaphores(presentInfo.numWaitSemaphores);
 
-	for (uint32_t i = 0; i < presentInfo.numWaitSemaphores; ++i)
-	{
-		waitSemaphores[i] = presentInfo.waitSemaphores[i]->getVkHandle();
-	}
+	for (uint32_t i = 0; i < presentInfo.numWaitSemaphores; ++i) { waitSemaphores[i] = presentInfo.waitSemaphores[i]->getVkHandle(); }
 
 	VkPresentInfoKHR presentInfoVk = {};
 	presentInfoVk.sType = static_cast<VkStructureType>(StructureType::e_PRESENT_INFO_KHR);
@@ -126,10 +114,7 @@ void Queue_::present(PresentInfo& presentInfo, Result* const results)
 	vkThrowIfFailed(getDevice()->getVkBindings().vkQueuePresentKHR(getVkHandle(), &presentInfoVk), "Error in queue present");
 }
 
-void Queue_::waitIdle()
-{
-	vkThrowIfFailed(getDevice()->getVkBindings().vkQueueWaitIdle(getVkHandle()), "Queue::waitIdle - error in preceeding command.");
-}
+void Queue_::waitIdle() { vkThrowIfFailed(getDevice()->getVkBindings().vkQueueWaitIdle(getVkHandle()), "Queue::waitIdle - error in preceeding command."); }
 namespace {
 inline void processSparseMemoryBind(const SparseMemoryBind& memoryBind, VkSparseMemoryBind& outVkSparseMemoryBind)
 {
@@ -290,10 +275,7 @@ void Queue_::beginDebugUtilsLabel(const pvrvk::DebugUtilsLabel& labelInfo)
 	getDevice()->getVkBindings().vkQueueBeginDebugUtilsLabelEXT(getVkHandle(), &vkLabelInfo);
 }
 
-void Queue_::endDebugUtilsLabel()
-{
-	getDevice()->getVkBindings().vkQueueEndDebugUtilsLabelEXT(getVkHandle());
-}
+void Queue_::endDebugUtilsLabel() { getDevice()->getVkBindings().vkQueueEndDebugUtilsLabelEXT(getVkHandle()); }
 
 void Queue_::insertDebugUtilsLabel(const pvrvk::DebugUtilsLabel& labelInfo)
 {

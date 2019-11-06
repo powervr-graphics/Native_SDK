@@ -7,7 +7,7 @@
 #pragma once
 
 #include "PVRCore/types/Types.h"
-#if defined(WAYLAND)
+#if defined(Wayland)
 #include <wayland-egl.h>
 #endif
 #include <DynamicEgl.h>
@@ -36,7 +36,7 @@ struct NativePlatformHandles_
 	/// <summary>EGL context.</summary>
 	EGLContext context;
 
-#if defined(WAYLAND)
+#if defined(Wayland)
 	wl_egl_window* eglWindow;
 #endif
 
@@ -67,17 +67,11 @@ struct NativeDisplayHandle_
 
 	/// <summary>Operator() for the NativeDisplayHandle_ structure which retrieves the native display handle.</summary>
 	/// <returns>Returns a reference to the native display handle.</returns>
-	operator NativeDisplay&()
-	{
-		return nativeDisplay;
-	}
+	operator NativeDisplay&() { return nativeDisplay; }
 
 	/// <summary>const Operator() for the NativeDisplayHandle_ structure which retrieves the native display handle.</summary>
 	/// <returns>Returns a const reference to the native display handle.</returns>
-	operator const NativeDisplay&() const
-	{
-		return nativeDisplay;
-	}
+	operator const NativeDisplay&() const { return nativeDisplay; }
 };
 
 /// <summary>Forward-declare and smart pointer friendly handle to an EGL window</summary>
@@ -88,17 +82,11 @@ struct NativeWindowHandle_
 
 	/// <summary>Operator() for the NativeWindowHandle_ structure which retrieves the native window.</summary>
 	/// <returns>Returns a reference to the native window.</returns>
-	operator NativeWindow&()
-	{
-		return nativeWindow;
-	}
+	operator NativeWindow&() { return nativeWindow; }
 
 	/// <summary>const Operator() for the NativeWindowHandle_ structure which retrieves the native window.</summary>
 	/// <returns>Returns a const reference to the native window.</returns>
-	operator const NativeWindow&() const
-	{
-		return nativeWindow;
-	}
+	operator const NativeWindow&() const { return nativeWindow; }
 };
 
 /// <summary>Pointer to a struct of platform handles. Used to pass around the undefined NativePlatformHandles_ struct.</summary>

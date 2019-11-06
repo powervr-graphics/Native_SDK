@@ -44,10 +44,7 @@ struct VertexAttributeInfo
 	/// <param name=rhs>The right hand side of the operator</param>
 	/// <returns>True if at least one of index, format, width and offset is not equal,
 	/// otherwise false</returns>
-	bool operator!=(VertexAttributeInfo const& rhs) const
-	{
-		return !((*this) == rhs);
-	}
+	bool operator!=(VertexAttributeInfo const& rhs) const { return !((*this) == rhs); }
 };
 
 /// <summary>Information about a Buffer binding: Binding index, stride, (instance) step rate.</summary>
@@ -58,7 +55,7 @@ struct VertexInputBindingInfo
 	StepRate stepRate; //!< buffer step rate
 
 	/// <summary>Construct with Uninitialized values.</summary>
-	VertexInputBindingInfo() {}
+	VertexInputBindingInfo() : bindingId(static_cast<uint16_t>(-1)), strideInBytes(static_cast<uint32_t>(-1)), stepRate(StepRate::Default) {}
 
 	/// <summary>Add a buffer binding.</summary>
 	/// <param name="bindId">Buffer binding point</param>
@@ -74,7 +71,7 @@ struct VertexAttributeInfoWithBinding : public VertexAttributeInfo
 	uint16_t binding;
 
 	/// <summary>Constructor</summary>
-	VertexAttributeInfoWithBinding() {}
+	VertexAttributeInfoWithBinding() : binding(static_cast<uint16_t>(-1)) {}
 
 	/// <summary>Constructor from VertexAttributeInfo and Binding</summary>
 	/// <param name="nfo">A vertexAttributeInfo</param>

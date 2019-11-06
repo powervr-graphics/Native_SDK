@@ -25,9 +25,6 @@
 
 @end
 
-// TODO: Don't make these globals
-//GLint numDiscardAttachments	= 0;
-//GLenum discardAttachments[3];
 GLuint framebuffer = 0;
 GLuint renderbuffer = 0;
 GLuint depthBuffer = 0;
@@ -36,41 +33,10 @@ GLuint msaaFrameBuffer = 0;
 GLuint msaaColorBuffer = 0;
 GLuint msaaDepthBuffer = 0;
 
-//TODO: Lots of error checking.
-using namespace pvr::platform;
+namespace pvr {
+namespace platform {
 
-using namespace pvr;
-
-pvr::platform::SharedEglContext_::SharedEglContext_(pvr::platform::EglContext_& context)
-{
-	// CREATE THE PBUFFER SURFACE FOR THE SHARED CONTEXT
-	_parentContext = &context;
-	_handles.reset(new NativeSharedPlatformHandles_);
-    
-    EAGLRenderingAPI api;
-    switch (_parentContext->getApiVersion())
-    {
-        case pvr::Api::OpenGLES2: //GLES2
-            Log(LogLevel::Debug, "EAGL context creation: Setting kEAGLRenderingAPIOpenGLES2");
-            api = EAGLRenderingAPI(kEAGLRenderingAPIOpenGLES2);
-            break;
-        case pvr::Api::OpenGLES3: //GLES2
-            Log(LogLevel::Debug, "EGL context creation: kEAGLRenderingAPIOpenGLES3");
-            api = EAGLRenderingAPI(kEAGLRenderingAPIOpenGLES3);
-            break;
-        default:
-            throw InvalidOperationError("[SharedEglContext constructor] Unrecognised Api version for the parent context");
-    }
-    _handles->uploadingContext= [[EAGLContext alloc] initWithAPI:api sharegroup:_parentContext->getNativePlatformHandles().context.sharegroup];
-    if(!_handles->uploadingContext)
-    {
-        throw OperationFailedError("[SharedEglContext constructor] Failed to create SharedContext");
-    }
-}
-
-
-
-void pvr::platform::EglContext_::release()
+void EglContext_::release()
 {
     glDeleteFramebuffers(1,&framebuffer);
     glDeleteRenderbuffers(1,&renderbuffer);
@@ -82,24 +48,13 @@ void pvr::platform::EglContext_::release()
     _maxApiVersion = Api::Unspecified;
 }
 
-static inline void preInitialize(NativePlatformHandles& handles)
-{
-    if (!handles.get())
-    {
-        handles.reset(new NativePlatformHandles::ElementType);
-    }
-}
-
-
-
-void pvr::platform::EglContext_::populateMaxApiVersion()
+void EglContext_::populateMaxApiVersion()
 {
     _maxApiVersion = Api::Unspecified;
     Api graphicsapi = Api::OpenGLESMaxVersion;
     while (graphicsapi > Api::Unspecified)
     {
-        const char* esversion = (graphicsapi == Api::OpenGLES31 ? "3.1" : graphicsapi == Api::OpenGLES3 ? "3.0" : graphicsapi == Api::OpenGLES2 ?
-                                                                                                              "2.0" : "UNKNOWN_VERSION");
+        const char* esversion = (graphicsapi == Api::OpenGLES31 ? "3.1" : graphicsapi == Api::OpenGLES3 ? "3.0" : graphicsapi == Api::OpenGLES2 ? "2.0" : "UNKNOWN_VERSION");
 
         EAGLContext* context = NULL;
         // create our context
@@ -129,33 +84,20 @@ void pvr::platform::EglContext_::populateMaxApiVersion()
         graphicsapi = Api((uint32_t)graphicsapi - 1);
     }
     Log(LogLevel::Critical, "=== FATAL: COULD NOT FIND COMPATIBILITY WITH ANY OPENGL ES VERSION ===");
-
 }
 
-pvr::Api pvr::platform::EglContext_::getMaxApiVersion()
-{
-    if(!_preInitialized)
-    {
-        preInitialize(_platformContextHandles);
-        _preInitialized = true;
-        populateMaxApiVersion();
-    }
-    return _maxApiVersion;
-}
-
-bool pvr::platform::EglContext_::isApiSupported(Api apiLevel)
+bool EglContext_::isApiSupported(Api apiLevel)
 {
 	return apiLevel <= getMaxApiVersion();
 }
 
-void pvr::platform::SharedEglContext_::makeSharedContextCurrent()
+void SharedEglContext_::makeSharedContextCurrent()
 {
     if(![EAGLContext setCurrentContext:_handles->uploadingContext])
         throw OperationFailedError("[SharedEglContext_::makeSharedContextCurrent] Failed to set current context.");
 }
 
-
-void init(pvr::platform::EglContext_& platformContext,const NativeDisplay& nativeDisplay,
+void init(EglContext_& platformContext,const NativeDisplay& nativeDisplay,
     const NativeWindow& nativeWindow, DisplayAttributes& attributes, const pvr::Api& apiContextType,
     UIView** outView, EAGLContext** outContext)
 {
@@ -163,9 +105,7 @@ void init(pvr::platform::EglContext_& platformContext,const NativeDisplay& nativ
     if(apiContextType == pvr::Api::Unspecified || !platformContext.isApiSupported(apiContextType))
     {
         apiRequest = platformContext.getMaxApiVersion();
-        //platformContext.getOsManager().setApiTypeRequired(apiRequest);
-        Log(LogLevel::Information, "Unspecified target API. Setting to max API level, which is %s",
-            apiName(apiRequest));
+        Log(LogLevel::Information, "Unspecified target API. Setting to max API level, which is %s", apiName(apiRequest));
     }
     
     if(!platformContext.isInitialized())
@@ -223,15 +163,14 @@ void init(pvr::platform::EglContext_& platformContext,const NativeDisplay& nativ
         
         context = [[EAGLContext alloc] initWithAPI:api];
         
-        if(!context) // TODO: Save a copy of the current context
+        if(!context)
         {
             throw OperationFailedError("[EglContext] Failed to create EAGL context");
         }
-        if(![EAGLContext setCurrentContext:context]) // TODO: Save a copy of the current context
+        if(![EAGLContext setCurrentContext:context])
         {
             throw OperationFailedError("[EglContext] Failed to make newly created EAGL Context valid.");
         }
-        
         
         const GLubyte *extensions = glGetString(GL_EXTENSIONS);
         bool hasFramebufferMultisample = (strstr((const char *)extensions, "GL_APPLEframebuffer_multisample") != NULL);
@@ -260,10 +199,6 @@ void init(pvr::platform::EglContext_& platformContext,const NativeDisplay& nativ
         glGenFramebuffers(1, &framebuffer);
         glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, renderbuffer);
-        
-        
-     //   if(hasFramebufferDiscard && attributes.discardFrameColor)
-        //    discardAttachments[numDiscardAttachments++] = GL_COLOR_ATTACHMENT0;
         
         if(attributes.depthBPP || attributes.stencilBPP)
         {
@@ -365,74 +300,12 @@ void init(pvr::platform::EglContext_& platformContext,const NativeDisplay& nativ
     }
 }
 
-unsigned int pvr::platform::EglContext_::getOnScreenFbo()
+unsigned int EglContext_::getOnScreenFbo()
 {
     return framebuffer;
 }
 
-void pvr::platform::EglContext_::init(OSWindow window, OSDisplay display, DisplayAttributes& attributes,
-    Api minVersion, Api maxVersion)
-{
-    if(_initialized)
-    {
-       throw InvalidOperationError("[EglContext::init] Context already initialized");
-    }
-    _attributes = &attributes;
-    if(!_preInitialized)
-    {
-        preInitialize(_platformContextHandles);
-        _preInitialized = true;
-        populateMaxApiVersion();
-    }
-
-    if (maxVersion == Api::Unspecified)
-    {
-        maxVersion = getMaxApiVersion();
-        
-    }
-    if(minVersion == Api::Unspecified)
-    {
-        minVersion = Api::OpenGLES2;
-    }
-    else
-    {
-        maxVersion = std::min(maxVersion, getMaxApiVersion());
-    }
-    
-    if (minVersion > maxVersion)
-    {
-        throw InvalidDataError(strings::createFormatted("================================================================================\n"
-            "API level requested [%s] was not supported. Max supported API level on this device is [%s]\n"
-            "**** APPLICATION WILL EXIT ****\n"
-            "================================================================================",
-            apiName(_apiType), apiName(getMaxApiVersion())));
-    }
-    if (minVersion == Api::Unspecified)
-    {
-        Log(LogLevel::Information, "Unspecified target API -- Setting to max API level : %s", apiName(_apiType));
-    }
-    
-    else
-    {
-        _apiType = std::max(minVersion, maxVersion);
-        Log(LogLevel::Information, "Requested minimum API level : %s. Will actually create %s since it is supported.",
-            apiName(minVersion), apiName(_apiType));
-    }
-
-    EAGLContext* context;
-    UIView* view;
-    ::init(*this, reinterpret_cast<const NativeDisplay>(display),
-                reinterpret_cast<const NativeWindow>(window),
-           attributes, _apiType, &view,&context);
-        
-    _platformContextHandles->context = context;
-    _platformContextHandles->view = (__bridge VoidUIView*)view;
-    _initialized = true;
-        
-    makeCurrent();
-}
-
-void pvr::platform::EglContext_::makeCurrent()
+void EglContext_::makeCurrent()
 {
     if(msaaFrameBuffer)
     {
@@ -448,18 +321,11 @@ void pvr::platform::EglContext_::makeCurrent()
         throw OperationFailedError("[EglContext_::makeCurrent] Failed to set current context.");
 }
 
-
-Api pvr::platform::EglContext_::getApiVersion()
-{
-    return _apiType;
-}
-
-void pvr::platform::EglContext_::swapBuffers()
+void EglContext_::swapBuffers()
 {
     EAGLContext* oldContext = [EAGLContext currentContext];
     
-    if(oldContext != _platformContextHandles->context)
-        [EAGLContext setCurrentContext:_platformContextHandles->context]; // TODO: If we're switching context then we should also be saving the renderbuffer/scissor test state
+    if(oldContext != _platformContextHandles->context) { [EAGLContext setCurrentContext:_platformContextHandles->context]; }
     
     //MSAA
     if(msaaFrameBuffer)
@@ -478,15 +344,114 @@ void pvr::platform::EglContext_::swapBuffers()
         if (![EAGLContext setCurrentContext:oldContext])
             throw OperationFailedError("[EglContext::swapBuffers] Failed to make current in present renderbuffer.");
 }
-std::unique_ptr<pvr::platform::SharedEglContext_> pvr::platform::EglContext_::createSharedPlatformContext()
+
+static inline void preInitialize(NativePlatformHandles& handles)
 {
-	return std::unique_ptr<SharedEglContext_>(new SharedEglContext_(*this));
+    if (!handles) { handles = std::make_shared<NativePlatformHandles_>(); }
 }
 
-
-//Creates an instance of a graphics context
-std::unique_ptr<pvr::platform::EglContext_> pvr::createEglContext()
+void EglContext_::init(OSWindow window, OSDisplay display, DisplayAttributes& attributes, Api minApi, Api maxApi)
 {
-    return std::unique_ptr<pvr::platform::EglContext_>(new pvr::platform::EglContext_());
+    if(_initialized) { throw InvalidOperationError("[EglContext::init] Context already initialized"); }
+    _attributes = &attributes;
+    if(!_preInitialized)
+    {
+        preInitialize(_platformContextHandles);
+        _preInitialized = true;
+        populateMaxApiVersion();
+    }
+
+	if (maxApi == Api::Unspecified) { maxApi = getMaxApiVersion(); }
+	if (minApi == Api::Unspecified) { minApi = Api::OpenGLES2; }
+	else
+	{
+		maxApi = std::min(maxApi, getMaxApiVersion());
+	}
+    
+	if (minApi > maxApi)
+	{
+		throw InvalidOperationError(pvr::strings::createFormatted("[EglContext::init]: API level requested [%s] was not supported. Max supported API level on this device is [%s]\n"
+																  "**** APPLICATION WILL EXIT ****\n",
+			apiName(minApi), apiName(getMaxApiVersion())));
+	}
+
+	if (minApi == Api::Unspecified)
+	{
+		_apiType = maxApi;
+		Log(LogLevel::Information, "Unspecified target API -- Setting to max API level : %s", apiName(_apiType));
+	}
+	else
+	{
+		_apiType = std::max(minApi, maxApi);
+		Log(LogLevel::Information, "Requested minimum API level : %s. Will actually create %s since it is supported.", apiName(minApi), apiName(_apiType));
+	}
+
+    EAGLContext* context;
+    UIView* view;
+    pvr::platform::init(*this, reinterpret_cast<const NativeDisplay>(display),
+                reinterpret_cast<const NativeWindow>(window),
+           attributes, _apiType, &view,&context);
+        
+    _platformContextHandles->context = context;
+    _platformContextHandles->view = (__bridge VoidUIView*)view;
+    _initialized = true;
+        
+    makeCurrent();
 }
+
+SharedEglContext_::SharedEglContext_(make_unique_enabler, EglContext_& context)
+{
+	_parentContext = &context;
+	_handles = std::make_unique<NativeSharedPlatformHandles_>();
+    
+    EAGLRenderingAPI api;
+    switch (_parentContext->getApiVersion())
+    {
+        case pvr::Api::OpenGLES2: //GLES2
+            Log(LogLevel::Debug, "EAGL context creation: Setting kEAGLRenderingAPIOpenGLES2");
+            api = EAGLRenderingAPI(kEAGLRenderingAPIOpenGLES2);
+            break;
+        case pvr::Api::OpenGLES3: //GLES2
+            Log(LogLevel::Debug, "EGL context creation: kEAGLRenderingAPIOpenGLES3");
+            api = EAGLRenderingAPI(kEAGLRenderingAPIOpenGLES3);
+            break;
+        default:
+            throw InvalidOperationError("[SharedEglContext constructor] Unrecognised Api version for the parent context");
+    }
+    _handles->uploadingContext= [[EAGLContext alloc] initWithAPI:api sharegroup:_parentContext->getNativePlatformHandles().context.sharegroup];
+    if(!_handles->uploadingContext)
+    {
+        throw OperationFailedError("[SharedEglContext constructor] Failed to create SharedContext");
+    }
+}
+
+Api EglContext_::getMaxApiVersion()
+{
+    if(!_preInitialized)
+    {
+        preInitialize(_platformContextHandles);
+        _preInitialized = true;
+        populateMaxApiVersion();
+    }
+	
+    return _maxApiVersion;
+}
+
+Api EglContext_::getApiVersion()
+{
+    return _apiType;
+}
+
+std::unique_ptr<SharedEglContext_> EglContext_::createSharedPlatformContext()
+{
+	auto retval = SharedEglContext_::constructUnique(*this);
+	return retval;
+}
+} // namespace platform
+} // namespace pvr
+
+namespace pvr {
+// Creates an instance of a platform context
+std::unique_ptr<platform::EglContext_> createEglContext() { return std::make_unique<platform::EglContext_>(); }
+} // namespace pvr
 //!\endcond 

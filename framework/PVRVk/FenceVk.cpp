@@ -46,10 +46,7 @@ bool Fence_::wait(uint64_t timeoutNanos)
 	return (res == Result::e_SUCCESS);
 }
 
-void Fence_::reset()
-{
-	vkThrowIfFailed(getDevice()->getVkBindings().vkResetFences(getDevice()->getVkHandle(), 1, &getVkHandle()), "Fence::reset returned an error");
-}
+void Fence_::reset() { vkThrowIfFailed(getDevice()->getVkBindings().vkResetFences(getDevice()->getVkHandle(), 1, &getVkHandle()), "Fence::reset returned an error"); }
 
 bool Fence_::isSignalled()
 {

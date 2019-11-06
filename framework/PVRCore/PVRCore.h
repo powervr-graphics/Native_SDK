@@ -5,7 +5,9 @@
 \copyright Copyright (c) Imagination Technologies Limited.
 */
 #pragma once
+#ifndef PVRCORE_NO_GLM
 #include "PVRCore/math/MathUtils.h"
+#endif
 #include "PVRCore/stream/BufferStream.h"
 #include "PVRCore/types/Types.h"
 #include "PVRCore/strings/StringFunctions.h"
@@ -13,6 +15,10 @@
 #include "PVRCore/IAssetProvider.h"
 #include "PVRCore/commandline/CommandLine.h"
 #include "PVRCore/textureio/TextureIO.h"
+#include "PVRCore/texture/TextureLoad.h"
+#include "PVRCore/stream/FilePath.h"
+#include "PVRCore/Time_.h"
+
 #include <iterator>
 // RefCounted.h has been made deprecated and is now unused throughout the PowerVR SDK
 #include "PVRCore/RefCounted.h"

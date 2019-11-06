@@ -7,6 +7,8 @@
 //!\cond NO_DOXYGEN
 
 #include "PVRVk/LayersVk.h"
+#include "PVRVk/InstanceVk.h"
+
 #include <sstream>
 
 namespace pvrvk {
@@ -65,13 +67,11 @@ VulkanLayerList filterLayers(const std::vector<LayerProperties>& layerProperties
 
 void enumerateInstanceLayers(std::vector<LayerProperties>& outLayers)
 {
-	VkBindings vkBindings;
-	initVkBindings(&vkBindings);
 	uint32_t numItems = 0;
-	pvrvk::impl::vkThrowIfFailed(vkBindings.vkEnumerateInstanceLayerProperties(&numItems, nullptr), "LayersVk::Failed to enumerate instance layer properties");
+	pvrvk::impl::vkThrowIfFailed(pvrvk::getVkBindings().vkEnumerateInstanceLayerProperties(&numItems, nullptr), "LayersVk::Failed to enumerate instance layer properties");
 	outLayers.resize(numItems);
 	pvrvk::impl::vkThrowIfFailed(
-		vkBindings.vkEnumerateInstanceLayerProperties(&numItems, (VkLayerProperties*)outLayers.data()), "LayersVk::Failed to enumerate instance layer properties");
+		pvrvk::getVkBindings().vkEnumerateInstanceLayerProperties(&numItems, (VkLayerProperties*)outLayers.data()), "LayersVk::Failed to enumerate instance layer properties");
 }
 
 bool isInstanceLayerSupported(const std::string& layer)
@@ -80,10 +80,7 @@ bool isInstanceLayerSupported(const std::string& layer)
 	enumerateInstanceLayers(layers);
 	for (uint32_t i = 0; i < layers.size(); ++i)
 	{
-		if (!strcmp(layers[i].getLayerName(), layer.c_str()))
-		{
-			return true;
-		}
+		if (!strcmp(layers[i].getLayerName(), layer.c_str())) { return true; }
 	}
 	return false;
 }

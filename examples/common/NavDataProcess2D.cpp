@@ -1,5 +1,5 @@
 #include "NavDataProcess.h"
-#include "../external/glm/gtx/intersect.hpp"
+#include "glm/gtx/intersect.hpp"
 #include "pugixml.hpp"
 
 const float TexUVLeft = -1.f;
@@ -19,10 +19,7 @@ pvr::Result NavDataProcess::loadAndProcessData()
 
 	pvr::Result result = loadOSMData();
 
-	if (result != pvr::Result::Success)
-	{
-		return result;
-	}
+	if (result != pvr::Result::Success) { return result; }
 
 	initialiseTiles();
 	calculateRoute();
@@ -81,10 +78,7 @@ pvr::Result NavDataProcess::loadOSMData()
 	pugi::xml_parse_result result = mapData.load_string(mapStream.data(), static_cast<uint32_t>(mapStream.size()));
 
 	Log(LogLevel::Debug, "XML parse result: %s", result.description());
-	if (!result)
-	{
-		return pvr::Result::UnknownError;
-	}
+	if (!result) { return pvr::Result::UnknownError; }
 
 	// Get the bounds of the map
 	_osm.maxLonLat =
@@ -102,10 +96,7 @@ pvr::Result NavDataProcess::loadOSMData()
 	for (pugi::xml_named_node_iterator currentNode = nodes.begin(); currentNode != nodes.end(); ++currentNode)
 	{
 		if (!currentNode->attribute("visible").empty() && !currentNode->attribute("visible").as_bool()) // Skip node if not visible
-		{
-			continue;
-		}
-
+		{ continue; }
 		glm::dvec2 coords;
 
 		// Get ID, latitude and longitude
@@ -116,14 +107,8 @@ pvr::Result NavDataProcess::loadOSMData()
 		coords = glm::dvec2(currentNode->attribute("lon").as_double(), currentNode->attribute("lat").as_double());
 		tempNode.coords = lonLatToMetres(_osm.minLonLat, coords);
 
-		if (coords.x < _osm.minLonLat.x)
-		{
-			tempNode.coords.x *= -1;
-		}
-		if (coords.y < _osm.minLonLat.y)
-		{
-			tempNode.coords.y *= -1;
-		}
+		if (coords.x < _osm.minLonLat.x) { tempNode.coords.x *= -1; }
+		if (coords.y < _osm.minLonLat.y) { tempNode.coords.y *= -1; }
 
 		// Get tags from XML.
 		pugi::xml_object_range<pugi::xml_named_node_iterator> tags = currentNode->children("tag");
@@ -141,20 +126,14 @@ pvr::Result NavDataProcess::loadOSMData()
 
 		debug_assertion(_osm.icons[LOD::IconLOD].size() >= _osm.amenityLabels[LOD::AmenityLabelLOD].size(), "There must be at least one amenity icon per amenity label");
 	}
-	if (_osm.nodes.empty())
-	{
-		return pvr::Result::UnknownError;
-	}
+	if (_osm.nodes.empty()) { return pvr::Result::UnknownError; }
 	// Collect the ways
 	pugi::xml_object_range<pugi::xml_named_node_iterator> ways = mapData.root().child("osm").children("way");
 
 	for (pugi::xml_named_node_iterator currentWay = ways.begin(); currentWay != ways.end(); ++currentWay)
 	{
 		if (!currentWay->attribute("visible").empty() && !currentWay->attribute("visible").as_bool()) // Skip way if not visible
-		{
-			continue;
-		}
-
+		{ continue; }
 		bool isArea = false;
 
 		Way* tempWay = NULL;
@@ -175,9 +154,7 @@ pvr::Result NavDataProcess::loadOSMData()
 			if ((strcmp(key, "highway") == 0) && (strcmp(value, "footway") != 0) && (strcmp(value, "bus_guideway") != 0) && (strcmp(value, "raceway") != 0) &&
 				(strcmp(value, "bridleway") != 0) && (strcmp(value, "steps") != 0) && (strcmp(value, "path") != 0) && (strcmp(value, "cycleway") != 0) &&
 				(strcmp(value, "proposed") != 0) && (strcmp(value, "construction") != 0) && (strcmp(value, "track") != 0) && (strcmp(value, "pedestrian") != 0))
-			{
-				wayType = WayTypes::Road;
-			}
+			{ wayType = WayTypes::Road; }
 			else if ((strcmp(key, "amenity") == 0) && (strcmp(value, "parking") == 0))
 			{
 				wayType = WayTypes::Parking;
@@ -193,10 +170,7 @@ pvr::Result NavDataProcess::loadOSMData()
 		}
 		Way tmp;
 
-		if (wayType == WayTypes::Road)
-		{
-			tempWay = &_osm.originalRoadWays[tempWayId];
-		}
+		if (wayType == WayTypes::Road) { tempWay = &_osm.originalRoadWays[tempWayId]; }
 		else if (wayType == WayTypes::Parking)
 		{
 			tempWay = &_osm.parkingWays[tempWayId];
@@ -240,10 +214,7 @@ pvr::Result NavDataProcess::loadOSMData()
 				Vertex& currentNode = _osm.getNodeById(tempWay->nodeIds.back());
 				currentNode.wayIds.emplace_back(tempWay->id);
 
-				if (currentNode.wayIds.size() == 2)
-				{
-					_osm.original_intersections.emplace_back(currentNode.id);
-				}
+				if (currentNode.wayIds.size() == 2) { _osm.original_intersections.emplace_back(currentNode.id); }
 			}
 		}
 
@@ -295,14 +266,10 @@ pvr::Result NavDataProcess::loadOSMData()
 			debug_assertion(_osm.icons[LOD::IconLOD].size() >= _osm.amenityLabels[LOD::AmenityLabelLOD].size(), "There must be at least one amenity icon per amenity label");
 			break;
 		}
-		default:
-			break;
+		default: break;
 		}
 	}
-	if (_osm.originalRoadWays.empty() && _osm.buildWays.empty() && _osm.parkingWays.empty())
-	{
-		return pvr::Result::UnknownError;
-	}
+	if (_osm.originalRoadWays.empty() && _osm.buildWays.empty() && _osm.parkingWays.empty()) { return pvr::Result::UnknownError; }
 
 	// Use relation data to sort inner ways
 	pugi::xml_object_range<pugi::xml_named_node_iterator> relations = mapData.root().child("osm").children("relation");
@@ -310,11 +277,7 @@ pvr::Result NavDataProcess::loadOSMData()
 	for (pugi::xml_named_node_iterator currentRelation = relations.begin(); currentRelation != relations.end(); ++currentRelation)
 	{
 		if (!currentRelation->attribute("visible").empty() && !currentRelation->attribute("visible").as_bool()) // Skip way if not visible
-		{
-			continue;
-		}
-
-		// Check tags to see if it describes a multipolygon
+		{ continue; } // Check tags to see if it describes a multipolygon
 		pugi::xml_object_range<pugi::xml_named_node_iterator> tags = currentRelation->children("tag");
 		bool multiPolygon = false;
 
@@ -323,16 +286,10 @@ pvr::Result NavDataProcess::loadOSMData()
 			std::string key = currentTag->attribute("k").as_string();
 			std::string value = currentTag->attribute("v").as_string();
 
-			if ((key == "type") && (value == "multipolygon"))
-			{
-				multiPolygon = true;
-			}
+			if ((key == "type") && (value == "multipolygon")) { multiPolygon = true; }
 		}
 
-		if (!multiPolygon)
-		{
-			continue;
-		}
+		if (!multiPolygon) { continue; }
 
 		// Iterate through members to find outer way type
 		pugi::xml_object_range<pugi::xml_named_node_iterator> members = currentRelation->children("member");
@@ -347,10 +304,7 @@ pvr::Result NavDataProcess::loadOSMData()
 			{
 				uint64_t wayId = currentMember->attribute("ref").as_ullong();
 
-				if (_osm.parkingWays.find(wayId) != _osm.parkingWays.end())
-				{
-					outerType = WayTypes::Parking;
-				}
+				if (_osm.parkingWays.find(wayId) != _osm.parkingWays.end()) { outerType = WayTypes::Parking; }
 				else if (_osm.buildWays.find(wayId) != _osm.buildWays.end())
 				{
 					outerType = WayTypes::Building;
@@ -371,10 +325,7 @@ pvr::Result NavDataProcess::loadOSMData()
 				const auto& parkingTemp = _osm.parkingWays.find(wayId);
 				const auto& buildTemp = _osm.buildWays.find(wayId);
 
-				if ((parkingTemp != _osm.parkingWays.end()) && (outerType == WayTypes::Parking))
-				{
-					parkingTemp->second.inner = true;
-				}
+				if ((parkingTemp != _osm.parkingWays.end()) && (outerType == WayTypes::Parking)) { parkingTemp->second.inner = true; }
 				else if ((buildTemp != _osm.buildWays.end()) && (outerType == WayTypes::Building))
 				{
 					buildTemp->second.inner = true;
@@ -404,7 +355,7 @@ void NavDataProcess::calculateRoute()
 	std::set<uint64_t> previousWayIDs;
 	uint64_t nextID = _osm.original_intersections[0];
 	uint64_t lastID = -1;
-	std::vector<std::pair<uint64_t, glm::dvec2> > tempCoords;
+	std::vector<std::pair<uint64_t, glm::dvec2>> tempCoords;
 
 	Log(LogLevel::Information, "Calculated intersections: %u", _osm.original_intersections.size());
 
@@ -423,10 +374,7 @@ void NavDataProcess::calculateRoute()
 			{
 				previousWayIDs.insert(way.id);
 
-				if (_osm.getNodeById(way.nodeIds.back()).wayIds.size() == 1 && _osm.getNodeById(way.nodeIds[0]).wayIds.size() == 1)
-				{
-					continue;
-				}
+				if (_osm.getNodeById(way.nodeIds.back()).wayIds.size() == 1 && _osm.getNodeById(way.nodeIds[0]).wayIds.size() == 1) { continue; }
 
 				for (auto id : way.nodeIds)
 				{
@@ -435,10 +383,7 @@ void NavDataProcess::calculateRoute()
 					// Check the node is not outside the map boundary.
 					if (isOutOfBounds(coords) || isTooCloseToBoundary(coords))
 					{
-						if (tempCoords.size() > 0)
-						{
-							tempCoords.clear();
-						}
+						if (tempCoords.size() > 0) { tempCoords.clear(); }
 
 						continue;
 					}
@@ -477,9 +422,7 @@ void NavDataProcess::calculateRoute()
 								tempCoords.clear();
 
 								for (uint32_t j = 0; j < way.nodeIds.size(); ++j)
-								{
-									tempCoords.emplace_back(std::pair<uint64_t, glm::dvec2>(way.nodeIds[j], _osm.getNodeById(way.nodeIds[j]).coords));
-								}
+								{ tempCoords.emplace_back(std::pair<uint64_t, glm::dvec2>(way.nodeIds[j], _osm.getNodeById(way.nodeIds[j]).coords)); }
 							}
 						}
 						break;
@@ -491,10 +434,7 @@ void NavDataProcess::calculateRoute()
 			{
 				for (uint32_t j = 0; j < tempCoords.size(); ++j)
 				{
-					if (lastID == tempCoords[j].first)
-					{
-						continue;
-					}
+					if (lastID == tempCoords[j].first) { continue; }
 
 					RouteData data;
 					data.distanceToNext = 0.0f;
@@ -511,10 +451,7 @@ void NavDataProcess::calculateRoute()
 		}
 
 		// If no junction was found end the route.
-		if (!nextJunctionFound)
-		{
-			break;
-		}
+		if (!nextJunctionFound) { break; }
 
 		count++;
 	}
@@ -536,17 +473,11 @@ void NavDataProcess::generateIcon(const uint64_t* nodeIds, size_t numNodeIds, co
 		const std::string& name = getAttributeName(tags, numTags);
 		bool nameEmpty = name.empty();
 
-		if (_osm.uniqueIconNames.find(name) != _osm.uniqueIconNames.end() || (type == BuildingType::Other && nameEmpty))
-		{
-			return;
-		}
+		if (_osm.uniqueIconNames.find(name) != _osm.uniqueIconNames.end() || (type == BuildingType::Other && nameEmpty)) { return; }
 
 		// Calculate the icons co-ordinates by averaging the nodes co-ordinates that make up the building.
 		glm::dvec2 coord = glm::dvec2(0, 0);
-		for (uint32_t i = 0; i < numNodeIds; ++i)
-		{
-			coord += _osm.getNodeById(nodeIds[i]).coords;
-		}
+		for (uint32_t i = 0; i < numNodeIds; ++i) { coord += _osm.getNodeById(nodeIds[i]).coords; }
 
 		coord /= double(numNodeIds);
 
@@ -577,10 +508,7 @@ void NavDataProcess::generateIcon(const uint64_t* nodeIds, size_t numNodeIds, co
 				std::size_t pos = name.find_first_of(' ', maxLineLen);
 				pos = (pos == std::string::npos ? name.find_last_of(' ') : pos);
 
-				if (pos != std::string::npos)
-				{
-					label.name.insert(pos + 1, "\n");
-				}
+				if (pos != std::string::npos) { label.name.insert(pos + 1, "\n"); }
 			}
 
 			_osm.amenityLabels[LOD::AmenityLabelLOD].emplace_back(label);
@@ -597,10 +525,7 @@ void NavDataProcess::processLabels(const glm::dvec2& mapWorldDim)
 	for (uint32_t lod = 0; lod <= LOD::Count; ++lod)
 	{
 		auto& _osmlodlabels = _osm.labels[lod];
-		if (_osmlodlabels.size() == 0)
-		{
-			continue;
-		}
+		if (_osmlodlabels.size() == 0) { continue; }
 		static const float minDistLabels = 0.03f; // Minimum distance two labels can be apart, to prevent crowding / overlaps.
 		std::vector<LabelData> temp;
 
@@ -612,10 +537,7 @@ void NavDataProcess::processLabels(const glm::dvec2& mapWorldDim)
 				// Check labels came from the same way.
 				if (_osmlodlabels[i].id == _osmlodlabels[i - 1].id)
 				{
-					if (glm::distance(_osmlodlabels[i].coords, _osmlodlabels[i - 1].coords) < 0.01)
-					{
-						continue;
-					}
+					if (glm::distance(_osmlodlabels[i].coords, _osmlodlabels[i - 1].coords) < 0.01) { continue; }
 
 					label = _osmlodlabels[i];
 
@@ -625,10 +547,7 @@ void NavDataProcess::processLabels(const glm::dvec2& mapWorldDim)
 					if (temp.size() > 0)
 					{
 						double dist = glm::distance(temp.back().coords, pos);
-						if (dist < minDistLabels)
-						{
-							continue;
-						}
+						if (dist < minDistLabels) { continue; }
 					}
 
 					// Remap co-ordinates into screen space to calculate the accurate angle of the line.
@@ -641,10 +560,7 @@ void NavDataProcess::processLabels(const glm::dvec2& mapWorldDim)
 					// Compute rotation for the label based on slope of line y / x
 					float angle = static_cast<float>(calculateAngleBetweenPoints(remappedPos1, remappedPos2));
 
-					if (angle <= -90.f)
-					{
-						angle += 180.f;
-					}
+					if (angle <= -90.f) { angle += 180.f; }
 					else if (angle >= 90.f)
 					{
 						angle -= 180.f;
@@ -668,7 +584,7 @@ void NavDataProcess::processLabels(const glm::dvec2& mapWorldDim)
 \param  point Longitude then latitude of point to convert.
 \brief  Convert longitude and latitude to x and y from a given origin.
 ***********************************************************************************************************************/
-glm::dvec2 NavDataProcess::lonLatToMetres(const glm::dvec2 origin, const glm::dvec2 point) const
+glm::dvec2 NavDataProcess::lonLatToMetres(glm::dvec2 origin, glm::dvec2 point) const
 {
 	glm::dvec2 coords;
 	// Approx radius of Earth
@@ -695,18 +611,12 @@ void NavDataProcess::triangulateAllRoads()
 	// Triangulate the roads
 	for (auto wayIterator = _osm.originalRoadWays.begin(), end = _osm.originalRoadWays.end(); wayIterator != end; ++wayIterator)
 	{
-		if (wayIterator->second.area)
-		{
-			_osm.triangulatedRoads[wayIterator->first] = wayIterator->second;
-		}
+		if (wayIterator->second.area) { _osm.triangulatedRoads[wayIterator->first] = wayIterator->second; }
 		else
 		{
 			/*Increases node density around sharp bends, which in turn increases the number of triangles produced by the triangulation function,
 			which improves visual quality for sharp bends, at the cost of memory usage, initialisation time and potentially frame times.*/
-			if (wayIterator->second.nodeIds.size() > 2)
-			{
-				wayIterator->second.nodeIds = tessellate(wayIterator->second.nodeIds, wayIterator->second.width);
-			}
+			if (wayIterator->second.nodeIds.size() > 2) { wayIterator->second.nodeIds = tessellate(wayIterator->second.nodeIds, wayIterator->second.width); }
 
 			_osm.triangulatedRoads[wayIterator->first] = wayIterator->second;
 			_osm.triangulatedRoads[wayIterator->first].nodeIds = triangulateRoad(wayIterator->second.nodeIds, wayIterator->second.width);
@@ -757,7 +667,7 @@ void breakUpAllIntersectionWays(OSM& _osm, uint64_t intersection_id)
 	while (wayToBreak_id != static_cast<uint64_t>(-1))
 	{
 		isLoop = false;
-		wayToBreak_id = -1;
+		wayToBreak_id = static_cast<uint64_t>(-1);
 
 		// Determine if the junction involves only the start or end of a way
 		for (size_t way_idx = 0; way_idx < intersection_vertex.wayIds.size() && wayToBreak_id == static_cast<uint64_t>(-1); ++way_idx)
@@ -770,10 +680,7 @@ void breakUpAllIntersectionWays(OSM& _osm, uint64_t intersection_id)
 			// Only deal with loops AFTER chopping off leftover bits and pieces...
 			// We will break loops to avoid problems, but later later...
 			isLoop = (!hasIntersectionContinuity && oriway.nodeIds.front() == intersection_id && oriway.nodeIds.back() == intersection_id);
-			if (hasIntersectionContinuity || isLoop)
-			{
-				wayToBreak_id = way_id;
-			}
+			if (hasIntersectionContinuity || isLoop) { wayToBreak_id = way_id; }
 		}
 
 		if (wayToBreak_id != static_cast<uint64_t>(-1)) // If there is a junction part way through a road, or we have a loop to break up
@@ -878,10 +785,7 @@ void sortIntersectionWaysByAngle(OSM& _osm, std::vector<Way>& nonTriangulatedWay
 
 			float currentAngle = static_cast<float>(glm::atan(nextPoint.y - centrePoint.y, nextPoint.x - centrePoint.x));
 
-			if (currentAngle < 0)
-			{
-				currentAngle += glm::pi<float>() * 2.f;
-			}
+			if (currentAngle < 0) { currentAngle += glm::pi<float>() * 2.f; }
 
 			if (currentAngle < angle)
 			{
@@ -937,7 +841,7 @@ void processIntersection(OSM& _osm, uint64_t intersection_id)
 
 	_osm.insertOrOverwriteNode(std::move(tmpint)); // Add the new vertices
 
-	std::vector<std::array<uint64_t, 3> > newIntersectionTriangles;
+	std::vector<std::array<uint64_t, 3>> newIntersectionTriangles;
 
 	static const Real Angle_Sine_For_Parallel_Line = .05; // If the absolute value of the sine of an angle is less than that, we consider the lines parallel
 	static const Real Vertex_Max_Fudge_Distance = .001; // If the distance of two vertices are less than that, we are allowed to move them both to their centerpoint.
@@ -965,28 +869,18 @@ void processIntersection(OSM& _osm, uint64_t intersection_id)
 			{
 				current_ptr_0 = &_osm.getNodeById(currentWay.nodeIds[current_tmp]).coords;
 				current_ptr_2 = &_osm.getNodeById(currentWay.nodeIds[current_tmp + 2]).coords;
-				if (current_tmp + 4 >= static_cast<uint32_t>(currentWay.nodeIds.size()))
-				{
-					break;
-				} // Nothing to do - can't look further...
+				if (current_tmp + 4 >= static_cast<uint32_t>(currentWay.nodeIds.size())) { break; } // Nothing to do - can't look further...
 				if (glm::length(*current_ptr_0 - *current_ptr_2) > 0.0001) // If they're far enough to get a direction, use it...
-				{
-					break;
-				}
+				{ break; }
 				current_tmp += 2;
 			}
 			while (true)
 			{
 				next_ptr_1 = &_osm.getNodeById(nextWay.nodeIds[next_tmp]).coords;
 				next_ptr_3 = &_osm.getNodeById(nextWay.nodeIds[next_tmp + 2]).coords;
-				if (next_tmp + 4 >= static_cast<uint32_t>(nextWay.nodeIds.size()))
-				{
-					break;
-				} // Nothing to do - can't look further...
+				if (next_tmp + 4 >= static_cast<uint32_t>(nextWay.nodeIds.size())) { break; } // Nothing to do - can't look further...
 				if (glm::length(*next_ptr_1 - *next_ptr_3) > 0.0001) // If they're far enough to get a direction, use it...
-				{
-					break;
-				}
+				{ break; }
 				next_tmp += 2;
 			}
 
@@ -1079,15 +973,9 @@ void processIntersection(OSM& _osm, uint64_t intersection_id)
 
 				if (isIntersectionValidForCurrent && isIntersectionValidForNext)
 				{
-					for (uint32_t i = 0; i <= current_node_idx; ++i)
-					{
-						_osm.getNodeById(currentWay.nodeIds[i * 2]).coords = intersection_point;
-					}
+					for (uint32_t i = 0; i <= current_node_idx; ++i) { _osm.getNodeById(currentWay.nodeIds[i * 2]).coords = intersection_point; }
 
-					for (uint32_t i = 0; i <= next_node_idx; ++i)
-					{
-						_osm.getNodeById(nextWay.nodeIds[i * 2 + 1]).coords = intersection_point;
-					}
+					for (uint32_t i = 0; i <= next_node_idx; ++i) { _osm.getNodeById(nextWay.nodeIds[i * 2 + 1]).coords = intersection_point; }
 				}
 				else
 				{
@@ -1107,7 +995,7 @@ void processIntersection(OSM& _osm, uint64_t intersection_id)
 	}
 	if (intersection_vertex.wayIds.size() > 2)
 	{
-		std::vector<std::pair<Tag*, size_t> > temp;
+		std::vector<std::pair<Tag*, size_t>> temp;
 		bool roundabout = false;
 		uint32_t oneWayCount = 0;
 		double width = 0;
@@ -1115,18 +1003,9 @@ void processIntersection(OSM& _osm, uint64_t intersection_id)
 		for (Way& w : triangulatedWays)
 		{
 			temp.emplace_back(std::make_pair(w.tags.data(), w.tags.size()));
-			if (w.isRoundabout)
-			{
-				roundabout = true;
-			}
-			if (w.width > width)
-			{
-				width = w.width;
-			}
-			if (isRoadOneWay(w.tags))
-			{
-				oneWayCount++;
-			}
+			if (w.isRoundabout) { roundabout = true; }
+			if (w.width > width) { width = w.width; }
+			if (isRoadOneWay(w.tags)) { oneWayCount++; }
 		}
 
 		Tag t;
@@ -1159,24 +1038,15 @@ void NavDataProcess::calculateIntersections()
 		auto& intersection_vertex = _osm.getNodeById(intersection_id);
 		processing_intersections.pop_front();
 
-		if (isOutOfBounds(intersection_vertex.coords))
-		{
-			continue;
-		}
+		if (isOutOfBounds(intersection_vertex.coords)) { continue; }
 
-		if (_osm.getNodeById(intersection_id).wayIds.size() < 2)
-		{
-			continue;
-		}
+		if (_osm.getNodeById(intersection_id).wayIds.size() < 2) { continue; }
 
 		// We preprocess all ways and junctions, in such a way that each road segment between two junctions is a single way.
 		// In other words, junctions are always at the ENDS of ways. This makes the next step so much easier...
 		breakUpAllIntersectionWays(_osm, intersection_id);
 
-		if (intersection_vertex.wayIds.size() > 1)
-		{
-			processed_intersections.emplace_back(intersection_id);
-		}
+		if (intersection_vertex.wayIds.size() > 1) { processed_intersections.emplace_back(intersection_id); }
 	}
 
 	// Processed intersections only contain roadways.
@@ -1194,7 +1064,7 @@ void NavDataProcess::calculateIntersections()
 ***********************************************************************************************************************/
 void NavDataProcess::convertToTriangleList()
 {
-	std::vector<std::array<uint64_t, 3> > triangles;
+	std::vector<std::array<uint64_t, 3>> triangles;
 	// Finally sort into triangle lists and get outlines ready for tiling
 	for (auto wayIterator = _osm.triangulatedRoads.begin(); wayIterator != _osm.triangulatedRoads.end(); ++wayIterator)
 	{
@@ -1204,16 +1074,10 @@ void NavDataProcess::convertToTriangleList()
 		if (wayIterator->second.area) // Handle road areas
 		{
 			if (checkWinding(wayIterator->second.nodeIds) == pvr::PolygonWindingOrder::FrontFaceCW)
-			{
-				std::reverse(wayIterator->second.nodeIds.begin(), wayIterator->second.nodeIds.end());
-			}
-
+			{ std::reverse(wayIterator->second.nodeIds.begin(), wayIterator->second.nodeIds.end()); }
 			triangulate(wayIterator->second.nodeIds, triangles);
 
-			for (uint32_t i = 0; i < triangles.size(); ++i)
-			{
-				convertedRoad.triangulatedIds.emplace_back(triangles[i]);
-			}
+			for (uint32_t i = 0; i < triangles.size(); ++i) { convertedRoad.triangulatedIds.emplace_back(triangles[i]); }
 		}
 		else
 		{
@@ -1294,35 +1158,23 @@ void NavDataProcess::sortTiles()
 	for (uint32_t lod = 0; lod < LOD::Count; ++lod)
 	{
 		// Labels
-		for (uint32_t i = 0; i < _osm.labels[lod].size(); ++i)
-		{
-			fillLabelTiles(_osm.labels[lod][i], lod);
-		}
+		for (uint32_t i = 0; i < _osm.labels[lod].size(); ++i) { fillLabelTiles(_osm.labels[lod][i], lod); }
 
 		// Icons
-		for (uint32_t i = 0; i < _osm.icons[lod].size(); ++i)
-		{
-			fillIconTiles(_osm.icons[lod][i], lod);
-		}
+		for (uint32_t i = 0; i < _osm.icons[lod].size(); ++i) { fillIconTiles(_osm.icons[lod][i], lod); }
 
 		// Amenity Labels
-		for (uint32_t i = 0; i < _osm.amenityLabels[lod].size(); ++i)
-		{
-			fillAmenityTiles(_osm.amenityLabels[lod][i], lod);
-		}
+		for (uint32_t i = 0; i < _osm.amenityLabels[lod].size(); ++i) { fillAmenityTiles(_osm.amenityLabels[lod][i], lod); }
 	}
 
 	// Tile car parking
 	id = 0;
 	std::vector<Way> innerWays;
-	std::vector<std::array<uint64_t, 3> > triangles;
+	std::vector<std::array<uint64_t, 3>> triangles;
 	for (auto&& wayMapEntry : _osm.parkingWays)
 	{
 		auto& way = wayMapEntry.second;
-		if (checkWinding(way.nodeIds) == pvr::PolygonWindingOrder::FrontFaceCW)
-		{
-			std::reverse(way.nodeIds.begin(), way.nodeIds.end());
-		}
+		if (checkWinding(way.nodeIds) == pvr::PolygonWindingOrder::FrontFaceCW) { std::reverse(way.nodeIds.begin(), way.nodeIds.end()); }
 
 		if (way.inner)
 		{
@@ -1349,10 +1201,7 @@ void NavDataProcess::sortTiles()
 	for (auto&& wayMapEntry : _osm.buildWays)
 	{
 		auto& way = wayMapEntry.second;
-		if (checkWinding(way.nodeIds) == pvr::PolygonWindingOrder::FrontFaceCW)
-		{
-			std::reverse(way.nodeIds.begin(), way.nodeIds.end());
-		}
+		if (checkWinding(way.nodeIds) == pvr::PolygonWindingOrder::FrontFaceCW) { std::reverse(way.nodeIds.begin(), way.nodeIds.end()); }
 
 		if (way.inner)
 		{
@@ -1491,10 +1340,7 @@ std::vector<uint64_t> NavDataProcess::tessellate(const std::vector<uint64_t>& ol
 				Vertex newNode(node1);
 				/*Copy the control node into the newIds when we reach the center
 				of the curve (approx) only updating its position (to preserve intersections).*/
-				if (interpolant >= 0.5 && !middleNodeAdded)
-				{
-					middleNodeAdded = true;
-				}
+				if (interpolant >= 0.5 && !middleNodeAdded) { middleNodeAdded = true; }
 				else // Create a new node
 				{
 					newNode.id = _osm.nodes.rbegin()->first + 1;
@@ -1520,15 +1366,15 @@ std::vector<uint64_t> NavDataProcess::tessellate(const std::vector<uint64_t>& ol
 \param  nodeIds Node IDs of a road linestrip.
 \brief  Triangluates a road line strip into a triangle strip.
 ***********************************************************************************************************************/
-std::vector<uint64_t> NavDataProcess::triangulateRoad(const std::vector<uint64_t>& nodeIds, const double width)
+std::vector<uint64_t> NavDataProcess::triangulateRoad(const std::vector<uint64_t>& nodeIds, double width)
 {
 	std::vector<uint64_t> newNodeIds;
 
 	if (nodeIds.size() == 2)
 	{
 		uint64_t id = _osm.nodes.rbegin()->first + 1;
-		const Vertex& node0 = _osm.getNodeById(nodeIds[0]);
-		const Vertex& node1 = _osm.getNodeById(nodeIds[1]);
+		const Vertex node0 = _osm.getNodeById(nodeIds[0]);
+		const Vertex node1 = _osm.getNodeById(nodeIds[1]);
 
 		// Find coordinates of new points
 		std::array<glm::dvec2, 2> firstPerps = findPerpendicularPoints(node0.coords, node1.coords, width, 1);
@@ -1599,11 +1445,10 @@ std::vector<uint64_t> NavDataProcess::triangulateRoad(const std::vector<uint64_t
 			newNodeIds.emplace_back(newNode5.id);
 		}
 	}
+#ifdef DEBUG
 	for (auto&& newNodeId : newNodeIds)
-	{
-		debug_assertion(_osm.getNodeById(newNodeId).texCoords.x != -10000.f && _osm.getNodeById(newNodeId).texCoords.y != -10000.f, "TexCoord DEFAULT");
-	}
-
+	{ debug_assertion(_osm.getNodeById(newNodeId).texCoords.x != -10000.f && _osm.getNodeById(newNodeId).texCoords.y != -10000.f, "TexCoord DEFAULT"); }
+#endif
 	return newNodeIds;
 }
 
@@ -1854,10 +1699,7 @@ void NavDataProcess::recurseClipRoad(const Vertex& vertex0, const Vertex& vertex
 	if (((glm::abs(vertex0.coords.x - vertex1.coords.x) < epsilon) && (glm::abs(vertex0.coords.y - vertex1.coords.y) < epsilon)) ||
 		((glm::abs(vertex0.coords.x - vertex2.coords.x) < epsilon) && (glm::abs(vertex0.coords.y - vertex2.coords.y) < epsilon)) ||
 		((glm::abs(vertex1.coords.x - vertex2.coords.x) < epsilon) && (glm::abs(vertex1.coords.y - vertex2.coords.y) < epsilon)))
-	{
-		return;
-	}
-
+	{ return; }
 	debug_assertion((glm::abs(vertex0.coords.x - vertex1.coords.x) > epsilon) || (glm::abs(vertex0.coords.y - vertex1.coords.y) > epsilon), "");
 
 	debug_assertion((glm::abs(vertex0.coords.x - vertex2.coords.x) > epsilon) || (glm::abs(vertex0.coords.y - vertex2.coords.y) > epsilon), "");
@@ -1871,8 +1713,7 @@ void NavDataProcess::recurseClipRoad(const Vertex& vertex0, const Vertex& vertex
 	glm::uvec2 planeIdCoords((minTileIndex.x + maxTileIndex.x) / 2, (minTileIndex.y + maxTileIndex.y) / 2); // the id of the tile whose top-right is a point of the plane
 	glm::vec2 planeOrigin = _osm.tiles[planeIdCoords.x][planeIdCoords.y].max;
 
-	clipAgainst(
-		vertex0, vertex1, vertex2, planeOrigin, isPlaneVertical ? glm::vec2(-1.0f, 0.0f) : glm::vec2(0.0f, -1.0f), frontVertex, backVertex, numFrontTriangles, numBackTriangles);
+	clipAgainst(vertex0, vertex1, vertex2, planeOrigin, isPlaneVertical ? glm::vec2(-1.0f, 0.0f) : glm::vec2(0.0f, -1.0f), frontVertex, backVertex, numFrontTriangles, numBackTriangles);
 
 	if (numFrontTriangles > 0) // CLIPS THE FIRST FRONT TRIANGLE IF IT EXISTS
 							   // At least one part of the resulting triangle is to the "front" of the plane, so:
@@ -1882,10 +1723,7 @@ void NavDataProcess::recurseClipRoad(const Vertex& vertex0, const Vertex& vertex
 		debug_assert_vertices_less_than(frontVertex[0], frontVertex[1], frontVertex[2], planeOrigin, isPlaneVertical);
 
 		auto maxCoords = planeIdCoords;
-		if (isPlaneVertical)
-		{
-			maxCoords.y = maxTileIndex.y;
-		}
+		if (isPlaneVertical) { maxCoords.y = maxTileIndex.y; }
 		else
 		{
 			maxCoords.x = maxTileIndex.x;
@@ -1899,10 +1737,7 @@ void NavDataProcess::recurseClipRoad(const Vertex& vertex0, const Vertex& vertex
 	{
 		debug_assert_vertices_less_than(frontVertex[3], frontVertex[4], frontVertex[5], planeOrigin, isPlaneVertical);
 		auto maxCoords = planeIdCoords;
-		if (isPlaneVertical)
-		{
-			maxCoords.y = maxTileIndex.y;
-		}
+		if (isPlaneVertical) { maxCoords.y = maxTileIndex.y; }
 		else
 		{
 			maxCoords.x = maxTileIndex.x;
@@ -1953,10 +1788,7 @@ void NavDataProcess::clipRoad(
 	if (((glm::abs(vertex0.coords.x - vertex1.coords.x) < epsilon) && (glm::abs(vertex0.coords.y - vertex1.coords.y) < epsilon)) ||
 		((glm::abs(vertex0.coords.x - vertex2.coords.x) < epsilon) && (glm::abs(vertex0.coords.y - vertex2.coords.y) < epsilon)) ||
 		((glm::abs(vertex1.coords.x - vertex2.coords.x) < epsilon) && (glm::abs(vertex1.coords.y - vertex2.coords.y) < epsilon)))
-	{
-		return;
-	}
-	// SELECT WHICH PLANE TO CLIP AGAINST
+	{ return; } // SELECT WHICH PLANE TO CLIP AGAINST
 	if (minTileIndex.x == maxTileIndex.x) // If those are equal, we are working with a column.
 	{
 		if (minTileIndex.y == maxTileIndex.y) // We are in a single tile, so by definition there must be no more clipping : the triangle is completly inside a tile.
@@ -2019,9 +1851,7 @@ void NavDataProcess::clipRoad(const Vertex& vertex0, const Vertex& vertex1, cons
 	if (((glm::abs(vertex0.coords.x - vertex1.coords.x) < epsilon) && (glm::abs(vertex0.coords.y - vertex1.coords.y) < epsilon)) ||
 		((glm::abs(vertex0.coords.x - vertex2.coords.x) < epsilon) && (glm::abs(vertex0.coords.y - vertex2.coords.y) < epsilon)) ||
 		((glm::abs(vertex1.coords.x - vertex2.coords.x) < epsilon) && (glm::abs(vertex1.coords.y - vertex2.coords.y) < epsilon)))
-	{
-		return;
-	}
+	{ return; }
 	const glm::ivec2& tile0 = findTile(vertex0.coords);
 	const glm::ivec2& tile1 = findTile(vertex1.coords);
 	const glm::ivec2& tile2 = findTile(vertex2.coords);
@@ -2048,14 +1878,8 @@ void NavDataProcess::clipRoad(const Vertex& vertex0, const Vertex& vertex1, cons
 		clipAgainst(vertex0, vertex1, vertex2, _osm.bounds.min, glm::vec2(1.0f, 0.0f), frontVertex, backVertex, numFrontTriangles, numBackTriangles);
 
 		// Careful of the tile bounds: by using the same x in min and max, we are slicing off a column...
-		if (numFrontTriangles > 0)
-		{
-			clipRoad(frontVertex[0], frontVertex[1], frontVertex[2], wayId, wayTags, wayType, area, roadType, roadWidth, isIntersection, isRoundabout);
-		}
-		if (numFrontTriangles > 1)
-		{
-			clipRoad(frontVertex[3], frontVertex[4], frontVertex[5], wayId, wayTags, wayType, area, roadType, roadWidth, isIntersection, isRoundabout);
-		}
+		if (numFrontTriangles > 0) { clipRoad(frontVertex[0], frontVertex[1], frontVertex[2], wayId, wayTags, wayType, area, roadType, roadWidth, isIntersection, isRoundabout); }
+		if (numFrontTriangles > 1) { clipRoad(frontVertex[3], frontVertex[4], frontVertex[5], wayId, wayTags, wayType, area, roadType, roadWidth, isIntersection, isRoundabout); }
 	}
 	else if (vertex0.coords.x > (_osm.bounds.max.x + epsilon) || vertex1.coords.x > (_osm.bounds.max.x + epsilon) || vertex2.coords.x > (_osm.bounds.max.x + epsilon))
 	{
@@ -2066,14 +1890,8 @@ void NavDataProcess::clipRoad(const Vertex& vertex0, const Vertex& vertex1, cons
 		clipAgainst(vertex0, vertex1, vertex2, _osm.bounds.max, glm::vec2(-1.0f, 0.0f), frontVertex, backVertex, numFrontTriangles, numBackTriangles);
 
 		// Careful of the tile bounds: by using the same x in min and max, we are slicing off a column...
-		if (numFrontTriangles > 0)
-		{
-			clipRoad(frontVertex[0], frontVertex[1], frontVertex[2], wayId, wayTags, wayType, area, roadType, roadWidth, isIntersection, isRoundabout);
-		}
-		if (numFrontTriangles > 1)
-		{
-			clipRoad(frontVertex[3], frontVertex[4], frontVertex[5], wayId, wayTags, wayType, area, roadType, roadWidth, isIntersection, isRoundabout);
-		}
+		if (numFrontTriangles > 0) { clipRoad(frontVertex[0], frontVertex[1], frontVertex[2], wayId, wayTags, wayType, area, roadType, roadWidth, isIntersection, isRoundabout); }
+		if (numFrontTriangles > 1) { clipRoad(frontVertex[3], frontVertex[4], frontVertex[5], wayId, wayTags, wayType, area, roadType, roadWidth, isIntersection, isRoundabout); }
 	}
 	else if (vertex0.coords.y < (_osm.bounds.min.y - epsilon) || vertex1.coords.y < (_osm.bounds.min.y - epsilon) || vertex2.coords.y < (_osm.bounds.min.y - epsilon))
 	{
@@ -2084,14 +1902,8 @@ void NavDataProcess::clipRoad(const Vertex& vertex0, const Vertex& vertex1, cons
 		clipAgainst(vertex0, vertex1, vertex2, _osm.bounds.min, glm::vec2(0.0f, 1.0f), frontVertex, backVertex, numFrontTriangles, numBackTriangles);
 
 		// Careful of the tile bounds: by using the same x in min and max, we are slicing off a column...
-		if (numFrontTriangles > 0)
-		{
-			clipRoad(frontVertex[0], frontVertex[1], frontVertex[2], wayId, wayTags, wayType, area, roadType, roadWidth, isIntersection, isRoundabout);
-		}
-		if (numFrontTriangles > 1)
-		{
-			clipRoad(frontVertex[3], frontVertex[4], frontVertex[5], wayId, wayTags, wayType, area, roadType, roadWidth, isIntersection, isRoundabout);
-		}
+		if (numFrontTriangles > 0) { clipRoad(frontVertex[0], frontVertex[1], frontVertex[2], wayId, wayTags, wayType, area, roadType, roadWidth, isIntersection, isRoundabout); }
+		if (numFrontTriangles > 1) { clipRoad(frontVertex[3], frontVertex[4], frontVertex[5], wayId, wayTags, wayType, area, roadType, roadWidth, isIntersection, isRoundabout); }
 	}
 	else if (vertex0.coords.y > (_osm.bounds.max.y + epsilon) || vertex1.coords.y > (_osm.bounds.max.y + epsilon) || vertex2.coords.y > (_osm.bounds.max.y + epsilon))
 	{
@@ -2102,14 +1914,8 @@ void NavDataProcess::clipRoad(const Vertex& vertex0, const Vertex& vertex1, cons
 		clipAgainst(vertex0, vertex1, vertex2, _osm.bounds.max, glm::vec2(0.0f, -1.0f), frontVertex, backVertex, numFrontTriangles, numBackTriangles);
 
 		// Careful of the tile bounds: by using the same x in min and max, we are slicing off a column...
-		if (numFrontTriangles > 0)
-		{
-			clipRoad(frontVertex[0], frontVertex[1], frontVertex[2], wayId, wayTags, wayType, area, roadType, roadWidth, isIntersection, isRoundabout);
-		}
-		if (numFrontTriangles > 1)
-		{
-			clipRoad(frontVertex[3], frontVertex[4], frontVertex[5], wayId, wayTags, wayType, area, roadType, roadWidth, isIntersection, isRoundabout);
-		}
+		if (numFrontTriangles > 0) { clipRoad(frontVertex[0], frontVertex[1], frontVertex[2], wayId, wayTags, wayType, area, roadType, roadWidth, isIntersection, isRoundabout); }
+		if (numFrontTriangles > 1) { clipRoad(frontVertex[3], frontVertex[4], frontVertex[5], wayId, wayTags, wayType, area, roadType, roadWidth, isIntersection, isRoundabout); }
 	}
 	else
 	{
@@ -2150,16 +1956,13 @@ bool NavDataProcess::isTooCloseToBoundary(const glm::dvec2& point) const
 ***********************************************************************************************************************/
 glm::ivec2 NavDataProcess::findTile2(glm::dvec2& point) const
 {
-	glm::uvec2 tileCoords;
+	glm::uvec2 tileCoords(0, 0);
 
 	for (uint32_t i = 0; i < _osm.numCols; ++i)
 	{
 		if (point.x <= _osm.tiles[i][0].max.x)
 		{
-			if ((point.x == _osm.tiles[i][0].max.x) && (i != (_osm.numCols - 1)))
-			{
-				point.x -= 0.0000001;
-			} // Move node off of tile border
+			if ((point.x == _osm.tiles[i][0].max.x) && (i != (_osm.numCols - 1))) { point.x -= 0.0000001; } // Move node off of tile border
 			tileCoords.x = i;
 			break;
 		}
@@ -2169,10 +1972,7 @@ glm::ivec2 NavDataProcess::findTile2(glm::dvec2& point) const
 	{
 		if (point.y <= _osm.tiles[0][i].max.y)
 		{
-			if ((point.y == _osm.tiles[0][i].max.y) && (i != (_osm.numRows - 1)))
-			{
-				point.y -= 0.0000001;
-			} // Move node off of tile border
+			if ((point.y == _osm.tiles[0][i].max.y) && (i != (_osm.numRows - 1))) { point.y -= 0.0000001; } // Move node off of tile border
 			tileCoords.y = i;
 			break;
 		}
@@ -2191,14 +1991,8 @@ glm::ivec2 NavDataProcess::findTile(const glm::dvec2& point) const
 	glm::dvec2 tileRatio = point / tileSize;
 	glm::dvec2 tileFloorRatio(glm::floor(tileRatio));
 	glm::ivec2 retval(tileFloorRatio);
-	if (tileRatio.x == tileFloorRatio.x)
-	{
-		retval.x -= 1;
-	} // If on tile boundary, return left/bottom tile
-	if (tileRatio.y == tileFloorRatio.y)
-	{
-		retval.y -= 1;
-	}
+	if (tileRatio.x == tileFloorRatio.x) { retval.x -= 1; } // If on tile boundary, return left/bottom tile
+	if (tileRatio.y == tileFloorRatio.y) { retval.y -= 1; }
 	return retval;
 }
 

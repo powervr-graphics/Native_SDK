@@ -2,7 +2,8 @@
 apply plugin: 'com.android.application'
 
 def hasSigningDefined = project.hasProperty('KEYSTORE_FILE') &&  project.hasProperty('KEYSTORE_PASSWORD') &&  project.hasProperty('KEY_ALIAS') && project.hasProperty('KEY_PASSWORD')
-def binOutput = project.hasProperty('BUILD_ENTIRE_SDK') ? '../../../../build-android/bin' : 'bin'
+// Get the output directory based on if the gradle command was kicked for the entire SDK or the example only
+def binOutput = gradle.ext.PVR_BINARY_OUTPUT_DIR
 
 // This block configures the repositories and dependencies for Gradle itself. Here we add a dependency for the Android plugin for Gradle as it provides
 // the additional instructions Gradle needs to build Android app modules
@@ -12,9 +13,9 @@ buildscript {
 		jcenter()
 	}
 
-	// Adds the Android plugin for Gradle version 3.3.0 as a classpath dependency
+	// Adds the Android plugin for Gradle version 3.5 as a classpath dependency
 	dependencies {
-		classpath 'com.android.tools.build:gradle:3.3.0'
+		classpath 'com.android.tools.build:gradle:3.5.0'
 	}
 }
 
@@ -35,14 +36,7 @@ android {
 		externalNativeBuild {
 			cmake {
 				cppFlags "-fexceptions"
-				if(project.hasProperty('BUILD_ENTIRE_SDK'))
-				{
-					arguments "-DANDROID_STL=c++_static"
-				}
-				else
-				{
-					arguments "-DANDROID_STL=c++_static"
-				}
+				arguments "-DANDROID_STL=c++_static"
 			}
 		}
 		ndk
@@ -62,7 +56,7 @@ android {
 		}
 	}
 
-    // This block configures our build types
+	// This block configures our build types
 	buildTypes {
 		release {
 			minifyEnabled false
@@ -76,6 +70,7 @@ android {
 	externalNativeBuild {
 		cmake {
 			path "../CMakeLists.txt"
+			version "3.10.2"
 		}
 	}
 	

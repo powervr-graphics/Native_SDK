@@ -38,11 +38,8 @@ Swapchain_::Swapchain_(make_shared_enabler, const DeviceWeakPtr& device, Surface
 	swapchainCreate.presentMode = static_cast<VkPresentModeKHR>(_createInfo.presentMode);
 	swapchainCreate.queueFamilyIndexCount = _createInfo.numQueueFamilyIndex;
 
-	ArrayOrVector<uint32_t, 10> queueFamilyIndices(swapchainCreate.queueFamilyIndexCount);
-	for (uint32_t i = 0; i < swapchainCreate.queueFamilyIndexCount; i++)
-	{
-		queueFamilyIndices[i] = _createInfo.queueFamilyIndices[i];
-	}
+	ArrayOrVector<uint32_t, 4> queueFamilyIndices(swapchainCreate.queueFamilyIndexCount);
+	for (uint32_t i = 0; i < swapchainCreate.queueFamilyIndexCount; i++) { queueFamilyIndices[i] = _createInfo.queueFamilyIndices[i]; }
 
 	swapchainCreate.pQueueFamilyIndices = queueFamilyIndices.get();
 
@@ -70,10 +67,7 @@ Swapchain_::~Swapchain_()
 	{
 		if (!_device.expired())
 		{
-			for (uint32_t i = 0; i < _swapChainLength; ++i)
-			{
-				_colorImageViews[i].reset();
-			}
+			for (uint32_t i = 0; i < _swapChainLength; ++i) { _colorImageViews[i].reset(); }
 
 			getDevice()->getVkBindings().vkDestroySwapchainKHR(getDevice()->getVkHandle(), getVkHandle(), nullptr);
 			_vkHandle = VK_NULL_HANDLE;

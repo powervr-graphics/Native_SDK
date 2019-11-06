@@ -26,8 +26,9 @@
 
 namespace pvr {
 namespace platform {
-struct InternalOS
+class InternalOS
 {
+public:
 	bool isInitialised;
 
 	uint32_t display;
@@ -49,15 +50,9 @@ struct InternalOS
 // Setup the capabilities.
 const ShellOS::Capabilities ShellOS::_capabilities = { Capability::Immutable, Capability::Immutable };
 
-ShellOS::ShellOS(OSApplication hInstance, OSDATA osdata) : _instance(hInstance)
-{
-	_OSImplementation = new InternalOS;
-}
+ShellOS::ShellOS(OSApplication hInstance, OSDATA osdata) : _instance(hInstance) { _OSImplementation = std::make_unique<InternalOS>(); }
 
-ShellOS::~ShellOS()
-{
-	delete _OSImplementation;
-}
+ShellOS::~ShellOS() {}
 
 void ShellOS::updatePointingDeviceLocation()
 {
@@ -71,10 +66,7 @@ void ShellOS::updatePointingDeviceLocation()
 
 bool ShellOS::init(DisplayAttributes& data)
 {
-	if (!_OSImplementation)
-	{
-		return false;
-	}
+	if (!_OSImplementation) { return false; }
 
 	//#if defined(__linux__)
 	// In case we're in the background ignore SIGTTIN and SIGTTOU.
@@ -82,10 +74,7 @@ bool ShellOS::init(DisplayAttributes& data)
 	signal(SIGTTOU, SIG_IGN);
 
 	// Keyboard handling.
-	if ((_OSImplementation->devfd = open(CONNAME, O_RDWR | O_NDELAY)) <= 0)
-	{
-		Log(LogLevel::Warning, "Can't open tty '" CONNAME "'");
-	}
+	if ((_OSImplementation->devfd = open(CONNAME, O_RDWR | O_NDELAY)) <= 0) { Log(LogLevel::Warning, "Can't open tty '" CONNAME "'"); }
 	else
 	{
 		tcgetattr(_OSImplementation->devfd, &_OSImplementation->termio_orig);
@@ -95,17 +84,11 @@ bool ShellOS::init(DisplayAttributes& data)
 		_OSImplementation->termio.c_cc[VMIN] = 1;
 		_OSImplementation->termio.c_cc[VTIME] = 0;
 
-		if (tcsetattr(_OSImplementation->devfd, TCSANOW, &_OSImplementation->termio) == -1)
-		{
-			Log(LogLevel::Warning, "Can't set tty attributes for '" CONNAME "'");
-		}
+		if (tcsetattr(_OSImplementation->devfd, TCSANOW, &_OSImplementation->termio) == -1) { Log(LogLevel::Warning, "Can't set tty attributes for '" CONNAME "'"); }
 	}
 
 	// Keypad handling.
-	if ((_OSImplementation->keypad_fd = open(KEYPAD_INPUT, O_RDONLY | O_NDELAY)) <= 0)
-	{
-		Log(LogLevel::Warning, "Can't open keypad input device (%s)\n", KEYPAD_INPUT);
-	}
+	if ((_OSImplementation->keypad_fd = open(KEYPAD_INPUT, O_RDONLY | O_NDELAY)) <= 0) { Log(LogLevel::Warning, "Can't open keypad input device (%s)\n", KEYPAD_INPUT); }
 
 	// Construct our read and write path.
 	pid_t ourPid = getpid();
@@ -211,9 +194,7 @@ bool ShellOS::initializeWindow(DisplayAttributes& data)
 
 	switch (data.redBits + data.greenBits + data.blueBits + data.alphaBits)
 	{
-	case 32:
-		ePixelFormat = SCREEN_FORMAT_RGBA8888;
-		break;
+	case 32: ePixelFormat = SCREEN_FORMAT_RGBA8888; break;
 	default:
 		ePixelFormat = SCREEN_FORMAT_RGB565;
 		data.redBits = 5;
@@ -242,20 +223,13 @@ void ShellOS::releaseWindow()
 	close(_OSImplementation->keypad_fd);
 }
 
-OSApplication ShellOS::getApplication() const
-{
-	return _instance;
-}
+OSApplication ShellOS::getApplication() const { return _instance; }
 
-OSDisplay ShellOS::getDisplay() const
-{
-	return reinterpret_cast<void*>(_OSImplementation->display);
-}
+OSConnection ShellOS::getConnection() const { return nullptr; }
 
-OSWindow ShellOS::getWindow() const
-{
-	return reinterpret_cast<void*>(_OSImplementation->window);
-}
+OSDisplay ShellOS::getDisplay() const { return reinterpret_cast<void*>(_OSImplementation->display); }
+
+OSWindow ShellOS::getWindow() const { return reinterpret_cast<void*>(_OSImplementation->window); }
 
 static Keys terminalStandardKeyMap[128] = {
 	Keys::Unknown, Keys::Unknown, Keys::Unknown, Keys::Unknown, Keys::Unknown, /* 0   */
@@ -343,19 +317,13 @@ Keys InternalOS::getSpecialKey(Keys firstCharacter) const
 	unsigned char key, buf[6];
 
 	// Read until we have the full key.
-	while ((read(devfd, &key, 1) == 1) && len < 6)
-	{
-		buf[len++] = key;
-	}
+	while ((read(devfd, &key, 1) == 1) && len < 6) { buf[len++] = key; }
 	buf[len] = '\0';
 
 	// Find the matching special key from the map.
 	while (terminalSpecialKeyMap[pos].str != NULL)
 	{
-		if (!strcmp(terminalSpecialKeyMap[pos].str, (const char*)buf))
-		{
-			return (terminalSpecialKeyMap[pos].key);
-		}
+		if (!strcmp(terminalSpecialKeyMap[pos].str, (const char*)buf)) { return (terminalSpecialKeyMap[pos].key); }
 		pos++;
 	}
 
@@ -386,10 +354,7 @@ bool ShellOS::handleOSEvents()
 		{
 			// Check for special multi-character key - (first character is Escape or F7).
 			if ((terminalStandardKeyMap[initialKey] == Keys::Escape) || (terminalStandardKeyMap[initialKey] == Keys::F7))
-			{
-				key = _OSImplementation->getSpecialKey(terminalStandardKeyMap[initialKey]);
-			}
-			else
+			{ key = _OSImplementation->getSpecialKey(terminalStandardKeyMap[initialKey]); } else
 			{
 				key = terminalStandardKeyMap[initialKey];
 			}
@@ -414,18 +379,12 @@ bool ShellOS::handleOSEvents()
 		if ((bytes == sizeof(struct input_event)) && (keyinfo.type == 0x01))
 		{
 			// Update shift key status.
-			if (keyboardKeyMap[keyinfo.code] == Keys::Shift)
-			{
-				_OSImplementation->keyboardShiftHeld = (keyinfo.value > 0);
-			}
+			if (keyboardKeyMap[keyinfo.code] == Keys::Shift) { _OSImplementation->keyboardShiftHeld = (keyinfo.value > 0); }
 
 			// Select standard or shifted key map.
 			Keys* keyMap = _OSImplementation->keyboardShiftHeld ? keyboardShiftedKeyMap : keyboardKeyMap;
 
-			if (keyinfo.value == 0)
-			{
-				_shell->onKeyUp(keyMap[keyinfo.code]);
-			}
+			if (keyinfo.value == 0) { _shell->onKeyUp(keyMap[keyinfo.code]); }
 			else
 			{
 				_shell->onKeyDown(keyMap[keyinfo.code]);
@@ -453,56 +412,29 @@ bool ShellOS::handleOSEvents()
 			{
 			case 22:
 			case 64:
-			case 107:
-				key = Keys::Escape;
-				break; // End call button on Zoom2
-			case 28:
-				key = Keys::Space;
-				break; // Old Select
+			case 107: key = Keys::Escape; break; // End call button on Zoom2
+			case 28: key = Keys::Space; break; // Old Select
 			case 46:
-			case 59:
-				key = Keys::Key1;
-				break;
-			case 60:
-				key = Keys::Key2;
-				break;
-			case 103:
-				key = Keys::Up;
-				break;
-			case 108:
-				key = Keys::Down;
-				break;
-			case 105:
-				key = Keys::Left;
-				break;
-			case 106:
-				key = Keys::Right;
-				break;
-			default:
-				key = Keys::Unknown;
-				break;
+			case 59: key = Keys::Key1; break;
+			case 60: key = Keys::Key2; break;
+			case 103: key = Keys::Up; break;
+			case 108: key = Keys::Down; break;
+			case 105: key = Keys::Left; break;
+			case 106: key = Keys::Right; break;
+			default: key = Keys::Unknown; break;
 			}
-			if (key != Keys::Unknown)
-			{
-				keyinfo.value == 0 ? _shell->onKeyUp(key) : _shell->onKeyDown(key);
-			}
+			if (key != Keys::Unknown) { keyinfo.value == 0 ? _shell->onKeyUp(key) : _shell->onKeyDown(key); }
 		}
 	}
 
 	return true;
 }
 
-bool ShellOS::isInitialized()
-{
-	return _OSImplementation && _OSImplementation->window;
-}
+bool ShellOS::isInitialized() { return _OSImplementation && _OSImplementation->window; }
 
 bool ShellOS::popUpMessage(const char* title, const char* message, ...) const
 {
-	if (!message)
-	{
-		return false;
-	}
+	if (!message) { return false; }
 
 	va_list arg;
 

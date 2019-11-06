@@ -19,10 +19,7 @@ namespace pvrvk {
 struct SamplerCreateInfo;
 namespace impl {
 //\cond NO_DOXYGEN
-inline void reportDestroyedAfterDevice()
-{
-	assert(false && "Attempted to destroy object after its corresponding device");
-}
+inline void reportDestroyedAfterDevice() { assert(false && "Attempted to destroy object after its corresponding device"); }
 //\endcond
 
 /// <summary>GpuDevice implementation that supports Vulkan</summary>
@@ -235,27 +232,18 @@ public:
 	{
 		for (uint32_t i = 0; i < _queueFamilies.size(); ++i)
 		{
-			if (_queueFamilies[i].queueFamily == queueFamily)
-			{
-				return _queueFamilies[i].queues[queueId];
-			}
+			if (_queueFamilies[i].queueFamily == queueFamily) { return _queueFamilies[i].queues[queueId]; }
 		}
 		throw ErrorValidationFailedEXT("Request for queue from family id that did not exist.");
 	}
 
 	/// <summary>Get a list of enabled extensions which includes names and spec versions</summary>
 	/// <returns>VulkanExtensionList&</returns>
-	const VulkanExtensionList& getEnabledExtensionList()
-	{
-		return _createInfo.getExtensionList();
-	}
+	const VulkanExtensionList& getEnabledExtensionList() { return _createInfo.getExtensionList(); }
 
 	/// <summary>Return a table which contains boolean members set to true/false corresponding to whether specific extensions have been enabled</summary>
 	/// <returns>A table of extensions</returns>
-	const DeviceExtensionTable& getEnabledExtensionTable() const
-	{
-		return _extensionTable;
-	}
+	const DeviceExtensionTable& getEnabledExtensionTable() const { return _extensionTable; }
 
 	/// <summary>Update Descriptorsets</summary>
 	/// <param name="writeDescSets">Write descriptor sets</param>
@@ -266,38 +254,23 @@ public:
 
 	/// <summary>Gets the device dispatch table</summary>
 	/// <returns>The device dispatch table</returns>
-	inline const VkDeviceBindings& getVkBindings() const
-	{
-		return _vkBindings;
-	}
+	inline const VkDeviceBindings& getVkBindings() const { return _vkBindings; }
 
 	/// <summary>Gets the Transform feedback properties</summary>
 	/// <returns>The physical device transform feedback properties</returns>
-	inline const PhysicalDeviceTransformFeedbackProperties& getTransformFeedbackProperties() const
-	{
-		return _transformFeedbackProperties;
-	}
+	inline const PhysicalDeviceTransformFeedbackProperties& getTransformFeedbackProperties() const { return _transformFeedbackProperties; }
 
 	/// <summary>Gets the Transform feedback properties</summary>
 	/// <returns>The physical device transform feedback properties</returns>
-	inline PhysicalDeviceTransformFeedbackProperties getTransformFeedbackProperties()
-	{
-		return _transformFeedbackProperties;
-	}
+	inline PhysicalDeviceTransformFeedbackProperties getTransformFeedbackProperties() { return _transformFeedbackProperties; }
 
 	/// <summary>Gets the Transform feedback features</summary>
 	/// <returns>The physical device transform feedback features</returns>
-	inline const PhysicalDeviceTransformFeedbackFeatures& getTransformFeedbackFeatures() const
-	{
-		return _transformFeedbackFeatures;
-	}
+	inline const PhysicalDeviceTransformFeedbackFeatures& getTransformFeedbackFeatures() const { return _transformFeedbackFeatures; }
 
 	/// <summary>Gets the Transform feedback features</summary>
 	/// <returns>The physical device transform feedback features</returns>
-	inline PhysicalDeviceTransformFeedbackFeatures getTransformFeedbackFeatures()
-	{
-		return _transformFeedbackFeatures;
-	}
+	inline PhysicalDeviceTransformFeedbackFeatures getTransformFeedbackFeatures() { return _transformFeedbackFeatures; }
 };
 } // namespace impl
 } // namespace pvrvk

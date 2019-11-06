@@ -35,7 +35,7 @@ struct DeviceResources
 	// Rendering manager, putting together Effects with Models to render things
 	pvr::utils::RenderManager mgr;
 	// Asset loader
-	pvr::Multi<pvrvk::CommandBuffer> commandBuffers;
+	pvr::Multi<pvrvk::CommandBuffer> cmdBuffers;
 
 	pvr::Multi<pvrvk::Framebuffer> onScreenFramebuffer;
 	pvr::Multi<pvrvk::ImageView> depthStencilImages;
@@ -53,8 +53,7 @@ struct DeviceResources
 			uint32_t l = swapchain->getSwapchainLength();
 			for (uint32_t i = 0; i < l; ++i)
 			{
-				if (perFrameResourcesFences[i])
-					perFrameResourcesFences[i]->wait();
+				if (perFrameResourcesFences[i]) perFrameResourcesFences[i]->wait();
 			}
 		}
 	}
@@ -99,14 +98,9 @@ void VulkanSkinning::eventMappedInput(pvr::SimplifiedInput action)
 	{
 	case pvr::SimplifiedInput::Action1:
 	case pvr::SimplifiedInput::Action2:
-	case pvr::SimplifiedInput::Action3:
-		_isPaused = !_isPaused;
-		break;
-	case pvr::SimplifiedInput::ActionClose:
-		exitShell();
-		break;
-	default:
-		break;
+	case pvr::SimplifiedInput::Action3: _isPaused = !_isPaused; break;
+	case pvr::SimplifiedInput::ActionClose: exitShell(); break;
+	default: break;
 	}
 }
 
@@ -119,12 +113,7 @@ If the rendering context is lost, initApplication() will not be called again.
 pvr::Result VulkanSkinning::initApplication()
 {
 	this->setStencilBitsPerPixel(0);
-	pvr::assets::PODReader podReader(getAssetStream(Configuration::SceneFile));
-	if ((_scene = pvr::assets::Model::createWithReader(podReader)) == nullptr)
-	{
-		setExitMessage("Error: Could not create the _scene file %s.", Configuration::SceneFile);
-		return pvr::Result::InitializationError;
-	}
+	_scene = pvr::assets::loadModel(*this, Configuration::SceneFile);
 	_frameId = 0;
 	return pvr::Result::Success;
 }
@@ -147,7 +136,7 @@ Used to initialize variables that are dependent on the rendering context (e.g. t
 ***********************************************************************************************************************/
 pvr::Result VulkanSkinning::initView()
 {
-	_deviceResources = std::unique_ptr<DeviceResources>(new DeviceResources());
+	_deviceResources = std::make_unique<DeviceResources>();
 
 	// Create instance and retrieve compatible physical devices
 	_deviceResources->instance = pvr::utils::createInstance(this->getApplicationName());
@@ -159,7 +148,8 @@ pvr::Result VulkanSkinning::initView()
 	}
 
 	// Create the surface
-	_deviceResources->surface = pvr::utils::createSurface(_deviceResources->instance, _deviceResources->instance->getPhysicalDevice(0), this->getWindow(), this->getDisplay());
+	_deviceResources->surface =
+		pvr::utils::createSurface(_deviceResources->instance, _deviceResources->instance->getPhysicalDevice(0), this->getWindow(), this->getDisplay(), this->getConnection());
 
 	// Create a default set of debug utils messengers or debug callbacks using either VK_EXT_debug_utils or VK_EXT_debug_report respectively
 	_deviceResources->debugUtilsCallbacks = pvr::utils::createDebugUtilsCallbacks(_deviceResources->instance);
@@ -183,11 +173,7 @@ pvr::Result VulkanSkinning::initView()
 	// validate the supported swapchain image usage
 	pvrvk::ImageUsageFlags swapchainImageUsage = pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT;
 	if (pvr::utils::isImageUsageSupportedBySurface(surfaceCapabilities, pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT))
-	{
-		swapchainImageUsage |= pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT;
-	}
-
-	// create the swapchain
+	{ swapchainImageUsage |= pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT; } // create the swapchain
 	pvr::utils::createSwapchainAndDepthStencilImageAndViews(_deviceResources->device, _deviceResources->surface, getDisplayAttributes(), _deviceResources->swapchain,
 		_deviceResources->depthStencilImages, swapchainImageUsage, pvrvk::ImageUsageFlags::e_DEPTH_STENCIL_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_TRANSIENT_ATTACHMENT_BIT,
 		&_deviceResources->vmaAllocator);
@@ -195,7 +181,7 @@ pvr::Result VulkanSkinning::initView()
 	_currentFrame = 0.;
 
 	// Setup the effect
-	pvr::pfx::PfxParser rd(Configuration::EffectFile, this);
+	pvr::Effect effect = pvr::pfx::readPFX(*getAssetStream(Configuration::EffectFile), this);
 
 	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(pvrvk::DescriptorPoolCreateInfo()
 																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 16)
@@ -209,17 +195,17 @@ pvr::Result VulkanSkinning::initView()
 	// create the commandbuffers, semaphores & the fence
 	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
 	{
-		_deviceResources->commandBuffers[i] = _deviceResources->commandPool->allocateCommandBuffer();
+		_deviceResources->cmdBuffers[i] = _deviceResources->commandPool->allocateCommandBuffer();
 		_deviceResources->presentationSemaphores[i] = _deviceResources->device->createSemaphore();
 		_deviceResources->imageAcquiredSemaphores[i] = _deviceResources->device->createSemaphore();
 		_deviceResources->perFrameResourcesFences[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
 	}
 
 	_deviceResources->mgr.init(*this, _deviceResources->swapchain, _deviceResources->descriptorPool);
-	_deviceResources->commandBuffers[0]->begin();
-	_deviceResources->mgr.addEffect(*rd.getAssetHandle(), _deviceResources->commandBuffers[0]);
+	_deviceResources->cmdBuffers[0]->begin();
+	_deviceResources->mgr.addEffect(effect, _deviceResources->cmdBuffers[0]);
 	_deviceResources->mgr.addModelForAllPasses(_scene);
-	_deviceResources->mgr.buildRenderObjects(_deviceResources->commandBuffers[0]);
+	_deviceResources->mgr.buildRenderObjects(_deviceResources->cmdBuffers[0]);
 	_scene->releaseVertexData();
 	_deviceResources->mgr.createAutomaticSemantics();
 
@@ -230,12 +216,12 @@ pvr::Result VulkanSkinning::initView()
 		if (framebuffer->getAttachment(0))
 		{
 			pvr::utils::setImageLayout(
-				framebuffer->getAttachment(0)->getImage(), pvrvk::ImageLayout::e_UNDEFINED, pvrvk::ImageLayout::e_PRESENT_SRC_KHR, _deviceResources->commandBuffers[0]);
+				framebuffer->getAttachment(0)->getImage(), pvrvk::ImageLayout::e_UNDEFINED, pvrvk::ImageLayout::e_PRESENT_SRC_KHR, _deviceResources->cmdBuffers[0]);
 		}
 		if (framebuffer->getAttachment(1))
 		{
 			pvr::utils::setImageLayout(framebuffer->getAttachment(1)->getImage(), pvrvk::ImageLayout::e_UNDEFINED, pvrvk::ImageLayout::e_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
-				_deviceResources->commandBuffers[0]);
+				_deviceResources->cmdBuffers[0]);
 		}
 	}
 
@@ -256,15 +242,15 @@ pvr::Result VulkanSkinning::initView()
 	_deviceResources->uiRenderer.init(getWidth(), getHeight(), isFullScreen(), _deviceResources->mgr.toPass(0, 0).getFramebuffer(0)->getRenderPass(), 0,
 		getBackBufferColorspace() == pvr::ColorSpace::sRGB, _deviceResources->commandPool, _deviceResources->queue);
 
-	_deviceResources->commandBuffers[0]->end();
+	_deviceResources->cmdBuffers[0]->end();
 	pvrvk::SubmitInfo submitInfo;
-	submitInfo.commandBuffers = &_deviceResources->commandBuffers[0];
+	submitInfo.commandBuffers = &_deviceResources->cmdBuffers[0];
 	submitInfo.numCommandBuffers = 1;
 	_deviceResources->perFrameResourcesFences[0]->reset();
 	_deviceResources->queue->submit(&submitInfo, 1, _deviceResources->perFrameResourcesFences[0]);
 	_deviceResources->perFrameResourcesFences[0]->wait();
 
-	_deviceResources->commandBuffers[0]->reset(pvrvk::CommandBufferResetFlags::e_RELEASE_RESOURCES_BIT);
+	_deviceResources->cmdBuffers[0]->reset(pvrvk::CommandBufferResetFlags::e_RELEASE_RESOURCES_BIT);
 
 	_deviceResources->uiRenderer.getDefaultTitle()->setText("Skinning");
 	_deviceResources->uiRenderer.getDefaultTitle()->commitUpdates();
@@ -310,10 +296,7 @@ pvr::Result VulkanSkinning::renderFrame()
 	{
 		if (!_isPaused)
 		{
-			if (_currentFrame > animation.getTotalTimeInMs())
-			{
-				_currentFrame = 0;
-			}
+			if (_currentFrame > animation.getTotalTimeInMs()) { _currentFrame = 0; }
 			else
 			{
 				_currentFrame += getFrameTime();
@@ -348,7 +331,7 @@ pvr::Result VulkanSkinning::renderFrame()
 	// Update all the bones matrices
 	pvrvk::SubmitInfo submitInfo;
 	pvrvk::PipelineStageFlags pipeWaitStageFlags = pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT;
-	submitInfo.commandBuffers = &_deviceResources->commandBuffers[swapchainIndex];
+	submitInfo.commandBuffers = &_deviceResources->cmdBuffers[swapchainIndex];
 	submitInfo.numCommandBuffers = 1;
 	submitInfo.waitSemaphores = &_deviceResources->imageAcquiredSemaphores[_frameId];
 	submitInfo.numWaitSemaphores = 1;
@@ -389,21 +372,18 @@ inline std::vector<pvr::StringHash> generateBonesList(const char* base, uint32_t
 	{
 		for (int32_t unit = 0; unit < 10; ++unit)
 		{
-			*ptr = '0' + unit;
+			*ptr = (char)('0' + unit);
 			ptr[1] = '\0';
 			boneSemantics.push_back(pvr::StringHash(buffer));
 		}
-		if (decade == 0)
-		{
-			ptr++;
-		}
-		*(ptr - 1) = '0' + decade + 1;
+		if (decade == 0) { ptr++; }
+		*(ptr - 1) = (char)('0' + decade + 1);
 	}
 
 	// 0, 1, 2, 3, 4, 5, 6, 7
 	for (int32_t unit = 0; unit < units; ++unit)
 	{
-		*ptr = '0' + unit;
+		*ptr = (char)('0' + unit);
 		ptr[1] = '\0';
 		boneSemantics.push_back(pvr::StringHash(buffer));
 	}
@@ -422,17 +402,17 @@ inline void VulkanSkinning::recordCommandBuffer()
 	};
 	for (uint32_t swapidx = 0; swapidx < _deviceResources->swapchain->getSwapchainLength(); ++swapidx)
 	{
-		_deviceResources->commandBuffers[swapidx]->begin();
+		_deviceResources->cmdBuffers[swapidx]->begin();
 		// Clear the color and depth buffer automatically.
 
 		pvr::utils::setImageLayout(_deviceResources->mgr.toPass(0, 0).getFramebuffer(swapidx)->getAttachment(0)->getImage(), pvrvk::ImageLayout::e_PRESENT_SRC_KHR,
-			pvrvk::ImageLayout::e_COLOR_ATTACHMENT_OPTIMAL, _deviceResources->commandBuffers[swapidx]);
+			pvrvk::ImageLayout::e_COLOR_ATTACHMENT_OPTIMAL, _deviceResources->cmdBuffers[swapidx]);
 
-		_deviceResources->commandBuffers[swapidx]->beginRenderPass(_deviceResources->mgr.toPass(0, 0).getFramebuffer(swapidx), true, clearValues, ARRAY_SIZE(clearValues));
-		_deviceResources->mgr.toPass(0, 0).recordRenderingCommands(_deviceResources->commandBuffers[swapidx], swapidx, false);
+		_deviceResources->cmdBuffers[swapidx]->beginRenderPass(_deviceResources->mgr.toPass(0, 0).getFramebuffer(swapidx), true, clearValues, ARRAY_SIZE(clearValues));
+		_deviceResources->mgr.toPass(0, 0).recordRenderingCommands(_deviceResources->cmdBuffers[swapidx], (uint16_t)swapidx, false);
 
 		//// PART 3 :  UIRenderer
-		_deviceResources->uiRenderer.beginRendering(_deviceResources->commandBuffers[swapidx]);
+		_deviceResources->uiRenderer.beginRendering(_deviceResources->cmdBuffers[swapidx]);
 		_deviceResources->uiRenderer.getDefaultDescription()->render();
 		_deviceResources->uiRenderer.getDefaultTitle()->render();
 		_deviceResources->uiRenderer.getSdkLogo()->render();
@@ -440,17 +420,14 @@ inline void VulkanSkinning::recordCommandBuffer()
 		_deviceResources->uiRenderer.endRendering();
 
 		///// PART 4 : End the RenderePass
-		_deviceResources->commandBuffers[swapidx]->endRenderPass();
+		_deviceResources->cmdBuffers[swapidx]->endRenderPass();
 		// prepare image for presentation
 		pvr::utils::setImageLayout(_deviceResources->mgr.toPass(0, 0).getFramebuffer(swapidx)->getAttachment(0)->getImage(), pvrvk::ImageLayout::e_COLOR_ATTACHMENT_OPTIMAL,
-			pvrvk::ImageLayout::e_PRESENT_SRC_KHR, _deviceResources->commandBuffers[swapidx]);
-		_deviceResources->commandBuffers[swapidx]->end();
+			pvrvk::ImageLayout::e_PRESENT_SRC_KHR, _deviceResources->cmdBuffers[swapidx]);
+		_deviceResources->cmdBuffers[swapidx]->end();
 	}
 }
 
 /// <summary>This function must be implemented by the user of the shell. The user should return its pvr::Shell object defining the behaviour of the application.</summary>
 /// <returns>Return a unique ptr to the demo supplied by the user.</returns>
-std::unique_ptr<pvr::Shell> pvr::newDemo()
-{
-	return std::unique_ptr<pvr::Shell>(new VulkanSkinning());
-}
+std::unique_ptr<pvr::Shell> pvr::newDemo() { return std::make_unique<VulkanSkinning>(); }

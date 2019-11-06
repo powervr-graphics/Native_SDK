@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['unsupported_5fformat',['UNSUPPORTED_FORMAT',['../_convert_to_p_v_r_vk_types_8h.html#a493f8922ffa17ba6920641f427cbd840',1,'ConvertToPVRVkTypes.h']]]
+  ['vma_5fstatic_5fvulkan_5ffunctions',['VMA_STATIC_VULKAN_FUNCTIONS',['../_memory_allocator_8h.html#a95b1c7528a1c18cffad6ec26332213a5',1,'MemoryAllocator.h']]]
 ];

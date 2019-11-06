@@ -1,6 +1,6 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classpvrvk_1_1impl_1_1_device_object_debug_utils.html" title="pvrvk::impl::DeviceObject\lDebugUtils\&lt; QueryPool_ \&gt;" alt="" coords="305,5,484,46"/>
-<area shape="rect" id="node2" href="$classpvrvk_1_1impl_1_1_query_pool__.html" title="Vulkan implementation of the Query Pool class. Destroying the query pool will also destroy the querie..." alt="" coords="552,48,715,75"/>
-<area shape="rect" id="node3" href="$classpvrvk_1_1impl_1_1_p_v_r_vk_object_base.html" title="pvrvk::impl::PVRVkObject\lBase\&lt; VkQueryPool, PVRVkObject\lType \&gt;" alt="" coords="6,69,237,125"/>
-<area shape="rect" id="node4" href="$classpvrvk_1_1impl_1_1_p_v_r_vk_device_object_base.html" title="pvrvk::impl::PVRVkDevice\lObjectBase\&lt; VkQueryPool,\l ObjectType::e_QUERY_POOL \&gt;" alt="" coords="285,69,504,125"/>
+<area shape="rect" id="node1" href="$classpvrvk_1_1impl_1_1_device_object_debug_utils.html" title="pvrvk::impl::DeviceObject\lDebugUtils\&lt; PipelineLayout_ \&gt;" alt="" coords="253,5,480,47"/>
+<area shape="rect" id="node2" href="$classpvrvk_1_1impl_1_1_pipeline_layout__.html" title="Vulkan implementation of the PipelineLayout class." alt="" coords="540,50,747,77"/>
+<area shape="rect" id="node3" href="$classpvrvk_1_1impl_1_1_p_v_r_vk_object_base.html" title="pvrvk::impl::PVRVkObject\lBase\&lt; VkPipelineLayout,\l PVRVkObjectType \&gt;" alt="" coords="5,71,193,127"/>
+<area shape="rect" id="node4" href="$classpvrvk_1_1impl_1_1_p_v_r_vk_device_object_base.html" title="pvrvk::impl::PVRVkDevice\lObjectBase\&lt; VkPipelineLayout,\l ObjectType::e_PIPELINE_LAYOUT \&gt;" alt="" coords="241,71,492,127"/>
 </map>

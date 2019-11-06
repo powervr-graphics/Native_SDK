@@ -10,13 +10,10 @@
 
 #ifdef VK_USE_PLATFORM_ANDROID_KHR
 
-static bool focus 	= false;
-static bool init 	= false;
+static bool focus = false;
+static bool init = false;
 
-static int32_t processInput(struct android_app* app, AInputEvent* event)
-{
-	return 0;
-}
+static int32_t processInput(struct android_app* app, AInputEvent* event) { return 0; }
 
 static void processCommand(struct android_app* androidApp, int32_t cmd)
 {
@@ -60,14 +57,14 @@ static void processCommand(struct android_app* androidApp, int32_t cmd)
 	}
 }
 
-static void processTerminate() { }
+static void processTerminate() {}
 
-// typical Android NativeActivity entry function
+// Typical Android NativeActivity entry function.
 void android_main(struct android_app* state)
 {
 	VulkanHelloAPI VulkanExample;
 
-	// Make sure glue isn't stripped.
+	// Make sure glue is not stripped.
 	state->userData = &VulkanExample;
 	state->onAppCmd = processCommand;
 	state->onInputEvent = processInput;
@@ -82,12 +79,9 @@ void android_main(struct android_app* state)
 		while ((ident = ALooper_pollAll(focus ? 0 : -1, NULL, &events, (void**)&source)) >= 0)
 		{
 			// Process this event.
-			if (source != NULL)
-			{
-				source->process(state, source);
-			}
+			if (source != NULL) { source->process(state, source); }
 
-			// Check if we are exiting.
+			// Check for exiting.
 			if (state->destroyRequested != 0)
 			{
 				processTerminate();
@@ -96,12 +90,7 @@ void android_main(struct android_app* state)
 			}
 		}
 
-		if (focus && init)
-		{
-			VulkanExample.drawFrame();
-		}
+		if (focus && init) { VulkanExample.drawFrame(); }
 	}
-
-
 }
 #endif

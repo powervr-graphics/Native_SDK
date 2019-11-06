@@ -9,6 +9,21 @@
 #include "InstanceVk.h"
 
 namespace pvrvk {
+
+VkBindings& getVkBindings()
+{
+	static bool isVkBindingsInitialized = false;
+	static VkBindings vkBindings;
+
+	if (!isVkBindingsInitialized)
+	{
+		if (!initVkBindings(&vkBindings)) { throw pvrvk::ErrorInitializationFailed("We were unable to retrieve Vulkan bindings"); }
+		isVkBindingsInitialized = true;
+	}
+
+	return vkBindings;
+}
+
 namespace impl {
 class InstanceHelperFactory_
 {
@@ -16,29 +31,14 @@ public:
 	static Instance createVkInstance(const InstanceCreateInfo& createInfo);
 };
 
-const std::vector<PhysicalDevice>& Instance_::getPhysicalDevices() const
-{
-	return _physicalDevices;
-}
+const std::vector<PhysicalDevice>& Instance_::getPhysicalDevices() const { return _physicalDevices; }
 
-PhysicalDevice& Instance_::getPhysicalDevice(uint32_t id)
-{
-	return _physicalDevices[id];
-}
+PhysicalDevice& Instance_::getPhysicalDevice(uint32_t id) { return _physicalDevices[id]; }
 
-const PhysicalDevice& Instance_::getPhysicalDevice(uint32_t id) const
-{
-	return _physicalDevices[id];
-}
+const PhysicalDevice& Instance_::getPhysicalDevice(uint32_t id) const { return _physicalDevices[id]; }
 
 pvrvk::impl::Instance_::Instance_(make_shared_enabler, const InstanceCreateInfo& instanceCreateInfo) : PVRVkObjectBase()
 {
-	VkBindings vkBindings;
-	if (!initVkBindings(&vkBindings))
-	{
-		throw pvrvk::ErrorInitializationFailed("We were unable to retrieve Vulkan bindings");
-	}
-
 	_createInfo = instanceCreateInfo;
 
 	VkApplicationInfo appInfo = {};
@@ -60,9 +60,7 @@ pvrvk::impl::Instance_::Instance_(make_shared_enabler, const InstanceCreateInfo&
 	{
 		enabledExtensions.resize(instanceCreateInfo.getExtensionList().getNumExtensions());
 		for (uint32_t i = 0; i < instanceCreateInfo.getExtensionList().getNumExtensions(); ++i)
-		{
-			enabledExtensions[i] = instanceCreateInfo.getExtensionList().getExtension(i).getName().c_str();
-		}
+		{ enabledExtensions[i] = instanceCreateInfo.getExtensionList().getExtension(i).getName().c_str(); }
 
 		instanceCreateInfoVk.enabledExtensionCount = static_cast<uint32_t>(enabledExtensions.size());
 		instanceCreateInfoVk.ppEnabledExtensionNames = enabledExtensions.data();
@@ -71,10 +69,7 @@ pvrvk::impl::Instance_::Instance_(make_shared_enabler, const InstanceCreateInfo&
 	if (instanceCreateInfo.getLayerList().getNumLayers())
 	{
 		enableLayers.resize(instanceCreateInfo.getLayerList().getNumLayers());
-		for (uint32_t i = 0; i < instanceCreateInfo.getLayerList().getNumLayers(); ++i)
-		{
-			enableLayers[i] = _createInfo.getLayerList().getLayer(i).getName().c_str();
-		}
+		for (uint32_t i = 0; i < instanceCreateInfo.getLayerList().getNumLayers(); ++i) { enableLayers[i] = _createInfo.getLayerList().getLayer(i).getName().c_str(); }
 
 		instanceCreateInfoVk.enabledLayerCount = static_cast<uint32_t>(enableLayers.size());
 		instanceCreateInfoVk.ppEnabledLayerNames = enableLayers.data();
@@ -99,8 +94,8 @@ pvrvk::impl::Instance_::Instance_(make_shared_enabler, const InstanceCreateInfo&
 
 	// Setup validation features
 	VkValidationFeaturesEXT validationFeatures = {};
-	std::vector<VkValidationFeatureEnableEXT> vkEnabledValidationFeatures;
-	std::vector<VkValidationFeatureDisableEXT> vkDisabledValidationFeatures;
+	pvrvk::ArrayOrVector<VkValidationFeatureEnableEXT, 4> vkEnabledValidationFeatures(instanceCreateInfo.getValidationFeatures().getNumEnabledValidationFeatures());
+	pvrvk::ArrayOrVector<VkValidationFeatureDisableEXT, 4> vkDisabledValidationFeatures(instanceCreateInfo.getValidationFeatures().getNumDisabledValidationFeatures());
 
 	// Setup the validation features to enable or disable if they have been provided
 	if (instanceCreateInfo.getValidationFeatures().getNumEnabledValidationFeatures() || instanceCreateInfo.getValidationFeatures().getNumDisabledValidationFeatures())
@@ -111,25 +106,21 @@ pvrvk::impl::Instance_::Instance_(make_shared_enabler, const InstanceCreateInfo&
 		validationFeatures.disabledValidationFeatureCount = instanceCreateInfo.getValidationFeatures().getNumDisabledValidationFeatures();
 
 		for (uint32_t i = 0; i < instanceCreateInfo.getValidationFeatures().getNumEnabledValidationFeatures(); ++i)
-		{
-			vkEnabledValidationFeatures.emplace_back(static_cast<VkValidationFeatureEnableEXT>(instanceCreateInfo.getValidationFeatures().getEnabledValidationFeature(i)));
-		}
+		{ vkEnabledValidationFeatures[i] = static_cast<VkValidationFeatureEnableEXT>(instanceCreateInfo.getValidationFeatures().getEnabledValidationFeature(i)); }
 
 		for (uint32_t i = 0; i < instanceCreateInfo.getValidationFeatures().getNumDisabledValidationFeatures(); ++i)
-		{
-			vkDisabledValidationFeatures.emplace_back(static_cast<VkValidationFeatureDisableEXT>(instanceCreateInfo.getValidationFeatures().getDisabledValidationFeature(i)));
-		}
+		{ vkDisabledValidationFeatures[i] = static_cast<VkValidationFeatureDisableEXT>(instanceCreateInfo.getValidationFeatures().getDisabledValidationFeature(i)); }
 
-		validationFeatures.pEnabledValidationFeatures = vkEnabledValidationFeatures.data();
-		validationFeatures.pDisabledValidationFeatures = vkDisabledValidationFeatures.data();
+		validationFeatures.pEnabledValidationFeatures = vkEnabledValidationFeatures.get();
+		validationFeatures.pDisabledValidationFeatures = vkDisabledValidationFeatures.get();
 
 		appendPNext((VkBaseInStructure*)&instanceCreateInfoVk, &validationFeatures);
 	}
 
-	vkThrowIfFailed(vkBindings.vkCreateInstance(&instanceCreateInfoVk, nullptr, &_vkHandle), "Instance Constructor");
+	vkThrowIfFailed(pvrvk::getVkBindings().vkCreateInstance(&instanceCreateInfoVk, nullptr, &_vkHandle), "Instance Constructor");
 
 	// Retrieve the function pointers for the functions taking a VkInstance as their dispatchable handles.
-	initVkInstanceBindings(_vkHandle, &_vkBindings, vkBindings.vkGetInstanceProcAddr);
+	initVkInstanceBindings(_vkHandle, &_vkBindings, pvrvk::getVkBindings().vkGetInstanceProcAddr);
 
 	// setup the extension table which can be used to cheaply determine support for extensions
 	_extensionTable.setEnabledExtensions(enabledExtensions);
@@ -142,8 +133,8 @@ void pvrvk::impl::Instance_::retrievePhysicalDevices()
 	getVkBindings().vkEnumeratePhysicalDevices(getVkHandle(), &numPhysicalDevices, nullptr);
 
 	// Retreive the numPhysicalDevices installed on the system
-	std::vector<VkPhysicalDevice> vkPhysicalDevices(numPhysicalDevices);
-	vkThrowIfFailed(getVkBindings().vkEnumeratePhysicalDevices(getVkHandle(), &numPhysicalDevices, vkPhysicalDevices.data()));
+	pvrvk::ArrayOrVector<VkPhysicalDevice, 2> vkPhysicalDevices(numPhysicalDevices);
+	vkThrowIfFailed(getVkBindings().vkEnumeratePhysicalDevices(getVkHandle(), &numPhysicalDevices, vkPhysicalDevices.get()));
 
 	Instance instance = shared_from_this();
 	for (uint32_t i = 0; i < numPhysicalDevices; ++i)
@@ -153,15 +144,9 @@ void pvrvk::impl::Instance_::retrievePhysicalDevices()
 	}
 }
 
-pvrvk::Instance InstanceHelperFactory_::createVkInstance(const InstanceCreateInfo& createInfo)
-{
-	return impl::Instance_::constructShared(createInfo);
-}
+pvrvk::Instance InstanceHelperFactory_::createVkInstance(const InstanceCreateInfo& createInfo) { return impl::Instance_::constructShared(createInfo); }
 } // namespace impl
 
-Instance createInstance(const InstanceCreateInfo& createInfo)
-{
-	return impl::InstanceHelperFactory_::createVkInstance(createInfo);
-}
+Instance createInstance(const InstanceCreateInfo& createInfo) { return impl::InstanceHelperFactory_::createVkInstance(createInfo); }
 } // namespace pvrvk
   //!\endcond

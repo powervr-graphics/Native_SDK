@@ -1,10 +1,16 @@
 cmake_minimum_required(VERSION 3.3)
 project(VulkanExampleUI)
-if(APPLE)
-	message ("Vulkan is not supported on Apple platforms.")
+if(IOS)
+	message ("Skipping VulkanExampleUI : Vulkan is not supported on iOS.")
 	return()
 endif()
+
 add_subdirectory(../../.. ${CMAKE_CURRENT_BINARY_DIR}/sdk)
+
+if(PVR_PREBUILT_DEPENDENCIES)
+	find_package(PVRShell REQUIRED MODULE)
+	find_package(PVRUtilsVk REQUIRED MODULE)
+endif()
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
@@ -14,74 +20,71 @@ set(SRC_FILES VulkanExampleUI.cpp)
 
 set(ASSET_FOLDER ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Assets_VulkanExampleUI)
 
-# ASSET FILES (textures, scene files, textures etc) - Packaged with the executable for runtime use
-set(ASSET_FILES
-	${CMAKE_CURRENT_SOURCE_DIR}/../../assets/ExampleUI/container-corner.pvr
-	${CMAKE_CURRENT_SOURCE_DIR}/../../assets/ExampleUI/container-filler.pvr
-	${CMAKE_CURRENT_SOURCE_DIR}/../../assets/ExampleUI/container-vertical.pvr
-	${CMAKE_CURRENT_SOURCE_DIR}/../../assets/ExampleUI/container-horizontal.pvr
-	${CMAKE_CURRENT_SOURCE_DIR}/../../assets/ExampleUI/topbar.pvr
-	${CMAKE_CURRENT_SOURCE_DIR}/../../assets/ExampleUI/background.pvr
-	${CMAKE_CURRENT_SOURCE_DIR}/../../assets/ExampleUI/clock-face.pvr
-	${CMAKE_CURRENT_SOURCE_DIR}/../../assets/ExampleUI/clock-face-small.pvr
-	${CMAKE_CURRENT_SOURCE_DIR}/../../assets/ExampleUI/hand.pvr
-	${CMAKE_CURRENT_SOURCE_DIR}/../../assets/ExampleUI/hand-small.pvr
-	${CMAKE_CURRENT_SOURCE_DIR}/../../assets/ExampleUI/battery.pvr
-	${CMAKE_CURRENT_SOURCE_DIR}/../../assets/ExampleUI/internet-web-browser.pvr
-	${CMAKE_CURRENT_SOURCE_DIR}/../../assets/ExampleUI/mail-message-new.pvr
-	${CMAKE_CURRENT_SOURCE_DIR}/../../assets/ExampleUI/network-wireless.pvr
-	${CMAKE_CURRENT_SOURCE_DIR}/../../assets/ExampleUI/office-calendar.pvr
-	${CMAKE_CURRENT_SOURCE_DIR}/../../assets/ExampleUI/weather-sun-cloud.pvr
-	${CMAKE_CURRENT_SOURCE_DIR}/../../assets/ExampleUI/weather-storm.pvr
-	${CMAKE_CURRENT_SOURCE_DIR}/../../assets/ExampleUI/weather-rain.pvr
-	${CMAKE_CURRENT_SOURCE_DIR}/../../assets/ExampleUI/text1.pvr
-	${CMAKE_CURRENT_SOURCE_DIR}/../../assets/ExampleUI/text2.pvr
-	${CMAKE_CURRENT_SOURCE_DIR}/../../assets/ExampleUI/text-weather.pvr
-	${CMAKE_CURRENT_SOURCE_DIR}/../../assets/ExampleUI/text-fri.pvr
-	${CMAKE_CURRENT_SOURCE_DIR}/../../assets/ExampleUI/text-sat.pvr
-	${CMAKE_CURRENT_SOURCE_DIR}/../../assets/ExampleUI/text-sun.pvr
-	${CMAKE_CURRENT_SOURCE_DIR}/../../assets/ExampleUI/text-mon.pvr
-	${CMAKE_CURRENT_SOURCE_DIR}/../../assets/ExampleUI/weather-sun-cloud-big.pvr
-	${CMAKE_CURRENT_SOURCE_DIR}/../../assets/ExampleUI/window-bottom.pvr
-	${CMAKE_CURRENT_SOURCE_DIR}/../../assets/ExampleUI/window-bottomcorner.pvr
-	${CMAKE_CURRENT_SOURCE_DIR}/../../assets/ExampleUI/window-side.pvr
-	${CMAKE_CURRENT_SOURCE_DIR}/../../assets/ExampleUI/window-top.pvr
-	${CMAKE_CURRENT_SOURCE_DIR}/../../assets/ExampleUI/window-topleft.pvr
-	${CMAKE_CURRENT_SOURCE_DIR}/../../assets/ExampleUI/window-topright.pvr
-	${CMAKE_CURRENT_SOURCE_DIR}/../../assets/ExampleUI/loremipsum.pvr
-	${CMAKE_CURRENT_SOURCE_DIR}/../../assets/ExampleUI/vertical-bar.pvr
-	)
-list(APPEND SRC_FILES ${ASSET_FILES})
-source_group("assets" FILES ${ASSET_FILES})
+# Adds an executable (or ndk library for Android) and necessary files like plists for Mac/iOS etc.
+add_platform_specific_executable(VulkanExampleUI ${SRC_FILES})
 
-# SHADER SOURCE FILES (Vulkan) - Compiled to spir-v at build-time
-set(SHADER_NAMES
-ColShader.fsh
-ColShader.vsh
-	)
+#################################### ASSET FILES ##########################################
+# For platforms supporting it, will be packaged with the executable for runtime use.
+# Will be accessible from the app with their "relative path". One call per base path
 
-foreach (SHADER_FILE ${SHADER_NAMES})
-	list(APPEND SHADER_SOURCE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/${SHADER_FILE}")
-	list(APPEND SHADER_GENERATED_FILES "${CMAKE_CURRENT_SOURCE_DIR}/${SHADER_FILE}.spv")
-endforeach()
-list(APPEND SRC_FILES ${SHADER_SOURCE_FILES})
-list(APPEND SRC_FILES ${SHADER_GENERATED_FILES})
-source_group("shaders_source" FILES ${SHADER_SOURCE_FILES})
-source_group("shaders_generated" FILES ${SHADER_GENERATED_FILES})
+### Textures, scene files, generic resources... ###
+add_assets_to_target(VulkanExampleUI
+	SOURCE_GROUP "assets" 
+	ASSET_FOLDER ${ASSET_FOLDER} 
+	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/ExampleUI
+	FILE_LIST 
+		container-corner.pvr
+		container-filler.pvr
+		container-vertical.pvr
+		container-horizontal.pvr
+		topbar.pvr
+		background.pvr
+		clock-face.pvr
+		clock-face-small.pvr
+		hand.pvr
+		hand-small.pvr
+		battery.pvr
+		internet-web-browser.pvr
+		mail-message-new.pvr
+		network-wireless.pvr
+		office-calendar.pvr
+		weather-sun-cloud.pvr
+		weather-storm.pvr
+		weather-rain.pvr
+		text1.pvr
+		text2.pvr
+		text-weather.pvr
+		text-fri.pvr
+		text-sat.pvr
+		text-sun.pvr
+		text-mon.pvr
+		weather-sun-cloud-big.pvr
+		window-bottom.pvr
+		window-bottomcorner.pvr
+		window-side.pvr
+		window-top.pvr
+		window-topleft.pvr
+		window-topright.pvr
+		loremipsum.pvr
+		vertical-bar.pvr)
 
-set(RESOURCE_FILES ${ASSET_FILES} ${SHADER_SOURCE_FILES} ${SHADER_GENERATED_FILES})
+### Shaders that need to be compiled to SpirV (Vulkan) ###
+# During build time, glslangvalidator will be called to create a "<shadername.extension>.spv" file
+add_spirv_shaders_to_target(VulkanExampleUI 
+	SOURCE_GROUP "shaders_source" 
+	SPIRV_SOURCE_GROUP "shaders_generated"
+	ASSET_FOLDER ${ASSET_FOLDER} 
+	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/
+	FILE_LIST
+		ColShader.fsh
+		ColShader.vsh)
 
-# Adds Windows resouces.rc, macOS plists etc. For macOS/iOS, also set the opengl dynamic libs in the "frameworks" group
-add_platform_specific_resource_files(SRC_FILES RESOURCE_FILES)
+# Create and adds a Windows resource file (Resources.rc) with all the assets that have been added to the target with the previous functions
+add_assets_resource_file(VulkanExampleUI)
+###########################################################################################
 
-# Generate a pre-build step for compiling glsl shaders to spir-v
-add_rule_generate_spirv_from_shaders("${SHADER_NAMES}")
-
-# Adds a platform specific executable
-add_platform_specific_executable(VulkanExampleUI "${SRC_FILES}" "${RESOURCE_FILES}")
-
-# Copies the assets to our assets folder
-add_rule_copy_assets_to_asset_folder("${RESOURCE_FILES}" "${ASSET_FOLDER}")
+# Apply SDK example specific compile and linker options
+apply_example_compile_options_to_target(VulkanExampleUI)
 
 target_link_libraries(VulkanExampleUI
 	PVRShell

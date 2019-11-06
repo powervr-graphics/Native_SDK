@@ -5,12 +5,10 @@
 \copyright Copyright (c) Imagination Technologies Limited.
 */
 #pragma once
-#include "PVRCore/stream/Asset.h"
 #include "PVRAssets/model/Camera.h"
 #include "PVRAssets/model/Animation.h"
 #include "PVRAssets/model/Light.h"
 #include "PVRAssets/model/Mesh.h"
-#include "PVRAssets/fileio/PODReader.h"
 
 /// <summary>Main namespace of the PowerVR Framework.</summary>
 namespace pvr {
@@ -42,50 +40,23 @@ struct Skeleton
 	std::vector<glm::mat4> invBindMatrices;
 };
 
+/// <summary>Enumerates the model formats directly supported by the Framework.</summary>
+enum class ModelFileFormat
+{
+	UNKNOWN = 0,
+	POD,
+	GLTF,
+};
+
 /// <summary>The Model class represents an entire Scene, or Model. It is mainly a Node structure, allowing various
 /// different kinds of data to be stored in the Nodes. The class contains a tree-like structure of Nodes. Each Node
 /// can be a Mesh node (containing a Mesh), Camera node or Light node. The tree-structure assumes transformational
 /// hierarchy (as usual). Transformations are expressed through Animation objects (a static transform is an
 /// animation with a single frame) There is an implicit order in the nodes - First in the array the Mesh nodes will
 /// be laid out, then Camera and Light nodes.</summary>
-class Model : public Asset<Model>
+class Model
 {
 public:
-	/// <summary>Return the value of a Model-wide semantic as a FreeValue, null if it does not exist.</summary>
-	/// <param name="semantic">The semantic name to retrieve</param>
-	/// <returns>A pointer to a FreeValue containing the value of the semantic. If the semantic does not exist,
-	/// return NULL</returns>
-	const FreeValue* getModelSemantic(const StringHash& semantic) const
-	{
-		auto it = _data.semantics.find(semantic);
-		if (it == _data.semantics.end())
-		{
-			return NULL;
-		}
-		return &it->second;
-	}
-
-	/// <summary>Get a pointer to the UserData of this model, if such data exist.</summary>
-	/// <returns>A pointer to the UserData, as a Reference Counted Void pointer. Cast to appropriate (ref counted)type</returns>
-	const std::shared_ptr<void>& getUserDataPtr() const
-	{
-		return this->_data.userDataPtr;
-	}
-
-	/// <summary>Get a pointer to the UserData of this model.</summary>
-	/// <returns>A pointer to the UserData, as a Reference Counted Void pointer. Cast to appropriate (ref counted)type</returns>
-	std::shared_ptr<void> getUserDataPtr()
-	{
-		return this->_data.userDataPtr;
-	}
-
-	/// <summary>Set the UserData of this model (wrap the data into a std::shared_ptr and cast to Ref Counted void pointer.</summary>
-	/// <param name="ptr">The UserData. Must be wrapped in an appropriate std::shared_ptr, and then cast into a std::shared_ptr to void</param>
-	void setUserDataPtr(const std::shared_ptr<void>& ptr)
-	{
-		_data.userDataPtr = ptr;
-	}
-
 	/// <summary>Brings the Mesh class name into this class.</summary>
 	typedef assets::Mesh Mesh;
 
@@ -118,7 +89,7 @@ public:
 			};
 
 			// CONTAINS
-			float frameXform[16]; //!< contains interpolated SRT or Matrix for an frame else single Matrix for non animated node. Rotations are stored as quaternion in the format xyzw
+			float frameTransform[16]; //!< contains interpolated SRT or Matrix for an frame else single Matrix for non animated node. Rotations are stored as quaternion in the format xyzw
 
 			// NODE'S LOCAL SPACE SRT
 			glm::vec3 scale; //!< Node's local space scale
@@ -132,90 +103,55 @@ public:
 
 			/// <summary>Get current frame scale animation</summary>
 			/// <returns>Returns scale</returns>
-			glm::vec3& getFrameScaleAnimation()
-			{
-				return *(glm::vec3*)frameXform;
-			}
+			glm::vec3& getFrameScaleAnimation() { return *(glm::vec3*)frameTransform; }
 
 			/// <summary>Get current frame rotation animation</summary>
 			/// <returns>Returns rotation</returns>
-			glm::quat& getFrameRotationAnimation()
-			{
-				return *(glm::quat*)(&frameXform[3]);
-			}
+			glm::quat& getFrameRotationAnimation() { return *(glm::quat*)(&frameTransform[3]); }
 
 			/// <summary>Get current frame translation animation</summary>
 			/// <returns>Returns translation</returns>
-			glm::vec3& getFrameTranslationAnimation()
-			{
-				return *(glm::vec3*)(&frameXform[7]);
-			}
+			glm::vec3& getFrameTranslationAnimation() { return *(glm::vec3*)(&frameTransform[7]); }
 
 			/// <summary>Get current frame scale animation (const)</summary>
 			/// <returns>Returns scale</returns>
-			const glm::vec3& getFrameScaleAnimation() const
-			{
-				return *(glm::vec3*)frameXform;
-			}
+			const glm::vec3& getFrameScaleAnimation() const { return *(glm::vec3*)frameTransform; }
 
 			/// <summary>Get current frame rotation animation (const)</summary>
 			/// <returns>Returns rotation</returns>
-			const glm::quat& getFrameRotationAnimation() const
-			{
-				return *(glm::quat*)(&frameXform[3]);
-			}
+			const glm::quat& getFrameRotationAnimation() const { return *(glm::quat*)(&frameTransform[3]); }
 
 			/// <summary>Get current frame translation animation (const)</summary>
 			/// <returns>Returns rotation</returns>
-			const glm::vec3& getFrameTranslationAnimation() const
-			{
-				return *(glm::vec3*)(&frameXform[7]);
-			}
+			const glm::vec3& getFrameTranslationAnimation() const { return *(glm::vec3*)(&frameTransform[7]); }
 
 			/// <summary>Get local space scale</summary>
 			/// <returns>Returns local space scale<returns>
-			glm::vec3& getScale()
-			{
-				return scale;
-			}
+			glm::vec3& getScale() { return scale; }
 
 			/// <summary>Get local space rotation</summary>
 			/// <returns>Returns local space rotation<returns>
-			glm::quat& getRotate()
-			{
-				return rotation;
-			}
+			glm::quat& getRotate() { return rotation; }
 
 			/// <summary>Get local space translation</summary>
 			/// <returns>Returns local space translation<returns>
-			glm::vec3& getTranslation()
-			{
-				return translation;
-			}
+			glm::vec3& getTranslation() { return translation; }
 
 			/// <summary>Get local space scale</summary>
 			/// <returns>Returns local space scale<returns>
-			const glm::vec3& getScale() const
-			{
-				return scale;
-			}
+			const glm::vec3& getScale() const { return scale; }
 
 			/// <summary>Get local space rotation</summary>
 			/// <returns>Returns local space rotation<returns>
-			const glm::quat& getRotate() const
-			{
-				return rotation;
-			}
+			const glm::quat& getRotate() const { return rotation; }
 
 			/// <summary>Get local space translation</summary>
 			/// <returns>Returns local space translation<returns>
-			const glm::vec3& getTranslation() const
-			{
-				return translation;
-			}
+			const glm::vec3& getTranslation() const { return translation; }
 
 			/// <summary>Default constructor</summary>
-			InternalData() : objectIndex(-1), materialIndex(-1), parentIndex(-1), scale(1.0f), translation(0.0f)
+			InternalData()
+				: objectIndex(static_cast<uint32_t>(-1)), materialIndex(static_cast<uint32_t>(-1)), parentIndex(static_cast<uint32_t>(-1)), scale(1.0f), translation(0.0f)
 			{
 				transformFlags = TransformFlags::Identity;
 				hasAnimation = false;
@@ -225,73 +161,43 @@ public:
 	public:
 		/// <summary>Get which Mesh, Camera or Light this object refers to.</summary>
 		/// <returns>The index of the Mesh, Camera or Light array of this node (depending on its type)</returns>
-		uint32_t getObjectId() const
-		{
-			return _data.objectIndex;
-		}
+		uint32_t getObjectId() const { return _data.objectIndex; }
 
 		/// <summary>Get this Node's name.</summary>
 		/// <returns>The name of this object</returns>
-		const StringHash& getName() const
-		{
-			return _data.name;
-		}
+		const StringHash& getName() const { return _data.name; }
 
 		/// <summary>Get this Node's parent id.</summary>
 		/// <returns>The ID of this Node's parent Node.</returns>
-		uint32_t getParentID() const
-		{
-			return _data.parentIndex;
-		}
+		uint32_t getParentID() const { return _data.parentIndex; }
 
 		/// <summary>Get this Node's material id.</summary>
 		/// <returns>The ID of this Node's Material</returns>
-		uint32_t getMaterialIndex() const
-		{
-			return _data.materialIndex;
-		}
+		uint32_t getMaterialIndex() const { return _data.materialIndex; }
 
 		/// <summary>Associate a material with this node (Assign a material id to this node)</summary>
 		/// <param name="materialId">The material ID to associate with</param>
-		void setMaterialIndex(uint32_t materialId)
-		{
-			_data.materialIndex = materialId;
-		}
+		void setMaterialIndex(uint32_t materialId) { _data.materialIndex = materialId; }
 
 		/// <summary>Get this Node's user data.</summary>
 		/// <returns>The user data of this Node</returns>
-		const uint8_t* getUserData() const
-		{
-			return _data.userData.data();
-		}
+		const uint8_t* getUserData() const { return _data.userData.data(); }
 
 		/// <summary>Get the size of this Node's user data.</summary>
 		/// <returns>Return The size in bytes of the user data of this Node</returns>
-		uint32_t getUserDataSize() const
-		{
-			return static_cast<uint32_t>(_data.userData.size());
-		}
+		uint32_t getUserDataSize() const { return static_cast<uint32_t>(_data.userData.size()); }
 
 		/// <summary>Set mesh id. Must correlate with the actual position of this node in the data.</summary>
 		/// <param name="index">The id to set the index of this node.</param>
-		void setIndex(uint32_t index)
-		{
-			_data.objectIndex = index;
-		}
+		void setIndex(uint32_t index) { _data.objectIndex = index; }
 
 		/// <summary>Set the name of this node.</summary>
 		/// <param name="name">The std::string to set this node's name to.</param>
-		void setName(const StringHash& name)
-		{
-			_data.name = name;
-		}
+		void setName(const StringHash& name) { _data.name = name; }
 
 		/// <summary>Set the parent of this node.</summary>
 		/// <param name="parentID">the ID of this node's parent</param>
-		void setParentID(uint32_t parentID)
-		{
-			_data.parentIndex = parentID;
-		}
+		void setParentID(uint32_t parentID) { _data.parentIndex = parentID; }
 
 		/// <summary>Set the user data of this node. A bit copy of the data will be made.</summary>
 		/// <param name="size">The size, in bytes, of the data</param>
@@ -304,17 +210,11 @@ public:
 
 		/// <summary>Get a reference to the internal data of this object. Handle with care.</summary>
 		/// <returns>Return a reference to the internal data of this object.</returns>
-		InternalData& getInternalData()
-		{
-			return _data;
-		}
+		InternalData& getInternalData() { return _data; }
 
 		/// <summary>Get a const reference to the data object carrying all internal data of this model.</summary>
 		/// <returns>Return a reference to the internal data of this object.</returns>
-		const InternalData& getInternalData() const
-		{
-			return _data;
-		}
+		const InternalData& getInternalData() const { return _data; }
 
 	private:
 		InternalData _data;
@@ -333,24 +233,15 @@ public:
 
 		/// <summary>Get the name of the texture.</summary>
 		/// <returns>Return the texture name</returns>
-		const pvr::StringHash& getName() const
-		{
-			return _name;
-		}
+		const pvr::StringHash& getName() const { return _name; }
 
 		/// <summary>Get a reference to the name of the texture.</summary>
 		/// <returns>Return reference to the texture name</returns>
-		pvr::StringHash& getName()
-		{
-			return _name;
-		}
+		pvr::StringHash& getName() { return _name; }
 
 		/// <summary>Set the name of the texture.</summary>
 		/// <param name="name">The std::string to set this texture name to.</param>
-		void setName(const StringHash& name)
-		{
-			this->_name = name;
-		}
+		void setName(const StringHash& name) { this->_name = name; }
 
 	private:
 		pvr::StringHash _name;
@@ -477,39 +368,24 @@ public:
 
 			/// <summary>Get occlusion texture index</summary>
 			/// <returns> Occlusion texture index</returns>
-			uint32_t getOcclusionTextureIndex() const
-			{
-				return _material.getTextureIndex("OCCLUSIONTEXTURE");
-			}
+			uint32_t getOcclusionTextureIndex() const { return _material.getTextureIndex("OCCLUSIONTEXTURE"); }
 
 			/// <summary>Set occlusion texture index</summary>
 			/// <param name="index"> Occlusion texture index</param>
-			void setOcclusionTextureIndex(uint32_t index)
-			{
-				_material.setTextureIndex("OCCLUSIONTEXTURE", index);
-			}
+			void setOcclusionTextureIndex(uint32_t index) { _material.setTextureIndex("OCCLUSIONTEXTURE", index); }
 
 			/// <summary>Get normal texture index</summary>
 			/// <returns> normal texture index</returns>
-			uint32_t getNormalTextureIndex() const
-			{
-				return _material.getTextureIndex("NORMALTEXTURE");
-			}
+			uint32_t getNormalTextureIndex() const { return _material.getTextureIndex("NORMALTEXTURE"); }
 
 			/// <summary>Set normal texture index</summary>
 			/// <param name="index"> normal texture index</param>
-			void setNormalTextureIndex(uint32_t index)
-			{
-				_material.setTextureIndex("NORMALTEXTURE", index);
-			}
+			void setNormalTextureIndex(uint32_t index) { _material.setTextureIndex("NORMALTEXTURE", index); }
 
 			/// <summary>Get the RGB components of the emissive color of the material. These values are linear.
 			/// If an emissiveTexture is specified, this value is multiplied with the texel values.</summary>
 			/// <returns> emissive color</returns>
-			glm::vec3 getEmissiveColor() const
-			{
-				return _material.getMaterialAttributeWithDefault("EMISSIVECOLOR", glm::vec3(0.f));
-			}
+			glm::vec3 getEmissiveColor() const { return _material.getMaterialAttributeWithDefault("EMISSIVECOLOR", glm::vec3(0.f)); }
 
 			/// <summary>Set the RGB components of the emissive color of the material. These values are linear.
 			/// If an emissiveTexture is specified, this value is multiplied with the texel values.</summary>
@@ -523,45 +399,27 @@ public:
 
 			/// <summary>Set the emissive texture index</summary>
 			/// <param name="index">  emissive texture index</param>
-			void setEmissiveTextureIndex(uint32_t index)
-			{
-				_material.setTextureIndex("EMISSIVETEXTURE", index);
-			}
+			void setEmissiveTextureIndex(uint32_t index) { _material.setTextureIndex("EMISSIVETEXTURE", index); }
 
 			/// <summary>Get the emissive texture index</summary>
 			/// <returns> Returns emissive texture index</returns>
-			uint32_t getEmissiveTextureIndex() const
-			{
-				return _material.getTextureIndex("EMISSIVETEXTURE");
-			}
+			uint32_t getEmissiveTextureIndex() const { return _material.getTextureIndex("EMISSIVETEXTURE"); }
 
 			/// <summary>Set the roughness texture index</summary>
 			/// <param name="index">  roughness texture index</param>
-			void setRoughnessTextureIndex(uint32_t index)
-			{
-				_material.setTextureIndex("ROUGHNESSTEXTURE", index);
-			}
+			void setRoughnessTextureIndex(uint32_t index) { _material.setTextureIndex("ROUGHNESSTEXTURE", index); }
 
 			/// <summary>Get the roughness texture index</summary>
 			/// <returns> Returns roughness texture index</returns>
-			uint32_t getRoughnessTextureIndex()
-			{
-				return _material.getTextureIndex("ROUGHNESSTEXTURE");
-			}
+			uint32_t getRoughnessTextureIndex() { return _material.getTextureIndex("ROUGHNESSTEXTURE"); }
 
 			/// <summary>Set the metallicity texture index</summary>
 			/// <param name="index">  metallicity texture index</param>
-			void setMetallicityTextureIndex(uint32_t index)
-			{
-				_material.setTextureIndex("METALLICITYTEXTURE", index);
-			}
+			void setMetallicityTextureIndex(uint32_t index) { _material.setTextureIndex("METALLICITYTEXTURE", index); }
 
 			/// <summary>Get the metallicity texture index</summary>
 			/// <returns> Returns metallicity texture index</returns>
-			uint32_t getMetallicityTextureIndex()
-			{
-				return _material.getTextureIndex("METALLICITYTEXTURE");
-			}
+			uint32_t getMetallicityTextureIndex() { return _material.getTextureIndex("METALLICITYTEXTURE"); }
 
 		protected:
 			Material& _material; //!< Material used
@@ -577,32 +435,20 @@ public:
 
 			/// <summary>set emission luminance</summary>
 			/// <param name="luminance">luminance</param>
-			void setEmissionLuminance(float luminance)
-			{
-				_material.setMaterialAttribute("EMISSIONLUMINANCE", FreeValue(luminance));
-			}
+			void setEmissionLuminance(float luminance) { _material.setMaterialAttribute("EMISSIONLUMINANCE", FreeValue(luminance)); }
 
 			/// <summary>The Physical Material supports an emissive component, additive light on top of other shading.
 			/// Emission identity is defined by the weight and color multiplied by the luminence, and also tinted by the Kelvin color temperature (where 6500=white).</summary>
 			/// <returns>Returns emission luminance</returns>
-			float getEmissionLuminance() const
-			{
-				return _material.getMaterialAttributeWithDefault("EMISSIONLUMINANCE", 0.f);
-			}
+			float getEmissionLuminance() const { return _material.getMaterialAttributeWithDefault("EMISSIONLUMINANCE", 0.f); }
 
 			/// <summary>Set emission kelvin</summary>
 			/// <param name="kelvin">Kelvin</param>
-			void setEmissionKelvin(float kelvin)
-			{
-				_material.setMaterialAttribute("EMISSIONKELVIN", kelvin);
-			}
+			void setEmissionKelvin(float kelvin) { _material.setMaterialAttribute("EMISSIONKELVIN", kelvin); }
 
 			/// <summary>Get emission kelvin</summary>
 			/// <returns>Returns emission kelvin</returns>
-			float getEmissionKelvin() const
-			{
-				return _material.getMaterialAttributeWithDefault("EMISSIONKELVIN", 1.f);
-			}
+			float getEmissionKelvin() const { return _material.getMaterialAttributeWithDefault("EMISSIONKELVIN", 1.f); }
 		};
 
 		/// <summary>Specifies the alpha mode used</summary>
@@ -640,10 +486,7 @@ public:
 			/// For a non-metal the base color represents the reflected diffuse color of the material.
 			/// In this model it is not possible to specify a F0 value for non-metals, and a linear value of 4% (0.04) is used.</summary>
 			/// <returns>base color</returns>
-			glm::vec4 getBaseColor() const
-			{
-				return _material.getMaterialAttributeWithDefault<glm::vec4>("METALLICBASECOLOR", glm::vec4(1.f));
-			}
+			glm::vec4 getBaseColor() const { return _material.getMaterialAttributeWithDefault<glm::vec4>("METALLICBASECOLOR", glm::vec4(1.f)); }
 
 			/// <summary>Set the base color texture. This texture contains RGB(A) components in sRGB color space.
 			/// The first three components (RGB) specify the base color of the material.
@@ -651,10 +494,7 @@ public:
 			/// Otherwise, an alpha of 1.0 is assumed. The alphaMode property specifies how alpha is interpreted.
 			/// The stored texels must not be premultiplied.</summary>
 			/// <param name="index">base color texture index</param>
-			void setBaseColorTextureIndex(uint32_t index)
-			{
-				_material.setTextureIndex("DIFFUSETEXTURE", index);
-			}
+			void setBaseColorTextureIndex(uint32_t index) { _material.setTextureIndex("DIFFUSETEXTURE", index); }
 
 			/// <summary>Get the base color texture. This texture contains RGB(A) components in sRGB color space.
 			/// The first three components (RGB) specify the base color of the material.
@@ -662,10 +502,7 @@ public:
 			/// Otherwise, an alpha of 1.0 is assumed. The alphaMode property specifies how alpha is interpreted.
 			/// The stored texels must not be premultiplied.</summary>
 			/// <returns>base color texture index</returns>
-			uint32_t getBaseColorTextureIndex() const
-			{
-				return _material.getTextureIndex("DIFFUSETEXTURE");
-			}
+			uint32_t getBaseColorTextureIndex() const { return _material.getTextureIndex("DIFFUSETEXTURE"); }
 
 			/// <summary>Set the metalness of the material. A value of 1.0 means the material is a metal.
 			/// A value of 0.0 means the material is a dielectric. Values in between are for blending between metals and dielectrics
@@ -684,10 +521,7 @@ public:
 			/// such as dirty metallic surfaces. This value is linear. If a metallicRoughnessTexture is specified,
 			/// this value is multiplied with the metallic texel values.</summary>
 			/// <returns>metallic factor</returns>
-			float getMetallicity() const
-			{
-				return _material.getMaterialAttributeWithDefault<float>("METALLICITY", 0);
-			}
+			float getMetallicity() const { return _material.getMaterialAttributeWithDefault<float>("METALLICITY", 0); }
 
 			/// <summary>Set the roughness of the material. A value of 1.0 means the material is completely rough.
 			/// A value of 0.0 means the material is completely smooth. This value is linear.
@@ -704,20 +538,14 @@ public:
 			/// A value of 0.0 means the material is completely smooth. This value is linear.
 			/// If a metallicRoughnessTexture is specified, this value is multiplied with the roughness texel values.</summary>
 			/// <returns>roughness factor</returns>
-			float getRoughness() const
-			{
-				return _material.getMaterialAttributeWithDefault<float>("ROUGHNESS", 0);
-			}
+			float getRoughness() const { return _material.getMaterialAttributeWithDefault<float>("ROUGHNESS", 0); }
 
 			/// <summary>Get the alpha cutoff value of the material.
 			/// Specifies the cutoff threshold when in MASK mode. If the alpha value is greater than or equal to this
 			/// value then it is rendered as fully opaque, otherwise, it is rendered as fully transparent.
 			/// A value greater than 1.0 will render the entire material as fully transparent. This value is ignored for other modes.</summary>
 			/// <returns>The alpha cutoff value of the material.</returns>
-			float getAlphaCutOff() const
-			{
-				return _material.getMaterialAttributeWithDefault("ALPHACUTOFF", 0.5f);
-			}
+			float getAlphaCutOff() const { return _material.getMaterialAttributeWithDefault("ALPHACUTOFF", 0.5f); }
 
 			/// <summary>Get the alpha cutoff value of the material.
 			/// Specifies the cutoff threshold when in MASK mode. If the alpha value is greater than or equal to this
@@ -735,10 +563,7 @@ public:
 			/// When this value is true, back-face culling is disabled and double sided lighting is enabled.
 			/// The back-face must have its normals reversed before the lighting equation is evaluated.</summary>
 			/// <returns>Return true whether is double sided</returns>
-			bool isDoubleSided() const
-			{
-				return _material.getMaterialAttributeWithDefault("DOUBLESIDED", 1);
-			}
+			bool isDoubleSided() const { return static_cast<bool>(_material.getMaterialAttributeWithDefault("DOUBLESIDED", 1)); }
 
 			/// <summary>Set the material is double sided or not. When this value is false, back-face culling is enabled.
 			/// When this value is true, back-face culling is disabled and double sided lighting is enabled.
@@ -780,31 +605,19 @@ public:
 
 			/// <summary>Get material ambient (semantic "AMBIENT")</summary>
 			/// <returns>Material ambient</returns>
-			glm::vec3 getAmbient() const
-			{
-				return material->getMaterialAttributeWithDefault<glm::vec3>("AMBIENT", glm::vec3(0.f, 0.f, 0.f));
-			}
+			glm::vec3 getAmbient() const { return material->getMaterialAttributeWithDefault<glm::vec3>("AMBIENT", glm::vec3(0.f, 0.f, 0.f)); }
 
 			/// <summary>Get material diffuse (semantic "DIFFUSE")</summary>
 			/// <returns>Material diffuse</returns>
-			glm::vec3 getDiffuse() const
-			{
-				return material->getMaterialAttributeWithDefault<glm::vec3>("DIFFUSE", glm::vec3(1.f, 1.f, 1.f));
-			}
+			glm::vec3 getDiffuse() const { return material->getMaterialAttributeWithDefault<glm::vec3>("DIFFUSE", glm::vec3(1.f, 1.f, 1.f)); }
 
 			/// <summary>Get material specular (semantic "SPECULAR")</summary>
 			/// <returns>Material specular</returns>
-			glm::vec3 getSpecular() const
-			{
-				return material->getMaterialAttributeWithDefault<glm::vec3>("SPECULAR", glm::vec3(0.f, 0.f, 0.f));
-			}
+			glm::vec3 getSpecular() const { return material->getMaterialAttributeWithDefault<glm::vec3>("SPECULAR", glm::vec3(0.f, 0.f, 0.f)); }
 
 			/// <summary>Get material shininess (semantic "SHININESS")</summary>
 			/// <returns>Material shininess</returns>
-			float getShininess() const
-			{
-				return material->getMaterialAttributeWithDefault<float>("SHININESS", 0.f);
-			}
+			float getShininess() const { return material->getMaterialAttributeWithDefault<float>("SHININESS", 0.f); }
 
 			/// <summary>Get the diffuse color texture's index (semantic "DIFFUSETEXTURE", return-1 if not exist)</summary>
 			/// <returns>Return the diffuse texture index, if exists, otherwise return -1</returns>
@@ -888,66 +701,39 @@ public:
 
 			/// <summary>Get this material opacity (semantic "OPACITY")</summary>
 			/// <returns>Return the material opacity</returns>
-			float getOpacity() const
-			{
-				return material->getMaterialAttributeWithDefault<float>("OPACITY", 1.f);
-			}
+			float getOpacity() const { return material->getMaterialAttributeWithDefault<float>("OPACITY", 1.f); }
 
 			/// <summary>Get the blend function for Source Color (semantic "BLENDSRCCOLOR")</summary>
 			/// <returns>Return source color blend function</returns>
-			BlendFunction getBlendSrcRGB() const
-			{
-				return material->getMaterialAttributeWithDefault<BlendFunction>("BLENDSRCCOLOR", BlendFunction::BlendFuncOne);
-			}
+			BlendFunction getBlendSrcRGB() const { return material->getMaterialAttributeWithDefault<BlendFunction>("BLENDSRCCOLOR", BlendFunction::BlendFuncOne); }
 
 			/// <summary>Get the blend function for Source Alpha (semantic "BLENDSRCALPHA")</summary>
 			/// <returns>Return source alpha blend function</returns>
-			BlendFunction getBlendSrcA() const
-			{
-				return material->getMaterialAttributeWithDefault<BlendFunction>("BLENDSRCALPHA", BlendFunction::BlendFuncOne);
-			}
+			BlendFunction getBlendSrcA() const { return material->getMaterialAttributeWithDefault<BlendFunction>("BLENDSRCALPHA", BlendFunction::BlendFuncOne); }
 
 			/// <summary>Get the blend function for Destination Color (semantic "BLENDDSTCOLOR")</summary>
 			/// <returns>Return destination color blend function</returns>
-			BlendFunction getBlendDstRGB() const
-			{
-				return material->getMaterialAttributeWithDefault<BlendFunction>("BLENDDSTCOLOR", BlendFunction::BlendFuncZero);
-			}
+			BlendFunction getBlendDstRGB() const { return material->getMaterialAttributeWithDefault<BlendFunction>("BLENDDSTCOLOR", BlendFunction::BlendFuncZero); }
 
 			/// <summary>Get the blend function for Destination Alpha (semantic "BLENDDSTALPHA")</summary>
 			/// <returns>Return destination alpha blend function</returns>
-			BlendFunction getBlendDstA() const
-			{
-				return material->getMaterialAttributeWithDefault<BlendFunction>("BLENDDSTALPHA", BlendFunction::BlendFuncZero);
-			}
+			BlendFunction getBlendDstA() const { return material->getMaterialAttributeWithDefault<BlendFunction>("BLENDDSTALPHA", BlendFunction::BlendFuncZero); }
 
 			/// <summary>Get the blend operation for Color (semantic "BLENDOPCOLOR")</summary>
 			/// <returns>Return the color's blend operator</returns>
-			BlendOperation getBlendOpRGB() const
-			{
-				return material->getMaterialAttributeWithDefault<BlendOperation>("BLENDOPCOLOR", BlendOperation::BlendOpAdd);
-			}
+			BlendOperation getBlendOpRGB() const { return material->getMaterialAttributeWithDefault<BlendOperation>("BLENDOPCOLOR", BlendOperation::BlendOpAdd); }
 
 			/// <summary>Return the blend operation for Alpha (semantic "BLENDOPALPHA")</summary>
 			/// <returns>Return the alpha's blend operator</returns>
-			BlendOperation getBlendOpA() const
-			{
-				return material->getMaterialAttributeWithDefault<BlendOperation>("BLENDOPALPHA", BlendOperation::BlendOpAdd);
-			}
+			BlendOperation getBlendOpA() const { return material->getMaterialAttributeWithDefault<BlendOperation>("BLENDOPALPHA", BlendOperation::BlendOpAdd); }
 
 			/// <summary>Get the blend color (semantic "BLENDCOLOR")</summary>
 			/// <returns>Return blend color</returns>
-			glm::vec4 getBlendColor() const
-			{
-				return material->getMaterialAttributeWithDefault<glm::vec4>("BLENDCOLOR", glm::vec4(0.f, 0.f, 0.f, 0.f));
-			}
+			glm::vec4 getBlendColor() const { return material->getMaterialAttributeWithDefault<glm::vec4>("BLENDCOLOR", glm::vec4(0.f, 0.f, 0.f, 0.f)); }
 
 			/// <summary>Return the blend factor (semantic "BLENDFACTOR")</summary>
 			/// <returns>Return blend factor</returns>
-			glm::vec4 getBlendFactor() const
-			{
-				return material->getMaterialAttributeWithDefault<glm::vec4>("BLENDFACTOR", glm::vec4(0.f, 0.f, 0.f, 0.f));
-			}
+			glm::vec4 getBlendFactor() const { return material->getMaterialAttributeWithDefault<glm::vec4>("BLENDFACTOR", glm::vec4(0.f, 0.f, 0.f, 0.f)); }
 
 		private:
 			const Material* material;
@@ -957,19 +743,13 @@ public:
 		/// <summary>Get a Default Semantics adapter for this object. This is just a convenience object to access
 		/// the default semantics through compile time functions.</summary>
 		/// <returns>The default semantics for this object.</returns>
-		const DefaultMaterialSemantics& defaultSemantics() const
-		{
-			return _defaultSemantics;
-		}
+		const DefaultMaterialSemantics& defaultSemantics() const { return _defaultSemantics; }
 
 		/// <summary>Set a material attribute by Semantic Name. Any semantic name may be passed, but some of them
 		/// may be additionally accessed through Default Semantics.</summary>
 		/// <param name="semantic">The semantic to set</param>
 		/// <param name="value">The value to set</param>
-		void setMaterialAttribute(const StringHash& semantic, const FreeValue& value)
-		{
-			_data.materialSemantics[semantic] = value;
-		}
+		void setMaterialAttribute(const StringHash& semantic, const FreeValue& value) { _data.materialSemantics[semantic] = value; }
 
 		/// <summary>Retrieve a material attribute by Semantic Name. If it does not exist, NULL will be returned.</summary>
 		/// <param name="semantic">The semantic to retrieve</param>
@@ -978,10 +758,7 @@ public:
 		const FreeValue* getMaterialAttribute(const StringHash& semantic) const
 		{
 			auto it = _data.materialSemantics.find(semantic);
-			if (it != _data.materialSemantics.end())
-			{
-				return &it->second;
-			}
+			if (it != _data.materialSemantics.end()) { return &it->second; }
 			return nullptr;
 		}
 
@@ -996,10 +773,7 @@ public:
 		const Type getMaterialAttributeWithDefault(const StringHash& semantic, const Type& defaultAttrib) const
 		{
 			auto* val = getMaterialAttribute(semantic);
-			if (val)
-			{
-				return val->interpretValueAs<Type>();
-			}
+			if (val) { return val->interpretValueAs<Type>(); }
 			return defaultAttrib;
 		}
 
@@ -1013,10 +787,7 @@ public:
 		const Type* getMaterialAttributeAs(const StringHash& semantic) const
 		{
 			auto* val = getMaterialAttribute(semantic);
-			if (val)
-			{
-				return &val->interpretValueAs<Type>();
-			}
+			if (val) { return &val->interpretValueAs<Type>(); }
 			return NULL;
 		}
 
@@ -1024,39 +795,24 @@ public:
 		/// <param name="semantic">The semantic name to check.</param>
 		/// <returns>True if either a texture or a material attribute with the specified
 		/// semantic exists, otherwise false</returns>
-		bool hasSemantic(const StringHash& semantic) const
-		{
-			return hasMaterialTexture(semantic) || hasMaterialAttribute(semantic);
-		}
+		bool hasSemantic(const StringHash& semantic) const { return hasMaterialTexture(semantic) || hasMaterialAttribute(semantic); }
 
 		/// <summary>Check if a material texture with the specified semantic exists.</summary>
 		/// <param name="semantic">The semantic of the material texture to check.</param>
 		/// <returns>True if the material texture exists, otherwise false</returns>
-		bool hasMaterialTexture(const StringHash& semantic) const
-		{
-			return getTextureIndex(semantic) != static_cast<uint32_t>(-1);
-		}
+		bool hasMaterialTexture(const StringHash& semantic) const { return getTextureIndex(semantic) != static_cast<uint32_t>(-1); }
 		/// <summary>Check if a material attribute with the specified semantic exists.</summary>
 		/// <param name="semantic">The semantic of the material attribute to check.</param>
 		/// <returns>True if the material attribute exists, otherwise false</returns>
-		bool hasMaterialAttribute(const StringHash& semantic) const
-		{
-			return getMaterialAttribute(semantic) != NULL;
-		}
+		bool hasMaterialAttribute(const StringHash& semantic) const { return getMaterialAttribute(semantic) != NULL; }
 
 		/// <summary>Set material effect name.</summary>
 		/// <param name="name">Material effect name</param>
-		void setEffectName(const StringHash& name)
-		{
-			_data.effectName = name;
-		}
+		void setEffectName(const StringHash& name) { _data.effectName = name; }
 
 		/// <summary>Set material effect file name.</summary>
 		/// <param name="name">Effect file name</param>
-		void setEffectFile(const StringHash& name)
-		{
-			_data.effectFile = name;
-		}
+		void setEffectFile(const StringHash& name) { _data.effectFile = name; }
 
 		/// <summary>Find a texture with the specified semantic. If it exists, returns its index otherwise -1.</summary>
 		/// <param name="semantic">The semantic of the texture to retrieve.</param>
@@ -1070,46 +826,29 @@ public:
 		/// <summary>Set texture with the specified semantic and index.</summary>
 		/// <param name="semantic">The semantic of the texture.</param>
 		/// <param name="index">texture index</param>
-		void setTextureIndex(const StringHash& semantic, uint32_t index)
-		{
-			_data.textureIndices[semantic] = index;
-		}
+		void setTextureIndex(const StringHash& semantic, uint32_t index) { _data.textureIndices[semantic] = index; }
 
 		/// <summary>Get this material name.</summary>
 		/// <returns>return the material name</returns>
-		const StringHash& getName() const
-		{
-			return this->_data.name;
-		}
+		const StringHash& getName() const { return this->_data.name; }
 
 		/// <summary>Get this material effect file name.</summary>
 		/// <returns>Retuurn Material effect file name</returns>
-		const StringHash& getEffectFile() const
-		{
-			return _data.effectFile;
-		}
+		const StringHash& getEffectFile() const { return _data.effectFile; }
 
 		/// <summary>Get this material effect name.</summary>
 		/// <returns>Return material effect name</returns>
-		const StringHash& getEffectName() const
-		{
-			return _data.effectName;
-		}
+		const StringHash& getEffectName() const { return _data.effectName; }
 
 		/// <summary>Return a reference to the material's internal data structure. Handle with care.</summary>
 		/// <returns>Return reference to the internal data</returns>
-		InternalData& getInternalData()
-		{
-			return _data;
-		}
+		InternalData& getInternalData() { return _data; }
 
 	private:
 		UInt8Buffer userData;
 		InternalData _data;
 		DefaultMaterialSemantics _defaultSemantics;
 	};
-
-public:
 	/// <summary>Struct containing the internal data of the Model.</summary>
 	struct InternalData
 	{
@@ -1150,15 +889,41 @@ public:
 		}
 	};
 
+private:
+	std::vector<float> cachedFrame; //!< Cache indicating the frames at which the matrix cache was filled
+	std::vector<glm::mat4x4> worldMatrixFrameN; //!< Cache of world matrices for the frame described in fCachedFrame
+	std::vector<glm::mat4x4> worldMatrixFrameZero; //!< Cache of frame 0 matrices
+	InternalData _data; //!< A set of internal data relating to the model
+public:
+	/// <summary>Return the value of a Model-wide semantic as a FreeValue, null if it does not exist.</summary>
+	/// <param name="semantic">The semantic name to retrieve</param>
+	/// <returns>A pointer to a FreeValue containing the value of the semantic. If the semantic does not exist,
+	/// return NULL</returns>
+	const FreeValue* getModelSemantic(const StringHash& semantic) const
+	{
+		auto it = _data.semantics.find(semantic);
+		if (it == _data.semantics.end()) { return NULL; }
+		return &it->second;
+	}
+
+	/// <summary>Get a pointer to the UserData of this model, if such data exist.</summary>
+	/// <returns>A pointer to the UserData, as a Reference Counted Void pointer. Cast to appropriate (ref counted)type</returns>
+	const std::shared_ptr<void>& getUserDataPtr() const { return this->_data.userDataPtr; }
+
+	/// <summary>Get a pointer to the UserData of this model.</summary>
+	/// <returns>A pointer to the UserData, as a Reference Counted Void pointer. Cast to appropriate (ref counted)type</returns>
+	std::shared_ptr<void> getUserDataPtr() { return this->_data.userDataPtr; }
+
+	/// <summary>Set the UserData of this model (wrap the data into a std::shared_ptr and cast to Ref Counted void pointer.</summary>
+	/// <param name="ptr">The UserData. Must be wrapped in an appropriate std::shared_ptr, and then cast into a std::shared_ptr to void</param>
+	void setUserDataPtr(const std::shared_ptr<void>& ptr) { _data.userDataPtr = ptr; }
+
 public:
 	/// <summary>Free the vertex data (Vertex attribute values, Vertex Index values) of all meshes to free memory.
 	/// Usually called after VBOs/IBOs have been created. Any other data of the Mesh are unaffected.</summary>
 	void releaseVertexData()
 	{
-		for (uint32_t i = 0; i < getNumMeshes(); ++i)
-		{
-			releaseVertexData(i);
-		}
+		for (uint32_t i = 0; i < getNumMeshes(); ++i) { releaseVertexData(i); }
 	}
 
 	/// <summary>Free the vertex data (Vertex attribute values, Vertex Index values) of a single mesh to free memory.
@@ -1167,10 +932,7 @@ public:
 	void releaseVertexData(uint32_t meshId)
 	{
 		Mesh& mesh = getMesh(meshId);
-		for (uint32_t i = 0; i < mesh.getNumDataElements(); ++i)
-		{
-			mesh.removeData(i);
-		}
+		for (uint32_t i = 0; i < mesh.getNumDataElements(); ++i) { mesh.removeData(i); }
 		mesh.getFaces().setData(0, 0);
 	}
 
@@ -1181,18 +943,12 @@ public:
 
 	/// <summary>Get number of animation data</summary>
 	/// <returns> Return number of animation data</returns>
-	size_t getNumAnimationData() const
-	{
-		return _data.animationsData.size();
-	}
+	size_t getNumAnimationData() const { return _data.animationsData.size(); }
 
 	/// <summary> Get animation data</summary>
 	/// <param name="index"> animation data index</param>
 	/// <returns>Return animation data</returns>
-	const AnimationData& getAnimationData(uint32_t index) const
-	{
-		return _data.animationsData[index];
-	}
+	const AnimationData& getAnimationData(uint32_t index) const { return _data.animationsData[index]; }
 
 	/// <summary>Get Animation Data</summary>
 	/// <param name="name">Animation data name</param>
@@ -1201,35 +957,23 @@ public:
 	{
 		const auto& it =
 			std::find_if(_data.animationsData.begin(), _data.animationsData.end(), [&](const AnimationData& anim) { return strcmp(name, anim.getAnimationName().c_str()) == 0; });
-		if (it != _data.animationsData.end())
-		{
-			return &(*it);
-		}
+		if (it != _data.animationsData.end()) { return &(*it); }
 		return nullptr;
 	}
 
 	/// <summary>Get animation instance</summary>
 	/// <param name="index">Animation instance index</param>
 	/// <returns>Returns animation instance</returns>
-	const AnimationInstance& getAnimationInstance(uint32_t index) const
-	{
-		return _data.animationInstances[index];
-	}
+	const AnimationInstance& getAnimationInstance(uint32_t index) const { return _data.animationInstances[index]; }
 
 	/// <summary>Get animation instance</summary>
 	/// <param name="index">Animation instance index</param>
 	/// <returns>Returns animation instance</returns>
-	AnimationInstance& getAnimationInstance(uint32_t index)
-	{
-		return _data.animationInstances[index];
-	}
+	AnimationInstance& getAnimationInstance(uint32_t index) { return _data.animationInstances[index]; }
 
 	/// <summary>Get number of animation instances</summary>
 	/// <returns>Return number of animation instances</returns>
-	size_t getNumAnimationInstances() const
-	{
-		return _data.animationInstances.size();
-	}
+	size_t getNumAnimationInstances() const { return _data.animationInstances.size(); }
 
 	/// <summary>Add new animation instance</summary>
 	/// <param name="animationInstance">Animation instance to add</param>
@@ -1272,10 +1016,7 @@ public:
 	glm::mat4x4 toWorldMatrix(uint32_t nodeId, const glm::mat4& localMatrix) const
 	{
 		uint32_t parentID = _data.nodes[nodeId].getParentID();
-		if (parentID == static_cast<uint32_t>(-1))
-		{
-			return localMatrix;
-		}
+		if (parentID == static_cast<uint32_t>(-1)) { return localMatrix; }
 		else
 		{
 			glm::mat4 parentWorld = getWorldMatrix(parentID);
@@ -1286,39 +1027,24 @@ public:
 	/// <summary>Get skeleton</summary>
 	/// <param name="skeletonIndex">Skeleton index</param>
 	/// <returns>Return skeleton</returns>
-	const Skeleton& getSkeleton(uint32_t skeletonIndex) const
-	{
-		return _data.skeletons[skeletonIndex];
-	}
+	const Skeleton& getSkeleton(uint32_t skeletonIndex) const { return _data.skeletons[skeletonIndex]; }
 
 	/// <summary>Get number of skeletons</summary>
 	/// <returns>Return number of skeleton</returns>
-	size_t getNumSkeletons() const
-	{
-		return _data.skeletons.size();
-	}
+	size_t getNumSkeletons() const { return _data.skeletons.size(); }
 
 	/// <summary>Get the clear color (background) (float array R,G,B,A).</summary>
 	/// <returns>The clear color (float array R,G,B,A).</returns>
-	const float* getBackgroundColor() const
-	{
-		return _data.clearColor;
-	}
+	const float* getBackgroundColor() const { return _data.clearColor; }
 
 	/// <summary>Get the number of distinct camera objects. May be different than the actual number of Camera
 	/// Instances (Nodes).</summary>
 	/// <returns>Return The number of distinct camera objects.</returns>
-	uint32_t getNumCameras() const
-	{
-		return static_cast<uint32_t>(_data.cameras.size());
-	}
+	uint32_t getNumCameras() const { return static_cast<uint32_t>(_data.cameras.size()); }
 
 	/// <summary>Get the number of Camera nodes in this model</summary>
 	/// <returns>Return The number of Camera instances (Nodes) in this Model.</returns>
-	uint32_t getNumCameraNodes() const
-	{
-		return getNumCameras(); /* Will be changed at a future revision */
-	}
+	uint32_t getNumCameraNodes() const { return getNumCameras(); /* Will be changed at a future revision */ }
 
 	/// <summary>Get a Camera from this model</summary>
 	/// <param name="cameraIndex">The index of the camera. Valid values (0 to getNumCameras()-1)</param>
@@ -1361,10 +1087,7 @@ public:
 
 	/// <summary>Get number of animation instances</summary>
 	/// <returns> Returns number of animation instances<returns>
-	size_t getNumAnimations() const
-	{
-		return _data.animationsData.size();
-	}
+	size_t getNumAnimations() const { return _data.animationsData.size(); }
 
 	/// <summary>Get the (global) Node Index of a specific CameraNode.</summary>
 	/// <param name="cameraNodeIndex">The Index of a Camera Node that will be used to calculate the NodeID. Valid
@@ -1381,17 +1104,11 @@ public:
 	/// <summary>Get the number of distinct Light objects. May be different than the actual number of Light Instances
 	/// (Nodes).</summary>
 	/// <returns>Return The number of distinct Light objects in this Model.</returns>
-	uint32_t getNumLights() const
-	{
-		return static_cast<uint32_t>(_data.lights.size());
-	}
+	uint32_t getNumLights() const { return static_cast<uint32_t>(_data.lights.size()); }
 
 	/// <summary>Get the number of Light nodes.</summary>
 	/// <returns>Return The number of Light instances (Nodes) in this Model.</returns>
-	uint32_t getNumLightNodes() const
-	{
-		return getNumLights(); /* Will be changed at a future revision */
-	}
+	uint32_t getNumLightNodes() const { return getNumLights(); /* Will be changed at a future revision */ }
 
 	/// <summary>Get the light object with the specific Light Index.</summary>
 	/// <param name="lightIndex">The index of the light. Valid values (0..getNumLights()-1)</param>
@@ -1435,39 +1152,24 @@ public:
 	/// <summary>Get the number of distinct Mesh objects. Unless each Mesh appears at exactly one Node, may be
 	/// different than the actual number of Mesh instances.</summary>
 	/// <returns>Return The number of different Mesh objects in this Model.</returns>
-	uint32_t getNumMeshes() const
-	{
-		return static_cast<uint32_t>(_data.meshes.size());
-	}
+	uint32_t getNumMeshes() const { return static_cast<uint32_t>(_data.meshes.size()); }
 
 	/// <summary>Get the number of Mesh nodes.</summary>
 	/// <returns>Return The number of Mesh instances (Nodes) in this Model.</returns>
-	uint32_t getNumMeshNodes() const
-	{
-		return _data.numMeshNodes;
-	}
+	uint32_t getNumMeshNodes() const { return _data.numMeshNodes; }
 
 	/// <summary>Get the Mesh object with the specific Mesh Index. Constant overload.</summary>
 	/// <param name="meshIndex">The index of the Mesh. Valid values (0..getNumMeshes()-1)</param>
 	/// <returns>The mesh with id <paramref name="meshIndex."/>Const ref.</returns>
-	const Mesh& getMesh(uint32_t meshIndex) const
-	{
-		return _data.meshes[meshIndex];
-	}
+	const Mesh& getMesh(uint32_t meshIndex) const { return _data.meshes[meshIndex]; }
 
 	/// <summary>Allocate memory for animation data</summary>
 	/// <param name="numAnimation">Number of animation data to allocate</param>
-	void allocateAnimationsData(uint32_t numAnimation)
-	{
-		_data.animationsData.resize(numAnimation);
-	}
+	void allocateAnimationsData(uint32_t numAnimation) { _data.animationsData.resize(numAnimation); }
 
 	/// <summary>Allocate memory for animation instances</summary>
 	/// <param name="numAnimation">Number of animation instances to allocate</param>
-	void allocateAnimationInstances(uint32_t numAnimation)
-	{
-		_data.animationInstances.resize(numAnimation);
-	}
+	void allocateAnimationInstances(uint32_t numAnimation) { _data.animationInstances.resize(numAnimation); }
 
 	/// <summary>Get the Mesh object with the specific Mesh Index.</summary>
 	/// <param name="index">The index of the Mesh. Valid values (0..getNumMeshes()-1)</param>
@@ -1503,10 +1205,7 @@ public:
 	/// <summary>Connect mesh to a mesh node (i.e. set the node's mesh to the mesh</summary>
 	/// <param name="meshId">The mesh id</param>
 	/// <param name="meshNodeId">The mesh node id to connect to</param>
-	void connectMeshWithMeshNode(uint32_t meshId, uint32_t meshNodeId)
-	{
-		getMeshNode(meshNodeId).setIndex(meshId);
-	}
+	void connectMeshWithMeshNode(uint32_t meshId, uint32_t meshNodeId) { getMeshNode(meshNodeId).setIndex(meshId); }
 
 	/// <summary>Connect mesh to number of mesh nodes</summary>
 	/// <param name="meshId">The mesh id</param>
@@ -1514,10 +1213,7 @@ public:
 	/// <param name="endMeshNodeId">End mesh node id (inclusive)</param>
 	void connectMeshWithMeshNodes(uint32_t meshId, uint32_t beginMeshNodeId, uint32_t endMeshNodeId)
 	{
-		for (uint32_t i = beginMeshNodeId; i <= endMeshNodeId; ++i)
-		{
-			connectMeshWithMeshNode(meshId, i);
-		}
+		for (uint32_t i = beginMeshNodeId; i <= endMeshNodeId; ++i) { connectMeshWithMeshNode(meshId, i); }
 	}
 
 	/// <summary>Assign material id to number of mesh nodes</summary>
@@ -1526,10 +1222,7 @@ public:
 	/// <param name="endMeshNodeId">end mesh node id (inclusive)</param>
 	void assignMaterialToMeshNodes(uint32_t materialIndex, uint32_t beginMeshNodeId, uint32_t endMeshNodeId)
 	{
-		for (uint32_t i = beginMeshNodeId; i <= endMeshNodeId; ++i)
-		{
-			getMeshNode(i).setMaterialIndex(materialIndex);
-		}
+		for (uint32_t i = beginMeshNodeId; i <= endMeshNodeId; ++i) { getMeshNode(i).setMaterialIndex(materialIndex); }
 	}
 
 	/// <summary>Get the (global) Node Index of a specific MeshNode. This function is provided for completion, as
@@ -1547,84 +1240,51 @@ public:
 
 	/// <summary>Get an iterator to the beginning of the meshes.</summary>
 	/// <returns>Return an iterator</returns>
-	std::vector<Mesh>::iterator beginMeshes()
-	{
-		return _data.meshes.begin();
-	}
+	std::vector<Mesh>::iterator beginMeshes() { return _data.meshes.begin(); }
 
 	/// <summary>Get an iterator past the end of the meshes.</summary>
 	/// <returns>Iterator to one past the last item of the mesh array</returns>
-	std::vector<Mesh>::iterator endMeshes()
-	{
-		return _data.meshes.end();
-	}
+	std::vector<Mesh>::iterator endMeshes() { return _data.meshes.end(); }
 
 	/// <summary>Get a const_iterator to the beginning of the meshes.</summary>
 	/// <returns>Iterator to the start of the mesh array</returns>
-	std::vector<Mesh>::const_iterator beginMeshes() const
-	{
-		return _data.meshes.begin();
-	}
+	std::vector<Mesh>::const_iterator beginMeshes() const { return _data.meshes.begin(); }
 
 	/// <summary>Get a const_iterator past the end of the meshes.</summary>
 	/// <returns>Iterator to one past the last item of the mesh array</returns>
-	std::vector<Mesh>::const_iterator endMeshes() const
-	{
-		return _data.meshes.end();
-	}
+	std::vector<Mesh>::const_iterator endMeshes() const { return _data.meshes.end(); }
 
 	/// <summary>Get the total number of nodes (Meshes, Cameras, Lights, others (helpers etc)).</summary>
 	/// <returns>Return number of nodes in this model</returns>
-	uint32_t getNumNodes() const
-	{
-		return static_cast<uint32_t>(_data.nodes.size());
-	}
+	uint32_t getNumNodes() const { return static_cast<uint32_t>(_data.nodes.size()); }
 
 	/// <summary>Get the node with the specified index.</summary>
 	/// <param name="index">The index of the node to get</param>
 	/// <returns>Return The Node from this scene</returns>
-	const Node& getNode(uint32_t index) const
-	{
-		return _data.nodes[index];
-	}
+	const Node& getNode(uint32_t index) const { return _data.nodes[index]; }
 
 	/// <summary>Get the node with the specified index.</summary>
 	/// <param name="index">The index of the node to get</param>
 	/// <returns>Return The Node from this scene</returns>
-	Node& getNode(uint32_t index)
-	{
-		return _data.nodes[index];
-	}
+	Node& getNode(uint32_t index) { return _data.nodes[index]; }
 
 	/// <summary>Get the number of distinct Textures in the scene.</summary>
 	/// <returns>Return number of distinct textures</returns>
-	uint32_t getNumTextures() const
-	{
-		return static_cast<uint32_t>(_data.textures.size());
-	}
+	uint32_t getNumTextures() const { return static_cast<uint32_t>(_data.textures.size()); }
 
 	/// <summary>Get the texture with the specified index.</summary>
 	/// <param name="index">The index of the texture to get</param>
 	/// <returns>Return a texture from this scene</returns>
-	const Texture& getTexture(uint32_t index) const
-	{
-		return _data.textures[index];
-	}
+	const Texture& getTexture(uint32_t index) const { return _data.textures[index]; }
 
 	/// <summary>Get the number of distinct Materials in the scene.</summary>
 	/// <returns>Return number of materials in this scene</returns>
-	uint32_t getNumMaterials() const
-	{
-		return static_cast<uint32_t>(_data.materials.size());
-	}
+	uint32_t getNumMaterials() const { return static_cast<uint32_t>(_data.materials.size()); }
 
 	/// <summary>Get the material with the specified index.</summary>
 	/// <param name="index">The index of material to get</param>
 	/// <returns>Return a material from this scene</returns>
-	const Material& getMaterial(uint32_t index) const
-	{
-		return _data.materials[index];
-	}
+	const Material& getMaterial(uint32_t index) const { return _data.materials[index]; }
 
 	/// <summary>Add a material to this model, and gets its (just created) material id</summary>
 	/// <param name="material">The the material to add to the materials of this model</param>
@@ -1638,20 +1298,14 @@ public:
 	/// <summary>Get the material with the specified index.</summary>
 	/// <param name="index">The index of material to get</param>
 	/// <returns>Return a material from this scene</returns>
-	Material& getMaterial(uint32_t index)
-	{
-		return _data.materials[index];
-	}
+	Material& getMaterial(uint32_t index) { return _data.materials[index]; }
 
 	/// <summary>Get the total number of frames in the scene. The total number of usable animated frames is limited to
 	/// exclude (numFrames - 1) but include any partial number up to (numFrames - 1). Example: If there are 100 frames
 	/// of animation, the highest frame number allowed is 98, since that will blend between frames 98 and 99. (99
 	/// being of course the 100th frame.)</summary>
 	/// <returns>Return the number of frames in this model</returns>
-	uint32_t getNumFrames() const
-	{
-		return _data.numFrames ? _data.numFrames : 1;
-	}
+	uint32_t getNumFrames() const { return _data.numFrames ? _data.numFrames : 1; }
 
 	/// <summary>Get the current frame of the scene.</summary>
 	/// <returns>Return the current frame</returns>
@@ -1659,17 +1313,11 @@ public:
 
 	/// <summary>Set the expected FPS of the animation.</summary>
 	/// <param name="fps">FPS of the animation</param>
-	void setFPS(float fps)
-	{
-		_data.FPS = fps;
-	}
+	void setFPS(float fps) { _data.FPS = fps; }
 
 	/// <summary>Get the FPS this animation was created for.</summary>
 	/// <returns>Get the expected FPS of the animation.</returns>
-	float getFPS() const
-	{
-		return _data.FPS;
-	}
+	float getFPS() const { return _data.FPS; }
 
 	/// <summary>Set custom user data.</summary>
 	/// <param name="size">The size, in bytes, of the data.</param>
@@ -1694,10 +1342,7 @@ public:
 
 	/// <summary>Get a reference to the internal data of this Model. Handle with care.</summary>
 	/// <returns>Return internal data</returns>
-	InternalData& getInternalData()
-	{
-		return _data;
-	}
+	InternalData& getInternalData() { return _data; }
 
 	/// <summary>Get the properties of a camera. This is additional info on the class (remarks or documentation).</summary>
 	/// <param name="cameraIdx">The index of the camera.</param>
@@ -1741,10 +1386,7 @@ public:
 	void getLightPosition(uint32_t lightIdx, glm::vec4& position) const;
 
 	/// <summary>Free the resources of this model.</summary>
-	void destroy()
-	{
-		_data = InternalData();
-	}
+	void destroy() { _data = InternalData(); }
 
 	/// <summary>Allocate the specified number of mesh nodes.</summary>
 	/// <param name="no">The number of mesh nodes to allocate</param>
@@ -1756,13 +1398,8 @@ public:
 	int32_t addTexture(const Texture& tex)
 	{
 		_data.textures.emplace_back(tex);
-		return static_cast<uint32_t>(_data.textures.size()) - 1;
+		return static_cast<int32_t>(_data.textures.size()) - 1;
 	}
-
-	std::vector<float> cachedFrame; //!< Cache indicating the frames at which the matrix cache was filled
-	std::vector<glm::mat4x4> worldMatrixFrameN; //!< Cache of world matrices for the frame described in fCachedFrame
-	std::vector<glm::mat4x4> worldMatrixFrameZero; //!< Cache of frame 0 matrices
-	InternalData _data; //!< A set of internal data relating to the model
 };
 
 typedef Model::Material Material; ///< Export the Material into the pvr::assets namespace
@@ -1785,10 +1422,7 @@ typedef std::shared_ptr<Material> MaterialHandle;
 /// <param name="meshId">The ID of the meshId inside <paramRef name="model"/></param>
 /// <returns>A MeshHandle to the Mesh. It shares the ref counting of
 /// <paramRef name="model"/></returns
-inline MeshHandle getMeshHandle(ModelHandle model, int meshId)
-{
-	return std::shared_ptr<Mesh>(model, &model->getMesh(meshId));
-}
+inline MeshHandle getMeshHandle(ModelHandle model, uint32_t meshId) { return std::shared_ptr<Mesh>(model, &model->getMesh(meshId)); }
 
 /// <summary>Create a Reference Counted Handle to a Material from a Model. The handle provided
 /// works as any other std::shared_ptr smart pointer, and uses the "shared ref count"
@@ -1799,10 +1433,7 @@ inline MeshHandle getMeshHandle(ModelHandle model, int meshId)
 /// <param name="materialId">The ID of the material inside <paramRef name="model"/></param>
 /// <returns>A MaterialHandle to the Material. It shares the ref counting of
 /// <paramRef name="model"/></returns
-inline MaterialHandle getMaterialHandle(ModelHandle model, int materialId)
-{
-	return std::shared_ptr<Material>(model, &model->getMaterial(materialId));
-}
+inline MaterialHandle getMaterialHandle(ModelHandle model, uint32_t materialId) { return std::shared_ptr<Material>(model, &model->getMaterial(materialId)); }
 
 /// <summary>Create a Reference Counted Handle to a Light from a Model. The handle provided
 /// works as any other std::shared_ptr smart pointer, and uses the "shared ref count"
@@ -1813,10 +1444,7 @@ inline MaterialHandle getMaterialHandle(ModelHandle model, int materialId)
 /// <param name="lightId">The ID of the Light inside <paramRef name="model"/></param>
 /// <returns>A LightHandle to the Light. It shares the ref counting of
 /// <paramRef name="model"/></returns>
-inline LightHandle getLightHandle(ModelHandle model, int lightId)
-{
-	return std::shared_ptr<Light>(model, &model->getLight(lightId));
-}
+inline LightHandle getLightHandle(ModelHandle model, uint32_t lightId) { return std::shared_ptr<Light>(model, &model->getLight(lightId)); }
 
 /// <summary>Create a Reference Counted Handle to a Camera from a Model. The handle provided
 /// works as any other std::shared_ptr smart pointer, and uses the "shared ref count"
@@ -1827,10 +1455,7 @@ inline LightHandle getLightHandle(ModelHandle model, int lightId)
 /// <param name="cameraId">The ID of the Camera inside <paramRef name="model"/></param>
 /// <returns>A CameraHandle to the Camera. It shares the ref counting of
 /// <paramRef name="model"/></returns>
-inline CameraHandle getCameraHandle(ModelHandle model, int cameraId)
-{
-	return std::shared_ptr<Camera>(model, &model->getCamera(cameraId));
-}
+inline CameraHandle getCameraHandle(ModelHandle model, uint32_t cameraId) { return std::shared_ptr<Camera>(model, &model->getCamera(cameraId)); }
 
 /// <summary>Create a Reference Counted Handle to a Node from a Model. The handle provided
 /// works as any other std::shared_ptr smart pointer, and uses the "shared ref count"
@@ -1841,9 +1466,6 @@ inline CameraHandle getCameraHandle(ModelHandle model, int cameraId)
 /// <param name="nodeId">The ID of the Node inside <paramRef name="model"/></param>
 /// <returns>A Node Handle to the Node. It shares the ref counting of
 /// <paramRef name="model"/></returns>
-inline NodeHandle getNodeHandle(ModelHandle model, int nodeId)
-{
-	return std::shared_ptr<Node>(model, &model->getNode(nodeId));
-}
+inline NodeHandle getNodeHandle(ModelHandle model, uint32_t nodeId) { return std::shared_ptr<Node>(model, &model->getNode(nodeId)); }
 } // namespace assets
 } // namespace pvr

@@ -24,6 +24,11 @@ extern VulkanExtensionList filterExtensions(const std::vector<pvrvk::ExtensionPr
 /// <param name="outExtensions">Returned extensions</param>
 void enumerateInstanceExtensions(std::vector<ExtensionProperties>& outExtensions);
 
+/// <summary>Get list of all supported instance extension properties for a given layer</summary>
+/// <param name="outExtensions">Returned extensions</param>
+/// <param name="layerName">Layer from which to retrieve supported extensions</param>
+void enumerateInstanceExtensions(std::vector<ExtensionProperties>& outExtensions, const std::string& layerName);
+
 /// <summary>Query if an Instance Extension is supported</summary>
 /// <param name="extension">The extension string</param>
 /// <returns>True if the instance supports the extension, otherwise false</param>

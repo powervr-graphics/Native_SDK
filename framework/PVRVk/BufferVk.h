@@ -35,70 +35,37 @@ public:
 
 	/// <summary>Get the buffer creation flags</summary>
 	/// <returns>The set of buffer creation flags</returns>
-	inline BufferCreateFlags getFlags() const
-	{
-		return _flags;
-	}
+	inline BufferCreateFlags getFlags() const { return _flags; }
 	/// <summary>Set the buffer creation flags</summary>
 	/// <param name="flags">The buffer creation flags</param>
-	inline void setFlags(BufferCreateFlags flags)
-	{
-		this->_flags = flags;
-	}
+	inline void setFlags(BufferCreateFlags flags) { this->_flags = flags; }
 	/// <summary>Get the buffer creation size</summary>
 	/// <returns>The set of buffer creation size</returns>
-	inline DeviceSize getSize() const
-	{
-		return _size;
-	}
+	inline DeviceSize getSize() const { return _size; }
 	/// <summary>Set the buffer creation size</summary>
 	/// <param name="size">The buffer creation size</param>
-	inline void setSize(DeviceSize size)
-	{
-		this->_size = size;
-	}
+	inline void setSize(DeviceSize size) { this->_size = size; }
 	/// <summary>Get the buffer creation sharing mode</summary>
 	/// <returns>The set of buffer creation sharing mode</returns>
-	inline SharingMode getSharingMode() const
-	{
-		return _sharingMode;
-	}
+	inline SharingMode getSharingMode() const { return _sharingMode; }
 	/// <summary>Set the buffer creation sharing mode</summary>
 	/// <param name="sharingMode">The buffer creation sharing mode</param>
-	inline void setSharingMode(SharingMode sharingMode)
-	{
-		this->_sharingMode = sharingMode;
-	}
+	inline void setSharingMode(SharingMode sharingMode) { this->_sharingMode = sharingMode; }
 	/// <summary>Get the buffer creation usage flags</summary>
 	/// <returns>The set of buffer creation usage flags</returns>
-	inline BufferUsageFlags getUsageFlags() const
-	{
-		return _usageFlags;
-	}
+	inline BufferUsageFlags getUsageFlags() const { return _usageFlags; }
 	/// <summary>Set the buffer creation usage flags</summary>
 	/// <param name="usageFlags">The buffer creation usage flags</param>
-	inline void setUsageFlags(BufferUsageFlags usageFlags)
-	{
-		this->_usageFlags = usageFlags;
-	}
+	inline void setUsageFlags(BufferUsageFlags usageFlags) { this->_usageFlags = usageFlags; }
 	/// <summary>Get the number of queue family indices pointed to</summary>
 	/// <returns>The number of queue family indices pointed to</returns>
-	inline uint32_t getNumQueueFamilyIndices() const
-	{
-		return _numQueueFamilyIndices;
-	}
+	inline uint32_t getNumQueueFamilyIndices() const { return _numQueueFamilyIndices; }
 	/// <summary>Set the number of queue family indices pointed to</summary>
 	/// <param name="numQueueFamilyIndices">The number of queue family indices pointed to</param>
-	inline void setNumQueueFamilyIndices(uint32_t numQueueFamilyIndices)
-	{
-		this->_numQueueFamilyIndices = numQueueFamilyIndices;
-	}
+	inline void setNumQueueFamilyIndices(uint32_t numQueueFamilyIndices) { this->_numQueueFamilyIndices = numQueueFamilyIndices; }
 	/// <summary>Get this buffer creation infos pointer to a list of supported queue family indices</summary>
 	/// <returns>A pointer to a list of supported queue family indices</returns>
-	inline const uint32_t* getQueueFamilyIndices() const
-	{
-		return _queueFamilyIndices;
-	}
+	inline const uint32_t* getQueueFamilyIndices() const { return _queueFamilyIndices; }
 
 private:
 	/// <summary>Flags to use for creating the buffer</summary>
@@ -130,10 +97,7 @@ private:
 		friend class Buffer_;
 	};
 
-	static Buffer constructShared(const DeviceWeakPtr& device, const BufferCreateInfo& createInfo)
-	{
-		return std::make_shared<Buffer_>(make_shared_enabler{}, device, createInfo);
-	}
+	static Buffer constructShared(const DeviceWeakPtr& device, const BufferCreateInfo& createInfo) { return std::make_shared<Buffer_>(make_shared_enabler{}, device, createInfo); }
 
 	BufferCreateInfo _createInfo;
 	MemoryRequirements _memRequirements;
@@ -151,68 +115,41 @@ public:
 
 	/// <summary>Return the DeviceMemory bound to this buffer. Note</summary>: only nonsparse buffer can have a bound memory block
 	/// <returns>MemoryBlock</returns>
-	DeviceMemory& getDeviceMemory()
-	{
-		return _deviceMemory;
-	}
+	DeviceMemory& getDeviceMemory() { return _deviceMemory; }
 
 	/// <summary>Get this buffer's creation flags</summary>
 	/// <returns>The set of buffer creation flags</returns>
-	inline BufferCreateFlags getFlags() const
-	{
-		return _createInfo.getFlags();
-	}
+	inline BufferCreateFlags getFlags() const { return _createInfo.getFlags(); }
 
 	/// <summary>Indicates whether the buffers creation flags includes the given flag</summary>
 	/// <param name="flags">A buffer creation flag</param>
 	/// <returns>True if the buffers creation flags includes the given flag</returns>
-	inline bool hasCreateFlag(pvrvk::BufferCreateFlags flags) const
-	{
-		return (_createInfo.getFlags() & flags) == flags;
-	}
+	inline bool hasCreateFlag(pvrvk::BufferCreateFlags flags) const { return (_createInfo.getFlags() & flags) == flags; }
 
 	/// <summary>Indicates whether the buffers usage flags includes the given flag</summary>
 	/// <param name="flags">A buffer usage flag</param>
 	/// <returns>True if the buffers usage flags includes the given flag</returns>
-	inline bool hasUsageFlag(pvrvk::BufferUsageFlags flags) const
-	{
-		return (_createInfo.getUsageFlags() & flags) == flags;
-	}
+	inline bool hasUsageFlag(pvrvk::BufferUsageFlags flags) const { return (_createInfo.getUsageFlags() & flags) == flags; }
 
 	/// <summary>Get this buffer's size</summary>
 	/// <returns>The size of this buffer</returns>
-	inline DeviceSize getSize() const
-	{
-		return _createInfo.getSize();
-	}
+	inline DeviceSize getSize() const { return _createInfo.getSize(); }
 
 	/// <summary>Get this buffer's supported sharing mode</summary>
 	/// <returns>A SharingMode structure specifying this buffer's supported sharing mode</returns>
-	inline SharingMode getSharingMode() const
-	{
-		return _createInfo.getSharingMode();
-	}
+	inline SharingMode getSharingMode() const { return _createInfo.getSharingMode(); }
 
 	/// <summary>Get this buffer's supported usage flags</summary>
 	/// <returns>A BufferUsageFlags structure specifying this buffer's supported usage flags</returns>
-	inline BufferUsageFlags getUsageFlags() const
-	{
-		return _createInfo.getUsageFlags();
-	}
+	inline BufferUsageFlags getUsageFlags() const { return _createInfo.getUsageFlags(); }
 
 	/// <summary>Get the number of queue families supported by this buffer</summary>
 	/// <returns>The size of the list of supported queue family indices</returns>
-	inline uint32_t getNumQueueFamilyIndices() const
-	{
-		return _createInfo.getNumQueueFamilyIndices();
-	}
+	inline uint32_t getNumQueueFamilyIndices() const { return _createInfo.getNumQueueFamilyIndices(); }
 
 	/// <summary>Get this buffer's pointer to supported queue families</summary>
 	/// <returns>A pointer to a list of supported queue family indices</returns>
-	inline const uint32_t* getQueueFamilyIndices() const
-	{
-		return _createInfo.getQueueFamilyIndices();
-	}
+	inline const uint32_t* getQueueFamilyIndices() const { return _createInfo.getQueueFamilyIndices(); }
 
 	/// <summary>Call only on Non-sparse buffer.
 	/// Binds a non-sparse memory block. This function must be called once
@@ -221,15 +158,9 @@ public:
 	/// <param name="offset"> begin offset in the memory block</param>
 	void bindMemory(DeviceMemory deviceMemory, VkDeviceSize offset)
 	{
-		if (isSparseBuffer())
-		{
-			throw ErrorValidationFailedEXT("Cannot call bindMemory on a sparse buffer");
-		}
+		if (isSparseBuffer()) { throw ErrorValidationFailedEXT("Cannot call bindMemory on a sparse buffer"); }
 
-		if (_deviceMemory)
-		{
-			throw ErrorValidationFailedEXT("Cannot bind a memory block as Buffer already has a memory block bound");
-		}
+		if (_deviceMemory) { throw ErrorValidationFailedEXT("Cannot bind a memory block as Buffer already has a memory block bound"); }
 		_memoryOffset = offset;
 		_deviceMemory = deviceMemory;
 
@@ -239,10 +170,7 @@ public:
 
 	/// <summary>Get this buffer's create flags</summary>
 	/// <returns>BufferCreateInfo</returns>
-	BufferCreateInfo getCreateInfo() const
-	{
-		return _createInfo;
-	}
+	BufferCreateInfo getCreateInfo() const { return _createInfo; }
 
 	/// <summary>Return true if this is a sparse buffer</summary>
 	/// <returns>bool</returns>
@@ -253,10 +181,7 @@ public:
 
 	/// <summary>Get thus buffer memory requirements</summary>
 	/// <returns>VkMemoryRequirements</returns>
-	const MemoryRequirements& getMemoryRequirement() const
-	{
-		return _memRequirements;
-	}
+	const MemoryRequirements& getMemoryRequirement() const { return _memRequirements; }
 };
 } // namespace impl
 
@@ -281,64 +206,34 @@ public:
 
 	/// <summary>Get the buffer view creation flags</summary>
 	/// <returns>The set of buffer view creation flags</returns>
-	inline BufferViewCreateFlags getFlags() const
-	{
-		return _flags;
-	}
+	inline BufferViewCreateFlags getFlags() const { return _flags; }
 	/// <summary>Set the buffer view creation flags</summary>
 	/// <param name="flags">The buffer view creation flags</param>
-	inline void setFlags(BufferViewCreateFlags flags)
-	{
-		this->_flags = flags;
-	}
+	inline void setFlags(BufferViewCreateFlags flags) { this->_flags = flags; }
 	/// <summary>Get Buffer</summary>
 	/// <returns>The Buffer used in the buffer view</returns>
-	inline const Buffer& getBuffer() const
-	{
-		return _buffer;
-	}
+	inline const Buffer& getBuffer() const { return _buffer; }
 	/// <summary>Set PVRVk Buffer view creation image</summary>
 	/// <param name="buffer">Buffer to use for creating a PVRVk buffer view</param>
-	inline void setBuffer(const Buffer& buffer)
-	{
-		this->_buffer = buffer;
-	}
+	inline void setBuffer(const Buffer& buffer) { this->_buffer = buffer; }
 	/// <summary>Get Buffer view format</summary>
 	/// <returns>Buffer view format (Format)</returns>
-	inline Format getFormat() const
-	{
-		return _format;
-	}
+	inline Format getFormat() const { return _format; }
 	/// <summary>Set the Buffer view format for PVRVk Buffer creation</summary>
 	/// <param name="format">The buffer view format to use for creating a PVRVk buffer</param>
-	inline void setFormat(Format format)
-	{
-		this->_format = format;
-	}
+	inline void setFormat(Format format) { this->_format = format; }
 	/// <summary>Get the buffer view creation offset</summary>
 	/// <returns>The set of buffer view creation offset</returns>
-	inline DeviceSize getOffset() const
-	{
-		return _offset;
-	}
+	inline DeviceSize getOffset() const { return _offset; }
 	/// <summary>Set the buffer view creation offset</summary>
 	/// <param name="offset">The buffer view creation offset</param>
-	inline void setOffset(DeviceSize offset)
-	{
-		this->_offset = offset;
-	}
+	inline void setOffset(DeviceSize offset) { this->_offset = offset; }
 	/// <summary>Get the buffer view creation range</summary>
 	/// <returns>The set of buffer view creation range</returns>
-	inline DeviceSize getRange() const
-	{
-		return _range;
-	}
+	inline DeviceSize getRange() const { return _range; }
 	/// <summary>Set the buffer view creation range</summary>
 	/// <param name="range">The buffer view creation range</param>
-	inline void setRange(DeviceSize range)
-	{
-		this->_range = range;
-	}
+	inline void setRange(DeviceSize range) { this->_range = range; }
 
 private:
 	/// <summary>The buffer on which the view will be created</summary>
@@ -387,40 +282,22 @@ public:
 
 	/// <summary>Get the buffer view creation flags</summary>
 	/// <returns>The set of buffer view creation flags</returns>
-	inline BufferViewCreateFlags getFlags() const
-	{
-		return _createInfo.getFlags();
-	}
+	inline BufferViewCreateFlags getFlags() const { return _createInfo.getFlags(); }
 	/// <summary>Get Buffer</summary>
 	/// <returns>The Buffer used in the buffer view</returns>
-	inline const Buffer& getBuffer() const
-	{
-		return _createInfo.getBuffer();
-	}
+	inline const Buffer& getBuffer() const { return _createInfo.getBuffer(); }
 	/// <summary>Get Buffer view format</summary>
 	/// <returns>Buffer view format (Format)</returns>
-	inline Format getFormat() const
-	{
-		return _createInfo.getFormat();
-	}
+	inline Format getFormat() const { return _createInfo.getFormat(); }
 	/// <summary>Get the buffer view creation offset</summary>
 	/// <returns>The set of buffer view creation offset</returns>
-	inline DeviceSize getOffset() const
-	{
-		return _createInfo.getOffset();
-	}
+	inline DeviceSize getOffset() const { return _createInfo.getOffset(); }
 	/// <summary>Get the buffer view creation range</summary>
 	/// <returns>The set of buffer view creation range</returns>
-	inline DeviceSize getRange() const
-	{
-		return _createInfo.getRange();
-	}
+	inline DeviceSize getRange() const { return _createInfo.getRange(); }
 	/// <summary>Get this buffer view's create flags</summary>
 	/// <returns>BufferViewCreateInfo</returns>
-	const BufferViewCreateInfo& getCreateInfo() const
-	{
-		return _createInfo;
-	}
+	const BufferViewCreateInfo& getCreateInfo() const { return _createInfo; }
 };
 } // namespace impl
 } // namespace pvrvk

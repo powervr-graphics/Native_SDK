@@ -19,11 +19,11 @@ typedef std::shared_ptr<Texture> TexturePtr;
 
 /// <summary>Provides a reference counted pointer to a IFrameworkAsyncResult specialised by a TexturePtr which will be used
 /// as the main interface for using API agnostic asynchronous textures.</summary>
-typedef std::shared_ptr<async::IFrameworkAsyncResult<TexturePtr> > AsyncTexture;
+typedef std::shared_ptr<async::IFrameworkAsyncResult<TexturePtr>> AsyncTexture;
 
 /// <summary>Provides a reference counted pointer to a IFrameworkAsyncResult specialised by an ImageView which will be used
 /// as the main interface for using API specific asynchronous textures.</summary>
-typedef std::shared_ptr<async::IFrameworkAsyncResult<pvrvk::ImageView> > AsyncApiTexture;
+typedef std::shared_ptr<async::IFrameworkAsyncResult<pvrvk::ImageView>> AsyncApiTexture;
 
 /// <summary>This class provides a wrapper for a Image upload future</summary>
 struct ImageUploadFuture_ : public async::IFrameworkAsyncResult<pvrvk::ImageView>, public std::enable_shared_from_this<ImageUploadFuture_>
@@ -61,10 +61,7 @@ public:
 
 	/// <summary>Sets a callback which will be called after the image upload has completed.</summary>
 	/// <param name="callback">Specifies a callback to call when the image upload has completed.</param>
-	void setCallBack(CallbackType callback)
-	{
-		setTheCallback(callback);
-	}
+	void setCallBack(CallbackType callback) { setTheCallback(callback); }
 
 	/// <summary>Initiates the asynchronous image upload.</summary>
 	void loadNow()
@@ -86,10 +83,7 @@ public:
 
 	/// <summary>Returns the result of the asynchronous image upload.</summary>
 	/// <returns>The result of the asynchronous image upload which is an ImageView.</returns>
-	const pvrvk::ImageView& getResult()
-	{
-		return _result;
-	}
+	const pvrvk::ImageView& getResult() { return _result; }
 
 private:
 	pvrvk::ImageView customUploadImage()
@@ -118,10 +112,7 @@ private:
 		return results;
 	}
 
-	void callBack()
-	{
-		executeCallBack(shared_from_this());
-	}
+	void callBack() { executeCallBack(shared_from_this()); }
 	pvrvk::ImageView _result;
 	pvrvk::ImageView get_() const
 	{
@@ -133,10 +124,7 @@ private:
 		return _result;
 	}
 
-	pvrvk::ImageView getNoWait() const
-	{
-		return _result;
-	}
+	pvrvk::ImageView getNoWait() const { return _result; }
 
 	bool isComplete_() const
 	{
@@ -158,10 +146,7 @@ typedef std::shared_ptr<ImageUploadFuture_> ImageUploadFuture;
 
 /// <summary>Provides a mechanism for kicking an asynchronous image upload worker</summary>
 /// <param name="uploadFuture">An image upload future to be uploaded on a separate thread.</param>
-inline void imageUploadAsyncWorker(ImageUploadFuture uploadFuture)
-{
-	uploadFuture->loadNow();
-}
+inline void imageUploadAsyncWorker(ImageUploadFuture uploadFuture) { uploadFuture->loadNow(); }
 
 /// <summary>This class wraps a worker thread that uploads texture to the GPU asynchronously and returns
 /// futures to them. This class would normally be used with Texture Futures as well, in order to do both
@@ -175,10 +160,7 @@ private:
 	async::Mutex* _cmdQueueMutex;
 
 public:
-	ImageApiAsyncUploader() : _cmdQueueMutex(nullptr)
-	{
-		_myInfo = "ImageApiAsyncUploader";
-	}
+	ImageApiAsyncUploader() : _cmdQueueMutex(nullptr) { _myInfo = "ImageApiAsyncUploader"; }
 	/// <summary>The type of the optional callback that is called at the end of the operation</summary>
 	typedef async::IFrameworkAsyncResult<pvrvk::ImageView>::Callback CallbackType;
 

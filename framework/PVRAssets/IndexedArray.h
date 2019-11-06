@@ -70,32 +70,21 @@ public:
 
 		/// <summary>operator *</summary>
 		/// <returns>Return this</returns>
-		DictionaryEntry& operator*()
-		{
-			return *(start + current);
-		}
+		DictionaryEntry& operator*() { return *(start + current); }
 
 		/// <summary>operator -></summary>
 		/// <returns>Return this</returns>
-		DictionaryEntry* operator->()
-		{
-			return (start + current);
-		}
+		DictionaryEntry* operator->() { return (start + current); }
 
 		/// <summary>Get the current index of the pointed-to item</summary>
 		/// <returns>Current index</returns>
-		size_t getItemIndex()
-		{
-			return current;
-		}
+		size_t getItemIndex() { return current; }
 
 		/// <summary>prefix operator ++</summary>
 		/// <returns>This</returns>
 		iterator& operator++()
 		{
-			while ((start + (++current))->isUnused && current != size)
-			{
-			} // skip empty values
+			while ((start + (++current))->isUnused && current != size) {} // skip empty values
 			return *this;
 		}
 
@@ -104,9 +93,7 @@ public:
 		iterator operator++(int)
 		{
 			iterator ret = *this;
-			while ((start + (++current))->isUnused && current != size)
-			{
-			} // skip empty values
+			while ((start + (++current))->isUnused && current != size) {} // skip empty values
 			++(*this);
 			return ret;
 		}
@@ -115,9 +102,7 @@ public:
 		/// <returns>This</returns>
 		iterator& operator--()
 		{
-			while ((start + (--current))->isUnused && current != static_cast<size_t>(-1))
-			{
-			} // CAREFUL! this is a size_t, which means it WILL eventually overflow.
+			while ((start + (--current))->isUnused && current != static_cast<size_t>(-1)) {} // CAREFUL! this is a size_t, which means it WILL eventually overflow.
 			return *this;
 		}
 
@@ -133,18 +118,12 @@ public:
 		/// <summary>operator !=</summary>
 		/// <param name="rhs">Right hand side</param>
 		/// <returns>True if this is not equal to rhs</returns>
-		bool operator!=(const iterator& rhs)
-		{
-			return this->current != rhs.current;
-		}
+		bool operator!=(const iterator& rhs) { return this->current != rhs.current; }
 
 		/// <summary>operator ==</summary>
 		/// <param name="rhs">Right hand side</param>
 		/// <returns>True if this is equal to rhs</returns>
-		bool operator==(const iterator& rhs)
-		{
-			return !((*this) != rhs);
-		}
+		bool operator==(const iterator& rhs) { return !((*this) != rhs); }
 	};
 	/// <summary>An (constant) Linear iterator of the IndexedArray class. Will linearly iterate the backing store
 	/// skipping empy spots. Unordered.</summary>
@@ -159,29 +138,18 @@ public:
 	public:
 		/// <summary>Dereferencing operator: Return the object this iterator currently points to</summary>
 		/// <returns>The object this iterator currently points to</returns>
-		const DictionaryEntry& operator*()
-		{
-			return *(start + current);
-		}
+		const DictionaryEntry& operator*() { return *(start + current); }
 		/// <summary>Dereferencing operator: Access the members of the object this iterator currently points to</summary>
 		/// <returns>A pointer to the object this iterator currently points to</returns>
-		const DictionaryEntry* operator->()
-		{
-			return (start + current);
-		}
+		const DictionaryEntry* operator->() { return (start + current); }
 		/// <summary>The index of the item where this iterator points</summary>
 		/// <returns>The index of the item where this iterator points</returns>
-		size_t getItemIndex()
-		{
-			return current;
-		}
+		size_t getItemIndex() { return current; }
 		/// <summary>prefix operator ++</summary>
 		/// <returns>This</returns>
 		const_iterator& operator++()
 		{
-			while (++current < size && (start + current)->isUnused)
-			{
-			} // skip empty values
+			while (++current < size && (start + current)->isUnused) {} // skip empty values
 			return *this;
 		}
 
@@ -197,9 +165,7 @@ public:
 		/// <returns>This</returns>
 		const_iterator& operator--()
 		{
-			while (--current != static_cast<size_t>(-1) && (start + current)->isUnused)
-			{
-			} // CAREFUL! this is a size_t, which means it WILL eventually overflow.
+			while (--current != static_cast<size_t>(-1) && (start + current)->isUnused) {} // CAREFUL! this is a size_t, which means it WILL eventually overflow.
 			return *this;
 		}
 
@@ -215,18 +181,12 @@ public:
 		/// <summary>Inequality.</summary>
 		/// <param name="rhs">Right hand side of the operation</param>
 		/// <returns>True if the items are not equal, otherwise false</returns>
-		bool operator!=(const const_iterator& rhs)
-		{
-			return this->current != rhs.current;
-		}
+		bool operator!=(const const_iterator& rhs) { return this->current != rhs.current; }
 
 		/// <summary>Equality.</summary>
 		/// <param name="rhs">Right hand side of the operation</param>
 		/// <returns>True if the items are not equal, otherwise false</returns>
-		bool operator==(const const_iterator& rhs)
-		{
-			return !((*this) != rhs);
-		}
+		bool operator==(const const_iterator& rhs) { return !((*this) != rhs); }
 	};
 	/// <summary>An Indexed iterator of the IndexedArray class. Will follow the indexing map of the IndexedArray
 	/// iterating items in their Indexing order.</summary>
@@ -243,10 +203,7 @@ public:
 		if (!mystorage.empty())
 		{
 			iterator ret(&mystorage.front(), mystorage.size());
-			while ((ret.start + ret.current)->isUnused && (ret.current != ret.size))
-			{
-				++ret.current;
-			} // skip empty values
+			while ((ret.start + ret.current)->isUnused && (ret.current != ret.size)) { ++ret.current; } // skip empty values
 			return ret;
 		}
 		else
@@ -262,10 +219,7 @@ public:
 		if (!mystorage.empty())
 		{
 			const_iterator ret(&mystorage.front(), mystorage.size());
-			while ((ret.start + ret.current)->isUnused && ret.current != ret.size)
-			{
-				++ret.current;
-			} // skip empty values
+			while ((ret.start + ret.current)->isUnused && ret.current != ret.size) { ++ret.current; } // skip empty values
 			return ret;
 		}
 		else
@@ -277,59 +231,35 @@ public:
 	/// <summary>Return an indexed iterator by finding the provided key Indexing map.</summary>
 	/// <param name="key">The key with which to lookup.</param>
 	/// <returns>An indexed_iterator</returns>
-	typename maptype_::iterator indexed_find(const IndexType_& key)
-	{
-		return myindex.find(key);
-	}
+	typename maptype_::iterator indexed_find(const IndexType_& key) { return myindex.find(key); }
 
 	/// <summary>Return a const indexed iterator by finding the provided key Indexing map.</summary>
 	/// <param name="key">The key with which to lookup.</param>
 	/// <returns>A const indexed iterator</returns>
-	typename maptype_::const_iterator indexed_find(const IndexType_& key) const
-	{
-		return myindex.find(key);
-	}
+	typename maptype_::const_iterator indexed_find(const IndexType_& key) const { return myindex.find(key); }
 
 	/// <summary>Return an indexed_const_iterator to the first item in the map.</summary>
 	/// <returns>An indexed iterator to the beginning</returns>
-	typename maptype_::iterator indexed_begin()
-	{
-		return myindex.begin();
-	}
+	typename maptype_::iterator indexed_begin() { return myindex.begin(); }
 	/// <summary>Return a indexed_const_iterator to the first item in the map.</summary>
 	/// <returns>A constant indexed iterator to the beginning</returns>
-	typename maptype_::const_iterator indexed_begin() const
-	{
-		return myindex.begin();
-	}
+	typename maptype_::const_iterator indexed_begin() const { return myindex.begin(); }
 
 	/// <summary>Return an indexed_iterator pointing one item past the last item in the map.</summary>
 	/// <returns>An indexed iterator to the end</returns>
-	typename maptype_::iterator indexed_end()
-	{
-		return myindex.end();
-	}
+	typename maptype_::iterator indexed_end() { return myindex.end(); }
 
 	/// <summary>Return an indexed_const_iterator pointing one item past the last item in the map.</summary>
 	/// <returns>A const indexed iterator to the end</returns>
-	typename maptype_::const_iterator indexed_end() const
-	{
-		return myindex.end();
-	}
+	typename maptype_::const_iterator indexed_end() const { return myindex.end(); }
 
 	/// <summary>Return an iterator pointing one item past the last item in the backing array.</summary>
 	/// <returns>An iterator to the end of the backing array</returns>
-	iterator end()
-	{
-		return mystorage.empty() ? iterator(NULL, 0) : iterator(&mystorage.front(), mystorage.size(), mystorage.size());
-	}
+	iterator end() { return mystorage.empty() ? iterator(NULL, 0) : iterator(&mystorage.front(), mystorage.size(), mystorage.size()); }
 
 	/// <summary>Return a const_iterator pointing one item past the last item in the backing array.</summary>
 	/// <returns>An iterator to the end of the backing array</returns>
-	const_iterator end() const
-	{
-		return mystorage.empty() ? const_iterator(NULL, 0) : const_iterator(&mystorage.front(), mystorage.size(), mystorage.size());
-	}
+	const_iterator end() const { return mystorage.empty() ? const_iterator(NULL, 0) : const_iterator(&mystorage.front(), mystorage.size(), mystorage.size()); }
 
 	/// <summary>Insert an item at a specific point in the backing array.</summary>
 	/// <param name="where">The index where to insert the new item</param>
@@ -337,10 +267,7 @@ public:
 	/// <param name="val">The Value of the new item</param>
 	void insertAt(size_t where, const IndexType_& key, const ValueType_& val)
 	{
-		if (insert(key, val) != where)
-		{
-			relocate(key, where);
-		}
+		if (insert(key, val) != where) { relocate(key, where); }
 	}
 
 	/// <summary>Insert an item at the first possible spot in the backing array. If key exists, will update the value.</summary>
@@ -351,10 +278,7 @@ public:
 	{
 		std::pair<typename maptype_::iterator, bool> found = myindex.insert(std::make_pair(key, 0));
 		if (!found.second) // Element already existed!
-		{
-			mystorage[found.first->second].value = val;
-		}
-		else
+		{ mystorage[found.first->second].value = val; } else
 		{
 			found.first->second = insertinvector(key, val);
 		}
@@ -369,10 +293,7 @@ public:
 	{
 		typename maptype_::const_iterator found = myindex.find(key);
 		if (found != myindex.end()) // Element already existed!
-		{
-			return found->second;
-		}
-		return static_cast<size_t>(-1);
+		{ return found->second; } return static_cast<size_t>(-1);
 	}
 
 	/// <summary>Removes the item with the specified key from the IndexedArray.</summary>
@@ -402,36 +323,24 @@ public:
 	/// If idx points to a deleted item or past the last item, the behaviour is undefined.</summary>
 	/// <param name="idx">The backing index to retrieve.</param>
 	/// <returns>Reference to the item at specified index</returns>
-	ValueType_& operator[](size_t idx)
-	{
-		return mystorage[idx].value;
-	}
+	ValueType_& operator[](size_t idx) { return mystorage[idx].value; }
 	/// <summary>Const array indexing operator. Use getIndex to get the indices of specific items. If idx points to a
 	/// deleted item or past the last item, the behaviour is undefined.</summary>
 	/// <param name="idx">The backing index to retrieve.</param>
 	/// <returns>Const Reference to the item at specified index</returns>
-	const ValueType_& operator[](size_t idx) const
-	{
-		return mystorage[idx].value;
-	}
+	const ValueType_& operator[](size_t idx) const { return mystorage[idx].value; }
 
 	/// <summary>Indexed indexing operator. Uses std::map find to retrieve the specified value. If the
 	/// key does not exist, it will be inserted.</summary>
 	/// <param name="key">The key to find.</param>
 	/// <returns> Reference to the item at specified index</returns>
-	ValueType_& operator[](const IndexType_& key)
-	{
-		return mystorage[myindex.find(key)->second].value;
-	}
+	ValueType_& operator[](const IndexType_& key) { return mystorage[myindex.find(key)->second].value; }
 
 	/// <summary>Indexed indexing operator. Uses std::map find to retrieve the specified value. If the
 	/// key does not exist, it will be inserted.</summary>
 	/// <param name="key">The key to find.</param>
 	/// <returns> Reference to the item at specified index</returns>
-	const ValueType_& operator[](const IndexType_& key) const
-	{
-		return mystorage[myindex.find(key)->second].value;
-	}
+	const ValueType_& operator[](const IndexType_& key) const { return mystorage[myindex.find(key)->second].value; }
 
 	/// <summary>Compacts the backing array by removing existing items from the end of the vector and putting them in the
 	/// place of deleted items, and then updating their index, until no more positions marked as deleted are left.
@@ -439,10 +348,7 @@ public:
 	void compact()
 	{
 		// We can do that because the last remove() tears down all datastructures used.
-		if (!myindex.size())
-		{
-			return;
-		}
+		if (!myindex.size()) { return; }
 		// First, make sure there is something to compact...
 		deleteditemlisttype_::iterator unused_spot = myDeletedItems.begin();
 		while (myDeletedItems.size() && unused_spot != myDeletedItems.end())
@@ -467,10 +373,7 @@ public:
 			else // Or we can have find its last item!
 			{
 				// 2)Trim any items from the end of the unused spots list that may have been trimmed off by the vector...
-				while (unused_spot != myDeletedItems.end() && *unused_spot >= last)
-				{
-					myDeletedItems.erase(unused_spot++);
-				}
+				while (unused_spot != myDeletedItems.end() && *unused_spot >= last) { myDeletedItems.erase(unused_spot++); }
 				// Any spots left?
 				if (unused_spot != myDeletedItems.end())
 				{
@@ -503,31 +406,19 @@ public:
 
 	/// <summary>Gets the number of items in the IndexedArray.</summary>
 	/// <returns>The number of items in the IndexedArray.</returns>
-	size_t size() const
-	{
-		return myindex.size();
-	}
+	size_t size() const { return myindex.size(); }
 
 	/// <summary>Gets the number of items in the IndexedArray, including items that have been deleted.</summary>
 	/// <returns>The number of items in the IndexedArray, including items that have been deleted.</returns>
-	size_t sizeWithDeleted() const
-	{
-		return mystorage.size();
-	}
+	size_t sizeWithDeleted() const { return mystorage.size(); }
 
 	/// <summary>Gets the current capacity of the backing array of the IndexedArray.</summary>
 	/// <returns>The current capacity of the backing array of the IndexedArray.</returns>
-	size_t capacity() const
-	{
-		return mystorage.size();
-	}
+	size_t capacity() const { return mystorage.size(); }
 
 	/// <summary>Gets the number of deleted items.</summary>
 	/// <returns>The number of deleted items.</returns>
-	size_t deletedItemsCount() const
-	{
-		return myDeletedItems.size();
-	}
+	size_t deletedItemsCount() const { return myDeletedItems.size(); }
 
 	/// <summary>Move a specific item (identified by a key) to a specific index in the list. If an item is already in
 	/// this spot in the list, their positions are swapped.</summary>
@@ -537,15 +428,9 @@ public:
 	bool relocate(const IndexType_& key, size_t index)
 	{
 		typename maptype_::iterator found = myindex.find(key);
-		if (found == myindex.end())
-		{
-			return false;
-		}
+		if (found == myindex.end()) { return false; }
 		size_t old_index = myindex[key];
-		if (index == old_index)
-		{
-			return true;
-		} // No-op
+		if (index == old_index) { return true; } // No-op
 		if (index + 1 > mystorage.size()) // Storage not big enough.
 		{
 			// Grow, and mark unused all required items. Need to add all spots (But the last) to unusedspots.

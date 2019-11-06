@@ -1,10 +1,16 @@
 cmake_minimum_required(VERSION 3.3)
 project(VulkanPostProcessing)
-if(APPLE)
-	message ("Vulkan is not supported on Apple platforms.")
+if(IOS)
+	message ("Skipping VulkanPostProcessing : Vulkan is not supported on iOS.")
 	return()
 endif()
+
 add_subdirectory(../../.. ${CMAKE_CURRENT_BINARY_DIR}/sdk)
+
+if(PVR_PREBUILT_DEPENDENCIES)
+	find_package(PVRShell REQUIRED MODULE)
+	find_package(PVRUtilsVk REQUIRED MODULE)
+endif()
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
@@ -14,72 +20,81 @@ set(SRC_FILES VulkanPostProcessing.cpp)
 
 set(ASSET_FOLDER ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Assets_VulkanPostProcessing)
 
-# ASSET FILES (textures, scene files, textures etc) - Packaged with the executable for runtime use
-set(ASSET_FILES
-	${CMAKE_CURRENT_SOURCE_DIR}/../../assets/Satyr/MarbleNormalMap.pvr
-	${CMAKE_CURRENT_SOURCE_DIR}/../../assets/Satyr/Marble.pvr
-	${CMAKE_CURRENT_SOURCE_DIR}/../../assets/HdrScenes/satara_night_scale_0.305_rgb9e5.pvr
-	${CMAKE_CURRENT_SOURCE_DIR}/../../assets/HdrScenes/satara_night_scale_0.305_rgb9e5_Irradiance.pvr
-	${CMAKE_CURRENT_SOURCE_DIR}/../../assets/HdrScenes/pink_sunrise_rgb9e5.pvr
-	${CMAKE_CURRENT_SOURCE_DIR}/../../assets/HdrScenes/pink_sunrise_rgb9e5_Irradiance.pvr
-	${CMAKE_CURRENT_SOURCE_DIR}/../../assets/HdrScenes/signal_hill_sunrise_scale_0.312_rgb9e5.pvr
-	${CMAKE_CURRENT_SOURCE_DIR}/../../assets/HdrScenes/signal_hill_sunrise_scale_0.312_rgb9e5_Irradiance.pvr
-	${CMAKE_CURRENT_SOURCE_DIR}/GaussianBlurFragmentShader.fsh.in
-	${CMAKE_CURRENT_SOURCE_DIR}/LinearGaussianBlurVertexShader.vsh.in
-	${CMAKE_CURRENT_SOURCE_DIR}/LinearGaussianBlurFragmentShader.fsh.in
-	${CMAKE_CURRENT_SOURCE_DIR}/ComputeGaussianBlurHorizontalShader.csh.in
-	${CMAKE_CURRENT_SOURCE_DIR}/ComputeGaussianBlurVerticalShader.csh.in
-	${CMAKE_CURRENT_SOURCE_DIR}/../../assets/Satyr/Satyr.pod
-	)
-list(APPEND SRC_FILES ${ASSET_FILES})
-source_group("assets" FILES ${ASSET_FILES})
+# Adds an executable (or ndk library for Android) and necessary files like plists for Mac/iOS etc.
+add_platform_specific_executable(VulkanPostProcessing ${SRC_FILES})
 
-# SHADER SOURCE FILES (Vulkan) - Compiled to spir-v at build-time
-set(SHADER_NAMES
-Downsample4x4FragShader.fsh
-Downsample4x4VertShader.vsh
-DualFilterDownSampleFragShader.fsh
-DualFilterDownVertShader.vsh
-DualFilterUpSampleFragShader.fsh
-DualFilterUpSampleMergedFinalPassFragShader.fsh
-DualFilterUpVertShader.vsh
-TentFilterFirstUpSampleFragShader.fsh
-TentFilterUpSampleFragShader.fsh
-TentFilterUpSampleMergedFinalPassFragShader.fsh
-TentFilterUpSampleVertShader.vsh
-FragShader.fsh
-KawaseFragShader.fsh
-KawaseVertShader.vsh
-PostBloomFragShader.fsh
-PostBloomVertShader.vsh
-VertShader.vsh
-SkyboxFragShader.fsh
-SkyboxVertShader.vsh
-GaussianVertShader.vsh
-	)
+#################################### ASSET FILES ##########################################
+# For platforms supporting it, will be packaged with the executable for runtime use.
+# Will be accessible from the app with their "relative path". One call per base path
 
-foreach (SHADER_FILE ${SHADER_NAMES})
-	list(APPEND SHADER_SOURCE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/${SHADER_FILE}")
-	list(APPEND SHADER_GENERATED_FILES "${CMAKE_CURRENT_SOURCE_DIR}/${SHADER_FILE}.spv")
-endforeach()
-list(APPEND SRC_FILES ${SHADER_SOURCE_FILES})
-list(APPEND SRC_FILES ${SHADER_GENERATED_FILES})
-source_group("shaders_source" FILES ${SHADER_SOURCE_FILES})
-source_group("shaders_generated" FILES ${SHADER_GENERATED_FILES})
+### Textures, scene files, generic resources... ###
+add_assets_to_target(VulkanPostProcessing
+	SOURCE_GROUP "assets" 
+	ASSET_FOLDER ${ASSET_FOLDER} 
+	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/Satyr
+	FILE_LIST 
+		MarbleNormalMap.pvr
+		Marble.pvr
+		Satyr.pod)
 
-set(RESOURCE_FILES ${ASSET_FILES} ${SHADER_SOURCE_FILES} ${SHADER_GENERATED_FILES})
+add_assets_to_target(VulkanPostProcessing
+	SOURCE_GROUP "assets" 
+	ASSET_FOLDER ${ASSET_FOLDER} 
+	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/HdrScenes
+	FILE_LIST 
+		satara_night_scale_0.305_rgb9e5.pvr
+		satara_night_scale_0.305_rgb9e5_Irradiance.pvr
+		pink_sunrise_rgb9e5.pvr
+		pink_sunrise_rgb9e5_Irradiance.pvr
+		signal_hill_sunrise_scale_0.312_rgb9e5.pvr
+		signal_hill_sunrise_scale_0.312_rgb9e5_Irradiance.pvr)
 
-# Adds Windows resouces.rc, macOS plists etc. For macOS/iOS, also set the opengl dynamic libs in the "frameworks" group
-add_platform_specific_resource_files(SRC_FILES RESOURCE_FILES)
+add_assets_to_target(VulkanPostProcessing
+	SOURCE_GROUP "assets" 
+	ASSET_FOLDER ${ASSET_FOLDER} 
+	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/
+	FILE_LIST 
+		GaussianBlurFragmentShader.fsh.template
+		LinearGaussianBlurVertexShader.vsh.template
+		LinearGaussianBlurFragmentShader.fsh.template
+		ComputeGaussianBlurHorizontalShader.csh.template
+		ComputeGaussianBlurVerticalShader.csh.template)
 
-# Generate a pre-build step for compiling glsl shaders to spir-v
-add_rule_generate_spirv_from_shaders("${SHADER_NAMES}")
+### Shaders that need to be compiled to SpirV (Vulkan) ###
+# During build time, glslangvalidator will be called to create a "<shadername.extension>.spv" file
+add_spirv_shaders_to_target(VulkanPostProcessing 
+	SOURCE_GROUP "shaders_source" 
+	SPIRV_SOURCE_GROUP "shaders_generated"
+	ASSET_FOLDER ${ASSET_FOLDER} 
+	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/
+	FILE_LIST
+		Downsample4x4FragShader.fsh
+		Downsample4x4VertShader.vsh
+		DualFilterDownSampleFragShader.fsh
+		DualFilterDownVertShader.vsh
+		DualFilterUpSampleFragShader.fsh
+		DualFilterUpSampleMergedFinalPassFragShader.fsh
+		DualFilterUpVertShader.vsh
+		TentFilterFirstUpSampleFragShader.fsh
+		TentFilterUpSampleFragShader.fsh
+		TentFilterUpSampleMergedFinalPassFragShader.fsh
+		TentFilterUpSampleVertShader.vsh
+		FragShader.fsh
+		KawaseFragShader.fsh
+		KawaseVertShader.vsh
+		PostBloomFragShader.fsh
+		PostBloomVertShader.vsh
+		VertShader.vsh
+		SkyboxFragShader.fsh
+		SkyboxVertShader.vsh
+		GaussianVertShader.vsh)
 
-# Adds a platform specific executable
-add_platform_specific_executable(VulkanPostProcessing "${SRC_FILES}" "${RESOURCE_FILES}")
+# Create and adds a Windows resource file (Resources.rc) with all the assets that have been added to the target with the previous functions
+add_assets_resource_file(VulkanPostProcessing)
+###########################################################################################
 
-# Copies the assets to our assets folder
-add_rule_copy_assets_to_asset_folder("${RESOURCE_FILES}" "${ASSET_FOLDER}")
+# Apply SDK example specific compile and linker options
+apply_example_compile_options_to_target(VulkanPostProcessing)
 
 target_link_libraries(VulkanPostProcessing
 	PVRShell

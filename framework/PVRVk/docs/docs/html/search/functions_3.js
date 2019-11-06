@@ -21,7 +21,7 @@ var searchData=
   ['dispatchindirect',['dispatchIndirect',['../classpvrvk_1_1impl_1_1_command_buffer_base__.html#acb78b08d16568eeb47ffed3294d3f6e2',1,'pvrvk::impl::CommandBufferBase_']]],
   ['displaymodecreateinfo',['DisplayModeCreateInfo',['../structpvrvk_1_1_display_mode_create_info.html#a56c2c82554d532c9c37aeb52cd9905f7',1,'pvrvk::DisplayModeCreateInfo::DisplayModeCreateInfo()'],['../structpvrvk_1_1_display_mode_create_info.html#a8c35b7317816b029166bbf2a01b4cd97',1,'pvrvk::DisplayModeCreateInfo::DisplayModeCreateInfo(DisplayModeParametersKHR parameters, DisplayModeCreateFlagsKHR flags=DisplayModeCreateFlagsKHR::e_NONE)']]],
   ['draw',['draw',['../classpvrvk_1_1impl_1_1_command_buffer_base__.html#a4a38f7566ddeb086f6aa546ee3311288',1,'pvrvk::impl::CommandBufferBase_']]],
-  ['drawindexed',['drawIndexed',['../classpvrvk_1_1impl_1_1_command_buffer_base__.html#a9d0dd5fece38c2da3f474f302f70eba8',1,'pvrvk::impl::CommandBufferBase_']]],
+  ['drawindexed',['drawIndexed',['../classpvrvk_1_1impl_1_1_command_buffer_base__.html#a85499f2c0908567eb04903dc51b2c9da',1,'pvrvk::impl::CommandBufferBase_']]],
   ['drawindexedindirect',['drawIndexedIndirect',['../classpvrvk_1_1impl_1_1_command_buffer_base__.html#a58c8d29b0470bcc6df46f83032408db1',1,'pvrvk::impl::CommandBufferBase_']]],
   ['drawindirect',['drawIndirect',['../classpvrvk_1_1impl_1_1_command_buffer_base__.html#a2ea627c5ef086a05ac210a4a4b3287ea',1,'pvrvk::impl::CommandBufferBase_']]],
   ['drawindirectbytecount',['drawIndirectByteCount',['../classpvrvk_1_1impl_1_1_command_buffer_base__.html#a65d898c93ffd584464a0f079b7df6785',1,'pvrvk::impl::CommandBufferBase_']]],

@@ -148,10 +148,7 @@ bool createWindowAndDisplay(HINSTANCE applicationInstance, HWND& nativeWindow, H
 
 	// Register the windows class with the OS.
 	ATOM registerClass = RegisterClass(&nativeWindowDescription);
-	if (!registerClass)
-	{
-		MessageBox(0, _T("Failed to register the window class"), ERROR_TITLE, MB_OK | MB_ICONEXCLAMATION);
-	}
+	if (!registerClass) { MessageBox(0, _T("Failed to register the window class"), ERROR_TITLE, MB_OK | MB_ICONEXCLAMATION); }
 
 	// Create a rectangle describing the area of the window
 	RECT windowRectangle;
@@ -191,10 +188,7 @@ bool createEGLDisplay(HDC deviceContext, EGLDisplay& display)
 	//	Should this fail, EGL is usually able to provide access to a default display.
 
 	display = eglGetDisplay(deviceContext);
-	if (display == EGL_NO_DISPLAY)
-	{
-		display = eglGetDisplay((EGLNativeDisplayType)EGL_DEFAULT_DISPLAY);
-	}
+	if (display == EGL_NO_DISPLAY) { display = eglGetDisplay((EGLNativeDisplayType)EGL_DEFAULT_DISPLAY); }
 
 	// If a display still couldn't be obtained, return an error.
 	if (display == EGL_NO_DISPLAY)
@@ -222,10 +216,7 @@ bool createEGLDisplay(HDC deviceContext, EGLDisplay& display)
 
 	result = eglBindAPI(EGL_OPENGL_ES_API);
 
-	if (result != EGL_TRUE)
-	{
-		return false;
-	}
+	if (result != EGL_TRUE) { return false; }
 
 	return true;
 }
@@ -291,10 +282,7 @@ bool createEGLSurface(HWND nativeWindow, EGLDisplay display, EGLConfig config, E
 	}
 
 	// Check for any EGL Errors
-	if (!testEGLError(nativeWindow, "eglCreateWindowSurface"))
-	{
-		return false;
-	}
+	if (!testEGLError(nativeWindow, "eglCreateWindowSurface")) { return false; }
 	return true;
 }
 
@@ -314,10 +302,7 @@ bool setupEGLContext(EGLDisplay display, EGLConfig config, EGLSurface surface, E
 	//	rather than any other API (such as OpenVG).
 
 	eglBindAPI(EGL_OPENGL_ES_API);
-	if (!testEGLError(nativeWindow, "eglBindAPI"))
-	{
-		return false;
-	}
+	if (!testEGLError(nativeWindow, "eglBindAPI")) { return false; }
 
 	//	Create a context.
 	//	EGL has to create what is known as a context for OpenGL ES. The concept of a context is OpenGL ES's way of encapsulating any
@@ -329,10 +314,7 @@ bool setupEGLContext(EGLDisplay display, EGLConfig config, EGLSurface surface, E
 
 	// Create the context with the context attributes supplied
 	context = eglCreateContext(display, config, NULL, contextAttributes);
-	if (!testEGLError(nativeWindow, "eglCreateContext"))
-	{
-		return false;
-	}
+	if (!testEGLError(nativeWindow, "eglCreateContext")) { return false; }
 
 	//	Bind the context to the current thread.
 	//	Due to the way OpenGL uses global functions, contexts need to be made current so that any function call can operate on the correct
@@ -342,10 +324,7 @@ bool setupEGLContext(EGLDisplay display, EGLConfig config, EGLSurface surface, E
 	//  To use multiple contexts at the same time, users should use multiple threads and synchronise between them.
 	eglMakeCurrent(display, surface, surface, context);
 
-	if (!testEGLError(nativeWindow, "eglMakeCurrent"))
-	{
-		return false;
-	}
+	if (!testEGLError(nativeWindow, "eglMakeCurrent")) { return false; }
 	return true;
 }
 
@@ -386,10 +365,7 @@ bool initializeBuffer(GLuint& vertexBuffer, HWND nativeWindow)
 	//	to modify the data until we're done with it.
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertexData), vertexData, GL_STATIC_DRAW);
 
-	if (!testGLError(nativeWindow, "glBufferData"))
-	{
-		return false;
-	}
+	if (!testGLError(nativeWindow, "glBufferData")) { return false; }
 	return true;
 }
 
@@ -538,10 +514,7 @@ bool initializeShaders(GLuint& fragmentShader, GLuint& vertexShader, GLuint& sha
 
 	glUseProgram(shaderProgram);
 
-	if (!testGLError(nativeWindow, "glUseProgram"))
-	{
-		return false;
-	}
+	if (!testGLError(nativeWindow, "glUseProgram")) { return false; }
 	return true;
 }
 
@@ -556,10 +529,7 @@ bool initializeShaders(GLuint& fragmentShader, GLuint& vertexShader, GLuint& sha
 bool renderScene(GLuint shaderProgram, EGLDisplay display, EGLSurface surface, HWND nativeWindow)
 {
 	// The message handler setup for the window system will signal this variable when the window is closed, so close the application.
-	if (HasUserQuit)
-	{
-		return false;
-	}
+	if (HasUserQuit) { return false; }
 
 	//	Set the clear color
 	//	At the start of a frame, generally you clear the image to tell OpenGL ES that you're done with whatever was there before and want to
@@ -583,20 +553,14 @@ bool renderScene(GLuint shaderProgram, EGLDisplay display, EGLSurface surface, H
 
 	// Pass the transformationMatrix to the shader using its location
 	glUniformMatrix4fv(matrixLocation, 1, GL_FALSE, transformationMatrix);
-	if (!testGLError(nativeWindow, "glUniformMatrix4fv"))
-	{
-		return false;
-	}
+	if (!testGLError(nativeWindow, "glUniformMatrix4fv")) { return false; }
 
 	// Enable the user-defined vertex array
 	glEnableVertexAttribArray(VertexArray);
 
 	// Sets the vertex data to this attribute index, with the number of floats in each position
 	glVertexAttribPointer(VertexArray, 3, GL_FLOAT, GL_FALSE, 0, 0);
-	if (!testGLError(nativeWindow, "glVertexAttribPointer"))
-	{
-		return false;
-	}
+	if (!testGLError(nativeWindow, "glVertexAttribPointer")) { return false; }
 
 	//	Draw the triangle
 	//	glDrawArrays is a draw call, and executes the shader program using the vertices and other state set by the user. Draw calls are the
@@ -607,10 +571,7 @@ bool renderScene(GLuint shaderProgram, EGLDisplay display, EGLSurface surface, H
 	//	Others include versions of the above that allow the user to draw the same object multiple times with slightly different data, and
 	//	a version of glDrawElements which allows a user to restrict the actual indices accessed.
 	glDrawArrays(GL_TRIANGLES, 0, 3);
-	if (!testGLError(nativeWindow, "glDrawArrays"))
-	{
-		return false;
-	}
+	if (!testGLError(nativeWindow, "glDrawArrays")) { return false; }
 
 	// Invalidate the contents of the specified buffers for the framebuffer to allow the implementation further optimization opportunities.
 	// The following is taken from https://www.khronos.org/registry/OpenGL/extensions/EXT/EXT_discard_framebuffer.txt
@@ -629,10 +590,7 @@ bool renderScene(GLuint shaderProgram, EGLDisplay display, EGLSurface surface, H
 		invalidateAttachments[1] = GL_STENCIL_EXT;
 
 		glDiscardFramebufferEXT(GL_FRAMEBUFFER, 2, &invalidateAttachments[0]);
-		if (!testGLError(nativeWindow, "glDiscardFramebufferEXT"))
-		{
-			return false;
-		}
+		if (!testGLError(nativeWindow, "glDiscardFramebufferEXT")) { return false; }
 	}
 
 	//	Present the display data to the screen.
@@ -694,16 +652,10 @@ void releaseEGLState(EGLDisplay display)
 void releaseWindowAndDisplay(HWND nativeWindow, HDC deviceContext)
 {
 	// Release the device context.
-	if (deviceContext)
-	{
-		ReleaseDC(nativeWindow, deviceContext);
-	}
+	if (deviceContext) { ReleaseDC(nativeWindow, deviceContext); }
 
 	// Destroy the window
-	if (nativeWindow)
-	{
-		DestroyWindow(nativeWindow);
-	}
+	if (nativeWindow) { DestroyWindow(nativeWindow); }
 }
 
 /*!*********************************************************************************************************************
@@ -734,54 +686,30 @@ int WINAPI WinMain(HINSTANCE applicationInstance, HINSTANCE previousInstance, TC
 	GLuint vertexBuffer = 0;
 
 	// Setup the windowing system, getting a window and a display
-	if (!createWindowAndDisplay(applicationInstance, nativeWindow, deviceContext))
-	{
-		goto cleanup;
-	}
+	if (!createWindowAndDisplay(applicationInstance, nativeWindow, deviceContext)) { goto cleanup; }
 
 	// Create and Initialize an EGLDisplay from the native display
-	if (!createEGLDisplay(deviceContext, display))
-	{
-		goto cleanup;
-	}
+	if (!createEGLDisplay(deviceContext, display)) { goto cleanup; }
 
 	// Choose an EGLConfig for the application, used when setting up the rendering surface and EGLContext
-	if (!chooseEGLConfig(display, config))
-	{
-		goto cleanup;
-	}
+	if (!chooseEGLConfig(display, config)) { goto cleanup; }
 
 	// Create an EGLSurface for rendering from the native window
-	if (!createEGLSurface(nativeWindow, display, config, surface))
-	{
-		goto cleanup;
-	}
+	if (!createEGLSurface(nativeWindow, display, config, surface)) { goto cleanup; }
 
 	// Setup the EGL Context from the other EGL constructs created so far, so that the application is ready to submit OpenGL ES commands
-	if (!setupEGLContext(display, config, surface, context, nativeWindow))
-	{
-		goto cleanup;
-	}
+	if (!setupEGLContext(display, config, surface, context, nativeWindow)) { goto cleanup; }
 
 	// Initialize the vertex data in the application
-	if (!initializeBuffer(vertexBuffer, nativeWindow))
-	{
-		goto cleanup;
-	}
+	if (!initializeBuffer(vertexBuffer, nativeWindow)) { goto cleanup; }
 
 	// Initialize the fragment and vertex shaders used in the application
-	if (!initializeShaders(fragmentShader, vertexShader, shaderProgram, nativeWindow))
-	{
-		goto cleanup;
-	}
+	if (!initializeShaders(fragmentShader, vertexShader, shaderProgram, nativeWindow)) { goto cleanup; }
 
 	// Renders a triangle for 800 frames using the state setup in the previous function
 	for (uint32_t i = 0; i < 800; ++i)
 	{
-		if (!renderScene(shaderProgram, display, surface, nativeWindow))
-		{
-			break;
-		}
+		if (!renderScene(shaderProgram, display, surface, nativeWindow)) { break; }
 	}
 
 	// Release any resources we created in the Initialize functions

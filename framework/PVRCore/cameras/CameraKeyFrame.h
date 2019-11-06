@@ -55,10 +55,7 @@ struct CameraAnimationController
 
 	/// <summary>Sets the current total time in MS</summary>
 	/// <param name="totalMs">The current tile in milli seconds</param>
-	void setTotalTimeInMs(uint64_t totalMs)
-	{
-		totalKeyFrameMs = totalMs;
-	}
+	void setTotalTimeInMs(uint64_t totalMs) { totalKeyFrameMs = totalMs; }
 
 	/// <summary>Advances the current total time in MS</summary>
 	/// <param name="dt">The number of milli seconds to advance the time by</param>
@@ -105,24 +102,15 @@ struct CameraAnimationController
 
 	/// <summary>Retrieves the current beginning of the key frame for the current time</summary>
 	/// <returns>The current beginning of the key frame for the current time</returns>
-	uint32_t getCurrentBeginKeyFrame() const
-	{
-		return startKeyFrame;
-	}
+	uint32_t getCurrentBeginKeyFrame() const { return startKeyFrame; }
 
 	/// <summary>Retrieves the current end of the key frame for the current time</summary>
 	/// <returns>The current end of the key frame for the current time</returns>
-	uint32_t getCurrentEndKeyFrame() const
-	{
-		return endKeyFrame;
-	}
+	uint32_t getCurrentEndKeyFrame() const { return endKeyFrame; }
 
 	/// <summary>Retrieves the number of key frames</summary>
 	/// <returns>The number of key frames currently being controlled</returns>
-	uint64_t getNumKeyFrames() const
-	{
-		return keyframes.size();
-	}
+	uint64_t getNumKeyFrames() const { return keyframes.size(); }
 
 	/// <summary>Adds a new key frame</summary>
 	/// <param name="keyFrames">A pointer to a list of key frames</param>
@@ -130,10 +118,7 @@ struct CameraAnimationController
 	void addKeyFrames(const CameraKeyFrame* keyFrames, uint32_t numKeyFrames)
 	{
 		this->keyframes.reserve(numKeyFrames + this->keyframes.size());
-		for (uint32_t i = 0; i < numKeyFrames; ++i)
-		{
-			this->keyframes.emplace_back(keyFrames[i]);
-		}
+		for(uint32_t i = 0; i < numKeyFrames; ++i) { this->keyframes.emplace_back(keyFrames[i]); }
 
 		totalKeyFrameMs = std::max(totalKeyFrameMs, this->keyframes.back().frameMs);
 	}

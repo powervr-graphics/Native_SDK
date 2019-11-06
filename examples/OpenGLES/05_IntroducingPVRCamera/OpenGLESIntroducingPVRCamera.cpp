@@ -76,10 +76,7 @@ pvr::Result OpenGLESIntroducingPVRCamera::initApplication()
 \return Return ::pvr::Result::Success if no error occurred
 \brief  Will be called by Shell once per run, just before exiting the _program. Nothing to do in this demo.
 ***********************************************************************************************************************/
-pvr::Result OpenGLESIntroducingPVRCamera::quitApplication()
-{
-	return pvr::Result::Success;
-}
+pvr::Result OpenGLESIntroducingPVRCamera::quitApplication() { return pvr::Result::Success; }
 
 /*!*********************************************************************************************************************
 \return Return ::pvr::Result::Success if no error occured
@@ -100,10 +97,7 @@ pvr::Result OpenGLESIntroducingPVRCamera::initView()
 		uint16_t numAttribs = 1;
 		_program = pvr::utils::createShaderProgram(*this, Configuration::VertexShaderFile, Configuration::FragShaderFile, attribNames, attribIndices, numAttribs,
 			Configuration::ShaderDefines, Configuration::NumShaderDefines);
-		if (!_program)
-		{
-			return pvr::Result::UnknownError;
-		}
+		if (!_program) { return pvr::Result::UnknownError; }
 		_uvTransformLocation = gl::GetUniformLocation(_program, "uvTransform");
 	}
 	_uiRenderer.init(getWidth(), getHeight(), isFullScreen(), getBackBufferColorspace() == pvr::ColorSpace::sRGB);
@@ -128,8 +122,7 @@ pvr::Result OpenGLESIntroducingPVRCamera::releaseView()
 
 	// Release UIRenderer resources
 	_uiRenderer.release();
-	if (_program)
-		gl::DeleteProgram(_program);
+	if (_program) gl::DeleteProgram(_program);
 	return pvr::Result::Success;
 }
 
@@ -177,10 +170,7 @@ pvr::Result OpenGLESIntroducingPVRCamera::renderFrame()
 	_uiRenderer.getSdkLogo()->render();
 	_uiRenderer.endRendering();
 
-	if (this->shouldTakeScreenshot())
-	{
-		pvr::utils::takeScreenshot(this->getScreenshotFileName(), this->getWidth(), this->getHeight());
-	}
+	if (this->shouldTakeScreenshot()) { pvr::utils::takeScreenshot(this->getScreenshotFileName(), this->getWidth(), this->getHeight()); }
 
 	_context->swapBuffers();
 	return pvr::Result::Success;
@@ -188,7 +178,4 @@ pvr::Result OpenGLESIntroducingPVRCamera::renderFrame()
 
 /// <summary>This function must be implemented by the user of the shell. The user should return its pvr::Shell object defining the behaviour of the application.</summary>
 /// <returns>Return a unique ptr to the demo supplied by the user.</returns>
-std::unique_ptr<pvr::Shell> pvr::newDemo()
-{
-	return std::unique_ptr<pvr::Shell>(new OpenGLESIntroducingPVRCamera());
-}
+std::unique_ptr<pvr::Shell> pvr::newDemo() { return std::make_unique<OpenGLESIntroducingPVRCamera>(); }

@@ -21,10 +21,7 @@
 
 namespace pvrvk {
 namespace impl {
-inline void copyRectangleToVulkan(const Rect2D& renderArea, VkRect2D& vulkanRenderArea)
-{
-	memcpy(&vulkanRenderArea, &renderArea, sizeof(renderArea));
-}
+inline void copyRectangleToVulkan(const Rect2D& renderArea, VkRect2D& vulkanRenderArea) { memcpy(&vulkanRenderArea, &renderArea, sizeof(renderArea)); }
 
 CommandBufferBase_::~CommandBufferBase_()
 {
@@ -94,74 +91,37 @@ VkImageMemoryBarrier imageBarrier(const ImageMemoryBarrier& imgBarrier)
 	return barrier;
 }
 
-inline uint32_t getNumNativeMemoryBarriers(const MemoryBarrierSet& set)
-{
-	return static_cast<uint32_t>(set.getMemoryBarriers().size());
-}
+inline uint32_t getNumNativeMemoryBarriers(const MemoryBarrierSet& set) { return static_cast<uint32_t>(set.getMemoryBarriers().size()); }
 
-inline uint32_t getNumNativeImageBarriers(const MemoryBarrierSet& set)
-{
-	return static_cast<uint32_t>(set.getImageBarriers().size());
-}
+inline uint32_t getNumNativeImageBarriers(const MemoryBarrierSet& set) { return static_cast<uint32_t>(set.getImageBarriers().size()); }
 
-inline uint32_t getNumNativeBufferBarriers(const MemoryBarrierSet& set)
-{
-	return static_cast<uint32_t>(set.getBufferBarriers().size());
-}
+inline uint32_t getNumNativeBufferBarriers(const MemoryBarrierSet& set) { return static_cast<uint32_t>(set.getBufferBarriers().size()); }
 
 inline void prepareNativeBarriers(const MemoryBarrierSet& set, VkMemoryBarrier* mem, VkImageMemoryBarrier* img, VkBufferMemoryBarrier* buf)
 {
 	const auto& memBarriers = set.getMemoryBarriers();
 	const auto& imageBarriers = set.getImageBarriers();
 	const auto& bufferBarriers = set.getBufferBarriers();
-	for (uint32_t i = 0; i < memBarriers.size(); ++i)
-	{
-		mem[i] = memoryBarrier(memBarriers[i]);
-	}
-	for (uint32_t i = 0; i < imageBarriers.size(); ++i)
-	{
-		img[i] = imageBarrier(imageBarriers[i]);
-	}
-	for (uint32_t i = 0; i < bufferBarriers.size(); ++i)
-	{
-		buf[i] = bufferBarrier(bufferBarriers[i]);
-	}
+	for (uint32_t i = 0; i < memBarriers.size(); ++i) { mem[i] = memoryBarrier(memBarriers[i]); }
+	for (uint32_t i = 0; i < imageBarriers.size(); ++i) { img[i] = imageBarrier(imageBarriers[i]); }
+	for (uint32_t i = 0; i < bufferBarriers.size(); ++i) { buf[i] = bufferBarrier(bufferBarriers[i]); }
 }
 
 void CommandBufferBase_::pipelineBarrier(PipelineStageFlags srcStage, PipelineStageFlags dstStage, const MemoryBarrierSet& barriers, bool dependencyByRegion)
 {
-	const uint32_t maxArrayBarrier = 16;
-	VkMemoryBarrier mem[maxArrayBarrier];
-	VkImageMemoryBarrier img[maxArrayBarrier];
-	VkBufferMemoryBarrier buf[maxArrayBarrier];
-	uint32_t memcnt = static_cast<uint32_t>(barriers.getMemoryBarriers().size());
-	uint32_t imgcnt = static_cast<uint32_t>(barriers.getImageBarriers().size());
-	uint32_t bufcnt = static_cast<uint32_t>(barriers.getBufferBarriers().size());
-	VkMemoryBarrier* memptr = memcnt > maxArrayBarrier ? new VkMemoryBarrier[memcnt] : mem;
-	VkImageMemoryBarrier* imgptr = imgcnt > maxArrayBarrier ? new VkImageMemoryBarrier[imgcnt] : img;
-	VkBufferMemoryBarrier* bufptr = bufcnt > maxArrayBarrier ? new VkBufferMemoryBarrier[bufcnt] : buf;
+	auto memoryBarriers = ArrayOrVector<VkMemoryBarrier, 2>(barriers.getMemoryBarriers().size());
+	auto imageMemoryBarriers = ArrayOrVector<VkImageMemoryBarrier, 2>(barriers.getImageBarriers().size());
+	auto bufferMemoryBarrier = ArrayOrVector<VkBufferMemoryBarrier, 2>(barriers.getBufferBarriers().size());
 
-	prepareNativeBarriers(barriers, memptr, imgptr, bufptr);
+	prepareNativeBarriers(barriers, memoryBarriers.get(), imageMemoryBarriers.get(), bufferMemoryBarrier.get());
 
 	getDevice()->getVkBindings().vkCmdPipelineBarrier(getVkHandle(), static_cast<VkPipelineStageFlags>(srcStage), static_cast<VkPipelineStageFlags>(dstStage),
-		static_cast<VkDependencyFlags>(DependencyFlags::e_BY_REGION_BIT * (dependencyByRegion != 0)), memcnt, memptr, bufcnt, bufptr, imgcnt, imgptr);
-
-	if (memptr != mem)
-	{
-		delete[] memptr;
-	}
-	if (imgptr != img)
-	{
-		delete[] imgptr;
-	}
-	if (bufptr != buf)
-	{
-		delete[] bufptr;
-	}
+		static_cast<VkDependencyFlags>(DependencyFlags::e_BY_REGION_BIT * (dependencyByRegion != 0)), static_cast<uint32_t>(barriers.getMemoryBarriers().size()), memoryBarriers.get(),
+		static_cast<uint32_t>(barriers.getBufferBarriers().size()), bufferMemoryBarrier.get(), static_cast<uint32_t>(barriers.getImageBarriers().size()), imageMemoryBarriers.get());
 
 #ifdef DEBUG
 	const auto& imageBarriers = barriers.getImageBarriers();
-	for (uint32_t i = 0; i < imgcnt; ++i)
+	for (uint32_t i = 0; i < barriers.getImageBarriers().size(); ++i)
 	{
 		const ImageMemoryBarrier& currentImageMemoryBarrier = imageBarriers[i];
 		currentImageMemoryBarrier.getImage()->setImageLayout(currentImageMemoryBarrier.getNewLayout());
@@ -171,49 +131,29 @@ void CommandBufferBase_::pipelineBarrier(PipelineStageFlags srcStage, PipelineSt
 
 void CommandBufferBase_::waitForEvent(const Event& event, PipelineStageFlags srcStage, PipelineStageFlags dstStage, const MemoryBarrierSet& barriers)
 {
-	_objectReferences.emplace_back(event);
-	VkMemoryBarrier mem[16];
-	VkImageMemoryBarrier img[16];
-	VkBufferMemoryBarrier buf[16];
-	uint32_t memcnt = static_cast<uint32_t>(barriers.getMemoryBarriers().size());
-	uint32_t imgcnt = static_cast<uint32_t>(barriers.getImageBarriers().size());
-	uint32_t bufcnt = static_cast<uint32_t>(barriers.getBufferBarriers().size());
-	VkMemoryBarrier* memptr = memcnt > 16 ? new VkMemoryBarrier[memcnt] : mem;
-	VkImageMemoryBarrier* imgptr = imgcnt > 16 ? new VkImageMemoryBarrier[imgcnt] : img;
-	VkBufferMemoryBarrier* bufptr = bufcnt > 16 ? new VkBufferMemoryBarrier[bufcnt] : buf;
+	uint32_t memoryBarrierCount = static_cast<uint32_t>(barriers.getMemoryBarriers().size());
+	uint32_t imageBarrierCount = static_cast<uint32_t>(barriers.getImageBarriers().size());
+	uint32_t bufferBarrierCount = static_cast<uint32_t>(barriers.getBufferBarriers().size());
+	ArrayOrVector<VkMemoryBarrier, 2> memoryBarriers(memoryBarrierCount);
+	ArrayOrVector<VkImageMemoryBarrier, 2> imageMemoryBarriers(imageBarrierCount);
+	ArrayOrVector<VkBufferMemoryBarrier, 2> bufferMemoryBarriers(bufferBarrierCount);
 
-	prepareNativeBarriers(barriers, memptr, imgptr, bufptr);
+	prepareNativeBarriers(barriers, memoryBarriers.get(), imageMemoryBarriers.get(), bufferMemoryBarriers.get());
 
 	getDevice()->getVkBindings().vkCmdWaitEvents(getVkHandle(), 1, &event->getVkHandle(), static_cast<VkPipelineStageFlags>(srcStage), static_cast<VkPipelineStageFlags>(dstStage),
-		memcnt, memptr, bufcnt, bufptr, imgcnt, imgptr);
-
-	if (memptr != mem)
-	{
-		delete[] memptr;
-	}
-	if (imgptr != img)
-	{
-		delete[] imgptr;
-	}
-	if (bufptr != buf)
-	{
-		delete[] bufptr;
-	}
+		memoryBarrierCount, memoryBarriers.get(), bufferBarrierCount, bufferMemoryBarriers.get(), imageBarrierCount, imageMemoryBarriers.get());
 }
 
 void CommandBufferBase_::waitForEvents(const Event* events, uint32_t numEvents, PipelineStageFlags srcStage, PipelineStageFlags dstStage, const MemoryBarrierSet& barriers)
 {
-	VkMemoryBarrier mem[16];
-	VkImageMemoryBarrier img[16];
-	VkBufferMemoryBarrier buf[16];
-	uint32_t memcnt = static_cast<uint32_t>(barriers.getMemoryBarriers().size());
-	uint32_t imgcnt = static_cast<uint32_t>(barriers.getImageBarriers().size());
-	uint32_t bufcnt = static_cast<uint32_t>(barriers.getBufferBarriers().size());
-	VkMemoryBarrier* memptr = memcnt > 16 ? new VkMemoryBarrier[memcnt] : mem;
-	VkImageMemoryBarrier* imgptr = imgcnt > 16 ? new VkImageMemoryBarrier[imgcnt] : img;
-	VkBufferMemoryBarrier* bufptr = bufcnt > 16 ? new VkBufferMemoryBarrier[bufcnt] : buf;
+	uint32_t memoryBarrierCount = static_cast<uint32_t>(barriers.getMemoryBarriers().size());
+	uint32_t imageBarrierCount = static_cast<uint32_t>(barriers.getImageBarriers().size());
+	uint32_t bufferBarrierCount = static_cast<uint32_t>(barriers.getBufferBarriers().size());
+	ArrayOrVector<VkMemoryBarrier, 4> memoryBarriers(memoryBarrierCount);
+	ArrayOrVector<VkImageMemoryBarrier, 4> imageMemoryBarriers(imageBarrierCount);
+	ArrayOrVector<VkBufferMemoryBarrier, 4> bufferMemoryBarriers(bufferBarrierCount);
 
-	prepareNativeBarriers(barriers, memptr, imgptr, bufptr);
+	prepareNativeBarriers(barriers, memoryBarriers.get(), imageMemoryBarriers.get(), bufferMemoryBarriers.get());
 
 	ArrayOrVector<VkEvent, 4> vkEvents(numEvents);
 	for (uint32_t i = 0; i < numEvents; ++i)
@@ -223,20 +163,7 @@ void CommandBufferBase_::waitForEvents(const Event* events, uint32_t numEvents, 
 	}
 
 	getDevice()->getVkBindings().vkCmdWaitEvents(getVkHandle(), numEvents, vkEvents.get(), static_cast<VkPipelineStageFlags>(srcStage), static_cast<VkPipelineStageFlags>(dstStage),
-		memcnt, memptr, bufcnt, bufptr, imgcnt, imgptr);
-
-	if (memptr != mem)
-	{
-		delete[] memptr;
-	}
-	if (imgptr != img)
-	{
-		delete[] imgptr;
-	}
-	if (bufptr != buf)
-	{
-		delete[] bufptr;
-	}
+		memoryBarrierCount, memoryBarriers.get(), bufferBarrierCount, bufferMemoryBarriers.get(), imageBarrierCount, imageMemoryBarriers.get());
 }
 
 // bind pipelines, sets, vertex/index buffers
@@ -260,41 +187,22 @@ void CommandBufferBase_::bindDescriptorSets(PipelineBindPoint bindingPoint, cons
 
 void CommandBufferBase_::bindVertexBuffer(Buffer const* buffers, uint32_t* offsets, uint16_t numBuffers, uint16_t startBinding, uint16_t numBindings)
 {
-	if (numBuffers <= 8)
+	ArrayOrVector<VkBuffer, 4> vertexBuffers(numBuffers);
+	ArrayOrVector<VkDeviceSize, 4> vertexBufferSizes(numBuffers);
+
+	for (uint16_t i = 0; i < numBuffers; ++i)
 	{
-		_objectReferences.emplace_back(buffers[numBuffers]);
-		VkBuffer buff[8];
-		VkDeviceSize sizes[8];
-		for (uint16_t i = 0; i < numBuffers; ++i)
-		{
-			_objectReferences.emplace_back(buffers[i]);
-			buff[i] = buffers[i]->getVkHandle();
-			sizes[i] = offsets[i];
-		}
-		getDevice()->getVkBindings().vkCmdBindVertexBuffers(getVkHandle(), startBinding, numBindings, buff, sizes);
+		_objectReferences.emplace_back(buffers[i]);
+		vertexBuffers[i] = buffers[i]->getVkHandle();
+		vertexBufferSizes[i] = offsets[i];
 	}
-	else
-	{
-		VkBuffer* buff = new VkBuffer[numBuffers];
-		VkDeviceSize* sizes = new VkDeviceSize[numBuffers];
-		for (uint16_t i = 0; i < numBuffers; ++i)
-		{
-			_objectReferences.emplace_back(buffers[i]);
-			buff[i] = buffers[i]->getVkHandle();
-			sizes[i] = offsets[i];
-		}
-		getDevice()->getVkBindings().vkCmdBindVertexBuffers(getVkHandle(), startBinding, numBindings, buff, sizes);
-		delete[] buff;
-		delete[] sizes;
-	}
+
+	getDevice()->getVkBindings().vkCmdBindVertexBuffers(getVkHandle(), startBinding, numBindings, vertexBuffers.get(), vertexBufferSizes.get());
 }
 
 void CommandBufferBase_::begin(const CommandBufferUsageFlags flags)
 {
-	if (_isRecording)
-	{
-		assert(false && "Called CommandBuffer::begin while a recording was already in progress. Call CommandBuffer::end first");
-	}
+	if (_isRecording) { assert(false && "Called CommandBuffer::begin while a recording was already in progress. Call CommandBuffer::end first"); }
 	_isRecording = true;
 	VkCommandBufferBeginInfo info = {};
 	info.sType = static_cast<VkStructureType>(StructureType::e_COMMAND_BUFFER_BEGIN_INFO);
@@ -314,10 +222,7 @@ void CommandBufferBase_::begin(const CommandBufferUsageFlags flags)
 
 void SecondaryCommandBuffer_::begin(const Framebuffer& framebuffer, uint32_t subpass, const CommandBufferUsageFlags flags)
 {
-	if (_isRecording)
-	{
-		throw ErrorValidationFailedEXT("Called CommandBuffer::begin while a recording was already in progress. Call CommandBuffer::end first");
-	}
+	if (_isRecording) { throw ErrorValidationFailedEXT("Called CommandBuffer::begin while a recording was already in progress. Call CommandBuffer::end first"); }
 	_objectReferences.emplace_back(framebuffer);
 	_isRecording = true;
 	VkCommandBufferBeginInfo info = {};
@@ -367,10 +272,7 @@ void CommandBufferBase_::end()
 
 void CommandBuffer_::executeCommands(const SecondaryCommandBuffer& secondaryCmdBuffer)
 {
-	if (!secondaryCmdBuffer)
-	{
-		throw ErrorValidationFailedEXT("Secondary command buffer was NULL for ExecuteCommands");
-	}
+	if (!secondaryCmdBuffer) { throw ErrorValidationFailedEXT("Secondary command buffer was NULL for ExecuteCommands"); }
 	_objectReferences.emplace_back(secondaryCmdBuffer);
 
 	getDevice()->getVkBindings().vkCmdExecuteCommands(getVkHandle(), 1, &secondaryCmdBuffer->getVkHandle());
@@ -450,10 +352,7 @@ void CommandBufferBase_::blitImage(const Image& src, const Image& dst, const Ima
 	_objectReferences.emplace_back(src);
 	_objectReferences.emplace_back(dst);
 	ArrayOrVector<VkImageBlit, 8> imageBlits(numRegions);
-	for (uint32_t i = 0; i < numRegions; ++i)
-	{
-		imageBlits[i] = regions[i].get();
-	}
+	for (uint32_t i = 0; i < numRegions; ++i) { imageBlits[i] = regions[i].get(); }
 
 	getDevice()->getVkBindings().vkCmdBlitImage(getVkHandle(), src->getVkHandle(), static_cast<VkImageLayout>(srcLayout), dst->getVkHandle(), static_cast<VkImageLayout>(dstLayout),
 		numRegions, imageBlits.get(), static_cast<VkFilter>(filter));
@@ -466,10 +365,7 @@ void CommandBufferBase_::copyImage(const Image& srcImage, const Image& dstImage,
 	// Try to avoid heap allocation
 	ArrayOrVector<VkImageCopy, 8> pRegions(numRegions);
 
-	for (uint32_t i = 0; i < numRegions; ++i)
-	{
-		pRegions[i] = regions[i].get();
-	}
+	for (uint32_t i = 0; i < numRegions; ++i) { pRegions[i] = regions[i].get(); }
 
 	getDevice()->getVkBindings().vkCmdCopyImage(getVkHandle(), srcImage->getVkHandle(), static_cast<VkImageLayout>(srcImageLayout), dstImage->getVkHandle(),
 		static_cast<VkImageLayout>(dstImageLayout), numRegions, pRegions.get());
@@ -483,10 +379,7 @@ void CommandBufferBase_::copyImageToBuffer(const Image& srcImage, ImageLayout sr
 	ArrayOrVector<VkBufferImageCopy, 8> pRegions(numRegions);
 	// Try to avoid heap allocation
 
-	for (uint32_t i = 0; i < numRegions; ++i)
-	{
-		pRegions[i] = regions[i].get();
-	}
+	for (uint32_t i = 0; i < numRegions; ++i) { pRegions[i] = regions[i].get(); }
 
 	getDevice()->getVkBindings().vkCmdCopyImageToBuffer(
 		getVkHandle(), srcImage->getVkHandle(), static_cast<VkImageLayout>(srcImageLayout), dstBuffer->getVkHandle(), numRegions, pRegions.get());
@@ -503,10 +396,7 @@ void CommandBufferBase_::copyBufferToImage(const Buffer& buffer, const Image& im
 	ArrayOrVector<VkBufferImageCopy, 8> bufferImageCopy(regionsCount);
 	_objectReferences.emplace_back(buffer);
 	_objectReferences.emplace_back(image);
-	for (uint32_t i = 0; i < regionsCount; ++i)
-	{
-		bufferImageCopy[i] = regions[i].get();
-	}
+	for (uint32_t i = 0; i < regionsCount; ++i) { bufferImageCopy[i] = regions[i].get(); }
 	getDevice()->getVkBindings().vkCmdCopyBufferToImage(
 		getVkHandle(), buffer->getVkHandle(), image->getVkHandle(), static_cast<VkImageLayout>(dstImageLayout), regionsCount, bufferImageCopy.get());
 }
@@ -518,20 +408,14 @@ void CommandBufferBase_::fillBuffer(const Buffer& dstBuffer, uint32_t dstOffset,
 }
 
 // dynamic commands
-void CommandBufferBase_::setViewport(const Viewport& viewport)
-{
-	getDevice()->getVkBindings().vkCmdSetViewport(getVkHandle(), 0, 1, &viewport.get());
-}
+void CommandBufferBase_::setViewport(const Viewport& viewport) { getDevice()->getVkBindings().vkCmdSetViewport(getVkHandle(), 0, 1, &viewport.get()); }
 
 void CommandBufferBase_::setScissor(uint32_t firstScissor, uint32_t numScissors, const Rect2D* scissors)
 {
 	getDevice()->getVkBindings().vkCmdSetScissor(getVkHandle(), firstScissor, numScissors, (const VkRect2D*)scissors);
 }
 
-void CommandBufferBase_::setDepthBounds(float min, float max)
-{
-	getDevice()->getVkBindings().vkCmdSetDepthBounds(getVkHandle(), min, max);
-}
+void CommandBufferBase_::setDepthBounds(float min, float max) { getDevice()->getVkBindings().vkCmdSetDepthBounds(getVkHandle(), min, max); }
 
 void CommandBufferBase_::setStencilCompareMask(StencilFaceFlags face, uint32_t compareMask)
 {
@@ -553,15 +437,9 @@ void CommandBufferBase_::setDepthBias(float depthBias, float depthBiasClamp, flo
 	getDevice()->getVkBindings().vkCmdSetDepthBias(getVkHandle(), depthBias, depthBiasClamp, slopeScaledDepthBias);
 }
 
-void CommandBufferBase_::setBlendConstants(float rgba[4])
-{
-	getDevice()->getVkBindings().vkCmdSetBlendConstants(getVkHandle(), rgba);
-}
+void CommandBufferBase_::setBlendConstants(float rgba[4]) { getDevice()->getVkBindings().vkCmdSetBlendConstants(getVkHandle(), rgba); }
 
-void CommandBufferBase_::setLineWidth(float lineWidth)
-{
-	getDevice()->getVkBindings().vkCmdSetLineWidth(getVkHandle(), lineWidth);
-}
+void CommandBufferBase_::setLineWidth(float lineWidth) { getDevice()->getVkBindings().vkCmdSetLineWidth(getVkHandle(), lineWidth); }
 
 inline void clearcolorimage(const Device& device, VkCommandBuffer buffer, const ImageView& image, ClearColorValue clearColor, const uint32_t* baseMipLevel,
 	const uint32_t* numLevels, const uint32_t* baseArrayLayers, const uint32_t* numLayers, uint32_t numRanges, ImageLayout layout)
@@ -603,9 +481,7 @@ inline static void clearDepthStencilImageHelper(const Device& device, VkCommandB
 	float clearDepth, uint32_t clearStencil, const uint32_t* baseMipLevel, const uint32_t* numLevels, const uint32_t* baseArrayLayers, const uint32_t* numLayers, uint32_t numRanges)
 {
 	if (!(layout == ImageLayout::e_GENERAL || layout == ImageLayout::e_TRANSFER_DST_OPTIMAL))
-	{
-		throw ErrorValidationFailedEXT("Cannot clear depth stencil image: It is in neither e_GENERAL or e_TRANSFER_DST_OPTIMAL layout");
-	}
+	{ throw ErrorValidationFailedEXT("Cannot clear depth stencil image: It is in neither e_GENERAL or e_TRANSFER_DST_OPTIMAL layout"); }
 
 	VkClearDepthStencilValue clearDepthStencilValue;
 	clearDepthStencilValue.depth = clearDepth;
@@ -637,8 +513,7 @@ void CommandBufferBase_::clearDepthImage(const Image& image, float clearDepth, c
 	const uint32_t* numLayers, uint32_t numRanges, ImageLayout layout)
 {
 	_objectReferences.emplace_back(image);
-	clearDepthStencilImageHelper(
-		getDevice(), getVkHandle(), image, layout, ImageAspectFlags::e_DEPTH_BIT, clearDepth, 0u, baseMipLevel, numLevels, baseArrayLayers, numLayers, numRanges);
+	clearDepthStencilImageHelper(getDevice(), getVkHandle(), image, layout, ImageAspectFlags::e_DEPTH_BIT, clearDepth, 0u, baseMipLevel, numLevels, baseArrayLayers, numLayers, numRanges);
 }
 
 void CommandBufferBase_::clearStencilImage(
@@ -697,7 +572,7 @@ void CommandBufferBase_::clearAttachments(const uint32_t numAttachments, const C
 }
 
 // drawing commands
-void CommandBufferBase_::drawIndexed(uint32_t firstIndex, uint32_t numIndices, uint32_t vertexOffset, uint32_t firstInstance, uint32_t numInstances)
+void CommandBufferBase_::drawIndexed(uint32_t firstIndex, uint32_t numIndices, int32_t vertexOffset, uint32_t firstInstance, uint32_t numInstances)
 {
 	getDevice()->getVkBindings().vkCmdDrawIndexed(getVkHandle(), numIndices, numInstances, firstIndex, vertexOffset, firstInstance);
 }
@@ -724,10 +599,7 @@ void CommandBufferBase_::dispatch(uint32_t numGroupX, uint32_t numGroupY, uint32
 	getDevice()->getVkBindings().vkCmdDispatch(getVkHandle(), numGroupX, numGroupY, numGroupZ);
 }
 
-void CommandBufferBase_::dispatchIndirect(Buffer& buffer, uint32_t offset)
-{
-	getDevice()->getVkBindings().vkCmdDispatchIndirect(getVkHandle(), buffer->getVkHandle(), offset);
-}
+void CommandBufferBase_::dispatchIndirect(Buffer& buffer, uint32_t offset) { getDevice()->getVkBindings().vkCmdDispatchIndirect(getVkHandle(), buffer->getVkHandle(), offset); }
 
 void CommandBufferBase_::resetQueryPool(QueryPool& queryPool, uint32_t firstQuery, uint32_t queryCount)
 {
@@ -746,9 +618,7 @@ void CommandBufferBase_::resetQueryPool(QueryPool& queryPool, uint32_t queryInde
 void CommandBufferBase_::beginQuery(QueryPool& queryPool, uint32_t queryIndex, QueryControlFlags flags)
 {
 	if (queryIndex >= queryPool->getNumQueries())
-	{
-		throw ErrorValidationFailedEXT("Attempted to begin a query with index larger than the number of queries available to the QueryPool");
-	}
+	{ throw ErrorValidationFailedEXT("Attempted to begin a query with index larger than the number of queries available to the QueryPool"); }
 	_objectReferences.emplace_back(queryPool);
 	getDevice()->getVkBindings().vkCmdBeginQuery(getVkHandle(), queryPool->getVkHandle(), queryIndex, static_cast<VkQueryControlFlags>(flags));
 }
@@ -756,9 +626,7 @@ void CommandBufferBase_::beginQuery(QueryPool& queryPool, uint32_t queryIndex, Q
 void CommandBufferBase_::endQuery(QueryPool& queryPool, uint32_t queryIndex)
 {
 	if (queryIndex >= queryPool->getNumQueries())
-	{
-		throw ErrorValidationFailedEXT("Attempted to end a query with index larger than the number of queries available to the QueryPool");
-	}
+	{ throw ErrorValidationFailedEXT("Attempted to end a query with index larger than the number of queries available to the QueryPool"); }
 	_objectReferences.emplace_back(queryPool);
 	getDevice()->getVkBindings().vkCmdEndQuery(getVkHandle(), queryPool->getVkHandle(), queryIndex);
 }
@@ -767,9 +635,7 @@ void CommandBufferBase_::copyQueryPoolResults(
 	QueryPool& queryPool, uint32_t firstQuery, uint32_t queryCount, Buffer& dstBuffer, VkDeviceSize offset, VkDeviceSize stride, QueryResultFlags flags)
 {
 	if (firstQuery + queryCount >= queryPool->getNumQueries())
-	{
-		throw ErrorValidationFailedEXT("Attempted to copy query results with index larger than the number of queries available to the QueryPool");
-	}
+	{ throw ErrorValidationFailedEXT("Attempted to copy query results with index larger than the number of queries available to the QueryPool"); }
 	_objectReferences.emplace_back(queryPool);
 	getDevice()->getVkBindings().vkCmdCopyQueryPoolResults(
 		getVkHandle(), queryPool->getVkHandle(), firstQuery, queryCount, dstBuffer->getVkHandle(), offset, stride, static_cast<VkQueryControlFlags>(flags));
@@ -778,9 +644,7 @@ void CommandBufferBase_::copyQueryPoolResults(
 void CommandBufferBase_::writeTimestamp(QueryPool& queryPool, uint32_t queryIndex, PipelineStageFlags pipelineStage)
 {
 	if (queryIndex >= queryPool->getNumQueries())
-	{
-		throw ErrorValidationFailedEXT("Attempted to write a timestamp for a with index larger than the number of queries available to the QueryPool");
-	}
+	{ throw ErrorValidationFailedEXT("Attempted to write a timestamp for a with index larger than the number of queries available to the QueryPool"); }
 	_objectReferences.emplace_back(queryPool);
 	getDevice()->getVkBindings().vkCmdWriteTimestamp(getVkHandle(), static_cast<VkPipelineStageFlagBits>(pipelineStage), queryPool->getVkHandle(), queryIndex);
 }
@@ -839,9 +703,7 @@ void CommandBufferBase_::endTransformFeedback(pvrvk::Buffer counterBuffer, VkDev
 void CommandBufferBase_::beginQueryIndexed(QueryPool& queryPool, uint32_t queryIndex, QueryControlFlags flags, uint32_t index)
 {
 	if (queryIndex >= queryPool->getNumQueries())
-	{
-		throw ErrorValidationFailedEXT("Attempted to begin a query with index larger than the number of queries available to the QueryPool");
-	}
+	{ throw ErrorValidationFailedEXT("Attempted to begin a query with index larger than the number of queries available to the QueryPool"); }
 	_objectReferences.emplace_back(queryPool);
 	getDevice()->getVkBindings().vkCmdBeginQueryIndexedEXT(getVkHandle(), queryPool->getVkHandle(), queryIndex, static_cast<VkQueryControlFlags>(flags), index);
 }
@@ -849,9 +711,7 @@ void CommandBufferBase_::beginQueryIndexed(QueryPool& queryPool, uint32_t queryI
 void CommandBufferBase_::endQueryIndexed(QueryPool& queryPool, uint32_t queryIndex, uint32_t index)
 {
 	if (queryIndex >= queryPool->getNumQueries())
-	{
-		throw ErrorValidationFailedEXT("Attempted to end a query with index larger than the number of queries available to the QueryPool");
-	}
+	{ throw ErrorValidationFailedEXT("Attempted to end a query with index larger than the number of queries available to the QueryPool"); }
 	_objectReferences.emplace_back(queryPool);
 	getDevice()->getVkBindings().vkCmdEndQueryIndexedEXT(getVkHandle(), queryPool->getVkHandle(), queryIndex, index);
 }

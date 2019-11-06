@@ -7,6 +7,8 @@
 
 //!\cond NO_DOXYGEN
 #include "PVRVk/ExtensionsVk.h"
+#include "PVRVk/InstanceVk.h"
+
 namespace pvrvk {
 namespace Extensions {
 
@@ -59,14 +61,19 @@ VulkanExtensionList filterExtensions(const std::vector<ExtensionProperties>& ext
 	return outExtensions;
 }
 
-void enumerateInstanceExtensions(std::vector<ExtensionProperties>& outExtensionProps)
+void enumerateInstanceExtensions(std::vector<ExtensionProperties>& outExtensions) { enumerateInstanceExtensions(outExtensions, ""); }
+
+void enumerateInstanceExtensions(std::vector<ExtensionProperties>& outExtensions, const std::string& layerName)
 {
-	VkBindings vkBindings;
-	initVkBindings(&vkBindings);
 	uint32_t numItems = 0;
-	pvrvk::impl::vkThrowIfFailed(vkBindings.vkEnumerateInstanceExtensionProperties(nullptr, &numItems, nullptr), "ExtensionsVk::Failed to enumerate instance extension properties");
-	outExtensionProps.resize(numItems);
-	pvrvk::impl::vkThrowIfFailed(vkBindings.vkEnumerateInstanceExtensionProperties(nullptr, &numItems, (VkExtensionProperties*)outExtensionProps.data()),
+
+	const char* pLayerName = nullptr;
+	if (layerName.length() > 0) { pLayerName = layerName.c_str(); }
+
+	pvrvk::impl::vkThrowIfFailed(
+		pvrvk::getVkBindings().vkEnumerateInstanceExtensionProperties(pLayerName, &numItems, nullptr), "ExtensionsVk::Failed to enumerate instance extension properties");
+	outExtensions.resize(numItems);
+	pvrvk::impl::vkThrowIfFailed(pvrvk::getVkBindings().vkEnumerateInstanceExtensionProperties(pLayerName, &numItems, (VkExtensionProperties*)outExtensions.data()),
 		"ExtensionsVk::Failed to enumerate instance extension properties");
 }
 
@@ -76,10 +83,7 @@ bool isInstanceExtensionSupported(const std::string& extension)
 	enumerateInstanceExtensions(extensions);
 	for (uint32_t i = 0; i < extensions.size(); ++i)
 	{
-		if (!strcmp(extensions[i].getExtensionName(), extension.c_str()))
-		{
-			return true;
-		}
+		if (!strcmp(extensions[i].getExtensionName(), extension.c_str())) { return true; }
 	}
 	return false;
 }

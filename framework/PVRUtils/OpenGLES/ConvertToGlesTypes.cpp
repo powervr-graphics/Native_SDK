@@ -214,10 +214,7 @@ void getOpenGLFormat(PixelFormat pixelFormat, pvr::ColorSpace colorSpace, pvr::V
 		}
 		case static_cast<uint64_t>(CompressedPixelFormat::ETC2_RGB):
 		{
-			if (colorSpace == ColorSpace::sRGB)
-			{
-				glInternalFormat = GL_COMPRESSED_SRGB8_ETC2;
-			}
+			if (colorSpace == ColorSpace::sRGB) { glInternalFormat = GL_COMPRESSED_SRGB8_ETC2; }
 			else
 			{
 				glInternalFormat = GL_COMPRESSED_RGB8_ETC2;
@@ -226,10 +223,7 @@ void getOpenGLFormat(PixelFormat pixelFormat, pvr::ColorSpace colorSpace, pvr::V
 		}
 		case static_cast<uint64_t>(CompressedPixelFormat::ETC2_RGBA):
 		{
-			if (colorSpace == ColorSpace::sRGB)
-			{
-				glInternalFormat = GL_COMPRESSED_SRGB8_ALPHA8_ETC2_EAC;
-			}
+			if (colorSpace == ColorSpace::sRGB) { glInternalFormat = GL_COMPRESSED_SRGB8_ALPHA8_ETC2_EAC; }
 			else
 			{
 				glInternalFormat = GL_COMPRESSED_RGBA8_ETC2_EAC;
@@ -238,10 +232,7 @@ void getOpenGLFormat(PixelFormat pixelFormat, pvr::ColorSpace colorSpace, pvr::V
 		}
 		case static_cast<uint64_t>(CompressedPixelFormat::ETC2_RGB_A1):
 		{
-			if (colorSpace == ColorSpace::sRGB)
-			{
-				glInternalFormat = GL_COMPRESSED_SRGB8_PUNCHTHROUGH_ALPHA1_ETC2;
-			}
+			if (colorSpace == ColorSpace::sRGB) { glInternalFormat = GL_COMPRESSED_SRGB8_PUNCHTHROUGH_ALPHA1_ETC2; }
 			else
 			{
 				glInternalFormat = GL_COMPRESSED_RGB8_PUNCHTHROUGH_ALPHA1_ETC2;
@@ -252,10 +243,7 @@ void getOpenGLFormat(PixelFormat pixelFormat, pvr::ColorSpace colorSpace, pvr::V
 		{
 			if (dataType == VariableType::SignedInteger || dataType == VariableType::SignedIntegerNorm || dataType == VariableType::SignedShort ||
 				dataType == VariableType::SignedShortNorm || dataType == VariableType::SignedByte || dataType == VariableType::SignedByteNorm || dataType == VariableType::SignedFloat)
-			{
-				glInternalFormat = GL_COMPRESSED_SIGNED_R11_EAC;
-			}
-			else
+			{ glInternalFormat = GL_COMPRESSED_SIGNED_R11_EAC; } else
 			{
 				glInternalFormat = GL_COMPRESSED_R11_EAC;
 			}
@@ -265,10 +253,7 @@ void getOpenGLFormat(PixelFormat pixelFormat, pvr::ColorSpace colorSpace, pvr::V
 		{
 			if (dataType == VariableType::SignedInteger || dataType == VariableType::SignedIntegerNorm || dataType == VariableType::SignedShort ||
 				dataType == VariableType::SignedShortNorm || dataType == VariableType::SignedByte || dataType == VariableType::SignedByteNorm || dataType == VariableType::SignedFloat)
-			{
-				glInternalFormat = GL_COMPRESSED_SIGNED_RG11_EAC;
-			}
-			else
+			{ glInternalFormat = GL_COMPRESSED_SIGNED_RG11_EAC; } else
 			{
 				glInternalFormat = GL_COMPRESSED_RG11_EAC;
 			}
@@ -833,24 +818,16 @@ void getOpenGLFormat(PixelFormat pixelFormat, pvr::ColorSpace colorSpace, pvr::V
 			case GeneratePixelType4<'r', 'g', 'b', 'a', 8, 8, 8, 8>::ID:
 			{
 				glFormat = GL_RGBA;
-				if (colorSpace == ColorSpace::sRGB)
-				{
-					glInternalFormat = GL_SRGB8_ALPHA8;
-				}
+				if (colorSpace == ColorSpace::sRGB) { glInternalFormat = GL_SRGB8_ALPHA8; }
 				else
 				{
 					glInternalFormat = GL_RGBA8;
 				}
 				return;
 			}
-			case GeneratePixelType3<'r', 'g', 'b', 8, 8, 8>::ID:
-			{
-				glFormat = glInternalFormat = GL_RGB;
+			case GeneratePixelType3<'r', 'g', 'b', 8, 8, 8>::ID: { glFormat = glInternalFormat = GL_RGB;
 #ifdef GL_SRGB8
-				if (colorSpace == ColorSpace::sRGB)
-				{
-					glInternalFormat = GL_SRGB8;
-				}
+				if (colorSpace == ColorSpace::sRGB) { glInternalFormat = GL_SRGB8; }
 				else
 				{
 					glInternalFormat = GL_RGB8;
@@ -1275,9 +1252,7 @@ void getOpenGLFormat(PixelFormat pixelFormat, pvr::ColorSpace colorSpace, pvr::V
 				glInternalFormat = GL_RGB10_A2UI;
 				return;
 			}
-			case GeneratePixelType1<'d', 24>::ID:
-			{
-				glFormat = GL_DEPTH_COMPONENT;
+			case GeneratePixelType1<'d', 24>::ID: { glFormat = GL_DEPTH_COMPONENT;
 #if defined(GL_DEPTH_COMPONENT24)
 				glInternalFormat = GL_DEPTH_COMPONENT24;
 #else
@@ -1285,8 +1260,7 @@ void getOpenGLFormat(PixelFormat pixelFormat, pvr::ColorSpace colorSpace, pvr::V
 #endif
 				return;
 			}
-			case GeneratePixelType2<'d', 's', 24, 8>::ID:
-			{
+			case GeneratePixelType2<'d', 's', 24, 8>::ID: {
 #if defined(GL_DEPTH_STENCIL)
 				glFormat = GL_DEPTH_STENCIL;
 				glInternalFormat = GL_DEPTH24_STENCIL8;
@@ -1332,8 +1306,7 @@ void getOpenGLFormat(PixelFormat pixelFormat, pvr::ColorSpace colorSpace, pvr::V
 			}
 			break;
 		}
-		default:
-		{
+		default: {
 		}
 		}
 	}
@@ -1349,29 +1322,25 @@ void getOpenGLStorageFormat(PixelFormat pixelFormat, pvr::ColorSpace colorSpace,
 		// Format and type == 0 for compressed textures.
 		switch (pixelFormat.getPixelTypeId())
 		{
-		case static_cast<uint64_t>(CompressedPixelFormat::PVRTCI_2bpp_RGB):
-		{
+		case static_cast<uint64_t>(CompressedPixelFormat::PVRTCI_2bpp_RGB): {
 #ifdef GL_COMPRESSED_RGB_PVRTC_2BPPV1_IMG
 			glInternalFormat = GL_COMPRESSED_RGB_PVRTC_2BPPV1_IMG;
 #endif
 			return;
 		}
-		case static_cast<uint64_t>(CompressedPixelFormat::PVRTCI_2bpp_RGBA):
-		{
+		case static_cast<uint64_t>(CompressedPixelFormat::PVRTCI_2bpp_RGBA): {
 #ifdef GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG
 			glInternalFormat = GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG;
 #endif
 			return;
 		}
-		case static_cast<uint64_t>(CompressedPixelFormat::PVRTCI_4bpp_RGB):
-		{
+		case static_cast<uint64_t>(CompressedPixelFormat::PVRTCI_4bpp_RGB): {
 #ifdef GL_COMPRESSED_RGB_PVRTC_4BPPV1_IMG
 			glInternalFormat = GL_COMPRESSED_RGB_PVRTC_4BPPV1_IMG;
 #endif
 			return;
 		}
-		case static_cast<uint64_t>(CompressedPixelFormat::PVRTCI_4bpp_RGBA):
-		{
+		case static_cast<uint64_t>(CompressedPixelFormat::PVRTCI_4bpp_RGBA): {
 #ifdef GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG
 			glInternalFormat = GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG;
 #endif
@@ -1429,10 +1398,7 @@ void getOpenGLStorageFormat(PixelFormat pixelFormat, pvr::ColorSpace colorSpace,
 		}
 		case static_cast<uint64_t>(CompressedPixelFormat::ETC2_RGB):
 		{
-			if (colorSpace == ColorSpace::sRGB)
-			{
-				glInternalFormat = GL_COMPRESSED_SRGB8_ETC2;
-			}
+			if (colorSpace == ColorSpace::sRGB) { glInternalFormat = GL_COMPRESSED_SRGB8_ETC2; }
 			else
 			{
 				glInternalFormat = GL_COMPRESSED_RGB8_ETC2;
@@ -1441,10 +1407,7 @@ void getOpenGLStorageFormat(PixelFormat pixelFormat, pvr::ColorSpace colorSpace,
 		}
 		case static_cast<uint64_t>(CompressedPixelFormat::ETC2_RGBA):
 		{
-			if (colorSpace == ColorSpace::sRGB)
-			{
-				glInternalFormat = GL_COMPRESSED_SRGB8_ALPHA8_ETC2_EAC;
-			}
+			if (colorSpace == ColorSpace::sRGB) { glInternalFormat = GL_COMPRESSED_SRGB8_ALPHA8_ETC2_EAC; }
 			else
 			{
 				glInternalFormat = GL_COMPRESSED_RGBA8_ETC2_EAC;
@@ -1453,10 +1416,7 @@ void getOpenGLStorageFormat(PixelFormat pixelFormat, pvr::ColorSpace colorSpace,
 		}
 		case static_cast<uint64_t>(CompressedPixelFormat::ETC2_RGB_A1):
 		{
-			if (colorSpace == ColorSpace::sRGB)
-			{
-				glInternalFormat = GL_COMPRESSED_SRGB8_PUNCHTHROUGH_ALPHA1_ETC2;
-			}
+			if (colorSpace == ColorSpace::sRGB) { glInternalFormat = GL_COMPRESSED_SRGB8_PUNCHTHROUGH_ALPHA1_ETC2; }
 			else
 			{
 				glInternalFormat = GL_COMPRESSED_RGB8_PUNCHTHROUGH_ALPHA1_ETC2;
@@ -1467,10 +1427,7 @@ void getOpenGLStorageFormat(PixelFormat pixelFormat, pvr::ColorSpace colorSpace,
 		{
 			if (dataType == VariableType::SignedInteger || dataType == VariableType::SignedIntegerNorm || dataType == VariableType::SignedShort ||
 				dataType == VariableType::SignedShortNorm || dataType == VariableType::SignedByte || dataType == VariableType::SignedByteNorm || dataType == VariableType::SignedFloat)
-			{
-				glInternalFormat = GL_COMPRESSED_SIGNED_R11_EAC;
-			}
-			else
+			{ glInternalFormat = GL_COMPRESSED_SIGNED_R11_EAC; } else
 			{
 				glInternalFormat = GL_COMPRESSED_R11_EAC;
 			}
@@ -1480,10 +1437,7 @@ void getOpenGLStorageFormat(PixelFormat pixelFormat, pvr::ColorSpace colorSpace,
 		{
 			if (dataType == VariableType::SignedInteger || dataType == VariableType::SignedIntegerNorm || dataType == VariableType::SignedShort ||
 				dataType == VariableType::SignedShortNorm || dataType == VariableType::SignedByte || dataType == VariableType::SignedByteNorm || dataType == VariableType::SignedFloat)
-			{
-				glInternalFormat = GL_COMPRESSED_SIGNED_RG11_EAC;
-			}
-			else
+			{ glInternalFormat = GL_COMPRESSED_SIGNED_RG11_EAC; } else
 			{
 				glInternalFormat = GL_COMPRESSED_RG11_EAC;
 			}
@@ -1599,10 +1553,7 @@ void getOpenGLStorageFormat(PixelFormat pixelFormat, pvr::ColorSpace colorSpace,
 			{
 			case GeneratePixelType4<'r', 'g', 'b', 'a', 8, 8, 8, 8>::ID:
 			{
-				if (colorSpace == ColorSpace::sRGB)
-				{
-					glInternalFormat = GL_SRGB8_ALPHA8;
-				}
+				if (colorSpace == ColorSpace::sRGB) { glInternalFormat = GL_SRGB8_ALPHA8; }
 				else
 				{
 					glInternalFormat = GL_RGBA8;
@@ -1611,10 +1562,7 @@ void getOpenGLStorageFormat(PixelFormat pixelFormat, pvr::ColorSpace colorSpace,
 			}
 			case GeneratePixelType3<'r', 'g', 'b', 8, 8, 8>::ID:
 			{
-				if (colorSpace == ColorSpace::sRGB)
-				{
-					glInternalFormat = GL_SRGB8;
-				}
+				if (colorSpace == ColorSpace::sRGB) { glInternalFormat = GL_SRGB8; }
 				else
 				{
 					glInternalFormat = GL_RGB8;
@@ -1984,8 +1932,7 @@ void getOpenGLStorageFormat(PixelFormat pixelFormat, pvr::ColorSpace colorSpace,
 			}
 			break;
 		}
-		default:
-		{
+		default: {
 		}
 		}
 	}
@@ -2017,17 +1964,11 @@ GLenum convertToGles(ImageAspectFlags type)
 {
 	switch (type)
 	{
-	case ImageAspectFlags::Color:
-		return GL_COLOR_ATTACHMENT0;
-	case ImageAspectFlags::Depth:
-		return GL_DEPTH_ATTACHMENT;
-	case ImageAspectFlags::Stencil:
-		return GL_STENCIL_ATTACHMENT;
-	case ImageAspectFlags::DepthAndStencil:
-		return GL_DEPTH_STENCIL_ATTACHMENT;
-	default:
-		assertion(0, "Invalid image aspect type");
-		return GL_COLOR_ATTACHMENT0;
+	case ImageAspectFlags::Color: return GL_COLOR_ATTACHMENT0;
+	case ImageAspectFlags::Depth: return GL_DEPTH_ATTACHMENT;
+	case ImageAspectFlags::Stencil: return GL_STENCIL_ATTACHMENT;
+	case ImageAspectFlags::DepthAndStencil: return GL_DEPTH_STENCIL_ATTACHMENT;
+	default: assertion(0, "Invalid image aspect type"); return GL_COLOR_ATTACHMENT0;
 	}
 }
 
@@ -2098,10 +2039,8 @@ GLenum convertToGles(PrimitiveTopology primitiveType)
 		GL_TRIANGLE_FAN,
 	};
 	if (primitiveType > PrimitiveTopology::TriangleFan)
-	{
-		Log(LogLevel::Error, "drawPrimitiveType: Primitive type not supported at this API level (BUILD_API_MAX is defined and BUILD_API_MAX<31)");
-	}
-#else
+	{ Log(LogLevel::Error, "drawPrimitiveType: Primitive type not supported at this API level (BUILD_API_MAX is defined and BUILD_API_MAX<31)"); }
+	#else
 
 	static GLenum glPrimtiveType[] = { GL_POINTS, GL_LINES, GL_LINE_STRIP, GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN, GL_LINES_ADJACENCY_OES, GL_LINE_STRIP_ADJACENCY_OES,
 		GL_TRIANGLES_ADJACENCY_OES, GL_TRIANGLE_STRIP_ADJACENCY_OES, GL_PATCHES };

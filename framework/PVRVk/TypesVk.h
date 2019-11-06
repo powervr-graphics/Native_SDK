@@ -11,71 +11,54 @@
 #include <algorithm>
 #include <cassert>
 
-// Disable warning messages for 4351 (https://msdn.microsoft.com/en-us/library/1ywe7hcy.aspx).
-#pragma warning(disable : 4351)
+namespace pvrvk {
 /// <summary>Internal helper class that is used for unknown size arrays, utilising a small statically
 /// allocated space to avoid dynamic allocations if an array of "less-than" a number of items is required</summary>
 /// <typeparam name="ElementType"> The type of items stored </typeparam>
-/// <typeparam name="static_size"> The amount of statically allocated memory used. If overran, a dynamic allocation takes place.</typeparam>
-template<typename ElementType, size_t static_size>
+/// <typeparam name="staticSize"> The amount of statically allocated memory used. If overran, a dynamic allocation takes place.</typeparam>
+template<typename ElementType, size_t staticSize>
 class ArrayOrVector
 {
-	ElementType _array[static_size];
+private:
+	std::array<ElementType, staticSize> _array;
 	ElementType* _ptr;
 
 public:
 	/// <summary>Array indexing operator</summary>
 	/// <param name="idx"> Array index</param>
 	/// <returns> The indexed item</returns>
-	ElementType& operator[](size_t idx)
-	{
-		return _ptr[idx];
-	}
+	ElementType& operator[](size_t idx) { return _ptr[idx]; }
+
 	/// <summary>Array indexing operator</summary>
 	/// <param name="idx"> Array index</param>
 	/// <returns> The indexed item</returns>
-	const ElementType& operator[](size_t idx) const
-	{
-		return _ptr[idx];
-	}
+	const ElementType& operator[](size_t idx) const { return _ptr[idx]; }
+
 	/// <summary>Constructor. Takes the actual, runtime size of the array.</summary>
-	/// <param name="num_items_required"> The size required for the array</param>
-	ArrayOrVector(size_t num_items_required) : _array{}
+	/// <param name="numItemsRequired"> The size required for the array</param>
+	ArrayOrVector(size_t numItemsRequired) : _array{}
 	{
-		if (num_items_required > static_size)
-		{
-			_ptr = new ElementType[num_items_required]();
-		}
+		if (numItemsRequired > staticSize) { _ptr = new ElementType[numItemsRequired](); }
 		else
 		{
-			_ptr = _array;
+			_ptr = _array.data();
 		}
 	}
+
 	/// <summary>Destructor</summary>
 	~ArrayOrVector()
 	{
-		if (_ptr != _array)
-		{
-			delete[] _ptr;
-		}
+		if (_ptr != _array.data()) { delete[] _ptr; }
 	}
 
 	/// <summary>Returns the pointer to the actual storage used (whether static or dynamic)</summary>
 	/// <returns> The pointer to the actual storage used.</returns>
-	ElementType* get()
-	{
-		return _ptr;
-	}
+	ElementType* get() { return _ptr; }
+
 	/// <summary>Returns the pointer to the actual storage used (whether static or dynamic)</summary>
 	/// <returns> The pointer to the actual storage used.</returns>
-	const ElementType* get() const
-	{
-		return _ptr;
-	}
+	const ElementType* get() const { return _ptr; }
 };
-#pragma warning(default : 4351)
-
-namespace pvrvk {
 
 /// <summary>Contains the maximum limitation this framework supports</summary>
 namespace FrameworkCaps {
@@ -146,10 +129,7 @@ size_t insertSorted_overwrite(container& cont, typename container::iterator begi
 {
 	auto it = std::lower_bound(begin, end, item, compare);
 	auto offset = static_cast<int64_t>(it - begin);
-	if (it != end && !(compare(*it, item) || compare(item, *it)))
-	{
-		*it = item;
-	}
+	if (it != end && !(compare(*it, item) || compare(item, *it))) { *it = item; }
 	else
 	{
 		cont.insert(it, item);
@@ -346,31 +326,19 @@ public:
 
 	/// <summary>Get the red component (const)</summary>
 	/// <returns>The red component</returns>
-	float getR() const
-	{
-		return color[0];
-	}
+	float getR() const { return color[0]; }
 
 	/// <summary>Get green component (const)</summary>
 	/// <returns>Green component</returns>
-	float getG() const
-	{
-		return color[1];
-	}
+	float getG() const { return color[1]; }
 
 	/// <summary>Get blue component (const)</summary>
 	/// <returns>Blue component</returns>
-	float getB() const
-	{
-		return color[2];
-	}
+	float getB() const { return color[2]; }
 
 	/// <summary>Get alpha component (const)</summary>
 	/// <returns>Alpha component</returns>
-	float getA() const
-	{
-		return color[3];
-	}
+	float getA() const { return color[3]; }
 };
 
 /// <summary>Appends the provided pNext to the last pNext member of the provided base structure pNext chain</summary>
@@ -379,10 +347,7 @@ public:
 inline void appendPNext(VkBaseInStructure* baseStructure, const void* newPNext)
 {
 	auto currentPNext = const_cast<VkBaseInStructure*>(baseStructure->pNext);
-	while (currentPNext != nullptr)
-	{
-		currentPNext = const_cast<VkBaseInStructure*>(currentPNext->pNext);
-	}
+	while (currentPNext != nullptr) { currentPNext = const_cast<VkBaseInStructure*>(currentPNext->pNext); }
 	currentPNext = (VkBaseInStructure*)newPNext;
 }
 
@@ -442,178 +407,103 @@ public:
 
 	/// <summary>Get red floating point component</summary>
 	/// <returns>Red component</returns>
-	float getR() const
-	{
-		return color.float32[0];
-	}
+	float getR() const { return color.float32[0]; }
 
 	/// <summary>Set red floating point component</summary>
 	/// <param name="r">Red component</param>
-	void setR(const float r)
-	{
-		this->color.float32[0] = r;
-	}
+	void setR(const float r) { this->color.float32[0] = r; }
 
 	/// <summary>Get green floating point component</summary>
 	/// <returns>Green component</returns>
-	float getG() const
-	{
-		return color.float32[1];
-	}
+	float getG() const { return color.float32[1]; }
 
 	/// <summary>Set green floating point component</summary>
 	/// <param name="g">green component</param>
-	void setG(const float g)
-	{
-		this->color.float32[1] = g;
-	}
+	void setG(const float g) { this->color.float32[1] = g; }
 
 	/// <summary>Get blue floating point component</summary>
 	/// <returns>Blue component</returns>
-	float getB() const
-	{
-		return color.float32[2];
-	}
+	float getB() const { return color.float32[2]; }
 
 	/// <summary>Set blue floating point component</summary>
 	/// <param name="b">Blue component</param>
-	void setB(const float b)
-	{
-		this->color.float32[2] = b;
-	}
+	void setB(const float b) { this->color.float32[2] = b; }
 
 	/// <summary>Get alpha floating point component</summary>
 	/// <returns>Alpha component</returns>
-	float getA() const
-	{
-		return color.float32[3];
-	}
+	float getA() const { return color.float32[3]; }
 
 	/// <summary>Set alpha floating point component</summary>
 	/// <param name="a">Alpha component</param>
-	void setA(const float a)
-	{
-		this->color.float32[3] = a;
-	}
+	void setA(const float a) { this->color.float32[3] = a; }
 
 	/// <summary>Get red interger component</summary>
 	/// <returns>Red component</returns>
-	int32_t getRInt() const
-	{
-		return color.int32[0];
-	}
+	int32_t getRInt() const { return color.int32[0]; }
 
 	/// <summary>Set red integer point component</summary>
 	/// <param name="r">Red component</param>
-	void setR(const uint32_t r)
-	{
-		this->color.int32[0] = r;
-	}
+	void setR(const int32_t r) { this->color.int32[0] = r; }
 
 	/// <summary>Get green interger component</summary>
 	/// <returns>Green component</returns>
-	int32_t getGInt() const
-	{
-		return color.int32[1];
-	}
+	int32_t getGInt() const { return color.int32[1]; }
 
 	/// <summary>Set green integer point component</summary>
 	/// <param name="g">Green component</param>
-	void setG(const uint32_t g)
-	{
-		this->color.int32[1] = g;
-	}
+	void setG(const int32_t g) { this->color.int32[1] = g; }
 
 	/// <summary>Get blue interger component</summary>
 	/// <returns>Blue component</returns>
-	int32_t getBInt() const
-	{
-		return color.int32[2];
-	}
+	int32_t getBInt() const { return color.int32[2]; }
 
 	/// <summary>Set blue integer point component</summary>
 	/// <param name="b">Blue component</param>
-	void setB(const uint32_t b)
-	{
-		this->color.int32[2] = b;
-	}
+	void setB(const int32_t b) { this->color.int32[2] = b; }
 
 	/// <summary>Get alpha interger component</summary>
 	/// <returns>alpha component</returns>
-	int32_t getAInt() const
-	{
-		return color.int32[3];
-	}
+	int32_t getAInt() const { return color.int32[3]; }
 
 	/// <summary>Set alpha integer point component</summary>
 	/// <param name="a">alpha component</param>
-	void setA(const uint32_t a)
-	{
-		this->color.int32[3] = a;
-	}
+	void setA(const int32_t a) { this->color.int32[3] = a; }
 
 	/// <summary>Get red unsiged interger component</summary>
 	/// <returns>Red component</returns>
-	uint32_t getRUint() const
-	{
-		return color.uint32[0];
-	}
+	uint32_t getRUint() const { return color.uint32[0]; }
 
 	/// <summary>Set red unsiged integer point component</summary>
 	/// <param name="r">Red component</param>
-	void setRUint(const uint32_t r)
-	{
-		this->color.uint32[0] = r;
-	}
+	void setRUint(const uint32_t r) { this->color.uint32[0] = r; }
 
 	/// <summary>Get green unsiged interger component</summary>
 	/// <returns>Green component</returns>
-	uint32_t getGUint() const
-	{
-		return color.uint32[1];
-	}
+	uint32_t getGUint() const { return color.uint32[1]; }
 
 	/// <summary>Set green unsiged integer point component</summary>
 	/// <param name="g">Green component</param>
-	void setGUint(const uint32_t g)
-	{
-		this->color.uint32[1] = g;
-	}
+	void setGUint(const uint32_t g) { this->color.uint32[1] = g; }
 
 	/// <summary>Get blue unsiged interger component</summary>
 	/// <returns>Blue component</returns>
-	uint32_t getBUint() const
-	{
-		return color.uint32[2];
-	}
+	uint32_t getBUint() const { return color.uint32[2]; }
 
 	/// <summary>Set blue unsiged integer point component</summary>
 	/// <param name="b">Blue component</param>
-	void setBUint(const uint32_t b)
-	{
-		this->color.uint32[2] = b;
-	}
+	void setBUint(const uint32_t b) { this->color.uint32[2] = b; }
 
 	/// <summary>Get alpha unsiged interger component</summary>
 	/// <returns>Alpha component</returns>
-	uint32_t getAUint() const
-	{
-		return color.uint32[3];
-	}
+	uint32_t getAUint() const { return color.uint32[3]; }
 
 	/// <summary>Set alpha unsiged integer point component</summary>
 	/// <param name="a">Alpha component</param>
-	void setAUint(const uint32_t a)
-	{
-		this->color.uint32[3] = a;
-	}
+	void setAUint(const uint32_t a) { this->color.uint32[3] = a; }
 
 	/// <summary>Get color clear value</summary>
 	/// <returns>VkClearColorValue</returns>
-	const VkClearColorValue& getColor() const
-	{
-		return color;
-	}
+	const VkClearColorValue& getColor() const { return color; }
 };
 
 /// <summary>Represents the geometric size (number of rows/columns/slices in x-y-z) and number of array and mipmap layers
@@ -634,31 +524,19 @@ public:
 
 	/// <summary>Get the number of array levels</summary>
 	/// <returns>Num array levels</returns>
-	inline uint32_t getNumArrayLevels() const
-	{
-		return numArrayLevels;
-	}
+	inline uint32_t getNumArrayLevels() const { return numArrayLevels; }
 
 	/// <summary>Set Num array levels</summary>
-	/// <param name="numArrayLevels">Number of array levels</param>
-	inline void setNumArrayLevels(const uint32_t& numArrayLevels)
-	{
-		this->numArrayLevels = numArrayLevels;
-	}
+	/// <param name="inNumArrayLevels">Number of array levels</param>
+	inline void setNumArrayLevels(const uint32_t& inNumArrayLevels) { this->numArrayLevels = inNumArrayLevels; }
 
 	/// <summary>Get num mip levels</summary>
 	/// <returns>Number of mipmap levels</returns>
-	inline uint32_t getNumMipLevels() const
-	{
-		return numMipLevels;
-	}
+	inline uint32_t getNumMipLevels() const { return numMipLevels; }
 
 	/// <summary>Set the number of mip map levels</summary>
-	/// <param name="numMipLevels">Num mip map levels</param>
-	inline void setNumMipLevels(const uint32_t& numMipLevels)
-	{
-		this->numMipLevels = numMipLevels;
-	}
+	/// <param name="inNumMipLevels">Num mip map levels</param>
+	inline void setNumMipLevels(const uint32_t& inNumMipLevels) { this->numMipLevels = inNumMipLevels; }
 };
 
 /// <summary>Represents the geometric size (number of rows/columns/slices in x-y-z) and number of array and mipmap layers
@@ -716,28 +594,16 @@ public:
 	}
 	/// <summary>Get the offset x</summary>
 	/// <returns>The offset x</returns>
-	inline float getX() const
-	{
-		return x;
-	}
+	inline float getX() const { return x; }
 	/// <summary>Sets the offset x</summary>
-	/// <param name="x">The new offset x</param>
-	inline void setX(float x)
-	{
-		this->x = x;
-	}
+	/// <param name="inX">The new offset x</param>
+	inline void setX(float inX) { this->x = inX; }
 	/// <summary>Get the offset y</summary>
 	/// <returns>The offset y</returns>
-	inline float getY() const
-	{
-		return y;
-	}
+	inline float getY() const { return y; }
 	/// <summary>Sets the offset y</summary>
-	/// <param name="y">The new offset y</param>
-	inline void setY(float y)
-	{
-		this->y = y;
-	}
+	/// <param name="inY">The new offset y</param>
+	inline void setY(float inY) { this->y = inY; }
 };
 
 /// <summary>2 dimensional extent which contains the width and height</summary>
@@ -764,28 +630,16 @@ public:
 	}
 	/// <summary>Get the extent width</summary>
 	/// <returns>The extent width</returns>
-	inline float getWidth() const
-	{
-		return width;
-	}
+	inline float getWidth() const { return width; }
 	/// <summary>Sets the extent width</summary>
-	/// <param name="width">An extent width</param>
-	inline void setWidth(float width)
-	{
-		this->width = width;
-	}
+	/// <param name="inWidth">An extent width</param>
+	inline void setWidth(float inWidth) { this->width = inWidth; }
 	/// <summary>Get the extent height</summary>
 	/// <returns>The extent height</returns>
-	inline float getHeight() const
-	{
-		return height;
-	}
+	inline float getHeight() const { return height; }
 	/// <summary>Sets the extent height</summary>
-	/// <param name="height">An extent height</param>
-	inline void setHeight(float height)
-	{
-		this->height = height;
-	}
+	/// <param name="inHeight">An extent height</param>
+	inline void setHeight(float inHeight) { this->height = inHeight; }
 };
 
 /// <summary>2-dimensional floating point rectangle</summary>
@@ -808,31 +662,19 @@ public:
 
 	/// <summary>Get Offset</summary>
 	/// <returns>Offset</returns>
-	inline const Offset2Df& getOffset() const
-	{
-		return offset;
-	}
+	inline const Offset2Df& getOffset() const { return offset; }
 
 	/// <summary>Set Offset</summary>
-	/// <param name="offset">Offset</param>
-	inline void setOffset(const Offset2Df& offset)
-	{
-		this->offset = offset;
-	}
+	/// <param name="inOffset">Offset</param>
+	inline void setOffset(const Offset2Df& inOffset) { this->offset = inOffset; }
 
 	/// <summary>Get Extent</summary>
 	/// <returns>Extent</returns>
-	inline const Extent2Df& getExtent() const
-	{
-		return extent;
-	}
+	inline const Extent2Df& getExtent() const { return extent; }
 
 	/// <summary>Set Extent</summary>
-	/// <param name="extent">Extent</param>
-	inline void setExtent(const Extent2Df& extent)
-	{
-		this->extent = extent;
-	}
+	/// <param name="inExtent">Extent</param>
+	inline void setExtent(const Extent2Df& inExtent) { this->extent = inExtent; }
 };
 
 /// <summary>Containes application info used for creating vulkan instance</summary>
@@ -866,64 +708,34 @@ public:
 
 	/// <summary>Get the Application name</summary>
 	/// <returns>The application name</returns>
-	inline const std::string& getApplicationName() const
-	{
-		return applicationName;
-	}
+	inline const std::string& getApplicationName() const { return applicationName; }
 	/// <summary>Sets the application name</summary>
 	/// <param name="applicationName">The application name to use</param>
-	inline void setApplicationName(const std::string& applicationName)
-	{
-		this->applicationName = applicationName;
-	}
+	inline void setApplicationName(const std::string& inApplicationName) { this->applicationName = inApplicationName; }
 	/// <summary>Get the Application version</summary>
 	/// <returns>The application version</returns>
-	inline uint32_t getApplicationVersion() const
-	{
-		return applicationVersion;
-	}
+	inline uint32_t getApplicationVersion() const { return applicationVersion; }
 	/// <summary>Sets the application version</summary>
 	/// <param name="applicationVersion">The application version to use</param>
-	inline void setApplicationVersion(uint32_t applicationVersion)
-	{
-		this->applicationVersion = applicationVersion;
-	}
+	inline void setApplicationVersion(uint32_t inApplicationVersion) { this->applicationVersion = inApplicationVersion; }
 	/// <summary>Get the Engine name</summary>
 	/// <returns>The engine name</returns>
-	inline const std::string& getEngineName() const
-	{
-		return engineName;
-	}
+	inline const std::string& getEngineName() const { return engineName; }
 	/// <summary>Sets the engine name</summary>
 	/// <param name="engineName">The engine name to use</param>
-	inline void setEngineName(const std::string& engineName)
-	{
-		this->engineName = engineName;
-	}
+	inline void setEngineName(const std::string& inEngineName) { this->engineName = inEngineName; }
 	/// <summary>Get the Engine version</summary>
 	/// <returns>The engine version</returns>
-	inline uint32_t getEngineVersion() const
-	{
-		return engineVersion;
-	}
+	inline uint32_t getEngineVersion() const { return engineVersion; }
 	/// <summary>Sets the engine version</summary>
 	/// <param name="engineVersion">The engine version to use</param>
-	inline void setEngineVersion(uint32_t engineVersion)
-	{
-		this->engineVersion = engineVersion;
-	}
+	inline void setEngineVersion(uint32_t inEngineVersion) { this->engineVersion = inEngineVersion; }
 	/// <summary>Get the api version</summary>
 	/// <returns>The api version</returns>
-	inline uint32_t getApiVersion() const
-	{
-		return apiVersion;
-	}
+	inline uint32_t getApiVersion() const { return apiVersion; }
 	/// <summary>Sets the api version</summary>
 	/// <param name="apiVersion">The api version to use</param>
-	inline void setApiVersion(uint32_t apiVersion)
-	{
-		this->apiVersion = apiVersion;
-	}
+	inline void setApiVersion(uint32_t inApiVersion) { this->apiVersion = inApiVersion; }
 };
 
 /// <summary>Contains information about the queues to create for a single queue family. A set of DeviceQueueCreateInfo structures for each queue families are passed in to
@@ -936,20 +748,14 @@ private:
 
 public:
 	/// <summary>Constructor</summary>
-	DeviceQueueCreateInfo()
-	{
-		setQueueFamilyIndex(static_cast<uint32_t>(-1));
-	}
+	DeviceQueueCreateInfo() { setQueueFamilyIndex(static_cast<uint32_t>(-1)); }
 	/// <summary>Constructor. Each of queueCount queues will have a default priority of 1.0f</summary>
 	/// <param name="queueFamilyIndex">The queue family index</param>
 	/// <param name="queueCount">The number of queues to create in the particular family type</param>
 	DeviceQueueCreateInfo(uint32_t queueFamilyIndex, uint32_t queueCount)
 	{
 		setQueueFamilyIndex(queueFamilyIndex);
-		for (uint32_t i = 0; i < queueCount; i++)
-		{
-			addQueue();
-		}
+		for (uint32_t i = 0; i < queueCount; i++) { addQueue(); }
 	}
 
 	/// <summary>Constructor</summary>
@@ -964,59 +770,32 @@ public:
 
 	/// <summary>Retrieve the queue family index</summary>
 	/// <returns>The queue family index</returns>
-	inline uint32_t getQueueFamilyIndex() const
-	{
-		return queueFamilyIndex;
-	}
+	inline uint32_t getQueueFamilyIndex() const { return queueFamilyIndex; }
 	/// <summary>Sets the queue family index</summary>
-	/// <param name="queueFamilyIndex">The queue family index</param>
-	inline void setQueueFamilyIndex(uint32_t queueFamilyIndex)
-	{
-		this->queueFamilyIndex = queueFamilyIndex;
-	}
+	/// <param name="inQueueFamilyIndex">The queue family index</param>
+	inline void setQueueFamilyIndex(uint32_t inQueueFamilyIndex) { this->queueFamilyIndex = inQueueFamilyIndex; }
 	/// <summary>Retrieve the number of queues created in the queue family index</summary>
 	/// <returns>The number of queues in the particular queue family index</returns>
-	inline const uint32_t getNumQueues() const
-	{
-		return static_cast<uint32_t>(queuePriorities.size());
-	}
+	inline const uint32_t getNumQueues() const { return static_cast<uint32_t>(queuePriorities.size()); }
 	/// <summary>Retrieve the queues created in the queue family index (const)</summary>
 	/// <returns>The queues in the particular queue family index (const)</returns>
-	inline const std::vector<float>& getQueuePriorities() const
-	{
-		return queuePriorities;
-	}
+	inline const std::vector<float>& getQueuePriorities() const { return queuePriorities; }
 	/// <summary>Retrieve the queues created in the queue family index</summary>
 	/// <returns>The queues in the particular queue family index</returns>
-	inline std::vector<float>& getQueuePriorities()
-	{
-		return queuePriorities;
-	}
+	inline std::vector<float>& getQueuePriorities() { return queuePriorities; }
 	/// <summary>Retrieve the queue priority of the queue at the specified index</summary>
 	/// <param name="index">The index of the queue priority to get</param>
 	/// <returns>The queue priority of the queue at the specified index</returns>
-	inline float getQueuePriority(uint32_t index) const
-	{
-		return queuePriorities[index];
-	}
+	inline float getQueuePriority(uint32_t index) const { return queuePriorities[index]; }
 	/// <summary>Adds a queue with a particular priority</summary>
 	/// <param name="priority">The queue priority</param>
-	inline void addQueue(float priority = 1.0f)
-	{
-		queuePriorities.emplace_back(priority);
-	}
+	inline void addQueue(float priority = 1.0f) { queuePriorities.emplace_back(priority); }
 	/// <summary>Sets a queues priority</summary>
 	/// <param name="index">The index of queue priority to set</param>
 	/// <param name="priority">The new queue priority</param>
-	inline void addQueueAtIndex(uint32_t index, float priority = 1.0f)
-	{
-		queuePriorities[index] = priority;
-	}
+	inline void addQueueAtIndex(uint32_t index, float priority = 1.0f) { queuePriorities[index] = priority; }
 	/// <summary>Clears all the queue priorities</summary>
-	inline void clearQueues()
-	{
-		queuePriorities.clear();
-	}
+	inline void clearQueues() { queuePriorities.clear(); }
 };
 
 /// <summary>A wrapper for a Vulkan extension and its specification version</summary>
@@ -1030,39 +809,24 @@ public:
 
 	/// <summary>Get the name of the Vulkan extension</summary>
 	/// <returns>The name of the Vulkan extension</returns>
-	inline const std::string& getName() const
-	{
-		return _name;
-	}
+	inline const std::string& getName() const { return _name; }
 
 	/// <summary>Set the name of the Vulkan extension</summary>
 	/// <param name="name">The name of the Vulkan extension</param>
-	inline void setName(std::string name)
-	{
-		this->_name = name;
-	}
+	inline void setName(std::string name) { this->_name = name; }
 
 	/// <summary>Get the spec version of the Vulkan extension</summary>
 	/// <returns>The spec version of the Vulkan extension</returns>
-	inline uint32_t getSpecVersion() const
-	{
-		return _specVersion;
-	}
+	inline uint32_t getSpecVersion() const { return _specVersion; }
 
 	/// <summary>Set the spec version of the Vulkan extension</summary>
 	/// <param name="specVersion">The spec version of the Vulkan extension</param>
-	inline void setSpecVersion(uint32_t specVersion)
-	{
-		this->_specVersion = specVersion;
-	}
+	inline void setSpecVersion(uint32_t specVersion) { this->_specVersion = specVersion; }
 
 	/// <summary>Overridden operator==.</summary>
 	/// <param name="rhs">The VulkanLayer to compare against for equality</param>
 	/// <returns>True if the VulkanExtension matches this</returns>
-	bool operator==(const VulkanExtension& rhs) const
-	{
-		return getName() == rhs.getName() && getSpecVersion() == rhs.getSpecVersion();
-	}
+	bool operator==(const VulkanExtension& rhs) const { return getName() == rhs.getName() && getSpecVersion() == rhs.getSpecVersion(); }
 
 private:
 	std::string _name;
@@ -1084,67 +848,40 @@ public:
 
 	/// <summary>Get the name of the Vulkan layer</summary>
 	/// <returns>The name of the Vulkan layer</returns>
-	inline const std::string& getName() const
-	{
-		return _name;
-	}
+	inline const std::string& getName() const { return _name; }
 
 	/// <summary>Set the name of the Vulkan layer</summary>
 	/// <param name="name">The name of the Vulkan layer</param>
-	inline void setName(std::string name)
-	{
-		this->_name = name;
-	}
+	inline void setName(std::string name) { this->_name = name; }
 
 	/// <summary>Get the spec version of the Vulkan layer</summary>
 	/// <returns>The spec version of the Vulkan layer</returns>
-	inline uint32_t getSpecVersion() const
-	{
-		return _specVersion;
-	}
+	inline uint32_t getSpecVersion() const { return _specVersion; }
 
 	/// <summary>Set the spec version of the Vulkan layer</summary>
 	/// <param name="specVersion">The spec version of the Vulkan layer</param>
-	inline void setSpecVersion(uint32_t specVersion)
-	{
-		this->_specVersion = specVersion;
-	}
+	inline void setSpecVersion(uint32_t specVersion) { this->_specVersion = specVersion; }
 
 	/// <summary>Get the implementation version of the Vulkan layer</summary>
 	/// <returns>The implementation version of the Vulkan layer</returns>
-	inline uint32_t getImplementationVersion() const
-	{
-		return _implementationVersion;
-	}
+	inline uint32_t getImplementationVersion() const { return _implementationVersion; }
 
 	/// <summary>Set the implementation version of the Vulkan layer</summary>
 	/// <param name="implementationVersion">The implementation version of the Vulkan layer</param>
-	inline void setImplementationVersion(uint32_t implementationVersion)
-	{
-		this->_implementationVersion = implementationVersion;
-	}
+	inline void setImplementationVersion(uint32_t implementationVersion) { this->_implementationVersion = implementationVersion; }
 
 	/// <summary>Get the description of the Vulkan layer</summary>
 	/// <returns>The description of the Vulkan layer</returns>
-	inline const std::string& getDescription() const
-	{
-		return _description;
-	}
+	inline const std::string& getDescription() const { return _description; }
 
 	/// <summary>Set the description of the Vulkan layer</summary>
 	/// <param name="description">The description of the Vulkan layer</param>
-	inline void setDescription(std::string description)
-	{
-		this->_description = description;
-	}
+	inline void setDescription(std::string description) { this->_description = description; }
 
 	/// <summary>Overridden operator==.</summary>
 	/// <param name="rhs">The VulkanLayer to compare against for equality</param>
 	/// <returns>True if the VulkanLayer matches this</returns>
-	bool operator==(const VulkanLayer& rhs) const
-	{
-		return getName() == rhs.getName() && getSpecVersion() == rhs.getSpecVersion();
-	}
+	bool operator==(const VulkanLayer& rhs) const { return getName() == rhs.getName() && getSpecVersion() == rhs.getSpecVersion(); }
 
 private:
 	std::string _name;
@@ -1162,23 +899,14 @@ public:
 
 	/// <summary>Get the number of extensions</summary>
 	/// <returns>Theextensions</returns>
-	inline uint32_t getNumExtensions() const
-	{
-		return static_cast<uint32_t>(_extensions.size());
-	}
+	inline uint32_t getNumExtensions() const { return static_cast<uint32_t>(_extensions.size()); }
 	/// <summary>Get the list of extensions</summary>
 	/// <returns>A list of extensions</returns>
-	inline const std::vector<VulkanExtension>& getExtensions() const
-	{
-		return _extensions;
-	}
+	inline const std::vector<VulkanExtension>& getExtensions() const { return _extensions; }
 	/// <summary>Retrieve the extension at the index specified</summary>
 	/// <param name="index">The index of the extension to retrieve</param>
 	/// <returns>The extension at the index specified</returns>
-	inline const VulkanExtension& getExtension(uint32_t index) const
-	{
-		return _extensions[index];
-	}
+	inline const VulkanExtension& getExtension(uint32_t index) const { return _extensions[index]; }
 	/// <summary>Sets the extensions list</summary>
 	/// <param name="extensions">A list of extensions to enable</param>
 	inline void setExtensions(const std::vector<VulkanExtension>& extensions)
@@ -1188,16 +916,10 @@ public:
 	}
 	/// <summary>Add a new extension</summary>
 	/// <param name="extension">A new extension.</param>
-	inline void addExtension(const VulkanExtension& extension)
-	{
-		this->_extensions.emplace_back(extension);
-	}
+	inline void addExtension(const VulkanExtension& extension) { this->_extensions.emplace_back(extension); }
 	/// <summary>Add a new extension to add by name</summary>
 	/// <param name="extensionName">A new extension.</param>
-	inline void addExtension(const std::string& extensionName)
-	{
-		this->_extensions.emplace_back(VulkanExtension(extensionName));
-	}
+	inline void addExtension(const std::string& extensionName) { this->_extensions.emplace_back(VulkanExtension(extensionName)); }
 	/// <summary>Removes a particular extension from the list of extensions</summary>
 	/// <param name="extension">The extension to remove from the existing list of extensions</param>
 	inline void removeExtension(const VulkanExtension& extension)
@@ -1225,10 +947,7 @@ public:
 	/// <summary>Check if extension is enabled</summary>
 	/// <param name="extension">Extension</param>
 	/// <returns>Return true if it is enabled</returns>
-	bool containsExtension(const VulkanExtension& extension) const
-	{
-		return std::find(_extensions.begin(), _extensions.end(), extension) != _extensions.end();
-	}
+	bool containsExtension(const VulkanExtension& extension) const { return std::find(_extensions.begin(), _extensions.end(), extension) != _extensions.end(); }
 
 private:
 	std::vector<pvrvk::VulkanExtension> _extensions;
@@ -1243,23 +962,14 @@ public:
 
 	/// <summary>Get the number of layers</summary>
 	/// <returns>Thelayers</returns>
-	inline uint32_t getNumLayers() const
-	{
-		return static_cast<uint32_t>(_layers.size());
-	}
+	inline uint32_t getNumLayers() const { return static_cast<uint32_t>(_layers.size()); }
 	/// <summary>Get the list of layers</summary>
 	/// <returns>A list of layers</returns>
-	inline const std::vector<VulkanLayer>& getLayers() const
-	{
-		return _layers;
-	}
+	inline const std::vector<VulkanLayer>& getLayers() const { return _layers; }
 	/// <summary>Retrieve the layer at the index specified</summary>
 	/// <param name="index">The index of the layer to retrieve</param>
 	/// <returns>The layer at the index specified</returns>
-	inline const VulkanLayer& getLayer(uint32_t index) const
-	{
-		return _layers[index];
-	}
+	inline const VulkanLayer& getLayer(uint32_t index) const { return _layers[index]; }
 	/// <summary>Sets the layers list</summary>
 	/// <param name="layers">A list of layers to enable</param>
 	inline void setLayers(const std::vector<VulkanLayer>& layers)
@@ -1269,22 +979,13 @@ public:
 	}
 	/// <summary>Add a new layer</summary>
 	/// <param name="layer">A new layer.</param>
-	inline void addLayer(const VulkanLayer& layer)
-	{
-		this->_layers.emplace_back(layer);
-	}
+	inline void addLayer(const VulkanLayer& layer) { this->_layers.emplace_back(layer); }
 	/// <summary>Add a new layer to add by name</summary>
 	/// <param name="layerName">A new layer.</param>
-	inline void addLayer(const std::string& layerName)
-	{
-		this->_layers.emplace_back(VulkanLayer(layerName));
-	}
+	inline void addLayer(const std::string& layerName) { this->_layers.emplace_back(VulkanLayer(layerName)); }
 	/// <summary>Removes a particular layer from the list of layers</summary>
 	/// <param name="layer">The layer to remove from the existing list of layers</param>
-	inline void removeLayer(const VulkanLayer& layer)
-	{
-		this->_layers.erase(std::remove(this->_layers.begin(), this->_layers.end(), layer), this->_layers.end());
-	}
+	inline void removeLayer(const VulkanLayer& layer) { this->_layers.erase(std::remove(this->_layers.begin(), this->_layers.end(), layer), this->_layers.end()); }
 	/// <summary>Removes a particular layer from the list of layers using only an layer name</summary>
 	/// <param name="layerName">The layer to remove from the existing list of layers using only its name</param>
 	inline void removeLayer(const std::string& layerName)
@@ -1304,10 +1005,7 @@ public:
 	/// <summary>Check if layer is enabled</summary>
 	/// <param name="layer">Layer</param>
 	/// <returns>Return true if enabled</returns>
-	bool containsLayer(const VulkanLayer& layer) const
-	{
-		return std::find(_layers.begin(), _layers.end(), layer) != _layers.end();
-	}
+	bool containsLayer(const VulkanLayer& layer) const { return std::find(_layers.begin(), _layers.end(), layer) != _layers.end(); }
 
 private:
 	std::vector<pvrvk::VulkanLayer> _layers;
@@ -1330,8 +1028,7 @@ public:
 	/// <param name="enabledFeatures">A set of Vulkan device features to enable for the device.</param>
 	/// <param name="flags">A set of reserved device creation flags.</param>
 	explicit DeviceCreateInfo(const std::vector<DeviceQueueCreateInfo>& queueCreateInfos = std::vector<DeviceQueueCreateInfo>(),
-		const VulkanExtensionList& enabledExtensions = VulkanExtensionList(), const PhysicalDeviceFeatures* enabledFeatures = nullptr,
-		DeviceCreateFlags flags = DeviceCreateFlags::e_NONE)
+		const VulkanExtensionList& enabledExtensions = VulkanExtensionList(), const PhysicalDeviceFeatures* enabledFeatures = nullptr, DeviceCreateFlags flags = DeviceCreateFlags::e_NONE)
 		: flags(flags), enabledFeatures(enabledFeatures)
 	{
 		setDeviceQueueCreateInfos(queueCreateInfos);
@@ -1340,92 +1037,64 @@ public:
 
 	/// <summary>Get the device creation flags</summary>
 	/// <returns>A set of DeviceCreateFlags</returns>
-	inline const DeviceCreateFlags& getFlags() const
-	{
-		return flags;
-	}
+	inline const DeviceCreateFlags& getFlags() const { return flags; }
+
 	/// <summary>Sets the device creation info flags</summary>
-	/// <param name="flags">A set of DeviceCreateFlags specifying how the device will be created.</param>
-	inline void setFlags(const DeviceCreateFlags& flags)
-	{
-		this->flags = flags;
-	}
+	/// <param name="inFlags">A set of DeviceCreateFlags specifying how the device will be created.</param>
+	inline void setFlags(const DeviceCreateFlags& inFlags) { this->flags = inFlags; }
 
 	/// <summary>Get the number of queue create info structures</summary>
 	/// <returns>The number of device queue create infos</returns>
-	inline uint32_t getNumDeviceQueueCreateInfos() const
-	{
-		return static_cast<uint32_t>(queueCreateInfos.size());
-	}
+	inline uint32_t getNumDeviceQueueCreateInfos() const { return static_cast<uint32_t>(queueCreateInfos.size()); }
+
 	/// <summary>Get the queue create info structures</summary>
 	/// <returns>The device queue create infos</returns>
-	inline const std::vector<DeviceQueueCreateInfo>& getDeviceQueueCreateInfos() const
-	{
-		return queueCreateInfos;
-	}
+	inline const std::vector<DeviceQueueCreateInfo>& getDeviceQueueCreateInfos() const { return queueCreateInfos; }
+
 	/// <summary>Get the queue create info structure at the specified index (const)</summary>
 	/// <param name="index">The specific index of the queue create info structure to set.</param>
 	/// <returns>The device queue create info at the specified index (const)</returns>
-	inline const DeviceQueueCreateInfo& getDeviceQueueCreateInfo(uint32_t index) const
-	{
-		return queueCreateInfos[index];
-	}
+	inline const DeviceQueueCreateInfo& getDeviceQueueCreateInfo(uint32_t index) const { return queueCreateInfos[index]; }
+
 	/// <summary>Get the queue create info structure at the specified index</summary>
 	/// <param name="index">The specific index of the queue create info structure to get.</param>
 	/// <returns>The device queue create info at the specified index</returns>
-	inline DeviceQueueCreateInfo& getDeviceQueueCreateInfo(uint32_t index)
-	{
-		return queueCreateInfos[index];
-	}
+	inline DeviceQueueCreateInfo& getDeviceQueueCreateInfo(uint32_t index) { return queueCreateInfos[index]; }
+
 	/// <summary>Sets the device queue creation info structures</summary>
-	/// <param name="queueCreateInfos">A list of DeviceQueueCreateInfo specifying the queue family indices and corresponding queues (and priorites) to create.</param>
-	inline void setDeviceQueueCreateInfos(const std::vector<DeviceQueueCreateInfo>& queueCreateInfos)
+	/// <param name="inQueueCreateInfos">A list of DeviceQueueCreateInfo specifying the queue family indices and corresponding queues (and priorites) to create.</param>
+	inline void setDeviceQueueCreateInfos(const std::vector<DeviceQueueCreateInfo>& inQueueCreateInfos)
 	{
-		this->queueCreateInfos.resize(queueCreateInfos.size());
-		std::copy(queueCreateInfos.begin(), queueCreateInfos.end(), this->queueCreateInfos.begin());
+		this->queueCreateInfos.resize(inQueueCreateInfos.size());
+		std::copy(inQueueCreateInfos.begin(), inQueueCreateInfos.end(), this->queueCreateInfos.begin());
 	}
 	/// <summary>Adds a new device queue creation info structure</summary>
 	/// <param name="deviceQueueCreateInfo">A DeviceQueueCreateInfo specifying a queue family index and its corresponding queues (and priorites) to create.</param>
-	inline void addDeviceQueue(DeviceQueueCreateInfo deviceQueueCreateInfo = DeviceQueueCreateInfo())
-	{
-		queueCreateInfos.emplace_back(deviceQueueCreateInfo);
-	}
+	inline void addDeviceQueue(DeviceQueueCreateInfo deviceQueueCreateInfo = DeviceQueueCreateInfo()) { queueCreateInfos.emplace_back(deviceQueueCreateInfo); }
+
 	/// <summary>Adds a new device queue creation info structure at the specified index</summary>
 	/// <param name="index">The index of the device queue create info structure to set.</param>
 	/// <param name="deviceQueueCreateInfo">A DeviceQueueCreateInfo specifying a queue family index and its corresponding queues (and priorites) to create.</param>
-	inline void addDeviceQueueAtIndex(uint32_t index, DeviceQueueCreateInfo deviceQueueCreateInfo = DeviceQueueCreateInfo())
-	{
-		queueCreateInfos[index] = deviceQueueCreateInfo;
-	}
+	inline void addDeviceQueueAtIndex(uint32_t index, DeviceQueueCreateInfo deviceQueueCreateInfo = DeviceQueueCreateInfo()) { queueCreateInfos[index] = deviceQueueCreateInfo; }
+
 	/// <summary>Clears the device queue create info structures</summary>
-	inline void clearDeviceQueueCreateInfos()
-	{
-		queueCreateInfos.clear();
-	}
+	inline void clearDeviceQueueCreateInfos() { queueCreateInfos.clear(); }
+
 	/// <summary>Get the list of enabled extensions</summary>
 	/// <returns>The list of enabled instance extensions</returns>
-	inline const VulkanExtensionList& getExtensionList() const
-	{
-		return enabledExtensions;
-	}
+	inline const VulkanExtensionList& getExtensionList() const { return enabledExtensions; }
+
 	/// <summary>Sets the enabled extension list</summary>
-	/// <param name="enabledExtensions">A VulkanExtensionList</param>
-	inline void setExtensionList(const VulkanExtensionList& enabledExtensions)
-	{
-		this->enabledExtensions = enabledExtensions;
-	}
+	/// <param name="inEnabledExtensions">A VulkanExtensionList</param>
+	inline void setExtensionList(const VulkanExtensionList& inEnabledExtensions) { this->enabledExtensions = inEnabledExtensions; }
+
 	/// <summary>Get a pointer to the physical device features structure</summary>
 	/// <returns>A pointer to the enabled physical device features</returns>
-	inline const PhysicalDeviceFeatures* getEnabledFeatures() const
-	{
-		return enabledFeatures;
-	}
+	inline const PhysicalDeviceFeatures* getEnabledFeatures() const { return enabledFeatures; }
+
 	/// <summary>Sets the enabled physical device features</summary>
-	/// <param name="enabledFeatures">A pointer to a set of PhysicalDeviceFeatures.</param>
-	inline void setEnabledFeatures(const PhysicalDeviceFeatures* enabledFeatures)
-	{
-		this->enabledFeatures = enabledFeatures;
-	}
+	/// <param name="inEnabledFeatures">A pointer to a set of PhysicalDeviceFeatures.</param>
+	inline void setEnabledFeatures(const PhysicalDeviceFeatures* inEnabledFeatures) { this->enabledFeatures = inEnabledFeatures; }
 };
 
 /// <summary>The ClearValue struct. Color or depth/stencil value to clear the attachment to.</summary>
@@ -1446,20 +1115,14 @@ public:
 	/// <summary>Constructor. Initialise with depth stencil clear values</summary>
 	/// <param name="depth">Depth clear value</param>
 	/// <param name="stencil">Stencil clear value</param>
-	ClearValue(float depth, uint32_t stencil)
-	{
-		setDepthStencilValue(depth, stencil);
-	}
+	ClearValue(float depth, uint32_t stencil) { setDepthStencilValue(depth, stencil); }
 
 	/// <summary>Constructor. Initialise with rgba floating point</summary>
 	/// <param name="r">Red component</param>
 	/// <param name="g">Green component</param>
 	/// <param name="b">Blue component</param>
 	/// <param name="a">Alpha component</param>
-	ClearValue(float r, float g, float b, float a)
-	{
-		setColorValue(r, g, b, a);
-	}
+	ClearValue(float r, float g, float b, float a) { setColorValue(r, g, b, a); }
 
 	/// <summary>Constructor. Initialise with rgba interger</summary>
 	/// <param name="r">Red component</param>
@@ -1531,27 +1194,18 @@ public:
 
 	/// <summary>Create default depth stencil clear value factory function</summary>
 	/// <returns>Returns default depth stencil clear value</returns>
-	static ClearValue createDefaultDepthStencilClearValue()
-	{
-		return ClearValue(1.f, 0u);
-	}
+	static ClearValue createDefaultDepthStencilClearValue() { return ClearValue(1.f, 0u); }
 
 	/// <summary>Create stencil clear value factory function</summary>
 	/// <param name="stencil">Stencil clear value</param>
 	/// <returns>Returns stencil clear value</returns>
-	static ClearValue createStencilClearValue(uint32_t stencil)
-	{
-		return ClearValue(1.f, stencil);
-	}
+	static ClearValue createStencilClearValue(uint32_t stencil) { return ClearValue(1.f, stencil); }
 
 	/// <summary>Create depth-stencil clear value factory function</summary>
 	/// <param name="depth">Depth clear value</param>
 	/// <param name="stencil">Stencil value</param>
 	/// <returns>Returns depth-stencil clear value</returns>
-	static ClearValue createDepthStencilClearValue(float depth, uint32_t stencil)
-	{
-		return ClearValue(depth, stencil);
-	}
+	static ClearValue createDepthStencilClearValue(float depth, uint32_t stencil) { return ClearValue(depth, stencil); }
 };
 
 /// <summary>ClearAttachment structures defining the attachments to clear and the clear values to use. Used in Commandbuffer::ClearAttachments command</summary>
@@ -1598,28 +1252,20 @@ struct ClearAttachment : private VkClearAttachment
 	}
 	/// <summary>Get the attachment aspect masks</summary>
 	/// <returns>The attachment aspect mask</returns>
-	inline ImageAspectFlags getAspectMask() const
-	{
-		return static_cast<ImageAspectFlags>(aspectMask);
-	}
+	inline ImageAspectFlags getAspectMask() const { return static_cast<ImageAspectFlags>(aspectMask); }
+
 	/// <summary>Set the attachment aspect masks</summary>
-	/// <param name="aspectMask">The attachment aspect mask.</param>
-	inline void setAspectMask(const ImageAspectFlags& aspectMask)
-	{
-		this->aspectMask = static_cast<VkImageAspectFlags>(aspectMask);
-	}
+	/// <param name="inAspectMask">The attachment aspect mask.</param>
+	inline void setAspectMask(const ImageAspectFlags& inAspectMask) { this->aspectMask = static_cast<VkImageAspectFlags>(inAspectMask); }
+
 	/// <summary>Get the attachment color attachment index</summary>
 	/// <returns>The attachment color attachment index</returns>
-	inline uint32_t getColorAttachment() const
-	{
-		return colorAttachment;
-	}
+	inline uint32_t getColorAttachment() const { return colorAttachment; }
+
 	/// <summary>Set the attachment color attachment index</summary>
-	/// <param name="colorAttachment">The attachment color attachment index.</param>
-	inline void setColorAttachment(const uint32_t& colorAttachment)
-	{
-		this->colorAttachment = colorAttachment;
-	}
+	/// <param name="inColorAttachment">The attachment color attachment index.</param>
+	inline void setColorAttachment(const uint32_t& inColorAttachment) { this->colorAttachment = inColorAttachment; }
+
 	/// <summary>Get the attachment clear value</summary>
 	/// <returns>The attachment value value</returns>
 	inline ClearValue getClearValue() const
@@ -1628,12 +1274,10 @@ struct ClearAttachment : private VkClearAttachment
 		memcpy(&retval, &clearValue, sizeof(ClearValue));
 		return retval;
 	}
+
 	/// <summary>Set the attachment clear value</summary>
-	/// <param name="clearValue">The attachment clear value.</param>
-	inline void setClearValue(const ClearValue& clearValue)
-	{
-		memcpy(&this->clearValue, &clearValue, sizeof(ClearValue));
-	}
+	/// <param name="inClearValue">The attachment clear value.</param>
+	inline void setClearValue(const ClearValue& inClearValue) { memcpy(&this->clearValue, &inClearValue, sizeof(ClearValue)); }
 };
 
 /// <summary>Contains attachment configuration of a renderpass (format, loadop, storeop, samples).</summary>
@@ -1717,112 +1361,58 @@ struct AttachmentDescription : private VkAttachmentDescription
 
 	/// <summary>Get the AttachmentDescriptionFlags</summary>
 	/// <returns>A set of AttachmentDescriptionFlags</returns>
-	inline AttachmentDescriptionFlags getFlags() const
-	{
-		return static_cast<AttachmentDescriptionFlags>(flags);
-	}
+	inline AttachmentDescriptionFlags getFlags() const { return static_cast<AttachmentDescriptionFlags>(flags); }
 	/// <summary>Set the attachment description flags</summary>
-	/// <param name="flags">The attachment description flags</param>
-	inline void setFlags(const AttachmentDescriptionFlags& flags)
-	{
-		this->flags = static_cast<VkAttachmentDescriptionFlags>(flags);
-	}
+	/// <param name="inFlags">The attachment description flags</param>
+	inline void setFlags(const AttachmentDescriptionFlags& inFlags) { this->flags = static_cast<VkAttachmentDescriptionFlags>(inFlags); }
 	/// <summary>Get the attachment Format</summary>
 	/// <returns>The attachment format</returns>
-	inline Format getFormat() const
-	{
-		return static_cast<Format>(format);
-	}
+	inline Format getFormat() const { return static_cast<Format>(format); }
 	/// <summary>Set the attachment format</summary>
-	/// <param name="format">The attachment format</param>
-	inline void setFormat(const Format& format)
-	{
-		this->format = static_cast<VkFormat>(format);
-	}
+	/// <param name="inFormat">The attachment format</param>
+	inline void setFormat(const Format& inFormat) { this->format = static_cast<VkFormat>(inFormat); }
 	/// <summary>Get the sample count for the attachment</summary>
 	/// <returns>The sample count for the attachment</returns>
-	inline SampleCountFlags getSamples() const
-	{
-		return static_cast<SampleCountFlags>(samples);
-	}
+	inline SampleCountFlags getSamples() const { return static_cast<SampleCountFlags>(samples); }
 	/// <summary>Set the attachment sample count flags</summary>
-	/// <param name="samples">The attachment sample count flags</param>
-	inline void setSamples(const SampleCountFlags& samples)
-	{
-		this->samples = static_cast<VkSampleCountFlagBits>(samples);
-	}
+	/// <param name="inSamples">The attachment sample count flags</param>
+	inline void setSamples(const SampleCountFlags& inSamples) { this->samples = static_cast<VkSampleCountFlagBits>(inSamples); }
 	/// <summary>Get the attachment load operation</summary>
 	/// <returns>The attachment load operation</returns>
-	inline AttachmentLoadOp getLoadOp() const
-	{
-		return static_cast<AttachmentLoadOp>(loadOp);
-	}
+	inline AttachmentLoadOp getLoadOp() const { return static_cast<AttachmentLoadOp>(loadOp); }
 	/// <summary>Set the attachment load operation</summary>
-	/// <param name="loadOp">The attachment load operation</param>
-	inline void setLoadOp(const AttachmentLoadOp& loadOp)
-	{
-		this->loadOp = static_cast<VkAttachmentLoadOp>(loadOp);
-	}
+	/// <param name="inLoadOp">The attachment load operation</param>
+	inline void setLoadOp(const AttachmentLoadOp& inLoadOp) { this->loadOp = static_cast<VkAttachmentLoadOp>(inLoadOp); }
 	/// <summary>Get the attachment store operation</summary>
 	/// <returns>The attachment store operation</returns>
-	inline AttachmentStoreOp getStoreOp() const
-	{
-		return static_cast<AttachmentStoreOp>(storeOp);
-	}
+	inline AttachmentStoreOp getStoreOp() const { return static_cast<AttachmentStoreOp>(storeOp); }
 	/// <summary>Set the attachment store operation</summary>
-	/// <param name="storeOp">The attachment store operation</param>
-	inline void setStoreOp(const AttachmentStoreOp& storeOp)
-	{
-		this->storeOp = static_cast<VkAttachmentStoreOp>(storeOp);
-	}
+	/// <param name="inStoreOp">The attachment store operation</param>
+	inline void setStoreOp(const AttachmentStoreOp& inStoreOp) { this->storeOp = static_cast<VkAttachmentStoreOp>(inStoreOp); }
 	/// <summary>Get the attachment stencil load operation</summary>
 	/// <returns>The attachment stencil load operation</returns>
-	inline AttachmentLoadOp getStencilLoadOp() const
-	{
-		return static_cast<AttachmentLoadOp>(stencilLoadOp);
-	}
+	inline AttachmentLoadOp getStencilLoadOp() const { return static_cast<AttachmentLoadOp>(stencilLoadOp); }
 	/// <summary>Set the attachment stencil load operation</summary>
-	/// <param name="stencilLoadOp">The attachment stencil load operation</param>
-	inline void setStencilLoadOp(const AttachmentLoadOp& stencilLoadOp)
-	{
-		this->stencilLoadOp = static_cast<VkAttachmentLoadOp>(stencilLoadOp);
-	}
+	/// <param name="inStencilLoadOp">The attachment stencil load operation</param>
+	inline void setStencilLoadOp(const AttachmentLoadOp& inStencilLoadOp) { this->stencilLoadOp = static_cast<VkAttachmentLoadOp>(inStencilLoadOp); }
 	/// <summary>Get the attachment stencil store operation</summary>
 	/// <returns>The attachment stencil store operation</returns>
-	inline AttachmentStoreOp getStencilStoreOp() const
-	{
-		return static_cast<AttachmentStoreOp>(stencilStoreOp);
-	}
+	inline AttachmentStoreOp getStencilStoreOp() const { return static_cast<AttachmentStoreOp>(stencilStoreOp); }
 	/// <summary>Set the attachment stencil store operation</summary>
-	/// <param name="stencilStoreOp">The attachment stencil store operation</param>
-	inline void setStencilStoreOp(const AttachmentStoreOp& stencilStoreOp)
-	{
-		this->stencilStoreOp = static_cast<VkAttachmentStoreOp>(stencilStoreOp);
-	}
+	/// <param name="inStencilStoreOp">The attachment stencil store operation</param>
+	inline void setStencilStoreOp(const AttachmentStoreOp& inStencilStoreOp) { this->stencilStoreOp = static_cast<VkAttachmentStoreOp>(inStencilStoreOp); }
 	/// <summary>Get the attachment initial layout</summary>
 	/// <returns>The attachment initial layout</returns>
-	inline ImageLayout getInitialLayout() const
-	{
-		return static_cast<ImageLayout>(initialLayout);
-	}
+	inline ImageLayout getInitialLayout() const { return static_cast<ImageLayout>(initialLayout); }
 	/// <summary>Set the attachment initial layout</summary>
-	/// <param name="initialLayout">The attachment initial layout</param>
-	inline void setInitialLayout(const ImageLayout& initialLayout)
-	{
-		this->initialLayout = static_cast<VkImageLayout>(initialLayout);
-	}
+	/// <param name="inInitialLayout">The attachment initial layout</param>
+	inline void setInitialLayout(const ImageLayout& inInitialLayout) { this->initialLayout = static_cast<VkImageLayout>(inInitialLayout); }
 	/// <summary>Get the attachment final layout</summary>
 	/// <returns>The attachment final layout</returns>
-	inline ImageLayout getFinalLayout() const
-	{
-		return static_cast<ImageLayout>(finalLayout);
-	}
+	inline ImageLayout getFinalLayout() const { return static_cast<ImageLayout>(finalLayout); }
 	/// <summary>Set the attachment final layout</summary>
-	/// <param name="finalLayout">The attachment final layout</param>
-	inline void setFinalLayout(const ImageLayout& finalLayout)
-	{
-		this->finalLayout = static_cast<VkImageLayout>(finalLayout);
-	}
+	/// <param name="inFinalLayout">The attachment final layout</param>
+	inline void setFinalLayout(const ImageLayout& inFinalLayout) { this->finalLayout = static_cast<VkImageLayout>(inFinalLayout); }
 };
 
 /// <summary>Render pass subpass. Subpasses allow intermediate draws to be chained and communicating with techniques
@@ -1835,10 +1425,7 @@ public:
 	SubpassDescription(pvrvk::PipelineBindPoint pipeBindPoint = pvrvk::PipelineBindPoint::e_GRAPHICS)
 		: _pipelineBindPoint(pipeBindPoint), _numInputAttachments(0), _numColorAttachments(0), _numResolveAttachments(0), _numPreserveAttachments(0)
 	{
-		for (uint32_t i = 0; i < FrameworkCaps::MaxPreserveAttachments; ++i)
-		{
-			_preserveAttachment[i] = static_cast<uint32_t>(-1);
-		}
+		for (uint32_t i = 0; i < FrameworkCaps::MaxPreserveAttachments; ++i) { _preserveAttachment[i] = static_cast<uint32_t>(-1); }
 	}
 
 	/// <summary>Set the pipeline binding point.</summary>
@@ -1857,7 +1444,7 @@ public:
 	/// <returns>Reference to this(allows chaining)</returns>
 	SubpassDescription& setColorAttachmentReference(uint32_t bindingIndex, const AttachmentReference& attachmentReference)
 	{
-		_numColorAttachments += static_cast<uint8_t>(setAttachment(bindingIndex, attachmentReference, _colorAttachment, static_cast<uint32_t>(FrameworkCaps::MaxColorAttachments)));
+		_numColorAttachments += static_cast<uint8_t>(setAttachment(bindingIndex, attachmentReference, _colorAttachment));
 		return *this;
 	}
 
@@ -1868,7 +1455,7 @@ public:
 	/// <returns>Reference to this(allows chaining)</returns>
 	SubpassDescription& setInputAttachmentReference(uint32_t bindingIndex, const AttachmentReference& attachmentReference)
 	{
-		_numInputAttachments += static_cast<uint8_t>(setAttachment(bindingIndex, attachmentReference, _inputAttachment, static_cast<uint32_t>(FrameworkCaps::MaxInputAttachments)));
+		_numInputAttachments += static_cast<uint8_t>(setAttachment(bindingIndex, attachmentReference, _inputAttachment));
 		return *this;
 	}
 
@@ -1879,8 +1466,7 @@ public:
 	/// <returns>this (allow chaining)</returns>
 	SubpassDescription& setResolveAttachmentReference(uint32_t bindingIndex, const AttachmentReference& attachmentReference)
 	{
-		_numResolveAttachments +=
-			static_cast<uint8_t>(setAttachment(bindingIndex, attachmentReference, _resolveAttachments, static_cast<uint32_t>(FrameworkCaps::MaxResolveAttachments)));
+		_numResolveAttachments += static_cast<uint8_t>(setAttachment(bindingIndex, attachmentReference, _resolveAttachments));
 		return *this;
 	}
 
@@ -1907,38 +1493,23 @@ public:
 
 	/// <summary>Return number of color attachments</summary>
 	/// <returns>Return number of color attachment references</returns>
-	uint8_t getNumColorAttachmentReference() const
-	{
-		return _numColorAttachments;
-	}
+	uint8_t getNumColorAttachmentReference() const { return _numColorAttachments; }
 
 	/// <summary>Return number of input attachments</summary>
 	/// <returns>Return number of input attachment references</returns>
-	uint8_t getNumInputAttachmentReference() const
-	{
-		return _numInputAttachments;
-	}
+	uint8_t getNumInputAttachmentReference() const { return _numInputAttachments; }
 
 	/// <summary>Get number of resolve attachments (const)</summary>
 	/// <returns>Number of resolve attachments</returns>
-	uint8_t getNumResolveAttachmentReference() const
-	{
-		return _numResolveAttachments;
-	}
+	uint8_t getNumResolveAttachmentReference() const { return _numResolveAttachments; }
 
 	/// <summary>Return number of preserve attachments (const)</summary>
 	//// <returns>Number of preserve attachments</returns>
-	uint8_t getNumPreserveAttachmentReference() const
-	{
-		return _numPreserveAttachments;
-	}
+	uint8_t getNumPreserveAttachmentReference() const { return _numPreserveAttachments; }
 
 	/// <summary>Get pipeline binding point (const)</summary>
 	/// <returns>Returns Pipeline binding point</returns>
-	pvrvk::PipelineBindPoint getPipelineBindPoint() const
-	{
-		return _pipelineBindPoint;
-	}
+	pvrvk::PipelineBindPoint getPipelineBindPoint() const { return _pipelineBindPoint; }
 
 	/// <summary>Get input attachment id (const)</summary>
 	/// <param name="index">Attachment index</param>
@@ -1951,10 +1522,7 @@ public:
 
 	/// <summary>Get depth stencil attachment reference (const).</summary>
 	/// <returns> Return depth-stencil attachment reference id</returns>
-	const AttachmentReference& getDepthStencilAttachmentReference() const
-	{
-		return this->_depthStencilAttachment;
-	}
+	const AttachmentReference& getDepthStencilAttachmentReference() const { return this->_depthStencilAttachment; }
 
 	/// <summary>Get color attachment id (const)</summary>
 	/// <param name="index">Attachment index</param>
@@ -1985,10 +1553,7 @@ public:
 
 	/// <summary>Get all preserve attahments ids (const)</summary>(const)
 	/// <returns>Return all preserve attachments id</returns>
-	const uint32_t* getAllPreserveAttachments() const
-	{
-		return _preserveAttachment;
-	}
+	const uint32_t* getAllPreserveAttachments() const { return _preserveAttachment; }
 
 	/// <summary>clear all entries</summary>
 	/// <returns>Returns this object (allows chained calls)</returns>
@@ -2002,12 +1567,11 @@ public:
 	}
 
 private:
-	uint32_t setAttachment(uint32_t bindingId, const AttachmentReference& newAttachment, AttachmentReference* attachments, uint32_t maxAttachment)
+	uint32_t setAttachment(uint32_t bindingId, const AttachmentReference& newAttachment, AttachmentReference* attachments)
 	{
-		assert(bindingId < maxAttachment && "Binding Id exceeds the max limit");
 		const uint32_t oldId = attachments[bindingId].getAttachment();
 		attachments[bindingId] = newAttachment;
-		return (oldId == static_cast<uint32_t>(-1) ? 1 : 0);
+		return (oldId == static_cast<uint32_t>(-1) ? 1u : 0u);
 	}
 
 	pvrvk::PipelineBindPoint _pipelineBindPoint;
@@ -2036,40 +1600,22 @@ public:
 
 	/// <summary>Get the pipeline cache creation flags</summary>
 	/// <returns>The set of pipeline cache creation flags</returns>
-	inline PipelineCacheCreateFlags getFlags() const
-	{
-		return _flags;
-	}
+	inline PipelineCacheCreateFlags getFlags() const { return _flags; }
 	/// <summary>Set the pipeline cache creation flags</summary>
 	/// <param name="flags">The pipeline cache creation flags</param>
-	inline void setFlags(PipelineCacheCreateFlags flags)
-	{
-		this->_flags = flags;
-	}
+	inline void setFlags(PipelineCacheCreateFlags flags) { this->_flags = flags; }
 	/// <summary>Get the initial data size of the pipeline cache</summary>
 	/// <returns>The initial data size of the pipeline cache</returns>
-	inline size_t getInitialDataSize() const
-	{
-		return _initialDataSize;
-	}
+	inline size_t getInitialDataSize() const { return _initialDataSize; }
 	/// <summary>Set the pipeline cache creation initial data size</summary>
 	/// <param name="initialDataSize">The pipeline cache creation initial data size</param>
-	inline void setInitialDataSize(size_t initialDataSize)
-	{
-		this->_initialDataSize = initialDataSize;
-	}
+	inline void setInitialDataSize(size_t initialDataSize) { this->_initialDataSize = initialDataSize; }
 	/// <summary>Get the initial data of the pipeline cache</summary>
 	/// <returns>The initial data of the pipeline cache</returns>
-	inline const void* getInitialData() const
-	{
-		return _pInitialData;
-	}
+	inline const void* getInitialData() const { return _pInitialData; }
 	/// <summary>Set the pipeline cache creation initial data</summary>
 	/// <param name="pInitialData">The pipeline cache creation initial data</param>
-	inline void setInitialData(const void* pInitialData)
-	{
-		this->_pInitialData = pInitialData;
-	}
+	inline void setInitialData(const void* pInitialData) { this->_pInitialData = pInitialData; }
 
 private:
 	/// <summary>The number of bytes in _pInitialData</summary>
@@ -2090,16 +1636,10 @@ public:
 
 	/// <summary>Get the event creation flags</summary>
 	/// <returns>The set of event creation flags</returns>
-	inline EventCreateFlags getFlags() const
-	{
-		return _flags;
-	}
+	inline EventCreateFlags getFlags() const { return _flags; }
 	/// <summary>Set the event creation flags</summary>
 	/// <param name="flags">The event creation flags</param>
-	inline void setFlags(EventCreateFlags flags)
-	{
-		this->_flags = flags;
-	}
+	inline void setFlags(EventCreateFlags flags) { this->_flags = flags; }
 
 private:
 	/// <summary>Flags to use for creating the event</summary>
@@ -2116,16 +1656,10 @@ public:
 
 	/// <summary>Get the fence creation flags</summary>
 	/// <returns>The set of fence creation flags</returns>
-	inline FenceCreateFlags getFlags() const
-	{
-		return _flags;
-	}
+	inline FenceCreateFlags getFlags() const { return _flags; }
 	/// <summary>Set the fence creation flags</summary>
 	/// <param name="flags">The fence creation flags</param>
-	inline void setFlags(FenceCreateFlags flags)
-	{
-		this->_flags = flags;
-	}
+	inline void setFlags(FenceCreateFlags flags) { this->_flags = flags; }
 
 private:
 	/// <summary>Flags to use for creating the fence</summary>
@@ -2142,16 +1676,10 @@ public:
 
 	/// <summary>Get the Semaphore creation flags</summary>
 	/// <returns>The set of Semaphore creation flags</returns>
-	inline SemaphoreCreateFlags getFlags() const
-	{
-		return _flags;
-	}
+	inline SemaphoreCreateFlags getFlags() const { return _flags; }
 	/// <summary>Set the Semaphore creation flags</summary>
 	/// <param name="flags">The Semaphore creation flags</param>
-	inline void setFlags(SemaphoreCreateFlags flags)
-	{
-		this->_flags = flags;
-	}
+	inline void setFlags(SemaphoreCreateFlags flags) { this->_flags = flags; }
 
 private:
 	/// <summary>Flags to use for creating the Semaphore</summary>
@@ -2171,75 +1699,45 @@ public:
 
 	/// <summary>Adds a new Enabled Validation Feature</summary>
 	/// <param name="enabledFeature">A ValidationFeatureEnableEXT which specifies a validation feature to enable.</param>
-	inline void addEnabledValidationFeature(ValidationFeatureEnableEXT enabledFeature)
-	{
-		_enabledValidationFeatures.emplace_back(enabledFeature);
-	}
+	inline void addEnabledValidationFeature(ValidationFeatureEnableEXT enabledFeature) { _enabledValidationFeatures.emplace_back(enabledFeature); }
 
 	/// <summary>Adds a new Disabled Validation Feature</summary>
 	/// <param name="disabledFeature">A ValidationFeatureDisableEXT which specifies a validation feature to disable.</param>
-	inline void addDisabledValidationFeature(ValidationFeatureDisableEXT disabledFeature)
-	{
-		_disabledValidationFeatures.emplace_back(disabledFeature);
-	}
+	inline void addDisabledValidationFeature(ValidationFeatureDisableEXT disabledFeature) { _disabledValidationFeatures.emplace_back(disabledFeature); }
 
 	/// <summary>Get the number of enabled validation features</summary>
 	/// <returns>The number of enabled validation features</returns>
-	inline uint32_t getNumEnabledValidationFeatures() const
-	{
-		return static_cast<uint32_t>(_enabledValidationFeatures.size());
-	}
+	inline uint32_t getNumEnabledValidationFeatures() const { return static_cast<uint32_t>(_enabledValidationFeatures.size()); }
 
 	/// <summary>Get the number of disabled validation features</summary>
 	/// <returns>The number of disabled validation features</returns>
-	inline uint32_t getNumDisabledValidationFeatures() const
-	{
-		return static_cast<uint32_t>(_disabledValidationFeatures.size());
-	}
+	inline uint32_t getNumDisabledValidationFeatures() const { return static_cast<uint32_t>(_disabledValidationFeatures.size()); }
 
 	/// <summary>Get the list of enabled validation features (const)</summary>
 	/// <returns>The list of enabled validation features (const)</returns>
-	inline const std::vector<ValidationFeatureEnableEXT>& getEnabledValidationFeatures() const
-	{
-		return _enabledValidationFeatures;
-	}
+	inline const std::vector<ValidationFeatureEnableEXT>& getEnabledValidationFeatures() const { return _enabledValidationFeatures; }
 
 	/// <summary>Get the list of enabled validation features</summary>
 	/// <returns>The list of enabled validation features</returns>
-	inline std::vector<ValidationFeatureEnableEXT>& getEnabledValidationFeatures()
-	{
-		return _enabledValidationFeatures;
-	}
+	inline std::vector<ValidationFeatureEnableEXT>& getEnabledValidationFeatures() { return _enabledValidationFeatures; }
 
 	/// <summary>Get the the enabled validation feature at index</summary>
 	/// <param name="index">The index of the enabled validation feature to retrieve.</param>
 	/// <returns>The enabled validation feature at index</returns>
-	inline const ValidationFeatureEnableEXT& getEnabledValidationFeature(uint32_t index) const
-	{
-		return _enabledValidationFeatures[index];
-	}
+	inline const ValidationFeatureEnableEXT& getEnabledValidationFeature(uint32_t index) const { return _enabledValidationFeatures[index]; }
 
 	/// <summary>Get the list of disabled validation features (const)</summary>
 	/// <returns>The list of disabled validation features (const)</returns>
-	inline const std::vector<ValidationFeatureDisableEXT>& getDisabledValidationFeatures() const
-	{
-		return _disabledValidationFeatures;
-	}
+	inline const std::vector<ValidationFeatureDisableEXT>& getDisabledValidationFeatures() const { return _disabledValidationFeatures; }
 
 	/// <summary>Get the list of disabled validation features</summary>
 	/// <returns>The list of disabled validation features</returns>
-	inline std::vector<ValidationFeatureDisableEXT>& getDisabledValidationFeatures()
-	{
-		return _disabledValidationFeatures;
-	}
+	inline std::vector<ValidationFeatureDisableEXT>& getDisabledValidationFeatures() { return _disabledValidationFeatures; }
 
 	/// <summary>Get the the disabled validation feature at index</summary>
 	/// <param name="index">The index of the disabled validation feature to retrieve.</param>
 	/// <returns>The disabled validation feature at index</returns>
-	inline const ValidationFeatureDisableEXT& getDisabledValidationFeature(uint32_t index) const
-	{
-		return _disabledValidationFeatures[index];
-	}
+	inline const ValidationFeatureDisableEXT& getDisabledValidationFeature(uint32_t index) const { return _disabledValidationFeatures[index]; }
 
 	/// <summary>Sets the list of enabled validation features</summary>
 	/// <param name="enabledValidationFeatures">A list of validation features to enable.</param>
@@ -2258,16 +1756,10 @@ public:
 	}
 
 	/// <summary>Clears the list of validation features to enable</summary>
-	inline void clearEnabledValidationFeatures()
-	{
-		_enabledValidationFeatures.clear();
-	}
+	inline void clearEnabledValidationFeatures() { _enabledValidationFeatures.clear(); }
 
 	/// <summary>Clears the list of validation features to disable</summary>
-	inline void clearDisabledValidationFeatures()
-	{
-		_disabledValidationFeatures.clear();
-	}
+	inline void clearDisabledValidationFeatures() { _disabledValidationFeatures.clear(); }
 };
 
 /// <summary>Containes a PhysicalDeviceTransformFeedbackProperties structure which specifies the implementation dependent limits for transform feedback.</summary>
@@ -2307,73 +1799,43 @@ public:
 
 	/// <summary>Sets the maxTransformFeedbackStreams</summary>
 	/// <param name="maxTransformFeedbackStreams">The maxTransformFeedbackStreams.</param>
-	inline void setMaxTransformFeedbackStreams(uint32_t maxTransformFeedbackStreams)
-	{
-		_maxTransformFeedbackStreams = maxTransformFeedbackStreams;
-	}
+	inline void setMaxTransformFeedbackStreams(uint32_t maxTransformFeedbackStreams) { _maxTransformFeedbackStreams = maxTransformFeedbackStreams; }
 
 	/// <summary>Gets the maxTransformFeedbackStreams</summary>
 	/// <returns>The maxTransformFeedbackStreams</returns>
-	inline uint32_t getMaxTransformFeedbackStreams()
-	{
-		return _maxTransformFeedbackStreams;
-	}
+	inline uint32_t getMaxTransformFeedbackStreams() { return _maxTransformFeedbackStreams; }
 
 	/// <summary>Sets the maxTransformFeedbackBuffers</summary>
 	/// <param name="maxTransformFeedbackBuffers">The maxTransformFeedbackBuffers.</param>
-	inline void setMaxTransformFeedbackBuffers(uint32_t maxTransformFeedbackBuffers)
-	{
-		_maxTransformFeedbackBuffers = maxTransformFeedbackBuffers;
-	}
+	inline void setMaxTransformFeedbackBuffers(uint32_t maxTransformFeedbackBuffers) { _maxTransformFeedbackBuffers = maxTransformFeedbackBuffers; }
 
 	/// <summary>Gets the maxTransformFeedbackBuffers</summary>
 	/// <returns>The maxTransformFeedbackBuffers</returns>
-	inline uint32_t getMaxTransformFeedbackBuffers()
-	{
-		return _maxTransformFeedbackBuffers;
-	}
+	inline uint32_t getMaxTransformFeedbackBuffers() { return _maxTransformFeedbackBuffers; }
 
 	/// <summary>Sets the maxTransformFeedbackBufferSize</summary>
 	/// <param name="maxTransformFeedbackBufferSize">The maxTransformFeedbackBufferSize.</param>
-	inline void setMaxTransformFeedbackBufferSize(VkDeviceSize maxTransformFeedbackBufferSize)
-	{
-		_maxTransformFeedbackBufferSize = maxTransformFeedbackBufferSize;
-	}
+	inline void setMaxTransformFeedbackBufferSize(VkDeviceSize maxTransformFeedbackBufferSize) { _maxTransformFeedbackBufferSize = maxTransformFeedbackBufferSize; }
 
 	/// <summary>Gets the maxTransformFeedbackBufferSize</summary>
 	/// <returns>The maxTransformFeedbackBufferSize</returns>
-	inline VkDeviceSize getMaxTransformFeedbackBufferSize()
-	{
-		return _maxTransformFeedbackBufferSize;
-	}
+	inline VkDeviceSize getMaxTransformFeedbackBufferSize() { return _maxTransformFeedbackBufferSize; }
 
 	/// <summary>Sets the maxTransformFeedbackStreamDataSize</summary>
 	/// <param name="maxTransformFeedbackStreamDataSize">The maxTransformFeedbackStreamDataSize.</param>
-	inline void setMaxTransformFeedbackStreamDataSize(uint32_t maxTransformFeedbackStreamDataSize)
-	{
-		_maxTransformFeedbackStreamDataSize = maxTransformFeedbackStreamDataSize;
-	}
+	inline void setMaxTransformFeedbackStreamDataSize(uint32_t maxTransformFeedbackStreamDataSize) { _maxTransformFeedbackStreamDataSize = maxTransformFeedbackStreamDataSize; }
 
 	/// <summary>Gets the maxTransformFeedbackStreamDataSize</summary>
 	/// <returns>The maxTransformFeedbackStreamDataSize</returns>
-	inline uint32_t getMaxTransformFeedbackStreamDataSize()
-	{
-		return _maxTransformFeedbackStreamDataSize;
-	}
+	inline uint32_t getMaxTransformFeedbackStreamDataSize() { return _maxTransformFeedbackStreamDataSize; }
 
 	/// <summary>Sets the maxTransformFeedbackBufferDataSize</summary>
 	/// <param name="maxTransformFeedbackBufferDataSize">The maxTransformFeedbackBufferDataSize.</param>
-	inline void setMaxTransformFeedbackBufferDataSize(uint32_t maxTransformFeedbackBufferDataSize)
-	{
-		_maxTransformFeedbackBufferDataSize = maxTransformFeedbackBufferDataSize;
-	}
+	inline void setMaxTransformFeedbackBufferDataSize(uint32_t maxTransformFeedbackBufferDataSize) { _maxTransformFeedbackBufferDataSize = maxTransformFeedbackBufferDataSize; }
 
 	/// <summary>Gets the maxTransformFeedbackBufferDataSize</summary>
 	/// <returns>The maxTransformFeedbackBufferDataSize</returns>
-	inline uint32_t getMaxTransformFeedbackBufferDataSize()
-	{
-		return _maxTransformFeedbackBufferDataSize;
-	}
+	inline uint32_t getMaxTransformFeedbackBufferDataSize() { return _maxTransformFeedbackBufferDataSize; }
 
 	/// <summary>Sets the maxTransformFeedbackBufferDataStride</summary>
 	/// <param name="maxTransformFeedbackBufferDataStride">The maxTransformFeedbackBufferDataStride.</param>
@@ -2384,24 +1846,15 @@ public:
 
 	/// <summary>Gets the maxTransformFeedbackBufferDataStride</summary>
 	/// <returns>The maxTransformFeedbackBufferDataStride</returns>
-	inline uint32_t getMaxTransformFeedbackBufferDataStride()
-	{
-		return _maxTransformFeedbackBufferDataStride;
-	}
+	inline uint32_t getMaxTransformFeedbackBufferDataStride() { return _maxTransformFeedbackBufferDataStride; }
 
 	/// <summary>Sets the transformFeedbackQueries</summary>
 	/// <param name="transformFeedbackQueries">The transformFeedbackQueries.</param>
-	inline void setTransformFeedbackQueries(bool transformFeedbackQueries)
-	{
-		_transformFeedbackQueries = transformFeedbackQueries;
-	}
+	inline void setTransformFeedbackQueries(bool transformFeedbackQueries) { _transformFeedbackQueries = transformFeedbackQueries; }
 
 	/// <summary>Gets the transformFeedbackQueries</summary>
 	/// <returns>The transformFeedbackQueries</returns>
-	inline bool getTransformFeedbackQueries()
-	{
-		return _transformFeedbackQueries;
-	}
+	inline bool getTransformFeedbackQueries() { return _transformFeedbackQueries; }
 
 	/// <summary>Sets the transformFeedbackStreamsLinesTriangles</summary>
 	/// <param name="transformFeedbackStreamsLinesTriangles">The transformFeedbackStreamsLinesTriangles.</param>
@@ -2412,10 +1865,7 @@ public:
 
 	/// <summary>Gets the transformFeedbackStreamsLinesTriangles</summary>
 	/// <returns>The transformFeedbackStreamsLinesTriangles</returns>
-	inline bool getTransformFeedbackStreamsLinesTriangles()
-	{
-		return _transformFeedbackStreamsLinesTriangles;
-	}
+	inline bool getTransformFeedbackStreamsLinesTriangles() { return _transformFeedbackStreamsLinesTriangles; }
 
 	/// <summary>Sets the transformFeedbackRasterizationStreamSelect</summary>
 	/// <param name="transformFeedbackRasterizationStreamSelect">The transformFeedbackRasterizationStreamSelect.</param>
@@ -2426,24 +1876,15 @@ public:
 
 	/// <summary>Gets the transformFeedbackRasterizationStreamSelect</summary>
 	/// <returns>The transformFeedbackRasterizationStreamSelect</returns>
-	inline bool getTransformFeedbackRasterizationStreamSelect()
-	{
-		return _transformFeedbackRasterizationStreamSelect;
-	}
+	inline bool getTransformFeedbackRasterizationStreamSelect() { return _transformFeedbackRasterizationStreamSelect; }
 
 	/// <summary>Sets the transformFeedbackDraw</summary>
 	/// <param name="transformFeedbackDraw">The transformFeedbackDraw.</param>
-	inline void setTransformFeedbackDraw(bool transformFeedbackDraw)
-	{
-		_transformFeedbackDraw = transformFeedbackDraw;
-	}
+	inline void setTransformFeedbackDraw(bool transformFeedbackDraw) { _transformFeedbackDraw = transformFeedbackDraw; }
 
 	/// <summary>Gets the transformFeedbackDraw</summary>
 	/// <returns>The transformFeedbackDraw</returns>
-	inline bool getTransformFeedbackDraw()
-	{
-		return _transformFeedbackDraw;
-	}
+	inline bool getTransformFeedbackDraw() { return _transformFeedbackDraw; }
 };
 
 /// <summary>Containes a PhysicalDeviceTransformFeedbackFeaturesEXT structure which specifies the implementation dependent features for transform feedback.</summary>
@@ -2467,31 +1908,19 @@ public:
 
 	/// <summary>Sets the transformFeedback</summary>
 	/// <param name="transformFeedback">The transformFeedback.</param>
-	inline void setTransformFeedback(bool transformFeedback)
-	{
-		_transformFeedback = transformFeedback;
-	}
+	inline void setTransformFeedback(bool transformFeedback) { _transformFeedback = transformFeedback; }
 
 	/// <summary>Gets the transformFeedback</summary>
 	/// <returns>The transformFeedback</returns>
-	inline bool getTransformFeedback()
-	{
-		return _transformFeedback;
-	}
+	inline bool getTransformFeedback() { return _transformFeedback; }
 
 	/// <summary>Sets the geometryStreams</summary>
 	/// <param name="geometryStreams">The geometryStreams.</param>
-	inline void setGeometryStreams(bool geometryStreams)
-	{
-		_geometryStreams = geometryStreams;
-	}
+	inline void setGeometryStreams(bool geometryStreams) { _geometryStreams = geometryStreams; }
 
 	/// <summary>Gets the geometryStreams</summary>
 	/// <returns>The geometryStreams</returns>
-	inline bool getGeometryStreams()
-	{
-		return _geometryStreams;
-	}
+	inline bool getGeometryStreams() { return _geometryStreams; }
 };
 } // namespace pvrvk
 #undef DEFINE_ENUM_OPERATORS

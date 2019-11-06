@@ -1,5 +1,5 @@
 #include "NavDataProcess.h"
-glm::dvec3 NavDataProcess::findIntersect(const glm::dvec2 minBounds, const glm::dvec2 maxBounds, const glm::dvec2 inPoint, const glm::dvec2 outPoint) const
+glm::dvec3 NavDataProcess::findIntersect(glm::dvec2 minBounds, glm::dvec2 maxBounds, glm::dvec2 inPoint, glm::dvec2 outPoint) const
 {
 	double m = (inPoint.y - outPoint.y) / (inPoint.x - outPoint.x);
 	double c = inPoint.y - m * inPoint.x;
@@ -8,50 +8,32 @@ glm::dvec3 NavDataProcess::findIntersect(const glm::dvec2 minBounds, const glm::
 	{
 		double y = m * minBounds.x + c;
 
-		if ((y >= minBounds.y) && (y <= maxBounds.y))
-		{
-			return glm::dvec3(minBounds.x, y, Sides::Left);
-		}
+		if ((y >= minBounds.y) && (y <= maxBounds.y)) { return glm::dvec3(minBounds.x, y, Sides::Left); }
 	}
 
 	if (outPoint.y > maxBounds.y) // Check if intersect is with top side
 	{
-		if (outPoint.x == inPoint.x)
-		{
-			return glm::dvec3(outPoint.x, maxBounds.y, Sides::Top);
-		}
+		if (outPoint.x == inPoint.x) { return glm::dvec3(outPoint.x, maxBounds.y, Sides::Top); }
 
 		double x = (maxBounds.y - c) / m;
 
-		if ((x >= minBounds.x) && (x <= maxBounds.x))
-		{
-			return glm::dvec3(x, maxBounds.y, Sides::Top);
-		}
+		if ((x >= minBounds.x) && (x <= maxBounds.x)) { return glm::dvec3(x, maxBounds.y, Sides::Top); }
 	}
 
 	if (outPoint.x > maxBounds.x) // Check if intersect is with right sight
 	{
 		double y = m * maxBounds.x + c;
 
-		if ((y >= minBounds.y) && (y <= maxBounds.y))
-		{
-			return glm::dvec3(maxBounds.x, y, Sides::Right);
-		}
+		if ((y >= minBounds.y) && (y <= maxBounds.y)) { return glm::dvec3(maxBounds.x, y, Sides::Right); }
 	}
 
 	if (outPoint.y < minBounds.y) // Check if intersect is with bottom side
 	{
-		if (outPoint.x == inPoint.x)
-		{
-			return glm::dvec3(outPoint.x, minBounds.y, Sides::Bottom);
-		}
+		if (outPoint.x == inPoint.x) { return glm::dvec3(outPoint.x, minBounds.y, Sides::Bottom); }
 
 		double x = (minBounds.y - c) / m;
 
-		if ((x >= minBounds.x) && (x <= maxBounds.x))
-		{
-			return glm::dvec3(x, minBounds.y, Sides::Bottom);
-		}
+		if ((x >= minBounds.x) && (x <= maxBounds.x)) { return glm::dvec3(x, minBounds.y, Sides::Bottom); }
 	}
 
 	Log(LogLevel::Error, "Could not find intersect point, empty vector returned");
@@ -63,24 +45,18 @@ pvr::PolygonWindingOrder NavDataProcess::checkWinding(const std::vector<uint64_t
 {
 	std::vector<glm::dvec2> points;
 
-	for (uint32_t i = 0; i < nodeIds.size(); ++i)
-	{
-		points.emplace_back(_osm.getNodeById(nodeIds[i]).coords);
-	}
+	for (uint32_t i = 0; i < nodeIds.size(); ++i) { points.emplace_back(_osm.getNodeById(nodeIds[i]).coords); }
 
 	double area = calculateTriangleArea(points);
 
-	if (area <= 0.0)
-	{
-		return pvr::PolygonWindingOrder::FrontFaceCCW;
-	}
+	if (area <= 0.0) { return pvr::PolygonWindingOrder::FrontFaceCCW; }
 	else
 	{
 		return pvr::PolygonWindingOrder::FrontFaceCW;
 	}
 }
 
-std::array<glm::dvec2, 2> NavDataProcess::findPerpendicularPoints(const glm::dvec2 firstPoint, const glm::dvec2 secPoint, const double width, const int pointNum) const
+std::array<glm::dvec2, 2> NavDataProcess::findPerpendicularPoints(glm::dvec2 firstPoint, glm::dvec2 secPoint, double width, int pointNum) const
 {
 	std::array<glm::dvec2, 2> points;
 
@@ -100,20 +76,14 @@ std::array<glm::dvec2, 2> NavDataProcess::findPerpendicularPoints(const glm::dve
 
 	// Switch points around if necessary so we know element 0 holds the point that is to the left of the way
 	if ((glm::atan(secPoint.y - firstPoint.y, secPoint.x - firstPoint.x) - glm::atan(points[0].y - firstPoint.y, points[0].x - firstPoint.x)) > 0)
-	{
-		std::reverse(points.begin(), points.end());
-	}
-
+	{ std::reverse(points.begin(), points.end()); }
 	return points;
 }
 
-void NavDataProcess::triangulate(std::vector<uint64_t>& nodeIds, std::vector<std::array<uint64_t, 3> >& triangles) const
+void NavDataProcess::triangulate(std::vector<uint64_t>& nodeIds, std::vector<std::array<uint64_t, 3>>& triangles) const
 {
 	triangles.clear();
-	if (nodeIds.front() == nodeIds.back())
-	{
-		nodeIds.pop_back();
-	}
+	if (nodeIds.front() == nodeIds.back()) { nodeIds.pop_back(); }
 
 	while (nodeIds.size() >= 3)
 	{
@@ -150,8 +120,7 @@ void NavDataProcess::triangulate(std::vector<uint64_t>& nodeIds, std::vector<std
 			}
 
 			// Check if the vertex is interior or exterior
-			if (checkWinding(std::vector<glm::dvec2>{ prevNode.coords, currentNode.coords, nextNode.coords }) == pvr::PolygonWindingOrder::FrontFaceCW)
-				continue;
+			if (checkWinding(std::vector<glm::dvec2>{ prevNode.coords, currentNode.coords, nextNode.coords }) == pvr::PolygonWindingOrder::FrontFaceCW) continue;
 
 			// Determine if any of the other points are inside the triangle
 			bool pointInTriangle = false;
@@ -175,10 +144,7 @@ void NavDataProcess::triangulate(std::vector<uint64_t>& nodeIds, std::vector<std
 				}
 			}
 
-			if (pointInTriangle)
-			{
-				continue;
-			}
+			if (pointInTriangle) { continue; }
 
 			// Add the new triangle and remove the necessary point
 			triangles.emplace_back(std::array<uint64_t, 3>{ prevNode.id, currentNode.id, nextNode.id });
@@ -186,10 +152,7 @@ void NavDataProcess::triangulate(std::vector<uint64_t>& nodeIds, std::vector<std
 			break;
 		}
 
-		if (size == nodeIds.size())
-		{
-			break;
-		}
+		if (size == nodeIds.size()) { break; }
 	}
 }
 
@@ -206,74 +169,40 @@ BuildingType::BuildingType NavDataProcess::getBuildingType(const Tag* tags, uint
 		}
 	}
 
-	if (value.empty())
-		return BuildingType::None;
-	if (value.compare("supermarket") == 0 || value.compare("convenience") == 0)
-		return BuildingType::Shop;
-	if (value.compare("bar") == 0)
-		return BuildingType::Bar;
-	if (value.compare("cafe") == 0)
-		return BuildingType::Cafe;
-	if (value.compare("fast_food") == 0)
-		return BuildingType::FastFood;
-	if (value.compare("pub") == 0)
-		return BuildingType::Pub;
-	if (value.compare("college") == 0)
-		return BuildingType::College;
-	if (value.compare("library") == 0)
-		return BuildingType::Library;
-	if (value.compare("university") == 0)
-		return BuildingType::University;
-	if (value.compare("atm") == 0)
-		return BuildingType::ATM;
-	if (value.compare("bank") == 0)
-		return BuildingType::Bank;
-	if (value.compare("restaurant") == 0)
-		return BuildingType::Restaurant;
-	if (value.compare("doctors") == 0)
-		return BuildingType::Doctors;
-	if (value.compare("dentist") == 0)
-		return BuildingType::Dentist;
-	if (value.compare("hospital") == 0)
-		return BuildingType::Hospital;
-	if (value.compare("pharmacy") == 0)
-		return BuildingType::Pharmacy;
-	if (value.compare("cinema") == 0)
-		return BuildingType::Cinema;
-	if (value.compare("casino") == 0)
-		return BuildingType::Casino;
-	if (value.compare("theatre") == 0)
-		return BuildingType::Theatre;
-	if (value.compare("fire_station") == 0)
-		return BuildingType::FireStation;
-	if (value.compare("courthouse") == 0)
-		return BuildingType::Courthouse;
-	if (value.compare("police") == 0)
-		return BuildingType::Police;
-	if (value.compare("post_office") == 0)
-		return BuildingType::PostOffice;
-	if (value.compare("toilets") == 0)
-		return BuildingType::Toilets;
-	if (value.compare("place_of_worship") == 0)
-		return BuildingType::PlaceOfWorship;
-	if (value.compare("fuel") == 0)
-		return BuildingType::PetrolStation;
-	if (value.compare("parking") == 0)
-		return BuildingType::Parking;
-	if (value.compare("post_box") == 0)
-		return BuildingType::PostBox;
-	if (value.compare("veterinary") == 0 || value.compare("pet") == 0)
-		return BuildingType::Veterinary;
-	if (value.compare("embassy") == 0)
-		return BuildingType::Embassy;
-	if (value.compare("hairdresser") == 0)
-		return BuildingType::HairDresser;
-	if (value.compare("butcher") == 0)
-		return BuildingType::Butcher;
-	if (value.compare("florist") == 0)
-		return BuildingType::Florist;
-	if (value.compare("optician") == 0)
-		return BuildingType::Optician;
+	if (value.empty()) return BuildingType::None;
+	if (value.compare("supermarket") == 0 || value.compare("convenience") == 0) return BuildingType::Shop;
+	if (value.compare("bar") == 0) return BuildingType::Bar;
+	if (value.compare("cafe") == 0) return BuildingType::Cafe;
+	if (value.compare("fast_food") == 0) return BuildingType::FastFood;
+	if (value.compare("pub") == 0) return BuildingType::Pub;
+	if (value.compare("college") == 0) return BuildingType::College;
+	if (value.compare("library") == 0) return BuildingType::Library;
+	if (value.compare("university") == 0) return BuildingType::University;
+	if (value.compare("atm") == 0) return BuildingType::ATM;
+	if (value.compare("bank") == 0) return BuildingType::Bank;
+	if (value.compare("restaurant") == 0) return BuildingType::Restaurant;
+	if (value.compare("doctors") == 0) return BuildingType::Doctors;
+	if (value.compare("dentist") == 0) return BuildingType::Dentist;
+	if (value.compare("hospital") == 0) return BuildingType::Hospital;
+	if (value.compare("pharmacy") == 0) return BuildingType::Pharmacy;
+	if (value.compare("cinema") == 0) return BuildingType::Cinema;
+	if (value.compare("casino") == 0) return BuildingType::Casino;
+	if (value.compare("theatre") == 0) return BuildingType::Theatre;
+	if (value.compare("fire_station") == 0) return BuildingType::FireStation;
+	if (value.compare("courthouse") == 0) return BuildingType::Courthouse;
+	if (value.compare("police") == 0) return BuildingType::Police;
+	if (value.compare("post_office") == 0) return BuildingType::PostOffice;
+	if (value.compare("toilets") == 0) return BuildingType::Toilets;
+	if (value.compare("place_of_worship") == 0) return BuildingType::PlaceOfWorship;
+	if (value.compare("fuel") == 0) return BuildingType::PetrolStation;
+	if (value.compare("parking") == 0) return BuildingType::Parking;
+	if (value.compare("post_box") == 0) return BuildingType::PostBox;
+	if (value.compare("veterinary") == 0 || value.compare("pet") == 0) return BuildingType::Veterinary;
+	if (value.compare("embassy") == 0) return BuildingType::Embassy;
+	if (value.compare("hairdresser") == 0) return BuildingType::HairDresser;
+	if (value.compare("butcher") == 0) return BuildingType::Butcher;
+	if (value.compare("florist") == 0) return BuildingType::Florist;
+	if (value.compare("optician") == 0) return BuildingType::Optician;
 	return BuildingType::Other;
 }
 
@@ -285,7 +214,7 @@ BuildingType::BuildingType NavDataProcess::getBuildingType(const Tag* tags, uint
 \param  width   Desired width between the new nodes.
 \brief  Provides two points on the perpendicular line at distance "width" apart for the middle point.
 ***********************************************************************************************************************/
-std::array<glm::dvec2, 2> NavDataProcess::findPerpendicularPoints(const glm::dvec2 firstPoint, const glm::dvec2 secPoint, const glm::dvec2 thirdPoint, const double width) const
+std::array<glm::dvec2, 2> NavDataProcess::findPerpendicularPoints(glm::dvec2 firstPoint, glm::dvec2 secPoint, glm::dvec2 thirdPoint, double width) const
 {
 	std::array<glm::dvec2, 2> points;
 	std::array<glm::dvec2, 2> first = findPerpendicularPoints(firstPoint, secPoint, width, 1);
@@ -294,9 +223,7 @@ std::array<glm::dvec2, 2> NavDataProcess::findPerpendicularPoints(const glm::dve
 	std::array<glm::dvec2, 2> third = findPerpendicularPoints(secPoint, thirdPoint, width, 2);
 
 	if (isVectorEqual(sec1[0], sec2[0]) && isVectorEqual(sec1[1], sec2[1])) // If the line section has no bend sec1 and sec2 will be equal
-	{
-		points = sec1;
-	}
+	{ points = sec1; }
 	else // Most of the time they will not be equal
 	{
 		rayIntersect(first[0], sec1[0] - first[0], third[0], sec2[0] - third[0], points[0]);
@@ -305,7 +232,7 @@ std::array<glm::dvec2, 2> NavDataProcess::findPerpendicularPoints(const glm::dve
 	return points;
 }
 
-std::string NavDataProcess::getIntersectionRoadName(const std::vector<std::vector<Tag> >& tags) const
+std::string NavDataProcess::getIntersectionRoadName(const std::vector<std::vector<Tag>>& tags) const
 {
 	std::map<std::string, uint32_t> nameCount;
 	uint32_t currentCount = 0;
@@ -313,9 +240,8 @@ std::string NavDataProcess::getIntersectionRoadName(const std::vector<std::vecto
 
 	for (auto& t : tags)
 	{
-		std::string name = getAttributeName(t.data(), t.size());
-		if (!name.empty())
-			nameCount[name]++;
+		std::string name2 = getAttributeName(t.data(), t.size());
+		if (!name2.empty()) nameCount[name2]++;
 	}
 
 	for (auto it = nameCount.begin(); it != nameCount.end(); ++it)
@@ -446,10 +372,7 @@ double NavDataProcess::getRoadWidth(const std::vector<Tag>& tags, RoadTypes::Roa
 void NavDataProcess::fillLabelTiles(LabelData& label, uint32_t lod)
 {
 	// Check if label is out of the map bounds
-	if (isOutOfBounds(label.coords))
-	{
-		return;
-	}
+	if (isOutOfBounds(label.coords)) { return; }
 
 	glm::uvec2 tileCoords = findTile2(label.coords);
 	processLabelBoundary(label, tileCoords);
@@ -470,10 +393,7 @@ void NavDataProcess::insert(const glm::uvec2& tileCoords, WayTypes::WayTypes typ
 	{
 	case WayTypes::Road:
 	{
-		if (w->area)
-		{
-			insertWay(_osm.tiles[tileCoords.x][tileCoords.y].areaWays, *w);
-		}
+		if (w->area) { insertWay(_osm.tiles[tileCoords.x][tileCoords.y].areaWays, *w); }
 		else
 		{
 			insertWay(_osm.tiles[tileCoords.x][tileCoords.y].roadWays, *w);
@@ -502,8 +422,7 @@ void NavDataProcess::insert(const glm::uvec2& tileCoords, WayTypes::WayTypes typ
 	}
 	case WayTypes::AreaOutline:
 	{
-		if (w->area)
-			_osm.tiles[tileCoords.x][tileCoords.y].areaOutlineIds.emplace_back(id);
+		if (w->area) _osm.tiles[tileCoords.x][tileCoords.y].areaOutlineIds.emplace_back(id);
 		break;
 	}
 	default:
@@ -520,10 +439,7 @@ void NavDataProcess::insert(const glm::uvec2& tileCoords, WayTypes::WayTypes typ
 void NavDataProcess::fillIconTiles(IconData& icon, uint32_t lod)
 {
 	// Check if icon is out of the map bounds
-	if (isOutOfBounds(icon.coords))
-	{
-		return;
-	}
+	if (isOutOfBounds(icon.coords)) { return; }
 
 	glm::uvec2 tileCoords = findTile2(icon.coords);
 
@@ -533,10 +449,7 @@ void NavDataProcess::fillIconTiles(IconData& icon, uint32_t lod)
 void NavDataProcess::fillAmenityTiles(AmenityLabelData& label, uint32_t lod)
 {
 	// Check if label is out of the map bounds
-	if (isOutOfBounds(label.coords))
-	{
-		return;
-	}
+	if (isOutOfBounds(label.coords)) { return; }
 
 	glm::uvec2 tileCoords = findTile2(label.coords);
 	processLabelBoundary(label, tileCoords);

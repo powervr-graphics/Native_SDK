@@ -431,7 +431,6 @@ the output with a fragment shader whilst blurring in the other direction.</p>
 <a class="reference internal image-reference" href="../../examples/Vulkan/ImageBasedLighting/ImageBasedLighting.png"><img alt="../../examples/Vulkan/ImageBasedLighting/ImageBasedLighting.png" src="../../examples/Vulkan/ImageBasedLighting/ImageBasedLighting.png" style="width: 320.0px; height: 200.0px;" /></a>
 </div>
 <p>This example demonstrates Physically Based Rendering (PBR) with Image Based Lighting (IBL).</p>
-<p>IBL: based on <a class="reference external" href="https://blog.selfshadow.com/publications/s2013-shading-course/karis/s2013_pbs_epic_notes_v2.pdf">https://blog.selfshadow.com/publications/s2013-shading-course/karis/s2013_pbs_epic_notes_v2.pdf</a></p>
 <div class="section" id="id37">
 <h3>API<a class="headerlink" href="#id37" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
@@ -441,17 +440,71 @@ the output with a fragment shader whilst blurring in the other direction.</p>
 <div class="section" id="id38">
 <h3>Description<a class="headerlink" href="#id38" title="Permalink to this headline">¶</a></h3>
 <p>This example has two scenes using Metallic-Roughness PBR workflow. It features two scenes, a GLTF model rederered  with  albedo, metallic roughness and emissive map, and a collection of spheres showcasing different metallic and non metallic non-texture values.
-The examples uses a Diffuse map pre-computed offline from the environment map, using the lambert diffuse BRDF, and two specular maps (also calculated offline): A Pre-Filtered Environment map for different roughness values, and an Environment BRDF including the rest of the equation.</p>
-<div class="figure">
-<a class="reference internal image-reference" href="../../examples/Vulkan/ImageBasedLighting/IBL_layers.png"><img alt="../../examples/Vulkan/ImageBasedLighting/IBL_layers.png" src="../../examples/Vulkan/ImageBasedLighting/IBL_layers.png" style="width: 320.0px; height: 200.0px;" /></a>
-</div>
+The examples uses a Diffuse map pre-computed offline from the environment map, using the lambert diffuse BRDF, and two specular maps (also calculated offline): A Pre-Filtered Environment map for different roughness values, and an Environment BRDF including the rest of the equation.
+Full documentation on .. __: <a class="reference external" href="https://docs.imgtec.com/PBR_with_IBL_for_PVR/topics/pbr_ibl_introduction.html">https://docs.imgtec.com/PBR_with_IBL_for_PVR/topics/pbr_ibl_introduction.html</a></p>
 </div>
 <div class="section" id="id39">
 <h3>Controls<a class="headerlink" href="#id39" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Quit- Close the application</li>
-<li>Left/ Right to change the scene</li>
+<li>Left/Right to change the scene</li>
 <li>Action1 to pause.</li>
+</ul>
+</div>
+</div>
+<div class="section" id="imagebasedlightingmapgenerator">
+<h2>ImageBasedLightingMapGenerator<a class="headerlink" href="#imagebasedlightingmapgenerator" title="Permalink to this headline">¶</a></h2>
+<p>A command-line tool showing how to use headless Vulkan to generate Image Based Lighting irradiance and reflection maps from a skybox.</p>
+<div class="section" id="id40">
+<h3>API<a class="headerlink" href="#id40" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Vulkan</li>
+</ul>
+</div>
+<div class="section" id="id41">
+<h3>Description<a class="headerlink" href="#id41" title="Permalink to this headline">¶</a></h3>
+<p>This tool is different from the rest of the SDK in that it is a command line tool that can be used to generate two maps used in Image Based Lighting using GPU shaders to optimise the procedure. A single-thread cpu calculation would easily take minutes for each of the maps, hence this Vulkan implementation.
+The input is a skybox, a Cubemap that represents the entire environment around a point in space.
+The Irradiance map the uses this skybox to calculate the incoming energy for each direction, in other words how much does this skybox light a surface with a specific orientation, assuming perfect diffusion.
+The Pre-Filtered Reflection map is essentially a copy of the skybox whose mip-maps are mapped to different roughness values, with smaller mipmaps being progressively more blurred in order to be used in larger roughness values, simulating the effect of rougher surfaces having blurrier reflections.</p>
+</div>
+<div class="section" id="id42">
+<h3>Controls<a class="headerlink" href="#id42" title="Permalink to this headline">¶</a></h3>
+<ul>
+<li><p class="first">Usage: VulkanIBLMapGenerator.exe [input cubemap] [options]</p>
+</li>
+<li><table class="first docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd><span class="option">-s<var>kipDiffuse</var></span></kbd></td>
+<td><p class="first last">do not create a diffuse irradiance map</p>
+</td></tr>
+</tbody>
+</table>
+</li>
+<li><p class="first">-diffuseSize=[NUMBER]         the size of the output Irradiance map</p>
+</li>
+<li><p class="first">-diffuseSamples=[NUMBER]      the number of samples per output texel of the irradiance map (default 10000)</p>
+</li>
+<li><table class="first docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd><span class="option">-s<var>kipSpecular</var></span></kbd></td>
+<td><p class="first last">do not create a Pre-Filtered Reflection map</p>
+</td></tr>
+</tbody>
+</table>
+</li>
+<li><p class="first">-specularSize=[NUMBER]        the size of the output Pre-Filtered Reflection map</p>
+</li>
+<li><p class="first">-specularSamples=[NUMBER]     the number of samples per output texel of the irradiance map (default 10000)</p>
+</li>
+<li><p class="first">-specularDiscardMips=[NUMBER] the number of specular mips NOT to generate (i.e. 2 means that the smallest mipmap will be 4x4)</p>
+</li>
 </ul>
 </div>
 </div>
@@ -461,18 +514,18 @@ The examples uses a Diffuse map pre-computed offline from the environment map, u
 <a class="reference internal image-reference" href="../../examples/Vulkan/MultiSampling/MultiSampling.png"><img alt="../../examples/Vulkan/MultiSampling/MultiSampling.png" src="../../examples/Vulkan/MultiSampling/MultiSampling.png" style="width: 320.0px; height: 200.0px;" /></a>
 </div>
 <p>Renders a scene to a multisampling framebuffer object.</p>
-<div class="section" id="id40">
-<h3>API<a class="headerlink" href="#id40" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id43">
+<h3>API<a class="headerlink" href="#id43" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Vulkan</li>
 </ul>
 </div>
-<div class="section" id="id41">
-<h3>Description<a class="headerlink" href="#id41" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id44">
+<h3>Description<a class="headerlink" href="#id44" title="Permalink to this headline">¶</a></h3>
 <p>This example demonstrates how to use the PowerVR Framework to render a scene using the multisampling feature.</p>
 </div>
-<div class="section" id="id42">
-<h3>Controls<a class="headerlink" href="#id42" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id45">
+<h3>Controls<a class="headerlink" href="#id45" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Quit- Close the application</li>
 </ul>
@@ -487,13 +540,13 @@ The examples uses a Diffuse map pre-computed offline from the environment map, u
 API
 —
 * Vulkan</p>
-<div class="section" id="id43">
-<h3>Description<a class="headerlink" href="#id43" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id46">
+<h3>Description<a class="headerlink" href="#id46" title="Permalink to this headline">¶</a></h3>
 <p>This example will display a loading screen (using UIRenderer) while assets are being loaded in, and then
 switch to displaying the statue from the Bumpmap demo.</p>
 </div>
-<div class="section" id="id44">
-<h3>Controls<a class="headerlink" href="#id44" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id47">
+<h3>Controls<a class="headerlink" href="#id47" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Quit- Close the application</li>
 </ul>
@@ -505,14 +558,14 @@ switch to displaying the statue from the Bumpmap demo.</p>
 <a class="reference internal image-reference" href="../../examples/Vulkan/Navigation2D/Navigation2D.png"><img alt="../../examples/Vulkan/Navigation2D/Navigation2D.png" src="../../examples/Vulkan/Navigation2D/Navigation2D.png" style="width: 320.0px; height: 200.0px;" /></a>
 </div>
 <p>Demonstrates parsing, processing and rendering of raw OSM data as a 2D navigational map.</p>
-<div class="section" id="id45">
-<h3>API<a class="headerlink" href="#id45" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id48">
+<h3>API<a class="headerlink" href="#id48" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Vulkan</li>
 </ul>
 </div>
-<div class="section" id="id46">
-<h3>Description<a class="headerlink" href="#id46" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id49">
+<h3>Description<a class="headerlink" href="#id49" title="Permalink to this headline">¶</a></h3>
 <p>The 2D navigation example shows the complete process of creating a navigational map from raw data, in this
 case Open Street Map (OSM) data.</p>
 <p>The example demonstrates:</p>
@@ -530,8 +583,8 @@ case Open Street Map (OSM) data.</p>
 <li>an effective tile-based approach to batching and culling the geometry.</li>
 </ul>
 </div>
-<div class="section" id="id47">
-<h3>Controls<a class="headerlink" href="#id47" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id50">
+<h3>Controls<a class="headerlink" href="#id50" title="Permalink to this headline">¶</a></h3>
 <p>Q- Quit- Close the application</p>
 </div>
 </div>
@@ -541,14 +594,14 @@ case Open Street Map (OSM) data.</p>
 <a class="reference internal image-reference" href="../../examples/Vulkan/Navigation3D/Navigation3D.png"><img alt="../../examples/Vulkan/Navigation3D/Navigation3D.png" src="../../examples/Vulkan/Navigation3D/Navigation3D.png" style="width: 320.0px; height: 200.0px;" /></a>
 </div>
 <p>Demonstrates parsing, processing and rendering of raw OSM data as a 3D navigational map.</p>
-<div class="section" id="id48">
-<h3>API<a class="headerlink" href="#id48" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id51">
+<h3>API<a class="headerlink" href="#id51" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Vulkan</li>
 </ul>
 </div>
-<div class="section" id="id49">
-<h3>Description<a class="headerlink" href="#id49" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id52">
+<h3>Description<a class="headerlink" href="#id52" title="Permalink to this headline">¶</a></h3>
 <p>The 3D navigation example demonstrates the entire process of creating a navigational map from raw XML data,
 in this case using Open Street Map (OSM) data.</p>
 <p>The example shows how to load and parse the XML. It then shows how to process the raw data into renderable polygons which can be used by the GPU. This is achieved through triangulation, which uses the ear-clipping algorithm to generate triangles from lists of points.</p>
@@ -559,8 +612,8 @@ in this case using Open Street Map (OSM) data.</p>
 <li>an effective tile based approach to batching and culling the geometry.</li>
 </ul>
 </div>
-<div class="section" id="id50">
-<h3>Controls<a class="headerlink" href="#id50" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id53">
+<h3>Controls<a class="headerlink" href="#id53" title="Permalink to this headline">¶</a></h3>
 <p>Q- Quit- Close the application</p>
 </div>
 </div>
@@ -570,18 +623,18 @@ in this case using Open Street Map (OSM) data.</p>
 <a class="reference internal image-reference" href="../../examples/Vulkan/PVRScopeExample/PVRScopeExample.png"><img alt="../../examples/Vulkan/PVRScopeExample/PVRScopeExample.png" src="../../examples/Vulkan/PVRScopeExample/PVRScopeExample.png" style="width: 320.0px; height: 200.0px;" /></a>
 </div>
 <p>Demonstrates the use of PVRScope and the example graphing code.</p>
-<div class="section" id="id51">
-<h3>API<a class="headerlink" href="#id51" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id54">
+<h3>API<a class="headerlink" href="#id54" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Vulkan</li>
 </ul>
 </div>
-<div class="section" id="id52">
-<h3>Description<a class="headerlink" href="#id52" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id55">
+<h3>Description<a class="headerlink" href="#id55" title="Permalink to this headline">¶</a></h3>
 <p>This example uses a simple PBR-style shader and shows the use of PVRScope to allow an application to return performance statistics from the GPU in real time. It uses the example graphing code to render a graph of the selected counters on the screen. For further details, refer to the PVRScope User Manual.</p>
 </div>
-<div class="section" id="id53">
-<h3>Controls<a class="headerlink" href="#id53" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id56">
+<h3>Controls<a class="headerlink" href="#id56" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Quit- Close demo</li>
 <li>Up/Down- Select a counter from the available list of HW counters</li>
@@ -595,19 +648,19 @@ in this case using Open Street Map (OSM) data.</p>
 <a class="reference internal image-reference" href="../../examples/Vulkan/PVRScopeRemote/PVRScopeRemote.png"><img alt="../../examples/Vulkan/PVRScopeRemote/PVRScopeRemote.png" src="../../examples/Vulkan/PVRScopeRemote/PVRScopeRemote.png" style="width: 320.0px; height: 200.0px;" /></a>
 </div>
 <p>Demonstrates the use of PVRScope’s remote communication features.</p>
-<div class="section" id="id54">
-<h3>API<a class="headerlink" href="#id54" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id57">
+<h3>API<a class="headerlink" href="#id57" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Vulkan</li>
 </ul>
 </div>
-<div class="section" id="id55">
-<h3>Description<a class="headerlink" href="#id55" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id58">
+<h3>Description<a class="headerlink" href="#id58" title="Permalink to this headline">¶</a></h3>
 <p>This example shows how to use the editable data and custom mark functionality of PVRScope. PVRTune must be running and connected to an instance of PVRPerfServer running on the target device for this example to function.</p>
 <p>A simple physically-based shader is provided with properties of Albedo, Metallicity and Glossiness. These, together with the shaders, can be edited from the PVRTune GUI. This allows immediate modification of the appearance of the statue.</p>
 </div>
-<div class="section" id="id56">
-<h3>Controls<a class="headerlink" href="#id56" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id59">
+<h3>Controls<a class="headerlink" href="#id59" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Quit- Close demo</li>
 <li>PVRTune- Control example variables through PVRTune</li>
@@ -620,30 +673,29 @@ in this case using Open Street Map (OSM) data.</p>
 <a class="reference internal image-reference" href="../../examples/Vulkan/ParticleSystem/ParticleSystem.png"><img alt="../../examples/Vulkan/ParticleSystem/ParticleSystem.png" src="../../examples/Vulkan/ParticleSystem/ParticleSystem.png" style="width: 320.0px; height: 200.0px;" /></a>
 </div>
 <p>This example shows how to implement a simple particle system using GPGPU.</p>
-<div class="section" id="id57">
-<h3>API<a class="headerlink" href="#id57" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id60">
+<h3>API<a class="headerlink" href="#id60" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Vulkan</li>
 </ul>
 </div>
-<div class="section" id="id58">
-<h3>Description<a class="headerlink" href="#id58" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id61">
+<h3>Description<a class="headerlink" href="#id61" title="Permalink to this headline">¶</a></h3>
 <p>Particle systems are techniques that use a large amount of sprites to simulate phenomena that would be difficult to reproduce with conventional rendering techniques.</p>
 <p>This example uses GPGPU (GPU Compute) to implement a particle system. This is a simple integration-based simulation which is advanced and then rendered every frame strictly on the GPU, without any CPU access of that data. It also highlights the interaction between the compute and the rendering part of a simulation.</p>
 </div>
-<div class="section" id="id59">
-<h3>Controls<a class="headerlink" href="#id59" title="Permalink to this headline">¶</a></h3>
-<ul>
+<div class="section" id="id62">
+<h3>Controls<a class="headerlink" href="#id62" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
 <li><dl class="first docutils">
 <dt>Quit- Close demo</dt>
-<dd><ul class="first last simple">
+<dd><ul class="first last">
 <li>Left/Right- Decrease/increase number of particles</li>
 </ul>
 </dd>
 </dl>
 </li>
-<li><p class="first">Up/Down- Switch between GPU Compute and CPU Particle System implementation.</p>
-</li>
+<li>Up/Down- Switch between GPU Compute and CPU Particle System implementation.</li>
 </ul>
 </div>
 </div>
@@ -653,14 +705,14 @@ in this case using Open Street Map (OSM) data.</p>
 <a class="reference internal image-reference" href="../../examples/Vulkan/PostProcessing/PostProcessing.png"><img alt="../../examples/Vulkan/PostProcessing/PostProcessing.png" src="../../examples/Vulkan/PostProcessing/PostProcessing.png" style="width: 320.0px; height: 200.0px;" /></a>
 </div>
 <p>This example demonstrates a set of heavily-optimised bloom post-processing implementations.</p>
-<div class="section" id="id60">
-<h3>API<a class="headerlink" href="#id60" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id63">
+<h3>API<a class="headerlink" href="#id63" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Vulkan</li>
 </ul>
 </div>
-<div class="section" id="id61">
-<h3>Description<a class="headerlink" href="#id61" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id64">
+<h3>Description<a class="headerlink" href="#id64" title="Permalink to this headline">¶</a></h3>
 <p>This example demonstrates a set of heavily-optimised bloom post-processing implementations including:</p>
 <ul class="simple">
 <li>Reference implementation of a separated Gaussian Blur.</li>
@@ -679,8 +731,8 @@ in this case using Open Street Map (OSM) data.</p>
 <li>The resulting blurred image is then composited onto the original image to create a smooth bloom around the brighter regions.</li>
 </ol>
 </div>
-<div class="section" id="id62">
-<h3>Controls<a class="headerlink" href="#id62" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id65">
+<h3>Controls<a class="headerlink" href="#id65" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Left/Right - Cycle through the various bloom implementations</li>
 <li>Up/Down - Increase/decrease the size of the bloom intensity</li>
@@ -696,20 +748,20 @@ in this case using Open Street Map (OSM) data.</p>
 <a class="reference internal image-reference" href="../../examples/Vulkan/Skinning/Skinning.png"><img alt="../../examples/Vulkan/Skinning/Skinning.png" src="../../examples/Vulkan/Skinning/Skinning.png" style="width: 320.0px; height: 200.0px;" /></a>
 </div>
 <p>This example shows a scene with a combination of a skinned, bumpmapped character with non-skinned, non-bumpmapped objects.</p>
-<div class="section" id="id63">
-<h3>API<a class="headerlink" href="#id63" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id66">
+<h3>API<a class="headerlink" href="#id66" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Vulkan</li>
 </ul>
 </div>
-<div class="section" id="id64">
-<h3>Description<a class="headerlink" href="#id64" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id67">
+<h3>Description<a class="headerlink" href="#id67" title="Permalink to this headline">¶</a></h3>
 <p>Skinning is the act of animating a vertex over time given a set (palette) of matrices, and a known set of blend weights assigned to those matrices.</p>
 <p>The Skinning example shows a skinned character in combination with bump mapping. For each frame, the matrix palette is recomputed based on time.</p>
 <p>PVRAssets and POD files support skinning with either full transformation matrices, or Quaternion rotation with scaling and translation vectors. The provided POD file contains matrix animation. A shader storage buffer object is used to support a dynamic number of bones.</p>
 </div>
-<div class="section" id="id65">
-<h3>Controls<a class="headerlink" href="#id65" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id68">
+<h3>Controls<a class="headerlink" href="#id68" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Action1/2/3- Pause</li>
 <li>Esc- Close</li>

@@ -84,18 +84,12 @@ public:
 	/// <param name="minimumLevelToOutput">The minimum level to actually output.</param>
 	/// <remarks>Messages with a severity less than this will be silently discarded. For example, if using a "Warning"
 	/// level, Critical, Error and Warning will be displayed, while Information, Verbose and Debug will be discarded.</remarks>
-	void setVerbosity(const LogLevel minimumLevelToOutput)
-	{
-		_verbosityThreshold = minimumLevelToOutput;
-	}
+	void setVerbosity(const LogLevel minimumLevelToOutput) { _verbosityThreshold = minimumLevelToOutput; }
 	/// <summary>Get the verbosity threshold below which messages will not be output.</summary>
 	/// <returns>The minimum level that is currently output.</returns>
 	/// <remarks>Messages with a severity less than this will be silently discarded. For example, if using a "Warning"
 	/// level, Critical, Error and Warning will be displayed, while Information, Verbose and Debug will be discarded.</remarks>
-	LogLevel getVerbosity() const
-	{
-		return _verbosityThreshold;
-	}
+	LogLevel getVerbosity() const { return _verbosityThreshold; }
 
 	/// <summary>Functor operator used to allow an instance of this class to be called as a function. Logs a message using
 	/// this logger's message handler.</summary>
@@ -105,10 +99,7 @@ public:
 	/// <param name="...">Variable arguments for the format std::string. Printf-style rules</param>
 	void operator()(LogLevel severity, const char* const formatString, ...) const
 	{
-		if (severity < _verbosityThreshold)
-		{
-			return;
-		}
+		if (severity < _verbosityThreshold) { return; }
 		va_list argumentList;
 		va_start(argumentList, formatString);
 		vaOutput(severity, formatString, argumentList);
@@ -121,10 +112,7 @@ public:
 	/// <param name="...">Variable arguments for the format std::string. Printf-style rules</param>
 	void operator()(const char* const formatString, ...) const
 	{
-		if (LogLevel::Error < _verbosityThreshold)
-		{
-			return;
-		}
+		if (LogLevel::Error < _verbosityThreshold) { return; }
 		va_list argumentList;
 		va_start(argumentList, formatString);
 		vaOutput(LogLevel::Error, formatString, argumentList);
@@ -138,10 +126,7 @@ public:
 	/// <param name="...">Variable arguments for the format std::string. Printf-style rules</param>
 	void output(LogLevel severity, const char* formatString, ...) const
 	{
-		if (severity < _verbosityThreshold)
-		{
-			return;
-		}
+		if (severity < _verbosityThreshold) { return; }
 		va_list argumentList;
 		va_start(argumentList, formatString);
 		vaOutput(severity, formatString, argumentList);
@@ -152,10 +137,7 @@ public:
 	/// <param name="...">Variable arguments for the format std::string. Printf-style rules</param>
 	void output(const char* formatString, ...) const
 	{
-		if (LogLevel::Error < _verbosityThreshold)
-		{
-			return;
-		}
+		if (LogLevel::Error < _verbosityThreshold) { return; }
 		va_list argumentList;
 		va_start(argumentList, formatString);
 		vaOutput(LogLevel::Error, formatString, argumentList);
@@ -178,17 +160,24 @@ private:
 /// through interfaces, and as such can be replaced with custom components.</summary>
 class Logger : public ILogger
 {
+	FILE* file;
+
 public:
 	Logger()
 	{
 #if defined(PVR_PLATFORM_IS_DESKTOP) && !defined(TARGET_OS_MAC)
-		FILE* truncateme = fopen("log.txt", "w");
-
-		if (truncateme)
-		{
-			fclose(truncateme);
-		}
+		file = fopen("log.txt", "w");
 #endif
+	}
+	virtual ~Logger() { close(); }
+
+	void close()
+	{
+		if (file)
+		{
+			fclose(file);
+			file = 0;
+		}
 	}
 
 	/// <summary>Varargs version of the "output" function.</summary>
@@ -218,6 +207,7 @@ public:
 			va_copy(tempList, argumentList);
 #endif
 			vsnprintf(buffer, 4095, formatString, argumentList);
+			buffer[4095] = 0;
 
 #if defined(_WIN32) && !defined(_CONSOLE)
 			if (isDebuggerPresent())
@@ -232,13 +222,12 @@ public:
 #endif
 #if defined(PVR_PLATFORM_IS_DESKTOP) && !defined(TARGET_OS_MAC)
 			{
-				FILE* file = fopen("log.txt", "a");
 				if (file)
 				{
 					fwrite(messageTypes[static_cast<int>(severity)], 1, strlen(messageTypes[static_cast<int>(severity)]), file);
 					fwrite(buffer, 1, strlen(buffer), file);
 					fwrite("\n", 1, 1, file);
-					fclose(file);
+					fflush(file);
 				}
 			}
 #endif
@@ -253,10 +242,7 @@ static Logger originalDefaultLogger;
 }
 /// <summary>Returns the original default logger object</summary>
 /// <returns>The original default logger global logger.</returns>
-inline Logger& originalDefaultLogger()
-{
-	return impl::originalDefaultLogger;
-}
+inline Logger& originalDefaultLogger() { return impl::originalDefaultLogger; }
 
 /// <summary>Returns the default logger object. This is the only way to get that object. Is global.</summary>
 /// <returns>The default logger global logger.</returns>
@@ -265,6 +251,8 @@ inline Logger& DefaultLogger()
 	static Logger* logger = &originalDefaultLogger();
 	return *logger;
 }
+
+inline void LogClose() { DefaultLogger().close(); }
 
 /// <summary>Logs a message using the default logger.</summary>
 /// <param name="severity">The severity of the message. Apart from being output into the message, the severity is
@@ -326,10 +314,7 @@ inline void Log(const char* formatString, ...)
 /// <param name="msg">The message that will be logged if the asserted condition is false.</param>
 inline void assert_warning(bool condition, const char* msg)
 {
-	if (!condition)
-	{
-		Log(LogLevel::Warning, msg);
-	}
+	if (!condition) { Log(LogLevel::Warning, msg); }
 }
 
 /// <summary>If condition is false, logs a critical error, debug breaks if possible, and - on debug builds - throws an assertion.
@@ -340,7 +325,7 @@ inline void assertion(bool condition, const char* msg)
 {
 	if (!condition)
 	{
-		Log(LogLevel::Critical, "ASSERTION FAILED: ", msg);
+		Log(LogLevel::Critical, "ASSERTION FAILED: %s", msg);
 		debuggerBreak();
 		assert(0);
 	}
@@ -349,10 +334,7 @@ inline void assertion(bool condition, const char* msg)
 /// <summary>If condition is false, logs a critical error, debug breaks if possible, and - on debug builds - throws an assertion.
 /// If you wish to completely compile it out on release, use the macro debug_assertion.</summary>
 /// <param name="condition">Pass the condition to assert here. If true, nothing happens. If false, asserts.</param>
-inline void assertion(bool condition)
-{
-	assertion(condition, "");
-}
+inline void assertion(bool condition) { assertion(condition, ""); }
 
 #ifdef DEBUG
 /// <summary>An assertion that gets completely compiled out in release  builds.

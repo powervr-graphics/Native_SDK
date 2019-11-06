@@ -25,10 +25,7 @@ private:
 		friend class Fence_;
 	};
 
-	static Fence constructShared(const DeviceWeakPtr& device, const FenceCreateInfo& createInfo)
-	{
-		return std::make_shared<Fence_>(make_shared_enabler{}, device, createInfo);
-	}
+	static Fence constructShared(const DeviceWeakPtr& device, const FenceCreateInfo& createInfo) { return std::make_shared<Fence_>(make_shared_enabler{}, device, createInfo); }
 
 	/// <summary>Creation information used when creating the fence.</summary>
 	FenceCreateInfo _createInfo;
@@ -54,17 +51,11 @@ public:
 
 	/// <summary>Get the fence creation flags</summary>
 	/// <returns>The set of fence creation flags</returns>
-	inline FenceCreateFlags getFlags() const
-	{
-		return _createInfo.getFlags();
-	}
+	inline FenceCreateFlags getFlags() const { return _createInfo.getFlags(); }
 
 	/// <summary>Get this fence's create flags</summary>
 	/// <returns>FenceCreateInfo</returns>
-	FenceCreateInfo getCreateInfo() const
-	{
-		return _createInfo;
-	}
+	FenceCreateInfo getCreateInfo() const { return _createInfo; }
 };
 } // namespace impl
 } // namespace pvrvk

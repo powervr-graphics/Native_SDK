@@ -37,41 +37,15 @@ struct UboData
 	glm::mat4 uv;
 	glm::vec4 color;
 	bool alphaMode;
-
-	static const std::pair<StringHash, GpuDatatypes> EntryNames[4];
-	enum Entry
-	{
-		MVP,
-		UV,
-		Color,
-		AlphaMode,
-		Count
-	};
 };
 
-const std::pair<StringHash, GpuDatatypes> UboData::EntryNames[] = {
-	std::pair<StringHash, GpuDatatypes>("mvp", GpuDatatypes::mat4x4),
-	std::pair<StringHash, GpuDatatypes>("uv", GpuDatatypes::mat4x4),
-	std::pair<StringHash, GpuDatatypes>("color", GpuDatatypes::vec4),
-	std::pair<StringHash, GpuDatatypes>("alphaMode", GpuDatatypes::Integer),
-};
+Sprite_::Sprite_(UIRenderer& uiRenderer) : _color(1.f, 1.f, 1.f, 1.f), _alphaMode(false), _uiRenderer(&uiRenderer), _spriteName("") { _boundingRect.clear(); }
 
-Sprite_::Sprite_(UIRenderer& uiRenderer) : _color(1.f, 1.f, 1.f, 1.f), _alphaMode(false), _uiRenderer(&uiRenderer), _spriteName("")
-{
-	_boundingRect.clear();
-}
-
-void Sprite_::commitUpdates() const
-{
-	calculateMvp(0, glm::mat4(1.f), _uiRenderer->getScreenRotation() * _uiRenderer->getProjection(), _uiRenderer->getViewport());
-}
+void Sprite_::commitUpdates() const { calculateMvp(0, glm::mat4(1.f), _uiRenderer->getScreenRotation() * _uiRenderer->getProjection(), _uiRenderer->getViewport()); }
 
 void Sprite_::render()
 {
-	if (!_uiRenderer->isRendering())
-	{
-		throw UIRendererError("Sprite: Render called without first calling uiRenderer::begin to set up the commandbuffer.");
-	}
+	if (!_uiRenderer->isRendering()) { throw UIRendererError("Sprite: Render called without first calling uiRenderer::begin to set up the commandbuffer."); }
 	onRender(_uiRenderer->getActiveCommandBuffer(), 0);
 }
 
@@ -83,8 +57,8 @@ void Image_::updateUbo(uint64_t parentIds) const
 	debug_assertion(_mvpData[parentIds].bufferArrayId != -1, "Invalid MVP Buffer ID");
 	debug_assertion(_materialData.bufferArrayId != -1, "Invalid Material Buffer ID");
 	// update the ubo
-	_uiRenderer->getUbo().updateMvp(_mvpData[parentIds].bufferArrayId, _mvpData[parentIds].mvp);
-	_uiRenderer->getMaterial().updateMaterial(_materialData.bufferArrayId, _color, _alphaMode, uvTrans);
+	_uiRenderer->getUbo().updateMvp(static_cast<uint32_t>(_mvpData[parentIds].bufferArrayId), _mvpData[parentIds].mvp);
+	_uiRenderer->getMaterial().updateMaterial(static_cast<uint32_t>(_materialData.bufferArrayId), _color, _alphaMode, uvTrans);
 }
 
 void Image_::updateTextureDescriptorSet() const
@@ -108,32 +82,15 @@ void Image_::calculateMvp(uint64_t parentIds, const glm::mat4& srt, const glm::m
 
 		switch (_anchor)
 		{
-		case Anchor::Center:
-			break;
-		case Anchor::TopLeft:
-			offset = vec2(-1.f, 1.f);
-			break;
-		case Anchor::TopCenter:
-			offset = vec2(0.0f, 1.f);
-			break;
-		case Anchor::TopRight:
-			offset = vec2(1.f, 1.f);
-			break;
-		case Anchor::BottomLeft:
-			offset = vec2(-1.f, -1.f);
-			break;
-		case Anchor::BottomCenter:
-			offset = vec2(0.0f, -1.f);
-			break;
-		case Anchor::BottomRight:
-			offset = vec2(1.f, -1.f);
-			break;
-		case Anchor::CenterLeft:
-			offset = vec2(-1.f, 0.0f);
-			break;
-		case Anchor::CenterRight:
-			offset = vec2(1.f, 0.0f);
-			break;
+		case Anchor::Center: break;
+		case Anchor::TopLeft: offset = vec2(-1.f, 1.f); break;
+		case Anchor::TopCenter: offset = vec2(0.0f, 1.f); break;
+		case Anchor::TopRight: offset = vec2(1.f, 1.f); break;
+		case Anchor::BottomLeft: offset = vec2(-1.f, -1.f); break;
+		case Anchor::BottomCenter: offset = vec2(0.0f, -1.f); break;
+		case Anchor::BottomRight: offset = vec2(1.f, -1.f); break;
+		case Anchor::CenterLeft: offset = vec2(-1.f, 0.0f); break;
+		case Anchor::CenterRight: offset = vec2(1.f, 0.0f); break;
 		}
 
 		memset(glm::value_ptr(_cachedMatrix), 0, sizeof(_cachedMatrix));
@@ -172,8 +129,8 @@ void Image_::onRender(CommandBufferBase& commandBuffer, uint64_t parentId)
 {
 	pvr::utils::beginCommandBufferDebugLabel(commandBuffer, pvrvk::DebugUtilsLabel("Rendering: (" + getSpriteName() + ")"));
 	commandBuffer->bindDescriptorSet(PipelineBindPoint::e_GRAPHICS, _uiRenderer->getPipelineLayout(), 0, getTexDescriptorSet(), nullptr, 0);
-	_uiRenderer->getUbo().bindUboDynamic(commandBuffer, _uiRenderer->getPipelineLayout(), _mvpData[parentId].bufferArrayId);
-	_uiRenderer->getMaterial().bindUboDynamic(commandBuffer, _uiRenderer->getPipelineLayout(), _materialData.bufferArrayId);
+	_uiRenderer->getUbo().bindUboDynamic(commandBuffer, _uiRenderer->getPipelineLayout(), static_cast<uint32_t>(_mvpData[parentId].bufferArrayId));
+	_uiRenderer->getMaterial().bindUboDynamic(commandBuffer, _uiRenderer->getPipelineLayout(), static_cast<uint32_t>(_materialData.bufferArrayId));
 	commandBuffer->bindVertexBuffer(_uiRenderer->getImageVbo(), 0, 0);
 	commandBuffer->draw(0, 6);
 	pvr::utils::endCommandBufferDebugLabel(commandBuffer);
@@ -184,10 +141,7 @@ void Image_::onAddInstance(uint64_t parentId)
 	if (_mvpData[parentId].bufferArrayId == -1)
 	{
 		int32_t id = _uiRenderer->getUbo().getNewBufferSlice();
-		if (id == -1)
-		{
-			throw UIRendererInstanceMaxError("Failed to create Image (UBO instance).");
-		}
+		if (id == -1) { throw UIRendererInstanceMaxError("Failed to create Image (UBO instance)."); }
 		_mvpData[parentId].bufferArrayId = id;
 	}
 }
@@ -206,16 +160,11 @@ void Image_::onRemoveInstance(uint64_t parentId)
 Image_::Image_(make_shared_enabler, UIRenderer& uiRenderer, const ImageView& imageView, uint32_t width, uint32_t height, const Sampler& sampler)
 	: Sprite_(uiRenderer), _texW(width), _texH(height), _imageView(imageView), _sampler(sampler), _isTextureDirty(true)
 {
-	if (!_sampler)
-	{
-		_sampler = imageView->getImage()->getNumMipLevels() > 1 ? uiRenderer.getSamplerTrilinear() : uiRenderer.getSamplerBilinear();
-	}
+	if (!_sampler) { _sampler = imageView->getImage()->getNumMipLevels() > 1 ? uiRenderer.getSamplerTrilinear() : uiRenderer.getSamplerBilinear(); }
 	_boundingRect.setMinMax(glm::vec3(width * -.5f, height * -.5f, 0.0f), glm::vec3(width * .5f, height * .5f, 0.0f));
 	_texDescSet = uiRenderer.getDescriptorPool()->allocateDescriptorSet(uiRenderer.getTexDescriptorSetLayout());
 	if (_materialData.bufferArrayId == -1 && (_materialData.bufferArrayId = _uiRenderer->getMaterial().getNewBufferArray()) == -1)
-	{
-		throw std::runtime_error("Failed to create Image (Material instance)");
-	}
+	{ throw std::runtime_error("Failed to create Image (Material instance)"); }
 	onAddInstance(0);
 }
 
@@ -240,34 +189,22 @@ void Font_::loadFontData(const Texture& texture)
 		_characters.resize(_header.numCharacters);
 		found = metaDataMap.find(static_cast<uint32_t>(FontCharList));
 
-		if (found != metaDataMap.end())
-		{
-			memcpy(&_characters[0], found->second.getData(), found->second.getDataSize());
-		}
+		if (found != metaDataMap.end()) { memcpy(&_characters[0], found->second.getData(), found->second.getDataSize()); }
 
 		_yOffsets.resize(_header.numCharacters);
 		found = metaDataMap.find(static_cast<uint32_t>(FontYoffset));
 
-		if (found != metaDataMap.end())
-		{
-			memcpy(&_yOffsets[0], found->second.getData(), found->second.getDataSize());
-		}
+		if (found != metaDataMap.end()) { memcpy(&_yOffsets[0], found->second.getData(), found->second.getDataSize()); }
 
 		_charMetrics.resize(_header.numCharacters);
 		found = metaDataMap.find(static_cast<uint32_t>(FontMetrics));
 
-		if (found != metaDataMap.end())
-		{
-			memcpy(&_charMetrics[0], found->second.getData(), found->second.getDataSize());
-		}
+		if (found != metaDataMap.end()) { memcpy(&_charMetrics[0], found->second.getData(), found->second.getDataSize()); }
 
 		_rects.resize(_header.numCharacters);
 		found = metaDataMap.find(static_cast<uint32_t>(FontRects));
 
-		if (found != metaDataMap.end())
-		{
-			memcpy(&_rects[0], found->second.getData(), found->second.getDataSize());
-		}
+		if (found != metaDataMap.end()) { memcpy(&_rects[0], found->second.getData(), found->second.getDataSize()); }
 
 		// Build UVs
 		_characterUVs.resize(_header.numCharacters);
@@ -285,10 +222,7 @@ void Font_::loadFontData(const Texture& texture)
 		found = metaDataMap.find(static_cast<uint32_t>(FontKerning));
 		_kerningPairs.resize(_header.numKerningPairs);
 
-		if (found != metaDataMap.end())
-		{
-			memcpy(&_kerningPairs[0], found->second.getData(), found->second.getDataSize());
-		}
+		if (found != metaDataMap.end()) { memcpy(&_kerningPairs[0], found->second.getData(), found->second.getDataSize()); }
 	}
 }
 
@@ -296,10 +230,7 @@ uint32_t Font_::findCharacter(uint32_t character) const
 {
 	uint32_t* item = reinterpret_cast<uint32_t*>(bsearch(&character, &_characters[0], _characters.size(), sizeof(uint32_t), characterCompFunc));
 
-	if (!item)
-	{
-		return static_cast<uint32_t>(InvalidChar);
-	}
+	if (!item) { return static_cast<uint32_t>(InvalidChar); }
 
 	uint32_t index = static_cast<uint32_t>(item - &_characters[0]);
 	return index;
@@ -312,32 +243,20 @@ void Font_::applyKerning(uint32_t charA, uint32_t charB, float& offset)
 		uint64_t uiPairToSearch = (static_cast<uint64_t>(charA) << 32) | static_cast<uint64_t>(charB);
 		KerningPair* pItem = (KerningPair*)bsearch(&uiPairToSearch, &_kerningPairs[0], _kerningPairs.size(), sizeof(KerningPair), kerningCompFunc);
 
-		if (pItem)
-		{
-			offset += static_cast<float>(pItem->offset);
-		}
+		if (pItem) { offset += static_cast<float>(pItem->offset); }
 	}
 }
 
-int32_t Font_::characterCompFunc(const void* a, const void* b)
-{
-	return (*static_cast<const int32_t*>(a) - *static_cast<const int32_t*>(b));
-}
+int32_t Font_::characterCompFunc(const void* a, const void* b) { return (*static_cast<const int32_t*>(a) - *static_cast<const int32_t*>(b)); }
 
 int32_t Font_::kerningCompFunc(const void* a, const void* b)
 {
 	KerningPair* pPairA = (KerningPair*)a;
 	KerningPair* pPairB = (KerningPair*)b;
 
-	if (pPairA->pair > pPairB->pair)
-	{
-		return 1;
-	}
+	if (pPairA->pair > pPairB->pair) { return 1; }
 
-	if (pPairA->pair < pPairB->pair)
-	{
-		return -1;
-	}
+	if (pPairA->pair < pPairB->pair) { return -1; }
 
 	return 0;
 }
@@ -347,10 +266,7 @@ Font_::Font_(make_shared_enabler, UIRenderer& uiRenderer, const pvrvk::ImageView
 	setUIRenderer(&uiRenderer);
 	_imageView = tex2D;
 	loadFontData(textureHeader);
-	if (textureHeader.getPixelFormat().getNumChannels() == 1 && textureHeader.getPixelFormat().getChannelContent(0) == 'a')
-	{
-		_alphaRenderingMode = true;
-	}
+	if (textureHeader.getPixelFormat().getNumChannels() == 1 && textureHeader.getPixelFormat().getChannelContent(0) == 'a') { _alphaRenderingMode = true; }
 
 	_texDescSet = uiRenderer.getDescriptorPool()->allocateDescriptorSet(uiRenderer.getTexDescriptorSetLayout());
 	// update the texture descriptor set
@@ -361,10 +277,7 @@ Font_::Font_(make_shared_enabler, UIRenderer& uiRenderer, const pvrvk::ImageView
 
 uint32_t TextElement_::updateVertices(float fZPos, float xPos, float yPos, const std::vector<uint32_t>& text, Vertex* const pVertices) const
 {
-	if (pVertices == NULL || text.empty())
-	{
-		return 0;
-	}
+	if (pVertices == NULL || text.empty()) { return 0; }
 	_boundingRect.clear();
 
 	Font tmp = _font;
@@ -387,10 +300,7 @@ uint32_t TextElement_::updateVertices(float fZPos, float xPos, float yPos, const
 
 	for (size_t index = 0; index < numCharsInString; index++)
 	{
-		if (index > MaxLetters)
-		{
-			break;
-		}
+		if (index > MaxLetters) { break; }
 
 		// Newline
 		if (text[index] == 0x0A)
@@ -467,20 +377,18 @@ void Text_::onAddInstance(uint64_t parentId)
 	if (_mvpData[parentId].bufferArrayId == -1)
 	{
 		if ((_mvpData[parentId].bufferArrayId = _uiRenderer->getUbo().getNewBufferSlice()) == -1)
-		{
-			throw UIRendererInstanceMaxError("Failed to create Text (Material instances)");
-		}
+		{ throw UIRendererInstanceMaxError("Failed to create Text (Material instances)"); }
 	}
 }
 
 void TextElement_::createBuffers()
 {
-	_vbo = utils::createBuffer(_uiRenderer->getDevice().lock(), static_cast<uint32_t>(sizeof(Vertex) * _maxLength * 4), pvrvk::BufferUsageFlags::e_VERTEX_BUFFER_BIT,
-		pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, &_uiRenderer->getMemoryAllocator(),
-		pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+	_vbo = utils::createBuffer(_uiRenderer->getDevice().lock(),
+		pvrvk::BufferCreateInfo(static_cast<uint32_t>(sizeof(Vertex) * _maxLength * 4), pvrvk::BufferUsageFlags::e_VERTEX_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
+		pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, &_uiRenderer->getMemoryAllocator(), pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
-	_drawIndirectBuffer = utils::createBuffer(_uiRenderer->getDevice().lock(), sizeof(VkDrawIndexedIndirectCommand), pvrvk::BufferUsageFlags::e_INDIRECT_BUFFER_BIT,
-		pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
+	_drawIndirectBuffer = utils::createBuffer(_uiRenderer->getDevice().lock(),
+		pvrvk::BufferCreateInfo(sizeof(VkDrawIndexedIndirectCommand), pvrvk::BufferUsageFlags::e_INDIRECT_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 		pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT | pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT |
 			pvrvk::MemoryPropertyFlags::e_HOST_CACHED_BIT,
 		&_uiRenderer->getMemoryAllocator(), pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
@@ -489,16 +397,10 @@ void TextElement_::createBuffers()
 void TextElement_::regenerateText() const
 {
 	_utf32.clear();
-	if (_isUtf8)
-	{
-		utils::UnicodeConverter::convertUTF8ToUTF32(reinterpret_cast<const utf8*>(_textStr.c_str()), _utf32);
-	}
+	if (_isUtf8) { utils::UnicodeConverter::convertUTF8ToUTF32(reinterpret_cast<const utf8*>(_textStr.c_str()), _utf32); }
 	else
 	{
-		if (sizeof(wchar_t) == 2 && _textWStr.length())
-		{
-			utils::UnicodeConverter::convertUTF16ToUTF32((const utf16*)_textWStr.c_str(), _utf32);
-		}
+		if (sizeof(wchar_t) == 2 && _textWStr.length()) { utils::UnicodeConverter::convertUTF16ToUTF32((const utf16*)_textWStr.c_str(), _utf32); }
 		else if (_textWStr.length()) // if (sizeof(wchar_t) == 4)
 		{
 			_utf32.resize(_textWStr.size());
@@ -507,10 +409,7 @@ void TextElement_::regenerateText() const
 	}
 
 	_vertices.clear();
-	if (_vertices.size() < (_utf32.size() * 4))
-	{
-		_vertices.resize(_utf32.size() * 4);
-	}
+	if (_vertices.size() < (_utf32.size() * 4)) { _vertices.resize(_utf32.size() * 4); }
 
 	_numCachedVerts = updateVertices(0.0f, 0.f, 0.f, _utf32, _vertices.size() ? &_vertices[0] : 0);
 	assertion((_numCachedVerts % 4) == 0);
@@ -520,10 +419,7 @@ void TextElement_::regenerateText() const
 
 void TextElement_::updateVbo() const
 {
-	if (_vertices.size())
-	{
-		pvr::utils::updateHostVisibleBuffer(_vbo, _vertices.data(), 0, static_cast<uint32_t>(sizeof(Vertex) * _vertices.size()), true);
-	}
+	if (_vertices.size()) { pvr::utils::updateHostVisibleBuffer(_vbo, _vertices.data(), 0, static_cast<uint32_t>(sizeof(Vertex) * _vertices.size()), true); }
 	VkDrawIndexedIndirectCommand cmd;
 	cmd.firstInstance = 0;
 	cmd.firstIndex = 0;
@@ -555,33 +451,15 @@ void Text_::calculateMvp(uint64_t parentIds, glm::mat4 const& srt, const glm::ma
 
 		switch (_anchor)
 		{
-		case Anchor::Center:
-			offset = vec2(_boundingRect.center());
-			break;
-		case Anchor::TopLeft:
-			offset = vec2(_boundingRect.topLeftNear());
-			break;
-		case Anchor::TopCenter:
-			offset = vec2(_boundingRect.topCenterNear());
-			break;
-		case Anchor::TopRight:
-			offset = vec2(_boundingRect.topRightNear());
-			break;
-		case Anchor::BottomLeft:
-			offset = vec2(_boundingRect.bottomLeftNear());
-			break;
-		case Anchor::BottomCenter:
-			offset = vec2(_boundingRect.bottomCenterNear());
-			break;
-		case Anchor::BottomRight:
-			offset = vec2(_boundingRect.bottomRightNear());
-			break;
-		case Anchor::CenterLeft:
-			offset = vec2(_boundingRect.centerLeftNear());
-			break;
-		case Anchor::CenterRight:
-			offset = vec2(_boundingRect.centerRightNear());
-			break;
+		case Anchor::Center: offset = vec2(_boundingRect.center()); break;
+		case Anchor::TopLeft: offset = vec2(_boundingRect.topLeftNear()); break;
+		case Anchor::TopCenter: offset = vec2(_boundingRect.topCenterNear()); break;
+		case Anchor::TopRight: offset = vec2(_boundingRect.topRightNear()); break;
+		case Anchor::BottomLeft: offset = vec2(_boundingRect.bottomLeftNear()); break;
+		case Anchor::BottomCenter: offset = vec2(_boundingRect.bottomCenterNear()); break;
+		case Anchor::BottomRight: offset = vec2(_boundingRect.bottomRightNear()); break;
+		case Anchor::CenterLeft: offset = vec2(_boundingRect.centerLeftNear()); break;
+		case Anchor::CenterRight: offset = vec2(_boundingRect.centerRightNear()); break;
 		}
 
 		// Read the following bottom to top - this is because of how the optimised GLM functions work
@@ -658,10 +536,7 @@ Text_::Text_(make_shared_enabler, UIRenderer& uiRenderer, const TextElement& tex
 	if (_materialData.bufferArrayId == -1)
 	{
 		_materialData.bufferArrayId = _uiRenderer->getMaterial().getNewBufferArray();
-		if (_materialData.bufferArrayId == -1)
-		{
-			throw UIRendererInstanceMaxError("Failed to create Text (Material instances)");
-		}
+		if (_materialData.bufferArrayId == -1) { throw UIRendererInstanceMaxError("Failed to create Text (Material instances)"); }
 	}
 
 	onAddInstance(0);
@@ -675,10 +550,7 @@ TextElement_& TextElement_::setText(const std::string& str)
 	_isTextDirty = true;
 	_isUtf8 = true;
 	_textWStr.clear();
-	if (str.length() > _maxLength)
-	{
-		_textStr.assign(str.begin(), str.begin() + _maxLength);
-	}
+	if (str.length() > _maxLength) { _textStr.assign(str.begin(), str.begin() + _maxLength); }
 	else
 	{
 		_textStr = str;
@@ -692,10 +564,7 @@ TextElement_& TextElement_::setText(const std::wstring& str)
 	_isTextDirty = true;
 	_isUtf8 = false;
 	_textStr.clear();
-	if (str.length() > _maxLength)
-	{
-		_textWStr.assign(str.begin(), str.begin() + _maxLength);
-	}
+	if (str.length() > _maxLength) { _textWStr.assign(str.begin(), str.begin() + _maxLength); }
 	else
 	{
 		_textWStr = str;
@@ -706,44 +575,29 @@ TextElement_& TextElement_::setText(const std::wstring& str)
 
 TextElement_& TextElement_::setText(std::string&& str)
 {
-	if (str.length() > _maxLength)
-	{
-		str.erase(str.begin() + _maxLength, str.end());
-	}
+	if (str.length() > _maxLength) { str.erase(str.begin() + _maxLength, str.end()); }
 	_isTextDirty = true;
 	_isUtf8 = true;
 	_textWStr.clear();
-	if (str.length() > _maxLength)
-	{
-		_textStr.erase(str.begin() + _maxLength, str.end());
-	}
+	if (str.length() > _maxLength) { _textStr.erase(str.begin() + _maxLength, str.end()); }
 	_textStr = std::move(str);
 	return *this;
 }
 
 TextElement_& TextElement_::setText(std::wstring&& str)
 {
-	if (str.length() > _maxLength)
-	{
-		str.erase(str.begin() + _maxLength, str.end());
-	}
+	if (str.length() > _maxLength) { str.erase(str.begin() + _maxLength, str.end()); }
 	_isTextDirty = true;
 	_isUtf8 = false;
 	_textStr.clear();
-	if (str.length() > _maxLength)
-	{
-		str.erase(str.begin() + _maxLength, str.end());
-	}
+	if (str.length() > _maxLength) { str.erase(str.begin() + _maxLength, str.end()); }
 	_textWStr = std::move(str);
 	return *this;
 }
 
 MatrixGroup_::MatrixGroup_(make_shared_enabler, UIRenderer& uiRenderer, uint64_t id) : Group_(uiRenderer, id) {}
 
-void MatrixGroup_::commitUpdates() const
-{
-	calculateMvp(0, glm::mat4(1.f), _uiRenderer->getScreenRotation() * _viewProj, _uiRenderer->getViewport());
-}
+void MatrixGroup_::commitUpdates() const { calculateMvp(0, glm::mat4(1.f), _uiRenderer->getScreenRotation() * _viewProj, _uiRenderer->getViewport()); }
 
 void PixelGroup_::calculateMvp(uint64_t parentIds, const glm::mat4& srt, const glm::mat4& viewProj, Rect2D const& viewport) const
 {
@@ -751,32 +605,15 @@ void PixelGroup_::calculateMvp(uint64_t parentIds, const glm::mat4& srt, const g
 
 	switch (_anchor)
 	{
-	case Anchor::Center:
-		break;
-	case Anchor::TopLeft:
-		offset = glm::vec2(_boundingRect.topLeftNear());
-		break;
-	case Anchor::TopCenter:
-		offset = glm::vec2(_boundingRect.topCenterNear());
-		break;
-	case Anchor::TopRight:
-		offset = glm::vec2(_boundingRect.topRightNear());
-		break;
-	case Anchor::BottomLeft:
-		offset = glm::vec2(_boundingRect.bottomLeftNear());
-		break;
-	case Anchor::BottomCenter:
-		offset = glm::vec2(_boundingRect.bottomCenterNear());
-		break;
-	case Anchor::BottomRight:
-		offset = glm::vec2(_boundingRect.bottomRightNear());
-		break;
-	case Anchor::CenterLeft:
-		offset = glm::vec2(_boundingRect.centerLeftNear());
-		break;
-	case Anchor::CenterRight:
-		offset = glm::vec2(_boundingRect.centerRightNear());
-		break;
+	case Anchor::Center: break;
+	case Anchor::TopLeft: offset = glm::vec2(_boundingRect.topLeftNear()); break;
+	case Anchor::TopCenter: offset = glm::vec2(_boundingRect.topCenterNear()); break;
+	case Anchor::TopRight: offset = glm::vec2(_boundingRect.topRightNear()); break;
+	case Anchor::BottomLeft: offset = glm::vec2(_boundingRect.bottomLeftNear()); break;
+	case Anchor::BottomCenter: offset = glm::vec2(_boundingRect.bottomCenterNear()); break;
+	case Anchor::BottomRight: offset = glm::vec2(_boundingRect.bottomRightNear()); break;
+	case Anchor::CenterLeft: offset = glm::vec2(_boundingRect.centerLeftNear()); break;
+	case Anchor::CenterRight: offset = glm::vec2(_boundingRect.centerRightNear()); break;
 	}
 
 	memset(glm::value_ptr(_cachedMatrix), 0, sizeof(_cachedMatrix));

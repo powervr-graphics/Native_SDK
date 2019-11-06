@@ -23,24 +23,15 @@ struct Rectangle
 
 	/// <summary>Get the offset of the rectangle, i.e. the position of its minimum (bottom-left) vertex</summary>
 	/// <returns>The position of its minimum (bottom-left) vertex</returns>
-	glm::tvec2<TYPE, glm::highp> offset() const
-	{
-		return glm::tvec2<TYPE, glm::highp>(x, y);
-	}
+	glm::tvec2<TYPE, glm::highp> offset() const { return glm::tvec2<TYPE, glm::highp>(x, y); }
 
 	/// <summary>Get the extent (i.e. size) of the rectangle</summary>
 	/// <returns>A vec2 containing the sizes per component (width in x, height in y)</returns>
-	glm::tvec2<TYPE, glm::highp> extent() const
-	{
-		return glm::tvec2<TYPE, glm::highp>(width, height);
-	}
+	glm::tvec2<TYPE, glm::highp> extent() const { return glm::tvec2<TYPE, glm::highp>(width, height); }
 
 	/// <summary>Get the position of the center of the rectangle</summary>
 	/// <returns>The position of the center of the rectangle</returns>
-	glm::tvec2<TYPE, glm::highp> center() const
-	{
-		return offset() + extent() / TYPE(2);
-	}
+	glm::tvec2<TYPE, glm::highp> center() const { return offset() + extent() / TYPE(2); }
 
 	/// <summary>Create a rectangle with uninitialized values.</summary>
 	Rectangle() {}
@@ -74,18 +65,12 @@ struct Rectangle
 	/// <summary>Test equality.</summary>
 	/// <param name="rhs">Rectangle to test against.</param>
 	/// <returns>True if rectangles are exactly equal (corners completely coincide), otherwise false.</returns>
-	bool operator==(const Rectangle& rhs) const
-	{
-		return (x == rhs.x) && (y == rhs.y) && (width == rhs.width) && (height == rhs.height);
-	}
+	bool operator==(const Rectangle& rhs) const { return (x == rhs.x) && (y == rhs.y) && (width == rhs.width) && (height == rhs.height); }
 
 	/// <summary>Test equality.</summary>
 	/// <param name="rhs">Rectangle to test against.</param>
 	/// <returns>True if rectangles are not exactly equal (at least one corner different), otherwise false.</returns>
-	bool operator!=(const Rectangle& rhs) const
-	{
-		return !(*this == rhs);
-	}
+	bool operator!=(const Rectangle& rhs) const { return !(*this == rhs); }
 
 	/// <summary>Expand this rectangle so that it also contains the given rectangle. Equivalently: Set this
 	/// rectangle's min corner to the min of this and rect min corner, and the max corner to the max of this

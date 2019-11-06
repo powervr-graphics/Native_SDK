@@ -14,10 +14,7 @@ void ModelGles::destroy()
 	model = nullptr;
 	for (auto& mesh : meshes)
 	{
-		if (mesh.vbos.size())
-		{
-			gl::DeleteBuffers(static_cast<GLsizei>(mesh.vbos.size()), mesh.vbos.data());
-		}
+		if (mesh.vbos.size()) { gl::DeleteBuffers(static_cast<GLsizei>(mesh.vbos.size()), mesh.vbos.data()); }
 		mesh.vbos.clear();
 		if (mesh.ibo)
 		{
@@ -33,23 +30,34 @@ void ModelGles::destroy()
 	}
 }
 
-void ModelGles::init(pvr::IAssetProvider& assetProvider, pvr::assets::Model& model, bool isEs2)
+void ModelGles::init(pvr::IAssetProvider& assetProvider, pvr::assets::Model& inModel, Flags flags)
 {
-	this->model = &model;
-	textures.resize(model.getNumTextures());
-	meshes.resize(model.getNumMeshes());
-
-	for (uint32_t i = 0; i < model.getNumTextures(); ++i)
+	this->model = &inModel;
+	textures.resize(this->model->getNumTextures());
+	meshes.resize(this->model->getNumMeshes());
+	if ((flags & Flags::LoadTextures) == Flags::LoadTextures)
 	{
-		textures[i] = pvr::utils::textureUpload(assetProvider, model.getTexture(i).getName().c_str(), isEs2);
+		for (uint32_t i = 0; i < this->model->getNumTextures(); ++i)
+		{ textures[i] = pvr::utils::textureUpload(assetProvider, this->model->getTexture(i).getName().c_str(), (flags & Flags::GLES2Only) == Flags::GLES2Only); }
 	}
 
-	for (uint32_t i = 0; i < model.getNumMeshes(); ++i)
+	if ((flags & Flags::LoadMeshes) == Flags::LoadMeshes)
 	{
-		auto& mesh = model.getMesh(i);
-		pvr::utils::createMultipleBuffersFromMesh(mesh, meshes[i].vbos, meshes[i].ibo);
+		for (uint32_t i = 0; i < this->model->getNumMeshes(); ++i)
+		{
+			auto& mesh = this->model->getMesh(i);
+			pvr::utils::createMultipleBuffersFromMesh(mesh, meshes[i].vbos, meshes[i].ibo);
+		}
 	}
 }
+
+void ModelGles::init(pvr::IAssetProvider& assetProvider, pvr::assets::ModelHandle& inModel, Flags flags)
+{
+	if (!inModel) { throw pvr::InvalidArgumentError("model", "Model cannot be an empty ModelHandle"); }
+	modelHandle = inModel;
+	init(assetProvider, *inModel, flags);
+}
+
 } // namespace utils
 } // namespace pvr
 //!\endcond

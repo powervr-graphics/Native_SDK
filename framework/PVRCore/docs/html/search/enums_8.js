@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['matrixcolumns',['MatrixColumns',['../namespacepvr_1_1_gpu_datatypes_helper.html#a1a443ed852f4fa9bd3cc3cc446ed1499',1,'pvr::GpuDatatypesHelper']]]
+  ['loglevel',['LogLevel',['../_log_8h.html#aca1fd1d8935433e6ba2e3918214e07f9',1,'Log.h']]]
 ];

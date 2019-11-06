@@ -81,11 +81,11 @@ inline GLuint createComputeShaderProgram(IAssetProvider& app, const char* compSh
 /// <param name="defines">A list of defines to be added to the shaders</param>
 /// <param name="numDefines">The number of defines to be added to the shaders</param>
 /// <returns>The program object</returns>
-inline GLuint createShaderProgram(IAssetProvider& app, const char* vertShaderFilename, const char* tessCtrlShaderFilename, const char* tessEvalShaderFilename,
+inline GLuint createShaderProgram(const IAssetProvider& app, const char* vertShaderFilename, const char* tessCtrlShaderFilename, const char* tessEvalShaderFilename,
 	const char* geometryShaderFilename, const char* fragShaderFilename, const char** attribNames, const uint16_t* attribIndices, uint32_t numAttribs,
 	const char* const* defines = 0, uint32_t numDefines = 0)
 {
-	GLuint shaders[5] = { 0 };
+	GLuint shaders[6] = { 0 };
 	GLuint program = 0;
 	uint32_t count = 0;
 	if (vertShaderFilename)
@@ -119,10 +119,7 @@ inline GLuint createShaderProgram(IAssetProvider& app, const char* vertShaderFil
 	}
 
 	program = pvr::utils::createShaderProgram(shaders, count, attribNames, attribIndices, numAttribs);
-	for (uint32_t i = 0; i < count; ++i)
-	{
-		gl::DeleteShader(shaders[i]);
-	}
+	for (uint32_t i = 0; i < count; ++i) { gl::DeleteShader(shaders[i]); }
 
 	return program;
 }
@@ -137,7 +134,7 @@ inline GLuint createShaderProgram(IAssetProvider& app, const char* vertShaderFil
 /// <param name="defines">A list of defines to be added to the shaders</param>
 /// <param name="numDefines">The number of defines to be added to the shaders</param>
 /// <returns>The program object</returns>
-inline GLuint createShaderProgram(IAssetProvider& app, const char* vertShaderFilename, const char* fragShaderFilename, const char** attribNames, const uint16_t* attribIndices,
+inline GLuint createShaderProgram(const IAssetProvider& app, const char* vertShaderFilename, const char* fragShaderFilename, const char** attribNames, const uint16_t* attribIndices,
 	uint32_t numAttribs, const char* const* defines = 0, uint32_t numDefines = 0)
 {
 	return createShaderProgram(app, vertShaderFilename, nullptr, nullptr, nullptr, fragShaderFilename, attribNames, attribIndices, numAttribs, defines, numDefines);

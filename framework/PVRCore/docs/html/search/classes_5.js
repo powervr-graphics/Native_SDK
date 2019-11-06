@@ -1,11 +1,7 @@
 var searchData=
 [
   ['fileeoferror',['FileEOFError',['../classpvr_1_1_file_e_o_f_error.html',1,'pvr']]],
-  ['fileheader',['FileHeader',['../structpvr_1_1texture__xnb_1_1_file_header.html',1,'pvr::texture_xnb']]],
-  ['fileheader',['FileHeader',['../structpvr_1_1texture__bmp_1_1_file_header.html',1,'pvr::texture_bmp']]],
-  ['fileheader',['FileHeader',['../structpvr_1_1texture__dds_1_1_file_header.html',1,'pvr::texture_dds']]],
-  ['fileheader',['FileHeader',['../structpvr_1_1texture__ktx_1_1_file_header.html',1,'pvr::texture_ktx']]],
-  ['fileheader',['FileHeader',['../structpvr_1_1texture__tga_1_1_file_header.html',1,'pvr::texture_tga']]],
+  ['fileheader',['FileHeader',['../structpvr_1_1texture__bmp_1_1_file_header.html',1,'pvr::texture_bmp::FileHeader'],['../structpvr_1_1texture__dds_1_1_file_header.html',1,'pvr::texture_dds::FileHeader'],['../structpvr_1_1texture__ktx_1_1_file_header.html',1,'pvr::texture_ktx::FileHeader'],['../structpvr_1_1texture__tga_1_1_file_header.html',1,'pvr::texture_tga::FileHeader'],['../structpvr_1_1texture__xnb_1_1_file_header.html',1,'pvr::texture_xnb::FileHeader']]],
   ['fileheaderdx10',['FileHeaderDX10',['../structpvr_1_1texture__dds_1_1_file_header_d_x10.html',1,'pvr::texture_dds']]],
   ['fileioerror',['FileIOError',['../classpvr_1_1_file_i_o_error.html',1,'pvr']]],
   ['filenotfounderror',['FileNotFoundError',['../classpvr_1_1_file_not_found_error.html',1,'pvr']]],

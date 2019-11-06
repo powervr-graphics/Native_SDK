@@ -22,9 +22,9 @@ DebugUtilsMessenger_::DebugUtilsMessenger_(make_shared_enabler, Instance& instan
 	callbackCreateInfo.pfnUserCallback = createInfo.getCallback();
 	callbackCreateInfo.pUserData = createInfo.getPUserData();
 
+	if (!instance->getVkBindings().vkCreateDebugUtilsMessengerEXT) { throw std::runtime_error("vkCreateDebugUtilsMessengerEXT NULL"); }
 	// Register the DebugUtilsMessenger
-	vkThrowIfFailed(
-		instance->getVkBindings().vkCreateDebugUtilsMessengerEXT(instance->getVkHandle(), &callbackCreateInfo, nullptr, &_vkHandle), "Failed to create DebugUtilsMessenger");
+	vkThrowIfFailed(instance->getVkBindings().vkCreateDebugUtilsMessengerEXT(instance->getVkHandle(), &callbackCreateInfo, nullptr, &_vkHandle), "Failed to create DebugUtilsMessenger");
 }
 
 DebugUtilsMessenger_::~DebugUtilsMessenger_()

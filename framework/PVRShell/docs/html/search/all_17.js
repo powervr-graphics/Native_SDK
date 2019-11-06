@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['_7eshell',['~Shell',['../classpvr_1_1platform_1_1_shell.html#ad53e03eb253c06ad0977e07f7b53c938',1,'pvr::platform::Shell']]],
-  ['_7eshellos',['~ShellOS',['../classpvr_1_1platform_1_1_shell_o_s.html#a680bb0320a128e2c4bcee683acb48454',1,'pvr::platform::ShellOS']]]
+  ['x',['x',['../structpvr_1_1_pointer_location_store.html#ab1413acf53b7ac3e7cd240ae90aae875',1,'pvr::PointerLocationStore::x()'],['../structpvr_1_1_configure_event.html#a48b19a30df03e9d850209fa45f2d784e',1,'pvr::ConfigureEvent::x()'],['../structpvr_1_1platform_1_1_shell_1_1_pointer_normalised_location.html#a6610d0648353f6da9a9b1f6f04286a05',1,'pvr::platform::Shell::PointerNormalisedLocation::x()']]]
 ];

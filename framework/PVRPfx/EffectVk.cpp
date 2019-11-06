@@ -18,10 +18,7 @@ namespace impl {
 using namespace pvrvk;
 namespace {
 std::map<Api, std::set<StringHash> /**/> apiToStringList;
-inline void addMapping(Api api, const StringHash& str)
-{
-	apiToStringList[api].insert(str);
-}
+inline void addMapping(Api api, const StringHash& str) { apiToStringList[api].insert(str); }
 
 inline bool initializeStringLists()
 {
@@ -90,10 +87,7 @@ inline void addTexture(Effect_& effect, const effect::TextureReference& textureR
 	IAssetProvider& assetProvider)
 {
 	PipelineDef* pipeDef = effect.getPipelineDefinition(pipeline);
-	if (!pipeDef)
-	{
-		throw ErrorValidationFailedEXT("Could not find a pipeline definition with name" + pipeline.str());
-	}
+	if (!pipeDef) { throw ErrorValidationFailedEXT("Could not find a pipeline definition with name" + pipeline.str()); }
 	pipeDef->descSetExists[textureRef.set] = true;
 	ImageView view;
 	Device device = effect.getDevice().lock();
@@ -101,16 +95,14 @@ inline void addTexture(Effect_& effect, const effect::TextureReference& textureR
 	{
 		const effect::TextureDefinition& textureDef = effect.getEffectAsset().textures.find(textureRef.textureName)->second;
 
-		if (textureDef.path.length())
-		{
-			view = utils::loadAndUploadImageAndView(device, textureDef.path.c_str(), true, cmdBuffer, assetProvider);
-		}
+		if (textureDef.path.length()) { view = utils::loadAndUploadImageAndView(device, textureDef.path.c_str(), true, cmdBuffer, assetProvider); }
 		else
 		{
-			Format format = utils::convertToPVRVk(textureDef.fmt);
-			Image image = utils::createImage(device, pvrvk::ImageType::e_2D, format, pvrvk::Extent3D(textureDef.width, textureDef.height, 1u), pvrvk::ImageUsageFlags::e_SAMPLED_BIT,
-				pvrvk::ImageCreateFlags(0), pvrvk::ImageLayersSize(), pvrvk::SampleCountFlags::e_1_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT,
-				pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, &effect.getImageAllocator(), utils::vma::AllocationCreateFlags::e_DEDICATED_MEMORY_BIT);
+			Format format = utils::convertToPVRVk(textureDef.format);
+			Image image = utils::createImage(device,
+				pvrvk::ImageCreateInfo(pvrvk::ImageType::e_2D, format, pvrvk::Extent3D(textureDef.width, textureDef.height, 1u), pvrvk::ImageUsageFlags::e_SAMPLED_BIT),
+				pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, &effect.getImageAllocator(),
+				utils::vma::AllocationCreateFlags::e_DEDICATED_MEMORY_BIT);
 			view = device->createImageView(pvrvk::ImageViewCreateInfo(image));
 		}
 
@@ -151,14 +143,9 @@ inline void addBuffer(Effect_& effect, PipelineDef& pipedef, const BufferRef& bu
 			bufferdef.scope = assetBufferDef.scope;
 			bufferdef.memoryDescription.setName(bufferRef.bufferName.c_str());
 			for (size_t i = 0; i < assetBufferDef.entries.size(); ++i)
-			{
-				bufferdef.memoryDescription.addElement(assetBufferDef.entries[i].semantic, assetBufferDef.entries[i].dataType, assetBufferDef.entries[i].arrayElements);
-			}
+			{ bufferdef.memoryDescription.addElement(assetBufferDef.entries[i].semantic, assetBufferDef.entries[i].dataType, assetBufferDef.entries[i].arrayElements); }
 
-			if (assetBufferDef.multibuffering)
-			{
-				bufferdef.numBuffers = static_cast<uint16_t>(swapchainLength);
-			}
+			if (assetBufferDef.multibuffering) { bufferdef.numBuffers = static_cast<uint16_t>(swapchainLength); }
 		}
 
 		// Add it to the pipeline's lists
@@ -186,8 +173,7 @@ inline void addBuffer(Effect_& effect, PipelineDef& pipedef, const BufferRef& bu
 			static_cast<BufferRef&>(binfo) = static_cast<const BufferRef&>(bufferRef);
 		}
 		break;
-		default:
-			Log(LogLevel::Warning, "Unsupported VariableScope used");
+		default: Log(LogLevel::Warning, "Unsupported VariableScope used");
 		}
 	}
 	else
@@ -206,15 +192,14 @@ inline void createTextures(Effect_& effect, std::map<StringHash, ImageView>& tex
 		for (auto pipe_it = pipes.begin(); pipe_it != pipes.end(); ++pipe_it)
 		{
 			for (auto texture_it = pipe_it->second.textures.begin(); texture_it != pipe_it->second.textures.end(); ++texture_it)
-			{
-				addTexture(effect, *texture_it, textures, pipe_it->first, uploadCmdBuffer, assetProvider);
-			}
+			{ addTexture(effect, *texture_it, textures, pipe_it->first, uploadCmdBuffer, assetProvider); }
 		}
 	}
 }
 
 inline void createBuffers(Effect_& effect, std::map<StringHash, PipelineDef>& createParams, std::map<StringHash, BufferDef>& buffers, uint32_t swapchainLength)
 {
+	(void)createParams;
 	const Effect_::AssetEffect assetEffect = effect.getEffectAsset();
 	auto pipes = assetEffect.versionedPipelines.find(effect.getApiString());
 	if (pipes != assetEffect.versionedPipelines.end())
@@ -222,14 +207,9 @@ inline void createBuffers(Effect_& effect, std::map<StringHash, PipelineDef>& cr
 		for (auto pipe_it = pipes->second.begin(); pipe_it != pipes->second.end(); ++pipe_it)
 		{
 			auto pipeDef = effect.getPipelineDefinition(pipe_it->first);
-			if (!pipeDef)
-			{
-				continue;
-			}
+			if (!pipeDef) { continue; }
 			for (auto buffer_it = pipe_it->second.buffers.begin(); buffer_it != pipe_it->second.buffers.end(); ++buffer_it)
-			{
-				addBuffer(effect, *pipeDef, *buffer_it, buffers, swapchainLength);
-			}
+			{ addBuffer(effect, *pipeDef, *buffer_it, buffers, swapchainLength); }
 		}
 	}
 }
@@ -238,17 +218,11 @@ const effect::PipelineDefinition* getPipeline(const effect::Effect& effect, cons
 {
 	const Effect_::AssetEffect& assetEffect = effect;
 	auto pipes = assetEffect.versionedPipelines.find(version);
-	if (pipes == assetEffect.versionedPipelines.end())
-	{
-		pipes = assetEffect.versionedPipelines.find(StringHash());
-	}
+	if (pipes == assetEffect.versionedPipelines.end()) { pipes = assetEffect.versionedPipelines.find(StringHash()); }
 	if (pipes != assetEffect.versionedPipelines.end())
 	{
 		auto pipe = pipes->second.find(name);
-		if (pipe != pipes->second.end())
-		{
-			return &pipe->second;
-		}
+		if (pipe != pipes->second.end()) { return &pipe->second; }
 	}
 	return NULL;
 }
@@ -277,16 +251,11 @@ bool getRenderPassAndFramebufferForPass(Effect_& effect, const effect::Effect& e
 				if (!subpass.targets[target].empty())
 				{
 					if (subpass.targets[target] == "default") // Is this Swapchain image
-					{
-						swapchainTargetIndex = target;
-					}
+					{ swapchainTargetIndex = target; }
 					else
 					{
 						const auto& found = effectAsset.textures.find(subpass.targets[target]);
-						if (found != effectAsset.textures.end())
-						{
-							colorAttachmentsSet.insert(found->second);
-						}
+						if (found != effectAsset.textures.end()) { colorAttachmentsSet.insert(found->second); }
 					}
 				}
 			}
@@ -297,10 +266,7 @@ bool getRenderPassAndFramebufferForPass(Effect_& effect, const effect::Effect& e
 				if (!subpass.inputs[input].empty())
 				{
 					const auto& found = effectAsset.textures.find(subpass.inputs[input]);
-					if (found != effectAsset.textures.end())
-					{
-						inputAttachments.insert(found->second);
-					}
+					if (found != effectAsset.textures.end()) { inputAttachments.insert(found->second); }
 				}
 			}
 		} // next subpass
@@ -320,10 +286,7 @@ bool getRenderPassAndFramebufferForPass(Effect_& effect, const effect::Effect& e
 
 		// if it is swapchain and the target index is not 0 then swap so that they are in the right
 		// order in the list.
-		if (swapchainTargetIndex != -1 && swapchainTargetIndex != 0)
-		{
-			std::swap(colorAttachments[swapchainTargetIndex], colorAttachments[0]);
-		}
+		if (swapchainTargetIndex != -1 && swapchainTargetIndex != 0) { std::swap(colorAttachments[swapchainTargetIndex], colorAttachments[0]); }
 
 		for (uint32_t i = 0; i < colorAttachments.size(); ++i)
 		{
@@ -362,7 +325,7 @@ bool getRenderPassAndFramebufferForPass(Effect_& effect, const effect::Effect& e
 				}
 				else
 				{
-					pvrvk::Format fmt = utils::convertToPVRVk(texDef.fmt);
+					pvrvk::Format format = utils::convertToPVRVk(texDef.format);
 					auto found = std::find_if(
 						inputAttachments.begin(), inputAttachments.end(), [&](const effect::TextureDefinition& texDefinition) { return (texDefinition.name == texDef.name); });
 
@@ -371,24 +334,24 @@ bool getRenderPassAndFramebufferForPass(Effect_& effect, const effect::Effect& e
 					if (found != inputAttachments.end())
 					{
 						// create the transient image
-						texture = utils::createImage(device, pvrvk::ImageType::e_2D, fmt, pvrvk::Extent3D(framebufferWidth, framebufferHeight, 1u),
-							pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_INPUT_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_TRANSIENT_ATTACHMENT_BIT,
-							pvrvk::ImageCreateFlags(0), pvrvk::ImageLayersSize(), pvrvk::SampleCountFlags::e_1_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT,
-							pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_LAZILY_ALLOCATED_BIT, &effect.getImageAllocator(),
-							utils::vma::AllocationCreateFlags::e_DEDICATED_MEMORY_BIT);
+						texture = utils::createImage(device,
+							pvrvk::ImageCreateInfo(pvrvk::ImageType::e_2D, format, pvrvk::Extent3D(framebufferWidth, framebufferHeight, 1u),
+								pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_INPUT_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_TRANSIENT_ATTACHMENT_BIT),
+							pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_LAZILY_ALLOCATED_BIT,
+							&effect.getImageAllocator(), utils::vma::AllocationCreateFlags::e_DEDICATED_MEMORY_BIT);
 						storeOp = pvrvk::AttachmentStoreOp::e_DONT_CARE;
 					}
 					else
 					{
-						texture = utils::createImage(device, pvrvk::ImageType::e_2D, fmt, pvrvk::Extent3D(framebufferWidth, framebufferHeight, 1u),
-							pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT, pvrvk::ImageCreateFlags(0), pvrvk::ImageLayersSize(), pvrvk::SampleCountFlags::e_1_BIT,
+						texture = utils::createImage(device,
+							pvrvk::ImageCreateInfo(pvrvk::ImageType::e_2D, format, pvrvk::Extent3D(framebufferWidth, framebufferHeight, 1u), pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT),
 							pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_LAZILY_ALLOCATED_BIT,
 							&effect.getImageAllocator(), utils::vma::AllocationCreateFlags::e_DEDICATED_MEMORY_BIT);
 					}
 					framebufferInfo[swapChainId].setAttachment(i, device->createImageView(pvrvk::ImageViewCreateInfo(texture)));
 					rpInfo.setAttachmentDescription(i,
 						AttachmentDescription::createColorDescription(
-							fmt, pvrvk::ImageLayout::e_UNDEFINED, pvrvk::ImageLayout::e_COLOR_ATTACHMENT_OPTIMAL, pvrvk::AttachmentLoadOp::e_CLEAR, storeOp));
+							format, pvrvk::ImageLayout::e_UNDEFINED, pvrvk::ImageLayout::e_COLOR_ATTACHMENT_OPTIMAL, pvrvk::AttachmentLoadOp::e_CLEAR, storeOp));
 					colorAttachmentIndex.emplace_back(std::make_pair(texDef.name, i));
 				}
 			}
@@ -417,7 +380,7 @@ bool getRenderPassAndFramebufferForPass(Effect_& effect, const effect::Effect& e
 						"Forcing to %d",
 						found->first.c_str(), framebufferHeight);
 				}
-				pvrvk::Format depthStencilFormat = utils::convertToPVRVk(found->second.fmt);
+				pvrvk::Format depthStencilFormat = utils::convertToPVRVk(found->second.format);
 
 				std::vector<pvrvk::Format> depthStencilFormats;
 				depthStencilFormats.emplace_back(pvrvk::Format::e_D32_SFLOAT_S8_UINT);
@@ -469,8 +432,8 @@ bool getRenderPassAndFramebufferForPass(Effect_& effect, const effect::Effect& e
 					for (uint32_t i = 0; i < aspectFlagSpecificDepthStencilFormats.size(); ++i)
 					{
 						currentDepthStencilFormat = aspectFlagSpecificDepthStencilFormats[i];
-						pvrvk::FormatProperties prop = device->getPhysicalDevice()->getFormatProperties(currentDepthStencilFormat);
-						if ((prop.getOptimalTilingFeatures() & pvrvk::FormatFeatureFlags::e_DEPTH_STENCIL_ATTACHMENT_BIT) != 0)
+						pvrvk::FormatProperties prop2 = device->getPhysicalDevice()->getFormatProperties(currentDepthStencilFormat);
+						if ((prop2.getOptimalTilingFeatures() & pvrvk::FormatFeatureFlags::e_DEPTH_STENCIL_ATTACHMENT_BIT) != 0)
 						{
 							depthStencilFormat = currentDepthStencilFormat;
 							foundSuitableDepthStencilFormat = true;
@@ -483,8 +446,8 @@ bool getRenderPassAndFramebufferForPass(Effect_& effect, const effect::Effect& e
 						for (uint32_t i = 0; i < depthStencilFormats.size(); ++i)
 						{
 							currentDepthStencilFormat = depthStencilFormats[i];
-							pvrvk::FormatProperties prop = device->getPhysicalDevice()->getFormatProperties(currentDepthStencilFormat);
-							if ((prop.getOptimalTilingFeatures() & pvrvk::FormatFeatureFlags::e_DEPTH_STENCIL_ATTACHMENT_BIT) != 0)
+							pvrvk::FormatProperties prop2 = device->getPhysicalDevice()->getFormatProperties(currentDepthStencilFormat);
+							if ((prop2.getOptimalTilingFeatures() & pvrvk::FormatFeatureFlags::e_DEPTH_STENCIL_ATTACHMENT_BIT) != 0)
 							{
 								depthStencilFormat = currentDepthStencilFormat;
 								foundSuitableDepthStencilFormat = true;
@@ -496,11 +459,11 @@ bool getRenderPassAndFramebufferForPass(Effect_& effect, const effect::Effect& e
 
 				for (uint32_t ii = 0; ii < swapchain->getSwapchainLength(); ++ii)
 				{
-					Image tex = utils::createImage(device, pvrvk::ImageType::e_2D, depthStencilFormat, pvrvk::Extent3D(framebufferWidth, framebufferHeight, 1u),
-						pvrvk::ImageUsageFlags::e_DEPTH_STENCIL_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_TRANSIENT_ATTACHMENT_BIT, pvrvk::ImageCreateFlags(0),
-						pvrvk::ImageLayersSize(), pvrvk::SampleCountFlags::e_1_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT,
-						pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_LAZILY_ALLOCATED_BIT, &effect.getImageAllocator(),
-						utils::vma::AllocationCreateFlags::e_DEDICATED_MEMORY_BIT);
+					Image tex = utils::createImage(device,
+						pvrvk::ImageCreateInfo(pvrvk::ImageType::e_2D, depthStencilFormat, pvrvk::Extent3D(framebufferWidth, framebufferHeight, 1u),
+							pvrvk::ImageUsageFlags::e_DEPTH_STENCIL_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_TRANSIENT_ATTACHMENT_BIT),
+						pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_LAZILY_ALLOCATED_BIT,
+						&effect.getImageAllocator(), utils::vma::AllocationCreateFlags::e_DEDICATED_MEMORY_BIT);
 					dsAttachments[ii] = device->createImageView(pvrvk::ImageViewCreateInfo(tex));
 				}
 				depthStencilAttachmentIndex = rpInfo.getNumAttachmentDescription();
@@ -523,9 +486,7 @@ bool getRenderPassAndFramebufferForPass(Effect_& effect, const effect::Effect& e
 			for (auto it = colorAttachments.cbegin(); it != colorAttachments.cend(); ++it, ++attachmentId)
 			{
 				if (pass.subpasses[i].targets[0] == it->name)
-				{
-					subpass.setColorAttachmentReference(0, AttachmentReference(attachmentId, pvrvk::ImageLayout::e_COLOR_ATTACHMENT_OPTIMAL));
-				}
+				{ subpass.setColorAttachmentReference(0, AttachmentReference(attachmentId, pvrvk::ImageLayout::e_COLOR_ATTACHMENT_OPTIMAL)); }
 				else if (pass.subpasses[i].targets[1] == it->name)
 				{
 					subpass.setColorAttachmentReference(1, AttachmentReference(attachmentId, pvrvk::ImageLayout::e_COLOR_ATTACHMENT_OPTIMAL));
@@ -566,9 +527,7 @@ bool getRenderPassAndFramebufferForPass(Effect_& effect, const effect::Effect& e
 			}
 
 			if (pass.subpasses[i].useDepthStencil && depthStencilAttachmentIndex != static_cast<uint32_t>(-1))
-			{
-				subpass.setDepthStencilAttachmentReference(AttachmentReference(depthStencilAttachmentIndex, pvrvk::ImageLayout::e_DEPTH_STENCIL_ATTACHMENT_OPTIMAL));
-			}
+			{ subpass.setDepthStencilAttachmentReference(AttachmentReference(depthStencilAttachmentIndex, pvrvk::ImageLayout::e_DEPTH_STENCIL_ATTACHMENT_OPTIMAL)); }
 
 			rpInfo.setSubpass(i, subpass);
 		} // next subpass
@@ -583,10 +542,7 @@ bool getRenderPassAndFramebufferForPass(Effect_& effect, const effect::Effect& e
 			{
 				// avoid if src and dest subpasses are same and the src sub pass index must be less than the
 				// destination sub pass index
-				if (j >= i)
-				{
-					continue;
-				}
+				if (j >= i) { continue; }
 				const SubpassDescription& subpassSrc = rpInfo.getSubpass(j);
 
 				auto srcAccessFlag = pvrvk::AccessFlags::e_NONE;
@@ -643,10 +599,7 @@ bool getRenderPassAndFramebufferForPass(Effect_& effect, const effect::Effect& e
 		{
 			framebufferInfo[i].setDimensions(framebufferWidth, framebufferHeight);
 			framebufferInfo[i].setRenderPass(rp);
-			if (dsAttachments[i])
-			{
-				framebufferInfo[i].setAttachment(depthStencilAttachmentIndex, dsAttachments[i]);
-			}
+			if (dsAttachments[i]) { framebufferInfo[i].setAttachment(depthStencilAttachmentIndex, dsAttachments[i]); }
 			framebuffers[i] = device->createFramebuffer(framebufferInfo[i]);
 		}
 		return framebuffers[0] != nullptr;
@@ -755,10 +708,7 @@ void createPasses(Effect_& effect, std::vector<Pass>& passes, std::map<StringHas
 							else if (!textures_it->textureName.empty())
 							{
 								auto tex_sampler_it = samplers_it->second.find(textures_it->textureName);
-								if (tex_sampler_it != samplers_it->second.end())
-								{
-									effectPipeDef.textureSamplersByTexName[tex_sampler_it->first] = tex_sampler_it->second;
-								}
+								if (tex_sampler_it != samplers_it->second.end()) { effectPipeDef.textureSamplersByTexName[tex_sampler_it->first] = tex_sampler_it->second; }
 								else
 								{
 									Log("EffectApi: Could not find a sampler for texture [%s], pipeline [%s] referenced in pass #%d", tex_sampler_it->first.c_str(),
@@ -799,20 +749,14 @@ void createPasses(Effect_& effect, std::vector<Pass>& passes, std::map<StringHas
 					// add blending states for the attachment if the target is a valid std::string and not 'none'
 					for (uint32_t i = 0; i < effect::Subpass::MaxTargets; ++i)
 					{
-						if (subpass_it->targets[i].empty() || subpass_it->targets[i] == "none")
-						{
-							continue;
-						}
+						if (subpass_it->targets[i].empty() || subpass_it->targets[i] == "none") { continue; }
 						cp.colorBlend.setAttachmentState(i, utils::convertToPVRVk(pipedef->blending));
 					}
 					cp.renderPass = pass.renderPass;
 					cp.subpass = subpass_idx;
 
 					////// CONFIGURE DEPTHSTENCILSTATES //////
-					if (!subpass_it->useDepthStencil)
-					{
-						cp.depthStencil.enableAllStates(false);
-					}
+					if (!subpass_it->useDepthStencil) { cp.depthStencil.enableAllStates(false); }
 					cp.depthStencil.enableDepthWrite(pipedef->enableDepthWrite);
 					cp.depthStencil.enableDepthTest(pipedef->enableDepthTest);
 					cp.depthStencil.setDepthCompareFunc(utils::convertToPVRVk(pipedef->depthCmpFunc));
@@ -843,24 +787,12 @@ void createPasses(Effect_& effect, std::vector<Pass>& passes, std::map<StringHas
 						}
 						switch ((*shader_it)->type)
 						{
-						case ShaderType::VertexShader:
-							cp.vertexShader = shader;
-							break;
-						case ShaderType::FragmentShader:
-							cp.fragmentShader = shader;
-							break;
-						case ShaderType::GeometryShader:
-							cp.geometryShader = shader;
-							break;
-						case ShaderType::TessControlShader:
-							cp.tesselationStates.setControlShader(shader);
-							break;
-						case ShaderType::TessEvaluationShader:
-							cp.tesselationStates.setEvaluationShader(shader);
-							break;
-						default:
-							Log("EffectApi initialization: Shader with name [%s] had unknown type", (*shader_it)->name.c_str());
-							break;
+						case ShaderType::VertexShader: cp.vertexShader = shader; break;
+						case ShaderType::FragmentShader: cp.fragmentShader = shader; break;
+						case ShaderType::GeometryShader: cp.geometryShader = shader; break;
+						case ShaderType::TessControlShader: cp.tesselationStates.setControlShader(shader); break;
+						case ShaderType::TessEvaluationShader: cp.tesselationStates.setEvaluationShader(shader); break;
+						default: Log("EffectApi initialization: Shader with name [%s] had unknown type", (*shader_it)->name.c_str()); break;
 						}
 					}
 
@@ -993,10 +925,7 @@ void createLayouts(Effect_& effect, std::map<StringHash, PipelineLayout>& pipeLa
 	pipeLayoutCps.resize(asset_pipes.size());
 	for (auto it = sets_with_pipe_ids.begin(); it != sets_with_pipe_ids.end(); ++it)
 	{
-		for (auto it2 = it->pipeids_setnos.begin(); it2 != it->pipeids_setnos.end(); ++it2)
-		{
-			pipeLayoutCps[it2->pipe_id].setDescSetLayout(it2->set_no, it->desclayout);
-		}
+		for (auto it2 = it->pipeids_setnos.begin(); it2 != it->pipeids_setnos.end(); ++it2) { pipeLayoutCps[it2->pipe_id].setDescSetLayout(it2->set_no, it->desclayout); }
 	}
 
 	// The actual pipeline layouts! Shared reference counting makes sure of no duplication.
@@ -1014,19 +943,13 @@ void createLayouts(Effect_& effect, std::map<StringHash, PipelineLayout>& pipeLa
 			// Traverse the rest of the list, and assign the same pipe layout to the rest of the pipes.
 			for (size_t inner = outer + 1; inner != pipeLayoutCps.size(); ++inner)
 			{
-				if (pipeLayoutCps[outer] == pipeLayoutCps[inner])
-				{
-					pipeLayouts[inner] = pipeLayouts[outer];
-				}
+				if (pipeLayoutCps[outer] == pipeLayoutCps[inner]) { pipeLayouts[inner] = pipeLayouts[outer]; }
 			}
 		}
 	}
 
 	size_t idx = 0;
-	for (auto it = asset_pipes.begin(); it != asset_pipes.end(); ++it)
-	{
-		pipeLayoutsIndexed[it->first] = pipeLayouts[idx++];
-	}
+	for (auto it = asset_pipes.begin(); it != asset_pipes.end(); ++it) { pipeLayoutsIndexed[it->first] = pipeLayouts[idx++]; }
 }
 
 struct TempSamplers
@@ -1070,9 +993,7 @@ void createSamplers(Effect_& effect, std::map<StringHash, std::map<StringHash, T
 		all_samplers_with_duplicates.resize(all_samplers_with_duplicates.size() + 1);
 		all_samplers_with_duplicates.back().pipe_tmp_asset_idx = pipe_idx;
 		for (auto it_tex = it_pipe->second.textures.begin(); it_tex != it_pipe->second.textures.end(); ++it_tex)
-		{
-			all_samplers_with_duplicates.back().samplerPerTextureInOrder.emplace_back(it_tex->samplerFilter);
-		}
+		{ all_samplers_with_duplicates.back().samplerPerTextureInOrder.emplace_back(it_tex->samplerFilter); }
 		++pipe_idx;
 	}
 
@@ -1136,10 +1057,7 @@ void createSamplers(Effect_& effect, std::map<StringHash, std::map<StringHash, T
 	{
 		for (auto it2 = it->pipeids_texturenos.begin(); it2 != it->pipeids_texturenos.end(); ++it2)
 		{
-			if (samplers[it2->pipe_id].size() <= it2->tex_no)
-			{
-				samplers[it2->pipe_id].resize(it2->tex_no + 1);
-			}
+			if (samplers[it2->pipe_id].size() <= it2->tex_no) { samplers[it2->pipe_id].resize(it2->tex_no + 1); }
 			samplers[it2->pipe_id][it2->tex_no] = it->sampler;
 		}
 	}
@@ -1195,10 +1113,7 @@ void createFixedDescriptorSets(Effect_& effect, std::map<StringHash, PipelineDef
 				uint32_t numsets = pipeDef.second.descSetIsMultibuffered[i] ? swapchainLength : 1;
 				for (uint32_t swapindex = 0; swapindex < numsets; ++swapindex)
 				{
-					if (!set[swapindex])
-					{
-						set[swapindex] = effect.getDescriptorPool()->allocateDescriptorSet(setlayout);
-					}
+					if (!set[swapindex]) { set[swapindex] = effect.getDescriptorPool()->allocateDescriptorSet(setlayout); }
 				}
 				pipeDef.second.fixedDescSet[i] = set;
 			}
@@ -1210,19 +1125,13 @@ void createFixedDescriptorSets(Effect_& effect, std::map<StringHash, PipelineDef
 void Effect_::registerUniformSemantic(StringHash pipeline, StringHash semantic, StringHash variableName)
 {
 	PipelineDef* pipe = getPipelineDefinition(pipeline);
-	if (pipe)
-	{
-		pipe->uniforms[semantic] = UniformSemantic(semantic, variableName);
-	}
+	if (pipe) { pipe->uniforms[semantic] = UniformSemantic(semantic, variableName); }
 }
 
 void Effect_::registerTextureSemantic(StringHash pipeline, StringHash semantic, uint16_t set, uint16_t binding)
 {
 	PipelineDef* pipe = getPipelineDefinition(pipeline);
-	if (pipe)
-	{
-		pipe->textures[semantic] = ObjectSemantic(semantic, set, binding);
-	}
+	if (pipe) { pipe->textures[semantic] = ObjectSemantic(semantic, set, binding); }
 }
 
 void Effect_::buildRenderObjects(CommandBuffer& texUploadCmdBuffer, IAssetProvider& assetProvider)

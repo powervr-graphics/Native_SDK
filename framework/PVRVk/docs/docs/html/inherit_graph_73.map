@@ -1,6 +1,6 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classpvrvk_1_1impl_1_1_p_v_r_vk_object_base.html" title="pvrvk::impl::PVRVkObject\lBase\&lt; VkSurfaceKHR, PVRVkObject\lType \&gt;" alt="" coords="6,4,250,60"/>
-<area shape="rect" id="node2" href="$classpvrvk_1_1impl_1_1_p_v_r_vk_instance_object_base.html" title="pvrvk::impl::PVRVkInstance\lObjectBase\&lt; VkSurfaceKHR,\l ObjectType::e_SURFACE_KHR \&gt;" alt="" coords="299,4,527,60"/>
-<area shape="rect" id="node3" href="$classpvrvk_1_1impl_1_1_surface__.html" title="A surface represents a renderable part of the &quot;screen&quot;, e.g. the inside part of the window..." alt="" coords="576,19,723,45"/>
-<area shape="rect" id="node4" href="$classpvrvk_1_1impl_1_1_display_plane_surface__.html" title="A DisplayPlane Surface." alt="" coords="771,11,941,53"/>
+<area shape="rect" id="node1" href="$classpvrvk_1_1impl_1_1_device_object_debug_utils.html" title="pvrvk::impl::DeviceObject\lDebugUtils\&lt; ShaderModule_ \&gt;" alt="" coords="257,5,479,47"/>
+<area shape="rect" id="node2" href="$classpvrvk_1_1impl_1_1_shader_module__.html" title="Vulkan shader module wrapper" alt="" coords="543,50,745,77"/>
+<area shape="rect" id="node3" href="$classpvrvk_1_1impl_1_1_p_v_r_vk_object_base.html" title="pvrvk::impl::PVRVkObject\lBase\&lt; VkShaderModule,\l PVRVkObjectType \&gt;" alt="" coords="5,71,193,127"/>
+<area shape="rect" id="node4" href="$classpvrvk_1_1impl_1_1_p_v_r_vk_device_object_base.html" title="pvrvk::impl::PVRVkDevice\lObjectBase\&lt; VkShaderModule,\l ObjectType::e_SHADER_MODULE \&gt;" alt="" coords="241,71,495,127"/>
 </map>

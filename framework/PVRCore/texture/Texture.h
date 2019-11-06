@@ -70,15 +70,15 @@ inline float growFloat(const uint32_t& value, const uint8_t& mantissaBits, const
 	static const uint8_t f32totBits = 32;
 
 	// Get the # of sign bits (always 1 or 0)
-	uint8_t signBits = (hasSign ? 1 : 0);
+	uint8_t signBits = static_cast<uint8_t>(hasSign ? 1 : 0);
 
 	// Work out the total bits
-	uint8_t totalBits = mantissaBits + exponentBits + signBits;
+	uint8_t totalBits = static_cast<uint8_t>(mantissaBits + exponentBits + signBits);
 
 	// Generate the masks for each bit.
-	uint32_t signMask = ((1 << signBits) - 1) << (exponentBits + mantissaBits);
-	uint32_t expoMask = ((1 << exponentBits) - 1) << mantissaBits;
-	uint32_t mantMask = ((1 << mantissaBits) - 1);
+	uint32_t signMask = static_cast<uint8_t>(((1 << signBits) - 1) << (exponentBits + mantissaBits));
+	uint32_t expoMask = static_cast<uint8_t>(((1 << exponentBits) - 1) << mantissaBits);
+	uint32_t mantMask = static_cast<uint8_t>(((1 << mantissaBits) - 1));
 
 	// Get original exponent.
 	uint32_t originalExponent = ((value & expoMask) >> (mantissaBits));
@@ -90,8 +90,7 @@ inline float growFloat(const uint32_t& value, const uint8_t& mantissaBits, const
 	uint32_t uMantissa = (value & mantMask) << (f32manBits - mantissaBits);
 
 	// Make sure NaN/Infinity is preserved if original was NaN/Infinity.
-	if (originalIsNaN)
-		uExponent = ((1 << f32expBits) - 1) << f32manBits;
+	if (originalIsNaN) { uExponent = ((1 << f32expBits) - 1) << f32manBits; }
 
 	// Assign the expanded values to the union
 	intToFloat.uiVal = uSign | uExponent | uMantissa;
@@ -108,20 +107,16 @@ inline ImageType imageViewTypeToImageBaseType(ImageViewType viewtype)
 	switch (viewtype)
 	{
 	case ImageViewType::ImageView1D:
-	case ImageViewType::ImageView1DArray:
-		return ImageType::Image1D;
+	case ImageViewType::ImageView1DArray: return ImageType::Image1D;
 
 	case ImageViewType::ImageView2D:
 	case ImageViewType::ImageView2DCube:
 	case ImageViewType::ImageView2DArray:
-	case ImageViewType::ImageView2DCubeArray:
-		return ImageType::Image2D;
+	case ImageViewType::ImageView2DCubeArray: return ImageType::Image2D;
 
-	case ImageViewType::ImageView3D:
-		return ImageType::Image3D;
+	case ImageViewType::ImageView3D: return ImageType::Image3D;
 
-	default:
-		return ImageType::Unallocated;
+	default: return ImageType::Unallocated;
 	}
 }
 
@@ -138,10 +133,7 @@ inline void convertXYZToCubeUV(float x, float y, float z, CubeFace& face, float&
 	float absY = fabs(y);
 	float absZ = fabs(z);
 
-	if (absX == 0.f && absY == 0.f && absZ == 0.f)
-	{
-		throw new std::runtime_error("Cannot convert the zero vector to a cubemap sample");
-	}
+	if (absX == 0.f && absY == 0.f && absZ == 0.f) { throw new std::runtime_error("Cannot convert the zero vector to a cubemap sample"); }
 
 	int isXPositive = x > 0 ? 1 : 0;
 	int isYPositive = y > 0 ? 1 : 0;
@@ -248,18 +240,12 @@ struct ImageDataFormat
 	/// <summary>Equality operator. All content must be equal for it to return true.</summary>
 	/// <param name="rhs">The right hand side of the operator</param>
 	/// <returns>true if the right hand object is same as this.</returns>
-	bool operator==(const ImageDataFormat& rhs) const
-	{
-		return (format == rhs.format && dataType == rhs.dataType && colorSpace == rhs.colorSpace);
-	}
+	bool operator==(const ImageDataFormat& rhs) const { return (format == rhs.format && dataType == rhs.dataType && colorSpace == rhs.colorSpace); }
 
 	/// <summary>Inequality operator. Equivalent to !(==)</summary>
 	/// <param name="rhs">The right hand side of the operator</param>
 	/// <returns>true if the right hand object is not same as this</returns>
-	bool operator!=(const ImageDataFormat& rhs) const
-	{
-		return !(*this == rhs);
-	}
+	bool operator!=(const ImageDataFormat& rhs) const { return !(*this == rhs); }
 };
 
 /// <summary>Extends the ImageDataFormat with mipmaps and number of Samples.</summary>
@@ -337,10 +323,7 @@ struct GenericOffset2D
 	/// <summary>Sum this Offset with an Extent</summary>
 	/// <param name="rhs">The right hand side of the additions</param>
 	/// <returns>The result of this offset plus the extent rhs</returns>
-	GenericOffset2D operator+(const GenericExtent2D<typename std::make_unsigned<T>::type>& rhs) const
-	{
-		return GenericOffset2D(*this) += rhs;
-	}
+	GenericOffset2D operator+(const GenericExtent2D<typename std::make_unsigned<T>::type>& rhs) const { return GenericOffset2D(*this) += rhs; }
 	/// <summary>Add an Extent to this Offset</summary>
 	/// <param name="rhs">The right hand side of the additions</param>
 	/// <returns>This object, which now contains This offset plus the extent rhs</returns>
@@ -544,7 +527,7 @@ struct ImageStorageFormatCompressed : public CompressedImageDataFormat
 	int8_t numMipMapLevels; //!< number of mip levels
 };
 
-/// <summary>Enumerates the formats directly supported by the Framework.</summary>
+/// <summary>Enumerates the texture formats directly supported by the Framework.</summary>
 enum class TextureFileFormat
 {
 	UNKNOWN = 0,
@@ -572,7 +555,7 @@ public:
 	/// <remarks>Creates a new texture based on a texture header, pre-allocating the correct amount of memory. If data is
 	/// supplied, it will be copied into memory. If the pointer contains less data than is dictated by the texture
 	/// header, the behaviour is undefined.</remarks>
-	Texture(const TextureHeader& sHeader, const char* pData = NULL);
+	Texture(const TextureHeader& sHeader, const unsigned char* pData = NULL);
 
 	/// <summary>Create a texture using the information from a Texture header and preallocate memory for its data.
 	///</summary>
@@ -614,7 +597,7 @@ public:
 	unsigned char* getPixelPointer(uint32_t x, uint32_t y, uint32_t z = 0, uint32_t mipMapLevel = 0, uint32_t arrayMember = 0, uint32_t face = 0)
 	{
 		uint8_t pelsize = getPixelSize();
-		size_t idx = (x + y * _header.width + z * _header.width * _header.height) * pelsize;
+		size_t idx = (size_t)((size_t)x + (size_t)y * _header.width + (size_t)z * _header.width * _header.height) * pelsize;
 		return getDataPointer(mipMapLevel, arrayMember, face) + idx;
 	}
 
@@ -661,18 +644,12 @@ public:
 
 	/// <summary>Return the base dimensioning type of the image (3D, 2D, 1D).</summary>
 	/// <returns>The base dimensioning type of the image (3D, 2D, 1D).</returns>
-	ImageType getDimension() const
-	{
-		return getDepth() > 1 ? ImageType::Image3D : getHeight() > 1 ? ImageType::Image2D : ImageType::Image1D;
-	}
+	ImageType getDimension() const { return getDepth() > 1 ? ImageType::Image3D : getHeight() > 1 ? ImageType::Image2D : ImageType::Image1D; }
 
 	/// <summary>Return the texture's layer layout (miplevels, arraylevels). Faces are considered array levels, so a cube
 	/// array has array x face array levels.</summary>
 	/// <returns>The texture's layer layout (miplevels, arraylevels)</returns>
-	ImageLayersSize getLayersSize() const
-	{
-		return ImageLayersSize(static_cast<uint16_t>(getNumArrayMembers() * getNumFaces()), static_cast<uint8_t>(getNumMipMapLevels()));
-	}
+	ImageLayersSize getLayersSize() const { return ImageLayersSize(static_cast<uint16_t>(getNumArrayMembers() * getNumFaces()), static_cast<uint8_t>(getNumMipMapLevels())); }
 
 	/// <summary>Return the texture's dimensions as a 3D extent (height, width, depth).</summary>
 	/// <param name="miplevel">(Default 0) The mip level for which to get the dimensions</param>

@@ -76,9 +76,6 @@ const char PBRVertShaderFileName[] = "PBRVertShader.vsh";
 const char PBRFragShaderFileName[] = "PBRFragShader.fsh";
 const char SkyboxVertShaderFileName[] = "SkyboxVertShader.vsh";
 const char SkyboxFragShaderFileName[] = "SkyboxFragShader.fsh";
-const char IrradianceVertShaderFileName[] = "IrradianceVertShader.vsh";
-const char IrradianceFragShaderFileName[] = "IrradianceFragShader.fsh";
-const char PreFilterFragShaderFileName[] = "PreFilterFragShader.fsh";
 
 // Scenes
 const char HelmetModelFileName[] = "damagedHelmet.gltf";
@@ -89,7 +86,7 @@ const std::string SkyboxTexFileName[] = {
 	"satara_night_scale_0.305_rgb9e5", //
 	"misty_pines_rgb9e5", //
 };
-const int numSkyBoxes = sizeof SkyboxTexFileName / sizeof SkyboxTexFileName[0];
+
 int currentSkybox = 0;
 
 const std::string SkyboxTexFileExtension = ".pvr";
@@ -97,12 +94,15 @@ const std::string DiffuseIrradianceMapTexFileSuffix = "_Irradiance.pvr";
 const std::string PrefilteredEnvMapTexFileSuffix = "_Prefiltered.pvr";
 const std::string BrdfLUTTexFile = "brdfLUT.pvr";
 
-const uint32_t IrradianceMapDim = 64;
-const uint32_t PrefilterEnvMapDim = 256;
-
-const uint32_t NumSphereRows = 4;
-const uint32_t NumSphereColumns = 6;
-const uint32_t NumInstances = NumSphereRows * NumSphereColumns;
+enum
+{
+	IrradianceMapDim = 64,
+	PrefilterEnvMapDim = 256,
+	NumSphereRows = 4,
+	NumSphereColumns = 6,
+	NumInstances = NumSphereRows * NumSphereColumns,
+	NumSkyBoxes = sizeof(SkyboxTexFileName) / sizeof(SkyboxTexFileName[0])
+};
 
 const float rotationSpeed = .01f;
 
@@ -120,19 +120,25 @@ enum class Models
 	NumModels
 };
 
+struct Material
+{
+	glm::vec3 albedo; // std140 offset 0
+	float roughness; // std140 packed at the end of RGB (offset: 12 bytes)
+	float metallic; // std140 next item                (offset: 16 bytes)
+	float _padding1; // Since the Materials will be an array, std140 requires
+	float _padding2; // the whole struct to be padded to a vec4
+	float _padding3; // Total size: 32 bytes
+} materials[25];
+
 class SkyboxPass
 {
 public:
 	SkyboxPass() : program(0), skyBoxMap(0), irradianceMap(0), prefilteredMap(0), numPrefilteredMipLevels(0), uboBuffer(0), isBufferStorageExtSupported(false) {}
-	void init(pvr::IAssetProvider& assetProvider, bool srgbFramebuffer, bool isBufferStorageExtSupported)
+	void init(pvr::IAssetProvider& assetProvider, bool inIsBufferStorageExtSupported)
 	{
 		cleanup();
 
-		GLint viewport_data[4];
-
-		gl::GetIntegerv(GL_VIEWPORT, viewport_data);
-
-		this->isBufferStorageExtSupported = isBufferStorageExtSupported;
+		this->isBufferStorageExtSupported = inIsBufferStorageExtSupported;
 
 		// load the environment map.
 		skyBoxMap = pvr::utils::textureUpload(assetProvider, SkyboxTexFileName[currentSkybox] + SkyboxTexFileExtension);
@@ -140,51 +146,44 @@ public:
 		debugThrowOnApiError("Setting skybox params");
 		std::string irradianceFileName = SkyboxTexFileName[currentSkybox] + DiffuseIrradianceMapTexFileSuffix;
 
-		// irradianceMap = pvr::utils::textureUpload(assetProvider, irradianceFileName, irradianceMapData);
-
 		// Generating the irradiance map very well happen online, possible in a once-off step, but because it may take some time,
-		// it is better to happen beforehand. This could look like this:
+		// it is better to happen beforehand.
 
-		try
+		// The commented-out try-catch could be a typical way to generate them online.
+
+		// try
 		{
 			irradianceMap = pvr::utils::textureUpload(assetProvider, irradianceFileName);
 		}
-		catch (const pvr::FileNotFoundError&) // Not exists
-		{
-			pvr::Texture irradianceMapData;
-			pvr::utils::generateIrradianceMap(skyBoxMap, irradianceMapData, irradianceMap);
-			pvr::assetWriters::TextureWriterPVR writerPVR;
-			writerPVR.openAssetStream(pvr::FileStream::createFileStream(irradianceFileName, "wb"));
-			writerPVR.writeAsset(irradianceMapData);
-			writerPVR.closeAssetStream();
-		}
+		// catch (const pvr::FileNotFoundError&) // Not exists
+		//{
+		// pvr::Texture irradianceMapData;
+		// pvr::utils::generateIrradianceMap(skyBoxMap, irradianceMapData, irradianceMap);
+		// pvr::assetWriters::writePVR(irradianceMapData, pvr::FileStream(irradianceFileName, "wb"));
+		//}
 
 		std::string preFilteredMap = SkyboxTexFileName[currentSkybox] + PrefilteredEnvMapTexFileSuffix;
 
 		// Same with the PreFiltered map
 
-		try
+		// try
 		{
 			pvr::Texture preFilteredMapData;
 			prefilteredMap = pvr::utils::textureUpload(assetProvider, preFilteredMap, preFilteredMapData);
 			numPrefilteredMipLevels = preFilteredMapData.getNumMipMapLevels();
 		}
-		catch (pvr::FileNotFoundError&)
-		{
-			pvr::Texture preFilteredMapData;
-			// Discard the last two mipmaps. From our experimentation throwing away "a few" miplevels, keeping the last as 16x16~4x4 avoids the worst of
-			// blocky texel artifacts for materials with roughness values close to 1.0 and with large smoothly curved surfaces (e.g. a rough sphere).
-			// However, the more mipmaps that are discarded, the less accurate the blurring of the mipmap.
-			const uint32_t DISCARD_SPECULAR_MIP_LEVELS = 4;
-			pvr::utils::generatePreFilteredMapMipMapStyle(skyBoxMap, preFilteredMapData, prefilteredMap, PrefilterEnvMapDim, false, DISCARD_SPECULAR_MIP_LEVELS);
-			numPrefilteredMipLevels = preFilteredMapData.getNumMipMapLevels();
+		// catch (pvr::FileNotFoundError&)
+		//{
+		//	pvr::Texture preFilteredMapData;
+		//	// Discard the last two mipmaps. From our experimentation throwing away "a few" miplevels, keeping the last as 16x16~4x4 avoids the worst of
+		//	// blocky texel artifacts for materials with roughness values close to 1.0 and with large smoothly curved surfaces (e.g. a rough sphere).
+		//	// However, the more mipmaps that are discarded, the less accurate the blurring of the mipmap.
+		//	const uint32_t DISCARD_SPECULAR_MIP_LEVELS = 4;
+		//	pvr::utils::generatePreFilteredMapMipMapStyle(skyBoxMap, preFilteredMapData, prefilteredMap, PrefilterEnvMapDim, false, DISCARD_SPECULAR_MIP_LEVELS);
+		//	numPrefilteredMipLevels = preFilteredMapData.getNumMipMapLevels();
 
-			pvr::Stream::ptr_type fileStream = pvr::FileStream::createFileStream(preFilteredMap, "wb");
-			pvr::assetWriters::TextureWriterPVR writerPVR;
-			writerPVR.openAssetStream(std::move(fileStream));
-			writerPVR.writeAsset(preFilteredMapData);
-			writerPVR.closeAssetStream();
-		}
+		//	pvr::assetWriters::writePVR(preFilteredMapData, pvr::FileStream(preFilteredMap, "wb"));
+		//}
 
 		std::vector<const char*> defines;
 		// Note that the tone mapping that we use does not work with (or need) SRGB gamma correction
@@ -209,11 +208,10 @@ public:
 			gl::BindBuffer(GL_COPY_READ_BUFFER, uboBuffer);
 			gl::ext::BufferStorageEXT(GL_COPY_READ_BUFFER, (GLsizei)uboView.getSize(), nullptr, GL_MAP_WRITE_BIT_EXT | GL_MAP_PERSISTENT_BIT_EXT | GL_MAP_COHERENT_BIT_EXT);
 
-			void* memory = gl::MapBufferRange(GL_COPY_READ_BUFFER, 0, static_cast<GLsizeiptr>(uboView.getSize()), GL_MAP_WRITE_BIT_EXT | GL_MAP_PERSISTENT_BIT_EXT | GL_MAP_COHERENT_BIT_EXT);
+			void* memory =
+				gl::MapBufferRange(GL_COPY_READ_BUFFER, 0, static_cast<GLsizeiptr>(uboView.getSize()), GL_MAP_WRITE_BIT_EXT | GL_MAP_PERSISTENT_BIT_EXT | GL_MAP_COHERENT_BIT_EXT);
 			uboView.pointToMappedMemory(memory);
 		}
-
-		gl::Viewport(viewport_data[0], viewport_data[1], viewport_data[2], viewport_data[3]);
 	}
 
 	void cleanup()
@@ -226,30 +224,15 @@ public:
 			program = 0;
 		}
 
-		if (uboBuffer)
-		{
-			gl::DeleteBuffers(1, &uboBuffer);
-		}
+		if (uboBuffer) { gl::DeleteBuffers(1, &uboBuffer); }
 	}
 
-	uint32_t getNumPrefilteredMipLevels() const
-	{
-		return numPrefilteredMipLevels;
-	}
+	uint32_t getNumPrefilteredMipLevels() const { return numPrefilteredMipLevels; }
 
-	GLuint getDiffuseIrradianceMap()
-	{
-		return irradianceMap;
-	}
+	GLuint getDiffuseIrradianceMap() { return irradianceMap; }
 
-	GLuint getPrefilteredMap()
-	{
-		return prefilteredMap;
-	}
-	GLuint getEnvironmentMap()
-	{
-		return skyBoxMap;
-	}
+	GLuint getPrefilteredMap() { return prefilteredMap; }
+	GLuint getEnvironmentMap() { return skyBoxMap; }
 
 	void render(const glm::mat4& viewProjMtx, const glm::vec3& eyePos)
 	{
@@ -271,20 +254,14 @@ public:
 		uboView.getElement(0).setValue(glm::inverse(viewProjMtx));
 		uboView.getElement(1).setValue(eyePos);
 
-		if (!isBufferStorageExtSupported)
-		{
-			gl::UnmapBuffer(GL_UNIFORM_BUFFER);
-		}
+		if (!isBufferStorageExtSupported) { gl::UnmapBuffer(GL_UNIFORM_BUFFER); }
 
 		gl::UseProgram(program);
 		gl::Uniform1f(3, exposure);
 		gl::DrawArrays(GL_TRIANGLES, 0, 6);
 	}
 
-	~SkyboxPass()
-	{
-		cleanup();
-	}
+	~SkyboxPass() { cleanup(); }
 
 private:
 	// Generates specular irradiance map.
@@ -305,23 +282,49 @@ class SpherePass
 public:
 	/// <summary>initialise the sphere's program</summary>
 	/// <param name="assetProvider">Asset provider for loading assets from disk.</param>
-	void init(pvr::IAssetProvider& assetProvider, bool srgbFramebuffer)
+	void init(pvr::IAssetProvider& assetProvider, bool srgbFramebuffer, bool isBufferStorageSupported)
 	{
 		const pvr::utils::VertexBindings_Name vertexBindings[] = { { "POSITION", "inVertex" }, { "NORMAL", "inNormal" }, { "UV0", "inTexCoord" }, { "TANGENT", "tangent" } };
 
 		std::vector<const char*> defines;
-		defines.push_back("INSTANCING");
-		if (srgbFramebuffer)
-		{
-			defines.push_back("FRAMEBUFFER_SRGB");
-		}
+		if (srgbFramebuffer) { defines.push_back("FRAMEBUFFER_SRGB"); }
 
 		program =
 			pvr::utils::createShaderProgram(assetProvider, PBRVertShaderFileName, PBRFragShaderFileName, nullptr, nullptr, 0, defines.data(), static_cast<uint32_t>(defines.size()));
 
-		model = pvr::assets::Model::createWithReader(pvr::assets::PODReader(assetProvider.getAssetStream(SphereModelFileName)));
+		model = pvr::assets::loadModel(assetProvider, SphereModelFileName);
 		pvr::utils::appendSingleBuffersFromModel(*model, vbos, ibos);
 		vertexConfiguration = createInputAssemblyFromMesh(model->getMesh(0), vertexBindings, ARRAY_SIZE(vertexBindings));
+
+		// Sphere instances
+		// offset the posittion for each sphere instances
+		const glm::vec3 albedos[] = {
+			glm::vec3(0.971519, 0.959915, 0.915324), // Silver Metallic
+			glm::vec3(1, 0.765557, 0.336057), // Gold Metallic
+			glm::vec3(.75f), // White Plastic
+			glm::vec3(.01f, .05f, .2f), // Blue Plastic
+		};
+		const float roughness[NumSphereColumns] = { .9f, 0.6f, 0.35f, 0.25f, 0.15f, 0.0f };
+
+		// set the per sphere materiual property. Creating a grid of spheres:  4x6, two rows metallic two plastic, each row a different colour, going from rough to smooth.
+		for (uint32_t i = 0; i < NumSphereRows; ++i)
+		{
+			for (uint32_t j = 0; j < NumSphereColumns; ++j)
+			{
+				auto& mat = materials[i * NumSphereColumns + j];
+				mat.albedo = albedos[i]; // One colour per row.
+				mat.roughness = roughness[j]; // Smooth to rough
+				mat.metallic = float(i < 2) * 1.0f; // set the first 2 row set metalicity to 1.0 and the two last to 0.0
+			}
+		}
+		gl::GenBuffers(1, &materialUbo);
+		gl::BindBuffer(GL_UNIFORM_BUFFER, materialUbo);
+		if (isBufferStorageSupported) { gl::ext::BufferStorageEXT(GL_UNIFORM_BUFFER, sizeof(materials), materials, 0); }
+		else
+		{
+			gl::BufferData(GL_UNIFORM_BUFFER, sizeof(materials), materials, GL_STATIC_DRAW);
+		}
+		gl::BindBuffer(GL_UNIFORM_BUFFER, 0);
 	}
 
 	/// <summary>Destructor for the sphere pass</summary>
@@ -337,7 +340,6 @@ public:
 	{
 		debugThrowOnApiError("begin Render Sphere Scene");
 		gl::UseProgram(program);
-		gl::Uniform1f(3, exposure);
 		debugThrowOnApiError("bind sphere pass program");
 
 		for (uint32_t node = 0; node < model->getNumMeshNodes(); ++node)
@@ -345,6 +347,7 @@ public:
 			uint32_t meshId = model->getMeshNode(node).getObjectId();
 			gl::BindBuffer(GL_ARRAY_BUFFER, vbos[meshId]);
 			gl::BindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibos[meshId]);
+			gl::BindBufferBase(GL_UNIFORM_BUFFER, 3, materialUbo);
 
 			const pvr::assets::Mesh& mesh = model->getMesh(meshId);
 			for (uint32_t i = 0; i < vertexConfiguration.attributes.size(); ++i)
@@ -372,6 +375,7 @@ private:
 	GLuint program;
 	std::vector<GLuint> vbos;
 	std::vector<GLuint> ibos;
+	GLuint materialUbo;
 	pvr::utils::VertexConfiguration vertexConfiguration;
 };
 
@@ -380,7 +384,7 @@ class HelmetPass
 public:
 	void init(pvr::IAssetProvider& assetProvider, bool srgbFramebuffer)
 	{
-		model = pvr::assets::Model::createWithReader(pvr::assets::GltfReader(assetProvider.getAssetStream(HelmetModelFileName), assetProvider));
+		model = pvr::assets::loadModel(assetProvider, HelmetModelFileName);
 
 		pvr::utils::appendSingleBuffersFromModel(*model, vbos, ibos);
 
@@ -390,42 +394,21 @@ public:
 		createProgram(assetProvider, srgbFramebuffer);
 	}
 
-	GLuint getProgram()
-	{
-		return program;
-	}
+	GLuint getProgram() { return program; }
 
-	pvr::assets::ModelHandle& getModel()
-	{
-		return model;
-	}
+	pvr::assets::ModelHandle& getModel() { return model; }
 
-	GLuint getAlbedoMap()
-	{
-		return textures[0];
-	}
+	GLuint getAlbedoMap() { return textures[0]; }
 
-	GLuint getOcclusionMetallicRoughnessMap()
-	{
-		return textures[1];
-	}
+	GLuint getOcclusionMetallicRoughnessMap() { return textures[1]; }
 
-	GLuint getNormalMap()
-	{
-		return textures[2];
-	}
+	GLuint getNormalMap() { return textures[2]; }
 
-	GLuint getEmissiveMap()
-	{
-		return textures[3];
-	}
+	GLuint getEmissiveMap() { return textures[3]; }
 
 	~HelmetPass()
 	{
-		if (program)
-		{
-			gl::DeleteProgram(program);
-		}
+		if (program) { gl::DeleteProgram(program); }
 		if (vbos.size())
 		{
 			gl::DeleteBuffers(static_cast<GLsizei>(vbos.size()), vbos.data());
@@ -460,18 +443,7 @@ public:
 
 		// render the helmet
 		gl::UseProgram(program);
-		gl::Uniform1f(3, exposure);
-		// The scene has only on material.
-		auto& material = model->getMaterial(0);
-		pvr::assets::Model::Material::GLTFMetallicRoughnessSemantics pbrMetallicRoughness(material);
-		gl::Uniform2f(0, pbrMetallicRoughness.getMetallicity(), pbrMetallicRoughness.getRoughness());
-		const glm::vec4 baseColor = pbrMetallicRoughness.getBaseColor();
-		gl::Uniform3f(1, baseColor.r, baseColor.g, baseColor.b);
-
-		for (uint32_t i = 0; i < model->getNumMeshNodes(); ++i)
-		{
-			renderMesh(i);
-		}
+		for (uint32_t i = 0; i < model->getNumMeshNodes(); ++i) { renderMesh(i); }
 	}
 
 private:
@@ -479,8 +451,8 @@ private:
 	{
 		for (uint32_t i = 0; i < model->getNumTextures(); ++i)
 		{
-			pvr::Stream::ptr_type stream = assetProvider.getAssetStream(model->getTexture(i).getName());
-			pvr::Texture tex = pvr::textureLoad(stream, pvr::TextureFileFormat::PVR);
+			std::unique_ptr<pvr::Stream> stream = assetProvider.getAssetStream(model->getTexture(i).getName());
+			pvr::Texture tex = pvr::textureLoad(*stream, pvr::TextureFileFormat::PVR);
 			textures.push_back(pvr::utils::textureUpload(tex, false, true).image);
 		}
 	}
@@ -491,10 +463,7 @@ private:
 		std::vector<const char*> defines;
 		defines.push_back("MATERIAL_TEXTURES");
 		defines.push_back("NORMAL_MAP");
-		if (srgbFramebuffer)
-		{
-			defines.push_back("FRAMEBUFFER_SRGB");
-		}
+		if (srgbFramebuffer) { defines.push_back("FRAMEBUFFER_SRGB"); }
 
 		program =
 			pvr::utils::createShaderProgram(assetProvider, PBRVertShaderFileName, PBRFragShaderFileName, nullptr, nullptr, 0, defines.data(), static_cast<uint32_t>(defines.size()));
@@ -588,7 +557,6 @@ class OpenGLESImageBasedLighting : public pvr::Shell
 	pvr::utils::StructuredBufferView _uboPerModelBufferView;
 	pvr::utils::StructuredBufferView _uboPerFrameBufferView;
 	std::vector<char> _uboDynamicData;
-	std::vector<char> _uboModelData;
 	std::vector<char> _uboMaterialData;
 	glm::mat4 _projMtx;
 	pvr::TPSOrbitCamera _camera;
@@ -603,7 +571,6 @@ public:
 	virtual pvr::Result quitApplication();
 	virtual pvr::Result renderFrame();
 	void createUbo();
-	void updateUbo(Models model);
 	void setDefaultOpenglState();
 
 	virtual void eventMappedInput(pvr::SimplifiedInput key)
@@ -613,17 +580,11 @@ public:
 		{
 		case pvr::SimplifiedInput::Left:
 			exposure *= .75;
-			if (oldexposure > 1.f && exposure < 1.f)
-			{
-				exposure = 1.f;
-			}
+			if (oldexposure > 1.f && exposure < 1.f) { exposure = 1.f; }
 			break;
 		case pvr::SimplifiedInput::Right:
 			exposure *= 1.25;
-			if (oldexposure < 1.f && exposure > 1.f)
-			{
-				exposure = 1.f;
-			}
+			if (oldexposure < 1.f && exposure > 1.f) { exposure = 1.f; }
 			break;
 
 		case pvr::SimplifiedInput::Action2:
@@ -641,9 +602,9 @@ public:
 		}
 		case pvr::SimplifiedInput::Action3:
 		{
-			(++currentSkybox) %= numSkyBoxes;
+			(++currentSkybox) %= NumSkyBoxes;
 
-			_deviceResources->skyboxPass.init(*this, getBackBufferColorspace() == pvr::ColorSpace::sRGB, _isBufferStorageExtSupported);
+			_deviceResources->skyboxPass.init(*this, _isBufferStorageExtSupported);
 			break;
 		}
 
@@ -674,20 +635,17 @@ pvr::Result OpenGLESImageBasedLighting::initApplication()
 /// <summary>Code in quitApplication() will be called by Shell once per run, just before exiting the program.
 /// quitApplication() will not be called every time the rendering context is lost, only before application exit.</summary>
 /// <returns>Result::Success if no error occurred.</returns>
-pvr::Result OpenGLESImageBasedLighting::quitApplication()
-{
-	return pvr::Result::Success;
-}
+pvr::Result OpenGLESImageBasedLighting::quitApplication() { return pvr::Result::Success; }
 
 /// <summary>Code in initView() will be called by Shell upon initialization or after a change in the rendering context.
 /// Used to initialize variables that are dependent on the rendering context(e.g.textures, vertex buffers, etc.)</summary>
 /// <returns>Result::Success if no error occurred.</returns>
 pvr::Result OpenGLESImageBasedLighting::initView()
 {
-	_deviceResources = std::unique_ptr<DeviceResources>(new DeviceResources());
+	_deviceResources = std::make_unique<DeviceResources>();
 	_deviceResources->context = pvr::createEglContext();
 
-	// Create the context. The minimum OpenGLES version must be OpenGL ES 3.0
+	// Create the context. The minimum OpenGLES version must be OpenGL ES 3.1
 	_deviceResources->context->init(getWindow(), getDisplay(), getDisplayAttributes(), pvr::Api::OpenGLES31);
 
 	// We make use of GL_EXT_buffer_storage wherever possible
@@ -702,16 +660,15 @@ pvr::Result OpenGLESImageBasedLighting::initView()
 	_deviceResources->uiRenderer.getDefaultTitle()->commitUpdates();
 	_deviceResources->uiRenderer.getDefaultControls()->commitUpdates();
 
-	_deviceResources->skyboxPass.init(*this, getBackBufferColorspace() == pvr::ColorSpace::sRGB, _isBufferStorageExtSupported);
+	_deviceResources->skyboxPass.init(*this, _isBufferStorageExtSupported);
 	_deviceResources->helmetPass.init(*this, getBackBufferColorspace() == pvr::ColorSpace::sRGB);
-	_deviceResources->spherePass.init(*this, getBackBufferColorspace() == pvr::ColorSpace::sRGB);
+	_deviceResources->spherePass.init(*this, getBackBufferColorspace() == pvr::ColorSpace::sRGB, _isBufferStorageExtSupported);
 
 	// set the view port dimension back.
 	gl::Viewport(0, 0, getWidth(), getHeight());
 
 	// create the static ubo
 	createUbo();
-	updateUbo(_currentModel);
 
 	_deviceResources->brdfLUT = pvr::utils::textureUpload(*this, BrdfLUTTexFile, false);
 
@@ -782,42 +739,6 @@ void OpenGLESImageBasedLighting::setDefaultOpenglState()
 	gl::Enable(GL_DEPTH_TEST);
 }
 
-void OpenGLESImageBasedLighting::updateUbo(Models model)
-{
-	gl::BindBuffer(GL_UNIFORM_BUFFER, _deviceResources->uboPerModel);
-
-	void* mappedMemory = nullptr;
-	if (!_isBufferStorageExtSupported)
-	{
-		mappedMemory = gl::MapBufferRange(GL_UNIFORM_BUFFER, 0, static_cast<GLsizeiptr>(_uboPerModelBufferView.getSize()), GL_MAP_WRITE_BIT);
-		_uboPerModelBufferView.pointToMappedMemory(mappedMemory);
-	}
-
-	if (model == Models::Helmet)
-	{
-		_uboPerModelBufferView.getElement(0, 0, static_cast<uint32_t>(model)).setValue(glm::eulerAngleXY(glm::radians(0.f), glm::radians(120.f)) * glm::scale(glm::vec3(22.0f)));
-	}
-	else
-	{
-		_uboPerModelBufferView.getElement(0, 0, static_cast<uint32_t>(model)).setValue(glm::scale(glm::vec3(4.5f)));
-	}
-
-	static float emissiveScale = 0.0f;
-	static float emissiveStrength = 1.;
-	emissiveStrength += .15f;
-	if (emissiveStrength >= glm::pi<float>())
-	{
-		emissiveStrength = 0.0f;
-	}
-
-	emissiveScale = std::abs(glm::cos(emissiveStrength)) + .75f;
-	_uboPerModelBufferView.getElement(1, 0, static_cast<uint32_t>(model)).setValue(emissiveScale);
-	if (!_isBufferStorageExtSupported)
-	{
-		gl::UnmapBuffer(GL_UNIFORM_BUFFER);
-	}
-}
-
 /// <summary>Code in releaseView() will be called by Shell when the application quits or before a change in the rendering context.</summary>
 /// <returns>Result::Success if no error occurred.</returns>
 pvr::Result OpenGLESImageBasedLighting::releaseView()
@@ -833,32 +754,14 @@ pvr::Result OpenGLESImageBasedLighting::renderFrame()
 	debugThrowOnApiError("Begin Frame");
 
 	gl::Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	
-	updateUbo(_currentModel);
-	
 
-	if (!_pause)
-	{
-		_camera.addAzimuth(getFrameTime() * rotationSpeed);
-	}
+	if (!_pause) { _camera.addAzimuth(getFrameTime() * rotationSpeed); }
 
-	if (this->isKeyPressed(pvr::Keys::A))
-	{
-		_camera.addAzimuth(getFrameTime() * -.1f);
-	}
-	if (this->isKeyPressed(pvr::Keys::D))
-	{
-		_camera.addAzimuth(getFrameTime() * .1f);
-	}
+	if (this->isKeyPressed(pvr::Keys::A)) { _camera.addAzimuth(getFrameTime() * -.1f); }
+	if (this->isKeyPressed(pvr::Keys::D)) { _camera.addAzimuth(getFrameTime() * .1f); }
 
-	if (this->isKeyPressed(pvr::Keys::W))
-	{
-		_camera.addInclination(getFrameTime() * .1f);
-	}
-	if (this->isKeyPressed(pvr::Keys::S))
-	{
-		_camera.addInclination(getFrameTime() * -.1f);
-	}
+	if (this->isKeyPressed(pvr::Keys::W)) { _camera.addInclination(getFrameTime() * .1f); }
+	if (this->isKeyPressed(pvr::Keys::S)) { _camera.addInclination(getFrameTime() * -.1f); }
 
 	gl::BindBuffer(GL_UNIFORM_BUFFER, _deviceResources->uboPerFrame);
 	void* mappedMemory = nullptr;
@@ -868,12 +771,19 @@ pvr::Result OpenGLESImageBasedLighting::renderFrame()
 		_uboPerFrameBufferView.pointToMappedMemory(mappedMemory);
 	}
 	const glm::mat4 viewProj = _projMtx * _camera.getViewMatrix();
-	_uboPerFrameBufferView.getElement(0).setValue(_camera.getCameraPosition());
-	_uboPerFrameBufferView.getElement(1).setValue(viewProj);
-	if (!_isBufferStorageExtSupported)
-	{
-		gl::UnmapBuffer(GL_UNIFORM_BUFFER);
-	}
+	_uboPerFrameBufferView.getElement(0).setValue(viewProj);
+	_uboPerFrameBufferView.getElement(1).setValue(_camera.getCameraPosition());
+	static float emissiveScale = 0.0f;
+	static float emissiveStrength = 1.;
+	emissiveStrength += .15f;
+
+	if (emissiveStrength >= glm::pi<float>()) { emissiveStrength = 0.0f; }
+	emissiveScale = std::abs(glm::cos(emissiveStrength)) + .75f;
+
+	_uboPerFrameBufferView.getElement(2).setValue(emissiveScale);
+	_uboPerFrameBufferView.getElement(3).setValue(exposure);
+
+	if (!_isBufferStorageExtSupported) { gl::UnmapBuffer(GL_UNIFORM_BUFFER); }
 
 	// render the skybox
 	_deviceResources->skyboxPass.render(viewProj, _camera.getCameraPosition());
@@ -906,10 +816,7 @@ pvr::Result OpenGLESImageBasedLighting::renderFrame()
 		static_cast<GLsizeiptr>(_uboPerModelBufferView.getDynamicSliceSize()));
 	debugThrowOnApiError("ERROR");
 
-	if (_currentModel == Models::Helmet)
-	{
-		_deviceResources->helmetPass.render();
-	}
+	if (_currentModel == Models::Helmet) { _deviceResources->helmetPass.render(); }
 	else
 	{
 		_deviceResources->spherePass.render();
@@ -921,11 +828,8 @@ pvr::Result OpenGLESImageBasedLighting::renderFrame()
 	_deviceResources->uiRenderer.getSdkLogo()->render();
 	_deviceResources->uiRenderer.endRendering();
 
-	if (this->shouldTakeScreenshot())
-	{
-		pvr::utils::takeScreenshot(this->getScreenshotFileName(), this->getWidth(), this->getHeight());
-	}
-	
+	if (this->shouldTakeScreenshot()) { pvr::utils::takeScreenshot(this->getScreenshotFileName(), this->getWidth(), this->getHeight()); }
+
 	_deviceResources->context->swapBuffers();
 	return pvr::Result::Success;
 }
@@ -958,32 +862,32 @@ void OpenGLESImageBasedLighting::createUbo()
 	{
 		pvr::utils::StructuredMemoryDescription memDesc;
 		memDesc.addElement("ModelMatrix", pvr::GpuDatatypes::mat4x4);
-		memDesc.addElement("emissiveScale", pvr::GpuDatatypes::Float);
 		GLint uniformAlignment = 0;
 		gl::GetIntegerv(GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT, &uniformAlignment);
 		_uboPerModelBufferView.initDynamic(memDesc, 2, pvr::BufferUsageFlags::UniformBuffer, uniformAlignment);
-		_uboModelData.resize(static_cast<const unsigned int>(_uboPerModelBufferView.getSize()));
+		std::vector<char> _uboModelData(static_cast<const unsigned int>(_uboPerModelBufferView.getSize()));
+
+		_uboPerModelBufferView.pointToMappedMemory(_uboModelData.data());
+		_uboPerModelBufferView.getElement(0, 0, 0).setValue(glm::eulerAngleXY(glm::radians(0.f), glm::radians(120.f)) * glm::scale(glm::vec3(22.0f)));
+		_uboPerModelBufferView.getElement(0, 0, 1).setValue(glm::scale(glm::vec3(4.5f)));
 
 		gl::GenBuffers(1, &_deviceResources->uboPerModel);
 		gl::BindBuffer(GL_UNIFORM_BUFFER, _deviceResources->uboPerModel);
-		gl::BufferData(GL_UNIFORM_BUFFER, static_cast<GLsizeiptr>(_uboPerModelBufferView.getSize()), nullptr, GL_DYNAMIC_DRAW);
 
 		// if GL_EXT_buffer_storage is supported then map the buffer upfront and never upmap it
-		if (_isBufferStorageExtSupported)
+		if (_isBufferStorageExtSupported) { gl::ext::BufferStorageEXT(GL_UNIFORM_BUFFER, (GLsizei)_uboPerModelBufferView.getSize(), _uboModelData.data(), 0); }
+		else
 		{
-			gl::BindBuffer(GL_COPY_READ_BUFFER, _deviceResources->uboPerModel);
-			gl::ext::BufferStorageEXT(
-				GL_COPY_READ_BUFFER, (GLsizei)_uboPerModelBufferView.getSize(), nullptr, GL_MAP_WRITE_BIT_EXT | GL_MAP_PERSISTENT_BIT_EXT | GL_MAP_COHERENT_BIT_EXT);
-
-			void* memory = gl::MapBufferRange(GL_COPY_READ_BUFFER, 0, static_cast<GLsizeiptr>(_uboPerModelBufferView.getSize()), GL_MAP_WRITE_BIT_EXT | GL_MAP_PERSISTENT_BIT_EXT | GL_MAP_COHERENT_BIT_EXT);
-			_uboPerModelBufferView.pointToMappedMemory(memory);
+			gl::BufferData(GL_UNIFORM_BUFFER, static_cast<GLsizeiptr>(_uboPerModelBufferView.getSize()), _uboModelData.data(), GL_STATIC_DRAW);
 		}
 	}
 
 	{
 		pvr::utils::StructuredMemoryDescription memDesc;
-		memDesc.addElement("camPos", pvr::GpuDatatypes::vec3);
 		memDesc.addElement("VPMatrix", pvr::GpuDatatypes::mat4x4);
+		memDesc.addElement("camPos", pvr::GpuDatatypes::vec3);
+		memDesc.addElement("emissiveIntensity", pvr::GpuDatatypes::Float);
+		memDesc.addElement("exposure", pvr::GpuDatatypes::Float);
 		_uboPerFrameBufferView.init(memDesc);
 		_uboDynamicData.resize(static_cast<const unsigned int>(_uboPerFrameBufferView.getSize()));
 		gl::GenBuffers(1, &_deviceResources->uboPerFrame);
@@ -994,8 +898,7 @@ void OpenGLESImageBasedLighting::createUbo()
 		if (_isBufferStorageExtSupported)
 		{
 			gl::BindBuffer(GL_COPY_READ_BUFFER, _deviceResources->uboPerFrame);
-			gl::ext::BufferStorageEXT(
-				GL_COPY_READ_BUFFER, (GLsizei)_uboPerFrameBufferView.getSize(), nullptr, GL_MAP_WRITE_BIT_EXT | GL_MAP_PERSISTENT_BIT_EXT | GL_MAP_COHERENT_BIT_EXT);
+			gl::ext::BufferStorageEXT(GL_COPY_READ_BUFFER, (GLsizei)_uboPerFrameBufferView.getSize(), nullptr, GL_MAP_WRITE_BIT_EXT | GL_MAP_PERSISTENT_BIT_EXT | GL_MAP_COHERENT_BIT_EXT);
 
 			void* memory = gl::MapBufferRange(
 				GL_COPY_READ_BUFFER, 0, static_cast<GLsizeiptr>(_uboPerFrameBufferView.getSize()), GL_MAP_WRITE_BIT_EXT | GL_MAP_PERSISTENT_BIT_EXT | GL_MAP_COHERENT_BIT_EXT);
@@ -1007,7 +910,4 @@ void OpenGLESImageBasedLighting::createUbo()
 
 /// <summary>This function must be implemented by the user of the shell. The user should return its pvr::Shell object defining the behaviour of the application.</summary>
 /// <returns>Return a unique ptr to the demo supplied by the user.</returns>
-std::unique_ptr<pvr::Shell> pvr::newDemo()
-{
-	return std::unique_ptr<pvr::Shell>(new OpenGLESImageBasedLighting());
-}
+std::unique_ptr<pvr::Shell> pvr::newDemo() { return std::make_unique<OpenGLESImageBasedLighting>(); }

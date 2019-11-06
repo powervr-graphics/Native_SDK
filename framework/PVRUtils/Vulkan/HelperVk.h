@@ -34,34 +34,13 @@ namespace utils {
 inline uint8_t getNumSamplesFromSampleCountFlags(pvrvk::SampleCountFlags sampleCountFlags)
 {
 	uint8_t numSamples = 0;
-	if (static_cast<uint32_t>(sampleCountFlags & pvrvk::SampleCountFlags::e_1_BIT) != 0)
-	{
-		numSamples += 1;
-	}
-	if (static_cast<uint32_t>(sampleCountFlags & pvrvk::SampleCountFlags::e_2_BIT) != 0)
-	{
-		numSamples += 2;
-	}
-	if (static_cast<uint32_t>(sampleCountFlags & pvrvk::SampleCountFlags::e_4_BIT) != 0)
-	{
-		numSamples += 4;
-	}
-	if (static_cast<uint32_t>(sampleCountFlags & pvrvk::SampleCountFlags::e_8_BIT) != 0)
-	{
-		numSamples += 8;
-	}
-	if (static_cast<uint32_t>(sampleCountFlags & pvrvk::SampleCountFlags::e_16_BIT) != 0)
-	{
-		numSamples += 16;
-	}
-	if (static_cast<uint32_t>(sampleCountFlags & pvrvk::SampleCountFlags::e_32_BIT) != 0)
-	{
-		numSamples += 32;
-	}
-	if (static_cast<uint32_t>(sampleCountFlags & pvrvk::SampleCountFlags::e_64_BIT) != 0)
-	{
-		numSamples += 64;
-	}
+	if (static_cast<uint32_t>(sampleCountFlags & pvrvk::SampleCountFlags::e_1_BIT) != 0) { numSamples += 1; }
+	if (static_cast<uint32_t>(sampleCountFlags & pvrvk::SampleCountFlags::e_2_BIT) != 0) { numSamples += 2; }
+	if (static_cast<uint32_t>(sampleCountFlags & pvrvk::SampleCountFlags::e_4_BIT) != 0) { numSamples += 4; }
+	if (static_cast<uint32_t>(sampleCountFlags & pvrvk::SampleCountFlags::e_8_BIT) != 0) { numSamples += 8; }
+	if (static_cast<uint32_t>(sampleCountFlags & pvrvk::SampleCountFlags::e_16_BIT) != 0) { numSamples += 16; }
+	if (static_cast<uint32_t>(sampleCountFlags & pvrvk::SampleCountFlags::e_32_BIT) != 0) { numSamples += 32; }
+	if (static_cast<uint32_t>(sampleCountFlags & pvrvk::SampleCountFlags::e_64_BIT) != 0) { numSamples += 64; }
 
 	return numSamples;
 }
@@ -110,10 +89,7 @@ DebugUtilsCallbacks createDebugUtilsCallbacks(pvrvk::Instance& instance);
 inline void beginQueueDebugLabel(pvrvk::Queue queue, const pvrvk::DebugUtilsLabel& labelInfo)
 {
 	// if the VK_EXT_debug_utils extension is supported then start the queue label region
-	if (queue->getDevice()->getPhysicalDevice()->getInstance()->getEnabledExtensionTable().extDebugUtilsEnabled)
-	{
-		queue->beginDebugUtilsLabel(labelInfo);
-	}
+	if (queue->getDevice()->getPhysicalDevice()->getInstance()->getEnabledExtensionTable().extDebugUtilsEnabled) { queue->beginDebugUtilsLabel(labelInfo); }
 }
 
 /// <summary>Ends a label region of work submitted to this queue.</summary>
@@ -121,10 +97,7 @@ inline void beginQueueDebugLabel(pvrvk::Queue queue, const pvrvk::DebugUtilsLabe
 inline void endQueueDebugLabel(pvrvk::Queue queue)
 {
 	// if the VK_EXT_debug_utils extension is supported then end the queue label region
-	if (queue->getDevice()->getPhysicalDevice()->getInstance()->getEnabledExtensionTable().extDebugUtilsEnabled)
-	{
-		queue->endDebugUtilsLabel();
-	}
+	if (queue->getDevice()->getPhysicalDevice()->getInstance()->getEnabledExtensionTable().extDebugUtilsEnabled) { queue->endDebugUtilsLabel(); }
 }
 
 /// <summary>Begins identifying a region of work submitted to this command buffer. The calls to beginDebugUtilsLabel and endDebugUtilsLabel must be matched and
@@ -134,10 +107,7 @@ inline void endQueueDebugLabel(pvrvk::Queue queue)
 inline void beginCommandBufferDebugLabel(pvrvk::CommandBufferBase commandBufferBase, const pvrvk::DebugUtilsLabel& labelInfo)
 {
 	// if the VK_EXT_debug_utils extension is supported then start the queue label region
-	if (commandBufferBase->getDevice()->getPhysicalDevice()->getInstance()->getEnabledExtensionTable().extDebugUtilsEnabled)
-	{
-		commandBufferBase->beginDebugUtilsLabel(labelInfo);
-	}
+	if (commandBufferBase->getDevice()->getPhysicalDevice()->getInstance()->getEnabledExtensionTable().extDebugUtilsEnabled) { commandBufferBase->beginDebugUtilsLabel(labelInfo); }
 	// else if the VK_EXT_debug_marker extension is supported then start the debug marker region
 	else if (commandBufferBase->getDevice()->getEnabledExtensionTable().extDebugMarkerEnabled)
 	{
@@ -151,10 +121,7 @@ inline void beginCommandBufferDebugLabel(pvrvk::CommandBufferBase commandBufferB
 inline void endCommandBufferDebugLabel(pvrvk::CommandBufferBase commandBufferBase)
 {
 	// if the VK_EXT_debug_utils extension is supported then end the command buffer label region
-	if (commandBufferBase->getDevice()->getPhysicalDevice()->getInstance()->getEnabledExtensionTable().extDebugUtilsEnabled)
-	{
-		commandBufferBase->endDebugUtilsLabel();
-	}
+	if (commandBufferBase->getDevice()->getPhysicalDevice()->getInstance()->getEnabledExtensionTable().extDebugUtilsEnabled) { commandBufferBase->endDebugUtilsLabel(); }
 	// else if the VK_EXT_debug_marker extension is supported then end the debug marker region
 	else if (commandBufferBase->getDevice()->getEnabledExtensionTable().extDebugMarkerEnabled)
 	{
@@ -169,10 +136,7 @@ inline void insertDebugUtilsLabel(pvrvk::CommandBufferBase commandBufferBase, co
 {
 	// if the VK_EXT_debug_utils extension is supported then insert the queue label region
 	if (commandBufferBase->getDevice()->getPhysicalDevice()->getInstance()->getEnabledExtensionTable().extDebugUtilsEnabled)
-	{
-		commandBufferBase->insertDebugUtilsLabel(labelInfo);
-	}
-	// else if the VK_EXT_debug_marker extension is supported then insert the debug marker
+	{ commandBufferBase->insertDebugUtilsLabel(labelInfo); } // else if the VK_EXT_debug_marker extension is supported then insert the debug marker
 	else if (commandBufferBase->getDevice()->getEnabledExtensionTable().extDebugMarkerEnabled)
 	{
 		pvrvk::DebugMarkerMarkerInfo markerInfo(labelInfo.getLabelName(), labelInfo.getR(), labelInfo.getG(), labelInfo.getB(), labelInfo.getA());
@@ -200,10 +164,7 @@ inline void beginCommandBufferDebugLabel(pvrvk::SecondaryCommandBuffer& secondar
 
 /// <summary>Ends a label region of work submitted to this command buffer.</summary>
 /// <param name="commandBuffer">The command buffer to which the debug label region should be ended</param>
-inline void endCommandBufferDebugLabel(pvrvk::CommandBuffer& commandBuffer)
-{
-	endCommandBufferDebugLabel(static_cast<pvrvk::CommandBufferBase>(commandBuffer));
-}
+inline void endCommandBufferDebugLabel(pvrvk::CommandBuffer& commandBuffer) { endCommandBufferDebugLabel(static_cast<pvrvk::CommandBufferBase>(commandBuffer)); }
 
 /// <summary>Ends a label region of work submitted to this secondary command buffer.</summary>
 /// <param name="secondaryCommandBuffer">The secondary command buffer to which the debug label region should be ended</param>
@@ -230,8 +191,7 @@ inline void insertDebugUtilsLabel(pvrvk::SecondaryCommandBuffer& secondaryComman
 
 /// <summary>Create a new buffer object and (optionally) allocate and bind memory for it</summary>
 /// <param name="device">The device on which to create the buffer</param>
-/// <param name="size">The total size of the buffer</param>
-/// <param name="bufferUsage">All buffer usages for which this buffer will be valid</param>
+/// <param name="createInfo">A pvrvk::BufferCreateInfo structure controlling how the buffer will be created.</param>
 /// <param name="requiredMemoryFlags">The minimal set of memory property flags which are required for the PVRVk buffer to be created.
 /// If pvrvk::MemoryPropertyFlags::e_NONE is passed, no memory will be allocated for this buffer.</param>
 /// <param name="optimalMemoryFlags">The most optimal set of memory property flags which could be used by the memory backing the returned PVRVk buffer.
@@ -241,26 +201,15 @@ inline void insertDebugUtilsLabel(pvrvk::SecondaryCommandBuffer& secondaryComman
 /// Valid flags include e_DEDICATED_MEMORY_BIT and e_MAPPED_BIT. e_DEDICATED_MEMORY_BIT indicates that the allocation should have its own memory block.
 /// e_MAPPED_BIT indicates memory will be persistently mapped respectively.
 /// The default vma::AllocationCreateFlags::e_MAPPED_BIT is valid even if HOST_VISIBLE is not used - these flags will be ignored in this case.</param>
-/// <param name="bufferCreateFlags">Buffer creation flags (see Vulkan spec)</param>
-/// <param name="sharingMode">indicates whether the buffer is exclusive for some queues or can be used simultaneously multiple queues</param>
-/// <param name="queueFamilyIndices">If not exclusive, indicates which queue families the buffer can be used by</param>
-/// <param name="numQueueFamilyIndices">If not exclusive, the number of queue families for which this buffer is valid</param>
 /// <returns>Return a valid object if success</returns>.
-pvrvk::Buffer createBuffer(pvrvk::Device device, VkDeviceSize size, pvrvk::BufferUsageFlags bufferUsage, pvrvk::MemoryPropertyFlags requiredMemoryFlags,
+pvrvk::Buffer createBuffer(pvrvk::Device device, const pvrvk::BufferCreateInfo& createInfo, pvrvk::MemoryPropertyFlags requiredMemoryFlags,
 	pvrvk::MemoryPropertyFlags optimalMemoryFlags = pvrvk::MemoryPropertyFlags::e_NONE, vma::Allocator* bufferAllocator = nullptr,
-	vma::AllocationCreateFlags vmaAllocationCreateFlags = vma::AllocationCreateFlags::e_MAPPED_BIT, pvrvk::BufferCreateFlags bufferCreateFlags = pvrvk::BufferCreateFlags(0),
-	pvrvk::SharingMode sharingMode = pvrvk::SharingMode::e_EXCLUSIVE, const uint32_t* queueFamilyIndices = nullptr, uint32_t numQueueFamilyIndices = 0);
+	vma::AllocationCreateFlags vmaAllocationCreateFlags = vma::AllocationCreateFlags::e_MAPPED_BIT);
 
 /// <summary>create a new Image(sparse or with memory backing, depending on <paramref name="flags"/>. The user should not call bindMemory on the image if sparse flags are used.
 /// <paramref name="requiredMemoryFlags"/> is ignored if <paramref name="flags"/> contains sparse binding flags.</summary>
 /// <param name="device">The device on which to create the image</param>
-/// <param name="imageType">The type of the created image (1D/2D/3D etc)</param>
-/// <param name="format">The Image format</param>
-/// <param name="dimension">Image dimension</param>
-/// <param name="usage">Image usage flags</param>
-/// <param name="flags">Image create flags</param>
-/// <param name="layerSize">Image layer size</param>
-/// <param name="samples">Number of samples</param>
+/// <param name="createInfo">A pvrvk::ImageCreateInfo structure controlling how the image will be created.</param>
 /// <param name="requiredMemoryFlags">The minimal set of memory property flags which are required for the PVRVk Image to be created.
 /// If pvrvk::MemoryPropertyFlags::e_NONE is passed, no memory will be allocated for this Image.</param>
 /// <param name="optimalMemoryFlags">The most optimal set of memory property flags which could be used by the memory backing the returned PVRVk Image.
@@ -270,25 +219,10 @@ pvrvk::Buffer createBuffer(pvrvk::Device device, VkDeviceSize size, pvrvk::Buffe
 /// Valid flags include e_DEDICATED_MEMORY_BIT and e_MAPPED_BIT. e_DEDICATED_MEMORY_BIT indicates that the allocation should have its own memory block.
 /// e_MAPPED_BIT indicates memory will be persistently mapped respectively.
 /// The default vma::AllocationCreateFlags::e_MAPPED_BIT is valid even if HOST_VISIBLE is not used - these flags will be ignored in this case.</param>
-/// <param name="sharingMode">Specifying the sharing mode of this image.
-/// Setting it exclusive means that only a single queue can access it therefore
-/// the calle must exclusively transfer queue ownership of this image if they want separate queue family to access this image
-/// and the <paramref name="queueFamilyIndices"/>, <paramref name="numQueueFamilyIndices"/> is ignored.
-/// Setting it to concurrent means multiple queue family can access this image at any point in time and requires
-/// <paramref name="queueFamilyIndices"/>, <paramref name="numQueueFamilyIndices"/></param>
-/// <param name="queueFamilyIndices">A c-style array containing the queue family indices that
-/// this image is exclusive to</param>
-/// <param name="tiling">Specifies the tiling mode which defines the tiling arrangement of data elements in memory</param>
-/// <param name="initialLayout">Is a ImageLayout value specifying the initial ImageLayout of all image subresources of the image</param>
-/// <param name="numQueueFamilyIndices">The number of queues in <paramref name="queueFamilyIndices"/></param>
 /// <returns> The created Imageobject on success, null Image on failure</returns>
-pvrvk::Image createImage(pvrvk::Device device, pvrvk::ImageType imageType, pvrvk::Format format, const pvrvk::Extent3D& dimension, pvrvk::ImageUsageFlags usage,
-	pvrvk::ImageCreateFlags flags = pvrvk::ImageCreateFlags(0), const pvrvk::ImageLayersSize& layerSize = pvrvk::ImageLayersSize(),
-	pvrvk::SampleCountFlags samples = pvrvk::SampleCountFlags::e_1_BIT, pvrvk::MemoryPropertyFlags requiredMemoryFlags = pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT,
-	pvrvk::MemoryPropertyFlags optimalMemoryFlags = pvrvk::MemoryPropertyFlags::e_NONE, vma::Allocator* imageAllocator = nullptr,
-	vma::AllocationCreateFlags vmaAllocationCreateFlags = vma::AllocationCreateFlags::e_NONE, pvrvk::SharingMode sharingMode = pvrvk::SharingMode::e_EXCLUSIVE,
-	pvrvk::ImageTiling tiling = pvrvk::ImageTiling::e_OPTIMAL, pvrvk::ImageLayout initialLayout = pvrvk::ImageLayout::e_UNDEFINED, const uint32_t* queueFamilyIndices = nullptr,
-	uint32_t numQueueFamilyIndices = 0);
+pvrvk::Image createImage(pvrvk::Device device, const pvrvk::ImageCreateInfo& createInfo,
+	pvrvk::MemoryPropertyFlags requiredMemoryFlags = pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags optimalMemoryFlags = pvrvk::MemoryPropertyFlags::e_NONE,
+	vma::Allocator* imageAllocator = nullptr, vma::AllocationCreateFlags vmaAllocationCreateFlags = vma::AllocationCreateFlags::e_NONE);
 
 /// <summary>Create perspective matrix that trasform scenes that use Opengl Convention (+y up) to Vulkan Convention (+y down).</summary>
 /// <param name="fovy">The field of view in the y dimension or the vertical angle.</param>
@@ -583,19 +517,10 @@ inline void updateHostVisibleBuffer(pvrvk::Buffer& buffer, const void* data, VkD
 
 	memcpy(mapData, data, (size_t)size);
 
-	if (static_cast<uint32_t>(buffer->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) != 0)
-	{
-		flushMemory = false;
-	}
+	if (static_cast<uint32_t>(buffer->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) != 0) { flushMemory = false; }
 
-	if (flushMemory)
-	{
-		buffer->getDeviceMemory()->flushRange(offset, size);
-	}
-	if (unmap)
-	{
-		buffer->getDeviceMemory()->unmap();
-	}
+	if (flushMemory) { buffer->getDeviceMemory()->flushRange(offset, size); }
+	if (unmap) { buffer->getDeviceMemory()->unmap(); }
 }
 
 /// <summary>Utility function to update a buffer's data via an indirect copy from a temporary staging buffer. Updating memory via the use of a staging buffer
@@ -619,7 +544,8 @@ inline void updateBufferUsingStagingBuffer(pvrvk::Device& device, pvrvk::Buffer&
 
 	// 1. Create a staging buffer
 	pvrvk::MemoryPropertyFlags memoryFlags = pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT;
-	pvrvk::Buffer stagingBuffer = pvr::utils::createBuffer(device, size, pvrvk::BufferUsageFlags::e_TRANSFER_SRC_BIT, memoryFlags, memoryFlags, stagingBufferAllocator);
+	pvrvk::Buffer stagingBuffer =
+		pvr::utils::createBuffer(device, pvrvk::BufferCreateInfo(size, pvrvk::BufferUsageFlags::e_TRANSFER_SRC_BIT), memoryFlags, memoryFlags, stagingBufferAllocator);
 
 	// 2. map (if required), then update the memory, then finally unmap (if required)
 	updateHostVisibleBuffer(stagingBuffer, data, offset, size, true);
@@ -686,15 +612,15 @@ struct QueueAccessInfo
 	uint32_t queueId;
 
 	/// <summary>Constructor for a QueueAccessInfo which sets family id and queue id to invalid values.</summary>
-	QueueAccessInfo() : familyId(-1), queueId(-1) {}
+	QueueAccessInfo() : familyId(static_cast<uint32_t>(-1)), queueId(static_cast<uint32_t>(-1)) {}
 };
 
 /// <summary>Container for a list of instance layers to be used for initiailising an instance using the helper function 'createInstanceAndSurface'.</summary>
 struct InstanceLayers : public pvrvk::VulkanLayerList
 {
 	/// <summary>Default constructor. Initialises the list of instance layers based on whether the build is Debug/Release.</summary>
-	/// <param name="forceLayers">A boolean flag which can be used to force the use of VK_LAYER_LUNARG_standard_validation even when in Releae builds.
-	/// Note that the VK_LAYER_LUNARG_standard_validation layers will be enabled by default in Debug builds.</param>
+	/// <param name="forceLayers">A boolean flag which can be used to force the use of VK_LAYER_KHRONOS_validation or the now deprecated VK_LAYER_LUNARG_standard_validation even
+	/// when in Releae builds. Note that the VK_LAYER_KHRONOS_validation layers will be enabled by default in Debug builds.</param>
 	InstanceLayers(bool forceLayers =
 #ifdef DEBUG
 					   true);
@@ -751,6 +677,15 @@ pvrvk::Swapchain createSwapchain(pvrvk::Device& device, const pvrvk::Surface& su
 pvrvk::Swapchain createSwapchain(pvrvk::Device& device, const pvrvk::Surface& surface, pvr::DisplayAttributes& displayAttributes,
 	pvrvk::ImageUsageFlags swapchainImageUsageFlags = pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT);
 
+bool isSupportedDepthStencilFormat(const pvrvk::Device& device, pvrvk::Format format);
+
+pvrvk::Format getSupportedDepthStencilFormat(const pvrvk::Device& device, pvr::DisplayAttributes& displayAttributes, std::vector<pvrvk::Format> preferredDepthFormats = {});
+
+std::vector<pvrvk::ImageView> createDepthStencilImageAndViews(pvrvk::Device& device, int32_t imageCount, pvrvk::Format depthFormat, const pvrvk::Extent2D& imageExtent,
+	const pvrvk::ImageUsageFlags& imageUsageFlags = pvrvk::ImageUsageFlags::e_DEPTH_STENCIL_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_TRANSIENT_ATTACHMENT_BIT,
+	pvrvk::SampleCountFlags sampleCount = pvrvk::SampleCountFlags::e_1_BIT, vma::Allocator* dsImageAllocator = nullptr,
+	vma::AllocationCreateFlags dsImageAllocationCreateFlags = vma::AllocationCreateFlags::e_DEDICATED_MEMORY_BIT);
+
 /// <summary>Create a pvrvk::Swapchain and corresponding number of depth stencil images using a pre-initialised pvrvk::Device and pvrvk::Surface
 /// choosing the color and depth stencil format of the images created from the specified list of preferred color and depth stencil formats.</summary>
 /// <param name="device">A logical device to use for creating the pvrvk::Swapchain and depth stencil images.</param>
@@ -793,6 +728,60 @@ void createSwapchainAndDepthStencilImageAndViews(pvrvk::Device& device, const pv
 	const pvrvk::ImageUsageFlags& dsImageUsageFlags = pvrvk::ImageUsageFlags::e_DEPTH_STENCIL_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_TRANSIENT_ATTACHMENT_BIT,
 	vma::Allocator* dsImageAllocator = nullptr, vma::AllocationCreateFlags dsImageAllocationCreateFlags = vma::AllocationCreateFlags::e_DEDICATED_MEMORY_BIT);
 
+inline pvrvk::RenderPass createRenderPass(pvrvk::Swapchain& swapchain, pvrvk::ImageView* depthStencilImages,
+	pvrvk::ImageLayout initialSwapchainLayout = pvrvk::ImageLayout::e_UNDEFINED, pvrvk::ImageLayout initialDepthStencilLayout = pvrvk::ImageLayout::e_UNDEFINED,
+	pvrvk::AttachmentLoadOp colorLoadOp = pvrvk::AttachmentLoadOp::e_CLEAR, pvrvk::AttachmentStoreOp colorStoreOp = pvrvk::AttachmentStoreOp::e_STORE,
+	pvrvk::AttachmentLoadOp depthStencilLoadOp = pvrvk::AttachmentLoadOp::e_CLEAR, pvrvk::AttachmentStoreOp depthStencilStoreOp = pvrvk::AttachmentStoreOp::e_DONT_CARE)
+{
+	pvrvk::RenderPassCreateInfo rpInfo;
+	rpInfo.setAttachmentDescription(0,
+		pvrvk::AttachmentDescription::createColorDescription(swapchain->getImageFormat(), initialSwapchainLayout, pvrvk::ImageLayout::e_PRESENT_SRC_KHR, colorLoadOp, colorStoreOp));
+
+	pvrvk::SubpassDescription subpass;
+	subpass.setColorAttachmentReference(0, pvrvk::AttachmentReference(0, pvrvk::ImageLayout::e_COLOR_ATTACHMENT_OPTIMAL));
+	if (depthStencilImages != nullptr)
+	{
+		rpInfo.setAttachmentDescription(1,
+			pvrvk::AttachmentDescription::createDepthStencilDescription(depthStencilImages[0]->getImage()->getFormat(), initialDepthStencilLayout,
+				pvrvk::ImageLayout::e_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, depthStencilLoadOp, depthStencilStoreOp));
+		subpass.setDepthStencilAttachmentReference(pvrvk::AttachmentReference(1, pvrvk::ImageLayout::e_DEPTH_STENCIL_ATTACHMENT_OPTIMAL));
+	}
+
+	pvrvk::SubpassDependency dependencies[2];
+	dependencies[0] = pvrvk::SubpassDependency(pvrvk::SubpassExternal, 0, pvrvk::PipelineStageFlags::e_BOTTOM_OF_PIPE_BIT, pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT,
+		pvrvk::AccessFlags::e_NONE, pvrvk::AccessFlags::e_COLOR_ATTACHMENT_READ_BIT | pvrvk::AccessFlags::e_COLOR_ATTACHMENT_WRITE_BIT, pvrvk::DependencyFlags::e_BY_REGION_BIT);
+
+	dependencies[1] = pvrvk::SubpassDependency(0, pvrvk::SubpassExternal, pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT, pvrvk::PipelineStageFlags::e_BOTTOM_OF_PIPE_BIT,
+		pvrvk::AccessFlags::e_COLOR_ATTACHMENT_READ_BIT | pvrvk::AccessFlags::e_COLOR_ATTACHMENT_WRITE_BIT, pvrvk::AccessFlags::e_NONE, pvrvk::DependencyFlags::e_BY_REGION_BIT);
+
+	rpInfo.addSubpassDependencies(dependencies, ARRAY_SIZE(dependencies));
+	rpInfo.setSubpass(0, subpass);
+
+	pvrvk::RenderPass renderPass = swapchain->getDevice()->createRenderPass(rpInfo);
+	renderPass->setObjectName("PVRUtilsVk::OnScreenRenderPass");
+
+	return renderPass;
+}
+
+inline std::vector<pvrvk::Framebuffer> createOnscreenFramebuffers(pvrvk::Swapchain& swapchain, pvrvk::ImageView* depthStencilImages, const pvrvk::RenderPass& renderPass)
+{
+	std::vector<pvrvk::Framebuffer> framebuffers;
+	framebuffers.reserve(swapchain->getSwapchainLength());
+
+	for (uint32_t i = 0; i < swapchain->getSwapchainLength(); ++i)
+	{
+		pvrvk::FramebufferCreateInfo framebufferInfo;
+		framebufferInfo.setAttachment(0, swapchain->getImageView(i));
+		framebufferInfo.setDimensions(swapchain->getDimension());
+		if (depthStencilImages) { framebufferInfo.setAttachment(1, depthStencilImages[i]); }
+		framebufferInfo.setRenderPass(renderPass);
+		framebuffers.push_back(swapchain->getDevice()->createFramebuffer(framebufferInfo));
+		framebuffers.back()->setObjectName(std::string("PVRUtilsVk::OnScreenFrameBuffer [") + std::to_string(i) + std::string("]"));
+	}
+
+	return framebuffers;
+}
+
 /// <summary>Create a pvrvk::Framebuffer and RenderPass to use for 'default' rendering to the 'onscreen' color images with following config
 /// RenderPass:
 ///     Attachment0: ColorAttachment
@@ -823,46 +812,13 @@ inline void createOnscreenFramebufferAndRenderPass(pvrvk::Swapchain& swapchain, 
 	pvrvk::AttachmentStoreOp colorStoreOp = pvrvk::AttachmentStoreOp::e_STORE, pvrvk::AttachmentLoadOp depthStencilLoadOp = pvrvk::AttachmentLoadOp::e_CLEAR,
 	pvrvk::AttachmentStoreOp depthStencilStoreOp = pvrvk::AttachmentStoreOp::e_DONT_CARE)
 {
-	pvrvk::FramebufferCreateInfo framebufferInfos[pvrvk::FrameworkCaps::MaxSwapChains];
-	pvrvk::RenderPassCreateInfo rpInfo;
-	rpInfo.setAttachmentDescription(0,
-		pvrvk::AttachmentDescription::createColorDescription(swapchain->getImageFormat(), initialSwapchainLayout, pvrvk::ImageLayout::e_PRESENT_SRC_KHR, colorLoadOp, colorStoreOp));
+	outRenderPass =
+		createRenderPass(swapchain, depthStencilImages, initialSwapchainLayout, initialDepthStencilLayout, colorLoadOp, colorStoreOp, depthStencilLoadOp, depthStencilStoreOp);
 
-	pvrvk::SubpassDescription subpass;
-	subpass.setColorAttachmentReference(0, pvrvk::AttachmentReference(0, pvrvk::ImageLayout::e_COLOR_ATTACHMENT_OPTIMAL));
-	if (depthStencilImages != nullptr)
-	{
-		rpInfo.setAttachmentDescription(1,
-			pvrvk::AttachmentDescription::createDepthStencilDescription(depthStencilImages[0]->getImage()->getFormat(), initialDepthStencilLayout,
-				pvrvk::ImageLayout::e_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, depthStencilLoadOp, depthStencilStoreOp));
-		subpass.setDepthStencilAttachmentReference(pvrvk::AttachmentReference(1, pvrvk::ImageLayout::e_DEPTH_STENCIL_ATTACHMENT_OPTIMAL));
-	}
+	auto framebuffers = createOnscreenFramebuffers(swapchain, depthStencilImages, outRenderPass);
 
-	pvrvk::SubpassDependency dependencies[2];
-	dependencies[0] = pvrvk::SubpassDependency(pvrvk::SubpassExternal, 0, pvrvk::PipelineStageFlags::e_BOTTOM_OF_PIPE_BIT, pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT,
-		pvrvk::AccessFlags::e_MEMORY_READ_BIT, pvrvk::AccessFlags::e_COLOR_ATTACHMENT_READ_BIT | pvrvk::AccessFlags::e_COLOR_ATTACHMENT_WRITE_BIT,
-		pvrvk::DependencyFlags::e_BY_REGION_BIT);
-	dependencies[1] = pvrvk::SubpassDependency(0, pvrvk::SubpassExternal, pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT, pvrvk::PipelineStageFlags::e_BOTTOM_OF_PIPE_BIT,
-		pvrvk::AccessFlags::e_COLOR_ATTACHMENT_READ_BIT | pvrvk::AccessFlags::e_COLOR_ATTACHMENT_WRITE_BIT, pvrvk::AccessFlags::e_NONE, pvrvk::DependencyFlags::e_BY_REGION_BIT);
-
-	rpInfo.addSubpassDependencies(dependencies, ARRAY_SIZE(dependencies));
-
-	rpInfo.setSubpass(0, subpass);
-	outRenderPass = swapchain->getDevice()->createRenderPass(rpInfo);
-	outRenderPass->setObjectName("PVRUtilsVk::OnScreenRenderPass");
-
-	for (uint32_t i = 0; i < swapchain->getSwapchainLength(); ++i)
-	{
-		framebufferInfos[i].setAttachment(0, swapchain->getImageView(i));
-		framebufferInfos[i].setDimensions(swapchain->getDimension());
-		if (depthStencilImages)
-		{
-			framebufferInfos[i].setAttachment(1, depthStencilImages[i]);
-		}
-		framebufferInfos[i].setRenderPass(outRenderPass);
-		outFramebuffers[i] = swapchain->getDevice()->createFramebuffer(framebufferInfos[i]);
-		outFramebuffers[i]->setObjectName(std::string("PVRUtilsVk::OnScreenFrameBuffer [") + std::to_string(i) + std::string("]"));
-	}
+	outFramebuffers.resize(swapchain->getSwapchainLength());
+	std::copy_n(framebuffers.begin(), outFramebuffers.size(), &outFramebuffers[0]);
 }
 
 /// <summary>Create a pvrvk::Framebuffer and RenderPass to use for 'default' rendering to the 'onscreen' color images with following config
@@ -943,11 +899,8 @@ inline void populateInputAssemblyFromMesh(const assets::Mesh& mesh, const Vertex
 	pvrvk::PipelineVertexInputStateCreateInfo& vertexCreateInfo, pvrvk::PipelineInputAssemblerStateCreateInfo& inputAssemblerCreateInfo, uint16_t* numOutBuffers = nullptr)
 {
 	vertexCreateInfo.clear();
-	if (numOutBuffers)
-	{
-		*numOutBuffers = 0;
-	}
-	int16_t current = 0;
+	if (numOutBuffers) { *numOutBuffers = 0; }
+	uint16_t current = 0;
 	while (current < numBindings)
 	{
 		auto attr = mesh.getVertexAttributeByName(bindingMap[current].semanticName.c_str());
@@ -955,13 +908,10 @@ inline void populateInputAssemblyFromMesh(const assets::Mesh& mesh, const Vertex
 		{
 			VertexAttributeLayout layout = attr->getVertexLayout();
 			uint32_t stride = mesh.getStride(attr->getDataIndex());
-			if (numOutBuffers)
-			{
-				*numOutBuffers = static_cast<uint16_t>(std::max<int32_t>(attr->getDataIndex() + 1, *numOutBuffers));
-			}
+			if (numOutBuffers) { *numOutBuffers = std::max(static_cast<uint16_t>(attr->getDataIndex() + 1u), *numOutBuffers); }
 
-			const pvrvk::VertexInputAttributeDescription attribDesc(
-				bindingMap[current].location, attr->getDataIndex(), convertToPVRVkVertexInputFormat(layout.dataType, layout.width), layout.offset);
+			const pvrvk::VertexInputAttributeDescription attribDesc(static_cast<uint32_t>(bindingMap[current].location), attr->getDataIndex(),
+				convertToPVRVkVertexInputFormat(layout.dataType, layout.width), static_cast<uint32_t>(layout.offset));
 
 			const pvrvk::VertexInputBindingDescription bindingDesc(attr->getDataIndex(), stride, pvrvk::VertexInputRate::e_VERTEX);
 			vertexCreateInfo.addInputAttribute(attribDesc).addInputBinding(bindingDesc);
@@ -983,15 +933,12 @@ inline void populateInputAssemblyFromMesh(const assets::Mesh& mesh, const Vertex
 /// <param name="inputAssemblerCreateInfo">A pvrvk::InputAssemblerStateCreateInfo structure which will be filled by this utility function.</param>
 /// <param name="numOutBuffers">A pointer to an unsigned integer which will set to specify the number of buffers required to create
 /// buffers for to use the mesh vertex attributes.</param>
-inline void populateInputAssemblyFromMesh(const assets::Mesh& mesh, const VertexBindings_Name* bindingMap, uint16_t numBindings,
-	pvrvk::PipelineVertexInputStateCreateInfo& vertexCreateInfo, pvrvk::PipelineInputAssemblerStateCreateInfo& inputAssemblerCreateInfo, uint16_t* numOutBuffers = nullptr)
+inline void populateInputAssemblyFromMesh(const assets::Mesh& mesh, const VertexBindings_Name* bindingMap, uint32_t numBindings,
+	pvrvk::PipelineVertexInputStateCreateInfo& vertexCreateInfo, pvrvk::PipelineInputAssemblerStateCreateInfo& inputAssemblerCreateInfo, uint32_t* numOutBuffers = nullptr)
 {
 	vertexCreateInfo.clear();
-	if (numOutBuffers)
-	{
-		*numOutBuffers = 0;
-	}
-	int16_t current = 0;
+	if (numOutBuffers) { *numOutBuffers = 0; }
+	uint32_t current = 0;
 	// In this scenario, we will be using our own indexes instead of user provided ones, correlating them by names.
 	vertexCreateInfo.clear();
 	while (current < numBindings)
@@ -1002,10 +949,7 @@ inline void populateInputAssemblyFromMesh(const assets::Mesh& mesh, const Vertex
 			VertexAttributeLayout layout = attr->getVertexLayout();
 			uint32_t stride = mesh.getStride(attr->getDataIndex());
 
-			if (numOutBuffers)
-			{
-				*numOutBuffers = static_cast<uint16_t>(std::max<int32_t>(attr->getDataIndex() + 1, *numOutBuffers));
-			}
+			if (numOutBuffers) { *numOutBuffers = std::max<uint32_t>(attr->getDataIndex() + 1u, *numOutBuffers); }
 			const pvrvk::VertexInputAttributeDescription attribDesc(current, attr->getDataIndex(), convertToPVRVkVertexInputFormat(layout.dataType, layout.width), layout.offset);
 
 			const pvrvk::VertexInputBindingDescription bindingDesc(attr->getDataIndex(), stride, pvrvk::VertexInputRate::e_VERTEX);
@@ -1040,29 +984,21 @@ inline void createSingleBuffersFromMesh(pvrvk::Device& device, const assets::Mes
 	requiresCommandBufferSubmission = false;
 
 	size_t total = 0;
-	for (uint32_t i = 0; i < mesh.getNumDataElements(); ++i)
-	{
-		total += mesh.getDataSize(i);
-	}
+	for (uint32_t i = 0; i < mesh.getNumDataElements(); ++i) { total += mesh.getDataSize(i); }
 
-	pvrvk::MemoryPropertyFlags requiredMemoryFlags = pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT;
-	pvrvk::MemoryPropertyFlags optimalMemoryFlags = requiredMemoryFlags;
-	outVbo = createBuffer(device, static_cast<uint32_t>(mesh.getDataSize(0)), pvrvk::BufferUsageFlags::e_VERTEX_BUFFER_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT,
-		requiredMemoryFlags, optimalMemoryFlags, bufferAllocator, vmaAllocationCreateFlags);
+	pvrvk::MemoryPropertyFlags vboRequiredMemoryFlags = pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT;
+	pvrvk::MemoryPropertyFlags vboOptimalMemoryFlags = vboRequiredMemoryFlags;
+	outVbo = createBuffer(device, pvrvk::BufferCreateInfo(static_cast<uint32_t>(total), pvrvk::BufferUsageFlags::e_VERTEX_BUFFER_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT),
+		vboRequiredMemoryFlags, vboOptimalMemoryFlags, bufferAllocator, vmaAllocationCreateFlags);
 
-	bool isBufferHostVisible = (outVbo->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT) != 0;
-	if (!isBufferHostVisible)
-	{
-		requiresCommandBufferSubmission = true;
-	}
+	bool isVboHostVisible = (outVbo->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT) != 0;
+	if (!isVboHostVisible) { requiresCommandBufferSubmission = true; }
 
 	size_t current = 0;
 	for (uint32_t i = 0; i < mesh.getNumDataElements(); ++i)
 	{
-		if (isBufferHostVisible)
-		{
-			updateHostVisibleBuffer(outVbo, static_cast<const void*>(mesh.getData(i)), static_cast<uint32_t>(current), static_cast<uint32_t>(mesh.getDataSize(i)), true);
-		}
+		if (isVboHostVisible)
+		{ updateHostVisibleBuffer(outVbo, static_cast<const void*>(mesh.getData(i)), static_cast<uint32_t>(current), static_cast<uint32_t>(mesh.getDataSize(i)), true); }
 		else
 		{
 			updateBufferUsingStagingBuffer(device, outVbo, pvrvk::CommandBufferBase(uploadCmdBuffer), static_cast<const void*>(mesh.getData(i)), static_cast<uint32_t>(current),
@@ -1073,21 +1009,17 @@ inline void createSingleBuffersFromMesh(pvrvk::Device& device, const assets::Mes
 
 	if (mesh.getNumFaces())
 	{
-		pvrvk::MemoryPropertyFlags requiredMemoryFlags = pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT;
-		pvrvk::MemoryPropertyFlags optimalMemoryFlags = requiredMemoryFlags;
-		outIbo = createBuffer(device, static_cast<uint32_t>(mesh.getFaces().getDataSize()), pvrvk::BufferUsageFlags::e_INDEX_BUFFER_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT,
-			requiredMemoryFlags, optimalMemoryFlags, bufferAllocator, vmaAllocationCreateFlags);
+		pvrvk::MemoryPropertyFlags iboRequiredMemoryFlags = pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT;
+		pvrvk::MemoryPropertyFlags iboOptimalMemoryFlags = iboRequiredMemoryFlags;
+		outIbo = createBuffer(device,
+			pvrvk::BufferCreateInfo(static_cast<uint32_t>(mesh.getFaces().getDataSize()), pvrvk::BufferUsageFlags::e_INDEX_BUFFER_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT),
+			iboRequiredMemoryFlags, iboOptimalMemoryFlags, bufferAllocator, vmaAllocationCreateFlags);
 
-		bool isBufferHostVisible = (outIbo->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT) != 0;
-		if (!isBufferHostVisible)
-		{
-			requiresCommandBufferSubmission = true;
-		}
+		bool isIboHostVisible = (outIbo->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT) != 0;
+		if (!isIboHostVisible) { requiresCommandBufferSubmission = true; }
 
-		if (isBufferHostVisible)
-		{
-			updateHostVisibleBuffer(outIbo, static_cast<const void*>(mesh.getFaces().getData()), 0, static_cast<uint32_t>(mesh.getFaces().getDataSize()), true);
-		}
+		if (isIboHostVisible)
+		{ updateHostVisibleBuffer(outIbo, static_cast<const void*>(mesh.getFaces().getData()), 0, static_cast<uint32_t>(mesh.getFaces().getDataSize()), true); }
 		else
 		{
 			updateBufferUsingStagingBuffer(device, outIbo, pvrvk::CommandBufferBase(uploadCmdBuffer), static_cast<const void*>(mesh.getFaces().getData()), 0,
@@ -1125,19 +1057,14 @@ inline void createMultipleBuffersFromMesh(pvrvk::Device& device, const assets::M
 	{
 		pvrvk::MemoryPropertyFlags requiredMemoryFlags = pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT;
 		pvrvk::MemoryPropertyFlags optimalMemoryFlags = requiredMemoryFlags;
-		outVbos.emplace_back(createBuffer(device, static_cast<uint32_t>(mesh.getDataSize(i)), pvrvk::BufferUsageFlags::e_VERTEX_BUFFER_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT,
+		outVbos.emplace_back(createBuffer(device,
+			pvrvk::BufferCreateInfo(static_cast<uint32_t>(mesh.getDataSize(i)), pvrvk::BufferUsageFlags::e_VERTEX_BUFFER_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT),
 			requiredMemoryFlags, optimalMemoryFlags, bufferAllocator, vmaAllocationCreateFlags));
 
 		bool isBufferHostVisible = (outVbos.back()->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT) != 0;
-		if (!isBufferHostVisible)
-		{
-			requiresCommandBufferSubmission = true;
-		}
+		if (!isBufferHostVisible) { requiresCommandBufferSubmission = true; }
 
-		if (isBufferHostVisible)
-		{
-			updateHostVisibleBuffer(outVbos.back(), static_cast<const void*>(mesh.getData(i)), 0, static_cast<uint32_t>(mesh.getDataSize(i)), true);
-		}
+		if (isBufferHostVisible) { updateHostVisibleBuffer(outVbos.back(), static_cast<const void*>(mesh.getData(i)), 0, static_cast<uint32_t>(mesh.getDataSize(i)), true); }
 		else
 		{
 			updateBufferUsingStagingBuffer(device, outVbos.back(), pvrvk::CommandBufferBase(uploadCmdBuffer), static_cast<const void*>(mesh.getData(i)), 0,
@@ -1148,19 +1075,15 @@ inline void createMultipleBuffersFromMesh(pvrvk::Device& device, const assets::M
 	{
 		pvrvk::MemoryPropertyFlags requiredMemoryFlags = pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT;
 		pvrvk::MemoryPropertyFlags optimalMemoryFlags = requiredMemoryFlags;
-		outIbo = createBuffer(device, static_cast<uint32_t>(mesh.getFaces().getDataSize()), pvrvk::BufferUsageFlags::e_INDEX_BUFFER_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT,
+		outIbo = createBuffer(device,
+			pvrvk::BufferCreateInfo(static_cast<uint32_t>(mesh.getFaces().getDataSize()), pvrvk::BufferUsageFlags::e_INDEX_BUFFER_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT),
 			requiredMemoryFlags, optimalMemoryFlags, bufferAllocator, vmaAllocationCreateFlags);
 
 		bool isBufferHostVisible = (outIbo->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT) != 0;
-		if (!isBufferHostVisible)
-		{
-			requiresCommandBufferSubmission = true;
-		}
+		if (!isBufferHostVisible) { requiresCommandBufferSubmission = true; }
 
 		if (isBufferHostVisible)
-		{
-			updateHostVisibleBuffer(outIbo, static_cast<const void*>(mesh.getFaces().getData()), 0, static_cast<uint32_t>(mesh.getFaces().getDataSize()), true);
-		}
+		{ updateHostVisibleBuffer(outIbo, static_cast<const void*>(mesh.getFaces().getData()), 0, static_cast<uint32_t>(mesh.getFaces().getDataSize()), true); }
 		else
 		{
 			updateBufferUsingStagingBuffer(device, outIbo, pvrvk::CommandBufferBase(uploadCmdBuffer), static_cast<const void*>(mesh.getFaces().getData()), 0,
@@ -1199,28 +1122,22 @@ inline void createSingleBuffersFromMeshes(pvrvk::Device& device, MeshIterator_ m
 	while (meshIter != meshIterEnd)
 	{
 		size_t total = 0;
-		for (uint32_t ii = 0; ii < meshIter->getNumDataElements(); ++ii)
-		{
-			total += meshIter->getDataSize(ii);
-		}
+		for (uint32_t ii = 0; ii < meshIter->getNumDataElements(); ++ii) { total += meshIter->getDataSize(ii); }
 
 		pvrvk::Buffer vbo;
 
-		pvrvk::MemoryPropertyFlags requiredMemoryFlags = pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT;
-		pvrvk::MemoryPropertyFlags optimalMemoryFlags = requiredMemoryFlags;
-		vbo = createBuffer(device, static_cast<uint32_t>(total), pvrvk::BufferUsageFlags::e_VERTEX_BUFFER_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT, requiredMemoryFlags,
-			optimalMemoryFlags, bufferAllocator, vmaAllocationCreateFlags);
+		pvrvk::MemoryPropertyFlags vboRequiredMemoryFlags = pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT;
+		pvrvk::MemoryPropertyFlags vboOptimalMemoryFlags = vboRequiredMemoryFlags;
+		vbo = createBuffer(device, pvrvk::BufferCreateInfo(static_cast<uint32_t>(total), pvrvk::BufferUsageFlags::e_VERTEX_BUFFER_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT),
+			vboRequiredMemoryFlags, vboOptimalMemoryFlags, bufferAllocator, vmaAllocationCreateFlags);
 
-		bool isBufferHostVisible = (vbo->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT) != 0;
-		if (!isBufferHostVisible)
-		{
-			requiresCommandBufferSubmission = true;
-		}
+		bool isVboHostVisible = (vbo->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT) != 0;
+		if (!isVboHostVisible) { requiresCommandBufferSubmission = true; }
 
 		size_t current = 0;
 		for (size_t ii = 0; ii < meshIter->getNumDataElements(); ++ii)
 		{
-			if (isBufferHostVisible)
+			if (isVboHostVisible)
 			{
 				updateHostVisibleBuffer(vbo, (const void*)meshIter->getData(static_cast<uint32_t>(ii)), static_cast<uint32_t>(current),
 					static_cast<uint32_t>(meshIter->getDataSize(static_cast<uint32_t>(ii))), true);
@@ -1238,22 +1155,17 @@ inline void createSingleBuffersFromMeshes(pvrvk::Device& device, MeshIterator_ m
 		{
 			pvrvk::Buffer ibo;
 
-			pvrvk::MemoryPropertyFlags requiredMemoryFlags = pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT;
-			pvrvk::MemoryPropertyFlags optimalMemoryFlags = requiredMemoryFlags;
-			ibo = createBuffer(device, static_cast<uint32_t>(meshIter->getFaces().getDataSize()),
-				pvrvk::BufferUsageFlags::e_INDEX_BUFFER_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT, requiredMemoryFlags, optimalMemoryFlags, bufferAllocator,
-				vmaAllocationCreateFlags);
+			pvrvk::MemoryPropertyFlags iboRequiredMemoryFlags = pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT;
+			pvrvk::MemoryPropertyFlags iboOptimalMemoryFlags = iboRequiredMemoryFlags;
+			ibo = createBuffer(device,
+				pvrvk::BufferCreateInfo(
+					static_cast<uint32_t>(meshIter->getFaces().getDataSize()), pvrvk::BufferUsageFlags::e_INDEX_BUFFER_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT),
+				iboRequiredMemoryFlags, iboOptimalMemoryFlags, bufferAllocator, vmaAllocationCreateFlags);
 
-			bool isBufferHostVisible = (ibo->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT) != 0;
-			if (!isBufferHostVisible)
-			{
-				requiresCommandBufferSubmission = true;
-			}
+			bool isIboHostVisible = (ibo->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT) != 0;
+			if (!isIboHostVisible) { requiresCommandBufferSubmission = true; }
 
-			if (isBufferHostVisible)
-			{
-				updateHostVisibleBuffer(ibo, static_cast<const void*>(meshIter->getFaces().getData()), 0, meshIter->getFaces().getDataSize(), true);
-			}
+			if (isIboHostVisible) { updateHostVisibleBuffer(ibo, static_cast<const void*>(meshIter->getFaces().getData()), 0, meshIter->getFaces().getDataSize(), true); }
 			else
 			{
 				updateBufferUsingStagingBuffer(device, ibo, pvrvk::CommandBufferBase(uploadCmdBuffer), static_cast<const void*>(meshIter->getFaces().getData()), 0,
@@ -1322,8 +1234,7 @@ template<typename VboInsertIterator_, typename IboInsertIterator_>
 inline void createSingleBuffersFromModel(pvrvk::Device& device, const assets::Model& model, VboInsertIterator_ vbos, IboInsertIterator_ ibos, pvrvk::CommandBuffer& uploadCmdBuffer,
 	bool& requiresCommandBufferSubmission, vma::Allocator* bufferAllocator = nullptr, vma::AllocationCreateFlags vmaAllocationCreateFlags = vma::AllocationCreateFlags::e_MAPPED_BIT)
 {
-	createSingleBuffersFromMeshes(
-		device, model.beginMeshes(), model.endMeshes(), vbos, ibos, uploadCmdBuffer, requiresCommandBufferSubmission, bufferAllocator, vmaAllocationCreateFlags);
+	createSingleBuffersFromMeshes(device, model.beginMeshes(), model.endMeshes(), vbos, ibos, uploadCmdBuffer, requiresCommandBufferSubmission, bufferAllocator, vmaAllocationCreateFlags);
 }
 
 /// <summary>Auto generates a set of VBOs and a set of IBOs from the vertex data of the meshes of a model and
@@ -1372,9 +1283,9 @@ void create3dPlaneMesh(uint32_t width, uint32_t depth, bool generateTexCoords, b
 /// <param name="imageAllocator">A VMA allocator used to allocate memory for the created image.</param>
 /// <returns>A vector containing the retrieved image data</returns>
 std::vector<unsigned char> captureImageRegion(pvrvk::Queue& queue, pvrvk::CommandPool& commandPool, pvrvk::Image& image, pvrvk::Offset3D srcOffset = pvrvk::Offset3D(0, 0, 0),
-	pvrvk::Extent3D srcExtent = pvrvk::Extent3D(-1, -1, -1), pvrvk::Format destinationImageFormat = pvrvk::Format::e_UNDEFINED,
-	pvrvk::ImageLayout imageInitialLayout = pvrvk::ImageLayout::e_TRANSFER_SRC_OPTIMAL, pvrvk::ImageLayout imageFinalLayout = pvrvk::ImageLayout::e_TRANSFER_DST_OPTIMAL,
-	vma::Allocator* bufferAllocator = nullptr, vma::Allocator* imageAllocator = nullptr);
+	pvrvk::Extent3D srcExtent = pvrvk::Extent3D(static_cast<uint32_t>(-1), static_cast<uint32_t>(-1), static_cast<uint32_t>(-1)),
+	pvrvk::Format destinationImageFormat = pvrvk::Format::e_UNDEFINED, pvrvk::ImageLayout imageInitialLayout = pvrvk::ImageLayout::e_TRANSFER_SRC_OPTIMAL,
+	pvrvk::ImageLayout imageFinalLayout = pvrvk::ImageLayout::e_TRANSFER_DST_OPTIMAL, vma::Allocator* bufferAllocator = nullptr, vma::Allocator* imageAllocator = nullptr);
 
 /// <summary>Saves the input image as a TGA file with the filename specified. Note that the image must have been created with the
 /// pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT set.</summary>
@@ -1406,10 +1317,7 @@ bool takeScreenshot(pvrvk::Queue& queue, pvrvk::CommandPool& commandPool, pvrvk:
 /// <summary>Return true if the format is a depth stencil format</summary>
 /// <param name="format">Format to querry</param>
 /// <returns>True if the pvrvk::Format specified is a depth or stencil format</returns>
-inline bool isFormatDepthStencil(pvrvk::Format format)
-{
-	return format >= pvrvk::Format::e_D16_UNORM && format <= pvrvk::Format::e_D32_SFLOAT_S8_UINT;
-}
+inline bool isFormatDepthStencil(pvrvk::Format format) { return format >= pvrvk::Format::e_D16_UNORM && format <= pvrvk::Format::e_D32_SFLOAT_S8_UINT; }
 
 /// <summary>Populate color and depthstencil clear values</summary>
 /// <param name="renderpass">The renderpass is used to determine the number of attachments and their formats from which a decision will be as to whether the
@@ -1418,16 +1326,12 @@ inline bool isFormatDepthStencil(pvrvk::Format format)
 /// <param name="clearDepthStencilValue">A pvrvk::ClearValue which will be used as the depth stencil value for the renderpass attachments with depth stencil formats</param>
 /// <param name="outClearValues">A pointer to an array of pvrvk::ClearValue structures which should have size greater than or equal to the number of renderpass
 /// attachments.</param>
-inline void populateClearValues(
-	const pvrvk::RenderPass& renderpass, const pvrvk::ClearValue& clearColor, const pvrvk::ClearValue& clearDepthStencilValue, pvrvk::ClearValue* outClearValues)
+inline void populateClearValues(const pvrvk::RenderPass& renderpass, const pvrvk::ClearValue& clearColor, const pvrvk::ClearValue& clearDepthStencilValue, pvrvk::ClearValue* outClearValues)
 {
 	for (uint32_t i = 0; i < renderpass->getCreateInfo().getNumAttachmentDescription(); ++i)
 	{
 		const pvrvk::Format& format = renderpass->getCreateInfo().getAttachmentDescription(i).getFormat();
-		if (pvr::utils::isFormatDepthStencil(format))
-		{
-			outClearValues[i] = clearDepthStencilValue;
-		}
+		if (pvr::utils::isFormatDepthStencil(format)) { outClearValues[i] = clearDepthStencilValue; }
 		else
 		{
 			outClearValues[i] = clearColor;
@@ -1440,22 +1344,10 @@ inline void populateClearValues(
 /// <returns>Returns a LogLevel deemed to correspond to the given pvrvk::DebugUtilsMessageSeverityFlagsEXT.</returns>
 inline LogLevel mapDebugUtilsMessageSeverityFlagsToLogLevel(pvrvk::DebugUtilsMessageSeverityFlagsEXT flags)
 {
-	if ((flags & pvrvk::DebugUtilsMessageSeverityFlagsEXT::e_INFO_BIT_EXT) != 0)
-	{
-		return LogLevel::Information;
-	}
-	if ((flags & pvrvk::DebugUtilsMessageSeverityFlagsEXT::e_WARNING_BIT_EXT) != 0)
-	{
-		return LogLevel::Warning;
-	}
-	if ((flags & pvrvk::DebugUtilsMessageSeverityFlagsEXT::e_VERBOSE_BIT_EXT) != 0)
-	{
-		return LogLevel::Debug;
-	}
-	if ((flags & pvrvk::DebugUtilsMessageSeverityFlagsEXT::e_ERROR_BIT_EXT) != 0)
-	{
-		return LogLevel::Error;
-	}
+	if ((flags & pvrvk::DebugUtilsMessageSeverityFlagsEXT::e_INFO_BIT_EXT) != 0) { return LogLevel::Information; }
+	if ((flags & pvrvk::DebugUtilsMessageSeverityFlagsEXT::e_WARNING_BIT_EXT) != 0) { return LogLevel::Warning; }
+	if ((flags & pvrvk::DebugUtilsMessageSeverityFlagsEXT::e_VERBOSE_BIT_EXT) != 0) { return LogLevel::Debug; }
+	if ((flags & pvrvk::DebugUtilsMessageSeverityFlagsEXT::e_ERROR_BIT_EXT) != 0) { return LogLevel::Error; }
 	return LogLevel::Information;
 }
 
@@ -1464,26 +1356,11 @@ inline LogLevel mapDebugUtilsMessageSeverityFlagsToLogLevel(pvrvk::DebugUtilsMes
 /// <returns>Returns a LogLevel deemed to correspond to the given pvrvk::DebugReportFlagsEXT.</returns>
 inline LogLevel mapDebugReportFlagsToLogLevel(pvrvk::DebugReportFlagsEXT flags)
 {
-	if ((flags & pvrvk::DebugReportFlagsEXT::e_INFORMATION_BIT_EXT) != 0)
-	{
-		return LogLevel::Information;
-	}
-	if ((flags & pvrvk::DebugReportFlagsEXT::e_WARNING_BIT_EXT) != 0)
-	{
-		return LogLevel::Warning;
-	}
-	if ((flags & pvrvk::DebugReportFlagsEXT::e_PERFORMANCE_WARNING_BIT_EXT) != 0)
-	{
-		return LogLevel::Performance;
-	}
-	if ((flags & pvrvk::DebugReportFlagsEXT::e_ERROR_BIT_EXT) != 0)
-	{
-		return LogLevel::Error;
-	}
-	if ((flags & pvrvk::DebugReportFlagsEXT::e_DEBUG_BIT_EXT) != 0)
-	{
-		return LogLevel::Debug;
-	}
+	if ((flags & pvrvk::DebugReportFlagsEXT::e_INFORMATION_BIT_EXT) != 0) { return LogLevel::Information; }
+	if ((flags & pvrvk::DebugReportFlagsEXT::e_WARNING_BIT_EXT) != 0) { return LogLevel::Warning; }
+	if ((flags & pvrvk::DebugReportFlagsEXT::e_PERFORMANCE_WARNING_BIT_EXT) != 0) { return LogLevel::Performance; }
+	if ((flags & pvrvk::DebugReportFlagsEXT::e_ERROR_BIT_EXT) != 0) { return LogLevel::Error; }
+	if ((flags & pvrvk::DebugReportFlagsEXT::e_DEBUG_BIT_EXT) != 0) { return LogLevel::Debug; }
 	return LogLevel::Information;
 }
 
@@ -1552,10 +1429,7 @@ struct VulkanVersion
 
 	/// <summary>Converts the major, minor and patch versions to a uint32_t which can be directly used when creating a Vulkan instance.</summary>
 	/// <returns>A uint32_t value which can be directly as the vulkan api version when creating a Vulkan instance set as pvrvk::ApplicationInfo.apiVersion</returns>
-	uint32_t toVulkanVersion()
-	{
-		return VK_MAKE_VERSION(majorV, minorV, patchV);
-	}
+	uint32_t toVulkanVersion() { return VK_MAKE_VERSION(majorV, minorV, patchV); }
 };
 
 /// <summary>Utility function for creating a Vulkan instance and supported physical devices using the appropriately set parameters.</summary>
@@ -1574,8 +1448,9 @@ pvrvk::Instance createInstance(const std::string& applicationName, VulkanVersion
 /// <param name="physicalDevice">A physical device from which to create the native platform surface.</param>
 /// <param name="window">A pointer to a NativeWindow used to create the windowing surface.</param>
 /// <param name="display">A pointer to a NativeDisplay used to create the windowing surface.</param>
+/// <param name="connection">A pointer to a NativeConnection used to create the windowing surface.</param>
 /// <returns>A pointer to an abstract vulkan native platform surface.</returns>
-pvrvk::Surface createSurface(pvrvk::Instance& instance, pvrvk::PhysicalDevice& physicalDevice, void* window, void* display);
+pvrvk::Surface createSurface(pvrvk::Instance& instance, pvrvk::PhysicalDevice& physicalDevice, void* window, void* display, void* connection);
 
 /// <summary>Utility function for retrieving a memory type index for a suitable memory type which supports the memory type bits specified. If the optimal set of memory
 /// properties are supported then return the corresponding memory type index otherwise check for availablility of the required set of memory properties. This allows for

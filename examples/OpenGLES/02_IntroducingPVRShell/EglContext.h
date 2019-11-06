@@ -26,37 +26,31 @@ struct NativePlatformHandle
 	EGLSurface readSurface;
 	EGLContext context;
 
-#if defined(WAYLAND)
+#if defined(Wayland)
 	wl_egl_window* eglWindow;
 #endif
 
-	NativePlatformHandle() : display(EGL_NO_DISPLAY), drawSurface(EGL_NO_SURFACE), readSurface(EGL_NO_SURFACE),
-		context(EGL_NO_CONTEXT) {}
+	NativePlatformHandle() : display(EGL_NO_DISPLAY), drawSurface(EGL_NO_SURFACE), readSurface(EGL_NO_SURFACE), context(EGL_NO_CONTEXT) {}
 };
 #endif
-
 
 struct NativeDisplayHandle
 {
 	NativeDisplay nativeDisplay;
-	operator NativeDisplay& () { return nativeDisplay; }
-	operator const NativeDisplay& () const { return nativeDisplay; }
+	operator NativeDisplay&() { return nativeDisplay; }
+	operator const NativeDisplay&() const { return nativeDisplay; }
 };
 
 struct EglContext
 {
-	bool init(pvr::OSWindow window, pvr::OSDisplay display, pvr::DisplayAttributes& attributes,
-	          pvr::Api minVersion = pvr::Api::Unspecified, pvr::Api maxVersion = pvr::Api::Unspecified);
+	bool init(pvr::OSWindow window, pvr::OSDisplay display, pvr::DisplayAttributes& attributes, pvr::Api minVersion = pvr::Api::Unspecified, pvr::Api maxVersion = pvr::Api::Unspecified);
 	bool preInitialize(pvr::OSDisplay osdisplay, NativePlatformHandle& handles);
 	void populateMaxApiVersion();
 	bool swapBuffers();
 	void release();
 	bool isApiSupported(pvr::Api api)
 	{
-		if (_maxApiVersion == pvr::Api::Unspecified)
-		{
-			populateMaxApiVersion();
-		}
+		if (_maxApiVersion == pvr::Api::Unspecified) { populateMaxApiVersion(); }
 		return api <= _maxApiVersion;
 	}
 	bool makeCurrent();
@@ -75,6 +69,4 @@ private:
 	bool isGlesVersionSupported(EGLDisplay display, pvr::Api graphicsapi, bool& isSupported);
 	bool initializeContext(bool wantWindow, pvr::DisplayAttributes& original_attributes, NativePlatformHandle& handles, EGLConfig& config, pvr::Api graphicsapi);
 #endif
-
 };
-

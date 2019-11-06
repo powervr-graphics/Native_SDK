@@ -4,7 +4,6 @@ var searchData=
   ['makefourcc',['MakeFourCC',['../classpvr_1_1texture__dds_1_1_make_four_c_c.html',1,'pvr::texture_dds']]],
   ['makepoweroftwohigh',['makePowerOfTwoHigh',['../namespacepvr_1_1math.html#afa79fff0c4934d5ab39edb53695ee3d4',1,'pvr::math']]],
   ['makepoweroftwolow',['makePowerOfTwoLow',['../namespacepvr_1_1math.html#aeb17baa9649bd59237e2e04eb588c5fb',1,'pvr::math']]],
-  ['maplegacyenumtonewformat',['mapLegacyEnumToNewFormat',['../classpvr_1_1asset_readers_1_1_texture_reader_p_v_r.html#a0b85abcc94231bf1ec0d3d44a0076cc0',1,'pvr::assetReaders::TextureReaderPVR']]],
   ['mathutils_2eh',['MathUtils.h',['../_math_utils_8h.html',1,'']]],
   ['matrixcolumns',['MatrixColumns',['../namespacepvr_1_1_gpu_datatypes_helper.html#a1a443ed852f4fa9bd3cc3cc446ed1499',1,'pvr::GpuDatatypesHelper']]],
   ['max',['Max',['../namespacepvr.html#a78be6b6f15903b90d6a9d575ebf6d353a6a061313d22e51e0f25b7cd4dc065233',1,'pvr']]],
@@ -32,7 +31,6 @@ var searchData=
   ['movez',['moveZ',['../classpvr_1_1_f_p_s_camera.html#a93935a91f58b08898399f93b8949ec86',1,'pvr::FPSCamera']]],
   ['multibuffering',['multibuffering',['../structpvr_1_1effect_1_1_buffer_definition.html#a12a32b3d932353b82494ffd5219f02a5',1,'pvr::effect::BufferDefinition']]],
   ['mutable',['Mutable',['../namespacepvr.html#af9ca1aead0a3149b0af3842d03bc6cd4ad924522d30d6615e9f71e91504364a9d',1,'pvr']]],
-  ['mutex',['Mutex',['../classpvr_1_1async_1_1_mutex.html',1,'pvr::async']]],
-  ['mutex',['Mutex',['../classpvr_1_1async_1_1_mutex.html#a422225bfb5a838883b349dfc162ce002',1,'pvr::async::Mutex']]],
+  ['mutex',['Mutex',['../classpvr_1_1async_1_1_mutex.html',1,'pvr::async::Mutex'],['../classpvr_1_1async_1_1_mutex.html#a422225bfb5a838883b349dfc162ce002',1,'pvr::async::Mutex::Mutex()']]],
   ['mybase',['MyBase',['../structpvr_1_1async_1_1_texture_load_future__.html#ab87cc198bd4f73a6ffe95a5409a98c9c',1,'pvr::async::TextureLoadFuture_']]]
 ];

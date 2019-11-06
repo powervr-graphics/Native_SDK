@@ -19,28 +19,16 @@ public:
 
 	/// <summary>Get the command pool creation flags</summary>
 	/// <returns>The set of command pool creation flags</returns>
-	inline CommandPoolCreateFlags getFlags() const
-	{
-		return _flags;
-	}
+	inline CommandPoolCreateFlags getFlags() const { return _flags; }
 	/// <summary>Set the command pool creation flags</summary>
 	/// <param name="flags">The command pool creation flags</param>
-	inline void setFlags(CommandPoolCreateFlags flags)
-	{
-		this->_flags = flags;
-	}
+	inline void setFlags(CommandPoolCreateFlags flags) { this->_flags = flags; }
 	/// <summary>Get Queue family index</summary>
 	/// <returns>The queue family index to which all command buffers allocated from this pool can be submitted to</returns>
-	inline uint32_t getQueueFamilyIndex() const
-	{
-		return _queueFamilyIndex;
-	}
+	inline uint32_t getQueueFamilyIndex() const { return _queueFamilyIndex; }
 	/// <summary>Set the Queue family index</summary>
 	/// <param name="queueFamilyIndex">The queue family index to which all command buffers allocated from this pool can be submitted to</param>
-	inline void setQueueFamilyIndex(uint32_t queueFamilyIndex)
-	{
-		this->_queueFamilyIndex = queueFamilyIndex;
-	}
+	inline void setQueueFamilyIndex(uint32_t queueFamilyIndex) { this->_queueFamilyIndex = queueFamilyIndex; }
 
 private:
 	/// <summary>Flags to use for creating the command pool</summary>
@@ -52,9 +40,7 @@ private:
 namespace impl {
 /// <summary>Vulkan implementation of the Command Pool class.
 /// Destroying the commandpool will also destroys the commandbuffers allocated from this pool</summary>
-class CommandPool_ : public PVRVkDeviceObjectBase<VkCommandPool, ObjectType::e_COMMAND_POOL>,
-					 public DeviceObjectDebugUtils<CommandPool_>,
-					 public std::enable_shared_from_this<CommandPool_>
+class CommandPool_ : public PVRVkDeviceObjectBase<VkCommandPool, ObjectType::e_COMMAND_POOL>, public DeviceObjectDebugUtils<CommandPool_>, public std::enable_shared_from_this<CommandPool_>
 {
 private:
 	friend class Device_;
@@ -102,8 +88,8 @@ public:
 
 	/// <summary>Allocate primary commandbuffers</summary>
 	/// <param name="numCommandbuffers">Number of commandbuffers to allocate</param>
-	/// <param name="outCommandBuffers">Allocated commandbuffers</param>
-	void allocateCommandBuffers(uint32_t numCommandbuffers, CommandBuffer* outCommandBuffers);
+	/// <param name="outCmdBuffers">Allocated commandbuffers</param>
+	void allocateCommandBuffers(uint32_t numCommandbuffers, CommandBuffer* outCmdBuffers);
 
 	/// <summary>Allocate a secondary commandBuffer</summary>
 	/// <returns>Return a valid commandbuffer if allocation success, otherwise a null CommandBuffer</returns>
@@ -111,21 +97,15 @@ public:
 
 	/// <summary>Allocate secondary commandbuffers</summary>
 	/// <param name="numCommandbuffers">Number of commmandbuffers to allocate</param>
-	/// <param name="outCommandBuffers">allocated commandbuffers</param>
-	void allocateSecondaryCommandBuffers(uint32_t numCommandbuffers, SecondaryCommandBuffer* outCommandBuffers);
+	/// <param name="outCmdBuffers">allocated commandbuffers</param>
+	void allocateSecondaryCommandBuffers(uint32_t numCommandbuffers, SecondaryCommandBuffer* outCmdBuffers);
 
 	/// <summary>Get the command pool creation flags</summary>
 	/// <returns>The set of command pool creation flags</returns>
-	inline CommandPoolCreateFlags getFlags() const
-	{
-		return _createInfo.getFlags();
-	}
+	inline CommandPoolCreateFlags getFlags() const { return _createInfo.getFlags(); }
 	/// <summary>Get the queue family index</summary>
 	/// <returns>The queue family index, all command buffers allocated from this command pool must be submitted to queues from the same queue family</returns>
-	inline uint32_t getQueueFamilyIndex() const
-	{
-		return _createInfo.getQueueFamilyIndex();
-	}
+	inline uint32_t getQueueFamilyIndex() const { return _createInfo.getQueueFamilyIndex(); }
 
 	/// <summary>Resets the command pool and also optionally recycles all of the resoources of all of the command buffers allocated from the command pool.</summary>
 	/// <param name="flags">VkCommandPoolResetFlags controls the reset operation</param>

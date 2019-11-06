@@ -122,10 +122,7 @@ void main()
 
 	// calcuate the mip level dimensions
 	std::vector<uint32_t> mipLevelDimensions(numMipLevels);
-	for (uint32_t i = 0; i < mipLevelDimensions.size(); ++i)
-	{
-		mipLevelDimensions[i] = static_cast<uint32_t>(pow(2, numMipLevels - i - 1));
-	}
+	for (uint32_t i = 0; i < mipLevelDimensions.size(); ++i) { mipLevelDimensions[i] = static_cast<uint32_t>(pow(2, numMipLevels - i - 1)); }
 
 	// Create the shaders
 	GLuint shaders[2] = { pvr::utils::loadShader(vertShaderSrc, ShaderType::VertexShader, NULL, 0), pvr::utils::loadShader(fragShaderSrc, ShaderType::FragmentShader, NULL, 0) };
@@ -145,7 +142,7 @@ void main()
 	debugThrowOnApiError("[pvr::utils::generateIrradianceMap] Error creating texture");
 
 	const uint32_t formatStride = 4; // We are going to save this into an GL_RGB9_E5 = 4 bytes
-	std::vector<char> texData(formatStride * mapSize * mapSize * numMipLevels * 6, 0);
+	std::vector<unsigned char> texData(formatStride * mapSize * mapSize * numMipLevels * 6, 0);
 	uint32_t dataOffset = 0;
 
 	const glm::mat3 cubeView[6] = {
@@ -218,7 +215,7 @@ void main()
 	texHeader.setNumFaces(6);
 	texHeader.setNumArrayMembers(1);
 	texHeader.setPixelFormat(pvr::PixelFormat(CompressedPixelFormat::SharedExponentR9G9B9E5));
-	outTexture = pvr::Texture(texHeader, (const char*)texData.data());
+	outTexture = pvr::Texture(texHeader, texData.data());
 }
 
 void generatePreFilteredMapMipMapStyle(
@@ -384,10 +381,7 @@ void main()
 
 	// calcuate the mip level dimensions
 	std::vector<uint32_t> mipLevelDimensions(numMipLevels);
-	for (uint32_t i = 0; i < mipLevelDimensions.size(); ++i)
-	{
-		mipLevelDimensions[i] = static_cast<uint32_t>(pow(2, numMipLevels + numMipLevelsToDiscard - 1 - i));
-	}
+	for (uint32_t i = 0; i < mipLevelDimensions.size(); ++i) { mipLevelDimensions[i] = static_cast<uint32_t>(pow(2, numMipLevels + numMipLevelsToDiscard - 1 - i)); }
 
 	// Create the destination OpenGL ES texture
 	gl::GenTextures(1, &outTextureGles);
@@ -400,7 +394,7 @@ void main()
 
 	const uint32_t formatStride = 4; // We are going to save this into an GL_RGB9_E5 = 4 bytes
 
-	std::vector<char> texDataIrrRoughness(formatStride * mapSize * mapSize * numMipLevels * 6);
+	std::vector<unsigned char> texDataIrrRoughness(formatStride * mapSize * mapSize * numMipLevels * 6);
 	uint32_t dataOffset = 0;
 
 	const glm::mat3 cubeView[6] = {

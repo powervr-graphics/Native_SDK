@@ -220,7 +220,7 @@ class OGLESNavigation2D : public pvr::Shell
 
 	// Graphics resources
 	std::unique_ptr<DeviceResources> _deviceResources;
-	std::vector<std::vector<TileRenderingResources> > _tileRenderingResources;
+	std::vector<std::vector<TileRenderingResources>> _tileRenderingResources;
 
 	uint16_t _currentScaleLevel;
 
@@ -311,10 +311,7 @@ private:
 	{
 		pvr::DisplayAttributes displayAttrib;
 		float scaleFactor;
-		if (isScreenRotated())
-		{
-			scaleFactor = static_cast<float>(getHeight()) / displayAttrib.height;
-		}
+		if (isScreenRotated()) { scaleFactor = static_cast<float>(getHeight()) / displayAttrib.height; }
 		else
 		{
 			scaleFactor = static_cast<float>(getWidth()) / displayAttrib.width;
@@ -354,14 +351,9 @@ void OGLESNavigation2D::eventMappedInput(pvr::SimplifiedInput e)
 {
 	switch (e)
 	{
-	case pvr::SimplifiedInput::ActionClose:
-		this->exitShell();
-		break;
+	case pvr::SimplifiedInput::ActionClose: this->exitShell(); break;
 	case pvr::SimplifiedInput::Action1:
-		if (_cameraMode == CameraMode::Auto)
-		{
-			_cameraMode = CameraMode::Manual;
-		}
+		if (_cameraMode == CameraMode::Auto) { _cameraMode = CameraMode::Manual; }
 		else
 		{
 			_cameraMode = CameraMode::Auto;
@@ -369,8 +361,7 @@ void OGLESNavigation2D::eventMappedInput(pvr::SimplifiedInput e)
 		resetCameraVariables();
 		updateSubtitleText();
 		break;
-	default:
-		break;
+	default: break;
 	}
 }
 
@@ -394,7 +385,7 @@ pvr::Result OGLESNavigation2D::initApplication()
 	setStencilBitsPerPixel(0);
 
 	// Load and process the map.
-	_OSMdata.reset(new NavDataProcess(getAssetStream(MapFile), glm::ivec2(getWidth(), getHeight())));
+	_OSMdata = std::make_unique<NavDataProcess>(getAssetStream(MapFile), glm::ivec2(getWidth(), getHeight()));
 	pvr::Result result = _OSMdata->loadAndProcessData();
 
 	Log(LogLevel::Information, "MAP SIZE IS: [ %d x %d ] TILES", _OSMdata->getNumRows(), _OSMdata->getNumCols());
@@ -424,10 +415,10 @@ Used to initialize variables that are dependent on the rendering _deviceResource
 ***********************************************************************************************************************/
 pvr::Result OGLESNavigation2D::initView()
 {
-	_deviceResources = std::unique_ptr<DeviceResources>(new DeviceResources());
+	_deviceResources = std::make_unique<DeviceResources>();
 
 	_deviceResources->context = pvr::createEglContext();
-	_deviceResources->context->init(getWindow(), getDisplay(), getDisplayAttributes());
+	_deviceResources->context->init(getWindow(), getDisplay(), getDisplayAttributes(), pvr::Api::OpenGLES3);
 
 	recalculateTheScale();
 	resetCameraVariables();
@@ -456,10 +447,7 @@ pvr::Result OGLESNavigation2D::initView()
 	_OSMdata->initTiles();
 
 	_tileRenderingResources.resize(_numCols);
-	for (uint32_t i = 0; i < _numCols; ++i)
-	{
-		_tileRenderingResources[i].resize(_numRows);
-	}
+	for (uint32_t i = 0; i < _numCols; ++i) { _tileRenderingResources[i].resize(_numRows); }
 
 	pvr::utils::VertexAttributeInfo vertexInfo[] = { pvr::utils::VertexAttributeInfo(0, pvr::DataType::Float32, 3, 0, "myVertex"),
 		pvr::utils::VertexAttributeInfo(1, pvr::DataType::Float32, 2, sizeof(float) * 3, "texCoord") };
@@ -506,10 +494,7 @@ pvr::Result OGLESNavigation2D::initView()
 	_screenWidth = static_cast<float>(getWidth());
 	_screenHeight = static_cast<float>(getHeight());
 
-	if (isScreenRotated())
-	{
-		std::swap(_screenWidth, _screenHeight);
-	}
+	if (isScreenRotated()) { std::swap(_screenWidth, _screenHeight); }
 
 	_projMtx = pvr::math::ortho(_deviceResources->context->getApiVersion(), 0.0f, static_cast<float>(_screenWidth), 0.0f, static_cast<float>(_screenHeight));
 
@@ -540,10 +525,7 @@ pvr::Result OGLESNavigation2D::initView()
 
 void OGLESNavigation2D::updateSubtitleText()
 {
-	if (_cameraMode == CameraMode::Auto)
-	{
-		_deviceResources->uiRenderer.getDefaultDescription()->setText(pvr::strings::createFormatted("Automatic Camera Mode"));
-	}
+	if (_cameraMode == CameraMode::Auto) { _deviceResources->uiRenderer.getDefaultDescription()->setText(pvr::strings::createFormatted("Automatic Camera Mode")); }
 	else
 	{
 		_deviceResources->uiRenderer.getDefaultDescription()->setText("Manual Camera Model use up/down/left/right to control the camera");
@@ -563,33 +545,18 @@ void OGLESNavigation2D::handleInput()
 		const float transDelta = dt;
 		int right = isKeyPressed(pvr::Keys::Right) - isKeyPressed(pvr::Keys::Left);
 		int up = isKeyPressed(pvr::Keys::Up) - isKeyPressed(pvr::Keys::Down);
-		if (isKeyPressed(pvr::Keys::W) && _cameraMode == CameraMode::Manual)
-		{
-			_scale *= 1.05f;
-		}
+		if (isKeyPressed(pvr::Keys::W) && _cameraMode == CameraMode::Manual) { _scale *= 1.05f; }
 		if (isKeyPressed(pvr::Keys::S) && _cameraMode == CameraMode::Manual)
 		{
 			_scale *= .95f;
 			_scale = glm::max(_scale, 0.1f);
 		}
 
-		if (isKeyPressed(pvr::Keys::A) && _cameraMode == CameraMode::Manual)
-		{
-			_rotation += dt * .1f;
-		}
-		if (isKeyPressed(pvr::Keys::D) && _cameraMode == CameraMode::Manual)
-		{
-			_rotation -= dt * .1f;
-		}
+		if (isKeyPressed(pvr::Keys::A) && _cameraMode == CameraMode::Manual) { _rotation += dt * .1f; }
+		if (isKeyPressed(pvr::Keys::D) && _cameraMode == CameraMode::Manual) { _rotation -= dt * .1f; }
 
-		if (_rotation <= -180)
-		{
-			_rotation += 360;
-		}
-		if (_rotation > 180)
-		{
-			_rotation -= 360;
-		}
+		if (_rotation <= -180) { _rotation += 360; }
+		if (_rotation > 180) { _rotation -= 360; }
 
 		float fup = (-transDelta * up / _scale) * glm::cos(glm::pi<float>() * _rotation / 180) + (transDelta * right / _scale) * glm::sin(glm::pi<float>() * _rotation / 180);
 		float fright = (-transDelta * up / _scale) * glm::sin(glm::pi<float>() * _rotation / 180) - (transDelta * right / _scale) * glm::cos(glm::pi<float>() * _rotation / 180);
@@ -639,10 +606,7 @@ pvr::Result OGLESNavigation2D::renderFrame()
 
 	debugThrowOnApiError("Frame end");
 
-	if (this->shouldTakeScreenshot())
-	{
-		pvr::utils::takeScreenshot(this->getScreenshotFileName(), this->getWidth(), this->getHeight());
-	}
+	if (this->shouldTakeScreenshot()) { pvr::utils::takeScreenshot(this->getScreenshotFileName(), this->getWidth(), this->getHeight()); }
 
 	_deviceResources->context->swapBuffers();
 
@@ -710,9 +674,7 @@ void OGLESNavigation2D::initializeRenderers(TileRenderingResources* begin, TileR
 	renderer.init(getWidth(), getHeight(), isFullScreen(), getBackBufferColorspace() == pvr::ColorSpace::sRGB);
 
 	if (_deviceResources->context->getApiVersion() != pvr::Api::OpenGLES2)
-	{
-		begin->font = begin->renderer->createFont(_deviceResources->fontTexture, _deviceResources->fontHeader, _deviceResources->fontSampler);
-	}
+	{ begin->font = begin->renderer->createFont(_deviceResources->fontTexture, _deviceResources->fontHeader, _deviceResources->fontSampler); }
 	else
 	{
 		begin->font = begin->renderer->createFont(_deviceResources->fontTexture, _deviceResources->fontHeader);
@@ -751,10 +713,7 @@ void OGLESNavigation2D::initializeRenderers(TileRenderingResources* begin, TileR
 			{
 				for (uint32_t i = 0; i < BuildingType::None; ++i)
 				{
-					if (tile.icons[lod][iconIndex].buildingType == BuildingType::Shop + i)
-					{
-						it->spriteImages[i] = begin->spriteImages[i];
-					}
+					if (tile.icons[lod][iconIndex].buildingType == BuildingType::Shop + i) { it->spriteImages[i] = begin->spriteImages[i]; }
 				}
 			}
 		}
@@ -765,15 +724,13 @@ void OGLESNavigation2D::initializeRenderers(TileRenderingResources* begin, TileR
 
 void OGLESNavigation2D::renderTile(const Tile& tile, TileRenderingResources& renderingResources)
 {
+	(void)tile;
 	uint32_t offset = 0;
 
 	// Bind the vertex and index buffers for the tile
 	if (_stateTracker.vao != static_cast<GLint>(renderingResources.vao))
 	{
-		if (_deviceResources->context->getApiVersion() != pvr::Api::OpenGLES2)
-		{
-			gl::BindVertexArray(renderingResources.vao);
-		}
+		if (_deviceResources->context->getApiVersion() != pvr::Api::OpenGLES2) { gl::BindVertexArray(renderingResources.vao); }
 		else
 		{
 			gl::ext::BindVertexArrayOES(renderingResources.vao);
@@ -1114,18 +1071,10 @@ void OGLESNavigation2D::createBuffers()
 					_stateTracker.vertexAttribPointerChanged[it->index] = true;
 				}
 
-				if (_deviceResources->context->getApiVersion() != pvr::Api::OpenGLES2)
-				{
-					gl::BindVertexArray(0);
-				}
+				if (_deviceResources->context->getApiVersion() != pvr::Api::OpenGLES2) { gl::BindVertexArray(0); }
 				else
 				{
 					gl::ext::BindVertexArrayOES(0);
-				}
-
-				for (auto it = _deviceResources->vertexConfiguration.attributes.begin(), end = _deviceResources->vertexConfiguration.attributes.end(); it != end; ++it)
-				{
-					gl::DisableVertexAttribArray(it->index);
 				}
 			}
 		}
@@ -1175,10 +1124,7 @@ void OGLESNavigation2D::updateAnimation()
 			// Find the shortest rotation
 			if (angleDiff > 180.0f)
 			{
-				if (r1 > r2)
-				{
-					r2 += 360.0f;
-				}
+				if (r1 > r2) { r2 += 360.0f; }
 				else
 				{
 					r2 -= 360.0f;
@@ -1196,10 +1142,7 @@ void OGLESNavigation2D::updateAnimation()
 				_rotation = glm::mix(r1, r2, _rotateAnimTime / _rotateTime);
 				_turning = true;
 			}
-			if (_rotateAnimTime >= _rotateTime)
-			{
-				_turning = false;
-			}
+			if (_rotateAnimTime >= _rotateTime) { _turning = false; }
 		}
 
 		if (_animTime >= _keyFrameTime && !_turning)
@@ -1223,10 +1166,7 @@ void OGLESNavigation2D::updateAnimation()
 		_currentScaleLevel = LOD::L4;
 		for (int32_t i = LOD::L4; i >= 0; --i)
 		{
-			if (_scale > scales[_currentScaleLevel])
-			{
-				_currentScaleLevel = i;
-			}
+			if (_scale > scales[_currentScaleLevel]) { _currentScaleLevel = (uint16_t)i; }
 			else
 			{
 				break;
@@ -1240,17 +1180,11 @@ void OGLESNavigation2D::updateAnimation()
 			_previousScaleLevel = _currentScaleLevel;
 			if (_increaseScale)
 			{
-				if (++_currentScaleLevel == LOD::L4)
-				{
-					_increaseScale = false;
-				}
+				if (++_currentScaleLevel == LOD::L4) { _increaseScale = false; }
 			}
 			else
 			{
-				if (--_currentScaleLevel == LOD::L1)
-				{
-					_increaseScale = true;
-				}
+				if (--_currentScaleLevel == LOD::L1) { _increaseScale = true; }
 			}
 			_timePassed = 0.0f;
 			_scaleChange = _previousScaleLevel != _currentScaleLevel;
@@ -1258,10 +1192,7 @@ void OGLESNavigation2D::updateAnimation()
 
 		if (_scaleChange)
 		{
-			if (_timePassed >= scaleAnimTime)
-			{
-				_scaleChange = false;
-			}
+			if (_timePassed >= scaleAnimTime) { _scaleChange = false; }
 			// interpolate
 			_scale = glm::mix(MapScales[_previousScaleLevel], MapScales[_currentScaleLevel], _timePassed / scaleAnimTime);
 		}
@@ -1330,9 +1261,7 @@ void OGLESNavigation2D::createUIRendererItems()
 	for (uint32_t col = 0; col < _numCols; ++col)
 	{
 		for (uint32_t row = 0; row < _numRows; row++)
-		{
-			initializeRenderers(&_tileRenderingResources[col][row], &_tileRenderingResources[col][std::min(row + 1, _numRows - 1)], col, row);
-		}
+		{ initializeRenderers(&_tileRenderingResources[col][row], &_tileRenderingResources[col][std::min(row + 1, _numRows - 1)], col, row); }
 	}
 
 	for (uint32_t col = 0; col < _numCols; ++col)
@@ -1397,10 +1326,7 @@ void OGLESNavigation2D::createUIRendererItems()
 						tileResAmenityLabel.label.text->setPixelOffset(-glm::abs(tileResAmenityLabel.iconData.coords - amenityLabel.coords));
 						tileResAmenityLabel.label.text->commitUpdates();
 
-						if (skipAmenityLabel(amenityLabel, tileResAmenityLabel.label, extent))
-						{
-							continue;
-						}
+						if (skipAmenityLabel(amenityLabel, tileResAmenityLabel.label, extent)) { continue; }
 
 						// add the label to its corresponding amenity group
 						tileResAmenityLabel.group->add(tileResAmenityLabel.label.text);
@@ -1426,10 +1352,7 @@ void OGLESNavigation2D::createUIRendererItems()
 						tileResLabel.text->setPixelOffset(label.coords);
 						tileResLabel.text->commitUpdates();
 
-						if (skipLabel(label, tileResLabel, extent))
-						{
-							continue;
-						}
+						if (skipLabel(label, tileResLabel, extent)) { continue; }
 
 						group->add(tileResLabel.text);
 					}
@@ -1475,10 +1398,7 @@ void OGLESNavigation2D::render()
 
 	for (auto&& tile : _deviceResources->renderqueue)
 	{
-		if (tile->renderer)
-		{
-			renderTile(_OSMdata->getTiles()[tile->col][tile->row], *tile);
-		}
+		if (tile->renderer) { renderTile(_OSMdata->getTiles()[tile->col][tile->row], *tile); }
 		for (int lod = _currentScaleLevel; lod < LOD::Count; ++lod)
 		{
 			if (tile->cameraRotateGroup[lod])
@@ -1494,10 +1414,7 @@ void OGLESNavigation2D::render()
 /*!*********************************************************************************************************************
 \brief  Capture frustum planes from the current View Projection matrix
 ***********************************************************************************************************************/
-void OGLESNavigation2D::calculateClipPlanes()
-{
-	pvr::math::getFrustumPlanes(_deviceResources->context->getApiVersion(), _mapMVPMtx, _viewFrustum);
-}
+void OGLESNavigation2D::calculateClipPlanes() { pvr::math::getFrustumPlanes(_deviceResources->context->getApiVersion(), _mapMVPMtx, _viewFrustum); }
 
 /*!*********************************************************************************************************************
 \param min The minimum co-ordinates of the bounding box.
@@ -1554,17 +1471,11 @@ void OGLESNavigation2D::updateLabels(uint32_t col, uint32_t row)
 		{
 			auto& tileResLabelLod = tileRes.labels[lod];
 
-			if (tileResLabelLod.empty())
-			{
-				continue;
-			}
+			if (tileResLabelLod.empty()) { continue; }
 
 			auto& tileLabel = tile.labels[lod][labelIdx];
 			auto& tileResLabel = tileRes.labels[lod][labelIdx];
-			if (tileResLabel.text == nullptr)
-			{
-				continue;
-			}
+			if (tileResLabel.text == nullptr) { continue; }
 
 			glm::dvec2 offset(0, 0);
 
@@ -1576,10 +1487,7 @@ void OGLESNavigation2D::updateLabels(uint32_t col, uint32_t row)
 
 			// check whether the label needs flipping
 			// we add a small buffer onto the total angles to reduce the chance of parts of roads being flipped whilst other parts are not
-			if ((total_angle - 2.f) <= -90.f)
-			{
-				angle += 180.f;
-			}
+			if ((total_angle - 2.f) <= -90.f) { angle += 180.f; }
 			else if ((total_angle + 2.f) >= 90.f)
 			{
 				angle -= 180.f;
@@ -1627,10 +1535,7 @@ void OGLESNavigation2D::updateAmenities(uint32_t col, uint32_t row)
 		for (uint32_t amenityLabelIndex = 0; amenityLabelIndex < tileRes.amenityLabels[lod].size(); ++amenityLabelIndex)
 		{
 			AmenityLabelGroup& amenityLabel = tileRes.amenityLabels[lod][amenityLabelIndex];
-			if (amenityLabel.label.text == nullptr)
-			{
-				continue;
-			}
+			if (amenityLabel.label.text == nullptr) { continue; }
 
 			float txtScale = 1.0f / (_scale * 15.0f);
 
@@ -1652,7 +1557,4 @@ void OGLESNavigation2D::updateAmenities(uint32_t col, uint32_t row)
 \brief  This function must be implemented by the user of the shell. The user should return its Shell object defining the
 behaviour of the application.
 ***********************************************************************************************************************/
-std::unique_ptr<pvr::Shell> pvr::newDemo()
-{
-	return std::unique_ptr<pvr::Shell>(new OGLESNavigation2D());
-}
+std::unique_ptr<pvr::Shell> pvr::newDemo() { return std::make_unique<OGLESNavigation2D>(); }

@@ -19,14 +19,12 @@
 #define PI 3.1415926535897932384626433832795
 #define ONE_OVER_PI (1.0 / PI)
 #define MODEL_MAT_ARRAY_SIZE 25
-const mediump vec3 lightColor = vec3(1.0f);
 
 layout (location = 0) in highp vec3 inWorldPos;
 layout (location = 1) in mediump vec3 inNormal;
 layout (location = 2) flat in mediump int inInstanceIndex;
 
 layout (location = 3) in mediump vec2 inTexCoords;
-
 layout (location = 4) in mediump vec3 inTangent;
 layout (location = 5) in mediump vec3 inBitTangent;
 
@@ -34,21 +32,16 @@ layout (location = 0) out mediump vec4 outColor;
 
 layout(std140, set = 0, binding = 0) uniform Dynamics
 {
-	highp mat4 view;
-	highp mat4 WVPMatrix;
+	highp mat4 VPMatrix;
 	highp vec3 camPos;
 	mediump float emissiveIntensity;
 	mediump float exposure;
 }ubo;
 
-layout(push_constant) uniform PushConsts {
-	uint modelMtxId;
-	uint materialId;
-} pushConstant;
-
 layout (std140, set = 1, binding = 0) uniform UboScene
 {
-	mediump vec3 lights;
+	mediump vec3 lightDir;
+	mediump vec3 lightColor;
 	uint numPrefilteredMipLevels;
 } uboScene;
 
@@ -67,9 +60,9 @@ layout(constant_id=0) const bool HAS_MATERIAL_TEXTURES = false;
 
 struct Material
 {
+	mediump vec3 albedo;
 	mediump float roughness;
 	mediump float metallic;
-	mediump vec3 rgb;
 };
 
 layout(std140, set = 2, binding = 4) uniform Materials
@@ -117,7 +110,7 @@ mediump vec3 computeLight(mediump vec3 V, mediump vec3 N, mediump vec3 F0, mediu
 {
 	// Directional light
 	// NOTE: we negate the light direction here because the direction was from the light source.
-	mediump vec3 L = normalize(-uboScene.lights);
+	mediump vec3 L = normalize(-uboScene.lightDir);
 	// half vector
 	mediump vec3 H = normalize (V + L);
 
@@ -151,7 +144,7 @@ mediump vec3 computeLight(mediump vec3 V, mediump vec3 N, mediump vec3 F0, mediu
 		mediump vec3 diff = kD * albedo * ONE_OVER_PI;
 
 		///-------- DIFFUSE + SPEC ------
-		color += (diff + spec) * lightColor * dotNL;// scale the final color based on the angle between the light and the surface normal.
+		color += (diff + spec) * uboScene.lightColor * dotNL;// scale the final color based on the angle between the light and the surface normal.
 	}
 	return color;
 }
@@ -223,9 +216,9 @@ void main()
 	}
 	else 
 	{
-		metallic = materials.mat[pushConstant.materialId + uint(inInstanceIndex)].metallic;
-		roughness = materials.mat[pushConstant.materialId + uint(inInstanceIndex)].roughness;
-		albedo = vec4(materials.mat[pushConstant.materialId + uint(inInstanceIndex)].rgb, 1.0);
+		metallic = materials.mat[inInstanceIndex].metallic;
+		roughness = materials.mat[inInstanceIndex].roughness;
+		albedo = vec4(materials.mat[inInstanceIndex].albedo, 1.0);
 		emissive = vec3(0.,0.,0.);
 	}
 

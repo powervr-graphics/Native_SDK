@@ -1,106 +1,132 @@
 cmake_minimum_required(VERSION 3.3)
-project (PVRVk)
+project(PVRVk)
 
+include(GNUInstallDirs)
+include(cmake/CompilerFunctions.cmake)
+
+set(PVRVK_USE_PLATFORM "${PVRVK_USE_PLATFORM}" CACHE STRING "A list of Vulkan platforms of the form VK_USE_PLATFORM_* used as compile-time definitions in PVRVk")
+
+# PVRVk include files
+set(PVRVk_HEADERS
+	ApiObjectsVk.h
+	BufferVk.h
+	CommandBufferVk.h
+	CommandPoolVk.h
+	ComputePipelineVk.h
+	DebugReportCallbackVk.h
+	DebugUtilsMessengerVk.h
+	DebugUtilsVk.h
+	DescriptorSetVk.h
+	DeviceMemoryVk.h
+	DeviceVk.h
+	DisplayModeVk.h
+	DisplayVk.h
+	EventVk.h
+	ExtensionsVk.h
+	FenceVk.h
+	ForwardDecObjectsVk.h
+	FramebufferVk.h
+	GraphicsPipelineVk.h
+	HeadersVk.h
+	ImageVk.cpp
+	ImageVk.h
+	InstanceVk.h
+	LayersVk.h
+	MemoryBarrierVk.h
+	PhysicalDeviceVk.h
+	PipelineCacheVk.h
+	PipelineConfigVk.h
+	PipelineLayoutVk.h
+	PipelineVk.h
+	PopulateCreateInfoVk.h
+	PVRVk.h
+	pvrvk_vulkan_wrapper.h
+	PVRVkObjectBaseVk.h
+	QueryPoolVk.h
+	QueueVk.h
+	RenderPassVk.h
+	SamplerVk.h
+	SemaphoreVk.h
+	ShaderModuleVk.h
+	SurfaceVk.h
+	SwapchainVk.h
+	TypesVk.h)
+	  
+set(PVRVk_INCLUDES 
+	../../include/pvr_openlib.h
+	../../include/vk_bindings.h
+	../../include/vk_bindings_helper.h)
+
+# PVRVk sources
 set(PVRVk_SRC
-	   ${CMAKE_CURRENT_LIST_DIR}/ApiObjectsVk.h
-	   ${CMAKE_CURRENT_LIST_DIR}/BufferVk.cpp
-	   ${CMAKE_CURRENT_LIST_DIR}/BufferVk.h
-	   ${CMAKE_CURRENT_LIST_DIR}/CommandBufferVk.cpp
-	   ${CMAKE_CURRENT_LIST_DIR}/CommandBufferVk.h
-	   ${CMAKE_CURRENT_LIST_DIR}/CommandPoolVk.cpp
-	   ${CMAKE_CURRENT_LIST_DIR}/CommandPoolVk.h
-	   ${CMAKE_CURRENT_LIST_DIR}/ComputePipelineVk.h
-	   ${CMAKE_CURRENT_LIST_DIR}/DebugReportCallbackVk.cpp
-	   ${CMAKE_CURRENT_LIST_DIR}/DebugReportCallbackVk.h
-	   ${CMAKE_CURRENT_LIST_DIR}/DebugUtilsMessengerVk.cpp
-	   ${CMAKE_CURRENT_LIST_DIR}/DebugUtilsMessengerVk.h
-	   ${CMAKE_CURRENT_LIST_DIR}/DebugUtilsVk.cpp
-	   ${CMAKE_CURRENT_LIST_DIR}/DebugUtilsVk.h
-	   ${CMAKE_CURRENT_LIST_DIR}/DescriptorSetVk.cpp
-	   ${CMAKE_CURRENT_LIST_DIR}/DescriptorSetVk.h
-	   ${CMAKE_CURRENT_LIST_DIR}/DeviceMemoryVk.h
-	   ${CMAKE_CURRENT_LIST_DIR}/DeviceVk.cpp
-	   ${CMAKE_CURRENT_LIST_DIR}/DeviceVk.h
-	   ${CMAKE_CURRENT_LIST_DIR}/DisplayModeVk.cpp
-	   ${CMAKE_CURRENT_LIST_DIR}/DisplayModeVk.h
-	   ${CMAKE_CURRENT_LIST_DIR}/DisplayVk.cpp
-	   ${CMAKE_CURRENT_LIST_DIR}/DisplayVk.h
-	   ${CMAKE_CURRENT_LIST_DIR}/EventVk.cpp
-	   ${CMAKE_CURRENT_LIST_DIR}/EventVk.h
-	   ${CMAKE_CURRENT_LIST_DIR}/ExtensionsVk.cpp
-	   ${CMAKE_CURRENT_LIST_DIR}/ExtensionsVk.h
-	   ${CMAKE_CURRENT_LIST_DIR}/FenceVk.cpp
-	   ${CMAKE_CURRENT_LIST_DIR}/FenceVk.h
-	   ${CMAKE_CURRENT_LIST_DIR}/ForwardDecObjectsVk.h
-	   ${CMAKE_CURRENT_LIST_DIR}/FramebufferVk.cpp
-	   ${CMAKE_CURRENT_LIST_DIR}/FramebufferVk.h
-	   ${CMAKE_CURRENT_LIST_DIR}/GraphicsPipelineVk.h
-	   ${CMAKE_CURRENT_LIST_DIR}/HeadersVk.h
-	   ${CMAKE_CURRENT_LIST_DIR}/ImageVk.cpp
-	   ${CMAKE_CURRENT_LIST_DIR}/ImageVk.h
-	   ${CMAKE_CURRENT_LIST_DIR}/InstanceVk.cpp
-	   ${CMAKE_CURRENT_LIST_DIR}/InstanceVk.h
-	   ${CMAKE_CURRENT_LIST_DIR}/LayersVk.cpp
-	   ${CMAKE_CURRENT_LIST_DIR}/LayersVk.h
-	   ${CMAKE_CURRENT_LIST_DIR}/MemoryBarrierVk.h
-	   ${CMAKE_CURRENT_LIST_DIR}/PhysicalDeviceVk.cpp
-	   ${CMAKE_CURRENT_LIST_DIR}/PhysicalDeviceVk.h
-	   ${CMAKE_CURRENT_LIST_DIR}/PipelineCacheVk.h
-	   ${CMAKE_CURRENT_LIST_DIR}/PipelineConfigVk.h
-	   ${CMAKE_CURRENT_LIST_DIR}/PipelineLayoutVk.cpp
-	   ${CMAKE_CURRENT_LIST_DIR}/PipelineLayoutVk.h
-	   ${CMAKE_CURRENT_LIST_DIR}/PipelineVk.h
-	   ${CMAKE_CURRENT_LIST_DIR}/PopulateCreateInfoVk.h
-	   ${CMAKE_CURRENT_LIST_DIR}/PVRVk.h
-	   ${CMAKE_CURRENT_LIST_DIR}/pvrvk_vulkan_wrapper.h
-	   ${CMAKE_CURRENT_LIST_DIR}/PVRVkObjectBaseVk.h
-	   ${CMAKE_CURRENT_LIST_DIR}/QueryPoolVk.cpp
-	   ${CMAKE_CURRENT_LIST_DIR}/QueryPoolVk.h
-	   ${CMAKE_CURRENT_LIST_DIR}/QueueVk.cpp
-	   ${CMAKE_CURRENT_LIST_DIR}/QueueVk.h
-	   ${CMAKE_CURRENT_LIST_DIR}/RenderPassVk.cpp
-	   ${CMAKE_CURRENT_LIST_DIR}/RenderPassVk.h
-	   ${CMAKE_CURRENT_LIST_DIR}/SamplerVk.cpp
-	   ${CMAKE_CURRENT_LIST_DIR}/SamplerVk.h
-	   ${CMAKE_CURRENT_LIST_DIR}/SemaphoreVk.cpp
-	   ${CMAKE_CURRENT_LIST_DIR}/SemaphoreVk.h
-	   ${CMAKE_CURRENT_LIST_DIR}/ShaderModuleVk.cpp
-	   ${CMAKE_CURRENT_LIST_DIR}/ShaderModuleVk.h
-	   ${CMAKE_CURRENT_LIST_DIR}/SurfaceVk.cpp
-	   ${CMAKE_CURRENT_LIST_DIR}/SurfaceVk.h
-	   ${CMAKE_CURRENT_LIST_DIR}/SwapchainVk.cpp
-	   ${CMAKE_CURRENT_LIST_DIR}/SwapchainVk.h
-	   ${CMAKE_CURRENT_LIST_DIR}/TypesVk.h
-	   ${CMAKE_CURRENT_LIST_DIR}/../../include/vk_bindings.h
-	   ${CMAKE_CURRENT_LIST_DIR}/../../include/vk_bindings_helper.h)
+	BufferVk.cpp
+	CommandBufferVk.cpp
+	CommandPoolVk.cpp
+	DebugReportCallbackVk.cpp
+	DebugUtilsMessengerVk.cpp
+	DebugUtilsVk.cpp
+	DescriptorSetVk.cpp
+	DeviceVk.cpp
+	DisplayModeVk.cpp
+	DisplayVk.cpp
+	EventVk.cpp
+	ExtensionsVk.cpp
+	FenceVk.cpp
+	FramebufferVk.cpp
+	ImageVk.cpp
+	InstanceVk.cpp
+	LayersVk.cpp
+	PhysicalDeviceVk.cpp
+	PipelineLayoutVk.cpp
+	QueryPoolVk.cpp
+	QueueVk.cpp
+	RenderPassVk.cpp
+	SamplerVk.cpp
+	SemaphoreVk.cpp
+	ShaderModuleVk.cpp
+	SurfaceVk.cpp
+	SwapchainVk.cpp)
 
 set(PVRVk_INCLUDE_DIRECTORIES 
 	${CMAKE_CURRENT_LIST_DIR}/../../include
-	${CMAKE_CURRENT_LIST_DIR}/../../framework)
-	
-set(PVRVk_LINK_LIBS VulkanPlatformInterface PowerVR_SDK)
-	   
-get_directory_property(HAS_PARENT PARENT_DIRECTORY)
-if(HAS_PARENT AND USE_PREBUILT_DEPENDENCIES)
-add_library(PVRVk STATIC IMPORTED GLOBAL)
+	${CMAKE_CURRENT_LIST_DIR}/../
+	${MVK_INCLUDE_DIR})
 
-# add the subdirectory after the add_library so that the target exists
-add_subdirectory(../.. ${CMAKE_CURRENT_BINARY_DIR}/sdk EXCLUDE_FROM_ALL)
+# Create the library
+add_library(PVRVk STATIC
+	${PVRVk_SRC}
+	${PVRVk_HEADERS})
 
-set_target_properties(PVRVk PROPERTIES
-	IMPORTED_LOCATION_DEBUG ${FRAMEWORK_LIB_FOLDER}/${CMAKE_STATIC_LIBRARY_PREFIX}PVRVk${CMAKE_STATIC_LIBRARY_SUFFIX}
-	IMPORTED_LOCATION_RELEASE ${FRAMEWORK_LIB_FOLDER}/${CMAKE_STATIC_LIBRARY_PREFIX}PVRVk${CMAKE_STATIC_LIBRARY_SUFFIX}
-	INTERFACE_INCLUDE_DIRECTORIES "${PVRVk_INCLUDE_DIRECTORIES}"
-	INTERFACE_LINK_LIBRARIES "${PVRVk_LINK_LIBS}")
-else()
-add_library(PVRVk STATIC EXCLUDE_FROM_ALL ${PVRVk_SRC})
+# Set the include directories for PVRVk
+target_include_directories(PVRVk 
+	PUBLIC 
+		"$<BUILD_INTERFACE:${PVRVk_INCLUDE_DIRECTORIES}>"
+		$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
-# add the subdirectory after the add_library so that the target exists
-add_subdirectory(../../ ${CMAKE_CURRENT_BINARY_DIR}/sdk EXCLUDE_FROM_ALL)
-
-target_include_directories(PVRVk PUBLIC ${PVRVk_INCLUDE_DIRECTORIES})
-target_link_libraries(PVRVk ${PVRVk_LINK_LIBS})
-set_target_properties(PVRVk PROPERTIES 
-	ARCHIVE_OUTPUT_DIRECTORY ${FRAMEWORK_LIB_FOLDER}
-	LIBRARY_OUTPUT_DIRECTORY ${FRAMEWORK_LIB_FOLDER})
+# Determine which platform PVRVk should be built to support
+if(PVRVK_USE_PLATFORM)
+	# Setup compile definitions
+	target_compile_definitions(PVRVk 
+		PUBLIC 
+			"${PVRVK_USE_PLATFORM}")
 endif()
+
+apply_compile_options_to_target(PVRVk)
+
+install(TARGETS PVRVk EXPORT PVRVkTargets
+	ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+	RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+	INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+	OPTIONAL)
+# Setup the files to be installed for PVRVk
+install(FILES ${PVRVk_HEADERS} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/PVRVk OPTIONAL)
+install(FILES ${PVRVk_INCLUDES} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/include OPTIONAL)
+install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/../../include/vulkan DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/include OPTIONAL)
+install(EXPORT PVRVkTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/PVRVk OPTIONAL)
+
+export(EXPORT PVRVkTargets FILE "${CMAKE_CURRENT_BINARY_DIR}/PVRVk/PVRVkTargets.cmake")
+# build tree package config
+file(COPY cmake/PVRVkConfig.cmake.in DESTINATION "${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/PVRVk/" NO_SOURCE_PERMISSIONS)
+configure_file("${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/PVRVk/PVRVkConfig.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/PVRVk/PVRVkConfig.cmake" @ONLY)
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/PVRVk/PVRVkTargets.cmake" DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/PVRVk OPTIONAL)

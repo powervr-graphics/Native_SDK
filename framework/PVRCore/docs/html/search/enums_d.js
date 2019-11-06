@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['variablescope',['VariableScope',['../namespacepvr.html#a7449705e04c8fe948e390ea793106107',1,'pvr']]],
-  ['variabletype',['VariableType',['../namespacepvr.html#a6f7777c11dfff8fcf4a03d85e5ab0b98',1,'pvr']]],
-  ['vectorwidth',['VectorWidth',['../namespacepvr_1_1_gpu_datatypes_helper.html#aff3aa99e1b21f38c32bce768d56b2198',1,'pvr::GpuDatatypesHelper']]],
-  ['vsyncmode',['VsyncMode',['../namespacepvr.html#a7f3166dd9130684c23ff89682e4b38c8',1,'pvr']]]
+  ['texturedimension',['TextureDimension',['../_file_defines_d_d_s_8h.html#a4b18cc994a3380753a6ca3fec8bec5fb',1,'pvr::texture_dds']]],
+  ['texturefileformat',['TextureFileFormat',['../namespacepvr.html#a8be7d779089afe1df56a1bf542134d0d',1,'pvr']]],
+  ['texturemiscellaneousflags',['TextureMiscellaneousFlags',['../_file_defines_d_d_s_8h.html#a18aeddd978ed8f2f7b3df2d21aa94128',1,'pvr::texture_dds']]],
+  ['texturemiscellaneousflags2',['TextureMiscellaneousFlags2',['../_file_defines_d_d_s_8h.html#aa824b3f3827d549fa5032ef428e8b56a',1,'pvr::texture_dds']]]
 ];

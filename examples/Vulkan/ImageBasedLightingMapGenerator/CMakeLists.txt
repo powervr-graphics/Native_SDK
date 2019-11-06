@@ -12,10 +12,9 @@ set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT V
 
 set(SRC_FILES VulkanIBLMapsGenerator.cpp)
 
-# Adds Windows resouces.rc, macOS plists etc. For macOS/iOS, also set the opengl dynamic libs in the "frameworks" group
-add_platform_specific_resource_files(SRC_FILES "")
-
 # Adds a platform specific executable
 add_executable(VulkanIBLMapsGenerator ${SRC_FILES})
+
+set_target_properties(VulkanIBLMapsGenerator PROPERTIES CXX_STANDARD 14)
 
 target_link_libraries(VulkanIBLMapsGenerator PVRUtilsVk)

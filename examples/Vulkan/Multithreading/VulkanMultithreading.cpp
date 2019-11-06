@@ -53,13 +53,6 @@ enum Enum
 const char FragShaderSrcFile[] = "FragShader.fsh.spv";
 const char VertShaderSrcFile[] = "VertShader.vsh.spv";
 
-// PVR texture files
-const char StatueTexFile[] = "Marble.pvr";
-const char StatueNormalMapFile[] = "MarbleNormalMap.pvr";
-
-const char ShadowTexFile[] = "Shadow.pvr";
-const char ShadowNormalMapFile[] = "ShadowNormalMap.pvr";
-
 // POD _scene files
 const char SceneFile[] = "Satyr.pod";
 
@@ -91,8 +84,8 @@ struct DeviceResources
 	pvrvk::DescriptorPool descriptorPool;
 	pvrvk::CommandPool commandPool;
 
-	pvr::Multi<pvrvk::CommandBuffer> commandBuffers; // per swapchain
-	pvr::Multi<pvrvk::CommandBuffer> loadingTextCommandBuffer; // per swapchain
+	pvr::Multi<pvrvk::CommandBuffer> cmdBuffers; // per swapchain
+	pvr::Multi<pvrvk::CommandBuffer> loadingTextCmdBuffer; // per swapchain
 
 	pvr::Multi<pvrvk::Framebuffer> framebuffer;
 	pvr::Multi<pvrvk::ImageView> depthStencilImages;
@@ -125,10 +118,7 @@ struct DeviceResources
 
 	~DeviceResources()
 	{
-		if (device)
-		{
-			device->waitIdle();
-		}
+		if (device) { device->waitIdle(); }
 		auto items_remaining = loader.getNumQueuedItems();
 		if (items_remaining)
 		{
@@ -151,8 +141,7 @@ struct DeviceResources
 			uint32_t l = swapchain->getSwapchainLength();
 			for (uint32_t i = 0; i < l; ++i)
 			{
-				if (perFrameResourcesFences[i])
-					perFrameResourcesFences[i]->wait();
+				if (perFrameResourcesFences[i]) perFrameResourcesFences[i]->wait();
 			}
 		}
 	}
@@ -188,7 +177,7 @@ public:
 	void createImageSamplerDescriptorSets();
 	void createUbo();
 	void loadPipeline();
-	void drawMesh(pvrvk::CommandBuffer& commandBuffer, int i32NodeIndex);
+	void drawMesh(pvrvk::CommandBuffer& cmdBuffers, int i32NodeIndex);
 	void recordMainCommandBuffer();
 	void recordLoadingCommandBuffer();
 	void updateTextureDescriptorSet();
@@ -205,8 +194,7 @@ void VulkanMultithreading::updateTextureDescriptorSet()
 			_deviceResources->asyncUpdateInfo.diffuseTex->get(), _deviceResources->asyncUpdateInfo.bilinearSampler, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL));
 
 	writeDescInfo[1].setImageInfo(0,
-		pvrvk::DescriptorImageInfo(
-			_deviceResources->asyncUpdateInfo.bumpTex->get(), _deviceResources->asyncUpdateInfo.trilinearSampler, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL));
+		pvrvk::DescriptorImageInfo(_deviceResources->asyncUpdateInfo.bumpTex->get(), _deviceResources->asyncUpdateInfo.trilinearSampler, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL));
 
 	_deviceResources->device->updateDescriptorSets(writeDescInfo, ARRAY_SIZE(writeDescInfo), nullptr, 0);
 }
@@ -240,8 +228,8 @@ void VulkanMultithreading::createUbo()
 
 		_deviceResources->structuredMemoryView.initDynamic(desc, swapchainLength, pvr::BufferUsageFlags::UniformBuffer,
 			static_cast<uint32_t>(_deviceResources->device->getPhysicalDevice()->getProperties().getLimits().getMinUniformBufferOffsetAlignment()));
-		_deviceResources->ubo = pvr::utils::createBuffer(_deviceResources->device, _deviceResources->structuredMemoryView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT,
-			pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
+		_deviceResources->ubo = pvr::utils::createBuffer(_deviceResources->device,
+			pvrvk::BufferCreateInfo(_deviceResources->structuredMemoryView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
 			&_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
@@ -295,8 +283,8 @@ void VulkanMultithreading::loadPipeline()
 	pipeInfo.rasterizer.setCullMode(pvrvk::CullModeFlags::e_BACK_BIT);
 	pipeInfo.colorBlend.setAttachmentState(0, pvrvk::PipelineColorBlendAttachmentState());
 
-	pvr::Stream::ptr_type vertSource = getAssetStream(VertShaderSrcFile);
-	pvr::Stream::ptr_type fragSource = getAssetStream(FragShaderSrcFile);
+	std::unique_ptr<pvr::Stream> vertSource = getAssetStream(VertShaderSrcFile);
+	std::unique_ptr<pvr::Stream> fragSource = getAssetStream(FragShaderSrcFile);
 
 	pipeInfo.vertexShader.setShader(_deviceResources->device->createShaderModule(pvrvk::ShaderModuleCreateInfo(vertSource->readToEnd<uint32_t>())));
 	pipeInfo.fragmentShader.setShader(_deviceResources->device->createShaderModule(pvrvk::ShaderModuleCreateInfo(fragSource->readToEnd<uint32_t>())));
@@ -311,8 +299,7 @@ void VulkanMultithreading::loadPipeline()
 	pipeInfo.depthStencil.enableDepthTest(true);
 	pipeInfo.depthStencil.setDepthCompareFunc(pvrvk::CompareOp::e_LESS);
 	pipeInfo.depthStencil.enableDepthWrite(true);
-	pvr::utils::populateInputAssemblyFromMesh(
-		mesh, VertexAttribBindings, sizeof(VertexAttribBindings) / sizeof(VertexAttribBindings[0]), pipeInfo.vertexInput, pipeInfo.inputAssembler);
+	pvr::utils::populateInputAssemblyFromMesh(mesh, VertexAttribBindings, sizeof(VertexAttribBindings) / sizeof(VertexAttribBindings[0]), pipeInfo.vertexInput, pipeInfo.inputAssembler);
 
 	pvr::utils::populateViewportStateCreateInfo(_deviceResources->framebuffer[0], pipeInfo.viewport);
 	_deviceResources->pipe = _deviceResources->device->createGraphicsPipeline(pipeInfo, _deviceResources->pipelineCache);
@@ -327,7 +314,7 @@ void VulkanMultithreading::loadPipeline()
 pvr::Result VulkanMultithreading::initApplication()
 {
 	// Load the _scene
-	pvr::assets::helper::loadModel(*this, SceneFile, _scene);
+	_scene = pvr::assets::loadModel(*this, SceneFile);
 	_angleY = 0.0f;
 	_frameId = 0;
 	return pvr::Result::Success;
@@ -382,7 +369,7 @@ void NormalTextureDoneCallback(pvr::utils::AsyncApiTexture tex)
 ***********************************************************************************************************************/
 pvr::Result VulkanMultithreading::initView()
 {
-	_deviceResources = std::unique_ptr<DeviceResources>(new DeviceResources());
+	_deviceResources = std::make_unique<DeviceResources>();
 
 	// Create instance and retrieve compatible physical devices
 	_deviceResources->instance = pvr::utils::createInstance(this->getApplicationName());
@@ -394,7 +381,8 @@ pvr::Result VulkanMultithreading::initView()
 	}
 
 	// Create the surface
-	_deviceResources->surface = pvr::utils::createSurface(_deviceResources->instance, _deviceResources->instance->getPhysicalDevice(0), this->getWindow(), this->getDisplay());
+	_deviceResources->surface =
+		pvr::utils::createSurface(_deviceResources->instance, _deviceResources->instance->getPhysicalDevice(0), this->getWindow(), this->getDisplay(), this->getConnection());
 
 	// Create a default set of debug utils messengers or debug callbacks using either VK_EXT_debug_utils or VK_EXT_debug_report respectively
 	_deviceResources->debugUtilsCallbacks = pvr::utils::createDebugUtilsCallbacks(_deviceResources->instance);
@@ -437,11 +425,7 @@ pvr::Result VulkanMultithreading::initView()
 	// validate the supported swapchain image usage
 	pvrvk::ImageUsageFlags swapchainImageUsage = pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT;
 	if (pvr::utils::isImageUsageSupportedBySurface(surfaceCapabilities, pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT))
-	{
-		swapchainImageUsage |= pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT;
-	}
-
-	// Create the swapchain image and depthstencil image
+	{ swapchainImageUsage |= pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT; } // Create the swapchain image and depthstencil image
 	pvr::utils::createSwapchainAndDepthStencilImageAndViews(_deviceResources->device, _deviceResources->surface, getDisplayAttributes(), _deviceResources->swapchain,
 		_deviceResources->depthStencilImages, swapchainImageUsage, pvrvk::ImageUsageFlags::e_DEPTH_STENCIL_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_TRANSIENT_ATTACHMENT_BIT,
 		&_deviceResources->vmaAllocator);
@@ -461,22 +445,22 @@ pvr::Result VulkanMultithreading::initView()
 		_deviceResources->imageAcquiredSemaphores[i] = _deviceResources->device->createSemaphore();
 		_deviceResources->perFrameResourcesFences[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
 
-		_deviceResources->loadingTextCommandBuffer[i] = _deviceResources->commandPool->allocateCommandBuffer();
-		_deviceResources->commandBuffers[i] = _deviceResources->commandPool->allocateCommandBuffer();
+		_deviceResources->loadingTextCmdBuffer[i] = _deviceResources->commandPool->allocateCommandBuffer();
+		_deviceResources->cmdBuffers[i] = _deviceResources->commandPool->allocateCommandBuffer();
 	}
 
 	// load the vbo and ibo data
-	_deviceResources->commandBuffers[0]->begin();
+	_deviceResources->cmdBuffers[0]->begin();
 	bool requiresCommandBufferSubmission = false;
-	pvr::utils::appendSingleBuffersFromModel(_deviceResources->device, *_scene, _deviceResources->vbos, _deviceResources->ibos, _deviceResources->commandBuffers[0],
+	pvr::utils::appendSingleBuffersFromModel(_deviceResources->device, *_scene, _deviceResources->vbos, _deviceResources->ibos, _deviceResources->cmdBuffers[0],
 		requiresCommandBufferSubmission, &_deviceResources->vmaAllocator);
 
-	_deviceResources->commandBuffers[0]->end();
+	_deviceResources->cmdBuffers[0]->end();
 
 	if (requiresCommandBufferSubmission)
 	{
 		pvrvk::SubmitInfo submitInfo;
-		submitInfo.commandBuffers = &_deviceResources->commandBuffers[0];
+		submitInfo.commandBuffers = &_deviceResources->cmdBuffers[0];
 		submitInfo.numCommandBuffers = 1;
 
 		// submit the queue and wait for it to become idle
@@ -554,15 +538,12 @@ pvr::Result VulkanMultithreading::renderFrame()
 	{
 		static float f = 0;
 		f += getFrameTime() * .0005f;
-		if (f > glm::pi<float>() * .5f)
-		{
-			f = 0;
-		}
+		if (f > glm::pi<float>() * .5f) { f = 0; }
 		_deviceResources->loadingText[swapchainIndex]->setColor(1.0f, 1.0f, 1.0f, f + .01f);
 		_deviceResources->loadingText[swapchainIndex]->setScale(sin(f) * 3.f, sin(f) * 3.f);
 		_deviceResources->loadingText[swapchainIndex]->commitUpdates();
 
-		submitInfo.commandBuffers = &_deviceResources->loadingTextCommandBuffer[swapchainIndex];
+		submitInfo.commandBuffers = &_deviceResources->loadingTextCmdBuffer[swapchainIndex];
 	}
 
 	if (_loadingDone)
@@ -595,7 +576,7 @@ pvr::Result VulkanMultithreading::renderFrame()
 					_deviceResources->structuredMemoryView.getDynamicSliceSize() * _scene->getNumMeshNodes());
 			}
 		}
-		submitInfo.commandBuffers = &_deviceResources->commandBuffers[swapchainIndex];
+		submitInfo.commandBuffers = &_deviceResources->cmdBuffers[swapchainIndex];
 	}
 
 	{
@@ -628,13 +609,13 @@ pvr::Result VulkanMultithreading::renderFrame()
 \brief  Draws a assets::Mesh after the model view matrix has been set and the material prepared.
 \param  nodeIndex Node index of the mesh to draw
 ***********************************************************************************************************************/
-void VulkanMultithreading::drawMesh(pvrvk::CommandBuffer& commandBuffer, int nodeIndex)
+void VulkanMultithreading::drawMesh(pvrvk::CommandBuffer& cmdBuffers, int nodeIndex)
 {
 	uint32_t meshId = _scene->getNode(nodeIndex).getObjectId();
 	const pvr::assets::Mesh& mesh = _scene->getMesh(meshId);
 
 	// bind the VBO for the mesh
-	commandBuffer->bindVertexBuffer(_deviceResources->vbos[meshId], 0, 0);
+	cmdBuffers->bindVertexBuffer(_deviceResources->vbos[meshId], 0, 0);
 
 	//  The geometry can be exported in 4 ways:
 	//  - Indexed Triangle list
@@ -646,13 +627,13 @@ void VulkanMultithreading::drawMesh(pvrvk::CommandBuffer& commandBuffer, int nod
 		// Indexed Triangle list
 		if (_deviceResources->ibos[meshId])
 		{
-			commandBuffer->bindIndexBuffer(_deviceResources->ibos[meshId], 0, pvr::utils::convertToPVRVk(mesh.getFaces().getDataType()));
-			commandBuffer->drawIndexed(0, mesh.getNumFaces() * 3, 0, 0, 1);
+			cmdBuffers->bindIndexBuffer(_deviceResources->ibos[meshId], 0, pvr::utils::convertToPVRVk(mesh.getFaces().getDataType()));
+			cmdBuffers->drawIndexed(0, mesh.getNumFaces() * 3, 0, 0, 1);
 		}
 		else
 		{
 			// Non-Indexed Triangle list
-			commandBuffer->draw(0, mesh.getNumFaces() * 3, 0, 1);
+			cmdBuffers->draw(0, mesh.getNumFaces() * 3, 0, 1);
 		}
 	}
 	else
@@ -663,13 +644,13 @@ void VulkanMultithreading::drawMesh(pvrvk::CommandBuffer& commandBuffer, int nod
 			if (_deviceResources->ibos[meshId])
 			{
 				// Indexed Triangle strips
-				commandBuffer->bindIndexBuffer(_deviceResources->ibos[meshId], 0, pvr::utils::convertToPVRVk(mesh.getFaces().getDataType()));
-				commandBuffer->drawIndexed(0, mesh.getStripLength(i) + 2, offset * 2, 0, 1);
+				cmdBuffers->bindIndexBuffer(_deviceResources->ibos[meshId], 0, pvr::utils::convertToPVRVk(mesh.getFaces().getDataType()));
+				cmdBuffers->drawIndexed(0, mesh.getStripLength(i) + 2, offset * 2, 0, 1);
 			}
 			else
 			{
 				// Non-Indexed Triangle strips
-				commandBuffer->draw(0, mesh.getStripLength(i) + 2, 0, 1);
+				cmdBuffers->draw(0, mesh.getStripLength(i) + 2, 0, 1);
 			}
 			offset += mesh.getStripLength(i) + 2;
 		}
@@ -684,22 +665,22 @@ void VulkanMultithreading::recordMainCommandBuffer()
 	const pvrvk::ClearValue clearValues[] = { pvrvk::ClearValue(0.0f, 0.40f, .39f, 1.f), pvrvk::ClearValue(1.f, 0u) };
 	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
 	{
-		pvrvk::CommandBuffer& commandBuffer = _deviceResources->commandBuffers[i];
-		commandBuffer->begin();
-		commandBuffer->beginRenderPass(_deviceResources->framebuffer[i], pvrvk::Rect2D(0, 0, getWidth(), getHeight()), true, clearValues, ARRAY_SIZE(clearValues));
+		pvrvk::CommandBuffer& cmdBuffers = _deviceResources->cmdBuffers[i];
+		cmdBuffers->begin();
+		cmdBuffers->beginRenderPass(_deviceResources->framebuffer[i], pvrvk::Rect2D(0, 0, getWidth(), getHeight()), true, clearValues, ARRAY_SIZE(clearValues));
 		// enqueue the static states which wont be changed through out the frame
-		commandBuffer->bindPipeline(_deviceResources->pipe);
-		commandBuffer->bindDescriptorSet(pvrvk::PipelineBindPoint::e_GRAPHICS, _deviceResources->pipelayout, 0, _deviceResources->texDescSet, 0);
-		commandBuffer->bindDescriptorSet(pvrvk::PipelineBindPoint::e_GRAPHICS, _deviceResources->pipelayout, 1, _deviceResources->uboDescSet[i]);
-		drawMesh(commandBuffer, 0);
+		cmdBuffers->bindPipeline(_deviceResources->pipe);
+		cmdBuffers->bindDescriptorSet(pvrvk::PipelineBindPoint::e_GRAPHICS, _deviceResources->pipelayout, 0, _deviceResources->texDescSet, 0);
+		cmdBuffers->bindDescriptorSet(pvrvk::PipelineBindPoint::e_GRAPHICS, _deviceResources->pipelayout, 1, _deviceResources->uboDescSet[i]);
+		drawMesh(cmdBuffers, 0);
 
 		// record the uirenderer commands
-		_deviceResources->uiRenderer.beginRendering(commandBuffer);
+		_deviceResources->uiRenderer.beginRendering(cmdBuffers);
 		_deviceResources->uiRenderer.getDefaultTitle()->render();
 		_deviceResources->uiRenderer.getSdkLogo()->render();
 		_deviceResources->uiRenderer.endRendering();
-		commandBuffer->endRenderPass();
-		commandBuffer->end();
+		cmdBuffers->endRenderPass();
+		cmdBuffers->end();
 	}
 }
 
@@ -712,29 +693,26 @@ void VulkanMultithreading::recordLoadingCommandBuffer()
 
 	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
 	{
-		pvrvk::CommandBuffer& commandBuffer = _deviceResources->loadingTextCommandBuffer[i];
-		commandBuffer->begin();
+		pvrvk::CommandBuffer& cmdBuffers = _deviceResources->loadingTextCmdBuffer[i];
+		cmdBuffers->begin();
 
-		commandBuffer->beginRenderPass(_deviceResources->framebuffer[i], true, clearColor, ARRAY_SIZE(clearColor));
+		cmdBuffers->beginRenderPass(_deviceResources->framebuffer[i], true, clearColor, ARRAY_SIZE(clearColor));
 
 		_deviceResources->loadingText[i] = _deviceResources->uiRenderer.createText("Loading...");
 		_deviceResources->loadingText[i]->commitUpdates();
 
 		// record the uirenderer commands
-		_deviceResources->uiRenderer.beginRendering(commandBuffer);
+		_deviceResources->uiRenderer.beginRendering(cmdBuffers);
 		_deviceResources->uiRenderer.getDefaultTitle()->render();
 		_deviceResources->uiRenderer.getSdkLogo()->render();
 		_deviceResources->loadingText[i]->render();
 		_deviceResources->uiRenderer.endRendering();
 
-		commandBuffer->endRenderPass();
-		commandBuffer->end();
+		cmdBuffers->endRenderPass();
+		cmdBuffers->end();
 	}
 }
 
 /// <summary>This function must be implemented by the user of the shell. The user should return its pvr::Shell object defining the behaviour of the application.</summary>
 /// <returns>Return a unique ptr to the demo supplied by the user.</returns>
-std::unique_ptr<pvr::Shell> pvr::newDemo()
-{
-	return std::unique_ptr<pvr::Shell>(new VulkanMultithreading());
-}
+std::unique_ptr<pvr::Shell> pvr::newDemo() { return std::make_unique<VulkanMultithreading>(); }

@@ -3,9 +3,12 @@
 #define NAV_3D
 #include "../../common/NavDataProcess.h"
 #include "PVRCore/cameras/TPSCamera.h"
-const float CameraMoveSpeed = 1.f;
+const float CameraMoveSpeed = 3.f;
 static const float CamHeight = .35f;
 static uint32_t routeIndex = 0;
+const float nearClip = .1f;
+const float farClip = 10.f;
+
 // Camera Settings
 const float CameraRotationSpeed = .5f;
 const float CamRotationTime = 10000.f;
@@ -246,13 +249,10 @@ private:
 	{
 		GLuint boundTextures[4];
 		GLuint boundProgram;
-		GlesStateTracker() : boundProgram(0)
-		{
-			memset(boundTextures, 0, sizeof(boundTextures));
-		}
+		GlesStateTracker() : boundProgram(0) { memset(boundTextures, 0, sizeof(boundTextures)); }
 	} _glesStates;
 
-	std::vector<std::vector<std::unique_ptr<TileRenderingResources> > > _tileRenderingResources;
+	std::vector<std::vector<std::unique_ptr<TileRenderingResources>>> _tileRenderingResources;
 
 	// Uniforms
 	glm::mat4 _viewProjMatrix;
@@ -303,10 +303,7 @@ private:
 	void createPrograms();
 	void setPipelineStates(PipelineState pipelineState);
 	// Calculate the key frametime between one point to another.
-	float calculateRouteKeyFrameTime(const glm::dvec2& start, const glm::dvec2& end)
-	{
-		return ::calculateRouteKeyFrameTime(start, end, _totalRouteDistance, CameraMoveSpeed);
-	}
+	float calculateRouteKeyFrameTime(const glm::dvec2& start, const glm::dvec2& end) { return ::calculateRouteKeyFrameTime(start, end, _totalRouteDistance, CameraMoveSpeed); }
 
 	glm::vec3 _cameraTranslation;
 	template<class ShaderProgram>
@@ -340,11 +337,10 @@ pvr::Result OGLESNavigation3D::initApplication()
 	// WARNING: This should not be done lightly. This example has taken care of linear/sRGB color space conversion appropriately and has been tuned specifically
 	// for performance/color space correctness.
 
-	_OSMdata.reset(new NavDataProcess(getAssetStream(MapFile), glm::ivec2(getWidth(), getHeight())));
+	_OSMdata = std::make_unique<NavDataProcess>(getAssetStream(MapFile), glm::ivec2(getWidth(), getHeight()));
 	pvr::Result result = _OSMdata->loadAndProcessData();
 
-	if (result != pvr::Result::Success)
-		return result;
+	if (result != pvr::Result::Success) return result;
 
 	createShadowMatrix();
 
@@ -373,7 +369,7 @@ Used to initialize variables that are dependent on the rendering context (e.g. t
 ***********************************************************************************************************************/
 pvr::Result OGLESNavigation3D::initView()
 {
-	_deviceResources.reset(new DeviceResources());
+	_deviceResources = std::make_unique<DeviceResources>();
 
 	// Acquire graphics _deviceResources->context.
 	_deviceResources->context = pvr::createEglContext();
@@ -391,17 +387,11 @@ pvr::Result OGLESNavigation3D::initView()
 	_numCols = _OSMdata->getNumCols();
 	_tileRenderingResources.resize(_numCols);
 
-	for (uint32_t i = 0; i < _numCols; ++i)
-	{
-		_tileRenderingResources[i].resize(_numRows);
-	}
+	for (uint32_t i = 0; i < _numCols; ++i) { _tileRenderingResources[i].resize(_numRows); }
 	_deviceResources->uiRenderer.getDefaultTitle()->setText("Navigation3D");
 	_deviceResources->uiRenderer.getDefaultTitle()->commitUpdates();
 
-	if (!loadTexture())
-	{
-		return pvr::Result::UnknownError;
-	}
+	if (!loadTexture()) { return pvr::Result::UnknownError; }
 
 	_deviceResources->text = _deviceResources->uiRenderer.createText();
 	_deviceResources->text->setColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -493,17 +483,14 @@ void OGLESNavigation3D::setPipelineStates(PipelineState pipelineState)
 
 	switch (pipelineState)
 	{
-	case PipelineState::RoadPipe:
-		gl::Enable(GL_BLEND);
-		break;
+	case PipelineState::RoadPipe: gl::Enable(GL_BLEND); break;
 	case PipelineState::PlanarShaderPipe:
 		gl::Enable(GL_BLEND);
 		gl::StencilFunc(GL_EQUAL, 0, 0xff);
 		gl::StencilOp(GL_KEEP, GL_KEEP, GL_INCR_WRAP);
 		gl::DepthFunc(GL_LESS);
 		break;
-	default:
-		break;
+	default: break;
 	}
 }
 
@@ -514,7 +501,7 @@ void OGLESNavigation3D::setPipelineStates(PipelineState pipelineState)
 bool OGLESNavigation3D::loadTexture()
 {
 	/// Road Texture
-	pvr::Texture tex = pvr::textureLoad(getAssetStream(RoadTexFile), pvr::TextureFileFormat::PVR);
+	pvr::Texture tex = pvr::textureLoad(*getAssetStream(RoadTexFile), pvr::TextureFileFormat::PVR);
 
 	pvr::utils::TextureUploadResults uploadResultRoadTex = pvr::utils::textureUpload(tex, _deviceResources->context->getApiVersion() == pvr::Api::OpenGLES2, true);
 
@@ -527,7 +514,7 @@ bool OGLESNavigation3D::loadTexture()
 	//	gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT)
 
 	/// Font Texture
-	tex = pvr::textureLoad(getAssetStream(FontFile), pvr::TextureFileFormat::PVR);
+	tex = pvr::textureLoad(*getAssetStream(FontFile), pvr::TextureFileFormat::PVR);
 	pvr::utils::TextureUploadResults uploadResulFontTex = pvr::utils::textureUpload(tex, _deviceResources->context->getApiVersion() == pvr::Api::OpenGLES2, true);
 	_deviceResources->fontTex = uploadResulFontTex.image;
 	gl::BindTexture(GL_TEXTURE_2D, _deviceResources->fontTex);
@@ -544,7 +531,7 @@ bool OGLESNavigation3D::loadTexture()
 void OGLESNavigation3D::setUniforms()
 {
 	_perspectiveMatrix = _deviceResources->uiRenderer.getScreenRotation() *
-		pvr::math::perspectiveFov(_deviceResources->context->getApiVersion(), glm::radians(45.0f), float(_windowWidth), float(_windowHeight), 0.01f, 5.f);
+		pvr::math::perspectiveFov(_deviceResources->context->getApiVersion(), glm::radians(45.0f), float(_windowWidth), float(_windowHeight), nearClip, farClip);
 }
 
 /*!*********************************************************************************************************************
@@ -559,7 +546,7 @@ void OGLESNavigation3D::createBuffers()
 	{
 		for (Tile& tile : tileCol)
 		{
-			_tileRenderingResources[col][row].reset(new TileRenderingResources());
+			_tileRenderingResources[col][row] = std::make_unique<TileRenderingResources>();
 			TileRenderingResources& tileResource = *_tileRenderingResources[col][row];
 
 			// Set the min and max coordinates for the tile
@@ -636,10 +623,7 @@ pvr::Result OGLESNavigation3D::renderFrame()
 	// Update commands
 	executeCommands();
 
-	if (this->shouldTakeScreenshot())
-	{
-		pvr::utils::takeScreenshot(this->getScreenshotFileName(), this->getWidth(), this->getHeight());
-	}
+	if (this->shouldTakeScreenshot()) { pvr::utils::takeScreenshot(this->getScreenshotFileName(), this->getWidth(), this->getHeight()); }
 
 	_deviceResources->context->swapBuffers();
 	return pvr::Result::Success;
@@ -650,10 +634,7 @@ pvr::Result OGLESNavigation3D::renderFrame()
 ***********************************************************************************************************************/
 void OGLESNavigation3D::updateAnimation()
 {
-	if (_OSMdata->getRouteData().size() == 0)
-	{
-		return;
-	}
+	if (_OSMdata->getRouteData().size() == 0) { return; }
 
 	static const float rotationOffset = -90.f;
 	static bool turning = false;
@@ -712,10 +693,7 @@ void OGLESNavigation3D::updateAnimation()
 
 			currentRotationTime += dt;
 			currentRotationTime = glm::clamp(currentRotationTime, 0.0f, rotateTime);
-			if (currentRotationTime >= rotateTime)
-			{
-				turning = false;
-			}
+			if (currentRotationTime >= rotateTime) { turning = false; }
 			else
 			{
 				turning = true;
@@ -745,10 +723,7 @@ void OGLESNavigation3D::updateAnimation()
 		// Reset the route.
 		camStartPosition = _OSMdata->getRouteData()[routeIndex].point;
 	}
-	if (lastRouteIndex != routeIndex)
-	{
-		_currentRoad = _OSMdata->getRouteData()[routeIndex].name;
-	}
+	if (lastRouteIndex != routeIndex) { _currentRoad = _OSMdata->getRouteData()[routeIndex].name; }
 	_viewMatrix = _camera.getViewMatrix();
 
 	animTime += dt;
@@ -775,10 +750,7 @@ void OGLESNavigation3D::executeCommands()
 		for (uint32_t j = 0; j < _numRows; ++j)
 		{
 			// Only queue up commands if the tile is visible.
-			if (inFrustum(_OSMdata->getTiles()[i][j].screenMin, _OSMdata->getTiles()[i][j].screenMax))
-			{
-				executeCommands(*_tileRenderingResources[i][j]);
-			}
+			if (inFrustum(_OSMdata->getTiles()[i][j].screenMin, _OSMdata->getTiles()[i][j].screenMax)) { executeCommands(*_tileRenderingResources[i][j]); }
 		}
 	}
 
@@ -796,10 +768,7 @@ void OGLESNavigation3D::executeCommands()
 /*!*********************************************************************************************************************
 \brief	Capture frustum planes from the current View Projection matrix
 ***********************************************************************************************************************/
-void OGLESNavigation3D::calculateClipPlanes()
-{
-	pvr::math::getFrustumPlanes(_deviceResources->context->getApiVersion(), _viewProjMatrix, _viewFrustum);
-}
+void OGLESNavigation3D::calculateClipPlanes() { pvr::math::getFrustumPlanes(_deviceResources->context->getApiVersion(), _viewProjMatrix, _viewFrustum); }
 
 /*!*********************************************************************************************************************
 \param min The minimum co-ordinates of the bounding box.
@@ -974,11 +943,11 @@ void OGLESNavigation3D::executeCommands(const TileRenderingResources& tileRes)
 
 	if (innerNum > 0)
 	{
-		const ShaderProgramFill& program = _deviceResources->fillPipe;
-		bindProgram(program);
-		gl::UniformMatrix4fv(program.uniformLocation[ShaderProgramFill::Uniform::UniformTransform], 1, false, glm::value_ptr(_viewProjMatrix));
+		const ShaderProgramFill& program2 = _deviceResources->fillPipe;
+		bindProgram(program2);
+		gl::UniformMatrix4fv(program2.uniformLocation[ShaderProgramFill::Uniform::UniformTransform], 1, false, glm::value_ptr(_viewProjMatrix));
 
-		gl::Uniform4fv(program.uniformLocation[ShaderProgramFill::Uniform::UniformColor], 1, glm::value_ptr(_clearColor));
+		gl::Uniform4fv(program2.uniformLocation[ShaderProgramFill::Uniform::UniformColor], 1, glm::value_ptr(_clearColor));
 		gl::DrawElements(GL_TRIANGLES, innerNum, GL_UNSIGNED_INT, reinterpret_cast<const void*>(static_cast<uintptr_t>(offset)));
 		offset += innerNum * sizeof(uint32_t);
 	}
@@ -993,10 +962,7 @@ pvr::Result OGLESNavigation3D::releaseView()
 	// Clean up tile rendering resource data.
 	for (auto& resourceCol : _tileRenderingResources)
 	{
-		for (auto& resource : resourceCol)
-		{
-			resource.reset(0);
-		}
+		for (auto& resource : resourceCol) { resource.reset(0); }
 	}
 
 	_OSMdata.reset();
@@ -1012,14 +978,8 @@ pvr::Result OGLESNavigation3D::releaseView()
 \brief	Code in quitApplication() will be called by PVRShell once per run, just before exiting the program.
 If the rendering context is lost, quitApplication() will not be called.
 ***********************************************************************************************************************/
-pvr::Result OGLESNavigation3D::quitApplication()
-{
-	return pvr::Result::Success;
-}
+pvr::Result OGLESNavigation3D::quitApplication() { return pvr::Result::Success; }
 
 /// <summary>This function must be implemented by the user of the shell. The user should return its pvr::Shell object defining the behaviour of the application.</summary>
 /// <returns>Return a unique ptr to the demo supplied by the user.</returns>
-std::unique_ptr<pvr::Shell> pvr::newDemo()
-{
-	return std::unique_ptr<pvr::Shell>(new OGLESNavigation3D());
-}
+std::unique_ptr<pvr::Shell> pvr::newDemo() { return std::make_unique<OGLESNavigation3D>(); }

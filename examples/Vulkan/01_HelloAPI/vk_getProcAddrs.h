@@ -18,9 +18,11 @@
 #endif // __linux__
 #ifdef _LINUX
 #ifdef BUILD_XLIB
-#define VK_USE_PLATFORM_XLIB_KHR
-#include "X11/Xlib.h"
 #include "X11/Xutil.h"
+#define VK_USE_PLATFORM_XLIB_KHR
+#endif
+#ifdef BUILD_XCB
+#define VK_USE_PLATFORM_XCB_KHR
 #endif
 #ifdef BUILD_WAYLAND
 #define VK_USE_PLATFORM_WAYLAND_KHR
@@ -53,14 +55,33 @@ typedef void* LIBTYPE;
 
 #if _WIN32
 #define VK_USE_PLATFORM_WIN32_KHR
-#define WIN32_LEAN_AND_MIN_AND_MAX
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#ifndef NOMINMAX
 #define NOMINMAX
+#endif
 #include <Windows.h>
 #include <tchar.h>
 typedef HMODULE LIBTYPE;
 #endif
 
-#if !defined(VK_USE_PLATFORM_WIN32_KHR) && !defined(VK_USE_PLATFORM_ANDROID_KHR) && !defined(VK_USE_PLATFORM_XLIB_KHR) && !defined(VK_USE_PLATFORM_WAYLAND_KHR)
+#if defined(__APPLE__)
+#define _APPLE 1
+#define VK_USE_PLATFORM_MACOS_MVK
+#include <unistd.h>
+#include <dlfcn.h>
+#include <cstring>
+#include <memory>
+#include "CoreFoundation/CoreFoundation.h"
+static const char* g_pszEnvVar = "PVRTRACE_LIB_PATH";
+#define LOGI(...) ((void)printf(__VA_ARGS__))
+#define LOGW(...) ((void)fprintf(stderr, __VA_ARGS__))
+#define LOGE(...) ((void)fprintf(stderr, __VA_ARGS__))
+typedef void* LIBTYPE;
+#endif
+
+#if !defined(VK_USE_PLATFORM_WIN32_KHR) && !defined(VK_USE_PLATFORM_ANDROID_KHR) && !defined(VK_USE_PLATFORM_XLIB_KHR) && !defined(VK_USE_PLATFORM_XCB_KHR) && !defined(VK_USE_PLATFORM_WAYLAND_KHR) && !defined(VK_USE_PLATFORM_MACOS_MVK)
 #define USE_PLATFORM_NULLWS
 #endif
 
@@ -102,8 +123,14 @@ public:
 #ifdef VK_USE_PLATFORM_XLIB_KHR
 	PVR_VULKAN_FUNCTION_POINTER_DECLARATION(CreateXlibSurfaceKHR)
 #endif
+#ifdef VK_USE_PLATFORM_XCB_KHR
+	PVR_VULKAN_FUNCTION_POINTER_DECLARATION(CreateXcbSurfaceKHR)
+#endif
 #ifdef VK_USE_PLATFORM_WAYLAND_KHR
 	PVR_VULKAN_FUNCTION_POINTER_DECLARATION(CreateWaylandSurfaceKHR)
+#endif
+#ifdef VK_USE_PLATFORM_MACOS_MVK
+    PVR_VULKAN_FUNCTION_POINTER_DECLARATION(CreateMacOSSurfaceMVK)
 #endif
 
 #ifdef USE_PLATFORM_NULLWS
@@ -290,11 +317,11 @@ inline void logOutput(bool error, const char* const formatString, va_list argume
 #else
 	va_copy(tempList, argumentList);
 #endif
-	if(logfile != NULL)
+	if (logfile != NULL)
 	{
-	    vsnprintf(buffer, 4095, formatString, argumentList);
-	    fprintf(logfile, "%s%s\n", procAddressMessageTypes[static_cast<uint32_t>(error)], buffer);
-	    fclose(logfile);
+		vsnprintf(buffer, 4095, formatString, argumentList);
+		fprintf(logfile, "%s%s\n", procAddressMessageTypes[static_cast<uint32_t>(error)], buffer);
+		fclose(logfile);
 	}
 #if defined(_WIN32)
 
@@ -349,10 +376,7 @@ public:
 #if _WIN32
 		_hostLib = LoadLibraryA(LibPath.c_str());
 
-		if (!_hostLib)
-		{
-			Log(true, "Could not load host library '%s", LibPath.c_str());
-		}
+		if (!_hostLib) { Log(true, "Could not load host library '%s", LibPath.c_str()); }
 		Log(false, "Host library '%s' loaded", LibPath.c_str());
 #endif
 #if _LINUX
@@ -364,10 +388,7 @@ public:
 
 			const char* err = dlerror();
 
-			if (err)
-			{
-				LOGE("dlopen failed with error: %s => %s\n", err, LibPath.c_str());
-			}
+			if (err) { LOGE("dlopen failed with error: %s => %s\n", err, LibPath.c_str()); }
 
 			char pathMod[256];
 			strcpy(pathMod, "./");
@@ -379,10 +400,7 @@ public:
 			{
 				const char* err = dlerror();
 
-				if (err)
-				{
-					LOGE("dlopen failed with error: %s => %s\n", err, pathMod);
-				}
+				if (err) { LOGE("dlopen failed with error: %s => %s\n", err, pathMod); }
 			}
 			else
 			{
@@ -390,6 +408,71 @@ public:
 			}
 		}
 		LOGI("Host library '%s' loaded\n", LibPath.c_str());
+#endif
+#if _APPLE
+        const char* pszPath = LibPath.c_str();
+        CFBundleRef mainBundle = CFBundleGetMainBundle();
+        CFURLRef resourceURL = CFBundleCopyPrivateFrameworksURL(mainBundle);
+        char path[PATH_MAX];
+        if (CFURLGetFileSystemRepresentation(resourceURL, TRUE, (UInt8*)path, PATH_MAX))
+        {
+            CFRelease(resourceURL);
+
+            // --- Set a global environment variable to point to this path (for VFrame usage)
+            const char* slash = strrchr(pszPath, '/');
+            if (slash)
+            {
+                char szPath[FILENAME_MAX];
+                memset(szPath, 0, sizeof(szPath));
+                strncpy(szPath, pszPath, slash - pszPath);
+                setenv(g_pszEnvVar, szPath, 1);
+            }
+            else
+            {
+                // Use the current bundle path
+                std::string framework = std::string(path) + "/../Frameworks/";
+                setenv(g_pszEnvVar, framework.c_str(), 1);
+            }
+            
+            // --- Make a temp symlink
+            char szTempFile[FILENAME_MAX];
+            memset(szTempFile, 0, sizeof(szTempFile));
+            
+            char tmpdir[PATH_MAX];
+            size_t n = confstr(_CS_DARWIN_USER_TEMP_DIR, tmpdir, sizeof(tmpdir));
+            if ((n <= 0) || (n >= sizeof(tmpdir)))
+            {
+                strlcpy(tmpdir, getenv("TMPDIR"), sizeof(tmpdir));
+            }
+            
+            strcat(szTempFile, tmpdir);
+            strcat(szTempFile, "tmp.XXXXXX");
+            
+            if (mkstemp(szTempFile))
+            {
+                if (symlink(pszPath, szTempFile) == 0)
+                {
+                    _hostLib = dlopen(szTempFile, RTLD_LAZY | RTLD_GLOBAL);
+                    remove(szTempFile);
+                }
+            }
+            
+            // --- Can't find the lib? Check the application framework folder instead.
+            if (!_hostLib)
+            {
+                std::string framework = std::string(path) + std::string("/") + pszPath;
+                _hostLib = dlopen(framework.c_str(), RTLD_LAZY | RTLD_GLOBAL);
+                
+                if (!_hostLib)
+                {
+                    const char* err = dlerror();
+                    if (err)
+                    {
+                        // NSLog(@"dlopen failed with error: %s => %@", err, framework);
+                    }
+                }
+            }
+        }
 #endif
 #if _ANDROID
 		size_t start = 0;
@@ -399,10 +482,7 @@ public:
 		{
 			size_t end = LibPath.find_first_of(';', start);
 
-			if (end == std::string::npos)
-			{
-				tmp = LibPath.substr(start, LibPath.length() - start);
-			}
+			if (end == std::string::npos) { tmp = LibPath.substr(start, LibPath.length() - start); }
 			else
 			{
 				tmp = LibPath.substr(start, end - start);
@@ -413,28 +493,19 @@ public:
 
 				if (!_hostLib)
 				{
-					// Remove the last character in case a new line character snuck in
+					// Remove the last character, in case a new line character snuck in.
 					tmp = tmp.substr(0, tmp.size() - 1);
 					_hostLib = openLibrary(tmp.c_str());
 				}
 			}
-			if (end == std::string::npos)
-			{
-				break;
-			}
+			if (end == std::string::npos) { break; }
 			start = end + 1;
 		}
-		if (!_hostLib)
-		{
-			LOGE("Could not load host library '%s'", LibPath.c_str());
-		}
+		if (!_hostLib) { LOGE("Could not load host library '%s'", LibPath.c_str()); }
 		LOGI("Host library '%s' loaded", LibPath.c_str());
 #endif
 	}
-	~NativeLibrary()
-	{
-		CloseLib();
-	}
+	~NativeLibrary() { CloseLib(); }
 
 	/*!*********************************************************************************************************************
 	\brief   Get a function pointer from the library.
@@ -447,18 +518,12 @@ public:
 		{
 #if _WIN32
 			void* pFn = reinterpret_cast<void*>(GetProcAddress(_hostLib, functionName));
-			if (pFn == NULL)
-			{
-				Log(true, "Could not get function %s", functionName);
-			}
+			if (pFn == NULL) { Log(true, "Could not get function %s", functionName); }
 #endif
 
-#if _LINUX || _ANDROID
+#if _LINUX || _ANDROID || _APPLE
 			void* pFn = dlsym(_hostLib, functionName);
-			if (pFn == NULL)
-			{
-				LOGE("Could not get function %s\n", functionName);
-			}
+			if (pFn == NULL) { LOGE("Could not get function %s\n", functionName); }
 #endif
 			return pFn;
 		}
@@ -487,7 +552,7 @@ public:
 #if _WIN32
 			FreeLibrary(_hostLib);
 #endif
-#if _LINUX || _ANDROID
+#if _LINUX || _ANDROID || _APPLE
 			dlclose(_hostLib);
 #endif
 			_hostLib = 0;

@@ -37,22 +37,16 @@ Event_::~Event_()
 }
 //!\endcond
 
-void Event_::set()
-{
-	vkThrowIfFailed(getDevice()->getVkBindings().vkSetEvent(getDevice()->getVkHandle(), getVkHandle()), "Event::set returned an error");
-}
+void Event_::set() { vkThrowIfFailed(getDevice()->getVkBindings().vkSetEvent(getDevice()->getVkHandle(), getVkHandle()), "Event::set returned an error"); }
 
-void Event_::reset()
-{
-	vkThrowIfFailed(getDevice()->getVkBindings().vkResetEvent(getDevice()->getVkHandle(), getVkHandle()), "Event::reset returned an error");
-}
+void Event_::reset() { vkThrowIfFailed(getDevice()->getVkBindings().vkResetEvent(getDevice()->getVkHandle(), getVkHandle()), "Event::reset returned an error"); }
 
 bool Event_::isSet()
 {
 	Result res;
 	vkThrowIfError(res = static_cast<pvrvk::Result>(getDevice()->getVkBindings().vkGetEventStatus(getDevice()->getVkHandle(), getVkHandle())), "Event::isSet returned an error");
 	assert(res == Result::e_EVENT_SET || res == Result::e_EVENT_RESET && "Event::isSet returned a success code that was neither EVENT_SET or EVENT_RESET");
-	return res == Result::e_EVENT_RESET;
+	return res == Result::e_EVENT_SET;
 }
 } // namespace impl
 } // namespace pvrvk

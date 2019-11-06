@@ -218,7 +218,7 @@ struct DeviceResources
 
 	//// Command Buffers ////
 	// Main Primary Command Buffer
-	pvr::Multi<pvrvk::CommandBuffer> commandBufferMain;
+	pvr::Multi<pvrvk::CommandBuffer> cmdBufferMain;
 	pvr::utils::RenderManager render_mgr;
 
 	// UIRenderer used to display text
@@ -231,8 +231,7 @@ struct DeviceResources
 			uint32_t l = swapchain->getSwapchainLength();
 			for (uint32_t i = 0; i < l; ++i)
 			{
-				if (perFrameResourcesFences[i])
-					perFrameResourcesFences[i]->wait();
+				if (perFrameResourcesFences[i]) perFrameResourcesFences[i]->wait();
 			}
 		}
 	}
@@ -275,8 +274,8 @@ class VulkanDeferredShadingPFX : public pvr::Shell
 	glm::mat4 _inverseViewMatrix;
 	float _farClipDistance;
 
-	int32_t _windowWidth;
-	int32_t _windowHeight;
+	uint32_t _windowWidth;
+	uint32_t _windowHeight;
 	int32_t _framebufferWidth;
 	int32_t _framebufferHeight;
 
@@ -304,7 +303,7 @@ public:
 	virtual pvr::Result quitApplication();
 	virtual pvr::Result renderFrame();
 
-	void recordCommandsPointLightGeometryStencil(pvrvk::CommandBuffer& commandBuffer, uint32_t swapChainIndex, const uint32_t pointLight);
+	void recordCommandsPointLightGeometryStencil(pvrvk::CommandBuffer& cmdBuffers, uint32_t swapChainIndex, const uint32_t pointLight);
 	void recordMainCommandBuffer();
 	void allocateLights();
 	void uploadStaticData();
@@ -329,17 +328,10 @@ public:
 		switch (key)
 		{
 		// Handle input
-		case pvr::SimplifiedInput::ActionClose:
-			exitShell();
-			break;
-		case pvr::SimplifiedInput::Action1:
-			_isPaused = !_isPaused;
-			break;
-		case pvr::SimplifiedInput::Action2:
-			_animateCamera = !_animateCamera;
-			break;
-		default:
-			break;
+		case pvr::SimplifiedInput::ActionClose: exitShell(); break;
+		case pvr::SimplifiedInput::Action1: _isPaused = !_isPaused; break;
+		case pvr::SimplifiedInput::Action2: _animateCamera = !_animateCamera; break;
+		default: break;
 		}
 	}
 	pvr::assets::ModelHandle createFullScreenQuadMesh();
@@ -365,7 +357,7 @@ pvr::Result VulkanDeferredShadingPFX::initApplication()
 	_frameId = 0;
 
 	//  Load the scene and the light
-	pvr::assets::helper::loadModel(*this, Files::SceneFile, _mainScene);
+	_mainScene = pvr::assets::loadModel(*this, Files::SceneFile);
 
 	if (_mainScene->getNumCameras() == 0)
 	{
@@ -374,7 +366,7 @@ pvr::Result VulkanDeferredShadingPFX::initApplication()
 	}
 
 	//  Load light proxy geometry
-	pvr::assets::helper::loadModel(*this, Files::PointLightModelFile, _pointLightModel);
+	_pointLightModel = pvr::assets::loadModel(*this, Files::PointLightModelFile);
 
 	return pvr::Result::Success;
 }
@@ -405,7 +397,7 @@ Used to initialize variables that are dependent on the rendering context (e.g. t
 pvr::Result VulkanDeferredShadingPFX::initView()
 {
 	// Create the empty API objects.
-	_deviceResources = std::unique_ptr<DeviceResources>(new DeviceResources());
+	_deviceResources = std::make_unique<DeviceResources>();
 
 	// Create instance and retrieve compatible physical devices
 	_deviceResources->instance = pvr::utils::createInstance(this->getApplicationName());
@@ -417,7 +409,8 @@ pvr::Result VulkanDeferredShadingPFX::initView()
 	}
 
 	// Create the surface
-	_deviceResources->surface = pvr::utils::createSurface(_deviceResources->instance, _deviceResources->instance->getPhysicalDevice(0), this->getWindow(), this->getDisplay());
+	_deviceResources->surface =
+		pvr::utils::createSurface(_deviceResources->instance, _deviceResources->instance->getPhysicalDevice(0), this->getWindow(), this->getDisplay(), this->getConnection());
 
 	// Create a default set of debug utils messengers or debug callbacks using either VK_EXT_debug_utils or VK_EXT_debug_report respectively
 	_deviceResources->debugUtilsCallbacks = pvr::utils::createDebugUtilsCallbacks(_deviceResources->instance);
@@ -436,11 +429,7 @@ pvr::Result VulkanDeferredShadingPFX::initView()
 	// validate the supported swapchain image usage
 	pvrvk::ImageUsageFlags swapchainImageUsage = pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT;
 	if (pvr::utils::isImageUsageSupportedBySurface(surfaceCapabilities, pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT))
-	{
-		swapchainImageUsage |= pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT;
-	}
-
-	// Create the swapchain
+	{ swapchainImageUsage |= pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT; } // Create the swapchain
 	_deviceResources->swapchain = pvr::utils::createSwapchain(_deviceResources->device, _deviceResources->surface, getDisplayAttributes(), swapchainImageUsage);
 
 	_deviceResources->vmaAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
@@ -489,22 +478,17 @@ pvr::Result VulkanDeferredShadingPFX::initView()
 	// Setup per swapchain Resources
 	for (uint32_t i = 0; i < _numSwapImages; ++i)
 	{
-		_deviceResources->commandBufferMain[i] = _deviceResources->commandPool->allocateCommandBuffer();
+		_deviceResources->cmdBufferMain[i] = _deviceResources->commandPool->allocateCommandBuffer();
 		_deviceResources->presentationSemaphores[i] = _deviceResources->device->createSemaphore();
 		_deviceResources->imageAcquiredSemaphores[i] = _deviceResources->device->createSemaphore();
 		_deviceResources->perFrameResourcesFences[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
 
-		if (i == 0)
-		{
-			_deviceResources->commandBufferMain[0]->begin();
-		}
-		pvr::utils::setImageLayout(
-			_deviceResources->swapchain->getImage(i), pvrvk::ImageLayout::e_UNDEFINED, pvrvk::ImageLayout::e_PRESENT_SRC_KHR, _deviceResources->commandBufferMain[0]);
+		if (i == 0) { _deviceResources->cmdBufferMain[0]->begin(); }
+		pvr::utils::setImageLayout(_deviceResources->swapchain->getImage(i), pvrvk::ImageLayout::e_UNDEFINED, pvrvk::ImageLayout::e_PRESENT_SRC_KHR, _deviceResources->cmdBufferMain[0]);
 	}
 
 	const float_t aspectRatio = (float_t)_deviceResources->swapchain->getDimension().getWidth() / _deviceResources->swapchain->getDimension().getHeight();
-	_projectionMatrix =
-		pvr::math::perspective(pvr::Api::Vulkan, _mainScene->getCamera(0).getFOV(), aspectRatio, _mainScene->getCamera(0).getNear(), _mainScene->getCamera(0).getFar());
+	_projectionMatrix = pvr::math::perspective(pvr::Api::Vulkan, _mainScene->getCamera(0).getFOV(), aspectRatio, _mainScene->getCamera(0).getNear(), _mainScene->getCamera(0).getFar());
 
 	// allocate number of point light mesh nodes which will uses the same material and the mesh
 	_numberOfPointLights = PointLightConfiguration::NumProceduralPointLights;
@@ -516,12 +500,10 @@ pvr::Result VulkanDeferredShadingPFX::initView()
 	_pointLightModel->assignMaterialToMeshNodes(0, 0, _numberOfPointLights - 1);
 
 	//--- create the pfx effect
-	pvr::pfx::PfxParser rd(Files::EffectPfx, this);
-	if (!_deviceResources->render_mgr.init(*this, _deviceResources->swapchain, _deviceResources->descriptorPool))
-	{
-		return pvr::Result::UnknownError;
-	}
-	_deviceResources->render_mgr.addEffect(*rd.getAssetHandle(), _deviceResources->commandBufferMain[0]);
+	pvr::Effect effect = pvr::pfx::readPFX(*getAssetStream(Files::EffectPfx), this);
+
+	if (!_deviceResources->render_mgr.init(*this, _deviceResources->swapchain, _deviceResources->descriptorPool)) { return pvr::Result::UnknownError; }
+	_deviceResources->render_mgr.addEffect(effect, _deviceResources->cmdBufferMain[0]);
 
 	//--- Gbuffer renders the scene
 	_deviceResources->render_mgr.addModelForAllSubpassGroups(_mainScene, 0, static_cast<uint32_t>(RenderPassSubpass::GBuffer), 0);
@@ -541,11 +523,11 @@ pvr::Result VulkanDeferredShadingPFX::initView()
 		_pointLightModel, 0, static_cast<uint32_t>(RenderPassSubpass::Lighting), static_cast<uint32_t>(LightingSubpassGroup::PointLightStep3));
 
 	// build all the renderman objects
-	_deviceResources->render_mgr.buildRenderObjects(_deviceResources->commandBufferMain[0]);
+	_deviceResources->render_mgr.buildRenderObjects(_deviceResources->cmdBufferMain[0]);
 
-	_deviceResources->commandBufferMain[0]->end();
+	_deviceResources->cmdBufferMain[0]->end();
 	pvrvk::SubmitInfo submitInfo;
-	submitInfo.commandBuffers = &_deviceResources->commandBufferMain[0];
+	submitInfo.commandBuffers = &_deviceResources->cmdBufferMain[0];
 	submitInfo.numCommandBuffers = 1;
 
 	_deviceResources->queue->submit(&submitInfo, 1);
@@ -570,10 +552,7 @@ pvr::Result VulkanDeferredShadingPFX::initView()
 	initialiseStaticLightProperties();
 	uploadStaticData();
 
-	for (uint32_t i = 0; i < _numSwapImages; ++i)
-	{
-		updateDynamicSceneData(i);
-	}
+	for (uint32_t i = 0; i < _numSwapImages; ++i) { updateDynamicSceneData(i); }
 
 	// Record the main command buffer
 	recordMainCommandBuffer();
@@ -629,7 +608,7 @@ pvr::Result VulkanDeferredShadingPFX::renderFrame()
 	// submit the main command buffer
 	pvrvk::SubmitInfo submitInfo;
 	pvrvk::PipelineStageFlags pipeWaitStage = pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT;
-	submitInfo.commandBuffers = &_deviceResources->commandBufferMain[_swapchainIndex];
+	submitInfo.commandBuffers = &_deviceResources->cmdBufferMain[_swapchainIndex];
 	submitInfo.numCommandBuffers = 1;
 	submitInfo.waitSemaphores = &_deviceResources->imageAcquiredSemaphores[_frameId];
 	submitInfo.numWaitSemaphores = 1;
@@ -847,10 +826,7 @@ void VulkanDeferredShadingPFX::updateDynamicLightData(uint32_t swapchain)
 		{
 		case pvr::assets::Light::Point:
 		{
-			if (pointLight >= static_cast<uint32_t>(PointLightConfiguration::MaxScenePointLights))
-			{
-				continue;
-			}
+			if (pointLight >= static_cast<uint32_t>(PointLightConfiguration::MaxScenePointLights)) { continue; }
 
 			const glm::mat4& transMtx = _mainScene->getWorldMatrix(_mainScene->getNodeIdFromLightNodeId(i));
 			const glm::mat4& proxyScale = glm::scale(glm::vec3(PointLightConfiguration::PointLightMaxRadius)) * PointLightConfiguration::PointlightIntensity;
@@ -878,8 +854,7 @@ void VulkanDeferredShadingPFX::updateDynamicLightData(uint32_t swapchain)
 			++directionalLight;
 		}
 		break;
-		default:
-			break;
+		default: break;
 		}
 	}
 
@@ -907,9 +882,7 @@ void VulkanDeferredShadingPFX::updateDynamicLightData(uint32_t swapchain)
 
 	// update the procedural point lights
 	for (; pointLight < numSceneLights + _numberOfPointLights; ++pointLight)
-	{
-		updateProceduralPointLight(pass.pointLightPasses.initialData[pointLight], _renderInfo.pointLightPasses.lightProperties[pointLight], pointLight);
-	}
+	{ updateProceduralPointLight(pass.pointLightPasses.initialData[pointLight], _renderInfo.pointLightPasses.lightProperties[pointLight], pointLight); }
 }
 
 void VulkanDeferredShadingPFX::setProceduralPointLightInitialData(PointLightPasses::InitialData& data, PointLightPasses::PointLightProperties& pointLightProperties)
@@ -939,21 +912,13 @@ void VulkanDeferredShadingPFX::updateProceduralPointLight(PointLightPasses::Init
 	{
 		float_t dt = static_cast<float>(std::min(getFrameTime(), uint64_t(30)));
 		if (data.distance < PointLightConfiguration::LightMinDistance)
-		{
-			data.axial_vel = glm::abs(data.axial_vel) + (PointLightConfiguration::LightMaxAxialVelocity * dt * .001f);
-		}
+		{ data.axial_vel = glm::abs(data.axial_vel) + (PointLightConfiguration::LightMaxAxialVelocity * dt * .001f); }
 		if (data.distance > PointLightConfiguration::LightMaxDistance)
-		{
-			data.axial_vel = -glm::abs(data.axial_vel) - (PointLightConfiguration::LightMaxAxialVelocity * dt * .001f);
-		}
+		{ data.axial_vel = -glm::abs(data.axial_vel) - (PointLightConfiguration::LightMaxAxialVelocity * dt * .001f); }
 		if (data.height < PointLightConfiguration::LightMinHeight)
-		{
-			data.vertical_vel = glm::abs(data.vertical_vel) + (PointLightConfiguration::LightMaxAxialVelocity * dt * .001f);
-		}
+		{ data.vertical_vel = glm::abs(data.vertical_vel) + (PointLightConfiguration::LightMaxAxialVelocity * dt * .001f); }
 		if (data.height > PointLightConfiguration::LightMaxHeight)
-		{
-			data.vertical_vel = -glm::abs(data.vertical_vel) - (PointLightConfiguration::LightMaxAxialVelocity * dt * .001f);
-		}
+		{ data.vertical_vel = -glm::abs(data.vertical_vel) - (PointLightConfiguration::LightMaxAxialVelocity * dt * .001f); }
 
 		data.axial_vel += pvr::randomrange(-PointLightConfiguration::LightAxialVelocityChange, PointLightConfiguration::LightAxialVelocityChange) * dt;
 
@@ -961,18 +926,9 @@ void VulkanDeferredShadingPFX::updateProceduralPointLight(PointLightPasses::Init
 
 		data.vertical_vel += pvr::randomrange(-PointLightConfiguration::LightVerticalVelocityChange, PointLightConfiguration::LightVerticalVelocityChange) * dt;
 
-		if (glm::abs(data.axial_vel) > PointLightConfiguration::LightMaxAxialVelocity)
-		{
-			data.axial_vel *= .8f;
-		}
-		if (glm::abs(data.radial_vel) > PointLightConfiguration::LightMaxRadialVelocity)
-		{
-			data.radial_vel *= .8f;
-		}
-		if (glm::abs(data.vertical_vel) > PointLightConfiguration::LightMaxVerticalVelocity)
-		{
-			data.vertical_vel *= .8f;
-		}
+		if (glm::abs(data.axial_vel) > PointLightConfiguration::LightMaxAxialVelocity) { data.axial_vel *= .8f; }
+		if (glm::abs(data.radial_vel) > PointLightConfiguration::LightMaxRadialVelocity) { data.radial_vel *= .8f; }
+		if (glm::abs(data.vertical_vel) > PointLightConfiguration::LightMaxVerticalVelocity) { data.vertical_vel *= .8f; }
 
 		data.distance += data.axial_vel * dt * 0.001f;
 		data.angle += data.radial_vel * dt * 0.001f;
@@ -1059,10 +1015,7 @@ void VulkanDeferredShadingPFX::updateAnimation()
 
 	// Update camera matrices
 	static float angle = 0;
-	if (_animateCamera)
-	{
-		angle += getFrameTime() / 5000.f;
-	}
+	if (_animateCamera) { angle += getFrameTime() / 5000.f; }
 	_viewMatrix = glm::lookAt(glm::vec3(sin(angle) * 100.f + vTo.x, vTo.y + 30., cos(angle) * 100.f + vTo.z), vTo, vUp);
 	_viewProjectionMatrix = _projectionMatrix * _viewMatrix;
 	_inverseViewMatrix = glm::inverse(_viewMatrix);
@@ -1085,10 +1038,7 @@ void VulkanDeferredShadingPFX::initialiseStaticLightProperties()
 		{
 		case pvr::assets::Light::Point:
 		{
-			if (pointLight >= PointLightConfiguration::MaxScenePointLights)
-			{
-				continue;
-			}
+			if (pointLight >= PointLightConfiguration::MaxScenePointLights) { continue; }
 
 			// POINT LIGHT GEOMETRY : The spheres that will be used for the stencil pass
 			pass.pointLightPasses.lightProperties[pointLight].lightColor = glm::vec4(light.getColor(), 1.f);
@@ -1110,8 +1060,7 @@ void VulkanDeferredShadingPFX::initialiseStaticLightProperties()
 			++directionalLight;
 		}
 		break;
-		default:
-			break;
+		default: break;
 		}
 	}
 
@@ -1133,26 +1082,15 @@ void VulkanDeferredShadingPFX::allocateLights()
 	{
 		switch (_mainScene->getLight(_mainScene->getLightNode(i).getObjectId()).getType())
 		{
-		case pvr::assets::Light::Directional:
-			++countDirectional;
-			break;
-		case pvr::assets::Light::Point:
-			++countPoint;
-			break;
-		default:
-			break;
+		case pvr::assets::Light::Directional: ++countDirectional; break;
+		case pvr::assets::Light::Point: ++countPoint; break;
+		default: break;
 		}
 	}
 
-	if (DirectionalLightConfiguration::AdditionalDirectionalLight)
-	{
-		++countDirectional;
-	}
+	if (DirectionalLightConfiguration::AdditionalDirectionalLight) { ++countDirectional; }
 
-	if (countPoint >= static_cast<uint32_t>(PointLightConfiguration::MaxScenePointLights))
-	{
-		countPoint = PointLightConfiguration::MaxScenePointLights;
-	}
+	if (countPoint >= static_cast<uint32_t>(PointLightConfiguration::MaxScenePointLights)) { countPoint = PointLightConfiguration::MaxScenePointLights; }
 
 	countPoint += PointLightConfiguration::NumProceduralPointLights;
 
@@ -1164,9 +1102,7 @@ void VulkanDeferredShadingPFX::allocateLights()
 	_renderInfo.pointLightPasses.initialData.resize(countPoint);
 
 	for (uint32_t i = countPoint - PointLightConfiguration::NumProceduralPointLights; i < countPoint; ++i)
-	{
-		setProceduralPointLightInitialData(_renderInfo.pointLightPasses.initialData[i], _renderInfo.pointLightPasses.lightProperties[i]);
-	}
+	{ setProceduralPointLightInitialData(_renderInfo.pointLightPasses.initialData[i], _renderInfo.pointLightPasses.lightProperties[i]); }
 }
 
 /*!*********************************************************************************************************************
@@ -1183,81 +1119,78 @@ void VulkanDeferredShadingPFX::recordMainCommandBuffer()
 
 	for (uint32_t i = 0; i < _numSwapImages; ++i)
 	{
-		_deviceResources->commandBufferMain[i]->begin();
+		_deviceResources->cmdBufferMain[i]->begin();
 
 		pvrvk::Framebuffer framebuffer = _deviceResources->render_mgr.toPass(0, 0).getFramebuffer(i);
 
 		// Prepare the image for Presenting
-		pvr::utils::setImageLayout(_deviceResources->swapchain->getImage(i), pvrvk::ImageLayout::e_PRESENT_SRC_KHR, pvrvk::ImageLayout::e_COLOR_ATTACHMENT_OPTIMAL,
-			_deviceResources->commandBufferMain[i]);
+		pvr::utils::setImageLayout(
+			_deviceResources->swapchain->getImage(i), pvrvk::ImageLayout::e_PRESENT_SRC_KHR, pvrvk::ImageLayout::e_COLOR_ATTACHMENT_OPTIMAL, _deviceResources->cmdBufferMain[i]);
 
 		/// 1) Begin the render pass
-		_deviceResources->commandBufferMain[i]->beginRenderPass(
-			_deviceResources->render_mgr.toPass(0, 0).framebuffer[i], renderArea, true, clearValue, framebuffer->getNumAttachments());
+		_deviceResources->cmdBufferMain[i]->beginRenderPass(_deviceResources->render_mgr.toPass(0, 0).framebuffer[i], renderArea, true, clearValue, framebuffer->getNumAttachments());
 
 		/// 2) Record the scene in to the gbuffer
-		_deviceResources->render_mgr.toSubpass(0, 0, static_cast<uint32_t>(RenderPassSubpass::GBuffer)).recordRenderingCommands(_deviceResources->commandBufferMain[i], i, false);
+		_deviceResources->render_mgr.toSubpass(0, 0, static_cast<uint32_t>(RenderPassSubpass::GBuffer)).recordRenderingCommands(_deviceResources->cmdBufferMain[i], (uint16_t)i, false);
 
 		/// 3) Begin the next subpass
-		_deviceResources->commandBufferMain[i]->nextSubpass(pvrvk::SubpassContents::e_INLINE);
+		_deviceResources->cmdBufferMain[i]->nextSubpass(pvrvk::SubpassContents::e_INLINE);
 
 		/// 4) record the directional lights Geometry stencil. Draw stencil to discard useless pixels
 		_deviceResources->render_mgr.toSubpassGroup(0, 0, static_cast<uint32_t>(RenderPassSubpass::Lighting), static_cast<uint32_t>(LightingSubpassGroup::DirectionalLight))
-			.recordRenderingCommands(_deviceResources->commandBufferMain[i], i);
+			.recordRenderingCommands(_deviceResources->cmdBufferMain[i], (uint16_t)i);
 
 		for (uint32_t j = 0; j < _numberOfPointLights; j++)
 		{
 			/// 5) record the point light stencil
-			recordCommandsPointLightGeometryStencil(_deviceResources->commandBufferMain[i], i, j);
+			recordCommandsPointLightGeometryStencil(_deviceResources->cmdBufferMain[i], i, j);
 
 			/// 6) record the point light proxy
 			_deviceResources->render_mgr.toSubpassGroup(0, 0, static_cast<uint32_t>(RenderPassSubpass::Lighting), static_cast<uint32_t>(LightingSubpassGroup::PointLightStep2))
 				.toSubpassGroupModel(0)
 				.nodes[j]
-				.recordRenderingCommands(_deviceResources->commandBufferMain[i], i);
+				.recordRenderingCommands(_deviceResources->cmdBufferMain[i], (uint16_t)i);
 		}
 
 		/// 7) record the pointlight source
 		_deviceResources->render_mgr.toSubpassGroup(0, 0, static_cast<uint32_t>(RenderPassSubpass::Lighting), static_cast<uint32_t>(LightingSubpassGroup::PointLightStep3))
-			.recordRenderingCommands(_deviceResources->commandBufferMain[i], i);
+			.recordRenderingCommands(_deviceResources->cmdBufferMain[i], (uint16_t)i);
 
 		/// 8) Render ui
-		_deviceResources->uiRenderer.beginRendering(_deviceResources->commandBufferMain[i]);
+		_deviceResources->uiRenderer.beginRendering(_deviceResources->cmdBufferMain[i]);
 		_deviceResources->uiRenderer.getDefaultTitle()->render();
 		_deviceResources->uiRenderer.getDefaultControls()->render();
 		_deviceResources->uiRenderer.getSdkLogo()->render();
 		_deviceResources->uiRenderer.endRendering();
-		_deviceResources->commandBufferMain[i]->endRenderPass();
+		_deviceResources->cmdBufferMain[i]->endRenderPass();
 
 		// Prepare the image for Presenting
-		pvr::utils::setImageLayout(_deviceResources->swapchain->getImage(i), pvrvk::ImageLayout::e_COLOR_ATTACHMENT_OPTIMAL, pvrvk::ImageLayout::e_PRESENT_SRC_KHR,
-			_deviceResources->commandBufferMain[i]);
-		_deviceResources->commandBufferMain[i]->end();
+		pvr::utils::setImageLayout(
+			_deviceResources->swapchain->getImage(i), pvrvk::ImageLayout::e_COLOR_ATTACHMENT_OPTIMAL, pvrvk::ImageLayout::e_PRESENT_SRC_KHR, _deviceResources->cmdBufferMain[i]);
+		_deviceResources->cmdBufferMain[i]->end();
 	}
 }
 
 /*!*********************************************************************************************************************
 \brief	Record point light stencil commands
-\param  commandBuffer SecondaryCommandBuffer to record
+\param  cmdBuffers SecondaryCommandBuffer to record
 \param swapChainIndex Current swap chain index
 \param subpass Current sub pass
 ***********************************************************************************************************************/
-void VulkanDeferredShadingPFX::recordCommandsPointLightGeometryStencil(pvrvk::CommandBuffer& commandBuffer, uint32_t swapChainIndex, const uint32_t pointLight)
+void VulkanDeferredShadingPFX::recordCommandsPointLightGeometryStencil(pvrvk::CommandBuffer& cmdBuffers, uint32_t swapChainIndex, const uint32_t pointLight)
 {
 	pvrvk::ClearRect clearArea(pvrvk::Rect2D(0, 0, _framebufferWidth, _framebufferHeight));
 	if ((_framebufferWidth != _windowWidth) || (_framebufferHeight != _windowHeight))
-	{
-		clearArea.setRect(pvrvk::Rect2D(_viewportOffsets[0], _viewportOffsets[1], _framebufferWidth, _framebufferHeight));
-	}
+	{ clearArea.setRect(pvrvk::Rect2D(_viewportOffsets[0], _viewportOffsets[1], _framebufferWidth, _framebufferHeight)); }
 
 	// clear stencil to 0's to make use of it again for point lights
-	commandBuffer->clearAttachment(pvrvk::ClearAttachment::createStencilClearAttachment(0u), clearArea);
+	cmdBuffers->clearAttachment(pvrvk::ClearAttachment::createStencilClearAttachment(0u), clearArea);
 
 	// record the rendering commands for the point light stencil pass
 	_deviceResources->render_mgr.toSubpassGroup(0, 0, static_cast<uint32_t>(RenderPassSubpass::Lighting), static_cast<uint32_t>(LightingSubpassGroup::PointLightStep1))
 		.toSubpassGroupModel(0)
 		.nodes[pointLight]
-		.recordRenderingCommands(commandBuffer, swapChainIndex);
+		.recordRenderingCommands(cmdBuffers, static_cast<uint16_t>(swapChainIndex));
 }
 
 /*!*********************************************************************************************************************
@@ -1265,7 +1198,4 @@ void VulkanDeferredShadingPFX::recordCommandsPointLightGeometryStencil(pvrvk::Co
 \brief	This function must be implemented by the user of the shell. The user should return its Shell object defining the
 behaviour of the application.
 ***********************************************************************************************************************/
-std::unique_ptr<pvr::Shell> pvr::newDemo()
-{
-	return std::unique_ptr<Shell>(new VulkanDeferredShadingPFX());
-}
+std::unique_ptr<pvr::Shell> pvr::newDemo() { return std::make_unique<VulkanDeferredShadingPFX>(); }

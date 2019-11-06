@@ -18,10 +18,7 @@ public:
 	void generateTexture()
 	{
 		gl::GetError(); // Make sure you don't break due to previous errors
-		if (!myTexture)
-		{
-			gl::GenTextures(1, &myTexture);
-		}
+		if (!myTexture) { gl::GenTextures(1, &myTexture); }
 
 		gl::BindTexture(GL_TEXTURE_2D, myTexture);
 		gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -58,50 +55,31 @@ public:
 
 				rawBuffer[j * width + i] = (one ^ two ? 0xFFC0C0C0 : 0xFF606060);
 			}
-		gl::TexImage2D(GL_TEXTURE_2D, 0, GL_SRGB8_ALPHA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, rawBuffer.data());
-		GLint err = gl::GetError();
-		if (err != GL_NO_ERROR)
-		{
-			throw new pvr::PvrError("PVRCamera, Dummy version - Error while generating the dummy camera texture.");
-		}
+		gl::TexImage2D(GL_TEXTURE_2D, 0, GL_SRGB8_ALPHA8, static_cast<GLsizei>(width), static_cast<GLsizei>(height), 0, GL_RGBA, GL_UNSIGNED_BYTE, rawBuffer.data());
+		GLenum err = gl::GetError();
+		if (err != GL_NO_ERROR) { throw pvr::PvrError("PVRCamera, Dummy version - Error while generating the dummy camera texture."); }
 	}
 	void destroyTexture()
 	{
-		if (myTexture)
-			gl::DeleteTextures(1, &myTexture);
+		if (myTexture) gl::DeleteTextures(1, &myTexture);
 		myTexture = 0;
 	}
-	const GLuint& getRgbTexture()
-	{
-		return myTexture;
-	}
+	const GLuint& getRgbTexture() { return myTexture; }
 };
 
-CameraInterface::CameraInterface()
-{
-	pImpl = new CameraInterfaceImpl;
-}
-CameraInterface::~CameraInterface()
-{
-	delete static_cast<CameraInterfaceImpl*>(pImpl);
-}
+CameraInterface::CameraInterface() { pImpl = new CameraInterfaceImpl; }
+CameraInterface::~CameraInterface() { delete static_cast<CameraInterfaceImpl*>(pImpl); }
 
-void CameraInterface::initializeSession(HWCamera::Enum eCamera, int preferredResX, int preferredResY)
+void CameraInterface::initializeSession(HWCamera::Enum, int preferredResX, int preferredResY)
 {
-	static_cast<CameraInterfaceImpl*>(pImpl)->width = preferredResX ? preferredResX : 512;
-	static_cast<CameraInterfaceImpl*>(pImpl)->height = preferredResY ? preferredResY : 512;
+	static_cast<CameraInterfaceImpl*>(pImpl)->width = preferredResX ? static_cast<uint32_t>(preferredResX) : 512u;
+	static_cast<CameraInterfaceImpl*>(pImpl)->height = preferredResY ? static_cast<uint32_t>(preferredResY) : 512u;
 	static_cast<CameraInterfaceImpl*>(pImpl)->generateTexture();
 }
 
-bool CameraInterface::updateImage()
-{
-	return false;
-}
+bool CameraInterface::updateImage() { return false; }
 
-bool CameraInterface::hasProjectionMatrixChanged()
-{
-	return false;
-}
+bool CameraInterface::hasProjectionMatrixChanged() { return false; }
 
 const glm::mat4& CameraInterface::getProjectionMatrix()
 {
@@ -109,25 +87,13 @@ const glm::mat4& CameraInterface::getProjectionMatrix()
 	return proj;
 }
 
-GLuint CameraInterface::getRgbTexture()
-{
-	return static_cast<CameraInterfaceImpl*>(pImpl)->getRgbTexture();
-}
+GLuint CameraInterface::getRgbTexture() { return static_cast<CameraInterfaceImpl*>(pImpl)->getRgbTexture(); }
 
-GLuint CameraInterface::getLuminanceTexture()
-{
-	return 0;
-}
+GLuint CameraInterface::getLuminanceTexture() { return 0; }
 
-GLuint CameraInterface::getChrominanceTexture()
-{
-	return 0;
-}
+GLuint CameraInterface::getChrominanceTexture() { return 0; }
 
-void CameraInterface::destroySession()
-{
-	static_cast<CameraInterfaceImpl*>(pImpl)->destroyTexture();
-}
+void CameraInterface::destroySession() { static_cast<CameraInterfaceImpl*>(pImpl)->destroyTexture(); }
 
 void CameraInterface::getCameraResolution(uint32_t& x, uint32_t& y)
 {
@@ -135,14 +101,8 @@ void CameraInterface::getCameraResolution(uint32_t& x, uint32_t& y)
 	y = static_cast<CameraInterfaceImpl*>(pImpl)->height;
 }
 
-bool CameraInterface::hasRgbTexture()
-{
-	return true;
-}
+bool CameraInterface::hasRgbTexture() { return true; }
 
-bool CameraInterface::hasLumaChromaTextures()
-{
-	return false;
-}
+bool CameraInterface::hasLumaChromaTextures() { return false; }
 } // namespace pvr
 //!\endcond

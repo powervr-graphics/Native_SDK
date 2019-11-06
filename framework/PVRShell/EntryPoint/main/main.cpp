@@ -18,7 +18,7 @@ int main(int argc, char** argv)
 	pvr::platform::CommandLineParser commandLine;
 	commandLine.set((argc - 1), &argv[1]);
 
-	pvr::platform::StateMachine stateMachine(NULL, commandLine, NULL);
+	pvr::platform::StateMachine stateMachine(nullptr, commandLine, nullptr);
 
 	stateMachine.init();
 

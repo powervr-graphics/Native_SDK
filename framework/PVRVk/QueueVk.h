@@ -152,10 +152,7 @@ public:
 	/// <summary>Submit</summary>
 	/// <param name="queueSubmitInfo">Queue submit info</param>
 	/// <param name="signalFence">Optional handle to a fence to be signaled. If fence is not null handle, it defines a fence signal</param>
-	void submit(const SubmitInfo& queueSubmitInfo, Fence signalFence = Fence())
-	{
-		submit(&queueSubmitInfo, 1, signalFence);
-	}
+	void submit(const SubmitInfo& queueSubmitInfo, Fence signalFence = Fence()) { submit(&queueSubmitInfo, 1, signalFence); }
 
 	/// <summary>Submit</summary>
 	/// <param name="queueSubmitInfo">Pointer to submit info</param>
@@ -167,7 +164,7 @@ public:
 	/// <param name="presentInfo">Present info</param>
 	/// <param name="results">An array of presentInfo.swapchainCount Results. Applications that do not need per-swapchain results can use nullptr for results.
 	/// If non-NULL, each entry results will be set to the Result for presenting the swapchain corresponding to the same swapchain</param>
-	void present(PresentInfo& presentInfo, Result* const results = nullptr);
+	void present(const PresentInfo& presentInfo, Result* const results = nullptr);
 
 	/// <summary>To wait on the host for the completion of outstanding queue operations for a given queue. This is equivalent to submitting a fence to a queue and waiting with an
 	/// infinite timeout for that fence to signal.</summary>
@@ -175,17 +172,11 @@ public:
 
 	/// <summary>Return supported queue flags</summary>
 	/// <returns>pvrvk::QueueFlags</returns>
-	pvrvk::QueueFlags getFlags() const
-	{
-		return _flags;
-	}
+	pvrvk::QueueFlags getFlags() const { return _flags; }
 
 	/// <summary>Return the queues priority</summary>
 	/// <returns>Queue Priority</returns>
-	float getPriority() const
-	{
-		return _priority;
-	}
+	float getPriority() const { return _priority; }
 
 	/// <summary>Submit sparse binding operations.</summary>
 	/// <param name="bindInfo">Pointer to bind infos</param>
@@ -195,10 +186,7 @@ public:
 
 	/// <summary>Get family id</summary>
 	/// <returns>uint</returns>32_t
-	uint32_t getFamilyIndex() const
-	{
-		return _familyIndex;
-	}
+	uint32_t getFamilyIndex() const { return _familyIndex; }
 
 	/// <summary>Begins identifying a region of work submitted to this queue. The calls to beginDebugUtilsLabel and endDebugUtilsLabel must be matched and balanced.</summary>
 	/// <param name="labelInfo">Specifies the parameters of the label region to open</param>

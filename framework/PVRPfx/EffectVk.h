@@ -39,24 +39,15 @@ struct ObjectSemantic
 	/// <summary>Less than operator. Works by comparing the name field</summary>
 	/// <param name="rhs">Right hand side of the operator</param>
 	/// <returns>True if the names compare "less than", otherwise false</param>
-	bool operator<(const ObjectSemantic& rhs) const
-	{
-		return name < rhs.name;
-	}
+	bool operator<(const ObjectSemantic& rhs) const { return name < rhs.name; }
 	/// <summary>Equality operator. Works by comparing the name field</summary>
 	/// <param name="rhs">Right hand side of the operator</param>
 	/// <returns>True if the names compare "equal", otherwise false</param>
-	bool operator==(const ObjectSemantic& rhs) const
-	{
-		return name == rhs.name;
-	}
+	bool operator==(const ObjectSemantic& rhs) const { return name == rhs.name; }
 	/// <summary>Inequality operator. Works by comparing the name field</summary>
 	/// <param name="rhs">Right hand side of the operator</param>
 	/// <returns>True if the names compare "equal", otherwise false</param>
-	bool operator!=(const ObjectSemantic& rhs) const
-	{
-		return name != rhs.name;
-	}
+	bool operator!=(const ObjectSemantic& rhs) const { return name != rhs.name; }
 };
 
 /// <summary>Effect's uniform semantic. A Uniform semantic is intended to connect
@@ -78,24 +69,15 @@ struct UniformSemantic : public effect::UniformSemantic
 	/// <summary>Less than operator. Works by comparing the name field</summary>
 	/// <param name="rhs">Right hand side of the operator</param>
 	/// <returns>True if the names compare "less than", otherwise false</param>
-	bool operator<(const UniformSemantic& rhs) const
-	{
-		return semantic < rhs.semantic;
-	}
+	bool operator<(const UniformSemantic& rhs) const { return semantic < rhs.semantic; }
 	/// <summary>Equality operator. Works by comparing the name field</summary>
 	/// <param name="rhs">Right hand side of the operator</param>
 	/// <returns>True if the names compare "equal", otherwise false</param>
-	bool operator==(const UniformSemantic& rhs) const
-	{
-		return semantic == rhs.semantic;
-	}
+	bool operator==(const UniformSemantic& rhs) const { return semantic == rhs.semantic; }
 	/// <summary>Inequality operator. Works by comparing the name field</summary>
 	/// <param name="rhs">Right hand side of the operator</param>
 	/// <returns>True if the names compare "equal", otherwise false</param>
-	bool operator!=(const UniformSemantic& rhs) const
-	{
-		return semantic != rhs.semantic;
-	}
+	bool operator!=(const UniformSemantic& rhs) const { return semantic != rhs.semantic; }
 };
 
 /// <summary>A conditional Pipeline is effectively a Pipeline entry in a SubpassGroup that
@@ -233,59 +215,35 @@ public:
 
 	/// <summary>Get the exact string that the Effect object is using to define its API.</summary>
 	/// <returns>The exact string that the Effect object is using to define its API.</returns>
-	const StringHash& getApiString() const
-	{
-		return _apiString;
-	}
+	const StringHash& getApiString() const { return _apiString; }
 
 	/// <summary>Get number of passes</summary>
 	/// <returns>The number of passes</returns>
-	uint32_t getNumPasses() const
-	{
-		return static_cast<uint32_t>(_passes.size());
-	}
+	uint32_t getNumPasses() const { return static_cast<uint32_t>(_passes.size()); }
 
 	/// <summary>Get the device that this Effect object belongs to.</summary>
 	/// <returns>The device that this Effect object belongs to.</returns>
-	pvrvk::DeviceWeakPtr& getDevice()
-	{
-		return _device;
-	}
+	pvrvk::DeviceWeakPtr& getDevice() { return _device; }
 
 	/// <summary>Get the context that this Effect object belongs to.</summary>
 	/// <returns>The context that this Effect object belongs to.</returns>
-	const pvrvk::DeviceWeakPtr& getDevice() const
-	{
-		return _device;
-	}
+	const pvrvk::DeviceWeakPtr& getDevice() const { return _device; }
 
 	/// <summary>Get the buffer allocator that this Effect uses.</summary>
 	/// <returns>The buffer allocator that this Effect uses.</returns>
-	pvr::utils::vma::Allocator& getBufferAllocator()
-	{
-		return _bufferAllocator;
-	}
+	pvr::utils::vma::Allocator& getBufferAllocator() { return _bufferAllocator; }
 
 	/// <summary>Get the buffer allocator that this Effect uses.</summary>
 	/// <returns>The buffer allocator that this Effect uses.</returns>
-	const pvr::utils::vma::Allocator& getBufferAllocator() const
-	{
-		return _bufferAllocator;
-	}
+	const pvr::utils::vma::Allocator& getBufferAllocator() const { return _bufferAllocator; }
 
 	/// <summary>Get the image allocator that this Effect uses.</summary>
 	/// <returns>The image allocator that this Effect uses.</returns>
-	pvr::utils::vma::Allocator& getImageAllocator()
-	{
-		return _imageAllocator;
-	}
+	pvr::utils::vma::Allocator& getImageAllocator() { return _imageAllocator; }
 
 	/// <summary>Get the image allocator that this Effect uses.</summary>
 	/// <returns>The image allocator that this Effect uses.</returns>
-	const pvr::utils::vma::Allocator& getImageAllocator() const
-	{
-		return _imageAllocator;
-	}
+	const pvr::utils::vma::Allocator& getImageAllocator() const { return _imageAllocator; }
 
 	/// <summary>Get a pipeline layout by its pipeline name.</summary>
 	/// <param name="name">The name of a pipeline (as defined in the Effect).</param>
@@ -293,35 +251,23 @@ public:
 	pvrvk::PipelineLayout getPipelineLayout(const StringHash& name) const
 	{
 		auto it = _pipelineDefinitions.find(name);
-		if (it == _pipelineDefinitions.end())
-		{
-			return pvrvk::PipelineLayout();
-		}
+		if (it == _pipelineDefinitions.end()) { return pvrvk::PipelineLayout(); }
 		return it->second.createParam.pipelineLayout;
 	}
 
 	/// <summary>Get a reference to one of the effect's passes</summary>
 	/// <param name="passIndex">The index of the pass (the order with which it was defined/added to the effect)</param>
 	/// <returns>The pass with the specified index. If it does not exist, undefined behaviour.</returns>
-	const Pass& getPass(uint32_t passIndex) const
-	{
-		return _passes[passIndex];
-	}
+	const Pass& getPass(uint32_t passIndex) const { return _passes[passIndex]; }
 
 	/// <summary>Get a reference to one of the effect's passes</summary>
 	/// <param name="passIndex">The index of the pass (the order with which it was defined/added to the effect)</param>
 	/// <returns>The pass with the specified index. If it does not exist, undefined behaviour.</returns>
-	Pass& getPass(uint32_t passIndex)
-	{
-		return _passes[passIndex];
-	}
+	Pass& getPass(uint32_t passIndex) { return _passes[passIndex]; }
 
 	/// <summary>Get all passes (implementation defined)</summary>
 	/// <returns>An implementation-defined container of all passes in this effect.</returns>
-	const std::vector<Pass>& getPasses() const
-	{
-		return _passes;
-	}
+	const std::vector<Pass>& getPasses() const { return _passes; }
 
 	/// <summary>Get a reference to a Buffer. Null if not exists.</summary>
 	/// <param name="name">The name of the Buffer</param>
@@ -343,24 +289,15 @@ public:
 
 	/// <summary>Get swapchain (const)</summary>
 	/// <returns>const pvrvk::Swapchain&</returns>
-	const pvrvk::Swapchain& getSwapchain() const
-	{
-		return _swapchain;
-	}
+	const pvrvk::Swapchain& getSwapchain() const { return _swapchain; }
 
 	/// <summary>Get pipeline cache (const)</summary>
 	/// <returns>const pvrvk::PipelineCache&</returns>
-	const pvrvk::PipelineCache& getPipelineCache() const
-	{
-		return _pipelineCache;
-	}
+	const pvrvk::PipelineCache& getPipelineCache() const { return _pipelineCache; }
 
 	/// <summary>Get the list of all buffers as a raw container</summary>
 	/// <returns>An implementation-defined container with all the buffers</returns>
-	const std::map<StringHash, BufferDef>& getBuffers() const
-	{
-		return _bufferDefinitions;
-	}
+	const std::map<StringHash, BufferDef>& getBuffers() const { return _bufferDefinitions; }
 
 	/// <summary>Get a texture by its name</summary>
 	/// <param name="name">The name of the texture</param>
@@ -368,10 +305,7 @@ public:
 	pvrvk::ImageView getTexture(const StringHash& name) const
 	{
 		auto it = _textures.find(name);
-		if (it == _textures.end())
-		{
-			return pvrvk::ImageView();
-		}
+		if (it == _textures.end()) { return pvrvk::ImageView(); }
 		return it->second;
 	}
 
@@ -438,10 +372,7 @@ public:
 	const pvrvk::GraphicsPipelineCreateInfo& getPipelineCreateParam(const StringHash& pipelineName) const
 	{
 		auto it = _pipelineDefinitions.find(pipelineName);
-		if (it == _pipelineDefinitions.end())
-		{
-			Log("Pipeline create param %s not found", pipelineName.c_str());
-		}
+		if (it == _pipelineDefinitions.end()) { Log("Pipeline create param %s not found", pipelineName.c_str()); }
 		return it->second.createParam;
 	}
 
@@ -451,40 +382,25 @@ public:
 	pvrvk::GraphicsPipelineCreateInfo& getPipelineCreateParam(const StringHash& pipelineName)
 	{
 		auto it = _pipelineDefinitions.find(pipelineName);
-		if (it == _pipelineDefinitions.end())
-		{
-			Log("Pipeline create param %s not found", pipelineName.c_str());
-		}
+		if (it == _pipelineDefinitions.end()) { Log("Pipeline create param %s not found", pipelineName.c_str()); }
 		return it->second.createParam;
 	}
 
 	/// <summary>Return the name of the effect name.</summary>
 	/// <returns>The name of the effect name.</returns>
-	const std::string& getEffectName() const
-	{
-		return _name;
-	}
+	const std::string& getEffectName() const { return _name; }
 
 	/// <summary>Return the effect asset that was used to create this object</summary>
 	/// <returns>The effect asset that was used to create this object</returns>
-	const effect::Effect& getEffectAsset() const
-	{
-		return _assetEffect;
-	}
+	const effect::Effect& getEffectAsset() const { return _assetEffect; }
 
 	/// <summary>Get the descriptor pool used by this object</summary>
 	/// <returns>the descriptor pool used by this object</returns>
-	pvrvk::DescriptorPool& getDescriptorPool()
-	{
-		return _descriptorPool;
-	}
+	pvrvk::DescriptorPool& getDescriptorPool() { return _descriptorPool; }
 
 	/// <summary>Get the descriptor pool used by this object</summary>
 	/// <returns>the descriptor pool used by this object</returns>
-	const pvrvk::DescriptorPool& getDescriptorPool() const
-	{
-		return _descriptorPool;
-	}
+	const pvrvk::DescriptorPool& getDescriptorPool() const { return _descriptorPool; }
 
 	/// <summary>Register a uniform semantic</summary>
 	/// <param name="pipeline">The pipeline to add the semantic for</param>

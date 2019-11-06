@@ -4,11 +4,9 @@ var searchData=
   ['nativedisplayhandle',['NativeDisplayHandle',['../namespacepvr_1_1platform.html#a638473918ac7c040543bdcbcfd50c4a8',1,'pvr::platform']]],
   ['nativedisplayhandle_5f',['NativeDisplayHandle_',['../structpvr_1_1platform_1_1_native_display_handle__.html',1,'pvr::platform']]],
   ['nativeplatformhandles',['NativePlatformHandles',['../namespacepvr_1_1platform.html#a273377608e97d7f4e527ca4456df0e4b',1,'pvr::platform']]],
-  ['nativeplatformhandles_5f',['NativePlatformHandles_',['../structpvr_1_1platform_1_1_native_platform_handles__.html',1,'pvr::platform']]],
-  ['nativeplatformhandles_5f',['NativePlatformHandles_',['../structpvr_1_1platform_1_1_native_platform_handles__.html#a7fd95dd2ed8a0cb038551fa0a0b93d52',1,'pvr::platform::NativePlatformHandles_']]],
+  ['nativeplatformhandles_5f',['NativePlatformHandles_',['../structpvr_1_1platform_1_1_native_platform_handles__.html',1,'pvr::platform::NativePlatformHandles_'],['../structpvr_1_1platform_1_1_native_platform_handles__.html#a7fd95dd2ed8a0cb038551fa0a0b93d52',1,'pvr::platform::NativePlatformHandles_::NativePlatformHandles_()']]],
   ['nativesharedplatformhandles',['NativeSharedPlatformHandles',['../namespacepvr_1_1platform.html#aa4a9f3b43e51f394652a51427bb96e25',1,'pvr::platform']]],
-  ['nativesharedplatformhandles_5f',['NativeSharedPlatformHandles_',['../structpvr_1_1platform_1_1_native_shared_platform_handles__.html#a064cf4d2c8f615e4814ea0768b553948',1,'pvr::platform::NativeSharedPlatformHandles_']]],
-  ['nativesharedplatformhandles_5f',['NativeSharedPlatformHandles_',['../structpvr_1_1platform_1_1_native_shared_platform_handles__.html',1,'pvr::platform']]],
+  ['nativesharedplatformhandles_5f',['NativeSharedPlatformHandles_',['../structpvr_1_1platform_1_1_native_shared_platform_handles__.html',1,'pvr::platform::NativeSharedPlatformHandles_'],['../structpvr_1_1platform_1_1_native_shared_platform_handles__.html#a064cf4d2c8f615e4814ea0768b553948',1,'pvr::platform::NativeSharedPlatformHandles_::NativeSharedPlatformHandles_()']]],
   ['nativewindow',['nativeWindow',['../structpvr_1_1platform_1_1_native_window_handle__.html#a9a8bfae237ff5fe2f048f53ab6c2490a',1,'pvr::platform::NativeWindowHandle_::nativeWindow()'],['../namespacepvr_1_1platform.html#ae62e3026b365c47da1848f8d5bcb8355',1,'pvr::platform::NativeWindow()']]],
   ['nativewindowhandle_5f',['NativeWindowHandle_',['../structpvr_1_1platform_1_1_native_window_handle__.html',1,'pvr::platform']]],
   ['nominmax',['NOMINMAX',['../_bindings_gles_8h.html#a9f918755b601cf4bffca775992e6fb90',1,'BindingsGles.h']]]

@@ -68,14 +68,8 @@ public:
 	void yaw(float yaw)
 	{
 		_yaw += yaw;
-		if (_yaw <= -180.f)
-		{
-			_yaw += 360.f;
-		}
-		if (_yaw > 180.f)
-		{
-			_yaw -= 360.f;
-		}
+		if (_yaw <= -180.f) { _yaw += 360.f; }
+		if (_yaw > 180.f) { _yaw -= 360.f; }
 		_isOrientationDirty = true;
 	}
 

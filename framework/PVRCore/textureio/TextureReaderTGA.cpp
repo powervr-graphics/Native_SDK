@@ -6,238 +6,53 @@
 */
 //!\cond NO_DOXYGEN
 #include "PVRCore/stream/FilePath.h"
-#include "PVRCore/Log.h"
-
 #include "PVRCore/textureio/TextureReaderTGA.h"
 #include "PVRCore/textureio/PaletteExpander.h"
 #include <algorithm>
 using std::vector;
 namespace pvr {
 namespace assetReaders {
-TextureReaderTGA::TextureReaderTGA() : _texturesToLoad(true) {}
-
-TextureReaderTGA::TextureReaderTGA(Stream::ptr_type assetStream) : AssetReader<Texture>(std::move(assetStream)), _texturesToLoad(true) {}
-
-void TextureReaderTGA::readAsset_(Texture& asset)
+namespace {
+texture_tga::FileHeader readFileHeader(const pvr::Stream& stream)
 {
-	// Check the Result
-	if (_hasNewAssetStream)
-	{
-		initializeFile();
-
-		_texturesToLoad = true;
-		_hasNewAssetStream = false;
-	}
-
-	long streamPosition = static_cast<long>(_assetStream->getPosition());
-	try
-	{
-		loadImageFromFile(asset);
-		// If it succeeded, let the user know that there are no more texture to load.
-		_texturesToLoad = false;
-	}
-	catch (...)
-	{
-		// Return to the beginning of the texture data if not loaded correctly.
-		_assetStream->seek(streamPosition, Stream::SeekOriginFromStart);
-		throw;
-	}
-}
-
-bool TextureReaderTGA::isSupportedFile(Stream& assetStream)
-{
-	// Try to open the stream
-	FilePath filePath(assetStream.getFileName());
-	std::string fileExt;
-	std::transform(filePath.getFileExtension().begin(), filePath.getFileExtension().end(), fileExt.begin(), ::tolower);
-	return fileExt == "tga";
-}
-
-void TextureReaderTGA::initializeFile()
-{
-	// Read the file header
-	readFileHeader(_fileHeader);
-
-	// Skip the identifier area
-	_assetStream->seek(_fileHeader.identSize, Stream::SeekOriginFromCurrent);
-
-	// Mark that the header has been loaded
-	_fileHeaderLoaded = true;
-}
-
-void TextureReaderTGA::readFileHeader(texture_tga::FileHeader& fileheader)
-{
+	texture_tga::FileHeader fileheader;
 	// Read the size of the identifier area
-	_assetStream->readExact(sizeof(fileheader.identSize), 1, &fileheader.identSize);
+	stream.readExact(sizeof(fileheader.identSize), 1, &fileheader.identSize);
 	// Read the color map type
-	_assetStream->readExact(sizeof(fileheader.colorMapType), 1, &fileheader.colorMapType);
+	stream.readExact(sizeof(fileheader.colorMapType), 1, &fileheader.colorMapType);
 	// Read the image type
-	_assetStream->readExact(sizeof(fileheader.imageType), 1, &fileheader.imageType);
+	stream.readExact(sizeof(fileheader.imageType), 1, &fileheader.imageType);
 	// Read the start position of the color map
-	_assetStream->readExact(sizeof(fileheader.colorMapStart), 1, &fileheader.colorMapStart);
+	stream.readExact(sizeof(fileheader.colorMapStart), 1, &fileheader.colorMapStart);
 	// Read the length of the color map
-	_assetStream->readExact(sizeof(fileheader.colorMapLength), 1, &fileheader.colorMapLength);
+	stream.readExact(sizeof(fileheader.colorMapLength), 1, &fileheader.colorMapLength);
 	// Read the number of bits per palette entry in the color map
-	_assetStream->readExact(sizeof(fileheader.colorMapBits), 1, &fileheader.colorMapBits);
+	stream.readExact(sizeof(fileheader.colorMapBits), 1, &fileheader.colorMapBits);
 	// Read the horizontal offset for the start of the image
-	_assetStream->readExact(sizeof(fileheader.xStart), 1, &fileheader.xStart);
+	stream.readExact(sizeof(fileheader.xStart), 1, &fileheader.xStart);
 	// Read the vertical offset for the start of the image
-	_assetStream->readExact(sizeof(fileheader.yStart), 1, &fileheader.yStart);
+	stream.readExact(sizeof(fileheader.yStart), 1, &fileheader.yStart);
 	// Read the width of the image
-	_assetStream->readExact(sizeof(fileheader.width), 1, &fileheader.width);
+	stream.readExact(sizeof(fileheader.width), 1, &fileheader.width);
 	// Read the height of the image
-	_assetStream->readExact(sizeof(fileheader.height), 1, &fileheader.height);
+	stream.readExact(sizeof(fileheader.height), 1, &fileheader.height);
 	// Read the bits per pixel in the image
-	_assetStream->readExact(sizeof(fileheader.bits), 1, &fileheader.bits);
+	stream.readExact(sizeof(fileheader.bits), 1, &fileheader.bits);
 	// Read the descriptor flags
-	_assetStream->readExact(sizeof(fileheader.descriptor), 1, &fileheader.descriptor);
+	stream.readExact(sizeof(fileheader.descriptor), 1, &fileheader.descriptor);
+	return fileheader;
 }
 
-void TextureReaderTGA::loadImageFromFile(Texture& asset)
-{
-	// Make sure the file is ready to load
-	if (!_fileHeaderLoaded || !_texturesToLoad)
-	{
-		throw InvalidOperationError("[TextureReaderTGA::loadImageFromFile] Attempted to read empty TGA.");
-	}
-
-	// Setup the texture header.
-	TextureHeader textureHeader;
-
-	// Set the width and height from the file header.
-	textureHeader.setWidth(_fileHeader.width);
-	textureHeader.setHeight(_fileHeader.height);
-
-	// Check whether the alpha value is ignored or not.
-	bool alphaIgnored = ((_fileHeader.descriptor & texture_tga::DescriptorFlagAlpha) == 0);
-
-	// Get the bytes per data entry
-	uint32_t bytesPerDataEntry = _fileHeader.bits / 8;
-	if (_fileHeader.bits == 15)
-	{
-		bytesPerDataEntry = 2;
-	}
-
-	// Get the bytes per color map entry
-	uint32_t bytesPerPaletteEntry = _fileHeader.colorMapBits / 8;
-	if (_fileHeader.colorMapBits == 15)
-	{
-		bytesPerPaletteEntry = 2;
-	}
-
-	// Work out the bits per pixel of the final pixel format
-	uint32_t bitsPerPixel = _fileHeader.bits;
-	if (_fileHeader.colorMapType == texture_tga::ColorMap::Paletted)
-	{
-		bitsPerPixel = _fileHeader.colorMapBits;
-	}
-
-	// Work out the pixel format - based on the number of bits in the final pixel format
-	switch (bitsPerPixel)
-	{
-	case 8:
-	{
-		textureHeader.setPixelFormat(GeneratePixelType1<'l', 8>::ID);
-		break;
-	}
-	case 15:
-	{
-		textureHeader.setPixelFormat(GeneratePixelType4<'x', 'b', 'g', 'r', 1, 5, 5, 5>::ID);
-		textureHeader.setChannelType(VariableType::UnsignedShortNorm);
-		break;
-	}
-	case 16:
-	{
-		if (alphaIgnored)
-		{
-			textureHeader.setPixelFormat(GeneratePixelType4<'x', 'b', 'g', 'r', 1, 5, 5, 5>::ID);
-		}
-		else
-		{
-			textureHeader.setPixelFormat(GeneratePixelType4<'a', 'b', 'g', 'r', 1, 5, 5, 5>::ID);
-		}
-		textureHeader.setChannelType(VariableType::UnsignedShortNorm);
-		break;
-	}
-	case 24:
-	{
-		textureHeader.setPixelFormat(GeneratePixelType3<'b', 'g', 'r', 8, 8, 8>::ID);
-		break;
-	}
-	case 32:
-	{
-		if (alphaIgnored)
-		{
-			textureHeader.setPixelFormat(GeneratePixelType4<'b', 'g', 'r', 'x', 8, 8, 8, 8>::ID);
-		}
-		else
-		{
-			textureHeader.setPixelFormat(GeneratePixelType4<'b', 'g', 'r', 'a', 8, 8, 8, 8>::ID);
-		}
-		break;
-	}
-	default:
-		// Invalid format
-		throw InvalidOperationError("[TextureReaderTGA::loadImageFromFile]: Reading from [" + _assetStream->getFileName() + "] - Invalid number of bits per pixel in TGA file");
-	}
-
-	// Create the texture data
-	asset = Texture(textureHeader);
-
-	// Read the texture data according to how it's stored
-	switch (_fileHeader.imageType)
-	{
-	case texture_tga::ImageType::None:
-	{
-		memset(asset.getDataPointer(), 0, asset.getDataSize());
-		break;
-	}
-	case texture_tga::ImageType::Indexed:
-	{
-		loadIndexed(asset, bytesPerPaletteEntry, bytesPerDataEntry);
-		break;
-	}
-	case texture_tga::ImageType::RGB:
-	case texture_tga::ImageType::GreyScale:
-	{
-		_assetStream->readExact(bytesPerDataEntry, asset.getTextureSize(), asset.getDataPointer());
-		break;
-	}
-	case texture_tga::ImageType::RunLengthIndexed:
-	{
-		loadRunLengthIndexed(asset, bytesPerPaletteEntry, bytesPerDataEntry);
-		break;
-	}
-	case texture_tga::ImageType::RunLengthRGB:
-	case texture_tga::ImageType::RunLengthGreyScale:
-	{
-		loadRunLength(asset, bytesPerDataEntry);
-		break;
-	}
-	case texture_tga::ImageType::RunLengthHuffmanDelta:
-	case texture_tga::ImageType::RunLengthHuffmanDeltaFourPassQuadTree:
-	default:
-	{
-		throw InvalidOperationError("[TextureReaderTGA::loadImageFromFile]: Invalid image type");
-		break;
-	}
-	}
-
-	// Signify that the image has been loaded.
-	_texturesToLoad = false;
-}
-
-void TextureReaderTGA::loadIndexed(Texture& asset, uint32_t bytesPerPaletteEntry, uint32_t bytesPerDataEntry)
+void loadIndexed(const texture_tga::FileHeader& header, const Stream& stream, Texture& asset, uint32_t bytesPerPaletteEntry, uint32_t bytesPerDataEntry)
 {
 	// Check that a palette is present.
-	if (_fileHeader.colorMapType != texture_tga::ColorMap::Paletted)
+	if (header.colorMapType != texture_tga::ColorMap::Paletted)
 	{
-		throw InvalidOperationError(
-			"[TextureReaderTGA::loadIndexed]: Reading from [" + _assetStream->getFileName() + "] - Image Type specifies palette data, but no palette is supplied.");
+		throw InvalidOperationError("[TextureReaderTGA::loadIndexed]: Reading from [" + stream.getFileName() + "] - Image Type specifies palette data, but no palette is supplied.");
 	}
 
 	// Work out the size of the palette data entries
-	uint32_t paletteEntries = (_fileHeader.colorMapLength - _fileHeader.colorMapStart);
+	uint32_t paletteEntries = static_cast<uint32_t>(header.colorMapLength - header.colorMapStart);
 	uint32_t paletteSize = paletteEntries * bytesPerPaletteEntry;
 
 	// Allocate data to read the palette into.
@@ -245,10 +60,10 @@ void TextureReaderTGA::loadIndexed(Texture& asset, uint32_t bytesPerPaletteEntry
 	paletteData.resize(paletteSize);
 
 	// seek to the beginning of the palette
-	_assetStream->seek(_fileHeader.colorMapStart * bytesPerPaletteEntry, Stream::SeekOriginFromCurrent);
+	stream.seek(static_cast<long>(header.colorMapStart * bytesPerPaletteEntry), Stream::SeekOriginFromCurrent);
 
 	// Read the palette
-	_assetStream->readExact(bytesPerPaletteEntry, paletteEntries, paletteData.data());
+	stream.readExact(bytesPerPaletteEntry, paletteEntries, paletteData.data());
 
 	// Create the palette helper class
 	PaletteExpander paletteLookup(paletteData.data(), paletteSize, bytesPerPaletteEntry);
@@ -259,7 +74,7 @@ void TextureReaderTGA::loadIndexed(Texture& asset, uint32_t bytesPerPaletteEntry
 	for (uint32_t texturePosition = 0; texturePosition < (asset.getTextureSize()); ++texturePosition)
 	{
 		// Read the index
-		_assetStream->readExact(bytesPerDataEntry, 1, &currentIndex);
+		stream.readExact(bytesPerDataEntry, 1, &currentIndex);
 		// Get the color output
 		paletteLookup.getColorFromIndex(currentIndex, outputPixel);
 
@@ -268,8 +83,9 @@ void TextureReaderTGA::loadIndexed(Texture& asset, uint32_t bytesPerPaletteEntry
 	}
 }
 
-void TextureReaderTGA::loadRunLength(Texture& asset, uint32_t bytesPerDataEntry)
+void loadRunLength(const texture_tga::FileHeader& header, const Stream& stream, Texture& asset, uint32_t bytesPerDataEntry)
 {
+	(void)header;
 	// Buffer for any repeated values come across
 	vector<char> repeatedValue;
 	repeatedValue.resize(bytesPerDataEntry);
@@ -280,7 +96,7 @@ void TextureReaderTGA::loadRunLength(Texture& asset, uint32_t bytesPerDataEntry)
 	{
 		// Read the leading character for this block
 		int8_t leadingCharacter;
-		_assetStream->readExact(1, 1, &leadingCharacter);
+		stream.readExact(1, 1, &leadingCharacter);
 		// Check if it's a run of differing values or a run of the same value multiple times
 		if (leadingCharacter >= 0)
 		{
@@ -290,7 +106,7 @@ void TextureReaderTGA::loadRunLength(Texture& asset, uint32_t bytesPerDataEntry)
 				if (outputPixel < (asset.getDataPointer() + asset.getDataSize()))
 				{
 					// Read in the value
-					_assetStream->readExact(bytesPerDataEntry, 1, outputPixel);
+					stream.readExact(bytesPerDataEntry, 1, outputPixel);
 					// Increment the output location
 					outputPixel += bytesPerDataEntry;
 				}
@@ -299,7 +115,7 @@ void TextureReaderTGA::loadRunLength(Texture& asset, uint32_t bytesPerDataEntry)
 		else if (leadingCharacter > -128)
 		{
 			// Read a repeated value
-			_assetStream->readExact(bytesPerDataEntry, 1, repeatedValue.data());
+			stream.readExact(bytesPerDataEntry, 1, repeatedValue.data());
 			// Write the repeated value the appropriate number of times
 			for (int runIndex = 0; runIndex < (1 + (leadingCharacter & 0x7f)); ++runIndex)
 			{
@@ -317,16 +133,14 @@ void TextureReaderTGA::loadRunLength(Texture& asset, uint32_t bytesPerDataEntry)
 	}
 }
 
-void TextureReaderTGA::loadRunLengthIndexed(Texture& asset, uint32_t bytesPerPaletteEntry, uint32_t bytesPerDataEntry)
+void loadRunLengthIndexed(const texture_tga::FileHeader& header, const Stream& stream, Texture& asset, uint32_t bytesPerPaletteEntry, uint32_t bytesPerDataEntry)
 {
 	// Check that a palette is present.
-	if (_fileHeader.colorMapType != texture_tga::ColorMap::Paletted)
-	{
-		throw InvalidDataError("[" + _assetStream->getFileName() + "]: Image Type specifies palette data, but no palette is supplied.");
-	}
+	if (header.colorMapType != texture_tga::ColorMap::Paletted)
+	{ throw InvalidDataError("[" + stream.getFileName() + "]: Image Type specifies palette data, but no palette is supplied."); }
 
 	// Work out the size of the palette data entries
-	uint32_t paletteEntries = (_fileHeader.colorMapLength - _fileHeader.colorMapStart);
+	uint32_t paletteEntries = (header.colorMapLength - header.colorMapStart);
 	uint32_t paletteSize = paletteEntries * bytesPerPaletteEntry;
 
 	// Allocate data to read the palette into.
@@ -334,9 +148,9 @@ void TextureReaderTGA::loadRunLengthIndexed(Texture& asset, uint32_t bytesPerPal
 	paletteData.resize(paletteSize);
 
 	// seek to the beginning of the palette
-	_assetStream->seek(_fileHeader.colorMapStart, Stream::SeekOriginFromCurrent);
+	stream.seek(header.colorMapStart, Stream::SeekOriginFromCurrent);
 	// Read the palette
-	_assetStream->readExact(bytesPerPaletteEntry, paletteEntries, paletteData.data());
+	stream.readExact(bytesPerPaletteEntry, paletteEntries, paletteData.data());
 
 	// Create the palette helper class
 	PaletteExpander paletteLookup(paletteData.data(), paletteSize, bytesPerPaletteEntry);
@@ -350,7 +164,7 @@ void TextureReaderTGA::loadRunLengthIndexed(Texture& asset, uint32_t bytesPerPal
 	{
 		// Read the leading character for this block
 		int8_t leadingCharacter;
-		_assetStream->readExact(1, 1, &leadingCharacter);
+		stream.readExact(1, 1, &leadingCharacter);
 		// Check if it's a run of differing values or a run of the same value multiple times
 		if (leadingCharacter >= 0)
 		{
@@ -360,7 +174,7 @@ void TextureReaderTGA::loadRunLengthIndexed(Texture& asset, uint32_t bytesPerPal
 				if (outputPixel < (asset.getDataPointer() + asset.getDataSize()))
 				{
 					// Read in the value
-					_assetStream->readExact(bytesPerDataEntry, 1, &currentIndex);
+					stream.readExact(bytesPerDataEntry, 1, &currentIndex);
 					// Get the color output
 					paletteLookup.getColorFromIndex(currentIndex, outputPixel);
 
@@ -372,7 +186,7 @@ void TextureReaderTGA::loadRunLengthIndexed(Texture& asset, uint32_t bytesPerPal
 		else if (leadingCharacter > -128)
 		{
 			// Read in the repeated value
-			_assetStream->readExact(bytesPerDataEntry, 1, &currentIndex);
+			stream.readExact(bytesPerDataEntry, 1, &currentIndex);
 			// Write the repeated value the appropriate number of times
 			for (int runIndex = 0; runIndex < (1 + (leadingCharacter & 0x7f)); ++runIndex)
 			{
@@ -387,6 +201,147 @@ void TextureReaderTGA::loadRunLengthIndexed(Texture& asset, uint32_t bytesPerPal
 			}
 		}
 		// Character -128 is a "no op", so there's nothing to do for it. It's used as padding basically.
+	}
+}
+
+Texture loadImageFromFile(const Stream& stream, const texture_tga::FileHeader& header)
+{
+	Texture asset;
+	// Setup the texture header.
+	TextureHeader textureHeader;
+
+	// Set the width and height from the file header.
+	textureHeader.setWidth(header.width);
+	textureHeader.setHeight(header.height);
+
+	// Check whether the alpha value is ignored or not.
+	bool alphaIgnored = ((header.descriptor & texture_tga::DescriptorFlagAlpha) == 0);
+
+	// Get the bytes per data entry
+	uint32_t bytesPerDataEntry = header.bits / 8;
+	if (header.bits == 15) { bytesPerDataEntry = 2; }
+
+	// Get the bytes per color map entry
+	uint32_t bytesPerPaletteEntry = header.colorMapBits / 8;
+	if (header.colorMapBits == 15) { bytesPerPaletteEntry = 2; }
+
+	// Work out the bits per pixel of the final pixel format
+	uint32_t bitsPerPixel = header.bits;
+	if (header.colorMapType == texture_tga::ColorMap::Paletted) { bitsPerPixel = header.colorMapBits; }
+
+	// Work out the pixel format - based on the number of bits in the final pixel format
+	switch (bitsPerPixel)
+	{
+	case 8:
+	{
+		textureHeader.setPixelFormat(GeneratePixelType1<'l', 8>::ID);
+		break;
+	}
+	case 15:
+	{
+		textureHeader.setPixelFormat(GeneratePixelType4<'x', 'b', 'g', 'r', 1, 5, 5, 5>::ID);
+		textureHeader.setChannelType(VariableType::UnsignedShortNorm);
+		break;
+	}
+	case 16:
+	{
+		if (alphaIgnored) { textureHeader.setPixelFormat(GeneratePixelType4<'x', 'b', 'g', 'r', 1, 5, 5, 5>::ID); }
+		else
+		{
+			textureHeader.setPixelFormat(GeneratePixelType4<'a', 'b', 'g', 'r', 1, 5, 5, 5>::ID);
+		}
+		textureHeader.setChannelType(VariableType::UnsignedShortNorm);
+		break;
+	}
+	case 24:
+	{
+		textureHeader.setPixelFormat(GeneratePixelType3<'b', 'g', 'r', 8, 8, 8>::ID);
+		break;
+	}
+	case 32:
+	{
+		if (alphaIgnored) { textureHeader.setPixelFormat(GeneratePixelType4<'b', 'g', 'r', 'x', 8, 8, 8, 8>::ID); }
+		else
+		{
+			textureHeader.setPixelFormat(GeneratePixelType4<'b', 'g', 'r', 'a', 8, 8, 8, 8>::ID);
+		}
+		break;
+	}
+	default:
+		// Invalid format
+		throw InvalidOperationError("[TextureReaderTGA::loadImageFromFile]: Reading from [" + stream.getFileName() + "] - Invalid number of bits per pixel in TGA file");
+	}
+
+	// Create the texture data
+	asset = Texture(textureHeader);
+
+	// Read the texture data according to how it's stored
+	switch (header.imageType)
+	{
+	case texture_tga::ImageType::None:
+	{
+		memset(asset.getDataPointer(), 0, asset.getDataSize());
+		break;
+	}
+	case texture_tga::ImageType::Indexed:
+	{
+		loadIndexed(header, stream, asset, bytesPerPaletteEntry, bytesPerDataEntry);
+		break;
+	}
+	case texture_tga::ImageType::RGB:
+	case texture_tga::ImageType::GreyScale:
+	{
+		stream.readExact(bytesPerDataEntry, asset.getTextureSize(), asset.getDataPointer());
+		break;
+	}
+	case texture_tga::ImageType::RunLengthIndexed:
+	{
+		loadRunLengthIndexed(header, stream, asset, bytesPerPaletteEntry, bytesPerDataEntry);
+		break;
+	}
+	case texture_tga::ImageType::RunLengthRGB:
+	case texture_tga::ImageType::RunLengthGreyScale:
+	{
+		loadRunLength(header, stream, asset, bytesPerDataEntry);
+		break;
+	}
+	case texture_tga::ImageType::RunLengthHuffmanDelta:
+	case texture_tga::ImageType::RunLengthHuffmanDeltaFourPassQuadTree:
+	default:
+	{
+		throw InvalidOperationError("[TextureReaderTGA::loadImageFromFile]: Invalid image type");
+		break;
+	}
+	}
+
+	// Signify that the image has been loaded.
+	return asset;
+}
+} // namespace
+
+Texture readTGA(const Stream& stream)
+{
+	if (!stream.isReadable()) { throw InvalidOperationError("[pvr::assetReaders::readTGA] Attempted to read a non-readable assetStream"); }
+
+	size_t original_position = stream.getPosition();
+	try
+	{
+		texture_tga::FileHeader header(readFileHeader(stream));
+
+		// Skip the identifier area
+		stream.seek(header.identSize, Stream::SeekOriginFromCurrent);
+
+		return loadImageFromFile(stream, header);
+	}
+	catch (...)
+	{
+		try
+		{
+			stream.seek((long)original_position, Stream::SeekOriginFromStart);
+		}
+		catch (...)
+		{}
+		throw;
 	}
 }
 

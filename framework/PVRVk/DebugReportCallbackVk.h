@@ -27,10 +27,7 @@ public:
 
 	/// <summary>Get the flags for the creation info</summary>
 	/// <returns>The DebugReportFlagsEXT</returns>
-	DebugReportFlagsEXT getFlags() const
-	{
-		return _flags;
-	}
+	DebugReportFlagsEXT getFlags() const { return _flags; }
 
 	/// <summary>Set the DebugReportFlagsEXT which specify the events causing this callback to be called.</summary>
 	/// <param name="flags">A set of DebugReportFlagsEXT which specify the events causing this callback to be called.</param>
@@ -43,10 +40,7 @@ public:
 
 	/// <summary>Get the application callback function</summary>
 	/// <returns>The PFN_vkDebugReportCallbackEXT callback function</returns>
-	PFN_vkDebugReportCallbackEXT getCallback() const
-	{
-		return _callback;
-	}
+	PFN_vkDebugReportCallbackEXT getCallback() const { return _callback; }
 
 	/// <summary>Set the PFN_vkDebugReportCallbackEXT specifying the callback function which will be called.</summary>
 	/// <param name="callback">The application callback function to call.</param>
@@ -59,18 +53,12 @@ public:
 
 	/// <summary>Get the user data passed to the callback</summary>
 	/// <returns>The userdata which will be passed to the application callback function</returns>
-	inline void* getPUserData() const
-	{
-		return _userData;
-	}
+	inline void* getPUserData() const { return _userData; }
 
 	/// <summary>Set the user data passed to the callback.</summary>
 	/// <param name="pUserData">The userdata which will be passed to the application callback function.</param>
 	/// <returns>this (allow chaining)</returns>
-	inline void setPUserData(void* pUserData)
-	{
-		this->_userData = pUserData;
-	}
+	inline void setPUserData(void* pUserData) { this->_userData = pUserData; }
 
 private:
 	/// <summary>Indicates which events will cause the callback to be called</summary>

@@ -7,9 +7,13 @@
 #endif
 #define GL_NO_PROTOTYPES
 #define EGL_NO_PROTOTYPES
-#if defined( _WIN32 )
+#if defined(_WIN32)
+#ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
+#endif
+#ifndef NOMINMAX
 #define NOMINMAX
+#endif
 #include <Windows.h>
 #endif
 #include <utility>
@@ -57,8 +61,8 @@ static const char* libName = "libGLESv2.dylib";
 #else
 static const char* libName = "libGLESv2.so";
 #endif
-}
-}
+} // namespace internals
+} // namespace gl
 
 // LOAD HEADER FILES DEPENDING ON FEATURE LEVEL
 #if !TARGET_OS_IPHONE
@@ -78,34 +82,89 @@ enum OpenGLES31FunctionName
 {
 	//// OPENGL ES 31 ////
 
-	DispatchCompute, DispatchComputeIndirect, DrawArraysIndirect, DrawElementsIndirect, FramebufferParameteri, GetFramebufferParameteriv, GetProgramInterfaceiv,
-	GetProgramResourceIndex, GetProgramResourceName, GetProgramResourceiv, GetProgramResourceLocation, UseProgramStages, ActiveShaderProgram, CreateShaderProgramv,
-	BindProgramPipeline, DeleteProgramPipelines, GenProgramPipelines, IsProgramPipeline, GetProgramPipelineiv, ProgramUniform1i, ProgramUniform2i, ProgramUniform3i,
-	ProgramUniform4i, ProgramUniform1ui, ProgramUniform2ui, ProgramUniform3ui, ProgramUniform4ui, ProgramUniform1f, ProgramUniform2f, ProgramUniform3f,
-	ProgramUniform4f, ProgramUniform1iv, ProgramUniform2iv, ProgramUniform3iv, ProgramUniform4iv, ProgramUniform1uiv, ProgramUniform2uiv, ProgramUniform3uiv,
-	ProgramUniform4uiv, ProgramUniform1fv, ProgramUniform2fv, ProgramUniform3fv, ProgramUniform4fv, ProgramUniformMatrix2fv, ProgramUniformMatrix3fv,
-	ProgramUniformMatrix4fv, ProgramUniformMatrix2x3fv, ProgramUniformMatrix3x2fv, ProgramUniformMatrix2x4fv, ProgramUniformMatrix4x2fv, ProgramUniformMatrix3x4fv,
-	ProgramUniformMatrix4x3fv, ValidateProgramPipeline, GetProgramPipelineInfoLog, BindImageTexture, GetBooleani_v, MemoryBarrier, MemoryBarrierByRegion,
-	TexStorage2DMultisample, GetMultisamplefv, SampleMaski, GetTexLevelParameteriv, GetTexLevelParameterfv, BindVertexBuffer, VertexAttribFormat, VertexAttribIFormat,
-	VertexAttribBinding, VertexBindingDivisor,
+	DispatchCompute,
+	DispatchComputeIndirect,
+	DrawArraysIndirect,
+	DrawElementsIndirect,
+	FramebufferParameteri,
+	GetFramebufferParameteriv,
+	GetProgramInterfaceiv,
+	GetProgramResourceIndex,
+	GetProgramResourceName,
+	GetProgramResourceiv,
+	GetProgramResourceLocation,
+	UseProgramStages,
+	ActiveShaderProgram,
+	CreateShaderProgramv,
+	BindProgramPipeline,
+	DeleteProgramPipelines,
+	GenProgramPipelines,
+	IsProgramPipeline,
+	GetProgramPipelineiv,
+	ProgramUniform1i,
+	ProgramUniform2i,
+	ProgramUniform3i,
+	ProgramUniform4i,
+	ProgramUniform1ui,
+	ProgramUniform2ui,
+	ProgramUniform3ui,
+	ProgramUniform4ui,
+	ProgramUniform1f,
+	ProgramUniform2f,
+	ProgramUniform3f,
+	ProgramUniform4f,
+	ProgramUniform1iv,
+	ProgramUniform2iv,
+	ProgramUniform3iv,
+	ProgramUniform4iv,
+	ProgramUniform1uiv,
+	ProgramUniform2uiv,
+	ProgramUniform3uiv,
+	ProgramUniform4uiv,
+	ProgramUniform1fv,
+	ProgramUniform2fv,
+	ProgramUniform3fv,
+	ProgramUniform4fv,
+	ProgramUniformMatrix2fv,
+	ProgramUniformMatrix3fv,
+	ProgramUniformMatrix4fv,
+	ProgramUniformMatrix2x3fv,
+	ProgramUniformMatrix3x2fv,
+	ProgramUniformMatrix2x4fv,
+	ProgramUniformMatrix4x2fv,
+	ProgramUniformMatrix3x4fv,
+	ProgramUniformMatrix4x3fv,
+	ValidateProgramPipeline,
+	GetProgramPipelineInfoLog,
+	BindImageTexture,
+	GetBooleani_v,
+	MemoryBarrier,
+	MemoryBarrierByRegion,
+	TexStorage2DMultisample,
+	GetMultisamplefv,
+	SampleMaski,
+	GetTexLevelParameteriv,
+	GetTexLevelParameterfv,
+	BindVertexBuffer,
+	VertexAttribFormat,
+	VertexAttribIFormat,
+	VertexAttribBinding,
+	VertexBindingDivisor,
 	NUMBER_OF_OPENGLES3_FUNCTIONS
 };
-}
+} // namespace Gl31FuncName
 
-// THIS FUNCTION PRELOADS ALL ES POINTERS ON FIRST CALL
+// Preloads the OpenGL ES 3.1 function pointers the first time any OpenGL ES 3.1 function call is made
 inline void* getEs31Function(gl::internals::Gl31FuncName::OpenGLES31FunctionName funcname)
 {
 	static void* FunctionTable[Gl31FuncName::NUMBER_OF_OPENGLES3_FUNCTIONS];
 
-	//  GET FUNCTION POINTERS --- ONCE!!!! ///
 #if !TARGET_OS_IPHONE
+	// Retrieve the OpenGL ES 3.1 functions pointers once
 	if (!FunctionTable[0])
 	{
 		pvr::lib::LIBTYPE lib = pvr::lib::openlib(libName);
-		if (!lib)
-		{
-			Log_Error("OpenGL ES Bindings: Failed to open library %s\n", libName);
-		}
+		if (!lib) { Log_Error("OpenGL ES Bindings: Failed to open library %s\n", libName); }
 		else
 		{
 			Log_Info("OpenGL ES Bindings: Successfully loaded library %s for OpenGL ES 3.1\n", libName);
@@ -183,8 +242,8 @@ inline void* getEs31Function(gl::internals::Gl31FuncName::OpenGLES31FunctionName
 #endif
 	return FunctionTable[funcname];
 }
-}
-}
+} // namespace internals
+} // namespace gl
 
 /************ OPENGL ES API ************/
 #ifndef DYNAMICGLES_NO_NAMESPACE
@@ -243,7 +302,8 @@ inline void DYNAMICGLES_FUNCTION(GetFramebufferParameteriv)(GLenum target, GLenu
 #if TARGET_OS_IPHONE
 	assert(0);
 #else
-	PFNGLGETFRAMEBUFFERPARAMETERIVPROC _GetFramebufferParameteriv = (PFNGLGETFRAMEBUFFERPARAMETERIVPROC)gl::internals::getEs31Function(gl::internals::Gl31FuncName::GetFramebufferParameteriv);
+	PFNGLGETFRAMEBUFFERPARAMETERIVPROC _GetFramebufferParameteriv =
+		(PFNGLGETFRAMEBUFFERPARAMETERIVPROC)gl::internals::getEs31Function(gl::internals::Gl31FuncName::GetFramebufferParameteriv);
 	return _GetFramebufferParameteriv(target, pname, params);
 #endif
 }
@@ -273,9 +333,9 @@ inline void DYNAMICGLES_FUNCTION(GetProgramResourceName)(GLuint program, GLenum 
 	PFNGLGETPROGRAMRESOURCENAMEPROC _GetProgramResourceName = (PFNGLGETPROGRAMRESOURCENAMEPROC)gl::internals::getEs31Function(gl::internals::Gl31FuncName::GetProgramResourceName);
 	return _GetProgramResourceName(program, programInterface, index, bufSize, length, name);
 #endif
-
 }
-inline void DYNAMICGLES_FUNCTION(GetProgramResourceiv)(GLuint program, GLenum programInterface, GLuint index, GLsizei propCount, const GLenum* props, GLsizei bufSize, GLsizei* length, GLint* params)
+inline void DYNAMICGLES_FUNCTION(GetProgramResourceiv)(
+	GLuint program, GLenum programInterface, GLuint index, GLsizei propCount, const GLenum* props, GLsizei bufSize, GLsizei* length, GLint* params)
 {
 #if TARGET_OS_IPHONE
 	assert(0);
@@ -289,7 +349,8 @@ inline GLint DYNAMICGLES_FUNCTION(GetProgramResourceLocation)(GLuint program, GL
 #if TARGET_OS_IPHONE
 	assert(0);
 #else
-	PFNGLGETPROGRAMRESOURCELOCATIONPROC _GetProgramResourceLocation = (PFNGLGETPROGRAMRESOURCELOCATIONPROC)gl::internals::getEs31Function(gl::internals::Gl31FuncName::GetProgramResourceLocation);
+	PFNGLGETPROGRAMRESOURCELOCATIONPROC _GetProgramResourceLocation =
+		(PFNGLGETPROGRAMRESOURCELOCATIONPROC)gl::internals::getEs31Function(gl::internals::Gl31FuncName::GetProgramResourceLocation);
 	return _GetProgramResourceLocation(program, programInterface, name);
 #endif
 }
@@ -614,7 +675,8 @@ inline void DYNAMICGLES_FUNCTION(ProgramUniformMatrix2x3fv)(GLuint program, GLin
 #if TARGET_OS_IPHONE
 	assert(0);
 #else
-	PFNGLPROGRAMUNIFORMMATRIX2X3FVPROC _ProgramUniformMatrix2x3fv = (PFNGLPROGRAMUNIFORMMATRIX2X3FVPROC)gl::internals::getEs31Function(gl::internals::Gl31FuncName::ProgramUniformMatrix2x3fv);
+	PFNGLPROGRAMUNIFORMMATRIX2X3FVPROC _ProgramUniformMatrix2x3fv =
+		(PFNGLPROGRAMUNIFORMMATRIX2X3FVPROC)gl::internals::getEs31Function(gl::internals::Gl31FuncName::ProgramUniformMatrix2x3fv);
 	return _ProgramUniformMatrix2x3fv(program, location, count, transpose, value);
 #endif
 }
@@ -623,7 +685,8 @@ inline void DYNAMICGLES_FUNCTION(ProgramUniformMatrix3x2fv)(GLuint program, GLin
 #if TARGET_OS_IPHONE
 	assert(0);
 #else
-	PFNGLPROGRAMUNIFORMMATRIX3X2FVPROC _ProgramUniformMatrix3x2fv = (PFNGLPROGRAMUNIFORMMATRIX3X2FVPROC)gl::internals::getEs31Function(gl::internals::Gl31FuncName::ProgramUniformMatrix3x2fv);
+	PFNGLPROGRAMUNIFORMMATRIX3X2FVPROC _ProgramUniformMatrix3x2fv =
+		(PFNGLPROGRAMUNIFORMMATRIX3X2FVPROC)gl::internals::getEs31Function(gl::internals::Gl31FuncName::ProgramUniformMatrix3x2fv);
 	return _ProgramUniformMatrix3x2fv(program, location, count, transpose, value);
 #endif
 }
@@ -632,7 +695,8 @@ inline void DYNAMICGLES_FUNCTION(ProgramUniformMatrix2x4fv)(GLuint program, GLin
 #if TARGET_OS_IPHONE
 	assert(0);
 #else
-	PFNGLPROGRAMUNIFORMMATRIX2X4FVPROC _ProgramUniformMatrix2x4fv = (PFNGLPROGRAMUNIFORMMATRIX2X4FVPROC)gl::internals::getEs31Function(gl::internals::Gl31FuncName::ProgramUniformMatrix2x4fv);
+	PFNGLPROGRAMUNIFORMMATRIX2X4FVPROC _ProgramUniformMatrix2x4fv =
+		(PFNGLPROGRAMUNIFORMMATRIX2X4FVPROC)gl::internals::getEs31Function(gl::internals::Gl31FuncName::ProgramUniformMatrix2x4fv);
 	return _ProgramUniformMatrix2x4fv(program, location, count, transpose, value);
 #endif
 }
@@ -641,7 +705,8 @@ inline void DYNAMICGLES_FUNCTION(ProgramUniformMatrix4x2fv)(GLuint program, GLin
 #if TARGET_OS_IPHONE
 	assert(0);
 #else
-	PFNGLPROGRAMUNIFORMMATRIX4X2FVPROC _ProgramUniformMatrix4x2fv = (PFNGLPROGRAMUNIFORMMATRIX4X2FVPROC)gl::internals::getEs31Function(gl::internals::Gl31FuncName::ProgramUniformMatrix4x2fv);
+	PFNGLPROGRAMUNIFORMMATRIX4X2FVPROC _ProgramUniformMatrix4x2fv =
+		(PFNGLPROGRAMUNIFORMMATRIX4X2FVPROC)gl::internals::getEs31Function(gl::internals::Gl31FuncName::ProgramUniformMatrix4x2fv);
 	return _ProgramUniformMatrix4x2fv(program, location, count, transpose, value);
 #endif
 }
@@ -650,7 +715,8 @@ inline void DYNAMICGLES_FUNCTION(ProgramUniformMatrix3x4fv)(GLuint program, GLin
 #if TARGET_OS_IPHONE
 	assert(0);
 #else
-	PFNGLPROGRAMUNIFORMMATRIX3X4FVPROC _ProgramUniformMatrix3x4fv = (PFNGLPROGRAMUNIFORMMATRIX3X4FVPROC)gl::internals::getEs31Function(gl::internals::Gl31FuncName::ProgramUniformMatrix3x4fv);
+	PFNGLPROGRAMUNIFORMMATRIX3X4FVPROC _ProgramUniformMatrix3x4fv =
+		(PFNGLPROGRAMUNIFORMMATRIX3X4FVPROC)gl::internals::getEs31Function(gl::internals::Gl31FuncName::ProgramUniformMatrix3x4fv);
 	return _ProgramUniformMatrix3x4fv(program, location, count, transpose, value);
 #endif
 }
@@ -659,7 +725,8 @@ inline void DYNAMICGLES_FUNCTION(ProgramUniformMatrix4x3fv)(GLuint program, GLin
 #if TARGET_OS_IPHONE
 	assert(0);
 #else
-	PFNGLPROGRAMUNIFORMMATRIX4X3FVPROC _ProgramUniformMatrix4x3fv = (PFNGLPROGRAMUNIFORMMATRIX4X3FVPROC)gl::internals::getEs31Function(gl::internals::Gl31FuncName::ProgramUniformMatrix4x3fv);
+	PFNGLPROGRAMUNIFORMMATRIX4X3FVPROC _ProgramUniformMatrix4x3fv =
+		(PFNGLPROGRAMUNIFORMMATRIX4X3FVPROC)gl::internals::getEs31Function(gl::internals::Gl31FuncName::ProgramUniformMatrix4x3fv);
 	return _ProgramUniformMatrix4x3fv(program, location, count, transpose, value);
 #endif
 }
@@ -677,10 +744,10 @@ inline void DYNAMICGLES_FUNCTION(GetProgramPipelineInfoLog)(GLuint pipeline, GLs
 #if TARGET_OS_IPHONE
 	assert(0);
 #else
-	PFNGLGETPROGRAMPIPELINEINFOLOGPROC _GetProgramPipelineInfoLog = (PFNGLGETPROGRAMPIPELINEINFOLOGPROC)gl::internals::getEs31Function(gl::internals::Gl31FuncName::GetProgramPipelineInfoLog);
+	PFNGLGETPROGRAMPIPELINEINFOLOGPROC _GetProgramPipelineInfoLog =
+		(PFNGLGETPROGRAMPIPELINEINFOLOGPROC)gl::internals::getEs31Function(gl::internals::Gl31FuncName::GetProgramPipelineInfoLog);
 	return _GetProgramPipelineInfoLog(pipeline, bufSize, length, infoLog);
 #endif
-
 }
 inline void DYNAMICGLES_FUNCTION(BindImageTexture)(GLuint unit, GLuint texture, GLint level, GLboolean layered, GLint layer, GLenum access, GLenum format)
 {
@@ -815,7 +882,6 @@ inline void DYNAMICGLES_FUNCTION(VertexBindingDivisor)(GLuint bindingindex, GLui
 }
 #endif
 
-
 namespace gl {
 namespace internals {
 namespace Gl3FuncName {
@@ -823,35 +889,125 @@ enum OpenGLES3FunctionName
 {
 	//// OPENGL ES 3 ////
 
-	ReadBuffer, DrawRangeElements, TexImage3D, TexSubImage3D, CopyTexSubImage3D, CompressedTexImage3D, CompressedTexSubImage3D, GenQueries, DeleteQueries, IsQuery,
-	BeginQuery, EndQuery, GetQueryiv, GetQueryObjectuiv, UnmapBuffer, GetBufferPointerv, DrawBuffers, UniformMatrix2x3fv, UniformMatrix3x2fv, UniformMatrix2x4fv,
-	UniformMatrix4x2fv, UniformMatrix3x4fv, UniformMatrix4x3fv, BlitFramebuffer, RenderbufferStorageMultisample, FramebufferTextureLayer, MapBufferRange,
-	FlushMappedBufferRange, BindVertexArray, DeleteVertexArrays, GenVertexArrays, IsVertexArray, GetIntegeri_v, BeginTransformFeedback, EndTransformFeedback,
-	BindBufferRange, BindBufferBase, TransformFeedbackVaryings, GetTransformFeedbackVarying, VertexAttribIPointer, GetVertexAttribIiv, GetVertexAttribIuiv,
-	VertexAttribI4i, VertexAttribI4ui, VertexAttribI4iv, VertexAttribI4uiv, GetUniformuiv, GetFragDataLocation, Uniform1ui, Uniform2ui, Uniform3ui, Uniform4ui,
-	Uniform1uiv, Uniform2uiv, Uniform3uiv, Uniform4uiv, ClearBufferiv, ClearBufferuiv, ClearBufferfv, ClearBufferfi, GetStringi, CopyBufferSubData, GetUniformIndices,
-	GetActiveUniformsiv, GetUniformBlockIndex, GetActiveUniformBlockiv, GetActiveUniformBlockName, UniformBlockBinding, DrawArraysInstanced, DrawElementsInstanced,
-	FenceSync, IsSync, DeleteSync, ClientWaitSync, WaitSync, GetInteger64v, GetSynciv, GetInteger64i_v, GetBufferParameteri64v, GenSamplers, DeleteSamplers, IsSampler,
-	BindSampler, SamplerParameteri, SamplerParameteriv, SamplerParameterf, SamplerParameterfv, GetSamplerParameteriv, GetSamplerParameterfv, VertexAttribDivisor,
-	BindTransformFeedback, DeleteTransformFeedbacks, GenTransformFeedbacks, IsTransformFeedback, PauseTransformFeedback, ResumeTransformFeedback, GetProgramBinary,
-	ProgramBinary, ProgramParameteri, InvalidateFramebuffer, InvalidateSubFramebuffer, TexStorage2D, TexStorage3D, GetInternalformativ,
+	ReadBuffer,
+	DrawRangeElements,
+	TexImage3D,
+	TexSubImage3D,
+	CopyTexSubImage3D,
+	CompressedTexImage3D,
+	CompressedTexSubImage3D,
+	GenQueries,
+	DeleteQueries,
+	IsQuery,
+	BeginQuery,
+	EndQuery,
+	GetQueryiv,
+	GetQueryObjectuiv,
+	UnmapBuffer,
+	GetBufferPointerv,
+	DrawBuffers,
+	UniformMatrix2x3fv,
+	UniformMatrix3x2fv,
+	UniformMatrix2x4fv,
+	UniformMatrix4x2fv,
+	UniformMatrix3x4fv,
+	UniformMatrix4x3fv,
+	BlitFramebuffer,
+	RenderbufferStorageMultisample,
+	FramebufferTextureLayer,
+	MapBufferRange,
+	FlushMappedBufferRange,
+	BindVertexArray,
+	DeleteVertexArrays,
+	GenVertexArrays,
+	IsVertexArray,
+	GetIntegeri_v,
+	BeginTransformFeedback,
+	EndTransformFeedback,
+	BindBufferRange,
+	BindBufferBase,
+	TransformFeedbackVaryings,
+	GetTransformFeedbackVarying,
+	VertexAttribIPointer,
+	GetVertexAttribIiv,
+	GetVertexAttribIuiv,
+	VertexAttribI4i,
+	VertexAttribI4ui,
+	VertexAttribI4iv,
+	VertexAttribI4uiv,
+	GetUniformuiv,
+	GetFragDataLocation,
+	Uniform1ui,
+	Uniform2ui,
+	Uniform3ui,
+	Uniform4ui,
+	Uniform1uiv,
+	Uniform2uiv,
+	Uniform3uiv,
+	Uniform4uiv,
+	ClearBufferiv,
+	ClearBufferuiv,
+	ClearBufferfv,
+	ClearBufferfi,
+	GetStringi,
+	CopyBufferSubData,
+	GetUniformIndices,
+	GetActiveUniformsiv,
+	GetUniformBlockIndex,
+	GetActiveUniformBlockiv,
+	GetActiveUniformBlockName,
+	UniformBlockBinding,
+	DrawArraysInstanced,
+	DrawElementsInstanced,
+	FenceSync,
+	IsSync,
+	DeleteSync,
+	ClientWaitSync,
+	WaitSync,
+	GetInteger64v,
+	GetSynciv,
+	GetInteger64i_v,
+	GetBufferParameteri64v,
+	GenSamplers,
+	DeleteSamplers,
+	IsSampler,
+	BindSampler,
+	SamplerParameteri,
+	SamplerParameteriv,
+	SamplerParameterf,
+	SamplerParameterfv,
+	GetSamplerParameteriv,
+	GetSamplerParameterfv,
+	VertexAttribDivisor,
+	BindTransformFeedback,
+	DeleteTransformFeedbacks,
+	GenTransformFeedbacks,
+	IsTransformFeedback,
+	PauseTransformFeedback,
+	ResumeTransformFeedback,
+	GetProgramBinary,
+	ProgramBinary,
+	ProgramParameteri,
+	InvalidateFramebuffer,
+	InvalidateSubFramebuffer,
+	TexStorage2D,
+	TexStorage3D,
+	GetInternalformativ,
 	NUMBER_OF_OPENGLES3_FUNCTIONS
 };
 }
 
+// Preloads the OpenGL ES 3.0 function pointers the first time any OpenGL ES 3.0 function call is made
 inline void* getEs3Function(gl::internals::Gl3FuncName::OpenGLES3FunctionName funcname)
 {
 	static void* FunctionTable[Gl3FuncName::NUMBER_OF_OPENGLES3_FUNCTIONS];
 
-	//  GET FUNCTION POINTERS --- ONCE!!!! ///
+	// Retrieve the OpenGL ES 3.0 functions pointers once
 	if (!FunctionTable[0])
 	{
 #if !TARGET_OS_IPHONE
 		pvr::lib::LIBTYPE lib = pvr::lib::openlib(gl::internals::libName);
-		if (!lib)
-		{
-			Log_Error("OpenGL ES Bindings: Failed to open library %s\n", gl::internals::libName);
-		}
+		if (!lib) { Log_Error("OpenGL ES Bindings: Failed to open library %s\n", gl::internals::libName); }
 		else
 		{
 			Log_Info("OpenGL ES Bindings: Successfully loaded library %s for OpenGL ES 3.0\n", gl::internals::libName);
@@ -1069,8 +1225,8 @@ inline void* getEs3Function(gl::internals::Gl3FuncName::OpenGLES3FunctionName fu
 	}
 	return FunctionTable[funcname];
 }
-}
-}
+} // namespace internals
+} // namespace gl
 #ifndef DYNAMICGLES_NO_NAMESPACE
 namespace gl {
 #elif TARGET_OS_IPHONE
@@ -1093,7 +1249,8 @@ inline void DYNAMICGLES_FUNCTION(DrawRangeElements)(GLenum mode, GLuint start, G
 	PFNGLDRAWRANGEELEMENTSPROC _DrawRangeElements = (PFNGLDRAWRANGEELEMENTSPROC)gl::internals::getEs3Function(gl::internals::Gl3FuncName::DrawRangeElements);
 	return _DrawRangeElements(mode, start, end, count, type, indices);
 }
-inline void DYNAMICGLES_FUNCTION(TexImage3D)(GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLenum format, GLenum type, const void* pixels)
+inline void DYNAMICGLES_FUNCTION(TexImage3D)(
+	GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLenum format, GLenum type, const void* pixels)
 {
 #if TARGET_OS_IPHONE
 	typedef decltype(&glTexImage3D) PFNGLTEXIMAGE3DPROC;
@@ -1101,7 +1258,8 @@ inline void DYNAMICGLES_FUNCTION(TexImage3D)(GLenum target, GLint level, GLint i
 	PFNGLTEXIMAGE3DPROC _TexImage3D = (PFNGLTEXIMAGE3DPROC)gl::internals::getEs3Function(gl::internals::Gl3FuncName::TexImage3D);
 	return _TexImage3D(target, level, internalformat, width, height, depth, border, format, type, pixels);
 }
-inline void DYNAMICGLES_FUNCTION(TexSubImage3D)(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, const void* pixels)
+inline void DYNAMICGLES_FUNCTION(TexSubImage3D)(
+	GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, const void* pixels)
 {
 #if TARGET_OS_IPHONE
 	typedef decltype(&glTexSubImage3D) PFNGLTEXSUBIMAGE3DPROC;
@@ -1117,7 +1275,8 @@ inline void DYNAMICGLES_FUNCTION(CopyTexSubImage3D)(GLenum target, GLint level, 
 	PFNGLCOPYTEXSUBIMAGE3DPROC _CopyTexSubImage3D = (PFNGLCOPYTEXSUBIMAGE3DPROC)gl::internals::getEs3Function(gl::internals::Gl3FuncName::CopyTexSubImage3D);
 	return _CopyTexSubImage3D(target, level, xoffset, yoffset, zoffset, x, y, width, height);
 }
-inline void DYNAMICGLES_FUNCTION(CompressedTexImage3D)(GLenum target, GLint level, GLenum internalformat, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLsizei imageSize, const void* data)
+inline void DYNAMICGLES_FUNCTION(CompressedTexImage3D)(
+	GLenum target, GLint level, GLenum internalformat, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLsizei imageSize, const void* data)
 {
 #if TARGET_OS_IPHONE
 	typedef decltype(&glCompressedTexImage3D) PFNGLCOMPRESSEDTEXIMAGE3DPROC;
@@ -1125,7 +1284,8 @@ inline void DYNAMICGLES_FUNCTION(CompressedTexImage3D)(GLenum target, GLint leve
 	PFNGLCOMPRESSEDTEXIMAGE3DPROC _CompressedTexImage3D = (PFNGLCOMPRESSEDTEXIMAGE3DPROC)gl::internals::getEs3Function(gl::internals::Gl3FuncName::CompressedTexImage3D);
 	return _CompressedTexImage3D(target, level, internalformat, width, height, depth, border, imageSize, data);
 }
-inline void DYNAMICGLES_FUNCTION(CompressedTexSubImage3D)(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLsizei imageSize, const void* data)
+inline void DYNAMICGLES_FUNCTION(CompressedTexSubImage3D)(
+	GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLsizei imageSize, const void* data)
 {
 #if TARGET_OS_IPHONE
 	typedef decltype(&glCompressedTexSubImage3D) PFNGLCOMPRESSEDTEXSUBIMAGE3DPROC;
@@ -1274,7 +1434,8 @@ inline void DYNAMICGLES_FUNCTION(RenderbufferStorageMultisample)(GLenum target, 
 #if TARGET_OS_IPHONE
 	typedef decltype(&glRenderbufferStorageMultisample) PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC;
 #endif
-	PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC _RenderbufferStorageMultisample = (PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC)gl::internals::getEs3Function(gl::internals::Gl3FuncName::RenderbufferStorageMultisample);
+	PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC _RenderbufferStorageMultisample =
+		(PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC)gl::internals::getEs3Function(gl::internals::Gl3FuncName::RenderbufferStorageMultisample);
 	return _RenderbufferStorageMultisample(target, samples, internalformat, width, height);
 }
 inline void DYNAMICGLES_FUNCTION(FramebufferTextureLayer)(GLenum target, GLenum attachment, GLuint texture, GLint level, GLint layer)
@@ -1378,18 +1539,18 @@ inline void DYNAMICGLES_FUNCTION(TransformFeedbackVaryings)(GLuint program, GLsi
 #if TARGET_OS_IPHONE
 	typedef decltype(&glTransformFeedbackVaryings) PFNGLTRANSFORMFEEDBACKVARYINGSPROC;
 #endif
-	PFNGLTRANSFORMFEEDBACKVARYINGSPROC _TransformFeedbackVaryings = (PFNGLTRANSFORMFEEDBACKVARYINGSPROC)gl::internals::getEs3Function(gl::internals::Gl3FuncName::TransformFeedbackVaryings);
+	PFNGLTRANSFORMFEEDBACKVARYINGSPROC _TransformFeedbackVaryings =
+		(PFNGLTRANSFORMFEEDBACKVARYINGSPROC)gl::internals::getEs3Function(gl::internals::Gl3FuncName::TransformFeedbackVaryings);
 	return _TransformFeedbackVaryings(program, count, varyings, bufferMode);
-
 }
 inline void DYNAMICGLES_FUNCTION(GetTransformFeedbackVarying)(GLuint program, GLuint index, GLsizei bufSize, GLsizei* length, GLsizei* size, GLenum* type, GLchar* name)
 {
 #if TARGET_OS_IPHONE
 	typedef decltype(&glGetTransformFeedbackVarying) PFNGLGETTRANSFORMFEEDBACKVARYINGPROC;
 #endif
-	PFNGLGETTRANSFORMFEEDBACKVARYINGPROC _GetTransformFeedbackVarying = (PFNGLGETTRANSFORMFEEDBACKVARYINGPROC)gl::internals::getEs3Function(gl::internals::Gl3FuncName::GetTransformFeedbackVarying);
+	PFNGLGETTRANSFORMFEEDBACKVARYINGPROC _GetTransformFeedbackVarying =
+		(PFNGLGETTRANSFORMFEEDBACKVARYINGPROC)gl::internals::getEs3Function(gl::internals::Gl3FuncName::GetTransformFeedbackVarying);
 	return _GetTransformFeedbackVarying(program, index, bufSize, length, size, type, name);
-
 }
 inline void DYNAMICGLES_FUNCTION(VertexAttribIPointer)(GLuint index, GLint size, GLenum type, GLsizei stride, const void* pointer)
 {
@@ -1582,7 +1743,6 @@ inline void DYNAMICGLES_FUNCTION(GetUniformIndices)(GLuint program, GLsizei unif
 #endif
 	PFNGLGETUNIFORMINDICESPROC _GetUniformIndices = (PFNGLGETUNIFORMINDICESPROC)gl::internals::getEs3Function(gl::internals::Gl3FuncName::GetUniformIndices);
 	return _GetUniformIndices(program, uniformCount, uniformNames, uniformIndices);
-
 }
 inline void DYNAMICGLES_FUNCTION(GetActiveUniformsiv)(GLuint program, GLsizei uniformCount, const GLuint* uniformIndices, GLenum pname, GLint* params)
 {
@@ -1613,9 +1773,9 @@ inline void DYNAMICGLES_FUNCTION(GetActiveUniformBlockName)(GLuint program, GLui
 #if TARGET_OS_IPHONE
 	typedef decltype(&glGetActiveUniformBlockName) PFNGLGETACTIVEUNIFORMBLOCKNAMEPROC;
 #endif
-	PFNGLGETACTIVEUNIFORMBLOCKNAMEPROC _GetActiveUniformBlockName = (PFNGLGETACTIVEUNIFORMBLOCKNAMEPROC)gl::internals::getEs3Function(gl::internals::Gl3FuncName::GetActiveUniformBlockName);
+	PFNGLGETACTIVEUNIFORMBLOCKNAMEPROC _GetActiveUniformBlockName =
+		(PFNGLGETACTIVEUNIFORMBLOCKNAMEPROC)gl::internals::getEs3Function(gl::internals::Gl3FuncName::GetActiveUniformBlockName);
 	return _GetActiveUniformBlockName(program, uniformBlockIndex, bufSize, length, uniformBlockName);
-
 }
 inline void DYNAMICGLES_FUNCTION(UniformBlockBinding)(GLuint program, GLuint uniformBlockIndex, GLuint uniformBlockBinding)
 {
@@ -1925,37 +2085,163 @@ namespace internals {
 namespace Gl2FuncName {
 enum OpenGLES2FunctionName
 {
-	ActiveTexture, AttachShader, BindAttribLocation, BindBuffer, BindFramebuffer, BindRenderbuffer, BindTexture, BlendColor, BlendEquation, BlendEquationSeparate,
-	BlendFunc, BlendFuncSeparate, BufferData, BufferSubData, CheckFramebufferStatus, Clear, ClearColor, ClearDepthf, ClearStencil, ColorMask, CompileShader,
-	CompressedTexImage2D, CompressedTexSubImage2D, CopyTexImage2D, CopyTexSubImage2D, CreateProgram, CreateShader, CullFace, DeleteBuffers, DeleteFramebuffers,
-	DeleteProgram, DeleteRenderbuffers, DeleteShader, DeleteTextures, DepthFunc, DepthMask, DepthRangef, DetachShader, Disable, DisableVertexAttribArray,
-	DrawArrays, DrawElements, Enable, EnableVertexAttribArray, Finish, Flush, FramebufferRenderbuffer, FramebufferTexture2D, FrontFace, GenBuffers, GenerateMipmap,
-	GenFramebuffers, GenRenderbuffers, GenTextures, GetActiveAttrib, GetActiveUniform, GetAttachedShaders, GetAttribLocation, GetBooleanv, GetBufferParameteriv,
-	GetError, GetFloatv, GetFramebufferAttachmentParameteriv, GetIntegerv, GetProgramiv, GetProgramInfoLog, GetRenderbufferParameteriv, GetShaderiv, GetShaderInfoLog,
-	GetShaderPrecisionFormat, GetShaderSource, GetString, GetTexParameterfv, GetTexParameteriv, GetUniformfv, GetUniformiv, GetUniformLocation, GetVertexAttribfv,
-	GetVertexAttribiv, GetVertexAttribPointerv, Hint, IsBuffer, IsEnabled, IsFramebuffer, IsProgram, IsRenderbuffer, IsShader, IsTexture, LineWidth, LinkProgram,
-	PixelStorei, PolygonOffset, ReadPixels, ReleaseShaderCompiler, RenderbufferStorage, SampleCoverage, Scissor, ShaderBinary, ShaderSource, StencilFunc,
-	StencilFuncSeparate, StencilMask, StencilMaskSeparate, StencilOp, StencilOpSeparate, TexImage2D, TexParameterf, TexParameterfv, TexParameteri, TexParameteriv,
-	TexSubImage2D, Uniform1f, Uniform1fv, Uniform1i, Uniform1iv, Uniform2f, Uniform2fv, Uniform2i, Uniform2iv, Uniform3f, Uniform3fv, Uniform3i, Uniform3iv, Uniform4f,
-	Uniform4fv, Uniform4i, Uniform4iv, UniformMatrix2fv, UniformMatrix3fv, UniformMatrix4fv, UseProgram, ValidateProgram, VertexAttrib1f, VertexAttrib1fv,
-	VertexAttrib2f, VertexAttrib2fv, VertexAttrib3f, VertexAttrib3fv, VertexAttrib4f, VertexAttrib4fv, VertexAttribPointer, Viewport,
+	ActiveTexture,
+	AttachShader,
+	BindAttribLocation,
+	BindBuffer,
+	BindFramebuffer,
+	BindRenderbuffer,
+	BindTexture,
+	BlendColor,
+	BlendEquation,
+	BlendEquationSeparate,
+	BlendFunc,
+	BlendFuncSeparate,
+	BufferData,
+	BufferSubData,
+	CheckFramebufferStatus,
+	Clear,
+	ClearColor,
+	ClearDepthf,
+	ClearStencil,
+	ColorMask,
+	CompileShader,
+	CompressedTexImage2D,
+	CompressedTexSubImage2D,
+	CopyTexImage2D,
+	CopyTexSubImage2D,
+	CreateProgram,
+	CreateShader,
+	CullFace,
+	DeleteBuffers,
+	DeleteFramebuffers,
+	DeleteProgram,
+	DeleteRenderbuffers,
+	DeleteShader,
+	DeleteTextures,
+	DepthFunc,
+	DepthMask,
+	DepthRangef,
+	DetachShader,
+	Disable,
+	DisableVertexAttribArray,
+	DrawArrays,
+	DrawElements,
+	Enable,
+	EnableVertexAttribArray,
+	Finish,
+	Flush,
+	FramebufferRenderbuffer,
+	FramebufferTexture2D,
+	FrontFace,
+	GenBuffers,
+	GenerateMipmap,
+	GenFramebuffers,
+	GenRenderbuffers,
+	GenTextures,
+	GetActiveAttrib,
+	GetActiveUniform,
+	GetAttachedShaders,
+	GetAttribLocation,
+	GetBooleanv,
+	GetBufferParameteriv,
+	GetError,
+	GetFloatv,
+	GetFramebufferAttachmentParameteriv,
+	GetIntegerv,
+	GetProgramiv,
+	GetProgramInfoLog,
+	GetRenderbufferParameteriv,
+	GetShaderiv,
+	GetShaderInfoLog,
+	GetShaderPrecisionFormat,
+	GetShaderSource,
+	GetString,
+	GetTexParameterfv,
+	GetTexParameteriv,
+	GetUniformfv,
+	GetUniformiv,
+	GetUniformLocation,
+	GetVertexAttribfv,
+	GetVertexAttribiv,
+	GetVertexAttribPointerv,
+	Hint,
+	IsBuffer,
+	IsEnabled,
+	IsFramebuffer,
+	IsProgram,
+	IsRenderbuffer,
+	IsShader,
+	IsTexture,
+	LineWidth,
+	LinkProgram,
+	PixelStorei,
+	PolygonOffset,
+	ReadPixels,
+	ReleaseShaderCompiler,
+	RenderbufferStorage,
+	SampleCoverage,
+	Scissor,
+	ShaderBinary,
+	ShaderSource,
+	StencilFunc,
+	StencilFuncSeparate,
+	StencilMask,
+	StencilMaskSeparate,
+	StencilOp,
+	StencilOpSeparate,
+	TexImage2D,
+	TexParameterf,
+	TexParameterfv,
+	TexParameteri,
+	TexParameteriv,
+	TexSubImage2D,
+	Uniform1f,
+	Uniform1fv,
+	Uniform1i,
+	Uniform1iv,
+	Uniform2f,
+	Uniform2fv,
+	Uniform2i,
+	Uniform2iv,
+	Uniform3f,
+	Uniform3fv,
+	Uniform3i,
+	Uniform3iv,
+	Uniform4f,
+	Uniform4fv,
+	Uniform4i,
+	Uniform4iv,
+	UniformMatrix2fv,
+	UniformMatrix3fv,
+	UniformMatrix4fv,
+	UseProgram,
+	ValidateProgram,
+	VertexAttrib1f,
+	VertexAttrib1fv,
+	VertexAttrib2f,
+	VertexAttrib2fv,
+	VertexAttrib3f,
+	VertexAttrib3fv,
+	VertexAttrib4f,
+	VertexAttrib4fv,
+	VertexAttribPointer,
+	Viewport,
 	NUMBER_OF_OPENGLES2_FUNCTIONS
 };
 }
 
+// Preloads the OpenGL ES 2.0 function pointers the first time any OpenGL ES 2.0 function call is made
 inline void* getEs2Function(gl::internals::Gl2FuncName::OpenGLES2FunctionName funcname)
 {
 	static void* FunctionTable[Gl2FuncName::NUMBER_OF_OPENGLES2_FUNCTIONS];
 
-	//  GET FUNCTION POINTERS --- ONCE!!!! ///
+	// Retrieve the OpenGL ES 2.0 functions pointers once
 	if (!FunctionTable[0])
 	{
 #if !TARGET_OS_IPHONE
 		pvr::lib::LIBTYPE lib = pvr::lib::openlib(gl::internals::libName);
-		if (!lib)
-		{
-			Log_Error("OpenGL ES Bindings: Failed to open library %s\n", internals::libName);
-		}
+		if (!lib) { Log_Error("OpenGL ES Bindings: Failed to open library %s\n", internals::libName); }
 		else
 		{
 			Log_Info("OpenGL ES Bindings: Successfully loaded library %s for OpenGL ES 2.0\n", libName);
@@ -2251,9 +2537,8 @@ inline void* getEs2Function(gl::internals::Gl2FuncName::OpenGLES2FunctionName fu
 	}
 	return FunctionTable[funcname];
 }
-}
-}
-
+} // namespace internals
+} // namespace gl
 
 #ifndef DYNAMICGLES_NO_NAMESPACE
 namespace gl {
@@ -2439,7 +2724,8 @@ inline void DYNAMICGLES_FUNCTION(CompressedTexImage2D)(GLenum target, GLint leve
 	PFNGLCOMPRESSEDTEXIMAGE2DPROC _CompressedTexImage2D = (PFNGLCOMPRESSEDTEXIMAGE2DPROC)gl::internals::getEs2Function(gl::internals::Gl2FuncName::CompressedTexImage2D);
 	return _CompressedTexImage2D(target, level, internalformat, width, height, border, imageSize, data);
 }
-inline void DYNAMICGLES_FUNCTION(CompressedTexSubImage2D)(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLsizei imageSize, const void* data)
+inline void DYNAMICGLES_FUNCTION(CompressedTexSubImage2D)(
+	GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLsizei imageSize, const void* data)
 {
 #if TARGET_OS_IPHONE
 	typedef decltype(&glCompressedTexSubImage2D) PFNGLCOMPRESSEDTEXSUBIMAGE2DPROC;
@@ -2702,7 +2988,6 @@ inline void DYNAMICGLES_FUNCTION(GetActiveAttrib)(GLuint program, GLuint index, 
 #endif
 	PFNGLGETACTIVEATTRIBPROC _GetActiveAttrib = (PFNGLGETACTIVEATTRIBPROC)gl::internals::getEs2Function(gl::internals::Gl2FuncName::GetActiveAttrib);
 	return _GetActiveAttrib(program, index, bufSize, length, size, type, name);
-
 }
 inline void DYNAMICGLES_FUNCTION(GetActiveUniform)(GLuint program, GLuint index, GLsizei bufSize, GLsizei* length, GLint* size, GLenum* type, GLchar* name)
 {
@@ -2711,7 +2996,6 @@ inline void DYNAMICGLES_FUNCTION(GetActiveUniform)(GLuint program, GLuint index,
 #endif
 	PFNGLGETACTIVEUNIFORMPROC _GetActiveUniform = (PFNGLGETACTIVEUNIFORMPROC)gl::internals::getEs2Function(gl::internals::Gl2FuncName::GetActiveUniform);
 	return _GetActiveUniform(program, index, bufSize, length, size, type, name);
-
 }
 inline void DYNAMICGLES_FUNCTION(GetAttachedShaders)(GLuint program, GLsizei maxCount, GLsizei* count, GLuint* shaders)
 {
@@ -2766,7 +3050,8 @@ inline void DYNAMICGLES_FUNCTION(GetFramebufferAttachmentParameteriv)(GLenum tar
 #if TARGET_OS_IPHONE
 	typedef decltype(&glGetFramebufferAttachmentParameteriv) PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVPROC;
 #endif
-	PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVPROC _GetFramebufferAttachmentParameteriv = (PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVPROC)gl::internals::getEs2Function(gl::internals::Gl2FuncName::GetFramebufferAttachmentParameteriv);
+	PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVPROC _GetFramebufferAttachmentParameteriv =
+		(PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVPROC)gl::internals::getEs2Function(gl::internals::Gl2FuncName::GetFramebufferAttachmentParameteriv);
 	return _GetFramebufferAttachmentParameteriv(target, attachment, pname, params);
 }
 inline void DYNAMICGLES_FUNCTION(GetIntegerv)(GLenum pname, GLint* data)
@@ -2792,14 +3077,14 @@ inline void DYNAMICGLES_FUNCTION(GetProgramInfoLog)(GLuint program, GLsizei bufS
 #endif
 	PFNGLGETPROGRAMINFOLOGPROC _GetProgramInfoLog = (PFNGLGETPROGRAMINFOLOGPROC)gl::internals::getEs2Function(gl::internals::Gl2FuncName::GetProgramInfoLog);
 	return _GetProgramInfoLog(program, bufSize, length, infoLog);
-
 }
 inline void DYNAMICGLES_FUNCTION(GetRenderbufferParameteriv)(GLenum target, GLenum pname, GLint* params)
 {
 #if TARGET_OS_IPHONE
 	typedef decltype(&glGetRenderbufferParameteriv) PFNGLGETRENDERBUFFERPARAMETERIVPROC;
 #endif
-	PFNGLGETRENDERBUFFERPARAMETERIVPROC _GetRenderbufferParameteriv = (PFNGLGETRENDERBUFFERPARAMETERIVPROC)gl::internals::getEs2Function(gl::internals::Gl2FuncName::GetRenderbufferParameteriv);
+	PFNGLGETRENDERBUFFERPARAMETERIVPROC _GetRenderbufferParameteriv =
+		(PFNGLGETRENDERBUFFERPARAMETERIVPROC)gl::internals::getEs2Function(gl::internals::Gl2FuncName::GetRenderbufferParameteriv);
 	return _GetRenderbufferParameteriv(target, pname, params);
 }
 inline void DYNAMICGLES_FUNCTION(GetShaderiv)(GLuint shader, GLenum pname, GLint* params)
@@ -2817,7 +3102,6 @@ inline void DYNAMICGLES_FUNCTION(GetShaderInfoLog)(GLuint shader, GLsizei bufSiz
 #endif
 	PFNGLGETSHADERINFOLOGPROC _GetShaderInfoLog = (PFNGLGETSHADERINFOLOGPROC)gl::internals::getEs2Function(gl::internals::Gl2FuncName::GetShaderInfoLog);
 	return _GetShaderInfoLog(shader, bufSize, length, infoLog);
-
 }
 inline void DYNAMICGLES_FUNCTION(GetShaderPrecisionFormat)(GLenum shadertype, GLenum precisiontype, GLint* range, GLint* precision)
 {
@@ -2834,7 +3118,6 @@ inline void DYNAMICGLES_FUNCTION(GetShaderSource)(GLuint shader, GLsizei bufSize
 #endif
 	PFNGLGETSHADERSOURCEPROC _GetShaderSource = (PFNGLGETSHADERSOURCEPROC)gl::internals::getEs2Function(gl::internals::Gl2FuncName::GetShaderSource);
 	return _GetShaderSource(shader, bufSize, length, source);
-
 }
 inline const GLubyte* DYNAMICGLES_FUNCTION(GetString)(GLenum name)
 {
@@ -2963,7 +3246,6 @@ inline GLboolean DYNAMICGLES_FUNCTION(IsShader)(GLuint shader)
 #endif
 	PFNGLISSHADERPROC _IsShader = (PFNGLISSHADERPROC)gl::internals::getEs2Function(gl::internals::Gl2FuncName::IsShader);
 	return _IsShader(shader);
-
 }
 inline GLboolean DYNAMICGLES_FUNCTION(IsTexture)(GLuint texture)
 {
@@ -3060,7 +3342,6 @@ inline void DYNAMICGLES_FUNCTION(ShaderSource)(GLuint shader, GLsizei count, con
 #endif
 	PFNGLSHADERSOURCEPROC _ShaderSource = (PFNGLSHADERSOURCEPROC)gl::internals::getEs2Function(gl::internals::Gl2FuncName::ShaderSource);
 	return _ShaderSource(shader, count, string, length);
-
 }
 inline void DYNAMICGLES_FUNCTION(StencilFunc)(GLenum func, GLint ref, GLuint mask)
 {
@@ -3418,282 +3699,307 @@ namespace internals {
 namespace GlExtFuncName {
 enum OpenGLESExtFunctionName
 {
-	//EXTENSIONS //
-	MultiDrawArraysEXT, MultiDrawElementsEXT, DiscardFramebufferEXT, MapBufferOES, UnmapBufferOES, GetBufferPointervOES, BindVertexArrayOES, DeleteVertexArraysOES,
-	GenVertexArraysOES, IsVertexArrayOES, DeleteFencesNV, GenFencesNV, IsFenceNV, TestFenceNV, GetFenceivNV, FinishFenceNV, SetFenceNV,
+	// Extensions
+	MultiDrawArraysEXT,
+	MultiDrawElementsEXT,
+	DiscardFramebufferEXT,
+	MapBufferOES,
+	UnmapBufferOES,
+	GetBufferPointervOES,
+	BindVertexArrayOES,
+	DeleteVertexArraysOES,
+	GenVertexArraysOES,
+	IsVertexArrayOES,
+	DeleteFencesNV,
+	GenFencesNV,
+	IsFenceNV,
+	TestFenceNV,
+	GetFenceivNV,
+	FinishFenceNV,
+	SetFenceNV,
 #if !TARGET_OS_IPHONE
-	EGLImageTargetTexture2DOES, EGLImageTargetRenderbufferStorageOES,
+	EGLImageTargetTexture2DOES,
+	EGLImageTargetRenderbufferStorageOES,
 #endif
-	RenderbufferStorageMultisampleIMG, FramebufferTexture2DMultisampleIMG, GetPerfMonitorGroupsAMD, GetPerfMonitorCountersAMD, GetPerfMonitorGroupStringAMD,
-	GetPerfMonitorCounterStringAMD, GetPerfMonitorCounterInfoAMD, GenPerfMonitorsAMD, DeletePerfMonitorsAMD, SelectPerfMonitorCountersAMD, BeginPerfMonitorAMD,
-	EndPerfMonitorAMD, GetPerfMonitorCounterDataAMD, BlitFramebufferANGLE, RenderbufferStorageMultisampleANGLE,
-	CoverageMaskNV, CoverageOperationNV, GetDriverControlsQCOM, GetDriverControlStringQCOM, EnableDriverControlQCOM,
-	DisableDriverControlQCOM, ExtGetTexturesQCOM, ExtGetBuffersQCOM, ExtGetRenderbuffersQCOM, ExtGetFramebuffersQCOM, ExtGetTexLevelParameterivQCOM,
-	ExtTexObjectStateOverrideiQCOM, ExtGetTexSubImageQCOM, ExtGetBufferPointervQCOM, ExtGetShadersQCOM, ExtGetProgramsQCOM, ExtIsProgramBinaryQCOM,
-	ExtGetProgramBinarySourceQCOM, StartTilingQCOM, EndTilingQCOM, GetProgramBinaryOES, ProgramBinaryOES, TexImage3DOES, TexSubImage3DOES, CopyTexSubImage3DOES,
-	CompressedTexImage3DOES, CompressedTexSubImage3DOES, FramebufferTexture3DOES, BlendEquationSeparateOES, BlendFuncSeparateOES, BlendEquationOES, QueryMatrixxOES,
-	CopyTextureLevelsAPPLE, RenderbufferStorageMultisampleAPPLE, ResolveMultisampleFramebufferAPPLE, FenceSyncAPPLE, IsSyncAPPLE, DeleteSyncAPPLE,
-	ClientWaitSyncAPPLE, WaitSyncAPPLE, GetInteger64vAPPLE, GetSyncivAPPLE, MapBufferRangeEXT, FlushMappedBufferRangeEXT, RenderbufferStorageMultisampleEXT,
-	FramebufferTexture2DMultisampleEXT, GetGraphicsResetStatusEXT, ReadnPixelsEXT, GetnUniformfvEXT, GetnUniformivEXT, TexStorage1DEXT, TexStorage2DEXT,
-	TexStorage3DEXT, TextureStorage1DEXT, TextureStorage2DEXT, TextureStorage3DEXT,
+	RenderbufferStorageMultisampleIMG,
+	FramebufferTexture2DMultisampleIMG,
+	GetPerfMonitorGroupsAMD,
+	GetPerfMonitorCountersAMD,
+	GetPerfMonitorGroupStringAMD,
+	GetPerfMonitorCounterStringAMD,
+	GetPerfMonitorCounterInfoAMD,
+	GenPerfMonitorsAMD,
+	DeletePerfMonitorsAMD,
+	SelectPerfMonitorCountersAMD,
+	BeginPerfMonitorAMD,
+	EndPerfMonitorAMD,
+	GetPerfMonitorCounterDataAMD,
+	BlitFramebufferANGLE,
+	RenderbufferStorageMultisampleANGLE,
+	CoverageMaskNV,
+	CoverageOperationNV,
+	GetDriverControlsQCOM,
+	GetDriverControlStringQCOM,
+	EnableDriverControlQCOM,
+	DisableDriverControlQCOM,
+	ExtGetTexturesQCOM,
+	ExtGetBuffersQCOM,
+	ExtGetRenderbuffersQCOM,
+	ExtGetFramebuffersQCOM,
+	ExtGetTexLevelParameterivQCOM,
+	ExtTexObjectStateOverrideiQCOM,
+	ExtGetTexSubImageQCOM,
+	ExtGetBufferPointervQCOM,
+	ExtGetShadersQCOM,
+	ExtGetProgramsQCOM,
+	ExtIsProgramBinaryQCOM,
+	ExtGetProgramBinarySourceQCOM,
+	StartTilingQCOM,
+	EndTilingQCOM,
+	GetProgramBinaryOES,
+	ProgramBinaryOES,
+	TexImage3DOES,
+	TexSubImage3DOES,
+	CopyTexSubImage3DOES,
+	CompressedTexImage3DOES,
+	CompressedTexSubImage3DOES,
+	FramebufferTexture3DOES,
+	BlendEquationSeparateOES,
+	BlendFuncSeparateOES,
+	BlendEquationOES,
+	QueryMatrixxOES,
+	CopyTextureLevelsAPPLE,
+	RenderbufferStorageMultisampleAPPLE,
+	ResolveMultisampleFramebufferAPPLE,
+	FenceSyncAPPLE,
+	IsSyncAPPLE,
+	DeleteSyncAPPLE,
+	ClientWaitSyncAPPLE,
+	WaitSyncAPPLE,
+	GetInteger64vAPPLE,
+	GetSyncivAPPLE,
+	MapBufferRangeEXT,
+	FlushMappedBufferRangeEXT,
+	RenderbufferStorageMultisampleEXT,
+	FramebufferTexture2DMultisampleEXT,
+	GetGraphicsResetStatusEXT,
+	ReadnPixelsEXT,
+	GetnUniformfvEXT,
+	GetnUniformivEXT,
+	TexStorage1DEXT,
+	TexStorage2DEXT,
+	TexStorage3DEXT,
+	TextureStorage1DEXT,
+	TextureStorage2DEXT,
+	TextureStorage3DEXT,
 #if !defined(GL_KHR_debug)
 	GLDEBUGPROCKHR,
 #endif
-	DebugMessageControlKHR, DebugMessageInsertKHR, DebugMessageCallbackKHR, GetDebugMessageLogKHR, PushDebugGroupKHR, PopDebugGroupKHR, ObjectLabelKHR,
-	GetObjectLabelKHR, ObjectPtrLabelKHR, GetObjectPtrLabelKHR, GetPointervKHR, DrawArraysInstancedANGLE, DrawElementsInstancedANGLE, VertexAttribDivisorANGLE,
-	GetTranslatedShaderSourceANGLE, LabelObjectEXT, GetObjectLabelEXT, InsertEventMarkerEXT, PushGroupMarkerEXT, PopGroupMarkerEXT,
-	GenQueriesEXT, DeleteQueriesEXT, IsQueryEXT, BeginQueryEXT, EndQueryEXT, GetQueryivEXT, GetQueryObjectuivEXT, UseProgramStagesEXT, ActiveShaderProgramEXT,
-	CreateShaderProgramvEXT, BindProgramPipelineEXT, DeleteProgramPipelinesEXT, GenProgramPipelinesEXT, IsProgramPipelineEXT, ProgramParameteriEXT,
-	GetProgramPipelineivEXT, ProgramUniform1iEXT, ProgramUniform2iEXT, ProgramUniform3iEXT, ProgramUniform4iEXT, ProgramUniform1fEXT, ProgramUniform2fEXT,
-	ProgramUniform3fEXT, ProgramUniform4fEXT, ProgramUniform1ivEXT, ProgramUniform2ivEXT, ProgramUniform3ivEXT, ProgramUniform4ivEXT, ProgramUniform1fvEXT,
-	ProgramUniform2fvEXT, ProgramUniform3fvEXT, ProgramUniform4fvEXT, ProgramUniformMatrix2fvEXT, ProgramUniformMatrix3fvEXT, ProgramUniformMatrix4fvEXT,
-	ValidateProgramPipelineEXT, GetProgramPipelineInfoLogEXT, ProgramUniform1uiEXT, ProgramUniform2uiEXT, ProgramUniform3uiEXT, ProgramUniform4uiEXT,
-	ProgramUniform1uivEXT, ProgramUniform2uivEXT, ProgramUniform3uivEXT, ProgramUniform4uivEXT, ProgramUniformMatrix2x3fvEXT, ProgramUniformMatrix3x2fvEXT,
-	ProgramUniformMatrix2x4fvEXT, ProgramUniformMatrix4x2fvEXT, ProgramUniformMatrix3x4fvEXT, ProgramUniformMatrix4x3fvEXT, AlphaFuncQCOM, ReadBufferNV,
-	DrawBuffersNV, ReadBufferIndexedEXT, DrawBuffersIndexedEXT, GetIntegeri_vEXT, DrawBuffersEXT, BlendEquationEXT, BlendBarrierKHR, TexStorage3DMultisampleOES,
-	FramebufferTextureMultiviewOVR, FramebufferPixelLocalStorageSizeEXT, ClearPixelLocalStorageuiEXT, GetFramebufferPixelLocalStorageSizeEXT, BufferStorageEXT,
-	ClearTexImageIMG, ClearTexSubImageIMG, ClearTexImageEXT, ClearTexSubImageEXT, FramebufferTexture2DDownsampleIMG, FramebufferTextureLayerDownsampleIMG,
+	DebugMessageControlKHR,
+	DebugMessageInsertKHR,
+	DebugMessageCallbackKHR,
+	GetDebugMessageLogKHR,
+	PushDebugGroupKHR,
+	PopDebugGroupKHR,
+	ObjectLabelKHR,
+	GetObjectLabelKHR,
+	ObjectPtrLabelKHR,
+	GetObjectPtrLabelKHR,
+	GetPointervKHR,
+	DrawArraysInstancedANGLE,
+	DrawElementsInstancedANGLE,
+	VertexAttribDivisorANGLE,
+	GetTranslatedShaderSourceANGLE,
+	LabelObjectEXT,
+	GetObjectLabelEXT,
+	InsertEventMarkerEXT,
+	PushGroupMarkerEXT,
+	PopGroupMarkerEXT,
+	GenQueriesEXT,
+	DeleteQueriesEXT,
+	IsQueryEXT,
+	BeginQueryEXT,
+	EndQueryEXT,
+	GetQueryivEXT,
+	GetQueryObjectuivEXT,
+	UseProgramStagesEXT,
+	ActiveShaderProgramEXT,
+	CreateShaderProgramvEXT,
+	BindProgramPipelineEXT,
+	DeleteProgramPipelinesEXT,
+	GenProgramPipelinesEXT,
+	IsProgramPipelineEXT,
+	ProgramParameteriEXT,
+	GetProgramPipelineivEXT,
+	ProgramUniform1iEXT,
+	ProgramUniform2iEXT,
+	ProgramUniform3iEXT,
+	ProgramUniform4iEXT,
+	ProgramUniform1fEXT,
+	ProgramUniform2fEXT,
+	ProgramUniform3fEXT,
+	ProgramUniform4fEXT,
+	ProgramUniform1ivEXT,
+	ProgramUniform2ivEXT,
+	ProgramUniform3ivEXT,
+	ProgramUniform4ivEXT,
+	ProgramUniform1fvEXT,
+	ProgramUniform2fvEXT,
+	ProgramUniform3fvEXT,
+	ProgramUniform4fvEXT,
+	ProgramUniformMatrix2fvEXT,
+	ProgramUniformMatrix3fvEXT,
+	ProgramUniformMatrix4fvEXT,
+	ValidateProgramPipelineEXT,
+	GetProgramPipelineInfoLogEXT,
+	ProgramUniform1uiEXT,
+	ProgramUniform2uiEXT,
+	ProgramUniform3uiEXT,
+	ProgramUniform4uiEXT,
+	ProgramUniform1uivEXT,
+	ProgramUniform2uivEXT,
+	ProgramUniform3uivEXT,
+	ProgramUniform4uivEXT,
+	ProgramUniformMatrix2x3fvEXT,
+	ProgramUniformMatrix3x2fvEXT,
+	ProgramUniformMatrix2x4fvEXT,
+	ProgramUniformMatrix4x2fvEXT,
+	ProgramUniformMatrix3x4fvEXT,
+	ProgramUniformMatrix4x3fvEXT,
+	AlphaFuncQCOM,
+	ReadBufferNV,
+	DrawBuffersNV,
+	ReadBufferIndexedEXT,
+	DrawBuffersIndexedEXT,
+	GetIntegeri_vEXT,
+	DrawBuffersEXT,
+	BlendEquationEXT,
+	BlendBarrierKHR,
+	TexStorage3DMultisampleOES,
+	FramebufferTextureMultiviewOVR,
+	FramebufferPixelLocalStorageSizeEXT,
+	ClearPixelLocalStorageuiEXT,
+	GetFramebufferPixelLocalStorageSizeEXT,
+	BufferStorageEXT,
+	ClearTexImageIMG,
+	ClearTexSubImageIMG,
+	ClearTexImageEXT,
+	ClearTexSubImageEXT,
+	FramebufferTexture2DDownsampleIMG,
+	FramebufferTextureLayerDownsampleIMG,
 	PatchParameteriEXT,
 
 #ifdef GL_IMG_bindless_texture
-	GetTextureHandleIMG, GetTextureSamplerHandleIMG, UniformHandleui64IMG, UniformHandleui64vIMG, ProgramUniformHandleui64IMG, ProgramUniformHandleui64vIMG,
+	GetTextureHandleIMG,
+	GetTextureSamplerHandleIMG,
+	UniformHandleui64IMG,
+	UniformHandleui64vIMG,
+	ProgramUniformHandleui64IMG,
+	ProgramUniformHandleui64vIMG,
 #endif
 
 	NUMBER_OF_OPENGLEXT_FUNCTIONS
 };
-}
+} // namespace GlExtFuncName
 
 namespace GlExtFuncName {
 
-static const std::pair<uint16_t, const char* const> OpenGLESExtFunctionNamePairs[] =
-{
-	{ MultiDrawArraysEXT, "glMultiDrawArraysEXT"},
-	{ MultiDrawElementsEXT, "glMultiDrawElementsEXT" },
-	{ DiscardFramebufferEXT, "glDiscardFramebufferEXT" },
-	{ MapBufferOES, "glMapBufferOES" },
-	{ UnmapBufferOES, "glUnmapBufferOES" },
-	{ GetBufferPointervOES, "glGetBufferPointervOES" },
-	{ BindVertexArrayOES, "glBindVertexArrayOES" },
-	{ DeleteVertexArraysOES, "glDeleteVertexArraysOES" },
-	{ GenVertexArraysOES, "glGenVertexArraysOES" },
-	{ IsVertexArrayOES, "glIsVertexArrayOES" },
-	{ DeleteFencesNV, "glDeleteFencesNV" },
-	{ GenFencesNV, "glGenFencesNV" },
-	{ IsFenceNV, "glIsFenceNV" },
-	{ TestFenceNV, "glTestFenceNV" },
-	{ GetFenceivNV, "glGetFenceivNV" },
-	{ FinishFenceNV, "glFinishFenceNV" },
-	{ SetFenceNV, "glSetFenceNV" },
+static const std::pair<uint32_t, const char* const> OpenGLESExtFunctionNamePairs[] = { { MultiDrawArraysEXT, "glMultiDrawArraysEXT" },
+	{ MultiDrawElementsEXT, "glMultiDrawElementsEXT" }, { DiscardFramebufferEXT, "glDiscardFramebufferEXT" }, { MapBufferOES, "glMapBufferOES" }, { UnmapBufferOES, "glUnmapBufferOES" },
+	{ GetBufferPointervOES, "glGetBufferPointervOES" }, { BindVertexArrayOES, "glBindVertexArrayOES" }, { DeleteVertexArraysOES, "glDeleteVertexArraysOES" },
+	{ GenVertexArraysOES, "glGenVertexArraysOES" }, { IsVertexArrayOES, "glIsVertexArrayOES" }, { DeleteFencesNV, "glDeleteFencesNV" }, { GenFencesNV, "glGenFencesNV" },
+	{ IsFenceNV, "glIsFenceNV" }, { TestFenceNV, "glTestFenceNV" }, { GetFenceivNV, "glGetFenceivNV" }, { FinishFenceNV, "glFinishFenceNV" }, { SetFenceNV, "glSetFenceNV" },
 #if !TARGET_OS_IPHONE
-	{ EGLImageTargetTexture2DOES, "glEGLImageTargetTexture2DOES"},
-	{ EGLImageTargetRenderbufferStorageOES, "glEGLImageTargetRenderbufferStorageOES"},
+	{ EGLImageTargetTexture2DOES, "glEGLImageTargetTexture2DOES" }, { EGLImageTargetRenderbufferStorageOES, "glEGLImageTargetRenderbufferStorageOES" },
 #endif
-	{ RenderbufferStorageMultisampleIMG, "glRenderbufferStorageMultisampleIMG" },
-	{ FramebufferTexture2DMultisampleIMG, "glFramebufferTexture2DMultisampleIMG" },
-	{ GetPerfMonitorGroupsAMD, "glGetPerfMonitorGroupsAMD" },
-	{ GetPerfMonitorCountersAMD, "glGetPerfMonitorCountersAMD" },
-	{ GetPerfMonitorGroupStringAMD, "glGetPerfMonitorGroupStringAMD"},
-	{ GetPerfMonitorCounterStringAMD, "glGetPerfMonitorCounterStringAMD" },
-	{ GetPerfMonitorCounterInfoAMD, "glGetPerfMonitorCounterInfoAMD" },
-	{ GenPerfMonitorsAMD, "glGenPerfMonitorsAMD" },
-	{ DeletePerfMonitorsAMD, "glDeletePerfMonitorsAMD" },
-	{ SelectPerfMonitorCountersAMD, "glSelectPerfMonitorCountersAMD" },
-	{ BeginPerfMonitorAMD, "glBeginPerfMonitorAMD" },
-	{ EndPerfMonitorAMD, "glEndPerfMonitorAMD" },
-	{ GetPerfMonitorCounterDataAMD, "glGetPerfMonitorCounterDataAMD" },
-	{ BlitFramebufferANGLE, "glBlitFramebufferANGLE" },
-	{ RenderbufferStorageMultisampleANGLE, "glRenderbufferStorageMultisampleANGLE" },
-	{ CoverageMaskNV, "glCoverageMaskNV" },
-	{ CoverageOperationNV, "glCoverageOperationNV" },
-	{ GetDriverControlsQCOM, "glGetDriverControlsQCOM" },
-	{ GetDriverControlStringQCOM, "glGetDriverControlStringQCOM" },
-	{ EnableDriverControlQCOM, "glEnableDriverControlQCOM" },
-	{ DisableDriverControlQCOM, "glDisableDriverControlQCOM" },
-	{ ExtGetTexturesQCOM, "glExtGetTexturesQCOM" },
-	{ ExtGetBuffersQCOM, "glExtGetBuffersQCOM" },
-	{ ExtGetRenderbuffersQCOM, "glExtGetRenderbuffersQCOM" },
-	{ ExtGetFramebuffersQCOM, "glExtGetFramebuffersQCOM" },
-	{ ExtGetTexLevelParameterivQCOM, "glExtGetTexLevelParameterivQCOM" },
-	{ ExtTexObjectStateOverrideiQCOM, "glExtTexObjectStateOverrideiQCOM" },
-	{ ExtGetTexSubImageQCOM, "glExtGetTexSubImageQCOM" },
-	{ ExtGetBufferPointervQCOM, "glExtGetBufferPointervQCOM" },
-	{ ExtGetShadersQCOM, "glExtGetShadersQCOM" },
-	{ ExtGetProgramsQCOM, "glExtGetProgramsQCOM" },
-	{ ExtIsProgramBinaryQCOM, "glExtIsProgramBinaryQCOM" },
-	{ ExtGetProgramBinarySourceQCOM, "glExtGetProgramBinarySourceQCOM" },
-	{ StartTilingQCOM, "glStartTilingQCOM" },
-	{ EndTilingQCOM, "glEndTilingQCOM" },
-	{ GetProgramBinaryOES, "glGetProgramBinaryOES" },
-	{ ProgramBinaryOES, "glProgramBinaryOES" },
-	{ TexImage3DOES, "glTexImage3DOES" },
-	{ TexSubImage3DOES, "glTexSubImage3DOES" },
-	{ CopyTexSubImage3DOES, "glCopyTexSubImage3DOES" },
-	{ CompressedTexImage3DOES, "glCompressedTexImage3DOES" },
-	{ CompressedTexSubImage3DOES, "glCompressedTexSubImage3DOES" },
-	{ FramebufferTexture3DOES, "glFramebufferTexture3DOES" },
-	{ BlendEquationSeparateOES, "glBlendEquationSeparateOES" },
-	{ BlendFuncSeparateOES, "glBlendFuncSeparateOES" },
-	{ BlendEquationOES, "glBlendEquationOES" },
-	{ QueryMatrixxOES, "glQueryMatrixxOES" },
-	{ CopyTextureLevelsAPPLE, "glCopyTextureLevelsAPPLE" },
-	{ RenderbufferStorageMultisampleAPPLE, "glRenderbufferStorageMultisampleAPPLE" },
-	{ ResolveMultisampleFramebufferAPPLE, "glResolveMultisampleFramebufferAPPLE" },
-	{ FenceSyncAPPLE, "glFenceSyncAPPLE" },
-	{ IsSyncAPPLE, "glIsSyncAPPLE" },
-	{ DeleteSyncAPPLE, "glDeleteSyncAPPLE" },
-	{ ClientWaitSyncAPPLE, "glClientWaitSyncAPPLE" },
-	{ WaitSyncAPPLE, "glWaitSyncAPPLE" },
-	{ GetInteger64vAPPLE, "glGetInteger64vAPPLE" },
-	{ GetSyncivAPPLE, "glGetSyncivAPPLE" },
-	{ MapBufferRangeEXT, "glMapBufferRangeEXT" },
-	{ FlushMappedBufferRangeEXT, "glFlushMappedBufferRangeEXT" },
-	{ RenderbufferStorageMultisampleEXT, "glRenderbufferStorageMultisampleEXT" },
-	{ FramebufferTexture2DMultisampleEXT, "glFramebufferTexture2DMultisampleEXT" },
-	{ GetGraphicsResetStatusEXT, "glGetGraphicsResetStatusEXT" },
-	{ ReadnPixelsEXT, "glReadnPixelsEXT" },
-	{ GetnUniformfvEXT, "glGetnUniformfvEXT" },
-	{ GetnUniformivEXT, "glGetnUniformivEXT" },
-	{ TexStorage1DEXT, "glTexStorage1DEXT" },
-	{ TexStorage2DEXT, "glTexStorage2DEXT" },
-	{ TexStorage3DEXT, "glTexStorage3DEXT" },
-	{ TextureStorage1DEXT, "glTextureStorage1DEXT" },
-	{ TextureStorage2DEXT, "glTextureStorage2DEXT" },
-	{ TextureStorage3DEXT, "glTextureStorage3DEXT" },
+	{ RenderbufferStorageMultisampleIMG, "glRenderbufferStorageMultisampleIMG" }, { FramebufferTexture2DMultisampleIMG, "glFramebufferTexture2DMultisampleIMG" },
+	{ GetPerfMonitorGroupsAMD, "glGetPerfMonitorGroupsAMD" }, { GetPerfMonitorCountersAMD, "glGetPerfMonitorCountersAMD" },
+	{ GetPerfMonitorGroupStringAMD, "glGetPerfMonitorGroupStringAMD" }, { GetPerfMonitorCounterStringAMD, "glGetPerfMonitorCounterStringAMD" },
+	{ GetPerfMonitorCounterInfoAMD, "glGetPerfMonitorCounterInfoAMD" }, { GenPerfMonitorsAMD, "glGenPerfMonitorsAMD" }, { DeletePerfMonitorsAMD, "glDeletePerfMonitorsAMD" },
+	{ SelectPerfMonitorCountersAMD, "glSelectPerfMonitorCountersAMD" }, { BeginPerfMonitorAMD, "glBeginPerfMonitorAMD" }, { EndPerfMonitorAMD, "glEndPerfMonitorAMD" },
+	{ GetPerfMonitorCounterDataAMD, "glGetPerfMonitorCounterDataAMD" }, { BlitFramebufferANGLE, "glBlitFramebufferANGLE" },
+	{ RenderbufferStorageMultisampleANGLE, "glRenderbufferStorageMultisampleANGLE" }, { CoverageMaskNV, "glCoverageMaskNV" }, { CoverageOperationNV, "glCoverageOperationNV" },
+	{ GetDriverControlsQCOM, "glGetDriverControlsQCOM" }, { GetDriverControlStringQCOM, "glGetDriverControlStringQCOM" }, { EnableDriverControlQCOM, "glEnableDriverControlQCOM" },
+	{ DisableDriverControlQCOM, "glDisableDriverControlQCOM" }, { ExtGetTexturesQCOM, "glExtGetTexturesQCOM" }, { ExtGetBuffersQCOM, "glExtGetBuffersQCOM" },
+	{ ExtGetRenderbuffersQCOM, "glExtGetRenderbuffersQCOM" }, { ExtGetFramebuffersQCOM, "glExtGetFramebuffersQCOM" },
+	{ ExtGetTexLevelParameterivQCOM, "glExtGetTexLevelParameterivQCOM" }, { ExtTexObjectStateOverrideiQCOM, "glExtTexObjectStateOverrideiQCOM" },
+	{ ExtGetTexSubImageQCOM, "glExtGetTexSubImageQCOM" }, { ExtGetBufferPointervQCOM, "glExtGetBufferPointervQCOM" }, { ExtGetShadersQCOM, "glExtGetShadersQCOM" },
+	{ ExtGetProgramsQCOM, "glExtGetProgramsQCOM" }, { ExtIsProgramBinaryQCOM, "glExtIsProgramBinaryQCOM" }, { ExtGetProgramBinarySourceQCOM, "glExtGetProgramBinarySourceQCOM" },
+	{ StartTilingQCOM, "glStartTilingQCOM" }, { EndTilingQCOM, "glEndTilingQCOM" }, { GetProgramBinaryOES, "glGetProgramBinaryOES" }, { ProgramBinaryOES, "glProgramBinaryOES" },
+	{ TexImage3DOES, "glTexImage3DOES" }, { TexSubImage3DOES, "glTexSubImage3DOES" }, { CopyTexSubImage3DOES, "glCopyTexSubImage3DOES" },
+	{ CompressedTexImage3DOES, "glCompressedTexImage3DOES" }, { CompressedTexSubImage3DOES, "glCompressedTexSubImage3DOES" }, { FramebufferTexture3DOES, "glFramebufferTexture3DOES" },
+	{ BlendEquationSeparateOES, "glBlendEquationSeparateOES" }, { BlendFuncSeparateOES, "glBlendFuncSeparateOES" }, { BlendEquationOES, "glBlendEquationOES" },
+	{ QueryMatrixxOES, "glQueryMatrixxOES" }, { CopyTextureLevelsAPPLE, "glCopyTextureLevelsAPPLE" }, { RenderbufferStorageMultisampleAPPLE, "glRenderbufferStorageMultisampleAPPLE" },
+	{ ResolveMultisampleFramebufferAPPLE, "glResolveMultisampleFramebufferAPPLE" }, { FenceSyncAPPLE, "glFenceSyncAPPLE" }, { IsSyncAPPLE, "glIsSyncAPPLE" },
+	{ DeleteSyncAPPLE, "glDeleteSyncAPPLE" }, { ClientWaitSyncAPPLE, "glClientWaitSyncAPPLE" }, { WaitSyncAPPLE, "glWaitSyncAPPLE" }, { GetInteger64vAPPLE, "glGetInteger64vAPPLE" },
+	{ GetSyncivAPPLE, "glGetSyncivAPPLE" }, { MapBufferRangeEXT, "glMapBufferRangeEXT" }, { FlushMappedBufferRangeEXT, "glFlushMappedBufferRangeEXT" },
+	{ RenderbufferStorageMultisampleEXT, "glRenderbufferStorageMultisampleEXT" }, { FramebufferTexture2DMultisampleEXT, "glFramebufferTexture2DMultisampleEXT" },
+	{ GetGraphicsResetStatusEXT, "glGetGraphicsResetStatusEXT" }, { ReadnPixelsEXT, "glReadnPixelsEXT" }, { GetnUniformfvEXT, "glGetnUniformfvEXT" },
+	{ GetnUniformivEXT, "glGetnUniformivEXT" }, { TexStorage1DEXT, "glTexStorage1DEXT" }, { TexStorage2DEXT, "glTexStorage2DEXT" }, { TexStorage3DEXT, "glTexStorage3DEXT" },
+	{ TextureStorage1DEXT, "glTextureStorage1DEXT" }, { TextureStorage2DEXT, "glTextureStorage2DEXT" }, { TextureStorage3DEXT, "glTextureStorage3DEXT" },
 #if !defined(GL_KHR_debug)
 	{ GLDEBUGPROCKHR, "glGLDEBUGPROCKHR" },
 #endif
-	{ DebugMessageControlKHR, "glDebugMessageControlKHR" },
-	{ DebugMessageInsertKHR, "glDebugMessageInsertKHR" },
-	{ DebugMessageCallbackKHR, "glDebugMessageCallbackKHR" },
-	{ GetDebugMessageLogKHR, "glGetDebugMessageLogKHR" },
-	{ PushDebugGroupKHR, "glPushDebugGroupKHR" },
-	{ PopDebugGroupKHR, "glPopDebugGroupKHR" },
-	{ ObjectLabelKHR, "glObjectLabelKHR" },
-	{ GetObjectLabelKHR, "glGetObjectLabelKHR" },
-	{ ObjectPtrLabelKHR, "glObjectPtrLabelKHR" },
-	{ GetObjectPtrLabelKHR, "glGetObjectPtrLabelKHR" },
-	{ GetPointervKHR, "glGetPointervKHR" },
-	{ DrawArraysInstancedANGLE, "glDrawArraysInstancedANGLE" },
-	{ DrawElementsInstancedANGLE, "glDrawElementsInstancedANGLE" },
-	{ VertexAttribDivisorANGLE, "glVertexAttribDivisorANGLE" },
-	{ GetTranslatedShaderSourceANGLE, "glGetTranslatedShaderSourceANGLE" },
-	{ LabelObjectEXT, "glLabelObjectEXT" },
-	{ GetObjectLabelEXT, "glGetObjectLabelEXT" },
-	{ InsertEventMarkerEXT, "glInsertEventMarkerEXT" },
-	{ PushGroupMarkerEXT, "glPushGroupMarkerEXT" },
-	{ PopGroupMarkerEXT, "glPopGroupMarkerEXT" },
-	{ GenQueriesEXT, "glGenQueriesEXT" },
-	{ DeleteQueriesEXT, "glDeleteQueriesEXT" },
-	{ IsQueryEXT, "glIsQueryEXT" },
-	{ BeginQueryEXT, "glBeginQueryEXT" },
-	{ EndQueryEXT, "glEndQueryEXT" },
-	{ GetQueryivEXT, "glGetQueryivEXT" },
-	{ GetQueryObjectuivEXT, "glGetQueryObjectuivEXT" },
-	{ UseProgramStagesEXT, "glUseProgramStagesEXT" },
-	{ ActiveShaderProgramEXT, "glActiveShaderProgramEXT" },
-	{ CreateShaderProgramvEXT, "glCreateShaderProgramvEXT" },
-	{ BindProgramPipelineEXT, "glBindProgramPipelineEXT" },
-	{ DeleteProgramPipelinesEXT, "glDeleteProgramPipelinesEXT" },
-	{ GenProgramPipelinesEXT, "glGenProgramPipelinesEXT" },
-	{ IsProgramPipelineEXT, "glIsProgramPipelineEXT" },
-	{ ProgramParameteriEXT, "glProgramParameteriEXT" },
-	{ GetProgramPipelineivEXT, "glGetProgramPipelineivEXT" },
-	{ ProgramUniform1iEXT, "glProgramUniform1iEXT" },
-	{ ProgramUniform2iEXT, "glProgramUniform2iEXT" },
-	{ ProgramUniform3iEXT, "glProgramUniform3iEXT" },
-	{ ProgramUniform4iEXT, "glProgramUniform4iEXT" },
-	{ ProgramUniform1fEXT, "glProgramUniform1fEXT" },
-	{ ProgramUniform2fEXT, "glProgramUniform2fEXT" },
-	{ ProgramUniform3fEXT, "glProgramUniform3fEXT" },
-	{ ProgramUniform4fEXT, "glProgramUniform4fEXT" },
-	{ ProgramUniform1ivEXT, "glProgramUniform1ivEXT" },
-	{ ProgramUniform2ivEXT, "glProgramUniform2ivEXT" },
-	{ ProgramUniform3ivEXT, "glProgramUniform3ivEXT" },
-	{ ProgramUniform4ivEXT, "glProgramUniform4ivEXT" },
-	{ ProgramUniform1fvEXT, "glProgramUniform1fvEXT" },
-	{ ProgramUniform2fvEXT, "glProgramUniform2fvEXT" },
-	{ ProgramUniform3fvEXT, "glProgramUniform3fvEXT" },
-	{ ProgramUniform4fvEXT, "glProgramUniform4fvEXT" },
-	{ ProgramUniformMatrix2fvEXT, "glProgramUniformMatrix2fvEXT" },
-	{ ProgramUniformMatrix3fvEXT, "glProgramUniformMatrix3fvEXT" },
-	{ ProgramUniformMatrix4fvEXT, "glProgramUniformMatrix4fvEXT" },
-	{ ValidateProgramPipelineEXT, "glValidateProgramPipelineEXT" },
-	{ GetProgramPipelineInfoLogEXT, "glGetProgramPipelineInfoLogEXT" },
-	{ ProgramUniform1uiEXT, "glProgramUniform1uiEXT" },
-	{ ProgramUniform2uiEXT, "glProgramUniform2uiEXT" },
-	{ ProgramUniform3uiEXT, "glProgramUniform3uiEXT" },
-	{ ProgramUniform4uiEXT, "glProgramUniform4uiEXT" },
-	{ ProgramUniform1uivEXT, "glProgramUniform1uivEXT" },
-	{ ProgramUniform2uivEXT, "glProgramUniform2uivEXT" },
-	{ ProgramUniform3uivEXT, "glProgramUniform3uivEXT" },
-	{ ProgramUniform4uivEXT, "glProgramUniform4uivEXT" },
-	{ ProgramUniformMatrix2x3fvEXT, "glProgramUniformMatrix2x3fvEXT" },
-	{ ProgramUniformMatrix3x2fvEXT, "glProgramUniformMatrix3x2fvEXT" },
-	{ ProgramUniformMatrix2x4fvEXT, "glProgramUniformMatrix2x4fvEXT" },
-	{ ProgramUniformMatrix4x2fvEXT, "glProgramUniformMatrix4x2fvEXT" },
-	{ ProgramUniformMatrix3x4fvEXT, "glProgramUniformMatrix3x4fvEXT" },
-	{ ProgramUniformMatrix4x3fvEXT, "glProgramUniformMatrix4x3fvEXT" },
-	{ AlphaFuncQCOM, "glAlphaFuncQCOM" },
-	{ ReadBufferNV, "glReadBufferNV" },
-	{ DrawBuffersNV, "glDrawBuffersNV" },
-	{ ReadBufferIndexedEXT, "glReadBufferIndexedEXT" },
-	{ DrawBuffersIndexedEXT, "glDrawBuffersIndexedEXT" },
-	{ GetIntegeri_vEXT, "glGetIntegeri_vEXT" },
-	{ DrawBuffersEXT, "glDrawBuffersEXT" },
-	{ BlendEquationEXT, "glBlendEquationEXT" },
-	{ BlendBarrierKHR, "glBlendBarrierKHR" },
-	{ TexStorage3DMultisampleOES, "glTexStorage3DMultisampleOES" },
-	{ FramebufferTextureMultiviewOVR, "glFramebufferTextureMultiviewOVR" },
-	{ FramebufferPixelLocalStorageSizeEXT, "glFramebufferPixelLocalStorageSizeEXT" },
-	{ ClearPixelLocalStorageuiEXT, "glClearPixelLocalStorageuiEXT" },
-	{ GetFramebufferPixelLocalStorageSizeEXT, "glGetFramebufferPixelLocalStorageSize" },
-	{ BufferStorageEXT, "glBufferStorageEXT" },
-	{ ClearTexImageIMG, "glClearTexImageIMG" },
-	{ ClearTexSubImageIMG, "glClearTexSubImageIMG" },
-	{ ClearTexImageEXT, "glClearTexImageEXT" },
-	{ ClearTexSubImageEXT, "glClearTexSubImageEXT" },
-	{ FramebufferTexture2DDownsampleIMG, "glFramebufferTexture2DDownsampleIMG" },
-	{ FramebufferTextureLayerDownsampleIMG, "glFramebufferTextureLayerDownsampleIMG" },
-	{ PatchParameteriEXT, "glPatchParameteriEXT" },
+	{ DebugMessageControlKHR, "glDebugMessageControlKHR" }, { DebugMessageInsertKHR, "glDebugMessageInsertKHR" }, { DebugMessageCallbackKHR, "glDebugMessageCallbackKHR" },
+	{ GetDebugMessageLogKHR, "glGetDebugMessageLogKHR" }, { PushDebugGroupKHR, "glPushDebugGroupKHR" }, { PopDebugGroupKHR, "glPopDebugGroupKHR" },
+	{ ObjectLabelKHR, "glObjectLabelKHR" }, { GetObjectLabelKHR, "glGetObjectLabelKHR" }, { ObjectPtrLabelKHR, "glObjectPtrLabelKHR" },
+	{ GetObjectPtrLabelKHR, "glGetObjectPtrLabelKHR" }, { GetPointervKHR, "glGetPointervKHR" }, { DrawArraysInstancedANGLE, "glDrawArraysInstancedANGLE" },
+	{ DrawElementsInstancedANGLE, "glDrawElementsInstancedANGLE" }, { VertexAttribDivisorANGLE, "glVertexAttribDivisorANGLE" },
+	{ GetTranslatedShaderSourceANGLE, "glGetTranslatedShaderSourceANGLE" }, { LabelObjectEXT, "glLabelObjectEXT" }, { GetObjectLabelEXT, "glGetObjectLabelEXT" },
+	{ InsertEventMarkerEXT, "glInsertEventMarkerEXT" }, { PushGroupMarkerEXT, "glPushGroupMarkerEXT" }, { PopGroupMarkerEXT, "glPopGroupMarkerEXT" },
+	{ GenQueriesEXT, "glGenQueriesEXT" }, { DeleteQueriesEXT, "glDeleteQueriesEXT" }, { IsQueryEXT, "glIsQueryEXT" }, { BeginQueryEXT, "glBeginQueryEXT" },
+	{ EndQueryEXT, "glEndQueryEXT" }, { GetQueryivEXT, "glGetQueryivEXT" }, { GetQueryObjectuivEXT, "glGetQueryObjectuivEXT" }, { UseProgramStagesEXT, "glUseProgramStagesEXT" },
+	{ ActiveShaderProgramEXT, "glActiveShaderProgramEXT" }, { CreateShaderProgramvEXT, "glCreateShaderProgramvEXT" }, { BindProgramPipelineEXT, "glBindProgramPipelineEXT" },
+	{ DeleteProgramPipelinesEXT, "glDeleteProgramPipelinesEXT" }, { GenProgramPipelinesEXT, "glGenProgramPipelinesEXT" }, { IsProgramPipelineEXT, "glIsProgramPipelineEXT" },
+	{ ProgramParameteriEXT, "glProgramParameteriEXT" }, { GetProgramPipelineivEXT, "glGetProgramPipelineivEXT" }, { ProgramUniform1iEXT, "glProgramUniform1iEXT" },
+	{ ProgramUniform2iEXT, "glProgramUniform2iEXT" }, { ProgramUniform3iEXT, "glProgramUniform3iEXT" }, { ProgramUniform4iEXT, "glProgramUniform4iEXT" },
+	{ ProgramUniform1fEXT, "glProgramUniform1fEXT" }, { ProgramUniform2fEXT, "glProgramUniform2fEXT" }, { ProgramUniform3fEXT, "glProgramUniform3fEXT" },
+	{ ProgramUniform4fEXT, "glProgramUniform4fEXT" }, { ProgramUniform1ivEXT, "glProgramUniform1ivEXT" }, { ProgramUniform2ivEXT, "glProgramUniform2ivEXT" },
+	{ ProgramUniform3ivEXT, "glProgramUniform3ivEXT" }, { ProgramUniform4ivEXT, "glProgramUniform4ivEXT" }, { ProgramUniform1fvEXT, "glProgramUniform1fvEXT" },
+	{ ProgramUniform2fvEXT, "glProgramUniform2fvEXT" }, { ProgramUniform3fvEXT, "glProgramUniform3fvEXT" }, { ProgramUniform4fvEXT, "glProgramUniform4fvEXT" },
+	{ ProgramUniformMatrix2fvEXT, "glProgramUniformMatrix2fvEXT" }, { ProgramUniformMatrix3fvEXT, "glProgramUniformMatrix3fvEXT" },
+	{ ProgramUniformMatrix4fvEXT, "glProgramUniformMatrix4fvEXT" }, { ValidateProgramPipelineEXT, "glValidateProgramPipelineEXT" },
+	{ GetProgramPipelineInfoLogEXT, "glGetProgramPipelineInfoLogEXT" }, { ProgramUniform1uiEXT, "glProgramUniform1uiEXT" }, { ProgramUniform2uiEXT, "glProgramUniform2uiEXT" },
+	{ ProgramUniform3uiEXT, "glProgramUniform3uiEXT" }, { ProgramUniform4uiEXT, "glProgramUniform4uiEXT" }, { ProgramUniform1uivEXT, "glProgramUniform1uivEXT" },
+	{ ProgramUniform2uivEXT, "glProgramUniform2uivEXT" }, { ProgramUniform3uivEXT, "glProgramUniform3uivEXT" }, { ProgramUniform4uivEXT, "glProgramUniform4uivEXT" },
+	{ ProgramUniformMatrix2x3fvEXT, "glProgramUniformMatrix2x3fvEXT" }, { ProgramUniformMatrix3x2fvEXT, "glProgramUniformMatrix3x2fvEXT" },
+	{ ProgramUniformMatrix2x4fvEXT, "glProgramUniformMatrix2x4fvEXT" }, { ProgramUniformMatrix4x2fvEXT, "glProgramUniformMatrix4x2fvEXT" },
+	{ ProgramUniformMatrix3x4fvEXT, "glProgramUniformMatrix3x4fvEXT" }, { ProgramUniformMatrix4x3fvEXT, "glProgramUniformMatrix4x3fvEXT" }, { AlphaFuncQCOM, "glAlphaFuncQCOM" },
+	{ ReadBufferNV, "glReadBufferNV" }, { DrawBuffersNV, "glDrawBuffersNV" }, { ReadBufferIndexedEXT, "glReadBufferIndexedEXT" },
+	{ DrawBuffersIndexedEXT, "glDrawBuffersIndexedEXT" }, { GetIntegeri_vEXT, "glGetIntegeri_vEXT" }, { DrawBuffersEXT, "glDrawBuffersEXT" },
+	{ BlendEquationEXT, "glBlendEquationEXT" }, { BlendBarrierKHR, "glBlendBarrierKHR" }, { TexStorage3DMultisampleOES, "glTexStorage3DMultisampleOES" },
+	{ FramebufferTextureMultiviewOVR, "glFramebufferTextureMultiviewOVR" }, { FramebufferPixelLocalStorageSizeEXT, "glFramebufferPixelLocalStorageSizeEXT" },
+	{ ClearPixelLocalStorageuiEXT, "glClearPixelLocalStorageuiEXT" }, { GetFramebufferPixelLocalStorageSizeEXT, "glGetFramebufferPixelLocalStorageSize" },
+	{ BufferStorageEXT, "glBufferStorageEXT" }, { ClearTexImageIMG, "glClearTexImageIMG" }, { ClearTexSubImageIMG, "glClearTexSubImageIMG" },
+	{ ClearTexImageEXT, "glClearTexImageEXT" }, { ClearTexSubImageEXT, "glClearTexSubImageEXT" }, { FramebufferTexture2DDownsampleIMG, "glFramebufferTexture2DDownsampleIMG" },
+	{ FramebufferTextureLayerDownsampleIMG, "glFramebufferTextureLayerDownsampleIMG" }, { PatchParameteriEXT, "glPatchParameteriEXT" },
 
 #ifdef GL_IMG_bindless_texture
-	{ GetTextureHandleIMG, "glGetTextureHandleIMG" },
-	{ GetTextureSamplerHandleIMG, "glGetTextureSamplerHandleIMG" },
-	{ UniformHandleui64IMG, "glUniformHandleui64IMG" },
-	{ UniformHandleui64vIMG, "glUniformHandleui64vIMG" },
-	{ ProgramUniformHandleui64IMG, "glProgramUniformHandleui64IMG" },
+	{ GetTextureHandleIMG, "glGetTextureHandleIMG" }, { GetTextureSamplerHandleIMG, "glGetTextureSamplerHandleIMG" }, { UniformHandleui64IMG, "glUniformHandleui64IMG" },
+	{ UniformHandleui64vIMG, "glUniformHandleui64vIMG" }, { ProgramUniformHandleui64IMG, "glProgramUniformHandleui64IMG" },
 	{ ProgramUniformHandleui64vIMG, "glProgramUniformHandleui64vIMG" }
 #endif
 
 };
-}
+} // namespace GlExtFuncName
 
 #if !TARGET_OS_IPHONE
-static inline void* GetGlesExtensionFunction(const char* funcName)
-{
-	return (void*)DYNAMICEGL_CALL_FUNCTION(GetProcAddress)(funcName);
-}
+static inline void* GetGlesExtensionFunction(const char* funcName) { return (void*)DYNAMICEGL_CALL_FUNCTION(GetProcAddress)(funcName); }
 #endif
 
 static inline bool isExtensionSupported(const unsigned char* const extensionString, const char* const extension)
 {
-	if (!extensionString)
-	{
-		return false;
-	}
+	if (!extensionString) { return false; }
 
 	// The recommended technique for querying OpenGL extensions;
 	// from http://opengl.org/resources/features/OGLextensions/
 	const char* start = (const char*)extensionString;
-	char* position, *terminator;
+	char *position, *terminator;
 
 	// Extension names should not have spaces.
 	position = (char*)strchr(extension, ' ');
 
-	if (position || *extension == '\0')
-	{
-		return 0;
-	}
+	if (position || *extension == '\0') { return 0; }
 
 	/* It takes a bit of care to be fool-proof about parsing the
 	OpenGL extensions string. Don't be fooled by sub-strings, etc. */
@@ -3701,19 +4007,13 @@ static inline bool isExtensionSupported(const unsigned char* const extensionStri
 	{
 		position = (char*)strstr((char*)start, extension);
 
-		if (!position)
-		{
-			break;
-		}
+		if (!position) { break; }
 
 		terminator = position + strlen(extension);
 
 		if (position == start || *(position - 1) == ' ')
 		{
-			if (*terminator == ' ' || *terminator == '\0')
-			{
-				return true;
-			}
+			if (*terminator == ' ' || *terminator == '\0') { return true; }
 		}
 
 		start = terminator;
@@ -3722,9 +4022,10 @@ static inline bool isExtensionSupported(const unsigned char* const extensionStri
 	return false;
 }
 
+// Preloads the OpenGL ES extension function pointers the first time any OpenGL ES extension function call is made
 inline void* getGlesExtFunction(gl::internals::GlExtFuncName::OpenGLESExtFunctionName funcname, bool reset = false)
 {
-	static void* FunctionTable[GlExtFuncName::NUMBER_OF_OPENGLEXT_FUNCTIONS + 1] = {0};
+	static void* FunctionTable[GlExtFuncName::NUMBER_OF_OPENGLEXT_FUNCTIONS + 1] = { 0 };
 
 #if TARGET_OS_IPHONE
 	FunctionTable[GlExtFuncName::DiscardFramebufferEXT] = (void*)&glDiscardFramebufferEXT;
@@ -3823,7 +4124,7 @@ inline void* getGlesExtFunction(gl::internals::GlExtFuncName::OpenGLESExtFunctio
 	FunctionTable[GlExtFuncName::DrawBuffersEXT] = (void*)&glDrawBuffers;
 	FunctionTable[GlExtFuncName::BlendEquationEXT] = (void*)&glBlendEquation;
 #else
-	//  GET FUNCTION POINTERS --- ONCE!!!! ///
+	// Retrieve the OpenGL ES extension functions pointers once
 	if (!FunctionTable[GlExtFuncName::NUMBER_OF_OPENGLEXT_FUNCTIONS] || reset)
 	{
 		const uint32_t numExtensionStrings = sizeof(GlExtFuncName::OpenGLESExtFunctionNamePairs) / sizeof(GlExtFuncName::OpenGLESExtFunctionNamePairs[0]);
@@ -3831,16 +4132,13 @@ inline void* getGlesExtFunction(gl::internals::GlExtFuncName::OpenGLESExtFunctio
 		// Set the last element of the function table to avoid issues
 		FunctionTable[GlExtFuncName::NUMBER_OF_OPENGLEXT_FUNCTIONS] = (void*)1;
 
-		for (uint32_t i = 0; i < numExtensionStrings; i++)
-		{
-			FunctionTable[i] = GetGlesExtensionFunction(GlExtFuncName::OpenGLESExtFunctionNamePairs[i].second);
-		}
+		for (uint32_t i = 0; i < numExtensionStrings; i++) { FunctionTable[i] = GetGlesExtensionFunction(GlExtFuncName::OpenGLESExtFunctionNamePairs[i].second); }
 	}
 #endif
 	return FunctionTable[funcname];
 }
-}
-}
+} // namespace internals
+} // namespace gl
 
 #ifndef DYNAMICGLES_NO_NAMESPACE
 namespace gl {
@@ -3849,10 +4147,7 @@ namespace ext {
 namespace gl {
 namespace internals {
 #endif
-inline void resetExtensionFunctionPointers()
-{
-	gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::OpenGLESExtFunctionName(0), true);
-}
+inline void resetExtensionFunctionPointers() { gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::OpenGLESExtFunctionName(0), true); }
 
 inline void DYNAMICGLES_FUNCTION(MultiDrawElementsEXT)(GLenum mode, const GLsizei* count, GLenum type, const GLvoid** indices, GLsizei primcount)
 {
@@ -4005,7 +4300,8 @@ inline void DYNAMICGLES_FUNCTION(EGLImageTargetTexture2DOES)(GLenum target, GLeg
 #if TARGET_OS_IPHONE
 	assert(0);
 #else
-	PFNGLEGLIMAGETARGETTEXTURE2DOESPROC _EGLImageTargetTexture2DOES = (PFNGLEGLIMAGETARGETTEXTURE2DOESPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::EGLImageTargetTexture2DOES);
+	PFNGLEGLIMAGETARGETTEXTURE2DOESPROC _EGLImageTargetTexture2DOES =
+		(PFNGLEGLIMAGETARGETTEXTURE2DOESPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::EGLImageTargetTexture2DOES);
 	return _EGLImageTargetTexture2DOES(target, image);
 #endif
 }
@@ -4014,7 +4310,8 @@ inline void DYNAMICGLES_FUNCTION(EGLImageTargetRenderbufferStorageOES)(GLenum ta
 #if TARGET_OS_IPHONE
 	assert(0);
 #else
-	PFNGLEGLIMAGETARGETRENDERBUFFERSTORAGEOESPROC _EGLImageTargetRenderbufferStorageOES = (PFNGLEGLIMAGETARGETRENDERBUFFERSTORAGEOESPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::EGLImageTargetRenderbufferStorageOES);
+	PFNGLEGLIMAGETARGETRENDERBUFFERSTORAGEOESPROC _EGLImageTargetRenderbufferStorageOES =
+		(PFNGLEGLIMAGETARGETRENDERBUFFERSTORAGEOESPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::EGLImageTargetRenderbufferStorageOES);
 	return _EGLImageTargetRenderbufferStorageOES(target, image);
 #endif
 }
@@ -4024,7 +4321,8 @@ inline void DYNAMICGLES_FUNCTION(RenderbufferStorageMultisampleIMG)(GLenum targe
 #if TARGET_OS_IPHONE
 	assert(0);
 #else
-	PFNGLRENDERBUFFERSTORAGEMULTISAMPLEIMGPROC _RenderbufferStorageMultisampleIMG = (PFNGLRENDERBUFFERSTORAGEMULTISAMPLEIMGPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::RenderbufferStorageMultisampleIMG);
+	PFNGLRENDERBUFFERSTORAGEMULTISAMPLEIMGPROC _RenderbufferStorageMultisampleIMG =
+		(PFNGLRENDERBUFFERSTORAGEMULTISAMPLEIMGPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::RenderbufferStorageMultisampleIMG);
 	return _RenderbufferStorageMultisampleIMG(target, samples, internalformat, width, height);
 #endif
 }
@@ -4033,7 +4331,8 @@ inline void DYNAMICGLES_FUNCTION(FramebufferTexture2DMultisampleIMG)(GLenum targ
 #if TARGET_OS_IPHONE
 	assert(0);
 #else
-	PFNGLFRAMEBUFFERTEXTURE2DMULTISAMPLEIMGPROC _FramebufferTexture2DMultisampleIMG = (PFNGLFRAMEBUFFERTEXTURE2DMULTISAMPLEIMGPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::FramebufferTexture2DMultisampleIMG);
+	PFNGLFRAMEBUFFERTEXTURE2DMULTISAMPLEIMGPROC _FramebufferTexture2DMultisampleIMG =
+		(PFNGLFRAMEBUFFERTEXTURE2DMULTISAMPLEIMGPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::FramebufferTexture2DMultisampleIMG);
 	return _FramebufferTexture2DMultisampleIMG(target, attachment, textarget, texture, level, samples);
 #endif
 }
@@ -4042,7 +4341,8 @@ inline void DYNAMICGLES_FUNCTION(GetPerfMonitorGroupsAMD)(GLint* numGroups, GLsi
 #if TARGET_OS_IPHONE
 	assert(0);
 #else
-	PFNGLGETPERFMONITORGROUPSAMDPROC _GetPerfMonitorGroupsAMD = (PFNGLGETPERFMONITORGROUPSAMDPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::GetPerfMonitorGroupsAMD);
+	PFNGLGETPERFMONITORGROUPSAMDPROC _GetPerfMonitorGroupsAMD =
+		(PFNGLGETPERFMONITORGROUPSAMDPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::GetPerfMonitorGroupsAMD);
 	return _GetPerfMonitorGroupsAMD(numGroups, groupsSize, groups);
 #endif
 }
@@ -4051,7 +4351,8 @@ inline void DYNAMICGLES_FUNCTION(GetPerfMonitorCountersAMD)(GLuint group, GLint*
 #if TARGET_OS_IPHONE
 	assert(0);
 #else
-	PFNGLGETPERFMONITORCOUNTERSAMDPROC _GetPerfMonitorCountersAMD = (PFNGLGETPERFMONITORCOUNTERSAMDPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::GetPerfMonitorCountersAMD);
+	PFNGLGETPERFMONITORCOUNTERSAMDPROC _GetPerfMonitorCountersAMD =
+		(PFNGLGETPERFMONITORCOUNTERSAMDPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::GetPerfMonitorCountersAMD);
 	return _GetPerfMonitorCountersAMD(group, numCounters, maxActiveCounters, counterSize, counters);
 #endif
 }
@@ -4060,7 +4361,8 @@ inline void DYNAMICGLES_FUNCTION(GetPerfMonitorGroupStringAMD)(GLuint group, GLs
 #if TARGET_OS_IPHONE
 	assert(0);
 #else
-	PFNGLGETPERFMONITORGROUPSTRINGAMDPROC _GetPerfMonitorGroupStringAMD = (PFNGLGETPERFMONITORGROUPSTRINGAMDPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::GetPerfMonitorGroupStringAMD);
+	PFNGLGETPERFMONITORGROUPSTRINGAMDPROC _GetPerfMonitorGroupStringAMD =
+		(PFNGLGETPERFMONITORGROUPSTRINGAMDPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::GetPerfMonitorGroupStringAMD);
 	return _GetPerfMonitorGroupStringAMD(group, bufSize, length, groupString);
 #endif
 }
@@ -4069,7 +4371,8 @@ inline void DYNAMICGLES_FUNCTION(GetPerfMonitorCounterStringAMD)(GLuint group, G
 #if TARGET_OS_IPHONE
 	assert(0);
 #else
-	PFNGLGETPERFMONITORCOUNTERSTRINGAMDPROC _GetPerfMonitorCounterStringAMD = (PFNGLGETPERFMONITORCOUNTERSTRINGAMDPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::GetPerfMonitorCounterStringAMD);
+	PFNGLGETPERFMONITORCOUNTERSTRINGAMDPROC _GetPerfMonitorCounterStringAMD =
+		(PFNGLGETPERFMONITORCOUNTERSTRINGAMDPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::GetPerfMonitorCounterStringAMD);
 	return _GetPerfMonitorCounterStringAMD(group, counter, bufSize, length, counterString);
 #endif
 }
@@ -4078,7 +4381,8 @@ inline void DYNAMICGLES_FUNCTION(GetPerfMonitorCounterInfoAMD)(GLuint group, GLu
 #if TARGET_OS_IPHONE
 	assert(0);
 #else
-	PFNGLGETPERFMONITORCOUNTERINFOAMDPROC _GetPerfMonitorCounterInfoAMD = (PFNGLGETPERFMONITORCOUNTERINFOAMDPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::GetPerfMonitorCounterInfoAMD);
+	PFNGLGETPERFMONITORCOUNTERINFOAMDPROC _GetPerfMonitorCounterInfoAMD =
+		(PFNGLGETPERFMONITORCOUNTERINFOAMDPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::GetPerfMonitorCounterInfoAMD);
 	return _GetPerfMonitorCounterInfoAMD(group, counter, pname, data);
 #endif
 }
@@ -4105,7 +4409,8 @@ inline void DYNAMICGLES_FUNCTION(SelectPerfMonitorCountersAMD)(GLuint monitor, G
 #if TARGET_OS_IPHONE
 	assert(0);
 #else
-	PFNGLSELECTPERFMONITORCOUNTERSAMDPROC _SelectPerfMonitorCountersAMD = (PFNGLSELECTPERFMONITORCOUNTERSAMDPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::SelectPerfMonitorCountersAMD);
+	PFNGLSELECTPERFMONITORCOUNTERSAMDPROC _SelectPerfMonitorCountersAMD =
+		(PFNGLSELECTPERFMONITORCOUNTERSAMDPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::SelectPerfMonitorCountersAMD);
 	return _SelectPerfMonitorCountersAMD(monitor, enable, group, numCounters, countersList);
 #endif
 }
@@ -4132,11 +4437,13 @@ inline void DYNAMICGLES_FUNCTION(GetPerfMonitorCounterDataAMD)(GLuint monitor, G
 #if TARGET_OS_IPHONE
 	assert(0);
 #else
-	PFNGLGETPERFMONITORCOUNTERDATAAMDPROC _GetPerfMonitorCounterDataAMD = (PFNGLGETPERFMONITORCOUNTERDATAAMDPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::GetPerfMonitorCounterDataAMD);
+	PFNGLGETPERFMONITORCOUNTERDATAAMDPROC _GetPerfMonitorCounterDataAMD =
+		(PFNGLGETPERFMONITORCOUNTERDATAAMDPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::GetPerfMonitorCounterDataAMD);
 	return _GetPerfMonitorCounterDataAMD(monitor, pname, dataSize, data, bytesWritten);
 #endif
 }
-inline void DYNAMICGLES_FUNCTION(BlitFramebufferANGLE)(GLint srcX0, GLint srcY0, GLint srcX1, GLint srcY1, GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1, GLbitfield mask, GLenum filter)
+inline void DYNAMICGLES_FUNCTION(BlitFramebufferANGLE)(
+	GLint srcX0, GLint srcY0, GLint srcX1, GLint srcY1, GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1, GLbitfield mask, GLenum filter)
 {
 #if TARGET_OS_IPHONE
 	assert(0);
@@ -4150,7 +4457,8 @@ inline void DYNAMICGLES_FUNCTION(RenderbufferStorageMultisampleANGLE)(GLenum tar
 #if TARGET_OS_IPHONE
 	assert(0);
 #else
-	PFNGLRENDERBUFFERSTORAGEMULTISAMPLEANGLEPROC _RenderbufferStorageMultisampleANGLE = (PFNGLRENDERBUFFERSTORAGEMULTISAMPLEANGLEPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::RenderbufferStorageMultisampleANGLE);
+	PFNGLRENDERBUFFERSTORAGEMULTISAMPLEANGLEPROC _RenderbufferStorageMultisampleANGLE =
+		(PFNGLRENDERBUFFERSTORAGEMULTISAMPLEANGLEPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::RenderbufferStorageMultisampleANGLE);
 	return _RenderbufferStorageMultisampleANGLE(target, samples, internalformat, width, height);
 #endif
 }
@@ -4159,7 +4467,8 @@ inline void DYNAMICGLES_FUNCTION(RenderbufferStorageMultisampleAPPLE)(GLenum tar
 #if TARGET_OS_IPHONE
 	typedef decltype(&glRenderbufferStorageMultisampleAPPLE) PFNGLRENDERBUFFERSTORAGEMULTISAMPLEAPPLEPROC;
 #endif
-	PFNGLRENDERBUFFERSTORAGEMULTISAMPLEAPPLEPROC _RenderbufferStorageMultisampleAPPLE = (PFNGLRENDERBUFFERSTORAGEMULTISAMPLEAPPLEPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::RenderbufferStorageMultisampleAPPLE);
+	PFNGLRENDERBUFFERSTORAGEMULTISAMPLEAPPLEPROC _RenderbufferStorageMultisampleAPPLE =
+		(PFNGLRENDERBUFFERSTORAGEMULTISAMPLEAPPLEPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::RenderbufferStorageMultisampleAPPLE);
 	return _RenderbufferStorageMultisampleAPPLE(target, samples, internalformat, width, height);
 }
 inline void DYNAMICGLES_FUNCTION(ResolveMultisampleFramebufferAPPLE)(void)
@@ -4167,7 +4476,8 @@ inline void DYNAMICGLES_FUNCTION(ResolveMultisampleFramebufferAPPLE)(void)
 #if TARGET_OS_IPHONE
 	typedef decltype(&glResolveMultisampleFramebufferAPPLE) PFNGLRESOLVEMULTISAMPLEFRAMEBUFFERAPPLEPROC;
 #endif
-	PFNGLRESOLVEMULTISAMPLEFRAMEBUFFERAPPLEPROC _ResolveMultisampleFramebufferAPPLE = (PFNGLRESOLVEMULTISAMPLEFRAMEBUFFERAPPLEPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::ResolveMultisampleFramebufferAPPLE);
+	PFNGLRESOLVEMULTISAMPLEFRAMEBUFFERAPPLEPROC _ResolveMultisampleFramebufferAPPLE =
+		(PFNGLRESOLVEMULTISAMPLEFRAMEBUFFERAPPLEPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::ResolveMultisampleFramebufferAPPLE);
 	return _ResolveMultisampleFramebufferAPPLE();
 }
 inline void DYNAMICGLES_FUNCTION(CoverageMaskNV)(GLboolean mask)
@@ -4202,7 +4512,8 @@ inline void DYNAMICGLES_FUNCTION(GetDriverControlStringQCOM)(GLuint driverContro
 #if TARGET_OS_IPHONE
 	assert(0);
 #else
-	PFNGLGETDRIVERCONTROLSTRINGQCOMPROC _GetDriverControlStringQCOM = (PFNGLGETDRIVERCONTROLSTRINGQCOMPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::GetDriverControlStringQCOM);
+	PFNGLGETDRIVERCONTROLSTRINGQCOMPROC _GetDriverControlStringQCOM =
+		(PFNGLGETDRIVERCONTROLSTRINGQCOMPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::GetDriverControlStringQCOM);
 	return _GetDriverControlStringQCOM(driverControl, bufSize, length, driverControlString);
 #endif
 }
@@ -4211,7 +4522,8 @@ inline void DYNAMICGLES_FUNCTION(EnableDriverControlQCOM)(GLuint driverControl)
 #if TARGET_OS_IPHONE
 	assert(0);
 #else
-	PFNGLENABLEDRIVERCONTROLQCOMPROC _EnableDriverControlQCOM = (PFNGLENABLEDRIVERCONTROLQCOMPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::EnableDriverControlQCOM);
+	PFNGLENABLEDRIVERCONTROLQCOMPROC _EnableDriverControlQCOM =
+		(PFNGLENABLEDRIVERCONTROLQCOMPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::EnableDriverControlQCOM);
 	return _EnableDriverControlQCOM(driverControl);
 #endif
 }
@@ -4220,7 +4532,8 @@ inline void DYNAMICGLES_FUNCTION(DisableDriverControlQCOM)(GLuint driverControl)
 #if TARGET_OS_IPHONE
 	assert(0);
 #else
-	PFNGLDISABLEDRIVERCONTROLQCOMPROC _DisableDriverControlQCOM = (PFNGLDISABLEDRIVERCONTROLQCOMPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::DisableDriverControlQCOM);
+	PFNGLDISABLEDRIVERCONTROLQCOMPROC _DisableDriverControlQCOM =
+		(PFNGLDISABLEDRIVERCONTROLQCOMPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::DisableDriverControlQCOM);
 	return _DisableDriverControlQCOM(driverControl);
 #endif
 }
@@ -4247,7 +4560,8 @@ inline void DYNAMICGLES_FUNCTION(ExtGetRenderbuffersQCOM)(GLuint* renderbuffers,
 #if TARGET_OS_IPHONE
 	assert(0);
 #else
-	PFNGLEXTGETRENDERBUFFERSQCOMPROC _ExtGetRenderbuffersQCOM = (PFNGLEXTGETRENDERBUFFERSQCOMPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::ExtGetRenderbuffersQCOM);
+	PFNGLEXTGETRENDERBUFFERSQCOMPROC _ExtGetRenderbuffersQCOM =
+		(PFNGLEXTGETRENDERBUFFERSQCOMPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::ExtGetRenderbuffersQCOM);
 	return _ExtGetRenderbuffersQCOM(renderbuffers, maxRenderbuffers, numRenderbuffers);
 #endif
 }
@@ -4265,7 +4579,8 @@ inline void DYNAMICGLES_FUNCTION(ExtGetTexLevelParameterivQCOM)(GLuint texture, 
 #if TARGET_OS_IPHONE
 	assert(0);
 #else
-	PFNGLEXTGETTEXLEVELPARAMETERIVQCOMPROC _ExtGetTexLevelParameterivQCOM = (PFNGLEXTGETTEXLEVELPARAMETERIVQCOMPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::ExtGetTexLevelParameterivQCOM);
+	PFNGLEXTGETTEXLEVELPARAMETERIVQCOMPROC _ExtGetTexLevelParameterivQCOM =
+		(PFNGLEXTGETTEXLEVELPARAMETERIVQCOMPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::ExtGetTexLevelParameterivQCOM);
 	return _ExtGetTexLevelParameterivQCOM(texture, face, level, pname, params);
 #endif
 }
@@ -4274,11 +4589,13 @@ inline void DYNAMICGLES_FUNCTION(ExtTexObjectStateOverrideiQCOM)(GLenum target, 
 #if TARGET_OS_IPHONE
 	assert(0);
 #else
-	PFNGLEXTTEXOBJECTSTATEOVERRIDEIQCOMPROC _ExtTexObjectStateOverrideiQCOM = (PFNGLEXTTEXOBJECTSTATEOVERRIDEIQCOMPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::ExtTexObjectStateOverrideiQCOM);
+	PFNGLEXTTEXOBJECTSTATEOVERRIDEIQCOMPROC _ExtTexObjectStateOverrideiQCOM =
+		(PFNGLEXTTEXOBJECTSTATEOVERRIDEIQCOMPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::ExtTexObjectStateOverrideiQCOM);
 	return _ExtTexObjectStateOverrideiQCOM(target, pname, param);
 #endif
 }
-inline void DYNAMICGLES_FUNCTION(ExtGetTexSubImageQCOM)(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, GLvoid* texels)
+inline void DYNAMICGLES_FUNCTION(ExtGetTexSubImageQCOM)(
+	GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, GLvoid* texels)
 {
 #if TARGET_OS_IPHONE
 	assert(0);
@@ -4292,7 +4609,8 @@ inline void DYNAMICGLES_FUNCTION(ExtGetBufferPointervQCOM)(GLenum target, GLvoid
 #if TARGET_OS_IPHONE
 	assert(0);
 #else
-	PFNGLEXTGETBUFFERPOINTERVQCOMPROC _ExtGetBufferPointervQCOM = (PFNGLEXTGETBUFFERPOINTERVQCOMPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::ExtGetBufferPointervQCOM);
+	PFNGLEXTGETBUFFERPOINTERVQCOMPROC _ExtGetBufferPointervQCOM =
+		(PFNGLEXTGETBUFFERPOINTERVQCOMPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::ExtGetBufferPointervQCOM);
 	return _ExtGetBufferPointervQCOM(target, params);
 #endif
 }
@@ -4328,7 +4646,8 @@ inline void DYNAMICGLES_FUNCTION(ExtGetProgramBinarySourceQCOM)(GLuint program, 
 #if TARGET_OS_IPHONE
 	assert(0);
 #else
-	PFNGLEXTGETPROGRAMBINARYSOURCEQCOMPROC _ExtGetProgramBinarySourceQCOM = (PFNGLEXTGETPROGRAMBINARYSOURCEQCOMPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::ExtGetProgramBinarySourceQCOM);
+	PFNGLEXTGETPROGRAMBINARYSOURCEQCOMPROC _ExtGetProgramBinarySourceQCOM =
+		(PFNGLEXTGETPROGRAMBINARYSOURCEQCOMPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::ExtGetProgramBinarySourceQCOM);
 	return _ExtGetProgramBinarySourceQCOM(program, shadertype, source, length);
 #endif
 }
@@ -4368,7 +4687,8 @@ inline void DYNAMICGLES_FUNCTION(ProgramBinaryOES)(GLuint program, GLenum binary
 	return _ProgramBinaryOES(program, binaryFormat, binary, length);
 #endif
 }
-inline void DYNAMICGLES_FUNCTION(TexImage3DOES)(GLenum target, GLint level, GLenum internalformat, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLenum format, GLenum type, const GLvoid* pixels)
+inline void DYNAMICGLES_FUNCTION(TexImage3DOES)(
+	GLenum target, GLint level, GLenum internalformat, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLenum format, GLenum type, const GLvoid* pixels)
 {
 #if TARGET_OS_IPHONE
 	assert(0);
@@ -4377,7 +4697,8 @@ inline void DYNAMICGLES_FUNCTION(TexImage3DOES)(GLenum target, GLint level, GLen
 	return _TexImage3DOES(target, level, internalformat, width, height, depth, border, format, type, pixels);
 #endif
 }
-inline void DYNAMICGLES_FUNCTION(TexSubImage3DOES)(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, const GLvoid* pixels)
+inline void DYNAMICGLES_FUNCTION(TexSubImage3DOES)(
+	GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, const GLvoid* pixels)
 {
 #if TARGET_OS_IPHONE
 	assert(0);
@@ -4395,21 +4716,25 @@ inline void DYNAMICGLES_FUNCTION(CopyTexSubImage3DOES)(GLenum target, GLint leve
 	return _CopyTexSubImage3DOES(target, level, xoffset, yoffset, zoffset, x, y, width, height);
 #endif
 }
-inline void DYNAMICGLES_FUNCTION(CompressedTexImage3DOES)(GLenum target, GLint level, GLenum internalformat, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLsizei imageSize, const GLvoid* data)
+inline void DYNAMICGLES_FUNCTION(CompressedTexImage3DOES)(
+	GLenum target, GLint level, GLenum internalformat, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLsizei imageSize, const GLvoid* data)
 {
 #if TARGET_OS_IPHONE
 	assert(0);
 #else
-	PFNGLCOMPRESSEDTEXIMAGE3DOESPROC _CompressedTexImage3DOES = (PFNGLCOMPRESSEDTEXIMAGE3DOESPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::CompressedTexImage3DOES);
+	PFNGLCOMPRESSEDTEXIMAGE3DOESPROC _CompressedTexImage3DOES =
+		(PFNGLCOMPRESSEDTEXIMAGE3DOESPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::CompressedTexImage3DOES);
 	return _CompressedTexImage3DOES(target, level, internalformat, width, height, depth, border, imageSize, data);
 #endif
 }
-inline void DYNAMICGLES_FUNCTION(CompressedTexSubImage3DOES)(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLsizei imageSize, const GLvoid* data)
+inline void DYNAMICGLES_FUNCTION(CompressedTexSubImage3DOES)(
+	GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLsizei imageSize, const GLvoid* data)
 {
 #if TARGET_OS_IPHONE
 	assert(0);
 #else
-	PFNGLCOMPRESSEDTEXSUBIMAGE3DOESPROC _CompressedTexSubImage3DOES = (PFNGLCOMPRESSEDTEXSUBIMAGE3DOESPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::CompressedTexSubImage3DOES);
+	PFNGLCOMPRESSEDTEXSUBIMAGE3DOESPROC _CompressedTexSubImage3DOES =
+		(PFNGLCOMPRESSEDTEXSUBIMAGE3DOESPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::CompressedTexSubImage3DOES);
 	return _CompressedTexSubImage3DOES(target, level, xoffset, yoffset, zoffset, width, height, depth, format, imageSize, data);
 #endif
 }
@@ -4418,7 +4743,8 @@ inline void DYNAMICGLES_FUNCTION(FramebufferTexture3DOES)(GLenum target, GLenum 
 #if TARGET_OS_IPHONE
 	assert(0);
 #else
-	PFNGLFRAMEBUFFERTEXTURE3DOESPROC _FramebufferTexture3DOES = (PFNGLFRAMEBUFFERTEXTURE3DOESPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::FramebufferTexture3DOES);
+	PFNGLFRAMEBUFFERTEXTURE3DOESPROC _FramebufferTexture3DOES =
+		(PFNGLFRAMEBUFFERTEXTURE3DOESPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::FramebufferTexture3DOES);
 	return _FramebufferTexture3DOES(target, attachment, textarget, texture, level, zoffset);
 #endif
 }
@@ -4509,7 +4835,8 @@ inline void DYNAMICGLES_FUNCTION(FlushMappedBufferRangeEXT)(GLenum target, GLint
 #if TARGET_OS_IPHONE
 	typedef decltype(&glFlushMappedBufferRangeEXT) PFNGLFLUSHMAPPEDBUFFERRANGEEXTPROC;
 #endif
-	PFNGLFLUSHMAPPEDBUFFERRANGEEXTPROC _FlushMappedBufferRangeEXT = (PFNGLFLUSHMAPPEDBUFFERRANGEEXTPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::FlushMappedBufferRangeEXT);
+	PFNGLFLUSHMAPPEDBUFFERRANGEEXTPROC _FlushMappedBufferRangeEXT =
+		(PFNGLFLUSHMAPPEDBUFFERRANGEEXTPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::FlushMappedBufferRangeEXT);
 	return _FlushMappedBufferRangeEXT(target, offset, length);
 }
 inline void DYNAMICGLES_FUNCTION(RenderbufferStorageMultisampleEXT)(GLenum target, GLsizei samples, GLenum internalformat, GLsizei width, GLsizei height)
@@ -4517,7 +4844,8 @@ inline void DYNAMICGLES_FUNCTION(RenderbufferStorageMultisampleEXT)(GLenum targe
 #if TARGET_OS_IPHONE
 	assert(0);
 #else
-	PFNGLRENDERBUFFERSTORAGEMULTISAMPLEEXTPROC _RenderbufferStorageMultisampleEXT = (PFNGLRENDERBUFFERSTORAGEMULTISAMPLEEXTPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::RenderbufferStorageMultisampleEXT);
+	PFNGLRENDERBUFFERSTORAGEMULTISAMPLEEXTPROC _RenderbufferStorageMultisampleEXT =
+		(PFNGLRENDERBUFFERSTORAGEMULTISAMPLEEXTPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::RenderbufferStorageMultisampleEXT);
 	return _RenderbufferStorageMultisampleEXT(target, samples, internalformat, width, height);
 #endif
 }
@@ -4526,7 +4854,8 @@ inline void DYNAMICGLES_FUNCTION(FramebufferTexture2DMultisampleEXT)(GLenum targ
 #if TARGET_OS_IPHONE
 	assert(0);
 #else
-	PFNGLFRAMEBUFFERTEXTURE2DMULTISAMPLEEXTPROC _FramebufferTexture2DMultisampleEXT = (PFNGLFRAMEBUFFERTEXTURE2DMULTISAMPLEEXTPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::FramebufferTexture2DMultisampleEXT);
+	PFNGLFRAMEBUFFERTEXTURE2DMULTISAMPLEEXTPROC _FramebufferTexture2DMultisampleEXT =
+		(PFNGLFRAMEBUFFERTEXTURE2DMULTISAMPLEEXTPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::FramebufferTexture2DMultisampleEXT);
 	return _FramebufferTexture2DMultisampleEXT(target, attachment, textarget, texture, level, samples);
 #endif
 }
@@ -4535,7 +4864,8 @@ inline GLenum DYNAMICGLES_FUNCTION(GetGraphicsResetStatusEXT)(void)
 #if TARGET_OS_IPHONE
 	assert(0);
 #else
-	PFNGLGETGRAPHICSRESETSTATUSEXTPROC _GetGraphicsResetStatusEXT = (PFNGLGETGRAPHICSRESETSTATUSEXTPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::GetGraphicsResetStatusEXT);
+	PFNGLGETGRAPHICSRESETSTATUSEXTPROC _GetGraphicsResetStatusEXT =
+		(PFNGLGETGRAPHICSRESETSTATUSEXTPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::GetGraphicsResetStatusEXT);
 	return _GetGraphicsResetStatusEXT();
 #endif
 }
@@ -4637,17 +4967,17 @@ inline void DYNAMICGLES_FUNCTION(DebugMessageInsertKHR)(GLenum source, GLenum ty
 	PFNGLDEBUGMESSAGEINSERTKHRPROC _DebugMessageInsertKHR = (PFNGLDEBUGMESSAGEINSERTKHRPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::DebugMessageInsertKHR);
 	return _DebugMessageInsertKHR(source, type, id, severity, length, buf);
 #endif
-
 }
 #if !TARGET_OS_IPHONE
 inline void DYNAMICGLES_FUNCTION(DebugMessageCallbackKHR)(GLDEBUGPROCKHR callback, const void* userParam)
 {
-
-	PFNGLDEBUGMESSAGECALLBACKKHRPROC _DebugMessageCallbackKHR = (PFNGLDEBUGMESSAGECALLBACKKHRPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::DebugMessageCallbackKHR);
+	PFNGLDEBUGMESSAGECALLBACKKHRPROC _DebugMessageCallbackKHR =
+		(PFNGLDEBUGMESSAGECALLBACKKHRPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::DebugMessageCallbackKHR);
 	return _DebugMessageCallbackKHR(callback, userParam);
 }
 #endif
-inline GLuint DYNAMICGLES_FUNCTION(GetDebugMessageLogKHR)(GLuint count, GLsizei bufsize, GLenum* sources, GLenum* types, GLuint* ids, GLenum* severities, GLsizei* lengths, GLchar* messageLog)
+inline GLuint DYNAMICGLES_FUNCTION(GetDebugMessageLogKHR)(
+	GLuint count, GLsizei bufsize, GLenum* sources, GLenum* types, GLuint* ids, GLenum* severities, GLsizei* lengths, GLchar* messageLog)
 {
 #if TARGET_OS_IPHONE
 	assert(0);
@@ -4664,7 +4994,6 @@ inline void DYNAMICGLES_FUNCTION(PushDebugGroupKHR)(GLenum source, GLuint id, GL
 	PFNGLPUSHDEBUGGROUPKHRPROC _PushDebugGroupKHR = (PFNGLPUSHDEBUGGROUPKHRPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::PushDebugGroupKHR);
 	return _PushDebugGroupKHR(source, id, length, message);
 #endif
-
 }
 inline void DYNAMICGLES_FUNCTION(PopDebugGroupKHR)(void)
 {
@@ -4701,7 +5030,6 @@ inline void DYNAMICGLES_FUNCTION(ObjectPtrLabelKHR)(const void* ptr, GLsizei len
 	PFNGLOBJECTPTRLABELKHRPROC _ObjectPtrLabelKHR = (PFNGLOBJECTPTRLABELKHRPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::ObjectPtrLabelKHR);
 	return _ObjectPtrLabelKHR(ptr, length, label);
 #endif
-
 }
 inline void DYNAMICGLES_FUNCTION(GetObjectPtrLabelKHR)(const void* ptr, GLsizei bufSize, GLsizei* length, GLchar* label)
 {
@@ -4711,7 +5039,6 @@ inline void DYNAMICGLES_FUNCTION(GetObjectPtrLabelKHR)(const void* ptr, GLsizei 
 	PFNGLGETOBJECTPTRLABELKHRPROC _GetObjectPtrLabelKHR = (PFNGLGETOBJECTPTRLABELKHRPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::GetObjectPtrLabelKHR);
 	return _GetObjectPtrLabelKHR(ptr, bufSize, length, label);
 #endif
-
 }
 inline void DYNAMICGLES_FUNCTION(GetPointervKHR)(GLenum pname, void** params)
 {
@@ -4727,7 +5054,8 @@ inline void DYNAMICGLES_FUNCTION(DrawArraysInstancedANGLE)(GLenum mode, GLint fi
 #if TARGET_OS_IPHONE
 	assert(0);
 #else
-	PFNGLDRAWARRAYSINSTANCEDANGLEPROC _DrawArraysInstancedANGLE = (PFNGLDRAWARRAYSINSTANCEDANGLEPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::DrawArraysInstancedANGLE);
+	PFNGLDRAWARRAYSINSTANCEDANGLEPROC _DrawArraysInstancedANGLE =
+		(PFNGLDRAWARRAYSINSTANCEDANGLEPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::DrawArraysInstancedANGLE);
 	return _DrawArraysInstancedANGLE(mode, first, count, primcount);
 #endif
 }
@@ -4736,7 +5064,8 @@ inline void DYNAMICGLES_FUNCTION(DrawElementsInstancedANGLE)(GLenum mode, GLsize
 #if TARGET_OS_IPHONE
 	assert(0);
 #else
-	PFNGLDRAWELEMENTSINSTANCEDANGLEPROC _DrawElementsInstancedANGLE = (PFNGLDRAWELEMENTSINSTANCEDANGLEPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::DrawElementsInstancedANGLE);
+	PFNGLDRAWELEMENTSINSTANCEDANGLEPROC _DrawElementsInstancedANGLE =
+		(PFNGLDRAWELEMENTSINSTANCEDANGLEPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::DrawElementsInstancedANGLE);
 	return _DrawElementsInstancedANGLE(mode, count, type, indices, primcount);
 #endif
 }
@@ -4745,7 +5074,8 @@ inline void DYNAMICGLES_FUNCTION(VertexAttribDivisorANGLE)(GLuint index, GLuint 
 #if TARGET_OS_IPHONE
 	assert(0);
 #else
-	PFNGLVERTEXATTRIBDIVISORANGLEPROC _VertexAttribDivisorANGLE = (PFNGLVERTEXATTRIBDIVISORANGLEPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::VertexAttribDivisorANGLE);
+	PFNGLVERTEXATTRIBDIVISORANGLEPROC _VertexAttribDivisorANGLE =
+		(PFNGLVERTEXATTRIBDIVISORANGLEPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::VertexAttribDivisorANGLE);
 	return _VertexAttribDivisorANGLE(index, divisor);
 #endif
 }
@@ -4754,10 +5084,10 @@ inline void DYNAMICGLES_FUNCTION(GetTranslatedShaderSourceANGLE)(GLuint shader, 
 #if TARGET_OS_IPHONE
 	assert(0);
 #else
-	PFNGLGETTRANSLATEDSHADERSOURCEANGLEPROC _GetTranslatedShaderSourceANGLE = (PFNGLGETTRANSLATEDSHADERSOURCEANGLEPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::GetTranslatedShaderSourceANGLE);
+	PFNGLGETTRANSLATEDSHADERSOURCEANGLEPROC _GetTranslatedShaderSourceANGLE =
+		(PFNGLGETTRANSLATEDSHADERSOURCEANGLEPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::GetTranslatedShaderSourceANGLE);
 	return _GetTranslatedShaderSourceANGLE(shader, bufsize, length, source);
 #endif
-
 }
 inline void DYNAMICGLES_FUNCTION(LabelObjectEXT)(GLenum type, GLuint object, GLsizei length, const GLchar* label)
 {
@@ -4767,7 +5097,6 @@ inline void DYNAMICGLES_FUNCTION(LabelObjectEXT)(GLenum type, GLuint object, GLs
 	PFNGLLABELOBJECTEXTPROC _LabelObjectEXT = (PFNGLLABELOBJECTEXTPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::LabelObjectEXT);
 	return _LabelObjectEXT(type, object, length, label);
 #endif
-
 }
 inline void DYNAMICGLES_FUNCTION(GetObjectLabelEXT)(GLenum type, GLuint object, GLsizei bufSize, GLsizei* length, GLchar* label)
 {
@@ -4777,7 +5106,6 @@ inline void DYNAMICGLES_FUNCTION(GetObjectLabelEXT)(GLenum type, GLuint object, 
 	PFNGLGETOBJECTLABELEXTPROC _GetObjectLabelEXT = (PFNGLGETOBJECTLABELEXTPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::GetObjectLabelEXT);
 	return _GetObjectLabelEXT(type, object, bufSize, length, label);
 #endif
-
 }
 inline void DYNAMICGLES_FUNCTION(InsertEventMarkerEXT)(GLsizei length, const GLchar* marker)
 {
@@ -4787,7 +5115,6 @@ inline void DYNAMICGLES_FUNCTION(InsertEventMarkerEXT)(GLsizei length, const GLc
 	PFNGLINSERTEVENTMARKEREXTPROC _InsertEventMarkerEXT = (PFNGLINSERTEVENTMARKEREXTPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::InsertEventMarkerEXT);
 	return _InsertEventMarkerEXT(length, marker);
 #endif
-
 }
 inline void DYNAMICGLES_FUNCTION(PushGroupMarkerEXT)(GLsizei length, const GLchar* marker)
 {
@@ -4797,7 +5124,6 @@ inline void DYNAMICGLES_FUNCTION(PushGroupMarkerEXT)(GLsizei length, const GLcha
 	PFNGLPUSHGROUPMARKEREXTPROC _PushGroupMarkerEXT = (PFNGLPUSHGROUPMARKEREXTPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::PushGroupMarkerEXT);
 	return _PushGroupMarkerEXT(length, marker);
 #endif
-
 }
 inline void DYNAMICGLES_FUNCTION(PopGroupMarkerEXT)(void)
 {
@@ -4890,7 +5216,8 @@ inline GLuint DYNAMICGLES_FUNCTION(CreateShaderProgramvEXT)(GLenum type, GLsizei
 	assert(0);
 	return 0;
 #else
-	PFNGLCREATESHADERPROGRAMVEXTPROC _CreateShaderProgramvEXT = (PFNGLCREATESHADERPROGRAMVEXTPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::CreateShaderProgramvEXT);
+	PFNGLCREATESHADERPROGRAMVEXTPROC _CreateShaderProgramvEXT =
+		(PFNGLCREATESHADERPROGRAMVEXTPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::CreateShaderProgramvEXT);
 	return _CreateShaderProgramvEXT(type, count, strings);
 #endif
 }
@@ -4907,7 +5234,8 @@ inline void DYNAMICGLES_FUNCTION(DeleteProgramPipelinesEXT)(GLsizei n, const GLu
 #if TARGET_OS_IPHONE
 	typedef decltype(&glDeleteProgramPipelinesEXT) PFNGLDELETEPROGRAMPIPELINESEXTPROC;
 #endif
-	PFNGLDELETEPROGRAMPIPELINESEXTPROC _DeleteProgramPipelinesEXT = (PFNGLDELETEPROGRAMPIPELINESEXTPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::DeleteProgramPipelinesEXT);
+	PFNGLDELETEPROGRAMPIPELINESEXTPROC _DeleteProgramPipelinesEXT =
+		(PFNGLDELETEPROGRAMPIPELINESEXTPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::DeleteProgramPipelinesEXT);
 	return _DeleteProgramPipelinesEXT(n, pipelines);
 }
 inline void DYNAMICGLES_FUNCTION(GenProgramPipelinesEXT)(GLsizei n, GLuint* pipelines)
@@ -4939,7 +5267,8 @@ inline void DYNAMICGLES_FUNCTION(GetProgramPipelineivEXT)(GLuint pipeline, GLenu
 #if TARGET_OS_IPHONE
 	typedef decltype(&glGetProgramPipelineivEXT) PFNGLGETPROGRAMPIPELINEIVEXTPROC;
 #endif
-	PFNGLGETPROGRAMPIPELINEIVEXTPROC _GetProgramPipelineivEXT = (PFNGLGETPROGRAMPIPELINEIVEXTPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::GetProgramPipelineivEXT);
+	PFNGLGETPROGRAMPIPELINEIVEXTPROC _GetProgramPipelineivEXT =
+		(PFNGLGETPROGRAMPIPELINEIVEXTPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::GetProgramPipelineivEXT);
 	return _GetProgramPipelineivEXT(pipeline, pname, params);
 }
 inline void DYNAMICGLES_FUNCTION(ProgramUniform1iEXT)(GLuint program, GLint location, GLint x)
@@ -5091,7 +5420,8 @@ inline void DYNAMICGLES_FUNCTION(ProgramUniformMatrix2fvEXT)(GLuint program, GLi
 #if TARGET_OS_IPHONE
 	assert(0);
 #else
-	PFNGLPROGRAMUNIFORMMATRIX2FVEXTPROC _ProgramUniformMatrix2fvEXT = (PFNGLPROGRAMUNIFORMMATRIX2FVEXTPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::ProgramUniformMatrix2fvEXT);
+	PFNGLPROGRAMUNIFORMMATRIX2FVEXTPROC _ProgramUniformMatrix2fvEXT =
+		(PFNGLPROGRAMUNIFORMMATRIX2FVEXTPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::ProgramUniformMatrix2fvEXT);
 	return _ProgramUniformMatrix2fvEXT(program, location, count, transpose, value);
 #endif
 }
@@ -5100,7 +5430,8 @@ inline void DYNAMICGLES_FUNCTION(ProgramUniformMatrix3fvEXT)(GLuint program, GLi
 #if TARGET_OS_IPHONE
 	assert(0);
 #else
-	PFNGLPROGRAMUNIFORMMATRIX3FVEXTPROC _ProgramUniformMatrix3fvEXT = (PFNGLPROGRAMUNIFORMMATRIX3FVEXTPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::ProgramUniformMatrix3fvEXT);
+	PFNGLPROGRAMUNIFORMMATRIX3FVEXTPROC _ProgramUniformMatrix3fvEXT =
+		(PFNGLPROGRAMUNIFORMMATRIX3FVEXTPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::ProgramUniformMatrix3fvEXT);
 	return _ProgramUniformMatrix3fvEXT(program, location, count, transpose, value);
 #endif
 }
@@ -5109,7 +5440,8 @@ inline void DYNAMICGLES_FUNCTION(ProgramUniformMatrix4fvEXT)(GLuint program, GLi
 #if TARGET_OS_IPHONE
 	assert(0);
 #else
-	PFNGLPROGRAMUNIFORMMATRIX4FVEXTPROC _ProgramUniformMatrix4fvEXT = (PFNGLPROGRAMUNIFORMMATRIX4FVEXTPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::ProgramUniformMatrix4fvEXT);
+	PFNGLPROGRAMUNIFORMMATRIX4FVEXTPROC _ProgramUniformMatrix4fvEXT =
+		(PFNGLPROGRAMUNIFORMMATRIX4FVEXTPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::ProgramUniformMatrix4fvEXT);
 	return _ProgramUniformMatrix4fvEXT(program, location, count, transpose, value);
 #endif
 }
@@ -5118,7 +5450,8 @@ inline void DYNAMICGLES_FUNCTION(ValidateProgramPipelineEXT)(GLuint pipeline)
 #if TARGET_OS_IPHONE
 	typedef decltype(&glValidateProgramPipelineEXT) PFNGLVALIDATEPROGRAMPIPELINEEXTPROC;
 #endif
-	PFNGLVALIDATEPROGRAMPIPELINEEXTPROC _ValidateProgramPipelineEXT = (PFNGLVALIDATEPROGRAMPIPELINEEXTPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::ValidateProgramPipelineEXT);
+	PFNGLVALIDATEPROGRAMPIPELINEEXTPROC _ValidateProgramPipelineEXT =
+		(PFNGLVALIDATEPROGRAMPIPELINEEXTPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::ValidateProgramPipelineEXT);
 	return _ValidateProgramPipelineEXT(pipeline);
 }
 inline void DYNAMICGLES_FUNCTION(GetProgramPipelineInfoLogEXT)(GLuint pipeline, GLsizei bufSize, GLsizei* length, GLchar* infoLog)
@@ -5126,9 +5459,9 @@ inline void DYNAMICGLES_FUNCTION(GetProgramPipelineInfoLogEXT)(GLuint pipeline, 
 #if TARGET_OS_IPHONE
 	typedef decltype(&glGetProgramPipelineInfoLogEXT) PFNGLGETPROGRAMPIPELINEINFOLOGEXTPROC;
 #endif
-	PFNGLGETPROGRAMPIPELINEINFOLOGEXTPROC _GetProgramPipelineInfoLogEXT = (PFNGLGETPROGRAMPIPELINEINFOLOGEXTPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::GetProgramPipelineInfoLogEXT);
+	PFNGLGETPROGRAMPIPELINEINFOLOGEXTPROC _GetProgramPipelineInfoLogEXT =
+		(PFNGLGETPROGRAMPIPELINEINFOLOGEXTPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::GetProgramPipelineInfoLogEXT);
 	return _GetProgramPipelineInfoLogEXT(pipeline, bufSize, length, infoLog);
-
 }
 inline void DYNAMICGLES_FUNCTION(ProgramUniform1uiEXT)(GLuint program, GLint location, GLuint v0)
 {
@@ -5207,7 +5540,8 @@ inline void DYNAMICGLES_FUNCTION(ProgramUniformMatrix2x3fvEXT)(GLuint program, G
 #if TARGET_OS_IPHONE
 	assert(0);
 #else
-	PFNGLPROGRAMUNIFORMMATRIX2X3FVEXTPROC _ProgramUniformMatrix2x3fvEXT = (PFNGLPROGRAMUNIFORMMATRIX2X3FVEXTPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::ProgramUniformMatrix2x3fvEXT);
+	PFNGLPROGRAMUNIFORMMATRIX2X3FVEXTPROC _ProgramUniformMatrix2x3fvEXT =
+		(PFNGLPROGRAMUNIFORMMATRIX2X3FVEXTPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::ProgramUniformMatrix2x3fvEXT);
 	return _ProgramUniformMatrix2x3fvEXT(program, location, count, transpose, value);
 #endif
 }
@@ -5216,7 +5550,8 @@ inline void DYNAMICGLES_FUNCTION(ProgramUniformMatrix3x2fvEXT)(GLuint program, G
 #if TARGET_OS_IPHONE
 	assert(0);
 #else
-	PFNGLPROGRAMUNIFORMMATRIX3X2FVEXTPROC _ProgramUniformMatrix3x2fvEXT = (PFNGLPROGRAMUNIFORMMATRIX3X2FVEXTPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::ProgramUniformMatrix3x2fvEXT);
+	PFNGLPROGRAMUNIFORMMATRIX3X2FVEXTPROC _ProgramUniformMatrix3x2fvEXT =
+		(PFNGLPROGRAMUNIFORMMATRIX3X2FVEXTPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::ProgramUniformMatrix3x2fvEXT);
 	return _ProgramUniformMatrix3x2fvEXT(program, location, count, transpose, value);
 #endif
 }
@@ -5225,7 +5560,8 @@ inline void DYNAMICGLES_FUNCTION(ProgramUniformMatrix2x4fvEXT)(GLuint program, G
 #if TARGET_OS_IPHONE
 	assert(0);
 #else
-	PFNGLPROGRAMUNIFORMMATRIX2X4FVEXTPROC _ProgramUniformMatrix2x4fvEXT = (PFNGLPROGRAMUNIFORMMATRIX2X4FVEXTPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::ProgramUniformMatrix2x4fvEXT);
+	PFNGLPROGRAMUNIFORMMATRIX2X4FVEXTPROC _ProgramUniformMatrix2x4fvEXT =
+		(PFNGLPROGRAMUNIFORMMATRIX2X4FVEXTPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::ProgramUniformMatrix2x4fvEXT);
 	return _ProgramUniformMatrix2x4fvEXT(program, location, count, transpose, value);
 #endif
 }
@@ -5234,7 +5570,8 @@ inline void DYNAMICGLES_FUNCTION(ProgramUniformMatrix4x2fvEXT)(GLuint program, G
 #if TARGET_OS_IPHONE
 	assert(0);
 #else
-	PFNGLPROGRAMUNIFORMMATRIX4X2FVEXTPROC _ProgramUniformMatrix4x2fvEXT = (PFNGLPROGRAMUNIFORMMATRIX4X2FVEXTPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::ProgramUniformMatrix4x2fvEXT);
+	PFNGLPROGRAMUNIFORMMATRIX4X2FVEXTPROC _ProgramUniformMatrix4x2fvEXT =
+		(PFNGLPROGRAMUNIFORMMATRIX4X2FVEXTPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::ProgramUniformMatrix4x2fvEXT);
 	return _ProgramUniformMatrix4x2fvEXT(program, location, count, transpose, value);
 #endif
 }
@@ -5243,7 +5580,8 @@ inline void DYNAMICGLES_FUNCTION(ProgramUniformMatrix3x4fvEXT)(GLuint program, G
 #if TARGET_OS_IPHONE
 	assert(0);
 #else
-	PFNGLPROGRAMUNIFORMMATRIX3X4FVEXTPROC _ProgramUniformMatrix3x4fvEXT = (PFNGLPROGRAMUNIFORMMATRIX3X4FVEXTPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::ProgramUniformMatrix3x4fvEXT);
+	PFNGLPROGRAMUNIFORMMATRIX3X4FVEXTPROC _ProgramUniformMatrix3x4fvEXT =
+		(PFNGLPROGRAMUNIFORMMATRIX3X4FVEXTPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::ProgramUniformMatrix3x4fvEXT);
 	return _ProgramUniformMatrix3x4fvEXT(program, location, count, transpose, value);
 #endif
 }
@@ -5252,7 +5590,8 @@ inline void DYNAMICGLES_FUNCTION(ProgramUniformMatrix4x3fvEXT)(GLuint program, G
 #if TARGET_OS_IPHONE
 	assert(0);
 #else
-	PFNGLPROGRAMUNIFORMMATRIX4X3FVEXTPROC _ProgramUniformMatrix4x3fvEXT = (PFNGLPROGRAMUNIFORMMATRIX4X3FVEXTPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::ProgramUniformMatrix4x3fvEXT);
+	PFNGLPROGRAMUNIFORMMATRIX4X3FVEXTPROC _ProgramUniformMatrix4x3fvEXT =
+		(PFNGLPROGRAMUNIFORMMATRIX4X3FVEXTPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::ProgramUniformMatrix4x3fvEXT);
 	return _ProgramUniformMatrix4x3fvEXT(program, location, count, transpose, value);
 #endif
 }
@@ -5328,12 +5667,14 @@ inline void DYNAMICGLES_FUNCTION(BlendBarrierKHR)(void)
 	return _BlendBarrierKHR();
 #endif
 }
-inline void DYNAMICGLES_FUNCTION(TexStorage3DMultisampleOES)(GLenum target, GLsizei samples, GLenum internalformat, GLsizei width, GLsizei height, GLsizei depth, GLboolean fixedsamplelocations)
+inline void DYNAMICGLES_FUNCTION(TexStorage3DMultisampleOES)(
+	GLenum target, GLsizei samples, GLenum internalformat, GLsizei width, GLsizei height, GLsizei depth, GLboolean fixedsamplelocations)
 {
 #if TARGET_OS_IPHONE
 	assert(0);
 #else
-	PFNGLTEXSTORAGE3DMULTISAMPLEOESPROC _TexStorage3DMultisampleOES = (PFNGLTEXSTORAGE3DMULTISAMPLEOESPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::TexStorage3DMultisampleOES);
+	PFNGLTEXSTORAGE3DMULTISAMPLEOESPROC _TexStorage3DMultisampleOES =
+		(PFNGLTEXSTORAGE3DMULTISAMPLEOESPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::TexStorage3DMultisampleOES);
 	return _TexStorage3DMultisampleOES(target, samples, internalformat, width, height, depth, fixedsamplelocations);
 #endif
 }
@@ -5342,26 +5683,30 @@ inline void DYNAMICGLES_FUNCTION(FramebufferTextureMultiviewOVR)(GLenum target, 
 #if TARGET_OS_IPHONE
 	assert(0);
 #else
-	PFNGLFRAMEBUFFERTEXTUREMULTIVIEWOVRPROC _FramebufferTextureMultiviewOVR = (PFNGLFRAMEBUFFERTEXTUREMULTIVIEWOVRPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::FramebufferTextureMultiviewOVR);
+	PFNGLFRAMEBUFFERTEXTUREMULTIVIEWOVRPROC _FramebufferTextureMultiviewOVR =
+		(PFNGLFRAMEBUFFERTEXTUREMULTIVIEWOVRPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::FramebufferTextureMultiviewOVR);
 	return _FramebufferTextureMultiviewOVR(target, attachment, texture, level, baseViewIndex, numViews);
 #endif
 }
 inline void DYNAMICGLES_FUNCTION(FramebufferPixelLocalStorageSizeEXT)(GLuint target, GLsizei storageSize)
 {
-	typedef void (GL_APIENTRY * PFNGLFRAMEBUFFERPIXELLOCALSTORAGESIZEPROC)(GLuint target, GLsizei storageSize);
-	PFNGLFRAMEBUFFERPIXELLOCALSTORAGESIZEPROC _FramebufferPixelLocalStorageSize = (PFNGLFRAMEBUFFERPIXELLOCALSTORAGESIZEPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::FramebufferPixelLocalStorageSizeEXT);
+	typedef void(GL_APIENTRY * PFNGLFRAMEBUFFERPIXELLOCALSTORAGESIZEPROC)(GLuint target, GLsizei storageSize);
+	PFNGLFRAMEBUFFERPIXELLOCALSTORAGESIZEPROC _FramebufferPixelLocalStorageSize =
+		(PFNGLFRAMEBUFFERPIXELLOCALSTORAGESIZEPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::FramebufferPixelLocalStorageSizeEXT);
 	return _FramebufferPixelLocalStorageSize(target, storageSize);
 }
 inline void DYNAMICGLES_FUNCTION(ClearPixelLocalStorageuiEXT)(GLsizei offset, GLsizei n, const GLuint* values)
 {
-	typedef void (GL_APIENTRY * PFNGLCLEARPIXELLOCALSTORAGEUIPROC)(GLsizei offset, GLsizei n, const GLuint * values);
-	PFNGLCLEARPIXELLOCALSTORAGEUIPROC _ClearPixelLocalStorageui = (PFNGLCLEARPIXELLOCALSTORAGEUIPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::ClearPixelLocalStorageuiEXT);
+	typedef void(GL_APIENTRY * PFNGLCLEARPIXELLOCALSTORAGEUIPROC)(GLsizei offset, GLsizei n, const GLuint* values);
+	PFNGLCLEARPIXELLOCALSTORAGEUIPROC _ClearPixelLocalStorageui =
+		(PFNGLCLEARPIXELLOCALSTORAGEUIPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::ClearPixelLocalStorageuiEXT);
 	return _ClearPixelLocalStorageui(offset, n, values);
 }
 inline void DYNAMICGLES_FUNCTION(GetFramebufferPixelLocalStorageSizeEXT)(GLuint target)
 {
-	typedef void (GL_APIENTRY * PFNGLGETFRAMEBUFFERPIXELLOCALSTORAGESIZEPROC)(GLuint target);
-	PFNGLGETFRAMEBUFFERPIXELLOCALSTORAGESIZEPROC _GetFramebufferPixelLocalStorageSize = (PFNGLGETFRAMEBUFFERPIXELLOCALSTORAGESIZEPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::GetFramebufferPixelLocalStorageSizeEXT);
+	typedef void(GL_APIENTRY * PFNGLGETFRAMEBUFFERPIXELLOCALSTORAGESIZEPROC)(GLuint target);
+	PFNGLGETFRAMEBUFFERPIXELLOCALSTORAGESIZEPROC _GetFramebufferPixelLocalStorageSize =
+		(PFNGLGETFRAMEBUFFERPIXELLOCALSTORAGESIZEPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::GetFramebufferPixelLocalStorageSizeEXT);
 	return _GetFramebufferPixelLocalStorageSize(target);
 }
 inline void DYNAMICGLES_FUNCTION(BufferStorageEXT)(GLenum target, GLsizei size, const void* data, GLbitfield flags)
@@ -5382,7 +5727,8 @@ inline void DYNAMICGLES_FUNCTION(ClearTexImageEXT)(GLuint texture, GLint level, 
 	return _ClearTexImageEXT(texture, level, format, type, data);
 #endif
 }
-inline void DYNAMICGLES_FUNCTION(ClearTexSubImageEXT)(GLuint texture, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, const GLvoid* data)
+inline void DYNAMICGLES_FUNCTION(ClearTexSubImageEXT)(
+	GLuint texture, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, const GLvoid* data)
 {
 #if TARGET_OS_IPHONE
 	assert(0);
@@ -5391,27 +5737,31 @@ inline void DYNAMICGLES_FUNCTION(ClearTexSubImageEXT)(GLuint texture, GLint leve
 	return _ClearTexSubImageEXT(texture, level, xoffset, yoffset, zoffset, width, height, depth, format, type, data);
 #endif
 }
-inline void DYNAMICGLES_FUNCTION(ClearTexSubImageIMG)(GLuint texture, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, const GLvoid* data)
+inline void DYNAMICGLES_FUNCTION(ClearTexSubImageIMG)(
+	GLuint texture, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, const GLvoid* data)
 {
-	typedef void (GL_APIENTRY * PFNGLCLEARTEXSUBIMAGEIMGPROC)(GLuint texture, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, const void* data);
+	typedef void(GL_APIENTRY * PFNGLCLEARTEXSUBIMAGEIMGPROC)(
+		GLuint texture, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, const void* data);
 	PFNGLCLEARTEXSUBIMAGEIMGPROC _ClearTexSubImageIMG = (PFNGLCLEARTEXSUBIMAGEIMGPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::ClearTexSubImageIMG);
 	return _ClearTexSubImageIMG(texture, level, xoffset, yoffset, zoffset, width, height, depth, format, type, data);
 }
-inline void DYNAMICGLES_FUNCTION(FramebufferTexture2DDownsampleIMG)(GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level, GLuint xscale, GLuint yscale)
+inline void DYNAMICGLES_FUNCTION(FramebufferTexture2DDownsampleIMG)(GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level, GLint xscale, GLint yscale)
 {
 #if TARGET_OS_IPHONE
 	assert(0);
 #else
-	PFNGLFRAMEBUFFERTEXTURE2DDOWNSAMPLEIMGPROC _FramebufferTexture2DDownsampleIMG = (PFNGLFRAMEBUFFERTEXTURE2DDOWNSAMPLEIMGPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::FramebufferTexture2DDownsampleIMG);
+	PFNGLFRAMEBUFFERTEXTURE2DDOWNSAMPLEIMGPROC _FramebufferTexture2DDownsampleIMG =
+		(PFNGLFRAMEBUFFERTEXTURE2DDOWNSAMPLEIMGPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::FramebufferTexture2DDownsampleIMG);
 	return _FramebufferTexture2DDownsampleIMG(target, attachment, textarget, texture, level, xscale, yscale);
 #endif
 }
-inline void DYNAMICGLES_FUNCTION(FramebufferTextureLayerDownsampleIMG)(GLenum target, GLenum attachment, GLuint texture, GLint level, GLint layer, GLuint xscale, GLuint yscale)
+inline void DYNAMICGLES_FUNCTION(FramebufferTextureLayerDownsampleIMG)(GLenum target, GLenum attachment, GLuint texture, GLint level, GLint layer, GLint xscale, GLint yscale)
 {
 #if TARGET_OS_IPHONE
 	assert(0);
 #else
-	PFNGLFRAMEBUFFERTEXTURELAYERDOWNSAMPLEIMGPROC _FramebufferTextureLayerDownsampleIMG = (PFNGLFRAMEBUFFERTEXTURELAYERDOWNSAMPLEIMGPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::FramebufferTextureLayerDownsampleIMG);
+	PFNGLFRAMEBUFFERTEXTURELAYERDOWNSAMPLEIMGPROC _FramebufferTextureLayerDownsampleIMG =
+		(PFNGLFRAMEBUFFERTEXTURELAYERDOWNSAMPLEIMGPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::FramebufferTextureLayerDownsampleIMG);
 	return _FramebufferTextureLayerDownsampleIMG(target, attachment, texture, level, layer, xscale, yscale);
 #endif
 }
@@ -5440,7 +5790,8 @@ inline GLuint64 DYNAMICGLES_FUNCTION(GetTextureSamplerHandleIMG)(GLuint texture,
 #if TARGET_OS_IPHONE
 	typedef decltype(&glGetTextureSamplerHandleIMG) PFNGLGETTEXTURESAMPLERHANDLEIMGPROC;
 #endif
-	PFNGLGETTEXTURESAMPLERHANDLEIMGPROC _GetTextureSamplerHandleIMG = (PFNGLGETTEXTURESAMPLERHANDLEIMGPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::GetTextureSamplerHandleIMG);
+	PFNGLGETTEXTURESAMPLERHANDLEIMGPROC _GetTextureSamplerHandleIMG =
+		(PFNGLGETTEXTURESAMPLERHANDLEIMGPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::GetTextureSamplerHandleIMG);
 	return _GetTextureSamplerHandleIMG(texture, sampler);
 }
 inline void DYNAMICGLES_FUNCTION(UniformHandleui64IMG)(GLint location, GLuint64 value)
@@ -5464,7 +5815,8 @@ inline void DYNAMICGLES_FUNCTION(ProgramUniformHandleui64IMG)(GLuint program, GL
 #if TARGET_OS_IPHONE
 	assert(0);
 #endif
-	PFNGLPROGRAMUNIFORMHANDLEUI64IMGPROC _ProgramUniformHandleui64IMG = (PFNGLPROGRAMUNIFORMHANDLEUI64IMGPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::ProgramUniformHandleui64IMG);
+	PFNGLPROGRAMUNIFORMHANDLEUI64IMGPROC _ProgramUniformHandleui64IMG =
+		(PFNGLPROGRAMUNIFORMHANDLEUI64IMGPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::ProgramUniformHandleui64IMG);
 	return _ProgramUniformHandleui64IMG(program, location, value);
 }
 inline void DYNAMICGLES_FUNCTION(ProgramUniformHandleui64vIMG)(GLuint program, GLint location, GLsizei count, const GLuint64* values)
@@ -5472,7 +5824,8 @@ inline void DYNAMICGLES_FUNCTION(ProgramUniformHandleui64vIMG)(GLuint program, G
 #if TARGET_OS_IPHONE
 	assert(0);
 #endif
-	PFNGLPROGRAMUNIFORMHANDLEUI64VIMGPROC _ProgramUniformHandleui64vIMG = (PFNGLPROGRAMUNIFORMHANDLEUI64VIMGPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::ProgramUniformHandleui64vIMG);
+	PFNGLPROGRAMUNIFORMHANDLEUI64VIMGPROC _ProgramUniformHandleui64vIMG =
+		(PFNGLPROGRAMUNIFORMHANDLEUI64VIMGPROC)gl::internals::getGlesExtFunction(gl::internals::GlExtFuncName::ProgramUniformHandleui64vIMG);
 	return _ProgramUniformHandleui64vIMG(program, location, count, values);
 }
 #endif
@@ -5483,7 +5836,7 @@ inline void DYNAMICGLES_FUNCTION(ProgramUniformHandleui64vIMG)(GLuint program, G
 }
 #endif
 
-inline bool isGlExtensionSupported(const char* extensionName, bool resetExtensionCache = false)
+inline bool isGlExtensionSupported(const char* extensionName)
 {
 #ifndef DYNAMICGLES_NO_NAMESPACE
 	const unsigned char* extensionString = GetString(GL_EXTENSIONS);

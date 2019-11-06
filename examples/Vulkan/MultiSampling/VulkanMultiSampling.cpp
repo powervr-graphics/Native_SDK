@@ -47,7 +47,7 @@ struct DeviceResources
 	pvr::Multi<pvrvk::Framebuffer> onScreenFramebuffer;
 
 	// main command buffer used to store rendering commands
-	pvr::Multi<pvrvk::CommandBuffer> commandBuffers;
+	pvr::Multi<pvrvk::CommandBuffer> cmdBuffers;
 
 	// descriptor sets
 	std::vector<MaterialDescSet> texDescSets;
@@ -86,8 +86,7 @@ struct DeviceResources
 			uint32_t l = swapchain->getSwapchainLength();
 			for (uint32_t i = 0; i < l; ++i)
 			{
-				if (perFrameResourcesFences[i])
-					perFrameResourcesFences[i]->wait();
+				if (perFrameResourcesFences[i]) perFrameResourcesFences[i]->wait();
 			}
 		}
 	}
@@ -121,7 +120,7 @@ public:
 
 	void createMultiSampleFramebufferAndRenderPass();
 	void createBuffers();
-	void createDescriptorSets(pvrvk::CommandBuffer& commandBuffer);
+	void createDescriptorSets(pvrvk::CommandBuffer& cmdBuffers);
 	void recordCommandBuffers();
 	void createPipeline();
 	void createDescriptorSetLayouts();
@@ -131,10 +130,7 @@ struct DescripotSetComp
 {
 	int32_t id;
 	DescripotSetComp(int32_t id) : id(id) {}
-	bool operator()(std::pair<int32_t, pvrvk::DescriptorSet> const& pair)
-	{
-		return pair.first == id;
-	}
+	bool operator()(std::pair<int32_t, pvrvk::DescriptorSet> const& pair) { return pair.first == id; }
 };
 
 /*!*********************************************************************************************************************
@@ -146,27 +142,19 @@ struct DescripotSetComp
 pvr::Result VulkanMultiSampling::initApplication()
 {
 	// Load the _scene
-	_scene = pvr::assets::Model::createWithReader(pvr::assets::PODReader(getAssetStream(SceneFileName)));
+	_scene = pvr::assets::loadModel(*this, SceneFileName);
 
 	// The cameras are stored in the file. We check it contains at least one.
-	if (_scene->getNumCameras() == 0)
-	{
-		throw pvr::InvalidDataError("ERROR: The scene does not contain a camera");
-	}
+	if (_scene->getNumCameras() == 0) { throw pvr::InvalidDataError("ERROR: The scene does not contain a camera"); }
 
 	// We check the scene contains at least one light
-	if (_scene->getNumLights() == 0)
-	{
-		throw pvr::InvalidDataError("The scene does not contain a light\n");
-	}
+	if (_scene->getNumLights() == 0) { throw pvr::InvalidDataError("The scene does not contain a light\n"); }
 
 	// Ensure that all meshes use an indexed triangle list
 	for (uint32_t i = 0; i < _scene->getNumMeshes(); ++i)
 	{
 		if (_scene->getMesh(i).getPrimitiveType() != pvr::PrimitiveTopology::TriangleList || _scene->getMesh(i).getFaces().getDataSize() == 0)
-		{
-			throw pvr::InvalidDataError("ERROR: The meshes in the scene should use an indexed triangle list\n");
-		}
+		{ throw pvr::InvalidDataError("ERROR: The meshes in the scene should use an indexed triangle list\n"); }
 	}
 
 	// Initialize variables used for the animation
@@ -211,13 +199,13 @@ void VulkanMultiSampling::createMultiSampleFramebufferAndRenderPass()
 	// The second dependency is defined for operations occurring inside a subpass and after the render pass.
 	// it transition the barrier from color read/ write operation to memory read so the presentation engine can read
 	// them.
-	pvrvk::SubpassDependency dependencies[2] = { pvrvk::SubpassDependency(pvrvk::SubpassExternal, 0, pvrvk::PipelineStageFlags::e_BOTTOM_OF_PIPE_BIT,
-													 pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT, pvrvk::AccessFlags::e_MEMORY_READ_BIT,
-													 pvrvk::AccessFlags::e_COLOR_ATTACHMENT_READ_BIT | pvrvk::AccessFlags::e_COLOR_ATTACHMENT_WRITE_BIT,
-													 pvrvk::DependencyFlags::e_BY_REGION_BIT),
+	pvrvk::SubpassDependency dependencies[2] = {
+		pvrvk::SubpassDependency(pvrvk::SubpassExternal, 0, pvrvk::PipelineStageFlags::e_BOTTOM_OF_PIPE_BIT, pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT,
+			pvrvk::AccessFlags::e_NONE, pvrvk::AccessFlags::e_COLOR_ATTACHMENT_READ_BIT | pvrvk::AccessFlags::e_COLOR_ATTACHMENT_WRITE_BIT, pvrvk::DependencyFlags::e_BY_REGION_BIT),
 
 		pvrvk::SubpassDependency(0, pvrvk::SubpassExternal, pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT, pvrvk::PipelineStageFlags::e_BOTTOM_OF_PIPE_BIT,
-			pvrvk::AccessFlags::e_COLOR_ATTACHMENT_READ_BIT | pvrvk::AccessFlags::e_COLOR_ATTACHMENT_WRITE_BIT, pvrvk::AccessFlags::e_NONE, pvrvk::DependencyFlags::e_BY_REGION_BIT) };
+			pvrvk::AccessFlags::e_COLOR_ATTACHMENT_READ_BIT | pvrvk::AccessFlags::e_COLOR_ATTACHMENT_WRITE_BIT, pvrvk::AccessFlags::e_NONE, pvrvk::DependencyFlags::e_BY_REGION_BIT)
+	};
 
 	// multi sample color attachment
 	subpass.setColorAttachmentReference(0, pvrvk::AttachmentReference(0, pvrvk::ImageLayout::e_COLOR_ATTACHMENT_OPTIMAL));
@@ -264,18 +252,21 @@ void VulkanMultiSampling::createMultiSampleFramebufferAndRenderPass()
 		pvrvk::FramebufferCreateInfo& info = framebufferInfo[i];
 		// allocate the musltisample color and depth stencil attachment
 		// color attachment. The attachment will transient
-		pvrvk::ImageView msColor = _deviceResources->device->createImageView(pvrvk::ImageViewCreateInfo(pvr::utils::createImage(_deviceResources->device, pvrvk::ImageType::e_2D,
-			msColorDsFmt[0], dimension, pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_TRANSIENT_ATTACHMENT_BIT, pvrvk::ImageCreateFlags(0),
-			pvrvk::ImageLayersSize(), NumSamples, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_LAZILY_ALLOCATED_BIT)));
+		pvrvk::ImageView msColor = _deviceResources->device->createImageView(pvrvk::ImageViewCreateInfo(pvr::utils::createImage(_deviceResources->device,
+			pvrvk::ImageCreateInfo(pvrvk::ImageType::e_2D, msColorDsFmt[0], dimension,
+				pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_TRANSIENT_ATTACHMENT_BIT, 1, 1, NumSamples),
+			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_LAZILY_ALLOCATED_BIT)));
 
 		// depth stencil attachment. The attachment will be transient
-		pvrvk::ImageView msDs = _deviceResources->device->createImageView(pvrvk::ImageViewCreateInfo(pvr::utils::createImage(_deviceResources->device, pvrvk::ImageType::e_2D,
-			msColorDsFmt[1], dimension, pvrvk::ImageUsageFlags::e_DEPTH_STENCIL_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_TRANSIENT_ATTACHMENT_BIT, pvrvk::ImageCreateFlags(0),
-			pvrvk::ImageLayersSize(), NumSamples, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_LAZILY_ALLOCATED_BIT)));
+		pvrvk::ImageView msDs = _deviceResources->device->createImageView(pvrvk::ImageViewCreateInfo(pvr::utils::createImage(_deviceResources->device,
+			pvrvk::ImageCreateInfo(pvrvk::ImageType::e_2D, msColorDsFmt[1], dimension,
+				pvrvk::ImageUsageFlags::e_DEPTH_STENCIL_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_TRANSIENT_ATTACHMENT_BIT, 1, 1, NumSamples),
+			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_LAZILY_ALLOCATED_BIT)));
 
-		pvrvk::ImageView ds = _deviceResources->device->createImageView(pvrvk::ImageViewCreateInfo(pvr::utils::createImage(_deviceResources->device, pvrvk::ImageType::e_2D,
-			msColorDsFmt[1], dimension, pvrvk::ImageUsageFlags::e_DEPTH_STENCIL_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_TRANSIENT_ATTACHMENT_BIT, pvrvk::ImageCreateFlags(0),
-			pvrvk::ImageLayersSize(), pvrvk::SampleCountFlags::e_1_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_LAZILY_ALLOCATED_BIT)));
+		pvrvk::ImageView ds = _deviceResources->device->createImageView(pvrvk::ImageViewCreateInfo(pvr::utils::createImage(_deviceResources->device,
+			pvrvk::ImageCreateInfo(
+				pvrvk::ImageType::e_2D, msColorDsFmt[1], dimension, pvrvk::ImageUsageFlags::e_DEPTH_STENCIL_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_TRANSIENT_ATTACHMENT_BIT),
+			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_LAZILY_ALLOCATED_BIT)));
 
 		info.setAttachment(0, msColor);
 		info.setAttachment(1, msDs);
@@ -294,7 +285,7 @@ void VulkanMultiSampling::createMultiSampleFramebufferAndRenderPass()
 ***********************************************************************************************************************/
 pvr::Result VulkanMultiSampling::initView()
 {
-	_deviceResources = std::unique_ptr<DeviceResources>(new DeviceResources());
+	_deviceResources = std::make_unique<DeviceResources>();
 
 	// Create instance and retrieve compatible physical devices
 	_deviceResources->instance = pvr::utils::createInstance(this->getApplicationName());
@@ -306,7 +297,8 @@ pvr::Result VulkanMultiSampling::initView()
 	}
 
 	// Create the surface
-	_deviceResources->surface = pvr::utils::createSurface(_deviceResources->instance, _deviceResources->instance->getPhysicalDevice(0), this->getWindow(), this->getDisplay());
+	_deviceResources->surface =
+		pvr::utils::createSurface(_deviceResources->instance, _deviceResources->instance->getPhysicalDevice(0), this->getWindow(), this->getDisplay(), this->getConnection());
 
 	// Create a default set of debug utils messengers or debug callbacks using either VK_EXT_debug_utils or VK_EXT_debug_report respectively
 	_deviceResources->debugUtilsCallbacks = pvr::utils::createDebugUtilsCallbacks(_deviceResources->instance);
@@ -326,11 +318,7 @@ pvr::Result VulkanMultiSampling::initView()
 	// validate the supported swapchain image usage
 	pvrvk::ImageUsageFlags swapchainImageUsage = pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT;
 	if (pvr::utils::isImageUsageSupportedBySurface(surfaceCapabilities, pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT))
-	{
-		swapchainImageUsage |= pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT;
-	}
-
-	// Create the swapchain and depth stencil images
+	{ swapchainImageUsage |= pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT; } // Create the swapchain and depth stencil images
 	pvr::utils::createSwapchainAndDepthStencilImageAndViews(_deviceResources->device, _deviceResources->surface, getDisplayAttributes(), _deviceResources->swapchain,
 		_deviceResources->depthStencilImages, swapchainImageUsage, pvrvk::ImageUsageFlags::e_DEPTH_STENCIL_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_TRANSIENT_ATTACHMENT_BIT,
 		&_deviceResources->vmaAllocator);
@@ -357,44 +345,36 @@ pvr::Result VulkanMultiSampling::initView()
 		_deviceResources->imageAcquiredSemaphores[i] = _deviceResources->device->createSemaphore();
 		_deviceResources->perFrameResourcesFences[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
 
-		_deviceResources->commandBuffers[i] = _deviceResources->commandPool->allocateCommandBuffer();
+		_deviceResources->cmdBuffers[i] = _deviceResources->commandPool->allocateCommandBuffer();
 	}
 
-	_deviceResources->commandBuffers[0]->begin();
+	_deviceResources->cmdBuffers[0]->begin();
 	bool requiresCommandBufferSubmission = false;
-	pvr::utils::appendSingleBuffersFromModel(_deviceResources->device, *_scene, _deviceResources->vbos, _deviceResources->ibos, _deviceResources->commandBuffers[0],
+	pvr::utils::appendSingleBuffersFromModel(_deviceResources->device, *_scene, _deviceResources->vbos, _deviceResources->ibos, _deviceResources->cmdBuffers[0],
 		requiresCommandBufferSubmission, &_deviceResources->vmaAllocator);
 
 	// create the descriptor set layouts and pipeline layouts
 	createDescriptorSetLayouts();
 
 	// create the descriptor sets
-	createDescriptorSets(_deviceResources->commandBuffers[0]);
-	_deviceResources->commandBuffers[0]->end();
+	createDescriptorSets(_deviceResources->cmdBuffers[0]);
+	_deviceResources->cmdBuffers[0]->end();
 
 	pvrvk::SubmitInfo submitInfo;
-	submitInfo.commandBuffers = &_deviceResources->commandBuffers[0];
+	submitInfo.commandBuffers = &_deviceResources->cmdBuffers[0];
 	submitInfo.numCommandBuffers = 1;
 
 	// submit the queue and wait for it to become idle
 	_deviceResources->queue->submit(&submitInfo, 1);
 	_deviceResources->queue->waitIdle();
 
-	_deviceResources->uiRenderer.init(getWidth(), getHeight(), isFullScreen(), _deviceResources->onScreenFramebuffer[0]->getRenderPass(), 0,
-		getBackBufferColorspace() == pvr::ColorSpace::sRGB, _deviceResources->commandPool, _deviceResources->queue);
-
 	// Create the pipeline cache
 	_deviceResources->pipelineCache = _deviceResources->device->createPipelineCache();
 
-	// Create Multisample Pipeline for UIRenderer
-	pvrvk::GraphicsPipelineCreateInfo uiPipeInfo = _deviceResources->uiRenderer.getPipeline()->getCreateInfo();
-	uiPipeInfo.multiSample.setNumRasterizationSamples(NumSamples);
-	uiPipeInfo.basePipeline = _deviceResources->uiRenderer.getPipeline();
-	uiPipeInfo.flags = pvrvk::PipelineCreateFlags::e_DERIVATIVE_BIT;
-	_deviceResources->uiPipeline = _deviceResources->device->createGraphicsPipeline(uiPipeInfo, _deviceResources->pipelineCache);
+	_deviceResources->uiRenderer.init(getWidth(), getHeight(), isFullScreen(), _deviceResources->onScreenFramebuffer[0]->getRenderPass(), 0,
+		getBackBufferColorspace() == pvr::ColorSpace::sRGB, _deviceResources->commandPool, _deviceResources->queue);
 
 	_deviceResources->uiRenderer.getDefaultTitle()->setText("MultiSampling").commitUpdates();
-	_deviceResources->uiRenderer.getDefaultTitle()->commitUpdates();
 
 	// create demo graphics pipeline
 	createPipeline();
@@ -446,10 +426,7 @@ pvr::Result VulkanMultiSampling::renderFrame()
 	//  get the time in milliseconds.
 	_frame += static_cast<float>(getFrameTime()); // design-time target fps for animation
 
-	if (_frame >= animInst.getTotalTimeInMs())
-	{
-		_frame = 0;
-	}
+	if (_frame >= animInst.getTotalTimeInMs()) { _frame = 0; }
 
 	// Sets the _scene animation to this _frame
 	animInst.updateAnimation(_frame);
@@ -507,7 +484,7 @@ pvr::Result VulkanMultiSampling::renderFrame()
 	// Submit
 	pvrvk::SubmitInfo submitInfo;
 	pvrvk::PipelineStageFlags pipeWaitStageFlags = pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT;
-	submitInfo.commandBuffers = &_deviceResources->commandBuffers[swapchainIndex];
+	submitInfo.commandBuffers = &_deviceResources->cmdBuffers[swapchainIndex];
 	submitInfo.numCommandBuffers = 1;
 	submitInfo.waitSemaphores = &_deviceResources->imageAcquiredSemaphores[_frameId];
 	submitInfo.numWaitSemaphores = 1;
@@ -545,14 +522,14 @@ void VulkanMultiSampling::recordCommandBuffers()
 	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
 	{
 		// begin recording commands
-		_deviceResources->commandBuffers[i]->begin();
+		_deviceResources->cmdBuffers[i]->begin();
 
 		// begin the renderpass
-		_deviceResources->commandBuffers[i]->beginRenderPass(
+		_deviceResources->cmdBuffers[i]->beginRenderPass(
 			_deviceResources->onScreenFramebuffer[i], pvrvk::Rect2D(0, 0, getWidth(), getHeight()), true, clearValues, ARRAY_SIZE(clearValues));
 
 		// bind the graphics pipeline
-		_deviceResources->commandBuffers[i]->bindPipeline(_deviceResources->pipeline);
+		_deviceResources->cmdBuffers[i]->bindPipeline(_deviceResources->pipeline);
 
 		// A scene is composed of nodes. There are 3 types of nodes:
 		// - MeshNodes :
@@ -591,23 +568,23 @@ void VulkanMultiSampling::recordCommandBuffers()
 			offsets[1] = _deviceResources->lightMemoryView.getDynamicSliceOffset(i);
 
 			// bind the descriptor sets
-			_deviceResources->commandBuffers[i]->bindDescriptorSets(pvrvk::PipelineBindPoint::e_GRAPHICS, _deviceResources->pipelineLayout, 0, descriptorSets, 3, offsets, 2);
+			_deviceResources->cmdBuffers[i]->bindDescriptorSets(pvrvk::PipelineBindPoint::e_GRAPHICS, _deviceResources->pipelineLayout, 0, descriptorSets, 3, offsets, 2);
 
 			// bind the vbo and ibos for the current mesh node
-			_deviceResources->commandBuffers[i]->bindVertexBuffer(_deviceResources->vbos[pNode->getObjectId()], 0, 0);
-			_deviceResources->commandBuffers[i]->bindIndexBuffer(_deviceResources->ibos[pNode->getObjectId()], 0, pvr::utils::convertToPVRVk(pMesh->getFaces().getDataType()));
+			_deviceResources->cmdBuffers[i]->bindVertexBuffer(_deviceResources->vbos[pNode->getObjectId()], 0, 0);
+			_deviceResources->cmdBuffers[i]->bindIndexBuffer(_deviceResources->ibos[pNode->getObjectId()], 0, pvr::utils::convertToPVRVk(pMesh->getFaces().getDataType()));
 
 			// draw
-			_deviceResources->commandBuffers[i]->drawIndexed(0, pMesh->getNumFaces() * 3, 0, 0, 1);
+			_deviceResources->cmdBuffers[i]->drawIndexed(0, pMesh->getNumFaces() * 3, 0, 0, 1);
 		}
 
 		// add ui effects using ui renderer
-		_deviceResources->uiRenderer.beginRendering(_deviceResources->commandBuffers[i], _deviceResources->uiPipeline);
+		_deviceResources->uiRenderer.beginRendering(_deviceResources->cmdBuffers[i]);
 		_deviceResources->uiRenderer.getDefaultTitle()->render();
 		_deviceResources->uiRenderer.getSdkLogo()->render();
 		_deviceResources->uiRenderer.endRendering();
-		_deviceResources->commandBuffers[i]->endRenderPass();
-		_deviceResources->commandBuffers[i]->end();
+		_deviceResources->cmdBuffers[i]->endRenderPass();
+		_deviceResources->cmdBuffers[i]->end();
 	}
 }
 
@@ -655,8 +632,8 @@ void VulkanMultiSampling::createPipeline()
 	pvr::utils::populateViewportStateCreateInfo(_deviceResources->onScreenFramebuffer[0], pipeDesc.viewport);
 	pvr::utils::populateInputAssemblyFromMesh(_scene->getMesh(0), Attributes, 3, pipeDesc.vertexInput, pipeDesc.inputAssembler);
 
-	pvr::Stream::ptr_type vertSource = getAssetStream(VertShaderFileName);
-	pvr::Stream::ptr_type fragSource = getAssetStream(FragShaderFileName);
+	std::unique_ptr<pvr::Stream> vertSource = getAssetStream(VertShaderFileName);
+	std::unique_ptr<pvr::Stream> fragSource = getAssetStream(FragShaderFileName);
 
 	pipeDesc.vertexShader.setShader(_deviceResources->device->createShaderModule(pvrvk::ShaderModuleCreateInfo(vertSource->readToEnd<uint32_t>())));
 	pipeDesc.fragmentShader.setShader(_deviceResources->device->createShaderModule(pvrvk::ShaderModuleCreateInfo(fragSource->readToEnd<uint32_t>())));
@@ -686,8 +663,8 @@ void VulkanMultiSampling::createBuffers()
 
 		_deviceResources->matrixMemoryView.initDynamic(desc, _scene->getNumMeshNodes() * _deviceResources->swapchain->getSwapchainLength(), pvr::BufferUsageFlags::UniformBuffer,
 			static_cast<uint32_t>(_deviceResources->device->getPhysicalDevice()->getProperties().getLimits().getMinUniformBufferOffsetAlignment()));
-		_deviceResources->matrixBuffer = pvr::utils::createBuffer(_deviceResources->device, _deviceResources->matrixMemoryView.getSize(),
-			pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
+		_deviceResources->matrixBuffer = pvr::utils::createBuffer(_deviceResources->device,
+			pvrvk::BufferCreateInfo(_deviceResources->matrixMemoryView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
 			&_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 		_deviceResources->matrixMemoryView.pointToMappedMemory(_deviceResources->matrixBuffer->getDeviceMemory()->getMappedData());
@@ -699,8 +676,8 @@ void VulkanMultiSampling::createBuffers()
 
 		_deviceResources->lightMemoryView.initDynamic(desc, _deviceResources->swapchain->getSwapchainLength(), pvr::BufferUsageFlags::UniformBuffer,
 			static_cast<uint32_t>(_deviceResources->device->getPhysicalDevice()->getProperties().getLimits().getMinUniformBufferOffsetAlignment()));
-		_deviceResources->lightBuffer = pvr::utils::createBuffer(_deviceResources->device, _deviceResources->lightMemoryView.getSize(),
-			pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
+		_deviceResources->lightBuffer = pvr::utils::createBuffer(_deviceResources->device,
+			pvrvk::BufferCreateInfo(_deviceResources->lightMemoryView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
 			&_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 		_deviceResources->lightMemoryView.pointToMappedMemory(_deviceResources->lightBuffer->getDeviceMemory()->getMappedData());
@@ -711,7 +688,7 @@ void VulkanMultiSampling::createBuffers()
 \brief  Create combined texture and sampler descriptor set for the materials in the _scene
 \return Return true on success
 ***********************************************************************************************************************/
-void VulkanMultiSampling::createDescriptorSets(pvrvk::CommandBuffer& commandBuffer)
+void VulkanMultiSampling::createDescriptorSets(pvrvk::CommandBuffer& cmdBuffers)
 {
 	// create the sampler object
 	pvrvk::SamplerCreateInfo samplerInfo;
@@ -723,10 +700,7 @@ void VulkanMultiSampling::createDescriptorSets(pvrvk::CommandBuffer& commandBuff
 	std::vector<pvrvk::WriteDescriptorSet> writeDescSets;
 	for (uint32_t i = 0; i < _scene->getNumMaterials(); ++i)
 	{
-		if (_scene->getMaterial(i).defaultSemantics().getDiffuseTextureIndex() == static_cast<uint32_t>(-1))
-		{
-			continue;
-		}
+		if (_scene->getMaterial(i).defaultSemantics().getDiffuseTextureIndex() == static_cast<uint32_t>(-1)) { continue; }
 
 		MaterialDescSet matDescSet = std::make_pair(i, _deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->texDescSetLayout));
 		_deviceResources->texDescSets.push_back(matDescSet);
@@ -739,7 +713,7 @@ void VulkanMultiSampling::createDescriptorSets(pvrvk::CommandBuffer& commandBuff
 		// Load the diffuse texture map
 		const char* fileName = _scene->getTexture(material.defaultSemantics().getDiffuseTextureIndex()).getName().c_str();
 
-		pvrvk::ImageView diffuseMap = pvr::utils::loadAndUploadImageAndView(_deviceResources->device, fileName, true, commandBuffer, *this, pvrvk::ImageUsageFlags::e_SAMPLED_BIT,
+		pvrvk::ImageView diffuseMap = pvr::utils::loadAndUploadImageAndView(_deviceResources->device, fileName, true, cmdBuffers, *this, pvrvk::ImageUsageFlags::e_SAMPLED_BIT,
 			pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, nullptr, &_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
 
 		writeDescSet.setImageInfo(0, pvrvk::DescriptorImageInfo(diffuseMap, _deviceResources->samplerTrilinear, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL));
@@ -763,7 +737,4 @@ void VulkanMultiSampling::createDescriptorSets(pvrvk::CommandBuffer& commandBuff
 
 /// <summary>This function must be implemented by the user of the shell. The user should return its pvr::Shell object defining the behaviour of the application.</summary>
 /// <returns>Return a unique ptr to the demo supplied by the user.</returns>
-std::unique_ptr<pvr::Shell> pvr::newDemo()
-{
-	return std::unique_ptr<pvr::Shell>(new VulkanMultiSampling());
-}
+std::unique_ptr<pvr::Shell> pvr::newDemo() { return std::make_unique<VulkanMultiSampling>(); }

@@ -64,10 +64,7 @@ bool PVRScopeGraph::init(pvrvk::Device& device, const pvrvk::Extent2D& dimension
 	_assetProvider = &assetProvider;
 	_vmaAllocator = vmaAllocator;
 	const EPVRScopeInitCode ePVRScopeInitCode = PVRScopeInitialise(&scopeData);
-	if (ePVRScopeInitCodeOk != ePVRScopeInitCode)
-	{
-		scopeData = 0;
-	}
+	if (ePVRScopeInitCodeOk != ePVRScopeInitCode) { scopeData = 0; }
 
 	if (scopeData)
 	{
@@ -75,7 +72,8 @@ bool PVRScopeGraph::init(pvrvk::Device& device, const pvrvk::Extent2D& dimension
 		const uint16_t indexData[10] = { 0, 1, 2, 3, 4, 5, 0, 4, 1, 5 };
 
 		{
-			_indexBuffer = pvr::utils::createBuffer(device, sizeof(indexData), pvrvk::BufferUsageFlags::e_INDEX_BUFFER_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
+			_indexBuffer = pvr::utils::createBuffer(device, pvrvk::BufferCreateInfo(sizeof(indexData), pvrvk::BufferUsageFlags::e_INDEX_BUFFER_BIT),
+				pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 				pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT, &_vmaAllocator,
 				pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
@@ -83,19 +81,15 @@ bool PVRScopeGraph::init(pvrvk::Device& device, const pvrvk::Extent2D& dimension
 		}
 
 		{
-			_vertexBufferGraphBorder = pvr::utils::createBuffer(device, sizeof(glm::vec2) * Configuration::NumVerticesGraphBorder, pvrvk::BufferUsageFlags::e_VERTEX_BUFFER_BIT,
-				pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
-				pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT, &_vmaAllocator,
-				pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+			_vertexBufferGraphBorder =
+				pvr::utils::createBuffer(device, pvrvk::BufferCreateInfo(sizeof(glm::vec2) * Configuration::NumVerticesGraphBorder, pvrvk::BufferUsageFlags::e_VERTEX_BUFFER_BIT),
+					pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
+					pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
+					&_vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 		}
-
-		updateCounters();
 	}
 
-	if (!createPipeline(renderPass, dimension, outMsg))
-	{
-		return false;
-	}
+	if (!createPipeline(renderPass, dimension, outMsg)) { return false; }
 	_isInitialzed = true;
 	// create the color descriptorset for Vulkan
 
@@ -103,22 +97,18 @@ bool PVRScopeGraph::init(pvrvk::Device& device, const pvrvk::Extent2D& dimension
 	desc.addElement("color", pvr::GpuDatatypes::vec4);
 	_uboViewColor.initDynamic(desc, ColorTableSize, pvr::BufferUsageFlags::UniformBuffer,
 		static_cast<uint32_t>(device->getPhysicalDevice()->getProperties().getLimits().getMinUniformBufferOffsetAlignment()));
-	_uboColor = pvr::utils::createBuffer(device, _uboViewColor.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
+	_uboColor = pvr::utils::createBuffer(device, pvrvk::BufferCreateInfo(_uboViewColor.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT),
+		pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT, &_vmaAllocator,
 		pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
 	// fill the buffer
 	_uboViewColor.pointToMappedMemory(_uboColor->getDeviceMemory()->getMappedData());
-	for (uint32_t i = 0; i < ColorTableSize; ++i)
-	{
-		_uboViewColor.getElement(0, 0, i).setValue(ColorTable[i]);
-	}
+	for (uint32_t i = 0; i < ColorTableSize; ++i) { _uboViewColor.getElement(0, 0, i).setValue(ColorTable[i]); }
 
 	// if the memory property flags used by the buffers' device memory do not contain e_HOST_COHERENT_BIT then we must flush the memory
 	if (static_cast<uint32_t>(_uboColor->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
-	{
-		_uboColor->getDeviceMemory()->flushRange(0, _uboViewColor.getSize());
-	}
+	{ _uboColor->getDeviceMemory()->flushRange(0, _uboViewColor.getSize()); }
 
 	_uboColorDescriptor = descriptorPool->allocateDescriptorSet(_pipeDrawLine->getPipelineLayout()->getDescriptorSetLayout(0));
 
@@ -133,10 +123,7 @@ bool PVRScopeGraph::init(pvrvk::Device& device, const pvrvk::Extent2D& dimension
 ***********************************************************************************************************************/
 PVRScopeGraph::~PVRScopeGraph()
 {
-	if (scopeData)
-	{
-		PVRScopeDeInitialise(&scopeData, &counters, &reading);
-	}
+	if (scopeData) { PVRScopeDeInitialise(&scopeData, &counters, &reading); }
 }
 
 /*!*********************************************************************************************************************
@@ -150,25 +137,11 @@ void PVRScopeGraph::ping(float dt)
 		if (isActiveGroupChanged)
 		{
 			PVRScopeSetGroup(scopeData, activeGroupSelect);
-
-			// When the active group is changed, retrieve new indices
-			idxFPS = PVRScopeFindStandardCounter(numCounter, counters, activeGroupSelect, ePVRScopeStandardCounter_FPS);
-			idx2D = PVRScopeFindStandardCounter(numCounter, counters, activeGroupSelect, ePVRScopeStandardCounter_Load_2D);
-			idx3D = PVRScopeFindStandardCounter(numCounter, counters, activeGroupSelect, ePVRScopeStandardCounter_Load_Renderer);
-			idxTA = PVRScopeFindStandardCounter(numCounter, counters, activeGroupSelect, ePVRScopeStandardCounter_Load_Tiler);
-			idxCompute = PVRScopeFindStandardCounter(numCounter, counters, activeGroupSelect, ePVRScopeStandardCounter_Load_Compute);
-			idxShaderPixel = PVRScopeFindStandardCounter(numCounter, counters, activeGroupSelect, ePVRScopeStandardCounter_Load_Shader_Pixel);
-			idxShaderVertex = PVRScopeFindStandardCounter(numCounter, counters, activeGroupSelect, ePVRScopeStandardCounter_Load_Shader_Vertex);
-			idxShaderCompute = PVRScopeFindStandardCounter(numCounter, counters, activeGroupSelect, ePVRScopeStandardCounter_Load_Shader_Compute);
-
 			isActiveGroupChanged = false;
 		}
 
 		// Only recalculate counters periodically
-		if (++updateIntervalCounter >= updateInterval)
-		{
-			psReading = &reading;
-		}
+		if (++updateIntervalCounter >= updateInterval) { psReading = &reading; }
 
 		//  Always call this function, but if we don't want to calculate new
 		//  counters yet we set psReading to NULL.
@@ -191,6 +164,16 @@ void PVRScopeGraph::ping(float dt)
 						memset(graphCounters[i].valueCB.data(), 0, sizeof(graphCounters[i].valueCB[0]) * graphCounters[i].valueCB.size());
 					}
 				}
+
+				// When the active group is changed, retrieve new indices
+				idxFPS = PVRScopeFindStandardCounter(numCounter, counters, activeGroupSelect, ePVRScopeStandardCounter_FPS);
+				idx2D = PVRScopeFindStandardCounter(numCounter, counters, activeGroupSelect, ePVRScopeStandardCounter_Load_2D);
+				idx3D = PVRScopeFindStandardCounter(numCounter, counters, activeGroupSelect, ePVRScopeStandardCounter_Load_Renderer);
+				idxTA = PVRScopeFindStandardCounter(numCounter, counters, activeGroupSelect, ePVRScopeStandardCounter_Load_Tiler);
+				idxCompute = PVRScopeFindStandardCounter(numCounter, counters, activeGroupSelect, ePVRScopeStandardCounter_Load_Compute);
+				idxShaderPixel = PVRScopeFindStandardCounter(numCounter, counters, activeGroupSelect, ePVRScopeStandardCounter_Load_Shader_Pixel);
+				idxShaderVertex = PVRScopeFindStandardCounter(numCounter, counters, activeGroupSelect, ePVRScopeStandardCounter_Load_Shader_Vertex);
+				idxShaderCompute = PVRScopeFindStandardCounter(numCounter, counters, activeGroupSelect, ePVRScopeStandardCounter_Load_Shader_Compute);
 			}
 
 			// Write the counter value to the buffer
@@ -200,10 +183,7 @@ void PVRScopeGraph::ping(float dt)
 			{
 				if (counters[i].nGroup == activeGroup || counters[i].nGroup == 0xffffffff)
 				{
-					if (graphCounters[i].writePosCB >= sizeCB)
-					{
-						graphCounters[i].writePosCB = 0;
-					}
+					if (graphCounters[i].writePosCB >= sizeCB) { graphCounters[i].writePosCB = 0; }
 
 					graphCounters[i].valueCB[graphCounters[i].writePosCB++] = reading.pfValueBuf[ui32Index++];
 				}
@@ -310,10 +290,7 @@ void PVRScopeGraph::update(float dt)
 			graphCounters[counterId].colorLutIdx = ii % ColorTableSize;
 
 			float maximum = 0.0f;
-			if (graphCounters[counterId].maximum != 0.0f)
-			{
-				maximum = graphCounters[counterId].maximum;
-			}
+			if (graphCounters[counterId].maximum != 0.0f) { maximum = graphCounters[counterId].maximum; }
 			else if (!counters[counterId].nBoolPercentage)
 			{
 				maximum = getMaximumOfData(counterId);
@@ -327,10 +304,7 @@ void PVRScopeGraph::update(float dt)
 			float filtering_window_sorted[3] = { .0f, .0f, .0f };
 			int32_t filter_idx = -1;
 
-			if (sizeCB > 0)
-			{
-				filtering_window[0] = filtering_window[1] = filtering_window[2] = graphCounters[counterId].valueCB[0];
-			}
+			if (sizeCB > 0) { filtering_window[0] = filtering_window[1] = filtering_window[2] = graphCounters[counterId].valueCB[0]; }
 
 			{
 				bool updateThisCounter = mustUpdate;
@@ -346,9 +320,7 @@ void PVRScopeGraph::update(float dt)
 					int id = (graphCounters[counterId].writePosCB ? graphCounters[counterId].writePosCB - 1 : sizeCB - 1);
 					activeCounters[ii].legendLabel->setText(pvr::strings::createFormatted("[%2d]  %s", counterId, counters[counterId].pszName));
 					if (counters[counterId].nBoolPercentage)
-					{
-						activeCounters[ii].legendValue->setText(pvr::strings::createFormatted(" %8.2f%%", graphCounters[counterId].valueCB[id]));
-					}
+					{ activeCounters[ii].legendValue->setText(pvr::strings::createFormatted(" %8.2f%%", graphCounters[counterId].valueCB[id])); }
 					else if (maximum > 100000)
 					{
 						activeCounters[ii].legendValue->setText(pvr::strings::createFormatted(" %9.0fK", graphCounters[counterId].valueCB[id] / 1000));
@@ -383,10 +355,7 @@ void PVRScopeGraph::update(float dt)
 				++filter_idx;
 				filter_idx %= FILTER;
 				// Wrap the source index when necessary
-				if (iSrc >= static_cast<int32_t>(sizeCB))
-				{
-					iSrc = 0;
-				}
+				if (iSrc >= static_cast<int32_t>(sizeCB)) { iSrc = 0; }
 
 				// Filter the values to avoid spices. We use a rather aggressive median - of - three smoothing.
 				float value = graphCounters[counterId].valueCB[iSrc];
@@ -397,29 +366,17 @@ void PVRScopeGraph::update(float dt)
 
 				// Two-way Bubble sort that is actually not too shabby for 3 items :).
 				{
-					if (filtering_window_sorted[0] > filtering_window_sorted[1])
-					{
-						std::swap(filtering_window_sorted[0], filtering_window_sorted[1]);
-					}
-					if (filtering_window_sorted[1] > filtering_window_sorted[2])
-					{
-						std::swap(filtering_window_sorted[1], filtering_window_sorted[2]);
-					}
-					if (filtering_window_sorted[0] > filtering_window_sorted[1])
-					{
-						std::swap(filtering_window_sorted[0], filtering_window_sorted[1]);
-					}
+					if (filtering_window_sorted[0] > filtering_window_sorted[1]) { std::swap(filtering_window_sorted[0], filtering_window_sorted[1]); }
+					if (filtering_window_sorted[1] > filtering_window_sorted[2]) { std::swap(filtering_window_sorted[1], filtering_window_sorted[2]); }
+					if (filtering_window_sorted[0] > filtering_window_sorted[1]) { std::swap(filtering_window_sorted[0], filtering_window_sorted[1]); }
 				}
 
 				// X
-				verticesGraphContent[iDst].x = x + iDst * pixelW;
+				verticesGraphContent[static_cast<size_t>(iDst)].x = x + iDst * pixelW;
 
 				// Y
 				fRatio = .0f;
-				if (filtering_window_sorted[1])
-				{
-					fRatio = filtering_window_sorted[1] * oneOverMax;
-				}
+				if (filtering_window_sorted[1]) { fRatio = filtering_window_sorted[1] * oneOverMax; }
 
 				glm::clamp(fRatio, 0.f, 1.f);
 				verticesGraphContent[iDst].y = flipY * (y + fRatio * graphH); // flip the y for Vulkan
@@ -430,8 +387,8 @@ void PVRScopeGraph::update(float dt)
 		// Need reallocation?
 		if (!activeCounters[ii].vbo || activeCounters[ii].vbo->getSize() != sizeof(verticesGraphContent[0]) * sizeCB)
 		{
-			activeCounters[ii].vbo = pvr::utils::createBuffer(_device, sizeof(verticesGraphContent[0]) * sizeCB, pvrvk::BufferUsageFlags::e_VERTEX_BUFFER_BIT,
-				pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
+			activeCounters[ii].vbo = pvr::utils::createBuffer(_device,
+				pvrvk::BufferCreateInfo(sizeof(verticesGraphContent[0]) * sizeCB, pvrvk::BufferUsageFlags::e_VERTEX_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 				pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT, &_vmaAllocator,
 				pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 		}
@@ -504,10 +461,7 @@ bool PVRScopeGraph::createPipeline(const pvrvk::RenderPass& renderPass, const pv
 ***********************************************************************************************************************/
 void PVRScopeGraph::showCounter(uint32_t nCounter, bool showGraph)
 {
-	if (nCounter < numCounter)
-	{
-		graphCounters[nCounter].showGraph = showGraph;
-	}
+	if (nCounter < numCounter) { graphCounters[nCounter].showGraph = showGraph; }
 }
 
 /*!*********************************************************************************************************************
@@ -515,10 +469,7 @@ void PVRScopeGraph::showCounter(uint32_t nCounter, bool showGraph)
 \return bool
 \param  uint32_t nCounter
 ***********************************************************************************************************************/
-bool PVRScopeGraph::isCounterShown(uint32_t nCounter) const
-{
-	return graphCounters.size() && nCounter < numCounter ? graphCounters[nCounter].showGraph : false;
-}
+bool PVRScopeGraph::isCounterShown(uint32_t nCounter) const { return graphCounters.size() && nCounter < numCounter ? graphCounters[nCounter].showGraph : false; }
 
 /*!*********************************************************************************************************************
 \brief  return whether the counter is being drawn
@@ -527,10 +478,7 @@ bool PVRScopeGraph::isCounterShown(uint32_t nCounter) const
 ***********************************************************************************************************************/
 bool PVRScopeGraph::isCounterBeingDrawn(uint32_t counter) const
 {
-	if (counter < numCounter && (counters[counter].nGroup == activeGroup || counters[counter].nGroup == 0xffffffff))
-	{
-		return true;
-	}
+	if (counter < numCounter && (counters[counter].nGroup == activeGroup || counters[counter].nGroup == 0xffffffff)) { return true; }
 	return false;
 }
 
@@ -539,10 +487,7 @@ bool PVRScopeGraph::isCounterBeingDrawn(uint32_t counter) const
 \return bool
 \param  uint32_t counter
 ***********************************************************************************************************************/
-bool PVRScopeGraph::isCounterPercentage(uint32_t counter) const
-{
-	return counter < numCounter && counters[counter].nBoolPercentage;
-}
+bool PVRScopeGraph::isCounterPercentage(uint32_t counter) const { return counter < numCounter && counters[counter].nBoolPercentage; }
 
 /*!*********************************************************************************************************************
 \brief  return counter's maximum data
@@ -562,18 +507,9 @@ float PVRScopeGraph::getMaximumOfData(uint32_t counter)
 			float prev_value = graphCounters[counter].valueCB[id_prev];
 			float current_value = graphCounters[counter].valueCB[i];
 			float next_value = graphCounters[counter].valueCB[id_next];
-			if (prev_value > current_value)
-			{
-				std::swap(prev_value, current_value);
-			}
-			if (current_value > next_value)
-			{
-				std::swap(current_value, next_value);
-			}
-			if (prev_value > current_value)
-			{
-				std::swap(prev_value, current_value);
-			}
+			if (prev_value > current_value) { std::swap(prev_value, current_value); }
+			if (current_value > next_value) { std::swap(current_value, next_value); }
+			if (prev_value > current_value) { std::swap(prev_value, current_value); }
 			// CURRENT_VALUE CONTAINS THE MEDIAN.
 
 			maximum = std::max(current_value, maximum);
@@ -593,10 +529,7 @@ float PVRScopeGraph::getMaximumOfData(uint32_t counter)
 ***********************************************************************************************************************/
 float PVRScopeGraph::getMaximum(uint32_t nCounter)
 {
-	if (nCounter < numCounter)
-	{
-		return graphCounters[nCounter].maximum;
-	}
+	if (nCounter < numCounter) { return graphCounters[nCounter].maximum; }
 	return 0.0f;
 }
 
@@ -607,10 +540,7 @@ float PVRScopeGraph::getMaximum(uint32_t nCounter)
 ***********************************************************************************************************************/
 void PVRScopeGraph::setMaximum(uint32_t counter, float maximum)
 {
-	if (counter < numCounter)
-	{
-		graphCounters[counter].maximum = maximum;
-	}
+	if (counter < numCounter) { graphCounters[counter].maximum = maximum; }
 }
 
 /*!*********************************************************************************************************************
@@ -618,19 +548,16 @@ void PVRScopeGraph::setMaximum(uint32_t counter, float maximum)
 \return true if no error occurred
 \param  const uint32_t activeGroup
 ***********************************************************************************************************************/
-bool PVRScopeGraph::setActiveGroup(const uint32_t activeGroup)
+bool PVRScopeGraph::setActiveGroup(const uint32_t inActiveGroup)
 {
-	if (activeGroupSelect == activeGroup)
-	{
-		return true;
-	}
+	if (activeGroupSelect == inActiveGroup) { return true; }
 
 	for (uint32_t i = 0; i < numCounter; ++i)
 	{
 		// Is it a valid group
-		if (counters[i].nGroup != 0xffffffff && counters[i].nGroup >= activeGroup)
+		if (counters[i].nGroup != 0xffffffff && counters[i].nGroup >= inActiveGroup)
 		{
-			activeGroupSelect = activeGroup;
+			activeGroupSelect = inActiveGroup;
 			isActiveGroupChanged = true;
 			return true;
 		}
@@ -645,10 +572,7 @@ bool PVRScopeGraph::setActiveGroup(const uint32_t activeGroup)
 ***********************************************************************************************************************/
 const char* PVRScopeGraph::getCounterName(const uint32_t i) const
 {
-	if (i >= numCounter)
-	{
-		return "";
-	}
+	if (i >= numCounter) { return ""; }
 	return counters[i].pszName;
 }
 
@@ -656,101 +580,56 @@ const char* PVRScopeGraph::getCounterName(const uint32_t i) const
 \brief  return FPS
 \return float
 ***********************************************************************************************************************/
-float PVRScopeGraph::getStandardFPS() const
-{
-	return idxFPS < reading.nValueCnt ? reading.pfValueBuf[idxFPS] : -1.0f;
-}
+float PVRScopeGraph::getStandardFPS() const { return idxFPS < reading.nValueCnt ? reading.pfValueBuf[idxFPS] : -1.0f; }
 
 /*!*********************************************************************************************************************
 \brief  return FPS
 \return float
 ***********************************************************************************************************************/
-int32_t PVRScopeGraph::getStandardFPSIndex() const
-{
-	return idxFPS;
-}
+int32_t PVRScopeGraph::getStandardFPSIndex() const { return idxFPS; }
 
 float PVRScopeGraph::getStandard2D() const
 {
 	const float fRet = idx2D < reading.nValueCnt ? reading.pfValueBuf[idx2D] : -1.0f;
 	return fRet;
 }
-int32_t PVRScopeGraph::getStandard2DIndex() const
-{
-	return idx2D;
-}
+int32_t PVRScopeGraph::getStandard2DIndex() const { return idx2D; }
 
-float PVRScopeGraph::getStandard3D() const
-{
-	return idx3D < reading.nValueCnt ? reading.pfValueBuf[idx3D] : -1.0f;
-}
+float PVRScopeGraph::getStandard3D() const { return idx3D < reading.nValueCnt ? reading.pfValueBuf[idx3D] : -1.0f; }
 
-int32_t PVRScopeGraph::getStandard3DIndex() const
-{
-	return idx3D;
-}
+int32_t PVRScopeGraph::getStandard3DIndex() const { return idx3D; }
 
-float PVRScopeGraph::getStandardTA() const
-{
-	return idxTA < reading.nValueCnt ? reading.pfValueBuf[idxTA] : -1.0f;
-}
+float PVRScopeGraph::getStandardTA() const { return idxTA < reading.nValueCnt ? reading.pfValueBuf[idxTA] : -1.0f; }
 
-int32_t PVRScopeGraph::getStandardTAIndex() const
-{
-	return idxTA;
-}
+int32_t PVRScopeGraph::getStandardTAIndex() const { return idxTA; }
 
 /*!*********************************************************************************************************************
 \brief  return standard compute
 \return float
 ***********************************************************************************************************************/
-float PVRScopeGraph::getStandardCompute() const
-{
-	return idxCompute < reading.nValueCnt ? reading.pfValueBuf[idxCompute] : -1.0f;
-}
+float PVRScopeGraph::getStandardCompute() const { return idxCompute < reading.nValueCnt ? reading.pfValueBuf[idxCompute] : -1.0f; }
 
-int32_t PVRScopeGraph::getStandardComputeIndex() const
-{
-	return idxCompute;
-}
+int32_t PVRScopeGraph::getStandardComputeIndex() const { return idxCompute; }
 
 /*!*********************************************************************************************************************
 \brief  return the standard pixel size
 \return float
 ***********************************************************************************************************************/
-float PVRScopeGraph::getStandardShaderPixel() const
-{
-	return idxShaderPixel < reading.nValueCnt ? reading.pfValueBuf[idxShaderPixel] : -1.0f;
-}
-int32_t PVRScopeGraph::getStandardShaderPixelIndex() const
-{
-	return idxShaderPixel;
-}
+float PVRScopeGraph::getStandardShaderPixel() const { return idxShaderPixel < reading.nValueCnt ? reading.pfValueBuf[idxShaderPixel] : -1.0f; }
+int32_t PVRScopeGraph::getStandardShaderPixelIndex() const { return idxShaderPixel; }
 
 /*!*********************************************************************************************************************
 \brief  return the standard shared vertex
 \return float
 ***********************************************************************************************************************/
-float PVRScopeGraph::getStandardShaderVertex() const
-{
-	return idxShaderVertex < reading.nValueCnt ? reading.pfValueBuf[idxShaderVertex] : -1.0f;
-}
-int32_t PVRScopeGraph::getStandardShaderVertexIndex() const
-{
-	return idxShaderVertex;
-}
+float PVRScopeGraph::getStandardShaderVertex() const { return idxShaderVertex < reading.nValueCnt ? reading.pfValueBuf[idxShaderVertex] : -1.0f; }
+int32_t PVRScopeGraph::getStandardShaderVertexIndex() const { return idxShaderVertex; }
 /*!*********************************************************************************************************************
 \brief  return the standard compute shader
 \return float
 ***********************************************************************************************************************/
-float PVRScopeGraph::getStandardShaderCompute() const
-{
-	return idxShaderCompute < reading.nValueCnt ? reading.pfValueBuf[idxShaderCompute] : -1.0f;
-}
-int32_t PVRScopeGraph::getStandardShaderComputeIndex() const
-{
-	return idxShaderCompute;
-}
+float PVRScopeGraph::getStandardShaderCompute() const { return idxShaderCompute < reading.nValueCnt ? reading.pfValueBuf[idxShaderCompute] : -1.0f; }
+int32_t PVRScopeGraph::getStandardShaderComputeIndex() const { return idxShaderCompute; }
 /*!*********************************************************************************************************************
 \brief  return counter's number of group
 \return number of group
@@ -758,10 +637,7 @@ int32_t PVRScopeGraph::getStandardShaderComputeIndex() const
 ***********************************************************************************************************************/
 int PVRScopeGraph::getCounterGroup(const uint32_t i) const
 {
-	if (i >= numCounter)
-	{
-		return 0xffffffff;
-	}
+	if (i >= numCounter) { return 0xffffffff; }
 	return counters[i].nGroup;
 }
 
@@ -773,17 +649,17 @@ int PVRScopeGraph::getCounterGroup(const uint32_t i) const
 ***********************************************************************************************************************/
 void PVRScopeGraph::position(const uint32_t viewportW, const uint32_t viewportH, const pvrvk::Rect2D& graph)
 {
-	if (scopeData && graphCounters.size())
+	if (scopeData)
 	{
 		sizeCB = graph.getExtent().getWidth();
 
-		float pixelW = 2 * 1.0f / viewportW;
-		float graphH = 2 * static_cast<float>(graph.getExtent().getHeight()) / viewportH;
+		float pixelWidth = 2 * 1.0f / viewportW;
+		float graphHeight = 2 * static_cast<float>(graph.getExtent().getHeight()) / viewportH;
 
-		if (this->pixelW != pixelW || this->graphH != graphH)
+		if (this->pixelW != pixelWidth || this->graphH != graphHeight)
 		{
-			this->pixelW = pixelW;
-			this->graphH = graphH;
+			this->pixelW = pixelWidth;
+			this->graphH = graphHeight;
 
 			updateCounters();
 		}
@@ -802,7 +678,7 @@ void PVRScopeGraph::updateCounters()
 	if (PVRScopeGetCounters(scopeData, &numCounter, &counters, &reading))
 	{
 		graphCounters.resize(numCounter);
-		
+
 		for (uint32_t i = 0; i < numCounter; ++i)
 		{
 			graphCounters[i].valueCB.clear();
@@ -845,7 +721,4 @@ void PVRScopeGraph::updateBufferLines()
 	pvr::utils::updateHostVisibleBuffer(_vertexBufferGraphBorder, &verticesGraphBorder[0].x, 0, sizeof(verticesGraphBorder), true);
 }
 
-void PVRScopeGraph::setUpdateInterval(const uint32_t updateInterval)
-{
-	this->updateInterval = updateInterval;
-}
+void PVRScopeGraph::setUpdateInterval(const uint32_t updateInterval_) { this->updateInterval = updateInterval_; }

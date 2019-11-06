@@ -20,6 +20,7 @@ namespace pvr {
 namespace utils {
 //!\cond NO_DOXYGEN
 class StructuredMemoryEntry;
+class StructuredBufferView;
 //!\endcond
 
 /// <summary>Defines a memory element description. The element will be provided with a name,
@@ -43,7 +44,7 @@ public:
 	/// <param name="arraySize">The array size for a new element to add.</param>
 	/// <param name="children">A std::initializer_list<StructuredMemoryDescription> containing the description for a set of children to add.</param>
 	StructuredMemoryDescription(const std::string& name, uint32_t arraySize, std::initializer_list<StructuredMemoryDescription> children)
-		: _name(name), _children(std::move(children)), _numArrayElements(arraySize)
+		: _name(name), _children(std::move(children)), _numArrayElements(arraySize), _type(GpuDatatypes::none)
 	{}
 
 	/// <summary>The constructor for a StructuredMemoryDescription based on the provided name, arraySize and children</summary>
@@ -51,7 +52,7 @@ public:
 	/// <param name="arraySize">The array size for a new element to add.</param>
 	/// <param name="children">A std::initializer_list<StructuredMemoryDescription> containing the description for a set of children to add.</param>
 	StructuredMemoryDescription(std::string&& name, uint32_t arraySize, std::initializer_list<StructuredMemoryDescription> children)
-		: _name(std::move(name)), _children(std::move(children)), _numArrayElements(arraySize)
+		: _name(std::move(name)), _children(std::move(children)), _numArrayElements(arraySize), _type(GpuDatatypes::none)
 	{}
 
 	/// <summary>The constructor for a StructuredMemoryDescription based on the provided name and GpuDatatypes</summary>
@@ -158,10 +159,7 @@ public:
 	{
 		for (uint32_t i = 0; i < _children.size(); i++)
 		{
-			if (_children[i].getName() == name)
-			{
-				return _children[i];
-			}
+			if (_children[i].getName() == name) { return _children[i]; }
 		}
 
 		return StructuredMemoryDescription();
@@ -172,40 +170,25 @@ public:
 	/// <returns>Returns the StructuredMemoryDescription for a element at index.</returns>
 	StructuredMemoryDescription getElement(uint32_t index)
 	{
-		if (index < _children.size())
-		{
-			return _children[index];
-		}
+		if (index < _children.size()) { return _children[index]; }
 		return StructuredMemoryDescription();
 	}
 
 	/// <summary>Gets an element name for the StructuredMemoryDescription.</summary>
 	/// <returns>Returns the name for the StructuredMemoryDescription.</returns>
-	const std::string& getName() const
-	{
-		return _name;
-	}
+	const std::string& getName() const { return _name; }
 
 	/// <summary>Gets an element type for the StructuredMemoryDescription.</summary>
 	/// <returns>Returns the type for the StructuredMemoryDescription.</returns>
-	const GpuDatatypes getType()
-	{
-		return _type;
-	}
+	const GpuDatatypes getType() { return _type; }
 
 	/// <summary>Gets the number of array elements for the StructuredMemoryDescription.</summary>
 	/// <returns>Returns the number of array elements for the StructuredMemoryDescription.</returns>
-	const uint32_t getNumArrayElements()
-	{
-		return _numArrayElements;
-	}
+	const uint32_t getNumArrayElements() { return _numArrayElements; }
 
 	/// <summary>Gets the number of child elements for the StructuredMemoryDescription.</summary>
 	/// <returns>Returns the number of child elements for the StructuredMemoryDescription.</returns>
-	const uint32_t getNumChildren()
-	{
-		return static_cast<uint32_t>(_children.size());
-	}
+	const uint32_t getNumChildren() { return static_cast<uint32_t>(_children.size()); }
 };
 
 /// <summary>Defines a StructuredMemoryEntry element. A StructuredMemoryEntry defines an actual element entry in a structured buffer view.
@@ -225,9 +208,10 @@ private:
 	std::vector<StructuredMemoryEntry> _childEntries; // These must never reallocate. Hence the list is non-copyable
 	GpuDatatypes _type;
 	uint32_t _baseAlignment; // The alignment requirements of this object as defined by std140. Takes into account array etc.
-	int32_t _numArrayElements; // The number of array elements.
+	uint32_t _numArrayElements; // The number of array elements.
 	bool _variableArray; // This is the last 1st level element, so can be resized dynamically
 	uint64_t _size; // The minimum size of this item, including self-padding IF an arrays or structures, NOT taking into account next item alignment.
+	uint64_t _singleElementSize; // The minimum size of this item, including self-padding IF an arrays or structures, NOT taking into account next item alignment.
 	uint32_t _arrayMemberSize; // The size of each slice of this item, ALWAYS including self-padding for array or structure.
 	uint32_t _offset;
 	uint64_t _minDynamicAlignment;
@@ -238,10 +222,7 @@ private:
 	{
 		const StringHash& _hash;
 		IsEqual(const StringHash& name) : _hash(name) {}
-		bool operator()(const StructuredMemoryEntry& rhs) const
-		{
-			return _hash == rhs.getName();
-		}
+		bool operator()(const StructuredMemoryEntry& rhs) const { return _hash == rhs.getName(); }
 	};
 
 	void calcBaseAlignment()
@@ -259,10 +240,7 @@ private:
 		else
 		{
 			_baseAlignment = getAlignment(_type);
-			if (_numArrayElements > 1)
-			{
-				_baseAlignment = std::max(_baseAlignment, getAlignment(GpuDatatypes::vec4));
-			}
+			if (_numArrayElements > 1) { _baseAlignment = std::max(_baseAlignment, getAlignment(GpuDatatypes::vec4)); }
 		}
 	}
 
@@ -274,22 +252,13 @@ private:
 		uint64_t ssboAlign = 0;
 
 		// if dynamic ubo OR dynamic ssbo take the relevant alignment
-		if (static_cast<uint32_t>(usage & BufferUsageFlags::UniformBuffer) != 0 && minUboDynamicAlignment)
-		{
-			uboAlign = minUboDynamicAlignment;
-		}
-		if (static_cast<uint32_t>(usage & BufferUsageFlags::StorageBuffer) != 0 && minSsboDynamicAlignment)
-		{
-			ssboAlign = minSsboDynamicAlignment;
-		}
+		if (static_cast<uint32_t>(usage & BufferUsageFlags::UniformBuffer) != 0 && minUboDynamicAlignment) { uboAlign = minUboDynamicAlignment; }
+		if (static_cast<uint32_t>(usage & BufferUsageFlags::StorageBuffer) != 0 && minSsboDynamicAlignment) { ssboAlign = minSsboDynamicAlignment; }
 		_minDynamicAlignment = std::max(uboAlign, ssboAlign);
 
 		if (isStructure())
 		{
-			for (auto& child : _childEntries)
-			{
-				child.calcDynamicAlignment();
-			}
+			for (auto& child : _childEntries) { child.calcDynamicAlignment(); }
 		}
 	}
 
@@ -310,6 +279,7 @@ private:
 			tmp_offset = align(tmp_offset, _baseAlignment);
 			tmp_offset = align(tmp_offset, _minDynamicAlignment);
 			_arrayMemberSize = tmp_offset;
+			_singleElementSize = _arrayMemberSize;
 
 			tmp_offset *= _numArrayElements;
 			_size = tmp_offset;
@@ -317,6 +287,7 @@ private:
 		else
 		{
 			_arrayMemberSize = getSelfAlignedArraySize(_type);
+			_singleElementSize = pvr::getSize(_type);
 			_size = _variableArray ? _arrayMemberSize * _numArrayElements : pvr::getSize(_type, _numArrayElements);
 		}
 	}
@@ -363,23 +334,28 @@ private:
 	/// dynamic slice is used to adjust the offset value used when setting values. The mapped dynamic slice is set via a call to pointToMappedMemory
 	/// on the structured buffer view. This function should only be called on the root</summary>
 	/// <returns>Return the mapped dynamic slice</returns>
-	uint32_t getMappedDynamicSlice() const
-	{
-		return _mappedDynamicSlice;
-	}
+	uint32_t getMappedDynamicSlice() const { return _mappedDynamicSlice; }
 
 	/// <summary>Get the mapped memory pointed to by this StructuredMemoryEntry.
 	/// The mapped memory is set via a call to pointToMappedMemory on the structured buffer view. This function should only be called on the root</summary>
 	/// <returns>Return the mapped memory</returns>
-	void* getMappedMemory() const
+	void* getMappedMemory() const { return _mappedMemory; }
+
+	void fixParentPointers(StructuredMemoryEntry* parent)
 	{
-		return _mappedMemory;
+		_parent = parent;
+		for (auto&& child : _childEntries)
+		{ //
+			child.fixParentPointers(this);
+		}
 	}
+	friend void swap(StructuredBufferView& first, StructuredBufferView& second);
 
 public:
 	/// <summary>A default Constructor for a StructuredMemoryEntry.</summary>
 	StructuredMemoryEntry()
-		: _name(), _parent(0), _type(GpuDatatypes::none), _numArrayElements(0), _size(0), _arrayMemberSize(0), _offset(0), _mappedMemory(nullptr), _mappedDynamicSlice(0)
+		: _name(), _parent(0), _type(GpuDatatypes::none), _numArrayElements(0), _size(0), _arrayMemberSize(0), _singleElementSize(0), _offset(0), _mappedMemory(nullptr),
+		  _mappedDynamicSlice(0), _baseAlignment(0), _minDynamicAlignment(0), _variableArray(0)
 	{}
 
 	/// <summary>A Copy constructor for a StructuredMemoryEntry.</summary>
@@ -391,10 +367,16 @@ public:
 		_childEntries.reserve(other._childEntries.size());
 		std::copy(other._childEntries.begin(), other._childEntries.end(), back_inserter(_childEntries));
 		_type = other._type;
+		_baseAlignment = other._baseAlignment;
 		_numArrayElements = other._numArrayElements;
+		_variableArray = other._variableArray;
 		_size = other._size;
+		_singleElementSize = other._singleElementSize;
 		_arrayMemberSize = other._arrayMemberSize;
 		_offset = other._offset;
+		_minDynamicAlignment = other._minDynamicAlignment;
+		_mappedMemory = other._mappedMemory;
+		_mappedDynamicSlice = other._mappedDynamicSlice;
 	}
 
 	/// <summary>Destructor. Virtual (for polymorphic use).</summary>
@@ -409,17 +391,16 @@ public:
 		std::swap(first._parent, second._parent);
 		std::swap(first._childEntries, second._childEntries);
 		std::swap(first._type, second._type);
+		std::swap(first._baseAlignment, second._baseAlignment);
 		std::swap(first._numArrayElements, second._numArrayElements);
+		std::swap(first._variableArray, second._variableArray);
 		std::swap(first._size, second._size);
+		std::swap(first._singleElementSize, second._singleElementSize);
 		std::swap(first._arrayMemberSize, second._arrayMemberSize);
 		std::swap(first._offset, second._offset);
-	}
-
-	/// <summary>Move Constructor.</summary>
-	/// <param name="other">The StructuredMemoryEntry to move from</param>
-	StructuredMemoryEntry(StructuredMemoryEntry&& other)
-	{
-		swap(*this, other);
+		std::swap(first._minDynamicAlignment, second._minDynamicAlignment);
+		std::swap(first._mappedMemory, second._mappedMemory);
+		std::swap(first._mappedDynamicSlice, second._mappedDynamicSlice);
 	}
 
 	/// <summary>Copy Assignment operator.</summary>
@@ -433,82 +414,53 @@ public:
 
 	/// <summary>Returns the number of children.</summary>
 	/// <returns>Return the number of child entries.</returns>
-	const uint32_t getNumChildren() const
-	{
-		return static_cast<uint32_t>(_childEntries.size());
-	}
+	const uint32_t getNumChildren() const { return static_cast<uint32_t>(_childEntries.size()); }
 
 	/// <summary>Returns the child at the given index.</summary>
 	/// <param name="index">The index of the child to return</param>
 	/// <returns>Return the child StructuredMemoryEntry.</returns>
-	const StructuredMemoryEntry& getChild(uint32_t index) const
-	{
-		return _childEntries[index];
-	}
+	const StructuredMemoryEntry& getChild(uint32_t index) const { return _childEntries[index]; }
 
 	/// <summary>Returns the parent.</summary>
 	/// <returns>Return the StructuredMemoryEntry parent.</returns>
-	const StructuredMemoryEntry* getParent() const
-	{
-		return _parent;
-	}
+	const StructuredMemoryEntry* getParent() const { return _parent; }
 
 	/// <summary>Returns the number of array elements.</summary>
 	/// <returns>Return the number of array elements.</returns>
-	uint32_t getNumArrayElements() const
-	{
-		return _numArrayElements;
-	}
+	uint32_t getNumArrayElements() const { return _numArrayElements; }
 
 	/// <summary>Check if the StructuredMemoryEntry is a structure.</summary>
 	/// <returns>Returns true if the StructuredMemoryEntry is a structure.</returns>
-	bool isStructure() const
-	{
-		return _childEntries.size() != 0;
-	}
+	bool isStructure() const { return _childEntries.size() != 0; }
 
 	/// <summary>Check if the StructuredMemoryEntry has a primitive data type.</summary>
 	/// <returns>Returns true if the StructuredMemoryEntry has a primitive data type.</returns>
-	bool isPrimitive() const
-	{
-		return !isStructure();
-	}
+	bool isPrimitive() const { return !isStructure(); }
 
 	/// <summary>Checks the name of the StructuredMemoryEntry.</summary>
 	/// <returns>Returns the given name of the StructuredMemoryEntry.</returns>
-	const StringHash& getName() const
-	{
-		return _name;
-	}
+	const StringHash& getName() const { return _name; }
 
 	/// <summary>Checks the primitive type of the StructuredMemoryEntry.</summary>
 	/// <returns>Returns the typeof the StructuredMemoryEntry.</returns>
-	GpuDatatypes getPrimitiveType() const
-	{
-		return _type;
-	}
+	GpuDatatypes getPrimitiveType() const { return _type; }
 
 	/// <summary>Gets the offset for the StructuredMemoryEntry.</summary>
 	/// <returns>Returns the offset the StructuredMemoryEntry.</returns>
-	uint32_t getOffset() const
-	{
-		return _offset;
-	}
+	uint32_t getOffset() const { return _offset; }
 
 	/// <summary>Returns the particular array element offset for the StructuredMemoryEntry.</summary>
 	/// <param name="arrayElement">The array element to retrieve the offset for</param>
 	/// <returns>Return the array element offset for the given arrayElement.</returns>
-	uint32_t getArrayElementOffset(uint32_t arrayElement) const
-	{
-		return _offset + _arrayMemberSize * arrayElement;
-	}
+	uint32_t getArrayElementOffset(uint32_t arrayElement) const { return _offset + _arrayMemberSize * arrayElement; }
 
 	/// <summary>Gets the size of the StructuredMemoryEntry.</summary>
 	/// <returns>Returns the size the StructuredMemoryEntry.</returns>
-	uint64_t getSize() const
-	{
-		return _size;
-	}
+	uint64_t getSize() const { return _size; }
+
+	/// <summary>Gets the size of the StructuredMemoryEntry.</summary>
+	/// <returns>Returns the size the StructuredMemoryEntry.</returns>
+	uint64_t getSingleItemSize() const { return _singleElementSize; }
 
 	/// <summary>Sets the element array size for the last entry in the StructuredMemoryEntry.
 	/// Only the last element in the StructuredMemoryEntry may have its size set from the api</summary>
@@ -533,10 +485,7 @@ public:
 	uint32_t getIndex(const StringHash& name) const
 	{
 		auto entry = std::find_if(_childEntries.begin(), _childEntries.end(), IsEqual(name));
-		if (entry == _childEntries.end())
-		{
-			return static_cast<uint32_t>(-1);
-		}
+		if (entry == _childEntries.end()) { return static_cast<uint32_t>(-1); }
 		return static_cast<uint32_t>(entry - _childEntries.begin());
 	}
 
@@ -567,39 +516,28 @@ public:
 	/// <param name="level">The current level to print a preamble for</param>
 	inline static void printPreamble(std::stringstream& str, uint32_t level)
 	{
-		for (uint32_t i = 0; i < level; ++i)
-		{
-			str << " ";
-		}
+		for (uint32_t i = 0; i < level; ++i) { str << " "; }
 	}
 
 	/// <summary>Prints a StructuredMemoryEntry to a std::stringstream for the current level</summary>
 	/// <param name="str">The current std::stringstream to print to</param>
 	/// <param name="level">The current level to print a preamble for</param>
-	void printIntoStringStream(std::stringstream& str, int level) const
+	void printIntoStringStream(std::stringstream& str, uint32_t level) const
 	{
 		str << "\n" << std::setw(3) << _offset << ": ";
 		printPreamble(str, level * 2);
 		str << (isStructure() ? "struct" : toString(_type)) << " " << _name.str();
-		if (_numArrayElements > 1)
-		{
-			str << "[" << _numArrayElements << "]";
-		}
+		if (_numArrayElements > 1) { str << "[" << _numArrayElements << "]"; }
 		str << ";";
-		if (!isStructure())
-		{
-			str << "\t";
-		}
-		str << "\t baseSz:" << _size / _numArrayElements << "\t size:" << getSize() << "\t baseAlign:" << _baseAlignment << "\t nextOffset" << _offset + getSize();
+		if (!isStructure()) { str << "\t"; }
+		str << "\t baseSz:" << _size / _numArrayElements << "\t size:" << getSize() << "\t baseAlign:" << _baseAlignment << "\t nextOffset:" << _offset + getSize()
+			<< "\t arrayMemberSize:" << _arrayMemberSize;
 		if (isStructure())
 		{
 			str << "\n";
 			printPreamble(str, level * 2 + 5);
 			str << "{";
-			for (auto& child : _childEntries)
-			{
-				child.printIntoStringStream(str, level + 1);
-			}
+			for (auto& child : _childEntries) { child.printIntoStringStream(str, level + 1); }
 			str << "\n";
 			printPreamble(str, level * 2 + 5);
 			str << "}";
@@ -625,10 +563,7 @@ private:
 		: _mappedMemory(nullptr), _level(level), _prototype(entry)
 	{
 		_indices[0] = elementArrayIndex;
-		if (parentIndices)
-		{
-			memcpy(_indices + 1, parentIndices, sizeof(uint32_t) * (level));
-		}
+		if (parentIndices) { memcpy(_indices + 1, parentIndices, sizeof(uint32_t) * (level)); }
 		init(dynamicSlice);
 	}
 	void init(uint32_t dynamicSlice = 0)
@@ -746,50 +681,36 @@ public:
 	/// <summary>Gets an element using an index</summary>
 	/// <param name="elementIndex">The index of the element to retrieve</param>
 	/// <returns>Return the StructuredBufferViewElement.</returns>
-	const std::string& getElementNameByIndex(uint32_t elementIndex) const
-	{
-		return _prototype.getChild(elementIndex).getName();
-	}
+	const std::string& getElementNameByIndex(uint32_t elementIndex) const { return _prototype.getChild(elementIndex).getName(); }
 
 	/// <summary>Gets the index for a given element</summary>
 	/// <param name="str">The name of the element to retrieve the index for</param>
 	/// <returns>Return the index of the StructuredBufferViewElement.</returns>
-	uint32_t getIndex(const StringHash& str)
-	{
-		return _prototype.getIndex(str);
-	}
+	uint32_t getIndex(const StringHash& str) { return _prototype.getIndex(str); }
 
 	/// <summary>Gets the index for a given element</summary>
 	/// <param name="str">The name of the element to retrieve the index for</param>
 	/// <returns>Return the index of the StructuredBufferViewElement.</returns>
-	uint32_t getIndex(const std::string& str)
-	{
-		return _prototype.getIndex(str);
-	}
+	uint32_t getIndex(const std::string& str) { return _prototype.getIndex(str); }
 
 	/// <summary>Gets the index for a given element</summary>
 	/// <param name="str">The name of the element to retrieve the index for</param>
 	/// <returns>Return the index of the StructuredBufferViewElement.</returns>
-	uint32_t getIndex(const char* str)
-	{
-		return _prototype.getIndex(str);
-	}
+	uint32_t getIndex(const char* str) { return _prototype.getIndex(str); }
 
 	/// <summary>Gets the offset for the StructuredBufferViewElement. This function takes into account any
 	/// mapped memory. if the mapped dynamic slice is not equal to zero then the offset returned here
 	/// will be adjusted based on the mapped dynamic slice.</summary>
 	/// <returns>Return the offset of the StructuredBufferViewElement.</returns>
-	uint32_t getOffset() const
-	{
-		return _offset;
-	}
+	uint32_t getOffset() const { return _offset; }
 
 	/// <summary>Gets the size of the underlying structure memory entry</summary>
 	/// <returns>Return the size of the underlying structure memory entry.</returns>
-	uint64_t getValueSize() const
-	{
-		return _prototype._arrayMemberSize;
-	}
+	uint64_t getValueSize() const { return _prototype.getSingleItemSize(); }
+
+	/// <summary>Gets the size of the underlying structure memory entry</summary>
+	/// <returns>Return the size of the underlying structure memory entry.</returns>
+	uint64_t getArrayPaddedSize() const { return _prototype._arrayMemberSize; }
 
 // clang-format off
 /// <summary>Contain functions to set values for a number of gpu compatible data types.</summary>
@@ -824,26 +745,18 @@ public:
 
 	/// <summary>Sets the value (glm::vec3 specific) for this element taking the source by reference</summary>
 	/// <param name="value">The value to set by reference</param>
-	void setValue(const glm::vec3& value)
-	{
-		memcpy(static_cast<char*>(getMappedMemory()) + getOffset(), &value, sizeof(glm::vec3));
-	}
+	void setValue(const glm::vec3& value) { memcpy(static_cast<char*>(getMappedMemory()) + getOffset(), &value, sizeof(glm::vec3)); }
 
 	/// <summary>Sets the value (glm::ivec3 specific) for this element taking the source by reference</summary>
 	/// <param name="value">The value to set by reference</param>
-	void setValue(const glm::ivec3& value)
-	{
-		memcpy(static_cast<char*>(getMappedMemory()) + getOffset(), &value, sizeof(glm::ivec3));
-	}
+	void setValue(const glm::ivec3& value) { memcpy(static_cast<char*>(getMappedMemory()) + getOffset(), &value, sizeof(glm::ivec3)); }
 
 	/// <summary>Sets the value (glm::vec3 specific) for this element taking the source by pointer</summary>
 	/// <param name="value">The value to set by pointer</param>
 	void setValue(const glm::vec3* value)
 	{
 		for (uint32_t i = 0; i < this->_prototype.getNumArrayElements(); ++i)
-		{
-			memcpy(static_cast<char*>(getMappedMemory()) + getOffset() + sizeof(glm::vec4) * i, value + i, sizeof(glm::vec3));
-		}
+		{ memcpy(static_cast<char*>(getMappedMemory()) + getOffset() + sizeof(glm::vec4) * i, value + i, sizeof(glm::vec3)); }
 	}
 
 	/// <summary>Sets the value (glm::ivec3 specific) for this element taking the source by pointer</summary>
@@ -851,9 +764,7 @@ public:
 	void setValue(const glm::ivec3* value)
 	{
 		for (uint32_t i = 0; i < this->_prototype.getNumArrayElements(); ++i)
-		{
-			memcpy(static_cast<char*>(getMappedMemory()) + getOffset() + sizeof(glm::ivec4) * i, value + i, sizeof(glm::ivec3));
-		}
+		{ memcpy(static_cast<char*>(getMappedMemory()) + getOffset() + sizeof(glm::ivec4) * i, value + i, sizeof(glm::ivec3)); }
 	}
 
 	/// <summary>Sets the value (glm::mat2x3 specific) for this element taking the source by reference</summary>
@@ -909,10 +820,7 @@ public:
 	void setValue(const FreeValue& value)
 	{
 		if (this->_prototype.getPrimitiveType() != value.dataType() && value.dataType() != GpuDatatypes::mat3x3)
-		{
-			throw std::runtime_error("StructuredBufferView: Mismatched FreeValue datatype");
-		}
-
+		{ throw std::runtime_error("StructuredBufferView: Mismatched FreeValue datatype"); }
 		if (value.dataType() == GpuDatatypes::mat3x3)
 		{
 			glm::mat3x4 tmp(value.interpretValueAs<glm::mat3x3>());
@@ -937,14 +845,8 @@ public:
 	void setArrayValuesStartingFromThis(const TypedMem& value)
 	{
 		if (this->_prototype.getPrimitiveType() != value.dataType() && value.dataType() != GpuDatatypes::mat3x3)
-		{
-			throw std::runtime_error("StructuredBufferView: Mismatched FreeValue datatype");
-		}
-		if (value.arrayElements() != _prototype.getNumArrayElements())
-		{
-			throw std::runtime_error("StructuredBufferView: Mismatched number of array elements");
-		}
-
+		{ throw std::runtime_error("StructuredBufferView: Mismatched FreeValue datatype"); }
+		if (value.arrayElements() != _prototype.getNumArrayElements()) { throw std::runtime_error("StructuredBufferView: Mismatched number of array elements"); }
 		if (value.dataType() == GpuDatatypes::mat3x3)
 		{
 			size_t startoff = getOffset();
@@ -969,10 +871,7 @@ public:
 	/// <returns>Return the number of elements for a particular level of the structured buffer view.</returns>
 	uint32_t getNumElements()
 	{
-		if (_prototype.isStructure())
-		{
-			return _prototype.getNumChildren();
-		}
+		if (_prototype.isStructure()) { return _prototype.getNumChildren(); }
 		return 1;
 	}
 };
@@ -1003,72 +902,71 @@ public:
 	/// <summary>Constructor. Creates an empty StructuredBufferView.</summary>
 	StructuredBufferView() : _numDynamicSlices(1) {}
 
+	/// <summary>Constructor. Creates an empty StructuredBufferView.</summary>
+	StructuredBufferView(const StructuredBufferView& other) : _numDynamicSlices(other._numDynamicSlices), _root(other._root)
+	{ //
+		_root.fixParentPointers(0);
+	}
+	/// <summary>Constructor. Creates an empty StructuredBufferView.</summary>
+	StructuredBufferView(const StructuredBufferView&& other) : _numDynamicSlices(other._numDynamicSlices), _root(std::move(other._root))
+	{ //
+		_root.fixParentPointers(0);
+	}
+
+	StructuredBufferView& operator=(StructuredBufferView other)
+	{
+		swap(*this, other);
+		_root.fixParentPointers(0);
+		return *this;
+	}
+
+	friend void swap(StructuredBufferView& first, StructuredBufferView& second)
+	{
+		swap(first._root, second._root);
+		std::swap(first._numDynamicSlices, second._numDynamicSlices);
+		first._root.fixParentPointers(0);
+		second._root.fixParentPointers(0);
+	}
+
 	/// <summary>Assigns memory for this structured buffer view to point towards. Can also set the mapped dynamic
 	/// slice which will be used to adjust any offsets retrieved or used when setting buffer values.</summary>
 	/// <param name="mappedMemory">The mapped memory to point to</param>
 	/// <param name="mappedDynamicSlice">The dynamic slice used when mapping the mapped memory.</param>
-	void pointToMappedMemory(void* mappedMemory, const uint32_t mappedDynamicSlice = 0)
-	{
-		_root.setMappedMemory(mappedMemory, mappedDynamicSlice);
-	}
+	void pointToMappedMemory(void* mappedMemory, const uint32_t mappedDynamicSlice = 0) { _root.setMappedMemory(mappedMemory, mappedDynamicSlice); }
 
 	/// <summary>Get the size of the whole buffer represented by the StructuredBufferView. This size takes into account dynamic slices.</summary>
 	/// <returns>Return the size of the buffer</returns>
-	uint64_t getSize() const
-	{
-		return getDynamicSliceSize() * _numDynamicSlices;
-	}
+	uint64_t getSize() const { return getDynamicSliceSize() * _numDynamicSlices; }
 
 	/// <summary>Get dynamic slice which was mapped when a buffer was mapped which follows the structure set out by this StructuredBufferView. The mapped
 	/// dynamic slice is used to adjust the offset value used when setting values. The mapped dynamic slice is set via a call to pointToMappedMemory.</summary>
 	/// <returns>Return the mapped dynamic slice</returns>
-	uint32_t getMappedDynamicSlice() const
-	{
-		return _root.getMappedDynamicSlice();
-	}
+	uint32_t getMappedDynamicSlice() const { return _root.getMappedDynamicSlice(); }
 
 	/// <summary>Get the mapped memory pointed to by this StructuredBufferView. The mapped memory is set via a call to pointToMappedMemory.</summary>
 	/// <returns>Return the mapped memory</returns>
-	const void* getMappedMemory() const
-	{
-		return _root.getMappedMemory();
-	}
+	const void* getMappedMemory() const { return _root.getMappedMemory(); }
 
 	/// <summary>Get the size of a given dynamic slice of the buffer represented by the StructuredBufferView.</summary>
 	/// <returns>Return the size of particular dynamic slice</returns>
-	uint64_t getDynamicSliceSize() const
-	{
-		return _root.getSize();
-	}
+	uint64_t getDynamicSliceSize() const { return _root.getSize(); }
 
 	/// <summary>Get the number of dynamic slices the StructuredBufferView uses.</summary>
 	/// <returns>Return the number of dynamic slices</returns>
-	uint32_t getNumDynamicSlices() const
-	{
-		return _numDynamicSlices;
-	}
+	uint32_t getNumDynamicSlices() const { return _numDynamicSlices; }
 
 	/// <summary>Get the StructuredBufferViewName.</summary>
 	/// <returns>The name of root element</returns>
-	const std::string& getName() const
-	{
-		return _root.getName();
-	}
+	const std::string& getName() const { return _root.getName(); }
 
 	/// <summary>Get the offset for the given dynamic slice.</summary>
 	/// <param name="dynamicSliceIndex">The dynamic slice to retrieve the offset for</param>
 	/// <returns>Return the offset for the given dynamic slice</returns>
-	uint32_t getDynamicSliceOffset(uint32_t dynamicSliceIndex) const
-	{
-		return dynamicSliceIndex * static_cast<uint32_t>(getDynamicSliceSize());
-	}
+	uint32_t getDynamicSliceOffset(uint32_t dynamicSliceIndex) const { return dynamicSliceIndex * static_cast<uint32_t>(getDynamicSliceSize()); }
 
 	/// <summary>Initialises the StructuredBufferView for a non-dynamic buffer.</summary>
 	/// <param name="desc">The description to use for initialising the StructuredBufferView</param>
-	void init(const StructuredMemoryDescription& desc)
-	{
-		_root.init(desc);
-	}
+	void init(const StructuredMemoryDescription& desc) { _root.init(desc); }
 
 	/// <summary>Initialises the StructuredBufferView for a dynamic buffer.</summary>
 	/// <param name="desc">The description to use for initialising the StructuredBufferView</param>
@@ -1166,49 +1064,31 @@ public:
 	/// <summary>Gets an element name using an index</summary>
 	/// <param name="elementIndex">The index of the element to retrieve</param>
 	/// <returns>Return the name of the element at the index.</returns>
-	std::string getElementNameByIndex(uint32_t elementIndex)
-	{
-		return StructuredBufferViewElement(_root, 0, 0, nullptr).getElementNameByIndex(elementIndex);
-	}
+	std::string getElementNameByIndex(uint32_t elementIndex) { return StructuredBufferViewElement(_root, 0, 0, nullptr).getElementNameByIndex(elementIndex); }
 
 	/// <summary>Gets the number of elements for a particular level of the structured buffer view</summary>
 	/// <returns>Return the number of elements for a particular level of the structured buffer view.</returns>
-	uint32_t getNumElements()
-	{
-		return StructuredBufferViewElement(_root, 0, 0, nullptr).getNumElements();
-	}
+	uint32_t getNumElements() { return StructuredBufferViewElement(_root, 0, 0, nullptr).getNumElements(); }
 
 	/// <summary>Sets the element array size for the last entry in the StructuredBufferViewElement.
 	/// Only the last element in the StructuredBufferViewElement may have its size set from the api</summary>
 	/// <param name="arraySize">The size of the array</param>
-	void setLastElementArraySize(uint32_t arraySize)
-	{
-		return _root.setLastElementArraySize(arraySize);
-	}
+	void setLastElementArraySize(uint32_t arraySize) { return _root.setLastElementArraySize(arraySize); }
 
 	/// <summary>Retrieve the index of a variable by its name</summary>
 	/// <param name="name">The name of a element</param>
 	/// <returns>The index of a variable entry</returns>
-	uint32_t getIndex(const StringHash& name) const
-	{
-		return _root.getIndex(name);
-	}
+	uint32_t getIndex(const StringHash& name) const { return _root.getIndex(name); }
 
 	/// <summary>Retrieve the index of a variable by its name</summary>
 	/// <param name="name">The name of a element</param>
 	/// <returns>The index of a variable entry</returns>
-	uint32_t getIndex(const char* name) const
-	{
-		return _root.getIndex(name);
-	}
+	uint32_t getIndex(const char* name) const { return _root.getIndex(name); }
 
 	/// <summary>Retrieve the index of a variable by its name</summary>
 	/// <param name="name">The name of a element</param>
 	/// <returns>The index of a variable entry</returns>
-	uint32_t getIndex(const std::string& name) const
-	{
-		return _root.getIndex(name);
-	}
+	uint32_t getIndex(const std::string& name) const { return _root.getIndex(name); }
 
 	/// <summary>Converts the StructuredBufferView to a readable string entry</summary>
 	/// <returns>The human readable string corresponding to the StructuredBufferView</returns>

@@ -1,12 +1,16 @@
 cmake_minimum_required(VERSION 3.3)
 project(OpenGLESIMGFramebufferDownsample)
-if(APPLE)
-	if(IOS)
-		message("Skipping OpenGLESIMGFramebufferDownsample : Not supported on iOS")
-		return()
-	endif()
+if(IOS)	
+	message("Skipping OpenGLESIMGFramebufferDownsample : Not supported on iOS")
+	return()
 endif()
+
 add_subdirectory(../../.. ${CMAKE_CURRENT_BINARY_DIR}/sdk)
+
+if(PVR_PREBUILT_DEPENDENCIES)
+	find_package(PVRShell REQUIRED MODULE)
+	find_package(PVRUtilsGles REQUIRED MODULE)
+endif()
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
@@ -16,28 +20,32 @@ set(SRC_FILES OpenGLESIMGFramebufferDownsample.cpp)
 
 set(ASSET_FOLDER ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Assets_OpenGLESIMGFramebufferDownsample)
 
-# TEXTUAL SHADER FILES (OpenGL ES) - Packaged with the executable for runtime use
-set(SHADER_FILES
-	${CMAKE_CURRENT_SOURCE_DIR}/FragShader.fsh
-	${CMAKE_CURRENT_SOURCE_DIR}/VertShader.vsh
-	${CMAKE_CURRENT_SOURCE_DIR}/BlitFragShader.fsh
-	${CMAKE_CURRENT_SOURCE_DIR}/BlitVertShader.vsh
-	${CMAKE_CURRENT_SOURCE_DIR}/HalfAndHalfFragShader.fsh
-	${CMAKE_CURRENT_SOURCE_DIR}/HalfAndHalfVertShader.vsh
-	)
-list(APPEND SRC_FILES ${SHADER_FILES})
-source_group("shaders" FILES ${SHADER_FILES})
+# Adds an executable (or ndk library for Android) and necessary files like plists for Mac/iOS etc.
+add_platform_specific_executable(OpenGLESIMGFramebufferDownsample ${SRC_FILES})
 
-set(RESOURCE_FILES ${ASSET_FILES} ${SHADER_FILES})
+#################################### ASSET FILES ##########################################
+# For platforms supporting it, will be packaged with the executable for runtime use.
+# Will be accessible from the app with their "relative path". One call per base path
 
-# Adds Windows resouces.rc, macOS plists etc. For macOS/iOS, also set the opengl dynamic libs in the "frameworks" group
-add_platform_specific_resource_files(SRC_FILES RESOURCE_FILES)
+### Textural shaders (OpenGL ES) ###
+add_assets_to_target(OpenGLESIMGFramebufferDownsample 
+	SOURCE_GROUP "shaders" 
+	ASSET_FOLDER ${ASSET_FOLDER} 
+	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/
+	FILE_LIST 
+		FragShader.fsh
+		VertShader.vsh
+		BlitFragShader.fsh
+		BlitVertShader.vsh
+		HalfAndHalfFragShader.fsh
+		HalfAndHalfVertShader.vsh)
 
-# Adds a platform specific executable
-add_platform_specific_executable(OpenGLESIMGFramebufferDownsample "${SRC_FILES}" "${RESOURCE_FILES}")
+# Create and adds a Windows resource file (Resources.rc) with all the assets that have been added to the target with the previous functions
+add_assets_resource_file(OpenGLESIMGFramebufferDownsample)
+###########################################################################################
 
-# Copies the assets to our assets folder
-add_rule_copy_assets_to_asset_folder("${RESOURCE_FILES}" "${ASSET_FOLDER}")
+# Apply SDK example specific compile and linker options
+apply_example_compile_options_to_target(OpenGLESIMGFramebufferDownsample)
 
 target_link_libraries(OpenGLESIMGFramebufferDownsample
 	PVRShell

@@ -21,7 +21,7 @@ namespace utils {
 inline math::AxisAlignedBox getBoundingBox(const char* data, size_t stride_bytes, size_t offset_bytes, size_t size_bytes)
 {
 	math::AxisAlignedBox aabb;
-	assertion(data);
+	assertion(static_cast<bool>(data));
 	assertion(stride_bytes >= 12 || !stride_bytes);
 	assertion(size_bytes >= stride_bytes);
 	if (size_bytes && data)
@@ -58,8 +58,7 @@ inline math::AxisAlignedBox getBoundingBox(const Mesh& mesh, const char* positio
 	const Mesh::VertexAttributeData* vbo = mesh.getVertexAttributeByName(positionSemanticName);
 	if (vbo)
 	{
-		return getBoundingBox(
-			static_cast<const char*>(mesh.getData(vbo->getDataIndex())), mesh.getStride(vbo->getDataIndex()), vbo->getOffset(), mesh.getDataSize(vbo->getDataIndex()));
+		return getBoundingBox(static_cast<const char*>(mesh.getData(vbo->getDataIndex())), mesh.getStride(vbo->getDataIndex()), vbo->getOffset(), mesh.getDataSize(vbo->getDataIndex()));
 	}
 	return math::AxisAlignedBox();
 }
@@ -68,10 +67,7 @@ inline math::AxisAlignedBox getBoundingBox(const Mesh& mesh, const char* positio
 /// <param name="mesh">A mesh from which to get the bounding box of</param>
 /// <returns>Axis-aligned bounding box</returns>
 /// <remarks>It will be assumed that Vertex Position is a vec3 and has the semantic "POSITION".</remarks>
-inline math::AxisAlignedBox getBoundingBox(const Mesh& mesh)
-{
-	return getBoundingBox(mesh, "POSITION");
-}
+inline math::AxisAlignedBox getBoundingBox(const Mesh& mesh) { return getBoundingBox(mesh, "POSITION"); }
 
 /// <summary>Return bounding box of a model.</summary>
 /// <param name="model">A model from which to get the bounding box of. All meshes will be considered.</param>
@@ -82,10 +78,7 @@ inline math::AxisAlignedBox getBoundingBox(const Model& model)
 	if (model.getNumMeshes())
 	{
 		math::AxisAlignedBox retval(getBoundingBox(model.getMesh(0)));
-		for (uint32_t i = 1; i < model.getNumMeshes(); ++i)
-		{
-			retval.mergeBox(getBoundingBox(model.getMesh(i)));
-		}
+		for (uint32_t i = 1; i < model.getNumMeshes(); ++i) { retval.mergeBox(getBoundingBox(model.getMesh(i))); }
 		return retval;
 	}
 	else

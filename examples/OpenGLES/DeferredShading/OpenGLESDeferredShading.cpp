@@ -436,8 +436,8 @@ public:
 	void renderGBuffer();
 	void renderDirectionalLights();
 	void renderPointLights();
-	void renderPointLightProxyGeometryIntoStencilBuffer(const uint32_t pointLight);
-	void renderPointLightProxy(const uint32_t pointLight);
+	void renderPointLightProxyGeometryIntoStencilBuffer();
+	void renderPointLightProxy();
 	void renderPointLightSources();
 	void renderPlsToFbo();
 	void renderUi();
@@ -447,17 +447,10 @@ public:
 		switch (key)
 		{
 		// Handle input
-		case pvr::SimplifiedInput::ActionClose:
-			exitShell();
-			break;
-		case pvr::SimplifiedInput::Action1:
-			_isPaused = !_isPaused;
-			break;
-		case pvr::SimplifiedInput::Action2:
-			_animateCamera = !_animateCamera;
-			break;
-		default:
-			break;
+		case pvr::SimplifiedInput::ActionClose: exitShell(); break;
+		case pvr::SimplifiedInput::Action1: _isPaused = !_isPaused; break;
+		case pvr::SimplifiedInput::Action2: _animateCamera = !_animateCamera; break;
+		default: break;
 		}
 	}
 };
@@ -465,7 +458,10 @@ public:
 /// <summary>This class is added as the Debug Callback. Redirects the debug output to the Log object.</summary>
 inline void GL_APIENTRY debugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam)
 {
-	Log(LogLevel::Debug, "%s", message);
+	(void)length;
+	(void)severity;
+	(void)userParam;
+	Log(LogLevel::Debug, "[%d|%d|%d] %s", source, type, id, message);
 }
 
 /*!*********************************************************************************************************************
@@ -485,11 +481,7 @@ pvr::Result OpenGLESDeferredShading::initApplication()
 	_clearColor = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
 	//  Load the _mainScene and the light
-	if (!pvr::utils::loadModel(*this, Files::SceneFile.c_str(), _mainScene))
-	{
-		setExitMessage("ERROR: Couldn't load the _mainScene pod file %s\n", Files::SceneFile.c_str());
-		return pvr::Result::UnknownError;
-	}
+	_mainScene = pvr::assets::loadModel(*this, Files::SceneFile.c_str());
 
 	if (_mainScene->getNumCameras() == 0)
 	{
@@ -498,11 +490,8 @@ pvr::Result OpenGLESDeferredShading::initApplication()
 	}
 
 	//  Load light proxy geometry
-	if (!pvr::utils::loadModel(*this, Files::PointLightModelFile.c_str(), _pointLightScene))
-	{
-		setExitMessage("ERROR: Couldn't load the point light proxy pod file\n");
-		return pvr::Result::UnknownError;
-	}
+	_pointLightScene = pvr::assets::loadModel(*this, Files::PointLightModelFile.c_str());
+
 	return pvr::Result::Success;
 }
 
@@ -513,16 +502,13 @@ Used to initialize variables that are dependent on the rendering context (e.g. t
 ***********************************************************************************************************************/
 pvr::Result OpenGLESDeferredShading::initView()
 {
-	_deviceResources = std::unique_ptr<DeviceResources>(new DeviceResources());
+	_deviceResources = std::make_unique<DeviceResources>();
 	_deviceResources->context = pvr::createEglContext();
 
 	_deviceResources->context->init(getWindow(), getDisplay(), getDisplayAttributes(), pvr::Api::OpenGLES31);
 
 	// Check if pixel local storage extensions are supported
-	if (gl::isGlExtensionSupported("GL_KHR_debug"))
-	{
-		gl::ext::DebugMessageCallbackKHR(&debugCallback, NULL);
-	}
+	if (gl::isGlExtensionSupported("GL_KHR_debug")) { gl::ext::DebugMessageCallbackKHR(&debugCallback, NULL); }
 
 	_pixelLocalStorageSupported = gl::isGlExtensionSupported("GL_EXT_shader_pixel_local_storage");
 	_pixelLocalStorage2Supported = gl::isGlExtensionSupported("GL_EXT_shader_pixel_local_storage2");
@@ -546,10 +532,7 @@ pvr::Result OpenGLESDeferredShading::initView()
 	}
 	else
 	{
-		if (_pixelLocalStorage2Supported)
-		{
-			Log(LogLevel::Information, "GL_EXT_shader_pixel_local_storage2 is supported.");
-		}
+		if (_pixelLocalStorage2Supported) { Log(LogLevel::Information, "GL_EXT_shader_pixel_local_storage2 is supported."); }
 		else
 		{
 			Log(LogLevel::Information, "GL_EXT_shader_pixel_local_storage is supported (GL_EXT_shader_pixel_local_storage2 is not supported).");
@@ -684,10 +667,7 @@ pvr::Result OpenGLESDeferredShading::renderFrame()
 
 	debugThrowOnApiError("Frame end");
 
-	if (this->shouldTakeScreenshot())
-	{
-		pvr::utils::takeScreenshot(this->getScreenshotFileName(), this->getWidth(), this->getHeight());
-	}
+	if (this->shouldTakeScreenshot()) { pvr::utils::takeScreenshot(this->getScreenshotFileName(), this->getWidth(), this->getHeight()); }
 
 	_deviceResources->context->swapBuffers();
 
@@ -719,6 +699,9 @@ pvr::Result OpenGLESDeferredShading::quitApplication()
 
 void OpenGLESDeferredShading::bindAndClearFramebuffer()
 {
+	// disable depth writes
+	gl::DepthMask(GL_TRUE);
+
 	gl::BindFramebuffer(GL_DRAW_FRAMEBUFFER, _deviceResources->defaultFbo);
 	gl::Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 }
@@ -804,6 +787,8 @@ void OpenGLESDeferredShading::renderGBuffer()
 			// Non-Indexed Triangle list
 			gl::DrawArrays(primitiveType, 0, mesh.getNumFaces() * 3);
 		}
+
+		gl::BindVertexArray(0);
 	}
 }
 
@@ -860,8 +845,11 @@ void OpenGLESDeferredShading::renderPointLights()
 		gl::BindBufferRange(GL_UNIFORM_BUFFER, BufferBindings::PointLightDynamicData, _deviceResources->pointLightMatrixUbo,
 			_deviceResources->dynamicPointLightBufferView.getDynamicSliceOffset(i), (size_t)_deviceResources->dynamicPointLightBufferView.getDynamicSliceSize());
 
-		renderPointLightProxyGeometryIntoStencilBuffer(i);
-		renderPointLightProxy(i);
+		renderPointLightProxyGeometryIntoStencilBuffer();
+		gl::BindBufferRange(GL_UNIFORM_BUFFER, BufferBindings::PointLightStaticData, _deviceResources->pointLightPropertiesUbo,
+			_deviceResources->staticPointLightBufferView.getDynamicSliceOffset(i), (size_t)_deviceResources->staticPointLightBufferView.getDynamicSliceSize());
+
+		renderPointLightProxy();
 	}
 	renderPointLightSources();
 
@@ -891,7 +879,7 @@ void OpenGLESDeferredShading::renderPlsToFbo()
 	gl::DrawArrays(GL_TRIANGLE_STRIP, 0, 3);
 }
 
-void OpenGLESDeferredShading::renderPointLightProxyGeometryIntoStencilBuffer(const uint32_t pointLight)
+void OpenGLESDeferredShading::renderPointLightProxyGeometryIntoStencilBuffer()
 {
 	// POINT LIGHTS GEOMETRY STENCIL PASS
 	// Render the front face of each light volume
@@ -930,7 +918,7 @@ void OpenGLESDeferredShading::renderPointLightProxyGeometryIntoStencilBuffer(con
 	gl::DrawElements(primitiveType, mesh.getNumFaces() * 3, indexgltype, 0);
 }
 
-void OpenGLESDeferredShading::renderPointLightProxy(const uint32_t pointLight)
+void OpenGLESDeferredShading::renderPointLightProxy()
 {
 	// POINT LIGHTS PROXIES - Actually light the pixels touched by a point light.
 	// Render the back faces of the light volumes
@@ -958,9 +946,6 @@ void OpenGLESDeferredShading::renderPointLightProxy(const uint32_t pointLight)
 	const pvr::assets::Mesh& mesh = _pointLightScene->getMesh(static_cast<uint32_t>(LightNodes::PointLightMeshNode));
 
 	gl::UseProgram(pointLightProxyPass.program);
-
-	gl::BindBufferRange(GL_UNIFORM_BUFFER, BufferBindings::PointLightStaticData, _deviceResources->pointLightPropertiesUbo,
-		_deviceResources->staticPointLightBufferView.getDynamicSliceOffset(pointLight), (size_t)_deviceResources->staticPointLightBufferView.getDynamicSliceSize());
 
 	GLenum primitiveType = pvr::utils::convertToGles(mesh.getPrimitiveType());
 	auto indextype = mesh.getFaces().getDataType();
@@ -1034,10 +1019,7 @@ void OpenGLESDeferredShading::createSamplers()
 ***********************************************************************************************************************/
 void OpenGLESDeferredShading::createMaterialTextures()
 {
-	if (_mainScene->getNumMaterials() == 0)
-	{
-		throw pvr::InvalidDataError("[OpenGLESDeferredShading::createMaterialTextures]Number of scene materials cannot be zero");
-	}
+	if (_mainScene->getNumMaterials() == 0) { throw pvr::InvalidDataError("[OpenGLESDeferredShading::createMaterialTextures]Number of scene materials cannot be zero"); }
 
 	// Load textures for each material
 	_deviceResources->materials.resize(_mainScene->getNumMaterials());
@@ -1154,14 +1136,8 @@ void OpenGLESDeferredShading::createPrograms()
 		// Enable or disable gamma correction based on if it is automatically performed on the framebuffer or we need to do it in the shader.
 		const char* defines[] = { NULL, NULL };
 		uint32_t numDefines = 0;
-		if (getBackBufferColorspace() == pvr::ColorSpace::sRGB)
-		{
-			defines[numDefines++] = "FRAMEBUFFER_SRGB";
-		}
-		if (_simpleGammaFunction)
-		{
-			defines[numDefines++] = "SIMPLE_GAMMA_FUNCTION";
-		}
+		if (getBackBufferColorspace() == pvr::ColorSpace::sRGB) { defines[numDefines++] = "FRAMEBUFFER_SRGB"; }
+		if (_simpleGammaFunction) { defines[numDefines++] = "SIMPLE_GAMMA_FUNCTION"; }
 
 		_deviceResources->renderInfo.writePlsToFbo.program =
 			pvr::utils::createShaderProgram(*this, Files::AttributelessVertexShader.c_str(), Files::WritePlsToFboShader.c_str(), 0, 0, 0, defines, numDefines);
@@ -1179,10 +1155,7 @@ void OpenGLESDeferredShading::updateAnimation()
 
 	// Update camera matrices
 	static float angle = 0;
-	if (_animateCamera)
-	{
-		angle += getFrameTime() / 5000.f;
-	}
+	if (_animateCamera) { angle += getFrameTime() / 5000.f; }
 	_viewMatrix = glm::lookAt(glm::vec3(sin(angle) * 100.f + vTo.x, vTo.y + 30., cos(angle) * 100.f + vTo.z), vTo, vUp);
 	_viewProjectionMatrix = _projectionMatrix * _viewMatrix;
 	_inverseViewMatrix = glm::inverse(_viewMatrix);
@@ -1228,8 +1201,8 @@ void OpenGLESDeferredShading::createModelBuffers()
 			gl::ext::BufferStorageEXT(
 				GL_COPY_READ_BUFFER, (GLsizei)_deviceResources->modelMaterialBufferView.getSize(), 0, GL_MAP_WRITE_BIT_EXT | GL_MAP_PERSISTENT_BIT_EXT | GL_MAP_COHERENT_BIT_EXT);
 
-			void* memory = gl::MapBufferRange(
-				GL_COPY_READ_BUFFER, 0, static_cast<GLsizeiptr>(_deviceResources->modelMaterialBufferView.getSize()), GL_MAP_WRITE_BIT_EXT | GL_MAP_PERSISTENT_BIT_EXT | GL_MAP_COHERENT_BIT_EXT);
+			void* memory = gl::MapBufferRange(GL_COPY_READ_BUFFER, 0, static_cast<GLsizeiptr>(_deviceResources->modelMaterialBufferView.getSize()),
+				GL_MAP_WRITE_BIT_EXT | GL_MAP_PERSISTENT_BIT_EXT | GL_MAP_COHERENT_BIT_EXT);
 			_deviceResources->modelMaterialBufferView.pointToMappedMemory(memory);
 		}
 	}
@@ -1238,7 +1211,7 @@ void OpenGLESDeferredShading::createModelBuffers()
 		description.addElement(BufferEntryNames::PerModel::WorldViewProjectionMatrix, pvr::GpuDatatypes::mat4x4);
 		description.addElement(BufferEntryNames::PerModel::WorldViewMatrix, pvr::GpuDatatypes::mat4x4);
 		description.addElement(BufferEntryNames::PerModel::WorldViewITMatrix, pvr::GpuDatatypes::mat4x4);
-		_deviceResources->modelMatrixBufferView.initDynamic(description, _mainScene->getNumMeshNodes(), pvr::BufferUsageFlags::UniformBuffer, _uniformAlignment);
+		_deviceResources->modelMatrixBufferView.initDynamic(description, _mainScene->getNumMeshNodes(), pvr::BufferUsageFlags::UniformBuffer, static_cast<uint64_t>(_uniformAlignment));
 
 		gl::GenBuffers(1, &_deviceResources->modelMatrixUbo);
 		gl::BindBuffer(GL_UNIFORM_BUFFER, _deviceResources->modelMatrixUbo);
@@ -1247,11 +1220,11 @@ void OpenGLESDeferredShading::createModelBuffers()
 		if (_bufferStorageExtSupported)
 		{
 			gl::BindBuffer(GL_COPY_READ_BUFFER, _deviceResources->modelMatrixUbo);
-			gl::ext::BufferStorageEXT(
-				GL_COPY_READ_BUFFER, (GLsizei)_deviceResources->modelMatrixBufferView.getSize(), 0, GL_MAP_WRITE_BIT_EXT | GL_MAP_PERSISTENT_BIT_EXT | GL_MAP_COHERENT_BIT_EXT);
+			gl::ext::BufferStorageEXT(GL_COPY_READ_BUFFER, static_cast<GLsizei>(_deviceResources->modelMatrixBufferView.getSize()), 0,
+				GL_MAP_WRITE_BIT_EXT | GL_MAP_PERSISTENT_BIT_EXT | GL_MAP_COHERENT_BIT_EXT);
 
-			void* memory = gl::MapBufferRange(
-				GL_COPY_READ_BUFFER, 0, (size_t)_deviceResources->modelMatrixBufferView.getSize(), GL_MAP_WRITE_BIT_EXT | GL_MAP_PERSISTENT_BIT_EXT | GL_MAP_COHERENT_BIT_EXT);
+			void* memory = gl::MapBufferRange(GL_COPY_READ_BUFFER, 0, static_cast<GLsizeiptr>(_deviceResources->modelMatrixBufferView.getSize()),
+				GL_MAP_WRITE_BIT_EXT | GL_MAP_PERSISTENT_BIT_EXT | GL_MAP_COHERENT_BIT_EXT);
 			_deviceResources->modelMatrixBufferView.pointToMappedMemory(memory);
 		}
 	}
@@ -1276,10 +1249,7 @@ void OpenGLESDeferredShading::uploadStaticModelData()
 
 		_deviceResources->modelMaterialBufferView.getElementByName(BufferEntryNames::PerModelMaterial::DiffuseColor, 0, i).setValue(_deviceResources->materials[i].diffuseColor);
 	}
-	if (!_bufferStorageExtSupported)
-	{
-		gl::UnmapBuffer(GL_UNIFORM_BUFFER);
-	}
+	if (!_bufferStorageExtSupported) { gl::UnmapBuffer(GL_UNIFORM_BUFFER); }
 
 	_farClipDistance = _mainScene->getCamera(0).getFar();
 
@@ -1307,13 +1277,9 @@ void OpenGLESDeferredShading::uploadStaticDirectionalLightData()
 		_deviceResources->staticDirectionalLightBufferView.getElementByName(BufferEntryNames::StaticDirectionalLight::LightIntensity, 0, i)
 			.setValue(_deviceResources->renderInfo.directionalLightPass.lightProperties[i].lightIntensity);
 
-		_deviceResources->staticDirectionalLightBufferView.getElementByName(BufferEntryNames::StaticDirectionalLight::AmbientLight, 0, i)
-			.setValue(DirectionalLightConfiguration::AmbientLightColor);
+		_deviceResources->staticDirectionalLightBufferView.getElementByName(BufferEntryNames::StaticDirectionalLight::AmbientLight, 0, i).setValue(DirectionalLightConfiguration::AmbientLightColor);
 	}
-	if (!_bufferStorageExtSupported)
-	{
-		gl::UnmapBuffer(GL_UNIFORM_BUFFER);
-	}
+	if (!_bufferStorageExtSupported) { gl::UnmapBuffer(GL_UNIFORM_BUFFER); }
 }
 
 void OpenGLESDeferredShading::uploadStaticPointLightData()
@@ -1322,7 +1288,7 @@ void OpenGLESDeferredShading::uploadStaticPointLightData()
 	if (!_bufferStorageExtSupported)
 	{
 		gl::BindBuffer(GL_UNIFORM_BUFFER, _deviceResources->pointLightPropertiesUbo);
-		void* memory = gl::MapBufferRange(GL_UNIFORM_BUFFER, 0, (size_t)_deviceResources->staticPointLightBufferView.getSize(), GL_MAP_WRITE_BIT);
+		void* memory = gl::MapBufferRange(GL_UNIFORM_BUFFER, 0, static_cast<GLsizeiptr>(_deviceResources->staticPointLightBufferView.getSize()), GL_MAP_WRITE_BIT);
 		_deviceResources->staticPointLightBufferView.pointToMappedMemory(memory);
 	}
 
@@ -1340,10 +1306,7 @@ void OpenGLESDeferredShading::uploadStaticPointLightData()
 		_deviceResources->staticPointLightBufferView.getElementByName(BufferEntryNames::StaticPointLight::LightSourceColor, 0, i)
 			.setValue(_deviceResources->renderInfo.pointLightPasses.lightProperties[i].lightSourceColor);
 	}
-	if (!_bufferStorageExtSupported)
-	{
-		gl::UnmapBuffer(GL_UNIFORM_BUFFER);
-	}
+	if (!_bufferStorageExtSupported) { gl::UnmapBuffer(GL_UNIFORM_BUFFER); }
 }
 
 /*!*********************************************************************************************************************
@@ -1480,10 +1443,6 @@ void OpenGLESDeferredShading::bindVertexSpecification(const pvr::assets::Mesh& m
 	}
 
 	gl::BindVertexArray(0);
-	for (auto it = vertexConfiguration.attributes.begin(), end = vertexConfiguration.attributes.end(); it != end; ++it)
-	{
-		gl::DisableVertexAttribArray(it->index);
-	}
 }
 
 void OpenGLESDeferredShading::createGeometryBuffers()
@@ -1518,26 +1477,15 @@ void OpenGLESDeferredShading::allocateLights()
 	{
 		switch (_mainScene->getLight(_mainScene->getLightNode(i).getObjectId()).getType())
 		{
-		case pvr::assets::Light::Directional:
-			++countDirectional;
-			break;
-		case pvr::assets::Light::Point:
-			++countPoint;
-			break;
-		default:
-			break;
+		case pvr::assets::Light::Directional: ++countDirectional; break;
+		case pvr::assets::Light::Point: ++countPoint; break;
+		default: break;
 		}
 	}
 
-	if (DirectionalLightConfiguration::AdditionalDirectionalLight)
-	{
-		++countDirectional;
-	}
+	if (DirectionalLightConfiguration::AdditionalDirectionalLight) { ++countDirectional; }
 
-	if (countPoint >= PointLightConfiguration::MaxScenePointLights)
-	{
-		countPoint = PointLightConfiguration::MaxScenePointLights;
-	}
+	if (countPoint >= PointLightConfiguration::MaxScenePointLights) { countPoint = PointLightConfiguration::MaxScenePointLights; }
 
 	countPoint += static_cast<uint32_t>(PointLightConfiguration::NumProceduralPointLights);
 
@@ -1550,9 +1498,7 @@ void OpenGLESDeferredShading::allocateLights()
 	_deviceResources->renderInfo.pointLightPasses.initialData.resize(countPoint);
 
 	for (uint32_t i = countPoint - static_cast<uint32_t>(PointLightConfiguration::NumProceduralPointLights); i < countPoint; ++i)
-	{
-		updateProceduralPointLight(_deviceResources->renderInfo.pointLightPasses.initialData[i], _deviceResources->renderInfo.pointLightPasses.lightProperties[i], true);
-	}
+	{ updateProceduralPointLight(_deviceResources->renderInfo.pointLightPasses.initialData[i], _deviceResources->renderInfo.pointLightPasses.lightProperties[i], true); }
 }
 
 /*!*********************************************************************************************************************
@@ -1572,10 +1518,7 @@ void OpenGLESDeferredShading::initialiseStaticLightProperties()
 		{
 		case pvr::assets::Light::Point:
 		{
-			if (pointLight >= PointLightConfiguration::MaxScenePointLights)
-			{
-				continue;
-			}
+			if (pointLight >= PointLightConfiguration::MaxScenePointLights) { continue; }
 
 			// POINT LIGHT GEOMETRY : The spheres that will be used for the stencil pass
 			pass.pointLightPasses.lightProperties[pointLight].lightColor = glm::vec4(light.getColor(), 1.f);
@@ -1597,8 +1540,7 @@ void OpenGLESDeferredShading::initialiseStaticLightProperties()
 			++directionalLight;
 		}
 		break;
-		default:
-			break;
+		default: break;
 		}
 	}
 	if (DirectionalLightConfiguration::AdditionalDirectionalLight)
@@ -1635,21 +1577,13 @@ void OpenGLESDeferredShading::updateProceduralPointLight(PointLightPasses::Initi
 		uint64_t maxFrameTime = 30;
 		float dt = static_cast<float>(std::min(getFrameTime(), maxFrameTime));
 		if (data.distance < PointLightConfiguration::LightMinDistance)
-		{
-			data.axial_vel = glm::abs(data.axial_vel) + (PointLightConfiguration::LightMaxAxialVelocity * dt * .001f);
-		}
+		{ data.axial_vel = glm::abs(data.axial_vel) + (PointLightConfiguration::LightMaxAxialVelocity * dt * .001f); }
 		if (data.distance > PointLightConfiguration::LightMaxDistance)
-		{
-			data.axial_vel = -glm::abs(data.axial_vel) - (PointLightConfiguration::LightMaxAxialVelocity * dt * .001f);
-		}
+		{ data.axial_vel = -glm::abs(data.axial_vel) - (PointLightConfiguration::LightMaxAxialVelocity * dt * .001f); }
 		if (data.height < PointLightConfiguration::LightMinHeight)
-		{
-			data.vertical_vel = glm::abs(data.vertical_vel) + (PointLightConfiguration::LightMaxAxialVelocity * dt * .001f);
-		}
+		{ data.vertical_vel = glm::abs(data.vertical_vel) + (PointLightConfiguration::LightMaxAxialVelocity * dt * .001f); }
 		if (data.height > PointLightConfiguration::LightMaxHeight)
-		{
-			data.vertical_vel = -glm::abs(data.vertical_vel) - (PointLightConfiguration::LightMaxAxialVelocity * dt * .001f);
-		}
+		{ data.vertical_vel = -glm::abs(data.vertical_vel) - (PointLightConfiguration::LightMaxAxialVelocity * dt * .001f); }
 
 		data.axial_vel += pvr::randomrange(-PointLightConfiguration::LightAxialVelocityChange, PointLightConfiguration::LightAxialVelocityChange) * dt;
 
@@ -1657,18 +1591,9 @@ void OpenGLESDeferredShading::updateProceduralPointLight(PointLightPasses::Initi
 
 		data.vertical_vel += pvr::randomrange(-PointLightConfiguration::LightVerticalVelocityChange, PointLightConfiguration::LightVerticalVelocityChange) * dt;
 
-		if (glm::abs(data.axial_vel) > PointLightConfiguration::LightMaxAxialVelocity)
-		{
-			data.axial_vel *= .8f;
-		}
-		if (glm::abs(data.radial_vel) > PointLightConfiguration::LightMaxRadialVelocity)
-		{
-			data.radial_vel *= .8f;
-		}
-		if (glm::abs(data.vertical_vel) > PointLightConfiguration::LightMaxVerticalVelocity)
-		{
-			data.vertical_vel *= .8f;
-		}
+		if (glm::abs(data.axial_vel) > PointLightConfiguration::LightMaxAxialVelocity) { data.axial_vel *= .8f; }
+		if (glm::abs(data.radial_vel) > PointLightConfiguration::LightMaxRadialVelocity) { data.radial_vel *= .8f; }
+		if (glm::abs(data.vertical_vel) > PointLightConfiguration::LightMaxVerticalVelocity) { data.vertical_vel *= .8f; }
 
 		data.distance += data.axial_vel * dt * 0.001f;
 		data.angle += data.radial_vel * dt * 0.001f;
@@ -1707,7 +1632,7 @@ void OpenGLESDeferredShading::updateDynamicSceneData()
 		if (!_bufferStorageExtSupported)
 		{
 			gl::BindBuffer(GL_UNIFORM_BUFFER, _deviceResources->modelMatrixUbo);
-			void* memory = gl::MapBufferRange(GL_UNIFORM_BUFFER, 0, (size_t)_deviceResources->modelMatrixBufferView.getSize(), GL_MAP_WRITE_BIT);
+			void* memory = gl::MapBufferRange(GL_UNIFORM_BUFFER, 0, static_cast<GLsizeiptr>(_deviceResources->modelMatrixBufferView.getSize()), GL_MAP_WRITE_BIT);
 			_deviceResources->modelMatrixBufferView.pointToMappedMemory(memory);
 		}
 
@@ -1723,10 +1648,7 @@ void OpenGLESDeferredShading::updateDynamicSceneData()
 			_deviceResources->modelMatrixBufferView.getElementByName(BufferEntryNames::PerModel::WorldViewProjectionMatrix, 0, i).setValue(pass.renderGBuffer.objects[i].worldViewProj);
 			_deviceResources->modelMatrixBufferView.getElementByName(BufferEntryNames::PerModel::WorldViewITMatrix, 0, i).setValue(pass.renderGBuffer.objects[i].worldViewIT4x4);
 		}
-		if (!_bufferStorageExtSupported)
-		{
-			gl::UnmapBuffer(GL_UNIFORM_BUFFER);
-		}
+		if (!_bufferStorageExtSupported) { gl::UnmapBuffer(GL_UNIFORM_BUFFER); }
 	}
 
 	uint32_t pointLight = 0;
@@ -1741,10 +1663,7 @@ void OpenGLESDeferredShading::updateDynamicSceneData()
 		{
 		case pvr::assets::Light::Point:
 		{
-			if (pointLight >= PointLightConfiguration::MaxScenePointLights)
-			{
-				continue;
-			}
+			if (pointLight >= PointLightConfiguration::MaxScenePointLights) { continue; }
 
 			const glm::mat4& transMtx = _mainScene->getWorldMatrix(_mainScene->getNodeIdFromLightNodeId(i));
 			const glm::mat4& proxyScale = glm::scale(glm::vec3(PointLightConfiguration::PointLightMaxRadius));
@@ -1769,8 +1688,7 @@ void OpenGLESDeferredShading::updateDynamicSceneData()
 			++directionalLight;
 		}
 		break;
-		default:
-			break;
+		default: break;
 		}
 	}
 	int numSceneLights = pointLight;
@@ -1781,10 +1699,7 @@ void OpenGLESDeferredShading::updateDynamicSceneData()
 	}
 
 	for (; pointLight < numSceneLights + static_cast<uint32_t>(PointLightConfiguration::NumProceduralPointLights); ++pointLight)
-	{
-		updateProceduralPointLight(pass.pointLightPasses.initialData[pointLight], _deviceResources->renderInfo.pointLightPasses.lightProperties[pointLight], false);
-	}
-
+	{ updateProceduralPointLight(pass.pointLightPasses.initialData[pointLight], _deviceResources->renderInfo.pointLightPasses.lightProperties[pointLight], false); }
 	{
 		// dynamic directional light buffer
 		if (!_bufferStorageExtSupported)
@@ -1799,10 +1714,7 @@ void OpenGLESDeferredShading::updateDynamicSceneData()
 			_deviceResources->dynamicDirectionalLightBufferView.getElementByName(BufferEntryNames::DynamicDirectionalLight::ViewSpaceLightDirection, 0, i)
 				.setValue(_deviceResources->renderInfo.directionalLightPass.lightProperties[i].viewSpaceLightDirection);
 		}
-		if (!_bufferStorageExtSupported)
-		{
-			gl::UnmapBuffer(GL_UNIFORM_BUFFER);
-		}
+		if (!_bufferStorageExtSupported) { gl::UnmapBuffer(GL_UNIFORM_BUFFER); }
 	}
 
 	// dynamic point light buffer
@@ -1824,10 +1736,7 @@ void OpenGLESDeferredShading::updateDynamicSceneData()
 		_deviceResources->dynamicPointLightBufferView.getElementByName(BufferEntryNames::DynamicPointLight::ProxyWorldViewMatrix, 0, i)
 			.setValue(_deviceResources->renderInfo.pointLightPasses.lightProperties[i].proxyWorldViewMatrix);
 	}
-	if (!_bufferStorageExtSupported)
-	{
-		gl::UnmapBuffer(GL_UNIFORM_BUFFER);
-	}
+	if (!_bufferStorageExtSupported) { gl::UnmapBuffer(GL_UNIFORM_BUFFER); }
 }
 
 /*!*********************************************************************************************************************
@@ -1835,7 +1744,4 @@ void OpenGLESDeferredShading::updateDynamicSceneData()
 \brief  This function must be implemented by the user of the shell. The user should return its Shell object defining the
 behaviour of the application.
 ***********************************************************************************************************************/
-std::unique_ptr<pvr::Shell> pvr::newDemo()
-{
-	return std::unique_ptr<pvr::Shell>(new OpenGLESDeferredShading());
-}
+std::unique_ptr<pvr::Shell> pvr::newDemo() { return std::make_unique<OpenGLESDeferredShading>(); }

@@ -21,8 +21,7 @@ DebugReportCallback_::DebugReportCallback_(make_shared_enabler, Instance& instan
 	callbackCreateInfo.pUserData = createInfo.getPUserData();
 
 	// Register the DebugReportCallback
-	vkThrowIfFailed(
-		instance->getVkBindings().vkCreateDebugReportCallbackEXT(instance->getVkHandle(), &callbackCreateInfo, nullptr, &_vkHandle), "Failed to create DebugReportCallback");
+	vkThrowIfFailed(instance->getVkBindings().vkCreateDebugReportCallbackEXT(instance->getVkHandle(), &callbackCreateInfo, nullptr, &_vkHandle), "Failed to create DebugReportCallback");
 }
 
 DebugReportCallback_::~DebugReportCallback_()

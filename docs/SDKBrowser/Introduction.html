@@ -45,7 +45,6 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">The PowerVR SDK</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Build.html">Build Instructions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Framework.html">PowerVR SDK Framework</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ExamplesVulkan.html">Vulkan Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Documentation.html">Documentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Licence.html">EULA</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Contact.html">Contact Us</a></li>
@@ -83,7 +82,7 @@ experimental examples showing how it is possible to build a pseudo-engine on top
 <p>The Framework exists to make the sections of uninteresting or boilerplate code smaller, or even make them disappear. This allows more of the focus to be on the key graphics API calls for drawing something on the screen.</p>
 <p>The examples themselves are mostly code samples intended to:</p>
 <ul class="simple">
-<li>Show the basics of OpenGL and Vulkan, with the HelloAPI and IntroducingPVRShell examples.</li>
+<li>Show the basics of OpenGL ES and Vulkan, with the HelloAPI and IntroducingPVRShell examples.</li>
 <li>Demonstrate optimal implementations for techniques relevant for PowerVR, such as our DeferredShading with Pixel Local Storage/transient attachments, or our Gaussian Blur using a Sliding Average compute shader for reducing bandwidth.</li>
 <li>Demonstrate how to use important extensions that may improve performance, PowerVR specific or otherwise, such as IMGFramebufferDownsample and IMGTextureFilterCubic.</li>
 </ul>
@@ -117,6 +116,19 @@ For Android, navigate to the <code class="docutils literal notranslate"><span cl
 <li><code class="docutils literal notranslate"><span class="pre">libEGL.dll</span></code>     (EGL)</li>
 <li><code class="docutils literal notranslate"><span class="pre">libGLES_CM.dll</span></code> (OpenGL ES 1.x)</li>
 <li><code class="docutils literal notranslate"><span class="pre">libGLESv2.dll</span></code>  (OpenGL ES 2.0 and 3.x)</li>
+</ul>
+</div>
+<div class="section" id="dependencies">
+<h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
+<p>The PowerVR SDK has a number of third-party dependencies, each of which may have their own license:</p>
+<ul class="simple">
+<li>[glm](<a class="reference external" href="https://github.com/g-truc/glm">https://github.com/g-truc/glm</a>): OpenGL Mathematics</li>
+<li>[pugixml](<a class="reference external" href="https://github.com/zeux/pugixml">https://github.com/zeux/pugixml</a>): Light-weight, simple and fast XML parser for C++ with XPath support</li>
+<li>[concurrentqueue](<a class="reference external" href="https://github.com/cameron314/concurrentqueue">https://github.com/cameron314/concurrentqueue</a>): A fast multi-producer, multi-consumer lock-free concurrent queue for C++11</li>
+<li>[glslang](<a class="reference external" href="https://github.com/KhronosGroup/glslang">https://github.com/KhronosGroup/glslang</a>): Shader front end and validator</li>
+<li>[tinygltf](<a class="reference external" href="https://github.com/syoyo/tinygltf">https://github.com/syoyo/tinygltf</a>): Header only C++11 tiny glTF 2.0 library</li>
+<li>[vma](<a class="reference external" href="https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator">https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator</a>): Vulkan Memory Allocator</li>
+<li>[vulkan](<a class="reference external" href="https://github.com/KhronosGroup/Vulkan-Docs">https://github.com/KhronosGroup/Vulkan-Docs</a>): Sources for the formal documentation of the Vulkan API</li>
 </ul>
 </div>
 <div class="section" id="release-notes">

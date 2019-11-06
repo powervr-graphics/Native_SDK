@@ -20,27 +20,15 @@ bool PhysicalDevice_::getSurfaceSupport(uint32_t queueFamilyIndex, Surface surfa
 	return supportsWsi != 0;
 }
 
-const std::vector<Display>& PhysicalDevice_::getDisplays() const
-{
-	return _displays;
-}
+const std::vector<Display>& PhysicalDevice_::getDisplays() const { return _displays; }
 
-Display& PhysicalDevice_::getDisplay(uint32_t id)
-{
-	return _displays[id];
-}
+Display& PhysicalDevice_::getDisplay(uint32_t id) { return _displays[id]; }
 
-const Display& PhysicalDevice_::getDisplay(uint32_t id) const
-{
-	return _displays[id];
-}
+const Display& PhysicalDevice_::getDisplay(uint32_t id) const { return _displays[id]; }
 
 FormatProperties PhysicalDevice_::getFormatProperties(Format format)
 {
-	if (format == Format::e_UNDEFINED)
-	{
-		return FormatProperties();
-	}
+	if (format == Format::e_UNDEFINED) { return FormatProperties(); }
 
 	FormatProperties formatProperties;
 
@@ -67,9 +55,7 @@ SurfaceCapabilitiesKHR PhysicalDevice_::getSurfaceCapabilities(const Surface& su
 	Instance instance = getInstance();
 	SurfaceCapabilitiesKHR surfaceCapabilities;
 	if (instance->getVkBindings().vkGetPhysicalDeviceSurfaceCapabilitiesKHR == nullptr)
-	{
-		throw ErrorValidationFailedEXT("GetPhysicalDeviceSurfaceCapabilitiesKHR does not exist. Cannot get surface capabilities.");
-	}
+	{ throw ErrorValidationFailedEXT("GetPhysicalDeviceSurfaceCapabilitiesKHR does not exist. Cannot get surface capabilities."); }
 	instance->getVkBindings().vkGetPhysicalDeviceSurfaceCapabilitiesKHR(getVkHandle(), surface->getVkHandle(), &surfaceCapabilities.get());
 	return surfaceCapabilities;
 }
@@ -98,10 +84,7 @@ std::vector<PresentModeKHR> PhysicalDevice_::getSurfacePresentModes(const Surfac
 
 std::vector<ExtensionProperties>& PhysicalDevice_::getDeviceExtensionsProperties()
 {
-	if (_deviceExtensions.size())
-	{
-		return _deviceExtensions;
-	}
+	if (_deviceExtensions.size()) { return _deviceExtensions; }
 	Instance instance = getInstance();
 	uint32_t numItems = 0;
 	instance->getVkBindings().vkEnumerateDeviceExtensionProperties(getVkHandle(), nullptr, &numItems, nullptr);
@@ -125,10 +108,7 @@ Display PhysicalDevice_::getDisplayPlaneProperties(uint32_t displayPlaneIndex, u
 
 	for (uint32_t i = 0; i < getNumDisplays(); ++i)
 	{
-		if (_displays[i]->getVkHandle() == displayVk)
-		{
-			return _displays[i];
-		}
+		if (_displays[i]->getVkHandle() == displayVk) { return _displays[i]; }
 	}
 	return Display();
 }
@@ -155,10 +135,7 @@ std::vector<Display> PhysicalDevice_::getDisplayPlaneSupportedDisplays(uint32_t 
 	{
 		for (uint32_t j = 0; j < getNumDisplays(); ++j)
 		{
-			if (_displays[j]->getVkHandle() == supportedDisplaysVk[i])
-			{
-				supportedDisplays.emplace_back(_displays[j]);
-			}
+			if (_displays[j]->getVkHandle() == supportedDisplaysVk[i]) { supportedDisplays.emplace_back(_displays[j]); }
 		}
 	}
 	return supportedDisplays;
@@ -205,10 +182,7 @@ const ImageFormatProperties PhysicalDevice_::getImageFormatProperties(Format for
 			static_cast<VkImageTiling>(tiling), static_cast<VkImageUsageFlags>(usage), static_cast<VkImageCreateFlags>(flags), &imageProperties.get());
 	}
 
-	if (result != VK_SUCCESS)
-	{
-		throw ErrorValidationFailedEXT("The combination of parameters used is not supported by the implementation for use in vkCreateImage");
-	}
+	if (result != VK_SUCCESS) { throw ErrorValidationFailedEXT("The combination of parameters used is not supported by the implementation for use in vkCreateImage"); }
 
 	return imageProperties;
 }
@@ -235,16 +209,10 @@ const std::vector<SparseImageFormatProperties> PhysicalDevice_::getSparseImageFo
 		sparseImageFormatProperties.resize(propertiesCount);
 
 		std::vector<VkSparseImageFormatProperties2KHR> properties(propertiesCount);
-		for (uint32_t i = 0; i < propertiesCount; i++)
-		{
-			properties[i].sType = static_cast<VkStructureType>(StructureType::e_SPARSE_IMAGE_FORMAT_PROPERTIES_2_KHR);
-		}
+		for (uint32_t i = 0; i < propertiesCount; i++) { properties[i].sType = static_cast<VkStructureType>(StructureType::e_SPARSE_IMAGE_FORMAT_PROPERTIES_2_KHR); }
 
 		instance->getVkBindings().vkGetPhysicalDeviceSparseImageFormatProperties2KHR(getVkHandle(), &sparseImageFormatInfo, &propertiesCount, properties.data());
-		for (uint32_t i = 0; i < propertiesCount; i++)
-		{
-			sparseImageFormatProperties[i] = properties[i].properties;
-		}
+		for (uint32_t i = 0; i < propertiesCount; i++) { sparseImageFormatProperties[i] = properties[i].properties; }
 	}
 	else
 	{
@@ -292,17 +260,11 @@ PhysicalDevice_::PhysicalDevice_(make_shared_enabler, Instance& instance, const 
 		_queueFamilyPropeties.resize(numQueueFamilies);
 
 		std::vector<VkQueueFamilyProperties2KHR> queueFamilyProperties(numQueueFamilies);
-		for (uint32_t i = 0; i < numQueueFamilies; i++)
-		{
-			queueFamilyProperties[i].sType = static_cast<VkStructureType>(StructureType::e_QUEUE_FAMILY_PROPERTIES_2_KHR);
-		}
+		for (uint32_t i = 0; i < numQueueFamilies; i++) { queueFamilyProperties[i].sType = static_cast<VkStructureType>(StructureType::e_QUEUE_FAMILY_PROPERTIES_2_KHR); }
 
 		instance->getVkBindings().vkGetPhysicalDeviceQueueFamilyProperties2KHR(getVkHandle(), &numQueueFamilies, queueFamilyProperties.data());
 
-		for (uint32_t i = 0; i < numQueueFamilies; ++i)
-		{
-			_queueFamilyPropeties[i] = queueFamilyProperties[i].queueFamilyProperties;
-		}
+		for (uint32_t i = 0; i < numQueueFamilies; ++i) { _queueFamilyPropeties[i] = queueFamilyProperties[i].queueFamilyProperties; }
 	}
 	else
 	{
@@ -347,9 +309,8 @@ void PhysicalDevice_::retrieveDisplays()
 			uint32_t numProperties = 0;
 			instance->getVkBindings().vkGetPhysicalDeviceDisplayPropertiesKHR(getVkHandle(), &numProperties, NULL);
 
-			std::vector<VkDisplayPropertiesKHR> _displayProperties;
-			_displayProperties.resize(numProperties);
-			instance->getVkBindings().vkGetPhysicalDeviceDisplayPropertiesKHR(getVkHandle(), &numProperties, _displayProperties.data());
+			pvrvk::ArrayOrVector<VkDisplayPropertiesKHR, 4> _displayProperties(numProperties);
+			instance->getVkBindings().vkGetPhysicalDeviceDisplayPropertiesKHR(getVkHandle(), &numProperties, _displayProperties.get());
 
 			PhysicalDevice physicalDevice = shared_from_this();
 			for (uint32_t i = 0; i < numProperties; ++i)
@@ -370,16 +331,13 @@ uint32_t PhysicalDevice_::getMemoryTypeIndex(uint32_t allowedMemoryTypeBits, pvr
 	const uint32_t memoryCount = _deviceMemoryProperties.getMemoryTypeCount();
 	for (uint32_t memoryIndex = 0; memoryIndex < memoryCount; ++memoryIndex)
 	{
-		const uint32_t memoryTypeBits = (1 << memoryIndex);
+		const uint32_t memoryTypeBits = (uint32_t)(1 << memoryIndex);
 		const bool isRequiredMemoryType = static_cast<uint32_t>(allowedMemoryTypeBits & memoryTypeBits) != 0;
 
 		usedMemoryProperties = _deviceMemoryProperties.getMemoryTypes()[memoryIndex].getPropertyFlags();
 		const bool hasRequiredProperties = static_cast<uint32_t>(usedMemoryProperties & requiredMemoryProperties) == requiredMemoryProperties;
 
-		if (isRequiredMemoryType && hasRequiredProperties)
-		{
-			return static_cast<uint32_t>(memoryIndex);
-		}
+		if (isRequiredMemoryType && hasRequiredProperties) { return static_cast<uint32_t>(memoryIndex); }
 	}
 
 	// failed to find memory type

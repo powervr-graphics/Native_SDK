@@ -1,54 +1,82 @@
 cmake_minimum_required(VERSION 3.3)
-project (PVRAssets)
+project(PVRAssets)
 
+include(GNUInstallDirs)
+include(CMakeFindDependencyMacro)
+include(../../cmake/CompilerFunctions.cmake)
+include(../../cmake/Functions.cmake)
+
+# PVRAssets include files
+set(PVRAssets_HEADERS
+	BoundingBox.h
+	Geometry.h
+	Helper.h
+	IndexedArray.h
+	Model.h
+	PVRAssets.h
+	ShadowVolume.h
+	Volume.h
+	fileio/GltfReader.h
+	fileio/PODDefines.h
+	fileio/PODReader.h
+	model/Animation.h
+	model/Camera.h
+	model/Light.h
+	model/Mesh.h
+	model/Animation.h
+	model/Camera.h
+	model/Light.h
+	model/Mesh.h)
+
+# PVRAssets sources
 set(PVRAssets_SRC
-	${CMAKE_CURRENT_LIST_DIR}/BoundingBox.h
-	${CMAKE_CURRENT_LIST_DIR}/fileio/GltfReader.cpp
-	${CMAKE_CURRENT_LIST_DIR}/fileio/GltfReader.h
-	${CMAKE_CURRENT_LIST_DIR}/fileio/PODDefines.h
-	${CMAKE_CURRENT_LIST_DIR}/fileio/PODReader.cpp
-	${CMAKE_CURRENT_LIST_DIR}/fileio/PODReader.h
-	${CMAKE_CURRENT_LIST_DIR}/Geometry.h
-	${CMAKE_CURRENT_LIST_DIR}/Helper.cpp
-	${CMAKE_CURRENT_LIST_DIR}/Helper.h
-	${CMAKE_CURRENT_LIST_DIR}/IndexedArray.h
-	${CMAKE_CURRENT_LIST_DIR}/Model.h
-	${CMAKE_CURRENT_LIST_DIR}/model/Animation.cpp
-	${CMAKE_CURRENT_LIST_DIR}/model/Animation.h
-	${CMAKE_CURRENT_LIST_DIR}/model/Camera.cpp
-	${CMAKE_CURRENT_LIST_DIR}/model/Camera.h
-	${CMAKE_CURRENT_LIST_DIR}/model/Light.cpp
-	${CMAKE_CURRENT_LIST_DIR}/model/Light.h
-	${CMAKE_CURRENT_LIST_DIR}/model/Mesh.cpp
-	${CMAKE_CURRENT_LIST_DIR}/model/Mesh.h
-	${CMAKE_CURRENT_LIST_DIR}/model/Model.cpp
-	${CMAKE_CURRENT_LIST_DIR}/PVRAssets.h
-	${CMAKE_CURRENT_LIST_DIR}/ShadowVolume.cpp
-	${CMAKE_CURRENT_LIST_DIR}/ShadowVolume.h
-	${CMAKE_CURRENT_LIST_DIR}/Volume.cpp
-	${CMAKE_CURRENT_LIST_DIR}/Volume.h)
-	
-set(PVRAssets_LINK_LIBS PowerVR_SDK PVRCore)
-	
-get_directory_property(HAS_PARENT PARENT_DIRECTORY)
-if(HAS_PARENT AND USE_PREBUILT_DEPENDENCIES)
-add_library(PVRAssets STATIC IMPORTED GLOBAL)
+	fileio/GltfReader.cpp
+	fileio/PODReader.cpp
+	Helper.cpp
+	model/Animation.cpp
+	model/Camera.cpp
+	model/Light.cpp
+	model/Mesh.cpp
+	model/Model.cpp
+	ShadowVolume.cpp
+	Volume.cpp)
 
-# add the subdirectory after the add_library so that the target exists
-add_subdirectory(../.. ${CMAKE_CURRENT_BINARY_DIR}/sdk EXCLUDE_FROM_ALL)
+# Create the library
+add_library(PVRAssets STATIC ${PVRAssets_SRC} ${PVRAssets_HEADERS} ${PVRAssets_FILEIO_HEADERS} ${PVRAssets_MODEL_HEADERS})
 
-set_target_properties(PVRAssets PROPERTIES
-	IMPORTED_LOCATION_DEBUG ${FRAMEWORK_LIB_FOLDER}/${CMAKE_STATIC_LIBRARY_PREFIX}PVRAssets${CMAKE_STATIC_LIBRARY_SUFFIX}
-	IMPORTED_LOCATION_RELEASE ${FRAMEWORK_LIB_FOLDER}/${CMAKE_STATIC_LIBRARY_PREFIX}PVRAssets${CMAKE_STATIC_LIBRARY_SUFFIX}
-	INTERFACE_LINK_LIBRARIES "${PVRAssets_LINK_LIBS}")
-else()
-add_library(PVRAssets STATIC EXCLUDE_FROM_ALL ${PVRAssets_SRC})
-
-# add the subdirectory after the add_library so that the target exists
-add_subdirectory(../.. ${CMAKE_CURRENT_BINARY_DIR}/sdk EXCLUDE_FROM_ALL)
-
-target_link_libraries(PVRAssets ${PVRAssets_LINK_LIBS})
-set_target_properties(PVRAssets PROPERTIES 
-	ARCHIVE_OUTPUT_DIRECTORY ${FRAMEWORK_LIB_FOLDER}
-	LIBRARY_OUTPUT_DIRECTORY ${FRAMEWORK_LIB_FOLDER})
+if(PVR_PREBUILT_DEPENDENCIES)
+	list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/../../cmake/modules")
+	find_dependency(PVRCore MODULE REQUIRED)
+	find_dependency(tinygltf MODULE REQUIRED)
 endif()
+
+apply_compile_options_to_target(PVRAssets)
+
+target_link_libraries(PVRAssets
+	PUBLIC
+		PVRCore
+	PRIVATE
+		tinygltf)
+
+target_include_directories(PVRAssets 
+	PUBLIC 
+		$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../>
+		$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+
+install(TARGETS PVRAssets EXPORT PVRAssetsTargets
+	ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+	RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+	INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+	OPTIONAL)
+foreach(file ${PVRAssets_HEADERS})
+	get_filename_component(dir ${file} DIRECTORY)
+	install(FILES ${file} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/PVRAssets/${dir})
+endforeach()
+install(EXPORT PVRAssetsTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/PVRAssets OPTIONAL)
+
+export(EXPORT PVRAssetsTargets FILE "${CMAKE_CURRENT_BINARY_DIR}/PVRAssets/PVRAssetsTargets.cmake")
+# build tree package config
+file(COPY cmake/PVRAssetsConfig.cmake.in DESTINATION "${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/PVRAssets/" NO_SOURCE_PERMISSIONS)
+configure_file("${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/PVRAssets/PVRAssetsConfig.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/PVRAssets/PVRAssetsConfig.cmake" COPYONLY)
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/PVRAssets/PVRAssetsTargets.cmake" DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/PVRAssets OPTIONAL)

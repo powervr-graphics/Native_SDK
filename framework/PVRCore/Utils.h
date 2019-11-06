@@ -10,7 +10,10 @@
 #include <array>
 #include <cassert>
 #include <cstring>
+#ifndef PVRCORE_NO_GLM
 #include "glm.h"
+#endif
+
 /// <summary>Main PowerVR Framework Namespace</summary>
 namespace pvr {
 /// <summary>Contains assorted utility functions (test endianness, unicode conversions etc.)</summary>
@@ -23,10 +26,7 @@ namespace utils {
 /// <param name="b">Red channel (8 bit)</param>
 /// <param name="a">Red channel (8 bit)</param>
 /// <returns>32 bit RGBA value</returns>
-inline uint32_t packRGBA(uint8_t r, uint8_t g, uint8_t b, uint8_t a)
-{
-	return (static_cast<uint32_t>(((a) << 24) | ((b) << 16) | ((g) << 8) | (r)));
-}
+inline uint32_t packRGBA(uint8_t r, uint8_t g, uint8_t b, uint8_t a) { return (static_cast<uint32_t>(((a) << 24) | ((b) << 16) | ((g) << 8) | (r))); }
 
 /// <summary>Pack 4 values (red, green, blue, alpha) in the range of 0.0-1.0 into a single 32 bit unsigned Integer
 /// unsigned.</summary>
@@ -113,6 +113,8 @@ inline void memCopyToVolatile(volatile T1& dst, const T2& src)
 	memcpy(&const_cast<T1&>(dst), &src, sizeof(T1));
 }
 
+#ifndef PVRCORE_NO_GLM
+
 /// <summary>Convert the linear rgb color values in to srgb color space.</summary>
 /// <param name="lRGB">lRGB</param>
 /// <returns>sRGB color value</returns>
@@ -125,10 +127,8 @@ inline glm::vec3 convertLRGBtoSRGB(const glm::vec3& lRGB)
 /// The Alpha value get unmodified.</summary>
 /// <param name="lRGB">lRGB</param>
 /// <returns>sRGB color value</returns>
-inline glm::vec4 convertLRGBtoSRGB(const glm::vec4& lRGB)
-{
-	return glm::vec4(convertLRGBtoSRGB(glm::vec3(lRGB)), lRGB.a);
-}
+inline glm::vec4 convertLRGBtoSRGB(const glm::vec4& lRGB) { return glm::vec4(convertLRGBtoSRGB(glm::vec3(lRGB)), lRGB.a); }
 
+#endif
 } // namespace utils
 } // namespace pvr

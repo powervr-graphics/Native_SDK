@@ -30,27 +30,15 @@ public:
 	/// <summary>Constructor</summary>
 	Mutex() : sema(1) {}
 	/// <summary>Waits for semaphore completion</summary>
-	void lock()
-	{
-		sema.wait();
-	}
+	void lock() { sema.wait(); }
 	/// <summary>Signals the semaphore as completed</summary>
-	void unlock()
-	{
-		sema.signal();
-	}
+	void unlock() { sema.signal(); }
 	/// <summary>Retrieves the semaphore</summary>
 	/// <returns>The semaphore</returns>
-	Semaphore& getSemaphore()
-	{
-		return sema;
-	}
+	Semaphore& getSemaphore() { return sema; }
 	/// <summary>Retrieves the semaphore (const)</summary>
 	/// <returns>The semaphore (const)</returns>
-	const Semaphore& getSemaphore() const
-	{
-		return sema;
-	}
+	const Semaphore& getSemaphore() const { return sema; }
 };
 
 /// <summary>A reference-counted pointer to a Semaphore</summary>
@@ -112,17 +100,14 @@ public:
 	/// <summary>The type of the return value</summary>
 	typedef T ValueType;
 	/// <summary>A smart pointer to this result object (not the wrapped value)</summary>
-	typedef std::shared_ptr<IFrameworkAsyncResult<T> > PointerType;
+	typedef std::shared_ptr<IFrameworkAsyncResult<T>> PointerType;
 	/// <summary>A function pointer type that can be used as a callback to call
 	/// when the return value is ready</summary>
 	typedef void (*Callback)(PointerType);
 
 	/// <summary>Query is the return value is ready to be used</summary>
 	/// <returns>True if the value is ready, otherwise false</returns>
-	bool isComplete() const
-	{
-		return _isComplete ? true : (_isComplete = isComplete_());
-	}
+	bool isComplete() const { return _isComplete ? true : (_isComplete = isComplete_()); }
 	/// <summary>This is the most important function of IFrameworkAsyncResult: it actually
 	/// gets the return value. If the value is not yet ready (the task is not complete),
 	/// it will wait for the task completion. Use this immediately when other operations
@@ -131,19 +116,13 @@ public:
 	/// If the task may fail, you should call isSuccessful() before
 	/// using the value to ensure it is what you expect.</summary>
 	/// <returns>The return value of the operation.</returns>
-	ValueType get()
-	{
-		return get_();
-	}
+	ValueType get() { return get_(); }
 	/// <summary>Returns true if the operation was successful. An operation that is not
 	/// complete cannot be successful, so check isComplete to ensure that a return value
 	/// of false means that the operation actually failed</returns>
 	/// <returns>True if the operation is complete and successful, false if the operation
 	/// failed or has not yet completed</returns>
-	bool isSuccessful() const
-	{
-		return _successful;
-	}
+	bool isSuccessful() const { return _successful; }
 
 protected:
 	Callback _completionCallback; //!< The callback that will be called on completion
@@ -152,10 +131,7 @@ protected:
 
 	/// <summary>Set the callback (a function pointer that will be called whenever processing an item is done)</summary>
 	/// <param name="completionCallback">The callback to set</param>
-	void setTheCallback(Callback completionCallback)
-	{
-		_completionCallback = completionCallback;
-	}
+	void setTheCallback(Callback completionCallback) { _completionCallback = completionCallback; }
 
 	/// <summary>Execute the callback (overridable)</summary>
 	/// <param name="thisPtr">The object with which the callback will be executed as a parameter.</param>
@@ -199,14 +175,11 @@ class AsyncScheduler
 {
 public:
 	/// <summary>The type of result throughout this class.</summary>
-	typedef std::shared_ptr<IFrameworkAsyncResult<ValueType> > AsyncResult;
+	typedef std::shared_ptr<IFrameworkAsyncResult<ValueType>> AsyncResult;
 
 	/// <summary>The approximate number of queued items. (Unsynchronized for performance).</summary>
 	/// <returns>The number of queued items (currently visible to this thread)</returns>
-	uint32_t getNumApproxQueuedItem()
-	{
-		return static_cast<uint32_t>(_queue.size());
-	}
+	uint32_t getNumApproxQueuedItem() { return static_cast<uint32_t>(_queue.size()); }
 
 	/// <summary>The precise number of queued items at the time of calling. Although it is poosible
 	/// that (if the queue is currently producing or consuming) the number has changed by the time
@@ -234,10 +207,7 @@ public:
 		}
 		_queueSemaphore.signal();
 		if (didit) // Only join if it was actually running. Duh!
-		{
-			_thread.join();
-		}
-	}
+		{ _thread.join(); } }
 
 protected:
 	/// <summary>Constructor (empty, spawns worker thread and waits)</summary>
@@ -324,45 +294,42 @@ private:
 } // namespace pvr
 
 namespace pvr {
-/// <summary>A simple adapter for the BlockingConcurrentQueue that just simplifies the common case</summary>
+/// <summary>A simple adapter for the BlockingConcurrentQueue that simplifies common use cases</summary>
 template<typename T>
 class LockedQueue
 {
-	moodycamel::BlockingConcurrentQueue<T> queue;
+	moodycamel::BlockingConcurrentQueue<T> _queue;
+	std::atomic<int32_t> _unblockingCounter; // 1->32767:unblocking one 2,147,483,648:draining all
+	volatile bool _isUnblocking;
+	const int TIMEOUT_US = 1000;
 
 public:
 	/// <summary>Producer token</summary>
 	typedef moodycamel::ProducerToken ProducerToken;
 	/// <summary>Consumer token</summary>
 	typedef moodycamel::ConsumerToken ConsumerToken;
+
 	/// <summary>Constructor</summary>
-	LockedQueue() {}
+	LockedQueue() : _unblockingCounter(0), _isUnblocking(false) {}
+
 	/// <summary>Get a consumer token for this queue</summary>
 	/// <returns>A consumer token</returns>
-	ConsumerToken getConsumerToken()
-	{
-		return ConsumerToken(queue);
-	}
+	ConsumerToken getConsumerToken() { return ConsumerToken(_queue); }
+
 	/// <summary>Get a producer token for this queue</summary>
 	/// <returns>A producer token</returns>
-	ProducerToken getProducerToken()
-	{
-		return ProducerToken(queue);
-	}
+	ProducerToken getProducerToken() { return ProducerToken(_queue); }
+
 	/// <summary>Produce: Enqueue an item in the queue.</summary>
 	/// <param name="item">The item that will be enqueued. Will be copied into the queue.</param>
-	void produce(const T& item)
-	{
-		queue.enqueue(item);
-	}
+	void produce(const T& item) { _queue.enqueue(item); }
+
 	/// <summary>Produce: Enqueue an item in the queue, using a producer token.
 	/// Will generally be more efficient to use tokens.</summary>
 	/// <param name="token">The ProducerToken. May be used to create "private" subqueues to avoid thread contention.</param>
 	/// <param name="item">The item that will be enqueued. Will be copied into the queue.</param>
-	void produce(ProducerToken& token, const T& item)
-	{
-		queue.enqueue(token, item);
-	}
+	void produce(ProducerToken& token, const T& item) { _queue.enqueue(token, item); }
+
 	/// <summary>Produce: Enqueue multiple items in the queue.
 	/// Will be very efficient.</summary>
 	/// <param name="items">A type that will act as an iterator. Typically a C-pointer</param>
@@ -371,8 +338,9 @@ public:
 	template<typename iterator>
 	void produceMultiple(iterator items, uint32_t numItems)
 	{
-		queue.enqueue_bulk(items, numItems);
+		_queue.enqueue_bulk(items, numItems);
 	}
+
 	/// <summary>Produce: Enqueue multiple items in the queue.
 	/// Will be very the most efficient way of enqueueing multiple items.</summary>
 	/// <param name="items">A type that will act as an iterator. Typically a C-pointer</param>
@@ -382,7 +350,30 @@ public:
 	template<typename iterator>
 	void produceMultiple(ProducerToken& token, iterator items, uint32_t numItems)
 	{
-		queue.enqueue_bulk(token, items, numItems);
+		_queue.enqueue_bulk(token, items, numItems);
+	}
+
+	// This function will test if there is spend an unblock token. Should be called once whenever a dequeue
+	inline bool tryUnblockAndReturnTrueIfUnblocked()
+	{
+		// times out
+		if (_isUnblocking)
+		{
+			// Spend an "unblock token"
+			int32_t howManyUnblocks = _unblockingCounter--;
+			if (howManyUnblocks == 1)
+			{
+				// Finish unblocking if all tokens are spent
+				_isUnblocking = false;
+			} // Last one!
+			if (howManyUnblocks > 0)
+			{
+				// If you didn't spend a token that was not there, break free, you are unblocked
+				return true;
+			}
+			++_unblockingCounter; // Nope, not unblocking, at least not for THIS thread. Revert your change, and keep waiting - token is already spent.
+		}
+		return false;
 	}
 
 	/// <summary>Blocking consume: Dequeue one item from the queue. If returns false, the queue was finishing.</summary>
@@ -390,7 +381,14 @@ public:
 	/// <returns>True if an item was dequeued, otherwise false</returns>
 	bool consume(T& item)
 	{
-		return queue.wait_dequeue(item);
+		bool result = false;
+		// Spins until you either an item is consumed (returns "result" number of items), or an "unblock" token is consumed.
+		while (!(result = _queue.wait_dequeue_timed(item, TIMEOUT_US)))
+		{
+			if (tryUnblockAndReturnTrueIfUnblocked()) { break; }
+		}
+		assert(_unblockingCounter >= 0);
+		return result;
 	}
 
 	/// <summary>Blocking consume: Dequeue one item from the queue. If returns false, the queue was finishing.</summary>
@@ -399,7 +397,14 @@ public:
 	/// <returns>True if an item was dequeued, otherwise false</returns>
 	bool consume(ConsumerToken& token, T& item)
 	{
-		return queue.wait_dequeue(token, item);
+		bool result = false;
+		// Spins until you either an item is consumed (returns "result" number of items), or an "unblock" token is consumed.
+		while (!(result = _queue.wait_dequeue_timed(token, item, TIMEOUT_US)))
+		{
+			if (tryUnblockAndReturnTrueIfUnblocked()) { break; }
+		}
+		assert(_unblockingCounter >= 0);
+		return result;
 	}
 
 	/// <summary>Blocking consume multiple: Dequeue multiple items from the queue. Will return at least one item, unless the
@@ -411,7 +416,14 @@ public:
 	template<typename iterator>
 	size_t consumeMultiple(iterator firstItem, uint32_t maxItems)
 	{
-		return queue.wait_dequeue_bulk(firstItem, maxItems);
+		bool result = false;
+		// Spins until you either an item is consumed (returns "result" number of items), or an "unblock" token is consumed.
+		while (!(result = _queue.wait_dequeue_bulk_timed(firstItem, maxItems, TIMEOUT_US)))
+		{
+			if (tryUnblockAndReturnTrueIfUnblocked()) { break; }
+		}
+		assert(_unblockingCounter >= 0);
+		return result;
 	}
 
 	/// <summary>Blocking consume multiple with token: Dequeue multiple items from the queue. Will return at least one item, unless the
@@ -424,51 +436,70 @@ public:
 	template<typename iterator>
 	size_t consumeMultiple(ConsumerToken& token, iterator firstItem, uint32_t maxItems)
 	{
-		return queue.wait_dequeue_bulk(token, firstItem, maxItems);
+		size_t result = 0;
+		while (!(result = _queue.wait_dequeue_bulk_timed(token, firstItem, maxItems, TIMEOUT_US)))
+		{
+			if (tryUnblockAndReturnTrueIfUnblocked()) { break; }
+		}
+		assert(_unblockingCounter >= 0);
+		return result;
 	}
 
 	/// <summary>Release one consumer from the queue. Used to release waiting threads when shutting down.</summary>
 	void unblockOne()
 	{
-		queue.unblock(1);
+		_isUnblocking = true;
+		_unblockingCounter += 1;
 	}
+
 	/// <summary>Release multiple consumers from the queue. Used to release waiting threads when shutting down.</summary>
 	/// <param name="numUnblock">The number of consumers to unblock</param>
-	void unblockMultiple(uint32_t numUnblock)
+	void unblockMultiple(uint16_t numUnblock)
 	{
-		queue.unblock(numUnblock);
+		_isUnblocking = true;
+		_unblockingCounter += numUnblock;
 	}
-	/// <summary>ONLY CALL ON EMPTY QUEUE, otherwise behaviour is undefined.</summary>
+
+	/// <summary>Only call on an empty, otherwise behaviour is undefined.</summary>
 	void reset()
 	{
-		queue.reset();
+		_unblockingCounter = 0;
+		_isUnblocking = false;
 	}
 
 	/// <summary>Check if the queue is (tentatively) empty - this is an approximation due to multithreading.
 	/// (To get a precise number the queue should have be blocked for all access and until it was used.)</summary>
 	/// <returns>True if the thread is empty, otherwise false</returns>
-	bool isEmpty()
-	{
-		return itemsRemainingApprox() == 0;
-	}
+	bool isEmpty() { return itemsRemainingApprox() == 0; }
+
 	/// <summary>Get the number of (tentative) items in the queue - this is an approximation due to multithreading.
 	/// (To get a precise number the queue should have be blocked for all access and until it was used.)</summary>
 	/// <returns>The number of produced items</returns>
-	size_t itemsRemainingApprox()
-	{
-		return queue.size_approx();
-	}
-	/// <summary>ALWAYS CALL ONLY AFTER YOU STOP ENQUEUEING ITEMS. Waits for all consumers to finish consuming,
+	size_t itemsRemainingApprox() { return _queue.size_approx(); }
+
+	/// <summary>Always call this after you stop enqueueing items. Waits for all consumers to finish consuming,
 	/// and then signals the queue to finish (unblocks all consumers on an empty queue)</summary>
-	void drainEmpty()
+	void waitUntilEmpty()
 	{
-		queue.drainEmpty();
+		while (_queue.size_approx())
+		{
+			while (_queue.size_approx())
+			{
+				// allow the consumers to consume
+				std::this_thread::sleep_for(std::chrono::microseconds(10 * _queue.size_approx()));
+			}
+			// just for good measure...
+			std::this_thread::sleep_for(std::chrono::microseconds(50));
+		}
+		done();
 	}
+
 	/// <summary>Immediately signal all consumers to unblock and stop, refusing to enqueue any more items.
 	/// The queue will be inconsistent afterwards and should be destroyed.</summary>
 	void done()
 	{
-		queue.finishImmediate();
+		_unblockingCounter = (std::numeric_limits<int>::max() / 2); // Robustness. Allow user to still call unblock without overflow
+		_isUnblocking = true;
 	}
-};
+}; // namespace pvr
 } // namespace pvr

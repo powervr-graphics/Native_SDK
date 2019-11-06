@@ -1,8 +1,9 @@
 var searchData=
 [
   ['d3dcolor',['D3DCOLOR',['../namespacepvr.html#a7924324f96dc973225ad3c532cc72309a67cb8b94254acbfda2cdf7a916421298',1,'pvr']]],
-  ['datasize',['dataSize',['../structpvr_1_1texture__legacy_1_1_header_v1.html#ac5cec0a143b61001c3723af9efcd96bf',1,'pvr::texture_legacy::HeaderV1::dataSize()'],['../classpvr_1_1_free_value_view.html#a0aa9115211adc67014c867a69b12c87e',1,'pvr::FreeValueView::dataSize()']]],
-  ['datatype',['dataType',['../structpvr_1_1effect_1_1_buffer_definition_1_1_entry.html#a77ed27e652f3fa9352ebef9f611aa164',1,'pvr::effect::BufferDefinition::Entry::dataType()'],['../structpvr_1_1effect_1_1_uniform_semantic.html#ac65051447f5b09c780715a0ef91c4c4f',1,'pvr::effect::UniformSemantic::dataType()'],['../structpvr_1_1effect_1_1_attribute_semantic.html#ad3b02ef3e043977630a9052a2ccbe593',1,'pvr::effect::AttributeSemantic::dataType()'],['../structpvr_1_1_image_data_format.html#aa271880fb7770fb0cf6feec8b8bf77d4',1,'pvr::ImageDataFormat::dataType()'],['../structpvr_1_1_vertex_attribute_layout.html#abd726ad9b53010e8b1ec9869f4742975',1,'pvr::VertexAttributeLayout::dataType()'],['../classpvr_1_1_free_value_view.html#a8dfbe83db91fe5bfb1dbccbe8834cab8',1,'pvr::FreeValueView::dataType()'],['../namespacepvr.html#a7924324f96dc973225ad3c532cc72309',1,'pvr::DataType()']]],
+  ['d3dformat',['D3DFormat',['../_file_defines_d_d_s_8h.html#a628b237cfaa1315a2e7312c017e65a03',1,'pvr::texture_dds']]],
+  ['datasize',['dataSize',['../structpvr_1_1texture__legacy_1_1_header_v1.html#ac5cec0a143b61001c3723af9efcd96bf',1,'pvr::texture_legacy::HeaderV1::dataSize()'],['../classpvr_1_1_free_value_view.html#a34e67fecfeafdf8db696da1ba4a6bbb8',1,'pvr::FreeValueView::dataSize()']]],
+  ['datatype',['dataType',['../structpvr_1_1effect_1_1_buffer_definition_1_1_entry.html#a77ed27e652f3fa9352ebef9f611aa164',1,'pvr::effect::BufferDefinition::Entry::dataType()'],['../structpvr_1_1effect_1_1_uniform_semantic.html#ac65051447f5b09c780715a0ef91c4c4f',1,'pvr::effect::UniformSemantic::dataType()'],['../structpvr_1_1effect_1_1_attribute_semantic.html#ad3b02ef3e043977630a9052a2ccbe593',1,'pvr::effect::AttributeSemantic::dataType()'],['../structpvr_1_1_image_data_format.html#aa271880fb7770fb0cf6feec8b8bf77d4',1,'pvr::ImageDataFormat::dataType()'],['../structpvr_1_1_vertex_attribute_layout.html#abd726ad9b53010e8b1ec9869f4742975',1,'pvr::VertexAttributeLayout::dataType()'],['../classpvr_1_1_free_value_view.html#ac39b7136564f7eb47f3c5f3df65f9140',1,'pvr::FreeValueView::dataType()'],['../namespacepvr.html#a7924324f96dc973225ad3c532cc72309',1,'pvr::DataType()']]],
   ['datatype_5f',['dataType_',['../classpvr_1_1_free_value_view.html#a7cb6084a7d5c18a295a3bd76635db43d',1,'pvr::FreeValueView']]],
   ['datatypeisnormalised',['dataTypeIsNormalised',['../namespacepvr.html#a32304b6fe8a8ebcfdaa03d5b227da809',1,'pvr']]],
   ['datatypesize',['dataTypeSize',['../namespacepvr.html#a4bbe49ea1e5ffbeaf1463379ff1adcfc',1,'pvr']]],
@@ -25,6 +26,7 @@ var searchData=
   ['depthbpp',['depthBPP',['../classpvr_1_1_display_attributes.html#ae80999d8458a2a0067e0f09c32d2b47e',1,'pvr::DisplayAttributes']]],
   ['depthcmpfunc',['depthCmpFunc',['../structpvr_1_1effect_1_1_pipeline_definition.html#a024818e779b9086cc976909347c8d5fb',1,'pvr::effect::PipelineDefinition']]],
   ['descriptor',['descriptor',['../structpvr_1_1texture__tga_1_1_file_header.html#a2e9ddf0dfc63f4215a025790fe84e24b',1,'pvr::texture_tga::FileHeader']]],
+  ['descriptorflag',['DescriptorFlag',['../_file_defines_t_g_a_8h.html#a40997ef8601df090f40772aa95088c57',1,'pvr::texture_tga']]],
   ['descriptorref',['DescriptorRef',['../structpvr_1_1effect_1_1_descriptor_ref.html',1,'pvr::effect']]],
   ['descriptortype',['DescriptorType',['../namespacepvr.html#a3283c5c9822ac5135fefd45a7cdd5932',1,'pvr']]],
   ['descriptortypetobufferusage',['descriptorTypeToBufferUsage',['../namespacepvr.html#af4676d56d2f795d4c4f5b7a094af90c9',1,'pvr']]],
@@ -32,12 +34,11 @@ var searchData=
   ['distancepointtoplane',['distancePointToPlane',['../namespacepvr_1_1math.html#a604fa4c3a5bcbcdd7ea87858b235e780',1,'pvr::math']]],
   ['distanceto',['distanceTo',['../classpvr_1_1_plane3d.html#a6d5f4fd659d0b18994d4f439b6c90047',1,'pvr::Plane3d']]],
   ['done',['done',['../classpvr_1_1_locked_queue.html#a67dcdfb780c3e09e50b868d5938b1430',1,'pvr::LockedQueue']]],
-  ['drainempty',['drainEmpty',['../classpvr_1_1_locked_queue.html#a8a2c354a3bb3c4ca5dd9c746372f9f9c',1,'pvr::LockedQueue']]],
   ['dstalpha',['DstAlpha',['../namespacepvr.html#afc560f133c0bcec5adff02183b4a9386af72dbe2436b38a39e5927ed644e6818b',1,'pvr']]],
   ['dstblendalpha',['dstBlendAlpha',['../structpvr_1_1_blending_config.html#a932a0d1a4baa563a650b1407c6051c69',1,'pvr::BlendingConfig']]],
   ['dstblendcolor',['dstBlendColor',['../structpvr_1_1_blending_config.html#a00a8feadb5eaec6ccb6b3b99feea00a2',1,'pvr::BlendingConfig']]],
   ['dstcolor',['DstColor',['../namespacepvr.html#afc560f133c0bcec5adff02183b4a9386afaedf511c99a5461048fd6a3b73da26c',1,'pvr']]],
   ['dstoffset',['dstOffset',['../structpvr_1_1_image_resolve_range.html#aee1ad3674346e6fa8b4891de3f639fdf',1,'pvr::ImageResolveRange']]],
   ['dstsubresource',['dstSubResource',['../structpvr_1_1_image_resolve_range.html#a9bdd1f935efc5afa3f91a104c1ea831a',1,'pvr::ImageResolveRange']]],
-  ['dxgiformat',['dxgiFormat',['../structpvr_1_1texture__dds_1_1_file_header_d_x10.html#a3df4f7e0a49a0400329535ab1b55e632',1,'pvr::texture_dds::FileHeaderDX10']]]
+  ['dxgiformat',['dxgiFormat',['../structpvr_1_1texture__dds_1_1_file_header_d_x10.html#a3df4f7e0a49a0400329535ab1b55e632',1,'pvr::texture_dds::FileHeaderDX10::dxgiFormat()'],['../_file_defines_d_d_s_8h.html#a322d6a22cb5b62c28c1288b29d2bf427',1,'pvr::texture_dds::DXGIFormat()']]]
 ];

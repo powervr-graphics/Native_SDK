@@ -8,7 +8,6 @@
 #pragma once
 
 #include "PVRCore/types/Types.h"
-#include "PVRCore/RefCounted.h"
 #include "PVRCore/Log.h"
 #include "OpenGLES/ES2/gl.h"
 #include "OpenGLES/ES2/glext.h"
@@ -60,32 +59,26 @@ struct NativeSharedPlatformHandles_
 struct NativeDisplayHandle_
 {
 	NativeDisplay nativeDisplay;
-	operator NativeDisplay&()
-	{
-		return nativeDisplay;
-	}
-	operator const NativeDisplay&() const
-	{
-		return nativeDisplay;
-	}
+	operator NativeDisplay&() { return nativeDisplay; }
+	operator const NativeDisplay&() const { return nativeDisplay; }
 };
 /*! \brief Forward-declare friendly container for the native window */
 struct NativeWindowHandle_
 {
 	NativeWindow nativeWindow;
-	operator NativeWindow&()
-	{
-		return nativeWindow;
-	}
-	operator const NativeWindow&() const
-	{
-		return nativeWindow;
-	}
+	operator NativeWindow&() { return nativeWindow; }
+	operator const NativeWindow&() const { return nativeWindow; }
 };
 
-typedef RefCountedResource<NativePlatformHandles_> NativePlatformHandles;
-typedef RefCountedResource<NativeDisplayHandle_> NativeDisplayHandle;
-typedef RefCountedResource<NativeSharedPlatformHandles_> NativeSharedPlatformHandles;
+/// <summary>Pointer to a struct of platform handles. Used to pass around the undefined NativePlatformHandles_ struct.</summary>
+typedef std::shared_ptr<NativePlatformHandles_> NativePlatformHandles;
+
+/// <summary>Pointer to a struct of platform handles. Used to pass around the undefined NativePlatformHandles_ struct.</summary>
+typedef std::shared_ptr<NativeDisplayHandle_> NativeDisplayHandle;
+
+/// <summary>Pointer to a struct of Shared context handles. Used to pass around the undefined NativeSharedPlatformHandles_
+/// struct</summary>
+typedef std::shared_ptr<NativeSharedPlatformHandles_> NativeSharedPlatformHandles;
 
 } // namespace platform
 } // namespace pvr

@@ -11,14 +11,15 @@ matrix:
           - tools
           - platform-tools
           - tools
-          - build-tools-27.0.3
-          - android-26
+          - build-tools-29.0.0
+          - android-29
       licenses:
           - 'android-sdk-preview-license-.+'
           - 'android-sdk-license-.+'
           - 'android-ndk-license-.+'
       before_install: 
           - echo y | sdkmanager "ndk-bundle"
+          - echo y | sdkmanager --channel=3 --channel=1 "cmake;3.10.2.4988404"
       before_script: 
           - cd build-android 
           - chmod +x gradlew

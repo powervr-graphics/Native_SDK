@@ -15,7 +15,7 @@ layout(location = 0) out mediump vec2 UV_OUT;
 
 void main()
 {
-	// Simply calculate the ndc position for the current vertex using the model view projection matrix
+	// Calculate the ndc position for the current vertex using the model view projection matrix.
 	gl_Position = modelViewProjectionMatrix * vertex;
 	UV_OUT = uv;
 }

@@ -39,20 +39,15 @@ enum class UboDescSetBindingId
 	Material
 };
 } // namespace
+
 void UIRenderer::initCreatePipeline(bool isFrameBufferSrgb)
 {
 	GraphicsPipelineCreateInfo pipelineDesc;
 	PipelineLayoutCreateInfo pipeLayoutInfo;
 	pipeLayoutInfo.addDescSetLayout(_texDescLayout);
 
-	if (_uboMvpDescLayout)
-	{
-		pipeLayoutInfo.addDescSetLayout(_uboMvpDescLayout);
-	}
-	if (_uboMaterialLayout)
-	{
-		pipeLayoutInfo.addDescSetLayout(_uboMaterialLayout);
-	}
+	if (_uboMvpDescLayout) { pipeLayoutInfo.addDescSetLayout(_uboMvpDescLayout); }
+	if (_uboMaterialLayout) { pipeLayoutInfo.addDescSetLayout(_uboMaterialLayout); }
 
 	Device deviceSharedPtr = _device.lock();
 
@@ -82,7 +77,7 @@ void UIRenderer::initCreatePipeline(bool isFrameBufferSrgb)
 	pipelineDesc.rasterizer.setCullMode(pvrvk::CullModeFlags::e_NONE);
 	pipelineDesc.inputAssembler.setPrimitiveTopology(pvrvk::PrimitiveTopology::e_TRIANGLE_LIST);
 	pipelineDesc.viewport.setViewportAndScissor(0, Viewport(0, 0, _screenDimensions.x, _screenDimensions.y),
-		Rect2D(pvrvk::Offset2D(0, 0), pvrvk::Extent2D(static_cast<int32_t>(_screenDimensions.x), static_cast<int32_t>(_screenDimensions.y))));
+		Rect2D(pvrvk::Offset2D(0, 0), pvrvk::Extent2D(static_cast<uint32_t>(_screenDimensions.x), static_cast<uint32_t>(_screenDimensions.y))));
 	pipelineDesc.renderPass = _renderpass;
 	pipelineDesc.subpass = _subpass;
 	pipelineDesc.flags = pvrvk::PipelineCreateFlags::e_ALLOW_DERIVATIVES_BIT;
@@ -90,8 +85,31 @@ void UIRenderer::initCreatePipeline(bool isFrameBufferSrgb)
 
 	const int32_t shaderConst = static_cast<int32_t>(isFrameBufferSrgb);
 	pipelineDesc.fragmentShader.setShaderConstant(0, pvrvk::ShaderConstantInfo(0, &shaderConst, static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::Integer))));
+
+#ifdef VK_USE_PLATFORM_MACOS_MVK
+
+	VkInstance instance = deviceSharedPtr->getPhysicalDevice()->getInstance()->getVkHandle();
+
+	// set fullImageViewSwizzle to true and set MoltenVKConfig.
+	if (!isFullImageViewSwizzleMVK)
+	{
+		mvkConfig.fullImageViewSwizzle = true;
+		pvrvk::getVkBindings().vkSetMoltenVKConfigurationMVK(instance, &mvkConfig, &sizeOfMVK);
+	}
+
+#endif
+
 	_pipeline = deviceSharedPtr->createGraphicsPipeline(pipelineDesc, _pipelineCache);
 	_pipeline->setObjectName("PVRUtilsVk::UIRenderer::UI GraphicsPipeline");
+
+#ifdef VK_USE_PLATFORM_MACOS_MVK
+	if (!isFullImageViewSwizzleMVK)
+	{
+		// Reset fullImageViewSwizzle to it's previous value.
+		mvkConfig.fullImageViewSwizzle = isFullImageViewSwizzleMVK;
+		pvrvk::getVkBindings().vkSetMoltenVKConfigurationMVK(instance, &mvkConfig, &sizeOfMVK);
+	}
+#endif
 }
 
 void UIRenderer::initCreateDescriptorSetLayout()
@@ -100,7 +118,7 @@ void UIRenderer::initCreateDescriptorSetLayout()
 	descPoolInfo.addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, MaxCombinedImageSampler);
 	descPoolInfo.setMaxDescriptorSets(MaxCombinedImageSampler);
 	descPoolInfo.addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, MaxDescUbo);
-	descPoolInfo.setMaxDescriptorSets(descPoolInfo.getMaxDescriptorSets() + MaxDescUbo);
+	descPoolInfo.setMaxDescriptorSets((uint16_t)(descPoolInfo.getMaxDescriptorSets() + MaxDescUbo));
 
 	Device deviceSharedPtr = _device.lock();
 
@@ -171,10 +189,7 @@ void UIRenderer::setUpUboPools(uint32_t numInstances, uint32_t numSprites)
 	_uboMaterial.init(device, _uboMaterialLayout, getDescriptorPool(), *this);
 }
 
-Image UIRenderer::createImage(const ImageView& tex, const Sampler& sampler)
-{
-	return createImageFromAtlas(tex, Rect2Df(0.0f, 0.0f, 1.0f, 1.0f), sampler);
-}
+Image UIRenderer::createImage(const ImageView& tex, const Sampler& sampler) { return createImageFromAtlas(tex, Rect2Df(0.0f, 0.0f, 1.0f, 1.0f), sampler); }
 
 pvr::ui::Image UIRenderer::createImageFromAtlas(const ImageView& tex, const Rect2Df& uv, const Sampler& sampler)
 {
@@ -190,6 +205,7 @@ pvr::ui::Image UIRenderer::createImageFromAtlas(const ImageView& tex, const Rect
 
 TextElement UIRenderer::createTextElement(const std::wstring& text, const Font& font, uint32_t maxLength)
 {
+	(void)maxLength;
 	TextElement spriteText = pvr::ui::impl::TextElement_::constructShared(*this, text, font);
 	_textElements.emplace_back(spriteText);
 	return spriteText;
@@ -213,6 +229,14 @@ Text UIRenderer::createText(const TextElement& textElement)
 void UIRenderer::init(uint32_t width, uint32_t height, bool fullscreen, const RenderPass& renderpass, uint32_t subpass, bool isFrameBufferSrgb, CommandPool& commandPool,
 	Queue& queue, bool createDefaultLogo, bool createDefaultTitle, bool createDefaultFont, uint32_t maxNumInstances, uint32_t maxNumSprites)
 {
+#ifdef VK_USE_PLATFORM_MACOS_MVK
+
+	VkInstance instance = renderpass->getDevice()->getPhysicalDevice()->getInstance()->getVkHandle();
+	sizeOfMVK = sizeof(MVKConfiguration);
+	pvrvk::getVkBindings().vkGetMoltenVKConfigurationMVK(instance, &mvkConfig, &sizeOfMVK);
+	isFullImageViewSwizzleMVK = mvkConfig.fullImageViewSwizzle;
+
+#endif
 	_mustEndCommandBuffer = false;
 	_device = renderpass->getDevice();
 
@@ -225,8 +249,9 @@ void UIRenderer::init(uint32_t width, uint32_t height, bool fullscreen, const Re
 		pvrvk::Device device = getDevice().lock();
 		// Create a temporary buffer to derive the memory requirements for our buffer allocator.
 		// This buffer will be released at the end of this scope.
-		pvrvk::Buffer tempBuffer = utils::createBuffer(device, _uboMvp._structuredBufferView.getDynamicSliceSize(),
-			pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT | pvrvk::BufferUsageFlags::e_INDEX_BUFFER_BIT | pvrvk::BufferUsageFlags::e_VERTEX_BUFFER_BIT,
+		pvrvk::Buffer tempBuffer = utils::createBuffer(device,
+			pvrvk::BufferCreateInfo(_uboMvp._structuredBufferView.getDynamicSliceSize(),
+				pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT | pvrvk::BufferUsageFlags::e_INDEX_BUFFER_BIT | pvrvk::BufferUsageFlags::e_VERTEX_BUFFER_BIT),
 			(pvrvk::MemoryPropertyFlags(0)));
 
 		_vmaAllocator = utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(device, 0));
@@ -236,10 +261,7 @@ void UIRenderer::init(uint32_t width, uint32_t height, bool fullscreen, const Re
 	_renderpass = renderpass;
 	_subpass = subpass;
 	// screen rotated?
-	if (_screenDimensions.y > _screenDimensions.x && fullscreen)
-	{
-		rotateScreen90degreeCCW();
-	}
+	if (_screenDimensions.y > _screenDimensions.x && fullscreen) { rotateScreen90degreeCCW(); }
 
 	// create the commandbuffer
 	CommandBuffer cmdBuffer = commandPool->allocateCommandBuffer();
@@ -255,18 +277,9 @@ void UIRenderer::init(uint32_t width, uint32_t height, bool fullscreen, const Re
 	setUpUboPools(maxNumInstances, maxNumSprites);
 	initCreateDefaultSampler();
 
-	if (createDefaultLogo)
-	{
-		initCreateDefaultSdkLogo(cmdBuffer);
-	}
-	if (createDefaultFont)
-	{
-		initCreateDefaultFont(cmdBuffer);
-	}
-	if (createDefaultTitle)
-	{
-		initCreateDefaultTitle();
-	}
+	if (createDefaultLogo) { initCreateDefaultSdkLogo(cmdBuffer); }
+	if (createDefaultFont) { initCreateDefaultFont(cmdBuffer); }
+	if (createDefaultTitle) { initCreateDefaultTitle(); }
 	pvr::utils::endCommandBufferDebugLabel(cmdBuffer);
 	cmdBuffer->end();
 
@@ -303,10 +316,10 @@ void UIRenderer::initCreateDefaultSampler()
 void UIRenderer::initCreateDefaultSdkLogo(CommandBuffer& cmdBuffer)
 {
 	ImageView sdkLogoImage;
-	Stream::ptr_type sdkLogo = Stream::ptr_type(new BufferStream("", _PowerVR_Logo_RGBA_pvr, _PowerVR_Logo_RGBA_pvr_size));
+	std::unique_ptr<Stream> sdkLogo = std::make_unique<BufferStream>("", _PowerVR_Logo_RGBA_pvr, _PowerVR_Logo_RGBA_pvr_size);
 
 	Texture sdkTex;
-	sdkTex = textureLoad(sdkLogo, TextureFileFormat::PVR);
+	sdkTex = textureLoad(*sdkLogo, TextureFileFormat::PVR);
 	Device device = getDevice().lock();
 
 	pvr::utils::beginCommandBufferDebugLabel(cmdBuffer, pvrvk::DebugUtilsLabel("PVRUtilsVk::UIRenderer::initCreateDefaultSdkLogo"));
@@ -318,10 +331,7 @@ void UIRenderer::initCreateDefaultSdkLogo(CommandBuffer& cmdBuffer)
 	_sdkLogo->setAnchor(Anchor::BottomRight, glm::vec2(.98f, -.98f));
 	float scalefactor = .3f * getRenderingDim().x / BaseScreenDim.x;
 
-	if (scalefactor > 1)
-	{
-		scalefactor = 1;
-	}
+	if (scalefactor > 1) { scalefactor = 1; }
 	else if (scalefactor > .5)
 	{
 		scalefactor = .5;
@@ -353,14 +363,10 @@ void UIRenderer::initCreateDefaultTitle()
 		_defaultTitle->commitUpdates();
 		// set object names
 		if (_defaultTitle->getTextElement()->_vbo->getVkHandle() != VK_NULL_HANDLE)
-		{
-			_defaultTitle->getTextElement()->_vbo->setObjectName("PVRUtilsVk::UIRenderer::Default Title Vbo");
-		}
+		{ _defaultTitle->getTextElement()->_vbo->setObjectName("PVRUtilsVk::UIRenderer::Default Title Vbo"); }
 
 		if (_defaultTitle->getTextElement()->_drawIndirectBuffer->getVkHandle() != VK_NULL_HANDLE)
-		{
-			_defaultTitle->getTextElement()->_drawIndirectBuffer->setObjectName("PVRUtilsVk::UIRenderer::Default Title Draw Indirect Buffer");
-		}
+		{ _defaultTitle->getTextElement()->_drawIndirectBuffer->setObjectName("PVRUtilsVk::UIRenderer::Default Title Draw Indirect Buffer"); }
 	}
 
 	// Default Description
@@ -368,14 +374,10 @@ void UIRenderer::initCreateDefaultTitle()
 		_defaultDescription = createText(createTextElement("", _defaultFont, 256));
 		// set object names
 		if (_defaultDescription->getTextElement()->_vbo->getVkHandle() != VK_NULL_HANDLE)
-		{
-			_defaultDescription->getTextElement()->_vbo->setObjectName("PVRUtilsVk::UIRenderer::Default Description Vbo");
-		}
+		{ _defaultDescription->getTextElement()->_vbo->setObjectName("PVRUtilsVk::UIRenderer::Default Description Vbo"); }
 
 		if (_defaultDescription->getTextElement()->_drawIndirectBuffer->getVkHandle() != VK_NULL_HANDLE)
-		{
-			_defaultDescription->getTextElement()->_drawIndirectBuffer->setObjectName("PVRUtilsVk::UIRenderer::Default Description Draw Indirect Buffer");
-		}
+		{ _defaultDescription->getTextElement()->_drawIndirectBuffer->setObjectName("PVRUtilsVk::UIRenderer::Default Description Draw Indirect Buffer"); }
 		_defaultDescription->setAnchor(Anchor::TopLeft, glm::vec2(-.98f, .98f - _defaultTitle->getFont()->getFontLineSpacing() / static_cast<float>(getRenderingDimY()) * 1.5f))
 			->setScale(glm::vec2(.60, .60));
 		_defaultDescription->commitUpdates();
@@ -386,14 +388,10 @@ void UIRenderer::initCreateDefaultTitle()
 		_defaultControls = createText(createTextElement("", _defaultFont, 256));
 		// set object names
 		if (_defaultControls->getTextElement()->_vbo->getVkHandle() != VK_NULL_HANDLE)
-		{
-			_defaultControls->getTextElement()->_vbo->setObjectName("PVRUtilsVk::UIRenderer::Default Controls Vbo");
-		}
+		{ _defaultControls->getTextElement()->_vbo->setObjectName("PVRUtilsVk::UIRenderer::Default Controls Vbo"); }
 
 		if (_defaultControls->getTextElement()->_drawIndirectBuffer->getVkHandle() != VK_NULL_HANDLE)
-		{
-			_defaultControls->getTextElement()->_drawIndirectBuffer->setObjectName("PVRUtilsVk::UIRenderer::Default Controls Draw Indirect Buffer");
-		}
+		{ _defaultControls->getTextElement()->_drawIndirectBuffer->setObjectName("PVRUtilsVk::UIRenderer::Default Controls Draw Indirect Buffer"); }
 		_defaultControls->setAnchor(Anchor::BottomLeft, glm::vec2(-.98f, -.98f))->setScale(glm::vec2(.5, .5));
 		_defaultControls->commitUpdates();
 	}
@@ -403,29 +401,46 @@ void UIRenderer::initCreateDefaultFont(CommandBuffer& cmdBuffer)
 {
 	pvr::utils::beginCommandBufferDebugLabel(cmdBuffer, pvrvk::DebugUtilsLabel("PVRUtilsVk::UIRenderer::initCeateDefaultFont"));
 	Texture fontTex;
-	Stream::ptr_type arialFontTex;
+	std::unique_ptr<Stream> arialFontTex;
 	float maxRenderDim = glm::max<float>(getRenderingDimX(), getRenderingDimY());
 	// pick the right font size of this resolution.
-	if (maxRenderDim <= 800)
-	{
-		arialFontTex = Stream::ptr_type(new BufferStream("", _arialbd_36_r8_pvr, _arialbd_36_r8_pvr_size));
-	}
+	if (maxRenderDim <= 800) { arialFontTex = std::make_unique<BufferStream>("", _arialbd_36_r8_pvr, _arialbd_36_r8_pvr_size); }
 	else if (maxRenderDim <= 1000)
 	{
-		arialFontTex = Stream::ptr_type(new BufferStream("", _arialbd_46_r8_pvr, _arialbd_46_r8_pvr_size));
+		arialFontTex = std::make_unique<BufferStream>("", _arialbd_46_r8_pvr, _arialbd_46_r8_pvr_size);
 	}
 	else
 	{
-		arialFontTex = Stream::ptr_type(new BufferStream("", _arialbd_56_r8_pvr, _arialbd_56_r8_pvr_size));
+		arialFontTex = std::make_unique<BufferStream>("", _arialbd_56_r8_pvr, _arialbd_56_r8_pvr_size);
 	}
 
-	fontTex = textureLoad(arialFontTex, TextureFileFormat::PVR);
+	fontTex = textureLoad(*arialFontTex, TextureFileFormat::PVR);
 
 	Device device = getDevice().lock();
+
+#ifdef VK_USE_PLATFORM_MACOS_MVK
+	VkInstance instance = device->getPhysicalDevice()->getInstance()->getVkHandle();
+
+	// set fullImageViewSwizzle to true and set MoltenVKConfig.
+	if (!isFullImageViewSwizzleMVK)
+	{
+		mvkConfig.fullImageViewSwizzle = true;
+		pvrvk::getVkBindings().vkSetMoltenVKConfigurationMVK(instance, &mvkConfig, &sizeOfMVK);
+	}
+
+#endif
 
 	pvrvk::ImageView fontImage = device->createImageView(pvrvk::ImageViewCreateInfo(utils::uploadImage(device, fontTex, true, cmdBuffer, pvrvk::ImageUsageFlags::e_SAMPLED_BIT,
 																						pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, &getMemoryAllocator(), &getMemoryAllocator()),
 		pvrvk::ComponentMapping(pvrvk::ComponentSwizzle::e_R, pvrvk::ComponentSwizzle::e_R, pvrvk::ComponentSwizzle::e_R, pvrvk::ComponentSwizzle::e_R)));
+
+#ifdef VK_USE_PLATFORM_MACOS_MVK
+	if (!isFullImageViewSwizzleMVK)
+	{
+		mvkConfig.fullImageViewSwizzle = isFullImageViewSwizzleMVK;
+		pvrvk::getVkBindings().vkSetMoltenVKConfigurationMVK(instance, &mvkConfig, &sizeOfMVK);
+	}
+#endif
 
 	_defaultFont = createFont(fontImage, fontTex);
 	fontImage->setObjectName("PVRUtilsVk::UIRenderer::Default Font ImageView");
@@ -448,22 +463,17 @@ void UIRenderer::UboMaterial::initLayout(Device& device, uint32_t numArrayId)
 
 void UIRenderer::UboMaterial::init(Device& device, DescriptorSetLayout& descLayout, DescriptorPool& pool, UIRenderer& uirenderer)
 {
-	_buffer = pvr::utils::createBuffer(device, (size_t)_structuredBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
+	_buffer = pvr::utils::createBuffer(device, pvrvk::BufferCreateInfo(static_cast<VkDeviceSize>(_structuredBufferView.getSize()), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT),
+		pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 		pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT |
 			pvrvk::MemoryPropertyFlags::e_HOST_CACHED_BIT,
 		&uirenderer._vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
 	_structuredBufferView.pointToMappedMemory(_buffer->getDeviceMemory()->getMappedData());
-	if (!_buffer)
-	{
-		Log("Failed to create UIRenderer Material buffer");
-	}
+	if (!_buffer) { Log("Failed to create UIRenderer Material buffer"); }
 	_buffer->setObjectName("PVRUtilsVk::UIRenderer::UboMaterial");
 
-	if (!_uboDescSetSet)
-	{
-		_uboDescSetSet = pool->allocateDescriptorSet(descLayout);
-	}
+	if (!_uboDescSetSet) { _uboDescSetSet = pool->allocateDescriptorSet(descLayout); }
 	_uboDescSetSet->setObjectName("PVRUtilsVk::UIRenderer::UboMaterial DescriptorSet");
 
 	WriteDescriptorSet writeDescSet(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, _uboDescSetSet, 0, 0);
@@ -483,17 +493,15 @@ void UIRenderer::UboMvp::initLayout(Device& device, uint32_t numElements)
 
 void UIRenderer::UboMvp::init(Device& device, DescriptorSetLayout& descLayout, DescriptorPool& pool, UIRenderer& uirenderer)
 {
-	_buffer = pvr::utils::createBuffer(device, (size_t)_structuredBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
+	_buffer = pvr::utils::createBuffer(device, pvrvk::BufferCreateInfo(static_cast<VkDeviceSize>(_structuredBufferView.getSize()), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT),
+		pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 		pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT |
 			pvrvk::MemoryPropertyFlags::e_HOST_CACHED_BIT,
 		&uirenderer._vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
 	_structuredBufferView.pointToMappedMemory(_buffer->getDeviceMemory()->getMappedData());
 
-	if (!_uboDescSetSet)
-	{
-		_uboDescSetSet = pool->allocateDescriptorSet(descLayout);
-	}
+	if (!_uboDescSetSet) { _uboDescSetSet = pool->allocateDescriptorSet(descLayout); }
 	WriteDescriptorSet writeDescSet(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, _uboDescSetSet, 0, 0);
 
 	writeDescSet.setBufferInfo(0, DescriptorBufferInfo(_buffer, 0, _structuredBufferView.getDynamicSliceSize()));
@@ -509,9 +517,7 @@ void UIRenderer::UboMaterial::updateMaterial(uint32_t arrayIndex, const glm::vec
 
 	// if the memory property flags used by the buffers' device memory do not contain e_HOST_COHERENT_BIT then we must flush the memory
 	if (static_cast<uint32_t>(_buffer->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
-	{
-		_buffer->getDeviceMemory()->flushRange(_structuredBufferView.getDynamicSliceOffset(arrayIndex), _structuredBufferView.getDynamicSliceSize());
-	}
+	{ _buffer->getDeviceMemory()->flushRange(_structuredBufferView.getDynamicSliceOffset(arrayIndex), _structuredBufferView.getDynamicSliceSize()); }
 }
 
 void UIRenderer::UboMvp::updateMvp(uint32_t bufferArrayId, const glm::mat4x4& mvp)
@@ -520,9 +526,7 @@ void UIRenderer::UboMvp::updateMvp(uint32_t bufferArrayId, const glm::mat4x4& mv
 
 	// if the memory property flags used by the buffers' device memory do not contain e_HOST_COHERENT_BIT then we must flush the memory
 	if (static_cast<uint32_t>(_buffer->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
-	{
-		_buffer->getDeviceMemory()->flushRange(_structuredBufferView.getDynamicSliceOffset(bufferArrayId), _structuredBufferView.getDynamicSliceSize());
-	}
+	{ _buffer->getDeviceMemory()->flushRange(_structuredBufferView.getDynamicSliceOffset(bufferArrayId), _structuredBufferView.getDynamicSliceSize()); }
 }
 } // namespace ui
 } // namespace pvr

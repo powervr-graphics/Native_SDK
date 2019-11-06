@@ -60,10 +60,7 @@ inline void getOpenGLStorageFormat(ImageStorageFormat storageFormat, GLenum& glI
 /// <summary>Converts from a pvr::IndexType to its OpenGL ES GLenum counterpart.</summary>
 /// <param name="type">The pvr::IndexType to convert.</param>
 /// <returns>The OpenGL ES GLenum counterpart to a pvr::IndexType.</returns>
-inline GLenum convertToGles(IndexType type)
-{
-	return (type == pvr::IndexType::IndexType16Bit ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT);
-}
+inline GLenum convertToGles(IndexType type) { return static_cast<GLenum>((type == pvr::IndexType::IndexType16Bit ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT)); }
 
 /// <summary>Convert to opengl face.</summary>
 /// <param name="face">A Face enum</param>

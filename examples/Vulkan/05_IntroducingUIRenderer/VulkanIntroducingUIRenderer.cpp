@@ -76,20 +76,14 @@ public:
 		return *this;
 	}
 
-	pvr::ui::Text getText(uint32_t swapchain)
-	{
-		return _text[swapchain];
-	}
+	pvr::ui::Text getText(uint32_t swapchain) { return _text[swapchain]; }
 
 	void setText(uint32_t swapchain, const char* str)
 	{
 		_lastUpdateText = swapchain;
 		_text[swapchain]->getTextElement()->setText(str);
 		_text[swapchain]->commitUpdates();
-		for (uint32_t i = 0; i < ARRAY_SIZE(_isDirty); ++i)
-		{
-			_isDirty[i] |= (1 << DirtyTextMask);
-		}
+		for (uint32_t i = 0; i < ARRAY_SIZE(_isDirty); ++i) { _isDirty[i] |= (1 << DirtyTextMask); }
 
 		_isDirty[swapchain] &= ~(1 << DirtyTextMask);
 	}
@@ -99,10 +93,7 @@ public:
 		_lastUpdateText = swapchain;
 		_text[swapchain]->getTextElement()->setText(str);
 		_text[swapchain]->commitUpdates();
-		for (uint32_t i = 0; i < _numElement; ++i)
-		{
-			_isDirty[i] |= (1 << DirtyTextMask);
-		}
+		for (uint32_t i = 0; i < _numElement; ++i) { _isDirty[i] |= (1 << DirtyTextMask); }
 
 		_isDirty[swapchain] &= ~(1 << DirtyTextMask);
 	}
@@ -130,9 +121,7 @@ public:
 		if (_isDirty[swapchain] & 0x01)
 		{
 			if (_text[_lastUpdateText]->getTextElement()->getString().length())
-			{
-				_text[swapchain]->getTextElement()->setText(_text[_lastUpdateText]->getTextElement()->getString());
-			}
+			{ _text[swapchain]->getTextElement()->setText(_text[_lastUpdateText]->getTextElement()->getString()); }
 			else
 			{
 				_text[swapchain]->getTextElement()->setText(_text[_lastUpdateText]->getTextElement()->getWString());
@@ -144,10 +133,7 @@ public:
 		return false;
 	}
 
-	void renderText(uint32_t swapchain)
-	{
-		_text[swapchain]->render();
-	}
+	void renderText(uint32_t swapchain) { _text[swapchain]->render(); }
 };
 
 struct DeviceResources
@@ -183,8 +169,8 @@ struct DeviceResources
 	pvrvk::Semaphore presentationSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
 	pvrvk::Fence perFrameResourcesFences[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
 
-	pvr::Multi<pvrvk::SecondaryCommandBuffer> commandBufferWithIntro;
-	pvr::Multi<pvrvk::SecondaryCommandBuffer> commandBufferWithText;
+	pvr::Multi<pvrvk::SecondaryCommandBuffer> cmdBufferWithIntro;
+	pvr::Multi<pvrvk::SecondaryCommandBuffer> cmdBufferWithText;
 	pvr::Multi<pvrvk::SecondaryCommandBuffer> commandBufferSubtitle;
 	pvr::Multi<pvrvk::CommandBuffer> primaryCommandBuffer;
 
@@ -196,8 +182,7 @@ struct DeviceResources
 			uint32_t l = swapchain->getSwapchainLength();
 			for (uint32_t i = 0; i < l; ++i)
 			{
-				if (perFrameResourcesFences[i])
-					perFrameResourcesFences[i]->wait();
+				if (perFrameResourcesFences[i]) perFrameResourcesFences[i]->wait();
 			}
 		}
 	}
@@ -235,7 +220,7 @@ public:
 
 	void updateCentralTitle(uint64_t currentTime);
 	void updateSubTitle(uint64_t currentTime, uint32_t swapchain);
-	void updateCentralText(uint64_t currentTime);
+	void updateCentralText();
 	void recordCommandBuffers();
 
 private:
@@ -250,8 +235,8 @@ void VulkanIntroducingUIRenderer::recordCommandBuffers()
 	{
 		// commandbuffer intro
 		{
-			_deviceResources->commandBufferWithIntro[i]->begin(_deviceResources->onScreenFramebuffer[i], 0);
-			_deviceResources->uiRenderer.beginRendering(_deviceResources->commandBufferWithIntro[i]);
+			_deviceResources->cmdBufferWithIntro[i]->begin(_deviceResources->onScreenFramebuffer[i], 0);
+			_deviceResources->uiRenderer.beginRendering(_deviceResources->cmdBufferWithIntro[i]);
 			_deviceResources->background->render();
 			// This is the difference
 			_deviceResources->centralTitleLine1->render();
@@ -259,19 +244,19 @@ void VulkanIntroducingUIRenderer::recordCommandBuffers()
 			_deviceResources->uiRenderer.getSdkLogo()->render();
 			// Tells uiRenderer to do all the pending text rendering now
 			_deviceResources->uiRenderer.endRendering();
-			_deviceResources->commandBufferWithIntro[i]->end();
+			_deviceResources->cmdBufferWithIntro[i]->end();
 		}
 
 		// commandbuffer scrolling text
 		{
-			_deviceResources->commandBufferWithText[i]->begin(_deviceResources->onScreenFramebuffer[i], 0);
-			_deviceResources->uiRenderer.beginRendering(_deviceResources->commandBufferWithText[i]);
+			_deviceResources->cmdBufferWithText[i]->begin(_deviceResources->onScreenFramebuffer[i], 0);
+			_deviceResources->uiRenderer.beginRendering(_deviceResources->cmdBufferWithText[i]);
 			_deviceResources->background->render();
 			_deviceResources->centralTextGroup[i]->render();
 			_deviceResources->uiRenderer.getSdkLogo()->render();
 			// Tells uiRenderer to do all the pending text rendering now
 			_deviceResources->uiRenderer.endRendering();
-			_deviceResources->commandBufferWithText[i]->end();
+			_deviceResources->cmdBufferWithText[i]->end();
 		}
 	}
 }
@@ -288,7 +273,7 @@ pvr::Result VulkanIntroducingUIRenderer::initApplication()
 	// we are instead using an external resource file which contains all of the text to be
 	// rendered. This allows complete control over the encoding of the resource file which
 	// in this case is encoded as UTF-8.
-	pvr::Stream::ptr_type textStream = getAssetStream(CentralTextFile);
+	std::unique_ptr<pvr::Stream> textStream = getAssetStream(CentralTextFile);
 
 	// The following code simply pulls out each line in the resource file and adds it
 	// to an array so we can render each line separately. ReadIntoCharBuffer null-terminates the std::string
@@ -300,20 +285,11 @@ pvr::Result VulkanIntroducingUIRenderer::initApplication()
 		const char* start = _text.data() + current;
 
 		_textLines.push_back(start);
-		while (current < _text.size() && _text[current] != '\0' && _text[current] != '\n' && _text[current] != '\r')
-		{
-			++current;
-		}
+		while (current < _text.size() && _text[current] != '\0' && _text[current] != '\n' && _text[current] != '\r') { ++current; }
 
-		if (current < _text.size() && (_text[current] == '\r'))
-		{
-			_text[current++] = '\0';
-		}
+		if (current < _text.size() && (_text[current] == '\r')) { _text[current++] = '\0'; }
 		// null-term the strings!!!
-		if (current < _text.size() && (_text[current] == '\n' || _text[current] == '\0'))
-		{
-			_text[current++] = '\0';
-		}
+		if (current < _text.size() && (_text[current] == '\n' || _text[current] == '\0')) { _text[current++] = '\0'; }
 	}
 
 	_titleLang = Language::English;
@@ -326,10 +302,7 @@ pvr::Result VulkanIntroducingUIRenderer::initApplication()
 \brief    Code in quitApplication() will be called by PVRShell once per run, just before exiting the program.
 	  If the rendering context is lost, quitApplication() will not be called.
 *********************************************************************************************************************/
-pvr::Result VulkanIntroducingUIRenderer::quitApplication()
-{
-	return pvr::Result::Success;
-}
+pvr::Result VulkanIntroducingUIRenderer::quitApplication() { return pvr::Result::Success; }
 
 /*!******************************************************************************************************************
 \brief  Generates a simple background texture procedurally.
@@ -358,7 +331,7 @@ void VulkanIntroducingUIRenderer::generateBackgroundTexture(uint32_t screenWidth
 			if (!(rand() % 200))
 			{
 				int brightness = rand() % 255;
-				textureData[width * j + i] = glm::clamp(textureData[width * j + i] + brightness, 0, 255);
+				textureData[width * j + i] = (unsigned char)glm::clamp(textureData[width * j + i] + brightness, 0, 255);
 			}
 		}
 	}
@@ -374,7 +347,7 @@ void VulkanIntroducingUIRenderer::generateBackgroundTexture(uint32_t screenWidth
 pvr::Result VulkanIntroducingUIRenderer::initView()
 {
 	// Create the empty API objects.
-	_deviceResources = std::unique_ptr<DeviceResources>(new DeviceResources());
+	_deviceResources = std::make_unique<DeviceResources>();
 
 	// Create instance and retrieve compatible physical devices
 	_deviceResources->instance = pvr::utils::createInstance(this->getApplicationName());
@@ -386,7 +359,8 @@ pvr::Result VulkanIntroducingUIRenderer::initView()
 	}
 
 	// Create the surface
-	_deviceResources->surface = pvr::utils::createSurface(_deviceResources->instance, _deviceResources->instance->getPhysicalDevice(0), this->getWindow(), this->getDisplay());
+	_deviceResources->surface =
+		pvr::utils::createSurface(_deviceResources->instance, _deviceResources->instance->getPhysicalDevice(0), this->getWindow(), this->getDisplay(), this->getConnection());
 
 	// Create a default set of debug utils messengers or debug callbacks using either VK_EXT_debug_utils or VK_EXT_debug_report respectively
 	_deviceResources->debugUtilsCallbacks = pvr::utils::createDebugUtilsCallbacks(_deviceResources->instance);
@@ -409,11 +383,7 @@ pvr::Result VulkanIntroducingUIRenderer::initView()
 	// validate the supported swapchain image usage
 	pvrvk::ImageUsageFlags swapchainImageUsage = pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT;
 	if (pvr::utils::isImageUsageSupportedBySurface(surfaceCapabilities, pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT))
-	{
-		swapchainImageUsage |= pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT;
-	}
-
-	// Retrieve the swapchain images and create corresponding depth stencil images per swap chain
+	{ swapchainImageUsage |= pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT; } // Retrieve the swapchain images and create corresponding depth stencil images per swap chain
 	pvr::utils::createSwapchainAndDepthStencilImageAndViews(_deviceResources->device, _deviceResources->surface, getDisplayAttributes(), _deviceResources->swapchain,
 		_deviceResources->depthStencilImages, swapchainImageUsage, pvrvk::ImageUsageFlags::e_DEPTH_STENCIL_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_TRANSIENT_ATTACHMENT_BIT,
 		&_deviceResources->vmaAllocator);
@@ -427,8 +397,8 @@ pvr::Result VulkanIntroducingUIRenderer::initView()
 	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
 	{
 		_deviceResources->commandBufferSubtitle[i] = _deviceResources->commandPool->allocateSecondaryCommandBuffer();
-		_deviceResources->commandBufferWithIntro[i] = _deviceResources->commandPool->allocateSecondaryCommandBuffer();
-		_deviceResources->commandBufferWithText[i] = _deviceResources->commandPool->allocateSecondaryCommandBuffer();
+		_deviceResources->cmdBufferWithIntro[i] = _deviceResources->commandPool->allocateSecondaryCommandBuffer();
+		_deviceResources->cmdBufferWithText[i] = _deviceResources->commandPool->allocateSecondaryCommandBuffer();
 		_deviceResources->primaryCommandBuffer[i] = _deviceResources->commandPool->allocateCommandBuffer();
 		_deviceResources->presentationSemaphores[i] = _deviceResources->device->createSemaphore();
 		_deviceResources->imageAcquiredSemaphores[i] = _deviceResources->device->createSemaphore();
@@ -460,8 +430,7 @@ pvr::Result VulkanIntroducingUIRenderer::initView()
 			Log(LogLevel::Information, "Making use of supported Sampler Anisotropy");
 			centralTextSamplerCreateInfo.enableAnisotropy = true;
 
-			Log(LogLevel::Information, "Maximum supported Sampler Anisotropy: %f",
-				_deviceResources->device->getPhysicalDevice()->getProperties().getLimits().getMaxSamplerAnisotropy());
+			Log(LogLevel::Information, "Maximum supported Sampler Anisotropy: %f", _deviceResources->device->getPhysicalDevice()->getProperties().getLimits().getMaxSamplerAnisotropy());
 
 			Log(LogLevel::Information, "Using anisotropyMaximum = %f as this is the minimum supported limit", 16);
 
@@ -474,10 +443,7 @@ pvr::Result VulkanIntroducingUIRenderer::initView()
 		// Determine which size title font to use.
 		uint32_t screenShortDimension = std::min(getWidth(), getHeight());
 		const char* subtitleFontFileName = NULL;
-		if (screenShortDimension >= 720)
-		{
-			subtitleFontFileName = SubTitleFontFiles[FontSize::n_56];
-		}
+		if (screenShortDimension >= 720) { subtitleFontFileName = SubTitleFontFiles[FontSize::n_56]; }
 		else if (screenShortDimension >= 640)
 		{
 			subtitleFontFileName = SubTitleFontFiles[FontSize::n_46];
@@ -519,21 +485,15 @@ pvr::Result VulkanIntroducingUIRenderer::initView()
 	}
 
 	_deviceResources->centralTextLines.push_back(_deviceResources->uiRenderer.createText(centralTextFont, _textLines[0], 255));
-	for (uint32_t i = 0; i < swapChainLength; ++i)
-	{
-		_deviceResources->centralTextGroup[i]->add(_deviceResources->centralTextLines.back());
-	}
+	for (uint32_t i = 0; i < swapChainLength; ++i) { _deviceResources->centralTextGroup[i]->add(_deviceResources->centralTextLines.back()); }
 	_lineSpacingNDC = 1.6f * _deviceResources->centralTextLines[0]->getFont()->getFontLineSpacing() / static_cast<float>(_deviceResources->uiRenderer.getRenderingDimY());
 
 	for (uint32_t i = 1; i < _textLines.size(); ++i)
 	{
-		pvr::ui::Text _text = _deviceResources->uiRenderer.createText(centralTextFont, _textLines[i], 255);
-		_text->setAnchor(pvr::ui::Anchor::Center, glm::vec2(0.f, -(i * _lineSpacingNDC)));
-		_deviceResources->centralTextLines.push_back(_text);
-		for (uint32_t i = 0; i < swapChainLength; ++i)
-		{
-			_deviceResources->centralTextGroup[i]->add(_text);
-		}
+		pvr::ui::Text text = _deviceResources->uiRenderer.createText(centralTextFont, _textLines[i], 255);
+		text->setAnchor(pvr::ui::Anchor::Center, glm::vec2(0.f, -(i * _lineSpacingNDC)));
+		_deviceResources->centralTextLines.push_back(text);
+		for (uint32_t j = 0; j < swapChainLength; ++j) { _deviceResources->centralTextGroup[j]->add(text); }
 	}
 
 	_deviceResources->centralTextLines[0]->setAlphaRenderingMode(true);
@@ -601,20 +561,14 @@ pvr::Result VulkanIntroducingUIRenderer::renderFrame()
 	{
 		updateCentralTitle(currentTime);
 		_centralTitleRecorded[swapchainIndex] = true;
-		if (mustRecord)
-		{
-			_deviceResources->primaryCommandBuffer[swapchainIndex]->executeCommands(_deviceResources->commandBufferWithIntro[swapchainIndex]);
-		}
+		if (mustRecord) { _deviceResources->primaryCommandBuffer[swapchainIndex]->executeCommands(_deviceResources->cmdBufferWithIntro[swapchainIndex]); }
 	}
 	// Render the 3D text.
 	else
 	{
-		updateCentralText(currentTime);
+		updateCentralText();
 		_centralTextRecorded[swapchainIndex] = true;
-		if (mustRecord)
-		{
-			_deviceResources->primaryCommandBuffer[swapchainIndex]->executeCommands(_deviceResources->commandBufferWithText[swapchainIndex]);
-		}
+		if (mustRecord) { _deviceResources->primaryCommandBuffer[swapchainIndex]->executeCommands(_deviceResources->cmdBufferWithText[swapchainIndex]); }
 	}
 	_deviceResources->centralTextGroup[swapchainIndex]->commitUpdates();
 
@@ -715,10 +669,7 @@ void VulkanIntroducingUIRenderer::updateCentralTitle(uint64_t currentTime)
 	float fadeAmount = 1.0f;
 
 	// Fade in
-	if (currentTime < IntroFadeTime)
-	{
-		fadeAmount = currentTime / static_cast<float>(IntroFadeTime);
-	}
+	if (currentTime < IntroFadeTime) { fadeAmount = currentTime / static_cast<float>(IntroFadeTime); }
 	// Fade out
 	else if (currentTime > IntroTime - IntroFadeTime)
 	{
@@ -734,7 +685,7 @@ void VulkanIntroducingUIRenderer::updateCentralTitle(uint64_t currentTime)
 /*!******************************************************************************************************************
 \brief  Draws the 3D _text and scrolls in to the screen.
 *********************************************************************************************************************/
-void VulkanIntroducingUIRenderer::updateCentralText(uint64_t currentTime)
+void VulkanIntroducingUIRenderer::updateCentralText()
 {
 	glm::mat4 mProjection = glm::mat4(1.0f);
 
@@ -758,15 +709,9 @@ void VulkanIntroducingUIRenderer::updateCentralText(uint64_t currentTime)
 
 	// Move the text. Progressively speed up.
 	float fSpeedInc = 0.0f;
-	if (_textOffset > 0.0f)
-	{
-		fSpeedInc = _textOffset / _textEndY;
-	}
+	if (_textOffset > 0.0f) { fSpeedInc = _textOffset / _textEndY; }
 	_textOffset += (0.75f + (1.0f * fSpeedInc)) * fFPSScale;
-	if (_textOffset > _textEndY)
-	{
-		_textOffset = static_cast<float>(_textStartY);
-	}
+	if (_textOffset > _textEndY) { _textOffset = static_cast<float>(_textStartY); }
 	glm::mat4 trans = glm::translate(glm::vec3(0.0f, _textOffset, 0.0f));
 
 	// uiRenderer can optionally be provided with user-defined projection and model-view matrices
@@ -804,7 +749,4 @@ void VulkanIntroducingUIRenderer::updateCentralText(uint64_t currentTime)
 
 /// <summary>This function must be implemented by the user of the shell. The user should return its pvr::Shell object defining the behaviour of the application.</summary>
 /// <returns>Return a unique ptr to the demo supplied by the user.</returns>
-std::unique_ptr<pvr::Shell> pvr::newDemo()
-{
-	return std::unique_ptr<pvr::Shell>(new VulkanIntroducingUIRenderer());
-}
+std::unique_ptr<pvr::Shell> pvr::newDemo() { return std::make_unique<VulkanIntroducingUIRenderer>(); }

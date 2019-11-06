@@ -78,10 +78,7 @@ private:
 		uint32_t numIndices; // If the index count is greater than 0 and indexData is NULL then the data is handled externally
 
 		ShadowVolumeData() : indexData(NULL), numIndices(0) {}
-		~ShadowVolumeData()
-		{
-			delete indexData;
-		}
+		~ShadowVolumeData() { delete indexData; }
 	};
 
 	// Extrude

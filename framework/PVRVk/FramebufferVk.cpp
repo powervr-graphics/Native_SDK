@@ -34,10 +34,7 @@ Framebuffer_::Framebuffer_(make_shared_enabler, const DeviceWeakPtr& device, con
 	assert(createInfo.getRenderPass() && "Invalid RenderPass");
 	// validate the dimension.
 	if (createInfo.getDimensions().getWidth() == 0 || createInfo.getDimensions().getHeight() == 0)
-	{
-		throw ErrorValidationFailedEXT("Framebuffer with and height must be valid size");
-	}
-
+	{ throw ErrorValidationFailedEXT("Framebuffer with and height must be valid size"); }
 	_createInfo = createInfo;
 	VkFramebufferCreateInfo framebufferCreateInfo = {};
 
@@ -48,14 +45,10 @@ Framebuffer_::Framebuffer_(make_shared_enabler, const DeviceWeakPtr& device, con
 	framebufferCreateInfo.renderPass = createInfo.getRenderPass()->getVkHandle();
 	framebufferCreateInfo.attachmentCount = createInfo.getNumAttachments();
 
-	std::vector<VkImageView> imageViews;
-	imageViews.resize(framebufferCreateInfo.attachmentCount);
-	framebufferCreateInfo.pAttachments = imageViews.data();
+	pvrvk::ArrayOrVector<VkImageView, 4> imageViews(framebufferCreateInfo.attachmentCount);
+	framebufferCreateInfo.pAttachments = imageViews.get();
 	// do all the color attachments
-	for (uint32_t i = 0; i < createInfo.getNumAttachments(); ++i)
-	{
-		imageViews[i] = createInfo.getAttachment(i)->getVkHandle();
-	}
+	for (uint32_t i = 0; i < createInfo.getNumAttachments(); ++i) { imageViews[i] = createInfo.getAttachment(i)->getVkHandle(); }
 	vkThrowIfFailed(getDevice()->getVkBindings().vkCreateFramebuffer(getDevice()->getVkHandle(), &framebufferCreateInfo, NULL, &_vkHandle), "Create Framebuffer Failed");
 }
 //!\endcond

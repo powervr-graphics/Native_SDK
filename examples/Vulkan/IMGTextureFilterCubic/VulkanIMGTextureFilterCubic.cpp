@@ -23,7 +23,7 @@ struct DeviceResources
 	pvr::utils::DebugUtilsCallbacks debugUtilsCallbacks;
 	pvrvk::Device device;
 	pvrvk::Swapchain swapchain;
-	pvrvk::CommandPool commandPool;
+	pvrvk::CommandPool cmdPool;
 	pvrvk::DescriptorPool descriptorPool;
 	pvrvk::Queue queue;
 	pvr::utils::vma::Allocator vmaAllocator;
@@ -38,10 +38,10 @@ struct DeviceResources
 	pvr::Multi<pvrvk::Framebuffer> onScreenFramebuffer;
 
 	// main command buffer used to store rendering commands
-	pvr::Multi<pvrvk::CommandBuffer> commandBuffers;
+	pvr::Multi<pvrvk::CommandBuffer> cmdBuffers;
 
 	// Command buffer used to upload data to the GPU
-	pvrvk::CommandBuffer uploadCommandBuffer;
+	pvrvk::CommandBuffer uploadCmdBuffer;
 
 	pvrvk::ImageView baseImageView;
 
@@ -67,17 +67,13 @@ struct DeviceResources
 
 	~DeviceResources()
 	{
-		if (device)
-		{
-			device->waitIdle();
-		}
+		if (device) { device->waitIdle(); }
 		if (swapchain)
 		{
 			uint32_t l = swapchain->getSwapchainLength();
 			for (uint32_t i = 0; i < l; ++i)
 			{
-				if (perFrameResourcesFences[i])
-					perFrameResourcesFences[i]->wait();
+				if (perFrameResourcesFences[i]) perFrameResourcesFences[i]->wait();
 			}
 		}
 	}
@@ -133,10 +129,7 @@ pvr::Result VulkanIMGTextureFilterCubic::initApplication()
 \brief  Code in quitApplication() will be called by pvr::Shell once per run, just before exiting the program.
 		If the rendering context is lost, quitApplication() will not be called.
 ***********************************************************************************************************************/
-pvr::Result VulkanIMGTextureFilterCubic::quitApplication()
-{
-	return pvr::Result::Success;
-}
+pvr::Result VulkanIMGTextureFilterCubic::quitApplication() { return pvr::Result::Success; }
 
 /*!*********************************************************************************************************************
 \return Result::Success if no error occurred
@@ -145,7 +138,7 @@ pvr::Result VulkanIMGTextureFilterCubic::quitApplication()
 ***********************************************************************************************************************/
 pvr::Result VulkanIMGTextureFilterCubic::initView()
 {
-	_deviceResources = std::unique_ptr<DeviceResources>(new DeviceResources());
+	_deviceResources = std::make_unique<DeviceResources>();
 
 	// Create instance and retrieve compatible physical devices
 	_deviceResources->instance = pvr::utils::createInstance(this->getApplicationName());
@@ -157,7 +150,8 @@ pvr::Result VulkanIMGTextureFilterCubic::initView()
 	}
 
 	// Create the surface
-	pvrvk::Surface surface = pvr::utils::createSurface(_deviceResources->instance, _deviceResources->instance->getPhysicalDevice(0), this->getWindow(), this->getDisplay());
+	pvrvk::Surface surface =
+		pvr::utils::createSurface(_deviceResources->instance, _deviceResources->instance->getPhysicalDevice(0), this->getWindow(), this->getDisplay(), this->getConnection());
 
 	// Create a default set of debug utils messengers or debug callbacks using either VK_EXT_debug_utils or VK_EXT_debug_report respectively
 	_deviceResources->debugUtilsCallbacks = pvr::utils::createDebugUtilsCallbacks(_deviceResources->instance);
@@ -173,10 +167,7 @@ pvr::Result VulkanIMGTextureFilterCubic::initView()
 	_deviceResources->device = pvr::utils::createDeviceAndQueues(_deviceResources->instance->getPhysicalDevice(0), &queuePopulateInfo, 1, &queueAccessInfo, deviceExtensions);
 
 	// Determine whether there is support for VK_IMG_filter_cubic
-	if (!_deviceResources->device->getEnabledExtensionTable().imgFilterCubicEnabled)
-	{
-		throw pvrvk::ErrorExtensionNotPresent(VK_IMG_FILTER_CUBIC_EXTENSION_NAME);
-	}
+	if (!_deviceResources->device->getEnabledExtensionTable().imgFilterCubicEnabled) { throw pvrvk::ErrorExtensionNotPresent(VK_IMG_FILTER_CUBIC_EXTENSION_NAME); }
 
 	// Support has been found for the device extension VK_IMG_filter_cubic. We can now make use of cubic filtering as will be shown in this example
 
@@ -190,17 +181,13 @@ pvr::Result VulkanIMGTextureFilterCubic::initView()
 	// validate the supported swapchain image usage
 	pvrvk::ImageUsageFlags swapchainImageUsage = pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT;
 	if (pvr::utils::isImageUsageSupportedBySurface(surfaceCapabilities, pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT))
-	{
-		swapchainImageUsage |= pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT;
-	}
-
-	// Create the swapchain
+	{ swapchainImageUsage |= pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT; } // Create the swapchain
 	_deviceResources->swapchain = pvr::utils::createSwapchain(_deviceResources->device, surface, getDisplayAttributes(), swapchainImageUsage);
 
 	pvr::utils::createOnscreenFramebufferAndRenderPass(_deviceResources->swapchain, nullptr, _deviceResources->onScreenFramebuffer);
 
 	// Create the Comandpool & Descriptorpool
-	_deviceResources->commandPool =
+	_deviceResources->cmdPool =
 		_deviceResources->device->createCommandPool(pvrvk::CommandPoolCreateInfo(queueAccessInfo.familyId, pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT));
 
 	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(
@@ -213,25 +200,25 @@ pvr::Result VulkanIMGTextureFilterCubic::initView()
 		_deviceResources->imageAcquiredSemaphores[i] = _deviceResources->device->createSemaphore();
 		_deviceResources->perFrameResourcesFences[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
 
-		_deviceResources->commandBuffers[i] = _deviceResources->commandPool->allocateCommandBuffer();
+		_deviceResources->cmdBuffers[i] = _deviceResources->cmdPool->allocateCommandBuffer();
 	}
 
-	_deviceResources->uploadCommandBuffer = _deviceResources->commandPool->allocateCommandBuffer();
+	_deviceResources->uploadCmdBuffer = _deviceResources->cmdPool->allocateCommandBuffer();
 
 	// create the descriptor set layouts and pipeline layouts
 	createDescriptorSetLayout();
 
-	_deviceResources->uploadCommandBuffer->begin();
+	_deviceResources->uploadCmdBuffer->begin();
 
 	loadVbo();
 
 	// Create the texture which will be sampled from using a sampler with magnification filter of pvrvk::Filter::e_CUBIC_IMG using VK_IMG_filter_cubic
 	createTextures();
 
-	_deviceResources->uploadCommandBuffer->end();
+	_deviceResources->uploadCmdBuffer->end();
 
 	pvrvk::SubmitInfo submitInfo;
-	submitInfo.commandBuffers = &_deviceResources->uploadCommandBuffer;
+	submitInfo.commandBuffers = &_deviceResources->uploadCmdBuffer;
 	submitInfo.numCommandBuffers = 1;
 	_deviceResources->queue->submit(&submitInfo, 1);
 	_deviceResources->queue->waitIdle();
@@ -240,7 +227,7 @@ pvr::Result VulkanIMGTextureFilterCubic::initView()
 	createDescriptorSet();
 
 	_deviceResources->uiRenderer.init(getWidth(), getHeight(), isFullScreen(), _deviceResources->onScreenFramebuffer[0]->getRenderPass(), 0,
-		getBackBufferColorspace() == pvr::ColorSpace::sRGB, _deviceResources->commandPool, _deviceResources->queue);
+		getBackBufferColorspace() == pvr::ColorSpace::sRGB, _deviceResources->cmdPool, _deviceResources->queue);
 	_deviceResources->uiRenderer.getDefaultTitle()->setText("IMGTextureFilterCubic").commitUpdates();
 	_deviceResources->uiRenderer.getDefaultDescription()->setText("Left: Bilinear Filtering.\nRight: Cubic Filtering.");
 	_deviceResources->uiRenderer.getDefaultDescription()->commitUpdates();
@@ -306,7 +293,7 @@ pvr::Result VulkanIMGTextureFilterCubic::renderFrame()
 	// Submit
 	pvrvk::SubmitInfo submitInfo;
 	pvrvk::PipelineStageFlags pipeWaitStageFlags = pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT;
-	submitInfo.commandBuffers = &_deviceResources->commandBuffers[swapchainIndex];
+	submitInfo.commandBuffers = &_deviceResources->cmdBuffers[swapchainIndex];
 	submitInfo.numCommandBuffers = 1;
 	submitInfo.waitSemaphores = &_deviceResources->imageAcquiredSemaphores[_frameId];
 	submitInfo.numWaitSemaphores = 1;
@@ -317,7 +304,7 @@ pvr::Result VulkanIMGTextureFilterCubic::renderFrame()
 
 	if (this->shouldTakeScreenshot())
 	{
-		pvr::utils::takeScreenshot(_deviceResources->queue, _deviceResources->commandPool, _deviceResources->swapchain, swapchainIndex, this->getScreenshotFileName(),
+		pvr::utils::takeScreenshot(_deviceResources->queue, _deviceResources->cmdPool, _deviceResources->swapchain, swapchainIndex, this->getScreenshotFileName(),
 			&_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
 	}
 
@@ -349,19 +336,18 @@ void VulkanIMGTextureFilterCubic::loadVbo()
 		_vertices.push_back(glm::vec3(10.0f, -10.0f, 0.0f));
 	}
 
-	_deviceResources->quadVbo = pvr::utils::createBuffer(_deviceResources->device, pvr::getSize(pvr::GpuDatatypes::vec3) * 6,
-		pvrvk::BufferUsageFlags::e_VERTEX_BUFFER_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT,
-		pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT, &_deviceResources->vmaAllocator);
+	_deviceResources->quadVbo = pvr::utils::createBuffer(_deviceResources->device,
+		pvrvk::BufferCreateInfo(pvr::getSize(pvr::GpuDatatypes::vec3) * 6, pvrvk::BufferUsageFlags::e_VERTEX_BUFFER_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT),
+		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
+		&_deviceResources->vmaAllocator);
 
 	bool isBufferHostVisible = (_deviceResources->quadVbo->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT) != 0;
 
 	if (isBufferHostVisible)
-	{
-		pvr::utils::updateHostVisibleBuffer(_deviceResources->quadVbo, static_cast<const void*>(_vertices.data()), 0, pvr::getSize(pvr::GpuDatatypes::vec3) * 6, true);
-	}
+	{ pvr::utils::updateHostVisibleBuffer(_deviceResources->quadVbo, static_cast<const void*>(_vertices.data()), 0, pvr::getSize(pvr::GpuDatatypes::vec3) * 6, true); }
 	else
 	{
-		pvr::utils::updateBufferUsingStagingBuffer(_deviceResources->device, _deviceResources->quadVbo, pvrvk::CommandBufferBase(_deviceResources->uploadCommandBuffer),
+		pvr::utils::updateBufferUsingStagingBuffer(_deviceResources->device, _deviceResources->quadVbo, pvrvk::CommandBufferBase(_deviceResources->uploadCmdBuffer),
 			static_cast<const void*>(_vertices.data()), 0, pvr::getSize(pvr::GpuDatatypes::vec3) * 6, &_deviceResources->vmaAllocator);
 	}
 }
@@ -379,15 +365,15 @@ void VulkanIMGTextureFilterCubic::createTextures()
 
 	// Our use of vkBlitImage to generate the mip-chain requires support for pvrvk::FormatFeatureFlags::e_BLIT_SRC_BIT | pvrvk::FormatFeatureFlags::e_BLIT_DST_BIT
 	// We have chosen to use an image with format pvrvk::Format::e_R8G8B8A8_UNORM which implementations must provide support for pvrvk::FormatFeatureFlags::e_BLIT_SRC_BIT | pvrvk::FormatFeatureFlags::e_BLIT_DST_BIT
-	pvrvk::Image linearImage = pvr::utils::createImage(_deviceResources->device, pvrvk::ImageType::e_2D, pvrvk::Format::e_R8G8B8A8_UNORM, extent, imageUsage,
-		static_cast<pvrvk::ImageCreateFlags>(0), pvrvk::ImageLayersSize(1, numMipLevels), pvrvk::SampleCountFlags::e_1_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT,
-		pvrvk::MemoryPropertyFlags::e_NONE, &_deviceResources->vmaAllocator);
+	pvrvk::Image linearImage =
+		pvr::utils::createImage(_deviceResources->device, pvrvk::ImageCreateInfo(pvrvk::ImageType::e_2D, pvrvk::Format::e_R8G8B8A8_UNORM, extent, imageUsage, numMipLevels, 1),
+			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_NONE, &_deviceResources->vmaAllocator);
 
 	_deviceResources->baseImageView = _deviceResources->device->createImageView(pvrvk::ImageViewCreateInfo(linearImage));
 
 	// Transition image from pvrvk::ImageLayout::e_UNDEFINED to pvrvk::ImageLayout::e_TRANSFER_DST_OPTIMAL ready for data transfer
 	pvr::utils::setImageLayout(
-		_deviceResources->baseImageView->getImage(), pvrvk::ImageLayout::e_UNDEFINED, pvrvk::ImageLayout::e_TRANSFER_DST_OPTIMAL, _deviceResources->uploadCommandBuffer);
+		_deviceResources->baseImageView->getImage(), pvrvk::ImageLayout::e_UNDEFINED, pvrvk::ImageLayout::e_TRANSFER_DST_OPTIMAL, _deviceResources->uploadCmdBuffer);
 
 	// Generate image data which will be used as the source for the mip maps levels
 	std::vector<unsigned char> img(this->getWidth() * this->getHeight() * 4);
@@ -443,12 +429,12 @@ void VulkanIMGTextureFilterCubic::createTextures()
 	updateInfo.data = img.data();
 	updateInfo.dataSize = static_cast<uint32_t>(img.size());
 
-	pvr::utils::updateImage(_deviceResources->device, _deviceResources->uploadCommandBuffer, &updateInfo, 1, pvrvk::Format::e_R8G8B8A8_UNORM,
+	pvr::utils::updateImage(_deviceResources->device, _deviceResources->uploadCmdBuffer, &updateInfo, 1, pvrvk::Format::e_R8G8B8A8_UNORM,
 		pvrvk::ImageLayout::e_TRANSFER_DST_OPTIMAL, false, _deviceResources->baseImageView->getImage(), &_deviceResources->vmaAllocator);
 
 	// Transition image from pvrvk::ImageLayout::e_TRANSFER_DST_OPTIMAL to pvrvk::ImageLayout::e_TRANSFER_SRC_OPTIMAL ready for data transfer
 	pvr::utils::setImageLayout(
-		_deviceResources->baseImageView->getImage(), pvrvk::ImageLayout::e_TRANSFER_DST_OPTIMAL, pvrvk::ImageLayout::e_TRANSFER_SRC_OPTIMAL, _deviceResources->uploadCommandBuffer);
+		_deviceResources->baseImageView->getImage(), pvrvk::ImageLayout::e_TRANSFER_DST_OPTIMAL, pvrvk::ImageLayout::e_TRANSFER_SRC_OPTIMAL, _deviceResources->uploadCmdBuffer);
 
 	// Generate the mip chain using vkCmdBlitImage
 	Log(LogLevel::Information, "\tGenerating %u mipmap levels for Image to be sampled from.", numMipLevels);
@@ -457,7 +443,7 @@ void VulkanIMGTextureFilterCubic::createTextures()
 	for (uint32_t i = 1; i < numMipLevels; i++)
 	{
 		// Transition current mip level pvrvk::ImageLayout::e_TRANSFER_SRC_OPTIMAL to pvrvk::ImageLayout::e_TRANSFER_DST_OPTIMAL ready for data transfer
-		pvr::utils::setImageLayoutAndQueueFamilyOwnership(_deviceResources->uploadCommandBuffer, pvrvk::CommandBufferBase(), static_cast<uint32_t>(-1), static_cast<uint32_t>(-1),
+		pvr::utils::setImageLayoutAndQueueFamilyOwnership(_deviceResources->uploadCmdBuffer, pvrvk::CommandBufferBase(), static_cast<uint32_t>(-1), static_cast<uint32_t>(-1),
 			pvrvk::ImageLayout::e_TRANSFER_SRC_OPTIMAL, pvrvk::ImageLayout::e_TRANSFER_DST_OPTIMAL, _deviceResources->baseImageView->getImage(), i, 1, 0,
 			static_cast<uint32_t>(_deviceResources->baseImageView->getImage()->getNumArrayLayers()), pvrvk::ImageAspectFlags::e_COLOR_BIT);
 
@@ -471,19 +457,19 @@ void VulkanIMGTextureFilterCubic::createTextures()
 			sourceOffsets[1] = pvrvk::Offset3D(sourceMipWidth, sourceMipHeight, 1);
 			pvrvk::Offset3D destinationOffsets[2];
 			destinationOffsets[0] = pvrvk::Offset3D(0, 0, 0);
-			int32_t destinationMipWidth = static_cast<uint32_t>(std::max(1u, _deviceResources->baseImageView->getImage()->getExtent().getWidth() >> i));
-			int32_t destinationMipHeight = static_cast<uint32_t>(std::max(1u, _deviceResources->baseImageView->getImage()->getExtent().getHeight() >> i));
+			int32_t destinationMipWidth = static_cast<int32_t>(std::max(1u, _deviceResources->baseImageView->getImage()->getExtent().getWidth() >> i));
+			int32_t destinationMipHeight = static_cast<int32_t>(std::max(1u, _deviceResources->baseImageView->getImage()->getExtent().getHeight() >> i));
 			destinationOffsets[1] = pvrvk::Offset3D(destinationMipWidth, destinationMipHeight, 1);
 			pvrvk::ImageBlit blitRegion = pvrvk::ImageBlit(pvrvk::ImageSubresourceLayers(pvrvk::ImageAspectFlags::e_COLOR_BIT, i - 1, 0, 1), &sourceOffsets[0],
 				pvrvk::ImageSubresourceLayers(pvrvk::ImageAspectFlags::e_COLOR_BIT, i, 0, 1), &destinationOffsets[0]);
 
 			// Perform the blit using a linear filter
-			_deviceResources->uploadCommandBuffer->blitImage(_deviceResources->baseImageView->getImage(), _deviceResources->baseImageView->getImage(), &blitRegion, 1,
+			_deviceResources->uploadCmdBuffer->blitImage(_deviceResources->baseImageView->getImage(), _deviceResources->baseImageView->getImage(), &blitRegion, 1,
 				pvrvk::Filter::e_LINEAR, pvrvk::ImageLayout::e_TRANSFER_SRC_OPTIMAL, pvrvk::ImageLayout::e_TRANSFER_DST_OPTIMAL);
 		}
 
 		// Transition current mip level pvrvk::ImageLayout::e_TRANSFER_DST_OPTIMAL to pvrvk::ImageLayout::e_TRANSFER_SRC_OPTIMAL ready to be used as a source for the next transfer
-		pvr::utils::setImageLayoutAndQueueFamilyOwnership(_deviceResources->uploadCommandBuffer, pvrvk::CommandBufferBase(), static_cast<uint32_t>(-1), static_cast<uint32_t>(-1),
+		pvr::utils::setImageLayoutAndQueueFamilyOwnership(_deviceResources->uploadCmdBuffer, pvrvk::CommandBufferBase(), static_cast<uint32_t>(-1), static_cast<uint32_t>(-1),
 			pvrvk::ImageLayout::e_TRANSFER_DST_OPTIMAL, pvrvk::ImageLayout::e_TRANSFER_SRC_OPTIMAL, _deviceResources->baseImageView->getImage(), i, 1, 0,
 			static_cast<uint32_t>(_deviceResources->baseImageView->getImage()->getNumArrayLayers()), pvrvk::ImageAspectFlags::e_COLOR_BIT);
 	}
@@ -491,8 +477,8 @@ void VulkanIMGTextureFilterCubic::createTextures()
 	// All of the images are now in pvrvk::ImageLayout::e_TRANSFER_SRC_OPTIMAL
 
 	// Transition images from pvrvk::ImageLayout::e_TRANSFER_SRC_OPTIMAL to pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL ready for sampling
-	pvr::utils::setImageLayout(_deviceResources->baseImageView->getImage(), pvrvk::ImageLayout::e_TRANSFER_SRC_OPTIMAL, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL,
-		_deviceResources->uploadCommandBuffer);
+	pvr::utils::setImageLayout(
+		_deviceResources->baseImageView->getImage(), pvrvk::ImageLayout::e_TRANSFER_SRC_OPTIMAL, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, _deviceResources->uploadCmdBuffer);
 }
 
 /*!*********************************************************************************************************************
@@ -504,37 +490,36 @@ void VulkanIMGTextureFilterCubic::recordCommandBuffers()
 	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
 	{
 		// begin recording commands
-		_deviceResources->commandBuffers[i]->begin();
+		_deviceResources->cmdBuffers[i]->begin();
 
 		// begin the renderpass
-		_deviceResources->commandBuffers[i]->beginRenderPass(_deviceResources->onScreenFramebuffer[i], pvrvk::Rect2D(0, 0, getWidth(), getHeight()), true, &clearValue, 1);
+		_deviceResources->cmdBuffers[i]->beginRenderPass(_deviceResources->onScreenFramebuffer[i], pvrvk::Rect2D(0, 0, getWidth(), getHeight()), true, &clearValue, 1);
 
 		// bind the VBO for the mesh
-		_deviceResources->commandBuffers[i]->bindVertexBuffer(_deviceResources->quadVbo, 0, 0);
+		_deviceResources->cmdBuffers[i]->bindVertexBuffer(_deviceResources->quadVbo, 0, 0);
 
-		_deviceResources->commandBuffers[i]->bindPipeline(_deviceResources->pipeline);
+		_deviceResources->cmdBuffers[i]->bindPipeline(_deviceResources->pipeline);
 
 		_modelViewProjection = _viewProjection * glm::rotate(glm::radians(-90.f), glm::vec3(1.0f, 0.0f, 0.f));
 
 		float pushConstantWidth = (float)getWidth();
-		_deviceResources->commandBuffers[i]->pushConstants(_deviceResources->pipeline->getPipelineLayout(),
+		_deviceResources->cmdBuffers[i]->pushConstants(_deviceResources->pipeline->getPipelineLayout(),
 			pvrvk::ShaderStageFlags::e_VERTEX_BIT | pvrvk::ShaderStageFlags::e_FRAGMENT_BIT, 0, static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::mat4x4)), &_modelViewProjection);
-		_deviceResources->commandBuffers[i]->pushConstants(_deviceResources->pipeline->getPipelineLayout(),
-			pvrvk::ShaderStageFlags::e_VERTEX_BIT | pvrvk::ShaderStageFlags::e_FRAGMENT_BIT, static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::mat4x4)),
-			static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::Float)), &pushConstantWidth);
+		_deviceResources->cmdBuffers[i]->pushConstants(_deviceResources->pipeline->getPipelineLayout(), pvrvk::ShaderStageFlags::e_VERTEX_BIT | pvrvk::ShaderStageFlags::e_FRAGMENT_BIT,
+			static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::mat4x4)), static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::Float)), &pushConstantWidth);
 
 		// Bind the descriptor set which contains the base texture bound with linear and cubic samplers
-		_deviceResources->commandBuffers[i]->bindDescriptorSet(pvrvk::PipelineBindPoint::e_GRAPHICS, _deviceResources->pipelineLayout, 0u, _deviceResources->textureDescriptorSet);
-		_deviceResources->commandBuffers[i]->draw(0, 6);
+		_deviceResources->cmdBuffers[i]->bindDescriptorSet(pvrvk::PipelineBindPoint::e_GRAPHICS, _deviceResources->pipelineLayout, 0u, _deviceResources->textureDescriptorSet);
+		_deviceResources->cmdBuffers[i]->draw(0, 6);
 
 		// add ui effects using ui renderer
-		_deviceResources->uiRenderer.beginRendering(_deviceResources->commandBuffers[i]);
+		_deviceResources->uiRenderer.beginRendering(_deviceResources->cmdBuffers[i]);
 		_deviceResources->uiRenderer.getDefaultTitle()->render();
 		_deviceResources->uiRenderer.getDefaultDescription()->render();
 		_deviceResources->uiRenderer.getSdkLogo()->render();
 		_deviceResources->uiRenderer.endRendering();
-		_deviceResources->commandBuffers[i]->endRenderPass();
-		_deviceResources->commandBuffers[i]->end();
+		_deviceResources->cmdBuffers[i]->endRenderPass();
+		_deviceResources->cmdBuffers[i]->end();
 	}
 }
 
@@ -639,7 +624,4 @@ void VulkanIMGTextureFilterCubic::createDescriptorSet()
 
 /// <summary>This function must be implemented by the user of the shell. The user should return its pvr::Shell object defining the behaviour of the application.</summary>
 /// <returns>Return a unique ptr to the demo supplied by the user.</returns>
-std::unique_ptr<pvr::Shell> pvr::newDemo()
-{
-	return std::unique_ptr<pvr::Shell>(new VulkanIMGTextureFilterCubic());
-}
+std::unique_ptr<pvr::Shell> pvr::newDemo() { return std::make_unique<VulkanIMGTextureFilterCubic>(); }

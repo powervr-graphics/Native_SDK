@@ -11,16 +11,12 @@
 #ifdef USE_PLATFORM_NULLWS
 int main(int /*argc*/, char** /*argv*/)
 {
-	VulkanHelloAPI VulkanExample;
-	VulkanExample.initialize();
-	VulkanExample.recordCommandBuffer();
+	VulkanHelloAPI vulkanExample;
+	vulkanExample.initialize();
+	vulkanExample.recordCommandBuffer();
 
-	for (uint32_t i = 0; i < 800; ++i)
-	{
-		VulkanExample.drawFrame();
-	}
+	for (uint32_t i = 0; i < 800; ++i) { vulkanExample.drawFrame(); }
 
-	VulkanExample.deinitialize();
-
+	vulkanExample.deinitialize();
 }
 #endif

@@ -1,8 +1,7 @@
 var searchData=
 [
-  ['shell',['Shell',['../classpvr_1_1platform_1_1_shell.html',1,'pvr::platform']]],
-  ['shelldata',['ShellData',['../structpvr_1_1platform_1_1_shell_data.html',1,'pvr::platform']]],
-  ['shellevent',['ShellEvent',['../structpvr_1_1platform_1_1_shell_event.html',1,'pvr::platform']]],
-  ['shellos',['ShellOS',['../classpvr_1_1platform_1_1_shell_o_s.html',1,'pvr::platform']]],
-  ['statemachine',['StateMachine',['../classpvr_1_1platform_1_1_state_machine.html',1,'pvr::platform']]]
+  ['pointerlocation',['PointerLocation',['../classpvr_1_1_pointer_location.html',1,'pvr']]],
+  ['pointerlocationstore',['PointerLocationStore',['../structpvr_1_1_pointer_location_store.html',1,'pvr']]],
+  ['pointernormalisedlocation',['PointerNormalisedLocation',['../structpvr_1_1platform_1_1_shell_1_1_pointer_normalised_location.html',1,'pvr::platform::Shell']]],
+  ['pointingdevicestate',['PointingDeviceState',['../structpvr_1_1platform_1_1_shell_1_1_pointing_device_state.html',1,'pvr::platform::Shell']]]
 ];

@@ -60,7 +60,7 @@ struct DeviceResources
 	pvr::Multi<pvrvk::ImageView> depthStencilImages;
 	pvr::Multi<pvrvk::DescriptorSet> mvpDescriptor;
 	pvr::Multi<pvrvk::DescriptorSet> materialDescriptor;
-	pvr::Multi<pvrvk::CommandBuffer> commandBuffer;
+	pvr::Multi<pvrvk::CommandBuffer> cmdBuffers;
 	pvrvk::Semaphore imageAcquiredSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
 	pvrvk::Semaphore presentationSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
 	pvrvk::Fence perFrameResourcesFences[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
@@ -91,8 +91,7 @@ struct DeviceResources
 			uint32_t l = swapchain->getSwapchainLength();
 			for (uint32_t i = 0; i < l; ++i)
 			{
-				if (perFrameResourcesFences[i])
-					perFrameResourcesFences[i]->wait();
+				if (perFrameResourcesFences[i]) perFrameResourcesFences[i]->wait();
 			}
 		}
 	}
@@ -177,19 +176,13 @@ void VulkanPVRScopeExample::eventMappedInput(pvr::SimplifiedInput key)
 	case pvr::SimplifiedInput::Up:
 	{
 		_selectedCounter++;
-		if (_selectedCounter >= static_cast<int32_t>(_deviceResources->scopeGraph.getCounterNum()))
-		{
-			_selectedCounter = _deviceResources->scopeGraph.getCounterNum() - 1;
-		}
+		if (_selectedCounter >= static_cast<int32_t>(_deviceResources->scopeGraph.getCounterNum())) { _selectedCounter = _deviceResources->scopeGraph.getCounterNum() - 1; }
 	}
 	break;
 	case pvr::SimplifiedInput::Down:
 	{
 		_selectedCounter--;
-		if (_selectedCounter < 0)
-		{
-			_selectedCounter = 0;
-		}
+		if (_selectedCounter < 0) { _selectedCounter = 0; }
 	}
 	break;
 	case pvr::SimplifiedInput::Action1:
@@ -198,17 +191,10 @@ void VulkanPVRScopeExample::eventMappedInput(pvr::SimplifiedInput key)
 	}
 	break;
 	// Keyboard input (cursor left/right to change active group)
-	case pvr::SimplifiedInput::Right:
-		_deviceResources->scopeGraph.setActiveGroup(_deviceResources->scopeGraph.getActiveGroup() + 1);
-		break;
-	case pvr::SimplifiedInput::Left:
-		_deviceResources->scopeGraph.setActiveGroup(_deviceResources->scopeGraph.getActiveGroup() - 1);
-		break;
-	case pvr::SimplifiedInput::ActionClose:
-		exitShell();
-		break;
-	default:
-		break;
+	case pvr::SimplifiedInput::Right: _deviceResources->scopeGraph.setActiveGroup(_deviceResources->scopeGraph.getActiveGroup() + 1); break;
+	case pvr::SimplifiedInput::Left: _deviceResources->scopeGraph.setActiveGroup(_deviceResources->scopeGraph.getActiveGroup() - 1); break;
+	case pvr::SimplifiedInput::ActionClose: exitShell(); break;
+	default: break;
 	}
 	updateDescription();
 }
@@ -241,18 +227,20 @@ void VulkanPVRScopeExample::createUboDescriptorSet()
 	const uint32_t swapchainLength = _deviceResources->swapchain->getSwapchainLength();
 	pvrvk::WriteDescriptorSet writeDescSet[pvrvk::FrameworkCaps::MaxSwapChains * 2];
 
-	pvr::utils::StructuredMemoryDescription desc;
-	desc.addElement("MVPMatrix", pvr::GpuDatatypes::mat4x4);
-	desc.addElement("MVITMatrix", pvr::GpuDatatypes::mat3x3);
+	{
+		pvr::utils::StructuredMemoryDescription desc;
+		desc.addElement("MVPMatrix", pvr::GpuDatatypes::mat4x4);
+		desc.addElement("MVITMatrix", pvr::GpuDatatypes::mat3x3);
 
-	_deviceResources->mvpUboView.initDynamic(desc, NumModelInstance * _deviceResources->swapchain->getSwapchainLength(), pvr::BufferUsageFlags::UniformBuffer,
-		static_cast<uint32_t>(_deviceResources->device->getPhysicalDevice()->getProperties().getLimits().getMinUniformBufferOffsetAlignment()));
-	_deviceResources->mvpUbo = pvr::utils::createBuffer(_deviceResources->device, _deviceResources->mvpUboView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT,
-		pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
-		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
-		&_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+		_deviceResources->mvpUboView.initDynamic(desc, NumModelInstance * _deviceResources->swapchain->getSwapchainLength(), pvr::BufferUsageFlags::UniformBuffer,
+			static_cast<uint32_t>(_deviceResources->device->getPhysicalDevice()->getProperties().getLimits().getMinUniformBufferOffsetAlignment()));
+		_deviceResources->mvpUbo = pvr::utils::createBuffer(_deviceResources->device,
+			pvrvk::BufferCreateInfo(_deviceResources->mvpUboView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
+			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
+			&_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
-	_deviceResources->mvpUboView.pointToMappedMemory(_deviceResources->mvpUbo->getDeviceMemory()->getMappedData());
+		_deviceResources->mvpUboView.pointToMappedMemory(_deviceResources->mvpUbo->getDeviceMemory()->getMappedData());
+	}
 
 	uint32_t writeIndex = 0;
 	for (uint32_t i = 0; i < swapchainLength; ++i, ++writeIndex)
@@ -275,8 +263,8 @@ void VulkanPVRScopeExample::createUboDescriptorSet()
 
 		_deviceResources->materialUboView.initDynamic(desc, _deviceResources->swapchain->getSwapchainLength(), pvr::BufferUsageFlags::UniformBuffer,
 			static_cast<uint32_t>(_deviceResources->device->getPhysicalDevice()->getProperties().getLimits().getMinUniformBufferOffsetAlignment()));
-		_deviceResources->materialUbo = pvr::utils::createBuffer(_deviceResources->device, _deviceResources->materialUboView.getSize(),
-			pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
+		_deviceResources->materialUbo = pvr::utils::createBuffer(_deviceResources->device,
+			pvrvk::BufferCreateInfo(_deviceResources->materialUboView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
 			&_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
@@ -301,9 +289,7 @@ void VulkanPVRScopeExample::createUboDescriptorSet()
 
 	// if the memory property flags used by the buffers' device memory do not contain e_HOST_COHERENT_BIT then we must flush the memory
 	if (static_cast<uint32_t>(_deviceResources->materialUbo->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
-	{
-		_deviceResources->materialUbo->getDeviceMemory()->flushRange(0, _deviceResources->materialUboView.getSize());
-	}
+	{ _deviceResources->materialUbo->getDeviceMemory()->flushRange(0, _deviceResources->materialUboView.getSize()); }
 
 	_deviceResources->device->updateDescriptorSets(writeDescSet, writeIndex, nullptr, 0);
 }
@@ -415,7 +401,7 @@ pvr::Result VulkanPVRScopeExample::initApplication()
 	_angleY = 0.0f;
 
 	// Load the _scene
-	pvr::assets::helper::loadModel(*this, SceneFile, _scene);
+	_scene = pvr::assets::loadModel(*this, SceneFile);
 
 	// Process the command line
 	{
@@ -445,7 +431,7 @@ pvr::Result VulkanPVRScopeExample::quitApplication()
 ***********************************************************************************************************************/
 pvr::Result VulkanPVRScopeExample::initView()
 {
-	_deviceResources = std::unique_ptr<DeviceResources>(new DeviceResources());
+	_deviceResources = std::make_unique<DeviceResources>();
 
 	// Create instance and retrieve compatible physical devices
 	_deviceResources->instance = pvr::utils::createInstance(this->getApplicationName());
@@ -457,7 +443,8 @@ pvr::Result VulkanPVRScopeExample::initView()
 	}
 
 	// Create the surface
-	pvrvk::Surface surface = pvr::utils::createSurface(_deviceResources->instance, _deviceResources->instance->getPhysicalDevice(0), this->getWindow(), this->getDisplay());
+	pvrvk::Surface surface =
+		pvr::utils::createSurface(_deviceResources->instance, _deviceResources->instance->getPhysicalDevice(0), this->getWindow(), this->getDisplay(), this->getConnection());
 
 	// Create a default set of debug utils messengers or debug callbacks using either VK_EXT_debug_utils or VK_EXT_debug_report respectively
 	_deviceResources->debugUtilsCallbacks = pvr::utils::createDebugUtilsCallbacks(_deviceResources->instance);
@@ -481,13 +468,10 @@ pvr::Result VulkanPVRScopeExample::initView()
 	if (pvr::utils::isImageUsageSupportedBySurface(surfaceCapabilities, pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT))
 	{
 		swapchainImageUsage |= pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT;
-	}
-
-	//--------------------
-	// Create the swapchain
-	pvr::utils::createSwapchainAndDepthStencilImageAndViews(_deviceResources->device, surface, getDisplayAttributes(), _deviceResources->swapchain,
-		_deviceResources->depthStencilImages, swapchainImageUsage, pvrvk::ImageUsageFlags::e_DEPTH_STENCIL_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_TRANSIENT_ATTACHMENT_BIT,
-		&_deviceResources->vmaAllocator);
+	} //--------------------
+	  // Create the swapchain
+	pvr::utils::createSwapchainAndDepthStencilImageAndViews(_deviceResources->device, surface, getDisplayAttributes(), _deviceResources->swapchain, _deviceResources->depthStencilImages,
+		swapchainImageUsage, pvrvk::ImageUsageFlags::e_DEPTH_STENCIL_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_TRANSIENT_ATTACHMENT_BIT, &_deviceResources->vmaAllocator);
 
 	//--------------------
 	// Create the framebuffer
@@ -524,22 +508,19 @@ pvr::Result VulkanPVRScopeExample::initView()
 		_deviceResources->presentationSemaphores[i] = _deviceResources->device->createSemaphore();
 		_deviceResources->imageAcquiredSemaphores[i] = _deviceResources->device->createSemaphore();
 		_deviceResources->perFrameResourcesFences[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
-		_deviceResources->commandBuffer[i] = _deviceResources->commandPool->allocateCommandBuffer();
-		if (i == 0)
-		{
-			_deviceResources->commandBuffer[0]->begin();
-		}
+		_deviceResources->cmdBuffers[i] = _deviceResources->commandPool->allocateCommandBuffer();
+		if (i == 0) { _deviceResources->cmdBuffers[0]->begin(); }
 	}
 
 	// Load textures
-	createTexSamplerDescriptorSet(_deviceResources->commandBuffer[0]);
+	createTexSamplerDescriptorSet(_deviceResources->cmdBuffers[0]);
 
 	// Initialize VBO data
-	loadVbos(_deviceResources->commandBuffer[0]);
+	loadVbos(_deviceResources->cmdBuffers[0]);
 
-	_deviceResources->commandBuffer[0]->end();
+	_deviceResources->cmdBuffers[0]->end();
 	pvrvk::SubmitInfo submitInfo;
-	submitInfo.commandBuffers = &_deviceResources->commandBuffer[0];
+	submitInfo.commandBuffers = &_deviceResources->cmdBuffers[0];
 	submitInfo.numCommandBuffers = 1;
 	_deviceResources->queue->submit(&submitInfo, 1);
 	_deviceResources->queue->waitIdle();
@@ -597,18 +578,12 @@ pvr::Result VulkanPVRScopeExample::initView()
 		{
 			std::string s(std::string(_deviceResources->scopeGraph.getCounterName(i))); // Better safe than sorry - get a copy...
 			pvr::strings::toLower(s);
-			if (pvr::strings::startsWith(s, "hsr efficiency"))
-			{
-				_deviceResources->scopeGraph.showCounter(i, true);
-			}
-			if (pvr::strings::startsWith(s, "shaded pixels per second"))
-			{
-				_deviceResources->scopeGraph.showCounter(i, true);
-			}
+			if (pvr::strings::startsWith(s, "hsr efficiency")) { _deviceResources->scopeGraph.showCounter(i, true); }
+			if (pvr::strings::startsWith(s, "shaded pixels per second")) { _deviceResources->scopeGraph.showCounter(i, true); }
 		}
 
 		// Set the update interval: number of updates [frames] before updating the graph
-		_deviceResources->scopeGraph.setUpdateInterval(_interval);
+		_deviceResources->scopeGraph.setUpdateInterval(static_cast<uint32_t>(_interval));
 	}
 
 	updateDescription();
@@ -644,11 +619,12 @@ pvr::Result VulkanPVRScopeExample::renderFrame()
 
 	updateMVPMatrix(swapchainIndex);
 	_deviceResources->scopeGraph.ping(static_cast<float>(getFrameTime()));
+	updateDescription();
 	recordCommandBuffer(swapchainIndex);
 
 	pvrvk::SubmitInfo submitInfo;
 	pvrvk::PipelineStageFlags pipeWaitStageFlags = pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT;
-	submitInfo.commandBuffers = &_deviceResources->commandBuffer[swapchainIndex];
+	submitInfo.commandBuffers = &_deviceResources->cmdBuffers[swapchainIndex];
 	submitInfo.numCommandBuffers = 1;
 	submitInfo.waitSemaphores = &_deviceResources->imageAcquiredSemaphores[_frameId];
 	submitInfo.numWaitSemaphores = 1;
@@ -735,7 +711,7 @@ void VulkanPVRScopeExample::drawMesh(int32_t nodeIndex, pvrvk::CommandBuffer& co
 void VulkanPVRScopeExample::recordCommandBuffer(uint32_t swapchain)
 {
 	const pvrvk::ClearValue clearValues[] = { pvrvk::ClearValue(0.0f, 0.45f, 0.41f, 1.0f), pvrvk::ClearValue::createDefaultDepthStencilClearValue() };
-	pvrvk::CommandBuffer& command = _deviceResources->commandBuffer[swapchain];
+	pvrvk::CommandBuffer& command = _deviceResources->cmdBuffers[swapchain];
 	command->begin();
 	command->beginRenderPass(_deviceResources->onScreenFramebuffer[swapchain], pvrvk::Rect2D(0, 0, getWidth(), getHeight()), true, clearValues, ARRAY_SIZE(clearValues));
 
@@ -833,7 +809,4 @@ void VulkanPVRScopeExample::updateDescription()
 
 /// <summary>This function must be implemented by the user of the shell. The user should return its pvr::Shell object defining the behaviour of the application.</summary>
 /// <returns>Return a unique ptr to the demo supplied by the user.</returns>
-std::unique_ptr<pvr::Shell> pvr::newDemo()
-{
-	return std::unique_ptr<pvr::Shell>(new VulkanPVRScopeExample());
-}
+std::unique_ptr<pvr::Shell> pvr::newDemo() { return std::make_unique<VulkanPVRScopeExample>(); }

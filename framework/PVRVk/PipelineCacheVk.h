@@ -65,22 +65,13 @@ public:
 
 	/// <summary>Get the pipeline cache creation flags</summary>
 	/// <returns>The set of pipeline cache creation flags</returns>
-	inline PipelineCacheCreateFlags getFlags() const
-	{
-		return _createInfo.getFlags();
-	}
+	inline PipelineCacheCreateFlags getFlags() const { return _createInfo.getFlags(); }
 	/// <summary>Get the initial data size of the pipeline cache</summary>
 	/// <returns>The initial data size of the pipeline cache</returns>
-	inline size_t getInitialDataSize() const
-	{
-		return _createInfo.getInitialDataSize();
-	}
+	inline size_t getInitialDataSize() const { return _createInfo.getInitialDataSize(); }
 	/// <summary>Get the initial data of the pipeline cache</summary>
 	/// <returns>The initial data of the pipeline cache</returns>
-	inline const void* getInitialData() const
-	{
-		return _createInfo.getInitialData();
-	}
+	inline const void* getInitialData() const { return _createInfo.getInitialData(); }
 
 	/// <summary>Get the maximum size of the data that can be retrieved from the this pipeline cache, in bytes</summary>
 	/// <returns>Returns maximum cache size</returns>
@@ -105,10 +96,7 @@ public:
 
 	/// <summary>Get this pipeline cache's create flags</summary>
 	/// <returns>PipelineCacheCreateInfo</returns>
-	PipelineCacheCreateInfo getCreateInfo() const
-	{
-		return _createInfo;
-	}
+	PipelineCacheCreateInfo getCreateInfo() const { return _createInfo; }
 };
 } // namespace impl
 } // namespace pvrvk

@@ -10,7 +10,9 @@ var searchData=
   ['eventkeyup',['eventKeyUp',['../classpvr_1_1platform_1_1_shell.html#a7fd1296cb45dffdac831bfff5bd9c730',1,'pvr::platform::Shell']]],
   ['eventmappedinput',['eventMappedInput',['../classpvr_1_1platform_1_1_shell.html#a5e9a69685418d9328fa2415476319f06',1,'pvr::platform::Shell']]],
   ['execute',['execute',['../classpvr_1_1platform_1_1_state_machine.html#aa0ceef207e50096836056de3df07a697',1,'pvr::platform::StateMachine']]],
-  ['executeonce',['executeOnce',['../classpvr_1_1platform_1_1_state_machine.html#abe0b141d27c80ae22f68676c6c82c7d4',1,'pvr::platform::StateMachine::executeOnce()'],['../classpvr_1_1platform_1_1_state_machine.html#ab8a49e3f00302adc3fbe4eae2ec3f594',1,'pvr::platform::StateMachine::executeOnce(const State state)']]],
-  ['executeupto',['executeUpTo',['../classpvr_1_1platform_1_1_state_machine.html#a9fec54fc1350baad6b33770d38a49a2f',1,'pvr::platform::StateMachine']]],
+  ['executedownto',['executeDownTo',['../classpvr_1_1platform_1_1_state_machine.html#a99d2a061ac7e81f7b26dce5467689cee',1,'pvr::platform::StateMachine']]],
+  ['executenext',['executeNext',['../classpvr_1_1platform_1_1_state_machine.html#a972985cfef23ab5adbf50fe9320dba06',1,'pvr::platform::StateMachine']]],
+  ['executeto',['executeTo',['../classpvr_1_1platform_1_1_state_machine.html#aa7323098f7b19c5a9074e43850cef91c',1,'pvr::platform::StateMachine']]],
+  ['executeupto',['executeUpTo',['../classpvr_1_1platform_1_1_state_machine.html#a9e29f68fa67093a164ef2584d997e9d9',1,'pvr::platform::StateMachine']]],
   ['exitshell',['exitShell',['../classpvr_1_1platform_1_1_shell.html#a4167538c72b7eae18d00a73f9f72a753',1,'pvr::platform::Shell']]]
 ];

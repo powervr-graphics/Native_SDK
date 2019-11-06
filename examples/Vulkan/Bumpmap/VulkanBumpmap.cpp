@@ -71,7 +71,7 @@ class VulkanBumpmap : public pvr::Shell
 		pvrvk::PipelineLayout pipelayout;
 		pvrvk::DescriptorSet texDescSet;
 		pvrvk::GraphicsPipeline pipe;
-		pvr::Multi<pvrvk::CommandBuffer> commandBuffers; // per swapchain
+		pvr::Multi<pvrvk::CommandBuffer> cmdBuffers; // per swapchain
 		pvr::Multi<pvrvk::Framebuffer> onScreenFramebuffers; // per swapchain
 		pvr::Multi<pvrvk::ImageView> depthStencilImages;
 		pvr::Multi<pvrvk::DescriptorSet> uboDescSets;
@@ -84,15 +84,11 @@ class VulkanBumpmap : public pvr::Shell
 
 		~DeviceResources()
 		{
-			if (device)
-			{
-				device->waitIdle();
-			}
+			if (device) { device->waitIdle(); }
 			uint32_t l = swapchain->getSwapchainLength();
 			for (uint32_t i = 0; i < l; ++i)
 			{
-				if (perFrameResourcesFences[i])
-					perFrameResourcesFences[i]->wait();
+				if (perFrameResourcesFences[i]) perFrameResourcesFences[i]->wait();
 			}
 		}
 	};
@@ -124,7 +120,7 @@ public:
 	void createImageSamplerDescriptor(pvrvk::CommandBuffer& imageUploadCmd);
 	void createUbo();
 	void createPipeline();
-	void drawMesh(pvrvk::CommandBuffer& commandBuffer, int i32NodeIndex);
+	void drawMesh(pvrvk::CommandBuffer& cmdBuffers, int i32NodeIndex);
 	void recordCommandBuffer();
 };
 
@@ -178,8 +174,8 @@ void VulkanBumpmap::createUbo()
 
 		_deviceResources->structuredBufferView.initDynamic(desc, _scene->getNumMeshNodes() * _deviceResources->swapchain->getSwapchainLength(), pvr::BufferUsageFlags::UniformBuffer,
 			static_cast<uint32_t>(_deviceResources->device->getPhysicalDevice()->getProperties().getLimits().getMinUniformBufferOffsetAlignment()));
-		_deviceResources->ubo = pvr::utils::createBuffer(_deviceResources->device, _deviceResources->structuredBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT,
-			pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
+		_deviceResources->ubo = pvr::utils::createBuffer(_deviceResources->device,
+			pvrvk::BufferCreateInfo(_deviceResources->structuredBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
 			&_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 		_deviceResources->structuredBufferView.pointToMappedMemory(_deviceResources->ubo->getDeviceMemory()->getMappedData());
@@ -240,8 +236,8 @@ void VulkanBumpmap::createPipeline()
 	pipeInfo.rasterizer.setCullMode(pvrvk::CullModeFlags::e_BACK_BIT);
 	pipeInfo.colorBlend.setAttachmentState(0, colorAttachemtState);
 
-	pvr::Stream::ptr_type vertSource = getAssetStream(VertShaderSrcFile);
-	pvr::Stream::ptr_type fragSource = getAssetStream(FragShaderSrcFile);
+	std::unique_ptr<pvr::Stream> vertSource = getAssetStream(VertShaderSrcFile);
+	std::unique_ptr<pvr::Stream> fragSource = getAssetStream(FragShaderSrcFile);
 
 	pipeInfo.vertexShader.setShader(_deviceResources->device->createShaderModule(pvrvk::ShaderModuleCreateInfo(vertSource->readToEnd<uint32_t>())));
 	pipeInfo.fragmentShader.setShader(_deviceResources->device->createShaderModule(pvrvk::ShaderModuleCreateInfo(fragSource->readToEnd<uint32_t>())));
@@ -256,8 +252,7 @@ void VulkanBumpmap::createPipeline()
 	pipeInfo.depthStencil.enableDepthTest(true);
 	pipeInfo.depthStencil.setDepthCompareFunc(pvrvk::CompareOp::e_LESS);
 	pipeInfo.depthStencil.enableDepthWrite(true);
-	pvr::utils::populateInputAssemblyFromMesh(
-		mesh, VertexAttribBindings, sizeof(VertexAttribBindings) / sizeof(VertexAttribBindings[0]), pipeInfo.vertexInput, pipeInfo.inputAssembler);
+	pvr::utils::populateInputAssemblyFromMesh(mesh, VertexAttribBindings, sizeof(VertexAttribBindings) / sizeof(VertexAttribBindings[0]), pipeInfo.vertexInput, pipeInfo.inputAssembler);
 	_deviceResources->pipe = _deviceResources->device->createGraphicsPipeline(pipeInfo, _deviceResources->pipelineCache);
 	_deviceResources->pipe->setObjectName("Bumpmap GraphicsPipeline");
 }
@@ -270,8 +265,8 @@ void VulkanBumpmap::createPipeline()
 ***********************************************************************************************************************/
 pvr::Result VulkanBumpmap::initApplication()
 {
-	// Load the _scene
-	pvr::assets::helper::loadModel(*this, SceneFile, _scene);
+	// Load the scene
+	_scene = pvr::assets::loadModel(*this, SceneFile);
 	_angleY = 0.0f;
 	_frameId = 0;
 
@@ -296,7 +291,7 @@ pvr::Result VulkanBumpmap::quitApplication()
 ***********************************************************************************************************************/
 pvr::Result VulkanBumpmap::initView()
 {
-	_deviceResources = std::unique_ptr<DeviceResources>(new DeviceResources());
+	_deviceResources = std::make_unique<DeviceResources>();
 
 	// Create instance and retrieve compatible physical devices
 	_deviceResources->instance = pvr::utils::createInstance(this->getApplicationName());
@@ -308,7 +303,8 @@ pvr::Result VulkanBumpmap::initView()
 	}
 
 	// Create the surface
-	pvrvk::Surface surface = pvr::utils::createSurface(_deviceResources->instance, _deviceResources->instance->getPhysicalDevice(0), this->getWindow(), this->getDisplay());
+	pvrvk::Surface surface =
+		pvr::utils::createSurface(_deviceResources->instance, _deviceResources->instance->getPhysicalDevice(0), this->getWindow(), this->getDisplay(), this->getConnection());
 
 	// Create a default set of debug utils messengers or debug callbacks using either VK_EXT_debug_utils or VK_EXT_debug_report respectively
 	_deviceResources->debugUtilsCallbacks = pvr::utils::createDebugUtilsCallbacks(_deviceResources->instance);
@@ -329,13 +325,10 @@ pvr::Result VulkanBumpmap::initView()
 	if (pvr::utils::isImageUsageSupportedBySurface(surfaceCapabilities, pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT))
 	{
 		swapchainImageUsage |= pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT;
-	}
-
-	//---------------
-	// Create the swapchain
-	pvr::utils::createSwapchainAndDepthStencilImageAndViews(_deviceResources->device, surface, getDisplayAttributes(), _deviceResources->swapchain,
-		_deviceResources->depthStencilImages, swapchainImageUsage, pvrvk::ImageUsageFlags::e_DEPTH_STENCIL_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_TRANSIENT_ATTACHMENT_BIT,
-		&_deviceResources->vmaAllocator);
+	} //---------------
+	  // Create the swapchain
+	pvr::utils::createSwapchainAndDepthStencilImageAndViews(_deviceResources->device, surface, getDisplayAttributes(), _deviceResources->swapchain, _deviceResources->depthStencilImages,
+		swapchainImageUsage, pvrvk::ImageUsageFlags::e_DEPTH_STENCIL_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_TRANSIENT_ATTACHMENT_BIT, &_deviceResources->vmaAllocator);
 
 	//---------------
 	// Create the commandpool and descriptorset pool
@@ -370,12 +363,9 @@ pvr::Result VulkanBumpmap::initView()
 	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
 	{
 		// create the per swapchain command buffers
-		_deviceResources->commandBuffers[i] = _deviceResources->commandPool->allocateCommandBuffer();
-		_deviceResources->commandBuffers[i]->setObjectName(std::string("Main CommandBuffer [") + std::to_string(i) + "]");
-		if (i == 0)
-		{
-			_deviceResources->commandBuffers[0]->begin();
-		}
+		_deviceResources->cmdBuffers[i] = _deviceResources->commandPool->allocateCommandBuffer();
+		_deviceResources->cmdBuffers[i]->setObjectName(std::string("Main CommandBuffer [") + std::to_string(i) + "]");
+		if (i == 0) { _deviceResources->cmdBuffers[0]->begin(); }
 
 		_deviceResources->presentationSemaphores[i] = _deviceResources->device->createSemaphore();
 		_deviceResources->presentationSemaphores[i]->setObjectName(std::string("Presentation Semaphore [") + std::to_string(i) + "]");
@@ -387,17 +377,17 @@ pvr::Result VulkanBumpmap::initView()
 
 	// load the vbo and ibo data
 	bool requiresCommandBufferSubmission = false;
-	pvr::utils::appendSingleBuffersFromModel(_deviceResources->device, *_scene, _deviceResources->vbos, _deviceResources->ibos, _deviceResources->commandBuffers[0],
+	pvr::utils::appendSingleBuffersFromModel(_deviceResources->device, *_scene, _deviceResources->vbos, _deviceResources->ibos, _deviceResources->cmdBuffers[0],
 		requiresCommandBufferSubmission, &_deviceResources->vmaAllocator);
 
 	// create the image samplers
-	createImageSamplerDescriptor(_deviceResources->commandBuffers[0]);
-	_deviceResources->commandBuffers[0]->end();
+	createImageSamplerDescriptor(_deviceResources->cmdBuffers[0]);
+	_deviceResources->cmdBuffers[0]->end();
 
 	pvr::utils::beginQueueDebugLabel(_deviceResources->queue, pvrvk::DebugUtilsLabel("Batching Application Resource Upload"));
 
 	pvrvk::SubmitInfo submitInfo;
-	submitInfo.commandBuffers = &_deviceResources->commandBuffers[0];
+	submitInfo.commandBuffers = &_deviceResources->cmdBuffers[0];
 	submitInfo.numCommandBuffers = 1;
 	_deviceResources->queue->submit(&submitInfo, 1);
 	_deviceResources->queue->waitIdle();
@@ -495,7 +485,7 @@ pvr::Result VulkanBumpmap::renderFrame()
 
 	pvrvk::SubmitInfo submitInfo;
 	pvrvk::PipelineStageFlags pipeWaitStageFlags = pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT;
-	submitInfo.commandBuffers = &_deviceResources->commandBuffers[swapchainIndex];
+	submitInfo.commandBuffers = &_deviceResources->cmdBuffers[swapchainIndex];
 	submitInfo.numCommandBuffers = 1;
 	submitInfo.waitSemaphores = &_deviceResources->imageAcquiredSemaphores[_frameId];
 	submitInfo.numWaitSemaphores = 1;
@@ -537,13 +527,13 @@ pvr::Result VulkanBumpmap::renderFrame()
 \brief  Draws a assets::Mesh after the model view matrix has been set and the material prepared.
 \param  nodeIndex Node index of the mesh to draw
 ***********************************************************************************************************************/
-void VulkanBumpmap::drawMesh(pvrvk::CommandBuffer& commandBuffer, int nodeIndex)
+void VulkanBumpmap::drawMesh(pvrvk::CommandBuffer& cmdBuffers, int nodeIndex)
 {
 	const uint32_t meshId = _scene->getNode(nodeIndex).getObjectId();
 	const pvr::assets::Mesh& mesh = _scene->getMesh(meshId);
 
 	// bind the VBO for the mesh
-	commandBuffer->bindVertexBuffer(_deviceResources->vbos[meshId], 0, 0);
+	cmdBuffers->bindVertexBuffer(_deviceResources->vbos[meshId], 0, 0);
 
 	//  The geometry can be exported in 4 ways:
 	//  - Indexed Triangle list
@@ -555,13 +545,13 @@ void VulkanBumpmap::drawMesh(pvrvk::CommandBuffer& commandBuffer, int nodeIndex)
 		// Indexed Triangle list
 		if (_deviceResources->ibos[meshId])
 		{
-			commandBuffer->bindIndexBuffer(_deviceResources->ibos[meshId], 0, pvr::utils::convertToPVRVk(mesh.getFaces().getDataType()));
-			commandBuffer->drawIndexed(0, mesh.getNumFaces() * 3, 0, 0, 1);
+			cmdBuffers->bindIndexBuffer(_deviceResources->ibos[meshId], 0, pvr::utils::convertToPVRVk(mesh.getFaces().getDataType()));
+			cmdBuffers->drawIndexed(0, mesh.getNumFaces() * 3, 0, 0, 1);
 		}
 		else
 		{
 			// Non-Indexed Triangle list
-			commandBuffer->draw(0, mesh.getNumFaces() * 3, 0, 1);
+			cmdBuffers->draw(0, mesh.getNumFaces() * 3, 0, 1);
 		}
 	}
 	else
@@ -572,13 +562,13 @@ void VulkanBumpmap::drawMesh(pvrvk::CommandBuffer& commandBuffer, int nodeIndex)
 			if (_deviceResources->ibos[meshId])
 			{
 				// Indexed Triangle strips
-				commandBuffer->bindIndexBuffer(_deviceResources->ibos[meshId], 0, pvr::utils::convertToPVRVk(mesh.getFaces().getDataType()));
-				commandBuffer->drawIndexed(0, mesh.getStripLength(i) + 2, offset * 2, 0, 1);
+				cmdBuffers->bindIndexBuffer(_deviceResources->ibos[meshId], 0, pvr::utils::convertToPVRVk(mesh.getFaces().getDataType()));
+				cmdBuffers->drawIndexed(0, mesh.getStripLength(i) + 2, offset * 2, 0, 1);
 			}
 			else
 			{
 				// Non-Indexed Triangle strips
-				commandBuffer->draw(0, mesh.getStripLength(i) + 2, 0, 1);
+				cmdBuffers->draw(0, mesh.getStripLength(i) + 2, 0, 1);
 			}
 			offset += mesh.getStripLength(i) + 2;
 		}
@@ -595,44 +585,40 @@ void VulkanBumpmap::recordCommandBuffer()
 	for (uint32_t i = 0; i < numSwapchains; ++i)
 	{
 		// begin recording commands for the current swap chain command buffer
-		_deviceResources->commandBuffers[i]->begin();
-		pvr::utils::beginCommandBufferDebugLabel(_deviceResources->commandBuffers[i], pvrvk::DebugUtilsLabel("Render Frame Commands"));
+		_deviceResources->cmdBuffers[i]->begin();
+		pvr::utils::beginCommandBufferDebugLabel(_deviceResources->cmdBuffers[i], pvrvk::DebugUtilsLabel("Render Frame Commands"));
 
 		// begin the render pass
-		_deviceResources->commandBuffers[i]->beginRenderPass(
+		_deviceResources->cmdBuffers[i]->beginRenderPass(
 			_deviceResources->onScreenFramebuffers[i], pvrvk::Rect2D(0, 0, getWidth(), getHeight()), true, clearValues, ARRAY_SIZE(clearValues));
 
-		pvr::utils::beginCommandBufferDebugLabel(_deviceResources->commandBuffers[i], pvrvk::DebugUtilsLabel("Mesh"));
+		pvr::utils::beginCommandBufferDebugLabel(_deviceResources->cmdBuffers[i], pvrvk::DebugUtilsLabel("Mesh"));
 
 		// calculate the dynamic offset to use
 		const uint32_t dynamicOffset = _deviceResources->structuredBufferView.getDynamicSliceOffset(i);
 		// enqueue the static states which wont be changed through out the frame
-		_deviceResources->commandBuffers[i]->bindPipeline(_deviceResources->pipe);
-		_deviceResources->commandBuffers[i]->bindDescriptorSet(pvrvk::PipelineBindPoint::e_GRAPHICS, _deviceResources->pipelayout, 0, _deviceResources->texDescSet, nullptr);
-		_deviceResources->commandBuffers[i]->bindDescriptorSet(
-			pvrvk::PipelineBindPoint::e_GRAPHICS, _deviceResources->pipelayout, 1, _deviceResources->uboDescSets[i], &dynamicOffset, 1);
-		drawMesh(_deviceResources->commandBuffers[i], 0);
-		pvr::utils::endCommandBufferDebugLabel(_deviceResources->commandBuffers[i]);
+		_deviceResources->cmdBuffers[i]->bindPipeline(_deviceResources->pipe);
+		_deviceResources->cmdBuffers[i]->bindDescriptorSet(pvrvk::PipelineBindPoint::e_GRAPHICS, _deviceResources->pipelayout, 0, _deviceResources->texDescSet, nullptr);
+		_deviceResources->cmdBuffers[i]->bindDescriptorSet(pvrvk::PipelineBindPoint::e_GRAPHICS, _deviceResources->pipelayout, 1, _deviceResources->uboDescSets[i], &dynamicOffset, 1);
+		drawMesh(_deviceResources->cmdBuffers[i], 0);
+		pvr::utils::endCommandBufferDebugLabel(_deviceResources->cmdBuffers[i]);
 
 		// record the ui renderer commands
-		_deviceResources->uiRenderer.beginRendering(_deviceResources->commandBuffers[i]);
+		_deviceResources->uiRenderer.beginRendering(_deviceResources->cmdBuffers[i]);
 		_deviceResources->uiRenderer.getDefaultTitle()->render();
 		_deviceResources->uiRenderer.getSdkLogo()->render();
 		_deviceResources->uiRenderer.endRendering();
 
 		// end the renderpass
-		_deviceResources->commandBuffers[i]->endRenderPass();
+		_deviceResources->cmdBuffers[i]->endRenderPass();
 
-		pvr::utils::endCommandBufferDebugLabel(_deviceResources->commandBuffers[i]);
+		pvr::utils::endCommandBufferDebugLabel(_deviceResources->cmdBuffers[i]);
 
 		// end recording commands for the current command buffer
-		_deviceResources->commandBuffers[i]->end();
+		_deviceResources->cmdBuffers[i]->end();
 	}
 }
 
 /// <summary>This function must be implemented by the user of the shell. The user should return its pvr::Shell object defining the behaviour of the application.</summary>
 /// <returns>Return a unique ptr to the demo supplied by the user.</returns>
-std::unique_ptr<pvr::Shell> pvr::newDemo()
-{
-	return std::unique_ptr<pvr::Shell>(new VulkanBumpmap());
-}
+std::unique_ptr<pvr::Shell> pvr::newDemo() { return std::make_unique<VulkanBumpmap>(); }

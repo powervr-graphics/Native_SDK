@@ -12,8 +12,9 @@
 /*! \mainpage PVRCamera
 ******************************************************************************
 
-\tableofcontents 
+\tableofcontents
  
+
 \section overview Overview
 *****************************
 PVRCamera is unique among the PowerVR Framework modules in that it does not only contain native code. PVRCamera provides an easy-to-use interface between the platform's Camera of Android or iOS and the rest of the Framework. Please refer to the relevant examples (e.g. TextureStreaming) for its use.

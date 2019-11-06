@@ -26,11 +26,21 @@ void VertexRead(const uint8_t* data, const DataType type, uint32_t count, float*
 /// <param name="out">of index data read</param>
 void VertexIndexRead(const uint8_t* data, const IndexType type, uint32_t* const out);
 
-/// <summary>loads a model from the provided file and fill out the model.</summary>
-/// <param name="assetProvider">The asset provider to use for opening the asset stream</param>
-/// <param name="filename">The filename to read the model from</param>
-/// <param name="outModel">The model to fill</param>
-void loadModel(IAssetProvider& assetProvider, const char* filename, assets::ModelHandle& outModel);
+/// <summary>Retrieves the model definition type using the extension of the given filename.</summary>
+/// <param name="modelFile">The name of the model file to use for determining its model file format</param>
+pvr::assets::ModelFileFormat getModelFormatFromFilename(const std::string& modelFile);
+
 } // namespace helper
+/// <summary>Load a model file using the provided scene file name.</summary>
+/// <param name="app">An asset provider used to load the model file</param>
+/// <param name="modelFile"></param>
+/// <returns>Returns a successfully created pvr::assets::ModelHandle object otherwise will throw</returns>
+pvr::assets::ModelHandle loadModel(const IAssetProvider& app, const std::string& modelFile);
+
+/// <summary>Load a model file using the provided scene file name.</summary>
+/// <param name="app">An asset provider used to load the model file</param>
+/// <param name="modelFile"></param>
+/// <returns>Returns a successfully created pvr::assets::ModelHandle object otherwise will throw</returns>
+pvr::assets::ModelHandle loadModel(const IAssetProvider& app, const pvr::Stream& model);
 } // namespace assets
 } // namespace pvr

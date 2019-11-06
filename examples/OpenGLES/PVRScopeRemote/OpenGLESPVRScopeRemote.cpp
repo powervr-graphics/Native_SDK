@@ -138,7 +138,7 @@ void OpenGLESPVRScopeRemote::createSamplerTexture()
 {
 	CPPLProcessingScoped PPLProcessingScoped(_spsCommsData, __FUNCTION__, static_cast<uint32_t>(strlen(__FUNCTION__)), _frameCounter);
 	auto texStream = getAssetStream(TextureFile);
-	pvr::Texture tex = pvr::textureLoad(texStream, pvr::TextureFileFormat::PVR);
+	pvr::Texture tex = pvr::textureLoad(*texStream, pvr::TextureFileFormat::PVR);
 	pvr::utils::TextureUploadResults uploadResults = pvr::utils::textureUpload(tex, _deviceResources->context->getApiVersion() == pvr::Api::OpenGLES2, true);
 	_deviceResources->texture = uploadResults.image;
 	gl::BindTexture(GL_TEXTURE_2D, _deviceResources->texture);
@@ -235,8 +235,8 @@ void OpenGLESPVRScopeRemote::loadVbos()
 ***********************************************************************************************************************/
 pvr::Result OpenGLESPVRScopeRemote::initApplication()
 {
-	// Load the _scene
-	pvr::assets::helper::loadModel(*this, SceneFile, _scene);
+	// Load the scene
+	_scene = pvr::assets::loadModel(*this, SceneFile);
 	pvr::utils::VertexBindings_Name vertexBindings[] = { { "POSITION", "inVertex" }, { "NORMAL", "inNormal" }, { "UV0", "inTexCoord" } };
 	_vertexConfiguration = createInputAssemblyFromMesh(_scene->getMesh(0), vertexBindings, 3);
 
@@ -303,7 +303,7 @@ pvr::Result OpenGLESPVRScopeRemote::quitApplication()
 ***********************************************************************************************************************/
 pvr::Result OpenGLESPVRScopeRemote::initView()
 {
-	_deviceResources = std::unique_ptr<DeviceResources>(new DeviceResources());
+	_deviceResources = std::make_unique<DeviceResources>();
 
 	_deviceResources->context = pvr::createEglContext();
 	_deviceResources->context->init(getWindow(), getDisplay(), getDisplayAttributes(), this->getMinApi(), this->getMaxApi());
@@ -330,7 +330,7 @@ pvr::Result OpenGLESPVRScopeRemote::initView()
 		}
 
 		//  Editable shaders
-		const std::pair<std::string, pvr::Stream::ptr_type> aShaders[2] = { { _vertShaderSrcFile, getAssetStream(_vertShaderSrcFile) },
+		const std::pair<std::string, std::unique_ptr<pvr::Stream>> aShaders[2] = { { _vertShaderSrcFile, getAssetStream(_vertShaderSrcFile) },
 			{ _fragShaderSrcFile, getAssetStream(_fragShaderSrcFile) } };
 
 		std::vector<char> data[sizeof(aShaders) / sizeof(*aShaders)];
@@ -414,10 +414,7 @@ pvr::Result OpenGLESPVRScopeRemote::initView()
 
 		// Ok, submit our library
 		if (!pplLibraryCreate(_spsCommsData, communicableItems.data(), static_cast<uint32_t>(communicableItems.size())))
-		{
-			Log(LogLevel::Debug, "PVRScopeRemote: pplLibraryCreate() failed\n");
-		}
-		// User defined counters
+		{ Log(LogLevel::Debug, "PVRScopeRemote: pplLibraryCreate() failed\n"); } // User defined counters
 
 		SSPSCommsCounterDef counterDefines[CounterDefs::NumCounter];
 		for (uint32_t i = 0; i < CounterDefs::NumCounter; ++i)
@@ -426,10 +423,7 @@ pvr::Result OpenGLESPVRScopeRemote::initView()
 			counterDefines[i].nNameLength = static_cast<uint32_t>(strlen(FrameDefs[i]));
 		}
 
-		if (!pplCountersCreate(_spsCommsData, counterDefines, CounterDefs::NumCounter))
-		{
-			Log(LogLevel::Debug, "PVRScopeRemote: pplCountersCreate() failed\n");
-		}
+		if (!pplCountersCreate(_spsCommsData, counterDefines, CounterDefs::NumCounter)) { Log(LogLevel::Debug, "PVRScopeRemote: pplCountersCreate() failed\n"); }
 	}
 	_deviceResources->onScreenFbo = _deviceResources->context->getOnScreenFbo();
 
@@ -440,13 +434,13 @@ pvr::Result OpenGLESPVRScopeRemote::initView()
 	size_t dataRead;
 	// Take our initial vertex shader source
 	{
-		pvr::Stream::ptr_type vertShader = getAssetStream(_vertShaderSrcFile);
+		std::unique_ptr<pvr::Stream> vertShader = getAssetStream(_vertShaderSrcFile);
 		_vertShaderSrc.resize(vertShader->getSize() + 1, 0);
 		vertShader->read(vertShader->getSize(), 1, &_vertShaderSrc[0], dataRead);
 	}
 	// Take our initial fragment shader source
 	{
-		pvr::Stream::ptr_type fragShader = getAssetStream(_fragShaderSrcFile);
+		std::unique_ptr<pvr::Stream> fragShader = getAssetStream(_fragShaderSrcFile);
 		_fragShaderSrc.resize(fragShader->getSize() + 1, 0);
 		fragShader->read(fragShader->getSize(), 1, &_fragShaderSrc[0], dataRead);
 	}
@@ -457,7 +451,7 @@ pvr::Result OpenGLESPVRScopeRemote::initView()
 	//  Initialize the UI Renderer
 	_deviceResources->uiRenderer.init(getWidth(), getHeight(), isFullScreen(), getBackBufferColorspace() == pvr::ColorSpace::sRGB);
 
-	// create the pvrscope connection pass and fail text
+	// create the PVRScope connection pass and fail text
 	_deviceResources->uiRenderer.getDefaultTitle()->setText("PVRScopeRemote");
 	_deviceResources->uiRenderer.getDefaultTitle()->commitUpdates();
 
@@ -478,7 +472,7 @@ pvr::Result OpenGLESPVRScopeRemote::initView()
 		_progUniforms.projectionMtx = pvr::math::perspectiveFov(_deviceResources->context->getApiVersion(), glm::pi<float>() / 6, static_cast<float>(getWidth()),
 			static_cast<float>(getHeight()), _scene->getCamera(0).getNear(), _scene->getCamera(0).getFar());
 	}
-	gl::BindFramebuffer(GL_DRAW_FRAMEBUFFER, _deviceResources->onScreenFbo);
+	gl::BindFramebuffer(GL_FRAMEBUFFER, _deviceResources->onScreenFbo);
 	gl::ClearColor(ClearColor.r, ClearColor.g, ClearColor.b, 1.0f);
 	return pvr::Result::Success;
 }
@@ -606,10 +600,7 @@ pvr::Result OpenGLESPVRScopeRemote::renderFrame()
 		}
 	}
 
-	if (_spsCommsData)
-	{
-		_hasCommunicationError |= !pplSendProcessingBegin(_spsCommsData, "draw", static_cast<uint32_t>(strlen("draw")), _frameCounter);
-	}
+	if (_spsCommsData) { _hasCommunicationError |= !pplSendProcessingBegin(_spsCommsData, "draw", static_cast<uint32_t>(strlen("draw")), _frameCounter); }
 
 	// Rotate and Translation the model matrix
 	glm::mat4 modelMtx = glm::rotate(_angleY, glm::vec3(0, 1, 0)) * glm::scale(glm::vec3(0.6f)) * _scene->getWorldMatrix(0);
@@ -651,30 +642,18 @@ pvr::Result OpenGLESPVRScopeRemote::renderFrame()
 		executeCommands();
 	}
 
-	if (_spsCommsData)
-	{
-		_hasCommunicationError |= !pplSendProcessingEnd(_spsCommsData);
-	}
+	if (_spsCommsData) { _hasCommunicationError |= !pplSendProcessingEnd(_spsCommsData); }
 
 	// send counters
 	_counterReadings[CounterDefs::Counter] = _frameCounter;
 	_counterReadings[CounterDefs::Counter10] = _frame10Counter;
-	if (_spsCommsData)
-	{
-		_hasCommunicationError |= !pplCountersUpdate(_spsCommsData, _counterReadings);
-	}
+	if (_spsCommsData) { _hasCommunicationError |= !pplCountersUpdate(_spsCommsData, _counterReadings); }
 
 	// update some counters
 	++_frameCounter;
-	if (0 == (_frameCounter / 10) % 10)
-	{
-		_frame10Counter += 10;
-	}
+	if (0 == (_frameCounter / 10) % 10) { _frame10Counter += 10; }
 
-	if (this->shouldTakeScreenshot())
-	{
-		pvr::utils::takeScreenshot(this->getScreenshotFileName(), this->getWidth(), this->getHeight());
-	}
+	if (this->shouldTakeScreenshot()) { pvr::utils::takeScreenshot(this->getScreenshotFileName(), this->getWidth(), this->getHeight()); }
 
 	_deviceResources->context->swapBuffers();
 
@@ -696,7 +675,7 @@ void OpenGLESPVRScopeRemote::drawMesh(int nodeIndex)
 	debugThrowOnApiError("draw mesh");
 	CPPLProcessingScoped PPLProcessingScoped(_spsCommsData, __FUNCTION__, static_cast<uint32_t>(strlen(__FUNCTION__)), _frameCounter);
 
-	int32_t meshIndex = _scene->getNode(nodeIndex).getObjectId();
+	uint32_t meshIndex = _scene->getNode(nodeIndex).getObjectId();
 	const pvr::assets::Mesh& mesh = _scene->getMesh(meshIndex);
 	// bind the VBO for the mesh
 	gl::BindBuffer(GL_ARRAY_BUFFER, _deviceResources->vbos[meshIndex]);
@@ -803,7 +782,4 @@ void OpenGLESPVRScopeRemote::executeCommands()
 
 /// <summary>This function must be implemented by the user of the shell. The user should return its pvr::Shell object defining the behaviour of the application.</summary>
 /// <returns>Return a unique ptr to the demo supplied by the user.</returns>
-std::unique_ptr<pvr::Shell> pvr::newDemo()
-{
-	return std::unique_ptr<pvr::Shell>(new OpenGLESPVRScopeRemote());
-}
+std::unique_ptr<pvr::Shell> pvr::newDemo() { return std::make_unique<OpenGLESPVRScopeRemote>(); }

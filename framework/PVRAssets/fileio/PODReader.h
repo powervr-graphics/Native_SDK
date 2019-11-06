@@ -7,45 +7,23 @@
 #pragma once
 
 #include "PVRAssets/Model.h"
-#include "PVRCore/stream/AssetReader.h"
+#include "PVRCore/stream/Stream.h"
 
 namespace pvr {
 namespace assets {
-class Model;
 
 /// <summary>This class creates pvr::assets::Model object from Streams of POD Model data. Use the readAsset method
 /// to create Model objects from the data in your stream.</summary>
-class PODReader : public AssetReader<Model>
-{
-public:
-	/// <summary>Construct empty reader.</summary>
-	PODReader();
+::pvr::assets::Model readPOD(const ::pvr::Stream& stream);
 
-	/// <summary>Construct reader from the specified stream.</summary>
-	/// <param name="assetStream">The stream to read from</param>
-	PODReader(Stream::ptr_type assetStream) : AssetReader<Model>(std::move(assetStream)) {}
+/// <summary>This class creates pvr::assets::Model object from Streams of POD Model data. Use the readAsset method
+/// to create Model objects from the data in your stream.</summary>
+void readPOD(const ::pvr::Stream& stream, ::pvr::assets::Model& model);
 
-	/// <summary>Check if there more assets in the stream.</summary>
-	/// <returns>True if the readAsset() method can be called again to read another asset</returns>
-	bool hasAssetsLeftToLoad();
+/// <summary>Check if this reader supports the particular assetStream.</summary>
+/// <param name="assetStream">The stream to check</param>
+/// <returns>True if this reader supports the particular assetStream</returns>
+bool isPOD(const ::pvr::Stream& stream);
 
-	/// <summary>Check if this reader supports multiple assets per stream.</summary>
-	/// <returns>True if this reader supports multiple assets per stream</returns>
-	virtual bool canHaveMultipleAssets();
-
-	/// <summary>Check if this reader supports the particular assetStream.</summary>
-	/// <param name="assetStream">The stream to check</param>
-	/// <returns>True if this reader supports the particular assetStream</returns>
-	virtual bool isSupportedFile(Stream& assetStream);
-
-	/// <summary>Check what are the expected file extensions for files supported by this reader.</summary>
-	/// <returns>A vector with the expected file extensions for files supported by this reader</returns>
-	virtual std::vector<std::string> getSupportedFileExtensions();
-
-private:
-	void readAsset_(Model& asset);
-
-	bool _modelsToLoad;
-};
 } // namespace assets
 } // namespace pvr

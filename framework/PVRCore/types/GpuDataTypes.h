@@ -108,30 +108,18 @@ enum class GpuDatatypes : uint32_t
 		static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitOneCol),
 	uvec4 = ivec4,
 	bvec4 = ivec4,
-	vec2 = static_cast<uint32_t>(GpuDatatypesHelper::Bits::Float) | static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitVec2) |
-		static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitOneCol),
-	vec3 = static_cast<uint32_t>(GpuDatatypesHelper::Bits::Float) | static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitVec3) |
-		static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitOneCol),
-	vec4 = static_cast<uint32_t>(GpuDatatypesHelper::Bits::Float) | static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitVec4) |
-		static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitOneCol),
-	mat2x2 = static_cast<uint32_t>(GpuDatatypesHelper::Bits::Float) | static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitVec2) |
-		static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitMat2x),
-	mat2x3 = static_cast<uint32_t>(GpuDatatypesHelper::Bits::Float) | static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitVec3) |
-		static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitMat2x),
-	mat2x4 = static_cast<uint32_t>(GpuDatatypesHelper::Bits::Float) | static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitVec4) |
-		static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitMat2x),
-	mat3x2 = static_cast<uint32_t>(GpuDatatypesHelper::Bits::Float) | static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitVec2) |
-		static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitMat3x),
-	mat3x3 = static_cast<uint32_t>(GpuDatatypesHelper::Bits::Float) | static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitVec3) |
-		static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitMat3x),
-	mat3x4 = static_cast<uint32_t>(GpuDatatypesHelper::Bits::Float) | static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitVec4) |
-		static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitMat3x),
-	mat4x2 = static_cast<uint32_t>(GpuDatatypesHelper::Bits::Float) | static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitVec2) |
-		static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitMat4x),
-	mat4x3 = static_cast<uint32_t>(GpuDatatypesHelper::Bits::Float) | static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitVec3) |
-		static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitMat4x),
-	mat4x4 = static_cast<uint32_t>(GpuDatatypesHelper::Bits::Float) | static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitVec4) |
-		static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitMat4x),
+	vec2 = static_cast<uint32_t>(GpuDatatypesHelper::Bits::Float) | static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitVec2) | static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitOneCol),
+	vec3 = static_cast<uint32_t>(GpuDatatypesHelper::Bits::Float) | static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitVec3) | static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitOneCol),
+	vec4 = static_cast<uint32_t>(GpuDatatypesHelper::Bits::Float) | static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitVec4) | static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitOneCol),
+	mat2x2 = static_cast<uint32_t>(GpuDatatypesHelper::Bits::Float) | static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitVec2) | static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitMat2x),
+	mat2x3 = static_cast<uint32_t>(GpuDatatypesHelper::Bits::Float) | static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitVec3) | static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitMat2x),
+	mat2x4 = static_cast<uint32_t>(GpuDatatypesHelper::Bits::Float) | static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitVec4) | static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitMat2x),
+	mat3x2 = static_cast<uint32_t>(GpuDatatypesHelper::Bits::Float) | static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitVec2) | static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitMat3x),
+	mat3x3 = static_cast<uint32_t>(GpuDatatypesHelper::Bits::Float) | static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitVec3) | static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitMat3x),
+	mat3x4 = static_cast<uint32_t>(GpuDatatypesHelper::Bits::Float) | static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitVec4) | static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitMat3x),
+	mat4x2 = static_cast<uint32_t>(GpuDatatypesHelper::Bits::Float) | static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitVec2) | static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitMat4x),
+	mat4x3 = static_cast<uint32_t>(GpuDatatypesHelper::Bits::Float) | static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitVec3) | static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitMat4x),
+	mat4x4 = static_cast<uint32_t>(GpuDatatypesHelper::Bits::Float) | static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitVec4) | static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitMat4x),
 	none = 0xFFFFFFFF,
 	structure = none
 };
@@ -139,28 +127,19 @@ enum class GpuDatatypes : uint32_t
 /// <param name="lhs">Left hand side</param>
 /// <param name="rhs">Right hand side</param>
 /// <returns>lhs AND rhs</returns>
-inline GpuDatatypes operator&(GpuDatatypes lhs, GpuDatatypesHelper::Bits rhs)
-{
-	return static_cast<GpuDatatypes>(static_cast<uint32_t>(lhs) & static_cast<uint32_t>(rhs));
-}
+inline GpuDatatypes operator&(GpuDatatypes lhs, GpuDatatypesHelper::Bits rhs) { return static_cast<GpuDatatypes>(static_cast<uint32_t>(lhs) & static_cast<uint32_t>(rhs)); }
 
 /// <summary>Bitwise operator RIGHT SHIFT. Typical semantics. Allows RIGHT SHIFT of GpuDatatypes by Bits</summary>
 /// <param name="lhs">Left hand side</param>
 /// <param name="rhs">Right hand side</param>
 /// <returns>lhs RIGHT SHIFT rhs</returns>
-inline GpuDatatypes operator>>(GpuDatatypes lhs, GpuDatatypesHelper::Bits rhs)
-{
-	return static_cast<GpuDatatypes>(static_cast<uint32_t>(lhs) >> static_cast<uint32_t>(rhs));
-}
+inline GpuDatatypes operator>>(GpuDatatypes lhs, GpuDatatypesHelper::Bits rhs) { return static_cast<GpuDatatypes>(static_cast<uint32_t>(lhs) >> static_cast<uint32_t>(rhs)); }
 
 /// <summary>Bitwise operator LEFT SHIFT. Typical semantics. Allows LEFT SHIFT of GpuDatatypes by Bits</summary>
 /// <param name="lhs">Left hand side</param>
 /// <param name="rhs">Right hand side</param>
 /// <returns>lhs LEFT SHIFT rhs</returns>
-inline GpuDatatypes operator<<(GpuDatatypes lhs, GpuDatatypesHelper::Bits rhs)
-{
-	return static_cast<GpuDatatypes>(static_cast<uint32_t>(lhs) << static_cast<uint32_t>(rhs));
-}
+inline GpuDatatypes operator<<(GpuDatatypes lhs, GpuDatatypesHelper::Bits rhs) { return static_cast<GpuDatatypes>(static_cast<uint32_t>(lhs) << static_cast<uint32_t>(rhs)); }
 
 /// <summary>Get the number of colums (1..4) of the type</summary>
 /// <param name="type">The datatype to test</param>
@@ -176,16 +155,13 @@ inline uint32_t getNumMatrixColumns(GpuDatatypes type)
 inline uint32_t getAlignment(GpuDatatypes type)
 {
 	uint32_t vectype = static_cast<uint32_t>(type & GpuDatatypesHelper::Bits::MaskVec);
-	return (vectype == static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitScalar) ? 4 : vectype == static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitVec2) ? 8 : 16);
+	return (vectype == static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitScalar) ? 4u : vectype == static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitVec2) ? 8u : 16u);
 }
 
 /// <summary>Get the size of a type, including padding, assuming the next item is of the same type</summary>
 /// <param name="type">The datatype to test</param>
 /// <returns>The size plus padding of this type</returns>
-inline uint32_t getVectorSelfAlignedSize(GpuDatatypes type)
-{
-	return getAlignment(type);
-}
+inline uint32_t getVectorSelfAlignedSize(GpuDatatypes type) { return getAlignment(type); }
 
 /// <summary>Get the number of vector elements (i.e. Rows) of a type. (e.g. vec2=>2)</summary>
 /// <param name="type">The datatype to test</param>
@@ -198,18 +174,12 @@ inline uint32_t getNumVecElements(GpuDatatypes type)
 /// <summary>Get the cpu-packed size of each vector element a type (disregarding matrix columns if they exist)</summary>
 /// <param name="type">The datatype to test</param>
 /// <returns>The size that a single column of <paramRef name="type"/> would take on the CPU</returns>
-inline uint32_t getVectorUnalignedSize(GpuDatatypes type)
-{
-	return 4 * getNumVecElements(type);
-}
+inline uint32_t getVectorUnalignedSize(GpuDatatypes type) { return 4 * getNumVecElements(type); }
 
 /// <summary>Get the underlying element of a type (integer or float)</summary>
 /// <param name="type">The datatype to test</param>
 /// <returns>A BaseType enum (integer or float)</returns>
-inline GpuDatatypesHelper::BaseType getBaseType(GpuDatatypes type)
-{
-	return GpuDatatypesHelper::BaseType(static_cast<uint32_t>(type) & 1);
-}
+inline GpuDatatypesHelper::BaseType getBaseType(GpuDatatypes type) { return GpuDatatypesHelper::BaseType(static_cast<uint32_t>(type) & 1); }
 
 /// <summary>Returns a datatype that is larger or equal to both of two types:
 /// 1) Has the most permissive base type (float>int)
@@ -254,10 +224,7 @@ inline uint32_t getSelfAlignedSize(GpuDatatypes type)
 /// <summary>Returns "how many bytes will an object of this type take", if it is an array member (arrays have potentially stricter requirements).</summary>
 /// <param name="type">The datatype to test</param>
 /// <returns>The size of this type, aligned to max array alignment restrictions</returns>
-inline uint32_t getSelfAlignedArraySize(GpuDatatypes type)
-{
-	return (::std::max)(getVectorSelfAlignedSize(type), static_cast<uint32_t>(16)) * getNumMatrixColumns(type);
-}
+inline uint32_t getSelfAlignedArraySize(GpuDatatypes type) { return (::std::max)(getVectorSelfAlignedSize(type), static_cast<uint32_t>(16)) * getNumMatrixColumns(type); }
 
 /// <summary>Returns how many bytes an array of n objects of this type take, but arrayElements = 1
 /// is NOT considered an array (is aligned as a single object, NOT an array of 1)</summary>
@@ -291,44 +258,25 @@ inline const char* toString(GpuDatatypes type)
 {
 	switch (type)
 	{
-	case GpuDatatypes::Integer:
-		return "int";
-	case GpuDatatypes::ivec2:
-		return "ivec2";
-	case GpuDatatypes::ivec3:
-		return "ivec3";
-	case GpuDatatypes::ivec4:
-		return "ivec4";
-	case GpuDatatypes::Float:
-		return "float";
-	case GpuDatatypes::vec2:
-		return "vec2";
-	case GpuDatatypes::vec3:
-		return "vec3";
-	case GpuDatatypes::vec4:
-		return "vec4";
-	case GpuDatatypes::mat2x2:
-		return "mat2x2";
-	case GpuDatatypes::mat2x3:
-		return "mat2x3";
-	case GpuDatatypes::mat2x4:
-		return "mat2x4";
-	case GpuDatatypes::mat3x2:
-		return "mat3x2";
-	case GpuDatatypes::mat3x3:
-		return "mat3x3";
-	case GpuDatatypes::mat3x4:
-		return "mat3x4";
-	case GpuDatatypes::mat4x2:
-		return "mat4x2";
-	case GpuDatatypes::mat4x3:
-		return "mat4x3";
-	case GpuDatatypes::mat4x4:
-		return "mat4x4";
-	case GpuDatatypes::none:
-		return "NONE";
-	default:
-		return "UNKNOWN";
+	case GpuDatatypes::Integer: return "int";
+	case GpuDatatypes::ivec2: return "ivec2";
+	case GpuDatatypes::ivec3: return "ivec3";
+	case GpuDatatypes::ivec4: return "ivec4";
+	case GpuDatatypes::Float: return "float";
+	case GpuDatatypes::vec2: return "vec2";
+	case GpuDatatypes::vec3: return "vec3";
+	case GpuDatatypes::vec4: return "vec4";
+	case GpuDatatypes::mat2x2: return "mat2x2";
+	case GpuDatatypes::mat2x3: return "mat2x3";
+	case GpuDatatypes::mat2x4: return "mat2x4";
+	case GpuDatatypes::mat3x2: return "mat3x2";
+	case GpuDatatypes::mat3x3: return "mat3x3";
+	case GpuDatatypes::mat3x4: return "mat3x4";
+	case GpuDatatypes::mat4x2: return "mat4x2";
+	case GpuDatatypes::mat4x3: return "mat4x3";
+	case GpuDatatypes::mat4x4: return "mat4x4";
+	case GpuDatatypes::none: return "NONE";
+	default: return "UNKNOWN";
 	}
 }
 
@@ -336,10 +284,7 @@ inline const char* toString(GpuDatatypes type)
 /// <param name="type">The datatype to test</param>
 /// <param name="arrayElements">The number of array elements</param>
 /// <returns>The base size of the type multiplied by arrayElements</returns>
-inline uint64_t getCpuPackedSize(GpuDatatypes type, uint32_t arrayElements = 1)
-{
-	return getVectorUnalignedSize(type) * getNumMatrixColumns(type) * arrayElements;
-}
+inline uint64_t getCpuPackedSize(GpuDatatypes type, uint32_t arrayElements = 1) { return getVectorUnalignedSize(type) * getNumMatrixColumns(type) * arrayElements; }
 
 /// <summary>Aligns an address/offset with the alignment of a type -- equivalently,
 /// assuming you want to place a type after a known offset (i.e. calculating the
@@ -378,10 +323,7 @@ inline uint64_t getTotalSizeAfter(GpuDatatypes type, uint32_t arrayElements, uin
 /// load in the data you upload to the GPU to correctly upload the same value  in the shader).</summary>
 /// <param name="type">The type to convert</param>
 /// <returns>A CPU type that has the same bit representation as one scalar element of type (i.e. mat4x4 returns "float")</returns>
-inline DataType toDataType(GpuDatatypes type)
-{
-	return getBaseType(type) == GpuDatatypesHelper::BaseType::Float ? DataType::Float32 : DataType::Int32;
-}
+inline DataType toDataType(GpuDatatypes type) { return getBaseType(type) == GpuDatatypesHelper::BaseType::Float ? DataType::Float32 : DataType::Int32; }
 
 namespace GpuDatatypesHelper {
 template<typename T>

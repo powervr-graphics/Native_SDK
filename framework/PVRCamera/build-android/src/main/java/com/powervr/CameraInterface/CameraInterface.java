@@ -3,6 +3,7 @@ package com.powervr.PVRCamera;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import android.util.Log;
 import android.graphics.ImageFormat;
@@ -28,14 +29,14 @@ public class CameraInterface implements SurfaceTexture.OnFrameAvailableListener 
 
 		@Override
 		public int compare(Size s1, Size s2) {
-			  if(s1.width > s2.width) {
-				  return 1;
-			  }
-			  else if(s1.width < s2.width) {
-				  return -1;
-			  }
-			  return 0;
-		}		   
+			if(s1.width > s2.width) {
+				return 1;
+			}
+			else if(s1.width < s2.width) {
+				return -1;
+			}
+			return 0;
+		}
 	}
 	
 	private Camera mCamera;
@@ -43,7 +44,7 @@ public class CameraInterface implements SurfaceTexture.OnFrameAvailableListener 
 	
 	private float[] mTexCoordsProjM = new float[16];
 	private float[] mTempTexCoordsProjM = new float[16];
-	private boolean mUpdateImage;
+	private final AtomicInteger mUpdateImage = new AtomicInteger();
 	
 	private int mCameraResolutionX;
 	private int mCameraResolutionY;
@@ -72,7 +73,7 @@ public class CameraInterface implements SurfaceTexture.OnFrameAvailableListener 
 		}
 		
 		try {
-			mUpdateImage = true;
+			mUpdateImage.set(1);
 			mSurface.setOnFrameAvailableListener(this);
 		}
 		catch (RuntimeException ioe) {
@@ -165,15 +166,31 @@ public class CameraInterface implements SurfaceTexture.OnFrameAvailableListener 
 
 	@Override
 	public void onFrameAvailable(SurfaceTexture surfaceTexture) {
-		mUpdateImage = true;
+		// Atomic increment mUpdateImage;
+		while(true) {
+			int existingValue = mUpdateImage.get();
+			if(mUpdateImage.compareAndSet(existingValue, existingValue + 1)) {
+				break;
+			}
+		}
 	}
 	
 	public boolean updateImage() {
-		if(mUpdateImage) {
-			// Update the texture
-			mSurface.updateTexImage();
-			mSurface.getTransformMatrix(mTempTexCoordsProjM);
-			
+		if(mUpdateImage.get() > 0) {
+			while(mUpdateImage.get() > 0)
+			{
+				// Update the texture
+				mSurface.updateTexImage();
+				mSurface.getTransformMatrix(mTempTexCoordsProjM);
+				// Atomic decrement
+				while(true) {
+					int existingValue = mUpdateImage.get();
+					if(mUpdateImage.compareAndSet(existingValue, existingValue - 1)) {
+						break;
+					}
+				}
+			}
+
 			// Check if the Projection Matrix has changed
 			boolean hasUpdated = false;
 			for (int i = 0; i < 16; ++i) {
@@ -184,12 +201,9 @@ public class CameraInterface implements SurfaceTexture.OnFrameAvailableListener 
 			}
 			if (hasUpdated) setTexCoordsProjMatrix(mTexCoordsProjM);
 			
-			// Lower the flag
-			mUpdateImage = false;
 			
 			return true;
 		}
-		
 		return false;
 	}
 	

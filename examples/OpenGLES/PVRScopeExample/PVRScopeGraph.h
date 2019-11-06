@@ -13,13 +13,13 @@
 
 struct PVRGraphCounter
 {
-	std::vector<float> valueCB;	// Circular buffer of counter values
-	uint32_t   writePosCB;	// Current write position of circular buffer
+	std::vector<float> valueCB; // Circular buffer of counter values
+	uint32_t writePosCB; // Current write position of circular buffer
 	bool showGraph; // Show the graph
-	uint32_t colorLutIdx;// color lookup table index
+	uint32_t colorLutIdx; // color lookup table index
 	float maximum;
 
-	PVRGraphCounter() : writePosCB(0), showGraph(true), maximum(0.0f) {}
+	PVRGraphCounter() : writePosCB(0), showGraph(), maximum(0.0f) {}
 };
 
 namespace Configuration {
@@ -37,13 +37,13 @@ protected:
 	std::vector<glm::vec2> verticesGraphContent;
 	glm::vec2 verticesGraphBorder[Configuration::NumVerticesGraphBorder];
 
-	SPVRScopeCounterReading	reading;
+	SPVRScopeCounterReading reading;
 
 	uint32_t numCounter;
-	SPVRScopeImplData*	scopeData;
+	SPVRScopeImplData* scopeData;
 	SPVRScopeCounterDef* counters;
 	uint32_t activeGroup; // most recent group seen
-	uint32_t activeGroupSelect;	// users desired group
+	uint32_t activeGroupSelect; // users desired group
 	bool isActiveGroupChanged;
 
 	uint32_t sizeCB;
@@ -59,7 +59,7 @@ protected:
 
 	std::vector<PVRGraphCounter> graphCounters;
 	std::vector<ActiveCounter> activeCounters;
-	std::vector<uint16_t> activeCounterIds;
+	std::vector<uint32_t> activeCounterIds;
 
 	float x, y, pixelW, graphH;
 
@@ -88,7 +88,7 @@ public:
 
 	// Disallow copying
 	PVRScopeGraph(const PVRScopeGraph&); // deleted
-	PVRScopeGraph& operator=(const PVRScopeGraph&);// deleted
+	PVRScopeGraph& operator=(const PVRScopeGraph&); // deleted
 	void executeCommands();
 	void executeUICommands();
 	void ping(float dt_millis);
@@ -126,12 +126,12 @@ public:
 	void setUpdateInterval(const uint32_t nUpdateInverval);
 	bool isInitialized() const { return _isInitialzed; }
 
-	bool init(pvr::EglContext& context, pvr::IAssetProvider& assetProvider, pvr::ui::UIRenderer& uiRenderer, std::string& outMsg);
+	bool init(pvr::EglContext& context, pvr::IAssetProvider& assetProvider, pvr::ui::UIRenderer& uiRenderer);
 
 protected:
 	void updateCounters();
 	void updateBufferLines();
 	void update(float dt_millis);
-	bool createProgram(pvr::EglContext& context, std::string& errorStr);
+	bool createProgram(pvr::EglContext& context);
 	void setGlCommonStates();
 };

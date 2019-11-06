@@ -36,41 +36,20 @@ uint32_t Volume::findOrCreateVertex(const glm::vec3& vertex, bool& existed)
 		}
 	}
 
-	if (_volumeMesh.numVertices == 0)
-	{
-		_volumeMesh.minimum = _volumeMesh.maximum = vertex;
-	}
+	if (_volumeMesh.numVertices == 0) { _volumeMesh.minimum = _volumeMesh.maximum = vertex; }
 	else
 	{
-		if (vertex.x < _volumeMesh.minimum.x)
-		{
-			_volumeMesh.minimum.x = vertex.x;
-		}
+		if (vertex.x < _volumeMesh.minimum.x) { _volumeMesh.minimum.x = vertex.x; }
 
-		if (vertex.y < _volumeMesh.minimum.y)
-		{
-			_volumeMesh.minimum.y = vertex.y;
-		}
+		if (vertex.y < _volumeMesh.minimum.y) { _volumeMesh.minimum.y = vertex.y; }
 
-		if (vertex.z < _volumeMesh.minimum.z)
-		{
-			_volumeMesh.minimum.z = vertex.z;
-		}
+		if (vertex.z < _volumeMesh.minimum.z) { _volumeMesh.minimum.z = vertex.z; }
 
-		if (vertex.x > _volumeMesh.maximum.x)
-		{
-			_volumeMesh.maximum.x = vertex.x;
-		}
+		if (vertex.x > _volumeMesh.maximum.x) { _volumeMesh.maximum.x = vertex.x; }
 
-		if (vertex.y > _volumeMesh.maximum.y)
-		{
-			_volumeMesh.maximum.y = vertex.y;
-		}
+		if (vertex.y > _volumeMesh.maximum.y) { _volumeMesh.maximum.y = vertex.y; }
 
-		if (vertex.z > _volumeMesh.maximum.z)
-		{
-			_volumeMesh.maximum.z = vertex.z;
-		}
+		if (vertex.z > _volumeMesh.maximum.z) { _volumeMesh.maximum.z = vertex.z; }
 	}
 
 	// Add the vertex
@@ -129,10 +108,8 @@ void Volume::findOrCreateTriangle(const glm::vec3& v0, const glm::vec3& v1, cons
 	{
 		for (uint32_t i = 0; i < _volumeMesh.numTriangles; ++i)
 		{
-			if ((_volumeMesh.triangles[i].edgeIndices[0] == edgeIndex0 || _volumeMesh.triangles[i].edgeIndices[0] == edgeIndex1 ||
-					_volumeMesh.triangles[i].edgeIndices[0] == edgeIndex2) &&
-				(_volumeMesh.triangles[i].edgeIndices[1] == edgeIndex0 || _volumeMesh.triangles[i].edgeIndices[1] == edgeIndex1 ||
-					_volumeMesh.triangles[i].edgeIndices[1] == edgeIndex2) &&
+			if ((_volumeMesh.triangles[i].edgeIndices[0] == edgeIndex0 || _volumeMesh.triangles[i].edgeIndices[0] == edgeIndex1 || _volumeMesh.triangles[i].edgeIndices[0] == edgeIndex2) &&
+				(_volumeMesh.triangles[i].edgeIndices[1] == edgeIndex0 || _volumeMesh.triangles[i].edgeIndices[1] == edgeIndex1 || _volumeMesh.triangles[i].edgeIndices[1] == edgeIndex2) &&
 				(_volumeMesh.triangles[i].edgeIndices[2] == edgeIndex0 || _volumeMesh.triangles[i].edgeIndices[2] == edgeIndex1 || _volumeMesh.triangles[i].edgeIndices[2] == edgeIndex2))
 			{
 				// Don't do anything more if the triangle already exists
@@ -152,28 +129,19 @@ void Volume::findOrCreateTriangle(const glm::vec3& v0, const glm::vec3& v1, cons
 	edge2 = &_volumeMesh.edges[edgeIndex2];
 
 	if (edge0->vertexIndices[0] == edge1->vertexIndices[0] || edge0->vertexIndices[0] == edge1->vertexIndices[1])
-	{
-		_volumeMesh.triangles[_volumeMesh.numTriangles].vertexIndices[0] = edge0->vertexIndices[1];
-	}
-	else
+	{ _volumeMesh.triangles[_volumeMesh.numTriangles].vertexIndices[0] = edge0->vertexIndices[1]; } else
 	{
 		_volumeMesh.triangles[_volumeMesh.numTriangles].vertexIndices[0] = edge0->vertexIndices[0];
 	}
 
 	if (edge1->vertexIndices[0] == edge2->vertexIndices[0] || edge1->vertexIndices[0] == edge2->vertexIndices[1])
-	{
-		_volumeMesh.triangles[_volumeMesh.numTriangles].vertexIndices[1] = edge1->vertexIndices[1];
-	}
-	else
+	{ _volumeMesh.triangles[_volumeMesh.numTriangles].vertexIndices[1] = edge1->vertexIndices[1]; } else
 	{
 		_volumeMesh.triangles[_volumeMesh.numTriangles].vertexIndices[1] = edge1->vertexIndices[0];
 	}
 
 	if (edge2->vertexIndices[0] == edge0->vertexIndices[0] || edge2->vertexIndices[0] == edge0->vertexIndices[1])
-	{
-		_volumeMesh.triangles[_volumeMesh.numTriangles].vertexIndices[2] = edge2->vertexIndices[1];
-	}
-	else
+	{ _volumeMesh.triangles[_volumeMesh.numTriangles].vertexIndices[2] = edge2->vertexIndices[1]; } else
 	{
 		_volumeMesh.triangles[_volumeMesh.numTriangles].vertexIndices[2] = edge2->vertexIndices[0];
 	}
@@ -189,20 +157,11 @@ void Volume::findOrCreateTriangle(const glm::vec3& v0, const glm::vec3& v1, cons
 	// Check which edges have the correct winding order for this triangle
 	_volumeMesh.triangles[_volumeMesh.numTriangles].winding = 0;
 
-	if (memcmp(&_volumeMesh.vertices[edge0->vertexIndices[0]], &v0, sizeof(v0)) == 0)
-	{
-		_volumeMesh.triangles[_volumeMesh.numTriangles].winding |= 0x01;
-	}
+	if (memcmp(&_volumeMesh.vertices[edge0->vertexIndices[0]], &v0, sizeof(v0)) == 0) { _volumeMesh.triangles[_volumeMesh.numTriangles].winding |= 0x01; }
 
-	if (memcmp(&_volumeMesh.vertices[edge1->vertexIndices[0]], &v1, sizeof(v1)) == 0)
-	{
-		_volumeMesh.triangles[_volumeMesh.numTriangles].winding |= 0x02;
-	}
+	if (memcmp(&_volumeMesh.vertices[edge1->vertexIndices[0]], &v1, sizeof(v1)) == 0) { _volumeMesh.triangles[_volumeMesh.numTriangles].winding |= 0x02; }
 
-	if (memcmp(&_volumeMesh.vertices[edge2->vertexIndices[0]], &v2, sizeof(v2)) == 0)
-	{
-		_volumeMesh.triangles[_volumeMesh.numTriangles].winding |= 0x04;
-	}
+	if (memcmp(&_volumeMesh.vertices[edge2->vertexIndices[0]], &v2, sizeof(v2)) == 0) { _volumeMesh.triangles[_volumeMesh.numTriangles].winding |= 0x04; }
 
 	++_volumeMesh.numTriangles;
 	return;
@@ -212,16 +171,10 @@ bool Volume::init(const assets::Mesh& mesh)
 {
 	const assets::Mesh::VertexAttributeData* positions = mesh.getVertexAttributeByName("POSITION");
 
-	if (positions == NULL)
-	{
-		return false;
-	}
+	if (positions == NULL) { return false; }
 
 	uint32_t posIdx = positions->getDataIndex();
-	if (posIdx)
-	{
-		return false;
-	}
+	if (posIdx) { return false; }
 
 	const assets::Mesh::FaceData& faceData = mesh.getFaces();
 
@@ -292,30 +245,18 @@ bool Volume::init(const uint8_t* const data, uint32_t numVertices, uint32_t vert
 		uint32_t count = 0;
 		for (uint32_t triangle = 0; triangle < _volumeMesh.numTriangles; ++triangle)
 		{
-			if (_volumeMesh.triangles[triangle].edgeIndices[0] == edge)
-			{
-				++count;
-			}
+			if (_volumeMesh.triangles[triangle].edgeIndices[0] == edge) { ++count; }
 
-			if (_volumeMesh.triangles[triangle].edgeIndices[1] == edge)
-			{
-				++count;
-			}
+			if (_volumeMesh.triangles[triangle].edgeIndices[1] == edge) { ++count; }
 
-			if (_volumeMesh.triangles[triangle].edgeIndices[2] == edge)
-			{
-				++count;
-			}
+			if (_volumeMesh.triangles[triangle].edgeIndices[2] == edge) { ++count; }
 		}
 
 		/*
 			Every edge should be referenced exactly twice.
 			If they aren't then the mesh isn't closed which will cause problems when rendering.
 		*/
-		if (count != 2)
-		{
-			_isClosed = false;
-		}
+		if (count != 2) { _isClosed = false; }
 	}
 
 #endif
@@ -350,50 +291,23 @@ bool Volume::init(const uint8_t* const data, uint32_t numVertices, uint32_t vert
 	return true;
 }
 
-uint8_t* Volume::getVertexData()
-{
-	return _volumeMesh.vertexData;
-}
+uint8_t* Volume::getVertexData() { return _volumeMesh.vertexData; }
 
-uint32_t Volume::getVertexDataPositionOffset()
-{
-	return 0;
-}
+uint32_t Volume::getVertexDataPositionOffset() { return 0; }
 
-uint32_t Volume::getVertexDataExtrudeOffset()
-{
-	return sizeof(float) * 3;
-}
+uint32_t Volume::getVertexDataExtrudeOffset() { return sizeof(float) * 3; }
 
-uint32_t Volume::getVertexDataSize()
-{
-	return _volumeMesh.numVertices * 2 * getVertexDataStride();
-}
+uint32_t Volume::getVertexDataSize() { return _volumeMesh.numVertices * 2 * getVertexDataStride(); }
 
-uint32_t Volume::getVertexDataStride()
-{
-	return 3 * sizeof(float) + sizeof(uint32_t);
-}
+uint32_t Volume::getVertexDataStride() { return 3 * sizeof(float) + sizeof(uint32_t); }
 
-uint32_t Volume::getIndexDataSize()
-{
-	return _volumeMesh.numTriangles * 2 * 3 * getIndexDataStride();
-}
+uint32_t Volume::getIndexDataSize() { return _volumeMesh.numTriangles * 2 * 3 * getIndexDataStride(); }
 
-uint32_t Volume::getIndexDataStride()
-{
-	return _volumeMesh.needs32BitIndices ? sizeof(uint32_t) : sizeof(uint16_t);
-}
+uint32_t Volume::getIndexDataStride() { return _volumeMesh.needs32BitIndices ? sizeof(uint32_t) : sizeof(uint16_t); }
 
-uint32_t Volume::getTriangleCount()
-{
-	return _volumeMesh.numTriangles;
-}
+uint32_t Volume::getTriangleCount() { return _volumeMesh.numTriangles; }
 
-Volume::VolumeTriangle Volume::getTriangleData(uint32_t triangleIndex)
-{
-	return _volumeMesh.triangles[triangleIndex];
-}
+Volume::VolumeTriangle Volume::getTriangleData(uint32_t triangleIndex) { return _volumeMesh.triangles[triangleIndex]; }
 
 void Volume::getVerticesForTriangle(const VolumeTriangle& triangle, glm::vec3& vertex0, glm::vec3& vertex1, glm::vec3& vertex2)
 {
@@ -402,9 +316,6 @@ void Volume::getVerticesForTriangle(const VolumeTriangle& triangle, glm::vec3& v
 	vertex2 = _volumeMesh.vertices[triangle.vertexIndices[2]];
 }
 
-bool Volume::isVolumeClosed()
-{
-	return _isClosed;
-}
+bool Volume::isVolumeClosed() { return _isClosed; }
 } // namespace pvr
 //!\endcond

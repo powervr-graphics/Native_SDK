@@ -51,10 +51,7 @@ class OpenGLESIntroducingPVRUtils : public pvr::Shell
 		DeviceResources() : program(0) {}
 		~DeviceResources()
 		{
-			if (program)
-			{
-				gl::DeleteProgram(program);
-			}
+			if (program) { gl::DeleteProgram(program); }
 			program = 0;
 			if (vbos.size())
 			{
@@ -111,18 +108,12 @@ public:
 pvr::Result OpenGLESIntroducingPVRUtils::initApplication()
 {
 	// Load the scene
-	_scene = pvr::assets::Model::createWithReader(pvr::assets::PODReader(getAssetStream(SceneFileName)));
+	_scene = pvr::assets::loadModel(*this, SceneFileName);
 
 	// The cameras are stored in the file. We check it contains at least one.
-	if (_scene->getNumCameras() == 0)
-	{
-		throw pvr::InvalidDataError("The scene does not contain a camera");
-	}
+	if (_scene->getNumCameras() == 0) { throw pvr::InvalidDataError("The scene does not contain a camera"); }
 	// We check the _scene contains at least one light
-	if (_scene->getNumLights() == 0)
-	{
-		throw pvr::InvalidDataError("The scene does not contain a light");
-	}
+	if (_scene->getNumLights() == 0) { throw pvr::InvalidDataError("The scene does not contain a light"); }
 
 	// Ensure that all meshes use an indexed triangle list
 	for (uint32_t i = 0; i < _scene->getNumMeshes(); ++i)
@@ -158,17 +149,20 @@ pvr::Result OpenGLESIntroducingPVRUtils::quitApplication()
 ***********************************************************************************************************************/
 pvr::Result OpenGLESIntroducingPVRUtils::initView()
 {
-	_deviceResources = std::unique_ptr<DeviceResources>(new DeviceResources());
+	_deviceResources = std::make_unique<DeviceResources>();
 	_deviceResources->context = pvr::createEglContext();
 
 	_deviceResources->context->init(getWindow(), getDisplay(), getDisplayAttributes());
 
+	debugThrowOnApiError("InitView: Initialise Context");
+
 	pvr::utils::appendSingleBuffersFromModel(*_scene, _deviceResources->vbos, _deviceResources->ibos);
 
 	_deviceResources->uiRenderer.init(getWidth(), getHeight(), isFullScreen(), getBackBufferColorspace() == pvr::ColorSpace::sRGB);
-
 	_deviceResources->uiRenderer.getDefaultTitle()->setText("IntroducingPVRUtils");
 	_deviceResources->uiRenderer.getDefaultTitle()->commitUpdates();
+
+	debugThrowOnApiError("InitView: Initialise UIRenderer");
 
 	static const char* attribs[] = { "inVertex", "inNormal", "inTexCoord" };
 	static const uint16_t attribIndices[] = { 0, 1, 2 };
@@ -187,8 +181,6 @@ pvr::Result OpenGLESIntroducingPVRUtils::initView()
 
 	GLuint program = _deviceResources->program = pvr::utils::createShaderProgram(*this, VertexShaderFile, FragmentShaderFile, attribs, attribIndices, 3, defines, numDefines);
 
-	std::string errorStr;
-
 	_uniformLocations[Uniforms::WorldViewProjection] = gl::GetUniformLocation(program, Uniforms::names[Uniforms::WorldViewProjection]);
 	_uniformLocations[Uniforms::WorldViewIT] = gl::GetUniformLocation(program, Uniforms::names[Uniforms::WorldViewIT]);
 	_uniformLocations[Uniforms::LightDirEye] = gl::GetUniformLocation(program, Uniforms::names[Uniforms::LightDirEye]);
@@ -198,14 +190,13 @@ pvr::Result OpenGLESIntroducingPVRUtils::initView()
 	pvr::utils::VertexBindings_Name vertexBindings[] = { { "POSITION", "inVertex" }, { "NORMAL", "inNormal" }, { "UV0", "inTexCoord" } };
 	_vertexConfiguration = createInputAssemblyFromMesh(mesh, vertexBindings, 3);
 
+	debugThrowOnApiError("InitView: Initialise program");
+
 	uint32_t i = 0;
 
 	_deviceResources->textures.resize(_scene->getNumMaterials());
 
-	for (auto it = _deviceResources->textures.begin(), end = _deviceResources->textures.end(); it != end; ++it)
-	{
-		*it = 0;
-	}
+	for (auto it = _deviceResources->textures.begin(), end = _deviceResources->textures.end(); it != end; ++it) { *it = 0; }
 
 	while (i < _scene->getNumMaterials() && _scene->getMaterial(i).defaultSemantics().getDiffuseTextureIndex() != static_cast<uint32_t>(-1))
 	{
@@ -243,6 +234,8 @@ pvr::Result OpenGLESIntroducingPVRUtils::initView()
 
 	_scene->getCameraProperties(0, fov, cameraPos, cameraTarget, cameraUp);
 	_viewMtx = glm::lookAt(cameraPos, cameraTarget, cameraUp);
+	debugThrowOnApiError("InitView: Exit");
+
 	return pvr::Result::Success;
 }
 
@@ -276,15 +269,14 @@ pvr::Result OpenGLESIntroducingPVRUtils::releaseView()
 ***********************************************************************************************************************/
 pvr::Result OpenGLESIntroducingPVRUtils::renderFrame()
 {
+	debugThrowOnApiError("RenderFrame: Entrance");
+
 	//  Calculates the _frame number to animate in a time-based manner.
 	//  get the time in milliseconds.
 	pvr::assets::AnimationInstance& animInst = _scene->getAnimationInstance(0);
 	_frame += static_cast<float>(getFrameTime());
 
-	if (_frame >= animInst.getTotalTimeInMs())
-	{
-		_frame = 0;
-	}
+	if (_frame >= animInst.getTotalTimeInMs()) { _frame = 0; }
 
 	// Sets the _scene animation to this _frame
 	animInst.updateAnimation(_frame);
@@ -295,22 +287,17 @@ pvr::Result OpenGLESIntroducingPVRUtils::renderFrame()
 	gl::Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	gl::Uniform1i(_uniformLocations[Uniforms::AlbedoTexture], 0);
 
-	for (uint32_t i = 0; i < _scene->getNumMeshNodes(); ++i)
-	{
-		renderMesh(i);
-	}
+	for (uint32_t i = 0; i < _scene->getNumMeshNodes(); ++i) { renderMesh(i); }
 
 	_deviceResources->uiRenderer.beginRendering();
 	_deviceResources->uiRenderer.getDefaultTitle()->render();
 	_deviceResources->uiRenderer.getSdkLogo()->render();
 	_deviceResources->uiRenderer.endRendering();
 
-	if (this->shouldTakeScreenshot())
-	{
-		pvr::utils::takeScreenshot(this->getScreenshotFileName(), this->getWidth(), this->getHeight());
-	}
+	if (this->shouldTakeScreenshot()) { pvr::utils::takeScreenshot(this->getScreenshotFileName(), this->getWidth(), this->getHeight()); }
 
 	_deviceResources->context->swapBuffers();
+	debugThrowOnApiError("RenderFrame: Exit");
 	return pvr::Result::Success;
 }
 
@@ -377,7 +364,4 @@ void OpenGLESIntroducingPVRUtils::renderMesh(uint32_t meshNodeId)
 
 /// <summary>This function must be implemented by the user of the shell. The user should return its pvr::Shell object defining the behaviour of the application.</summary>
 /// <returns>Return a unique ptr to the demo supplied by the user.</returns>
-std::unique_ptr<pvr::Shell> pvr::newDemo()
-{
-	return std::unique_ptr<pvr::Shell>(new OpenGLESIntroducingPVRUtils());
-}
+std::unique_ptr<pvr::Shell> pvr::newDemo() { return std::make_unique<OpenGLESIntroducingPVRUtils>(); }

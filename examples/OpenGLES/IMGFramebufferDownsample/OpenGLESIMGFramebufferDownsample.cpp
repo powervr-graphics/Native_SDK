@@ -109,10 +109,7 @@ void OpenGLESIMGFramebufferDownsample::eventMappedInput(pvr::SimplifiedInput e)
 	switch (e)
 	{
 	case pvr::SimplifiedInput::Left:
-		if (--mode < 0)
-		{
-			mode = 2;
-		}
+		if (--mode < 0) { mode = 2; }
 		updateMode(mode);
 		updateSubtitleText();
 		break;
@@ -121,11 +118,8 @@ void OpenGLESIMGFramebufferDownsample::eventMappedInput(pvr::SimplifiedInput e)
 		updateMode(mode);
 		updateSubtitleText();
 		break;
-	case pvr::SimplifiedInput::ActionClose:
-		this->exitShell();
-		break;
-	default:
-		break;
+	case pvr::SimplifiedInput::ActionClose: this->exitShell(); break;
+	default: break;
 	}
 }
 
@@ -177,10 +171,9 @@ pvr::Result OpenGLESIMGFramebufferDownsample::initView()
 	_context = pvr::createEglContext();
 	_context->init(getWindow(), getDisplay(), getDisplayAttributes(), pvr::Api::OpenGLES2);
 
-	if (!gl::isGlExtensionSupported("GL_IMG_framebuffer_downsample"))
-	{
-		throw pvr::GlExtensionNotSupportedError("GL_IMG_framebuffer_downsample");
-	}
+	if (!gl::isGlExtensionSupported("GL_OES_depth_texture")) { throw pvr::GlExtensionNotSupportedError("GL_OES_depth_texture"); }
+
+	if (!gl::isGlExtensionSupported("GL_IMG_framebuffer_downsample")) { throw pvr::GlExtensionNotSupportedError("GL_IMG_framebuffer_downsample"); }
 
 	_triVbo = 0;
 
@@ -225,9 +218,9 @@ pvr::Result OpenGLESIMGFramebufferDownsample::initView()
 	// Create depth texture. Depth and stencil buffers must be full size
 	gl::GenTextures(1, &_depthTexture);
 	gl::BindTexture(GL_TEXTURE_2D, _depthTexture);
-	gl::TexStorage2D(GL_TEXTURE_2D, 1, GL_DEPTH_COMPONENT16, this->getWidth(), this->getHeight());
 	gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	gl::TexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, this->getWidth(), this->getHeight(), 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, 0);
 	gl::BindTexture(GL_TEXTURE_2D, 0);
 
 	gl::GenTextures(1, &_fullTex);
@@ -349,10 +342,7 @@ pvr::Result OpenGLESIMGFramebufferDownsample::renderFrame()
 		_uiRenderer.endRendering();
 	}
 
-	if (this->shouldTakeScreenshot())
-	{
-		pvr::utils::takeScreenshot(this->getScreenshotFileName(), this->getWidth(), this->getHeight());
-	}
+	if (this->shouldTakeScreenshot()) { pvr::utils::takeScreenshot(this->getScreenshotFileName(), this->getWidth(), this->getHeight()); }
 
 	_context->swapBuffers();
 
@@ -367,25 +357,17 @@ pvr::Result OpenGLESIMGFramebufferDownsample::releaseView()
 {
 	_uiRenderer.release();
 
-	if (_triVbo)
-		gl::DeleteBuffers(1, &_triVbo);
+	if (_triVbo) gl::DeleteBuffers(1, &_triVbo);
 
-	if (_fullTex)
-		gl::DeleteTextures(1, &_fullTex);
-	if (_halfTex)
-		gl::DeleteTextures(1, &_halfTex);
-	if (_depthTexture)
-		gl::DeleteTextures(1, &_depthTexture);
+	if (_fullTex) gl::DeleteTextures(1, &_fullTex);
+	if (_halfTex) gl::DeleteTextures(1, &_halfTex);
+	if (_depthTexture) gl::DeleteTextures(1, &_depthTexture);
 
-	if (_downsampleFBO)
-		gl::DeleteFramebuffers(1, &_downsampleFBO);
+	if (_downsampleFBO) gl::DeleteFramebuffers(1, &_downsampleFBO);
 
-	if (_ShaderProgram.handle)
-		gl::DeleteProgram(_ShaderProgram.handle);
-	if (_BlitShaderProgram.handle)
-		gl::DeleteProgram(_BlitShaderProgram.handle);
-	if (_HalfAndHalfShaderProgram.handle)
-		gl::DeleteProgram(_HalfAndHalfShaderProgram.handle);
+	if (_ShaderProgram.handle) gl::DeleteProgram(_ShaderProgram.handle);
+	if (_BlitShaderProgram.handle) gl::DeleteProgram(_BlitShaderProgram.handle);
+	if (_HalfAndHalfShaderProgram.handle) gl::DeleteProgram(_HalfAndHalfShaderProgram.handle);
 
 	return pvr::Result::Success;
 }
@@ -395,10 +377,7 @@ pvr::Result OpenGLESIMGFramebufferDownsample::releaseView()
 \brief	Code in quitApplication() will be called by Shell once per run, just before exiting the program.
 If the rendering context is lost, quitApplication() will not be called.
 ***********************************************************************************************************************/
-pvr::Result OpenGLESIMGFramebufferDownsample::quitApplication()
-{
-	return pvr::Result::Success;
-}
+pvr::Result OpenGLESIMGFramebufferDownsample::quitApplication() { return pvr::Result::Success; }
 
 void OpenGLESIMGFramebufferDownsample::getDownScaleFactor(GLint& xDownscale, GLint& yDownscale)
 {
@@ -495,7 +474,4 @@ void OpenGLESIMGFramebufferDownsample::loadShaders()
 
 /// <summary>This function must be implemented by the user of the shell. The user should return its pvr::Shell object defining the behaviour of the application.</summary>
 /// <returns>Return a unique ptr to the demo supplied by the user.</returns>
-std::unique_ptr<pvr::Shell> pvr::newDemo()
-{
-	return std::unique_ptr<pvr::Shell>(new OpenGLESIMGFramebufferDownsample());
-}
+std::unique_ptr<pvr::Shell> pvr::newDemo() { return std::make_unique<OpenGLESIMGFramebufferDownsample>(); }

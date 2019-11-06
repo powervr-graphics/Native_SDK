@@ -3,26 +3,18 @@
 \Title        VulkanHello API Header
 \Author       PowerVR by Imagination, Developer Technology Team.
 \Copyright    Copyright(c) Imagination Technologies Limited.
-\brief        Header file for VulkanHelloAPI class. It Also contains helper functions and structs.
+\brief        Header file for VulkanHelloAPI class. It also contains helper functions and structs.
 ***********************************************************************************************************************/
 #pragma once
 #include "vk_getProcAddrs.h"
 #include <string>
+#include <array>
 
 #include <sstream>
 #include <iostream>
 
-#ifndef GLM_FORCE_RADIANS
-#define GLM_FORCE_RADIANS
-#endif
-#define GLM_ENABLE_EXPERIMENTAL
-#include "../../../external/glm/glm.hpp"
-#include "../../../external/glm/gtc/matrix_transform.hpp"
-#include "../../../external/glm/gtc/type_ptr.hpp"
-#include "../../../external/glm/gtx/transform.hpp"
-
-// The Surface Data structure is different based on the platform we're using
-// here we define the structure and its members inside Vulkan provided preprocessors
+// The Surface Data structure is different based on the platform being used.
+// The structure is defined and its members, inside Vulkan-provided preprocessors.
 
 #ifdef VK_USE_PLATFORM_WIN32_KHR
 struct SurfaceData
@@ -48,6 +40,21 @@ struct SurfaceData
 };
 #endif
 
+#ifdef VK_USE_PLATFORM_XCB_KHR
+struct SurfaceData
+{
+	float width, height;
+
+	xcb_connection_t* connection;
+	xcb_screen_t* screen;
+	xcb_window_t window;
+
+	uint32_t deleteWindowAtom;
+
+	SurfaceData() {}
+};
+#endif
+
 #ifdef VK_USE_PLATFORM_ANDROID_KHR
 struct SurfaceData
 {
@@ -55,10 +62,7 @@ struct SurfaceData
 
 	ANativeWindow* window;
 
-	SurfaceData()
-	{
-		width = height = 0;
-	}
+	SurfaceData() { width = height = 0; }
 };
 
 #endif
@@ -92,6 +96,21 @@ struct SurfaceData
 };
 #endif
 
+#ifdef VK_USE_PLATFORM_MACOS_MVK
+struct SurfaceData
+{
+    float width, height;
+
+    void* view;
+
+    SurfaceData()
+    {
+        width = height = 0;
+        view = NULL;
+    }
+};
+#endif
+
 #ifdef USE_PLATFORM_NULLWS
 struct SurfaceData
 {
@@ -119,46 +138,27 @@ static std::string debugGetVKResultString(const VkResult inRes)
 {
 	switch (inRes)
 	{
-	case 0:
-		return "VK_SUCCESS";
-	case 1:
-		return "VK_NOT_READY";
-	case 2:
-		return "VK_TIMEOUT";
-	case 3:
-		return "VK_EVENT_SET";
-	case 4:
-		return "VK_EVENT_RESET";
-	case 5:
-		return "VK_INCOMPLETE";
+	case 0: return "VK_SUCCESS";
+	case 1: return "VK_NOT_READY";
+	case 2: return "VK_TIMEOUT";
+	case 3: return "VK_EVENT_SET";
+	case 4: return "VK_EVENT_RESET";
+	case 5: return "VK_INCOMPLETE";
 
-	case -1:
-		return "VK_ERROR_OUT_OF_HOST_MEMORY";
-	case -2:
-		return "VK_ERROR_OUT_OF_DEVICE_MEMORY";
-	case -3:
-		return "VK_ERROR_INITIALIZATION_FAILED";
-	case -4:
-		return "VK_ERROR_DEVICE_LOST";
-	case -5:
-		return "VK_ERROR_MEMORY_MAP_FAILED";
-	case -6:
-		return "VK_ERROR_LAYER_NOT_PRESENT";
-	case -7:
-		return "VK_ERROR_EXTENSION_NOT_PRESENT";
-	case -8:
-		return "VK_ERROR_FEATURE_NOT_PRESENT";
-	case -9:
-		return "VK_ERROR_INCOMPATIBLE_DRIVER";
-	case -10:
-		return "VK_ERROR_TOO_MANY_OBJECTS";
-	case -11:
-		return "VK_ERROR_FORMAT_NOT_SUPPORTED";
-	case -12:
-		return "VK_ERROR_FRAGMENTED_POOL";
+	case -1: return "VK_ERROR_OUT_OF_HOST_MEMORY";
+	case -2: return "VK_ERROR_OUT_OF_DEVICE_MEMORY";
+	case -3: return "VK_ERROR_INITIALIZATION_FAILED";
+	case -4: return "VK_ERROR_DEVICE_LOST";
+	case -5: return "VK_ERROR_MEMORY_MAP_FAILED";
+	case -6: return "VK_ERROR_LAYER_NOT_PRESENT";
+	case -7: return "VK_ERROR_EXTENSION_NOT_PRESENT";
+	case -8: return "VK_ERROR_FEATURE_NOT_PRESENT";
+	case -9: return "VK_ERROR_INCOMPATIBLE_DRIVER";
+	case -10: return "VK_ERROR_TOO_MANY_OBJECTS";
+	case -11: return "VK_ERROR_FORMAT_NOT_SUPPORTED";
+	case -12: return "VK_ERROR_FRAGMENTED_POOL";
 
-	default:
-		return "Unknown VkResult Value";
+	default: return "Unknown VkResult Value";
 	}
 }
 
@@ -184,7 +184,7 @@ const float TORAD = PI / 180.0f;
 class VulkanHelloAPI
 {
 private:
-	// Custom structs that encapsulates related data to help us keep track of
+	// Custom structs that encapsulates related data to help keep track of
 	// the multiple aspects of different Vulkan objects.
 	struct SwapchainImage
 	{
@@ -223,7 +223,7 @@ private:
 		std::vector<VkPhysicalDevice> gpus;
 		std::vector<VkQueueFamilyProperties> queueFamilyProperties;
 		std::vector<SwapchainImage> swapChainImages;
-		std::vector<VkCommandBuffer> commandBuffers;
+		std::vector<VkCommandBuffer> cmdBuffers;
 		std::vector<VkFramebuffer> frameBuffers;
 		std::vector<VkDescriptorSetLayout> descriptorSetLayouts;
 
@@ -269,15 +269,16 @@ private:
 
 	struct Vertex
 	{
-		float x, y, z, w; // coordinates
-		float u, v; // texture UVs
+		float x, y, z, w; // coordinates.
+		float u, v; // texture UVs.
 	};
-	glm::mat4 viewProj;
+
+	std::array<std::array<float, 4>, 4> viewProj = std::array<std::array<float, 4>, 4>();
 
 	// Check type of memory using the device memory properties.
 	bool getMemoryTypeFromProperties(const VkPhysicalDeviceMemoryProperties& memory_properties, uint32_t typeBits, VkFlags requirements_mask, uint32_t* typeIndex)
 	{
-		// Search memory types to find first index with those properties
+		// Search memory types to find first index with those properties.
 		for (uint32_t i = 0; i < memory_properties.memoryTypeCount; i++)
 		{
 			if ((typeBits & 1) == 1)
@@ -291,92 +292,121 @@ private:
 			}
 			typeBits >>= 1;
 		}
-		// No memory types matched, return failure
+		// No memory types matched, return failure.
 		return false;
 	}
-	// this method checks for physical device compatibility.
+	// This method checks for physical device compatibility.
 	VkPhysicalDevice getCompatibleDevice();
-	// Get a compatible Queue Family with the properties and it's a graphical one.
+
+	// Get a compatible queue family with the properties, and it needs to be a graphical one.
 	void getCompatibleQueueFamilies(uint32_t& graphicsfamilyindex, uint32_t& presentfamilyindex);
-	// checks if the mode we want is compatible with the surface, if not we default to the standard (FIFO)
+
+	// Checks if the mode wanted is compatible with the surface, if not then default to the standard (FIFO).
 	VkPresentModeKHR getCompatiblePresentMode(const VkPresentModeKHR& inReqMode, const std::vector<VkPresentModeKHR>& inModes);
-	// We make sure the Extent is correct and if it's not we set the same sizes as the window.
+
+	// Make sure the extent is correct, and if not, set the same sizes as the window.
 	VkExtent2D getCorrectExtent(const VkSurfaceCapabilitiesKHR& inSurfCap);
 
 	void initUniformBuffers();
 
 public:
-	// initialize the Validation layers.
+	// Initialise the validation layers.
 	std::vector<std::string> initLayers();
-	// initialize the needed extensions.
+
+	// Initialise the needed extensions.
 	std::vector<std::string> initInstanceExtensions();
 	std::vector<std::string> initDeviceExtensions();
-	// initialize the Application & Instance.
+
+	// Initialise the application and instance.
 	void initApplicationAndInstance(std::vector<std::string>& extensionNames, std::vector<std::string>& layerNames);
-	// fetch the physical devices and get a compatible one.
+
+	// Fetch the physical devices and get a compatible one.
 	void initPhysicalDevice();
+
 	// Find queues families and individual queues from device.
 	void initQueuesFamilies();
-	// initialize the logical device.
+
+	// Initialise the logical device.
 	void initLogicalDevice(std::vector<std::string>& deviceExtensions);
-	// fetch queues from device.
+
+	// Fetch queues from device.
 	void initQueues();
-	// Create the surface we'll render on (Platform Dependent).
+
+	// Create the surface to be rendered on (platform-dependent).
 	void initSurface();
-	// Create The SwapChain
+
+	// Create the swapchain.
 	void initSwapChain();
-	// create the Images and Image Views to be used with the SwapChain.
+
+	// Create the images and image views to be used with the swapchain.
 	void initImagesAndViews();
-	// create a vertex buffers to draw our primitive
+
+	// Create vertex buffers to draw the primitive.
 	void initVertexBuffers();
-	// We create a texture to apply to our primitive.
+
+	// Create a texture to apply to the primitive.
 	void initTexture();
-	// Create Rotation Descriptors and Matrix.
-	void initDynamicUniformBuffers();
-	// create a descriptor pool and allocate descriptor sets for our buffers.
+
+	// Create a descriptor pool and allocate descriptor sets for the buffers.
 	void initDescriptorPoolAndSet();
-	// compile and convert the shaders that we'll be using.
+
+	// Compile and convert the shaders that will be used.
 	void initShaders();
-	// create the pipeline we'll be using for the rendering
+
+	// Create the pipeline to use for the rendering.
 	void initPipeline();
-	// create the render pass we'll use to render the triangle.
+
+	// Create the render pass to use for rendering the triangle.
 	void initRenderPass();
-	// create the Frame buffers for rendering
+
+	// Create the frame buffers for rendering.
 	void initFrameBuffers();
-	// create the command buffer to be sent to the GPU from our command pool.
+
+	// Create the command buffer to be sent to the GPU from the command pool.
 	void initCommandPoolAndBuffer();
-	// initialize the view port and scissor for the rendering
+
+	// Initialise the viewport and scissor for the rendering.
 	void initViewportAndScissor();
-	// Create the semaphore to deal with our command queue.
+
+	// Create the semaphore to deal with the command queue.
 	void initSemaphoreAndFence();
 
-	// Generic method to initialize buffers (both Vertex and Uniform use this)
+	// Generic method to initialise buffers. Both vertex and uniform buffers use this.
 	void createBuffer(BufferData& inBuffer, const uint8_t* inData, const VkBufferUsageFlags& inUsage);
-	// Generic Method for creating a Dynamic Uniform buffer.
+
+	// Generic method for creating a dynamic uniform buffer.
 	void createDynamicUniformBuffer(BufferData& inBuffer);
+
 	// Generic method for creating a shader module.
 	void createShaderModule(const uint32_t* spvShader, size_t spvShaderSize, int indx, VkShaderStageFlagBits shaderStage);
+
 	// Generates a texture without having to load an image file.
 	void generateTexture();
-	// Changes the rotation of the per frame Uniform buffer
+
+	// Changes the rotation of the per-frame uniform buffer.
 	void applyRotation(int idx = 0);
 
-	// Initializes all the needed Vulkan objects but calling all the Init__ methods.
+	// Initialises all the needed Vulkan objects, but calling all the Init__ methods.
 	void initialize();
-	// Cleans up every thing when we're done with our application.
+
+	// Cleans up everything when the application is finished with.
 	void deinitialize();
 
-	// Record the command buffer for rendering our example.
+	// Record the command buffer for rendering the example.
 	void recordCommandBuffer();
+
 	// Execute the command buffer and present the result to the surface.
 	void drawFrame();
 
-	// Holds all the Vulkan Handles that we need access to "globally"
+	// Holds all the Vulkan handles that global access is required for.
 	AppManager appManager;
-	// used for debugging mostly to show the VKResult return from the Vulkan function calls.
+
+	// Used for debugging mostly; to show the VKResult return from the Vulkan function calls.
 	VkResult lastRes;
-	// Keeps track of the frame for synchronization purposes.
+
+	// Keeps track of the frame for synchronisation purposes.
 	int frameId;
+
 	// Surface data needed to distinguish between the different platforms.
 	SurfaceData surfaceData;
 };

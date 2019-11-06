@@ -77,18 +77,12 @@ class OpenGLESOpenCLExample : public pvr::Shell
 		// Vbos/Ibos
 		std::vector<GLuint> vbos;
 		std::vector<GLuint> ibos;
-		bool useEglClSharing()
-		{
-			return supportsEglImage && supportsEglClSharing;
-		}
+		bool useEglClSharing() { return supportsEglImage && supportsEglClSharing; }
 
 		// UIRenderer used to display text
 		pvr::ui::UIRenderer uiRenderer;
 
-				
-		DeviceResources() : progDefault(0), sharedImageGl(0), sharedImageEgl(0), imageCl_Input(0),
-			imageCl_ClToGl(0), imageCl_Backup(0), samplerCl(0)
-		{}
+		DeviceResources() : progDefault(0), sharedImageGl(0), sharedImageEgl(0), imageCl_Input(0), imageCl_ClToGl(0), imageCl_Backup(0), samplerCl(0) {}
 		~DeviceResources()
 		{
 			if (vbos.size())
@@ -108,32 +102,14 @@ class OpenGLESOpenCLExample : public pvr::Shell
 				progDefault = 0;
 			}
 
-			if (samplerCl)
-			{
-				cl::ReleaseSampler(samplerCl);
-			}
+			if (samplerCl) { cl::ReleaseSampler(samplerCl); }
 
-			if (imageCl_Input)
-			{
-				cl::ReleaseMemObject(imageCl_Input);
-			}
-			if (imageCl_ClToGl)
-			{
-				cl::ReleaseMemObject(imageCl_ClToGl);
-			}
-			if (imageCl_Backup)
-			{
-				cl::ReleaseMemObject(imageCl_Backup);
-			}
+			if (imageCl_Input) { cl::ReleaseMemObject(imageCl_Input); }
+			if (imageCl_ClToGl) { cl::ReleaseMemObject(imageCl_ClToGl); }
+			if (imageCl_Backup) { cl::ReleaseMemObject(imageCl_Backup); }
 
-			if (sharedImageGl)
-			{
-				gl::DeleteTextures(1, &sharedImageGl);
-			}
-			if (sharedImageEgl)
-			{
-				egl::ext::DestroyImageKHR(egl::GetCurrentDisplay(), sharedImageEgl);
-			}
+			if (sharedImageGl) { gl::DeleteTextures(1, &sharedImageGl); }
+			if (sharedImageEgl) { egl::ext::DestroyImageKHR(egl::GetCurrentDisplay(), sharedImageEgl); }
 		}
 	};
 
@@ -169,14 +145,14 @@ public:
 
 void OpenGLESOpenCLExample::createOpenCLObjects()
 {
-	imageData = pvr::textureLoad(getAssetStream(Files::ImageTexture), pvr::TextureFileFormat::PVR);
+	imageData = pvr::textureLoad(*getAssetStream(Files::ImageTexture), pvr::TextureFileFormat::PVR);
 
 	auto& clo = _deviceResources->oclContext;
 	clutils::createOpenCLContext(clo.platform, clo.device, clo.context, clo.commandqueue, 0, CL_DEVICE_TYPE_GPU, 0, 0);
 
 	auto kernelSrc = getAssetStream(Files::KernelSrc);
 
-	clo.program = clutils::loadKernel(clo.context, clo.device, *kernelSrc);
+	clo.program = clutils::loadKernelProgram(clo.context, clo.device, *kernelSrc);
 
 	imageTexels.resize(imageData.getWidth() * imageData.getHeight() * 4);
 
@@ -202,14 +178,8 @@ void OpenGLESOpenCLExample::createOpenCLObjects()
 	}
 	else
 	{
-		if (!_deviceResources->supportsEglImage)
-		{
-			Log(LogLevel::Information, "EGL_KHR_image extension not supported\n");
-		}
-		if (!_deviceResources->supportsEglClSharing)
-		{
-			Log(LogLevel::Information, "cl_khr_egl_image extension not supported\n");
-		}
+		if (!_deviceResources->supportsEglImage) { Log(LogLevel::Information, "EGL_KHR_image extension not supported\n"); }
+		if (!_deviceResources->supportsEglClSharing) { Log(LogLevel::Information, "cl_khr_egl_image extension not supported\n"); }
 		Log(LogLevel::Information, "Extensions necessary for Image sharing (interop) path not available. Using CPU fallback.\n");
 	}
 
@@ -256,9 +226,7 @@ void OpenGLESOpenCLExample::initClImages()
 	imageDescriptor.image_width = imageData.getWidth();
 
 	if (imageData.getPixelFormat() != pvr::PixelFormat::RGBA_8888())
-	{
-		throw pvr::InvalidDataError("Only RGBA8888 format supported for the input image of this application. Please replace InputImage.pvr with a compatible image.");
-	}
+	{ throw pvr::InvalidDataError("Only RGBA8888 format supported for the input image of this application. Please replace InputImage.pvr with a compatible image."); }
 
 	format.image_channel_order = CL_RGBA;
 	format.image_channel_data_type = CL_UNORM_INT8;
@@ -266,9 +234,7 @@ void OpenGLESOpenCLExample::initClImages()
 
 	_deviceResources->imageCl_Input = cl::CreateImage(clobj.context, CL_MEM_ALLOC_HOST_PTR | CL_MEM_READ_WRITE, &format, &imageDescriptor, NULL, &errcode);
 	if (errcode != CL_SUCCESS || _deviceResources->imageCl_Input == NULL)
-	{
-		throw pvr::InvalidOperationError(pvr::strings::createFormatted("Failed to create shared OpenCL image input with code %s", clutils::getOpenCLError(errcode)));
-	}
+	{ throw pvr::InvalidOperationError(pvr::strings::createFormatted("Failed to create shared OpenCL image input with code %s", clutils::getOpenCLError(errcode))); }
 
 	size_t origin[] = { 0, 0, 0 };
 	size_t region[] = { imageData.getWidth(), imageData.getHeight(), 1 };
@@ -277,16 +243,12 @@ void OpenGLESOpenCLExample::initClImages()
 		(char*)cl::EnqueueMapImage(clobj.commandqueue, _deviceResources->imageCl_Input, CL_TRUE, CL_MAP_WRITE, origin, region, &image_row_pitch, NULL, 0, NULL, NULL, &errcode);
 
 	if (errcode != CL_SUCCESS || mappedMemory == NULL)
-	{
-		throw pvr::InvalidOperationError(pvr::strings::createFormatted("ERROR: Failed to map bufferwith code %s", clutils::getOpenCLError(errcode)));
-	}
+	{ throw pvr::InvalidOperationError(pvr::strings::createFormatted("ERROR: Failed to map bufferwith code %s", clutils::getOpenCLError(errcode))); }
 
 	memcpy(mappedMemory, imageData.getDataPointer(), imageData.getHeight() * imageData.getWidth() * 4);
 
 	if (CL_SUCCESS != cl::EnqueueUnmapMemObject(clobj.commandqueue, _deviceResources->imageCl_Input, mappedMemory, 0, NULL, NULL))
-	{
-		throw pvr::InvalidOperationError(pvr::strings::createFormatted("ERROR: Failed to unmap input image", clutils::getOpenCLError(errcode)));
-	}
+	{ throw pvr::InvalidOperationError(pvr::strings::createFormatted("ERROR: Failed to unmap input image", clutils::getOpenCLError(errcode))); }
 
 	if (_deviceResources->useEglClSharing())
 	{
@@ -300,35 +262,32 @@ void OpenGLESOpenCLExample::initClImages()
 	}
 
 	if (_deviceResources->imageCl_ClToGl == NULL || errcode != CL_SUCCESS)
-	{
-		throw pvr::InvalidOperationError(pvr::strings::createFormatted("ERROR: Failed to create shared image object (output) with code %s", clutils::getOpenCLError(errcode)));
-	}
+	{ throw pvr::InvalidOperationError(pvr::strings::createFormatted("ERROR: Failed to create shared image object (output) with code %s", clutils::getOpenCLError(errcode))); }
 
 	_deviceResources->imageCl_Backup = cl::CreateImage(clobj.context, CL_MEM_READ_WRITE, &format, &imageDescriptor, NULL, &errcode);
 	if (_deviceResources->imageCl_Backup == NULL || errcode != CL_SUCCESS)
-	{
-		throw pvr::InvalidOperationError(pvr::strings::createFormatted("ERROR: Failed to create shared image object (backup) with code %s", clutils::getOpenCLError(errcode)));
-	}
+	{ throw pvr::InvalidOperationError(pvr::strings::createFormatted("ERROR: Failed to create shared image object (backup) with code %s", clutils::getOpenCLError(errcode))); }
 
 	mappedMemory =
 		(char*)cl::EnqueueMapImage(clobj.commandqueue, _deviceResources->imageCl_Backup, CL_TRUE, CL_MAP_WRITE, origin, region, &image_row_pitch, NULL, 0, NULL, NULL, &errcode);
 	if (errcode != CL_SUCCESS || mappedMemory == NULL)
-	{
-		throw pvr::InvalidOperationError(pvr::strings::createFormatted("ERROR: Failed to map image (backup) with code %s", clutils::getOpenCLError(errcode)));
-	}
+	{ throw pvr::InvalidOperationError(pvr::strings::createFormatted("ERROR: Failed to map image (backup) with code %s", clutils::getOpenCLError(errcode))); }
 
 	memcpy(mappedMemory, imageData.getDataPointer(), imageData.getHeight() * imageData.getWidth() * 4);
 
 	if (CL_SUCCESS != cl::EnqueueUnmapMemObject(clobj.commandqueue, _deviceResources->imageCl_Backup, mappedMemory, 0, NULL, NULL))
-	{
-		throw pvr::InvalidOperationError(pvr::strings::createFormatted("ERROR: Failed to unmap backup image with code %s", clutils::getOpenCLError(errcode)));
-	}
+	{ throw pvr::InvalidOperationError(pvr::strings::createFormatted("ERROR: Failed to unmap backup image with code %s", clutils::getOpenCLError(errcode))); }
 
-	_deviceResources->samplerCl = cl::CreateSampler(clobj.context, CL_FALSE, CL_ADDRESS_CLAMP, CL_FILTER_NEAREST, &errcode);
+#if (CL_VERSION_2_0)
+	cl_sampler_properties properties[] = { CL_SAMPLER_NORMALIZED_COORDS, CL_FALSE, CL_SAMPLER_ADDRESSING_MODE, CL_ADDRESS_CLAMP_TO_EDGE, CL_SAMPLER_FILTER_MODE, CL_FILTER_NEAREST, 0 };
+
+	_deviceResources->samplerCl = cl::CreateSamplerWithProperties(clobj.context, properties, &errcode);
+#else // Deprecated call
+	_deviceResources->samplerCl = cl::CreateSampler(clobj.context, false, CL_ADDRESS_CLAMP_TO_EDGE, CL_FILTER_NEAREST, &errcode);
+#endif
+
 	if (_deviceResources->samplerCl == NULL || errcode != CL_SUCCESS)
-	{
-		throw pvr::InvalidOperationError(pvr::strings::createFormatted("ERROR: Failed to create OpenCL sampler with code %s", clutils::getOpenCLError(errcode)));
-	}
+	{ throw pvr::InvalidOperationError(pvr::strings::createFormatted("ERROR: Failed to create OpenCL sampler with code %s", clutils::getOpenCLError(errcode))); }
 
 	cl::Finish(clobj.commandqueue);
 
@@ -344,10 +303,7 @@ void OpenGLESOpenCLExample::eventMappedInput(pvr::SimplifiedInput e)
 	switch (e)
 	{
 	case pvr::SimplifiedInput::Left:
-		if (_currentKernel == 0)
-		{
-			_currentKernel = Kernel::Count - 1;
-		}
+		if (_currentKernel == 0) { _currentKernel = Kernel::Count - 1; }
 		else
 		{
 			--_currentKernel;
@@ -358,10 +314,7 @@ void OpenGLESOpenCLExample::eventMappedInput(pvr::SimplifiedInput e)
 		updateSubtitleText();
 		break;
 	case pvr::SimplifiedInput::Right:
-		if (++_currentKernel == Kernel::Count)
-		{
-			_currentKernel = 0;
-		}
+		if (++_currentKernel == Kernel::Count) { _currentKernel = 0; }
 		_kernelTime = 0;
 		_modeTime = 0;
 		_mode = true;
@@ -375,11 +328,8 @@ void OpenGLESOpenCLExample::eventMappedInput(pvr::SimplifiedInput e)
 		_modeTime = 0;
 		_mode = true;
 		break;
-	case pvr::SimplifiedInput::ActionClose:
-		this->exitShell();
-		break;
-	default:
-		break;
+	case pvr::SimplifiedInput::ActionClose: this->exitShell(); break;
+	default: break;
 	}
 }
 
@@ -392,10 +342,7 @@ void OpenGLESOpenCLExample::createPipeline()
 	// Enable or disable gamma correction based on if it is automatically performed on the framebuffer or we need to do it in the shader.
 	const char* defines[] = { "FRAMEBUFFER_SRGB" };
 	uint32_t numDefines = 1;
-	if (getBackBufferColorspace() != pvr::ColorSpace::sRGB)
-	{
-		numDefines = 0;
-	}
+	if (getBackBufferColorspace() != pvr::ColorSpace::sRGB) { numDefines = 0; }
 	_deviceResources->progDefault = pvr::utils::createShaderProgram(*this, Files::QuadVertShaderSrc, Files::QuadFragShaderSrc, NULL, NULL, 0, defines, numDefines);
 
 	// Set the sampler2D variable to the first texture unit
@@ -427,10 +374,7 @@ pvr::Result OpenGLESOpenCLExample::initApplication()
 \brief  Code in quitApplication() will be called by pvr::Shell once per run, just before exiting the program.
 quitApplication() will not be called every time the rendering context is lost, only before application exit.
 ***********************************************************************************************/
-pvr::Result OpenGLESOpenCLExample::quitApplication()
-{
-	return pvr::Result::Success;
-}
+pvr::Result OpenGLESOpenCLExample::quitApplication() { return pvr::Result::Success; }
 
 /*!********************************************************************************************
 \return Return Result::Success if no error occurred
@@ -440,7 +384,7 @@ pvr::Result OpenGLESOpenCLExample::quitApplication()
 ***********************************************************************************************/
 pvr::Result OpenGLESOpenCLExample::initView()
 {
-	_deviceResources = std::unique_ptr<DeviceResources>(new DeviceResources());
+	_deviceResources = std::make_unique<DeviceResources>();
 	_deviceResources->context = pvr::createEglContext();
 	_deviceResources->context->init(getWindow(), getDisplay(), getDisplayAttributes(), pvr::Api::OpenGLES3);
 
@@ -494,10 +438,7 @@ pvr::Result OpenGLESOpenCLExample::renderFrame()
 		}
 		if (_kernelTime > modeDuration * numfilterDisplays)
 		{
-			if (++_currentKernel == Kernel::Count)
-			{
-				_currentKernel = 0;
-			}
+			if (++_currentKernel == Kernel::Count) { _currentKernel = 0; }
 			_kernelTime = 0.f;
 			updateSubtitleText();
 		}
@@ -519,26 +460,17 @@ pvr::Result OpenGLESOpenCLExample::renderFrame()
 			(clEnqueueAcquireEGLObjectsKHR_fn)cl::GetExtensionFunctionAddressForPlatform(clobj.platform, "clEnqueueAcquireEGLObjectsKHR");
 		errcode = clEnqueueAcquireEGLObjectsKHR(queue, 1, &_deviceResources->imageCl_ClToGl, 0, NULL, NULL);
 		if (errcode != CL_SUCCESS)
-		{
-			throw pvr::InvalidOperationError(pvr::strings::createFormatted("Failed to acquire EGL Objects with code %s", clutils::getOpenCLError(errcode)));
-		}
+		{ throw pvr::InvalidOperationError(pvr::strings::createFormatted("Failed to acquire EGL Objects with code %s", clutils::getOpenCLError(errcode))); }
 	}
 	// Use the original image as starting point for the first iteration
 	if (cl::SetKernelArg(kernel, 0, sizeof(cl_mem), &_deviceResources->imageCl_Backup) != CL_SUCCESS)
-	{
-		throw pvr::InvalidOperationError(pvr::strings::createFormatted("Failed to set kernel arg 0 with code %s", clutils::getOpenCLError(errcode)));
-	}
+	{ throw pvr::InvalidOperationError(pvr::strings::createFormatted("Failed to set kernel arg 0 with code %s", clutils::getOpenCLError(errcode))); }
 	if (cl::SetKernelArg(kernel, 1, sizeof(cl_mem), &_deviceResources->imageCl_ClToGl) != CL_SUCCESS)
-	{
-		throw pvr::InvalidOperationError(pvr::strings::createFormatted("Failed to set kernel arg 1 with code %s", clutils::getOpenCLError(errcode)));
-	}
+	{ throw pvr::InvalidOperationError(pvr::strings::createFormatted("Failed to set kernel arg 1 with code %s", clutils::getOpenCLError(errcode))); }
 
 	// Launch kernel
 	errcode = cl::EnqueueNDRangeKernel(queue, kernel, 2, global_offset, global_size, local_size, 0, NULL, NULL);
-	if (errcode != CL_SUCCESS)
-	{
-		throw pvr::InvalidOperationError(pvr::strings::createFormatted("Failed to execure kernel with code %s", clutils::getOpenCLError(errcode)));
-	}
+	if (errcode != CL_SUCCESS) { throw pvr::InvalidOperationError(pvr::strings::createFormatted("Failed to execure kernel with code %s", clutils::getOpenCLError(errcode))); }
 
 	if (_deviceResources->useEglClSharing()) // Release the shared image from CL ownership, so we can render with it,...
 	{
@@ -546,9 +478,7 @@ pvr::Result OpenGLESOpenCLExample::renderFrame()
 			(clEnqueueReleaseEGLObjectsKHR_fn)cl::GetExtensionFunctionAddressForPlatform(clobj.platform, "clEnqueueReleaseEGLObjectsKHR");
 		errcode = clEnqueueReleaseEGLObjectsKHR(queue, 1, &_deviceResources->imageCl_ClToGl, 0, NULL, NULL);
 		if (errcode != CL_SUCCESS)
-		{
-			throw pvr::InvalidOperationError(pvr::strings::createFormatted("Failed to release EGL Objects with code %s", clutils::getOpenCLError(errcode)));
-		}
+		{ throw pvr::InvalidOperationError(pvr::strings::createFormatted("Failed to release EGL Objects with code %s", clutils::getOpenCLError(errcode))); }
 	}
 	else // Otherwise, copy the data from the shared image...
 	{
@@ -557,9 +487,7 @@ pvr::Result OpenGLESOpenCLExample::renderFrame()
 		const size_t row_pitch = imageData.getWidth() * 4;
 		errcode = cl::EnqueueReadImage(queue, _deviceResources->imageCl_ClToGl, CL_TRUE, origin, region, row_pitch, 0, imageTexels.data(), 0, NULL, NULL);
 		if (errcode != CL_SUCCESS)
-		{
-			throw pvr::InvalidOperationError(pvr::strings::createFormatted("Failed to Failed to enqueue read image with code %s", clutils::getOpenCLError(errcode)));
-		}
+		{ throw pvr::InvalidOperationError(pvr::strings::createFormatted("Failed to Failed to enqueue read image with code %s", clutils::getOpenCLError(errcode))); }
 	}
 	cl::Finish(queue);
 
@@ -578,9 +506,7 @@ pvr::Result OpenGLESOpenCLExample::renderFrame()
 	// Read back convolved data and feed back into texture if we're not using CL_KHR_egl_image.
 	// If we ARE using CL_KHR_egl_image, there's no point - they're already in the shared image.
 	if (!_deviceResources->useEglClSharing())
-	{
-		gl::TexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, imageData.getWidth(), imageData.getHeight(), GL_RGBA, GL_UNSIGNED_BYTE, imageTexels.data());
-	}
+	{ gl::TexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, imageData.getWidth(), imageData.getHeight(), GL_RGBA, GL_UNSIGNED_BYTE, imageTexels.data()); }
 	drawAxisAlignedQuad();
 
 	// UIRENDERER
@@ -596,10 +522,7 @@ pvr::Result OpenGLESOpenCLExample::renderFrame()
 	}
 	debugThrowOnApiError("Frame end");
 
-	if (this->shouldTakeScreenshot())
-	{
-		pvr::utils::takeScreenshot(this->getScreenshotFileName(), this->getWidth(), this->getHeight());
-	}
+	if (this->shouldTakeScreenshot()) { pvr::utils::takeScreenshot(this->getScreenshotFileName(), this->getWidth(), this->getHeight()); }
 
 	_deviceResources->context->swapBuffers();
 	return pvr::Result::Success;
@@ -629,7 +552,4 @@ void OpenGLESOpenCLExample::drawAxisAlignedQuad()
 
 /// <summary>This function must be implemented by the user of the shell. The user should return its pvr::Shell object defining the behaviour of the application.</summary>
 /// <returns>Return a unique ptr to the demo supplied by the user.</returns>
-std::unique_ptr<pvr::Shell> pvr::newDemo()
-{
-	return std::unique_ptr<pvr::Shell>(new OpenGLESOpenCLExample());
-}
+std::unique_ptr<pvr::Shell> pvr::newDemo() { return std::make_unique<OpenGLESOpenCLExample>(); }

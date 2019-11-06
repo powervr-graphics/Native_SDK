@@ -12,11 +12,12 @@
 #include <WindowsX.h>
 
 #define WINDOW_CLASS "PVRShellOS"
-using std::string;
+
 namespace pvr {
 namespace platform {
-struct InternalOS
+class InternalOS
 {
+public:
 	OSDATA osdata;
 	HDC hDC;
 	HWND hWnd;
@@ -29,16 +30,13 @@ const ShellOS::Capabilities ShellOS::_capabilities = { Capability::Immutable, Ca
 
 ShellOS::ShellOS(OSApplication hInstance, OSDATA osdata) : _instance(hInstance)
 {
-	_OSImplementation = new InternalOS;
+	_OSImplementation = std::make_unique<InternalOS>();
 
 	if (osdata)
 	{
 		_OSImplementation->osdata = new WindowsOSData;
 
-		if (_OSImplementation->osdata)
-		{
-			memcpy(_OSImplementation->osdata, osdata, sizeof(WindowsOSData));
-		}
+		if (_OSImplementation->osdata) { memcpy(_OSImplementation->osdata, osdata, sizeof(WindowsOSData)); }
 	}
 	else
 	{
@@ -48,26 +46,17 @@ ShellOS::ShellOS(OSApplication hInstance, OSDATA osdata) : _instance(hInstance)
 
 ShellOS::~ShellOS()
 {
-	if (_OSImplementation)
-	{
-		delete _OSImplementation->osdata;
-		delete _OSImplementation;
-	}
+	if (_OSImplementation) { delete _OSImplementation->osdata; }
 }
 
 void ShellOS::updatePointingDeviceLocation()
 {
 	POINT point;
 	if (GetCursorPos(&point) && ScreenToClient(_OSImplementation->hWnd, &point))
-	{
-		_shell->updatePointerPosition(PointerLocation(static_cast<int16_t>(point.x), static_cast<int16_t>(point.y)));
-	}
+	{ _shell->updatePointerPosition(PointerLocation(static_cast<int16_t>(point.x), static_cast<int16_t>(point.y))); }
 }
 
-static Keys mapKeyWparamToPvrKey(WPARAM wParam)
-{
-	return static_cast<Keys>(wParam);
-}
+static Keys mapKeyWparamToPvrKey(WPARAM wParam) { return static_cast<Keys>(wParam); }
 
 // The window procedure receives and handles messages from MS Windows.
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -92,17 +81,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 #endif
 		break;
 	}
-	case WM_PAINT:
-		break;
-	case WM_DESTROY:
-		break;
-	case WM_CLOSE:
-		theShell->onSystemEvent(SystemEvent::SystemEvent_Quit);
-		return 0;
-	case WM_QUIT:
-		return 0;
+	case WM_PAINT: break;
+	case WM_DESTROY: break;
+	case WM_CLOSE: theShell->onSystemEvent(SystemEvent::SystemEvent_Quit); return 0;
+	case WM_QUIT: return 0;
 	case WM_MOVE:
-	{}
+	{
+	}
 	break;
 	case WM_LBUTTONDOWN:
 		if (hWnd != GetCapture())
@@ -130,24 +115,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 	case WM_LBUTTONUP:
 		if (capturer == 1 && hWnd == GetCapture()) // Only send an event if we're still capturing.
-		{
-			ReleaseCapture();
-		}
+		{ ReleaseCapture(); }
 		theShell->onPointingDeviceUp(0);
 		break;
 	case WM_RBUTTONUP:
 		if (capturer == 2 && hWnd == GetCapture()) // Only send an event if we're still capturing.
-		{
-			ReleaseCapture();
-		}
+		{ ReleaseCapture(); }
 		theShell->onPointingDeviceUp(1);
 		break;
 	case WM_MBUTTONUP:
 	{
 		if (capturer == 3 && hWnd == GetCapture()) // Only send an event if we're still capturing.
-		{
-			ReleaseCapture();
-		}
+		{ ReleaseCapture(); }
 		theShell->onPointingDeviceUp(2);
 		break;
 	}
@@ -155,14 +134,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{
 		break;
 	}
-	case WM_KEYDOWN:
-		theShell->onKeyDown(mapKeyWparamToPvrKey(wParam));
-		break;
-	case WM_KEYUP:
-		theShell->onKeyUp(mapKeyWparamToPvrKey(wParam));
-		break;
-	default:
-		break;
+	case WM_KEYDOWN: theShell->onKeyDown(mapKeyWparamToPvrKey(wParam)); break;
+	case WM_KEYUP: theShell->onKeyUp(mapKeyWparamToPvrKey(wParam)); break;
+	default: break;
 	}
 
 	return DefWindowProc(hWnd, message, wParam, lParam);
@@ -193,10 +167,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 
 bool ShellOS::init(DisplayAttributes& /*data*/)
 {
-	if (!_OSImplementation)
-	{
-		return false;
-	}
+	if (!_OSImplementation) { return false; }
 
 	// Register our class.
 	MyRegisterClass(static_cast<HINSTANCE>(_instance));
@@ -205,10 +176,7 @@ bool ShellOS::init(DisplayAttributes& /*data*/)
 	{
 		char moduleFilename[MAX_PATH] = "";
 
-		if (GetModuleFileName(NULL, moduleFilename, sizeof(moduleFilename) - 1) == 0)
-		{
-			return false;
-		}
+		if (GetModuleFileName(NULL, moduleFilename, sizeof(moduleFilename) - 1) == 0) { return false; }
 
 		FilePath filepath(moduleFilename);
 		setApplicationName(filepath.getFilenameNoExtension());
@@ -236,14 +204,8 @@ bool ShellOS::initializeWindow(DisplayAttributes& data)
 
 		p.x = data.x;
 		p.y = data.y;
-		if (data.x == DisplayAttributes::PosDefault)
-		{
-			p.x = 0;
-		}
-		if (data.y == DisplayAttributes::PosDefault)
-		{
-			p.y = 0;
-		}
+		if (data.x == DisplayAttributes::PosDefault) { p.x = 0; }
+		if (data.y == DisplayAttributes::PosDefault) { p.y = 0; }
 
 		hMonitor = MonitorFromPoint(p, MONITOR_DEFAULTTONEAREST);
 		sMInfo.cbSize = sizeof(sMInfo);
@@ -267,22 +229,16 @@ bool ShellOS::initializeWindow(DisplayAttributes& data)
 	{
 		int x, y;
 
-		SetRect(&winRect, 0, 0, data.width, data.height);
+		SetRect(&winRect, 0, 0, static_cast<int>(data.width), static_cast<int>(data.height));
 		AdjustWindowRectEx(&winRect, WS_CAPTION | WS_SYSMENU, false, 0);
 
-		if (data.x == DisplayAttributes::PosDefault)
-		{
-			x = CW_USEDEFAULT;
-		}
+		if (data.x == DisplayAttributes::PosDefault) { x = CW_USEDEFAULT; }
 		else
 		{
 			x = data.x;
 		}
 
-		if (data.y == DisplayAttributes::PosDefault)
-		{
-			y = CW_USEDEFAULT;
-		}
+		if (data.y == DisplayAttributes::PosDefault) { y = CW_USEDEFAULT; }
 		else
 		{
 			y = data.y;
@@ -292,10 +248,7 @@ bool ShellOS::initializeWindow(DisplayAttributes& data)
 			NULL, static_cast<HINSTANCE>(_instance), this->_shell.get());
 	}
 
-	if (!hWnd)
-	{
-		return false;
-	}
+	if (!hWnd) { return false; }
 
 	ShowWindow(hWnd, static_cast<WindowsOSData*>(_OSImplementation->osdata)->cmdShow);
 	UpdateWindow(hWnd);
@@ -318,20 +271,13 @@ void ShellOS::releaseWindow()
 	}
 }
 
-OSApplication ShellOS::getApplication() const
-{
-	return _instance;
-}
+OSApplication ShellOS::getApplication() const { return _instance; }
 
-OSDisplay ShellOS::getDisplay() const
-{
-	return _OSImplementation->hDC;
-}
+OSConnection ShellOS::getConnection() const { return nullptr; }
 
-OSWindow ShellOS::getWindow() const
-{
-	return _OSImplementation->hWnd;
-}
+OSDisplay ShellOS::getDisplay() const { return _OSImplementation->hDC; }
+
+OSWindow ShellOS::getWindow() const { return _OSImplementation->hWnd; }
 
 bool ShellOS::handleOSEvents()
 {
@@ -347,21 +293,12 @@ bool ShellOS::handleOSEvents()
 	return true;
 }
 
-bool ShellOS::isInitialized()
-{
-	return _OSImplementation && _OSImplementation->hDC;
-}
+bool ShellOS::isInitialized() { return _OSImplementation && _OSImplementation->hDC; }
 
 bool ShellOS::popUpMessage(const char* title, const char* message, ...) const
 {
-	if (!title)
-	{
-		title = "";
-	}
-	if (!message)
-	{
-		message = "";
-	}
+	if (!title) { title = ""; }
+	if (!message) { message = ""; }
 
 	va_list arg;
 	char buf[1024];

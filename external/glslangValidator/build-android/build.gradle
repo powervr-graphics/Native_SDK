@@ -13,7 +13,6 @@ android {
 			cmake {
 				cppFlags "-fexceptions"
 				arguments "-DANDROID_STL=c++_static"
-				targets "glslangValidator"
 			}
 		}
 		ndk
@@ -24,6 +23,7 @@ android {
 	externalNativeBuild {
 		cmake {
 			path "../../glslang/CMakeLists.txt"
+			version "3.10.2"
 		}
 	}
 }
@@ -34,7 +34,7 @@ buildscript {
 		jcenter()
 	}
 	dependencies {
-		classpath 'com.android.tools.build:gradle:3.3.0'
+		classpath 'com.android.tools.build:gradle:3.5.0'
 	}
 }
 

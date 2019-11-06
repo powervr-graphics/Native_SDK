@@ -136,15 +136,12 @@ private:
 	transformation matrix. Necessary to support instanced rendering of the same sprite from
 	different groups.
 	********************************************************************************************************/
-	virtual void onRender(uint64_t parentId) const {}
+	virtual void onRender(uint64_t parentId) const { (void)parentId; }
 
 protected:
 	/// <summary>Setter for the current UIRenderer being used for the Sprite.</summary>
 	/// <param name="uiRenderer">The new UIRenderer to use for rendering this sprite.</param>
-	void setUIRenderer(UIRenderer* uiRenderer)
-	{
-		_uiRenderer = uiRenderer;
-	}
+	void setUIRenderer(UIRenderer* uiRenderer) { _uiRenderer = uiRenderer; }
 
 	/// <summary>Bounding rectangle of the sprite.</summary>
 	mutable math::AxisAlignedBox _boundingRect;
@@ -177,10 +174,7 @@ public:
 	/// <summary>Get the Sprite's bounding box. If the sprite has changed, the value returned is only valid after
 	/// calling the commitUpdates function</summary>
 	/// <returns>The Sprite's bounding box.</returns>
-	glm::vec2 getDimensions() const
-	{
-		return glm::vec2(_boundingRect.getSize());
-	}
+	glm::vec2 getDimensions() const { return glm::vec2(_boundingRect.getSize()); }
 
 	/// <summary>Render is the normal function to call to render a sprite. Before calling this function, call
 	/// beginRendering on the uiRenderer this sprite belongs to to set up the commandBuffer to render to. In general
@@ -193,19 +187,13 @@ public:
 	/// as Alpha textures.</summary>
 	/// <param name="isAlphaOnly">Pass "true" to flush all color channels to 1.0 and keep the alpha channel. Pass false
 	/// (default state) to render with texture colors unchanged.</param>
-	void setAlphaRenderingMode(bool isAlphaOnly) const
-	{
-		_alphaMode = isAlphaOnly;
-	}
+	void setAlphaRenderingMode(bool isAlphaOnly) const { _alphaMode = isAlphaOnly; }
 
 	/// <summary>Set a modulation (multiplicative) color to the sprite, as a vector of normalised 32 bit float values.
 	/// Range of values must be 0..1</summary>
 	/// <param name="color">A glm::vec4 that contains color and alpha values in the range of 0..1. Initial value
 	/// (1.0,1.0,1.0,1.0)</param>
-	void setColor(glm::vec4 color) const
-	{
-		_color = color;
-	}
+	void setColor(glm::vec4 color) const { _color = color; }
 
 	/// <summary>Set a modulation (multiplicative) color to the sprite, as bytes (0..255).</summary>
 	/// <param name="r">Red channel. Initial value 255.</param>
@@ -247,37 +235,25 @@ public:
 
 	/// <summary>Get the modulation (multiplicative) color of the sprite, as a glm::vec4.</summary>
 	/// <returns>The sprites's modulation color. Values are normalised in the range of 0..1</returns>
-	const glm::vec4& getColor() const
-	{
-		return _color;
-	}
+	const glm::vec4& getColor() const { return _color; }
 
 	/// <summary>This setting queries if this is set to render as Alpha channel only, (setting its color to 1,1,1,a).
 	/// Otherwise, an Alpha texture would render black. This setting is typically used to render Text with Fonts that
 	/// have been generated with PVRTexTool as Alpha textures.</summary>
 	/// <returns>"true" if set to render as Alpha, false otherwise.</returns>
-	bool getAlphaRenderingMode() const
-	{
-		return _alphaMode == 1;
-	}
+	bool getAlphaRenderingMode() const { return _alphaMode == 1; }
 
 	/// <summary>Get the sprite's own transformation matrix. Does not contain hierarchical transformations from groups
 	/// etc. This function is valid only after any changes to the sprite have been commited with commitUpdates as it
 	/// is normally calculated in commitUpdates.</summary>
 	/// <returns>The sprite's final transformation matrix. If the sprite is rendered on its own, this is the matrix
 	/// that will be uploaded to the shader.</returns>
-	const glm::mat4& getMatrix() const
-	{
-		return _cachedMatrix;
-	}
+	const glm::mat4& getMatrix() const { return _cachedMatrix; }
 
 	/// <summary>Get the Sprite's bounding box. If the sprite has changed, the value returned is only valid after
 	/// calling the commitUpdates function</summary>
 	/// <returns>The Sprite's bounding box.</returns>
-	math::AxisAlignedBox const& getBoundingBox() const
-	{
-		return _boundingRect;
-	}
+	math::AxisAlignedBox const& getBoundingBox() const { return _boundingRect; }
 
 	/// <summary>Retrieves the groups scaled dimension based on each childs current scaling factor.</summary>
 	/// <returns>The groups scaled dimension.</returns>
@@ -369,10 +345,7 @@ public:
 	/// always moves the final (transformed) sprite by the specified number of pixels in each direction.</summary>
 	/// <param name="offset">Number of pixels to move the sprite right/up (negative for down/left)</param>
 	/// <returns>this object (allow chaining commands with ->)</returns>
-	I2dComponent const* setPixelOffset(glm::vec2 offset) const
-	{
-		return setPixelOffset(offset.x, offset.y);
-	}
+	I2dComponent const* setPixelOffset(glm::vec2 offset) const { return setPixelOffset(offset.x, offset.y); }
 
 	/// <summary>Set the scale of this object.</summary>
 	/// <param name="scale">The scale of this object. (1,1) is natural scale.</param>
@@ -481,52 +454,31 @@ public:
 
 	/// <summary>Get the width of this image width in pixels.</summary>
 	/// <returns>Image width in pixels.</returns>
-	uint32_t getWidth() const
-	{
-		return _texW;
-	}
+	uint32_t getWidth() const { return _texW; }
 
 	/// <summary>Get the height of this image width in pixels.</summary>
 	/// <returns>Image width in pixels.</returns>
-	uint32_t getHeight() const
-	{
-		return _texH;
-	}
+	uint32_t getHeight() const { return _texH; }
 
 	/// <summary>Retrieve the pvr::api::Texture2D object that this Image wraps.</summary>
 	/// <returns>The pvr::api::Texture2D object that this Image wraps.</returns>
-	const GLuint& getTexture() const
-	{
-		return _texture;
-	}
+	const GLuint& getTexture() const { return _texture; }
 
 	/// <summary>Retrieve the pvr::api::Texture2D object that this Image wraps.</summary>
 	/// <returns>The pvr::api::Texture2D object that this Image wraps.</returns>
-	GLuint& getTexture()
-	{
-		return _texture;
-	}
+	GLuint& getTexture() { return _texture; }
 
 	/// <summary>Retrieve the pvr::api::Sampler that this Image will use for sampling the texture. Const overload.</summary>
 	/// <returns>The pvr::api::Sampler that this Image will use for sampling the texture. Const overload.</returns>
-	const GLuint& getSampler() const
-	{
-		return _sampler;
-	}
+	const GLuint& getSampler() const { return _sampler; }
 
 	/// <summary>Retrieve the pvr::api::Sampler that this Image will use for sampling the texture.</summary>
 	/// <returns>The pvr::api::Sampler that this Image will use for sampling the texture.</returns>
-	GLuint& getSampler()
-	{
-		return _sampler;
-	}
+	GLuint& getSampler() { return _sampler; }
 
 	/// <summary>Get the size of this texture after applying scale</summary>
 	/// <returns>The size of this texture after applying scale</returns>
-	glm::vec2 getScaledDimension() const
-	{
-		return getDimensions() * _scale;
-	}
+	glm::vec2 getScaledDimension() const { return getDimensions() * _scale; }
 };
 
 /// <summary>Use this class through the reference counted Framework Object pvr::ui::Font. Is an Image_ containing font
@@ -590,10 +542,7 @@ private:
 	static int32_t characterCompFunc(const void* a, const void* b);
 	static int32_t kerningCompFunc(const void* a, const void* b);
 
-	void setUIRenderer(UIRenderer* uiRenderer)
-	{
-		_uiRenderer = uiRenderer;
-	}
+	void setUIRenderer(UIRenderer* uiRenderer) { _uiRenderer = uiRenderer; }
 
 	struct Header // 12 bytes
 	{
@@ -654,77 +603,47 @@ public:
 	/// <param name="index">The internal index of the character. Use findCharacter to get the index of a specific
 	/// known character.</param>
 	/// <returns>A CharMetrics object representing the character metrics of the character with that index.</returns>
-	const CharMetrics& getCharMetrics(uint32_t index) const
-	{
-		return _charMetrics[index];
-	}
+	const CharMetrics& getCharMetrics(uint32_t index) const { return _charMetrics[index]; }
 
 	/// <summary>Get the UVs of the characters of this font</summary>
 	/// <param name="index">The internal index of the character. Use findCharacter to get the index of a specific
 	/// known character.</param>
 	/// <returns>A CharMetrics object representing the character metrics of the character with that index.</returns>
-	const CharacterUV& getCharacterUV(uint32_t index) const
-	{
-		return _characterUVs[index];
-	}
+	const CharacterUV& getCharacterUV(uint32_t index) const { return _characterUVs[index]; }
 
 	/// <summary>Get the rectangle for a specific character</summary>
 	/// <param name="index">The internal index of the character. Use findCharacter to get the index of a specific known character.</param>
 	/// <returns>The rectangle where this character exists in the font texture.</returns>
-	const Rectanglei& getRectangle(uint32_t index) const
-	{
-		return _rects[index];
-	}
+	const Rectanglei& getRectangle(uint32_t index) const { return _rects[index]; }
 
 	/// <summary>Get the spacing between baseline to baseline of this font, in pixels.</summary>
 	/// <returns>The spacing between baseline to baseline of this font, in pixels.</returns>
-	int16_t getFontLineSpacing() const
-	{
-		return _header.lineSpace;
-	}
+	int16_t getFontLineSpacing() const { return _header.lineSpace; }
 
 	/// <summary>Get the distance between baseline to Ascent of this font, in pixels.</summary>
 	/// <returns>The distance from Baseline to Ascent of this font, in pixels.</returns>
-	int16_t getAscent() const
-	{
-		return _header.ascent;
-	}
+	int16_t getAscent() const { return _header.ascent; }
 
 	/// <summary>Get the width, in pixels, of the Space character.</summary>
 	/// <returns>The width, in pixels, of the Space character.</returns>
-	uint8_t getSpaceWidth() const
-	{
-		return _header.spaceWidth;
-	}
+	uint8_t getSpaceWidth() const { return _header.spaceWidth; }
 
 	/// <summary>Get the Y offset of the font.</summary>
 	/// <param name="index">The internal index of the character. Use findCharacter to get the index of a specific known character.</param>
 	/// <returns>The Y offset of the font.</returns>
-	int32_t getYOffset(uint32_t index) const
-	{
-		return _yOffsets[index];
-	}
+	int32_t getYOffset(uint32_t index) const { return _yOffsets[index]; }
 
 	/// <summary>Get whether the font uses alpha rendering mode.</summary>
 	/// <returns>True if alpha rendering mode is being used. False otherwise.</returns>
-	bool isAlphaRendering() const
-	{
-		return _alphaRenderingMode != 0;
-	}
+	bool isAlphaRendering() const { return _alphaRenderingMode != 0; }
 
 	/// <summary>Get the sampler being used by the font.</summary>
 	/// <returns>The sampler in use by the font.</returns>
-	GLuint getSampler() const
-	{
-		return _sampler;
-	}
+	GLuint getSampler() const { return _sampler; }
 
 	/// <summary>Get the texture being used by the font.</summary>
 	/// <returns>The texture in use by the font.</returns>
-	GLuint getTexture() const
-	{
-		return _texture;
-	}
+	GLuint getTexture() const { return _texture; }
 };
 
 /// <summary>UIRenderer vertex format.</summary>
@@ -745,20 +664,20 @@ struct Vertex
 	float tv;
 
 	/// <summary>Setter for a Vertex's data</summary>
-	/// <param name="x">The x position.</param>
-	/// <param name="y">The y position.</param>
-	/// <param name="z">The z position.</param>
-	/// <param name="rhw">The w coordinate.</param>
-	/// <param name="u">The texture u coordinate.</param>
-	/// <param name="v">The texture v coordinate.</param>
-	void setData(float x, float y, float z, float rhw, float u, float v)
+	/// <param name="inX">The x position.</param>
+	/// <param name="inY">The y position.</param>
+	/// <param name="inZ">The z position.</param>
+	/// <param name="inRhw">The w coordinate.</param>
+	/// <param name="inU">The texture u coordinate.</param>
+	/// <param name="inV">The texture v coordinate.</param>
+	void setData(float inX, float inY, float inZ, float inRhw, float inU, float inV)
 	{
-		this->x = x;
-		this->y = y;
-		this->z = z;
-		this->rhw = rhw;
-		this->tu = u;
-		this->tv = v;
+		this->x = inX;
+		this->y = inY;
+		this->z = inZ;
+		this->rhw = inRhw;
+		this->tu = inU;
+		this->tv = inV;
 	}
 };
 
@@ -778,10 +697,7 @@ private:
 		friend class TextElement_;
 	};
 
-	static TextElement constructShared(UIRenderer& uiRenderer, const Font& font)
-	{
-		return std::make_shared<TextElement_>(make_shared_enabler{}, uiRenderer, font);
-	}
+	static TextElement constructShared(UIRenderer& uiRenderer, const Font& font) { return std::make_shared<TextElement_>(make_shared_enabler{}, uiRenderer, font); }
 
 	static TextElement constructShared(UIRenderer& uiRenderer, const std::wstring& str, const Font& font)
 	{
@@ -805,10 +721,7 @@ private:
 		return false;
 	}
 
-	void setUIRenderer(UIRenderer* uiRenderer)
-	{
-		_uiRenderer = uiRenderer;
-	}
+	void setUIRenderer(UIRenderer* uiRenderer) { _uiRenderer = uiRenderer; }
 
 	void regenerateText() const;
 	void updateVbo() const;
@@ -836,13 +749,16 @@ public:
 	/// <summary>Constructor for a Text element. Do not use - use the UIRenderer::createTextElement</summary>
 	/// <param name="uiRenderer">The UIRenderer to use when creating the Font.</param>
 	/// <param name="font">The font to use for the text element.</param>
-	TextElement_(make_shared_enabler, UIRenderer& uiRenderer, const Font& font) : _isTextDirty(false), _font(font), _vbo(-1), _vboCreated(false), _uiRenderer(&uiRenderer) {}
+	TextElement_(make_shared_enabler, UIRenderer& uiRenderer, const Font& font)
+		: _isTextDirty(false), _font(font), _vbo(static_cast<GLuint>(-1)), _vboCreated(false), _uiRenderer(&uiRenderer), _isUtf8(false)
+	{}
 
 	/// <summary>Constructor for a Text element. Do not use - use the UIRenderer::createTextElement</summary>
 	/// <param name="uiRenderer">The UIRenderer to use when creating the Font.</param>
 	/// <param name="str">The Text string to use for the text element.</param>
 	/// <param name="font">The font to use for the text element.</param>
-	TextElement_(make_shared_enabler, UIRenderer& uiRenderer, const std::string& str, const Font& font) : _font(font), _vbo(-1), _vboCreated(false), _uiRenderer(&uiRenderer)
+	TextElement_(make_shared_enabler, UIRenderer& uiRenderer, const std::string& str, const Font& font)
+		: _font(font), _vbo(static_cast<GLuint>(-1)), _vboCreated(false), _uiRenderer(&uiRenderer)
 	{
 		setText(str);
 		updateText();
@@ -852,7 +768,8 @@ public:
 	/// <param name="uiRenderer">The UIRenderer to use when creating the Font.</param>
 	/// <param name="str">The Text string to use for the text element.</param>
 	/// <param name="font">The font to use for the text element.</param>
-	TextElement_(make_shared_enabler, UIRenderer& uiRenderer, const std::wstring& str, const Font& font) : _font(font), _vbo(-1), _vboCreated(false), _uiRenderer(&uiRenderer)
+	TextElement_(make_shared_enabler, UIRenderer& uiRenderer, const std::wstring& str, const Font& font)
+		: _font(font), _vbo(static_cast<uint32_t>(-1)), _vboCreated(false), _uiRenderer(&uiRenderer)
 	{
 		setText(str);
 		updateText();
@@ -868,18 +785,12 @@ public:
 	/// <summary>Get the Sprite's bounding box dimensions. If the sprite has changed, the value returned is only valid after
 	/// calling the commitUpdates function</summary>
 	/// <returns>The Sprite's bounding box dimensions.</returns>
-	glm::vec2 getDimensions() const
-	{
-		return glm::vec2(_boundingRect.getSize());
-	}
+	glm::vec2 getDimensions() const { return glm::vec2(_boundingRect.getSize()); }
 
 	/// <summary>Get the Sprite's bounding box. If the sprite has changed, the value returned is only valid after
 	/// calling the commitUpdates function</summary>
 	/// <returns>The Sprite's bounding box.</returns>
-	math::AxisAlignedBox const& getBoundingBox() const
-	{
-		return _boundingRect;
-	}
+	math::AxisAlignedBox const& getBoundingBox() const { return _boundingRect; }
 
 	/// <summary>Sets the text element text from a std::string</summary>
 	/// <param name="str">The new text value to use for the text element.</param>
@@ -903,24 +814,15 @@ public:
 
 	/// <summary>Gets the text element current text string</summary>
 	/// <returns>The text element current text string</returns>
-	const std::string& getString() const
-	{
-		return _textStr;
-	}
+	const std::string& getString() const { return _textStr; }
 
 	/// <summary>Gets the text element current text wstring</summary>
 	/// <returns>The text element current text wstring</returns>
-	const std::wstring& getWString() const
-	{
-		return _textWStr;
-	}
+	const std::wstring& getWString() const { return _textWStr; }
 
 	/// <summary>Gets the text element current font</summary>
 	/// <returns>The text element current font</returns>
-	const Font& getFont() const
-	{
-		return _font;
-	}
+	const Font& getFont() const { return _font; }
 };
 
 /// <summary>Use this class through the reference counted Framework Object pvr::ui::Text. Represents some text that can
@@ -937,10 +839,7 @@ private:
 		friend class Text_;
 	};
 
-	static Text constructShared(UIRenderer& uiRenderer, const TextElement& textElement)
-	{
-		return std::make_shared<Text_>(make_shared_enabler{}, uiRenderer, textElement);
-	}
+	static Text constructShared(UIRenderer& uiRenderer, const TextElement& textElement) { return std::make_shared<Text_>(make_shared_enabler{}, uiRenderer, textElement); }
 
 	struct MvpData
 	{
@@ -965,31 +864,19 @@ public:
 
 	/// <summary>Gets the text objects current font</summary>
 	/// <returns>The text objects current font</returns>
-	const Font getFont() const
-	{
-		return getTextElement()->getFont();
-	}
+	const Font getFont() const { return getTextElement()->getFont(); }
 
 	/// <summary>Gets the text objects current text element</summary>
 	/// <returns>The text objects current text element</returns>
-	TextElement getTextElement()
-	{
-		return _textElement;
-	}
+	TextElement getTextElement() { return _textElement; }
 
 	/// <summary>Gets the text objects current text element</summary>
 	/// <returns>The text objects current text element</returns>
-	const TextElement getTextElement() const
-	{
-		return _textElement;
-	}
+	const TextElement getTextElement() const { return _textElement; }
 
 	/// <summary>Get the size of this texture after applying scale</summary>
 	/// <returns>The size of this texture after applying scale</returns>
-	glm::vec2 getScaledDimension() const
-	{
-		return getDimensions() * _scale;
-	}
+	glm::vec2 getScaledDimension() const { return getDimensions() * _scale; }
 
 	/// <summary>Sets the text element text from a std::string</summary>
 	/// <param name="str">The new text value to use for the text element.</param>
@@ -1047,20 +934,14 @@ private:
 	{
 		glm::mat4 tmpMatrix = srt * _cachedMatrix;
 		// My cached matrix should always be up-to-date unless overridden. No effect.
-		for (ChildContainer::iterator it = _children.begin(); it != _children.end(); ++it)
-		{
-			(*it)->calculateMvp(packId(parentIds, _id), tmpMatrix, viewProjection, viewport);
-		}
+		for (ChildContainer::iterator it = _children.begin(); it != _children.end(); ++it) { (*it)->calculateMvp(packId(parentIds, _id), tmpMatrix, viewProjection, viewport); }
 	}
 
 	/// <summary>Internal function that UIRenderer calls to render.</summary>
 	/// <param name="parentId">The groups parent's id.</param>
 	virtual void onRender(uint64_t parentId) const
 	{
-		for (ChildContainer::iterator it = _children.begin(); it != _children.end(); ++it)
-		{
-			(*it)->onRender(packId(parentId, _id));
-		}
+		for (ChildContainer::iterator it = _children.begin(); it != _children.end(); ++it) { (*it)->onRender(packId(parentId, _id)); }
 	}
 
 	/// <summary>Constructor. Internal use. The parameter groupid is an implementation detail used to implement and optimize
@@ -1071,10 +952,7 @@ private:
 	{
 		Sprite sprite;
 		SpriteEntryEquals(const Sprite& sprite) : sprite(sprite) {}
-		bool operator()(const Sprite& rhs)
-		{
-			return sprite == rhs;
-		}
+		bool operator()(const Sprite& rhs) { return sprite == rhs; }
 	};
 
 protected:
@@ -1121,13 +999,11 @@ public:
 	void remove(const Sprite& sprite)
 	{
 		ChildContainer::iterator it = std::find_if(_children.begin(), _children.end(), SpriteEntryEquals(sprite));
-		if (it != _children.end())
-		{
-			_children.erase(it);
-		}
+		if (it != _children.end()) { _children.erase(it); }
 
+		// reconstruct the bounding box
 		_boundingRect.clear();
-		std::for_each(_children.begin(), _children.begin() + _children.size(), [&](const Sprite& sprite) { _boundingRect.add(sprite->getBoundingBox()); });
+		for (Sprite& currentSprite : _children) { _boundingRect.add(currentSprite->getBoundingBox()); }
 	}
 
 	/// <summary>Remove all sprites in this group. Requires commandbuffer re-recording inorder to take affect</param>
@@ -1142,10 +1018,7 @@ public:
 	glm::vec2 getScaledDimension() const
 	{
 		glm::vec2 dim(0);
-		for (uint32_t i = 0; i < _children.size(); ++i)
-		{
-			dim += _children[i]->getScaledDimension();
-		}
+		for (uint32_t i = 0; i < _children.size(); ++i) { dim += _children[i]->getScaledDimension(); }
 		return dim;
 	}
 };
@@ -1165,10 +1038,7 @@ private:
 		friend class MatrixGroup_;
 	};
 
-	static MatrixGroup constructShared(UIRenderer& uiRenderer, uint64_t id)
-	{
-		return std::make_shared<MatrixGroup_>(make_shared_enabler{}, uiRenderer, id);
-	}
+	static MatrixGroup constructShared(UIRenderer& uiRenderer, uint64_t id) { return std::make_shared<MatrixGroup_>(make_shared_enabler{}, uiRenderer, id); }
 
 	glm::mat4 _viewProj;
 
@@ -1181,10 +1051,7 @@ private:
 	{
 		glm::mat4 tmpMatrix = srt * _cachedMatrix;
 		// My cached matrix should always be up-to-date unless overridden. No effect.
-		for (ChildContainer::iterator it = _children.begin(); it != _children.end(); ++it)
-		{
-			(*it)->calculateMvp(packId(parentIds, _id), tmpMatrix, viewProj, viewport);
-		}
+		for (ChildContainer::iterator it = _children.begin(); it != _children.end(); ++it) { (*it)->calculateMvp(packId(parentIds, _id), tmpMatrix, viewProj, viewport); }
 	}
 
 public:
@@ -1196,16 +1063,10 @@ public:
 	/// <summary>Set the scale/rotation/translation matrix of this group. If other transformations are added to this
 	/// matrix, unexpected results may occur when rendering the sprites.</summary>
 	/// <param name="srt">The scale/rotation/translation matrix of this group</param>
-	void setScaleRotateTranslate(const glm::mat4& srt)
-	{
-		_cachedMatrix = srt;
-	}
+	void setScaleRotateTranslate(const glm::mat4& srt) { _cachedMatrix = srt; }
 	/// <summary>Set the projection matrix of this group</summary>
 	/// <param name="viewProj">A projection matrix which will be used to render all members of this group</param>
-	void setViewProjection(const glm::mat4& viewProj)
-	{
-		_viewProj = viewProj;
-	}
+	void setViewProjection(const glm::mat4& viewProj) { _viewProj = viewProj; }
 
 	/// <summary>Call this method when you are finished updating the sprites (text, matrices, positioning etc.), and
 	/// BEFORE the beginRendering command, to commit any changes you have done to the sprites. This function must not
@@ -1228,10 +1089,7 @@ private:
 		friend class PixelGroup_;
 	};
 
-	static PixelGroup constructShared(UIRenderer& uiRenderer, uint64_t id)
-	{
-		return std::make_shared<PixelGroup_>(make_shared_enabler{}, uiRenderer, id);
-	}
+	static PixelGroup constructShared(UIRenderer& uiRenderer, uint64_t id) { return std::make_shared<PixelGroup_>(make_shared_enabler{}, uiRenderer, id); }
 
 	/// <summary>Internal function that UIRenderer calls to render. Do not call directly.</summary>
 	void calculateMvp(uint64_t parentIds, glm::mat4 const& srt, const glm::mat4& viewProj, pvr::Rectanglei const& viewport) const;

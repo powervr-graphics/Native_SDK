@@ -51,35 +51,23 @@ public:
 			/// <summary>Equality</summary>
 			/// <param name="rhs">Right hand side of the operator</param>
 			/// <returns>True if left and right side are equal, otherwise false</returns>
-			bool operator==(const Option& rhs) const
-			{
-				return strcmp(arg, rhs.arg) == 0;
-			}
+			bool operator==(const Option& rhs) const { return strcmp(arg, rhs.arg) == 0; }
 			/// <summary>Equality to c-string</summary>
 			/// <param name="rhs">Right hand side of the operator</param>
 			/// <returns>True if left and right side are equal, otherwise false</returns>
-			bool operator==(const char* rhs) const
-			{
-				return strcmp(arg, rhs) == 0;
-			}
+			bool operator==(const char* rhs) const { return strcmp(arg, rhs) == 0; }
 		};
 		typedef std::vector<Option> Options; //!< List of all options passed
 
 		/// <summary>Get all command line options as a list of name/value pairs (c-strings)</summary>
 		/// <returns>The command line options</returns>
-		const Options& getOptionsList() const
-		{
-			return _options;
-		}
+		const Options& getOptionsList() const { return _options; }
 
 		/// <summary>Query if a specific argument name exists (regardless of the presence of a value or not). For
 		/// example, if the command line was "myapp.exe -fps", the query hasOption("fps") will return true.</summary>
 		/// <param name="name">The argument name to test</param>
 		/// <returns>True if the argument name was passed through the command line , otherwise false.</returns>
-		bool hasOption(const char* name) const
-		{
-			return std::find(_options.begin(), _options.end(), name) != _options.end();
-		}
+		bool hasOption(const char* name) const { return std::find(_options.begin(), _options.end(), name) != _options.end(); }
 
 		/// <summary>Get an argument as a std::string value. Returns false and leaves the value unchanged if the value is not
 		/// present, allowing very easy use of default arguments.</summary>
@@ -90,10 +78,7 @@ public:
 		bool getStringOption(const char* name, std::string& outValue) const
 		{
 			auto it = std::find(_options.begin(), _options.end(), name);
-			if (it == _options.end())
-			{
-				return false;
-			}
+			if (it == _options.end()) { return false; }
 			outValue = it->val;
 			return true;
 		}
@@ -107,19 +92,13 @@ public:
 		bool getStringOptionList(const char* name, std::vector<std::string>& outValues) const
 		{
 			std::string tmp;
-			if (!getStringOption(name, tmp))
-			{
-				return false;
-			}
+			if (!getStringOption(name, tmp)) { return false; }
 
 			if (!tmp.empty())
 			{
 				std::istringstream iss(tmp);
 				std::string output;
-				while (std::getline(iss, output, ','))
-				{
-					outValues.emplace_back(output);
-				}
+				while (std::getline(iss, output, ',')) { outValues.emplace_back(output); }
 			}
 			return true;
 		}
@@ -133,10 +112,7 @@ public:
 		bool getFloatOption(const char* name, float& outValue) const
 		{
 			auto it = std::find(_options.begin(), _options.end(), name);
-			if (it == _options.end() || it->val == NULL)
-			{
-				return false;
-			}
+			if (it == _options.end() || it->val == NULL) { return false; }
 			outValue = static_cast<float>(atof(it->val));
 			return true;
 		}
@@ -150,10 +126,7 @@ public:
 		bool getIntOption(const char* name, int32_t& outValue) const
 		{
 			auto it = std::find(_options.begin(), _options.end(), name);
-			if (it == _options.end() || it->val == NULL)
-			{
-				return false;
-			}
+			if (it == _options.end() || it->val == NULL) { return false; }
 			outValue = atoi(it->val);
 			return true;
 		}
@@ -165,10 +138,7 @@ public:
 		bool getBoolOptionSetTrueIfPresent(const char* name, bool& outValue) const
 		{
 			auto it = std::find(_options.begin(), _options.end(), name);
-			if (it == _options.end())
-			{
-				return false;
-			}
+			if (it == _options.end()) { return false; }
 			outValue = true;
 			return true;
 		}
@@ -180,10 +150,7 @@ public:
 		bool getBoolOptionSetFalseIfPresent(const char* name, bool& outValue) const
 		{
 			auto it = std::find(_options.begin(), _options.end(), name);
-			if (it == _options.end())
-			{
-				return false;
-			}
+			if (it == _options.end()) { return false; }
 			outValue = false;
 			return true;
 		}
@@ -199,26 +166,17 @@ public:
 	/// <summary>Constructor from C++ main arguments</summary>
 	/// <param name="argc">The number of arguments to parse</param>
 	/// <param name="argv">A list of argc arguments to parse</param>
-	CommandLineParser(int argc, char** argv) : _data(0)
-	{
-		set(argc, argv);
-	}
+	CommandLineParser(int argc, char** argv) : _data(0) { set(argc, argv); }
 
 	/// <summary>Get a ParsedCommandLine option to inspect and use the command line arguments.</summary>
 	/// <returns>The processed command line object.</returns>
-	const ParsedCommandLine& getParsedCommandLine() const
-	{
-		return _commandLine;
-	}
+	const ParsedCommandLine& getParsedCommandLine() const { return _commandLine; }
 
 	/// <summary>Set the command line to a new std::string (wide).</summary>
 	/// <param name="cmdLine">The new (wide) std::string to set the command line to</param>
 	void set(const wchar_t* cmdLine)
 	{
-		if (cmdLine == nullptr)
-		{
-			return;
-		}
+		if (cmdLine == nullptr) { return; }
 
 		size_t length = wcslen(cmdLine) + 1;
 
@@ -239,20 +197,14 @@ public:
 	/// <param name="argv">The list of arguments</param>
 	void set(int argc, char** argv)
 	{
-		if (argc < 0)
-		{
-			return;
-		}
+		if (argc < 0) { return; }
 
 		_commandLine._options.clear();
 
 		{
 			size_t length = 0;
 
-			for (int i = 0; i < argc; ++i)
-			{
-				length += strlen(argv[i]) + 1;
-			}
+			for (int i = 0; i < argc; ++i) { length += strlen(argv[i]) + 1; }
 
 			_data.resize(length);
 		}
@@ -275,17 +227,11 @@ public:
 
 	/// <summary>Set the command line from a new std::string.</summary>
 	/// <param name="cmdLine">The new std::string to set the command line to</param>
-	void set(const char* cmdLine)
-	{
-		parseCmdLine(cmdLine);
-	}
+	void set(const char* cmdLine) { parseCmdLine(cmdLine); }
 
 	/// <summary>Set the command line from another command line.</summary>
 	/// <param name="cmdLine">Copy the data from another command line</param>
-	void set(const CommandLineParser& cmdLine)
-	{
-		*this = cmdLine;
-	}
+	void set(const CommandLineParser& cmdLine) { *this = cmdLine; }
 
 	/// <summary>Prepend data to the command line.</summary>
 	/// <param name="cmdLine">A std::string containing the data to prepend to this command line</param>
@@ -340,10 +286,7 @@ public:
 	/// <param name="cmdLine">The command line from which to prepend the data</param>
 	void prefix(const CommandLineParser& cmdLine)
 	{
-		if (cmdLine._commandLine._options.empty())
-		{
-			return;
-		}
+		if (cmdLine._commandLine._options.empty()) { return; }
 
 		std::vector<char> newData;
 		newData.resize(_data.size() + cmdLine._data.size());
@@ -356,13 +299,13 @@ public:
 		memcpy(&newData[cmdLine._data.size()], _data.data(), _data.size());
 
 		// Initialize the options
-		for (unsigned int i = 0; i < cmdLine._commandLine._options.size(); ++i)
+		for (uint32_t i = 0; i < cmdLine._commandLine._options.size(); ++i)
 		{
 			newOptions[i].arg = (const char*)((size_t)cmdLine._commandLine._options[i].arg - (size_t)cmdLine._data.data()) + (size_t)newData.data();
 			newOptions[i].val = (const char*)((size_t)cmdLine._commandLine._options[i].val - (size_t)cmdLine._data.data()) + (size_t)newData.data();
 		}
 
-		for (unsigned int i = 0; i < _commandLine._options.size(); ++i)
+		for (uint32_t i = 0; i < _commandLine._options.size(); ++i)
 		{
 			newOptions[cmdLine._commandLine._options.size() + i].arg =
 				(const char*)((size_t)_commandLine._options[i].arg - (size_t)_data.data()) + (size_t)newData.data() + cmdLine._data.size();
@@ -429,10 +372,7 @@ public:
 	/// <param name="cmdLine">The command line from which to append the data</param>
 	void append(const CommandLineParser& cmdLine)
 	{
-		if (cmdLine._commandLine._options.empty())
-		{
-			return;
-		}
+		if (cmdLine._commandLine._options.empty()) { return; }
 
 		std::vector<char> newData;
 		newData.resize(_data.size() + cmdLine._data.size());
@@ -445,13 +385,13 @@ public:
 		memcpy(&newData[_data.size()], cmdLine._data.data(), cmdLine._data.size());
 
 		// Initialize the options
-		for (unsigned int i = 0; i < _commandLine._options.size(); ++i)
+		for (uint32_t i = 0; i < _commandLine._options.size(); ++i)
 		{
 			newOptions[i].arg = (const char*)((size_t)_commandLine._options[i].arg - (size_t)_data.data()) + (size_t)newData.data();
 			newOptions[i].val = (const char*)((size_t)_commandLine._options[i].val - (size_t)_data.data()) + (size_t)newData.data();
 		}
 
-		for (unsigned int i = 0; i < cmdLine._commandLine._options.size(); ++i)
+		for (uint32_t i = 0; i < cmdLine._commandLine._options.size(); ++i)
 		{
 			newOptions[_commandLine._options.size() + i].arg =
 				(const char*)((size_t)cmdLine._commandLine._options[i].arg - (size_t)cmdLine._data.data()) + (size_t)newData.data() + _data.size();
@@ -470,14 +410,11 @@ protected:
 	void parseCmdLine(const char* const cmdLine)
 	{
 		size_t len;
-		int nIn, nOut;
+		uint32_t nIn, nOut;
 		bool bInQuotes;
 		ParsedCommandLine::Option opt;
 
-		if (cmdLine == nullptr)
-		{
-			return;
-		}
+		if (cmdLine == nullptr) { return; }
 
 		// Take a copy of the original
 		len = strlen(cmdLine) + 1;
@@ -489,23 +426,17 @@ protected:
 		bInQuotes = false;
 		opt.arg = nullptr;
 		opt.val = nullptr;
-		nIn = -1;
+		nIn = static_cast<uint32_t>(-1);
 		nOut = 0;
 		do
 		{
 			++nIn;
-			if (cmdLine[nIn] == '"')
-			{
-				bInQuotes = !bInQuotes;
-			}
+			if (cmdLine[nIn] == '"') { bInQuotes = !bInQuotes; }
 			else
 			{
 				if (bInQuotes && cmdLine[nIn] != 0)
 				{
-					if (opt.arg == nullptr)
-					{
-						opt.arg = &_data[nOut];
-					}
+					if (opt.arg == nullptr) { opt.arg = &_data[nOut]; }
 
 					_data[nOut++] = cmdLine[nIn];
 				}
@@ -533,10 +464,7 @@ protected:
 						break;
 
 					default:
-						if (opt.arg == nullptr)
-						{
-							opt.arg = &_data[nOut];
-						}
+						if (opt.arg == nullptr) { opt.arg = &_data[nOut]; }
 
 						_data[nOut++] = cmdLine[nIn];
 						break;
@@ -554,10 +482,7 @@ protected:
 		size_t j;
 
 		// Hunt for an = symbol
-		for (j = 0; (arg[j] != 0) && arg[j] != '='; ++j)
-		{
-			;
-		}
+		for (j = 0; (arg[j] != 0) && arg[j] != '='; ++j) { ; }
 
 		opt.arg = arg;
 		if (arg[j] != 0)
@@ -587,10 +512,7 @@ private:
 		*/
 		for (i = 0; i < _commandLine._options.size(); ++i)
 		{
-			if (_stricmp(_commandLine._options[i].arg, arg) == 0)
-			{
-				break;
-			}
+			if (_stricmp(_commandLine._options[i].arg, arg) == 0) { break; }
 		}
 
 		return i;
@@ -599,33 +521,24 @@ private:
 	{
 		uint32_t nIdx = findArg(arg);
 
-		if (nIdx == _commandLine._options.size())
-		{
-			return false;
-		}
+		if (nIdx == _commandLine._options.size()) { return false; }
 		// a flag must have no value
 		bVal = _commandLine._options[nIdx].val != nullptr ? false : true;
 		return true;
 	}
-	bool readUint(const char* arg, unsigned int& val) const
+	bool readUint(const char* arg, uint32_t& val) const
 	{
 		uint32_t nIdx = findArg(arg);
 
-		if (nIdx == _commandLine._options.size())
-		{
-			return false;
-		}
-		val = atoi(_commandLine._options[nIdx].val);
+		if (nIdx == _commandLine._options.size()) { return false; }
+		val = static_cast<uint32_t>(atoi(_commandLine._options[nIdx].val));
 		return true;
 	}
 	bool readFloat(const char* arg, float& val) const
 	{
 		uint32_t nIdx = findArg(arg);
 
-		if (nIdx == _commandLine._options.size())
-		{
-			return false;
-		}
+		if (nIdx == _commandLine._options.size()) { return false; }
 		val = static_cast<float>(atof(_commandLine._options[nIdx].val));
 		return true;
 	}

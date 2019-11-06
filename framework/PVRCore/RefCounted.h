@@ -22,10 +22,7 @@ Note that RefCounted.h has now been made deprecated and is unused throughout the
 #define debug_assertion(condition, message) \
 	do \
 	{ \
-		if (!(condition)) \
-		{ \
-			throw std::runtime_error(message); \
-		} \
+		if (!(condition)) { throw std::runtime_error(message); } \
 	} while (false);
 #else
 /// <summary>Provides a debug build only std::runtime_error when a given condition occurs with a particular message.</summary>
@@ -62,14 +59,8 @@ private:
 	std::mutex mylock;
 
 public:
-	int32_t count()
-	{
-		return count_;
-	} //!< Number of total references for this object
-	int32_t weakcount()
-	{
-		return weakcount_;
-	} //!< Number of weak references for this object
+	int32_t count() { return count_; } //!< Number of total references for this object
+	int32_t weakcount() { return weakcount_; } //!< Number of weak references for this object
 
 protected:
 	/// <summary>Increment strong references by one. It is an error to call on a deleted object.</summary>
@@ -78,10 +69,7 @@ protected:
 		if (std::atomic_fetch_add(&count_, 1) == 0)
 		{
 			std::lock_guard<std::mutex> lockguard(mylock);
-			if (count_.load() == 0)
-			{
-				throw std::runtime_error("RefCounted::increment_count:  Tried to increment the count of an object but it had already been destroyed!");
-			}
+			if (count_.load() == 0) { throw std::runtime_error("RefCounted::increment_count:  Tried to increment the count of an object but it had already been destroyed!"); }
 		}
 	}
 	/// <summary>Increment weak references by one. It is an error to call on a deleted object.</summary>
@@ -90,10 +78,7 @@ protected:
 		if (std::atomic_fetch_add(&weakcount_, 1) == 0)
 		{
 			std::lock_guard<std::mutex> lockguard(mylock);
-			if (weakcount_.load() == 0)
-			{
-				throw std::runtime_error("RefCounted::increment_count:  Tried to increment the count of an object but it had already been destroyed!");
-			}
+			if (weakcount_.load() == 0) { throw std::runtime_error("RefCounted::increment_count:  Tried to increment the count of an object but it had already been destroyed!"); }
 		}
 	}
 
@@ -108,16 +93,10 @@ protected:
 			{
 				std::lock_guard<std::mutex> lockguard(mylock);
 				destroyObject();
-				if (weakcount() == 0)
-				{
-					deleter = true;
-				}
+				if (weakcount() == 0) { deleter = true; }
 			}
 		}
-		if (deleter)
-		{
-			deleteEntry();
-		}
+		if (deleter) { deleteEntry(); }
 	}
 
 	/// <summary>Decrement weak references by one. If it reaches zero and the strong reference count is also zero, will destroy the bookkeeping entry.
@@ -128,15 +107,9 @@ protected:
 		if (((std::atomic_fetch_add(&weakcount_, -1)) == 1))
 		{
 			std::lock_guard<std::mutex> lockguard(mylock);
-			if (count_.load() == 0)
-			{
-				deleter = true;
-			}
+			if (count_.load() == 0) { deleter = true; }
 		}
-		if (deleter)
-		{
-			deleteEntry();
-		}
+		if (deleter) { deleteEntry(); }
 	} //!< Number of weak references for this object
 
 	virtual void deleteEntry() = 0; //!< Will be overriden with the actual code required to delete the bookkeeping entry
@@ -177,16 +150,10 @@ struct RefCountEntryIntrusive : public IRefCountEntry
 	/// count) are 0. It assumes the object has already been destroyed - so it will NOT destroy the object properly -
 	/// only free its memory! destroyObject must be explicitly called otherwise undefined behaviour occurs by freeing
 	/// the memory of a live object!</summary>
-	void deleteEntry()
-	{
-		delete this;
-	}
+	void deleteEntry() { delete this; }
 
 	/// <summary>Destroys the the held object. Called when all strong references are dead (count is zero).</summary>
-	void destroyObject()
-	{
-		reinterpret_cast<MyClass_*>(entry)->~MyClass_();
-	}
+	void destroyObject() { reinterpret_cast<MyClass_*>(entry)->~MyClass_(); }
 };
 
 /// <summary>DO NOT USE DIRECTLY. The RefCountedResource uses this class when required. A "simple" Refcount entry
@@ -203,14 +170,8 @@ struct RefCountEntry : public IRefCountEntry
 	MyClass_* ptr; //!< Pointer to the object
 	RefCountEntry() : ptr(NULL) {}
 	RefCountEntry(MyClass_* ptr) : ptr(ptr) {}
-	void deleteEntry()
-	{
-		delete this;
-	}
-	void destroyObject()
-	{
-		delete ptr;
-	}
+	void deleteEntry() { delete this; }
+	void destroyObject() { delete ptr; }
 };
 
 /// <summary>DO NOT USE DIRECTLY. The RefCountedResource follows this class.</summary>
@@ -222,10 +183,7 @@ class Dereferenceable
 {
 protected:
 	MyClass_* _pointee;
-	Dereferenceable(const MyClass_* pointee)
-	{
-		this->_pointee = const_cast<MyClass_*>(pointee);
-	}
+	Dereferenceable(const MyClass_* pointee) { this->_pointee = const_cast<MyClass_*>(pointee); }
 
 public:
 	/// <summary>Dereferencing operator. Returns the contained object.</summary>
@@ -261,50 +219,32 @@ public:
 	/// <summary>Tests equality of the pointers of two compatible RefCountedResource. NULL tests equal to NULL.</summary>
 	/// <param name="rhs">Right hand side of the operator</param>
 	/// <returns>True if the two RefCountedResources contain equal pointers, otherwise false</param>
-	bool operator==(const Dereferenceable& rhs) const
-	{
-		return _pointee == rhs._pointee;
-	}
+	bool operator==(const Dereferenceable& rhs) const { return _pointee == rhs._pointee; }
 
 	/// <summary>Tests inequality of the pointers of two compatible RefCountedResource. NULL tests equal to NULL.</summary>
 	/// <param name="rhs">Right hand side of the operator</param>
 	/// <returns>True if the two RefCountedResources contain unequal pointers, otherwise false</param>
-	bool operator!=(const Dereferenceable& rhs) const
-	{
-		return _pointee != rhs._pointee;
-	}
+	bool operator!=(const Dereferenceable& rhs) const { return _pointee != rhs._pointee; }
 
 	/// <summary>Tests inequality of the pointers of two compatible RefCountedResource. NULL tests equal to NULL.</summary>
 	/// <param name="rhs">Right hand side of the operator</param>
 	/// <returns>True if the pointer to left-hand-side is less than the pointer of right-hand-side, otherwise false</param>
-	bool operator<(const Dereferenceable& rhs) const
-	{
-		return _pointee < rhs._pointee;
-	}
+	bool operator<(const Dereferenceable& rhs) const { return _pointee < rhs._pointee; }
 
 	/// <summary>Tests inequality of the pointers of two compatible RefCountedResource. NULL tests equal to NULL.</summary>
 	/// <param name="rhs">Right hand side of the operator</param>
 	/// <returns>True if the pointer to left-hand-side is greater than the pointer of right-hand-side, otherwise false</param>
-	bool operator>(const Dereferenceable& rhs) const
-	{
-		return _pointee > rhs._pointee;
-	}
+	bool operator>(const Dereferenceable& rhs) const { return _pointee > rhs._pointee; }
 
 	/// <summary>Tests inequality of the pointers of two compatible RefCountedResource. NULL tests equal to NULL.</summary>
 	/// <param name="rhs">Right hand side of the operator</param>
 	/// <returns>True if the pointer to left-hand-side is less than or equal the pointer of right-hand-side, otherwise false</param>
-	bool operator<=(const Dereferenceable& rhs) const
-	{
-		return _pointee <= rhs._pointee;
-	}
+	bool operator<=(const Dereferenceable& rhs) const { return _pointee <= rhs._pointee; }
 
 	/// <summary>Tests equality of the pointers of two compatible RefCountedResource. NULL tests equal to NULL.</summary>
 	/// <param name="rhs">Right hand side of the operator</param>
 	/// <returns>True if the pointer to left-hand-side is greater than or equal the pointer of right-hand-side, otherwise false</param>
-	bool operator>=(const Dereferenceable& rhs) const
-	{
-		return _pointee >= rhs._pointee;
-	}
+	bool operator>=(const Dereferenceable& rhs) const { return _pointee >= rhs._pointee; }
 };
 //!\cond NO_DOXYGEN
 template<>
@@ -316,50 +256,32 @@ protected:
 
 public:
 	/// <summary>Tests equality of the pointers of two compatible RefCountedResource. NULL tests equal to NULL.</summary>
-	bool operator==(const Dereferenceable& rhs) const
-	{
-		return _pointee == rhs._pointee;
-	}
+	bool operator==(const Dereferenceable& rhs) const { return _pointee == rhs._pointee; }
 
 	/// <summary>Tests inequality of the pointers of two compatible RefCountedResource. NULL tests equal to NULL.</summary>
 	/// <param name="rhs">Right hand side of the operator</param>
 	/// <returns>True if the pointer to left-hand-side is not equal to the pointer of right-hand-side, otherwise false</param>
-	bool operator!=(const Dereferenceable& rhs) const
-	{
-		return _pointee != rhs._pointee;
-	}
+	bool operator!=(const Dereferenceable& rhs) const { return _pointee != rhs._pointee; }
 
 	/// <summary>Tests equality of the pointers of two compatible RefCountedResource. NULL tests equal to NULL.</summary>
 	/// <param name="rhs">Right hand side of the operator</param>
 	/// <returns>True if the pointer to left-hand-side is less than the pointer of right-hand-side, otherwise false</param>
-	bool operator<(const Dereferenceable& rhs) const
-	{
-		return _pointee < rhs._pointee;
-	}
+	bool operator<(const Dereferenceable& rhs) const { return _pointee < rhs._pointee; }
 
 	/// <summary>Tests equality of the pointers of two compatible RefCountedResource. NULL tests equal to NULL.</summary>
 	/// <param name="rhs">Right hand side of the operator</param>
 	/// <returns>True if the pointer to left-hand-side is greater than the pointer of right-hand-side, otherwise false</param>
-	bool operator>(const Dereferenceable& rhs) const
-	{
-		return _pointee > rhs._pointee;
-	}
+	bool operator>(const Dereferenceable& rhs) const { return _pointee > rhs._pointee; }
 
 	/// <summary>Tests equality of the pointers of two compatible RefCountedResource. NULL tests equal to NULL.</summary>
 	/// <param name="rhs">Right hand side of the operator</param>
 	/// <returns>True if the pointer to left-hand-side is less than or equal to the pointer of right-hand-side, otherwise false</param>
-	bool operator<=(const Dereferenceable& rhs) const
-	{
-		return _pointee <= rhs._pointee;
-	}
+	bool operator<=(const Dereferenceable& rhs) const { return _pointee <= rhs._pointee; }
 
 	/// <summary>Tests equality of the pointers of two compatible RefCountedResource. NULL tests equal to NULL.</summary>
 	/// <param name="rhs">Right hand side of the operator</param>
 	/// <returns>True if the pointer to left-hand-side is greater than or equal to the pointer of right-hand-side, otherwise false</param>
-	bool operator>=(const Dereferenceable& rhs) const
-	{
-		return _pointee >= rhs._pointee;
-	}
+	bool operator>=(const Dereferenceable& rhs) const { return _pointee >= rhs._pointee; }
 };
 
 template<typename MyClass_>
@@ -428,33 +350,21 @@ public:
 	/// return false for both unallocated strong or weak references, or weak references that point to objects without
 	/// strong references (destroyed). Equivalent to !isNull().</summary>
 	/// <returns>True if this object contains a reference to a non-null object (is safely dereferenceable).</returns>
-	bool isValid() const
-	{
-		return RefcountEntryHolder<MyClass_>::refCountEntry != NULL && RefcountEntryHolder<MyClass_>::refCountEntry->count() > 0;
-	}
+	bool isValid() const { return RefcountEntryHolder<MyClass_>::refCountEntry != NULL && RefcountEntryHolder<MyClass_>::refCountEntry->count() > 0; }
 
 	/// <summary>Check if the object does not contains a reference to a non-null object (i.e. is safely
 	/// dereferenceable). Will return true for both unallocated strong or weak references, or weak references that
 	/// point to objects without strong references (destroyed). Equivalent to !isValid().</summary>
 	/// <returns>True if this object does not contain a reference to a non-null object (is not safely dereferenceable).</returns>
-	bool isNull() const
-	{
-		return RefcountEntryHolder<MyClass_>::refCountEntry == NULL || RefcountEntryHolder<MyClass_>::refCountEntry->count() == 0;
-	}
+	bool isNull() const { return RefcountEntryHolder<MyClass_>::refCountEntry == NULL || RefcountEntryHolder<MyClass_>::refCountEntry->count() == 0; }
 
 	/// <summary>Get a raw pointer to the pointed-to object.</summary>
 	/// <returns>A raw pointer to the pointed-to object.</returns>
-	MyClass_* get()
-	{
-		return Dereferenceable<MyClass_>::_pointee;
-	}
+	MyClass_* get() { return Dereferenceable<MyClass_>::_pointee; }
 
 	/// <summary>Get a const raw pointer to the pointed-to object.</summary>
 	/// <returns>A const raw pointer to the pointed-to object.</returns>
-	const MyClass_* get() const
-	{
-		return Dereferenceable<MyClass_>::_pointee;
-	}
+	const MyClass_* get() const { return Dereferenceable<MyClass_>::_pointee; }
 
 	/// <summary>Swap the contents of this RefCountedResource object with another RefCountedResource object of the same
 	/// type.</summary>
@@ -481,8 +391,7 @@ public:
 		if (RefcountEntryHolder<MyClass_>::refCountEntry)
 		{
 			RefcountEntryHolder<MyClass_>::refCountEntry->increment_count();
-			debug_assertion(
-				(RefcountEntryHolder<MyClass_>::refCountEntry->count() >= 0) && (RefcountEntryHolder<MyClass_>::refCountEntry->weakcount() >= 0), "BUG - Count was negative.");
+			debug_assertion((RefcountEntryHolder<MyClass_>::refCountEntry->count() >= 0) && (RefcountEntryHolder<MyClass_>::refCountEntry->weakcount() >= 0), "BUG - Count was negative.");
 		}
 	}
 
@@ -531,11 +440,9 @@ public:
 		(void)checkMe;
 		if (RefcountEntryHolder<MyClass_>::refCountEntry)
 		{
-			debug_assertion(
-				(RefcountEntryHolder<MyClass_>::refCountEntry->count() >= 0) && (RefcountEntryHolder<MyClass_>::refCountEntry->weakcount() >= 0), "BUG - Count was negative.");
+			debug_assertion((RefcountEntryHolder<MyClass_>::refCountEntry->count() >= 0) && (RefcountEntryHolder<MyClass_>::refCountEntry->weakcount() >= 0), "BUG - Count was negative.");
 			RefcountEntryHolder<MyClass_>::refCountEntry->increment_count();
-			debug_assertion(
-				(RefcountEntryHolder<MyClass_>::refCountEntry->count() >= 0) && (RefcountEntryHolder<MyClass_>::refCountEntry->weakcount() >= 0), "BUG - Count was negative.");
+			debug_assertion((RefcountEntryHolder<MyClass_>::refCountEntry->count() >= 0) && (RefcountEntryHolder<MyClass_>::refCountEntry->weakcount() >= 0), "BUG - Count was negative.");
 		}
 	}
 
@@ -556,25 +463,17 @@ public:
 		(void)checkMe;
 		if (RefcountEntryHolder<MyClass_>::refCountEntry)
 		{
-			debug_assertion(
-				(RefcountEntryHolder<MyClass_>::refCountEntry->count() >= 0) && (RefcountEntryHolder<MyClass_>::refCountEntry->weakcount() >= 0), "BUG - Count was negative.");
+			debug_assertion((RefcountEntryHolder<MyClass_>::refCountEntry->count() >= 0) && (RefcountEntryHolder<MyClass_>::refCountEntry->weakcount() >= 0), "BUG - Count was negative.");
 			RefcountEntryHolder<MyClass_>::refCountEntry->increment_count();
-			debug_assertion(
-				(RefcountEntryHolder<MyClass_>::refCountEntry->count() >= 0) && (RefcountEntryHolder<MyClass_>::refCountEntry->weakcount() >= 0), "BUG - Count was negative.");
+			debug_assertion((RefcountEntryHolder<MyClass_>::refCountEntry->count() >= 0) && (RefcountEntryHolder<MyClass_>::refCountEntry->weakcount() >= 0), "BUG - Count was negative.");
 		}
 	}
 
 	/// <summary>Destructor. Releases the object (decreases reference count and deletes it if zero).</summary>
-	virtual ~EmbeddedRefCountedResource()
-	{
-		reset();
-	}
+	virtual ~EmbeddedRefCountedResource() { reset(); }
 
 	/// <summary>Tests inequality of the pointers of two compatible RefCountedResource. NULL tests equal to NULL.</summary>
-	bool operator!=(const EmbeddedRefCountedResource& rhs) const
-	{
-		return get() != rhs.get();
-	}
+	bool operator!=(const EmbeddedRefCountedResource& rhs) const { return get() != rhs.get(); }
 
 	/// <summary>Decrements reference count. If it is the last pointer, destroys the pointed-to object. Else, abandons it.
 	/// Then, wraps the provided pointer and points to it. Equivalent to (but more efficient than) destroying the
@@ -592,10 +491,7 @@ public:
 
 	/// <summary>Decrements reference count. If it is the last pointer, destroys the pointed-to object. Else, abandons it.
 	/// Then, resets to NULL.</summary>
-	void reset()
-	{
-		releaseOne();
-	}
+	void reset() { releaseOne(); }
 
 protected:
 	template<typename OriginalType>
@@ -603,11 +499,9 @@ protected:
 	{
 		if (RefcountEntryHolder<MyClass_>::refCountEntry)
 		{
-			debug_assertion(
-				(RefcountEntryHolder<MyClass_>::refCountEntry->count() >= 0) && (RefcountEntryHolder<MyClass_>::refCountEntry->weakcount() >= 0), "BUG - Count was negative.");
+			debug_assertion((RefcountEntryHolder<MyClass_>::refCountEntry->count() >= 0) && (RefcountEntryHolder<MyClass_>::refCountEntry->weakcount() >= 0), "BUG - Count was negative.");
 			RefcountEntryHolder<MyClass_>::refCountEntry->increment_count();
-			debug_assertion(
-				(RefcountEntryHolder<MyClass_>::refCountEntry->count() > 0) && (RefcountEntryHolder<MyClass_>::refCountEntry->weakcount() >= 0), "BUG - Count was negative.");
+			debug_assertion((RefcountEntryHolder<MyClass_>::refCountEntry->count() > 0) && (RefcountEntryHolder<MyClass_>::refCountEntry->weakcount() >= 0), "BUG - Count was negative.");
 		}
 	}
 
@@ -745,10 +639,7 @@ public:
 	}
 
 	/// <summary>Decrements reference count. If it is the last pointer, destroys the pointed-to object. Else, abandons it.</summary>
-	void reset()
-	{
-		EmbeddedRefCountedResource<MyClass_>::reset();
-	}
+	void reset() { EmbeddedRefCountedResource<MyClass_>::reset(); }
 
 	/// <summary>-- Use this method to construct a new instance of ElementType using its one-parameter constructor,
 	/// and use reference counting with it. --- ONE ARGUMENT CONSTRUCTOR OVERLOAD</summary>
@@ -834,31 +725,19 @@ public:
 
 	/// <summary>Test if this reference points to a valid object.</summary>
 	/// <returns>True if this reference points to a valid object.</returns>
-	bool isValid() const
-	{
-		return RefcountEntryHolder<MyClass_>::refCountEntry != NULL && RefcountEntryHolder<MyClass_>::refCountEntry->count() > 0;
-	}
+	bool isValid() const { return RefcountEntryHolder<MyClass_>::refCountEntry != NULL && RefcountEntryHolder<MyClass_>::refCountEntry->count() > 0; }
 
 	/// <summary>Test if this reference does not point to a valid object.</summary>
 	/// <returns>True if this reference does not points to a valid object.</returns>
-	bool isNull() const
-	{
-		return RefcountEntryHolder<MyClass_>::refCountEntry == NULL || RefcountEntryHolder<MyClass_>::refCountEntry->count() == 0;
-	}
+	bool isNull() const { return RefcountEntryHolder<MyClass_>::refCountEntry == NULL || RefcountEntryHolder<MyClass_>::refCountEntry->count() == 0; }
 
 	/// <summary>Get a raw pointer to the pointed-to object.</summary>
 	/// <returns>Get a raw pointer of MyClass_* type to the pointed-to object.</returns>
-	MyClass_* get()
-	{
-		return Dereferenceable<MyClass_>::_pointee;
-	}
+	MyClass_* get() { return Dereferenceable<MyClass_>::_pointee; }
 
 	/// <summary>Get a const raw pointer to the pointed-to object.</summary>
 	/// <returns>Get a const raw pointer of MyClass_* type to the pointed-to object.</returns>
-	const MyClass_* get() const
-	{
-		return Dereferenceable<MyClass_>::_pointee;
-	}
+	const MyClass_* get() const { return Dereferenceable<MyClass_>::_pointee; }
 
 	void swap(RefCountedWeakReference& rhs)
 	{
@@ -991,10 +870,7 @@ public:
 	}
 
 	/// <summary>Destructor. Reduces weak references by one, freeing the bookkeeping block if total references reach 0.</summary>
-	virtual ~RefCountedWeakReference()
-	{
-		release();
-	}
+	virtual ~RefCountedWeakReference() { release(); }
 
 	/// <summary>Decrements weak reference count. If it is the last pointer, the object must have already been destroyed, but
 	/// it destroys the reference counts block. Then, points to NULL.</summary>
@@ -1007,10 +883,7 @@ public:
 
 	/// <summary>Decrements weak reference count. If it is the last pointer, the object must have already been destroyed, but
 	/// it destroys the reference counts block. Then, points to NULL.</summary>
-	void reset()
-	{
-		release();
-	}
+	void reset() { release(); }
 
 private:
 	void retainOne()
@@ -1062,14 +935,8 @@ public:
 	typedef EmbeddedRefCount<MyClass_> MyEmbeddedType;
 	typedef EmbeddedRefCountedResource<MyClass_> StrongReferenceType;
 	typedef RefCountedWeakReference<MyClass_> WeakReferenceType;
-	WeakReferenceType getWeakReference()
-	{
-		return WeakReferenceType(static_cast<MyClass_*>(this), static_cast<MyClass_*>(this));
-	}
-	StrongReferenceType getReference()
-	{
-		return StrongReferenceType(static_cast<MyClass_*>(this), static_cast<MyClass_*>(this));
-	}
+	WeakReferenceType getWeakReference() { return WeakReferenceType(static_cast<MyClass_*>(this), static_cast<MyClass_*>(this)); }
+	StrongReferenceType getReference() { return StrongReferenceType(static_cast<MyClass_*>(this), static_cast<MyClass_*>(this)); }
 
 protected:
 	EmbeddedRefCount() {}
@@ -1083,10 +950,7 @@ protected:
 		return ptr;
 	}
 
-	void deleteEntry()
-	{
-		delete static_cast<MyClass_*>(this);
-	}
+	void deleteEntry() { delete static_cast<MyClass_*>(this); }
 };
 
 //!\cond NO_DOXYGEN

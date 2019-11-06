@@ -37,7 +37,7 @@ namespace impl {
 /// VK_PIPELINE_BINDING_POINT_COMPUTE, and as such only supports the part of Vulkan that is
 /// supported for Graphics pipelines.</summary>
 template<class PVRVkPipeline, class PVRVkPipelineCreateInfo>
-class Pipeline : public PVRVkDeviceObjectBase<VkPipeline, ObjectType::e_PIPELINE>, public DeviceObjectDebugUtils<Pipeline<PVRVkPipeline, PVRVkPipelineCreateInfo> >
+class Pipeline : public PVRVkDeviceObjectBase<VkPipeline, ObjectType::e_PIPELINE>, public DeviceObjectDebugUtils<Pipeline<PVRVkPipeline, PVRVkPipelineCreateInfo>>
 {
 public:
 	//!\cond NO_DOXYGEN
@@ -45,17 +45,11 @@ public:
 	//!\endcond
 	/// <summary>Return pipeline layout.</summary>
 	/// <returns>const PipelineLayout&</returns>
-	const PipelineLayout& getPipelineLayout() const
-	{
-		return _createInfo.pipelineLayout;
-	}
+	const PipelineLayout& getPipelineLayout() const { return _createInfo.pipelineLayout; }
 
 	/// <summary>return pipeline create param used to create the child pipeline</summary>
 	/// <returns>const PipelineCreateInfo<PVRVkPipeline>&</returns>
-	const PVRVkPipelineCreateInfo& getCreateInfo() const
-	{
-		return _createInfo;
-	}
+	const PVRVkPipelineCreateInfo& getCreateInfo() const { return _createInfo; }
 
 protected:
 	/// <summary>Destructor for a PVRVk pipeline object.</summary>
@@ -90,7 +84,7 @@ protected:
 	/// <param name="vkPipeline">The Vulkan pipeline object itself.</param>
 	/// <param name="desc">The pipeline creation information.</param>
 	Pipeline(const DeviceWeakPtr& device, VkPipeline vkPipeline, const PVRVkPipelineCreateInfo& desc)
-		: PVRVkDeviceObjectBase<VkPipeline, ObjectType::e_PIPELINE>(device), DeviceObjectDebugUtils<Pipeline<PVRVkPipeline, PVRVkPipelineCreateInfo> >(), _pipeCache(VK_NULL_HANDLE)
+		: PVRVkDeviceObjectBase<VkPipeline, ObjectType::e_PIPELINE>(device), DeviceObjectDebugUtils<Pipeline<PVRVkPipeline, PVRVkPipelineCreateInfo>>(), _pipeCache(VK_NULL_HANDLE)
 	{
 		_vkHandle = vkPipeline;
 		_createInfo = desc;

@@ -18,6 +18,14 @@
 #define vsnprintf _vsnprintf
 #endif
 
+#if defined(__APPLE__)
+#include <stdbool.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <sys/sysctl.h>
+#include <signal.h>
+#endif
+
 #if defined(__linux__)
 #include <sys/stat.h>
 #include <unistd.h>
@@ -40,19 +48,42 @@ inline static bool isDebuggerPresent()
 	if (!haveCheckedForDebugger)
 	{
 #if defined(_MSC_VER)
-		if (IsDebuggerPresent())
-		{
-			isUsingDebugger = true;
-		}
+		if (IsDebuggerPresent()) { isUsingDebugger = true; }
+#elif defined(__APPLE__)
+		// reference implementation taken from: https: // developer.apple.com/library/archive/qa/qa1361/_index.html
+		int junk;
+		int mib[4];
+		struct kinfo_proc info;
+		size_t size;
+
+		// Initialize the flags so that, if sysctl fails for some bizarre
+		// reason, we get a predictable result.
+
+		info.kp_proc.p_flag = 0;
+
+		// Initialize mib, which tells sysctl the info we want, in this case
+		// we're looking for information about a specific process ID.
+
+		mib[0] = CTL_KERN;
+		mib[1] = KERN_PROC;
+		mib[2] = KERN_PROC_PID;
+		mib[3] = getpid();
+
+		// Call sysctl.
+
+		size = sizeof(info);
+		junk = sysctl(mib, sizeof(mib) / sizeof(*mib), &info, &size, NULL, 0);
+		assert(junk == 0);
+
+		// We're being debugged if the P_TRACED flag is set.
+
+		if ((info.kp_proc.p_flag & P_TRACED) != 0) { isUsingDebugger = true; }
 #elif defined(__linux__)
 		// reference implementation taken from: https://stackoverflow.com/a/24969863
 		char buf[1024];
 
 		int status_fd = open("/proc/self/status", O_RDONLY);
-		if (status_fd == -1)
-		{
-			isUsingDebugger = false;
-		}
+		if (status_fd == -1) { isUsingDebugger = false; }
 		else
 		{
 			ssize_t num_read = read(status_fd, buf, sizeof(buf) - 1);
@@ -63,10 +94,7 @@ inline static bool isDebuggerPresent()
 
 				buf[num_read] = 0;
 				tracer_pid = strstr(buf, TracerPid);
-				if (tracer_pid)
-				{
-					isUsingDebugger = !!atoi(tracer_pid + sizeof(TracerPid) - 1);
-				}
+				if (tracer_pid) { isUsingDebugger = !!atoi(tracer_pid + sizeof(TracerPid) - 1); }
 			}
 		}
 #endif
@@ -81,7 +109,9 @@ inline void debuggerBreak()
 {
 	if (isDebuggerPresent())
 	{
-#if defined(__linux__)
+#if defined(__APPLE__)
+		raise(SIGTRAP);
+#elif defined(__linux__)
 		{
 			raise(SIGTRAP);
 		}
@@ -99,10 +129,7 @@ class PvrError : public std::runtime_error
 public:
 	/// <summary>Constructor.</summary>
 	/// <param name="message">A message to log.</param>
-	PvrError(std::string message) : std::runtime_error(message)
-	{
-		debuggerBreak();
-	}
+	PvrError(std::string message) : std::runtime_error(message) { debuggerBreak(); }
 };
 /// <summary>A simple std::runtime_error wrapper for throwing exceptions when invalid arguments are provided</summary>
 class InvalidArgumentError : public PvrError

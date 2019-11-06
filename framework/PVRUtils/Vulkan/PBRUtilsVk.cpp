@@ -34,10 +34,7 @@ pvr::Texture generateIrradianceMap(
 
 	// calculate the mip level dimensions.
 	std::vector<uint32_t> mipLevelDimensions(numMipLevels);
-	for (uint32_t i = 0; i < mipLevelDimensions.size(); ++i)
-	{
-		mipLevelDimensions[i] = static_cast<uint32_t>(pow(2, numMipLevels - i - 1));
-	}
+	for (uint32_t i = 0; i < mipLevelDimensions.size(); ++i) { mipLevelDimensions[i] = static_cast<uint32_t>(pow(2, numMipLevels - i - 1)); }
 
 	pvrvk::CommandBuffer cmdBuffer = cmdPool->allocateCommandBuffer();
 
@@ -60,8 +57,8 @@ pvr::Texture generateIrradianceMap(
 		cmdPool->getDevice()->getPhysicalDevice()->getProperties().getLimits().getMinUniformBufferOffsetAlignment());
 
 	// Create the uniform buffer storing the rotation matrix for the cube map view direction
-	pvrvk::Buffer uboBuffer = pvr::utils::createBuffer(device, uboView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
-		pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT | pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, &allocator);
+	pvrvk::Buffer uboBuffer = pvr::utils::createBuffer(device, pvrvk::BufferCreateInfo(uboView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT),
+		pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT | pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, &allocator);
 	uboView.pointToMappedMemory(uboBuffer->getDeviceMemory()->getMappedData());
 
 	const glm::mat3 cubeView[] = {
@@ -80,10 +77,7 @@ pvr::Texture generateIrradianceMap(
 	uboView.getElement(0, 0, 4).setValue(cubeView[4]);
 	uboView.getElement(0, 0, 5).setValue(cubeView[5]);
 
-	if (uint32_t(uboBuffer->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
-	{
-		uboBuffer->getDeviceMemory()->flushRange();
-	}
+	if (uint32_t(uboBuffer->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0) { uboBuffer->getDeviceMemory()->flushRange(); }
 
 	const pvrvk::ClearValue clearValue = pvrvk::ClearValue(1.f, 1.f, 0.f, 1.0f);
 
@@ -91,9 +85,7 @@ pvr::Texture generateIrradianceMap(
 	const pvrvk::Format outputVkFormat = pvr::utils::convertToPVRVkPixelFormat(outputFormat, pvr::ColorSpace::lRGB, outputFormatType);
 
 	if (outputVkFormat == pvrvk::Format::e_UNDEFINED)
-	{
-		throw InvalidArgumentError("format,type", "The provided PixelFormat and VariableType do not map to a valid Vulkan format");
-	}
+	{ throw InvalidArgumentError("format,type", "The provided PixelFormat and VariableType do not map to a valid Vulkan format"); }
 
 	const uint32_t outputFormatStride = outputFormat.getBitsPerPixel() / 8;
 
@@ -104,7 +96,7 @@ pvr::Texture generateIrradianceMap(
 	const uint32_t bufferSize = mipLevelDimensions[0] * mipLevelDimensions[0] * 6 * outputFormatStride * numMipLevels;
 
 	// Create a buffer to use as the final destination for the image data which will be saved to disk
-	pvrvk::Buffer imageDataBuffer = pvr::utils::createBuffer(device, static_cast<VkDeviceSize>(bufferSize), pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT,
+	pvrvk::Buffer imageDataBuffer = pvr::utils::createBuffer(device, pvrvk::BufferCreateInfo(static_cast<VkDeviceSize>(bufferSize), pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT),
 		pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT | pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, &allocator);
 
 	pvrvk::WriteDescriptorSet descSetUpdate[] = {
@@ -117,17 +109,19 @@ pvr::Texture generateIrradianceMap(
 	device->updateDescriptorSets(descSetUpdate, ARRAY_SIZE(descSetUpdate), nullptr, 0);
 
 	// Create an image to use as the destination for per level, per face color attachment writes
-	renderTarget = pvr::utils::createImage(device, pvrvk::ImageType::e_2D, format, pvrvk::Extent3D(mapSize, mapSize, 1),
-		pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT, pvrvk::ImageCreateFlags::e_NONE, pvrvk::ImageLayersSize(1, 1),
-		pvrvk::SampleCountFlags::e_1_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, &allocator);
+	renderTarget = pvr::utils::createImage(device,
+		pvrvk::ImageCreateInfo(
+			pvrvk::ImageType::e_2D, format, pvrvk::Extent3D(mapSize, mapSize, 1), pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT),
+		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, &allocator);
 
 	// Create an image view for the render target so that it can be used a framebuffer attachment
 	imageView = device->createImageView(pvrvk::ImageViewCreateInfo(renderTarget));
 
 	// Create an image to use as the destination for per level, per face transfer operations which may involve format translation
-	outputImage = pvr::utils::createImage(device, pvrvk::ImageType::e_2D, outputVkFormat, pvrvk::Extent3D(mapSize, mapSize, 1),
-		pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT | pvrvk::ImageUsageFlags::e_TRANSFER_DST_BIT, pvrvk::ImageCreateFlags::e_NONE, pvrvk::ImageLayersSize(1, 1),
-		pvrvk::SampleCountFlags::e_1_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, &allocator);
+	outputImage = pvr::utils::createImage(device,
+		pvrvk::ImageCreateInfo(
+			pvrvk::ImageType::e_2D, outputVkFormat, pvrvk::Extent3D(mapSize, mapSize, 1), pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT | pvrvk::ImageUsageFlags::e_TRANSFER_DST_BIT),
+		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, &allocator);
 
 	// create the renderpass
 	pvrvk::RenderPassCreateInfo rpInfo;
@@ -275,11 +269,7 @@ pvr::Texture generateIrradianceMap(
 
 	// Ensure that if the image data buffer memory backing does not have pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT that the data is visible to the host
 	if (uint32_t(imageDataBuffer->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
-	{
-		imageDataBuffer->getDeviceMemory()->invalidateRange();
-	}
-
-	// Get a pointer to the diffuse irradiance image data from the buffer and save it in to the file.
+	{ imageDataBuffer->getDeviceMemory()->invalidateRange(); } // Get a pointer to the diffuse irradiance image data from the buffer and save it in to the file.
 	void* data;
 	data = imageDataBuffer->getDeviceMemory()->getMappedData();
 
@@ -295,7 +285,7 @@ pvr::Texture generateIrradianceMap(
 	texHeader.setNumArrayMembers(1);
 	texHeader.setPixelFormat(outputFormat);
 
-	return Texture(texHeader, static_cast<const char*>(data));
+	return Texture(texHeader, static_cast<const unsigned char*>(data));
 }
 
 Texture generatePreFilteredMapMipmapStyle(pvrvk::Queue queue, pvrvk::ImageView environmentMap, pvr::PixelFormat outputFormat, pvr::VariableType outputFormatType, uint32_t mapSize,
@@ -317,10 +307,7 @@ Texture generatePreFilteredMapMipmapStyle(pvrvk::Queue queue, pvrvk::ImageView e
 
 	// Calculate the mipmap level dimensions
 	std::vector<uint32_t> mipLevelDimensions(numMipLevels);
-	for (size_t i = 0; i < mipLevelDimensions.size(); ++i)
-	{
-		mipLevelDimensions[i] = static_cast<uint32_t>(pow(2, numMipLevels + numMipLevelsToDiscard - i - 1));
-	}
+	for (size_t i = 0; i < mipLevelDimensions.size(); ++i) { mipLevelDimensions[i] = static_cast<uint32_t>(pow(2, numMipLevels + numMipLevelsToDiscard - i - 1)); }
 
 	pvrvk::Device device = queue->getDevice();
 	device->waitIdle();
@@ -346,8 +333,8 @@ Texture generatePreFilteredMapMipmapStyle(pvrvk::Queue queue, pvrvk::ImageView e
 	viewDesc.addElement("rotateMtx", pvr::GpuDatatypes::mat3x3);
 	uboView.initDynamic(viewDesc, numFaces, pvr::BufferUsageFlags::UniformBuffer, device->getPhysicalDevice()->getProperties().getLimits().getMinUniformBufferOffsetAlignment());
 
-	pvrvk::Buffer uboBuffer = pvr::utils::createBuffer(device, uboView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
-		pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT | pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, &allocator);
+	pvrvk::Buffer uboBuffer = pvr::utils::createBuffer(device, pvrvk::BufferCreateInfo(uboView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT),
+		pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT | pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, &allocator);
 	uboView.pointToMappedMemory(uboBuffer->getDeviceMemory()->getMappedData());
 
 	const glm::mat3 cubeView[numFaces] = {
@@ -366,10 +353,7 @@ Texture generatePreFilteredMapMipmapStyle(pvrvk::Queue queue, pvrvk::ImageView e
 	uboView.getElement(0, 0, 4).setValue(cubeView[4]);
 	uboView.getElement(0, 0, 5).setValue(cubeView[5]);
 
-	if (uint32_t(uboBuffer->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
-	{
-		uboBuffer->getDeviceMemory()->flushRange();
-	}
+	if (uint32_t(uboBuffer->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0) { uboBuffer->getDeviceMemory()->flushRange(); }
 
 	const pvrvk::ClearValue clearValue = pvrvk::ClearValue(0.f, 0.f, 0.f, 0.0f);
 
@@ -377,9 +361,7 @@ Texture generatePreFilteredMapMipmapStyle(pvrvk::Queue queue, pvrvk::ImageView e
 	const pvrvk::Format outputVkFormat = pvr::utils::convertToPVRVkPixelFormat(outputFormat, pvr::ColorSpace::lRGB, outputFormatType);
 
 	if (outputVkFormat == pvrvk::Format::e_UNDEFINED)
-	{
-		throw InvalidArgumentError("format,type", "The provided PixelFormat and VariableType do not map to a valid Vulkan format");
-	}
+	{ throw InvalidArgumentError("format,type", "The provided PixelFormat and VariableType do not map to a valid Vulkan format"); }
 
 	const uint32_t outputFormatStride = outputFormat.getBitsPerPixel() / 8;
 
@@ -390,8 +372,8 @@ Texture generatePreFilteredMapMipmapStyle(pvrvk::Queue queue, pvrvk::ImageView e
 	const uint32_t bufferSize = mipLevelDimensions[0] * mipLevelDimensions[0] * 6 * outputFormatStride * numMipLevels;
 
 	// Create a buffer to use as the final destination for the image data which will be saved to disk
-	pvrvk::Buffer imageDataBuffer = pvr::utils::createBuffer(device, bufferSize, pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
-		pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT | pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, &allocator);
+	pvrvk::Buffer imageDataBuffer = pvr::utils::createBuffer(device, pvrvk::BufferCreateInfo(bufferSize, pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT),
+		pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT | pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, &allocator);
 
 	pvrvk::WriteDescriptorSet descSetUpdate[] = {
 		pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, descSet, 0),
@@ -407,17 +389,19 @@ Texture generatePreFilteredMapMipmapStyle(pvrvk::Queue queue, pvrvk::ImageView e
 	device->updateDescriptorSets(descSetUpdate, ARRAY_SIZE(descSetUpdate), nullptr, 0);
 
 	// Create an image to use as the destination for per level, per face color attachment writes
-	renderTarget = pvr::utils::createImage(device, pvrvk::ImageType::e_2D, format, pvrvk::Extent3D(mipLevelDimensions[0], mipLevelDimensions[0], 1),
-		pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT, pvrvk::ImageCreateFlags::e_NONE, pvrvk::ImageLayersSize(1, 1),
-		pvrvk::SampleCountFlags::e_1_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, &allocator);
+	renderTarget = pvr::utils::createImage(device,
+		pvrvk::ImageCreateInfo(pvrvk::ImageType::e_2D, format, pvrvk::Extent3D(mipLevelDimensions[0], mipLevelDimensions[0], 1),
+			pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT),
+		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, &allocator);
 
 	// Create an image view for the render target so that it can be used a framebuffer attachment
 	imageView = device->createImageView(pvrvk::ImageViewCreateInfo(renderTarget));
 
 	// Create an image to use as the destination for per level, per face transfer operations which may involve format translation
-	outputImage = pvr::utils::createImage(device, pvrvk::ImageType::e_2D, outputVkFormat, pvrvk::Extent3D(mapSize, mapSize, 1),
-		pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT | pvrvk::ImageUsageFlags::e_TRANSFER_DST_BIT, pvrvk::ImageCreateFlags::e_NONE, pvrvk::ImageLayersSize(1, 1),
-		pvrvk::SampleCountFlags::e_1_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, &allocator);
+	outputImage = pvr::utils::createImage(device,
+		pvrvk::ImageCreateInfo(
+			pvrvk::ImageType::e_2D, outputVkFormat, pvrvk::Extent3D(mapSize, mapSize, 1), pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT | pvrvk::ImageUsageFlags::e_TRANSFER_DST_BIT),
+		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, &allocator);
 
 	// create the renderpass
 	pvrvk::RenderPassCreateInfo rpInfo;
@@ -597,7 +581,7 @@ Texture generatePreFilteredMapMipmapStyle(pvrvk::Queue queue, pvrvk::ImageView e
 	texHeader.setNumArrayMembers(1);
 	texHeader.setPixelFormat(outputFormat);
 
-	return Texture(texHeader, static_cast<const char*>(data));
+	return Texture(texHeader, static_cast<const unsigned char*>(data));
 }
 
 } // namespace utils

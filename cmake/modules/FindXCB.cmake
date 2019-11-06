@@ -12,27 +12,27 @@ include(FindPackageHandleStandardArgs)
 set(XCB_FOUND true)
 set(XCB_INCLUDE_DIRS "")
 set(XCB_LIBRARIES "")
+
 foreach(comp ${XCB_FIND_COMPONENTS})
     # component name
     string(TOUPPER ${comp} compname)
-    string(REPLACE "-" "_" compname ${compname})
     # header name
-    string(REPLACE "xcb-" "" headername xcb/${comp}.h)
+    set(headername xcb/${comp}.h)
     # library name
     set(libname ${comp})
 
-    pkg_check_modules(PC_${comp} QUIET ${comp})
+    pkg_check_modules(PKG_${compname} QUIET ${comp})
 
     find_path(${compname}_INCLUDE_DIR NAMES ${headername}
         HINTS
-        ${PC_${comp}_INCLUDEDIR}
-        ${PC_${comp}_INCLUDE_DIRS}
+        ${PKG_${comp}_INCLUDEDIR}
+        ${PKG_${comp}_INCLUDE_DIRS}
         )
 
     find_library(${compname}_LIBRARY NAMES ${libname}
         HINTS
-        ${PC_${comp}_LIBDIR}
-        ${PC_${comp}_LIBRARY_DIRS}
+        ${PKG_${comp}_LIBDIR}
+        ${PKG_${comp}_LIBRARY_DIRS}
         )
 
     find_package_handle_standard_args(${comp}
@@ -48,4 +48,6 @@ foreach(comp ${XCB_FIND_COMPONENTS})
     endif()
 endforeach()
 
-list(REMOVE_DUPLICATES XCB_INCLUDE_DIRS)
+if(XCB_INCLUDE_DIRS)
+	list(REMOVE_DUPLICATES XCB_INCLUDE_DIRS)
+endif()

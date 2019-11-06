@@ -108,18 +108,12 @@ void Allocator_::defragment(
 	}
 
 	DefragmentationStats myDefragStatus;
-	if (outDefragStatus == nullptr && uint32_t(_reportFlags & DebugReportFlags::Defragments) != 0)
-	{
-		outDefragStatus = &myDefragStatus;
-	}
+	if (outDefragStatus == nullptr && uint32_t(_reportFlags & DebugReportFlags::Defragments) != 0) { outDefragStatus = &myDefragStatus; }
 	pvrvk::impl::vkThrowIfFailed((::VkResult)vmaDefragment(
 		_vmaAllocator, allocations.data(), numAllocations, outAllocationsChanged, (const VmaDefragmentationInfo*)defragInfo, (VmaDefragmentationStats*)outDefragStatus));
 	for (uint32_t i = 0; i < numAllocations; ++i)
 	{
-		if (outAllocationsChanged[i])
-		{
-			memAllocations[i]->updateAllocationInfo();
-		}
+		if (outAllocationsChanged[i]) { memAllocations[i]->updateAllocationInfo(); }
 	}
 	if (uint32_t(_reportFlags & DebugReportFlags::Defragments) != 0)
 	{
@@ -134,10 +128,7 @@ void Allocator_::defragment(
 Allocator_::~Allocator_()
 {
 	_deviceMemory.clear();
-	if (_vmaAllocator != VK_NULL_HANDLE)
-	{
-		vmaDestroyAllocator(_vmaAllocator);
-	}
+	if (_vmaAllocator != VK_NULL_HANDLE) { vmaDestroyAllocator(_vmaAllocator); }
 	_vmaAllocator = VK_NULL_HANDLE;
 }
 
@@ -155,10 +146,7 @@ Pool_::Pool_(make_shared_enabler, const PoolCreateInfo& createInfo) : _vmaPool(V
 
 Pool_::~Pool_()
 {
-	if (_vmaPool != VK_NULL_HANDLE)
-	{
-		vmaDestroyPool(_allocator->_vmaAllocator, _vmaPool);
-	}
+	if (_vmaPool != VK_NULL_HANDLE) { vmaDestroyPool(_allocator->_vmaAllocator, _vmaPool); }
 }
 
 PoolStats Pool_::getStats() const
@@ -170,10 +158,7 @@ PoolStats Pool_::getStats() const
 
 void Allocation_::unmap()
 {
-	if (!_mappedSize)
-	{
-		throw pvrvk::ErrorMemoryMapFailed("Cannot unmap memory block as the memory is not mapped");
-	}
+	if (!_mappedSize) { throw pvrvk::ErrorMemoryMapFailed("Cannot unmap memory block as the memory is not mapped"); }
 	_mappedSize = 0;
 	_mappedOffset = 0;
 	vmaUnmapMemory(_memAllocator->_vmaAllocator, _vmaAllocation);
@@ -185,17 +170,11 @@ void* Allocation_::getMappedData()
 	return (getVkHandle() != VK_NULL_HANDLE ? _allocInfo.pMappedData : nullptr);
 }
 
-void Allocation_::setUserData(void* userData)
-{
-	vmaSetAllocationUserData(_memAllocator->_vmaAllocator, _vmaAllocation, userData);
-}
+void Allocation_::setUserData(void* userData) { vmaSetAllocationUserData(_memAllocator->_vmaAllocator, _vmaAllocation, userData); }
 
 Allocation_::~Allocation_()
 {
-	if (_vmaAllocation == VK_NULL_HANDLE)
-	{
-		return;
-	}
+	if (_vmaAllocation == VK_NULL_HANDLE) { return; }
 	updateAllocationInfo();
 	if (uint32_t(_memAllocator->_reportFlags & DebugReportFlags::Allocation) != 0)
 	{
@@ -211,32 +190,25 @@ Allocation_::~Allocation_()
 
 void* Allocation_::map(VkDeviceSize offset, VkDeviceSize size, pvrvk::MemoryMapFlags memoryMapFlags)
 {
-	size_t total_offset = static_cast<size_t>( offset + getOffset());
+	(void)memoryMapFlags;
+	size_t total_offset = static_cast<size_t>(offset + getOffset());
 	if (!isMappable())
 	{
 		throw pvrvk::ErrorMemoryMapFailed("Cannot map memory block as the memory was created without "
 										  "HOST_VISIBLE_BIT or HOST_COHERENT_BIT memory flags");
 	}
-	if (_mappedSize)
-	{
-		throw pvrvk::ErrorMemoryMapFailed("Cannot map memory block as the memory is already mapped");
-	}
+	if (_mappedSize) { throw pvrvk::ErrorMemoryMapFailed("Cannot map memory block as the memory is already mapped"); }
 	if (size != VK_WHOLE_SIZE)
 	{
 		if ((total_offset + size) > (total_offset + _allocInfo.size))
-		{
-			throw pvrvk::ErrorMemoryMapFailed("Cannot map map memory block : offset + size range greater than the memory block size");
-		}
+		{ throw pvrvk::ErrorMemoryMapFailed("Cannot map map memory block : offset + size range greater than the memory block size"); }
 	}
 
 	void* mappedMemory = nullptr;
 
 	pvrvk::impl::vkThrowIfFailed((pvrvk::Result)vmaMapMemory(_memAllocator->_vmaAllocator, _vmaAllocation, &mappedMemory), "Failed to map memory block");
 
-	if (mappedMemory == 0)
-	{
-		throw pvrvk::ErrorMemoryMapFailed("Failed to map memory block");
-	}
+	if (mappedMemory == 0) { throw pvrvk::ErrorMemoryMapFailed("Failed to map memory block"); }
 
 	// store the mapped offset and mapped size
 	_mappedOffset = offset;
@@ -247,10 +219,7 @@ void* Allocation_::map(VkDeviceSize offset, VkDeviceSize size, pvrvk::MemoryMapF
 
 bool Allocation_::isAllocationLost() const
 {
-	if (static_cast<uint32_t>(_createFlags & AllocationCreateFlags::e_CAN_BECOME_LOST_BIT) != 0)
-	{
-		updateAllocationInfo();
-	}
+	if (static_cast<uint32_t>(_createFlags & AllocationCreateFlags::e_CAN_BECOME_LOST_BIT) != 0) { updateAllocationInfo(); }
 	return getVkHandle() == VK_NULL_HANDLE;
 }
 
@@ -288,10 +257,7 @@ void Allocation_::updateAllocationInfo() const
 class AllocatorCreateFactory
 {
 public:
-	static Allocator createAllocator(const AllocatorCreateInfo& createInfo)
-	{
-		return Allocator_::constructShared(createInfo);
-	}
+	static Allocator createAllocator(const AllocatorCreateInfo& createInfo) { return Allocator_::constructShared(createInfo); }
 };
 
 class DeviceMemoryCallbackDispatcher_
@@ -306,41 +272,26 @@ private:
 	static void VKAPI_PTR allocateDeviceMemoryFunction(VmaAllocator allocator, uint32_t memoryType, VkDeviceMemory memory, VkDeviceSize size)
 	{
 		AllocatorWeakPtr context = getDispatchContext(allocator);
-		if (!context.expired())
-		{
-			context.lock()->onAllocateDeviceMemoryFunction(memoryType, memory, size);
-		}
+		if (!context.expired()) { context.lock()->onAllocateDeviceMemoryFunction(memoryType, memory, size); }
 	}
 
 	static void VKAPI_PTR freeDeviceMemoryFunction(VmaAllocator allocator, uint32_t memoryType, VkDeviceMemory memory, VkDeviceSize size)
 	{
 		AllocatorWeakPtr context = getDispatchContext(allocator);
-		if (!context.expired())
-		{
-			context.lock()->onFreeDeviceMemoryFunction(memoryType, memory, size);
-		}
+		if (!context.expired()) { context.lock()->onFreeDeviceMemoryFunction(memoryType, memory, size); }
 	}
 
 	static AllocatorWeakPtr getDispatchContext(VmaAllocator allocator)
 	{
 		auto it = std::find_if(_context.begin(), _context.end(), [&](const AllocatorWeakPtr& context) {
-			if (!context.expired())
-			{
-				return context.lock()->_vmaAllocator == allocator;
-			}
+			if (!context.expired()) { return context.lock()->_vmaAllocator == allocator; }
 			return false;
 		});
-		if (it != _context.end())
-		{
-			return (*it);
-		}
+		if (it != _context.end()) { return (*it); }
 		return AllocatorWeakPtr();
 	}
 
-	void addContext(AllocatorWeakPtr memAllocator)
-	{
-		_context.emplace_back(memAllocator);
-	}
+	void addContext(AllocatorWeakPtr memAllocator) { _context.emplace_back(memAllocator); }
 
 	DeviceMemoryCallbacks _callBacks;
 };
@@ -382,10 +333,7 @@ pvr::utils::vma::impl::Allocator_::Allocator_(make_shared_enabler, const Allocat
 
 	VmaDeviceMemoryCallbacks vmaDeviceMemCallbacks{ DeviceMemoryCallbackDispatcher_::allocateDeviceMemoryFunction, DeviceMemoryCallbackDispatcher_::freeDeviceMemoryFunction };
 
-	if (createInfo.pDeviceMemoryCallbacks)
-	{
-		_deviceMemCallbacks = *createInfo.pDeviceMemoryCallbacks;
-	}
+	if (createInfo.pDeviceMemoryCallbacks) { _deviceMemCallbacks = *createInfo.pDeviceMemoryCallbacks; }
 	const VmaAllocatorCreateInfo vmaCreateInfo{ static_cast<VmaAllocatorCreateFlags>(createInfo.flags), _device.lock()->getPhysicalDevice()->getVkHandle(),
 		_device.lock()->getVkHandle(), createInfo.preferredLargeHeapBlockSize, (const VkAllocationCallbacks*)createInfo.pAllocationCallbacks, &vmaDeviceMemCallbacks,
 		createInfo.frameInUseCount, createInfo.pHeapSizeLimit, &vmaFunctions };
@@ -393,10 +341,7 @@ pvr::utils::vma::impl::Allocator_::Allocator_(make_shared_enabler, const Allocat
 	pvrvk::impl::vkThrowIfFailed(::VkResult(vmaCreateAllocator(&vmaCreateInfo, &_vmaAllocator)), "Failed to create memory allocator");
 }
 
-void pvr::utils::vma::impl::Allocator_::addCallbackDispatcherContext()
-{
-	DeviceMemoryCallbackDispatcher_::getCallbackDispatcher()->addContext(shared_from_this());
-}
+void pvr::utils::vma::impl::Allocator_::addCallbackDispatcherContext() { DeviceMemoryCallbackDispatcher_::getCallbackDispatcher()->addContext(shared_from_this()); }
 } // namespace impl
 Allocator createAllocator(const AllocatorCreateInfo& createInfo)
 {

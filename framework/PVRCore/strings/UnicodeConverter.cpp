@@ -77,13 +77,9 @@ uint32_t UnicodeConverter::unicodeCount(const utf8* unicodeString)
 			utf8 tailMask = *currentCharacter & 0xF0;
 			switch (tailMask)
 			{
-			case 0xF0:
-				currentCharacter++;
-			case 0xE0:
-				currentCharacter++;
-			case 0xC0:
-				currentCharacter++;
-				break;
+			case 0xF0: currentCharacter++;
+			case 0xE0: currentCharacter++;
+			case 0xC0: currentCharacter++; break;
 			default:
 				// Invalid tail char
 				return 0;
@@ -105,9 +101,7 @@ uint32_t UnicodeConverter::unicodeCount(const utf16* unicodeString)
 	while (*currentCharacter)
 	{
 		if (currentCharacter[0] >= UTF16_SURG_H_MARK && currentCharacter[0] <= UTF16_SURG_H_END && currentCharacter[1] >= UTF16_SURG_L_MARK && currentCharacter[1] <= UTF16_SURG_L_END)
-		{
-			currentCharacter += 2;
-		}
+		{ currentCharacter += 2; }
 		else
 		{
 			currentCharacter += 1;
@@ -135,16 +129,10 @@ uint32_t UnicodeConverter::unicodeCount(const utf32* unicodeString)
 void UnicodeConverter::convertAsciiToUnicode(const char* asciiString, vector<utf8>& unicodeString)
 {
 	uint32_t stringLength = static_cast<uint32_t>(strlen(asciiString));
-	if (!isAsciiChar(asciiString))
-	{
-		throw UnicodeConversionError("Parameter [asciiString] was not actually a valid ASCII string");
-	}
+	if (!isAsciiChar(asciiString)) { throw UnicodeConversionError("Parameter [asciiString] was not actually a valid ASCII string"); }
 	// Make sure to include the NULL terminator.
 	unicodeString.resize(stringLength + 1);
-	for (uint32_t i = 0; i < stringLength; ++i)
-	{
-		unicodeString[i] = asciiString[i];
-	}
+	for (uint32_t i = 0; i < stringLength; ++i) { unicodeString[i] = static_cast<utf8>(asciiString[i]); }
 }
 
 void UnicodeConverter::convertUTF8ToUTF16(const utf8* /*unicodeString*/, vector<utf16>& /*unicodeStringOut*/)
@@ -159,7 +147,7 @@ void UnicodeConverter::convertUTF8ToUTF32(const utf8* unicodeString, vector<utf3
 	while (*currentCharacter)
 	{
 		// Quick optimisation for ASCII characters
-		while (*currentCharacter && isAsciiChar(*currentCharacter))
+		while (*currentCharacter && isAsciiChar((char)*currentCharacter))
 		{
 			unicodeStringOut.emplace_back(*currentCharacter);
 			++currentCharacter;
@@ -200,10 +188,7 @@ void UnicodeConverter::convertUTF8ToUTF32(const utf8* unicodeString, vector<utf3
 				// Check overlong values.
 				if (codePoint >= c_utf32MinimumValues[tailLength])
 				{
-					if (isValidCodePoint(codePoint))
-					{
-						unicodeStringOut.emplace_back(codePoint);
-					}
+					if (isValidCodePoint(codePoint)) { unicodeStringOut.emplace_back(codePoint); }
 					else
 					{
 						throw UnicodeConversionError("Parameter [unicodeString] contained invalid code points");
@@ -269,10 +254,7 @@ void UnicodeConverter::convertUTF16ToUTF32(const utf16* unicodeString, vector<ut
 		}
 
 		// Check that the code point is valid
-		if (isValidCodePoint(codePoint))
-		{
-			unicodeStringOut.emplace_back(codePoint);
-		}
+		if (isValidCodePoint(codePoint)) { unicodeStringOut.emplace_back(codePoint); }
 		else
 		{
 			throw UnicodeConversionError("Parameter [unicodeString] contained an invalid code point");
@@ -293,10 +275,7 @@ void UnicodeConverter::convertUTF32ToUTF16(const utf32* /*unicodeString*/, vecto
 bool UnicodeConverter::isAsciiChar(char asciiChar)
 {
 	// Make sure that the ascii std::string is limited to encodings with the first 7 bits. Any outside of this range are part of the system's locale.
-	if ((asciiChar & VALID_ASCII) != 0)
-	{
-		return false;
-	}
+	if ((asciiChar & VALID_ASCII) != 0) { return false; }
 
 	return true;
 }
@@ -307,10 +286,7 @@ bool UnicodeConverter::isAsciiChar(const char* asciiString)
 
 	for (uint32_t i = 0; i < stringLength; ++i)
 	{
-		if (!isAsciiChar(asciiString[i]))
-		{
-			return false;
-		}
+		if (!isAsciiChar(asciiString[i])) { return false; }
 	}
 
 	return true;
@@ -323,10 +299,7 @@ bool UnicodeConverter::isValidUnicode(const utf8* unicodeString)
 	while (*currentCharacter != 0)
 	{
 		// Quick optimisation for ASCII characters - these are always valid.
-		while (*currentCharacter && isAsciiChar(static_cast<char>(*currentCharacter)))
-		{
-			currentCharacter++;
-		}
+		while (*currentCharacter && isAsciiChar(static_cast<char>(*currentCharacter))) { currentCharacter++; }
 
 		// Check that we haven't hit the end with the previous loop.
 		if (*currentCharacter != 0)
@@ -342,10 +315,7 @@ bool UnicodeConverter::isValidUnicode(const utf8* unicodeString)
 
 			// Check for invalid tail length, characters - there are only a few possibilities here due to the lookup table.
 			// Also check to make sure the tail length is inside the provided buffer.
-			if (tailLength == 0 || (currentCharacter + tailLength > unicodeString + stringLength))
-			{
-				return false;
-			}
+			if (tailLength == 0 || (currentCharacter + tailLength > unicodeString + stringLength)) { return false; }
 
 			// Get the data out of the first char. This depends on the length of the tail.
 			codePoint &= (TAIL_MASK >> tailLength);
@@ -354,26 +324,17 @@ bool UnicodeConverter::isValidUnicode(const utf8* unicodeString)
 			for (uint32_t i = 0; i < tailLength; ++i)
 			{
 				// Check for invalid tail bytes
-				if ((currentCharacter[i] & 0xC0) != 0x80)
-				{
-					return false;
-				}
+				if ((currentCharacter[i] & 0xC0) != 0x80) { return false; }
 
 				codePoint = (codePoint << BYTES_PER_TAIL) + (currentCharacter[i] & TAIL_MASK);
 			}
 			currentCharacter += tailLength;
 
 			// Check for 'overlong' values - i.e. values which have a tail but don't actually need it..
-			if (codePoint < c_utf32MinimumValues[tailLength])
-			{
-				return false;
-			}
+			if (codePoint < c_utf32MinimumValues[tailLength]) { return false; }
 
 			// Check that it's a valid code point
-			if (!isValidCodePoint(codePoint))
-			{
-				return false;
-			}
+			if (!isValidCodePoint(codePoint)) { return false; }
 		}
 	}
 
@@ -422,10 +383,7 @@ bool UnicodeConverter::isValidUnicode(const utf16* unicodeString)
 		}
 
 		// Check that the code point is valid
-		if (!isValidCodePoint(codePoint))
-		{
-			return false;
-		}
+		if (!isValidCodePoint(codePoint)) { return false; }
 	}
 
 	return true;
@@ -437,10 +395,7 @@ bool UnicodeConverter::isValidUnicode(const utf32* unicodeString)
 
 	for (uint32_t i = 0; i < stringLength; ++i)
 	{
-		if (!isValidCodePoint(unicodeString[i]))
-		{
-			return false;
-		}
+		if (!isValidCodePoint(unicodeString[i])) { return false; }
 	}
 
 	return true;
@@ -449,28 +404,16 @@ bool UnicodeConverter::isValidUnicode(const utf32* unicodeString)
 bool UnicodeConverter::isValidCodePoint(utf32 codePoint)
 {
 	// Check that this value isn't a UTF16 surrogate mask.
-	if (codePoint >= UTF16_SURG_H_MARK && codePoint <= UTF16_SURG_L_END)
-	{
-		return false;
-	}
+	if (codePoint >= UTF16_SURG_H_MARK && codePoint <= UTF16_SURG_L_END) { return false; }
 
 	// Check non-char values
-	if (codePoint >= UNICODE_NONCHAR_MARK && codePoint <= UNICODE_NONCHAR_END)
-	{
-		return false;
-	}
+	if (codePoint >= UNICODE_NONCHAR_MARK && codePoint <= UNICODE_NONCHAR_END) { return false; }
 
 	// Check reserved values
-	if ((codePoint & UNICODE_RESERVED) == UNICODE_RESERVED)
-	{
-		return false;
-	}
+	if ((codePoint & UNICODE_RESERVED) == UNICODE_RESERVED) { return false; }
 
 	// Check max value.
-	if (codePoint > UNICODE_MAX)
-	{
-		return false;
-	}
+	if (codePoint > UNICODE_MAX) { return false; }
 
 	return true;
 }

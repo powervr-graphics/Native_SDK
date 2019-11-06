@@ -24,61 +24,55 @@ CommandPool_::CommandPool_(make_shared_enabler, const DeviceWeakPtr& device, con
 
 CommandBuffer CommandPool_::allocateCommandBuffer()
 {
-	VkCommandBuffer cbuff;
+	VkCommandBuffer cmdBuffer;
 	VkCommandBufferAllocateInfo nfo = {};
 	nfo.commandBufferCount = 1;
 	nfo.commandPool = getVkHandle();
 	nfo.level = static_cast<VkCommandBufferLevel>(CommandBufferLevel::e_PRIMARY);
 	nfo.sType = static_cast<VkStructureType>(StructureType::e_COMMAND_BUFFER_ALLOCATE_INFO);
-	vkThrowIfFailed(getDevice()->getVkBindings().vkAllocateCommandBuffers(getDevice()->getVkHandle(), &nfo, &cbuff), "CommandBuffer Allocation Failure.");
+	vkThrowIfFailed(getDevice()->getVkBindings().vkAllocateCommandBuffers(getDevice()->getVkHandle(), &nfo, &cmdBuffer), "CommandBuffer Allocation Failure.");
 	CommandPool commandPool = shared_from_this();
-	return CommandBuffer_::constructShared(_device, commandPool, cbuff);
+	return CommandBuffer_::constructShared(_device, commandPool, cmdBuffer);
 }
 
-void CommandPool_::allocateCommandBuffers(uint32_t numCommandbuffers, CommandBuffer* outCommandBuffers)
+void CommandPool_::allocateCommandBuffers(uint32_t numCommandbuffers, CommandBuffer* outCmdBuffers)
 {
-	ArrayOrVector<VkCommandBuffer, 8> cbuff(numCommandbuffers);
+	ArrayOrVector<VkCommandBuffer, 4> cmdBuffer(numCommandbuffers);
 	VkCommandBufferAllocateInfo nfo = {};
 	nfo.commandBufferCount = numCommandbuffers;
 	nfo.commandPool = getVkHandle();
 	nfo.level = static_cast<VkCommandBufferLevel>(CommandBufferLevel::e_PRIMARY);
 	nfo.sType = static_cast<VkStructureType>(StructureType::e_COMMAND_BUFFER_ALLOCATE_INFO);
-	vkThrowIfFailed(getDevice()->getVkBindings().vkAllocateCommandBuffers(getDevice()->getVkHandle(), &nfo, cbuff.get()), "CommandBuffer Allocation Failed.");
+	vkThrowIfFailed(getDevice()->getVkBindings().vkAllocateCommandBuffers(getDevice()->getVkHandle(), &nfo, cmdBuffer.get()), "CommandBuffer Allocation Failed.");
 	CommandPool commandPool = shared_from_this();
-	for (uint32_t i = 0; i < numCommandbuffers; ++i)
-	{
-		outCommandBuffers[i] = CommandBuffer_::constructShared(_device, commandPool, cbuff[i]);
-	}
+	for (uint32_t i = 0; i < numCommandbuffers; ++i) { outCmdBuffers[i] = CommandBuffer_::constructShared(_device, commandPool, cmdBuffer[i]); }
 }
 
 SecondaryCommandBuffer CommandPool_::allocateSecondaryCommandBuffer()
 {
-	VkCommandBuffer cbuff;
+	VkCommandBuffer cmdBuffer;
 
 	VkCommandBufferAllocateInfo nfo = {};
 	nfo.commandBufferCount = 1;
 	nfo.commandPool = getVkHandle();
 	nfo.level = static_cast<VkCommandBufferLevel>(CommandBufferLevel::e_SECONDARY);
 	nfo.sType = static_cast<VkStructureType>(StructureType::e_COMMAND_BUFFER_ALLOCATE_INFO);
-	vkThrowIfFailed(getDevice()->getVkBindings().vkAllocateCommandBuffers(getDevice()->getVkHandle(), &nfo, &cbuff), "CommandBuffer Allocation Failed.");
+	vkThrowIfFailed(getDevice()->getVkBindings().vkAllocateCommandBuffers(getDevice()->getVkHandle(), &nfo, &cmdBuffer), "CommandBuffer Allocation Failed.");
 	CommandPool commandPool = shared_from_this();
-	return SecondaryCommandBuffer_::constructShared(_device, commandPool, cbuff);
+	return SecondaryCommandBuffer_::constructShared(_device, commandPool, cmdBuffer);
 }
 
-void CommandPool_::allocateSecondaryCommandBuffers(uint32_t numCommandbuffers, SecondaryCommandBuffer* outCommandBuffers)
+void CommandPool_::allocateSecondaryCommandBuffers(uint32_t numCommandbuffers, SecondaryCommandBuffer* outCmdBuffers)
 {
-	ArrayOrVector<VkCommandBuffer, 8> cbuff(numCommandbuffers);
+	ArrayOrVector<VkCommandBuffer, 4> cmdBuffer(numCommandbuffers);
 	VkCommandBufferAllocateInfo nfo = {};
 	nfo.commandBufferCount = numCommandbuffers;
 	nfo.commandPool = getVkHandle();
 	nfo.level = static_cast<VkCommandBufferLevel>(CommandBufferLevel::e_SECONDARY);
 	nfo.sType = static_cast<VkStructureType>(StructureType::e_COMMAND_BUFFER_ALLOCATE_INFO);
-	vkThrowIfFailed(getDevice()->getVkBindings().vkAllocateCommandBuffers(getDevice()->getVkHandle(), &nfo, cbuff.get()), "CommandBuffer Allocation Failure.");
+	vkThrowIfFailed(getDevice()->getVkBindings().vkAllocateCommandBuffers(getDevice()->getVkHandle(), &nfo, cmdBuffer.get()), "CommandBuffer Allocation Failure.");
 	CommandPool commandPool = shared_from_this();
-	for (uint32_t i = 0; i < numCommandbuffers; ++i)
-	{
-		outCommandBuffers[i] = SecondaryCommandBuffer_::constructShared(_device, commandPool, cbuff[i]);
-	}
+	for (uint32_t i = 0; i < numCommandbuffers; ++i) { outCmdBuffers[i] = SecondaryCommandBuffer_::constructShared(_device, commandPool, cmdBuffer[i]); }
 }
 
 void CommandPool_::reset(CommandPoolResetFlags flags)

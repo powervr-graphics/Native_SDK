@@ -28,10 +28,7 @@ public:
 	{
 		size_t index = find_last_of(c_extensionSeparator, length());
 
-		if (index != std::string::npos)
-		{
-			return substr((index + 1), length() - (index + 1));
-		}
+		if (index != std::string::npos) { return substr((index + 1), length() - (index + 1)); }
 
 		return std::string();
 	}
@@ -45,16 +42,10 @@ public:
 		std::string::size_type index = static_cast<std::string::size_type>(find_last_of(c_unixDirectorySeparator, length()));
 
 #if defined(_WIN32)
-		if (index == std::string::npos)
-		{
-			index = static_cast<std::string::size_type>(find_last_of(c_windowsDirectorySeparator, length()));
-		}
+		if (index == std::string::npos) { index = static_cast<std::string::size_type>(find_last_of(c_windowsDirectorySeparator, length())); }
 #endif
 
-		if (index != c_objectNotFound)
-		{
-			return substr(0, index);
-		}
+		if (index != c_objectNotFound) { return substr(0, index); }
 
 		return std::string();
 	}
@@ -66,16 +57,10 @@ public:
 		std::string::size_type index = static_cast<std::string::size_type>(find_last_of(c_unixDirectorySeparator, length()));
 
 #if defined(_WIN32)
-		if (index == std::string::npos)
-		{
-			index = static_cast<std::string::size_type>(find_last_of(c_windowsDirectorySeparator, length()));
-		}
+		if (index == std::string::npos) { index = static_cast<std::string::size_type>(find_last_of(c_windowsDirectorySeparator, length())); }
 #endif
 
-		if (index != std::string::npos)
-		{
-			return substr((index + 1), length() - (index + 1));
-		}
+		if (index != std::string::npos) { return substr((index + 1), length() - (index + 1)); }
 
 		return *this;
 	}
@@ -86,10 +71,7 @@ public:
 	{
 		std::string::size_type extensionIndex = static_cast<std::string::size_type>(getFilename().find_last_of(c_extensionSeparator, length()));
 
-		if (extensionIndex != std::string::npos)
-		{
-			return getFilename().substr(0, extensionIndex);
-		}
+		if (extensionIndex != std::string::npos) { return getFilename().substr(0, extensionIndex); }
 
 		return getFilename();
 	}

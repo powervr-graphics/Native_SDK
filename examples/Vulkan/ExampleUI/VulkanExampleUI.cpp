@@ -157,10 +157,7 @@ struct SpriteDesc
 	uint32_t uiSrcX;
 	uint32_t uiSrcY;
 	bool bHasAlpha;
-	void release()
-	{
-		imageView.reset();
-	}
+	void release() { imageView.reset(); }
 };
 
 struct Vertex
@@ -305,9 +302,7 @@ void PageWindow::update(glm::mat4& proj, uint32_t swapchain, float width, float 
 
 	// if the memory property flags used by the buffers' device memory do not contain e_HOST_COHERENT_BIT then we must flush the memory
 	if (static_cast<uint32_t>(renderQuadUboBuffer->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
-	{
-		renderQuadUboBuffer->getDeviceMemory()->flushRange(renderQuadUboBufferView.getDynamicSliceOffset(swapchain), renderQuadUboBufferView.getDynamicSliceSize());
-	}
+	{ renderQuadUboBuffer->getDeviceMemory()->flushRange(renderQuadUboBufferView.getDynamicSliceOffset(swapchain), renderQuadUboBufferView.getDynamicSliceSize()); }
 }
 
 /*!*********************************************************************************************************************
@@ -429,14 +424,14 @@ struct DeviceResources
 
 	pvr::Multi<pvrvk::Framebuffer> onScreenFramebuffer;
 	pvr::Multi<pvrvk::ImageView> depthStencil;
-	pvr::Multi<pvrvk::CommandBuffer> commandBuffer;
+	pvr::Multi<pvrvk::CommandBuffer> cmdBuffers;
 
-	pvr::Multi<pvrvk::SecondaryCommandBuffer> commandBufferTitleDesc;
-	pvr::Multi<pvrvk::SecondaryCommandBuffer> commandBufferBaseUI;
+	pvr::Multi<pvrvk::SecondaryCommandBuffer> cmdBufferTitleDesc;
+	pvr::Multi<pvrvk::SecondaryCommandBuffer> cmdBufferBaseUI;
 	pvr::Multi<pvrvk::SecondaryCommandBuffer> commandBufferClockPage;
-	pvr::Multi<pvrvk::SecondaryCommandBuffer> commandBufferWeatherpage;
-	pvr::Multi<pvrvk::SecondaryCommandBuffer> commandBufferWindow;
-	pvr::Multi<pvrvk::SecondaryCommandBuffer> commandBufferRenderUI;
+	pvr::Multi<pvrvk::SecondaryCommandBuffer> cmdBufferWeatherpage;
+	pvr::Multi<pvrvk::SecondaryCommandBuffer> cmdBufferWindow;
+	pvr::Multi<pvrvk::SecondaryCommandBuffer> cmdBufferRenderUI;
 
 	SpriteDesc spritesDesc[Sprites::Count + Ancillary::Count];
 
@@ -455,8 +450,7 @@ struct DeviceResources
 			uint32_t l = swapchain->getSwapchainLength();
 			for (uint32_t i = 0; i < l; ++i)
 			{
-				if (perFrameResourcesFences[i])
-					perFrameResourcesFences[i]->wait();
+				if (perFrameResourcesFences[i]) perFrameResourcesFences[i]->wait();
 			}
 		}
 	}
@@ -506,16 +500,14 @@ private:
 			{ glm::vec4(width, height, 0, 1) }, // top right
 			{ glm::vec4(width, 0, 0, 1) } // bottom right
 		};
-		_deviceResources->quadVbo = pvr::utils::createBuffer(_deviceResources->device, sizeof(vVerts),
-			pvrvk::BufferUsageFlags::e_VERTEX_BUFFER_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT,
-			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, &_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+		_deviceResources->quadVbo = pvr::utils::createBuffer(_deviceResources->device,
+			pvrvk::BufferCreateInfo(sizeof(vVerts), pvrvk::BufferUsageFlags::e_VERTEX_BUFFER_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT),
+			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, &_deviceResources->vmaAllocator,
+			pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
 		bool isBufferHostVisible = (_deviceResources->quadVbo->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT) != 0;
 
-		if (isBufferHostVisible)
-		{
-			pvr::utils::updateHostVisibleBuffer(_deviceResources->quadVbo, &vVerts[0], 0, static_cast<uint32_t>(sizeof(vVerts[0]) * 4), true);
-		}
+		if (isBufferHostVisible) { pvr::utils::updateHostVisibleBuffer(_deviceResources->quadVbo, &vVerts[0], 0, static_cast<uint32_t>(sizeof(vVerts[0]) * 4), true); }
 		else
 		{
 			pvr::utils::updateBufferUsingStagingBuffer(
@@ -523,31 +515,30 @@ private:
 		}
 	}
 
-	void updateTitleAndDesc(DisplayOption::Enum _displayOption)
+	void updateTitleAndDesc(DisplayOption::Enum displayOption)
 	{
-		switch (_displayOption)
+		switch (displayOption)
 		{
 		case DisplayOption::UI:
 			_deviceResources->uiRenderer.getDefaultDescription()->setText("Displaying Interface");
 			_deviceResources->uiRenderer.getDefaultDescription()->commitUpdates();
 			break;
-		default:
-			break;
+		default: break;
 		}
 		for (uint32_t i = 0; i < _numSwapchain; ++i)
 		{
-			_deviceResources->commandBufferTitleDesc[i]->begin(_deviceResources->onScreenFramebuffer[i], 0);
-			_deviceResources->uiRenderer.beginRendering(_deviceResources->commandBufferTitleDesc[i]);
+			_deviceResources->cmdBufferTitleDesc[i]->begin(_deviceResources->onScreenFramebuffer[i], 0);
+			_deviceResources->uiRenderer.beginRendering(_deviceResources->cmdBufferTitleDesc[i]);
 			_deviceResources->uiRenderer.getDefaultTitle()->render();
 			_deviceResources->uiRenderer.getDefaultDescription()->render();
 			_deviceResources->uiRenderer.getSdkLogo()->render();
 			_deviceResources->uiRenderer.endRendering();
-			_deviceResources->commandBufferTitleDesc[i]->end();
+			_deviceResources->cmdBufferTitleDesc[i]->end();
 		}
 	}
 
 private:
-	void drawScreenAlignedQuad(const pvrvk::GraphicsPipeline& pipe, pvrvk::DescriptorSet& ubo, pvrvk::CommandBufferBase commandBuffer);
+	void drawScreenAlignedQuad(const pvrvk::GraphicsPipeline& pipe, pvrvk::DescriptorSet& ubo, pvrvk::CommandBufferBase cmdBuffers);
 	void renderUI(uint32_t swapchain);
 	void renderPage(DisplayPage::Enum Page, const glm::mat4& mTransform, uint32_t swapchain);
 	void createPipelines();
@@ -557,26 +548,11 @@ private:
 	void swipeLeft();
 	void swipeRight();
 	void eventMappedInput(pvr::SimplifiedInput action);
-	float getVirtualWidth()
-	{
-		return static_cast<float>(isRotated() ? this->getHeight() : this->getWidth());
-	}
-	float getVirtualHeight()
-	{
-		return static_cast<float>(isRotated() ? this->getWidth() : this->getHeight());
-	}
-	float toDeviceX(float fVal)
-	{
-		return ((fVal / VirtualWidth) * getVirtualWidth());
-	}
-	float toDeviceY(float fVal)
-	{
-		return ((fVal / VirtualHeight) * getVirtualHeight());
-	}
-	inline bool isRotated()
-	{
-		return this->isScreenRotated();
-	}
+	float getVirtualWidth() { return static_cast<float>(isRotated() ? this->getHeight() : this->getWidth()); }
+	float getVirtualHeight() { return static_cast<float>(isRotated() ? this->getWidth() : this->getHeight()); }
+	float toDeviceX(float fVal) { return ((fVal / VirtualWidth) * getVirtualWidth()); }
+	float toDeviceY(float fVal) { return ((fVal / VirtualHeight) * getVirtualHeight()); }
+	inline bool isRotated() { return this->isScreenRotated(); }
 	void createSamplersAndDescriptorSet();
 	void createSpriteContainer(pvrvk::Rect2Df const& rect, uint32_t numSubContainer, float lowerContainerHeight, SpriteContainer& outContainer);
 	void createPageClock();
@@ -598,7 +574,7 @@ public:
 ***********************************************************************************************************************/
 VulkanExampleUI::VulkanExampleUI()
 	: _wndRotate(0.0f), _displayOption(DisplayOption::Default), _state(DisplayState::Default), _transitionPerc(0.0f), _currentPage(DisplayPage::Default),
-	  _lastPage(DisplayPage::Default), _cycleDir(1), _wndRotPerc(0.0f), _prevTransTime(0), _prevTime(0)
+	  _lastPage(DisplayPage::Default), _cycleDir(1), _wndRotPerc(0.0f), _prevTransTime(0), _prevTime(0), _currTime(static_cast<uint64_t>(-1))
 {}
 
 /*!********************************************************************************************************************
@@ -704,8 +680,7 @@ void VulkanExampleUI::createSpriteContainer(pvrvk::Rect2Df const& rect, uint32_t
 		newGroup->add(_deviceResources->sprites[Sprites::ContainerCorner]);
 		// flip the x and y coordinates
 		newGroup
-			->setAnchor(
-				pvr::ui::Anchor::BottomRight, rectBottomHorizontal.getOffset().getX() + rectBottomHorizontal.getExtent().getWidth(), rectBottomHorizontal.getExtent().getHeight())
+			->setAnchor(pvr::ui::Anchor::BottomRight, rectBottomHorizontal.getOffset().getX() + rectBottomHorizontal.getExtent().getWidth(), rectBottomHorizontal.getExtent().getHeight())
 			->setScale(glm::vec2(-1.f, -1.0f));
 		outContainer.group->add(newGroup);
 	}
@@ -737,8 +712,8 @@ void VulkanExampleUI::createSpriteContainer(pvrvk::Rect2Df const& rect, uint32_t
 	// Vertical Left
 	{
 		// calculate the height of the sprite
-		float height = (rectVerticleLeft.getExtent().getHeight() * .501f * _deviceResources->uiRenderer.getRenderingDimY() /
-			_deviceResources->sprites[Sprites::ContainerHorizontal]->getHeight());
+		float height =
+			(rectVerticleLeft.getExtent().getHeight() * .501f * _deviceResources->uiRenderer.getRenderingDimY() / _deviceResources->sprites[Sprites::ContainerHorizontal]->getHeight());
 		pvr::ui::PixelGroup verticle = _deviceResources->uiRenderer.createPixelGroup();
 		verticle->add(_deviceResources->sprites[Sprites::ContainerHorizontal]);
 		verticle->setScale(glm::vec2(1, height))->setAnchor(pvr::ui::Anchor::BottomLeft, rectVerticleLeft.getOffset().getX(), rectVerticleLeft.getOffset().getY())->setPixelOffset(0, 0);
@@ -963,8 +938,7 @@ void VulkanExampleUI::createPageClock()
 	_deviceResources->pageClock.clocks.push_back(clockCenter);
 
 	_deviceResources->sprites[Sprites::Text1]
-		->setAnchor(
-			pvr::ui::Anchor::BottomLeft, glm::vec2(_deviceResources->pageClock.container.size.getOffset().getX(), _deviceResources->pageClock.container.size.getOffset().getY()))
+		->setAnchor(pvr::ui::Anchor::BottomLeft, glm::vec2(_deviceResources->pageClock.container.size.getOffset().getX(), _deviceResources->pageClock.container.size.getOffset().getY()))
 		->setPixelOffset(0, 10);
 	_deviceResources->sprites[Sprites::Text1]->setScale(_screenScale);
 	groupSprites[i++] = _deviceResources->sprites[Sprites::Text1];
@@ -977,16 +951,16 @@ void VulkanExampleUI::createPageClock()
 	_deviceResources->sprites[Sprites::Text2]->setScale(_screenScale);
 	groupSprites[i++] = _deviceResources->sprites[Sprites::Text2];
 
-	for (uint32_t i = 0; i < _numSwapchain; ++i)
+	for (uint32_t swapchainIndex = 0; swapchainIndex < _numSwapchain; ++swapchainIndex)
 	{
-		_deviceResources->pageClock.group[i] = _deviceResources->uiRenderer.createMatrixGroup();
+		_deviceResources->pageClock.group[swapchainIndex] = _deviceResources->uiRenderer.createMatrixGroup();
 		pvr::ui::MatrixGroup groupBorder = _deviceResources->uiRenderer.createMatrixGroup();
 		groupBorder->add(_deviceResources->sprites[Sprites::ContainerVertical]);
 		groupBorder->setScaleRotateTranslate(glm::translate(glm::vec3(0.0f, -0.45f, 0.0f)) * glm::scale(glm::vec3(.65f, .055f, .2f)));
-		_deviceResources->pageClock.group[i]->add(_deviceResources->containerTop.group);
-		_deviceResources->pageClock.group[i]->add(groupSprites, ARRAY_SIZE(groupSprites));
-		_deviceResources->pageClock.group[i]->setViewProjection(_projMtx);
-		_deviceResources->pageClock.group[i]->commitUpdates();
+		_deviceResources->pageClock.group[swapchainIndex]->add(_deviceResources->containerTop.group);
+		_deviceResources->pageClock.group[swapchainIndex]->add(groupSprites, ARRAY_SIZE(groupSprites));
+		_deviceResources->pageClock.group[swapchainIndex]->setViewProjection(_projMtx);
+		_deviceResources->pageClock.group[swapchainIndex]->commitUpdates();
 	}
 }
 
@@ -1046,7 +1020,7 @@ void VulkanExampleUI::createBaseUI()
 ***********************************************************************************************************************/
 pvr::Result VulkanExampleUI::initView()
 {
-	_deviceResources = std::unique_ptr<DeviceResources>(new DeviceResources());
+	_deviceResources = std::make_unique<DeviceResources>();
 
 	// Create instance and retrieve compatible physical devices
 	_deviceResources->instance = pvr::utils::createInstance(this->getApplicationName());
@@ -1058,7 +1032,8 @@ pvr::Result VulkanExampleUI::initView()
 	}
 
 	// Create the surface
-	_deviceResources->surface = pvr::utils::createSurface(_deviceResources->instance, _deviceResources->instance->getPhysicalDevice(0), this->getWindow(), this->getDisplay());
+	_deviceResources->surface =
+		pvr::utils::createSurface(_deviceResources->instance, _deviceResources->instance->getPhysicalDevice(0), this->getWindow(), this->getDisplay(), this->getConnection());
 
 	// Create a default set of debug utils messengers or debug callbacks using either VK_EXT_debug_utils or VK_EXT_debug_report respectively
 	_deviceResources->debugUtilsCallbacks = pvr::utils::createDebugUtilsCallbacks(_deviceResources->instance);
@@ -1078,11 +1053,7 @@ pvr::Result VulkanExampleUI::initView()
 	// validate the supported swapchain image usage
 	pvrvk::ImageUsageFlags swapchainImageUsage = pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT;
 	if (pvr::utils::isImageUsageSupportedBySurface(surfaceCapabilities, pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT))
-	{
-		swapchainImageUsage |= pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT;
-	}
-
-	// Create the swapchain and depthstencil attachments
+	{ swapchainImageUsage |= pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT; } // Create the swapchain and depthstencil attachments
 	pvr::utils::createSwapchainAndDepthStencilImageAndViews(_deviceResources->device, _deviceResources->surface, getDisplayAttributes(), _deviceResources->swapchain,
 		_deviceResources->depthStencil, swapchainImageUsage, pvrvk::ImageUsageFlags::e_DEPTH_STENCIL_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_TRANSIENT_ATTACHMENT_BIT,
 		&_deviceResources->vmaAllocator);
@@ -1102,8 +1073,8 @@ pvr::Result VulkanExampleUI::initView()
 
 	for (uint32_t i = 0; i < _numSwapchain; ++i)
 	{
-		_deviceResources->commandBuffer[i] = _deviceResources->commandPool->allocateCommandBuffer();
-		_deviceResources->commandBufferTitleDesc[i] = _deviceResources->commandPool->allocateSecondaryCommandBuffer();
+		_deviceResources->cmdBuffers[i] = _deviceResources->commandPool->allocateCommandBuffer();
+		_deviceResources->cmdBufferTitleDesc[i] = _deviceResources->commandPool->allocateSecondaryCommandBuffer();
 	}
 	// Initialize _deviceResources->uiRenderer
 	_deviceResources->uiRenderer.init(getWidth(), getHeight(), isFullScreen(), _deviceResources->onScreenFramebuffer[0]->getRenderPass(), 0,
@@ -1113,18 +1084,18 @@ pvr::Result VulkanExampleUI::initView()
 	_prevTransTime = this->getTime();
 
 	// Load the sprites
-	_deviceResources->commandBuffer[0]->begin(pvrvk::CommandBufferUsageFlags::e_ONE_TIME_SUBMIT_BIT);
-	loadSprites(_deviceResources->commandBuffer[0]);
-	createFullScreenQuad(_deviceResources->commandBuffer[0]);
-	_deviceResources->commandBuffer[0]->end();
+	_deviceResources->cmdBuffers[0]->begin(pvrvk::CommandBufferUsageFlags::e_ONE_TIME_SUBMIT_BIT);
+	loadSprites(_deviceResources->cmdBuffers[0]);
+	createFullScreenQuad(_deviceResources->cmdBuffers[0]);
+	_deviceResources->cmdBuffers[0]->end();
 
 	// Submit all the image uploads
 	pvrvk::SubmitInfo submitInfo;
-	submitInfo.commandBuffers = &_deviceResources->commandBuffer[0];
+	submitInfo.commandBuffers = &_deviceResources->cmdBuffers[0];
 	submitInfo.numCommandBuffers = 1;
 	_deviceResources->queue->submit(&submitInfo, 1);
 	_deviceResources->queue->waitIdle();
-	_deviceResources->commandBuffer[0]->reset(pvrvk::CommandBufferResetFlags::e_RELEASE_RESOURCES_BIT);
+	_deviceResources->cmdBuffers[0]->reset(pvrvk::CommandBufferResetFlags::e_RELEASE_RESOURCES_BIT);
 
 	// Create the pipeline cache
 	_deviceResources->pipelineCache = _deviceResources->device->createPipelineCache();
@@ -1195,9 +1166,7 @@ void VulkanExampleUI::loadSprites(pvrvk::CommandBuffer& uploadCmd)
 		if (tex.getPixelFormat().getPixelTypeId() == (uint64_t)pvr::CompressedPixelFormat::PVRTCI_2bpp_RGBA ||
 			tex.getPixelFormat().getPixelTypeId() == (uint64_t)pvr::CompressedPixelFormat::PVRTCI_4bpp_RGBA || pixelString[0] == 'a' || pixelString[1] == 'a' ||
 			pixelString[2] == 'a' || pixelString[3] == 'a')
-		{
-			_deviceResources->spritesDesc[i].bHasAlpha = true;
-		}
+		{ _deviceResources->spritesDesc[i].bHasAlpha = true; }
 		else
 		{
 			_deviceResources->spritesDesc[i].bHasAlpha = false;
@@ -1238,10 +1207,10 @@ void VulkanExampleUI::createSamplersAndDescriptorSet()
 	ubo.initDynamic(desc, _numSwapchain, pvr::BufferUsageFlags::UniformBuffer,
 		static_cast<uint32_t>(_deviceResources->device->getPhysicalDevice()->getProperties().getLimits().getMinUniformBufferOffsetAlignment()));
 
-	_deviceResources->pageWindow.renderQuadUboBuffer =
-		pvr::utils::createBuffer(_deviceResources->device, ubo.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
-			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
-			&_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+	_deviceResources->pageWindow.renderQuadUboBuffer = pvr::utils::createBuffer(_deviceResources->device,
+		pvrvk::BufferCreateInfo(ubo.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
+		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
+		&_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
 	ubo.pointToMappedMemory(_deviceResources->pageWindow.renderQuadUboBuffer->getDeviceMemory()->getMappedData());
 
@@ -1271,8 +1240,8 @@ void VulkanExampleUI::createPipelines()
 	_deviceResources->uboLayoutFrag = _deviceResources->device->createDescriptorSetLayout(
 		pvrvk::DescriptorSetLayoutCreateInfo().setBinding(0, pvrvk::DescriptorType::e_UNIFORM_BUFFER, 1, pvrvk::ShaderStageFlags::e_FRAGMENT_BIT));
 
-	pvr::Stream::ptr_type vertSource = getAssetStream(VertShaderFileName);
-	pvr::Stream::ptr_type fragSource = getAssetStream(FragShaderFileName);
+	std::unique_ptr<pvr::Stream> vertSource = getAssetStream(VertShaderFileName);
+	std::unique_ptr<pvr::Stream> fragSource = getAssetStream(FragShaderFileName);
 
 	// create the vertex and fragment shaders
 	_deviceResources->vertexShader = _deviceResources->device->createShaderModule(pvrvk::ShaderModuleCreateInfo(vertSource->readToEnd<uint32_t>()));
@@ -1344,11 +1313,11 @@ void VulkanExampleUI::createPipelines()
 	world coordinates. SrcRect is the rectangle to be cropped from the texture in pixel coordinates.
 	NOTE: This is not an optimized function and should not be called repeatedly to draw quads to the screen at render time.
 ***********************************************************************************************************************/
-void VulkanExampleUI::drawScreenAlignedQuad(const pvrvk::GraphicsPipeline& pipe, pvrvk::DescriptorSet& ubo, pvrvk::CommandBufferBase commandBuffer)
+void VulkanExampleUI::drawScreenAlignedQuad(const pvrvk::GraphicsPipeline& pipe, pvrvk::DescriptorSet& ubo, pvrvk::CommandBufferBase cmdBuffers)
 {
-	commandBuffer->bindDescriptorSet(pvrvk::PipelineBindPoint::e_GRAPHICS, pipe->getPipelineLayout(), 0, ubo);
-	commandBuffer->bindVertexBuffer(_deviceResources->quadVbo, 0, 0);
-	commandBuffer->draw(0, 4, 0, 1);
+	cmdBuffers->bindDescriptorSet(pvrvk::PipelineBindPoint::e_GRAPHICS, pipe->getPipelineLayout(), 0, ubo);
+	cmdBuffers->bindVertexBuffer(_deviceResources->quadVbo, 0, 0);
+	cmdBuffers->draw(0, 4, 0, 1);
 }
 
 /*!*********************************************************************************************************************
@@ -1366,10 +1335,7 @@ pvr::Result VulkanExampleUI::releaseView()
 	the program. If the rendering context is lost, quitApplication() will not be called.
 \return Return pvr::Result::Success if no error occurred
 ***********************************************************************************************************************/
-pvr::Result VulkanExampleUI::quitApplication()
-{
-	return pvr::Result::Success;
-}
+pvr::Result VulkanExampleUI::quitApplication() { return pvr::Result::Success; }
 
 /*!*********************************************************************************************************************
 \brief  Render the page
@@ -1382,18 +1348,17 @@ void VulkanExampleUI::renderPage(DisplayPage::Enum page, const glm::mat4& mTrans
 	{
 	case DisplayPage::Clocks:
 		_deviceResources->pageClock.update(swapchain, float(getFrameTime()), mTransform);
-		_deviceResources->commandBuffer[swapchain]->executeCommands(_deviceResources->commandBufferClockPage[swapchain]);
+		_deviceResources->cmdBuffers[swapchain]->executeCommands(_deviceResources->commandBufferClockPage[swapchain]);
 		break;
 	case DisplayPage::Weather:
 		_deviceResources->pageWeather.update(swapchain, mTransform);
-		_deviceResources->commandBuffer[swapchain]->executeCommands(_deviceResources->commandBufferWeatherpage[swapchain]);
+		_deviceResources->cmdBuffers[swapchain]->executeCommands(_deviceResources->cmdBufferWeatherpage[swapchain]);
 		break;
 	case DisplayPage::Window:
 		_deviceResources->pageWindow.update(_projMtx, swapchain, _deviceResources->uiRenderer.getRenderingDimX(), _deviceResources->uiRenderer.getRenderingDimY(), mTransform);
-		_deviceResources->commandBuffer[swapchain]->executeCommands(_deviceResources->commandBufferWindow[swapchain]);
+		_deviceResources->cmdBuffers[swapchain]->executeCommands(_deviceResources->cmdBufferWindow[swapchain]);
 		break;
-	default:
-		break;
+	default: break;
 	}
 }
 
@@ -1403,11 +1368,11 @@ void VulkanExampleUI::renderPage(DisplayPage::Enum page, const glm::mat4& mTrans
 void VulkanExampleUI::renderUI(uint32_t swapchain)
 {
 	pvrvk::ClearValue clearValues[] = { pvrvk::ClearValue(.3f, .3f, 0.3f, 1.f), pvrvk::ClearValue::createDefaultDepthStencilClearValue() };
-	_deviceResources->commandBuffer[swapchain]->beginRenderPass(
+	_deviceResources->cmdBuffers[swapchain]->beginRenderPass(
 		_deviceResources->onScreenFramebuffer[swapchain], pvrvk::Rect2D(0, 0, getWidth(), getHeight()), false, clearValues, ARRAY_SIZE(clearValues));
 
 	// render the baseUI
-	_deviceResources->commandBuffer[swapchain]->executeCommands(_deviceResources->commandBufferBaseUI[swapchain]);
+	_deviceResources->cmdBuffers[swapchain]->executeCommands(_deviceResources->cmdBufferBaseUI[swapchain]);
 
 	if (_state == DisplayState::Element)
 	{
@@ -1453,8 +1418,8 @@ void VulkanExampleUI::renderUI(uint32_t swapchain)
 		renderPage(_currentPage, _transform, swapchain);
 	}
 	// record draw title and description commands
-	_deviceResources->commandBuffer[swapchain]->executeCommands(_deviceResources->commandBufferTitleDesc[swapchain]);
-	_deviceResources->commandBuffer[swapchain]->endRenderPass();
+	_deviceResources->cmdBuffers[swapchain]->executeCommands(_deviceResources->cmdBufferTitleDesc[swapchain]);
+	_deviceResources->cmdBuffers[swapchain]->endRenderPass();
 }
 
 /*!*********************************************************************************************************************
@@ -1462,10 +1427,7 @@ void VulkanExampleUI::renderUI(uint32_t swapchain)
 ***********************************************************************************************************************/
 void VulkanExampleUI::swipeLeft()
 {
-	if (_currentPage == 0)
-	{
-		return;
-	}
+	if (_currentPage == 0) { return; }
 	_swipe = true;
 	_cycleDir = -1;
 }
@@ -1475,10 +1437,7 @@ void VulkanExampleUI::swipeLeft()
 ***********************************************************************************************************************/
 void VulkanExampleUI::swipeRight()
 {
-	if (_currentPage == DisplayPage::Count - 1)
-	{
-		return;
-	}
+	if (_currentPage == DisplayPage::Count - 1) { return; }
 	_swipe = true;
 	_cycleDir = 1;
 }
@@ -1497,7 +1456,7 @@ pvr::Result VulkanExampleUI::renderFrame()
 	_deviceResources->perFrameResourcesFences[swapchainIndex]->wait();
 	_deviceResources->perFrameResourcesFences[swapchainIndex]->reset();
 
-	_deviceResources->commandBuffer[swapchainIndex]->begin(pvrvk::CommandBufferUsageFlags::e_ONE_TIME_SUBMIT_BIT);
+	_deviceResources->cmdBuffers[swapchainIndex]->begin(pvrvk::CommandBufferUsageFlags::e_ONE_TIME_SUBMIT_BIT);
 	_currTime = this->getTime();
 	float deltaTime = (_currTime - _prevTime) * 0.001f;
 	_prevTime = _currTime;
@@ -1541,12 +1500,12 @@ pvr::Result VulkanExampleUI::renderFrame()
 
 	renderUI(swapchainIndex);
 	// record commands to draw the title and description
-	_deviceResources->commandBuffer[swapchainIndex]->end();
+	_deviceResources->cmdBuffers[swapchainIndex]->end();
 
 	// Submit
 	pvrvk::SubmitInfo submitInfo;
 	pvrvk::PipelineStageFlags waitStage = pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT;
-	submitInfo.commandBuffers = &_deviceResources->commandBuffer[swapchainIndex];
+	submitInfo.commandBuffers = &_deviceResources->cmdBuffers[swapchainIndex];
 	submitInfo.numCommandBuffers = 1;
 	submitInfo.waitSemaphores = &_deviceResources->imageAcquiredSemaphores[_frameId];
 	submitInfo.numWaitSemaphores = 1;
@@ -1582,8 +1541,8 @@ void VulkanExampleUI::recordSecondaryCommandBuffers(uint32_t swapchain)
 {
 	// record the base ui
 	{
-		_deviceResources->commandBufferBaseUI[swapchain] = _deviceResources->commandPool->allocateSecondaryCommandBuffer();
-		_deviceResources->uiRenderer.beginRendering(_deviceResources->commandBufferBaseUI[swapchain]);
+		_deviceResources->cmdBufferBaseUI[swapchain] = _deviceResources->commandPool->allocateSecondaryCommandBuffer();
+		_deviceResources->uiRenderer.beginRendering(_deviceResources->cmdBufferBaseUI[swapchain]);
 		_deviceResources->groupBaseUI->render(); // render the base GUI
 		_deviceResources->uiRenderer.endRendering();
 	}
@@ -1598,32 +1557,32 @@ void VulkanExampleUI::recordSecondaryCommandBuffers(uint32_t swapchain)
 
 	// record draw weather commands
 	{
-		_deviceResources->commandBufferWeatherpage[swapchain] = _deviceResources->commandPool->allocateSecondaryCommandBuffer();
-		_deviceResources->commandBufferWeatherpage[swapchain]->begin(_deviceResources->onScreenFramebuffer[swapchain]);
-		_deviceResources->uiRenderer.beginRendering(_deviceResources->commandBufferWeatherpage[swapchain], _deviceResources->onScreenFramebuffer[swapchain]);
+		_deviceResources->cmdBufferWeatherpage[swapchain] = _deviceResources->commandPool->allocateSecondaryCommandBuffer();
+		_deviceResources->cmdBufferWeatherpage[swapchain]->begin(_deviceResources->onScreenFramebuffer[swapchain]);
+		_deviceResources->uiRenderer.beginRendering(_deviceResources->cmdBufferWeatherpage[swapchain], _deviceResources->onScreenFramebuffer[swapchain]);
 		_deviceResources->pageWeather.group[swapchain]->render();
 		_deviceResources->uiRenderer.endRendering();
-		_deviceResources->commandBufferWeatherpage[swapchain]->end();
+		_deviceResources->cmdBufferWeatherpage[swapchain]->end();
 	}
 
 	// record draw Window commands
 	{
-		_deviceResources->commandBufferWindow[swapchain] = _deviceResources->commandPool->allocateSecondaryCommandBuffer();
-		_deviceResources->commandBufferWindow[swapchain]->begin(_deviceResources->onScreenFramebuffer[swapchain], 0);
+		_deviceResources->cmdBufferWindow[swapchain] = _deviceResources->commandPool->allocateSecondaryCommandBuffer();
+		_deviceResources->cmdBufferWindow[swapchain]->begin(_deviceResources->onScreenFramebuffer[swapchain], 0);
 
 		// bind the render quad pipeline
-		_deviceResources->commandBufferWindow[swapchain]->bindPipeline(_deviceResources->renderQuadPipe);
+		_deviceResources->cmdBufferWindow[swapchain]->bindPipeline(_deviceResources->renderQuadPipe);
 
 		// draw a quad only to clear a specific region of the screen
-		drawScreenAlignedQuad(_deviceResources->renderQuadPipe, _deviceResources->pageWindow.renderQuadUboDesc[swapchain], _deviceResources->commandBufferWindow[swapchain]);
+		drawScreenAlignedQuad(_deviceResources->renderQuadPipe, _deviceResources->pageWindow.renderQuadUboDesc[swapchain], _deviceResources->cmdBufferWindow[swapchain]);
 
 		// bind the renderWindowTextPipe pipeline and render the text
 		_deviceResources->uiRenderer.beginRendering(
-			_deviceResources->commandBufferWindow[swapchain], _deviceResources->renderWindowTextPipe, _deviceResources->onScreenFramebuffer[swapchain]);
+			_deviceResources->cmdBufferWindow[swapchain], _deviceResources->renderWindowTextPipe, _deviceResources->onScreenFramebuffer[swapchain]);
 		_deviceResources->pageWindow.group[swapchain]->render();
 		_deviceResources->uiRenderer.endRendering();
 
-		_deviceResources->commandBufferWindow[swapchain]->end();
+		_deviceResources->cmdBufferWindow[swapchain]->end();
 	}
 }
 
@@ -1635,17 +1594,12 @@ void VulkanExampleUI::eventMappedInput(pvr::SimplifiedInput action)
 {
 	switch (action)
 	{
-	case pvr::SimplifiedInput::Right:
-		swipeLeft();
-		break;
-	case pvr::SimplifiedInput::Left:
-		swipeRight();
-		break;
+	case pvr::SimplifiedInput::Right: swipeLeft(); break;
+	case pvr::SimplifiedInput::Left: swipeRight(); break;
 	case pvr::SimplifiedInput::ActionClose: // quit the application
 		this->exitShell();
 		break;
-	default:
-		break;
+	default: break;
 	}
 }
 
@@ -1654,18 +1608,12 @@ void VulkanExampleUI::eventMappedInput(pvr::SimplifiedInput action)
 \param[in] width Area width
 \param[in] height Area height
 ***********************************************************************************************************************/
-Area::Area(int32_t width, int32_t height) : x(0), y(0), isFilled(false), right(nullptr), left(nullptr)
-{
-	setSize(width, height);
-}
+Area::Area(int32_t width, int32_t height) : x(0), y(0), isFilled(false), right(nullptr), left(nullptr) { setSize(width, height); }
 
 /*!*********************************************************************************************************************
 \brief  Constructor
 ***********************************************************************************************************************/
-Area::Area() : x(0), y(0), isFilled(false), right(NULL), left(NULL)
-{
-	setSize(0, 0);
-}
+Area::Area() : x(0), y(0), isFilled(false), right(NULL), left(NULL) { setSize(0, 0); }
 
 /*!*********************************************************************************************************************
 \brief  Calculates an area where there's sufficient space or returns NULL if no space could be found.
@@ -1681,27 +1629,15 @@ Area* Area::insert(int32_t width, int32_t height)
 	{
 		Area* tempPtr = NULL;
 		tempPtr = left->insert(width, height);
-		if (tempPtr != NULL)
-		{
-			return tempPtr;
-		}
+		if (tempPtr != NULL) { return tempPtr; }
 	}
 	// Now check right
-	if (right)
-	{
-		return right->insert(width, height);
-	}
+	if (right) { return right->insert(width, height); }
 	// Already filled!
-	if (isFilled)
-	{
-		return NULL;
-	}
+	if (isFilled) { return NULL; }
 
 	// Too small
-	if (size < width * height || w < width || h < height)
-	{
-		return NULL;
-	}
+	if (size < width * height || w < width || h < height) { return NULL; }
 
 	// Just right!
 	if (size == width * height && w == width && h == height)
@@ -1763,28 +1699,16 @@ bool Area::deleteArea()
 	{
 		if (left->left != NULL)
 		{
-			if (!left->deleteArea())
-			{
-				return false;
-			}
-			if (!right->deleteArea())
-			{
-				return false;
-			}
+			if (!left->deleteArea()) { return false; }
+			if (!right->deleteArea()) { return false; }
 		}
 	}
 	if (right != NULL)
 	{
 		if (right->left != NULL)
 		{
-			if (!left->deleteArea())
-			{
-				return false;
-			}
-			if (!right->deleteArea())
-			{
-				return false;
-			}
+			if (!left->deleteArea()) { return false; }
+			if (!right->deleteArea()) { return false; }
 		}
 	}
 	delete right;
@@ -1810,26 +1734,17 @@ void Area::setSize(int32_t width, int32_t height)
 \brief  Get the X position of the area.
 \return Return the area's x position
 ***********************************************************************************************************************/
-inline int32_t Area::getX() const
-{
-	return x;
-}
+inline int32_t Area::getX() const { return x; }
 
 /*!*********************************************************************************************************************
 \brief  get the Y position of the area.
 \return Return the area's y position
 ***********************************************************************************************************************/
-inline int32_t Area::getY() const
-{
-	return y;
-}
+inline int32_t Area::getY() const { return y; }
 
 /*!*********************************************************************************************************************
 \brief  This function must be implemented by the user of the shell.The user should return its pvr::Shell object defining
 		the behavior of the application.
 \return Return The demo supplied by the user
 ***********************************************************************************************************************/
-std::unique_ptr<pvr::Shell> pvr::newDemo()
-{
-	return std::unique_ptr<pvr::Shell>(new VulkanExampleUI());
-}
+std::unique_ptr<pvr::Shell> pvr::newDemo() { return std::make_unique<VulkanExampleUI>(); }

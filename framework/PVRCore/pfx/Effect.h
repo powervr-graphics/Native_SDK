@@ -9,7 +9,7 @@ objects and use them for rendering.
 #include "PVRCore/texture/Texture.h"
 #include "PVRCore/types/GpuDataTypes.h"
 #include "PVRCore/types/Types.h"
-#include "PVRCore/stream/Asset.h"
+#include "PVRCore/stream/Stream.h"
 #include "PVRCore/strings/StringHash.h"
 #include <set>
 
@@ -37,32 +37,14 @@ public:
 	NameComparable(const StringHash& name) : name(name) {}
 
 	typedef MyType_ MyType;
-	bool operator<(const MyType& rhs) const
-	{
-		return name < rhs.name;
-	}
-	bool operator>(const MyType& rhs) const
-	{
-		return name > rhs.name;
-	}
+	bool operator<(const MyType& rhs) const { return name < rhs.name; }
+	bool operator>(const MyType& rhs) const { return name > rhs.name; }
 
-	bool operator>=(const MyType& rhs) const
-	{
-		return name >= rhs.name;
-	}
-	bool operator<=(const MyType& rhs) const
-	{
-		return name <= rhs.name;
-	}
+	bool operator>=(const MyType& rhs) const { return name >= rhs.name; }
+	bool operator<=(const MyType& rhs) const { return name <= rhs.name; }
 
-	bool operator==(const MyType& rhs) const
-	{
-		return name == rhs.name;
-	}
-	bool operator!=(const MyType& rhs) const
-	{
-		return name != rhs.name;
-	}
+	bool operator==(const MyType& rhs) const { return name == rhs.name; }
+	bool operator!=(const MyType& rhs) const { return name != rhs.name; }
 };
 //!\endcond
 
@@ -72,7 +54,7 @@ struct TextureDefinition : public NameComparable<TextureDefinition>
 	StringHash path; ///< File name
 	uint32_t width; ///< Texture width
 	uint32_t height; ///< Texture height
-	ImageDataFormat fmt; ///< Texture format
+	ImageDataFormat format; ///< Texture format
 	/// <summary>Constructor. Non-initializing.</summary>
 	TextureDefinition() {}
 	/// <summary>Constructor from individual elements</summary>
@@ -80,17 +62,14 @@ struct TextureDefinition : public NameComparable<TextureDefinition>
 	/// <param name="path">The path of the texture data</param>
 	/// <param name="width">Width of the texture</param>
 	/// <param name="height">Height of the texture</param>
-	/// <param name="fmt">Format of the texture</param>
-	TextureDefinition(const StringHash& name, const StringHash& path, uint32_t width, uint32_t height, const ImageDataFormat& fmt)
-		: NameComparable(name), path(path), width(width), height(height), fmt(fmt)
+	/// <param name="format">Format of the texture</param>
+	TextureDefinition(const StringHash& name, const StringHash& path, uint32_t width, uint32_t height, const ImageDataFormat& format)
+		: NameComparable(name), path(path), width(width), height(height), format(format)
 	{}
 
 	/// <summary>Check if this texture definition is read from a file (or defined by the application)</summary>
 	/// <returns>True if a file, otherwise false<returns>
-	bool isFile()
-	{
-		return path.empty();
-	}
+	bool isFile() { return path.empty(); }
 };
 
 /// <summary>Stores effect texture information.</summary>
@@ -245,8 +224,7 @@ struct PipelineDefinition : public NameComparable<PipelineDefinition>
 
 	/// <summary>Constructor. initializes to no depth/stencil test/write, no backface culling.
 	PipelineDefinition()
-		: enableDepthTest(false), enableDepthWrite(true), depthCmpFunc(CompareOp::Less), enableStencilTest(false), windingOrder(PolygonWindingOrder::FrontFaceCCW),
-		  cullFace(Face::None)
+		: enableDepthTest(false), enableDepthWrite(true), depthCmpFunc(CompareOp::Less), enableStencilTest(false), windingOrder(PolygonWindingOrder::FrontFaceCCW), cullFace(Face::None)
 	{}
 };
 
@@ -310,14 +288,31 @@ struct Pass
 /// objects, as long as they fulfil some similar conceptual roles (see subpass groups). By using "SEMANTICS", i.e. descriptions of different
 /// items of information that may be provided from outside (e.g. the model, the animation system, or other), it provides a clear interface for
 /// the application to provide this information and render automatically. For an implementation of a rendering system using that, see the
-/// RenderManager in Vulkan Utilities.
-struct Effect : public Asset<Effect>
+/// RenderManager in Vulkan Utilities.</summary>
+struct Effect
 {
+	using EffectHandle = std::shared_ptr<Effect>;
+	using EffectReader = void (*)(const ::pvr::Stream& stream, Effect& thisEffect);
+	/// <param name="reader">An AssetReader of the correct type. Must have a valid Stream opened.</param>
+	/// <returns>A handle to the new Asset. Will be null if failed to load.</returns>
+	static EffectHandle createWithReader(EffectReader reader, const ::pvr::Stream& stream)
+	{
+		EffectHandle handle = std::make_shared<Effect>();
+		reader(stream, *handle);
+		return handle;
+	}
+
+	/// <summary>Load the data of this asset from an AssetReader. This function requires an already constructed object,
+	/// so it is commonly used to reuse an asset.</summary>
+	/// <param name="reader">An AssetReader instance. Can be empty (without a stream).</param>
+	/// <param name="stream">A stream that contains the data to load into this asset.</param>
+	void loadWithReader(EffectReader reader, const ::pvr::Stream& stream) { reader(stream, *this); }
+
 	StringHash name; ///< The name of this effect
 	std::map<StringHash, std::string> headerAttributes; ///< Free name value pairs provided in the header of the effect
 
-	std::map<StringHash, std::map<StringHash, Shader> > versionedShaders; ///< Lists of shaders along with their corresponding apis
-	std::map<StringHash, std::map<StringHash, PipelineDefinition> > versionedPipelines; ///< Lists of pipelines, along with their corresponding apis that they apply to
+	std::map<StringHash, std::map<StringHash, Shader>> versionedShaders; ///< Lists of shaders along with their corresponding apis
+	std::map<StringHash, std::map<StringHash, PipelineDefinition>> versionedPipelines; ///< Lists of pipelines, along with their corresponding apis that they apply to
 
 	std::map<StringHash, TextureDefinition> textures; ///< All the (possible) textures defined for this effect
 	std::map<StringHash, BufferDefinition> buffers; ///< All the (possible) buffers defined for this effect
@@ -331,10 +326,7 @@ struct Effect : public Asset<Effect>
 	{
 		if (versions.empty())
 		{
-			for (auto it = versionedPipelines.begin(); it != versionedPipelines.end(); ++it)
-			{
-				versions.emplace_back(it->first);
-			}
+			for(auto it = versionedPipelines.begin(); it != versionedPipelines.end(); ++it) { versions.emplace_back(it->first); }
 		}
 		return versions;
 	}
@@ -350,44 +342,26 @@ struct Effect : public Asset<Effect>
 	/// <summary>Add a shader for a specific api version</summary>
 	/// <param name="apiName">A string denoting a supported version.</param>
 	/// <param name="shader">A Shader object containing the Source and type of the shader.</param>
-	void addShader(const StringHash& apiName, Shader&& shader)
-	{
-		versionedShaders[apiName][shader.name] = std::move(shader);
-	}
+	void addShader(const StringHash& apiName, Shader&& shader) { versionedShaders[apiName][shader.name] = std::move(shader); }
 	/// <summary>Add a shader for a specific api version</summary>
 	/// <param name="apiName">A string denoting a supported version.</param>
 	/// <param name="shader">A Shader object containing the Source and type of the shader.</param>
-	void addShader(const StringHash& apiName, const Shader& shader)
-	{
-		versionedShaders[apiName][shader.name] = shader;
-	}
+	void addShader(const StringHash& apiName, const Shader& shader) { versionedShaders[apiName][shader.name] = shader; }
 
 	/// <summary>Add a texture to this effect object</summary>
 	/// <param name="texture">A TextureDefinition object to add to this effect.</param>
-	void addTexture(TextureDefinition&& texture)
-	{
-		textures[texture.name] = std::move(texture);
-	}
+	void addTexture(TextureDefinition&& texture) { textures[texture.name] = std::move(texture); }
 	/// <summary>Add a texture to this effect object</summary>
 	/// <param name="texture">A TextureDefinition object to add to this effect.</param>
-	void addTexture(const TextureDefinition& texture)
-	{
-		textures[texture.name] = texture;
-	}
+	void addTexture(const TextureDefinition& texture) { textures[texture.name] = texture; }
 
 	/// <summary>Add a buffer to this effect object</summary>
 	/// <param name="buffer">A BufferDefinition object to add to this effect.</param>
-	void addBuffer(BufferDefinition&& buffer)
-	{
-		buffers[buffer.name] = std::move(buffer);
-	}
+	void addBuffer(BufferDefinition&& buffer) { buffers[buffer.name] = std::move(buffer); }
 
 	/// <summary>Add a buffer to this effect object</summary>
 	/// <param name="buffer">A BufferDefinition object to add to this effect.</param>
-	void addBuffer(const BufferDefinition& buffer)
-	{
-		buffers[buffer.name] = buffer;
-	}
+	void addBuffer(const BufferDefinition& buffer) { buffers[buffer.name] = buffer; }
 
 	/// <summary>Add a pipeline to this effect object for a specific api version</summary>
 	/// <param name="apiName">A string for the specific API version for which this pipeline will be defined.</param>

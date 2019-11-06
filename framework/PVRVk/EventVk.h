@@ -24,10 +24,7 @@ private:
 		friend class Event_;
 	};
 
-	static Event constructShared(const DeviceWeakPtr& device, const EventCreateInfo& createInfo)
-	{
-		return std::make_shared<Event_>(make_shared_enabler{}, device, createInfo);
-	}
+	static Event constructShared(const DeviceWeakPtr& device, const EventCreateInfo& createInfo) { return std::make_shared<Event_>(make_shared_enabler{}, device, createInfo); }
 
 	/// <summary>Creation information used when creating the event.</summary>
 	EventCreateInfo _createInfo;
@@ -50,17 +47,11 @@ public:
 
 	/// <summary>Get the event creation flags</summary>
 	/// <returns>The set of event creation flags</returns>
-	inline EventCreateFlags getFlags() const
-	{
-		return _createInfo.getFlags();
-	}
+	inline EventCreateFlags getFlags() const { return _createInfo.getFlags(); }
 
 	/// <summary>Get this event's create flags</summary>
 	/// <returns>EventCreateInfo</returns>
-	EventCreateInfo getCreateInfo() const
-	{
-		return _createInfo;
-	}
+	EventCreateInfo getCreateInfo() const { return _createInfo; }
 };
 } // namespace impl
 } // namespace pvrvk

@@ -66,10 +66,7 @@ DescriptorPool_::~DescriptorPool_()
 }
 
 #ifdef DEBUG
-static inline bool bindingIdPairComparison(const std::pair<uint32_t, uint32_t>& a, const std::pair<uint32_t, uint32_t>& b)
-{
-	return a.first < b.first;
-}
+static inline bool bindingIdPairComparison(const std::pair<uint32_t, uint32_t>& a, const std::pair<uint32_t, uint32_t>& b) { return a.first < b.first; }
 #endif
 
 DescriptorSetLayout_::~DescriptorSetLayout_()
@@ -103,16 +100,12 @@ DescriptorSetLayout_::DescriptorSetLayout_(make_shared_enabler, const DeviceWeak
 		vkBindings[i].descriptorCount = bindings[i].descriptorCount;
 		vkBindings[i].stageFlags = static_cast<VkShaderStageFlags>(bindings[i].stageFlags);
 		vkBindings[i].pImmutableSamplers = nullptr;
-		if (bindings[i].immutableSampler)
-		{
-			vkBindings[i].pImmutableSamplers = &bindings[i].immutableSampler->getVkHandle();
-		}
+		if (bindings[i].immutableSampler) { vkBindings[i].pImmutableSamplers = &bindings[i].immutableSampler->getVkHandle(); }
 	}
 	vkLayoutCreateInfo.sType = static_cast<VkStructureType>(StructureType::e_DESCRIPTOR_SET_LAYOUT_CREATE_INFO);
 	vkLayoutCreateInfo.bindingCount = static_cast<uint32_t>(getCreateInfo().getNumBindings());
 	vkLayoutCreateInfo.pBindings = vkBindings.get();
-	vkThrowIfFailed(
-		getDevice()->getVkBindings().vkCreateDescriptorSetLayout(getDevice()->getVkHandle(), &vkLayoutCreateInfo, nullptr, &_vkHandle), "Create Descriptor Set Layout failed");
+	vkThrowIfFailed(getDevice()->getVkBindings().vkCreateDescriptorSetLayout(getDevice()->getVkHandle(), &vkLayoutCreateInfo, nullptr, &_vkHandle), "Create Descriptor Set Layout failed");
 }
 //!\endcond
 } // namespace impl

@@ -13,6 +13,7 @@
 #include <cstring>
 #include <string>
 #include <cstdio>
+#include <cctype>
 #include <cwchar>
 
 namespace pvr {
@@ -28,34 +29,31 @@ inline std::basic_string<wchar_t> vaFormatString(const wchar_t* const format, va
 	bool result = true;
 
 #if defined(_WIN32)
-	int newStringSize = _vscwprintf(format, argumentList);
+	size_t newStringSize = (size_t)_vscwprintf(format, argumentList);
 #else
 	va_list argumentListCopy;
 
 	va_copy(argumentListCopy, argumentList);
-	int newStringSize = vswprintf(0, 0, format, argumentListCopy);
+	size_t newStringSize = (size_t)vswprintf(0, 0, format, argumentListCopy);
 	va_end(argumentListCopy);
 #endif
 
 	// Create a new std::string
 	std::basic_string<wchar_t> newString;
-	newString.resize(static_cast<uint32_t>(newStringSize + 1));
+	newString.resize(newStringSize + 1);
 
 	{
 #ifdef _WIN32
-		if (_vsnwprintf_s(const_cast<wchar_t*>(newString.c_str()), newStringSize + 1, newStringSize, format, argumentList) != newStringSize)
+		if (static_cast<size_t>(_vsnwprintf_s(const_cast<wchar_t*>(newString.c_str()), newStringSize + 1, newStringSize, format, argumentList)) != newStringSize)
 #else
-		if (vswprintf(const_cast<wchar_t*>(newString.c_str()), static_cast<size_t>(newStringSize) + 1, format, argumentList) != newStringSize)
+		if (static_cast<size_t>(vswprintf(const_cast<wchar_t*>(newString.c_str()), newStringSize + 1, format, argumentList)) != newStringSize)
 #endif
 		{
 			result = false;
 		}
 	}
 
-	if (!result)
-	{
-		newString.resize(0);
-	}
+	if (!result) { newString.resize(0); }
 
 	return newString;
 }
@@ -74,9 +72,9 @@ inline std::string createFormatted(const char* const format, ...)
 	va_list vaArgsCopy;
 	va_copy(vaArgsCopy, vaArgs);
 #if defined(_WIN32)
-	const int iLen = vsnprintf(nullptr, 0, format, vaArgsCopy);
+	const size_t iLen = (size_t)vsnprintf(nullptr, 0, format, vaArgsCopy);
 #else
-	const int iLen = std::vsnprintf(nullptr, 0, format, vaArgsCopy);
+	const size_t iLen = (size_t)std::vsnprintf(nullptr, 0, format, vaArgsCopy);
 #endif
 	va_end(vaArgsCopy);
 
@@ -106,35 +104,13 @@ inline std::basic_string<wchar_t> createFormatted(const wchar_t* format, ...)
 	return newString;
 }
 
-/// <summary>Transforms a std::string to lowercase in place.</summary>
-/// <param name="str">A std::string to transform to lowercase.</param>
-/// <returns>The string passed as a param, transformed to lowercase in-place.
-/// If read only, behaviour is undefined.</returns>
-inline std::string& toLower(std::string& str)
-{
-	std::transform(str.begin(), str.end(), str.begin(), tolower);
-	return str;
-}
-
-/// <summary>Transforms a std::string to lowercase.</summary>
-/// <param name="str">A std::string to transform.</param>
-/// <returns>A string otherwise equal to the param str, but transformed to lowercase</returns>
-inline std::string toLower(const std::string& str)
-{
-	std::string s = str;
-	return toLower(s);
-}
-
 /// <summary>Skips any beginning space, tab or new-line characters, advancing the pointer to the first
 /// non-whitespace character</summary>
 /// <param name="pszString">Pointer to a c-style string. Will be advanced to the first non-whitespace char (or the null
 /// terminator if no other characters exist)</param>
 inline void ignoreWhitespace(char** pszString)
 {
-	while (*pszString[0] == '\t' || *pszString[0] == '\n' || *pszString[0] == '\r' || *pszString[0] == ' ')
-	{
-		(*pszString)++;
-	}
+	while (*pszString[0] == '\t' || *pszString[0] == '\n' || *pszString[0] == '\r' || *pszString[0] == ' ') { (*pszString)++; }
 }
 
 /// <summary>Reads next strings to the end of the line and interperts as a token.</summary>
@@ -167,18 +143,12 @@ inline bool concatenateLinesUntil(std::string& outStr, int& line, const std::vec
 	size_t nLen;
 
 	nLen = 0;
-	for (i = line; i < limit; ++i)
+	for (i = static_cast<uint32_t>(line); i < limit; ++i)
 	{
-		if (strcmp(lines[i].c_str(), endStr) == 0)
-		{
-			break;
-		}
+		if (strcmp(lines[i].c_str(), endStr) == 0) { break; }
 		nLen += strlen(lines[i].c_str()) + 1;
 	}
-	if (i == limit)
-	{
-		return false;
-	}
+	if (i == limit) { return false; }
 
 	if (nLen != 0u)
 	{
@@ -186,84 +156,43 @@ inline bool concatenateLinesUntil(std::string& outStr, int& line, const std::vec
 
 		outStr.reserve(nLen);
 
-		for (j = line; j < i; ++j)
+		for (j = static_cast<uint32_t>(line); j < i; ++j)
 		{
 			outStr.append(lines[j]);
 			outStr.append("\n");
 		}
 	}
 
-	line = i;
+	line = static_cast<int>(i);
 	return true;
 }
 
-/// <summary>Tests if a std::string starts with another std::string.</summary>
-/// <param name="str">The std::string whose beginning will be checked</param>
-/// <param name="substr">The sequence of characters to check if str starts with</param>
-/// <returns>true if the std::string substr is indeed the first characters of str, false otherwise.</returns>
-inline bool startsWith(const char* str, const char* substr)
+/// <summary>Transforms a std::string to lowercase.</summary>
+/// <param name="str">A std::string to transform.</param>
+/// <returns>A string otherwise equal to the param str, but transformed to lowercase</returns>
+inline void toLower(std::string& str)
 {
-	int current = 0;
-	while ((str[current] != 0) && (substr[current] != 0))
-	{
-		if (str[current] != substr[current])
-		{
-			return false;
-		}
-		++current;
-	}
-	if (!str[current] && (substr[current] != 0))
-	{
-		return false;
-	}
-	return true;
+	std::transform(str.begin(), str.end(), str.begin(), [](char c) { return static_cast<char>(std::tolower(static_cast<int>(c))); });
 }
+
+/// <summary>Transforms a std::string to lowercase.</summary>
+/// <param name="str">A std::string to transform.</param>
+/// <returns>A string otherwise equal to the param str, but transformed to lowercase</returns>
+inline std::string toLower(const std::string& str)
+{
+	std::string loweredString = str;
+	pvr::strings::toLower(loweredString);
+	return loweredString;
+}
+
 /// <summary>Tests if a std::string starts with another std::string.</summary>
 /// <param name="str">The std::string whose beginning will be checked</param>
 /// <param name="substr">The sequence of characters to check if str starts with</param>
 /// <returns>true if the std::string substr is indeed the first characters of str, false otherwise.</returns>
 inline bool startsWith(const std::string& str, const std::string& substr)
 {
-	return startsWith(str.c_str(), substr.c_str());
-}
-
-/// <summary>Tests if a std::string starts with another std::string.</summary>
-/// <param name="str">The std::string whose beginning will be checked</param>
-/// <param name="substr">The sequence of characters to check if str starts with</param>
-/// <returns>true if the std::string substr is indeed the first characters of str, false otherwise.</returns>
-inline bool startsWith(const std::string& str, const char* substr)
-{
-	return startsWith(str.c_str(), substr);
-}
-
-/// <summary>Tests if a std::string ends with another std::string.</summary>
-/// <param name="str">The std::string whose end will be checked. Not null terminated - length is passed explicitly.</param>
-/// <param name="lenStr">The length of str</param>
-/// <param name="substr">The sequence of characters to check if str ends with. Not null terminated - length is passed explicitly.</param>
-/// <param name="lenSubstr">The length of Substr</param>
-/// <returns>true if the std::string substr is indeed the last characters of str, false otherwise.</returns>
-inline bool endsWith(const char* str, int32_t lenStr, const char* substr, int32_t lenSubstr)
-{
-	if (lenSubstr > lenStr || ((lenStr--) == 0))
-	{
-		return false;
-	}
-	if ((lenSubstr--) == 0)
-	{
-		return true;
-	}
-	while (lenStr >= 0 && lenSubstr >= 0)
-	{
-		if (str[lenStr--] != substr[lenSubstr--])
-		{
-			return false;
-		}
-	}
-	if (!lenStr && (lenSubstr != 0))
-	{
-		return false;
-	}
-	return true;
+	if (str.rfind(substr, 0) == 0) { return true; };
+	return false;
 }
 
 /// <summary>Tests if a std::string ends with another std::string.</summary>
@@ -272,25 +201,11 @@ inline bool endsWith(const char* str, int32_t lenStr, const char* substr, int32_
 /// <returns>true if the std::string substr is indeed the last characters of str, false otherwise.</returns>
 inline bool endsWith(const std::string& str, const std::string& substr)
 {
-	return endsWith(str.c_str(), static_cast<int32_t>(str.length()), substr.c_str(), static_cast<int32_t>(substr.length()));
-}
-
-/// <summary>Tests if a std::string starts with another std::string.</summary>
-/// <param name="str">The std::string whose end will be checked.</param>
-/// <param name="substr">The sequence of characters to check if str starts with.</param>
-/// <returns>true if the std::string substr is indeed the first characters of str, false otherwise.</returns>
-inline bool endsWith(const std::string& str, const char* substr)
-{
-	return endsWith(str.c_str(), static_cast<int32_t>(str.length()), substr, static_cast<int32_t>(strlen(substr)));
-}
-
-/// <summary>Tests if a std::string starts with another std::string.</summary>
-/// <param name="str">The std::string whose end will be checked.</param>
-/// <param name="substr">The sequence of characters to check if str starts with.</param>
-/// <returns>true if the std::string substr is indeed the first characters of str, false otherwise.</returns>
-inline bool endsWith(const char* str, const char* substr)
-{
-	return endsWith(str, static_cast<int32_t>(strlen(str)), substr, static_cast<int32_t>(strlen(substr)));
+	if (str.length() >= substr.length()) { return (0 == str.compare(str.length() - substr.length(), substr.length(), substr)); }
+	else
+	{
+		return false;
+	}
 }
 
 /// <summary>Retrieves the file directory for the given file path.</summary>
@@ -300,10 +215,7 @@ inline void getFileDirectory(const std::string& filePath, std::string& outFileDi
 {
 	outFileDir.clear();
 	auto pos = filePath.find_last_of("/");
-	if (pos == std::string::npos)
-	{
-		return;
-	}
+	if (pos == std::string::npos) { return; }
 	outFileDir.assign(filePath.substr(0, pos));
 }
 
@@ -321,7 +233,7 @@ inline void getFileNameAndExtension(const std::string& fileAndExtension, std::st
 		extension = "";
 		return;
 	}
-	size_t position = fileAndExtension.rend() - it; // rend is the position one-after the start of the std::string.
+	auto position = fileAndExtension.rend() - it; // rend is the position one-after the start of the std::string.
 	filename.assign(fileAndExtension.begin(), fileAndExtension.begin() + position - 1);
 	extension.assign(fileAndExtension.begin() + position, fileAndExtension.end());
 }

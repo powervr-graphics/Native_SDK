@@ -81,17 +81,6 @@ typedef std::weak_ptr<impl::Allocator_> AllocatorWeakPtr;
 /// <summary>Forwared-declared reference-counted handle to a DeviceMemoryWrapper. For detailed documentation, see below</summary>
 typedef std::shared_ptr<impl::DeviceMemoryWrapper_> DeviceMemoryWrapper;
 
-/// <summary>Provides a bitwise operator for an enum class</summary>
-#define ENUM_CLASS_BITWISE_OPERATOR(type_) \
-	inline type_ operator&(type_ lhs, type_ rhs) \
-	{ \
-		return static_cast<type_>(static_cast<uint32_t>(lhs) & static_cast<uint32_t>(rhs)); \
-	} \
-	inline type_ operator|(type_ lhs, type_ rhs) \
-	{ \
-		return static_cast<type_>(static_cast<uint32_t>(lhs) | static_cast<uint32_t>(rhs)); \
-	}
-
 /// <summary>Callback function called after successful vkAllocateMemory.</summary>
 typedef void(VKAPI_PTR* PFN_AllocateDeviceMemoryFunction)(Allocator allocator, uint32_t memoryType, pvrvk::DeviceMemory memory, VkDeviceSize size);
 
@@ -171,7 +160,7 @@ enum class AllocationCreateFlags
 	e_USER_DATA_COPY_STRING_BIT = impl::VMA_ALLOCATION_CREATE_USER_DATA_COPY_STRING_BIT,
 	e_FLAG_BITS_MAX_ENUM = impl::VMA_ALLOCATION_CREATE_FLAG_BITS_MAX_ENUM
 };
-ENUM_CLASS_BITWISE_OPERATOR(AllocationCreateFlags)
+DEFINE_ENUM_BITWISE_OPERATORS(AllocationCreateFlags)
 
 /// <summary>The AllocatorCreateFlags enum set defines a set of flags modifying the way in which a VmaAllocator will function.</summary>
 enum class AllocatorCreateFlags
@@ -209,7 +198,7 @@ enum class AllocatorCreateFlags
 
 	e_FLAG_BITS_MAX_ENUM = impl::VMA_ALLOCATOR_CREATE_FLAG_BITS_MAX_ENUM
 };
-ENUM_CLASS_BITWISE_OPERATOR(AllocatorCreateFlags)
+DEFINE_ENUM_BITWISE_OPERATORS(AllocatorCreateFlags)
 
 /// <summary>The MemoryUsage enum set provides a high level mechanism for specifying how created memory will be used</summary>
 enum class MemoryUsage
@@ -252,7 +241,7 @@ enum class PoolCreateFlags
 
 	e_FLAG_BITS_MAX_ENUM = impl::VMA_POOL_CREATE_FLAG_BITS_MAX_ENUM
 };
-ENUM_CLASS_BITWISE_OPERATOR(PoolCreateFlags)
+DEFINE_ENUM_BITWISE_OPERATORS(PoolCreateFlags)
 
 /// <summary>Debug Report flags to be used when creating the VmaAllocator object. These flags will effect the way in which vma will provide debug logging.<summary>
 enum class DebugReportFlags
@@ -267,8 +256,7 @@ enum class DebugReportFlags
 	Defragments = 0x4,
 	All = DeviceMemory | Allocation | Defragments,
 };
-ENUM_CLASS_BITWISE_OPERATOR(DebugReportFlags)
-#undef ENUM_CLASS_BITWISE_OPERATOR
+DEFINE_ENUM_BITWISE_OPERATORS(DebugReportFlags)
 
 /// <summary>The AllocationCreateInfo structure will control the way in which any one particular allocation is made.</summary>
 struct AllocationCreateInfo
@@ -384,7 +372,10 @@ struct AllocatorCreateInfo
 		const pvrvk::AllocationCallbacks* pAllocationCallbacks = nullptr, const DeviceMemoryCallbacks* pDeviceMemoryCallbacks = nullptr)
 		: flags(flags), device(device), preferredLargeHeapBlockSize(preferredLargeHeapBlockSize), pAllocationCallbacks(pAllocationCallbacks),
 		  pDeviceMemoryCallbacks(pDeviceMemoryCallbacks), frameInUseCount(frameInUseCount), pHeapSizeLimit(pHeapSizeLimit), reportFlags(debugReportFlags)
-	{}
+	{
+		if (device->getEnabledExtensionTable().khrDedicatedAllocationEnabled && device->getEnabledExtensionTable().khrGetMemoryRequirements2Enabled)
+		{ flags |= AllocatorCreateFlags::e_KHR_DEDICATED_ALLOCATION_BIT; }
+	}
 };
 
 /// <summary>Optional configuration parameters to be passed to function vmaDefragment().</summary>
@@ -393,17 +384,11 @@ struct DefragmentationInfo : private impl::VmaDefragmentationInfo
 	/// <summary>Maximum total numbers of bytes that can be copied while moving allocations to different places.
 	/// Default is `VK_WHOLE_SIZE`, which means no limit.</summary>
 	/// <returns>The maximum total number of bytes which can be copied while moving allocations</returns>
-	pvrvk::DeviceSize getMaxBytesToMove() const
-	{
-		return maxBytesToMove;
-	}
+	pvrvk::DeviceSize getMaxBytesToMove() const { return maxBytesToMove; }
 	/// <summary>Maximum number of allocations that can be moved to different place.
 	/// Default is `UINT32_MAX`, which means no limit.</summary>
 	/// <returns>The maximum number of allocation which can be moved</returns>
-	uint32_t getMaxAllocationsToMove() const
-	{
-		return maxAllocationsToMove;
-	}
+	uint32_t getMaxAllocationsToMove() const { return maxAllocationsToMove; }
 
 	/// <summary>Setter for controlling the maximum number of bytes which can be copied when moving allocations.</summary>
 	/// <param name="bytesToMove">The maximum number of bytes which can be copied when moving allocations</param>
@@ -430,70 +415,37 @@ struct StatInfo : private impl::VmaStatInfo
 public:
 	/// <summary>Getter for the number of `VkDeviceMemory` Vulkan memory blocks allocated.</summary>
 	/// <returns>The number of `VkDeviceMemory` Vulkan memory blocks allocated</returns>
-	uint32_t getBlockCount() const
-	{
-		return blockCount;
-	}
+	uint32_t getBlockCount() const { return blockCount; }
 	/// <summary>Getter for the number of `VmaAllocation` allocation objects allocated.</summary>
 	/// <returns>The number of `VmaAllocation` allocation objects allocated.</returns>
-	uint32_t getAllocationCount() const
-	{
-		return allocationCount;
-	}
+	uint32_t getAllocationCount() const { return allocationCount; }
 	/// <summary>Getter for the number of free ranges of memory between allocations.</summary>
 	/// <returns>The number of free ranges of memory between allocations.</returns>
-	uint32_t getUnusedRangeCount() const
-	{
-		return unusedRangeCount;
-	}
+	uint32_t getUnusedRangeCount() const { return unusedRangeCount; }
 	/// <summary>Getter for the total number of bytes occupied.</summary>
 	/// <returns>The total number of bytes occupied</returns>
-	VkDeviceSize getUsedBytes() const
-	{
-		return usedBytes;
-	}
+	VkDeviceSize getUsedBytes() const { return usedBytes; }
 	/// <summary>Getter for the total number of bytes occupied by unused ranges.</summary>
 	/// <returns>The total number of bytes occupied by unused ranges</returns>
-	VkDeviceSize getUnusedBytes() const
-	{
-		return unusedBytes;
-	}
+	VkDeviceSize getUnusedBytes() const { return unusedBytes; }
 	/// <summary>Getter for the minimum allocation size.</summary>
 	/// <returns>The minimum allocation size</returns>
-	VkDeviceSize getAllocationSizeMin() const
-	{
-		return allocationSizeMin;
-	}
+	VkDeviceSize getAllocationSizeMin() const { return allocationSizeMin; }
 	/// <summary>Getter for the average allocation size.</summary>
 	/// <returns>The average allocation size</returns>
-	VkDeviceSize getAllocationSizeAvg() const
-	{
-		return allocationSizeAvg;
-	}
+	VkDeviceSize getAllocationSizeAvg() const { return allocationSizeAvg; }
 	/// <summary>Getter for the maximum allocation size.</summary>
 	/// <returns>The maximum allocation size</returns>
-	VkDeviceSize getAllocationSizeMax() const
-	{
-		return allocationSizeMax;
-	}
+	VkDeviceSize getAllocationSizeMax() const { return allocationSizeMax; }
 	/// <summary>Getter for the minimum number of bytes occupied by unused ranges.</summary>
 	/// <returns>The minimum number of bytes occupied by unused ranges</returns>
-	VkDeviceSize getUnusedRangeSizeMin() const
-	{
-		return unusedRangeSizeMin;
-	}
+	VkDeviceSize getUnusedRangeSizeMin() const { return unusedRangeSizeMin; }
 	/// <summary>Getter for the average number of bytes occupied by unused ranges.</summary>
 	/// <returns>The average number of bytes occupied by unused ranges</returns>
-	VkDeviceSize getUnusedRangeSizeAvg() const
-	{
-		return unusedRangeSizeAvg;
-	}
+	VkDeviceSize getUnusedRangeSizeAvg() const { return unusedRangeSizeAvg; }
 	/// <summary>Getter for the maximum number of bytes occupied by unused ranges.</summary>
 	/// <returns>The maximum number of bytes occupied by unused ranges</returns>
-	VkDeviceSize getUnusedRangeSizeMax() const
-	{
-		return unusedRangeSizeMax;
-	}
+	VkDeviceSize getUnusedRangeSizeMax() const { return unusedRangeSizeMax; }
 };
 
 /// <summary>General statistics from current state of Allocator.</summary>
@@ -595,7 +547,7 @@ struct PoolCreateInfo
 	uint32_t frameInUseCount;
 
 	/// <summary>Constructor for a pool creation info structure.</summary>
-	PoolCreateInfo() : memoryTypeIndex(-1), flags(PoolCreateFlags(0)), blockSize(0), minBlockCount(0), maxBlockCount(0), frameInUseCount(0) {}
+	PoolCreateInfo() : memoryTypeIndex(static_cast<uint32_t>(-1)), flags(PoolCreateFlags(0)), blockSize(0), minBlockCount(0), maxBlockCount(0), frameInUseCount(0) {}
 
 	/// <summary>Constructor for a pool creation info structure.</summary>
 	/// <param name="memoryTypeIndex">Vulkan memory type index to allocate this pool from</param>
@@ -622,10 +574,7 @@ private:
 		friend class Pool_;
 	};
 
-	static Pool constructShared(const PoolCreateInfo& poolCreateInfo)
-	{
-		return std::make_shared<Pool_>(make_shared_enabler{}, poolCreateInfo);
-	}
+	static Pool constructShared(const PoolCreateInfo& poolCreateInfo) { return std::make_shared<Pool_>(make_shared_enabler{}, poolCreateInfo); }
 
 	Allocator _allocator;
 	VmaPool _vmaPool;
@@ -687,10 +636,7 @@ public:
 
 	/// <summary>Unmapping device memory directly is not supported via VMA and instead the device memory should be unmapped using the
 	/// corresponding Device Memory's device memory allocation.</summary>
-	virtual void unmap()
-	{
-		throw std::runtime_error("VMA DeviceMemory cannot be unmapped, Use Allocation unmap");
-	}
+	virtual void unmap() { throw std::runtime_error("VMA DeviceMemory cannot be unmapped, Use Allocation unmap"); }
 	//!\endcond
 };
 
@@ -838,10 +784,7 @@ private:
 		friend class Allocator_;
 	};
 
-	static Allocator constructShared(const AllocatorCreateInfo& createInfo)
-	{
-		return std::make_shared<Allocator_>(make_shared_enabler{}, createInfo);
-	}
+	static Allocator constructShared(const AllocatorCreateInfo& createInfo) { return std::make_shared<Allocator_>(make_shared_enabler{}, createInfo); }
 
 	pvrvk::DeviceWeakPtr _device;
 	VmaAllocator _vmaAllocator;
@@ -949,17 +892,11 @@ public:
 /// <summary>Creates a Pool</summary>
 /// <param name="poolCreateInfo">Specifies how the created pool will be created</param>
 /// <returns>The created Memory Pool.</returns>
-inline Pool Allocator_::createPool(const PoolCreateInfo& poolCreateInfo)
-{
-	return Pool_::constructShared(poolCreateInfo);
-}
+inline Pool Allocator_::createPool(const PoolCreateInfo& poolCreateInfo) { return Pool_::constructShared(poolCreateInfo); }
 
 /// <summary>Getter for the allocator's device</summary>
 /// <returns>The device.</returns>
-inline pvrvk::DeviceWeakPtr Allocator_::getDevice()
-{
-	return _device;
-}
+inline pvrvk::DeviceWeakPtr Allocator_::getDevice() { return _device; }
 
 inline Allocation Allocator_::createMemoryAllocation(const AllocationCreateInfo& allocCreateInfo, const VmaAllocationInfo& allocInfo, VmaAllocation vmaAllocation)
 {
@@ -982,41 +919,24 @@ inline void Allocator_::onAllocateDeviceMemoryFunction(uint32_t memoryType, VkDe
 	_deviceMemory.emplace_back(deviceMemory);
 
 	if (uint32_t(_reportFlags & DebugReportFlags::DeviceMemory) != 0)
-	{
-		Log(LogLevel::Debug, "VMA: New DeviceMemory 0x%llx, MemoryType %d, Size %lu bytes", memory, memoryType, size);
-	}
-
-	if (_deviceMemCallbacks.pfnAllocate)
-	{
-		_deviceMemCallbacks.pfnAllocate(shared_from_this(), memoryType, _deviceMemory.back(), size);
-	}
+	{ Log(LogLevel::Debug, "VMA: New DeviceMemory 0x%llx, MemoryType %d, Size %lu bytes", memory, memoryType, size); }
+	if (_deviceMemCallbacks.pfnAllocate) { _deviceMemCallbacks.pfnAllocate(shared_from_this(), memoryType, _deviceMemory.back(), size); }
 }
 
 inline void Allocator_::onFreeDeviceMemoryFunction(uint32_t memoryType, VkDeviceMemory memory, pvrvk::DeviceSize size)
 {
 	if (uint32_t(_reportFlags & DebugReportFlags::DeviceMemory) != 0)
-	{
-		Log(LogLevel::Debug, "VMA: Freed DeviceMemory 0x%llx: MemoryType %d, Size %lu bytes", memory, memoryType, size);
-	}
+	{ Log(LogLevel::Debug, "VMA: Freed DeviceMemory 0x%llx: MemoryType %d, Size %lu bytes", memory, memoryType, size); }
 	if (_deviceMemCallbacks.pfnFree)
 	{
 		auto it = std::find_if(_deviceMemory.begin(), _deviceMemory.end(), [&](const pvrvk::DeviceMemory& deviceMemory) { return deviceMemory->getVkHandle() == memory; });
-		if (it != _deviceMemory.end())
-		{
-			_deviceMemCallbacks.pfnAllocate(shared_from_this(), memoryType, *it, size);
-		}
+		if (it != _deviceMemory.end()) { _deviceMemCallbacks.pfnAllocate(shared_from_this(), memoryType, *it, size); }
 	}
 }
 
-inline uint32_t Allocation_::getMemoryType() const
-{
-	return _allocInfo.memoryType;
-}
+inline uint32_t Allocation_::getMemoryType() const { return _allocInfo.memoryType; }
 
-inline bool Allocation_::isMapped() const
-{
-	return _mappedSize > 0;
-}
+inline bool Allocation_::isMapped() const { return _mappedSize > 0; }
 
 inline bool Allocation_::isMappable() const
 {
@@ -1024,15 +944,9 @@ inline bool Allocation_::isMappable() const
 		(static_cast<uint32_t>(getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) != 0);
 }
 
-inline pvrvk::MemoryPropertyFlags Allocation_::getMemoryFlags() const
-{
-	return _flags;
-}
+inline pvrvk::MemoryPropertyFlags Allocation_::getMemoryFlags() const { return _flags; }
 
-inline pvrvk::DeviceSize Allocation_::getOffset() const
-{
-	return _allocInfo.offset;
-}
+inline pvrvk::DeviceSize Allocation_::getOffset() const { return _allocInfo.offset; }
 
 inline void Allocation_::flushRange(pvrvk::DeviceSize offset, pvrvk::DeviceSize size)
 {
@@ -1069,17 +983,13 @@ inline void Allocation_::invalidateRange(VkDeviceSize offset, VkDeviceSize size)
 	range.memory = getVkHandle();
 	range.offset = offset;
 	range.size = size;
-	pvrvk::impl::vkThrowIfFailed(
-		_device.lock()->getVkBindings().vkInvalidateMappedMemoryRanges(_device.lock()->getVkHandle(), 1, &range), "Failed to invalidate range of memory block");
+	pvrvk::impl::vkThrowIfFailed(_device.lock()->getVkBindings().vkInvalidateMappedMemoryRanges(_device.lock()->getVkHandle(), 1, &range), "Failed to invalidate range of memory block");
 }
 
 inline void Allocation_::recalculateOffsetAndSize(VkDeviceSize& offset, VkDeviceSize& size) const
 {
 	offset += getOffset();
-	if (size == VK_WHOLE_SIZE)
-	{
-		size = getOffset() + getSize() - offset;
-	}
+	if (size == VK_WHOLE_SIZE) { size = getOffset() + getSize() - offset; }
 	assert(size <= _allocInfo.size);
 }
 
@@ -1089,89 +999,44 @@ inline void* Allocation_::getUserData()
 	return _allocInfo.pUserData;
 }
 
-inline AllocationCreateFlags Allocation_::getCreateFlags() const
-{
-	return _createFlags;
-}
+inline AllocationCreateFlags Allocation_::getCreateFlags() const { return _createFlags; }
 
-inline bool Allocation_::canBecomeLost() const
-{
-	return static_cast<uint32_t>(_createFlags & AllocationCreateFlags::e_CAN_BECOME_LOST_BIT) != 0;
-}
+inline bool Allocation_::canBecomeLost() const { return static_cast<uint32_t>(_createFlags & AllocationCreateFlags::e_CAN_BECOME_LOST_BIT) != 0; }
 
-inline VkDeviceSize Allocation_::getMappedOffset() const
-{
-	return _mappedOffset;
-}
+inline VkDeviceSize Allocation_::getMappedOffset() const { return _mappedOffset; }
 
-inline VkDeviceSize Allocation_::getMappedSize() const
-{
-	return _mappedSize;
-}
+inline VkDeviceSize Allocation_::getMappedSize() const { return _mappedSize; }
 
-inline VkDeviceSize Allocation_::getSize() const
-{
-	return _allocInfo.size;
-}
+inline VkDeviceSize Allocation_::getSize() const { return _allocInfo.size; }
 
-inline Pool Allocation_::getMemoryPool()
-{
-	return _pool;
-}
+inline Pool Allocation_::getMemoryPool() { return _pool; }
 } // namespace impl
 
-inline pvrvk::DeviceSize PoolStats::getUnusedSize() const
-{
-	return unusedSize;
-}
+inline pvrvk::DeviceSize PoolStats::getUnusedSize() const { return unusedSize; }
 
-inline size_t PoolStats::getAllocationCount() const
-{
-	return allocationCount;
-}
+inline size_t PoolStats::getAllocationCount() const { return allocationCount; }
 
-inline pvrvk::DeviceSize PoolStats::getUnusedRangeSizeMax() const
-{
-	return unusedRangeSizeMax;
-}
+inline pvrvk::DeviceSize PoolStats::getUnusedRangeSizeMax() const { return unusedRangeSizeMax; }
 
-inline size_t PoolStats::getUnusedRangeCount() const
-{
-	return unusedRangeCount;
-}
+inline size_t PoolStats::getUnusedRangeCount() const { return unusedRangeCount; }
 
-inline pvrvk::DeviceSize PoolStats::getSize() const
-{
-	return size;
-}
+inline pvrvk::DeviceSize PoolStats::getSize() const { return size; }
 
 /// <summary>Retrieves DefragmentationStats regarding the bytes which have been moved</summary>
 /// <returns>A set of DefragmentationStats corresponding to which bytes which have been moved.</returns>
-inline pvrvk::DeviceSize DefragmentationStats::getBytesMoved() const
-{
-	return bytesMoved;
-}
+inline pvrvk::DeviceSize DefragmentationStats::getBytesMoved() const { return bytesMoved; }
 
 /// <summary>Retrieves DefragmentationStats regarding the bytes which have been freed</summary>
 /// <returns>A set of DefragmentationStats corresponding to which bytes which have been freed.</returns>
-inline pvrvk::DeviceSize DefragmentationStats::getBytesFreed() const
-{
-	return bytesFreed;
-}
+inline pvrvk::DeviceSize DefragmentationStats::getBytesFreed() const { return bytesFreed; }
 
 /// <summary>Retrieves DefragmentationStats regarding the device memory blocks which have been moved</summary>
 /// <returns>A set of DefragmentationStats corresponding to which device memory blocks which have been moved.</returns>
-inline uint32_t DefragmentationStats::getAllocationsMoved() const
-{
-	return allocationsMoved;
-}
+inline uint32_t DefragmentationStats::getAllocationsMoved() const { return allocationsMoved; }
 
 /// <summary>Retrieves DefragmentationStats regarding the device memory blocks which have been freed</summary>
 /// <returns>A set of DefragmentationStats corresponding to which device memory blocks which have been freed.</returns>
-inline uint32_t DefragmentationStats::getDeviceMemoryBlocksFreed() const
-{
-	return deviceMemoryBlocksFreed;
-}
+inline uint32_t DefragmentationStats::getDeviceMemoryBlocksFreed() const { return deviceMemoryBlocksFreed; }
 
 /// <summary>Creates a device memory allocator</summary>
 /// <param name="createInfo">Specifies how the created device memory allocator will function</param>

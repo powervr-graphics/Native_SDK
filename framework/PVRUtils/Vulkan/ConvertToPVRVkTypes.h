@@ -21,10 +21,7 @@ namespace utils {
 /// <summary>Contain functions to convert several PowerVR Framework types to their Native, Vulkan representations,
 /// usually, from an enumeration to a vulkan type.</summary>
 #define PVR_DECLARE_DIRECT_MAPPING(_pvrvktype_, _frameworktype_) \
-	inline _pvrvktype_ convertToPVRVk(_frameworktype_ item) \
-	{ \
-		return (_pvrvktype_)item; \
-	}
+	inline _pvrvktype_ convertToPVRVk(_frameworktype_ item) { return (_pvrvktype_)item; }
 PVR_DECLARE_DIRECT_MAPPING(::pvrvk::PrimitiveTopology, ::pvr::PrimitiveTopology)
 PVR_DECLARE_DIRECT_MAPPING(::pvrvk::BufferUsageFlags, ::pvr::BufferUsageFlags)
 PVR_DECLARE_DIRECT_MAPPING(::pvrvk::BlendOp, ::pvr::BlendOp)
@@ -44,16 +41,12 @@ PVR_DECLARE_DIRECT_MAPPING(::pvrvk::FrontFace, ::pvr::PolygonWindingOrder)
 /// <summary>Specifies that the format is unsupported.</summary>
 /// <param name="fmt">Pixel format</param>
 #define UNSUPPORTED_FORMAT(fmt) \
-	case static_cast<uint64_t>(CompressedPixelFormat::fmt): \
-		return pvrvk::Format::e_UNDEFINED;
+	case static_cast<uint64_t>(CompressedPixelFormat::fmt): return pvrvk::Format::e_UNDEFINED;
 
 /// <summary>Convert a pvr::IndexType to its Native, Vulkan representation.</summary>
 /// <param name="type">A pvr::IndexType to convert to its Vulkan representation</param>
 /// <returns>A pvrvk::IndexType corresponding to the pvr::IndexType</returns>
-inline pvrvk::IndexType convertToPVRVk(IndexType type)
-{
-	return (type == IndexType::IndexType16Bit ? pvrvk::IndexType::e_UINT16 : pvrvk::IndexType::e_UINT32);
-}
+inline pvrvk::IndexType convertToPVRVk(IndexType type) { return (type == IndexType::IndexType16Bit ? pvrvk::IndexType::e_UINT16 : pvrvk::IndexType::e_UINT32); }
 
 /// <summary>Convert to pvrvk image view type</summary>
 /// <param name="texDimemsion">Texture dimension</param>
@@ -62,38 +55,25 @@ inline pvrvk::ImageViewType convertToPVRVk(ImageViewType texDimemsion)
 {
 	switch (texDimemsion)
 	{
-	case ImageViewType::ImageView1D:
-		return pvrvk::ImageViewType::e_1D;
+	case ImageViewType::ImageView1D: return pvrvk::ImageViewType::e_1D;
 
-	case ImageViewType::ImageView2D:
-		return pvrvk::ImageViewType::e_2D;
-	case ImageViewType::ImageView2DCube:
-		return pvrvk::ImageViewType::e_CUBE;
-	case ImageViewType::ImageView2DArray:
-		return pvrvk::ImageViewType::e_2D_ARRAY;
-	case ImageViewType::ImageView3D:
-		return pvrvk::ImageViewType::e_3D;
-	default:
-		assertion(false, "Invalid texture dimension");
-		return pvrvk::ImageViewType::e_MAX_ENUM;
+	case ImageViewType::ImageView2D: return pvrvk::ImageViewType::e_2D;
+	case ImageViewType::ImageView2DCube: return pvrvk::ImageViewType::e_CUBE;
+	case ImageViewType::ImageView2DArray: return pvrvk::ImageViewType::e_2D_ARRAY;
+	case ImageViewType::ImageView3D: return pvrvk::ImageViewType::e_3D;
+	default: assertion(false, "Invalid texture dimension"); return pvrvk::ImageViewType::e_MAX_ENUM;
 	}
 }
 
 /// <summary>Convert to pvrvk vertex input rate</summary>
 /// <param name="stepRate">The step rate of the vertex input(Vertex, Instance)</param>
 /// <returns>A pvrvk::VertexInputRate (pvrvk::VertexInputRate::e_VERTEX, pvrvk::VertexInputRate::e_INSTANCE)</returns>
-inline pvrvk::VertexInputRate convertToPVRVk(StepRate stepRate)
-{
-	return (stepRate == StepRate::Vertex ? pvrvk::VertexInputRate::e_VERTEX : pvrvk::VertexInputRate::e_INSTANCE);
-}
+inline pvrvk::VertexInputRate convertToPVRVk(StepRate stepRate) { return (stepRate == StepRate::Vertex ? pvrvk::VertexInputRate::e_VERTEX : pvrvk::VertexInputRate::e_INSTANCE); }
 
 /// <summary>Convert to pvrvk Data type</summary>
 /// <param name="dataType">The pvr::DataType to convert to Vulkan type</param>
 /// <returns>A pvrvk::DataType</returns>
-inline pvrvk::DataType convertToPVRVk(DataType dataType)
-{
-	return static_cast<pvrvk::DataType>(dataType);
-}
+inline pvrvk::DataType convertToPVRVk(DataType dataType) { return static_cast<pvrvk::DataType>(dataType); }
 
 /// <summary>Convert to pvrvk sample count</summary>
 /// <param name="numSamples">Number of samples</param>
@@ -133,42 +113,25 @@ inline pvrvk::Format convertToPVRVkVertexInputFormat(DataType dataType, uint8_t 
 	static const pvrvk::Format UInt16Norm[] = { pvrvk::Format::e_R16_UNORM, pvrvk::Format::e_R16G16_UNORM, pvrvk::Format::e_R16G16B16_UNORM, pvrvk::Format::e_R16G16B16A16_UNORM };
 	switch (dataType)
 	{
-	case DataType::Float32:
-		return Float32[width - 1];
-	case DataType::Int16:
-		return Int16[width - 1];
-	case DataType::Int16Norm:
-		return Int16Norm[width - 1];
-	case DataType::Int8:
-		return Int8[width - 1];
-	case DataType::Int8Norm:
-		return Int8Norm[width - 1];
-	case DataType::UInt8:
-		return UInt8[width - 1];
-	case DataType::UInt8Norm:
-		return UInt8Norm[width - 1];
-	case DataType::UInt16:
-		return UInt16[width - 1];
-	case DataType::UInt16Norm:
-		return UInt16Norm[width - 1];
-	case DataType::Int32:
-		return Int32[width - 1];
-	case DataType::UInt32:
-		return UInt32[width - 1];
-	case DataType::RGBA:
-		return pvrvk::Format::e_R8G8B8A8_UNORM;
-	case DataType::UBYTE4:
-		return pvrvk::Format::e_R8G8B8A8_UINT;
-	case DataType::DEC3N:
-		return pvrvk::Format::e_A2R10G10B10_UNORM_PACK32;
-	case DataType::Fixed16_16:
-		return pvrvk::Format::e_R16G16_SNORM;
-	case DataType::ABGR:
-		return pvrvk::Format::e_A8B8G8R8_UNORM_PACK32;
+	case DataType::Float32: return Float32[width - 1];
+	case DataType::Int16: return Int16[width - 1];
+	case DataType::Int16Norm: return Int16Norm[width - 1];
+	case DataType::Int8: return Int8[width - 1];
+	case DataType::Int8Norm: return Int8Norm[width - 1];
+	case DataType::UInt8: return UInt8[width - 1];
+	case DataType::UInt8Norm: return UInt8Norm[width - 1];
+	case DataType::UInt16: return UInt16[width - 1];
+	case DataType::UInt16Norm: return UInt16Norm[width - 1];
+	case DataType::Int32: return Int32[width - 1];
+	case DataType::UInt32: return UInt32[width - 1];
+	case DataType::RGBA: return pvrvk::Format::e_R8G8B8A8_UNORM;
+	case DataType::UBYTE4: return pvrvk::Format::e_R8G8B8A8_UINT;
+	case DataType::DEC3N: return pvrvk::Format::e_A2R10G10B10_UNORM_PACK32;
+	case DataType::Fixed16_16: return pvrvk::Format::e_R16G16_SNORM;
+	case DataType::ABGR: return pvrvk::Format::e_A8B8G8R8_UNORM_PACK32;
 	case DataType::Custom:
 	case DataType::None:
-	default:
-		return pvrvk::Format::e_UNDEFINED;
+	default: return pvrvk::Format::e_UNDEFINED;
 	}
 }
 
@@ -202,65 +165,41 @@ inline pvrvk::Format convertToPVRVkPixelFormat(PixelFormat format, ColorSpace co
 			return isSrgb ? pvrvk::Format::e_PVRTC1_4BPP_SRGB_BLOCK_IMG : pvrvk::Format::e_PVRTC1_4BPP_UNORM_BLOCK_IMG;
 
 		// OTHER COMPRESSED
-		case static_cast<uint64_t>(CompressedPixelFormat::SharedExponentR9G9B9E5):
-			return pvrvk::Format::e_E5B9G9R9_UFLOAT_PACK32;
-		case static_cast<uint64_t>(CompressedPixelFormat::ETC2_RGB):
-			return (isSrgb ? pvrvk::Format::e_ETC2_R8G8B8_SRGB_BLOCK : pvrvk::Format::e_ETC2_R8G8B8_UNORM_BLOCK);
-		case static_cast<uint64_t>(CompressedPixelFormat::ETC2_RGBA):
-			return (isSrgb ? pvrvk::Format::e_ETC2_R8G8B8A8_SRGB_BLOCK : pvrvk::Format::e_ETC2_R8G8B8A8_UNORM_BLOCK);
-		case static_cast<uint64_t>(CompressedPixelFormat::ETC2_RGB_A1):
-			return (isSrgb ? pvrvk::Format::e_ETC2_R8G8B8A1_SRGB_BLOCK : pvrvk::Format::e_ETC2_R8G8B8A1_UNORM_BLOCK);
-		case static_cast<uint64_t>(CompressedPixelFormat::EAC_R11):
-			return (isSigned ? pvrvk::Format::e_EAC_R11_SNORM_BLOCK : pvrvk::Format::e_EAC_R11_UNORM_BLOCK);
-		case static_cast<uint64_t>(CompressedPixelFormat::EAC_RG11):
-			return (isSigned ? pvrvk::Format::e_EAC_R11G11_SNORM_BLOCK : pvrvk::Format::e_EAC_R11G11_UNORM_BLOCK);
+		case static_cast<uint64_t>(CompressedPixelFormat::SharedExponentR9G9B9E5): return pvrvk::Format::e_E5B9G9R9_UFLOAT_PACK32;
+		case static_cast<uint64_t>(CompressedPixelFormat::ETC2_RGB): return (isSrgb ? pvrvk::Format::e_ETC2_R8G8B8_SRGB_BLOCK : pvrvk::Format::e_ETC2_R8G8B8_UNORM_BLOCK);
+		case static_cast<uint64_t>(CompressedPixelFormat::ETC2_RGBA): return (isSrgb ? pvrvk::Format::e_ETC2_R8G8B8A8_SRGB_BLOCK : pvrvk::Format::e_ETC2_R8G8B8A8_UNORM_BLOCK);
+		case static_cast<uint64_t>(CompressedPixelFormat::ETC2_RGB_A1): return (isSrgb ? pvrvk::Format::e_ETC2_R8G8B8A1_SRGB_BLOCK : pvrvk::Format::e_ETC2_R8G8B8A1_UNORM_BLOCK);
+		case static_cast<uint64_t>(CompressedPixelFormat::EAC_R11): return (isSigned ? pvrvk::Format::e_EAC_R11_SNORM_BLOCK : pvrvk::Format::e_EAC_R11_UNORM_BLOCK);
+		case static_cast<uint64_t>(CompressedPixelFormat::EAC_RG11): return (isSigned ? pvrvk::Format::e_EAC_R11G11_SNORM_BLOCK : pvrvk::Format::e_EAC_R11G11_UNORM_BLOCK);
 
-		case static_cast<uint64_t>(CompressedPixelFormat::BC2):
-			return (isSrgb ? pvrvk::Format::e_BC2_SRGB_BLOCK : pvrvk::Format::e_BC2_UNORM_BLOCK);
-		case static_cast<uint64_t>(CompressedPixelFormat::BC3):
-			return (isSrgb ? pvrvk::Format::e_BC3_SRGB_BLOCK : pvrvk::Format::e_BC3_UNORM_BLOCK);
-		case static_cast<uint64_t>(CompressedPixelFormat::BC4):
-			return (isSigned ? pvrvk::Format::e_BC4_SNORM_BLOCK : pvrvk::Format::e_BC4_UNORM_BLOCK);
-		case static_cast<uint64_t>(CompressedPixelFormat::BC5):
-			return (isSigned ? pvrvk::Format::e_BC5_SNORM_BLOCK : pvrvk::Format::e_BC5_UNORM_BLOCK);
-		case static_cast<uint64_t>(CompressedPixelFormat::BC6):
-			return (isSigned ? pvrvk::Format::e_BC6H_SFLOAT_BLOCK : pvrvk::Format::e_BC6H_UFLOAT_BLOCK);
-		case static_cast<uint64_t>(CompressedPixelFormat::BC7):
-			return (isSrgb ? pvrvk::Format::e_BC7_SRGB_BLOCK : pvrvk::Format::e_BC7_UNORM_BLOCK);
-		case static_cast<uint64_t>(CompressedPixelFormat::ASTC_10x10):
-			return (isSrgb ? pvrvk::Format::e_ASTC_10x10_SRGB_BLOCK : pvrvk::Format::e_ASTC_10x10_UNORM_BLOCK);
-		case static_cast<uint64_t>(CompressedPixelFormat::ASTC_10x5):
-			return (isSrgb ? pvrvk::Format::e_ASTC_10x5_SRGB_BLOCK : pvrvk::Format::e_ASTC_10x5_UNORM_BLOCK);
-		case static_cast<uint64_t>(CompressedPixelFormat::ASTC_10x6):
-			return (isSrgb ? pvrvk::Format::e_ASTC_10x6_SRGB_BLOCK : pvrvk::Format::e_ASTC_10x6_UNORM_BLOCK);
-		case static_cast<uint64_t>(CompressedPixelFormat::ASTC_10x8):
-			return (isSrgb ? pvrvk::Format::e_ASTC_10x8_SRGB_BLOCK : pvrvk::Format::e_ASTC_10x8_UNORM_BLOCK);
-		case static_cast<uint64_t>(CompressedPixelFormat::ASTC_12x10):
-			return (isSrgb ? pvrvk::Format::e_ASTC_12x10_SRGB_BLOCK : pvrvk::Format::e_ASTC_12x10_UNORM_BLOCK);
-		case static_cast<uint64_t>(CompressedPixelFormat::ASTC_12x12):
-			return (isSrgb ? pvrvk::Format::e_ASTC_12x12_SRGB_BLOCK : pvrvk::Format::e_ASTC_12x12_UNORM_BLOCK);
-		case static_cast<uint64_t>(CompressedPixelFormat::ASTC_4x4):
-			return (isSrgb ? pvrvk::Format::e_ASTC_4x4_SRGB_BLOCK : pvrvk::Format::e_ASTC_4x4_UNORM_BLOCK);
-		case static_cast<uint64_t>(CompressedPixelFormat::ASTC_5x4):
-			return (isSrgb ? pvrvk::Format::e_ASTC_5x4_SRGB_BLOCK : pvrvk::Format::e_ASTC_5x4_UNORM_BLOCK);
-		case static_cast<uint64_t>(CompressedPixelFormat::ASTC_5x5):
-			return (isSrgb ? pvrvk::Format::e_ASTC_5x5_SRGB_BLOCK : pvrvk::Format::e_ASTC_5x5_UNORM_BLOCK);
-		case static_cast<uint64_t>(CompressedPixelFormat::ASTC_6x5):
-			return (isSrgb ? pvrvk::Format::e_ASTC_6x5_SRGB_BLOCK : pvrvk::Format::e_ASTC_6x5_UNORM_BLOCK);
-		case static_cast<uint64_t>(CompressedPixelFormat::ASTC_8x5):
-			return (isSrgb ? pvrvk::Format::e_ASTC_8x5_SRGB_BLOCK : pvrvk::Format::e_ASTC_8x5_UNORM_BLOCK);
-		case static_cast<uint64_t>(CompressedPixelFormat::ASTC_8x6):
-			return (isSrgb ? pvrvk::Format::e_ASTC_8x6_SRGB_BLOCK : pvrvk::Format::e_ASTC_8x6_UNORM_BLOCK);
-		case static_cast<uint64_t>(CompressedPixelFormat::ASTC_8x8):
-			return (isSrgb ? pvrvk::Format::e_ASTC_8x8_SRGB_BLOCK : pvrvk::Format::e_ASTC_8x8_UNORM_BLOCK);
+		case static_cast<uint64_t>(CompressedPixelFormat::BC1): return (isSrgb ? pvrvk::Format::e_BC1_RGBA_SRGB_BLOCK : pvrvk::Format::e_BC1_RGBA_UNORM_BLOCK);
+		case static_cast<uint64_t>(CompressedPixelFormat::BC2): return (isSrgb ? pvrvk::Format::e_BC2_SRGB_BLOCK : pvrvk::Format::e_BC2_UNORM_BLOCK);
+		case static_cast<uint64_t>(CompressedPixelFormat::BC3): return (isSrgb ? pvrvk::Format::e_BC3_SRGB_BLOCK : pvrvk::Format::e_BC3_UNORM_BLOCK);
+		case static_cast<uint64_t>(CompressedPixelFormat::BC4): return (isSigned ? pvrvk::Format::e_BC4_SNORM_BLOCK : pvrvk::Format::e_BC4_UNORM_BLOCK);
+		case static_cast<uint64_t>(CompressedPixelFormat::BC5): return (isSigned ? pvrvk::Format::e_BC5_SNORM_BLOCK : pvrvk::Format::e_BC5_UNORM_BLOCK);
+		case static_cast<uint64_t>(CompressedPixelFormat::BC6): return (isSigned ? pvrvk::Format::e_BC6H_SFLOAT_BLOCK : pvrvk::Format::e_BC6H_UFLOAT_BLOCK);
+		case static_cast<uint64_t>(CompressedPixelFormat::BC7): return (isSrgb ? pvrvk::Format::e_BC7_SRGB_BLOCK : pvrvk::Format::e_BC7_UNORM_BLOCK);
+		case static_cast<uint64_t>(CompressedPixelFormat::ASTC_10x10): return (isSrgb ? pvrvk::Format::e_ASTC_10x10_SRGB_BLOCK : pvrvk::Format::e_ASTC_10x10_UNORM_BLOCK);
+		case static_cast<uint64_t>(CompressedPixelFormat::ASTC_10x5): return (isSrgb ? pvrvk::Format::e_ASTC_10x5_SRGB_BLOCK : pvrvk::Format::e_ASTC_10x5_UNORM_BLOCK);
+		case static_cast<uint64_t>(CompressedPixelFormat::ASTC_10x6): return (isSrgb ? pvrvk::Format::e_ASTC_10x6_SRGB_BLOCK : pvrvk::Format::e_ASTC_10x6_UNORM_BLOCK);
+		case static_cast<uint64_t>(CompressedPixelFormat::ASTC_10x8): return (isSrgb ? pvrvk::Format::e_ASTC_10x8_SRGB_BLOCK : pvrvk::Format::e_ASTC_10x8_UNORM_BLOCK);
+		case static_cast<uint64_t>(CompressedPixelFormat::ASTC_12x10): return (isSrgb ? pvrvk::Format::e_ASTC_12x10_SRGB_BLOCK : pvrvk::Format::e_ASTC_12x10_UNORM_BLOCK);
+		case static_cast<uint64_t>(CompressedPixelFormat::ASTC_12x12): return (isSrgb ? pvrvk::Format::e_ASTC_12x12_SRGB_BLOCK : pvrvk::Format::e_ASTC_12x12_UNORM_BLOCK);
+		case static_cast<uint64_t>(CompressedPixelFormat::ASTC_4x4): return (isSrgb ? pvrvk::Format::e_ASTC_4x4_SRGB_BLOCK : pvrvk::Format::e_ASTC_4x4_UNORM_BLOCK);
+		case static_cast<uint64_t>(CompressedPixelFormat::ASTC_5x4): return (isSrgb ? pvrvk::Format::e_ASTC_5x4_SRGB_BLOCK : pvrvk::Format::e_ASTC_5x4_UNORM_BLOCK);
+		case static_cast<uint64_t>(CompressedPixelFormat::ASTC_5x5): return (isSrgb ? pvrvk::Format::e_ASTC_5x5_SRGB_BLOCK : pvrvk::Format::e_ASTC_5x5_UNORM_BLOCK);
+		case static_cast<uint64_t>(CompressedPixelFormat::ASTC_6x5): return (isSrgb ? pvrvk::Format::e_ASTC_6x5_SRGB_BLOCK : pvrvk::Format::e_ASTC_6x5_UNORM_BLOCK);
+		case static_cast<uint64_t>(CompressedPixelFormat::ASTC_8x5): return (isSrgb ? pvrvk::Format::e_ASTC_8x5_SRGB_BLOCK : pvrvk::Format::e_ASTC_8x5_UNORM_BLOCK);
+		case static_cast<uint64_t>(CompressedPixelFormat::ASTC_8x6): return (isSrgb ? pvrvk::Format::e_ASTC_8x6_SRGB_BLOCK : pvrvk::Format::e_ASTC_8x6_UNORM_BLOCK);
+		case static_cast<uint64_t>(CompressedPixelFormat::ASTC_8x8): return (isSrgb ? pvrvk::Format::e_ASTC_8x8_SRGB_BLOCK : pvrvk::Format::e_ASTC_8x8_UNORM_BLOCK);
+		case static_cast<uint64_t>(CompressedPixelFormat::RGBG8888): return (isSrgb ? pvrvk::Format::e_UNDEFINED : pvrvk::Format::e_G8B8G8R8_422_UNORM);
+		case static_cast<uint64_t>(CompressedPixelFormat::GRGB8888):
+			return (isSrgb ? pvrvk::Format::e_UNDEFINED : pvrvk::Format::e_B8G8R8G8_422_UNORM);
 
 			///////// UNSUPPORTED FORMATS
 			UNSUPPORTED_FORMAT(ETC1);
 			UNSUPPORTED_FORMAT(DXT2)
 			UNSUPPORTED_FORMAT(DXT4)
-			UNSUPPORTED_FORMAT(BC1)
-			UNSUPPORTED_FORMAT(RGBG8888)
-			UNSUPPORTED_FORMAT(GRGB8888)
 			UNSUPPORTED_FORMAT(UYVY)
 			UNSUPPORTED_FORMAT(YUY2)
 			UNSUPPORTED_FORMAT(BW1bpp)
@@ -283,22 +222,15 @@ inline pvrvk::Format convertToPVRVkPixelFormat(PixelFormat format, ColorSpace co
 		{
 			switch (format.getPixelTypeId())
 			{
-			case GeneratePixelType1<'d', 32>::ID:
-				return pvrvk::Format::e_D32_SFLOAT;
+			case GeneratePixelType1<'d', 32>::ID: return pvrvk::Format::e_D32_SFLOAT;
 			case GeneratePixelType1<'d', 24>::ID:
 			case GeneratePixelType2<'x', 8, 'd', 24>::ID:
-			case GeneratePixelType2<'d', 24, 'x', 8>::ID:
-				return pvrvk::Format::e_D32_SFLOAT;
-			case GeneratePixelType1<'d', 16>::ID:
-				return pvrvk::Format::e_D16_UNORM;
-			case GeneratePixelType2<'d', 's', 32, 8>::ID:
-				return pvrvk::Format::e_D32_SFLOAT_S8_UINT;
-			case GeneratePixelType2<'d', 's', 24, 8>::ID:
-				return pvrvk::Format::e_D24_UNORM_S8_UINT;
-			case GeneratePixelType2<'d', 's', 16, 8>::ID:
-				return pvrvk::Format::e_D16_UNORM_S8_UINT;
-			case GeneratePixelType1<'s', 8>::ID:
-				return pvrvk::Format::e_S8_UINT;
+			case GeneratePixelType2<'d', 24, 'x', 8>::ID: return pvrvk::Format::e_D32_SFLOAT;
+			case GeneratePixelType1<'d', 16>::ID: return pvrvk::Format::e_D16_UNORM;
+			case GeneratePixelType2<'d', 's', 32, 8>::ID: return pvrvk::Format::e_D32_SFLOAT_S8_UINT;
+			case GeneratePixelType2<'d', 's', 24, 8>::ID: return pvrvk::Format::e_D24_UNORM_S8_UINT;
+			case GeneratePixelType2<'d', 's', 16, 8>::ID: return pvrvk::Format::e_D16_UNORM_S8_UINT;
+			case GeneratePixelType1<'s', 8>::ID: return pvrvk::Format::e_S8_UINT;
 			}
 		}
 		else
@@ -306,43 +238,26 @@ inline pvrvk::Format convertToPVRVkPixelFormat(PixelFormat format, ColorSpace co
 			switch (dataType)
 			{
 			case VariableType::UnsignedFloat:
-				if (format.getPixelTypeId() == GeneratePixelType3<'b', 'g', 'r', 10, 11, 11>::ID)
-				{
-					return pvrvk::Format::e_B10G11R11_UFLOAT_PACK32;
-				}
+				if (format.getPixelTypeId() == GeneratePixelType3<'b', 'g', 'r', 10, 11, 11>::ID) { return pvrvk::Format::e_B10G11R11_UFLOAT_PACK32; }
 				break;
 			case VariableType::SignedFloat:
 			{
 				switch (format.getPixelTypeId())
 				{
-				case GeneratePixelType4<'r', 'g', 'b', 'a', 16, 16, 16, 16>::ID:
-					return pvrvk::Format::e_R16G16B16A16_SFLOAT;
-				case GeneratePixelType3<'r', 'g', 'b', 16, 16, 16>::ID:
-					return pvrvk::Format::e_R16G16B16_SFLOAT;
-				case GeneratePixelType2<'r', 'g', 16, 16>::ID:
-					return pvrvk::Format::e_R16G16_SFLOAT;
-				case GeneratePixelType1<'r', 16>::ID:
-					return pvrvk::Format::e_R16_SFLOAT;
-				case GeneratePixelType2<'l', 'a', 16, 16>::ID:
-					return pvrvk::Format::e_R16G16_SFLOAT;
-				case GeneratePixelType1<'l', 16>::ID:
-					return pvrvk::Format::e_R16_SFLOAT;
-				case GeneratePixelType1<'a', 16>::ID:
-					return pvrvk::Format::e_R16_SFLOAT;
-				case GeneratePixelType4<'r', 'g', 'b', 'a', 32, 32, 32, 32>::ID:
-					return pvrvk::Format::e_R32G32B32A32_SFLOAT;
-				case GeneratePixelType3<'r', 'g', 'b', 32, 32, 32>::ID:
-					return pvrvk::Format::e_R32G32B32_SFLOAT;
-				case GeneratePixelType2<'r', 'g', 32, 32>::ID:
-					return pvrvk::Format::e_R32G32_SFLOAT;
-				case GeneratePixelType1<'r', 32>::ID:
-					return pvrvk::Format::e_R32_SFLOAT;
-				case GeneratePixelType2<'l', 'a', 32, 32>::ID:
-					return pvrvk::Format::e_R32G32_SFLOAT;
-				case GeneratePixelType1<'l', 32>::ID:
-					return pvrvk::Format::e_R32_SFLOAT;
-				case GeneratePixelType1<'a', 32>::ID:
-					return pvrvk::Format::e_R32_SFLOAT;
+				case GeneratePixelType4<'r', 'g', 'b', 'a', 16, 16, 16, 16>::ID: return pvrvk::Format::e_R16G16B16A16_SFLOAT;
+				case GeneratePixelType3<'r', 'g', 'b', 16, 16, 16>::ID: return pvrvk::Format::e_R16G16B16_SFLOAT;
+				case GeneratePixelType2<'r', 'g', 16, 16>::ID: return pvrvk::Format::e_R16G16_SFLOAT;
+				case GeneratePixelType1<'r', 16>::ID: return pvrvk::Format::e_R16_SFLOAT;
+				case GeneratePixelType2<'l', 'a', 16, 16>::ID: return pvrvk::Format::e_R16G16_SFLOAT;
+				case GeneratePixelType1<'l', 16>::ID: return pvrvk::Format::e_R16_SFLOAT;
+				case GeneratePixelType1<'a', 16>::ID: return pvrvk::Format::e_R16_SFLOAT;
+				case GeneratePixelType4<'r', 'g', 'b', 'a', 32, 32, 32, 32>::ID: return pvrvk::Format::e_R32G32B32A32_SFLOAT;
+				case GeneratePixelType3<'r', 'g', 'b', 32, 32, 32>::ID: return pvrvk::Format::e_R32G32B32_SFLOAT;
+				case GeneratePixelType2<'r', 'g', 32, 32>::ID: return pvrvk::Format::e_R32G32_SFLOAT;
+				case GeneratePixelType1<'r', 32>::ID: return pvrvk::Format::e_R32_SFLOAT;
+				case GeneratePixelType2<'l', 'a', 32, 32>::ID: return pvrvk::Format::e_R32G32_SFLOAT;
+				case GeneratePixelType1<'l', 32>::ID: return pvrvk::Format::e_R32_SFLOAT;
+				case GeneratePixelType1<'a', 32>::ID: return pvrvk::Format::e_R32_SFLOAT;
 				}
 				break;
 			}
@@ -350,77 +265,53 @@ inline pvrvk::Format convertToPVRVkPixelFormat(PixelFormat format, ColorSpace co
 			{
 				switch (format.getPixelTypeId())
 				{
-				case GeneratePixelType4<'r', 'g', 'b', 'a', 8, 8, 8, 8>::ID:
-					return (isSrgb ? pvrvk::Format::e_R8G8B8A8_SRGB : pvrvk::Format::e_R8G8B8A8_UNORM);
-				case GeneratePixelType3<'r', 'g', 'b', 8, 8, 8>::ID:
-					return (isSrgb ? pvrvk::Format::e_R8G8B8_SRGB : pvrvk::Format::e_R8G8B8_UNORM);
+				case GeneratePixelType4<'r', 'g', 'b', 'a', 8, 8, 8, 8>::ID: return (isSrgb ? pvrvk::Format::e_R8G8B8A8_SRGB : pvrvk::Format::e_R8G8B8A8_UNORM);
+				case GeneratePixelType3<'r', 'g', 'b', 8, 8, 8>::ID: return (isSrgb ? pvrvk::Format::e_R8G8B8_SRGB : pvrvk::Format::e_R8G8B8_UNORM);
 				case GeneratePixelType2<'r', 'g', 8, 8>::ID:
-				case GeneratePixelType2<'l', 'a', 8, 8>::ID:
-					return pvrvk::Format::e_R8G8_UNORM;
+				case GeneratePixelType2<'l', 'a', 8, 8>::ID: return pvrvk::Format::e_R8G8_UNORM;
 				case GeneratePixelType1<'r', 8>::ID:
 				case GeneratePixelType1<'l', 8>::ID:
-				case GeneratePixelType1<'a', 8>::ID:
-					return (isSrgb ? pvrvk::Format::e_R8_SRGB : pvrvk::Format::e_R8_UNORM);
-				case GeneratePixelType4<'b', 'g', 'r', 'a', 8, 8, 8, 8>::ID:
-					return (isSrgb ? pvrvk::Format::e_B8G8R8A8_SRGB : pvrvk::Format::e_B8G8R8A8_UNORM);
-				case GeneratePixelType3<'b', 'g', 'r', 8, 8, 8>::ID:
-					return (isSrgb ? pvrvk::Format::e_B8G8R8_SRGB : pvrvk::Format::e_B8G8R8_UNORM);
-				case GeneratePixelType4<'r', 'g', 'b', 'a', 4, 4, 4, 4>::ID:
-					return pvrvk::Format::e_R4G4B4A4_UNORM_PACK16;
+				case GeneratePixelType1<'a', 8>::ID: return (isSrgb ? pvrvk::Format::e_R8_SRGB : pvrvk::Format::e_R8_UNORM);
+				case GeneratePixelType4<'b', 'g', 'r', 'a', 8, 8, 8, 8>::ID: return (isSrgb ? pvrvk::Format::e_B8G8R8A8_SRGB : pvrvk::Format::e_B8G8R8A8_UNORM);
+				case GeneratePixelType3<'b', 'g', 'r', 8, 8, 8>::ID: return (isSrgb ? pvrvk::Format::e_B8G8R8_SRGB : pvrvk::Format::e_B8G8R8_UNORM);
+				case GeneratePixelType4<'r', 'g', 'b', 'a', 4, 4, 4, 4>::ID: return pvrvk::Format::e_R4G4B4A4_UNORM_PACK16;
 				}
 			}
 			case VariableType::SignedByteNorm:
 			{
 				switch (format.getPixelTypeId())
 				{
-				case GeneratePixelType4<'r', 'g', 'b', 'a', 8, 8, 8, 8>::ID:
-					return pvrvk::Format::e_R8G8B8A8_SNORM;
-				case GeneratePixelType3<'r', 'g', 'b', 8, 8, 8>::ID:
-					return pvrvk::Format::e_R8G8B8_SNORM;
+				case GeneratePixelType4<'r', 'g', 'b', 'a', 8, 8, 8, 8>::ID: return pvrvk::Format::e_R8G8B8A8_SNORM;
+				case GeneratePixelType3<'r', 'g', 'b', 8, 8, 8>::ID: return pvrvk::Format::e_R8G8B8_SNORM;
 				case GeneratePixelType2<'r', 'g', 8, 8>::ID:
-				case GeneratePixelType2<'l', 'a', 8, 8>::ID:
-					return pvrvk::Format::e_R8G8B8_SNORM;
-				case GeneratePixelType4<'b', 'g', 'r', 'a', 8, 8, 8, 8>::ID:
-					return (isSrgb ? pvrvk::Format::e_B8G8R8A8_SRGB : pvrvk::Format::e_B8G8R8A8_SNORM);
-				case GeneratePixelType3<'b', 'g', 'r', 8, 8, 8>::ID:
-					return (isSrgb ? pvrvk::Format::e_B8G8R8_SRGB : pvrvk::Format::e_B8G8R8_SNORM);
+				case GeneratePixelType2<'l', 'a', 8, 8>::ID: return pvrvk::Format::e_R8G8B8_SNORM;
+				case GeneratePixelType4<'b', 'g', 'r', 'a', 8, 8, 8, 8>::ID: return (isSrgb ? pvrvk::Format::e_B8G8R8A8_SRGB : pvrvk::Format::e_B8G8R8A8_SNORM);
+				case GeneratePixelType3<'b', 'g', 'r', 8, 8, 8>::ID: return (isSrgb ? pvrvk::Format::e_B8G8R8_SRGB : pvrvk::Format::e_B8G8R8_SNORM);
 				case GeneratePixelType1<'r', 8>::ID:
 				case GeneratePixelType1<'l', 8>::ID:
-				case GeneratePixelType1<'a', 8>::ID:
-					return pvrvk::Format::e_R8_SNORM;
-					break;
+				case GeneratePixelType1<'a', 8>::ID: return pvrvk::Format::e_R8_SNORM; break;
 				}
 			}
 			case VariableType::UnsignedByte:
 			{
 				switch (format.getPixelTypeId())
 				{
-				case GeneratePixelType4<'r', 'g', 'b', 'a', 8, 8, 8, 8>::ID:
-					return pvrvk::Format::e_R8G8B8A8_UINT;
-				case GeneratePixelType3<'r', 'g', 'b', 8, 8, 8>::ID:
-					return pvrvk::Format::e_R8G8B8_UINT;
-				case GeneratePixelType2<'r', 'g', 8, 8>::ID:
-					return pvrvk::Format::e_R8G8_UINT;
-				case GeneratePixelType1<'r', 8>::ID:
-					return pvrvk::Format::e_R8_UINT;
-				case GeneratePixelType4<'b', 'g', 'r', 'a', 8, 8, 8, 8>::ID:
-					return pvrvk::Format::e_B8G8R8A8_UINT;
-				case GeneratePixelType3<'b', 'g', 'r', 8, 8, 8>::ID:
-					return pvrvk::Format::e_B8G8R8_UINT;
+				case GeneratePixelType4<'r', 'g', 'b', 'a', 8, 8, 8, 8>::ID: return pvrvk::Format::e_R8G8B8A8_UINT;
+				case GeneratePixelType3<'r', 'g', 'b', 8, 8, 8>::ID: return pvrvk::Format::e_R8G8B8_UINT;
+				case GeneratePixelType2<'r', 'g', 8, 8>::ID: return pvrvk::Format::e_R8G8_UINT;
+				case GeneratePixelType1<'r', 8>::ID: return pvrvk::Format::e_R8_UINT;
+				case GeneratePixelType4<'b', 'g', 'r', 'a', 8, 8, 8, 8>::ID: return pvrvk::Format::e_B8G8R8A8_UINT;
+				case GeneratePixelType3<'b', 'g', 'r', 8, 8, 8>::ID: return pvrvk::Format::e_B8G8R8_UINT;
 				}
 			}
 			case VariableType::SignedByte:
 			{
 				switch (format.getPixelTypeId())
 				{
-				case GeneratePixelType4<'r', 'g', 'b', 'a', 8, 8, 8, 8>::ID:
-					return pvrvk::Format::e_R8G8B8A8_SINT;
-				case GeneratePixelType3<'r', 'g', 'b', 8, 8, 8>::ID:
-					return pvrvk::Format::e_R8G8B8_SINT;
-				case GeneratePixelType2<'r', 'g', 8, 8>::ID:
-					return pvrvk::Format::e_R8G8_SINT;
-				case GeneratePixelType1<'r', 8>::ID:
-					return pvrvk::Format::e_R8_SINT;
+				case GeneratePixelType4<'r', 'g', 'b', 'a', 8, 8, 8, 8>::ID: return pvrvk::Format::e_R8G8B8A8_SINT;
+				case GeneratePixelType3<'r', 'g', 'b', 8, 8, 8>::ID: return pvrvk::Format::e_R8G8B8_SINT;
+				case GeneratePixelType2<'r', 'g', 8, 8>::ID: return pvrvk::Format::e_R8G8_SINT;
+				case GeneratePixelType1<'r', 8>::ID: return pvrvk::Format::e_R8_SINT;
 				}
 				break;
 			}
@@ -428,25 +319,17 @@ inline pvrvk::Format convertToPVRVkPixelFormat(PixelFormat format, ColorSpace co
 			{
 				switch (format.getPixelTypeId())
 				{
-				case GeneratePixelType4<'r', 'g', 'b', 'a', 4, 4, 4, 4>::ID:
-					return pvrvk::Format::e_R4G4B4A4_UNORM_PACK16;
-				case GeneratePixelType4<'r', 'g', 'b', 'a', 5, 5, 5, 1>::ID:
-					return pvrvk::Format::e_R5G5B5A1_UNORM_PACK16;
-				case GeneratePixelType3<'r', 'g', 'b', 5, 6, 5>::ID:
-					return pvrvk::Format::e_R5G6B5_UNORM_PACK16;
-				case GeneratePixelType4<'r', 'g', 'b', 'a', 16, 16, 16, 16>::ID:
-					return pvrvk::Format::e_R16G16B16A16_UNORM;
-				case GeneratePixelType3<'r', 'g', 'b', 16, 16, 16>::ID:
-					return pvrvk::Format::e_R16G16B16_UNORM;
+				case GeneratePixelType4<'r', 'g', 'b', 'a', 4, 4, 4, 4>::ID: return pvrvk::Format::e_R4G4B4A4_UNORM_PACK16;
+				case GeneratePixelType4<'r', 'g', 'b', 'a', 5, 5, 5, 1>::ID: return pvrvk::Format::e_R5G5B5A1_UNORM_PACK16;
+				case GeneratePixelType3<'r', 'g', 'b', 5, 6, 5>::ID: return pvrvk::Format::e_R5G6B5_UNORM_PACK16;
+				case GeneratePixelType4<'r', 'g', 'b', 'a', 16, 16, 16, 16>::ID: return pvrvk::Format::e_R16G16B16A16_UNORM;
+				case GeneratePixelType3<'r', 'g', 'b', 16, 16, 16>::ID: return pvrvk::Format::e_R16G16B16_UNORM;
 				case GeneratePixelType2<'r', 'g', 16, 16>::ID:
-				case GeneratePixelType2<'l', 'a', 16, 16>::ID:
-					return pvrvk::Format::e_R16G16_UNORM;
-				case GeneratePixelType2<'d', 16, 's', 8>::ID:
-					return pvrvk::Format::e_D16_UNORM_S8_UINT;
+				case GeneratePixelType2<'l', 'a', 16, 16>::ID: return pvrvk::Format::e_R16G16_UNORM;
+				case GeneratePixelType2<'d', 16, 's', 8>::ID: return pvrvk::Format::e_D16_UNORM_S8_UINT;
 				case GeneratePixelType1<'r', 16>::ID:
 				case GeneratePixelType1<'a', 16>::ID:
-				case GeneratePixelType1<'l', 16>::ID:
-					return pvrvk::Format::e_R16_UNORM;
+				case GeneratePixelType1<'l', 16>::ID: return pvrvk::Format::e_R16_UNORM;
 				}
 				break;
 			}
@@ -454,17 +337,13 @@ inline pvrvk::Format convertToPVRVkPixelFormat(PixelFormat format, ColorSpace co
 			{
 				switch (format.getPixelTypeId())
 				{
-				case GeneratePixelType4<'r', 'g', 'b', 'a', 16, 16, 16, 16>::ID:
-					return pvrvk::Format::e_R16G16B16A16_SNORM;
-				case GeneratePixelType3<'r', 'g', 'b', 16, 16, 16>::ID:
-					return pvrvk::Format::e_R16G16B16_SNORM;
+				case GeneratePixelType4<'r', 'g', 'b', 'a', 16, 16, 16, 16>::ID: return pvrvk::Format::e_R16G16B16A16_SNORM;
+				case GeneratePixelType3<'r', 'g', 'b', 16, 16, 16>::ID: return pvrvk::Format::e_R16G16B16_SNORM;
 				case GeneratePixelType2<'r', 'g', 16, 16>::ID:
-				case GeneratePixelType2<'l', 'a', 16, 16>::ID:
-					return pvrvk::Format::e_R16G16_SNORM;
+				case GeneratePixelType2<'l', 'a', 16, 16>::ID: return pvrvk::Format::e_R16G16_SNORM;
 				case GeneratePixelType1<'r', 16>::ID:
 				case GeneratePixelType1<'l', 16>::ID:
-				case GeneratePixelType1<'a', 16>::ID:
-					return pvrvk::Format::e_R16_SNORM;
+				case GeneratePixelType1<'a', 16>::ID: return pvrvk::Format::e_R16_SNORM;
 				}
 				break;
 			}
@@ -472,14 +351,10 @@ inline pvrvk::Format convertToPVRVkPixelFormat(PixelFormat format, ColorSpace co
 			{
 				switch (format.getPixelTypeId())
 				{
-				case GeneratePixelType4<'r', 'g', 'b', 'a', 16, 16, 16, 16>::ID:
-					return pvrvk::Format::e_R16G16B16A16_UINT;
-				case GeneratePixelType3<'r', 'g', 'b', 16, 16, 16>::ID:
-					return pvrvk::Format::e_R16G16B16_UINT;
-				case GeneratePixelType2<'r', 'g', 16, 16>::ID:
-					return pvrvk::Format::e_R16G16_UINT;
-				case GeneratePixelType1<'r', 16>::ID:
-					return pvrvk::Format::e_R16_UINT;
+				case GeneratePixelType4<'r', 'g', 'b', 'a', 16, 16, 16, 16>::ID: return pvrvk::Format::e_R16G16B16A16_UINT;
+				case GeneratePixelType3<'r', 'g', 'b', 16, 16, 16>::ID: return pvrvk::Format::e_R16G16B16_UINT;
+				case GeneratePixelType2<'r', 'g', 16, 16>::ID: return pvrvk::Format::e_R16G16_UINT;
+				case GeneratePixelType1<'r', 16>::ID: return pvrvk::Format::e_R16_UINT;
 				}
 				break;
 			}
@@ -487,14 +362,10 @@ inline pvrvk::Format convertToPVRVkPixelFormat(PixelFormat format, ColorSpace co
 			{
 				switch (format.getPixelTypeId())
 				{
-				case GeneratePixelType4<'r', 'g', 'b', 'a', 16, 16, 16, 16>::ID:
-					return pvrvk::Format::e_R16G16B16A16_SINT;
-				case GeneratePixelType3<'r', 'g', 'b', 16, 16, 16>::ID:
-					return pvrvk::Format::e_R16G16B16_SINT;
-				case GeneratePixelType2<'r', 'g', 16, 16>::ID:
-					return pvrvk::Format::e_R16G16_SINT;
-				case GeneratePixelType1<'r', 16>::ID:
-					return pvrvk::Format::e_R16_SINT;
+				case GeneratePixelType4<'r', 'g', 'b', 'a', 16, 16, 16, 16>::ID: return pvrvk::Format::e_R16G16B16A16_SINT;
+				case GeneratePixelType3<'r', 'g', 'b', 16, 16, 16>::ID: return pvrvk::Format::e_R16G16B16_SINT;
+				case GeneratePixelType2<'r', 'g', 16, 16>::ID: return pvrvk::Format::e_R16G16_SINT;
+				case GeneratePixelType1<'r', 16>::ID: return pvrvk::Format::e_R16_SINT;
 				}
 				break;
 			}
@@ -503,8 +374,7 @@ inline pvrvk::Format convertToPVRVkPixelFormat(PixelFormat format, ColorSpace co
 				switch (format.getPixelTypeId())
 				{
 				case GeneratePixelType4<'a', 'b', 'g', 'r', 2, 10, 10, 10>::ID:
-				case GeneratePixelType4<'x', 'b', 'g', 'r', 2, 10, 10, 10>::ID:
-					return pvrvk::Format::e_A2B10G10R10_UNORM_PACK32;
+				case GeneratePixelType4<'x', 'b', 'g', 'r', 2, 10, 10, 10>::ID: return pvrvk::Format::e_A2B10G10R10_UNORM_PACK32;
 				}
 				break;
 			}
@@ -512,16 +382,11 @@ inline pvrvk::Format convertToPVRVkPixelFormat(PixelFormat format, ColorSpace co
 			{
 				switch (format.getPixelTypeId())
 				{
-				case GeneratePixelType4<'r', 'g', 'b', 'a', 32, 32, 32, 32>::ID:
-					return pvrvk::Format::e_R32G32B32A32_UINT;
-				case GeneratePixelType3<'r', 'g', 'b', 32, 32, 32>::ID:
-					return pvrvk::Format::e_R32G32B32_UINT;
-				case GeneratePixelType2<'r', 'g', 32, 32>::ID:
-					return pvrvk::Format::e_R32G32_UINT;
-				case GeneratePixelType1<'r', 32>::ID:
-					return pvrvk::Format::e_R32_UINT;
-				case GeneratePixelType4<'a', 'b', 'g', 'r', 2, 10, 10, 10>::ID:
-					return pvrvk::Format::e_A2B10G10R10_UINT_PACK32;
+				case GeneratePixelType4<'r', 'g', 'b', 'a', 32, 32, 32, 32>::ID: return pvrvk::Format::e_R32G32B32A32_UINT;
+				case GeneratePixelType3<'r', 'g', 'b', 32, 32, 32>::ID: return pvrvk::Format::e_R32G32B32_UINT;
+				case GeneratePixelType2<'r', 'g', 32, 32>::ID: return pvrvk::Format::e_R32G32_UINT;
+				case GeneratePixelType1<'r', 32>::ID: return pvrvk::Format::e_R32_UINT;
+				case GeneratePixelType4<'a', 'b', 'g', 'r', 2, 10, 10, 10>::ID: return pvrvk::Format::e_A2B10G10R10_UINT_PACK32;
 				}
 				break;
 			}
@@ -529,14 +394,10 @@ inline pvrvk::Format convertToPVRVkPixelFormat(PixelFormat format, ColorSpace co
 			{
 				switch (format.getPixelTypeId())
 				{
-				case GeneratePixelType4<'r', 'g', 'b', 'a', 32, 32, 32, 32>::ID:
-					return pvrvk::Format::e_R32G32B32A32_SINT;
-				case GeneratePixelType3<'r', 'g', 'b', 32, 32, 32>::ID:
-					return pvrvk::Format::e_R32G32B32_SINT;
-				case GeneratePixelType2<'r', 'g', 32, 32>::ID:
-					return pvrvk::Format::e_R32G32_SINT;
-				case GeneratePixelType1<'r', 32>::ID:
-					return pvrvk::Format::e_R32_SINT;
+				case GeneratePixelType4<'r', 'g', 'b', 'a', 32, 32, 32, 32>::ID: return pvrvk::Format::e_R32G32B32A32_SINT;
+				case GeneratePixelType3<'r', 'g', 'b', 32, 32, 32>::ID: return pvrvk::Format::e_R32G32B32_SINT;
+				case GeneratePixelType2<'r', 'g', 32, 32>::ID: return pvrvk::Format::e_R32G32_SINT;
+				case GeneratePixelType1<'r', 32>::ID: return pvrvk::Format::e_R32_SINT;
 				}
 				break;
 			}
@@ -576,10 +437,7 @@ inline void unpackSamplerFilter(PackedSamplerFilter packed, pvrvk::Filter& mini,
 /// <summary>Convert to pvrvk pixel format</summary>
 /// <param name="format">Image Data format</param>
 /// <returns>A pvrvk::Format representing the pixel format</returns>
-inline pvrvk::Format convertToPVRVk(const ImageDataFormat& format)
-{
-	return convertToPVRVkPixelFormat(format.format, format.colorSpace, format.dataType);
-}
+inline pvrvk::Format convertToPVRVk(const ImageDataFormat& format) { return convertToPVRVkPixelFormat(format.format, format.colorSpace, format.dataType); }
 
 /// <summary>Convert to pvrvk pixel format</summary>
 /// <param name="format">Pixel format</param>
@@ -607,9 +465,8 @@ inline pvrvk::StencilOpState convertToPVRVk(const StencilState& op)
 /// <returns>A pvrvk::PipelineColorBlendAttachmentState representing the BlendingConfig</returns>
 inline pvrvk::PipelineColorBlendAttachmentState convertToPVRVk(const BlendingConfig& config)
 {
-	return pvrvk::PipelineColorBlendAttachmentState(config.blendEnable, convertToPVRVk(config.srcBlendColor), convertToPVRVk(config.dstBlendColor),
-		convertToPVRVk(config.blendOpColor), convertToPVRVk(config.srcBlendAlpha), convertToPVRVk(config.dstBlendAlpha), convertToPVRVk(config.blendOpAlpha),
-		convertToPVRVk(config.channelWriteMask));
+	return pvrvk::PipelineColorBlendAttachmentState(config.blendEnable, convertToPVRVk(config.srcBlendColor), convertToPVRVk(config.dstBlendColor), convertToPVRVk(config.blendOpColor),
+		convertToPVRVk(config.srcBlendAlpha), convertToPVRVk(config.dstBlendAlpha), convertToPVRVk(config.blendOpAlpha), convertToPVRVk(config.channelWriteMask));
 }
 
 /// <summary>Convert to pvrvk VertexInputAttributeDescription</summary>
@@ -632,34 +489,22 @@ inline pvrvk::VertexInputBindingDescription convertToPVRVk(const VertexInputBind
 /// <summary>Convert to pvrvk Extent3D</summary>
 /// <param name="extent">The pvr::Extent3D to convert</param>
 /// <returns>A pvrvk::Extent3D representing the Extent3D</returns>
-inline pvrvk::Extent3D convertToPVRVk(const Extent3D& extent)
-{
-	return pvrvk::Extent3D{ extent.width, extent.height, extent.depth };
-}
+inline pvrvk::Extent3D convertToPVRVk(const Extent3D& extent) { return pvrvk::Extent3D{ extent.width, extent.height, extent.depth }; }
 
 /// <summary>Convert to pvrvk Extent2D</summary>
 /// <param name="extent">The pvr::Extent2D to convert</param>
 /// <returns>A pvrvk::Extent2D representing the Extent2D</returns>
-inline pvrvk::Extent2D convertToPVRVk(const Extent2D& extent)
-{
-	return pvrvk::Extent2D{ extent.width, extent.height };
-}
+inline pvrvk::Extent2D convertToPVRVk(const Extent2D& extent) { return pvrvk::Extent2D{ extent.width, extent.height }; }
 
 /// <summary>Convert to pvrvk Offset3D</summary>
 /// <param name="offset">The pvr::Offset3D to convert</param>
 /// <returns>A pvrvk::Offset3D representing the Offset3D</returns>
-inline pvrvk::Offset3D convertToPVRVk(const Offset3D& offset)
-{
-	return pvrvk::Offset3D{ offset.x, offset.y, offset.z };
-}
+inline pvrvk::Offset3D convertToPVRVk(const Offset3D& offset) { return pvrvk::Offset3D{ offset.x, offset.y, offset.z }; }
 
 /// <summary>Convert to pvrvk Offset2D</summary>
 /// <param name="offset">The pvr::Offset2D to convert</param>
 /// <returns>A pvrvk::Offset2D representing the Offset2D</returns>
-inline pvrvk::Offset2D convertToPVRVk(const Offset2D& offset)
-{
-	return pvrvk::Offset2D{ offset.x, offset.y };
-}
+inline pvrvk::Offset2D convertToPVRVk(const Offset2D& offset) { return pvrvk::Offset2D{ offset.x, offset.y }; }
 #undef UNSUPPORTED_FORMAT
 } // namespace utils
 } // namespace pvr

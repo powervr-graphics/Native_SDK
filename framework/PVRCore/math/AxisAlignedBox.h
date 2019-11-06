@@ -58,20 +58,14 @@ struct ViewingFrustum : public Frustum
 /// <param name="plane">The plane, defined as a vector4, where (xyz: Normal, w: Distance from the origin)</param>
 /// <returns>The distance from the point to the plane (along the normal). Positive if on the side of the normal,
 /// otherwise false</returns>
-inline float distancePointToPlane(const glm::vec3& point, const glm::vec4& plane)
-{
-	return glm::dot(point, glm::vec3(plane.x, plane.y, plane.z)) + plane.w;
-}
+inline float distancePointToPlane(const glm::vec3& point, const glm::vec4& plane) { return glm::dot(point, glm::vec3(plane.x, plane.y, plane.z)) + plane.w; }
 
 /// <summary>Calculate if the point is in the positive half-space defined by the plane (i.e. if it is lying on the
 /// same side as the normal points</summary>
 /// <param name="point">The point</param>
 /// <param name="plane">The plane, defined as a vector4, where (xyz: Normal, w: Distance from the origin)</param>
 /// <returns>True if the point is on the plane or on the same side as the normal, otherwise false</returns>
-inline bool pointOnSide(const glm::vec3& point, const glm::vec4& plane)
-{
-	return distancePointToPlane(point, plane) >= 0.0f;
-}
+inline bool pointOnSide(const glm::vec3& point, const glm::vec4& plane) { return distancePointToPlane(point, plane) >= 0.0f; }
 
 /// <summary>Retrieve the viewing frustum from a projection matrix</summary>
 /// <param name="projection_from_world">The projection matrix</param>
@@ -127,6 +121,8 @@ inline void getFrustumPoints(ViewingFrustum& frustum_out)
 	frustum_out.points[7] = IntersectPlanes(frustum_out.plusZ, frustum_out.plusX, frustum_out.minusY);
 }
 
+class AxisAlignedBoxMinMax;
+
 /// <summary>This class provides functionality to handle 3 dimensional Axis Aligned Boxes. Center-halfextent
 /// representation.</summary>
 class AxisAlignedBox
@@ -139,6 +135,10 @@ public:
 	/// <param name="center">The center of the box</param>
 	/// <param name="halfExtent">A vector containing the half-lengths on each axis</param>
 	AxisAlignedBox(const glm::vec3& center = glm::vec3(0.0f), const glm::vec3& halfExtent = glm::vec3(0.f)) : _center(center), _halfExtent(halfExtent) {}
+
+	/// <summary>Conversion constructor from AxisAlignedBoxMinMax</summary>
+	/// <param name="copyFrom">An AxisAlignedBoxMinMax to convert from. An invalid AxisAlignedBoxMinMax will result in an empty AxisAlignedBox</param>
+	AxisAlignedBox(const AxisAlignedBoxMinMax& copyFrom);
 
 	/// <summary>Sets center and extents to zero.</summary>
 	void clear()
@@ -169,10 +169,7 @@ public:
 	/// <summary>Add a new point to the box. The new box will be the minimum box containing the old box and the new
 	/// point.</summary>
 	/// <param name="point">The point which to add</param>
-	void add(const glm::vec3& point)
-	{
-		setMinMax(glm::min(point, getMin()), glm::max(point, getMax()));
-	}
+	void add(const glm::vec3& point) { setMinMax(glm::min(point, getMin()), glm::max(point, getMax())); }
 
 	/// <summary>Merge two axis aligned boxes. The new box will be the minimum box containing both the old and the new
 	/// box.</summary>
@@ -188,24 +185,15 @@ public:
 	/// <param name="x">The x-coord of the point which to add</param>
 	/// <param name="y">The y-coord of the point which to add</param>
 	/// <param name="z">The z-coord of the point which to add</param>
-	void add(float x, float y, float z)
-	{
-		add(glm::vec3(x, y, z));
-	}
+	void add(float x, float y, float z) { add(glm::vec3(x, y, z)); }
 
 	/// <summary>Return a point consisting of the smallest (minimum) coordinate in each axis.</summary>
 	/// <returns>A point consisting of the smallest (minimum) coordinate in each axis</returns>
-	glm::vec3 getMin() const
-	{
-		return _center - _halfExtent;
-	}
+	glm::vec3 getMin() const { return _center - _halfExtent; }
 
 	/// <summary>Return a point consisting of the largest (maximum) coordinate in each axis.</summary>
 	/// <returns>A point consisting of the largest (maximum) coordinate in each axis</returns>
-	glm::vec3 getMax() const
-	{
-		return _center + _halfExtent;
-	}
+	glm::vec3 getMax() const { return _center + _halfExtent; }
 
 	/// <summary>Return the min and the max.</summary>
 	/// <param name="outMin">Output: The min point will be stored here.</param>
@@ -233,172 +221,100 @@ public:
 
 	/// <summary>Get the size (width, height, depth) of the AABB.</summary>
 	/// <returns>The size of the AABB.</returns>
-	glm::vec3 getSize() const
-	{
-		return _halfExtent + _halfExtent;
-	}
+	glm::vec3 getSize() const { return _halfExtent + _halfExtent; }
 
 	/// <summary>Get the half-size (half-width, half-height, half-depth) of the AABB.</summary>
 	/// <returns>A vector whose coordinates are each half the size of the coresponding axis.</returns>
-	glm::vec3 getHalfExtent() const
-	{
-		return _halfExtent;
-	}
+	glm::vec3 getHalfExtent() const { return _halfExtent; }
 
 	/// <summary>Get the (-x +y +z) corner of the box.</summary>
 	/// <returns>A vector containing (min x, max y, max z)</returns>
-	glm::vec3 topLeftFar() const
-	{
-		return _center + glm::vec3(-_halfExtent.x, _halfExtent.y, _halfExtent.z);
-	}
+	glm::vec3 topLeftFar() const { return _center + glm::vec3(-_halfExtent.x, _halfExtent.y, _halfExtent.z); }
 
 	/// <summary>Get the center of the (+y +z) edge of the box.</summary>
 	/// <returns>A vector containing (center x, max y, max z)</returns>
-	glm::vec3 topCenterFar() const
-	{
-		return _center + glm::vec3(0, _halfExtent.y, _halfExtent.z);
-	}
+	glm::vec3 topCenterFar() const { return _center + glm::vec3(0, _halfExtent.y, _halfExtent.z); }
 
 	/// <summary>Get the +x +y +z corner of the box.</summary>
 	/// <returns>A vector containing (max x, max y, max z)</returns>
-	glm::vec3 topRightFar() const
-	{
-		return _center + _halfExtent;
-	}
+	glm::vec3 topRightFar() const { return _center + _halfExtent; }
 
 	/// <summary>Get the -x +y -z corner of the box.</summary>
 	/// <returns>A vector containing (min x, max y, min z)</returns>
-	glm::vec3 topLeftNear() const
-	{
-		return _center + glm::vec3(-_halfExtent.x, _halfExtent.y, -_halfExtent.z);
-	}
+	glm::vec3 topLeftNear() const { return _center + glm::vec3(-_halfExtent.x, _halfExtent.y, -_halfExtent.z); }
 
 	/// <summary>Get the center of the edge with ( +y , -z).</summary>
 	/// <returns>A vector containing (center of x, max y, min z)</returns>
-	glm::vec3 topCenterNear() const
-	{
-		return _center + glm::vec3(0., _halfExtent.y, -_halfExtent.z);
-	}
+	glm::vec3 topCenterNear() const { return _center + glm::vec3(0., _halfExtent.y, -_halfExtent.z); }
 
 	/// <summary>Get the +x +y -z corner of the box.</summary>
 	/// <returns>A vector containing (max x, max y, min z)</returns>
-	glm::vec3 topRightNear() const
-	{
-		return _center + glm::vec3(_halfExtent.x, _halfExtent.y, -_halfExtent.z);
-	}
+	glm::vec3 topRightNear() const { return _center + glm::vec3(_halfExtent.x, _halfExtent.y, -_halfExtent.z); }
 
 	/// <summary>Get the center the box.</summary>
 	/// <returns>A vector containing (center x, center y, center z)</returns>
-	glm::vec3 center() const
-	{
-		return _center;
-	}
+	glm::vec3 center() const { return _center; }
 
 	/// <summary>Get the center of the (-x -z) edge of the box.</summary>
 	/// <returns>A vector containing (min x, center y, min z)</returns>
-	glm::vec3 centerLeftNear() const
-	{
-		return _center + glm::vec3(-_halfExtent.x, 0, -_halfExtent.z);
-	}
+	glm::vec3 centerLeftNear() const { return _center + glm::vec3(-_halfExtent.x, 0, -_halfExtent.z); }
 	/// <summary>Get the center of the (-z) face of the box.</summary>
 	/// <returns>A vector containing (center x, center y, min z)</returns>
-	glm::vec3 centerNear() const
-	{
-		return _center + glm::vec3(0, 0, -_halfExtent.z);
-	}
+	glm::vec3 centerNear() const { return _center + glm::vec3(0, 0, -_halfExtent.z); }
 
 	/// <summary>Get the center of the (+x -z) edge of the box.</summary>
 	/// <returns>A vector containing (max x, center y, min z)</returns>
-	glm::vec3 centerRightNear() const
-	{
-		return _center + glm::vec3(_halfExtent.x, 0, -_halfExtent.z);
-	}
+	glm::vec3 centerRightNear() const { return _center + glm::vec3(_halfExtent.x, 0, -_halfExtent.z); }
 
 	/// <summary>Get the center of the (-x +z) edge of the box.</summary>
 	/// <returns>A vector containing (min x, center y, max z)</returns>
-	glm::vec3 centerLeftFar() const
-	{
-		return _center + glm::vec3(-_halfExtent.x, 0, _halfExtent.z);
-	}
+	glm::vec3 centerLeftFar() const { return _center + glm::vec3(-_halfExtent.x, 0, _halfExtent.z); }
 
 	/// <summary>Get the center of the (+z) face of the box.</summary>
 	/// <returns>A vector containing (center x, center y, max z)</returns>
-	glm::vec3 centerFar() const
-	{
-		return _center + glm::vec3(0, 0, _halfExtent.z);
-	}
+	glm::vec3 centerFar() const { return _center + glm::vec3(0, 0, _halfExtent.z); }
 
 	/// <summary>Get the center of the (+x +z) edge of the box.</summary>
 	/// <returns>A vector containing (max x, center y, max z)</returns>
-	glm::vec3 centerRightFar() const
-	{
-		return _center + glm::vec3(_halfExtent.x, 0, _halfExtent.z);
-	}
+	glm::vec3 centerRightFar() const { return _center + glm::vec3(_halfExtent.x, 0, _halfExtent.z); }
 
 	/// <summary>Get the (-x -y -z) corner of the box.</summary>
 	/// <returns>A vector containing (min x, min y, min z)</returns>
-	glm::vec3 bottomLeftNear() const
-	{
-		return _center + glm::vec3(-_halfExtent.x, -_halfExtent.y, -_halfExtent.z);
-	}
+	glm::vec3 bottomLeftNear() const { return _center + glm::vec3(-_halfExtent.x, -_halfExtent.y, -_halfExtent.z); }
 
 	/// <summary>Get the center of the (-x -z) edge of the box.</summary>
 	/// <returns>A vector containing (center x, min y, min z)</returns>
-	glm::vec3 bottomCenterNear() const
-	{
-		return _center + glm::vec3(0, -_halfExtent.y, -_halfExtent.z);
-	}
+	glm::vec3 bottomCenterNear() const { return _center + glm::vec3(0, -_halfExtent.y, -_halfExtent.z); }
 
 	/// <summary>Get the (+x -y -z) corner of the box.</summary>
 	/// <returns>A vector containing (max x, min y, min z)</returns>
-	glm::vec3 bottomRightNear() const
-	{
-		return _center + glm::vec3(_halfExtent.x, -_halfExtent.y, -_halfExtent.z);
-	}
+	glm::vec3 bottomRightNear() const { return _center + glm::vec3(_halfExtent.x, -_halfExtent.y, -_halfExtent.z); }
 
 	/// <summary>Get the (-x -y +z) corner of the box.</summary>
 	/// <returns>A vector containing (min x, min y, max z)</returns>
-	glm::vec3 bottomLeftFar() const
-	{
-		return _center + glm::vec3(-_halfExtent.x, -_halfExtent.y, _halfExtent.z);
-	}
+	glm::vec3 bottomLeftFar() const { return _center + glm::vec3(-_halfExtent.x, -_halfExtent.y, _halfExtent.z); }
 
 	/// <summary>Get the center of the (-y +z) edge of the box.</summary>
 	/// <returns>A vector containing (center x, min y, max z)</returns>
-	glm::vec3 bottomCenterFar() const
-	{
-		return _center + glm::vec3(0, -_halfExtent.y, _halfExtent.z);
-	}
+	glm::vec3 bottomCenterFar() const { return _center + glm::vec3(0, -_halfExtent.y, _halfExtent.z); }
 
 	/// <summary>Get the (+x -y +z) corner of the box.</summary>
 	/// <returns>A vector containing (max x, min y, max z)</returns>
-	glm::vec3 bottomRightFar() const
-	{
-		return _center + glm::vec3(_halfExtent.x, -_halfExtent.y, _halfExtent.z);
-	}
+	glm::vec3 bottomRightFar() const { return _center + glm::vec3(_halfExtent.x, -_halfExtent.y, _halfExtent.z); }
 
 	/// <summary>Set this AABB as the minimum AABB that contains itself and the AABB provided.</summary>
 	/// <param name="rhs">The AABB to merge with.</param>
-	void mergeBox(const AxisAlignedBox& rhs)
-	{
-		setMinMax(glm::min(getMin(), rhs.getMin()), glm::max(getMax(), rhs.getMax()));
-	}
+	void mergeBox(const AxisAlignedBox& rhs) { setMinMax(glm::min(getMin(), rhs.getMin()), glm::max(getMax(), rhs.getMax())); }
 
 	/// <summary>Equality operator. AABBS are equal when center and size the same (equivalently all vertices coincide)</summary>
 	/// <param name="rhs">The right hand side.</param>
 	/// <returns>True if the AABBs completely coincide, otherwise false</returns>
-	bool operator==(const AxisAlignedBox& rhs) const
-	{
-		return _center == rhs._center && _halfExtent == rhs._halfExtent;
-	}
+	bool operator==(const AxisAlignedBox& rhs) const { return _center == rhs._center && _halfExtent == rhs._halfExtent; }
 
 	/// <summary>Inequality operator. AABBS are equal when either center or size are not the same (equivalently at least one vertex does not)</summary>
 	/// <param name="rhs">The right hand side.</param>
 	/// <returns>True if the AABBs completely coincide, otherwise false</returns>
-	bool operator!=(const AxisAlignedBox& rhs) const
-	{
-		return !(*this == rhs);
-	}
+	bool operator!=(const AxisAlignedBox& rhs) const { return !(*this == rhs); }
 };
 
 namespace {
@@ -418,9 +334,7 @@ inline bool noPointsOnSide(glm::vec3 blf, glm::vec3 tlf, glm::vec3 brf, glm::vec
 {
 	if (pointOnSide(blf, plane) || pointOnSide(tlf, plane) || pointOnSide(brf, plane) || pointOnSide(trf, plane) || pointOnSide(bln, plane) || pointOnSide(tln, plane) ||
 		pointOnSide(brn, plane) || pointOnSide(trn, plane))
-	{
-		return false;
-	}
+	{ return false; }
 	return true;
 }
 } // namespace
@@ -444,43 +358,39 @@ inline bool aabbInFrustum(const AxisAlignedBox& box, const ViewingFrustum& frust
 	if (noPointsOnSide(blf, tlf, brf, trf, bln, tln, brn, trn, frustum.minusX) || noPointsOnSide(blf, tlf, brf, trf, bln, tln, brn, trn, frustum.plusX) ||
 		noPointsOnSide(blf, tlf, brf, trf, bln, tln, brn, trn, frustum.minusY) || noPointsOnSide(blf, tlf, brf, trf, bln, tln, brn, trn, frustum.plusY) ||
 		noPointsOnSide(blf, tlf, brf, trf, bln, tln, brn, trn, frustum.minusZ) || noPointsOnSide(blf, tlf, brf, trf, bln, tln, brn, trn, frustum.plusZ))
-	{
-		return false;
-	}
+	{ return false; }
 	return true;
 }
 
-/// <summary>An AABB with a min-max representation.</summary>
+/// <summary>An AABB with a min-max representation. A newly constructed AxisAlignedBoxMinMax is always invalid (min>max), but in such a way that adding
+/// any point to it will make it valid.</summary>
 class AxisAlignedBoxMinMax
 {
 	glm::vec3 _min;
 	glm::vec3 _max;
 
 public:
+	/// <summary>Constructor. The created AxisAlignedBoxMinMax has the min set at the highest-valued float number, and the max set at the lowest-valued float number,
+	/// so but will immediately become valid when the first value is added</summary>
+	/// <param name="copyFrom">An AxisAlignedBox to convert from.</param>
+	AxisAlignedBoxMinMax() : _min(std::numeric_limits<float>::max()), _max(std::numeric_limits<float>::lowest()) {}
+
+	/// <summary>Conversion from AxisAlignedBox.</summary>
+	/// <param name="copyFrom">An AxisAlignedBox to convert from.</param>
+	explicit AxisAlignedBoxMinMax(const AxisAlignedBox& copyFrom) : _min(copyFrom.getMin()), _max(copyFrom.getMax()) {}
+
 	/// <summary>Set the minimum corner.</summary>
 	/// <param name="min">The minimum corner</param>
-	void setMin(const glm::vec3& min)
-	{
-		_min = min;
-	}
+	void setMin(const glm::vec3& min) { _min = min; }
 	/// <summary>Set the maximum corner.</summary>
 	/// <param name="max">The maximum corner</param>
-	void setMax(const glm::vec3& max)
-	{
-		_max = max;
-	}
+	void setMax(const glm::vec3& max) { _max = max; }
 	/// <summary>Get the minimum corner.</summary>
 	/// <returns>The minumum corner</param>
-	const glm::vec3& getMin()
-	{
-		return _min;
-	}
+	const glm::vec3& getMin() const { return _min; }
 	/// <summary>Get the maximum corner.</summary>
 	/// <returns>The maximum corner</param>
-	const glm::vec3& getMax()
-	{
-		return _max;
-	}
+	const glm::vec3& getMax() const { return _max; }
 
 	/// <summary>Ensure a point is contained in the AABB. If already in the AABB, do nothing.
 	/// If not in the AABB, expand the AABB to exactly contain it.</summary>
@@ -492,5 +402,8 @@ public:
 		_max = glm::max(_max, point);
 	}
 };
+
+inline AxisAlignedBox::AxisAlignedBox(const AxisAlignedBoxMinMax& copyFrom) { setMinMax(copyFrom.getMin(), copyFrom.getMax()); }
+
 } // namespace math
 } // namespace pvr

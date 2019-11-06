@@ -29,18 +29,12 @@ void printGaussianWeightsAndOffsets(std::vector<double>& gaussianOffsets, std::v
 
 	Log(LogLevel::Information, "Weights =");
 	Log(LogLevel::Information, "{");
-	for (uint32_t i = 0; i < gaussianWeights.size(); i++)
-	{
-		Log(LogLevel::Information, "%.15f,", gaussianWeights[i]);
-	}
+	for (uint32_t i = 0; i < gaussianWeights.size(); i++) { Log(LogLevel::Information, "%.15f,", gaussianWeights[i]); }
 	Log(LogLevel::Information, "};");
 
 	Log(LogLevel::Information, "Offsets =");
 	Log(LogLevel::Information, "{");
-	for (uint32_t i = 0; i < gaussianOffsets.size(); i++)
-	{
-		Log(LogLevel::Information, "%.15f,", gaussianOffsets[i]);
-	}
+	for (uint32_t i = 0; i < gaussianOffsets.size(); i++) { Log(LogLevel::Information, "%.15f,", gaussianOffsets[i]); }
 	Log(LogLevel::Information, "};");
 }
 
@@ -104,8 +98,7 @@ struct DeviceResources
 			uint32_t l = swapchain->getSwapchainLength();
 			for (uint32_t i = 0; i < l; ++i)
 			{
-				if (perFrameResourcesFences[i])
-					perFrameResourcesFences[i]->wait();
+				if (perFrameResourcesFences[i]) perFrameResourcesFences[i]->wait();
 			}
 		}
 	}
@@ -140,7 +133,7 @@ public:
 	virtual pvr::Result renderFrame();
 
 	void initialiseGaussianWeightsAndOffsets();
-	void loadTextures(pvrvk::CommandBuffer& commandBuffer);
+	void loadTextures(pvrvk::CommandBuffer& cmdBuffers);
 	void createResources();
 	void createPipelines();
 	void updateResources();
@@ -149,11 +142,11 @@ public:
 
 /// <summary>Loads the textures used throughout the demo. The commands required for uploading image data into the
 /// texture are recorded into the provided command buffer.</summary>
-/// <param name="commandBuffer">The commands required for uploading image data into the texture are recorded into this command buffer.</param>
-void VulkanGaussianBlur::loadTextures(pvrvk::CommandBuffer& commandBuffer)
+/// <param name="cmdBuffers">The commands required for uploading image data into the texture are recorded into this command buffer.</param>
+void VulkanGaussianBlur::loadTextures(pvrvk::CommandBuffer& cmdBuffers)
 {
 	// Load the Texture PVR file from the disk
-	pvr::Texture texture = pvr::textureLoad(getAssetStream(StatueTexFile), pvr::TextureFileFormat::PVR);
+	pvr::Texture texture = pvr::textureLoad(*getAssetStream(StatueTexFile), pvr::TextureFileFormat::PVR);
 
 	pvr::ImageDataFormat imageformat;
 	imageformat.colorSpace = texture.getColorSpace();
@@ -161,20 +154,20 @@ void VulkanGaussianBlur::loadTextures(pvrvk::CommandBuffer& commandBuffer)
 
 	// Create and Allocate Textures.
 	_deviceResources->inputImageView =
-		pvr::utils::uploadImageAndView(_deviceResources->device, texture, true, commandBuffer, pvrvk::ImageUsageFlags::e_SAMPLED_BIT | pvrvk::ImageUsageFlags::e_STORAGE_BIT,
+		pvr::utils::uploadImageAndView(_deviceResources->device, texture, true, cmdBuffers, pvrvk::ImageUsageFlags::e_SAMPLED_BIT | pvrvk::ImageUsageFlags::e_STORAGE_BIT,
 			pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, &_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
 
 	// Create 1 intermediate image per frame.
 	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); i++)
 	{
-		pvrvk::Image intermediateTexture = pvr::utils::createImage(_deviceResources->device, pvrvk::ImageType::e_2D,
-			pvr::utils::convertToPVRVkPixelFormat(texture.getPixelFormat(), texture.getColorSpace(), texture.getChannelType()),
-			pvrvk::Extent3D(texture.getWidth(), texture.getHeight(), 1u), pvrvk::ImageUsageFlags::e_STORAGE_BIT | pvrvk::ImageUsageFlags::e_SAMPLED_BIT,
-			static_cast<pvrvk::ImageCreateFlags>(0), pvrvk::ImageLayersSize(), pvrvk::SampleCountFlags::e_1_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT,
-			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, &_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_DEDICATED_MEMORY_BIT);
+		pvrvk::Image intermediateTexture = pvr::utils::createImage(_deviceResources->device,
+			pvrvk::ImageCreateInfo(pvrvk::ImageType::e_2D, pvr::utils::convertToPVRVkPixelFormat(texture.getPixelFormat(), texture.getColorSpace(), texture.getChannelType()),
+				pvrvk::Extent3D(texture.getWidth(), texture.getHeight(), 1u), pvrvk::ImageUsageFlags::e_STORAGE_BIT | pvrvk::ImageUsageFlags::e_SAMPLED_BIT),
+			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, &_deviceResources->vmaAllocator,
+			pvr::utils::vma::AllocationCreateFlags::e_DEDICATED_MEMORY_BIT);
 
 		// transfer the layout from UNDEFINED to SHADER_READ_ONLY_OPTIMAL
-		pvr::utils::setImageLayout(intermediateTexture, pvrvk::ImageLayout::e_UNDEFINED, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, commandBuffer);
+		pvr::utils::setImageLayout(intermediateTexture, pvrvk::ImageLayout::e_UNDEFINED, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, cmdBuffers);
 		_deviceResources->horizontallyBlurredImageViews[i] = _deviceResources->device->createImageView(pvrvk::ImageViewCreateInfo(intermediateTexture));
 	}
 }
@@ -234,9 +227,10 @@ void VulkanGaussianBlur::createResources()
 	{
 		_graphicsSsboSize = static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::vec2));
 
-		_deviceResources->graphicsGaussianConfigBuffer = pvr::utils::createBuffer(_deviceResources->device, _graphicsSsboSize, pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT,
-			pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
-			&_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+		_deviceResources->graphicsGaussianConfigBuffer =
+			pvr::utils::createBuffer(_deviceResources->device, pvrvk::BufferCreateInfo(_graphicsSsboSize, pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT),
+				pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
+				&_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 	}
 
 	{
@@ -263,8 +257,7 @@ void VulkanGaussianBlur::createResources()
 
 				writeDescSets.push_back(
 					pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, _deviceResources->graphicsDescriptorSets[i], 1)
-						.setImageInfo(
-							0, pvrvk::DescriptorImageInfo(_deviceResources->inputImageView, _deviceResources->nearestSampler, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL)));
+						.setImageInfo(0, pvrvk::DescriptorImageInfo(_deviceResources->inputImageView, _deviceResources->nearestSampler, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL)));
 
 				writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, _deviceResources->graphicsDescriptorSets[i], 2)
 											.setImageInfo(0,
@@ -285,13 +278,12 @@ void VulkanGaussianBlur::updateResources()
 		float inverseImageHeight = 1.0f / _deviceResources->inputImageView->getCreateInfo().getImage()->getHeight();
 		glm::vec2 config = glm::vec2(windowWidth, inverseImageHeight);
 
-		memcpy(static_cast<char*>(_deviceResources->graphicsGaussianConfigBuffer->getDeviceMemory()->getMappedData()), &config, static_cast<size_t>( pvr::getSize(pvr::GpuDatatypes::vec2) ));
+		memcpy(static_cast<char*>(_deviceResources->graphicsGaussianConfigBuffer->getDeviceMemory()->getMappedData()), &config,
+			static_cast<size_t>(pvr::getSize(pvr::GpuDatatypes::vec2)));
 
 		// if the memory property flags used by the buffers' device memory do not contain e_HOST_COHERENT_BIT then we must flush the memory
 		if (static_cast<uint32_t>(_deviceResources->graphicsGaussianConfigBuffer->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
-		{
-			_deviceResources->graphicsGaussianConfigBuffer->getDeviceMemory()->flushRange(0, _graphicsSsboSize);
-		}
+		{ _deviceResources->graphicsGaussianConfigBuffer->getDeviceMemory()->flushRange(0, _graphicsSsboSize); }
 	}
 }
 
@@ -321,8 +313,8 @@ void VulkanGaussianBlur::createPipelines()
 				static_cast<float>(rect.getExtent().getHeight())),
 			rect);
 
-		pvrvk::PipelineColorBlendAttachmentState colorAttachemtState;
-		colorAttachemtState.setBlendEnable(false);
+		pvrvk::PipelineColorBlendAttachmentState colorAttachmentState;
+		colorAttachmentState.setBlendEnable(false);
 		createInfo.vertexShader.setShader(vertexShader);
 		createInfo.fragmentShader.setShader(fragShader);
 
@@ -336,7 +328,7 @@ void VulkanGaussianBlur::createPipelines()
 		createInfo.vertexInput.clear();
 		createInfo.inputAssembler.setPrimitiveTopology(pvrvk::PrimitiveTopology::e_TRIANGLE_STRIP);
 
-		createInfo.colorBlend.setAttachmentState(0, colorAttachemtState);
+		createInfo.colorBlend.setAttachmentState(0, colorAttachmentState);
 		createInfo.pipelineLayout = _deviceResources->graphicsPipelinelayout;
 		createInfo.renderPass = _deviceResources->framebuffer[0]->getRenderPass();
 		createInfo.subpass = 0;
@@ -378,8 +370,7 @@ void VulkanGaussianBlur::recordCommandBuffer()
 					_deviceResources->inputImageView->getImage(), pvrvk::ImageSubresourceRange(pvrvk::ImageAspectFlags::e_COLOR_BIT), pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL,
 					pvrvk::ImageLayout::e_GENERAL, _deviceResources->queues[0]->getFamilyIndex(), _deviceResources->queues[0]->getFamilyIndex()));
 
-				_deviceResources->computeCommandBuffers[i]->pipelineBarrier(
-					pvrvk::PipelineStageFlags::e_FRAGMENT_SHADER_BIT, pvrvk::PipelineStageFlags::e_COMPUTE_SHADER_BIT, barrierSet);
+				_deviceResources->computeCommandBuffers[i]->pipelineBarrier(pvrvk::PipelineStageFlags::e_FRAGMENT_SHADER_BIT, pvrvk::PipelineStageFlags::e_COMPUTE_SHADER_BIT, barrierSet);
 			}
 
 			// Bind the compute pipeline & the descriptor set.
@@ -404,8 +395,7 @@ void VulkanGaussianBlur::recordCommandBuffer()
 					_deviceResources->inputImageView->getImage(), pvrvk::ImageSubresourceRange(pvrvk::ImageAspectFlags::e_COLOR_BIT), pvrvk::ImageLayout::e_GENERAL,
 					pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, _deviceResources->queues[0]->getFamilyIndex(), _deviceResources->queues[0]->getFamilyIndex()));
 
-				_deviceResources->computeCommandBuffers[i]->pipelineBarrier(
-					pvrvk::PipelineStageFlags::e_COMPUTE_SHADER_BIT, pvrvk::PipelineStageFlags::e_FRAGMENT_SHADER_BIT, barrierSet);
+				_deviceResources->computeCommandBuffers[i]->pipelineBarrier(pvrvk::PipelineStageFlags::e_COMPUTE_SHADER_BIT, pvrvk::PipelineStageFlags::e_FRAGMENT_SHADER_BIT, barrierSet);
 			}
 
 			pvr::utils::endCommandBufferDebugLabel(_deviceResources->computeCommandBuffers[i]);
@@ -481,7 +471,7 @@ pvr::Result VulkanGaussianBlur::initApplication()
 /// <returns>Result::Success if no error occurred.</returns>
 pvr::Result VulkanGaussianBlur::initView()
 {
-	_deviceResources = std::unique_ptr<DeviceResources>(new DeviceResources());
+	_deviceResources = std::make_unique<DeviceResources>();
 
 	// Create instance and retrieve compatible physical devices
 	_deviceResources->instance = pvr::utils::createInstance(this->getApplicationName());
@@ -493,7 +483,8 @@ pvr::Result VulkanGaussianBlur::initView()
 	}
 
 	// Create the surface
-	_deviceResources->surface = pvr::utils::createSurface(_deviceResources->instance, _deviceResources->instance->getPhysicalDevice(0), this->getWindow(), this->getDisplay());
+	_deviceResources->surface =
+		pvr::utils::createSurface(_deviceResources->instance, _deviceResources->instance->getPhysicalDevice(0), this->getWindow(), this->getDisplay(), this->getConnection());
 
 	// Create a default set of debug utils messengers or debug callbacks using either VK_EXT_debug_utils or VK_EXT_debug_report respectively
 	_deviceResources->debugUtilsCallbacks = pvr::utils::createDebugUtilsCallbacks(_deviceResources->instance);
@@ -511,22 +502,24 @@ pvr::Result VulkanGaussianBlur::initView()
 	// Graphics + Compute + WSI support.
 	// Other multi queue approaches may be possible i.e. making use of additional queues which do not support graphics/WSI
 	_useMultiQueue = false;
+
 	if (queueAccessInfos[1].familyId != -1 && queueAccessInfos[1].queueId != -1)
 	{
-		_useMultiQueue = true;
-		Log(LogLevel::Information, "Multiple queues support e_GRAPHICS_BIT + e_COMPUTE_BIT + WSI. These queues will be used to ping-pong work each frame");
+		_deviceResources->queues[1] = _deviceResources->device->getQueue(queueAccessInfos[1].familyId, queueAccessInfos[1].queueId);
+
+		if (_deviceResources->queues[0]->getFamilyIndex() == _deviceResources->queues[1]->getFamilyIndex())
+		{
+			_useMultiQueue = true;
+			Log(LogLevel::Information, "Multiple queues support e_GRAPHICS_BIT + e_COMPUTE_BIT + WSI. These queues will be used to ping-pong work each frame");
+		}
+		else
+		{
+			Log(LogLevel::Information, "Queues are from a different Family. We cannot ping-pong work each frame");
+		}
 	}
 	else
 	{
 		Log(LogLevel::Information, "Only a single queue supports e_GRAPHICS_BIT + e_COMPUTE_BIT + WSI. We cannot ping-pong work each frame");
-	}
-
-	if (_useMultiQueue)
-	{
-		_deviceResources->queues[1] = _deviceResources->device->getQueue(queueAccessInfos[1].familyId, queueAccessInfos[1].queueId);
-
-		// Currently we're requiring that both queues use the same queue family id
-		assertion(_deviceResources->queues[0]->getFamilyIndex() == _deviceResources->queues[1]->getFamilyIndex());
 	}
 
 	_deviceResources->vmaAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
@@ -536,11 +529,7 @@ pvr::Result VulkanGaussianBlur::initView()
 	// validate the supported swapchain image usage
 	pvrvk::ImageUsageFlags swapchainImageUsage = pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT;
 	if (pvr::utils::isImageUsageSupportedBySurface(surfaceCapabilities, pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT))
-	{
-		swapchainImageUsage |= pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT;
-	}
-
-	// Create the swapchain
+	{ swapchainImageUsage |= pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT; } // Create the swapchain
 	_deviceResources->swapchain = pvr::utils::createSwapchain(_deviceResources->device, _deviceResources->surface, getDisplayAttributes(), swapchainImageUsage);
 
 	// create the framebuffers.
@@ -612,10 +601,7 @@ pvr::Result VulkanGaussianBlur::releaseView()
 /// <summary>Code in quitApplication() will be called by Shell once per run, just before exiting the program.
 /// quitApplication() will not be called every time the rendering context is lost, only before application exit.</summary>
 /// <returns>Result::Success if no error occurred.</returns>
-pvr::Result VulkanGaussianBlur::quitApplication()
-{
-	return pvr::Result::Success;
-}
+pvr::Result VulkanGaussianBlur::quitApplication() { return pvr::Result::Success; }
 
 /// <summary>Main rendering loop function of the program. The shell will call this function every frame</summary>
 /// <returns>Result::Success if no error occurred.</summary>
@@ -675,17 +661,11 @@ pvr::Result VulkanGaussianBlur::renderFrame()
 
 	_frameId = (_frameId + 1) % _deviceResources->swapchain->getSwapchainLength();
 
-	if (_useMultiQueue)
-	{
-		_queueIndex = (_queueIndex + 1) % 2;
-	}
+	if (_useMultiQueue) { _queueIndex = (_queueIndex + 1) % 2; }
 
 	return pvr::Result::Success;
 }
 
 /// <summary>This function must be implemented by the user of the shell. The user should return its pvr::Shell object defining the behaviour of the application.</summary>
 /// <returns>Return a unique ptr to the demo supplied by the user.</returns>
-std::unique_ptr<pvr::Shell> pvr::newDemo()
-{
-	return std::unique_ptr<pvr::Shell>(new VulkanGaussianBlur());
-}
+std::unique_ptr<pvr::Shell> pvr::newDemo() { return std::make_unique<VulkanGaussianBlur>(); }

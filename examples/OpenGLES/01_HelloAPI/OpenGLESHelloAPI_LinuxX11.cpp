@@ -4,7 +4,7 @@
 \Author       PowerVR by Imagination, Developer Technology Team
 \Copyright    Copyright (c) Imagination Technologies Limited.
 \brief        Basic Tutorial that shows step-by-step how to initialize OpenGL ES 2.0, use it for drawing a triangle and terminate it.
-              Entry Point: main
+			  Entry Point: main
 ***********************************************************************************************************************/
 #include <stdio.h>
 #include <stdlib.h>
@@ -20,14 +20,14 @@
 #include <memory>
 
 // Name of the application
-const char* ApplicationName       = "HelloAPI";
+const char* ApplicationName = "HelloAPI";
 
 // Width and height of the window
-const unsigned int WindowWidth     = 1280;
-const unsigned int WindowHeight    = 800;
+const unsigned int WindowWidth = 1280;
+const unsigned int WindowHeight = 800;
 
 // Index to bind the attributes to vertex shaders
-const unsigned int VertexArray	 = 0;
+const unsigned int VertexArray = 0;
 
 /*!*********************************************************************************************************************
 \param[in]			functionLastCalled          Function which triggered the error
@@ -95,7 +95,7 @@ bool testGLError(const char* functionLastCalled)
 bool createNativeDisplay(Display** nativeDisplay)
 {
 	// Check for a valid display
-	if (!nativeDisplay)	{	return false;	}
+	if (!nativeDisplay) { return false; }
 
 	// Open the display
 	*nativeDisplay = XOpenDisplay(0);
@@ -146,18 +146,18 @@ bool createNativeWindow(Display* nativeDisplay, Window* nativeWindow)
 	windowAttributes.event_mask = StructureNotifyMask | ExposureMask | ButtonPressMask;
 
 	// Create the window
-	*nativeWindow = XCreateWindow(nativeDisplay,              // The display used to create the window
-	                              rootWindow,                   // The parent (root) window - the desktop
-	                              0,                            // The horizontal (x) origin of the window
-	                              0,                            // The vertical (y) origin of the window
-	                              WindowWidth,                 // The width of the window
-	                              WindowHeight,                // The height of the window
-	                              0,                            // Border size - set it to zero
-	                              visualInfo->depth,            // Depth from the visual info
-	                              InputOutput,                  // Window type - this specifies InputOutput.
-	                              visualInfo->visual,           // Visual to use
-	                              CWEventMask | CWColormap,     // Mask specifying these have been defined in the window attributes
-	                              &windowAttributes);           // Pointer to the window attribute structure
+	*nativeWindow = XCreateWindow(nativeDisplay, // The display used to create the window
+		rootWindow, // The parent (root) window - the desktop
+		0, // The horizontal (x) origin of the window
+		0, // The vertical (y) origin of the window
+		WindowWidth, // The width of the window
+		WindowHeight, // The height of the window
+		0, // Border size - set it to zero
+		visualInfo->depth, // Depth from the visual info
+		InputOutput, // Window type - this specifies InputOutput.
+		visualInfo->visual, // Visual to use
+		CWEventMask | CWColormap, // Mask specifying these have been defined in the window attributes
+		&windowAttributes); // Pointer to the window attribute structure
 
 	// Make the window viewable by mapping it to the display
 	XMapWindow(nativeDisplay, *nativeWindow);
@@ -167,7 +167,7 @@ bool createNativeWindow(Display* nativeDisplay, Window* nativeWindow)
 
 	// Setup the window manager protocols to handle window deletion events
 	Atom windowManagerDelete = XInternAtom(nativeDisplay, "WM_DELETE_WINDOW", True);
-	XSetWMProtocols(nativeDisplay, *nativeWindow, &windowManagerDelete , 1);
+	XSetWMProtocols(nativeDisplay, *nativeWindow, &windowManagerDelete, 1);
 
 	return true;
 }
@@ -204,17 +204,14 @@ bool createEGLDisplay(Display* nativeDisplay, EGLDisplay& eglDisplay)
 		printf("Failed to initialize the EGLDisplay");
 		return false;
 	}
-	
+
 	// Bind the correct API
 	int result = EGL_FALSE;
 
 	result = eglBindAPI(EGL_OPENGL_ES_API);
 
-	if (result != EGL_TRUE)
-	{
-		return false;
-	}
-	
+	if (result != EGL_TRUE) { return false; }
+
 	return true;
 }
 
@@ -232,12 +229,7 @@ bool chooseEGLConfig(EGLDisplay eglDisplay, EGLConfig& eglConfig)
 	//	requires so that an appropriate one can be chosen. The first step in doing this is to create an attribute list, which is an array
 	//	of key/value pairs which describe particular capabilities requested. In this application nothing special is required so we can query
 	//	the minimum of needing it to render to a window, and being OpenGL ES 2.0 capable.
-	const EGLint configurationAttributes[] =
-	{
-		EGL_SURFACE_TYPE,		EGL_WINDOW_BIT,
-		EGL_RENDERABLE_TYPE,	EGL_OPENGL_ES2_BIT,
-		EGL_NONE
-	};
+	const EGLint configurationAttributes[] = { EGL_SURFACE_TYPE, EGL_WINDOW_BIT, EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT, EGL_NONE };
 
 	//	Find a suitable EGLConfig
 	//	eglChooseConfig is provided by EGL to provide an easy way to select an appropriate configuration. It takes in the capabilities
@@ -275,7 +267,7 @@ bool createEGLSurface(Window nativeWindow, EGLDisplay eglDisplay, EGLConfig eglC
 	//	The offscreen surfaces are useful for non-rendering contexts and in certain other scenarios, but for most applications the main
 	//	surface used will be a window surface as performed below.
 	eglSurface = eglCreateWindowSurface(eglDisplay, eglConfig, (EGLNativeWindowType)nativeWindow, NULL);
-	if (!testEGLError("eglCreateWindowSurface")){	return false;	}
+	if (!testEGLError("eglCreateWindowSurface")) { return false; }
 	return true;
 }
 
@@ -294,7 +286,7 @@ bool setupEGLContext(EGLDisplay eglDisplay, EGLConfig eglConfig, EGLSurface eglS
 	// EGL needs a way to know that any subsequent EGL calls are going to be affecting OpenGL ES,
 	// rather than any other API (such as OpenVG).
 	eglBindAPI(EGL_OPENGL_ES_API);
-	if (!testEGLError("eglBindAPI")){	return false;	}
+	if (!testEGLError("eglBindAPI")) { return false; }
 
 	//	Create a context.
 	//	EGL has to create what is known as a context for OpenGL ES. The concept of a context is OpenGL ES's way of encapsulating any
@@ -302,25 +294,21 @@ bool setupEGLContext(EGLDisplay eglDisplay, EGLConfig eglConfig, EGLSurface eglS
 	//	is required for any operations in OpenGL ES.
 	//	Similar to an EGLConfig, a context takes in a list of attributes specifying some of its capabilities. However in most cases this
 	//	is limited to just requiring the version of the OpenGL ES context required - In this case, OpenGL ES 2.0.
-	EGLint contextAttributes[] =
-	{
-		EGL_CONTEXT_CLIENT_VERSION, 2,
-		EGL_NONE
-	};
+	EGLint contextAttributes[] = { EGL_CONTEXT_CLIENT_VERSION, 2, EGL_NONE };
 
 	// Create the context with the context attributes supplied
 	context = eglCreateContext(eglDisplay, eglConfig, NULL, contextAttributes);
-	if (!testEGLError("eglCreateContext")){	return false;	}
+	if (!testEGLError("eglCreateContext")) { return false; }
 
 	//	Bind the context to the current thread.
 	//	Due to the way OpenGL uses global functions, contexts need to be made current so that any function call can operate on the correct
-	//	context. Specifically, make current will bind the context to the current rendering thread it's called from. If the calling thread already 
+	//	context. Specifically, make current will bind the context to the current rendering thread it's called from. If the calling thread already
 	//  has a current rendering context then that context is flushed and marked as no longer current. It is not valid to call eglMakeCurrent with a context
-	//  which is current on another thread. 
+	//  which is current on another thread.
 	//  To use multiple contexts at the same time, users should use multiple threads and synchronise between them.eglMakeCurrent(eglDisplay, eglSurface, eglSurface, context);
 	eglMakeCurrent(eglDisplay, eglSurface, eglSurface, context);
-	
-	if (!testEGLError("eglMakeCurrent")){	return false;	}
+
+	if (!testEGLError("eglMakeCurrent")) { return false; }
 	return true;
 }
 
@@ -336,19 +324,18 @@ bool initializeBuffer(GLuint& vertexBuffer)
 	//	it is. The data used to do this is referred to as vertices, points in 3D space which are usually collected into groups of three
 	//	to render as triangles. Fundamentally, any advanced 3D shape in OpenGL ES is constructed from a series of these vertices - each
 	//	vertex representing one corner of a polygon.
-    
+
 	//	Concept: Buffer Objects
 	//	To operate on any data, OpenGL first needs to be able to access it. The GPU maintains a separate pool of memory it uses independent
 	//	of the CPU. Whilst on many embedded systems these are in the same physical memory, the distinction exists so that they can use and
 	//	allocate memory without having to worry about synchronising with any other processors in the device.
 	//	To this end, data needs to be uploaded into buffers, which are essentially a reserved bit of memory for the GPU to use. By creating
 	//	a buffer and giving it some data we can tell the GPU how to render a triangle.
-	
+
 	// Vertex data containing the positions of each point of the triangle
 	GLfloat vertexData[] = { -0.4f, -0.4f, 0.0f, // Bottom Left
-	                         0.4f, -0.4f, 0.0f, // Bottom Right
-	                         0.0f, 0.4f, 0.0f
-	                       }; // Top Middle
+		0.4f, -0.4f, 0.0f, // Bottom Right
+		0.0f, 0.4f, 0.0f }; // Top Middle
 
 	// Generate a buffer object
 	glGenBuffers(1, &vertexBuffer);
@@ -361,7 +348,7 @@ bool initializeBuffer(GLuint& vertexBuffer)
 	//	to modify the data until we're done with it.
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertexData), vertexData, GL_STATIC_DRAW);
 
-	if (!testGLError("glBufferData")){	return false;	}
+	if (!testGLError("glBufferData")) { return false; }
 	return true;
 }
 
@@ -382,7 +369,6 @@ bool initializeShaders(GLuint& fragmentShader, GLuint& vertexShader, GLuint& sha
 	//	which is usually abbreviated to simply "GLSL ES".
 	//	Each shader is compiled on-device and then linked into a shader program, which combines a vertex and fragment shader into a form
 	//	that the OpenGL ES implementation can execute.
-	
 
 	//	Concept: Fragment Shaders
 	//	In a final buffer of image data, each individual point is referred to as a pixel. Fragment shaders are the part of the pipeline
@@ -391,7 +377,7 @@ bool initializeShaders(GLuint& fragmentShader, GLuint& vertexShader, GLuint& sha
 	//	The reason these are called "fragment" shaders instead of "pixel" shaders is due to a small technical difference between the two
 	//	concepts. When you color a fragment, it may not be the final color which ends up on screen. This is particularly true when
 	//	performing blending, where multiple fragments can contribute to the final pixel color.
-	
+
 	const char* const fragmentShaderSource = "\
 											 void main (void)\
 											 {\
@@ -417,7 +403,8 @@ bool initializeShaders(GLuint& fragmentShader, GLuint& vertexShader, GLuint& sha
 		glGetShaderiv(fragmentShader, GL_INFO_LOG_LENGTH, &infoLogLength);
 
 		// Allocate enough space for the message and retrieve it
-		std::vector<char> infoLog; infoLog.resize(infoLogLength);
+		std::vector<char> infoLog;
+		infoLog.resize(infoLogLength);
 		glGetShaderInfoLog(fragmentShader, infoLogLength, &charactersWritten, infoLog.data());
 
 		// Display the error in a dialog box
@@ -431,7 +418,7 @@ bool initializeShaders(GLuint& fragmentShader, GLuint& vertexShader, GLuint& sha
 	//	Scaling, Translation or Rotation. Using the same basic layout and structure as a fragment shader, these take in vertex data and
 	//	output a fully transformed set of positions. Other inputs are also able to be used such as normals or texture coordinates, and can
 	//	also be transformed and output alongside the position data.
-	
+
 	// Vertex shader code
 	const char* const vertexShaderSource = "\
 										   attribute highp vec4	myVertex;\
@@ -459,7 +446,8 @@ bool initializeShaders(GLuint& fragmentShader, GLuint& vertexShader, GLuint& sha
 		glGetShaderiv(vertexShader, GL_INFO_LOG_LENGTH, &infoLogLength);
 
 		// Allocate enough space for the message and retrieve it
-		std::vector<char> infoLog; infoLog.resize(infoLogLength);
+		std::vector<char> infoLog;
+		infoLog.resize(infoLogLength);
 		glGetShaderInfoLog(vertexShader, infoLogLength, &charactersWritten, infoLog.data());
 
 		// Display the error in a dialog box
@@ -490,7 +478,8 @@ bool initializeShaders(GLuint& fragmentShader, GLuint& vertexShader, GLuint& sha
 		glGetProgramiv(shaderProgram, GL_INFO_LOG_LENGTH, &infoLogLength);
 
 		// Allocate enough space for the message and retrieve it
-		std::vector<char> infoLog; infoLog.resize(infoLogLength);
+		std::vector<char> infoLog;
+		infoLog.resize(infoLogLength);
 		glGetProgramInfoLog(shaderProgram, infoLogLength, &charactersWritten, infoLog.data());
 
 		// Display the error in a dialog box
@@ -504,7 +493,7 @@ bool initializeShaders(GLuint& fragmentShader, GLuint& vertexShader, GLuint& sha
 	//	be active at once, so in a multi-program application this function would be called in the render loop. Since this application only
 	//	uses one program it can be installed in the current state and left there.
 	glUseProgram(shaderProgram);
-	if (!testGLError("glUseProgram")){	return false;	}
+	if (!testGLError("glUseProgram")) { return false; }
 	return true;
 }
 
@@ -536,24 +525,18 @@ bool renderScene(GLuint shaderProgram, EGLDisplay eglDisplay, EGLSurface eglSurf
 	int matrixLocation = glGetUniformLocation(shaderProgram, "transformationMatrix");
 
 	// Matrix used to specify the orientation of the triangle on screen.
-	const float transformationMatrix[] =
-	{
-		1.0f, 0.0f, 0.0f, 0.0f,
-		0.0f, 1.0f, 0.0f, 0.0f,
-		0.0f, 0.0f, 1.0f, 0.0f,
-		0.0f, 0.0f, 0.0f, 1.0f
-	};
+	const float transformationMatrix[] = { 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f };
 
 	// Pass the transformationMatrix to the shader using its location
 	glUniformMatrix4fv(matrixLocation, 1, GL_FALSE, transformationMatrix);
-	if (!testGLError("glUniformMatrix4fv")){ return false; }
+	if (!testGLError("glUniformMatrix4fv")) { return false; }
 
 	// Enable the user-defined vertex array
 	glEnableVertexAttribArray(VertexArray);
 
 	// Sets the vertex data to this attribute index, with the number of floats in each position
 	glVertexAttribPointer(VertexArray, 3, GL_FLOAT, GL_FALSE, 0, 0);
-	if (!testGLError("glVertexAttribPointer")){	return false;	}
+	if (!testGLError("glVertexAttribPointer")) { return false; }
 
 	//	Draw the triangle
 	//	glDrawArrays is a draw call, and executes the shader program using the vertices and other state set by the user. Draw calls are the
@@ -564,8 +547,8 @@ bool renderScene(GLuint shaderProgram, EGLDisplay eglDisplay, EGLSurface eglSurf
 	//	Others include versions of the above that allow the user to draw the same object multiple times with slightly different data, and
 	//	a version of glDrawElements which allows a user to restrict the actual indices accessed.
 	glDrawArrays(GL_TRIANGLES, 0, 3);
-	if (!testGLError("glDrawArrays")){	return false;	}
-	
+	if (!testGLError("glDrawArrays")) { return false; }
+
 	// Invalidate the contents of the specified buffers for the framebuffer to allow the implementation further optimization opportunities.
 	// The following is taken from https://www.khronos.org/registry/OpenGL/extensions/EXT/EXT_discard_framebuffer.txt
 	// Some OpenGL ES implementations cache framebuffer images in a small pool of fast memory.  Before rendering, these implementations must load the
@@ -576,14 +559,14 @@ bool renderScene(GLuint shaderProgram, EGLDisplay eglDisplay, EGLSurface eglSurf
 	// Even without this extension, if a frame of rendering begins with a full-screen Clear, an OpenGL ES implementation may optimize away the loading
 	// of framebuffer contents prior to rendering the frame.  With this extension, an application can use DiscardFramebufferEXT to signal that framebuffer
 	// contents will no longer be needed.  In this case an OpenGL ES implementation may also optimize away the storing back of framebuffer contents after rendering the frame.
-	if(isGlExtensionSupported("GL_EXT_discard_framebuffer"))
+	if (isGlExtensionSupported("GL_EXT_discard_framebuffer"))
 	{
 		GLenum invalidateAttachments[2];
 		invalidateAttachments[0] = GL_DEPTH_EXT;
 		invalidateAttachments[1] = GL_STENCIL_EXT;
-		
+
 		glDiscardFramebufferEXT(GL_FRAMEBUFFER, 2, &invalidateAttachments[0]);
-		if (!testGLError("glDiscardFramebufferEXT")){	return false;	}
+		if (!testGLError("glDiscardFramebufferEXT")) { return false; }
 	}
 
 	//	Present the display data to the screen.
@@ -611,10 +594,8 @@ bool renderScene(GLuint shaderProgram, EGLDisplay eglDisplay, EGLSurface eglSurf
 		case ClientMessage:
 		// Exit on mouse click
 		case ButtonPress:
-		case DestroyNotify:
-			return false;
-		default:
-			break;
+		case DestroyNotify: return false;
+		default: break;
 		}
 	}
 	return true;
@@ -662,10 +643,10 @@ void releaseEGLState(EGLDisplay eglDisplay)
 void releaseNativeResources(Display* nativeDisplay, Window nativeWindow)
 {
 	// Destroy the window
-	if (nativeWindow){	XDestroyWindow(nativeDisplay, nativeWindow);	}
+	if (nativeWindow) { XDestroyWindow(nativeDisplay, nativeWindow); }
 
 	// Release the display.
-	if (nativeDisplay){	XCloseDisplay(nativeDisplay);	}
+	if (nativeDisplay) { XCloseDisplay(nativeDisplay); }
 }
 
 /*!*********************************************************************************************************************
@@ -681,10 +662,10 @@ int main(int /*argc*/, char** /*argv*/)
 	Window nativeWindow = 0;
 
 	// EGL variables
-	EGLDisplay			eglDisplay = NULL;
-	EGLConfig			eglConfig = NULL;
-	EGLSurface			eglSurface = NULL;
-	EGLContext			context = NULL;
+	EGLDisplay eglDisplay = NULL;
+	EGLConfig eglConfig = NULL;
+	EGLSurface eglSurface = NULL;
+	EGLContext context = NULL;
 
 	// Handles for the two shaders used to draw the triangle, and the program handle which combines them.
 	GLuint fragmentShader = 0, vertexShader = 0;
@@ -694,33 +675,33 @@ int main(int /*argc*/, char** /*argv*/)
 	GLuint vertexBuffer = 0;
 
 	// Get access to a native display
-	if (!createNativeDisplay(&nativeDisplay)){	goto cleanup;	}
+	if (!createNativeDisplay(&nativeDisplay)) { goto cleanup; }
 
 	// Setup the windowing system, create a window
-	if (!createNativeWindow(nativeDisplay, &nativeWindow)){	goto cleanup;	}
+	if (!createNativeWindow(nativeDisplay, &nativeWindow)) { goto cleanup; }
 
 	// Create and Initialize an EGLDisplay from the native display
-	if (!createEGLDisplay(nativeDisplay, eglDisplay)){	goto cleanup;	}
+	if (!createEGLDisplay(nativeDisplay, eglDisplay)) { goto cleanup; }
 
 	// Choose an EGLConfig for the application, used when setting up the rendering surface and EGLContext
-	if (!chooseEGLConfig(eglDisplay, eglConfig)){	goto cleanup;	}
+	if (!chooseEGLConfig(eglDisplay, eglConfig)) { goto cleanup; }
 
 	// Create an EGLSurface for rendering from the native window
-	if (!createEGLSurface(nativeWindow, eglDisplay, eglConfig, eglSurface)){	goto cleanup;	}
+	if (!createEGLSurface(nativeWindow, eglDisplay, eglConfig, eglSurface)) { goto cleanup; }
 
 	// Setup the EGL Context from the other EGL constructs created so far, so that the application is ready to submit OpenGL ES commands
-	if (!setupEGLContext(eglDisplay, eglConfig, eglSurface, context)){	goto cleanup;	}
+	if (!setupEGLContext(eglDisplay, eglConfig, eglSurface, context)) { goto cleanup; }
 
 	// Initialize the vertex data in the application
-	if (!initializeBuffer(vertexBuffer)){	goto cleanup;	}
+	if (!initializeBuffer(vertexBuffer)) { goto cleanup; }
 
 	// Initialize the fragment and vertex shaders used in the application
-	if (!initializeShaders(fragmentShader, vertexShader, shaderProgram)){	goto cleanup;	}
+	if (!initializeShaders(fragmentShader, vertexShader, shaderProgram)) { goto cleanup; }
 
 	// Renders a triangle for 800 frames using the state setup in the previous function
 	for (int i = 0; i < 800; ++i)
 	{
-		if (!renderScene(shaderProgram, eglDisplay, eglSurface, nativeDisplay))	{	break;	}
+		if (!renderScene(shaderProgram, eglDisplay, eglSurface, nativeDisplay)) { break; }
 	}
 
 	// Release any resources we created in the Initialize functions

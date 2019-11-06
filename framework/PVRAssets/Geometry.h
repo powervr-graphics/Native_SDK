@@ -10,15 +10,9 @@
 namespace pvr {
 namespace tool {
 namespace impl {
-inline static void setVertex(glm::vec3& vertex, float x, float y, float z)
-{
-	vertex.x = x, vertex.y = y, vertex.z = z;
-}
+inline static void setVertex(glm::vec3& vertex, float x, float y, float z) { vertex.x = x, vertex.y = y, vertex.z = z; }
 
-inline static void setUV(glm::vec2& uv, float u, float v)
-{
-	uv.x = u, uv.y = v;
-}
+inline static void setUV(glm::vec2& uv, float u, float v) { uv.x = u, uv.y = v; }
 } // namespace impl
   /// <summary>Create a Skybox vertices and UVs for a specified texture size</summary>
 /// <param name="scale">scale the vertices</param>
@@ -27,7 +21,7 @@ inline static void setUV(glm::vec2& uv, float u, float v)
 /// <param name="outVertices">array of generated vertices</param>
 /// <param name="outUVs">array of generated UVs</param>
 
-void createSkyBox(float scale, bool adjustUV, uint32_t textureSize, std::vector<glm::vec3>& outVertices, std::vector<glm::vec2>& outUVs)
+inline void createSkyBox(float scale, bool adjustUV, uint32_t textureSize, std::vector<glm::vec3>& outVertices, std::vector<glm::vec2>& outUVs)
 {
 	using namespace impl;
 	float unit = 1.f, a0 = 1.f, a1 = 1.f;
@@ -104,5 +98,4 @@ void createSkyBox(float scale, bool adjustUV, uint32_t textureSize, std::vector<
 }
 } // namespace tool
 
-} // namespace pvr
 } // namespace pvr

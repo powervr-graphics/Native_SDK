@@ -6,9 +6,6 @@ arithmetic types, enumerations, character types).
 \copyright Copyright (c) Imagination Technologies Limited.
 */
 #pragma once
-#pragma warning(disable : 4512)
-#pragma warning(disable : 4480)
-#pragma warning(disable : 4100)
 
 //!\cond NO_DOXYGEN
 #ifdef _WIN32
@@ -167,20 +164,14 @@ DEFINE_ENUM_OPERATORS(BufferUsageFlags)
 /// <returns>The typical usage flags for <paramref name="descType/></returns>
 inline BufferUsageFlags descriptorTypeToBufferUsage(DescriptorType descType)
 {
-	if (descType == DescriptorType::UniformBuffer || descType == DescriptorType::UniformBufferDynamic)
-	{
-		return BufferUsageFlags::UniformBuffer;
-	}
+	if (descType == DescriptorType::UniformBuffer || descType == DescriptorType::UniformBufferDynamic) { return BufferUsageFlags::UniformBuffer; }
 	return BufferUsageFlags::StorageBuffer;
 }
 
 /// <summary>Checks if a descriptor type is dynamic (a dynamic UBO or dynamic SSBO)</summary>
 /// <param name="descType">A descriptor type</param>
 /// <returns>True if descType is UniformBufferDynamic or StorageBufferDynamic, otherwise false</returns>
-inline bool isDescriptorTypeDynamic(DescriptorType descType)
-{
-	return (descType == DescriptorType::UniformBufferDynamic || descType == DescriptorType::StorageBufferDynamic);
-}
+inline bool isDescriptorTypeDynamic(DescriptorType descType) { return (descType == DescriptorType::UniformBufferDynamic || descType == DescriptorType::StorageBufferDynamic); }
 
 /// <summary>Aligns a given number based on the given alignment</summary>
 /// <param name="numberToAlign">A number ot align based alignment</param>
@@ -192,10 +183,7 @@ inline t1 align(t1 numberToAlign, t2 alignment)
 	if (alignment)
 	{
 		t1 align1 = numberToAlign % (t1)alignment;
-		if (!align1)
-		{
-			align1 += (t1)alignment;
-		}
+		if (!align1) { align1 += (t1)alignment; }
 		numberToAlign += t1(alignment) - align1;
 	}
 	return numberToAlign;
@@ -235,9 +223,7 @@ inline uint32_t dataTypeSize(DataType type)
 {
 	switch (type)
 	{
-	default:
-		assert(false);
-		return 0;
+	default: assert(false); return 0;
 	case DataType::Float32:
 	case DataType::Int32:
 	case DataType::UInt32:
@@ -247,17 +233,14 @@ inline uint32_t dataTypeSize(DataType type)
 	case DataType::D3DCOLOR:
 	case DataType::UBYTE4:
 	case DataType::DEC3N: //(1D/2D/3D).
-	case DataType::Fixed16_16:
-		return 4;
+	case DataType::Fixed16_16: return 4;
 	case DataType::Int16:
 	case DataType::Int16Norm:
-	case DataType::UInt16:
-		return 2;
+	case DataType::UInt16: return 2;
 	case DataType::UInt8:
 	case DataType::UInt8Norm:
 	case DataType::Int8:
-	case DataType::Int8Norm:
-		return 1;
+	case DataType::Int8Norm: return 1;
 	}
 }
 /// <summary>Return the number of components in a datatype.</summary>
@@ -267,9 +250,7 @@ inline uint32_t numDataTypeComponents(DataType type)
 {
 	switch (type)
 	{
-	default:
-		assert(false);
-		return 0;
+	default: assert(false); return 0;
 	case DataType::Float32:
 	case DataType::Int32:
 	case DataType::UInt32:
@@ -280,16 +261,13 @@ inline uint32_t numDataTypeComponents(DataType type)
 	case DataType::Int8:
 	case DataType::Int8Norm:
 	case DataType::UInt8:
-	case DataType::UInt8Norm:
-		return 1;
-	case DataType::DEC3N:
-		return 3;
+	case DataType::UInt8Norm: return 1;
+	case DataType::DEC3N: return 3;
 	case DataType::RGBA:
 	case DataType::ABGR:
 	case DataType::ARGB:
 	case DataType::D3DCOLOR:
-	case DataType::UBYTE4:
-		return 4;
+	case DataType::UBYTE4: return 4;
 	}
 }
 
@@ -447,13 +425,9 @@ inline uint32_t indexTypeSizeInBytes(const IndexType type)
 {
 	switch (type)
 	{
-	default:
-		assert(false);
-		return false;
-	case IndexType::IndexType16Bit:
-		return 2;
-	case IndexType::IndexType32Bit:
-		return 4;
+	default: assert(false); return false;
+	case IndexType::IndexType16Bit: return 2;
+	case IndexType::IndexType32Bit: return 4;
 	}
 }
 
@@ -575,24 +549,15 @@ inline std::string to_string(ShaderType shaderType)
 {
 	switch (shaderType)
 	{
-	case ShaderType::VertexShader:
-		return "Vertex";
-	case ShaderType::FragmentShader:
-		return "Fragment";
-	case ShaderType::ComputeShader:
-		return "Compute";
-	case ShaderType::TessControlShader:
-		return "Tessellation Control";
-	case ShaderType::TessEvaluationShader:
-		return "Tessellation Evaluation";
-	case ShaderType::GeometryShader:
-		return "Geometry";
-	case ShaderType::RayShader:
-		return "Ray";
-	case ShaderType::FrameShader:
-		return "Frame";
-	default:
-		return "Unknown";
+	case ShaderType::VertexShader: return "Vertex";
+	case ShaderType::FragmentShader: return "Fragment";
+	case ShaderType::ComputeShader: return "Compute";
+	case ShaderType::TessControlShader: return "Tessellation Control";
+	case ShaderType::TessEvaluationShader: return "Tessellation Evaluation";
+	case ShaderType::GeometryShader: return "Geometry";
+	case ShaderType::RayShader: return "Ray";
+	case ShaderType::FrameShader: return "Frame";
+	default: return "Unknown";
 	}
 }
 
@@ -615,18 +580,12 @@ inline const char* getResultCodeString(Result result)
 {
 	switch (result)
 	{
-	case Result::Success:
-		return "Success";
-	case Result::UnknownError:
-		return "Unknown Error";
-	case Result::ExitRenderFrame:
-		return "Exit Render Scene";
-	case Result::NotInitialized:
-		return "Not initialized";
-	case Result::InitializationError:
-		return "Error while initializing";
-	default:
-		return "UNRECOGNIZED CODE";
+	case Result::Success: return "Success";
+	case Result::UnknownError: return "Unknown Error";
+	case Result::ExitRenderFrame: return "Exit Render Scene";
+	case Result::NotInitialized: return "Not initialized";
+	case Result::InitializationError: return "Error while initializing";
+	default: return "UNRECOGNIZED CODE";
 	}
 }
 
@@ -711,17 +670,14 @@ public:
 	{}
 	/// <summary>Checks if the screen is rotated.</summary>
 	/// <returns>True if the screen is Portrait, otherwise (if landscape) false .</returns>
-	bool isDisplayPortrait() const
-	{
-		return height > width;
-	}
+	bool isDisplayPortrait() const { return height > width; }
 	/// <summary>Checks if full screen.</summary>
 	/// <returns>True if full screen, otherwise false.</returns>
-	bool isFullScreen() const
-	{
-		return fullscreen;
-	}
+	bool isFullScreen() const { return fullscreen; }
 };
+
+/// <summary>Native connection type. Used as a connection between a client side window system library (Xlib, XCB) and its corresponding server side window system library.</summary>
+typedef void* OSConnection;
 
 /// <summary>Native display type.</summary>
 typedef void* OSDisplay;
@@ -781,7 +737,7 @@ struct VertexAttributeLayout
 	uint8_t width; //!< Number of values per vertex
 
 	/// <summary>VertexAttributeLayout</summary>
-	VertexAttributeLayout() {}
+	VertexAttributeLayout() : dataType(DataType::None), offset(static_cast<uint16_t>(-1)), width(static_cast<uint8_t>(-1)) {}
 
 	/// <summary>VertexAttributeLayout</summary>
 	/// <param name="dataType"></param>

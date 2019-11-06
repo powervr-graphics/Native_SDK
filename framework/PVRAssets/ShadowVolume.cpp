@@ -48,10 +48,7 @@ bool ShadowVolume::releaseVolume(uint32_t volumeID)
 	std::map<uint32_t, ShadowVolumeData>::iterator found = _shadowVolumes.find(volumeID);
 	assertion(found != _shadowVolumes.end());
 
-	if (found == _shadowVolumes.end())
-	{
-		return false;
-	}
+	if (found == _shadowVolumes.end()) { return false; }
 	{
 		const ShadowVolumeData& volume = found->second;
 		delete[] volume.indexData;
@@ -72,10 +69,7 @@ uint32_t ShadowVolume::getNumIndices(uint32_t volumeID)
 	ShadowVolumeMapType::iterator found = _shadowVolumes.find(volumeID);
 	assertion(found != _shadowVolumes.end());
 
-	if (found == _shadowVolumes.end())
-	{
-		return 0;
-	}
+	if (found == _shadowVolumes.end()) { return 0; }
 
 	return found->second.numIndices;
 }
@@ -85,20 +79,14 @@ char* ShadowVolume::getIndices(uint32_t volumeID)
 	ShadowVolumeMapType::iterator found = _shadowVolumes.find(volumeID);
 	assertion(found != _shadowVolumes.end());
 
-	if (found == _shadowVolumes.end())
-	{
-		return 0;
-	}
+	if (found == _shadowVolumes.end()) { return 0; }
 
 	return found->second.indexData;
 }
 
 bool ShadowVolume::projectSilhouette(uint32_t volumeID, uint32_t flags, const glm::vec3& lightModel, bool isPointLight, char** externalIndexBuffer)
 {
-	if (_volumeMesh.needs32BitIndices)
-	{
-		return project<uint32_t>(volumeID, flags, lightModel, isPointLight, reinterpret_cast<uint32_t**>(externalIndexBuffer));
-	}
+	if (_volumeMesh.needs32BitIndices) { return project<uint32_t>(volumeID, flags, lightModel, isPointLight, reinterpret_cast<uint32_t**>(externalIndexBuffer)); }
 	else
 	{
 		return project<uint16_t>(volumeID, flags, lightModel, isPointLight, reinterpret_cast<uint16_t**>(externalIndexBuffer));
@@ -111,18 +99,12 @@ bool ShadowVolume::project(uint32_t volumeID, uint32_t flags, const glm::vec3& l
 	ShadowVolumeMapType::iterator found = _shadowVolumes.find(volumeID);
 	assertion(found != _shadowVolumes.end());
 
-	if (found != _shadowVolumes.end())
-	{
-		return false;
-	}
+	if (found != _shadowVolumes.end()) { return false; }
 
 	ShadowVolumeData& volume = found->second;
 	INDEXTYPE* indices = externalIndexBuffer ? *externalIndexBuffer : reinterpret_cast<INDEXTYPE*>(volume.indexData);
 
-	if (indices == NULL)
-	{
-		return false;
-	}
+	if (indices == NULL) { return false; }
 
 	float f;
 	volume.numIndices = 0;
@@ -187,10 +169,7 @@ bool ShadowVolume::project(uint32_t volumeID, uint32_t flags, const glm::vec3& l
 #ifdef DEBUG // Sanity checks
 	assertion(volume.numIndices * sizeof(INDEXTYPE) <= getIndexDataSize()); // Have we accessed memory we shouldn't have?
 
-	for (uint32_t i = 0; i < volume.numIndices; ++i)
-	{
-		assertion(indices[i] < _volumeMesh.numVertices * 2);
-	}
+	for (uint32_t i = 0; i < volume.numIndices; ++i) { assertion(indices[i] < _volumeMesh.numVertices * 2); }
 #endif
 
 	// Run through edges, testing which are silhouette edges
@@ -231,10 +210,7 @@ bool ShadowVolume::project(uint32_t volumeID, uint32_t flags, const glm::vec3& l
 #ifdef DEBUG // Sanity checks
 	assertion(volume.numIndices * sizeof(INDEXTYPE) <= getIndexDataSize()); // Have we accessed memory we shouldn't have?
 
-	for (uint32_t i = 0; i < volume.numIndices; ++i)
-	{
-		assertion(indices[i] < _volumeMesh.numVertices * 2);
-	}
+	for (uint32_t i = 0; i < volume.numIndices; ++i) { assertion(indices[i] < _volumeMesh.numVertices * 2); }
 #endif
 
 	return true;
@@ -247,15 +223,9 @@ static inline void transformPoint(const glm::mat4x4& projection, float bx, float
 	out.z = (projection[0][2] * bx) + (projection[1][2] * by) + (projection[2][2] * bz) + projection[3][2];
 	out.w = (projection[0][3] * bx) + (projection[1][3] * by) + (projection[2][3] * bz) + projection[3][3];
 
-	if (out.z <= 0)
-	{
-		++numClipZ;
-	}
+	if (out.z <= 0) { ++numClipZ; }
 
-	if (out.z <= lightProjZ)
-	{
-		++clipFlagsA;
-	}
+	if (out.z <= lightProjZ) { ++clipFlagsA; }
 }
 
 static inline void extrudeAndTransformPoint(
@@ -290,63 +260,30 @@ static inline bool isBoundingHyperCubeVisible(const glm::vec4 (&boundingHyperCub
 	for (uint32_t i = 0; i < 8; ++i)
 	{
 		// Far
-		if (extrudedVertices[i].x < extrudedVertices[i].w)
-		{
-			clipFlagsA |= 1 << 0;
-		}
+		if (extrudedVertices[i].x < extrudedVertices[i].w) { clipFlagsA |= 1 << 0; }
 
-		if (extrudedVertices[i].x > -extrudedVertices[i].w)
-		{
-			clipFlagsA |= 1 << 1;
-		}
+		if (extrudedVertices[i].x > -extrudedVertices[i].w) { clipFlagsA |= 1 << 1; }
 
-		if (extrudedVertices[i].y < extrudedVertices[i].w)
-		{
-			clipFlagsA |= 1 << 2;
-		}
+		if (extrudedVertices[i].y < extrudedVertices[i].w) { clipFlagsA |= 1 << 2; }
 
-		if (extrudedVertices[i].y > -extrudedVertices[i].w)
-		{
-			clipFlagsA |= 1 << 3;
-		}
+		if (extrudedVertices[i].y > -extrudedVertices[i].w) { clipFlagsA |= 1 << 3; }
 
-		if (extrudedVertices[i].z > 0)
-		{
-			clipFlagsA |= 1 << 4;
-		}
+		if (extrudedVertices[i].z > 0) { clipFlagsA |= 1 << 4; }
 
 		// Near
-		if (boundingHyperCube[i].x < boundingHyperCube[i].w)
-		{
-			clipFlagsA |= 1 << 0;
-		}
+		if (boundingHyperCube[i].x < boundingHyperCube[i].w) { clipFlagsA |= 1 << 0; }
 
-		if (boundingHyperCube[i].x > -boundingHyperCube[i].w)
-		{
-			clipFlagsA |= 1 << 1;
-		}
+		if (boundingHyperCube[i].x > -boundingHyperCube[i].w) { clipFlagsA |= 1 << 1; }
 
-		if (boundingHyperCube[i].y < boundingHyperCube[i].w)
-		{
-			clipFlagsA |= 1 << 2;
-		}
+		if (boundingHyperCube[i].y < boundingHyperCube[i].w) { clipFlagsA |= 1 << 2; }
 
-		if (boundingHyperCube[i].y > -boundingHyperCube[i].w)
-		{
-			clipFlagsA |= 1 << 3;
-		}
+		if (boundingHyperCube[i].y > -boundingHyperCube[i].w) { clipFlagsA |= 1 << 3; }
 
-		if (boundingHyperCube[i].z > 0)
-		{
-			clipFlagsA |= 1 << 4;
-		}
+		if (boundingHyperCube[i].z > 0) { clipFlagsA |= 1 << 4; }
 	}
 
 	// Volume is hidden if all the vertices are over a screen edge
-	if ((clipFlagsA | clipFlagsB) != 0x1F)
-	{
-		return false;
-	}
+	if ((clipFlagsA | clipFlagsB) != 0x1F) { return false; }
 
 	/*
 	  Well, according to the simple bounding box check, it might be
@@ -380,45 +317,24 @@ static inline bool isBoundingHyperCubeVisible(const glm::vec4 (&boundingHyperCub
 
 		clipFlags = 0;
 
-		if (glm::dot(c_rect0, v) < 0)
-		{
-			++clipFlags;
-		}
+		if (glm::dot(c_rect0, v) < 0) { ++clipFlags; }
 
-		if (glm::dot(c_rect1, v) < 0)
-		{
-			++clipFlags;
-		}
+		if (glm::dot(c_rect1, v) < 0) { ++clipFlags; }
 
-		if (glm::dot(c_rect2, v) < 0)
-		{
-			++clipFlags;
-		}
+		if (glm::dot(c_rect2, v) < 0) { ++clipFlags; }
 
-		if (glm::dot(c_rect3, v) < 0)
-		{
-			++clipFlags;
-		}
+		if (glm::dot(c_rect3, v) < 0) { ++clipFlags; }
 
 		// clipFlags will be 0 or 4 if the screen edges are on the outside of this bounding-box-silhouette-edge.
-		if (clipFlags % 4)
-		{
-			continue;
-		}
+		if (clipFlags % 4) { continue; }
 
 		for (uint32_t j = 0; j < 8; ++j)
 		{
-			if ((j != w0) & (j != w1) && (glm::dot(shifted[j], v) > 0))
-			{
-				++clipFlags;
-			}
+			if ((j != w0) & (j != w1) && (glm::dot(shifted[j], v) > 0)) { ++clipFlags; }
 		}
 
 		// clipFlags will be 0 or 12 if this is a silhouette edge of the bounding box
-		if (clipFlags % 12)
-		{
-			continue;
-		}
+		if (clipFlags % 12) { continue; }
 
 		return false;
 	}
@@ -446,10 +362,7 @@ static inline bool isFrontClipInVolume(const glm::vec4 (&boundingHyperCube)[16])
 		const glm::vec4& v1 = boundingHyperCube[c_linesHyperCube[2 * i + 1]];
 
 		// If both coordinates are negative, or both coordinates are positive, it doesn't cross the Z=0 plane
-		if (v0.z * v1.z > 0)
-		{
-			continue;
-		}
+		if (v0.z * v1.z > 0) { continue; }
 
 		// TODO: if fScale > 0.5f, do the lerp in the other direction; this is
 		// because we want fScale to be close to 0, not 1, to retain accuracy.
@@ -459,31 +372,16 @@ static inline bool isFrontClipInVolume(const glm::vec4 (&boundingHyperCube)[16])
 		y = scale * v1.y + (1.0f - scale) * v0.y;
 		w = scale * v1.w + (1.0f - scale) * v0.w;
 
-		if (x > -w)
-		{
-			clipFlags |= 1 << 0;
-		}
+		if (x > -w) { clipFlags |= 1 << 0; }
 
-		if (x < w)
-		{
-			clipFlags |= 1 << 1;
-		}
+		if (x < w) { clipFlags |= 1 << 1; }
 
-		if (y > -w)
-		{
-			clipFlags |= 1 << 2;
-		}
+		if (y > -w) { clipFlags |= 1 << 2; }
 
-		if (y < w)
-		{
-			clipFlags |= 1 << 3;
-		}
+		if (y < w) { clipFlags |= 1 << 3; }
 	}
 
-	if (clipFlags == 0x0F)
-	{
-		return true;
-	}
+	if (clipFlags == 0x0F) { return true; }
 
 	return false;
 }
@@ -496,37 +394,19 @@ static inline bool isBoundingBoxVisible(const glm::vec4* const boundingHyperCube
 
 	for (uint32_t i = 0; i < 8; ++i)
 	{
-		if (boundingHyperCube[i].x < boundingHyperCube[i].w)
-		{
-			clipFlags |= 1 << 0;
-		}
+		if (boundingHyperCube[i].x < boundingHyperCube[i].w) { clipFlags |= 1 << 0; }
 
-		if (boundingHyperCube[i].x > -boundingHyperCube[i].w)
-		{
-			clipFlags |= 1 << 1;
-		}
+		if (boundingHyperCube[i].x > -boundingHyperCube[i].w) { clipFlags |= 1 << 1; }
 
-		if (boundingHyperCube[i].y < boundingHyperCube[i].w)
-		{
-			clipFlags |= 1 << 2;
-		}
+		if (boundingHyperCube[i].y < boundingHyperCube[i].w) { clipFlags |= 1 << 2; }
 
-		if (boundingHyperCube[i].y > -boundingHyperCube[i].w)
-		{
-			clipFlags |= 1 << 3;
-		}
+		if (boundingHyperCube[i].y > -boundingHyperCube[i].w) { clipFlags |= 1 << 3; }
 
-		if (boundingHyperCube[i].z > 0)
-		{
-			clipFlags |= 1 << 4;
-		}
+		if (boundingHyperCube[i].z > 0) { clipFlags |= 1 << 4; }
 	}
 
 	// Volume is hidden if all the vertices are over a screen edge
-	if (clipFlags != 0x1F)
-	{
-		return false;
-	}
+	if (clipFlags != 0x1F) { return false; }
 
 	/*
 	  Well, according to the simple bounding box check, it might be
@@ -553,45 +433,24 @@ static inline bool isBoundingBoxVisible(const glm::vec4* const boundingHyperCube
 		v = glm::cross(shifted[w0], shifted[w1]);
 		clipFlags = 0;
 
-		if (glm::dot(c_rect0, v) < 0)
-		{
-			++clipFlags;
-		}
+		if (glm::dot(c_rect0, v) < 0) { ++clipFlags; }
 
-		if (glm::dot(c_rect1, v) < 0)
-		{
-			++clipFlags;
-		}
+		if (glm::dot(c_rect1, v) < 0) { ++clipFlags; }
 
-		if (glm::dot(c_rect2, v) < 0)
-		{
-			++clipFlags;
-		}
+		if (glm::dot(c_rect2, v) < 0) { ++clipFlags; }
 
-		if (glm::dot(c_rect3, v) < 0)
-		{
-			++clipFlags;
-		}
+		if (glm::dot(c_rect3, v) < 0) { ++clipFlags; }
 
 		// clipFlags will be 0 or 4 if the screen edges are on the outside of this bounding-box-silhouette-edge.
-		if (clipFlags % 4)
-		{
-			continue;
-		}
+		if (clipFlags % 4) { continue; }
 
 		for (uint32_t j = 0; j < 8; ++j)
 		{
-			if ((j != w0) & (j != w1) && (glm::dot(shifted[j], v) > 0))
-			{
-				++clipFlags;
-			}
+			if ((j != w0) & (j != w1) && (glm::dot(shifted[j], v) > 0)) { ++clipFlags; }
 		}
 
 		// clipFlags will be 0 or 12 if this is a silhouette edge of the bounding box
-		if (clipFlags % 12)
-		{
-			continue;
-		}
+		if (clipFlags % 12) { continue; }
 
 		return false;
 	}
@@ -650,10 +509,7 @@ uint32_t ShadowVolume::isVisible(const glm::mat4x4 projection, const glm::vec3& 
 		{
 			result |= Zfail;
 
-			if (isBoundingBoxVisible(&boundingHyperCubeT[0], cameraZProj))
-			{
-				result |= Cap_back;
-			}
+			if (isBoundingBoxVisible(&boundingHyperCubeT[0], cameraZProj)) { result |= Cap_back; }
 		}
 	}
 	else
@@ -669,15 +525,9 @@ uint32_t ShadowVolume::isVisible(const glm::mat4x4 projection, const glm::vec3& 
 			// 5
 			result |= Zfail;
 
-			if (isBoundingBoxVisible(&boundingHyperCubeT[0], cameraZProj))
-			{
-				result |= Cap_front;
-			}
+			if (isBoundingBoxVisible(&boundingHyperCubeT[0], cameraZProj)) { result |= Cap_front; }
 
-			if (isBoundingBoxVisible(&boundingHyperCubeT[8], cameraZProj))
-			{
-				result |= Cap_back;
-			}
+			if (isBoundingBoxVisible(&boundingHyperCubeT[8], cameraZProj)) { result |= Cap_back; }
 		}
 	}
 

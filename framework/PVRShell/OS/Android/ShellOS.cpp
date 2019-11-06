@@ -16,7 +16,7 @@
 //!\cond NO_DOXYGEN
 namespace pvr {
 namespace platform {
-struct InternalOS
+class InternalOS
 {};
 
 static Keys keyboardKeyMap[]{
@@ -244,10 +244,7 @@ static Keys keyboardKeyMap[]{
 
 static int16_t cursor_x;
 static int16_t cursor_y;
-void ShellOS::updatePointingDeviceLocation()
-{
-	_shell->updatePointerPosition(PointerLocation(cursor_x, cursor_y));
-}
+void ShellOS::updatePointingDeviceLocation() { _shell->updatePointerPosition(PointerLocation(cursor_x, cursor_y)); }
 
 // Setup the callback function that handles the input.
 static int32_t handle_input(struct android_app* app, AInputEvent* event)
@@ -276,8 +273,7 @@ static int32_t handle_input(struct android_app* app, AInputEvent* event)
 				theShell->onKeyUp(key);
 			}
 			break;
-			default:
-				break;
+			default: break;
 			}
 			return 1;
 		}
@@ -319,32 +315,23 @@ const ShellOS::Capabilities ShellOS::_capabilities = { Capability::Unsupported, 
 
 ShellOS::ShellOS(void* hInstance, OSDATA osdata) : _instance(hInstance)
 {
-	_OSImplementation = new InternalOS;
+	_OSImplementation = std::make_unique<InternalOS>();
 
 	android_app* state = static_cast<android_app*>(hInstance);
 
 	if (state && !state->onInputEvent)
 	{
-		if (!state->userData)
-		{
-			state->userData = this;
-		}
+		if (!state->userData) { state->userData = this; }
 
 		state->onInputEvent = handle_input;
 	}
 }
 
-ShellOS::~ShellOS()
-{
-	delete _OSImplementation;
-}
+ShellOS::~ShellOS() {}
 
 bool ShellOS::init(DisplayAttributes& data)
 {
-	if (!_OSImplementation)
-	{
-		return false;
-	}
+	if (!_OSImplementation) { return false; }
 
 	// Get PID (Process ID).
 	char *pszAppName = 0, pszSrcLink[64];
@@ -382,10 +369,7 @@ bool ShellOS::init(DisplayAttributes& data)
 		fclose(pFile);
 	}
 
-	if (!pszAppName)
-	{
-		Log(LogLevel::Debug, "Warning: Unable to set app name.\n");
-	}
+	if (!pszAppName) { Log(LogLevel::Debug, "Warning: Unable to set app name.\n"); }
 	else
 	{
 		_appName = pszAppName;
@@ -409,23 +393,14 @@ bool ShellOS::init(DisplayAttributes& data)
 
 			dataPath = static_cast<char*>(malloc(size));
 
-			if (dataPath)
-			{
-				snprintf(dataPath, size, "/data/data/%s/", _appName.c_str());
-			}
+			if (dataPath) { snprintf(dataPath, size, "/data/data/%s/", _appName.c_str()); }
 		}
 
-		if (!dataPath)
-		{
-			dataPath = const_cast<char*>("/sdcard/");
-		}
+		if (!dataPath) { dataPath = const_cast<char*>("/sdcard/"); }
 
 		_writePath = dataPath;
 
-		if (!_appName.empty())
-		{
-			free(dataPath);
-		}
+		if (!_appName.empty()) { free(dataPath); }
 	}
 	else
 	{
@@ -440,10 +415,7 @@ bool ShellOS::init(DisplayAttributes& data)
 bool ShellOS::initializeWindow(DisplayAttributes& data)
 {
 	android_app* instance = static_cast<android_app*>(_instance);
-	if (!instance->window)
-	{
-		return false;
-	}
+	if (!instance->window) { return false; }
 
 	data.fullscreen = true;
 	data.x = instance->contentRect.left;
@@ -455,20 +427,13 @@ bool ShellOS::initializeWindow(DisplayAttributes& data)
 
 void ShellOS::releaseWindow() {}
 
-OSApplication ShellOS::getApplication() const
-{
-	return _instance;
-}
+OSApplication ShellOS::getApplication() const { return _instance; }
 
-OSDisplay ShellOS::getDisplay() const
-{
-	return 0;
-}
+OSConnection ShellOS::getConnection() const { return nullptr; }
 
-OSWindow ShellOS::getWindow() const
-{
-	return static_cast<android_app*>(_instance)->window;
-}
+OSDisplay ShellOS::getDisplay() const { return nullptr; }
+
+OSWindow ShellOS::getWindow() const { return static_cast<android_app*>(_instance)->window; }
 
 bool ShellOS::handleOSEvents()
 {
@@ -478,10 +443,7 @@ bool ShellOS::handleOSEvents()
 
 bool ShellOS::popUpMessage(const char* title, const char* message, ...) const
 {
-	if (!title && !message && _instance)
-	{
-		return false;
-	}
+	if (!title && !message && _instance) { return false; }
 
 	bool result = false;
 

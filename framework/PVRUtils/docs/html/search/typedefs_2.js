@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['eglcontext',['EglContext',['../namespacepvr.html#a3340319e831c4d82125a16bf2dbf9e0e',1,'pvr']]],
-  ['elementtype',['ElementType',['../classpvr_1_1_multi.html#ab99af96c2ba05abc0db8b9da127135c8',1,'pvr::Multi']]]
+  ['devicememorywrapper',['DeviceMemoryWrapper',['../_memory_allocator_8h.html#a3e21f8880a80be865a4840666eb8d03a',1,'pvr::utils::vma']]]
 ];

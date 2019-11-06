@@ -58,10 +58,7 @@ public:
 	/// <param name="unicodeString">The resulting UTF-16 std::string stored as an std::vector<utf16></param>
 	static void convertAsciiToUnicode(const char* asciiString, std::vector<utf16>& unicodeString)
 	{
-		if (!isAsciiChar(asciiString))
-		{
-			throw UnicodeConversionError("Parameter [asciiString] was not actually a valid ASCII string");
-		}
+		if (!isAsciiChar(asciiString)) { throw UnicodeConversionError("Parameter [asciiString] was not actually a valid ASCII string"); }
 		convertUTF8ToUTF16(reinterpret_cast<const utf8*>(asciiString), unicodeString);
 	}
 
@@ -70,10 +67,7 @@ public:
 	/// <param name="utf32StringOut">The resulting UTF-32 std::string stored as an std::vector<utf32></param>
 	static void convertAsciiToUnicode(const char* asciiString, std::vector<utf32>& utf32StringOut)
 	{
-		if (!isAsciiChar(asciiString))
-		{
-			throw UnicodeConversionError("Parameter [asciiString] was not actually a valid ASCII string");
-		}
+		if (!isAsciiChar(asciiString)) { throw UnicodeConversionError("Parameter [asciiString] was not actually a valid ASCII string"); }
 		convertUTF8ToUTF32(reinterpret_cast<const utf8*>(asciiString), utf32StringOut);
 	}
 

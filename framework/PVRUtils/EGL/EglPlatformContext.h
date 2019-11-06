@@ -33,10 +33,7 @@ public:
 		: _platformContextHandles(), _swapInterval(-2), _initialized(false), _preInitialized(false), _apiType(Api::Unspecified), _maxApiVersion(Api::Unspecified), _attributes(0)
 	{}
 
-	virtual ~EglContext_()
-	{
-		release();
-	}
+	virtual ~EglContext_() { release(); }
 
 	/// <summary>Release this object</summary>
 	void release();
@@ -58,18 +55,12 @@ public:
 
 	/// <summary>Get native platform handles (const)</summary>
 	/// <returns>A platform/api specific object containing the platform handles (surface, window etc.)</returns>
-	const NativePlatformHandles_& getNativePlatformHandles() const
-	{
-		return *_platformContextHandles;
-	}
+	const NativePlatformHandles_& getNativePlatformHandles() const { return *_platformContextHandles; }
 
 	/// <summary>Get native platform handles (const)</summary>
 	/// <returns>A platform/api specific object containing the platform handles (context, queues, fences/semaphores
 	/// etc.)</returns>
-	NativePlatformHandles_& getNativePlatformHandles()
-	{
-		return *_platformContextHandles;
-	}
+	NativePlatformHandles_& getNativePlatformHandles() { return *_platformContextHandles; }
 
 	/// <summary>Get information on this object</summary>
 	/// <returns>Information on this object, typically device name etc.</returns>
@@ -77,10 +68,7 @@ public:
 
 	/// <summary>Return true if this object is initialized</summary>
 	/// <returns>true if this object is initialized</returns>
-	bool isInitialized() const
-	{
-		return (_platformContextHandles.get() != 0) && _initialized;
-	}
+	bool isInitialized() const { return (_platformContextHandles.get() != 0) && _initialized; }
 
 	/// <summary>Getter for the Api version of the EGL platform context created.</summary>
 	/// <returns>Returns the pvr::Api version of the EGL platform context created.</returns>
@@ -105,7 +93,6 @@ public:
 
 private:
 	friend class SharedEglContext_;
-	friend std::unique_ptr<platform::EglContext_> createEglContext();
 
 	EglContext_(const EglContext_& rhs); // deleted
 	NativePlatformHandles _platformContextHandles;
@@ -126,22 +113,33 @@ private:
 /// multiple threads. A SharedEglContext can only be initiailised by passing a previously created EGLContext to the init function.</summary>
 class SharedEglContext_
 {
-	SharedEglContext_(EglContext_& context);
+private:
 	friend class EglContext_;
+
+	class make_unique_enabler
+	{
+	protected:
+		make_unique_enabler() {}
+		friend class SharedEglContext_;
+	};
+
+	static std::unique_ptr<SharedEglContext_> constructUnique(EglContext_& context) { return std::make_unique<SharedEglContext_>(make_unique_enabler{}, context); }
+
 	platform::NativeSharedPlatformHandles _handles;
 	platform::EglContext_* _parentContext;
 
 public:
+	//!\cond NO_DOXYGEN
+	SharedEglContext_(make_unique_enabler, EglContext_& context);
+	//!\endcond
+
 	/// <summary>If required by the implementation, make this the shared context current for this thread.</summary>
 	/// <returns>True if successful or no-op.</returns>
 	void makeSharedContextCurrent();
 
 	/// <summary>Retrieves the SharedEglContext handle.</summary>
 	/// <returns>Returns a structure containing the native handles defining the Shared EGL Context.</returns>
-	platform::NativeSharedPlatformHandles_& getSharedHandles()
-	{
-		return *_handles;
-	}
+	platform::NativeSharedPlatformHandles_& getSharedHandles() { return *_handles; }
 };
 } // namespace platform
 } // namespace pvr

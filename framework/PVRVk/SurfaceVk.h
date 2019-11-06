@@ -58,17 +58,11 @@ public:
 
 	/// <summary>Get window handle</summary>
 	/// <returns>ANativeWindow&</returns>
-	const ANativeWindow* getANativeWindow() const
-	{
-		return _aNativeWindow;
-	}
+	const ANativeWindow* getANativeWindow() const { return _aNativeWindow; }
 
 	/// <summary>Get AndroidSurfaceCreateFlagsKHR flags</summary>
 	/// <returns>AndroidSurfaceCreateFlagsKHR&</returns>
-	const AndroidSurfaceCreateFlagsKHR& getFlags() const
-	{
-		return _flags;
-	}
+	const AndroidSurfaceCreateFlagsKHR& getFlags() const { return _flags; }
 };
 #endif
 
@@ -102,24 +96,15 @@ public:
 
 	/// <summary>Get hinstance</summary>
 	/// <returns>HINSTANCE&</returns>
-	const HINSTANCE& getHInstance() const
-	{
-		return _hinstance;
-	}
+	const HINSTANCE& getHInstance() const { return _hinstance; }
 
 	/// <summary>Get hwnd</summary>
 	/// <returns>HWND&</returns>
-	const HWND& getHwnd() const
-	{
-		return _hwnd;
-	}
+	const HWND& getHwnd() const { return _hwnd; }
 
 	/// <summary>Get Win32SurfaceCreateFlagsKHR flags</summary>
 	/// <returns>Win32SurfaceCreateFlagsKHR&</returns>
-	const Win32SurfaceCreateFlagsKHR& getFlags() const
-	{
-		return _flags;
-	}
+	const Win32SurfaceCreateFlagsKHR& getFlags() const { return _flags; }
 };
 #endif
 
@@ -154,24 +139,15 @@ public:
 
 	/// <summary>Get hinstance</summary>
 	/// <returns>HINSTANCE&</returns>
-	const xcb_connection_t& getConnection() const
-	{
-		return *_connection;
-	}
+	const xcb_connection_t& getConnection() const { return *_connection; }
 
 	/// <summary>Get hwnd</summary>
 	/// <returns>HWND&</returns>
-	xcb_window_t getWindow() const
-	{
-		return _window;
-	}
+	xcb_window_t getWindow() const { return _window; }
 
 	/// <summary>Get XcbSurfaceCreateFlagsKHR flags</summary>
 	/// <returns>XcbSurfaceCreateFlagsKHR&</returns>
-	const XcbSurfaceCreateFlagsKHR& getFlags() const
-	{
-		return _flags;
-	}
+	const XcbSurfaceCreateFlagsKHR& getFlags() const { return _flags; }
 };
 #endif
 
@@ -206,24 +182,15 @@ public:
 
 	/// <summary>Get display</summary>
 	/// <returns>Display&</returns>
-	const ::Display& getDpy() const
-	{
-		return *_dpy;
-	}
+	const ::Display& getDpy() const { return *_dpy; }
 
 	/// <summary>Get Window</summary>
 	/// <returns>Window&</returns>
-	const Window& getWindow() const
-	{
-		return _window;
-	}
+	const Window& getWindow() const { return _window; }
 
 	/// <summary>Get XlibSurfaceCreateFlagsKHR flags</summary>
 	/// <returns>XlibSurfaceCreateFlagsKHR&</returns>
-	const XlibSurfaceCreateFlagsKHR& getFlags() const
-	{
-		return _flags;
-	}
+	const XlibSurfaceCreateFlagsKHR& getFlags() const { return _flags; }
 };
 #endif
 
@@ -258,24 +225,51 @@ public:
 
 	/// <summary>Get display</summary>
 	/// <returns>wl_display&</returns>
-	const wl_display* getDisplay() const
-	{
-		return _display;
-	}
+	const wl_display* getDisplay() const { return _display; }
 
 	/// <summary>Get Surface</summary>
 	/// <returns>wl_surface&</returns>
-	const wl_surface* getSurface() const
-	{
-		return _surface;
-	}
+	const wl_surface* getSurface() const { return _surface; }
 
 	/// <summary>Get WaylandSurfaceCreateFlagsKHR flags</summary>
 	/// <returns>WaylandSurfaceCreateFlagsKHR&</returns>
-	const WaylandSurfaceCreateFlagsKHR& getFlags() const
-	{
-		return _flags;
-	}
+	const WaylandSurfaceCreateFlagsKHR& getFlags() const { return _flags; }
+};
+#endif
+
+#if defined(VK_USE_PLATFORM_MACOS_MVK)
+/// <summary>A MacOS Surface.</summary>
+class MacOSSurface_ : public Surface_
+{
+private:
+    friend class Instance_;
+    
+    class make_shared_enabler
+    {
+    protected:
+        make_shared_enabler() {}
+        friend MacOSSurface_;
+    };
+    
+    static MacOSSurface constructShared(Instance& instance, void* view)
+    {
+        return std::make_shared<MacOSSurface_>(make_shared_enabler{}, instance, view);
+    }
+    
+    void* _view;
+    
+public:
+    //!\cond NO_DOXYGEN
+    DECLARE_NO_COPY_SEMANTICS(MacOSSurface_)
+    MacOSSurface_(make_shared_enabler, Instance& instance, void* view);
+    //!\endcond
+    
+    /// <summary>Get view</summary>
+    /// <returns>void*</returns>
+    const void* getView() const
+    {
+        return _view;
+    }
 };
 #endif
 
@@ -319,59 +313,35 @@ public:
 
 	/// <summary>Get Display Mode Properties</summary>
 	/// <returns>DisplayModePropertiesKHR&</returns>
-	const DisplayModeWeakPtr& getDisplayMode() const
-	{
-		return _displayMode;
-	}
+	const DisplayModeWeakPtr& getDisplayMode() const { return _displayMode; }
 
 	/// <summary>Get DisplaySurfaceCreateFlagsKHR flags</summary>
 	/// <returns>DisplaySurfaceCreateFlagsKHR&</returns>
-	const DisplaySurfaceCreateFlagsKHR& getFlags() const
-	{
-		return _flags;
-	}
+	const DisplaySurfaceCreateFlagsKHR& getFlags() const { return _flags; }
 
 	/// <summary>Get display plane index</summary>
 	/// <returns>Plane index</returns>
-	uint32_t getPlaneIndex() const
-	{
-		return _planeIndex;
-	}
+	uint32_t getPlaneIndex() const { return _planeIndex; }
 
 	/// <summary>Get display plane stack index</summary>
 	/// <returns>Plane stack index</returns>
-	uint32_t getPlaneStackIndex() const
-	{
-		return _planeStackIndex;
-	}
+	uint32_t getPlaneStackIndex() const { return _planeStackIndex; }
 
 	/// <summary>Get SurfaceTransformFlagsKHR flags</summary>
 	/// <returns>SurfaceTransformFlagsKHR&</returns>
-	const SurfaceTransformFlagsKHR& getTransformFlags() const
-	{
-		return _transformFlags;
-	}
+	const SurfaceTransformFlagsKHR& getTransformFlags() const { return _transformFlags; }
 
 	/// <summary>Get display plane global alpha</summary>
 	/// <returns>Plane global alpha</returns>
-	float getGlobalAlpha() const
-	{
-		return _globalAlpha;
-	}
+	float getGlobalAlpha() const { return _globalAlpha; }
 
 	/// <summary>Get DisplayPlaneAlphaFlagsKHR flags</summary>
 	/// <returns>DisplayPlaneAlphaFlagsKHR&</returns>
-	const DisplayPlaneAlphaFlagsKHR& getAlphaFlags() const
-	{
-		return _alphaFlags;
-	}
+	const DisplayPlaneAlphaFlagsKHR& getAlphaFlags() const { return _alphaFlags; }
 
 	/// <summary>Get Extent2D</summary>
 	/// <returns>Extent2D&</returns>
-	const Extent2D& getImageExtent() const
-	{
-		return _imageExtent;
-	}
+	const Extent2D& getImageExtent() const { return _imageExtent; }
 };
 } // namespace impl
 } // namespace pvrvk

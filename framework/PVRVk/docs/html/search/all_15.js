@@ -12,7 +12,6 @@ var searchData=
   ['wrapmodeu',['wrapModeU',['../structpvrvk_1_1_sampler_create_info.html#a609d3e89b03908671dc3e8f21bb04b2e',1,'pvrvk::SamplerCreateInfo']]],
   ['wrapmodev',['wrapModeV',['../structpvrvk_1_1_sampler_create_info.html#a768662c1680ea93d8bfb4a0f73fc35a1',1,'pvrvk::SamplerCreateInfo']]],
   ['wrapmodew',['wrapModeW',['../structpvrvk_1_1_sampler_create_info.html#aa80dbdc7eeee648a476db793c59bcabc',1,'pvrvk::SamplerCreateInfo']]],
-  ['writedescriptorset',['WriteDescriptorSet',['../structpvrvk_1_1_write_descriptor_set.html',1,'pvrvk']]],
-  ['writedescriptorset',['WriteDescriptorSet',['../structpvrvk_1_1_write_descriptor_set.html#a13ecd4648faa0d7f09311ab0a80e25fb',1,'pvrvk::WriteDescriptorSet::WriteDescriptorSet()'],['../structpvrvk_1_1_write_descriptor_set.html#a74c341158ea6e32a1bbdc98b7f2abe1b',1,'pvrvk::WriteDescriptorSet::WriteDescriptorSet(pvrvk::DescriptorType descType, DescriptorSet descSet, uint32_t dstBinding=0, uint32_t dstArrayElement=0)']]],
+  ['writedescriptorset',['WriteDescriptorSet',['../structpvrvk_1_1_write_descriptor_set.html',1,'pvrvk::WriteDescriptorSet'],['../structpvrvk_1_1_write_descriptor_set.html#a13ecd4648faa0d7f09311ab0a80e25fb',1,'pvrvk::WriteDescriptorSet::WriteDescriptorSet()'],['../structpvrvk_1_1_write_descriptor_set.html#a74c341158ea6e32a1bbdc98b7f2abe1b',1,'pvrvk::WriteDescriptorSet::WriteDescriptorSet(pvrvk::DescriptorType descType, DescriptorSet descSet, uint32_t dstBinding=0, uint32_t dstArrayElement=0)']]],
   ['writetimestamp',['writeTimestamp',['../classpvrvk_1_1impl_1_1_command_buffer_base__.html#a09fc5e0ce68a45bfda286a3a02fec71b',1,'pvrvk::impl::CommandBufferBase_']]]
 ];

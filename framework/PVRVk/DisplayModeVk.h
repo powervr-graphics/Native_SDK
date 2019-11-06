@@ -22,16 +22,11 @@ public:
 	/// <summary>Constructor</summary>
 	/// <param name="parameters">Display mode parameters used to initialise the display mode creation structure</param>
 	/// <param name="flags">A set of pvrvk::DisplayModeCreateFlagsKHR defining how to create a given pvrvk::DisplayMode</param>
-	DisplayModeCreateInfo(DisplayModeParametersKHR parameters, DisplayModeCreateFlagsKHR flags = DisplayModeCreateFlagsKHR::e_NONE)
-		: _flags(DisplayModeCreateFlagsKHR::e_NONE), _parameters(parameters)
-	{}
+	DisplayModeCreateInfo(DisplayModeParametersKHR parameters, DisplayModeCreateFlagsKHR flags = DisplayModeCreateFlagsKHR::e_NONE) : _flags(flags), _parameters(parameters) {}
 
 	/// <summary>Getter for the display mode creation flags</summary>
 	/// <returns>A DisplayModeCreateFlagsKHR structure</returns>
-	DisplayModeCreateFlagsKHR getFlags() const
-	{
-		return _flags;
-	}
+	DisplayModeCreateFlagsKHR getFlags() const { return _flags; }
 
 	/// <summary>Setter for the display mode creation flags</summary>
 	/// <param name="flags">A set of DisplayModeCreateFlagsKHR</param>
@@ -44,10 +39,7 @@ public:
 
 	/// <summary>Getter for the display mode parameters</summary>
 	/// <returns>A DisplayModeParametersKHR structure</returns>
-	DisplayModeParametersKHR getParameters() const
-	{
-		return _parameters;
-	}
+	DisplayModeParametersKHR getParameters() const { return _parameters; }
 
 	/// <summary>Setter for the display mode parameters</summary>
 	/// <param name="parameters">A set of DisplayModeParametersKHR</param>
@@ -101,10 +93,7 @@ public:
 
 	/// <summary>Returns the display mode parameters</summary>
 	/// <returns>A DisplayModeParametersKHR structure specifying the display mode parameters for the display mode</returns>
-	DisplayModeParametersKHR getParameters() const
-	{
-		return _parameters;
-	}
+	DisplayModeParametersKHR getParameters() const { return _parameters; }
 };
 } // namespace impl
 } // namespace pvrvk

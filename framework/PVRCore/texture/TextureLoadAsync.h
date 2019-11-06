@@ -39,11 +39,11 @@ public:
 	/// <summary>Load the texture synchronously and signal the result semaphore. Normally called by the worker thread</summary>
 	void loadNow()
 	{
-		Stream::ptr_type stream = loader->getAssetStream(filename);
+		std::unique_ptr<Stream> stream = loader->getAssetStream(filename);
 		_successful = false;
 		try
 		{
-			*result = textureLoad(stream, format);
+			*result = textureLoad(*stream, format);
 			_successful = true;
 		}
 		catch (...)
@@ -57,10 +57,7 @@ public:
 	}
 	/// <summary>Set a function to be called when the texture loading has been finished.</summary>
 	/// <param name="callback">Set a function to be called when the texture loading has been finished.</param>
-	void setCallBack(CallbackType callback)
-	{
-		setTheCallback(callback);
-	}
+	void setCallBack(CallbackType callback) { setTheCallback(callback); }
 
 private:
 	TexturePtr get_() const
@@ -92,10 +89,7 @@ typedef std::shared_ptr<TextureLoadFuture_> TextureLoadFuture;
 namespace impl {
 /// <summary>internal</summary>
 /// <param name="future">The Texture load future to kick work for</param>
-inline void textureLoadAsyncWorker(TextureLoadFuture future)
-{
-	future->loadNow();
-}
+inline void textureLoadAsyncWorker(TextureLoadFuture future) { future->loadNow(); }
 } // namespace impl
 
 /// <summary>A class that loads Textures in a (single) different thread and provides futures to them.
@@ -105,10 +99,7 @@ inline void textureLoadAsyncWorker(TextureLoadFuture future)
 class TextureAsyncLoader : public AsyncScheduler<TexturePtr, TextureLoadFuture, &impl::textureLoadAsyncWorker>
 {
 public:
-	TextureAsyncLoader()
-	{
-		_myInfo = "TextureAsyncLoader";
-	}
+	TextureAsyncLoader() { _myInfo = "TextureAsyncLoader"; }
 	/// <summary>This function enqueues a "load texture" on a background thread, and returns an object
 	/// that can be used to query and wait for the result.</summary>
 	/// <param name="filename">The filename of the texture to load</param>

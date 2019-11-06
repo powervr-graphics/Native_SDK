@@ -36,23 +36,16 @@ void Shell::implSystemEvent(SystemEvent systemEvent)
 		Log(LogLevel::Information, "SystemEvent::Quit");
 		exitShell();
 		break;
-	default:
-		break;
+	default: break;
 	}
 }
 
 void Shell::implPointingDeviceUp(uint8_t buttonIdx)
 {
-	if (!_pointerState.isPressed(buttonIdx))
-	{
-		return;
-	}
-	_pointerState.setButton(buttonIdx, false);
+	if (!_pointerState.isPressed(static_cast<int8_t>(buttonIdx))) { return; }
+	_pointerState.setButton(static_cast<int8_t>(buttonIdx), false);
 	if (buttonIdx == 0) // NO buttons pressed - start drag
-	{
-		_pointerState.endDragging();
-	}
-
+	{ _pointerState.endDragging(); }
 	eventButtonUp(buttonIdx); // send the ButtonUp event
 
 	bool drag = (_dragging && buttonIdx == 0); // Detecting drag for first button only pointer
@@ -89,10 +82,7 @@ void Shell::implPointingDeviceUp(uint8_t buttonIdx)
 		else // For mouses, map mouse actions to other actions as well
 		{
 			SimplifiedInput action = MapPointingDeviceButtonToSimpleInput(buttonIdx);
-			if (action != SimplifiedInput::NONE)
-			{
-				eventMappedInput(action);
-			}
+			if (action != SimplifiedInput::NONE) { eventMappedInput(action); }
 		}
 	}
 }
@@ -103,9 +93,7 @@ void Shell::implPointingDeviceDown(uint8_t buttonIdx)
 	{
 		_pointerState.setButton(buttonIdx, true);
 		if (buttonIdx == 0) // NO buttons pressed - start drag
-		{
-			_pointerState.startDragging();
-		}
+		{ _pointerState.startDragging(); }
 		eventButtonDown(buttonIdx);
 	}
 }
@@ -118,10 +106,7 @@ void Shell::updatePointerPosition(PointerLocation location)
 		int16_t dx = _pointerState.position().x - _pointerState.dragStartPosition().x;
 		int16_t dy = _pointerState.position().y - _pointerState.dragStartPosition().y;
 		_dragging = (dx * dx + dy * dy > EPSILON_PIXEL_SQUARE);
-		if (_dragging)
-		{
-			eventDragStart(0, _pointerState.dragStartPosition());
-		}
+		if (_dragging) { eventDragStart(0, _pointerState.dragStartPosition()); }
 	}
 }
 
@@ -142,10 +127,7 @@ void Shell::implKeyUp(Keys key)
 		_keystate[static_cast<uint32_t>(key)] = false;
 		eventKeyUp(key);
 		SimplifiedInput action = MapKeyToMainInput(key);
-		if (action != SimplifiedInput::NONE)
-		{
-			eventMappedInput(action);
-		}
+		if (action != SimplifiedInput::NONE) { eventMappedInput(action); }
 	}
 }
 
@@ -312,10 +294,7 @@ Result Shell::shellRenderFrame()
 		}
 	}
 	//_data->weAreDone can very well be changed DURING renderFrame.
-	if (_data->weAreDone)
-	{
-		res = Result::ExitRenderFrame;
-	}
+	if (_data->weAreDone) { res = Result::ExitRenderFrame; }
 	return res;
 }
 
@@ -327,48 +306,28 @@ void Shell::processShellEvents()
 		eventQueue.pop();
 		switch (event.type)
 		{
-		case ShellEvent::SystemEvent:
-			implSystemEvent(event.systemEvent);
-			break;
-		case ShellEvent::PointingDeviceDown:
-			implPointingDeviceDown(event.buttonIdx);
-			break;
-		case ShellEvent::PointingDeviceUp:
-			implPointingDeviceUp(event.buttonIdx);
-			break;
-		case ShellEvent::KeyDown:
-			implKeyDown(event.key);
-			break;
-		case ShellEvent::KeyUp:
-			implKeyUp(event.key);
-			break;
-		case ShellEvent::PointingDeviceMove:
-			break;
+		case ShellEvent::SystemEvent: implSystemEvent(event.systemEvent); break;
+		case ShellEvent::PointingDeviceDown: implPointingDeviceDown(event.buttonIdx); break;
+		case ShellEvent::PointingDeviceUp: implPointingDeviceUp(event.buttonIdx); break;
+		case ShellEvent::KeyDown: implKeyDown(event.key); break;
+		case ShellEvent::KeyUp: implKeyUp(event.key); break;
+		case ShellEvent::PointingDeviceMove: break;
 		}
 	}
 }
 
-uint64_t Shell::getFrameTime()
-{
-	return _data->currentFrameTime - _data->lastFrameTime;
-}
+uint64_t Shell::getFrameTime() const { return _data->currentFrameTime - _data->lastFrameTime; }
 
-uint64_t Shell::getTime()
+uint64_t Shell::getTime() const
 {
 	ShellData& data = *_data;
 
-	if (data.forceFrameTime)
-	{
-		return data.frameNo * data.fakeFrameTime;
-	}
+	if (data.forceFrameTime) { return data.frameNo * data.fakeFrameTime; }
 
 	return data.timer.getCurrentTimeMilliSecs();
 }
 
-uint64_t Shell::getTimeAtInitApplication() const
-{
-	return _data->timeAtInitApplication;
-}
+uint64_t Shell::getTimeAtInitApplication() const { return _data->timeAtInitApplication; }
 
 bool Shell::init(struct ShellData* data)
 {
@@ -381,23 +340,14 @@ bool Shell::init(struct ShellData* data)
 	return false;
 }
 
-const platform::CommandLineParser::ParsedCommandLine& Shell::getCommandLine() const
-{
-	return _data->commandLine->getParsedCommandLine();
-}
+const platform::CommandLineParser::ParsedCommandLine& Shell::getCommandLine() const { return _data->commandLine->getParsedCommandLine(); }
 
 void Shell::setFullscreen(const bool fullscreen)
 {
-	if (ShellOS::getCapabilities().resizable != Capability::Unsupported)
-	{
-		_data->attributes.fullscreen = fullscreen;
-	}
+	if (ShellOS::getCapabilities().resizable != Capability::Unsupported) { _data->attributes.fullscreen = fullscreen; }
 }
 
-bool Shell::isFullScreen() const
-{
-	return _data->attributes.fullscreen;
-}
+bool Shell::isFullScreen() const { return _data->attributes.fullscreen; }
 
 Result Shell::setDimensions(uint32_t w, uint32_t h)
 {
@@ -411,30 +361,15 @@ Result Shell::setDimensions(uint32_t w, uint32_t h)
 	return Result::UnsupportedRequest;
 }
 
-uint32_t Shell::getWidth() const
-{
-	return _data->attributes.width;
-}
+uint32_t Shell::getWidth() const { return _data->attributes.width; }
 
-uint32_t Shell::getHeight() const
-{
-	return _data->attributes.height;
-}
+uint32_t Shell::getHeight() const { return _data->attributes.height; }
 
-uint32_t Shell::getCaptureFrameScale() const
-{
-	return _data->captureFrameScale;
-}
+uint32_t Shell::getCaptureFrameScale() const { return _data->captureFrameScale; }
 
-Api Shell::getMaxApi() const
-{
-	return this->_data->contextType;
-}
+Api Shell::getMaxApi() const { return this->_data->contextType; }
 
-Api Shell::getMinApi() const
-{
-	return this->_data->minContextType;
-}
+Api Shell::getMinApi() const { return this->_data->minContextType; }
 
 Result Shell::setPosition(uint32_t x, uint32_t y)
 {
@@ -448,80 +383,37 @@ Result Shell::setPosition(uint32_t x, uint32_t y)
 	return Result::UnsupportedRequest;
 }
 
-uint32_t Shell::getPositionX() const
-{
-	return _data->attributes.x;
-}
+uint32_t Shell::getPositionX() const { return _data->attributes.x; }
 
-uint32_t Shell::getPositionY() const
-{
-	return _data->attributes.y;
-}
+uint32_t Shell::getPositionY() const { return _data->attributes.y; }
 
-int32_t Shell::getQuitAfterFrame() const
-{
-	return _data->dieAfterFrame;
-}
+int32_t Shell::getQuitAfterFrame() const { return _data->dieAfterFrame; }
 
-float Shell::getQuitAfterTime() const
-{
-	return _data->dieAfterTime;
-}
+float Shell::getQuitAfterTime() const { return _data->dieAfterTime; }
 
-VsyncMode Shell::getVsyncMode() const
-{
-	return _data->attributes.vsyncMode;
-}
+VsyncMode Shell::getVsyncMode() const { return _data->attributes.vsyncMode; }
 
-uint32_t Shell::getAASamples() const
-{
-	return _data->attributes.aaSamples;
-}
+uint32_t Shell::getAASamples() const { return _data->attributes.aaSamples; }
 
-uint32_t Shell::getColorBitsPerPixel() const
-{
-	return _data->attributes.redBits + _data->attributes.blueBits + _data->attributes.greenBits + _data->attributes.alphaBits;
-}
+uint32_t Shell::getColorBitsPerPixel() const { return _data->attributes.redBits + _data->attributes.blueBits + _data->attributes.greenBits + _data->attributes.alphaBits; }
 
-uint32_t Shell::getDepthBitsPerPixel() const
-{
-	return _data->attributes.depthBPP;
-}
+uint32_t Shell::getDepthBitsPerPixel() const { return _data->attributes.depthBPP; }
 
-uint32_t Shell::getStencilBitsPerPixel() const
-{
-	return _data->attributes.stencilBPP;
-}
+uint32_t Shell::getStencilBitsPerPixel() const { return _data->attributes.stencilBPP; }
 
-void Shell::setQuitAfterFrame(uint32_t value)
-{
-	_data->dieAfterFrame = value;
-}
+void Shell::setQuitAfterFrame(uint32_t value) { _data->dieAfterFrame = value; }
 
-void Shell::setQuitAfterTime(float value)
-{
-	_data->dieAfterTime = value;
-}
+void Shell::setQuitAfterTime(float value) { _data->dieAfterTime = value; }
 
-void Shell::setVsyncMode(VsyncMode value)
-{
-	_data->attributes.vsyncMode = value;
-}
+void Shell::setVsyncMode(VsyncMode value) { _data->attributes.vsyncMode = value; }
 
-void Shell::setPreferredSwapChainLength(uint32_t swapChainLength)
-{
-	_data->attributes.swapLength = swapChainLength;
-}
+void Shell::setPreferredSwapChainLength(uint32_t swapChainLength) { _data->attributes.swapLength = swapChainLength; }
 
-void Shell::forceReinitView()
-{
-	_data->forceReleaseInitCycle = true;
-}
+void Shell::forceReleaseInitView() { _data->forceReleaseInitView = true; }
 
-void Shell::setAASamples(uint32_t value)
-{
-	_data->attributes.aaSamples = value;
-}
+void Shell::forceReleaseInitWindow() { _data->forceReleaseInitWindow = true; }
+
+void Shell::setAASamples(uint32_t value) { _data->attributes.aaSamples = value; }
 
 void Shell::setColorBitsPerPixel(uint32_t r, uint32_t g, uint32_t b, uint32_t a)
 {
@@ -531,25 +423,13 @@ void Shell::setColorBitsPerPixel(uint32_t r, uint32_t g, uint32_t b, uint32_t a)
 	_data->attributes.alphaBits = a;
 }
 
-void Shell::setBackBufferColorspace(ColorSpace colorSpace)
-{
-	_data->attributes.frameBufferSrgb = (colorSpace == ColorSpace::sRGB);
-}
+void Shell::setBackBufferColorspace(ColorSpace colorSpace) { _data->attributes.frameBufferSrgb = (colorSpace == ColorSpace::sRGB); }
 
-ColorSpace Shell::getBackBufferColorspace()
-{
-	return _data->attributes.frameBufferSrgb ? ColorSpace::sRGB : ColorSpace::lRGB;
-}
+ColorSpace Shell::getBackBufferColorspace() const { return _data->attributes.frameBufferSrgb ? ColorSpace::sRGB : ColorSpace::lRGB; }
 
-void Shell::setDepthBitsPerPixel(uint32_t value)
-{
-	_data->attributes.depthBPP = value;
-}
+void Shell::setDepthBitsPerPixel(uint32_t value) { _data->attributes.depthBPP = value; }
 
-void Shell::setStencilBitsPerPixel(uint32_t value)
-{
-	_data->attributes.stencilBPP = value;
-}
+void Shell::setStencilBitsPerPixel(uint32_t value) { _data->attributes.stencilBPP = value; }
 
 void Shell::setCaptureFrames(uint32_t start, uint32_t stop)
 {
@@ -559,70 +439,36 @@ void Shell::setCaptureFrames(uint32_t start, uint32_t stop)
 
 void Shell::setCaptureFrameScale(uint32_t value)
 {
-	if (value >= 1)
-	{
-		_data->captureFrameScale = value;
-	}
+	if (value >= 1) { _data->captureFrameScale = value; }
 }
 
-uint32_t Shell::getCaptureFrameStart() const
-{
-	return _data->captureFrameStart;
-}
+uint32_t Shell::getCaptureFrameStart() const { return _data->captureFrameStart; }
 
-uint32_t Shell::getCaptureFrameStop() const
-{
-	return _data->captureFrameStop;
-}
+uint32_t Shell::getCaptureFrameStop() const { return _data->captureFrameStop; }
 
-uint32_t Shell::getFrameNumber() const
-{
-	return _data->frameNo;
-}
+uint32_t Shell::getFrameNumber() const { return _data->frameNo; }
 
-void Shell::setContextPriority(uint32_t value)
-{
-	_data->attributes.contextPriority = value;
-}
+void Shell::setContextPriority(uint32_t value) { _data->attributes.contextPriority = value; }
 
-uint32_t Shell::getContextPriority() const
-{
-	return _data->attributes.contextPriority;
-}
+uint32_t Shell::getContextPriority() const { return _data->attributes.contextPriority; }
 
-void Shell::setDesiredConfig(uint32_t value)
-{
-	_data->attributes.configID = value;
-}
+void Shell::setDesiredConfig(uint32_t value) { _data->attributes.configID = value; }
 
-uint32_t Shell::getDesiredConfig() const
-{
-	return _data->attributes.configID;
-}
+uint32_t Shell::getDesiredConfig() const { return _data->attributes.configID; }
 
-void Shell::setFakeFrameTime(uint32_t value)
-{
-	_data->fakeFrameTime = value;
-}
+void Shell::setFakeFrameTime(uint32_t value) { _data->fakeFrameTime = value; }
 
-uint32_t Shell::getFakeFrameTime() const
-{
-	return _data->fakeFrameTime;
-}
+uint32_t Shell::getFakeFrameTime() const { return _data->fakeFrameTime; }
 
-Stream::ptr_type Shell::getAssetStream(const std::string& filename, bool errorIfFileNotFound)
+std::unique_ptr<Stream> Shell::getAssetStream(const std::string& filename, bool errorIfFileNotFound) const
 {
 	// The shell will first attempt to open a file in your readpath with the same name.
 	// This allows you to override any built-in assets
-	Stream::ptr_type stream;
+	std::unique_ptr<Stream> stream;
 	// Try absolute path first:
 
-	stream.reset(new FileStream(filename, "rb", false));
-	stream->open();
-	if (stream->isopen())
-	{
-		return stream;
-	}
+	stream = std::make_unique<FileStream>(filename, "rb", false);
+	if (stream->isReadable()) { return stream; }
 	stream.reset(0);
 
 	// Then relative to the search paths:
@@ -632,12 +478,8 @@ Stream::ptr_type Shell::getAssetStream(const std::string& filename, bool errorIf
 		std::string filepath(paths[i]);
 		filepath += filename;
 
-		stream.reset(new FileStream(filepath, "rb", false));
-		stream->open();
-		if (stream->isopen())
-		{
-			return stream;
-		}
+		stream = std::make_unique<FileStream>(filepath, "rb", false);
+		if (stream->isReadable()) { return stream; }
 
 		stream.reset(0);
 	}
@@ -646,17 +488,14 @@ Stream::ptr_type Shell::getAssetStream(const std::string& filename, bool errorIf
 #if defined(_WIN32) // On windows, the filename also matches the resource id in our examples, which is fortunate
 	try
 	{
-		stream.reset(new WindowsResourceStream(filename.c_str()));
+		stream = std::make_unique<WindowsResourceStream>(filename.c_str());
 	}
 	catch (FileNotFoundError)
 	{}
 #elif defined(__ANDROID__) // On android, external files are packaged in the .apk as assets
 	struct android_app* app = static_cast<android_app*>(_data->os->getApplication());
 
-	if (app && app->activity && app->activity->assetManager)
-	{
-		stream.reset(new AndroidAssetStream(app->activity->assetManager, filename.c_str()));
-	}
+	if (app && app->activity && app->activity->assetManager) { stream = std::make_unique<AndroidAssetStream>(app->activity->assetManager, filename.c_str()); }
 	else
 	{
 		Log(LogLevel::Debug, "Could not request android asset stream %s -- Application, Activity or Assetmanager was null", filename.c_str());
@@ -666,19 +505,15 @@ Stream::ptr_type Shell::getAssetStream(const std::string& filename, bool errorIf
 	{
 		if (stream.get())
 		{
-			stream->open();
-			return stream;
+			if (stream->isReadable()) { return stream; }
 		}
 	}
 	catch (...)
 	{
 		stream.reset();
 	}
-	if (errorIfFileNotFound)
-	{
-		throw FileNotFoundError(filename, "[pvr::Shell::getAssetStream]");
-	}
-	return Stream::ptr_type((Stream::ptr_type::element_type*)0);
+	if (errorIfFileNotFound) { throw FileNotFoundError(filename, "[pvr::Shell::getAssetStream]"); }
+	return std::unique_ptr<Stream>();
 }
 
 template<typename... Args>
@@ -687,42 +522,21 @@ void Shell::setApplicationName(const char* const format, Args... args)
 	getOS().setApplicationName(strings::createFormatted(format, args...).c_str());
 }
 
-const std::string& Shell::getExitMessage() const
-{
-	return _data->exitMessage;
-}
+const std::string& Shell::getExitMessage() const { return _data->exitMessage; }
 
-const std::string& Shell::getApplicationName() const
-{
-	return getOS().getApplicationName();
-}
+const std::string& Shell::getApplicationName() const { return getOS().getApplicationName(); }
 
-const std::string& Shell::getDefaultReadPath() const
-{
-	return getOS().getDefaultReadPath();
-}
+const std::string& Shell::getDefaultReadPath() const { return getOS().getDefaultReadPath(); }
 
-const std::vector<std::string>& Shell::getReadPaths() const
-{
-	return getOS().getReadPaths();
-}
+const std::vector<std::string>& Shell::getReadPaths() const { return getOS().getReadPaths(); }
 
-void Shell::addReadPath(const std::string& readPaths)
-{
-	getOS().addReadPath(readPaths);
-}
+void Shell::addReadPath(const std::string& readPaths) { getOS().addReadPath(readPaths); }
 
-const std::string& Shell::getWritePath() const
-{
-	return getOS().getWritePath();
-}
+const std::string& Shell::getWritePath() const { return getOS().getWritePath(); }
 
-ShellOS& Shell::getOS() const
-{
-	return *_data->os;
-}
+ShellOS& Shell::getOS() const { return *_data->os; }
 
-std::string Shell::getScreenshotFileName()
+std::string Shell::getScreenshotFileName() const
 {
 	// determine the screenshot filename
 	std::string filename;
@@ -755,16 +569,13 @@ std::string Shell::getScreenshotFileName()
 				}
 			}
 		}
-		if (!foundValidFile)
-		{
-			throw std::runtime_error("Could not create a screenshot file");
-		}
+		if (!foundValidFile) { throw std::runtime_error("Could not create a screenshot file"); }
 	}
 
 	return filename;
 }
 
-void Shell::showOutputInfo()
+void Shell::showOutputInfo() const
 {
 	std::string attributesInfo, tmp;
 	attributesInfo.reserve(2048);
@@ -788,10 +599,7 @@ void Shell::showOutputInfo()
 
 	for (uint32_t i = 0; i < options.size(); ++i)
 	{
-		if (options[i].val)
-		{
-			tmp = strings::createFormatted(" %hs=%hs", options[i].arg, options[i].val);
-		}
+		if (options[i].val) { tmp = strings::createFormatted(" %hs=%hs", options[i].arg, options[i].val); }
 		else
 		{
 			tmp = strings::createFormatted(" %hs", options[i].arg);
@@ -843,59 +651,27 @@ void Shell::setForceFrameTime(const bool value)
 	}
 }
 
-bool Shell::isForcingFrameTime()
-{
-	return _data->forceFrameTime;
-}
+bool Shell::isForcingFrameTime() const { return _data->forceFrameTime; }
 
-void Shell::setShowFPS(const bool showFPS)
-{
-	_data->showFPS = showFPS;
-}
+void Shell::setShowFPS(const bool showFPS) { _data->showFPS = showFPS; }
 
-bool Shell::isShowingFPS() const
-{
-	return _data->showFPS;
-}
+bool Shell::isShowingFPS() const { return _data->showFPS; }
 
-float Shell::getFPS() const
-{
-	return _data->FPS;
-}
+float Shell::getFPS() const { return _data->FPS; }
 
-bool Shell::isScreenRotated() const
-{
-	return _data->attributes.isDisplayPortrait() && isFullScreen();
-}
+bool Shell::isScreenRotated() const { return _data->attributes.isDisplayPortrait() && isFullScreen(); }
 
-bool Shell::isScreenPortrait() const
-{
-	return _data->attributes.isDisplayPortrait();
-}
+bool Shell::isScreenPortrait() const { return _data->attributes.isDisplayPortrait(); }
 
-bool Shell::isScreenLandscape() const
-{
-	return !_data->attributes.isDisplayPortrait();
-}
+bool Shell::isScreenLandscape() const { return !_data->attributes.isDisplayPortrait(); }
 
-void Shell::exitShell()
-{
-	_data->weAreDone = true;
-}
+void Shell::exitShell() { _data->weAreDone = true; }
 
-DisplayAttributes& Shell::getDisplayAttributes()
-{
-	return _data->attributes;
-}
-OSDisplay Shell::getDisplay()
-{
-	return _data->os->getDisplay();
-}
-
-OSWindow Shell::getWindow()
-{
-	return _data->os->getWindow();
-}
+const DisplayAttributes& Shell::getDisplayAttributes() const { return _data->attributes; }
+DisplayAttributes& Shell::getDisplayAttributes() { return _data->attributes; }
+OSConnection Shell::getConnection() const { return _data->os->getConnection(); }
+OSDisplay Shell::getDisplay() const { return _data->os->getDisplay(); }
+OSWindow Shell::getWindow() const { return _data->os->getWindow(); }
 } // namespace platform
 } // namespace pvr
 #undef EPSILON_PIXEL_SQUARE

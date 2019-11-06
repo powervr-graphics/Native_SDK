@@ -8,5 +8,5 @@ var searchData=
   ['fov',['fov',['../structpvr_1_1assets_1_1_camera_1_1_internal_data_1_1_fov_animation_data.html#a61d53f50d4be88477045dc41369cb7d0',1,'pvr::assets::Camera::InternalData::FovAnimationData']]],
   ['fovs',['fovs',['../structpvr_1_1assets_1_1_camera_1_1_internal_data.html#a92365893fdb8191345863d9b49b1cb87',1,'pvr::assets::Camera::InternalData']]],
   ['fps',['FPS',['../structpvr_1_1assets_1_1_model_1_1_internal_data.html#a0504df7eb3c96cf201cf9ecff492240f',1,'pvr::assets::Model::InternalData']]],
-  ['framexform',['frameXform',['../structpvr_1_1assets_1_1_model_1_1_node_1_1_internal_data.html#a5e18a4df3a2bdf54dd735004b6f119c9',1,'pvr::assets::Model::Node::InternalData']]]
+  ['frametransform',['frameTransform',['../structpvr_1_1assets_1_1_model_1_1_node_1_1_internal_data.html#afc00441743c7b5501d5dc55eef550f11',1,'pvr::assets::Model::Node::InternalData']]]
 ];

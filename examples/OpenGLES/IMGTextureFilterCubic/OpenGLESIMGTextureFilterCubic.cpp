@@ -37,8 +37,8 @@ class OpenGLESIMGTextureFilterCubic : public pvr::Shell
 	struct Program
 	{
 		GLuint handle;
-		uint32_t uiMVPMatrixLoc;
-		uint32_t uiWidthLoc;
+		GLint uiMVPMatrixLoc;
+		GLint uiWidthLoc;
 		Program() : handle(0), uiMVPMatrixLoc(-1), uiWidthLoc(-1) {}
 	} _shaderProgram;
 
@@ -50,7 +50,7 @@ class OpenGLESIMGTextureFilterCubic : public pvr::Shell
 	pvr::ui::UIRenderer _uiRenderer;
 
 public:
-	OpenGLESIMGTextureFilterCubic() : _quadVbo(0), _tex(0), _cubicTex(0) {}
+	OpenGLESIMGTextureFilterCubic() : _quadVbo(0), _tex(0), _cubicTex(0), _modelViewProjection(0.0f), _viewProjection(0.0f), _projection(0.0f) {}
 
 	// pvr::Shell implementation.
 	virtual pvr::Result initApplication();
@@ -69,10 +69,7 @@ public:
 Used to initialize variables that are not dependent on it (e.g. external modules, loading meshes, etc.).
 If the rendering context is lost, InitApplication() will not be called again.
 ***********************************************************************************************************************/
-pvr::Result OpenGLESIMGTextureFilterCubic::initApplication()
-{
-	return pvr::Result::Success;
-}
+pvr::Result OpenGLESIMGTextureFilterCubic::initApplication() { return pvr::Result::Success; }
 
 /*!*********************************************************************************************************************
 \return Result::Success if no error occurred
@@ -85,10 +82,7 @@ pvr::Result OpenGLESIMGTextureFilterCubic::initView()
 	_context->init(getWindow(), getDisplay(), getDisplayAttributes(), pvr::Api::OpenGLES2);
 
 	// Check whether the extension GL_IMG_texture_filter_cubic is supported
-	if (!gl::isGlExtensionSupported("GL_IMG_texture_filter_cubic"))
-	{
-		throw pvr::GlExtensionNotSupportedError("GL_IMG_texture_filter_cubic");
-	}
+	if (!gl::isGlExtensionSupported("GL_IMG_texture_filter_cubic")) { throw pvr::GlExtensionNotSupportedError("GL_IMG_texture_filter_cubic"); }
 
 	_quadVbo = 0;
 
@@ -236,10 +230,7 @@ pvr::Result OpenGLESIMGTextureFilterCubic::renderFrame()
 		_uiRenderer.endRendering();
 	}
 
-	if (this->shouldTakeScreenshot())
-	{
-		pvr::utils::takeScreenshot(this->getScreenshotFileName(), this->getWidth(), this->getHeight());
-	}
+	if (this->shouldTakeScreenshot()) { pvr::utils::takeScreenshot(this->getScreenshotFileName(), this->getWidth(), this->getHeight()); }
 
 	_context->swapBuffers();
 
@@ -254,14 +245,10 @@ pvr::Result OpenGLESIMGTextureFilterCubic::releaseView()
 {
 	_uiRenderer.release();
 
-	if (_tex)
-		gl::BindTexture(GL_TEXTURE_2D, _tex);
-	if (_cubicTex)
-		gl::BindTexture(GL_TEXTURE_2D, _cubicTex);
-	if (_quadVbo)
-		gl::DeleteBuffers(1, &_quadVbo);
-	if (_shaderProgram.handle)
-		gl::DeleteProgram(_shaderProgram.handle);
+	if (_tex) gl::BindTexture(GL_TEXTURE_2D, _tex);
+	if (_cubicTex) gl::BindTexture(GL_TEXTURE_2D, _cubicTex);
+	if (_quadVbo) gl::DeleteBuffers(1, &_quadVbo);
+	if (_shaderProgram.handle) gl::DeleteProgram(_shaderProgram.handle);
 
 	return pvr::Result::Success;
 }
@@ -271,10 +258,7 @@ pvr::Result OpenGLESIMGTextureFilterCubic::releaseView()
 \brief  Code in quitApplication() will be called by Shell once per run, just before exiting the program.
 If the rendering context is lost, quitApplication() will not be called.
 ***********************************************************************************************************************/
-pvr::Result OpenGLESIMGTextureFilterCubic::quitApplication()
-{
-	return pvr::Result::Success;
-}
+pvr::Result OpenGLESIMGTextureFilterCubic::quitApplication() { return pvr::Result::Success; }
 
 /*!*********************************************************************************************************************
 \brief  Loads the mesh data required for this training course into vertex buffer objects
@@ -315,10 +299,7 @@ void OpenGLESIMGTextureFilterCubic::loadShaders()
 	// Enable or disable gamma correction based on if it is automatically performed on the framebuffer or we need to do it in the shader.
 	const char* defines[] = { "FRAMEBUFFER_SRGB" };
 	uint32_t numDefines = 1;
-	if (getBackBufferColorspace() != pvr::ColorSpace::sRGB)
-	{
-		numDefines = 0;
-	}
+	if (getBackBufferColorspace() != pvr::ColorSpace::sRGB) { numDefines = 0; }
 
 	_shaderProgram.handle = pvr::utils::createShaderProgram(*this, VertShaderSrcFile, FragShaderSrcFile, attributes, attributeIndices, 1, defines, numDefines);
 
@@ -337,7 +318,4 @@ void OpenGLESIMGTextureFilterCubic::loadShaders()
 
 /// <summary>This function must be implemented by the user of the shell. The user should return its pvr::Shell object defining the behaviour of the application.</summary>
 /// <returns>Return a unique ptr to the demo supplied by the user.</returns>
-std::unique_ptr<pvr::Shell> pvr::newDemo()
-{
-	return std::unique_ptr<pvr::Shell>(new OpenGLESIMGTextureFilterCubic());
-}
+std::unique_ptr<pvr::Shell> pvr::newDemo() { return std::make_unique<OpenGLESIMGTextureFilterCubic>(); }

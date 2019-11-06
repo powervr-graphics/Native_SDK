@@ -1,7 +1,7 @@
 var searchData=
 [
   ['familyid',['familyId',['../structpvr_1_1utils_1_1_queue_access_info.html#a6d0e303c656d8312932d268db869596a',1,'pvr::utils::QueueAccessInfo']]],
-  ['findcharacter',['findCharacter',['../classpvr_1_1ui_1_1impl_1_1_font__.html#a64c29f2e72856b59abd8dd26060e4b60',1,'pvr::ui::impl::Font_::findCharacter(uint32_t character) const '],['../classpvr_1_1ui_1_1impl_1_1_font__.html#a64c29f2e72856b59abd8dd26060e4b60',1,'pvr::ui::impl::Font_::findCharacter(uint32_t character) const ']]],
+  ['findcharacter',['findCharacter',['../classpvr_1_1ui_1_1impl_1_1_font__.html#ab3f56ddd92e6f2476e28f9489164f9d5',1,'pvr::ui::impl::Font_::findCharacter(uint32_t character) const'],['../classpvr_1_1ui_1_1impl_1_1_font__.html#ab3f56ddd92e6f2476e28f9489164f9d5',1,'pvr::ui::impl::Font_::findCharacter(uint32_t character) const']]],
   ['findmemorytypeindex',['findMemoryTypeIndex',['../classpvr_1_1utils_1_1vma_1_1impl_1_1_allocator__.html#a49a3cdc7877e4628bd3ad4aac3ea0298',1,'pvr::utils::vma::impl::Allocator_']]],
   ['flags',['flags',['../structpvr_1_1utils_1_1vma_1_1_allocation_create_info.html#a3d856d30836d1ab82cb1787742640ca8',1,'pvr::utils::vma::AllocationCreateInfo::flags()'],['../structpvr_1_1utils_1_1vma_1_1_allocator_create_info.html#a6b18e0ac249d83013396ad08cd8d74ab',1,'pvr::utils::vma::AllocatorCreateInfo::flags()'],['../structpvr_1_1utils_1_1vma_1_1_pool_create_info.html#a70de574b7eb52bfee3aaaa2991c95abb',1,'pvr::utils::vma::PoolCreateInfo::flags()']]],
   ['flushrange',['flushRange',['../classpvr_1_1utils_1_1vma_1_1impl_1_1_allocation__.html#a98c85c8808871dd64c865ea4fe844903',1,'pvr::utils::vma::impl::Allocation_']]],

@@ -41,17 +41,11 @@ public:
 
 	/// <summary>Get the Semaphore creation flags</summary>
 	/// <returns>The set of Semaphore creation flags</returns>
-	inline SemaphoreCreateFlags getFlags() const
-	{
-		return _createInfo.getFlags();
-	}
+	inline SemaphoreCreateFlags getFlags() const { return _createInfo.getFlags(); }
 
 	/// <summary>Get this Semaphore's create flags</summary>
 	/// <returns>SemaphoreCreateInfo</returns>
-	SemaphoreCreateInfo getCreateInfo() const
-	{
-		return _createInfo;
-	}
+	SemaphoreCreateInfo getCreateInfo() const { return _createInfo; }
 };
 } // namespace impl
 } // namespace pvrvk

@@ -1,16 +1,15 @@
 var searchData=
 [
-  ['makepoweroftwohigh',['makePowerOfTwoHigh',['../namespacepvr_1_1math.html#afa79fff0c4934d5ab39edb53695ee3d4',1,'pvr::math']]],
-  ['makepoweroftwolow',['makePowerOfTwoLow',['../namespacepvr_1_1math.html#aeb17baa9649bd59237e2e04eb588c5fb',1,'pvr::math']]],
-  ['maplegacyenumtonewformat',['mapLegacyEnumToNewFormat',['../classpvr_1_1asset_readers_1_1_texture_reader_p_v_r.html#a0b85abcc94231bf1ec0d3d44a0076cc0',1,'pvr::assetReaders::TextureReaderPVR']]],
-  ['memcopy',['memCopy',['../namespacepvr_1_1utils.html#ad1d2042ec2af243eaf4bcce0a06d6e5e',1,'pvr::utils']]],
-  ['memcopyfromvolatile',['memCopyFromVolatile',['../namespacepvr_1_1utils.html#a5cc463ddc39c05eec129ff4264710314',1,'pvr::utils']]],
-  ['memcopytovolatile',['memCopyToVolatile',['../namespacepvr_1_1utils.html#ac847f23ce66e96bbbb645d41e9bc54da',1,'pvr::utils']]],
-  ['memset',['memSet',['../namespacepvr_1_1utils.html#abfdd74c999717c59497fcfabf175f259',1,'pvr::utils']]],
-  ['mergebox',['mergeBox',['../classpvr_1_1math_1_1_axis_aligned_box.html#a002c0771629b40f91fd1da4941be2b3e',1,'pvr::math::AxisAlignedBox']]],
-  ['mergedatatypesbigger',['mergeDatatypesBigger',['../namespacepvr.html#ac73ce628e547374c22057ff8e3a89bb3',1,'pvr']]],
-  ['mergedatatypessmaller',['mergeDatatypesSmaller',['../namespacepvr.html#a7ef5be44f3a11eac1a122cafd4a217db',1,'pvr']]],
-  ['movex',['moveX',['../classpvr_1_1_f_p_s_camera.html#ad47f57eddf5fe13c34b64099d9d9ca99',1,'pvr::FPSCamera']]],
-  ['movez',['moveZ',['../classpvr_1_1_f_p_s_camera.html#a93935a91f58b08898399f93b8949ec86',1,'pvr::FPSCamera']]],
-  ['mutex',['Mutex',['../classpvr_1_1async_1_1_mutex.html#a422225bfb5a838883b349dfc162ce002',1,'pvr::async::Mutex']]]
+  ['l_5f32',['L_32',['../classpvr_1_1_pixel_format.html#a138cded7a110001207a5279c992a2ad3',1,'pvr::PixelFormat']]],
+  ['la_5f1616',['LA_1616',['../classpvr_1_1_pixel_format.html#a99973707091023eaec1db3976d61db8e',1,'pvr::PixelFormat']]],
+  ['la_5f3232',['LA_3232',['../classpvr_1_1_pixel_format.html#aa368765161d6fe9e15170123b7f1babe',1,'pvr::PixelFormat']]],
+  ['lcm',['lcm',['../namespacepvr_1_1math.html#accd0426359027cb0b7266a8ae9fcc077',1,'pvr::math']]],
+  ['lcm_5fwith_5fmax',['lcm_with_max',['../namespacepvr_1_1math.html#af05f0c9d9f306695f2efc3483c6ed4b3',1,'pvr::math']]],
+  ['length',['length',['../classpvr_1_1_string_hash.html#a9bd0cef2d2557e327abb1e429d646f3d',1,'pvr::StringHash']]],
+  ['loadnow',['loadNow',['../structpvr_1_1async_1_1_texture_load_future__.html#a0dfecf32f5552c811b549c02c1fb2836',1,'pvr::async::TextureLoadFuture_']]],
+  ['loadtextureasync',['loadTextureAsync',['../classpvr_1_1async_1_1_texture_async_loader.html#a9bfabe07e22d5f96d0132edf24032675',1,'pvr::async::TextureAsyncLoader']]],
+  ['loadwithreader',['loadWithReader',['../structpvr_1_1effect_1_1_effect.html#a831b4036f40dffb1389ac53f9eaccbc7',1,'pvr::effect::Effect']]],
+  ['lock',['lock',['../classpvr_1_1async_1_1_mutex.html#a093d255fd41814b8dd2241e9115457ae',1,'pvr::async::Mutex']]],
+  ['lockedqueue',['LockedQueue',['../classpvr_1_1_locked_queue.html#a7cff4003db919e72ce2be81d73969314',1,'pvr::LockedQueue']]],
+  ['log',['Log',['../_log_8h.html#a49209d4079b083831638df881b307b68',1,'Log(LogLevel severity, const char *formatString,...):&#160;Log.h'],['../_log_8h.html#a397ae6459e32606af3ee5c88d02b011a',1,'Log(const char *formatString,...):&#160;Log.h']]]
 ];

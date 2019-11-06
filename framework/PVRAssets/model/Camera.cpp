@@ -20,15 +20,9 @@ float Camera::getFOV(float timeInMs) const
 	float t = 0.f;
 	bool interpolate = true;
 
-	if (_data.fovs.size() == 0)
-	{
-		return 0.7f;
-	}
+	if (_data.fovs.size() == 0) { return 0.7f; }
 
-	if (timeInSec <= _data.fovs[0].timeInSec)
-	{
-		interpolate = false;
-	}
+	if (timeInSec <= _data.fovs[0].timeInSec) { interpolate = false; }
 
 	else if (timeInSec >= _data.fovs.back().timeInSec)
 	{
@@ -44,10 +38,7 @@ float Camera::getFOV(float timeInMs) const
 		t = (timeInMs - _data.fovs[f0].timeInSec) / (_data.fovs[f1].timeInSec - _data.fovs[f0].timeInSec);
 	}
 
-	if (interpolate)
-	{
-		return _data.fovs[f0].fov * (1.f - t) + _data.fovs[f1].fov * t;
-	}
+	if (interpolate) { return _data.fovs[f0].fov * (1.f - t) + _data.fovs[f1].fov * t; }
 	else
 	{
 		return _data.fovs[f0].fov;

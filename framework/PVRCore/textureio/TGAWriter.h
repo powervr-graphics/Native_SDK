@@ -9,25 +9,21 @@
 #include "PVRCore/Log.h"
 
 namespace pvr {
+
 /// <summary>Write out TGA data from an image.</summary>
-/// <param name="filename">C-style string with the filename to write the TGA.</param>
+/// <param name="filename">Stream to write the TGA into</param>
 /// <param name="w">The width of the image</param>
 /// <param name="h">The height of the image</param>
 /// <param name="imageData">Pointer to the raw image data</param>
 /// <param name="stride">Size in bytes of each pixel. (Equal to the number of channels)</param>
 /// <param name="pixelReplicate">Upscale factor.</param>
 /// <returns>True if successfuly completed, otherwise False. (log error on false)</returns>
-inline void writeTGA(const char* filename, uint32_t w, uint32_t h, const unsigned char* imageData, const unsigned char stride, uint32_t pixelReplicate = 1)
+inline void writeTGA(pvr::Stream& file, uint32_t w, uint32_t h, const unsigned char* imageData, const uint32_t stride, uint32_t pixelReplicate = 1)
 {
-	if (pixelReplicate == 0 || w == 0 || h == 0)
-	{
-		throw InvalidArgumentError("writeTGA: Invalid size.");
-	}
+	if (!file.isWritable()) { throw InvalidOperationError("[writeTGA]: Attempted to write to non-writable stream"); }
+	if (pixelReplicate == 0 || w == 0 || h == 0) { throw InvalidArgumentError("writeTGA: Invalid size."); }
 
-	if (!imageData)
-	{
-		throw InvalidArgumentError("writeTGA: Pointer to data was null");
-	}
+	if (!imageData) { throw InvalidArgumentError("writeTGA: Pointer to data was null"); }
 
 	// header
 	unsigned char lengthID(0);
@@ -47,10 +43,6 @@ inline void writeTGA(const char* filename, uint32_t w, uint32_t h, const unsigne
 	unsigned char bitsperpixel(static_cast<unsigned char>(stride * 8));
 	unsigned char imageDescriptor(0);
 
-	FileStream file(filename, "wb");
-
-	file.open();
-
 	// Write header
 	size_t dataWritten;
 	file.write(sizeof(lengthID), 1, &lengthID, dataWritten);
@@ -67,10 +59,7 @@ inline void writeTGA(const char* filename, uint32_t w, uint32_t h, const unsigne
 	file.write(sizeof(imageDescriptor), 1, &imageDescriptor, dataWritten);
 
 	// write out the data
-	if (pixelReplicate == 1)
-	{
-		file.write(w * h * stride, 1, imageData, dataWritten);
-	}
+	if (pixelReplicate == 1) { file.write((size_t)w * (size_t)h * (size_t)stride, 1, imageData, dataWritten); }
 	else
 	{
 		for (uint32_t y = 0; y < h; ++y)
@@ -83,15 +72,70 @@ inline void writeTGA(const char* filename, uint32_t w, uint32_t h, const unsigne
 				{
 					const unsigned char* pixel = &row[stride * x];
 
-					for (uint32_t repX = 0; repX < pixelReplicate; ++repX)
-					{
-						file.write(stride, 1, pixel, dataWritten);
-					}
+					for (uint32_t repX = 0; repX < pixelReplicate; ++repX) { file.write(stride, 1, pixel, dataWritten); }
 				}
 			}
 		}
 	}
-	file.close();
+}
+
+/// <summary>Write out TGA data from an image.</summary>
+/// <param name="filename">Stream to write the TGA into</param>
+/// <param name="w">The width of the image</param>
+/// <param name="h">The height of the image</param>
+/// <param name="imageData">Pointer to the raw image data</param>
+/// <param name="stride">Size in bytes of each pixel. (Equal to the number of channels)</param>
+/// <param name="pixelReplicate">Upscale factor.</param>
+/// <returns>True if successfuly completed, otherwise False. (log error on false)</returns>
+inline void writeTGA(pvr::Stream&& file, uint32_t w, uint32_t h, const unsigned char* imageData, const unsigned char stride, uint32_t pixelReplicate = 1)
+{
+	writeTGA(file, w, h, imageData, stride, pixelReplicate);
+}
+
+/// <summary>Write out TGA data from an image.</summary>
+/// <param name="filename">Filename for which a filestream will be created to write the TGA into</param>
+/// <param name="w">The width of the image</param>
+/// <param name="h">The height of the image</param>
+/// <param name="imageData">Pointer to the raw image data</param>
+/// <param name="stride">Size in bytes of each pixel. (Equal to the number of channels)</param>
+/// <param name="pixelReplicate">Upscale factor.</param>
+/// <returns>True if successfuly completed, otherwise False. (log error on false)</returns>
+inline void writeTGA(const char* filename, uint32_t w, uint32_t h, const unsigned char* imageData, const unsigned char stride, uint32_t pixelReplicate = 1)
+{
+	FileStream fs(filename, "wb");
+	writeTGA(fs, w, h, imageData, stride, pixelReplicate);
+}
+
+/// <summary>Write out TGA data from an image.</summary>
+/// <param name="filename">Stream to write the TGA into</param>
+/// <param name="w">The width of the image</param>
+/// <param name="h">The height of the image</param>
+/// <param name="imageDataR">Pointer to the RED channel image data</param>
+/// <param name="imageDataG">Pointer to the GREEN channel image data</param>
+/// <param name="imageDataB">Pointer to the BLUE channel image data</param>
+/// <param name="stride">Size in bytes of each pixel</param>
+/// <param name="pixelReplicate">Upscale factor.</param>
+/// <returns>True if successfuly completed, otherwise False. (log error on false)</returns>
+inline void writeTGAFromPlanar(pvr::Stream& stream, uint32_t w, uint32_t h, const unsigned char* imageDataR, const unsigned char* imageDataG, const unsigned char* imageDataB,
+	const uint32_t stride, uint32_t pixelReplicate = 1)
+{
+	std::vector<unsigned char> data((size_t)w * (size_t)h * 3);
+	for (size_t row = 0; row < h; ++row)
+	{
+		for (size_t col = 0; col < w; ++col)
+		{
+			size_t offset = row * w + col;
+			data[offset * 3] = imageDataB[offset];
+			data[offset * 3 + 1] = imageDataG[offset];
+			data[offset * 3 + 2] = imageDataR[offset];
+		}
+	}
+	writeTGA(stream, w, h, data.data(), stride, pixelReplicate);
+}
+inline void writeTGAFromPlanar(pvr::Stream&& stream, uint32_t w, uint32_t h, const unsigned char* imageDataR, const unsigned char* imageDataG, const unsigned char* imageDataB,
+	const uint32_t stride, uint32_t pixelReplicate = 1)
+{
+	writeTGAFromPlanar(stream, w, h, imageDataR, imageDataG, imageDataB, stride, pixelReplicate);
 }
 
 /// <summary>Write out TGA data from an image.</summary>
@@ -105,20 +149,9 @@ inline void writeTGA(const char* filename, uint32_t w, uint32_t h, const unsigne
 /// <param name="pixelReplicate">Upscale factor.</param>
 /// <returns>True if successfuly completed, otherwise False. (log error on false)</returns>
 inline void writeTGAFromPlanar(const char* filename, uint32_t w, uint32_t h, const unsigned char* imageDataR, const unsigned char* imageDataG, const unsigned char* imageDataB,
-	const unsigned stride, uint32_t pixelReplicate = 1)
+	const uint32_t stride, uint32_t pixelReplicate = 1)
 {
-	std::vector<unsigned char> data(w * h * 3);
-	for (size_t row = 0; row < h; ++row)
-	{
-		for (size_t col = 0; col < w; ++col)
-		{
-			size_t offset = row * w + col;
-			data[offset * 3] = imageDataB[offset];
-			data[offset * 3 + 1] = imageDataG[offset];
-			data[offset * 3 + 2] = imageDataR[offset];
-		}
-	}
-	writeTGA(filename, w, h, data.data(), stride, pixelReplicate);
+	writeTGAFromPlanar(FileStream(filename, "wb"), w, h, imageDataR, imageDataG, imageDataB, stride, pixelReplicate);
 }
 
 } // namespace pvr

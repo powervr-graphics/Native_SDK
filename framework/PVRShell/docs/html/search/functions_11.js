@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['_7eshell',['~Shell',['../classpvr_1_1platform_1_1_shell.html#ad53e03eb253c06ad0977e07f7b53c938',1,'pvr::platform::Shell']]],
-  ['_7eshellos',['~ShellOS',['../classpvr_1_1platform_1_1_shell_o_s.html#a680bb0320a128e2c4bcee683acb48454',1,'pvr::platform::ShellOS']]]
+  ['winmain',['WinMain',['../_win_main_2main_8cpp.html#af3f1700b8b5ca5e5ae8aea93d3b98240',1,'main.cpp']]]
 ];

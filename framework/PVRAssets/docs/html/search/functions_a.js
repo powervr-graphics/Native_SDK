@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['material',['Material',['../classpvr_1_1assets_1_1_model_1_1_material.html#a8453456d586952692e46495b0670aceb',1,'pvr::assets::Model::Material']]],
-  ['meshinfo',['MeshInfo',['../structpvr_1_1assets_1_1_mesh_1_1_mesh_info.html#a8e26b4540200cce2ee93b04cec953d8b',1,'pvr::assets::Mesh::MeshInfo']]]
+  ['loadmodel',['loadModel',['../namespacepvr_1_1assets.html#aeb380c060e5fec88a3b28977d3f5c26a',1,'pvr::assets::loadModel(const IAssetProvider &amp;app, const std::string &amp;modelFile)'],['../namespacepvr_1_1assets.html#a58c00f3bd10cb0abc187d650a2e94a71',1,'pvr::assets::loadModel(const IAssetProvider &amp;app, const pvr::Stream &amp;model)']]]
 ];

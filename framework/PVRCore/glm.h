@@ -4,18 +4,18 @@
 #define GLM_COMPILER 0
 #endif
 
-#include "../external/glm/glm.hpp"
-#include "../external/glm/gtc/type_ptr.hpp"
-#include "../external/glm/gtc/matrix_inverse.hpp"
-#include "../external/glm/gtc/matrix_access.hpp"
-#include "../external/glm/gtc/quaternion.hpp"
-#include "../external/glm/gtx/transform.hpp"
-#include "../external/glm/gtx/norm.hpp"
-#include "../external/glm/simd/matrix.h"
-#include "../external/glm/simd/trigonometric.h"
-#include "../external/glm/gtx/fast_trigonometry.hpp"
-#include "../external/glm/gtx/euler_angles.hpp"
-#include "../external/glm/gtx/fast_square_root.hpp"
+#include "glm/glm.hpp"
+#include "glm/gtc/type_ptr.hpp"
+#include "glm/gtc/matrix_inverse.hpp"
+#include "glm/gtc/matrix_access.hpp"
+#include "glm/gtc/quaternion.hpp"
+#include "glm/gtx/transform.hpp"
+#include "glm/gtx/norm.hpp"
+#include "glm/simd/matrix.h"
+#include "glm/simd/trigonometric.h"
+#include "glm/gtx/fast_trigonometry.hpp"
+#include "glm/gtx/euler_angles.hpp"
+#include "glm/gtx/fast_square_root.hpp"
 
 #include <sstream>
 
@@ -25,10 +25,7 @@ inline std::string to_string(const glm::vec<L, T, Q>& vec)
 {
 	std::stringstream str;
 	str << "[" << vec[0];
-	for (uint32_t i = 1; i < L; ++i)
-	{
-		str << "," << vec[i];
-	}
+	for(uint32_t i = 1; i < L; ++i) { str << "," << vec[i]; }
 	str << "]";
 	return str.str();
 }
@@ -37,10 +34,7 @@ inline std::string to_string(const glm::mat<lC, lR, T, Q>& mat)
 {
 	std::stringstream str;
 	str << "[" << to_string(mat[0]);
-	for (uint32_t j = 1; j < lC; ++j)
-	{
-		str << "," << to_string(mat[j]);
-	}
+	for(uint32_t j = 1; j < lC; ++j) { str << "," << to_string(mat[j]); }
 	str << "]";
 	return str.str();
 }

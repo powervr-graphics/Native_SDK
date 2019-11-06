@@ -20,21 +20,15 @@ class GlslangProcessInitialiser
 {
 public:
 	/// <summary>The constructor should be called exactly once prior to using glslang.</summary>
-	GlslangProcessInitialiser()
-	{
-		glslang::InitializeProcess();
-	}
+	GlslangProcessInitialiser() { glslang::InitializeProcess(); }
 	/// <summary>The destructor should be called exactly once after using glslang.</summary>
-	~GlslangProcessInitialiser()
-	{
-		glslang::FinalizeProcess();
-	}
+	~GlslangProcessInitialiser() { glslang::FinalizeProcess(); }
 };
 
 struct TBuiltInResourceInitialiser
 {
 	std::unique_ptr<TBuiltInResource> tBuiltInResourcePtr;
-	TBuiltInResourceInitialiser(pvrvk::Device device) : tBuiltInResourcePtr(std::unique_ptr<TBuiltInResource>(new TBuiltInResource()))
+	TBuiltInResourceInitialiser(pvrvk::Device device) : tBuiltInResourcePtr(std::make_unique<TBuiltInResource>())
 	{
 		// Copied from StandAlone/ResourceLimits.cpp
 		TBuiltInResource defaultTBuiltInResource = { /* .MaxLights = */ 32,
@@ -147,54 +141,59 @@ struct TBuiltInResourceInitialiser
 		*tBuiltInResourcePtr = defaultTBuiltInResource;
 
 		// Initialise the Vulkan specific TBuiltInResource members
-		tBuiltInResourcePtr->maxClipDistances = device->getPhysicalDevice()->getProperties().getLimits().getMaxClipDistances();
-		tBuiltInResourcePtr->maxCombinedClipAndCullDistances = device->getPhysicalDevice()->getProperties().getLimits().getMaxCombinedClipAndCullDistances();
-		tBuiltInResourcePtr->maxCombinedImageUniforms = device->getPhysicalDevice()->getProperties().getLimits().getMaxPerStageDescriptorStorageImages();
-		tBuiltInResourcePtr->maxCombinedShaderOutputResources = device->getPhysicalDevice()->getProperties().getLimits().getMaxFragmentCombinedOutputResources();
-		tBuiltInResourcePtr->maxComputeImageUniforms = device->getPhysicalDevice()->getProperties().getLimits().getMaxPerStageDescriptorStorageImages();
-		tBuiltInResourcePtr->maxComputeWorkGroupCountX = static_cast<int32_t>(device->getPhysicalDevice()->getProperties().getLimits().getMaxComputeWorkGroupCount()[0]);
-		tBuiltInResourcePtr->maxComputeWorkGroupCountY = static_cast<int32_t>(device->getPhysicalDevice()->getProperties().getLimits().getMaxComputeWorkGroupCount()[1]);
-		tBuiltInResourcePtr->maxComputeWorkGroupCountZ = static_cast<int32_t>(device->getPhysicalDevice()->getProperties().getLimits().getMaxComputeWorkGroupCount()[2]);
-		tBuiltInResourcePtr->maxComputeWorkGroupSizeX = static_cast<int32_t>(device->getPhysicalDevice()->getProperties().getLimits().getMaxComputeWorkGroupSize()[0]);
-		tBuiltInResourcePtr->maxComputeWorkGroupSizeY = static_cast<int32_t>(device->getPhysicalDevice()->getProperties().getLimits().getMaxComputeWorkGroupSize()[1]);
-		tBuiltInResourcePtr->maxComputeWorkGroupSizeZ = static_cast<int32_t>(device->getPhysicalDevice()->getProperties().getLimits().getMaxComputeWorkGroupSize()[2]);
-		tBuiltInResourcePtr->maxCullDistances = device->getPhysicalDevice()->getProperties().getLimits().getMaxCullDistances();
-		tBuiltInResourcePtr->maxFragmentImageUniforms = device->getPhysicalDevice()->getProperties().getLimits().getMaxPerStageDescriptorStorageImages();
-		tBuiltInResourcePtr->maxFragmentInputComponents = device->getPhysicalDevice()->getProperties().getLimits().getMaxFragmentInputComponents();
-		tBuiltInResourcePtr->maxFragmentInputVectors = device->getPhysicalDevice()->getProperties().getLimits().getMaxFragmentInputComponents() / 4;
-		tBuiltInResourcePtr->maxGeometryImageUniforms = device->getPhysicalDevice()->getProperties().getLimits().getMaxPerStageDescriptorStorageImages();
-		tBuiltInResourcePtr->maxGeometryInputComponents = device->getPhysicalDevice()->getProperties().getLimits().getMaxGeometryInputComponents();
-		tBuiltInResourcePtr->maxGeometryOutputComponents = device->getPhysicalDevice()->getProperties().getLimits().getMaxGeometryOutputComponents();
-		tBuiltInResourcePtr->maxGeometryOutputVertices = device->getPhysicalDevice()->getProperties().getLimits().getMaxGeometryOutputComponents() / 4;
-		tBuiltInResourcePtr->maxGeometryTotalOutputComponents = device->getPhysicalDevice()->getProperties().getLimits().getMaxGeometryTotalOutputComponents();
-		tBuiltInResourcePtr->maxGeometryVaryingComponents = device->getPhysicalDevice()->getProperties().getLimits().getMaxGeometryInputComponents();
+		tBuiltInResourcePtr->maxClipDistances = static_cast<int>(device->getPhysicalDevice()->getProperties().getLimits().getMaxClipDistances());
+		tBuiltInResourcePtr->maxCombinedClipAndCullDistances = static_cast<int>(device->getPhysicalDevice()->getProperties().getLimits().getMaxCombinedClipAndCullDistances());
+		tBuiltInResourcePtr->maxCombinedImageUniforms = static_cast<int>(device->getPhysicalDevice()->getProperties().getLimits().getMaxPerStageDescriptorStorageImages());
+		tBuiltInResourcePtr->maxCombinedShaderOutputResources = static_cast<int>(device->getPhysicalDevice()->getProperties().getLimits().getMaxFragmentCombinedOutputResources());
+		tBuiltInResourcePtr->maxComputeImageUniforms = static_cast<int>(device->getPhysicalDevice()->getProperties().getLimits().getMaxPerStageDescriptorStorageImages());
+		tBuiltInResourcePtr->maxComputeWorkGroupCountX = static_cast<int>(device->getPhysicalDevice()->getProperties().getLimits().getMaxComputeWorkGroupCount()[0]);
+		tBuiltInResourcePtr->maxComputeWorkGroupCountY = static_cast<int>(device->getPhysicalDevice()->getProperties().getLimits().getMaxComputeWorkGroupCount()[1]);
+		tBuiltInResourcePtr->maxComputeWorkGroupCountZ = static_cast<int>(device->getPhysicalDevice()->getProperties().getLimits().getMaxComputeWorkGroupCount()[2]);
+		tBuiltInResourcePtr->maxComputeWorkGroupSizeX = static_cast<int>(device->getPhysicalDevice()->getProperties().getLimits().getMaxComputeWorkGroupSize()[0]);
+		tBuiltInResourcePtr->maxComputeWorkGroupSizeY = static_cast<int>(device->getPhysicalDevice()->getProperties().getLimits().getMaxComputeWorkGroupSize()[1]);
+		tBuiltInResourcePtr->maxComputeWorkGroupSizeZ = static_cast<int>(device->getPhysicalDevice()->getProperties().getLimits().getMaxComputeWorkGroupSize()[2]);
+		tBuiltInResourcePtr->maxCullDistances = static_cast<int>(device->getPhysicalDevice()->getProperties().getLimits().getMaxCullDistances());
+		tBuiltInResourcePtr->maxFragmentImageUniforms = static_cast<int>(device->getPhysicalDevice()->getProperties().getLimits().getMaxPerStageDescriptorStorageImages());
+		tBuiltInResourcePtr->maxFragmentInputComponents = static_cast<int>(device->getPhysicalDevice()->getProperties().getLimits().getMaxFragmentInputComponents());
+		tBuiltInResourcePtr->maxFragmentInputVectors = static_cast<int>(device->getPhysicalDevice()->getProperties().getLimits().getMaxFragmentInputComponents() / 4);
+		tBuiltInResourcePtr->maxGeometryImageUniforms = static_cast<int>(device->getPhysicalDevice()->getProperties().getLimits().getMaxPerStageDescriptorStorageImages());
+		tBuiltInResourcePtr->maxGeometryInputComponents = static_cast<int>(device->getPhysicalDevice()->getProperties().getLimits().getMaxGeometryInputComponents());
+		tBuiltInResourcePtr->maxGeometryOutputComponents = static_cast<int>(device->getPhysicalDevice()->getProperties().getLimits().getMaxGeometryOutputComponents());
+		tBuiltInResourcePtr->maxGeometryOutputVertices = static_cast<int>(device->getPhysicalDevice()->getProperties().getLimits().getMaxGeometryOutputComponents() / 4);
+		tBuiltInResourcePtr->maxGeometryTotalOutputComponents = static_cast<int>(device->getPhysicalDevice()->getProperties().getLimits().getMaxGeometryTotalOutputComponents());
+		tBuiltInResourcePtr->maxGeometryVaryingComponents = static_cast<int>(device->getPhysicalDevice()->getProperties().getLimits().getMaxGeometryInputComponents());
 		tBuiltInResourcePtr->maxImageSamples =
-			pvr::utils::getNumSamplesFromSampleCountFlags(device->getPhysicalDevice()->getProperties().getLimits().getSampledImageIntegerSampleCounts());
-		tBuiltInResourcePtr->maxPatchVertices = device->getPhysicalDevice()->getProperties().getLimits().getMaxTessellationPatchSize();
-		tBuiltInResourcePtr->maxProgramTexelOffset = device->getPhysicalDevice()->getProperties().getLimits().getMaxTexelOffset();
+			static_cast<int>(pvr::utils::getNumSamplesFromSampleCountFlags(device->getPhysicalDevice()->getProperties().getLimits().getSampledImageIntegerSampleCounts()));
+		tBuiltInResourcePtr->maxPatchVertices = static_cast<int>(device->getPhysicalDevice()->getProperties().getLimits().getMaxTessellationPatchSize());
+		tBuiltInResourcePtr->maxProgramTexelOffset = static_cast<int>(device->getPhysicalDevice()->getProperties().getLimits().getMaxTexelOffset());
 		tBuiltInResourcePtr->maxSamples =
-			std::max(pvr::utils::getNumSamplesFromSampleCountFlags(device->getPhysicalDevice()->getProperties().getLimits().getStorageImageSampleCounts()),
-				pvr::utils::getNumSamplesFromSampleCountFlags(device->getPhysicalDevice()->getProperties().getLimits().getSampledImageIntegerSampleCounts()));
-		tBuiltInResourcePtr->maxTessControlImageUniforms = device->getPhysicalDevice()->getProperties().getLimits().getMaxPerStageDescriptorStorageImages();
-		tBuiltInResourcePtr->maxTessControlInputComponents = device->getPhysicalDevice()->getProperties().getLimits().getMaxTessellationControlPerVertexInputComponents();
-		tBuiltInResourcePtr->maxTessControlOutputComponents = device->getPhysicalDevice()->getProperties().getLimits().getMaxTessellationControlPerVertexOutputComponents();
-		tBuiltInResourcePtr->maxTessControlTotalOutputComponents = device->getPhysicalDevice()->getProperties().getLimits().getMaxTessellationControlTotalOutputComponents();
-		tBuiltInResourcePtr->maxTessEvaluationImageUniforms = device->getPhysicalDevice()->getProperties().getLimits().getMaxPerStageDescriptorStorageImages();
-		tBuiltInResourcePtr->maxTessEvaluationInputComponents = device->getPhysicalDevice()->getProperties().getLimits().getMaxTessellationEvaluationInputComponents();
-		tBuiltInResourcePtr->maxTessEvaluationOutputComponents = device->getPhysicalDevice()->getProperties().getLimits().getMaxTessellationEvaluationOutputComponents();
-		tBuiltInResourcePtr->maxTessGenLevel = device->getPhysicalDevice()->getProperties().getLimits().getMaxTessellationGenerationLevel();
-		tBuiltInResourcePtr->maxTessPatchComponents = device->getPhysicalDevice()->getProperties().getLimits().getMaxTessellationPatchSize();
-		tBuiltInResourcePtr->maxVertexAttribs = device->getPhysicalDevice()->getProperties().getLimits().getMaxVertexInputAttributes();
-		tBuiltInResourcePtr->maxVertexImageUniforms = device->getPhysicalDevice()->getProperties().getLimits().getMaxPerStageDescriptorStorageImages();
-		tBuiltInResourcePtr->maxVertexOutputComponents = device->getPhysicalDevice()->getProperties().getLimits().getMaxVertexOutputComponents();
-		tBuiltInResourcePtr->maxVertexOutputVectors = device->getPhysicalDevice()->getProperties().getLimits().getMaxVertexOutputComponents() / 4;
-		tBuiltInResourcePtr->maxViewports = device->getPhysicalDevice()->getProperties().getLimits().getMaxViewports();
-		tBuiltInResourcePtr->minProgramTexelOffset = device->getPhysicalDevice()->getProperties().getLimits().getMinTexelOffset();
+			static_cast<int>(std::max(pvr::utils::getNumSamplesFromSampleCountFlags(device->getPhysicalDevice()->getProperties().getLimits().getStorageImageSampleCounts()),
+				pvr::utils::getNumSamplesFromSampleCountFlags(device->getPhysicalDevice()->getProperties().getLimits().getSampledImageIntegerSampleCounts())));
+		tBuiltInResourcePtr->maxTessControlImageUniforms = static_cast<int>(device->getPhysicalDevice()->getProperties().getLimits().getMaxPerStageDescriptorStorageImages());
+		tBuiltInResourcePtr->maxTessControlInputComponents =
+			static_cast<int>(device->getPhysicalDevice()->getProperties().getLimits().getMaxTessellationControlPerVertexInputComponents());
+		tBuiltInResourcePtr->maxTessControlOutputComponents =
+			static_cast<int>(device->getPhysicalDevice()->getProperties().getLimits().getMaxTessellationControlPerVertexOutputComponents());
+		tBuiltInResourcePtr->maxTessControlTotalOutputComponents =
+			static_cast<int>(device->getPhysicalDevice()->getProperties().getLimits().getMaxTessellationControlTotalOutputComponents());
+		tBuiltInResourcePtr->maxTessEvaluationImageUniforms = static_cast<int>(device->getPhysicalDevice()->getProperties().getLimits().getMaxPerStageDescriptorStorageImages());
+		tBuiltInResourcePtr->maxTessEvaluationInputComponents =
+			static_cast<int>(device->getPhysicalDevice()->getProperties().getLimits().getMaxTessellationEvaluationInputComponents());
+		tBuiltInResourcePtr->maxTessEvaluationOutputComponents =
+			static_cast<int>(device->getPhysicalDevice()->getProperties().getLimits().getMaxTessellationEvaluationOutputComponents());
+		tBuiltInResourcePtr->maxTessGenLevel = static_cast<int>(device->getPhysicalDevice()->getProperties().getLimits().getMaxTessellationGenerationLevel());
+		tBuiltInResourcePtr->maxTessPatchComponents = static_cast<int>(device->getPhysicalDevice()->getProperties().getLimits().getMaxTessellationPatchSize());
+		tBuiltInResourcePtr->maxVertexAttribs = static_cast<int>(device->getPhysicalDevice()->getProperties().getLimits().getMaxVertexInputAttributes());
+		tBuiltInResourcePtr->maxVertexImageUniforms = static_cast<int>(device->getPhysicalDevice()->getProperties().getLimits().getMaxPerStageDescriptorStorageImages());
+		tBuiltInResourcePtr->maxVertexOutputComponents = static_cast<int>(device->getPhysicalDevice()->getProperties().getLimits().getMaxVertexOutputComponents());
+		tBuiltInResourcePtr->maxVertexOutputVectors = static_cast<int>(device->getPhysicalDevice()->getProperties().getLimits().getMaxVertexOutputComponents() / 4);
+		tBuiltInResourcePtr->maxViewports = static_cast<int>(device->getPhysicalDevice()->getProperties().getLimits().getMaxViewports());
+		tBuiltInResourcePtr->minProgramTexelOffset = static_cast<int>(device->getPhysicalDevice()->getProperties().getLimits().getMinTexelOffset());
 
 		if (device->getEnabledExtensionTable().extTransformFeedbackEnabled)
 		{
-			tBuiltInResourcePtr->maxTransformFeedbackBuffers = device->getTransformFeedbackProperties().getMaxTransformFeedbackBuffers();
-			tBuiltInResourcePtr->maxTransformFeedbackInterleavedComponents = device->getTransformFeedbackProperties().getMaxTransformFeedbackBufferDataSize() / 4;
+			tBuiltInResourcePtr->maxTransformFeedbackBuffers = static_cast<int>(device->getTransformFeedbackProperties().getMaxTransformFeedbackBuffers());
+			tBuiltInResourcePtr->maxTransformFeedbackInterleavedComponents = static_cast<int>(device->getTransformFeedbackProperties().getMaxTransformFeedbackBufferDataSize() / 4);
 		}
 	}
 };
@@ -205,26 +204,13 @@ EShLanguage getCompilerLanguageShaderType(pvrvk::ShaderStageFlags shaderStageFla
 	EShLanguage glslShaderType;
 	switch (shaderStageFlags)
 	{
-	case pvrvk::ShaderStageFlags::e_VERTEX_BIT:
-		glslShaderType = EShLanguage::EShLangVertex;
-		break;
-	case pvrvk::ShaderStageFlags::e_FRAGMENT_BIT:
-		glslShaderType = EShLanguage::EShLangFragment;
-		break;
-	case pvrvk::ShaderStageFlags::e_COMPUTE_BIT:
-		glslShaderType = EShLanguage::EShLangCompute;
-		break;
-	case pvrvk::ShaderStageFlags::e_GEOMETRY_BIT:
-		glslShaderType = EShLanguage::EShLangGeometry;
-		break;
-	case pvrvk::ShaderStageFlags::e_TESSELLATION_CONTROL_BIT:
-		glslShaderType = EShLanguage::EShLangTessControl;
-		break;
-	case pvrvk::ShaderStageFlags::e_TESSELLATION_EVALUATION_BIT:
-		glslShaderType = EShLanguage::EShLangTessEvaluation;
-		break;
-	default:
-		throw InvalidOperationError("getGlslShaderType: Unknown shader type requested.");
+	case pvrvk::ShaderStageFlags::e_VERTEX_BIT: glslShaderType = EShLanguage::EShLangVertex; break;
+	case pvrvk::ShaderStageFlags::e_FRAGMENT_BIT: glslShaderType = EShLanguage::EShLangFragment; break;
+	case pvrvk::ShaderStageFlags::e_COMPUTE_BIT: glslShaderType = EShLanguage::EShLangCompute; break;
+	case pvrvk::ShaderStageFlags::e_GEOMETRY_BIT: glslShaderType = EShLanguage::EShLangGeometry; break;
+	case pvrvk::ShaderStageFlags::e_TESSELLATION_CONTROL_BIT: glslShaderType = EShLanguage::EShLangTessControl; break;
+	case pvrvk::ShaderStageFlags::e_TESSELLATION_EVALUATION_BIT: glslShaderType = EShLanguage::EShLangTessEvaluation; break;
+	default: throw InvalidOperationError("getGlslShaderType: Unknown shader type requested.");
 	}
 
 	return glslShaderType;
@@ -246,8 +232,8 @@ pvrvk::ShaderModule createShaderModule(pvrvk::Device& device, std::string& shade
 
 	// Determine the EShLanguage shader type
 	const EShLanguage glslangShaderStage = getCompilerLanguageShaderType(shaderStageFlags);
-	std::unique_ptr<glslang::TProgram> glslangProgramPtr = std::unique_ptr<glslang::TProgram>(new glslang::TProgram());
-	std::unique_ptr<glslang::TShader> glslangShaderPtr = std::unique_ptr<glslang::TShader>(new glslang::TShader(glslangShaderStage));
+	std::unique_ptr<glslang::TProgram> glslangProgramPtr = std::make_unique<glslang::TProgram>();
+	std::unique_ptr<glslang::TShader> glslangShaderPtr = std::make_unique<glslang::TShader>(glslangShaderStage);
 
 	// Determine whether a version string is present
 	std::string::size_type versionBegin = shaderSource.find("#version");
@@ -287,7 +273,7 @@ pvrvk::ShaderModule createShaderModule(pvrvk::Device& device, std::string& shade
 	uint32_t minor = VK_VERSION_MINOR(apiVersion);
 	glslang::EShTargetClientVersion vulkanClientVersion = glslang::EShTargetVulkan_1_0;
 	glslang::EShTargetLanguageVersion targetSpirvVersion = glslang::EShTargetSpv_1_0;
-	if (minor > 1)
+	if (minor >= 1)
 	{
 		vulkanClientVersion = glslang::EShTargetVulkan_1_1;
 		// Vulkan 1.1 implementations must support SPIR-V 1.3
@@ -327,10 +313,7 @@ pvrvk::ShaderModule createShaderModule(pvrvk::Device& device, std::string& shade
 	// Retrieve the intermediate representation of the glslang program
 	glslang::TIntermediate* intermediatePtr = glslangProgramPtr->getIntermediate(glslangShaderStage);
 
-	if (intermediatePtr == nullptr)
-	{
-		throw pvrvk::ErrorUnknown("pvr::utils::createShaderModule Unable to retrieve intermediate representation of the glslang program");
-	}
+	if (intermediatePtr == nullptr) { throw pvrvk::ErrorUnknown("pvr::utils::createShaderModule Unable to retrieve intermediate representation of the glslang program"); }
 
 	// Convert the intermediate representation to a SPIR-V blob
 	std::vector<unsigned int> spirvBlob;
@@ -339,14 +322,10 @@ pvrvk::ShaderModule createShaderModule(pvrvk::Device& device, std::string& shade
 	glslang::GlslangToSpv(*intermediatePtr, spirvBlob, &logger, &spvOptions);
 
 	if (!spirvBlob.size())
-	{
-		throw pvrvk::ErrorUnknown("pvr::utils::createShaderModule Unable to retrieve spirv blob from the intermediate representation of the glslang program");
-	}
+	{ throw pvrvk::ErrorUnknown("pvr::utils::createShaderModule Unable to retrieve spirv blob from the intermediate representation of the glslang program"); }
 
 	if (logger.getAllMessages().length() > 0)
-	{
-		throw pvrvk::ErrorUnknown(pvr::strings::createFormatted("pvr::utils::createShaderModule GlslangToSpv failed. Error log is: %s", logger.getAllMessages().c_str()).c_str());
-	}
+	{ throw pvrvk::ErrorUnknown(pvr::strings::createFormatted("pvr::utils::createShaderModule GlslangToSpv failed. Error log is: %s", logger.getAllMessages().c_str()).c_str()); }
 
 	// Create the shader module using the spirv blob
 	pvrvk::ShaderModuleCreateInfo createInfo;
@@ -359,7 +338,6 @@ pvrvk::ShaderModule createShaderModule(pvrvk::Device& device, std::string& shade
 pvrvk::ShaderModule createShaderModule(pvrvk::Device& device, const Stream& shaderStream, pvrvk::ShaderStageFlags shaderStageFlags, pvrvk::ShaderModuleCreateFlags flags,
 	const char* const* defines, uint32_t numDefines)
 {
-	shaderStream.open();
 	std::string shaderSource;
 	shaderStream.readIntoString(shaderSource);
 

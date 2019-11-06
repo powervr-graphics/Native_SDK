@@ -35,39 +35,13 @@ struct UboData
 	mat4 uv;
 	vec4 color;
 	bool alphaMode;
-
-	static const std::pair<StringHash, GpuDatatypes> EntryNames[4];
-	enum Entry
-	{
-		MVP,
-		UV,
-		Color,
-		AlphaMode,
-		Count
-	};
 };
 
-const std::pair<StringHash, GpuDatatypes> UboData::EntryNames[] = {
-	std::pair<StringHash, GpuDatatypes>("mvp", GpuDatatypes::mat4x4),
-	std::pair<StringHash, GpuDatatypes>("uv", GpuDatatypes::mat4x4),
-	std::pair<StringHash, GpuDatatypes>("color", GpuDatatypes::vec4),
-	std::pair<StringHash, GpuDatatypes>("alphaMode", GpuDatatypes::Integer),
-};
+Sprite_::Sprite_(UIRenderer& uiRenderer) : _color(1.f, 1.f, 1.f, 1.f), _alphaMode(false), _uiRenderer(&uiRenderer) { _boundingRect.clear(); }
 
-Sprite_::Sprite_(UIRenderer& uiRenderer) : _color(1.f, 1.f, 1.f, 1.f), _alphaMode(false), _uiRenderer(&uiRenderer)
-{
-	_boundingRect.clear();
-}
+void Sprite_::commitUpdates() const { calculateMvp(0, glm::mat4(1.f), _uiRenderer->getScreenRotation() * _uiRenderer->getProjection(), _uiRenderer->getViewport()); }
 
-void Sprite_::commitUpdates() const
-{
-	calculateMvp(0, glm::mat4(1.f), _uiRenderer->getScreenRotation() * _uiRenderer->getProjection(), _uiRenderer->getViewport());
-}
-
-void Sprite_::render() const
-{
-	onRender(0);
-}
+void Sprite_::render() const { onRender(0); }
 
 void Image_::calculateMvp(uint64_t parentIds, glm::mat4 const& srt, const glm::mat4& viewProj, pvr::Rectanglei const& viewport) const
 {
@@ -77,32 +51,15 @@ void Image_::calculateMvp(uint64_t parentIds, glm::mat4 const& srt, const glm::m
 
 		switch (_anchor)
 		{
-		case Anchor::Center:
-			break;
-		case Anchor::TopLeft:
-			offset = vec2(-1.f, 1.f);
-			break;
-		case Anchor::TopCenter:
-			offset = vec2(0.0f, 1.f);
-			break;
-		case Anchor::TopRight:
-			offset = vec2(1.f, 1.f);
-			break;
-		case Anchor::BottomLeft:
-			offset = vec2(-1.f, -1.f);
-			break;
-		case Anchor::BottomCenter:
-			offset = vec2(0.0f, -1.f);
-			break;
-		case Anchor::BottomRight:
-			offset = vec2(1.f, -1.f);
-			break;
-		case Anchor::CenterLeft:
-			offset = vec2(-1.f, 0.0f);
-			break;
-		case Anchor::CenterRight:
-			offset = vec2(1.f, 0.0f);
-			break;
+		case Anchor::Center: break;
+		case Anchor::TopLeft: offset = vec2(-1.f, 1.f); break;
+		case Anchor::TopCenter: offset = vec2(0.0f, 1.f); break;
+		case Anchor::TopRight: offset = vec2(1.f, 1.f); break;
+		case Anchor::BottomLeft: offset = vec2(-1.f, -1.f); break;
+		case Anchor::BottomCenter: offset = vec2(0.0f, -1.f); break;
+		case Anchor::BottomRight: offset = vec2(1.f, -1.f); break;
+		case Anchor::CenterLeft: offset = vec2(-1.f, 0.0f); break;
+		case Anchor::CenterRight: offset = vec2(1.f, 0.0f); break;
 		}
 
 		memset(glm::value_ptr(_cachedMatrix), 0, sizeof(_cachedMatrix));
@@ -207,7 +164,6 @@ Image_::Image_(make_shared_enabler, UIRenderer& uiRenderer, const GLuint& textur
 {
 	if (_uiRenderer->_uiStateTracker.activeTextureUnit != GL_TEXTURE7)
 	{
-		_uiRenderer->_uiStateTracker.activeTextureUnit = GL_TEXTURE7;
 		gl::ActiveTexture(GL_TEXTURE7);
 		_uiRenderer->_uiStateTracker.activeTextureUnitChanged = true;
 		_uiRenderer->_uiStateTracker.activeTextureUnit = GL_TEXTURE7;
@@ -249,34 +205,22 @@ void Font_::loadFontData(const Texture& texture)
 		_characters.resize(_header.numCharacters);
 		found = metaDataMap.find(FontCharList);
 
-		if (found != metaDataMap.end())
-		{
-			memcpy(&_characters[0], found->second.getData(), found->second.getDataSize());
-		}
+		if (found != metaDataMap.end()) { memcpy(&_characters[0], found->second.getData(), found->second.getDataSize()); }
 
 		_yOffsets.resize(_header.numCharacters);
 		found = metaDataMap.find(FontYoffset);
 
-		if (found != metaDataMap.end())
-		{
-			memcpy(&_yOffsets[0], found->second.getData(), found->second.getDataSize());
-		}
+		if (found != metaDataMap.end()) { memcpy(&_yOffsets[0], found->second.getData(), found->second.getDataSize()); }
 
 		_charMetrics.resize(_header.numCharacters);
 		found = metaDataMap.find(FontMetrics);
 
-		if (found != metaDataMap.end())
-		{
-			memcpy(&_charMetrics[0], found->second.getData(), found->second.getDataSize());
-		}
+		if (found != metaDataMap.end()) { memcpy(&_charMetrics[0], found->second.getData(), found->second.getDataSize()); }
 
 		_rects.resize(_header.numCharacters);
 		found = metaDataMap.find(FontRects);
 
-		if (found != metaDataMap.end())
-		{
-			memcpy(&_rects[0], found->second.getData(), found->second.getDataSize());
-		}
+		if (found != metaDataMap.end()) { memcpy(&_rects[0], found->second.getData(), found->second.getDataSize()); }
 
 		// Build UVs
 		_characterUVs.resize(_header.numCharacters);
@@ -294,10 +238,7 @@ void Font_::loadFontData(const Texture& texture)
 		found = metaDataMap.find(FontKerning);
 		_kerningPairs.resize(_header.numKerningPairs);
 
-		if (found != metaDataMap.end())
-		{
-			memcpy(&_kerningPairs[0], found->second.getData(), found->second.getDataSize());
-		}
+		if (found != metaDataMap.end()) { memcpy(&_kerningPairs[0], found->second.getData(), found->second.getDataSize()); }
 	}
 }
 
@@ -305,10 +246,7 @@ uint32_t Font_::findCharacter(uint32_t character) const
 {
 	uint32_t* item = reinterpret_cast<uint32_t*>(bsearch(&character, &_characters[0], _characters.size(), sizeof(uint32_t), characterCompFunc));
 
-	if (!item)
-	{
-		return InvalidChar;
-	}
+	if (!item) { return InvalidChar; }
 
 	uint32_t index = static_cast<uint32_t>(item - &_characters[0]);
 	return index;
@@ -321,32 +259,20 @@ void Font_::applyKerning(uint32_t charA, uint32_t charB, float& offset)
 		uint64_t uiPairToSearch = (static_cast<uint64_t>(charA) << 32) | static_cast<uint64_t>(charB);
 		KerningPair* pItem = (KerningPair*)bsearch(&uiPairToSearch, &_kerningPairs[0], _kerningPairs.size(), sizeof(KerningPair), kerningCompFunc);
 
-		if (pItem)
-		{
-			offset += static_cast<float>(pItem->offset);
-		}
+		if (pItem) { offset += static_cast<float>(pItem->offset); }
 	}
 }
 
-int32_t Font_::characterCompFunc(const void* a, const void* b)
-{
-	return (*static_cast<const int32_t*>(a) - *static_cast<const int32_t*>(b));
-}
+int32_t Font_::characterCompFunc(const void* a, const void* b) { return (*static_cast<const int32_t*>(a) - *static_cast<const int32_t*>(b)); }
 
 int32_t Font_::kerningCompFunc(const void* a, const void* b)
 {
 	KerningPair* pPairA = (KerningPair*)a;
 	KerningPair* pPairB = (KerningPair*)b;
 
-	if (pPairA->pair > pPairB->pair)
-	{
-		return 1;
-	}
+	if (pPairA->pair > pPairB->pair) { return 1; }
 
-	if (pPairA->pair < pPairB->pair)
-	{
-		return -1;
-	}
+	if (pPairA->pair < pPairB->pair) { return -1; }
 
 	return 0;
 }
@@ -359,30 +285,25 @@ Font_::Font_(make_shared_enabler, UIRenderer& uiRenderer, const GLuint& tex2D, c
 	{
 		_sampler = (sampler != 0) ? sampler : uiRenderer.getSamplerBilinear();
 		gl::BindSampler(7, _sampler);
-		_uiRenderer->_uiStateTracker.sampler7 = _sampler;
+		_uiRenderer->_uiStateTracker.sampler7 = static_cast<GLint>(_sampler);
 	}
 	else
 	{
 		gl::BindTexture(GL_TEXTURE_2D, tex2D);
-		gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+		gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	}
 
 	if ((tex.getPixelFormat().getNumChannels() == 1 && tex.getPixelFormat().getChannelContent(0) == 'a') ||
 		(tex.getPixelFormat().getNumChannels() == 4 && tex.getPixelFormat().getChannelContent(3) == 'a'))
-	{
-		_alphaRenderingMode = true;
-	}
+	{ _alphaRenderingMode = true; }
 	loadFontData(tex);
 }
 
 uint32_t TextElement_::updateVertices(float fZPos, float xPos, float yPos, const std::vector<uint32_t>& text, Vertex* const pVertices) const
 {
-	if (pVertices == NULL || text.empty())
-	{
-		return 0;
-	}
+	if (pVertices == NULL || text.empty()) { return 0; }
 	_boundingRect.clear();
 	/* Nothing to update */
 
@@ -405,10 +326,7 @@ uint32_t TextElement_::updateVertices(float fZPos, float xPos, float yPos, const
 
 	for (size_t index = 0; index < numCharsInString; index++)
 	{
-		if (index > MaxLetters)
-		{
-			break;
-		}
+		if (index > MaxLetters) { break; }
 
 		// Newline
 		if (text[index] == 0x0A)
@@ -482,17 +400,12 @@ uint32_t TextElement_::updateVertices(float fZPos, float xPos, float yPos, const
 
 void TextElement_::regenerateText() const
 {
+	debugThrowOnApiError("TextElement_::regenerateText enter");
 	_utf32.clear();
-	if (_isUtf8)
-	{
-		utils::UnicodeConverter::convertUTF8ToUTF32(reinterpret_cast<const utf8*>(_textStr.c_str()), _utf32);
-	}
+	if (_isUtf8) { utils::UnicodeConverter::convertUTF8ToUTF32(reinterpret_cast<const utf8*>(_textStr.c_str()), _utf32); }
 	else
 	{
-		if (sizeof(wchar_t) == 2 && _textWStr.length())
-		{
-			utils::UnicodeConverter::convertUTF16ToUTF32((const utf16*)_textWStr.c_str(), _utf32);
-		}
+		if (sizeof(wchar_t) == 2 && _textWStr.length()) { utils::UnicodeConverter::convertUTF16ToUTF32((const utf16*)_textWStr.c_str(), _utf32); }
 		else if (_textWStr.length()) // if (sizeof(wchar_t) == 4)
 		{
 			_utf32.resize(_textWStr.size());
@@ -501,15 +414,13 @@ void TextElement_::regenerateText() const
 	}
 
 	_vertices.clear();
-	if (_vertices.size() < (_utf32.size() * 4))
-	{
-		_vertices.resize(_utf32.size() * 4);
-	}
+	if (_vertices.size() < (_utf32.size() * 4)) { _vertices.resize(_utf32.size() * 4); }
 
 	_numCachedVerts = updateVertices(0.0f, 0.f, 0.f, _utf32, _vertices.size() ? &_vertices[0] : 0);
 	assertion((_numCachedVerts % 4) == 0);
 	assertion((_numCachedVerts / 4) < MaxLetters);
 	_isTextDirty = false;
+	debugThrowOnApiError("TextElement_::regenerateText exit");
 }
 
 void TextElement_::updateVbo() const
@@ -527,10 +438,7 @@ void TextElement_::updateVbo() const
 		gl::BufferData(GL_ARRAY_BUFFER, (static_cast<uint32_t>(sizeof(Vertex) * _vertices.size())), _vertices.data(), GL_STATIC_DRAW);
 
 		// rebind previous buffer so state remains the same
-		if (_uiRenderer->_uiStateTracker.vbo != _uiRenderer->_currentState.vbo)
-		{
-			gl::BindBuffer(GL_ARRAY_BUFFER, _uiRenderer->_currentState.vbo);
-		}
+		if (_uiRenderer->_uiStateTracker.vbo != _uiRenderer->_currentState.vbo) { gl::BindBuffer(GL_ARRAY_BUFFER, _uiRenderer->_currentState.vbo); }
 	}
 	debugThrowOnApiError("TextElement_::updateVbo exit");
 }
@@ -576,33 +484,15 @@ void Text_::calculateMvp(uint64_t parentIds, glm::mat4 const& srt, const glm::ma
 
 		switch (_anchor)
 		{
-		case Anchor::Center:
-			offset = vec2(_boundingRect.center());
-			break;
-		case Anchor::TopLeft:
-			offset = vec2(_boundingRect.topLeftNear());
-			break;
-		case Anchor::TopCenter:
-			offset = vec2(_boundingRect.topCenterNear());
-			break;
-		case Anchor::TopRight:
-			offset = vec2(_boundingRect.topRightNear());
-			break;
-		case Anchor::BottomLeft:
-			offset = vec2(_boundingRect.bottomLeftNear());
-			break;
-		case Anchor::BottomCenter:
-			offset = vec2(_boundingRect.bottomCenterNear());
-			break;
-		case Anchor::BottomRight:
-			offset = vec2(_boundingRect.bottomRightNear());
-			break;
-		case Anchor::CenterLeft:
-			offset = vec2(_boundingRect.centerLeftNear());
-			break;
-		case Anchor::CenterRight:
-			offset = vec2(_boundingRect.centerRightNear());
-			break;
+		case Anchor::Center: offset = vec2(_boundingRect.center()); break;
+		case Anchor::TopLeft: offset = vec2(_boundingRect.topLeftNear()); break;
+		case Anchor::TopCenter: offset = vec2(_boundingRect.topCenterNear()); break;
+		case Anchor::TopRight: offset = vec2(_boundingRect.topRightNear()); break;
+		case Anchor::BottomLeft: offset = vec2(_boundingRect.bottomLeftNear()); break;
+		case Anchor::BottomCenter: offset = vec2(_boundingRect.bottomCenterNear()); break;
+		case Anchor::BottomRight: offset = vec2(_boundingRect.bottomRightNear()); break;
+		case Anchor::CenterLeft: offset = vec2(_boundingRect.centerLeftNear()); break;
+		case Anchor::CenterRight: offset = vec2(_boundingRect.centerRightNear()); break;
 		}
 
 		// Read the following bottom to top - this is because of how the optimised GLM functions work
@@ -719,10 +609,7 @@ TextElement_& TextElement_::setText(std::wstring&& str)
 
 MatrixGroup_::MatrixGroup_(make_shared_enabler, UIRenderer& uiRenderer, uint64_t id) : Group_(uiRenderer, id) {}
 
-void MatrixGroup_::commitUpdates() const
-{
-	calculateMvp(0, glm::mat4(1.f), _uiRenderer->getScreenRotation() * _viewProj, _uiRenderer->getViewport());
-}
+void MatrixGroup_::commitUpdates() const { calculateMvp(0, glm::mat4(1.f), _uiRenderer->getScreenRotation() * _viewProj, _uiRenderer->getViewport()); }
 
 void PixelGroup_::calculateMvp(uint64_t parentIds, const glm::mat4& srt, const glm::mat4& viewProj, pvr::Rectanglei const& viewport) const
 {
@@ -730,32 +617,15 @@ void PixelGroup_::calculateMvp(uint64_t parentIds, const glm::mat4& srt, const g
 
 	switch (_anchor)
 	{
-	case Anchor::Center:
-		break;
-	case Anchor::TopLeft:
-		offset = glm::vec2(_boundingRect.topLeftNear());
-		break;
-	case Anchor::TopCenter:
-		offset = glm::vec2(_boundingRect.topCenterNear());
-		break;
-	case Anchor::TopRight:
-		offset = glm::vec2(_boundingRect.topRightNear());
-		break;
-	case Anchor::BottomLeft:
-		offset = glm::vec2(_boundingRect.bottomLeftNear());
-		break;
-	case Anchor::BottomCenter:
-		offset = glm::vec2(_boundingRect.bottomCenterNear());
-		break;
-	case Anchor::BottomRight:
-		offset = glm::vec2(_boundingRect.bottomRightNear());
-		break;
-	case Anchor::CenterLeft:
-		offset = glm::vec2(_boundingRect.centerLeftNear());
-		break;
-	case Anchor::CenterRight:
-		offset = glm::vec2(_boundingRect.centerRightNear());
-		break;
+	case Anchor::Center: break;
+	case Anchor::TopLeft: offset = glm::vec2(_boundingRect.topLeftNear()); break;
+	case Anchor::TopCenter: offset = glm::vec2(_boundingRect.topCenterNear()); break;
+	case Anchor::TopRight: offset = glm::vec2(_boundingRect.topRightNear()); break;
+	case Anchor::BottomLeft: offset = glm::vec2(_boundingRect.bottomLeftNear()); break;
+	case Anchor::BottomCenter: offset = glm::vec2(_boundingRect.bottomCenterNear()); break;
+	case Anchor::BottomRight: offset = glm::vec2(_boundingRect.bottomRightNear()); break;
+	case Anchor::CenterLeft: offset = glm::vec2(_boundingRect.centerLeftNear()); break;
+	case Anchor::CenterRight: offset = glm::vec2(_boundingRect.centerRightNear()); break;
 	}
 
 	memset(glm::value_ptr(_cachedMatrix), 0, sizeof(_cachedMatrix));

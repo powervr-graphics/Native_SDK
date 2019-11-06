@@ -1,33 +1,56 @@
 cmake_minimum_required(VERSION 3.3)
-project (PVRPfx)
+project(PVRPfx)
 
+include(GNUInstallDirs)
+include(CMakeFindDependencyMacro)
+include(../../cmake/Functions.cmake)
+
+# PVRPfx include files
+set(PVRPfx_HEADERS
+	EffectVk.h
+	RenderManagerVk.h)
+
+# PVRPfx sources
 set(PVRPfx_SRC
-	   ${CMAKE_CURRENT_LIST_DIR}/EffectVk.cpp
-	   ${CMAKE_CURRENT_LIST_DIR}/EffectVk.h
-	   ${CMAKE_CURRENT_LIST_DIR}/RenderManagerVk.cpp
-	   ${CMAKE_CURRENT_LIST_DIR}/RenderManagerVk.h)
+	EffectVk.cpp
+	RenderManagerVk.cpp)
 
-set(PVRPfx_LINK_LIBS PowerVR_SDK PVRUtilsVk)
-	   
-get_directory_property(HAS_PARENT PARENT_DIRECTORY)
-if(HAS_PARENT AND USE_PREBUILT_DEPENDENCIES)
-add_library(PVRPfx STATIC IMPORTED GLOBAL)
+# Create the library
+add_library(PVRPfx STATIC ${PVRPfx_SRC} ${PVRPfx_HEADERS})
 
-# add the subdirectory after the add_library so that the target exists
-add_subdirectory(../.. ${CMAKE_CURRENT_BINARY_DIR}/sdk EXCLUDE_FROM_ALL)
-
-set_target_properties(PVRPfx PROPERTIES
-	IMPORTED_LOCATION_DEBUG ${FRAMEWORK_LIB_FOLDER}/${CMAKE_STATIC_LIBRARY_PREFIX}PVRPfx${CMAKE_STATIC_LIBRARY_SUFFIX}
-	IMPORTED_LOCATION_RELEASE ${FRAMEWORK_LIB_FOLDER}/${CMAKE_STATIC_LIBRARY_PREFIX}PVRPfx${CMAKE_STATIC_LIBRARY_SUFFIX}
-	INTERFACE_LINK_LIBRARIES "${PVRPfx_LINK_LIBS}")
-else()
-add_library(PVRPfx STATIC EXCLUDE_FROM_ALL ${PVRPfx_SRC})
-
-# add the subdirectory after the add_library so that the target exists
-add_subdirectory(../.. ${CMAKE_CURRENT_BINARY_DIR}/sdk EXCLUDE_FROM_ALL)
-
-target_link_libraries(PVRPfx ${PVRPfx_LINK_LIBS})
-set_target_properties(PVRPfx PROPERTIES 
-	ARCHIVE_OUTPUT_DIRECTORY ${FRAMEWORK_LIB_FOLDER}
-	LIBRARY_OUTPUT_DIRECTORY ${FRAMEWORK_LIB_FOLDER})
+if(PVR_PREBUILT_DEPENDENCIES)
+	list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/../../cmake/modules")
+	find_dependency(PVRUtilsVk MODULE REQUIRED)
+	find_dependency(pugixml MODULE REQUIRED)
 endif()
+
+apply_compile_options_to_target(PVRPfx)
+
+target_link_libraries(PVRPfx
+	PUBLIC
+		PVRUtilsVk
+	PRIVATE
+		pugixml)
+
+target_include_directories(PVRPfx 
+	PUBLIC 
+		$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../>
+		$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+
+install(TARGETS PVRPfx EXPORT PVRPfxTargets
+	ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+	RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+	INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+	OPTIONAL)
+foreach(file ${PVRPfx_HEADERS})
+	get_filename_component(dir ${file} DIRECTORY)
+	install(FILES ${file} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/PVRPfx/${dir})
+endforeach()
+#install(EXPORT PVRPfxTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/PVRPfx OPTIONAL) # Cannot install(EXPORT PVRPfxTargets...) until glslang properly exports their targets
+
+export(EXPORT PVRPfxTargets FILE "${CMAKE_CURRENT_BINARY_DIR}/PVRPfx/PVRPfxTargets.cmake")
+# build tree package config
+file(COPY cmake/PVRPfxConfig.cmake.in DESTINATION "${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/PVRPfx/" NO_SOURCE_PERMISSIONS)
+configure_file("${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/PVRPfx/PVRPfxConfig.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/PVRPfx/PVRPfxConfig.cmake" COPYONLY)
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/PVRPfx/PVRPfxTargets.cmake" DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/PVRPfx OPTIONAL)

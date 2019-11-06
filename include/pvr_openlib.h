@@ -120,28 +120,19 @@ inline pvr::lib::LIBTYPE OpenLibrary(const char* pszPath)
 	// Convert char to wchar
 	DWORD i = 0;
 
-	for (i = 0; i <= strlen(pszPath); ++i)
-	{
-		pszPathW[i] = static_cast<wchar_t>(pszPath[i]);
-	}
+	for (i = 0; i <= strlen(pszPath); ++i) { pszPathW[i] = static_cast<wchar_t>(pszPath[i]); }
 
 	pszPathW[i] = ' ';
 	pvr::lib::LIBTYPE hostLib = LoadLibraryW(pszPathW);
 #else
 	pvr::lib::LIBTYPE hostLib = LoadLibraryA(pszPath);
 #endif
-	if (!hostLib)
-	{
-		Log_Error("Could not load host library '%s'", pszPath);
-	}
+	if (!hostLib) { Log_Error("Could not load host library '%s'", pszPath); }
 	Log_Info("Host library '%s' loaded", pszPath);
 	return hostLib;
 }
 
-inline void CloseLibrary(pvr::lib::LIBTYPE hostLib)
-{
-	FreeLibrary(hostLib);
-}
+inline void CloseLibrary(pvr::lib::LIBTYPE hostLib) { FreeLibrary(hostLib); }
 
 inline void* getLibraryFunction(pvr::lib::LIBTYPE hostLib, const char* pszName)
 {
@@ -163,10 +154,7 @@ inline void* OpenFramework(const char* pszPath)
 	CFBundleRef mainBundle = CFBundleGetMainBundle();
 	CFURLRef resourceURL = CFBundleCopyPrivateFrameworksURL(mainBundle);
 	char path[PATH_MAX];
-	if (!CFURLGetFileSystemRepresentation(resourceURL, TRUE, (UInt8*)path, PATH_MAX))
-	{
-		return 0;
-	}
+	if (!CFURLGetFileSystemRepresentation(resourceURL, TRUE, (UInt8*)path, PATH_MAX)) { return 0; }
 	CFRelease(resourceURL);
 
 	{
@@ -194,10 +182,7 @@ inline void* OpenFramework(const char* pszPath)
 
 		char tmpdir[PATH_MAX];
 		size_t n = confstr(_CS_DARWIN_USER_TEMP_DIR, tmpdir, sizeof(tmpdir));
-		if ((n <= 0) || (n >= sizeof(tmpdir)))
-		{
-			strlcpy(tmpdir, getenv("TMPDIR"), sizeof(tmpdir));
-		}
+		if ((n <= 0) || (n >= sizeof(tmpdir))) { strlcpy(tmpdir, getenv("TMPDIR"), sizeof(tmpdir)); }
 
 		strcat(szTempFile, tmpdir);
 		strcat(szTempFile, "tmp.XXXXXX");
@@ -246,10 +231,7 @@ inline pvr::lib::LIBTYPE OpenLibrary(const char* pszPath)
 {
 	// An objective-C function that uses dlopen
 	pvr::lib::LIBTYPE hostLib = OpenFramework(pszPath);
-	if (!hostLib)
-	{
-		Log_Error("Could not load host library '%s'", pszPath);
-	}
+	if (!hostLib) { Log_Error("Could not load host library '%s'", pszPath); }
 	Log_Info("Host library '%s' loaded", pszPath);
 	return hostLib;
 }
@@ -281,10 +263,7 @@ inline pvr::lib::LIBTYPE OpenLibrary(const char* pszPath)
 	{
 		size_t end = LibPath.find_first_of(';', start);
 
-		if (end == std::string::npos)
-		{
-			tmp = LibPath.substr(start, LibPath.length() - start);
-		}
+		if (end == std::string::npos) { tmp = LibPath.substr(start, LibPath.length() - start); }
 		else
 		{
 			tmp = LibPath.substr(start, end - start);
@@ -302,10 +281,7 @@ inline pvr::lib::LIBTYPE OpenLibrary(const char* pszPath)
 			}
 		}
 
-		if (end == std::string::npos)
-		{
-			break;
-		}
+		if (end == std::string::npos) { break; }
 
 		start = end + 1;
 	}
@@ -325,10 +301,7 @@ inline pvr::lib::LIBTYPE OpenLibrary(const char* pszPath)
 
 #endif
 
-inline void CloseLibrary(pvr::lib::LIBTYPE hostLib)
-{
-	dlclose(hostLib);
-}
+inline void CloseLibrary(pvr::lib::LIBTYPE hostLib) { dlclose(hostLib); }
 
 inline void* getLibraryFunction(pvr::lib::LIBTYPE hostLib, const char* pszName)
 {
@@ -361,10 +334,7 @@ inline pvr::lib::LIBTYPE OpenLibrary(const char* pszPath)
 	return hostLib;
 }
 
-inline void CloseLibrary(pvr::lib::LIBTYPE hostLib)
-{
-	dlclose(hostLib);
-}
+inline void CloseLibrary(pvr::lib::LIBTYPE hostLib) { dlclose(hostLib); }
 
 inline void* getLibraryFunction(pvr::lib::LIBTYPE hostLib, const char* pszName)
 {
@@ -384,15 +354,12 @@ static std::string libraryName;
 
 static inline pvr::lib::LIBTYPE openlib(const std::string& libName)
 {
-	libraryName = libName;
 	hostLib = pvr::internal::OpenLibrary(libName.c_str());
+	libraryName = libName;
 	return hostLib;
 }
 
-static inline void closelib(pvr::lib::LIBTYPE lib)
-{
-	pvr::internal::CloseLibrary(lib);
-}
+static inline void closelib(pvr::lib::LIBTYPE lib) { pvr::internal::CloseLibrary(lib); }
 
 template<typename PtrType_>
 PtrType_ inline getLibFunction(pvr::lib::LIBTYPE hostLib, const std::string& functionName)
@@ -404,10 +371,7 @@ template<typename PtrType_>
 PtrType_ inline getLibFunctionChecked(pvr::lib::LIBTYPE hostLib, const std::string& functionName)
 {
 	PtrType_ func = getLibFunction<PtrType_>(hostLib, functionName);
-	if (!func)
-	{
-		Log_Warning("Failed to load function [%s] from library '%s'.\n", functionName.c_str(), libraryName.c_str());
-	}
+	if (!func) { Log_Warning("Failed to load function [%s] from library '%s'.\n", functionName.c_str(), libraryName.c_str()); }
 	return func;
 }
 } // namespace lib

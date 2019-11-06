@@ -1,39 +1,74 @@
 cmake_minimum_required(VERSION 3.3)
-project (PVRCamera)
+project(PVRCamera)
 
-set(PVRCamera_SRC
+include(GNUInstallDirs)
+include(CMakeFindDependencyMacro)
+include(../../cmake/CompilerFunctions.cmake)
+include(../../cmake/Functions.cmake)
+
+# PVRCamera include files
+set(PVRCamera_HEADERS
 	PVRCamera.h
-	CameraInterface.h)
+	CameraInterface.h
+	../../include/DynamicEgl.h
+	../../include/DynamicGles.h)
 
+# Add platform specific PVRCamera sources
 if(ANDROID)
 	list(APPEND PVRCamera_SRC CameraInterface_Android.cpp)
 elseif (IOS)
-		list(APPEND PVRCamera_SRC CameraInterface_iOS.mm)
+	list(APPEND PVRCamera_SRC CameraInterface_iOS.mm)
 else()
-		list(APPEND PVRCamera_SRC CameraInterface_Dummy.cpp)
+	list(APPEND PVRCamera_SRC CameraInterface_Dummy.cpp)
 endif()
 
-set(PVRCamera_LINK_LIBS PowerVR_SDK PVRCore OpenGLESPlatformInterface)
-
-get_directory_property(HAS_PARENT PARENT_DIRECTORY)
-if(HAS_PARENT AND USE_PREBUILT_DEPENDENCIES)
-add_library(PVRCamera STATIC IMPORTED GLOBAL)
-
-# add the subdirectory after the add_library so that the target exists
-add_subdirectory(../.. ${CMAKE_CURRENT_BINARY_DIR}/sdk EXCLUDE_FROM_ALL)
-
-set_target_properties(PVRCamera PROPERTIES
-	IMPORTED_LOCATION_DEBUG ${FRAMEWORK_LIB_FOLDER}/${CMAKE_STATIC_LIBRARY_PREFIX}PVRCamera${CMAKE_STATIC_LIBRARY_SUFFIX}
-	IMPORTED_LOCATION_RELEASE ${FRAMEWORK_LIB_FOLDER}/${CMAKE_STATIC_LIBRARY_PREFIX}PVRCamera${CMAKE_STATIC_LIBRARY_SUFFIX}
-	INTERFACE_LINK_LIBRARIES "${PVRCamera_LINK_LIBS}")
-else()
-add_library(PVRCamera STATIC EXCLUDE_FROM_ALL ${PVRCamera_SRC})
-
-# add the subdirectory after the add_library so that the target exists
-add_subdirectory(../.. ${CMAKE_CURRENT_BINARY_DIR}/sdk EXCLUDE_FROM_ALL)
-
-target_link_libraries(PVRCamera ${PVRCamera_LINK_LIBS})
-set_target_properties(PVRCamera PROPERTIES 
-	ARCHIVE_OUTPUT_DIRECTORY ${FRAMEWORK_LIB_FOLDER}
-	LIBRARY_OUTPUT_DIRECTORY ${FRAMEWORK_LIB_FOLDER})
+# Add platform specific PVRCamera dependencies
+if (APPLE)
+	if (IOS)
+		find_library(lib-coremedia CoreMedia)
+		find_library(lib-corevideo CoreVideo)
+		list(APPEND PVRCamera_PRIVATE_LINK_LIBS ${lib-coremedia} ${lib-corevideo})
+	endif()
 endif()
+
+# Create the library
+add_library(PVRCamera STATIC ${PVRCamera_SRC} ${PVRCamera_HEADERS})
+
+if(PVR_PREBUILT_DEPENDENCIES)
+	list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/../../cmake/modules")
+	find_dependency(PVRCore MODULE REQUIRED)
+endif()
+
+apply_compile_options_to_target(PVRCamera)
+
+target_link_libraries(PVRCamera
+	PUBLIC
+		PVRCore
+	PRIVATE
+		${PVRCamera_PRIVATE_LINK_LIBS})
+		
+set(PVRCamera_INCLUDE_DIRECTORIES 
+	${CMAKE_CURRENT_LIST_DIR}/..
+	${CMAKE_CURRENT_LIST_DIR}/../../include)
+		
+target_include_directories(PVRCamera 
+	PUBLIC 
+		"$<BUILD_INTERFACE:${PVRCamera_INCLUDE_DIRECTORIES}>"
+		$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+
+install(TARGETS PVRCamera EXPORT PVRCameraTargets
+	ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+	RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+	OPTIONAL)
+foreach(file ${PVRCamera_HEADERS})
+	get_filename_component(dir ${file} DIRECTORY)
+	install(FILES ${file} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/PVRCamera/${dir})
+endforeach()
+install(EXPORT PVRCameraTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/PVRCamera OPTIONAL)
+
+export(EXPORT PVRCameraTargets FILE "${CMAKE_CURRENT_BINARY_DIR}/PVRCamera/PVRCameraTargets.cmake")
+# build tree package config
+file(COPY cmake/PVRCameraConfig.cmake.in DESTINATION "${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/PVRCamera/" NO_SOURCE_PERMISSIONS)
+configure_file("${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/PVRCamera/PVRCameraConfig.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/PVRCamera/PVRCameraConfig.cmake" COPYONLY)
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/PVRCamera/PVRCameraTargets.cmake" DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/PVRCamera OPTIONAL)

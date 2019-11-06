@@ -10,7 +10,7 @@
 #include "PVRUtils/PVRUtilsVk.h"
 #define NAV_3D
 #include "../../common/NavDataProcess.h"
-#include "../../../external/glm/gtx/vector_angle.hpp"
+#include "glm/gtx/vector_angle.hpp"
 #include "PVRCore/math/AxisAlignedBox.h"
 #include "PVRCore/cameras/TPSCamera.h"
 namespace ColourUniforms {
@@ -103,8 +103,7 @@ struct DeviceResources
 			uint32_t l = swapchain->getSwapchainLength();
 			for (uint32_t i = 0; i < l; ++i)
 			{
-				if (fencePerFrame[i])
-					fencePerFrame[i]->wait();
+				if (fencePerFrame[i]) fencePerFrame[i]->wait();
 			}
 		}
 	}
@@ -127,10 +126,7 @@ static const float CameraMoveSpeed = 1.f;
 static const float CameraRotationSpeed = .5f;
 static const float CamRotationTime = 10000.f;
 
-inline float cameraRotationTimeInMs(float angleDeg)
-{
-	return glm::abs(angleDeg / 360.f * CamRotationTime);
-}
+inline float cameraRotationTimeInMs(float angleDeg) { return glm::abs(angleDeg / 360.f * CamRotationTime); }
 
 /*!*********************************************************************************************************************
 Class implementing the pvr::Shell functions.
@@ -152,7 +148,7 @@ private:
 	// Graphics resources - buffers, samplers, descriptors.
 	std::unique_ptr<DeviceResources> _deviceResources;
 
-	std::vector<std::vector<std::unique_ptr<TileRenderingResources> > > _tileRenderingResources;
+	std::vector<std::vector<std::unique_ptr<TileRenderingResources>>> _tileRenderingResources;
 
 	// Uniforms
 	glm::mat4 _viewProjMatrix;
@@ -190,6 +186,13 @@ private:
 	glm::vec4 _otherRoadColor;
 	glm::vec4 _parkingColor;
 	glm::vec4 _outlineColor;
+
+	uint32_t _updateText[pvrvk::FrameworkCaps::MaxSwapChains] = {
+		uint32_t(-1),
+		uint32_t(-1),
+		uint32_t(-1),
+		uint32_t(-1),
+	};
 
 	void createBuffers(pvrvk::CommandBuffer& uploadCmd);
 	bool createUbos();
@@ -261,12 +264,9 @@ pvr::Result VulkanNavigation3D::initApplication()
 	// WARNING: This should not be done lightly. This example has taken care of linear/sRGB color space conversion appropriately and has been tuned specifically
 	// for performance/color space correctness.
 
-	_OSMdata.reset(new NavDataProcess(getAssetStream(MapFile), glm::ivec2(_windowWidth, _windowHeight)));
+	_OSMdata = std::make_unique<NavDataProcess>(getAssetStream(MapFile), glm::ivec2(_windowWidth, _windowHeight));
 	pvr::Result result = _OSMdata->loadAndProcessData();
-	if (result != pvr::Result::Success)
-	{
-		return result;
-	}
+	if (result != pvr::Result::Success) { return result; }
 
 	createShadowMatrix();
 
@@ -290,13 +290,13 @@ pvr::Result VulkanNavigation3D::initApplication()
 	_parkingColor = pvr::utils::convertLRGBtoSRGB(ParkingColorLinearSpace);
 	_outlineColor = pvr::utils::convertLRGBtoSRGB(OutlineColorLinearSpace);
 
+	Log(LogLevel::Information, "Initialising Tile Data");
+	_OSMdata->initTiles();
+
 	return pvr::Result::Success;
 }
 
-inline float calculateRotateTime(float angleRad)
-{
-	return 1000.f * angleRad / glm::pi<float>() * 2.f;
-}
+inline float calculateRotateTime(float angleRad) { return 1000.f * angleRad / glm::pi<float>() * 2.f; }
 
 /*!*********************************************************************************************************************
 \return	Return Result::Success if no error occurred
@@ -305,7 +305,9 @@ Used to initialize variables that are dependent on the rendering context (e.g. t
 ***********************************************************************************************************************/
 pvr::Result VulkanNavigation3D::initView()
 {
-	_deviceResources = std::unique_ptr<DeviceResources>(new DeviceResources());
+	for (int i = 0; i < pvrvk::FrameworkCaps::MaxSwapChains; ++i) { _updateText[i] = static_cast<uint32_t>(-1); }
+
+	_deviceResources = std::make_unique<DeviceResources>();
 
 	// Create instance and retrieve compatible physical devices
 	_deviceResources->instance = pvr::utils::createInstance(this->getApplicationName());
@@ -317,7 +319,8 @@ pvr::Result VulkanNavigation3D::initView()
 	}
 
 	// Create the surface
-	_deviceResources->surface = pvr::utils::createSurface(_deviceResources->instance, _deviceResources->instance->getPhysicalDevice(0), this->getWindow(), this->getDisplay());
+	_deviceResources->surface =
+		pvr::utils::createSurface(_deviceResources->instance, _deviceResources->instance->getPhysicalDevice(0), this->getWindow(), this->getDisplay(), this->getConnection());
 
 	// Create a default set of debug utils messengers or debug callbacks using either VK_EXT_debug_utils or VK_EXT_debug_report respectively
 	_deviceResources->debugUtilsCallbacks = pvr::utils::createDebugUtilsCallbacks(_deviceResources->instance);
@@ -345,10 +348,7 @@ pvr::Result VulkanNavigation3D::initView()
 	// validate the supported swapchain image usage
 	pvrvk::ImageUsageFlags swapchainImageUsage = pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT;
 	if (pvr::utils::isImageUsageSupportedBySurface(surfaceCapabilities, pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT))
-	{
-		swapchainImageUsage |= pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT;
-	}
-
+	{ swapchainImageUsage |= pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT; }
 	pvr::Multi<pvrvk::ImageView> dsImages;
 	// create the swapchain
 	pvr::utils::createSwapchainAndDepthStencilImageAndViews(_deviceResources->device, _deviceResources->surface, getDisplayAttributes(), _deviceResources->swapchain, dsImages,
@@ -365,18 +365,11 @@ pvr::Result VulkanNavigation3D::initView()
 	_windowWidth = static_cast<uint32_t>(_deviceResources->uiRenderer.getRenderingDimX());
 	_windowHeight = static_cast<uint32_t>(_deviceResources->uiRenderer.getRenderingDimY());
 
-	Log(LogLevel::Information, "Initialising Tile Data");
-
-	_OSMdata->initTiles();
-
 	_numRows = _OSMdata->getNumRows();
 	_numCols = _OSMdata->getNumCols();
 	_tileRenderingResources.resize(_numCols);
 
-	for (uint32_t i = 0; i < _numCols; ++i)
-	{
-		_tileRenderingResources[i].resize(_numRows);
-	}
+	for (uint32_t i = 0; i < _numCols; ++i) { _tileRenderingResources[i].resize(_numRows); }
 
 	_deviceResources->uiRenderer.getDefaultTitle()->setText("Navigation3D");
 	_deviceResources->uiRenderer.getDefaultTitle()->commitUpdates();
@@ -395,18 +388,15 @@ pvr::Result VulkanNavigation3D::initView()
 	// 1 Image sampler
 	// n Uniform buffer dynamic for the transformation data, n is number of swapchains
 	// 1 Uniform buffer for shadow matrix.
-	_deviceResources->descPool =
-		_deviceResources->device->createDescriptorPool(pvrvk::DescriptorPoolCreateInfo()
-														   .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 1)
-														   .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, _deviceResources->swapchain->getSwapchainLength())
-														   .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 1));
+	_deviceResources->descPool = _deviceResources->device->createDescriptorPool(
+		pvrvk::DescriptorPoolCreateInfo()
+			.addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 1)
+			.addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, (uint16_t)_deviceResources->swapchain->getSwapchainLength())
+			.addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 1));
 
 	_deviceResources->cbos[0]->begin();
 	initTextureAndSampler(_deviceResources->cbos[0]);
-	if (!createUbos())
-	{
-		return pvr::Result::UnknownError;
-	}
+	if (!createUbos()) { return pvr::Result::UnknownError; }
 
 	// create a  text with 255 max length.
 	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
@@ -463,8 +453,8 @@ bool VulkanNavigation3D::createUbos()
 
 		_deviceResources->uboDynamic.bufferView.initDynamic(memDesc, numSwapchainLength, pvr::BufferUsageFlags::UniformBuffer, props.getLimits().getMinUniformBufferOffsetAlignment());
 
-		_deviceResources->uboDynamic.buffer = pvr::utils::createBuffer(_deviceResources->device, _deviceResources->uboDynamic.bufferView.getSize(),
-			pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
+		_deviceResources->uboDynamic.buffer = pvr::utils::createBuffer(_deviceResources->device,
+			pvrvk::BufferCreateInfo(_deviceResources->uboDynamic.bufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
 			&_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
@@ -479,10 +469,10 @@ bool VulkanNavigation3D::createUbos()
 		const VkDeviceSize bufferSize = _deviceResources->uboStatic.bufferView.getSize();
 
 		// Create the buffer from device local heap and Host visible if supported.
-		_deviceResources->uboStatic.buffer =
-			pvr::utils::createBuffer(_deviceResources->device, bufferSize, pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
-				pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
-				&_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+		_deviceResources->uboStatic.buffer = pvr::utils::createBuffer(_deviceResources->device, pvrvk::BufferCreateInfo(bufferSize, pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT),
+			pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
+			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
+			&_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
 		// Write in to the buffer
 		_deviceResources->uboStatic.bufferView.pointToMappedMemory(_deviceResources->uboStatic.buffer->getDeviceMemory()->getMappedData());
@@ -490,9 +480,7 @@ bool VulkanNavigation3D::createUbos()
 
 		// if the memory property flags used by the buffers' device memory do not contain e_HOST_COHERENT_BIT then we must flush the memory
 		if (static_cast<uint32_t>(_deviceResources->uboStatic.buffer->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
-		{
-			_deviceResources->uboStatic.buffer->getDeviceMemory()->flushRange(0, _deviceResources->uboStatic.bufferView.getSize());
-		}
+		{ _deviceResources->uboStatic.buffer->getDeviceMemory()->flushRange(0, _deviceResources->uboStatic.bufferView.getSize()); }
 	}
 
 	// Create the descriptorset layouts
@@ -560,10 +548,7 @@ void VulkanNavigation3D::initTextureAndSampler(pvrvk::CommandBuffer& uploadCmdBu
 	_deviceResources->font = _deviceResources->uiRenderer.createFont(fontTex, fontHeader, sampler);
 }
 
-inline VkDeviceSize getColorUniformSlice(ColourUniforms::ColourUniforms uniforms, uint32_t swapchain)
-{
-	return ColourUniforms::Count * swapchain + uniforms;
-}
+inline VkDeviceSize getColorUniformSlice(ColourUniforms::ColourUniforms uniforms, uint32_t swapchain) { return ColourUniforms::Count * swapchain + uniforms; }
 
 /*!*********************************************************************************************************************
 \brief	Setup uniforms used for drawing the map. Fill dynamic UBO with uniform data.
@@ -618,7 +603,7 @@ void VulkanNavigation3D::createBuffers(pvrvk::CommandBuffer& uploadCmd)
 	{
 		for (Tile& tile : tileCol)
 		{
-			_tileRenderingResources[col][row].reset(new TileRenderingResources());
+			_tileRenderingResources[col][row] = std::make_unique<TileRenderingResources>();
 
 			// Set the min and max coordinates for the tile
 			tile.screenMin = remap(tile.min, _OSMdata->getTiles()[0][0].min, _OSMdata->getTiles()[0][0].max, glm::dvec2(-5, -5), glm::dvec2(5, 5));
@@ -668,16 +653,14 @@ void VulkanNavigation3D::createBuffers(pvrvk::CommandBuffer& uploadCmd)
 
 			{
 				const pvrvk::DeviceSize vboSize = static_cast<pvrvk::DeviceSize>(tile.vertices.size() * sizeof(tile.vertices[0]));
-				tileRes->vbo = pvr::utils::createBuffer(_deviceResources->device, vboSize,
-					pvrvk::BufferUsageFlags::e_VERTEX_BUFFER_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
+				tileRes->vbo = pvr::utils::createBuffer(_deviceResources->device,
+					pvrvk::BufferCreateInfo(vboSize, pvrvk::BufferUsageFlags::e_VERTEX_BUFFER_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT),
+					pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 					pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
 					&_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
 				bool isBufferHostVisible = (tileRes->vbo->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT) != 0;
-				if (isBufferHostVisible)
-				{
-					pvr::utils::updateHostVisibleBuffer(tileRes->vbo, tile.vertices.data(), 0, vboSize, true);
-				}
+				if (isBufferHostVisible) { pvr::utils::updateHostVisibleBuffer(tileRes->vbo, tile.vertices.data(), 0, vboSize, true); }
 				else
 				{
 					pvr::utils::updateBufferUsingStagingBuffer(_deviceResources->device, tileRes->vbo, uploadCmd, tile.vertices.data(), 0, vboSize, &_deviceResources->vmaAllocator);
@@ -687,16 +670,14 @@ void VulkanNavigation3D::createBuffers(pvrvk::CommandBuffer& uploadCmd)
 			{
 				const pvrvk::DeviceSize iboSize = static_cast<pvrvk::DeviceSize>(tile.indices.size() * sizeof(tile.indices[0]));
 
-				tileRes->ibo = pvr::utils::createBuffer(_deviceResources->device, iboSize,
-					pvrvk::BufferUsageFlags::e_INDEX_BUFFER_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
+				tileRes->ibo = pvr::utils::createBuffer(_deviceResources->device,
+					pvrvk::BufferCreateInfo(iboSize, pvrvk::BufferUsageFlags::e_INDEX_BUFFER_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT),
+					pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 					pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
 					&_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
 				bool isBufferHostVisible = (tileRes->ibo->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT) != 0;
-				if (isBufferHostVisible)
-				{
-					pvr::utils::updateHostVisibleBuffer(tileRes->ibo, tile.indices.data(), 0, iboSize, true);
-				}
+				if (isBufferHostVisible) { pvr::utils::updateHostVisibleBuffer(tileRes->ibo, tile.indices.data(), 0, iboSize, true); }
 				else
 				{
 					pvr::utils::updateBufferUsingStagingBuffer(_deviceResources->device, tileRes->ibo, uploadCmd, tile.indices.data(), 0, iboSize, &_deviceResources->vmaAllocator);
@@ -968,10 +949,7 @@ pvr::Result VulkanNavigation3D::renderFrame()
 ***********************************************************************************************************************/
 void VulkanNavigation3D::updateAnimation()
 {
-	if (_OSMdata->getRouteData().size() == 0)
-	{
-		return;
-	}
+	if (_OSMdata->getRouteData().size() == 0) { return; }
 
 	static const float rotationOffset = -90.f;
 	static bool turning = false;
@@ -1030,10 +1008,7 @@ void VulkanNavigation3D::updateAnimation()
 
 			currentRotationTime += dt;
 			currentRotationTime = glm::clamp(currentRotationTime, 0.0f, rotateTime);
-			if (currentRotationTime >= rotateTime)
-			{
-				turning = false;
-			}
+			if (currentRotationTime >= rotateTime) { turning = false; }
 			else
 			{
 				turning = true;
@@ -1063,10 +1038,7 @@ void VulkanNavigation3D::updateAnimation()
 		// Reset the route.
 		camStartPosition = _OSMdata->getRouteData()[routeIndex].point;
 	}
-	if (lastRouteIndex != routeIndex)
-	{
-		_currentRoad = _OSMdata->getRouteData()[routeIndex].name;
-	}
+	if (lastRouteIndex != routeIndex) { _currentRoad = _OSMdata->getRouteData()[routeIndex].name; }
 	_viewMatrix = _camera.getViewMatrix();
 
 	animTime += dt;
@@ -1100,27 +1072,19 @@ void VulkanNavigation3D::recordPrimaryCBO(uint32_t swapchain)
 ***********************************************************************************************************************/
 void VulkanNavigation3D::updateCommandBuffer(const uint32_t swapchain)
 {
-	static uint32_t updateText[pvrvk::FrameworkCaps::MaxSwapChains] = {
-		uint32_t(-1),
-		uint32_t(-1),
-		uint32_t(-1),
-		uint32_t(-1),
-	};
 	for (uint32_t i = 0; i < _numCols; ++i)
 	{
 		for (uint32_t j = 0; j < _numRows; ++j)
 		{
 			// Only queue up commands if the tile is visible.
 			if (inFrustum(_OSMdata->getTiles()[i][j].screenMin, _OSMdata->getTiles()[i][j].screenMax))
-			{
-				_deviceResources->cbos[swapchain]->executeCommands(_tileRenderingResources[i][j]->secCbo[swapchain]);
-			}
+			{ _deviceResources->cbos[swapchain]->executeCommands(_tileRenderingResources[i][j]->secCbo[swapchain]); }
 		}
 	}
 	// Draw text elements
-	if (updateText[swapchain] != routeIndex)
+	if (_updateText[swapchain] != routeIndex)
 	{
-		updateText[swapchain] = routeIndex;
+		_updateText[swapchain] = routeIndex;
 		// Render UI elements.
 		_deviceResources->text[swapchain]->setText(_currentRoad);
 		_deviceResources->text[swapchain]->commitUpdates();
@@ -1132,10 +1096,7 @@ void VulkanNavigation3D::updateCommandBuffer(const uint32_t swapchain)
 /*!*********************************************************************************************************************
 \brief	Capture frustum planes from the current View Projection matrix.
 ***********************************************************************************************************************/
-void VulkanNavigation3D::calculateClipPlanes()
-{
-	pvr::math::getFrustumPlanes(pvr::Api::Vulkan, _viewProjMatrix, _viewFrustum);
-}
+void VulkanNavigation3D::calculateClipPlanes() { pvr::math::getFrustumPlanes(pvr::Api::Vulkan, _viewProjMatrix, _viewFrustum); }
 
 /*!*********************************************************************************************************************
 \param min The minimum co-ordinates of the bounding box.
@@ -1216,8 +1177,7 @@ bool VulkanNavigation3D::createPipelines()
 	outlineInfo.vertexInput.addInputAttribute(posAttrib);
 
 	// Building pipeline specific parameters
-	buildingInfo.vertexShader =
-		_deviceResources->device->createShaderModule(pvrvk::ShaderModuleCreateInfo(getAssetStream("PerVertexLight_VertShader.vsh.spv")->readToEnd<uint32_t>()));
+	buildingInfo.vertexShader = _deviceResources->device->createShaderModule(pvrvk::ShaderModuleCreateInfo(getAssetStream("PerVertexLight_VertShader.vsh.spv")->readToEnd<uint32_t>()));
 	buildingInfo.vertexInput.addInputAttribute(posAttrib).addInputAttribute(normalAttrib);
 
 	int32_t doGammaCorrection = 1;
@@ -1295,7 +1255,4 @@ pvr::Result VulkanNavigation3D::quitApplication()
 
 /// <summary>This function must be implemented by the user of the shell. The user should return its pvr::Shell object defining the behaviour of the application.</summary>
 /// <returns>Return a unique ptr to the demo supplied by the user.</returns>
-std::unique_ptr<pvr::Shell> pvr::newDemo()
-{
-	return std::unique_ptr<pvr::Shell>(new VulkanNavigation3D());
-}
+std::unique_ptr<pvr::Shell> pvr::newDemo() { return std::make_unique<VulkanNavigation3D>(); }

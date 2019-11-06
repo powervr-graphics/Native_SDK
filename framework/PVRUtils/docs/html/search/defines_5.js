@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['vma_5fstatic_5fvulkan_5ffunctions',['VMA_STATIC_VULKAN_FUNCTIONS',['../_memory_allocator_8h.html#a95b1c7528a1c18cffad6ec26332213a5',1,'MemoryAllocator.h']]]
+  ['win32_5flean_5fand_5fmean',['WIN32_LEAN_AND_MEAN',['../_bindings_gles_8h.html#ac7bef5d85e3dcd73eef56ad39ffc84a9',1,'BindingsGles.h']]]
 ];

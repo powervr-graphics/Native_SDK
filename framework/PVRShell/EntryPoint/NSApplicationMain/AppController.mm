@@ -19,62 +19,58 @@ const int kFPS = 60.0;
 
 - (void) mainLoop
 {
-	if(stateMachine->executeOnce() != pvr::Result::Success)
-	{		
-        [self terminateApp];
+	if(stateMachine->executeNext() != pvr::Result::Success)
+	{
+		[self terminateApp];
 	}
 }
 
 - (void) applicationDidFinishLaunching:(NSNotification *)notification
 {
 	// Parse the command-line
-    NSMutableString *cl = [[NSMutableString alloc] init];
-    NSArray *args = [[NSProcessInfo processInfo] arguments];
-    
-    for(NSUInteger i = 1;i < [args count]; ++i)
-    {
-        [cl appendString:[args objectAtIndex:i]];
-        [cl appendString:@" "];
-    }
-	
+	NSMutableString *cl = [[NSMutableString alloc] init];
+	NSArray *args = [[NSProcessInfo processInfo] arguments];
+
+	for(NSUInteger i = 1;i < [args count]; ++i)
+	{
+		[cl appendString:[args objectAtIndex:i]];
+		[cl appendString:@" "];
+	}
+
 	commandLine.set([cl UTF8String]);
 	//[cl release];
-	
+
 	stateMachine = new pvr::platform::StateMachine((__bridge pvr::OSApplication)self, commandLine, NULL);
 
 	if(!stateMachine)
 	{
 		NSLog(@"Failed to allocate stateMachine.\n");
-        [self terminateApp];
+		[self terminateApp];
 	}
-	
+
 	if(stateMachine->init() != pvr::Result::Success)
 	{
 		NSLog(@"Failed to initialize stateMachine.\n");
 		[self terminateApp];
 	}
-	
+
 	mainLoopTimer = [NSTimer scheduledTimerWithTimeInterval:(1.0 / kFPS) target:self selector:@selector(mainLoop) userInfo:nil repeats:YES];	
 }
 
 - (void) applicationWillTerminate:(NSNotification *)notification
 {
-    [mainLoopTimer invalidate];
-    mainLoopTimer = nil;
-    
-    if( stateMachine->getCurrentState() == pvr::platform::StateMachine::StateRenderScene)
-    {
-        stateMachine->executeOnce(pvr::platform::StateMachine::StateReleaseView);
-        //[self terminateApp];
-    }
-    stateMachine->execute();
-    delete stateMachine;
-    stateMachine = NULL;
+	[mainLoopTimer invalidate];
+	mainLoopTimer = nil;
+
+	stateMachine->executeDownTo(pvr::platform::StateMachine::StateInitialised);
+
+	delete stateMachine;
+	stateMachine = NULL;
 }
 
 - (void) terminateApp
 {
-    [NSApp terminate:nil];
+	[NSApp terminate:nil];
 }
 
 @end

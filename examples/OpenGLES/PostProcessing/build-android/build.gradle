@@ -2,9 +2,10 @@
 apply plugin: 'com.android.application'
 
 def hasSigningDefined = project.hasProperty('KEYSTORE_FILE') &&  project.hasProperty('KEYSTORE_PASSWORD') &&  project.hasProperty('KEY_ALIAS') && project.hasProperty('KEY_PASSWORD')
-def binOutput = project.hasProperty('BUILD_ENTIRE_SDK') ? '../../../../build-android/bin' : 'bin'
+// Get the output directory based on if the gradle command was kicked for the entire SDK or the example only
+def binOutput = gradle.ext.PVR_BINARY_OUTPUT_DIR
 // The set of framework projects on which this application is dependent
-def projectDependencies = ["PVRUtilsGles", "PVRShell"]
+def projectDependencies = ["PVRShell", "PVRUtilsGles"]
 
 // This block configures the repositories and dependencies for Gradle itself. Here we add a dependency for the Android plugin for Gradle as it provides
 // the additional instructions Gradle needs to build Android app modules
@@ -14,9 +15,9 @@ buildscript {
 		jcenter()
 	}
 
-	// Adds the Android plugin for Gradle version 3.3.0 as a classpath dependency
+	// Adds the Android plugin for Gradle version 3.5.0 as a classpath dependency
 	dependencies {
-		classpath 'com.android.tools.build:gradle:3.3.0'
+		classpath 'com.android.tools.build:gradle:3.5.0'
 	}
 }
 
@@ -37,7 +38,7 @@ android {
 		externalNativeBuild {
 			cmake {
 				cppFlags "-fexceptions"
-				arguments "-DANDROID_STL=c++_static", "-DUSE_PREBUILT_DEPENDENCIES=ON"
+				arguments "-DANDROID_STL=c++_static", "-DPVR_PREBUILT_DEPENDENCIES=ON"
 			}
 		}
 		ndk
@@ -71,6 +72,7 @@ android {
 	externalNativeBuild {
 		cmake {
 			path "../CMakeLists.txt"
+			version "3.10.2"
 		}
 	}
 
@@ -122,7 +124,7 @@ android {
 	"${project.projectDir}/../GaussianVertShader.vsh",
 	)
 	
-	// Add a task for copying our assets from "project.projectDir}/.." to the assets/ folder
+	// Add a task for copying our assets from their original location (${project.projectDir}...) to the assets/ folder for packaging
 	task copyAssetsDebug(type: Copy) {
 		from assetFiles
 		into sourceSets.main.assets.srcDirs[0]
@@ -140,10 +142,6 @@ android {
 dependencies {
 	// Dependency on local binaries
 	implementation fileTree(dir: 'libs', include: ['*.jar'])
-	// Add the dependencies to the framework to guarantee build order
-	projectDependencies.each { 
-		s-> implementation project(":${s}")
-	}
 }
 
 // For release builds ensure that signing has taken place appropriately
@@ -175,15 +173,11 @@ task copyToBinRelease(type: Copy) {
 	rename('(.*)-release.apk', '$1.apk')
 }
 
-tasks.whenTaskAdded { task -> 	
-	// Workaround library native code dependency issue in gradle
-	// This should normally be handled by the dependencies above: (implementation project(':...'))
-	// refer to https://issuetracker.google.com/issues/69616088.
+tasks.whenTaskAdded { task ->
 	// We add a dependency on all projects dependencies corresponding externalNativeBuild tasks - If these lines are removed, the dependencies are not built as they should be.
-	if (task.name == 'generateJsonModelRelease') {
-		projectDependencies.each {s -> task.dependsOn ":${s}:externalNativeBuildRelease" }
-	} else if (task.name == 'generateJsonModelDebug') {
-		projectDependencies.each {s -> task.dependsOn ":${s}:externalNativeBuildDebug" }
+	if (task.name.startsWith('generateJsonModel')) {
+		def flavor = task.name.substring('generateJsonModel'.length())
+		projectDependencies.each {s -> task.dependsOn ":${s}:externalNativeBuild${flavor}" }
 	}
 
 	// Ensure the assets folder is appropriately copied to the apk
