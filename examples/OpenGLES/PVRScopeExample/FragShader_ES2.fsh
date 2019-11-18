@@ -52,8 +52,5 @@ void main()
 		mediump vec3 specularColor = vec3(plasticSpecularIntensity) + metallicSpecularIntensity * albedo;
 		color += specularColor;
 	}
-#ifndef FRAMEBUFFER_SRGB
-	color = pow(color, vec3(0.4545454545)); // Do gamma correction
-#endif	
 	gl_FragColor = vec4(color, 1.);
 }

@@ -81,6 +81,11 @@ if(PVR_BUILD_EXAMPLES)
 	option(PVR_BUILD_OPENGLES_EXAMPLES "Build the OpenGLES PowerVR SDK Examples - PVR_BUILD_EXAMPLES must also be enabled" OFF)
 	option(PVR_BUILD_VULKAN_EXAMPLES "Build the Vulkan PowerVR SDK Examples - PVR_BUILD_EXAMPLES must also be enabled" OFF)
 	option(PVR_BUILD_OPENCL_EXAMPLES "Build the OpenCL PowerVR SDK Examples - PVR_BUILD_EXAMPLES must also be enabled" OFF)
+	option(PVR_BUILD_OPENGLES2_EXAMPLES "Only build OpenGL ES 2.0 examples - PVR_BUILD_EXAMPLES must also be enabled. Assumes PVR_BUILD_OPENGLES_EXAMPLES to ON and disables Non-OpenGL ES examples as well." OFF)
+
+	if (PVR_BUILD_OPENGLES2_EXAMPLES)
+		set(PVR_BUILD_OPENGLES_EXAMPLES ON) 
+	endif()
 
 	if(NOT PVR_BUILD_OPENGLES_EXAMPLES AND NOT PVR_BUILD_VULKAN_EXAMPLES AND NOT PVR_BUILD_OPENCL_EXAMPLES)
 		if(EXISTS ${CMAKE_CURRENT_LIST_DIR}/examples/OpenGLES/CMakeLists.txt)

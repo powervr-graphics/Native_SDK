@@ -111,7 +111,7 @@ void Queue_::present(const PresentInfo& presentInfo, Result* const results)
 	presentInfoVk.waitSemaphoreCount = presentInfo.numWaitSemaphores;
 	presentInfoVk.pResults = (VkResult*)results;
 
-	vkThrowIfFailed(getDevice()->getVkBindings().vkQueuePresentKHR(getVkHandle(), &presentInfoVk), "Error in queue present");
+	vkThrowIfError(static_cast<pvrvk::Result>(getDevice()->getVkBindings().vkQueuePresentKHR(getVkHandle(), &presentInfoVk)), "Error in queue present");
 }
 
 void Queue_::waitIdle() { vkThrowIfFailed(getDevice()->getVkBindings().vkQueueWaitIdle(getVkHandle()), "Queue::waitIdle - error in preceeding command."); }

@@ -158,7 +158,8 @@ pvr::Result OpenGLESIntroducingPVRUtils::initView()
 
 	pvr::utils::appendSingleBuffersFromModel(*_scene, _deviceResources->vbos, _deviceResources->ibos);
 
-	_deviceResources->uiRenderer.init(getWidth(), getHeight(), isFullScreen(), getBackBufferColorspace() == pvr::ColorSpace::sRGB);
+	_deviceResources->uiRenderer.init(
+		getWidth(), getHeight(), isFullScreen(), (_deviceResources->context->getApiVersion() == pvr::Api::OpenGLES2) || (getBackBufferColorspace() == pvr::ColorSpace::sRGB));
 	_deviceResources->uiRenderer.getDefaultTitle()->setText("IntroducingPVRUtils");
 	_deviceResources->uiRenderer.getDefaultTitle()->commitUpdates();
 
@@ -176,7 +177,8 @@ pvr::Result OpenGLESIntroducingPVRUtils::initView()
 	{
 		// Gamma correct the clear color
 		_clearColor = pvr::utils::convertLRGBtoSRGB(clearColorLinearSpace);
-		numDefines = 0;
+		// However, OpenGL ES2 should not be gamma corrected because the textures will unfortunately not be correctly read in linear values
+		if (_deviceResources->context->getApiVersion() > pvr::Api::OpenGLES2) { numDefines = 0; }
 	}
 
 	GLuint program = _deviceResources->program = pvr::utils::createShaderProgram(*this, VertexShaderFile, FragmentShaderFile, attribs, attribIndices, 3, defines, numDefines);
