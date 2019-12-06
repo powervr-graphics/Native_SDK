@@ -12,7 +12,7 @@
 #include "PVRVk/QueueVk.h"
 
 ParticleSystemGPU::ParticleSystemGPU(pvr::Shell& assetLoader)
-	: computeShaderSrcFile("ParticleSolver.csh"), gravity(0.0f), numParticles(0), workgroupSize(32), numSpheres(0), assetProvider(assetLoader)
+	: computeShaderSrcFile("ParticleSolver.csh"), gravity(0.0f), numParticles(0), workgroupSize(32), assetProvider(assetLoader)
 {
 	memset(&particleConfigData, 0, sizeof(ParticleConfig));
 }
@@ -217,7 +217,7 @@ void ParticleSystemGPU::setGravity(const glm::vec3& g)
 
 void ParticleSystemGPU::setCollisionSpheres(const std::vector<Sphere> spheres)
 {
-	collisonSpheresUboBufferView.init(SphereViewMapping);
+	collisonSpheresUboBufferView.init(pvr::utils::StructuredMemoryDescription("SphereBuffer", 1, { { "SphereArray", 8, pvr::GpuDatatypes::vec4 } }));
 
 	collisonSpheresUbo = pvr::utils::createBuffer(device, pvrvk::BufferCreateInfo(collisonSpheresUboBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT),
 		pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
@@ -225,7 +225,7 @@ void ParticleSystemGPU::setCollisionSpheres(const std::vector<Sphere> spheres)
 		pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
 	collisonSpheresUboBufferView.pointToMappedMemory(collisonSpheresUbo->getDeviceMemory()->getMappedData());
-	for (uint32_t i = 0; i < numSpheres; ++i)
+	for (uint32_t i = 0; i < spheres.size(); ++i)
 	{ collisonSpheresUboBufferView.getElement(SphereViewElements::PositionRadius, i).setValue(glm::vec4(spheres[i].vPosition, spheres[i].fRadius)); }
 }
 

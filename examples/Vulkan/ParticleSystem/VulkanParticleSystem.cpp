@@ -201,9 +201,10 @@ private:
 	glm::mat3 _viewIT;
 	glm::vec3 _lightPos;
 	uint32_t _frameId;
+	float _angle;
 
 public:
-	VulkanParticleSystem() : _isCameraPaused(0) {}
+	VulkanParticleSystem() : _isCameraPaused(0), _angle(0.f) {}
 
 	virtual pvr::Result initApplication();
 	virtual pvr::Result initView();
@@ -233,8 +234,7 @@ void VulkanParticleSystem::eventMappedInput(pvr::SimplifiedInput key)
 {
 	switch (key)
 	{
-	case pvr::SimplifiedInput::Left:
-	{
+	case pvr::SimplifiedInput::Left: {
 		_deviceResources->computeQueue->waitIdle(); // wait for the queue to finish and update all the compute commandbuffers
 		uint32_t numParticles = _deviceResources->particleSystemGPU.getNumberOfParticles();
 		if (numParticles / 2 >= Configuration::MinNoParticles)
@@ -245,8 +245,7 @@ void VulkanParticleSystem::eventMappedInput(pvr::SimplifiedInput key)
 		}
 	}
 	break;
-	case pvr::SimplifiedInput::Right:
-	{
+	case pvr::SimplifiedInput::Right: {
 		_deviceResources->computeQueue->waitIdle(); // wait for the queue to finish and to update all the compute commandbuffers
 		uint32_t numParticles = _deviceResources->particleSystemGPU.getNumberOfParticles();
 		if (numParticles * 2 <= Configuration::MaxNoParticles)
@@ -703,7 +702,7 @@ pvr::Result VulkanParticleSystem::renderFrame()
 	_deviceResources->perFrameResourcesFences[swapchainIndex]->wait();
 	_deviceResources->perFrameResourcesFences[swapchainIndex]->reset();
 
-	if (!_isCameraPaused) { updateCamera(); }
+	updateCamera();
 
 	// Update scene resources
 	updateParticleBuffers();
@@ -953,9 +952,11 @@ void VulkanParticleSystem::recordDrawFloorCommandBuffer(uint32_t swapchainIndex)
 /// <summary>Updates the camera state.</summary>
 void VulkanParticleSystem::updateCamera()
 {
-	static float angle = 0;
-	angle += getFrameTime() / 5000.0f;
-	glm::vec3 vFrom = glm::vec3(sinf(angle) * 50.0f, 30.0f, cosf(angle) * 50.0f);
+	if (!_isCameraPaused) { _angle += getFrameTime() / 5000.0f; }
+	{
+		_angle += (getFrameTime() / 500.f) * (isKeyPressed(pvr::Keys::D) - isKeyPressed(pvr::Keys::A));
+	}
+	glm::vec3 vFrom = glm::vec3(sinf(_angle) * 50.0f, 30.0f, cosf(_angle) * 50.0f);
 
 	_viewMatrix = glm::lookAt(vFrom, glm::vec3(0.0f, 5.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	_viewIT = glm::inverseTranspose(glm::mat3(_viewMatrix));

@@ -122,7 +122,7 @@ static const char* MapFile = "map.osm";
 static const char* FontFile = "font.pvr";
 
 // Camera Settings
-static const float CameraMoveSpeed = 1.f;
+static const float CameraMoveSpeed = 2.f;
 static const float CameraRotationSpeed = .5f;
 static const float CamRotationTime = 10000.f;
 

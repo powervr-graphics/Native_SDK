@@ -70,13 +70,13 @@ Dependencies
 
 The PowerVR SDK has a number of third-party dependencies, each of which may have their own license:
 
-- [glm](https://github.com/g-truc/glm): OpenGL Mathematics
-- [pugixml](https://github.com/zeux/pugixml): Light-weight, simple and fast XML parser for C++ with XPath support
-- [concurrentqueue](https://github.com/cameron314/concurrentqueue): A fast multi-producer, multi-consumer lock-free concurrent queue for C++11
-- [glslang](https://github.com/KhronosGroup/glslang): Shader front end and validator
-- [tinygltf](https://github.com/syoyo/tinygltf): Header only C++11 tiny glTF 2.0 library
-- [vma](https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator): Vulkan Memory Allocator
-- [vulkan](https://github.com/KhronosGroup/Vulkan-Docs): Sources for the formal documentation of the Vulkan API
+- `glm <https://github.com/g-truc/glm>`_: OpenGL Mathematics
+- `pugixml <https://github.com/zeux/pugixml>`_: Light-weight, simple and fast XML parser for C++ with XPath support
+- `concurrentqueue <https://github.com/cameron314/concurrentqueue>`_: A fast multi-producer, multi-consumer lock-free concurrent queue for C++11
+- `glslang <https://github.com/KhronosGroup/glslang>`_: Shader front end and validator
+- `tinygltf <https://github.com/syoyo/tinygltf>`_: Header only C++11 tiny glTF 2.0 library
+- `vma <https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator>`_: Vulkan Memory Allocator
+- `vulkan <https://github.com/KhronosGroup/Vulkan-Docs>`_: Sources for the formal documentation of the Vulkan API
 
 Release notes
 -------------

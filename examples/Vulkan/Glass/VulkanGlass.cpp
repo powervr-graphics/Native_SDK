@@ -1235,8 +1235,6 @@ void VulkanGlass::eventMappedInput(pvr::SimplifiedInput action)
 		_deviceResources->device->waitIdle(); // make sure the command buffer is finished before re-recording
 		recordCommands();
 		break;
-	case pvr::SimplifiedInput::Action2: forceReleaseInitView(); break;
-	case pvr::SimplifiedInput::Action3: forceReleaseInitWindow(); break;
 	case pvr::SimplifiedInput::ActionClose: exitShell(); break;
 	default: break;
 	}

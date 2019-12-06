@@ -123,6 +123,7 @@ pvr::Result OpenGLESIntroducingPVRCamera::releaseView()
 	// Release UIRenderer resources
 	_uiRenderer.release();
 	if (_program) gl::DeleteProgram(_program);
+	_context.reset();
 	return pvr::Result::Success;
 }
 

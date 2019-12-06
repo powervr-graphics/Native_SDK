@@ -1428,7 +1428,7 @@ void OpenGLESDeferredShading::createDirectionalLightBuffers()
 void OpenGLESDeferredShading::bindVertexSpecification(const pvr::assets::Mesh& mesh, const pvr::utils::VertexBindings_Name* const vertexBindingsName,
 	const uint32_t numVertexBindings, pvr::utils::VertexConfiguration& vertexConfiguration, GLuint& vao, GLuint& vbo, GLuint& ibo)
 {
-	vertexConfiguration = pvr::utils::createInputAssemblyFromMesh(mesh, vertexBindingsName, numVertexBindings);
+	vertexConfiguration = pvr::utils::createInputAssemblyFromMesh(mesh, vertexBindingsName, (uint16_t)numVertexBindings);
 
 	gl::GenVertexArrays(1, &vao);
 	gl::BindVertexArray(vao);
@@ -1516,8 +1516,7 @@ void OpenGLESDeferredShading::initialiseStaticLightProperties()
 		const pvr::assets::Light& light = _mainScene->getLight(lightNode.getObjectId());
 		switch (light.getType())
 		{
-		case pvr::assets::Light::Point:
-		{
+		case pvr::assets::Light::Point: {
 			if (pointLight >= PointLightConfiguration::MaxScenePointLights) { continue; }
 
 			// POINT LIGHT GEOMETRY : The spheres that will be used for the stencil pass
@@ -1534,8 +1533,7 @@ void OpenGLESDeferredShading::initialiseStaticLightProperties()
 			++pointLight;
 		}
 		break;
-		case pvr::assets::Light::Directional:
-		{
+		case pvr::assets::Light::Directional: {
 			pass.directionalLightPass.lightProperties[directionalLight].lightIntensity = glm::vec4(light.getColor(), 1.0f) * DirectionalLightConfiguration::DirectionalLightIntensity;
 			++directionalLight;
 		}
@@ -1661,8 +1659,7 @@ void OpenGLESDeferredShading::updateDynamicSceneData()
 		const pvr::assets::Light& light = _mainScene->getLight(lightNode.getObjectId());
 		switch (light.getType())
 		{
-		case pvr::assets::Light::Point:
-		{
+		case pvr::assets::Light::Point: {
 			if (pointLight >= PointLightConfiguration::MaxScenePointLights) { continue; }
 
 			const glm::mat4& transMtx = _mainScene->getWorldMatrix(_mainScene->getNodeIdFromLightNodeId(i));
@@ -1681,8 +1678,7 @@ void OpenGLESDeferredShading::updateDynamicSceneData()
 			++pointLight;
 		}
 		break;
-		case pvr::assets::Light::Directional:
-		{
+		case pvr::assets::Light::Directional: {
 			const glm::mat4& transMtx = _mainScene->getWorldMatrix(_mainScene->getNodeIdFromLightNodeId(i));
 			pass.directionalLightPass.lightProperties[directionalLight].viewSpaceLightDirection = _viewMatrix * transMtx * glm::vec4(0.f, -1.f, 0.f, 0.f);
 			++directionalLight;

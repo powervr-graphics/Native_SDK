@@ -44,8 +44,6 @@ struct Sphere
 	Sphere(const glm::vec3& pos, float radius) : vPosition(pos), fRadius(radius) {}
 };
 
-const pvr::utils::StructuredMemoryDescription SphereViewMapping("SphereBuffer", 1, { { "SphereArray", 8, pvr::GpuDatatypes::vec4 } });
-
 namespace SphereViewElements {
 enum Enum
 {
@@ -192,7 +190,6 @@ private:
 	uint32_t numParticles;
 	uint32_t maxParticles;
 	uint32_t workgroupSize;
-	uint32_t numSpheres;
 	uint32_t particleSystemBufferSliceSize;
 	uint32_t currentResourceIndex;
 	uint32_t previousResourceIndex;

@@ -242,8 +242,7 @@ void VulkanGameOfLife::generateBoardData()
 	{
 	// Generates a board with random data.
 	default:
-	case BoardConfig::Random:
-	{
+	case BoardConfig::Random: {
 		// Randomly Fill the board to create a starting state for simulation.
 		for (unsigned int i = 0; i < board.size(); ++i)
 		{
@@ -257,17 +256,13 @@ void VulkanGameOfLife::generateBoardData()
 	break;
 
 	// Generates a Checkerboard.
-	case BoardConfig::Checkerboard:
-	{
+	case BoardConfig::Checkerboard: {
 		int checkerSize = 5;
-		int checkerSize2 = checkerSize * 2;
 		// This function will generate a checkered texture on the fly to be used on the triangle that is going
 		// to be rendered and rotated on screen.
 		for (unsigned int i = 0; i < board.size(); ++i)
 		{
 			int row = i / boardWidth;
-
-			bool isBlack = false;
 
 			bool rowblack = (row / checkerSize) % 2;
 			bool colblack = ((i % boardWidth) / checkerSize) % 2;
@@ -280,13 +275,12 @@ void VulkanGameOfLife::generateBoardData()
 	break;
 
 	// Generates a board with Heavyweight spaceship at random positions.
-	case BoardConfig::SpaceShips:
-	{
+	case BoardConfig::SpaceShips: {
 		memset(board.data(), 0, board.size());
 
 		for (int i = 0; i < 200 / zoomRatio; ++i)
 		{
-			setBoardBitOffset(pvr::randomrange(0, boardWidth), pvr::randomrange(0, boardHeight));
+			setBoardBitOffset(pvr::randomrange(0.f, (float)boardWidth), pvr::randomrange(0.f, (float)boardHeight));
 
 			if (rand() % 2 == 0)
 			{ // HWSS
@@ -675,7 +669,6 @@ void VulkanGameOfLife::submitGraphicsWork(pvrvk::CommandBuffer submitCmdBuffer)
 pvr::Result VulkanGameOfLife::initApplication()
 {
 	// Setting VsyncMode to FIFO
-	setVsyncMode(pvr::VsyncMode::Mailbox);
 	setBackBufferColorspace(pvr::ColorSpace::lRGB);
 
 	currentFrameId = 0;

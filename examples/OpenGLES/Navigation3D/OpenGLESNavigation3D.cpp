@@ -3,7 +3,7 @@
 #define NAV_3D
 #include "../../common/NavDataProcess.h"
 #include "PVRCore/cameras/TPSCamera.h"
-const float CameraMoveSpeed = 3.f;
+const float CameraMoveSpeed = 2.f;
 static const float CamHeight = .35f;
 static uint32_t routeIndex = 0;
 const float nearClip = .1f;

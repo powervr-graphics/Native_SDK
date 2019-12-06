@@ -16,6 +16,167 @@
 
 namespace pvr {
 namespace platform {
+
+static Keys X11_To_Keycode[255] = {
+	Keys::Unknown,
+	Keys::Unknown,
+	Keys::Unknown,
+	Keys::Unknown,
+	Keys::Unknown,
+	Keys::Unknown,
+	Keys::Unknown,
+	Keys::Unknown,
+	Keys::Unknown,
+	Keys::Escape,
+
+	Keys::Key1, // 10
+	Keys::Key2,
+	Keys::Key3,
+	Keys::Key4,
+	Keys::Key5,
+	Keys::Key6,
+	Keys::Key7,
+	Keys::Key8,
+	Keys::Key9,
+	Keys::Key0,
+
+	Keys::Minus, // 20
+	Keys::Equals,
+	Keys::Backspace,
+	Keys::Tab,
+	Keys::Q,
+	Keys::W,
+	Keys::E,
+	Keys::R,
+	Keys::T,
+	Keys::Y,
+
+	Keys::U, // 30
+	Keys::I,
+	Keys::O,
+	Keys::P,
+	Keys::SquareBracketLeft,
+	Keys::SquareBracketRight,
+	Keys::Return,
+	Keys::Control,
+	Keys::A,
+	Keys::S,
+
+	Keys::D, // 40
+	Keys::F,
+	Keys::G,
+	Keys::H,
+	Keys::J,
+	Keys::K,
+	Keys::L,
+	Keys::Semicolon,
+	Keys::Quote,
+	Keys::Backquote,
+	Keys::Shift, // 50
+
+	Keys::Backslash,
+	Keys::Z,
+	Keys::X,
+	Keys::C,
+	Keys::V,
+	Keys::B,
+	Keys::N,
+	Keys::M,
+	Keys::Comma,
+
+	Keys::Period, // 60
+	Keys::Slash,
+	Keys::Shift,
+	Keys::NumMul,
+	Keys::Alt,
+	Keys::Space,
+	Keys::CapsLock,
+	Keys::F1,
+	Keys::F2,
+	Keys::F3,
+
+	Keys::F4, // 70
+	Keys::F5,
+	Keys::F6,
+	Keys::F7,
+	Keys::F8,
+	Keys::F9,
+	Keys::F10,
+	Keys::NumLock,
+	Keys::ScrollLock,
+	Keys::Num7,
+
+	Keys::Num8, // 80
+	Keys::Num9,
+	Keys::NumSub,
+	Keys::Num4,
+	Keys::Num5,
+	Keys::Num6,
+	Keys::NumAdd,
+	Keys::Num1,
+	Keys::Num2,
+	Keys::Num3,
+
+	Keys::Num0, // 90
+	Keys::NumPeriod,
+	Keys::Unknown,
+	Keys::Unknown,
+	Keys::Backslash,
+	Keys::F11,
+	Keys::F12,
+	Keys::Unknown,
+	Keys::Unknown,
+	Keys::Unknown,
+
+	Keys::Unknown, // 100
+	Keys::Unknown,
+	Keys::Unknown,
+	Keys::Unknown,
+	Keys::Return,
+	Keys::Control,
+	Keys::NumDiv,
+	Keys::PrintScreen,
+	Keys::Alt,
+	Keys::Unknown,
+
+	Keys::Home, // 110
+	Keys::Up,
+	Keys::PageUp,
+	Keys::Left,
+	Keys::Right,
+	Keys::End,
+	Keys::Down,
+	Keys::PageDown,
+	Keys::Insert,
+	Keys::Delete,
+
+	Keys::Unknown, // 120
+	Keys::Unknown,
+	Keys::Unknown,
+	Keys::Unknown,
+	Keys::Unknown,
+	Keys::Unknown,
+	Keys::Unknown,
+	Keys::Pause,
+	Keys::Unknown,
+	Keys::Unknown,
+
+	Keys::Unknown, // 130
+	Keys::Unknown,
+	Keys::Unknown,
+	Keys::SystemKey1,
+	Keys::SystemKey1,
+	Keys::SystemKey2,
+	Keys::Unknown,
+	Keys::Unknown,
+	Keys::Unknown,
+	Keys::Unknown,
+	Keys::Unknown,
+	Keys::Unknown,
+	Keys::Unknown,
+	Keys::Unknown,
+};
+
 class X11InternalOS : public InternalOS
 {
 public:
@@ -175,15 +336,6 @@ bool X11InternalOS::initializeWindow(DisplayAttributes& data)
 	return true;
 }
 
-// Key press events cannot be used directly and must be translated to a KeySym
-// This keysym can then be used to lookup the keypress using its ASCII encoding
-inline Keys X11InternalOS::getKeyCodeFromXEvent(XEvent& xEvent)
-{
-	XKeyPressedEvent* keyPressEvent = reinterpret_cast<XKeyPressedEvent*>(&xEvent);
-	KeySym keySym = XLookupKeysym(keyPressEvent, 0);
-	return getKeyFromAscii(keySym);
-}
-
 bool X11InternalOS::handleOSEvents(std::unique_ptr<Shell>& shell)
 {
 	bool result = InternalOS::handleOSEvents(shell);
@@ -212,7 +364,9 @@ bool X11InternalOS::handleOSEvents(std::unique_ptr<Shell>& shell)
 			XButtonEvent* buttonEvent = reinterpret_cast<XButtonEvent*>(&xEvent);
 			switch (buttonEvent->button)
 			{
-			case 1: { shell->onPointingDeviceDown(0);
+			case 1:
+			{
+				shell->onPointingDeviceDown(0);
 			}
 			break;
 			default: break;
@@ -224,17 +378,23 @@ bool X11InternalOS::handleOSEvents(std::unique_ptr<Shell>& shell)
 			XButtonEvent* buttonEvent = reinterpret_cast<XButtonEvent*>(&xEvent);
 			switch (buttonEvent->button)
 			{
-			case 1: { shell->onPointingDeviceUp(0);
+			case 1:
+			{
+				shell->onPointingDeviceUp(0);
 			}
 			break;
 			default: break;
 			}
 			break;
 		}
-		case KeyPress: { shell->onKeyDown(getKeyCodeFromXEvent(xEvent));
+		case KeyPress:
+		{
+			shell->onKeyDown(X11_To_Keycode[xEvent.xkey.keycode]);
 		}
 		break;
-		case KeyRelease: { shell->onKeyUp(getKeyCodeFromXEvent(xEvent));
+		case KeyRelease:
+		{
+			shell->onKeyUp(X11_To_Keycode[xEvent.xkey.keycode]);
 		}
 		break;
 		case ConfigureNotify:
@@ -263,7 +423,8 @@ void X11InternalOS::updatePointingDeviceLocation()
 	uint dummy2;
 	Window child_return, root_return;
 	if (XQueryPointer(_display, getWindow(), &root_return, &child_return, &x, &y, &dummy0, &dummy1, &dummy2))
-	{ setPointerLocation(static_cast<int16_t>(x), static_cast<int16_t>(y)); } }
+	{ setPointerLocation(static_cast<int16_t>(x), static_cast<int16_t>(y)); }
+}
 
 void X11InternalOS::releaseWindow()
 {
