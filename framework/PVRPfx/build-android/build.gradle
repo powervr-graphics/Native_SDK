@@ -29,7 +29,6 @@ android {
 	}
 }
 
-Set taskDeleted = []
 
 tasks.whenTaskAdded { task ->
 	// We add a dependency on all projects dependencies corresponding externalNativeBuild tasks
@@ -42,14 +41,13 @@ tasks.whenTaskAdded { task ->
 	// We replace these tasks with basically dependencies on the native builds to generate the native library
 	if (task.name.startsWith('assemble') || task.name.startsWith('verify')) {
 		if (task.name.startsWith('assemble')){
-			if (!taskDeleted.contains(task.name)) {
-				taskDeleted.add(task.name)
-				tasks.remove(task)
-				tasks.create(name: task.name) // For verify, this is dummy
-			
-				def flavor = task.name.substring('assemble'.length())
-				tasks["assemble${flavor}"].dependsOn = ["externalNativeBuild${flavor}"]
-			}
+			tasks['assemble'].actions.clear()
+			tasks['assemble'].dependsOn.clear()
+			task.actions.clear() // For verify, this is dummy
+			task.dependsOn.clear()
+
+			def flavor = task.name.substring('assemble'.length())
+			tasks["assemble${flavor}"].dependsOn = ["externalNativeBuild${flavor}"]
 		}
 		else{
 			task.enabled = false
