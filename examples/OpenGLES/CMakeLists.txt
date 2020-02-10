@@ -8,8 +8,6 @@ if (PVR_BUILD_OPENGLES2_EXAMPLES)
 		03_IntroducingPVRUtils
 		04_IntroducingUIRenderer
 		05_IntroducingPVRCamera
-		PVRScopeExample
-		PVRScopeRemote
 	)
 else()
 	set(EXAMPLES 
