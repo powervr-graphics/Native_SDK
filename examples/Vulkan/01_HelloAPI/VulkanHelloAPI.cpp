@@ -1407,7 +1407,7 @@ void VulkanHelloAPI::initPipeline()
 	multisamplingInfo.flags = 0;
 	multisamplingInfo.pSampleMask = nullptr;
 	multisamplingInfo.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
-	multisamplingInfo.sampleShadingEnable = VK_TRUE;
+	multisamplingInfo.sampleShadingEnable = VK_FALSE;
 	multisamplingInfo.alphaToCoverageEnable = VK_FALSE;
 	multisamplingInfo.alphaToOneEnable = VK_FALSE;
 	multisamplingInfo.minSampleShading = 0.0f;
