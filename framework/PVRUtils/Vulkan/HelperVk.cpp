@@ -1186,8 +1186,6 @@ pvrvk::Device createDeviceAndQueues(pvrvk::PhysicalDevice physicalDevice, const 
 {
 	std::vector<pvrvk::DeviceQueueCreateInfo> queueCreateInfo;
 	const std::vector<pvrvk::QueueFamilyProperties>& queueFamilyProperties = physicalDevice->getQueueFamilyProperties();
-	std::vector<uint32_t> queuesRemaining;
-	queuesRemaining.resize(queueFamilyProperties.size());
 
 	const char* graphics = "GRAPHICS ";
 	const char* compute = "COMPUTE ";
@@ -1207,38 +1205,27 @@ pvrvk::Device createDeviceAndQueues(pvrvk::PhysicalDevice physicalDevice, const 
 			((queueFamilyProperties[i].getQueueFlags() & pvrvk::QueueFlags::e_SPARSE_BINDING_BIT) != 0) ? sparse : nothing, nothing, nothing);
 	}
 
-	for (uint32_t i = 0; i < queueFamilyProperties.size(); ++i) { queuesRemaining[i] = queueFamilyProperties[i].getQueueCount(); }
-
 	std::vector<int32_t> queueIndices(queueFamilyProperties.size(), -1);
 	std::vector<float> queuePrioties;
-	std::vector<pvrvk::QueueFlags> queueFlags(queueFamilyProperties.size(), pvrvk::QueueFlags(0));
 	for (uint32_t i = 0; i < numQueueCreateInfos; ++i)
 	{
 		for (uint32_t j = 0; j < queueFamilyProperties.size(); ++j)
 		{
-			// look for the flags
-			if (((static_cast<uint32_t>(queueFamilyProperties[j].getQueueFlags()) & static_cast<uint32_t>(queueCreateInfos[i].queueFlags)) ==
-					static_cast<uint32_t>(queueCreateInfos[i].queueFlags)) &&
-				queuesRemaining[j])
+			// if requested, look for presentation support
+			if (!queueCreateInfos[i].surface || physicalDevice->getSurfaceSupport(j, queueCreateInfos[i].surface))
 			{
-				if (queueCreateInfos[i].surface) // look for presentation
+				uint32_t supportedFlags = static_cast<uint32_t>(queueFamilyProperties[j].getQueueFlags());
+				uint32_t requestedFlags = static_cast<uint32_t>(queueCreateInfos[i].queueFlags);
+
+				// look for the supported flags
+				if ((supportedFlags & requestedFlags) == requestedFlags)
 				{
-					if (physicalDevice->getSurfaceSupport(j, queueCreateInfos[i].surface))
-					{
-						outAccessInfo[i].familyId = j;
-						outAccessInfo[i].queueId = static_cast<uint32_t>(++queueIndices[j]);
-						queuePrioties.emplace_back(queueCreateInfos[i].priority);
-						queueFlags[j] |= queueCreateInfos[i].queueFlags;
-						--queuesRemaining[j];
-						break;
-					}
-				}
-				else
-				{
+					if (static_cast<uint32_t>(queueIndices[j] + 1) < queueFamilyProperties[j].getQueueCount()) { ++queueIndices[j]; }
+
 					outAccessInfo[i].familyId = j;
-					outAccessInfo[i].queueId = ++queueIndices[j];
+					outAccessInfo[i].queueId = static_cast<uint32_t>(queueIndices[j]);
 					queuePrioties.emplace_back(queueCreateInfos[i].priority);
-					--queuesRemaining[j];
+
 					break;
 				}
 			}
