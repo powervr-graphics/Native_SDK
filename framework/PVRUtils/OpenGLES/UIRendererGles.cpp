@@ -596,7 +596,7 @@ void UIRenderer::init_CreateDefaultSampler()
 		gl::GenSamplers(1, &_samplerBilinear);
 		gl::GenSamplers(1, &_samplerTrilinear);
 		debugThrowOnApiError("UIRenderer::init_CreateDefaultSampler 1.1");
-		gl::SamplerParameteri(_samplerBilinear, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+		gl::SamplerParameteri(_samplerBilinear, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		debugThrowOnApiError("UIRenderer::init_CreateDefaultSampler 1.2");
 		gl::SamplerParameteri(_samplerBilinear, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		debugThrowOnApiError("UIRenderer::init_CreateDefaultSampler 1.3");
