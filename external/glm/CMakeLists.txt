@@ -7,10 +7,10 @@ if(NOT PVR_PREBUILT_DEPENDENCIES)
 	set(external_glm_VERSION "0.9.9.4" CACHE INTERNAL "")
 
 	# Set the glm source directory
-	set(glm_SRC_DIR ${CMAKE_CURRENT_LIST_DIR}/src CACHE INTERNAL "")
+	set(glm_SRC_DIR ${CMAKE_CURRENT_BINARY_DIR}/src CACHE INTERNAL "")
 
 	# Set glm download directory - we use a downloads directory to allow us to maintain cleanliness
-	set(glm_DOWNLOAD_DIR ${CMAKE_CURRENT_LIST_DIR}/../downloads/glm_downloads CACHE INTERNAL "")
+	set(glm_DOWNLOAD_DIR ${CMAKE_CURRENT_BINARY_DIR}/downloads/glm_downloads CACHE INTERNAL "")
 
 	# Don't download if it is already present - this handles cases where internet connectivity may be limited but all packages are already available
 	if(EXISTS ${glm_DOWNLOAD_DIR}/${external_glm_VERSION}.tar.gz AND EXISTS ${glm_SRC_DIR}/CMakeLists.txt)

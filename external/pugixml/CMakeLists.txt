@@ -7,10 +7,10 @@ if(NOT PVR_PREBUILT_DEPENDENCIES)
 	set(external_pugixml_VERSION_NUMBER "1.9" CACHE INTERNAL "")
 
 	# Set the pugixml source directory
-	set(pugixml_SRC_DIR ${CMAKE_CURRENT_LIST_DIR}/src CACHE INTERNAL "")
+	set(pugixml_SRC_DIR ${CMAKE_CURRENT_BINARY_DIR}/src CACHE INTERNAL "")
 
 	# Set pugixml download directory - we use a downloads directory to allow us to maintain cleanliness
-	set(pugixml_DOWNLOAD_DIR ${CMAKE_CURRENT_LIST_DIR}/../downloads/pugixml_downloads CACHE INTERNAL "")
+	set(pugixml_DOWNLOAD_DIR ${CMAKE_CURRENT_BINARY_DIR}/downloads/pugixml_downloads CACHE INTERNAL "")
 
 	# Don't download if it is already present - this handles cases where internet connectivity may be limited but all packages are already available
 	if(EXISTS ${pugixml_DOWNLOAD_DIR}/pugixml-${external_pugixml_VERSION_NUMBER}.tar.gz AND EXISTS ${pugixml_SRC_DIR}/CMakeLists.txt)

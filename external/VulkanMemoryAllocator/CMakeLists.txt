@@ -7,10 +7,10 @@ if(NOT PVR_PREBUILT_DEPENDENCIES)
 	set(external_VulkanMemoryAllocator_VERSION "v2.2.0" CACHE INTERNAL "")
 
 	# Set the VulkanMemoryAllocator source directory
-	set(VulkanMemoryAllocator_SRC_DIR ${CMAKE_CURRENT_LIST_DIR}/src CACHE INTERNAL "")
+	set(VulkanMemoryAllocator_SRC_DIR ${CMAKE_CURRENT_BINARY_DIR}/src CACHE INTERNAL "")
 
 	# Set VulkanMemoryAllocator download directory - we use a downloads directory to allow us to maintain cleanliness
-	set(VulkanMemoryAllocator_DOWNLOAD_DIR ${CMAKE_CURRENT_LIST_DIR}/../downloads/VulkanMemoryAllocator_downloads CACHE INTERNAL "")
+	set(VulkanMemoryAllocator_DOWNLOAD_DIR ${CMAKE_CURRENT_BINARY_DIR}/downloads/VulkanMemoryAllocator_downloads CACHE INTERNAL "")
 	
 	# Don't download if it is already present - this handles cases where internet connectivity may be limited but all packages are already available
 	if(EXISTS ${VulkanMemoryAllocator_DOWNLOAD_DIR}/${external_VulkanMemoryAllocator_VERSION}.tar.gz AND EXISTS ${VulkanMemoryAllocator_SRC_DIR}/src/vk_mem_alloc.h)
@@ -28,7 +28,7 @@ if(NOT PVR_PREBUILT_DEPENDENCIES)
 		
 	target_include_directories(VulkanMemoryAllocator INTERFACE
 		$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
-		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/src>)
+		$<BUILD_INTERFACE:${VulkanMemoryAllocator_SRC_DIR}/src>)
 	
 	install(TARGETS VulkanMemoryAllocator EXPORT VulkanMemoryAllocatorTargets)
 	install(EXPORT VulkanMemoryAllocatorTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/VulkanMemoryAllocator OPTIONAL)

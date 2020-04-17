@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.3)
 
 # Set glslang download directory - we use a downloads directory to allow us to maintain cleanliness
-set(glslang_DOWNLOAD_DIR ${CMAKE_CURRENT_LIST_DIR}/../downloads/glslang_downloads CACHE INTERNAL "")
+set(glslang_DOWNLOAD_DIR ${CMAKE_CURRENT_BINARY_DIR}/downloads/glslang_downloads CACHE INTERNAL "")
 
 if(CMAKE_HOST_WIN32)
 	set(glslangValidator_PACKAGE_NAME "glslang-master-windows-x64-Release")
@@ -27,7 +27,7 @@ if(NOT PVR_PREBUILT_DEPENDENCIES)
 	set(external_glslang_VERSION "7.11.3113" CACHE STRING "The exact version of GLSLANG to download from github")
 
 	# Set the glslang source directory
-	set(glslang_SRC_DIR ${CMAKE_CURRENT_LIST_DIR}/src CACHE INTERNAL "")
+	set(glslang_SRC_DIR ${CMAKE_CURRENT_BINARY_DIR}/src CACHE INTERNAL "")
 
 	# Don't download if it is already present - this handles cases where internet connectivity may be limited but all packages are already available
 	if(EXISTS ${glslang_DOWNLOAD_DIR}/${external_glslang_VERSION}.tar.gz AND EXISTS ${glslang_SRC_DIR}/CMakeLists.txt)
