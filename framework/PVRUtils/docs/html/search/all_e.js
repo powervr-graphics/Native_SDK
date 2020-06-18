@@ -11,7 +11,6 @@ var searchData=
   ['pbrutilsgles_2eh',['PBRUtilsGles.h',['../_p_b_r_utils_gles_8h.html',1,'']]],
   ['pbrutilsvk_2ecpp',['PBRUtilsVk.cpp',['../_p_b_r_utils_vk_8cpp.html',1,'']]],
   ['pbrutilsvk_2eh',['PBRUtilsVk.h',['../_p_b_r_utils_vk_8h.html',1,'']]],
-  ['pbuffersurface',['pBufferSurface',['../structpvr_1_1platform_1_1_native_shared_platform_handles__.html#abe0974dfa45663716300eff15d69fc15',1,'pvr::platform::NativeSharedPlatformHandles_']]],
   ['pdevicememorycallbacks',['pDeviceMemoryCallbacks',['../structpvr_1_1utils_1_1vma_1_1_allocator_create_info.html#aa65f3b2a40f467ae3e9806e973f77238',1,'pvr::utils::vma::AllocatorCreateInfo']]],
   ['pfn_5fallocatedevicememoryfunction',['PFN_AllocateDeviceMemoryFunction',['../_memory_allocator_8h.html#a808c21f5d7baeed561e87547dc98b90c',1,'pvr::utils::vma']]],
   ['pfn_5ffreedevicememoryfunction',['PFN_FreeDeviceMemoryFunction',['../_memory_allocator_8h.html#acfd0e87cbf365026fbdc47ce60ccb3b8',1,'pvr::utils::vma']]],

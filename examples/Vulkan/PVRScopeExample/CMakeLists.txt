@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.3)
 project(VulkanPVRScopeExample)
-if(IOS)	
+if(IOS)
 	message("Skipping VulkanPVRScopeExample : Not supported on iOS")
 	return()
 endif()
@@ -64,7 +64,7 @@ add_assets_resource_file(VulkanPVRScopeExample)
 # Apply SDK example specific compile and linker options
 apply_example_compile_options_to_target(VulkanPVRScopeExample)
 
-target_link_libraries(VulkanPVRScopeExample
+target_link_libraries(VulkanPVRScopeExample PUBLIC
 	PVRShell
 	PVRUtilsVk
 	PVRScopeDeveloper

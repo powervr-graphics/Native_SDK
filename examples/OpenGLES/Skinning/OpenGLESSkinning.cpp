@@ -1,9 +1,9 @@
-/*!*********************************************************************************************************************
-\File         OpenGLESSkinning.cpp
-\Author       PowerVR by Imagination, Developer Technology Team
-\Copyright    Copyright (c) Imagination Technologies Limited.
-\brief      Shows how to perform skinning combined with Dot3 (normal-mapped) lighting
-***********************************************************************************************************************/
+/*!
+\brief Shows how to perform skinning combined with Dot3 (normal-mapped) lighting
+\file OpenGLESSkinning.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #include "PVRShell/PVRShell.h"
 #include "PVRUtils/PVRUtilsGles.h"
 #include "PVRUtils/OpenGLES/ModelGles.h"
@@ -53,9 +53,7 @@ enum class DefaultUniforms : uint32_t
 	Count
 };
 
-/*!*********************************************************************************************************************
-Class implementing the Shell functions.
-***********************************************************************************************************************/
+/// <summary>Class implementing the Shell functions.</summary>
 class OpenGLESSkinning : public pvr::Shell
 {
 	// Put all API managed objects in a struct so that we can one-line free them...
@@ -128,10 +126,8 @@ public:
 	void eventMappedInput(pvr::SimplifiedInput action);
 };
 
-/*!*********************************************************************************************************************
-\brief  handle the input event
-\param  action input actions to handle
-***********************************************************************************************************************/
+/// <summary>Handle the input event.</summary>
+/// <param name="action">input actions to handle.</param>
 void OpenGLESSkinning::eventMappedInput(pvr::SimplifiedInput action)
 {
 	switch (action)
@@ -144,12 +140,10 @@ void OpenGLESSkinning::eventMappedInput(pvr::SimplifiedInput action)
 	}
 }
 
-/*!*********************************************************************************************************************
-\return Return pvr::Result::Success if no error occurred
-\brief  Code in initApplication() will be called by Shell once per run, before the rendering context is created.
-  Used to initialize variables that are not dependent on it (e.g. external modules, loading meshes, etc.)
-  If the rendering context is lost, initApplication() will not be called again.
-***********************************************************************************************************************/
+/// <summary>Code in initApplication() will be called by Shell once per run, before the rendering context is created.
+/// Used to initialize variables that are not dependent on it (e.g. external modules, loading meshes, etc.)
+/// If the rendering context is lost, initApplication() will not be called again.</summary>
+/// <returns>Return pvr::Result::Success if no error occurred.</returns>
 pvr::Result OpenGLESSkinning::initApplication()
 {
 	_scene = pvr::assets::loadModel(*this, Configuration::SceneFile);
@@ -171,22 +165,18 @@ pvr::Result OpenGLESSkinning::initApplication()
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return Return Result::Success if no error occurred
-\brief  Code in quitApplication() will be called by Shell once per run, just before exiting the program.
-  If the rendering context is lost, quitApplication() will not be called.
-***********************************************************************************************************************/
+/// <summary>Code in quitApplication() will be called by Shell once per run, just before exiting the program.
+/// If the rendering context is lost, quitApplication() will not be called.</summary>
+/// <returns> Return Result::Success if no error occurred.</returns>
 pvr::Result OpenGLESSkinning::quitApplication()
 {
 	_scene.reset();
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return Return Result::Success if no error occurred
-\brief  Code in initView() will be called by Shell upon initialization or after a change in the rendering context.
-  Used to initialize variables that are dependent on the rendering context (e.g. textures, vertex buffers, etc.)
-***********************************************************************************************************************/
+/// <summary>Code in initView() will be called by Shell upon initialization or after a change in the rendering context.
+/// Used to initialize variables that are dependent on the rendering context (e.g. textures, vertex buffers, etc.).</summary>
+/// <returns>Return Result::Success if no error occurred.</returns>
 pvr::Result OpenGLESSkinning::initView()
 {
 	_deviceResources = std::make_unique<DeviceResources>();
@@ -199,7 +189,7 @@ pvr::Result OpenGLESSkinning::initView()
 	_clearColor = clearColorLinearSpace;
 	if (getBackBufferColorspace() != pvr::ColorSpace::sRGB)
 	{
-		// Gamma correct the clear color
+		// Gamma correct the clear colour
 		_clearColor = pvr::utils::convertLRGBtoSRGB(_clearColor);
 	}
 
@@ -320,20 +310,16 @@ void OpenGLESSkinning::setDefaultOpenglState()
 	gl::FrontFace(GL_CCW);
 }
 
-/*!*********************************************************************************************************************
-\return Return Result::Success if no error occurred
-\brief  Code in releaseView() will be called by Shell when the application quits or before a change in the rendering context.
-***********************************************************************************************************************/
+/// <summary>Code in releaseView() will be called by Shell when the application quits or before a change in the rendering context.</summary>
+/// <returns>Return Result::Success if no error occurred.</returns>
 pvr::Result OpenGLESSkinning::releaseView()
 {
 	_deviceResources.reset();
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return Return pvr::Result::Success if no error occurred
-\brief  Main rendering loop function of the program. The shell will call this function every frame.
-***********************************************************************************************************************/
+/// <summary>Main rendering loop function of the program. The shell will call this function every frame.</summary>
+/// <returns>Return pvr::Result::Success if no error occurred.</returns>
 pvr::Result OpenGLESSkinning::renderFrame()
 {
 	// Calculates the frame number to animate in a time-based manner.
@@ -354,7 +340,7 @@ pvr::Result OpenGLESSkinning::renderFrame()
 	// Technically the camera projection stats COULD be animated, but we don't check for that
 	// and we assume the camera projection parameters are static - hence we set it up just once,
 	// in initApplication. So here we only need to get the world->view parameters (view matrix)
-	// and concat this into a "view projection" matrix.
+	// and concatenate this into a "view projection" matrix.
 	glm::mat4x4 viewMatrix;
 	glm::mat4x4 viewProjMatrix;
 	{
@@ -388,12 +374,12 @@ pvr::Result OpenGLESSkinning::renderFrame()
 	uboView.getElement(_lightPositionIdx).setValue(_scene->getLightPosition(0));
 	gl::UnmapBuffer(GL_UNIFORM_BUFFER);
 
-	// Get a new worldview camera and light position
-	// Update all node-specific matrices (Worldview, bone array etc).
+	// Get a new world view camera and light position
+	// Update all node-specific matrices (World view, bone array etc).
 	// Should be called before updating anything to optimise map/unmap. Suggest call once per frame.
 	// For each mesh:
 	// Bind the material of the mesh
-	// Call the corresponding set state (skinned, unskinned)
+	// Call the corresponding set state (skinned, non-skinned)
 	// Bind the corresponding program
 	// If skinned, bind the bones of the mesh
 	// If skinned, update the bones

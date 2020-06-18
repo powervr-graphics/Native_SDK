@@ -604,7 +604,9 @@ bool renderScene(GLuint shaderProgram, EGLDisplay eglDisplay, EGLSurface eglSurf
 		}
 		switch (genericEvent->response_type & ~0x80)
 		{
-		case XCB_DESTROY_NOTIFY: { return false;
+		case XCB_DESTROY_NOTIFY:
+		{
+			return false;
 		}
 		default: break;
 		}
@@ -662,6 +664,55 @@ void releaseNativeResources(Display* nativeDisplay, Window nativeWindow)
 	if (nativeDisplay) { XCloseDisplay(nativeDisplay); }
 }
 
+bool CreateWindowAndContext(EGLDisplay& eglDisplay, EGLConfig& eglConfig, EGLSurface& eglSurface, EGLContext& context, Display*& nativeDisplay, xcb_connection_t*& nativeConnection,
+	xcb_screen_t*& nativeScreen, xcb_window_t& nativeWindow, uint32_t& deleteWindowAtom)
+{
+	if (!createNativeDisplay(&nativeDisplay)) { return false; }
+	// Get access to a native connection
+	if (!createNativeConnection(nativeDisplay, &nativeConnection)) { return false; }
+
+	// Setup the windowing system, create a screen
+	if (!createNativeScreen(nativeConnection, &nativeScreen)) { return false; }
+
+	// Setup the windowing system, create a window
+	if (!createNativeWindow(nativeConnection, nativeScreen, nativeWindow, deleteWindowAtom)) { return false; }
+
+	// Create and Initialize an EGLDisplay from the native display
+	if (!createEGLDisplay(nativeDisplay, eglDisplay)) { return false; }
+
+	// Choose an EGLConfig for the application, used when setting up the rendering surface and EGLContext
+	if (!chooseEGLConfig(eglDisplay, eglConfig)) { return false; }
+
+	// Create an EGLSurface for rendering from the native window
+	if (!createEGLSurface(nativeWindow, eglDisplay, eglConfig, eglSurface)) { return false; }
+
+	// Setup the EGL Context from the other EGL constructs created so far, so that the application is ready to submit OpenGL ES commands
+	if (!setupEGLContext(eglDisplay, eglConfig, eglSurface, context)) { return false; }
+
+	return true;
+}
+
+bool CreateResources(GLuint& fragmentShader, GLuint& vertexShader, GLuint& shaderProgram, GLuint& vertexBuffer)
+{
+	// Initialize the vertex data in the application
+	if (!initializeBuffer(vertexBuffer)) { return false; }
+
+	// Initialize the fragment and vertex shaders used in the application
+	if (!initializeShaders(fragmentShader, vertexShader, shaderProgram)) { return false; }
+
+	return true;
+}
+
+bool Render(GLuint& shaderProgram, EGLDisplay eglDisplay, EGLSurface eglSurface, xcb_connection_t* nativeConnection, uint32_t deleteWindowAtom)
+{
+	for (int i = 0; i < 800; ++i)
+	{
+		if (!renderScene(shaderProgram, eglDisplay, eglSurface, nativeConnection, deleteWindowAtom)) { break; }
+	}
+
+	return false;
+}
+
 /*!*********************************************************************************************************************
 \param[in]			argc           Number of arguments passed to the application, ignored.
 \param[in]			argv           Command line strings passed to the application, ignored.
@@ -691,51 +742,34 @@ int main(int /*argc*/, char** /*argv*/)
 	GLuint vertexBuffer = 0;
 
 	// Get access to a native display
-	if (!createNativeDisplay(&nativeDisplay)) { goto cleanup; }
 
-	// Get access to a native connection
-	if (!createNativeConnection(nativeDisplay, &nativeConnection)) { goto cleanup; }
-
-	// Setup the windowing system, create a screen
-	if (!createNativeScreen(nativeConnection, &nativeScreen)) { goto cleanup; }
-
-	// Setup the windowing system, create a window
-	if (!createNativeWindow(nativeConnection, nativeScreen, nativeWindow, deleteWindowAtom)) { goto cleanup; }
-
-	// Create and Initialize an EGLDisplay from the native display
-	if (!createEGLDisplay(nativeDisplay, eglDisplay)) { goto cleanup; }
-
-	// Choose an EGLConfig for the application, used when setting up the rendering surface and EGLContext
-	if (!chooseEGLConfig(eglDisplay, eglConfig)) { goto cleanup; }
-
-	// Create an EGLSurface for rendering from the native window
-	if (!createEGLSurface(nativeWindow, eglDisplay, eglConfig, eglSurface)) { goto cleanup; }
-
-	// Setup the EGL Context from the other EGL constructs created so far, so that the application is ready to submit OpenGL ES commands
-	if (!setupEGLContext(eglDisplay, eglConfig, eglSurface, context)) { goto cleanup; }
-
-	// Initialize the vertex data in the application
-	if (!initializeBuffer(vertexBuffer)) { goto cleanup; }
-
-	// Initialize the fragment and vertex shaders used in the application
-	if (!initializeShaders(fragmentShader, vertexShader, shaderProgram)) { goto cleanup; }
-
-	// Renders a triangle for 800 frames using the state setup in the previous function
-	for (int i = 0; i < 800; ++i)
+	if (!CreateWindowAndContext(eglDisplay, eglConfig, eglSurface, context, nativeDisplay, nativeConnection, nativeScreen, nativeWindow, deleteWindowAtom))
 	{
-		if (!renderScene(shaderProgram, eglDisplay, eglSurface, nativeConnection, deleteWindowAtom)) { break; }
+		// Release the EGL State
+		releaseEGLState(eglDisplay);
+
+		// Release the windowing system resources
+		releaseNativeResources(nativeDisplay, nativeWindow);
 	}
 
-	// Release any resources we created in the Initialize functions
-	deInitializeGLState(fragmentShader, vertexShader, shaderProgram, vertexBuffer);
+	if (!CreateResources(fragmentShader, vertexShader, shaderProgram, vertexBuffer))
+	{
+		// Release the EGL State
+		releaseEGLState(eglDisplay);
 
-cleanup:
-	// Release the EGL State
-	releaseEGLState(eglDisplay);
+		// Release the windowing system resources
+		releaseNativeResources(nativeDisplay, nativeWindow);
+	}
 
-	// Release the windowing system resources
-	releaseNativeResources(nativeDisplay, nativeWindow);
+	if (!Render(shaderProgram, eglDisplay, eglSurface, nativeConnection, deleteWindowAtom))
+	{
+		deInitializeGLState(fragmentShader, vertexShader, shaderProgram, vertexBuffer);
+		// Release the EGL State
+		releaseEGLState(eglDisplay);
 
-	// Destroy the eglWindow
+		// Release the windowing system resources
+		releaseNativeResources(nativeDisplay, nativeWindow);
+	}
+
 	return 0;
 }

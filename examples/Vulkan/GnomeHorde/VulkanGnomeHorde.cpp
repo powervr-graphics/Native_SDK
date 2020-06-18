@@ -1,15 +1,14 @@
-/*!*********************************************************************************************************************
-\File         VulkanGnomeHorde.cpp
-\Title        GnomeHorde
-\Author       PowerVR by Imagination, Developer Technology Team
-\Copyright    Copyright (c) Imagination Technologies Limited.
-\brief        Multithreaded command buffer generation. Requires the PVRShell.
-***********************************************************************************************************************/
+/*!
+\brief Multi-threaded command buffer generation. Requires the PVRShell.
+\file VulkanGnomeHorde.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #include "PVRShell/PVRShell.h"
 #include "PVRUtils/PVRUtilsVk.h"
 #include "PVRCore/Threading.h"
 
-/*///////////////////////////////////////////////////////////////////////////////
+/*
 THE GNOME HORDE - MULTITHREADED RENDERING ON THE VULKAN API USING THE POWERVR
 FRAMEWORK.
 
@@ -32,8 +31,7 @@ into a "Tiles to process" queue and the thread moves to check the next one
 * Another group of threads pull items from the "tiles to process" threads and for
 each of them generate the command buffers, and enter them into the "tiles to draw"
 * The main thread pulls the command buffers and draws them.
-///////////////////////////////////////////////////////////////////////////////*/
-
+*/
 const glm::vec4 DirectionToLight = glm::vec4(0.0f, 1.0f, 0.65f, 0.0f);
 
 enum CONSTANTS
@@ -77,12 +75,13 @@ struct TileProcessingResult
 };
 
 class VulkanGnomeHorde;
-// This queue is to enqueue tasks used for the "determine visibility" producer queues
-// There, our "task" granularity is a "line" of tiles to process.
+
+/// <summary>This queue is to enqueue tasks used for the "determine visibility" producer queues
+/// There, our "task" granularity is a "line" of tiles to process.</summary>
 typedef pvr::LockedQueue<int32_t> LineTasksQueue;
 
-// This queue is used to create command buffers, so its task granularity is a tile.
-// It is Used for the "create command buffers for tile XXX" queues
+/// <summary>This queue is used to create command buffers, so its task granularity is a tile.
+/// It is Used for the "create command buffers for tile XXX" queues.</summary>
 typedef pvr::LockedQueue<TileProcessingResult> TileResultsQueue;
 
 class GnomeHordeWorkerThread
@@ -234,7 +233,7 @@ private:
 		for (MeshLod::iterator it = mesh.begin(); it != mesh.end(); ++it)
 		{
 			bool requiresCommandBufferSubmission = false;
-			pvr::utils::createSingleBuffersFromMesh(device, *it->mesh, it->vbo, it->ibo, uploadCmdBuffer, requiresCommandBufferSubmission, &vmaAllocator);
+			pvr::utils::createSingleBuffersFromMesh(device, *it->mesh, it->vbo, it->ibo, uploadCmdBuffer, requiresCommandBufferSubmission, vmaAllocator);
 		}
 	}
 };
@@ -556,8 +555,10 @@ inline void generatePositions(glm::vec3* points, glm::vec3 minBound, glm::vec3 m
 	}
 }
 
-/////////// CLASS VulkanGnomeHorde ///////////
-///// CALLBACKS - IMPLEMENTATION OF pvr::Shell /////
+/// <summary>Code in initApplication() will be called by Shell once per run, before the rendering context is created.
+/// Used to initialize variables that are not dependent on it (e.g. external modules, loading meshes, etc.)
+/// If the rendering context is lost, initApplication() will not be called again.</summary>
+/// <returns>Return Result::Success if no error occurred.</returns>
 pvr::Result VulkanGnomeHorde::initApplication()
 {
 	uint32_t num_cores = std::thread::hardware_concurrency();
@@ -567,7 +568,7 @@ pvr::Result VulkanGnomeHorde::initApplication()
 
 	_numVisibilityThreads = std::min(thread_factor, static_cast<uint32_t>(MAX_NUMBER_OF_THREADS));
 	_numTileThreads = std::min(thread_factor, static_cast<uint32_t>(MAX_NUMBER_OF_THREADS));
-	Log(LogLevel::Information, "Hardware concurreny reported: %u cores. Enabling %u visibility threads plus %u tile processing threads\n", num_cores, _numVisibilityThreads,
+	Log(LogLevel::Information, "Hardware concurrency reported: %u cores. Enabling %u visibility threads plus %u tile processing threads\n", num_cores, _numVisibilityThreads,
 		_numTileThreads);
 
 	_frameId = 0;
@@ -586,6 +587,9 @@ pvr::Result VulkanGnomeHorde::initApplication()
 	return pvr::Result::Success;
 }
 
+/// <summary>Code in quitApplication() will be called by PVRShell once per run, just before exiting the program.
+///	If the rendering context is lost, quitApplication() will not be called.</summary>
+/// <returns>Return Result::Success if no error occurred.</returns>
 pvr::Result VulkanGnomeHorde::quitApplication()
 {
 	_meshes.clearAll();
@@ -616,6 +620,9 @@ void VulkanGnomeHorde::setupUI()
 	}
 }
 
+/// <summary>Code in initView() will be called by Shell upon initialization or after a change in the rendering context.
+/// Used to initialize variables that are dependent on the rendering context (e.g. textures, vertex buffers, etc.).</summary>
+/// <returns>Return Result::Success if no error occurred.</returns>
 pvr::Result VulkanGnomeHorde::initView()
 {
 	_deviceResources = std::make_unique<DeviceResources>(_linesToProcessQ, _tilesToDrawQ);
@@ -653,15 +660,15 @@ pvr::Result VulkanGnomeHorde::initView()
 	pvrvk::ImageUsageFlags swapchainImageUsage = pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT;
 	if (pvr::utils::isImageUsageSupportedBySurface(surfaceCapabilities, pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT))
 	{ swapchainImageUsage |= pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT; } // create the swapchain
-	pvr::utils::createSwapchainAndDepthStencilImageAndViews(_deviceResources->device, surface, getDisplayAttributes(), _deviceResources->swapchain, _deviceResources->depthStencilImages,
-		swapchainImageUsage, pvrvk::ImageUsageFlags::e_DEPTH_STENCIL_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_TRANSIENT_ATTACHMENT_BIT, &_deviceResources->vmaAllocator);
+
+	auto swapChainCreateOutput = pvr::utils::createSwapchainRenderpassFramebuffers(_deviceResources->device, surface, getDisplayAttributes(),
+		pvr::utils::CreateSwapchainParameters().setAllocator(_deviceResources->vmaAllocator).setColorImageUsageFlags(swapchainImageUsage));
+
+	_deviceResources->swapchain = swapChainCreateOutput.swapchain;
+	_deviceResources->onScreenFramebuffer = swapChainCreateOutput.framebuffer;
 
 	//--------------------
-	// Create the on screen framebuffer
-	pvr::utils::createOnscreenFramebufferAndRenderPass(_deviceResources->swapchain, &_deviceResources->depthStencilImages[0], _deviceResources->onScreenFramebuffer);
-
-	//--------------------
-	// Create the commandpool
+	// Create the command pool
 	_deviceResources->commandPool = _deviceResources->device->createCommandPool(
 		pvrvk::CommandPoolCreateInfo(_deviceResources->queue->getFamilyIndex(), pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT));
 
@@ -825,6 +832,8 @@ pvr::Result VulkanGnomeHorde::initView()
 	return pvr::Result::Success;
 }
 
+/// <summary>Code in releaseView() will be called by PVRShell when the application quits or before a change in the rendering context.</summary>
+/// <returns>Return Result::Success if no error occurred.</returns>
 pvr::Result VulkanGnomeHorde::releaseView()
 {
 	Log(LogLevel::Information, "Signalling all worker threads: Signal drain empty queues...");
@@ -876,6 +885,8 @@ pvr::Result VulkanGnomeHorde::releaseView()
 	return pvr::Result::Success;
 }
 
+/// <summary>Consumes the items in the tiles queue and generates Tile buffers</summary>
+/// <returns>Returns true if items were processed correctly and false if queue not or queue was empty.</return>
 bool GnomeHordeTileThreadData::doWork()
 {
 	TileProcessingResult workItem[4];
@@ -883,10 +894,10 @@ bool GnomeHordeTileThreadData::doWork()
 	if ((result = app->_tilesToProcessQ.consume(threadApiObj->processQConsumerToken, workItem[0]))) { generateTileBuffer(workItem, result); }
 	return result != 0;
 }
-
+/// <summary>Updates resources for the Tile and Re-records the command buffers.</summary>
 void GnomeHordeTileThreadData::generateTileBuffer(const TileProcessingResult* tileIdxs, uint32_t numTiles)
 {
-	// Lambda to create the tiles secondary commandbs
+	// Lambda to create the tiles secondary command buffers
 	pvr::utils::StructuredBufferView& uboAllObj = app->_deviceResources->uboPerObjectBufferView;
 	const pvrvk::DescriptorSet& descSetAllObj = app->_deviceResources->descSetAllObjects;
 	pvr::utils::StructuredBufferView& uboCamera = app->_deviceResources->uboBufferView;
@@ -952,6 +963,8 @@ void GnomeHordeTileThreadData::generateTileBuffer(const TileProcessingResult* ti
 	}
 }
 
+/// <summary>Consumes the items in the lines queue and checks for line visibility.</summary>
+/// <returns>Returns true if items were processed correctly and false if queue not or queue was empty.</return>
 bool GnomeHordeVisibilityThreadData::doWork()
 {
 	int32_t workItem[4];
@@ -960,10 +973,11 @@ bool GnomeHordeVisibilityThreadData::doWork()
 	return result != 0;
 }
 
+/// <summary>Determines whether the line is visible on screen or not.</summary>
 void GnomeHordeVisibilityThreadData::determineLineVisibility(const int32_t* lineIdxs, uint32_t numLines)
 {
 	auto& tileInfos = app->_deviceResources->tileInfos;
-	// Local temporaries of the "global volatile" visibility variables. Memcpy used as they are declared "volatile"
+	// Local temporaries of the "global volatile" visibility variables. memcpy used as they are declared "volatile"
 	// It is perfectly fine to use memcopy for these volatiles AT THIS TIME because we know certainly that MAIN thread
 	// has finished writing to them some time now and no race condition is possible (the calculations happen before the threads)
 	pvr::math::ViewingFrustum _frustum;
@@ -1044,6 +1058,8 @@ void GnomeHordeVisibilityThreadData::determineLineVisibility(const int32_t* line
 	}
 }
 
+/// <summary>Main rendering loop function of the program. The shell will call this function every frame.</summary>
+/// <returns>Return Result::Success if no error occurred</returns>
 pvr::Result VulkanGnomeHorde::renderFrame()
 {
 	const pvrvk::ClearValue clearVals[] = { pvrvk::ClearValue(0.0f, 0.128f, 0.0f, 1.0f), pvrvk::ClearValue(1.0f, 0u) };
@@ -1060,9 +1076,9 @@ pvr::Result VulkanGnomeHorde::renderFrame()
 	if (_animDetails.logicTime > 10000000) { _animDetails.logicTime = 0; }
 
 	// Get the next free swapchain image
-	// We have implemented the application so that commandb[0,1,2] points to swapchain fb[0,1,2]
-	// so we must submit the commandb that this index points to.
-	// Applications that generate commandbs on the fly may not need to do this.
+	// We have implemented the application so that command buffers[0,1,2] points to swapchain frame buffers[0,1,2]
+	// so we must submit the command buffers that this index points to.
+	// Applications that generate command buffers on the fly may not need to do this.
 
 	// Interpolate frame parameters
 	AppModeParameter parameters = calcAnimationParameters();
@@ -1158,7 +1174,7 @@ pvr::Result VulkanGnomeHorde::renderFrame()
 	if (this->shouldTakeScreenshot())
 	{
 		pvr::utils::takeScreenshot(_deviceResources->queue, _deviceResources->commandPool, _deviceResources->swapchain, _swapchainIndex, this->getScreenshotFileName(),
-			&_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
+			_deviceResources->vmaAllocator, _deviceResources->vmaAllocator);
 	}
 
 	uint32_t swapIdx = _swapchainIndex;
@@ -1222,9 +1238,9 @@ void VulkanGnomeHorde::createDescSetsAndTiles(const pvrvk::DescriptorSetLayout& 
 	}
 
 	// The ::pvr::utils::StructuredMemoryView is a simple class that allows us easy access to update members of a buffer - it keeps track of offsets,
-	// datatypes and sizes of items in the buffer, allowing us to update them very easily.
+	// data types and sizes of items in the buffer, allowing us to update them very easily.
 
-	// The uboPerObject is one huge DynamicUniformBuffer, whose data is STATIC, and contains the object Model->World matrixes
+	// The uboPerObject is one huge DynamicUniformBuffer, whose data is STATIC, and contains the object Model->World matrices
 	// A different bit of this buffer is bound for each and every object.
 
 	// CAUTION: The Range of the Buffer View for a Dynamic Uniform Buffer must be the BINDING size, not the TOTAL size, i.e. the size
@@ -1385,7 +1401,7 @@ MeshLod VulkanGnomeHorde::loadLodMesh(const pvr::StringHash& filename, const pvr
 		ss << ".pod";
 
 		std::string path = filename.str() + ss.str();
-		Log(LogLevel::Information, "Loading model:%s mesh:%s\n", path.c_str(), mesh.c_str());
+		Log(LogLevel::Information, "Loading model:%s mesh:%s", path.c_str(), mesh.c_str());
 		pvr::assets::ModelHandle model = pvr::assets::loadModel(*this, path);
 
 		if (model == nullptr) { assertion(false, pvr::strings::createFormatted("Failed to load model file %s", path.c_str()).c_str()); }
@@ -1410,7 +1426,7 @@ pvrvk::DescriptorSet VulkanGnomeHorde::createDescriptorSetUtil(const pvrvk::Desc
 	// Load the texture
 
 	pvrvk::ImageView tex = pvr::utils::loadAndUploadImageAndView(_deviceResources->device, texture.c_str(), true, uploadCmdBuffer, *this, pvrvk::ImageUsageFlags::e_SAMPLED_BIT,
-		pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, nullptr, &_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
+		pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, nullptr, _deviceResources->vmaAllocator, _deviceResources->vmaAllocator);
 	pvrvk::DescriptorSet tmp = _deviceResources->descriptorPool->allocateDescriptorSet(layout);
 	bool hasMipmaps = tex->getImage()->getNumMipLevels() > 1;
 	pvrvk::WriteDescriptorSet write(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, tmp, 0);
@@ -1430,7 +1446,7 @@ void VulkanGnomeHorde::initUboStructuredObjects()
 		_deviceResources->sceneUbo = pvr::utils::createBuffer(_deviceResources->device,
 			pvrvk::BufferCreateInfo(_deviceResources->sceneUboBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
-			&_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+			_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
 		_deviceResources->sceneUboBufferView.pointToMappedMemory(_deviceResources->sceneUbo->getDeviceMemory()->getMappedData());
 	}
@@ -1445,7 +1461,7 @@ void VulkanGnomeHorde::initUboStructuredObjects()
 		_deviceResources->ubo = pvr::utils::createBuffer(_deviceResources->device,
 			pvrvk::BufferCreateInfo(_deviceResources->uboBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
-			&_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+			_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
 		_deviceResources->uboBufferView.pointToMappedMemory(_deviceResources->ubo->getDeviceMemory()->getMappedData());
 	}
@@ -1461,7 +1477,7 @@ void VulkanGnomeHorde::initUboStructuredObjects()
 		_deviceResources->uboPerObject = pvr::utils::createBuffer(_deviceResources->device,
 			pvrvk::BufferCreateInfo(_deviceResources->uboPerObjectBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
-			&_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+			_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
 		_deviceResources->uboPerObjectBufferView.pointToMappedMemory(_deviceResources->uboPerObject->getDeviceMemory()->getMappedData());
 	}
@@ -1500,4 +1516,6 @@ AppModeParameter VulkanGnomeHorde::calcAnimationParameters()
 	return result;
 }
 
+/// <summary>This function must be implemented by the user of the shell. The user should return its pvr::Shell object defining the behaviour of the application.</summary>
+/// <returns>Return a unique ptr to the demo supplied by the user.</returns>
 std::unique_ptr<pvr::Shell> pvr::newDemo() { return std::make_unique<VulkanGnomeHorde>(); }

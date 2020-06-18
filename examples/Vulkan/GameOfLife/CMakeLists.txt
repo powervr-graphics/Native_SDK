@@ -46,7 +46,7 @@ add_assets_resource_file(VulkanGameOfLife)
 # Apply SDK example specific compile and linker options
 apply_example_compile_options_to_target(VulkanGameOfLife)
 
-target_link_libraries(VulkanGameOfLife
+target_link_libraries(VulkanGameOfLife PUBLIC
 	PVRShell
 	PVRUtilsVk
 )

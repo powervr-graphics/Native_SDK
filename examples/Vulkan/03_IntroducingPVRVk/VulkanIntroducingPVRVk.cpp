@@ -12,7 +12,7 @@
 // enables the use of the PVRShell module which provides an abstract mechanism for the native platform primarily used for handling window creation and input handling.
 #include "PVRShell/PVRShell.h"
 // enables the use of the PVRVk module which provides an easy to use, minimal overhead abstraction layer on top of the Vulkan API
-// giving default constructors for all Vulkan objects, deterministic lifecycle management through reference counting and in general a clean, modern interface.
+// giving default constructors for all Vulkan objects, deterministic life cycle management through reference counting and in general a clean, modern interface.
 #include "PVRVk/PVRVk.h"
 
 /// <summary>Maps a set of DebugUtilsMessageSeverityFlagsEXT to a particular type of log message.</summary>
@@ -60,7 +60,7 @@ std::string debugUtilsMessengerCallbackToString(
 
 		for (uint32_t i = 0; i < pCallbackData->cmdBufLabelCount; ++i)
 		{
-			cmdBufferLabelsMessage += pvr::strings::createFormatted("\t\tCommand Buffer Label[%u] - %s, Color: {%f, %f, %f, %f}\n", i, pCallbackData->pCmdBufLabels[i].pLabelName,
+			cmdBufferLabelsMessage += pvr::strings::createFormatted("\t\tCommand Buffer Label[%u] - %s, Colour: {%f, %f, %f, %f}\n", i, pCallbackData->pCmdBufLabels[i].pLabelName,
 				pCallbackData->pCmdBufLabels[i].color[0], pCallbackData->pCmdBufLabels[i].color[1], pCallbackData->pCmdBufLabels[i].color[2], pCallbackData->pCmdBufLabels[i].color[3]);
 		}
 
@@ -74,7 +74,7 @@ std::string debugUtilsMessengerCallbackToString(
 
 		for (uint32_t i = 0; i < pCallbackData->queueLabelCount; ++i)
 		{
-			queueLabelsMessage += pvr::strings::createFormatted("\t\tQueue Label[%u] - %s, Color: {%f, %f, %f, %f}\n", i, pCallbackData->pQueueLabels[i].pLabelName,
+			queueLabelsMessage += pvr::strings::createFormatted("\t\tQueue Label[%u] - %s, Colour: {%f, %f, %f, %f}\n", i, pCallbackData->pQueueLabels[i].pLabelName,
 				pCallbackData->pQueueLabels[i].color[0], pCallbackData->pQueueLabels[i].color[1], pCallbackData->pQueueLabels[i].color[2], pCallbackData->pQueueLabels[i].color[3]);
 		}
 
@@ -84,8 +84,8 @@ std::string debugUtilsMessengerCallbackToString(
 }
 } // namespace
 
-// An application defined callback used as the callback function specified in as pfnCallback in the
-// create info VkDebugUtilsMessengerCreateInfoEXT used when creating the debug utils messenger callback vkCreateDebugUtilsMessengerEXT
+/// <summary>An application defined callback used as the callback function specified in as pfnCallback in the
+/// create info VkDebugUtilsMessengerCreateInfoEXT used when creating the debug utils messenger callback vkCreateDebugUtilsMessengerEXT.</summary>
 VKAPI_ATTR VkBool32 VKAPI_CALL throwOnErrorDebugUtilsMessengerCallback(VkDebugUtilsMessageSeverityFlagBitsEXT inMessageSeverity, VkDebugUtilsMessageTypeFlagsEXT inMessageTypes,
 	const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData)
 {
@@ -98,8 +98,8 @@ VKAPI_ATTR VkBool32 VKAPI_CALL throwOnErrorDebugUtilsMessengerCallback(VkDebugUt
 	return VK_FALSE;
 }
 
-// The application defined callback used as the callback function specified in as pfnCallback in the
-// create info VkDebugUtilsMessengerCreateInfoEXT used when creating the debug utils messenger callback vkCreateDebugUtilsMessengerEXT
+/// <summary>The application defined callback used as the callback function specified in as pfnCallback in the
+/// create info VkDebugUtilsMessengerCreateInfoEXT used when creating the debug utils messenger callback vkCreateDebugUtilsMessengerEXT.</summary>
 VKAPI_ATTR VkBool32 VKAPI_CALL logMessageDebugUtilsMessengerCallback(VkDebugUtilsMessageSeverityFlagBitsEXT inMessageSeverity, VkDebugUtilsMessageTypeFlagsEXT inMessageTypes,
 	const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData)
 {
@@ -198,7 +198,7 @@ VKAPI_ATTR VkBool32 VKAPI_CALL logMessageDebugReportCallback(VkDebugReportFlagsE
 
 // Of note is that the 'VK_EXT_XXXX_EXTENSION_NAME' syntax is provided by the vulkan headers as compile-time constants so that extension names can be used unambiguously avoiding
 // typos in querying for them.
-/// <summary>Container for a list of Instance extensions to be used when initiailising the instance.</summary>
+/// <summary>Container for a list of Instance extensions to be used when initialising the instance.</summary>
 struct InstanceExtensions : public pvrvk::VulkanExtensionList
 {
 	/// <summary>Initialises a list of instance extensions.</summary>
@@ -215,7 +215,7 @@ struct InstanceExtensions : public pvrvk::VulkanExtensionList
 		// an intermediate window system such as embedded applications or when running on embedded platforms
 		addExtension(VK_KHR_DISPLAY_EXTENSION_NAME);
 #ifdef DEBUG
-		// The VK_EXT_debug_utils and VK_EXT_debug_report extensions provides the functionaltiy for defining a way in which layers and the implementation can
+		// The VK_EXT_debug_utils and VK_EXT_debug_report extensions provides the functionality for defining a way in which layers and the implementation can
 		// call back to the application for events of particular interest to the application. By enabling this extension the application
 		// has the opportunity for receiving much more detailed feedback regarding the applications use of Vulkan. Note that VK_EXT_debug_report has been deprecated in
 		// favour of the more forward looking extension VK_EXT_debug_utils.
@@ -263,8 +263,8 @@ struct DeviceExtensions : public pvrvk::VulkanExtensionList
 // Vulkan is a layered API with layers that may provide additional functionality over core Vulkan but do not add or modify existing Vulkan commands.
 // In Vulkan the validation of correct API usage is left to validation layers so they are of particular importance.
 // When a Vulkan layer is enabled it inserts itself into the call chain for Vulkan commands the specific layer is interested in
-// the concept of using layers allows implementations to avoid peformance penalties incurred for validating application behaviour and API usage
-/// <summary>Container for a list of instance layers to be used for initiailising an instance using the helper function 'createInstanceAndSurface'.</summary>
+// the concept of using layers allows implementations to avoid performance penalties incurred for validating application behaviour and API usage
+/// <summary>Container for a list of instance layers to be used for initialising an instance using the helper function 'createInstanceAndSurface'.</summary>
 struct InstanceLayers : public pvrvk::VulkanLayerList
 {
 	InstanceLayers()
@@ -280,6 +280,7 @@ struct InstanceLayers : public pvrvk::VulkanLayerList
 		// PerfDoc is a Vulkan layer which attempts to identify API usage is may be discouraged primarily by validating applications
 		// against the rules set out in the Mali Application Developer Best Practices document
 		addLayer("VK_LAYER_ARM_mali_perf_doc");
+		addLayer("VK_LAYER_IMG_powervr_perf_doc");
 #endif
 	}
 };
@@ -287,7 +288,7 @@ struct InstanceLayers : public pvrvk::VulkanLayerList
 // to intercept all commands operating on that instance including any of its child objects i.e. the device or commands operating on a specific device.
 
 /// <summary>Retrieves the pvrvk::ImageAspectFlags based on the pvrvk::Format. The pvrvk::ImageAspectFlags specify the aspects of an image for purposes such as identifying a
-/// subresource.</summary>
+/// sub-resource.</summary>
 /// <param name="format">The pvrvk::Format to retrieve pvrvk::ImageAspectFlags for.</param>
 /// <returns>The compatible pvrvk::ImageAspectFlags based on the input pvrvk::Format.</returns>
 /// <details>This function simply infers the pvrvk::ImageAspectFlags based on the position of the given pvrvk::Format in the list of the pvrvk::Format enum.</details>
@@ -347,7 +348,7 @@ inline void getMemoryTypeIndex(const pvrvk::PhysicalDevice& physicalDevice, cons
 }
 
 // Filenames for the SPIR-V shader file binaries used in this demo
-// Note that the binaries are precompiled using the "recompile script" included alongside the demo (recompile.sh/recompile.bat)
+// Note that the binaries are pre-compiled using the "recompile script" included alongside the demo (recompile.sh/recompile.bat)
 const char* VertShaderName = "VertShader.vsh.spv";
 const char* FragShaderName = "FragShader.fsh.spv";
 
@@ -421,7 +422,7 @@ struct DeviceResources
 	// The layout specifying the descriptors used by the graphics pipeline.
 	pvrvk::PipelineLayout pipelineLayout;
 
-	// The graphics pipeline specifing the funnel for which certain sets of Vulkan commands are sent through.
+	// The graphics pipeline specifying the funnel for which certain sets of Vulkan commands are sent through.
 	pvrvk::GraphicsPipeline graphicsPipeline;
 
 	// A pipeline cache providing mechanism for the reuse of the results of pipeline creation.
@@ -686,7 +687,7 @@ pvr::Result VulkanIntroducingPVRVk::renderFrame()
 			&modelViewProjectionMatrix, sizeof(_viewProjectionMatrix));
 
 		// If the model view projection buffer memory was allocated with pvrvk::MemoryPropertyFlags including pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT indicating that
-		// the host does not need to manage the memory accesses explictly using the host cache management commands vkFlushMappedMemoryRanges and vkInvalidateMappedMemoryRanges
+		// the host does not need to manage the memory accesses explicitly using the host cache management commands vkFlushMappedMemoryRanges and vkInvalidateMappedMemoryRanges
 		// to flush host writes to the device meaning we can safely assume writes have taken place prior to making use of the model view projection buffer memory.
 		if ((_deviceResources->modelViewProjectionBuffer->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
 		{
@@ -739,7 +740,7 @@ pvr::Result VulkanIntroducingPVRVk::renderFrame()
 /// <returns>Result::Success if no error occurred.</returns>
 pvr::Result VulkanIntroducingPVRVk::releaseView()
 {
-	// Cleanly release all resources prior to exitting the application.
+	// Cleanly release all resources prior to exiting the application.
 	_deviceResources.reset();
 	return pvr::Result::Success;
 }
@@ -764,7 +765,7 @@ void VulkanIntroducingPVRVk::createInstance()
 	// vkEnumerateInstanceExtensionProperties, vkEnumerateInstanceLayerProperties and vkCreateInstance
 
 	// If a valid function pointer for vkEnumerateInstanceVersion cannot be retrieved then Vulkan only 1.0 is supported by the implementation otherwise we can use
-	// vkEnumerateInstanceVersion to determine the api version supported.
+	// vkEnumerateInstanceVersion to determine the API version supported.
 	if (pvrvk::getVkBindings().vkEnumerateInstanceVersion)
 	{
 		uint32_t supportedApiVersion;
@@ -956,11 +957,11 @@ void VulkanIntroducingPVRVk::createSurface(void* window, void* display, void* co
 	// Applications may also, on some platforms, present rendered images directly to display devices without the need for an intermediate Window System. The extension
 	// VK_KHR_display in particular can be used for this task.
 
-	// In Vulkan each platform may require unique window integration steps and therefore allows for an abstracted platform indepdent surface to be created.
+	// In Vulkan each platform may require unique window integration steps and therefore allows for an abstracted platform independent surface to be created.
 	// To facilitate this, each platform provides its own Window System Integration (WSI) extension containing platform specific functions for using their own WSI.
-	// Vulkan requires that the use of these extesions is guarded by preprocessor symbols defined in Vulkan's Window System-Specific Header Control appendix.
+	// Vulkan requires that the use of these extensions is guarded by preprocessor symbols defined in Vulkan's Window System-Specific Header Control appendix.
 	// For VulkanIntroducingPVRVk to appropriately make use of the WSI extensions for a given platform it must #define the appropriate symbols for the platform prior to
-	// including Vulkan.h header file. The appropriate set of proprocessor symbols are defined at the top of this file based on a set of compilation flags used to compile this demo.
+	// including Vulkan.h header file. The appropriate set of preprocessor symbols are defined at the top of this file based on a set of compilation flags used to compile this demo.
 
 	// Note that each WSI extension must be appropriately enabled as an instance extension prior to using them. This is controlled via the use of the array
 	// Extensions::InstanceExtensions which is constructed at compile time based on the same set of compilation flags described above.
@@ -1056,7 +1057,7 @@ uint32_t VulkanIntroducingPVRVk::getCompatibleQueueFamily()
 	// Attempts to retrieve a queue family which supports both graphics and presentation for the given application surface. This application has been
 	// written in such a way which requires that the graphics and presentation queue families match.
 	// Not all physical devices will support Window System Integration (WSI) support furthermore not all queue families for a particular physical device will support
-	// presenting to the screen and thus these capabilities must be separately queuried for support.
+	// presenting to the screen and thus these capabilities must be separately queried for support.
 
 	// Retrieves the queue family properties for the queue families the physical device supports.
 	const std::vector<pvrvk::QueueFamilyProperties>& queueFamilyProperties = _deviceResources->instance->getPhysicalDevice(0)->getQueueFamilyProperties();
@@ -1197,7 +1198,7 @@ void selectPresentMode(std::vector<pvrvk::PresentModeKHR>& modes, pvrvk::Present
 			presentationMode = desiredSwapMode;
 			break;
 		}
-		// Secondary matches : Immediate and Mailbox are better fits for each other than FIFO, so set them as secondaries
+		// Secondary matches : Immediate and Mailbox are better fits for each other than FIFO, so set them as secondary
 		// If the user asked for Mailbox, and we found Immediate, set it (in case Mailbox is not found) and keep looking
 		if ((desiredSwapMode == pvrvk::PresentModeKHR::e_MAILBOX_KHR) && (currentPresentMode == pvrvk::PresentModeKHR::e_IMMEDIATE_KHR))
 		{ presentationMode = pvrvk::PresentModeKHR::e_IMMEDIATE_KHR; }
@@ -1392,7 +1393,7 @@ void VulkanIntroducingPVRVk::createDepthStencilImages()
 }
 
 /// <summary>Creates a Buffer, allocates its memory and attaches the memory to the newly created buffer.</summary>
-/// <param name="size">The size of the buffer to create and the amont of memory to allocate.</param>
+/// <param name="size">The size of the buffer to create and the amount of memory to allocate.</param>
 /// <param name="usageFlags">The intended buffer usage.</param>
 /// <param name="requiredMemFlags">The set of flags specifying the required memory properties.</param>
 /// <param name="optimalMemFlags">The set of flags specifying an optimal memory properties.</param>
@@ -1480,7 +1481,7 @@ void VulkanIntroducingPVRVk::allocateCommandBuffers()
 	_deviceResources->commandPool->allocateCommandBuffers(_deviceResources->swapchain->getSwapchainLength(), &_deviceResources->cmdBuffers[0]);
 }
 
-/// <summary>Records the rendering commands into a set of command buffers which can be subsequently submitted to a queue for exection.</summary>
+/// <summary>Records the rendering commands into a set of command buffers which can be subsequently submitted to a queue for execution.</summary>
 void VulkanIntroducingPVRVk::recordCommandBuffers()
 {
 	// Record the rendering commands into a set of command buffers upfront (once). These command buffers can then be submitted to a device queue for execution resulting in
@@ -1508,7 +1509,7 @@ void VulkanIntroducingPVRVk::recordCommandBuffers()
 		// Initiates the start of a renderPass.
 		// From this point until either vkCmdNextSubpass or vkCmdEndRenderPass is called commands will be recorded for the first subpass of the specified renderPass.
 
-		// Bind the graphics pipeline through which commands will be funneled.
+		// Bind the graphics pipeline through which commands will be funnelled.
 		_deviceResources->cmdBuffers[i]->bindPipeline(_deviceResources->graphicsPipeline);
 
 		_deviceResources->cmdBuffers[i]->beginRenderPass(_deviceResources->framebuffers[i], true, clearValues, 2);
@@ -1543,7 +1544,7 @@ void VulkanIntroducingPVRVk::createPipelineCache()
 
 	// Pipeline caches provide a convenient mechanism for the result of pipeline creation to be reused between pipelines and between runs of an application.
 	// The use of a pipeline cache isn't strictly necessary and won't provide us with any benefits in this application due to the use of only a single pipeline in reuse only
-	// a single run of the application however their use is recommeneded and so their use has been included in this demo for demonstrative purposes only - Using them
+	// a single run of the application however their use is recommended and so their use has been included in this demo for demonstrative purposes only - Using them
 	// is definitely a best practice.
 
 	// Our application only makes use of pipeline caches between pipelines in the same run of the application and we make no effort to save and load
@@ -1555,7 +1556,7 @@ void VulkanIntroducingPVRVk::createPipelineCache()
 	// the most possible gains.
 
 	// It's heavily recommended to make use of pipeline caches as much as possible as they provide little to no overhead and provide the opportunity for
-	// the implemntation to provide optimisations for us. From the point of view of the application they provide an easy win in terms of work/benefit.
+	// the implementation to provide optimisations for us. From the point of view of the application they provide an easy win in terms of work/benefit.
 
 	_deviceResources->pipelineCache = _deviceResources->device->createPipelineCache(pvrvk::PipelineCacheCreateInfo());
 }
@@ -1566,7 +1567,7 @@ void VulkanIntroducingPVRVk::createShaderModules()
 	// Creates the pvrvk::ShaderModule(s) used by the demo.
 
 	// These shader modules contain shader code and entry points used by the graphics pipeline for rendering a textured triangle to the screen.
-	// Note that the shader modules have been precompiled to SPIR-V format using the "recompile script" included alongside the demo (recompile.sh/recompile.bat).
+	// Note that the shader modules have been pre-compiled to SPIR-V format using the "recompile script" included alongside the demo (recompile.sh/recompile.bat).
 	// Note that when creating our graphics pipeline the specific shader to use from the shader module is specified using an entry point.
 	_deviceResources->vertexShaderModule = createShaderModule(VertShaderName);
 	_deviceResources->fragmentShaderModule = createShaderModule(FragShaderName);
@@ -1597,7 +1598,7 @@ void VulkanIntroducingPVRVk::createPipeline()
 	// Vulkan commands are sent through.
 
 	// The pipeline used throughout this demo is fundamentally simple in nature but still illustrates how to make use of a graphics pipeline to render a geometric object even
-	// if it is only a triangle. The pipeline makes use of vertex attributes (position, normal and uv), samples a particular texture writing the result in to a color attachment
+	// if it is only a triangle. The pipeline makes use of vertex attributes (position, normal and UV), samples a particular texture writing the result in to a colour attachment
 	// and also rendering to a depth stencil attachments. Pipelines are monolithic objects taking account of various bits of state which allow for a great deal of optimization
 	// of shaders based on the pipeline description including shader inputs/outputs and fixed function stages.
 
@@ -1633,14 +1634,14 @@ void VulkanIntroducingPVRVk::createPipeline()
 
 	// The next stage of the graphics pipeline, Rasterization, produces fragments based on the points, line segments or triangles constructed in the first stage.
 	// Each of the generated fragments will be passed to the fragment shader carrying out the per fragment rendering - this is where the framebuffer operations occur. This
-	// stage includes blending, masking, stenciling and other logical operations.
+	// stage includes blending, masking, stencilling and other logical operations.
 
 	// The pvrvk::PipelineRasterizationStateCreateInfo structure specifies how various aspects of rasterization occur including cull mode.
 	pvrvk::PipelineRasterizationStateCreateInfo rasterizationInfo;
 	rasterizationInfo.setCullMode(pvrvk::CullModeFlags::e_BACK_BIT);
 	rasterizationInfo.setFrontFaceWinding(pvrvk::FrontFace::e_COUNTER_CLOCKWISE);
 
-	// The pvrvk::PipelineColorBlendAttachmentState structure specifies blending state for a particular color attachment.
+	// The pvrvk::PipelineColorBlendAttachmentState structure specifies blending state for a particular colour attachment.
 	pvrvk::PipelineColorBlendAttachmentState colorBlendAttachment;
 
 	// The pvrvk::PipelineColorBlendStateCreateInfo structure controls the per attachment blending.
@@ -1700,7 +1701,7 @@ void VulkanIntroducingPVRVk::createVbo()
 
 	// The use of pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT specifies that memory allocated with this memory property type is the most efficient for device access.
 	// Note that memory property flag pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT has not been specified meaning the host application must manage the memory accesses to
-	// this memory explictly using the host cache management commands vkFlushMappedMemoryRanges and vkInvalidateMappedMemoryRanges to flush host writes to the device or make
+	// this memory explicitly using the host cache management commands vkFlushMappedMemoryRanges and vkInvalidateMappedMemoryRanges to flush host writes to the device or make
 	// device writes visible to the host respectively.
 	pvrvk::MemoryPropertyFlags requiredFlags = pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT;
 	pvrvk::MemoryPropertyFlags optimalFlags = requiredFlags | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT;
@@ -1718,7 +1719,7 @@ void VulkanIntroducingPVRVk::createVbo()
 	// contents of the memory.
 	if ((_deviceResources->vbo->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT) != 0)
 	{
-		// Memory created using vkAllocateMemory isn't directly accesible to the host and instead must be mapped manually.
+		// Memory created using vkAllocateMemory isn't directly accessible to the host and instead must be mapped manually.
 		// Note that only memory created with the memory property flag pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT can be mapped.
 		// vkMapMemory retrieves a host virtual address pointer to a region of a mappable memory object.
 		void* mapped = _deviceResources->vbo->getDeviceMemory()->map(0, vboSize);
@@ -1726,7 +1727,7 @@ void VulkanIntroducingPVRVk::createVbo()
 		memcpy(mapped, triangle, sizeof(triangle));
 
 		// If the memory property flags for the allocated memory included the use of pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT then the host does not need to manage the
-		// memory accesses explictly using the host cache management commands vkFlushMappedMemoryRanges and vkInvalidateMappedMemoryRanges to flush host writes to
+		// memory accesses explicitly using the host cache management commands vkFlushMappedMemoryRanges and vkInvalidateMappedMemoryRanges to flush host writes to
 		// the device or make device writes visible to the host respectively. This behaviour is handled by the implementation.
 		if ((_deviceResources->vbo->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
 		{
@@ -1756,7 +1757,7 @@ void VulkanIntroducingPVRVk::createVbo()
 			memcpy(mapped, triangle, sizeof(triangle));
 
 			// If the memory property flags for the allocated memory included the use of pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT then the host does not need to manage the
-			// memory accesses explictly using the host cache management commands vkFlushMappedMemoryRanges and vkInvalidateMappedMemoryRanges to flush host writes to
+			// memory accesses explicitly using the host cache management commands vkFlushMappedMemoryRanges and vkInvalidateMappedMemoryRanges to flush host writes to
 			// the device or make device writes visible to the host respectively. This behaviour is handled by the implementation.
 			if ((stagingBuffer->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
 			{
@@ -1788,7 +1789,7 @@ void VulkanIntroducingPVRVk::createVbo()
 
 		_deviceResources->queue->submit(submitInfo, copyFence);
 
-		// Wait for the specified fence to be signaled which ensures that the command buffer has finished executing.
+		// Wait for the specified fence to be signalled which ensures that the command buffer has finished executing.
 		copyFence->wait();
 	}
 }
@@ -1814,7 +1815,7 @@ void VulkanIntroducingPVRVk::createUniformBuffers()
 
 	// The use of pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT indicates that memory allocated with this memory property type can be mapped and unmapped enabling host
 	// access using calls to vkMapMemory and vkUnmapMemory respectively. The memory property flag pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT is guaranteed to be available
-	// The use of pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT indicates the host does not need to manage the memory accesses explictly using the host cache management
+	// The use of pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT indicates the host does not need to manage the memory accesses explicitly using the host cache management
 	// commands vkFlushMappedMemoryRanges and vkInvalidateMappedMemoryRanges to flush host writes to the device or make device writes visible to the host respectively. This
 	// behaviour is handled by the implementation.
 	pvrvk::MemoryPropertyFlags requiredPropertyFlags = pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT;
@@ -1842,7 +1843,7 @@ void VulkanIntroducingPVRVk::createUniformBuffers()
 	}
 }
 
-/// <summary>Generates a simple checkerboard texture.</summary>
+/// <summary>Generates a simple checker board texture.</summary>
 void VulkanIntroducingPVRVk::generateTexture()
 {
 	// Generates a simple checkered texture which will be applied and used as a texture for the triangle we are going to render and rotate on screen.
@@ -1873,7 +1874,7 @@ void VulkanIntroducingPVRVk::allocateDescriptorSets()
 	_deviceResources->staticDescriptorSet = _deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->staticDescriptorSetLayout);
 	_deviceResources->dynamicDescriptorSet = _deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->dynamicDescriptorSetLayout);
 
-	// Note that at this point the descriptor sets are largely unintialized and all the descriptors are undefined although
+	// Note that at this point the descriptor sets are largely uninitialised and all the descriptors are undefined although
 	// the descriptor sets can still be bound to command buffers without issues.
 
 	// In our case we will update the descriptor sets immediately using descriptor set write operations.
@@ -1941,16 +1942,16 @@ void VulkanIntroducingPVRVk::createDescriptorPool()
 																						  .setMaxDescriptorSets(2));
 }
 
-/// <summary>Creates a checkerboard texture which will be applied to the triangle during rendering.</summary>
+/// <summary>Creates a checker board texture which will be applied to the triangle during rendering.</summary>
 void VulkanIntroducingPVRVk::createTexture()
 {
-	// Creates a checkerboard texture which will be applied to the triangle during rendering.
+	// Creates a checker board texture which will be applied to the triangle during rendering.
 
 	// In Vulkan, uploading an image/texture requires a few more steps than those familiar with older APIs would expect however these steps are required due to the explicit
 	// nature of Vulkan and the control Vulkan affords to the user making possible various performance optimisations. These steps include:
 
 	// 1) Create the (CPU side) texture:
-	//	  a) Create the texture data in cpu side memory.
+	//	  a) Create the texture data in CPU side memory.
 
 	// 2) Create the (empty) (GPU side) texture:
 	//    a) Creating the Vulkan texture definition - a "pvrvk::Image" object.
@@ -1966,12 +1967,12 @@ void VulkanIntroducingPVRVk::createTexture()
 	//    a) Create a view for the Vulkan texture so that it can be accessed by pipelines shaders for reading or writing to its image data - "pvrvk::ImageView" object
 	//    b) Create a sampler controlling how the sampled image data is sampled when accessed by pipeline shaders.
 
-	// A texture (Sampled Image) is stored in the GPU in an implementation-defined way, which may be completely different to the layout of the texture on disk/cpu side.
+	// A texture (Sampled Image) is stored in the GPU in an implementation-defined way, which may be completely different to the layout of the texture on disk/CPU side.
 	// For that reason, it is not possible to map its memory and write directly the data for that image.
 	// This is the reason for the second (Uploading) step: The vkCmdCopyBufferToImage command guarantees the correct translation/swizzling of the texture data.
 
 	//
-	// 1a). Create the texture data in cpu side memory.
+	// 1a). Create the texture data in CPU side memory.
 	//
 
 	// Setup the texture dimensions and the size of the texture itself.
@@ -1979,7 +1980,7 @@ void VulkanIntroducingPVRVk::createTexture()
 	_textureDimensions.setHeight(256);
 	_textureData.resize(_textureDimensions.getWidth() * _textureDimensions.getHeight() * (sizeof(uint8_t) * 4));
 
-	// This function generates our texture pattern on-the-fly into a block of cpu side memory (_textureData)
+	// This function generates our texture pattern on-the-fly into a block of CPU side memory (_textureData)
 	generateTexture();
 
 	//
@@ -2032,7 +2033,7 @@ void VulkanIntroducingPVRVk::createTexture()
 		memcpy(mapped, _textureData.data(), _textureData.size());
 
 		// If the memory property flags for the allocated memory included the use of pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT then the host does not need to manage the
-		// memory accesses explictly using the host cache management commands vkFlushMappedMemoryRanges and vkInvalidateMappedMemoryRanges to flush host writes to
+		// memory accesses explicitly using the host cache management commands vkFlushMappedMemoryRanges and vkInvalidateMappedMemoryRanges to flush host writes to
 		// the device or make device writes visible to the host respectively. This behaviour is handled by the implementation.
 		if ((stagingBuffer->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
 		{
@@ -2100,7 +2101,7 @@ void VulkanIntroducingPVRVk::createTexture()
 
 	_deviceResources->queue->submit(submitInfo, copyFence);
 
-	// Wait for the specified fence to be signaled which ensures that the command buffer has finished executing.
+	// Wait for the specified fence to be signalled which ensures that the command buffer has finished executing.
 	copyFence->wait();
 
 	//
@@ -2146,7 +2147,7 @@ void VulkanIntroducingPVRVk::createRenderPass()
 	//		https://www.imgtec.com/blog/the-dr-in-tbdr-deferred-rendering-in-rogue/
 
 	// Each RenderPass subpass may reference a subset of the RenderPass's Framebuffer attachments for reading or writing where each subpass containing information
-	// about what happens to the attachment data when the subpass begins including whether to clear it, load it from memory or leave it unitialized as well
+	// about what happens to the attachment data when the subpass begins including whether to clear it, load it from memory or leave it uninitialised as well
 	// as what to do with the attachment data when the subpass ends including storing it back to memory or discarding it.
 	// RenderPasses require that applications explicitly set out the dependencies between the subpasses providing an implementation with the know-how to effectively optimize
 	// when it should flush/clear/store memory in way it couldn't before. RenderPasses are a prime example of how Vulkan has replaced implementation guess work with the
@@ -2156,11 +2157,11 @@ void VulkanIntroducingPVRVk::createRenderPass()
 	// Another important feature introduced by Vulkan is the use of transient images (specify VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT in the pvrvk::ImageUsageFlags member of their
 	// pvrvk::ImageCreateInfo creation structure).
 	// Consider an attachment which is only ever written to and read during a single RenderPass, an attachment which begins either uninitialized or in a cleared state,
-	// which is first written to by one or more subpasses and then read from by one or more subpasses with the resulting attachment data ultimataly discarded then
+	// which is first written to by one or more subpasses and then read from by one or more subpasses with the resulting attachment data ultimately discarded then
 	// technically the image data never needs to be written out to main memory, further it doesn't need true memory backing at all.
 	// The image data only has a temporary lifetime and therefore can happily live only in cached on-chip memory.
 
-	// RenderPass subpasses, input attachments and transient attachments make possible huge savings in bandwidth, critically for mobile architecures, but also reduce latency by
+	// RenderPass subpasses, input attachments and transient attachments make possible huge savings in bandwidth, critically for mobile architectures, but also reduce latency by
 	// explicitly setting out their dependencies leading ultimately to a reduction in power consumption.
 
 	// RenderPass subpasses and transient attachments owe a lot to the OpenGL ES extensions GL_EXT_shader_pixel_local_storage, GL_EXT_shader_pixel_local_storage2 pioneered by
@@ -2168,13 +2169,13 @@ void VulkanIntroducingPVRVk::createRenderPass()
 	//		https://www.khronos.org/registry/OpenGL/extensions/EXT/EXT_shader_pixel_local_storage.txt
 	//		https://www.khronos.org/registry/OpenGL/extensions/EXT/EXT_shader_pixel_local_storage2.txt
 
-	// This demo uses a very simple RenderPass with a color and depth stencil attachment. The RenderPass then makes use of a single subpass referencing both the color and
+	// This demo uses a very simple RenderPass with a colour and depth stencil attachment. The RenderPass then makes use of a single subpass referencing both the colour and
 	// depth/stencil attachments of the RenderPass. More complicated examples are included in SDK showing off the benefits and optimizations made possible through the use of
 	// RenderPasses with multiple subpasses including the use of input attachments and transient attachments. Check out our DeferredShading example to see how to make the most
 	// RenderPasses and the benefits they can provide to a tiled architecture.
 	pvrvk::RenderPassCreateInfo renderPassInfo;
 
-	// An attachment description desribes the structure of an attachment including formats, number of samples, image layout transitions and how the image should be handled at
+	// An attachment description describes the structure of an attachment including formats, number of samples, image layout transitions and how the image should be handled at
 	// the beginning and end of the RenderPass including whether to load or clear memory and store or discard memory respectively.
 	pvrvk::AttachmentDescription attachmentDescriptions[2];
 
@@ -2182,14 +2183,14 @@ void VulkanIntroducingPVRVk::createRenderPass()
 	// attachments. A subpass description specifies the subset of attachments involved in the particular phase of rendering corresponding to the subpass.
 	pvrvk::SubpassDescription subpass;
 
-	// The subpass makes use of a single color attachment and the depth stencil attachment matching RenderPass attachments at index 0 and 1 repsectively.
+	// The subpass makes use of a single colour attachment and the depth stencil attachment matching RenderPass attachments at index 0 and 1 respectively.
 	subpass.setColorAttachmentReference(0, pvrvk::AttachmentReference(0, pvrvk::ImageLayout::e_COLOR_ATTACHMENT_OPTIMAL));
 	subpass.setDepthStencilAttachmentReference(pvrvk::AttachmentReference(1, pvrvk::ImageLayout::e_DEPTH_STENCIL_ATTACHMENT_OPTIMAL));
 	subpass.setPipelineBindPoint(pvrvk::PipelineBindPoint::e_GRAPHICS);
 
 	renderPassInfo.setSubpass(0, subpass);
 
-	// The first pvrvk::AttachmentDescription describes a color attachment which will be undefined initially (VK_IMAGE_LAYOUT_UNDEFINED), transitioning to a layout suitable for
+	// The first pvrvk::AttachmentDescription describes a colour attachment which will be undefined initially (VK_IMAGE_LAYOUT_UNDEFINED), transitioning to a layout suitable for
 	// presenting to the screen (VK_IMAGE_LAYOUT_PRESENT_SRC_KHR), uses only a single sample per pixel (VK_SAMPLE_COUNT_1_BIT), a pvrvk::Format matching the format used by the
 	// swapchain images, a pvrvk::AttachmentLoadOp specifying that the attachment will be cleared at the beginning of the first subpass in which the attachment is used, a
 	// pvrvk::AttachmentStoreOp specifying that the attachment will be stored (VK_ATTACHMENT_STORE_OP_STORE) at the end of the subpass in which the attachment is last used. The
@@ -2240,8 +2241,8 @@ void VulkanIntroducingPVRVk::createFramebuffer()
 	// Note that each element of pAttachments must have dimensions at least as large as the Framebuffer dimensions.
 	framebufferInfo.setNumLayers(1);
 	framebufferInfo.setDimensions(getWidth(), getHeight());
-	// This Framebuffer is comapatible with the application renderPass or with any other renderPass compatible with the application renderPass. For more information on
-	// RenderPass compatbility please refer to the Vulkan spec section "Render Pass Compatibility".
+	// This Framebuffer is compatible with the application renderPass or with any other renderPass compatible with the application renderPass. For more information on
+	// RenderPass compatibility please refer to the Vulkan spec section "Render Pass Compatibility".
 	framebufferInfo.setRenderPass(_deviceResources->renderPass);
 
 	// Create a Framebuffer per swapchain making use of the per swapchain presentation image and depth stencil image.
@@ -2273,7 +2274,7 @@ void VulkanIntroducingPVRVk::createSynchronisationPrimitives()
 	// One of the major changes in strategy introduced in Vulkan has been that there are fewer implicit guarantees as to the order in which commands are executed with respect
 	// to other commands on the device and the host itself. Synchronization has now become the responsibility of the application.
 
-	// Here we create the fences and semaphores used for synchornizing image acquisition, the use of per frame resources, submission to device queues and finally the
+	// Here we create the fences and semaphores used for synchronising image acquisition, the use of per frame resources, submission to device queues and finally the
 	// presentation of images. Note that the use of these synchronization primitives are explained in detail in the renderFrame function.
 
 	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)

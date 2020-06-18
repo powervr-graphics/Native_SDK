@@ -1,10 +1,11 @@
 cmake_minimum_required(VERSION 3.3)
+# Copyright (c) Imagination Technologies Limited.
+
 project(PVRCore)
 
 include(GNUInstallDirs)
 include(CMakeFindDependencyMacro)
-include(../../cmake/CompilerFunctions.cmake)
-include(../../cmake/Functions.cmake)
+include(../Common.cmake)
 
 if(NOT EXISTS "${CMAKE_CURRENT_LIST_DIR}/../../external/glm")
 	message("GLM not present in ../../external/glm. Skipping parts of PVRCore requiring geometry and math.")
@@ -80,6 +81,7 @@ set(PVRCore_SRC
 	textureio/TextureWriterPVR.cpp
 	Time.cpp)
 
+#Only include math in GLM is present
 if (NOT PVRCore_NO_GLM)
 	list(APPEND PVRCore_HEADERS
 		glm.h
@@ -95,7 +97,7 @@ if (NOT PVRCore_NO_GLM)
 	)
 endif()
 
-
+#Only include PFXParser if both GLM and PugiXML are present
 if (NOT PVRCore_NO_GLM AND NOT PVRCore_NO_PUGIXML)
 	list(APPEND PVRCore_HEADERS
 		pfx/PFXParser.h
@@ -146,7 +148,7 @@ else()
 endif()
 
 if(PVR_PREBUILT_DEPENDENCIES)
-	list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/../../cmake/modules")
+	list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/../cmake/modules")
 	if (NOT PVRCore_NO_GLM)
 		find_dependency(glm MODULE REQUIRED)
 	endif()
@@ -155,7 +157,7 @@ if(PVR_PREBUILT_DEPENDENCIES)
 	endif()
 endif()
 
-apply_compile_options_to_target(PVRCore)
+apply_framework_compile_options_to_target(PVRCore)
 
 if(PVRCore_NO_GLM)
 	target_compile_definitions(PVRCore PUBLIC PVRCORE_NO_GLM=1)
@@ -181,6 +183,7 @@ install(TARGETS PVRCore EXPORT PVRCoreTargets
 	RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 	INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 	OPTIONAL)
+
 foreach(file ${PVRCore_HEADERS})
 	get_filename_component(dir ${file} DIRECTORY)
 	install(FILES ${file} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/PVRCore/${dir})

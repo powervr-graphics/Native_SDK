@@ -33,11 +33,11 @@ add_assets_to_target(VulkanDeferredShading
 	ASSET_FOLDER ${ASSET_FOLDER} 
 	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/Satyr
 	FILE_LIST 
+		SatyrAndTable.pod
+		pointlight.pod
 		Marble.pvr
 		MarbleNormalMap.pvr
-		Table.pvr
-		SatyrAndTable.pod
-		pointlight.pod)
+		Table.pvr)
 
 ### Shaders that need to be compiled to SpirV (Vulkan) ###
 # During build time, glslangvalidator will be called to create a "<shadername.extension>.spv" file
@@ -67,7 +67,7 @@ add_assets_resource_file(VulkanDeferredShading)
 # Apply SDK example specific compile and linker options
 apply_example_compile_options_to_target(VulkanDeferredShading)
 
-target_link_libraries(VulkanDeferredShading
+target_link_libraries(VulkanDeferredShading PUBLIC
 	PVRShell
 	PVRUtilsVk
 )

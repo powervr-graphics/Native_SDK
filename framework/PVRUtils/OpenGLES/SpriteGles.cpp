@@ -191,13 +191,13 @@ void Font_::loadFontData(const Texture& texture)
 	_dim.x = texHeader.getWidth();
 	_dim.y = texHeader.getHeight();
 
-	const Header* header = reinterpret_cast<const Header*>(texture.getMetaDataMap()->at(TextureHeader::Header::PVRv3).at(FontHeader).getData());
+	const Header* header = reinterpret_cast<const Header*>(texture.getMetaDataMap()->at(TextureHeader::PVRv3).at(FontHeader).getData());
 
 	_header = *header;
 	_header.numCharacters = _header.numCharacters & 0xFFFF;
 	_header.numKerningPairs = _header.numKerningPairs & 0xFFFF;
 
-	const std::map<uint32_t, TextureMetaData>& metaDataMap = texture.getMetaDataMap()->at(TextureHeader::Header::PVRv3);
+	const std::map<uint32_t, TextureMetaData>& metaDataMap = texture.getMetaDataMap()->at(TextureHeader::PVRv3);
 	std::map<uint32_t, TextureMetaData>::const_iterator found;
 
 	if (_header.numCharacters)

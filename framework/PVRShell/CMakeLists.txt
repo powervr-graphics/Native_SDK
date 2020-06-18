@@ -1,10 +1,11 @@
 cmake_minimum_required(VERSION 3.3)
+# Copyright (c) Imagination Technologies Limited.
+
 project(PVRShell)
 
 include(GNUInstallDirs)
 include(CMakeFindDependencyMacro)
-include(../../cmake/CompilerFunctions.cmake)
-include(../../cmake/Functions.cmake)
+include(../Common.cmake)
 
 set(PVRShell_PRIVATE_LINK_LIBS "")
 
@@ -50,7 +51,7 @@ elseif(APPLE)
 			OS/AppKit/ShellOS.mm
 			OS/AppKit/ViewMTL.mm)
 			
-		find_library(lib-Metal Metal)			
+		find_library(lib-Metal Metal)
 		find_library(lib-appkit AppKit)
 		list(APPEND PVRShell_PRIVATE_LINK_LIBS ${lib-appkit} ${lib-Metal})
 	endif()
@@ -181,18 +182,18 @@ endif()
 add_library(PVRShell STATIC ${PVRShell_SRC} ${PVRShell_HEADERS})
 
 if(PVR_PREBUILT_DEPENDENCIES)
-	list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/../../cmake/modules")
+	list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/../cmake/modules")
 	find_dependency(PVRCore MODULE REQUIRED)
 endif()
 
-apply_compile_options_to_target(PVRShell)
+apply_framework_compile_options_to_target(PVRShell)
 
 target_link_libraries(PVRShell 
 	PUBLIC
 		PVRCore
 	PRIVATE
 		${PVRShell_PRIVATE_LINK_LIBS})
-		
+
 if(APPLE)
 	target_link_libraries(PVRShell PUBLIC "-ObjC")
 endif()

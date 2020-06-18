@@ -1,20 +1,19 @@
-/*!*********************************************************************************************************************
-\File         VulkanImageBasedLighting.cpp
-\Title        Introducing the PowerVR Framework
-\Author       PowerVR by Imagination, Developer Technology Team
-\Copyright    Copyright (c) Imagination Technologies Limited.
-\brief        This example demonstrates how to use Physically based rendering using Metallic-Roughness work flow showcasing 2 scenes (helmet and sphere) with Image based lighting
-			  (IBL). The Technique presented here is based on Epic Games publication http://blog.selfshadow.com/publications/s2013-shading-course/karis/s2013_pbs_epic_notes_v2.pdf
-***********************************************************************************************************************/
+/*!
+\brief This example demonstrates how to use Physically based rendering using Metallic-Roughness work flow showcasing 2 scenes (helmet and sphere) with Image based lighting
+	   (IBL). The Technique presented here is based on Epic Games publication http://blog.selfshadow.com/publications/s2013-shading-course/karis/s2013_pbs_epic_notes_v2.pdf
+\file  VulkanImageBasedLighting.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 
 /*!
 IBL Description
 	Material: Metallic-Roughness
 	============================
-	- Albedo map: This is a raw color of the material. This map shouldn't contains any shading information like Ambient Occlusion which is
+	- Albedo map: This is a raw colour of the material. This map shouldn't contains any shading information like Ambient Occlusion which is
 	very often baked in the diffuse map for phong model.
-	It does not only influence the diffuse color, but also the specular color of the material as well.
-	When the metallness is one(metallic material) the base color is the specular.
+	It does not only influence the diffuse colour, but also the specular colour of the material as well.
+	When the metallness is one(metallic material) the base colour is the specular.
 
 	- MetallicRoughness map: The metallic-roughness texture.
 	The metalness values are sampled from the B channel and roughness values are sampled from the G channel, other channels are ignored.
@@ -25,7 +24,7 @@ IBL Description
 	f = Cdiff / PI
 	Cdiff: Diffuse albedo of the material.
 
-	*Specular BRDF: Cook-Torance
+	*Specular BRDF: Cook-Torrance
 	f = D * F * G / (4 * (N.L) * (N.V));
 	D: NDF (Normal Distribution function), It computes the distribution of the microfacets for the shaded surface
 	F: Describes how light reflects and refracts at the intersection of two different media (most often in computer graphics : Air and the shaded surface)
@@ -35,32 +34,32 @@ IBL Description
 
 	IBL workflow
 	============
-	IBL is one of the most common technique for implmenting global illumination. The idea is that using environmap as light source.
+	IBL is one of the most common technique for implementing global illumination. The idea is that using environ-map as light source.
 
 	IBL Diffuse:
 	The application load/ generates a diffuse Irradiance map: This is normally done in offline but the code is left here for education
-	purpose. Normally when lambert diffuse is used in games, it is the light color multiplied by the visibility factor( N dot L).
+	purpose. Normally when Lambert diffuse is used in games, it is the light colour multiplied by the visibility factor( N dot L).
 	But when using Indirectional lighting (IBL)  the visibility factor is not considered because the light is coming from every where.
-	So the diffuse factor is the light color.
+	So the diffuse factor is the light colour.
 	All the pixels in the environment map is a light source, so when shading a point it has to be lit by many pixels from the environment map.
-	Sampling multiple texels for shading a single point is not practical for realtime application. Therefore these samples are precomputed
+	Sampling multiple texels for shading a single point is not practical for real-time application. Therefore these samples are precomputed
 	in the diffuse irradiance map. So at run time it would be a single texture fetch for the given reflection direction.
 
 	IBL Specular & BRDF_LUT:
-	Specular reflections looks shiny when the roughness values is low and it becames blurry when the roughness value is high.
+	Specular reflections looks shiny when the roughness values is low and it becomes blurry when the roughness value is high.
 	This is encoded in the specular irradiance texture.
 	We use the same technique, Split-Sum-Approximation presented by Epics Games, each mip level of this image contains the environment map specular reflectance.
-	Mip level 0 contains samples for roughness value 0, and the remaining miplevels get blurry for each mip level as the roughness value increases to 1.
+	Mip level 0 contains samples for roughness value 0, and the remaining mip levels get blurry for each mip level as the roughness value increases to 1.
 
-	The samples encoded in this map is the result of the specular BRDF of the environment map. For each pixels in the environemt map,
-	computes the Cook-Torrentz microfacet BRDF and stores those results.
+	The samples encoded in this map is the result of the specular BRDF of the environment map. For each pixels in the environment map,
+	computes the Cook-Torrence microfacet BRDF and stores those results.
 
-	Using the mip map for storing blured images for each roughness value has one draw backs, Specular antialising.
+	Using the mip map for storing blurred images for each roughness value has one draw backs, Specular antialiasing.
 	This happens for the level 0. Since we are using the mip map for different purpose, we can't use mipmapping technique
-	to solve the aliasing artifact for high resoultion texture which is level0 of the specular irradiance map.
-	Other mip map levels doesn'y have this issue as they are blured and low res.
+	to solve the aliasing artefact for high resolution texture which is level0 of the specular irradiance map.
+	Other mip map levels doesn't have this issue as they are blurred and low res.
 
-	To solve this issue we use another texture for doing mipmaping for level 0 of the specular Irradiance map.
+	To solve this issue we use another texture for doing mipmapping for level 0 of the specular Irradiance map.
 */
 
 #include "PVRShell/PVRShell.h"
@@ -136,7 +135,7 @@ public:
 			static_cast<uint32_t>(device->getPhysicalDevice()->getProperties().getLimits().getMinUniformBufferOffsetAlignment()));
 
 		ubo = pvr::utils::createBuffer(device, pvrvk::BufferCreateInfo(uboView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT),
-			pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT | pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, &allocator);
+			pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT | pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, allocator);
 		uboView.pointToMappedMemory(ubo->getDeviceMemory()->getMappedData());
 
 		// /// CREATE THE PIPELINE OBJECT FOR THE SKYBOX /// //
@@ -169,7 +168,7 @@ public:
 		cmdBuffer->begin();
 
 		skyBoxMap = device->createImageView(pvrvk::ImageViewCreateInfo(pvr::utils::loadAndUploadImage(device, SkyboxTexFile[currentSkybox] + ".pvr", true, cmdBuffer, assetProvider,
-			pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, nullptr, &allocator, &allocator)));
+			pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, nullptr, allocator, allocator)));
 
 		cmdBuffer->end();
 
@@ -190,15 +189,15 @@ public:
 
 		device->updateDescriptorSets(writeDescSets, ARRAY_SIZE(writeDescSets), nullptr, 0);
 
-		// Load (or generate) the other image based lighting files (diffuse/irradiance, specular/prefiltered)
+		// Load (or generate) the other image based lighting files (diffuse/irradiance, specular/pre-filtered)
 
 		std::string diffuseMapFilename = SkyboxTexFile[currentSkybox] + "_Irradiance.pvr";
 		std::string prefilteredMapFilename = SkyboxTexFile[currentSkybox] + "_Prefiltered.pvr";
 
 		irradianceMap = pvr::utils::loadAndUploadImageAndView(device, diffuseMapFilename.c_str(), true, cmdBuffer, assetProvider, pvrvk::ImageUsageFlags::e_SAMPLED_BIT,
-			pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, nullptr, &allocator, &allocator);
+			pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, nullptr, allocator, allocator);
 		prefilteredMap = pvr::utils::loadAndUploadImageAndView(device, prefilteredMapFilename.c_str(), true, cmdBuffer, assetProvider, pvrvk::ImageUsageFlags::e_SAMPLED_BIT,
-			pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, nullptr, &allocator, &allocator);
+			pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, nullptr, allocator, allocator);
 
 		numPrefilteredMipLevels = prefilteredMap->getImage()->getNumMipLevels();
 
@@ -299,7 +298,7 @@ public:
 	{
 		model = pvr::assets::loadModel(assetProvider, SphereModelFileName);
 
-		pvr::utils::appendSingleBuffersFromModel(device, *model, vbos, ibos, uploadCmdBuffer, requireSubmission, &allocator);
+		pvr::utils::appendSingleBuffersFromModel(device, *model, vbos, ibos, uploadCmdBuffer, requireSubmission, allocator);
 
 		createPipeline(assetProvider, device, basePipeline, pipelineCache);
 	}
@@ -361,7 +360,7 @@ public:
 		vbos.resize(model->getNumMeshes());
 		ibos.resize(model->getNumMeshes());
 
-		pvr::utils::createSingleBuffersFromMesh(device, model->getMesh(0), vbos[0], ibos[0], uploadCmdBuffer, requireSubmission, &allocator);
+		pvr::utils::createSingleBuffersFromMesh(device, model->getMesh(0), vbos[0], ibos[0], uploadCmdBuffer, requireSubmission, allocator);
 
 		// Load the texture
 		loadTextures(assetProvider, device, uploadCmdBuffer, allocator);
@@ -439,7 +438,7 @@ private:
 			std::unique_ptr<pvr::Stream> stream = assetProvider.getAssetStream(model->getTexture(i).getName());
 			pvr::Texture tex = pvr::textureLoad(*stream, pvr::TextureFileFormat::PVR);
 			images.push_back(pvr::utils::uploadImageAndView(device, tex, true, uploadCmdBuffer, pvrvk::ImageUsageFlags::e_SAMPLED_BIT,
-				pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, &allocator, &allocator, pvr::utils::vma::AllocationCreateFlags::e_DEDICATED_MEMORY_BIT));
+				pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, allocator, allocator, pvr::utils::vma::AllocationCreateFlags::e_DEDICATED_MEMORY_BIT));
 		}
 	}
 
@@ -450,9 +449,7 @@ private:
 	pvrvk::GraphicsPipeline pipeline;
 };
 
-/*!*********************************************************************************************************************
- Class implementing the pvr::Shell functions.
-***********************************************************************************************************************/
+/// <summary>Implementing the pvr::Shell functions.</summary>
 class VulkanImageBasedLighting : public pvr::Shell
 {
 	typedef std::pair<int32_t, pvrvk::DescriptorSet> MaterialDescSet;
@@ -468,7 +465,6 @@ class VulkanImageBasedLighting : public pvr::Shell
 	{
 		pvrvk::Instance instance;
 		pvr::utils::DebugUtilsCallbacks debugUtilsCallbacks;
-		pvrvk::Surface surface;
 		pvrvk::Device device;
 		pvrvk::Swapchain swapchain;
 		pvr::utils::vma::Allocator vmaAllocator;
@@ -558,13 +554,11 @@ public:
 		float oldexposure = exposure;
 		switch (action)
 		{
-		case pvr::SimplifiedInput::Action1:
-		{
+		case pvr::SimplifiedInput::Action1: {
 			_pause = !_pause;
 			break;
 		}
-		case pvr::SimplifiedInput::Action2:
-		{
+		case pvr::SimplifiedInput::Action2: {
 			uint32_t currentModel = static_cast<uint32_t>(_currentModel);
 			currentModel += 1;
 			currentModel = (currentModel + static_cast<uint32_t>(Models::NumModels)) % static_cast<uint32_t>(Models::NumModels);
@@ -572,8 +566,7 @@ public:
 			memset(_updateCommands, 1, sizeof(_updateCommands));
 			break;
 		}
-		case pvr::SimplifiedInput::Action3:
-		{
+		case pvr::SimplifiedInput::Action3: {
 			(++currentSkybox) %= numSkyBoxes;
 			_deviceResources->skyBoxPass.setSkyboxImage(*this, _deviceResources->queue, _deviceResources->commandPool, _deviceResources->descriptorPool,
 				_deviceResources->vmaAllocator, _deviceResources->samplerTrilinear);
@@ -581,20 +574,17 @@ public:
 			_updateDescriptors = true;
 			break;
 		}
-		case pvr::SimplifiedInput::Left:
-		{
+		case pvr::SimplifiedInput::Left: {
 			exposure *= .75;
 			if (oldexposure > 1.f && exposure < 1.f) exposure = 1.f;
 			break;
 		}
-		case pvr::SimplifiedInput::Right:
-		{
+		case pvr::SimplifiedInput::Right: {
 			exposure *= 1.25;
 			if (oldexposure < 1.f && exposure > 1.f) exposure = 1.f;
 			break;
 		}
-		case pvr::SimplifiedInput::ActionClose:
-		{
+		case pvr::SimplifiedInput::ActionClose: {
 			this->exitShell();
 			break;
 		}
@@ -629,7 +619,7 @@ pvr::Result VulkanImageBasedLighting::initView()
 
 	// Create vulkan instance and surface
 	_deviceResources->instance = pvr::utils::createInstance(this->getApplicationName());
-	_deviceResources->surface =
+	pvrvk::Surface surface =
 		pvr::utils::createSurface(_deviceResources->instance, _deviceResources->instance->getPhysicalDevice(0), this->getWindow(), this->getDisplay(), this->getConnection());
 
 	// Create a default set of debug utils messengers or debug callbacks using either VK_EXT_debug_utils or VK_EXT_debug_report respectively
@@ -638,7 +628,7 @@ pvr::Result VulkanImageBasedLighting::initView()
 	pvrvk::PhysicalDevice physicalDevice = _deviceResources->instance->getPhysicalDevice(0);
 
 	// Populate queue for rendering and transfer operation
-	const pvr::utils::QueuePopulateInfo queuePopulateInfo = { pvrvk::QueueFlags::e_GRAPHICS_BIT, _deviceResources->surface };
+	const pvr::utils::QueuePopulateInfo queuePopulateInfo = { pvrvk::QueueFlags::e_GRAPHICS_BIT, surface };
 
 	// Create the device and queue
 	pvr::utils::QueueAccessInfo queueAccessInfo;
@@ -647,27 +637,22 @@ pvr::Result VulkanImageBasedLighting::initView()
 	// Get the queue
 	_deviceResources->queue = _deviceResources->device->getQueue(queueAccessInfo.familyId, queueAccessInfo.queueId);
 
-	// validate the supported swapchain image usage for src trasfer option for capturing screenshots.
-	pvrvk::SurfaceCapabilitiesKHR surfaceCapabilities = physicalDevice->getSurfaceCapabilities(_deviceResources->surface);
+	// validate the supported swapchain image usage for source transfer option for capturing screenshots.
+	pvrvk::SurfaceCapabilitiesKHR surfaceCapabilities = physicalDevice->getSurfaceCapabilities(surface);
 	pvrvk::ImageUsageFlags swapchainImageUsage = pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT;
-	if (pvr::utils::isImageUsageSupportedBySurface(surfaceCapabilities, pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT))
-	{
-		swapchainImageUsage |= pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT; // Transfer operation supported.
-	}
+	if (pvr::utils::isImageUsageSupportedBySurface(surfaceCapabilities, pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT)) // Transfer operation supported.
+	{ swapchainImageUsage |= pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT; }
 
-	// initialse the vma allocator
+	// initialise the vma allocator
 	_deviceResources->vmaAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
 
-	// Create the swapchain and depth-stencil image views
-	pvr::utils::createSwapchainAndDepthStencilImageAndViews(_deviceResources->device, _deviceResources->surface, getDisplayAttributes(), _deviceResources->swapchain,
-		_deviceResources->depthStencilImages, swapchainImageUsage, pvrvk::ImageUsageFlags::e_DEPTH_STENCIL_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_TRANSIENT_ATTACHMENT_BIT,
-		&_deviceResources->vmaAllocator);
+	auto swapChainCreateOutput = pvr::utils::createSwapchainRenderpassFramebuffers(_deviceResources->device, surface, getDisplayAttributes(),
+		pvr::utils::CreateSwapchainParameters().setAllocator(_deviceResources->vmaAllocator).setColorImageUsageFlags(swapchainImageUsage));
 
-	// Create the framebuffer
-	pvrvk::RenderPass rp;
-	pvr::utils::createOnscreenFramebufferAndRenderPass(_deviceResources->swapchain, &_deviceResources->depthStencilImages[0], _deviceResources->onScreenFramebuffer, rp);
+	_deviceResources->swapchain = swapChainCreateOutput.swapchain;
+	_deviceResources->onScreenFramebuffer = swapChainCreateOutput.framebuffer;
 
-	// Create the Commandpool & Descriptorpool
+	// Create the Command pool & Descriptor pool
 	_deviceResources->commandPool =
 		_deviceResources->device->createCommandPool(pvrvk::CommandPoolCreateInfo(queueAccessInfo.familyId, pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT));
 	if (!_deviceResources->commandPool) { return pvr::Result::UnknownError; }
@@ -681,7 +666,7 @@ pvr::Result VulkanImageBasedLighting::initView()
 
 	if (!_deviceResources->descriptorPool) { return pvr::Result::UnknownError; }
 
-	// Create synchronization objects and commandbuffers
+	// Create synchronization objects and command buffers
 	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
 	{
 		_deviceResources->presentationSemaphores[i] = _deviceResources->device->createSemaphore();
@@ -718,7 +703,7 @@ pvr::Result VulkanImageBasedLighting::initView()
 
 	_deviceResources->brdfLUT = _deviceResources->device->createImageView(
 		pvrvk::ImageViewCreateInfo(pvr::utils::loadAndUploadImage(_deviceResources->device, BrdfLUTTexFile, true, _deviceResources->cmdBuffers[0], *this,
-			pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, nullptr, &_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator)));
+			pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, nullptr, _deviceResources->vmaAllocator, _deviceResources->vmaAllocator)));
 
 	createDescriptorSetLayouts();
 	createPipelineLayout();
@@ -901,7 +886,7 @@ pvr::Result VulkanImageBasedLighting::renderFrame()
 	if (this->shouldTakeScreenshot())
 	{
 		pvr::utils::takeScreenshot(_deviceResources->queue, _deviceResources->commandPool, _deviceResources->swapchain, swapchainIndex, this->getScreenshotFileName(),
-			&_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
+			_deviceResources->vmaAllocator, _deviceResources->vmaAllocator);
 	}
 
 	// present
@@ -918,9 +903,7 @@ pvr::Result VulkanImageBasedLighting::renderFrame()
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\brief  Pre-record the rendering commands
-***********************************************************************************************************************/
+/// <summary>Pre-record the rendering commands.</summary>
 void VulkanImageBasedLighting::recordCommandBuffers(uint32_t swapIndex)
 {
 	const pvrvk::ClearValue clearValues[] = { pvrvk::ClearValue(0.0f, 0.0f, 0.0f, 1.0f), pvrvk::ClearValue(1.f, 0) };
@@ -983,7 +966,7 @@ void VulkanImageBasedLighting::createDescriptorSetLayouts()
 		_deviceResources->descSetLayouts[DescSetIndex::Model] = _deviceResources->device->createDescriptorSetLayout(descSetInfo);
 	}
 
-	// Material textures textures
+	// Material textures
 	{
 		pvrvk::DescriptorSetLayoutCreateInfo descSetInfo;
 		descSetInfo.setBinding(0, pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 1, pvrvk::ShaderStageFlags::e_FRAGMENT_BIT); // binding 0: Albedo
@@ -1010,9 +993,7 @@ void VulkanImageBasedLighting::createPipelineLayout()
 	_deviceResources->pipelineLayout = _deviceResources->device->createPipelineLayout(pipeLayoutInfo);
 }
 
-/*!*********************************************************************************************************************
-\brief  Creates the buffers used throughout the demo.
-***********************************************************************************************************************/
+/// <summary>Creates the buffers used throughout the demo.</summary>
 void VulkanImageBasedLighting::createUbos()
 {
 	// Per frame
@@ -1029,7 +1010,7 @@ void VulkanImageBasedLighting::createUbos()
 		const pvrvk::DeviceSize size = _deviceResources->uboPerFrame.view.getSize();
 		_deviceResources->uboPerFrame.buffer = pvr::utils::createBuffer(_deviceResources->device, pvrvk::BufferCreateInfo(size, pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT),
 			pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT | pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT,
-			&_deviceResources->vmaAllocator);
+			_deviceResources->vmaAllocator);
 
 		_deviceResources->uboPerFrame.view.pointToMappedMemory(_deviceResources->uboPerFrame.buffer->getDeviceMemory()->getMappedData());
 	}
@@ -1044,7 +1025,7 @@ void VulkanImageBasedLighting::createUbos()
 		const pvrvk::DeviceSize size = _deviceResources->uboWorld.view.getSize();
 		_deviceResources->uboWorld.buffer = pvr::utils::createBuffer(_deviceResources->device, pvrvk::BufferCreateInfo(size, pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT),
 			pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT | pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT,
-			&_deviceResources->vmaAllocator);
+			_deviceResources->vmaAllocator);
 		_deviceResources->uboWorld.view.pointToMappedMemory(_deviceResources->uboWorld.buffer->getDeviceMemory()->getMappedData());
 	}
 
@@ -1058,7 +1039,7 @@ void VulkanImageBasedLighting::createUbos()
 		_deviceResources->uboLights.view.init(desc);
 		_deviceResources->uboLights.buffer = pvr::utils::createBuffer(_deviceResources->device,
 			pvrvk::BufferCreateInfo(_deviceResources->uboLights.view.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
-			pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT | pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, &_deviceResources->vmaAllocator);
+			pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT | pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, _deviceResources->vmaAllocator);
 
 		_deviceResources->uboLights.view.pointToMappedMemory(_deviceResources->uboLights.buffer->getDeviceMemory()->getMappedData());
 
@@ -1083,7 +1064,7 @@ void VulkanImageBasedLighting::createUbos()
 
 		_deviceResources->uboMaterial.buffer = pvr::utils::createBuffer(_deviceResources->device,
 			pvrvk::BufferCreateInfo(_deviceResources->uboMaterial.view.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
-			pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT | pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, &_deviceResources->vmaAllocator);
+			pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT | pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, _deviceResources->vmaAllocator);
 
 		_deviceResources->uboMaterial.view.pointToMappedMemory(_deviceResources->uboMaterial.buffer->getDeviceMemory()->getMappedData());
 
@@ -1117,7 +1098,7 @@ void VulkanImageBasedLighting::createUbos()
 				auto sphereView = _deviceResources->uboMaterial.view.getElement(0, i * NumSphereColumns + j);
 				sphereView.getElement(0).setValue(color[i]);
 				sphereView.getElement(1).setValue(roughness[j]);
-				sphereView.getElement(2).setValue(float(i < 2) * 1.0f); // set the first 2 row metalicity and the remaining to 0.0
+				sphereView.getElement(2).setValue(float(i < 2) * 1.0f); // set the first 2 row metallicity and the remaining to 0.0
 			}
 		}
 
@@ -1126,10 +1107,8 @@ void VulkanImageBasedLighting::createUbos()
 	}
 }
 
-/*!*********************************************************************************************************************
-\brief  Create combined texture and sampler descriptor set for the materials in the _scene
-\return Return true on success
-***********************************************************************************************************************/
+/// <summary>Create combined texture and sampler descriptor set for the materials in the _scene.</summary>
+/// <returns>Return true on success.</returns>
 void VulkanImageBasedLighting::updateDescriptors()
 {
 	// Update the descriptor sets

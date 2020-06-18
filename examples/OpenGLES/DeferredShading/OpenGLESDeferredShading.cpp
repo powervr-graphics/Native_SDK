@@ -1,15 +1,15 @@
-/*!*********************************************************************************************************************
-\File         OpenGLESDeferredShading.cpp
-\Title        Deferred Shading
-\Author       PowerVR by Imagination, Developer Technology Team
-\Copyright    Copyright (c) Imagination Technologies Limited.
-\Description  Implements a deferred shading technique supporting point and directional lights.
-***********************************************************************************************************************/
+/*!
+\brief This demo demonstrates how to implement Deferred Shading efficiently OpenGL ES.
+\file OpenGLESDeferredShading.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
+
 #include "PVRShell/PVRShell.h"
 #include "PVRAssets/PVRAssets.h"
 #include "PVRUtils/PVRUtilsGles.h"
 
-// Shader vertex Bindings
+/// <summary>Shader vertex Bindings </summary>
 const pvr::utils::VertexBindings_Name vertexBindings[] = { { "POSITION", "inVertex" }, { "NORMAL", "inNormal" }, { "UV0", "inTexCoords" }, { "TANGENT", "inTangent" } };
 
 namespace AttributeIndices {
@@ -52,7 +52,7 @@ enum Enum
 };
 }
 
-// Light mesh nodes
+/// <summary>Light mesh nodes.</summary>
 enum class LightNodes
 {
 	PointLightMeshNode = 0,
@@ -66,7 +66,7 @@ enum class MeshNodes
 	NumberOfMeshNodes
 };
 
-// Structures used for storing the shared point light data for the point light passes
+/// <summary>Structures used for storing the shared point light data for the point light passes.</summary>
 struct PointLightPasses
 {
 	struct PointLightProperties
@@ -96,26 +96,26 @@ struct PointLightPasses
 	std::vector<InitialData> initialData;
 };
 
-// structure used to draw the point light sources
+/// <summary>structure used to draw the point light sources.</summary>
 struct DrawPointLightSources
 {
 	GLuint program;
 };
 
-// structure used to draw the proxy point light
+/// <summary>structure used to draw the proxy point light.</summary>
 struct DrawPointLightProxy
 {
 	GLuint program;
 	GLuint farClipDistanceLocation;
 };
 
-// structure used to fill the stencil buffer used for optimsing the the proxy point light pass
+/// <summary>structure used to fill the stencil buffer used for optimising the proxy point light pass.</summary>
 struct PointLightGeometryStencil
 {
 	GLuint program;
 };
 
-// structure used to render directional lighting
+/// <summary>structure used to render directional lighting.</summary>
 struct DrawDirectionalLight
 {
 	GLuint program;
@@ -128,13 +128,13 @@ struct DrawDirectionalLight
 	std::vector<DirectionalLightProperties> lightProperties;
 };
 
-// structure used to blit the contents of pls.color to the main framebuffer
+/// <summary>structure used to blit the contents of pls.color to the main framebuffer.</summary>
 struct BlitPlsToFbo
 {
 	GLuint program;
 };
 
-// structure used to fill the GBuffer
+/// <summary>structure used to fill the GBuffer.</summary>
 struct DrawGBuffer
 {
 	struct Objects
@@ -149,7 +149,7 @@ struct DrawGBuffer
 	std::vector<Objects> objects;
 };
 
-// structure used to hold the rendering information for the demo
+/// <summary>structure used to hold the rendering information for the demo.</summary>
 struct RenderData
 {
 	DrawGBuffer renderGBuffer; // pass 0
@@ -181,7 +181,7 @@ uint32_t DirectionalLightStatic = 0;
 uint32_t DirectionalLightDynamic = 1;
 } // namespace BufferIndices
 
-// Shader names for all of the demo passes
+/// <summary>Shader names for all of the demo passes.</summary>
 namespace Files {
 const std::string PointLightModelFile = "pointlight.pod";
 const std::string SceneFile = "SatyrAndTable.pod";
@@ -244,19 +244,19 @@ const std::string ProxyWorldViewMatrix = "mProxyWorldViewMatrix";
 } // namespace DynamicPointLight
 } // namespace BufferEntryNames
 
-// Application wide configuration data
+/// <summary>Application wide configuration data.</summary>
 namespace ApplicationConfiguration {
 const float FrameRate = 1.0f / 120.0f;
 }
 
-// Directional lighting configuration data
+/// <summary>Directional lighting configuration data.</summary>
 namespace DirectionalLightConfiguration {
 static bool AdditionalDirectionalLight = true;
 const float DirectionalLightIntensity = .1f;
 const glm::vec4 AmbientLightColor = glm::vec4(.005f, .005f, .005f, 0.0f);
 } // namespace DirectionalLightConfiguration
 
-// Point lighting configuration data
+/// <summary>Point lighting configuration data.</summary>
 namespace PointLightConfiguration {
 float LightMaxDistance = 40.f;
 float LightMinDistance = 20.f;
@@ -278,7 +278,7 @@ float PointLightMaxRadius = 1.5f * glm::sqrt(PointLightConfiguration::Pointlight
 // Light attenuation is quadratic: Light value = Intensity / Distance ^2
 // The problem is that with this equation, light has infinite radius, as it asymptotically goes to zero as distance increases
 // Very big radius is in general undesirable for deferred shading where you wish to have a lot of small lights, and where there
-// contribution will be small to none, but a sharp cutoff is usually quite visible on dark scenes.
+// contribution will be small to none, but a sharp cut off is usually quite visible on dark scenes.
 // For that reason, we have implemented an attenuation equation which begins close to the light following this value,
 // but then after a predetermined value, switches to linear falloff and continues to zero following the same slope.
 // This can be tweaked through this vale: It basically says "At which light intensity should the quadratic equation
@@ -289,7 +289,7 @@ float PointLightMaxRadius = 1.5f * glm::sqrt(PointLightConfiguration::Pointlight
 // of pixels that have a miniscule lighting contribution).
 // Additionally, if there is a strong ambient or directional, this value can be increased (hence reducing the number of pixels
 // shaded) as the ambient light will completely hide the small contributions of the edges of the point lights. Reversely,
-// a completely dark scene would only be acceptable with values less than 2.f as otherwise the cutoff of the lights would be
+// a completely dark scene would only be acceptable with values less than 2.f as otherwise the cut off of the lights would be
 // quite visible.
 // NUMBERS: ( Symbols: Light Value: LV, Differential of LV: LV' Intensity: I, Distance: D, Distance of switch quadratic->linear:A)
 // After doing some number-crunching, starting with LV = I / D^2
@@ -299,9 +299,7 @@ float PointLightMaxRadius = 1.5f * glm::sqrt(PointLightConfiguration::Pointlight
 
 } // namespace PointLightConfiguration
 
-/*!*********************************************************************************************************************
-Class implementing the Shell functions.
-***********************************************************************************************************************/
+/// <summary>Class implementing the Shell functions.</summary>
 class OpenGLESDeferredShading : public pvr::Shell
 {
 public:
@@ -359,7 +357,7 @@ public:
 		pvr::ui::UIRenderer uiRenderer;
 	};
 
-	// Putting all api objects into a pointer just makes it easier to release them all together with RAII
+	// Putting all API objects into a pointer just makes it easier to release them all together with RAII
 	std::unique_ptr<DeviceResources> _deviceResources;
 
 	// 3D Model
@@ -403,7 +401,7 @@ public:
 		_isPaused = false;
 	}
 
-	//  Overriden from pvr::Shell
+	//  Overridden from pvr::Shell
 	virtual pvr::Result initApplication();
 	virtual pvr::Result initView();
 	virtual pvr::Result releaseView();
@@ -464,12 +462,10 @@ inline void GL_APIENTRY debugCallback(GLenum source, GLenum type, GLuint id, GLe
 	Log(LogLevel::Debug, "[%d|%d|%d] %s", source, type, id, message);
 }
 
-/*!*********************************************************************************************************************
-\return Return true if no error occurred
-\brief  Code in initApplication() will be called by pvr::Shell once per run, before the rendering context is created.
-Used to initialize variables that are not dependent on it (e.g. external modules, loading meshes, etc.)
-If the rendering context is lost, initApplication() will not be called again.
-***********************************************************************************************************************/
+/// <summary>Code in initApplication() will be called by Shell once per run, before the rendering context is created.
+/// Used to initialize variables that are not dependent on it(e.g.external modules, loading meshes, etc.).If the rendering
+/// context is lost, initApplication() will not be called again.</summary>
+/// <returns> Result::Success if no error occurred. </returns>
 pvr::Result OpenGLESDeferredShading::initApplication()
 {
 	setStencilBitsPerPixel(8);
@@ -495,11 +491,10 @@ pvr::Result OpenGLESDeferredShading::initApplication()
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return Return pvr::Result::Success if no error occurred
-\brief  Code in initView() will be called by PVRShell upon initialization or after a change in the rendering context.
-Used to initialize variables that are dependent on the rendering context (e.g. textures, vertex buffers, etc.)
-***********************************************************************************************************************/
+/// <summary>Code in initView() will be called by Shell upon initialization or after a change
+/// in the rendering context. Used to initialize variables that are dependent on the
+/// rendering context(e.g.textures, vertex buffers, etc.).</summary>
+/// <returns> Result::Success if no error occurred. </returns>
 pvr::Result OpenGLESDeferredShading::initView()
 {
 	_deviceResources = std::make_unique<DeviceResources>();
@@ -598,7 +593,7 @@ pvr::Result OpenGLESDeferredShading::initView()
 		_sizeOfPixelLocationStorage += 4; // albedo
 		_sizeOfPixelLocationStorage += 4; // normals
 		_sizeOfPixelLocationStorage += 4; // depth
-		_sizeOfPixelLocationStorage += 4; // color
+		_sizeOfPixelLocationStorage += 4; // colour
 
 		// specifies the amount of storage required for pixel local variables whilst pls is enabled
 		gl::ext::FramebufferPixelLocalStorageSizeEXT(GL_DRAW_FRAMEBUFFER, _sizeOfPixelLocationStorage);
@@ -611,10 +606,8 @@ pvr::Result OpenGLESDeferredShading::initView()
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return Return pvr::Result::Success if no error occurred
-\brief  Main rendering loop function of the program. The shell will call this function every frame.
-***********************************************************************************************************************/
+/// <summary>Main rendering loop function of the program. The shell will call this function every frame.</summary>
+/// <returns> Result::Success if no error occurred.</returns>
 pvr::Result OpenGLESDeferredShading::renderFrame()
 {
 	debugThrowOnApiError("Frame begin");
@@ -674,21 +667,16 @@ pvr::Result OpenGLESDeferredShading::renderFrame()
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return Return pvr::Result::Success if no error occurred
-\brief  Code in releaseView() will be called by PVRShell when the application quits or before a change in the rendering context.
-***********************************************************************************************************************/
+/// <summary>Code in releaseView() will be called by Shell when the application quits.</summary>
+/// <returns> Result::Success if no error occurred.</returns>
 pvr::Result OpenGLESDeferredShading::releaseView()
 {
 	_deviceResources.reset();
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return Return pvr::Result::Success if no error occurred
-\brief  Code in quitApplication() will be called by PVRShell once per run, just before exiting the program.
-If the rendering context is lost, QuitApplication() will not be called.x
-***********************************************************************************************************************/
+/// <summary>Code in quitApplication() will be called by pvr::Shell once per run, just before exiting the program.</summary>
+/// <returns> Result::Success if no error occurred</returns>.
 pvr::Result OpenGLESDeferredShading::quitApplication()
 {
 	_mainScene.reset();
@@ -884,12 +872,12 @@ void OpenGLESDeferredShading::renderPointLightProxyGeometryIntoStencilBuffer()
 	// POINT LIGHTS GEOMETRY STENCIL PASS
 	// Render the front face of each light volume
 	// Z function is set as Less/Equal
-	// Z test passes will leave the stencil as 0 i.e. the front of the light is infront of all geometry in the current pixel
+	// Z test passes will leave the stencil as 0 i.e. the front of the light is in front of all geometry in the current pixel
 	//    This is the condition we want for determining whether the geometry can be affected by the point lights
 	// Z test fails will increment the stencil to 1. i.e. the front of the light is behind all of the geometry in the current pixel
-	//    Under this condition the current pixel cannot be affected by the current point light as the geometry is infront of the front of the point light
+	//    Under this condition the current pixel cannot be affected by the current point light as the geometry is in front of the front of the point light
 
-	// disable color writing
+	// disable colour writing
 	gl::ColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
 
 	// enable back face culling
@@ -923,10 +911,10 @@ void OpenGLESDeferredShading::renderPointLightProxy()
 	// POINT LIGHTS PROXIES - Actually light the pixels touched by a point light.
 	// Render the back faces of the light volumes
 	// Z function is set as Greater/Equal
-	// Z test passes signify that there is geometry infront of the back face of the light volume i.e. for the current pixel there is
-	// some geometry infront of the back face of the light volume
-	// Stencil function is Equal i.e. the stencil renference is set to 0
-	// Stencil passes signify that for the current pixel there exists a front face of a light volume infront of the current geometry
+	// Z test passes signify that there is geometry in front of the back face of the light volume i.e. for the current pixel there is
+	// some geometry in front of the back face of the light volume
+	// Stencil function is Equal i.e. the stencil reference is set to 0
+	// Stencil passes signify that for the current pixel there exists a front face of a light volume in front of the current geometry
 	// Point light calculations occur every time a pixel passes both the stencil AND Z test
 
 	gl::ColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
@@ -1013,10 +1001,8 @@ void OpenGLESDeferredShading::createSamplers()
 	pvr::utils::throwOnGlError("[OpenGLESDeferredShading::createSamplers] Sampler creation failed");
 }
 
-/*!*********************************************************************************************************************
-\return Return true if no error occurred
-\brief  Loads the textures required for this example and sets up descriptorSets
-***********************************************************************************************************************/
+/// <summary>Loads the textures required for this example and sets up descriptorSets.</summary>
+/// <returns> Return true if no error occurred </returns>
 void OpenGLESDeferredShading::createMaterialTextures()
 {
 	if (_mainScene->getNumMaterials() == 0) { throw pvr::InvalidDataError("[OpenGLESDeferredShading::createMaterialTextures]Number of scene materials cannot be zero"); }
@@ -1044,20 +1030,18 @@ void OpenGLESDeferredShading::createMaterialTextures()
 		}
 		if (material.defaultSemantics().getBumpMapTextureIndex() != static_cast<uint32_t>(-1))
 		{
-			// Load the bumpmap
+			// Load the bump map
 			_deviceResources->materials[i].bumpmapTexture =
 				pvr::utils::textureUpload(*this, _mainScene->getTexture(material.defaultSemantics().getBumpMapTextureIndex()).getName().c_str());
 		}
 	}
 }
 
-/*!*********************************************************************************************************************
-\brief  Create the pipelines for this example
-\return Return true if no error occurred
-***********************************************************************************************************************/
+/// <summary>Create the pipelines for this example.</summary>
+/// <returns>Return true if no error occurred </returns>
 void OpenGLESDeferredShading::createPrograms()
 {
-	{ // GBuffer program - bumpmapped
+	{ // GBuffer program - bump mapped
 		const char* attributeNames[] = { vertexBindings[0].variableName.c_str(), vertexBindings[1].variableName.c_str(), vertexBindings[2].variableName.c_str(),
 			vertexBindings[3].variableName.c_str() };
 		const uint16_t attributeIndices[] = { static_cast<uint16_t>(AttributeIndices::VertexArray), static_cast<uint16_t>(AttributeIndices::NormalArray),
@@ -1144,9 +1128,7 @@ void OpenGLESDeferredShading::createPrograms()
 	}
 }
 
-/*!*********************************************************************************************************************
-\brief  Updates animation variables and camera matrices.
-***********************************************************************************************************************/
+/// <summary>Updates animation variables and camera matrices.</summary>
 void OpenGLESDeferredShading::updateAnimation()
 {
 	glm::vec3 vTo, vUp;
@@ -1179,9 +1161,7 @@ void OpenGLESDeferredShading::createBuffers()
 	createPointLightBuffers();
 }
 
-/*!*********************************************************************************************************************
-\brief  Creates the buffers used for rendering the models
-***********************************************************************************************************************/
+/// <summary>Creates the buffers used for rendering the models.</summary>
 void OpenGLESDeferredShading::createModelBuffers()
 {
 	{
@@ -1194,7 +1174,7 @@ void OpenGLESDeferredShading::createModelBuffers()
 		gl::BindBuffer(GL_UNIFORM_BUFFER, _deviceResources->modelMaterialUbo);
 		gl::BufferData(GL_UNIFORM_BUFFER, (size_t)_deviceResources->modelMaterialBufferView.getSize(), nullptr, GL_DYNAMIC_DRAW);
 
-		// if GL_EXT_buffer_storage is supported then map the buffer upfront and never upmap it
+		// if GL_EXT_buffer_storage is supported then map the buffer upfront and never unmap it
 		if (_bufferStorageExtSupported)
 		{
 			gl::BindBuffer(GL_COPY_READ_BUFFER, _deviceResources->modelMaterialUbo);
@@ -1230,9 +1210,7 @@ void OpenGLESDeferredShading::createModelBuffers()
 	}
 }
 
-/*!*********************************************************************************************************************
-\brief  Upload the static data to the buffers which do not change per frame
-***********************************************************************************************************************/
+/// <summary>Upload the static data to the buffers which do not change per frame.</summary>
 void OpenGLESDeferredShading::uploadStaticModelData()
 {
 	// static model buffer
@@ -1309,9 +1287,7 @@ void OpenGLESDeferredShading::uploadStaticPointLightData()
 	if (!_bufferStorageExtSupported) { gl::UnmapBuffer(GL_UNIFORM_BUFFER); }
 }
 
-/*!*********************************************************************************************************************
-\brief  Upload the static data to the buffers which do not change per frame
-***********************************************************************************************************************/
+/// <summary>Upload the static data to the buffers which do not change per frame.</summary>
 void OpenGLESDeferredShading::uploadStaticData()
 {
 	uploadStaticModelData();
@@ -1321,9 +1297,7 @@ void OpenGLESDeferredShading::uploadStaticData()
 	gl::UseProgram(0);
 }
 
-/*!*********************************************************************************************************************
-\brief  Creates the buffers used for rendering the point lighting
-***********************************************************************************************************************/
+/// <summary>Creates the buffers used for rendering the point lighting.</summary>
 void OpenGLESDeferredShading::createPointLightBuffers()
 {
 	{
@@ -1338,7 +1312,7 @@ void OpenGLESDeferredShading::createPointLightBuffers()
 		gl::BindBuffer(GL_UNIFORM_BUFFER, _deviceResources->pointLightPropertiesUbo);
 		gl::BufferData(GL_UNIFORM_BUFFER, (size_t)_deviceResources->staticPointLightBufferView.getSize(), nullptr, GL_DYNAMIC_DRAW);
 
-		// if GL_EXT_buffer_storage is supported then map the buffer upfront and never upmap it
+		// if GL_EXT_buffer_storage is supported then map the buffer upfront and never unmap it
 		if (_bufferStorageExtSupported)
 		{
 			gl::BindBuffer(GL_COPY_READ_BUFFER, _deviceResources->pointLightPropertiesUbo);
@@ -1363,7 +1337,7 @@ void OpenGLESDeferredShading::createPointLightBuffers()
 		gl::BindBuffer(GL_UNIFORM_BUFFER, _deviceResources->pointLightMatrixUbo);
 		gl::BufferData(GL_UNIFORM_BUFFER, (size_t)_deviceResources->dynamicPointLightBufferView.getSize(), nullptr, GL_DYNAMIC_DRAW);
 
-		// if GL_EXT_buffer_storage is supported then map the buffer upfront and never upmap it
+		// if GL_EXT_buffer_storage is supported then map the buffer upfront and never unmap it
 		if (_bufferStorageExtSupported)
 		{
 			gl::BindBuffer(GL_COPY_READ_BUFFER, _deviceResources->pointLightMatrixUbo);
@@ -1389,7 +1363,7 @@ void OpenGLESDeferredShading::createDirectionalLightBuffers()
 		gl::BindBuffer(GL_UNIFORM_BUFFER, _deviceResources->directionalLightStaticDataUbo);
 		gl::BufferData(GL_UNIFORM_BUFFER, (size_t)_deviceResources->staticDirectionalLightBufferView.getSize(), nullptr, GL_DYNAMIC_DRAW);
 
-		// if GL_EXT_buffer_storage is supported then map the buffer upfront and never upmap it
+		// if GL_EXT_buffer_storage is supported then map the buffer upfront and never unmap it
 		if (_bufferStorageExtSupported)
 		{
 			gl::BindBuffer(GL_COPY_READ_BUFFER, _deviceResources->directionalLightStaticDataUbo);
@@ -1411,7 +1385,7 @@ void OpenGLESDeferredShading::createDirectionalLightBuffers()
 		gl::BindBuffer(GL_UNIFORM_BUFFER, _deviceResources->directionalLightDynamicDataUbo);
 		gl::BufferData(GL_UNIFORM_BUFFER, (size_t)_deviceResources->dynamicDirectionalLightBufferView.getSize(), nullptr, GL_DYNAMIC_DRAW);
 
-		// if GL_EXT_buffer_storage is supported then map the buffer upfront and never upmap it
+		// if GL_EXT_buffer_storage is supported then map the buffer upfront and never unmap it
 		if (_bufferStorageExtSupported)
 		{
 			gl::BindBuffer(GL_COPY_READ_BUFFER, _deviceResources->directionalLightDynamicDataUbo);
@@ -1466,9 +1440,7 @@ void OpenGLESDeferredShading::createGeometryBuffers()
 		_deviceResources->pointLightVertexConfiguration, _deviceResources->pointLightVao, _deviceResources->pointLightVbo, _deviceResources->pointLightIbo);
 }
 
-/*!*********************************************************************************************************************
-\brief Allocate memory for Uniforms
-***********************************************************************************************************************/
+/// <summary>Allocate memory for Uniforms.</summary>
 void OpenGLESDeferredShading::allocateLights()
 {
 	uint32_t countPoint = 0;
@@ -1501,9 +1473,7 @@ void OpenGLESDeferredShading::allocateLights()
 	{ updateProceduralPointLight(_deviceResources->renderInfo.pointLightPasses.initialData[i], _deviceResources->renderInfo.pointLightPasses.lightProperties[i], true); }
 }
 
-/*!*********************************************************************************************************************
-\brief  Initialise the static light properties
-***********************************************************************************************************************/
+/// <summary>Initialise the static light properties.</summary>
 void OpenGLESDeferredShading::initialiseStaticLightProperties()
 {
 	RenderData& pass = _deviceResources->renderInfo;
@@ -1522,10 +1492,10 @@ void OpenGLESDeferredShading::initialiseStaticLightProperties()
 			// POINT LIGHT GEOMETRY : The spheres that will be used for the stencil pass
 			pass.pointLightPasses.lightProperties[pointLight].lightColor = glm::vec4(light.getColor(), 1.f);
 
-			// POINT LIGHT PROXIES : The "drawcalls" that will perform the actual rendering
+			// POINT LIGHT PROXIES : The "draw calls" that will perform the actual rendering
 			pass.pointLightPasses.lightProperties[pointLight].lightIntensity = PointLightConfiguration::PointlightIntensity;
 
-			// POINT LIGHT PROXIES : The "drawcalls" that will perform the actual rendering
+			// POINT LIGHT PROXIES : The "draw calls" that will perform the actual rendering
 			pass.pointLightPasses.lightProperties[pointLight].lightRadius = PointLightConfiguration::PointLightMaxRadius;
 
 			// POINT LIGHT SOURCES : The little balls that we render to show the lights
@@ -1548,9 +1518,7 @@ void OpenGLESDeferredShading::initialiseStaticLightProperties()
 	}
 }
 
-/*!*********************************************************************************************************************
-\brief  Update the procedural point lights
-***********************************************************************************************************************/
+/// <summary>Update the procedural point lights.</summary>
 void OpenGLESDeferredShading::updateProceduralPointLight(PointLightPasses::InitialData& data, PointLightPasses::PointLightProperties& pointLightProperties, bool initial)
 {
 	if (initial)
@@ -1610,7 +1578,7 @@ void OpenGLESDeferredShading::updateProceduralPointLight(PointLightPasses::Initi
 	// POINT LIGHT GEOMETRY : The spheres that will be used for the stencil pass
 	pointLightProperties.proxyWorldViewProjectionMatrix = _viewProjectionMatrix * mWorldScale;
 
-	// POINT LIGHT PROXIES : The "drawcalls" that will perform the actual rendering
+	// POINT LIGHT PROXIES : The "draw calls" that will perform the actual rendering
 	pointLightProperties.proxyWorldViewMatrix = _viewMatrix * mWorldScale;
 	pointLightProperties.proxyViewSpaceLightPosition = glm::vec4((_viewMatrix * transMtx)[3]); // Translation component of the view matrix
 
@@ -1618,9 +1586,7 @@ void OpenGLESDeferredShading::updateProceduralPointLight(PointLightPasses::Initi
 	pointLightProperties.worldViewProjectionMatrix = _viewProjectionMatrix * transMtx;
 }
 
-/*!*********************************************************************************************************************
-\brief  Update the CPU visible buffers containing dynamic data
-***********************************************************************************************************************/
+/// <summary>Update the CPU visible buffers containing dynamic data.</summary>
 void OpenGLESDeferredShading::updateDynamicSceneData()
 {
 	RenderData& pass = _deviceResources->renderInfo;
@@ -1669,7 +1635,7 @@ void OpenGLESDeferredShading::updateDynamicSceneData()
 			// POINT LIGHT GEOMETRY : The spheres that will be used for the stencil pass
 			pass.pointLightPasses.lightProperties[pointLight].proxyWorldViewProjectionMatrix = _viewProjectionMatrix * mWorldScale;
 
-			// POINT LIGHT PROXIES : The "drawcalls" that will perform the actual rendering
+			// POINT LIGHT PROXIES : The "draw calls" that will perform the actual rendering
 			pass.pointLightPasses.lightProperties[pointLight].proxyWorldViewMatrix = _viewMatrix * mWorldScale;
 			pass.pointLightPasses.lightProperties[pointLight].proxyViewSpaceLightPosition = glm::vec4((_viewMatrix * transMtx)[3]); // Translation component of the view matrix
 
@@ -1735,9 +1701,6 @@ void OpenGLESDeferredShading::updateDynamicSceneData()
 	if (!_bufferStorageExtSupported) { gl::UnmapBuffer(GL_UNIFORM_BUFFER); }
 }
 
-/*!*********************************************************************************************************************
-\return Return an unique_ptr to a new Demo class, supplied by the user
-\brief  This function must be implemented by the user of the shell. The user should return its Shell object defining the
-behaviour of the application.
-***********************************************************************************************************************/
+/// <summary>This function must be implemented by the user of the shell. The user should return its pvr::Shell object defining the behaviour of the application. </summary>
+/// <returns> Return a unique ptr to the demo supplied by the user. </returns>
 std::unique_ptr<pvr::Shell> pvr::newDemo() { return std::make_unique<OpenGLESDeferredShading>(); }

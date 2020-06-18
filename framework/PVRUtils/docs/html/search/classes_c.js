@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['sharedeglcontext_5f',['SharedEglContext_',['../classpvr_1_1platform_1_1_shared_egl_context__.html',1,'pvr::platform']]],
   ['sprite_5f',['Sprite_',['../classpvr_1_1ui_1_1impl_1_1_sprite__.html',1,'pvr::ui::impl']]],
   ['statinfo',['StatInfo',['../structpvr_1_1utils_1_1vma_1_1_stat_info.html',1,'pvr::utils::vma']]],
   ['stats',['Stats',['../structpvr_1_1utils_1_1vma_1_1_stats.html',1,'pvr::utils::vma']]],

@@ -1,9 +1,11 @@
 cmake_minimum_required(VERSION 3.3)
+# Copyright (c) Imagination Technologies Limited.
+
 project(PVRUtilsGles)
 
 include(GNUInstallDirs)
 include(CMakeFindDependencyMacro)
-include(../../../cmake/CompilerFunctions.cmake)
+include(../../Common.cmake)
 
 set(PVRUtils_HEADERS 
 	../ArialBoldFont.h
@@ -84,12 +86,12 @@ add_library(PVRUtilsGles STATIC
 	${PVRUtilsGles_EGL_HEADERS})
 
 if(PVR_PREBUILT_DEPENDENCIES)
-	list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/../../../cmake/modules")
+	list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/../../cmake/modules")
 	find_dependency(PVRCore MODULE REQUIRED)
 	find_dependency(PVRAssets MODULE REQUIRED)
 endif()
 
-apply_compile_options_to_target(PVRUtilsGles)
+apply_framework_compile_options_to_target(PVRUtilsGles)
 
 target_link_libraries(PVRUtilsGles 
 	PUBLIC
@@ -98,21 +100,25 @@ target_link_libraries(PVRUtilsGles
 	PRIVATE
 		${PVRUtilsGles_PRIVATE_LINK_LIBS})
 
-	if(WS OR PVR_WINDOW_SYSTEM)
-		if(WS AND NOT PVR_WINDOW_SYSTEM)
-			set(PVR_WINDOW_SYSTEM ${WS})
-			message("The WS variable has been deprecated. Please move to using PVR_WINDOW_SYSTEM instead.")
-		endif()
-		
-		set(PVR_WINDOW_SYSTEM_DEFINE "" CACHE INTERNAL "")
-		# Validate the use of -DPVR_WINDOW_SYSTEM
-		if(${PVR_WINDOW_SYSTEM} STREQUAL X11 OR ${PVR_WINDOW_SYSTEM} STREQUAL XCB OR ${PVR_WINDOW_SYSTEM} STREQUAL Wayland OR ${PVR_WINDOW_SYSTEM} STREQUAL NullWS OR ${PVR_WINDOW_SYSTEM} STREQUAL Screen)
-			set(PVR_WINDOW_SYSTEM_DEFINE "${PVR_WINDOW_SYSTEM}" CACHE INTERNAL "")
-		else()
-			message(FATAL_ERROR "Unrecognised PVR_WINDOW_SYSTEM: Valid values are NullWS, X11, XCB, Wayland, Screen.")
-		endif()
-		target_compile_definitions(PVRUtilsGles PUBLIC ${PVR_WINDOW_SYSTEM_DEFINE})
+if(WS OR PVR_WINDOW_SYSTEM)
+	if(WS AND NOT PVR_WINDOW_SYSTEM)
+		set(PVR_WINDOW_SYSTEM ${WS})
+		message("The WS variable has been deprecated. Please move to using PVR_WINDOW_SYSTEM instead.")
 	endif()
+	
+	set(PVR_WINDOW_SYSTEM_DEFINE "" CACHE INTERNAL "")
+	# Validate the use of -DPVR_WINDOW_SYSTEM
+	if(${PVR_WINDOW_SYSTEM} STREQUAL X11 OR ${PVR_WINDOW_SYSTEM} STREQUAL XCB OR ${PVR_WINDOW_SYSTEM} STREQUAL Wayland OR ${PVR_WINDOW_SYSTEM} STREQUAL NullWS OR ${PVR_WINDOW_SYSTEM} STREQUAL Screen)
+		set(PVR_WINDOW_SYSTEM_DEFINE "${PVR_WINDOW_SYSTEM}" CACHE INTERNAL "")
+	else()
+		message(FATAL_ERROR "Unrecognised PVR_WINDOW_SYSTEM: Valid values are NullWS, X11, XCB, Wayland, Screen.")
+	endif()
+	target_compile_definitions(PVRUtilsGles PUBLIC ${PVR_WINDOW_SYSTEM_DEFINE})
+endif()
+
+if(APPLE)
+	target_compile_definitions(PVRUtilsGles PUBLIC GLES_SILENCE_DEPRECATION=1)
+endif()
 
 target_include_directories(PVRUtilsGles 
 	PUBLIC 

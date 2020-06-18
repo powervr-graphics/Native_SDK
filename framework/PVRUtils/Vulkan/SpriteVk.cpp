@@ -174,14 +174,14 @@ void Font_::loadFontData(const Texture& texture)
 	_dim.x = texHeader.getWidth();
 	_dim.y = texHeader.getHeight();
 
-	const Header* header = reinterpret_cast<const Header*>(texture.getMetaDataMap()->at(TextureHeader::Header::PVRv3).at(static_cast<uint32_t>(FontHeader)).getData());
+	const Header* header = reinterpret_cast<const Header*>(texture.getMetaDataMap()->at(TextureHeader::PVRv3).at(static_cast<uint32_t>(FontHeader)).getData());
 	assertion(header != NULL);
 
 	_header = *header;
 	_header.numCharacters = _header.numCharacters & 0xFFFF;
 	_header.numKerningPairs = _header.numKerningPairs & 0xFFFF;
 
-	const std::map<uint32_t, TextureMetaData>& metaDataMap = texture.getMetaDataMap()->at(TextureHeader::Header::PVRv3);
+	const std::map<uint32_t, TextureMetaData>& metaDataMap = texture.getMetaDataMap()->at(TextureHeader::PVRv3);
 	std::map<uint32_t, TextureMetaData>::const_iterator found;
 
 	if (_header.numCharacters)
@@ -385,13 +385,13 @@ void TextElement_::createBuffers()
 {
 	_vbo = utils::createBuffer(_uiRenderer->getDevice().lock(),
 		pvrvk::BufferCreateInfo(static_cast<uint32_t>(sizeof(Vertex) * _maxLength * 4), pvrvk::BufferUsageFlags::e_VERTEX_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
-		pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, &_uiRenderer->getMemoryAllocator(), pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+		pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, _uiRenderer->getMemoryAllocator(), pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
 	_drawIndirectBuffer = utils::createBuffer(_uiRenderer->getDevice().lock(),
 		pvrvk::BufferCreateInfo(sizeof(VkDrawIndexedIndirectCommand), pvrvk::BufferUsageFlags::e_INDIRECT_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 		pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT | pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT |
 			pvrvk::MemoryPropertyFlags::e_HOST_CACHED_BIT,
-		&_uiRenderer->getMemoryAllocator(), pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+		_uiRenderer->getMemoryAllocator(), pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 }
 
 void TextElement_::regenerateText() const

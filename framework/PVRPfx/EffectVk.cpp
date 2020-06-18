@@ -101,7 +101,7 @@ inline void addTexture(Effect_& effect, const effect::TextureReference& textureR
 			Format format = utils::convertToPVRVk(textureDef.format);
 			Image image = utils::createImage(device,
 				pvrvk::ImageCreateInfo(pvrvk::ImageType::e_2D, format, pvrvk::Extent3D(textureDef.width, textureDef.height, 1u), pvrvk::ImageUsageFlags::e_SAMPLED_BIT),
-				pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, &effect.getImageAllocator(),
+				pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, effect.getImageAllocator(),
 				utils::vma::AllocationCreateFlags::e_DEDICATED_MEMORY_BIT);
 			view = device->createImageView(pvrvk::ImageViewCreateInfo(image));
 		}
@@ -151,23 +151,20 @@ inline void addBuffer(Effect_& effect, PipelineDef& pipedef, const BufferRef& bu
 		// Add it to the pipeline's lists
 		switch (bufferdef.scope)
 		{
-		case VariableScope::Effect:
-		{
+		case VariableScope::Effect: {
 			auto& binfo = pipedef.effectScopeBuffers[assetBufferDef.name];
 			static_cast<BufferRef&>(binfo) = static_cast<const BufferRef&>(bufferRef);
 		}
 		break;
 		case VariableScope::Model:
-		case VariableScope::BoneBatch:
-		{
+		case VariableScope::BoneBatch: {
 			pipedef.descSetIsFixed[bufferRef.set] = false;
 
 			auto& binfo = pipedef.modelScopeBuffers[assetBufferDef.name];
 			static_cast<BufferRef&>(binfo) = static_cast<const BufferRef&>(bufferRef);
 		}
 		break;
-		case VariableScope::Node:
-		{
+		case VariableScope::Node: {
 			pipedef.descSetIsFixed[bufferRef.set] = false;
 			auto& binfo = pipedef.nodeScopeBuffers[assetBufferDef.name];
 			static_cast<BufferRef&>(binfo) = static_cast<const BufferRef&>(bufferRef);
@@ -338,7 +335,7 @@ bool getRenderPassAndFramebufferForPass(Effect_& effect, const effect::Effect& e
 							pvrvk::ImageCreateInfo(pvrvk::ImageType::e_2D, format, pvrvk::Extent3D(framebufferWidth, framebufferHeight, 1u),
 								pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_INPUT_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_TRANSIENT_ATTACHMENT_BIT),
 							pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_LAZILY_ALLOCATED_BIT,
-							&effect.getImageAllocator(), utils::vma::AllocationCreateFlags::e_DEDICATED_MEMORY_BIT);
+							effect.getImageAllocator(), utils::vma::AllocationCreateFlags::e_DEDICATED_MEMORY_BIT);
 						storeOp = pvrvk::AttachmentStoreOp::e_DONT_CARE;
 					}
 					else
@@ -346,7 +343,7 @@ bool getRenderPassAndFramebufferForPass(Effect_& effect, const effect::Effect& e
 						texture = utils::createImage(device,
 							pvrvk::ImageCreateInfo(pvrvk::ImageType::e_2D, format, pvrvk::Extent3D(framebufferWidth, framebufferHeight, 1u), pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT),
 							pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_LAZILY_ALLOCATED_BIT,
-							&effect.getImageAllocator(), utils::vma::AllocationCreateFlags::e_DEDICATED_MEMORY_BIT);
+							effect.getImageAllocator(), utils::vma::AllocationCreateFlags::e_DEDICATED_MEMORY_BIT);
 					}
 					framebufferInfo[swapChainId].setAttachment(i, device->createImageView(pvrvk::ImageViewCreateInfo(texture)));
 					rpInfo.setAttachmentDescription(i,
@@ -463,7 +460,7 @@ bool getRenderPassAndFramebufferForPass(Effect_& effect, const effect::Effect& e
 						pvrvk::ImageCreateInfo(pvrvk::ImageType::e_2D, depthStencilFormat, pvrvk::Extent3D(framebufferWidth, framebufferHeight, 1u),
 							pvrvk::ImageUsageFlags::e_DEPTH_STENCIL_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_TRANSIENT_ATTACHMENT_BIT),
 						pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_LAZILY_ALLOCATED_BIT,
-						&effect.getImageAllocator(), utils::vma::AllocationCreateFlags::e_DEDICATED_MEMORY_BIT);
+						effect.getImageAllocator(), utils::vma::AllocationCreateFlags::e_DEDICATED_MEMORY_BIT);
 					dsAttachments[ii] = device->createImageView(pvrvk::ImageViewCreateInfo(tex));
 				}
 				depthStencilAttachmentIndex = rpInfo.getNumAttachmentDescription();

@@ -2,7 +2,6 @@ var searchData=
 [
   ['makeallocationslost',['makeAllocationsLost',['../classpvr_1_1utils_1_1vma_1_1impl_1_1_pool__.html#aca62579caacf41df6af5f663eea8010d',1,'pvr::utils::vma::impl::Pool_']]],
   ['makecurrent',['makeCurrent',['../classpvr_1_1platform_1_1_egl_context__.html#a27fe87cd8e21677df6fe69754e479049',1,'pvr::platform::EglContext_']]],
-  ['makesharedcontextcurrent',['makeSharedContextCurrent',['../classpvr_1_1platform_1_1_shared_egl_context__.html#a3d91df1766fae5f97b954e00ea359033',1,'pvr::platform::SharedEglContext_']]],
   ['map',['map',['../classpvr_1_1utils_1_1vma_1_1impl_1_1_allocation__.html#add681936918645046df692d853d788bf',1,'pvr::utils::vma::impl::Allocation_']]],
   ['mapdebugreportflagstologlevel',['mapDebugReportFlagsToLogLevel',['../namespacepvr_1_1utils.html#aee21903727c73558ad8e3cf936917344',1,'pvr::utils']]],
   ['mapdebugutilsmessageseverityflagstologlevel',['mapDebugUtilsMessageSeverityFlagsToLogLevel',['../namespacepvr_1_1utils.html#abbd1f30f49a0d36c9d932437e902d2bb',1,'pvr::utils']]],

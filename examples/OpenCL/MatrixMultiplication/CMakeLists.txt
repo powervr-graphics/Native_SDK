@@ -42,7 +42,7 @@ add_assets_resource_file(OpenCLMatrixMultiplication)
 # Apply SDK example specific compile and linker options
 apply_example_compile_options_to_target(OpenCLMatrixMultiplication)
 
-target_link_libraries(OpenCLMatrixMultiplication
+target_link_libraries(OpenCLMatrixMultiplication PUBLIC
 	PVRCore
 	PVRUtilsCL
 )

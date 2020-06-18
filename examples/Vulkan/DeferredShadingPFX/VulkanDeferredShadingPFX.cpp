@@ -1,10 +1,9 @@
-/*!*********************************************************************************************************************
-\File         VulkanDeferredShadingPFX.cpp
-\Title        Deferred Shading
-\Author       PowerVR by Imagination, Developer Technology Team
-\Copyright    Copyright (c) Imagination Technologies Limited.
-\Description  Implements a deferred shading technique supporting point and directional lights using pfx.
-***********************************************************************************************************************/
+/*!
+\brief Implements a deferred shading technique supporting point and directional lights using pfx.
+\file VulkanDeferredShadingPFX.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #include "PVRShell/PVRShell.h"
 #include "PVRVk/PVRVk.h"
 #include "PVRUtils/PVRUtilsVk.h"
@@ -45,7 +44,7 @@ enum class PFXSemanticId
 	FARCLIPDIST
 };
 
-// Structures used for storing the shared point light data for the point light passes
+/// <summary>Structures used for storing the shared point light data for the point light passes.</summary>
 struct PointLightPasses
 {
 	struct PointLightProperties
@@ -75,7 +74,7 @@ struct PointLightPasses
 	std::vector<InitialData> initialData;
 };
 
-// structure used to render directional lighting
+/// <summary>structure used to render directional lighting.</summary>
 struct DrawDirectionalLight
 {
 	struct DirectionalLightProperties
@@ -86,7 +85,7 @@ struct DrawDirectionalLight
 	std::vector<DirectionalLightProperties> lightProperties;
 };
 
-// structure used to fill the GBuffer
+/// <summary>structure used to fill the GBuffer.</summary>
 struct DrawGBuffer
 {
 	struct Objects
@@ -99,7 +98,7 @@ struct DrawGBuffer
 	std::vector<Objects> objects;
 };
 
-// structure used to hold the rendering information for the demo
+/// <summary>structure used to hold the rendering information for the demo.</summary>
 struct RenderData
 {
 	DrawGBuffer storeLocalMemoryPass; // Subpass 0
@@ -107,19 +106,19 @@ struct RenderData
 	PointLightPasses pointLightPasses; // holds point light data
 };
 
-// Shader names for all of the demo passes
+/// <summary>Shader names for all of the demo passes.</summary>
 namespace Files {
 const char* const SceneFile = "SatyrAndTable.pod";
 const char* const EffectPfx = "effect_MRT_PFX3.pfx";
 const char* const PointLightModelFile = "pointlight.pod";
 } // namespace Files
 
-// Application wide configuration data
+/// Application wide configuration data
 namespace ApplicationConfiguration {
 const float FrameRate = 1.0f / 120.0f;
 }
 
-// Directional lighting configuration data
+/// Directional lighting configuration data
 namespace DirectionalLightConfiguration {
 static bool AdditionalDirectionalLight = true;
 const float DirectionalLightIntensity = .1f;
@@ -127,7 +126,7 @@ const glm::vec4 AmbientLightColor = glm::vec4(.005f, .005f, .005f, 0.0f);
 
 } // namespace DirectionalLightConfiguration
 
-// Point lighting configuration data
+/// Point lighting configuration data
 namespace PointLightConfiguration {
 const float LightMaxDistance = 40.f;
 const float LightMinDistance = 20.f;
@@ -149,7 +148,7 @@ const float PointLightMaxRadius = 1.5f * glm::sqrt(PointLightConfiguration::Poin
 // Light attenuation is quadratic: Light value = Intensity / Distance ^2
 // The problem is that with this equation, light has infinite radius, as it asymptotically goes to zero as distance increases
 // Very big radius is in general undesirable for deferred shading where you wish to have a lot of small lights, and where there
-// contribution will be small to none, but a sharp cutoff is usually quite visible on dark scenes.
+// contribution will be small to none, but a sharp cut-off is usually quite visible on dark scenes.
 // For that reason, we have implemented an attenuation equation which begins close to the light following this value,
 // but then after a predetermined value, switches to linear falloff and continues to zero following the same slope.
 // This can be tweaked through this vale: It basically says "At which light intensity should the quadratic equation
@@ -160,7 +159,7 @@ const float PointLightMaxRadius = 1.5f * glm::sqrt(PointLightConfiguration::Poin
 // of pixels that have a miniscule lighting contribution).
 // Additionally, if there is a strong ambient or directional, this value can be increased (hence reducing the number of pixels
 // shaded) as the ambient light will completely hide the small contributions of the edges of the point lights. Reversely,
-// a completely dark scene would only be acceptable with values less than 2.f as otherwise the cutoff of the lights would be
+// a completely dark scene would only be acceptable with values less than 2.f as otherwise the cut-off of the lights would be
 // quite visible.
 // NUMBERS: ( Symbols: Light Value: LV, Differential of LV: LV' Intensity: I, Distance: D, Distance of switch quadratic->linear:A)
 // After doing some number-crunching, starting with LV = I / D^2
@@ -204,7 +203,6 @@ struct DeviceResources
 	pvrvk::Instance instance;
 	pvr::utils::DebugUtilsCallbacks debugUtilsCallbacks;
 	pvrvk::Device device;
-	pvrvk::Surface surface;
 	pvrvk::Queue queue;
 	pvr::utils::vma::Allocator vmaAllocator;
 	pvrvk::Swapchain swapchain;
@@ -237,9 +235,7 @@ struct DeviceResources
 	}
 };
 
-/*!*********************************************************************************************************************
-Class implementing the Shell functions.
-***********************************************************************************************************************/
+/// <summary>Class implementing the Shell functions.</summary>
 class VulkanDeferredShadingPFX : public pvr::Shell
 {
 	struct Material
@@ -254,7 +250,7 @@ class VulkanDeferredShadingPFX : public pvr::Shell
 	uint32_t _numSwapImages;
 	uint32_t _swapchainIndex;
 	uint32_t _frameId;
-	// Putting all api objects into a pointer just makes it easier to release them all together with RAII
+	// Putting all API objects into a pointer just makes it easier to release them all together with RAII
 	std::unique_ptr<DeviceResources> _deviceResources;
 
 	// Frame counters for animation
@@ -296,7 +292,7 @@ public:
 		_isPaused = false;
 	}
 
-	//	Overriden from Shell
+	//	Overridden from Shell
 	virtual pvr::Result initApplication();
 	virtual pvr::Result initView();
 	virtual pvr::Result releaseView();
@@ -340,12 +336,10 @@ public:
 private:
 };
 
-/*!*********************************************************************************************************************
-\return	Return true if no error occurred
-\brief	Code in initApplication() will be called by pvr::Shell once per run, before the rendering context is created.
-Used to initialize variables that are not dependent on it (e.g. external modules, loading meshes, etc.)
-If the rendering context is lost, initApplication() will not be called again.
-***********************************************************************************************************************/
+/// <summary> Code in initApplication() will be called by pvr::Shell once per run, before the rendering context is created.
+/// Used to initialize variables that are not dependent on it (e.g. external modules, loading meshes, etc.)
+/// If the rendering context is lost, initApplication() will not be called again.</summary>
+/// <returns> Return true if no error occurred. </returns>
 pvr::Result VulkanDeferredShadingPFX::initApplication()
 {
 	// This demo application makes heavy use of the stencil buffer
@@ -389,11 +383,9 @@ pvr::assets::ModelHandle VulkanDeferredShadingPFX::createFullScreenQuadMesh()
 	return model;
 }
 
-/*!*********************************************************************************************************************
-\return	Return pvr::Result::Success if no error occurred
-\brief	Code in initView() will be called by PVRShell upon initialization or after a change in the rendering context.
-Used to initialize variables that are dependent on the rendering context (e.g. textures, vertex buffers, etc.)
-***********************************************************************************************************************/
+/// <summary>Code in initView() will be called by Shell upon initialization or after a change in the rendering context.
+/// Used to initialize variables that are dependent on the rendering context (e.g. textures, vertex buffers, etc.).</summary>
+/// <returns>Return Result::Success if no error occurred.</returns>
 pvr::Result VulkanDeferredShadingPFX::initView()
 {
 	// Create the empty API objects.
@@ -409,14 +401,14 @@ pvr::Result VulkanDeferredShadingPFX::initView()
 	}
 
 	// Create the surface
-	_deviceResources->surface =
+	pvrvk::Surface surface =
 		pvr::utils::createSurface(_deviceResources->instance, _deviceResources->instance->getPhysicalDevice(0), this->getWindow(), this->getDisplay(), this->getConnection());
 
 	// Create a default set of debug utils messengers or debug callbacks using either VK_EXT_debug_utils or VK_EXT_debug_report respectively
 	_deviceResources->debugUtilsCallbacks = pvr::utils::createDebugUtilsCallbacks(_deviceResources->instance);
 
 	pvr::utils::QueuePopulateInfo queueFlagsInfo[] = {
-		{ pvrvk::QueueFlags::e_GRAPHICS_BIT, _deviceResources->surface },
+		{ pvrvk::QueueFlags::e_GRAPHICS_BIT, surface },
 	};
 	pvr::utils::QueueAccessInfo queueAccessInfo;
 
@@ -424,13 +416,13 @@ pvr::Result VulkanDeferredShadingPFX::initView()
 
 	_deviceResources->queue = _deviceResources->device->getQueue(queueAccessInfo.familyId, queueAccessInfo.queueId);
 
-	pvrvk::SurfaceCapabilitiesKHR surfaceCapabilities = _deviceResources->instance->getPhysicalDevice(0)->getSurfaceCapabilities(_deviceResources->surface);
+	pvrvk::SurfaceCapabilitiesKHR surfaceCapabilities = _deviceResources->instance->getPhysicalDevice(0)->getSurfaceCapabilities(surface);
 
 	// validate the supported swapchain image usage
 	pvrvk::ImageUsageFlags swapchainImageUsage = pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT;
 	if (pvr::utils::isImageUsageSupportedBySurface(surfaceCapabilities, pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT))
 	{ swapchainImageUsage |= pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT; } // Create the swapchain
-	_deviceResources->swapchain = pvr::utils::createSwapchain(_deviceResources->device, _deviceResources->surface, getDisplayAttributes(), swapchainImageUsage);
+	_deviceResources->swapchain = pvr::utils::createSwapchain(_deviceResources->device, surface, getDisplayAttributes(), swapchainImageUsage);
 
 	_deviceResources->vmaAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
 
@@ -457,11 +449,11 @@ pvr::Result VulkanDeferredShadingPFX::initView()
 	_viewportOffsets[1] = (_windowHeight - _framebufferHeight) / 2;
 
 	Log("Framebuffer dimensions: %d x %d\n", _framebufferWidth, _framebufferHeight);
-	Log("Onscreen Framebuffer dimensions: %d x %d\n", _windowWidth, _windowHeight);
+	Log("On-screen Framebuffer dimensions: %d x %d\n", _windowWidth, _windowHeight);
 
 	_deviceResources->vmaAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
 
-	// create the commandpool
+	// create the command pool
 	_deviceResources->commandPool =
 		_deviceResources->device->createCommandPool(pvrvk::CommandPoolCreateInfo(queueAccessInfo.familyId, pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT));
 
@@ -559,21 +551,17 @@ pvr::Result VulkanDeferredShadingPFX::initView()
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return	Return pvr::Result::Success if no error occurred
-\brief	Code in releaseView() will be called by PVRShell when the application quits or before a change in the rendering context.
-***********************************************************************************************************************/
+/// <summary>Code in releaseView() will be called by PVRShell when the application quits or before a change in the rendering context.</summary>
+/// <returns>Return Result::Success if no error occurred.</returns>
 pvr::Result VulkanDeferredShadingPFX::releaseView()
 {
 	_deviceResources.reset();
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return	Return pvr::Result::Success if no error occurred
-\brief	Code in quitApplication() will be called by PVRShell once per run, just before exiting the program.
-If the rendering context is lost, QuitApplication() will not be called.x
-***********************************************************************************************************************/
+/// <summary>Code in quitApplication() will be called by PVRShell once per run, just before exiting the program.
+///	If the rendering context is lost, quitApplication() will not be called.</summary>
+/// <returns>Return Result::Success if no error occurred.</returns>
 pvr::Result VulkanDeferredShadingPFX::quitApplication()
 {
 	_mainScene.reset();
@@ -581,10 +569,8 @@ pvr::Result VulkanDeferredShadingPFX::quitApplication()
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return	Return pvr::Result::Success if no error occurred
-\brief	Main rendering loop function of the program. The shell will call this function every m_frameNumber.
-***********************************************************************************************************************/
+/// <summary>Main rendering loop function of the program. The shell will call this function every frame.</summary>
+/// <returns>Return Result::Success if no error occurred</returns>
 pvr::Result VulkanDeferredShadingPFX::renderFrame()
 {
 	_deviceResources->swapchain->acquireNextImage(uint64_t(-1), _deviceResources->imageAcquiredSemaphores[_frameId]);
@@ -620,7 +606,7 @@ pvr::Result VulkanDeferredShadingPFX::renderFrame()
 	if (this->shouldTakeScreenshot())
 	{
 		pvr::utils::takeScreenshot(_deviceResources->queue, _deviceResources->commandPool, _deviceResources->swapchain, _swapchainIndex, this->getScreenshotFileName(),
-			&_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
+			_deviceResources->vmaAllocator, _deviceResources->vmaAllocator);
 	}
 
 	//--------------------
@@ -638,9 +624,7 @@ pvr::Result VulkanDeferredShadingPFX::renderFrame()
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\brief	Upload the static data to the buffers which do not change per frame
-***********************************************************************************************************************/
+/// <summary>Upload the static data to the buffers which do not change per frame.</summary>
 void VulkanDeferredShadingPFX::uploadStaticSceneData()
 {
 	// static scene properties buffer
@@ -671,9 +655,7 @@ void VulkanDeferredShadingPFX::uploadStaticSceneData()
 	}
 }
 
-/*!*********************************************************************************************************************
-\brief	Upload the static data to the buffers which do not change per frame
-***********************************************************************************************************************/
+/// <summary>Upload the static data to the buffers which do not change per frame.</summary>
 void VulkanDeferredShadingPFX::uploadStaticDirectionalLightData()
 {
 	pvr::FreeValue mem;
@@ -701,9 +683,7 @@ void VulkanDeferredShadingPFX::uploadStaticDirectionalLightData()
 	}
 }
 
-/*!*********************************************************************************************************************
-\brief	Upload the static data to the buffers which do not change per frame
-***********************************************************************************************************************/
+/// <summary>Upload the static data to the buffers which do not change per frame.</summary>
 void VulkanDeferredShadingPFX::uploadStaticPointLightData()
 {
 	// static point lighting buffer
@@ -768,9 +748,7 @@ void VulkanDeferredShadingPFX::uploadStaticPointLightData()
 	}
 }
 
-/*!*********************************************************************************************************************
-\brief	Upload the static data to the buffers which do not change per frame
-***********************************************************************************************************************/
+/// <summary>Upload the static data to the buffers which do not change per frame.</summary>
 void VulkanDeferredShadingPFX::uploadStaticData()
 {
 	uploadStaticDirectionalLightData();
@@ -778,9 +756,7 @@ void VulkanDeferredShadingPFX::uploadStaticData()
 	uploadStaticPointLightData();
 }
 
-/*!*********************************************************************************************************************
-\brief	Update the CPU visible buffers containing dynamic data
-***********************************************************************************************************************/
+/// <summary>Update the CPU visible buffers containing dynamic data.</summary>
 void VulkanDeferredShadingPFX::updateDynamicSceneData(uint32_t swapchain)
 {
 	RenderData& pass = _renderInfo;
@@ -812,6 +788,7 @@ void VulkanDeferredShadingPFX::updateDynamicSceneData(uint32_t swapchain)
 	}
 }
 
+/// <summary>Update the CPU visible buffers containing dynamic data.</summary>
 void VulkanDeferredShadingPFX::updateDynamicLightData(uint32_t swapchain)
 {
 	uint32_t pointLight = 0;
@@ -824,8 +801,7 @@ void VulkanDeferredShadingPFX::updateDynamicLightData(uint32_t swapchain)
 		const pvr::assets::Light& light = _mainScene->getLight(lightNode.getObjectId());
 		switch (light.getType())
 		{
-		case pvr::assets::Light::Point:
-		{
+		case pvr::assets::Light::Point: {
 			if (pointLight >= static_cast<uint32_t>(PointLightConfiguration::MaxScenePointLights)) { continue; }
 
 			const glm::mat4& transMtx = _mainScene->getWorldMatrix(_mainScene->getNodeIdFromLightNodeId(i));
@@ -847,8 +823,7 @@ void VulkanDeferredShadingPFX::updateDynamicLightData(uint32_t swapchain)
 			++pointLight;
 		}
 		break;
-		case pvr::assets::Light::Directional:
-		{
+		case pvr::assets::Light::Directional: {
 			const glm::mat4& transMtx = _mainScene->getWorldMatrix(_mainScene->getNodeIdFromLightNodeId(i));
 			pass.directionalLightPass.lightProperties[directionalLight].viewSpaceLightDirection = _viewMatrix * transMtx * glm::vec4(0.f, -1.f, 0.f, 0.f);
 			++directionalLight;
@@ -902,9 +877,7 @@ void VulkanDeferredShadingPFX::setProceduralPointLightInitialData(PointLightPass
 	pointLightProperties.lightRadius = PointLightConfiguration::PointLightMaxRadius;
 }
 
-/*!*********************************************************************************************************************
-\brief	Update the procedural point lights
-***********************************************************************************************************************/
+/// <summary>Update the procedural point lights.</summary>
 void VulkanDeferredShadingPFX::updateProceduralPointLight(PointLightPasses::InitialData& data, PointLightPasses::PointLightProperties& pointLightProperties, uint32_t pointLightIndex)
 {
 	const uint32_t swapchainIndex = _deviceResources->swapchain->getSwapchainIndex();
@@ -1004,9 +977,7 @@ void VulkanDeferredShadingPFX::updateProceduralPointLight(PointLightPasses::Init
 	}
 }
 
-/*!*********************************************************************************************************************
-\brief	Updates animation variables and camera matrices.
-***********************************************************************************************************************/
+/// <summary>Updates animation variables and camera matrices.</summary>
 void VulkanDeferredShadingPFX::updateAnimation()
 {
 	glm::vec3 vTo, vUp;
@@ -1021,9 +992,7 @@ void VulkanDeferredShadingPFX::updateAnimation()
 	_inverseViewMatrix = glm::inverse(_viewMatrix);
 }
 
-/*!*********************************************************************************************************************
-\brief	Initialise the static light properties
-***********************************************************************************************************************/
+/// <summary>Initialise the static light properties.</summary>
 void VulkanDeferredShadingPFX::initialiseStaticLightProperties()
 {
 	RenderData& pass = _renderInfo;
@@ -1036,8 +1005,7 @@ void VulkanDeferredShadingPFX::initialiseStaticLightProperties()
 		const pvr::assets::Light& light = _mainScene->getLight(lightNode.getObjectId());
 		switch (light.getType())
 		{
-		case pvr::assets::Light::Point:
-		{
+		case pvr::assets::Light::Point: {
 			if (pointLight >= PointLightConfiguration::MaxScenePointLights) { continue; }
 
 			// POINT LIGHT GEOMETRY : The spheres that will be used for the stencil pass
@@ -1054,8 +1022,7 @@ void VulkanDeferredShadingPFX::initialiseStaticLightProperties()
 			++pointLight;
 		}
 		break;
-		case pvr::assets::Light::Directional:
-		{
+		case pvr::assets::Light::Directional: {
 			pass.directionalLightPass.lightProperties[directionalLight].lightIntensity = glm::vec4(light.getColor(), 1.0f) * DirectionalLightConfiguration::DirectionalLightIntensity;
 			++directionalLight;
 		}
@@ -1071,9 +1038,7 @@ void VulkanDeferredShadingPFX::initialiseStaticLightProperties()
 	}
 }
 
-/*!*********************************************************************************************************************
-\brief Allocate memory for lighting data
-***********************************************************************************************************************/
+/// <summary>Allocate memory for lighting data.</summary>
 void VulkanDeferredShadingPFX::allocateLights()
 {
 	uint32_t countPoint = 0;
@@ -1105,9 +1070,7 @@ void VulkanDeferredShadingPFX::allocateLights()
 	{ setProceduralPointLightInitialData(_renderInfo.pointLightPasses.initialData[i], _renderInfo.pointLightPasses.lightProperties[i]); }
 }
 
-/*!*********************************************************************************************************************
-\brief	Records main command buffer
-***********************************************************************************************************************/
+/// <summary>Records main command buffer.</summary>
 void VulkanDeferredShadingPFX::recordMainCommandBuffer()
 {
 	const pvrvk::Rect2D renderArea(0, 0, _windowWidth, _windowHeight);
@@ -1152,7 +1115,7 @@ void VulkanDeferredShadingPFX::recordMainCommandBuffer()
 				.recordRenderingCommands(_deviceResources->cmdBufferMain[i], (uint16_t)i);
 		}
 
-		/// 7) record the pointlight source
+		/// 7) record the point light source
 		_deviceResources->render_mgr.toSubpassGroup(0, 0, static_cast<uint32_t>(RenderPassSubpass::Lighting), static_cast<uint32_t>(LightingSubpassGroup::PointLightStep3))
 			.recordRenderingCommands(_deviceResources->cmdBufferMain[i], (uint16_t)i);
 
@@ -1171,12 +1134,10 @@ void VulkanDeferredShadingPFX::recordMainCommandBuffer()
 	}
 }
 
-/*!*********************************************************************************************************************
-\brief	Record point light stencil commands
-\param  cmdBuffers SecondaryCommandBuffer to record
-\param swapChainIndex Current swap chain index
-\param subpass Current sub pass
-***********************************************************************************************************************/
+/// <summary>Record point light stencil commands.</summary>
+/// <param name="cmdBuffers"> SecondaryCommandBuffer to record.</param>
+/// <param name="swapChainIndex"> Current swap chain index.</param>
+/// <param name="subpass"> Current sub pass.</param>
 void VulkanDeferredShadingPFX::recordCommandsPointLightGeometryStencil(pvrvk::CommandBuffer& cmdBuffers, uint32_t swapChainIndex, const uint32_t pointLight)
 {
 	pvrvk::ClearRect clearArea(pvrvk::Rect2D(0, 0, _framebufferWidth, _framebufferHeight));
@@ -1193,9 +1154,7 @@ void VulkanDeferredShadingPFX::recordCommandsPointLightGeometryStencil(pvrvk::Co
 		.recordRenderingCommands(cmdBuffers, static_cast<uint16_t>(swapChainIndex));
 }
 
-/*!*********************************************************************************************************************
-\return	Return an unique_ptr to a new Demo class, supplied by the user
-\brief	This function must be implemented by the user of the shell. The user should return its Shell object defining the
-behaviour of the application.
-***********************************************************************************************************************/
+/// <summary>This function must be implemented by the user of the shell. The user should return its Shell object defining the
+/// behaviour of the application.</summary>
+/// <returns>Return an unique_ptr to a new Demo class,supplied by the user.</returns>
 std::unique_ptr<pvr::Shell> pvr::newDemo() { return std::make_unique<VulkanDeferredShadingPFX>(); }

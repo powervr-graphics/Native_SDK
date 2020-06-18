@@ -29,10 +29,10 @@ add_assets_to_target(OpenGLESIntroducingPVRUtils
 	ASSET_FOLDER ${ASSET_FOLDER} 
 	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/GnomeToy
 	FILE_LIST 
+		GnomeToy.pod
 		GnomeWood.pvr
 		DarkWood.pvr
-		ClearWood.pvr
-		GnomeToy.pod)
+		ClearWood.pvr)
 
 ### Textural shaders (OpenGL ES) ###
 add_assets_to_target(OpenGLESIntroducingPVRUtils 
@@ -50,7 +50,7 @@ add_assets_resource_file(OpenGLESIntroducingPVRUtils)
 # Apply SDK example specific compile and linker options
 apply_example_compile_options_to_target(OpenGLESIntroducingPVRUtils)
 
-target_link_libraries(OpenGLESIntroducingPVRUtils
+target_link_libraries(OpenGLESIntroducingPVRUtils PUBLIC
 	PVRShell
 	PVRUtilsGles
 )

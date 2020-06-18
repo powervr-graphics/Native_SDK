@@ -1,19 +1,16 @@
-/*!*********************************************************************************************************************
-\File         VulkanIntroducingPVRUtils.cpp
-\Title        Introducing the PowerVR Framework
-\Author       PowerVR by Imagination, Developer Technology Team
-\Copyright    Copyright (c) Imagination Technologies Limited.
-\brief      Shows how to use the PVRApi library together with loading models from POD files and rendering them with effects from PFX files.
-***********************************************************************************************************************/
+/*!
+\brief Shows how to use the PVRApi library together with loading models from POD files and rendering them with effects from PFX files.
+\file VulkanIntroducingPVRUtils.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #include "PVRCore/PVRCore.h"
 #include "PVRShell/PVRShell.h"
 #include "PVRUtils/PVRUtilsVk.h"
 
 pvr::utils::VertexBindings Attributes[] = { { "POSITION", 0 }, { "NORMAL", 1 }, { "UV0", 2 } };
 
-/*!*********************************************************************************************************************
- Content file names
-***********************************************************************************************************************/
+// Content file names
 const char VertShaderFileName[] = "VertShader.vsh.spv";
 const char FragShaderFileName[] = "FragShader.fsh.spv";
 const char SceneFileName[] = "GnomeToy.pod"; // POD scene files
@@ -23,10 +20,8 @@ struct DeviceResources
 {
 	pvrvk::Instance instance;
 	pvr::utils::DebugUtilsCallbacks debugUtilsCallbacks;
-	pvrvk::Surface surface;
 	pvrvk::Device device;
 	pvrvk::Swapchain swapchain;
-	pvr::Multi<pvrvk::ImageView> depthStencilImages;
 	pvrvk::Queue queue;
 
 	pvr::utils::vma::Allocator vmaAllocator;
@@ -80,7 +75,7 @@ struct DeviceResources
 	~DeviceResources()
 	{
 		if (device) { device->waitIdle(); }
-		uint32_t l = swapchain->getSwapchainLength();
+		uint32_t l = swapchain ? swapchain->getSwapchainLength() : 0;
 		for (uint32_t i = 0; i < l; ++i)
 		{
 			if (perFrameResourcesFences[i]) perFrameResourcesFences[i]->wait();
@@ -88,9 +83,7 @@ struct DeviceResources
 	}
 };
 
-/*!*********************************************************************************************************************
- Class implementing the pvr::Shell functions.
-***********************************************************************************************************************/
+/// <summary>Class implementing the pvr::Shell functions.</summary>
 class VulkanIntroducingPVRUtils : public pvr::Shell
 {
 	std::unique_ptr<DeviceResources> _deviceResources;
@@ -128,12 +121,10 @@ struct DescripotSetComp
 	bool operator()(std::pair<int32_t, pvrvk::DescriptorSet> const& pair) { return pair.first == id; }
 };
 
-/*!*********************************************************************************************************************
-\return Result::Success if no error occurred
-\brief  Code in initApplication() will be called by Shell once per run, before the rendering context is created.
-	Used to initialize variables that are not dependent on it (e.g. external modules, loading meshes, etc.). If the rendering
-	context is lost, initApplication() will not be called again.
-***********************************************************************************************************************/
+/// <summary>Code in initApplication() will be called by Shell once per run, before the rendering context is created.
+///	Used to initialize variables that are not dependent on it (e.g. external modules, loading meshes, etc.). If the rendering
+///	context is lost, initApplication() will not be called again.</summary>
+/// <returns>Result::Success if no error occurred.</returns>
 pvr::Result VulkanIntroducingPVRUtils::initApplication()
 {
 	// Load the _scene
@@ -159,22 +150,18 @@ pvr::Result VulkanIntroducingPVRUtils::initApplication()
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return Result::Success if no error occurred
-\brief  Code in quitApplication() will be called by pvr::Shell once per run, just before exiting the program.
-		If the rendering context is lost, quitApplication() will not be called.
-***********************************************************************************************************************/
+/// <summary>Code in quitApplication() will be called by pvr::Shell once per run, just before exiting the program.
+/// If the rendering context is lost, quitApplication() will not be called.</summary>
+/// <returns>Result::Success if no error occurred.</returns>
 pvr::Result VulkanIntroducingPVRUtils::quitApplication()
 {
 	_scene.reset();
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return Result::Success if no error occurred
-\brief  Code in initView() will be called by Shell upon initialization or after a change  in the rendering context.
-		Used to initialize variables that are dependent on the rendering context (e.g. textures, vertex buffers, etc.)
-***********************************************************************************************************************/
+/// <summary>Code in initView() will be called by Shell upon initialization or after a change in the rendering context.
+/// Used to initialize variables that are dependent on the rendering context (e.g. textures, vertex buffers, etc.).</summary>
+/// <returns>Return Result::Success if no error occurred.</returns>
 pvr::Result VulkanIntroducingPVRUtils::initView()
 {
 	_deviceResources = std::make_unique<DeviceResources>();
@@ -189,14 +176,14 @@ pvr::Result VulkanIntroducingPVRUtils::initView()
 	}
 
 	// Create the surface
-	_deviceResources->surface =
+	auto surface =
 		pvr::utils::createSurface(_deviceResources->instance, _deviceResources->instance->getPhysicalDevice(0), this->getWindow(), this->getDisplay(), this->getConnection());
 
 	// Create a default set of debug utils messengers or debug callbacks using either VK_EXT_debug_utils or VK_EXT_debug_report respectively
 	_deviceResources->debugUtilsCallbacks = pvr::utils::createDebugUtilsCallbacks(_deviceResources->instance);
 
 	pvr::utils::QueueAccessInfo queueAccessInfo;
-	const pvr::utils::QueuePopulateInfo queuePopulateInfo = { pvrvk::QueueFlags::e_GRAPHICS_BIT, _deviceResources->surface };
+	const pvr::utils::QueuePopulateInfo queuePopulateInfo = { pvrvk::QueueFlags::e_GRAPHICS_BIT, surface };
 
 	// Create the device and retrieve its queues
 	_deviceResources->device = pvr::utils::createDeviceAndQueues(_deviceResources->instance->getPhysicalDevice(0), &queuePopulateInfo, 1, &queueAccessInfo);
@@ -206,19 +193,21 @@ pvr::Result VulkanIntroducingPVRUtils::initView()
 
 	_deviceResources->vmaAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
 
-	pvrvk::SurfaceCapabilitiesKHR surfaceCapabilities = _deviceResources->instance->getPhysicalDevice(0)->getSurfaceCapabilities(_deviceResources->surface);
+	pvrvk::SurfaceCapabilitiesKHR surfaceCapabilities = _deviceResources->instance->getPhysicalDevice(0)->getSurfaceCapabilities(surface);
 
 	// validate the supported swapchain image usage
 	pvrvk::ImageUsageFlags swapchainImageUsage = pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT;
 	if (pvr::utils::isImageUsageSupportedBySurface(surfaceCapabilities, pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT))
 	{ swapchainImageUsage |= pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT; } // Create the swapchain and depth stencil images
-	pvr::utils::createSwapchainAndDepthStencilImageAndViews(_deviceResources->device, _deviceResources->surface, getDisplayAttributes(), _deviceResources->swapchain,
-		_deviceResources->depthStencilImages, swapchainImageUsage, pvrvk::ImageUsageFlags::e_DEPTH_STENCIL_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_TRANSIENT_ATTACHMENT_BIT,
-		&_deviceResources->vmaAllocator);
 
-	pvr::utils::createOnscreenFramebufferAndRenderPass(_deviceResources->swapchain, &_deviceResources->depthStencilImages[0], _deviceResources->onScreenFramebuffer);
+	// Create the Swapchain, its renderpass, attachments and framebuffers. Will support MSAA if enabled through command line.
+	auto swapChainCreateOutput = pvr::utils::createSwapchainRenderpassFramebuffers(_deviceResources->device, surface, getDisplayAttributes(),
+		pvr::utils::CreateSwapchainParameters().setAllocator(_deviceResources->vmaAllocator).setColorImageUsageFlags(swapchainImageUsage));
 
-	// Create the Comandpool & Descriptorpool
+	_deviceResources->swapchain = swapChainCreateOutput.swapchain;
+	_deviceResources->onScreenFramebuffer = swapChainCreateOutput.framebuffer;
+
+	// Create the Command pool & Descriptor pool
 	_deviceResources->commandPool =
 		_deviceResources->device->createCommandPool(pvrvk::CommandPoolCreateInfo(queueAccessInfo.familyId, pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT));
 
@@ -244,7 +233,7 @@ pvr::Result VulkanIntroducingPVRUtils::initView()
 	_deviceResources->cmdBuffers[0]->begin();
 	bool requiresCommandBufferSubmission = false;
 	pvr::utils::appendSingleBuffersFromModel(_deviceResources->device, *_scene, _deviceResources->vbos, _deviceResources->ibos, _deviceResources->cmdBuffers[0],
-		requiresCommandBufferSubmission, &_deviceResources->vmaAllocator);
+		requiresCommandBufferSubmission, _deviceResources->vmaAllocator);
 
 	// create the descriptor set layouts and pipeline layouts
 	createDescriptorSetLayouts();
@@ -291,20 +280,16 @@ pvr::Result VulkanIntroducingPVRUtils::initView()
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return Result::Success if no error occurred
-\brief  Code in releaseView() will be called by Shell when the application quits or before a change in the rendering context.
-***********************************************************************************************************************/
+/// <summary>Code in releaseView() will be called by PVRShell when the application quits or before a change in the rendering context.</summary>
+/// <returns>Return Result::Success if no error occurred.</returns>
 pvr::Result VulkanIntroducingPVRUtils::releaseView()
 {
 	_deviceResources.reset();
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return Result::Success if no error occurred
-\brief  Main rendering loop function of the program. The shell will call this function every _frame.
-***********************************************************************************************************************/
+/// <summary>Main rendering loop function of the program. The shell will call this function every frame.</summary>
+/// <returns>Return Result::Success if no error occurred.</returns>
 pvr::Result VulkanIntroducingPVRUtils::renderFrame()
 {
 	_deviceResources->swapchain->acquireNextImage(uint64_t(-1), _deviceResources->imageAcquiredSemaphores[_frameId]);
@@ -328,7 +313,7 @@ pvr::Result VulkanIntroducingPVRUtils::renderFrame()
 	//  A _scene is composed of nodes. There are 3 types of nodes:
 	//  - MeshNodes :
 	//    references a mesh in the getMesh().
-	//    These nodes are at the beginning of of the Nodes array.
+	//    These nodes are at the beginning of the Nodes array.
 	//    And there are nNumMeshNode number of them.
 	//    This way the .pod format can instantiate several times the same mesh
 	//    with different attributes.
@@ -389,7 +374,7 @@ pvr::Result VulkanIntroducingPVRUtils::renderFrame()
 	if (this->shouldTakeScreenshot())
 	{
 		pvr::utils::takeScreenshot(_deviceResources->queue, _deviceResources->commandPool, _deviceResources->swapchain, swapchainIndex, this->getScreenshotFileName(),
-			&_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
+			_deviceResources->vmaAllocator, _deviceResources->vmaAllocator);
 	}
 
 	// Present
@@ -406,9 +391,7 @@ pvr::Result VulkanIntroducingPVRUtils::renderFrame()
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\brief  Pre-record the rendering commands
-***********************************************************************************************************************/
+/// <summary>Pre-record the commands.</summary>
 void VulkanIntroducingPVRUtils::recordCommandBuffers()
 {
 	glm::vec3 clearColorLinearSpace(0.0f, 0.45f, 0.41f);
@@ -429,7 +412,7 @@ void VulkanIntroducingPVRUtils::recordCommandBuffers()
 		// A scene is composed of nodes. There are 3 types of nodes:
 		// - MeshNodes :
 		// references a mesh in the getMesh().
-		// These nodes are at the beginning of of the Nodes array.
+		// These nodes are at the beginning of the Nodes array.
 		// And there are nNumMeshNode number of them.
 		// This way the .pod format can instantiate several times the same mesh
 		// with different attributes.
@@ -483,9 +466,7 @@ void VulkanIntroducingPVRUtils::recordCommandBuffers()
 	}
 }
 
-/*!*********************************************************************************************************************
-\brief  Creates the descriptor set layouts used throughout the demo.
-***********************************************************************************************************************/
+/// <summary>Creates the descriptor set layouts used throughout the demo.</summary>
 void VulkanIntroducingPVRUtils::createDescriptorSetLayouts()
 {
 	// create the texture descriptor set layout and pipeline layout
@@ -516,9 +497,7 @@ void VulkanIntroducingPVRUtils::createDescriptorSetLayouts()
 	_deviceResources->pipelineLayout = _deviceResources->device->createPipelineLayout(pipeLayoutInfo);
 }
 
-/*!*********************************************************************************************************************
-\brief  Creates the graphics pipeline used in the demo.
-***********************************************************************************************************************/
+/// <summary>Creates the graphics pipeline used in the demo.</summary>
 void VulkanIntroducingPVRUtils::createPipeline()
 {
 	pvrvk::GraphicsPipelineCreateInfo pipeDesc;
@@ -539,15 +518,18 @@ void VulkanIntroducingPVRUtils::createPipeline()
 	pipeDesc.depthStencil.enableDepthWrite(true);
 	pipeDesc.rasterizer.setCullMode(pvrvk::CullModeFlags::e_BACK_BIT);
 	pipeDesc.subpass = 0;
+	if (getAASamples() > 1)
+	{
+		pipeDesc.multiSample.setSampleShading(true);
+		pipeDesc.multiSample.setNumRasterizationSamples(pvr::utils::convertToPVRVkNumSamples((uint8_t)getAASamples()));
+	}
 
 	pipeDesc.pipelineLayout = _deviceResources->pipelineLayout;
 
 	_deviceResources->pipeline = _deviceResources->device->createGraphicsPipeline(pipeDesc, _deviceResources->pipelineCache);
 }
 
-/*!*********************************************************************************************************************
-\brief  Creates the buffers used throughout the demo.
-***********************************************************************************************************************/
+/// <summary>Creates the buffers used throughout the demo.</summary>
 void VulkanIntroducingPVRUtils::createBuffers()
 {
 	{
@@ -560,7 +542,7 @@ void VulkanIntroducingPVRUtils::createBuffers()
 		_deviceResources->matrixBuffer = pvr::utils::createBuffer(_deviceResources->device,
 			pvrvk::BufferCreateInfo(_deviceResources->matrixMemoryView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
-			&_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+			_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 		_deviceResources->matrixMemoryView.pointToMappedMemory(_deviceResources->matrixBuffer->getDeviceMemory()->getMappedData());
 	}
 
@@ -573,15 +555,13 @@ void VulkanIntroducingPVRUtils::createBuffers()
 		_deviceResources->lightBuffer = pvr::utils::createBuffer(_deviceResources->device,
 			pvrvk::BufferCreateInfo(_deviceResources->lightMemoryView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
-			&_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+			_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 		_deviceResources->lightMemoryView.pointToMappedMemory(_deviceResources->lightBuffer->getDeviceMemory()->getMappedData());
 	}
 }
 
-/*!*********************************************************************************************************************
-\brief  Create combined texture and sampler descriptor set for the materials in the _scene
-\return Return true on success
-***********************************************************************************************************************/
+/// <summary>Create combined texture and sampler descriptor set for the materials in the _scene.</summary>
+/// <returns>Return true on success.</returns>
 void VulkanIntroducingPVRUtils::createDescriptorSets(pvrvk::CommandBuffer& cmdBuffers)
 {
 	// create the sampler object
@@ -608,7 +588,7 @@ void VulkanIntroducingPVRUtils::createDescriptorSets(pvrvk::CommandBuffer& cmdBu
 		const char* fileName = _scene->getTexture(material.defaultSemantics().getDiffuseTextureIndex()).getName().c_str();
 
 		pvrvk::ImageView diffuseMap = pvr::utils::loadAndUploadImageAndView(_deviceResources->device, fileName, true, cmdBuffers, *this, pvrvk::ImageUsageFlags::e_SAMPLED_BIT,
-			pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, nullptr, &_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
+			pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, nullptr, _deviceResources->vmaAllocator, _deviceResources->vmaAllocator);
 
 		writeDescSet.setImageInfo(0, pvrvk::DescriptorImageInfo(diffuseMap, _deviceResources->samplerTrilinear, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL));
 	}

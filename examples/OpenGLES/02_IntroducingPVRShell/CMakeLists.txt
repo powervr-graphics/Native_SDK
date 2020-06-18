@@ -48,8 +48,7 @@ target_include_directories(OpenGLESIntroducingPVRShell
 # Apply SDK specific compile and linker options
 apply_example_compile_options_to_target(OpenGLESIntroducingPVRShell)
 
-target_link_libraries(OpenGLESIntroducingPVRShell 
+target_link_libraries(OpenGLESIntroducingPVRShell PUBLIC
 	PVRShell
 	${OpenGLESIntroducingPVRShell_LINK_LIBS}
 )
-

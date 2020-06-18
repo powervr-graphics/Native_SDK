@@ -21,9 +21,13 @@ enum Enum
 };
 } // namespace HWCamera
 
+class CameraInterfaceImpl;
+
 /// <summary>A class design to provide you with a Texture handle to the Camera's image.</summary>
 class CameraInterface
 {
+	friend class ::pvr::CameraInterfaceImpl;
+
 public:
 	/// <summary>Constructor</summary>
 	CameraInterface();
@@ -84,11 +88,14 @@ public:
 	GLuint getChrominanceTexture();
 
 	/// <summary>Returns the resolution of the currently active camera.</summary>
-	/// <param name="x">The horizontal resolution of the currently active camera will be saved here</param>
-	/// <param name="y">The vertical resolution of the currently active camera will be saved here</param>
-	void getCameraResolution(uint32_t& x, uint32_t& y);
+	/// <param name="width">The horizontal resolution of the currently active camera will be saved here</param>
+	/// <param name="height">The vertical resolution of the currently active camera will be saved here</param>
+	bool getCameraResolution(uint32_t& width, uint32_t& height);
+
+	bool isReady() { return _isReady; }
 
 private:
+	bool _isReady = false;
 	void* pImpl;
 };
 } // namespace pvr

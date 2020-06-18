@@ -1,10 +1,9 @@
-/*!*********************************************************************************************************************
-\File         OpenGLESPVRScopeExample.cpp
-\Title        PVRScopeExample
-\Author       PowerVR by Imagination, Developer Technology Team
-\Copyright    Copyright (c) Imagination Technologies Limited.
-\brief  Shows how to use our example PVRScope graph code.
-***********************************************************************************************************************/
+/*!
+\brief Shows how to use our example PVRScope graph code.
+\file OpenGLESPVRScopeExample.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #include "PVRShell/PVRShell.h"
 #include "PVRUtils/OpenGLES/BindingsGles.h"
 #include "PVRUtils/PVRUtilsGles.h"
@@ -25,9 +24,7 @@ const char TextureFile[] = "Marble.pvr";
 // POD scene files
 const char SceneFile[] = "Satyr.pod";
 
-/*!*********************************************************************************************************************
-\brief Class implementing the pvr::Shell functions.
-***********************************************************************************************************************/
+/// <summary>Class implementing the pvr::Shell functions.</summary>
 class OpenGLESPVRScopeExample : public pvr::Shell
 {
 	glm::vec3 ClearColor;
@@ -100,17 +97,15 @@ public:
 	void eventMappedInput(pvr::SimplifiedInput key);
 
 	void updateDescription();
-	void executeGlCommands();
-	void createTexSamplerDescriptorSet();
+	void loadTextures();
 	void loadVbos();
 	void createProgram();
+	void drawScopeGraph();
 	void drawMesh(uint32_t nodeIndex);
 };
 
-/*!*********************************************************************************************************************
-\brief Handle input key events
-\param key key event to handle
-************************************************************************************************************************/
+/// <summary>Handle input key events.</summary>
+/// <param name="key">Event to handle.</param>
 void OpenGLESPVRScopeExample::eventMappedInput(pvr::SimplifiedInput key)
 {
 	// Keyboard input (cursor up/down to cycle through counters)
@@ -139,13 +134,13 @@ void OpenGLESPVRScopeExample::eventMappedInput(pvr::SimplifiedInput key)
 	updateDescription();
 }
 
-/*!*********************************************************************************************************************
-\brief Loads the textures required for this training course
-\return Return true if no error occurred
-***********************************************************************************************************************/
-void OpenGLESPVRScopeExample::createTexSamplerDescriptorSet()
+/// <summary>Loads the textures required for this training course.</summary>
+/// <returns>Return true if no error occurred.</returns>
+void OpenGLESPVRScopeExample::loadTextures()
 {
+	// load the texture from disk
 	_deviceResources->texture = pvr::utils::textureUpload(*this, TextureFile, _deviceResources->context->getApiVersion() == pvr::Api::OpenGLES2);
+
 	// create the bilinear sampler
 	gl::BindTexture(GL_TEXTURE_2D, _deviceResources->texture);
 	gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
@@ -170,7 +165,7 @@ void OpenGLESPVRScopeExample::createProgram()
 	ClearColor = clearColorLinearSpace;
 	if (getBackBufferColorspace() != pvr::ColorSpace::sRGB)
 	{
-		ClearColor = pvr::utils::convertLRGBtoSRGB(clearColorLinearSpace); // Gamma correct the clear color...
+		ClearColor = pvr::utils::convertLRGBtoSRGB(clearColorLinearSpace); // Gamma correct the clear colour...
 		numDefines = 0;
 	}
 
@@ -202,24 +197,20 @@ void OpenGLESPVRScopeExample::createProgram()
 	_vertexConfig = pvr::utils::createInputAssemblyFromMesh(_scene->getMesh(0), vertexBindings, 3);
 }
 
-/*!*********************************************************************************************************************
-\brief Loads the mesh data required for this training course into vertex buffer objects
-***********************************************************************************************************************/
+/// <summary>Loads the mesh data required for this training course into vertex buffer objects </summary>
 void OpenGLESPVRScopeExample::loadVbos() { pvr::utils::appendSingleBuffersFromModel(*_scene, _deviceResources->vbos, _deviceResources->ibos); }
 
-/*!*********************************************************************************************************************
-\return pvr::Result::Success if no error occurred
-\brief  Code in initApplication() will be called by pvr::Shell once per run, before the rendering context is created.
-	  Used to initialize variables that are not dependent on it (e.g. external modules, loading meshes,etc.)
-	  If the rendering context is lost, initApplication() will not be called again.
-***********************************************************************************************************************/
+/// <summary>Code in initApplication() will be called by pvr::Shell once per run, before the rendering context is created.
+/// Used to initialize variables that are not dependent on it (e.g. external modules, loading meshes,etc.)
+/// If the rendering context is lost, initApplication() will not be called again.</summary>
+/// <returns>pvr::Result::Success if no error occurred.</returns>
 pvr::Result OpenGLESPVRScopeExample::initApplication()
 {
 	// Blue-ish marble
 	_progUniforms.specularExponent = 100.f; // Width of the specular highlights (High exponent for small shiny highlights)
-	_progUniforms.albedo = glm::vec3(.78f, .82f, 1.f); // Overall color
+	_progUniforms.albedo = glm::vec3(.78f, .82f, 1.f); // Overall colour
 	_progUniforms.metallicity = 1.f; // Doesn't make much of a difference in this material.
-	_progUniforms.reflectivity = .2f; // Low reflectivity - color mostly diffuse.
+	_progUniforms.reflectivity = .2f; // Low reflectivity - colour mostly diffuse.
 
 	// At the time of writing, this counter is the USSE load for vertex + pixel processing
 	_selectedCounter = 0;
@@ -240,22 +231,18 @@ pvr::Result OpenGLESPVRScopeExample::initApplication()
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return Return Result::Success if no error occurred
-\brief  Code in quitApplication() will be called by pvr::Shell once per run, just before exiting
-	  the program. If the rendering context is lost, quitApplication() will not be called.
-***********************************************************************************************************************/
+/// <summary>Code in quitApplication() will be called by pvr::Shell once per run, just before exiting
+/// the program. If the rendering context is lost, quitApplication() will not be called.</summary>
+/// <returns>Return Result::Success if no error occurred.</returns>
 pvr::Result OpenGLESPVRScopeExample::quitApplication()
 {
 	_scene.reset();
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return Return Result::Success if no error occurred
-\brief Code in initView() will be called by pvr::Shell upon initialization or after a change in the rendering context.
-	 Used to initialize variables that are dependent on the rendering context (e.g. textures, vertex buffers, etc.)
-***********************************************************************************************************************/
+/// <summary>Code in initView() will be called by pvr::Shell upon initialization or after a change in the rendering context.
+/// Used to initialize variables that are dependent on the rendering context (e.g. textures, vertex buffers, etc.) </summary>
+/// <returns>Result::Success if no error occurred.</returns>
 pvr::Result OpenGLESPVRScopeExample::initView()
 {
 	_deviceResources = std::make_unique<DeviceResources>();
@@ -270,7 +257,7 @@ pvr::Result OpenGLESPVRScopeExample::initView()
 	loadVbos();
 
 	// Load textures
-	createTexSamplerDescriptorSet();
+	loadTextures();
 
 	// Load and compile the shaders & link programs
 	createProgram();
@@ -347,10 +334,8 @@ pvr::Result OpenGLESPVRScopeExample::initView()
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return Return Result::Success if no error occurred
-\brief Code in releaseView() will be called by pvr::Shell when the application quits or before a change in the rendering context.
-***********************************************************************************************************************/
+/// <summary>Code in releaseView() will be called by pvr::Shell when the application quits or before a change in the rendering context.</summary>
+/// <returns>Return Result::Success if no error occurred.</returns>
 pvr::Result OpenGLESPVRScopeExample::releaseView()
 {
 	// Instructs the Asset Store to free all resources
@@ -358,10 +343,8 @@ pvr::Result OpenGLESPVRScopeExample::releaseView()
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return Return Result::Success if no error occurred
-\brief Main rendering loop function of the program. The shell will call this function every frame.
-***********************************************************************************************************************/
+/// <summary>Main rendering loop function of the program. The shell will call this function every frame.</summary>
+/// <returns>Return Result::Success if no error occurred.<returns>
 pvr::Result OpenGLESPVRScopeExample::renderFrame()
 {
 	// Rotate and Translation the model matrix
@@ -388,9 +371,39 @@ pvr::Result OpenGLESPVRScopeExample::renderFrame()
 	// Set light direction in model space
 	_progUniforms.lightDirView = glm::normalize(glm::vec3(1., 1., -1.));
 
+	gl::Enable(GL_CULL_FACE);
+	gl::CullFace(GL_BACK);
+	gl::FrontFace(GL_CCW);
+	gl::Enable(GL_DEPTH_TEST);
+
+	gl::BindFramebuffer(GL_FRAMEBUFFER, _deviceResources->onScreenFbo);
+	gl::ClearColor(ClearColor.r, ClearColor.g, ClearColor.b, 1.f);
+	gl::Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	gl::UseProgram(_deviceResources->program);
+
 	_deviceResources->scopeGraph.ping(static_cast<float>(getFrameTime()));
 	updateDescription();
-	executeGlCommands();
+
+	gl::BindTexture(GL_TEXTURE_2D, _deviceResources->texture);
+
+	gl::Uniform3fv(_uniformLocations.lightDirView, 1, glm::value_ptr(_progUniforms.lightDirView));
+	gl::Uniform1fv(_uniformLocations.specularExponent, 1, &_progUniforms.specularExponent);
+	gl::Uniform1fv(_uniformLocations.metallicity, 1, &_progUniforms.metallicity);
+	gl::Uniform1fv(_uniformLocations.reflectivity, 1, &_progUniforms.reflectivity);
+	gl::Uniform3fv(_uniformLocations.albedo, 1, glm::value_ptr(_progUniforms.albedo));
+
+	// Now that the uniforms are set, call another function to actually draw the mesh.
+	gl::UniformMatrix4fv(_uniformLocations.mvpMtx, 1, GL_FALSE, glm::value_ptr(_progUniforms.mvpMatrix1));
+	gl::UniformMatrix3fv(_uniformLocations.mvITMtx, 1, GL_FALSE, glm::value_ptr(_progUniforms.mvITMatrix1));
+	drawMesh(0);
+	// Now that the uniforms are set, call another function to actually draw the mesh.
+	gl::UniformMatrix4fv(_uniformLocations.mvpMtx, 1, GL_FALSE, glm::value_ptr(_progUniforms.mvpMatrix2));
+	gl::UniformMatrix3fv(_uniformLocations.mvITMtx, 1, GL_FALSE, glm::value_ptr(_progUniforms.mvITMatrix2));
+	drawMesh(0);
+
+	// Render Scope Graph.
+	drawScopeGraph();
 
 	if (this->shouldTakeScreenshot()) { pvr::utils::takeScreenshot(this->getScreenshotFileName(), this->getWidth(), this->getHeight()); }
 
@@ -399,10 +412,20 @@ pvr::Result OpenGLESPVRScopeExample::renderFrame()
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\param nodeIndex Node index of the mesh to draw
-\brief Draws a pvr::Model::Mesh after the model view matrix has been set and the material prepared.
-***********************************************************************************************************************/
+void OpenGLESPVRScopeExample::drawScopeGraph()
+{
+	_deviceResources->scopeGraph.executeCommands();
+
+	_deviceResources->uiRenderer.beginRendering();
+	_deviceResources->uiRenderer.getDefaultTitle()->render();
+	_deviceResources->uiRenderer.getDefaultDescription()->render();
+	_deviceResources->uiRenderer.getSdkLogo()->render();
+	_deviceResources->scopeGraph.executeUICommands();
+	_deviceResources->uiRenderer.endRendering();
+}
+
+/// <summary>Draws a pvr::Model::Mesh after the model view matrix has been set and the material prepared.</summary>
+/// <param name="nodeIndex"> Node index of the mesh to draw.</param>
 void OpenGLESPVRScopeExample::drawMesh(uint32_t nodeIndex)
 {
 	const pvr::assets::Model::Node& node = _scene->getNode(nodeIndex);
@@ -461,54 +484,7 @@ void OpenGLESPVRScopeExample::drawMesh(uint32_t nodeIndex)
 	for (auto it = _vertexConfig.attributes.begin(), end = _vertexConfig.attributes.end(); it != end; ++it) { gl::DisableVertexAttribArray(it->index); }
 }
 
-/*!*********************************************************************************************************************
-\brief  Pre-record the rendering commands
-***********************************************************************************************************************/
-void OpenGLESPVRScopeExample::executeGlCommands()
-{
-	gl::BindFramebuffer(GL_FRAMEBUFFER, _deviceResources->onScreenFbo);
-	gl::ClearColor(ClearColor.r, ClearColor.g, ClearColor.b, 1.f);
-	gl::Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	gl::Enable(GL_CULL_FACE);
-	gl::UseProgram(_deviceResources->program);
-
-	//--- create the pipeline layout
-	gl::CullFace(GL_BACK);
-
-	gl::FrontFace(GL_CCW);
-
-	gl::Enable(GL_DEPTH_TEST);
-
-	gl::BindTexture(GL_TEXTURE_2D, _deviceResources->texture);
-
-	gl::Uniform3fv(_uniformLocations.lightDirView, 1, glm::value_ptr(_progUniforms.lightDirView));
-	gl::Uniform1fv(_uniformLocations.specularExponent, 1, &_progUniforms.specularExponent);
-	gl::Uniform1fv(_uniformLocations.metallicity, 1, &_progUniforms.metallicity);
-	gl::Uniform1fv(_uniformLocations.reflectivity, 1, &_progUniforms.reflectivity);
-	gl::Uniform3fv(_uniformLocations.albedo, 1, glm::value_ptr(_progUniforms.albedo));
-
-	// Now that the uniforms are set, call another function to actually draw the mesh.
-	gl::UniformMatrix4fv(_uniformLocations.mvpMtx, 1, GL_FALSE, glm::value_ptr(_progUniforms.mvpMatrix1));
-	gl::UniformMatrix3fv(_uniformLocations.mvITMtx, 1, GL_FALSE, glm::value_ptr(_progUniforms.mvITMatrix1));
-	drawMesh(0);
-	// Now that the uniforms are set, call another function to actually draw the mesh.
-	gl::UniformMatrix4fv(_uniformLocations.mvpMtx, 1, GL_FALSE, glm::value_ptr(_progUniforms.mvpMatrix2));
-	gl::UniformMatrix3fv(_uniformLocations.mvITMtx, 1, GL_FALSE, glm::value_ptr(_progUniforms.mvITMatrix2));
-	drawMesh(0);
-
-	_deviceResources->scopeGraph.executeCommands();
-
-	_deviceResources->uiRenderer.beginRendering();
-	_deviceResources->uiRenderer.getDefaultTitle()->render();
-	_deviceResources->uiRenderer.getDefaultDescription()->render();
-	_deviceResources->uiRenderer.getSdkLogo()->render();
-	_deviceResources->scopeGraph.executeUICommands();
-	_deviceResources->uiRenderer.endRendering();
-}
-
-/*!*********************************************************************************************************************
-\brief  Update the description
-***********************************************************************************************************************/
+/// <summary>Update the description.</summary>
 void OpenGLESPVRScopeExample::updateDescription()
 {
 	static char description[256];

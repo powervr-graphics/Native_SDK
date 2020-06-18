@@ -1,19 +1,15 @@
-/*!********************************************************************************************
-\File         OpenGLESOpenCLExample.cpp
-\Title        OpenCLExample
-\Author       PowerVR by Imagination, Developer Technology Team
-\Copyright    Copyright (c) Imagination Technologies Limited.
+/*!
 \brief
-***********************************************************************************************/
+\file OpenGLESOpenCLExample.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #include "PVRShell/PVRShell.h"
 #include "PVRAssets/PVRAssets.h"
 #include "PVRUtils/PVRUtilsGles.h"
 #include "PVRUtils/OpenCL/OpenCLUtils.h"
 
-/**********************************************************************************************
-Content file names
-***********************************************************************************************/
-
+/// Content file names
 namespace Files {
 const char QuadVertShaderSrc[] = "QuadVertShader_ES3.vsh";
 const char QuadFragShaderSrc[] = "QuadFragShader_ES3.fsh";
@@ -49,9 +45,7 @@ struct OpenCLObjects
 	cl_kernel kernels[Kernel::Count + 1];
 };
 
-/*!********************************************************************************************
-Class implementing the pvr::Shell functions.
-***********************************************************************************************/
+/// <summary>Implements the pvr::Shell functions.</summary>
 class OpenGLESOpenCLExample : public pvr::Shell
 {
 	struct DeviceResources
@@ -243,7 +237,7 @@ void OpenGLESOpenCLExample::initClImages()
 		(char*)cl::EnqueueMapImage(clobj.commandqueue, _deviceResources->imageCl_Input, CL_TRUE, CL_MAP_WRITE, origin, region, &image_row_pitch, NULL, 0, NULL, NULL, &errcode);
 
 	if (errcode != CL_SUCCESS || mappedMemory == NULL)
-	{ throw pvr::InvalidOperationError(pvr::strings::createFormatted("ERROR: Failed to map bufferwith code %s", clutils::getOpenCLError(errcode))); }
+	{ throw pvr::InvalidOperationError(pvr::strings::createFormatted("ERROR: Failed to map buffer width code %s", clutils::getOpenCLError(errcode))); }
 
 	memcpy(mappedMemory, imageData.getDataPointer(), imageData.getHeight() * imageData.getWidth() * 4);
 
@@ -294,9 +288,7 @@ void OpenGLESOpenCLExample::initClImages()
 	initKernels();
 }
 
-/*!********************************************************************************************
-\brief  Handles user imageCl_Input and updates live variables accordingly.
-***********************************************************************************************/
+/// <summary>Handles user imageCl_Input and updates live variables accordingly.</summary>
 void OpenGLESOpenCLExample::eventMappedInput(pvr::SimplifiedInput e)
 {
 	// Object+Bloom, object, bloom
@@ -333,10 +325,8 @@ void OpenGLESOpenCLExample::eventMappedInput(pvr::SimplifiedInput e)
 	}
 }
 
-/*!********************************************************************************************
-\brief  Loads and compiles the shaders and links the shader programs
-\return Return true if no error occurred required for this training course
-***********************************************************************************************/
+/// <summary>Loads and compiles the shaders and links the shader programs.</summary>
+/// <returns>Return true if no error occurred required for this training course</returns>
 void OpenGLESOpenCLExample::createPipeline()
 {
 	// Enable or disable gamma correction based on if it is automatically performed on the framebuffer or we need to do it in the shader.
@@ -352,14 +342,10 @@ void OpenGLESOpenCLExample::createPipeline()
 	gl::UseProgram(0);
 }
 
-/*!********************************************************************************************
-\return Return Result::Success if no error occurred
-\brief  Code in initApplication() will be called by pvr::Shell once per run, before the rendering
-  context is created.
-  Used to initialize variables that are not dependent on it (e.g. external modules,
-  loading meshes, etc.)
-  If the rendering context is lost, initApplication() will not be called again.
-***********************************************************************************************/
+/// <summary>Code in initApplication() will be called by pvr::Shell once per run, before the rendering
+/// context is created. Used to initialize variables that are not dependent on it (e.g. external modules,
+/// loading meshes, etc.) If the rendering context is lost, initApplication() will not be called again.</summary>
+/// <returns>Return Result::Success if no error occurred.</returns>
 pvr::Result OpenGLESOpenCLExample::initApplication()
 {
 	_currentKernel = 0;
@@ -369,19 +355,15 @@ pvr::Result OpenGLESOpenCLExample::initApplication()
 	return pvr::Result::Success;
 }
 
-/*!********************************************************************************************
-\return Return  pvr::Result::Success if no error occured
-\brief  Code in quitApplication() will be called by pvr::Shell once per run, just before exiting the program.
-quitApplication() will not be called every time the rendering context is lost, only before application exit.
-***********************************************************************************************/
+/// <summary>Code in quitApplication() will be called by pvr::Shell once per run, just before exiting the program.
+/// quitApplication() will not be called every time the rendering context is lost, only before application exit.</summary>
+/// <returns>Returns pvr::Result::Success if no error occurred.</returns>
 pvr::Result OpenGLESOpenCLExample::quitApplication() { return pvr::Result::Success; }
 
-/*!********************************************************************************************
-\return Return Result::Success if no error occurred
-\brief  Code in initView() will be called by pvr::Shell upon initialization or after a change
-  in the rendering context. Used to initialize variables that are dependent on the rendering
-  context (e.g. textures, vertex buffers, etc.)
-***********************************************************************************************/
+/// <summary>Code in initView() will be called by pvr::Shell upon initialization or after a change
+/// in the rendering context. Used to initialize variables that are dependent on the rendering
+/// context (e.g. textures, vertex buffers, etc.).</summary>
+/// <returns>Return Result::Success if no error occurred.</returns>
 pvr::Result OpenGLESOpenCLExample::initView()
 {
 	_deviceResources = std::make_unique<DeviceResources>();
@@ -406,20 +388,17 @@ pvr::Result OpenGLESOpenCLExample::initView()
 	return pvr::Result::Success;
 }
 
-/*!********************************************************************************************
-\return Return pvr::Result::Success if no error occurred
-\brief  Code in releaseView() will be called by pvr::Shell when the application quits or before
-a change in the rendering context.
-***********************************************************************************************/
+/// <summary>Code in releaseView() will be called by pvr::Shell when the application quits or before
+/// a change in the rendering context.</summary>
+/// <returns>Return pvr::Result::Success if no error occurred</returns>
 pvr::Result OpenGLESOpenCLExample::releaseView()
 {
 	_deviceResources.reset();
 	return pvr::Result::Success;
 }
-/*!********************************************************************************************
-\return Return Result::Suceess if no error occurred
-\brief  Main rendering loop function of the program. The shell will call this function every frame.
-***********************************************************************************************/
+
+/// <summary>Main rendering loop function of the program. The shell will call this function every frame.</summary>
+/// <returns>Return Result::Success if no error occurred.</returns>
 pvr::Result OpenGLESOpenCLExample::renderFrame()
 {
 	debugThrowOnApiError("Frame begin");
@@ -470,7 +449,7 @@ pvr::Result OpenGLESOpenCLExample::renderFrame()
 
 	// Launch kernel
 	errcode = cl::EnqueueNDRangeKernel(queue, kernel, 2, global_offset, global_size, local_size, 0, NULL, NULL);
-	if (errcode != CL_SUCCESS) { throw pvr::InvalidOperationError(pvr::strings::createFormatted("Failed to execure kernel with code %s", clutils::getOpenCLError(errcode))); }
+	if (errcode != CL_SUCCESS) { throw pvr::InvalidOperationError(pvr::strings::createFormatted("Failed to execute kernel with code %s", clutils::getOpenCLError(errcode))); }
 
 	if (_deviceResources->useEglClSharing()) // Release the shared image from CL ownership, so we can render with it,...
 	{
@@ -528,18 +507,14 @@ pvr::Result OpenGLESOpenCLExample::renderFrame()
 	return pvr::Result::Success;
 }
 
-/*!********************************************************************************************
-\brief  update the subtitle sprite
-***********************************************************************************************/
+/// <summary>Update the subtitle sprite.</summary>
 void OpenGLESOpenCLExample::updateSubtitleText()
 {
 	_deviceResources->uiRenderer.getDefaultDescription()->setText(pvr::strings::createFormatted("%s", Kernel::names[_currentKernel]));
 	_deviceResources->uiRenderer.getDefaultDescription()->commitUpdates();
 }
 
-/*!********************************************************************************************
-\brief  Add the draw commands for a full screen quad to a commandbuffer
-***********************************************************************************************/
+/// <summary>Add the draw commands for a full screen quad to a commandbuffer.</summary>
 void OpenGLESOpenCLExample::drawAxisAlignedQuad()
 {
 	gl::DisableVertexAttribArray(0);

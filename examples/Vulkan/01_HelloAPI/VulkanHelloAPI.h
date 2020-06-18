@@ -301,9 +301,6 @@ private:
 	// Get a compatible queue family with the properties, and it needs to be a graphical one.
 	void getCompatibleQueueFamilies(uint32_t& graphicsfamilyindex, uint32_t& presentfamilyindex);
 
-	// Checks if the mode wanted is compatible with the surface, if not then default to the standard (FIFO).
-	VkPresentModeKHR getCompatiblePresentMode(const VkPresentModeKHR& inReqMode, const std::vector<VkPresentModeKHR>& inModes);
-
 	// Make sure the extent is correct, and if not, set the same sizes as the window.
 	VkExtent2D getCorrectExtent(const VkSurfaceCapabilitiesKHR& inSurfCap);
 

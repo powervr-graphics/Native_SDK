@@ -1,11 +1,9 @@
-/*!*********************************************************************************************************************
-\File         OpenGLESGaussianBlur.cpp
-\Title        Gaussian Blur
-\Author       PowerVR by Imagination, Developer Technology Team
-\Copyright    Copyright(c) Imagination Technologies Limited.
-\brief        Shows how to perform a separated Gaussian Blur using a Compute shader and Fragment shader for carrying
-			  out the horizontal and vertical passes respectively.
-***********************************************************************************************************************/
+/*!
+\brief  Shows how to perform a separated Gaussian Blur using a Compute shader and Fragment shader for carrying out the horizontal and vertical passes respectively.
+\file OpenGLESGaussianBlur.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 
 #include "PVRShell/PVRShell.h"
 #include "PVRAssets/PVRAssets.h"
@@ -36,9 +34,9 @@ const uint16_t attribIndices[] = {
 
 const uint32_t GaussianKernelSize = 19;
 
-/// <summary>Prints the gaussian weights and offsets provided in the vectors.</summary>
-/// <param name="gaussianOffsets">The list of gaussian offsets to print.</param>
-/// <param name="gaussianWeights">The list of gaussian weights to print.</param>
+/// <summary>Prints the Gaussian weights and offsets provided in the vectors.</summary>
+/// <param name="gaussianOffsets">The list of Gaussian offsets to print.</param>
+/// <param name="gaussianWeights">The list of Gaussian weights to print.</param>
 void printGaussianWeightsAndOffsets(std::vector<double>& gaussianOffsets, std::vector<double>& gaussianWeights)
 {
 	Log(LogLevel::Information, "Number of Gaussian Weights and Offsets = %u;", gaussianWeights.size());
@@ -54,9 +52,7 @@ void printGaussianWeightsAndOffsets(std::vector<double>& gaussianOffsets, std::v
 	Log(LogLevel::Information, "};");
 }
 
-/*!*********************************************************************************************************************
-Class implementing the Shell functions.
-***********************************************************************************************************************/
+/// <summary>Class implementing the Shell functions.</summary>
 class OpenGLESGaussianBlur : public pvr::Shell
 {
 private:
@@ -133,7 +129,7 @@ public:
 };
 
 /// <summary>Code in  createResources() loads the compute, fragment and vertex shaders and associated buffers used by them. It loads the input texture on which
-/// we'll perform the Gaussian blur. It also generates the output texture that will be filled by the comptue shader and used by the fragment shader.</ summary>
+/// we'll perform the Gaussian blur. It also generates the output texture that will be filled by the compute shader and used by the fragment shader.</ summary>
 void OpenGLESGaussianBlur::createResources()
 {
 	// Load the compute shader and create the associated program.
@@ -198,7 +194,7 @@ void OpenGLESGaussianBlur::render()
 	// Use a memory barrier to ensure memory accesses using shader image load store
 	gl::MemoryBarrier(GL_TEXTURE_FETCH_BARRIER_BIT);
 
-	// Excute the Graphic program (Vertex and Fragment) and pass the output texture
+	// Execute the Graphic program (Vertex and Fragment) and pass the output texture
 	gl::UseProgram(_deviceResources->graphicsProgram);
 	gl::BindBufferBase(GL_UNIFORM_BUFFER, 0, _deviceResources->graphicsGaussianConfigBuffer);
 	gl::ActiveTexture(GL_TEXTURE0);
@@ -225,7 +221,7 @@ void OpenGLESGaussianBlur::renderUI()
 /// <summary>Updates the buffer used by the graphics pass for controlling the Gaussian Blurs.</summary>
 void OpenGLESGaussianBlur::updateResources()
 {
-	// Update the gaussian configuration buffer used for the graphics based vertical pass
+	// Update the Gaussian configuration buffer used for the graphics based vertical pass
 	{
 		gl::BindBuffer(GL_UNIFORM_BUFFER, _deviceResources->graphicsGaussianConfigBuffer);
 		_mappedGraphicsBufferMemory = gl::MapBufferRange(GL_UNIFORM_BUFFER, 0, static_cast<GLsizei>(_graphicsUboSize), GL_MAP_WRITE_BIT);

@@ -30,7 +30,7 @@ TextureFileFormat getTextureFormatFromFilename(const char* assetname)
 	return TextureFileFormat::UNKNOWN;
 }
 
-uint8_t Texture::getPixelSize() const { return _header.pixelFormat.getBitsPerPixel() / 8u; }
+uint8_t Texture::getPixelSize() const { return pixelFormat.getBitsPerPixel() / 8u; }
 
 Texture::Texture() { _pTextureData.resize(getDataSize()); }
 
@@ -112,13 +112,13 @@ void Texture::addPaddingMetaData(uint32_t paddingAlignment)
 	if (paddingAlignment <= 1) { return; }
 
 	// Set the meta data padding. The 12 is the size of an empty meta data block
-	uint32_t unpaddedStartOfTextureData = (Header::SizeOfHeader + getMetaDataSize() + 12);
+	uint32_t unpaddedStartOfTextureData = (SizeOfHeader + getMetaDataSize() + 12);
 
 	// Work out the value of the padding
 	uint32_t paddingAmount = ((static_cast<uint32_t>(-1) * unpaddedStartOfTextureData) % paddingAlignment);
 
 	// Create the meta data
-	TextureMetaData metaPadding(Header::PVRv3, TextureMetaData::IdentifierPadding, paddingAmount, NULL);
+	TextureMetaData metaPadding(PVRv3, TextureMetaData::IdentifierPadding, paddingAmount, NULL);
 
 	// Add the meta data to the texture
 	addMetaData(metaPadding);

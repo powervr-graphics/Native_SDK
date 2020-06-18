@@ -46,5 +46,6 @@ var searchData=
   ['getvsyncmode',['getVsyncMode',['../classpvr_1_1platform_1_1_shell.html#a5127debb8ffbdb8f9b1ae8ba10cc77e3',1,'pvr::platform::Shell']]],
   ['getwidth',['getWidth',['../classpvr_1_1platform_1_1_shell.html#add1b136289f1634fcfb5e06fee9bf827',1,'pvr::platform::Shell']]],
   ['getwindow',['getWindow',['../classpvr_1_1platform_1_1_shell_o_s.html#a76bb2b44020f631e9140ccbdd26aa7fd',1,'pvr::platform::ShellOS::getWindow()'],['../classpvr_1_1platform_1_1_shell.html#aeb8080c0f3c2ebbc110115fa4a1e8afe',1,'pvr::platform::Shell::getWindow()']]],
+  ['getwriteassetstream',['getWriteAssetStream',['../classpvr_1_1platform_1_1_shell.html#a41d3a0a140a5d79459e55858d4bb6668',1,'pvr::platform::Shell']]],
   ['getwritepath',['getWritePath',['../classpvr_1_1platform_1_1_shell_o_s.html#affc5990c37d3d9773759aa64c5a2ed6d',1,'pvr::platform::ShellOS::getWritePath()'],['../classpvr_1_1platform_1_1_shell.html#a41d150cc1ad351713bd8548fa0ece2a2',1,'pvr::platform::Shell::getWritePath()']]]
 ];

@@ -8,7 +8,7 @@ uniform mediump vec3 albedoModulation;
 // How smooth/rough the object is
 uniform mediump float specularExponent;
 
-// How much is the specular light colored by the object's color
+// How much is the specular light coloured by the object's colour
 uniform mediump float metallicity; 
 
 // How much of the light is diffuse/specular
@@ -24,7 +24,7 @@ const mediump vec3 viewDirection = vec3(0.57735, 0.57735, -0.57735);
 
 void main()
 {
-    // Overall color of the material. The use of albedoModulation is not strictly required (as this information would 
+    // Overall colour of the material. The use of albedoModulation is not strictly required (as this information would 
 	// normally come from a texture), but its helpful for achieving a "tweakable" shader
     mediump vec3 albedo = texture(sTexture, texCoord).rgb * albedoModulation;
 
@@ -33,7 +33,7 @@ void main()
 	// Specular, non-metallic (white) ambient = Ambient * reflectivity * (1 - metallicity)
 	mediump float whiteAmbientFactor = Ambient * (reflectivity * (1.0 - metallicity));
 
-	// Colored ambient = Ambient * albedo * (1 + reflectivity * (metallicity - 1))
+	// Coloured ambient = Ambient * albedo * (1 + reflectivity * (metallicity - 1))
 	mediump vec3 colorAmbientFactor = Ambient * albedo * (1.0 + reflectivity * (metallicity - 1.0));
 
 	// diffuse/specular ambient total
@@ -51,8 +51,8 @@ void main()
 		mediump vec3 reflectedLightDirection = reflect(-viewLightDirection, normal);
 		mediump float v_dot_r = max(dot(viewDirection, reflectedLightDirection), 0.0);
 		
-		// Most metallic: Specular Color = albedo color
-		// Most un-metallic: Specular Color = white
+		// Most metallic: Specular Colour = albedo colour
+		// Most non metallic: Specular Colour = white
 
 		mediump float specularIntensity = max(pow(v_dot_r, specularExponent) * reflectivity, 0.0);
 

@@ -324,7 +324,7 @@ void UIRenderer::initCreateDefaultSdkLogo(CommandBuffer& cmdBuffer)
 
 	pvr::utils::beginCommandBufferDebugLabel(cmdBuffer, pvrvk::DebugUtilsLabel("PVRUtilsVk::UIRenderer::initCreateDefaultSdkLogo"));
 	sdkLogoImage = utils::uploadImageAndView(
-		device, sdkTex, true, cmdBuffer, pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, &getMemoryAllocator(), &getMemoryAllocator());
+		device, sdkTex, true, cmdBuffer, pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, getMemoryAllocator(), getMemoryAllocator());
 	pvr::utils::endCommandBufferDebugLabel(cmdBuffer);
 
 	_sdkLogo = createImage(sdkLogoImage, _samplerBilinear);
@@ -431,7 +431,7 @@ void UIRenderer::initCreateDefaultFont(CommandBuffer& cmdBuffer)
 #endif
 
 	pvrvk::ImageView fontImage = device->createImageView(pvrvk::ImageViewCreateInfo(utils::uploadImage(device, fontTex, true, cmdBuffer, pvrvk::ImageUsageFlags::e_SAMPLED_BIT,
-																						pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, &getMemoryAllocator(), &getMemoryAllocator()),
+																						pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, getMemoryAllocator(), getMemoryAllocator()),
 		pvrvk::ComponentMapping(pvrvk::ComponentSwizzle::e_R, pvrvk::ComponentSwizzle::e_R, pvrvk::ComponentSwizzle::e_R, pvrvk::ComponentSwizzle::e_R)));
 
 #ifdef VK_USE_PLATFORM_MACOS_MVK
@@ -467,7 +467,7 @@ void UIRenderer::UboMaterial::init(Device& device, DescriptorSetLayout& descLayo
 		pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 		pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT |
 			pvrvk::MemoryPropertyFlags::e_HOST_CACHED_BIT,
-		&uirenderer._vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+		uirenderer._vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
 	_structuredBufferView.pointToMappedMemory(_buffer->getDeviceMemory()->getMappedData());
 	if (!_buffer) { Log("Failed to create UIRenderer Material buffer"); }
@@ -497,7 +497,7 @@ void UIRenderer::UboMvp::init(Device& device, DescriptorSetLayout& descLayout, D
 		pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 		pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT |
 			pvrvk::MemoryPropertyFlags::e_HOST_CACHED_BIT,
-		&uirenderer._vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+		uirenderer._vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
 	_structuredBufferView.pointToMappedMemory(_buffer->getDeviceMemory()->getMappedData());
 

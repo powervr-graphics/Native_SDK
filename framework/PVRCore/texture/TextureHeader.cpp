@@ -18,21 +18,20 @@ namespace pvr {
 
 TextureHeader::TextureHeader()
 {
-	_header.flags = 0;
-	_header.pixelFormat = CompressedPixelFormat::NumCompressedPFs;
-	_header.colorSpace = ColorSpace::lRGB;
-	_header.channelType = VariableType::UnsignedByteNorm;
-	_header.height = 1;
-	_header.width = 1;
-	_header.depth = 1;
-	_header.numSurfaces = 1;
-	_header.numFaces = 1;
-	_header.numMipMaps = 1;
-	_header.metaDataSize = 0;
+	flags = 0;
+	pixelFormat = CompressedPixelFormat::NumCompressedPFs;
+	colorSpace = ColorSpace::lRGB;
+	channelType = VariableType::UnsignedByteNorm;
+	height = 1;
+	width = 1;
+	depth = 1;
+	numSurfaces = 1;
+	numFaces = 1;
+	numMipMaps = 1;
+	metaDataSize = 0;
 }
 
-TextureHeader::TextureHeader(TextureHeader::Header& header) : _header(header) {}
-
+/*
 TextureHeader::TextureHeader(Header fileHeader, uint32_t numMetaData, TextureMetaData* metaData) : _header(fileHeader)
 {
 	if (metaData)
@@ -40,18 +39,19 @@ TextureHeader::TextureHeader(Header fileHeader, uint32_t numMetaData, TextureMet
 		for (uint32_t i = 0; i < numMetaData; ++i) { addMetaData(metaData[i]); }
 	}
 }
+*/
 
 TextureHeader::TextureHeader(PixelFormat pixelFormat, uint32_t width, uint32_t height, uint32_t depth, uint32_t numMipMaps, ColorSpace colorSpace, VariableType channelType,
 	uint32_t numSurfaces, uint32_t numFaces, uint32_t flags, TextureMetaData* metaData, uint32_t metaDataSize)
 {
-	_header.pixelFormat = pixelFormat;
-	_header.width = width, _header.height = height, _header.depth = depth;
-	_header.numMipMaps = numMipMaps;
-	_header.colorSpace = colorSpace;
-	_header.channelType = channelType;
-	_header.numSurfaces = numSurfaces;
-	_header.numFaces = numFaces;
-	_header.flags = flags;
+	this->pixelFormat = pixelFormat;
+	this->width = width, this->height = height, this->depth = depth;
+	this->numMipMaps = numMipMaps;
+	this->colorSpace = colorSpace;
+	this->channelType = channelType;
+	this->numSurfaces = numSurfaces;
+	this->numFaces = numFaces;
+	this->flags = flags;
 	if (metaData)
 	{
 		for (uint32_t i = 0; i < metaDataSize; ++i) { addMetaData(metaData[i]); }
@@ -61,7 +61,7 @@ TextureHeader::TextureHeader(PixelFormat pixelFormat, uint32_t width, uint32_t h
 const std::string TextureHeader::getCubeMapOrder() const
 {
 	// Make sure the meta block exists
-	map<uint32_t, map<uint32_t, TextureMetaData>>::const_iterator foundFourCC = _metaDataMap.find(Header::PVRv3);
+	map<uint32_t, map<uint32_t, TextureMetaData>>::const_iterator foundFourCC = _metaDataMap.find(PVRv3);
 	if (getNumFaces() <= 1) { throw InvalidOperationError("TextureHeader::getCubeMapOrder: Request for cube map order on non-cubemap Texture"); }
 
 	if (foundFourCC != _metaDataMap.end())
@@ -323,10 +323,10 @@ void TextureHeader::setBumpMap(float bumpScale, std::string bumpOrder)
 		return;
 	}
 	// Get a reference to the meta data block.
-	TextureMetaData& bumpMetaData = _metaDataMap[Header::PVRv3][TextureMetaData::IdentifierBumpData];
+	TextureMetaData& bumpMetaData = _metaDataMap[PVRv3][TextureMetaData::IdentifierBumpData];
 
 	// Check if it's already been set or not.
-	if (bumpMetaData.getData()) { _header.metaDataSize -= bumpMetaData.getTotalSizeInMemory(); }
+	if (bumpMetaData.getData()) { metaDataSize -= bumpMetaData.getTotalSizeInMemory(); }
 
 	// Initialize and clear the bump map data
 	char bumpData[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -335,17 +335,17 @@ void TextureHeader::setBumpMap(float bumpScale, std::string bumpOrder)
 	memcpy(bumpData, &bumpScale, 4);
 	memcpy(bumpData + 4, bumpOrder.c_str(), (std::min)(bumpOrder.length(), size_t(4)));
 
-	bumpMetaData = TextureMetaData(Header::PVRv3, TextureMetaData::IdentifierBumpData, 8, bumpData);
+	bumpMetaData = TextureMetaData(PVRv3, TextureMetaData::IdentifierBumpData, 8, bumpData);
 
 	// Increment the meta data size.
-	_header.metaDataSize += bumpMetaData.getTotalSizeInMemory();
+	metaDataSize += bumpMetaData.getTotalSizeInMemory();
 }
 
 TextureMetaData::AxisOrientation TextureHeader::getOrientation(TextureMetaData::Axis axis) const
 {
 	// Make sure the meta block exists
 
-	std::map<uint32_t, std::map<uint32_t, TextureMetaData>>::const_iterator foundIdentifer = _metaDataMap.find(Header::PVRv3);
+	std::map<uint32_t, std::map<uint32_t, TextureMetaData>>::const_iterator foundIdentifer = _metaDataMap.find(PVRv3);
 	if (foundIdentifer != _metaDataMap.end())
 	{
 		std::map<uint32_t, TextureMetaData>::const_iterator foundTexMetaData = foundIdentifer->second.find(TextureMetaData::IdentifierTextureOrientation);
@@ -436,8 +436,7 @@ bool TextureHeader::getDirectXGIFormat(uint32_t& dxgiFormat, bool& notAlpha) con
 	{
 		switch (getChannelType())
 		{
-		case VariableType::SignedFloat:
-		{
+		case VariableType::SignedFloat: {
 			switch (getPixelFormat().getPixelTypeId())
 			{
 			case GeneratePixelType4<'r', 'g', 'b', 'x', 32, 32, 32, 32>::ID: notAlpha = true;
@@ -453,8 +452,7 @@ bool TextureHeader::getDirectXGIFormat(uint32_t& dxgiFormat, bool& notAlpha) con
 			}
 			break;
 		}
-		case VariableType::UnsignedByte:
-		{
+		case VariableType::UnsignedByte: {
 			switch (getPixelFormat().getPixelTypeId())
 			{
 			case GeneratePixelType4<'r', 'g', 'b', 'x', 8, 8, 8, 8>::ID: notAlpha = true;
@@ -464,13 +462,11 @@ bool TextureHeader::getDirectXGIFormat(uint32_t& dxgiFormat, bool& notAlpha) con
 			}
 			break;
 		}
-		case VariableType::UnsignedByteNorm:
-		{
+		case VariableType::UnsignedByteNorm: {
 			switch (getPixelFormat().getPixelTypeId())
 			{
 			case GeneratePixelType4<'r', 'g', 'b', 'x', 8, 8, 8, 8>::ID: notAlpha = true;
-			case GeneratePixelType4<'r', 'g', 'b', 'a', 8, 8, 8, 8>::ID:
-			{
+			case GeneratePixelType4<'r', 'g', 'b', 'a', 8, 8, 8, 8>::ID: {
 				if (getColorSpace() == ColorSpace::sRGB)
 				{
 					dxgiFormat = texture_dds::DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
@@ -482,8 +478,7 @@ bool TextureHeader::getDirectXGIFormat(uint32_t& dxgiFormat, bool& notAlpha) con
 					return true;
 				}
 			}
-			case GeneratePixelType4<'b', 'g', 'r', 'a', 8, 8, 8, 8>::ID:
-			{
+			case GeneratePixelType4<'b', 'g', 'r', 'a', 8, 8, 8, 8>::ID: {
 				if (getColorSpace() == ColorSpace::sRGB)
 				{
 					dxgiFormat = texture_dds::DXGI_FORMAT_B8G8R8A8_UNORM_SRGB;
@@ -495,8 +490,7 @@ bool TextureHeader::getDirectXGIFormat(uint32_t& dxgiFormat, bool& notAlpha) con
 					return true;
 				}
 			}
-			case GeneratePixelType4<'b', 'g', 'r', 'x', 8, 8, 8, 8>::ID:
-			{
+			case GeneratePixelType4<'b', 'g', 'r', 'x', 8, 8, 8, 8>::ID: {
 				notAlpha = true;
 				if (getColorSpace() == ColorSpace::sRGB)
 				{
@@ -516,8 +510,7 @@ bool TextureHeader::getDirectXGIFormat(uint32_t& dxgiFormat, bool& notAlpha) con
 			}
 			break;
 		}
-		case VariableType::SignedByte:
-		{
+		case VariableType::SignedByte: {
 			switch (getPixelFormat().getPixelTypeId())
 			{
 			case GeneratePixelType4<'r', 'g', 'b', 'x', 8, 8, 8, 8>::ID: notAlpha = true;
@@ -527,8 +520,7 @@ bool TextureHeader::getDirectXGIFormat(uint32_t& dxgiFormat, bool& notAlpha) con
 			}
 			break;
 		}
-		case VariableType::SignedByteNorm:
-		{
+		case VariableType::SignedByteNorm: {
 			switch (getPixelFormat().getPixelTypeId())
 			{
 			case GeneratePixelType4<'r', 'g', 'b', 'x', 8, 8, 8, 8>::ID: notAlpha = true;
@@ -538,8 +530,7 @@ bool TextureHeader::getDirectXGIFormat(uint32_t& dxgiFormat, bool& notAlpha) con
 			}
 			break;
 		}
-		case VariableType::UnsignedShort:
-		{
+		case VariableType::UnsignedShort: {
 			switch (getPixelFormat().getPixelTypeId())
 			{
 			case GeneratePixelType4<'r', 'g', 'b', 'x', 16, 16, 16, 16>::ID: notAlpha = true;
@@ -549,8 +540,7 @@ bool TextureHeader::getDirectXGIFormat(uint32_t& dxgiFormat, bool& notAlpha) con
 			}
 			break;
 		}
-		case VariableType::UnsignedShortNorm:
-		{
+		case VariableType::UnsignedShortNorm: {
 			switch (getPixelFormat().getPixelTypeId())
 			{
 			case GeneratePixelType4<'r', 'g', 'b', 'x', 16, 16, 16, 16>::ID: notAlpha = true;
@@ -565,8 +555,7 @@ bool TextureHeader::getDirectXGIFormat(uint32_t& dxgiFormat, bool& notAlpha) con
 			}
 			break;
 		}
-		case VariableType::SignedShort:
-		{
+		case VariableType::SignedShort: {
 			switch (getPixelFormat().getPixelTypeId())
 			{
 			case GeneratePixelType4<'r', 'g', 'b', 'x', 16, 16, 16, 16>::ID: notAlpha = true;
@@ -576,8 +565,7 @@ bool TextureHeader::getDirectXGIFormat(uint32_t& dxgiFormat, bool& notAlpha) con
 			}
 			break;
 		}
-		case VariableType::SignedShortNorm:
-		{
+		case VariableType::SignedShortNorm: {
 			switch (getPixelFormat().getPixelTypeId())
 			{
 			case GeneratePixelType4<'r', 'g', 'b', 'x', 16, 16, 16, 16>::ID: notAlpha = true;
@@ -587,8 +575,7 @@ bool TextureHeader::getDirectXGIFormat(uint32_t& dxgiFormat, bool& notAlpha) con
 			}
 			break;
 		}
-		case VariableType::UnsignedInteger:
-		{
+		case VariableType::UnsignedInteger: {
 			switch (getPixelFormat().getPixelTypeId())
 			{
 			case GeneratePixelType4<'r', 'g', 'b', 'x', 32, 32, 32, 32>::ID: notAlpha = true;
@@ -601,8 +588,7 @@ bool TextureHeader::getDirectXGIFormat(uint32_t& dxgiFormat, bool& notAlpha) con
 			}
 			break;
 		}
-		case VariableType::UnsignedIntegerNorm:
-		{
+		case VariableType::UnsignedIntegerNorm: {
 			if (getPixelFormat().getPixelTypeId() == GeneratePixelType4<'r', 'g', 'b', 'a', 10, 10, 10, 2>::ID)
 			{
 				dxgiFormat = texture_dds::DXGI_FORMAT_R10G10B10A2_UNORM;
@@ -616,8 +602,7 @@ bool TextureHeader::getDirectXGIFormat(uint32_t& dxgiFormat, bool& notAlpha) con
 			}
 			break;
 		}
-		case VariableType::SignedInteger:
-		{
+		case VariableType::SignedInteger: {
 			switch (getPixelFormat().getPixelTypeId())
 			{
 			case GeneratePixelType4<'r', 'g', 'b', 'x', 32, 32, 32, 32>::ID: notAlpha = true;
@@ -628,8 +613,7 @@ bool TextureHeader::getDirectXGIFormat(uint32_t& dxgiFormat, bool& notAlpha) con
 			}
 			break;
 		}
-		default:
-		{
+		default: {
 		}
 		}
 	}
@@ -666,8 +650,7 @@ bool TextureHeader::getDirect3DFormat(uint32_t& d3dFormat) const
 	{
 		switch (getChannelType())
 		{
-		case VariableType::SignedFloat:
-		{
+		case VariableType::SignedFloat: {
 			switch (getPixelFormat().getPixelTypeId())
 			{
 			case GeneratePixelType1<'r', 16>::ID: d3dFormat = texture_dds::D3DFMT_R16F; return true;
@@ -679,8 +662,7 @@ bool TextureHeader::getDirect3DFormat(uint32_t& d3dFormat) const
 			}
 			break;
 		}
-		case VariableType::UnsignedIntegerNorm:
-		{
+		case VariableType::UnsignedIntegerNorm: {
 			switch (getPixelFormat().getPixelTypeId())
 			{
 			case GeneratePixelType3<'r', 'g', 'b', 8, 8, 8>::ID: d3dFormat = texture_dds::D3DFMT_R8G8B8; return true;
@@ -704,8 +686,7 @@ bool TextureHeader::getDirect3DFormat(uint32_t& d3dFormat) const
 			}
 			break;
 		}
-		case VariableType::UnsignedByteNorm:
-		{
+		case VariableType::UnsignedByteNorm: {
 			switch (getPixelFormat().getPixelTypeId())
 			{
 			case GeneratePixelType3<'r', 'g', 'b', 8, 8, 8>::ID: d3dFormat = texture_dds::D3DFMT_R8G8B8; return true;
@@ -719,8 +700,7 @@ bool TextureHeader::getDirect3DFormat(uint32_t& d3dFormat) const
 			}
 			break;
 		}
-		case VariableType::UnsignedShortNorm:
-		{
+		case VariableType::UnsignedShortNorm: {
 			switch (getPixelFormat().getPixelTypeId())
 			{
 			case GeneratePixelType1<'l', 16>::ID: d3dFormat = texture_dds::D3DFMT_L16; return true;
@@ -734,8 +714,7 @@ bool TextureHeader::getDirect3DFormat(uint32_t& d3dFormat) const
 			}
 			break;
 		}
-		case VariableType::SignedIntegerNorm:
-		{
+		case VariableType::SignedIntegerNorm: {
 			switch (getPixelFormat().getPixelTypeId())
 			{
 			case GeneratePixelType2<'g', 'r', 8, 8>::ID: d3dFormat = texture_dds::D3DFMT_V8U8; return true;
@@ -853,10 +832,10 @@ ptrdiff_t TextureHeader::getDataOffset(uint32_t mipMapLevel /*= 0*/, uint32_t ar
 void TextureHeader::setOrientation(TextureMetaData::AxisOrientation eAxisOrientation)
 {
 	// Get a reference to the meta data block.
-	TextureMetaData& orientationMetaData = _metaDataMap[Header::PVRv3][TextureMetaData::IdentifierTextureOrientation];
+	TextureMetaData& orientationMetaData = _metaDataMap[PVRv3][TextureMetaData::IdentifierTextureOrientation];
 
 	// Check if it's already been set or not.
-	if (orientationMetaData.getData()) { _header.metaDataSize -= orientationMetaData.getTotalSizeInMemory(); }
+	if (orientationMetaData.getData()) { metaDataSize -= orientationMetaData.getTotalSizeInMemory(); }
 
 	// Set the orientation data
 	char orientationData[3];
@@ -883,13 +862,13 @@ void TextureHeader::setOrientation(TextureMetaData::AxisOrientation eAxisOrienta
 	}
 
 	// Update the meta data block
-	orientationMetaData = TextureMetaData(Header::PVRv3, TextureMetaData::IdentifierTextureOrientation, 3, orientationData);
+	orientationMetaData = TextureMetaData(PVRv3, TextureMetaData::IdentifierTextureOrientation, 3, orientationData);
 
 	// Check that the meta data was created successfully.
 	if (orientationMetaData.getDataSize() != 0)
 	{
 		// Increment the meta data size.
-		_header.metaDataSize += orientationMetaData.getTotalSizeInMemory();
+		metaDataSize += orientationMetaData.getTotalSizeInMemory();
 	}
 	else
 	{
@@ -902,16 +881,16 @@ void TextureHeader::setCubeMapOrder(std::string cubeMapOrder)
 {
 	if (cubeMapOrder.find_first_not_of("xXyYzZ") != std::string::npos)
 	{ throw InvalidArgumentError("cubeMapOrder", "TextureHeader::setCubeMapOrder: Specified cubemap order string was invalid."); } // Get a reference to the meta data block.
-	TextureMetaData& cubeOrderMetaData = _metaDataMap[Header::PVRv3][TextureMetaData::IdentifierCubeMapOrder];
+	TextureMetaData& cubeOrderMetaData = _metaDataMap[PVRv3][TextureMetaData::IdentifierCubeMapOrder];
 
 	// Check if it's already been set or not.
-	if (cubeOrderMetaData.getData()) { _header.metaDataSize -= cubeOrderMetaData.getTotalSizeInMemory(); }
+	if (cubeOrderMetaData.getData()) { metaDataSize -= cubeOrderMetaData.getTotalSizeInMemory(); }
 
-	cubeOrderMetaData = TextureMetaData(
-		Header::PVRv3, TextureMetaData::IdentifierCubeMapOrder, (std::min)(static_cast<uint32_t>(cubeMapOrder.length()), 6u), static_cast<const char*>(cubeMapOrder.data()));
+	cubeOrderMetaData =
+		TextureMetaData(PVRv3, TextureMetaData::IdentifierCubeMapOrder, (std::min)(static_cast<uint32_t>(cubeMapOrder.length()), 6u), static_cast<const char*>(cubeMapOrder.data()));
 
 	// Increment the meta data size.
-	_header.metaDataSize += cubeOrderMetaData.getTotalSizeInMemory();
+	metaDataSize += cubeOrderMetaData.getTotalSizeInMemory();
 }
 
 void TextureHeader::addMetaData(const TextureMetaData& metaData)
@@ -920,18 +899,18 @@ void TextureHeader::addMetaData(const TextureMetaData& metaData)
 	TextureMetaData& currentMetaData = _metaDataMap[metaData.getFourCC()][metaData.getKey()];
 
 	// Check if it's already been set or not.
-	if (currentMetaData.getData()) { _header.metaDataSize -= currentMetaData.getTotalSizeInMemory(); }
+	if (currentMetaData.getData()) { metaDataSize -= currentMetaData.getTotalSizeInMemory(); }
 
 	// Set the meta data block
 	currentMetaData = metaData;
 
 	// Increment the meta data size.
-	_header.metaDataSize += currentMetaData.getTotalSizeInMemory();
+	metaDataSize += currentMetaData.getTotalSizeInMemory();
 }
 
 bool TextureHeader::isBumpMap() const
 {
-	const std::map<uint32_t, TextureMetaData>& dataMap = _metaDataMap.at(Header::PVRv3);
+	const std::map<uint32_t, TextureMetaData>& dataMap = _metaDataMap.at(PVRv3);
 	return (dataMap.find(TextureMetaData::IdentifierBumpData) != dataMap.end());
 }
 

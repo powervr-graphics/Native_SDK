@@ -25,7 +25,7 @@ enum
 /// <summary>A class mirroring the PVR Texture container format header, and which can in general represent any
 /// Texture asset. Contains accessors functions to facilitate using the Texture data in application code.
 ///</summary>
-class TextureHeader
+struct TextureHeader
 {
 public:
 	// V3 Header Identifiers.
@@ -33,61 +33,41 @@ public:
 	/// data accurately, but no more. Data that is provided but is not needed to read the data is stored in the
 	/// Metadata section (See TextureHeaderWithMetadata). Correct use of the texture may rely on meta data, but
 	/// accurate data loading can be done through the standard header alone.</summary>
-	struct Header
+
+	enum Constants //!< Contains constants used by the header
 	{
-		enum Constants //!< Contains constants used by the header
-		{
-			PVRv3 = 0x03525650, //!< PVR format v3 identifier
-			PVRv3Reversed = 0x50565203, //!< PVR format v3 reversed identifier
+		PVRv3 = 0x03525650, //!< PVR format v3 identifier
+		PVRv3Reversed = 0x50565203, //!< PVR format v3 reversed identifier
 
-			// PVR header flags.
-			CompressedFlag = (1 << 0), //!< Compressed format flag
-			PremultipliedFlag = (1 << 1), //!< Premultiplied flag
-			SizeOfHeader = 52 //!< The total size of the header in bytes
-		};
-
-		uint32_t flags; //!< Various format flags.
-		PixelFormat pixelFormat; //!< The pixel format, 8cc value storing the 4 channel identifiers and their respective sizes.
-		ColorSpace colorSpace; //!< The Color Space of the texture, currently either linear RGB or sRGB.
-		VariableType channelType; //!< Variable type that the channel is stored in. Supports signed/unsigned int/short/char/float.
-		uint32_t height; //!< Height of the texture.
-		uint32_t width; //!< Width of the texture.
-		uint32_t depth; //!< Depth of the texture. (Z-slices)
-		uint32_t numSurfaces; //!< Number of members in a Texture Array.
-		uint32_t numFaces; //!< Number of faces in a Cube Map. Maybe be a value other than 6.
-		uint32_t numMipMaps; //!< Number of MIP Maps in the texture - NB: Includes top level.
-		uint32_t metaDataSize; //!< Size of the accompanying meta data.
-		Header()
-			: flags(0), pixelFormat(0), colorSpace(ColorSpace::lRGB), channelType(VariableType::UnsignedByteNorm), height(1), width(1), depth(1), numSurfaces(1), numFaces(1),
-			  numMipMaps(1), metaDataSize(0)
-		{}
+		// PVR header flags.
+		CompressedFlag = (1 << 0), //!< Compressed format flag
+		PremultipliedFlag = (1 << 1), //!< Premultiplied flag
+		SizeOfHeader = 52 //!< The total size of the header in bytes
 	};
 
-protected:
-	Header _header; //!< Texture header as laid out in a file.
+	uint32_t flags; //!< Various format flags.
+	PixelFormat pixelFormat; //!< The pixel format, 8cc value storing the 4 channel identifiers and their respective sizes.
+	ColorSpace colorSpace; //!< The Color Space of the texture, currently either linear RGB or sRGB.
+	VariableType channelType; //!< Variable type that the channel is stored in. Supports signed/unsigned int/short/char/float.
+	uint32_t height; //!< Height of the texture.
+	uint32_t width; //!< Width of the texture.
+	uint32_t depth; //!< Depth of the texture. (Z-slices)
+	uint32_t numSurfaces; //!< Number of members in a Texture Array.
+	uint32_t numFaces; //!< Number of faces in a Cube Map. Maybe be a value other than 6.
+	uint32_t numMipMaps; //!< Number of MIP Maps in the texture - NB: Includes top level.
+	uint32_t metaDataSize; //!< Size of the accompanying meta data.
+
+	// Header _header; //!< Texture header as laid out in a file.
 	std::map<uint32_t, std::map<uint32_t, TextureMetaData>> _metaDataMap; //!< Map of all the meta data stored for a texture.
-public:
+
 	/// <summary>Default constructor for a TextureHeader. Returns an empty header.</summary>
 	TextureHeader();
-
-	/// <summary>Copy constructor</summary>
-	/// <param name="rhs">Copy from</param>
-	TextureHeader(const TextureHeader& rhs)
-	{
-		// Copy the header over.
-		_header = rhs._header;
-		_metaDataMap = rhs._metaDataMap;
-	}
-
-	/// <summary>Construct this from the given file header</summary>
-	/// <param name="header">File Header used to construct this</param>
-	TextureHeader(Header& header);
 
 	/// <summary>Construct this from file header and meta data</summary>
 	/// <param name="fileHeader">File header to construct from</param>
 	/// <param name="numMetaData">Number of meta data in the array</param>
 	/// <param name="metaData">Array of meta data</param>
-	TextureHeader(Header fileHeader, uint32_t numMetaData, TextureMetaData* metaData);
+	TextureHeader(uint32_t numMetaData, TextureMetaData* metaData);
 
 	/// <summary>Constructor.</summary>
 	/// <param name="pixelFormat">Pixel format of the texture</param>
@@ -106,17 +86,9 @@ public:
 		VariableType channelType = VariableType::UnsignedByteNorm, uint32_t numSurfaces = 1, uint32_t numFaces = 1, uint32_t flags = 0, TextureMetaData* metaData = NULL,
 		uint32_t metaDataSize = 0);
 
-	/// <summary>Gets the file header structure.</summary>
-	/// <returns>Return the file header.</returns>
-	const Header& getHeader() const { return _header; }
-
-	/// <summary>Gets the file header access.</summary>
-	/// <returns>Return the file header.</returns>
-	Header& getHeaderAccess() { return _header; }
-
 	/// <summary>Gets the pixel type ID of the texture.</summary>
 	/// <returns>Return a 64-bit pixel type ID.</returns>
-	PixelFormat getPixelFormat() const { return _header.pixelFormat; }
+	PixelFormat getPixelFormat() const { return pixelFormat; }
 
 	/// <summary>Gets the bits per pixel of the texture format.</summary>
 	/// <returns>Return number of bits per pixel</returns>
@@ -130,11 +102,11 @@ public:
 
 	/// <summary>Get the color space of the texture.</summary>
 	/// <returns>Return the ColorSpace enum representing color space.</returns>
-	ColorSpace getColorSpace() const { return static_cast<ColorSpace>(_header.colorSpace); }
+	ColorSpace getColorSpace() const { return static_cast<ColorSpace>(colorSpace); }
 
 	/// <summary>Get the channel type that the texture's data is stored in.</summary>
 	/// <returns>Return the enum representing the type of the texture.</returns>
-	VariableType getChannelType() const { return static_cast<VariableType>(_header.channelType); }
+	VariableType getChannelType() const { return static_cast<VariableType>(channelType); }
 
 	/// <summary>Gets the width of the user specified MIP-Map level for the texture.</summary>
 	/// <param name="uiMipMapLevel">MIP level that user is interested in.</param>
@@ -142,8 +114,8 @@ public:
 	uint32_t getWidth(uint32_t uiMipMapLevel = 0) const
 	{
 		// If MipLevel does not exist, return no uiDataSize.
-		if (uiMipMapLevel > _header.numMipMaps) { return 0; }
-		return std::max<uint32_t>(_header.width >> uiMipMapLevel, 1);
+		if (uiMipMapLevel > numMipMaps) { return 0; }
+		return std::max<uint32_t>(width >> uiMipMapLevel, 1);
 	}
 
 	/// <summary>Gets the data orientation for this texture.</summary>
@@ -157,8 +129,8 @@ public:
 	uint32_t getHeight(uint32_t uiMipMapLevel = 0) const
 	{
 		// If MipLevel does not exist, return no uiDataSize.
-		if (uiMipMapLevel > _header.numMipMaps) { return 0; }
-		return std::max<uint32_t>(_header.height >> uiMipMapLevel, 1);
+		if (uiMipMapLevel > numMipMaps) { return 0; }
+		return std::max<uint32_t>(height >> uiMipMapLevel, 1);
 	}
 
 	/// <summary>Gets the depth of the user specified MIP-Map level for the texture.</summary>
@@ -167,8 +139,8 @@ public:
 	uint32_t getDepth(uint32_t mipLevel = 0) const
 	{
 		// If MipLevel does not exist, return no uiDataSize.
-		if (mipLevel > _header.numMipMaps) { return 0; }
-		return std::max<uint32_t>(_header.depth >> mipLevel, 1);
+		if (mipLevel > numMipMaps) { return 0; }
+		return std::max<uint32_t>(depth >> mipLevel, 1);
 	}
 
 	/// <summary>Gets the size in PIXELS of the texture, given various input parameters.</summary>
@@ -205,7 +177,7 @@ public:
 
 	/// <summary>Gets the number of array members stored in this texture.</summary>
 	/// <returns>Return the number of array members in this texture.</returns>
-	uint32_t getNumArrayMembers() const { return _header.numSurfaces; }
+	uint32_t getNumArrayMembers() const { return numSurfaces; }
 
 	/// <summary>Get a pointer directly to the Meta Data Map, to allow users to read out data.</summary>
 	/// <returns>Return a direct pointer to the MetaData map.</returns>
@@ -213,11 +185,11 @@ public:
 
 	/// <summary>Gets the number of MIP-Map levels stored in this texture.</summary>
 	/// <returns>Return the number of MIP-Map levels in this texture.</returns>
-	uint32_t getNumMipMapLevels() const { return _header.numMipMaps; }
+	uint32_t getNumMipMapLevels() const { return numMipMaps; }
 
 	/// <summary>Gets the number of faces stored in this texture.</summary>
 	/// <returns>Return the number of faces in this texture.</returns>
-	uint32_t getNumFaces() const { return _header.numFaces; }
+	uint32_t getNumFaces() const { return numFaces; }
 
 	/// <summary>Gets the cube map face order.</summary>
 	/// <returns>Returns cube map order.</returns>
@@ -228,16 +200,16 @@ public:
 	/// <summary>Returns whether or not the texture is compressed using PVRTexLib's FILE compression - this is independent
 	/// of any texture compression.</summary>
 	/// <returns>Return true if it is file compressed.</returns>
-	bool isFileCompressed() const { return (_header.flags & Header::CompressedFlag) != 0; }
+	bool isFileCompressed() const { return (flags & CompressedFlag) != 0; }
 
 	/// <summary>Check whether or not the texture's color has been pre-multiplied by the alpha values.</summary>
 	/// <returns>Return true if texture is premultiplied.</returns>
-	bool isPreMultiplied() const { return (_header.flags & Header::PremultipliedFlag) != 0; }
+	bool isPreMultiplied() const { return (flags & PremultipliedFlag) != 0; }
 
 	/// <summary>Get the total size of the meta data stored in the header. This includes the size of all information
 	/// stored in all CPVRMetaDataBlocks.</summary>
 	/// <returns>Return the size, in bytes, of the meta data stored in the header.</returns>
-	uint32_t getMetaDataSize() const { return _header.metaDataSize; }
+	uint32_t getMetaDataSize() const { return metaDataSize; }
 
 	/// <summary>Gets the Direct3D equivalent format enumeration for this texture.</summary>
 	/// <param name="outD3dFormat">Returned d3d format</param>
@@ -252,15 +224,15 @@ public:
 
 	/// <summary>Sets the pixel format for this texture.</summary>
 	/// <param name="uPixelFormat">The format of the pixel.</param>
-	void setPixelFormat(PixelFormat uPixelFormat) { _header.pixelFormat = uPixelFormat.getPixelTypeId(); }
+	void setPixelFormat(PixelFormat uPixelFormat) { pixelFormat = uPixelFormat.getPixelTypeId(); }
 
 	/// <summary>Sets the color space for this texture. Default is lRGB.</summary>
 	/// <param name="colorSpace">A color space of the texture.</param>
-	void setColorSpace(ColorSpace colorSpace) { _header.colorSpace = colorSpace; }
+	void setColorSpace(ColorSpace newColorSpace) { colorSpace = newColorSpace; }
 
 	/// <summary>Sets the channel type of this texture.</summary>
 	/// <param name="channelType">Texture's channel type</param>
-	void setChannelType(VariableType channelType) { _header.channelType = channelType; }
+	void setChannelType(VariableType newChannelType) { channelType = newChannelType; }
 
 	/// <summary>Sets a texture's bump map data.</summary>
 	/// <param name="bumpScale">Floating point "height" value to scale the bump map.</param>
@@ -281,27 +253,27 @@ public:
 
 	/// <summary>Sets the texture width.</summary>
 	/// <param name="newWidth">The new width.</param>
-	void setWidth(uint32_t newWidth) { _header.width = newWidth; }
+	void setWidth(uint32_t newWidth) { width = newWidth; }
 
 	/// <summary>Sets the texture height.</summary>
 	/// <param name="newHeight">The new height.</param>
-	void setHeight(uint32_t newHeight) { _header.height = newHeight; }
+	void setHeight(uint32_t newHeight) { height = newHeight; }
 
 	/// <summary>Sets the texture depth.</summary>
 	/// <param name="newDepth">The new depth.</param>
-	void setDepth(uint32_t newDepth) { _header.depth = newDepth; }
+	void setDepth(uint32_t newDepth) { depth = newDepth; }
 
 	/// <summary>Sets the number of arrays in this texture</summary>
 	/// <param name="numNewMembers">The new number of members in this array.</param>
-	void setNumArrayMembers(uint32_t numNewMembers) { _header.numSurfaces = numNewMembers; }
+	void setNumArrayMembers(uint32_t numNewMembers) { numSurfaces = numNewMembers; }
 
 	/// <summary>Sets the number of MIP-Map levels in this texture.</summary>
 	/// <param name="numNewMipMapLevels">New number of MIP-Map levels.</param>
-	void setNumMipMapLevels(uint32_t numNewMipMapLevels) { _header.numMipMaps = numNewMipMapLevels; }
+	void setNumMipMapLevels(uint32_t numNewMipMapLevels) { numMipMaps = numNewMipMapLevels; }
 
 	/// <summary>Sets the number of faces stored in this texture.</summary>
 	/// <param name="numNewFaces">New number of faces for this texture.</param>
-	void setNumFaces(uint32_t numNewFaces) { _header.numFaces = numNewFaces; }
+	void setNumFaces(uint32_t numNewFaces) { numFaces = numNewFaces; }
 
 	/// <summary>Sets the data orientation for a given axis in this texture.</summary>
 	/// <param name="axisOrientation">Specifying axis and orientation.</param>
@@ -320,10 +292,10 @@ public:
 	/// <param name="isFileCompressed">Sets file compression to true/false.</param>
 	void setIsFileCompressed(bool isFileCompressed)
 	{
-		if (isFileCompressed) { _header.flags |= Header::CompressedFlag; }
+		if (isFileCompressed) { flags |= CompressedFlag; }
 		else
 		{
-			_header.flags &= !static_cast<bool>(static_cast<uint32_t>(Header::CompressedFlag));
+			flags &= !static_cast<bool>(static_cast<uint32_t>(CompressedFlag));
 		}
 	}
 
@@ -331,10 +303,10 @@ public:
 	/// <param name="isPreMultiplied">Sets if texture is premultiplied.</param>
 	void setIsPreMultiplied(bool isPreMultiplied)
 	{
-		if (isPreMultiplied) { _header.flags |= Header::PremultipliedFlag; }
+		if (isPreMultiplied) { flags |= PremultipliedFlag; }
 		else
 		{
-			_header.flags &= !static_cast<bool>(static_cast<uint32_t>(Header::PremultipliedFlag));
+			flags &= !static_cast<bool>(static_cast<uint32_t>(PremultipliedFlag));
 		}
 	}
 

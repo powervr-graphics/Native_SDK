@@ -1,9 +1,24 @@
+# Copyright (c) Imagination Technologies Limited.
 include(CheckCXXCompilerFlag)
 
 set(SDK_ROOT_INTERNAL_DIR ${CMAKE_CURRENT_LIST_DIR}/.. CACHE INTERNAL "")
 
 option(PVR_ENABLE_EXAMPLE_RECOMMENDED_WARNINGS "If enabled, pass /W4 to the compiler and disable specific unreasonable warnings." ON)
 option(PVR_ENABLE_EXAMPLE_FAST_MATH "If enabled, attempt to enable fast-math." ON)
+
+# Ensure the examples can find PVRVFrame OpenGL ES Emulation libraries.
+if(WIN32)
+	if("${CMAKE_SIZEOF_VOID_P}" EQUAL "8")
+		set(PVR_VFRAME_LIB_FOLDER "${SDK_ROOT_INTERNAL_DIR}/lib/Windows_x86_64" CACHE INTERNAL "")
+	else()
+		set(PVR_VFRAME_LIB_FOLDER "${SDK_ROOT_INTERNAL_DIR}/lib/Windows_x86_32" CACHE INTERNAL "")
+	endif()
+elseif(APPLE AND NOT IOS)
+	set(PVR_VFRAME_LIB_FOLDER "${SDK_ROOT_INTERNAL_DIR}/lib/macOS_x86" CACHE INTERNAL "")
+elseif(UNIX)
+	set(PVR_VFRAME_LIB_FOLDER "${SDK_ROOT_INTERNAL_DIR}/lib/${CMAKE_SYSTEM_NAME}_${CMAKE_SYSTEM_PROCESSOR}" CACHE INTERNAL "")
+endif()
+
 
 if(WIN32)
 	if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
@@ -45,10 +60,10 @@ function(add_platform_specific_executable EXECUTABLE_NAME)
 			if (ARGUMENTS_COMMAND_LINE)
 				message(SEND_ERROR "${EXECUTABLE_NAME}: Command line executables not supported on iOS platforms")
 			else()
-				configure_file(${SDK_ROOT_INTERNAL_DIR}/res/iOS/Entitlements.plist ${CMAKE_CURRENT_SOURCE_DIR}/cmake-resources/Entitlements.plist COPYONLY)
+				configure_file(${SDK_ROOT_INTERNAL_DIR}/res/iOS/Entitlements.plist ${CMAKE_CURRENT_BINARY_DIR}/cmake-resources/Entitlements.plist COPYONLY)
 				set(INFO_PLIST_FILE "${CMAKE_CURRENT_SOURCE_DIR}/cmake-resources/iOS_Info.plist")
 				file(GLOB EXTRA_RESOURCES LIST_DIRECTORIES false ${SDK_ROOT_INTERNAL_DIR}/res/iOS/* ${SDK_ROOT_INTERNAL_DIR}/res/iOS/OpenGLES/*)
-
+			
 				add_executable(${EXECUTABLE_NAME} MACOSX_BUNDLE ${EXTRA_RESOURCES} ${ARGUMENTS_UNPARSED_ARGUMENTS})
 				if(CODE_SIGN_IDENTITY)
 					set_target_properties (${EXECUTABLE_NAME} PROPERTIES XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "${CODE_SIGN_IDENTITY}")
@@ -58,13 +73,12 @@ function(add_platform_specific_executable EXECUTABLE_NAME)
 				endif()
 			endif()
 		else()
-			configure_file(${SDK_ROOT_INTERNAL_DIR}/res/macOS/MainMenu.xib.in ${CMAKE_CURRENT_SOURCE_DIR}/cmake-resources/MainMenu.xib)
-			configure_file(${SDK_ROOT_INTERNAL_DIR}/res/macOS/macOS_Info.plist ${CMAKE_CURRENT_SOURCE_DIR}/cmake-resources/macOS_Info.plist COPYONLY)
-			set(INFO_PLIST_FILE "${CMAKE_CURRENT_SOURCE_DIR}/cmake-resources/macOS_Info.plist")
-			list(APPEND EXTRA_RESOURCES "${CMAKE_CURRENT_SOURCE_DIR}/cmake-resources/MainMenu.xib")
+			configure_file(${SDK_ROOT_INTERNAL_DIR}/res/macOS/MainMenu.xib.in ${CMAKE_CURRENT_BINARY_DIR}/cmake-resources/MainMenu.xib)
+			configure_file(${SDK_ROOT_INTERNAL_DIR}/res/macOS/macOS_Info.plist ${CMAKE_CURRENT_BINARY_DIR}/cmake-resources/macOS_Info.plist COPYONLY)
+			set(INFO_PLIST_FILE "${CMAKE_CURRENT_BINARY_DIR}/cmake-resources/macOS_Info.plist")
+			list(APPEND EXTRA_RESOURCES "${CMAKE_CURRENT_BINARY_DIR}/cmake-resources/MainMenu.xib")
 			
 			list(APPEND FRAMEWORK_FILES "${PVR_VFRAME_LIB_FOLDER}/libEGL.dylib" "${PVR_VFRAME_LIB_FOLDER}/libGLESv2.dylib")
-
 			find_package(MoltenVK)
 			if(MOLTENVK_FOUND) 
 				list(APPEND FRAMEWORK_FILES "${MVK_LIBRARIES}") 
@@ -89,6 +103,9 @@ function(add_platform_specific_executable EXECUTABLE_NAME)
 	if (ARGUMENTS_COMMAND_LINE) #Just to use in other places
 		set_target_properties(${EXECUTABLE_NAME} PROPERTIES COMMAND_LINE 1)
 	endif()
+	
+	#Add to the global list of targets
+	set_property(GLOBAL APPEND PROPERTY PVR_EXAMPLE_TARGETS ${EXECUTABLE_NAME})
 endfunction()
 
 function(add_trailing_slash MYPATH)
@@ -112,6 +129,9 @@ function(unknown_args FUNCTION_NAME ARG_NAMES)
 endfunction()
 
 # Adds an asset to the resource list of TARGET_NAME (windows), and/or add rules to copy it to the asset folder of that target (unix etc.)
+# "Assets" in this context are files that we will make available for runtime use to the target. For example, for Windows we can embed them
+# into the executable or/end copy them to an asset folder, for UNIX we are copying them to an asset folder, for iOS/MacOS add them to the
+# application bundle, for android they are copied into the assets/ folder in the .apk, etc.
 # The assets will be copied from BASE_PATH/RELATIVE_PATH, and will be added as resources to the RELATIVE_PATH id for windows, or copied into
 # ASSET_FOLDER/RELATIVE_PATH for linux.
 #  Usage: add_assets_to_target(<TARGET_NAME> 
@@ -182,7 +202,11 @@ function(add_spirv_shaders_to_target TARGET_NAME)
 		set(ARGUMENTS_GLSLANG_ARGUMENTS -V)
 	endif()
 	if(NOT ARGUMENTS_SPIRV_OUTPUT_FOLDER)
-		set(ARGUMENTS_SPIRV_OUTPUT_FOLDER ${ARGUMENTS_BASE_PATH})
+		if(ANDROID)
+			set(ARGUMENTS_SPIRV_OUTPUT_FOLDER ${ARGUMENTS_BASE_PATH})
+		else()
+			set(ARGUMENTS_SPIRV_OUTPUT_FOLDER ${CMAKE_CURRENT_BINARY_DIR})
+		endif()
 	endif()
 	
 	mandatory_args(add_spirv_shaders_to_target BASE_PATH ASSET_FOLDER FILE_LIST)
@@ -241,7 +265,7 @@ function(add_assets_resource_file TARGET_NAME)
 			string(REPLACE "|" ";" PAIR ${TEMP})
 			list(GET PAIR 0 RESOURCE_NAME)
 			list(GET PAIR 1 RESOURCE_PATH)
-			file(RELATIVE_PATH RESOURCE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake-resources ${RESOURCE_PATH})
+			file(RELATIVE_PATH RESOURCE_PATH ${CMAKE_CURRENT_BINARY_DIR}/cmake-resources ${RESOURCE_PATH})
 			file(TO_NATIVE_PATH "${RESOURCE_PATH}" RESOURCE_PATH)
 			string(REPLACE "\\" "\\\\" RESOURCE_PATH "${RESOURCE_PATH}")
 			set(RESOURCE_LIST ${RESOURCE_LIST} "${RESOURCE_NAME} RCDATA \"${RESOURCE_PATH}\"\n")
@@ -250,9 +274,9 @@ function(add_assets_resource_file TARGET_NAME)
 		if (NOT(RESOURCE_LIST STREQUAL ""))
 			#flatten the list into a string that will be the whole resource block of the file
 			string(REPLACE ";" "" RESOURCE_LIST "${RESOURCE_LIST}")
-			configure_file(${SDK_ROOT_INTERNAL_DIR}/res/Windows/Resources.rc.in ${CMAKE_CURRENT_SOURCE_DIR}/cmake-resources/Resources.rc)
+			configure_file(${SDK_ROOT_INTERNAL_DIR}/res/Windows/Resources.rc.in ${CMAKE_CURRENT_BINARY_DIR}/cmake-resources/Resources.rc)
 			#Add the resource files needed for windows (icons, asset files etc).
-			target_sources(${TARGET_NAME} PUBLIC ${SOURCE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake-resources/Resources.rc")
+			target_sources(${TARGET_NAME} PUBLIC ${SOURCE_PATH} "${CMAKE_CURRENT_BINARY_DIR}/cmake-resources/Resources.rc")
 		endif()
 	endif()
 endfunction()
@@ -313,7 +337,7 @@ function(apply_example_compile_options_to_target THETARGET)
 			if(PVR_ENABLE_EXAMPLE_FAST_MATH)
 				CHECK_CXX_COMPILER_FLAG(/fp:fast COMPILER_SUPPORTS_FAST_MATH)
 				if(COMPILER_SUPPORTS_FAST_MATH)
-					target_compile_options(${THETARGET} PRIVATE "$<$<NOT:$<CONFIG:DEBUG>>:/fp:fast>")
+					target_compile_options(${THETARGET} PRIVATE "/fp:fast")
 				endif()
 			endif()
 		endif()
@@ -326,7 +350,7 @@ function(apply_example_compile_options_to_target THETARGET)
 			if((CMAKE_CXX_COMPILER_ID MATCHES "Clang") OR (CMAKE_CXX_COMPILER_ID MATCHES "GNU"))
 				CHECK_CXX_COMPILER_FLAG(-ffast-math COMPILER_SUPPORTS_FAST_MATH)
 				if(COMPILER_SUPPORTS_FAST_MATH)
-					target_compile_options(${THETARGET} PRIVATE "$<$<CONFIG:RELEASE>:-ffast-math>")
+					target_compile_options(${THETARGET} PRIVATE "-ffast-math")
 				endif()
 			endif()
 		endif()

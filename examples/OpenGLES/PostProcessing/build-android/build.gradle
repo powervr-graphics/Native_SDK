@@ -15,9 +15,9 @@ buildscript {
 		jcenter()
 	}
 
-	// Adds the Android plugin for Gradle version 3.5.0 as a classpath dependency
+	// Adds the Android plugin for Gradle as a classpath dependency
 	dependencies {
-		classpath 'com.android.tools.build:gradle:3.5.0'
+		classpath 'com.android.tools.build:gradle:3.5.3'
 	}
 }
 
@@ -30,11 +30,11 @@ allprojects {
 }
 
 android {
-	compileSdkVersion 28
+	compileSdkVersion 29
 	defaultConfig {
 		applicationId "com.powervr.OpenGLESPostProcessing"
 		minSdkVersion 21
-		targetSdkVersion 26
+		targetSdkVersion 29
 		externalNativeBuild {
 			cmake {
 				cppFlags "-fexceptions"
@@ -86,20 +86,6 @@ android {
 
 	// Add to this list files that will need to be read at runtime here: Textures, shaders, text files etc.
 	FileCollection assetFiles = files(
-	"${project.projectDir}/../../../assets/Satyr/MarbleNormalMap.pvr",
-	"${project.projectDir}/../../../assets/Satyr/Marble.pvr",
-	"${project.projectDir}/../../../assets/HdrScenes/satara_night_scale_0.305_rgb9e5.pvr",
-	"${project.projectDir}/../../../assets/HdrScenes/satara_night_scale_0.305_rgb9e5_Irradiance.pvr",
-	"${project.projectDir}/../../../assets/HdrScenes/pink_sunrise_rgb9e5.pvr",
-	"${project.projectDir}/../../../assets/HdrScenes/pink_sunrise_rgb9e5_Irradiance.pvr",
-	"${project.projectDir}/../../../assets/HdrScenes/signal_hill_sunrise_scale_0.312_rgb9e5.pvr",
-	"${project.projectDir}/../../../assets/HdrScenes/signal_hill_sunrise_scale_0.312_rgb9e5_Irradiance.pvr",
-	"${project.projectDir}/../GaussianBlurFragmentShader.fsh.in",
-	"${project.projectDir}/../LinearGaussianBlurVertexShader.vsh.in",
-	"${project.projectDir}/../LinearGaussianBlurFragmentShader.fsh.in",
-	"${project.projectDir}/../ComputeGaussianBlurHorizontalShader.csh.in",
-	"${project.projectDir}/../ComputeGaussianBlurVerticalShader.csh.in",
-	"${project.projectDir}/../../../assets/Satyr/Satyr.pod",
 	"${project.projectDir}/../Downsample2x2FragShader.fsh",
 	"${project.projectDir}/../Downsample2x2VertShader.vsh",
 	"${project.projectDir}/../Downsample4x4FragShader.fsh",
@@ -122,6 +108,20 @@ android {
 	"${project.projectDir}/../SkyboxFragShader.fsh",
 	"${project.projectDir}/../SkyboxVertShader.vsh",
 	"${project.projectDir}/../GaussianVertShader.vsh",
+	"${project.projectDir}/../GaussianBlurFragmentShader.fsh.in",
+	"${project.projectDir}/../LinearGaussianBlurVertexShader.vsh.in",
+	"${project.projectDir}/../LinearGaussianBlurFragmentShader.fsh.in",
+	"${project.projectDir}/../ComputeGaussianBlurHorizontalShader.csh.in",
+	"${project.projectDir}/../ComputeGaussianBlurVerticalShader.csh.in",
+	"${project.projectDir}/../../../assets/Satyr/Satyr.pod",
+	"${project.projectDir}/../../../assets/Satyr/MarbleNormalMap.pvr",
+	"${project.projectDir}/../../../assets/Satyr/Marble.pvr",
+	"${project.projectDir}/../../../assets/HdrScenes/satara_night_scale_0.305_rgb9e5.pvr",
+	"${project.projectDir}/../../../assets/HdrScenes/satara_night_scale_0.305_rgb9e5_Irradiance.pvr",
+	"${project.projectDir}/../../../assets/HdrScenes/pink_sunrise_rgb9e5.pvr",
+	"${project.projectDir}/../../../assets/HdrScenes/pink_sunrise_rgb9e5_Irradiance.pvr",
+	"${project.projectDir}/../../../assets/HdrScenes/signal_hill_sunrise_scale_0.312_rgb9e5.pvr",
+	"${project.projectDir}/../../../assets/HdrScenes/signal_hill_sunrise_scale_0.312_rgb9e5_Irradiance.pvr",
 	)
 	
 	// Add a task for copying our assets from their original location (${project.projectDir}...) to the assets/ folder for packaging

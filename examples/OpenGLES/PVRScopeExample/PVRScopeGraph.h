@@ -16,7 +16,7 @@ struct PVRGraphCounter
 	std::vector<float> valueCB; // Circular buffer of counter values
 	uint32_t writePosCB; // Current write position of circular buffer
 	bool showGraph; // Show the graph
-	uint32_t colorLutIdx; // color lookup table index
+	uint32_t colorLutIdx; // colour lookup table index
 	float maximum;
 
 	PVRGraphCounter() : writePosCB(0), showGraph(), maximum(0.0f) {}

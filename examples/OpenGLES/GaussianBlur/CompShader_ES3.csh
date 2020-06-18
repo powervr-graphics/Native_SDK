@@ -29,9 +29,9 @@ void main()
 	ivec2 image_bounds = ivec2(imageSize(imageIn));
 
 	int fptr = 0; // Counter tracking the last item in our cache
-	int x = 0; // Counter (Calculated from fpts) used to find which item in the weights array each color in the cache corresponds to
+	int x = 0; // Counter (Calculated from fpts) used to find which item in the weights array each colour in the cache corresponds to
 
-	mediump vec3 f[GaussianKernelSize]; // This is our per-row cache of colors. We use the previous numbers to check what we must load or discard.
+	mediump vec3 f[GaussianKernelSize]; // This is our per-row cache of colours. We use the previous numbers to check what we must load or discard.
 
 	int row = int(gl_GlobalInvocationID.x);
 
@@ -58,7 +58,7 @@ void main()
 	// Scan the image left-to-right (one invocation must be launched for each row of the image)
 	for (int column = 0; column < image_bounds.x; ++column)
 	{
-		// Average the color. X tracks the which item in the weight array corresponds to each item in the color array
+		// Average the colour. X tracks the which item in the weight array corresponds to each item in the color array
 		// IMPORTANT NOTE: We do not need bounds checking or expensive modulo operations here, because we have made sure
 		// the weight array is doubled.
 		mediump vec3 col = f[0] * Weights[x];

@@ -1301,10 +1301,10 @@ void convertTextureHeader2To3(const texture_legacy::HeaderV2& legacyHeader, Text
 	bool isCubeMap = (legacyHeader.pixelFormatAndFlags & texture_legacy::c_flagCubeMap) != 0;
 
 	// Setup the new header based on the old values
-	TextureHeader::Header pvrTextureHeaderV3;
+	TextureHeader pvrTextureHeaderV3;
 
 	// Set the pixel type obtained from the legacy format
-	pvrTextureHeaderV3.flags = isPremultiplied ? (TextureHeader::Header::PremultipliedFlag) : (0);
+	pvrTextureHeaderV3.flags = isPremultiplied ? (TextureHeader::PremultipliedFlag) : (0);
 	pvrTextureHeaderV3.pixelFormat = pixelType.getPixelTypeId();
 	pvrTextureHeaderV3.colorSpace = colorSpace;
 	pvrTextureHeaderV3.channelType = channelType;
@@ -1338,7 +1338,7 @@ void convertTextureHeader2To3(const texture_legacy::HeaderV2& legacyHeader, Text
 	pvrTextureHeaderV3.metaDataSize = 0;
 
 	// Create the new texture header.
-	newHeader = TextureHeader(pvrTextureHeaderV3, 0, NULL);
+	newHeader = TextureHeader(pvrTextureHeaderV3);
 
 	// Check for the texture being a normal map.
 	if (legacyHeader.pixelFormatAndFlags & texture_legacy::c_flagBumpMap) { newHeader.setBumpMap(1.0f, "xyz"); }
@@ -1363,7 +1363,7 @@ bool isPVR(const Stream& assetStream)
 
 	case texture_legacy::c_headerSizeV2: return dataRead == texture_legacy::c_headerSizeV2 && header.pvrMagic == texture_legacy::c_identifierV2;
 
-	case TextureHeader::Header::PVRv3: return dataRead >= std::min(texture_legacy::c_headerSizeV2, static_cast<uint32_t>(TextureHeader::Header::SizeOfHeader));
+	case TextureHeader::PVRv3: return dataRead >= std::min(texture_legacy::c_headerSizeV2, static_cast<uint32_t>(TextureHeader::SizeOfHeader));
 	}
 
 	return false;
@@ -1374,7 +1374,7 @@ Texture readPVR(const Stream& stream)
 
 	Texture asset;
 	// Get the file header to Read.
-	TextureHeader::Header textureFileHeader;
+	TextureHeader textureFileHeader;
 
 	try
 	{
@@ -1382,7 +1382,7 @@ Texture readPVR(const Stream& stream)
 		uint32_t version;
 		stream.readExact(sizeof(version), 1, &version);
 
-		if (version == TextureHeader::Header::PVRv3)
+		if (version == TextureHeader::PVRv3)
 		{
 			// Read the flags
 			stream.readExact(sizeof(textureFileHeader.flags), 1, &textureFileHeader.flags);
@@ -1420,9 +1420,8 @@ Texture readPVR(const Stream& stream)
 			// Construct a texture header.
 			// Set the meta data size to 0
 			textureFileHeader.metaDataSize = 0;
-			TextureHeader textureHeader(textureFileHeader, 0, NULL);
 
-			asset.initializeWithHeader(textureHeader);
+			asset.initializeWithHeader(textureFileHeader);
 			// Read the meta data
 			uint32_t metaDataRead = 0;
 			while (metaDataRead < tempMetaDataSize)

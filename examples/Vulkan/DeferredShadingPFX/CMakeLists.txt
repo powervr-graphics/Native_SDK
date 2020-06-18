@@ -32,20 +32,20 @@ add_platform_specific_executable(VulkanDeferredShadingPFX ${SRC_FILES})
 add_assets_to_target(VulkanDeferredShadingPFX
 	SOURCE_GROUP "assets" 
 	ASSET_FOLDER ${ASSET_FOLDER} 
-	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/Satyr
+	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/
 	FILE_LIST 
-		Marble.pvr
-		MarbleNormalMap.pvr
-		Table.pvr
-		SatyrAndTable.pod
-		pointlight.pod)
+		effect_MRT_PFX3.pfx)
 
 add_assets_to_target(VulkanDeferredShadingPFX
 	SOURCE_GROUP "assets" 
 	ASSET_FOLDER ${ASSET_FOLDER} 
-	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/
+	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/Satyr
 	FILE_LIST 
-		effect_MRT_PFX3.pfx)
+		SatyrAndTable.pod
+		pointlight.pod
+		Marble.pvr
+		MarbleNormalMap.pvr
+		Table.pvr)
 
 ### Shaders that need to be compiled to SpirV (Vulkan) ###
 # During build time, glslangvalidator will be called to create a "<shadername.extension>.spv" file
@@ -75,7 +75,7 @@ add_assets_resource_file(VulkanDeferredShadingPFX)
 # Apply SDK example specific compile and linker options
 apply_example_compile_options_to_target(VulkanDeferredShadingPFX)
 
-target_link_libraries(VulkanDeferredShadingPFX
+target_link_libraries(VulkanDeferredShadingPFX PUBLIC
 	PVRShell
 	PVRUtilsVk
 	PVRPfx

@@ -1,11 +1,10 @@
-/*!*********************************************************************************************************************
-\File         OpenGLESIntroducingPVRShell.cpp
-\Title        Introduces PVRShell
-\Author       PowerVR by Imagination, Developer Technology Team
-\Copyright    Copyright (c) Imagination Technologies Limited.
-\brief        Shows how to use the PowerVR framework for initialization. This framework allows platform abstraction so applications
-			  using it will work on any PowerVR enabled device.
-***********************************************************************************************************************/
+/*!
+\brief	Shows how to use the PowerVR framework for initialization. This framework allows platform abstraction so applications
+		using it will work on any PowerVR enabled device.
+\file	OpenGLESIntroducingPVRShell.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 
 /*
 * The PowerVR Shell
@@ -52,10 +51,9 @@ one.
 // Index to bind the attributes to vertex shaders
 const uint32_t VertexArray = 0;
 
-/*!*********************************************************************************************************************
- To use the shell, you have to inherit a class from PVRShell
- and implement the five virtual functions which describe how your application initializes, runs and releases the resources.
-***********************************************************************************************************************/
+/// <summary>To use the shell, you have to inherit a class from PVRShell
+/// and implement the five virtual functions which describe how your application
+// initializes, runs and releases the resources.</summary>
 class OpenGLESIntroducingPVRShell : public pvr::Shell
 {
 	EglContext _context;
@@ -77,12 +75,10 @@ public:
 	virtual pvr::Result renderFrame();
 };
 
-/*!*********************************************************************************************************************
-\return Return Result::Success if no error occurred
-\brief  Code in initApplication() will be called by pvr::Shell once per run, before the rendering context is created.
-	Used to initialize variables that are not dependent on it (e.g. external modules, loading meshes, etc.)
-	If the rendering context is lost, initApplication() will not be called again.
-***********************************************************************************************************************/
+/// <summary>Code in initApplication() will be called by Shell once per run, before the rendering context is created.
+/// Used to initialize variables that are not dependent on it(e.g.external modules, loading meshes, etc.).If the rendering
+/// context is lost, initApplication() will not be called again.</summary>
+/// <returns> Result::Success if no error occurred.</returns>
 pvr::Result OpenGLESIntroducingPVRShell::initApplication()
 {
 	setBackBufferColorspace(pvr::ColorSpace::lRGB);
@@ -94,18 +90,14 @@ pvr::Result OpenGLESIntroducingPVRShell::initApplication()
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return Return Result::Success if no error occurred
-\brief  Code in quitApplication() will be called by pvr::Shell once per run, just before exiting the program.
-		If the rendering context is lost, QuitApplication() will not be called.
-***********************************************************************************************************************/
+/// <summary>Code in quitApplication() will be called by pvr::Shell once per run, just before exiting the program.</summary>
+/// <returns>Result::Success if no error occurred</returns>.
 pvr::Result OpenGLESIntroducingPVRShell::quitApplication() { return pvr::Result::Success; }
 
-/*!*********************************************************************************************************************
-\return Return Result::Success if no error occured
-\brief  Code in initView() will be called by pvr::Shell upon initialization or after a change in the rendering context.
-	Used to initialize variables that are dependant on the rendering context (e.g. textures, vertex buffers, etc.)
-***********************************************************************************************************************/
+/// <summary>Code in initView() will be called by Shell upon initialization or after a change
+/// in the rendering context. Used to initialize variables that are dependent on the
+/// rendering context(e.g.textures, vertex buffers, etc.).</summary>
+/// <returns>Result::Success if no error occurred.</returns>
 pvr::Result OpenGLESIntroducingPVRShell::initView()
 {
 	// Initialize the PowerVR OpenGL bindings. Must be called before using any of the gl:: commands.
@@ -149,7 +141,7 @@ pvr::Result OpenGLESIntroducingPVRShell::initView()
 		infoLog.resize(infoLogLength);
 		gl::GetShaderInfoLog(_fragShader, infoLogLength, &numCharsWritten, infoLog.data());
 
-		//  Displays the message in a dialog box when the application quits
+		//  Displays the message in a dialogue box when the application quits
 		//  using the shell PVRShellSet function with first parameter prefExitMessage.
 		std::string message("Failed to compile fragment shader: ");
 		message += infoLog.data();
@@ -210,7 +202,7 @@ pvr::Result OpenGLESIntroducingPVRShell::initView()
 	// Actually use the created program
 	gl::UseProgram(_program);
 
-	// Sets the clear color
+	// Sets the clear colour
 	gl::ClearColor(0.00f, 0.70f, 0.67f, 1.0f);
 
 	// Create VBO for the triangle from our data
@@ -235,10 +227,8 @@ pvr::Result OpenGLESIntroducingPVRShell::initView()
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return Return Result::Success if no error occurred
-\brief  Code in releaseView() will be called by pvr::Shell when the application quits or before a change in the rendering context.
-***********************************************************************************************************************/
+/// <summary>Code in releaseView() will be called by Shell when the application quits.</summary>
+/// <returns>Result::Success if no error occurred.</returns>
 pvr::Result OpenGLESIntroducingPVRShell::releaseView()
 {
 	// Release Vertex buffer object.
@@ -254,16 +244,14 @@ pvr::Result OpenGLESIntroducingPVRShell::releaseView()
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return Return Result::Success if no error occurred
-\brief  Main rendering loop function of the program. The shell will call this function every frame.
-***********************************************************************************************************************/
+/// <summary>Main rendering loop function of the program. The shell will call this function every frame.</summary>
+/// <returns>Result::Success if no error occurred.</returns>
 pvr::Result OpenGLESIntroducingPVRShell::renderFrame()
 {
 	// Matrix used for projection model view
 	float afIdentity[] = { 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 };
 
-	//  Clears the color buffer. glClear() can also be used to clear the depth or stencil buffer
+	//  Clears the colour buffer. glClear() can also be used to clear the depth or stencil buffer
 	//  (GL_DEPTH_BUFFER_BIT or GL_STENCIL_BUFFER_BIT)
 	gl::Clear(GL_COLOR_BUFFER_BIT);
 
@@ -279,7 +267,7 @@ pvr::Result OpenGLESIntroducingPVRShell::renderFrame()
 	gl::BindBuffer(GL_ARRAY_BUFFER, _vbo);
 
 	// Enable the custom vertex attribute at index VERTEX_ARRAY.
-	// We previously binded that index to the variable in our shader "vec4 MyVertex;"
+	// We previously bound that index to the variable in our shader "vec4 MyVertex;"
 	gl::EnableVertexAttribArray(VertexArray);
 
 	// Points to the data for this vertex attribute

@@ -9,7 +9,6 @@ add_subdirectory(../../.. ${CMAKE_CURRENT_BINARY_DIR}/sdk)
 
 if(PVR_PREBUILT_DEPENDENCIES)
 	find_package(PVRShell REQUIRED MODULE)
-	find_package(PVRAssets REQUIRED MODULE)
 	find_package(PVRVk REQUIRED MODULE)
 endif()
 
@@ -46,9 +45,8 @@ add_assets_resource_file(VulkanIntroducingPVRVk)
 # Apply SDK example specific compile and linker options
 apply_example_compile_options_to_target(VulkanIntroducingPVRVk)
 
-target_link_libraries(VulkanIntroducingPVRVk
+target_link_libraries(VulkanIntroducingPVRVk PUBLIC
 	PVRShell
-	PVRAssets
 	PVRVk
 )
 if(APPLE AND NOT IOS)

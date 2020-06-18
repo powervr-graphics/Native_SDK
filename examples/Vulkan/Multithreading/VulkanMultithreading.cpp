@@ -1,10 +1,9 @@
-/*!*********************************************************************************************************************
-\File         VulkanMultithreading.cpp
-\Title        Bump mapping
-\Author       PowerVR by Imagination, Developer Technology Team
-\Copyright    Copyright (c) Imagination Technologies Limited.
-\brief      Shows how to perform tangent space bump mapping
-***********************************************************************************************************************/
+/*!
+\brief Shows how implement multithreading in a vulkan project.
+\file VulkanMultithreading.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #include "PVRShell/PVRShell.h"
 #include "PVRUtils/Vulkan/AsynchronousVk.h"
 #include "PVRUtils/PVRUtilsVk.h"
@@ -13,9 +12,7 @@
 const float RotateY = glm::pi<float>() / 150;
 const glm::vec4 LightDir(.24f, .685f, -.685f, 0.0f);
 const pvrvk::ClearValue ClearValue(0.0f, 0.40f, .39f, 1.f);
-/*!*********************************************************************************************************************
- shader attributes
- ***********************************************************************************************************************/
+
 // vertex attributes
 namespace VertexAttrib {
 enum Enum
@@ -45,9 +42,7 @@ enum Enum
 };
 }
 
-/*!*********************************************************************************************************************
- Content file names
- ***********************************************************************************************************************/
+// Content file names
 
 // Source and binary shaders
 const char FragShaderSrcFile[] = "FragShader.fsh.spv";
@@ -74,7 +69,6 @@ struct DeviceResources
 {
 	pvrvk::Instance instance;
 	pvr::utils::DebugUtilsCallbacks debugUtilsCallbacks;
-	pvrvk::Surface surface;
 	pvrvk::Device device;
 	pvrvk::Swapchain swapchain;
 	pvrvk::Queue queue;
@@ -87,7 +81,7 @@ struct DeviceResources
 	pvr::Multi<pvrvk::CommandBuffer> cmdBuffers; // per swapchain
 	pvr::Multi<pvrvk::CommandBuffer> loadingTextCmdBuffer; // per swapchain
 
-	pvr::Multi<pvrvk::Framebuffer> framebuffer;
+	pvr::Multi<pvrvk::Framebuffer> onScreenFramebuffer;
 	pvr::Multi<pvrvk::ImageView> depthStencilImages;
 
 	pvrvk::Semaphore imageAcquiredSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
@@ -147,9 +141,7 @@ struct DeviceResources
 	}
 };
 
-/*!*********************************************************************************************************************
- Class implementing the Shell functions.
- ***********************************************************************************************************************/
+/// <summary>Class implementing the Shell functions.</summary>
 class VulkanMultithreading : public pvr::Shell
 {
 	pvr::async::Mutex _hostMutex;
@@ -199,10 +191,8 @@ void VulkanMultithreading::updateTextureDescriptorSet()
 	_deviceResources->device->updateDescriptorSets(writeDescInfo, ARRAY_SIZE(writeDescInfo), nullptr, 0);
 }
 
-/*!*********************************************************************************************************************
-\return return true if no error occurred
-\brief  Loads the textures required for this training course
-***********************************************************************************************************************/
+/// <summary>Loads the textures required for this training course.</summary>
+/// <returns>return true if no error occurred.</returns>
 void VulkanMultithreading::createImageSamplerDescriptorSets()
 {
 	_deviceResources->texDescSet = _deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->texLayout);
@@ -231,7 +221,7 @@ void VulkanMultithreading::createUbo()
 		_deviceResources->ubo = pvr::utils::createBuffer(_deviceResources->device,
 			pvrvk::BufferCreateInfo(_deviceResources->structuredMemoryView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
-			&_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+			_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
 		_deviceResources->structuredMemoryView.pointToMappedMemory(_deviceResources->ubo->getDeviceMemory()->getMappedData());
 	}
@@ -249,10 +239,8 @@ void VulkanMultithreading::createUbo()
 	_deviceResources->device->updateDescriptorSets(descUpdate, swapchainLength, nullptr, 0);
 }
 
-/*!*********************************************************************************************************************
-\return  Return true if no error occurred
-\brief  Loads and compiles the shaders and create a pipeline
-***********************************************************************************************************************/
+/// <summary>Loads and compiles the shaders and create a pipeline.</summary>
+/// <returns>Return true if no error occurred.</returns>
 void VulkanMultithreading::loadPipeline()
 {
 	//--- create the texture-sampler descriptor set layout
@@ -264,7 +252,7 @@ void VulkanMultithreading::loadPipeline()
 		_deviceResources->texLayout = _deviceResources->device->createDescriptorSetLayout(descSetLayoutInfo);
 	}
 
-	//--- create the ubo descriptorset layout
+	//--- create the ubo descriptor set layout
 	{
 		pvrvk::DescriptorSetLayoutCreateInfo descSetLayoutInfo;
 		descSetLayoutInfo.setBinding(0, pvrvk::DescriptorType::e_UNIFORM_BUFFER, 1, pvrvk::ShaderStageFlags::e_VERTEX_BIT); /*binding 0*/
@@ -292,7 +280,7 @@ void VulkanMultithreading::loadPipeline()
 	const pvr::assets::Mesh& mesh = _scene->getMesh(0);
 	pipeInfo.inputAssembler.setPrimitiveTopology(pvr::utils::convertToPVRVk(mesh.getPrimitiveType()));
 	pipeInfo.pipelineLayout = _deviceResources->pipelayout;
-	pipeInfo.renderPass = _deviceResources->framebuffer[0]->getRenderPass();
+	pipeInfo.renderPass = _deviceResources->onScreenFramebuffer[0]->getRenderPass();
 	pipeInfo.subpass = 0;
 	// Enable z-buffer test. We are using a projection matrix optimized for a floating point depth buffer,
 	// so the depth test and clear value need to be inverted (1 becomes near, 0 becomes far).
@@ -301,16 +289,14 @@ void VulkanMultithreading::loadPipeline()
 	pipeInfo.depthStencil.enableDepthWrite(true);
 	pvr::utils::populateInputAssemblyFromMesh(mesh, VertexAttribBindings, sizeof(VertexAttribBindings) / sizeof(VertexAttribBindings[0]), pipeInfo.vertexInput, pipeInfo.inputAssembler);
 
-	pvr::utils::populateViewportStateCreateInfo(_deviceResources->framebuffer[0], pipeInfo.viewport);
+	pvr::utils::populateViewportStateCreateInfo(_deviceResources->onScreenFramebuffer[0], pipeInfo.viewport);
 	_deviceResources->pipe = _deviceResources->device->createGraphicsPipeline(pipeInfo, _deviceResources->pipelineCache);
 }
 
-/*!*********************************************************************************************************************
-\return Return pvr::Result::Success if no error occurred
-\brief  Code in initApplication() will be called by Shell once per run, before the rendering context is created.
-	Used to initialize variables that are not dependent on it (e.g. external modules, loading meshes, etc.)
-	If the rendering context is lost, initApplication() will not be called again.
-***********************************************************************************************************************/
+/// <summary>Code in initApplication() will be called by Shell once per run, before the rendering context is created.
+/// Used to initialize variables that are not dependent on it (e.g. external modules, loading meshes, etc.)
+/// If the rendering context is lost, initApplication() will not be called again.</summary>
+/// <returns>Return Result::Success if no error occurred.</returns>
 pvr::Result VulkanMultithreading::initApplication()
 {
 	// Load the _scene
@@ -320,11 +306,9 @@ pvr::Result VulkanMultithreading::initApplication()
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return Return pvr::Result::Success if no error occurred
-\brief  Code in quitApplication() will be called by PVRShell once per run, just before exiting the program.
-	If the rendering context is lost, quitApplication() will not be called.x
-***********************************************************************************************************************/
+/// <summary>Code in quitApplication() will be called by PVRShell once per run, just before exiting the program.
+///	If the rendering context is lost, quitApplication() will not be called.</summary>
+/// <returns>Return Result::Success if no error occurred.</returns>
 pvr::Result VulkanMultithreading::quitApplication()
 {
 	_scene.reset();
@@ -362,11 +346,9 @@ void NormalTextureDoneCallback(pvr::utils::AsyncApiTexture tex)
 	}
 }
 
-/*!*********************************************************************************************************************
-\return Return pvr::Result::Success if no error occurred
-\brief  Code in initView() will be called by Shell upon initialization or after a change in the rendering context.
-	Used to initialize variables that are dependent on the rendering context (e.g. textures, vertex buffers, etc.)
-***********************************************************************************************************************/
+/// <summary>Code in initView() will be called by Shell upon initialization or after a change in the rendering context.
+/// Used to initialize variables that are dependent on the rendering context (e.g. textures, vertex buffers, etc.).</summary>
+/// <returns>Return Result::Success if no error occurred.</returns>
 pvr::Result VulkanMultithreading::initView()
 {
 	_deviceResources = std::make_unique<DeviceResources>();
@@ -381,7 +363,7 @@ pvr::Result VulkanMultithreading::initView()
 	}
 
 	// Create the surface
-	_deviceResources->surface =
+	pvrvk::Surface surface =
 		pvr::utils::createSurface(_deviceResources->instance, _deviceResources->instance->getPhysicalDevice(0), this->getWindow(), this->getDisplay(), this->getConnection());
 
 	// Create a default set of debug utils messengers or debug callbacks using either VK_EXT_debug_utils or VK_EXT_debug_report respectively
@@ -390,7 +372,7 @@ pvr::Result VulkanMultithreading::initView()
 	// look for 2 queues one support Graphics and present operation and the second one with transfer operation
 	pvr::utils::QueuePopulateInfo queuePopulateInfo = {
 		pvrvk::QueueFlags::e_GRAPHICS_BIT,
-		_deviceResources->surface,
+		surface,
 	};
 	pvr::utils::QueueAccessInfo queueAccessInfo;
 	// create the Logical device
@@ -401,7 +383,7 @@ pvr::Result VulkanMultithreading::initView()
 
 	_deviceResources->vmaAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
 
-	// Create the commandpool & Descriptorpool
+	// Create the command pool & Descriptor pool
 	_deviceResources->commandPool = _deviceResources->device->createCommandPool(
 		pvrvk::CommandPoolCreateInfo(_deviceResources->queue->getFamilyIndex(), pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT));
 
@@ -411,7 +393,7 @@ pvr::Result VulkanMultithreading::initView()
 																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 16)
 																						  .setMaxDescriptorSets(16));
 
-	// create a new commandpool for image uploading and upload the images in separate thread
+	// create a new command pool for image uploading and upload the images in separate thread
 	_deviceResources->uploader.init(_deviceResources->device, _deviceResources->queue, &_hostMutex);
 
 	_deviceResources->asyncUpdateInfo.diffuseTex = _deviceResources->uploader.uploadTextureAsync(
@@ -420,17 +402,17 @@ pvr::Result VulkanMultithreading::initView()
 	_deviceResources->asyncUpdateInfo.bumpTex = _deviceResources->uploader.uploadTextureAsync(
 		_deviceResources->loader.loadTextureAsync("MarbleNormalMap.pvr", this, pvr::TextureFileFormat::PVR), true, &NormalTextureDoneCallback, true);
 
-	pvrvk::SurfaceCapabilitiesKHR surfaceCapabilities = _deviceResources->instance->getPhysicalDevice(0)->getSurfaceCapabilities(_deviceResources->surface);
+	pvrvk::SurfaceCapabilitiesKHR surfaceCapabilities = _deviceResources->instance->getPhysicalDevice(0)->getSurfaceCapabilities(surface);
 
 	// validate the supported swapchain image usage
 	pvrvk::ImageUsageFlags swapchainImageUsage = pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT;
 	if (pvr::utils::isImageUsageSupportedBySurface(surfaceCapabilities, pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT))
-	{ swapchainImageUsage |= pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT; } // Create the swapchain image and depthstencil image
-	pvr::utils::createSwapchainAndDepthStencilImageAndViews(_deviceResources->device, _deviceResources->surface, getDisplayAttributes(), _deviceResources->swapchain,
-		_deviceResources->depthStencilImages, swapchainImageUsage, pvrvk::ImageUsageFlags::e_DEPTH_STENCIL_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_TRANSIENT_ATTACHMENT_BIT,
-		&_deviceResources->vmaAllocator);
+	{ swapchainImageUsage |= pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT; } // Create the swapchain image and depth-stencil image
+	auto swapChainCreateOutput = pvr::utils::createSwapchainRenderpassFramebuffers(_deviceResources->device, surface, getDisplayAttributes(),
+		pvr::utils::CreateSwapchainParameters().setAllocator(_deviceResources->vmaAllocator).setColorImageUsageFlags(swapchainImageUsage));
 
-	pvr::utils::createOnscreenFramebufferAndRenderPass(_deviceResources->swapchain, &_deviceResources->depthStencilImages[0], _deviceResources->framebuffer);
+	_deviceResources->swapchain = swapChainCreateOutput.swapchain;
+	_deviceResources->onScreenFramebuffer = swapChainCreateOutput.framebuffer;
 
 	// Create the pipeline cache
 	_deviceResources->pipelineCache = _deviceResources->device->createPipelineCache();
@@ -453,7 +435,7 @@ pvr::Result VulkanMultithreading::initView()
 	_deviceResources->cmdBuffers[0]->begin();
 	bool requiresCommandBufferSubmission = false;
 	pvr::utils::appendSingleBuffersFromModel(_deviceResources->device, *_scene, _deviceResources->vbos, _deviceResources->ibos, _deviceResources->cmdBuffers[0],
-		requiresCommandBufferSubmission, &_deviceResources->vmaAllocator);
+		requiresCommandBufferSubmission, _deviceResources->vmaAllocator);
 
 	_deviceResources->cmdBuffers[0]->end();
 
@@ -469,7 +451,7 @@ pvr::Result VulkanMultithreading::initView()
 	}
 
 	//  Initialize UIRenderer
-	_deviceResources->uiRenderer.init(getWidth(), getHeight(), isFullScreen(), _deviceResources->framebuffer[0]->getRenderPass(), 0,
+	_deviceResources->uiRenderer.init(getWidth(), getHeight(), isFullScreen(), _deviceResources->onScreenFramebuffer[0]->getRenderPass(), 0,
 		getBackBufferColorspace() == pvr::ColorSpace::sRGB, _deviceResources->commandPool, _deviceResources->queue);
 
 	_deviceResources->uiRenderer.getDefaultTitle()->setText("Multithreading");
@@ -492,20 +474,16 @@ pvr::Result VulkanMultithreading::initView()
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\brief  Code in releaseView() will be called by PVRShell when theapplication quits or before a change in the rendering context.
-\return Return pvr::Result::Success if no error occurred
-***********************************************************************************************************************/
+/// <summary>Code in releaseView() will be called by PVRShell when the application quits or before a change in the rendering context.</summary>
+/// <returns>Return Result::Success if no error occurred.</returns>
 pvr::Result VulkanMultithreading::releaseView()
 {
 	_deviceResources.reset();
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return Return pvr::Result::Success if no error occurred
-\brief  Main rendering loop function of the program. The shell will call this function every frame.
-***********************************************************************************************************************/
+/// <summary>Main rendering loop function of the program. The shell will call this function every frame.</summary>
+/// <returns>Return Result::Success if no error occurred.</returns>
 pvr::Result VulkanMultithreading::renderFrame()
 {
 	_deviceResources->swapchain->acquireNextImage(uint64_t(-1), _deviceResources->imageAcquiredSemaphores[_frameId]);
@@ -588,7 +566,7 @@ pvr::Result VulkanMultithreading::renderFrame()
 	if (this->shouldTakeScreenshot())
 	{
 		pvr::utils::takeScreenshot(_deviceResources->queue, _deviceResources->commandPool, _deviceResources->swapchain, swapchainIndex, getScreenshotFileName(),
-			&_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
+			_deviceResources->vmaAllocator, _deviceResources->vmaAllocator);
 	}
 
 	// present
@@ -605,10 +583,8 @@ pvr::Result VulkanMultithreading::renderFrame()
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\brief  Draws a assets::Mesh after the model view matrix has been set and the material prepared.
-\param  nodeIndex Node index of the mesh to draw
-***********************************************************************************************************************/
+/// <summary>Draws a assets::Mesh after the model view matrix has been set and the material prepared.</summary>
+/// <param>nodeIndex Node index of the mesh to draw.</param>
 void VulkanMultithreading::drawMesh(pvrvk::CommandBuffer& cmdBuffers, int nodeIndex)
 {
 	uint32_t meshId = _scene->getNode(nodeIndex).getObjectId();
@@ -657,9 +633,7 @@ void VulkanMultithreading::drawMesh(pvrvk::CommandBuffer& cmdBuffers, int nodeIn
 	}
 }
 
-/*!*********************************************************************************************************************
-\brief  Pre record the commands
-***********************************************************************************************************************/
+/// <summary>Pre record the commands.</summary>
 void VulkanMultithreading::recordMainCommandBuffer()
 {
 	const pvrvk::ClearValue clearValues[] = { pvrvk::ClearValue(0.0f, 0.40f, .39f, 1.f), pvrvk::ClearValue(1.f, 0u) };
@@ -667,7 +641,7 @@ void VulkanMultithreading::recordMainCommandBuffer()
 	{
 		pvrvk::CommandBuffer& cmdBuffers = _deviceResources->cmdBuffers[i];
 		cmdBuffers->begin();
-		cmdBuffers->beginRenderPass(_deviceResources->framebuffer[i], pvrvk::Rect2D(0, 0, getWidth(), getHeight()), true, clearValues, ARRAY_SIZE(clearValues));
+		cmdBuffers->beginRenderPass(_deviceResources->onScreenFramebuffer[i], pvrvk::Rect2D(0, 0, getWidth(), getHeight()), true, clearValues, ARRAY_SIZE(clearValues));
 		// enqueue the static states which wont be changed through out the frame
 		cmdBuffers->bindPipeline(_deviceResources->pipe);
 		cmdBuffers->bindDescriptorSet(pvrvk::PipelineBindPoint::e_GRAPHICS, _deviceResources->pipelayout, 0, _deviceResources->texDescSet, 0);
@@ -684,9 +658,7 @@ void VulkanMultithreading::recordMainCommandBuffer()
 	}
 }
 
-/*!*********************************************************************************************************************
-\brief  Pre record the commands
-***********************************************************************************************************************/
+/// <summary>Pre record the commands.</summary>
 void VulkanMultithreading::recordLoadingCommandBuffer()
 {
 	const pvrvk::ClearValue clearColor[2] = { pvrvk::ClearValue(0.0f, 0.40f, .39f, 1.f), pvrvk::ClearValue(1.f, 0u) };
@@ -696,7 +668,7 @@ void VulkanMultithreading::recordLoadingCommandBuffer()
 		pvrvk::CommandBuffer& cmdBuffers = _deviceResources->loadingTextCmdBuffer[i];
 		cmdBuffers->begin();
 
-		cmdBuffers->beginRenderPass(_deviceResources->framebuffer[i], true, clearColor, ARRAY_SIZE(clearColor));
+		cmdBuffers->beginRenderPass(_deviceResources->onScreenFramebuffer[i], true, clearColor, ARRAY_SIZE(clearColor));
 
 		_deviceResources->loadingText[i] = _deviceResources->uiRenderer.createText("Loading...");
 		_deviceResources->loadingText[i]->commitUpdates();

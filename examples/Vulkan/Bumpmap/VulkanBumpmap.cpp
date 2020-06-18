@@ -1,19 +1,16 @@
-/*!*********************************************************************************************************************
-\File         VulkanBumpmap.cpp
-\Title        Bump mapping
-\Author       PowerVR by Imagination, Developer Technology Team
-\Copyright    Copyright (c) Imagination Technologies Limited.
-\brief      Shows how to perform tangent space bump mapping
-***********************************************************************************************************************/
+/*!
+\brief Shows how to perform tangent space bump mapping
+\file VulkanBumpmap.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #include "PVRShell/PVRShell.h"
 #include "PVRUtils/PVRUtilsVk.h"
 
 const float RotateY = glm::pi<float>() / 150;
 const glm::vec4 LightDir(.24f, .685f, -.685f, 0.0f);
 
-/*!*********************************************************************************************************************
- shader attributes
- ***********************************************************************************************************************/
+// shader attributes
 const pvr::utils::VertexBindings VertexAttribBindings[] = {
 	{ "POSITION", 0 },
 	{ "NORMAL", 1 },
@@ -31,9 +28,7 @@ enum Enum
 };
 }
 
-/*!*********************************************************************************************************************
- Content file names
- ***********************************************************************************************************************/
+// Content file names
 
 // Source and binary shaders
 const char FragShaderSrcFile[] = "FragShader.fsh.spv";
@@ -46,9 +41,7 @@ const char StatueNormalMapFile[] = "MarbleNormalMap.pvr";
 // POD _scene files
 const char SceneFile[] = "Satyr.pod";
 
-/*!*********************************************************************************************************************
- Class implementing the Shell functions.
- ***********************************************************************************************************************/
+/// <summary>Class implementing the Shell functions.</summary>
 class VulkanBumpmap : public pvr::Shell
 {
 	struct DeviceResources
@@ -72,8 +65,7 @@ class VulkanBumpmap : public pvr::Shell
 		pvrvk::DescriptorSet texDescSet;
 		pvrvk::GraphicsPipeline pipe;
 		pvr::Multi<pvrvk::CommandBuffer> cmdBuffers; // per swapchain
-		pvr::Multi<pvrvk::Framebuffer> onScreenFramebuffers; // per swapchain
-		pvr::Multi<pvrvk::ImageView> depthStencilImages;
+		pvr::Multi<pvrvk::Framebuffer> onScreenFramebuffer; // per swapchain
 		pvr::Multi<pvrvk::DescriptorSet> uboDescSets;
 		pvr::utils::StructuredBufferView structuredBufferView;
 		pvrvk::Buffer ubo;
@@ -124,10 +116,8 @@ public:
 	void recordCommandBuffer();
 };
 
-/*!*********************************************************************************************************************
-\return return true if no error occurred
-\brief  Loads the textures required for this training course
-***********************************************************************************************************************/
+/// <summary>Loads the textures required for this training course.</summary>
+/// <returns>Return true if no error occurred.</returns>
 void VulkanBumpmap::createImageSamplerDescriptor(pvrvk::CommandBuffer& imageUploadCmd)
 {
 	pvrvk::Device& device = _deviceResources->device;
@@ -145,9 +135,9 @@ void VulkanBumpmap::createImageSamplerDescriptor(pvrvk::CommandBuffer& imageUplo
 	pvrvk::Sampler samplerTrilinear = device->createSampler(samplerInfo);
 
 	texBase = pvr::utils::loadAndUploadImageAndView(_deviceResources->device, StatueTexFile, true, imageUploadCmd, *this, pvrvk::ImageUsageFlags::e_SAMPLED_BIT,
-		pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, nullptr, &_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
+		pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, nullptr, _deviceResources->vmaAllocator, _deviceResources->vmaAllocator);
 	texNormalMap = pvr::utils::loadAndUploadImageAndView(_deviceResources->device, StatueNormalMapFile, true, imageUploadCmd, *this, pvrvk::ImageUsageFlags::e_SAMPLED_BIT,
-		pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, nullptr, &_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
+		pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, nullptr, _deviceResources->vmaAllocator, _deviceResources->vmaAllocator);
 
 	texBase->setObjectName("Base diffuse ImageView");
 	texNormalMap->setObjectName("Normal map ImgaeView");
@@ -177,7 +167,7 @@ void VulkanBumpmap::createUbo()
 		_deviceResources->ubo = pvr::utils::createBuffer(_deviceResources->device,
 			pvrvk::BufferCreateInfo(_deviceResources->structuredBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
-			&_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+			_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 		_deviceResources->structuredBufferView.pointToMappedMemory(_deviceResources->ubo->getDeviceMemory()->getMappedData());
 		_deviceResources->ubo->setObjectName("Object Ubo");
 	}
@@ -194,10 +184,8 @@ void VulkanBumpmap::createUbo()
 	_deviceResources->device->updateDescriptorSets(descUpdate, _deviceResources->swapchain->getSwapchainLength(), nullptr, 0);
 }
 
-/*!*********************************************************************************************************************
-\return  Return true if no error occurred
-\brief  Loads and compiles the shaders and create a pipeline
-***********************************************************************************************************************/
+/// <summary>Loads and compiles the shaders and create a pipeline.</summary>
+/// <returns>Return true if no error occurred.</returns>
 void VulkanBumpmap::createPipeline()
 {
 	pvrvk::PipelineColorBlendAttachmentState colorAttachemtState;
@@ -212,7 +200,7 @@ void VulkanBumpmap::createPipeline()
 		_deviceResources->texLayout = _deviceResources->device->createDescriptorSetLayout(descSetLayoutInfo);
 	}
 
-	//--- create the ubo descriptorset layout
+	//--- create the ubo descriptor set layout
 	{
 		pvrvk::DescriptorSetLayoutCreateInfo descSetLayoutInfo;
 		descSetLayoutInfo.setBinding(0, pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 1, pvrvk::ShaderStageFlags::e_VERTEX_BIT); /*binding 0*/
@@ -245,7 +233,7 @@ void VulkanBumpmap::createPipeline()
 	const pvr::assets::Mesh& mesh = _scene->getMesh(0);
 	pipeInfo.inputAssembler.setPrimitiveTopology(pvr::utils::convertToPVRVk(mesh.getPrimitiveType()));
 	pipeInfo.pipelineLayout = _deviceResources->pipelayout;
-	pipeInfo.renderPass = _deviceResources->onScreenFramebuffers[0]->getRenderPass();
+	pipeInfo.renderPass = _deviceResources->onScreenFramebuffer[0]->getRenderPass();
 	pipeInfo.subpass = 0;
 	// Enable z-buffer test. We are using a projection matrix optimized for a floating point depth buffer,
 	// so the depth test and clear value need to be inverted (1 becomes near, 0 becomes far).
@@ -257,12 +245,10 @@ void VulkanBumpmap::createPipeline()
 	_deviceResources->pipe->setObjectName("Bumpmap GraphicsPipeline");
 }
 
-/*!*********************************************************************************************************************
-\return Return Result::Success if no error occurred
-\brief  Code in initApplication() will be called by Shell once per run, before the rendering context is created.
-	Used to initialize variables that are not dependent on it (e.g. external modules, loading meshes, etc.)
-	If the rendering context is lost, initApplication() will not be called again.
-***********************************************************************************************************************/
+/// <summary>Code in initApplication() will be called by Shell once per run, before the rendering context is created.
+/// Used to initialize variables that are not dependent on it (e.g. external modules, loading meshes, etc.)
+/// If the rendering context is lost, initApplication() will not be called again.</summary>
+/// <returns>Return Result::Success if no error occurred.</returns>
 pvr::Result VulkanBumpmap::initApplication()
 {
 	// Load the scene
@@ -273,22 +259,18 @@ pvr::Result VulkanBumpmap::initApplication()
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return Return Result::Success if no error occurred
-\brief  Code in quitApplication() will be called by PVRShell once per run, just before exiting the program.
-	If the rendering context is lost, quitApplication() will not be called.x
-***********************************************************************************************************************/
+/// <summary>Code in quitApplication() will be called by PVRShell once per run, just before exiting the program.
+///	If the rendering context is lost, quitApplication() will not be called.</summary>
+/// <returns>Return Result::Success if no error occurred.</returns>
 pvr::Result VulkanBumpmap::quitApplication()
 {
 	_scene.reset();
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return Return Result::Success if no error occurred
-\brief  Code in initView() will be called by Shell upon initialization or after a change in the rendering context.
-	Used to initialize variables that are dependent on the rendering context (e.g. textures, vertex buffers, etc.)
-***********************************************************************************************************************/
+/// <summary>Code in initView() will be called by Shell upon initialization or after a change in the rendering context.
+/// Used to initialize variables that are dependent on the rendering context (e.g. textures, vertex buffers, etc.).</summary>
+/// <returns>Return Result::Success if no error occurred.</returns>
 pvr::Result VulkanBumpmap::initView()
 {
 	_deviceResources = std::make_unique<DeviceResources>();
@@ -326,12 +308,14 @@ pvr::Result VulkanBumpmap::initView()
 	{
 		swapchainImageUsage |= pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT;
 	} //---------------
-	  // Create the swapchain
-	pvr::utils::createSwapchainAndDepthStencilImageAndViews(_deviceResources->device, surface, getDisplayAttributes(), _deviceResources->swapchain, _deviceResources->depthStencilImages,
-		swapchainImageUsage, pvrvk::ImageUsageFlags::e_DEPTH_STENCIL_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_TRANSIENT_ATTACHMENT_BIT, &_deviceResources->vmaAllocator);
+	  // Create the swapchain, on screen framebuffers and renderpass
+	auto swapChainCreateOutput = pvr::utils::createSwapchainRenderpassFramebuffers(_deviceResources->device, surface, getDisplayAttributes(),
+		pvr::utils::CreateSwapchainParameters().setAllocator(_deviceResources->vmaAllocator).setColorImageUsageFlags(swapchainImageUsage));
+	_deviceResources->swapchain = swapChainCreateOutput.swapchain;
+	_deviceResources->onScreenFramebuffer = swapChainCreateOutput.framebuffer;
 
 	//---------------
-	// Create the commandpool and descriptorset pool
+	// Create the command pool and descriptor set pool
 	_deviceResources->commandPool = _deviceResources->device->createCommandPool(
 		pvrvk::CommandPoolCreateInfo(_deviceResources->queue->getFamilyIndex(), pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT));
 	_deviceResources->commandPool->setObjectName("Main Command Pool");
@@ -342,16 +326,6 @@ pvr::Result VulkanBumpmap::initView()
 																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 16)
 																						  .setMaxDescriptorSets(16));
 	_deviceResources->descriptorPool->setObjectName("Main Descriptor Pool");
-
-	// create an onscreen framebuffer per swap chain
-	pvr::utils::createOnscreenFramebufferAndRenderPass(_deviceResources->swapchain, &_deviceResources->depthStencilImages[0], _deviceResources->onScreenFramebuffers);
-
-	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
-	{
-		_deviceResources->onScreenFramebuffers[i]->setObjectName(std::string("Main Framebuffer [") + std::to_string(i) + "]");
-		_deviceResources->swapchain->getImageView(i)->setObjectName(std::string("Swapchain Image View [") + std::to_string(i) + "]");
-		_deviceResources->depthStencilImages[i]->setObjectName(std::string("Depth Stencil Image View [") + std::to_string(i) + "]");
-	}
 
 	// Create the pipeline cache
 	_deviceResources->pipelineCache = _deviceResources->device->createPipelineCache();
@@ -378,7 +352,7 @@ pvr::Result VulkanBumpmap::initView()
 	// load the vbo and ibo data
 	bool requiresCommandBufferSubmission = false;
 	pvr::utils::appendSingleBuffersFromModel(_deviceResources->device, *_scene, _deviceResources->vbos, _deviceResources->ibos, _deviceResources->cmdBuffers[0],
-		requiresCommandBufferSubmission, &_deviceResources->vmaAllocator);
+		requiresCommandBufferSubmission, _deviceResources->vmaAllocator);
 
 	// create the image samplers
 	createImageSamplerDescriptor(_deviceResources->cmdBuffers[0]);
@@ -395,7 +369,7 @@ pvr::Result VulkanBumpmap::initView()
 	pvr::utils::endQueueDebugLabel(_deviceResources->queue);
 
 	//  Initialize UIRenderer
-	_deviceResources->uiRenderer.init(getWidth(), getHeight(), isFullScreen(), _deviceResources->onScreenFramebuffers[0]->getRenderPass(), 0,
+	_deviceResources->uiRenderer.init(getWidth(), getHeight(), isFullScreen(), _deviceResources->onScreenFramebuffer[0]->getRenderPass(), 0,
 		getBackBufferColorspace() == pvr::ColorSpace::sRGB, _deviceResources->commandPool, _deviceResources->queue);
 
 	_deviceResources->uiRenderer.getDefaultTitle()->setText("Bumpmap");
@@ -427,20 +401,16 @@ pvr::Result VulkanBumpmap::initView()
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\brief  Code in releaseView() will be called by PVRShell when theapplication quits or before a change in the rendering context.
-\return Return Result::Success if no error occurred
-***********************************************************************************************************************/
+/// <summary>Code in releaseView() will be called by PVRShell when the application quits or before a change in the rendering context.</summary>
+/// <returns>Return Result::Success if no error occurred.</returns>
 pvr::Result VulkanBumpmap::releaseView()
 {
 	_deviceResources.reset();
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return Return Result::Success if no error occurred
-\brief  Main rendering loop function of the program. The shell will call this function every frame.
-***********************************************************************************************************************/
+/// <summary>Main rendering loop function of the program. The shell will call this function every frame.</summary>
+/// <returns>Return Result::Success if no error occurred.</returns>
 pvr::Result VulkanBumpmap::renderFrame()
 {
 	pvr::utils::beginQueueDebugLabel(_deviceResources->queue, pvrvk::DebugUtilsLabel("renderFrame"));
@@ -499,7 +469,7 @@ pvr::Result VulkanBumpmap::renderFrame()
 	if (this->shouldTakeScreenshot())
 	{
 		pvr::utils::takeScreenshot(_deviceResources->queue, _deviceResources->commandPool, _deviceResources->swapchain, swapchainIndex, this->getScreenshotFileName(),
-			&_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
+			_deviceResources->vmaAllocator, _deviceResources->vmaAllocator);
 	}
 
 	//---------------
@@ -523,10 +493,8 @@ pvr::Result VulkanBumpmap::renderFrame()
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\brief  Draws a assets::Mesh after the model view matrix has been set and the material prepared.
-\param  nodeIndex Node index of the mesh to draw
-***********************************************************************************************************************/
+/// <summary>Draws a assets::Mesh after the model view matrix has been set and the material prepared.</summary>
+/// <pram =name"nodeIndex">Node index of the mesh to draw.</param>
 void VulkanBumpmap::drawMesh(pvrvk::CommandBuffer& cmdBuffers, int nodeIndex)
 {
 	const uint32_t meshId = _scene->getNode(nodeIndex).getObjectId();
@@ -575,9 +543,7 @@ void VulkanBumpmap::drawMesh(pvrvk::CommandBuffer& cmdBuffers, int nodeIndex)
 	}
 }
 
-/*!*********************************************************************************************************************
-\brief  Pre record the commands
-***********************************************************************************************************************/
+/// <summary>Pre-record the commands.</summary>
 void VulkanBumpmap::recordCommandBuffer()
 {
 	const uint32_t numSwapchains = _deviceResources->swapchain->getSwapchainLength();
@@ -590,7 +556,7 @@ void VulkanBumpmap::recordCommandBuffer()
 
 		// begin the render pass
 		_deviceResources->cmdBuffers[i]->beginRenderPass(
-			_deviceResources->onScreenFramebuffers[i], pvrvk::Rect2D(0, 0, getWidth(), getHeight()), true, clearValues, ARRAY_SIZE(clearValues));
+			_deviceResources->onScreenFramebuffer[i], pvrvk::Rect2D(0, 0, getWidth(), getHeight()), true, clearValues, ARRAY_SIZE(clearValues));
 
 		pvr::utils::beginCommandBufferDebugLabel(_deviceResources->cmdBuffers[i], pvrvk::DebugUtilsLabel("Mesh"));
 

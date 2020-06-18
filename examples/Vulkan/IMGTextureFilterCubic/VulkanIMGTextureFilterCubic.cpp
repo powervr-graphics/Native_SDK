@@ -1,19 +1,16 @@
-/*!*********************************************************************************************************************
-\File         VulkanIMGTextureFilterCubic.cpp
-\Title        Introducing the PowerVR device extension VK_IMG_filter_cubic
-\Author       PowerVR by Imagination, Developer Technology Team
-\Copyright    Copyright (c) Imagination Technologies Limited.
-\brief      Shows how to use the PowerVR device extension VK_IMG_filter_cubic.
-***********************************************************************************************************************/
+/*!
+\brief Shows how to use the PowerVR device extension VK_IMG_filter_cubic.
+\file VulkanIMGTextureFilterCubic.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #include "PVRCore/PVRCore.h"
 #include "PVRShell/PVRShell.h"
 #include "PVRUtils/PVRUtilsVk.h"
 
 pvr::utils::VertexBindings Attributes[] = { { "POSITION", 0 }, { "NORMAL", 1 }, { "UV0", 2 } };
 
-/*!*********************************************************************************************************************
- Content file names
-***********************************************************************************************************************/
+// Content file names
 const char VertShaderFileName[] = "VertShader.vsh.spv";
 const char FragShaderFileName[] = "FragShader.fsh.spv";
 
@@ -79,9 +76,7 @@ struct DeviceResources
 	}
 };
 
-/*!*********************************************************************************************************************
- Class implementing the pvr::Shell functions.
-***********************************************************************************************************************/
+/// <summary>implementing the pvr::Shell functions.</summary>
 class VulkanIMGTextureFilterCubic : public pvr::Shell
 {
 	std::unique_ptr<DeviceResources> _deviceResources;
@@ -111,12 +106,10 @@ public:
 	void loadVbo();
 };
 
-/*!*********************************************************************************************************************
-\return Result::Success if no error occurred
-\brief  Code in initApplication() will be called by Shell once per run, before the rendering context is created.
-	Used to initialize variables that are not dependent on it (e.g. external modules, loading meshes, etc.). If the rendering
-	context is lost, initApplication() will not be called again.
-***********************************************************************************************************************/
+/// <summary>Code in initApplication() will be called by Shell once per run, before the rendering context is created.
+/// Used to initialize variables that are not dependent on it (e.g. external modules, loading meshes, etc.)
+/// If the rendering context is lost, initApplication() will not be called again.</summary>
+/// <returns>Return Result::Success if no error occurred.</returns>
 pvr::Result VulkanIMGTextureFilterCubic::initApplication()
 {
 	_frameId = 0;
@@ -124,18 +117,14 @@ pvr::Result VulkanIMGTextureFilterCubic::initApplication()
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return Result::Success if no error occurred
-\brief  Code in quitApplication() will be called by pvr::Shell once per run, just before exiting the program.
-		If the rendering context is lost, quitApplication() will not be called.
-***********************************************************************************************************************/
+/// <summary>Code in quitApplication() will be called by PVRShell once per run, just before exiting the program.
+///	If the rendering context is lost, quitApplication() will not be called.</summary>
+/// <returns>Return Result::Success if no error occurred.</returns>
 pvr::Result VulkanIMGTextureFilterCubic::quitApplication() { return pvr::Result::Success; }
 
-/*!*********************************************************************************************************************
-\return Result::Success if no error occurred
-\brief  Code in initView() will be called by Shell upon initialization or after a change  in the rendering context.
-		Used to initialize variables that are dependent on the rendering context (e.g. textures, vertex buffers, etc.)
-***********************************************************************************************************************/
+/// <summary>Code in initView() will be called by Shell upon initialization or after a change in the rendering context.
+/// Used to initialize variables that are dependent on the rendering context (e.g. textures, vertex buffers, etc.).</summary>
+/// <returns>Return Result::Success if no error occurred.</returns>
 pvr::Result VulkanIMGTextureFilterCubic::initView()
 {
 	_deviceResources = std::make_unique<DeviceResources>();
@@ -182,11 +171,14 @@ pvr::Result VulkanIMGTextureFilterCubic::initView()
 	pvrvk::ImageUsageFlags swapchainImageUsage = pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT;
 	if (pvr::utils::isImageUsageSupportedBySurface(surfaceCapabilities, pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT))
 	{ swapchainImageUsage |= pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT; } // Create the swapchain
-	_deviceResources->swapchain = pvr::utils::createSwapchain(_deviceResources->device, surface, getDisplayAttributes(), swapchainImageUsage);
+	// Create the Swapchain, its renderpass, attachments and framebuffers. Will support MSAA if enabled through command line.
+	auto swapChainCreateOutput = pvr::utils::createSwapchainRenderpassFramebuffers(_deviceResources->device, surface, getDisplayAttributes(),
+		pvr::utils::CreateSwapchainParameters().setAllocator(_deviceResources->vmaAllocator).setColorImageUsageFlags(swapchainImageUsage).enableDepthBuffer(false));
 
-	pvr::utils::createOnscreenFramebufferAndRenderPass(_deviceResources->swapchain, nullptr, _deviceResources->onScreenFramebuffer);
+	_deviceResources->swapchain = swapChainCreateOutput.swapchain;
+	_deviceResources->onScreenFramebuffer = swapChainCreateOutput.framebuffer;
 
-	// Create the Comandpool & Descriptorpool
+	// Create the Command pool & Descriptor pool
 	_deviceResources->cmdPool =
 		_deviceResources->device->createCommandPool(pvrvk::CommandPoolCreateInfo(queueAccessInfo.familyId, pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT));
 
@@ -242,7 +234,7 @@ pvr::Result VulkanIMGTextureFilterCubic::initView()
 	_clearColor = clearColorLinearSpace;
 	if (getBackBufferColorspace() != pvr::ColorSpace::sRGB)
 	{
-		// Gamma correct the clear color
+		// Gamma correct the clear colour
 		_clearColor = pvr::utils::convertLRGBtoSRGB(clearColorLinearSpace);
 	}
 
@@ -267,20 +259,16 @@ pvr::Result VulkanIMGTextureFilterCubic::initView()
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return Result::Success if no error occurred
-\brief  Code in releaseView() will be called by Shell when the application quits or before a change in the rendering context.
-***********************************************************************************************************************/
+/// <summary>Code in releaseView() will be called by PVRShell when the application quits or before a change in the rendering context.</summary>
+/// <returns>Return Result::Success if no error occurred.</returns>
 pvr::Result VulkanIMGTextureFilterCubic::releaseView()
 {
 	_deviceResources.reset();
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return Result::Success if no error occurred
-\brief  Main rendering loop function of the program. The shell will call this function every _frame.
-***********************************************************************************************************************/
+/// <summary>Main rendering loop function of the program. The shell will call this function every frame.</summary>
+/// <returns>Return Result::Success if no error occurred</returns>
 pvr::Result VulkanIMGTextureFilterCubic::renderFrame()
 {
 	_deviceResources->swapchain->acquireNextImage(uint64_t(-1), _deviceResources->imageAcquiredSemaphores[_frameId]);
@@ -305,7 +293,7 @@ pvr::Result VulkanIMGTextureFilterCubic::renderFrame()
 	if (this->shouldTakeScreenshot())
 	{
 		pvr::utils::takeScreenshot(_deviceResources->queue, _deviceResources->cmdPool, _deviceResources->swapchain, swapchainIndex, this->getScreenshotFileName(),
-			&_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
+			_deviceResources->vmaAllocator, _deviceResources->vmaAllocator);
 	}
 
 	// Present
@@ -339,7 +327,7 @@ void VulkanIMGTextureFilterCubic::loadVbo()
 	_deviceResources->quadVbo = pvr::utils::createBuffer(_deviceResources->device,
 		pvrvk::BufferCreateInfo(pvr::getSize(pvr::GpuDatatypes::vec3) * 6, pvrvk::BufferUsageFlags::e_VERTEX_BUFFER_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT),
 		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
-		&_deviceResources->vmaAllocator);
+		_deviceResources->vmaAllocator);
 
 	bool isBufferHostVisible = (_deviceResources->quadVbo->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT) != 0;
 
@@ -348,7 +336,7 @@ void VulkanIMGTextureFilterCubic::loadVbo()
 	else
 	{
 		pvr::utils::updateBufferUsingStagingBuffer(_deviceResources->device, _deviceResources->quadVbo, pvrvk::CommandBufferBase(_deviceResources->uploadCmdBuffer),
-			static_cast<const void*>(_vertices.data()), 0, pvr::getSize(pvr::GpuDatatypes::vec3) * 6, &_deviceResources->vmaAllocator);
+			static_cast<const void*>(_vertices.data()), 0, pvr::getSize(pvr::GpuDatatypes::vec3) * 6, _deviceResources->vmaAllocator);
 	}
 }
 
@@ -356,7 +344,7 @@ void VulkanIMGTextureFilterCubic::createTextures()
 {
 	Log(LogLevel::Information, "Generating the Image to be sampled from using pvrvk::Filter::e_CUBIC_IMG and pvrvk::Filter::e_LINEAR.");
 
-	// Determine the number of mipmap levels - see the Vulkan specification section "Image Miplevel Sizing"
+	// Determine the number of mipmap levels - see the Vulkan specification section "Image Mip level Sizing"
 	uint32_t numMipLevels = static_cast<uint32_t>(floor(log2(std::max(getWidth(), getHeight()))) + 1);
 
 	// Ensure images have pvrvk::ImageUsageFlags including pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT | pvrvk::ImageUsageFlags::e_TRANSFER_DST_BIT
@@ -367,7 +355,7 @@ void VulkanIMGTextureFilterCubic::createTextures()
 	// We have chosen to use an image with format pvrvk::Format::e_R8G8B8A8_UNORM which implementations must provide support for pvrvk::FormatFeatureFlags::e_BLIT_SRC_BIT | pvrvk::FormatFeatureFlags::e_BLIT_DST_BIT
 	pvrvk::Image linearImage =
 		pvr::utils::createImage(_deviceResources->device, pvrvk::ImageCreateInfo(pvrvk::ImageType::e_2D, pvrvk::Format::e_R8G8B8A8_UNORM, extent, imageUsage, numMipLevels, 1),
-			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_NONE, &_deviceResources->vmaAllocator);
+			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_NONE, _deviceResources->vmaAllocator);
 
 	_deviceResources->baseImageView = _deviceResources->device->createImageView(pvrvk::ImageViewCreateInfo(linearImage));
 
@@ -430,7 +418,7 @@ void VulkanIMGTextureFilterCubic::createTextures()
 	updateInfo.dataSize = static_cast<uint32_t>(img.size());
 
 	pvr::utils::updateImage(_deviceResources->device, _deviceResources->uploadCmdBuffer, &updateInfo, 1, pvrvk::Format::e_R8G8B8A8_UNORM,
-		pvrvk::ImageLayout::e_TRANSFER_DST_OPTIMAL, false, _deviceResources->baseImageView->getImage(), &_deviceResources->vmaAllocator);
+		pvrvk::ImageLayout::e_TRANSFER_DST_OPTIMAL, false, _deviceResources->baseImageView->getImage(), _deviceResources->vmaAllocator);
 
 	// Transition image from pvrvk::ImageLayout::e_TRANSFER_DST_OPTIMAL to pvrvk::ImageLayout::e_TRANSFER_SRC_OPTIMAL ready for data transfer
 	pvr::utils::setImageLayout(
@@ -481,9 +469,7 @@ void VulkanIMGTextureFilterCubic::createTextures()
 		_deviceResources->baseImageView->getImage(), pvrvk::ImageLayout::e_TRANSFER_SRC_OPTIMAL, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, _deviceResources->uploadCmdBuffer);
 }
 
-/*!*********************************************************************************************************************
-\brief  Pre-record the rendering commands
-***********************************************************************************************************************/
+/// <summary>Pre-record the commands.</summary>
 void VulkanIMGTextureFilterCubic::recordCommandBuffers()
 {
 	pvrvk::ClearValue clearValue = pvrvk::ClearValue(_clearColor.x, _clearColor.y, _clearColor.z, 1.0f);
@@ -523,9 +509,7 @@ void VulkanIMGTextureFilterCubic::recordCommandBuffers()
 	}
 }
 
-/*!*********************************************************************************************************************
-\brief  Creates the descriptor set layouts used throughout the demo.
-***********************************************************************************************************************/
+/// <summary>Creates the descriptor set layouts used throughout the demo.</summary>
 void VulkanIMGTextureFilterCubic::createDescriptorSetLayout()
 {
 	// create the texture descriptor set layout and pipeline layout
@@ -544,9 +528,7 @@ void VulkanIMGTextureFilterCubic::createDescriptorSetLayout()
 	_deviceResources->pipelineLayout = _deviceResources->device->createPipelineLayout(pipeLayoutInfo);
 }
 
-/*!*********************************************************************************************************************
-\brief  Creates the graphics pipeline used in the demo.
-***********************************************************************************************************************/
+/// <summary>Creates the graphics pipeline used in the demo.</summary>
 void VulkanIMGTextureFilterCubic::createPipeline()
 {
 	pvrvk::GraphicsPipelineCreateInfo pipelineInfo;
@@ -584,10 +566,8 @@ void VulkanIMGTextureFilterCubic::createPipeline()
 	_deviceResources->pipeline = _deviceResources->device->createGraphicsPipeline(pipelineInfo, _deviceResources->pipelineCache);
 }
 
-/*!*********************************************************************************************************************
-\brief  Create combined texture and sampler descriptor set for the materials in the _scene
-\return Return true on success
-***********************************************************************************************************************/
+/// <summary>Create combined texture and sampler descriptor set for the materials in the _scene</summary>
+/// <return>Return true on success.</return>
 void VulkanIMGTextureFilterCubic::createDescriptorSet()
 {
 	// create the sampler objects

@@ -1,10 +1,9 @@
-/*!*********************************************************************************************************************
-\File         OpenGLESNavigation2D.cpp
-\Title        Navigation2D
-\Author       PowerVR by Imagination, Developer Technology Team
-\Copyright    Copyright (c) Imagination Technologies Limited.
-\Description  Implements a 2D navigation renderer.
-***********************************************************************************************************************/
+/*!
+\brief Implements a 2D navigation renderer.
+\file OpenGLESNavigation2D.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #include "PVRShell/PVRShell.h"
 #include "PVRAssets/PVRAssets.h"
 #include "PVRUtils/PVRUtilsGles.h"
@@ -211,9 +210,7 @@ const char* FontFile = "font.pvr";
 float scales[LOD::Count] = { 10.0f, 7.0f, 5.0f, 3.0f, 2.0f };
 float MapScales[LOD::Count] = { 11.0f, 10.0f, 7.0f, 5.0f, 2.0f };
 
-/*!*********************************************************************************************************************
-Class implementing the pvr::Shell functions.
-***********************************************************************************************************************/
+/// <summary>implementing the pvr::Shell functions.<summary>
 class OGLESNavigation2D : public pvr::Shell
 {
 	std::unique_ptr<NavDataProcess> _OSMdata;
@@ -344,9 +341,7 @@ void OGLESNavigation2D::resetCameraVariables()
 	_translation = _OSMdata->getRouteData()[_routeIndex].point;
 }
 
-/*!********************************************************************************************
-\brief  Handles user input and updates live variables accordingly.
-***********************************************************************************************/
+/// <summary>Handles user input and updates live variables accordingly.<summary>
 void OGLESNavigation2D::eventMappedInput(pvr::SimplifiedInput e)
 {
 	switch (e)
@@ -365,21 +360,19 @@ void OGLESNavigation2D::eventMappedInput(pvr::SimplifiedInput e)
 	}
 }
 
-/*!*********************************************************************************************************************
-\return Return pvr::Result::Success if no error occurred
-\brief  Code in initApplication() will be called by the Shell once per run, before the rendering _deviceResources->context is created.
-Used to initialize variables that are not dependent on it  (e.g. external modules, loading meshes, etc.)
-If the rendering _deviceResources->context is lost, initApplication() will not be called again.
-***********************************************************************************************************************/
+/// <summary>Code in initApplication() will be called by Shell once per run, before the rendering context is created.
+/// Used to initialize variables that are not dependent on it(e.g.external modules, loading meshes, etc.).If the rendering
+/// context is lost, initApplication() will not be called again.</summary>
+/// <returns>Result::Success if no error occurred.</returns>
 pvr::Result OGLESNavigation2D::initApplication()
 {
 	// Disable gamma correction in the framebuffer.
 	setBackBufferColorspace(pvr::ColorSpace::lRGB);
-	// WARNING: This should not be done lightly. This example only passes through textures or hardcoded color values.
+	// WARNING: This should not be done lightly. This example only passes through textures or hard coded colour values.
 	// If you do that, you should ensure that your textures will end up giving you the correct values. If you use
 	// normal sRGB textures, they will NOT provide you with the values you except (they will look too dark).
 	// Also linear operations will not work correctly. Again in this example this is not a problem as we have tweaked
-	// all values manually for visual effect and there is no lighting math going on.
+	// all values manually for visual effect and there is no lighting maths going on.
 
 	setDepthBitsPerPixel(0);
 	setStencilBitsPerPixel(0);
@@ -390,9 +383,9 @@ pvr::Result OGLESNavigation2D::initApplication()
 
 	Log(LogLevel::Information, "MAP SIZE IS: [ %d x %d ] TILES", _OSMdata->getNumRows(), _OSMdata->getNumCols());
 
-	// perform gamma correction of the linear space colors so that they can do used directly without further thinking about Linear/sRGB color space conversions
-	// This should not be done lightly. This example only passes through hardcoded color values and uses them directly without applying any
-	// math to their values and so can be performed safely.
+	// perform gamma correction of the linear space colours so that they can do used directly without further thinking about Linear/sRGB colour space conversions
+	// This should not be done lightly. This example only passes through hard coded colour values and uses them directly without applying any
+	// maths to their values and so can be performed safely.
 	_clearColor = pvr::utils::convertLRGBtoSRGB(ClearColorLinearSpace);
 	_roadAreaColor = pvr::utils::convertLRGBtoSRGB(RoadAreaColorLinearSpace);
 	_motorwayColor = pvr::utils::convertLRGBtoSRGB(MotorwayColorLinearSpace);
@@ -408,11 +401,10 @@ pvr::Result OGLESNavigation2D::initApplication()
 	return result;
 }
 
-/*!*********************************************************************************************************************
-\return Return Result::Success if no error occurred
-\brief  Code in initView() will be called by PVRShell upon initialization or after a change in the rendering _deviceResources->context.
-Used to initialize variables that are dependent on the rendering _deviceResources->context (e.g. textures, vertex buffers, etc.)
-***********************************************************************************************************************/
+/// <summary>Code in initView() will be called by Shell upon initialization or after a change
+/// in the rendering context. Used to initialize variables that are dependent on the
+/// rendering context(e.g.textures, vertex buffers, etc.).</summary>
+/// <returns>Result::Success if no error occurred.</returns>
 pvr::Result OGLESNavigation2D::initView()
 {
 	_deviceResources = std::make_unique<DeviceResources>();
@@ -572,10 +564,8 @@ void OGLESNavigation2D::handleInput()
 	}
 }
 
-/*!*********************************************************************************************************************
-\return Return Result::Success if no error occurred
-\brief  Main rendering loop function of the program. The shell will call this function every frame.
-***********************************************************************************************************************/
+/// <summary>Main rendering loop function of the program. The shell will call this function every frame.</summary>
+/// <returns>Result::Success if no error occurred.</returns>
 pvr::Result OGLESNavigation2D::renderFrame()
 {
 	debugThrowOnApiError("Frame begin");
@@ -584,11 +574,11 @@ pvr::Result OGLESNavigation2D::renderFrame()
 	float rotation = glm::radians(_rotation + MapScreenAlignRotation);
 
 	_mapMVPMtx = _mapProjMtx *
-		glm::translate(glm::vec3(_translation.x + _screenWidth * .5 /*center the map*/, _translation.y + _screenHeight * .5 /*center the map*/, 0.0f)) // final transform
+		glm::translate(glm::vec3(_translation.x + _screenWidth * .5 /*centre the map*/, _translation.y + _screenHeight * .5 /*centre the map*/, 0.0f)) // final transform
 		* glm::translate(glm::vec3(-_translation.x, -_translation.y, 0.0f)) // undo the translation
 		* glm::rotate(rotation, glm::vec3(0.0f, 0.0f, 1.0f)) // rotate
 		* glm::scale(glm::vec3(_scale, _scale, 1.0f)) // scale the focus area
-		* glm::translate(glm::vec3(_translation.x, _translation.y, 0.0f)); // translate the camera to the center of the current focus area
+		* glm::translate(glm::vec3(_translation.x, _translation.y, 0.0f)); // translate the camera to the centre of the current focus area
 
 	calculateClipPlanes();
 
@@ -613,10 +603,8 @@ pvr::Result OGLESNavigation2D::renderFrame()
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return Result::Success if no error occurred
-\brief  Code in releaseView() will be called by Shell when the application quits or before a change in the rendering _deviceResources->context.
-***********************************************************************************************************************/
+/// <summary>Code in releaseView() will be called by Shell when the application quits.</summary>
+/// <returns>Result::Success if no error occurred.</returns>
 pvr::Result OGLESNavigation2D::releaseView()
 {
 	// Clean up tile rendering resource data.
@@ -628,11 +616,8 @@ pvr::Result OGLESNavigation2D::releaseView()
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return Return Result::Success if no error occurred
-\brief  Code in quitApplication() will be called by PVRShell once per run, just before exiting the program.
-If the rendering _deviceResources->context is lost, quitApplication() will not be called.
-***********************************************************************************************************************/
+/// <summary>Code in quitApplication() will be called by pvr::Shell once per run, just before exiting the program.</summary>
+/// <returns>Result::Success if no error occurred.</returns>
 pvr::Result OGLESNavigation2D::quitApplication()
 {
 	_OSMdata.reset();
@@ -891,10 +876,8 @@ void OGLESNavigation2D::renderTile(const Tile& tile, TileRenderingResources& ren
 	}
 }
 
-/*!*********************************************************************************************************************
-\return Return true if no error occurred, false if the sampler descriptor set is not valid.
-\brief  Load a texture from file using PVR Asset Store, create a trilinear sampler, create a description set.
-***********************************************************************************************************************/
+/// <summary>Load a texture from file using PVR Asset Store, create a trilinear sampler, create a description set.</summary>
+/// <returns>Return true if no error occurred, false if the sampler descriptor set is not valid.</returns>
 void OGLESNavigation2D::loadTexture()
 {
 	// load the diffuse texture
@@ -942,10 +925,8 @@ void OGLESNavigation2D::loadTexture()
 	pvr::utils::throwOnGlError("[OGLESNavigation2D::loadTexture] Failed to create textures");
 }
 
-/*!*********************************************************************************************************************
-\brief  Converts pre-computed route into the appropriate co-ordinate space and calculates the routes total true distance
-and partial distances between each node which is used later to animate the route.
-***********************************************************************************************************************/
+/// <summary>Converts pre-computed route into the appropriate co-ordinate space and calculates the routes total true distance
+/// and partial distances between each node which is used later to animate the route.</summary>
 void OGLESNavigation2D::initRoute()
 {
 	_OSMdata->convertRoute(_mapWorldDim, _numCols, _numRows, _totalRouteDistance);
@@ -957,9 +938,7 @@ void OGLESNavigation2D::initRoute()
 	}
 }
 
-/*!*********************************************************************************************************************
-\brief  Creates vertex and index buffers and records the secondary command buffers for each tile.
-***********************************************************************************************************************/
+/// <summary>Creates vertex and index buffers and records the secondary command buffers for each tile.</summary>
 void OGLESNavigation2D::createBuffers()
 {
 	// get the map dimension
@@ -1048,7 +1027,7 @@ void OGLESNavigation2D::createBuffers()
 				gl::BindBuffer(GL_ARRAY_BUFFER, tileRes.vbo);
 				gl::BindBuffer(GL_ELEMENT_ARRAY_BUFFER, tileRes.ibo);
 
-				// enable vertex attrib pointers
+				// enable vertex attribute pointers
 				for (auto it = _deviceResources->vertexConfiguration.attributes.begin(), end = _deviceResources->vertexConfiguration.attributes.end(); it != end; ++it)
 				{
 					gl::EnableVertexAttribArray(it->index);
@@ -1081,9 +1060,7 @@ void OGLESNavigation2D::createBuffers()
 	}
 }
 
-/*!*********************************************************************************************************************
-\brief  Update animation using pre-computed path for the camera to follow.
-***********************************************************************************************************************/
+/// <summary>Update animation using pre-computed path for the camera to follow.</summary>
 void OGLESNavigation2D::updateAnimation()
 {
 	static const float scaleAnimTime = 1000.0f;
@@ -1253,9 +1230,7 @@ bool skipLabel(LabelData& labelData, Label& label, glm::dvec3& extent)
 	return false;
 }
 
-/*!*********************************************************************************************************************
-\brief  Record the primary command buffer.
-***********************************************************************************************************************/
+/// <summary>Record the primary command buffer.</summary>
 void OGLESNavigation2D::createUIRendererItems()
 {
 	for (uint32_t col = 0; col < _numCols; ++col)
@@ -1366,9 +1341,7 @@ void OGLESNavigation2D::createUIRendererItems()
 	}
 }
 
-/*!*********************************************************************************************************************
-\brief  Find the tiles that need to be rendered.
-***********************************************************************************************************************/
+/// <summary>Find the tiles that need to be rendered.</summary>
 void OGLESNavigation2D::render()
 {
 	_deviceResources->renderqueue.clear();
@@ -1411,18 +1384,15 @@ void OGLESNavigation2D::render()
 	}
 }
 
-/*!*********************************************************************************************************************
-\brief  Capture frustum planes from the current View Projection matrix
-***********************************************************************************************************************/
+/// <summary>Capture frustum planes from the current View Projection matrix.</summary>
 void OGLESNavigation2D::calculateClipPlanes() { pvr::math::getFrustumPlanes(_deviceResources->context->getApiVersion(), _mapMVPMtx, _viewFrustum); }
 
-/*!*********************************************************************************************************************
-\param min The minimum co-ordinates of the bounding box.
-\param max The maximum co-ordinates of the bounding box.
-\return boolean True if inside the view frustum, false if outside.
-\brief  Tests whether a 2D bounding box is intersected or enclosed by a view frustum.
-Only the top, bottom, left and right planes of the view frustum are taken into consideration to optimize the intersection test.
-***********************************************************************************************************************/
+/// <summary>Tests whether a 2D bounding box is intersected or enclosed by a view frustum.
+/// Only the top, bottom, left and right planes of the view frustum are taken into consideration
+/// to optimize the intersection test.</summary>
+/// <param name="min">The minimum co-ordinates of the bounding box.</param>
+/// <param name="max">The maximum co-ordinates of the bounding box.</param>
+/// <returns>Return boolean True if inside the view frustum, false if outside.</returns>
 bool OGLESNavigation2D::inFrustum(glm::vec2 min, glm::vec2 max)
 {
 	// Test the axis-aligned bounding box against each frustum plane,
@@ -1455,11 +1425,10 @@ void OGLESNavigation2D::updateGroups(uint32_t col, uint32_t row)
 	}
 }
 
-/*!*********************************************************************************************************************
-\param col  Column index for tile.
-\param row  Row index for tile.
-\brief Update the renderable text (dependant on LOD level) using the pre-processed data (position, scale, _rotation, std::string) and UIRenderer.
-***********************************************************************************************************************/
+/// <summary>Update the renderable text (dependant on LOD level) using the pre-processed
+/// data (position, scale, _rotation, std::string) and UIRenderer.</summary>
+/// <param name="col">Column index for tile.</param>
+/// <param name="row">Row index for tile.</param>
 void OGLESNavigation2D::updateLabels(uint32_t col, uint32_t row)
 {
 	Tile& tile = _OSMdata->getTiles()[col][row];
@@ -1504,11 +1473,10 @@ void OGLESNavigation2D::updateLabels(uint32_t col, uint32_t row)
 	}
 }
 
-/*!*********************************************************************************************************************
-\param col  Column index for tile.
-\param row  Row index for tile.
-\brief Update renderable icon, dependant on LOD level (for buildings such as; cafe, pub, library etc.) using the pre-processed data (position, type) and UIRenderer.
-***********************************************************************************************************************/
+/// <summary>Update renderable icon, dependant on LOD level (for buildings such as; cafe, pub, library etc.)
+/// using the pre-processed data (position, type) and UIRenderer.</summary>
+/// <param name="col">Column index for tile.</param>
+/// <param name="row">Row index for tile.</param>
 void OGLESNavigation2D::updateAmenities(uint32_t col, uint32_t row)
 {
 	TileRenderingResources& tileRes = _tileRenderingResources[col][row];
@@ -1552,9 +1520,6 @@ void OGLESNavigation2D::updateAmenities(uint32_t col, uint32_t row)
 	}
 }
 
-/*!*********************************************************************************************************************
-\return Return an unique_ptr to a new Demo class, supplied by the user
-\brief  This function must be implemented by the user of the shell. The user should return its Shell object defining the
-behaviour of the application.
-***********************************************************************************************************************/
+/// <summary>This function must be implemented by the user of the shell. The user should return its pvr::Shell object defining the behaviour of the application.</summary>
+/// <returns>Return a unique ptr to the demo supplied by the user.</returns>
 std::unique_ptr<pvr::Shell> pvr::newDemo() { return std::make_unique<OGLESNavigation2D>(); }

@@ -4,7 +4,7 @@ if(ANDROID)
 	message("Skipping OpenGLESOpenCLExample : Not supported on Android")
 	return()
 endif()
-if(IOS)	
+if(IOS)
 	message("Skipping OpenGLESOpenCLExample : Not supported on iOS")
 	return()
 endif()
@@ -14,6 +14,7 @@ add_subdirectory(../../.. ${CMAKE_CURRENT_BINARY_DIR}/sdk)
 if(PVR_PREBUILT_DEPENDENCIES)
 	find_package(PVRShell REQUIRED MODULE)
 	find_package(PVRUtilsGles REQUIRED MODULE)
+	find_package(PVRUtilsCL REQUIRED MODULE)
 endif()
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
@@ -63,7 +64,8 @@ add_assets_resource_file(OpenGLESOpenCLExample)
 # Apply SDK example specific compile and linker options
 apply_example_compile_options_to_target(OpenGLESOpenCLExample)
 
-target_link_libraries(OpenGLESOpenCLExample
+target_link_libraries(OpenGLESOpenCLExample PUBLIC
 	PVRShell
 	PVRUtilsGles
+	PVRUtilsCL
 )

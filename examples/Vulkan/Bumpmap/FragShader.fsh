@@ -13,7 +13,7 @@ void main()
 	mediump vec3 normal = texture(sNormalMap, TexCoord).rgb * 2.0 - 1.0;
 
     // linear interpolations of normals may cause shortened normals and thus
-	// visible artifacts on low-poly models.
+	// visible artefacts on low-poly models.
 	// We omit the normalization here for performance reasons
     
 	// calculate diffuse lighting as the cosine of the angle between light

@@ -154,7 +154,7 @@ enum OpenGLES31FunctionName
 };
 } // namespace Gl31FuncName
 
-// Preloads the OpenGL ES 3.1 function pointers the first time any OpenGL ES 3.1 function call is made
+// Pre-loads the OpenGL ES 3.1 function pointers the first time any OpenGL ES 3.1 function call is made
 inline void* getEs31Function(gl::internals::Gl31FuncName::OpenGLES31FunctionName funcname)
 {
 	static void* FunctionTable[Gl31FuncName::NUMBER_OF_OPENGLES3_FUNCTIONS];
@@ -244,6 +244,11 @@ inline void* getEs31Function(gl::internals::Gl31FuncName::OpenGLES31FunctionName
 }
 } // namespace internals
 } // namespace gl
+
+#if TARGET_OS_IPHONE
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-variable"
+#endif
 
 /************ OPENGL ES API ************/
 #ifndef DYNAMICGLES_NO_NAMESPACE
@@ -997,7 +1002,7 @@ enum OpenGLES3FunctionName
 };
 }
 
-// Preloads the OpenGL ES 3.0 function pointers the first time any OpenGL ES 3.0 function call is made
+// Pre-loads the OpenGL ES 3.0 function pointers the first time any OpenGL ES 3.0 function call is made
 inline void* getEs3Function(gl::internals::Gl3FuncName::OpenGLES3FunctionName funcname)
 {
 	static void* FunctionTable[Gl3FuncName::NUMBER_OF_OPENGLES3_FUNCTIONS];
@@ -2231,7 +2236,7 @@ enum OpenGLES2FunctionName
 };
 }
 
-// Preloads the OpenGL ES 2.0 function pointers the first time any OpenGL ES 2.0 function call is made
+// Pre-loads the OpenGL ES 2.0 function pointers the first time any OpenGL ES 2.0 function call is made
 inline void* getEs2Function(gl::internals::Gl2FuncName::OpenGLES2FunctionName funcname)
 {
 	static void* FunctionTable[Gl2FuncName::NUMBER_OF_OPENGLES2_FUNCTIONS];
@@ -4022,7 +4027,7 @@ static inline bool isExtensionSupported(const unsigned char* const extensionStri
 	return false;
 }
 
-// Preloads the OpenGL ES extension function pointers the first time any OpenGL ES extension function call is made
+// Pre-loads the OpenGL ES extension function pointers the first time any OpenGL ES extension function call is made
 inline void* getGlesExtFunction(gl::internals::GlExtFuncName::OpenGLESExtFunctionName funcname, bool reset = false)
 {
 	static void* FunctionTable[GlExtFuncName::NUMBER_OF_OPENGLEXT_FUNCTIONS + 1] = { 0 };
@@ -5834,6 +5839,10 @@ inline void DYNAMICGLES_FUNCTION(ProgramUniformHandleui64vIMG)(GLuint program, G
 #elif TARGET_OS_IPHONE
 }
 }
+#endif
+
+#if TARGET_OS_IPHONE
+#pragma clang diagnostic pop
 #endif
 
 inline bool isGlExtensionSupported(const char* extensionName)

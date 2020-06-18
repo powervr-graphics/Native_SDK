@@ -29,19 +29,19 @@ void main()
 	}
 	else
 	{
-		// Retrieve the two hdr color attachments and combine them
+		// Retrieve the two hdr colour attachments and combine them
 		highp vec3 offscreenTexture = texture(sOffScreenTexture, vTexCoords).rgb;
 		highp vec3 bloomTexture = vec3(texture(sBlurTexture, vTexCoords).r);
 		hdrColor = offscreenTexture * linearExposure + bloomTexture;
 	}
 
 	// http://filmicworlds.com/blog/filmic-tonemapping-operators/
-	// Reinhard tonemapping
+	// Reinhard tone mapping
 	mediump vec3 ldrColor = hdrColor / (1.0 + hdrColor);
 
 	// apply a simple vignette
 	mediump vec2 vtc = vec2(vTexCoords - vec2(0.5));
-	// determine the vector length of the center position
+	// determine the vector length of the centre position
 	mediump float lenPos = length(vtc);
 	mediump float vignette = smoothstep(VignetteRadius, VignetteRadius - VignetteSoftness, lenPos);
 

@@ -1,12 +1,12 @@
 .. image:: https://img.shields.io/github/tag-date/powervr-graphics/Native_SDK.svg
    :target: https://github.com/powervr-graphics/Native_SDK/releases
-   
+      
 .. image:: https://img.shields.io/github/license/powervr-graphics/Native_SDK.svg
     :target: https://github.com/powervr-graphics/Native_SDK/blob/master/LICENSE.md
 
 .. image:: https://travis-ci.org/powervr-graphics/Native_SDK.svg?branch=master
-    :target: https://travis-ci.org/powervr-graphics/Native_SDK
-    
+     :target: https://travis-ci.org/powervr-graphics/Native_SDK
+
 .. figure:: ./docs/images/WelcomeGraphic.png
 
 ===============
@@ -14,12 +14,12 @@ The PowerVR SDK
 ===============
 
 The PowerVR SDK is an open source codebase to help with the development of graphics applications for PowerVR and other platforms.
-It consists of two main parts: the Framework, and our examples.
+It consists of two main parts: the Framework and a set of examples.
 
-The Framework is a collection of libraries that aim to make development of OpenGL ES and Vulkan real-time applications much easier, by removing boilerplate code and enhancing productivity. It can be considered to be the lowest-level parts of a graphics engine - the main loop, platform abstraction, and graphical utilities. There are even a couple of
-experimental examples showing how it is possible to build a pseudo-engine on top of the Vulkan Framework using our PVRPfx library.
+The Framework is a collection of libraries that aim to make development of OpenGL ES and Vulkan real-time applications much easier by removing boilerplate code and enhancing productivity. It can be used to easily create the lowest-level parts of a graphics engine - the main loop, platform abstraction, and graphical utilities. There are even a couple of 
+examples showing how it is possible to build a pseudo-engine on top of the Vulkan Framework using our PVRPfx library.
 
-The Framework exists to make the sections of uninteresting or boilerplate code smaller, or even make them disappear. This allows more of the focus to be on the key graphics API calls for drawing something on the screen.
+The Framework is intended to reduce the amount of boilerplate code in an application. This allows a developer to focus on the key graphics API calls for drawing to screen rather than standard application setup.
 
 The examples themselves are mostly code samples intended to:
 
@@ -27,7 +27,8 @@ The examples themselves are mostly code samples intended to:
 * Demonstrate optimal implementations for techniques relevant for PowerVR, such as our DeferredShading with Pixel Local Storage/transient attachments, or our Gaussian Blur using a Sliding Average compute shader for reducing bandwidth.
 * Demonstrate how to use important extensions that may improve performance, PowerVR specific or otherwise, such as IMGFramebufferDownsample and IMGTextureFilterCubic.
 
-The examples are built on top of the Framework, and optimised so that only the relevant code is left.
+The examples are built on top of the Framework and optimised so that only the relevant code is left. The examples range from setting up a simple application using the Framework to implementing more advanced graphics techniques, such as physically-based rendering.
+Examples are available using Vulkan, OpenGL ES, and OpenCL.
 
 Developers can interact with our online Community at `www.imgtec.com/developers <https://www.imgtec.com/developers/>`_.
 

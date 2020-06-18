@@ -3,7 +3,7 @@
 #include <deque>
 #include <set>
 
-/***Road types - color uniforms***/
+// Road types - colour uniforms
 const glm::vec4 ClearColorLinearSpace(0.65f, 0.65f, 0.65f, 1.0f);
 const glm::vec4 RoadAreaColorLinearSpace(0.390f, 0.469f, 0.571f, 1.0f);
 const glm::vec4 MotorwayColorLinearSpace(1.000f, 0.327f, 0.178f, 1.0f);
@@ -12,7 +12,7 @@ const glm::vec4 PrimaryRoadColorLinearSpace(0.6882f, 0.5392f, 0.3431f, 1.0f);
 const glm::vec4 SecondaryRoadColorLinearSpace(1.0f, 1.0f, 0.2019f, 1.0f);
 const glm::vec4 ServiceRoadColorLinearSpace(0.696f, 0.696f, 0.696f, 1.0f);
 const glm::vec4 OtherRoadColorLinearSpace(0.696f, 0.696f, 0.696f, 1.0f);
-/**************************/
+
 const glm::vec4 ParkingColorLinearSpace(0.6412f, 0.602f, 0.249f, 1.0f);
 const glm::vec4 BuildingColorLinearSpace(0.28f, 0.28f, 0.28f, 1.0f);
 const glm::vec4 OutlineColorLinearSpace(0.2392f, 0.3412f, 0.3647f, 1.0f);
@@ -141,13 +141,13 @@ struct BoundaryData
 	uint32_t index;
 };
 
-/* A struct which stores node data.
+/*A struct which stores node data.
 Id - Unique node identification number,
 index - Used for index drawing of nodes,
 coords - Location in 2D space,
 texCoords - Texture co-ordinates for AA lines,
 wayIds - Ids of ways that this node belongs to,
-tileBoundNode - Is this node on a tile boundary. */
+tileBoundNode - Is this node on a tile boundary.*/
 struct Vertex
 {
 	uint64_t id;
@@ -260,7 +260,7 @@ public:
 	RoadTypes::RoadTypes roadType;
 };
 
-// This is used to store road ways that have been converted into triangles
+/// <summary>This is used to store road ways that have been converted into triangles.</summary>
 class ConvertedWay : public Way
 {
 public:
@@ -280,7 +280,7 @@ public:
 	}
 };
 
-// Structure for storing data for an individual map tile.
+/// <summary>Structure for storing data for an individual map tile.</summary>
 struct Tile
 {
 	glm::dvec2 min;
@@ -313,7 +313,7 @@ struct Tile
 	std::vector<uint32_t> indices;
 };
 
-// Structure for storing data from OSM file.
+/// <summary>Structure for storing data from OSM file.</summary>
 struct OSM
 {
 	double lonTileScale;
@@ -362,7 +362,7 @@ struct OSM
 	void cleanData();
 };
 
-// Remap an old co-ordinate into a new coordinate system.
+/// <summary>Remap an old co-ordinate into a new coordinate system.</summary>
 template<typename T>
 inline T remap(T valueToRemap, T oldmin, T oldmax, T newmin, T newmax)
 {
@@ -376,13 +376,11 @@ typedef double Real;
 const double boundaryBufferX = 0.05;
 const double boundaryBufferY = 0.05;
 
-// Calculate the rotate time in millisec
+// Calculate the rotate time in milliseconds
 inline float cameraRotationTimeInMs(float angleDeg, float ms360) { return glm::abs(angleDeg / 360.f * ms360); }
 
-/*!*****************************************************************************
-Class NavDataProcess This class handles the loading of OSM data from an XML file
-and pre-processing (i.e. triangulation) the raw data into usable rendering data.
-********************************************************************************/
+/// <summary>Class NavDataProcess This class handles the loading of OSM data from an XML file
+/// and pre-processing (i.e. triangulation) the raw data into usable rendering data.</summary>
 class NavDataProcess
 {
 public:
@@ -413,6 +411,7 @@ public:
 	void recurseClipRoad(const Vertex& vertex0, const Vertex& vertex1, const Vertex& vertex2, const glm::uvec2& minTileIndex, const glm::uvec2& maxTileIndex,
 		const RoadParams& roadParams, bool isPlaneVertical);
 
+#pragma warning TODO_MAKE_ALL_FUNCTIONS_VOID
 	// These functions should be called before accessing the tile data to make
 	// sure the tiles have been initialised.
 	pvr::Result loadAndProcessData();
@@ -431,12 +430,9 @@ public:
 	const OSM& getOsm() const { return _osm; }
 	void processLabelBoundary(LabelData& label, glm::uvec2& tileCoords);
 
-	/*!*********************************************************************************************************************
-	\brief  Converts pre-computed route into the appropriate co-ordinate space and
-	calculates the routes total true distance
-	and partial distances between each node which is used later to animate the
-	route.
-	***********************************************************************************************************************/
+	/// <summary>Converts pre-computed route into the appropriate co-ordinate space and
+	/// calculates the routes total true distance and partial distances between each
+	/// node which is used later to animate the route.</summary>
 	void convertRoute(const glm::dvec2& mapWorldDim, uint32_t numCols, uint32_t numRows, float& totalRouteDistance);
 
 private:
@@ -445,7 +441,7 @@ private:
 	glm::ivec2 _windowsDim;
 	std::unique_ptr<pvr::Stream> _assetStream;
 
-	// Raw data handling fuctions
+	// Raw data handling functions
 	pvr::Result loadOSMData();
 	glm::dvec2 lonLatToMetres(glm::dvec2 origin, glm::dvec2 point) const;
 	void generateIcon(const uint64_t* nodeIds, size_t numNodeIds, const Tag* tags, size_t numTags, uint64_t id);
@@ -465,28 +461,21 @@ private:
 
 	// Linear mathematics functions
 
-	/*!*********************************************************************************************************************
-			\return Return array of 2 new points. Left points (with respect to way
-	   direction) is given first.
-			\param  firstPoint  First point to use.
-			\param  secPoint  Second point to use.
-			\param  width   Desired width between the new nodes.
-			\param  pointNum  Point to return values for (1, 2).
-			\brief  Provides two points on the perpendicular line at distance
-	   "width" apart.
-			***********************************************************************************************************************/
+	/// <summary>Provides two points on the perpendicular line at distance "width" apart.</summary>
+	/// <param name="firstPoint">First point to use.</param>
+	/// <param name="secPoint">Second point to use.</param>
+	/// <param name="width">Desired width between the new nodes.</param>
+	/// <param name="pointNum">Point to return values for (1, 2).</param>
+	/// <returns>Return array of 2 new points. Left points (with respect to way direction) is given first.<returns>
 	std::array<glm::dvec2, 2> findPerpendicularPoints(glm::dvec2 firstPoint, glm::dvec2 secPoint, double width, int pointNum) const;
 
-	/*!*********************************************************************************************************************
-	\return Return array of 2 new points. Left points (with respect to way
-	direction) is given first.
-	\param  firstPoint  First point to use.
-	\param  secPoint  Second point to use.
-	\param  thirdPoint  Third point to use.
-	\param  width   Desired width between the new nodes.
-	\brief  Provides two points on the perpendicular line at distance "width"
-	apart for the middle point.
-	***********************************************************************************************************************/
+	/// <summary>Provides two points on the perpendicular line at distance "width"
+	/// apart for the middle point.</summary>
+	/// <param name="firstPoint">First point to use.</param>
+	/// <param name="secPoint">Second point to use.</param>
+	/// <param name="thirdPoint">Third point to use.</param>
+	/// <param name="width">Desired width between the new nodes.</param>
+	/// <returns>Return array of 2 new points. Left points (with respect to way direction) is given first.</returns>
 	std::array<glm::dvec2, 2> findPerpendicularPoints(glm::dvec2 firstPoint, glm::dvec2 secPoint, glm::dvec2 thirdPoint, double width) const;
 
 	std::array<glm::dvec2, 2> circleIntersects(glm::vec2 centre, double r, double m, double constant) const;
@@ -503,12 +492,9 @@ private:
 	std::vector<uint64_t> tessellate(const std::vector<uint64_t>& oldNodeIDs, Real width);
 	// Polygon triangulation functions
 
-	/*!*********************************************************************************************************************
-			\return std::vector<std::vector<uint64_t>> A vector of triangle ways.
-			\param  nodeIds A vector of node IDs for a closed way (anti-clockwise
-	   wound).
-			\brief  Triangluates an anti-clockwise wound closed way.
-			***********************************************************************************************************************/
+	/// <summary>Triangulates an anti-clockwise wound closed way.</summary>
+	/// <param name="nodeIds">A vector of node IDs for a closed way (anti-clockwise wound).</param>
+	/// <returns>A vector of triangle ways.</returns>
 	void triangulate(std::vector<uint64_t>& nodeIds, std::vector<std::array<uint64_t, 3>>& outTriangulates) const;
 
 	pvr::PolygonWindingOrder checkWinding(const std::vector<uint64_t>& nodeIds) const;
@@ -521,26 +507,18 @@ private:
 	void fillTiles(Vertex startNode, Vertex endNode, uint64_t wayId, const std::vector<Tag>& wayTags, WayTypes::WayTypes wayType, double height = 0, bool addEnd = false,
 		bool area = false, RoadTypes::RoadTypes type = RoadTypes::None, double width = 0.0, bool isIntersection = false, bool isRoundabout = false, bool isFork = false);
 
-	/*!*********************************************************************************************************************
-	\brief	Fill tiles with label data.
-	***********************************************************************************************************************/
+	/// <summary>Fill tiles with label data.</summary>
 	void fillLabelTiles(LabelData& label, uint32_t lod);
 
-	/*!*********************************************************************************************************************
-	\brief	Fill tiles with icon data.
-	***********************************************************************************************************************/
+	/// <summary>Fill tiles with icon data.</summary>
 	void fillIconTiles(IconData& icon, uint32_t lod);
 
-	/*!*********************************************************************************************************************
-	\brief  Fill tiles with Amenity label data.
-	***********************************************************************************************************************/
+	/// <summary>Fill tiles with Amenity label data.</summary>
 	void fillAmenityTiles(AmenityLabelData& label, uint32_t lod);
 
-	/*!*********************************************************************************************************************
-	\param	insertIn	 The vector of ways in which to insert.
-	\param	way			 The way to insert.
-	\brief	Insert a way (or a node ID) into a given array of ways.
-	***********************************************************************************************************************/
+	/// <summary>Insert a way (or a node ID) into a given array of ways.</summary>
+	/// <param name="insertIn">The vector of ways in which to insert.</param>
+	/// <param name="way">The way to insert.</param>
 	void insertWay(std::vector<Way>& insertIn, Way& way);
 	void insert(const glm::uvec2& tileCoords, WayTypes::WayTypes type, Way* w = nullptr, uint64_t id = 0);
 
@@ -591,14 +569,12 @@ inline bool compareY(const Vertex* const a, const Vertex* const b) { return a->c
 inline bool compareRoadTypes(const Way& a, const Way& b) { return (int(a.roadType) < int(b.roadType)); }
 inline bool compareID(const Vertex* const a, const Vertex* const b) { return a->id == b->id; }
 
-/*!*********************************************************************************************************************
-\return Find intersection point of 2 lines.
-\param  p1  Point on line 1.
-\param  d1  Direction vector of line 1.
-\param  p2  Point on line 2.
-\param  d2  Direction vector of line 2.
-\brief  Find intersection point of 2 lines (assumes they intersect).
-***********************************************************************************************************************/
+/// <summary>Find intersection point of 2 lines (assumes they intersect).</summary>
+/// <param name="p1">Point on line 1.</param>
+/// <param name="d1">Direction vector of line 1.</param>
+/// <param name="p2">Point on line 2.</param>
+/// <param name="d2">Direction vector of line 2.</param>
+///	<returns>Returns the intersection point of 2 lines.</returns>
 template<typename Vec2>
 inline bool rayIntersect(const Vec2& p0, const Vec2& d0, const Vec2& p1, const Vec2& d1, typename Vec2::value_type& outDistanceD0, Vec2& outIntersectionPoint)
 {
@@ -617,14 +593,12 @@ inline bool rayIntersect(const Vec2& p0, const Vec2& d0, const Vec2& p1, const V
 	return retval;
 }
 
-/*!*********************************************************************************************************************
-\return Find intersection point of 2 lines.
-\param  p1  Point on line 1.
-\param  d1  Direction vector of line 1.
-\param  p2  Point on line 2.
-\param  d2  Direction vector of line 2.
-\brief  Find intersection point of 2 lines (assumes they intersect).
-***********************************************************************************************************************/
+/// <summary>Find intersection point of 2 lines (assumes they intersect).</summary>
+/// <param name="p1">Point on line 1.</param>
+/// <param name="d1">Direction vector of line 1.</param>
+/// <param name="p2">Point on line 2.</param>
+/// <param name="d2">Direction vector of line 2.</param>
+/// <returns>Find intersection point of 2 lines.</returns>
 template<typename Vec2>
 inline bool rayIntersect(const Vec2& p0, const Vec2& d0, const Vec2& p1, const Vec2& d1, Vec2& outIntersectionPoint)
 {
@@ -677,10 +651,8 @@ inline typename Vec2::value_type vectorAngleSine(const Vec2& center, const Vec2&
 	return vectorAngleSine(point0 - center, point1 - center);
 }
 
-/*!*********************************************************************************************************************
-\param  s String to sanitise.
-\brief  Sanitises the incoming std::string.
-***********************************************************************************************************************/
+/// <summary>Sanitises the incoming std::string.</summary>
+/// <param name="s">String to sanitise.</param>
 inline void cleanString(std::string& s)
 {
 	// Remove HTML escape character for '&'
@@ -711,22 +683,18 @@ inline void cleanString(std::string& s)
 	}
 }
 
-/*!*********************************************************************************************************************
-\return The width of the road.
-\type The RoadType enum describing the type of the road
-\brief  Use the type of a road to determine its width.
-***********************************************************************************************************************/
+/// <summary>Use the type of a road to determine its width.</summary>
+/// <param name="type">The RoadType enum describing the type of the road.</param>
+/// <returns>The width of the road.</returns>
 inline double getRoadWidth(RoadTypes::RoadTypes type)
 {
 	static const float roadWidths[] = { 0.015f, 0.014f, 0.013f, 0.012f, 0.010f, 0.008f };
 	return roadWidths[type];
 }
 
-/*!*********************************************************************************************************************
-\return bool True if the road is a roundabout otherwise false.
-\param  tags Tags for the road.
-\brief  Clears data no longer needed from the osm object.
-***********************************************************************************************************************/
+/// <summary>Clears data no longer needed from the osm object.</summary>
+/// <param name="tags">Tags for the road.</param>
+/// <returns>True if the road is a roundabout otherwise false.</returns>
 inline bool isRoadRoundabout(const std::vector<Tag>& tags)
 {
 	for (auto& tag : tags)
@@ -736,11 +704,9 @@ inline bool isRoadRoundabout(const std::vector<Tag>& tags)
 	return false;
 }
 
-/*!*********************************************************************************************************************
-\return std::string  The unique ID to return.
-\param  tags  A collection of tags to search.
-\brief  Use the tags to find the unique ID.
-***********************************************************************************************************************/
+/// <summary>Use the tags to find the unique ID.</summary>
+/// <param name="tags">A collection of tags to search.</param>
+/// <returns>std::string  The unique ID to return.</returns>
 inline const std::string& getAttributeRef(const std::vector<Tag>& tags)
 {
 	static std::string value;
@@ -756,12 +722,9 @@ inline const std::string& getAttributeRef(const std::vector<Tag>& tags)
 	return value;
 }
 
-/*!*********************************************************************************************************************
-\return std::string  Name of the road or empty std::string if no name is
-available.
-\param  tags  A collection of tags to search.
-\brief  Use the tags of a road to determine its name.
-***********************************************************************************************************************/
+/// <summary>Use the tags of a road to determine its name.</summary>
+/// <param name ="tags">A collection of tags to search.</param>
+/// <returns>std::string  Name of the road or empty std::string if no name is available.</returns>
 inline std::string getAttributeName(const Tag* tags, size_t numTags)
 {
 	std::string value;
@@ -778,12 +741,10 @@ inline std::string getAttributeName(const Tag* tags, size_t numTags)
 	return value;
 }
 
-/*!*********************************************************************************************************************
-\return std::string the road name for the intersection.
-\param  std::vector<std::vector<Tag>> Reference to a vector of vectors which
-holds the tags for each way that makes up an intersection.
-\brief  Finds the dominant road name for a given intersection.
-***********************************************************************************************************************/
+/// <summary>Finds the dominant road name for a given intersection.</summary>
+/// <param name="tags">Reference to a vector of vectors which holds the tags
+/// for each way that makes up an intersection.</param>
+/// <returns>Returns the road name for the intersection.</returns>
 inline const std::string& getIntersectionRoadName(const std::vector<std::pair<Tag*, size_t>>& tags)
 {
 	std::map<std::string, uint32_t> nameCount;
@@ -808,12 +769,9 @@ inline const std::string& getIntersectionRoadName(const std::vector<std::pair<Ta
 	return name;
 }
 
-/*!*********************************************************************************************************************
-\return RoadTypes the type of road.
-\param  ways Reference to a vector of ways which make up the intersection.
-\brief  Finds the dominant road type for a given intersection (used to color
-the intersection based on the road type).
-***********************************************************************************************************************/
+/// <summary>Finds the dominant road type for a given intersection (used to colour the intersection based on the road type).</summary>
+/// <param name="ways">Reference to a vector of ways which make up the intersection.</param>
+/// <returns>Returns roadTypes the type of road.</returns>
 inline RoadTypes::RoadTypes getIntersectionRoadType(const std::vector<Way>& ways)
 {
 	std::vector<Way> tempWays = ways;
@@ -826,11 +784,9 @@ inline RoadTypes::RoadTypes getIntersectionRoadType(const std::vector<Way>& ways
 	return current;
 }
 
-/*!*********************************************************************************************************************
-\return bool True if the road is a roundabout otherwise false.
-\param  tags Tags for the road.
-\brief  Clears data no longer needed from the osm object.
-***********************************************************************************************************************/
+/// <summary>Clears data no longer needed from the osm object.</summary>
+/// <param name="tags">Tags for the road.</param>
+/// <returns>True if the road is a roundabout otherwise false.</returns>
 inline bool isRoadOneWay(const std::vector<Tag>& tags)
 {
 	for (auto& tag : tags)
@@ -901,12 +857,10 @@ inline BuildingType::BuildingType getBuildingType(Tag* tags, size_t numTags)
 	return BuildingType::Other;
 }
 
-/*!*********************************************************************************************************************
-\param  tile The tile to generate indices for.
-\param  way The vector of ways to generate indices for.
-\return uint32_t The number of indices added (used for offset to index IBO)
-\brief  Generate indices for a given tile and way (i.e. road, area etc.).
-***********************************************************************************************************************/
+/// <summary>Generate indices for a given tile and way (i.e. road, area etc.).</summary>
+/// <param name="tile">The tile to generate indices for.</param>
+/// <param name="way">The vector of ways to generate indices for.</param>
+/// <returns>The number of indices added (used for offset to index IBO)</returns>
 inline uint32_t generateIndices(Tile& tile, std::vector<Way>& way)
 {
 	uint32_t count = 0;
@@ -921,12 +875,10 @@ inline uint32_t generateIndices(Tile& tile, std::vector<Way>& way)
 	return count;
 }
 
-/*!*********************************************************************************************************************
-\param	tile The tile to generate normals for.
-\param	offset The offset into the index buffer.
-\param	count The number of indices to iterate over.
-\brief	Generate normals cross(b-a, c-a).
-***********************************************************************************************************************/
+/// <summary>Generate normals cross(b-a, c-a).</summary>
+/// <param name="tile">The tile to generate normals for.</param>
+/// <param name="offset">The offset into the index buffer.</param>
+/// <param name="count">The number of indices to iterate over.</param>
 inline void generateNormals(Tile& tile, uint32_t offset, uint32_t count)
 {
 	for (uint32_t i = 0; i < count; i += 3)
@@ -943,12 +895,10 @@ inline void generateNormals(Tile& tile, uint32_t offset, uint32_t count)
 	}
 }
 
-/*!*********************************************************************************************************************
-\param  tile The tile to generate indices for.
-\param  way The vector of outlines to generate indices for.
-\return uint32_t The number of indices added (used for offset to index IBO)
-\brief  Generate indices for a given tile and outline (i.e road, area etc.).
-***********************************************************************************************************************/
+/// <summary>Generate indices for a given tile and outline (i.e road, area etc.).</summary>
+/// <param name="tile">The tile to generate indices for.</param>
+/// <param name="way">The vector of outlines to generate indices for.</param>
+/// <returns>uint32_t The number of indices added (used for offset to index IBO)</returns>
 inline uint32_t generateIndices(Tile& tile, std::vector<uint64_t>& outlines)
 {
 	uint32_t count = 0;
@@ -960,14 +910,11 @@ inline uint32_t generateIndices(Tile& tile, std::vector<uint64_t>& outlines)
 	return count;
 }
 
-/*!*********************************************************************************************************************
-\param  tile The tile to generate indices for.
-\param  way The vector of ways to generate indices for.
-\param  type The road type to generate indices for.
-\return uint32_t The number of indices added (used for offset to index IBO)
-\brief  Generate indices for a given tile and way - specifically for road types
-(i.e motorway, primary etc.).
-***********************************************************************************************************************/
+/// <summary>Generate indices for a given tile and way - specifically for road types (i.e motorway, primary etc.).</summary>
+/// <param name="tile">The tile to generate indices for.</param>
+/// <param name="way">The vector of ways to generate indices for.</param>
+/// <param name="type ">The road type to generate indices for.</param>
+/// <returns>The number of indices added (used for offset to index IBO)<returns>
 inline uint32_t generateIndices(Tile& tile, std::vector<Way>& way, RoadTypes::RoadTypes type)
 {
 	uint32_t count = 0;
@@ -1058,8 +1005,8 @@ inline void remapItemCoordinates(NavDataProcess& navDataProcess, uint32_t& numCo
 
 inline double calculateAngleBetweenPoints(glm::dvec2 start, glm::dvec2 end)
 {
-	// convert it to standard cartersian corrdinate system,
-	// becasue the positive z is facing the user in opengl.
+	// convert it to standard Cartesian coordinate system,
+	// because the positive z is facing the user in OpenGL.
 	// end.y *= -1.f;
 	// start.y *= -1.f;
 	double dy = end.y - start.y;
@@ -1071,9 +1018,7 @@ inline double calculateAngleBetweenPoints(glm::dvec2 start, glm::dvec2 end)
 	return theta;
 }
 
-/*!*********************************************************************************************************************
-\brief  Determine min and max coordinates of individual tiles.
-***********************************************************************************************************************/
+/// <summary>Determine min and max coordinates of individual tiles.</summary>
 inline void NavDataProcess::initialiseTiles()
 {
 	// Tiles will be the same size regardless of the map
@@ -1105,11 +1050,9 @@ inline void NavDataProcess::initialiseTiles()
 	}
 }
 
-/*!*********************************************************************************************************************
-\return	std::string	The unique ID to return.
-\param	tags	A collection of tags to search.
-\brief	Use the tags to find the unique ID.
-***********************************************************************************************************************/
+/// <summary>Use the tags to find the unique ID.</summary>
+/// <param name="tags">A collection of tags to search.</param>
+/// <returns>The unique ID to return.</returns>
 inline std::string NavDataProcess::getAttributeRef(const std::vector<Tag>& tags) const
 {
 	std::string value = "";
@@ -1124,10 +1067,8 @@ inline std::string NavDataProcess::getAttributeRef(const std::vector<Tag>& tags)
 	return value;
 }
 
-/*!*********************************************************************************************************************
-\param	s	String to sanitise.
-\brief	Sanitises the incoming std::string.
-***********************************************************************************************************************/
+/// <summary>Sanitises the incoming std::string.</summary>
+/// <param name="s">String to sanitise.</param>
 inline void NavDataProcess::cleanString(std::string& s) const
 {
 	// Remove HTML escape character for '&'
@@ -1143,11 +1084,9 @@ inline void NavDataProcess::cleanString(std::string& s) const
 	}
 }
 
-/*!*********************************************************************************************************************
-\return bool True if the road is a roundabout otherwise false.
-\param	tags Tags for the road.
-\brief	Clears data no longer needed from the osm object.
-***********************************************************************************************************************/
+/// <summary>Clears data no longer needed from the osm object.</summary>
+/// <params name="tags">Tags for the road.</param>
+/// <returns>True if the road is a roundabout otherwise false.</returns>
 inline bool NavDataProcess::isRoadRoundabout(const std::vector<Tag>& tags) const
 {
 	for (auto& tag : tags)
@@ -1157,11 +1096,9 @@ inline bool NavDataProcess::isRoadRoundabout(const std::vector<Tag>& tags) const
 	return false;
 }
 
-/*!*********************************************************************************************************************
-\return bool True if the road is a roundabout otherwise false.
-\param	tags Tags for the road.
-\brief	Clears data no longer needed from the osm object.
-***********************************************************************************************************************/
+/// <summary>Clears data no longer needed from the osm object.</summary>
+/// <param name="tags">Tags for the road.</param>
+/// <returns>bool True if the road is a roundabout otherwise false.</returns>
 inline bool NavDataProcess::isRoadOneWay(const std::vector<Tag>& tags) const
 {
 	for (auto& tag : tags)
@@ -1171,20 +1108,15 @@ inline bool NavDataProcess::isRoadOneWay(const std::vector<Tag>& tags) const
 	return false;
 }
 
-/*!*********************************************************************************************************************
-\brief	Clears data no longer needed from the osm object.
-***********************************************************************************************************************/
+/// <summary>Clears data no longer needed from the osm object.</summary>
 inline void NavDataProcess::cleanData() { _osm.cleanData(); }
 
-/*!*********************************************************************************************************************
-\return	Return the 2 points that intersect with the circle.
-\param	centre		Centre of circle.
-\param	r			Radius of circle.
-\param	m			Gradient of line.
-\param	constant	Constant of line.
-\brief	Find the 2 intersections of a line with a circle (assumes they
-intersect).
-***********************************************************************************************************************/
+/// <summary>Find the 2 intersections of a line with a circle(assumes they intersect).</summary>
+/// <param name ="centre">Centre of circle.</param>
+/// <param name ="r">Radius of circle.</param>
+/// <param name ="m">Gradient of line.</param>
+/// <param name ="constant">Constant of line.</param>
+/// <returns>Return the 2 points that intersect with the circle.</returns>
 inline std::array<glm::dvec2, 2> NavDataProcess::circleIntersects(glm::vec2 centre, double r, double m, double constant) const
 {
 	const double a = glm::pow(m, 2.0) + 1.0;
@@ -1197,12 +1129,9 @@ inline std::array<glm::dvec2, 2> NavDataProcess::circleIntersects(glm::vec2 cent
 	return std::array<glm::dvec2, 2>{ glm::dvec2(x1, m * x1 + constant), glm::dvec2(x2, m * x2 + constant) };
 }
 
-/*!*********************************************************************************************************************
-\return	pvr::PolygonWindingOrder	FrontFaceCW (clockwise) or
-FrontFaceCCW (anti-clockwise).
-\param	points	The series of points to check.
-\brief	Checks the winding order of a a series of points.
-***********************************************************************************************************************/
+/// <summary>Checks the winding order of a a series of points.</summary>
+/// <param name="points">The series of points to check.</param>
+/// <returns>pvr::PolygonWindingOrder FrontFaceCW (clockwise) or FrontFaceCCW (anti-clockwise).<returns>
 inline pvr::PolygonWindingOrder NavDataProcess::checkWinding(const std::vector<glm::dvec2>& points) const
 {
 	const double area = calculateTriangleArea(points);
@@ -1213,14 +1142,12 @@ inline pvr::PolygonWindingOrder NavDataProcess::checkWinding(const std::vector<g
 		return pvr::PolygonWindingOrder::FrontFaceCW;
 }
 
-/*!*********************************************************************************************************************
-\return	Find intersection point of 2 lines.
-\param	p1	Point on line 1.
-\param	d1	Direction vector of line 1.
-\param	p2	Point on line 2.
-\param	d2	Direction vector of line 2.
-\brief	Find intersection point of 2 lines (assumes they intersect).
-***********************************************************************************************************************/
+/// <summary>Find intersection point of 2 lines (assumes they intersect).</summary>
+/// <param name="p1">Point on line 1.</param>
+/// <param name="d1">Direction vector of line 1.</param>
+/// <param name="p2">Point on line 2.</param>
+/// <param name="d2">Direction vector of line 2.</param>
+/// <returns>Find intersection point of 2 lines.</returns>
 inline glm::dvec2 NavDataProcess::lineIntersect(glm::dvec2 p1, glm::dvec2 d1, glm::dvec2 p2, glm::dvec2 d2) const
 {
 	if (compareReal(p1.x, p2.x) && compareReal(p1.y, p2.y)) return p1;
@@ -1251,10 +1178,8 @@ inline void NavDataProcess::processLabelBoundary(LabelData& label, glm::uvec2& t
 	label.distToBoundary = static_cast<float>(glm::sqrt(glm::min(glm::min(glm::min(d1, d2), d3), d4)));
 }
 
-/*!*********************************************************************************************************************
-\return Return true if the point is out of bounds.
-\brief  Find if the point is out of the map bounds.
-***********************************************************************************************************************/
+/// <summary>Find if the point is out of the map bounds.</summary>
+/// <returns>Return true if the point is out of bounds.</returns>
 inline bool NavDataProcess::isOutOfBounds(const glm::dvec2& point) const
 {
 	return ((point.x < _osm.bounds.min.x) || (point.y < _osm.bounds.min.y) || (point.x > _osm.bounds.max.x) || (point.y > _osm.bounds.max.y));
@@ -1262,7 +1187,7 @@ inline bool NavDataProcess::isOutOfBounds(const glm::dvec2& point) const
 
 inline float calulateTimeInMillisec(float distance, float speed) { return distance / speed * 1000.f; }
 
-// Calculate the key frametime between one point to another.
+///< summary>Calculate the key frame time between one point to another.</summary>
 inline float calculateRouteKeyFrameTime(const glm::dvec2& start, const glm::dvec2& end, float totalDistance, float speed)
 {
 	double dist = glm::distance(start, end);

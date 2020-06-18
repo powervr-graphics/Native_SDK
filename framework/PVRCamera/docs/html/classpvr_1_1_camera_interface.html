@@ -21,7 +21,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="https://www.imgtec.com/developers/" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
+      <a href="https://www.imgtec.com/developers/" target="_blank"><img src="PVRlogo.png" width="80%" height="80%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRCamera</span> Documentation</a>
    <tbody>
@@ -84,9 +84,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a68a42d0a9e4d9c7637dc6309b4fff35a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_camera_interface.html#a68a42d0a9e4d9c7637dc6309b4fff35a">destroySession</a> ()</td></tr>
 <tr class="memdesc:a68a42d0a9e4d9c7637dc6309b4fff35a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shutdown the AV capture session and release associated objects. <a href="#a68a42d0a9e4d9c7637dc6309b4fff35a">More...</a><br /></td></tr>
 <tr class="separator:a68a42d0a9e4d9c7637dc6309b4fff35a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a53b5bb9ff64f9aa944535b59aeebc3eb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_camera_interface.html#a53b5bb9ff64f9aa944535b59aeebc3eb">getCameraResolution</a> (uint32_t &amp;x, uint32_t &amp;y)</td></tr>
-<tr class="memdesc:a53b5bb9ff64f9aa944535b59aeebc3eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the resolution of the currently active camera. <a href="#a53b5bb9ff64f9aa944535b59aeebc3eb">More...</a><br /></td></tr>
-<tr class="separator:a53b5bb9ff64f9aa944535b59aeebc3eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad846402b848f9f7b0b1a8a9ae0e9de78"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_camera_interface.html#ad846402b848f9f7b0b1a8a9ae0e9de78">getCameraResolution</a> (uint32_t &amp;width, uint32_t &amp;height)</td></tr>
+<tr class="memdesc:ad846402b848f9f7b0b1a8a9ae0e9de78"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the resolution of the currently active camera. <a href="#ad846402b848f9f7b0b1a8a9ae0e9de78">More...</a><br /></td></tr>
+<tr class="separator:ad846402b848f9f7b0b1a8a9ae0e9de78"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4575d5a32b80297c64527b9cefc9620d"><td class="memItemLeft" align="right" valign="top">GLuint&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_camera_interface.html#a4575d5a32b80297c64527b9cefc9620d">getChrominanceTexture</a> ()</td></tr>
 <tr class="memdesc:a4575d5a32b80297c64527b9cefc9620d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the texture name for the YUV camera texture. <a href="#a4575d5a32b80297c64527b9cefc9620d">More...</a><br /></td></tr>
 <tr class="separator:a4575d5a32b80297c64527b9cefc9620d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -111,6 +111,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:afd9c1a402c945c2ba0f4148f8389d1da"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_camera_interface.html#afd9c1a402c945c2ba0f4148f8389d1da">initializeSession</a> (<a class="el" href="namespacepvr_1_1_h_w_camera.html#a77929091f777ed468df6cb128dbfdb08">HWCamera::Enum</a> eCamera, int preferredResX=0, int preferredResY=0)</td></tr>
 <tr class="memdesc:afd9c1a402c945c2ba0f4148f8389d1da"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the capture session using the given hardware camera, if it is available. <a href="#afd9c1a402c945c2ba0f4148f8389d1da">More...</a><br /></td></tr>
 <tr class="separator:afd9c1a402c945c2ba0f4148f8389d1da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a97a88645efc11d82c7cac915e429c420"><td class="memItemLeft" align="right" valign="top"><a id="a97a88645efc11d82c7cac915e429c420"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>isReady</b> ()</td></tr>
+<tr class="separator:a97a88645efc11d82c7cac915e429c420"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad452083810797f079a8d5efbe02e1909"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_camera_interface.html#ad452083810797f079a8d5efbe02e1909">updateImage</a> ()</td></tr>
 <tr class="memdesc:ad452083810797f079a8d5efbe02e1909"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks to see if the image has been updated. <a href="#ad452083810797f079a8d5efbe02e1909">More...</a><br /></td></tr>
 <tr class="separator:ad452083810797f079a8d5efbe02e1909"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -176,23 +179,23 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a53b5bb9ff64f9aa944535b59aeebc3eb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a53b5bb9ff64f9aa944535b59aeebc3eb">&#9670;&nbsp;</a></span>getCameraResolution()</h2>
+<a id="ad846402b848f9f7b0b1a8a9ae0e9de78"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad846402b848f9f7b0b1a8a9ae0e9de78">&#9670;&nbsp;</a></span>getCameraResolution()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void pvr::CameraInterface::getCameraResolution </td>
+          <td class="memname">bool pvr::CameraInterface::getCameraResolution </td>
           <td>(</td>
           <td class="paramtype">uint32_t &amp;&#160;</td>
-          <td class="paramname"><em>x</em>, </td>
+          <td class="paramname"><em>width</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">uint32_t &amp;&#160;</td>
-          <td class="paramname"><em>y</em>&#160;</td>
+          <td class="paramname"><em>height</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -205,8 +208,8 @@ Public Member Functions</h2></td></tr>
 <p>Returns the resolution of the currently active camera.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">x</td><td>The horizontal resolution of the currently active camera will be saved here</td></tr>
-    <tr><td class="paramname">y</td><td>The vertical resolution of the currently active camera will be saved here</td></tr>
+    <tr><td class="paramname">width</td><td>The horizontal resolution of the currently active camera will be saved here</td></tr>
+    <tr><td class="paramname">height</td><td>The vertical resolution of the currently active camera will be saved here</td></tr>
   </table>
   </dd>
 </dl>
@@ -428,7 +431,7 @@ Public Member Functions</h2></td></tr>
 <div id="FooterMainContainer">
 	<div id="FooterContainer">
 		<div class="footerlogo">
-			<a href="http://www.imgtec.com" target="_blank"><img src="img-footer-logo-grey.png" width="100%" height="100%" border="none" /></a>
+			<a href="http://www.imgtec.com" target="_blank"><img src="img-footer-logo-grey.png" width="20%" height="20%" border="none" /></a>
 		</div>
 		<div class="copyright"><p>&copy; Imagination Technologies Limited<br> All rights reserved</p></div>
 	</div>

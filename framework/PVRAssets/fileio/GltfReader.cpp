@@ -612,12 +612,14 @@ void parseAllMesh(const tinygltf::Model& tinyModel, pvr::assets::Model& asset, s
 					tangentAttribFound = true;
 				}
 				gltfAttributes[static_cast<uint32_t>(attribIndex)].data = tinyBuffer.data.data() + tinyBufferView.byteOffset + tinyAccessor.byteOffset;
-				gltfAttributes[static_cast<uint32_t>(attribIndex)].strideInBytes = static_cast<uint32_t>(tinyBufferView.byteStride);
+				gltfAttributes[static_cast<uint32_t>(attribIndex)].strideInBytes = tinyBufferView.byteStride
+					? static_cast<uint32_t>(tinyBufferView.byteStride)
+					: tinyGltf_getTypeNumComponents(tinyAccessor.type) * tinyGltf_getComponentTypeToDataType(tinyAccessor.componentType).second;
 				gltfAttributes[static_cast<uint32_t>(attribIndex)].N = tinyGltf_getTypeNumComponents(tinyAccessor.type); // Get number of component this type has. e.g vec3, vec4
 				gltfAttributes[static_cast<uint32_t>(attribIndex)].dataType = tinyGltf_getComponentTypeToDataType(tinyAccessor.componentType);
 				gltfAttributes[static_cast<uint32_t>(attribIndex)].semantic = attrib.first;
 				numvertices = static_cast<uint32_t>(tinyAccessor.count);
-				dataAttribsStride += static_cast<uint32_t>(tinyBufferView.byteStride);
+				dataAttribsStride += static_cast<uint32_t>(gltfAttributes[static_cast<uint32_t>(attribIndex)].strideInBytes);
 
 				if (gltfAttributes[static_cast<uint32_t>(attribIndex)].strideInBytes >
 					(gltfAttributes[static_cast<uint32_t>(attribIndex)].N * gltfAttributes[static_cast<uint32_t>(attribIndex)].dataType.second))

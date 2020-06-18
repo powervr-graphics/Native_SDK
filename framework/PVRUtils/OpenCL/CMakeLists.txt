@@ -1,9 +1,11 @@
 cmake_minimum_required(VERSION 3.3)
+# Copyright (c) Imagination Technologies Limited.
+
 project(PVRUtilsCL)
 
 include(GNUInstallDirs)
 include(CMakeFindDependencyMacro)
-include(../../../cmake/CompilerFunctions.cmake)
+include(../../Common.cmake)
 
 set(PVRUtilsCL_HEADERS
 	../../../include/DynamicOCL.h
@@ -12,7 +14,7 @@ set(PVRUtilsCL_HEADERS
 add_library(PVRUtilsCL INTERFACE)
 
 if(PVR_PREBUILT_DEPENDENCIES)
-	list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/../../../cmake/modules")
+	list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/../../cmake/modules")
 	find_dependency(PVRCore MODULE REQUIRED)
 endif()
 
@@ -35,7 +37,7 @@ endif()
 target_link_libraries(PVRUtilsCL 
 	INTERFACE
 		${PVRUtilsCL_LINK_LIBS})
-		
+
 install(TARGETS PVRUtilsCL EXPORT PVRUtilsCLTargets
 	ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
 	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}

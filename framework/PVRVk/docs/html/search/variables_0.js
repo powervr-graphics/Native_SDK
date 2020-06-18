@@ -4,8 +4,6 @@ var searchData=
   ['_5fdevice',['_device',['../classpvrvk_1_1impl_1_1_p_v_r_vk_device_object_base.html#a7e34537906b05ee353451b35dac332ca',1,'pvrvk::impl::PVRVkDeviceObjectBase']]],
   ['_5finstance',['_instance',['../classpvrvk_1_1impl_1_1_p_v_r_vk_instance_object_base.html#a33426ff5089f6cd713183b4e6198d398',1,'pvrvk::impl::PVRVkInstanceObjectBase']]],
   ['_5fisrecording',['_isRecording',['../classpvrvk_1_1impl_1_1_command_buffer_base__.html#a759e4e7ca81cb8812048075ddcf274d6',1,'pvrvk::impl::CommandBufferBase_']]],
-  ['_5flastboundcomputepipe',['_lastBoundComputePipe',['../classpvrvk_1_1impl_1_1_command_buffer_base__.html#a943d27103dec9450a0966c8352aef979',1,'pvrvk::impl::CommandBufferBase_']]],
-  ['_5flastboundgraphicspipe',['_lastBoundGraphicsPipe',['../classpvrvk_1_1impl_1_1_command_buffer_base__.html#aa0f1be52e5e2affe2a3f57ea68a8d036',1,'pvrvk::impl::CommandBufferBase_']]],
   ['_5fmemory',['_memory',['../classpvrvk_1_1impl_1_1_image__.html#a5088814b6a07e1004ec1f57ebf9c1f90',1,'pvrvk::impl::Image_']]],
   ['_5fmemreqs',['_memReqs',['../classpvrvk_1_1impl_1_1_image__.html#a5b2f5b8392ed2e27f6da7197b2a90b5b',1,'pvrvk::impl::Image_']]],
   ['_5fobjectreferences',['_objectReferences',['../classpvrvk_1_1impl_1_1_command_buffer_base__.html#ad5fab5878ab60a1307b8185a432bc861',1,'pvrvk::impl::CommandBufferBase_']]],

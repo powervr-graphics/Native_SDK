@@ -135,11 +135,11 @@ void main()
 		mediump vec3 v = currentParticle.vVelocity;
 
 		//Simulate particle movement:
-		//Semi-implicit euler is the best of the "completely basic", forward integration methods - it has better
+		//Semi-implicit Euler is the best of the "completely basic", forward integration methods - it has better
 		//behaviour than explicit Euler basically for free. Error is of the same order as Explicit Euler, but it 
 		//is much more stable as it normally retains energy.
 		//Explicit Euler is		: x1 = x0 + v0.dt, then: v1 = v0 + a0*dt
-		//Semi - Implicit euler is 
+		//Semi - Implicit Euler is 
 		//This integration is	: v1 = v0 + a0*dt, then: x1 = x0 + v1*dt (we will use this)
 		//OR					: x1 = x0 + v0*dt, then: v1 = v0 + a1*dt
 

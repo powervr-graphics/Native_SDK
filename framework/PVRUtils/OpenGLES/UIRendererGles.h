@@ -265,10 +265,7 @@ public:
 	}
 
 	/// <summary>Constructor. Does not produce a ready-to-use object, use the init function before use.</summary>
-	UIRenderer()
-		: _screenRotation(.0f), _program(0), _fontIboCreated(false), _imageVboCreated(false), _samplerBilinearCreated(false), _samplerTrilinearCreated(false), _samplerBilinear(-1),
-		  _samplerTrilinear(-1), _fontIbo(-1), _imageVbo(-1)
-	{}
+	UIRenderer() : _screenRotation(.0f), _program(0), _fontIboCreated(false), _imageVboCreated(false), _samplerBilinear(0), _samplerTrilinear(0), _fontIbo(-1), _imageVbo(-1) {}
 
 	/// <summary>Move Constructor. Does not produce a ready-to-use object, use the init function before use.</summary>
 	/// <param name="rhs">Another UIRenderer to initiialise from.</param>
@@ -351,18 +348,16 @@ public:
 		if (_imageVboCreated && _imageVbo != static_cast<uint32_t>(-1)) { gl::DeleteBuffers(1, &_imageVbo); }
 		if (_api != Api::OpenGLES2)
 		{
-			if (_samplerBilinearCreated && _samplerBilinear != static_cast<uint32_t>(-1)) { gl::DeleteSamplers(1, &_samplerBilinear); }
-			if (_samplerTrilinearCreated && _samplerTrilinear != static_cast<uint32_t>(-1)) { gl::DeleteSamplers(1, &_samplerTrilinear); }
+			if (_samplerBilinear) { gl::DeleteSamplers(1, &_samplerBilinear); }
+			if (_samplerTrilinear) { gl::DeleteSamplers(1, &_samplerTrilinear); }
 		}
 
 		_screenRotation = .0f;
 		_program = 0;
 		_fontIboCreated = false;
 		_imageVboCreated = false;
-		_samplerBilinearCreated = false;
-		_samplerTrilinearCreated = false;
-		_samplerBilinear = static_cast<GLuint>(-1);
-		_samplerTrilinear = static_cast<GLuint>(-1);
+		_samplerBilinear = static_cast<GLuint>(0);
+		_samplerTrilinear = static_cast<GLuint>(0);
 		_fontIbo = static_cast<GLuint>(-1);
 		_imageVbo = static_cast<GLuint>(-1);
 	}
@@ -682,8 +677,6 @@ private:
 	Text _defaultControls;
 	GLuint _program;
 
-	bool _samplerBilinearCreated;
-	bool _samplerTrilinearCreated;
 	GLuint _samplerBilinear;
 	GLuint _samplerTrilinear;
 	GLuint _fontIbo;

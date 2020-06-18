@@ -22,12 +22,11 @@ enum BoardConfig
 
 const char* boardConfigs[BoardConfig::NumBoards] = { "Random", "CheckerBoard", "SpaceShips" };
 
-/// <summary> Resources used throughout the demo. </summary>
+/// <summary>Resources used throughout the demo.</summary>
 struct DeviceResources
 {
 	pvrvk::Instance instance;
 	pvr::utils::DebugUtilsCallbacks debugUtilsCallbacks;
-	pvrvk::Surface surface;
 	pvrvk::Device device;
 	pvrvk::Queue queues[2];
 	pvr::utils::vma::Allocator vmaAllocator;
@@ -48,7 +47,7 @@ struct DeviceResources
 
 	pvrvk::Fence computeFences[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
 
-	pvr::Multi<pvrvk::Framebuffer> framebuffer;
+	pvr::Multi<pvrvk::Framebuffer> onScreenFramebuffer;
 
 	// Two primary Command Buffers one for Compute and one for Graphics
 	pvr::Multi<pvrvk::CommandBuffer> graphicsPrimaryCmdBuffers;
@@ -100,7 +99,7 @@ struct DeviceResources
 	}
 };
 
-/// <summary> VulkanGameOfLife is the main demo class implementing the PVRShell functions. </summary>
+/// <summary>VulkanGameOfLife is the main demo class implementing the PVRShell functions.</summary>
 class VulkanGameOfLife : public pvr::Shell
 {
 	std::unique_ptr<DeviceResources> _deviceResources;
@@ -155,7 +154,7 @@ private:
 	void createPetriDishEffect(pvrvk::CommandBuffer& cmdBuffer);
 	void updateDesciptorSets();
 
-	// Pick a bit on the board and set it to either full(defualt) or empty.
+	// Pick a bit on the board and set it to either full(default) or empty.
 	void setBoardBit(int x, int y, bool bit = true)
 	{
 		if ((x + boardOffSetX < boardWidth) && (x + boardOffSetX >= 0) && (y + boardOffSetY < boardHeight) && (y + boardOffSetY >= 0))
@@ -172,7 +171,7 @@ private:
 	}
 };
 
-/// <summary> Resets board texture data and restarts the simulation </summary>
+/// <summary>Resets board texture data and restarts the simulation.</summary>
 void VulkanGameOfLife::refreshBoard(bool regenData = false)
 {
 	_deviceResources->device->waitIdle();
@@ -212,8 +211,8 @@ void VulkanGameOfLife::refreshBoard(bool regenData = false)
 	if (regenData) { updateDesciptorSets(); }
 }
 
-/// <summary> Sets the ZoomLevel of the board by calculating the ZoomRatio </summary>
-/// <param name="zoomLvl"> desired level of zoom. </param>
+/// <summary>Sets the ZoomLevel of the board by calculating the ZoomRatio.</summary>
+/// <param name="zoomLvl"> desired level of zoom.</param>
 void VulkanGameOfLife::setZoomLevel(int zoomLvl)
 {
 	// Updating the Zoom Ratio based on the current level.
@@ -233,7 +232,7 @@ void VulkanGameOfLife::setZoomLevel(int zoomLvl)
 	zoomRatioUI += oss.str();
 }
 
-/// <summary> Generates data as a starting state for the Game Of Life board.</summary>
+/// <summary>Generates data as a starting state for the Game Of Life board.</summary>
 void VulkanGameOfLife::generateBoardData()
 {
 	generation = 0;
@@ -255,7 +254,7 @@ void VulkanGameOfLife::generateBoardData()
 	}
 	break;
 
-	// Generates a Checkerboard.
+	// Generates a Checker board.
 	case BoardConfig::Checkerboard: {
 		int checkerSize = 5;
 		// This function will generate a checkered texture on the fly to be used on the triangle that is going
@@ -280,7 +279,7 @@ void VulkanGameOfLife::generateBoardData()
 
 		for (int i = 0; i < 200 / zoomRatio; ++i)
 		{
-			setBoardBitOffset(pvr::randomrange(0.f, (float)boardWidth), pvr::randomrange(0.f, (float)boardHeight));
+			setBoardBitOffset((int)pvr::randomrange(0.f, (float)boardWidth), (int)pvr::randomrange(0.f, (float)boardHeight));
 
 			if (rand() % 2 == 0)
 			{ // HWSS
@@ -367,11 +366,11 @@ void VulkanGameOfLife::generateBoardData()
 	}
 }
 
-/// <summary> Creates the petri dish effect texture </summary>
+/// <summary>Creates the Petri dish effect texture.</summary>
 void VulkanGameOfLife::createPetriDishEffect(pvrvk::CommandBuffer& cmdBuffer)
 {
 	unsigned int petriDishSize = getPetriDishSize();
-	// Creating the petridish effect.
+	// Creating the Petri dish effect.
 	petriDish.resize(static_cast<size_t>(petriDishSize * petriDishSize));
 
 	float radius = petriDishSize * .5f;
@@ -391,10 +390,10 @@ void VulkanGameOfLife::createPetriDishEffect(pvrvk::CommandBuffer& cmdBuffer)
 	pvr::Texture petriTexture(petritextureheader, petriDish.data());
 
 	_deviceResources->petriDishImageView = pvr::utils::uploadImageAndView(_deviceResources->device, petriTexture, true, cmdBuffer,
-		pvrvk::ImageUsageFlags::e_SAMPLED_BIT | pvrvk::ImageUsageFlags::e_STORAGE_BIT, pvrvk::ImageLayout::e_GENERAL, &_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
+		pvrvk::ImageUsageFlags::e_SAMPLED_BIT | pvrvk::ImageUsageFlags::e_STORAGE_BIT, pvrvk::ImageLayout::e_GENERAL, _deviceResources->vmaAllocator, _deviceResources->vmaAllocator);
 }
 
-/// <summary> Generates random textures as a starting state for the Game Of Life</summary>
+/// <summary>Generates random textures as a starting state for the Game Of Life.</summary>
 void VulkanGameOfLife::generateTextures(pvrvk::CommandBuffer& cmdBuffer)
 {
 	// Create the board textures.
@@ -405,11 +404,11 @@ void VulkanGameOfLife::generateTextures(pvrvk::CommandBuffer& cmdBuffer)
 	{
 		_deviceResources->boardImageViews[i] =
 			pvr::utils::uploadImageAndView(_deviceResources->device, boardTexture, true, cmdBuffer, pvrvk::ImageUsageFlags::e_SAMPLED_BIT | pvrvk::ImageUsageFlags::e_STORAGE_BIT,
-				pvrvk::ImageLayout::e_GENERAL, &_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
+				pvrvk::ImageLayout::e_GENERAL, _deviceResources->vmaAllocator, _deviceResources->vmaAllocator);
 	}
 }
 
-/// <summary> Updates descriptor sets with new Images for the compute and graphics stages </summary>
+/// <summary> Updates descriptor sets with new Images for the compute and graphics stages.</summary>
 void VulkanGameOfLife::updateDesciptorSets()
 {
 	std::vector<pvrvk::WriteDescriptorSet> writeDescSets;
@@ -441,7 +440,7 @@ void VulkanGameOfLife::updateDesciptorSets()
 	_deviceResources->device->updateDescriptorSets(writeDescSets.data(), static_cast<uint32_t>(writeDescSets.size()), nullptr, 0);
 }
 
-/// <summary> Creates the shader modules and associated graphics pipelines used for rendering the scene. </summary>
+/// <summary> Creates the shader modules and associated graphics pipelines used for rendering the scene.</summary>
 void VulkanGameOfLife::createPipelines()
 {
 	pvrvk::ShaderModule computeShader = _deviceResources->device->createShaderModule(pvrvk::ShaderModuleCreateInfo(getAssetStream(CompShaderSrcFile)->readToEnd<uint32_t>()));
@@ -481,14 +480,14 @@ void VulkanGameOfLife::createPipelines()
 
 		createInfo.colorBlend.setAttachmentState(0, colorAttachmentState);
 		createInfo.pipelineLayout = _deviceResources->graphicsPipelinelayout;
-		createInfo.renderPass = _deviceResources->framebuffer[0]->getRenderPass();
+		createInfo.renderPass = _deviceResources->onScreenFramebuffer[0]->getRenderPass();
 		createInfo.subpass = 0;
 
 		_deviceResources->graphicsPipeline = _deviceResources->device->createGraphicsPipeline(createInfo, _deviceResources->pipelineCache);
 	}
 }
 
-/// <summary> Creates pipeline layouts and descriptor sets and associated layouts used for rendering and compute. </summary>
+/// <summary> Creates pipeline layouts and descriptor sets and associated layouts used for rendering and compute.</summary>
 void VulkanGameOfLife::createResources()
 {
 	// Create Compute Pipeline layout
@@ -544,12 +543,12 @@ void VulkanGameOfLife::createResources()
 	updateDesciptorSets();
 }
 
-/// <summary> Record the commands used for rendering the UI elements. </summary>
+/// <summary> Record the commands used for rendering the UI elements.</summary>
 void VulkanGameOfLife::recordUICmdBuffer()
 {
 	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
 	{
-		_deviceResources->uiRendererCmdBuffers[i]->begin(_deviceResources->framebuffer[i], 0, pvrvk::CommandBufferUsageFlags::e_RENDER_PASS_CONTINUE_BIT);
+		_deviceResources->uiRendererCmdBuffers[i]->begin(_deviceResources->onScreenFramebuffer[i], 0, pvrvk::CommandBufferUsageFlags::e_RENDER_PASS_CONTINUE_BIT);
 		_deviceResources->uiRenderer.beginRendering(_deviceResources->uiRendererCmdBuffers[i]);
 		_deviceResources->uiRenderer.getSdkLogo()->render();
 		_deviceResources->uiRenderer.getDefaultTitle()->render();
@@ -560,8 +559,8 @@ void VulkanGameOfLife::recordUICmdBuffer()
 	}
 }
 
-/// <summary> Record the commands used for rendering to screen. </summary>
-/// <param name="swapchainIndex"> The swapchain index signifying the frame to record commands to render. </param>
+/// <summary>Record the commands used for rendering to screen.</summary>
+/// <param name="swapchainIndex"> The swapchain index signifying the frame to record commands to render.</param>
 pvrvk::CommandBuffer VulkanGameOfLife::recordGraphicsCmdBuffer(const uint32_t swapchainIndex)
 {
 	const pvrvk::ClearValue clearValue[] = { pvrvk::ClearValue(1.0f, 1.0f, 1.0f, 1.0f) };
@@ -570,7 +569,7 @@ pvrvk::CommandBuffer VulkanGameOfLife::recordGraphicsCmdBuffer(const uint32_t sw
 	pvrvk::SecondaryCommandBuffer& graphicsCmdBuffer = _deviceResources->graphicsCmdBuffers[swapchainIndex];
 
 	// Recording The graphics Commandbuffer
-	graphicsCmdBuffer->begin(_deviceResources->framebuffer[swapchainIndex], 0, pvrvk::CommandBufferUsageFlags::e_RENDER_PASS_CONTINUE_BIT);
+	graphicsCmdBuffer->begin(_deviceResources->onScreenFramebuffer[swapchainIndex], 0, pvrvk::CommandBufferUsageFlags::e_RENDER_PASS_CONTINUE_BIT);
 	pvr::utils::beginCommandBufferDebugLabel(graphicsCmdBuffer, pvrvk::DebugUtilsLabel("Fragment Shader"));
 	graphicsCmdBuffer->bindPipeline(_deviceResources->graphicsPipeline);
 	graphicsCmdBuffer->bindDescriptorSet(pvrvk::PipelineBindPoint::e_GRAPHICS, _deviceResources->graphicsPipelinelayout, 0, _deviceResources->graphicsDescriptorSets[currentFrameId]);
@@ -579,7 +578,7 @@ pvrvk::CommandBuffer VulkanGameOfLife::recordGraphicsCmdBuffer(const uint32_t sw
 	graphicsCmdBuffer->end();
 
 	mainCmdBuffer->begin();
-	mainCmdBuffer->beginRenderPass(_deviceResources->framebuffer[swapchainIndex], pvrvk::Rect2D(0, 0, getWidth(), getHeight()), false, clearValue, ARRAY_SIZE(clearValue));
+	mainCmdBuffer->beginRenderPass(_deviceResources->onScreenFramebuffer[swapchainIndex], pvrvk::Rect2D(0, 0, getWidth(), getHeight()), false, clearValue, ARRAY_SIZE(clearValue));
 	mainCmdBuffer->executeCommands(graphicsCmdBuffer);
 	mainCmdBuffer->executeCommands(_deviceResources->uiRendererCmdBuffers[swapchainIndex]);
 	mainCmdBuffer->endRenderPass();
@@ -588,7 +587,7 @@ pvrvk::CommandBuffer VulkanGameOfLife::recordGraphicsCmdBuffer(const uint32_t sw
 	return mainCmdBuffer;
 }
 
-/// <summary> Record the commands used for computing next state of Game of life. </summary>
+/// <summary>Record the commands used for computing next state of Game of life.</summary>
 pvrvk::CommandBuffer VulkanGameOfLife::recordComputeCmdBuffer()
 {
 	pvrvk::SecondaryCommandBuffer& computeCmdBuffer = _deviceResources->computeCmdBuffers[currentFrameId];
@@ -617,7 +616,7 @@ void VulkanGameOfLife::submitComputeWork(pvrvk::CommandBuffer submitCmdBuffer)
 {
 	const uint32_t swapchainLength = _deviceResources->swapchain->getSwapchainLength();
 
-	// Set the semaphores to be waited on and signaled
+	// Set the semaphores to be waited on and signalled
 	pvrvk::PipelineStageFlags computePipeWaitStageFlags[] = { pvrvk::PipelineStageFlags::e_COMPUTE_SHADER_BIT, pvrvk::PipelineStageFlags::e_COMPUTE_SHADER_BIT };
 	pvrvk::Semaphore computeWaitSemaphores[] = { _deviceResources->computeToComputeSemaphores[previousFrameId], _deviceResources->renderToComputeSemaphore[renderComputeSyncId] };
 	pvrvk::Semaphore computeSignalSemaphores[] = { _deviceResources->computeToComputeSemaphores[currentFrameId], _deviceResources->computeToRenderSemaphore[currentFrameId] };
@@ -638,13 +637,13 @@ void VulkanGameOfLife::submitComputeWork(pvrvk::CommandBuffer submitCmdBuffer)
 	_deviceResources->queues[computeQueueIndex]->submit(&computeSubmitInfo, 1, _deviceResources->computeFences[currentFrameId]);
 }
 
-/// <summary> Submit the commands used for rendering to screen </summary>
-/// <param name="submitCmdBuffer"> The Command buffer used to submit graphics work. </param>
+/// <summary>Submit the commands used for rendering to screen </summary>
+/// <param name="submitCmdBuffer"> The Command buffer used to submit graphics work.</param>
 void VulkanGameOfLife::submitGraphicsWork(pvrvk::CommandBuffer submitCmdBuffer)
 {
 	const uint32_t swapchainIndex = _deviceResources->swapchain->getSwapchainIndex();
 
-	// Set the semaphores to be waited on and signaled
+	// Set the semaphores to be waited on and signalled
 	pvrvk::PipelineStageFlags pipeWaitStageFlags[] = { pvrvk::PipelineStageFlags::e_FRAGMENT_SHADER_BIT, pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT };
 	pvrvk::Semaphore graphicsWaitSemaphores[] = { _deviceResources->computeToRenderSemaphore[currentFrameId], _deviceResources->imageAcquiredSemaphores[currentFrameId] };
 	pvrvk::Semaphore graphicsSignalSemaphores[] = { _deviceResources->renderToComputeSemaphore[currentFrameId], _deviceResources->presentationSemaphores[currentFrameId] };
@@ -662,10 +661,10 @@ void VulkanGameOfLife::submitGraphicsWork(pvrvk::CommandBuffer submitCmdBuffer)
 	_deviceResources->queues[graphicsQueueIndex]->submit(&submitInfo, 1, _deviceResources->perFrameResourcesFences[swapchainIndex]);
 }
 
-/// <summary> Code in initApplication() will be called by Shell once per run, before the rendering context is created.
+/// <summary>Code in initApplication() will be called by Shell once per run, before the rendering context is created.
 /// Used to initialize variables that are not dependent on it(e.g.external modules, loading meshes, etc.).If the rendering
-/// context is lost, initApplication() will not be called again. </summary>
-/// <returns> Result::Success if no error occurred. </returns>
+/// context is lost, initApplication() will not be called again.</summary>
+/// <returns>Result::Success if no error occurred.</returns>
 pvr::Result VulkanGameOfLife::initApplication()
 {
 	// Setting VsyncMode to FIFO
@@ -689,9 +688,9 @@ pvr::Result VulkanGameOfLife::initApplication()
 	return pvr::Result::Success;
 }
 
-/// <summary> Code in initView() will be called by Shell upon initialization or after a change  in the rendering context. Used to initialize variables that are dependent on the
-/// rendering context(e.g.textures, vertex buffers, etc.). </summary>
-/// <returns> Result::Success if no error occurred. </returns>
+/// <summary>Code in initView() will be called by Shell upon initialization or after a change  in the rendering context. Used to initialize variables that are dependent on the
+/// rendering context(e.g.textures, vertex buffers, etc.).</summary>
+/// <returns> Result::Success if no error occurred.</returns>
 pvr::Result VulkanGameOfLife::initView()
 {
 	// Initialise device resources.
@@ -705,14 +704,14 @@ pvr::Result VulkanGameOfLife::initView()
 		return pvr::Result::UnknownError;
 	}
 	// Create surface
-	_deviceResources->surface =
+	pvrvk::Surface surface =
 		pvr::utils::createSurface(_deviceResources->instance, _deviceResources->instance->getPhysicalDevice(0), this->getWindow(), this->getDisplay(), this->getConnection());
 
 	// Create a default set of debug utils messengers or debug callbacks using either VK_EXT_debug_utils or VK_EXT_debug_report respectively
 	_deviceResources->debugUtilsCallbacks = pvr::utils::createDebugUtilsCallbacks(_deviceResources->instance);
 
 	pvr::utils::QueuePopulateInfo queueCreateInfos[] = {
-		{ pvrvk::QueueFlags::e_GRAPHICS_BIT, _deviceResources->surface }, // Queue 0 for Graphics
+		{ pvrvk::QueueFlags::e_GRAPHICS_BIT, surface }, // Queue 0 for Graphics
 		{ pvrvk::QueueFlags::e_COMPUTE_BIT } // Queue 1 For Compute
 	};
 
@@ -721,7 +720,7 @@ pvr::Result VulkanGameOfLife::initView()
 
 	_deviceResources->queues[0] = _deviceResources->device->getQueue(queueAccessInfos[0].familyId, queueAccessInfos[0].queueId);
 
-	// In the future we may want to improve our flexibility wrt. making use of multiple queues but for now to support multi queue the queue must support
+	// In the future we may want to improve our flexibility with regards to making use of multiple queues but for now to support multi queue the queue must support
 	// Graphics + Compute + WSI support.
 	// Other multi queue approaches may be possible i.e. making use of additional queues which do not support graphics/WSI
 	useMultiQueue = false;
@@ -739,16 +738,18 @@ pvr::Result VulkanGameOfLife::initView()
 
 	_deviceResources->vmaAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
 
-	pvrvk::SurfaceCapabilitiesKHR surfaceCapabilities = _deviceResources->instance->getPhysicalDevice(0)->getSurfaceCapabilities(_deviceResources->surface);
+	pvrvk::SurfaceCapabilitiesKHR surfaceCapabilities = _deviceResources->instance->getPhysicalDevice(0)->getSurfaceCapabilities(surface);
 
 	// validate the supported swapchain image usage
 	pvrvk::ImageUsageFlags swapchainImageUsage = pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT;
 	if (pvr::utils::isImageUsageSupportedBySurface(surfaceCapabilities, pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT))
 	{ swapchainImageUsage |= pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT; } // Create the swapchain
-	_deviceResources->swapchain = pvr::utils::createSwapchain(_deviceResources->device, _deviceResources->surface, getDisplayAttributes(), swapchainImageUsage);
+	// Create the Swapchain, its renderpass, attachments and framebuffers. Will support MSAA if enabled through command line.
+	auto swapChainCreateOutput = pvr::utils::createSwapchainRenderpassFramebuffers(_deviceResources->device, surface, getDisplayAttributes(),
+		pvr::utils::CreateSwapchainParameters().setAllocator(_deviceResources->vmaAllocator).setColorImageUsageFlags(swapchainImageUsage).enableDepthBuffer(false));
 
-	// Create the framebuffers
-	pvr::utils::createOnscreenFramebufferAndRenderPass(_deviceResources->swapchain, nullptr, _deviceResources->framebuffer);
+	_deviceResources->swapchain = swapChainCreateOutput.swapchain;
+	_deviceResources->onScreenFramebuffer = swapChainCreateOutput.framebuffer;
 
 	_deviceResources->cmdPool = _deviceResources->device->createCommandPool(
 		pvrvk::CommandPoolCreateInfo(_deviceResources->queues[0]->getFamilyIndex(), pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT));
@@ -803,7 +804,7 @@ pvr::Result VulkanGameOfLife::initView()
 	createResources();
 	createPipelines();
 
-	_deviceResources->uiRenderer.init(getWidth(), getHeight(), isFullScreen(), _deviceResources->framebuffer[0]->getRenderPass(), 0,
+	_deviceResources->uiRenderer.init(getWidth(), getHeight(), isFullScreen(), _deviceResources->onScreenFramebuffer[0]->getRenderPass(), 0,
 		getBackBufferColorspace() == pvr::ColorSpace::sRGB, _deviceResources->cmdPool, _deviceResources->queues[0]);
 
 	_deviceResources->uiRenderer.getDefaultTitle()->setText("Game of Life");
@@ -819,8 +820,8 @@ pvr::Result VulkanGameOfLife::initView()
 	return pvr::Result::Success;
 }
 
-/// <summary> Main rendering loop function of the program. The shell will call this function every frame. </summary>
-/// <returns> Result::Success if no error occurred. </returns>
+/// <summary>Main rendering loop function of the program. The shell will call this function every frame.</summary>
+/// <returns>Result::Success if no error occurred.</returns>
 pvr::Result VulkanGameOfLife::renderFrame()
 {
 	// Do Compute Work
@@ -847,11 +848,11 @@ pvr::Result VulkanGameOfLife::renderFrame()
 
 	submitGraphicsWork(recordGraphicsCmdBuffer(swapchainIndex));
 
-	// Take screenshot if the commandline argument is passed
+	// Take screenshot if the command-line argument is passed
 	if (this->shouldTakeScreenshot())
 	{
 		pvr::utils::takeScreenshot(_deviceResources->queues[graphicsQueueIndex], _deviceResources->cmdPool, _deviceResources->swapchain, swapchainIndex,
-			this->getScreenshotFileName(), &_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
+			this->getScreenshotFileName(), _deviceResources->vmaAllocator, _deviceResources->vmaAllocator);
 	}
 
 	// Present
@@ -877,8 +878,8 @@ pvr::Result VulkanGameOfLife::renderFrame()
 	return pvr::Result::Success;
 }
 
-/// <summary> Handles user input and updates live variables accordingly. </summary>
-/// <param name="key"> Input key to handle </param>
+/// <summary>Handles user input and updates live variables accordingly.</summary>
+/// <param name="key">Input key to handle</param>
 void VulkanGameOfLife::eventMappedInput(pvr::SimplifiedInput key)
 {
 	switch (key)
@@ -917,18 +918,18 @@ void VulkanGameOfLife::eventMappedInput(pvr::SimplifiedInput key)
 	}
 }
 
-/// <summary> Code in releaseView() will be called by Shell when the application quits. </summary>
-/// <returns> Result::Success if no error occurred. </returns>
+/// <summary>Code in releaseView() will be called by Shell when the application quits.</summary>
+/// <returns>Result::Success if no error occurred.</returns>
 pvr::Result VulkanGameOfLife::releaseView()
 {
 	_deviceResources.reset();
 	return pvr::Result::Success;
 }
 
-/// <summary> Code in quitApplication() will be called by pvr::Shell once per run, just before exiting the program. </summary>
-/// <returns> Result::Success if no error occurred </returns>.
+/// <summary>Code in quitApplication() will be called by pvr::Shell once per run, just before exiting the program.</summary>
+/// <returns>Result::Success if no error occurred.</returns>.
 pvr::Result VulkanGameOfLife::quitApplication() { return pvr::Result::Success; }
 
-/// <summary> This function must be implemented by the user of the shell. The user should return its pvr::Shell object defining the behaviour of the application. </summary>
-/// <returns> Return a unique ptr to the demo supplied by the user. </returns>
+/// <summary>This function must be implemented by the user of the shell. The user should return its pvr::Shell object defining the behaviour of the application.</summary>
+/// <returns>Return a unique ptr to the demo supplied by the user.</returns>
 std::unique_ptr<pvr::Shell> pvr::newDemo() { return std::unique_ptr<pvr::Shell>(new VulkanGameOfLife()); }

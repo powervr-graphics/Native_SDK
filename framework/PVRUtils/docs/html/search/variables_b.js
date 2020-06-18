@@ -2,7 +2,6 @@ var searchData=
 [
   ['pallocationcallbacks',['pAllocationCallbacks',['../structpvr_1_1utils_1_1vma_1_1_allocator_create_info.html#a0382de4bfe72088255893471dd9376b3',1,'pvr::utils::vma::AllocatorCreateInfo']]],
   ['patchv',['patchV',['../structpvr_1_1utils_1_1_vulkan_version.html#a3e1b806e01b77ae8589182a3d55cb00d',1,'pvr::utils::VulkanVersion']]],
-  ['pbuffersurface',['pBufferSurface',['../structpvr_1_1platform_1_1_native_shared_platform_handles__.html#abe0974dfa45663716300eff15d69fc15',1,'pvr::platform::NativeSharedPlatformHandles_']]],
   ['pdevicememorycallbacks',['pDeviceMemoryCallbacks',['../structpvr_1_1utils_1_1vma_1_1_allocator_create_info.html#aa65f3b2a40f467ae3e9806e973f77238',1,'pvr::utils::vma::AllocatorCreateInfo']]],
   ['pfnallocate',['pfnAllocate',['../structpvr_1_1utils_1_1vma_1_1_device_memory_callbacks.html#a587c2aedda1a6fae93c3d586fcca2fa8',1,'pvr::utils::vma::DeviceMemoryCallbacks']]],
   ['pfnfree',['pfnFree',['../structpvr_1_1utils_1_1vma_1_1_device_memory_callbacks.html#a5566be5e29e7c2bbf605ff8147dbecb3',1,'pvr::utils::vma::DeviceMemoryCallbacks']]],

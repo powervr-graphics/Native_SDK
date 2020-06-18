@@ -651,7 +651,7 @@ static inline void initializeContext(bool wantWindow, DisplayAttributes& origina
 	}
 }
 
-void createSharedContext(const DisplayAttributes& original_attributes, NativePlatformHandles& parentHandles, NativeSharedPlatformHandles& handles, Api graphicsapi,
+void createSharedContext(const DisplayAttributes& original_attributes, NativePlatformHandles& parentHandles, NativePlatformHandles& handles, Api graphicsapi,
 	EGLConfig& shared_config, uint32_t uploadContextPriority = 2)
 {
 	std::vector<EGLConfig> configs;
@@ -802,10 +802,10 @@ void createSharedContext(const DisplayAttributes& original_attributes, NativePla
 
 			Log(LogLevel::Information, "Creating Secondary EGL PBuffer context...");
 			// Create the context
-			handles->uploadingContext = egl::CreateContext(parentHandles->display, shared_config, parentHandles->context, contextAttributes);
+			handles->context = egl::CreateContext(parentHandles->display, shared_config, parentHandles->context, contextAttributes);
 
 			//// SUCCESS -- FUNCTION SUCCESSFUL EXIT POINT
-			if (handles->uploadingContext != EGL_NO_CONTEXT)
+			if (handles->context != EGL_NO_CONTEXT)
 			{
 				Log(LogLevel::Debug, "EGL secondary PBuffer context created. Will now check if any attributes were being debugged, and try to roll back unnecessary changes.");
 				bool is_final = true;
@@ -1015,27 +1015,6 @@ void EglContext_::init(OSWindow window, OSDisplay display, DisplayAttributes& at
 	makeCurrent();
 }
 
-SharedEglContext_::SharedEglContext_(make_unique_enabler, EglContext_& context)
-{
-	EGLint eglattribs[] = { EGL_NONE, EGL_NONE, EGL_NONE, EGL_NONE, EGL_NONE, EGL_NONE, EGL_NONE };
-
-	eglattribs[0] = EGL_HEIGHT;
-	eglattribs[1] = 8;
-	eglattribs[2] = EGL_WIDTH;
-	eglattribs[3] = 8;
-	eglattribs[4] = EGL_NONE;
-	EGLConfig config;
-
-	_parentContext = &context;
-	_handles = std::make_unique<NativeSharedPlatformHandles_>();
-
-	createSharedContext(*context._attributes, _parentContext->_platformContextHandles, _handles, _parentContext->_apiType, config);
-
-	// Create the PBuffer surface for the shared context
-	_handles->pBufferSurface = egl::CreatePbufferSurface(context.getNativePlatformHandles().display, config, eglattribs);
-	if (_handles->pBufferSurface == EGL_NO_SURFACE) { throw InvalidOperationError("[SharedEglContext]: Shared context creation failed - PBufferSurface was NULL"); }
-}
-
 Api EglContext_::getMaxApiVersion()
 {
 	if (!_preInitialized)
@@ -1050,10 +1029,31 @@ Api EglContext_::getMaxApiVersion()
 
 Api EglContext_::getApiVersion() { return _apiType; }
 
-std::unique_ptr<SharedEglContext_> EglContext_::createSharedPlatformContext()
+std::unique_ptr<EglContext_> EglContext_::createSharedContextFromEGLContext()
 {
-	auto retval = SharedEglContext_::constructUnique(*this);
-	return retval;
+	std::unique_ptr<platform::EglContext_> sharedContext = std::make_unique<platform::EglContext_>();
+
+	EGLint eglattribs[] = { EGL_NONE, EGL_NONE, EGL_NONE, EGL_NONE, EGL_NONE, EGL_NONE, EGL_NONE };
+
+	eglattribs[0] = EGL_HEIGHT;
+	eglattribs[1] = 8;
+	eglattribs[2] = EGL_WIDTH;
+	eglattribs[3] = 8;
+	eglattribs[4] = EGL_NONE;
+	EGLConfig config;
+
+	sharedContext->_parentContext = this;
+	sharedContext->_platformContextHandles = std::make_shared<NativePlatformHandles_>();
+
+	createSharedContext(*sharedContext->_parentContext->_attributes, sharedContext->_parentContext->_platformContextHandles, sharedContext->_platformContextHandles,
+		sharedContext->_parentContext->_apiType, config);
+
+	// Create the PBuffer surface for the shared context
+	sharedContext->_platformContextHandles->drawSurface = egl::CreatePbufferSurface(sharedContext->_parentContext->getNativePlatformHandles().display, config, eglattribs);
+	if (sharedContext->_platformContextHandles->drawSurface == EGL_NO_SURFACE)
+	{ throw InvalidOperationError("[SharedEglContext]: Shared context creation failed - PBufferSurface was NULL"); }
+
+	return sharedContext;
 }
 
 void EglContext_::populateMaxApiVersion()
@@ -1102,23 +1102,26 @@ bool EglContext_::isApiSupported(Api apiLevel)
 
 void EglContext_::makeCurrent()
 {
-	if (!egl::MakeCurrent(_platformContextHandles->display, _platformContextHandles->drawSurface, _platformContextHandles->drawSurface, _platformContextHandles->context))
-	{ throw InvalidOperationError("[EglContext::makeCurrent]: eglMakeCurrent failed"); }
-#if !defined(__ANDROID__) && !defined(TARGET_OS_IPHONE)
-	if (_swapInterval != -2)
+	if (_parentContext == nullptr)
 	{
-		// Set our swap interval which affects the current draw surface
-		egl::SwapInterval(_platformContextHandles->display, _swapInterval);
-		_swapInterval = -2;
-	}
+		if (!egl::MakeCurrent(_platformContextHandles->display, _platformContextHandles->drawSurface, _platformContextHandles->drawSurface, _platformContextHandles->context))
+		{ throw InvalidOperationError("[EglContext::makeCurrent]: eglMakeCurrent failed"); }
+#if !defined(__ANDROID__) && !defined(TARGET_OS_IPHONE)
+		if (_swapInterval != -2)
+		{
+			// Set our swap interval which affects the current draw surface
+			egl::SwapInterval(_platformContextHandles->display, _swapInterval);
+			_swapInterval = -2;
+		}
 #endif
-}
-
-void SharedEglContext_::makeSharedContextCurrent()
-{
-	if (!egl::MakeCurrent(_parentContext->_platformContextHandles->display, _handles->pBufferSurface, _handles->pBufferSurface, _handles->uploadingContext) ||
-		!egl::BindAPI(EGL_OPENGL_ES_API))
-	{ throw InvalidOperationError("[SharedEglContext::makeSharedContextCurrent]: eglMakeCurrent failed"); }
+	}
+	else
+	{
+		if (!egl::MakeCurrent(
+				_parentContext->_platformContextHandles->display, _platformContextHandles->drawSurface, _platformContextHandles->drawSurface, _platformContextHandles->context) ||
+			!egl::BindAPI(EGL_OPENGL_ES_API))
+		{ throw InvalidOperationError("[SharedEglContext::makeSharedContextCurrent]: eglMakeCurrent failed"); }
+	}
 }
 
 void EglContext_::swapBuffers()

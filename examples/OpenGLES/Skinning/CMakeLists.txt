@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.3)
 project(OpenGLESSkinning)
-if(IOS)	
+if(IOS)
 	message("Skipping OpenGLESSkinning : Not supported on iOS")
 	return()
 endif()
@@ -33,13 +33,13 @@ add_assets_to_target(OpenGLESSkinning
 	ASSET_FOLDER ${ASSET_FOLDER} 
 	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/Robot
 	FILE_LIST 
+		Robot.pod
 		Arm.pvr
 		Grid.pvr
 		Pipes.pvr
 		RobotDiffuse.pvr
 		RobotNormal.pvr
-		Tiles.pvr
-		Robot.pod)
+		Tiles.pvr)
 
 ### Textural shaders (OpenGL ES) ###
 add_assets_to_target(OpenGLESSkinning 
@@ -59,7 +59,7 @@ add_assets_resource_file(OpenGLESSkinning)
 # Apply SDK example specific compile and linker options
 apply_example_compile_options_to_target(OpenGLESSkinning)
 
-target_link_libraries(OpenGLESSkinning
+target_link_libraries(OpenGLESSkinning PUBLIC
 	PVRShell
 	PVRUtilsGles
 )

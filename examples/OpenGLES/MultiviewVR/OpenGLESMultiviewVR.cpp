@@ -1,10 +1,10 @@
-/*!*********************************************************************************************************************
-\File         MultiviewVR.cpp
-\Title        Introducing the POD 3D file format
-\Author       PowerVR by Imagination, Developer Technology Team
-\Copyright    Copyright (c) Imagination Technologies Limited.
-\brief        Shows how to load POD files and play the animation with basic lighting
-***********************************************************************************************************************/
+/*!
+\brief	Shows how to load POD files and play the animation with basic lighting
+\file	MultiviewVR.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
+
 #include "PVRShell/PVRShell.h"
 #include "PVRAssets/PVRAssets.h"
 #include "PVRUtils/PVRUtilsGles.h"
@@ -30,9 +30,7 @@ const pvr::StringHash AttribNames[] = {
 
 glm::vec3 viewOffset(1.5f, 0.0f, 0.0f);
 
-/*!*********************************************************************************************************************
-\brief Class implementing the pvr::Shell functions.
-***********************************************************************************************************************/
+/// <summary>Class implementing the pvr::Shell functions.</summary>
 class MultiviewVR : public pvr::Shell
 {
 	glm::vec3 _clearColor;
@@ -109,7 +107,7 @@ void MultiviewVR::createMultiViewFbo()
 	_widthHigh = getWidth() / 4;
 	_heightHigh = getHeight() / 2;
 
-	// generate the color texture
+	// generate the colour texture
 	{
 		gl::GenTextures(1, &_multiViewFbo.colorTexture);
 		gl::BindTexture(GL_TEXTURE_2D_ARRAY, _multiViewFbo.colorTexture);
@@ -154,10 +152,8 @@ void MultiviewVR::createMultiViewFbo()
 	}
 }
 
-/*!*********************************************************************************************************************
-\brief  Load the material's textures
-\return Return true if success
-***********************************************************************************************************************/
+/// <summary>Load the material's textures.</summary>
+/// <returns>Return true if success.</returns>
 void MultiviewVR::loadTextures()
 {
 	uint32_t numMaterials = _scene->getNumMaterials();
@@ -179,10 +175,8 @@ void MultiviewVR::loadTextures()
 	} // next material
 }
 
-/*!*********************************************************************************************************************
-\brief  Loads and compiles the shaders and links the shader programs required for this training course
-\return Return true if no error occurred
-***********************************************************************************************************************/
+/// <summary>Loads and compiles the shaders and links the shader programs required for this training course.</summary>
+/// <returns>Return true if no error occurred.</returns>
 void MultiviewVR::loadShaders()
 {
 	// Enable or disable gamma correction based on if it is automatically performed on the framebuffer or we need to do it in the shader.
@@ -221,10 +215,8 @@ void MultiviewVR::loadShaders()
 	}
 }
 
-/*!*********************************************************************************************************************
-\brief  Loads the mesh data required for this training course into vertex buffer objects
-\return Return true if no error occurred
-***********************************************************************************************************************/
+/// <summary>Loads the mesh data required for this training course into vertex buffer objects.</summary>
+/// <returns>Return true if no error occurred.</returns>
 void MultiviewVR::LoadVbos()
 {
 	_vbo.resize(_scene->getNumMeshes());
@@ -297,12 +289,10 @@ void MultiviewVR::LoadVbos()
 	}
 }
 
-/*!*********************************************************************************************************************
-\return Result::Success if no error occurred
-\brief  Code in initApplication() will be called by Shell once per run, before the rendering context is created.
-	Used to initialize variables that are not dependent on it (e.g. external modules, loading meshes, etc.).
-	If the rendering context is lost, InitApplication() will not be called again.
-***********************************************************************************************************************/
+/// <summary>Code in initApplication() will be called by Shell once per run, before the rendering context is created.
+/// Used to initialize variables that are not dependent on it(e.g.external modules, loading meshes, etc.).If the rendering
+/// context is lost, initApplication() will not be called again.</summary>
+/// <returns>Result::Success if no error occurred.</returns>
 pvr::Result MultiviewVR::initApplication()
 {
 	// Load the scene
@@ -319,18 +309,14 @@ pvr::Result MultiviewVR::initApplication()
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return Result::Success if no error occurred
-\brief  Code in quitApplication() will be called by Shell once per run, just before exiting the program.
-		If the rendering context is lost, quitApplication() will not be called.
-***********************************************************************************************************************/
+/// <summary>Code in quitApplication() will be called by pvr::Shell once per run, just before exiting the program.</summary>
+/// <returns>Result::Success if no error occurred.</returns>
 pvr::Result MultiviewVR::quitApplication() { return pvr::Result::Success; }
 
-/*!*********************************************************************************************************************
-\return Result::Success if no error occurred
-\brief  Code in initView() will be called by Shell upon initialization or after a change in the rendering context.
-	Used to initialize variables that are dependent on the rendering context (e.g. textures, vertex buffers, etc.)
-***********************************************************************************************************************/
+/// <summary>Code in initView() will be called by Shell upon initialization or after a change
+/// in the rendering context. Used to initialize variables that are dependent on the
+/// rendering context(e.g.textures, vertex buffers, etc.).</summary>
+/// <returns>Result::Success if no error occurred.</returns>
 pvr::Result MultiviewVR::initView()
 {
 	// create an OpenGLES context
@@ -345,7 +331,7 @@ pvr::Result MultiviewVR::initView()
 	_clearColor = clearColorLinearSpace;
 	if (getBackBufferColorspace() != pvr::ColorSpace::sRGB)
 	{
-		// Gamma correct the clear color
+		// Gamma correct the clear colour
 		_clearColor = pvr::utils::convertLRGBtoSRGB(clearColorLinearSpace);
 	}
 
@@ -366,9 +352,9 @@ pvr::Result MultiviewVR::initView()
 
 	// Set up the _projection matrices for each view. For each eye the scene is rendered twice with different fov.
 	// The narrower field of view gives half the size near plane of the wider fov in order to
-	// render the center of the scene at a higher resolution. The high and low resolution
+	// render the centre of the scene at a higher resolution. The high and low resolution
 	// images will then be interpolated in the fragment shader to create an image with higher resolutions for
-	// pixel that are center of the screen and lower resolutions for pixels outside the center of the screen
+	// pixel that are centre of the screen and lower resolutions for pixels outside the centre of the screen
 	// 90 degrees.
 	// 53.1301024 degrees.  half the size for the near plane. tan(90/2) == (tan(53.13 / 2) * 2)
 	float fovWide = glm::radians(90.f);
@@ -409,10 +395,8 @@ pvr::Result MultiviewVR::initView()
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return Result::Success if no error occurred
-\brief  Code in releaseView() will be called by PVRShell when the application quits or before a change in the rendering context.
-***********************************************************************************************************************/
+/// <summary>Code in releaseView() will be called by Shell when the application quits.</summary>
+/// <returns>Result::Success if no error occurred.</returns>
 pvr::Result MultiviewVR::releaseView()
 {
 	// Deletes the textures
@@ -440,9 +424,9 @@ void MultiviewVR::renderToMultiViewFbo()
 {
 	debugThrowOnApiError("renderToMultiViewFbo begin");
 	gl::Viewport(0, 0, _widthHigh, _heightHigh);
-	// Clear the color and depth buffer
+	// Clear the colour and depth buffer
 	gl::BindFramebuffer(GL_FRAMEBUFFER, _multiViewFbo.fbo);
-	gl::ClearColor(_clearColor.r, _clearColor.g, _clearColor.b, 1.f); // Use a nice bright blue as clear color
+	gl::ClearColor(_clearColor.r, _clearColor.g, _clearColor.b, 1.f); // Use a nice bright blue as clear colour
 	gl::Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// Use shader program
@@ -496,7 +480,7 @@ void MultiviewVR::renderToMultiViewFbo()
 		glm::mat4 worldViewLeft = viewLeft * _world;
 		glm::mat4 worldViewRight = viewRight * _world;
 
-		// Pass the model-view-_projection matrix (MVP) to the shader to transform the vertice
+		// Pass the model-view-_projection matrix (MVP) to the shader to transform the vertices
 		_mvp[0] = _projection[0] * worldViewLeft;
 		_mvp[1] = _projection[1] * worldViewRight;
 		_mvp[2] = _projection[2] * worldViewLeft;
@@ -517,10 +501,8 @@ void MultiviewVR::renderToMultiViewFbo()
 	debugThrowOnApiError("renderFrame end");
 }
 
-/*!*********************************************************************************************************************
-\return Result::Success if no error occurred
-\brief  Main rendering loop function of the program. The shell will call this function every _frame.
-***********************************************************************************************************************/
+/// <summary>Main rendering loop function of the program. The shell will call this function every frame.</summary>
+/// <returns>Result::Success if no error occurred.</returns>
 pvr::Result MultiviewVR::renderFrame()
 {
 	renderToMultiViewFbo();
@@ -528,7 +510,7 @@ pvr::Result MultiviewVR::renderFrame()
 	gl::BindFramebuffer(GL_FRAMEBUFFER, _context->getOnScreenFbo());
 	gl::ClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	gl::Viewport(0, 0, getWidth(), getHeight());
-	// Clear the color and depth buffer
+	// Clear the colour and depth buffer
 	gl::Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	// Use shader program
 	gl::UseProgram(_texQuadProgram.handle);
@@ -570,10 +552,8 @@ pvr::Result MultiviewVR::renderFrame()
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\param  nodeIndex   Node index of the mesh to draw
-\brief  Draws a mesh after the model view matrix has been set and the material prepared.
-***********************************************************************************************************************/
+/// <param name="nodeIndex"> Node index of the mesh to draw </param>
+/// <summary>Draws a mesh after the model view matrix has been set and the material prepared.</summary>
 void MultiviewVR::drawMesh(int nodeIndex)
 {
 	uint32_t meshIndex = _scene->getMeshNode(nodeIndex).getObjectId();
@@ -663,11 +643,9 @@ void MultiviewVR::drawMesh(int nodeIndex)
 	gl::BindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-/*!*********************************************************************************************************************
-\brief  Different texture coordinates are used for the high and low resolution images.
-	  High resolution image should be drawn at half the size of the low resolution
-	image and centered in the middle of the screen.
-***********************************************************************************************************************/
+/// <summary>Different texture coordinates are used for the high and low resolution images.
+///	High resolution image should be drawn at half the size of the low resolution
+///	image and centred in the middle of the screen.</summary>
 void MultiviewVR::drawHighLowResQuad()
 {
 	// high res texture coord

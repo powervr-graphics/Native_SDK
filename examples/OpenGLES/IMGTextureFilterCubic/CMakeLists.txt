@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.3)
 project(OpenGLESIMGTextureFilterCubic)
-if(IOS)	
+if(IOS)
 	message("Skipping OpenGLESIMGTextureFilterCubic : Not supported on iOS")
 	return()
 endif()
@@ -43,7 +43,7 @@ add_assets_resource_file(OpenGLESIMGTextureFilterCubic)
 # Apply SDK example specific compile and linker options
 apply_example_compile_options_to_target(OpenGLESIMGTextureFilterCubic)
 
-target_link_libraries(OpenGLESIMGTextureFilterCubic
+target_link_libraries(OpenGLESIMGTextureFilterCubic PUBLIC
 	PVRShell
 	PVRUtilsGles
 )

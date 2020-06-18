@@ -1,19 +1,19 @@
-/*!*********************************************************************************************************************
-\File         VulkanIBLMapsGenerator.cpp
-\Title        Vulkan Image Based Lighting Maps Generator
-\Author       PowerVR by Imagination, Developer Technology Team.
-\Copyright    Copyright(c) Imagination Technologies Limited.
-\brief        A command line tool using Headless (i.e. surfaceless) Vulkan Graphics to calculate the Irradiance map (
-			  used for Diffuse global illumination), and the Prefiltered Reflection map (used for Specular global
-			  illumination).
-***********************************************************************************************************************/
+/*!
+\brief A command line tool using Headless (i.e. surface less) Vulkan Graphics to calculate the Irradiance map (
+	   used for Diffuse global illumination), and the Pre-filtered Reflection map (used for Specular global
+	   illumination).
+\file  VulkanIBLMapsGenerator.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
+
 #include "PVRCore/PVRCore.h"
 #include "PVRCore/stream/FilePath.h"
 #include "PVRUtils/PVRUtilsVk.h"
 #include "PVRUtils/Vulkan/PBRUtilsVk.h"
 #include <iostream>
 
-// Print the supported command line parameters to standard out
+/// <summary>Print the supported command line parameters to standard out.</summary>
 void printHelp()
 {
 	std::cout << "  Options:\n" << std::endl;
@@ -25,17 +25,17 @@ void printHelp()
 			  << std::endl;
 	std::cout << "     -skipDiffuse                  Do not create a Diffuse Irradiance map" << std::endl << std::endl;
 	std::cout << "     -skipSpecular                 Do not create a specular irradiance map." << std::endl << std::endl;
-	std::cout << "     -specularSize=[NUMBER]        The size of the generated Prefiltered Reflection map. Default: 256 (for a 256x256 map)" << std::endl << std::endl;
-	std::cout << "     -specularSamples=[NUMBER]     The number of sampling points to use when generating the Prefiltered Reflection map." << std::endl;
+	std::cout << "     -specularSize=[NUMBER]        The size of the generated Pre-filtered Reflection map. Default: 256 (for a 256x256 map)" << std::endl << std::endl;
+	std::cout << "     -specularSamples=[NUMBER]     The number of sampling points to use when generating the Pre-filtered Reflection map." << std::endl;
 	std::cout << "                                   Default: 10000                      Min: 1" << std::endl;
 	std::cout << "                                   Recommended values : Low-Mid Thousands. Use higher values for environment maps with high frequency components." << std::endl
 			  << std::endl;
 	std::cout << "     -specularDiscardMips=[NUMBER] The number of specular maps to not generate (i.e. indirectly, the size of the smallest map to generate).points to use when "
-				 "generating the Prefiltered Reflection map."
+				 "generating the Pre-filtered Reflection map."
 			  << std::endl;
 	std::cout << "                                   Default: 2                          Min: 0    Max: The base-2 logarithm of the size." << std::endl;
 	std::cout << "                                   Recommended values : 1-3. If the lowest specular maps are kept, rough but mildly curved surfaces will be suffering by very "
-				 "strong artifacts. If a lot of maps are discarded, smoother surfaces will be incorrect due to not having enough resolution between the low roughness mipmaps."
+				 "strong artefacts. If a lot of maps are discarded, smoother surfaces will be incorrect due to not having enough resolution between the low roughness mipmaps."
 			  << std::endl
 			  << std::endl;
 	std::cout << "  CAUTION: With the number of samples, more is better but up to a point: Very high value will eventually sharply drop in accuracy due to floating point "
@@ -175,7 +175,7 @@ int main(int argc, char** argv)
 		}
 		if (!skipSpecular)
 		{
-			cout << "Generating prefiltered reflection map [" << outputNamePrefiltered << "]..." << std::flush;
+			cout << "Generating pre-filtered reflection map [" << outputNamePrefiltered << "]..." << std::flush;
 			preFilteredTexture = pvr::utils::generatePreFilteredMapMipmapStyle(
 				queue, environmentMap, pvr::PixelFormat::RGBA_16161616(), pvr::VariableType::SignedFloat, mapSizeSpecular, true, 2, numSamplesSpecular);
 			cout << "DONE!\n";

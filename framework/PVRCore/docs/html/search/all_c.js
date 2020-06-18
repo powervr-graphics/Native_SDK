@@ -16,7 +16,7 @@ var searchData=
   ['mergedatatypessmaller',['mergeDatatypesSmaller',['../namespacepvr.html#a7ef5be44f3a11eac1a122cafd4a217db',1,'pvr']]],
   ['metadata',['Metadata',['../structpvr_1_1_gpu_datatypes_helper_1_1_metadata.html',1,'pvr::GpuDatatypesHelper']]],
   ['metadata_2eh',['MetaData.h',['../_meta_data_8h.html',1,'']]],
-  ['metadatasize',['metaDataSize',['../structpvr_1_1_texture_header_1_1_header.html#a99736b9817782a8864da6905e9d541c3',1,'pvr::TextureHeader::Header']]],
+  ['metadatasize',['metaDataSize',['../structpvr_1_1_texture_header.html#a4488946b871a1bf11f465b10923779c1',1,'pvr::TextureHeader']]],
   ['min',['Min',['../namespacepvr.html#a78be6b6f15903b90d6a9d575ebf6d353a78d811e98514cd165dda532286610fd2',1,'pvr']]],
   ['minusx',['minusX',['../structpvr_1_1math_1_1_frustum.html#a4e3de8f88d7c92f1525ad6606e0e621b',1,'pvr::math::Frustum']]],
   ['minusy',['minusY',['../structpvr_1_1math_1_1_frustum.html#a6681b7f0ef27e4e48a3b408eb55beda5',1,'pvr::math::Frustum']]],

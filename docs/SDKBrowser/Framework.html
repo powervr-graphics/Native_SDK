@@ -4,8 +4,7 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
     <title>PowerVR SDK Framework &#8212; PowerVR SDK Browser  documentation</title>
     <link rel="stylesheet" href="_static/img_style.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -13,9 +12,10 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
     <script type="text/javascript" src="_static/img_style.js"></script>
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Documentation" href="Documentation.html" />
+    <link rel="next" title="Vulkan Examples" href="ExamplesVulkan.html" />
     <link rel="prev" title="Build Instructions" href="Build.html" />
 <div id="GlobalHeaderContainer">
 		<div id="GlobalHeader">
@@ -30,7 +30,7 @@
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
-          <a href="Documentation.html" title="Documentation"
+          <a href="ExamplesVulkan.html" title="Vulkan Examples"
              accesskey="N">next</a></li>
         <li class="right" >
           <a href="Build.html" title="Build Instructions"
@@ -45,19 +45,18 @@
 <li class="toctree-l1"><a class="reference internal" href="Introduction.html">The PowerVR SDK</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Build.html">Build Instructions</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">PowerVR SDK Framework</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Documentation.html">Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ExamplesVulkan.html">Vulkan Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SDK_Documentation.html">Documentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Licence.html">EULA</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Contact.html">Contact Us</a></li>
 </ul>
 
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
@@ -77,7 +76,7 @@
 <p>The PowerVR Framework is a complete framework source code. It targets Windows, Linux, and macOS desktop platforms, and Android and iOS mobile platforms. A key strength of the PowerVR Framework is that it is platform-agnostic, meaning that with the same code, it is possible to compile for different platforms without changing the source code.</p>
 <p>The majority of the code is written in C++ and tested across different compilers (Visual Studio 2013-2017, GNU Compiler Collection, and Clang) using modern C++ style. It provides a complete framework for application development. There is also supporting per-platform code such as Objective-C code for iOS and macOS, and Java code for Android. CMake files are also supplied.</p>
 <p>The Framework consists of libraries divided by functionality, as shown in the figure below. These modules are provided to be configured as static libraries, but they can be used differently if required.</p>
-<div class="figure">
+<div class="figure align-default">
 <img alt="_images/PowerVRFrameworkComponents.png" src="_images/PowerVRFrameworkComponents.png" />
 </div>
 <div class="section" id="pvrcore">
@@ -121,65 +120,59 @@
 <h2>Creating an application using the Framework<a class="headerlink" href="#creating-an-application-using-the-framework" title="Permalink to this headline">¶</a></h2>
 <p>To create a typical application, please follow these steps:</p>
 <ol class="arabic">
-<li><p class="first">Create a <code class="docutils literal notranslate"><span class="pre">CMakeLists.txt</span></code> for the platform. This could be your own, or one of the SDK example’s <code class="docutils literal notranslate"><span class="pre">CMakeLists.txt</span></code> to use as a base. For example: <code class="docutils literal notranslate"><span class="pre">examples/Vulkan/Intermediate/Bumpmap/CMakeLists.txt</span></code>.</p>
+<li><p>Create a <code class="docutils literal notranslate"><span class="pre">CMakeLists.txt</span></code> for the platform. This could be your own, or one of the SDK example’s <code class="docutils literal notranslate"><span class="pre">CMakeLists.txt</span></code> to use as a base. For example: <code class="docutils literal notranslate"><span class="pre">examples/Vulkan/Intermediate/Bumpmap/CMakeLists.txt</span></code>.</p>
 <p>In more detail:</p>
 <ul class="simple">
-<li><dl class="first docutils">
-<dt>Add include directories:</dt>
-<dd><ul class="first last">
-<li><code class="docutils literal notranslate"><span class="pre">[SDK]/framework</span></code></li>
-<li><code class="docutils literal notranslate"><span class="pre">[SDK]/include</span></code></li>
+<li><dl class="simple">
+<dt>Add include directories:</dt><dd><ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">[SDK]/framework</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[SDK]/include</span></code></p></li>
 </ul>
 </dd>
 </dl>
 </li>
-<li><dl class="first docutils">
-<dt>Add CMake dependencies using <code class="docutils literal notranslate"><span class="pre">add_subdirectory</span></code>:</dt>
-<dd><ul class="first last">
-<li>(If Vulkan) <code class="docutils literal notranslate"><span class="pre">[SDK]/framework/PVRVk</span></code></li>
-<li>(If Vulkan) <code class="docutils literal notranslate"><span class="pre">[SDK]/framework/PVRUtils/Vulkan</span></code></li>
-<li>(If OpenGL ES) <code class="docutils literal notranslate"><span class="pre">[SDK]/framework/PVRUtils/OpenGLES</span></code></li>
-<li><code class="docutils literal notranslate"><span class="pre">[SDK]/framework/PVRShell</span></code></li>
-<li><code class="docutils literal notranslate"><span class="pre">[SDK]/framework/PVRAssets</span></code></li>
-<li><code class="docutils literal notranslate"><span class="pre">[SDK]/framework/PVRCore</span></code></li>
+<li><dl class="simple">
+<dt>Add CMake dependencies using <code class="docutils literal notranslate"><span class="pre">add_subdirectory</span></code>:</dt><dd><ul>
+<li><p>(If Vulkan) <code class="docutils literal notranslate"><span class="pre">[SDK]/framework/PVRVk</span></code></p></li>
+<li><p>(If Vulkan) <code class="docutils literal notranslate"><span class="pre">[SDK]/framework/PVRUtils/Vulkan</span></code></p></li>
+<li><p>(If OpenGL ES) <code class="docutils literal notranslate"><span class="pre">[SDK]/framework/PVRUtils/OpenGLES</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[SDK]/framework/PVRShell</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[SDK]/framework/PVRAssets</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[SDK]/framework/PVRCore</span></code></p></li>
 </ul>
 </dd>
 </dl>
 </li>
-<li>Alternatively, build the Framework modules as described, and add depependencies to them with <code class="docutils literal notranslate"><span class="pre">target_link_libraries</span></code></li>
-<li><dl class="first docutils">
-<dt>Link against other libraries:</dt>
-<dd><ul class="first last">
-<li>(Optional) <code class="docutils literal notranslate"><span class="pre">[SDK]/libs/[Platform]/[Other</span> <span class="pre">libraries,</span> <span class="pre">e.g.</span> <span class="pre">PVRScope]</span></code></li>
+<li><p>Alternatively, build the Framework modules as described, and add depependencies to them with <code class="docutils literal notranslate"><span class="pre">target_link_libraries</span></code></p></li>
+<li><dl class="simple">
+<dt>Link against other libraries:</dt><dd><ul>
+<li><p>(Optional) <code class="docutils literal notranslate"><span class="pre">[SDK]/libs/[Platform]/[Other</span> <span class="pre">libraries,</span> <span class="pre">e.g.</span> <span class="pre">PVRScope]</span></code></p></li>
 </ul>
 </dd>
 </dl>
 </li>
 </ul>
 </li>
-<li><p class="first">(<strong>Android only</strong>) Create the Gradle scripts. Explaining the Gradle language is beyond the scope of this guide. It is recommended to copy the <code class="docutils literal notranslate"><span class="pre">build-android</span></code> folder of one of the SDK examples and working from there. The Framework modules have their own Gradle scripts so ensuring that they are built means declaring them in the <code class="docutils literal notranslate"><span class="pre">settings.gradle</span></code> of the example and adding dependencies in <code class="docutils literal notranslate"><span class="pre">build.gradle</span></code>.</p>
-</li>
-<li><dl class="first docutils">
-<dt>Create the application files. For a single CPP file, the includes will usually be:</dt>
-<dd><ul class="first last simple">
-<li><code class="docutils literal notranslate"><span class="pre">PVRShell/PVRShell.h</span></code></li>
-<li><code class="docutils literal notranslate"><span class="pre">PVRUtils/PVRUtilsGles.h</span></code> or <code class="docutils literal notranslate"><span class="pre">PVRUtils/PVRUtilsVk.h</span></code></li>
+<li><p>(<strong>Android only</strong>) Create the Gradle scripts. Explaining the Gradle language is beyond the scope of this guide. It is recommended to copy the <code class="docutils literal notranslate"><span class="pre">build-android</span></code> folder of one of the SDK examples and working from there. The Framework modules have their own Gradle scripts so ensuring that they are built means declaring them in the <code class="docutils literal notranslate"><span class="pre">settings.gradle</span></code> of the example and adding dependencies in <code class="docutils literal notranslate"><span class="pre">build.gradle</span></code>.</p></li>
+<li><dl class="simple">
+<dt>Create the application files. For a single CPP file, the includes will usually be:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">PVRShell/PVRShell.h</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PVRUtils/PVRUtilsGles.h</span></code> or <code class="docutils literal notranslate"><span class="pre">PVRUtils/PVRUtilsVk.h</span></code></p></li>
 </ul>
 </dd>
 </dl>
 </li>
-<li><p class="first">Write the skeleton of the application. See description of PVRShell.</p>
-</li>
+<li><p>Write the skeleton of the application. See description of PVRShell.</p></li>
 </ol>
 </div>
 <div class="section" id="guidelines-and-recommendations">
 <h2>Guidelines and Recommendations<a class="headerlink" href="#guidelines-and-recommendations" title="Permalink to this headline">¶</a></h2>
 <p>Below are a set of guidelines and recommendations to consider when using the PowerVR Framework:</p>
 <ul class="simple">
-<li>Use PVRUtils to simplify common, surprisingly complex tasks. This makes them easy, concise and understandable. These tasks include context creation, backbuffer/swapchain setup, and texture uploading. Then step through the code to understand the actual mechanics implemented. This is particularly important for Vulkan tasks that are surprisingly involved, such as texture uploading.</li>
-<li>The <code class="docutils literal notranslate"><span class="pre">pvr::assets::Model</span></code> class contains all the information needed for drawing, including cameras, lights, and effects. Follow a typical PowerVR SDK example such as IntroducingPVRUtils to understand its basic use, including getting information about the data layout of meshes from a model.</li>
-<li>There are many utility functions that simplify complex tasks between Assets and the underlying API. For example, the <code class="docutils literal notranslate"><span class="pre">pvr::utils::createInputAssemblyFromXXXXXX</span></code> functions will populate a Vulkan pipeline’s vertex configuration with the correct vertex configuration of a mesh. Similarly, the <code class="docutils literal notranslate"><span class="pre">createXXXXBufferFromXXXX</span></code> functions will auto-generate and upload VBOs for a mesh. Browse the <code class="docutils literal notranslate"><span class="pre">pvr::utils</span></code> namespace for such helpers.</li>
-<li>Use and understand what <code class="docutils literal notranslate"><span class="pre">pvr::utils::StructuredBufferView</span></code> can do. It is a class that allows precise description of a Shader Interface Block, which is a UBO/SSBO definition in the shader. It then automatically calculates all the sizes, offsets, and required paddings of every single one of its members, and CPU-side layout. It aligns everything based on STD140, takes into account dynamic offsets, provides helpers for directly setting values to mapped memory, and essentially makes working with buffers much easier. All examples that use UBOs or SSBOs use the <code class="docutils literal notranslate"><span class="pre">StructuredMemoryView</span></code> to define and set values.</li>
+<li><p>Use PVRUtils to simplify common, surprisingly complex tasks. This makes them easy, concise and understandable. These tasks include context creation, backbuffer/swapchain setup, and texture uploading. Then step through the code to understand the actual mechanics implemented. This is particularly important for Vulkan tasks that are surprisingly involved, such as texture uploading.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">pvr::assets::Model</span></code> class contains all the information needed for drawing, including cameras, lights, and effects. Follow a typical PowerVR SDK example such as IntroducingPVRUtils to understand its basic use, including getting information about the data layout of meshes from a model.</p></li>
+<li><p>There are many utility functions that simplify complex tasks between Assets and the underlying API. For example, the <code class="docutils literal notranslate"><span class="pre">pvr::utils::createInputAssemblyFromXXXXXX</span></code> functions will populate a Vulkan pipeline’s vertex configuration with the correct vertex configuration of a mesh. Similarly, the <code class="docutils literal notranslate"><span class="pre">createXXXXBufferFromXXXX</span></code> functions will auto-generate and upload VBOs for a mesh. Browse the <code class="docutils literal notranslate"><span class="pre">pvr::utils</span></code> namespace for such helpers.</p></li>
+<li><p>Use and understand what <code class="docutils literal notranslate"><span class="pre">pvr::utils::StructuredBufferView</span></code> can do. It is a class that allows precise description of a Shader Interface Block, which is a UBO/SSBO definition in the shader. It then automatically calculates all the sizes, offsets, and required paddings of every single one of its members, and CPU-side layout. It aligns everything based on STD140, takes into account dynamic offsets, provides helpers for directly setting values to mapped memory, and essentially makes working with buffers much easier. All examples that use UBOs or SSBOs use the <code class="docutils literal notranslate"><span class="pre">StructuredMemoryView</span></code> to define and set values.</p></li>
 </ul>
 </div>
 </div>
@@ -194,7 +187,7 @@
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
-          <a href="Documentation.html" title="Documentation"
+          <a href="ExamplesVulkan.html" title="Vulkan Examples"
              >next</a></li>
         <li class="right" >
           <a href="Build.html" title="Build Instructions"
@@ -205,7 +198,7 @@
 <div id="FooterMainContainer">
     <div id="FooterContainer">
 		<div class="footerlogo">
-			<a href="http://www.imgtec.com" target="_blank"><img src="_static/img-footer-logo-grey.png" width="100%" height="100%" /></a>
+			<a href="http://www.imgtec.com" target="_blank"><img src="_static/img-footer-logo-grey.png" width="25%" height="50%" /></a>
 		</div>
 	<div class="copyright">&copy; Imagination Technologies Limited<br> All rights reserved</div>
 	</div>

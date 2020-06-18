@@ -21,7 +21,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="https://www.imgtec.com/developers/" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
+      <a href="https://www.imgtec.com/developers/" target="_blank"><img src="PVRlogo.png" width="80%" height="80%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRUtils</span> Documentation</a>
    <tbody>
@@ -75,9 +75,9 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a34c025a17bebe940cb45c2547e4b6792"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classpvr_1_1platform_1_1_shared_egl_context__.html">SharedEglContext_</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_egl_context__.html#a34c025a17bebe940cb45c2547e4b6792">createSharedPlatformContext</a> ()</td></tr>
-<tr class="memdesc:a34c025a17bebe940cb45c2547e4b6792"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an instance of a shared platform context <a href="#a34c025a17bebe940cb45c2547e4b6792">More...</a><br /></td></tr>
-<tr class="separator:a34c025a17bebe940cb45c2547e4b6792"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad48696831ebb3111b6518bd8fcefe790"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classpvr_1_1platform_1_1_egl_context__.html">EglContext_</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_egl_context__.html#ad48696831ebb3111b6518bd8fcefe790">createSharedContextFromEGLContext</a> ()</td></tr>
+<tr class="memdesc:ad48696831ebb3111b6518bd8fcefe790"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an instance of a shared platform context <a href="#ad48696831ebb3111b6518bd8fcefe790">More...</a><br /></td></tr>
+<tr class="separator:ad48696831ebb3111b6518bd8fcefe790"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a724e8438da13abc60503d123747e3842"><td class="memItemLeft" align="right" valign="top">Api&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_egl_context__.html#a724e8438da13abc60503d123747e3842">getApiVersion</a> ()</td></tr>
 <tr class="memdesc:a724e8438da13abc60503d123747e3842"><td class="mdescLeft">&#160;</td><td class="mdescRight">Getter for the Api version of the EGL platform context created. <a href="#a724e8438da13abc60503d123747e3842">More...</a><br /></td></tr>
 <tr class="separator:a724e8438da13abc60503d123747e3842"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -118,14 +118,14 @@ Public Member Functions</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>The EglContext context is the class wrapping all platform-specific objects required to power an OpenGL implementation (Displays, windows, configurations etc.).</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="a34c025a17bebe940cb45c2547e4b6792"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a34c025a17bebe940cb45c2547e4b6792">&#9670;&nbsp;</a></span>createSharedPlatformContext()</h2>
+<a id="ad48696831ebb3111b6518bd8fcefe790"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad48696831ebb3111b6518bd8fcefe790">&#9670;&nbsp;</a></span>createSharedContextFromEGLContext()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::unique_ptr&lt;<a class="el" href="classpvr_1_1platform_1_1_shared_egl_context__.html">SharedEglContext_</a>&gt; pvr::platform::EglContext_::createSharedPlatformContext </td>
+          <td class="memname">std::unique_ptr&lt;<a class="el" href="classpvr_1_1platform_1_1_egl_context__.html">EglContext_</a>&gt; pvr::platform::EglContext_::createSharedContextFromEGLContext </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -134,7 +134,7 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Creates an instance of a shared platform context</p>
-<dl class="section return"><dt>Returns</dt><dd>A unique pointer to a <a class="el" href="classpvr_1_1platform_1_1_shared_egl_context__.html" title="The SharedEglContext class provides the necessary wrapping to allow for the creation of shared EGL re...">SharedEglContext_</a> instance.</dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>A unique pointer to a <a class="el" href="classpvr_1_1platform_1_1_egl_context__.html" title="The EglContext context is the class wrapping all platform-specific objects required to power an OpenG...">EglContext_</a> instance.</dd></dl>
 
 </div>
 </div>
@@ -455,7 +455,7 @@ Public Member Functions</h2></td></tr>
 <div id="FooterMainContainer">
 	<div id="FooterContainer">
 		<div class="footerlogo">
-			<a href="http://www.imgtec.com" target="_blank"><img src="img-footer-logo-grey.png" width="100%" height="100%" border="none" /></a>
+			<a href="http://www.imgtec.com" target="_blank"><img src="img-footer-logo-grey.png" width="20%" height="20%" border="none" /></a>
 		</div>
 		<div class="copyright"><p>&copy; Imagination Technologies Limited<br> All rights reserved</p></div>
 	</div>

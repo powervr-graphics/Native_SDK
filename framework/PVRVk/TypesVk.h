@@ -346,9 +346,9 @@ public:
 /// <param name="newPNext">An element to append to the pNext chain</param>
 inline void appendPNext(VkBaseInStructure* baseStructure, const void* newPNext)
 {
-	auto currentPNext = const_cast<VkBaseInStructure*>(baseStructure->pNext);
-	while (currentPNext != nullptr) { currentPNext = const_cast<VkBaseInStructure*>(currentPNext->pNext); }
-	currentPNext = (VkBaseInStructure*)newPNext;
+	auto currentStructure = baseStructure;
+	while (currentStructure->pNext != nullptr) { currentStructure = const_cast<VkBaseInStructure*>(currentStructure->pNext); }
+	currentStructure->pNext = (VkBaseInStructure*)newPNext;
 }
 
 /// <summary>Contains clear color values (rgba).

@@ -1,3 +1,9 @@
+/*!
+\brief Implements a 3D navigation renderer.
+\file OpenGLESNavigation3D.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #include "PVRShell/PVRShell.h"
 #include "PVRUtils/PVRUtilsGles.h"
 #define NAV_3D
@@ -187,9 +193,7 @@ struct TileRenderingResources
 	}
 };
 
-/*!*********************************************************************************************************************
-Class implementing the pvr::Shell functions.
-***********************************************************************************************************************/
+/// <summary>implementing the pvr::Shell functions.</summary>
 class OGLESNavigation3D : public pvr::Shell
 {
 public:
@@ -302,7 +306,7 @@ private:
 	void executeCommands(const TileRenderingResources& tileRes);
 	void createPrograms();
 	void setPipelineStates(PipelineState pipelineState);
-	// Calculate the key frametime between one point to another.
+	// Calculate the key frame time between one point to another.
 	float calculateRouteKeyFrameTime(const glm::dvec2& start, const glm::dvec2& end) { return ::calculateRouteKeyFrameTime(start, end, _totalRouteDistance, CameraMoveSpeed); }
 
 	glm::vec3 _cameraTranslation;
@@ -324,18 +328,16 @@ public:
 	OGLESNavigation3D() : _totalRouteDistance(0.0f), _keyFrameTime(0.0f), _shadowMatrix(1.0), _cameraTranslation(0.0f) {}
 };
 
-/*!*********************************************************************************************************************
-\return	Return pvr::Result::Success if no error occurred
-\brief	Code in initApplication() will be called by the Shell once per run, before the rendering context is created.
-Used to initialize variables that are not dependent on it  (e.g. external modules, loading meshes, etc.)
-If the rendering context is lost, initApplication() will not be called again.
-***********************************************************************************************************************/
+/// <summary>Code in initApplication() will be called by the Shell once per run, before the rendering context is created.
+/// Used to initialize variables that are not dependent on it  (e.g. external modules, loading meshes, etc.)
+/// If the rendering context is lost, initApplication() will not be called again.</summary>
+/// <returns>Return pvr::Result::Success if no error occurred.</returns>
 pvr::Result OGLESNavigation3D::initApplication()
 {
 	// Disable gamma correction in the framebuffer.
 	setBackBufferColorspace(pvr::ColorSpace::lRGB);
-	// WARNING: This should not be done lightly. This example has taken care of linear/sRGB color space conversion appropriately and has been tuned specifically
-	// for performance/color space correctness.
+	// WARNING: This should not be done lightly. This example has taken care of linear/sRGB colour space conversion appropriately and has been tuned specifically
+	// for performance/colour space correctness.
 
 	_OSMdata = std::make_unique<NavDataProcess>(getAssetStream(MapFile), glm::ivec2(getWidth(), getHeight()));
 	pvr::Result result = _OSMdata->loadAndProcessData();
@@ -344,10 +346,10 @@ pvr::Result OGLESNavigation3D::initApplication()
 
 	createShadowMatrix();
 
-	// perform gamma correction of the linear space colors so that they can do used directly without further thinking about Linear/sRGB color space conversions
-	// This should not be done lightly. This example in most cases only passes through hardcoded color values and uses them directly without applying any
-	// math to their values and so can be performed safely.
-	// When rendering the buildings we do apply math to these colors and as such the color space conversion has been taken care of appropriately
+	// perform gamma correction of the linear space colours so that they can do used directly without further thinking about Linear/sRGB colour space conversions
+	// This should not be done lightly. This example in most cases only passes through hard-coded colour values and uses them directly without applying any
+	// maths to their values and so can be performed safely.
+	// When rendering the buildings we do apply maths to these colours and as such the colour space conversion has been taken care of appropriately
 	_clearColor = pvr::utils::convertLRGBtoSRGB(ClearColorLinearSpace);
 	_roadAreaColor = pvr::utils::convertLRGBtoSRGB(RoadAreaColorLinearSpace);
 	_motorwayColor = pvr::utils::convertLRGBtoSRGB(MotorwayColorLinearSpace);
@@ -362,11 +364,9 @@ pvr::Result OGLESNavigation3D::initApplication()
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return	Return Result::Success if no error occurred
-\brief	Code in initView() will be called by PVRShell upon initialization or after a change in the rendering context.
-Used to initialize variables that are dependent on the rendering context (e.g. textures, vertex buffers, etc.)
-***********************************************************************************************************************/
+/// <summary>Code in initView() will be called by PVRShell upon initialization or after a change in the rendering context.
+/// Used to initialize variables that are dependent on the rendering context.(e.g. textures, vertex buffers, etc.)</summary>
+/// <returns>Return Result::Success if no error occurred.</returns>
 pvr::Result OGLESNavigation3D::initView()
 {
 	_deviceResources = std::make_unique<DeviceResources>();
@@ -477,7 +477,7 @@ void OGLESNavigation3D::setPipelineStates(PipelineState pipelineState)
 	gl::CullFace(GL_NONE);
 	gl::Enable(GL_DEPTH);
 	gl::DepthFunc(GL_LEQUAL);
-	// Classic Alpha blending, but preserving framebuffer alpha to avoid artifacts on compositors that actually use the alpha value.
+	// Classic Alpha blending, but preserving framebuffer alpha to avoid artefacts on compositors that actually use the alpha value.
 	gl::BlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ZERO, GL_ONE);
 	gl::BlendEquation(GL_FUNC_ADD);
 
@@ -494,10 +494,8 @@ void OGLESNavigation3D::setPipelineStates(PipelineState pipelineState)
 	}
 }
 
-/*!*********************************************************************************************************************
-\return	Return true if no error occurred, false if the sampler descriptor set is not valid.
-\brief	Load a texture from file using PVR Asset Store, create a trilinear sampler, create a description set.
-***********************************************************************************************************************/
+/// <summary>Load a texture from file using PVR Asset Store, create a trilinear sampler, create a description set.</summary>
+/// <returns>Return true if no error occurred, false if the sampler descriptor set is not valid.</returns>
 bool OGLESNavigation3D::loadTexture()
 {
 	/// Road Texture
@@ -525,18 +523,14 @@ bool OGLESNavigation3D::loadTexture()
 	return true;
 }
 
-/*!*********************************************************************************************************************
-\brief	Setup uniforms used for drawing the map.
-***********************************************************************************************************************/
+/// <summary>Setup uniforms used for drawing the map. </summary>
 void OGLESNavigation3D::setUniforms()
 {
 	_perspectiveMatrix = _deviceResources->uiRenderer.getScreenRotation() *
 		pvr::math::perspectiveFov(_deviceResources->context->getApiVersion(), glm::radians(45.0f), float(_windowWidth), float(_windowHeight), nearClip, farClip);
 }
 
-/*!*********************************************************************************************************************
-\brief	Creates vertex and index buffers and records the secondary command buffers for each tile.
-***********************************************************************************************************************/
+/// <summary>Creates vertex and index buffers and records the secondary command buffers for each tile.</summary>
 void OGLESNavigation3D::createBuffers()
 {
 	uint32_t col = 0;
@@ -610,10 +604,8 @@ void OGLESNavigation3D::createBuffers()
 	}
 }
 
-/*!*********************************************************************************************************************
-\return	Return Result::Success if no error occurred
-\brief	Main rendering loop function of the program. The shell will call this function every frame.
-***********************************************************************************************************************/
+/// <summary>Main rendering loop function of the program. The shell will call this function every frame.</summary>
+/// <returns>Return Result::Success if no error occurred.</returns>
 pvr::Result OGLESNavigation3D::renderFrame()
 {
 	updateAnimation();
@@ -629,9 +621,7 @@ pvr::Result OGLESNavigation3D::renderFrame()
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\brief	Handle user input.
-***********************************************************************************************************************/
+/// <summary>Handle user input.</summary>
 void OGLESNavigation3D::updateAnimation()
 {
 	if (_OSMdata->getRouteData().size() == 0) { return; }
@@ -651,7 +641,7 @@ void OGLESNavigation3D::updateAnimation()
 	camEndPosition = _OSMdata->getRouteData()[routeIndex + 1].point;
 	const uint32_t lastRouteIndex = routeIndex;
 	_keyFrameTime = calculateRouteKeyFrameTime(camStartPosition, camEndPosition);
-	// Do the transaltion if the camera is not turning
+	// Do the translation if the camera is not turning
 	if (destinationReached && routeRestartTime >= 2000)
 	{
 		destinationReached = false;
@@ -729,18 +719,14 @@ void OGLESNavigation3D::updateAnimation()
 	animTime += dt;
 }
 
-/*!*********************************************************************************************************************
-\brief	Calculate the View Projection Matrix.
-***********************************************************************************************************************/
+/// <summary>Calculate the View Projection Matrix.</summary>
 void OGLESNavigation3D::calculateTransform()
 {
 	_lightDir = glm::normalize(glm::mat3(_viewMatrix) * glm::vec3(0.25f, -2.4f, -1.15f));
 	_viewProjMatrix = _perspectiveMatrix * _viewMatrix;
 }
 
-/*!*********************************************************************************************************************
-\brief	Record the primary command buffer.
-***********************************************************************************************************************/
+/// <summary>Record the primary command buffer.</summary>
 void OGLESNavigation3D::executeCommands()
 {
 	gl::ClearColor(_clearColor.r, _clearColor.g, _clearColor.b, _clearColor.a);
@@ -765,18 +751,14 @@ void OGLESNavigation3D::executeCommands()
 	_deviceResources->uiRenderer.endRendering();
 }
 
-/*!*********************************************************************************************************************
-\brief	Capture frustum planes from the current View Projection matrix
-***********************************************************************************************************************/
+/// <summary>Capture frustum planes from the current View Projection matrix.</summary>
 void OGLESNavigation3D::calculateClipPlanes() { pvr::math::getFrustumPlanes(_deviceResources->context->getApiVersion(), _viewProjMatrix, _viewFrustum); }
 
-/*!*********************************************************************************************************************
-\param min The minimum co-ordinates of the bounding box.
-\param max The maximum co-ordinates of the bounding box.
-\return	boolean True if inside the view frustum, false if outside.
-\brief	Tests whether a 2D bounding box is intersected or enclosed by a view frustum.
-Only the near, far, left and right planes of the view frustum are taken into consideration to optimize the intersection test.
-***********************************************************************************************************************/
+/// <summary>Tests whether a 2D bounding box is intersected or enclosed by a view frustum.
+/// Only the near, far, left and right planes of the view frustum are taken into consideration to optimize the intersection test.</summary>
+/// <param name="min">The minimum co-ordinates of the bounding box.</param>
+/// <param name="max">The maximum co-ordinates of the bounding box.</param>
+/// <returns>Returns True if inside the view frustum, false if outside.</returns>
 bool OGLESNavigation3D::inFrustum(glm::vec2 min, glm::vec2 max)
 {
 	// Test the axis-aligned bounding box against each frustum plane,
@@ -856,7 +838,7 @@ void OGLESNavigation3D::executeCommands(const TileRenderingResources& tileRes)
 	// Draw the roads
 	const ShaderProgramRoad& program = _deviceResources->roadPipe;
 	gl::Enable(GL_BLEND);
-	// Classic Alpha blending, but preserving framebuffer alpha to avoid artifacts on compositors that actually use the alpha value.
+	// Classic Alpha blending, but preserving framebuffer alpha to avoid artefacts on compositors that actually use the alpha value.
 	gl::BlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ZERO, GL_ONE);
 	gl::BlendEquation(GL_FUNC_ADD);
 
@@ -923,7 +905,7 @@ void OGLESNavigation3D::executeCommands(const TileRenderingResources& tileRes)
 		gl::DrawElements(GL_TRIANGLES, buildNum, GL_UNSIGNED_INT, reinterpret_cast<const void*>(static_cast<uintptr_t>(offset)));
 
 		// Planar shadows for buildings only.
-		// Classic Alpha blending, but preserving framebuffer alpha to avoid artifacts on compositors that actually use the alpha value.
+		// Classic Alpha blending, but preserving framebuffer alpha to avoid artefacts on compositors that actually use the alpha value.
 		gl::Enable(GL_BLEND);
 		gl::BlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ZERO, GL_ONE);
 		gl::StencilFunc(GL_EQUAL, 0x0, 0xff);
@@ -953,10 +935,8 @@ void OGLESNavigation3D::executeCommands(const TileRenderingResources& tileRes)
 	}
 }
 
-/*!*********************************************************************************************************************
-\return	Result::Success if no error occurred
-\brief	Code in releaseView() will be called by Shell when the application quits or before a change in the rendering context.
-***********************************************************************************************************************/
+/// <summary>Code in releaseView() will be called by Shell when the application quits or before a change in the rendering context. </summary>
+/// <returns>Result::Success if no error occurred.</returns>
 pvr::Result OGLESNavigation3D::releaseView()
 {
 	// Clean up tile rendering resource data.
@@ -973,11 +953,9 @@ pvr::Result OGLESNavigation3D::releaseView()
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return	Return Result::Success if no error occurred
-\brief	Code in quitApplication() will be called by PVRShell once per run, just before exiting the program.
-If the rendering context is lost, quitApplication() will not be called.
-***********************************************************************************************************************/
+/// <sumary>Code in quitApplication() will be called by PVRShell once per run, just before exiting the program.
+/// If the rendering context is lost, quitApplication() will not be called.</summary>
+/// <returns>Return Result::Success if no error occurred.</returns>
 pvr::Result OGLESNavigation3D::quitApplication() { return pvr::Result::Success; }
 
 /// <summary>This function must be implemented by the user of the shell. The user should return its pvr::Shell object defining the behaviour of the application.</summary>

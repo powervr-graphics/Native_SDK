@@ -172,7 +172,7 @@ const std::string InstanceExtensions[] = {
 	// an intermediate window system such as embedded applications or when running on embedded platforms
 	VK_KHR_DISPLAY_EXTENSION_NAME,
 #ifdef DEBUG
-	// The VK_EXT_debug_report extension provides the functionaltiy for defining a way in which layers and the implementation can
+	// The VK_EXT_debug_report extension provides the functionality for defining a way in which layers and the implementation can
 	// call back to the application for events of particular interest to the application. By enabling this extension the application
 	// has the opportunity for receiving much more detailed feedback regarding the applications use of Vulkan
 	VK_EXT_DEBUG_REPORT_EXTENSION_NAME,
@@ -209,7 +209,7 @@ const std::string DeviceExtensions[] = {
 // Vulkan is a layered API with layers that may provide additional functionality over core Vulkan but do not add or modify existing Vulkan commands.
 // In Vulkan the validation of correct API usage is left to validation layers so they are of particular importance.
 // When a Vulkan layer is enabled it inserts itself into the call chain for Vulkan commands the specific layer is interested in
-// the concept of using layers allows implementations to avoid peformance penalties incurred for validating application behaviour and API usage
+// the concept of using layers allows implementations to avoid performance penalties incurred for validating application behaviour and API usage
 namespace Layers {
 const std::string InstanceLayers[] = {
 #ifdef DEBUG
@@ -222,7 +222,9 @@ const std::string InstanceLayers[] = {
 	"VK_LAYER_LUNARG_standard_validation",
 	// PerfDoc is a Vulkan layer which attempts to identify API usage is may be discouraged primarily by validating applications
 	// against the rules set out in the Mali Application Developer Best Practices document
-	"VK_LAYER_ARM_mali_perf_doc"
+	"VK_LAYER_ARM_mali_perf_doc",
+	"VK_LAYER_IMG_powervr_perf_doc", //
+
 #else
 	""
 #endif
@@ -269,7 +271,7 @@ std::vector<std::string> filterExtensions(const std::vector<VkExtensionPropertie
 
 /// <summary>Filters a list of VkLayerProperties supported by a particular device based on a set of application chosen layers to be used in this demo.</summary>
 /// <param name="layerProperties">A list of VkLayerProperties supported by a particular device which will be used as the base for filtering.</param>
-/// <param name="layersToEnable">A pointer to a list of appication chosen layers to enable.</param>
+/// <param name="layersToEnable">A pointer to a list of application chosen layers to enable.</param>
 /// <param name="layersCount">The number of layers in the array pointed to by layersToEnable.</param>
 /// <returns>A set of device supported layers the application wishes to enable.</returns>
 std::vector<std::string> filterLayers(const std::vector<VkLayerProperties>& layerProperties, const std::string* layersToEnable, uint32_t layersCount)
@@ -326,7 +328,7 @@ inline uint32_t getMemoryTypeIndexHelper(const VkPhysicalDeviceMemoryProperties&
 /// <param name="allowedMemoryTypeBits">A set of allowed memory type bits for the required memory allocation. Retrieved from the memoryTypeBits member of the VkMemoryRequirements
 /// retrieved using vkGetImageMemoryRequirements or vkGetBufferMemoryRequirements etc.</param>
 /// <param name="requiredMemoryProperties">The memory property flags required for the memory allocation.</param>
-/// <param name="optimalMemoryProperties">An optimal st of memory property flags to use for the memory allocation.</param>
+/// <param name="optimalMemoryProperties">An optimal set of memory property flags to use for the memory allocation.</param>
 /// <param name="outMemoryTypeIndex">The memory type index used for allocating the memory.</param>
 /// <param name="outMemoryPropertyFlags">The memory property flags actually used when allocating the memory.</param>
 inline void getMemoryTypeIndex(const VkPhysicalDeviceMemoryProperties& deviceMemProps, const uint32_t allowedMemoryTypeBits, const VkMemoryPropertyFlags requiredMemoryProperties,
@@ -353,7 +355,7 @@ inline void getMemoryTypeIndex(const VkPhysicalDeviceMemoryProperties& deviceMem
 }
 
 /// <summary>Retrieves the VkImageAspectFlags based on the VkFormat. The VkImageAspectFlags specify the aspects of an image for purposes such as identifying a
-/// subresource.</summary>
+/// sub-resource.</summary>
 /// <param name="format">The VkFormat to retrieve VkImageAspectFlags for.</param>
 /// <returns>The compatible VkImageAspectFlags based on the input VkFormat.</returns>
 /// <details>This function simply infers the VkImageAspectFlags based on the position of the given VkFormat in the list of the VkFormat enum.</details>
@@ -382,7 +384,7 @@ inline VkImageAspectFlags formatToImageAspect(VkFormat format)
 }
 
 // Filenames for the SPIR-V shader file binaries used in this demo
-// Note that the binaries are precompiled using the "recompile script" included alongside the demo (recompile.sh/recompile.bat)
+// Note that the binaries are pre-compiled using the "recompile script" included alongside the demo (recompile.sh/recompile.bat)
 const char* VertShaderName = "VertShader.vsh.spv";
 const char* FragShaderName = "FragShader.fsh.spv";
 
@@ -474,7 +476,7 @@ class VulkanIntroducingPVRShell : public pvr::Shell
 	// The model view projection buffer object used for rendering
 	VkBuffer _modelViewProjectionBuffer;
 
-	// The memory backing for the model view projection buffer buffer object.
+	// The memory backing for the model view projection buffer object.
 	VkDeviceMemory _modelViewProjectionMemory;
 
 	// The memory property flags used for allocating the memory for the model view projection memory.
@@ -542,7 +544,7 @@ class VulkanIntroducingPVRShell : public pvr::Shell
 	// The layout specifying the descriptors used by the graphics pipeline.
 	VkPipelineLayout _pipelineLayout;
 
-	// The graphics pipeline specifing the funnel for which certain sets of Vulkan commands are sent through.
+	// The graphics pipeline specifying the funnel for which certain sets of Vulkan commands are sent through.
 	VkPipeline _graphicsPipeline;
 
 	// A pipeline cache providing mechanism for the reuse of the results of pipeline creation.
@@ -665,7 +667,7 @@ public:
 pvr::Result VulkanIntroducingPVRShell::initApplication()
 {
 	setBackBufferColorspace(pvr::ColorSpace::lRGB);
-	// Here we are setting the backbuffer colorspace value to lRGB for simplicity: We are working directly with the "final" sRGB
+	// Here we are setting the back buffer colorspace value to lRGB for simplicity: We are working directly with the "final" sRGB
 	// values in our textures and passing the values through.
 	// Note, the default for PVRShell is sRGB: when doing anything but the most simplistic effects, you will need to
 	// work with linear values in the shaders and then either perform gamma correction in the shader, or (if supported)
@@ -755,7 +757,7 @@ pvr::Result VulkanIntroducingPVRShell::renderFrame()
 
 	// As with various other tasks in Vulkan rendering an image and presenting it to the screen takes some explanation, various commands and a fair amount of thought.
 
-	// We are using a "canonical" way to do synchronization that works in all but the most exotic of cases.
+	// We are using a "canonical" way to do synchronisation that works in all but the most exotic of cases.
 	// Calls to vkAcquireNextImageKHR, using a timeout of UINT64_MAX, will block until a presentable image from the swapchain can be acquired or will return an error.
 	// Calls to vkAcquireNextImageKHR may return immediately and therefore we cannot rely simply on this call to meter our rendering speed, we instead make use of
 	// The fence _perFrameResourcesFences[_swapchainIndex] to provides us with metered rendering and we make use of a semaphore _imageAcquireSemaphores[_currentFrameIndex] signalled
@@ -803,7 +805,7 @@ pvr::Result VulkanIntroducingPVRShell::renderFrame()
 		memcpy(static_cast<unsigned char*>(_modelViewProjectionMappedMemory) + _dynamicBufferAlignedSize * _swapchainIndex, &modelViewProjectionMatrix, sizeof(_viewProjectionMatrix));
 
 		// If the model view projection buffer memory was allocated with VkMemoryPropertyFlags including VK_MEMORY_PROPERTY_HOST_COHERENT_BIT indicating that the host does
-		// not need to manage the memory accesses explictly using the host cache management commands vkFlushMappedMemoryRanges and vkInvalidateMappedMemoryRanges to flush host
+		// not need to manage the memory accesses explicitly using the host cache management commands vkFlushMappedMemoryRanges and vkInvalidateMappedMemoryRanges to flush host
 		// writes to the device meaning we can safely assume writes have taken place prior to making use of the model view projection buffer memory.
 		if ((_modelViewProjectionMemoryFlags & VK_MEMORY_PROPERTY_HOST_COHERENT_BIT) == 0)
 		{
@@ -864,7 +866,7 @@ pvr::Result VulkanIntroducingPVRShell::renderFrame()
 /// <returns>Result::Success if no error occurred.</returns>
 pvr::Result VulkanIntroducingPVRShell::releaseView()
 {
-	// Cleanly release all resources prior to exitting the application.
+	// Cleanly release all resources prior to exiting the application.
 
 	// Wait for the device to finish with the resources prior to releasing them.
 	if (_device) { vulkanSuccessOrDie(_deviceVkFunctions.vkDeviceWaitIdle(_device), "Failed to wait for the device to become idle"); }
@@ -1076,7 +1078,7 @@ void VulkanIntroducingPVRShell::createInstance()
 	uint32_t patch = -1;
 
 	// If a valid function pointer for vkEnumerateInstanceVersion cannot be retrieved then Vulkan only 1.0 is supported by the implementation otherwise we can use
-	// vkEnumerateInstanceVersion to determine the api version supported.
+	// vkEnumerateInstanceVersion to determine the API version supported.
 	if (_vkBindings.vkEnumerateInstanceVersion)
 	{
 		uint32_t supportedApiVersion;
@@ -1317,11 +1319,11 @@ void VulkanIntroducingPVRShell::createSurface(void* window, void* display, void*
 	// Applications may also, on some platforms, present rendered images directly to display devices without the need for an intermediate Window System. The extension
 	// VK_KHR_display in particular can be used for this task.
 
-	// In Vulkan each platform may require unique window integration steps and therefore allows for an abstracted platform indepdent surface to be created.
+	// In Vulkan each platform may require unique window integration steps and therefore allows for an abstracted platform independent surface to be created.
 	// To facilitate this, each platform provides its own Window System Integration (WSI) extension containing platform specific functions for using their own WSI.
-	// Vulkan requires that the use of these extesions is guarded by preprocessor symbols defined in Vulkan's Window System-Specific Header Control appendix.
+	// Vulkan requires that the use of these extensions is guarded by preprocessor symbols defined in Vulkan's Window System-Specific Header Control appendix.
 	// For VulkanIntroducingPVRShell to appropriately make use of the WSI extensions for a given platform it must #define the appropriate symbols for the platform prior to
-	// including Vulkan.h header file. The appropriate set of proprocessor symbols are defined at the top of this file based on a set of compilation flags used to compile this demo.
+	// including Vulkan.h header file. The appropriate set of preprocessor symbols are defined at the top of this file based on a set of compilation flags used to compile this demo.
 
 	// Note that each WSI extension must be appropriately enabled as an instance extension prior to using them. This is controlled via the use of the array
 	// Extensions::InstanceExtensions which is constructed at compile time based on the same set of compilation flags described above.
@@ -1463,7 +1465,7 @@ uint32_t VulkanIntroducingPVRShell::getCompatibleQueueFamily()
 	// Attempts to retrieve a queue family which supports both graphics and presentation for the given application surface. This application has been
 	// written in such a way which requires that the graphics and presentation queue families match.
 	// Not all physical devices will support Window System Integration (WSI) support furthermore not all queue families for a particular physical device will support
-	// presenting to the screen and thus these capabilities must be separately queuried for support.
+	// presenting to the screen and thus these capabilities must be separately queried for support.
 
 	uint32_t queueFamilyCount;
 	// Retrieves the number of queue families the physical device supports.
@@ -1482,7 +1484,7 @@ uint32_t VulkanIntroducingPVRShell::getCompatibleQueueFamily()
 	for (uint32_t i = 0; i < queueFamilyCount; ++i)
 	{
 		vulkanSuccessOrDie(_instanceVkFunctions.vkGetPhysicalDeviceSurfaceSupportKHR(_physicalDevice, i, _surface, &queueFamilySupportsPresentation[i]),
-			"Unable to determine whether the specified queue family suports presentation for the given surface");
+			"Unable to determine whether the specified queue family supports presentation for the given surface");
 		if (((queueFamilyProperties[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) != 0) && queueFamilySupportsPresentation[i]) { return i; }
 	}
 
@@ -1497,7 +1499,7 @@ void VulkanIntroducingPVRShell::createLogicalDevice()
 	// Logical devices represent logical connections to underlying physical devices.
 	// A logical device provides main interface for an application to access the resources of the physical device and the physical device itself including:
 	//		Creation of queues.
-	//		Creation and management of synchronization primitives.
+	//		Creation and management of synchronisation primitives.
 	//		Allocation, release and management of memory.
 	//		Creation and destruction of command buffers and command buffer pools.
 	//		Creation, management and destruction of other graphics state including pipelines and resource descriptors.
@@ -1527,7 +1529,7 @@ void VulkanIntroducingPVRShell::createLogicalDevice()
 	VkDeviceCreateInfo deviceInfo = {};
 	deviceInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
 
-	// Loigical device layers are deprecated and the following members will be ignored by implementations.
+	// Logical device layers are deprecated and the following members will be ignored by implementations.
 	// For more information refer to "Device Layer Deprecation" in the Vulkan spec.
 	{
 		deviceInfo.enabledLayerCount = 0;
@@ -1633,7 +1635,7 @@ void selectPresentMode(const pvr::DisplayAttributes& displayAttributes, std::vec
 			presentationMode = desiredSwapMode;
 			break;
 		}
-		// Secondary matches : Immediate and Mailbox are better fits for each other than FIFO, so set them as secondaries
+		// Secondary matches : Immediate and Mailbox are better fits for each other than FIFO, so set them as secondary
 		// If the user asked for Mailbox, and we found Immediate, set it (in case Mailbox is not found) and keep looking
 		if ((desiredSwapMode == VK_PRESENT_MODE_MAILBOX_KHR) && (currentPresentMode == VK_PRESENT_MODE_IMMEDIATE_KHR)) { presentationMode = VK_PRESENT_MODE_IMMEDIATE_KHR; }
 		// ... And vice versa: If the user asked for Immediate, and we found Mailbox, set it (in case Immediate is not found) and keep looking
@@ -1709,7 +1711,7 @@ void VulkanIntroducingPVRShell::createSwapchain()
 
 	Log(LogLevel::Information, "Surface format selected: VkFormat with enumeration value %d", swapchainColorFormat.format);
 
-	// Store the presentation image color format as we will make use of it elsewhere.
+	// Store the presentation image colour format as we will make use of it elsewhere.
 	_swapchainColorFormat = swapchainColorFormat.format;
 
 	// Get the surface capabilities from the surface and physical device.
@@ -1862,7 +1864,7 @@ void VulkanIntroducingPVRShell::createDepthStencilImages()
 		VkImageFormatProperties imageFormatProperties = {};
 		vulkanSuccessOrDie(_instanceVkFunctions.vkGetPhysicalDeviceImageFormatProperties(
 							   _physicalDevice, createInfo.format, createInfo.imageType, createInfo.tiling, createInfo.usage, createInfo.flags, &imageFormatProperties),
-			"The combination of paramters used is not supported by the implementation for use in vkCreateImage");
+			"The combination of parameters used is not supported by the implementation for use in vkCreateImage");
 
 		// Create the depth stencil image (VkImage).
 		vulkanSuccessOrDie(_deviceVkFunctions.vkCreateImage(_device, &createInfo, NULL, &_depthStencilImages[i]), "Failed to create depth stencil image");
@@ -1903,7 +1905,7 @@ void VulkanIntroducingPVRShell::createDepthStencilImages()
 }
 
 /// <summary>Creates a Buffer, allocates its memory and attaches the memory to the newly created buffer.</summary>
-/// <param name="size">The size of the buffer to create and the amont of memory to allocate.</param>
+/// <param name="size">The size of the buffer to create and the amount of memory to allocate.</param>
 /// <param name="usageFlags">The intended buffer usage.</param>
 /// <param name="requiredMemFlags">The set of flags specifying the required memory properties.</param>
 /// <param name="optimalMemFlags">The set of flags specifying an optimal memory properties.</param>
@@ -1982,7 +1984,7 @@ void VulkanIntroducingPVRShell::loadAndCreateShaderModules(const char* const sha
 	// Load the spirv shader binary from memory by creating a Stream object for it directly from the file system or from a platform specific store such as
 	// Windows resources, Android .apk assets etc.
 	// A shader itself specifies the programmable operations executed for a particular type of task - vertex, control point, tessellated vertex, primitive, fragment or compute
-	// workgroup
+	// work-group
 	std::unique_ptr<pvr::Stream> stream = getAssetStream(shaderName);
 	assertion(stream.get() != nullptr && "Invalid Shader source");
 	std::vector<uint32_t> readData(stream->getSize());
@@ -2017,7 +2019,7 @@ void VulkanIntroducingPVRShell::allocateCommandBuffers()
 	vulkanSuccessOrDie(_deviceVkFunctions.vkAllocateCommandBuffers(_device, &sAllocateInfo, &_cmdBuffers[0]), "Failed to allocate command buffers");
 }
 
-/// <summary>Records the rendering commands into a set of command buffers which can be subsequently submitted to a queue for exection.</summary>
+/// <summary>Records the rendering commands into a set of command buffers which can be subsequently submitted to a queue for execution.</summary>
 void VulkanIntroducingPVRShell::recordCommandBuffers()
 {
 	// Record the rendering commands into a set of command buffers upfront (once). These command buffers can then be submitted to a device queue for execution resulting in fewer
@@ -2075,7 +2077,7 @@ void VulkanIntroducingPVRShell::recordCommandBuffers()
 		// Bind the list of descriptor sets using the dynamic offset.
 		_deviceVkFunctions.vkCmdBindDescriptorSets(_cmdBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelineLayout, 0, 2, descriptorSets, 1, &dynamicOffset);
 
-		// Bind the graphics pipeline through which commands will be funneled.
+		// Bind the graphics pipeline through which commands will be funnelled.
 		_deviceVkFunctions.vkCmdBindPipeline(_cmdBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, _graphicsPipeline);
 
 		// Bind the vertex buffer used for sourcing the triangle vertices
@@ -2100,7 +2102,7 @@ void VulkanIntroducingPVRShell::createPipelineCache()
 
 	// Pipeline caches provide a convenient mechanism for the result of pipeline creation to be reused between pipelines and between runs of an application.
 	// The use of a pipeline cache isn't strictly necessary and won't provide us with any benefits in this application due to the use of only a single pipeline in reuse only
-	// a single run of the application however their use is recommeneded and so their use has been included in this demo for demonstrative purposes only - Using them
+	// a single run of the application however their use is recommended and so their use has been included in this demo for demonstrative purposes only - Using them
 	// is definitely a best practice.
 
 	// Our application only makes use of pipeline caches between pipelines in the same run of the application and we make no effort to save and load
@@ -2112,7 +2114,7 @@ void VulkanIntroducingPVRShell::createPipelineCache()
 	// most possible gains.
 
 	// It's heavily recommended to make use of pipeline caches as much as possible as they provide little to no overhead and provide the opportunity for
-	// the implemntation to provide optimisations for us. From the point of view of the application they provide an easy win in terms of work/benefit.
+	// the implementation to provide optimisations for us. From the point of view of the application they provide an easy win in terms of work/benefit.
 
 	VkPipelineCacheCreateInfo createInfo = {};
 	createInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO;
@@ -2130,7 +2132,7 @@ void VulkanIntroducingPVRShell::createShaderModules()
 	// Creates the VkShaderModule(s) used by the demo.
 
 	// These shader modules contain shader code and entry points used by the graphics pipeline for rendering a textured triangle to the screen.
-	// Note that the shader modules have been precompiled to SPIR-V format using the "recompile script" included alongside the demo (recompile.sh/recompile.bat).
+	// Note that the shader modules have been pre-compiled to SPIR-V format using the "recompile script" included alongside the demo (recompile.sh/recompile.bat).
 	// Note that when creating our graphics pipeline the specific shader to use from the shader module is specified using an entry point.
 	loadAndCreateShaderModules(VertShaderName, _vertexShaderModule);
 	loadAndCreateShaderModules(FragShaderName, _fragmentShaderModule);
@@ -2168,7 +2170,7 @@ void VulkanIntroducingPVRShell::createPipeline()
 	// commands are sent through.
 
 	// The pipeline used throughout this demo is fundamentally simple in nature but still illustrates how to make use of a graphics pipeline to render a geometric object even if it
-	// is only a triangle. The pipeline makes use of vertex attributes (position, normal and uv), samples a particular texture writing the result in to a color attachment and also
+	// is only a triangle. The pipeline makes use of vertex attributes (position, normal and UV), samples a particular texture writing the result in to a colour attachment and also
 	// rendering to a depth stencil attachments.
 	// Pipelines are monolithic objects taking account of various bits of state which allow for a great deal of optimization of shaders based on the pipeline description including
 	// shader inputs/outputs and fixed function stages.
@@ -2183,7 +2185,7 @@ void VulkanIntroducingPVRShell::createPipeline()
 	vertexInputBindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
 	vertexInputBindingDescription.stride = _vboStride;
 
-	// The VkVertexInputAttributeDescription structure specifies the structure of a particular vertex attribute (position, normal, uvs etc.).
+	// The VkVertexInputAttributeDescription structure specifies the structure of a particular vertex attribute (position, normal, UVs etc.).
 	VkVertexInputAttributeDescription vertexInputAttributeDescription[2];
 	vertexInputAttributeDescription[0].binding = 0;
 	vertexInputAttributeDescription[0].format = VK_FORMAT_R32G32B32A32_SFLOAT;
@@ -2215,7 +2217,7 @@ void VulkanIntroducingPVRShell::createPipeline()
 
 	// The next stage of the graphics pipeline, Rasterization, produces fragments based on the points, line segments or triangles constructed in the first stage.
 	// Each of the generated fragments will be passed to the fragment shader carrying out the per fragment rendering - this is where the framebuffer operations occur. This stage
-	// includes blending, masking, stenciling and other logical operations.
+	// includes blending, masking, stencilling and other logical operations.
 
 	// The VkPipelineRasterizationStateCreateInfo structure specifies how various aspects of rasterization occur including cull mode.
 	VkPipelineRasterizationStateCreateInfo rasterizationInfo = {};
@@ -2231,7 +2233,7 @@ void VulkanIntroducingPVRShell::createPipeline()
 	rasterizationInfo.depthBiasEnable = VK_FALSE;
 	rasterizationInfo.depthBiasSlopeFactor = 0.0f;
 
-	// The VkPipelineColorBlendAttachmentState structure specifies blending state for a particular color attachment.
+	// The VkPipelineColorBlendAttachmentState structure specifies blending state for a particular colour attachment.
 	VkPipelineColorBlendAttachmentState colorBlendAttachment = {};
 	colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
 	colorBlendAttachment.blendEnable = VK_FALSE;
@@ -2263,7 +2265,7 @@ void VulkanIntroducingPVRShell::createPipeline()
 	multisamplingInfo.flags = 0;
 	multisamplingInfo.pSampleMask = nullptr;
 	multisamplingInfo.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
-	multisamplingInfo.sampleShadingEnable = VK_TRUE;
+	multisamplingInfo.sampleShadingEnable = VK_FALSE;
 	multisamplingInfo.alphaToCoverageEnable = VK_FALSE;
 	multisamplingInfo.alphaToOneEnable = VK_FALSE;
 	multisamplingInfo.minSampleShading = 0.0f;
@@ -2361,7 +2363,7 @@ void VulkanIntroducingPVRShell::createVbo()
 
 	// The use of VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT specifies that memory allocated with this memory property type is the most efficient for device access.
 	// Note that memory property flag VK_MEMORY_PROPERTY_HOST_COHERENT_BIT has not been specified meaning the host application must manage the memory accesses to this memory
-	// explictly using the host cache management commands vkFlushMappedMemoryRanges and vkInvalidateMappedMemoryRanges to flush host writes to the device or make device writes
+	// explicitly using the host cache management commands vkFlushMappedMemoryRanges and vkInvalidateMappedMemoryRanges to flush host writes to the device or make device writes
 	// visible to the host respectively.
 	VkMemoryPropertyFlags requiredFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
 	VkMemoryPropertyFlags optimalFlags = requiredFlags | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
@@ -2374,11 +2376,11 @@ void VulkanIntroducingPVRShell::createVbo()
 	triangle[2] = { glm::vec4(0.0f, 0.577f, 0.0f, 1.0f), { .5f, 1.f } };
 
 	// The use of VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT indicates that memory allocated with this memory property type can be mapped and unmapped enabling host
-	// access using calls to vkMapMemory and vkUnmapMemory respectively. When this memory property type is used we are able to map/update/unmap the memory to update the contents of
+	// access using calls to vkMapMemory and vkUnmapMemory respectively. When this memory property type is used we are able to map/update/unlap the memory to update the contents of
 	// the memory.
 	if ((_vboMemoryFlags & VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT) != 0)
 	{
-		// Memory created using vkAllocateMemory isn't directly accesible to the host and instead must be mapped manually.
+		// Memory created using vkAllocateMemory isn't directly accessible to the host and instead must be mapped manually.
 		// Note that only memory created with the memory property flag VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT can be mapped.
 		// vkMapMemory retrieves a host virtual address pointer to a region of a mappable memory object.
 		void* mapped = 0;
@@ -2387,7 +2389,7 @@ void VulkanIntroducingPVRShell::createVbo()
 		memcpy(mapped, triangle, sizeof(triangle));
 
 		// If the memory property flags for the allocated memory included the use of VK_MEMORY_PROPERTY_HOST_COHERENT_BIT then the host does not need to manage the
-		// memory accesses explictly using the host cache management commands vkFlushMappedMemoryRanges and vkInvalidateMappedMemoryRanges to flush host writes to
+		// memory accesses explicitly using the host cache management commands vkFlushMappedMemoryRanges and vkInvalidateMappedMemoryRanges to flush host writes to
 		// the device or make device writes visible to the host respectively. This behaviour is handled by the implementation.
 		if ((_vboMemoryFlags & VK_MEMORY_PROPERTY_HOST_COHERENT_BIT) == 0)
 		{
@@ -2427,7 +2429,7 @@ void VulkanIntroducingPVRShell::createVbo()
 			memcpy(mapped, triangle, sizeof(triangle));
 
 			// If the memory property flags for the allocated memory included the use of VK_MEMORY_PROPERTY_HOST_COHERENT_BIT then the host does not need to manage the
-			// memory accesses explictly using the host cache management commands vkFlushMappedMemoryRanges and vkInvalidateMappedMemoryRanges to flush host writes to
+			// memory accesses explicitly using the host cache management commands vkFlushMappedMemoryRanges and vkInvalidateMappedMemoryRanges to flush host writes to
 			// the device or make device writes visible to the host respectively. This behaviour is handled by the implementation.
 			if ((stagingBufferMemoryFlags & VK_MEMORY_PROPERTY_HOST_COHERENT_BIT) == 0)
 			{
@@ -2474,7 +2476,7 @@ void VulkanIntroducingPVRShell::createVbo()
 		// We end the recording of our command buffer.
 		vulkanSuccessOrDie(_deviceVkFunctions.vkEndCommandBuffer(cmdBuffers), "End Staging Buffer Copy to Vbo Command Buffer Recording");
 
-		// We create a fence to make sure that the command buffer is synchronized correctly.
+		// We create a fence to make sure that the command buffer is synchronised correctly.
 		VkFence copyFence;
 		VkFenceCreateInfo copyFenceInfo = {};
 		copyFenceInfo.flags = 0;
@@ -2498,7 +2500,7 @@ void VulkanIntroducingPVRShell::createVbo()
 
 		vulkanSuccessOrDie(_deviceVkFunctions.vkQueueSubmit(_queue, 1, &submitInfo, copyFence), "Submit Staging Buffer to Vbo Copy Command Buffer");
 
-		// Wait for the specified fence to be signaled which ensures that the command buffer has finished executing.
+		// Wait for the specified fence to be signalled which ensures that the command buffer has finished executing.
 		vulkanSuccessOrDie(_deviceVkFunctions.vkWaitForFences(_device, 1, &copyFence, true, static_cast<uint64_t>(-1)), "Staging Buffer Copy to Buffer Fence Signal");
 
 		// We clean up all the temporary data we created for this operation.
@@ -2530,7 +2532,7 @@ void VulkanIntroducingPVRShell::createUniformBuffers()
 
 	// The use of VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT indicates that memory allocated with this memory property type can be mapped and unmapped enabling host
 	// access using calls to vkMapMemory and vkUnmapMemory respectively. The memory property flag VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT is guaranteed to be available
-	// The use of VK_MEMORY_PROPERTY_HOST_COHERENT_BIT indicates the host does not need to manage the memory accesses explictly using the host cache management commands
+	// The use of VK_MEMORY_PROPERTY_HOST_COHERENT_BIT indicates the host does not need to manage the memory accesses explicitly using the host cache management commands
 	// vkFlushMappedMemoryRanges and vkInvalidateMappedMemoryRanges to flush host writes to the device or make device writes visible to the host respectively. This behaviour
 	// is handled by the implementation.
 	VkMemoryPropertyFlags requiredPropertyFlags = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
@@ -2560,7 +2562,7 @@ void VulkanIntroducingPVRShell::createUniformBuffers()
 	}
 }
 
-/// <summary>Generates a simple checkerboard texture.</summary>
+/// <summary>Generates a simple checker board texture.</summary>
 void VulkanIntroducingPVRShell::generateTexture()
 {
 	// Generates a simple checkered texture which will be applied and used as a texture for the triangle we are going to render and rotate on screen.
@@ -2590,7 +2592,7 @@ void VulkanIntroducingPVRShell::allocateDescriptorSets()
 	// Construct a list of descriptor set layouts from which to base the allocated descriptor sets.
 	VkDescriptorSetLayout descriptorSetLayouts[2] = { _staticDescriptorSetLayout, _dynamicDescriptorSetLayout };
 
-	// Create the descriptor set allocation info struct uesd to allocate the descriptors from the descriptor pool.
+	// Create the descriptor set allocation info struct used to allocate the descriptors from the descriptor pool.
 	VkDescriptorSetAllocateInfo descriptorAllocateInfo = {};
 	descriptorAllocateInfo.descriptorPool = _descriptorPool;
 	descriptorAllocateInfo.descriptorSetCount = 2;
@@ -2598,7 +2600,7 @@ void VulkanIntroducingPVRShell::allocateDescriptorSets()
 	descriptorAllocateInfo.pSetLayouts = descriptorSetLayouts;
 	descriptorAllocateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
 
-	// Construct a list of VkDescriptorSets to be used as the target for the resulting desciptor set allocation handles.
+	// Construct a list of VkDescriptorSets to be used as the target for the resulting descriptor set allocation handles.
 	std::vector<VkDescriptorSet*> descriptorSets;
 	descriptorSets.push_back(&_staticDescriptorSet);
 	descriptorSets.push_back(&_dynamicDescriptorSet);
@@ -2606,7 +2608,7 @@ void VulkanIntroducingPVRShell::allocateDescriptorSets()
 	// Allocate the descriptor sets
 	vulkanSuccessOrDie(_deviceVkFunctions.vkAllocateDescriptorSets(_device, &descriptorAllocateInfo, descriptorSets.data()[0]), "Descriptor Set Creation");
 
-	// Note that at this point the descriptor sets are largely unintialized and all the descriptors are undefined although
+	// Note that at this point the descriptor sets are largely uninitialized and all the descriptors are undefined although
 	// the descriptor sets can still be bound to command buffers without issues.
 
 	// In our case we will update the descriptor sets immediately using descriptor set write operations.
@@ -2742,16 +2744,16 @@ void VulkanIntroducingPVRShell::createDescriptorPool()
 	vulkanSuccessOrDie(_deviceVkFunctions.vkCreateDescriptorPool(_device, &descriptorPoolInfo, NULL, &_descriptorPool), "Descriptor Pool Creation");
 }
 
-/// <summary>Creates a checkerboard texture which will be applied to the triangle during rendering.</summary>
+/// <summary>Creates a checker board texture which will be applied to the triangle during rendering.</summary>
 void VulkanIntroducingPVRShell::createTexture()
 {
-	// Creates a checkerboard texture which will be applied to the triangle during rendering.
+	// Creates a checker board texture which will be applied to the triangle during rendering.
 
 	// In Vulkan, uploading an image/texture requires a few more steps than those familiar with older APIs would expect however these steps are required due to the explicit nature
 	// of Vulkan and the control Vulkan affords to the user making possible various performance optimisations. These steps include:
 
 	// 1) Create the (CPU side) texture:
-	//	  a) Create the texture data in cpu side memory.
+	//	  a) Create the texture data in CPU side memory.
 
 	// 2) Create the (empty) (GPU side) texture:
 	//    a) Creating the Vulkan texture definition - a "VkImage" object.
@@ -2767,12 +2769,12 @@ void VulkanIntroducingPVRShell::createTexture()
 	//    a) Create a view for the Vulkan texture so that it can be accessed by pipelines shaders for reading or writing to its image data - "VkImageView" object
 	//    b) Create a sampler controlling how the sampled image data is sampled when accessed by pipeline shaders.
 
-	// A texture (Sampled Image) is stored in the GPU in an implementation-defined way, which may be completely different to the layout of the texture on disk/cpu side.
+	// A texture (Sampled Image) is stored in the GPU in an implementation-defined way, which may be completely different to the layout of the texture on disk/CPU side.
 	// For that reason, it is not possible to map its memory and write directly the data for that image.
 	// This is the reason for the second (Uploading) step: The vkCmdCopyBufferToImage command guarantees the correct translation/swizzling of the texture data.
 
 	//
-	// 1a). Create the texture data in cpu side memory.
+	// 1a). Create the texture data in CPU side memory.
 	//
 
 	// Setup the texture dimensions and the size of the texture itself.
@@ -2780,7 +2782,7 @@ void VulkanIntroducingPVRShell::createTexture()
 	_textureDimensions.width = 256;
 	_textureData.resize(_textureDimensions.width * _textureDimensions.height * (sizeof(uint8_t) * 4));
 
-	// This function generates our texture pattern on-the-fly into a block of cpu side memory (_textureData)
+	// This function generates our texture pattern on-the-fly into a block of CPU side memory (_textureData)
 	generateTexture();
 
 	//
@@ -2854,7 +2856,7 @@ void VulkanIntroducingPVRShell::createTexture()
 		memcpy(mapped, _textureData.data(), _textureData.size());
 
 		// If the memory property flags for the allocated memory included the use of VK_MEMORY_PROPERTY_HOST_COHERENT_BIT then the host does not need to manage the
-		// memory accesses explictly using the host cache management commands vkFlushMappedMemoryRanges and vkInvalidateMappedMemoryRanges to flush host writes to
+		// memory accesses explicitly using the host cache management commands vkFlushMappedMemoryRanges and vkInvalidateMappedMemoryRanges to flush host writes to
 		// the device or make device writes visible to the host respectively. This behaviour is handled by the implementation.
 		if ((stagingBufferMemoryFlags & VK_MEMORY_PROPERTY_HOST_COHERENT_BIT) == 0)
 		{
@@ -2946,7 +2948,7 @@ void VulkanIntroducingPVRShell::createTexture()
 	// We end the recording of our command buffer.
 	vulkanSuccessOrDie(_deviceVkFunctions.vkEndCommandBuffer(cmdBuffers), "End Staging Buffer to Image Copy Command Buffer Recording");
 
-	// We create a fence to make sure that the command buffer is synchronized correctly.
+	// We create a fence to make sure that the command buffer is synchronised correctly.
 	VkFence copyFence;
 	VkFenceCreateInfo copyFenceInfo = {};
 	copyFenceInfo.flags = 0;
@@ -2970,7 +2972,7 @@ void VulkanIntroducingPVRShell::createTexture()
 
 	vulkanSuccessOrDie(_deviceVkFunctions.vkQueueSubmit(_queue, 1, &submitInfo, copyFence), "Submit Staging Buffer Copy to Image Command Buffer");
 
-	// Wait for the specified fence to be signaled which ensures that the command buffer has finished executing.
+	// Wait for the specified fence to be signalled which ensures that the command buffer has finished executing.
 	vulkanSuccessOrDie(_deviceVkFunctions.vkWaitForFences(_device, 1, &copyFence, true, static_cast<uint64_t>(-1)), "Staging Buffer Copy to Image Fence Signal");
 
 	//
@@ -3057,7 +3059,7 @@ void VulkanIntroducingPVRShell::createRenderPass()
 	//		https://www.imgtec.com/blog/the-dr-in-tbdr-deferred-rendering-in-rogue/
 
 	// Each RenderPass subpass may reference a subset of the RenderPass's Framebuffer attachments for reading or writing where each subpass containing information
-	// about what happens to the attachment data when the subpass begins including whether to clear it, load it from memory or leave it unitialized as well
+	// about what happens to the attachment data when the subpass begins including whether to clear it, load it from memory or leave it uninitialised as well
 	// as what to do with the attachment data when the subpass ends including storing it back to memory or discarding it.
 	// RenderPasses require that applications explicitly set out the dependencies between the subpasses providing an implementation with the know-how to effectively optimize when
 	// it should flush/clear/store memory in way it couldn't before. RenderPasses are a prime example of how Vulkan has replaced implementation guess work with the application
@@ -3067,11 +3069,11 @@ void VulkanIntroducingPVRShell::createRenderPass()
 	// Another important feature introduced by Vulkan is the use of transient images (specify VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT in the VkImageUsageFlags member of their
 	// VkImageCreateInfo creation structure).
 	// Consider an attachment which is only ever written to and read during a single RenderPass, an attachment which begins either uninitialized or in a cleared state,
-	// which is first written to by one or more subpasses and then read from by one or more subpasses with the resulting attachment data ultimataly discarded then
+	// which is first written to by one or more subpasses and then read from by one or more subpasses with the resulting attachment data ultimately discarded then
 	// technically the image data never needs to be written out to main memory, further it doesn't need true memory backing at all.
 	// The image data only has a temporary lifetime and therefore can happily live only in cached on-chip memory.
 
-	// RenderPass subpasses, input attachments and transient attachments make possible huge savings in bandwidth, critically for mobile architecures, but also reduce latency by
+	// RenderPass subpasses, input attachments and transient attachments make possible huge savings in bandwidth, critically for mobile architectures, but also reduce latency by
 	// explicitly setting out their dependencies leading ultimately to a reduction in power consumption.
 
 	// RenderPass subpasses and transient attachments owe a lot to the OpenGL ES extensions GL_EXT_shader_pixel_local_storage, GL_EXT_shader_pixel_local_storage2 pioneered by
@@ -3079,13 +3081,13 @@ void VulkanIntroducingPVRShell::createRenderPass()
 	//		https://www.khronos.org/registry/OpenGL/extensions/EXT/EXT_shader_pixel_local_storage.txt
 	//		https://www.khronos.org/registry/OpenGL/extensions/EXT/EXT_shader_pixel_local_storage2.txt
 
-	// This demo uses a very simple RenderPass with a color and depth stencil attachment. The RenderPass then makes use of a single subpass referencing both the color and
+	// This demo uses a very simple RenderPass with a colour and depth stencil attachment. The RenderPass then makes use of a single subpass referencing both the colour and
 	// depth/stencil attachments of the RenderPass. More complicated examples are included in SDK showing off the benefits and optimizations made possible through the use of
 	// RenderPasses with multiple subpasses including the use of input attachments and transient attachments. Check out our DeferredShading example to see how to make the most
 	// RenderPasses and the benefits they can provide to a tiled architecture.
 	VkRenderPassCreateInfo renderPassInfo = {};
 
-	// An attachment description desribes the structure of an attachment including formats, number of samples, image layout transitions and how the image should be handled at the
+	// An attachment description describes the structure of an attachment including formats, number of samples, image layout transitions and how the image should be handled at the
 	// beginning and end of the RenderPass including whether to load or clear memory and store or discard memory respectively.
 	VkAttachmentDescription attachmentDescriptions[2];
 
@@ -3098,7 +3100,7 @@ void VulkanIntroducingPVRShell::createRenderPass()
 	renderPassInfo.pSubpasses = &subpass;
 	renderPassInfo.subpassCount = 1;
 
-	// The first VkAttachmentDescription describes a color attachment which will be undefined initially (VK_IMAGE_LAYOUT_UNDEFINED), transitioning to a layout suitable for
+	// The first VkAttachmentDescription describes a colour attachment which will be undefined initially (VK_IMAGE_LAYOUT_UNDEFINED), transitioning to a layout suitable for
 	// presenting to the screen (VK_IMAGE_LAYOUT_PRESENT_SRC_KHR), uses only a single sample per pixel (VK_SAMPLE_COUNT_1_BIT), a VkFormat matching the format used by the swapchain
 	// images, a VkAttachmentLoadOp specifying that the attachment will be cleared at the beginning of the first subpass in which the attachment is used, a VkAttachmentStoreOp
 	// specifying that the attachment will be stored (VK_ATTACHMENT_STORE_OP_STORE) at the end of the subpass in which the attachment is last used. The stencil load and store
@@ -3131,7 +3133,7 @@ void VulkanIntroducingPVRShell::createRenderPass()
 	// Defines the set of RenderPass attachments the subsequent subpass will make use of and the layout these attachments must be in for the particular subpass.
 	VkAttachmentReference attachmentReferences[2] = { { 0, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL }, { 1, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL } };
 
-	// The subpass makes use of a single color attachment and the depth stencil attachment matching RenderPass attachments at index 0 and 1 repsectively.
+	// The subpass makes use of a single colour attachment and the depth stencil attachment matching RenderPass attachments at index 0 and 1 respectively.
 	subpass.colorAttachmentCount = 1;
 	subpass.pColorAttachments = &attachmentReferences[0];
 	subpass.pDepthStencilAttachment = &attachmentReferences[1];
@@ -3185,8 +3187,8 @@ void VulkanIntroducingPVRShell::createFramebuffer()
 	framebufferInfo.width = getWidth();
 	framebufferInfo.height = getHeight();
 	framebufferInfo.layers = 1;
-	// This Framebuffer is comapatible with the application renderPass or with any other renderPass compatible with the application renderPass. For more information on RenderPass
-	// compatbility please refer to the Vulkan spec section "Render Pass Compatibility".
+	// This Framebuffer is compatible with the application renderPass or with any other renderPass compatible with the application renderPass. For more information on RenderPass
+	// compatibility please refer to the Vulkan spec section "Render Pass Compatibility".
 	framebufferInfo.renderPass = _renderPass;
 	framebufferInfo.attachmentCount = 2;
 	// Create a Framebuffer per swapchain making use of the per swapchain presentation image and depth stencil image.
@@ -3214,23 +3216,23 @@ void VulkanIntroducingPVRShell::createCommandPool()
 	vulkanSuccessOrDie(_deviceVkFunctions.vkCreateCommandPool(_device, &commandPoolCreateInfo, nullptr, &_commandPool), "Failed to create command pool");
 }
 
-/// <summary>Creates the fences and semaphores used for synchronization throughout this demo.</summary>
+/// <summary>Creates the fences and semaphores used for synchronisation throughout this demo.</summary>
 void VulkanIntroducingPVRShell::createSynchronisationPrimitives()
 {
-	// Create the fences and semaphores for synchronization throughout the demo.
+	// Create the fences and semaphores for synchronisation throughout the demo.
 
 	// One of the major changes in strategy introduced in Vulkan has been that there are fewer implicit guarantees as to the order in which commands are executed with respect to
-	// other commands on the device and the host itself. Synchronization has now become the responsibility of the application.
+	// other commands on the device and the host itself. Synchronisation has now become the responsibility of the application.
 
-	// Here we create the fences and semaphores used for synchornizing image acquisition, the use of per frame resources, submission to device queues and finally the presentation
-	// of images. Note that the use of these synchronization primitives are explained in detail in the renderFrame function.
+	// Here we create the fences and semaphores used for synchronising image acquisition, the use of per frame resources, submission to device queues and finally the presentation
+	// of images. Note that the use of these synchronisation primitives are explained in detail in the renderFrame function.
 
 	// Semaphores are used for inserting dependencies between batches submitted to queues.
 	VkSemaphoreCreateInfo sci = {};
 	sci.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
 
 	// Fences are used for indicating a dependency from the queue to the host.
-	// The fences are created in the signalled state meaning we don't require any special logic for handling the first frame synchronization.
+	// The fences are created in the signalled state meaning we don't require any special logic for handling the first frame synchronisation.
 	VkFenceCreateInfo fci = {};
 	fci.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
 	fci.flags = VK_FENCE_CREATE_SIGNALED_BIT;

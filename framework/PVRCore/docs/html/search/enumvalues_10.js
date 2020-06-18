@@ -2,7 +2,7 @@ var searchData=
 [
   ['sampledimage',['SampledImage',['../namespacepvr.html#a3283c5c9822ac5135fefd45a7cdd5932a4520c597ce328c250d1ca5192047d71d',1,'pvr']]],
   ['sampler',['Sampler',['../namespacepvr.html#a3283c5c9822ac5135fefd45a7cdd5932a5bca2f066df1fe641b2b779db2a63c0a',1,'pvr']]],
-  ['sizeofheader',['SizeOfHeader',['../structpvr_1_1_texture_header_1_1_header.html#a98897c220e0645d75555f481ae4749fba4c429f4b608512e069e7a03b99e6a58e',1,'pvr::TextureHeader::Header']]],
+  ['sizeofheader',['SizeOfHeader',['../structpvr_1_1_texture_header.html#aa575a1cac05e7c71cc544ff4469264a4a656632f4d3e87051deca7655ead0f65b',1,'pvr::TextureHeader']]],
   ['src1alpha',['Src1Alpha',['../namespacepvr.html#afc560f133c0bcec5adff02183b4a9386aa69d96453c025ed62b3276e892e59e39',1,'pvr']]],
   ['src1color',['Src1Color',['../namespacepvr.html#afc560f133c0bcec5adff02183b4a9386a87c65d6ae5c79e8a05482365776bd959',1,'pvr']]],
   ['srcalpha',['SrcAlpha',['../namespacepvr.html#afc560f133c0bcec5adff02183b4a9386ad5c7b7f0102df3f7305c43f73fc3a498',1,'pvr']]],

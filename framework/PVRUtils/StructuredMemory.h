@@ -733,6 +733,8 @@ public:
 	DEFINE_SETVALUE_FOR_TYPE(glm::vec4)
 	DEFINE_SETVALUE_FOR_TYPE(glm::ivec2)
 	DEFINE_SETVALUE_FOR_TYPE(glm::ivec4)
+	DEFINE_SETVALUE_FOR_TYPE(glm::uvec2)
+	DEFINE_SETVALUE_FOR_TYPE(glm::uvec4)
 	DEFINE_SETVALUE_FOR_TYPE(glm::mat2x2)
 	DEFINE_SETVALUE_FOR_TYPE(glm::mat2x4)
 	DEFINE_SETVALUE_FOR_TYPE(glm::mat3x2)
@@ -751,6 +753,10 @@ public:
 	/// <param name="value">The value to set by reference</param>
 	void setValue(const glm::ivec3& value) { memcpy(static_cast<char*>(getMappedMemory()) + getOffset(), &value, sizeof(glm::ivec3)); }
 
+	/// <summary>Sets the value (glm::ivec3 specific) for this element taking the source by reference</summary>
+	/// <param name="value">The value to set by reference</param>
+	void setValue(const glm::uvec3& value) { memcpy(static_cast<char*>(getMappedMemory()) + getOffset(), &value, sizeof(glm::uvec3)); }
+
 	/// <summary>Sets the value (glm::vec3 specific) for this element taking the source by pointer</summary>
 	/// <param name="value">The value to set by pointer</param>
 	void setValue(const glm::vec3* value)
@@ -765,6 +771,14 @@ public:
 	{
 		for (uint32_t i = 0; i < this->_prototype.getNumArrayElements(); ++i)
 		{ memcpy(static_cast<char*>(getMappedMemory()) + getOffset() + sizeof(glm::ivec4) * i, value + i, sizeof(glm::ivec3)); }
+	}
+
+	/// <summary>Sets the value (glm::uvec3 specific) for this element taking the source by pointer</summary>
+	/// <param name="value">The value to set by pointer</param>
+	void setValue(const glm::uvec3* value)
+	{
+		for (uint32_t i = 0; i < this->_prototype.getNumArrayElements(); ++i)
+		{ memcpy(static_cast<char*>(getMappedMemory()) + getOffset() + sizeof(glm::uvec4) * i, value + i, sizeof(glm::uvec3)); }
 	}
 
 	/// <summary>Sets the value (glm::mat2x3 specific) for this element taking the source by reference</summary>

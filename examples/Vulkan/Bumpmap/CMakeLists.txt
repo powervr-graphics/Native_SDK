@@ -33,9 +33,9 @@ add_assets_to_target(VulkanBumpmap
 	ASSET_FOLDER ${ASSET_FOLDER} 
 	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/Satyr
 	FILE_LIST 
+		Satyr.pod
 		MarbleNormalMap.pvr
-		Marble.pvr
-		Satyr.pod)
+		Marble.pvr)
 
 ### Shaders that need to be compiled to SpirV (Vulkan) ###
 # During build time, glslangvalidator will be called to create a "<shadername.extension>.spv" file
@@ -55,7 +55,7 @@ add_assets_resource_file(VulkanBumpmap)
 # Apply SDK example specific compile and linker options
 apply_example_compile_options_to_target(VulkanBumpmap)
 
-target_link_libraries(VulkanBumpmap
+target_link_libraries(VulkanBumpmap PUBLIC
 	PVRShell
 	PVRUtilsVk
 )

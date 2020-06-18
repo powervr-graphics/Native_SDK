@@ -57,7 +57,7 @@ void main()
 
 	 int self = cache[lidy][lidx]; 
 
-	// OPTIMIZED Expression : the slightly faster following expression (eliminate 3 branches in favor of a
+	// OPTIMIZED Expression : the slightly faster following expression (eliminate 3 branches in favour of a
 	// mix and two convert to float).
 	 int nextState = int(mix(nNeighbours == 3, nNeighbours >= 2 && nNeighbours <= 3, bool(self)));
 

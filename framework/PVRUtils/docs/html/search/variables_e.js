@@ -8,5 +8,6 @@ var searchData=
   ['stenciltestchanged',['stencilTestChanged',['../structpvr_1_1ui_1_1_g_l_state_tracker.html#a01facd6133a2997148cbb0aebecf9fce',1,'pvr::ui::GLStateTracker']]],
   ['steprate',['stepRate',['../structpvr_1_1utils_1_1_vertex_input_binding_info.html#a4a0ba801a760bfcd833720e2c569fd02',1,'pvr::utils::VertexInputBindingInfo']]],
   ['strideinbytes',['strideInBytes',['../structpvr_1_1utils_1_1_vertex_input_binding_info.html#a8eb59b416afb7564ea282739d995cc28',1,'pvr::utils::VertexInputBindingInfo']]],
-  ['surface',['surface',['../structpvr_1_1utils_1_1_queue_populate_info.html#ab303d9a7f5c55fcd9a13f272ae23b764',1,'pvr::utils::QueuePopulateInfo']]]
+  ['surface',['surface',['../structpvr_1_1utils_1_1_queue_populate_info.html#ab303d9a7f5c55fcd9a13f272ae23b764',1,'pvr::utils::QueuePopulateInfo']]],
+  ['swapchain',['swapchain',['../structpvr_1_1utils_1_1_on_screen_objects.html#a3a0f31739dd381069c4eb8187f722191',1,'pvr::utils::OnScreenObjects']]]
 ];

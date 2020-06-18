@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.3)
 project(OpenGLESIMGFramebufferDownsample)
-if(IOS)	
+if(IOS)
 	message("Skipping OpenGLESIMGFramebufferDownsample : Not supported on iOS")
 	return()
 endif()
@@ -47,7 +47,7 @@ add_assets_resource_file(OpenGLESIMGFramebufferDownsample)
 # Apply SDK example specific compile and linker options
 apply_example_compile_options_to_target(OpenGLESIMGFramebufferDownsample)
 
-target_link_libraries(OpenGLESIMGFramebufferDownsample
+target_link_libraries(OpenGLESIMGFramebufferDownsample PUBLIC
 	PVRShell
 	PVRUtilsGles
 )

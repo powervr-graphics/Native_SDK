@@ -460,6 +460,32 @@ void Shell::setFakeFrameTime(uint32_t value) { _data->fakeFrameTime = value; }
 
 uint32_t Shell::getFakeFrameTime() const { return _data->fakeFrameTime; }
 
+std::unique_ptr<Stream> Shell::getWriteAssetStream(const std::string& filename, bool allowRead, bool truncateIfExists) const
+{
+	std::unique_ptr<Stream> stream;
+	std::string mode;
+
+	try
+	{
+		// the file open mode will depend on the flags possible combinations are: wb, wb+, ab, ab+.
+		mode.append((truncateIfExists ? "a" : "w")).append("b").append((allowRead ? "+" : ""));
+
+		// The files will be written to the WritePath which is platform specific.
+		stream = std::make_unique<FileStream>(getWritePath() + filename, mode, false);
+
+		if (stream.get())
+		{
+			if (stream->isWritable()) { return stream; }
+		}
+	}
+	catch (...)
+	{
+		stream.reset();
+	}
+
+	return std::unique_ptr<Stream>();
+}
+
 std::unique_ptr<Stream> Shell::getAssetStream(const std::string& filename, bool errorIfFileNotFound) const
 {
 	// The shell will first attempt to open a file in your readpath with the same name.
@@ -495,11 +521,16 @@ std::unique_ptr<Stream> Shell::getAssetStream(const std::string& filename, bool 
 #elif defined(__ANDROID__) // On android, external files are packaged in the .apk as assets
 	struct android_app* app = static_cast<android_app*>(_data->os->getApplication());
 
-	if (app && app->activity && app->activity->assetManager) { stream = std::make_unique<AndroidAssetStream>(app->activity->assetManager, filename.c_str()); }
-	else
+	try
 	{
-		Log(LogLevel::Debug, "Could not request android asset stream %s -- Application, Activity or Assetmanager was null", filename.c_str());
+		if (app && app->activity && app->activity->assetManager) { stream = std::make_unique<AndroidAssetStream>(app->activity->assetManager, filename.c_str()); }
+		else
+		{
+			Log(LogLevel::Debug, "Could not request android asset stream %s -- Application, Activity or Assetmanager was null", filename.c_str());
+		}
 	}
+	catch (FileNotFoundError)
+	{}
 #endif // On the rest of the files, the filesystem is either sandboxed (iOS) or we use it directly (Linux)
 	try
 	{

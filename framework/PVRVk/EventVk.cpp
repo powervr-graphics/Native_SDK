@@ -45,7 +45,7 @@ bool Event_::isSet()
 {
 	Result res;
 	vkThrowIfError(res = static_cast<pvrvk::Result>(getDevice()->getVkBindings().vkGetEventStatus(getDevice()->getVkHandle(), getVkHandle())), "Event::isSet returned an error");
-	assert(res == Result::e_EVENT_SET || res == Result::e_EVENT_RESET && "Event::isSet returned a success code that was neither EVENT_SET or EVENT_RESET");
+	assert((res == Result::e_EVENT_SET || res == Result::e_EVENT_RESET) && "Event::isSet returned a success code that was neither EVENT_SET or EVENT_RESET");
 	return res == Result::e_EVENT_SET;
 }
 } // namespace impl

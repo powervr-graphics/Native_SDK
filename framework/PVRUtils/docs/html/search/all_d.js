@@ -4,6 +4,7 @@ var searchData=
   ['offsetx',['offsetX',['../structpvr_1_1utils_1_1_image_update_info.html#a9c2480ee85781549db081da54c7cbf7b',1,'pvr::utils::ImageUpdateInfo']]],
   ['offsety',['offsetY',['../structpvr_1_1utils_1_1_image_update_info.html#a3bae3542769781673b17522db91c19b0',1,'pvr::utils::ImageUpdateInfo']]],
   ['offsetz',['offsetZ',['../structpvr_1_1utils_1_1_image_update_info.html#af9bdb2f2512ec72d5669ae3b870d7fa5',1,'pvr::utils::ImageUpdateInfo']]],
+  ['onscreenobjects',['OnScreenObjects',['../structpvr_1_1utils_1_1_on_screen_objects.html',1,'pvr::utils']]],
   ['openclerror',['OpenCLError',['../classclutils_1_1_open_c_l_error.html',1,'clutils::OpenCLError'],['../classclutils_1_1_open_c_l_error.html#a3112f7a3464535c0a3074beb16ec979d',1,'clutils::OpenCLError::OpenCLError(cl_int errorCode)'],['../classclutils_1_1_open_c_l_error.html#a445b5ec21f6a3af24455ec7b4147a3a4',1,'clutils::OpenCLError::OpenCLError(cl_int errorCode, const std::string &amp;message)']]],
   ['openclformatconversionerror',['OpenCLFormatConversionError',['../classclutils_1_1_open_c_l_format_conversion_error.html',1,'clutils']]],
   ['openclutils_2eh',['OpenCLUtils.h',['../_open_c_l_utils_8h.html',1,'']]],

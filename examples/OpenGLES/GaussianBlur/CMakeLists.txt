@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.3)
 project(OpenGLESGaussianBlur)
-if(IOS)	
+if(IOS)
 	message("Skipping OpenGLESGaussianBlur : Not supported on iOS")
 	return()
 endif()
@@ -52,7 +52,7 @@ add_assets_resource_file(OpenGLESGaussianBlur)
 # Apply SDK example specific compile and linker options
 apply_example_compile_options_to_target(OpenGLESGaussianBlur)
 
-target_link_libraries(OpenGLESGaussianBlur
+target_link_libraries(OpenGLESGaussianBlur PUBLIC
 	PVRShell
 	PVRUtilsGles
 )

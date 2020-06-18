@@ -86,7 +86,7 @@ add_assets_resource_file(VulkanExampleUI)
 # Apply SDK example specific compile and linker options
 apply_example_compile_options_to_target(VulkanExampleUI)
 
-target_link_libraries(VulkanExampleUI
+target_link_libraries(VulkanExampleUI PUBLIC
 	PVRShell
 	PVRUtilsVk
 )

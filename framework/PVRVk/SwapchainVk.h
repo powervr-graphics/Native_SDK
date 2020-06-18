@@ -56,7 +56,7 @@ public:
 	/// <param name="presentMode">The presentation mode the swapchain will use.</param>
 	/// <param name="imageArrayLayers">The number of views in a multiview/stereo surface</param>
 	/// <param name="imageSharingMode">The sharing mode used for the image(s) of the swapchain.</param>
-	/// <param name="preTransform">A pvrvk::SurfaceTransformFlagsKHR value describing the transform, relative to the presentation engine’s natural orientation, applied to the image content prior to presentation. If it does not match the currentTransform value returned by vkGetPhysicalDeviceSurfaceCapabilitiesKHR, the presentation engine will transform the image content as part of the presentation operation.</param>
+	/// <param name="preTransform">A pvrvk::SurfaceTransformFlagsKHR value describing the transform, relative to the presentation engine's natural orientation, applied to the image content prior to presentation. If it does not match the currentTransform value returned by vkGetPhysicalDeviceSurfaceCapabilitiesKHR, the presentation engine will transform the image content as part of the presentation operation.</param>
 	/// <param name="compositeAlpha">A pvrvk::CompositeAlphaFlagsKHR value indicating the alpha compositing mode to use when this surface is composited together with other surfaces on certain window systems.</param>
 	/// <param name="clipped">Specifies whether the Vulkan implementation is allowed to discard rendering operations that affect regions of the surface that are not visible.</param>
 	/// <param name="oldSwapchain">Is a null pvrvk::Swapchain, or the existing non-retired swapchain currently associated with surface.</param>

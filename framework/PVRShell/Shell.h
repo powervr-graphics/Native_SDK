@@ -952,6 +952,14 @@ public:
 	/// <returns>A unique pointer to the Stream returned if successful, an Empty unique pointer if failed.</returns>
 	std::unique_ptr<Stream> getAssetStream(const std::string& filename, bool errorIfFileNotFound = true) const;
 
+	/// <summary>Create and return a Stream object for a specific filename. Uses platform dependent write path rules to
+	/// create the stream</summary>
+	/// <param name="filename">The name of the file to load. Should be a raw filename.</param>
+	/// <param name="allowRead">Whether to allow read & write or Write only access.</param>
+	/// <param name="truncateIfExists">Whether it's a write operation (false) or and append operation (true)</param>
+	/// <returns>A unique pointer to the Stream returned if successful, an Empty unique pointer if failed.</returns>
+	std::unique_ptr<Stream> getWriteAssetStream(const std::string& filename, bool allowRead = false, bool truncateIfExists = false) const;
+
 	/// <summary>Gets the ShellOS object owned by this shell.</summary>
 	/// <returns>The ShellOS object owned by this shell.</returns>
 	ShellOS& getOS() const;

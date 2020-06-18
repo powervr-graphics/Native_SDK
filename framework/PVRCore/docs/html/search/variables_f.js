@@ -6,7 +6,7 @@ var searchData=
   ['pipelines',['pipelines',['../structpvr_1_1effect_1_1_subpass_group.html#a13ba6337288029b0b0c3c59058881a3f',1,'pvr::effect::SubpassGroup']]],
   ['pitchorlinearsize',['pitchOrLinearSize',['../structpvr_1_1texture__dds_1_1_file_header.html#ad459e95d64e7744d6448a5d258ad6c47',1,'pvr::texture_dds::FileHeader']]],
   ['pixeldepth',['pixelDepth',['../structpvr_1_1texture__ktx_1_1_file_header.html#a675feaacbf44bc3b6430a727bc23e007',1,'pvr::texture_ktx::FileHeader']]],
-  ['pixelformat',['pixelFormat',['../structpvr_1_1_texture_header_1_1_header.html#a846eff0f6fc3f5514b628d2665a1461b',1,'pvr::TextureHeader::Header::pixelFormat()'],['../structpvr_1_1texture__dds_1_1_file_header.html#add7ff70972be86c13b63c6a3dd7745b9',1,'pvr::texture_dds::FileHeader::pixelFormat()']]],
+  ['pixelformat',['pixelFormat',['../structpvr_1_1_texture_header.html#a0c4edd7302ab785ff47b46dd4f46170f',1,'pvr::TextureHeader::pixelFormat()'],['../structpvr_1_1texture__dds_1_1_file_header.html#add7ff70972be86c13b63c6a3dd7745b9',1,'pvr::texture_dds::FileHeader::pixelFormat()']]],
   ['pixelformatandflags',['pixelFormatAndFlags',['../structpvr_1_1texture__legacy_1_1_header_v1.html#a0ac5f064f791d501aad102836482fe00',1,'pvr::texture_legacy::HeaderV1']]],
   ['pixelheight',['pixelHeight',['../structpvr_1_1texture__ktx_1_1_file_header.html#ae24a7341737befc899d564702d6e2002',1,'pvr::texture_ktx::FileHeader']]],
   ['pixeloffset',['pixelOffset',['../structpvr_1_1texture__bmp_1_1_file_header.html#af5b6916ab9f18f3a8335a2cee501a52f',1,'pvr::texture_bmp::FileHeader']]],

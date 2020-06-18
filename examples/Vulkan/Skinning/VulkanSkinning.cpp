@@ -1,9 +1,10 @@
-/*!*********************************************************************************************************************
-\File         VulkanSkinning.cpp
-\Author       PowerVR by Imagination, Developer Technology Team
-\Copyright    Copyright (c) Imagination Technologies Limited.
-\brief      Shows how to perform skinning combined with Dot3 (normal-mapped) lighting
-***********************************************************************************************************************/
+/*!
+\brief Shows how to perform skinning combined with Dot3 (normal-mapped) lighting
+\file VulkanSkinning.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
+
 #include "PVRShell/PVRShell.h"
 #include "PVRUtils/PVRUtilsVk.h"
 #include "PVRPfx/RenderManagerVk.h"
@@ -59,9 +60,7 @@ struct DeviceResources
 	}
 };
 
-/*!*********************************************************************************************************************
-Class implementing the Shell functions.
-***********************************************************************************************************************/
+/// <summary>Class implementing the Shell functions.</summary>
 class VulkanSkinning : public pvr::Shell
 {
 	std::unique_ptr<DeviceResources> _deviceResources;
@@ -88,10 +87,8 @@ public:
 	void eventMappedInput(pvr::SimplifiedInput action);
 };
 
-/*!*********************************************************************************************************************
-\brief  handle the input event
-\param  action input actions to handle
-***********************************************************************************************************************/
+/// <summary>handle the input event.</summary>
+/// <param name="action">input actions to handle.</param>
 void VulkanSkinning::eventMappedInput(pvr::SimplifiedInput action)
 {
 	switch (action)
@@ -104,12 +101,10 @@ void VulkanSkinning::eventMappedInput(pvr::SimplifiedInput action)
 	}
 }
 
-/*!*********************************************************************************************************************
-\return Return pvr::Result::Success if no error occurred
-\brief  Code in initApplication() will be called by Shell once per run, before the rendering context is created.
-Used to initialize variables that are not dependent on it (e.g. external modules, loading meshes, etc.)
-If the rendering context is lost, initApplication() will not be called again.
-***********************************************************************************************************************/
+/// <summary>Code in initApplication() will be called by Shell once per run, before the rendering context is created.
+/// Used to initialize variables that are not dependent on it(e.g.external modules, loading meshes, etc.).If the rendering
+/// context is lost, initApplication() will not be called again.</summary>
+/// <returns>Result::Success if no error occurred.</returns>
 pvr::Result VulkanSkinning::initApplication()
 {
 	this->setStencilBitsPerPixel(0);
@@ -118,22 +113,17 @@ pvr::Result VulkanSkinning::initApplication()
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return Return pvr::Result::Success if no error occurred
-\brief  Code in quitApplication() will be called by Shell once per run, just before exiting the program.
-If the rendering context is lost, quitApplication() will not be called.
-***********************************************************************************************************************/
+/// <summary>Code in quitApplication() will be called by pvr::Shell once per run, just before exiting the program.</summary>
+/// <returns>Result::Success if no error occurred</returns>.
 pvr::Result VulkanSkinning::quitApplication()
 {
 	_scene.reset();
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return Return pvr::Result::Success if no error occurred
-\brief  Code in initView() will be called by Shell upon initialization or after a change in the rendering context.
-Used to initialize variables that are dependent on the rendering context (e.g. textures, vertex buffers, etc.)
-***********************************************************************************************************************/
+/// <summary>Code in initView() will be called by Shell upon initialization or after a change  in the rendering context. Used to initialize variables that are dependent on the
+/// rendering context(e.g.textures, vertex buffers, etc.).</summary>
+/// <returns>Result::Success if no error occurred.</returns>
 pvr::Result VulkanSkinning::initView()
 {
 	_deviceResources = std::make_unique<DeviceResources>();
@@ -148,7 +138,7 @@ pvr::Result VulkanSkinning::initView()
 	}
 
 	// Create the surface
-	_deviceResources->surface =
+	pvrvk::Surface surface =
 		pvr::utils::createSurface(_deviceResources->instance, _deviceResources->instance->getPhysicalDevice(0), this->getWindow(), this->getDisplay(), this->getConnection());
 
 	// Create a default set of debug utils messengers or debug callbacks using either VK_EXT_debug_utils or VK_EXT_debug_report respectively
@@ -157,7 +147,7 @@ pvr::Result VulkanSkinning::initView()
 	// look for graphics queue with presentation support for the given surface
 	const pvr::utils::QueuePopulateInfo queueCreateInfo = {
 		pvrvk::QueueFlags::e_GRAPHICS_BIT | pvrvk::QueueFlags::e_COMPUTE_BIT,
-		_deviceResources->surface,
+		surface,
 	};
 
 	pvr::utils::QueueAccessInfo queueAccessInfo;
@@ -168,15 +158,21 @@ pvr::Result VulkanSkinning::initView()
 
 	_deviceResources->vmaAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
 
-	pvrvk::SurfaceCapabilitiesKHR surfaceCapabilities = _deviceResources->instance->getPhysicalDevice(0)->getSurfaceCapabilities(_deviceResources->surface);
+	pvrvk::SurfaceCapabilitiesKHR surfaceCapabilities = _deviceResources->instance->getPhysicalDevice(0)->getSurfaceCapabilities(surface);
 
 	// validate the supported swapchain image usage
 	pvrvk::ImageUsageFlags swapchainImageUsage = pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT;
 	if (pvr::utils::isImageUsageSupportedBySurface(surfaceCapabilities, pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT))
 	{ swapchainImageUsage |= pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT; } // create the swapchain
-	pvr::utils::createSwapchainAndDepthStencilImageAndViews(_deviceResources->device, _deviceResources->surface, getDisplayAttributes(), _deviceResources->swapchain,
-		_deviceResources->depthStencilImages, swapchainImageUsage, pvrvk::ImageUsageFlags::e_DEPTH_STENCIL_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_TRANSIENT_ATTACHMENT_BIT,
-		&_deviceResources->vmaAllocator);
+
+	// Create the Swapchain
+	_deviceResources->swapchain = pvr::utils::createSwapchain(_deviceResources->device, surface, getDisplayAttributes(), swapchainImageUsage);
+
+	// Create the Depth/Stencil buffer images
+	pvr::utils::createAttachmentImages(_deviceResources->depthStencilImages, _deviceResources->device, _deviceResources->swapchain->getSwapchainLength(),
+		pvr::utils::getSupportedDepthStencilFormat(_deviceResources->device, getDisplayAttributes()), _deviceResources->swapchain->getDimension(),
+		pvrvk::ImageUsageFlags::e_DEPTH_STENCIL_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_TRANSIENT_ATTACHMENT_BIT, pvrvk::SampleCountFlags::e_1_BIT,
+		_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_DEDICATED_MEMORY_BIT, "DepthStencilBufferImages");
 
 	_currentFrame = 0.;
 
@@ -192,7 +188,7 @@ pvr::Result VulkanSkinning::initView()
 	_deviceResources->commandPool = _deviceResources->device->createCommandPool(
 		pvrvk::CommandPoolCreateInfo(_deviceResources->queue->getFamilyIndex(), pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT));
 
-	// create the commandbuffers, semaphores & the fence
+	// create the command buffers, semaphores & the fence
 	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
 	{
 		_deviceResources->cmdBuffers[i] = _deviceResources->commandPool->allocateCommandBuffer();
@@ -266,20 +262,16 @@ pvr::Result VulkanSkinning::initView()
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return Return pvr::Result::Success if no error occurred
-\brief  Code in releaseView() will be called by Shell when the application quits or before a change in the rendering context.
-***********************************************************************************************************************/
+/// <summary>Code in releaseView() will be called by Shell when the application quits.</summary>
+/// <returns>Result::Success if no error occurred.</returns>
 pvr::Result VulkanSkinning::releaseView()
 {
 	_deviceResources.reset();
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return Return pvr::Result::Success if no error occurred
-\brief  Main rendering loop function of the program. The shell will call this function every frame.
-***********************************************************************************************************************/
+/// <summary>Main rendering loop function of the program. The shell will call this function every frame.</summary>
+/// <returns>Result::Success if no error occurred.</returns>
 pvr::Result VulkanSkinning::renderFrame()
 {
 	_deviceResources->swapchain->acquireNextImage(uint64_t(-1), _deviceResources->imageAcquiredSemaphores[_frameId]);
@@ -311,11 +303,11 @@ pvr::Result VulkanSkinning::renderFrame()
 	/***************************************************************
 	**** Under the hood, the above line will do the following: *****
 
-	//Get a new worldview camera and light position
+	//Get a new world-view camera and light position
 	auto& pipeline = devObj->mgr.toPipeline(0, 0, 0, 0);
 	pipeline.updateAutomaticModelSemantics(getSwapChainIndex());
 
-	// Update all node-specific matrices (Worldview, bone array etc).
+	// Update all node-specific matrices (World-view, bone array etc).
 	uint32_t swapChainIndex = getGraphicsContext()->getPlatformContext().getSwapChainIndex();
 
 	// Should be called before updating anything to optimise map/unmap. Suggest call once per frame.
@@ -343,7 +335,7 @@ pvr::Result VulkanSkinning::renderFrame()
 	if (this->shouldTakeScreenshot())
 	{
 		pvr::utils::takeScreenshot(_deviceResources->queue, _deviceResources->commandPool, _deviceResources->swapchain, swapchainIndex, this->getScreenshotFileName(),
-			&_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
+			_deviceResources->vmaAllocator, _deviceResources->vmaAllocator);
 	}
 
 	pvrvk::PresentInfo presentInfo;
@@ -391,9 +383,7 @@ inline std::vector<pvr::StringHash> generateBonesList(const char* base, uint32_t
 	return boneSemantics;
 }
 
-/*!*********************************************************************************************************************
-\brief  pre-record the rendering commands
-***********************************************************************************************************************/
+/// <summary>pre-record the rendering commands.</summary>
 inline void VulkanSkinning::recordCommandBuffer()
 {
 	const pvrvk::ClearValue clearValues[2] = {
@@ -403,7 +393,7 @@ inline void VulkanSkinning::recordCommandBuffer()
 	for (uint32_t swapidx = 0; swapidx < _deviceResources->swapchain->getSwapchainLength(); ++swapidx)
 	{
 		_deviceResources->cmdBuffers[swapidx]->begin();
-		// Clear the color and depth buffer automatically.
+		// Clear the colour and depth buffer automatically.
 
 		pvr::utils::setImageLayout(_deviceResources->mgr.toPass(0, 0).getFramebuffer(swapidx)->getAttachment(0)->getImage(), pvrvk::ImageLayout::e_PRESENT_SRC_KHR,
 			pvrvk::ImageLayout::e_COLOR_ATTACHMENT_OPTIMAL, _deviceResources->cmdBuffers[swapidx]);

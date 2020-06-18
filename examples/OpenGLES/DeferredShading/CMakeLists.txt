@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.3)
 project(OpenGLESDeferredShading)
-if(IOS)	
+if(IOS)
 	message("Skipping OpenGLESDeferredShading : Not supported on iOS")
 	return()
 endif()
@@ -33,11 +33,11 @@ add_assets_to_target(OpenGLESDeferredShading
 	ASSET_FOLDER ${ASSET_FOLDER} 
 	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/Satyr
 	FILE_LIST 
+		SatyrAndTable.pod
+		pointlight.pod
 		Marble.pvr
 		MarbleNormalMap.pvr
-		Table.pvr
-		SatyrAndTable.pod
-		pointlight.pod)
+		Table.pvr)
 
 ### Textural shaders (OpenGL ES) ###
 add_assets_to_target(OpenGLESDeferredShading 
@@ -66,7 +66,7 @@ add_assets_resource_file(OpenGLESDeferredShading)
 # Apply SDK example specific compile and linker options
 apply_example_compile_options_to_target(OpenGLESDeferredShading)
 
-target_link_libraries(OpenGLESDeferredShading
+target_link_libraries(OpenGLESDeferredShading PUBLIC
 	PVRShell
 	PVRUtilsGles
 )

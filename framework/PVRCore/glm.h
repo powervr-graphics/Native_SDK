@@ -1,8 +1,5 @@
 #pragma once
 #define GLM_ENABLE_EXPERIMENTAL
-#ifdef __APPLE__
-#define GLM_COMPILER 0
-#endif
 
 #include "glm/glm.hpp"
 #include "glm/gtc/type_ptr.hpp"
@@ -25,7 +22,7 @@ inline std::string to_string(const glm::vec<L, T, Q>& vec)
 {
 	std::stringstream str;
 	str << "[" << vec[0];
-	for(uint32_t i = 1; i < L; ++i) { str << "," << vec[i]; }
+	for (uint32_t i = 1; i < L; ++i) { str << "," << vec[i]; }
 	str << "]";
 	return str.str();
 }
@@ -34,7 +31,7 @@ inline std::string to_string(const glm::mat<lC, lR, T, Q>& mat)
 {
 	std::stringstream str;
 	str << "[" << to_string(mat[0]);
-	for(uint32_t j = 1; j < lC; ++j) { str << "," << to_string(mat[j]); }
+	for (uint32_t j = 1; j < lC; ++j) { str << "," << to_string(mat[j]); }
 	str << "]";
 	return str.str();
 }

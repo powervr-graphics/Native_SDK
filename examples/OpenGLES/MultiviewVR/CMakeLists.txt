@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.3)
 project(OpenGLESMultiviewVR)
-if(IOS)	
+if(IOS)
 	message("Skipping OpenGLESMultiviewVR : Not supported on iOS")
 	return()
 endif()
@@ -33,10 +33,10 @@ add_assets_to_target(OpenGLESMultiviewVR
 	ASSET_FOLDER ${ASSET_FOLDER} 
 	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/GnomeToy
 	FILE_LIST 
+		GnomeToy.pod
 		GnomeWood.pvr
 		DarkWood.pvr
-		ClearWood.pvr
-		GnomeToy.pod)
+		ClearWood.pvr)
 
 ### Textural shaders (OpenGL ES) ###
 add_assets_to_target(OpenGLESMultiviewVR 
@@ -56,7 +56,7 @@ add_assets_resource_file(OpenGLESMultiviewVR)
 # Apply SDK example specific compile and linker options
 apply_example_compile_options_to_target(OpenGLESMultiviewVR)
 
-target_link_libraries(OpenGLESMultiviewVR
+target_link_libraries(OpenGLESMultiviewVR PUBLIC
 	PVRShell
 	PVRUtilsGles
 )

@@ -45,14 +45,8 @@ struct NativePlatformHandles_
 	GLuint msaaFrameBuffer = 0;
 	GLuint msaaColorBuffer = 0;
 	GLuint msaaDepthBuffer = 0;
-
+    
 	NativePlatformHandles_() {}
-};
-
-struct NativeSharedPlatformHandles_
-{
-	EAGLContext* uploadingContext;
-	VoidUIView* pBufferSurface;
 };
 
 /*! \brief Forward-declare friendly container for the native display */
@@ -75,10 +69,6 @@ typedef std::shared_ptr<NativePlatformHandles_> NativePlatformHandles;
 
 /// <summary>Pointer to a struct of platform handles. Used to pass around the undefined NativePlatformHandles_ struct.</summary>
 typedef std::shared_ptr<NativeDisplayHandle_> NativeDisplayHandle;
-
-/// <summary>Pointer to a struct of Shared context handles. Used to pass around the undefined NativeSharedPlatformHandles_
-/// struct</summary>
-typedef std::shared_ptr<NativeSharedPlatformHandles_> NativeSharedPlatformHandles;
 
 } // namespace platform
 } // namespace pvr

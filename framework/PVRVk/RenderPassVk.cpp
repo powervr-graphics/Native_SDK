@@ -33,6 +33,7 @@ RenderPass_::RenderPass_(make_shared_enabler, const DeviceWeakPtr& device, const
 		attachmentDescVk[attachmentIndex].finalLayout = static_cast<VkImageLayout>(attachmentDesc.getFinalLayout());
 		attachmentDescVk[attachmentIndex].stencilLoadOp = static_cast<VkAttachmentLoadOp>(attachmentDesc.getStencilLoadOp());
 		attachmentDescVk[attachmentIndex].stencilStoreOp = static_cast<VkAttachmentStoreOp>(attachmentDesc.getStencilStoreOp());
+		attachmentDescVk[attachmentIndex].samples = static_cast<VkSampleCountFlagBits>(attachmentDesc.getSamples());
 	} // next attachment
 
 	renderPassInfoVk.pAttachments = attachmentDescVk.get();

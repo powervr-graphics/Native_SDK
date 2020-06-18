@@ -90,13 +90,6 @@ bool EglContext_::isApiSupported(Api apiLevel)
 {
 	return apiLevel <= getMaxApiVersion();
 }
-
-void SharedEglContext_::makeSharedContextCurrent()
-{
-    if(![EAGLContext setCurrentContext:_handles->uploadingContext])
-        throw OperationFailedError("[SharedEglContext_::makeSharedContextCurrent] Failed to set current context.");
-}
-
 void init(EglContext_& platformContext,const NativeDisplay& nativeDisplay,
     const NativeWindow& nativeWindow, DisplayAttributes& attributes, const pvr::Api& apiContextType,
     UIView** outView, EAGLContext** outContext)
@@ -307,18 +300,26 @@ unsigned int EglContext_::getOnScreenFbo()
 
 void EglContext_::makeCurrent()
 {
-    if(msaaFrameBuffer)
+    if (_parentContext == nullptr)
     {
-        glBindFramebuffer(GL_FRAMEBUFFER, msaaFrameBuffer);
-        glBindRenderbuffer(GL_RENDERBUFFER, msaaColorBuffer);
+        if(msaaFrameBuffer)
+        {
+            glBindFramebuffer(GL_FRAMEBUFFER, msaaFrameBuffer);
+            glBindRenderbuffer(GL_RENDERBUFFER, msaaColorBuffer);
+        }
+        else
+        {
+            glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+        }
+
+        if (![EAGLContext setCurrentContext:_platformContextHandles->context])
+            throw OperationFailedError("[EglContext_::makeCurrent] Failed to set current context.");
     }
     else
     {
-        glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+        if(![EAGLContext setCurrentContext:_platformContextHandles->context])
+            throw OperationFailedError("[EglContext_::makeCurrent] Failed to set shared current context.");
     }
-
-    if (![EAGLContext setCurrentContext:_platformContextHandles->context])
-        throw OperationFailedError("[EglContext_::makeCurrent] Failed to set current context.");
 }
 
 void EglContext_::swapBuffers()
@@ -399,32 +400,6 @@ void EglContext_::init(OSWindow window, OSDisplay display, DisplayAttributes& at
     makeCurrent();
 }
 
-SharedEglContext_::SharedEglContext_(make_unique_enabler, EglContext_& context)
-{
-	_parentContext = &context;
-	_handles = std::make_unique<NativeSharedPlatformHandles_>();
-    
-    EAGLRenderingAPI api;
-    switch (_parentContext->getApiVersion())
-    {
-        case pvr::Api::OpenGLES2: //GLES2
-            Log(LogLevel::Debug, "EAGL context creation: Setting kEAGLRenderingAPIOpenGLES2");
-            api = EAGLRenderingAPI(kEAGLRenderingAPIOpenGLES2);
-            break;
-        case pvr::Api::OpenGLES3: //GLES2
-            Log(LogLevel::Debug, "EGL context creation: kEAGLRenderingAPIOpenGLES3");
-            api = EAGLRenderingAPI(kEAGLRenderingAPIOpenGLES3);
-            break;
-        default:
-            throw InvalidOperationError("[SharedEglContext constructor] Unrecognised Api version for the parent context");
-    }
-    _handles->uploadingContext= [[EAGLContext alloc] initWithAPI:api sharegroup:_parentContext->getNativePlatformHandles().context.sharegroup];
-    if(!_handles->uploadingContext)
-    {
-        throw OperationFailedError("[SharedEglContext constructor] Failed to create SharedContext");
-    }
-}
-
 Api EglContext_::getMaxApiVersion()
 {
     if(!_preInitialized)
@@ -442,9 +417,33 @@ Api EglContext_::getApiVersion()
     return _apiType;
 }
 
-std::unique_ptr<SharedEglContext_> EglContext_::createSharedPlatformContext()
+std::unique_ptr<EglContext_> EglContext_::createSharedContextFromEGLContext()
 {
-	auto retval = SharedEglContext_::constructUnique(*this);
+    std::unique_ptr<EglContext_> retval = std::make_unique<platform::EglContext_>();
+
+    retval->_parentContext = &(*this);
+    _platformContextHandles = std::make_unique<NativePlatformHandles_>();
+    
+    EAGLRenderingAPI api;
+    switch (retval->_parentContext->getApiVersion())
+    {
+        case pvr::Api::OpenGLES2: //GLES2
+            Log(LogLevel::Debug, "EAGL context creation: Setting kEAGLRenderingAPIOpenGLES2");
+            api = EAGLRenderingAPI(kEAGLRenderingAPIOpenGLES2);
+            break;
+        case pvr::Api::OpenGLES3: //GLES2
+            Log(LogLevel::Debug, "EGL context creation: kEAGLRenderingAPIOpenGLES3");
+            api = EAGLRenderingAPI(kEAGLRenderingAPIOpenGLES3);
+            break;
+        default:
+            throw InvalidOperationError("[SharedEglContext constructor] Unrecognised Api version for the parent context");
+    }
+    _platformContextHandles->context= [[EAGLContext alloc] initWithAPI:api sharegroup:retval->_parentContext->getNativePlatformHandles().context.sharegroup];
+    if(!_platformContextHandles->context)
+    {
+        throw OperationFailedError("[SharedEglContext constructor] Failed to create SharedContext");
+    }
+
 	return retval;
 }
 } // namespace platform

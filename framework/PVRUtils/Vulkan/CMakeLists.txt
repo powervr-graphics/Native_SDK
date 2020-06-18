@@ -1,9 +1,11 @@
 cmake_minimum_required(VERSION 3.3)
+# Copyright (c) Imagination Technologies Limited.
+
 project(PVRUtilsVk)
 
 include(GNUInstallDirs)
 include(CMakeFindDependencyMacro)
-include(../../../cmake/CompilerFunctions.cmake)
+include(../../Common.cmake)
 
 set(PVRUtilsVk_PRIVATE_LINK_LIBS glslang SPIRV)
 set(PVRUtilsVk_INCLUDE_DIRECTORIES ${CMAKE_CURRENT_LIST_DIR}/../../)
@@ -63,7 +65,7 @@ add_library(PVRUtilsVk STATIC
 	${PVRUtilsVk_HEADERS})
 
 if(PVR_PREBUILT_DEPENDENCIES)
-	list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/../../../cmake/modules")
+	list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/../../cmake/modules")
 	find_dependency(PVRCore MODULE REQUIRED)
 	find_dependency(PVRAssets MODULE REQUIRED)
 	find_dependency(PVRVk MODULE REQUIRED)
@@ -72,7 +74,7 @@ if(PVR_PREBUILT_DEPENDENCIES)
 	find_dependency(VulkanMemoryAllocator MODULE REQUIRED)
 endif()
 
-apply_compile_options_to_target(PVRUtilsVk)
+apply_framework_compile_options_to_target(PVRUtilsVk)
 
 target_link_libraries(PVRUtilsVk 
 	PUBLIC

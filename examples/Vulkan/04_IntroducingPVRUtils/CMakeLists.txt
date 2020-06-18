@@ -33,10 +33,10 @@ add_assets_to_target(VulkanIntroducingPVRUtils
 	ASSET_FOLDER ${ASSET_FOLDER} 
 	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/GnomeToy
 	FILE_LIST 
+		GnomeToy.pod
 		GnomeWood.pvr
 		DarkWood.pvr
-		ClearWood.pvr
-		GnomeToy.pod)
+		ClearWood.pvr)
 
 ### Shaders that need to be compiled to SpirV (Vulkan) ###
 # During build time, glslangvalidator will be called to create a "<shadername.extension>.spv" file
@@ -56,7 +56,7 @@ add_assets_resource_file(VulkanIntroducingPVRUtils)
 # Apply SDK example specific compile and linker options
 apply_example_compile_options_to_target(VulkanIntroducingPVRUtils)
 
-target_link_libraries(VulkanIntroducingPVRUtils
+target_link_libraries(VulkanIntroducingPVRUtils PUBLIC
 	PVRShell
 	PVRUtilsVk
 )

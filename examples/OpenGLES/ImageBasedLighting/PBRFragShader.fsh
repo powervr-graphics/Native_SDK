@@ -133,7 +133,7 @@ mediump vec3 computeLight(mediump vec3 V, mediump vec3 N, mediump vec3 F0, mediu
 		mediump vec3 kD =  (vec3(1.0) - F) * (1.0 - metallic);
 		mediump vec3 diff = kD * albedo * ONE_OVER_PI;
 		///-------- DIFFUSE + SPEC ------
-		color += (diff + spec) * uboStatic.lightColor * dotNL; // scale the final color based on the angle between the light and the surface normal.
+		color += (diff + spec) * uboStatic.lightColor * dotNL; // scale the final colour based on the angle between the light and the surface normal.
 	}
 	return color;
 }
@@ -153,7 +153,7 @@ mediump vec3 prefilteredReflection(mediump float roughness, mediump vec3 R)
 	}
 	else
 	{
-		mediump float lod = (roughness - cutoff) * maxmip / (1. - cutoff); // Remap to 0..1 on rest of mimpamps
+		mediump float lod = (roughness - cutoff) * maxmip / (1. - cutoff); // Remap to 0..1 on rest of mip maps
 		return textureLod(prefilteredMap, R, lod).rgb;
 	}
 }
@@ -214,9 +214,9 @@ void main()
 #endif
 
 
-	// The base color has two different interpretations depending on the value of metalness.
-	// When the material is a metal, the base color is the specific measured reflectance value at normal incidence (F0).
-	// For a non-metal the base color represents the reflected diffuse color of the material.
+	// The base colour has two different interpretations depending on the value of metalness.
+	// When the material is a metal, the base colour is the specific measured reflectance value at normal incidence (F0).
+	// For a non-metal the base colour represents the reflected diffuse colour of the material.
 	// In this model it is not possible to specify a F0 value for non-metals, and a linear value of 4% (0.04) is used.
 	mediump vec3 F0 = mix(vec3(0.04), albedo.rgb, metallic);
 
@@ -224,7 +224,7 @@ void main()
 
 	// Compute the direction light diffuse and specular
 	// highp vec3 dirLightDiffuseSpec = computeLight(V, N, F0, albedo.rgb, metallic, roughness);
-	// color = dirLightDiffuseSpec;
+	// colour = dirLightDiffuseSpec;
 
 	// IBL
 	mediump vec3 envLighting = computeEnvironmentLighting(N, V, R, albedo.rgb, F0, metallic, roughness);
@@ -236,19 +236,19 @@ void main()
 
 	color += envLighting;
 
-	// This seemingly strange clamp is to ensure that the final color stays within the constraints
+	// This seemingly strange clamp is to ensure that the final colour stays within the constraints
 	// of 16-bit floats (13848) with a bit to spare, as the tone mapping calculations squares 
 	// this number. It does not affect the final image otherwise, as the clamp will only bring the value to
-	// 50. This would already be very close to saturated (producing something like .99 after tonemapping), 
-	// but it was trivial to tweak the tonemapping to ensure 50 produces a value >=1.0.
+	// 50. This would already be very close to saturated (producing something like .99 after tone mapping), 
+	// but it was trivial to tweak the tone mapping to ensure 50 produces a value >=1.0.
 	// It is important to remember that this clamping must only happen last minute, as we need to have
-	// the full brightness available for postprocessing calculations (e.g. bloom)
+	// the full brightness available for post processing calculations (e.g. bloom)
 
 	mediump vec3 finalColor = min(color.rgb, 50. / uboDynamic.exposure);
 	finalColor *= uboDynamic.exposure;
 
 	// http://filmicworlds.com/blog/filmic-tonemapping-operators/
-	// Our favorite is the optimized formula by Jim Hejl and Richard Burgess-Dawson
+	// Our favourite is the optimized formula by Jim Hejl and Richard Burgess-Dawson
 	// We particularly like its high contrast and the fact that it also takes care
 	// of Gamma.
 	// As mentioned, we modified the values a bit to ensure it saturates at 50.

@@ -24,6 +24,10 @@ private:
 	uint32_t numItems;
 
 public:
+	/// <summary>Get data</summary>
+	/// <returns>Returns a pointer to the first element.</returns>
+	ElementType* data() { return numItems > 0 ? container : nullptr; }
+
 	/// <summary>Indexing operator</summary>
 	/// <param name="idx">The index</param>
 	/// <returns>Returns a reference to the indexed item.</returns>

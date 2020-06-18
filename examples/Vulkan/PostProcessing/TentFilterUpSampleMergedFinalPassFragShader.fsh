@@ -38,19 +38,19 @@ void main()
 	}
 	else
 	{
-		// Retrieve the original hdr color attachment and combine it with the blurred image
+		// Retrieve the original hdr colour attachment and combine it with the blurred image
 		highp vec3 offscreenTexture = texture(sOffScreenTexture, vTexCoords[0]).rgb;
 
 		hdrColor = offscreenTexture * linearExposure + vec3(blurredColor);
 	}
 
 	// http://filmicworlds.com/blog/filmic-tonemapping-operators/
-	// Reinhard tonemapping
+	// Reinhard tone mapping
 	mediump vec3 ldrColor = hdrColor / (1.0 + hdrColor);
 
 	// apply a simple vignette
 	mediump vec2 vtc = vec2(vTexCoords[0] - vec2(0.5));
-	// determine the vector length of the center position
+	// determine the vector length of the centre position
 	mediump float lenPos = length(vtc);
 	mediump float vignette = smoothstep(VignetteRadius, VignetteRadius - VignetteSoftness, lenPos);
 

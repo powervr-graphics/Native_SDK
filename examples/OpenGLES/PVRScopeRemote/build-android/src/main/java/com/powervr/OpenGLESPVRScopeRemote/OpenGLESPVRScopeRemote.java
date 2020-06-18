@@ -8,20 +8,14 @@ import android.view.Gravity;
 
 public class OpenGLESPVRScopeRemote extends NativeActivity
 {
-    @Override
-    protected void onCreate (Bundle savedInstanceState)
-    {
-        super.onCreate(savedInstanceState);
-    }
-
-    public void displayExitMessage(final String text) 
-    {
-        runOnUiThread(new Runnable() {
-	    public void run() {
-	    	Toast toast = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_LONG);
-	    	toast.setGravity(Gravity.CENTER, 0, 0);
-	    	toast.show();
-	    }
-        });
-    }
+	public void displayExitMessage(final String text) 
+	{
+		runOnUiThread(new Runnable() {
+		public void run() {
+			Toast toast = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_LONG);
+			toast.setGravity(Gravity.CENTER, 0, 0);
+			toast.show();
+		}
+		});
+	}
 }

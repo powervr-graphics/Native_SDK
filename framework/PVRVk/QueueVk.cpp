@@ -272,10 +272,11 @@ void Queue_::beginDebugUtilsLabel(const pvrvk::DebugUtilsLabel& labelInfo)
 	vkLabelInfo.color[3] = labelInfo.getA();
 	// The label name to give to the marked region
 	vkLabelInfo.pLabelName = labelInfo.getLabelName().c_str();
-	getDevice()->getVkBindings().vkQueueBeginDebugUtilsLabelEXT(getVkHandle(), &vkLabelInfo);
+
+	getDevice()->getPhysicalDevice()->getInstance()->getVkBindings().vkQueueBeginDebugUtilsLabelEXT(getVkHandle(), &vkLabelInfo);
 }
 
-void Queue_::endDebugUtilsLabel() { getDevice()->getVkBindings().vkQueueEndDebugUtilsLabelEXT(getVkHandle()); }
+void Queue_::endDebugUtilsLabel() { getDevice()->getPhysicalDevice()->getInstance()->getVkBindings().vkQueueEndDebugUtilsLabelEXT(getVkHandle()); }
 
 void Queue_::insertDebugUtilsLabel(const pvrvk::DebugUtilsLabel& labelInfo)
 {
@@ -288,7 +289,7 @@ void Queue_::insertDebugUtilsLabel(const pvrvk::DebugUtilsLabel& labelInfo)
 	vkLabelInfo.color[3] = labelInfo.getA();
 	// The label name to give to the marked region
 	vkLabelInfo.pLabelName = labelInfo.getLabelName().c_str();
-	getDevice()->getVkBindings().vkQueueInsertDebugUtilsLabelEXT(getVkHandle(), &vkLabelInfo);
+	getDevice()->getPhysicalDevice()->getInstance()->getVkBindings().vkQueueInsertDebugUtilsLabelEXT(getVkHandle(), &vkLabelInfo);
 }
 } // namespace impl
 } // namespace pvrvk

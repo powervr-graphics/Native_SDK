@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.3)
 project(VulkanExamples)
 
-set(EXAMPLES 
+set(VULKAN_EXAMPLES 
 	01_HelloAPI
 	02_IntroducingPVRShell
 	03_IntroducingPVRVk
@@ -27,9 +27,10 @@ set(EXAMPLES
 	IMGTextureFilterCubic
 	ImageBasedLightingMapGenerator
 	GameOfLife
+	PipelineCache
 )
 
-foreach(EXAMPLE ${EXAMPLES})
+foreach(EXAMPLE ${VULKAN_EXAMPLES})
 	message ("==>CMake generation for Vulkan/${EXAMPLE}...")
 	add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/${EXAMPLE}")
 endforeach()

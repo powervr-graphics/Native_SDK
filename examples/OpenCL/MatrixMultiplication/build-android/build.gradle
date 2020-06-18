@@ -16,7 +16,7 @@ buildscript {
 
 	// Adds the Android plugin for Gradle version 3.5.0 as a classpath dependency
 	dependencies {
-		classpath 'com.android.tools.build:gradle:3.5.0'
+		classpath 'com.android.tools.build:gradle:3.5.3'
 	}
 }
 
@@ -64,7 +64,6 @@ tasks.whenTaskAdded { task ->
 		def flavor = task.name.substring('generateJsonModel'.length())
 		projectDependencies.each {s -> task.dependsOn ":${s}:externalNativeBuild${flavor}" }
 	}
-	
 	// The following lines reconfigure the assemble, assembleDebug, assembleRelease tasks to just call the native build. All other parts of it are disabled.
 	if (task.name.startsWith('assemble') || task.name.startsWith('verify') || task.name.startsWith('check')) {
 

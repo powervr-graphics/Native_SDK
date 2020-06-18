@@ -21,7 +21,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="https://www.imgtec.com/developers/" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
+      <a href="https://www.imgtec.com/developers/" target="_blank"><img src="PVRlogo.png" width="80%" height="80%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRShell</span> Documentation</a>
    <tbody>
@@ -234,6 +234,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aeb8080c0f3c2ebbc110115fa4a1e8afe"><td class="memItemLeft" align="right" valign="top">OSWindow&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell.html#aeb8080c0f3c2ebbc110115fa4a1e8afe">getWindow</a> () const</td></tr>
 <tr class="memdesc:aeb8080c0f3c2ebbc110115fa4a1e8afe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the underlying Window object of this shell <a href="#aeb8080c0f3c2ebbc110115fa4a1e8afe">More...</a><br /></td></tr>
 <tr class="separator:aeb8080c0f3c2ebbc110115fa4a1e8afe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a41d3a0a140a5d79459e55858d4bb6668"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; Stream &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell.html#a41d3a0a140a5d79459e55858d4bb6668">getWriteAssetStream</a> (const std::string &amp;filename, bool allowRead=false, bool truncateIfExists=false) const</td></tr>
+<tr class="memdesc:a41d3a0a140a5d79459e55858d4bb6668"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create and return a Stream object for a specific filename. Uses platform dependent write path rules to create the stream <a href="#a41d3a0a140a5d79459e55858d4bb6668">More...</a><br /></td></tr>
+<tr class="separator:a41d3a0a140a5d79459e55858d4bb6668"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a41d150cc1ad351713bd8548fa0ece2a2"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_shell.html#a41d150cc1ad351713bd8548fa0ece2a2">getWritePath</a> () const</td></tr>
 <tr class="memdesc:a41d150cc1ad351713bd8548fa0ece2a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the path where any files will be saved. <a href="#a41d150cc1ad351713bd8548fa0ece2a2">More...</a><br /></td></tr>
 <tr class="separator:a41d150cc1ad351713bd8548fa0ece2a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1811,6 +1814,51 @@ Protected Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="a41d3a0a140a5d79459e55858d4bb6668"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a41d3a0a140a5d79459e55858d4bb6668">&#9670;&nbsp;</a></span>getWriteAssetStream()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt;Stream&gt; pvr::platform::Shell::getWriteAssetStream </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>filename</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>allowRead</em> = <code>false</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>truncateIfExists</em> = <code>false</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create and return a Stream object for a specific filename. Uses platform dependent write path rules to create the stream</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">filename</td><td>The name of the file to load. Should be a raw filename.</td></tr>
+    <tr><td class="paramname">allowRead</td><td>Whether to allow read &amp; write or Write only access.</td></tr>
+    <tr><td class="paramname">truncateIfExists</td><td>Whether it's a write operation (false) or and append operation (true)</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A unique pointer to the Stream returned if successful, an Empty unique pointer if failed.</dd></dl>
+
+</div>
+</div>
 <a id="a41d150cc1ad351713bd8548fa0ece2a2"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a41d150cc1ad351713bd8548fa0ece2a2">&#9670;&nbsp;</a></span>getWritePath()</h2>
 
@@ -3122,7 +3170,7 @@ template&lt;typename... Args&gt; </div>
 <div id="FooterMainContainer">
 	<div id="FooterContainer">
 		<div class="footerlogo">
-			<a href="http://www.imgtec.com" target="_blank"><img src="img-footer-logo-grey.png" width="100%" height="100%" border="none" /></a>
+			<a href="http://www.imgtec.com" target="_blank"><img src="img-footer-logo-grey.png" width="20%" height="20%" border="none" /></a>
 		</div>
 		<div class="copyright"><p>&copy; Imagination Technologies Limited<br> All rights reserved</p></div>
 	</div>

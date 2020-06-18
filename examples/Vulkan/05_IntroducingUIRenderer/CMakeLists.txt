@@ -33,13 +33,13 @@ add_assets_to_target(VulkanIntroducingUIRenderer
 	ASSET_FOLDER ${ASSET_FOLDER} 
 	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/IntroducingUIRenderer
 	FILE_LIST 
+		Text.txt
+		titletext.txt
 		arial_36.pvr
 		starjout_60.pvr
 		title_36.pvr
 		title_46.pvr
-		title_56.pvr
-		Text.txt
-		titletext.txt)
+		title_56.pvr)
 
 # Create and adds a Windows resource file (Resources.rc) with all the assets that have been added to the target with the previous functions
 add_assets_resource_file(VulkanIntroducingUIRenderer)
@@ -48,7 +48,7 @@ add_assets_resource_file(VulkanIntroducingUIRenderer)
 # Apply SDK example specific compile and linker options
 apply_example_compile_options_to_target(VulkanIntroducingUIRenderer)
 
-target_link_libraries(VulkanIntroducingUIRenderer
+target_link_libraries(VulkanIntroducingUIRenderer PUBLIC
 	PVRShell
 	PVRUtilsVk
 )

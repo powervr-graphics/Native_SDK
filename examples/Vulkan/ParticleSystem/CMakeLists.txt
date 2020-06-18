@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.3)
 project(VulkanParticleSystem)
-if(IOS)	
+if(IOS)
 	message("Skipping VulkanParticleSystem : Not supported on iOS")
 	return()
 endif()
@@ -61,7 +61,7 @@ add_assets_resource_file(VulkanParticleSystem)
 # Apply SDK example specific compile and linker options
 apply_example_compile_options_to_target(VulkanParticleSystem)
 
-target_link_libraries(VulkanParticleSystem
+target_link_libraries(VulkanParticleSystem PUBLIC
 	PVRShell
 	PVRUtilsVk
 )

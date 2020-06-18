@@ -1,11 +1,10 @@
-/*!*********************************************************************************************************************
-\File         VulkanNavigation2D.cpp
-\Title        Vulkan Navigation 2D
-\Author       PowerVR by Imagination, Developer Technology Team
-\Copyright    Copyright (c) Imagination Technologies Limited.
-\brief        The 2D navigation example demonstrates the entire process of
-creating a navigational map from raw XML data.
-***********************************************************************************************************************/
+/*!
+\brief The 2D navigation example demonstrates the entire process of
+	   creating a navigational map from raw XML data.
+\file VulkanNavigation2D.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 
 #include "../../common/NavDataProcess.h"
 #include "PVRShell/PVRShell.h"
@@ -119,13 +118,11 @@ inline float wrapToSignedAngle(float angle)
 	return angle;
 }
 
-// DeviceResources contains all the Vulkan resource object needed for this
-// application.
+/// <summary>DeviceResources contains all the Vulkan resource object needed for this application.</summary>
 struct DeviceResources
 {
 	pvrvk::Instance instance;
 	pvr::utils::DebugUtilsCallbacks debugUtilsCallbacks;
-	pvrvk::Surface surface;
 	pvrvk::Device device;
 	pvrvk::Swapchain swapchain;
 	pvrvk::Queue queue;
@@ -157,9 +154,9 @@ struct DeviceResources
 	pvrvk::PipelineLayout pipeLayout;
 
 	// Frame and primary command buffers
-	pvr::Multi<pvrvk::Framebuffer> framebuffer; // Framebuffers for each swapchains
-	pvr::Multi<pvrvk::CommandBuffer> cmdBuffers; // Commandbuffers for each swapchain
-	pvr::Multi<pvrvk::SecondaryCommandBuffer> uiRendererCmdBuffers; // UIRenderer commandbuffers for each swapchains
+	pvr::Multi<pvrvk::Framebuffer> onScreenFramebuffer; // Framebuffers for each swapchain image
+	pvr::Multi<pvrvk::CommandBuffer> cmdBuffers; // Command buffers for each swapchain
+	pvr::Multi<pvrvk::SecondaryCommandBuffer> uiRendererCmdBuffers; // UIRenderer command buffers for each swapchain image
 
 	// Texture atlas meta data.
 	pvr::TextureHeader texAtlasHeader;
@@ -244,9 +241,7 @@ struct TileRenderingResources
 	TileRenderingResources() {}
 };
 
-/*!*********************************************************************************************************************
-Class implementing the pvr::Shell functions.
-***********************************************************************************************************************/
+/// <summary>Class implementing the pvr::Shell functions.</summary>
 class VulkanNavigation2D : public pvr::Shell
 {
 	std::unique_ptr<NavDataProcess> _OSMdata;
@@ -379,15 +374,19 @@ private:
 	}
 };
 
+/// <summary>Code in initApplication() will be called by Shell once per run, before the rendering context is created.
+/// Used to initialize variables that are not dependent on it (e.g. external modules, loading meshes, etc.)
+/// If the rendering context is lost, initApplication() will not be called again.</summary>
+/// <returns>Return Result::Success if no error occurred.</returns>
 pvr::Result VulkanNavigation2D::initApplication()
 {
 	// Disable gamma correction in the framebuffer.
 	setBackBufferColorspace(pvr::ColorSpace::lRGB);
-	// WARNING: This should not be done lightly. This example only passes through textures or hardcoded color values.
+	// WARNING: This should not be done lightly. This example only passes through textures or hard coded colour values.
 	// If you do that, you should ensure that your textures will end up giving you the correct values. If you use
 	// normal sRGB textures, they will NOT provide you with the values you except (they will look too dark).
 	// Also linear operations will not work correctly. Again in this example this is not a problem as we have tweaked
-	// all values manually for visual effect and there is no lighting math going on.
+	// all values manually for visual effect and there is no lighting maths going on.
 
 	// Re-calculate the scale based on the screen dim.
 	// As we are rendering in 2D we have no need for either of the depth or
@@ -403,11 +402,11 @@ pvr::Result VulkanNavigation2D::initApplication()
 
 	_frameId = 0;
 
-	// perform gamma correction of the linear space colors so that they can do used directly without further thinking about Linear/sRGB color space conversions
-	// This should not be done lightly. This example only passes through hardcoded color values and uses them directly without applying any
-	// math to their values and so can be performed safely.
+	// perform gamma correction of the linear space colours so that they can do used directly without further thinking about Linear/sRGB colour space conversions
+	// This should not be done lightly. This example only passes through hard coded colour values and uses them directly without applying any
+	// maths to their values and so can be performed safely.
 
-	// Note that for the clear color floating point values will be converted to the format of the imagem with the clear value being treated as linear if the image is sRGB
+	// Note that for the clear colour floating point values will be converted to the format of the image with the clear value being treated as linear if the image is sRGB
 	_clearColor = pvr::utils::convertLRGBtoSRGB(ClearColorLinearSpace);
 	_roadAreaColor = pvr::utils::convertLRGBtoSRGB(RoadAreaColorLinearSpace);
 	_motorwayColor = pvr::utils::convertLRGBtoSRGB(MotorwayColorLinearSpace);
@@ -458,6 +457,9 @@ void VulkanNavigation2D::handleInput()
 	}
 }
 
+/// <summary>Code in initView() will be called by Shell upon initialization or after a change in the rendering context.
+/// Used to initialize variables that are dependent on the rendering context (e.g. textures, vertex buffers, etc.).</summary>
+/// <returns>Return Result::Success if no error occurred.</returns>
 pvr::Result VulkanNavigation2D::initView()
 {
 	_deviceResources = std::make_unique<DeviceResources>();
@@ -472,57 +474,59 @@ pvr::Result VulkanNavigation2D::initView()
 	}
 
 	// Create the surface
-	_deviceResources->surface =
+	pvrvk::Surface surface =
 		pvr::utils::createSurface(_deviceResources->instance, _deviceResources->instance->getPhysicalDevice(0), this->getWindow(), this->getDisplay(), this->getConnection());
 
 	// Create a default set of debug utils messengers or debug callbacks using either VK_EXT_debug_utils or VK_EXT_debug_report respectively
 	_deviceResources->debugUtilsCallbacks = pvr::utils::createDebugUtilsCallbacks(_deviceResources->instance);
 
 	// Populate a queue with graphics and presentation support.
-	const pvr::utils::QueuePopulateInfo queuePopulate = { pvrvk::QueueFlags::e_GRAPHICS_BIT, _deviceResources->surface };
+	const pvr::utils::QueuePopulateInfo queuePopulate = { pvrvk::QueueFlags::e_GRAPHICS_BIT, surface };
 
 	pvrvk::PhysicalDevice physicalDevice = _deviceResources->instance->getPhysicalDevice(0);
 	pvr::utils::QueueAccessInfo queueAccessInfo;
 	_deviceResources->device = pvr::utils::createDeviceAndQueues(physicalDevice, &queuePopulate, 1, &queueAccessInfo);
 	_deviceResources->queue = _deviceResources->device->getQueue(queueAccessInfo.familyId, queueAccessInfo.queueId);
 
-	pvrvk::SurfaceCapabilitiesKHR surfaceCapabilities = physicalDevice->getSurfaceCapabilities(_deviceResources->surface);
+	pvrvk::SurfaceCapabilitiesKHR surfaceCapabilities = physicalDevice->getSurfaceCapabilities(surface);
 
 	// validate the supported swapchain image usage
 	pvrvk::ImageUsageFlags swapchainImageUsage = pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT;
 
-	// Check if the e_TRANSFER_SRC_BIT usaeg supportted by the surface, so that
-	// the application can use save screen shot functionaltiy.
+	// Check if the e_TRANSFER_SRC_BIT usage supported by the surface, so that
+	// the application can use save screen shot functionality.
 	if (pvr::utils::isImageUsageSupportedBySurface(surfaceCapabilities, pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT))
 	{ swapchainImageUsage |= pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT; } // Create the swapchain
-	_deviceResources->swapchain = pvr::utils::createSwapchain(_deviceResources->device, _deviceResources->surface, getDisplayAttributes(), swapchainImageUsage);
+
+	// Create the Swapchain, its renderpass, attachments and framebuffers. Will support MSAA if enabled through command line.
+	auto swapChainCreateOutput = pvr::utils::createSwapchainRenderpassFramebuffers(_deviceResources->device, surface, getDisplayAttributes(),
+		pvr::utils::CreateSwapchainParameters().setAllocator(_deviceResources->vmaAllocator).setColorImageUsageFlags(swapchainImageUsage).enableDepthBuffer(false));
+
+	_deviceResources->swapchain = swapChainCreateOutput.swapchain;
+	_deviceResources->onScreenFramebuffer = swapChainCreateOutput.framebuffer;
+	_numSwapchains = swapChainCreateOutput.swapchain->getSwapchainLength();
 
 	recalculateTheScale();
 	resetCameraVariables();
 
-	_numSwapchains = _deviceResources->swapchain->getSwapchainLength();
-
-	// create the fbo and the render pass for rendering.
-	pvr::utils::createOnscreenFramebufferAndRenderPass(_deviceResources->swapchain, nullptr, _deviceResources->framebuffer);
-
 	createDescriptorSets();
 
-	// Create the commandpool
+	// Create the command pool
 	_deviceResources->commandPool =
 		_deviceResources->device->createCommandPool(pvrvk::CommandPoolCreateInfo(queueAccessInfo.familyId, pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT));
 
-	// Allocate the commandbuffers (primary and the secondary)
+	// Allocate the command buffers (primary and the secondary)
 	_deviceResources->commandPool->allocateCommandBuffers(_numSwapchains, &_deviceResources->cmdBuffers[0]);
 	_deviceResources->commandPool->allocateSecondaryCommandBuffers(_numSwapchains, &_deviceResources->uiRendererCmdBuffers[0]);
 
-	_deviceResources->uiRenderer.init(getWidth(), getHeight(), isFullScreen(), _deviceResources->framebuffer[0]->getRenderPass(), 0,
+	_deviceResources->uiRenderer.init(getWidth(), getHeight(), isFullScreen(), _deviceResources->onScreenFramebuffer[0]->getRenderPass(), 0,
 		getBackBufferColorspace() == pvr::ColorSpace::sRGB, _deviceResources->commandPool, _deviceResources->queue, true, true, true, 4, 4);
 
 	_deviceResources->vmaAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
 
 	// Load and upload the textures from the disk. The images are loaded using a
 	// staging buffer, therefore we need to record the upload commands on the
-	// comandbuffer and submit them before using the textrues.
+	// comand buffer and submit them before using the textures.
 	_deviceResources->cmdBuffers[0]->begin();
 	loadTexture(_deviceResources->cmdBuffers[0]);
 
@@ -538,7 +542,7 @@ pvr::Result VulkanNavigation2D::initView()
 	_tileRenderingResources.resize(_numCols);
 	for (uint32_t i = 0; i < _numCols; ++i) { _tileRenderingResources[i].resize(_numRows); }
 
-	// Craate the uniform buffer objects.
+	// Create the uniform buffer objects.
 	createUbos();
 
 	for (uint32_t i = 0; i < _numSwapchains; ++i)
@@ -569,9 +573,9 @@ pvr::Result VulkanNavigation2D::initView()
 	roadInfo.inputAssembler.setPrimitiveTopology(pvrvk::PrimitiveTopology::e_TRIANGLE_LIST);
 
 	roadInfo.rasterizer.setCullMode(pvrvk::CullModeFlags::e_NONE);
-	roadInfo.renderPass = _deviceResources->framebuffer[0]->getRenderPass();
+	roadInfo.renderPass = _deviceResources->onScreenFramebuffer[0]->getRenderPass();
 	roadInfo.pipelineLayout = _deviceResources->pipeLayout;
-	pvr::utils::populateViewportStateCreateInfo(_deviceResources->framebuffer[0], roadInfo.viewport);
+	pvr::utils::populateViewportStateCreateInfo(_deviceResources->onScreenFramebuffer[0], roadInfo.viewport);
 	fillInfo = roadInfo;
 
 	roadInfo.vertexInput.addInputAttribute(texAttrib); // Set vertex & tex-co-ordinate layout
@@ -579,7 +583,7 @@ pvr::Result VulkanNavigation2D::initView()
 	roadInfo.colorBlend.setAttachmentState(0,
 		pvrvk::PipelineColorBlendAttachmentState(
 			true, pvrvk::BlendFactor::e_SRC_ALPHA, pvrvk::BlendFactor::e_ONE_MINUS_SRC_ALPHA, pvrvk::BlendOp::e_ADD, pvrvk::BlendFactor::e_ZERO, pvrvk::BlendFactor::e_ONE));
-	// Blending : (src, Alpha, 1 - src Alpha), preserve framebuffer Alpha value to avoid artifacts in compositors. Change this is a different
+	// Blending : (src, Alpha, 1 - src Alpha), preserve framebuffer Alpha value to avoid artefacts in compositors. Change this is a different
 	// destination alpha value is required.
 	roadInfo.vertexShader = _deviceResources->device->createShaderModule(pvrvk::ShaderModuleCreateInfo(getAssetStream("AA_VertShader.vsh.spv")->readToEnd<uint32_t>()));
 	roadInfo.fragmentShader = _deviceResources->device->createShaderModule(pvrvk::ShaderModuleCreateInfo(getAssetStream("AA_FragShader.fsh.spv")->readToEnd<uint32_t>()));
@@ -626,11 +630,8 @@ pvr::Result VulkanNavigation2D::initView()
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return Return Result::Success if no error occurred
-\brief  Main rendering loop function of the program. The shell will call this
-function every frame.
-***********************************************************************************************************************/
+/// <summary>Main rendering loop function of the program. The shell will call this function every frame.</summary>
+/// <returns>Return Result::Success if no error occurred.</returns>
 pvr::Result VulkanNavigation2D::renderFrame()
 {
 	handleInput();
@@ -642,7 +643,7 @@ pvr::Result VulkanNavigation2D::renderFrame()
 	const float rotation = glm::radians(_rotation + MapScreenAlignRotation);
 	// create the map projection matrix. Read from bottom to top.
 	_mapMVPMtx = _projMtx *
-		glm::translate(glm::vec3(_translation.x + _screenWidth * .5 /*center the map*/, _translation.y + _screenHeight * .5 /*center the map*/,
+		glm::translate(glm::vec3(_translation.x + _screenWidth * .5 /*centre the map*/, _translation.y + _screenHeight * .5 /*centre the map*/,
 			0.0f)) // final transform
 		* glm::translate(glm::vec3(-_translation.x, -_translation.y,
 			  0.0f)) // undo the translation
@@ -650,7 +651,7 @@ pvr::Result VulkanNavigation2D::renderFrame()
 		* glm::scale(glm::vec3(_scale, _scale, 1.0f)) // scale the focus area
 		* glm::translate(glm::vec3(_translation.x, _translation.y, 0.0f))
 
-		; // translate the camera to the center
+		; // translate the camera to the centre
 		  // of the current focus area
 
 	// Update commands
@@ -685,7 +686,7 @@ pvr::Result VulkanNavigation2D::renderFrame()
 	if (this->shouldTakeScreenshot())
 	{
 		pvr::utils::takeScreenshot(_deviceResources->queue, _deviceResources->commandPool, _deviceResources->swapchain, swapchainIndex, this->getScreenshotFileName(),
-			&_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
+			_deviceResources->vmaAllocator, _deviceResources->vmaAllocator);
 	}
 
 	// PRESENT
@@ -694,7 +695,7 @@ pvr::Result VulkanNavigation2D::renderFrame()
 	presentInfo.swapchains = &_deviceResources->swapchain;
 	presentInfo.numSwapchains = 1;
 	presentInfo.waitSemaphores = &_deviceResources->presentationSemaphores[_frameId]; // wait for the semaphore that get
-																					  // signaled after finished rendering
+																					  // signalled after finished rendering
 																					  // to the swapchain image.
 	presentInfo.numWaitSemaphores = 1;
 	_deviceResources->queue->present(presentInfo);
@@ -705,25 +706,19 @@ pvr::Result VulkanNavigation2D::renderFrame()
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return Result::Success if no error occurred
-\brief  Code in releaseView() will be called by Shell when the application quits
-or before a change in the rendering context.
-***********************************************************************************************************************/
+/// <summary>Code in releaseView() will be called by PVRShell when the application quits or before a change in the rendering context.</summary>
+/// <returns>Return Result::Success if no error occurred.</returns>
 pvr::Result VulkanNavigation2D::releaseView()
 {
 	// Clean up tile rendering resource data.
 	_tileRenderingResources.clear();
-	_deviceResources.reset(); // destroy the vulkan resoures
+	_deviceResources.reset(); // destroy the vulkan resources
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return Return Result::Success if no error occurred
-\brief  Code in quitApplication() will be called by PVRShell once per run, just
-before exiting the program. If the rendering context is lost, quitApplication()
-will not be called.
-***********************************************************************************************************************/
+/// <summary>Code in quitApplication() will be called by PVRShell once per run, just before exiting the program.
+///	If the rendering context is lost, quitApplication() will not be called.</summary>
+/// <returns>Return Result::Success if no error occurred.</returns>
 pvr::Result VulkanNavigation2D::quitApplication()
 {
 	_OSMdata.reset();
@@ -764,9 +759,7 @@ void VulkanNavigation2D::resetCameraVariables()
 	_translation = _OSMdata->getRouteData()[_routeIndex].point;
 }
 
-/*!********************************************************************************************
-\brief  Handles user input and updates live variables accordingly.
-***********************************************************************************************/
+/// <summary>Handles user input and updates live variables accordingly.</summary>
 void VulkanNavigation2D::eventMappedInput(pvr::SimplifiedInput e)
 {
 	switch (e)
@@ -812,6 +805,7 @@ void VulkanNavigation2D::initializeRenderers(TileRenderingResources* begin, Tile
 																					  // camera groups and is a sprite
 		}
 
+#pragma warning WHAT_FIX_THIS_REMOVING_THE_LINE_BELOW_BREAKS
 		numSpriteInstances += 10;
 		begin->numSprites = numSprites;
 		begin->numSpriteInstances = numSpriteInstances;
@@ -821,7 +815,7 @@ void VulkanNavigation2D::initializeRenderers(TileRenderingResources* begin, Tile
 			begin->swapResources[swapIndex].renderer = std::make_shared<pvr::ui::UIRenderer>();
 			auto& renderer = *begin->swapResources[swapIndex].renderer;
 
-			renderer.init(getWidth(), getHeight(), isFullScreen(), _deviceResources->framebuffer[0]->getRenderPass(), 0, getBackBufferColorspace() == pvr::ColorSpace::sRGB,
+			renderer.init(getWidth(), getHeight(), isFullScreen(), _deviceResources->onScreenFramebuffer[0]->getRenderPass(), 0, getBackBufferColorspace() == pvr::ColorSpace::sRGB,
 				_deviceResources->commandPool, _deviceResources->queue, false, false, false, numSpriteInstances, numSprites);
 
 			begin->swapResources[swapIndex].font =
@@ -882,23 +876,21 @@ void VulkanNavigation2D::createDescriptorSets()
 	_deviceResources->pipeLayout = _deviceResources->device->createPipelineLayout(pipeLayoutInfo);
 }
 
-/*!*********************************************************************************************************************
-\brief  Create static and dynamic UBOs. Static UBO used to hold transform matrix
-and is updated once per frame. Dynamic UBO is used to hold color data for map
-elements and is only updated once during initialisation.
-***********************************************************************************************************************/
+/// <summary>Create static and dynamic UBOs. Static UBO used to hold transform matrix
+/// and is updated once per frame. Dynamic UBO is used to hold colour data for map
+/// elements and is only updated once during initialisation.</summary>
 void VulkanNavigation2D::createUbos()
 {
 	// Create the uniform buffer object. UBOs are created using the vma allocator
 	// for optimal allocation. The allocation are created with mapped bit which
 	// means the allocation is mapped after the allocation completion and the
-	// application uses flushrange to update the buffer if required. This is the
+	// application uses flush range to update the buffer if required. This is the
 	// recommended way of using buffers that requires update on each frames on
 	// PowerVR devices. Also the buffers are created with the following optimal
 	// flags pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT |
 	// pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT which means the buffer get
 	// allocated on the heap device-local and host-visible which is supported on
-	// intergated GPUs like PowerVR, Intel, etc.
+	// integrated GPUs like PowerVR, Intel, etc.
 
 	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(pvrvk::DescriptorPoolCreateInfo(200));
 	{
@@ -916,7 +908,7 @@ void VulkanNavigation2D::createUbos()
 		_deviceResources->uboMvp.buffer = pvr::utils::createBuffer(_deviceResources->device, pvrvk::BufferCreateInfo(bufferSize, pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT),
 			pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
-			&_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+			_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
 		_deviceResources->uboMvp.bufferView.pointToMappedMemory(_deviceResources->uboMvp.buffer->getDeviceMemory()->getMappedData());
 	}
@@ -934,7 +926,7 @@ void VulkanNavigation2D::createUbos()
 					_deviceResources->uboMvp.buffer, _deviceResources->uboMvp.bufferView.getDynamicSliceOffset(i), _deviceResources->uboMvp.bufferView.getDynamicSliceSize()));
 	}
 
-	// Create the Color uniform buffer object.
+	// Create the Colour uniform buffer object.
 	// This is a static UBO therefore it needs update once.
 	// Create the Uniform buffer with required flags(Devicelocal) and Optimal
 	// flags( devicelocal and host visible). if the optimal flags is not
@@ -953,7 +945,7 @@ void VulkanNavigation2D::createUbos()
 		uboColor.buffer = pvr::utils::createBuffer(_deviceResources->device,
 			pvrvk::BufferCreateInfo(uboSize, pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
-			&_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+			_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
 		uboColor.bufferView.pointToMappedMemory(uboColor.buffer->getDeviceMemory()->getMappedData());
 
@@ -981,16 +973,14 @@ void VulkanNavigation2D::createUbos()
 	_deviceResources->device->updateDescriptorSets(writeDescSet, _numSwapchains + 1, nullptr, 0);
 }
 
-/*!*********************************************************************************************************************
-\return Return true if no error occurred, false if the sampler descriptor set is
-not valid. \brief  Load a texture from file using PVR Asset Store, create a
-trilinear sampler, create a description set.
-***********************************************************************************************************************/
+/// <summary>Load a texture from file using PVR Asset Store, create a
+/// trilinear sampler, create a description set.</summary>
+/// <returns>Return true if no error occurred, false if the sampler descriptor set is not valid.</returns>
 void VulkanNavigation2D::loadTexture(pvrvk::CommandBuffer& uploadCmd)
 {
 	// Load font texture
 	_deviceResources->fontImage = pvr::utils::loadAndUploadImageAndView(_deviceResources->device, FontFile, true, uploadCmd, *this, pvrvk::ImageUsageFlags::e_SAMPLED_BIT,
-		pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, &_deviceResources->fontTexture, &_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
+		pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, &_deviceResources->fontTexture, _deviceResources->vmaAllocator, _deviceResources->vmaAllocator);
 
 	pvrvk::SamplerCreateInfo samplerInfo;
 	samplerInfo.magFilter = pvrvk::Filter::e_LINEAR;
@@ -1007,17 +997,15 @@ void VulkanNavigation2D::loadTexture(pvrvk::CommandBuffer& uploadCmd)
 	for (uint32_t i = 0; i < ARRAY_SIZE(SpriteFileNames); ++i)
 	{
 		images[i] = pvr::utils::loadAndUploadImage(_deviceResources->device, SpriteFileNames[i].c_str(), true, uploadCmd, *this,
-			pvrvk::ImageUsageFlags::e_SAMPLED_BIT | pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT, pvrvk::ImageLayout::e_TRANSFER_SRC_OPTIMAL, nullptr,
-			&_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
+			pvrvk::ImageUsageFlags::e_SAMPLED_BIT | pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT, pvrvk::ImageLayout::e_TRANSFER_SRC_OPTIMAL, nullptr, _deviceResources->vmaAllocator,
+			_deviceResources->vmaAllocator);
 	}
 
 	pvr::utils::generateTextureAtlas(_deviceResources->device, images, _deviceResources->atlasOffsets, ARRAY_SIZE(SpriteFileNames), pvrvk::ImageLayout::e_TRANSFER_SRC_OPTIMAL,
-		&_deviceResources->imageAtlas, nullptr, uploadCmd, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, &_deviceResources->vmaAllocator);
+		&_deviceResources->imageAtlas, nullptr, uploadCmd, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, _deviceResources->vmaAllocator);
 }
 
-/*!*********************************************************************************************************************
-\brief  Setup colors used for drawing the map. Fill dynamic UBO with data.
-***********************************************************************************************************************/
+/// <summary>Setup colours used for drawing the map. Fill dynamic UBO with data.</summary>
 void VulkanNavigation2D::setColors() {}
 
 void VulkanNavigation2D::initRoute()
@@ -1031,10 +1019,7 @@ void VulkanNavigation2D::initRoute()
 	}
 }
 
-/*!*********************************************************************************************************************
-\brief  Creates vertex and index buffers and records the secondary command
-buffers for each tile.
-***********************************************************************************************************************/
+/// <summary>Creates vertex and index buffers and records the secondary command buffers for each tile.</summary>
 void VulkanNavigation2D::createBuffers(pvrvk::CommandBuffer& uploadCmd)
 {
 	for (uint32_t col = 0; col < _OSMdata->getTiles().size(); ++col)
@@ -1088,13 +1073,13 @@ void VulkanNavigation2D::createBuffers(pvrvk::CommandBuffer& uploadCmd)
 						pvrvk::BufferCreateInfo(vboSize, pvrvk::BufferUsageFlags::e_VERTEX_BUFFER_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT),
 						pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 						pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
-						&_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+						_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
 					bool isBufferHostVisible = (tileRes.vbo->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT) != 0;
 					if (isBufferHostVisible) { pvr::utils::updateHostVisibleBuffer(tileRes.vbo, tile.vertices.data(), 0, vboSize, true); }
 					else
 					{
-						pvr::utils::updateBufferUsingStagingBuffer(_deviceResources->device, tileRes.vbo, uploadCmd, tile.vertices.data(), 0, vboSize, &_deviceResources->vmaAllocator);
+						pvr::utils::updateBufferUsingStagingBuffer(_deviceResources->device, tileRes.vbo, uploadCmd, tile.vertices.data(), 0, vboSize, _deviceResources->vmaAllocator);
 					}
 				}
 
@@ -1105,13 +1090,13 @@ void VulkanNavigation2D::createBuffers(pvrvk::CommandBuffer& uploadCmd)
 						pvrvk::BufferCreateInfo(iboSize, pvrvk::BufferUsageFlags::e_INDEX_BUFFER_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT),
 						pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 						pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
-						&_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+						_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
 					bool isBufferHostVisible = (tileRes.ibo->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT) != 0;
 					if (isBufferHostVisible) { pvr::utils::updateHostVisibleBuffer(tileRes.ibo, tile.indices.data(), 0, iboSize, true); }
 					else
 					{
-						pvr::utils::updateBufferUsingStagingBuffer(_deviceResources->device, tileRes.ibo, uploadCmd, tile.indices.data(), 0, iboSize, &_deviceResources->vmaAllocator);
+						pvr::utils::updateBufferUsingStagingBuffer(_deviceResources->device, tileRes.ibo, uploadCmd, tile.indices.data(), 0, iboSize, _deviceResources->vmaAllocator);
 					}
 				}
 
@@ -1122,7 +1107,7 @@ void VulkanNavigation2D::createBuffers(pvrvk::CommandBuffer& uploadCmd)
 				{
 					uint32_t offset = 0;
 					tileRes.swapResources[i].secCbo = _deviceResources->commandPool->allocateSecondaryCommandBuffer();
-					tileRes.swapResources[i].secCbo->begin(_deviceResources->framebuffer[i]);
+					tileRes.swapResources[i].secCbo->begin(_deviceResources->onScreenFramebuffer[i]);
 
 					// Bind the vertex and index buffers for the tile
 					tileRes.swapResources[i].secCbo->bindVertexBuffer(tileRes.vbo, 0, 0);
@@ -1241,9 +1226,7 @@ void VulkanNavigation2D::createBuffers(pvrvk::CommandBuffer& uploadCmd)
 	}
 }
 
-/*!*********************************************************************************************************************
-\brief  Update animation using pre-computed path for the camera to follow.
-***********************************************************************************************************************/
+/// <summary>Update animation using pre-computed path for the camera to follow.</summary>
 void VulkanNavigation2D::updateAnimation()
 {
 	static const float scaleAnimTime = 1000.0f;
@@ -1420,9 +1403,7 @@ bool skipLabel(LabelData& labelData, Label& label, glm::dvec3& extent)
 	return false;
 }
 
-/*!*********************************************************************************************************************
-\brief  Record the primary command buffer.
-***********************************************************************************************************************/
+/// <summary>Record the primary command buffer.</summary>
 void VulkanNavigation2D::createUIRendererItems()
 {
 	for (uint32_t col = 0; col < _numCols; col++)
@@ -1546,7 +1527,7 @@ void VulkanNavigation2D::createUIRendererItems()
 
 void VulkanNavigation2D::recordUiRendererCommandBuffer(uint32_t swapchainIndex)
 {
-	_deviceResources->uiRendererCmdBuffers[swapchainIndex]->begin(_deviceResources->framebuffer[swapchainIndex], 0, pvrvk::CommandBufferUsageFlags::e_RENDER_PASS_CONTINUE_BIT);
+	_deviceResources->uiRendererCmdBuffers[swapchainIndex]->begin(_deviceResources->onScreenFramebuffer[swapchainIndex], 0, pvrvk::CommandBufferUsageFlags::e_RENDER_PASS_CONTINUE_BIT);
 
 	_deviceResources->uiRenderer.beginRendering(_deviceResources->uiRendererCmdBuffers[swapchainIndex]);
 	_deviceResources->uiRenderer.getSdkLogo()->render();
@@ -1559,9 +1540,7 @@ void VulkanNavigation2D::recordUiRendererCommandBuffer(uint32_t swapchainIndex)
 
 static std::vector<TileRenderingResources*> renderqueue;
 
-/*!*********************************************************************************************************************
-\brief  Find the tiles that need to be rendered.
-***********************************************************************************************************************/
+/// <summary>Find the tiles that need to be rendered.</summary>
 void VulkanNavigation2D::updateCommandBuffer(pvrvk::CommandBuffer& cbo, uint32_t swapchainIndex)
 {
 	renderqueue.clear();
@@ -1624,7 +1603,7 @@ void VulkanNavigation2D::updateCommandBuffer(pvrvk::CommandBuffer& cbo, uint32_t
 			pvrvk::ClearValue::createDefaultDepthStencilClearValue() };
 
 		cbo->begin();
-		cbo->beginRenderPass(_deviceResources->framebuffer[swapchainIndex], pvrvk::Rect2D(0, 0, getWidth(), getHeight()), false, clearValues, ARRAY_SIZE(clearValues));
+		cbo->beginRenderPass(_deviceResources->onScreenFramebuffer[swapchainIndex], pvrvk::Rect2D(0, 0, getWidth(), getHeight()), false, clearValues, ARRAY_SIZE(clearValues));
 
 		for (auto&& tile : renderqueue)
 		{
@@ -1643,19 +1622,15 @@ void VulkanNavigation2D::updateCommandBuffer(pvrvk::CommandBuffer& cbo, uint32_t
 	}
 }
 
-/*!*********************************************************************************************************************
-\brief  Capture frustum planes from the current View Projection matrix
-***********************************************************************************************************************/
+/// <summary>Capture frustum planes from the current View Projection matrix.</summary>
 void VulkanNavigation2D::calculateClipPlanes() { pvr::math::getFrustumPlanes(pvr::Api::Vulkan, _mapMVPMtx, _viewFrustum); }
 
-/*!*********************************************************************************************************************
-\param min The minimum co-ordinates of the bounding box.
-\param max The maximum co-ordinates of the bounding box.
-\return boolean True if inside the view frustum, false if outside.
-\brief  Tests whether a 2D bounding box is intersected or enclosed by a view
-frustum. Only the near, far, left and right planes of the view frustum are taken
-into consideration to optimize the intersection test.
-***********************************************************************************************************************/
+/// <summary>Tests whether a 2D bounding box is intersected or enclosed by a view
+/// frustum. Only the near, far, left and right planes of the view frustum are taken
+/// into consideration to optimize the intersection test.</summary>
+/// <param name="min">The minimum co-ordinates of the bounding box.</param>
+/// <param name="max">The maximum co-ordinates of the bounding box.</param>
+/// <returns>Boolean True if inside the view frustum, false if outside.</returns>
 bool VulkanNavigation2D::inFrustum(glm::vec2 min, glm::vec2 max)
 {
 	// Test the axis-aligned bounding box against each frustum plane,
@@ -1688,12 +1663,10 @@ void VulkanNavigation2D::updateGroups(uint32_t col, uint32_t row, uint32_t swapi
 	}
 }
 
-/*!*********************************************************************************************************************
-\param col  Column index for tile.
-\param row  Row index for tile.
-\brief Update the renderable text (dependant on LOD level) using the
-pre-processed data (position, _scale, _rotation, std::string) and UIRenderer.
-***********************************************************************************************************************/
+/// <summary>Update the renderable text (dependant on LOD level) using the
+/// pre-processed data (position, _scale, _rotation, std::string) and UIRenderer.</summary>
+/// <param name="col">Column index for tile.</param>
+/// <param name="row">Row index for tile.</param>
 void VulkanNavigation2D::updateLabels(uint32_t col, uint32_t row, uint32_t swapchainIndex)
 {
 	Tile& tile = _OSMdata->getTiles()[col][row];
@@ -1744,13 +1717,11 @@ void VulkanNavigation2D::updateLabels(uint32_t col, uint32_t row, uint32_t swapc
 	}
 }
 
-/*!*********************************************************************************************************************
-\param col  Column index for tile.
-\param row  Row index for tile.
-\brief Update renderable icon, dependant on LOD level (for buildings such as;
-cafe, pub, library etc.) using the pre-processed data (position, type) and
-UIRenderer.
-***********************************************************************************************************************/
+/// <summary>Update renderable icon, dependant on LOD level (for buildings such as;
+/// cafe, pub, library etc.) using the pre-processed data (position, type) and
+/// UIRenderer.</summary>
+/// <param name="col">Column index for tile.</param>
+/// <param name="row">Row index for tile.</param>
 void VulkanNavigation2D::updateAmenities(uint32_t col, uint32_t row, uint32_t swapchainIndex)
 {
 	TileRenderingResources& tileRes = _tileRenderingResources[col][row];

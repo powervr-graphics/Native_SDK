@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.3)
 project(OpenGLESPVRScopeRemote)
-if(IOS)	
+if(IOS)
 	message("Skipping OpenGLESPVRScopeRemote : Not supported on iOS")
 	return()
 endif()
@@ -54,7 +54,7 @@ add_assets_resource_file(OpenGLESPVRScopeRemote)
 # Apply SDK example specific compile and linker options
 apply_example_compile_options_to_target(OpenGLESPVRScopeRemote)
 
-target_link_libraries(OpenGLESPVRScopeRemote
+target_link_libraries(OpenGLESPVRScopeRemote PUBLIC
 	PVRShell
 	PVRUtilsGles
 	PVRScopeDeveloper

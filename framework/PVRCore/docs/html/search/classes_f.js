@@ -7,7 +7,7 @@ var searchData=
   ['texturecubeheader',['TextureCubeHeader',['../structpvr_1_1texture__xnb_1_1_texture_cube_header.html',1,'pvr::texture_xnb']]],
   ['texturedecompressionerror',['TextureDecompressionError',['../classpvr_1_1_texture_decompression_error.html',1,'pvr']]],
   ['texturedefinition',['TextureDefinition',['../structpvr_1_1effect_1_1_texture_definition.html',1,'pvr::effect']]],
-  ['textureheader',['TextureHeader',['../classpvr_1_1_texture_header.html',1,'pvr']]],
+  ['textureheader',['TextureHeader',['../structpvr_1_1_texture_header.html',1,'pvr']]],
   ['textureloadfuture_5f',['TextureLoadFuture_',['../structpvr_1_1async_1_1_texture_load_future__.html',1,'pvr::async']]],
   ['texturemetadata',['TextureMetaData',['../classpvr_1_1_texture_meta_data.html',1,'pvr']]],
   ['textureref',['TextureRef',['../structpvr_1_1effect_1_1_texture_ref.html',1,'pvr::effect']]],

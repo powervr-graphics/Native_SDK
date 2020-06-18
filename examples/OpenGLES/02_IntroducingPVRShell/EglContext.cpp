@@ -33,7 +33,7 @@ void fixAttributes(const pvr::DisplayAttributes& origAttr, pvr::DisplayAttribute
 	if (!(retries[retry_reduceAlphaBpp] == 3) && !(retries[retry_NoAlpha] == 3)) // fixed. leave it alone..
 	{
 		if (retries[retry_reduceAlphaBpp] == 0 && retries[retry_NoAlpha] == 0) // reset.
-		{ attr.alphaBits = origAttr.alphaBits; } // mutually exclusiv if (retries[retry_reduceAlphaBpp] == 1) // test one
+		{ attr.alphaBits = origAttr.alphaBits; } // mutually exclusive if (retries[retry_reduceAlphaBpp] == 1) // test one
 		{
 			attr.alphaBits = 1;
 		} // mutually exclusive
@@ -239,7 +239,7 @@ EGLContext getContextForConfig(EGLDisplay display, EGLConfig config, pvr::Api gr
 bool EglContext::isGlesVersionSupported(EGLDisplay display, pvr::Api graphicsapi, bool& isSupported)
 {
 #if defined(TARGET_OS_MAC)
-	/* Max Api supported on macOS is OpenGLES3*/
+	/* Max API supported on macOS is OpenGLES3*/
 	if (graphicsapi > pvr::Api::OpenGLES3) { return false; }
 #endif
 

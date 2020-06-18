@@ -15,9 +15,9 @@ buildscript {
 		jcenter()
 	}
 
-	// Adds the Android plugin for Gradle version 3.5.0 as a classpath dependency
+	// Adds the Android plugin for Gradle as a classpath dependency
 	dependencies {
-		classpath 'com.android.tools.build:gradle:3.5.0'
+		classpath 'com.android.tools.build:gradle:3.5.3'
 	}
 }
 
@@ -30,11 +30,11 @@ allprojects {
 }
 
 android {
-	compileSdkVersion 28
+	compileSdkVersion 29
 	defaultConfig {
 		applicationId "com.powervr.VulkanExampleUI"
 		minSdkVersion 21
-		targetSdkVersion 26
+		targetSdkVersion 29
 		externalNativeBuild {
 			cmake {
 				cppFlags "-fexceptions"
@@ -102,6 +102,8 @@ android {
 
 	// Add to this list files that will need to be read at runtime here: Textures, shaders, text files etc.
 	FileCollection assetFiles = files(
+	"${project.projectDir}/../ColShader.fsh.spv",
+	"${project.projectDir}/../ColShader.vsh.spv",
 	"${project.projectDir}/../../../assets/ExampleUI/container-corner.pvr",
 	"${project.projectDir}/../../../assets/ExampleUI/container-filler.pvr",
 	"${project.projectDir}/../../../assets/ExampleUI/container-vertical.pvr",
@@ -136,8 +138,6 @@ android {
 	"${project.projectDir}/../../../assets/ExampleUI/window-topright.pvr",
 	"${project.projectDir}/../../../assets/ExampleUI/loremipsum.pvr",
 	"${project.projectDir}/../../../assets/ExampleUI/vertical-bar.pvr",
-	"${project.projectDir}/../ColShader.fsh.spv",
-	"${project.projectDir}/../ColShader.vsh.spv",
 	)
 	
 	// Add a task for copying our assets from their original location (${project.projectDir}...) to the assets/ folder for packaging

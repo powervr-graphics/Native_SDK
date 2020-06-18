@@ -253,7 +253,7 @@ inline void createVbos(utils::RenderManager& renderman, const std::map<assets::M
 				apimesh.ibo = pvr::utils::createBuffer(device, pvrvk::BufferCreateInfo(mesh.getFaces().getDataSize(), pvrvk::BufferUsageFlags::e_INDEX_BUFFER_BIT),
 					pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 					pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
-					&renderman.getAllocator(), pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+					renderman.getAllocator(), pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 				apimesh.indexType = mesh.getFaces().getDataType();
 
 				assertion(apimesh.ibo != nullptr, strings::createFormatted("RenderManager: Could not create IBO for mesh [%d] of model [%d]", mesh_id, model_id));
@@ -271,7 +271,7 @@ inline void createVbos(utils::RenderManager& renderman, const std::map<assets::M
 				apimesh.vbos[vbo_id] =
 					pvr::utils::createBuffer(device, pvrvk::BufferCreateInfo(vboSize, pvrvk::BufferUsageFlags::e_VERTEX_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 						pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
-						&renderman.getAllocator(), pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+						renderman.getAllocator(), pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 				populateVbos(attribConfig, apimesh.vbos, mesh);
 				assertion(apimesh.vbos[vbo_id] != nullptr, strings::createFormatted("RenderManager: Could not create VBO[%d] for mesh [%d] of model [%d]", mesh_id, model_id));
 			}
@@ -360,6 +360,8 @@ inline AttributeConfiguration getVertexBindingsForPipe(const effectvk::EffectApi
 		// the "stride" is the offset of the last one...
 		retval[binding][count[binding]++] = utils::Attribute(it->semantic, datatype, static_cast<uint16_t>(width), static_cast<uint16_t>(retval[binding].stride), it->variableName);
 		retval[binding].stride += width * dataTypeSize(datatype); // 4 - we only support float, int32_t;
+
+#pragma warning TODO_MUST_CHANGE_DATATYPE_FROM_THE_MESH_ALWAYS_ASSUMING_32_BIT_MUST_CHANGE
 	}
 	return retval;
 }
@@ -561,6 +563,8 @@ inline void addUniformSemanticLists(std::map<StringHash, effectvk::UniformSemant
 } // namespace
 
 /////////  PIPELINES /////////////
+#pragma warning TODO_MAKE_DIFFERENT_PIPE_BASED_ON_PRIMITIVE_TOPOLOGY
+
 inline void createPipelines(RenderManager& renderman, const std::map<StringHash, AttributeConfiguration*>& vertexConfigs)
 {
 	std::map<StringHash, GraphicsPipeline> pipelineApis;
@@ -753,7 +757,7 @@ inline bool createBuffers(RenderManager& renderman)
 			bufdef.buffer = pvr::utils::createBuffer(device, pvrvk::BufferCreateInfo(bufdef.structuredBufferView.getSize(), pvr::utils::convertToPVRVk(bufdef.allSupportedBindings)),
 				pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 				pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
-				&renderman.getAllocator(), pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+				renderman.getAllocator(), pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
 			bufdef.structuredBufferView.pointToMappedMemory(bufdef.buffer->getDeviceMemory()->getMappedData());
 		}
@@ -849,8 +853,8 @@ inline void createDescriptorSets(
 									{
 										const StringHash& texturePath = modeleffect.renderModel_->assetModel->getTexture(texIndex).getName();
 										auto imgView = utils::loadAndUploadImageAndView(device, texturePath.c_str(), true, cmdBuffer, renderman.getAssetProvider(),
-											pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, nullptr, &renderman.getAllocator(),
-											&renderman.getAllocator());
+											pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, nullptr, renderman.getAllocator(),
+											renderman.getAllocator());
 
 										uint32_t swaplength = pipedef.descSetIsMultibuffered[tex.second.set] ? swapchainLength : 1;
 
@@ -868,6 +872,7 @@ inline void createDescriptorSets(
 											"RenderManager: Texture semantic [%s] was not found in model material [%s]. "
 											"The texture will need to be populated by the application",
 											tex.first.c_str(), materialeffect.material->assetMaterial->getName().c_str());
+#pragma warning populate_non_automatic_semantics
 									}
 								}
 
@@ -1647,8 +1652,7 @@ NodeSemanticSetter RendermanNode::getNodeSemanticSetter(const StringHash& semant
 	case HashCompileTime<'M', 'O', 'D', 'E', 'L'>::value:
 	case HashCompileTime<'M', 'O', 'D', 'E', 'L', 'W', 'O', 'R', 'L', 'D', 'M', 'A', 'T', 'R', 'I', 'X'>::value:
 	case HashCompileTime<'M', 'O', 'D', 'E', 'L', 'W', 'O', 'R', 'L', 'D', 'M', 'T', 'X'>::value:
-	case HashCompileTime<'M', 'O', 'D', 'E', 'L', 'W', 'O', 'R', 'L', 'D'>::value:
-	{
+	case HashCompileTime<'M', 'O', 'D', 'E', 'L', 'W', 'O', 'R', 'L', 'D'>::value: {
 		return &getWorldMatrix;
 	}
 	break;
@@ -1666,8 +1670,7 @@ NodeSemanticSetter RendermanNode::getNodeSemanticSetter(const StringHash& semant
 	case HashCompileTime<'M', 'O', 'D', 'E', 'L', 'M', 'T', 'X', 'I', 'T'>::value:
 	case HashCompileTime<'M', 'O', 'D', 'E', 'L', 'W', 'O', 'R', 'L', 'D', 'M', 'A', 'T', 'R', 'I', 'X', 'I', 'T'>::value:
 	case HashCompileTime<'M', 'O', 'D', 'E', 'L', 'W', 'O', 'R', 'L', 'D', 'M', 'T', 'X', 'I', 'T'>::value:
-	case HashCompileTime<'M', 'O', 'D', 'E', 'L', 'W', 'O', 'R', 'L', 'D', 'I', 'T'>::value:
-	{
+	case HashCompileTime<'M', 'O', 'D', 'E', 'L', 'W', 'O', 'R', 'L', 'D', 'I', 'T'>::value: {
 		return &getWorldMatrixIT;
 	}
 	break;
@@ -1676,8 +1679,7 @@ NodeSemanticSetter RendermanNode::getNodeSemanticSetter(const StringHash& semant
 	case HashCompileTime<'M', 'O', 'D', 'E', 'L', 'V', 'I', 'E', 'W'>::value:
 	case HashCompileTime<'M', 'V', 'M', 'A', 'T', 'R', 'I', 'X'>::value:
 	case HashCompileTime<'M', 'V', 'M', 'T', 'X'>::value:
-	case HashCompileTime<'M', 'V'>::value:
-	{
+	case HashCompileTime<'M', 'V'>::value: {
 		return &getModelViewMatrix;
 	}
 	break;
@@ -1686,14 +1688,12 @@ NodeSemanticSetter RendermanNode::getNodeSemanticSetter(const StringHash& semant
 	case HashCompileTime<'M', 'O', 'D', 'E', 'L', 'V', 'I', 'E', 'W', 'P', 'R', 'O', 'J', 'E', 'C', 'T', 'I', 'O', 'N'>::value:
 	case HashCompileTime<'M', 'V', 'P', 'M', 'A', 'T', 'R', 'I', 'X'>::value:
 	case HashCompileTime<'M', 'V', 'P', 'M', 'T', 'X'>::value:
-	case HashCompileTime<'M', 'V', 'P'>::value:
-	{
+	case HashCompileTime<'M', 'V', 'P'>::value: {
 		return &getModelViewProjectionMatrix;
 	}
 	break;
 	case HashCompileTime<'B', 'O', 'N', 'E', 'C', 'O', 'U', 'N', 'T'>::value:
-	case HashCompileTime<'N', 'U', 'M', 'B', 'O', 'N', 'E', 'S'>::value:
-	{
+	case HashCompileTime<'N', 'U', 'M', 'B', 'O', 'N', 'E', 'S'>::value: {
 		return &getNumBones;
 	}
 	break;

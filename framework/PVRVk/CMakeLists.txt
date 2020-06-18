@@ -1,4 +1,6 @@
 cmake_minimum_required(VERSION 3.3)
+# Copyright (c) Imagination Technologies Limited.
+
 project(PVRVk)
 
 include(GNUInstallDirs)
@@ -95,7 +97,9 @@ set(PVRVk_INCLUDE_DIRECTORIES
 # Create the library
 add_library(PVRVk STATIC
 	${PVRVk_SRC}
-	${PVRVk_HEADERS})
+	${PVRVk_HEADERS}
+	${PVRVk_INCLUDES}
+	)
 
 # Set the include directories for PVRVk
 target_include_directories(PVRVk 
@@ -111,7 +115,7 @@ if(PVRVK_USE_PLATFORM)
 			"${PVRVK_USE_PLATFORM}")
 endif()
 
-apply_compile_options_to_target(PVRVk)
+apply_framework_compile_options_to_target(PVRVk)
 
 install(TARGETS PVRVk EXPORT PVRVkTargets
 	ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}

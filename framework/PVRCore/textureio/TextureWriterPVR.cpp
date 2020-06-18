@@ -32,33 +32,30 @@ inline static void writeTextureMetaDataToStream(Stream&& stream, const TextureMe
 
 void writePVR(const Texture& asset, Stream& stream)
 {
-	// Get the file header to write.
-	TextureHeader::Header textureHeader = asset.getHeader();
-
 	// Check the size of data written.
-	uint32_t version = TextureHeader::Header::PVRv3;
+	uint32_t version = TextureHeader::PVRv3;
 
 	stream.writeExact(sizeof(version), 1, &version); // Write the texture header version
-	stream.writeExact(sizeof(textureHeader.flags), 1, &textureHeader.flags); // Write the flags
-	stream.writeExact(sizeof(textureHeader.pixelFormat), 1, &textureHeader.pixelFormat); // Write the pixel format
-	stream.writeExact(sizeof(textureHeader.colorSpace), 1, &textureHeader.colorSpace); // Write the color space
-	stream.writeExact(sizeof(textureHeader.channelType), 1, &textureHeader.channelType); // Write the channel type
-	stream.writeExact(sizeof(textureHeader.height), 1, &textureHeader.height); // Write the height
-	stream.writeExact(sizeof(textureHeader.width), 1, &textureHeader.width); // Write the width
-	stream.writeExact(sizeof(textureHeader.depth), 1, &textureHeader.depth); // Write the depth
-	stream.writeExact(sizeof(textureHeader.numSurfaces), 1, &textureHeader.numSurfaces); // Write the number of surfaces
-	stream.writeExact(sizeof(textureHeader.numFaces), 1, &textureHeader.numFaces); // Write the number of faces
-	stream.writeExact(sizeof(textureHeader.numMipMaps), 1, &textureHeader.numMipMaps); // Write the number of MIP maps
-	stream.writeExact(sizeof(textureHeader.metaDataSize), 1, &textureHeader.metaDataSize); // Write the meta data size
+	stream.writeExact(sizeof(asset.flags), 1, &asset.flags); // Write the flags
+	stream.writeExact(sizeof(asset.pixelFormat), 1, &asset.pixelFormat); // Write the pixel format
+	stream.writeExact(sizeof(asset.colorSpace), 1, &asset.colorSpace); // Write the color space
+	stream.writeExact(sizeof(asset.channelType), 1, &asset.channelType); // Write the channel type
+	stream.writeExact(sizeof(asset.height), 1, &asset.height); // Write the height
+	stream.writeExact(sizeof(asset.width), 1, &asset.width); // Write the width
+	stream.writeExact(sizeof(asset.depth), 1, &asset.depth); // Write the depth
+	stream.writeExact(sizeof(asset.numSurfaces), 1, &asset.numSurfaces); // Write the number of surfaces
+	stream.writeExact(sizeof(asset.numFaces), 1, &asset.numFaces); // Write the number of faces
+	stream.writeExact(sizeof(asset.numMipMaps), 1, &asset.numMipMaps); // Write the number of MIP maps
+	stream.writeExact(sizeof(asset.metaDataSize), 1, &asset.metaDataSize); // Write the meta data size
 
 	// Write the meta data
 	const map<uint32_t, map<uint32_t, TextureMetaData>>* metaDataMap = asset.getMetaDataMap();
 	map<uint32_t, map<uint32_t, TextureMetaData>>::const_iterator walkMetaDataMap = metaDataMap->begin();
-	for(; walkMetaDataMap != metaDataMap->end(); ++walkMetaDataMap)
+	for (; walkMetaDataMap != metaDataMap->end(); ++walkMetaDataMap)
 	{
 		const map<uint32_t, TextureMetaData>& currentDevMetaDataMap = walkMetaDataMap->second;
 		map<uint32_t, TextureMetaData>::const_iterator walkCurDevMetaMap = currentDevMetaDataMap.begin();
-		for(; walkCurDevMetaMap != currentDevMetaDataMap.end(); ++walkCurDevMetaMap) { writeTextureMetaDataToStream(stream, walkCurDevMetaMap->second); }
+		for (; walkCurDevMetaMap != currentDevMetaDataMap.end(); ++walkCurDevMetaMap) { writeTextureMetaDataToStream(stream, walkCurDevMetaMap->second); }
 	}
 
 	// Write the texture data

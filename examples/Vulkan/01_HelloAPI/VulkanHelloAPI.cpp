@@ -206,7 +206,7 @@ std::vector<std::string> VulkanHelloAPI::initInstanceExtensions()
 	extensionNames.emplace_back(VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME);
 #endif
 #ifdef VK_USE_PLATFORM_MACOS_MVK
-    extensionNames.emplace_back(VK_MVK_MACOS_SURFACE_EXTENSION_NAME);
+	extensionNames.emplace_back(VK_MVK_MACOS_SURFACE_EXTENSION_NAME);
 #endif
 #ifdef USE_PLATFORM_NULLWS
 	extensionNames.emplace_back(VK_KHR_DISPLAY_EXTENSION_NAME);
@@ -284,7 +284,7 @@ void VulkanHelloAPI::initPhysicalDevice()
 {
 	// Concept: Physical Devices
 	// A physical device needs to be chosen. A physical device represents a GPU used for operations.
-	// All physical devices will be queried, and the device with the greatest compatability with the application's needs will be used.
+	// All physical devices will be queried, and the device with the greatest compatibility with the application's needs will be used.
 
 	// This function selects an available physical device which is most compatible with the application's requirements.
 
@@ -435,7 +435,7 @@ void VulkanHelloAPI::initSurface()
 	// This function initialises the surface that will be needed to present this rendered example.
 
 	// Surfaces are based on the platform (OS) that is being deployed to.
-	// Pre-processors are used to select the correct function call and info struct datatype to create a surface.
+	// Pre-processors are used to select the correct function call and info struct data type to create a surface.
 
 	// For Win32.
 #ifdef VK_USE_PLATFORM_WIN32_KHR
@@ -508,23 +508,23 @@ void VulkanHelloAPI::initSurface()
 
 #endif
 
-// For MoltenVK
+	// For MoltenVK
 #ifdef VK_USE_PLATFORM_MACOS_MVK
 
-    // Create the macos surface info, passing the NSView handle
-    VkMacOSSurfaceCreateInfoMVK surfaceInfo = {};
-    surfaceInfo.sType = VK_STRUCTURE_TYPE_MACOS_SURFACE_CREATE_INFO_MVK;
-    surfaceInfo.pNext = 0;
-    surfaceInfo.flags = 0;
-    // pView must be a valid NSView and must be backed by a CALayer instance of type CAMetalLayer.
-    surfaceInfo.pView = surfaceData.view;
+	// Create the MacOS surface info, passing the NSView handle
+	VkMacOSSurfaceCreateInfoMVK surfaceInfo = {};
+	surfaceInfo.sType = VK_STRUCTURE_TYPE_MACOS_SURFACE_CREATE_INFO_MVK;
+	surfaceInfo.pNext = 0;
+	surfaceInfo.flags = 0;
+	// pView must be a valid NSView and must be backed by a CALayer instance of type CAMetalLayer.
+	surfaceInfo.pView = surfaceData.view;
 
-    // Create the macos surface that will be presented on.
-    debugAssertFunctionResult(vk::CreateMacOSSurfaceMVK(appManager.instance, &surfaceInfo, NULL, &appManager.surface), "MacOS Surface Creation");
+	// Create the MacOS surface that will be presented on.
+	debugAssertFunctionResult(vk::CreateMacOSSurfaceMVK(appManager.instance, &surfaceInfo, NULL, &appManager.surface), "MacOS Surface Creation");
 
 #endif
 
-// For NullWS
+	// For NullWS
 #ifdef USE_PLATFORM_NULLWS
 
 	VkDisplayPropertiesKHR properties;
@@ -624,8 +624,8 @@ void VulkanHelloAPI::initSwapChain()
 	debugAssertFunctionResult(vk::GetPhysicalDeviceSurfacePresentModesKHR(appManager.physicalDevice, appManager.surface, &presentModesCount, presentModes.data()),
 		"Surface Present Modes - Allocate Data");
 
-	// Choose a compatible present mode and check if the identified present mode is compatible with the device using a helper function.
-	appManager.presentMode = getCompatiblePresentMode(VK_PRESENT_MODE_IMMEDIATE_KHR, presentModes);
+	// Make use of VK_PRESENT_MODE_FIFO_KHR for presentation.
+	appManager.presentMode = VK_PRESENT_MODE_FIFO_KHR;
 
 	// Get the correct extent (dimensions) of the surface using a helper function.
 	appManager.swapchainExtent = getCorrectExtent(surface_capabilities);
@@ -650,7 +650,14 @@ void VulkanHelloAPI::initSwapChain()
 		Log(true, "Surface does not support VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR transformation");
 		assert(surface_capabilities.supportedTransforms & VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR);
 	}
-	swapchainInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+
+	VkCompositeAlphaFlagBitsKHR supportedCompositeAlphaFlags = (VkCompositeAlphaFlagBitsKHR)0;
+	if ((surface_capabilities.supportedCompositeAlpha & VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR) != 0) { supportedCompositeAlphaFlags = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR; }
+	else if ((surface_capabilities.supportedCompositeAlpha & VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR) != 0)
+	{
+		supportedCompositeAlphaFlags = VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR;
+	}
+	swapchainInfo.compositeAlpha = supportedCompositeAlphaFlags;
 	swapchainInfo.presentMode = appManager.presentMode;
 	swapchainInfo.minImageCount = surfaceImageCount;
 	swapchainInfo.oldSwapchain = VK_NULL_HANDLE;
@@ -720,7 +727,7 @@ void VulkanHelloAPI::initImagesAndViews()
 	// Iterate over each image in order to create an image view for each one.
 	for (uint32_t i = 0; i < swapchainImageCount; ++i)
 	{
-		// Copy over the images to the permenant vector.
+		// Copy over the images to the permanent vector.
 		appManager.swapChainImages[i].image = images[i];
 
 		// Create the image view object itself, referencing one of the retrieved swapchain images.
@@ -750,7 +757,7 @@ void VulkanHelloAPI::initImagesAndViews()
 /// <summary>Creates the vertex and fragment shader modules and loads in compiled SPIR-V code</summary>
 void VulkanHelloAPI::initShaders()
 {
-	// In Vulkan, shaders are in SPIR-V format which is a bytecode format rather than a human-readable one.
+	// In Vulkan, shaders are in SPIR-V format which is a byte-code format rather than a human-readable one.
 	// SPIR-V can be used for both graphical and compute operations.
 	// This function loads the compiled source code (see vertshader.h and fragshader.h) and creates shader modules that are going
 	// to be used by the pipeline later on.
@@ -1372,7 +1379,7 @@ void VulkanHelloAPI::initPipeline()
 	rasterizationInfo.depthBiasEnable = VK_FALSE;
 	rasterizationInfo.depthBiasSlopeFactor = 0.0f;
 
-	// This colour blend attachment state will be used by the color blend info.
+	// This colour blend attachment state will be used by the colour blend info.
 	// Only a single colour blend attachment is required because the render pass only has
 	// one attachment.
 	// No blending is needed so existing fragment values will be overwritten with incoming ones.
@@ -1633,7 +1640,7 @@ void VulkanHelloAPI::initSemaphoreAndFence()
 		VkFenceCreateInfo FenceInfo;
 		FenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
 		FenceInfo.pNext = nullptr;
-		FenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT; // Start the fence as signaled.
+		FenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT; // Start the fence as signalled.
 
 		debugAssertFunctionResult(vk::CreateFence(appManager.device, &FenceInfo, nullptr, &frameFence), "Fence Creation");
 
@@ -1938,7 +1945,7 @@ void VulkanHelloAPI::drawFrame()
 	// and presenting the frame to the surface.
 
 	// Wait for the fence to be signalled before starting to render the current frame, then reset it so it can be reused.
-	debugAssertFunctionResult(vk::WaitForFences(appManager.device, 1, &appManager.frameFences[frameId], true, FENCE_TIMEOUT), "Fence - Signaled");
+	debugAssertFunctionResult(vk::WaitForFences(appManager.device, 1, &appManager.frameFences[frameId], true, FENCE_TIMEOUT), "Fence - Signalled");
 
 	vk::ResetFences(appManager.device, 1, &appManager.frameFences[frameId]);
 
@@ -2062,27 +2069,6 @@ VkPhysicalDevice VulkanHelloAPI::getCompatibleDevice()
 
 	// Return null if nothing is found.
 	return nullptr;
-}
-
-/// <summary>Checks for presentation mode compatibility</summary>
-/// <param name="inReqMode">The selected presentation mode</param>
-/// <param name="inModes">Vector of the GPU supported presentation modes</param>
-/// <returns>A presentation mode compatible with the inReqMode, or the default mode (VK_PRESENT_MODE_FIFO_KHR)</returns>
-VkPresentModeKHR VulkanHelloAPI::getCompatiblePresentMode(const VkPresentModeKHR& inReqMode, const std::vector<VkPresentModeKHR>& inModes)
-{
-	// This function checks for the presentation mode compatibility.
-	// Check if the other format selected is valid, if not just default to VK_PRESENT_MODE_FIFO_KHR.
-
-	// Check if the modes supported are compatible with the one requested.
-	for (const auto& mode : inModes)
-	{
-		if (mode == inReqMode) { return mode; }
-	}
-
-	Log(false, "Defaulting to VK_PRESENT_MODE_FIFO_KHR");
-
-	// If not, default to VK_PRESENT_FIFO_KHR which is the most supported format.
-	return VK_PRESENT_MODE_FIFO_KHR;
 }
 
 /// <summary>Checks if the extents are correct based on the capabilities of the surface</summary>

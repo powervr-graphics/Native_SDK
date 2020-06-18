@@ -33,10 +33,10 @@ add_assets_to_target(VulkanGlass
 	ASSET_FOLDER ${ASSET_FOLDER} 
 	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/Balloons
 	FILE_LIST 
+		Balloon.pod
 		BalloonTex.pvr
 		BalloonTex2.pvr
-		SkyboxTex.pvr
-		Balloon.pod)
+		SkyboxTex.pvr)
 
 add_assets_to_target(VulkanGlass
 	SOURCE_GROUP "assets" 
@@ -76,7 +76,7 @@ add_assets_resource_file(VulkanGlass)
 # Apply SDK example specific compile and linker options
 apply_example_compile_options_to_target(VulkanGlass)
 
-target_link_libraries(VulkanGlass
+target_link_libraries(VulkanGlass PUBLIC
 	PVRShell
 	PVRUtilsVk
 )

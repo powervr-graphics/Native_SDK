@@ -40,7 +40,7 @@ void main()
 	pls.depth = depth;
 
 #ifndef GL_EXT_shader_pixel_local_storage2
-	// clear pixel local storage color when GL_EXT_shader_pixel_local_storage2 isn't supported
+	// clear pixel local storage colour when GL_EXT_shader_pixel_local_storage2 isn't supported
 	pls.color = vec3(0.0);
 #endif
 }

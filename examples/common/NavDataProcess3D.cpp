@@ -1,10 +1,8 @@
 #include "NavDataProcess.h"
 #include "pugixml.hpp"
 
-/*!*********************************************************************************************************************
-\return	Return pvr::Result::Success if no error occurred
-\brief	Initialisation of data, calls functions to load data from XML file and triangulate geometry.
-***********************************************************************************************************************/
+/// <summary>Initialisation of data, calls functions to load data from XML file and triangulate geometry.</summary>
+/// <returns>Return pvr::Result::Success if no error occurred.</returns>
 pvr::Result NavDataProcess::loadAndProcessData()
 {
 	// Set tile scaling parameters
@@ -25,11 +23,9 @@ pvr::Result NavDataProcess::loadAndProcessData()
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return	Return pvr::Result::Success if no error occurred
-\brief	Further initialisation - should be called after LoadAndProcess and once the window width/height is known.
-This function fills the tiles with data which has been processed.
-***********************************************************************************************************************/
+/// <summary>Further initialisation - should be called after LoadAndProcess and once the window width/height is known.
+/// This function fills the tiles with data which has been processed.</summary>
+/// <returns>Return pvr::Result::Success if no error occurred.</returns>
 void NavDataProcess::initTiles()
 {
 	sortTiles();
@@ -52,10 +48,8 @@ void NavDataProcess::initTiles()
 	cleanData();
 }
 
-/*!*********************************************************************************************************************
-\return Return Result::Success if no error occurred
-\brief  Get map data and load into OSM object.
-***********************************************************************************************************************/
+/// <summary>Get map data and load into OSM object.</summary>
+/// <returns>Return Result::Success if no error occurred.</returns>
 pvr::Result NavDataProcess::loadOSMData()
 {
 #if defined(_WIN32) && defined(_DEBUG)
@@ -236,7 +230,7 @@ pvr::Result NavDataProcess::loadOSMData()
 	for (pugi::xml_named_node_iterator currentRelation = relations.begin(); currentRelation != relations.end(); ++currentRelation)
 	{
 		if (!currentRelation->attribute("visible").empty() && !currentRelation->attribute("visible").as_bool()) // Skip way if not visible
-		{ continue; } // Check tags to see if it describes a multipolygon
+		{ continue; } // Check tags to see if it describes a multi-polygon
 		pugi::xml_object_range<pugi::xml_named_node_iterator> tags = currentRelation->children("tag");
 		bool multiPolygon = false;
 
@@ -245,7 +239,7 @@ pvr::Result NavDataProcess::loadOSMData()
 			std::string key = currentTag->attribute("k").as_string();
 			std::string value = currentTag->attribute("v").as_string();
 
-			if ((key == "type") && (value == "multipolygon")) { multiPolygon = true; }
+			if ((key == "type") && (value == "multi-polygon")) { multiPolygon = true; }
 		}
 
 		if (!multiPolygon) { continue; }
@@ -323,10 +317,8 @@ void NavDataProcess::convertRoute(const glm::dvec2&, uint32_t numCols, uint32_t 
 	}
 }
 
-/*!*********************************************************************************************************************
-\brief	Iterates over available intersections and calculates a 'random' route through the available data set,
-if no interesections are available no route will be calculated.
-***********************************************************************************************************************/
+/// <summary>Iterates over available intersections and calculates a 'random' route through the available data set,
+/// if no intersections are available no route will be calculated.</summary>
 void NavDataProcess::calculateRoute()
 {
 	if (_osm.original_intersections.size() == 0)
@@ -336,7 +328,7 @@ void NavDataProcess::calculateRoute()
 	}
 
 	uint32_t count = 0;
-	// Hold previosuly visited IDs to prevent going back on ourselves.
+	// Hold previously visited IDs to prevent going back on ourselves.
 	std::set<uint64_t> previousIntersectIDs;
 	std::set<uint64_t> previousWayIDs;
 	uint64_t nextID = _osm.original_intersections[0];
@@ -439,12 +431,10 @@ void NavDataProcess::calculateRoute()
 	}
 }
 
-/*!*********************************************************************************************************************
-\param	nodeIds The nodes IDs that make up this entity.
-\param	tags The tags associated with this entity, which may contain the type of amenity / service and name.
-\param	id The id to use to add this icon to the array of icons.
-\brief	Check if the incoming entity is an amenity or service, if it is create an icon for it, and possibly a label if a name is present.
-***********************************************************************************************************************/
+/// <summary>Check if the incoming entity is an amenity or service, if it is create an icon for it, and possibly a label if a name is present.</summary>
+/// <param name="nodeIds">The nodes IDs that make up this entity.</param>
+/// <param name="tags">The tags associated with this entity, which may contain the type of amenity / service and name.</param>
+/// <param name="id">The id to use to add this icon to the array of icons.</param>
 void NavDataProcess::generateIcon(const uint64_t* nodeIds, size_t numNodeIds, const Tag* tags, size_t numTags, uint64_t id)
 {
 	static const uint32_t maxLineLen = 10;
@@ -497,10 +487,8 @@ void NavDataProcess::generateIcon(const uint64_t* nodeIds, size_t numNodeIds, co
 	}
 }
 
-/*!*********************************************************************************************************************
-\brief  Calculate actual label position based on the average of two nodes, also calculates the rotation that will be
-applied to the text based on the slope of the road segment i.e. the line between the two nodes.
-***********************************************************************************************************************/
+/// <summary>Calculate actual label position based on the average of two nodes, also calculates the rotation that will be
+/// applied to the text based on the slope of the road segment i.e. the line between the two nodes. </summary>
 void NavDataProcess::processLabels(const glm::dvec2& mapWorldDim)
 {
 	for (int lod = 0; lod <= LOD::Count; ++lod)
@@ -561,12 +549,10 @@ void NavDataProcess::processLabels(const glm::dvec2& mapWorldDim)
 	}
 }
 
-/*!*********************************************************************************************************************
-\return	The point in terms of x and y from the origin.
-\param	origin	Longitude then latitude to use as origin.
-\param	point	Longitude then latitude of point to convert.
-\brief	Convert longitude and latitude to x and y from a given origin.
-***********************************************************************************************************************/
+/// <summary>Convert longitude and latitude to x and y from a given origin.</summary>
+/// <param name ="origin">Longitude then latitude to use as origin.</param>
+/// <param name ="point">Longitude then latitude of point to convert.</param>
+/// <returns>The point in terms of x and y from the origin.</returns>
 glm::dvec2 NavDataProcess::lonLatToMetres(const glm::dvec2 origin, const glm::dvec2 point) const
 {
 	glm::dvec2 coords;
@@ -585,9 +571,7 @@ glm::dvec2 NavDataProcess::lonLatToMetres(const glm::dvec2 origin, const glm::dv
 	return coords;
 }
 
-/*!*********************************************************************************************************************
-\brief	Convert all roads to triangles.
-***********************************************************************************************************************/
+/// <summary>Convert all roads to triangles.</summary>
 void NavDataProcess::triangulateAllRoads()
 {
 	// Triangulate the roads
@@ -618,7 +602,7 @@ void NavDataProcess::triangulateAllRoads()
 					uint32_t intersectSize = static_cast<uint32_t>(_osm.nodes.find(newIds[0])->second.wayIds.size());
 					_osm.nodes.find(newIds[0])->second.wayIds.emplace_back(newWay.id);
 
-					// Update the intersctions for the nodes
+					// Update the intersections for the nodes
 					for (uint32_t j = 1; j < newIds.size(); ++j)
 					{
 						std::vector<uint64_t>& wayIds = _osm.nodes.find(newIds[j])->second.wayIds;
@@ -644,7 +628,7 @@ void NavDataProcess::triangulateAllRoads()
 			// This breaks a closed way
 			if (wayIterator->second.nodeIds.front() == wayIterator->second.nodeIds.back())
 			{
-				// If the start or end of a closed road is next to an intersection, move it onto the intersection to avoid artifacts
+				// If the start or end of a closed road is next to an intersection, move it onto the intersection to avoid artefacts
 				if ((_osm.nodes.find(wayIterator->second.nodeIds[1])->second.wayIds.size() > 1) && (_osm.nodes.find(wayIterator->second.nodeIds[0])->second.wayIds.size() == 2))
 				{
 					_osm.nodes.find(wayIterator->second.nodeIds[0])->second.wayIds.pop_back();
@@ -705,9 +689,7 @@ void NavDataProcess::triangulateAllRoads()
 	}
 }
 
-/*!*********************************************************************************************************************
-\brief	Calculate road intersections.
-***********************************************************************************************************************/
+/// <summary>Calculate road intersections.</summary>
 void NavDataProcess::calculateIntersections()
 {
 	// Calculate intersections
@@ -983,10 +965,8 @@ void NavDataProcess::calculateIntersections()
 	}
 }
 
-/*!*********************************************************************************************************************
-\param  newRoads Reference to temporary data shared between TriangulateAllRoads, CalculateIntersections and ConvertToTriangleList.
-\brief  Convert triangles into an ordered triangle list.
-***********************************************************************************************************************/
+/// <summary>Convert triangles into an ordered triangle list.</summary>
+/// <param name="newRoads" Reference to temporary data shared between TriangulateAllRoads, CalculateIntersections and ConvertToTriangleList.</param>
 void NavDataProcess::convertToTriangleList()
 {
 	std::vector<std::array<uint64_t, 3>> triangles;
@@ -1064,9 +1044,7 @@ void NavDataProcess::convertToTriangleList()
 	}
 }
 
-/*!*********************************************************************************************************************
-\brief	Sort the ways into the tiles.
-***********************************************************************************************************************/
+/// <summary>Sort the ways into the tiles.</summary>
 void NavDataProcess::sortTiles()
 {
 	uint64_t id = 0;
@@ -1373,11 +1351,9 @@ void NavDataProcess::sortTiles()
 	}
 }
 
-/*!*********************************************************************************************************************
-\param	insertIn	 The vector of ways in which to insert.
-\param	way			 The way to insert.
-\brief	Insert a way (or a node ID) into a given array of ways.
-***********************************************************************************************************************/
+/// <summary>Insert a way (or a node ID) into a given array of ways.</summary>
+/// <param name="insertIn">The vector of ways in which to insert.</param>
+/// <param name="way">The way to insert.</param>
 void NavDataProcess::insertWay(std::vector<Way>& insertIn, Way& way)
 {
 	if ((!insertIn.empty() && (insertIn.rbegin()->id == way.id)))
@@ -1392,11 +1368,9 @@ void NavDataProcess::insertWay(std::vector<Way>& insertIn, Way& way)
 	}
 }
 
-/*!*********************************************************************************************************************
-\return	Return a vector with the tile coordinates as long as the point is within the map bounds.
-\param	point Find the tile that this point belongs to.
-\brief	Find the tile the given point belongs to.
-***********************************************************************************************************************/
+/// <summary>Find the tile the given point belongs to.</summary>
+/// <param name="point">Find the tile that this point belongs to.</param>
+/// <returns>Return a vector with the tile coordinates as long as the point is within the map bounds.</returns>
 glm::ivec2 NavDataProcess::findTile2(glm::dvec2& point) const
 {
 	glm::uvec2 tileCoords(0, 0);
@@ -1426,17 +1400,15 @@ glm::ivec2 NavDataProcess::findTile2(glm::dvec2& point) const
 // The range of angles at which a bend should be tessellated - no need to tessellate almost flat road segments.
 static const float lowerThreshold = 15.0f;
 
-/*!*********************************************************************************************************************
-\param	startNode	Node to start filling from.
-\param	endNode		Final node.
-\param	wayId		ID of way being filled.
-\param	wayTags		Tags of way being filled.
-\param	wayType		Type of way being filled.
-\param	addEnd		Whether to add endNode.
-\param	addStart	Whether to add startNode.
-\param	area		If the way is a road and also an area.
-\brief	Fill the tiles with the way data.
-***********************************************************************************************************************/
+/// <summary>Fill the tiles with the way data.</summary>
+/// <param name="startNode">Node to start filling from.</param>
+/// <param name="endNode">Final node.</param>
+/// <param name="wayId">ID of way being filled.</param>
+/// <param name="wayTags">Tags of way being filled.</param>
+/// <param name="wayType">Type of way being filled.</param>
+/// <param name="addEnd">Whether to add endNode.</param>
+/// <param name="addStart">Whether to add startNode.</param>
+/// <param name="area">If the way is a road and also an area.</param>
 void NavDataProcess::fillTiles(Vertex startNode, Vertex endNode, const uint64_t wayId, const std::vector<Tag>& wayTags, WayTypes::WayTypes wayType, double height, bool addEnd,
 	bool area, RoadTypes::RoadTypes type, double width, bool isIntersection, bool isRoundabout, bool isFork)
 {
@@ -1613,9 +1585,7 @@ void NavDataProcess::fillTiles(Vertex startNode, Vertex endNode, const uint64_t 
 	}
 }
 
-/*!*********************************************************************************************************************
-\brief	Add tile corner points if necessary.
-***********************************************************************************************************************/
+/// <summary>Add tile corner points if necessary.</summary>
 void NavDataProcess::addCornerPoints(Tile& tile, std::vector<Way>& way)
 {
 	for (uint32_t i = 0; i < way.size(); i++)
@@ -1684,13 +1654,11 @@ void NavDataProcess::addCornerPoints(Tile& tile, std::vector<Way>& way)
 	}
 }
 
-/*!*********************************************************************************************************************
-\return	std::vector<uint64_t> A vector of old + newly generated node IDs - line strip.
-\param	oldNodes Node IDs of the incoming road linestrip.
-\brief	Increases the complexity of the geometry to smooth out harsh corners - the min/max angle is configurable.
-The algorithm iterates over the oldNodeIDs vector and selects 3 nodes (start, control, end) on each pass,
-a bezier curve is then generated with x number of steps. Note that the algorithm may return the exact same nodes if the road is fairly straight.
-***********************************************************************************************************************/
+/// <summary>Increases the complexity of the geometry to smooth out harsh corners - the min/max angle is configurable.
+/// The algorithm iterates over the oldNodeIDs vector and selects 3 nodes (start, control, end) on each pass,
+/// a Bezier curve is then generated with x number of steps. Note that the algorithm may return the exact same nodes if the road is fairly straight.</summary>
+/// <param name="oldNodeIDs" >Node IDs of the incoming road line strip.</param>
+/// <returns>A vector of old + newly generated node IDs - line strip.</returns>
 std::vector<uint64_t> NavDataProcess::tessellate(const std::vector<uint64_t>& oldNodeIDs, uint32_t& index, bool splitWay)
 {
 	std::vector<uint64_t> newIds;
@@ -1731,7 +1699,7 @@ std::vector<uint64_t> NavDataProcess::tessellate(const std::vector<uint64_t>& ol
 			double projLenA = glm::length(v1) / 10.0;
 			double projLenB = glm::length(v2) / 10.0;
 
-			// Compute the start and end locations for the bezier curve.
+			// Compute the start and end locations for the Bezier curve.
 			glm::dvec2 startPos = node1.coords + (glm::normalize(v1) * projLenA);
 			glm::dvec2 endPos = node1.coords + (glm::normalize(v2) * projLenB);
 
@@ -1743,7 +1711,7 @@ std::vector<uint64_t> NavDataProcess::tessellate(const std::vector<uint64_t>& ol
 				glm::dvec2 newCoords = glm::mix(a, b, interpolant);
 
 				Vertex newNode;
-				/*Copy the control node into the newIds when we reach the center
+				/*Copy the control node into the newIds when we reach the centre
 				of the curve (approx) only updating its position (to preserve intersections).*/
 				if (interpolant >= 0.5 && !middleNodeAdded)
 				{
@@ -1779,11 +1747,9 @@ std::vector<uint64_t> NavDataProcess::tessellate(const std::vector<uint64_t>& ol
 	return newIds;
 }
 
-/*!*********************************************************************************************************************
-\return	std::vector<uint64_t> A vector of node IDs representing triangle strips.
-\param	nodeIds	Node IDs of a road linestrip.
-\brief	Triangluates a road line strip into a triangle strip.
-***********************************************************************************************************************/
+/// <summary>Triangulates a road line strip into a triangle strip.</summary>
+/// <param name"nodeIds"> Node IDs of a road line strip.</param>
+/// <returns>A vector of node IDs representing triangle strips.</returns>
 std::vector<uint64_t> NavDataProcess::triangulateRoad(const std::vector<uint64_t>& nodeIds, const double width)
 {
 	std::vector<uint64_t> newNodeIds;
@@ -1867,9 +1833,7 @@ std::vector<uint64_t> NavDataProcess::triangulateRoad(const std::vector<uint64_t
 	return newNodeIds;
 }
 
-/*!*********************************************************************************************************************
-\brief	Calculates the texture co-ordinates for nodes that are on the outer boundary of the map.
-***********************************************************************************************************************/
+/// <summary>Calculates the texture co-ordinates for nodes that are on the outer boundary of the map.</summary>
 void NavDataProcess::calculateMapBoundaryTexCoords()
 {
 	// Iterate through 2D array, each 'bin' holds a map which contains the boundary node data.
@@ -1992,7 +1956,7 @@ void NavDataProcess::calculateMapBoundaryTexCoords()
 							}
 							else
 							{
-								// Place node in the 'middle' doesnt matter about ordering of 'middle' elements.
+								// Place node in the 'middle' doesn't matter about ordering of 'middle' elements.
 								foundNodes.insert(foundNodes.begin() + 1, nextNode);
 								innerItr->second.consumed = true;
 							}
@@ -2043,7 +2007,7 @@ void NavDataProcess::calculateMapBoundaryTexCoords()
 							}
 							else
 							{
-								// Place node in the 'middle' doesnt matter about ordering of 'middle' elements.
+								// Place node in the 'middle' doesn't matter about ordering of 'middle' elements.
 								foundNodes.insert(foundNodes.begin() + 1, nextNode);
 								innerItr->second.consumed = true;
 							}
@@ -2158,9 +2122,7 @@ void NavDataProcess::calculateMapBoundaryTexCoords()
 	}
 }
 
-/*!*********************************************************************************************************************
-\brief	Calculates the texture co-ordinates for nodes that make up a junction i.e. the connecting points between one or more roads.
-***********************************************************************************************************************/
+/// <summary>Calculates the texture co-ordinates for nodes that make up a junction i.e. the connecting points between one or more roads.</summary>
 void NavDataProcess::calculateJunctionTexCoords()
 {
 	// Iterate over intersection nodes and calculate appropriate texture co-ordinates for the junction.
@@ -2358,12 +2320,10 @@ void NavDataProcess::calculateJunctionTexCoords()
 	}
 }
 
-/*!*********************************************************************************************************************
-\param	map foundWays Relevant ways (i.e. ways holding nodes that are connected to the junction) generated by the calling function.
-\param	vector foundNodes Relevant nodes (i.e. the nodes that make up the junction) generated by the calling function.
-\brief	Calculates the index into the indices array for a junction which is a roundabout, this index is determined by finding the two nodes
-in 'foundNodes' which share the same co-ordinates as two nodes which are not part of the junction i.e. the connecting road way.
-***********************************************************************************************************************/
+/// <summary>Calculates the index into the indices array for a junction which is a roundabout, this index is determined by finding the two nodes
+/// in 'foundNodes' which share the same co-ordinates as two nodes which are not part of the junction i.e. the connecting road way.</summary>
+/// <param name="foundWays">Relevant ways (i.e. ways holding nodes that are connected to the junction) generated by the calling function.</param>
+/// <param name="foundNodes">Relevant nodes (i.e. the nodes that make up the junction) generated by the calling function.</param>
 void NavDataProcess::calculateCrossRoadJunctionTexCoords(std::vector<std::pair<Vertex*, Vertex*>>& foundNodes, std::vector<std::pair<glm::uvec2, Way*>>& junctionWays)
 {
 	// Store array of indices of nodes and the vector that is created between the two nodes.
@@ -2495,13 +2455,11 @@ void NavDataProcess::calculateCrossRoadJunctionTexCoords(std::vector<std::pair<V
 	}
 }
 
-/*!*********************************************************************************************************************
-\return	uint32_t Calculated index into indices array.
-\param	map foundWays Relevant ways (i.e. ways holding nodes that are connected to the junction) generated by the calling function.
-\param	vector foundNodes Relevant nodes (i.e. the nodes that make up the junction) generated by the calling function.
-\brief	Calculates the index into the indices array for a junction which is a roundabout, this index is determined by finding the two nodes
-in 'foundNodes' which share the same co-ordinates as two nodes which are not part of the junction i.e. the connecting road way.
-***********************************************************************************************************************/
+/// <summary>Calculates the index into the indices array for a junction which is a roundabout, this index is determined by finding the two nodes
+/// in 'foundNodes' which share the same co-ordinates as two nodes which are not part of the junction i.e. the connecting road way.</summary>
+/// <param name="foundWays">Relevant ways (i.e. ways holding nodes that are connected to the junction) generated by the calling function.</param>
+/// <param name="foundNodes">Relevant nodes (i.e. the nodes that make up the junction) generated by the calling function.</param>
+/// <returns>Calculated index into indices array.</returns>
 uint32_t NavDataProcess::calculateRoundaboutTexCoordIndices(std::map<uint64_t, Way*>& foundWays, std::vector<std::pair<Vertex*, Vertex*>>& foundNodes)
 {
 	bool i0 = false;
@@ -2537,15 +2495,13 @@ uint32_t NavDataProcess::calculateRoundaboutTexCoordIndices(std::map<uint64_t, W
 		return 2;
 }
 
-/*!*********************************************************************************************************************
-\return	uint32_t Calculated index into indices array.
-\param	map foundWays Relevant ways (i.e. ways holding nodes that are connected to the junction) generated by the calling function.
-\param	vector foundNodes Relevant nodes (i.e. the nodes that make up the junction) generated by the calling function.
-\param	Way way The current way which represents the junction.
-\brief	Calculates the index into the indices array for a junction which is a T-junction, this index is determined by finding the
-smallest angle between pairs of vectors created from found nodes and nodes which reside in found ways, the smallest angle found represents
-the line where the two roads intersect i.e. the connection points between the two roads.
-***********************************************************************************************************************/
+/// <summary>Calculates the index into the indices array for a junction which is a T-junction, this index is determined by finding the
+/// smallest angle between pairs of vectors created from found nodes and nodes which reside in found ways, the smallest angle found represents
+/// the line where the two roads intersect i.e. the connection points between the two roads.</summary>
+/// <param name="foundWays">Relevant ways(i.e.ways holding nodes that are connected to the junction) generated by the calling function.</param>
+/// <param name="foundNodes">Relevant nodes(i.e.the nodes that make up the junction) generated by the calling function.</param>
+/// <param name="way">The current way which represents the junction.</param>
+/// <returns> Calculated index into indices array.</returns>
 uint32_t NavDataProcess::calculateT_JunctionTexCoordIndices(std::map<uint64_t, Way*>& foundWays, std::vector<std::pair<Vertex*, Vertex*>>& foundNodes, Way* way)
 {
 	double currentClosestAngle = std::numeric_limits<double>::max();
@@ -2615,16 +2571,14 @@ uint32_t NavDataProcess::calculateT_JunctionTexCoordIndices(std::map<uint64_t, W
 	return currentIndex;
 }
 
-/*!*********************************************************************************************************************
-\return	Array The newly generated nodes that create the end cap.
-\param	Node first The first node at the start/end of the road segment.
-\param	Node second The second node at the start/end of the road segment.
-\param	Width This directly affects the cap size.
-\brief	Calculates an end cap (i.e. the smoothed/curved end to a road segment when it does not connect to another road) for a given road segment.
-***********************************************************************************************************************/
+/// <summary>Calculates an end cap (i.e. the smoothed/curved end to a road segment when it does not connect to another road) for a given road segment.</summary>
+/// <param name="first">The first node at the start/end of the road segment.</param>
+/// <param name="second">The second node at the start/end of the road segment.</param>
+/// <param name="width">This directly affects the cap size.</param>
+/// <returns>Array The newly generated nodes that create the end cap.</returns>
 std::array<uint64_t, 2> NavDataProcess::calculateEndCaps(Vertex& first, Vertex& second, double width)
 {
-	// Calculate vector betweeen end nodes.
+	// Calculate vector between end nodes.
 	glm::dvec2 v1 = first.coords - second.coords;
 	// Calculate a perpendicular vector.
 	glm::vec3 perp = glm::normalize(glm::cross(glm::vec3(v1, 0), glm::vec3(0, 0, 1)));
@@ -2653,18 +2607,16 @@ std::array<uint64_t, 2> NavDataProcess::calculateEndCaps(Vertex& first, Vertex& 
 	return retval;
 }
 
-/*!*********************************************************************************************************************
-\return	Vector2 with a newly generated point.
-\param	Vector2 p1 first point of triangle.
-\param	Vector2 p2 second point of triangle.
-\param	Vector2 p3 third point of triangle.
-\brief	Find the center point of the triangle based in its height / 2.
-***********************************************************************************************************************/
+/// <summary>Find the centre point of the triangle based in its height / 2.</summary>
+/// <param name"p1">first point of triangle.</param>
+/// <param name"p2">second point of triangle.</param>
+/// <param name"p3">third point of triangle.</param>
+/// <returns>Vector2 with a newly generated point.</returns>
 glm::dvec2 NavDataProcess::calculateMidPoint(glm::dvec2 p1, glm::dvec2 p2, glm::dvec2 p3) const
 {
-	// Get center of line.
+	// Get centre of line.
 	glm::dvec2 point = glm::dvec2((p1.x + p2.x) / 2.0, (p1.y + p2.y) / 2.0);
-	// Vector from center of line to third point in triangle.
+	// Vector from centre of line to third point in triangle.
 	glm::dvec2 v1 = p3 - point;
 	// Calculate vector length, for normalisation and projection.
 	double len = glm::length(v1);
@@ -2673,11 +2625,9 @@ glm::dvec2 NavDataProcess::calculateMidPoint(glm::dvec2 p1, glm::dvec2 p2, glm::
 	return point += (v1 * (len / 2.0));
 }
 
-/*!*********************************************************************************************************************
-\param  point1  Out of map bounds point.
-\param  point2  Out of map bounds point.
-\brief  Finds intersections with map bounds (if there are any) for a way that crosses a map without a node within bounds.
-***********************************************************************************************************************/
+/// <summary>Finds intersections with map bounds (if there are any) for a way that crosses a map without a node within bounds.</summary>
+/// <param name="point1">Out of map bounds point.</param>
+/// <param name="point2">Out of map bounds point.</param>
 bool NavDataProcess::findMapIntersect(glm::dvec2& point1, glm::dvec2& point2) const
 {
 	glm::dvec2 newPoint1;

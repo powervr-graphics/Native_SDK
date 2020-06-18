@@ -22,15 +22,14 @@ namespace pvr {
 /// <summary>The pvr::platform namespace contains low-level, system-communication classes and functions</summary>
 namespace platform {
 
-class SharedEglContext_;
-
 /// <summary>The EglContext context is the class wrapping all platform-specific objects required to power an
 /// OpenGL implementation (Displays, windows, configurations etc.).</summary>
 class EglContext_
 {
 public:
 	EglContext_()
-		: _platformContextHandles(), _swapInterval(-2), _initialized(false), _preInitialized(false), _apiType(Api::Unspecified), _maxApiVersion(Api::Unspecified), _attributes(0)
+		: _platformContextHandles(), _swapInterval(-2), _initialized(false), _preInitialized(false), _apiType(Api::Unspecified), _maxApiVersion(Api::Unspecified), _attributes(0),
+		  _isDiscardSupported(false), _parentContext(0)
 	{}
 
 	virtual ~EglContext_() { release(); }
@@ -88,12 +87,10 @@ public:
 	uint32_t getOnScreenFbo();
 
 	/// <summary>Creates an instance of a shared platform context</summary>
-	/// <returns>A unique pointer to a SharedEglContext_ instance.</returns>
-	std::unique_ptr<SharedEglContext_> createSharedPlatformContext();
+	/// <returns>A unique pointer to a EglContext_ instance.</returns>
+	std::unique_ptr<EglContext_> createSharedContextFromEGLContext();
 
 private:
-	friend class SharedEglContext_;
-
 	EglContext_(const EglContext_& rhs); // deleted
 	NativePlatformHandles _platformContextHandles;
 	NativeDisplayHandle _displayHandle;
@@ -104,43 +101,12 @@ private:
 	Api _maxApiVersion;
 	DisplayAttributes* _attributes;
 	bool _isDiscardSupported;
+	platform::EglContext_* _parentContext;
 
-	// Must be called after the context has been active inorder to query the driver for resource limitations.
+	// Must be called after the context has been active in order to query the driver for resource limitations.
 	void populateMaxApiVersion();
 };
 
-/// <summary>The SharedEglContext class provides the necessary wrapping to allow for the creation of shared EGL rendering contexts on
-/// multiple threads. A SharedEglContext can only be initiailised by passing a previously created EGLContext to the init function.</summary>
-class SharedEglContext_
-{
-private:
-	friend class EglContext_;
-
-	class make_unique_enabler
-	{
-	protected:
-		make_unique_enabler() {}
-		friend class SharedEglContext_;
-	};
-
-	static std::unique_ptr<SharedEglContext_> constructUnique(EglContext_& context) { return std::make_unique<SharedEglContext_>(make_unique_enabler{}, context); }
-
-	platform::NativeSharedPlatformHandles _handles;
-	platform::EglContext_* _parentContext;
-
-public:
-	//!\cond NO_DOXYGEN
-	SharedEglContext_(make_unique_enabler, EglContext_& context);
-	//!\endcond
-
-	/// <summary>If required by the implementation, make this the shared context current for this thread.</summary>
-	/// <returns>True if successful or no-op.</returns>
-	void makeSharedContextCurrent();
-
-	/// <summary>Retrieves the SharedEglContext handle.</summary>
-	/// <returns>Returns a structure containing the native handles defining the Shared EGL Context.</returns>
-	platform::NativeSharedPlatformHandles_& getSharedHandles() { return *_handles; }
-};
 } // namespace platform
 } // namespace pvr
 

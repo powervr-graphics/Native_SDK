@@ -6,7 +6,7 @@
  *   |---|---|---|---|---|---|---|---|---|---|
  *   | x | x | x |   |   |   |   |   |   | o |  this example shows two filter masks applied at the same time (denoted as X and Y)
  *   |---|---|---|---|---|---|---|---|---|---|
- *   | x | X |x/y| y | y |   |   |   |   | o |  the prefetch allows the sharing of samples, effectively reducing the bandwidth requirements
+ *   | x | X |x/y| y | y |   |   |   |   | o |  the pre-fetch allows the sharing of samples, effectively reducing the bandwidth requirements
  *   |---|---|---|---|---|---|---|---|---|---|
  *   | x | x |x/y| Y | y |   |   |   |   | o |
  *   |---|---|---|---|---|---|---|---|---|---|
@@ -50,7 +50,7 @@ inline void prefetch_texture_samples_8x4(__read_only image2d_t srcImage, sampler
 
 	if (lid.x < 6 && lid.y < 2)
 	{
-		// Prefetch required color samples
+		// Pre-fetch required colour samples
 		const int2 lid_offset = lid * (int2)(10, 5);
 		colors[lid_offset.x + lid_offset.y] =     read_imagef(srcImage, sampler, grid + (int2)(lid_offset.y - 1, lid.x - 1)).xyz;
 		colors[lid_offset.x + lid_offset.y + 1] = read_imagef(srcImage, sampler, grid + (int2)(lid_offset.y, lid.x - 1)).xyz;
@@ -65,7 +65,7 @@ inline void prefetch_texture_samples_8x4(__read_only image2d_t srcImage, sampler
 
 /*
  * Picks the highest luminance value in a 3x3 surrounding and
- * writes the corresping color as result.
+ * writes the corresponding colour as result.
  */
 __attribute__((reqd_work_group_size(8, 4, 1)))
 __kernel void erode_3x3(__read_only image2d_t srcImage, __write_only image2d_t dstImage, sampler_t sampler)
@@ -147,7 +147,7 @@ __kernel void copy(__read_only image2d_t srcImage, __write_only image2d_t dstIma
 
 /*
  * Picks the lowest luminance value in a 3x3 surrounding and
- * writes the corresping color as result.
+ * writes the corresponding colour as result.
  */
 __attribute__((reqd_work_group_size(8, 4, 1)))
 __kernel void dilate_3x3(__read_only image2d_t srcImage, __write_only image2d_t dstImage, sampler_t sampler)
@@ -164,7 +164,6 @@ __kernel void dilate_3x3(__read_only image2d_t srcImage, __write_only image2d_t 
 	if (lid.x < 6 && lid.y < 2)
 	{
 		const int2 lid_offset = lid * (int2)(10, 5);
-		int offset1;
 		luminance[lid_offset.x + lid_offset.y] = dot(rgb_to_lum, colors[lid_offset.x + lid_offset.y]);
 		luminance[lid_offset.x + lid_offset.y + 1] = dot(rgb_to_lum, colors[lid_offset.x + lid_offset.y + 1]);
 		luminance[lid_offset.x + lid_offset.y + 2] = dot(rgb_to_lum, colors[lid_offset.x + lid_offset.y + 2]);
@@ -223,22 +222,38 @@ __kernel void sobel_3x3(__read_only image2d_t srcImage,
 	const int2 gid = (int2)(get_group_id(0) * 8, get_group_id(1) * 4);
 	const int2 lid = (int2)(get_local_id(0), get_local_id(1));
 
-	__local float3 colors[60];
-	prefetch_texture_samples_8x4(srcImage, sampler, colors);
+	// Convert all color values to luminance in parallel
+	const float3 rgb_to_lum = (float3)(0.3f, 0.59f, 0.11f);
+
+	__local float luminance[60];
+	if (lid.x < 6 && lid.y < 2)
+	{
+		const int2 lid_offset = lid * (int2)(10, 5);
+		int cache_id = lid_offset.x + lid_offset.y;
+		luminance[cache_id]     = dot(rgb_to_lum, read_imagef(srcImage, sampler, gid + (int2)(lid_offset.y - 1, lid.x - 1)).xyz);
+		luminance[cache_id + 1] = dot(rgb_to_lum, read_imagef(srcImage, sampler, gid + (int2)(lid_offset.y, lid.x - 1)).xyz);
+		luminance[cache_id + 2] = dot(rgb_to_lum, read_imagef(srcImage, sampler, gid + (int2)(lid_offset.y + 1, lid.x - 1)).xyz);
+		luminance[cache_id + 3] = dot(rgb_to_lum, read_imagef(srcImage, sampler, gid + (int2)(lid_offset.y + 2, lid.x - 1)).xyz);
+		luminance[cache_id + 4] = dot(rgb_to_lum, read_imagef(srcImage, sampler, gid + (int2)(lid_offset.y + 3, lid.x - 1)).xyz);
+	}
+
+	barrier(CLK_LOCAL_MEM_FENCE);
+	int offset = lid.y * 10 + lid.x;
 
 	// horizontal filter
-	int offset = lid.y * 10 + lid.x;
-	float3 color;
-	color = colors[offset] * -1.0f + colors[offset + 1] * -2.0f + colors[offset + 2] * -1.0f;
-	color += colors[offset + 20] + colors[offset + 21] * 2.0f + colors[offset + 22];
+	float lumx = luminance[offset] * -1.0f + luminance[offset + 1] * -2.0f + luminance[offset + 2] * -1.0f;
+	lumx      += luminance[offset + 20] + luminance[offset + 21] * 2.0f + luminance[offset + 22];
 
+	
 	// vertical filter
-	color += colors[offset] * -1.0f + colors[offset + 2];
-	color += colors[offset + 10] * -2.0f + colors[offset + 12] * 2.0f;
-	color += colors[offset + 20] * -1.0f + colors[offset + 22] * 1.0f;
+	float lumy = luminance[offset] * -1.0f + luminance[offset + 2];
+	lumy      += luminance[offset + 10] * -2.0f + luminance[offset + 12] * 2.0f;
+	lumy      += luminance[offset + 20] * -1.0f + luminance[offset + 22] * 1.0f;
 
-	write_imagef(dstImage, gid + lid, (float4)(color, 1.0f));
+	float lum = lumy*lumy + lumx*lumx; // This should normaly be sqrt'd but a square has a bit more contrast.
+	write_imagef(dstImage, gid + lid, (float4)((float3)(lum), 1.0f));
 }
+
 
 /*
  *  Gaussian image smoothing

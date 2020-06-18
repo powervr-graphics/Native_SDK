@@ -26,7 +26,11 @@ ext.PVR_OPENGLES_EXAMPLES = [
 	'PVRScopeRemote',
 	'IMGFramebufferDownsample',
 	'IMGTextureFilterCubic',
-	'ImageBasedLighting'
+	'ImageBasedLighting',
+	'GameOfLife',
+	'BinaryShaders',
+	'Multithreading',
+	'Bumpmap'
 ]
 
 ext.PVR_VULKAN_EXAMPLES = [ 
@@ -54,7 +58,8 @@ ext.PVR_VULKAN_EXAMPLES = [
 	'ImageBasedLighting',
 	'IMGTextureFilterCubic',
 	'ImageBasedLightingMapGenerator',
-	'GameOfLife'
+	'GameOfLife',
+	'PipelineCache'
 ]
 
 ext.PVR_OPENCL_EXAMPLES = [ 

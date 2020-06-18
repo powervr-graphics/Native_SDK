@@ -1,10 +1,9 @@
-/*!********************************************************************************************
-\File         OpenGLESPostProcessing.cpp
-\Title        Bloom
-\Author       PowerVR by Imagination, Developer Technology Team
-\Copyright    Copyright (c) Imagination Technologies Limited.
-\brief      Shows how to do a bloom effect
-***********************************************************************************************/
+/*!
+\brief Shows how to do a post processing effects
+\file OpenGLESPostProcessing.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #include "PVRShell/PVRShell.h"
 #include "PVRUtils/PVRUtilsGles.h"
 #include "PVRCore/cameras/TPSCamera.h"
@@ -268,9 +267,9 @@ inline void GL_APIENTRY debugCallback(GLenum source, GLenum type, GLuint id, GLe
 	Log(LogLevel::Debug, "[%d|%d|%d] %s", (int)source, (int)type, (int)id, message);
 }
 
-/// <summary>Prints the gaussian weights and offsets provided in the vectors.</summary>
-/// <param name="gaussianWeights">The list of gaussian weights to print.</param>
-/// <param name="gaussianOffsets">The list of gaussian offsets to print.</param>
+/// <summary>Prints the Gaussian weights and offsets provided in the vectors.</summary>
+/// <param name="gaussianWeights">The list of Gaussian weights to print.</param>
+/// <param name="gaussianOffsets">The list of Gaussian offsets to print.</param>
 /// <param name="iterationsString">A string defining the number of iterations.</param>
 /// <param name="weightsString">A string defining the iteration set of weights.</param>
 /// <param name="offsetsString">A string defining the iteration set of offsets.</param>
@@ -299,13 +298,13 @@ void generateGaussianWeightsAndOffsetsStrings(std::vector<double>& gaussianWeigh
 	iterationsString = pvr::strings::createFormatted("const uint numIterations = %uu;", gaussianWeights.size());
 }
 
-/// <summary>Updates the gaussian weights and offsets using the configuration provided.</summary>
-/// <param name="kernelSize">The kernel size to generate gaussian weights and offsets for.</param>
+/// <summary>Updates the Gaussian weights and offsets using the configuration provided.</summary>
+/// <param name="kernelSize">The kernel size to generate Gaussian weights and offsets for.</param>
 /// <param name="useLinearOptimisation">Specifies whether linear sampling will be used when texture sampling using the given weights and offsets,
 /// if linear sampling will be used then the weights and offsets must be adjusted accordingly.</param>
 /// <param name="truncateCoefficients">Specifies whether to truncate and ignore coefficients which would provide a negligible change in the resulting blurred image.</param>
-/// <param name="gaussianWeights">The returned list of gaussian weights (as double).</param>
-/// <param name="gaussianOffsets">The returned list of gaussian offsets (as double).</param>
+/// <param name="gaussianWeights">The returned list of Gaussian weights (as double).</param>
+/// <param name="gaussianOffsets">The returned list of Gaussian offsets (as double).</param>
 void generateGaussianCoefficients(uint32_t kernelSize, bool useLinearOptimisation, bool truncateCoefficients, std::vector<double>& gaussianWeights, std::vector<double>& gaussianOffsets)
 {
 	// Ensure that the kernel given is odd in size
@@ -399,7 +398,7 @@ struct StatuePass
 		gl::BindBuffer(GL_UNIFORM_BUFFER, buffer);
 		gl::BufferData(GL_UNIFORM_BUFFER, (size_t)structuredBufferView.getSize(), nullptr, GL_DYNAMIC_DRAW);
 
-		// if GL_EXT_buffer_storage is supported then map the buffer upfront and never upmap it
+		// if GL_EXT_buffer_storage is supported then map the buffer upfront and never unmap it
 		if (isBufferStorageExtSupported)
 		{
 			gl::BindBuffer(GL_COPY_READ_BUFFER, buffer);
@@ -484,8 +483,8 @@ struct StatuePass
 	/// <param name="irradianceMap">The irradiance map</param>
 	/// <param name="samplerTrilinear">The trilinear sampler to use</param>
 	/// <param name="irradianceSampler">A sampler to use for sampling the irradiance map</param>
-	/// <param name="exposure">The exposure value used to 'expose' the color prior to post processing</param>
-	/// <param name="threshold">The threshold value used to determine how much of the color to retain for the bloom</param>
+	/// <param name="exposure">The exposure value used to 'expose' the colour prior to post processing</param>
+	/// <param name="threshold">The threshold value used to determine how much of the colour to retain for the bloom</param>
 	void render(GLuint irradianceMap, GLuint samplerTrilinear, GLuint irradianceSampler, float exposure, float threshold)
 	{
 		debugThrowOnApiError("StatuePass before render");
@@ -553,8 +552,8 @@ struct SkyboxPass
 	/// <param name="sceneBuffer">The scene buffer</param>
 	/// <param name="sceneBufferSize">The size of the scene buffer</param>
 	/// <param name="samplerTrilinear">The trilinear sampler to use</param>
-	/// <param name="exposure">The exposure value used to 'expose' the color prior to post processing</param>
-	/// <param name="threshold">The threshold value used to determine how much of the color to retain for the bloom</param>
+	/// <param name="exposure">The exposure value used to 'expose' the colour prior to post processing</param>
+	/// <param name="threshold">The threshold value used to determine how much of the colour to retain for the bloom</param>
 	/// <param name="currentScene">The current scene to use.</param>
 	void render(GLuint sceneBuffer, GLsizeiptr sceneBufferSize, GLuint samplerTrilinear, float exposure, float threshold, uint32_t currentScene)
 	{
@@ -582,7 +581,7 @@ struct DownSamplePass2x2
 
 	/// <summary>Initialises the Downsample pass.</summary>
 	/// <param name="assetProvider">The pvr::IAssetProvider which will be used for loading resources from memory.</param>
-	/// <param name="outputTexture">The color texture use as the output of the downsample.</param>
+	/// <param name="outputTexture">The colour texture use as the output of the downsample.</param>
 	/// <param name="destinationImageDimensions">The dimensions of the destination image which contains the downsampled image.</param>
 	virtual void init(pvr::IAssetProvider& assetProvider, GLuint outputTexture, const glm::uvec2& destinationImageDimensions)
 	{
@@ -632,7 +631,7 @@ struct DownSamplePass2x2
 	}
 };
 
-// A Downsample pass which can be used for downsampling images by 1/4 x 1/4 i.e. 1/4 resolution
+/// <summary>A Downsample pass which can be used for downsampling images by 1/4 x 1/4 i.e. 1/4 resolution</summary>
 struct DownSamplePass4x4 : public DownSamplePass2x2
 {
 	GLint downsampleConfigUniformLocations[4];
@@ -681,7 +680,7 @@ struct DownSamplePass4x4 : public DownSamplePass2x2
 
 // Developed by Masaki Kawase, Bunkasha Games
 // Used in DOUBLE-S.T.E.A.L. (aka Wreckless)
-// From his GDC2003 Presentation: Frame Buffer Postprocessing Effects in  DOUBLE-S.T.E.A.L (Wreckless)
+// From his GDC2003 Presentation: Frame Buffer Post processing Effects in  DOUBLE-S.T.E.A.L (Wreckless)
 // Multiple iterations of fixed (per iteration) offset sampling
 struct KawaseBlurPass
 {
@@ -727,7 +726,7 @@ struct KawaseBlurPass
 		blurKernels.clear();
 		blurIterations = 0;
 
-		// calculate texture sample offsets based on the number of iteratios and the kernel offset currently in use for the given iteration
+		// calculate texture sample offsets based on the number of iterations and the kernel offset currently in use for the given iteration
 		glm::vec2 pixelSize = glm::vec2(1.0f / framebufferDimensions.x, 1.0f / framebufferDimensions.y);
 
 		glm::vec2 halfPixelSize = pixelSize / 2.0f;
@@ -850,7 +849,7 @@ struct DualFilterBlurPass
 	// The final full resolution framebuffer dimensions
 	glm::uvec2 framebufferDimensions;
 
-	// The color image format in use
+	// The colour image format in use
 	GLuint colorImageFormat;
 
 	GLint upSampleBlurConfigLocations[8];
@@ -862,7 +861,7 @@ struct DualFilterBlurPass
 
 	/// <summary>Initialises the Dual Filter blur.</summary>
 	/// <param name="assetProvider">The pvr::IAssetProvider which will be used for loading resources from memory.</param>
-	/// <param name="colorImageFormat">The color image format to use for the Dual Filter blur.</param>
+	/// <param name="colorImageFormat">The colour image format to use for the Dual Filter blur.</param>
 	/// <param name="framebufferDimensions">The full size resolution framebuffer dimensions.</param>
 	void init(pvr::IAssetProvider& assetProvider, GLuint colorImageFormat_, const glm::uvec2& framebufferDimensions_, bool srgbFramebuffer)
 	{
@@ -1138,7 +1137,7 @@ struct DualFilterBlurPass
 	/// <param name="offscreenTexture">The offscreen texture.</param>
 	/// <param name="onScreenFbo">The on screen fbo.</param>
 	/// <param name="samplerBilinear">The sampler object to use when sampling Dual Filter.</param>
-	/// <param name="exposure">The exposure to use in the tonemapping.</param>
+	/// <param name="exposure">The exposure to use in the tone mapping.</param>
 	virtual void render(GLuint sourceTexture, GLuint offscreenTexture, GLuint onScreenFbo, GLuint samplerBilinear, bool renderBloomOnly, float exposure)
 	{
 		gl::ActiveTexture(GL_TEXTURE0);
@@ -1225,7 +1224,7 @@ struct DualFilterBlurPass
 // Presented in "Next Generation Post Processing In Call Of Duty Advanced Warfare" by Jorge Jimenez
 // Filters whilst Downsampling and Upsampling
 // Downsamples:
-//	Used for preventing aliasing artifacts
+//	Used for preventing aliasing artefacts
 //		A = downsample4(FullRes)
 //		B = downsample4(A)
 //		C = downsample4(B)
@@ -1257,7 +1256,7 @@ struct DownAndTentFilterBlurPass : public DualFilterBlurPass
 
 	/// <summary>Initialises the Dual Filter blur.</summary>
 	/// <param name="assetProvider">The pvr::IAssetProvider which will be used for loading resources from memory.</param>
-	/// <param name="colorImageFormat">The color image format to use for the Dual Filter blur.</param>
+	/// <param name="colorImageFormat">The colour image format to use for the Dual Filter blur.</param>
 	/// <param name="inFramebufferDimensions">The full size resolution framebuffer dimensions.</param>
 	/// <param name="isIMGFramebufferDownsampleSupported">Specifies whether the extension GL_IMG_framebuffer_downsample is supported.</param>
 	void init(pvr::IAssetProvider& assetProvider, GLuint inColorImageFormat, const glm::uvec2& inFramebufferDimensions, bool srgbFramebuffer)
@@ -1436,7 +1435,7 @@ struct DownAndTentFilterBlurPass : public DualFilterBlurPass
 	}
 };
 
-// A Gaussian Blur Pass
+/// <summary>A Gaussian Blur Pass.</summary>
 struct GaussianBlurPass
 {
 	// Horizontal and Vertical graphics pipelines
@@ -1487,7 +1486,7 @@ struct GaussianBlurPass
 		{ generateGaussianCoefficients(DemoConfigurations::Configurations[i].gaussianConfig, false, false, gaussianWeights[i], gaussianOffsets[i]); }
 	}
 
-	/// <summary>Generates the gaussian weights and offsets strings used by the various Gaussian shaders.</summary>
+	/// <summary>Generates the Gaussian weights and offsets strings used by the various Gaussian shaders.</summary>
 	virtual void generateGaussianShaderStrings()
 	{
 		// Generate per kernel size weights, offsets and iterations strings
@@ -1590,7 +1589,7 @@ struct GaussianBlurPass
 	}
 };
 
-// A Compute shader based Gaussian Blur Pass
+/// <summary>A Compute shader based Gaussian Blur Pass.</summary>
 struct ComputeBlurPass : public GaussianBlurPass
 {
 	std::vector<std::string> perKernelSizeCacheStrings;
@@ -1601,7 +1600,7 @@ struct ComputeBlurPass : public GaussianBlurPass
 		{ generateGaussianCoefficients(DemoConfigurations::Configurations[i].computeGaussianConfig, false, false, gaussianWeights[i], gaussianOffsets[i]); }
 	}
 
-	/// <summary>Generates the gaussian weights and offsets strings used by the various Gaussian shaders.</summary>
+	/// <summary>Generates the Gaussian weights and offsets strings used by the various Gaussian shaders.</summary>
 	void generateGaussianShaderStrings() override
 	{
 		// Generate per kernel size weights, offsets and iterations strings
@@ -1609,7 +1608,7 @@ struct ComputeBlurPass : public GaussianBlurPass
 		perKernelSizeWeightsStrings.resize(DemoConfigurations::NumDemoConfigurations);
 		perKernelSizeOffsetsStrings.resize(DemoConfigurations::NumDemoConfigurations);
 
-		// Compute shaders also need the per row/column color cache
+		// Compute shaders also need the per row/column colour cache
 		perKernelSizeCacheStrings.resize(DemoConfigurations::NumDemoConfigurations);
 
 		for (uint32_t i = 0; i < DemoConfigurations::NumDemoConfigurations; ++i)
@@ -1617,7 +1616,7 @@ struct ComputeBlurPass : public GaussianBlurPass
 			generateGaussianWeightsAndOffsetsStrings(
 				gaussianWeights[i], gaussianOffsets[i], perKernelSizeIterationsStrings[i], perKernelSizeWeightsStrings[i], perKernelSizeOffsetsStrings[i], true);
 
-			// Construct the compute shader specific per row/column color cache strings
+			// Construct the compute shader specific per row/column colour cache strings
 			std::string cache = "";
 			for (uint32_t j = 0; j < ((gaussianWeights[i].size() * 2) - 1); j++) { cache += "0.0,"; }
 			cache += "0.0";
@@ -1703,7 +1702,7 @@ struct ComputeBlurPass : public GaussianBlurPass
 	}
 };
 
-// A Linear sampler optimised Gaussian Blur Pass
+/// <summary>A Linear sampler optimised Gaussian Blur Pass.</summary>
 struct LinearGaussianBlurPass : public GaussianBlurPass
 {
 	void generatePerConfigGaussianCoefficients() override
@@ -1712,7 +1711,7 @@ struct LinearGaussianBlurPass : public GaussianBlurPass
 		{ generateGaussianCoefficients(DemoConfigurations::Configurations[i].linearGaussianConfig, true, false, gaussianWeights[i], gaussianOffsets[i]); }
 	}
 
-	/// <summary>Generates the gaussian weights and offsets strings used by the various Gaussian shaders.</summary>
+	/// <summary>Generates the Gaussian weights and offsets strings used by the various Gaussian shaders.</summary>
 	void generateGaussianShaderStrings() override
 	{
 		// Generate per kernel size weights, offsets and iterations strings
@@ -1820,7 +1819,7 @@ struct LinearGaussianBlurPass : public GaussianBlurPass
 	}
 };
 
-// A Truncated Linear sampler optimised Gaussian Blur Pass
+/// <summary>A Truncated Linear sampler optimised Gaussian Blur Pass.</summary>
 struct TruncatedLinearGaussianBlurPass : public LinearGaussianBlurPass
 {
 	void generatePerConfigGaussianCoefficients() override
@@ -1830,7 +1829,7 @@ struct TruncatedLinearGaussianBlurPass : public LinearGaussianBlurPass
 	}
 };
 
-// A Hybrid Gaussian Blur pass making use of a horizontal Compute shader pass followed by a Fragment based Vertical Gaussian Blur Pass
+/// <summary>A Hybrid Gaussian Blur pass making use of a horizontal Compute shader pass followed by a Fragment based Vertical Gaussian Blur Pass.</summary>
 struct HybridGaussianBlurPass
 {
 	// The Compute shader based Gaussian Blur pass - we will only be making use of the horizontal blur resources
@@ -1847,7 +1846,7 @@ struct HybridGaussianBlurPass
 		this->linearBlurPass = inLinearBlurPass;
 	}
 
-	/// <summary>Renders A hybrid gaussian blur based on the current configuration.</summary>
+	/// <summary>Renders A hybrid Gaussian blur based on the current configuration.</summary>
 	/// <param name="sourceTexture">The source texture to blur.</param>
 	/// <param name="horizontalBlurFramebuffer">The framebuffer to use in the horizontal Gaussian blur.</param>
 	/// <param name="verticalBlurFramebuffer">The framebuffer to use in the vertical Gaussian blur.</param>
@@ -1881,7 +1880,7 @@ struct HybridGaussianBlurPass
 	}
 };
 
-// Post bloom composition pass
+/// <summary>Post bloom composition pass.</summary>
 struct PostBloomPass
 {
 	GLuint defaultProgram;
@@ -1927,7 +1926,7 @@ struct PostBloomPass
 	/// <param name="originalTexture">The original HDR texture.</param>
 	/// <param name="samplerBilinear">The sampler object to use when sampling.</param>
 	/// <param name="renderBloomOnly">Render the bloom only.</param>
-	/// <param name="exposure">The exposure to use in the tonemapping.</param>
+	/// <param name="exposure">The exposure to use in the tone mapping.</param>
 	void render(GLuint blurTexture, GLuint originalTexture, GLuint samplerBilinear, bool renderBloomOnly, float exposure)
 	{
 		debugThrowOnApiError("Post Bloom Pass before render");
@@ -1959,9 +1958,7 @@ struct PostBloomPass
 	}
 };
 
-/*!********************************************************************************************
-Class implementing the Shell functions.
-***********************************************************************************************/
+/// <summary>Class implementing the Shell functions.</summary>
 class OpenGLESPostProcessing : public pvr::Shell
 {
 	pvr::EglContext _context;
@@ -2148,7 +2145,7 @@ pvr::Result OpenGLESPostProcessing::initApplication()
 }
 
 /// <summary>Code in initView() will be called by Shell upon initialization or after a change in the rendering context.
-/// Used to initialize variables that are dependent on the rendering context(e.g.textures, vertex buffers, etc.)</summary>
+/// Used to initialize variables that are dependent on the rendering context(e.g.textures, vertex buffers, etc.).</summary>
 /// <returns>Result::Success if no error occurred.</returns>
 pvr::Result OpenGLESPostProcessing::initView()
 {
@@ -2212,7 +2209,7 @@ pvr::Result OpenGLESPostProcessing::initView()
 
 	for (uint32_t i = 0; i < NumScenes; ++i) { _diffuseIrradianceTextures[i] = pvr::utils::textureUpload(*this, SceneTexFileNames[i].diffuseIrradianceMapTexture); }
 
-	// Creates the offscreen framebuffers allong with their attachments
+	// Creates the offscreen framebuffers along with their attachments
 	// The framebuffers and images can then be "ping-ponged" between when applying various filters/blurs
 	// Pass 1: Read From 1, Render to 0
 	// Pass 2: Read From 0, Render to 1
@@ -2265,7 +2262,7 @@ pvr::Result OpenGLESPostProcessing::initView()
 	// Update the demo configuration
 	updateDemoConfigs();
 
-	// initalise the UI Renderers
+	// initialise the UI Renderers
 	createUiRenderer();
 
 	// Set basic default state
@@ -2319,10 +2316,10 @@ pvr::Result OpenGLESPostProcessing::renderFrame()
 
 	// The scene rendering requires the use of 2 draw buffers
 	// 1. The offscreen texture
-	// 2. The Luminance color buffer
+	// 2. The Luminance colour buffer
 	gl::DrawBuffers(2, _mrtDrawBuffers);
 
-	// Clear the color and depth
+	// Clear the colour and depth
 	gl::Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// Perform Scene rendering
@@ -2628,7 +2625,7 @@ void OpenGLESPostProcessing::updateBlurDescription()
 	}
 
 	Log(LogLevel::Information, "Current blur mode: \"%s\"", BloomStrings[static_cast<int32_t>(_blurMode)].c_str());
-	Log(LogLevel::Information, "Current blur size configiuration: \"%u\"", _currentDemoConfiguration);
+	Log(LogLevel::Information, "Current blur size configuration: \"%u\"", _currentDemoConfiguration);
 }
 
 /// <summary>Creates the main scene buffer.</summary>
@@ -2644,7 +2641,7 @@ void OpenGLESPostProcessing::createSceneBuffer()
 	gl::BindBuffer(GL_UNIFORM_BUFFER, _sceneBuffer);
 	gl::BufferData(GL_UNIFORM_BUFFER, static_cast<GLsizeiptr>(_sceneBufferView.getSize()), nullptr, GL_DYNAMIC_DRAW);
 
-	// if GL_EXT_buffer_storage is supported then map the buffer upfront and never upmap it
+	// if GL_EXT_buffer_storage is supported then map the buffer upfront and never unmap it
 	if (_isBufferStorageExtSupported)
 	{
 		gl::BindBuffer(GL_COPY_READ_BUFFER, _sceneBuffer);
@@ -2781,7 +2778,7 @@ void OpenGLESPostProcessing::createOffScreenFramebuffers()
 	gl::GenTextures(1, &_offScreenTexture);
 	gl::BindTexture(GL_TEXTURE_2D, _offScreenTexture);
 	gl::TexStorage2D(GL_TEXTURE_2D, 1, _offscreenColorFormat, static_cast<GLsizei>(getWidth()), static_cast<GLsizei>(getHeight()));
-	debugThrowOnApiError("createOffScreenFramebuffers - created offscreen color texture");
+	debugThrowOnApiError("createOffScreenFramebuffers - created offscreen colour texture");
 
 	gl::GenTextures(1, &_depthStencilTexture);
 	gl::BindTexture(GL_TEXTURE_2D, _depthStencilTexture);
@@ -2930,7 +2927,7 @@ void OpenGLESPostProcessing::updateAnimation()
 	}
 }
 
-/// <summary>Update the demo configuration in use. Calculates gaussian weights and offsets, images being used, framebuffers being used etc.</summary>
+/// <summary>Update the demo configuration in use. Calculates Gaussian weights and offsets, images being used, framebuffers being used etc.</summary>
 void OpenGLESPostProcessing::updateDemoConfigs()
 {
 	switch (_blurMode)

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.3)
 project(OpenGLESPostProcessing)
-if(IOS)	
+if(IOS)
 	message("Skipping OpenGLESPostProcessing : Not supported on iOS")
 	return()
 endif()
@@ -31,11 +31,22 @@ add_platform_specific_executable(OpenGLESPostProcessing ${SRC_FILES})
 add_assets_to_target(OpenGLESPostProcessing
 	SOURCE_GROUP "assets" 
 	ASSET_FOLDER ${ASSET_FOLDER} 
+	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/
+	FILE_LIST 
+		GaussianBlurFragmentShader.fsh.in
+		LinearGaussianBlurVertexShader.vsh.in
+		LinearGaussianBlurFragmentShader.fsh.in
+		ComputeGaussianBlurHorizontalShader.csh.in
+		ComputeGaussianBlurVerticalShader.csh.in)
+
+add_assets_to_target(OpenGLESPostProcessing
+	SOURCE_GROUP "assets" 
+	ASSET_FOLDER ${ASSET_FOLDER} 
 	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/Satyr
 	FILE_LIST 
+		Satyr.pod
 		MarbleNormalMap.pvr
-		Marble.pvr
-		Satyr.pod)
+		Marble.pvr)
 
 add_assets_to_target(OpenGLESPostProcessing
 	SOURCE_GROUP "assets" 
@@ -48,17 +59,6 @@ add_assets_to_target(OpenGLESPostProcessing
 		pink_sunrise_rgb9e5_Irradiance.pvr
 		signal_hill_sunrise_scale_0.312_rgb9e5.pvr
 		signal_hill_sunrise_scale_0.312_rgb9e5_Irradiance.pvr)
-
-add_assets_to_target(OpenGLESPostProcessing
-	SOURCE_GROUP "assets" 
-	ASSET_FOLDER ${ASSET_FOLDER} 
-	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/
-	FILE_LIST 
-		GaussianBlurFragmentShader.fsh.in
-		LinearGaussianBlurVertexShader.vsh.in
-		LinearGaussianBlurFragmentShader.fsh.in
-		ComputeGaussianBlurHorizontalShader.csh.in
-		ComputeGaussianBlurVerticalShader.csh.in)
 
 ### Textural shaders (OpenGL ES) ###
 add_assets_to_target(OpenGLESPostProcessing 
@@ -96,7 +96,7 @@ add_assets_resource_file(OpenGLESPostProcessing)
 # Apply SDK example specific compile and linker options
 apply_example_compile_options_to_target(OpenGLESPostProcessing)
 
-target_link_libraries(OpenGLESPostProcessing
+target_link_libraries(OpenGLESPostProcessing PUBLIC
 	PVRShell
 	PVRUtilsGles
 )

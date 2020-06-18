@@ -6,7 +6,7 @@ layout(std140, set = 2, binding = 0) uniform Material
    mediump vec3 ViewLightDirection;
    mediump vec3 AlbedoModulation;
    mediump float SpecularExponent;  //How smooth is the object
-   mediump float Metallicity;  //How much is the specular light colored by the object's color
+   mediump float Metallicity;  //How much is the specular light coloured by the object's colour
    mediump float Reflectivity; //How much of the light is diffuse/specular
 };
 
@@ -19,16 +19,16 @@ const mediump float AMBIENT = 0.125;
 
 void main()
 {
-   // Overall color of the material. AlbedoModulation is not strictly required (as this information will
+   // Overall colour of the material. AlbedoModulation is not strictly required (as this information will
    //normally come from a texture), but it is very helpful for a "tweakable" shader
 
    mediump vec3 albedo = texture(sTexture, TexCoord).rgb * AlbedoModulation;
 
    //Add an ambient factor (greatly helps the look in general, otherwise high reflectivity makes the
    //the object pitch black...)
-   //Diffuse factor       (colored)  : AMBIENT * albedo * (1 - reflectivity)
-   //Specular, metallic   (colored)  : AMBIENT * albedo * reflectivity * metallicity
-   // ==> Colored ambient = AMBIENT * albedo * (1 + reflectivity * (metallicity  - 1))
+   //Diffuse factor       (coloured)  : AMBIENT * albedo * (1 - reflectivity)
+   //Specular, metallic   (coloured)  : AMBIENT * albedo * reflectivity * metallicity
+   // ==> Coloured ambient = AMBIENT * albedo * (1 + reflectivity * (metallicity  - 1))
 
    //Specular, non-metallic (white)  : AMBIENT * reflectivity * (1 - metallicity)
 
@@ -48,8 +48,8 @@ void main()
 	  mediump vec3 reflectedLightDirection = reflect(-ViewLightDirection, normal);
 	  mediump float v_dot_r = max(dot(viewDirection, reflectedLightDirection), 0.0);
 
-	  //Most metallic:    Specular Color = albedo color
-	  //Most un-metallic: Specular Color = white
+	  //Most metallic:    Specular Colour = albedo colour
+	  //Most un-metallic: Specular Colour = white
 
 	  mediump float specularIntensity = max(pow(v_dot_r, SpecularExponent) * Reflectivity, 0.);
 

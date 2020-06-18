@@ -129,16 +129,16 @@ inline const char* getOpenCLError(cl_int error)
 
 /// <summary>A simple std::runtime_error wrapper for throwing exceptions when receiving OpenCL
 /// errors.</summary>
-class OpenCLError : public std::runtime_error
+class OpenCLError : public pvr::PvrError
 {
 public:
 	/// <summary>Constructor.</summary>
 	/// <param name="errorCode">The OpenCL error code to stringify.</param>
-	OpenCLError(cl_int errorCode) : runtime_error(std::string("OpenCL Error [") + getOpenCLError(errorCode) + "]") {}
+	OpenCLError(cl_int errorCode) : PvrError(std::string("OpenCL Error [") + getOpenCLError(errorCode) + "]") {}
 	/// <summary>Constructor.</summary>
 	/// <param name="errorCode">The OpenCL error code to stringify.</param>
 	/// <param name="message">A message to log alongside the OpenCL error.</param>
-	OpenCLError(cl_int errorCode, const std::string& message) : runtime_error(std::string("OpenCL Error [") + getOpenCLError(errorCode) + "] - " + message) {}
+	OpenCLError(cl_int errorCode, const std::string& message) : PvrError(std::string("OpenCL Error [") + getOpenCLError(errorCode) + "] - " + message) {}
 };
 
 /// <summary>Determines whether the given OpenCL extension is supported.</summary>

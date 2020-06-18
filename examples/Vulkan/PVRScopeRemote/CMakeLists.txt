@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.3)
 project(VulkanPVRScopeRemote)
-if(IOS)	
+if(IOS)
 	message("Skipping VulkanPVRScopeRemote : Not supported on iOS")
 	return()
 endif()
@@ -62,7 +62,7 @@ add_assets_resource_file(VulkanPVRScopeRemote)
 # Apply SDK example specific compile and linker options
 apply_example_compile_options_to_target(VulkanPVRScopeRemote)
 
-target_link_libraries(VulkanPVRScopeRemote
+target_link_libraries(VulkanPVRScopeRemote PUBLIC
 	PVRShell
 	PVRUtilsVk
 	PVRScopeDeveloper

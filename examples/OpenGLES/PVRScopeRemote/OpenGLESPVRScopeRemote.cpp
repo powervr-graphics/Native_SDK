@@ -1,10 +1,9 @@
-/*!*********************************************************************************************************************
-\File         OpenGLESPVRScopeRemote.cpp
-\Title        PVRScopeRemote
-\Author       PowerVR by Imagination, Developer Technology Team
-\Copyright    Copyright (c) Imagination Technologies Limited.
-\brief      Shows how to use our example PVRScope graph code.
-***********************************************************************************************************************/
+/*!
+\brief Shows how to use our example PVRScope graph code.
+\file OpenGLESPVRScopeRemote.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #include "PVRShell/PVRShell.h"
 #include "PVRUtils/PVRUtilsGles.h"
 #include "PVRScopeComms.h"
@@ -31,9 +30,7 @@ enum Enum
 }
 const char* FrameDefs[CounterDefs::NumCounter] = { "Frames", "Frames10" };
 
-/*!*********************************************************************************************************************
-\brief Class implementing the PVRShell functions.
-***********************************************************************************************************************/
+/// <summary>Class implementing the PVRShell functions.</summary>
 class OpenGLESPVRScopeRemote : public pvr::Shell
 {
 	glm::vec3 ClearColor;
@@ -123,17 +120,14 @@ public:
 	virtual pvr::Result releaseView();
 	virtual pvr::Result quitApplication();
 	virtual pvr::Result renderFrame();
-	void executeCommands();
 	void createSamplerTexture();
 	void createProgram(const char* const pszFrag, const char* const pszVert, bool recompile = false);
 	void loadVbos();
 	void drawMesh(int i32NodeIndex);
 };
 
-/*!*********************************************************************************************************************
-\return Return true if no error occurred
-\brief  Loads the textures required for this training course
-***********************************************************************************************************************/
+/// <summary>Loads the textures required for this training course.</summary>
+/// <returns>Return true if no error occurred.</returns>
 void OpenGLESPVRScopeRemote::createSamplerTexture()
 {
 	CPPLProcessingScoped PPLProcessingScoped(_spsCommsData, __FUNCTION__, static_cast<uint32_t>(strlen(__FUNCTION__)), _frameCounter);
@@ -148,10 +142,8 @@ void OpenGLESPVRScopeRemote::createSamplerTexture()
 	pvr::utils::throwOnGlError("[OpenGLESPVRScopeRemote::createSamplerTexture] - Failed to create texture and sampler");
 }
 
-/*!*********************************************************************************************************************
-\return Return true if no error occurred
-\brief  Loads and compiles the shaders and links the shader programs required for this training course
-***********************************************************************************************************************/
+/// <summary>Loads and compiles the shaders and links the shader programs required for this training course.</summary>
+/// <returns>Return true if no error occurred.</returns>
 void OpenGLESPVRScopeRemote::createProgram(const char* const fragShaderSource, const char* const vertShaderSource, bool recompile)
 {
 	// Enable or disable gamma correction based on if it is automatically performed on the framebuffer or we need to do it in the shader.
@@ -161,7 +153,7 @@ void OpenGLESPVRScopeRemote::createProgram(const char* const fragShaderSource, c
 	ClearColor = clearColorLinearSpace;
 	if (getBackBufferColorspace() != pvr::ColorSpace::sRGB)
 	{
-		ClearColor = pvr::utils::convertLRGBtoSRGB(clearColorLinearSpace); // Gamma correct the clear color...
+		ClearColor = pvr::utils::convertLRGBtoSRGB(clearColorLinearSpace); // Gamma correct the clear colour...
 		numDefines = 0;
 	}
 
@@ -188,7 +180,7 @@ void OpenGLESPVRScopeRemote::createProgram(const char* const fragShaderSource, c
 			gl::DeleteShader(_deviceResources->shaders[1]);
 			_deviceResources->shaders[1] = 0;
 		}
-		gl::GetError(); // Don't really care if we succeded or failed...
+		gl::GetError(); // Don't really care if we succeeded or failed...
 	}
 	_deviceResources->shaders[0] = pvr::utils::loadShader(vertexShaderStream, pvr::ShaderType::VertexShader, defines, numDefines);
 	_deviceResources->shaders[1] = pvr::utils::loadShader(fragShaderStream, pvr::ShaderType::FragmentShader, defines, numDefines);
@@ -212,9 +204,7 @@ void OpenGLESPVRScopeRemote::createProgram(const char* const fragShaderSource, c
 	_uniformLocations.albedo = gl::GetUniformLocation(_deviceResources->program, "albedoModulation");
 }
 
-/*!*********************************************************************************************************************
-\brief  Loads the mesh data required for this training course into vertex buffer objects
-***********************************************************************************************************************/
+/// <summary>Loads the mesh data required for this training course into vertex buffer objects.</summary>
 void OpenGLESPVRScopeRemote::loadVbos()
 {
 	CPPLProcessingScoped PPLProcessingScoped(_spsCommsData, __FUNCTION__, static_cast<uint32_t>(strlen(__FUNCTION__)), _frameCounter);
@@ -227,12 +217,10 @@ void OpenGLESPVRScopeRemote::loadVbos()
 	pvr::utils::appendSingleBuffersFromModel(*_scene, _deviceResources->vbos, _deviceResources->ibos);
 }
 
-/*!*********************************************************************************************************************
-\return Return pvr::Result::Success if no error occurred
-\brief  Code in initApplication() will be called by Shell once per run, before the rendering context is created.
-	Used to initialize variables that are not dependent on it (e.g. external modules, loading meshes, etc.)
-	If the rendering context is lost, initApplication() will not be called again.
-***********************************************************************************************************************/
+/// <summary>Code in initApplication() will be called by Shell once per run, before the rendering context is created.
+/// Used to initialize variables that are not dependent on it (e.g. external modules, loading meshes, etc.)
+/// If the rendering context is lost, initApplication() will not be called again.</summary>
+/// <returns>Return pvr::Result::Success if no error occurred.</returns>
 pvr::Result OpenGLESPVRScopeRemote::initApplication()
 {
 	// Load the scene
@@ -241,8 +229,8 @@ pvr::Result OpenGLESPVRScopeRemote::initApplication()
 	_vertexConfiguration = createInputAssemblyFromMesh(_scene->getMesh(0), vertexBindings, 3);
 
 	_progUniforms.specularExponent = 5.f; // Width of the specular highlights (using low exponent for a brushed metal look)
-	_progUniforms.albedo = glm::vec3(1.0f, 0.563f, 0.087f); // Overall color
-	_progUniforms.metallicity = 1.f; // Is the color of the specular white (nonmetallic), or colored by the object(metallic)
+	_progUniforms.albedo = glm::vec3(1.0f, 0.563f, 0.087f); // Overall colour
+	_progUniforms.metallicity = 1.f; // Is the colour of the specular white (non-metallic), or coloured by the object(metallic)
 	_progUniforms.reflectivity = 0.9f; // Percentage of contribution of diffuse / specular
 	_frameCounter = 0;
 	_frame10Counter = 0;
@@ -269,11 +257,9 @@ pvr::Result OpenGLESPVRScopeRemote::initApplication()
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return Return pvr::Result::Success if no error occurred
-\brief  Code in quitApplication() will be called by Shell once per run, just before exiting the program.
-	If the rendering context is lost, QuitApplication() will not be called.
-***********************************************************************************************************************/
+/// <summary>Code in quitApplication() will be called by Shell once per run, just before exiting the program.
+///	If the rendering context is lost, QuitApplication() will not be called.</summary>
+/// <returns>Return pvr::Result::Success if no error occurred.</returns>
 pvr::Result OpenGLESPVRScopeRemote::quitApplication()
 {
 	if (_spsCommsData)
@@ -296,11 +282,9 @@ pvr::Result OpenGLESPVRScopeRemote::quitApplication()
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return Return pvr::Result::Success if no error occurred
-\brief  Code in initView() will be called by Shell upon initialization or after a change in the rendering context.
-	Used to initialize variables that are dependent on the rendering context (e.g. textures, vertex buffers, etc.)
-***********************************************************************************************************************/
+/// <summary>Code in initView() will be called by Shell upon initialization or after a change in the rendering context.</summary>
+/// Used to initialize variables that are dependent on the rendering context (e.g. textures, vertex buffers, etc.)
+/// <returns>Return pvr::Result::Success if no error occurred.</returns>
 pvr::Result OpenGLESPVRScopeRemote::initView()
 {
 	_deviceResources = std::make_unique<DeviceResources>();
@@ -317,7 +301,7 @@ pvr::Result OpenGLESPVRScopeRemote::initView()
 		std::vector<SSPSCommsLibraryItem> communicableItems;
 		size_t dataRead;
 
-		// choose the correct shader version for the api type
+		// choose the correct shader version for the API type
 		if (_deviceResources->context->getApiVersion() < pvr::Api::OpenGLES3)
 		{
 			_vertShaderSrcFile = VertShaderEs2SrcFile;
@@ -412,7 +396,7 @@ pvr::Result OpenGLESPVRScopeRemote::initView()
 		communicableItems.back().pData = (const char*)&_commsLibAlbedoB;
 		communicableItems.back().nDataLength = sizeof(_commsLibAlbedoB);
 
-		// Ok, submit our library
+		// OK, submit our library
 		if (!pplLibraryCreate(_spsCommsData, communicableItems.data(), static_cast<uint32_t>(communicableItems.size())))
 		{ Log(LogLevel::Debug, "PVRScopeRemote: pplLibraryCreate() failed\n"); } // User defined counters
 
@@ -477,10 +461,8 @@ pvr::Result OpenGLESPVRScopeRemote::initView()
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return Return pvr::Result::Success if no error occurred
-\brief  Code in releaseView() will be called by Shell when the application quits or before a change in the rendering context.
-***********************************************************************************************************************/
+/// <summary>Code in releaseView() will be called by Shell when the application quits or before a change in the rendering context. </summary>
+/// <returns>Return pvr::Result::Success if no error occurred </returns>
 pvr::Result OpenGLESPVRScopeRemote::releaseView()
 {
 	CPPLProcessingScoped PPLProcessingScoped(_spsCommsData, __FUNCTION__, static_cast<uint32_t>(strlen(__FUNCTION__)), _frameCounter);
@@ -489,10 +471,8 @@ pvr::Result OpenGLESPVRScopeRemote::releaseView()
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return Return Result::Success if no error occurred
-\brief Main rendering loop function of the program. The shell will call this function every frame.
-***********************************************************************************************************************/
+/// <summary>Main rendering loop function of the program. The shell will call this function every frame.</summary>
+/// <returns>Return Result::Success if no error occurred.</returns>
 pvr::Result OpenGLESPVRScopeRemote::renderFrame()
 {
 	if (_spsCommsData)
@@ -602,6 +582,12 @@ pvr::Result OpenGLESPVRScopeRemote::renderFrame()
 
 	if (_spsCommsData) { _hasCommunicationError |= !pplSendProcessingBegin(_spsCommsData, "draw", static_cast<uint32_t>(strlen("draw")), _frameCounter); }
 
+	gl::CullFace(GL_BACK);
+	gl::FrontFace(GL_CCW);
+	gl::Enable(GL_DEPTH_TEST);
+	gl::Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	gl::UseProgram(_deviceResources->program);
+
 	// Rotate and Translation the model matrix
 	glm::mat4 modelMtx = glm::rotate(_angleY, glm::vec3(0, 1, 0)) * glm::scale(glm::vec3(0.6f)) * _scene->getWorldMatrix(0);
 	_angleY += (2 * glm::pi<float>() * getFrameTime() / 1000) / 10;
@@ -617,31 +603,45 @@ pvr::Result OpenGLESPVRScopeRemote::renderFrame()
 	// Set light direction in model space
 	_progUniforms.lightDirView = glm::normalize(glm::vec3(1., 1., -1.));
 
-	// Set eye position in model space
-	// Now that the uniforms are set, call another function to actually draw the mesh.
-	if (_spsCommsData)
-	{
-		_hasCommunicationError |= !pplSendProcessingEnd(_spsCommsData);
-		_hasCommunicationError |= !pplSendProcessingBegin(_spsCommsData, "UIRenderer", static_cast<uint32_t>(strlen("UIRenderer")), _frameCounter);
-	}
-
+	// Now that the uniforms are set, draw the mesh.
 	if (_hasCommunicationError)
 	{
 		_deviceResources->uiRenderer.getDefaultControls()->setText("Communication Error:\nPVRScopeComms failed\n"
 																   "Is PVRPerfServer connected?");
 		_deviceResources->uiRenderer.getDefaultControls()->setColor(glm::vec4(.8f, .3f, .3f, 1.0f));
-		_deviceResources->uiRenderer.getDefaultControls()->commitUpdates();
-		executeCommands();
 		_hasCommunicationError = false;
 	}
 	else
 	{
 		_deviceResources->uiRenderer.getDefaultControls()->setText("PVRScope Communication established.");
 		_deviceResources->uiRenderer.getDefaultControls()->setColor(glm::vec4(1.f));
-		_deviceResources->uiRenderer.getDefaultControls()->commitUpdates();
-		executeCommands();
 	}
 
+	_deviceResources->uiRenderer.getDefaultControls()->commitUpdates();
+
+	gl::BindTexture(GL_TEXTURE_2D, _deviceResources->texture);
+
+	gl::Uniform3fv(_uniformLocations.lightDirView, 1, glm::value_ptr(_progUniforms.lightDirView));
+	gl::UniformMatrix4fv(_uniformLocations.mvpMtx, 1, false, glm::value_ptr(_progUniforms.mvpMatrix));
+	gl::UniformMatrix3fv(_uniformLocations.mvITMtx, 1, false, glm::value_ptr(_progUniforms.mvITMatrix));
+	gl::Uniform1fv(_uniformLocations.specularExponent, 1, &_progUniforms.specularExponent);
+	gl::Uniform1fv(_uniformLocations.metallicity, 1, &_progUniforms.metallicity);
+	gl::Uniform1fv(_uniformLocations.reflectivity, 1, &_progUniforms.reflectivity);
+	gl::Uniform3fv(_uniformLocations.albedo, 1, glm::value_ptr(_progUniforms.albedo));
+
+	drawMesh(0);
+
+	if (_spsCommsData) { _hasCommunicationError |= !pplSendProcessingEnd(_spsCommsData); }
+
+	if (_spsCommsData) { _hasCommunicationError |= !pplSendProcessingBegin(_spsCommsData, "UIRenderer", static_cast<uint32_t>(strlen("UIRenderer")), _frameCounter); }
+	// Displays the demo name using the tools. For a detailed explanation, see the example
+	// IntroducingUIRenderer
+	_deviceResources->uiRenderer.beginRendering();
+	_deviceResources->uiRenderer.getDefaultTitle()->render();
+	_deviceResources->uiRenderer.getDefaultDescription()->render();
+	_deviceResources->uiRenderer.getSdkLogo()->render();
+	_deviceResources->uiRenderer.getDefaultControls()->render();
+	_deviceResources->uiRenderer.endRendering();
 	if (_spsCommsData) { _hasCommunicationError |= !pplSendProcessingEnd(_spsCommsData); }
 
 	// send counters
@@ -666,10 +666,8 @@ pvr::Result OpenGLESPVRScopeRemote::renderFrame()
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\brief  Draws a pvr::assets::Mesh after the model view matrix has been set and the material prepared.
-\param  nodeIndex Node index of the mesh to draw
-***********************************************************************************************************************/
+/// <summary>Draws a pvr::assets::Mesh after the model view matrix has been set and the material prepared.</summary>
+/// <param name="nodeIndex">Node index of the mesh to draw </param>
 void OpenGLESPVRScopeRemote::drawMesh(int nodeIndex)
 {
 	debugThrowOnApiError("draw mesh");
@@ -735,49 +733,6 @@ void OpenGLESPVRScopeRemote::drawMesh(int nodeIndex)
 		auto& attrib = _vertexConfiguration.attributes[i];
 		gl::DisableVertexAttribArray(attrib.index);
 	}
-}
-
-/*!*********************************************************************************************************************
-\brief  pre-record the rendering the commands
-***********************************************************************************************************************/
-void OpenGLESPVRScopeRemote::executeCommands()
-{
-	debugThrowOnApiError("executeCommands");
-	CPPLProcessingScoped PPLProcessingScoped(_spsCommsData, __FUNCTION__, static_cast<uint32_t>(strlen(__FUNCTION__)), _frameCounter);
-
-	gl::Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	gl::UseProgram(_deviceResources->program);
-	debugThrowOnApiError("executeCommands");
-	gl::BindTexture(GL_TEXTURE_2D, _deviceResources->texture);
-	debugThrowOnApiError("executeCommands");
-	gl::CullFace(GL_BACK);
-	gl::FrontFace(GL_CCW);
-	gl::Enable(GL_DEPTH_TEST);
-	debugThrowOnApiError("executeCommands");
-	gl::Uniform3fv(_uniformLocations.lightDirView, 1, glm::value_ptr(_progUniforms.lightDirView));
-	debugThrowOnApiError("executeCommands");
-	gl::UniformMatrix4fv(_uniformLocations.mvpMtx, 1, false, glm::value_ptr(_progUniforms.mvpMatrix));
-	debugThrowOnApiError("executeCommands");
-	gl::UniformMatrix3fv(_uniformLocations.mvITMtx, 1, false, glm::value_ptr(_progUniforms.mvITMatrix));
-	debugThrowOnApiError("executeCommands");
-	gl::Uniform1fv(_uniformLocations.specularExponent, 1, &_progUniforms.specularExponent);
-	debugThrowOnApiError("executeCommands");
-	gl::Uniform1fv(_uniformLocations.metallicity, 1, &_progUniforms.metallicity);
-	debugThrowOnApiError("executeCommands");
-	gl::Uniform1fv(_uniformLocations.reflectivity, 1, &_progUniforms.reflectivity);
-	debugThrowOnApiError("executeCommands");
-	gl::Uniform3fv(_uniformLocations.albedo, 1, glm::value_ptr(_progUniforms.albedo));
-	debugThrowOnApiError("executeCommands");
-	drawMesh(0);
-
-	_deviceResources->uiRenderer.beginRendering();
-	// Displays the demo name using the tools. For a detailed explanation, see the example
-	// IntroducingUIRenderer
-	_deviceResources->uiRenderer.getDefaultTitle()->render();
-	_deviceResources->uiRenderer.getDefaultDescription()->render();
-	_deviceResources->uiRenderer.getSdkLogo()->render();
-	_deviceResources->uiRenderer.getDefaultControls()->render();
-	_deviceResources->uiRenderer.endRendering();
 }
 
 /// <summary>This function must be implemented by the user of the shell. The user should return its pvr::Shell object defining the behaviour of the application.</summary>

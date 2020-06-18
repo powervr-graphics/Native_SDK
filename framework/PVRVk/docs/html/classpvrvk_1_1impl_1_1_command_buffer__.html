@@ -21,7 +21,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="https://www.imgtec.com/developers/" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
+      <a href="https://www.imgtec.com/developers/" target="_blank"><img src="PVRlogo.png" width="80%" height="80%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRVk</span> Documentation</a>
    <tbody>
@@ -384,12 +384,6 @@ Protected Attributes</h2></td></tr>
 <tr class="memitem:a759e4e7ca81cb8812048075ddcf274d6"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_command_buffer_base__.html#a759e4e7ca81cb8812048075ddcf274d6">_isRecording</a></td></tr>
 <tr class="memdesc:a759e4e7ca81cb8812048075ddcf274d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Specifies whether the command buffer is currently in the recording state which is controlled via calling the begin function. <a href="#a759e4e7ca81cb8812048075ddcf274d6">More...</a><br /></td></tr>
 <tr class="separator:a759e4e7ca81cb8812048075ddcf274d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a943d27103dec9450a0966c8352aef979"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvrvk.html#a29a9475928347749fcf6e15f01d1ac9f">ComputePipeline</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_command_buffer_base__.html#a943d27103dec9450a0966c8352aef979">_lastBoundComputePipe</a></td></tr>
-<tr class="memdesc:a943d27103dec9450a0966c8352aef979"><td class="mdescLeft">&#160;</td><td class="mdescRight">Holds a reference to the last bound compute pipeline. This can then be used for optimising binding the same compute pipeline repeatedly. <a href="#a943d27103dec9450a0966c8352aef979">More...</a><br /></td></tr>
-<tr class="separator:a943d27103dec9450a0966c8352aef979"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa0f1be52e5e2affe2a3f57ea68a8d036"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvrvk.html#a0eb06716297c66be780d357af1d36e91">GraphicsPipeline</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_command_buffer_base__.html#aa0f1be52e5e2affe2a3f57ea68a8d036">_lastBoundGraphicsPipe</a></td></tr>
-<tr class="memdesc:aa0f1be52e5e2affe2a3f57ea68a8d036"><td class="mdescLeft">&#160;</td><td class="mdescRight">Holds a reference to the last bound graphics pipeline. This can be used for optimising binding the same graphics pipeline repeatedly. <a href="#aa0f1be52e5e2affe2a3f57ea68a8d036">More...</a><br /></td></tr>
-<tr class="separator:aa0f1be52e5e2affe2a3f57ea68a8d036"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad5fab5878ab60a1307b8185a432bc861"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::shared_ptr&lt; void &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvrvk_1_1impl_1_1_command_buffer_base__.html#ad5fab5878ab60a1307b8185a432bc861">_objectReferences</a></td></tr>
 <tr class="memdesc:ad5fab5878ab60a1307b8185a432bc861"><td class="mdescLeft">&#160;</td><td class="mdescRight">Holds a list of references to the objects currently in use by this command buffer. This ensures that objects are kept alive through reference counting until the command buffer is finished with them. <a href="#ad5fab5878ab60a1307b8185a432bc861">More...</a><br /></td></tr>
 <tr class="separator:ad5fab5878ab60a1307b8185a432bc861"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -5102,54 +5096,6 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a943d27103dec9450a0966c8352aef979"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a943d27103dec9450a0966c8352aef979">&#9670;&nbsp;</a></span>_lastBoundComputePipe</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="namespacepvrvk.html#a29a9475928347749fcf6e15f01d1ac9f">ComputePipeline</a> pvrvk::impl::CommandBufferBase_::_lastBoundComputePipe</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span><span class="mlabel">inherited</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Holds a reference to the last bound compute pipeline. This can then be used for optimising binding the same compute pipeline repeatedly.</p>
-
-</div>
-</div>
-<a id="aa0f1be52e5e2affe2a3f57ea68a8d036"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa0f1be52e5e2affe2a3f57ea68a8d036">&#9670;&nbsp;</a></span>_lastBoundGraphicsPipe</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="namespacepvrvk.html#a0eb06716297c66be780d357af1d36e91">GraphicsPipeline</a> pvrvk::impl::CommandBufferBase_::_lastBoundGraphicsPipe</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span><span class="mlabel">inherited</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Holds a reference to the last bound graphics pipeline. This can be used for optimising binding the same graphics pipeline repeatedly.</p>
-
-</div>
-</div>
 <a id="ad5fab5878ab60a1307b8185a432bc861"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ad5fab5878ab60a1307b8185a432bc861">&#9670;&nbsp;</a></span>_objectReferences</h2>
 
@@ -5256,7 +5202,7 @@ Protected Attributes</h2></td></tr>
 <div id="FooterMainContainer">
 	<div id="FooterContainer">
 		<div class="footerlogo">
-			<a href="http://www.imgtec.com" target="_blank"><img src="img-footer-logo-grey.png" width="100%" height="100%" border="none" /></a>
+			<a href="http://www.imgtec.com" target="_blank"><img src="img-footer-logo-grey.png" width="20%" height="20%" border="none" /></a>
 		</div>
 		<div class="copyright"><p>&copy; Imagination Technologies Limited<br> All rights reserved</p></div>
 	</div>

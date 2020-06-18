@@ -8,6 +8,6 @@ var searchData=
   ['compareop',['CompareOp',['../namespacepvr.html#a24a87498f839b45b6e1bc3c8b2ca20fc',1,'pvr']]],
   ['compressedpixelformat',['CompressedPixelFormat',['../namespacepvr.html#a7cfc7d042b44f46e4d5dfbb32d0f16b1',1,'pvr']]],
   ['conditiontype',['ConditionType',['../structpvr_1_1effect_1_1_pipeline_condition.html#a12fa4da1af78b5b92c8712d9ea7c3fee',1,'pvr::effect::PipelineCondition']]],
-  ['constants',['Constants',['../structpvr_1_1_texture_header_1_1_header.html#a98897c220e0645d75555f481ae4749fb',1,'pvr::TextureHeader::Header']]],
+  ['constants',['Constants',['../structpvr_1_1_texture_header.html#aa575a1cac05e7c71cc544ff4469264a4',1,'pvr::TextureHeader']]],
   ['cubeface',['CubeFace',['../namespacepvr.html#a87b409df225dee78541eb74988f4e20c',1,'pvr']]]
 ];

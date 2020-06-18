@@ -1,10 +1,9 @@
-/*!******************************************************************************************************************
-\File         VkIntroUIRenderer.cpp
-\Title        Introducing uiRenderer
-\Author       PowerVR by Imagination, Developer Technology Team
-\Copyright    Copyright (c) Imagination Technologies Limited.
-\brief  Shows how to use the UIRenderer class to draw ASCII/UTF-8 or wide-charUnicode-compliant text in 3D.
-*********************************************************************************************************************/
+/*!
+\brief Shows how to use the UIRenderer class to draw ASCII/UTF-8 or wide-charUnicode-compliant text in 3D.
+\file VkIntroUIRenderer.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #include "PVRShell/PVRShell.h"
 #include "PVRUtils/PVRUtilsVk.h"
 #include "PVRVk/ApiObjectsVk.h"
@@ -140,7 +139,6 @@ struct DeviceResources
 {
 	pvrvk::Instance instance;
 	pvr::utils::DebugUtilsCallbacks debugUtilsCallbacks;
-	pvrvk::Surface surface;
 	pvrvk::Device device;
 	pvrvk::Swapchain swapchain;
 	pvrvk::Queue queue;
@@ -188,9 +186,7 @@ struct DeviceResources
 	}
 };
 
-/*!******************************************************************************************************************
-Class implementing the pvr::Shell functions.
-*********************************************************************************************************************/
+/// <summary>Implementing the pvr::Shell functions.</summary>
 class VulkanIntroducingUIRenderer : public pvr::Shell
 {
 	glm::mat4 _mvp;
@@ -226,9 +222,7 @@ public:
 private:
 };
 
-/*!******************************************************************************************************************
-\brief  Record the rendering commands
-*********************************************************************************************************************/
+/// <summary>Record the rendering commands.</summary>
 void VulkanIntroducingUIRenderer::recordCommandBuffers()
 {
 	for (uint32_t i = 0; i < _deviceResources->onScreenFramebuffer.size(); ++i)
@@ -261,12 +255,10 @@ void VulkanIntroducingUIRenderer::recordCommandBuffers()
 	}
 }
 
-/*!******************************************************************************************************************
-\return Return pvr::Result::Success if no error occurred
-\brief  Code in initApplication() will be called by Shell once per run, before the rendering context is created.
-	Used to initialize variables that are not dependent on it (e.g. external modules, loading meshes, etc.)
-	If the rendering context is lost, initApplication() will not be called again.
-*********************************************************************************************************************/
+/// <summary>Code in initApplication() will be called by Shell once per run, before the rendering context is created.
+/// Used to initialize variables that are not dependent on it(e.g.external modules, loading meshes, etc.).If the rendering
+/// context is lost, initApplication() will not be called again.</summary>
+/// <returns>Result::Success if no error occurred.</returns>
 pvr::Result VulkanIntroducingUIRenderer::initApplication()
 {
 	// Because the C++ standard states that only ASCII characters are valid in compiled code,
@@ -297,25 +289,20 @@ pvr::Result VulkanIntroducingUIRenderer::initApplication()
 	return pvr::Result::Success;
 }
 
-/*!******************************************************************************************************************
-\return   Return pvr::Result::Success if no error occurred
-\brief    Code in quitApplication() will be called by PVRShell once per run, just before exiting the program.
-	  If the rendering context is lost, quitApplication() will not be called.
-*********************************************************************************************************************/
+/// <summary>Code in quitApplication() will be called by pvr::Shell once per run, just before exiting the program.</summary>
+/// <returns>Result::Success if no error occurred</returns>.
 pvr::Result VulkanIntroducingUIRenderer::quitApplication() { return pvr::Result::Success; }
 
-/*!******************************************************************************************************************
-\brief  Generates a simple background texture procedurally.
-\param[in]  screenWidth screen dimension's width
-\param[in]  screenHeight screen dimension's height
-*********************************************************************************************************************/
+/// <summary>Generates a simple background texture procedurally.</summary>
+/// <param name="screenWidth"> screen dimension's width.</param>
+/// <param name="screenHeight"> screen dimension's height.</param>
 void VulkanIntroducingUIRenderer::generateBackgroundTexture(uint32_t screenWidth, uint32_t screenHeight, pvrvk::CommandBuffer& uploadCmd)
 {
 	// Generate star texture
 	uint32_t width = pvr::math::makePowerOfTwoHigh(screenWidth);
 	uint32_t height = pvr::math::makePowerOfTwoHigh(screenHeight);
 
-	pvr::TextureHeader::Header hd;
+	pvr::TextureHeader hd;
 	hd.channelType = pvr::VariableType::UnsignedByteNorm;
 	hd.pixelFormat = pvr::GeneratePixelType1<'l', 8>::ID;
 	hd.colorSpace = pvr::ColorSpace::lRGB;
@@ -336,14 +323,12 @@ void VulkanIntroducingUIRenderer::generateBackgroundTexture(uint32_t screenWidth
 		}
 	}
 	_deviceResources->background = _deviceResources->uiRenderer.createImage(pvr::utils::uploadImageAndView(_deviceResources->device, myTexture, true, uploadCmd,
-		pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, &_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator));
+		pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, _deviceResources->vmaAllocator, _deviceResources->vmaAllocator));
 }
 
-/*!******************************************************************************************************************
-\return Result::Success if no error occurred
-\brief  Code in initView() will be called by Shell upon initialization or after a change in the rendering context.
-	Used to initialize variables that are dependent on the rendering context (e.g. textures, vertex buffers, etc.)
-*********************************************************************************************************************/
+/// <summary>Code in initView() will be called by Shell upon initialization or after a change  in the rendering context. Used to initialize variables that are dependent on the
+/// rendering context(e.g.textures, vertex buffers, etc.).</summary>
+/// <returns>Result::Success if no error occurred.</returns>
 pvr::Result VulkanIntroducingUIRenderer::initView()
 {
 	// Create the empty API objects.
@@ -359,13 +344,13 @@ pvr::Result VulkanIntroducingUIRenderer::initView()
 	}
 
 	// Create the surface
-	_deviceResources->surface =
+	pvrvk::Surface surface =
 		pvr::utils::createSurface(_deviceResources->instance, _deviceResources->instance->getPhysicalDevice(0), this->getWindow(), this->getDisplay(), this->getConnection());
 
 	// Create a default set of debug utils messengers or debug callbacks using either VK_EXT_debug_utils or VK_EXT_debug_report respectively
 	_deviceResources->debugUtilsCallbacks = pvr::utils::createDebugUtilsCallbacks(_deviceResources->instance);
 
-	pvr::utils::QueuePopulateInfo queuePopulateInfo = { pvrvk::QueueFlags::e_GRAPHICS_BIT, _deviceResources->surface };
+	pvr::utils::QueuePopulateInfo queuePopulateInfo = { pvrvk::QueueFlags::e_GRAPHICS_BIT, surface };
 	pvr::utils::QueueAccessInfo queueAccessInfo;
 	_deviceResources->device = pvr::utils::createDeviceAndQueues(_deviceResources->instance->getPhysicalDevice(0), &queuePopulateInfo, 1, &queueAccessInfo);
 
@@ -374,24 +359,24 @@ pvr::Result VulkanIntroducingUIRenderer::initView()
 
 	_deviceResources->vmaAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
 
-	// Create the commandpool
+	// Create the command pool
 	_deviceResources->commandPool =
 		_deviceResources->device->createCommandPool(pvrvk::CommandPoolCreateInfo(queueAccessInfo.familyId, pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT));
 
-	pvrvk::SurfaceCapabilitiesKHR surfaceCapabilities = _deviceResources->instance->getPhysicalDevice(0)->getSurfaceCapabilities(_deviceResources->surface);
+	pvrvk::SurfaceCapabilitiesKHR surfaceCapabilities = _deviceResources->instance->getPhysicalDevice(0)->getSurfaceCapabilities(surface);
 
 	// validate the supported swapchain image usage
 	pvrvk::ImageUsageFlags swapchainImageUsage = pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT;
 	if (pvr::utils::isImageUsageSupportedBySurface(surfaceCapabilities, pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT))
 	{ swapchainImageUsage |= pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT; } // Retrieve the swapchain images and create corresponding depth stencil images per swap chain
-	pvr::utils::createSwapchainAndDepthStencilImageAndViews(_deviceResources->device, _deviceResources->surface, getDisplayAttributes(), _deviceResources->swapchain,
-		_deviceResources->depthStencilImages, swapchainImageUsage, pvrvk::ImageUsageFlags::e_DEPTH_STENCIL_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_TRANSIENT_ATTACHMENT_BIT,
-		&_deviceResources->vmaAllocator);
+	auto swapChainCreateOutput = pvr::utils::createSwapchainRenderpassFramebuffers(_deviceResources->device, surface, getDisplayAttributes(),
+		pvr::utils::CreateSwapchainParameters().setAllocator(_deviceResources->vmaAllocator).setColorImageUsageFlags(swapchainImageUsage));
 
-	pvrvk::RenderPass renderPass;
-	pvr::utils::createOnscreenFramebufferAndRenderPass(_deviceResources->swapchain, &_deviceResources->depthStencilImages[0], _deviceResources->onScreenFramebuffer, renderPass);
-	_deviceResources->uiRenderer.init(getWidth(), getHeight(), isFullScreen(), renderPass, 0, getBackBufferColorspace() == pvr::ColorSpace::sRGB, _deviceResources->commandPool,
-		_deviceResources->queue, true, true, true, 128);
+	_deviceResources->swapchain = swapChainCreateOutput.swapchain;
+	_deviceResources->onScreenFramebuffer = swapChainCreateOutput.framebuffer;
+
+	_deviceResources->uiRenderer.init(getWidth(), getHeight(), isFullScreen(), swapChainCreateOutput.renderPass, 0, getBackBufferColorspace() == pvr::ColorSpace::sRGB,
+		_deviceResources->commandPool, _deviceResources->queue, true, true, true, 128);
 
 	// Create the sync objects and the commandbuffer
 	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
@@ -417,9 +402,9 @@ pvr::Result VulkanIntroducingUIRenderer::initView()
 		pvr::Texture tmpTexture0;
 		pvr::Texture tmpTexture1;
 		auto texview0 = pvr::utils::loadAndUploadImageAndView(_deviceResources->device, CentralTitleFontFile, true, _deviceResources->primaryCommandBuffer[0], *this,
-			pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, &tmpTexture0, &_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
+			pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, &tmpTexture0, _deviceResources->vmaAllocator, _deviceResources->vmaAllocator);
 		auto texview1 = pvr::utils::loadAndUploadImageAndView(_deviceResources->device, CentralTextFontFile, true, _deviceResources->primaryCommandBuffer[0], *this,
-			pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, &tmpTexture1, &_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
+			pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, &tmpTexture1, _deviceResources->vmaAllocator, _deviceResources->vmaAllocator);
 
 		centralTitleFont = _deviceResources->uiRenderer.createFont(texview0, tmpTexture0);
 
@@ -455,7 +440,7 @@ pvr::Result VulkanIntroducingUIRenderer::initView()
 
 		pvr::Texture tmpTexture2;
 		auto texview2 = pvr::utils::loadAndUploadImageAndView(_deviceResources->device, subtitleFontFileName, true, _deviceResources->primaryCommandBuffer[0], *this,
-			pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, &tmpTexture2, &_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
+			pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, &tmpTexture2, _deviceResources->vmaAllocator, _deviceResources->vmaAllocator);
 		subTitleFont = _deviceResources->uiRenderer.createFont(texview2, tmpTexture2);
 	}
 
@@ -513,10 +498,8 @@ pvr::Result VulkanIntroducingUIRenderer::initView()
 	return pvr::Result::Success;
 }
 
-/*!******************************************************************************************************************
-\return Result::Success if no error occurred
-\brief  Code in releaseView() will be called by Shell when the application quits or before a change in the rendering context.
-*********************************************************************************************************************/
+/// <summary>Code in releaseView() will be called by Shell when the application quits.</summary>
+/// <returns>Result::Success if no error occurred.</returns>
 pvr::Result VulkanIntroducingUIRenderer::releaseView()
 {
 	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
@@ -529,13 +512,11 @@ pvr::Result VulkanIntroducingUIRenderer::releaseView()
 	return pvr::Result::Success;
 }
 
-/*!******************************************************************************************************************
-\brief  Main rendering loop function of the program. The shell will call this function every frame.
-\return Result::Success if no error occurred
-*********************************************************************************************************************/
+/// <summary>Main rendering loop function of the program. The shell will call this function every frame.</summary>
+/// <returns>Result::Success if no error occurred.</returns>
 pvr::Result VulkanIntroducingUIRenderer::renderFrame()
 {
-	// Clears the color and depth buffer
+	// Clears the colour and depth buffer
 	uint64_t currentTime = this->getTime() - this->getTimeAtInitApplication();
 
 	_deviceResources->swapchain->acquireNextImage(uint64_t(-1), _deviceResources->imageAcquiredSemaphores[_frameId]);
@@ -601,7 +582,7 @@ pvr::Result VulkanIntroducingUIRenderer::renderFrame()
 	if (this->shouldTakeScreenshot())
 	{
 		pvr::utils::takeScreenshot(_deviceResources->queue, _deviceResources->commandPool, _deviceResources->swapchain, swapchainIndex, this->getScreenshotFileName(),
-			&_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
+			_deviceResources->vmaAllocator, _deviceResources->vmaAllocator);
 	}
 
 	// PRESENT
@@ -618,10 +599,8 @@ pvr::Result VulkanIntroducingUIRenderer::renderFrame()
 	return pvr::Result::Success;
 }
 
-/*!******************************************************************************************************************
-\brief  Update the description sprite
-\param  currentTime Current Time
-*********************************************************************************************************************/
+/// <summary>Update the description sprite.</summary>
+/// <param name="currentTime">Current Time.</param>
 void VulkanIntroducingUIRenderer::updateSubTitle(uint64_t currentTime, uint32_t swapchain)
 {
 	// Fade effect
@@ -657,10 +636,8 @@ void VulkanIntroducingUIRenderer::updateSubTitle(uint64_t currentTime, uint32_t 
 	_deviceResources->titleText2.updateText(swapchain);
 }
 
-/*!******************************************************************************************************************
-\brief  Draws the title text.
-\param[in]  fadeAmount
-*********************************************************************************************************************/
+/// <summary>Draws the title text.</summary>
+/// <param name="currentTime">Current Time.</param>
 void VulkanIntroducingUIRenderer::updateCentralTitle(uint64_t currentTime)
 {
 	// Using the MeasureText() method provided by uiRenderer, we can determine the bounding-box
@@ -682,9 +659,7 @@ void VulkanIntroducingUIRenderer::updateCentralTitle(uint64_t currentTime)
 	_deviceResources->centralTitleLine2->commitUpdates();
 }
 
-/*!******************************************************************************************************************
-\brief  Draws the 3D _text and scrolls in to the screen.
-*********************************************************************************************************************/
+/// <summary>Draws the 3D _text and scrolls in to the screen.</summary>
 void VulkanIntroducingUIRenderer::updateCentralText()
 {
 	glm::mat4 mProjection = glm::mat4(1.0f);
@@ -717,7 +692,7 @@ void VulkanIntroducingUIRenderer::updateCentralText()
 	// uiRenderer can optionally be provided with user-defined projection and model-view matrices
 	// which allow custom layout of text. Here we are proving both a projection and model-view
 	// matrix. The projection matrix specified here uses perspective projection which will
-	// provide the 3D effect. The model-view matrix positions the the text in world space
+	// provide the 3D effect. The model-view matrix positions the text in world space
 	// providing the 'camera' position and the scrolling of the text.
 
 	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)

@@ -485,15 +485,7 @@ only screen and (min-device-pixel-ratio: 2) {
 /* Header
 /*---------------------------------------------------------------*/
 #GlobalHeaderContainer {
-	background: #400863; /* Old browsers */
-	/* IE9 SVG, needs conditional override of 'filter' to 'none' */
-	background: -moz-linear-gradient(left,  #400863 0%, #23b2b0 100%); /* FF3.6+ */
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#400863), color-stop(100%,#23b2b0)); /* Chrome,Safari4+ */
-	background: -webkit-linear-gradient(left,  #400863 0%,#23b2b0 100%); /* Chrome10+,Safari5.1+ */
-	background: -o-linear-gradient(left,  #400863 0%,#23b2b0 100%); /* Opera 11.10+ */
-	background: -ms-linear-gradient(left,  #400863 0%,#23b2b0 100%); /* IE10+ */
-	background: linear-gradient(to left,  #400863 0%,#23b2b0 100%); /* W3C */
-	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#400863', endColorstr='#23b2b0',GradientType=0 ); /* IE6-8 */
+	background-color: #000000;
 }
 
 #GlobalHeader {
@@ -566,8 +558,7 @@ display: none
 #FooterMainContainer {
 	width: 100%;
 	background-color: #F9F9F9;
-	border-bottom: 10px solid #999;
-	border-top: 1px solid #e4e4e4
+	border-top: 1px solid #e4e4e4;
 }
 
 #FooterContainer {
@@ -575,10 +566,10 @@ display: none
 	height: 100px;
 	margin-left:20px;
 	padding-bottom: 20px;
+	margin: auto;
 }
 
 #FooterContainer .footerlogo {
-	float: right;
 	margin-top: 20px;
 }
 
@@ -587,9 +578,9 @@ display: none
 	font-weight: normal;
 	letter-spacing: -0.01em;
 	color: #999;
-	float: right;
-	margin-top: 60px;
-	margin-right: -210px;
+	/* float: right; */
+	/* margin-top: 60px; */
+	/* margin-right: -210px; */
 }
 /*---------------------------------------------------------------*/
 /* Images

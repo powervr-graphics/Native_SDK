@@ -18,7 +18,12 @@ if(NOT TARGET PVRScopeDeveloper OR NOT TARGET PVRScopeDeveloperShared)
 	endif()
 
 	if(WIN32)
-		set(PVR_SCOPE_LIB_FOLDER "${CMAKE_CURRENT_LIST_DIR}/../../lib/Windows_x86_${PROJECT_ARCH}")
+		# Set the library folder based on 32 or 64 bit architecture.
+		if("${CMAKE_SIZEOF_VOID_P}" EQUAL "8")
+			set(PVR_SCOPE_LIB_FOLDER "${CMAKE_CURRENT_LIST_DIR}/../../lib/Windows_x86_64")
+		else()
+			set(PVR_SCOPE_LIB_FOLDER "${CMAKE_CURRENT_LIST_DIR}/../../lib/Windows_x86_32")
+		endif()
 	elseif(ANDROID)
 		set(PVR_SCOPE_LIB_FOLDER "${CMAKE_CURRENT_LIST_DIR}/../../lib/Android_${ANDROID_ABI}")
 	elseif(APPLE)

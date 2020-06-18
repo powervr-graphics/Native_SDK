@@ -597,7 +597,7 @@ public:
 	unsigned char* getPixelPointer(uint32_t x, uint32_t y, uint32_t z = 0, uint32_t mipMapLevel = 0, uint32_t arrayMember = 0, uint32_t face = 0)
 	{
 		uint8_t pelsize = getPixelSize();
-		size_t idx = (size_t)((size_t)x + (size_t)y * _header.width + (size_t)z * _header.width * _header.height) * pelsize;
+		size_t idx = (size_t)((size_t)x + (size_t)y * width + (size_t)z * width * height) * pelsize;
 		return getDataPointer(mipMapLevel, arrayMember, face) + idx;
 	}
 

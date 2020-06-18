@@ -15,9 +15,9 @@ buildscript {
 		jcenter()
 	}
 
-	// Adds the Android plugin for Gradle version 3.5.0 as a classpath dependency
+	// Adds the Android plugin for Gradle as a classpath dependency
 	dependencies {
-		classpath 'com.android.tools.build:gradle:3.5.0'
+		classpath 'com.android.tools.build:gradle:3.5.3'
 	}
 }
 
@@ -30,11 +30,11 @@ allprojects {
 }
 
 android {
-	compileSdkVersion 28
+	compileSdkVersion 29
 	defaultConfig {
 		applicationId "com.powervr.OpenGLESIMGTextureFilterCubic"
 		minSdkVersion 21
-		targetSdkVersion 26
+		targetSdkVersion 29
 		externalNativeBuild {
 			cmake {
 				cppFlags "-fexceptions"

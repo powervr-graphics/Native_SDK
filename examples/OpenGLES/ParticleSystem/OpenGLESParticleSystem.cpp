@@ -1,24 +1,23 @@
-/*!*********************************************************************************************************************
-\File         OpenGLESParticleSystem.cpp
-\Title        ParticleSystem
-\Author       PowerVR by Imagination, Developer Technology Team
-\Copyright    Copyright (c) Imagination Technologies Limited.
-\brief      Particle animation system using Compute Shaders. Requires the PVRShell.
-***********************************************************************************************************************/
+/*!
+\brief Particle animation system using Compute Shaders. Requires the PVRShell.
+\file OpenGLESParticleSystem.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #include "PVRShell/PVRShell.h"
 #include "PVRUtils/PVRUtilsGles.h"
 
-// === Objects that have corresponding representations in Shader Code (Ubo, SSBO)
-// We are using PRAGMA PACK to remove all compiler-generated padding and hence only add our own explicit
-// padding, following the std140 rules (http://www.opengl.org/registry/doc/glspec45.core.pdf#page=159)
-// This is not strictly 100% necessary as std140 is actually "stricter" (has more padding) than all "common"
-// architectures (the example will still run fine without the pragma pack in x86/x64 and armvX architectures
-// compiled with any tested VS, GCC or Clang version) but it is the right thing to do.
+/// === Objects that have corresponding representations in Shader Code (Ubo, SSBO)
+/// We are using PRAGMA PACK to remove all compiler-generated padding and hence only add our own explicit
+/// padding, following the std140 rules (http://www.opengl.org/registry/doc/glspec45.core.pdf#page=159)
+/// This is not strictly 100% necessary as std140 is actually "stricter" (has more padding) than all "common"
+/// architectures (the example will still run fine without the pragma pack in x86/x64 and armvX architectures
+/// compiled with any tested VS, GCC or Clang version) but it is the right thing to do.
 #pragma pack(push)
 #pragma pack(1)
 
-// The particle structure will be kept packed. We follow the STD140 spec to explicitly add the paddings
-// so that we can be sure of the layout.
+/// <summary>The particle structure will be kept packed. We follow the STD140 spec to explicitly add the paddings
+/// so that we can be sure of the layout.</summary>
 struct Particle
 {
 	glm::vec3 vPosition; // vec3
@@ -27,8 +26,8 @@ struct Particle
 	float fTimeToLive; // vec4/w
 }; // SIZE:32 bytes
 
-// All the following will all be used in uniforms/ssbos, so we will mimic the alignment of std140 glsl
-// layout spec in order to make their use simpler
+/// <summary>All the following will all be used in uniforms/ssbos, so we will mimic the alignment of std140 glsl
+/// layout spec in order to make their use simpler.</summary>
 struct Sphere
 {
 	glm::vec3 vPosition; // vec4: xyz
@@ -123,9 +122,7 @@ enum BufferBindingPoint
 
 const uint32_t NumBuffers(2);
 
-/*!*********************************************************************************************************************
-Class implementing the PVRShell functions.
-***********************************************************************************************************************/
+/// <summary>class implementing the PVRShell functions.</summary>
 class OpenGLESParticleSystem : public pvr::Shell
 {
 private:
@@ -229,10 +226,8 @@ public:
 	void initializeParticles();
 };
 
-/*!*********************************************************************************************************************
-\brief  Handles user input and updates live variables accordingly.
-\param key Input key to handle
-***********************************************************************************************************************/
+/// <summary>Handles user input and updates live variables accordingly. </summary>
+/// <param name="key" Input key to handle.</param>
 void OpenGLESParticleSystem::eventMappedInput(pvr::SimplifiedInput key)
 {
 	switch (key)
@@ -266,18 +261,13 @@ void OpenGLESParticleSystem::eventMappedInput(pvr::SimplifiedInput key)
 	}
 }
 
-/*!*********************************************************************************************************************
-\brief ctor
-***********************************************************************************************************************/
 OpenGLESParticleSystem::OpenGLESParticleSystem() : _isCameraPaused(0), _numParticles(Configuration::InitialNoParticles), _particleArrayData(0), _blendModeAdditive(true)
 {
 	memset(&_particleConfigData, 0, sizeof(ParticleConfig));
 }
 
-/*!*********************************************************************************************************************
-\brief  Loads the mesh data required for this training course into vertex buffer objects
-\return Return true on success
-***********************************************************************************************************************/
+/// <summary>Loads the mesh data required for this training course into vertex buffer objects.</summary>
+/// <returns>Return true on success.</returns>
 bool OpenGLESParticleSystem::createBuffers()
 {
 	// Create the VBO for the Sphere model
@@ -331,7 +321,7 @@ bool OpenGLESParticleSystem::createBuffers()
 
 	gl::BindVertexArray(0);
 
-	// Create the "Physical" collision spheres UBO (Sphere center and radius, used for the Compute collisions)
+	// Create the "Physical" collision spheres UBO (Sphere centre and radius, used for the Compute collisions)
 
 	gl::GenBuffers(1, &_deviceResources->spheresUbo);
 	gl::BindBuffer(GL_UNIFORM_BUFFER, _deviceResources->spheresUbo);
@@ -373,15 +363,13 @@ void OpenGLESParticleSystem::useParticleRenderingProgramAndSetState()
 	gl::Enable(GL_BLEND);
 	gl::DepthMask(GL_FALSE);
 	// Source alpha factor is GL_ZERO and destination alpha factor is GL_ONE to preserve the framebuffer alpha value,
-	// in order to avoid artifacts in compositors that actually support framebuffer alpha for window transparency.
+	// in order to avoid artefacts in compositors that actually support framebuffer alpha for window transparency.
 	gl::BlendFuncSeparate(GL_SRC_ALPHA, _blendModeAdditive ? GL_ONE : GL_ONE_MINUS_SRC_ALPHA, GL_ZERO, GL_ONE);
 	gl::BlendEquation(GL_FUNC_ADD);
 }
 
-/*!*********************************************************************************************************************
-\return Return pvr::Result::Success if no error occured
-\brief  Loads and compiles the shaders and links the shader programs required for this training course
-***********************************************************************************************************************/
+/// <summary>Loads and compiles the shaders and links the shader programs required for this training course.</summary>
+/// <returns>Return pvr::Result::Success if no error occurred.</returns>
 bool OpenGLESParticleSystem::createPrograms()
 {
 	// Enable or disable gamma correction based on if it is automatically performed on the framebuffer or we need to do it in the shader.
@@ -467,12 +455,10 @@ bool OpenGLESParticleSystem::createPrograms()
 	return true;
 }
 
-/*!*********************************************************************************************************************
-\return Return pvr::Result::Success if no error occurred
-\brief  Code in initApplication() will be called by the Shell once per run, before the rendering context is created.
-  Used to initialize variables that are not dependent on it  (e.g. external modules, loading meshes, etc.)
-  If the rendering context is lost, InitApplication() will not be called again.
-***********************************************************************************************************************/
+/// <summary>Code in initApplication() will be called by the Shell once per run, before the rendering context is created.
+/// Used to initialize variables that are not dependent on it  (e.g. external modules, loading meshes, etc.)
+/// If the rendering context is lost, InitApplication() will not be called again.</summary>
+/// <returns>Return pvr::Result::Success if no error occurred.</returns>
 pvr::Result OpenGLESParticleSystem::initApplication()
 {
 	// Load the _scene
@@ -488,25 +474,21 @@ pvr::Result OpenGLESParticleSystem::initApplication()
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return Return pvr::Result::Success if no error occurred
-\brief  Code in quitApplication() will be called by the Shell once per run, just before exiting the program.
-  If the rendering context is lost, QuitApplication() will not be called.
-***********************************************************************************************************************/
+/// <summary>Code in quitApplication() will be called by the Shell once per run, just before exiting the program.
+/// If the rendering context is lost, QuitApplication() will not be called.</summary>
+/// <returns>Return pvr::Result::Success if no error occurred.</returns>
 pvr::Result OpenGLESParticleSystem::quitApplication()
 {
 	_scene.reset();
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return Return pvr::Result::Success if no error occurred
-\brief  Code in initView() will be called by the Shell upon initialization or after a change in the rendering context.
-  Used to initialize variables that are dependent on the rendering context (e.g. textures, vertex buffers, etc.)
-***********************************************************************************************************************/
+/// <summary>Code in initView() will be called by the Shell upon initialization or after a change in the rendering context.
+/// Used to initialize variables that are dependent on the rendering context (e.g. textures, vertex buffers, etc.).</summary>
+/// <returns>Return pvr::Result::Success if no error occurred.</returns>
 pvr::Result OpenGLESParticleSystem::initView()
 {
-	if (this->getMinApi() < pvr::Api::OpenGLES31) { Log(LogLevel::Information, "This demo requires a minimum api of OpenGLES31."); }
+	if (this->getMinApi() < pvr::Api::OpenGLES31) { Log(LogLevel::Information, "This demo requires a minimum API of OpenGLES31."); }
 
 	_deviceResources = std::make_unique<DeviceResources>();
 	_deviceResources->context = pvr::createEglContext();
@@ -546,20 +528,16 @@ pvr::Result OpenGLESParticleSystem::initView()
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return Return pvr::Result::Success if no error occurred
-\brief  Code in releaseView() will be called by pvr::Shell when the application quits or before a change in the rendering context.
-***********************************************************************************************************************/
+/// <summary>Code in releaseView() will be called by pvr::Shell when the application quits or before a change in the rendering context. </summary>
+/// <returns>Return pvr::Result::Success if no error occurred.</returns>
 pvr::Result OpenGLESParticleSystem::releaseView()
 {
 	_deviceResources.reset();
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return Return pvr::Result::Success if no error occurred
-\brief  Main rendering loop function of the program. The shell will call this function every frame.
-***********************************************************************************************************************/
+/// <summary>Main rendering loop function of the program. The shell will call this function every frame. </summary>
+/// <returns>Return pvr::Result::Success if no error occurred.</returns>
 pvr::Result OpenGLESParticleSystem::renderFrame()
 {
 	gl::DepthMask(GL_TRUE);
@@ -621,11 +599,9 @@ pvr::Result OpenGLESParticleSystem::renderFrame()
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\brief  Updates the memory from where the command buffer will read the values to update the uniforms for the spheres
-\param[in] proj projection matrix
-\param[in] view view matrix
-***********************************************************************************************************************/
+/// <summary>Updates the memory from where the command buffer will read the values to update the uniforms for the spheres.</summary>
+/// <param name="proj">Projection matrix.</param>
+/// <param name="view">View matrix.</param>
 void OpenGLESParticleSystem::updateSphereProgramUniforms(const glm::mat4& proj, const glm::mat4& view)
 {
 	for (uint32_t i = 0; i < Configuration::NumberOfSpheres; ++i)
@@ -642,9 +618,7 @@ void OpenGLESParticleSystem::updateSphereProgramUniforms(const glm::mat4& proj, 
 	}
 }
 
-/*!*********************************************************************************************************************
-\brief  Updates the memory from where the commandbuffer will read the values to update the uniforms for the floor
-***********************************************************************************************************************/
+/// <summary>Updates the memory from where the commandbuffer will read the values to update the uniforms for the floor.</summary>
 void OpenGLESParticleSystem::updateFloorProgramUniforms()
 {
 	_viewIT = glm::inverseTranspose(glm::mat3(_viewMtx));
@@ -652,10 +626,8 @@ void OpenGLESParticleSystem::updateFloorProgramUniforms()
 	_viewProjMtx = _projMtx * _viewMtx;
 }
 
-/*!*********************************************************************************************************************
-\brief  Updates particle positions and attributes, e.g. lifespan, position, velocity etc.
-  Will update the buffer that was "just used" as the Input, as output, so that we can exploit more GPU parallelization.
-************************************************************************************************************************/
+/// <summary>Updates particle positions and attributes, e.g. lifespan, position, velocity etc.
+/// Will update the buffer that was "just used" as the Input, as output, so that we can exploit more GPU parallelisation.</summary>
 void OpenGLESParticleSystem::updateParticleUniforms()
 {
 	float dt = static_cast<float>(getFrameTime());
@@ -744,8 +716,6 @@ void OpenGLESParticleSystem::initializeParticles()
 	}
 }
 
-/*!*********************************************************************************************************************
-\return Return a smart pointer to the application class.
-\brief  This function must be implemented by the user of the shell. It should return the Application class (a class inheriting from pvr::Shell.
-***********************************************************************************************************************/
+/// <summary>This function must be implemented by the user of the shell. It should return the Application class (a class inheriting from pvr::Shell.</summary>
+/// <returns>Return a smart pointer to the application class.</returns>
 std::unique_ptr<pvr::Shell> pvr::newDemo() { return std::make_unique<OpenGLESParticleSystem>(); }

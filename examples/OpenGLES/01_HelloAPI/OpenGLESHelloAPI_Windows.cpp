@@ -1,11 +1,9 @@
-/*!*********************************************************************************************************************
-\File         OpenGLESHelloAPI_Windows.cpp
-\Title        OpenGL ES HelloAPI Tutorial
-\Author       PowerVR by Imagination, Developer Technology Team
-\Copyright    Copyright (c) Imagination Technologies Limited.
-\brief		  Basic Tutorial that shows step-by-step how to initialize OpenGL ES 2.0, use it for drawing a triangle and terminate it.
-			  Entry Point: WinMain
-***********************************************************************************************************************/
+/*!
+\brief  asic Tutorial that shows step-by-step how to initialize OpenGL ES 2.0, use it for drawing a triangle and terminate it. Entry Point: WinMain
+\file OpenGLESHelloAPI_Windows.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 
 #define DYNAMICGLES_NO_NAMESPACE
 #define DYNAMICEGL_NO_NAMESPACE
@@ -32,14 +30,12 @@ const uint32_t VertexArray = 0;
 // Variable set by the message handler to finish the demo
 bool HasUserQuit = false;
 
-/*!*********************************************************************************************************************
-\param			nativeWindow                Handle to the window
-\param			message                     The message to handle
-\param			windowParameters            Additional message information
-\param			longWindowParameters        Additional message information
-\return	Result code to send to the OS
-\brief	Processes event messages for the main window
-***********************************************************************************************************************/
+/// <summary>Processes event messages for the main window.</summary>
+/// <returns>Result code to send to the OS.</returns>
+/// <param name="nativeWindow">Handle to the window.</param>
+/// <param name="message">The message to handle.</param>
+/// <param name="windowParameters">Additional message information.</param>
+/// <param name="longWindowParameters">Additional message information.</param>
 LRESULT CALLBACK handleWindowMessages(HWND nativeWindow, UINT message, WPARAM windowParameters, LPARAM longWindowParameters)
 {
 	switch (message)
@@ -76,12 +72,10 @@ LRESULT CALLBACK handleWindowMessages(HWND nativeWindow, UINT message, WPARAM wi
 	return DefWindowProc(nativeWindow, message, windowParameters, longWindowParameters);
 }
 
-/*!*********************************************************************************************************************
-\param			nativeWindow                Handle to the window
-\param			functionLastCalled          Function which triggered the error
-\return	True if no EGL error was detected
-\brief	Tests for an EGL error and prints it in a message box.
-***********************************************************************************************************************/
+/// <summary>Tests for an EGL error and prints it in a message box.</summary>
+/// <returns>True if no EGL error was detected.</returns>
+/// <param name="nativeWindow">Handle to the window.</param>
+/// <param name="functionLastCalled">Function which triggered the error.</param>
 bool testEGLError(HWND nativeWindow, const char* functionLastCalled)
 {
 	/*	eglGetError returns the last error that occurred using EGL, not necessarily the status of the last called function. The user has to
@@ -100,12 +94,10 @@ bool testEGLError(HWND nativeWindow, const char* functionLastCalled)
 	return true;
 }
 
-/*!*********************************************************************************************************************
-\param			nativeWindow                Handle to the window
-\param			functionLastCalled          Function which triggered the error
-\return	True if no EGL error was detected
-\brief	Tests for an EGL error and prints it in a message box.
-***********************************************************************************************************************/
+/// <summary>Tests for an GL error and prints it in a message box..</summary>
+/// <returns>True if no GL error was detected.</returns>
+/// <param name="nativeWindow">Handle to the window.</param>
+/// <param name="functionLastCalled">Function which triggered the error.</param>
 bool testGLError(HWND nativeWindow, const char* functionLastCalled)
 {
 	/*
@@ -124,13 +116,11 @@ bool testGLError(HWND nativeWindow, const char* functionLastCalled)
 	return true;
 }
 
-/*!*********************************************************************************************************************
-\param		applicationInstance		    Specific instance of the application
-\param[out]	nativeWindow			    Native window type to create
-\param[out]	deviceContext			    Native device context to create
-\return	Whether the function succeeded or not.
-\brief	Creates a native window and display for the application to render into.
-***********************************************************************************************************************/
+/// <summary>Creates a native window and display for the application to render into.</summary>
+/// <returns>Whether the function succeeded or not.</returns>
+/// <param name="applicationInstance">Specific instance of the application.</param>
+/// <param name="nativeWindow">Native window type to create.</param>
+/// <param name="deviceContext">Native device context to create.</param>
 bool createWindowAndDisplay(HINSTANCE applicationInstance, HWND& nativeWindow, HDC& deviceContext)
 {
 	// Describe the native window in a window class structure
@@ -174,12 +164,10 @@ bool createWindowAndDisplay(HINSTANCE applicationInstance, HWND& nativeWindow, H
 	return true;
 }
 
-/*!*********************************************************************************************************************
-\param		deviceContext               The device context used by the application
-\param[out]	display				    EGLDisplay created from deviceContext
-\return	Whether the function succeeded or not.
-\brief	Creates an EGLDisplay from a native device context, and initializes it.
-***********************************************************************************************************************/
+/// <summary>Creates an EGLDisplay from a native device context, and initializes it.</summary>
+/// <returns>Whether the function succeeded or not.</returns>
+/// <param name="deviceContext">The device context used by the application.</param>
+/// <param name="display">EGLDisplay created from deviceContext.</param>
 bool createEGLDisplay(HDC deviceContext, EGLDisplay& display)
 {
 	//	Get an EGL display.
@@ -221,12 +209,10 @@ bool createEGLDisplay(HDC deviceContext, EGLDisplay& display)
 	return true;
 }
 
-/*!*********************************************************************************************************************
-\param		display                  The EGLDisplay used by the application
-\param[out]	config                   The EGLConfig chosen by the function
-\return	Whether the function succeeded or not.
-\brief	Chooses an appropriate EGLConfig and return it.
-***********************************************************************************************************************/
+/// <summary>Chooses an appropriate EGLConfig and return it.</summary>
+/// <returns>Whether the function succeeded or not.</returns>
+/// <param name="config">The EGLConfig chosen by the function.</param>
+/// <param name="display">The EGLDisplay used by the application.</param>
 bool chooseEGLConfig(EGLDisplay display, EGLConfig& config)
 {
 	//	Specify the required configuration attributes.
@@ -255,14 +241,12 @@ bool chooseEGLConfig(EGLDisplay display, EGLConfig& config)
 	return true;
 }
 
-/*!*********************************************************************************************************************
-\param		nativeWindow                A native window that's been created
-\param		display                  The EGLDisplay used by the application
-\param		config                   An EGLConfig chosen by the application
-\param[out]	surface					The EGLSurface created from the native window.
-\return	Whether the function succeeds or not.
-\brief	Creates an EGLSurface from a native window
-***********************************************************************************************************************/
+/// <summary>Creates an EGLSurface from a native window.</summary>
+/// <returns>Whether the function succeeds or not.</returns>
+/// <param name="nativeWindow">A native window that's been created.</param>
+/// <param name="display">The EGLDisplay used by the application.</param>
+/// <param name="config">An EGLConfig chosen by the application.</param>
+/// <param name="surface">The EGLSurface created from the native window.</param>
 bool createEGLSurface(HWND nativeWindow, EGLDisplay display, EGLConfig config, EGLSurface& surface)
 {
 	//	Create an EGLSurface for rendering.
@@ -286,15 +270,13 @@ bool createEGLSurface(HWND nativeWindow, EGLDisplay display, EGLConfig config, E
 	return true;
 }
 
-/*!*********************************************************************************************************************
-\param			display                  The EGLDisplay used by the application
-\param			config                   An EGLConfig chosen by the application
-\param			surface					The EGLSurface created from the native window.
-\param[out] 	context                  The EGLContext created by this function
-\param			nativeWindow                A native window, used to display error messages
-\return	Whether the function succeeds or not.
-\brief	Sets up the EGLContext, creating it and then installing it to the current thread.
-***********************************************************************************************************************/
+/// <summary>Sets up the EGLContext, creating it and then installing it to the current thread.</summary>
+/// <returns>Whether the function succeeds or not.</returns>
+/// <param name="display">The EGLDisplay used by the application.</param>
+/// <param name="config">An EGLConfig chosen by the application.</param>
+/// <param name="surface">The EGLSurface created from the native window.</param>
+/// <param name="context">The EGLContext created by this function.</param>
+/// <param name="nativeWindow">A native window that's been created</param>
 bool setupEGLContext(EGLDisplay display, EGLConfig config, EGLSurface surface, EGLContext& context, HWND nativeWindow)
 {
 	//	Make OpenGL ES the current API.
@@ -328,12 +310,10 @@ bool setupEGLContext(EGLDisplay display, EGLConfig config, EGLSurface surface, E
 	return true;
 }
 
-/*!*********************************************************************************************************************
-\param[out]	vertexBuffer                Handle to a vertex buffer object
-\param		nativeWindow                A native window, used to display error messages
-\return	Whether the function succeeds or not.
-\brief	Initializes shaders, buffers and other state required to begin rendering with OpenGL ES
-***********************************************************************************************************************/
+/// <summary>Initializes shaders, buffers and other state required to begin rendering with OpenGL ES.</summary>
+/// <returns>Whether the function succeeds or not.</returns>
+/// <param name="vertexBuffer">Handle to a vertex buffer object.</param>
+/// <param name="nativeWindow">A native window, used to display error messages.</param>
 bool initializeBuffer(GLuint& vertexBuffer, HWND nativeWindow)
 {
 	//	Concept: Vertices
@@ -369,20 +349,17 @@ bool initializeBuffer(GLuint& vertexBuffer, HWND nativeWindow)
 	return true;
 }
 
-/*!*********************************************************************************************************************
-\param[out]	fragmentShader   Handle to a fragment shader
-\param[out]	vertexShader     Handle to a vertex shader
-\param[out]	shaderProgram    Handle to a shader program containing the fragment and vertex shader
-\param		nativeWindow     A native window, used to display error messages
-\return	Whether the function succeeds or not.
-\brief	Initializes shaders, buffers and other state required to begin rendering with OpenGL ES
-***********************************************************************************************************************/
+/// <summary>Initializes shaders, buffers and other state required to begin rendering with OpenGL ES.</summary>
+/// <returns>Whether the function succeeds or not.</returns>
+/// <param name="fragmentShader">Handle to a vertex buffer object.</param>
+/// <param name="vertexShader">Handle to a vertex shader.</param>
+/// <param name="shaderProgram">Handle to a shader program containing the fragment and vertex shader.</param>
 bool initializeShaders(GLuint& fragmentShader, GLuint& vertexShader, GLuint& shaderProgram, HWND nativeWindow)
 {
 	//	Concept: Shaders
 	//	OpenGL ES 2.0 uses what are known as shaders to determine how to draw objects on the screen. Instead of the fixed function
 	//	pipeline in early OpenGL or OpenGL ES 1.x, users can now programmatically define how vertices are transformed on screen, what
-	//	data is used where, and how each pixel on the screen is colored.
+	//	data is used where, and how each pixel on the screen is coloured.
 	//	These shaders are written in GL Shading Language ES: http://www.khronos.org/registry/gles/specs/2.0/GLSL_ES_Specification_1.0.17.pdf
 	//	which is usually abbreviated to simply "GLSL ES".
 	//	Each shader is compiled on-device and then linked into a shader program, which combines a vertex and fragment shader into a form
@@ -390,11 +367,11 @@ bool initializeShaders(GLuint& fragmentShader, GLuint& vertexShader, GLuint& sha
 
 	//	Concept: Fragment Shaders
 	//	In a final buffer of image data, each individual point is referred to as a pixel. Fragment shaders are the part of the pipeline
-	//	which determine how these final pixels are colored when drawn to the framebuffer. When data is passed through here, the positions
-	//	of these pixels is already set, all that's left to do is set the final color based on any defined inputs.
+	//	which determine how these final pixels are coloured when drawn to the framebuffer. When data is passed through here, the positions
+	//	of these pixels is already set, all that's left to do is set the final colour based on any defined inputs.
 	//	The reason these are called "fragment" shaders instead of "pixel" shaders is due to a small technical difference between the two
-	//	concepts. When you color a fragment, it may not be the final color which ends up on screen. This is particularly true when
-	//	performing blending, where multiple fragments can contribute to the final pixel color.
+	//	concepts. When you colour a fragment, it may not be the final colour which ends up on screen. This is particularly true when
+	//	performing blending, where multiple fragments can contribute to the final pixel colour.
 
 	const char* const fragmentShaderSource = "\
 											 void main (void)\
@@ -425,7 +402,7 @@ bool initializeShaders(GLuint& fragmentShader, GLuint& vertexShader, GLuint& sha
 		infoLog.resize(infoLogLength);
 		glGetShaderInfoLog(fragmentShader, infoLogLength, &charactersWritten, infoLog.data());
 
-		// Display the error in a dialog box
+		// Display the error in a dialogue box
 		MessageBox(nativeWindow, infoLogLength > 1 ? infoLog.data() : _T("Failed to compile fragment shader. (No information)"), ERROR_TITLE, MB_OK | MB_ICONEXCLAMATION);
 
 		return false;
@@ -468,7 +445,7 @@ bool initializeShaders(GLuint& fragmentShader, GLuint& vertexShader, GLuint& sha
 		infoLog.resize(infoLogLength);
 		glGetShaderInfoLog(vertexShader, infoLogLength, &charactersWritten, infoLog.data());
 
-		// Display the error in a dialog box
+		// Display the error in a dialogue box
 		MessageBox(nativeWindow, infoLogLength > 1 ? infoLog.data() : _T("Failed to compile vertex shader. (No information)"), ERROR_TITLE, MB_OK | MB_ICONEXCLAMATION);
 
 		return false;
@@ -500,7 +477,7 @@ bool initializeShaders(GLuint& fragmentShader, GLuint& vertexShader, GLuint& sha
 		std::vector<char> infoLog(infoLogLength);
 		glGetProgramInfoLog(shaderProgram, infoLogLength, &charactersWritten, infoLog.data());
 
-		// Display the error in a dialog box
+		// Display the error in a dialogue box
 		MessageBox(nativeWindow, infoLogLength > 1 ? infoLog.data() : _T("Failed to link GL program object. (No information)"), ERROR_TITLE, MB_OK | MB_ICONEXCLAMATION);
 
 		return false;
@@ -518,30 +495,28 @@ bool initializeShaders(GLuint& fragmentShader, GLuint& vertexShader, GLuint& sha
 	return true;
 }
 
-/*!*********************************************************************************************************************
-\param	shaderProgram   The shader program used to render the scene
-\param	display      The EGLDisplay used by the application
-\param	surface		The EGLSurface created from the native window.
-\param	nativeWindow    A native window, used to display error messages
-\return	Whether the function succeeds or not.
-\brief	Renders the scene to the framebuffer. Usually called within a loop.
-***********************************************************************************************************************/
+/// <summary>Renders the scene to the framebuffer. Usually called within a loop.</summary>
+/// <returns>Whether the function succeeds or not.</returns>
+/// <param name="shaderProgram">Handle to a vertex buffer object.</param>
+/// <param name="display">The EGLDisplay used by the application.</param>
+/// <param name="surface">The EGLSurface created from the native window.</param>
+/// <param name="nativeWindow">A native window, used to display error messages.</param>
 bool renderScene(GLuint shaderProgram, EGLDisplay display, EGLSurface surface, HWND nativeWindow)
 {
 	// The message handler setup for the window system will signal this variable when the window is closed, so close the application.
 	if (HasUserQuit) { return false; }
 
-	//	Set the clear color
+	//	Set the clear colour
 	//	At the start of a frame, generally you clear the image to tell OpenGL ES that you're done with whatever was there before and want to
-	//	draw a new frame. In order to do that however, OpenGL ES needs to know what color to set in the image's place. glClearColor
+	//	draw a new frame. In order to do that however, OpenGL ES needs to know what colour to set in the image's place. glClearColor
 	//	sets this value as 4 floating point values between 0.0 and 1.0, as the Red, Green, Blue and Alpha channels. Each value represents
 	//	the intensity of the particular channel, with all 0.0 being transparent black, and all 1.0 being opaque white. Subsequent calls to
-	//	glClear with the color bit will clear the frame buffer to this value.
+	//	glClear with the colour bit will clear the frame buffer to this value.
 	//	The functions glClearDepth and glClearStencil allow an application to do the same with depth and stencil values respectively.
 	glClearColor(0.00f, 0.70f, 0.67f, 1.0f);
 
-	//	Clears the color buffer.
-	//	glClear is used here with the Color Buffer to clear the color. It can also be used to clear the depth or stencil buffer using
+	//	Clears the colour buffer.
+	//	glClear is used here with the Colour Buffer to clear the colour. It can also be used to clear the depth or stencil buffer using
 	//	GL_DEPTH_BUFFER_BIT or GL_STENCIL_BUFFER_BIT, respectively.
 	glClear(GL_COLOR_BUFFER_BIT);
 
@@ -576,7 +551,7 @@ bool renderScene(GLuint shaderProgram, EGLDisplay display, EGLSurface surface, H
 	// Invalidate the contents of the specified buffers for the framebuffer to allow the implementation further optimization opportunities.
 	// The following is taken from https://www.khronos.org/registry/OpenGL/extensions/EXT/EXT_discard_framebuffer.txt
 	// Some OpenGL ES implementations cache framebuffer images in a small pool of fast memory.  Before rendering, these implementations must load the
-	// existing contents of one or more of the logical buffers (color, depth, stencil, etc.) into this memory.  After rendering, some or all of these
+	// existing contents of one or more of the logical buffers (colour, depth, stencil, etc.) into this memory.  After rendering, some or all of these
 	// buffers are likewise stored back to external memory so their contents can be used again in the future.  In many applications, some or all of the
 	// logical buffers  are cleared at the start of rendering.  If so, the effort to load or store those buffers is wasted.
 
@@ -613,13 +588,11 @@ bool renderScene(GLuint shaderProgram, EGLDisplay display, EGLSurface surface, H
 	return true;
 }
 
-/*!*********************************************************************************************************************
-\param			fragmentShader              Handle to a fragment shader
-\param			vertexShader                Handle to a vertex shader
-\param			shaderProgram               Handle to a shader program containing the fragment and vertex shader
-\param			vertexBuffer                Handle to a vertex buffer object
-\brief	Releases the resources created by "InitializeGLState"
-***********************************************************************************************************************/
+/// <summary>Releases the resources created by "InitializeGLState".</summary>
+/// <param name="fragmentShader">Handle to a fragment shader.</param>
+/// <param name="vertexShader">Handle to a vertex shader.</param>
+/// <param name="shaderProgram">Handle to a shader program containing the fragment and vertex shader.</param>
+/// <param name="vertexBuffer">Handle to a vertex buffer object.</param>
 void deInitializeGLState(GLuint fragmentShader, GLuint vertexShader, GLuint shaderProgram, GLuint vertexBuffer)
 {
 	// Frees the OpenGL handles for the program and the 2 shaders
@@ -631,10 +604,8 @@ void deInitializeGLState(GLuint fragmentShader, GLuint vertexShader, GLuint shad
 	glDeleteBuffers(1, &vertexBuffer);
 }
 
-/*!*********************************************************************************************************************
-\param			display  The EGLDisplay used by the application
-\brief	Releases all resources allocated by EGL
-***********************************************************************************************************************/
+/// <summary>Releases all resources allocated by EGL.</summary>
+/// <param name="display">The EGLDisplay used by the application.</param>
 void releaseEGLState(EGLDisplay display)
 {
 	// To release the resources in the context, first the context has to be released from its binding with the current thread.
@@ -644,11 +615,9 @@ void releaseEGLState(EGLDisplay display)
 	eglTerminate(display);
 }
 
-/*!*********************************************************************************************************************
-\param			nativeWindow                The native window to release
-\param			deviceContext               The native display to release
-\brief	Releases all resources allocated by the windowing system
-***********************************************************************************************************************/
+/// <summary>Releases all resources allocated by the windowing system.</summary>
+/// <param name="nativeWindow">The native window to release.</param>
+/// <param name="deviceContext">The native display to release.</param>
 void releaseWindowAndDisplay(HWND nativeWindow, HDC deviceContext)
 {
 	// Release the device context.
@@ -658,14 +627,56 @@ void releaseWindowAndDisplay(HWND nativeWindow, HDC deviceContext)
 	if (nativeWindow) { DestroyWindow(nativeWindow); }
 }
 
-/*!*********************************************************************************************************************
-\param			applicationInstance         Application instance created by the Operating System
-\param			previousInstance            Always NULL
-\param			commandLineString           Command line std::string passed from the Operating System, ignored.
-\param			showCommand                 Specifies how the window is to be shown, ignored.
-\return	Result code to send to the Operating System
-\brief	Main function of the program, executes other functions.
-***********************************************************************************************************************/
+bool CreateWindowAndContext(HINSTANCE applicationInstance, HWND& nativeWindow, HDC& deviceContext, EGLDisplay& display, EGLConfig& config, EGLSurface& surface, EGLContext& context)
+{
+	if (!createWindowAndDisplay(applicationInstance, nativeWindow, deviceContext)) { return false; }
+
+	// Create and Initialize an EGLDisplay from the native display
+	if (!createEGLDisplay(deviceContext, display)) { return false; }
+
+	// Choose an EGLConfig for the application, used when setting up the rendering surface and EGLContext
+	if (!chooseEGLConfig(display, config)) { return false; }
+
+	// Create an EGLSurface for rendering from the native window
+	if (!createEGLSurface(nativeWindow, display, config, surface)) { return false; }
+
+	// Setup the EGL Context from the other EGL constructs created so far, so that the application is ready to submit OpenGL ES commands
+	if (!setupEGLContext(display, config, surface, context, nativeWindow)) { return false; }
+
+	return true;
+}
+
+bool CreateResources(HWND& nativeWindow, GLuint& fragmentShader, GLuint& vertexShader, GLuint& shaderProgram, GLuint& vertexBuffer)
+{
+	// Initialize the vertex data in the application
+	if (!initializeBuffer(vertexBuffer, nativeWindow)) { return false; }
+
+	// Initialize the fragment and vertex shaders used in the application
+	if (!initializeShaders(fragmentShader, vertexShader, shaderProgram, nativeWindow)) { return false; }
+
+	return true;
+}
+
+bool Render(HWND nativeWindow, EGLDisplay display, EGLSurface surface, GLuint shaderProgram)
+{
+	// Renders a triangle for 800 frames using the state setup in the previous function
+	for (uint32_t i = 0; i < 800; ++i)
+	{
+		if (!renderScene(shaderProgram, display, surface, nativeWindow)) { break; }
+	}
+
+	return false;
+}
+
+bool test2(int** x) { return false; }
+bool test(int* x) { return test2(&x); }
+
+/// <summary>Main function of the program, executes other functions.</summary>
+/// <return>Result code to send to the Operating System.</return>
+/// <param name="applicationInstance">Application instance created by the Operating System.</param>
+/// <param name="previousInstance">Always NULL.</param>
+/// <param name="commandLineString">Command line std::string passed from the Operating System, ignored.</param>
+/// <param name="showCommand">Specifies how the window is to be shown, ignored.</param>
 int WINAPI WinMain(HINSTANCE applicationInstance, HINSTANCE previousInstance, TCHAR* /*commandLineString*/, int /*showCommand*/)
 {
 	// Windows variables
@@ -685,41 +696,35 @@ int WINAPI WinMain(HINSTANCE applicationInstance, HINSTANCE previousInstance, TC
 	// A vertex buffer object to store our model data.
 	GLuint vertexBuffer = 0;
 
+	int* x = 0;
+	test(x);
+
 	// Setup the windowing system, getting a window and a display
-	if (!createWindowAndDisplay(applicationInstance, nativeWindow, deviceContext)) { goto cleanup; }
-
-	// Create and Initialize an EGLDisplay from the native display
-	if (!createEGLDisplay(deviceContext, display)) { goto cleanup; }
-
-	// Choose an EGLConfig for the application, used when setting up the rendering surface and EGLContext
-	if (!chooseEGLConfig(display, config)) { goto cleanup; }
-
-	// Create an EGLSurface for rendering from the native window
-	if (!createEGLSurface(nativeWindow, display, config, surface)) { goto cleanup; }
-
-	// Setup the EGL Context from the other EGL constructs created so far, so that the application is ready to submit OpenGL ES commands
-	if (!setupEGLContext(display, config, surface, context, nativeWindow)) { goto cleanup; }
-
-	// Initialize the vertex data in the application
-	if (!initializeBuffer(vertexBuffer, nativeWindow)) { goto cleanup; }
-
-	// Initialize the fragment and vertex shaders used in the application
-	if (!initializeShaders(fragmentShader, vertexShader, shaderProgram, nativeWindow)) { goto cleanup; }
-
-	// Renders a triangle for 800 frames using the state setup in the previous function
-	for (uint32_t i = 0; i < 800; ++i)
+	if (!CreateWindowAndContext(applicationInstance, nativeWindow, deviceContext, display, config, surface, context))
 	{
-		if (!renderScene(shaderProgram, display, surface, nativeWindow)) { break; }
+		releaseEGLState(display);
+		// Release the windowing system resources
+		releaseWindowAndDisplay(nativeWindow, deviceContext);
+		// Destroy the eglWindow
 	}
 
-	// Release any resources we created in the Initialize functions
-	deInitializeGLState(fragmentShader, vertexShader, shaderProgram, vertexBuffer);
+	if (!CreateResources(nativeWindow, fragmentShader, vertexShader, shaderProgram, vertexBuffer))
+	{
+		releaseEGLState(display);
+		// Release the windowing system resources
+		releaseWindowAndDisplay(nativeWindow, deviceContext);
+		// Destroy the eglWindow
+	}
 
-cleanup:
-	// Release the EGL State
-	releaseEGLState(display);
-	// Release the windowing system resources
-	releaseWindowAndDisplay(nativeWindow, deviceContext);
-	// Destroy the eglWindow
+	if (!Render(nativeWindow, display, surface, shaderProgram))
+	{
+		deInitializeGLState(fragmentShader, vertexShader, shaderProgram, vertexBuffer);
+
+		releaseEGLState(display);
+		// Release the windowing system resources
+		releaseWindowAndDisplay(nativeWindow, deviceContext);
+		// Destroy the eglWindow
+	}
+
 	return 0;
 }

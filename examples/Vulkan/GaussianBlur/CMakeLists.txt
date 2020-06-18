@@ -54,7 +54,7 @@ add_assets_resource_file(VulkanGaussianBlur)
 # Apply SDK example specific compile and linker options
 apply_example_compile_options_to_target(VulkanGaussianBlur)
 
-target_link_libraries(VulkanGaussianBlur
+target_link_libraries(VulkanGaussianBlur PUBLIC
 	PVRShell
 	PVRUtilsVk
 )

@@ -210,7 +210,7 @@ void GLStateTracker::setUiState(Api api)
 
 	if (colorMaskChanged) { gl::ColorMask(colorMask[0], colorMask[1], colorMask[2], colorMask[3]); }
 	if (depthTestChanged) { depthTest ? gl::Enable(GL_DEPTH_TEST) : gl::Disable(GL_DEPTH_TEST); }
-	if (depthMaskChanged) { gl::DepthMask(depthMask); }
+	if (depthMaskChanged) { gl::DepthMask((GLboolean)depthMask); }
 	if (stencilTestChanged) { stencilTest ? gl::Enable(GL_STENCIL_TEST) : gl::Disable(GL_STENCIL_TEST); }
 	if (cullingEnabledChanged) { cullingEnabled ? gl::Enable(GL_CULL_FACE) : gl::Disable(GL_CULL_FACE); }
 	if (cullingChanged) { gl::CullFace(culling); }
@@ -238,7 +238,7 @@ void GLStateTracker::setUiState(Api api)
 				if (vertexAttribPointerChanged[i])
 				{
 					gl::VertexAttribPointer(
-						vertexAttribBindings[i], vertexAttribSizes[i], vertexAttribTypes[i], vertexAttribNormalized[i], vertexAttribStride[i], vertexAttribOffset[i]);
+						vertexAttribBindings[i], vertexAttribSizes[i], vertexAttribTypes[i], (GLboolean)vertexAttribNormalized[i], vertexAttribStride[i], vertexAttribOffset[i]);
 				}
 			}
 			else
@@ -297,7 +297,7 @@ void GLStateTracker::restoreState(const GLState& currentGlState, Api api)
 	}
 	if (depthMaskChanged)
 	{
-		gl::DepthMask(currentGlState.depthMask);
+		gl::DepthMask((GLboolean)currentGlState.depthMask);
 		debugThrowOnApiError("glState::restoreState Exit");
 	}
 	if (stencilTestChanged)
@@ -348,7 +348,7 @@ void GLStateTracker::restoreState(const GLState& currentGlState, Api api)
 				if (vertexAttribPointerChanged[i])
 				{
 					gl::VertexAttribPointer(currentGlState.vertexAttribBindings[i], currentGlState.vertexAttribSizes[i], currentGlState.vertexAttribTypes[i],
-						currentGlState.vertexAttribNormalized[i], currentGlState.vertexAttribStride[i], vertexAttribOffset[i]);
+						(GLboolean)currentGlState.vertexAttribNormalized[i], currentGlState.vertexAttribStride[i], vertexAttribOffset[i]);
 					debugThrowOnApiError("glState::restoreState Exit");
 				}
 			}
@@ -444,22 +444,19 @@ Image UIRenderer::createImage(const Texture& texture, GLuint sampler)
 {
 	utils::TextureUploadResults res = utils::textureUpload(texture, _api == Api::OpenGLES2, true);
 
-	if (_api == Api::OpenGLES2)
+	gl::BindTexture(GL_TEXTURE_2D, res.image);
+	if (texture.getLayersSize().numMipLevels > 1)
 	{
-		gl::BindTexture(GL_TEXTURE_2D, res.image);
-		if (texture.getLayersSize().numMipLevels > 1)
-		{
-			gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-			gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		}
-		else
-		{
-			gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		}
-		gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	}
+	else
+	{
+		gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	}
+	gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
 	return createImage(res.image, texture.getWidth(), texture.getHeight(), texture.getLayersSize().numMipLevels > 1, sampler);
 }
@@ -620,9 +617,6 @@ void UIRenderer::init_CreateDefaultSampler()
 		debugThrowOnApiError("UIRenderer::init_CreateDefaultSampler Exit");
 
 		_uiStateTracker.sampler7 = _samplerBilinear;
-
-		_samplerBilinearCreated = true;
-		_samplerTrilinearCreated = true;
 	}
 }
 

@@ -13,9 +13,6 @@
 #include "PVRVk/DebugUtilsVk.h"
 
 namespace pvrvk {
-
-/// <summary>Contains functions and methods related to the wiring of the PVRVk library to the underlying platform,
-/// including extensions and the Context classes.</summary>
 struct SamplerCreateInfo;
 namespace impl {
 //\cond NO_DOXYGEN

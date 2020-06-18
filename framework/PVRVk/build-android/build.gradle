@@ -27,20 +27,17 @@ android {
 	}
 }
 
-
-Set taskDeleted = []
-
 tasks.whenTaskAdded { task ->
 	// We want to be able to build with the "assembleDebug" and "assembleRelease" commands on the entire SDK:
 	// We replace these tasks with basically dependencies on the native builds to generate the native library
 	if (task.name.startsWith('assemble')) {
 		def flavor = task.name.substring('assemble'.length())
-		if (!taskDeleted.contains(flavor)) {
-			taskDeleted.add(flavor)
-			tasks.remove(task)
-			tasks.create(name: "assemble${flavor}")
-			tasks["assemble${flavor}"].dependsOn = ["externalNativeBuild${flavor}"]
-		}
+		tasks['assemble'].actions.clear()
+		tasks['assemble'].dependsOn.clear()
+		task.actions.clear()
+		task.dependsOn.clear()
+		
+		tasks["assemble${flavor}"].dependsOn = ["externalNativeBuild${flavor}"]
 	}
 }
 
@@ -50,7 +47,7 @@ buildscript {
 		jcenter()
 	}
 	dependencies {
-		classpath 'com.android.tools.build:gradle:3.5.0'
+		classpath 'com.android.tools.build:gradle:3.5.3'
 	}
 }
 

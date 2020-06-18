@@ -34,9 +34,9 @@ add_assets_to_target(VulkanNavigation3D
 	ASSET_FOLDER ${ASSET_FOLDER} 
 	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/Navigation3D
 	FILE_LIST 
+		map.osm
 		font.pvr
-		Road.pvr
-		map.osm)
+		Road.pvr)
 
 ### Shaders that need to be compiled to SpirV (Vulkan) ###
 # During build time, glslangvalidator will be called to create a "<shadername.extension>.spv" file
@@ -61,7 +61,7 @@ add_assets_resource_file(VulkanNavigation3D)
 # Apply SDK example specific compile and linker options
 apply_example_compile_options_to_target(VulkanNavigation3D)
 
-target_link_libraries(VulkanNavigation3D
+target_link_libraries(VulkanNavigation3D PUBLIC
 	pugixml
 	PVRShell
 	PVRUtilsVk

@@ -119,7 +119,7 @@ public:
 	/// <param name="inMaxParticles">The maximum number of particles the particle system can simulate. The maximum particle count will be used for resource allocation size.</param>
 	/// <param name="spheres">A list of spheres which will be used to make more interesting the particle system and can be collided into by particles.</param>
 	/// <param name="inDevice">The Vulkan device from which resources will be allocated.</param>
-	/// <param name="inQueue">The Vulkan queue to which comands will be submitted.</param>
+	/// <param name="inQueue">The Vulkan queue to which commands will be submitted.</param>
 	/// <param name="descriptorPool">A Vulkan descriptor pool from which descriptors will be allocated.</param>
 	/// <param name="inAllocator">A Vulkan allocator from which memory will be allocated.</param>
 	/// <param name="inPipelineCache">A pipeline cache used to optimise the creation of pipelines.</param>
@@ -128,7 +128,7 @@ public:
 		pvr::utils::vma::Allocator& inAllocator, pvrvk::PipelineCache& inPipelineCache, const std::vector<pvrvk::Semaphore> waitSemaphores);
 
 	/// <summary>Sets the current number of particles being simulated by the particle system.</summary>
-	/// <param name="numParticles">The current number of particles being simulated by the particle system. Note that this value must be less than the provided maximum number of paticles.</param>
+	/// <param name="numParticles">The current number of particles being simulated by the particle system. Note that this value must be less than the provided maximum number of particles.</param>
 	void setNumberOfParticles(uint32_t numParticles);
 
 	/// <summary>Sets the current number of particles being simulated by the particle system.</summary>

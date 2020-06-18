@@ -1,9 +1,12 @@
 cmake_minimum_required(VERSION 3.3)
+# Copyright (c) Imagination Technologies Limited.
+
 project(PVRPfx)
 
 include(GNUInstallDirs)
 include(CMakeFindDependencyMacro)
-include(../../cmake/Functions.cmake)
+
+include(../Common.cmake)
 
 # PVRPfx include files
 set(PVRPfx_HEADERS
@@ -19,12 +22,12 @@ set(PVRPfx_SRC
 add_library(PVRPfx STATIC ${PVRPfx_SRC} ${PVRPfx_HEADERS})
 
 if(PVR_PREBUILT_DEPENDENCIES)
-	list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/../../cmake/modules")
+	list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/../cmake/modules")
 	find_dependency(PVRUtilsVk MODULE REQUIRED)
 	find_dependency(pugixml MODULE REQUIRED)
 endif()
 
-apply_compile_options_to_target(PVRPfx)
+apply_framework_compile_options_to_target(PVRPfx)
 
 target_link_libraries(PVRPfx
 	PUBLIC

@@ -15,9 +15,9 @@ buildscript {
 		jcenter()
 	}
 
-	// Adds the Android plugin for Gradle version 3.5 as a classpath dependency
+	// Adds the Android plugin for Gradle version 3.5.0 as a classpath dependency
 	dependencies {
-		classpath 'com.android.tools.build:gradle:3.5.0'
+		classpath 'com.android.tools.build:gradle:3.5.3'
 	}
 }
 
@@ -61,7 +61,7 @@ android {
 	// This block configures our build types
 	buildTypes {
 		release {
-			minifyEnabled true
+			minifyEnabled false
 			proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
 			zipAlignEnabled true
 			if (!project.hasProperty('NOSIGN') && hasSigningDefined) {
@@ -75,7 +75,7 @@ android {
 			version "3.10.2"
 		}
 	}
-	
+
 	// Ensure that the icons are copied early - we do this by making the preBuild task depends on the copyIcons task
 	task copyIcons(type: Copy) {
 		from file("${project.projectDir}/../../../../res/Android/OpenGLES")

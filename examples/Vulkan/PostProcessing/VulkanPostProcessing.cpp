@@ -1,10 +1,9 @@
-/*!********************************************************************************************
-\File         VulkanPostProcessing.cpp
-\Title        Bloom
-\Author       PowerVR by Imagination, Developer Technology Team
-\Copyright    Copyright (c) Imagination Technologies Limited.
-\brief      Shows how to do a bloom effect
-***********************************************************************************************/
+/*!
+\brief Shows how to implement post processing in vulkan.
+\file VulkanPostProcessing.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #include "PVRShell/PVRShell.h"
 #include "PVRUtils/PVRUtilsVk.h"
 #include "PVRCore/cameras/TPSCamera.h"
@@ -223,9 +222,9 @@ DemoConfiguration Configurations[NumDemoConfigurations]{ // Demo Blur Configurat
 };
 } // namespace DemoConfigurations
 
-/// <summary>Prints the gaussian weights and offsets provided in the vectors.</summary>
-/// <param name="gaussianWeights">The list of gaussian weights to print.</param>
-/// <param name="gaussianOffsets">The list of gaussian offsets to print.</param>
+/// <summary>Prints the Gaussian weights and offsets provided in the vectors.</summary>
+/// <param name="gaussianWeights">The list of Gaussian weights to print.</param>
+/// <param name="gaussianOffsets">The list of Gaussian offsets to print.</param>
 /// <param name="iterationsString">A string defining the number of iterations.</param>
 /// <param name="weightsString">A string defining the iteration set of weights.</param>
 /// <param name="offsetsString">A string defining the iteration set of offsets.</param>
@@ -254,13 +253,13 @@ void generateGaussianWeightsAndOffsetsStrings(std::vector<double>& gaussianWeigh
 	iterationsString = pvr::strings::createFormatted("const uint numIterations = %uu;", gaussianWeights.size());
 }
 
-/// <summary>Updates the gaussian weights and offsets using the configuration provided.</summary>
-/// <param name="kernelSize">The kernel size to generate gaussian weights and offsets for.</param>
+/// <summary>Updates the Gaussian weights and offsets using the configuration provided.</summary>
+/// <param name="kernelSize">The kernel size to generate Gaussian weights and offsets for.</param>
 /// <param name="useLinearOptimisation">Specifies whether linear sampling will be used when texture sampling using the given weights and offsets,
 /// if linear sampling will be used then the weights and offsets must be adjusted accordingly.</param>
 /// <param name="truncateCoefficients">Specifies whether to truncate and ignore coefficients which would provide a negligible change in the resulting blurred image.</param>
-/// <param name="gaussianWeights">The returned list of gaussian weights (as double).</param>
-/// <param name="gaussianOffsets">The returned list of gaussian offsets (as double).</param>
+/// <param name="gaussianWeights">The returned list of Gaussian weights (as double).</param>
+/// <param name="gaussianOffsets">The returned list of Gaussian offsets (as double).</param>
 void generateGaussianCoefficients(uint32_t kernelSize, bool useLinearOptimisation, bool truncateCoefficients, std::vector<double>& gaussianWeights, std::vector<double>& gaussianOffsets)
 {
 	// Ensure that the kernel given is odd in size
@@ -325,7 +324,7 @@ void addImageToSharedImages(std::vector<pvr::Multi<pvrvk::ImageView>>& sharedIma
 	}
 }
 
-// A simple pass used for rendering our statue object
+/// <summary>A simple pass used for rendering our statue object.</summary>
 struct StatuePass
 {
 	pvrvk::GraphicsPipeline pipeline;
@@ -362,7 +361,7 @@ struct StatuePass
 		scene = pvr::assets::loadModel(assetProvider, SceneFile);
 
 		bool requiresCommandBufferSubmission = false;
-		pvr::utils::appendSingleBuffersFromModel(device, *scene, vbos, ibos, utilityCommandBuffer, requiresCommandBufferSubmission, &vmaAllocator);
+		pvr::utils::appendSingleBuffersFromModel(device, *scene, vbos, ibos, utilityCommandBuffer, requiresCommandBufferSubmission, vmaAllocator);
 
 		createBuffer(device, swapchain, vmaAllocator);
 		loadTextures(assetProvider, device, utilityCommandBuffer, vmaAllocator);
@@ -409,7 +408,7 @@ struct StatuePass
 			static_cast<uint32_t>(device->getPhysicalDevice()->getProperties().getLimits().getMinUniformBufferOffsetAlignment()));
 		buffer = pvr::utils::createBuffer(device, pvrvk::BufferCreateInfo(structuredBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT),
 			pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
-			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT, &vmaAllocator,
+			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT, vmaAllocator,
 			pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 		structuredBufferView.pointToMappedMemory(buffer->getDeviceMemory()->getMappedData());
 	}
@@ -428,10 +427,10 @@ struct StatuePass
 
 		// Create and Allocate Textures.
 		albeoImageView = pvr::utils::uploadImageAndView(
-			device, albedoTexture, true, utilityCommandBuffer, pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, &vmaAllocator, &vmaAllocator);
+			device, albedoTexture, true, utilityCommandBuffer, pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, vmaAllocator, vmaAllocator);
 
 		normalMapImageView = pvr::utils::uploadImageAndView(device, normalMapTexture, true, utilityCommandBuffer, pvrvk::ImageUsageFlags::e_SAMPLED_BIT,
-			pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, &vmaAllocator, &vmaAllocator);
+			pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, vmaAllocator, vmaAllocator);
 	}
 
 	/// <summary>Creates the descriptor set layouts used for rendering the statue.</summary>
@@ -581,8 +580,8 @@ struct StatuePass
 	/// <summary>Records the secondary command buffers for rendering the statue.</summary>
 	/// <param name="swapchainIndex">The swapchain index for which the recorded command buffer will be used.</param>
 	/// <param name="framebuffer">The framebuffer to render into</param>
-	/// <param name="exposure">The exposure value used to 'expose' the color prior to post processing</param>
-	/// <param name="threshold">The threshold value used to determine how much of the color to retain for the bloom</param>
+	/// <param name="exposure">The exposure value used to 'expose' the colour prior to post processing</param>
+	/// <param name="threshold">The threshold value used to determine how much of the colour to retain for the bloom</param>
 	void recordCommandBuffer(uint32_t swapchainIndex, pvrvk::Framebuffer& framebuffer, float exposure, float threshold)
 	{
 		cmdBuffers[swapchainIndex]->begin(framebuffer, 0, pvrvk::CommandBufferUsageFlags::e_RENDER_PASS_CONTINUE_BIT);
@@ -598,7 +597,7 @@ struct StatuePass
 	}
 };
 
-// A simple pass used for rendering our skybox
+/// <summary>A simple pass used for rendering our skybox.</summary>
 struct SkyboxPass
 {
 	pvrvk::GraphicsPipeline pipeline;
@@ -649,7 +648,7 @@ struct SkyboxPass
 
 			// Create and Allocate Textures.
 			skyBoxImageView = pvr::utils::uploadImageAndView(
-				device, skyBoxTexture, true, cmdBuffer, pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, &vmaAllocator, &vmaAllocator);
+				device, skyBoxTexture, true, cmdBuffer, pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, vmaAllocator, vmaAllocator);
 
 			this->currentScene = currentScene_;
 		}
@@ -745,8 +744,8 @@ struct SkyboxPass
 	/// <summary>Records the secondary command buffers for rendering the skybox.</summary>
 	/// <param name="swapchainIndex">The swapchain index for which the recorded command buffer will be used.</param>
 	/// <param name="framebuffer">The framebuffer to render into</param>
-	/// <param name="exposure">The exposure value used to 'expose' the color prior to post processing</param>
-	/// <param name="threshold">The threshold value used to determine how much of the color to retain for the bloom</param>
+	/// <param name="exposure">The exposure value used to 'expose' the colour prior to post processing</param>
+	/// <param name="threshold">The threshold value used to determine how much of the colour to retain for the bloom</param>
 	void recordCommandBuffer(uint32_t swapchainIndex, pvrvk::Framebuffer& framebuffer, float exposure, float threshold)
 	{
 		cmdBuffers[swapchainIndex]->begin(framebuffer, 0, pvrvk::CommandBufferUsageFlags::e_RENDER_PASS_CONTINUE_BIT);
@@ -762,7 +761,7 @@ struct SkyboxPass
 	}
 };
 
-// A Downsample pass which can be used for downsampling images by 1/4 x 1/4 i.e. 1/16 resolution
+/// <summary>A Downsample pass which can be used for downsampling images by 1/4 x 1/4 i.e. 1/16 resolution.</summary>
 struct DownSamplePass
 {
 	pvrvk::DescriptorSetLayout descriptorSetLayout;
@@ -927,7 +926,7 @@ struct DownSamplePass
 		subpass.setColorAttachmentReference(0, pvrvk::AttachmentReference(0, pvrvk::ImageLayout::e_COLOR_ATTACHMENT_OPTIMAL));
 		renderPassInfo.setSubpass(0, subpass);
 
-		// Add external subpass dependencies to avoid the implicit subpass depedencies
+		// Add external subpass dependencies to avoid the implicit subpass dependencies
 		pvrvk::SubpassDependency externalDependencies[2];
 		externalDependencies[0] = pvrvk::SubpassDependency(pvrvk::SubpassExternal, 0, pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT,
 			pvrvk::PipelineStageFlags::e_FRAGMENT_SHADER_BIT, pvrvk::AccessFlags::e_COLOR_ATTACHMENT_WRITE_BIT, pvrvk::AccessFlags::e_SHADER_READ_BIT, pvrvk::DependencyFlags::e_NONE);
@@ -979,7 +978,7 @@ struct DownSamplePass
 
 // Developed by Masaki Kawase, Bunkasha Games
 // Used in DOUBLE-S.T.E.A.L. (aka Wreckless)
-// From his GDC2003 Presentation: Frame Buffer Postprocessing Effects in  DOUBLE-S.T.E.A.L (Wreckless)
+// From his GDC2003 Presentation: Frame Buffer Post processing Effects in  DOUBLE-S.T.E.A.L (Wreckless)
 // Multiple iterations of fixed (per iteration) offset sampling
 struct KawaseBlurPass
 {
@@ -1064,7 +1063,7 @@ struct KawaseBlurPass
 		blurKernels.clear();
 		blurIterations = 0;
 
-		// calculate texture sample offsets based on the number of iteratios and the kernel offset currently in use for the given iteration
+		// calculate texture sample offsets based on the number of iterations and the kernel offset currently in use for the given iteration
 		glm::vec2 pixelSize = glm::vec2(1.0f / blurFramebufferDimensions.x, 1.0f / blurFramebufferDimensions.y);
 
 		glm::vec2 halfPixelSize = pixelSize / 2.0f;
@@ -1163,7 +1162,7 @@ struct KawaseBlurPass
 		pipelineInfo.vertexShader.setShader(device->createShaderModule(pvrvk::ShaderModuleCreateInfo(assetProvider.getAssetStream(Files::KawaseVertSrcFile)->readToEnd<uint32_t>())));
 		pipelineInfo.fragmentShader.setShader(device->createShaderModule(pvrvk::ShaderModuleCreateInfo(assetProvider.getAssetStream(Files::KawaseFragSrcFile)->readToEnd<uint32_t>())));
 
-		// We use attributeless rendering
+		// We use attribute-less rendering
 		pipelineInfo.vertexInput.clear();
 		pipelineInfo.inputAssembler.setPrimitiveTopology(pvrvk::PrimitiveTopology::e_TRIANGLE_STRIP);
 
@@ -1297,7 +1296,7 @@ struct DualFilterBlurPass
 	// The final full resolution framebuffer dimensions
 	glm::uvec2 framebufferDimensions;
 
-	// The color image format in use
+	// The colour image format in use
 	pvrvk::Format colorImageFormat;
 
 	// The source images to blur
@@ -1317,7 +1316,7 @@ struct DualFilterBlurPass
 	/// <param name="offscreenImageViews">A list of offscreen images (one per swapchain) which will be used in the final image composition pass.</param>
 	/// <param name="sourceImageViews">A list of source images (one per swapchain) which will be used as the source for the blur.</param>
 	/// <param name="vmaAllocator">A VMA allocator to use for allocating images and buffers.</param>
-	/// <param name="colorImageFormat">The color image format to use for the Dual Filter blur.</param>
+	/// <param name="colorImageFormat">The colour image format to use for the Dual Filter blur.</param>
 	/// <param name="framebufferDimensions_">The full size resolution framebuffer dimensions.</param>
 	/// <param name="sampler">The sampler object to use when sampling from the images during the Dual Filter blur passes.</param>
 	/// <param name="onScreenRenderPass">The main RenderPass used for rendering to the screen.</param>
@@ -1539,7 +1538,7 @@ struct DualFilterBlurPass
 				else
 				{
 					pvrvk::Image blurColorTexture = pvr::utils::createImage(device, pvrvk::ImageCreateInfo(pvrvk::ImageType::e_2D, colorImageFormat, extent, imageUsage),
-						pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_NONE, &vmaAllocator);
+						pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_NONE, vmaAllocator);
 
 					imageViews[j].add(device->createImageView(pvrvk::ImageViewCreateInfo(blurColorTexture)));
 					addImageToSharedImages(sharedImageViews, imageViews[j].back(), i);
@@ -1670,7 +1669,7 @@ struct DualFilterBlurPass
 		pipelineInfo.depthStencil.enableStencilTest(false);
 		pipelineInfo.colorBlend.setAttachmentState(0, pvrvk::PipelineColorBlendAttachmentState());
 
-		// We use attributeless rendering
+		// We use attribute-less rendering
 		pipelineInfo.vertexInput.clear();
 		pipelineInfo.inputAssembler.setPrimitiveTopology(pvrvk::PrimitiveTopology::e_TRIANGLE_STRIP);
 
@@ -1767,8 +1766,8 @@ struct DualFilterBlurPass
 	/// <summary>Records the commands required for the Dual Filter blur iterations based on the current configuration.</summary>
 	/// <param name="swapchainIndex">The swapchain index for which the recorded command buffer will be used.</param>
 	/// <param name="onScreenFramebuffer">The on screen Framebuffer.</param>
-	/// <param name="renderBloomOnly">The exposure to use in the tonemapping.</param>
-	/// <param name="exposure">The exposure to use in the tonemapping.</param>
+	/// <param name="renderBloomOnly">The exposure to use in the tone mapping.</param>
+	/// <param name="exposure">The exposure to use in the tone mapping.</param>
 	virtual void recordCommands(uint32_t swapchainIndex, pvrvk::Framebuffer& onScreenFramebuffer, bool renderBloomOnly, float exposure)
 	{
 		for (uint32_t i = 0; i < blurIterations; ++i)
@@ -1820,7 +1819,7 @@ struct DualFilterBlurPass
 	/// <param name="onScreenRenderPass">The on screen RenderPass to use in the final Dual Filter pass.</param>
 	/// <param name="onScreenFramebuffer">The on screen Framebuffers to use in the final Dual Filter pass.</param>
 	/// <param name="onScreenClearValues">The clear values used in the final Dual Filter pass.</param>
-	/// <param name="numOnScreenClearValues">The number of clear color values to use in the final Dual Filter pass.</param>
+	/// <param name="numOnScreenClearValues">The number of clear colour values to use in the final Dual Filter pass.</param>
 	virtual void recordCommandsToMainCommandBuffer(uint32_t swapchainIndex, pvrvk::CommandBuffer& cmdBuffer, pvrvk::Queue& queue, pvrvk::RenderPass& blurRenderPass,
 		pvrvk::RenderPass& onScreenRenderPass, pvrvk::Framebuffer& onScreenFramebuffer, pvrvk::ClearValue* onScreenClearValues, uint32_t numOnScreenClearValues)
 	{
@@ -1852,7 +1851,7 @@ struct DualFilterBlurPass
 // Presented in "Next Generation Post Processing In Call Of Duty Advanced Warfare" by Jorge Jimenez
 // Filters whilst Downsampling and Upsampling
 // Downsamples:
-//	Used for preventing aliasing artifacts
+//	Used for preventing aliasing artefacts
 //		A = downsample4(FullRes)
 //		B = downsample4(A)
 //		C = downsample4(B)
@@ -1905,7 +1904,7 @@ struct DownAndTentFilterBlurPass : public DualFilterBlurPass
 	/// <param name="inOffscreenImageViews">A list of offscreen images (one per swapchain) which will be used in the final image composition pass.</param>
 	/// <param name="inSourceImageViews">A list of source images (one per swapchain) which will be used as the source for the blur.</param>
 	/// <param name="vmaAllocator">A VMA allocator to use for allocating images and buffers.</param>
-	/// <param name="inColorImageFormat">The color image format to use for the Dual Filter blur.</param>
+	/// <param name="inColorImageFormat">The colour image format to use for the Dual Filter blur.</param>
 	/// <param name="inFramebufferDimensions">The full size resolution framebuffer dimensions.</param>
 	/// <param name="inSampler">The sampler object to use when sampling from the images during the Dual Filter blur passes.</param>
 	/// <param name="onScreenRenderPass">The main RenderPass used for rendering to the screen.</param>
@@ -1989,7 +1988,7 @@ struct DownAndTentFilterBlurPass : public DualFilterBlurPass
 				else
 				{
 					pvrvk::Image blurColorTexture = pvr::utils::createImage(device, pvrvk::ImageCreateInfo(pvrvk::ImageType::e_2D, colorImageFormat, extent, imageUsage),
-						pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_NONE, &vmaAllocator);
+						pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_NONE, vmaAllocator);
 
 					imageViews[j].add(device->createImageView(pvrvk::ImageViewCreateInfo(blurColorTexture)));
 					addImageToSharedImages(sharedImageViews, imageViews[j].back(), i);
@@ -2127,7 +2126,7 @@ struct DownAndTentFilterBlurPass : public DualFilterBlurPass
 
 		pipelineInfo.colorBlend.setAttachmentState(0, pvrvk::PipelineColorBlendAttachmentState());
 
-		// We use attributeless rendering
+		// We use attribute-less rendering
 		pipelineInfo.vertexInput.clear();
 		pipelineInfo.inputAssembler.setPrimitiveTopology(pvrvk::PrimitiveTopology::e_TRIANGLE_STRIP);
 
@@ -2214,7 +2213,7 @@ struct DownAndTentFilterBlurPass : public DualFilterBlurPass
 	/// <param name="renderBloomOnly">Indicates that only the bloom should be rendered to the screen.</param>
 	/// <param name="queue">The queue being used.</param>
 	/// <param name="sourceImageView">The source image to blur.</param>
-	/// <param name="exposure">The exposure to use in the tonemapping.</param>
+	/// <param name="exposure">The exposure to use in the tone mapping.</param>
 	void recordCommands(uint32_t swapchainIndex, pvrvk::Framebuffer& onScreenFramebuffer, bool renderBloomOnly, pvrvk::Queue& queue, pvrvk::ImageView&, float exposure)
 	{
 		(void)queue;
@@ -2282,7 +2281,7 @@ struct DownAndTentFilterBlurPass : public DualFilterBlurPass
 	/// <param name="onScreenRenderPass">The on screen RenderPass to use in the final Tent Filter pass.</param>
 	/// <param name="onScreenFramebuffer">The on screen Framebuffers to use in the final Tent Filter pass.</param>
 	/// <param name="onScreenClearValues">The clear values used in the final Tent Filter pass.</param>
-	/// <param name="numOnScreenClearValues">The number of clear color values to use in the final Tent Filter pass.</param>
+	/// <param name="numOnScreenClearValues">The number of clear colour values to use in the final Tent Filter pass.</param>
 	void recordCommandsToMainCommandBuffer(uint32_t swapchainIndex, pvrvk::CommandBuffer& cmdBuffer, pvrvk::Queue& queue, pvrvk::RenderPass& blurRenderPass,
 		pvrvk::RenderPass& onScreenRenderPass, pvrvk::Framebuffer& onScreenFramebuffer, pvrvk::ClearValue* onScreenClearValues, uint32_t numOnScreenClearValues) override
 	{
@@ -2320,7 +2319,7 @@ struct DownAndTentFilterBlurPass : public DualFilterBlurPass
 			cmdBuffer->endRenderPass();
 		}
 
-		// Handle the special cased final up sample whereby we merge the upsample blur with the tonemapping pass to save on write/reads
+		// Handle the special cased final up sample whereby we merge the upsample blur with the tone mapping pass to save on write/reads
 		cmdBuffer->beginRenderPass(onScreenFramebuffer, onScreenRenderPass,
 			pvrvk::Rect2D(0, 0, static_cast<uint32_t>(currentIterationDimensions[blurIterations - 1].x), static_cast<uint32_t>(currentIterationDimensions[blurIterations - 1].y)),
 			false, onScreenClearValues, numOnScreenClearValues);
@@ -2415,7 +2414,7 @@ struct GaussianBlurPass
 		{ generateGaussianCoefficients(DemoConfigurations::Configurations[i].gaussianConfig, false, false, gaussianWeights[i], gaussianOffsets[i]); }
 	}
 
-	/// <summary>Generates the gaussian weights and offsets strings used by the various Gaussian shaders.</summary>
+	/// <summary>Generates the Gaussian weights and offsets strings used by the various Gaussian shaders.</summary>
 	virtual void generateGaussianShaderStrings()
 	{
 		// Generate per kernel size weights, offsets and iterations strings
@@ -2477,7 +2476,7 @@ struct GaussianBlurPass
 	/// <summary>Creates the pipelines.</summary>
 	/// <param name="assetProvider">The pvr::IAssetProvider which will be used for loading resources from memory.</param>
 	/// <param name="device">The device to use for allocating the pipelines.</param>
-	/// <param name="renderPass">The RenderPass to use for gaussian blur.</param>
+	/// <param name="renderPass">The RenderPass to use for Gaussian blur.</param>
 	/// <param name="blurFramebufferDimensions">The dimensions of the Framebuffers used in the Gaussian blur iterations.</param>
 	/// <param name="pipelineCache">A pipeline cache object to use when creating pipelines.</param>
 	virtual void createPipelines(
@@ -2557,7 +2556,7 @@ struct GaussianBlurPass
 	/// <param name="verticalBlurFramebuffers">The framebuffers to use in the vertical blur pass.</param>
 	virtual void recordCommands(uint32_t swapchainIndex, pvr::Multi<pvrvk::Framebuffer>& horizontalBlurFramebuffers, pvr::Multi<pvrvk::Framebuffer>& verticalBlurFramebuffers)
 	{
-		// Record the commands to use for carrying out the horizontal gaussian blur pass
+		// Record the commands to use for carrying out the horizontal Gaussian blur pass
 		{
 			horizontalBlurCommandBuffers[swapchainIndex]->begin(horizontalBlurFramebuffers[swapchainIndex], 0, pvrvk::CommandBufferUsageFlags::e_RENDER_PASS_CONTINUE_BIT);
 
@@ -2572,7 +2571,7 @@ struct GaussianBlurPass
 			horizontalBlurCommandBuffers[swapchainIndex]->end();
 		}
 
-		// Record the commands to use for carrying out the vertical gaussian blur pass
+		// Record the commands to use for carrying out the vertical Gaussian blur pass
 		{
 			verticalBlurCommandBuffers[swapchainIndex]->begin(verticalBlurFramebuffers[swapchainIndex], 0, pvrvk::CommandBufferUsageFlags::e_RENDER_PASS_CONTINUE_BIT);
 
@@ -2693,7 +2692,7 @@ struct ComputeBlurPass : public GaussianBlurPass
 		device->updateDescriptorSets(writeDescSets.data(), static_cast<uint32_t>(writeDescSets.size()), nullptr, 0);
 	}
 
-	/// <summary>Generates the gaussian weights and offsets strings used by the various Gaussian shaders.</summary>
+	/// <summary>Generates the Gaussian weights and offsets strings used by the various Gaussian shaders.</summary>
 	void generateGaussianShaderStrings() override
 	{
 		// Generate per kernel size weights, offsets and iterations strings
@@ -2701,7 +2700,7 @@ struct ComputeBlurPass : public GaussianBlurPass
 		perKernelSizeWeightsStrings.resize(DemoConfigurations::NumDemoConfigurations);
 		perKernelSizeOffsetsStrings.resize(DemoConfigurations::NumDemoConfigurations);
 
-		// Compute shaders also need the per row/column color cache
+		// Compute shaders also need the per row/column colour cache
 		perKernelSizeCacheStrings.resize(DemoConfigurations::NumDemoConfigurations);
 
 		for (uint32_t i = 0; i < DemoConfigurations::NumDemoConfigurations; ++i)
@@ -2709,7 +2708,7 @@ struct ComputeBlurPass : public GaussianBlurPass
 			generateGaussianWeightsAndOffsetsStrings(
 				gaussianWeights[i], gaussianOffsets[i], perKernelSizeIterationsStrings[i], perKernelSizeWeightsStrings[i], perKernelSizeOffsetsStrings[i], true);
 
-			// Construct the compute shader specific per row/column color cache strings
+			// Construct the compute shader specific per row/column colour cache strings
 			std::string cache = "";
 			for (uint32_t j = 0; j < ((gaussianWeights[i].size() * 2) - 1); j++) { cache += "0.0,"; }
 			cache += "0.0";
@@ -2856,7 +2855,7 @@ struct LinearGaussianBlurPass : public GaussianBlurPass
 		{ generateGaussianCoefficients(DemoConfigurations::Configurations[i].linearGaussianConfig, true, false, gaussianWeights[i], gaussianOffsets[i]); }
 	}
 
-	/// <summary>Generates the gaussian weights and offsets strings used by the various Gaussian shaders.</summary>
+	/// <summary>Generates the Gaussian weights and offsets strings used by the various Gaussian shaders.</summary>
 	void generateGaussianShaderStrings() override
 	{
 		// Generate per kernel size weights, offsets and iterations strings
@@ -2968,7 +2967,7 @@ struct LinearGaussianBlurPass : public GaussianBlurPass
 
 	void recordCommands(uint32_t swapchainIndex, pvr::Multi<pvrvk::Framebuffer>& horizontalBlurFramebuffers, pvr::Multi<pvrvk::Framebuffer>& verticalBlurFramebuffers) override
 	{
-		// Record the commands to use for carrying out the horizontal gaussian blur pass
+		// Record the commands to use for carrying out the horizontal Gaussian blur pass
 		{
 			horizontalBlurCommandBuffers[swapchainIndex]->begin(horizontalBlurFramebuffers[swapchainIndex], 0, pvrvk::CommandBufferUsageFlags::e_RENDER_PASS_CONTINUE_BIT);
 
@@ -2983,7 +2982,7 @@ struct LinearGaussianBlurPass : public GaussianBlurPass
 			horizontalBlurCommandBuffers[swapchainIndex]->end();
 		}
 
-		// Record the commands to use for carrying out the vertical gaussian blur pass
+		// Record the commands to use for carrying out the vertical Gaussian blur pass
 		{
 			verticalBlurCommandBuffers[swapchainIndex]->begin(verticalBlurFramebuffers[swapchainIndex], 0, pvrvk::CommandBufferUsageFlags::e_RENDER_PASS_CONTINUE_BIT);
 
@@ -3049,7 +3048,7 @@ struct HybridGaussianBlurPass
 	/// <param name="queue">The queue to which the command buffer will be submitted.</param>
 	void recordCommands(uint32_t swapchainIndex, pvr::Multi<pvrvk::Framebuffer>& horizontalBlurFramebuffers, pvr::Multi<pvrvk::Framebuffer>& verticalBlurFramebuffers, pvrvk::Queue& queue)
 	{
-		// horizontal compute based gaussian blur pass
+		// horizontal compute based Gaussian blur pass
 		{
 			horizontalBlurCommandBuffers[swapchainIndex]->reset();
 			horizontalBlurCommandBuffers[swapchainIndex]->begin();
@@ -3077,7 +3076,7 @@ struct HybridGaussianBlurPass
 			horizontalBlurCommandBuffers[swapchainIndex]->end();
 		}
 
-		// vertical fragment based gaussian blur pass
+		// vertical fragment based Gaussian blur pass
 		{
 			verticalBlurCommandBuffers[swapchainIndex]->reset();
 			verticalBlurCommandBuffers[swapchainIndex]->begin(verticalBlurFramebuffers[swapchainIndex], 0, pvrvk::CommandBufferUsageFlags::e_RENDER_PASS_CONTINUE_BIT);
@@ -3262,7 +3261,7 @@ struct PostBloomPass
 	/// <param name="swapchainIndex">The swapchain index for which the recorded command buffer will be used.</param>
 	/// <param name="framebuffer">The framebuffer to render into</param>
 	/// <param name="renderBloomOnly">Indicates that only the bloom should be rendered to the screen</param>
-	/// <param name="exposure">The exposure to use in the tonemapping.</param>
+	/// <param name="exposure">The exposure to use in the tone mapping.</param>
 	void recordCommandBuffer(uint32_t swapchainIndex, pvrvk::Framebuffer& framebuffer, bool renderBloomOnly, float exposure)
 	{
 		cmdBuffers[swapchainIndex]->begin(framebuffer, 0, pvrvk::CommandBufferUsageFlags::e_RENDER_PASS_CONTINUE_BIT);
@@ -3366,9 +3365,7 @@ struct DeviceResources
 	}
 };
 
-/*!********************************************************************************************
-Class implementing the Shell functions.
-***********************************************************************************************/
+/// <summary>Class implementing the Shell functions.</summary>
 class VulkanPostProcessing : public pvr::Shell
 {
 	std::unique_ptr<DeviceResources> _deviceResources;
@@ -3540,12 +3537,10 @@ pvr::Result VulkanPostProcessing::initView()
 	pvr::utils::QueueAccessInfo queueAccessInfos[2];
 	_deviceResources->device = pvr::utils::createDeviceAndQueues(_deviceResources->instance->getPhysicalDevice(0), queueCreateInfos, 2, queueAccessInfos);
 
-	int version = _deviceResources->instance->getPhysicalDevice(0)->getProperties().getApiVersion();
-
 	_deviceResources->queues[0] = _deviceResources->device->getQueue(queueAccessInfos[0].familyId, queueAccessInfos[0].queueId);
 	_deviceResources->queues[1] = _deviceResources->device->getQueue(queueAccessInfos[1].familyId, queueAccessInfos[1].queueId);
 
-	// In the future we may want to improve our flexibility wrt. making use of multiple queues but for now to support multi queue the queue must support
+	// In the future we may want to improve our flexibility with regards to making use of multiple queues but for now to support multi queue the queue must support
 	// Graphics + Compute + WSI support.
 	// Other multi queue approaches may be possible i.e. making use of additional queues which do not support graphics/WSI
 	_useMultiQueue = false;
@@ -3579,8 +3574,32 @@ pvr::Result VulkanPostProcessing::initView()
 	// Create memory allocator
 	_deviceResources->vmaAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
 
-	pvr::utils::createSwapchainAndDepthStencilImageAndViews(_deviceResources->device, surface, getDisplayAttributes(), _deviceResources->swapchain, _deviceResources->depthStencilImages,
-		swapchainImageUsage, pvrvk::ImageUsageFlags::e_DEPTH_STENCIL_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_TRANSIENT_ATTACHMENT_BIT, &_deviceResources->vmaAllocator);
+	// We do not support automatic MSAA for this demo.
+	if (getDisplayAttributes().aaSamples > 1)
+	{
+		Log(LogLevel::Warning, "Full Screen Multisample Antialiasing requested, but not supported for this demo's configuration.");
+		getDisplayAttributes().aaSamples = 1;
+	}
+
+	// Create the swapchain, framebuffers and main rendering images
+	// Note the use of the colour attachment load operation (pvrvk::AttachmentLoadOp::e_DONT_CARE). The final composition pass will be a full screen render
+	// so we don't need to clear the attachment prior to rendering to the image as each pixel will get a new value either way
+	// The final render is a full screen pass, so no depth is required (see below)...
+	auto swapChainCreateOutput = pvr::utils::createSwapchainRenderpassFramebuffers(_deviceResources->device, surface, getDisplayAttributes(),
+		pvr::utils::CreateSwapchainParameters()
+			.setAllocator(_deviceResources->vmaAllocator)
+			.setColorImageUsageFlags(swapchainImageUsage)
+			.enableDepthBuffer(false)
+			.setColorLoadOp(pvrvk::AttachmentLoadOp::e_DONT_CARE));
+
+	_deviceResources->swapchain = swapChainCreateOutput.swapchain;
+	_deviceResources->onScreenRenderPass = swapChainCreateOutput.renderPass;
+	_deviceResources->onScreenFramebuffers = swapChainCreateOutput.framebuffer;
+
+	// ... however we need to create the exact same attachments as we would have, only attach them to the g-buffer, not the on-screen pass.
+	pvr::utils::createAttachmentImages(_deviceResources->depthStencilImages, _deviceResources->device, _deviceResources->swapchain->getSwapchainLength(),
+		pvr::utils::getSupportedDepthStencilFormat(_deviceResources->device, getDisplayAttributes()), _deviceResources->swapchain->getDimension(),
+		pvrvk::ImageUsageFlags::e_DEPTH_STENCIL_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_TRANSIENT_ATTACHMENT_BIT, pvrvk::SampleCountFlags::e_1_BIT, _deviceResources->vmaAllocator);
 
 	// calculate the frame buffer width and heights
 	_blurFramebufferDimensions = glm::uvec2(this->getWidth() / _blurScale, this->getHeight() / _blurScale);
@@ -3604,7 +3623,7 @@ pvr::Result VulkanPostProcessing::initView()
 	// Determine whether shader storage image extended formats is supported on the current platform
 	// Ideally we would choose e_R16_SFLOAT but the physical device must have support for features.ShaderStorageImageExtendedFormats
 	// If features.ShaderStorageImageExtendedFormats isn't supported then we'll fallback to e_R16G16B16A16_SFLOAT
-	// e_R16G16B16A16_SFLOAT may already be preferred as it allows for the handling of colored blooms i.e. colored light sources
+	// e_R16G16B16A16_SFLOAT may already be preferred as it allows for the handling of coloured blooms i.e. coloured light sources
 	if (_deviceResources->instance->getPhysicalDevice(0)->getFeatures().getShaderStorageImageExtendedFormats())
 	{
 		pvrvk::Format extendedFormat = _luminanceColorFormat;
@@ -3642,7 +3661,7 @@ pvr::Result VulkanPostProcessing::initView()
 		if ((prop.getOptimalTilingFeatures() & pvrvk::FormatFeatureFlags::e_SAMPLED_IMAGE_FILTER_LINEAR_BIT) == 0) { assertion(0); }
 	}
 
-	// create the commandpool and the descriptor pool
+	// create the command pool and the descriptor pool
 	_deviceResources->commandPool = _deviceResources->device->createCommandPool(
 		pvrvk::CommandPoolCreateInfo(_deviceResources->queues[0]->getFamilyIndex(), pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT));
 
@@ -3656,12 +3675,6 @@ pvr::Result VulkanPostProcessing::initView()
 	// create the utility commandbuffer which will be used for image layout transitions and buffer/image uploads.
 	_deviceResources->utilityCommandBuffer = _deviceResources->commandPool->allocateCommandBuffer();
 	_deviceResources->utilityCommandBuffer->begin();
-
-	// Create the framebuffers and main rendering images
-	// Note the use of the color attachment load operation (pvrvk::AttachmentLoadOp::e_DONT_CARE). The final composition pass will be a full screen render
-	// so we don't need to clear the attachment prior to rendering to the image as each pixel will get a new value either way
-	pvr::utils::createOnscreenFramebufferAndRenderPass(_deviceResources->swapchain, nullptr, _deviceResources->onScreenFramebuffers, _deviceResources->onScreenRenderPass,
-		pvrvk::ImageLayout::e_UNDEFINED, pvrvk::ImageLayout::e_UNDEFINED, pvrvk::AttachmentLoadOp::e_DONT_CARE);
 
 	// Create the pipeline cache
 	_deviceResources->pipelineCache = _deviceResources->device->createPipelineCache();
@@ -3690,7 +3703,7 @@ pvr::Result VulkanPostProcessing::initView()
 		}
 	}
 
-	// The diffue irradiance maps are small so we load them all up front
+	// The diffuse irradiance maps are small so we load them all up front
 	for (uint32_t i = 0; i < NumScenes; ++i)
 	{
 		pvr::Texture diffuseIrradianceMapTexture = pvr::textureLoad(*getAssetStream(SceneTexFileNames[i].diffuseIrradianceMapTexture), pvr::TextureFileFormat::PVR);
@@ -3698,7 +3711,7 @@ pvr::Result VulkanPostProcessing::initView()
 		// Create and Allocate Textures
 		_deviceResources->diffuseIrradianceMapImageViews[i] =
 			pvr::utils::uploadImageAndView(_deviceResources->device, diffuseIrradianceMapTexture, true, _deviceResources->utilityCommandBuffer,
-				pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, &_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
+				pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, _deviceResources->vmaAllocator, _deviceResources->vmaAllocator);
 	}
 
 	// Create the main scene rendering passes
@@ -3812,7 +3825,7 @@ pvr::Result VulkanPostProcessing::initView()
 		_deviceResources->perFrameResourcesFences[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
 	}
 
-	// initalise the UI Renderers
+	// initialise the UI Renderers
 	createUiRenderer();
 
 	// Record UI renderer command buffers
@@ -3880,7 +3893,7 @@ pvr::Result VulkanPostProcessing::renderFrame()
 	if (this->shouldTakeScreenshot())
 	{
 		pvr::utils::takeScreenshot(_deviceResources->queues[_queueIndex], _deviceResources->commandPool, _deviceResources->swapchain, _swapchainIndex,
-			this->getScreenshotFileName(), &_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
+			this->getScreenshotFileName(), _deviceResources->vmaAllocator, _deviceResources->vmaAllocator);
 	}
 
 	pvrvk::PresentInfo presentInfo;
@@ -3938,67 +3951,58 @@ void VulkanPostProcessing::updateBlurDescription()
 {
 	switch (_blurMode)
 	{
-	case (BloomMode::NoBloom):
-	{
+	case (BloomMode::NoBloom): {
 		_currentBlurString = BloomStrings[static_cast<uint32_t>(_blurMode)];
 		break;
 	}
-	case (BloomMode::GaussianOriginal):
-	{
+	case (BloomMode::GaussianOriginal): {
 		uint32_t numSamples = static_cast<uint32_t>(_deviceResources->gaussianBlurPass.gaussianOffsets[_currentDemoConfiguration].size());
 		_currentBlurString = BloomStrings[static_cast<uint32_t>(_blurMode)] + "\n" +
 			pvr::strings::createFormatted("Kernel Size = %u (%u + %u taps)", DemoConfigurations::Configurations[_currentDemoConfiguration].gaussianConfig, numSamples, numSamples);
 		break;
 	}
-	case (BloomMode::GaussianLinear):
-	{
+	case (BloomMode::GaussianLinear): {
 		uint32_t numSamples = static_cast<uint32_t>(_deviceResources->linearGaussianBlurPass.gaussianOffsets[_currentDemoConfiguration].size());
 		_currentBlurString = BloomStrings[static_cast<uint32_t>(_blurMode)] + "\n" +
 			pvr::strings::createFormatted("Kernel Size = %u (%u + %u taps)", DemoConfigurations::Configurations[_currentDemoConfiguration].linearGaussianConfig, numSamples, numSamples);
 		break;
 	}
-	case (BloomMode::GaussianLinearTruncated):
-	{
+	case (BloomMode::GaussianLinearTruncated): {
 		uint32_t numSamples = static_cast<uint32_t>(_deviceResources->truncatedLinearGaussianBlurPass.gaussianOffsets[_currentDemoConfiguration].size());
 		_currentBlurString = BloomStrings[static_cast<uint32_t>(_blurMode)] + "\n" +
 			pvr::strings::createFormatted(
 				"Kernel Size = %u (%u + %u taps)", DemoConfigurations::Configurations[_currentDemoConfiguration].truncatedLinearGaussianConfig, numSamples, numSamples);
 		break;
 	}
-	case (BloomMode::Compute):
-	{
+	case (BloomMode::Compute): {
 		uint32_t numSamples = static_cast<uint32_t>(_deviceResources->computeBlurPass.gaussianOffsets[_currentDemoConfiguration].size());
 		_currentBlurString = BloomStrings[static_cast<uint32_t>(_blurMode)] + "\n" +
 			pvr::strings::createFormatted(
 				"Kernel Size = %u (Sliding Average)", DemoConfigurations::Configurations[_currentDemoConfiguration].computeGaussianConfig, numSamples, numSamples);
 		break;
 	}
-	case (BloomMode::DualFilter):
-	{
+	case (BloomMode::DualFilter): {
 		uint32_t numSamples = _deviceResources->dualFilterBlurPass.blurIterations / 2;
 		_currentBlurString = BloomStrings[static_cast<uint32_t>(_blurMode)] + "\n" +
 			pvr::strings::createFormatted(
 				"Iterations = %u (%u Downsamples, %u Upsamples)", DemoConfigurations::Configurations[_currentDemoConfiguration].dualFilterConfig, numSamples, numSamples);
 		break;
 	}
-	case (BloomMode::TentFilter):
-	{
+	case (BloomMode::TentFilter): {
 		uint32_t numSamples = _deviceResources->downAndTentFilterBlurPass.blurIterations / 2;
 		_currentBlurString = BloomStrings[static_cast<uint32_t>(_blurMode)] + "\n" +
 			pvr::strings::createFormatted(
 				"Iterations = %u (%u Downsamples, %u Upsamples)", DemoConfigurations::Configurations[_currentDemoConfiguration].tentFilterConfig, numSamples, numSamples);
 		break;
 	}
-	case (BloomMode::HybridGaussian):
-	{
+	case (BloomMode::HybridGaussian): {
 		uint32_t numComputeSamples = static_cast<uint32_t>(_deviceResources->hybridGaussianBlurPass.computeBlurPass->gaussianOffsets[_currentDemoConfiguration].size());
 		uint32_t numLinearSamples = static_cast<uint32_t>(_deviceResources->hybridGaussianBlurPass.linearBlurPass->gaussianOffsets[_currentDemoConfiguration].size());
 		_currentBlurString = BloomStrings[static_cast<uint32_t>(_blurMode)] + "\n" +
 			pvr::strings::createFormatted("Horizontal Compute %u taps, Vertical Linear Gaussian %u taps)", numComputeSamples, numLinearSamples);
 		break;
 	}
-	case (BloomMode::Kawase):
-	{
+	case (BloomMode::Kawase): {
 		std::string kernelString = "";
 		uint32_t numIterations = _deviceResources->kawaseBlurPass.blurIterations;
 
@@ -4013,7 +4017,7 @@ void VulkanPostProcessing::updateBlurDescription()
 	}
 
 	Log(LogLevel::Information, "Current blur mode: \"%s\"", BloomStrings[static_cast<int32_t>(_blurMode)].c_str());
-	Log(LogLevel::Information, "Current blur size configiuration: \"%u\"", _currentDemoConfiguration);
+	Log(LogLevel::Information, "Current blur size configuration: \"%u\"", _currentDemoConfiguration);
 }
 
 /// <summary>Creates the main scene buffer.</summary>
@@ -4028,7 +4032,7 @@ void VulkanPostProcessing::createSceneBuffers()
 
 	_deviceResources->sceneBuffer =
 		pvr::utils::createBuffer(_deviceResources->device, pvrvk::BufferCreateInfo(_deviceResources->sceneBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT),
-			pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT, &_deviceResources->vmaAllocator);
+			pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT, _deviceResources->vmaAllocator);
 
 	_deviceResources->sceneBufferView.pointToMappedMemory(_deviceResources->sceneBuffer->getDeviceMemory()->getMappedData());
 }
@@ -4069,7 +4073,7 @@ void VulkanPostProcessing::recordMainCommandBuffer(uint32_t swapchainIndex)
 
 	pvrvk::ClearValue clearValues = pvrvk::ClearValue(0.0f, 0.0f, 0.0f, 1.f);
 
-	// When using Dual/Tent filter no downsample is required as they take care of downsampling theirselves
+	// When using Dual/Tent filter no downsample is required as they take care of downsampling themselves
 	if (!(_blurMode == BloomMode::DualFilter || _blurMode == BloomMode::TentFilter))
 	{
 		// Use a special cased downsample pass when the next pass will be using compute
@@ -4100,26 +4104,22 @@ void VulkanPostProcessing::recordMainCommandBuffer(uint32_t swapchainIndex)
 
 		switch (_blurMode)
 		{
-		case (BloomMode::GaussianOriginal):
-		{
+		case (BloomMode::GaussianOriginal): {
 			_deviceResources->gaussianBlurPass.recordCommandsToMainCommandBuffer(swapchainIndex, _deviceResources->mainCommandBuffers[swapchainIndex], _deviceResources->queues[0],
 				_deviceResources->blurRenderPass, _deviceResources->blurFramebuffers[0], _deviceResources->blurFramebuffers[1]);
 			break;
 		}
-		case (BloomMode::GaussianLinear):
-		{
+		case (BloomMode::GaussianLinear): {
 			_deviceResources->linearGaussianBlurPass.recordCommandsToMainCommandBuffer(swapchainIndex, _deviceResources->mainCommandBuffers[swapchainIndex],
 				_deviceResources->queues[0], _deviceResources->blurRenderPass, _deviceResources->blurFramebuffers[0], _deviceResources->blurFramebuffers[1]);
 			break;
 		}
-		case (BloomMode::GaussianLinearTruncated):
-		{
+		case (BloomMode::GaussianLinearTruncated): {
 			_deviceResources->truncatedLinearGaussianBlurPass.recordCommandsToMainCommandBuffer(swapchainIndex, _deviceResources->mainCommandBuffers[swapchainIndex],
 				_deviceResources->queues[0], _deviceResources->blurRenderPass, _deviceResources->blurFramebuffers[0], _deviceResources->blurFramebuffers[1]);
 			break;
 		}
-		case (BloomMode::Compute):
-		{
+		case (BloomMode::Compute): {
 			// Graphics to Compute pipeline barrier (Downsample -> Compute Blur (horizontal))
 			// Add a pipelineBarrier between fragment write (Downsample) -> shader read (Compute Blur (horizontal))
 			{
@@ -4138,27 +4138,23 @@ void VulkanPostProcessing::recordMainCommandBuffer(uint32_t swapchainIndex)
 			_deviceResources->computeBlurPass.recordCommandsToMainCommandBuffer(swapchainIndex, _deviceResources->mainCommandBuffers[swapchainIndex]);
 			break;
 		}
-		case (BloomMode::Kawase):
-		{
+		case (BloomMode::Kawase): {
 			_deviceResources->kawaseBlurPass.recordCommandsToMainCommandBuffer(swapchainIndex, _deviceResources->mainCommandBuffers[swapchainIndex], _deviceResources->queues[0],
 				_deviceResources->blurRenderPass, _deviceResources->blurFramebuffers);
 			break;
 		}
-		case (BloomMode::DualFilter):
-		{
+		case (BloomMode::DualFilter): {
 			_deviceResources->dualFilterBlurPass.recordCommandsToMainCommandBuffer(swapchainIndex, _deviceResources->mainCommandBuffers[swapchainIndex], _deviceResources->queues[0],
 				_deviceResources->blurRenderPass, _deviceResources->onScreenRenderPass, _deviceResources->onScreenFramebuffers[swapchainIndex], &clearValues, 1);
 			break;
 		}
-		case (BloomMode::TentFilter):
-		{
+		case (BloomMode::TentFilter): {
 			_deviceResources->downAndTentFilterBlurPass.recordCommandsToMainCommandBuffer(swapchainIndex, _deviceResources->mainCommandBuffers[swapchainIndex],
 				_deviceResources->queues[0], _deviceResources->blurRenderPass, _deviceResources->onScreenRenderPass, _deviceResources->onScreenFramebuffers[swapchainIndex],
 				&clearValues, 1);
 			break;
 		}
-		case (BloomMode::HybridGaussian):
-		{
+		case (BloomMode::HybridGaussian): {
 			// Graphics to Compute pipeline barrier (Downsample -> Compute Blur (horizontal))
 			// Add a pipelineBarrier between fragment write (Downsample) -> shader read (Compute Blur (horizontal))
 			{
@@ -4192,50 +4188,43 @@ void VulkanPostProcessing::recordMainCommandBuffer(uint32_t swapchainIndex)
 		// Ensure the post bloom pass uses the correct blurred image for the current blur mode
 		switch (_blurMode)
 		{
-		case (BloomMode::GaussianOriginal):
-		{
+		case (BloomMode::GaussianOriginal): {
 			_deviceResources->postBloomPass.updateDescriptorSets(_deviceResources->device, swapchainIndex, _deviceResources->offScreenColorImageViews[swapchainIndex],
 				_deviceResources->gaussianBlurPass.getBlurredImage(swapchainIndex), _deviceResources->samplerBilinear, _deviceResources->sceneBuffer,
 				_deviceResources->sceneBufferView, _deviceResources->diffuseIrradianceMapImageViews[_currentScene], _deviceResources->samplerTrilinear);
 			break;
 		}
-		case (BloomMode::GaussianLinear):
-		{
+		case (BloomMode::GaussianLinear): {
 			_deviceResources->postBloomPass.updateDescriptorSets(_deviceResources->device, swapchainIndex, _deviceResources->offScreenColorImageViews[swapchainIndex],
 				_deviceResources->linearGaussianBlurPass.getBlurredImage(swapchainIndex), _deviceResources->samplerBilinear, _deviceResources->sceneBuffer,
 				_deviceResources->sceneBufferView, _deviceResources->diffuseIrradianceMapImageViews[_currentScene], _deviceResources->samplerTrilinear);
 			break;
 		}
-		case (BloomMode::Compute):
-		{
+		case (BloomMode::Compute): {
 			_deviceResources->postBloomPass.updateDescriptorSets(_deviceResources->device, swapchainIndex, _deviceResources->offScreenColorImageViews[swapchainIndex],
 				_deviceResources->computeBlurPass.getBlurredImage(swapchainIndex), _deviceResources->samplerBilinear, _deviceResources->sceneBuffer,
 				_deviceResources->sceneBufferView, _deviceResources->diffuseIrradianceMapImageViews[_currentScene], _deviceResources->samplerTrilinear);
 			break;
 		}
-		case (BloomMode::GaussianLinearTruncated):
-		{
+		case (BloomMode::GaussianLinearTruncated): {
 			_deviceResources->postBloomPass.updateDescriptorSets(_deviceResources->device, swapchainIndex, _deviceResources->offScreenColorImageViews[swapchainIndex],
 				_deviceResources->truncatedLinearGaussianBlurPass.getBlurredImage(swapchainIndex), _deviceResources->samplerBilinear, _deviceResources->sceneBuffer,
 				_deviceResources->sceneBufferView, _deviceResources->diffuseIrradianceMapImageViews[_currentScene], _deviceResources->samplerTrilinear);
 			break;
 		}
-		case (BloomMode::Kawase):
-		{
+		case (BloomMode::Kawase): {
 			_deviceResources->postBloomPass.updateDescriptorSets(_deviceResources->device, swapchainIndex, _deviceResources->offScreenColorImageViews[swapchainIndex],
 				_deviceResources->kawaseBlurPass.getBlurredImage(swapchainIndex), _deviceResources->samplerBilinear, _deviceResources->sceneBuffer,
 				_deviceResources->sceneBufferView, _deviceResources->diffuseIrradianceMapImageViews[_currentScene], _deviceResources->samplerTrilinear);
 			break;
 		}
-		case (BloomMode::HybridGaussian):
-		{
+		case (BloomMode::HybridGaussian): {
 			_deviceResources->postBloomPass.updateDescriptorSets(_deviceResources->device, swapchainIndex, _deviceResources->offScreenColorImageViews[swapchainIndex],
 				_deviceResources->hybridGaussianBlurPass.linearBlurPass->getBlurredImage(swapchainIndex), _deviceResources->samplerBilinear, _deviceResources->sceneBuffer,
 				_deviceResources->sceneBufferView, _deviceResources->diffuseIrradianceMapImageViews[_currentScene], _deviceResources->samplerTrilinear);
 			break;
 		}
-		case (BloomMode::NoBloom):
-		{
+		case (BloomMode::NoBloom): {
 			_deviceResources->postBloomPass.updateDescriptorSets(_deviceResources->device, swapchainIndex, _deviceResources->offScreenColorImageViews[swapchainIndex],
 				_deviceResources->sharedBlurImageViews[_pingPongImageIndices[0]][swapchainIndex], _deviceResources->samplerBilinear, _deviceResources->sceneBuffer,
 				_deviceResources->sceneBufferView, _deviceResources->diffuseIrradianceMapImageViews[_currentScene], _deviceResources->samplerTrilinear);
@@ -4259,45 +4248,37 @@ void VulkanPostProcessing::recordBlurCommands(BloomMode blurMode, uint32_t swapc
 {
 	switch (blurMode)
 	{
-	case (BloomMode::GaussianOriginal):
-	{
+	case (BloomMode::GaussianOriginal): {
 		_deviceResources->gaussianBlurPass.recordCommands(swapchainIndex, _deviceResources->blurFramebuffers[0], _deviceResources->blurFramebuffers[1]);
 		break;
 	}
-	case (BloomMode::GaussianLinear):
-	{
+	case (BloomMode::GaussianLinear): {
 		_deviceResources->linearGaussianBlurPass.recordCommands(swapchainIndex, _deviceResources->blurFramebuffers[0], _deviceResources->blurFramebuffers[1]);
 		break;
 	}
-	case (BloomMode::GaussianLinearTruncated):
-	{
+	case (BloomMode::GaussianLinearTruncated): {
 		_deviceResources->truncatedLinearGaussianBlurPass.recordCommands(swapchainIndex, _deviceResources->blurFramebuffers[0], _deviceResources->blurFramebuffers[1]);
 		break;
 	}
-	case (BloomMode::Compute):
-	{
+	case (BloomMode::Compute): {
 		_deviceResources->computeBlurPass.recordCommands(swapchainIndex, _deviceResources->sharedBlurImageViews[_pingPongImageIndices[0]],
 			_deviceResources->sharedBlurImageViews[_pingPongImageIndices[1]], _deviceResources->queues[_queueIndex]);
 		break;
 	}
-	case (BloomMode::Kawase):
-	{
+	case (BloomMode::Kawase): {
 		_deviceResources->kawaseBlurPass.recordCommands(swapchainIndex, _deviceResources->blurFramebuffers, 2);
 		break;
 	}
-	case (BloomMode::DualFilter):
-	{
+	case (BloomMode::DualFilter): {
 		_deviceResources->dualFilterBlurPass.recordCommands(swapchainIndex, _deviceResources->onScreenFramebuffers[swapchainIndex], _renderOnlyBloom, _exposure);
 		break;
 	}
-	case (BloomMode::TentFilter):
-	{
+	case (BloomMode::TentFilter): {
 		_deviceResources->downAndTentFilterBlurPass.recordCommands(swapchainIndex, _deviceResources->onScreenFramebuffers[swapchainIndex], _renderOnlyBloom,
 			_deviceResources->queues[_queueIndex], _deviceResources->luminanceImageViews[_deviceResources->swapchain->getSwapchainIndex()], _exposure);
 		break;
 	}
-	case (BloomMode::HybridGaussian):
-	{
+	case (BloomMode::HybridGaussian): {
 		_deviceResources->hybridGaussianBlurPass.recordCommands(
 			swapchainIndex, _deviceResources->hybridBlurFramebuffers[0], _deviceResources->hybridBlurFramebuffers[1], _deviceResources->queues[_queueIndex]);
 		break;
@@ -4326,7 +4307,7 @@ void VulkanPostProcessing::allocatePingPongImages()
 			pvrvk::Image blurColorTexture = pvr::utils::createImage(_deviceResources->device,
 				pvrvk::ImageCreateInfo(pvrvk::ImageType::e_2D, _storageImageLuminanceColorFormat, dimension, storageImageUsage, 1, 1, pvrvk::SampleCountFlags::e_1_BIT,
 					pvrvk::ImageCreateFlags(0), _storageImageTiling),
-				pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_NONE, &_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_NONE);
+				pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_NONE, _deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_NONE);
 			_deviceResources->sharedBlurImageViews[_pingPongImageIndices[j]].add(_deviceResources->device->createImageView(pvrvk::ImageViewCreateInfo(blurColorTexture)));
 		}
 	}
@@ -4407,7 +4388,7 @@ void VulkanPostProcessing::createBlurRenderPass()
 	subpass.setColorAttachmentReference(0, pvrvk::AttachmentReference(0, pvrvk::ImageLayout::e_COLOR_ATTACHMENT_OPTIMAL));
 	renderPassInfo.setSubpass(0, subpass);
 
-	// Add external subpass dependencies to avoid the implicit subpass depedencies and to provide more optimal pipeline stage task synchronisation
+	// Add external subpass dependencies to avoid the implicit subpass dependencies and to provide more optimal pipeline stage task synchronisation
 	pvrvk::SubpassDependency externalDependencies[2];
 	externalDependencies[0] = pvrvk::SubpassDependency(pvrvk::SubpassExternal, 0, pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT,
 		pvrvk::PipelineStageFlags::e_FRAGMENT_SHADER_BIT, pvrvk::AccessFlags::e_COLOR_ATTACHMENT_WRITE_BIT, pvrvk::AccessFlags::e_SHADER_READ_BIT, pvrvk::DependencyFlags::e_NONE);
@@ -4434,7 +4415,7 @@ void VulkanPostProcessing::createHybridBlurRenderPass()
 	subpass.setColorAttachmentReference(0, pvrvk::AttachmentReference(0, pvrvk::ImageLayout::e_COLOR_ATTACHMENT_OPTIMAL));
 	renderPassInfo.setSubpass(0, subpass);
 
-	// Add external subpass dependencies to avoid the implicit subpass depedencies and to provide more optimal pipeline stage task synchronisation
+	// Add external subpass dependencies to avoid the implicit subpass dependencies and to provide more optimal pipeline stage task synchronisation
 	pvrvk::SubpassDependency externalDependencies[2];
 	externalDependencies[0] = pvrvk::SubpassDependency(pvrvk::SubpassExternal, 0, pvrvk::PipelineStageFlags::e_COMPUTE_SHADER_BIT, pvrvk::PipelineStageFlags::e_FRAGMENT_SHADER_BIT,
 		pvrvk::AccessFlags::e_SHADER_WRITE_BIT, pvrvk::AccessFlags::e_SHADER_READ_BIT, pvrvk::DependencyFlags::e_NONE);
@@ -4473,7 +4454,7 @@ void VulkanPostProcessing::createOffScreenFramebuffers()
 	offscreenSubpass.setDepthStencilAttachmentReference(pvrvk::AttachmentReference(2, pvrvk::ImageLayout::e_DEPTH_STENCIL_ATTACHMENT_OPTIMAL));
 	renderPassInfo.setSubpass(0, offscreenSubpass);
 
-	// Add external subpass dependencies to avoid the implicit subpass depedencies and to provide more optimal pipeline stage task synchronisation
+	// Add external subpass dependencies to avoid the implicit subpass dependencies and to provide more optimal pipeline stage task synchronisation
 	pvrvk::SubpassDependency externalDependencies[2];
 	externalDependencies[0] = pvrvk::SubpassDependency(pvrvk::SubpassExternal, 0, pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT,
 		pvrvk::PipelineStageFlags::e_FRAGMENT_SHADER_BIT, pvrvk::AccessFlags::e_COLOR_ATTACHMENT_WRITE_BIT, pvrvk::AccessFlags::e_SHADER_READ_BIT, pvrvk::DependencyFlags::e_NONE);
@@ -4495,17 +4476,17 @@ void VulkanPostProcessing::createOffScreenFramebuffers()
 		// Allocate the HDR luminance texture
 		pvrvk::Image luminanceColorTexture =
 			pvr::utils::createImage(_deviceResources->device, pvrvk::ImageCreateInfo(pvrvk::ImageType::e_2D, _luminanceColorFormat, dimension, imageUsage),
-				pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_NONE, &_deviceResources->vmaAllocator);
+				pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_NONE, _deviceResources->vmaAllocator);
 
 		_deviceResources->luminanceImageViews.add(_deviceResources->device->createImageView(pvrvk::ImageViewCreateInfo(luminanceColorTexture)));
 
 		pvrvk::FramebufferCreateInfo offScreenFramebufferCreateInfo;
 
-		// Allocate the HDR color texture
+		// Allocate the HDR colour texture
 		pvrvk::Image colorTexture = pvr::utils::createImage(_deviceResources->device,
 			pvrvk::ImageCreateInfo(pvrvk::ImageType::e_2D, pvrvk::Format::e_R16G16B16A16_SFLOAT, dimension,
 				pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_SAMPLED_BIT | pvrvk::ImageUsageFlags::e_INPUT_ATTACHMENT_BIT),
-			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_NONE, &_deviceResources->vmaAllocator);
+			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_NONE, _deviceResources->vmaAllocator);
 
 		_deviceResources->offScreenColorImageViews.add(_deviceResources->device->createImageView(pvrvk::ImageViewCreateInfo(colorTexture)));
 
@@ -4540,13 +4521,11 @@ void VulkanPostProcessing::updateDynamicSceneData()
 	{
 		switch (_blurMode)
 		{
-		case (BloomMode::DualFilter):
-		{
+		case (BloomMode::DualFilter): {
 			_deviceResources->dualFilterBlurPass.updateDescriptorSets(_deviceResources->device, _deviceResources->swapchain->getSwapchainIndex());
 			break;
 		}
-		case (BloomMode::TentFilter):
-		{
+		case (BloomMode::TentFilter): {
 			_deviceResources->downAndTentFilterBlurPass.updateDescriptorSets(_deviceResources->device, _deviceResources->swapchain->getSwapchainIndex());
 			break;
 		}
@@ -4605,28 +4584,24 @@ void VulkanPostProcessing::updateAnimation()
 	}
 }
 
-/// <summary>Update the demo configuration in use. Calculates gaussian weights and offsets, images being used, framebuffers being used etc.</summary>
+/// <summary>Update the demo configuration in use. Calculates Gaussian weights and offsets, images being used, framebuffers being used etc.</summary>
 void VulkanPostProcessing::updateDemoConfigs()
 {
 	switch (_blurMode)
 	{
-	case (BloomMode::GaussianOriginal):
-	{
+	case (BloomMode::GaussianOriginal): {
 		_deviceResources->gaussianBlurPass.updateKernelConfig(_currentDemoConfiguration);
 		break;
 	}
-	case (BloomMode::GaussianLinear):
-	{
+	case (BloomMode::GaussianLinear): {
 		_deviceResources->linearGaussianBlurPass.updateKernelConfig(_currentDemoConfiguration);
 		break;
 	}
-	case (BloomMode::GaussianLinearTruncated):
-	{
+	case (BloomMode::GaussianLinearTruncated): {
 		_deviceResources->truncatedLinearGaussianBlurPass.updateKernelConfig(_currentDemoConfiguration);
 		break;
 	}
-	case (BloomMode::Kawase):
-	{
+	case (BloomMode::Kawase): {
 		std::vector<pvr::Multi<pvrvk::ImageView>> kawaseImages;
 		kawaseImages.emplace_back(_deviceResources->sharedBlurImageViews[_pingPongImageIndices[0]]);
 		kawaseImages.emplace_back(_deviceResources->sharedBlurImageViews[_pingPongImageIndices[1]]);
@@ -4635,23 +4610,19 @@ void VulkanPostProcessing::updateDemoConfigs()
 			DemoConfigurations::Configurations[_currentDemoConfiguration].kawaseConfig.numIterations, kawaseImages.data(), 2);
 		break;
 	}
-	case (BloomMode::Compute):
-	{
+	case (BloomMode::Compute): {
 		_deviceResources->computeBlurPass.updateKernelConfig(_currentDemoConfiguration);
 		break;
 	}
-	case (BloomMode::DualFilter):
-	{
+	case (BloomMode::DualFilter): {
 		_deviceResources->dualFilterBlurPass.updateConfig(DemoConfigurations::Configurations[_currentDemoConfiguration].dualFilterConfig);
 		break;
 	}
-	case (BloomMode::TentFilter):
-	{
+	case (BloomMode::TentFilter): {
 		_deviceResources->downAndTentFilterBlurPass.updateConfig(DemoConfigurations::Configurations[_currentDemoConfiguration].dualFilterConfig);
 		break;
 	}
-	case (BloomMode::HybridGaussian):
-	{
+	case (BloomMode::HybridGaussian): {
 		_deviceResources->truncatedLinearGaussianBlurPass.updateKernelConfig(_currentDemoConfiguration);
 		_deviceResources->computeBlurPass.updateKernelConfig(_currentDemoConfiguration);
 		break;
@@ -4728,23 +4699,20 @@ void VulkanPostProcessing::eventMappedInput(pvr::SimplifiedInput e)
 {
 	switch (e)
 	{
-	case pvr::SimplifiedInput::Up:
-	{
+	case pvr::SimplifiedInput::Up: {
 		_currentDemoConfiguration = (_currentDemoConfiguration + 1) % DemoConfigurations::NumDemoConfigurations;
 		updateBloomConfiguration();
 		_isManual = true;
 		break;
 	}
-	case pvr::SimplifiedInput::Down:
-	{
+	case pvr::SimplifiedInput::Down: {
 		if (_currentDemoConfiguration == 0) { _currentDemoConfiguration = DemoConfigurations::NumDemoConfigurations; }
 		_currentDemoConfiguration = (_currentDemoConfiguration - 1) % DemoConfigurations::NumDemoConfigurations;
 		updateBloomConfiguration();
 		_isManual = true;
 		break;
 	}
-	case pvr::SimplifiedInput::Left:
-	{
+	case pvr::SimplifiedInput::Left: {
 		uint32_t currentBlurMode = static_cast<uint32_t>(_blurMode);
 		currentBlurMode -= 1;
 		currentBlurMode = (currentBlurMode + static_cast<uint32_t>(BloomMode::NumBloomModes)) % static_cast<uint32_t>(BloomMode::NumBloomModes);
@@ -4753,8 +4721,7 @@ void VulkanPostProcessing::eventMappedInput(pvr::SimplifiedInput e)
 		_isManual = true;
 		break;
 	}
-	case pvr::SimplifiedInput::Right:
-	{
+	case pvr::SimplifiedInput::Right: {
 		uint32_t currentBlurMode = static_cast<uint32_t>(_blurMode);
 		currentBlurMode += 1;
 		currentBlurMode = (currentBlurMode + static_cast<uint32_t>(BloomMode::NumBloomModes)) % static_cast<uint32_t>(BloomMode::NumBloomModes);
@@ -4763,32 +4730,27 @@ void VulkanPostProcessing::eventMappedInput(pvr::SimplifiedInput e)
 		_isManual = true;
 		break;
 	}
-	case pvr::SimplifiedInput::ActionClose:
-	{
+	case pvr::SimplifiedInput::ActionClose: {
 		this->exitShell();
 		break;
 	}
-	case pvr::SimplifiedInput::Action1:
-	{
+	case pvr::SimplifiedInput::Action1: {
 		_renderOnlyBloom = !_renderOnlyBloom;
 		for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i) { _mustRecordPrimaryCommandBuffer[i] = true; }
 		break;
 	}
-	case pvr::SimplifiedInput::Action2:
-	{
+	case pvr::SimplifiedInput::Action2: {
 		_animateObject = !_animateObject;
 		_animateCamera = !_animateCamera;
 		for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i) { _mustRecordPrimaryCommandBuffer[i] = true; }
 		break;
 	}
-	case pvr::SimplifiedInput::Action3:
-	{
+	case pvr::SimplifiedInput::Action3: {
 		(++_currentScene) %= NumScenes;
 		for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i) { _mustRecordPrimaryCommandBuffer[i] = true; }
 		break;
 	}
-	default:
-	{
+	default: {
 		break;
 	}
 	}

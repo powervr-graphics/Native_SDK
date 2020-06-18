@@ -31,7 +31,8 @@ void DeviceDebugUtilsImpl::setObjectName(const Device_& device, uint64_t vkHandl
 		vkObjectNameInfo.objectHandle = objectNameInfo.getObjectHandle();
 		// The name to use for the object
 		vkObjectNameInfo.pObjectName = objectNameInfo.getObjectName().c_str();
-		vkThrowIfFailed(device.getVkBindings().vkSetDebugUtilsObjectNameEXT(device.getVkHandle(), &vkObjectNameInfo), "Failed to set ObjectName with vkSetDebugUtilsObjectNameEXT");
+		vkThrowIfFailed(device.getPhysicalDevice()->getInstance()->getVkBindings().vkSetDebugUtilsObjectNameEXT(device.getVkHandle(), &vkObjectNameInfo),
+			"Failed to set ObjectName with vkSetDebugUtilsObjectNameEXT");
 	}
 	// if VK_EXT_debug_marker is supported then set the object name
 	else if (device.getEnabledExtensionTable().extDebugMarkerEnabled)
@@ -69,7 +70,8 @@ void DeviceDebugUtilsImpl::setObjectTag(const Device_& device, uint64_t vkHandle
 		vkObjectTagInfo.tagSize = objectTagInfo.getTagSize();
 		// An array of tagSize bytes containing the data to be associated with the object
 		vkObjectTagInfo.pTag = objectTagInfo.getTag();
-		vkThrowIfFailed(device.getVkBindings().vkSetDebugUtilsObjectTagEXT(device.getVkHandle(), &vkObjectTagInfo), "Failed to set ObjectTag with vkSetDebugUtilsObjectTagEXT");
+		vkThrowIfFailed(device.getPhysicalDevice()->getInstance()->getVkBindings().vkSetDebugUtilsObjectTagEXT(device.getVkHandle(), &vkObjectTagInfo),
+			"Failed to set ObjectTag with vkSetDebugUtilsObjectTagEXT");
 	}
 	// if VK_EXT_debug_marker is supported then set the object tag
 	else if (device.getEnabledExtensionTable().extDebugMarkerEnabled)

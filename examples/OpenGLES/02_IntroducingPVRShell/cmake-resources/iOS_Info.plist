@@ -17,7 +17,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleDisplayName</key>
-	<string>@PROJECT_NAME@</string>
+	<string>IntroducingPVRShell</string>
 	<key>CFBundleExecutable</key>
 	<string>$${DUMMY}{EXECUTABLE_NAME}</string>
 	<key>CFBundleIdentifier</key>

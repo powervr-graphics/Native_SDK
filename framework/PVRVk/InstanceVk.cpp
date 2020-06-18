@@ -85,7 +85,7 @@ pvrvk::impl::Instance_::Instance_(make_shared_enabler, const InstanceCreateInfo&
 		callbackCreateInfo.pNext = nullptr;
 		callbackCreateInfo.flags = static_cast<VkDebugUtilsMessengerCreateFlagsEXT>(instanceCreateInfo.getDebugUtilsMessengerCreateInfo().getFlags());
 		callbackCreateInfo.messageSeverity = static_cast<VkDebugUtilsMessageSeverityFlagsEXT>(instanceCreateInfo.getDebugUtilsMessengerCreateInfo().getMessageSeverity());
-		callbackCreateInfo.flags = static_cast<VkDebugUtilsMessageTypeFlagsEXT>(instanceCreateInfo.getDebugUtilsMessengerCreateInfo().getMessageType());
+		callbackCreateInfo.messageType = static_cast<VkDebugUtilsMessageTypeFlagsEXT>(instanceCreateInfo.getDebugUtilsMessengerCreateInfo().getMessageType());
 		callbackCreateInfo.pfnUserCallback = instanceCreateInfo.getDebugUtilsMessengerCreateInfo().getCallback();
 		callbackCreateInfo.pUserData = instanceCreateInfo.getDebugUtilsMessengerCreateInfo().getPUserData();
 

@@ -15,9 +15,9 @@ buildscript {
 		jcenter()
 	}
 
-	// Adds the Android plugin for Gradle version 3.5.0 as a classpath dependency
+	// Adds the Android plugin for Gradle as a classpath dependency
 	dependencies {
-		classpath 'com.android.tools.build:gradle:3.5.0'
+		classpath 'com.android.tools.build:gradle:3.5.3'
 	}
 }
 
@@ -30,11 +30,11 @@ allprojects {
 }
 
 android {
-	compileSdkVersion 28
+	compileSdkVersion 29
 	defaultConfig {
 		applicationId "com.powervr.VulkanDeferredShading"
 		minSdkVersion 21
-		targetSdkVersion 26
+		targetSdkVersion 29
 		externalNativeBuild {
 			cmake {
 				cppFlags "-fexceptions"
@@ -102,11 +102,6 @@ android {
 
 	// Add to this list files that will need to be read at runtime here: Textures, shaders, text files etc.
 	FileCollection assetFiles = files(
-	"${project.projectDir}/../../../assets/Satyr/Marble.pvr",
-	"${project.projectDir}/../../../assets/Satyr/MarbleNormalMap.pvr",
-	"${project.projectDir}/../../../assets/Satyr/Table.pvr",
-	"${project.projectDir}/../../../assets/Satyr/SatyrAndTable.pod",
-	"${project.projectDir}/../../../assets/Satyr/pointlight.pod",
 	"${project.projectDir}/../AttributelessVertexShader.vsh.spv",
 	"${project.projectDir}/../GBufferFragmentShader.fsh.spv",
 	"${project.projectDir}/../GBufferVertexShader.vsh.spv",
@@ -119,6 +114,11 @@ android {
 	"${project.projectDir}/../PointLightPass2VertexShader.vsh.spv",
 	"${project.projectDir}/../PointLightPass3FragmentShader.fsh.spv",
 	"${project.projectDir}/../PointLightPass3VertexShader.vsh.spv",
+	"${project.projectDir}/../../../assets/Satyr/SatyrAndTable.pod",
+	"${project.projectDir}/../../../assets/Satyr/pointlight.pod",
+	"${project.projectDir}/../../../assets/Satyr/Marble.pvr",
+	"${project.projectDir}/../../../assets/Satyr/MarbleNormalMap.pvr",
+	"${project.projectDir}/../../../assets/Satyr/Table.pvr",
 	)
 	
 	// Add a task for copying our assets from their original location (${project.projectDir}...) to the assets/ folder for packaging

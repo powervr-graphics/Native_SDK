@@ -30,6 +30,7 @@ add_assets_to_target(OpenGLESNavigation2D
 	ASSET_FOLDER ${ASSET_FOLDER} 
 	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/Navigation2D
 	FILE_LIST 
+		map.osm
 		ATM.pvr
 		bank.pvr
 		bar.pvr
@@ -65,8 +66,7 @@ add_assets_to_target(OpenGLESNavigation2D
 		toilets.pvr
 		university.pvr
 		vets.pvr
-		worship.pvr
-		map.osm)
+		worship.pvr)
 
 ### Textural shaders (OpenGL ES) ###
 add_assets_to_target(OpenGLESNavigation2D 
@@ -86,7 +86,7 @@ add_assets_resource_file(OpenGLESNavigation2D)
 # Apply SDK example specific compile and linker options
 apply_example_compile_options_to_target(OpenGLESNavigation2D)
 
-target_link_libraries(OpenGLESNavigation2D
+target_link_libraries(OpenGLESNavigation2D PUBLIC
 	pugixml
 	PVRShell
 	PVRUtilsGles

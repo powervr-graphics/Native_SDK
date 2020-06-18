@@ -34,13 +34,13 @@ add_assets_to_target(VulkanSkinning
 	ASSET_FOLDER ${ASSET_FOLDER} 
 	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/Robot
 	FILE_LIST 
+		Robot.pod
 		Arm.pvr
 		Grid.pvr
 		Pipes.pvr
 		RobotDiffuse.pvr
 		RobotNormal.pvr
-		Tiles.pvr
-		Robot.pod)
+		Tiles.pvr)
 
 add_assets_to_target(VulkanSkinning
 	SOURCE_GROUP "assets" 
@@ -69,7 +69,7 @@ add_assets_resource_file(VulkanSkinning)
 # Apply SDK example specific compile and linker options
 apply_example_compile_options_to_target(VulkanSkinning)
 
-target_link_libraries(VulkanSkinning
+target_link_libraries(VulkanSkinning PUBLIC
 	PVRShell
 	PVRUtilsVk
 	PVRPfx

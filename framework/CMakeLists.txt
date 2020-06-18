@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.3)
-project(framework)
+# Copyright (c) Imagination Technologies Limited.
+
+project(PowerVR_Framework)
+
+include(Common.cmake)
 
 add_subdirectory_if_exists(PVRCore PVRCore)
 add_subdirectory_if_exists(PVRAssets PVRAssets)
@@ -7,8 +11,11 @@ add_subdirectory_if_exists(PVRShell PVRShell)
 add_subdirectory_if_exists(PVRCamera PVRCamera)
 add_subdirectory_if_exists(PVRUtilsGles PVRUtils/OpenGLES)
 
-if(NOT APPLE)
+set_property(GLOBAL APPEND PROPERTY PVR_FRAMEWORK_TARGETS PVRCore PVRShell PVRAssets PVRCamera PVRUtilsGles)
+
+if(NOT IOS)
 	add_subdirectory_if_exists(PVRUtilsCL PVRUtils/OpenCL)
+	#set_property(GLOBAL APPEND PROPERTY PVR_FRAMEWORK_TARGETS PVRUtilsCL) -- DISABLED AS PVRUtilsCL is currently an interface target
 endif()
 
 if(((${MOLTENVK_FOUND}) OR (NOT APPLE)) AND NOT CMAKE_SYSTEM_NAME MATCHES "QNX")
@@ -35,4 +42,5 @@ if(((${MOLTENVK_FOUND}) OR (NOT APPLE)) AND NOT CMAKE_SYSTEM_NAME MATCHES "QNX")
 		endif()
 	endif()
 	add_subdirectory_if_exists(PVRVk PVRVk)
+	set_property(GLOBAL APPEND PROPERTY PVR_FRAMEWORK_TARGETS PVRVk PVRUtilsVk PVRPfx)
 endif()

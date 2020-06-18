@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.powervr.OpenGLESImageBasedLighting"
-		android:versionCode="1"
+        android:versionCode="1"
         android:versionName="1.0">
 
-    <uses-feature android:glEsVersion="0x00030000"/>
+    <uses-feature android:glEsVersion="0x00032000"/>
 
     <!-- 
         The INTERNET permission is included to allow PVRTrace and PVRScope to use 

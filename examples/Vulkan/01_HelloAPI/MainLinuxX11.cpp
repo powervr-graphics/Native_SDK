@@ -25,7 +25,7 @@ void createXlibWindowSurface(VulkanHelloAPI& vulkanExample)
 		int defaultDepth = DefaultDepth(vulkanExample.surfaceData.display, defaultScreen);
 
 		// Select a visual info.
-		std::auto_ptr<XVisualInfo> visualInfo(new XVisualInfo);
+		std::unique_ptr<XVisualInfo> visualInfo(new XVisualInfo);
 		XMatchVisualInfo(vulkanExample.surfaceData.display, defaultScreen, defaultDepth, TrueColor, visualInfo.get());
 		if (!visualInfo.get())
 		{

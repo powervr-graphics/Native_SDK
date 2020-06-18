@@ -42,7 +42,7 @@ tasks.whenTaskAdded { task ->
 // This block specifies dependencies required to build only the module itself
 dependencies {
 	// Dependency on a remote binary
-	implementation 'com.android.support:support-v4:26.1.0'
+	implementation 'com.android.support:support-v4:28.0.0'
 }
 
 buildscript {
@@ -51,7 +51,7 @@ buildscript {
 		jcenter()
 	}
 	dependencies {
-		classpath 'com.android.tools.build:gradle:3.5.0'
+		classpath 'com.android.tools.build:gradle:3.5.3'
 	}
 }
 allprojects {

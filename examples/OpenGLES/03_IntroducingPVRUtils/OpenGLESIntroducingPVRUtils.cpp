@@ -1,10 +1,10 @@
-/*!*********************************************************************************************************************
-\File         OpenGLESIntroducingPVRUtils.cpp
-\Title        Introducing the PowerVR Framework
-\Author       PowerVR by Imagination, Developer Technology Team
-\Copyright    Copyright (c) Imagination Technologies Limited.
-\brief      Shows how to use the PVRApi library together with loading models from POD files and rendering them with effects from PFX files.
-***********************************************************************************************************************/
+/*!
+\brief Shows how to use the PVRApi library together with loading models from POD files and rendering them with effects from PFX files.
+\file OpenGLESIntroducingPVRUtils.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
+
 #include "PVRShell/PVRShell.h"
 #include "PVRUtils/OpenGLES/BindingsGles.h"
 #include "PVRUtils/PVRUtilsGles.h"
@@ -22,17 +22,13 @@ enum Enum
 const char* names[] = { "WVPMatrix", "WorldViewIT", "LightDirection", "sTexture" };
 } // namespace Uniforms
 
-/*!*********************************************************************************************************************
- Content file names
-***********************************************************************************************************************/
+// Content file names
 const char VertexShaderFile[] = "VertShader.vsh"; // Effect file
 const char FragmentShaderFile[] = "FragShader.fsh"; // Effect file
 
 const char SceneFileName[] = "GnomeToy.pod"; // POD _scene files
 
-/*!*********************************************************************************************************************
- Class implementing the pvr::Shell functions.
-***********************************************************************************************************************/
+/// <summary>Class implementing the Shell functions.</summary>
 class OpenGLESIntroducingPVRUtils : public pvr::Shell
 {
 	struct DeviceResources
@@ -99,12 +95,10 @@ public:
 	void setOpenglState();
 };
 
-/*!*********************************************************************************************************************
-\return Result::Success if no error occurred
-\brief  Code in initApplication() will be called by Shell once per run, before the rendering context is created.
-	Used to initialize variables that are not dependent on it (e.g. external modules, loading meshes, etc.). If the rendering
-	context is lost, initApplication() will not be called again.
-***********************************************************************************************************************/
+/// <summary>Code in initApplication() will be called by Shell once per run, before the rendering context is created.
+/// Used to initialize variables that are not dependent on it(e.g.external modules, loading meshes, etc.).If the rendering
+/// context is lost, initApplication() will not be called again.</summary>
+/// <returns>Result::Success if no error occurred.</returns>
 pvr::Result OpenGLESIntroducingPVRUtils::initApplication()
 {
 	// Load the scene
@@ -131,22 +125,18 @@ pvr::Result OpenGLESIntroducingPVRUtils::initApplication()
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return Result::Success if no error occurred
-\brief  Code in quitApplication() will be called by pvr::Shell once per run, just before exiting the program.
-		If the rendering context is lost, quitApplication() will not be called.
-***********************************************************************************************************************/
+/// <summary>Code in quitApplication() will be called by pvr::Shell once per run, just before exiting the program.</summary>
+/// <returns>Result::Success if no error occurred</returns>.
 pvr::Result OpenGLESIntroducingPVRUtils::quitApplication()
 {
 	_scene.reset();
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return Result::Success if no error occurred
-\brief  Code in initView() will be called by Shell upon initialization or after a change  in the rendering context.
-		Used to initialize variables that are dependent on the rendering context (e.g. textures, vertex buffers, etc.)
-***********************************************************************************************************************/
+/// <summary>Code in initView() will be called by Shell upon initialization or after a change
+/// in the rendering context. Used to initialize variables that are dependent on the
+/// rendering context(e.g.textures, vertex buffers, etc.).</summary>
+/// <returns>Result::Success if no error occurred.</returns>
 pvr::Result OpenGLESIntroducingPVRUtils::initView()
 {
 	_deviceResources = std::make_unique<DeviceResources>();
@@ -175,7 +165,7 @@ pvr::Result OpenGLESIntroducingPVRUtils::initView()
 	_clearColor = clearColorLinearSpace;
 	if (getBackBufferColorspace() != pvr::ColorSpace::sRGB)
 	{
-		// Gamma correct the clear color
+		// Gamma correct the clear colour
 		_clearColor = pvr::utils::convertLRGBtoSRGB(clearColorLinearSpace);
 		// However, OpenGL ES2 should not be gamma corrected because the textures will unfortunately not be correctly read in linear values
 		if (_deviceResources->context->getApiVersion() > pvr::Api::OpenGLES2) { numDefines = 0; }
@@ -255,20 +245,16 @@ void OpenGLESIntroducingPVRUtils::setOpenglState()
 	gl::EnableVertexAttribArray(2);
 }
 
-/*!*********************************************************************************************************************
-\return Result::Success if no error occurred
-\brief  Code in releaseView() will be called by Shell when the application quits or before a change in the rendering context.
-***********************************************************************************************************************/
+/// <summary>Code in releaseView() will be called by Shell when the application quits.</summary>
+/// <returns>Result::Success if no error occurred.</returns>
 pvr::Result OpenGLESIntroducingPVRUtils::releaseView()
 {
 	_deviceResources.reset();
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return Result::Success if no error occurred
-\brief  Main rendering loop function of the program. The shell will call this function every _frame.
-***********************************************************************************************************************/
+/// <summary>Main rendering loop function of the program. The shell will call this function every frame.</summary>
+/// <returns>Result::Success if no error occurred.</returns>
 pvr::Result OpenGLESIntroducingPVRUtils::renderFrame()
 {
 	debugThrowOnApiError("RenderFrame: Entrance");
@@ -309,7 +295,7 @@ void OpenGLESIntroducingPVRUtils::renderMesh(uint32_t meshNodeId)
 	//  A _scene is composed of nodes. There are 3 types of nodes:
 	//  - MeshNodes :
 	//    references a mesh in the getMesh().
-	//    These nodes are at the beginning of of the Nodes array.
+	//    These nodes are at the beginning of the Nodes array.
 	//    And there are nNumMeshNode number of them.
 	//    This way the .pod format can instantiate several times the same mesh
 	//    with different attributes.
@@ -324,7 +310,7 @@ void OpenGLESIntroducingPVRUtils::renderMesh(uint32_t meshNodeId)
 	// A _scene is composed of nodes. There are 3 types of nodes:
 	// - MeshNodes :
 	// references a mesh in the getMesh().
-	// These nodes are at the beginning of of the Nodes array.
+	// These nodes are at the beginning of the Nodes array.
 	// And there are nNumMeshNode number of them.
 	// This way the .pod format can instantiate several times the same mesh
 	// with different attributes.

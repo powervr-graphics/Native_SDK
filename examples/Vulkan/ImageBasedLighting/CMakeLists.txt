@@ -33,12 +33,12 @@ add_assets_to_target(VulkanImageBasedLighting
 	ASSET_FOLDER ${ASSET_FOLDER} 
 	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/damagedHelmet
 	FILE_LIST 
+		damagedHelmet.bin
+		damagedHelmet.gltf
 		Default_albedo.pvr
 		Default_emissive.pvr
 		Default_occlusionRoughnessMetallic.pvr
-		Default_normal.pvr
-		damagedHelmet.bin
-		damagedHelmet.gltf)
+		Default_normal.pvr)
 
 add_assets_to_target(VulkanImageBasedLighting
 	SOURCE_GROUP "assets" 
@@ -55,16 +55,16 @@ add_assets_to_target(VulkanImageBasedLighting
 add_assets_to_target(VulkanImageBasedLighting
 	SOURCE_GROUP "assets" 
 	ASSET_FOLDER ${ASSET_FOLDER} 
-	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets
+	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/ParticleSystem
 	FILE_LIST 
-		brdfLUT.pvr)
+		sphere.pod)
 
 add_assets_to_target(VulkanImageBasedLighting
 	SOURCE_GROUP "assets" 
 	ASSET_FOLDER ${ASSET_FOLDER} 
-	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/ParticleSystem
+	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets
 	FILE_LIST 
-		sphere.pod)
+		brdfLUT.pvr)
 
 ### Shaders that need to be compiled to SpirV (Vulkan) ###
 # During build time, glslangvalidator will be called to create a "<shadername.extension>.spv" file
@@ -86,7 +86,7 @@ add_assets_resource_file(VulkanImageBasedLighting)
 # Apply SDK example specific compile and linker options
 apply_example_compile_options_to_target(VulkanImageBasedLighting)
 
-target_link_libraries(VulkanImageBasedLighting
+target_link_libraries(VulkanImageBasedLighting PUBLIC
 	PVRShell
 	PVRUtilsVk
 )

@@ -1,10 +1,10 @@
-/*!*********************************************************************************************************************
-\File         OpenGLESIMGFramebufferDownsample.cpp
-\Title        Introducing the POD 3D file format
-\Author       PowerVR by Imagination, Developer Technology Team
-\Copyright    Copyright (c) Imagination Technologies Limited.
-\brief        Shows how to load POD files and play the animation with basic  lighting
-***********************************************************************************************************************/
+/*!
+\brief Shows how to load POD files and play the animation with basic lighting
+\file OpenGLESIMGFramebufferDownsample.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
+
 // Main include file for the PVRShell library. Use this file when you will not be linking the PVRApi library.
 #include "PVRShell/PVRShell.h"
 // Main include file for the PVRAssets library.
@@ -27,9 +27,7 @@ const char HalfAndHalfVertShaderSrcFile[] = "HalfAndHalfVertShader.vsh";
 const char BlitFragShaderSrcFile[] = "BlitFragShader.fsh";
 const char BlitVertShaderSrcFile[] = "BlitVertShader.vsh";
 
-/*!*********************************************************************************************************************
-\brief Class implementing the pvr::Shell functions.
-***********************************************************************************************************************/
+/// <summary>implementing the pvr::Shell functions </summary>
 class OpenGLESIMGFramebufferDownsample : public pvr::Shell
 {
 	pvr::EglContext _context;
@@ -99,9 +97,7 @@ void OpenGLESIMGFramebufferDownsample::updateMode(int mode)
 	}
 }
 
-/*!********************************************************************************************
-\brief  Handles user input and updates live variables accordingly.
-***********************************************************************************************/
+/// <summary>Handles user input and updates live variables accordingly.</summary>
 void OpenGLESIMGFramebufferDownsample::eventMappedInput(pvr::SimplifiedInput e)
 {
 	static int mode = 0;
@@ -123,9 +119,7 @@ void OpenGLESIMGFramebufferDownsample::eventMappedInput(pvr::SimplifiedInput e)
 	}
 }
 
-/*!********************************************************************************************
-\brief  update the subtitle sprite
-***********************************************************************************************/
+/// <summary>update the subtitle sprite.</summary>
 void OpenGLESIMGFramebufferDownsample::updateSubtitleText()
 {
 	if (_useHalfAndHalf)
@@ -145,12 +139,10 @@ void OpenGLESIMGFramebufferDownsample::updateSubtitleText()
 	_uiRenderer.getDefaultDescription()->commitUpdates();
 }
 
-/*!*********************************************************************************************************************
-\return	Result::Success if no error occurred
-\brief	Code in initApplication() will be called by Shell once per run, before the rendering context is created.
-Used to initialize variables that are not dependent on it (e.g. external modules, loading meshes, etc.).
-If the rendering context is lost, InitApplication() will not be called again.
-***********************************************************************************************************************/
+/// <summary>Code in initApplication() will be called by Shell once per run, before the rendering context is created.
+/// Used to initialize variables that are not dependent on it(e.g.external modules, loading meshes, etc.).
+/// If the rendering context is lost, InitApplication() will not be called again.</summary>
+/// <returns>Result::Success if no error occurred.</returns>
 pvr::Result OpenGLESIMGFramebufferDownsample::initApplication()
 {
 	setBackBufferColorspace(pvr::ColorSpace::lRGB); // Example visuals are tweaked to directly use sRGB values to avoid shader gamma correction
@@ -161,11 +153,9 @@ pvr::Result OpenGLESIMGFramebufferDownsample::initApplication()
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return	Result::Success if no error occurred
-\brief	Code in initView() will be called by Shell upon initialization or after a change in the rendering context.
-		Used to initialize variables that are dependent on the rendering context (e.g. textures, vertex buffers, etc.)
-***********************************************************************************************************************/
+/// <summary>Code in initView() will be called by Shell upon initialization or after a change  in the rendering context. Used to initialize variables that are dependent on the
+/// rendering context(e.g.textures, vertex buffers, etc.).</summary>
+/// <returns>Result::Success if no error occurred.</returns>
 pvr::Result OpenGLESIMGFramebufferDownsample::initView()
 {
 	_context = pvr::createEglContext();
@@ -201,7 +191,7 @@ pvr::Result OpenGLESIMGFramebufferDownsample::initView()
 	glm::vec3 clearColor = clearColorLinearSpace;
 	if (getBackBufferColorspace() != pvr::ColorSpace::sRGB)
 	{
-		// Gamma correct the clear color
+		// Gamma correct the clear colour
 		clearColor = pvr::utils::convertLRGBtoSRGB(clearColorLinearSpace);
 	}
 
@@ -253,10 +243,8 @@ pvr::Result OpenGLESIMGFramebufferDownsample::initView()
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return	Result::Success if no error occurred
-\brief	Main rendering loop function of the program. The shell will call this function every _frame.
-***********************************************************************************************************************/
+/// <summary>Main rendering loop function of the program. The shell will call this function every frame.</summary>
+/// <returns>Result::Success if no error occurred.</returns>
 pvr::Result OpenGLESIMGFramebufferDownsample::renderFrame()
 {
 	// Set up the view and _projection matrices from the camera
@@ -349,10 +337,8 @@ pvr::Result OpenGLESIMGFramebufferDownsample::renderFrame()
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return	Result::Success if no error occurred
-\brief	Code in releaseView() will be called by PVRShell when the application quits or before a change in the rendering context.
-***********************************************************************************************************************/
+/// <summary>Code in releaseView() will be called by Shell when the application quits.</summary>
+/// <returns>Result::Success if no error occurred.</returns>
 pvr::Result OpenGLESIMGFramebufferDownsample::releaseView()
 {
 	_uiRenderer.release();
@@ -372,11 +358,8 @@ pvr::Result OpenGLESIMGFramebufferDownsample::releaseView()
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return	Result::Success if no error occurred
-\brief	Code in quitApplication() will be called by Shell once per run, just before exiting the program.
-If the rendering context is lost, quitApplication() will not be called.
-***********************************************************************************************************************/
+/// <summary>Code in quitApplication() will be called by pvr::Shell once per run, just before exiting the program.</summary>
+/// <returns>Result::Success if no error occurred</returns>.
 pvr::Result OpenGLESIMGFramebufferDownsample::quitApplication() { return pvr::Result::Success; }
 
 void OpenGLESIMGFramebufferDownsample::getDownScaleFactor(GLint& xDownscale, GLint& yDownscale)
@@ -415,10 +398,8 @@ void OpenGLESIMGFramebufferDownsample::getDownScaleFactor(GLint& xDownscale, GLi
 	}
 }
 
-/*!*********************************************************************************************************************
-\brief	Loads the mesh data required for this training course into vertex buffer objects
-\return	Return true if no error occurred
-***********************************************************************************************************************/
+/// <summary>Loads the mesh data required for this training course into vertex buffer objects.</summary>
+/// <returns>Return true if no error occurred.</return>
 void OpenGLESIMGFramebufferDownsample::LoadVbos()
 {
 	{
@@ -442,10 +423,8 @@ void OpenGLESIMGFramebufferDownsample::LoadVbos()
 	gl::BindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-/*!*********************************************************************************************************************
-\brief	Loads and compiles the shaders and links the shader programs required for this training course
-\return	Return true if no error occurred
-***********************************************************************************************************************/
+/// <summary>Loads and compiles the shaders and links the shader programs required for this training course.</summary>
+/// <returns>true if no error occurred.</return>
 void OpenGLESIMGFramebufferDownsample::loadShaders()
 {
 	// Load and compile the shaders from files.

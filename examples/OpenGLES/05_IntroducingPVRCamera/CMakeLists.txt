@@ -40,7 +40,7 @@ add_assets_resource_file(OpenGLESIntroducingPVRCamera)
 # Apply SDK example specific compile and linker options
 apply_example_compile_options_to_target(OpenGLESIntroducingPVRCamera)
 
-target_link_libraries(OpenGLESIntroducingPVRCamera
+target_link_libraries(OpenGLESIntroducingPVRCamera PUBLIC
 	PVRShell
 	PVRUtilsGles
 	PVRCamera

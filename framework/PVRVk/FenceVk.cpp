@@ -42,7 +42,7 @@ bool Fence_::wait(uint64_t timeoutNanos)
 	Result res;
 	vkThrowIfError(res = static_cast<pvrvk::Result>(getDevice()->getVkBindings().vkWaitForFences(getDevice()->getVkHandle(), 1, &getVkHandle(), true, timeoutNanos)),
 		"Fence::wait returned an error");
-	assert(res == Result::e_SUCCESS || res == Result::e_TIMEOUT || res == Result::e_NOT_READY && "Fence returned invalid non-error VkResult!");
+	assert((res == Result::e_SUCCESS || res == Result::e_TIMEOUT || res == Result::e_NOT_READY) && "Fence returned invalid non-error VkResult!");
 	return (res == Result::e_SUCCESS);
 }
 
@@ -52,7 +52,7 @@ bool Fence_::isSignalled()
 {
 	Result res;
 	vkThrowIfError(res = static_cast<pvrvk::Result>(getDevice()->getVkBindings().vkGetFenceStatus(getDevice()->getVkHandle(), getVkHandle())), "Fence::getStatus returned an error");
-	assert(res == Result::e_SUCCESS || res == Result::e_TIMEOUT || res == Result::e_NOT_READY && "Fence returned invalid non-error VkResult!");
+	assert((res == Result::e_SUCCESS || res == Result::e_TIMEOUT || res == Result::e_NOT_READY) && "Fence returned invalid non-error VkResult!");
 	return (res == Result::e_SUCCESS);
 }
 } // namespace impl

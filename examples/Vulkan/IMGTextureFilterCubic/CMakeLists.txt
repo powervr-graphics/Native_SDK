@@ -45,7 +45,7 @@ add_assets_resource_file(VulkanIMGTextureFilterCubic)
 # Apply SDK example specific compile and linker options
 apply_example_compile_options_to_target(VulkanIMGTextureFilterCubic)
 
-target_link_libraries(VulkanIMGTextureFilterCubic
+target_link_libraries(VulkanIMGTextureFilterCubic PUBLIC
 	PVRShell
 	PVRUtilsVk
 )

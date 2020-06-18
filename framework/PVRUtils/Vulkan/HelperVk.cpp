@@ -23,92 +23,7 @@
 
 namespace pvr {
 namespace utils {
-pvrvk::Buffer createBuffer(pvrvk::Device device, const pvrvk::BufferCreateInfo& createInfo, pvrvk::MemoryPropertyFlags requiredMemoryFlags,
-	pvrvk::MemoryPropertyFlags optimalMemoryFlags, vma::Allocator* bufferAllocator, vma::AllocationCreateFlags vmaAllocationCreateFlags)
-{
-	// create the PVRVk Buffer
-	pvrvk::Buffer buffer = device->createBuffer(createInfo);
-
-	// if the required memory flags is pvrvk::MemoryPropertyFlags::e_NONE then no backing will be provided for the buffer
-	if (requiredMemoryFlags != pvrvk::MemoryPropertyFlags::e_NONE)
-	{
-		// use the allocator
-		if (bufferAllocator && *bufferAllocator)
-		{
-			vma::AllocationCreateInfo allocationInfo;
-			allocationInfo.usage = vma::MemoryUsage::e_UNKNOWN;
-			allocationInfo.requiredFlags = requiredMemoryFlags;
-			allocationInfo.preferredFlags = optimalMemoryFlags | requiredMemoryFlags;
-			allocationInfo.flags = vmaAllocationCreateFlags;
-			allocationInfo.memoryTypeBits = buffer->getMemoryRequirement().getMemoryTypeBits();
-			vma::Allocation allocation;
-			allocation = (*bufferAllocator)->allocateMemoryForBuffer(buffer, allocationInfo);
-			buffer->bindMemory(pvrvk::DeviceMemory(allocation), allocation->getOffset());
-		}
-		else
-		{
-			// get the buffer memory requirements, memory type index and memory property flags required for backing the PVRVk buffer
-			const pvrvk::MemoryRequirements& memoryRequirements = buffer->getMemoryRequirement();
-			uint32_t memoryTypeIndex;
-			pvrvk::MemoryPropertyFlags memoryPropertyFlags;
-			getMemoryTypeIndex(device->getPhysicalDevice(), memoryRequirements.getMemoryTypeBits(), requiredMemoryFlags, optimalMemoryFlags, memoryTypeIndex, memoryPropertyFlags);
-
-			// allocate the buffer memory using the retrieved memory type index and memory property flags
-			pvrvk::DeviceMemory deviceMemory = device->allocateMemory(pvrvk::MemoryAllocationInfo(buffer->getMemoryRequirement().getSize(), memoryTypeIndex));
-
-			// attach the memory to the buffer
-			buffer->bindMemory(deviceMemory, 0);
-		}
-	}
-	return buffer;
-}
-
-pvrvk::Image createImage(pvrvk::Device device, const pvrvk::ImageCreateInfo& createInfo, pvrvk::MemoryPropertyFlags requiredMemoryFlags,
-	pvrvk::MemoryPropertyFlags optimalMemoryFlags, vma::Allocator* imageAllocator, vma::AllocationCreateFlags vmaAllocationCreateFlags)
-{
-	// create the PVRVk Image
-	pvrvk::Image image = device->createImage(createInfo);
-
-	// if the required memory flags is pvrvk::MemoryPropertyFlags::e_NONE then no backing will be provided for the image
-	if (requiredMemoryFlags != pvrvk::MemoryPropertyFlags::e_NONE)
-	{
-		// if no flags are provided for the optimal flags then just reuse the required set of memory property flags to optimise the getMemoryTypeIndex
-		if (optimalMemoryFlags == pvrvk::MemoryPropertyFlags::e_NONE) { optimalMemoryFlags = requiredMemoryFlags; }
-
-		// Create a memory block if it is non sparse and a valid memory propery flag.
-		if ((createInfo.getFlags() &
-				(pvrvk::ImageCreateFlags::e_SPARSE_ALIASED_BIT | pvrvk::ImageCreateFlags::e_SPARSE_BINDING_BIT | pvrvk::ImageCreateFlags::e_SPARSE_RESIDENCY_BIT)) == 0 &&
-			(requiredMemoryFlags != pvrvk::MemoryPropertyFlags(0)))
-		// If it's not sparse, create memory backing
-		{
-			if (imageAllocator && *imageAllocator)
-			{
-				vma::AllocationCreateInfo allocInfo = {};
-				allocInfo.memoryTypeBits = image->getMemoryRequirement().getMemoryTypeBits();
-				allocInfo.requiredFlags = requiredMemoryFlags;
-				allocInfo.preferredFlags = requiredMemoryFlags | optimalMemoryFlags;
-				allocInfo.flags = vmaAllocationCreateFlags;
-				vma::Allocation allocation = (*imageAllocator)->allocateMemoryForImage(image, allocInfo);
-				image->bindMemoryNonSparse(allocation, allocation->getOffset());
-			}
-			else
-			{
-				// get the image memory requirements, memory type index and memory property flags required for backing the PVRVk image
-				const pvrvk::MemoryRequirements& memoryRequirements = image->getMemoryRequirement();
-				uint32_t memoryTypeIndex;
-				pvrvk::MemoryPropertyFlags memoryPropertyFlags;
-				getMemoryTypeIndex(device->getPhysicalDevice(), memoryRequirements.getMemoryTypeBits(), requiredMemoryFlags, optimalMemoryFlags, memoryTypeIndex, memoryPropertyFlags);
-
-				// allocate the image memory using the retrieved memory type index and memory property flags
-				pvrvk::DeviceMemory memBlock = device->allocateMemory(pvrvk::MemoryAllocationInfo(memoryRequirements.getSize(), memoryTypeIndex));
-
-				// attach the memory to the image
-				image->bindMemoryNonSparse(memBlock);
-			}
-		}
-	}
-	return image;
-}
+#pragma region ////////////// BASIC HELPERS /////////////////
 
 pvrvk::ImageAspectFlags inferAspectFromFormat(pvrvk::Format format)
 {
@@ -203,7 +118,7 @@ void getDepthStencilBits(pvrvk::Format format, uint32_t& depthBits, uint32_t& st
 }
 
 pvrvk::ImageView uploadImageAndViewSubmit(pvrvk::Device& device, const Texture& texture, bool allowDecompress, pvrvk::CommandPool& cmdPool, pvrvk::Queue& queue,
-	pvrvk::ImageUsageFlags usageFlags, pvrvk::ImageLayout finalLayout, vma::Allocator* stagingBufferAllocator, vma::Allocator* imageAllocator,
+	pvrvk::ImageUsageFlags usageFlags, pvrvk::ImageLayout finalLayout, vma::Allocator stagingBufferAllocator, vma::Allocator imageAllocator,
 	vma::AllocationCreateFlags imageAllocationCreateFlags)
 {
 	pvrvk::CommandBuffer cmdBuffer = cmdPool->allocateCommandBuffer();
@@ -223,6 +138,66 @@ pvrvk::ImageView uploadImageAndViewSubmit(pvrvk::Device& device, const Texture& 
 
 	return result;
 }
+
+void create3dPlaneMesh(uint32_t width, uint32_t depth, bool generateTexCoords, bool generateNormalCoords, assets::Mesh& outMesh)
+{
+	const float halfWidth = width * .5f;
+	const float halfDepth = depth * .5f;
+
+	glm::vec3 normal[4] = { glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f) };
+
+	glm::vec2 texCoord[4] = {
+		glm::vec2(0.0f, 1.0f),
+		glm::vec2(0.0f, 0.0f),
+		glm::vec2(1.0f, 0.0f),
+		glm::vec2(1.0f, 1.0f),
+	};
+
+	glm::vec3 pos[4] = { glm::vec3(-halfWidth, 0.0f, -halfDepth), glm::vec3(-halfWidth, 0.0f, halfDepth), glm::vec3(halfWidth, 0.0f, halfDepth), glm::vec3(halfWidth, 0.0f, -halfDepth) };
+
+	uint32_t indexData[] = { 0, 1, 2, 0, 2, 3 };
+
+	float vertData[32];
+	uint32_t offset = 0;
+
+	for (uint32_t i = 0; i < 4; ++i)
+	{
+		memcpy(&vertData[offset], &pos[i], sizeof(pos[i]));
+		offset += 3;
+		if (generateNormalCoords)
+		{
+			memcpy(&vertData[offset], &normal[i], sizeof(normal[i]));
+			offset += 3;
+		}
+		if (generateTexCoords)
+		{
+			memcpy(&vertData[offset], &texCoord[i], sizeof(texCoord[i]));
+			offset += 2;
+		}
+	}
+
+	uint32_t stride = sizeof(glm::vec3) + (generateNormalCoords ? sizeof(glm::vec3) : 0) + (generateTexCoords ? sizeof(glm::vec2) : 0);
+
+	outMesh.addData(reinterpret_cast<const uint8_t*>(vertData), sizeof(vertData), stride, 0);
+	outMesh.addFaces(reinterpret_cast<const uint8_t*>(indexData), sizeof(indexData), IndexType::IndexType32Bit);
+	offset = 0;
+	outMesh.addVertexAttribute("POSITION", DataType::Float32, 3, offset, 0);
+	offset += sizeof(float) * 3;
+	if (generateNormalCoords)
+	{
+		outMesh.addVertexAttribute("NORMAL", DataType::Float32, 3, offset, 0);
+		offset += sizeof(float) * 2;
+	}
+	if (generateTexCoords) { outMesh.addVertexAttribute("UV0", DataType::Float32, 2, offset, 0); }
+	outMesh.setPrimitiveType(PrimitiveTopology::TriangleList);
+	outMesh.setStride(0, stride);
+	outMesh.setNumFaces(ARRAY_SIZE(indexData) / 3);
+	outMesh.setNumVertices(ARRAY_SIZE(pos));
+}
+
+#pragma endregion
+
+#pragma region ////////////// LOCAL HELPERS /////////////////
 namespace {
 void decompressPvrtc(const Texture& texture, Texture& cDecompressedTexture)
 {
@@ -248,6 +223,24 @@ void decompressPvrtc(const Texture& texture, Texture& cDecompressedTexture)
 	}
 }
 
+inline pvrvk::AccessFlags getAccesFlagsFromLayout(pvrvk::ImageLayout layout)
+{
+	switch (layout)
+	{
+	case pvrvk::ImageLayout::e_GENERAL:
+		return pvrvk::AccessFlags::e_SHADER_READ_BIT | pvrvk::AccessFlags::e_SHADER_WRITE_BIT | pvrvk::AccessFlags::e_COLOR_ATTACHMENT_READ_BIT |
+			pvrvk::AccessFlags::e_COLOR_ATTACHMENT_WRITE_BIT;
+	case pvrvk::ImageLayout::e_COLOR_ATTACHMENT_OPTIMAL: return pvrvk::AccessFlags::e_COLOR_ATTACHMENT_READ_BIT | pvrvk::AccessFlags::e_COLOR_ATTACHMENT_WRITE_BIT;
+	case pvrvk::ImageLayout::e_DEPTH_STENCIL_ATTACHMENT_OPTIMAL:
+		return pvrvk::AccessFlags::e_DEPTH_STENCIL_ATTACHMENT_READ_BIT | pvrvk::AccessFlags::e_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+	case pvrvk::ImageLayout::e_TRANSFER_DST_OPTIMAL: return pvrvk::AccessFlags::e_TRANSFER_WRITE_BIT;
+	case pvrvk::ImageLayout::e_TRANSFER_SRC_OPTIMAL: return pvrvk::AccessFlags::e_TRANSFER_READ_BIT;
+	case pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL: return pvrvk::AccessFlags::e_SHADER_READ_BIT;
+	case pvrvk::ImageLayout::e_PRESENT_SRC_KHR: return pvrvk::AccessFlags::e_MEMORY_READ_BIT;
+	case pvrvk::ImageLayout::e_PREINITIALIZED: return pvrvk::AccessFlags::e_HOST_WRITE_BIT;
+	default: return (pvrvk::AccessFlags)0;
+	}
+}
 inline pvrvk::Format getDepthStencilFormat(const DisplayAttributes& displayAttribs)
 {
 	uint32_t depthBpp = displayAttribs.depthBPP;
@@ -459,7 +452,7 @@ pvrvk::SurfaceFormatKHR findSwapchainFormat(
 	return swapchainFormat;
 }
 
-pvrvk::Swapchain createSwapchainHelper(pvrvk::Device& device, const pvrvk::Surface& surface, pvr::DisplayAttributes& displayAttributes,
+pvrvk::Swapchain createSwapchainHelper(const pvrvk::Device& device, const pvrvk::Surface& surface, pvr::DisplayAttributes& displayAttributes,
 	const pvrvk::ImageUsageFlags& swapchainImageUsageFlags, const std::vector<pvrvk::Format>& preferredColorFormats = std::vector<pvrvk::Format>())
 {
 	Log(LogLevel::Information, "Creating Vulkan Swapchain using pvr::DisplayAttributes");
@@ -614,27 +607,10 @@ inline static bool areQueueFamiliesSameOrInvalid(uint32_t lhs, uint32_t rhs)
 	return lhs == rhs || lhs == uint32_t(-1) || rhs == uint32_t(-1);
 }
 inline static bool isMultiQueue(uint32_t queueFamilySrc, uint32_t queueFamilyDst) { return !areQueueFamiliesSameOrInvalid(queueFamilySrc, queueFamilyDst); }
-
-inline pvrvk::AccessFlags getAccesFlagsFromLayout(pvrvk::ImageLayout layout)
-{
-	switch (layout)
-	{
-	case pvrvk::ImageLayout::e_GENERAL:
-		return pvrvk::AccessFlags::e_SHADER_READ_BIT | pvrvk::AccessFlags::e_SHADER_WRITE_BIT | pvrvk::AccessFlags::e_COLOR_ATTACHMENT_READ_BIT |
-			pvrvk::AccessFlags::e_COLOR_ATTACHMENT_WRITE_BIT;
-	case pvrvk::ImageLayout::e_COLOR_ATTACHMENT_OPTIMAL: return pvrvk::AccessFlags::e_COLOR_ATTACHMENT_READ_BIT | pvrvk::AccessFlags::e_COLOR_ATTACHMENT_WRITE_BIT;
-	case pvrvk::ImageLayout::e_DEPTH_STENCIL_ATTACHMENT_OPTIMAL:
-		return pvrvk::AccessFlags::e_DEPTH_STENCIL_ATTACHMENT_READ_BIT | pvrvk::AccessFlags::e_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
-	case pvrvk::ImageLayout::e_TRANSFER_DST_OPTIMAL: return pvrvk::AccessFlags::e_TRANSFER_WRITE_BIT;
-	case pvrvk::ImageLayout::e_TRANSFER_SRC_OPTIMAL: return pvrvk::AccessFlags::e_TRANSFER_READ_BIT;
-	case pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL: return pvrvk::AccessFlags::e_SHADER_READ_BIT;
-	case pvrvk::ImageLayout::e_PRESENT_SRC_KHR: return pvrvk::AccessFlags::e_MEMORY_READ_BIT;
-	case pvrvk::ImageLayout::e_PREINITIALIZED: return pvrvk::AccessFlags::e_HOST_WRITE_BIT;
-	default: return (pvrvk::AccessFlags)0;
-	}
-}
 } // namespace
+#pragma endregion
 
+#pragma region ///////////////// INTERNALS //////////////////
 namespace impl {
 inline bool isSupportedFormat(const pvrvk::PhysicalDevice& pdev, pvrvk::Format fmt)
 {
@@ -679,9 +655,62 @@ const Texture* decompressIfRequired(
 	}
 }
 } // namespace impl
+#pragma endregion
 
+#pragma region //////// IMAGE UPLOADING AND UPDATING ////////
+void setImageLayoutAndQueueFamilyOwnership(pvrvk::CommandBufferBase srccmd, pvrvk::CommandBufferBase dstcmd, uint32_t srcQueueFamily, uint32_t dstQueueFamily,
+	pvrvk::ImageLayout oldLayout, pvrvk::ImageLayout newLayout, pvrvk::Image& image, uint32_t baseMipLevel, uint32_t numMipLevels, uint32_t baseArrayLayer, uint32_t numArrayLayers,
+	pvrvk::ImageAspectFlags aspect)
+{
+	bool multiQueue = isMultiQueue(srcQueueFamily, dstQueueFamily);
+
+	// No operation required: We don't have a layout transition, and we don't have a queue family change.
+	if (newLayout == oldLayout && !multiQueue) { return; } // No transition required
+
+	if (multiQueue)
+	{
+		assertion(srccmd && dstcmd,
+			"Vulkan Utils setImageLayoutAndQueueOwnership: An ownership change was required, "
+			"but at least one null command buffers was passed as parameters");
+	}
+	else
+	{
+		assertion(srccmd || dstcmd,
+			"Vulkan Utils setImageLayoutAndQueueOwnership: An ownership change was not required, "
+			"but two non-null command buffers were passed as parameters");
+	}
+	pvrvk::MemoryBarrierSet barriers;
+
+	pvrvk::ImageMemoryBarrier imageMemBarrier;
+	imageMemBarrier.setOldLayout(oldLayout);
+	imageMemBarrier.setNewLayout(newLayout);
+	imageMemBarrier.setImage(image);
+	imageMemBarrier.setSubresourceRange(pvrvk::ImageSubresourceRange(aspect, baseMipLevel, numMipLevels, baseArrayLayer, numArrayLayers));
+	imageMemBarrier.setSrcQueueFamilyIndex(static_cast<uint32_t>(-1));
+	imageMemBarrier.setDstQueueFamilyIndex(static_cast<uint32_t>(-1));
+	imageMemBarrier.setSrcAccessMask(getAccesFlagsFromLayout(oldLayout));
+	imageMemBarrier.setDstAccessMask(getAccesFlagsFromLayout(newLayout));
+
+	if (multiQueue)
+	{
+		imageMemBarrier.setSrcQueueFamilyIndex(srcQueueFamily);
+		imageMemBarrier.setDstQueueFamilyIndex(dstQueueFamily);
+	}
+	barriers.clearAllBarriers();
+	// Support any one of the command buffers being NOT null - either first or second is fine.
+	if (srccmd)
+	{
+		barriers.addBarrier(imageMemBarrier);
+		srccmd->pipelineBarrier(pvrvk::PipelineStageFlags::e_ALL_COMMANDS_BIT, pvrvk::PipelineStageFlags::e_ALL_COMMANDS_BIT, barriers, true);
+	}
+	if (dstcmd)
+	{
+		barriers.addBarrier(imageMemBarrier);
+		dstcmd->pipelineBarrier(pvrvk::PipelineStageFlags::e_ALL_COMMANDS_BIT, pvrvk::PipelineStageFlags::e_ALL_COMMANDS_BIT, barriers, true);
+	}
+} // namespace utils
 pvrvk::Image uploadImageHelper(pvrvk::Device& device, const Texture& texture, bool allowDecompress, pvrvk::CommandBufferBase commandBuffer, pvrvk::ImageUsageFlags usageFlags,
-	pvrvk::ImageLayout finalLayout, vma::Allocator* bufferAllocator = nullptr, vma::Allocator* imageAllocator = nullptr,
+	pvrvk::ImageLayout finalLayout, vma::Allocator bufferAllocator = nullptr, vma::Allocator imageAllocator = nullptr,
 	vma::AllocationCreateFlags imageAllocationCreateFlags = vma::AllocationCreateFlags::e_NONE)
 {
 	// Check that the texture is valid.
@@ -781,7 +810,7 @@ pvrvk::Image uploadImageHelper(pvrvk::Device& device, const Texture& texture, bo
 }
 
 pvrvk::ImageView uploadImageAndViewHelper(pvrvk::Device& device, const Texture& texture, bool allowDecompress, pvrvk::CommandBufferBase commandBuffer,
-	pvrvk::ImageUsageFlags usageFlags, pvrvk::ImageLayout finalLayout, vma::Allocator* bufferAllocator = nullptr, vma::Allocator* imageAllocator = nullptr,
+	pvrvk::ImageUsageFlags usageFlags, pvrvk::ImageLayout finalLayout, vma::Allocator bufferAllocator = nullptr, vma::Allocator imageAllocator = nullptr,
 	vma::AllocationCreateFlags imageAllocationCreateFlags = vma::AllocationCreateFlags::e_NONE)
 {
 #ifdef VK_USE_PLATFORM_MACOS_MVK
@@ -854,8 +883,8 @@ pvrvk::ImageView uploadImageAndViewHelper(pvrvk::Device& device, const Texture& 
 }
 
 inline pvrvk::ImageView loadAndUploadImageAndViewHelper(pvrvk::Device& device, const char* fileName, bool allowDecompress, pvrvk::CommandBufferBase commandBuffer,
-	IAssetProvider& assetProvider, pvrvk::ImageUsageFlags usageFlags, pvrvk::ImageLayout finalLayout, Texture* outAssetTexture = nullptr, vma::Allocator* imageAllocator = nullptr,
-	vma::Allocator* bufferAllocator = nullptr, vma::AllocationCreateFlags imageAllocationCreateFlags = vma::AllocationCreateFlags::e_NONE)
+	IAssetProvider& assetProvider, pvrvk::ImageUsageFlags usageFlags, pvrvk::ImageLayout finalLayout, Texture* outAssetTexture = nullptr, vma::Allocator imageAllocator = nullptr,
+	vma::Allocator bufferAllocator = nullptr, vma::AllocationCreateFlags imageAllocationCreateFlags = vma::AllocationCreateFlags::e_NONE)
 {
 	Texture outTexture;
 	Texture* pOutTexture = &outTexture;
@@ -869,8 +898,8 @@ inline pvrvk::ImageView loadAndUploadImageAndViewHelper(pvrvk::Device& device, c
 }
 
 inline pvrvk::Image loadAndUploadImageHelper(pvrvk::Device& device, const char* fileName, bool allowDecompress, pvrvk::CommandBufferBase commandBuffer, IAssetProvider& assetProvider,
-	pvrvk::ImageUsageFlags usageFlags, pvrvk::ImageLayout finalLayout, Texture* outAssetTexture = nullptr, vma::Allocator* stagingBufferAllocator = nullptr,
-	vma::Allocator* imageAllocator = nullptr, vma::AllocationCreateFlags imageAllocationCreateFlags = vma::AllocationCreateFlags::e_NONE)
+	pvrvk::ImageUsageFlags usageFlags, pvrvk::ImageLayout finalLayout, Texture* outAssetTexture = nullptr, vma::Allocator stagingBufferAllocator = nullptr,
+	vma::Allocator imageAllocator = nullptr, vma::AllocationCreateFlags imageAllocationCreateFlags = vma::AllocationCreateFlags::e_NONE)
 {
 	Texture outTexture;
 	Texture* pOutTexture = &outTexture;
@@ -884,7 +913,7 @@ inline pvrvk::Image loadAndUploadImageHelper(pvrvk::Device& device, const char* 
 }
 
 pvrvk::ImageView loadAndUploadImageAndView(pvrvk::Device& device, const char* fileName, bool allowDecompress, pvrvk::CommandBuffer& commandBuffer, IAssetProvider& assetProvider,
-	pvrvk::ImageUsageFlags usageFlags, pvrvk::ImageLayout finalLayout, Texture* outAssetTexture, vma::Allocator* stagingBufferAllocator, vma::Allocator* imageAllocator,
+	pvrvk::ImageUsageFlags usageFlags, pvrvk::ImageLayout finalLayout, Texture* outAssetTexture, vma::Allocator stagingBufferAllocator, vma::Allocator imageAllocator,
 	vma::AllocationCreateFlags imageAllocationCreateFlags)
 {
 	return loadAndUploadImageAndViewHelper(device, fileName, allowDecompress, pvrvk::CommandBufferBase(commandBuffer), assetProvider, usageFlags, finalLayout, outAssetTexture,
@@ -892,15 +921,15 @@ pvrvk::ImageView loadAndUploadImageAndView(pvrvk::Device& device, const char* fi
 }
 
 pvrvk::ImageView loadAndUploadImageAndView(pvrvk::Device& device, const char* fileName, bool allowDecompress, pvrvk::SecondaryCommandBuffer& commandBuffer,
-	IAssetProvider& assetProvider, pvrvk::ImageUsageFlags usageFlags, pvrvk::ImageLayout finalLayout, Texture* outAssetTexture, vma::Allocator* stagingBufferAllocator,
-	vma::Allocator* imageAllocator, vma::AllocationCreateFlags imageAllocationCreateFlags)
+	IAssetProvider& assetProvider, pvrvk::ImageUsageFlags usageFlags, pvrvk::ImageLayout finalLayout, Texture* outAssetTexture, vma::Allocator stagingBufferAllocator,
+	vma::Allocator imageAllocator, vma::AllocationCreateFlags imageAllocationCreateFlags)
 {
 	return loadAndUploadImageAndViewHelper(device, fileName, allowDecompress, pvrvk::CommandBufferBase(commandBuffer), assetProvider, usageFlags, finalLayout, outAssetTexture,
 		imageAllocator, stagingBufferAllocator, imageAllocationCreateFlags);
 }
 
 pvrvk::Image loadAndUploadImage(pvrvk::Device& device, const char* fileName, bool allowDecompress, pvrvk::CommandBuffer& commandBuffer, IAssetProvider& assetProvider,
-	pvrvk::ImageUsageFlags usageFlags, pvrvk::ImageLayout finalLayout, Texture* outAssetTexture, vma::Allocator* stagingBufferAllocator, vma::Allocator* imageAllocator,
+	pvrvk::ImageUsageFlags usageFlags, pvrvk::ImageLayout finalLayout, Texture* outAssetTexture, vma::Allocator stagingBufferAllocator, vma::Allocator imageAllocator,
 	vma::AllocationCreateFlags imageAllocationCreateFlags)
 {
 	return loadAndUploadImageHelper(device, fileName, allowDecompress, pvrvk::CommandBufferBase(commandBuffer), assetProvider, usageFlags, finalLayout, outAssetTexture,
@@ -908,7 +937,7 @@ pvrvk::Image loadAndUploadImage(pvrvk::Device& device, const char* fileName, boo
 }
 
 pvrvk::Image loadAndUploadImage(pvrvk::Device& device, const std::string& fileName, bool allowDecompress, pvrvk::CommandBuffer& commandBuffer, IAssetProvider& assetProvider,
-	pvrvk::ImageUsageFlags usageFlags, pvrvk::ImageLayout finalLayout, Texture* outAssetTexture, vma::Allocator* stagingBufferAllocator, vma::Allocator* imageAllocator,
+	pvrvk::ImageUsageFlags usageFlags, pvrvk::ImageLayout finalLayout, Texture* outAssetTexture, vma::Allocator stagingBufferAllocator, vma::Allocator imageAllocator,
 	vma::AllocationCreateFlags imageAllocationCreateFlags)
 {
 	return loadAndUploadImageHelper(device, fileName.c_str(), allowDecompress, pvrvk::CommandBufferBase(commandBuffer), assetProvider, usageFlags, finalLayout, outAssetTexture,
@@ -916,7 +945,7 @@ pvrvk::Image loadAndUploadImage(pvrvk::Device& device, const std::string& fileNa
 }
 
 pvrvk::Image loadAndUploadImage(pvrvk::Device& device, const char* fileName, bool allowDecompress, pvrvk::SecondaryCommandBuffer& commandBuffer, IAssetProvider& assetProvider,
-	pvrvk::ImageUsageFlags usageFlags, pvrvk::ImageLayout finalLayout, Texture* outAssetTexture, vma::Allocator* stagingBufferAllocator, vma::Allocator* imageAllocator,
+	pvrvk::ImageUsageFlags usageFlags, pvrvk::ImageLayout finalLayout, Texture* outAssetTexture, vma::Allocator stagingBufferAllocator, vma::Allocator imageAllocator,
 	vma::AllocationCreateFlags imageAllocationCreateFlags)
 {
 	return loadAndUploadImageHelper(device, fileName, allowDecompress, pvrvk::CommandBufferBase(commandBuffer), assetProvider, usageFlags, finalLayout, outAssetTexture,
@@ -924,21 +953,27 @@ pvrvk::Image loadAndUploadImage(pvrvk::Device& device, const char* fileName, boo
 }
 
 pvrvk::ImageView uploadImageAndView(pvrvk::Device& device, const Texture& texture, bool allowDecompress, pvrvk::SecondaryCommandBuffer& commandBuffer, pvrvk::ImageUsageFlags usageFlags,
-	pvrvk::ImageLayout finalLayout, vma::Allocator* stagingBufferAllocator, vma::Allocator* imageAllocator, vma::AllocationCreateFlags imageAllocationCreateFlags)
+	pvrvk::ImageLayout finalLayout, vma::Allocator stagingBufferAllocator, vma::Allocator imageAllocator, vma::AllocationCreateFlags imageAllocationCreateFlags)
 {
 	return uploadImageAndViewHelper(
 		device, texture, allowDecompress, pvrvk::CommandBufferBase(commandBuffer), usageFlags, finalLayout, stagingBufferAllocator, imageAllocator, imageAllocationCreateFlags);
 }
 
 pvrvk::ImageView uploadImageAndView(pvrvk::Device& device, const Texture& texture, bool allowDecompress, pvrvk::CommandBuffer& commandBuffer, pvrvk::ImageUsageFlags usageFlags,
-	pvrvk::ImageLayout finalLayout, vma::Allocator* stagingBufferAllocator, vma::Allocator* imageAllocator, vma::AllocationCreateFlags imageAllocationCreateFlags)
+	pvrvk::ImageLayout finalLayout, vma::Allocator stagingBufferAllocator, vma::Allocator imageAllocator, vma::AllocationCreateFlags imageAllocationCreateFlags)
 {
 	return uploadImageAndViewHelper(
 		device, texture, allowDecompress, pvrvk::CommandBufferBase(commandBuffer), usageFlags, finalLayout, stagingBufferAllocator, imageAllocator, imageAllocationCreateFlags);
 }
 
+pvrvk::Image uploadImage(pvrvk::Device& device, const Texture& texture, bool allowDecompress, pvrvk::CommandBuffer& commandBuffer, pvrvk::ImageUsageFlags usageFlags,
+	pvrvk::ImageLayout finalLayout, vma::Allocator stagingBufferAllocator, vma::Allocator imageAllocator, vma::AllocationCreateFlags imageAllocationCreateFlags)
+{
+	return uploadImageHelper(device, texture, allowDecompress, commandBuffer, usageFlags, finalLayout, stagingBufferAllocator, imageAllocator, imageAllocationCreateFlags);
+}
+
 void generateTextureAtlas(pvrvk::Device& device, const pvrvk::Image* inputImages, pvrvk::Rect2Df* outUVs, uint32_t numImages, pvrvk::ImageLayout inputImageLayout,
-	pvrvk::ImageView* outImageView, TextureHeader* outDescriptor, pvrvk::CommandBufferBase cmdBuffer, pvrvk::ImageLayout finalLayout, vma::Allocator* imageAllocator,
+	pvrvk::ImageView* outImageView, TextureHeader* outDescriptor, pvrvk::CommandBufferBase cmdBuffer, pvrvk::ImageLayout finalLayout, vma::Allocator imageAllocator,
 	vma::AllocationCreateFlags imageAllocationCreateFlags)
 {
 	TextureHeader header;
@@ -1181,6 +1216,71 @@ void generateTextureAtlas(pvrvk::Device& device, const pvrvk::Image* inputImages
 	pvr::utils::endCommandBufferDebugLabel(cmdBuffer);
 }
 
+void updateImage(pvrvk::Device& device, pvrvk::CommandBufferBase cbuffTransfer, ImageUpdateInfo* updateInfos, uint32_t numUpdateInfos, pvrvk::Format format,
+	pvrvk::ImageLayout layout, bool isCubeMap, pvrvk::Image& image, vma::Allocator bufferAllocator)
+{
+	using namespace vma;
+	if (!(cbuffTransfer && cbuffTransfer->isRecording())) { throw pvrvk::ErrorValidationFailedEXT("updateImage - Commandbuffer must be valid and in recording state"); }
+
+	uint32_t numFace = (isCubeMap ? 6 : 1);
+
+	uint32_t hwSlice;
+	std::vector<pvrvk::Buffer> stagingBuffers;
+
+	{
+		pvr::utils::beginCommandBufferDebugLabel(cbuffTransfer, pvrvk::DebugUtilsLabel("PVRUtilsVk::updateImage"));
+
+		stagingBuffers.resize(numUpdateInfos);
+		pvrvk::BufferImageCopy imgcp = {};
+
+		for (uint32_t i = 0; i < numUpdateInfos; ++i)
+		{
+			const ImageUpdateInfo& mipLevelUpdate = updateInfos[i];
+			assertion(mipLevelUpdate.data && mipLevelUpdate.dataSize, "Data and Data size must be valid");
+
+			hwSlice = mipLevelUpdate.arrayIndex * numFace + mipLevelUpdate.cubeFace;
+
+			// Will write the switch layout commands from the universal queue to the transfer queue to both the
+			// transfer command buffer and the universal command buffer
+			setImageLayoutAndQueueFamilyOwnership(pvrvk::CommandBufferBase(), cbuffTransfer, static_cast<uint32_t>(-1), static_cast<uint32_t>(-1), pvrvk::ImageLayout::e_UNDEFINED,
+				pvrvk::ImageLayout::e_TRANSFER_DST_OPTIMAL, image, mipLevelUpdate.mipLevel, 1, hwSlice, 1, inferAspectFromFormat(format));
+
+			// Create a staging buffer to use as the source of a copyBufferToImage
+			stagingBuffers[i] = createBuffer(device, pvrvk::BufferCreateInfo(mipLevelUpdate.dataSize, pvrvk::BufferUsageFlags::e_TRANSFER_SRC_BIT),
+				pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, bufferAllocator, vma::AllocationCreateFlags::e_MAPPED_BIT);
+
+			stagingBuffers[i]->setObjectName("PVRUtilsVk::updateImage::Temporary Image Upload Buffer");
+			imgcp.setImageOffset(pvrvk::Offset3D(mipLevelUpdate.offsetX, mipLevelUpdate.offsetY, mipLevelUpdate.offsetZ));
+			imgcp.setImageExtent(pvrvk::Extent3D(mipLevelUpdate.imageWidth, mipLevelUpdate.imageHeight, 1));
+
+			imgcp.setImageSubresource(pvrvk::ImageSubresourceLayers(inferAspectFromFormat(format), updateInfos[i].mipLevel, hwSlice, 1));
+			imgcp.setBufferRowLength(mipLevelUpdate.dataWidth);
+			imgcp.setBufferImageHeight(mipLevelUpdate.dataHeight);
+
+			const uint8_t* srcData;
+			uint32_t srcDataSize;
+			srcData = static_cast<const uint8_t*>(mipLevelUpdate.data);
+			srcDataSize = mipLevelUpdate.dataSize;
+
+			updateHostVisibleBuffer(stagingBuffers[i], srcData, 0, srcDataSize, true);
+
+			cbuffTransfer->copyBufferToImage(stagingBuffers[i], image, pvrvk::ImageLayout::e_TRANSFER_DST_OPTIMAL, 1, &imgcp);
+
+			// CAUTION: We swapped src and dst queue families as, if there was no ownership transfer, no problem - queue families
+			// will be ignored.
+			// Will write the switch layout commands from the transfer queue to the universal queue to both the
+			// transfer command buffer and the universal command buffer
+			setImageLayoutAndQueueFamilyOwnership(cbuffTransfer, pvrvk::CommandBufferBase(), static_cast<uint32_t>(-1), static_cast<uint32_t>(-1),
+				pvrvk::ImageLayout::e_TRANSFER_DST_OPTIMAL, layout, image, mipLevelUpdate.mipLevel, 1, hwSlice, 1, inferAspectFromFormat(format));
+		}
+		pvr::utils::endCommandBufferDebugLabel(cbuffTransfer);
+	}
+}
+
+#pragma endregion
+
+#pragma region //////////// DEVICES AND QUEUES //////////////
+
 pvrvk::Device createDeviceAndQueues(pvrvk::PhysicalDevice physicalDevice, const QueuePopulateInfo* queueCreateInfos, uint32_t numQueueCreateInfos, QueueAccessInfo* outAccessInfo,
 	const DeviceExtensions& deviceExtensions)
 {
@@ -1319,6 +1419,9 @@ pvrvk::Device createDeviceAndQueues(pvrvk::PhysicalDevice physicalDevice, const 
 
 	return outDevice;
 }
+#pragma endregion
+
+#pragma region ///////// SWAPCHAINS AND FRAMEBUFFERS ////////
 
 bool isSupportedDepthStencilFormat(const pvrvk::Device& device, pvrvk::Format format)
 {
@@ -1361,80 +1464,137 @@ pvrvk::Format getSupportedDepthStencilFormat(const pvrvk::Device& device, pvr::D
 	return supportedDepthStencilFormat;
 }
 
-template<typename ImageContainer>
-inline static void createDepthStencilImageAndViewsHelper(pvrvk::Device& device, int32_t imageCount, pvrvk::Format depthFormat, const pvrvk::Extent2D& imageExtent,
-	const pvrvk::ImageUsageFlags& imageUsageFlags, pvrvk::SampleCountFlags sampleCount, vma::Allocator* dsImageAllocator, vma::AllocationCreateFlags dsImageAllocationCreateFlags,
-	ImageContainer& outDepthStencilImages)
-{
-	// the required memory property flags
-	const pvrvk::MemoryPropertyFlags requiredMemoryProperties = pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT;
-
-	// more optimal set of memory property flags
-	const pvrvk::MemoryPropertyFlags optimalMemoryProperties = (imageUsageFlags & pvrvk::ImageUsageFlags::e_TRANSIENT_ATTACHMENT_BIT) != 0
-		? pvrvk::MemoryPropertyFlags::e_LAZILY_ALLOCATED_BIT
-		: pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT;
-
-	for (int32_t i = 0; i < imageCount; ++i)
-	{
-		pvrvk::Image depthStencilImage = createImage(device,
-			pvrvk::ImageCreateInfo(pvrvk::ImageType::e_2D, depthFormat, pvrvk::Extent3D(imageExtent.getWidth(), imageExtent.getHeight(), 1u), imageUsageFlags, 1, 1, sampleCount),
-			requiredMemoryProperties, optimalMemoryProperties, dsImageAllocator, dsImageAllocationCreateFlags);
-		depthStencilImage->setObjectName(std::string("PVRUtilsVk::Depth Stencil Image [") + std::to_string(i) + std::string("]"));
-
-		outDepthStencilImages[i] = device->createImageView(pvrvk::ImageViewCreateInfo(depthStencilImage));
-		outDepthStencilImages[i]->setObjectName(std::string("PVRUtilsVk::Depth Stencil Image View [") + std::to_string(i) + std::string("]"));
-	}
-}
-
-std::vector<pvrvk::ImageView> createDepthStencilImageAndViews(pvrvk::Device& device, int32_t imageCount, pvrvk::Format depthFormat, const pvrvk::Extent2D& imageExtent,
-	const pvrvk::ImageUsageFlags& imageUsageFlags, pvrvk::SampleCountFlags sampleCount, vma::Allocator* dsImageAllocator, vma::AllocationCreateFlags dsImageAllocationCreateFlags)
-{
-	std::vector<pvrvk::ImageView> depthStencilImages(imageCount);
-	createDepthStencilImageAndViewsHelper(device, imageCount, depthFormat, imageExtent, imageUsageFlags, sampleCount, dsImageAllocator, dsImageAllocationCreateFlags, depthStencilImages);
-	return depthStencilImages;
-}
-
-void createSwapchainAndDepthStencilImageAndViews(pvrvk::Device& device, const pvrvk::Surface& surface, DisplayAttributes& displayAttributes, pvrvk::Swapchain& outSwapchain,
+void createSwapchainAndDepthStencilImageAndViews(const pvrvk::Device& device, const pvrvk::Surface& surface, DisplayAttributes& displayAttributes, pvrvk::Swapchain& outSwapchain,
 	Multi<pvrvk::ImageView>& outDepthStencilImages, const pvrvk::ImageUsageFlags& swapchainImageUsageFlags, const pvrvk::ImageUsageFlags& dsImageUsageFlags,
-	vma::Allocator* dsImageAllocator, vma::AllocationCreateFlags dsImageAllocationCreateFlags)
+	const vma::Allocator& dsImageAllocator, vma::AllocationCreateFlags dsImageAllocationCreateFlags)
 {
 	outSwapchain = createSwapchain(device, surface, displayAttributes, swapchainImageUsageFlags);
 
 	pvrvk::Format supportedDepthStencilFormat = getSupportedDepthStencilFormat(device, displayAttributes);
-	auto depthStencilImages = createDepthStencilImageAndViews(device, displayAttributes.swapLength, supportedDepthStencilFormat, outSwapchain->getDimension(), dsImageUsageFlags,
-		pvrvk::SampleCountFlags::e_1_BIT, dsImageAllocator, dsImageAllocationCreateFlags);
-
-	outDepthStencilImages.resize(displayAttributes.swapLength);
-	std::copy_n(depthStencilImages.begin(), outDepthStencilImages.size(), &outDepthStencilImages[0]);
+	createAttachmentImages(outDepthStencilImages, device, displayAttributes.swapLength, supportedDepthStencilFormat, outSwapchain->getDimension(), dsImageUsageFlags,
+		convertToPVRVkNumSamples((uint8_t)displayAttributes.aaSamples), dsImageAllocator, dsImageAllocationCreateFlags, "PVRUtilsVk::DepthStencil");
 }
 
-void createSwapchainAndDepthStencilImageAndViews(pvrvk::Device& device, const pvrvk::Surface& surface, DisplayAttributes& displayAttributes, pvrvk::Swapchain& outSwapchain,
-	Multi<pvrvk::ImageView>& outDepthStencilImages, const std::vector<pvrvk::Format>& preferredColorFormats, const std::vector<pvrvk::Format>& preferredDepthStencilFormats,
-	const pvrvk::ImageUsageFlags& swapchainImageUsageFlags, const pvrvk::ImageUsageFlags& dsImageUsageFlags, vma::Allocator* dsImageAllocator,
-	vma::AllocationCreateFlags dsImageAllocationCreateFlags)
-{
-	outSwapchain = createSwapchain(device, surface, displayAttributes, preferredColorFormats, swapchainImageUsageFlags);
-
-	pvrvk::Format supportedDepthStencilFormat = getSupportedDepthStencilFormat(device, displayAttributes, preferredDepthStencilFormats);
-
-	outDepthStencilImages.resize(displayAttributes.swapLength);
-	createDepthStencilImageAndViewsHelper(device, displayAttributes.swapLength, supportedDepthStencilFormat, outSwapchain->getDimension(), dsImageUsageFlags,
-		pvrvk::SampleCountFlags::e_1_BIT, dsImageAllocator, dsImageAllocationCreateFlags, outDepthStencilImages);
-}
-
-pvrvk::Swapchain createSwapchain(pvrvk::Device& device, const pvrvk::Surface& surface, pvr::DisplayAttributes& displayAttributes,
-	const std::vector<pvrvk::Format>& preferredColorFormats, pvrvk::ImageUsageFlags swapchainImageUsageFlags)
+pvrvk::Swapchain createSwapchain(const pvrvk::Device& device, const pvrvk::Surface& surface, pvr::DisplayAttributes& displayAttributes,
+	pvrvk::ImageUsageFlags swapchainImageUsageFlags, const std::vector<pvrvk::Format>& preferredColorFormats)
 {
 	return createSwapchainHelper(device, surface, displayAttributes, swapchainImageUsageFlags, preferredColorFormats);
 }
 
-pvrvk::Swapchain createSwapchain(pvrvk::Device& device, const pvrvk::Surface& surface, pvr::DisplayAttributes& displayAttributes, pvrvk::ImageUsageFlags swapchainImageUsageFlags)
+pvrvk::RenderPass createOnScreenRenderPass(const pvrvk::Swapchain& swapchain, bool hasDepthStencil, const pvrvk::Format depthStencilFormat,
+	pvrvk::ImageLayout initialSwapchainLayout, pvrvk::ImageLayout initialDepthStencilLayout, pvrvk::AttachmentLoadOp colorLoadOp, pvrvk::AttachmentStoreOp colorStoreOp,
+	pvrvk::AttachmentLoadOp depthStencilLoadOp, pvrvk::AttachmentStoreOp depthStencilStoreOp, pvrvk::SampleCountFlags samples)
 {
-	return createSwapchainHelper(device, surface, displayAttributes, swapchainImageUsageFlags);
+	pvrvk::RenderPassCreateInfo rpInfo;
+	pvrvk::SubpassDescription subpass;
+
+	bool multisample = (samples != pvrvk::SampleCountFlags::e_1_BIT);
+
+	int coloridx = 0, depthidx = 0, colorresolveidx = 0, depthresolveidx = 0;
+	details::assignAttachmentIndexes(hasDepthStencil, multisample, coloridx, depthidx, colorresolveidx, depthresolveidx);
+
+	if (!multisample)
+	{
+		rpInfo.setAttachmentDescription(0,
+			pvrvk::AttachmentDescription::createColorDescription(
+				swapchain->getImageFormat(), initialSwapchainLayout, pvrvk::ImageLayout::e_PRESENT_SRC_KHR, colorLoadOp, colorStoreOp, pvrvk::SampleCountFlags::e_1_BIT));
+		subpass.setColorAttachmentReference(0, pvrvk::AttachmentReference(coloridx, pvrvk::ImageLayout::e_COLOR_ATTACHMENT_OPTIMAL));
+		if (hasDepthStencil)
+		{
+			rpInfo.setAttachmentDescription(1,
+				pvrvk::AttachmentDescription::createDepthStencilDescription(depthStencilFormat, initialDepthStencilLayout, pvrvk::ImageLayout::e_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+					depthStencilLoadOp, depthStencilStoreOp, pvrvk::AttachmentLoadOp::e_CLEAR, pvrvk::AttachmentStoreOp::e_DONT_CARE,
+					swapchain->getImage(0)->getCreateInfo().getNumSamples()));
+			subpass.setDepthStencilAttachmentReference(pvrvk::AttachmentReference(depthidx, pvrvk::ImageLayout::e_DEPTH_STENCIL_ATTACHMENT_OPTIMAL));
+		}
+	}
+	else // MULTISAMPLING
+	{
+		// We do not care about storeop, as the resolve attachment is the one that will be stored. The layout should always be color attachment optimal, as only resolve will be presented
+		rpInfo.setAttachmentDescription(coloridx,
+			pvrvk::AttachmentDescription::createColorDescription(
+				swapchain->getImageFormat(), initialSwapchainLayout, pvrvk::ImageLayout::e_COLOR_ATTACHMENT_OPTIMAL, colorLoadOp, pvrvk::AttachmentStoreOp::e_DONT_CARE, samples));
+
+		subpass.setColorAttachmentReference(0, pvrvk::AttachmentReference(coloridx, pvrvk::ImageLayout::e_COLOR_ATTACHMENT_OPTIMAL));
+
+		// Conversely, we do not care about the loadop, since the whole attachment will get overwritten during resolving. The layout should be Present Src, as only the color attachment gets rendered into
+		rpInfo.setAttachmentDescription(colorresolveidx,
+			pvrvk::AttachmentDescription::createColorDescription(swapchain->getImageFormat(), initialSwapchainLayout, pvrvk::ImageLayout::e_PRESENT_SRC_KHR,
+				pvrvk::AttachmentLoadOp::e_DONT_CARE, colorStoreOp, pvrvk::SampleCountFlags::e_1_BIT));
+
+		subpass.setResolveAttachmentReference(0, pvrvk::AttachmentReference(colorresolveidx, pvrvk::ImageLayout::e_COLOR_ATTACHMENT_OPTIMAL));
+
+		if (hasDepthStencil)
+		{
+			rpInfo.setAttachmentDescription(depthidx,
+				pvrvk::AttachmentDescription::createDepthStencilDescription(depthStencilFormat, initialDepthStencilLayout, pvrvk::ImageLayout::e_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+					depthStencilLoadOp, pvrvk::AttachmentStoreOp::e_DONT_CARE, depthStencilLoadOp, pvrvk::AttachmentStoreOp::e_DONT_CARE, samples));
+			subpass.setDepthStencilAttachmentReference(pvrvk::AttachmentReference(depthidx, pvrvk::ImageLayout::e_DEPTH_STENCIL_ATTACHMENT_OPTIMAL));
+
+			rpInfo.setAttachmentDescription(depthresolveidx,
+				pvrvk::AttachmentDescription::createDepthStencilDescription(depthStencilFormat, initialDepthStencilLayout, pvrvk::ImageLayout::e_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+					pvrvk::AttachmentLoadOp::e_DONT_CARE, depthStencilStoreOp, pvrvk::AttachmentLoadOp::e_DONT_CARE, depthStencilStoreOp, pvrvk::SampleCountFlags::e_1_BIT));
+			subpass.setResolveAttachmentReference(1, pvrvk::AttachmentReference(depthresolveidx, pvrvk::ImageLayout::e_DEPTH_STENCIL_ATTACHMENT_OPTIMAL));
+		}
+	}
+
+	pvrvk::SubpassDependency dependencies[2];
+	dependencies[0] = pvrvk::SubpassDependency(pvrvk::SubpassExternal, 0, pvrvk::PipelineStageFlags::e_BOTTOM_OF_PIPE_BIT, pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT,
+		pvrvk::AccessFlags::e_NONE, pvrvk::AccessFlags::e_COLOR_ATTACHMENT_READ_BIT | pvrvk::AccessFlags::e_COLOR_ATTACHMENT_WRITE_BIT, pvrvk::DependencyFlags::e_BY_REGION_BIT);
+
+	dependencies[1] = pvrvk::SubpassDependency(0, pvrvk::SubpassExternal, pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT, pvrvk::PipelineStageFlags::e_BOTTOM_OF_PIPE_BIT,
+		pvrvk::AccessFlags::e_COLOR_ATTACHMENT_READ_BIT | pvrvk::AccessFlags::e_COLOR_ATTACHMENT_WRITE_BIT, pvrvk::AccessFlags::e_NONE, pvrvk::DependencyFlags::e_BY_REGION_BIT);
+
+	rpInfo.addSubpassDependencies(dependencies, ARRAY_SIZE(dependencies));
+	rpInfo.setSubpass(0, subpass);
+
+	pvrvk::RenderPass renderPass = swapchain->getDevice()->createRenderPass(rpInfo);
+	renderPass->setObjectName("PVRUtilsVk::OnScreenRenderPass");
+
+	return renderPass;
 }
 
+OnScreenObjects createSwapchainRenderpassFramebuffers(
+	const pvrvk::Device& device, const pvrvk::Surface& surface, pvr::DisplayAttributes& displayAttributes, const CreateSwapchainParameters& configuration)
+{
+	OnScreenObjects retval;
+	retval.swapchain = createSwapchain(device, surface, displayAttributes, configuration.colorImageUsageFlags, configuration.preferredColorFormats);
+	pvrvk::SampleCountFlags samples = convertToPVRVkNumSamples((uint8_t)displayAttributes.aaSamples);
+	pvrvk::Format supportedDepthStencilFormat = pvrvk::Format::e_UNDEFINED;
+	if (displayAttributes.aaSamples > 1)
+	{
+		// Since AA, THIS is actually the color attachemt. The backbuffer is the "resolve" attachment.
+		createAttachmentImages(retval.colorMultisampledAttachmentImages, device, displayAttributes.swapLength, retval.swapchain->getImageFormat(), retval.swapchain->getDimension(),
+			configuration.colorAttachmentFlagsIfMultisampled, samples, configuration.imageAllocator, configuration.imageAllocatorFlags, "PVRUtilsVk::ColorMSAAAttachment");
+	}
+	if (configuration.createDepthBuffer)
+	{
+		// The only attachment, or the Resolve attachment if AA
+		supportedDepthStencilFormat = getSupportedDepthStencilFormat(device, displayAttributes, configuration.preferredDepthStencilFormats);
+		createAttachmentImages(retval.depthStencilImages, device, displayAttributes.swapLength, supportedDepthStencilFormat, retval.swapchain->getDimension(),
+			configuration.depthStencilImageUsageFlags, pvrvk::SampleCountFlags::e_1_BIT, configuration.imageAllocator, configuration.imageAllocatorFlags, "PVRUtilsVk::DepthStencil");
+		if (displayAttributes.aaSamples > 1)
+		{
+			// Since AA, THIS is the depth attachment
+			createAttachmentImages(retval.depthStencilMultisampledAttachmentImages, device, displayAttributes.swapLength, supportedDepthStencilFormat,
+				retval.swapchain->getDimension(), configuration.depthStencilAttachmentFlagsIfMultisampled, samples, configuration.imageAllocator, configuration.imageAllocatorFlags,
+				"PVRUtilsVk::DepthStencilMSAAAttachment");
+		}
+	}
+
+	retval.renderPass = createOnScreenRenderPass(retval.swapchain, configuration.createDepthBuffer, supportedDepthStencilFormat, configuration.initialSwapchainLayout,
+		configuration.initialDepthStencilLayout, configuration.colorLoadOp, configuration.colorStoreOp, configuration.depthStencilLoadOp, configuration.depthStencilStoreOp, samples);
+	retval.framebuffer = createOnscreenFramebuffers<Multi<pvrvk::Framebuffer>>(retval.swapchain, retval.renderPass, retval.depthStencilImages.data(),
+		retval.colorMultisampledAttachmentImages.data(), retval.depthStencilMultisampledAttachmentImages.data());
+	return retval;
+}
+
+#pragma endregion
+
+#pragma region //////////////// SCREENSHOTS /////////////////
+
 std::vector<unsigned char> captureImageRegion(pvrvk::Queue& queue, pvrvk::CommandPool& cmdPool, pvrvk::Image& image, pvrvk::Offset3D srcOffset, pvrvk::Extent3D srcExtent,
-	pvrvk::Format destinationImageFormat, pvrvk::ImageLayout imageInitialLayout, pvrvk::ImageLayout imageFinalLayout, vma::Allocator* bufferAllocator, vma::Allocator* imageAllocator)
+	pvrvk::Format destinationImageFormat, pvrvk::ImageLayout imageInitialLayout, pvrvk::ImageLayout imageFinalLayout, vma::Allocator bufferAllocator, vma::Allocator imageAllocator)
 {
 	pvrvk::Device device = image->getDevice();
 	pvrvk::CommandBuffer cmdBuffer = cmdPool->allocateCommandBuffer();
@@ -1515,7 +1675,7 @@ std::vector<unsigned char> captureImageRegion(pvrvk::Queue& queue, pvrvk::Comman
 }
 
 bool takeScreenshot(pvrvk::Queue& queue, pvrvk::CommandPool& cmdPool, pvrvk::Swapchain& swapchain, const uint32_t swapIndex, const std::string& screenshotFileName,
-	vma::Allocator* bufferAllocator, vma::Allocator* imageAllocator, const uint32_t screenshotScale)
+	vma::Allocator bufferAllocator, vma::Allocator imageAllocator, const uint32_t screenshotScale)
 {
 	pvr::utils::beginQueueDebugLabel(queue, pvrvk::DebugUtilsLabel("PVRUtilsVk::takeScreenshot"));
 
@@ -1536,7 +1696,7 @@ bool takeScreenshot(pvrvk::Queue& queue, pvrvk::CommandPool& cmdPool, pvrvk::Swa
 }
 
 void saveImage(pvrvk::Queue& queue, pvrvk::CommandPool& cmdPool, pvrvk::Image& image, const pvrvk::ImageLayout imageInitialLayout, const pvrvk::ImageLayout imageFinalLayout,
-	const std::string& filename, vma::Allocator* bufferAllocator, vma::Allocator* imageAllocator, const uint32_t screenshotScale)
+	const std::string& filename, vma::Allocator bufferAllocator, vma::Allocator imageAllocator, const uint32_t screenshotScale)
 {
 	pvrvk::Format destinationImageFormat = pvrvk::Format::e_B8G8R8A8_SRGB;
 
@@ -1550,174 +1710,12 @@ void saveImage(pvrvk::Queue& queue, pvrvk::CommandPool& cmdPool, pvrvk::Image& i
 	writeTGA(filename.c_str(), image->getExtent().getWidth(), image->getExtent().getHeight(), imageData.data(), 4, screenshotScale);
 }
 
-void updateImage(pvrvk::Device& device, pvrvk::CommandBufferBase cbuffTransfer, ImageUpdateInfo* updateInfos, uint32_t numUpdateInfos, pvrvk::Format format,
-	pvrvk::ImageLayout layout, bool isCubeMap, pvrvk::Image& image, vma::Allocator* bufferAllocator)
-{
-	using namespace vma;
-	if (!(cbuffTransfer && cbuffTransfer->isRecording())) { throw pvrvk::ErrorValidationFailedEXT("updateImage - Commandbuffer must be valid and in recording state"); }
+#pragma endregion
 
-	uint32_t numFace = (isCubeMap ? 6 : 1);
+#pragma region //////////////// DEBUG_UTILS /////////////////
 
-	uint32_t hwSlice;
-	std::vector<pvrvk::Buffer> stagingBuffers;
-
-	{
-		pvr::utils::beginCommandBufferDebugLabel(cbuffTransfer, pvrvk::DebugUtilsLabel("PVRUtilsVk::updateImage"));
-
-		stagingBuffers.resize(numUpdateInfos);
-		pvrvk::BufferImageCopy imgcp = {};
-
-		for (uint32_t i = 0; i < numUpdateInfos; ++i)
-		{
-			const ImageUpdateInfo& mipLevelUpdate = updateInfos[i];
-			assertion(mipLevelUpdate.data && mipLevelUpdate.dataSize, "Data and Data size must be valid");
-
-			hwSlice = mipLevelUpdate.arrayIndex * numFace + mipLevelUpdate.cubeFace;
-
-			// Will write the switch layout commands from the universal queue to the transfer queue to both the
-			// transfer command buffer and the universal command buffer
-			setImageLayoutAndQueueFamilyOwnership(pvrvk::CommandBufferBase(), cbuffTransfer, static_cast<uint32_t>(-1), static_cast<uint32_t>(-1), pvrvk::ImageLayout::e_UNDEFINED,
-				pvrvk::ImageLayout::e_TRANSFER_DST_OPTIMAL, image, mipLevelUpdate.mipLevel, 1, hwSlice, 1, inferAspectFromFormat(format));
-
-			// Create a staging buffer to use as the source of a copyBufferToImage
-			stagingBuffers[i] = createBuffer(device, pvrvk::BufferCreateInfo(mipLevelUpdate.dataSize, pvrvk::BufferUsageFlags::e_TRANSFER_SRC_BIT),
-				pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, bufferAllocator, vma::AllocationCreateFlags::e_MAPPED_BIT);
-
-			stagingBuffers[i]->setObjectName("PVRUtilsVk::updateImage::Temporary Image Upload Buffer");
-			imgcp.setImageOffset(pvrvk::Offset3D(mipLevelUpdate.offsetX, mipLevelUpdate.offsetY, mipLevelUpdate.offsetZ));
-			imgcp.setImageExtent(pvrvk::Extent3D(mipLevelUpdate.imageWidth, mipLevelUpdate.imageHeight, 1));
-
-			imgcp.setImageSubresource(pvrvk::ImageSubresourceLayers(inferAspectFromFormat(format), updateInfos[i].mipLevel, hwSlice, 1));
-			imgcp.setBufferRowLength(mipLevelUpdate.dataWidth);
-			imgcp.setBufferImageHeight(mipLevelUpdate.dataHeight);
-
-			const uint8_t* srcData;
-			uint32_t srcDataSize;
-			srcData = static_cast<const uint8_t*>(mipLevelUpdate.data);
-			srcDataSize = mipLevelUpdate.dataSize;
-
-			updateHostVisibleBuffer(stagingBuffers[i], srcData, 0, srcDataSize, true);
-
-			cbuffTransfer->copyBufferToImage(stagingBuffers[i], image, pvrvk::ImageLayout::e_TRANSFER_DST_OPTIMAL, 1, &imgcp);
-
-			// CAUTION: We swapped src and dst queue families as, if there was no ownership transfer, no problem - queue families
-			// will be ignored.
-			// Will write the switch layout commands from the transfer queue to the universal queue to both the
-			// transfer command buffer and the universal command buffer
-			setImageLayoutAndQueueFamilyOwnership(cbuffTransfer, pvrvk::CommandBufferBase(), static_cast<uint32_t>(-1), static_cast<uint32_t>(-1),
-				pvrvk::ImageLayout::e_TRANSFER_DST_OPTIMAL, layout, image, mipLevelUpdate.mipLevel, 1, hwSlice, 1, inferAspectFromFormat(format));
-		}
-		pvr::utils::endCommandBufferDebugLabel(cbuffTransfer);
-	}
-}
-
-void create3dPlaneMesh(uint32_t width, uint32_t depth, bool generateTexCoords, bool generateNormalCoords, assets::Mesh& outMesh)
-{
-	const float halfWidth = width * .5f;
-	const float halfDepth = depth * .5f;
-
-	glm::vec3 normal[4] = { glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f) };
-
-	glm::vec2 texCoord[4] = {
-		glm::vec2(0.0f, 1.0f),
-		glm::vec2(0.0f, 0.0f),
-		glm::vec2(1.0f, 0.0f),
-		glm::vec2(1.0f, 1.0f),
-	};
-
-	glm::vec3 pos[4] = { glm::vec3(-halfWidth, 0.0f, -halfDepth), glm::vec3(-halfWidth, 0.0f, halfDepth), glm::vec3(halfWidth, 0.0f, halfDepth), glm::vec3(halfWidth, 0.0f, -halfDepth) };
-
-	uint32_t indexData[] = { 0, 1, 2, 0, 2, 3 };
-
-	float vertData[32];
-	uint32_t offset = 0;
-
-	for (uint32_t i = 0; i < 4; ++i)
-	{
-		memcpy(&vertData[offset], &pos[i], sizeof(pos[i]));
-		offset += 3;
-		if (generateNormalCoords)
-		{
-			memcpy(&vertData[offset], &normal[i], sizeof(normal[i]));
-			offset += 3;
-		}
-		if (generateTexCoords)
-		{
-			memcpy(&vertData[offset], &texCoord[i], sizeof(texCoord[i]));
-			offset += 2;
-		}
-	}
-
-	uint32_t stride = sizeof(glm::vec3) + (generateNormalCoords ? sizeof(glm::vec3) : 0) + (generateTexCoords ? sizeof(glm::vec2) : 0);
-
-	outMesh.addData(reinterpret_cast<const uint8_t*>(vertData), sizeof(vertData), stride, 0);
-	outMesh.addFaces(reinterpret_cast<const uint8_t*>(indexData), sizeof(indexData), IndexType::IndexType32Bit);
-	offset = 0;
-	outMesh.addVertexAttribute("POSITION", DataType::Float32, 3, offset, 0);
-	offset += sizeof(float) * 3;
-	if (generateNormalCoords)
-	{
-		outMesh.addVertexAttribute("NORMAL", DataType::Float32, 3, offset, 0);
-		offset += sizeof(float) * 2;
-	}
-	if (generateTexCoords) { outMesh.addVertexAttribute("UV0", DataType::Float32, 2, offset, 0); }
-	outMesh.setPrimitiveType(PrimitiveTopology::TriangleList);
-	outMesh.setStride(0, stride);
-	outMesh.setNumFaces(ARRAY_SIZE(indexData) / 3);
-	outMesh.setNumVertices(ARRAY_SIZE(pos));
-}
-
-void setImageLayoutAndQueueFamilyOwnership(pvrvk::CommandBufferBase srccmd, pvrvk::CommandBufferBase dstcmd, uint32_t srcQueueFamily, uint32_t dstQueueFamily,
-	pvrvk::ImageLayout oldLayout, pvrvk::ImageLayout newLayout, pvrvk::Image& image, uint32_t baseMipLevel, uint32_t numMipLevels, uint32_t baseArrayLayer, uint32_t numArrayLayers,
-	pvrvk::ImageAspectFlags aspect)
-{
-	bool multiQueue = isMultiQueue(srcQueueFamily, dstQueueFamily);
-
-	// No operation required: We don't have a layout transition, and we don't have a queue family change.
-	if (newLayout == oldLayout && !multiQueue) { return; } // No transition required
-
-	if (multiQueue)
-	{
-		assertion(srccmd && dstcmd,
-			"Vulkan Utils setImageLayoutAndQueueOwnership: An ownership change was required, "
-			"but at least one null command buffers was passed as parameters");
-	}
-	else
-	{
-		assertion(srccmd || dstcmd,
-			"Vulkan Utils setImageLayoutAndQueueOwnership: An ownership change was not required, "
-			"but two non-null command buffers were passed as parameters");
-	}
-	pvrvk::MemoryBarrierSet barriers;
-
-	pvrvk::ImageMemoryBarrier imageMemBarrier;
-	imageMemBarrier.setOldLayout(oldLayout);
-	imageMemBarrier.setNewLayout(newLayout);
-	imageMemBarrier.setImage(image);
-	imageMemBarrier.setSubresourceRange(pvrvk::ImageSubresourceRange(aspect, baseMipLevel, numMipLevels, baseArrayLayer, numArrayLayers));
-	imageMemBarrier.setSrcQueueFamilyIndex(static_cast<uint32_t>(-1));
-	imageMemBarrier.setDstQueueFamilyIndex(static_cast<uint32_t>(-1));
-	imageMemBarrier.setSrcAccessMask(getAccesFlagsFromLayout(oldLayout));
-	imageMemBarrier.setDstAccessMask(getAccesFlagsFromLayout(newLayout));
-
-	if (multiQueue)
-	{
-		imageMemBarrier.setSrcQueueFamilyIndex(srcQueueFamily);
-		imageMemBarrier.setDstQueueFamilyIndex(dstQueueFamily);
-	}
-	barriers.clearAllBarriers();
-	// Support any one of the command buffers being NOT null - either first or second is fine.
-	if (srccmd)
-	{
-		barriers.addBarrier(imageMemBarrier);
-		srccmd->pipelineBarrier(pvrvk::PipelineStageFlags::e_ALL_COMMANDS_BIT, pvrvk::PipelineStageFlags::e_ALL_COMMANDS_BIT, barriers, true);
-	}
-	if (dstcmd)
-	{
-		barriers.addBarrier(imageMemBarrier);
-		dstcmd->pipelineBarrier(pvrvk::PipelineStageFlags::e_ALL_COMMANDS_BIT, pvrvk::PipelineStageFlags::e_ALL_COMMANDS_BIT, barriers, true);
-	}
-} // namespace utils
+// Nasty global, but fit for purpose as a configuration switch.
+bool PVRUtils_Throw_On_Validation_Error = true;
 
 namespace {
 std::string debugUtilsMessengerCallbackToString(
@@ -1739,7 +1737,7 @@ std::string debugUtilsMessengerCallbackToString(
 			std::string objectType = pvrvk::to_string(static_cast<pvrvk::ObjectType>(pCallbackData->pObjects[i].objectType));
 
 			objectsMessage += pvr::strings::createFormatted("\t\tObject[%u] - Type %s, Value %p, Name \"%s\"\n", i, objectType.c_str(),
-				(void*)(pCallbackData->pObjects[i].objectHandle), pCallbackData->pObjects[i].pObjectName);
+				(void*)(pCallbackData->pObjects[i].objectHandle), pCallbackData->pObjects[i].pObjectName ? pCallbackData->pObjects[i].pObjectName : "unnamed-object");
 		}
 
 		exceptionMessage += objectsMessage;
@@ -1784,8 +1782,9 @@ VKAPI_ATTR VkBool32 VKAPI_CALL throwOnErrorDebugUtilsMessengerCallback(
 	(void)pUserData;
 
 	// throw an exception if the type of DebugUtilsMessageSeverityFlagsEXT contains the ERROR_BIT
-	if ((static_cast<pvrvk::DebugUtilsMessageSeverityFlagsEXT>(messageSeverity) & (pvrvk::DebugUtilsMessageSeverityFlagsEXT::e_ERROR_BIT_EXT)) !=
-		pvrvk::DebugUtilsMessageSeverityFlagsEXT::e_NONE)
+	if (PVRUtils_Throw_On_Validation_Error &&
+		((static_cast<pvrvk::DebugUtilsMessageSeverityFlagsEXT>(messageSeverity) & (pvrvk::DebugUtilsMessageSeverityFlagsEXT::e_ERROR_BIT_EXT)) !=
+			pvrvk::DebugUtilsMessageSeverityFlagsEXT::e_NONE))
 	{ throw pvrvk::ErrorValidationFailedEXT(debugUtilsMessengerCallbackToString(messageSeverity, msgTypes, pCallbackData)); }
 	return VK_FALSE;
 }
@@ -1815,7 +1814,7 @@ VKAPI_ATTR VkBool32 VKAPI_CALL throwOnErrorDebugReportCallback(VkDebugReportFlag
 	(void)pUserData;
 
 	// throw an exception if the type of VkDebugReportFlagsEXT contains the ERROR_BIT
-	if ((static_cast<pvrvk::DebugReportFlagsEXT>(flags) & (pvrvk::DebugReportFlagsEXT::e_ERROR_BIT_EXT)) != pvrvk::DebugReportFlagsEXT::e_NONE)
+	if (PVRUtils_Throw_On_Validation_Error && ((static_cast<pvrvk::DebugReportFlagsEXT>(flags) & pvrvk::DebugReportFlagsEXT::e_ERROR_BIT_EXT) != pvrvk::DebugReportFlagsEXT::e_NONE))
 	{
 		throw pvrvk::ErrorValidationFailedEXT(
 			std::string(pvrvk::to_string(static_cast<pvrvk::DebugReportObjectTypeEXT>(objectType)) + std::string(". VULKAN_LAYER_VALIDATION: ") + pMessage));
@@ -1842,6 +1841,53 @@ VKAPI_ATTR VkBool32 VKAPI_CALL logMessageDebugReportCallback(VkDebugReportFlagsE
 	return VK_FALSE;
 }
 
+DebugUtilsCallbacks createDebugUtilsCallbacks(pvrvk::Instance& instance)
+{
+	DebugUtilsCallbacks debugUtilsCallbacks;
+
+	if (instance->getEnabledExtensionTable().extDebugUtilsEnabled)
+	{
+		{
+			// Create a second Debug Utils Messenger for throwing exceptions for Error events.
+			pvrvk::DebugUtilsMessengerCreateInfo createInfo = pvrvk::DebugUtilsMessengerCreateInfo(
+				pvrvk::DebugUtilsMessageSeverityFlagsEXT::e_ERROR_BIT_EXT, pvrvk::DebugUtilsMessageTypeFlagsEXT::e_ALL_BITS, pvr::utils::throwOnErrorDebugUtilsMessengerCallback);
+			debugUtilsCallbacks.debugUtilsMessengers[1] = instance->createDebugUtilsMessenger(createInfo);
+		}
+		// Create Debug Utils Messengers
+		{
+			// Create a Debug Utils Messenger which will trigger our callback for logging messages for events of warning and error types of all severities
+			pvrvk::DebugUtilsMessengerCreateInfo createInfo =
+				pvrvk::DebugUtilsMessengerCreateInfo(pvrvk::DebugUtilsMessageSeverityFlagsEXT::e_ERROR_BIT_EXT | pvrvk::DebugUtilsMessageSeverityFlagsEXT::e_WARNING_BIT_EXT,
+					pvrvk::DebugUtilsMessageTypeFlagsEXT::e_ALL_BITS, logMessageDebugUtilsMessengerCallback);
+
+			debugUtilsCallbacks.debugUtilsMessengers[0] = instance->createDebugUtilsMessenger(createInfo);
+		}
+	}
+	else if (instance->getEnabledExtensionTable().extDebugReportEnabled)
+	{
+		{
+			// Create a second Debug Report Callback for throwing exceptions for Error events.
+			pvrvk::DebugReportCallbackCreateInfo createInfo =
+				pvrvk::DebugReportCallbackCreateInfo(pvrvk::DebugReportFlagsEXT::e_ERROR_BIT_EXT, pvr::utils::throwOnErrorDebugReportCallback);
+
+			debugUtilsCallbacks.debugCallbacks[1] = instance->createDebugReportCallback(createInfo);
+		}
+		// Create Debug Report Callbacks
+		{
+			// Create a Debug Report Callback for logging messages for events of error, performance or warning types.
+			pvrvk::DebugReportCallbackCreateInfo createInfo = pvrvk::DebugReportCallbackCreateInfo(
+				pvrvk::DebugReportFlagsEXT::e_ERROR_BIT_EXT | pvrvk::DebugReportFlagsEXT::e_PERFORMANCE_WARNING_BIT_EXT | pvrvk::DebugReportFlagsEXT::e_WARNING_BIT_EXT,
+				logMessageDebugReportCallback);
+
+			debugUtilsCallbacks.debugCallbacks[0] = instance->createDebugReportCallback(createInfo);
+		}
+	}
+
+	return debugUtilsCallbacks;
+}
+#pragma endregion
+
+#pragma region ////////////// OBJECT_CREATION ///////////////
 pvrvk::Instance createInstance(const std::string& applicationName, VulkanVersion version, const InstanceExtensions& instanceExtensions, const InstanceLayers& instanceLayers)
 {
 	pvrvk::InstanceCreateInfo instanceInfo;
@@ -1977,6 +2023,7 @@ pvrvk::Instance createInstance(const std::string& applicationName, VulkanVersion
 			pvrvk::ValidationFeatures validationFeatures;
 			validationFeatures.addEnabledValidationFeature(pvrvk::ValidationFeatureEnableEXT::e_GPU_ASSISTED_EXT);
 			validationFeatures.addEnabledValidationFeature(pvrvk::ValidationFeatureEnableEXT::e_GPU_ASSISTED_RESERVE_BINDING_SLOT_EXT);
+			validationFeatures.addEnabledValidationFeature(pvrvk::ValidationFeatureEnableEXT::e_BEST_PRACTICES_EXT);
 			// sets a list of validation features to enable when creating the instance
 			instanceInfo.setValidationFeatures(validationFeatures);
 		}
@@ -2069,7 +2116,7 @@ pvrvk::Instance createInstance(const std::string& applicationName, VulkanVersion
 	return outInstance;
 }
 
-pvrvk::Surface createSurface(pvrvk::Instance& instance, pvrvk::PhysicalDevice& physicalDevice, void* window, void* display, void* connection)
+pvrvk::Surface createSurface(const pvrvk::Instance& instance, const pvrvk::PhysicalDevice& physicalDevice, void* window, void* display, void* connection)
 {
 	(void)physicalDevice; // hide warning
 	(void)connection;
@@ -2089,7 +2136,7 @@ pvrvk::Surface createSurface(pvrvk::Instance& instance, pvrvk::PhysicalDevice& p
 	{ return pvrvk::Surface(instance->createWaylandSurface(reinterpret_cast<wl_display*>(display), reinterpret_cast<wl_surface*>(window))); }
 #elif defined(VK_USE_PLATFORM_MACOS_MVK)
 	(void)display;
-	if (instance->getEnabledExtensionTable().mmacosSurfaceEnabled) { return pvrvk::Surface(instance->createMacOSSurface(window)); }
+	if (instance->getEnabledExtensionTable().mvkMacosSurfaceEnabled) { return pvrvk::Surface(instance->createMacOSSurface(window)); }
 #else // NullWS
 	Log("%u Displays supported by the physical device", physicalDevice->getNumDisplays());
 	Log("Display properties:");
@@ -2157,6 +2204,95 @@ pvrvk::Surface createSurface(pvrvk::Instance& instance, pvrvk::PhysicalDevice& p
 	throw pvrvk::ErrorInitializationFailed("We were unable to create a suitable Surface for the given physical device.");
 }
 
+pvrvk::Buffer createBuffer(const pvrvk::Device& device, const pvrvk::BufferCreateInfo& createInfo, pvrvk::MemoryPropertyFlags requiredMemoryFlags,
+	pvrvk::MemoryPropertyFlags optimalMemoryFlags, const vma::Allocator& bufferAllocator, vma::AllocationCreateFlags vmaAllocationCreateFlags)
+{
+	// create the PVRVk Buffer
+	pvrvk::Buffer buffer = device->createBuffer(createInfo);
+
+	// if the required memory flags is pvrvk::MemoryPropertyFlags::e_NONE then no backing will be provided for the buffer
+	if (requiredMemoryFlags != pvrvk::MemoryPropertyFlags::e_NONE)
+	{
+		// use the allocator
+		if (bufferAllocator)
+		{
+			vma::AllocationCreateInfo allocationInfo;
+			allocationInfo.usage = vma::MemoryUsage::e_UNKNOWN;
+			allocationInfo.requiredFlags = requiredMemoryFlags;
+			allocationInfo.preferredFlags = optimalMemoryFlags | requiredMemoryFlags;
+			allocationInfo.flags = vmaAllocationCreateFlags;
+			allocationInfo.memoryTypeBits = buffer->getMemoryRequirement().getMemoryTypeBits();
+			vma::Allocation allocation;
+			allocation = bufferAllocator->allocateMemoryForBuffer(buffer, allocationInfo);
+			buffer->bindMemory(pvrvk::DeviceMemory(allocation), allocation->getOffset());
+		}
+		else
+		{
+			// get the buffer memory requirements, memory type index and memory property flags required for backing the PVRVk buffer
+			const pvrvk::MemoryRequirements& memoryRequirements = buffer->getMemoryRequirement();
+			uint32_t memoryTypeIndex;
+			pvrvk::MemoryPropertyFlags memoryPropertyFlags;
+			getMemoryTypeIndex(device->getPhysicalDevice(), memoryRequirements.getMemoryTypeBits(), requiredMemoryFlags, optimalMemoryFlags, memoryTypeIndex, memoryPropertyFlags);
+
+			// allocate the buffer memory using the retrieved memory type index and memory property flags
+			pvrvk::DeviceMemory deviceMemory = device->allocateMemory(pvrvk::MemoryAllocationInfo(buffer->getMemoryRequirement().getSize(), memoryTypeIndex));
+
+			// attach the memory to the buffer
+			buffer->bindMemory(deviceMemory, 0);
+		}
+	}
+	return buffer;
+}
+
+pvrvk::Image createImage(const pvrvk::Device& device, const pvrvk::ImageCreateInfo& createInfo, pvrvk::MemoryPropertyFlags requiredMemoryFlags,
+	pvrvk::MemoryPropertyFlags optimalMemoryFlags, const vma::Allocator& imageAllocator, vma::AllocationCreateFlags vmaAllocationCreateFlags)
+{
+	// create the PVRVk Image
+	pvrvk::Image image = device->createImage(createInfo);
+
+	// if the required memory flags is pvrvk::MemoryPropertyFlags::e_NONE then no backing will be provided for the image
+	if (requiredMemoryFlags != pvrvk::MemoryPropertyFlags::e_NONE)
+	{
+		// if no flags are provided for the optimal flags then just reuse the required set of memory property flags to optimise the getMemoryTypeIndex
+		if (optimalMemoryFlags == pvrvk::MemoryPropertyFlags::e_NONE) { optimalMemoryFlags = requiredMemoryFlags; }
+
+		// Create a memory block if it is non sparse and a valid memory propery flag.
+		if ((createInfo.getFlags() &
+				(pvrvk::ImageCreateFlags::e_SPARSE_ALIASED_BIT | pvrvk::ImageCreateFlags::e_SPARSE_BINDING_BIT | pvrvk::ImageCreateFlags::e_SPARSE_RESIDENCY_BIT)) == 0 &&
+			(requiredMemoryFlags != pvrvk::MemoryPropertyFlags(0)))
+		// If it's not sparse, create memory backing
+		{
+			if (imageAllocator)
+			{
+				vma::AllocationCreateInfo allocInfo = {};
+				allocInfo.memoryTypeBits = image->getMemoryRequirement().getMemoryTypeBits();
+				allocInfo.requiredFlags = requiredMemoryFlags;
+				allocInfo.preferredFlags = requiredMemoryFlags | optimalMemoryFlags;
+				allocInfo.flags = vmaAllocationCreateFlags;
+				vma::Allocation allocation = imageAllocator->allocateMemoryForImage(image, allocInfo);
+				image->bindMemoryNonSparse(allocation, allocation->getOffset());
+			}
+			else
+			{
+				// get the image memory requirements, memory type index and memory property flags required for backing the PVRVk image
+				const pvrvk::MemoryRequirements& memoryRequirements = image->getMemoryRequirement();
+				uint32_t memoryTypeIndex;
+				pvrvk::MemoryPropertyFlags memoryPropertyFlags;
+				getMemoryTypeIndex(device->getPhysicalDevice(), memoryRequirements.getMemoryTypeBits(), requiredMemoryFlags, optimalMemoryFlags, memoryTypeIndex, memoryPropertyFlags);
+
+				// allocate the image memory using the retrieved memory type index and memory property flags
+				pvrvk::DeviceMemory memBlock = device->allocateMemory(pvrvk::MemoryAllocationInfo(memoryRequirements.getSize(), memoryTypeIndex));
+
+				// attach the memory to the image
+				image->bindMemoryNonSparse(memBlock);
+			}
+		}
+	}
+	return image;
+}
+#pragma endregion
+
+#pragma region //////////////// MEMORY HEAPS ////////////////
 uint32_t numberOfSetBits(uint32_t bits)
 {
 	bits = bits - ((bits >> 1) & 0x55555555);
@@ -2208,7 +2344,9 @@ void getMemoryTypeIndex(const pvrvk::PhysicalDevice& physicalDevice, const uint3
 		}
 	}
 }
+#pragma endregion
 
+#pragma region //////////// EXTENSIONS AND LAYERS ///////////
 DeviceExtensions::DeviceExtensions() : VulkanExtensionList()
 {
 #ifdef VK_KHR_swapchain
@@ -2252,7 +2390,9 @@ InstanceLayers::InstanceLayers(bool forceLayers)
 		addLayer(pvrvk::VulkanLayer("VK_LAYER_KHRONOS_validation", static_cast<uint32_t>(-1)));
 		addLayer(pvrvk::VulkanLayer("VK_LAYER_LUNARG_standard_validation", static_cast<uint32_t>(-1)));
 		addLayer(pvrvk::VulkanLayer("VK_LAYER_LUNARG_assistant_layer", static_cast<uint32_t>(-1)));
-		addLayer(pvrvk::VulkanLayer("VK_LAYER_LUNARG_monitor", static_cast<uint32_t>(-1)));
+		// Add whatever perfdocs are supported
+		addLayer(pvrvk::VulkanLayer("VK_LAYER_ARM_mali_perf_doc", static_cast<uint32_t>(-1)));
+		addLayer(pvrvk::VulkanLayer("VK_LAYER_IMG_powervr_perf_doc", static_cast<uint32_t>(-1)));
 	}
 }
 
@@ -2295,57 +2435,7 @@ InstanceExtensions::InstanceExtensions()
 #endif
 #endif
 }
-
-pvrvk::Image uploadImage(pvrvk::Device& device, const Texture& texture, bool allowDecompress, pvrvk::CommandBuffer& commandBuffer, pvrvk::ImageUsageFlags usageFlags,
-	pvrvk::ImageLayout finalLayout, vma::Allocator* stagingBufferAllocator, vma::Allocator* imageAllocator, vma::AllocationCreateFlags imageAllocationCreateFlags)
-{
-	return uploadImageHelper(device, texture, allowDecompress, commandBuffer, usageFlags, finalLayout, stagingBufferAllocator, imageAllocator, imageAllocationCreateFlags);
-}
-
-DebugUtilsCallbacks createDebugUtilsCallbacks(pvrvk::Instance& instance)
-{
-	DebugUtilsCallbacks debugUtilsCallbacks;
-
-	if (instance->getEnabledExtensionTable().extDebugUtilsEnabled)
-	{
-		{
-			// Create a second Debug Utils Messenger for throwing exceptions for Error events.
-			pvrvk::DebugUtilsMessengerCreateInfo createInfo = pvrvk::DebugUtilsMessengerCreateInfo(
-				pvrvk::DebugUtilsMessageSeverityFlagsEXT::e_ERROR_BIT_EXT, pvrvk::DebugUtilsMessageTypeFlagsEXT::e_ALL_BITS, pvr::utils::throwOnErrorDebugUtilsMessengerCallback);
-			debugUtilsCallbacks.debugUtilsMessengers[1] = instance->createDebugUtilsMessenger(createInfo);
-		}
-		// Create Debug Utils Messengers
-		{
-			// Create a Debug Utils Messenger which will trigger our callback for logging messages for events of warning and error types of all severities
-			pvrvk::DebugUtilsMessengerCreateInfo createInfo =
-				pvrvk::DebugUtilsMessengerCreateInfo(pvrvk::DebugUtilsMessageSeverityFlagsEXT::e_ERROR_BIT_EXT | pvrvk::DebugUtilsMessageSeverityFlagsEXT::e_WARNING_BIT_EXT,
-					pvrvk::DebugUtilsMessageTypeFlagsEXT::e_ALL_BITS, logMessageDebugUtilsMessengerCallback);
-
-			debugUtilsCallbacks.debugUtilsMessengers[0] = instance->createDebugUtilsMessenger(createInfo);
-		}
-	}
-	else if (instance->getEnabledExtensionTable().extDebugReportEnabled)
-	{
-		{
-			// Create a second Debug Report Callback for throwing exceptions for Error events.
-			pvrvk::DebugReportCallbackCreateInfo createInfo =
-				pvrvk::DebugReportCallbackCreateInfo(pvrvk::DebugReportFlagsEXT::e_ERROR_BIT_EXT, pvr::utils::throwOnErrorDebugReportCallback);
-
-			debugUtilsCallbacks.debugCallbacks[1] = instance->createDebugReportCallback(createInfo);
-		}
-		// Create Debug Report Callbacks
-		{
-			// Create a Debug Report Callback for logging messages for events of error, performance or warning types.
-			pvrvk::DebugReportCallbackCreateInfo createInfo = pvrvk::DebugReportCallbackCreateInfo(
-				pvrvk::DebugReportFlagsEXT::e_ERROR_BIT_EXT | pvrvk::DebugReportFlagsEXT::e_PERFORMANCE_WARNING_BIT_EXT | pvrvk::DebugReportFlagsEXT::e_WARNING_BIT_EXT,
-				logMessageDebugReportCallback);
-
-			debugUtilsCallbacks.debugCallbacks[0] = instance->createDebugReportCallback(createInfo);
-		}
-	}
-
-	return debugUtilsCallbacks;
-}
+#pragma endregion
 } // namespace utils
 } // namespace pvr
-  //!\endcond
+//!\endcond

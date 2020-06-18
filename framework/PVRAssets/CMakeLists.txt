@@ -1,10 +1,11 @@
 cmake_minimum_required(VERSION 3.3)
+# Copyright (c) Imagination Technologies Limited.
+
 project(PVRAssets)
 
 include(GNUInstallDirs)
 include(CMakeFindDependencyMacro)
-include(../../cmake/CompilerFunctions.cmake)
-include(../../cmake/Functions.cmake)
+include(../Common.cmake)
 
 # PVRAssets include files
 set(PVRAssets_HEADERS
@@ -45,12 +46,12 @@ set(PVRAssets_SRC
 add_library(PVRAssets STATIC ${PVRAssets_SRC} ${PVRAssets_HEADERS} ${PVRAssets_FILEIO_HEADERS} ${PVRAssets_MODEL_HEADERS})
 
 if(PVR_PREBUILT_DEPENDENCIES)
-	list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/../../cmake/modules")
+	list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/../cmake/modules")
 	find_dependency(PVRCore MODULE REQUIRED)
 	find_dependency(tinygltf MODULE REQUIRED)
 endif()
 
-apply_compile_options_to_target(PVRAssets)
+apply_framework_compile_options_to_target(PVRAssets)
 
 target_link_libraries(PVRAssets
 	PUBLIC

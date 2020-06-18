@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.3)
 project(OpenGLESImageBasedLighting)
-if(IOS)	
+if(IOS)
 	message("Skipping OpenGLESImageBasedLighting : Not supported on iOS")
 	return()
 endif()
@@ -33,12 +33,12 @@ add_assets_to_target(OpenGLESImageBasedLighting
 	ASSET_FOLDER ${ASSET_FOLDER} 
 	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/damagedHelmet
 	FILE_LIST 
+		damagedHelmet.bin
+		damagedHelmet.gltf
 		Default_albedo.pvr
 		Default_emissive.pvr
 		Default_occlusionRoughnessMetallic.pvr
-		Default_normal.pvr
-		damagedHelmet.bin
-		damagedHelmet.gltf)
+		Default_normal.pvr)
 
 add_assets_to_target(OpenGLESImageBasedLighting
 	SOURCE_GROUP "assets" 
@@ -55,16 +55,16 @@ add_assets_to_target(OpenGLESImageBasedLighting
 add_assets_to_target(OpenGLESImageBasedLighting
 	SOURCE_GROUP "assets" 
 	ASSET_FOLDER ${ASSET_FOLDER} 
-	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets
+	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/ParticleSystem
 	FILE_LIST 
-		brdfLUT.pvr)
+		sphere.pod)
 
 add_assets_to_target(OpenGLESImageBasedLighting
 	SOURCE_GROUP "assets" 
 	ASSET_FOLDER ${ASSET_FOLDER} 
-	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/ParticleSystem
+	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets
 	FILE_LIST 
-		sphere.pod)
+		brdfLUT.pvr)
 
 ### Textural shaders (OpenGL ES) ###
 add_assets_to_target(OpenGLESImageBasedLighting 
@@ -84,7 +84,7 @@ add_assets_resource_file(OpenGLESImageBasedLighting)
 # Apply SDK example specific compile and linker options
 apply_example_compile_options_to_target(OpenGLESImageBasedLighting)
 
-target_link_libraries(OpenGLESImageBasedLighting
+target_link_libraries(OpenGLESImageBasedLighting PUBLIC
 	PVRShell
 	PVRUtilsGles
 )

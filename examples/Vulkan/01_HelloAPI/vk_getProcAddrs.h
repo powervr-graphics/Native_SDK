@@ -81,7 +81,8 @@ static const char* g_pszEnvVar = "PVRTRACE_LIB_PATH";
 typedef void* LIBTYPE;
 #endif
 
-#if !defined(VK_USE_PLATFORM_WIN32_KHR) && !defined(VK_USE_PLATFORM_ANDROID_KHR) && !defined(VK_USE_PLATFORM_XLIB_KHR) && !defined(VK_USE_PLATFORM_XCB_KHR) && !defined(VK_USE_PLATFORM_WAYLAND_KHR) && !defined(VK_USE_PLATFORM_MACOS_MVK)
+#if !defined(VK_USE_PLATFORM_WIN32_KHR) && !defined(VK_USE_PLATFORM_ANDROID_KHR) && !defined(VK_USE_PLATFORM_XLIB_KHR) && !defined(VK_USE_PLATFORM_XCB_KHR) && \
+	!defined(VK_USE_PLATFORM_WAYLAND_KHR) && !defined(VK_USE_PLATFORM_MACOS_MVK)
 #define USE_PLATFORM_NULLWS
 #endif
 
@@ -130,7 +131,7 @@ public:
 	PVR_VULKAN_FUNCTION_POINTER_DECLARATION(CreateWaylandSurfaceKHR)
 #endif
 #ifdef VK_USE_PLATFORM_MACOS_MVK
-    PVR_VULKAN_FUNCTION_POINTER_DECLARATION(CreateMacOSSurfaceMVK)
+	PVR_VULKAN_FUNCTION_POINTER_DECLARATION(CreateMacOSSurfaceMVK)
 #endif
 
 #ifdef USE_PLATFORM_NULLWS
@@ -410,69 +411,66 @@ public:
 		LOGI("Host library '%s' loaded\n", LibPath.c_str());
 #endif
 #if _APPLE
-        const char* pszPath = LibPath.c_str();
-        CFBundleRef mainBundle = CFBundleGetMainBundle();
-        CFURLRef resourceURL = CFBundleCopyPrivateFrameworksURL(mainBundle);
-        char path[PATH_MAX];
-        if (CFURLGetFileSystemRepresentation(resourceURL, TRUE, (UInt8*)path, PATH_MAX))
-        {
-            CFRelease(resourceURL);
+		const char* pszPath = LibPath.c_str();
+		CFBundleRef mainBundle = CFBundleGetMainBundle();
+		CFURLRef resourceURL = CFBundleCopyPrivateFrameworksURL(mainBundle);
+		char path[PATH_MAX];
+		if (CFURLGetFileSystemRepresentation(resourceURL, TRUE, (UInt8*)path, PATH_MAX))
+		{
+			CFRelease(resourceURL);
 
-            // --- Set a global environment variable to point to this path (for VFrame usage)
-            const char* slash = strrchr(pszPath, '/');
-            if (slash)
-            {
-                char szPath[FILENAME_MAX];
-                memset(szPath, 0, sizeof(szPath));
-                strncpy(szPath, pszPath, slash - pszPath);
-                setenv(g_pszEnvVar, szPath, 1);
-            }
-            else
-            {
-                // Use the current bundle path
-                std::string framework = std::string(path) + "/../Frameworks/";
-                setenv(g_pszEnvVar, framework.c_str(), 1);
-            }
-            
-            // --- Make a temp symlink
-            char szTempFile[FILENAME_MAX];
-            memset(szTempFile, 0, sizeof(szTempFile));
-            
-            char tmpdir[PATH_MAX];
-            size_t n = confstr(_CS_DARWIN_USER_TEMP_DIR, tmpdir, sizeof(tmpdir));
-            if ((n <= 0) || (n >= sizeof(tmpdir)))
-            {
-                strlcpy(tmpdir, getenv("TMPDIR"), sizeof(tmpdir));
-            }
-            
-            strcat(szTempFile, tmpdir);
-            strcat(szTempFile, "tmp.XXXXXX");
-            
-            if (mkstemp(szTempFile))
-            {
-                if (symlink(pszPath, szTempFile) == 0)
-                {
-                    _hostLib = dlopen(szTempFile, RTLD_LAZY | RTLD_GLOBAL);
-                    remove(szTempFile);
-                }
-            }
-            
-            // --- Can't find the lib? Check the application framework folder instead.
-            if (!_hostLib)
-            {
-                std::string framework = std::string(path) + std::string("/") + pszPath;
-                _hostLib = dlopen(framework.c_str(), RTLD_LAZY | RTLD_GLOBAL);
-                
-                if (!_hostLib)
-                {
-                    const char* err = dlerror();
-                    if (err)
-                    {
-                        // NSLog(@"dlopen failed with error: %s => %@", err, framework);
-                    }
-                }
-            }
-        }
+			// --- Set a global environment variable to point to this path (for VFrame usage)
+			const char* slash = strrchr(pszPath, '/');
+			if (slash)
+			{
+				char szPath[FILENAME_MAX];
+				memset(szPath, 0, sizeof(szPath));
+				strncpy(szPath, pszPath, slash - pszPath);
+				setenv(g_pszEnvVar, szPath, 1);
+			}
+			else
+			{
+				// Use the current bundle path
+				std::string framework = std::string(path) + "/../Frameworks/";
+				setenv(g_pszEnvVar, framework.c_str(), 1);
+			}
+
+			// --- Make a temp symlink
+			char szTempFile[FILENAME_MAX];
+			memset(szTempFile, 0, sizeof(szTempFile));
+
+			char tmpdir[PATH_MAX];
+			size_t n = confstr(_CS_DARWIN_USER_TEMP_DIR, tmpdir, sizeof(tmpdir));
+			if ((n <= 0) || (n >= sizeof(tmpdir))) { strlcpy(tmpdir, getenv("TMPDIR"), sizeof(tmpdir)); }
+
+			strcat(szTempFile, tmpdir);
+			strcat(szTempFile, "tmp.XXXXXX");
+
+			if (mkstemp(szTempFile))
+			{
+				if (symlink(pszPath, szTempFile) == 0)
+				{
+					_hostLib = dlopen(szTempFile, RTLD_LAZY | RTLD_GLOBAL);
+					remove(szTempFile);
+				}
+			}
+
+			// --- Can't find the lib? Check the application framework folder instead.
+			if (!_hostLib)
+			{
+				std::string framework = std::string(path) + std::string("/") + pszPath;
+				_hostLib = dlopen(framework.c_str(), RTLD_LAZY | RTLD_GLOBAL);
+
+				if (!_hostLib)
+				{
+					const char* err = dlerror();
+					if (err)
+					{
+						// NSLog(@"dlopen failed with error: %s => %@", err, framework);
+					}
+				}
+			}
+		}
 #endif
 #if _ANDROID
 		size_t start = 0;
@@ -493,7 +491,7 @@ public:
 
 				if (!_hostLib)
 				{
-					// Remove the last character, in case a new line character snuck in.
+					// Remove the last character, in case a new line character sneaked in.
 					tmp = tmp.substr(0, tmp.size() - 1);
 					_hostLib = openLibrary(tmp.c_str());
 				}

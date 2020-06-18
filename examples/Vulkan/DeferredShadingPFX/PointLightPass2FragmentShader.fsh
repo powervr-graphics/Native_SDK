@@ -71,7 +71,7 @@ void main()
 		highp float attenuation_point = fLightRadius * .667; // as described in the .cpp file, the attenuation equation
 		// we are using switches from "physically based" quadratic attenuation to a softening linear mode at 2/3 of the
 		// total light radius, 1) keeping the "physically based" quadratic equation as much as possible at the brighter
-		// parts of the image, but then avoiding a "sharp cutoff" at the light's max range by tapering off to zero.
+		// parts of the image, but then avoiding a "sharp cut-off" at the light's max range by tapering off to zero.
 
 		// calculate an attenuation factor
 		highp float attenuation = 1. / (lightDistance * lightDistance);

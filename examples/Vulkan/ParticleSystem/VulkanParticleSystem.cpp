@@ -141,7 +141,6 @@ private:
 		pvrvk::Instance instance;
 		pvr::utils::DebugUtilsCallbacks debugUtilsCallbacks;
 		pvrvk::Device device;
-		pvrvk::Surface surface;
 		pvrvk::Swapchain swapchain;
 		pvrvk::Queue graphicsQueue;
 		pvrvk::Queue computeQueue;
@@ -235,7 +234,7 @@ void VulkanParticleSystem::eventMappedInput(pvr::SimplifiedInput key)
 	switch (key)
 	{
 	case pvr::SimplifiedInput::Left: {
-		_deviceResources->computeQueue->waitIdle(); // wait for the queue to finish and update all the compute commandbuffers
+		_deviceResources->computeQueue->waitIdle(); // wait for the queue to finish and update all the compute command buffers
 		uint32_t numParticles = _deviceResources->particleSystemGPU.getNumberOfParticles();
 		if (numParticles / 2 >= Configuration::MinNoParticles)
 		{
@@ -246,7 +245,7 @@ void VulkanParticleSystem::eventMappedInput(pvr::SimplifiedInput key)
 	}
 	break;
 	case pvr::SimplifiedInput::Right: {
-		_deviceResources->computeQueue->waitIdle(); // wait for the queue to finish and to update all the compute commandbuffers
+		_deviceResources->computeQueue->waitIdle(); // wait for the queue to finish and to update all the compute command buffers
 		uint32_t numParticles = _deviceResources->particleSystemGPU.getNumberOfParticles();
 		if (numParticles * 2 <= Configuration::MaxNoParticles)
 		{
@@ -269,7 +268,7 @@ void VulkanParticleSystem::createBuffers()
 	_deviceResources->graphicsCommandBuffers[0]->begin();
 	bool requiresCommandBufferSubmission = false;
 	pvr::utils::createSingleBuffersFromMesh(_deviceResources->device, _scene->getMesh(0), _deviceResources->passSphere.vbo, _deviceResources->passSphere.ibo,
-		_deviceResources->graphicsCommandBuffers[0], requiresCommandBufferSubmission, &_deviceResources->vmaAllocator);
+		_deviceResources->graphicsCommandBuffers[0], requiresCommandBufferSubmission, _deviceResources->vmaAllocator);
 
 	_deviceResources->graphicsCommandBuffers[0]->end();
 
@@ -292,7 +291,7 @@ void VulkanParticleSystem::createBuffers()
 	_deviceResources->passFloor.vbo = pvr::utils::createBuffer(_deviceResources->device,
 		pvrvk::BufferCreateInfo(sizeof(afVertexBufferData), pvrvk::BufferUsageFlags::e_VERTEX_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
-		&_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+		_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 	pvr::utils::updateHostVisibleBuffer(_deviceResources->passFloor.vbo, afVertexBufferData, 0, sizeof(afVertexBufferData), true);
 }
 
@@ -441,7 +440,7 @@ void VulkanParticleSystem::createDescriptors()
 			pvrvk::BufferCreateInfo(_deviceResources->passSphere.uboPerModelBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT),
 			pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
-			&_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+			_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
 		_deviceResources->passSphere.uboPerModelBufferView.pointToMappedMemory(_deviceResources->passSphere.uboPerModel->getDeviceMemory()->getMappedData());
 	}
@@ -454,7 +453,7 @@ void VulkanParticleSystem::createDescriptors()
 			pvrvk::BufferCreateInfo(_deviceResources->passFloor.uboPerModelBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT),
 			pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
-			&_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+			_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
 		_deviceResources->passFloor.uboPerModelBufferView.pointToMappedMemory(_deviceResources->passFloor.uboPerModel->getDeviceMemory()->getMappedData());
 	}
@@ -469,7 +468,7 @@ void VulkanParticleSystem::createDescriptors()
 			pvrvk::BufferCreateInfo(_deviceResources->passSphere.uboLightPropBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT),
 			pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
-			&_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+			_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
 		_deviceResources->passSphere.uboLightPropBufferView.pointToMappedMemory(_deviceResources->passSphere.uboLightProp->getDeviceMemory()->getMappedData());
 	}
@@ -484,7 +483,7 @@ void VulkanParticleSystem::createDescriptors()
 			pvrvk::BufferCreateInfo(_deviceResources->passParticles.uboMvpBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT),
 			pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
-			&_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+			_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
 		_deviceResources->passParticles.uboMvpBufferView.pointToMappedMemory(_deviceResources->passParticles.uboMvp->getDeviceMemory()->getMappedData());
 	}
@@ -555,7 +554,7 @@ pvr::Result VulkanParticleSystem::initView()
 	}
 
 	// Create the surface
-	_deviceResources->surface =
+	pvrvk::Surface surface =
 		pvr::utils::createSurface(_deviceResources->instance, _deviceResources->instance->getPhysicalDevice(0), this->getWindow(), this->getDisplay(), this->getConnection());
 
 	// Create a default set of debug utils messengers or debug callbacks using either VK_EXT_debug_utils or VK_EXT_debug_report respectively
@@ -565,7 +564,7 @@ pvr::Result VulkanParticleSystem::initView()
 	// 1. A queue which supports graphics commands and which can also be used to present to the specified surface
 	// 2. A queue which supports compute commands. This queue may be the same queue as (1.), may be another queue in the same queue family or may be from another
 	//	queue family entirely.
-	pvr::utils::QueuePopulateInfo queueCreateInfos[] = { { pvrvk::QueueFlags::e_GRAPHICS_BIT, _deviceResources->surface }, { pvrvk::QueueFlags::e_COMPUTE_BIT } };
+	pvr::utils::QueuePopulateInfo queueCreateInfos[] = { { pvrvk::QueueFlags::e_GRAPHICS_BIT, surface }, { pvrvk::QueueFlags::e_COMPUTE_BIT } };
 
 	pvr::utils::QueueAccessInfo queueAccessInfos[2];
 	_deviceResources->device = pvr::utils::createDeviceAndQueues(_deviceResources->instance->getPhysicalDevice(0), queueCreateInfos, 2, queueAccessInfos);
@@ -576,7 +575,7 @@ pvr::Result VulkanParticleSystem::initView()
 
 	_deviceResources->vmaAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
 
-	// Create the commandpool
+	// Create the command pool
 	_deviceResources->commandPool = _deviceResources->device->createCommandPool(
 		pvrvk::CommandPoolCreateInfo(_deviceResources->graphicsQueue->getFamilyIndex(), pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT));
 
@@ -588,22 +587,21 @@ pvr::Result VulkanParticleSystem::initView()
 		.setMaxDescriptorSets(Configuration::NumDescriptorSets);
 	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(poolInfo);
 
-	pvrvk::SurfaceCapabilitiesKHR surfaceCapabilities = _deviceResources->instance->getPhysicalDevice(0)->getSurfaceCapabilities(_deviceResources->surface);
+	pvrvk::SurfaceCapabilitiesKHR surfaceCapabilities = _deviceResources->instance->getPhysicalDevice(0)->getSurfaceCapabilities(surface);
 
 	// validate the supported swapchain image usage
 	pvrvk::ImageUsageFlags swapchainImageUsage = pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT;
 	if (pvr::utils::isImageUsageSupportedBySurface(surfaceCapabilities, pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT))
 	{ swapchainImageUsage |= pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT; }
 
-	// Create the swapchain
-	pvr::utils::createSwapchainAndDepthStencilImageAndViews(_deviceResources->device, _deviceResources->surface, getDisplayAttributes(), _deviceResources->swapchain,
-		_deviceResources->depthStencilImages, swapchainImageUsage, pvrvk::ImageUsageFlags::e_DEPTH_STENCIL_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_TRANSIENT_ATTACHMENT_BIT,
-		&_deviceResources->vmaAllocator);
+	// Create the Swapchain, its renderpass, attachments and framebuffers. Will support MSAA if enabled through command line.
+	auto swapChainCreateOutput = pvr::utils::createSwapchainRenderpassFramebuffers(_deviceResources->device, surface, getDisplayAttributes(),
+		pvr::utils::CreateSwapchainParameters().setAllocator(_deviceResources->vmaAllocator).setColorImageUsageFlags(swapchainImageUsage));
 
-	// Create the on screen framebuffer
-	pvr::utils::createOnscreenFramebufferAndRenderPass(_deviceResources->swapchain, &_deviceResources->depthStencilImages[0], _deviceResources->onScreenFramebuffer);
+	_deviceResources->swapchain = swapChainCreateOutput.swapchain;
+	_deviceResources->onScreenFramebuffer = swapChainCreateOutput.framebuffer;
 
-	// Create the per swpapchain command buffers, semaphores and fences.
+	// Create the per swapchain command buffers, semaphores and fences.
 	_deviceResources->particleSystemSemaphores.reserve(_deviceResources->swapchain->getSwapchainLength());
 	for (uint8_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
 	{
@@ -743,7 +741,7 @@ pvr::Result VulkanParticleSystem::renderFrame()
 	if (this->shouldTakeScreenshot())
 	{
 		pvr::utils::takeScreenshot(_deviceResources->graphicsQueue, _deviceResources->commandPool, _deviceResources->swapchain, swapchainIndex, this->getScreenshotFileName(),
-			&_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
+			_deviceResources->vmaAllocator, _deviceResources->vmaAllocator);
 	}
 
 	// Handle presentation of the current image to the screen
@@ -799,7 +797,7 @@ void VulkanParticleSystem::updateSpheres()
 	}
 }
 
-/// <summary>Updates the memory from where the commandbuffer will read the values to render the floor.</summary>
+/// <summary>Updates the memory from where the command buffer will read the values to render the floor.</summary>
 void VulkanParticleSystem::updateFloor()
 {
 	const uint32_t swapchainIndex = _deviceResources->swapchain->getSwapchainIndex();

@@ -672,6 +672,49 @@ void releaseWaylandConnection()
 	wl_display_disconnect(wlDisplay);
 }
 
+bool CreateWindowAndContext(EGLDisplay& eglDisplay, EGLConfig& eglConfig, EGLSurface& eglSurface, EGLContext& context)
+{
+	// Get access to a native display
+	if (!initializeWindow()) { return false; }
+
+	// Create and Initialize an EGLDisplay from the native display
+	if (!createEGLDisplay(wlDisplay, eglDisplay)) { return false; }
+
+	// Choose an EGLConfig for the application, used when setting up the rendering surface and EGLContext
+	if (!chooseEGLConfig(eglDisplay, eglConfig)) { return false; }
+
+	// Create an EGLSurface for rendering from the native window
+	if (!createEGLSurface(eglDisplay, eglConfig, eglSurface)) { return false; }
+
+	// Setup the EGL Context from the other EGL constructs created so far, so that the application is ready to submit OpenGL ES commands
+	if (!setupEGLContext(eglDisplay, eglConfig, eglSurface, context)) { return false; }
+
+	return true;
+}
+
+bool CreateResources(GLuint& vertexBuffer, GLuint& fragmentShader, GLuint& vertexShader, GLuint& shaderProgram)
+{
+	// Initialize the vertex data in the application
+	if (!initializeBuffer(vertexBuffer)) { return false; }
+
+	// Initialize the fragment and vertex shaders used in the application
+	if (!initializeShaders(fragmentShader, vertexShader, shaderProgram)) { return false; }
+
+	return true;
+}
+
+bool Render(GLuint shaderProgram, EGLDisplay eglDisplay, EGLSurface eglSurface)
+{
+	// Renders a triangle for 800 frames using the state setup in the previous function
+	for (int i = 0; i < 800; ++i)
+	{
+		wl_display_dispatch_pending(wlDisplay);
+		if (!renderScene(shaderProgram, eglDisplay, eglSurface)) { break; }
+	}
+
+	return false;
+}
+
 /*!*********************************************************************************************************************
 \param[in]			argc           Number of arguments passed to the application, ignored.
 \param[in]			argv           Command line strings passed to the application, ignored.
@@ -694,44 +737,31 @@ int main(int /*argc*/, char** /*argv*/)
 	// A vertex buffer object to store our model data.
 	GLuint vertexBuffer = 0;
 
-	// Get access to a native display
-	if (!initializeWindow()) { goto cleanup; }
-
-	// Create and Initialize an EGLDisplay from the native display
-	if (!createEGLDisplay(wlDisplay, eglDisplay)) { goto cleanup; }
-
-	// Choose an EGLConfig for the application, used when setting up the rendering surface and EGLContext
-	if (!chooseEGLConfig(eglDisplay, eglConfig)) { goto cleanup; }
-
-	// Create an EGLSurface for rendering from the native window
-	if (!createEGLSurface(eglDisplay, eglConfig, eglSurface)) { goto cleanup; }
-
-	// Setup the EGL Context from the other EGL constructs created so far, so that the application is ready to submit OpenGL ES commands
-	if (!setupEGLContext(eglDisplay, eglConfig, eglSurface, context)) { goto cleanup; }
-
-	// Initialize the vertex data in the application
-	if (!initializeBuffer(vertexBuffer)) { goto cleanup; }
-
-	// Initialize the fragment and vertex shaders used in the application
-	if (!initializeShaders(fragmentShader, vertexShader, shaderProgram)) { goto cleanup; }
-
-	// Renders a triangle for 800 frames using the state setup in the previous function
-	for (int i = 0; i < 800; ++i)
+	if (!CreateWindowAndContext(eglDisplay, eglConfig, eglSurface, context))
 	{
-		wl_display_dispatch_pending(wlDisplay);
-		if (!renderScene(shaderProgram, eglDisplay, eglSurface)) { break; }
+		// Release the EGL State
+		releaseEGLState(eglDisplay);
+		// Release the Wayland connection
+		releaseWaylandConnection();
 	}
 
-	// Release any resources we created in the Initialize functions
-	deInitializeGLState(fragmentShader, vertexShader, shaderProgram, vertexBuffer);
+	if (!CreateResources(fragmentShader, vertexShader, shaderProgram, vertexBuffer))
+	{
+		// Release the EGL State
+		releaseEGLState(eglDisplay);
+		// Release the Wayland connection
+		releaseWaylandConnection();
+	}
 
-cleanup:
-	// Release the EGL State
-	releaseEGLState(eglDisplay);
+	if (!Render(shaderProgram, eglDisplay, eglSurface))
+	{
+		// Release any resources we created in the Initialize functions
+		deInitializeGLState(fragmentShader, vertexShader, shaderProgram, vertexBuffer);
+		// Release the EGL State
+		releaseEGLState(eglDisplay);
+		// Release the Wayland connection
+		releaseWaylandConnection();
+	}
 
-	// Release the Wayland connection
-	releaseWaylandConnection();
-
-	// Destroy the eglWindow
 	return 0;
 }

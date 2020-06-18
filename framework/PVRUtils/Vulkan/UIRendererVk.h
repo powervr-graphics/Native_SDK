@@ -66,7 +66,7 @@ public:
 			}
 
 			_fontIbo = utils::createBuffer(getDevice().lock(), pvrvk::BufferCreateInfo(sizeof(fontFaces[0]) * impl::Font_::FontElement, pvrvk::BufferUsageFlags::e_INDEX_BUFFER_BIT),
-				pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, &_vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+				pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, _vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 			pvr::utils::updateHostVisibleBuffer(_fontIbo, &fontFaces[0], 0, static_cast<uint32_t>(sizeof(fontFaces[0]) * fontFaces.size()), true);
 		}
 		return _fontIbo;
@@ -89,7 +89,7 @@ public:
 				1.f, 1.f, 0.f, 1.0f, 1.f, 1.f, // upper right
 			};
 			_imageVbo = utils::createBuffer(getDevice().lock(), pvrvk::BufferCreateInfo(sizeof(verts), pvrvk::BufferUsageFlags::e_VERTEX_BUFFER_BIT),
-				pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, &_vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+				pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, _vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 			pvr::utils::updateHostVisibleBuffer(_imageVbo, static_cast<const void*>(verts), 0, sizeof(verts), true);
 		}
 		return _imageVbo;

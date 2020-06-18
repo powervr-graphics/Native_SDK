@@ -29,7 +29,7 @@ void main()
 	highp vec4 pos = gl_Position;
 
 	vec4 WorldPos = InvVPMatrix * pos;
-	// fip the y here to convert from vulkan +Y down corrdinate to Opengl +Y up.
+	// flip the y here to convert from vulkan +Y down coordinate to OpenGL +Y up.
 	WorldPos /= WorldPos.w;
 
 	// Calculate ray direction

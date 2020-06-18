@@ -1,30 +1,31 @@
-cmake_minimum_required(VERSION 3.3)
-
+cmake_minimum_required(VERSION 3.10)
 project(PowerVR_SDK)
 
 include(GNUInstallDirs)
 
-# Include a set of reusable functions
-include("${CMAKE_CURRENT_LIST_DIR}/cmake/Functions.cmake")
+option(PVR_BUILD_FRAMEWORK "Build the PowerVR Framework" ON)
+option(PVR_PREBUILT_DEPENDENCIES "Indicates that the PowerVR Framework and its dependencies have been prebuilt. Libraries will not be built and will instead be imported. The Examples will still be built" OFF)
 
-# Include a set of reusable functions specific for the examples
+# Compile definitions, options that can be set  others
+include("${CMAKE_CURRENT_LIST_DIR}/Configuration.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/framework/Common.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/examples/ExampleFunctions.cmake")
 
 # Avoids the SDK being added multiple times
 if(TARGET PowerVR_SDK)
 	return()
 endif()
-add_library(PowerVR_SDK INTERFACE)
 
-# Set PROJECT_ARCH to either 32 or 64 (bits). Used to set the framework folders for Windows.
-if("${CMAKE_SIZEOF_VOID_P}" EQUAL "8")
-	set(PROJECT_ARCH 64 CACHE INTERNAL "")
+get_directory_property(HAS_PARENT PARENT_DIRECTORY)
+if(HAS_PARENT)
+	option(PVR_BUILD_EXAMPLES "Build the PowerVR SDK Examples" OFF)
 else()
-	set(PROJECT_ARCH 32 CACHE INTERNAL "")
+	option(PVR_BUILD_EXAMPLES "Build the PowerVR SDK Examples" ON)
 endif()
 
-# CMAKE_MODULE_PATH is used by find_package
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/cmake/modules" CACHE INTERNAL "")
+# Make a top-level project file to build everything
+add_library(PowerVR_SDK INTERFACE)
+
 # Default to release if the user passes nothing.
 if(NOT CMAKE_BUILD_TYPE) 
 	message("-DCMAKE_BUILD_TYPE not defined. Assuming Release")
@@ -37,11 +38,6 @@ if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 	set(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT FALSE)
 endif()
 
-option(PVR_BUILD_FRAMEWORK "Build the PowerVR Framework" ON)
-option(PVR_SKIP_EXTERNAL "Skip the external modules used by the PowerVR Framework" OFF)
-option(PVR_FIXED_LOCATION "Build the PowerVR Framework with framework and external libraries built to and imported from a fixed location (see cmake/PlatformSdkFolders for more information)" OFF)
-option(PVR_PREBUILT_DEPENDENCIES "Indicates that the PowerVR Framework and its dependencies have been prebuilt. Libraries will not be built and will instead be imported. The Examples will still be built" OFF)
-
 set(GLSLANG_VALIDATOR_INSTALL_DIR "GLSLANG_VALIDATOR-NOTFOUND" CACHE PATH "Path to a prebuilt glslangValidator")
 
 if(NOT GLSLANG_VALIDATOR_INSTALL_DIR)
@@ -52,29 +48,10 @@ if(APPLE AND NOT IOS)
 	find_package(MoltenVK)
 endif()
 
-if(NOT PVR_SKIP_EXTERNAL)
-	add_subdirectory(external EXCLUDE_FROM_ALL)
-endif()
-
-if(WIN32)
-	set(PVR_VFRAME_LIB_FOLDER "${CMAKE_CURRENT_LIST_DIR}/lib/Windows_x86_${PROJECT_ARCH}" CACHE INTERNAL "")
-elseif(APPLE AND NOT IOS)
-	set(PVR_VFRAME_LIB_FOLDER "${CMAKE_CURRENT_LIST_DIR}/lib/macOS_x86" CACHE INTERNAL "")
-elseif(UNIX)
-	set(PVR_VFRAME_LIB_FOLDER "${CMAKE_CURRENT_LIST_DIR}/lib/${CMAKE_SYSTEM_NAME}_${CMAKE_SYSTEM_PROCESSOR}" CACHE INTERNAL "")
-endif()
+add_subdirectory(external EXCLUDE_FROM_ALL)
 
 if(NOT PVR_PREBUILT_DEPENDENCIES)
-	if(PVR_BUILD_FRAMEWORK)
-		add_subdirectory(framework EXCLUDE_FROM_ALL)
-	endif()
-endif()
-
-get_directory_property(HAS_PARENT PARENT_DIRECTORY)
-if(HAS_PARENT)
-	option(PVR_BUILD_EXAMPLES "Build the PowerVR SDK Examples" OFF)
-else()
-	option(PVR_BUILD_EXAMPLES "Build the PowerVR SDK Examples" ON)
+	add_subdirectory(framework EXCLUDE_FROM_ALL)
 endif()
 
 if(PVR_BUILD_EXAMPLES)
@@ -101,3 +78,11 @@ if(PVR_BUILD_EXAMPLES)
 
 	add_subdirectory(examples)
 endif()
+
+get_property(ALL_EXTERNAL_TARGETS GLOBAL PROPERTY PVR_EXTERNAL_TARGETS)
+get_property(ALL_FRAMEWORK_TARGETS GLOBAL PROPERTY PVR_FRAMEWORK_TARGETS)
+get_property(ALL_EXAMPLE_TARGETS GLOBAL PROPERTY PVR_EXAMPLE_TARGETS)
+
+foreach(TARGET_NAME ${ALL_EXTERNAL_TARGETS} ${ALL_FRAMEWORK_TARGETS} ${ALL_EXAMPLE_TARGETS})
+	enable_sdk_options_for_target(${TARGET_NAME})
+endforeach()

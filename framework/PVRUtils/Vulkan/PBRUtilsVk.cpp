@@ -58,7 +58,7 @@ pvr::Texture generateIrradianceMap(
 
 	// Create the uniform buffer storing the rotation matrix for the cube map view direction
 	pvrvk::Buffer uboBuffer = pvr::utils::createBuffer(device, pvrvk::BufferCreateInfo(uboView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT),
-		pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT | pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, &allocator);
+		pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT | pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, allocator);
 	uboView.pointToMappedMemory(uboBuffer->getDeviceMemory()->getMappedData());
 
 	const glm::mat3 cubeView[] = {
@@ -97,7 +97,7 @@ pvr::Texture generateIrradianceMap(
 
 	// Create a buffer to use as the final destination for the image data which will be saved to disk
 	pvrvk::Buffer imageDataBuffer = pvr::utils::createBuffer(device, pvrvk::BufferCreateInfo(static_cast<VkDeviceSize>(bufferSize), pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT),
-		pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT | pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, &allocator);
+		pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT | pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, allocator);
 
 	pvrvk::WriteDescriptorSet descSetUpdate[] = {
 		pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, descSet, 0),
@@ -112,7 +112,7 @@ pvr::Texture generateIrradianceMap(
 	renderTarget = pvr::utils::createImage(device,
 		pvrvk::ImageCreateInfo(
 			pvrvk::ImageType::e_2D, format, pvrvk::Extent3D(mapSize, mapSize, 1), pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT),
-		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, &allocator);
+		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, allocator);
 
 	// Create an image view for the render target so that it can be used a framebuffer attachment
 	imageView = device->createImageView(pvrvk::ImageViewCreateInfo(renderTarget));
@@ -121,7 +121,7 @@ pvr::Texture generateIrradianceMap(
 	outputImage = pvr::utils::createImage(device,
 		pvrvk::ImageCreateInfo(
 			pvrvk::ImageType::e_2D, outputVkFormat, pvrvk::Extent3D(mapSize, mapSize, 1), pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT | pvrvk::ImageUsageFlags::e_TRANSFER_DST_BIT),
-		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, &allocator);
+		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, allocator);
 
 	// create the renderpass
 	pvrvk::RenderPassCreateInfo rpInfo;
@@ -334,7 +334,7 @@ Texture generatePreFilteredMapMipmapStyle(pvrvk::Queue queue, pvrvk::ImageView e
 	uboView.initDynamic(viewDesc, numFaces, pvr::BufferUsageFlags::UniformBuffer, device->getPhysicalDevice()->getProperties().getLimits().getMinUniformBufferOffsetAlignment());
 
 	pvrvk::Buffer uboBuffer = pvr::utils::createBuffer(device, pvrvk::BufferCreateInfo(uboView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT),
-		pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT | pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, &allocator);
+		pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT | pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, allocator);
 	uboView.pointToMappedMemory(uboBuffer->getDeviceMemory()->getMappedData());
 
 	const glm::mat3 cubeView[numFaces] = {
@@ -373,7 +373,7 @@ Texture generatePreFilteredMapMipmapStyle(pvrvk::Queue queue, pvrvk::ImageView e
 
 	// Create a buffer to use as the final destination for the image data which will be saved to disk
 	pvrvk::Buffer imageDataBuffer = pvr::utils::createBuffer(device, pvrvk::BufferCreateInfo(bufferSize, pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT),
-		pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT | pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, &allocator);
+		pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT | pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, allocator);
 
 	pvrvk::WriteDescriptorSet descSetUpdate[] = {
 		pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, descSet, 0),
@@ -392,7 +392,7 @@ Texture generatePreFilteredMapMipmapStyle(pvrvk::Queue queue, pvrvk::ImageView e
 	renderTarget = pvr::utils::createImage(device,
 		pvrvk::ImageCreateInfo(pvrvk::ImageType::e_2D, format, pvrvk::Extent3D(mipLevelDimensions[0], mipLevelDimensions[0], 1),
 			pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT),
-		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, &allocator);
+		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, allocator);
 
 	// Create an image view for the render target so that it can be used a framebuffer attachment
 	imageView = device->createImageView(pvrvk::ImageViewCreateInfo(renderTarget));
@@ -401,7 +401,7 @@ Texture generatePreFilteredMapMipmapStyle(pvrvk::Queue queue, pvrvk::ImageView e
 	outputImage = pvr::utils::createImage(device,
 		pvrvk::ImageCreateInfo(
 			pvrvk::ImageType::e_2D, outputVkFormat, pvrvk::Extent3D(mapSize, mapSize, 1), pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT | pvrvk::ImageUsageFlags::e_TRANSFER_DST_BIT),
-		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, &allocator);
+		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, allocator);
 
 	// create the renderpass
 	pvrvk::RenderPassCreateInfo rpInfo;

@@ -2,7 +2,7 @@
 
 /*
 	If the current vertex is affected by bones then the vertex position and
-	normal will be transformed by the bone matrices. Each vertex wil have up
+	normal will be transformed by the bone matrices. Each vertex will have up
 	to 4 bone indices (inBoneIndex) and bone weights (inBoneWeights).
 
 	The indices are used to index into the array of bone matrices
@@ -14,7 +14,7 @@
 	position = (BoneMatrixArray[Index0] * inVertex) * Weight0 +
 	           (BoneMatrixArray[Index1] * inVertex) * Weight1
 
-	The same proceedure is applied to the normals but the translation part of
+	The same procedure is applied to the normals but the translation part of
 	the transformation is ignored.
 
 	After this the position is multiplied by the view and projection matrices
@@ -33,7 +33,7 @@ layout(location = 4) in mediump vec2 inTexCoord;
 layout(location = 5) in mediump vec4 inBoneWeights;
 layout(location = 6) in uvec4 inBoneIndex;
 
-// perframe / per mesh
+// per frame / per mesh
 layout(std140,set = 1, binding = 0) uniform Dynamics
 {
 	mat4 BoneMatrixArray[24];

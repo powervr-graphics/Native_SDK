@@ -8,7 +8,7 @@ var searchData=
   ['adddistancefromtarget',['addDistanceFromTarget',['../classpvr_1_1_t_p_s_orbit_camera.html#a9573012cd08a4992a7b6330d689a18eb',1,'pvr::TPSOrbitCamera']]],
   ['addinclination',['addInclination',['../classpvr_1_1_t_p_s_orbit_camera.html#a827eb97fc6c22a422d1921c3081dc954',1,'pvr::TPSOrbitCamera']]],
   ['addkeyframes',['addKeyFrames',['../structpvr_1_1_camera_animation_controller.html#a746980035f1cada0d21beef06726257f',1,'pvr::CameraAnimationController']]],
-  ['addmetadata',['addMetaData',['../classpvr_1_1_texture_header.html#a15c81430182569becd27c48dc12e9f36',1,'pvr::TextureHeader']]],
+  ['addmetadata',['addMetaData',['../structpvr_1_1_texture_header.html#a15c81430182569becd27c48dc12e9f36',1,'pvr::TextureHeader']]],
   ['addpaddingmetadata',['addPaddingMetaData',['../classpvr_1_1_texture.html#a0eba5d93f2335cdb4085ad88b8e3a5cf',1,'pvr::Texture']]],
   ['addpipeline',['addPipeline',['../structpvr_1_1effect_1_1_effect.html#a3a00a475329d5deb491a63864ef5049f',1,'pvr::effect::Effect::addPipeline(const StringHash &amp;apiName, PipelineDefinition &amp;&amp;pipeline)'],['../structpvr_1_1effect_1_1_effect.html#a7c5bb2911d37375860ab126c27fd50ce',1,'pvr::effect::Effect::addPipeline(const StringHash &amp;apiName, const PipelineDefinition &amp;pipeline)']]],
   ['addshader',['addShader',['../structpvr_1_1effect_1_1_effect.html#a48e756f0fb8cffe5e085d0ac8f4f7985',1,'pvr::effect::Effect::addShader(const StringHash &amp;apiName, Shader &amp;&amp;shader)'],['../structpvr_1_1effect_1_1_effect.html#a545e4b5d67b2be0870e645205b260a8e',1,'pvr::effect::Effect::addShader(const StringHash &amp;apiName, const Shader &amp;shader)']]],

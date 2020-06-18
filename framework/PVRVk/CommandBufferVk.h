@@ -50,12 +50,6 @@ protected:
 	/// <summary>Specifies whether the command buffer is currently in the recording state which is controlled via calling the begin function.</summary>
 	bool _isRecording;
 
-	/// <summary>Holds a reference to the last bound graphics pipeline. This can be used for optimising binding the same graphics pipeline repeatedly.</summary>
-	GraphicsPipeline _lastBoundGraphicsPipe;
-
-	/// <summary>Holds a reference to the last bound compute pipeline. This can then be used for optimising binding the same compute pipeline repeatedly.</summary>
-	ComputePipeline _lastBoundComputePipe;
-
 public:
 	//!\cond NO_DOXYGEN
 	DECLARE_NO_COPY_SEMANTICS(CommandBufferBase_)
@@ -93,11 +87,11 @@ public:
 		vkLabelInfo.color[3] = labelInfo.getA();
 		// The label name to give to the marked region
 		vkLabelInfo.pLabelName = labelInfo.getLabelName().c_str();
-		getDevice()->getVkBindings().vkCmdBeginDebugUtilsLabelEXT(getVkHandle(), &vkLabelInfo);
+		getDevice()->getPhysicalDevice()->getInstance()->getVkBindings().vkCmdBeginDebugUtilsLabelEXT(getVkHandle(), &vkLabelInfo);
 	}
 
 	/// <summary>Ends a label region of work submitted to this command buffer.</summary>
-	void endDebugUtilsLabel() { getDevice()->getVkBindings().vkCmdEndDebugUtilsLabelEXT(getVkHandle()); }
+	void endDebugUtilsLabel() { getDevice()->getPhysicalDevice()->getInstance()->getVkBindings().vkCmdEndDebugUtilsLabelEXT(getVkHandle()); }
 
 	/// <summary>Inserts a single debug label any time.</summary>
 	/// <param name="labelInfo">Specifies the parameters of the label region to insert</param>
@@ -112,7 +106,7 @@ public:
 		vkLabelInfo.color[3] = labelInfo.getA();
 		// The label name to give to the marked region
 		vkLabelInfo.pLabelName = labelInfo.getLabelName().c_str();
-		getDevice()->getVkBindings().vkCmdInsertDebugUtilsLabelEXT(getVkHandle(), &vkLabelInfo);
+		getDevice()->getPhysicalDevice()->getInstance()->getVkBindings().vkCmdInsertDebugUtilsLabelEXT(getVkHandle(), &vkLabelInfo);
 	}
 
 	/// <summary>Begins a debug marked region.</summary>
@@ -196,24 +190,16 @@ public:
 	/// <param name="pipeline">The GraphicsPipeline to bind.</param>
 	void bindPipeline(const GraphicsPipeline& pipeline)
 	{
-		if (_lastBoundGraphicsPipe || _lastBoundGraphicsPipe != pipeline)
-		{
-			_objectReferences.emplace_back(pipeline);
-			getDevice()->getVkBindings().vkCmdBindPipeline(getVkHandle(), static_cast<VkPipelineBindPoint>(PipelineBindPoint::e_GRAPHICS), pipeline->getVkHandle());
-			_lastBoundGraphicsPipe = pipeline;
-		}
+		_objectReferences.emplace_back(pipeline);
+		getDevice()->getVkBindings().vkCmdBindPipeline(getVkHandle(), static_cast<VkPipelineBindPoint>(PipelineBindPoint::e_GRAPHICS), pipeline->getVkHandle());
 	}
 
 	/// <summary>Bind a compute pipeline</summary>
 	/// <param name="pipeline">The ComputePipeline to bind</param>
 	void bindPipeline(ComputePipeline& pipeline)
 	{
-		if (!_lastBoundComputePipe || _lastBoundComputePipe != pipeline)
-		{
-			_lastBoundComputePipe = pipeline;
-			_objectReferences.emplace_back(pipeline);
-			getDevice()->getVkBindings().vkCmdBindPipeline(getVkHandle(), static_cast<VkPipelineBindPoint>(PipelineBindPoint::e_COMPUTE), pipeline->getVkHandle());
-		}
+		_objectReferences.emplace_back(pipeline);
+		getDevice()->getVkBindings().vkCmdBindPipeline(getVkHandle(), static_cast<VkPipelineBindPoint>(PipelineBindPoint::e_COMPUTE), pipeline->getVkHandle());
 	}
 
 	/// <summary>Bind descriptorsets</summary>
@@ -333,8 +319,6 @@ public:
 	void reset(CommandBufferResetFlags resetFlags = CommandBufferResetFlags::e_NONE)
 	{
 		_objectReferences.clear();
-		_lastBoundComputePipe.reset();
-		_lastBoundGraphicsPipe.reset();
 
 		getDevice()->getVkBindings().vkResetCommandBuffer(getVkHandle(), static_cast<VkCommandBufferResetFlagBits>(resetFlags));
 	}

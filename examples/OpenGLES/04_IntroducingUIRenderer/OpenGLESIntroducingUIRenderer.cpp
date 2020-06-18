@@ -1,14 +1,13 @@
-/*!******************************************************************************************************************
-\File         OpenGLESIntroducingUIRenderer.cpp
-\Title        Introducing uiRenderer
-\Author       PowerVR by Imagination, Developer Technology Team
-\Copyright    Copyright (c) Imagination Technologies Limited.
-\brief  Shows how to use the UIRenderer class to draw ASCII/UTF-8 or wide-charUnicode-compliant text in 3D.
-*********************************************************************************************************************/
+/*!
+\brief Shows how to use the UIRenderer class to draw ASCII/UTF-8 or wide-charUnicode-compliant text in 3D.
+\file OpenGLESIntroducingUIRenderer.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #include "PVRShell/PVRShell.h"
 #include "PVRUtils/PVRUtilsGles.h"
 
-// PVR font files
+// PVR font files.
 const char CentralTextFontFile[] = "arial_36.pvr";
 const char CentralTitleFontFile[] = "starjout_60.pvr";
 const char CentralTextFile[] = "Text.txt";
@@ -54,9 +53,7 @@ const wchar_t* Titles[Language::Count] = {
 	L"\u0432\u044A\u0432\u0435\u0436\u0434\u0430\u043D\u0435UIRenderer",
 };
 
-/*!******************************************************************************************************************
-Class implementing the pvr::Shell functions.
-*********************************************************************************************************************/
+/// <summary>Class implementing the Shell functions.</summary>
 class OpenGLESIntroducingUIRenderer : public pvr::Shell
 {
 	pvr::EglContext _context;
@@ -91,12 +88,10 @@ public:
 	void updateCentralText();
 };
 
-/*!******************************************************************************************************************
-\return Return pvr::Result::Success if no error occurred
-\brief  Code in initApplication() will be called by Shell once per run, before the rendering context is created.
-	Used to initialize variables that are not dependent on it (e.g. external modules, loading meshes, etc.)
-	If the rendering context is lost, initApplication() will not be called again.
-*********************************************************************************************************************/
+/// <summary>Code in initApplication() will be called by Shell once per run, before the rendering context is created.
+/// Used to initialize variables that are not dependent on it(e.g.external modules, loading meshes, etc.).If the rendering
+/// context is lost, initApplication() will not be called again.</summary>
+/// <returns>Result::Success if no error occurred.</returns>
 pvr::Result OpenGLESIntroducingUIRenderer::initApplication()
 {
 	// Because the C++ standard states that only ASCII characters are valid in compiled code,
@@ -126,25 +121,20 @@ pvr::Result OpenGLESIntroducingUIRenderer::initApplication()
 	return pvr::Result::Success;
 }
 
-/*!******************************************************************************************************************
-\return   Return pvr::Result::Success if no error occurred
-\brief    Code in quitApplication() will be called by PVRShell once per run, just before exiting the program.
-	  If the rendering context is lost, quitApplication() will not be called.
-*********************************************************************************************************************/
+/// <summary>Code in quitApplication() will be called by pvr::Shell once per run, just before exiting the program.</summary>
+/// <returns>Result::Success if no error occurred</returns>.
 pvr::Result OpenGLESIntroducingUIRenderer::quitApplication() { return pvr::Result::Success; }
 
-/*!******************************************************************************************************************
-\brief  Generates a simple background texture procedurally.
-\param[in]  screenWidth screen dimension's width
-\param[in]  screenHeight screen dimension's height
-*********************************************************************************************************************/
+/// <summary>Generates a simple background texture procedurally.</summary>
+/// <param name="screenWidth ">Screen dimension's width.</param>
+/// <param name="screenHeight">Screen dimension's height.</param>
 void OpenGLESIntroducingUIRenderer::generateBackgroundTexture(uint32_t screenWidth, uint32_t screenHeight)
 {
 	// Generate star texture
 	uint32_t width = pvr::math::makePowerOfTwoHigh(screenWidth);
 	uint32_t height = pvr::math::makePowerOfTwoHigh(screenHeight);
 
-	pvr::TextureHeader::Header hd;
+	pvr::TextureHeader hd;
 	hd.channelType = pvr::VariableType::UnsignedByteNorm;
 	hd.pixelFormat = pvr::GeneratePixelType1<'l', 8>::ID;
 	hd.colorSpace = pvr::ColorSpace::lRGB;
@@ -167,14 +157,11 @@ void OpenGLESIntroducingUIRenderer::generateBackgroundTexture(uint32_t screenWid
 	_background = _uiRenderer.createImage(myTexture);
 }
 
-/*!******************************************************************************************************************
-\brief Load font from the resource used for this example
-\param[in] streamManager asset provider
-\param[in] filename name of the font file
-\param[in] uirenderer ui::Font creator
-\param[out] font returned font
-\return Return pvr::Result::Success if no error occurred.
-*********************************************************************************************************************/
+/// <summary>Load font from the resource used for this example.</summary>
+/// <param name="streamManager"> asset provider.</param>
+/// <param name="filename"> name of the font file.</param>
+/// <param name="uirenderer"> ui::Font creator.</param>
+/// <param name="font"> returned font.</param>
 inline void loadFontFromResources(pvr::Shell& streamManager, const char* filename, pvr::ui::UIRenderer& uirenderer, pvr::ui::Font& font)
 {
 	// the AssetStore is unsuitable for loading the font, because it does not keep the actual texture data that we need.
@@ -186,11 +173,10 @@ inline void loadFontFromResources(pvr::Shell& streamManager, const char* filenam
 	font = uirenderer.createFont(tmpTexture);
 }
 
-/*!******************************************************************************************************************
-\return Result::Success if no error occurred
-\brief  Code in initView() will be called by Shell upon initialization or after a change in the rendering context.
-	Used to initialize variables that are dependent on the rendering context (e.g. textures, vertex buffers, etc.)
-*********************************************************************************************************************/
+/// <summary>Code in initView() will be called by Shell upon initialization or after a change
+/// in the rendering context. Used to initialize variables that are dependent on the
+/// rendering context(e.g.textures, vertex buffers, etc.).</summary>
+/// <returns>Result::Success if no error occurred.</returns>
 pvr::Result OpenGLESIntroducingUIRenderer::initView()
 {
 	_context = pvr::createEglContext();
@@ -249,10 +235,8 @@ pvr::Result OpenGLESIntroducingUIRenderer::initView()
 	return pvr::Result::Success;
 }
 
-/*!******************************************************************************************************************
-\return Result::Success if no error occurred
-\brief  Code in releaseView() will be called by Shell when the application quits or before a change in the rendering context.
-*********************************************************************************************************************/
+/// <summary>Code in releaseView() will be called by Shell when the application quits.</summary>
+/// <returns>Result::Success if no error occurred.</returns>
 pvr::Result OpenGLESIntroducingUIRenderer::releaseView()
 {
 	// Release uiRenderer Textures
@@ -269,14 +253,12 @@ pvr::Result OpenGLESIntroducingUIRenderer::releaseView()
 	return pvr::Result::Success;
 }
 
-/*!******************************************************************************************************************
-\brief  Main rendering loop function of the program. The shell will call this function every frame.
-\return Result::Success if no error occurred
-*********************************************************************************************************************/
+/// <summary>Main rendering loop function of the program. The shell will call this function every frame.</summary>
+/// <returns>Result::Success if no error occurred.</returns>
 pvr::Result OpenGLESIntroducingUIRenderer::renderFrame()
 {
 	gl::Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	// Clears the color and depth buffer
+	// Clears the colour and depth buffer
 	uint64_t currentTime = this->getTime() - this->getTimeAtInitApplication();
 
 	updateSubTitle(currentTime);
@@ -312,10 +294,8 @@ pvr::Result OpenGLESIntroducingUIRenderer::renderFrame()
 	return pvr::Result::Success;
 }
 
-/*!******************************************************************************************************************
-\brief  Update the description sprite
-\param  currentTime Current Time
-*********************************************************************************************************************/
+/// <summary>Update the description sprite.</summary>
+/// <param name="currentTime">Current Time.</returns>
 void OpenGLESIntroducingUIRenderer::updateSubTitle(uint64_t currentTime)
 {
 	// Fade effect
@@ -352,10 +332,8 @@ void OpenGLESIntroducingUIRenderer::updateSubTitle(uint64_t currentTime)
 	_titleText2->commitUpdates();
 }
 
-/*!******************************************************************************************************************
-\brief  Draws the title _text.
-\param[in]  fadeAmount
-*********************************************************************************************************************/
+/// <summary>Draws the title _text.</summary>
+/// <param name="fadeAmount">Amount of fade.</param>
 void OpenGLESIntroducingUIRenderer::updateCentralTitle(uint64_t currentTime)
 {
 	// Using the MeasureText() method provided by uiRenderer, we can determine the bounding-box
@@ -377,9 +355,7 @@ void OpenGLESIntroducingUIRenderer::updateCentralTitle(uint64_t currentTime)
 	_centralTitleLine2->commitUpdates();
 }
 
-/*!******************************************************************************************************************
-\brief  Draws the 3D _text and scrolls in to the screen.
-*********************************************************************************************************************/
+/// <summary>Draws the 3D _text and scrolls in to the screen.</summary>
 void OpenGLESIntroducingUIRenderer::updateCentralText()
 {
 	glm::mat4 mProjection = glm::mat4(1.0f);
@@ -407,7 +383,7 @@ void OpenGLESIntroducingUIRenderer::updateCentralText()
 	// uiRenderer can optionally be provided with user-defined projection and model-view matrices
 	// which allow custom layout of text. Here we are proving both a projection and model-view
 	// matrix. The projection matrix specified here uses perspective projection which will
-	// provide the 3D effect. The model-view matrix positions the the text in world space
+	// provide the 3D effect. The model-view matrix positions the text in world space
 	// providing the 'camera' position and the scrolling of the text.
 
 	_centralTextGroup->setScaleRotateTranslate(trans);

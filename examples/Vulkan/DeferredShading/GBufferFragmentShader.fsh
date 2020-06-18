@@ -29,7 +29,7 @@ void main()
 	// Calculate the albedo, Pack the specular exponent with the albedo
 	oAlbedo = vec4(texture(sTexture, vTexCoord).rgb * vDiffuseColor.rgb, fSpecularStrength);
 
-	// Calculate viewspace perturbed normal
+	// Calculate view space perturbed normal
 	mediump vec3 bumpmap = normalize(texture(sBumpMap, vTexCoord).rgb * 2.0 - 1.0);
 	highp mat3 tangentSpace = mat3(normalize(vTangent), normalize(vBinormal), normalize(vNormal));
 	oNormal = normalize(tangentSpace * bumpmap);

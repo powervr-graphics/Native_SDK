@@ -65,7 +65,7 @@ void ParticleSystemGPU::init(uint32_t inMaxParticles, const std::vector<Sphere> 
 		particleSystemBuffers[i] = pvr::utils::createBuffer(device,
 			pvrvk::BufferCreateInfo(static_cast<VkDeviceSize>(particleSystemBufferSliceSize),
 				pvrvk::BufferUsageFlags::e_VERTEX_BUFFER_BIT | pvrvk::BufferUsageFlags::e_STORAGE_BUFFER_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT),
-			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, &allocator, pvr::utils::vma::AllocationCreateFlags::e_NONE);
+			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, allocator, pvr::utils::vma::AllocationCreateFlags::e_NONE);
 	}
 
 	// Create a configuration buffer for the particle system to be used for controlling the particle system behaviour
@@ -75,7 +75,7 @@ void ParticleSystemGPU::init(uint32_t inMaxParticles, const std::vector<Sphere> 
 
 		particleConfigUbo = pvr::utils::createBuffer(device, pvrvk::BufferCreateInfo(particleConfigUboBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT),
 			pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
-			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT, &allocator,
+			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT, allocator,
 			pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
 		particleConfigUboBufferView.pointToMappedMemory(particleConfigUbo->getDeviceMemory()->getMappedData());
@@ -107,7 +107,7 @@ void ParticleSystemGPU::init(uint32_t inMaxParticles, const std::vector<Sphere> 
 	device->updateDescriptorSets(writeDescSets.data(), static_cast<uint32_t>(writeDescSets.size()), nullptr, 0);
 
 	stagingBuffer = pvr::utils::createBuffer(device, pvrvk::BufferCreateInfo(particleSystemBuffers[0]->getSize(), pvrvk::BufferUsageFlags::e_TRANSFER_SRC_BIT),
-		pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT, &allocator,
+		pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT, allocator,
 		pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
 	stagingFence = device->createFence();
@@ -221,7 +221,7 @@ void ParticleSystemGPU::setCollisionSpheres(const std::vector<Sphere> spheres)
 
 	collisonSpheresUbo = pvr::utils::createBuffer(device, pvrvk::BufferCreateInfo(collisonSpheresUboBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT),
 		pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
-		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT, &allocator,
+		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT, allocator,
 		pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
 	collisonSpheresUboBufferView.pointToMappedMemory(collisonSpheresUbo->getDeviceMemory()->getMappedData());

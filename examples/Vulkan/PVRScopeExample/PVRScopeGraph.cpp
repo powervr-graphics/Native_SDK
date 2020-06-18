@@ -1,9 +1,10 @@
-/*!*********************************************************************************************************************
-\File         PVRScopeGraph.cpp
-\Title
-\Author       PowerVR by Imagination, Developer Technology Team
-\Copyright    Copyright (c) Imagination Technologies Limited.
-***********************************************************************************************************************/
+/*!
+\brief draws the graph on screen.
+\file PVRScopeGraph.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
+
 #include "PVRScopeStats.h"
 #include "PVRScopeGraph.h"
 #include "PVRCore/stream/BufferStream.h"
@@ -52,10 +53,8 @@ PVRScopeGraph::PVRScopeGraph()
 	reading.nReadingActiveGroup = 99;
 }
 
-/*!*********************************************************************************************************************
-\brief  init
-\return true if no error occurred
-***********************************************************************************************************************/
+/// <summary>Initialises the graph.</summary>
+/// <returns>Return true if no error occurred.<returns>
 bool PVRScopeGraph::init(pvrvk::Device& device, const pvrvk::Extent2D& dimension, pvrvk::DescriptorPool& descriptorPool, pvr::IAssetProvider& assetProvider,
 	pvr::ui::UIRenderer& uiRenderer, const pvrvk::RenderPass& renderPass, pvr::utils::vma::Allocator& vmaAllocator, std::string& outMsg)
 {
@@ -68,13 +67,13 @@ bool PVRScopeGraph::init(pvrvk::Device& device, const pvrvk::Extent2D& dimension
 
 	if (scopeData)
 	{
-		// create the indexbuffer
+		// create the index buffer
 		const uint16_t indexData[10] = { 0, 1, 2, 3, 4, 5, 0, 4, 1, 5 };
 
 		{
 			_indexBuffer = pvr::utils::createBuffer(device, pvrvk::BufferCreateInfo(sizeof(indexData), pvrvk::BufferUsageFlags::e_INDEX_BUFFER_BIT),
 				pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
-				pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT, &_vmaAllocator,
+				pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT, _vmaAllocator,
 				pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
 			pvr::utils::updateHostVisibleBuffer(_indexBuffer, indexData, 0, sizeof(indexData), true);
@@ -85,13 +84,13 @@ bool PVRScopeGraph::init(pvrvk::Device& device, const pvrvk::Extent2D& dimension
 				pvr::utils::createBuffer(device, pvrvk::BufferCreateInfo(sizeof(glm::vec2) * Configuration::NumVerticesGraphBorder, pvrvk::BufferUsageFlags::e_VERTEX_BUFFER_BIT),
 					pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 					pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
-					&_vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+					_vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 		}
 	}
 
 	if (!createPipeline(renderPass, dimension, outMsg)) { return false; }
 	_isInitialzed = true;
-	// create the color descriptorset for Vulkan
+	// create the colour descriptor set for Vulkan
 
 	pvr::utils::StructuredMemoryDescription desc;
 	desc.addElement("color", pvr::GpuDatatypes::vec4);
@@ -99,7 +98,7 @@ bool PVRScopeGraph::init(pvrvk::Device& device, const pvrvk::Extent2D& dimension
 		static_cast<uint32_t>(device->getPhysicalDevice()->getProperties().getLimits().getMinUniformBufferOffsetAlignment()));
 	_uboColor = pvr::utils::createBuffer(device, pvrvk::BufferCreateInfo(_uboViewColor.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT),
 		pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
-		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT, &_vmaAllocator,
+		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT, _vmaAllocator,
 		pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
 	// fill the buffer
@@ -118,17 +117,12 @@ bool PVRScopeGraph::init(pvrvk::Device& device, const pvrvk::Extent2D& dimension
 	return (_isInitialzed = true);
 }
 
-/*!*********************************************************************************************************************
-\brief  dtor
-***********************************************************************************************************************/
 PVRScopeGraph::~PVRScopeGraph()
 {
 	if (scopeData) { PVRScopeDeInitialise(&scopeData, &counters, &reading); }
 }
 
-/*!*********************************************************************************************************************
-\brief  ping
-***********************************************************************************************************************/
+/// <summary>Ping the PVRScope and update the counters' values.</summary>
 void PVRScopeGraph::ping(float dt)
 {
 	if (scopeData)
@@ -200,10 +194,8 @@ void PVRScopeGraph::ping(float dt)
 	}
 }
 
-/*!*********************************************************************************************************************
-\brief  pre-record the commands
-\param  pvrvk::CommandBufferBase commandBuffer
-***********************************************************************************************************************/
+/// <summary>Pre-record the commands.</summary>
+/// <param name="commandBuffer">Command buffer to record.</param>
 void PVRScopeGraph::recordCommandBuffer(pvrvk::CommandBuffer& commandBuffer)
 {
 	if (scopeData)
@@ -237,10 +229,6 @@ void PVRScopeGraph::recordCommandBuffer(pvrvk::CommandBuffer& commandBuffer)
 	}
 }
 
-/*!*********************************************************************************************************************
-\brief  pre-record the commands
-\param  pvrvk::CommandBufferBase commandBuffer
-***********************************************************************************************************************/
 void PVRScopeGraph::recordUIElements()
 {
 	// Draw the visible counters.
@@ -251,9 +239,7 @@ void PVRScopeGraph::recordUIElements()
 	}
 }
 
-/*!*********************************************************************************************************************
-\brief  update the graph
-***********************************************************************************************************************/
+/// <summary>Update the graph.</summary>
 void PVRScopeGraph::update(float dt)
 {
 	float fRatio;
@@ -389,7 +375,7 @@ void PVRScopeGraph::update(float dt)
 		{
 			activeCounters[ii].vbo = pvr::utils::createBuffer(_device,
 				pvrvk::BufferCreateInfo(sizeof(verticesGraphContent[0]) * sizeCB, pvrvk::BufferUsageFlags::e_VERTEX_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
-				pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT, &_vmaAllocator,
+				pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT, _vmaAllocator,
 				pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 		}
 		// Need updating anyway...
@@ -454,46 +440,36 @@ bool PVRScopeGraph::createPipeline(const pvrvk::RenderPass& renderPass, const pv
 	return true;
 }
 
-/*!*********************************************************************************************************************
-\brief  show the counter
-\param  uint32_t nCounter
-\param  bool showGraph
-***********************************************************************************************************************/
+/// <summary>Show the counter.</summary>
+/// <param name="nCounter">Counter Index.</param>
+/// <param name="showGraph"> Show/Hide graph flag.</param>
 void PVRScopeGraph::showCounter(uint32_t nCounter, bool showGraph)
 {
 	if (nCounter < numCounter) { graphCounters[nCounter].showGraph = showGraph; }
 }
 
-/*!*********************************************************************************************************************
-\brief  return true if counter is shown
-\return bool
-\param  uint32_t nCounter
-***********************************************************************************************************************/
+/// <summary>Check if counter is currently shown.</summary>
+/// <param name="nCounter">Counter Index.</param>
+/// <returns>Returns true if the counter is shown and false if it is not.</returns>
 bool PVRScopeGraph::isCounterShown(uint32_t nCounter) const { return graphCounters.size() && nCounter < numCounter ? graphCounters[nCounter].showGraph : false; }
 
-/*!*********************************************************************************************************************
-\brief  return whether the counter is being drawn
-\return bool
-\param  uint32_t counter
-***********************************************************************************************************************/
+/// <summary>Check if counter is currently being drawn.</summary>
+/// <param name="nCounter">Counter Index.</param>
+/// <returns>Returns true if the counter is drawn and false if it is not.</returns>
 bool PVRScopeGraph::isCounterBeingDrawn(uint32_t counter) const
 {
 	if (counter < numCounter && (counters[counter].nGroup == activeGroup || counters[counter].nGroup == 0xffffffff)) { return true; }
 	return false;
 }
 
-/*!*********************************************************************************************************************
-\brief  return true whether the counter use percentage
-\return bool
-\param  uint32_t counter
-***********************************************************************************************************************/
+/// <summary>Check if counter is a percentage.</summary>
+/// <param name="nCounter">Counter Index.</param>
+/// <returns>Returns true if the counter is a percentage and false if it is not.</returns>
 bool PVRScopeGraph::isCounterPercentage(uint32_t counter) const { return counter < numCounter && counters[counter].nBoolPercentage; }
 
-/*!*********************************************************************************************************************
-\brief  return counter's maximum data
-\return float
-\param  uint32_t counter
-***********************************************************************************************************************/
+/// <summary>get the counter's maximum data.</summary>
+/// <returns> Returns the maximum value that the ca</returns>
+/// <param name="counter">Counter Index.</param>
 float PVRScopeGraph::getMaximumOfData(uint32_t counter)
 {
 	float maximum = 0.f;
@@ -522,32 +498,26 @@ float PVRScopeGraph::getMaximumOfData(uint32_t counter)
 	}
 }
 
-/*!*********************************************************************************************************************
-\brief  return counter's maximum
-\return float
-\param  uint32_t nCounter
-***********************************************************************************************************************/
+/// <summary>return counter's maximum.</summary>
+/// <param name="nCounter">Counter index.</param>
+/// <returns>Current maximum value </returns>
 float PVRScopeGraph::getMaximum(uint32_t nCounter)
 {
 	if (nCounter < numCounter) { return graphCounters[nCounter].maximum; }
 	return 0.0f;
 }
 
-/*!*********************************************************************************************************************
-\brief  set counter's maximum
-\param  uint32_t counter
-\param  float maximum
-***********************************************************************************************************************/
+/// <summary>Set counter's maximum value for scaling the graph.</summary>
+/// <param name="counter">Counter Index.</param>
+/// <param name="maximum">New maximum value</param>
 void PVRScopeGraph::setMaximum(uint32_t counter, float maximum)
 {
 	if (counter < numCounter) { graphCounters[counter].maximum = maximum; }
 }
 
-/*!*********************************************************************************************************************
-\brief  set the active group
-\return true if no error occurred
-\param  const uint32_t activeGroup
-***********************************************************************************************************************/
+/// <summary>Set the active group.</summary>
+/// <param name="activeGroup">The new active group</param>
+/// <returns>Returns true if no error occurred.</returns>
 bool PVRScopeGraph::setActiveGroup(const uint32_t inActiveGroup)
 {
 	if (activeGroupSelect == inActiveGroup) { return true; }
@@ -565,27 +535,21 @@ bool PVRScopeGraph::setActiveGroup(const uint32_t inActiveGroup)
 	return false;
 }
 
-/*!*********************************************************************************************************************
-\brief  return the counter name
-\return const char*
-\param  i counter index
-***********************************************************************************************************************/
+/// <summary>Get the counter name from index.</summary>
+/// <returns>Returns the char ptr to the counter name.</returns>
+/// <param name="i">Counter index.</param>
 const char* PVRScopeGraph::getCounterName(const uint32_t i) const
 {
 	if (i >= numCounter) { return ""; }
 	return counters[i].pszName;
 }
 
-/*!*********************************************************************************************************************
-\brief  return FPS
-\return float
-***********************************************************************************************************************/
+/// <summary>Get the Standard Frames per Second (FPS).</summary>
+/// <returns>Returns a float value representing the Standard FPS.</returns>
 float PVRScopeGraph::getStandardFPS() const { return idxFPS < reading.nValueCnt ? reading.pfValueBuf[idxFPS] : -1.0f; }
 
-/*!*********************************************************************************************************************
-\brief  return FPS
-\return float
-***********************************************************************************************************************/
+/// <summary>Get the Standard Frames per Second (FPS) Index.</summary>
+/// <returns>Returns the Index of the standard FPS counter.</returns>
 int32_t PVRScopeGraph::getStandardFPSIndex() const { return idxFPS; }
 
 float PVRScopeGraph::getStandard2D() const
@@ -603,50 +567,40 @@ float PVRScopeGraph::getStandardTA() const { return idxTA < reading.nValueCnt ? 
 
 int32_t PVRScopeGraph::getStandardTAIndex() const { return idxTA; }
 
-/*!*********************************************************************************************************************
-\brief  return standard compute
-\return float
-***********************************************************************************************************************/
+/// <summary>Get the standard compute counter.</summary>
+/// <returns>The current value of the standard compute counter.</returns>
 float PVRScopeGraph::getStandardCompute() const { return idxCompute < reading.nValueCnt ? reading.pfValueBuf[idxCompute] : -1.0f; }
 
 int32_t PVRScopeGraph::getStandardComputeIndex() const { return idxCompute; }
 
-/*!*********************************************************************************************************************
-\brief  return the standard pixel size
-\return float
-***********************************************************************************************************************/
+/// <summary>Get the standard pixel size counter.</summary>
+/// <returns>The current value of the standard pixel size counter.</returns>
 float PVRScopeGraph::getStandardShaderPixel() const { return idxShaderPixel < reading.nValueCnt ? reading.pfValueBuf[idxShaderPixel] : -1.0f; }
 int32_t PVRScopeGraph::getStandardShaderPixelIndex() const { return idxShaderPixel; }
 
-/*!*********************************************************************************************************************
-\brief  return the standard shared vertex
-\return float
-***********************************************************************************************************************/
+/// <summary>Get the standard shader counter.</summary>
+/// <returns>The current value of the standard shader counter.</returns>
 float PVRScopeGraph::getStandardShaderVertex() const { return idxShaderVertex < reading.nValueCnt ? reading.pfValueBuf[idxShaderVertex] : -1.0f; }
 int32_t PVRScopeGraph::getStandardShaderVertexIndex() const { return idxShaderVertex; }
-/*!*********************************************************************************************************************
-\brief  return the standard compute shader
-\return float
-***********************************************************************************************************************/
+
+/// <summary>Get the standard compute counter.</summary>
+/// <returns>The current value of the standard compute counter.</returns>
 float PVRScopeGraph::getStandardShaderCompute() const { return idxShaderCompute < reading.nValueCnt ? reading.pfValueBuf[idxShaderCompute] : -1.0f; }
 int32_t PVRScopeGraph::getStandardShaderComputeIndex() const { return idxShaderCompute; }
-/*!*********************************************************************************************************************
-\brief  return counter's number of group
-\return number of group
-\param  const uint32_t i
-***********************************************************************************************************************/
+
+/// <summary>Get the group number of a counter.</summary>
+/// <param name="i">Counter index.</param>
+/// <returns>Returns counter's group number.</returns>
 int PVRScopeGraph::getCounterGroup(const uint32_t i) const
 {
 	if (i >= numCounter) { return 0xffffffff; }
 	return counters[i].nGroup;
 }
 
-/*!*********************************************************************************************************************
-\brief  set the position of the graph
-\param  const uint32_t viewportW
-\param  const uint32_t viewportH
-\param  Rectanglei const & graph
-***********************************************************************************************************************/
+/// <summary>Set the position of the graph on screen.</summary>
+/// <param name="viewportW">The viewport width.</param>
+/// <param name="viewportH">The viewport height.</param>
+/// <param name="graph">the graph rectangle.</param>
 void PVRScopeGraph::position(const uint32_t viewportW, const uint32_t viewportH, const pvrvk::Rect2D& graph)
 {
 	if (scopeData)
@@ -669,10 +623,7 @@ void PVRScopeGraph::position(const uint32_t viewportW, const uint32_t viewportH,
 	}
 }
 
-/*!*********************************************************************************************************************
-\brief  update the counter list
-\return void
-***********************************************************************************************************************/
+/// <summary>Update the counter list.</summary>
 void PVRScopeGraph::updateCounters()
 {
 	if (PVRScopeGetCounters(scopeData, &numCounter, &counters, &reading))
@@ -693,10 +644,7 @@ void PVRScopeGraph::updateCounters()
 	}
 }
 
-/*!*********************************************************************************************************************
-\brief  update the vertex buffer lines
-\return void
-***********************************************************************************************************************/
+/// <summary>Update the vertex buffer lines.</summary>
 void PVRScopeGraph::updateBufferLines()
 {
 	const float flipY = -1.f;

@@ -1,20 +1,19 @@
-/*!*********************************************************************************************************************
-\File         OpenGLESImageBasedLighting.cpp
-\Title        Introducing Physically Based Rendering
-\Author       PowerVR by Imagination, Developer Technology Team
-\Copyright    Copyright (c) Imagination Technologies Limited.
-\brief		  This example demonstrates how to use Physically based rendering using Metallic-Roughness work flow showcasing 2 scenes (helmet and sphere) with Image based lighting
-			  (IBL). The Technique presented here is based on Epic Games publication http://blog.selfshadow.com/publications/s2013-shading-course/karis/s2013_pbs_epic_notes_v2.pdf
-***********************************************************************************************************************/
+/*!
+\brief	This example demonstrates how to use Physically based rendering using Metallic-Roughness work flow showcasing 2 scenes (helmet and sphere) with Image based lighting
+		(IBL). The Technique presented here is based on Epic Games publication http://blog.selfshadow.com/publications/s2013-shading-course/karis/s2013_pbs_epic_notes_v2.pdf
+\file	OpenGLESImageBasedLighting.cpp
+\author	PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 
 /*!
 	IBL Description
 	Material: Metallic-Roughness
 	============================
-	- Albedo map: This is a raw color of the material. This map shouldn't contains any shading information like Ambient Occlusion which is
+	- Albedo map: This is a raw colour of the material. This map shouldn't contains any shading information like Ambient Occlusion which is
 	very often baked in the diffuse map for Phong model.
-	It does not only influence the diffuse color, but also the specular color of the material as well.
-	When the metalness is one(metallic material) the base color is the specular.
+	It does not only influence the diffuse colour, but also the specular colour of the material as well.
+	When the metalness is one(metallic material) the base colour is the specular.
 
 	- MetallicRoughness map: The metallic-roughness texture.
 	The metalness values are sampled from the B channel and roughness values are sampled from the G channel, other channels are ignored.
@@ -22,7 +21,7 @@
 	BRDF
 	====
 	*Diffuse BRDF: Lambertian diffuse
-	f = Cdiff / PI
+	f = Cliff / PI
 	Cdiff: Diffuse albedo of the material.
 
 	*Specular BRDF: Cook-Torrance
@@ -38,9 +37,9 @@
 	IBL is one of the most common technique for implementing global illumination. The basic idea is to make use of environment maps as light source.
 
 	IBL Diffuse:
-	Normally when Lambert diffuse is used in games, it is the light color multiplied by the visibility factor( N dot L).
+	Normally when Lambert diffuse is used in games, it is the light colour multiplied by the visibility factor( N dot L).
 	But when using In-directional lighting (IBL) the visibility factor is not considered because the light is coming from everywhere.
-	So the diffuse factor is the light color.
+	So the diffuse factor is the light colour.
 
 	All the pixels in the environment map is a light source, so when shading a point it has to be lit by many pixels from the environment map.
 	Sampling multiple texels for shading a single point is not practical for real-time application. Therefore these samples are precomputed
@@ -56,10 +55,10 @@
 	The samples encoded in this map is the result of the specular BRDF of the environment map. For each pixels in the environment map,
 	computes the Cook-Torrance micro-facet BRDF and stores those results.
 
-	Using the mipmap for storing blurred images for each roughness value has one draw back, Specular aliasing.
-	This is most pronounced for level 0. Since we are using the mipmap for storing different roughnesses, mipmaps cannot combat this.
+	Using the mip map for storing blurred images for each roughness value has one draw back, Specular aliasing.
+	This is most pronounced for level 0. Since we are using the mip map for storing different roughness, mip maps cannot combat this.
 	For this reason, we are using the environment map itself as the first level. This adds an additional texture read, but eliminates the worst
-	of specular aliasing. Other mipmap levels doesn't have this issue as they are blurred and low res.
+	of specular aliasing. Other mip map levels doesn't have this issue as they are blurred and low resolution.
 */
 
 #include "PVRShell/PVRShell.h"
@@ -71,7 +70,6 @@
 
 // Content file names
 // Shaders
-
 const char PBRVertShaderFileName[] = "PBRVertShader.vsh";
 const char PBRFragShaderFileName[] = "PBRFragShader.fsh";
 const char SkyboxVertShaderFileName[] = "SkyboxVertShader.vsh";
@@ -175,9 +173,9 @@ public:
 		// catch (pvr::FileNotFoundError&)
 		//{
 		//	pvr::Texture preFilteredMapData;
-		//	// Discard the last two mipmaps. From our experimentation throwing away "a few" miplevels, keeping the last as 16x16~4x4 avoids the worst of
-		//	// blocky texel artifacts for materials with roughness values close to 1.0 and with large smoothly curved surfaces (e.g. a rough sphere).
-		//	// However, the more mipmaps that are discarded, the less accurate the blurring of the mipmap.
+		//	// Discard the last two mip maps. From our experimentation throwing away "a few" mip levels, keeping the last as 16x16~4x4 avoids the worst of
+		//	// blocky texel artefacts for materials with roughness values close to 1.0 and with large smoothly curved surfaces (e.g. a rough sphere).
+		//	// However, the more mip maps that are discarded, the less accurate the blurring of the mip map.
 		//	const uint32_t DISCARD_SPECULAR_MIP_LEVELS = 4;
 		//	pvr::utils::generatePreFilteredMapMipMapStyle(skyBoxMap, preFilteredMapData, prefilteredMap, PrefilterEnvMapDim, false, DISCARD_SPECULAR_MIP_LEVELS);
 		//	numPrefilteredMipLevels = preFilteredMapData.getNumMipMapLevels();
@@ -267,7 +265,7 @@ private:
 	// Generates specular irradiance map.
 	GLuint program;
 	GLuint skyBoxMap;
-	GLuint irradianceMap; // Diffsue irradiance
+	GLuint irradianceMap; // Diffuse irradiance
 	GLuint prefilteredMap; // specular filtered map.
 	uint32_t numPrefilteredMipLevels;
 	pvr::utils::StructuredBufferView uboView;
@@ -284,7 +282,7 @@ public:
 	/// <param name="assetProvider">Asset provider for loading assets from disk.</param>
 	void init(pvr::IAssetProvider& assetProvider, bool srgbFramebuffer, bool isBufferStorageSupported)
 	{
-		const pvr::utils::VertexBindings_Name vertexBindings[] = { { "POSITION", "inVertex" }, { "NORMAL", "inNormal" }, { "UV0", "inTexCoord" }, { "TANGENT", "tangent" } };
+		const pvr::utils::VertexBindings_Name vertexBindings[] = { { "POSITION", "inVertex" }, { "NORMAL", "inNormal" } };
 
 		std::vector<const char*> defines;
 		if (srgbFramebuffer) { defines.push_back("FRAMEBUFFER_SRGB"); }
@@ -297,7 +295,7 @@ public:
 		vertexConfiguration = createInputAssemblyFromMesh(model->getMesh(0), vertexBindings, ARRAY_SIZE(vertexBindings));
 
 		// Sphere instances
-		// offset the posittion for each sphere instances
+		// offset the position for each sphere instances
 		const glm::vec3 albedos[] = {
 			glm::vec3(0.971519, 0.959915, 0.915324), // Silver Metallic
 			glm::vec3(1, 0.765557, 0.336057), // Gold Metallic
@@ -306,7 +304,7 @@ public:
 		};
 		const float roughness[NumSphereColumns] = { .9f, 0.6f, 0.35f, 0.25f, 0.15f, 0.0f };
 
-		// set the per sphere materiual property. Creating a grid of spheres:  4x6, two rows metallic two plastic, each row a different colour, going from rough to smooth.
+		// set the per sphere material property. Creating a grid of spheres:  4x6, two rows metallic two plastic, each row a different colour, going from rough to smooth.
 		for (uint32_t i = 0; i < NumSphereRows; ++i)
 		{
 			for (uint32_t j = 0; j < NumSphereColumns; ++j)
@@ -314,7 +312,7 @@ public:
 				auto& mat = materials[i * NumSphereColumns + j];
 				mat.albedo = albedos[i]; // One colour per row.
 				mat.roughness = roughness[j]; // Smooth to rough
-				mat.metallic = float(i < 2) * 1.0f; // set the first 2 row set metalicity to 1.0 and the two last to 0.0
+				mat.metallic = float(i < 2) * 1.0f; // set the first 2 row set metallicity to 1.0 and the two last to 0.0
 			}
 		}
 		gl::GenBuffers(1, &materialUbo);
@@ -468,7 +466,7 @@ private:
 		program =
 			pvr::utils::createShaderProgram(assetProvider, PBRVertShaderFileName, PBRFragShaderFileName, nullptr, nullptr, 0, defines.data(), static_cast<uint32_t>(defines.size()));
 		const pvr::assets::Mesh& mesh = model->getMesh(0);
-		const pvr::utils::VertexBindings_Name vertexBindings[] = { { "POSITION", "inVertex" }, { "NORMAL", "inNormal" }, { "UV0", "inTexCoord" }, { "TANGENT", "tangent" } };
+		const pvr::utils::VertexBindings_Name vertexBindings[] = { { "POSITION", "inVertex" }, { "NORMAL", "inNormal" }, { "UV0", "inTexCoord" }, { "TANGENT", "inTangent" } };
 		vertexConfiguration = createInputAssemblyFromMesh(mesh, vertexBindings, ARRAY_SIZE(vertexBindings));
 	}
 
@@ -514,9 +512,7 @@ private:
 	std::vector<GLuint> textures;
 };
 
-/*!*********************************************************************************************************************
- Class implementing the pvr::Shell functions.
-***********************************************************************************************************************/
+/// <summary>Class implementing the pvr::Shell functions.</summary>
 class OpenGLESImageBasedLighting : public pvr::Shell
 {
 	struct DeviceResources
@@ -587,42 +583,36 @@ public:
 			if (oldexposure < 1.f && exposure > 1.f) { exposure = 1.f; }
 			break;
 
-		case pvr::SimplifiedInput::Action2:
-		{
+		case pvr::SimplifiedInput::Action2: {
 			uint32_t currentModel = static_cast<uint32_t>(_currentModel);
 			currentModel -= 1;
 			currentModel = currentModel % static_cast<uint32_t>(Models::NumModels);
 			_currentModel = static_cast<Models>(currentModel);
 			break;
 		}
-		case pvr::SimplifiedInput::Action1:
-		{
+		case pvr::SimplifiedInput::Action1: {
 			_pause = !_pause;
 			break;
 		}
-		case pvr::SimplifiedInput::Action3:
-		{
+		case pvr::SimplifiedInput::Action3: {
 			(++currentSkybox) %= NumSkyBoxes;
 
 			_deviceResources->skyboxPass.init(*this, _isBufferStorageExtSupported);
 			break;
 		}
 
-		case pvr::SimplifiedInput::ActionClose:
-		{
+		case pvr::SimplifiedInput::ActionClose: {
 			this->exitShell();
 			break;
 		}
-		default:
-		{
+		default: {
 			break;
 		}
 		}
 	}
 };
 
-/// <summary>
-/// Code in initApplication() will be called by Shell once per run, before the rendering context is created.
+/// <summary>Code in initApplication() will be called by Shell once per run, before the rendering context is created.
 /// Used to initialize variables that are not dependent on it (e.g. external modules, loading meshes, etc.). If the rendering
 /// context is lost, initApplication() will not be called again.</summary>
 pvr::Result OpenGLESImageBasedLighting::initApplication()
@@ -704,9 +694,9 @@ pvr::Result OpenGLESImageBasedLighting::initView()
 	gl::BindSampler(3, _deviceResources->samplerTrilinearFull); // ...
 	gl::BindSampler(4, _deviceResources->samplerTrilinearFull); // ...
 	gl::BindSampler(5, _deviceResources->samplerTrilinearFull); // Environment: Irradiance
-	gl::BindSampler(6, _deviceResources->samplerTrilinearFull); // Environment: Prefiltered reflection map
+	gl::BindSampler(6, _deviceResources->samplerTrilinearFull); // Environment: Pre-filtered reflection map
 
-	gl::BindSampler(7, _deviceResources->samplerBilinear); // BRDF: No mipmaps!
+	gl::BindSampler(7, _deviceResources->samplerBilinear); // BRDF: No mip maps!
 
 	gl::BindSampler(8, _deviceResources->samplerTrilinearLodClamped); // Environment map, used for Reflections
 
@@ -874,7 +864,7 @@ void OpenGLESImageBasedLighting::createUbo()
 		gl::GenBuffers(1, &_deviceResources->uboPerModel);
 		gl::BindBuffer(GL_UNIFORM_BUFFER, _deviceResources->uboPerModel);
 
-		// if GL_EXT_buffer_storage is supported then map the buffer upfront and never upmap it
+		// if GL_EXT_buffer_storage is supported then map the buffer upfront and never unmap it
 		if (_isBufferStorageExtSupported) { gl::ext::BufferStorageEXT(GL_UNIFORM_BUFFER, (GLsizei)_uboPerModelBufferView.getSize(), _uboModelData.data(), 0); }
 		else
 		{
@@ -894,7 +884,7 @@ void OpenGLESImageBasedLighting::createUbo()
 		gl::BindBuffer(GL_UNIFORM_BUFFER, _deviceResources->uboPerFrame);
 		gl::BufferData(GL_UNIFORM_BUFFER, static_cast<GLsizeiptr>(_uboPerFrameBufferView.getSize()), nullptr, GL_DYNAMIC_DRAW);
 
-		// if GL_EXT_buffer_storage is supported then map the buffer upfront and never upmap it
+		// if GL_EXT_buffer_storage is supported then map the buffer upfront and never unmap it
 		if (_isBufferStorageExtSupported)
 		{
 			gl::BindBuffer(GL_COPY_READ_BUFFER, _deviceResources->uboPerFrame);

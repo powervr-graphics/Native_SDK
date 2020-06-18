@@ -206,14 +206,12 @@ BuildingType::BuildingType NavDataProcess::getBuildingType(const Tag* tags, uint
 	return BuildingType::Other;
 }
 
-/*!*********************************************************************************************************************
-\return Return array of 2 new points. Left points (with respect to way direction) is given first.
-\param  firstPoint  First point to use.
-\param  secPoint  Second point to use.
-\param  thirdPoint  Third point to use.
-\param  width   Desired width between the new nodes.
-\brief  Provides two points on the perpendicular line at distance "width" apart for the middle point.
-***********************************************************************************************************************/
+/// <summary>Provides two points on the perpendicular line at distance "width" apart for the middle point.</summary>
+/// <returns>Return array of 2 new points. Left points (with respect to way direction) is given first.</returns>
+/// <param name="firstPoint"> First point to use </param>
+/// <param name="secPoint"> Second point to use </param>
+/// <param name="thirdPoint"> Third point to use </param>
+/// <param name="width"> Desired width between the new nodes </param>
 std::array<glm::dvec2, 2> NavDataProcess::findPerpendicularPoints(glm::dvec2 firstPoint, glm::dvec2 secPoint, glm::dvec2 thirdPoint, double width) const
 {
 	std::array<glm::dvec2, 2> points;
@@ -257,9 +255,7 @@ std::string NavDataProcess::getIntersectionRoadName(const std::vector<std::vecto
 	return name;
 }
 
-/*!*********************************************************************************************************************
-\brief  Clears data no longer needed from the osm object.
-***********************************************************************************************************************/
+/// <summary>Clears data no longer needed from the osm object.</summary>
 void OSM::cleanData()
 {
 	nodes.clear();
@@ -288,11 +284,9 @@ void OSM::cleanData()
 	uniqueIconNames.clear();
 }
 
-/*!*********************************************************************************************************************
-\return RoadTypes the type of road.
-\param	ways Reference to a vector of ways which make up the intersection.
-\brief	Finds the dominant road type for a given intersection (used to color the intersection based on the road type).
-***********************************************************************************************************************/
+/// <summary>Finds the dominant road type for a given intersection (used to colour the intersection based on the road type).</summary>
+/// <returns>RoadTypes the type of road.</returns>
+/// <param name="ways">Reference to a vector of ways which make up the intersection.</param>
 RoadTypes::RoadTypes NavDataProcess::getIntersectionRoadType(const std::vector<Way>& ways) const
 {
 	std::vector<Way> tempWays = ways;
@@ -327,7 +321,7 @@ RoadTypes::RoadTypes NavDataProcess::getIntersectionRoadType(const std::vector<W
 
 double NavDataProcess::getRoadWidth(const std::vector<Tag>& tags, RoadTypes::RoadTypes& outType) const
 {
-	// Needs extension to include color
+	// Needs extension to include colour
 	std::string roadType = "";
 	for (Tag tag : tags)
 	{
@@ -380,13 +374,11 @@ void NavDataProcess::fillLabelTiles(LabelData& label, uint32_t lod)
 	_osm.tiles[tileCoords.x][tileCoords.y].labels[lod].emplace_back(label);
 }
 
-/*!*********************************************************************************************************************
-\param	tileCoords	 The tile co-ordinates where the data should be inserted.
-\param	type		 The type of way to insert (determines which vector the way will be inserted into).
-\param	way			 The way to insert.
-\param	id			 The node ID to insert.
-\brief	Determine the correct array to insert the way / node id based on way type.
-***********************************************************************************************************************/
+/// <summary>Determine the correct array to insert the way node id based on way type.</summary>
+/// <param name="tileCoords">The tile co-ordinates where the data should be inserted.</param>
+/// <param name="type">The type of way to insert (determines which vector the way will be inserted into).</param>
+/// <param name="way">The way to insert.</param>
+/// <param name="id">The node ID to insert.</param>
 void NavDataProcess::insert(const glm::uvec2& tileCoords, WayTypes::WayTypes type, Way* w, uint64_t id)
 {
 	switch (type)
@@ -433,9 +425,7 @@ void NavDataProcess::insert(const glm::uvec2& tileCoords, WayTypes::WayTypes typ
 	}
 }
 
-/*!*********************************************************************************************************************
-\brief  Fill tiles with icon data.
-***********************************************************************************************************************/
+/// <summary>Fill tiles with icon data.</summary>
 void NavDataProcess::fillIconTiles(IconData& icon, uint32_t lod)
 {
 	// Check if icon is out of the map bounds
@@ -456,11 +446,9 @@ void NavDataProcess::fillAmenityTiles(AmenityLabelData& label, uint32_t lod)
 	_osm.tiles[tileCoords.x][tileCoords.y].amenityLabels[lod].emplace_back(label);
 }
 
-/*!*********************************************************************************************************************
-\return	double The calculated area.
-\param	vector An array of points (vec2s) that make up the polygon.
-\brief	Calculates the area of a triangle from a series of given points.
-***********************************************************************************************************************/
+/// <summary>Calculates the area of a triangle from a series of given points.</summary>
+/// <returns> double The calculated area.</returns>
+/// <param name="vector">An array of points (vec2s) that make up the polygon.</param>
 double NavDataProcess::calculateTriangleArea(const std::vector<glm::dvec2>& points) const
 {
 	double area = 0.0;

@@ -45,20 +45,6 @@ struct NativePlatformHandles_
 	NativePlatformHandles_() : display(EGL_NO_DISPLAY), drawSurface(EGL_NO_SURFACE), readSurface(EGL_NO_SURFACE), context(EGL_NO_CONTEXT) {}
 };
 
-/// <summary>A structure containing the native handles defining a Shared Context, i.e. an EGL context that is suitable
-/// for the Framework requires to use to upload textures and perform other functions in a different thread. Contains an
-/// EGL context and the EGL p-buffer surface it is tied to.</summary>
-struct NativeSharedPlatformHandles_
-{
-	/// <summary>EGL uploading context.</summary>
-	EGLContext uploadingContext;
-
-	/// <summary>EGL buffer surface.</summary>
-	EGLSurface pBufferSurface;
-
-	/// <summary>Default constructor for the NativeSharedPlatformHandles_ structure initialising the uploadingContext and pBufferSurface to initial values.</summary>
-	NativeSharedPlatformHandles_() : uploadingContext(EGL_NO_CONTEXT), pBufferSurface(EGL_NO_SURFACE) {}
-};
 /// <summary>Forward-declare and smart pointer friendly handle to an EGL display</summary>
 struct NativeDisplayHandle_
 {
@@ -95,8 +81,5 @@ typedef std::shared_ptr<NativePlatformHandles_> NativePlatformHandles;
 /// <summary>Pointer to a struct of platform handles. Used to pass around the undefined NativePlatformHandles_ struct.</summary>
 typedef std::shared_ptr<NativeDisplayHandle_> NativeDisplayHandle;
 
-/// <summary>Pointer to a struct of Shared context handles. Used to pass around the undefined NativeSharedPlatformHandles_
-/// struct</summary>
-typedef std::shared_ptr<NativeSharedPlatformHandles_> NativeSharedPlatformHandles;
 } // namespace platform
 } // namespace pvr

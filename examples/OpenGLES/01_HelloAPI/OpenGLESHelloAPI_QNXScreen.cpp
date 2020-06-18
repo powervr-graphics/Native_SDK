@@ -662,6 +662,48 @@ void releaseWindow()
 	close(keypad_fd);
 }
 
+bool CreateWindowAndContext(EGLDisplay& eglDisplay, EGLConfig& eglConfig, EGLSurface& eglSurface, EGLContext& context)
+{
+	// Get access to a native display
+	if (!initializeWindow()) { return false; }
+
+	// Create and Initialize an EGLDisplay from the native display
+	if (!createEGLDisplay(eglDisplay)) { return false; }
+
+	// Choose an EGLConfig for the application, used when setting up the rendering surface and EGLContext
+	if (!chooseEGLConfig(eglDisplay, eglConfig)) { return false; }
+
+	// Create an EGLSurface for rendering from the native window
+	if (!createEGLSurface(eglDisplay, eglConfig, eglSurface)) { return false; }
+
+	// Setup the EGL Context from the other EGL constructs created so far, so that the application is ready to submit OpenGL ES commands
+	if (!setupEGLContext(eglDisplay, eglConfig, eglSurface, context)) { return false; }
+
+	return true;
+}
+
+bool CreateResources(GLuint& fragmentShader, GLuint& vertexShader, GLuint& shaderProgram, GLuint& vertexBuffer)
+{
+	// Initialize the vertex data in the application
+	if (!initializeBuffer(vertexBuffer)) { return false; }
+
+	// Initialize the fragment and vertex shaders used in the application
+	if (!initializeShaders(fragmentShader, vertexShader, shaderProgram)) { return false; }
+
+	return true;
+}
+
+bool Render(EGLDisplay eglDisplay, EGLSurface eglSurface, GLuint shaderProgram)
+{
+	// Renders a triangle for 800 frames using the state setup in the previous function
+	for (int i = 0; i < 800; ++i)
+	{
+		if (!renderScene(shaderProgram, eglDisplay, eglSurface)) { break; }
+	}
+
+	return false;
+}
+
 /*!*********************************************************************************************************************
 \param[in]			argc           Number of arguments passed to the application, ignored.
 \param[in]			argv           Command line strings passed to the application, ignored.
@@ -684,40 +726,30 @@ int main(int /*argc*/, char** /*argv*/)
 	// A vertex buffer object to store our model data.
 	GLuint vertexBuffer = 0;
 
-	// Get access to a native display
-	if (!initializeWindow()) { goto cleanup; }
-
-	// Create and Initialize an EGLDisplay from the native display
-	if (!createEGLDisplay(eglDisplay)) { goto cleanup; }
-
-	// Choose an EGLConfig for the application, used when setting up the rendering surface and EGLContext
-	if (!chooseEGLConfig(eglDisplay, eglConfig)) { goto cleanup; }
-
-	// Create an EGLSurface for rendering from the native window
-	if (!createEGLSurface(eglDisplay, eglConfig, eglSurface)) { goto cleanup; }
-
-	// Setup the EGL Context from the other EGL constructs created so far, so that the application is ready to submit OpenGL ES commands
-	if (!setupEGLContext(eglDisplay, eglConfig, eglSurface, context)) { goto cleanup; }
-
-	// Initialize the vertex data in the application
-	if (!initializeBuffer(vertexBuffer)) { goto cleanup; }
-
-	// Initialize the fragment and vertex shaders used in the application
-	if (!initializeShaders(fragmentShader, vertexShader, shaderProgram)) { goto cleanup; }
-
-	// Renders a triangle for 800 frames using the state setup in the previous function
-	for (int i = 0; i < 800; ++i)
+	if (!CreateWindowAndContext(eglDisplay, eglConfig, eglSurface, context))
 	{
-		if (!renderScene(shaderProgram, eglDisplay, eglSurface)) { break; }
+		// Release the EGL State
+		releaseEGLState(eglDisplay);
+		// Destroy the eglWindow
+		releaseWindow();
+	}
+	if (!CreateResources(fragmentShader, vertexShader, shaderProgram, vertexBuffer))
+	{
+		// Release the EGL State
+		releaseEGLState(eglDisplay);
+		// Destroy the eglWindow
+		releaseWindow();
 	}
 
-	// Release any resources we created in the Initialize functions
-	deInitializeGLState(fragmentShader, vertexShader, shaderProgram, vertexBuffer);
+	if (!Render(eglDisplay, eglSurface, shaderProgram))
+	{
+		// Release any resources we created in the Initialize functions
+		deInitializeGLState(fragmentShader, vertexShader, shaderProgram, vertexBuffer);
+		// Release the EGL State
+		releaseEGLState(eglDisplay);
+		// Destroy the eglWindow
+		releaseWindow();
+	}
 
-cleanup:
-	// Release the EGL State
-	releaseEGLState(eglDisplay);
-
-	// Destroy the eglWindow
 	return 0;
 }

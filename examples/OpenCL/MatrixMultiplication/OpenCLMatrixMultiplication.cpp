@@ -3,8 +3,8 @@
 \Title        Vulkan Image Based Lighting Maps Generator
 \Author       PowerVR by Imagination, Developer Technology Team.
 \Copyright    Copyright(c) Imagination Technologies Limited.
-\brief        A command line tool using Headless (i.e. surfaceless) Vulkan Graphics to calculate the Irradiance map (
-			  used for Diffuse global illumination), and the Prefiltered Reflection map (used for Specular global
+\brief        A command line tool using Headless (i.e. surface-less) Vulkan Graphics to calculate the Irradiance map (
+			  used for Diffuse global illumination), and the Pre-filtered Reflection map (used for Specular global
 			  illumination).
 ***********************************************************************************************************************/
 #include "PVRCore/PVRCore.h"
@@ -69,7 +69,7 @@ void printHelp()
 	std::cout << "                            matmul_linearwg_vec4_local: NOT optimal. Simplistic local-memory optimisation, where a full row of A is loaded into local "
 				 "memory, to take advantage of the linear-workgroup"
 			  << std::endl
-			  << "                                 paradigm above. The matrices are expressed as Vec4's, A is transposed, and an entire horisontal line "
+			  << "                                 paradigm above. The matrices are expressed as Vec4's, A is transposed, and an entire horizontal line "
 				 "of A is preloaded for each thread, hence execution will fail if the shared dimension N is too large."
 			  << std::endl;
 	std::cout << "                            matmul_tile_square    : NOT completely optimal. It will use local memory optimisation to load an area of A and B into local"
@@ -108,7 +108,7 @@ void printHelp()
 	std::cout << "    -tile_square          : The size of the square tile" << std::endl;
 	std::cout << "    -tile_rect_m          : The size of the M side of the tile rectangles." << std::endl;
 	std::cout << "    -tile_rect_n          : The size of the N side of the tile rectangles." << std::endl;
-	std::cout << "    -tile_rect_p          : The size of the P side of the tile rectangules." << std::endl;
+	std::cout << "    -tile_rect_p          : The size of the P side of the tile rectangles." << std::endl;
 }
 
 struct KernelParams
@@ -399,7 +399,7 @@ int main(int argc, char** argv)
 		cl_mem memC = cl::CreateBuffer(context, CL_MEM_ALLOC_HOST_PTR | CL_MEM_READ_WRITE, C.size() * sizeof(float), nullptr, &err);
 		clutils::throwOnFailure(err, "Create buffer C");
 		std::cout << "(" << mytime.getElapsedMilliSecsF() << "ms)" << std::endl;
-		std::cout << "==> Preparing ground truth: CPU-side multipy  - Time: " << myclock.getElapsedSecsF();
+		std::cout << "==> Preparing ground truth: CPU-side multiply  - Time: " << myclock.getElapsedSecsF();
 		mytime.Reset();
 
 		const auto D = VALIDATE ? A * B : dynmatrix<>(M, P);

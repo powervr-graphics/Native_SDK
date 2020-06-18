@@ -33,15 +33,6 @@ add_assets_to_target(VulkanGnomeHorde
 	ASSET_FOLDER ${ASSET_FOLDER} 
 	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/GnomeHorde
 	FILE_LIST 
-		bigMushroom_shadow.pvr
-		bigMushroom_texture.pvr
-		fern.pvr
-		fern_shadow.pvr
-		gnome_shadow.pvr
-		gnome_texture.pvr
-		mushroom_shadow.pvr
-		mushroom_texture.pvr
-		rocks.pvr
 		bigMushroom0.pod
 		bigMushroom_shadow0.pod
 		fern0.pod
@@ -57,7 +48,16 @@ add_assets_to_target(VulkanGnomeHorde
 		mushroom0.pod
 		mushroom1.pod
 		mushroom_shadow0.pod
-		rocks0.pod)
+		rocks0.pod
+		bigMushroom_shadow.pvr
+		bigMushroom_texture.pvr
+		fern.pvr
+		fern_shadow.pvr
+		gnome_shadow.pvr
+		gnome_texture.pvr
+		mushroom_shadow.pvr
+		mushroom_texture.pvr
+		rocks.pvr)
 
 ### Shaders that need to be compiled to SpirV (Vulkan) ###
 # During build time, glslangvalidator will be called to create a "<shadername.extension>.spv" file
@@ -80,7 +80,7 @@ add_assets_resource_file(VulkanGnomeHorde)
 # Apply SDK example specific compile and linker options
 apply_example_compile_options_to_target(VulkanGnomeHorde)
 
-target_link_libraries(VulkanGnomeHorde
+target_link_libraries(VulkanGnomeHorde PUBLIC
 	PVRShell
 	PVRUtilsVk
 )

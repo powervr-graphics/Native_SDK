@@ -1,10 +1,10 @@
-/*!*********************************************************************************************************************
-\File         VulkanPVRScopeRemote.cpp
-\Title        PVRScopeRemote
-\Author       PowerVR by Imagination, Developer Technology Team
-\Copyright    Copyright (c) Imagination Technologies Limited.
-\brief		  Shows how to use our example PVRScope graph code.
-***********************************************************************************************************************/
+/*!
+\brief Shows how to use our example PVRScope graph code.
+\file VulkanPVRScopeRemote.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
+
 #include "PVRShell/PVRShell.h"
 #include "PVRUtils/PVRUtilsVk.h"
 #include "PVRScopeComms.h"
@@ -114,9 +114,7 @@ struct DeviceResources
 	}
 };
 
-/*!*********************************************************************************************************************
-\brief Class implementing the PVRShell functions.
-***********************************************************************************************************************/
+/// <summary>Class implementing the PVRShell functions.</summary>
 class VulkanPVRScopeRemote : public pvr::Shell
 {
 	std::unique_ptr<DeviceResources> _deviceResources;
@@ -170,12 +168,10 @@ public:
 	void updateUbo(uint32_t swapchain);
 };
 
-/*!*********************************************************************************************************************
-\return	Return Result::Success if no error occurred
-\brief	Code in initApplication() will be called by Shell once per run, before the rendering context is created.
-		Used to initialize variables that are not dependent on it (e.g. external modules, loading meshes, etc.)
-		If the rendering context is lost, initApplication() will not be called again.
-***********************************************************************************************************************/
+/// <summary>Code in initApplication() will be called by Shell once per run, before the rendering context is created.
+/// Used to initialize variables that are not dependent on it(e.g.external modules, loading meshes, etc.).If the rendering
+/// context is lost, initApplication() will not be called again.</summary>
+/// <returns>Result::Success if no error occurred.</returns>
 pvr::Result VulkanPVRScopeRemote::initApplication()
 {
 	_frameId = 0;
@@ -200,8 +196,8 @@ pvr::Result VulkanPVRScopeRemote::initApplication()
 	CPPLProcessingScoped PPLProcessingScoped(_spsCommsData, __FUNCTION__, static_cast<uint32_t>(strlen(__FUNCTION__)), _frameCounter);
 
 	_uboMatData.specularExponent = 5.0f; // Width of the specular highlights (using low exponent for a brushed metal look)
-	_uboMatData.albedo = glm::vec3(1.0f, 0.563f, 0.087f); // Overall color
-	_uboMatData.metallicity = 1.f; // Is the color of the specular white (nonmetallic), or colored by the object(metallic)
+	_uboMatData.albedo = glm::vec3(1.0f, 0.563f, 0.087f); // Overall colour
+	_uboMatData.metallicity = 1.f; // Is the colour of the specular white (non-metallic), or coloured by the object(metallic)
 	_uboMatData.reflectivity = 0.9f; // Percentage of contribution of diffuse / specular
 	_uboMatData.isDirty = true;
 	_frameCounter = 0;
@@ -281,7 +277,7 @@ pvr::Result VulkanPVRScopeRemote::initApplication()
 		communicableItems.back().pData = (const char*)&_commsLibAlbedoB;
 		communicableItems.back().nDataLength = sizeof(_commsLibAlbedoB);
 
-		// Ok, submit our library
+		// OK, submit our library
 		if (!pplLibraryCreate(_spsCommsData, communicableItems.data(), static_cast<uint32_t>(communicableItems.size())))
 		{ Log(LogLevel::Debug, "PVRScopeRemote: pplLibraryCreate() failed\n"); } // User defined counters
 		SSPSCommsCounterDef counterDefines[CounterDefs::NumCounter];
@@ -296,11 +292,9 @@ pvr::Result VulkanPVRScopeRemote::initApplication()
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return	Return Result::Success if no error occurred
-\brief	Code in initView() will be called by Shell upon initialization or after a change in the rendering context.
-		Used to initialize variables that are dependent on the rendering context (e.g. textures, vertex buffers, etc.)
-***********************************************************************************************************************/
+/// <summary>Code in initView() will be called by Shell upon initialization or after a change  in the rendering context. Used to initialize variables that are dependent on the
+/// rendering context(e.g.textures, vertex buffers, etc.).</summary>
+/// <returns>Result::Success if no error occurred.</returns>
 pvr::Result VulkanPVRScopeRemote::initView()
 {
 	_deviceResources = std::make_unique<DeviceResources>();
@@ -315,13 +309,13 @@ pvr::Result VulkanPVRScopeRemote::initView()
 	}
 
 	// Create the surface
-	_deviceResources->surface =
+	pvrvk::Surface surface =
 		pvr::utils::createSurface(_deviceResources->instance, _deviceResources->instance->getPhysicalDevice(0), this->getWindow(), this->getDisplay(), this->getConnection());
 
 	// Create a default set of debug utils messengers or debug callbacks using either VK_EXT_debug_utils or VK_EXT_debug_report respectively
 	_deviceResources->debugUtilsCallbacks = pvr::utils::createDebugUtilsCallbacks(_deviceResources->instance);
 
-	pvr::utils::QueuePopulateInfo queuePopulateInfo = { pvrvk::QueueFlags::e_GRAPHICS_BIT, _deviceResources->surface };
+	pvr::utils::QueuePopulateInfo queuePopulateInfo = { pvrvk::QueueFlags::e_GRAPHICS_BIT, surface };
 	pvr::utils::QueueAccessInfo queueAccessInfo;
 
 	_deviceResources->device = pvr::utils::createDeviceAndQueues(_deviceResources->instance->getPhysicalDevice(0), &queuePopulateInfo, 1, &queueAccessInfo);
@@ -330,17 +324,20 @@ pvr::Result VulkanPVRScopeRemote::initView()
 
 	_deviceResources->vmaAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
 
-	pvrvk::SurfaceCapabilitiesKHR surfaceCapabilities = _deviceResources->instance->getPhysicalDevice(0)->getSurfaceCapabilities(_deviceResources->surface);
+	pvrvk::SurfaceCapabilitiesKHR surfaceCapabilities = _deviceResources->instance->getPhysicalDevice(0)->getSurfaceCapabilities(surface);
 
 	// validate the supported swapchain image usage
 	pvrvk::ImageUsageFlags swapchainImageUsage = pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT;
 	if (pvr::utils::isImageUsageSupportedBySurface(surfaceCapabilities, pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT))
 	{ swapchainImageUsage |= pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT; } // create the swapchain
-	pvr::utils::createSwapchainAndDepthStencilImageAndViews(_deviceResources->device, _deviceResources->surface, getDisplayAttributes(), _deviceResources->swapchain,
-		_deviceResources->depthStencilImages, swapchainImageUsage, pvrvk::ImageUsageFlags::e_DEPTH_STENCIL_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_TRANSIENT_ATTACHMENT_BIT,
-		&_deviceResources->vmaAllocator);
+	// Create the Swapchain, its renderpass, attachments and framebuffers. Will support MSAA if enabled through command line.
+	auto swapChainCreateOutput = pvr::utils::createSwapchainRenderpassFramebuffers(_deviceResources->device, surface, getDisplayAttributes(),
+		pvr::utils::CreateSwapchainParameters().setAllocator(_deviceResources->vmaAllocator).setColorImageUsageFlags(swapchainImageUsage));
 
-	// Create the Commandpool and Descriptorpool
+	_deviceResources->swapchain = swapChainCreateOutput.swapchain;
+	_deviceResources->onScreenFramebuffer = swapChainCreateOutput.framebuffer;
+
+	// Create the Command pool and Descriptor pool
 	_deviceResources->commandPool = _deviceResources->device->createCommandPool(
 		pvrvk::CommandPoolCreateInfo(_deviceResources->queue->getFamilyIndex(), pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT));
 
@@ -358,8 +355,6 @@ pvr::Result VulkanPVRScopeRemote::initView()
 		_deviceResources->perFrameResourcesFences[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
 	}
 
-	pvr::utils::createOnscreenFramebufferAndRenderPass(_deviceResources->swapchain, &_deviceResources->depthStencilImages[0], _deviceResources->onScreenFramebuffer);
-
 	CPPLProcessingScoped PPLProcessingScoped(_spsCommsData, __FUNCTION__, static_cast<uint32_t>(strlen(__FUNCTION__)), _frameCounter);
 
 	_deviceResources->cmdBuffers[0]->begin();
@@ -368,7 +363,7 @@ pvr::Result VulkanPVRScopeRemote::initView()
 	loadVbos(_deviceResources->cmdBuffers[0]);
 
 	_deviceResources->texture = pvr::utils::loadAndUploadImageAndView(_deviceResources->device, TextureFile, true, _deviceResources->cmdBuffers[0], *this,
-		pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, nullptr, &_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
+		pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, nullptr, _deviceResources->vmaAllocator, _deviceResources->vmaAllocator);
 	_deviceResources->cmdBuffers[0]->end();
 	// submit the texture upload commands
 	pvrvk::SubmitInfo submitInfo;
@@ -416,10 +411,8 @@ pvr::Result VulkanPVRScopeRemote::initView()
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return	Return Result::Success if no error occurred
-\brief	Code in releaseView() will be called by Shell when the application quits or before a change in the rendering context.
-***********************************************************************************************************************/
+/// <summary>Code in releaseView() will be called by Shell when the application quits.</summary>
+/// <returns>Result::Success if no error occurred.</returns>
 pvr::Result VulkanPVRScopeRemote::releaseView()
 {
 	CPPLProcessingScoped PPLProcessingScoped(_spsCommsData, __FUNCTION__, static_cast<uint32_t>(strlen(__FUNCTION__)), _frameCounter);
@@ -428,11 +421,8 @@ pvr::Result VulkanPVRScopeRemote::releaseView()
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return	Return Result::Success if no error occurred
-\brief	Code in quitApplication() will be called by Shell once per run, just before exiting the program.
-If the rendering context is lost, QuitApplication() will not be called.
-***********************************************************************************************************************/
+/// <summary>Code in quitApplication() will be called by pvr::Shell once per run, just before exiting the program.</summary>
+/// <returns>Result::Success if no error occurred</returns>.
 pvr::Result VulkanPVRScopeRemote::quitApplication()
 {
 	if (_spsCommsData)
@@ -453,10 +443,8 @@ pvr::Result VulkanPVRScopeRemote::quitApplication()
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return	Return Result::Success if no error occurred
-\brief Main rendering loop function of the program. The shell will call this function every frame.
-***********************************************************************************************************************/
+/// <summary>Main rendering loop function of the program. The shell will call this function every frame.</summary>
+/// <returns>Result::Success if no error occurred.</returns>
 pvr::Result VulkanPVRScopeRemote::renderFrame()
 {
 	if (_spsCommsData)
@@ -604,7 +592,7 @@ pvr::Result VulkanPVRScopeRemote::renderFrame()
 	if (this->shouldTakeScreenshot())
 	{
 		pvr::utils::takeScreenshot(_deviceResources->queue, _deviceResources->commandPool, _deviceResources->swapchain, swapchainIndex, this->getScreenshotFileName(),
-			&_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
+			_deviceResources->vmaAllocator, _deviceResources->vmaAllocator);
 	}
 
 	// PRESENT
@@ -644,10 +632,7 @@ void VulkanPVRScopeRemote::createDescriptorSetLayouts()
 	}
 }
 
-/*!*********************************************************************************************************************
-\return	Return true if no error occurred
-\brief	Loads and compiles the shaders and links the shader programs required for this training course
-***********************************************************************************************************************/
+/// <summary>Creates the graphics pipeline used in the demo.</summary>
 void VulkanPVRScopeRemote::createPipeline()
 {
 	// Mapping of mesh semantic names to shader variables
@@ -679,9 +664,7 @@ void VulkanPVRScopeRemote::createPipeline()
 	_deviceResources->pipeline = _deviceResources->device->createGraphicsPipeline(pipeDesc, _deviceResources->pipelineCache);
 }
 
-/*!*********************************************************************************************************************
-\brief	Loads the mesh data required for this training course into vertex buffer objects
-***********************************************************************************************************************/
+/// <summary>Loads the mesh data required for this training course into vertex buffer objects.</summary>
 void VulkanPVRScopeRemote::loadVbos(pvrvk::CommandBuffer& uploadCmd)
 {
 	CPPLProcessingScoped PPLProcessingScoped(_spsCommsData, __FUNCTION__, static_cast<uint32_t>(strlen(__FUNCTION__)), _frameCounter);
@@ -693,13 +676,11 @@ void VulkanPVRScopeRemote::loadVbos(pvrvk::CommandBuffer& uploadCmd)
 	//	thus it can be read faster by the hardware.
 	bool requiresCommandBufferSubmission = false;
 	pvr::utils::appendSingleBuffersFromModel(
-		_deviceResources->device, *_scene, _deviceResources->vbos, _deviceResources->ibos, uploadCmd, requiresCommandBufferSubmission, &_deviceResources->vmaAllocator);
+		_deviceResources->device, *_scene, _deviceResources->vbos, _deviceResources->ibos, uploadCmd, requiresCommandBufferSubmission, _deviceResources->vmaAllocator);
 }
 
-/*!*********************************************************************************************************************
-\brief	Draws a assets::Mesh after the model view matrix has been set and the material prepared.
-\param	nodeIndex Node index of the mesh to draw
-***********************************************************************************************************************/
+/// <summary>Draws a assets::Mesh after the model view matrix has been set and the material prepared.</summary>
+/// <param name="nodeIndex">Node index of the mesh to draw.</param>
 void VulkanPVRScopeRemote::drawMesh(int nodeIndex, pvrvk::CommandBuffer& command)
 {
 	CPPLProcessingScoped PPLProcessingScoped(_spsCommsData, __FUNCTION__, static_cast<uint32_t>(strlen(__FUNCTION__)), _frameCounter);
@@ -767,7 +748,7 @@ void VulkanPVRScopeRemote::createDescriptorSet()
 		_deviceResources->uboMatrices = pvr::utils::createBuffer(_deviceResources->device,
 			pvrvk::BufferCreateInfo(_deviceResources->uboMatricesBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
-			&_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+			_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
 		_deviceResources->uboMatricesBufferView.pointToMappedMemory(_deviceResources->uboMatrices->getDeviceMemory()->getMappedData());
 	}
@@ -851,7 +832,7 @@ void VulkanPVRScopeRemote::createBuffers()
 		_deviceResources->uboMaterial = pvr::utils::createBuffer(_deviceResources->device,
 			pvrvk::BufferCreateInfo(_deviceResources->uboMaterialBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
-			&_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+			_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
 		_deviceResources->uboMaterialBufferView.pointToMappedMemory(_deviceResources->uboMaterial->getDeviceMemory()->getMappedData());
 	}
@@ -864,15 +845,13 @@ void VulkanPVRScopeRemote::createBuffers()
 		_deviceResources->uboLighting = pvr::utils::createBuffer(_deviceResources->device,
 			pvrvk::BufferCreateInfo(_deviceResources->uboLightingBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
-			&_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+			_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
 		_deviceResources->uboLightingBufferView.pointToMappedMemory(_deviceResources->uboLighting->getDeviceMemory()->getMappedData());
 	}
 }
 
-/*!*********************************************************************************************************************
-\brief	pre-record the rendering the commands
-***********************************************************************************************************************/
+/// <summary>pre-record the rendering the commands.</summary>
 void VulkanPVRScopeRemote::recordCommandBuffer(uint32_t swapchain)
 {
 	CPPLProcessingScoped PPLProcessingScoped(_spsCommsData, __FUNCTION__, static_cast<uint32_t>(strlen(__FUNCTION__)), _frameCounter);

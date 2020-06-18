@@ -35,7 +35,7 @@ void main()
 	// Pack the specular exponent with the albedo
 	pls.albedo = vec4(texture(sTexture, vTexCoord).rgb * vDiffuseColor.rgb, fSpecularStrength);
 	
-	// Calculate viewspace perturbed normal
+	// Calculate view space perturbed normal
 	mediump vec3 bumpmap = normalize(texture(sBumpMap, vTexCoord).rgb * 2.0 - 1.0);
 	highp mat3 tangentSpace = mat3(normalize(vTangent), normalize(vBinormal), normalize(vNormal));
 	mediump vec3 normalVS = tangentSpace * bumpmap;		
@@ -46,7 +46,7 @@ void main()
 	pls.depth = vViewPosition.z / fFarClipDistance;
 
 #ifndef GL_EXT_shader_pixel_local_storage2
-	// clear pixel local storage color when GL_EXT_shader_pixel_local_storage2 isn't supported
+	// clear pixel local storage colour when GL_EXT_shader_pixel_local_storage2 isn't supported
 	pls.color = vec3(0.0);
 #endif
 }

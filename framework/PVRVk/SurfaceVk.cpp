@@ -153,24 +153,24 @@ WaylandSurface_::WaylandSurface_(make_shared_enabler, Instance& instance, wl_dis
 #if defined(VK_USE_PLATFORM_MACOS_MVK)
 MacOSSurface_::MacOSSurface_(make_shared_enabler, Instance& instance, void* view) : Surface_(instance)
 {
-    if (instance->getEnabledExtensionTable().mmacosSurfaceEnabled)
-    {
-        _view = view;
-        
-        // Create the MacOS surface info, passing the NSView handle
-        VkMacOSSurfaceCreateInfoMVK surfaceCreateInfo = {};
-        surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_MACOS_SURFACE_CREATE_INFO_MVK;
-        surfaceCreateInfo.pNext = 0;
-        surfaceCreateInfo.flags = 0;
-        // pView must be a valid NSView and must be backed by a CALayer instance of type CAMetalLayer.
-        surfaceCreateInfo.pView = _view;
+	if (instance->getEnabledExtensionTable().mvkMacosSurfaceEnabled)
+	{
+		_view = view;
 
-        vkThrowIfFailed(instance->getVkBindings().vkCreateMacOSSurfaceMVK(instance->getVkHandle(), &surfaceCreateInfo, NULL, &_vkHandle), "Failed to create MacOS surface");
-    }
-    else
-    {
-        throw ErrorUnknown("MacOS Platform Surface extensions have not been enabled when creating the VkInstance.");
-    }
+		// Create the MacOS surface info, passing the NSView handle
+		VkMacOSSurfaceCreateInfoMVK surfaceCreateInfo = {};
+		surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_MACOS_SURFACE_CREATE_INFO_MVK;
+		surfaceCreateInfo.pNext = 0;
+		surfaceCreateInfo.flags = 0;
+		// pView must be a valid NSView and must be backed by a CALayer instance of type CAMetalLayer.
+		surfaceCreateInfo.pView = _view;
+
+		vkThrowIfFailed(instance->getVkBindings().vkCreateMacOSSurfaceMVK(instance->getVkHandle(), &surfaceCreateInfo, NULL, &_vkHandle), "Failed to create MacOS surface");
+	}
+	else
+	{
+		throw ErrorUnknown("MacOS Platform Surface extensions have not been enabled when creating the VkInstance.");
+	}
 }
 #endif
 

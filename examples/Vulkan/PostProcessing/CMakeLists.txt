@@ -31,11 +31,22 @@ add_platform_specific_executable(VulkanPostProcessing ${SRC_FILES})
 add_assets_to_target(VulkanPostProcessing
 	SOURCE_GROUP "assets" 
 	ASSET_FOLDER ${ASSET_FOLDER} 
+	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/
+	FILE_LIST 
+		GaussianBlurFragmentShader.fsh.template
+		LinearGaussianBlurVertexShader.vsh.template
+		LinearGaussianBlurFragmentShader.fsh.template
+		ComputeGaussianBlurHorizontalShader.csh.template
+		ComputeGaussianBlurVerticalShader.csh.template)
+
+add_assets_to_target(VulkanPostProcessing
+	SOURCE_GROUP "assets" 
+	ASSET_FOLDER ${ASSET_FOLDER} 
 	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/Satyr
 	FILE_LIST 
+		Satyr.pod
 		MarbleNormalMap.pvr
-		Marble.pvr
-		Satyr.pod)
+		Marble.pvr)
 
 add_assets_to_target(VulkanPostProcessing
 	SOURCE_GROUP "assets" 
@@ -48,17 +59,6 @@ add_assets_to_target(VulkanPostProcessing
 		pink_sunrise_rgb9e5_Irradiance.pvr
 		signal_hill_sunrise_scale_0.312_rgb9e5.pvr
 		signal_hill_sunrise_scale_0.312_rgb9e5_Irradiance.pvr)
-
-add_assets_to_target(VulkanPostProcessing
-	SOURCE_GROUP "assets" 
-	ASSET_FOLDER ${ASSET_FOLDER} 
-	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/
-	FILE_LIST 
-		GaussianBlurFragmentShader.fsh.template
-		LinearGaussianBlurVertexShader.vsh.template
-		LinearGaussianBlurFragmentShader.fsh.template
-		ComputeGaussianBlurHorizontalShader.csh.template
-		ComputeGaussianBlurVerticalShader.csh.template)
 
 ### Shaders that need to be compiled to SpirV (Vulkan) ###
 # During build time, glslangvalidator will be called to create a "<shadername.extension>.spv" file
@@ -96,7 +96,7 @@ add_assets_resource_file(VulkanPostProcessing)
 # Apply SDK example specific compile and linker options
 apply_example_compile_options_to_target(VulkanPostProcessing)
 
-target_link_libraries(VulkanPostProcessing
+target_link_libraries(VulkanPostProcessing PUBLIC
 	PVRShell
 	PVRUtilsVk
 )

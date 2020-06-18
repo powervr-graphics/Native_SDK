@@ -385,12 +385,14 @@ void StateMachine::applyCommandLine()
 
 Result StateMachine::execute()
 {
-	Result result;
+	Result finalresult = pvr::Result::Success;
 	if (_currentState != StateInitialised) { Log(LogLevel::Warning, "The state machine was not in its initialised state when execute was called."); }
 	for (;;)
 	{
+		Result result;
 		result = executeNext();
-		if (_currentState == StateInitialised) { return result; }
+		if (result != pvr::Result::Success && finalresult == pvr::Result::Success) { finalresult = result; }
+		if (_currentState == StateInitialised) { return finalresult; }
 	}
 }
 

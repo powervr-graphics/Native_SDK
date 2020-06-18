@@ -1,10 +1,9 @@
-/*!*********************************************************************************************************************
-\File         OGLESPVRScopeExample.cpp
-\Title        PVRScopeExample
-\Author       PowerVR by Imagination, Developer Technology Team
-\Copyright    Copyright (c) Imagination Technologies Limited.
-\brief  Shows how to use our example PVRScope graph code.
-***********************************************************************************************************************/
+/*!
+\brief Shows how to use our example PVRScope graph code.
+\file OGLESPVRScopeExample.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #include "PVRShell/PVRShell.h"
 #include "PVRUtils/PVRUtilsVk.h"
 #include "PVRScopeGraph.h"
@@ -97,9 +96,7 @@ struct DeviceResources
 	}
 };
 
-/*!*********************************************************************************************************************
-\brief Class implementing the Shell functions.
-***********************************************************************************************************************/
+/// <summary>Class implementing the Shell functions.</summary>
 class VulkanPVRScopeExample : public pvr::Shell
 {
 	std::unique_ptr<DeviceResources> _deviceResources;
@@ -164,29 +161,24 @@ public:
 	void drawMesh(int32_t nodeIndex, pvrvk::CommandBuffer& command);
 };
 
-/*!*********************************************************************************************************************
-\brief Handle input key events
-\param key key event to handle
-************************************************************************************************************************/
+/// <summary>Handle input key events.</summary>
+/// <param name="key">Key event to handle.</param>
 void VulkanPVRScopeExample::eventMappedInput(pvr::SimplifiedInput key)
 {
 	// Keyboard input (cursor up/down to cycle through counters)
 	switch (key)
 	{
-	case pvr::SimplifiedInput::Up:
-	{
+	case pvr::SimplifiedInput::Up: {
 		_selectedCounter++;
 		if (_selectedCounter >= static_cast<int32_t>(_deviceResources->scopeGraph.getCounterNum())) { _selectedCounter = _deviceResources->scopeGraph.getCounterNum() - 1; }
 	}
 	break;
-	case pvr::SimplifiedInput::Down:
-	{
+	case pvr::SimplifiedInput::Down: {
 		_selectedCounter--;
 		if (_selectedCounter < 0) { _selectedCounter = 0; }
 	}
 	break;
-	case pvr::SimplifiedInput::Action1:
-	{
+	case pvr::SimplifiedInput::Action1: {
 		_deviceResources->scopeGraph.showCounter(_selectedCounter, !_deviceResources->scopeGraph.isCounterShown(_selectedCounter));
 	}
 	break;
@@ -199,14 +191,12 @@ void VulkanPVRScopeExample::eventMappedInput(pvr::SimplifiedInput key)
 	updateDescription();
 }
 
-/*!*********************************************************************************************************************
-\brief Loads the textures required for this training course
-\return Return true if no error occurred
-***********************************************************************************************************************/
+/// <summary>Loads the textures required for this training course.</summary>
+/// <returns>Return true if no error occurred.</returns>
 void VulkanPVRScopeExample::createTexSamplerDescriptorSet(pvrvk::CommandBuffer& imageUploadCmd)
 {
 	_deviceResources->texture = pvr::utils::loadAndUploadImageAndView(_deviceResources->device, TextureFile, true, imageUploadCmd, *this, pvrvk::ImageUsageFlags::e_SAMPLED_BIT,
-		pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, nullptr, &_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
+		pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, nullptr, _deviceResources->vmaAllocator, _deviceResources->vmaAllocator);
 
 	// create the bilinear sampler
 	pvrvk::SamplerCreateInfo samplerDesc;
@@ -237,7 +227,7 @@ void VulkanPVRScopeExample::createUboDescriptorSet()
 		_deviceResources->mvpUbo = pvr::utils::createBuffer(_deviceResources->device,
 			pvrvk::BufferCreateInfo(_deviceResources->mvpUboView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
-			&_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+			_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
 		_deviceResources->mvpUboView.pointToMappedMemory(_deviceResources->mvpUbo->getDeviceMemory()->getMappedData());
 	}
@@ -266,7 +256,7 @@ void VulkanPVRScopeExample::createUboDescriptorSet()
 		_deviceResources->materialUbo = pvr::utils::createBuffer(_deviceResources->device,
 			pvrvk::BufferCreateInfo(_deviceResources->materialUboView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
-			&_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+			_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 
 		_deviceResources->materialUboView.pointToMappedMemory(_deviceResources->materialUbo->getDeviceMemory()->getMappedData());
 	}
@@ -294,10 +284,8 @@ void VulkanPVRScopeExample::createUboDescriptorSet()
 	_deviceResources->device->updateDescriptorSets(writeDescSet, writeIndex, nullptr, 0);
 }
 
-/*!*********************************************************************************************************************
-\brief  Create a graphics pipeline required for this training course
-\return Return true if no error occurred
-***********************************************************************************************************************/
+/// <summary>Create a graphics pipeline required for this training course.</summary>
+/// <returns>Return true if no error occurred.</returns>
 void VulkanPVRScopeExample::createPipeline()
 {
 	pvr::utils::VertexBindings_Name vertexBindings[] = { { "POSITION", "inVertex" }, { "NORMAL", "inNormal" }, { "UV0", "inTexCoord" } };
@@ -341,15 +329,13 @@ void VulkanPVRScopeExample::createPipeline()
 	_deviceResources->pipeline = _deviceResources->device->createGraphicsPipeline(pipelineInfo, _deviceResources->pipelineCache);
 }
 
-/*!*********************************************************************************************************************
-\brief Loads the mesh data required for this training course into vertex buffer objects
-***********************************************************************************************************************/
+/// <summary>Loads the mesh data required for this training course into vertex buffer objects.</summary>
 void VulkanPVRScopeExample::loadVbos(pvrvk::CommandBuffer& uploadCmd)
 {
 	// load the vbo and ibo data
 	bool requiresCommandBufferSubmission = false;
 	pvr::utils::appendSingleBuffersFromModel(
-		_deviceResources->device, *_scene, _deviceResources->vbos, _deviceResources->ibos, uploadCmd, requiresCommandBufferSubmission, &_deviceResources->vmaAllocator);
+		_deviceResources->device, *_scene, _deviceResources->vbos, _deviceResources->ibos, uploadCmd, requiresCommandBufferSubmission, _deviceResources->vmaAllocator);
 }
 
 void VulkanPVRScopeExample::updateMVPMatrix(uint32_t swapchain)
@@ -379,20 +365,18 @@ void VulkanPVRScopeExample::updateMVPMatrix(uint32_t swapchain)
 	}
 }
 
-/*!*********************************************************************************************************************
-\return Result::Success if no error occurred
-\brief  Code in initApplication() will be called by Shell once per run, before the rendering context is created.
-	  Used to initialize variables that are not dependent on it (e.g. external modules, loading meshes,etc.)
-	  If the rendering context is lost, initApplication() will not be called again.
-***********************************************************************************************************************/
+/// <summary>Code in initApplication() will be called by Shell once per run, before the rendering context is created.
+/// Used to initialize variables that are not dependent on it (e.g. external modules, loading meshes,etc.)
+/// If the rendering context is lost, initApplication() will not be called again.</summary>
+/// <returns>Result::Success if no error occurred.</reutrns>
 pvr::Result VulkanPVRScopeExample::initApplication()
 {
 	_frameId = 0;
 	// Blue-ish marble
 	_progUniforms.specularExponent = 100.f; // Width of the specular highlights (High exponent for small shiny highlights)
-	_progUniforms.albedo = glm::vec3(.78f, .82f, 1.f); // Overall color
+	_progUniforms.albedo = glm::vec3(.78f, .82f, 1.f); // Overall colour
 	_progUniforms.metallicity = 1.f; // Doesn't make much of a difference in this material.
-	_progUniforms.reflectivity = .2f; // Low reflectivity - color mostly diffuse.
+	_progUniforms.reflectivity = .2f; // Low reflectivity - colour mostly diffuse.
 
 	// At the time of writing, this counter is the USSE load for vertex + pixel processing
 	_selectedCounter = 0;
@@ -413,22 +397,19 @@ pvr::Result VulkanPVRScopeExample::initApplication()
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return Return Result::Success if no error occurred
-\brief  Code in quitApplication() will be called by Shell once per run, just before exiting
-	  the program. If the rendering context is lost, quitApplication() will not be called.
-***********************************************************************************************************************/
+/// <summary>Code in initApplication() will be called by Shell once per run, before the rendering context is created.
+/// Used to initialize variables that are not dependent on it(e.g.external modules, loading meshes, etc.).If the rendering
+/// context is lost, initApplication() will not be called again.</summary>
+/// <returns>Result::Success if no error occurred.</returns>
 pvr::Result VulkanPVRScopeExample::quitApplication()
 {
 	_scene.reset();
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return Return Result::Success if no error occurred
-\brief Code in initView() will be called by Shell upon initialization or after a change in the rendering context.
-	 Used to initialize variables that are dependent on the rendering context (e.g. textures, vertex buffers, etc.)
-***********************************************************************************************************************/
+/// <summary>Code in initView() will be called by Shell upon initialization or after a change  in the rendering context. Used to initialize variables that are dependent on the
+/// rendering context(e.g.textures, vertex buffers, etc.).</summary>
+/// <returns>Result::Success if no error occurred.</returns>
 pvr::Result VulkanPVRScopeExample::initView()
 {
 	_deviceResources = std::make_unique<DeviceResources>();
@@ -451,7 +432,7 @@ pvr::Result VulkanPVRScopeExample::initView()
 
 	//--------------------
 	// Create the logical device and the queues
-	const pvr::utils::QueuePopulateInfo queuePopulateInfo = { pvrvk::QueueFlags::e_GRAPHICS_BIT | pvrvk::QueueFlags::e_TRANSFER_BIT, surface };
+	const pvr::utils::QueuePopulateInfo queuePopulateInfo = { pvrvk::QueueFlags::e_GRAPHICS_BIT, surface };
 	pvr::utils::QueueAccessInfo queueAccessInfo;
 	_deviceResources->device = pvr::utils::createDeviceAndQueues(_deviceResources->instance->getPhysicalDevice(0), &queuePopulateInfo, 1, &queueAccessInfo);
 
@@ -466,19 +447,15 @@ pvr::Result VulkanPVRScopeExample::initView()
 	// validate the supported swapchain image usage
 	pvrvk::ImageUsageFlags swapchainImageUsage = pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT;
 	if (pvr::utils::isImageUsageSupportedBySurface(surfaceCapabilities, pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT))
-	{
-		swapchainImageUsage |= pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT;
-	} //--------------------
-	  // Create the swapchain
-	pvr::utils::createSwapchainAndDepthStencilImageAndViews(_deviceResources->device, surface, getDisplayAttributes(), _deviceResources->swapchain, _deviceResources->depthStencilImages,
-		swapchainImageUsage, pvrvk::ImageUsageFlags::e_DEPTH_STENCIL_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_TRANSIENT_ATTACHMENT_BIT, &_deviceResources->vmaAllocator);
+	{ swapchainImageUsage |= pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT; }
 
-	//--------------------
-	// Create the framebuffer
-	pvrvk::RenderPass rp;
-	pvr::utils::createOnscreenFramebufferAndRenderPass(_deviceResources->swapchain, &_deviceResources->depthStencilImages[0], _deviceResources->onScreenFramebuffer, rp);
+	// Create the Swapchain, its renderpass, attachments and framebuffers. Will support MSAA if enabled through command line.
+	auto swapChainCreateOutput = pvr::utils::createSwapchainRenderpassFramebuffers(_deviceResources->device, surface, getDisplayAttributes(),
+		pvr::utils::CreateSwapchainParameters().setAllocator(_deviceResources->vmaAllocator).setColorImageUsageFlags(swapchainImageUsage));
 
-	//--------------------
+	_deviceResources->swapchain = swapChainCreateOutput.swapchain;
+	_deviceResources->onScreenFramebuffer = swapChainCreateOutput.framebuffer;
+
 	// Create the pools
 	_deviceResources->commandPool = _deviceResources->device->createCommandPool(
 		pvrvk::CommandPoolCreateInfo(_deviceResources->queue->getFamilyIndex(), pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT));
@@ -491,9 +468,9 @@ pvr::Result VulkanPVRScopeExample::initView()
 
 	// set up the material
 	_materialData.specExponent = 100.f; // Width of the specular highlights (High exponent for small shiny highlights)
-	_materialData.albedoMod = glm::vec3(.78f, .82f, 1.f); // Overall color
+	_materialData.albedoMod = glm::vec3(.78f, .82f, 1.f); // Overall colour
 	_materialData.metalicity = 1.f; // Doesn't make much of a difference in this material.
-	_materialData.reflectivity = .2f; // Low reflectivity - color mostly diffuse.
+	_materialData.reflectivity = .2f; // Low reflectivity - colour mostly diffuse.
 	_materialData.lightDirView = glm::normalize(glm::vec3(1.f, 1.f, -1.f)); // Set light direction in model space
 
 	// Create the pipeline cache
@@ -502,7 +479,7 @@ pvr::Result VulkanPVRScopeExample::initView()
 	createPipeline();
 	createUboDescriptorSet();
 
-	// Prepare per swachain resources and set the acttachments inital layouts
+	// Prepare per swapchain resources and set the attachments initial layouts
 	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
 	{
 		_deviceResources->presentationSemaphores[i] = _deviceResources->device->createSemaphore();
@@ -593,10 +570,8 @@ pvr::Result VulkanPVRScopeExample::initView()
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return Return Result::Success if no error occurred
-\brief Code in releaseView() will be called by Shell when the application quits or before a change in the rendering context.
-***********************************************************************************************************************/
+/// <summary>Code in releaseView() will be called by Shell when the application quits.</summary>
+/// <returns>Result::Success if no error occurred.</returns>
 pvr::Result VulkanPVRScopeExample::releaseView()
 {
 	// Instructs the Asset Store to free all resources
@@ -604,10 +579,8 @@ pvr::Result VulkanPVRScopeExample::releaseView()
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\return Return Result::Success if no error occurred
-\brief Main rendering loop function of the program. The shell will call this function every frame.
-***********************************************************************************************************************/
+/// <summary>Main rendering loop function of the program. The shell will call this function every frame.</summary>
+/// <returns>Result::Success if no error occurred.</returns>
 pvr::Result VulkanPVRScopeExample::renderFrame()
 {
 	_deviceResources->swapchain->acquireNextImage(uint64_t(-1), _deviceResources->imageAcquiredSemaphores[_frameId]);
@@ -636,7 +609,7 @@ pvr::Result VulkanPVRScopeExample::renderFrame()
 	if (this->shouldTakeScreenshot())
 	{
 		pvr::utils::takeScreenshot(_deviceResources->queue, _deviceResources->commandPool, _deviceResources->swapchain, swapchainIndex, this->getScreenshotFileName(),
-			&_deviceResources->vmaAllocator, &_deviceResources->vmaAllocator);
+			_deviceResources->vmaAllocator, _deviceResources->vmaAllocator);
 	}
 
 	//--------------------
@@ -653,10 +626,8 @@ pvr::Result VulkanPVRScopeExample::renderFrame()
 	return pvr::Result::Success;
 }
 
-/*!*********************************************************************************************************************
-\param nodeIndex Node index of the mesh to draw
-\brief Draws a Model::Mesh after the model view matrix has been set and the material prepared.
-***********************************************************************************************************************/
+/// <summary>Draws a Model::Mesh after the model view matrix has been set and the material prepared.</summary>
+/// <param name="nodeIndex">Node index of the mesh to draw.</param>
 void VulkanPVRScopeExample::drawMesh(int32_t nodeIndex, pvrvk::CommandBuffer& command)
 {
 	const pvr::assets::Model::Node& node = _scene->getNode(nodeIndex);
@@ -705,9 +676,7 @@ void VulkanPVRScopeExample::drawMesh(int32_t nodeIndex, pvrvk::CommandBuffer& co
 	}
 }
 
-/*!*********************************************************************************************************************
-\brief  Pre-record the rendering commands
-***********************************************************************************************************************/
+/// <summary>Records the rendering commands into a set of command buffers which can be subsequently submitted to a queue for execution.</summary>
 void VulkanPVRScopeExample::recordCommandBuffer(uint32_t swapchain)
 {
 	const pvrvk::ClearValue clearValues[] = { pvrvk::ClearValue(0.0f, 0.45f, 0.41f, 1.0f), pvrvk::ClearValue::createDefaultDepthStencilClearValue() };
@@ -753,9 +722,7 @@ void VulkanPVRScopeExample::recordCommandBuffer(uint32_t swapchain)
 	command->end();
 }
 
-/*!*********************************************************************************************************************
-\brief  Update the description
-***********************************************************************************************************************/
+/// <summary>Update the description.</summary>
 void VulkanPVRScopeExample::updateDescription()
 {
 	static char description[256];

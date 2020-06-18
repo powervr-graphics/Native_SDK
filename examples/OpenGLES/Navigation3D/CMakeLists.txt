@@ -30,9 +30,9 @@ add_assets_to_target(OpenGLESNavigation3D
 	ASSET_FOLDER ${ASSET_FOLDER} 
 	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/Navigation3D
 	FILE_LIST 
+		map.osm
 		font.pvr
-		Road.pvr
-		map.osm)
+		Road.pvr)
 
 ### Textural shaders (OpenGL ES) ###
 add_assets_to_target(OpenGLESNavigation3D 
@@ -55,7 +55,7 @@ add_assets_resource_file(OpenGLESNavigation3D)
 # Apply SDK example specific compile and linker options
 apply_example_compile_options_to_target(OpenGLESNavigation3D)
 
-target_link_libraries(OpenGLESNavigation3D
+target_link_libraries(OpenGLESNavigation3D PUBLIC
 	pugixml
 	PVRShell
 	PVRUtilsGles
