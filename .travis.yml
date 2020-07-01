@@ -30,48 +30,42 @@ matrix:
         - mkdir build_windows_32
         - cd build_windows_32 
         - cmake .. -G"Visual Studio 15 2017" && cmake --build . -- -m
-      before_install:
-        - choco install python --version 3.5.4
-        - python -m pip install --upgrade pip
-      env: PATH=/c/Python35:/c/Python35/Scripts:$PATH
     - name: "Windows 64bit"
       os: windows
       script: 
         - mkdir build_windows_64
         - cd build_windows_64
         - cmake .. -G"Visual Studio 15 2017" -Ax64 && cmake --build . -- -m
-      before_install:
-        - choco install python --version 3.5.4
-        - python -m pip install --upgrade pip
-      env: PATH=/c/Python35:/c/Python35/Scripts:$PATH
-    - name: "Linux(Xenial) 32bit - gcc"
+    - name: "Linux(Bionic) 32bit - gcc"
       os: linux
-      dist: xenial
+      dist: bionic
       compiler: gcc
-      before_install: 
-        - sudo dpkg --add-architecture i386
-        - sudo apt-get update -y 
-        - sudo apt-get install -y gcc-5-multilib g++-5-multilib linux-libc-dev:i386
+      before_install:
+        - sudo apt-get install gcc-multilib g++-multilib ninja-build
       script: 
         - mkdir build_linux_gcc_32
         - cd build_linux_gcc_32
-        - cmake -DWS=NullWS -DCMAKE_TOOLCHAIN_FILE="../cmake/toolchains/Linux-gcc-x86_32.cmake" .. && cmake --build . -- -j2 
-    - name: "Linux(Xenial) 64bit - gcc"
+        - cmake -GNinja -DPVR_WINDOW_SYSTEM=NullWS -DCMAKE_TOOLCHAIN_FILE="../cmake/toolchains/Linux-gcc-x86_32.cmake" .. && cmake --build . -- -j2 
+    - name: "Linux(Bionic) 64bit - gcc"
       os: linux
-      dist: xenial
+      dist: bionic
       compiler: gcc
+      before_install:
+        - sudo apt-get install ninja-build
       script: 
         - mkdir build_linux_gcc_64
         - cd build_linux_gcc_64
-        - cmake -DWS=NullWS -DCMAKE_TOOLCHAIN_FILE="../cmake/toolchains/Linux-gcc-x86_64.cmake" .. && cmake --build . -- -j2 
-    - name: "Linux(Xenial) - clang"
+        - cmake -GNinja -DPVR_WINDOW_SYSTEM=NullWS -DCMAKE_TOOLCHAIN_FILE="../cmake/toolchains/Linux-gcc-x86_64.cmake" .. && cmake --build . -- -j2 
+    - name: "Linux(Bionic) - clang"
       os: linux
-      dist: xenial
+      dist: bionic
       compiler: clang
+      before_install:
+        - sudo apt-get install ninja-build
       script: 
         - mkdir build_linux_clang_64
         - cd build_linux_clang_64
-        - cmake -DWS=NullWS .. && cmake --build . -- -j2
+        - cmake -GNinja -DPVR_WINDOW_SYSTEM=NullWS .. && cmake --build . -- -j2
     - name: "macOS"
       os: osx
       osx_image: xcode9.4

@@ -62,10 +62,11 @@ if(NOT PVR_PREBUILT_DEPENDENCIES)
 		HASH "${glslang_ARCHIVE_HASH}"
 		BYPRODUCTS "${glslang_SRC_DIR}/CMakeLists.txt"
 	)
-
+	
 	# These options are used for both glslang and glslangValidator
 	set(BUILD_TESTING OFF CACHE INTERNAL "")
 	set(ENABLE_HLSL OFF CACHE INTERNAL "")
+	set(BUILD_EXTERNAL OFF CACHE INTERNAL "")
 
 	# If CMAKE_CROSSCOMPILING then do not build glslangValidator using normal add_subdirectory logic
 	if(CMAKE_CROSSCOMPILING OR APPLE OR PVR_GLSLANG_VALIDATOR_INSTALL_DIR)
