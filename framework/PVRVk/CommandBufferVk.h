@@ -68,7 +68,7 @@ public:
 
 	/// <summary>Call this function before beginning to record commands.</summary>
 	/// <param name="flags">Flags is a bitmask of CommandBufferUsageFlags specifying usage behavior for the command buffer.</param>
-	void begin(const CommandBufferUsageFlags flags = CommandBufferUsageFlags(0));
+	void begin(const CommandBufferUsageFlags flags = CommandBufferUsageFlags::e_SIMULTANEOUS_USE_BIT);
 
 	/// <summary>Call this function when you are done recording commands. BeginRecording must be called first.</summary>
 	void end();
@@ -873,13 +873,13 @@ public:
 	/// <param name="renderpass">A RenderPass object defining which render passes this SecondaryCommandBuffer will be compatible with and can be executed within.</param>
 	/// <param name="subpass">The index of the subpass within the render pass instance that this CommandBuffer will be executed within.</param>
 	/// <param name="flags">Flags is a bitmask of CommandBufferUsageFlagBits specifying usage behavior for the command buffer.</param>
-	void begin(const RenderPass& renderpass, uint32_t subpass = 0, const CommandBufferUsageFlags flags = CommandBufferUsageFlags::e_RENDER_PASS_CONTINUE_BIT);
+	void begin(const RenderPass& renderpass, uint32_t subpass = 0, const CommandBufferUsageFlags flags = CommandBufferUsageFlags::e_SIMULTANEOUS_USE_BIT | CommandBufferUsageFlags::e_RENDER_PASS_CONTINUE_BIT);
 
 	/// <summary>Call this function before beginning to record commands.</summary>
 	/// <param name="framebuffer">Refers to an Framebuffer object that this CommandBuffer will be rendering to if it is executed within a render pass instance.</param>
 	/// <param name="subpass">The index of the subpass within the render pass instance that this CommandBuffer will be executed within.</param>
 	/// <param name="flags">Flags is a bitmask of CommandBufferUsageFlagBits specifying usage behavior for the command buffer.</param>
-	void begin(const Framebuffer& framebuffer, uint32_t subpass = 0, const CommandBufferUsageFlags flags = CommandBufferUsageFlags::e_RENDER_PASS_CONTINUE_BIT);
+	void begin(const Framebuffer& framebuffer, uint32_t subpass = 0, const CommandBufferUsageFlags flags = CommandBufferUsageFlags::e_SIMULTANEOUS_USE_BIT | CommandBufferUsageFlags::e_RENDER_PASS_CONTINUE_BIT);
 };
 } // namespace impl
 } // namespace pvrvk
