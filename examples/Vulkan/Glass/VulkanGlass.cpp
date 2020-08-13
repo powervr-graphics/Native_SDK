@@ -1157,9 +1157,9 @@ struct DeviceResources
 	pvr::Multi<pvrvk::ImageView> depthStencilImages;
 	pvrvk::Sampler samplerTrilinear;
 
-	pvrvk::Semaphore semaphoreAcquire[uint32_t(pvrvk::FrameworkCaps::MaxSwapChains)];
-	pvrvk::Semaphore semaphoreSubmit[uint32_t(pvrvk::FrameworkCaps::MaxSwapChains)];
-	pvrvk::Fence perFrameFence[uint32_t(pvrvk::FrameworkCaps::MaxSwapChains)];
+	pvrvk::Semaphore imageAcquiredSemaphores[uint32_t(pvrvk::FrameworkCaps::MaxSwapChains)];
+	pvrvk::Semaphore presentationSemaphores[uint32_t(pvrvk::FrameworkCaps::MaxSwapChains)];
+	pvrvk::Fence perFrameResourcesFences[uint32_t(pvrvk::FrameworkCaps::MaxSwapChains)];
 	~DeviceResources()
 	{
 		if (device)
@@ -1168,8 +1168,8 @@ struct DeviceResources
 			uint32_t l = swapchain->getSwapchainLength();
 			for (uint32_t i = 0; i < l; ++i)
 			{
-				if (perFrameFence[i]) perFrameFence[i]->wait();
-				if (perFrameFence[i]) perFrameFence[i]->wait();
+				if (perFrameResourcesFences[i]) perFrameResourcesFences[i]->wait();
+				if (perFrameResourcesFences[i]) perFrameResourcesFences[i]->wait();
 			}
 		}
 	}
@@ -1335,9 +1335,9 @@ pvr::Result VulkanGlass::initView()
 		_deviceResources->uiSecondaryCommandBuffers[i] = _deviceResources->commandPool->allocateSecondaryCommandBuffer();
 		if (i == 0) { _deviceResources->sceneCommandBuffers[0]->begin(); }
 
-		_deviceResources->semaphoreSubmit[i] = _deviceResources->device->createSemaphore();
-		_deviceResources->semaphoreAcquire[i] = _deviceResources->device->createSemaphore();
-		_deviceResources->perFrameFence[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
+		_deviceResources->presentationSemaphores[i] = _deviceResources->device->createSemaphore();
+		_deviceResources->imageAcquiredSemaphores[i] = _deviceResources->device->createSemaphore();
+		_deviceResources->perFrameResourcesFences[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
 	}
 
 	// Create the pipeline cache
@@ -1401,11 +1401,13 @@ pvr::Result VulkanGlass::releaseView()
 /// <returns>Return Result::Success if no error occurred</returns>
 pvr::Result VulkanGlass::renderFrame()
 {
-	// make sure the commandbuffer and the semaphore are free to use.
-	_deviceResources->perFrameFence[_frameId]->wait();
-	_deviceResources->perFrameFence[_frameId]->reset();
-	_deviceResources->swapchain->acquireNextImage(uint64_t(-1), _deviceResources->semaphoreAcquire[_frameId]);
+	_deviceResources->swapchain->acquireNextImage(uint64_t(-1), _deviceResources->imageAcquiredSemaphores[_frameId]);
 	const uint32_t swapchainIndex = _deviceResources->swapchain->getSwapchainIndex();
+	
+	// make sure the commandbuffer and the semaphore are free to use.
+	_deviceResources->perFrameResourcesFences[swapchainIndex]->wait();
+	_deviceResources->perFrameResourcesFences[swapchainIndex]->reset();
+
 	updateScene(swapchainIndex);
 
 	//--------------------
@@ -1415,11 +1417,11 @@ pvr::Result VulkanGlass::renderFrame()
 	submitInfo.commandBuffers = &_deviceResources->sceneCommandBuffers[swapchainIndex];
 	submitInfo.numCommandBuffers = 1;
 	submitInfo.numWaitSemaphores = 1;
-	submitInfo.waitSemaphores = &_deviceResources->semaphoreAcquire[_frameId];
+	submitInfo.waitSemaphores = &_deviceResources->imageAcquiredSemaphores[_frameId];
 	submitInfo.waitDstStageMask = &waitStage;
-	submitInfo.signalSemaphores = &_deviceResources->semaphoreSubmit[_frameId];
+	submitInfo.signalSemaphores = &_deviceResources->presentationSemaphores[_frameId];
 	submitInfo.numSignalSemaphores = 1;
-	_deviceResources->queue->submit(&submitInfo, 1, _deviceResources->perFrameFence[_frameId]);
+	_deviceResources->queue->submit(&submitInfo, 1, _deviceResources->perFrameResourcesFences[swapchainIndex]);
 
 	if (this->shouldTakeScreenshot())
 	{
@@ -1432,7 +1434,7 @@ pvr::Result VulkanGlass::renderFrame()
 	pvrvk::PresentInfo presentInfo;
 	presentInfo.swapchains = &_deviceResources->swapchain;
 	presentInfo.numWaitSemaphores = 1;
-	presentInfo.waitSemaphores = &_deviceResources->semaphoreSubmit[_frameId];
+	presentInfo.waitSemaphores = &_deviceResources->presentationSemaphores[_frameId];
 	presentInfo.imageIndices = &swapchainIndex;
 	presentInfo.numSwapchains = 1;
 
