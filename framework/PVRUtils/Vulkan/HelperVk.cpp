@@ -813,20 +813,13 @@ pvrvk::ImageView uploadImageAndViewHelper(pvrvk::Device& device, const Texture& 
 	pvrvk::ImageUsageFlags usageFlags, pvrvk::ImageLayout finalLayout, vma::Allocator bufferAllocator = nullptr, vma::Allocator imageAllocator = nullptr,
 	vma::AllocationCreateFlags imageAllocationCreateFlags = vma::AllocationCreateFlags::e_NONE)
 {
-#ifdef VK_USE_PLATFORM_MACOS_MVK
-	// Initialize the objects needed to configure MoltenVK.
-	VkInstance instance = device->getPhysicalDevice()->getInstance()->getVkHandle();
-	MVKConfiguration mvkConfig;
-	size_t sizeOfMVK = sizeof(MVKConfiguration);
-	bool isFullImageViewSwizzle = false, isSwizzled = false;
-#endif
-
 	pvrvk::ComponentMapping components = {
 		pvrvk::ComponentSwizzle::e_IDENTITY,
 		pvrvk::ComponentSwizzle::e_IDENTITY,
 		pvrvk::ComponentSwizzle::e_IDENTITY,
 		pvrvk::ComponentSwizzle::e_IDENTITY,
 	};
+
 	if (texture.getPixelFormat().getChannelContent(0) == 'l')
 	{
 		if (texture.getPixelFormat().getChannelContent(1) == 'a')
@@ -843,21 +836,6 @@ pvrvk::ImageView uploadImageAndViewHelper(pvrvk::Device& device, const Texture& 
 			components.setB(pvrvk::ComponentSwizzle::e_R);
 			components.setA(pvrvk::ComponentSwizzle::e_ONE);
 		}
-
-#ifdef VK_USE_PLATFORM_MACOS_MVK
-		// Get the MoltenVKConfiguration pointer from the instance and set fullImageViewSwizzle to true.
-		pvrvk::getVkBindings().vkGetMoltenVKConfigurationMVK(instance, &mvkConfig, &sizeOfMVK);
-		isFullImageViewSwizzle = mvkConfig.fullImageViewSwizzle;
-
-		// Check if the swizzle was set to false. if it is not, don't do anything.
-		if (!isFullImageViewSwizzle)
-		{
-			mvkConfig.fullImageViewSwizzle = true;
-			pvrvk::getVkBindings().vkSetMoltenVKConfigurationMVK(instance, &mvkConfig, &sizeOfMVK);
-		}
-
-		isSwizzled = true;
-#endif
 	}
 	else if (texture.getPixelFormat().getChannelContent(0) == 'a')
 	{
@@ -869,17 +847,6 @@ pvrvk::ImageView uploadImageAndViewHelper(pvrvk::Device& device, const Texture& 
 
 	return device->createImageView(pvrvk::ImageViewCreateInfo(
 		uploadImageHelper(device, texture, allowDecompress, commandBuffer, usageFlags, finalLayout, bufferAllocator, imageAllocator, imageAllocationCreateFlags), components));
-
-#ifdef VK_USE_PLATFORM_MACOS_MVK
-
-	// Set fullImageViewSwizzle back to false if it was originally false.
-	if (isSwizzled && !isFullImageViewSwizzle)
-	{
-		mvkConfig.fullImageViewSwizzle = isFullImageViewSwizzle;
-		pvrvk::getVkBindings().vkSetMoltenVKConfigurationMVK(instance, &mvkConfig, &sizeOfMVK);
-	}
-
-#endif
 }
 
 inline pvrvk::ImageView loadAndUploadImageAndViewHelper(pvrvk::Device& device, const char* fileName, bool allowDecompress, pvrvk::CommandBufferBase commandBuffer,
@@ -2122,86 +2089,118 @@ pvrvk::Surface createSurface(const pvrvk::Instance& instance, const pvrvk::Physi
 	(void)connection;
 	(void)display;
 #if defined(VK_USE_PLATFORM_ANDROID_KHR)
-	return pvrvk::Surface(instance->createAndroidSurface(reinterpret_cast<ANativeWindow*>(window)));
-#elif defined VK_USE_PLATFORM_WIN32_KHR
-	return pvrvk::Surface(instance->createWin32Surface(GetModuleHandle(NULL), static_cast<HWND>(window)));
-#elif defined(VK_USE_PLATFORM_XCB_KHR)
-	if (instance->getEnabledExtensionTable().khrXcbSurfaceEnabled)
-	{ return pvrvk::Surface(instance->createXcbSurface(static_cast<xcb_connection_t*>(connection), *((xcb_window_t*)(&window)))); }
-#elif defined(VK_USE_PLATFORM_XLIB_KHR)
-	if (instance->getEnabledExtensionTable().khrXlibSurfaceEnabled)
-	{ return pvrvk::Surface(instance->createXlibSurface(static_cast<Display*>(display), reinterpret_cast<Window>(window))); }
-#elif defined(VK_USE_PLATFORM_WAYLAND_KHR)
-	if (instance->getEnabledExtensionTable().khrWaylandSurfaceEnabled)
-	{ return pvrvk::Surface(instance->createWaylandSurface(reinterpret_cast<wl_display*>(display), reinterpret_cast<wl_surface*>(window))); }
-#elif defined(VK_USE_PLATFORM_MACOS_MVK)
-	(void)display;
-	if (instance->getEnabledExtensionTable().mvkMacosSurfaceEnabled) { return pvrvk::Surface(instance->createMacOSSurface(window)); }
-#else // NullWS
-	Log("%u Displays supported by the physical device", physicalDevice->getNumDisplays());
-	Log("Display properties:");
-
-	for (uint32_t i = 0; i < physicalDevice->getNumDisplays(); ++i)
+	Log("Using platform define: VK_USE_PLATFORM_ANDROID_KHR");
+	if (instance->getEnabledExtensionTable().khrAndroidSurfaceEnabled)
 	{
-		const pvrvk::Display& display = physicalDevice->getDisplay(i);
-		Log("Properties for Display [%u]:", i);
-		Log("	Display Name: '%s':", display->getDisplayName());
-		Log("	Supports Persistent Content: %u", display->getPersistentContent());
-		Log("	Physical Dimensions: (%u, %u)", display->getPhysicalDimensions().getWidth(), display->getPhysicalDimensions().getHeight());
-		Log("	Physical Resolution: (%u, %u)", display->getPhysicalResolution().getWidth(), display->getPhysicalResolution().getHeight());
-		Log("	Supported Transforms: %s", pvrvk::to_string(display->getSupportedTransforms()).c_str());
-		Log("	Supports Plane Reorder: %u", display->getPlaneReorderPossible());
-
-		Log("	Display supports [%u] display modes:", display->getNumDisplayModes());
-		for (uint32_t j = 0; j < display->getNumDisplayModes(); ++j)
-		{
-			Log("	Properties for Display Mode [%u]:", j);
-			const pvrvk::DisplayMode& displayMode = display->getDisplayMode(j);
-			Log("		Refresh Rate: %f", displayMode->getParameters().getRefreshRate());
-			Log("		Visible Region: (%u, %u)", displayMode->getParameters().getVisibleRegion().getWidth(), displayMode->getParameters().getVisibleRegion().getHeight());
-		}
+		Log("Using Instance surface extension: VK_KHR_android_surface");
+		return pvrvk::Surface(instance->createAndroidSurface(reinterpret_cast<ANativeWindow*>(window)));
 	}
-
-	if (physicalDevice->getNumDisplays() == 0) { throw pvrvk::ErrorInitializationFailed("Could not find a suitable Vulkan Display."); }
-
-	// We simply loop through the display planes and find a supported display and display mode
-	for (uint32_t i = 0; i < physicalDevice->getNumDisplayPlanes(); ++i)
+#elif defined VK_USE_PLATFORM_WIN32_KHR
+	Log("Using platform define: VK_USE_PLATFORM_WIN32_KHR");
+	if (instance->getEnabledExtensionTable().khrWin32SurfaceEnabled)
 	{
-		uint32_t currentStackIndex = -1;
-		pvrvk::Display display = physicalDevice->getDisplayPlaneProperties(i, currentStackIndex);
-		std::vector<pvrvk::Display> supportedDisplaysForPlane = physicalDevice->getDisplayPlaneSupportedDisplays(i);
-		pvrvk::DisplayMode displayMode;
+		Log("Using Instance surface extension: VK_KHR_win32_surface");
+		return pvrvk::Surface(instance->createWin32Surface(GetModuleHandle(NULL), static_cast<HWND>(window)));
+	}
+#elif defined(VK_USE_PLATFORM_XCB_KHR)
+	Log("Using platform define: VK_USE_PLATFORM_XCB_KHR");
+	if (instance->getEnabledExtensionTable().khrXcbSurfaceEnabled)
+	{
+		Log("Using Instance surface extension: VK_KHR_xcb_surface");
+		return pvrvk::Surface(instance->createXcbSurface(static_cast<xcb_connection_t*>(connection), *((xcb_window_t*)(&window))));
+	}
+#elif defined(VK_USE_PLATFORM_XLIB_KHR)
+	Log("Using platform define: VK_USE_PLATFORM_XLIB_KHR");
+	if (instance->getEnabledExtensionTable().khrXlibSurfaceEnabled)
+	{
+		Log("Using Instance surface extension: VK_KHR_xlib_surface");
+		return pvrvk::Surface(instance->createXlibSurface(static_cast<Display*>(display), reinterpret_cast<Window>(window)));
+	}
+#elif defined(VK_USE_PLATFORM_WAYLAND_KHR)
+	Log("Using platform define: VK_USE_PLATFORM_WAYLAND_KHR");
+	if (instance->getEnabledExtensionTable().khrWaylandSurfaceEnabled)
+	{
+		Log("Using Instance surface extension: VK_KHR_wayland_surface");
+		return pvrvk::Surface(instance->createWaylandSurface(reinterpret_cast<wl_display*>(display), reinterpret_cast<wl_surface*>(window)));
+	}
+#elif defined(VK_USE_PLATFORM_MACOS_MVK)
+	Log("Using platform define: VK_USE_PLATFORM_MACOS_MVK");
+	(void)display;
+	if (instance->getEnabledExtensionTable().mvkMacosSurfaceEnabled)
+	{
+		Log("Using Instance surface extension: VK_MVK_macos_surface");
+		return pvrvk::Surface(instance->createMacOSSurface(window));
+	}
+#else // NullWS
+	if (instance->getEnabledExtensionTable().khrDisplayEnabled)
+	{
+		Log("Using Instance surface extension: VK_KHR_display");
+		Log("%u Displays supported by the physical device", physicalDevice->getNumDisplays());
+		Log("Display properties:");
 
-		// if a valid display can be found and its supported then make use of it
-		if (display && std::find(supportedDisplaysForPlane.begin(), supportedDisplaysForPlane.end(), display) != supportedDisplaysForPlane.end())
-		{ displayMode = display->getDisplayMode(0); } // else find the first supported display and grab its first display mode
-		else if (supportedDisplaysForPlane.size())
+		for (uint32_t i = 0; i < physicalDevice->getNumDisplays(); ++i)
 		{
-			pvrvk::Display& currentDisplay = supportedDisplaysForPlane[0];
-			displayMode = currentDisplay->getDisplayMode(0);
+			const pvrvk::Display& display = physicalDevice->getDisplay(i);
+			Log("Properties for Display [%u]:", i);
+			Log("	Display Name: '%s':", display->getDisplayName());
+			Log("	Supports Persistent Content: %u", display->getPersistentContent());
+			Log("	Physical Dimensions: (%u, %u)", display->getPhysicalDimensions().getWidth(), display->getPhysicalDimensions().getHeight());
+			Log("	Physical Resolution: (%u, %u)", display->getPhysicalResolution().getWidth(), display->getPhysicalResolution().getHeight());
+			Log("	Supported Transforms: %s", pvrvk::to_string(display->getSupportedTransforms()).c_str());
+			Log("	Supports Plane Reorder: %u", display->getPlaneReorderPossible());
+
+			Log("	Display supports [%u] display modes:", display->getNumDisplayModes());
+			for (uint32_t j = 0; j < display->getNumDisplayModes(); ++j)
+			{
+				Log("	Properties for Display Mode [%u]:", j);
+				const pvrvk::DisplayMode& displayMode = display->getDisplayMode(j);
+				Log("		Refresh Rate: %f", displayMode->getParameters().getRefreshRate());
+				Log("		Visible Region: (%u, %u)", displayMode->getParameters().getVisibleRegion().getWidth(), displayMode->getParameters().getVisibleRegion().getHeight());
+			}
 		}
 
-		if (displayMode)
-		{
-			pvrvk::DisplayPlaneCapabilitiesKHR capabilities = physicalDevice->getDisplayPlaneCapabilities(displayMode, i);
-			Log("Capabilities for the chosen display mode for Display Plane [%u]:", i);
-			Log("	Supported Alpha Flags: %s", pvrvk::to_string(capabilities.getSupportedAlpha()).c_str());
-			Log("	Supported Min Src Position: (%u, %u)", capabilities.getMinSrcPosition().getX(), capabilities.getMinSrcPosition().getY());
-			Log("	Supported Max Src Position: (%u, %u)", capabilities.getMaxSrcPosition().getX(), capabilities.getMaxSrcPosition().getY());
-			Log("	Supported Min Src Extent: (%u, %u)", capabilities.getMinSrcExtent().getWidth(), capabilities.getMinSrcExtent().getHeight());
-			Log("	Supported Max Src Extent: (%u, %u)", capabilities.getMaxSrcExtent().getWidth(), capabilities.getMaxSrcExtent().getHeight());
-			Log("	Supported Min Dst Position: (%u, %u)", capabilities.getMinDstPosition().getX(), capabilities.getMinDstPosition().getY());
-			Log("	Supported Max Dst Position: (%u, %u)", capabilities.getMaxDstPosition().getX(), capabilities.getMaxDstPosition().getY());
-			Log("	Supported Min Dst Extent: (%u, %u)", capabilities.getMinDstExtent().getWidth(), capabilities.getMinDstExtent().getHeight());
-			Log("	Supported Max Dst Extent: (%u, %u)", capabilities.getMaxDstExtent().getWidth(), capabilities.getMaxDstExtent().getHeight());
+		if (physicalDevice->getNumDisplays() == 0) { throw pvrvk::ErrorInitializationFailed("Could not find a suitable Vulkan Display."); }
 
-			return pvrvk::Surface(
-				instance->createDisplayPlaneSurface(displayMode, displayMode->getParameters().getVisibleRegion(), pvrvk::DisplaySurfaceCreateFlagsKHR::e_NONE, i, currentStackIndex));
+		// We simply loop through the display planes and find a supported display and display mode
+		for (uint32_t i = 0; i < physicalDevice->getNumDisplayPlanes(); ++i)
+		{
+			uint32_t currentStackIndex = -1;
+			pvrvk::Display display = physicalDevice->getDisplayPlaneProperties(i, currentStackIndex);
+			std::vector<pvrvk::Display> supportedDisplaysForPlane = physicalDevice->getDisplayPlaneSupportedDisplays(i);
+			pvrvk::DisplayMode displayMode;
+
+			// if a valid display can be found and its supported then make use of it
+			if (display && std::find(supportedDisplaysForPlane.begin(), supportedDisplaysForPlane.end(), display) != supportedDisplaysForPlane.end())
+			{ displayMode = display->getDisplayMode(0); } // else find the first supported display and grab its first display mode
+			else if (supportedDisplaysForPlane.size())
+			{
+				pvrvk::Display& currentDisplay = supportedDisplaysForPlane[0];
+				displayMode = currentDisplay->getDisplayMode(0);
+			}
+
+			if (displayMode)
+			{
+				pvrvk::DisplayPlaneCapabilitiesKHR capabilities = physicalDevice->getDisplayPlaneCapabilities(displayMode, i);
+				Log("Capabilities for the chosen display mode for Display Plane [%u]:", i);
+				Log("	Supported Alpha Flags: %s", pvrvk::to_string(capabilities.getSupportedAlpha()).c_str());
+				Log("	Supported Min Src Position: (%u, %u)", capabilities.getMinSrcPosition().getX(), capabilities.getMinSrcPosition().getY());
+				Log("	Supported Max Src Position: (%u, %u)", capabilities.getMaxSrcPosition().getX(), capabilities.getMaxSrcPosition().getY());
+				Log("	Supported Min Src Extent: (%u, %u)", capabilities.getMinSrcExtent().getWidth(), capabilities.getMinSrcExtent().getHeight());
+				Log("	Supported Max Src Extent: (%u, %u)", capabilities.getMaxSrcExtent().getWidth(), capabilities.getMaxSrcExtent().getHeight());
+				Log("	Supported Min Dst Position: (%u, %u)", capabilities.getMinDstPosition().getX(), capabilities.getMinDstPosition().getY());
+				Log("	Supported Max Dst Position: (%u, %u)", capabilities.getMaxDstPosition().getX(), capabilities.getMaxDstPosition().getY());
+				Log("	Supported Min Dst Extent: (%u, %u)", capabilities.getMinDstExtent().getWidth(), capabilities.getMinDstExtent().getHeight());
+				Log("	Supported Max Dst Extent: (%u, %u)", capabilities.getMaxDstExtent().getWidth(), capabilities.getMaxDstExtent().getHeight());
+
+				return pvrvk::Surface(instance->createDisplayPlaneSurface(
+					displayMode, displayMode->getParameters().getVisibleRegion(), pvrvk::DisplaySurfaceCreateFlagsKHR::e_NONE, i, currentStackIndex));
+			}
 		}
 	}
 #endif
 
-	throw pvrvk::ErrorInitializationFailed("We were unable to create a suitable Surface for the given physical device.");
+	throw pvrvk::ErrorInitializationFailed("We were unable to create a suitable Surface for the given physical device, provided platform defines and supported surface "
+										   "extensions.");
 }
 
 pvrvk::Buffer createBuffer(const pvrvk::Device& device, const pvrvk::BufferCreateInfo& createInfo, pvrvk::MemoryPropertyFlags requiredMemoryFlags,

@@ -13,7 +13,7 @@ set(PVRUtilsVk_INCLUDE_DIRECTORIES ${CMAKE_CURRENT_LIST_DIR}/../../)
 set(PVRUtils_HEADERS 
 	../ArialBoldFont.h
 	../MultiObject.h
-	../PowerVRLogo.h
+	../ImaginationLogo.h
 	../PBRUtils.h
 	../PVRUtilsTypes.h
 	../StructuredMemory.h)
@@ -22,7 +22,7 @@ set(PVRUtils_HEADERS
 set(PVRUtilsVk_HEADERS
 	../ArialBoldFont.h
 	../MultiObject.h
-	../PowerVRLogo.h
+	../ImaginationLogo.h
 	../PBRUtils.h
 	../PVRUtilsTypes.h
 	../PVRUtilsVk.h
@@ -89,18 +89,20 @@ target_include_directories(PVRUtilsVk
 	PUBLIC 
 		"$<BUILD_INTERFACE:${PVRUtilsVk_INCLUDE_DIRECTORIES}>"
 		$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
-	
-install(TARGETS PVRUtilsVk EXPORT PVRUtilsVkTargets
-	ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-	RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-	OPTIONAL)
-install(FILES ${PVRUtils_HEADERS} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/PVRUtils OPTIONAL)
-install(FILES ${PVRUtilsVk_HEADERS} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/PVRUtils/Vulkan OPTIONAL)
-#install(EXPORT PVRUtilsVkTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/PVRUtilsVk OPTIONAL) # Cannot install(EXPORT PVRUtilsVkTargets...) until glslang properly exports their targets
 
-export(EXPORT PVRUtilsVkTargets FILE "${CMAKE_CURRENT_BINARY_DIR}/PVRUtilsVk/PVRUtilsVkTargets.cmake")
-# build tree package config
-file(COPY cmake/PVRUtilsVkConfig.cmake.in DESTINATION "${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/PVRUtilsVk/" NO_SOURCE_PERMISSIONS)
-configure_file("${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/PVRUtilsVk/PVRUtilsVkConfig.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/PVRUtilsVk/PVRUtilsVkConfig.cmake" COPYONLY)
-install(FILES "${CMAKE_CURRENT_BINARY_DIR}/PVRUtilsVk/PVRUtilsVkTargets.cmake" DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/PVRUtilsVk OPTIONAL)
+if(PVR_ENABLE_INSTALL)	
+	install(TARGETS PVRUtilsVk EXPORT PVRUtilsVkTargets
+		ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+		LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+		RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+		OPTIONAL)
+	install(FILES ${PVRUtils_HEADERS} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/PVRUtils OPTIONAL)
+	install(FILES ${PVRUtilsVk_HEADERS} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/PVRUtils/Vulkan OPTIONAL)
+	#install(EXPORT PVRUtilsVkTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/PVRUtilsVk OPTIONAL) # Cannot install(EXPORT PVRUtilsVkTargets...) until glslang properly exports their targets
+
+	export(EXPORT PVRUtilsVkTargets FILE "${CMAKE_CURRENT_BINARY_DIR}/PVRUtilsVk/PVRUtilsVkTargets.cmake")
+	# build tree package config
+	file(COPY cmake/PVRUtilsVkConfig.cmake.in DESTINATION "${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/PVRUtilsVk/" NO_SOURCE_PERMISSIONS)
+	configure_file("${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/PVRUtilsVk/PVRUtilsVkConfig.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/PVRUtilsVk/PVRUtilsVkConfig.cmake" COPYONLY)
+	install(FILES "${CMAKE_CURRENT_BINARY_DIR}/PVRUtilsVk/PVRUtilsVkTargets.cmake" DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/PVRUtilsVk OPTIONAL)
+endif()

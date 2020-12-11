@@ -44,6 +44,7 @@ var searchData=
   ['descriptorsetvk_2eh',['DescriptorSetVk.h',['../_descriptor_set_vk_8h.html',1,'']]],
   ['descriptorstore',['DescriptorStore',['../classpvrvk_1_1impl_1_1_descriptor_store.html',1,'pvrvk::impl']]],
   ['descriptorstore_3c_20descriptorinfos_2c_204_20_3e',['DescriptorStore&lt; DescriptorInfos, 4 &gt;',['../classpvrvk_1_1impl_1_1_descriptor_store.html',1,'pvrvk::impl']]],
+  ['descriptortypesize',['descriptorTypeSize',['../namespacepvrvk.html#a1a4d93cf0da3fa02cc6a4ccc3bbc5e2d',1,'pvrvk']]],
   ['device',['Device',['../namespacepvrvk.html#a48baa2a10fcb9f1bafd42e398fdbce61',1,'pvrvk']]],
   ['device_5f',['Device_',['../classpvrvk_1_1impl_1_1_device__.html',1,'pvrvk::impl']]],
   ['devicecreateinfo',['DeviceCreateInfo',['../structpvrvk_1_1_device_create_info.html',1,'pvrvk::DeviceCreateInfo'],['../structpvrvk_1_1_device_create_info.html#a300d33f7b0e356861afb4a82f6aa4e88',1,'pvrvk::DeviceCreateInfo::DeviceCreateInfo()']]],

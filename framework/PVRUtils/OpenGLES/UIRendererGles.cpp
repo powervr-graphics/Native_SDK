@@ -10,7 +10,7 @@
 #include "PVRCore/stream/BufferStream.h"
 #include "PVRUtils/OpenGLES/HelperGles.h"
 #include "PVRUtils/ArialBoldFont.h"
-#include "PVRUtils/PowerVRLogo.h"
+#include "PVRUtils/ImaginationLogo.h"
 #include "PVRUtils/OpenGLES/UIRendererShaders_ES.h"
 
 using std::map;
@@ -622,7 +622,7 @@ void UIRenderer::init_CreateDefaultSampler()
 
 void UIRenderer::init_CreateDefaultSdkLogo()
 {
-	std::unique_ptr<Stream> sdkLogo = std::make_unique<BufferStream>("", _PowerVR_Logo_RGBA_pvr, static_cast<size_t>(_PowerVR_Logo_RGBA_pvr_size));
+	std::unique_ptr<Stream> sdkLogo = std::make_unique<BufferStream>("", _Imagination_Logo_RGBA_pvr, static_cast<size_t>(_Imagination_Logo_RGBA_pvr_size));
 	Texture sdkTex;
 	sdkTex = textureLoad(*sdkLogo, TextureFileFormat::PVR);
 

@@ -28,6 +28,7 @@ set(VULKAN_EXAMPLES
 	ImageBasedLightingMapGenerator
 	GameOfLife
 	PipelineCache
+	MatrixMultiplication
 )
 
 foreach(EXAMPLE ${VULKAN_EXAMPLES})

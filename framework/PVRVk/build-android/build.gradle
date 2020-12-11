@@ -10,7 +10,7 @@ android {
 		externalNativeBuild {
 			cmake {
 				cppFlags "-fexceptions"
-				arguments "-DANDROID_STL=c++_static", "-DPVRVK_USE_PLATFORM=VK_USE_PLATFORM_ANDROID_KHR"
+				arguments "-DANDROID_STL=c++_static", "-DPVRVK_USE_PLATFORM=VK_USE_PLATFORM_ANDROID_KHR", "-DPVRVK_ENABLE_INSTALL=ON"
 				targets "PVRVk"
 			}
 		}

@@ -656,7 +656,7 @@ inline void updateBufferUsingStagingBuffer(pvrvk::Device& device, pvrvk::Buffer&
 		pvr::utils::createBuffer(device, pvrvk::BufferCreateInfo(size, pvrvk::BufferUsageFlags::e_TRANSFER_SRC_BIT), memoryFlags, memoryFlags, stagingBufferAllocator);
 
 	// 2. map (if required), then update the memory, then finally unmap (if required)
-	updateHostVisibleBuffer(stagingBuffer, data, offset, size, true);
+	updateHostVisibleBuffer(stagingBuffer, data, 0, size, true);
 
 	// 3. Copy from the staging buffer to the target buffer
 	const pvrvk::BufferCopy bufferCopy(0, offset, size);

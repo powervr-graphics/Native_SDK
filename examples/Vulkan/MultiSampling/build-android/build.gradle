@@ -38,7 +38,7 @@ android {
 		externalNativeBuild {
 			cmake {
 				cppFlags "-fexceptions"
-				arguments "-DANDROID_STL=c++_static", "-DPVR_PREBUILT_DEPENDENCIES=ON"
+				arguments "-DANDROID_STL=c++_static", "-DPVR_PREBUILT_DEPENDENCIES=ON", "-DPVR_ENABLE_INSTALL=ON"
 			}
 		}
 		ndk
@@ -75,11 +75,11 @@ android {
 						// We are providing prebuilt validation layer libraries built using the LunarG Vulkan-LoaderAndValidationLayers github repo: https://github.com/KhronosGroup/Vulkan-LoaderAndValidationLayers.git
 						// We found that the latest set provided in the ndk were quite out of date (using VK_HEADER_VERSION 31) and were outputting false positive validation layer errors in certain cases.
 						// The following makes use of our provided validation layer libraries:
-						// srcDir "${project.projectDir}/../../../../external/validation_layers/jniLibs"
+						srcDir "${project.projectDir}/../../../../external/validation_layers/jniLibs"
 						
 						// The following will instead make use of the prebuilt validation layer libraries provided in the ndk:
-						def ndkDir = android.ndkDirectory
-						srcDir "$ndkDir/sources/third_party/vulkan/src/build-android/jniLibs"
+						//def ndkDir = android.ndkDirectory
+						//srcDir "$ndkDir/sources/third_party/vulkan/src/build-android/jniLibs"
 					}
 				}
 			}

@@ -266,13 +266,11 @@ bool initializeBuffer(GLuint& vertexBuffer)
 }
 
 /*!*********************************************************************************************************************
-\param[out]		fragmentShader              Handle to a fragment shader
-\param[out]		vertexShader                Handle to a vertex shader
 \param[out]		shaderProgram               Handle to a shader program containing the fragment and vertex shader
 \return		Whether the function succeeds or not.
 \brief	Initializes shaders, buffers and other state required to begin rendering with OpenGL ES
 ***********************************************************************************************************************/
-bool initializeShaders(GLuint& fragmentShader, GLuint& vertexShader, GLuint& shaderProgram)
+bool initializeShaders(GLuint& shaderProgram)
 {
 	//	Concept: Shaders
 	//	OpenGL ES 2.0 uses what are known as shaders to determine how to draw objects on the screen. Instead of the fixed function
@@ -290,6 +288,9 @@ bool initializeShaders(GLuint& fragmentShader, GLuint& vertexShader, GLuint& sha
 	//	The reason these are called "fragment" shaders instead of "pixel" shaders is due to a small technical difference between the two
 	//	concepts. When you color a fragment, it may not be the final color which ends up on screen. This is particularly true when
 	//	performing blending, where multiple fragments can contribute to the final pixel color.
+
+	GLuint fragmentShader = 0;
+	GLuint vertexShader = 0;
 
 	const char* const fragmentShaderSource = "\
             void main (void)\
@@ -381,6 +382,10 @@ bool initializeShaders(GLuint& fragmentShader, GLuint& vertexShader, GLuint& sha
 	// Link the program
 	glLinkProgram(shaderProgram);
 
+	// After linking the program, shaders are no longer necessary
+	glDeleteShader(vertexShader);
+	glDeleteShader(fragmentShader);
+
 	// Check if linking succeeded in the same way we checked for compilation success
 	GLint isLinked;
 	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &isLinked);
@@ -418,7 +423,7 @@ bool initializeShaders(GLuint& fragmentShader, GLuint& vertexShader, GLuint& sha
 \return		Whether the function succeeds or not.
 \brief	Renders the scene to the framebuffer. Usually called within a loop.
 ***********************************************************************************************************************/
-bool renderScene(GLuint shaderProgram, EGLDisplay eglDisplay, EGLSurface eglSurface)
+bool renderScene(GLuint shaderProgram, GLuint vertexBuffer, EGLDisplay eglDisplay, EGLSurface eglSurface)
 {
 	//	Set the clear color
 	//	At the start of a frame, generally you clear the image to tell OpenGL ES that you're done with whatever was there before and want to
@@ -433,6 +438,9 @@ bool renderScene(GLuint shaderProgram, EGLDisplay eglDisplay, EGLSurface eglSurf
 	//	glClear is used here with the Color Buffer to clear the color. It can also be used to clear the depth or stencil buffer using
 	//	GL_DEPTH_BUFFER_BIT or GL_STENCIL_BUFFER_BIT, respectively.
 	glClear(GL_COLOR_BUFFER_BIT);
+
+	//	Bind the VBO
+	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
 
 	// Get the location of the transformation matrix in the shader using its name
 	int matrixLocation = glGetUniformLocation(shaderProgram, "transformationMatrix");
@@ -497,20 +505,14 @@ bool renderScene(GLuint shaderProgram, EGLDisplay eglDisplay, EGLSurface eglSurf
 }
 
 /*!*********************************************************************************************************************
-\param[in]			fragmentShader              Handle to a fragment shader
-\param[in]			vertexShader                Handle to a vertex shader
 \param[in]			shaderProgram               Handle to a shader program containing the fragment and vertex shader
 \param[in]			vertexBuffer                Handle to a vertex buffer object
 \brief	Releases the resources created by "InitializeGLState"
 ***********************************************************************************************************************/
-void deInitializeGLState(GLuint fragmentShader, GLuint vertexShader, GLuint shaderProgram, GLuint vertexBuffer)
+void deInitializeGLState(GLuint shaderProgram, GLuint vertexBuffer)
 {
-	// Frees the OpenGL handles for the program and the 2 shaders
-	glDeleteShader(fragmentShader);
-	glDeleteShader(vertexShader);
+	// Frees the OpenGL handles for the program and the VBO
 	glDeleteProgram(shaderProgram);
-
-	// Delete the VBO as it is no longer needed
 	glDeleteBuffers(1, &vertexBuffer);
 }
 
@@ -672,47 +674,15 @@ void releaseWaylandConnection()
 	wl_display_disconnect(wlDisplay);
 }
 
-bool CreateWindowAndContext(EGLDisplay& eglDisplay, EGLConfig& eglConfig, EGLSurface& eglSurface, EGLContext& context)
-{
-	// Get access to a native display
-	if (!initializeWindow()) { return false; }
-
-	// Create and Initialize an EGLDisplay from the native display
-	if (!createEGLDisplay(wlDisplay, eglDisplay)) { return false; }
-
-	// Choose an EGLConfig for the application, used when setting up the rendering surface and EGLContext
-	if (!chooseEGLConfig(eglDisplay, eglConfig)) { return false; }
-
-	// Create an EGLSurface for rendering from the native window
-	if (!createEGLSurface(eglDisplay, eglConfig, eglSurface)) { return false; }
-
-	// Setup the EGL Context from the other EGL constructs created so far, so that the application is ready to submit OpenGL ES commands
-	if (!setupEGLContext(eglDisplay, eglConfig, eglSurface, context)) { return false; }
-
-	return true;
-}
-
-bool CreateResources(GLuint& vertexBuffer, GLuint& fragmentShader, GLuint& vertexShader, GLuint& shaderProgram)
-{
-	// Initialize the vertex data in the application
-	if (!initializeBuffer(vertexBuffer)) { return false; }
-
-	// Initialize the fragment and vertex shaders used in the application
-	if (!initializeShaders(fragmentShader, vertexShader, shaderProgram)) { return false; }
-
-	return true;
-}
-
-bool Render(GLuint shaderProgram, EGLDisplay eglDisplay, EGLSurface eglSurface)
+bool render(GLuint shaderProgram, GLuint vertexBuffer, EGLDisplay& eglDisplay, EGLSurface& eglSurface)
 {
 	// Renders a triangle for 800 frames using the state setup in the previous function
 	for (int i = 0; i < 800; ++i)
 	{
 		wl_display_dispatch_pending(wlDisplay);
-		if (!renderScene(shaderProgram, eglDisplay, eglSurface)) { break; }
+		if (!renderScene(shaderProgram, vertexBuffer, eglDisplay, eglSurface)) { return false; }
 	}
-
-	return false;
+	return true;
 }
 
 /*!*********************************************************************************************************************
@@ -730,38 +700,43 @@ int main(int /*argc*/, char** /*argv*/)
 	EGLContext context = NULL;
 
 	// WAYLAND
-	// Handles for the two shaders used to draw the triangle, and the program handle which combines them.
-	GLuint fragmentShader = 0, vertexShader = 0;
+	// Handles for the program, used to draw the triangle, and the program handle which combines them.
 	GLuint shaderProgram = 0;
 
 	// A vertex buffer object to store our model data.
 	GLuint vertexBuffer = 0;
 
-	if (!CreateWindowAndContext(eglDisplay, eglConfig, eglSurface, context))
-	{
-		// Release the EGL State
-		releaseEGLState(eglDisplay);
-		// Release the Wayland connection
-		releaseWaylandConnection();
-	}
+	// Perform the chain of initialisation step (stop if anything fails)
 
-	if (!CreateResources(fragmentShader, vertexShader, shaderProgram, vertexBuffer))
-	{
-		// Release the EGL State
-		releaseEGLState(eglDisplay);
-		// Release the Wayland connection
-		releaseWaylandConnection();
-	}
+	// Get access to a native display and...
+	initializeWindow() &&
 
-	if (!Render(shaderProgram, eglDisplay, eglSurface))
-	{
-		// Release any resources we created in the Initialize functions
-		deInitializeGLState(fragmentShader, vertexShader, shaderProgram, vertexBuffer);
-		// Release the EGL State
-		releaseEGLState(eglDisplay);
-		// Release the Wayland connection
-		releaseWaylandConnection();
-	}
+	// Create and Initialize an EGLDisplay from the native display and ...
+	createEGLDisplay(wlDisplay, eglDisplay) &&
 
+	// Choose an EGLConfig for the application, used when setting up the rendering surface and EGLContext
+	chooseEGLConfig(eglDisplay, eglConfig) &&
+
+	// Create an EGLSurface for rendering from the native window
+	createEGLSurface(eglDisplay, eglConfig, eglSurface) &&
+
+	// Setup the EGL Context from the other EGL constructs created so far, so that the application is ready to submit OpenGL ES commands
+	setupEGLContext(eglDisplay, eglConfig, eglSurface, context) &&
+	
+	// Initialize the vertex data in the application
+	initializeBuffer(vertexBuffer) &&
+
+	// Initialize the fragment and vertex shaders used in the application
+	initializeShaders(shaderProgram) &&
+
+	// If everything else succeeded, run the rendering loop.
+	render(shaderProgram, vertexBuffer, eglDisplay, eglSurface);
+
+	// Cleanup
+	deInitializeGLState(shaderProgram, vertexBuffer);
+	// Release the EGL State
+	releaseEGLState(eglDisplay);
+	// Release the Wayland connection
+	releaseWaylandConnection();
 	return 0;
 }

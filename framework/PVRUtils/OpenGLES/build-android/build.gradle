@@ -12,7 +12,7 @@ android {
 		externalNativeBuild {
 			cmake {
 				cppFlags "-fexceptions"
-				arguments "-DANDROID_STL=c++_static", "-DPVR_PREBUILT_DEPENDENCIES=ON"
+				arguments "-DANDROID_STL=c++_static", "-DPVR_PREBUILT_DEPENDENCIES=ON", "-DPVR_ENABLE_INSTALL=ON"
 				targets "PVRUtilsGles"
 			}
 		}

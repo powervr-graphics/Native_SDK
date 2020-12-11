@@ -9,6 +9,9 @@
 #include "PVRVk/ForwardDecObjectsVk.h"
 namespace pvrvk {
 //!\cond NO_DOXYGEN
+
+const uint32_t dynamicStateSize = 16; // Number of elements in enum class DynamicState
+
 struct VertexAttributeInfoCmp_BindingLess_IndexLess
 {
 	bool operator()(const VertexInputAttributeDescription& lhs, const VertexInputAttributeDescription& rhs) const
@@ -862,7 +865,7 @@ public:
 struct DynamicStatesCreateInfo
 {
 private:
-	bool _dynamicStates[static_cast<uint32_t>(pvrvk::DynamicState::e_RANGE_SIZE)];
+	bool _dynamicStates[dynamicStateSize];
 
 public:
 	/// <summary>Constructor</summary>

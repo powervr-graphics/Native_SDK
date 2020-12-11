@@ -14,7 +14,7 @@ WG_HEIGHT			 : Dimension Y of the workgroup size
 #define WG_HEIGHT 4
 
 uniform layout(binding = 0) sampler2D imageIn;
-uniform layout(r8, binding = 1) writeonly image2D imageOut;
+uniform layout(rgba8, binding = 1) writeonly image2D imageOut;
 
 shared int cache[WG_HEIGHT + 2][WG_WIDTH + 2]; // This should be 10 * 6
 

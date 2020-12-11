@@ -76,6 +76,12 @@ enum class CompressedPixelFormat
 	ASTC_6x6x5,
 	ASTC_6x6x6,
 
+	BASISU_ETC1S,
+	BASISU_UASTC,
+
+	RGBM,
+	RGBD,
+
 	// Invalid value
 	NumCompressedPFs
 };
@@ -145,6 +151,12 @@ inline std::string to_string(CompressedPixelFormat format)
 	case CompressedPixelFormat::ASTC_6x5x5: return "ASTC_6x5x5";
 	case CompressedPixelFormat::ASTC_6x6x5: return "ASTC_6x6x5";
 	case CompressedPixelFormat::ASTC_6x6x6: return "ASTC_6x6x6";
+
+	case CompressedPixelFormat::BASISU_ETC1S: return "BASISU_ETC1S";
+	case CompressedPixelFormat::BASISU_UASTC: return "BASISU_UASTC";
+
+	case CompressedPixelFormat::RGBM: return "RGBM";
+	case CompressedPixelFormat::RGBD: return "RGBD";
 	default: return "UNKNOWN_FORMAT";
 	}
 }

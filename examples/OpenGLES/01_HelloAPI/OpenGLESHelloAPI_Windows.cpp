@@ -46,8 +46,7 @@ LRESULT CALLBACK handleWindowMessages(HWND nativeWindow, UINT message, WPARAM wi
 			switch (windowParameters)
 			{
 			case SC_SCREENSAVE:
-			case SC_MONITORPOWER:
-			{
+			case SC_MONITORPOWER: {
 				// Return 0 to let Windows know we don't want to sleep or turn the monitor off right now.
 				return 0;
 			}
@@ -351,10 +350,8 @@ bool initializeBuffer(GLuint& vertexBuffer, HWND nativeWindow)
 
 /// <summary>Initializes shaders, buffers and other state required to begin rendering with OpenGL ES.</summary>
 /// <returns>Whether the function succeeds or not.</returns>
-/// <param name="fragmentShader">Handle to a vertex buffer object.</param>
-/// <param name="vertexShader">Handle to a vertex shader.</param>
 /// <param name="shaderProgram">Handle to a shader program containing the fragment and vertex shader.</param>
-bool initializeShaders(GLuint& fragmentShader, GLuint& vertexShader, GLuint& shaderProgram, HWND nativeWindow)
+bool initializeShaders(GLuint& shaderProgram, HWND nativeWindow)
 {
 	//	Concept: Shaders
 	//	OpenGL ES 2.0 uses what are known as shaders to determine how to draw objects on the screen. Instead of the fixed function
@@ -372,6 +369,9 @@ bool initializeShaders(GLuint& fragmentShader, GLuint& vertexShader, GLuint& sha
 	//	The reason these are called "fragment" shaders instead of "pixel" shaders is due to a small technical difference between the two
 	//	concepts. When you colour a fragment, it may not be the final colour which ends up on screen. This is particularly true when
 	//	performing blending, where multiple fragments can contribute to the final pixel colour.
+
+	GLuint fragmentShader = 0;
+	GLuint vertexShader = 0;
 
 	const char* const fragmentShaderSource = "\
 											 void main (void)\
@@ -463,6 +463,10 @@ bool initializeShaders(GLuint& fragmentShader, GLuint& vertexShader, GLuint& sha
 
 	// Link the program
 	glLinkProgram(shaderProgram);
+
+	// Free the shader objects - they are now no longer necessary
+	glDeleteShader(vertexShader);
+	glDeleteShader(fragmentShader);
 
 	// Check if linking succeeded in the same way we checked for compilation success
 	GLint isLinked;
@@ -589,18 +593,12 @@ bool renderScene(GLuint shaderProgram, EGLDisplay display, EGLSurface surface, H
 }
 
 /// <summary>Releases the resources created by "InitializeGLState".</summary>
-/// <param name="fragmentShader">Handle to a fragment shader.</param>
-/// <param name="vertexShader">Handle to a vertex shader.</param>
 /// <param name="shaderProgram">Handle to a shader program containing the fragment and vertex shader.</param>
 /// <param name="vertexBuffer">Handle to a vertex buffer object.</param>
-void deInitializeGLState(GLuint fragmentShader, GLuint vertexShader, GLuint shaderProgram, GLuint vertexBuffer)
+void deInitializeGLState(GLuint shaderProgram, GLuint vertexBuffer)
 {
-	// Frees the OpenGL handles for the program and the 2 shaders
-	glDeleteShader(fragmentShader);
-	glDeleteShader(vertexShader);
+	// Frees the OpenGL handles for the program and VBO
 	glDeleteProgram(shaderProgram);
-
-	// Delete the VBO as it is no longer needed
 	glDeleteBuffers(1, &vertexBuffer);
 }
 
@@ -627,49 +625,16 @@ void releaseWindowAndDisplay(HWND nativeWindow, HDC deviceContext)
 	if (nativeWindow) { DestroyWindow(nativeWindow); }
 }
 
-bool CreateWindowAndContext(HINSTANCE applicationInstance, HWND& nativeWindow, HDC& deviceContext, EGLDisplay& display, EGLConfig& config, EGLSurface& surface, EGLContext& context)
+bool render(HWND nativeWindow, EGLDisplay display, EGLSurface surface, GLuint shaderProgram)
 {
-	if (!createWindowAndDisplay(applicationInstance, nativeWindow, deviceContext)) { return false; }
-
-	// Create and Initialize an EGLDisplay from the native display
-	if (!createEGLDisplay(deviceContext, display)) { return false; }
-
-	// Choose an EGLConfig for the application, used when setting up the rendering surface and EGLContext
-	if (!chooseEGLConfig(display, config)) { return false; }
-
-	// Create an EGLSurface for rendering from the native window
-	if (!createEGLSurface(nativeWindow, display, config, surface)) { return false; }
-
-	// Setup the EGL Context from the other EGL constructs created so far, so that the application is ready to submit OpenGL ES commands
-	if (!setupEGLContext(display, config, surface, context, nativeWindow)) { return false; }
-
-	return true;
-}
-
-bool CreateResources(HWND& nativeWindow, GLuint& fragmentShader, GLuint& vertexShader, GLuint& shaderProgram, GLuint& vertexBuffer)
-{
-	// Initialize the vertex data in the application
-	if (!initializeBuffer(vertexBuffer, nativeWindow)) { return false; }
-
-	// Initialize the fragment and vertex shaders used in the application
-	if (!initializeShaders(fragmentShader, vertexShader, shaderProgram, nativeWindow)) { return false; }
-
-	return true;
-}
-
-bool Render(HWND nativeWindow, EGLDisplay display, EGLSurface surface, GLuint shaderProgram)
-{
+	eglSwapInterval(display, 1);
 	// Renders a triangle for 800 frames using the state setup in the previous function
 	for (uint32_t i = 0; i < 800; ++i)
 	{
-		if (!renderScene(shaderProgram, display, surface, nativeWindow)) { break; }
+		if (!renderScene(shaderProgram, display, surface, nativeWindow)) { return false; }
 	}
-
-	return false;
+	return true;
 }
-
-bool test2(int** x) { return false; }
-bool test(int* x) { return test2(&x); }
 
 /// <summary>Main function of the program, executes other functions.</summary>
 /// <return>Result code to send to the Operating System.</return>
@@ -689,42 +654,41 @@ int WINAPI WinMain(HINSTANCE applicationInstance, HINSTANCE previousInstance, TC
 	EGLSurface surface = NULL;
 	EGLContext context = NULL;
 
-	// Handles for the two shaders used to draw the triangle, and the program handle which combines them.
-	GLuint fragmentShader = 0, vertexShader = 0;
+	// Handle for the program handle which combines them.
 	GLuint shaderProgram = 0;
 
 	// A vertex buffer object to store our model data.
 	GLuint vertexBuffer = 0;
 
-	int* x = 0;
-	test(x);
+	// Perform the chain of initialisation step (stop if anything fails)
+	createWindowAndDisplay(applicationInstance, nativeWindow, deviceContext) &&
 
-	// Setup the windowing system, getting a window and a display
-	if (!CreateWindowAndContext(applicationInstance, nativeWindow, deviceContext, display, config, surface, context))
-	{
-		releaseEGLState(display);
-		// Release the windowing system resources
-		releaseWindowAndDisplay(nativeWindow, deviceContext);
-		// Destroy the eglWindow
-	}
+	// Create and Initialize an EGLDisplay from the native display
+	createEGLDisplay(deviceContext, display) &&
 
-	if (!CreateResources(nativeWindow, fragmentShader, vertexShader, shaderProgram, vertexBuffer))
-	{
-		releaseEGLState(display);
-		// Release the windowing system resources
-		releaseWindowAndDisplay(nativeWindow, deviceContext);
-		// Destroy the eglWindow
-	}
+	// Choose an EGLConfig for the application, used when setting up the rendering surface and EGLContext
+	chooseEGLConfig(display, config) &&
 
-	if (!Render(nativeWindow, display, surface, shaderProgram))
-	{
-		deInitializeGLState(fragmentShader, vertexShader, shaderProgram, vertexBuffer);
+	// Create an EGLSurface for rendering from the native window
+	createEGLSurface(nativeWindow, display, config, surface) &&
 
-		releaseEGLState(display);
-		// Release the windowing system resources
-		releaseWindowAndDisplay(nativeWindow, deviceContext);
-		// Destroy the eglWindow
-	}
+	// Setup the EGL Context from the other EGL constructs created so far, so that the application is ready to submit OpenGL ES commands
+	setupEGLContext(display, config, surface, context, nativeWindow) &&
+
+
+	// Initialize the vertex data in the application
+	initializeBuffer(vertexBuffer, nativeWindow) &&
+
+	// Initialize the fragment and vertex shaders used in the application
+	initializeShaders(shaderProgram, nativeWindow) &&
+
+	// If everything else succeeded, run the rendering loop.
+	render(nativeWindow, display, surface, shaderProgram);
+
+	// Cleanup
+	deInitializeGLState(shaderProgram, vertexBuffer);
+	releaseEGLState(display);
+	releaseWindowAndDisplay(nativeWindow, deviceContext);
 
 	return 0;
 }

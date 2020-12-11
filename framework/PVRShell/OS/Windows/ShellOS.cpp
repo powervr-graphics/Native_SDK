@@ -46,7 +46,7 @@ ShellOS::ShellOS(OSApplication hInstance, OSDATA osdata) : _instance(hInstance)
 
 ShellOS::~ShellOS()
 {
-	if (_OSImplementation) { delete _OSImplementation->osdata; }
+	if (_OSImplementation) { delete static_cast<WindowsOSData*>(_OSImplementation->osdata); }
 }
 
 void ShellOS::updatePointingDeviceLocation()
@@ -70,8 +70,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	switch (message)
 	{
-	case WM_CREATE:
-	{
+	case WM_CREATE: {
 #if defined(UNDER_CE)
 		CREATESTRUCT* pCreate = (CREATESTRUCT*)lParam;
 		SetWindowLong(hWnd, GWL_USERDATA, (LONG)(LONG_PTR)pCreate->lpCreateParams); // Not ideal, but WinCE doesn't have SetWindowLongPtr.
@@ -85,8 +84,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_DESTROY: break;
 	case WM_CLOSE: theShell->onSystemEvent(SystemEvent::SystemEvent_Quit); return 0;
 	case WM_QUIT: return 0;
-	case WM_MOVE:
-	{
+	case WM_MOVE: {
 	}
 	break;
 	case WM_LBUTTONDOWN:
@@ -123,15 +121,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		{ ReleaseCapture(); }
 		theShell->onPointingDeviceUp(1);
 		break;
-	case WM_MBUTTONUP:
-	{
+	case WM_MBUTTONUP: {
 		if (capturer == 3 && hWnd == GetCapture()) // Only send an event if we're still capturing.
 		{ ReleaseCapture(); }
 		theShell->onPointingDeviceUp(2);
 		break;
 	}
-	case WM_MOUSEMOVE:
-	{
+	case WM_MOUSEMOVE: {
 		break;
 	}
 	case WM_KEYDOWN: theShell->onKeyDown(mapKeyWparamToPvrKey(wParam)); break;

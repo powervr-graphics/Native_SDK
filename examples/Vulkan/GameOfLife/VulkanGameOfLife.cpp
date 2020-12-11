@@ -160,7 +160,7 @@ private:
 		if ((x + boardOffSetX < boardWidth) && (x + boardOffSetX >= 0) && (y + boardOffSetY < boardHeight) && (y + boardOffSetY >= 0))
 		{
 			int idx = (y + boardOffSetY) * boardWidth + x + boardOffSetX;
-			board[idx] = bit * 255;
+			board[idx * 4] = bit * 255;
 		}
 	}
 	// Set an offset for the setBoardBit operation.
@@ -193,7 +193,7 @@ void VulkanGameOfLife::refreshBoard(bool regenData = false)
 
 		for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); i++)
 		{
-			pvr::utils::updateImage(_deviceResources->device, _deviceResources->graphicsPrimaryCmdBuffers[0], &imgUpdateInfo, 1, pvrvk::Format::e_R8_UNORM,
+			pvr::utils::updateImage(_deviceResources->device, _deviceResources->graphicsPrimaryCmdBuffers[0], &imgUpdateInfo, 1, pvrvk::Format::e_R8G8B8A8_UNORM,
 				pvrvk::ImageLayout::e_GENERAL, false, _deviceResources->boardImageViews[i]->getImage());
 		}
 	}
@@ -221,7 +221,7 @@ void VulkanGameOfLife::setZoomLevel(int zoomLvl)
 
 	boardWidth = static_cast<int>(getWidth() / zoomRatio);
 	boardHeight = static_cast<int>(getHeight() / zoomRatio);
-	board.resize(static_cast<size_t>(boardWidth * boardHeight));
+	board.resize(static_cast<size_t>(boardWidth * boardHeight * 4));
 
 	// Updating the Zoom UI Label and Value
 	zoomRatioUI = "\nZoom Level : ";
@@ -243,7 +243,7 @@ void VulkanGameOfLife::generateBoardData()
 	default:
 	case BoardConfig::Random: {
 		// Randomly Fill the board to create a starting state for simulation.
-		for (unsigned int i = 0; i < board.size(); ++i)
+		for (unsigned int i = 0; i < board.size(); i += 4)
 		{
 			if (pvr::randomrange(0, 1) > .75f) { board[i] = static_cast<unsigned char>(255); }
 			else
@@ -259,15 +259,14 @@ void VulkanGameOfLife::generateBoardData()
 		int checkerSize = 5;
 		// This function will generate a checkered texture on the fly to be used on the triangle that is going
 		// to be rendered and rotated on screen.
-		for (unsigned int i = 0; i < board.size(); ++i)
+		for (unsigned int i = 0; i < board.size(); i += 4)
 		{
-			int row = i / boardWidth;
+			int row = (i / 4) / (boardWidth);
 
 			bool rowblack = (row / checkerSize) % 2;
-			bool colblack = ((i % boardWidth) / checkerSize) % 2;
+			bool colblack = (((i / 4) % (boardWidth)) / checkerSize) % 2;
 
 			int r = rowblack ^ colblack ? 255 : 0;
-
 			board[i] = static_cast<unsigned char>(r);
 		}
 	}
@@ -277,7 +276,7 @@ void VulkanGameOfLife::generateBoardData()
 	case BoardConfig::SpaceShips: {
 		memset(board.data(), 0, board.size());
 
-		for (int i = 0; i < 200 / zoomRatio; ++i)
+		for (int i = 0; i < 200 / zoomRatio; i += 4)
 		{
 			setBoardBitOffset((int)pvr::randomrange(0.f, (float)boardWidth), (int)pvr::randomrange(0.f, (float)boardHeight));
 
@@ -371,7 +370,7 @@ void VulkanGameOfLife::createPetriDishEffect(pvrvk::CommandBuffer& cmdBuffer)
 {
 	unsigned int petriDishSize = getPetriDishSize();
 	// Creating the Petri dish effect.
-	petriDish.resize(static_cast<size_t>(petriDishSize * petriDishSize));
+	petriDish.resize(static_cast<size_t>(petriDishSize * petriDishSize * 4));
 
 	float radius = petriDishSize * .5f;
 	for (unsigned int y = 0; y < petriDishSize; y++)
@@ -381,12 +380,12 @@ void VulkanGameOfLife::createPetriDishEffect(pvrvk::CommandBuffer& cmdBuffer)
 			glm::vec2 r((float)(x - radius), (float)(y - radius));
 
 			int i = (y * petriDishSize + x);
-			petriDish[i] = (unsigned char)(std::max(0.f, std::min(255.f, (1.2f - glm::length(r) / radius) * 255.f)));
+			petriDish[i * 4] = (unsigned char)(std::max(0.f, std::min(255.f, (1.2f - glm::length(r) / radius) * 255.f)));
 		}
 	}
 
 	// Create the Petri Dish Texture
-	pvr::TextureHeader petritextureheader(pvr::PixelFormat::R_8(), petriDishSize, petriDishSize);
+	pvr::TextureHeader petritextureheader(pvr::PixelFormat::RGBA_8888(), petriDishSize, petriDishSize);
 	pvr::Texture petriTexture(petritextureheader, petriDish.data());
 
 	_deviceResources->petriDishImageView = pvr::utils::uploadImageAndView(_deviceResources->device, petriTexture, true, cmdBuffer,
@@ -397,7 +396,7 @@ void VulkanGameOfLife::createPetriDishEffect(pvrvk::CommandBuffer& cmdBuffer)
 void VulkanGameOfLife::generateTextures(pvrvk::CommandBuffer& cmdBuffer)
 {
 	// Create the board textures.
-	pvr::TextureHeader textureheader(pvr::PixelFormat::R_8(), boardWidth, boardHeight);
+	pvr::TextureHeader textureheader(pvr::PixelFormat::RGBA_8888(), boardWidth, boardHeight);
 	pvr::Texture boardTexture(textureheader, board.data());
 
 	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); i++)
@@ -780,7 +779,7 @@ pvr::Result VulkanGameOfLife::initView()
 		_deviceResources->computeFences[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
 	}
 
-	board.resize(static_cast<size_t>(boardWidth * boardHeight));
+	board.resize(static_cast<size_t>(boardWidth * boardHeight * 4));
 	generateBoardData();
 
 	// Load Textures used by in the demo

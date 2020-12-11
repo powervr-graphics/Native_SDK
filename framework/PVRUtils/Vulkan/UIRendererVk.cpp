@@ -13,7 +13,7 @@
 #include "PVRVk/DescriptorSetVk.h"
 #include "PVRUtils/Vulkan/UIRendererVk.h"
 #include "PVRUtils/ArialBoldFont.h"
-#include "PVRUtils/PowerVRLogo.h"
+#include "PVRUtils/ImaginationLogo.h"
 #include "PVRUtils/Vulkan/UIRendererVertShader.h"
 #include "PVRUtils/Vulkan/UIRendererFragShader.h"
 #include "PVRUtils/Vulkan/HelperVk.h"
@@ -86,30 +86,8 @@ void UIRenderer::initCreatePipeline(bool isFrameBufferSrgb)
 	const int32_t shaderConst = static_cast<int32_t>(isFrameBufferSrgb);
 	pipelineDesc.fragmentShader.setShaderConstant(0, pvrvk::ShaderConstantInfo(0, &shaderConst, static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::Integer))));
 
-#ifdef VK_USE_PLATFORM_MACOS_MVK
-
-	VkInstance instance = deviceSharedPtr->getPhysicalDevice()->getInstance()->getVkHandle();
-
-	// set fullImageViewSwizzle to true and set MoltenVKConfig.
-	if (!isFullImageViewSwizzleMVK)
-	{
-		mvkConfig.fullImageViewSwizzle = true;
-		pvrvk::getVkBindings().vkSetMoltenVKConfigurationMVK(instance, &mvkConfig, &sizeOfMVK);
-	}
-
-#endif
-
 	_pipeline = deviceSharedPtr->createGraphicsPipeline(pipelineDesc, _pipelineCache);
 	_pipeline->setObjectName("PVRUtilsVk::UIRenderer::UI GraphicsPipeline");
-
-#ifdef VK_USE_PLATFORM_MACOS_MVK
-	if (!isFullImageViewSwizzleMVK)
-	{
-		// Reset fullImageViewSwizzle to it's previous value.
-		mvkConfig.fullImageViewSwizzle = isFullImageViewSwizzleMVK;
-		pvrvk::getVkBindings().vkSetMoltenVKConfigurationMVK(instance, &mvkConfig, &sizeOfMVK);
-	}
-#endif
 }
 
 void UIRenderer::initCreateDescriptorSetLayout()
@@ -234,6 +212,8 @@ void UIRenderer::init(uint32_t width, uint32_t height, bool fullscreen, const Re
 	VkInstance instance = renderpass->getDevice()->getPhysicalDevice()->getInstance()->getVkHandle();
 	sizeOfMVK = sizeof(MVKConfiguration);
 	pvrvk::getVkBindings().vkGetMoltenVKConfigurationMVK(instance, &mvkConfig, &sizeOfMVK);
+	mvkConfig.fullImageViewSwizzle = true;
+	pvrvk::getVkBindings().vkSetMoltenVKConfigurationMVK(instance, &mvkConfig, &sizeOfMVK);
 	isFullImageViewSwizzleMVK = mvkConfig.fullImageViewSwizzle;
 
 #endif
@@ -316,7 +296,7 @@ void UIRenderer::initCreateDefaultSampler()
 void UIRenderer::initCreateDefaultSdkLogo(CommandBuffer& cmdBuffer)
 {
 	ImageView sdkLogoImage;
-	std::unique_ptr<Stream> sdkLogo = std::make_unique<BufferStream>("", _PowerVR_Logo_RGBA_pvr, _PowerVR_Logo_RGBA_pvr_size);
+	std::unique_ptr<Stream> sdkLogo = std::make_unique<BufferStream>("", _Imagination_Logo_RGBA_pvr, _Imagination_Logo_RGBA_pvr_size);
 
 	Texture sdkTex;
 	sdkTex = textureLoad(*sdkLogo, TextureFileFormat::PVR);
@@ -418,29 +398,9 @@ void UIRenderer::initCreateDefaultFont(CommandBuffer& cmdBuffer)
 
 	Device device = getDevice().lock();
 
-#ifdef VK_USE_PLATFORM_MACOS_MVK
-	VkInstance instance = device->getPhysicalDevice()->getInstance()->getVkHandle();
-
-	// set fullImageViewSwizzle to true and set MoltenVKConfig.
-	if (!isFullImageViewSwizzleMVK)
-	{
-		mvkConfig.fullImageViewSwizzle = true;
-		pvrvk::getVkBindings().vkSetMoltenVKConfigurationMVK(instance, &mvkConfig, &sizeOfMVK);
-	}
-
-#endif
-
 	pvrvk::ImageView fontImage = device->createImageView(pvrvk::ImageViewCreateInfo(utils::uploadImage(device, fontTex, true, cmdBuffer, pvrvk::ImageUsageFlags::e_SAMPLED_BIT,
 																						pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, getMemoryAllocator(), getMemoryAllocator()),
 		pvrvk::ComponentMapping(pvrvk::ComponentSwizzle::e_R, pvrvk::ComponentSwizzle::e_R, pvrvk::ComponentSwizzle::e_R, pvrvk::ComponentSwizzle::e_R)));
-
-#ifdef VK_USE_PLATFORM_MACOS_MVK
-	if (!isFullImageViewSwizzleMVK)
-	{
-		mvkConfig.fullImageViewSwizzle = isFullImageViewSwizzleMVK;
-		pvrvk::getVkBindings().vkSetMoltenVKConfigurationMVK(instance, &mvkConfig, &sizeOfMVK);
-	}
-#endif
 
 	_defaultFont = createFont(fontImage, fontTex);
 	fontImage->setObjectName("PVRUtilsVk::UIRenderer::Default Font ImageView");

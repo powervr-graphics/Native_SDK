@@ -29,6 +29,7 @@
 #include <CL/cl_egl.h>
 
 #include "pvr_openlib.h"
+#include <cassert>
 
 #ifndef DYNAMICCL_NO_NAMESPACE
 #define DEFINE_CL_FUNCTION_NAME(name) CL_API_ENTRY name

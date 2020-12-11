@@ -8,7 +8,7 @@ if(NOT PVR_PREBUILT_DEPENDENCIES)
 	set(glslang_URL "https://github.com/KhronosGroup/glslang/archive/${glslang_DOWNLOAD_VERSION}.tar.gz" CACHE INTERNAL "The URL from which to downlad glslang.")
 	
 	# User option: The hash used for glm
-	set(glslang_ARCHIVE_HASH "cb32322377cee2bc1cee5b60ebe46133" CACHE INTERNAL "The validation MD5 hash to use for the downloaded MD5 archive/")
+	set(glslang_ARCHIVE_HASH "cb32322377cee2bc1cee5b60ebe46133" CACHE INTERNAL "The validation MD5 hash to use for the downloaded MD5 archive")
 endif()
 
 if (ANDROID)
@@ -62,7 +62,7 @@ if(NOT PVR_PREBUILT_DEPENDENCIES)
 		HASH "${glslang_ARCHIVE_HASH}"
 		BYPRODUCTS "${glslang_SRC_DIR}/CMakeLists.txt"
 	)
-	
+
 	# These options are used for both glslang and glslangValidator
 	set(BUILD_TESTING OFF CACHE INTERNAL "")
 	set(ENABLE_HLSL OFF CACHE INTERNAL "")

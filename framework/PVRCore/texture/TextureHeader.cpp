@@ -104,19 +104,23 @@ uint32_t TextureHeader::getBitsPerPixel() const
 		case static_cast<uint64_t>(CompressedPixelFormat::ETC2_RGB):
 		case static_cast<uint64_t>(CompressedPixelFormat::ETC2_RGB_A1):
 		case static_cast<uint64_t>(CompressedPixelFormat::DXT1):
-		case static_cast<uint64_t>(CompressedPixelFormat::BC4): return 4;
+		case static_cast<uint64_t>(CompressedPixelFormat::BC4):
+		case static_cast<uint64_t>(CompressedPixelFormat::BASISU_ETC1S): return 4;
 		case static_cast<uint64_t>(CompressedPixelFormat::DXT2):
 		case static_cast<uint64_t>(CompressedPixelFormat::DXT3):
 		case static_cast<uint64_t>(CompressedPixelFormat::DXT4):
 		case static_cast<uint64_t>(CompressedPixelFormat::DXT5):
 		case static_cast<uint64_t>(CompressedPixelFormat::BC5):
 		case static_cast<uint64_t>(CompressedPixelFormat::EAC_RG11):
-		case static_cast<uint64_t>(CompressedPixelFormat::ETC2_RGBA): return 8;
+		case static_cast<uint64_t>(CompressedPixelFormat::ETC2_RGBA):
+		case static_cast<uint64_t>(CompressedPixelFormat::BASISU_UASTC): return 8;
 		case static_cast<uint64_t>(CompressedPixelFormat::YUY2):
 		case static_cast<uint64_t>(CompressedPixelFormat::UYVY):
 		case static_cast<uint64_t>(CompressedPixelFormat::RGBG8888):
 		case static_cast<uint64_t>(CompressedPixelFormat::GRGB8888): return 16;
-		case static_cast<uint64_t>(CompressedPixelFormat::SharedExponentR9G9B9E5): return 32;
+		case static_cast<uint64_t>(CompressedPixelFormat::SharedExponentR9G9B9E5): 
+		case static_cast<uint64_t>(CompressedPixelFormat::RGBM):
+		case static_cast<uint64_t>(CompressedPixelFormat::RGBD): return 32;
 		default: return 0;
 		}
 	}
@@ -149,6 +153,8 @@ void TextureHeader::getMinDimensionsForFormat(uint32_t& minX, uint32_t& minY, ui
 		case static_cast<uint64_t>(CompressedPixelFormat::ETC2_RGB_A1):
 		case static_cast<uint64_t>(CompressedPixelFormat::EAC_R11):
 		case static_cast<uint64_t>(CompressedPixelFormat::EAC_RG11):
+		case static_cast<uint64_t>(CompressedPixelFormat::BASISU_ETC1S):
+		case static_cast<uint64_t>(CompressedPixelFormat::BASISU_UASTC):
 			minX = 4;
 			minY = 4;
 			minZ = 1;
@@ -309,6 +315,8 @@ void TextureHeader::getMinDimensionsForFormat(uint32_t& minX, uint32_t& minY, ui
 			minY = 6;
 			minZ = 6;
 			break;
+		case static_cast<uint64_t>(CompressedPixelFormat::RGBM):
+		case static_cast<uint64_t>(CompressedPixelFormat::RGBD):
 		case static_cast<uint64_t>(CompressedPixelFormat::NumCompressedPFs): break;
 		}
 	}

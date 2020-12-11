@@ -199,7 +199,7 @@ static NativeLibrary& vkglueLib()
 	static NativeLibrary mylib("libvulkan.so");
 #endif
 #if _APPLE
-    static NativeLibrary mylib("libMoltenVK.dylib");
+	static NativeLibrary mylib("libMoltenVK.dylib");
 #endif
 	return mylib;
 }
@@ -208,12 +208,12 @@ bool vk::initVulkan()
 {
 	GetInstanceProcAddr = (PFN_vkGetInstanceProcAddr)vkglueLib().getFunction("vkGetInstanceProcAddr");
 
-    if(GetInstanceProcAddr)
-    {
-        PVR_VULKAN_GET_INSTANCE_POINTER(VK_NULL_HANDLE, EnumerateInstanceExtensionProperties);
-        PVR_VULKAN_GET_INSTANCE_POINTER(VK_NULL_HANDLE, EnumerateInstanceLayerProperties);
-        PVR_VULKAN_GET_INSTANCE_POINTER(VK_NULL_HANDLE, CreateInstance);
-    }
+	if (GetInstanceProcAddr)
+	{
+		PVR_VULKAN_GET_INSTANCE_POINTER(VK_NULL_HANDLE, EnumerateInstanceExtensionProperties);
+		PVR_VULKAN_GET_INSTANCE_POINTER(VK_NULL_HANDLE, EnumerateInstanceLayerProperties);
+		PVR_VULKAN_GET_INSTANCE_POINTER(VK_NULL_HANDLE, CreateInstance);
+	}
 
 	if (!GetInstanceProcAddr || !EnumerateInstanceExtensionProperties || !EnumerateInstanceLayerProperties || !CreateInstance || !DestroyInstance) { return false; }
 
@@ -238,7 +238,7 @@ bool vk::initVulkanInstance(VkInstance instance)
 	PVR_VULKAN_GET_INSTANCE_POINTER(instance, CreateWaylandSurfaceKHR)
 #endif
 #ifdef VK_USE_PLATFORM_MACOS_MVK
-    PVR_VULKAN_GET_INSTANCE_POINTER(instance, CreateMacOSSurfaceMVK)
+	PVR_VULKAN_GET_INSTANCE_POINTER(instance, CreateMacOSSurfaceMVK)
 #endif
 #ifdef USE_PLATFORM_NULLWS
 	PVR_VULKAN_GET_INSTANCE_POINTER(instance, GetPhysicalDeviceDisplayPropertiesKHR)
@@ -269,12 +269,13 @@ bool vk::initVulkanInstance(VkInstance instance)
 	PVR_VULKAN_GET_INSTANCE_POINTER(instance, DebugReportMessageEXT)
 	PVR_VULKAN_GET_INSTANCE_POINTER(instance, DestroyDebugReportCallbackEXT)
 
-    if (!DestroyInstance || !EnumerateDeviceLayerProperties || !EnumerateDeviceExtensionProperties || !GetPhysicalDeviceSurfaceCapabilitiesKHR || !GetPhysicalDeviceSurfaceFormatsKHR || !EnumeratePhysicalDevices || !GetPhysicalDeviceQueueFamilyProperties || !GetPhysicalDeviceFeatures || !CreateDevice || !GetDeviceProcAddr || !GetPhysicalDeviceMemoryProperties || !GetPhysicalDeviceSurfacePresentModesKHR || !GetPhysicalDeviceSurfaceSupportKHR || !GetPhysicalDeviceFormatProperties || !GetPhysicalDeviceProperties || !DestroySurfaceKHR || !GetPhysicalDeviceImageFormatProperties || !GetPhysicalDeviceSparseImageFormatProperties)
-    {
-        return false;
-    }
-    
-    return true;
+	if (!DestroyInstance || !EnumerateDeviceLayerProperties || !EnumerateDeviceExtensionProperties || !GetPhysicalDeviceSurfaceCapabilitiesKHR || !GetPhysicalDeviceSurfaceFormatsKHR ||
+		!EnumeratePhysicalDevices || !GetPhysicalDeviceQueueFamilyProperties || !GetPhysicalDeviceFeatures || !CreateDevice || !GetDeviceProcAddr ||
+		!GetPhysicalDeviceMemoryProperties || !GetPhysicalDeviceSurfacePresentModesKHR || !GetPhysicalDeviceSurfaceSupportKHR || !GetPhysicalDeviceFormatProperties ||
+		!GetPhysicalDeviceProperties || !DestroySurfaceKHR || !GetPhysicalDeviceImageFormatProperties || !GetPhysicalDeviceSparseImageFormatProperties)
+	{ return false; }
+
+	return true;
 }
 
 bool vk::initVulkanDevice(VkDevice device)

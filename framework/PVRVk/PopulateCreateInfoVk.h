@@ -390,7 +390,7 @@ public:
 
 		{
 			uint32_t count = 0;
-			for (uint32_t i = 0; i < static_cast<uint32_t>(DynamicState::e_RANGE_SIZE); ++i)
+			for (uint32_t i = 0; i < dynamicStateSize; ++i)
 			{
 				if (gpcp.dynamicStates.isDynamicStateEnabled((DynamicState)i))
 				{

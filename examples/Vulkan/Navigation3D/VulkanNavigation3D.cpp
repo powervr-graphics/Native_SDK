@@ -83,9 +83,9 @@ struct DeviceResources
 	pvr::Multi<pvrvk::Framebuffer> onScreenFramebuffer;
 	pvr::Multi<pvrvk::CommandBuffer> cbos;
 	pvr::Multi<pvrvk::SecondaryCommandBuffer> uiElementsCbo;
-	pvr::Multi<pvrvk::Semaphore> acquireSemaphore;
-	pvr::Multi<pvrvk::Semaphore> submitSemaphore;
-	pvr::Multi<pvrvk::Fence> fencePerFrame;
+	pvr::Multi<pvrvk::Semaphore> imageAcquiredSemaphores;
+	pvr::Multi<pvrvk::Semaphore> presentationSemaphores;
+	pvr::Multi<pvrvk::Fence> perFrameResourcesFences;
 	pvrvk::Sampler samplerTrilinear;
 
 	// UI object for road text and icons.
@@ -101,7 +101,7 @@ struct DeviceResources
 			uint32_t l = swapchain->getSwapchainLength();
 			for (uint32_t i = 0; i < l; ++i)
 			{
-				if (fencePerFrame[i]) fencePerFrame[i]->wait();
+				if (perFrameResourcesFences[i]) perFrameResourcesFences[i]->wait();
 			}
 		}
 	}
@@ -369,9 +369,9 @@ pvr::Result VulkanNavigation3D::initView()
 	{
 		_deviceResources->cbos.add(_deviceResources->commandPool->allocateCommandBuffer());
 		_deviceResources->uiElementsCbo.add(_deviceResources->commandPool->allocateSecondaryCommandBuffer());
-		_deviceResources->fencePerFrame[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
-		_deviceResources->acquireSemaphore[i] = _deviceResources->device->createSemaphore();
-		_deviceResources->submitSemaphore[i] = _deviceResources->device->createSemaphore();
+		_deviceResources->perFrameResourcesFences[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
+		_deviceResources->imageAcquiredSemaphores[i] = _deviceResources->device->createSemaphore();
+		_deviceResources->presentationSemaphores[i] = _deviceResources->device->createSemaphore();
 	}
 
 	// Create descriptor pool
@@ -874,10 +874,13 @@ pvr::Result VulkanNavigation3D::renderFrame()
 	updateAnimation();
 	calculateTransform();
 	calculateClipPlanes();
-	_deviceResources->fencePerFrame[_frameId]->wait();
-	_deviceResources->fencePerFrame[_frameId]->reset();
-	_deviceResources->swapchain->acquireNextImage(uint64_t(-1), _deviceResources->acquireSemaphore[_frameId]);
+	_deviceResources->swapchain->acquireNextImage(uint64_t(-1), _deviceResources->imageAcquiredSemaphores[_frameId]);
 	const uint32_t swapchainIndex = _deviceResources->swapchain->getSwapchainIndex();
+
+	// wait for the commandbuffer before reusing them from previous submission.
+	_deviceResources->perFrameResourcesFences[swapchainIndex]->wait();
+	_deviceResources->perFrameResourcesFences[swapchainIndex]->reset();
+
 	_deviceResources->uboDynamic.bufferView.getElement(0, 0, swapchainIndex).setValue(_viewProjMatrix);
 	_deviceResources->uboDynamic.bufferView.getElement(1, 0, swapchainIndex).setValue(_viewMatrix);
 	_deviceResources->uboDynamic.bufferView.getElement(2, 0, swapchainIndex).setValue(_lightDir);
@@ -893,16 +896,16 @@ pvr::Result VulkanNavigation3D::renderFrame()
 	recordPrimaryCBO(swapchainIndex);
 	pvrvk::SubmitInfo submitInfo;
 	// Wait for the semaphore which get signalled by the acquireNextImage
-	submitInfo.waitSemaphores = &_deviceResources->acquireSemaphore[_frameId];
+	submitInfo.waitSemaphores = &_deviceResources->imageAcquiredSemaphores[_frameId];
 	submitInfo.numWaitSemaphores = 1;
-	submitInfo.signalSemaphores = &_deviceResources->submitSemaphore[_frameId];
+	submitInfo.signalSemaphores = &_deviceResources->presentationSemaphores[_frameId];
 	submitInfo.numSignalSemaphores = 1;
 	submitInfo.commandBuffers = &_deviceResources->cbos[swapchainIndex];
 	submitInfo.numCommandBuffers = 1;
 	// Only wait for the semaphore when writing to the colour output, therefore the other stage can run before that.
 	pvrvk::PipelineStageFlags waitStage = pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT;
 	submitInfo.waitDstStageMask = &waitStage;
-	_deviceResources->queue->submit(&submitInfo, 1, _deviceResources->fencePerFrame[_frameId]);
+	_deviceResources->queue->submit(&submitInfo, 1, _deviceResources->perFrameResourcesFences[swapchainIndex]);
 
 	if (this->shouldTakeScreenshot())
 	{
@@ -915,7 +918,7 @@ pvr::Result VulkanNavigation3D::renderFrame()
 	presentInfo.imageIndices = &swapchainIndex;
 	presentInfo.numSwapchains = 1;
 	presentInfo.swapchains = &_deviceResources->swapchain;
-	presentInfo.waitSemaphores = &_deviceResources->submitSemaphore[_frameId];
+	presentInfo.waitSemaphores = &_deviceResources->presentationSemaphores[_frameId];
 	presentInfo.numWaitSemaphores = 1;
 	_deviceResources->queue->present(presentInfo);
 	_frameId = (_frameId + 1) % _deviceResources->swapchain->getSwapchainLength();

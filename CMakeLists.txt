@@ -48,6 +48,11 @@ if(APPLE AND NOT IOS)
 	find_package(MoltenVK)
 endif()
 
+option(PVR_SKIP_INSTALL "Skip installation of the PowerVR SDK" ${PVR_SKIP_INSTALL})
+if(NOT ${PVR_SKIP_INSTALL})
+	set(PVR_ENABLE_INSTALL ON)
+endif()
+
 add_subdirectory(external EXCLUDE_FROM_ALL)
 
 if(NOT PVR_PREBUILT_DEPENDENCIES)

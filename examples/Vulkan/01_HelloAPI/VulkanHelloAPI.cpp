@@ -1378,6 +1378,7 @@ void VulkanHelloAPI::initPipeline()
 	rasterizationInfo.depthBiasConstantFactor = 0.0f;
 	rasterizationInfo.depthBiasEnable = VK_FALSE;
 	rasterizationInfo.depthBiasSlopeFactor = 0.0f;
+	rasterizationInfo.rasterizerDiscardEnable = VK_FALSE;
 
 	// This colour blend attachment state will be used by the colour blend info.
 	// Only a single colour blend attachment is required because the render pass only has
@@ -1421,7 +1422,7 @@ void VulkanHelloAPI::initPipeline()
 
 	// Create a list of dynamic states that will be used.
 	// memset is used to initialise the block of memory pointed to by dynamicState to 0.
-	VkDynamicState dynamicState[VK_DYNAMIC_STATE_RANGE_SIZE];
+	VkDynamicState dynamicState[16]; // Number of elements in enum VkDynamicState
 	memset(dynamicState, 0, sizeof(dynamicState));
 
 	// Declare and populate the dynamic state info struct.

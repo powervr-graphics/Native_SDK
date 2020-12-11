@@ -13,6 +13,7 @@
 #include "DynamicOCL.h"
 #include "PVRCore/texture/PixelFormat.h"
 #include "PVRCore/Errors.h"
+#include "PVRCore/texture/Texture.h"
 
 namespace clutils {
 /// <summary>Get a string representation of an OpenCL error code.</summary>
@@ -450,7 +451,7 @@ inline void createOpenCLContext(cl_platform_id& outPlatform, cl_device_id& outDe
 /// <param name="defineCount">The number of defines to use in the shader</param>
 /// <returns>The created kernel program</returns>
 cl_program loadKernelProgram(
-	const cl_context& ctx, const cl_device_id& device, pvr::Stream& kernelSource, const char* compilerOptions = 0, const char* const* defines = 0, uint32_t defineCount = 0)
+	const cl_context& ctx, const cl_device_id& device, const pvr::Stream& kernelSource, const char* compilerOptions = 0, const char* const* defines = 0, uint32_t defineCount = 0)
 {
 	cl_int errcode;
 

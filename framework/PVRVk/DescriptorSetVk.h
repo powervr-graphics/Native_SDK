@@ -13,6 +13,9 @@ like Buffers and Images
 namespace pvrvk {
 /// <summary>Contains all information required to create a Descriptor Set Layout. This is the number of Textures,
 /// Samplers, Uniform Buffer Objects, and Shader Storage Buffer Objects bound for any shader stage.</summary>
+
+const uint32_t descriptorTypeSize = 14; // Number elements in enum class DescriptorType
+
 struct DescriptorSetLayoutCreateInfo
 {
 public:
@@ -273,7 +276,7 @@ private:
 struct DescriptorPoolCreateInfo
 {
 private:
-	std::array<pvrvk::DescriptorPoolSize, static_cast<uint32_t>(pvrvk::DescriptorType::e_RANGE_SIZE)> _descriptorPoolSizes;
+	std::array<pvrvk::DescriptorPoolSize, descriptorTypeSize> _descriptorPoolSizes;
 	uint16_t _numDescriptors;
 	uint16_t _maxSets;
 

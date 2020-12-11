@@ -26,6 +26,9 @@ public:
 		IdentifierTextureOrientation,
 		IdentifierBorderData,
 		IdentifierPadding,
+		IdentifierPerChannelType,
+		IdentifierSupercompressionGlobalData,
+		IdentifierMaxRange,
 		IdentifierNumMetaDataTypes
 	};
 

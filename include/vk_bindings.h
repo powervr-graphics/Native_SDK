@@ -8,7 +8,7 @@
 \copyright Copyright (c) Imagination Technologies Limited.
 */
 
-/* Corresponding to Vulkan registry file version #132# */
+/* Corresponding to Vulkan registry file version #144# */
 
 #pragma once
 #ifndef VK_PROTOTYPES
@@ -270,10 +270,6 @@ typedef struct VkInstanceBindings_ {
 #endif // (VK_USE_PLATFORM_VI_NN)
 #endif // VK_NN_vi_surface
 
-#if (defined(VK_NVX_device_generated_commands))
-	PFN_vkGetPhysicalDeviceGeneratedCommandsPropertiesNVX vkGetPhysicalDeviceGeneratedCommandsPropertiesNVX;
-#endif // VK_NVX_device_generated_commands
-
 #if (defined(VK_NV_cooperative_matrix))
 	PFN_vkGetPhysicalDeviceCooperativeMatrixPropertiesNV vkGetPhysicalDeviceCooperativeMatrixPropertiesNV;
 #endif // VK_NV_cooperative_matrix
@@ -534,6 +530,13 @@ typedef struct VkDeviceBindings_ {
 	PFN_vkCmdSetLineStippleEXT vkCmdSetLineStippleEXT;
 #endif // VK_EXT_line_rasterization
 
+#if (defined(VK_EXT_private_data))
+	PFN_vkCreatePrivateDataSlotEXT vkCreatePrivateDataSlotEXT;
+	PFN_vkDestroyPrivateDataSlotEXT vkDestroyPrivateDataSlotEXT;
+	PFN_vkGetPrivateDataEXT vkGetPrivateDataEXT;
+	PFN_vkSetPrivateDataEXT vkSetPrivateDataEXT;
+#endif // VK_EXT_private_data
+
 #if (defined(VK_EXT_sample_locations))
 	PFN_vkCmdSetSampleLocationsEXT vkCmdSetSampleLocationsEXT;
 #endif // VK_EXT_sample_locations
@@ -588,6 +591,16 @@ typedef struct VkDeviceBindings_ {
 	PFN_vkCmdNextSubpass2KHR vkCmdNextSubpass2KHR;
 	PFN_vkCreateRenderPass2KHR vkCreateRenderPass2KHR;
 #endif // VK_KHR_create_renderpass2
+
+#if (defined(VK_KHR_deferred_host_operations))
+#if (defined(VK_ENABLE_BETA_EXTENSIONS))
+	PFN_vkCreateDeferredOperationKHR vkCreateDeferredOperationKHR;
+	PFN_vkDeferredOperationJoinKHR vkDeferredOperationJoinKHR;
+	PFN_vkDestroyDeferredOperationKHR vkDestroyDeferredOperationKHR;
+	PFN_vkGetDeferredOperationMaxConcurrencyKHR vkGetDeferredOperationMaxConcurrencyKHR;
+	PFN_vkGetDeferredOperationResultKHR vkGetDeferredOperationResultKHR;
+#endif // (VK_ENABLE_BETA_EXTENSIONS)
+#endif // VK_KHR_deferred_host_operations
 
 #if (defined(VK_KHR_descriptor_update_template) || defined(VK_KHR_push_descriptor))
 	PFN_vkCmdPushDescriptorSetWithTemplateKHR vkCmdPushDescriptorSetWithTemplateKHR;
@@ -679,6 +692,33 @@ typedef struct VkDeviceBindings_ {
 	PFN_vkCmdPushDescriptorSetKHR vkCmdPushDescriptorSetKHR;
 #endif // VK_KHR_push_descriptor
 
+#if (defined(VK_KHR_ray_tracing))
+#if (defined(VK_ENABLE_BETA_EXTENSIONS))
+	PFN_vkBindAccelerationStructureMemoryKHR vkBindAccelerationStructureMemoryKHR;
+	PFN_vkBuildAccelerationStructureKHR vkBuildAccelerationStructureKHR;
+	PFN_vkCmdBuildAccelerationStructureIndirectKHR vkCmdBuildAccelerationStructureIndirectKHR;
+	PFN_vkCmdBuildAccelerationStructureKHR vkCmdBuildAccelerationStructureKHR;
+	PFN_vkCmdCopyAccelerationStructureKHR vkCmdCopyAccelerationStructureKHR;
+	PFN_vkCmdCopyAccelerationStructureToMemoryKHR vkCmdCopyAccelerationStructureToMemoryKHR;
+	PFN_vkCmdCopyMemoryToAccelerationStructureKHR vkCmdCopyMemoryToAccelerationStructureKHR;
+	PFN_vkCmdTraceRaysIndirectKHR vkCmdTraceRaysIndirectKHR;
+	PFN_vkCmdTraceRaysKHR vkCmdTraceRaysKHR;
+	PFN_vkCmdWriteAccelerationStructuresPropertiesKHR vkCmdWriteAccelerationStructuresPropertiesKHR;
+	PFN_vkCopyAccelerationStructureKHR vkCopyAccelerationStructureKHR;
+	PFN_vkCopyAccelerationStructureToMemoryKHR vkCopyAccelerationStructureToMemoryKHR;
+	PFN_vkCopyMemoryToAccelerationStructureKHR vkCopyMemoryToAccelerationStructureKHR;
+	PFN_vkCreateAccelerationStructureKHR vkCreateAccelerationStructureKHR;
+	PFN_vkCreateRayTracingPipelinesKHR vkCreateRayTracingPipelinesKHR;
+	PFN_vkDestroyAccelerationStructureKHR vkDestroyAccelerationStructureKHR;
+	PFN_vkGetAccelerationStructureDeviceAddressKHR vkGetAccelerationStructureDeviceAddressKHR;
+	PFN_vkGetAccelerationStructureMemoryRequirementsKHR vkGetAccelerationStructureMemoryRequirementsKHR;
+	PFN_vkGetDeviceAccelerationStructureCompatibilityKHR vkGetDeviceAccelerationStructureCompatibilityKHR;
+	PFN_vkGetRayTracingCaptureReplayShaderGroupHandlesKHR vkGetRayTracingCaptureReplayShaderGroupHandlesKHR;
+	PFN_vkGetRayTracingShaderGroupHandlesKHR vkGetRayTracingShaderGroupHandlesKHR;
+	PFN_vkWriteAccelerationStructuresPropertiesKHR vkWriteAccelerationStructuresPropertiesKHR;
+#endif // (VK_ENABLE_BETA_EXTENSIONS)
+#endif // VK_KHR_ray_tracing
+
 #if (defined(VK_KHR_sampler_ycbcr_conversion))
 	PFN_vkCreateSamplerYcbcrConversionKHR vkCreateSamplerYcbcrConversionKHR;
 	PFN_vkDestroySamplerYcbcrConversionKHR vkDestroySamplerYcbcrConversionKHR;
@@ -708,18 +748,8 @@ typedef struct VkDeviceBindings_ {
 	PFN_vkWaitSemaphoresKHR vkWaitSemaphoresKHR;
 #endif // VK_KHR_timeline_semaphore
 
-#if (defined(VK_NVX_device_generated_commands))
-	PFN_vkCmdProcessCommandsNVX vkCmdProcessCommandsNVX;
-	PFN_vkCmdReserveSpaceForCommandsNVX vkCmdReserveSpaceForCommandsNVX;
-	PFN_vkCreateIndirectCommandsLayoutNVX vkCreateIndirectCommandsLayoutNVX;
-	PFN_vkCreateObjectTableNVX vkCreateObjectTableNVX;
-	PFN_vkDestroyIndirectCommandsLayoutNVX vkDestroyIndirectCommandsLayoutNVX;
-	PFN_vkDestroyObjectTableNVX vkDestroyObjectTableNVX;
-	PFN_vkRegisterObjectsNVX vkRegisterObjectsNVX;
-	PFN_vkUnregisterObjectsNVX vkUnregisterObjectsNVX;
-#endif // VK_NVX_device_generated_commands
-
 #if (defined(VK_NVX_image_view_handle))
+	PFN_vkGetImageViewAddressNVX vkGetImageViewAddressNVX;
 	PFN_vkGetImageViewHandleNVX vkGetImageViewHandleNVX;
 #endif // VK_NVX_image_view_handle
 
@@ -731,6 +761,15 @@ typedef struct VkDeviceBindings_ {
 	PFN_vkCmdSetCheckpointNV vkCmdSetCheckpointNV;
 	PFN_vkGetQueueCheckpointDataNV vkGetQueueCheckpointDataNV;
 #endif // VK_NV_device_diagnostic_checkpoints
+
+#if (defined(VK_NV_device_generated_commands))
+	PFN_vkCmdBindPipelineShaderGroupNV vkCmdBindPipelineShaderGroupNV;
+	PFN_vkCmdExecuteGeneratedCommandsNV vkCmdExecuteGeneratedCommandsNV;
+	PFN_vkCmdPreprocessGeneratedCommandsNV vkCmdPreprocessGeneratedCommandsNV;
+	PFN_vkCreateIndirectCommandsLayoutNV vkCreateIndirectCommandsLayoutNV;
+	PFN_vkDestroyIndirectCommandsLayoutNV vkDestroyIndirectCommandsLayoutNV;
+	PFN_vkGetGeneratedCommandsMemoryRequirementsNV vkGetGeneratedCommandsMemoryRequirementsNV;
+#endif // VK_NV_device_generated_commands
 
 #if (defined(VK_NV_external_memory_win32))
 #if (defined(VK_USE_PLATFORM_WIN32_KHR))

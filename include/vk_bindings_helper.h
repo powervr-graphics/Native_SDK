@@ -8,7 +8,7 @@
 \copyright Copyright (c) Imagination Technologies Limited.
 */
 
-/* Corresponding to Vulkan registry file version #132# */
+/* Corresponding to Vulkan registry file version #144# */
 
 #pragma once
 #include <string>
@@ -289,10 +289,6 @@ static inline void initVkInstanceBindings(VkInstance instance, VkInstanceBinding
 #endif // (VK_USE_PLATFORM_VI_NN)
 #endif // VK_NN_vi_surface
 
-#if (defined(VK_NVX_device_generated_commands))
-	bindings->vkGetPhysicalDeviceGeneratedCommandsPropertiesNVX = (PFN_vkGetPhysicalDeviceGeneratedCommandsPropertiesNVX)getInstanceProcAddr(instance, "vkGetPhysicalDeviceGeneratedCommandsPropertiesNVX");
-#endif // VK_NVX_device_generated_commands
-
 #if (defined(VK_NV_cooperative_matrix))
 	bindings->vkGetPhysicalDeviceCooperativeMatrixPropertiesNV = (PFN_vkGetPhysicalDeviceCooperativeMatrixPropertiesNV)getInstanceProcAddr(instance, "vkGetPhysicalDeviceCooperativeMatrixPropertiesNV");
 #endif // VK_NV_cooperative_matrix
@@ -553,6 +549,13 @@ static inline void initVkDeviceBindings(VkDevice device, VkDeviceBindings *bindi
 	bindings->vkCmdSetLineStippleEXT = (PFN_vkCmdSetLineStippleEXT)getDeviceProcAddr(device, "vkCmdSetLineStippleEXT");
 #endif // VK_EXT_line_rasterization
 
+#if (defined(VK_EXT_private_data))
+	bindings->vkCreatePrivateDataSlotEXT = (PFN_vkCreatePrivateDataSlotEXT)getDeviceProcAddr(device, "vkCreatePrivateDataSlotEXT");
+	bindings->vkDestroyPrivateDataSlotEXT = (PFN_vkDestroyPrivateDataSlotEXT)getDeviceProcAddr(device, "vkDestroyPrivateDataSlotEXT");
+	bindings->vkGetPrivateDataEXT = (PFN_vkGetPrivateDataEXT)getDeviceProcAddr(device, "vkGetPrivateDataEXT");
+	bindings->vkSetPrivateDataEXT = (PFN_vkSetPrivateDataEXT)getDeviceProcAddr(device, "vkSetPrivateDataEXT");
+#endif // VK_EXT_private_data
+
 #if (defined(VK_EXT_sample_locations))
 	bindings->vkCmdSetSampleLocationsEXT = (PFN_vkCmdSetSampleLocationsEXT)getDeviceProcAddr(device, "vkCmdSetSampleLocationsEXT");
 #endif // VK_EXT_sample_locations
@@ -607,6 +610,16 @@ static inline void initVkDeviceBindings(VkDevice device, VkDeviceBindings *bindi
 	bindings->vkCmdNextSubpass2KHR = (PFN_vkCmdNextSubpass2KHR)getDeviceProcAddr(device, "vkCmdNextSubpass2KHR");
 	bindings->vkCreateRenderPass2KHR = (PFN_vkCreateRenderPass2KHR)getDeviceProcAddr(device, "vkCreateRenderPass2KHR");
 #endif // VK_KHR_create_renderpass2
+
+#if (defined(VK_KHR_deferred_host_operations))
+#if (defined(VK_ENABLE_BETA_EXTENSIONS))
+	bindings->vkCreateDeferredOperationKHR = (PFN_vkCreateDeferredOperationKHR)getDeviceProcAddr(device, "vkCreateDeferredOperationKHR");
+	bindings->vkDeferredOperationJoinKHR = (PFN_vkDeferredOperationJoinKHR)getDeviceProcAddr(device, "vkDeferredOperationJoinKHR");
+	bindings->vkDestroyDeferredOperationKHR = (PFN_vkDestroyDeferredOperationKHR)getDeviceProcAddr(device, "vkDestroyDeferredOperationKHR");
+	bindings->vkGetDeferredOperationMaxConcurrencyKHR = (PFN_vkGetDeferredOperationMaxConcurrencyKHR)getDeviceProcAddr(device, "vkGetDeferredOperationMaxConcurrencyKHR");
+	bindings->vkGetDeferredOperationResultKHR = (PFN_vkGetDeferredOperationResultKHR)getDeviceProcAddr(device, "vkGetDeferredOperationResultKHR");
+#endif // (VK_ENABLE_BETA_EXTENSIONS)
+#endif // VK_KHR_deferred_host_operations
 
 #if (defined(VK_KHR_descriptor_update_template) || defined(VK_KHR_push_descriptor))
 	bindings->vkCmdPushDescriptorSetWithTemplateKHR = (PFN_vkCmdPushDescriptorSetWithTemplateKHR)getDeviceProcAddr(device, "vkCmdPushDescriptorSetWithTemplateKHR");
@@ -698,6 +711,33 @@ static inline void initVkDeviceBindings(VkDevice device, VkDeviceBindings *bindi
 	bindings->vkCmdPushDescriptorSetKHR = (PFN_vkCmdPushDescriptorSetKHR)getDeviceProcAddr(device, "vkCmdPushDescriptorSetKHR");
 #endif // VK_KHR_push_descriptor
 
+#if (defined(VK_KHR_ray_tracing))
+#if (defined(VK_ENABLE_BETA_EXTENSIONS))
+	bindings->vkBindAccelerationStructureMemoryKHR = (PFN_vkBindAccelerationStructureMemoryKHR)getDeviceProcAddr(device, "vkBindAccelerationStructureMemoryKHR");
+	bindings->vkBuildAccelerationStructureKHR = (PFN_vkBuildAccelerationStructureKHR)getDeviceProcAddr(device, "vkBuildAccelerationStructureKHR");
+	bindings->vkCmdBuildAccelerationStructureIndirectKHR = (PFN_vkCmdBuildAccelerationStructureIndirectKHR)getDeviceProcAddr(device, "vkCmdBuildAccelerationStructureIndirectKHR");
+	bindings->vkCmdBuildAccelerationStructureKHR = (PFN_vkCmdBuildAccelerationStructureKHR)getDeviceProcAddr(device, "vkCmdBuildAccelerationStructureKHR");
+	bindings->vkCmdCopyAccelerationStructureKHR = (PFN_vkCmdCopyAccelerationStructureKHR)getDeviceProcAddr(device, "vkCmdCopyAccelerationStructureKHR");
+	bindings->vkCmdCopyAccelerationStructureToMemoryKHR = (PFN_vkCmdCopyAccelerationStructureToMemoryKHR)getDeviceProcAddr(device, "vkCmdCopyAccelerationStructureToMemoryKHR");
+	bindings->vkCmdCopyMemoryToAccelerationStructureKHR = (PFN_vkCmdCopyMemoryToAccelerationStructureKHR)getDeviceProcAddr(device, "vkCmdCopyMemoryToAccelerationStructureKHR");
+	bindings->vkCmdTraceRaysIndirectKHR = (PFN_vkCmdTraceRaysIndirectKHR)getDeviceProcAddr(device, "vkCmdTraceRaysIndirectKHR");
+	bindings->vkCmdTraceRaysKHR = (PFN_vkCmdTraceRaysKHR)getDeviceProcAddr(device, "vkCmdTraceRaysKHR");
+	bindings->vkCmdWriteAccelerationStructuresPropertiesKHR = (PFN_vkCmdWriteAccelerationStructuresPropertiesKHR)getDeviceProcAddr(device, "vkCmdWriteAccelerationStructuresPropertiesKHR");
+	bindings->vkCopyAccelerationStructureKHR = (PFN_vkCopyAccelerationStructureKHR)getDeviceProcAddr(device, "vkCopyAccelerationStructureKHR");
+	bindings->vkCopyAccelerationStructureToMemoryKHR = (PFN_vkCopyAccelerationStructureToMemoryKHR)getDeviceProcAddr(device, "vkCopyAccelerationStructureToMemoryKHR");
+	bindings->vkCopyMemoryToAccelerationStructureKHR = (PFN_vkCopyMemoryToAccelerationStructureKHR)getDeviceProcAddr(device, "vkCopyMemoryToAccelerationStructureKHR");
+	bindings->vkCreateAccelerationStructureKHR = (PFN_vkCreateAccelerationStructureKHR)getDeviceProcAddr(device, "vkCreateAccelerationStructureKHR");
+	bindings->vkCreateRayTracingPipelinesKHR = (PFN_vkCreateRayTracingPipelinesKHR)getDeviceProcAddr(device, "vkCreateRayTracingPipelinesKHR");
+	bindings->vkDestroyAccelerationStructureKHR = (PFN_vkDestroyAccelerationStructureKHR)getDeviceProcAddr(device, "vkDestroyAccelerationStructureKHR");
+	bindings->vkGetAccelerationStructureDeviceAddressKHR = (PFN_vkGetAccelerationStructureDeviceAddressKHR)getDeviceProcAddr(device, "vkGetAccelerationStructureDeviceAddressKHR");
+	bindings->vkGetAccelerationStructureMemoryRequirementsKHR = (PFN_vkGetAccelerationStructureMemoryRequirementsKHR)getDeviceProcAddr(device, "vkGetAccelerationStructureMemoryRequirementsKHR");
+	bindings->vkGetDeviceAccelerationStructureCompatibilityKHR = (PFN_vkGetDeviceAccelerationStructureCompatibilityKHR)getDeviceProcAddr(device, "vkGetDeviceAccelerationStructureCompatibilityKHR");
+	bindings->vkGetRayTracingCaptureReplayShaderGroupHandlesKHR = (PFN_vkGetRayTracingCaptureReplayShaderGroupHandlesKHR)getDeviceProcAddr(device, "vkGetRayTracingCaptureReplayShaderGroupHandlesKHR");
+	bindings->vkGetRayTracingShaderGroupHandlesKHR = (PFN_vkGetRayTracingShaderGroupHandlesKHR)getDeviceProcAddr(device, "vkGetRayTracingShaderGroupHandlesKHR");
+	bindings->vkWriteAccelerationStructuresPropertiesKHR = (PFN_vkWriteAccelerationStructuresPropertiesKHR)getDeviceProcAddr(device, "vkWriteAccelerationStructuresPropertiesKHR");
+#endif // (VK_ENABLE_BETA_EXTENSIONS)
+#endif // VK_KHR_ray_tracing
+
 #if (defined(VK_KHR_sampler_ycbcr_conversion))
 	bindings->vkCreateSamplerYcbcrConversionKHR = (PFN_vkCreateSamplerYcbcrConversionKHR)getDeviceProcAddr(device, "vkCreateSamplerYcbcrConversionKHR");
 	bindings->vkDestroySamplerYcbcrConversionKHR = (PFN_vkDestroySamplerYcbcrConversionKHR)getDeviceProcAddr(device, "vkDestroySamplerYcbcrConversionKHR");
@@ -727,18 +767,8 @@ static inline void initVkDeviceBindings(VkDevice device, VkDeviceBindings *bindi
 	bindings->vkWaitSemaphoresKHR = (PFN_vkWaitSemaphoresKHR)getDeviceProcAddr(device, "vkWaitSemaphoresKHR");
 #endif // VK_KHR_timeline_semaphore
 
-#if (defined(VK_NVX_device_generated_commands))
-	bindings->vkCmdProcessCommandsNVX = (PFN_vkCmdProcessCommandsNVX)getDeviceProcAddr(device, "vkCmdProcessCommandsNVX");
-	bindings->vkCmdReserveSpaceForCommandsNVX = (PFN_vkCmdReserveSpaceForCommandsNVX)getDeviceProcAddr(device, "vkCmdReserveSpaceForCommandsNVX");
-	bindings->vkCreateIndirectCommandsLayoutNVX = (PFN_vkCreateIndirectCommandsLayoutNVX)getDeviceProcAddr(device, "vkCreateIndirectCommandsLayoutNVX");
-	bindings->vkCreateObjectTableNVX = (PFN_vkCreateObjectTableNVX)getDeviceProcAddr(device, "vkCreateObjectTableNVX");
-	bindings->vkDestroyIndirectCommandsLayoutNVX = (PFN_vkDestroyIndirectCommandsLayoutNVX)getDeviceProcAddr(device, "vkDestroyIndirectCommandsLayoutNVX");
-	bindings->vkDestroyObjectTableNVX = (PFN_vkDestroyObjectTableNVX)getDeviceProcAddr(device, "vkDestroyObjectTableNVX");
-	bindings->vkRegisterObjectsNVX = (PFN_vkRegisterObjectsNVX)getDeviceProcAddr(device, "vkRegisterObjectsNVX");
-	bindings->vkUnregisterObjectsNVX = (PFN_vkUnregisterObjectsNVX)getDeviceProcAddr(device, "vkUnregisterObjectsNVX");
-#endif // VK_NVX_device_generated_commands
-
 #if (defined(VK_NVX_image_view_handle))
+	bindings->vkGetImageViewAddressNVX = (PFN_vkGetImageViewAddressNVX)getDeviceProcAddr(device, "vkGetImageViewAddressNVX");
 	bindings->vkGetImageViewHandleNVX = (PFN_vkGetImageViewHandleNVX)getDeviceProcAddr(device, "vkGetImageViewHandleNVX");
 #endif // VK_NVX_image_view_handle
 
@@ -750,6 +780,15 @@ static inline void initVkDeviceBindings(VkDevice device, VkDeviceBindings *bindi
 	bindings->vkCmdSetCheckpointNV = (PFN_vkCmdSetCheckpointNV)getDeviceProcAddr(device, "vkCmdSetCheckpointNV");
 	bindings->vkGetQueueCheckpointDataNV = (PFN_vkGetQueueCheckpointDataNV)getDeviceProcAddr(device, "vkGetQueueCheckpointDataNV");
 #endif // VK_NV_device_diagnostic_checkpoints
+
+#if (defined(VK_NV_device_generated_commands))
+	bindings->vkCmdBindPipelineShaderGroupNV = (PFN_vkCmdBindPipelineShaderGroupNV)getDeviceProcAddr(device, "vkCmdBindPipelineShaderGroupNV");
+	bindings->vkCmdExecuteGeneratedCommandsNV = (PFN_vkCmdExecuteGeneratedCommandsNV)getDeviceProcAddr(device, "vkCmdExecuteGeneratedCommandsNV");
+	bindings->vkCmdPreprocessGeneratedCommandsNV = (PFN_vkCmdPreprocessGeneratedCommandsNV)getDeviceProcAddr(device, "vkCmdPreprocessGeneratedCommandsNV");
+	bindings->vkCreateIndirectCommandsLayoutNV = (PFN_vkCreateIndirectCommandsLayoutNV)getDeviceProcAddr(device, "vkCreateIndirectCommandsLayoutNV");
+	bindings->vkDestroyIndirectCommandsLayoutNV = (PFN_vkDestroyIndirectCommandsLayoutNV)getDeviceProcAddr(device, "vkDestroyIndirectCommandsLayoutNV");
+	bindings->vkGetGeneratedCommandsMemoryRequirementsNV = (PFN_vkGetGeneratedCommandsMemoryRequirementsNV)getDeviceProcAddr(device, "vkGetGeneratedCommandsMemoryRequirementsNV");
+#endif // VK_NV_device_generated_commands
 
 #if (defined(VK_NV_external_memory_win32))
 #if (defined(VK_USE_PLATFORM_WIN32_KHR))

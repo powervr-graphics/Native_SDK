@@ -81,8 +81,6 @@ std::string mapDebugReportObjectTypeToString(VkDebugReportObjectTypeEXT objectTy
 	case VK_DEBUG_REPORT_OBJECT_TYPE_DEBUG_REPORT_CALLBACK_EXT_EXT: return "DEBUG_REPORT_CALLBACK_EXT_EXT"; break;
 	case VK_DEBUG_REPORT_OBJECT_TYPE_DISPLAY_KHR_EXT: return "DISPLAY_KHR_EXT"; break;
 	case VK_DEBUG_REPORT_OBJECT_TYPE_DISPLAY_MODE_KHR_EXT: return "DISPLAY_MODE_KHR_EXT"; break;
-	case VK_DEBUG_REPORT_OBJECT_TYPE_OBJECT_TABLE_NVX_EXT: return "OBJECT_TABLE_NVX_EXT"; break;
-	case VK_DEBUG_REPORT_OBJECT_TYPE_INDIRECT_COMMANDS_LAYOUT_NVX_EXT: return "INDIRECT_COMMANDS_LAYOUT_NVX_EXT"; break;
 	case VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_UPDATE_TEMPLATE_KHR_EXT: return "DESCRIPTOR_UPDATE_TEMPLATE_KHR_EXT"; break;
 	case VK_DEBUG_REPORT_OBJECT_TYPE_UNKNOWN_EXT:
 	default: return "UNKNOWN_EXT"; break;
@@ -193,7 +191,7 @@ const std::string InstanceExtensions[] = {
 	// for querying the support for rendering to a Wayland compositor
 	VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME,
 #elif defined(VK_USE_PLATFORM_MACOS_MVK)
-	// The VK_MVK_macos_surface extension provides the necessary mechanism for creating a VkSurfaceKHR object which refers to a CAMetalLayer backed NSView
+	// The VK_MVK_macos_surface extension provides the necessary mechanism for creating a VkSurfaceKHsurfaceCapsR object which refers to a CAMetalLayer backed NSView
 	VK_MVK_MACOS_SURFACE_EXTENSION_NAME,
 #endif
 };
@@ -295,7 +293,7 @@ std::vector<std::string> filterLayers(const std::vector<VkLayerProperties>& laye
 /// <param name="msg">Print msg if the error code is not VK_SUCCESS and exit the application.</param>
 inline void vulkanSuccessOrDie(VkResult result, const char* msg)
 {
-	if (result != VK_SUCCESS) { throw pvr::PvrError("Vulkan Raised an error: " + std::string(msg)); }
+	if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) { throw pvr::PvrError("Vulkan Raised an error: " + std::string(msg)); }
 }
 
 /// <summary>Attempts to find a suitable memory type for the specified set of allowed bits and memory property flags.</summary>
@@ -1745,7 +1743,15 @@ void VulkanIntroducingPVRShell::createSwapchain()
 	swapChainInfo.preTransform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
 	if ((surfaceCaps.supportedTransforms & VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR) == 0)
 	{ throw pvr::InvalidOperationError("Vulkan Surface does not support VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR transformation"); }
-	swapChainInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+
+	VkCompositeAlphaFlagBitsKHR supportedCompositeAlphaFlags = (VkCompositeAlphaFlagBitsKHR)0;
+	if ((surfaceCaps.supportedCompositeAlpha & VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR) != 0) { supportedCompositeAlphaFlags = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR; }
+	else if ((surfaceCaps.supportedCompositeAlpha & VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR) != 0)
+	{
+		supportedCompositeAlphaFlags = VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR;
+	}
+
+	swapChainInfo.compositeAlpha = supportedCompositeAlphaFlags;
 	swapChainInfo.clipped = VK_TRUE;
 	swapChainInfo.imageExtent.width = displayAttributes.width;
 	swapChainInfo.imageExtent.height = displayAttributes.height;

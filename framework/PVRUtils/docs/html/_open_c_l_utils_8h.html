@@ -103,9 +103,9 @@ cl_image_format&#160;</td><td class="memItemRight" valign="bottom"><b>clutils::c
 <tr class="memitem:a520fb6b6e8840e06c7b07812487503bb"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_open_c_l_utils_8h.html#a520fb6b6e8840e06c7b07812487503bb">clutils::isExtensionSupported</a> (cl_platform_id platform, const char *extension)</td></tr>
 <tr class="memdesc:a520fb6b6e8840e06c7b07812487503bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines whether the given OpenCL extension is supported. <a href="_open_c_l_utils_8h.html#a520fb6b6e8840e06c7b07812487503bb">More...</a><br /></td></tr>
 <tr class="separator:a520fb6b6e8840e06c7b07812487503bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0aef642bec8ddac85a86252dbb7f2d6c"><td class="memItemLeft" align="right" valign="top">cl_program&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_open_c_l_utils_8h.html#a0aef642bec8ddac85a86252dbb7f2d6c">clutils::loadKernelProgram</a> (const cl_context &amp;ctx, const cl_device_id &amp;device, pvr::Stream &amp;kernelSource, const char *compilerOptions=0, const char *const *defines=0, uint32_t defineCount=0)</td></tr>
-<tr class="memdesc:a0aef642bec8ddac85a86252dbb7f2d6c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Loads a kernel program. <a href="_open_c_l_utils_8h.html#a0aef642bec8ddac85a86252dbb7f2d6c">More...</a><br /></td></tr>
-<tr class="separator:a0aef642bec8ddac85a86252dbb7f2d6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac183b0b04285b22686ae15f189f1e48"><td class="memItemLeft" align="right" valign="top">cl_program&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_open_c_l_utils_8h.html#aac183b0b04285b22686ae15f189f1e48">clutils::loadKernelProgram</a> (const cl_context &amp;ctx, const cl_device_id &amp;device, const pvr::Stream &amp;kernelSource, const char *compilerOptions=0, const char *const *defines=0, uint32_t defineCount=0)</td></tr>
+<tr class="memdesc:aac183b0b04285b22686ae15f189f1e48"><td class="mdescLeft">&#160;</td><td class="mdescRight">Loads a kernel program. <a href="_open_c_l_utils_8h.html#aac183b0b04285b22686ae15f189f1e48">More...</a><br /></td></tr>
+<tr class="separator:aac183b0b04285b22686ae15f189f1e48"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a90ddaa3b6f56484a1ad570a3fd5e2f49"><td class="memItemLeft" align="right" valign="top"><a id="a90ddaa3b6f56484a1ad570a3fd5e2f49"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>clutils::throwOnFailure</b> (cl_int err)</td></tr>
 <tr class="separator:a90ddaa3b6f56484a1ad570a3fd5e2f49"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -287,8 +287,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>clutils::throwOnFailu
 
 </div>
 </div>
-<a id="file_a0aef642bec8ddac85a86252dbb7f2d6c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#file_a0aef642bec8ddac85a86252dbb7f2d6c">&#9670;&nbsp;</a></span>loadKernelProgram()</h2>
+<a id="file_aac183b0b04285b22686ae15f189f1e48"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#file_aac183b0b04285b22686ae15f189f1e48">&#9670;&nbsp;</a></span>loadKernelProgram()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -308,7 +308,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>clutils::throwOnFailu
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">pvr::Stream &amp;&#160;</td>
+          <td class="paramtype">const pvr::Stream &amp;&#160;</td>
           <td class="paramname"><em>kernelSource</em>, </td>
         </tr>
         <tr>
