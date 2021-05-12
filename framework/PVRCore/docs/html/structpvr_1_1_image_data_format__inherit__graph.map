@@ -1,3 +1,4 @@
 <map id="pvr::ImageDataFormat" name="pvr::ImageDataFormat">
+<area shape="rect" id="node1" title="Represents an image format, including pixel format(channels/bits per channel), datatype and colorspac..." alt="" coords="15,5,184,32"/>
 <area shape="rect" id="node2" href="$structpvr_1_1_image_storage_format.html" title="Extends the ImageDataFormat with mipmaps and number of Samples." alt="" coords="5,80,193,107"/>
 </map>

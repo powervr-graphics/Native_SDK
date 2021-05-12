@@ -1,3 +1,4 @@
 <map id="pvr::FreeValue" name="pvr::FreeValue">
+<area shape="rect" id="node1" title="A Free Value View that is backed by a 64&#45;byte statically allocated array: Enough to hold one item of ..." alt="" coords="21,80,136,107"/>
 <area shape="rect" id="node2" href="$classpvr_1_1_free_value_view.html" title="Represents a runtime&#45;known number of elements of a runtime&#45;known type, with functions to handle and c..." alt="" coords="5,5,152,32"/>
 </map>

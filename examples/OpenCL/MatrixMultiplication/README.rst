@@ -1,6 +1,6 @@
-===============
-DeferredShading
-===============
+====================
+MatrixMultiplication
+====================
 
 This command-line example demonstrates how various different algorithms and sizes perform for Single Precision General Matrix Multiplication (SGEMM)
 

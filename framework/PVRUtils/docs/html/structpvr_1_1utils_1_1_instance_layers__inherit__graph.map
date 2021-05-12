@@ -1,2 +1,4 @@
 <map id="pvr::utils::InstanceLayers" name="pvr::utils::InstanceLayers">
+<area shape="rect" id="node1" title="Container for a list of instance layers to be used for initiailising an instance using the helper fun..." alt="" coords="5,80,191,107"/>
+<area shape="rect" id="node2" title=" " alt="" coords="13,5,183,32"/>
 </map>

@@ -9,6 +9,7 @@
 #include "PVRVk/DeviceVk.h"
 #include "PVRVk/InstanceVk.h"
 #include "PVRVk/BufferVk.h"
+#include "PVRVk/AccelerationStructureVk.h"
 #include "PVRVk/CommandPoolVk.h"
 #include "PVRVk/DescriptorSetVk.h"
 #include "PVRVk/DescriptorSetVk.h"
@@ -25,6 +26,7 @@
 #include "PVRVk/SemaphoreVk.h"
 #include "PVRVk/GraphicsPipelineVk.h"
 #include "PVRVk/ComputePipelineVk.h"
+#include "PVRVk/RaytracingPipelineVk.h"
 #include "PVRVk/PopulateCreateInfoVk.h"
 #include "PVRVk/SwapchainVk.h"
 #include "PVRVk/PipelineCacheVk.h"
@@ -148,6 +150,30 @@ void Device_::createComputePipelines(const ComputePipelineCreateInfo* createInfo
 	for (uint32_t i = 0; i < numCreateInfos; ++i) { outPipelines[i] = ComputePipeline_::constructShared(device, vkPipelines[i], createInfos[i]); }
 }
 
+RaytracingPipeline Device_::createRaytracingPipeline(const RaytracingPipelineCreateInfo& createInfo, const PipelineCache& pipelineCache)
+{
+	RaytracingPipeline raytracingPipeline;
+	createRaytracingPipelines(&createInfo, 1, pipelineCache, &raytracingPipeline);
+	return raytracingPipeline;
+}
+
+void Device_::createRaytracingPipelines(const RaytracingPipelineCreateInfo* createInfo, uint32_t numCreateInfos, const PipelineCache& pipelineCache, RaytracingPipeline* outPipelines)
+{
+	RaytracingPipelinePopulate pipelinePopulate;
+	VkPipeline vkPipeline;
+
+	for (uint32_t i = 0; i < numCreateInfos; ++i)
+	{
+		pipelinePopulate.init(createInfo[i]);
+		vkThrowIfFailed(getVkBindings().vkCreateRayTracingPipelinesKHR(
+							getVkHandle(), {} , pipelineCache ? pipelineCache->getVkHandle() : VK_NULL_HANDLE, 1, &pipelinePopulate.createInfo, nullptr, &vkPipeline),
+			"Create RayTracingPipeline Failed.");
+
+		Device device = shared_from_this();
+		outPipelines[i] = RaytracingPipeline_::constructShared(device, vkPipeline, createInfo[i]);
+	}
+}
+
 pvrvk::Image Device_::createImage(const ImageCreateInfo& createInfo)
 {
 	Device device = shared_from_this();
@@ -159,7 +185,11 @@ void Device_::updateDescriptorSets(const WriteDescriptorSet* writeDescSets, uint
 	// WRITE DESCRIPTORSET
 	pvrvk::ArrayOrVector<VkWriteDescriptorSet, 4> vkWriteDescSets(numWriteDescSets);
 	// Count number of image, buffer and texel buffer view needed
-	uint32_t numImageInfos = 0, numBufferInfos = 0, numTexelBufferView = 0;
+	uint32_t numImageInfos = 0;
+	uint32_t numBufferInfos = 0;
+	uint32_t numTexelBufferView = 0;
+	uint32_t numAccelerationStructures = 0;
+	uint32_t numWriteDescSetAccelerationStructures = 0;
 
 	for (uint32_t i = 0; i < numWriteDescSets; ++i)
 	{
@@ -215,6 +245,17 @@ void Device_::updateDescriptorSets(const WriteDescriptorSet* writeDescSets, uint
 #endif
 			numTexelBufferView += writeDescSets[i].getNumDescriptors();
 		}
+		else if (writeDescSets[i].getDescriptorType() == DescriptorType::e_ACCELERATION_STRUCTURE_KHR) // Acceleration structure
+		{
+#ifdef DEBUG
+			// Validate the BufferView bindings
+			std::for_each(writeDescSets[i]._infos.begin(), writeDescSets[i]._infos.end(), [](const WriteDescriptorSet::DescriptorInfos& infos) {
+				if (infos.isValid()) { assert(infos.accelerationStructure && "Acceleration Structure Must be valid"); }
+			});
+#endif
+			numAccelerationStructures += writeDescSets[i].getNumDescriptors();
+			numWriteDescSetAccelerationStructures += 1;
+		}
 		else
 		{
 			assert(false && "Unsupported Descriptor type");
@@ -225,8 +266,12 @@ void Device_::updateDescriptorSets(const WriteDescriptorSet* writeDescSets, uint
 	pvrvk::ArrayOrVector<VkDescriptorBufferInfo, 4> bufferInfoVk(numBufferInfos);
 	pvrvk::ArrayOrVector<VkDescriptorImageInfo, 4> imageInfoVk(numImageInfos);
 	pvrvk::ArrayOrVector<VkBufferView, 4> texelBufferVk(numTexelBufferView);
+	pvrvk::ArrayOrVector<VkAccelerationStructureKHR, 4> accelerationStructureVk(numAccelerationStructures);
+	pvrvk::ArrayOrVector<VkWriteDescriptorSetAccelerationStructureKHR, 4> vkWriteDescSetAccelerationStructure(numWriteDescSetAccelerationStructures);
+	uint32_t vkAccelerationStructureOffset = 0;
 	uint32_t vkImageInfoOffset = 0;
 	uint32_t vkBufferInfoOffset = 0;
+	uint32_t currentASWriteIdx = 0;
 
 	// now process
 	for (uint32_t i = 0; i < numWriteDescSets; ++i)
@@ -263,6 +308,24 @@ void Device_::updateDescriptorSets(const WriteDescriptorSet* writeDescSets, uint
 				});
 			vkWriteDescSet.descriptorCount = writeDescSet._infos.size();
 			vkImageInfoOffset += writeDescSet._infos.size();
+		}
+		else if (writeDescSet._infoType == WriteDescriptorSet::InfoType::AccelerationStructureInfo)
+		{
+			VkWriteDescriptorSetAccelerationStructureKHR& vkAccelerationStructureWriteDescSet = vkWriteDescSetAccelerationStructure[currentASWriteIdx++];
+
+			vkAccelerationStructureWriteDescSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET_ACCELERATION_STRUCTURE_KHR;
+			vkAccelerationStructureWriteDescSet.pNext = VK_NULL_HANDLE;
+
+			vkWriteDescSet.pNext = &vkAccelerationStructureWriteDescSet;
+
+			vkAccelerationStructureWriteDescSet.pAccelerationStructures = accelerationStructureVk.get() + vkAccelerationStructureOffset;
+			std::transform(writeDescSet._infos.begin(), writeDescSet._infos.end(), accelerationStructureVk.get() + vkAccelerationStructureOffset,
+				[&](const WriteDescriptorSet::DescriptorInfos& writeDescSet) -> VkAccelerationStructureKHR {
+					return writeDescSet.accelerationStructure ? writeDescSet.accelerationStructure->getVkHandle() : VK_NULL_HANDLE;
+				});
+			vkAccelerationStructureWriteDescSet.accelerationStructureCount = writeDescSet._infos.size();
+			vkWriteDescSet.descriptorCount = writeDescSet._infos.size();
+			vkAccelerationStructureOffset += writeDescSet._infos.size();
 		}
 	}
 
@@ -313,12 +376,18 @@ Buffer Device_::createBuffer(const BufferCreateInfo& createInfo)
 	return Buffer_::constructShared(device, createInfo);
 }
 
-DeviceMemory Device_::allocateMemory(const MemoryAllocationInfo& allocationInfo)
+AccelerationStructure Device_::createAccelerationStructure(const AccelerationStructureCreateInfo& createInfo, pvrvk::Buffer asBuffer)
+{
+	Device device = shared_from_this();
+	return AccelerationStructure_::constructShared(device, createInfo, asBuffer);
+}
+
+DeviceMemory Device_::allocateMemory(const MemoryAllocationInfo& allocationInfo, const pvrvk::MemoryAllocateFlags memoryAllocateFlags)
 {
 	assert(allocationInfo.getMemoryTypeIndex() != uint32_t(-1) && allocationInfo.getAllocationSize() > 0u && "Invalid MemoryAllocationInfo");
 	const MemoryPropertyFlags memFlags = getPhysicalDevice()->getMemoryProperties().getMemoryTypes()[allocationInfo.getMemoryTypeIndex()].getPropertyFlags();
 	Device device = shared_from_this();
-	return DeviceMemory_::constructShared(device, allocationInfo, memFlags);
+	return DeviceMemory_::constructShared(device, allocationInfo, memFlags, VK_NULL_HANDLE, memoryAllocateFlags);
 }
 
 ShaderModule Device_::createShaderModule(const ShaderModuleCreateInfo& createInfo)
@@ -490,6 +559,8 @@ Device_::Device_(make_shared_enabler, PhysicalDevice& physicalDevice, const Devi
 	{
 		for (uint32_t i = 0; i < _createInfo.getExtensionList().getNumExtensions(); ++i)
 		{ enabledExtensions.emplace_back(_createInfo.getExtensionList().getExtension(i).getName().c_str()); }
+
+		deviceCreateInfo.pNext = _createInfo.getLastRequestedExtensionFeature();
 
 		deviceCreateInfo.enabledExtensionCount = static_cast<uint32_t>(enabledExtensions.size());
 		deviceCreateInfo.ppEnabledExtensionNames = enabledExtensions.data();

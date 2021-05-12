@@ -9,6 +9,8 @@
 #     VulkanMemoryAllocator
 #     glslang
 #     SPIRV
+# 	  MachineIndependent
+#	  GenericCodeGen
 
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR})
 include(CMakeFindDependencyMacro)
@@ -35,6 +37,14 @@ endif()
 
 if(NOT TARGET SPIRV)
 	find_dependency(SPIRV REQUIRED MODULE)
+endif()
+
+if(NOT TARGET GenericCodeGen)
+	find_dependency(GenericCodeGen REQUIRED MODULE)
+endif()
+
+if(NOT TARGET MachineIndependent)
+	find_dependency(MachineIndependent REQUIRED MODULE)
 endif()
 
 if(PVR_PREBUILT_DEPENDENCIES)

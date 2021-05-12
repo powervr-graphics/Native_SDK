@@ -31,14 +31,11 @@ Matrix B(0, 0, nullptr);
 // To hold the validation matrix
 Matrix C(0, 0, nullptr);
 
-// variables to hold the properties of the tests being done, like workgroups sizes
-// with their default values before the user changes
-// androids tyoically have a smaller max workgroup size, specifically the chromebook has 512
-#ifdef __ANDROID__
-int32_t naive_wg_width = 16;
-int32_t naive_wg_height = 16;
-int32_t linear_wg_size = 32;
-int32_t tile_square_wg_size = 16;
+// Set the workgroup sizes for the work to be done, in this case they are optimised for powerVR GPUS which has an ideal workgroup size of 32
+int32_t naive_wg_width = 8;
+int32_t naive_wg_height = 4;
+int32_t linear_wg_size = 8;
+int32_t tile_square_wg_size = 8;
 int32_t tile_square_WF = 8;
 
 // for the rectangular tiling
@@ -47,22 +44,7 @@ int32_t n_tile_size = 64;
 int32_t p_tile_size = 16;
 
 // The precision that matricies are confirmed to in validation
-float epsilon = 0.1f;
-#else
-int32_t naive_wg_width = 32;
-int32_t naive_wg_height = 32;
-int32_t linear_wg_size = 32;
-int32_t tile_square_wg_size = 32;
-int32_t tile_square_WF = 8;
-
-// for the rectangular tiling
-int32_t m_tile_size = 64;
-int32_t n_tile_size = 64;
-int32_t p_tile_size = 16;
-
-// The precision that matricies are confirmed to in validation
 float epsilon = 0.01f;
-#endif
 
 std::string Names[numberOfTotalTests] = { "mat_mul_naive_AT", "mat_mul_naive_BT", "mat_mul_naive_CT", "mat_mul_naive_ATCT", "mat_mul_naive_BTCT", "mat_mul_linearwg_AT",
 	"mat_mul_linearwg_BT", "mat_mul_linearwg_vec4", "mat_mul_linearwg_vec4_local", "mat_mul_tile", "mat_mul_tile_vec4", "mat_mul_tile_WF", "mat_mul_rect" };

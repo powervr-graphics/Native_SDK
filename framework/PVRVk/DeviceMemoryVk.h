@@ -161,10 +161,10 @@ protected:
 	/// <param name="memPropFlags">A set of memory property flags which will define the way in which the allocated memory may be used.</param>
 	/// <param name="vkMemoryHandle">The vulkan handle for this DeviceMemory.</param>
 	/// <returns>Returns a successfully created pvrvk::DeviceMemory</returns>
-	static DeviceMemory constructShared(
-		const DeviceWeakPtr& device, const MemoryAllocationInfo& allocationInfo, pvrvk::MemoryPropertyFlags memPropFlags, VkDeviceMemory vkMemoryHandle = VK_NULL_HANDLE)
+	static DeviceMemory constructShared(const DeviceWeakPtr& device, const MemoryAllocationInfo& allocationInfo, pvrvk::MemoryPropertyFlags memPropFlags,
+		VkDeviceMemory vkMemoryHandle = VK_NULL_HANDLE, MemoryAllocateFlags memoryAllocateFlags = pvrvk::MemoryAllocateFlags::e_NONE)
 	{
-		return std::make_shared<DeviceMemory_>(make_shared_enabler{}, device, allocationInfo, memPropFlags, vkMemoryHandle);
+		return std::make_shared<DeviceMemory_>(make_shared_enabler{}, device, allocationInfo, memPropFlags, vkMemoryHandle, memoryAllocateFlags);
 	}
 
 private:
@@ -172,7 +172,7 @@ private:
 	/// <param name="device">The device from which the memory allocation will be made.</param>
 	/// <param name="allocationInfo">The memory  memory allocation info.</param>
 	/// <param name="outMemory">The resulting Vulkan device memory object.</param>
-	void allocateDeviceMemory(Device device, const MemoryAllocationInfo& allocationInfo, VkDeviceMemory& outMemory)
+	void allocateDeviceMemory(Device device, const MemoryAllocationInfo& allocationInfo, VkDeviceMemory& outMemory, const pvrvk::MemoryAllocateFlags memoryAllocateFlags = pvrvk::MemoryAllocateFlags::e_NONE)
 	{
 		// allocate the memory
 		VkMemoryAllocateInfo memAllocInfo = {};
@@ -188,6 +188,26 @@ private:
 			memAllocateInfoKHR.sType = static_cast<VkStructureType>(StructureType::e_EXPORT_MEMORY_ALLOCATE_INFO_KHR);
 			memAllocateInfoKHR.handleTypes = static_cast<VkExternalMemoryHandleTypeFlags>(allocationInfo.getExportMemoryAllocateInfoKHR().handleTypes);
 			memAllocInfo.pNext = &memAllocateInfoKHR;
+		}
+
+		// handle VkMemoryAllocateFlagsInfo
+		VkMemoryAllocateFlagsInfo memoryAllocateFlagsInfo = {};
+		if (memoryAllocateFlags != pvrvk::MemoryAllocateFlags::e_NONE)
+		{
+			// VK_MEMORY_ALLOCATE_DEVICE_MASK_BIT not supported until we provide api for passing deviceMask to here
+			assert(!static_cast<bool>(memoryAllocateFlags & pvrvk::MemoryAllocateFlags::e_DEVICE_MASK_BIT));
+
+			memoryAllocateFlagsInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_FLAGS_INFO;
+			memoryAllocateFlagsInfo.flags = static_cast<VkMemoryAllocateFlagBits>(memoryAllocateFlags);
+			memoryAllocateFlagsInfo.deviceMask = 0;
+			if (memAllocInfo.pNext == nullptr)
+			{
+				memAllocInfo.pNext = &memoryAllocateFlagsInfo;
+			}
+			else
+			{
+				memAllocateInfoKHR.pNext = &memoryAllocateFlagsInfo; // append to pNext chain
+			}
 		}
 
 		if (memAllocInfo.memoryTypeIndex == static_cast<uint32_t>(-1))
@@ -236,12 +256,13 @@ public:
 	/// <param name="allocationInfo">The memory allocation info</param>
 	/// <param name="memPropFlags">The memory property flags the memory type index supports.</param>
 	/// <param name="vkMemoryHandle">A Vulkan device memory object indicating whether an allocation has already been made.</param>
-	DeviceMemory_(make_shared_enabler, const DeviceWeakPtr& device, const MemoryAllocationInfo& allocationInfo, pvrvk::MemoryPropertyFlags memPropFlags, VkDeviceMemory vkMemoryHandle)
+	DeviceMemory_(make_shared_enabler, const DeviceWeakPtr& device, const MemoryAllocationInfo& allocationInfo, pvrvk::MemoryPropertyFlags memPropFlags,
+		VkDeviceMemory vkMemoryHandle, const pvrvk::MemoryAllocateFlags memoryAllocateFlags = pvrvk::MemoryAllocateFlags::e_NONE)
 		: IDeviceMemory_(device), DeviceObjectDebugUtils(), _flags(memPropFlags), _mappedOffset(0), _mappedSize(0), _mappedMemory(nullptr)
 	{
 		_vkHandle = vkMemoryHandle;
 		_allocationInfo = allocationInfo;
-		if (vkMemoryHandle == VK_NULL_HANDLE) { allocateDeviceMemory(getDevice(), allocationInfo, _vkHandle); }
+		if (vkMemoryHandle == VK_NULL_HANDLE) { allocateDeviceMemory(getDevice(), allocationInfo, _vkHandle, memoryAllocateFlags); }
 	}
 	//!\endcond
 

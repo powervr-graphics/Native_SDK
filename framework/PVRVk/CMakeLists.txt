@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.3)
+cmake_minimum_required(VERSION 3.10)
 # Copyright (c) Imagination Technologies Limited.
 
 project(PVRVk)
@@ -12,13 +12,9 @@ if(NOT ${PVRVK_SKIP_INSTALL})
 	set(PVRVK_ENABLE_INSTALL ON)
 endif()
 
-option(VK_BETA_ENABLED "Enable the Vulkan Beta Extensions" ON)
-if (VK_BETA_ENABLED)
-	set(PVRVK_BETA_EXT "VK_ENABLE_BETA_EXTENSIONS" CACHE INTERNAL "")
-endif()
-
 # PVRVk include files
 set(PVRVk_HEADERS
+	AccelerationStructureVk.h
 	ApiObjectsVk.h
 	BufferVk.h
 	CommandBufferVk.h
@@ -55,6 +51,7 @@ set(PVRVk_HEADERS
 	PVRVkObjectBaseVk.h
 	QueryPoolVk.h
 	QueueVk.h
+	RaytracingPipelineVk.h
 	RenderPassVk.h
 	SamplerVk.h
 	SemaphoreVk.h
@@ -70,6 +67,7 @@ set(PVRVk_INCLUDES
 
 # PVRVk sources
 set(PVRVk_SRC
+	AccelerationStructureVk.cpp
 	BufferVk.cpp
 	CommandBufferVk.cpp
 	CommandPoolVk.cpp
@@ -121,14 +119,7 @@ if(PVRVK_USE_PLATFORM)
 	# Setup compile definitions
 	target_compile_definitions(PVRVk 
 		PUBLIC 
-			"${PVRVK_USE_PLATFORM}")
-endif()
-
-# Enable the Vulkan Beta Extensions.
-if(VK_BETA_ENABLED)
-	# Setup compile definitions
-	target_compile_definitions(PVRVk 
-		PUBLIC 
+			"${PVRVK_USE_PLATFORM}"
 			"${PVRVK_BETA_EXT}")
 endif()
 

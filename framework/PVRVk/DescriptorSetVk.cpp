@@ -31,9 +31,9 @@ DescriptorPool_::DescriptorPool_(make_shared_enabler, const DeviceWeakPtr& devic
 	descPoolInfo.pNext = NULL;
 	descPoolInfo.maxSets = _createInfo.getMaxDescriptorSets();
 	descPoolInfo.flags = static_cast<VkDescriptorPoolCreateFlags>(DescriptorPoolCreateFlags::e_FREE_DESCRIPTOR_SET_BIT);
-	VkDescriptorPoolSize poolSizes[static_cast<uint32_t>(descriptorTypeSize)];
+	VkDescriptorPoolSize poolSizes[descriptorTypeSize];
 	uint32_t poolIndex = 0;
-	for (uint32_t i = 0; i < static_cast<uint32_t>(descriptorTypeSize); ++i)
+	for (uint32_t i = 0; i < descriptorTypeSize; ++i)
 	{
 		uint32_t count = _createInfo.getNumDescriptorTypes(DescriptorType(i));
 		if (count)

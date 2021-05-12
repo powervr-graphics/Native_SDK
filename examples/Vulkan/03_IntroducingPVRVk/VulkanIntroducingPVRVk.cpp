@@ -210,10 +210,12 @@ struct InstanceExtensions : public pvrvk::VulkanExtensionList
 		// point of view the handle is an opaque non-platform-specific type. Specifically for this demo VK_KHR_surface is required for creating VkSurfaceKHR objects which are
 		// further used by the device extension VK_KHR_swapchain.
 		addExtension(VK_KHR_SURFACE_EXTENSION_NAME);
+#ifdef __linux__
 		// The VK_KHR_display extension provides the functionality for enumerating display devices and creating VkSurfaceKHR objects that directly
 		// target displays. This extension is particularly important for applications which render directly to display devices without
 		// an intermediate window system such as embedded applications or when running on embedded platforms
 		addExtension(VK_KHR_DISPLAY_EXTENSION_NAME);
+#endif
 #ifdef DEBUG
 		// The VK_EXT_debug_utils and VK_EXT_debug_report extensions provides the functionality for defining a way in which layers and the implementation can
 		// call back to the application for events of particular interest to the application. By enabling this extension the application

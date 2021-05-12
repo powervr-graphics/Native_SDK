@@ -324,6 +324,7 @@ private:
 	{
 		pvrvk::GraphicsPipelineCreateInfo pipeDesc = basePipeline->getCreateInfo();
 		pipeDesc.basePipeline = basePipeline;
+		pipeDesc.flags = pvrvk::PipelineCreateFlags::e_DERIVATIVE_BIT;
 		pvr::utils::VertexBindings bindingName[] = { { "POSITION", 0 }, { "NORMAL", 1 } };
 
 		pipeDesc.vertexInput.clear();
@@ -427,6 +428,8 @@ private:
 		pipeDesc.subpass = 0;
 
 		pipeDesc.pipelineLayout = pipelineLayout;
+
+		pipeDesc.flags = pvrvk::PipelineCreateFlags::e_ALLOW_DERIVATIVES_BIT;
 
 		pipeline = device->createGraphicsPipeline(pipeDesc, pipelineCache);
 	}

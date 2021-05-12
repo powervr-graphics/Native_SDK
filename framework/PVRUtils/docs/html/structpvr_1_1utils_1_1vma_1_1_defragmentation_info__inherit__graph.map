@@ -1,2 +1,4 @@
 <map id="pvr::utils::vma::DefragmentationInfo" name="pvr::utils::vma::DefragmentationInfo">
+<area shape="rect" id="node1" title="Optional configuration parameters to be passed to function vmaDefragment()." alt="" coords="5,80,265,107"/>
+<area shape="rect" id="node2" title=" " alt="" coords="23,5,248,32"/>
 </map>

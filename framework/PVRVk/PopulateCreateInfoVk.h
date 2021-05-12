@@ -13,6 +13,7 @@
 #include "PVRVk/ShaderModuleVk.h"
 #include "PVRVk/GraphicsPipelineVk.h"
 #include "PVRVk/ComputePipelineVk.h"
+#include "PVRVk/RaytracingPipelineVk.h"
 namespace pvrvk {
 namespace impl {
 
@@ -141,9 +142,10 @@ private:
 	VkVertexInputAttributeDescription _vkVertexAttributes[FrameworkCaps::MaxVertexAttributes]; // Memory for the attributes
 	VkPipelineColorBlendAttachmentState _vkBlendAttachments[FrameworkCaps::MaxColorAttachments]; // Memory for the attachments
 	VkPipelineDynamicStateCreateInfo _vkDynamicState;
+	VkPipelineFragmentShadingRateStateCreateInfoKHR _vkFragmentShadingRate;
+	std::vector<VkDynamicState> _dynamicStates;
 	VkRect2D _scissors[FrameworkCaps::MaxScissorRegions];
 	VkViewport _viewports[FrameworkCaps::MaxViewportRegions];
-	VkDynamicState dynamicStates[FrameworkCaps::MaxDynamicStates];
 	VkSpecializationInfo specializationInfos[FrameworkCaps::MaxSpecialisationInfos];
 	unsigned char specializationInfoData[FrameworkCaps::MaxSpecialisationInfos][FrameworkCaps::MaxSpecialisationInfoDataSize];
 	VkSpecializationMapEntry specilizationEntries[FrameworkCaps::MaxSpecialisationInfos][FrameworkCaps::MaxSpecialisationMapEntries];
@@ -387,24 +389,34 @@ public:
 			_ms.alphaToOneEnable = val.isAlphaToOneEnabled();
 			createInfo.pMultisampleState = &_ms;
 		}
-
+		// Dynamic State
 		{
-			uint32_t count = 0;
-			for (uint32_t i = 0; i < dynamicStateSize; ++i)
-			{
-				if (gpcp.dynamicStates.isDynamicStateEnabled((DynamicState)i))
-				{
-					dynamicStates[count] = (VkDynamicState)i;
-					++count;
-				}
-			}
+			std::vector<pvrvk::DynamicState> dynamicStatesEnabled = gpcp.dynamicStates.getDynamicStates();
+			for (pvrvk::DynamicState state : dynamicStatesEnabled) { _dynamicStates.push_back((VkDynamicState)state); }
+
 			_vkDynamicState.sType = static_cast<VkStructureType>(StructureType::e_PIPELINE_DYNAMIC_STATE_CREATE_INFO);
 			_vkDynamicState.flags = static_cast<VkPipelineDynamicStateCreateFlags>(PipelineDynamicStateCreateFlags::e_NONE);
 			_vkDynamicState.pNext = nullptr;
-			_vkDynamicState.pDynamicStates = dynamicStates;
-			_vkDynamicState.dynamicStateCount = count;
-			createInfo.pDynamicState = (count != 0 ? &_vkDynamicState : nullptr);
+			_vkDynamicState.pDynamicStates = _dynamicStates.data();
+			_vkDynamicState.dynamicStateCount = static_cast<uint32_t>(_dynamicStates.size());
+			createInfo.pDynamicState = (_dynamicStates.size() != 0 ? &_vkDynamicState : nullptr);
 		}
+		// pNext Chain
+		{
+			// fragment shading rate extension
+			if (gpcp.fragmentShadingRate.isEnabled())
+			{
+				_vkFragmentShadingRate.sType = static_cast<VkStructureType>(StructureType::e_PIPELINE_FRAGMENT_SHADING_RATE_STATE_CREATE_INFO_KHR);
+				_vkFragmentShadingRate.fragmentSize = gpcp.fragmentShadingRate.getFragmentSize().get();
+				_vkFragmentShadingRate.combinerOps[0] = (VkFragmentShadingRateCombinerOpKHR)gpcp.fragmentShadingRate.getCombinerOpPipelinePrimitive();
+				_vkFragmentShadingRate.combinerOps[1] = (VkFragmentShadingRateCombinerOpKHR)gpcp.fragmentShadingRate.getCombinerOpResultAttachment();
+
+				// push back the previously set pNext pointer in chain
+				_vkFragmentShadingRate.pNext = createInfo.pNext;
+				createInfo.pNext = &_vkFragmentShadingRate;
+			}
+		}
+
 		createInfo.basePipelineHandle = VK_NULL_HANDLE;
 		if (gpcp.basePipeline) { createInfo.basePipelineHandle = gpcp.basePipeline->getVkHandle(); }
 		createInfo.basePipelineIndex = gpcp.basePipelineIndex;
@@ -451,6 +463,58 @@ struct ComputePipelinePopulate
 			cpcp.computeShader.getAllShaderConstants(), cpcp.computeShader.getNumShaderConsts(), specializationInfos, specializationInfoData, specilizationEntries, _shader);
 
 		createInfo.stage = _shader;
+	}
+};
+
+/// <summary>Contains everything needed to define a VkRayTracingPipelineCreateInfoKHR</summary>
+struct RaytracingPipelinePopulate
+{
+	/// <summary>After construction, will contain the ready-to-use create info</summary>
+	VkRayTracingPipelineCreateInfoKHR createInfo;
+
+	/// <summary>Dereference operator - returns the underlying vulkan object</summary>
+	/// <returns>The vulkan object</returns>
+	VkRayTracingPipelineCreateInfoKHR& operator*() { return createInfo; }
+
+	/// <summary>Used to store the shader stage vreate info structs in VkPipelineShaderStageCreateInfo format when gathering information
+	/// from raytracingPipeline.stages, which use PipelineShaderStageCreateInfo</summary>
+	std::vector<VkPipelineShaderStageCreateInfo> stages;
+
+	/// <summary>Used to store the shader group create info structs in VkRayTracingShaderGroupCreateInfoKHR format when gathering information
+	/// from raytracingPipeline.stages, which use RayTracingShaderGroupCreateInfo</summary>
+	std::vector<VkRayTracingShaderGroupCreateInfoKHR> shaderGroups;
+
+	/// <summary>Initialize this ray tracing pipeline</summary>
+	/// <param name="raytracingPipeline">A framework ray tracing pipeline create param to be generated from</param>
+	/// <returns>Returns return if success</returns>
+	void init(const RaytracingPipelineCreateInfo& raytracingPipeline)
+	{
+		if (!raytracingPipeline.pipelineLayout) { throw ErrorValidationFailedEXT("PipelineLayout must be valid"); }
+
+		createInfo = {};
+		createInfo.sType = static_cast<VkStructureType>(StructureType::e_RAY_TRACING_PIPELINE_CREATE_INFO_KHR);
+
+		for (size_t i = 0; i < raytracingPipeline.stages.size(); ++i)
+		{
+			stages.push_back({ static_cast<VkStructureType>(StructureType::e_PIPELINE_SHADER_STAGE_CREATE_INFO), nullptr, 0,
+				static_cast<VkShaderStageFlagBits>(raytracingPipeline.stages[i].getShaderStage()),
+				raytracingPipeline.stages[i].getShader()->getVkHandle(), raytracingPipeline.stages[i].getEntryPoint().c_str(), nullptr });
+		}
+
+		for (size_t i = 0; i < raytracingPipeline.shaderGroups.size(); ++i)
+		{
+			shaderGroups.push_back({ static_cast<VkStructureType>(StructureType::e_RAY_TRACING_SHADER_GROUP_CREATE_INFO_KHR), nullptr,
+				static_cast<VkRayTracingShaderGroupTypeKHR>(raytracingPipeline.shaderGroups[i].getType()),
+					raytracingPipeline.shaderGroups[i].getGeneralShader(), raytracingPipeline.shaderGroups[i].getClosestHitShader(),
+					raytracingPipeline.shaderGroups[i].getAnyHitShader(), raytracingPipeline.shaderGroups[i].getIntersectionShader() });
+		}
+
+		createInfo.stageCount = static_cast<uint32_t>(stages.size());
+		createInfo.pStages = stages.data();
+		createInfo.groupCount = static_cast<uint32_t>(raytracingPipeline.shaderGroups.size());
+		createInfo.pGroups = shaderGroups.data();
+		createInfo.maxPipelineRayRecursionDepth = raytracingPipeline.maxRecursionDepth; // Ray depth
+		createInfo.layout = raytracingPipeline.pipelineLayout->getVkHandle();
 	}
 };
 } // namespace impl

@@ -1,3 +1,4 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node2" href="$structpvr_1_1utils_1_1vma_1_1_stat_info.html" title="Calculated statistics of memory usage in entire allocator." alt="" coords="156,5,331,32"/>
+<area shape="rect" id="node1" title=" " alt="" coords="5,13,137,39"/>
+<area shape="rect" id="node2" href="$classpvr_1_1utils_1_1vma_1_1impl_1_1_allocation__.html" title="The DeviceMemoryWrapper_. Class Just wraps the Vulkan device memory object allocated by the memory al..." alt="" coords="185,5,339,47"/>
 </map>

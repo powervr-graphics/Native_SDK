@@ -79,10 +79,23 @@ bool Matrix::validate(Matrix A, Matrix B, float epsilon)
 {
 	// if the matrices aren't the same size, they can't be the same
 	if (A.getHeight() != B.getHeight() || A.getWidth() != B.getWidth()) { return false; }
+	//Report the biggest difference found if it is outside of the epsilon
+	float largestDelta = 0.0;
+	bool diffFound = false;
 	// check every element
 	for (size_t i = 0; i < (size_t)A.getHeight() * (size_t)A.getWidth(); i++)
 	{
-		if (abs(A.data()[i] - B.data()[i]) > epsilon) { return false; }
+		if (abs(A.data()[i] - B.data()[i]) > epsilon) 
+		{
+			largestDelta = abs(A.data()[i] - B.data()[i]);
+			diffFound = true;
+			break;
+		}
+	}
+	if (diffFound) 
+	{ 
+		std::cout << "\tDifference is : " << largestDelta;
+		return false;
 	}
 	return true;
 }

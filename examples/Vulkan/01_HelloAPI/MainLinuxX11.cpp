@@ -21,6 +21,9 @@ void createXlibWindowSurface(VulkanHelloAPI& vulkanExample)
 		// Get the default screen for the display.
 		int defaultScreen = XDefaultScreen(vulkanExample.surfaceData.display);
 
+		vulkanExample.surfaceData.width = std::min(static_cast<float>(XDisplayWidth(vulkanExample.surfaceData.display, defaultScreen)), vulkanExample.surfaceData.width);
+		vulkanExample.surfaceData.height = std::min(static_cast<float>(XDisplayHeight(vulkanExample.surfaceData.display, defaultScreen)), vulkanExample.surfaceData.height);
+
 		// Get the default depth of the display.
 		int defaultDepth = DefaultDepth(vulkanExample.surfaceData.display, defaultScreen);
 

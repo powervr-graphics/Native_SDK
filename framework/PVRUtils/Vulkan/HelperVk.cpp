@@ -290,7 +290,9 @@ bool checkFormatListAgainstUserPreferences(
 			getColorBits(format, currentRedBpp, currentGreenBpp, currentBlueBpp, currentAlphaBpp);
 			if (currentRedBpp != displayAttributes.redBits || displayAttributes.greenBits != currentGreenBpp || displayAttributes.blueBits != currentBlueBpp ||
 				displayAttributes.alphaBits != currentAlphaBpp)
-			{ continue; }
+			{
+				continue;
+			}
 		}
 		outFormat = sfmt;
 		return true; // This loop will exit as soon as any item passes all of the enabled tests (matching colorspace and or matching bpp).
@@ -303,7 +305,9 @@ pvrvk::SurfaceFormatKHR findSwapchainFormat(
 {
 	Log(LogLevel::Information, "Supported Swapchain surface device formats:");
 	for (auto&& format : supportedFormats)
-	{ Log(LogLevel::Information, "\tFormat:     %-30s  Colorspace: %s", to_string(format.getFormat()).c_str(), to_string(format.getColorSpace()).c_str()); }
+	{
+		Log(LogLevel::Information, "\tFormat:     %-30s  Colorspace: %s", to_string(format.getFormat()).c_str(), to_string(format.getColorSpace()).c_str());
+	}
 
 	pvrvk::SurfaceFormatKHR swapchainFormat;
 
@@ -536,10 +540,14 @@ pvrvk::Swapchain createSwapchainHelper(const pvrvk::Device& device, const pvrvk:
 		// Secondary matches : Immediate and Mailbox are better fits for each other than FIFO, so set them as secondaries
 		// If the user asked for Mailbox, and we found Immediate, set it (in case Mailbox is not found) and keep looking
 		if ((desiredSwapMode == pvrvk::PresentModeKHR::e_MAILBOX_KHR) && (currentPresentMode == pvrvk::PresentModeKHR::e_IMMEDIATE_KHR))
-		{ swapchainPresentMode = pvrvk::PresentModeKHR::e_IMMEDIATE_KHR; }
+		{
+			swapchainPresentMode = pvrvk::PresentModeKHR::e_IMMEDIATE_KHR;
+		}
 		// ... And vice versa: If the user asked for Immediate, and we found Mailbox, set it (in case Immediate is not found) and keep looking
 		if ((desiredSwapMode == pvrvk::PresentModeKHR::e_IMMEDIATE_KHR) && (currentPresentMode == pvrvk::PresentModeKHR::e_MAILBOX_KHR))
-		{ swapchainPresentMode = pvrvk::PresentModeKHR::e_MAILBOX_KHR; }
+		{
+			swapchainPresentMode = pvrvk::PresentModeKHR::e_MAILBOX_KHR;
+		}
 	}
 	switch (swapchainPresentMode)
 	{
@@ -556,7 +564,9 @@ pvrvk::Swapchain createSwapchainHelper(const pvrvk::Device& device, const pvrvk:
 	// Check for a supported composite alpha value in a predefined order
 	pvrvk::CompositeAlphaFlagsKHR supportedCompositeAlphaFlags = pvrvk::CompositeAlphaFlagsKHR::e_NONE;
 	if ((surfaceCapabilities.getSupportedCompositeAlpha() & pvrvk::CompositeAlphaFlagsKHR::e_OPAQUE_BIT_KHR) != 0)
-	{ supportedCompositeAlphaFlags = pvrvk::CompositeAlphaFlagsKHR::e_OPAQUE_BIT_KHR; }
+	{
+		supportedCompositeAlphaFlags = pvrvk::CompositeAlphaFlagsKHR::e_OPAQUE_BIT_KHR;
+	}
 	else if ((surfaceCapabilities.getSupportedCompositeAlpha() & pvrvk::CompositeAlphaFlagsKHR::e_INHERIT_BIT_KHR) != 0)
 	{
 		supportedCompositeAlphaFlags = pvrvk::CompositeAlphaFlagsKHR::e_INHERIT_BIT_KHR;
@@ -583,7 +593,9 @@ pvrvk::Swapchain createSwapchainHelper(const pvrvk::Device& device, const pvrvk:
 
 	createInfo.preTransform = pvrvk::SurfaceTransformFlagsKHR::e_IDENTITY_BIT_KHR;
 	if ((surfaceCapabilities.getSupportedTransforms() & pvrvk::SurfaceTransformFlagsKHR::e_IDENTITY_BIT_KHR) == 0)
-	{ throw InvalidOperationError("Surface does not support VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR transformation"); }
+	{
+		throw InvalidOperationError("Surface does not support VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR transformation");
+	}
 	createInfo.imageSharingMode = pvrvk::SharingMode::e_EXCLUSIVE;
 	createInfo.presentMode = swapchainPresentMode;
 	createInfo.numQueueFamilyIndex = 1;
@@ -1102,11 +1114,15 @@ void generateTextureAtlas(pvrvk::Device& device, const pvrvk::Image* inputImages
 	uint32_t sortedImagesIterator = 0;
 	// calculate the total area
 	for (; sortedImagesIterator < sortedImage.size(); ++sortedImagesIterator)
-	{ area += (sortedImage[sortedImagesIterator].width + totalBorder) * (sortedImage[sortedImagesIterator].height + totalBorder); }
+	{
+		area += (sortedImage[sortedImagesIterator].width + totalBorder) * (sortedImage[sortedImagesIterator].height + totalBorder);
+	}
 	sortedImagesIterator = 0;
 	while ((static_cast<int32_t>(preferredDim[sortedImagesIterator]) * static_cast<int32_t>(preferredDim[sortedImagesIterator])) < area &&
 		sortedImagesIterator < sizeof(preferredDim) / sizeof(preferredDim[0]))
-	{ ++sortedImagesIterator; }
+	{
+		++sortedImagesIterator;
+	}
 	if (sortedImagesIterator >= sizeof(preferredDim) / sizeof(preferredDim[0])) { throw pvrvk::ErrorValidationFailedEXT("Cannot find a best size for the texture atlas"); }
 
 	pvr::utils::beginCommandBufferDebugLabel(cmdBuffer, pvrvk::DebugUtilsLabel("PVRUtilsVk::generateTextureAtlas"));
@@ -1331,7 +1347,9 @@ pvrvk::Device createDeviceAndQueues(pvrvk::PhysicalDevice physicalDevice, const 
 
 	Log(LogLevel::Information, "Supported Device Extensions:");
 	for (uint32_t i = 0; i < static_cast<uint32_t>(extensionProperties.size()); ++i)
-	{ Log(LogLevel::Information, "\t%s : version [%u]", extensionProperties[i].getExtensionName(), extensionProperties[i].getSpecVersion()); }
+	{
+		Log(LogLevel::Information, "\t%s : version [%u]", extensionProperties[i].getExtensionName(), extensionProperties[i].getSpecVersion());
+	}
 
 	// Filter the given set of extensions so only the set of device extensions which are supported by the device remain
 	if (deviceExtensions.getNumExtensions())
@@ -1355,6 +1373,7 @@ pvrvk::Device createDeviceAndQueues(pvrvk::PhysicalDevice physicalDevice, const 
 		}
 
 		deviceInfo.setExtensionList(supportedRequestedExtensions);
+		deviceInfo.setLastRequestedExtensionFeature(deviceExtensions.getLastRequestedExtensionFeature());
 
 		Log(LogLevel::Information, "Supported Device Extensions to be Enabled:");
 		for (uint32_t i = 0; i < static_cast<uint32_t>(deviceInfo.getExtensionList().getNumExtensions()); ++i)
@@ -1364,7 +1383,9 @@ pvrvk::Device createDeviceAndQueues(pvrvk::PhysicalDevice physicalDevice, const 
 		}
 
 		if (deviceInfo.getExtensionList().getNumExtensions() != deviceExtensions.getNumExtensions())
-		{ Log(LogLevel::Warning, "Note that not all requested Logical device extensions are supported"); }
+		{
+			Log(LogLevel::Warning, "Note that not all requested Logical device extensions are supported");
+		}
 	}
 
 	pvrvk::Device outDevice = physicalDevice->createDevice(deviceInfo);
@@ -1505,14 +1526,21 @@ pvrvk::RenderPass createOnScreenRenderPass(const pvrvk::Swapchain& swapchain, bo
 		}
 	}
 
-	pvrvk::SubpassDependency dependencies[2];
-	dependencies[0] = pvrvk::SubpassDependency(pvrvk::SubpassExternal, 0, pvrvk::PipelineStageFlags::e_BOTTOM_OF_PIPE_BIT, pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT,
+	std::vector<pvrvk::SubpassDependency> dependencies;
+	dependencies.emplace_back(pvrvk::SubpassExternal, 0, pvrvk::PipelineStageFlags::e_BOTTOM_OF_PIPE_BIT, pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT,
 		pvrvk::AccessFlags::e_NONE, pvrvk::AccessFlags::e_COLOR_ATTACHMENT_READ_BIT | pvrvk::AccessFlags::e_COLOR_ATTACHMENT_WRITE_BIT, pvrvk::DependencyFlags::e_BY_REGION_BIT);
 
-	dependencies[1] = pvrvk::SubpassDependency(0, pvrvk::SubpassExternal, pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT, pvrvk::PipelineStageFlags::e_BOTTOM_OF_PIPE_BIT,
+	dependencies.emplace_back(0, pvrvk::SubpassExternal, pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT, pvrvk::PipelineStageFlags::e_BOTTOM_OF_PIPE_BIT,
 		pvrvk::AccessFlags::e_COLOR_ATTACHMENT_READ_BIT | pvrvk::AccessFlags::e_COLOR_ATTACHMENT_WRITE_BIT, pvrvk::AccessFlags::e_NONE, pvrvk::DependencyFlags::e_BY_REGION_BIT);
 
-	rpInfo.addSubpassDependencies(dependencies, ARRAY_SIZE(dependencies));
+	if (hasDepthStencil)
+	{
+		dependencies.emplace_back(pvrvk::SubpassExternal, 0, pvrvk::PipelineStageFlags::e_LATE_FRAGMENT_TESTS_BIT, pvrvk::PipelineStageFlags::e_EARLY_FRAGMENT_TESTS_BIT,
+			pvrvk::AccessFlags::e_NONE, pvrvk::AccessFlags::e_DEPTH_STENCIL_ATTACHMENT_READ_BIT | pvrvk::AccessFlags::e_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
+			pvrvk::DependencyFlags::e_BY_REGION_BIT);
+	}
+
+	rpInfo.addSubpassDependencies(dependencies.data(), static_cast<uint32_t>(dependencies.size()));
 	rpInfo.setSubpass(0, subpass);
 
 	pvrvk::RenderPass renderPass = swapchain->getDevice()->createRenderPass(rpInfo);
@@ -1568,7 +1596,9 @@ std::vector<unsigned char> captureImageRegion(pvrvk::Queue& queue, pvrvk::Comman
 	// create the destination texture which does the format conversion
 	const pvrvk::FormatProperties& formatProps = device->getPhysicalDevice()->getFormatProperties(destinationImageFormat);
 	if ((formatProps.getOptimalTilingFeatures() & pvrvk::FormatFeatureFlags::e_BLIT_DST_BIT) == 0)
-	{ throw pvrvk::ErrorValidationFailedEXT("Screen Capture requested Image format is not supported"); }
+	{
+		throw pvrvk::ErrorValidationFailedEXT("Screen Capture requested Image format is not supported");
+	}
 
 	pvrvk::Extent3D copyRegion = pvrvk::Extent3D(srcExtent.getWidth() - srcOffset.getX(), srcExtent.getHeight() - srcOffset.getY(), srcExtent.getDepth() - srcOffset.getZ());
 
@@ -1636,7 +1666,9 @@ std::vector<unsigned char> captureImageRegion(pvrvk::Queue& queue, pvrvk::Comman
 	memcpy(outData.data(), data, static_cast<size_t>(dstImage->getMemoryRequirement().getSize()));
 
 	if (static_cast<uint32_t>(buffer->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
-	{ buffer->getDeviceMemory()->invalidateRange(0, dstImage->getMemoryRequirement().getSize()); }
+	{
+		buffer->getDeviceMemory()->invalidateRange(0, dstImage->getMemoryRequirement().getSize());
+	}
 	if (unmap) { buffer->getDeviceMemory()->unmap(); }
 	return outData;
 }
@@ -1752,7 +1784,9 @@ VKAPI_ATTR VkBool32 VKAPI_CALL throwOnErrorDebugUtilsMessengerCallback(
 	if (PVRUtils_Throw_On_Validation_Error &&
 		((static_cast<pvrvk::DebugUtilsMessageSeverityFlagsEXT>(messageSeverity) & (pvrvk::DebugUtilsMessageSeverityFlagsEXT::e_ERROR_BIT_EXT)) !=
 			pvrvk::DebugUtilsMessageSeverityFlagsEXT::e_NONE))
-	{ throw pvrvk::ErrorValidationFailedEXT(debugUtilsMessengerCallbackToString(messageSeverity, msgTypes, pCallbackData)); }
+	{
+		throw pvrvk::ErrorValidationFailedEXT(debugUtilsMessengerCallbackToString(messageSeverity, msgTypes, pCallbackData));
+	}
 	return VK_FALSE;
 }
 
@@ -1915,7 +1949,9 @@ pvrvk::Instance createInstance(const std::string& applicationName, VulkanVersion
 		if (requestedStandardValidation && !supportsStandardValidation && !supportsKhronosValidation)
 		{
 			for (auto it = layerProperties.begin(); !supportsStandardValidation && it != layerProperties.end(); ++it)
-			{ supportsStandardValidation = !strcmp(it->getLayerName(), standardValidationLayerString.c_str()); }
+			{
+				supportsStandardValidation = !strcmp(it->getLayerName(), standardValidationLayerString.c_str());
+			}
 			if (!supportsStandardValidation)
 			{
 				for (uint32_t i = 0; standardValidationRequiredIndex == static_cast<uint32_t>(-1) && i < layerProperties.size(); ++i)
@@ -2000,7 +2036,9 @@ pvrvk::Instance createInstance(const std::string& applicationName, VulkanVersion
 
 	Log(LogLevel::Information, "Supported Instance Extensions:");
 	for (uint32_t i = 0; i < static_cast<uint32_t>(extensionProperties.size()); ++i)
-	{ Log(LogLevel::Information, "\t%s : version [%u]", extensionProperties[i].getExtensionName(), extensionProperties[i].getSpecVersion()); }
+	{
+		Log(LogLevel::Information, "\t%s : version [%u]", extensionProperties[i].getExtensionName(), extensionProperties[i].getSpecVersion());
+	}
 
 	if (instanceExtensions.getNumExtensions())
 	{
@@ -2089,73 +2127,74 @@ pvrvk::Surface createSurface(const pvrvk::Instance& instance, const pvrvk::Physi
 	(void)connection;
 	(void)display;
 #if defined(VK_USE_PLATFORM_ANDROID_KHR)
-	Log("Using platform define: VK_USE_PLATFORM_ANDROID_KHR");
+	Log(LogLevel::Information, "Using platform define: VK_USE_PLATFORM_ANDROID_KHR");
 	if (instance->getEnabledExtensionTable().khrAndroidSurfaceEnabled)
 	{
-		Log("Using Instance surface extension: VK_KHR_android_surface");
+		Log(LogLevel::Information, "Using Instance surface extension: VK_KHR_android_surface");
 		return pvrvk::Surface(instance->createAndroidSurface(reinterpret_cast<ANativeWindow*>(window)));
 	}
 #elif defined VK_USE_PLATFORM_WIN32_KHR
-	Log("Using platform define: VK_USE_PLATFORM_WIN32_KHR");
+	Log(LogLevel::Information, "Using platform define: VK_USE_PLATFORM_WIN32_KHR");
 	if (instance->getEnabledExtensionTable().khrWin32SurfaceEnabled)
 	{
-		Log("Using Instance surface extension: VK_KHR_win32_surface");
+		Log(LogLevel::Information, "Using Instance surface extension: VK_KHR_win32_surface");
 		return pvrvk::Surface(instance->createWin32Surface(GetModuleHandle(NULL), static_cast<HWND>(window)));
 	}
 #elif defined(VK_USE_PLATFORM_XCB_KHR)
-	Log("Using platform define: VK_USE_PLATFORM_XCB_KHR");
+	Log(LogLevel::Information, "Using platform define: VK_USE_PLATFORM_XCB_KHR");
 	if (instance->getEnabledExtensionTable().khrXcbSurfaceEnabled)
 	{
-		Log("Using Instance surface extension: VK_KHR_xcb_surface");
+		Log(LogLevel::Information, "Using Instance surface extension: VK_KHR_xcb_surface");
 		return pvrvk::Surface(instance->createXcbSurface(static_cast<xcb_connection_t*>(connection), *((xcb_window_t*)(&window))));
 	}
 #elif defined(VK_USE_PLATFORM_XLIB_KHR)
-	Log("Using platform define: VK_USE_PLATFORM_XLIB_KHR");
+	Log(LogLevel::Information, "Using platform define: VK_USE_PLATFORM_XLIB_KHR");
 	if (instance->getEnabledExtensionTable().khrXlibSurfaceEnabled)
 	{
-		Log("Using Instance surface extension: VK_KHR_xlib_surface");
+		Log(LogLevel::Information, "Using Instance surface extension: VK_KHR_xlib_surface");
 		return pvrvk::Surface(instance->createXlibSurface(static_cast<Display*>(display), reinterpret_cast<Window>(window)));
 	}
 #elif defined(VK_USE_PLATFORM_WAYLAND_KHR)
-	Log("Using platform define: VK_USE_PLATFORM_WAYLAND_KHR");
+	Log(LogLevel::Information, "Using platform define: VK_USE_PLATFORM_WAYLAND_KHR");
 	if (instance->getEnabledExtensionTable().khrWaylandSurfaceEnabled)
 	{
-		Log("Using Instance surface extension: VK_KHR_wayland_surface");
+		Log(LogLevel::Information, "Using Instance surface extension: VK_KHR_wayland_surface");
 		return pvrvk::Surface(instance->createWaylandSurface(reinterpret_cast<wl_display*>(display), reinterpret_cast<wl_surface*>(window)));
 	}
 #elif defined(VK_USE_PLATFORM_MACOS_MVK)
-	Log("Using platform define: VK_USE_PLATFORM_MACOS_MVK");
+	Log(LogLevel::Information, "Using platform define: VK_USE_PLATFORM_MACOS_MVK");
 	(void)display;
 	if (instance->getEnabledExtensionTable().mvkMacosSurfaceEnabled)
 	{
-		Log("Using Instance surface extension: VK_MVK_macos_surface");
+		Log(LogLevel::Information, "Using Instance surface extension: VK_MVK_macos_surface");
 		return pvrvk::Surface(instance->createMacOSSurface(window));
 	}
 #else // NullWS
 	if (instance->getEnabledExtensionTable().khrDisplayEnabled)
 	{
-		Log("Using Instance surface extension: VK_KHR_display");
-		Log("%u Displays supported by the physical device", physicalDevice->getNumDisplays());
-		Log("Display properties:");
+		Log(LogLevel::Information, "Using Instance surface extension: VK_KHR_display");
+		Log(LogLevel::Information, "%u Displays supported by the physical device", physicalDevice->getNumDisplays());
+		Log(LogLevel::Information, "Display properties:");
 
 		for (uint32_t i = 0; i < physicalDevice->getNumDisplays(); ++i)
 		{
 			const pvrvk::Display& display = physicalDevice->getDisplay(i);
-			Log("Properties for Display [%u]:", i);
-			Log("	Display Name: '%s':", display->getDisplayName());
-			Log("	Supports Persistent Content: %u", display->getPersistentContent());
-			Log("	Physical Dimensions: (%u, %u)", display->getPhysicalDimensions().getWidth(), display->getPhysicalDimensions().getHeight());
-			Log("	Physical Resolution: (%u, %u)", display->getPhysicalResolution().getWidth(), display->getPhysicalResolution().getHeight());
-			Log("	Supported Transforms: %s", pvrvk::to_string(display->getSupportedTransforms()).c_str());
-			Log("	Supports Plane Reorder: %u", display->getPlaneReorderPossible());
+			Log(LogLevel::Information, "Properties for Display [%u]:", i);
+			Log(LogLevel::Information, "	Display Name: '%s':", display->getDisplayName());
+			Log(LogLevel::Information, "	Supports Persistent Content: %u", display->getPersistentContent());
+			Log(LogLevel::Information, "	Physical Dimensions: (%u, %u)", display->getPhysicalDimensions().getWidth(), display->getPhysicalDimensions().getHeight());
+			Log(LogLevel::Information, "	Physical Resolution: (%u, %u)", display->getPhysicalResolution().getWidth(), display->getPhysicalResolution().getHeight());
+			Log(LogLevel::Information, "	Supported Transforms: %s", pvrvk::to_string(display->getSupportedTransforms()).c_str());
+			Log(LogLevel::Information, "	Supports Plane Reorder: %u", display->getPlaneReorderPossible());
 
-			Log("	Display supports [%u] display modes:", display->getNumDisplayModes());
+			Log(LogLevel::Information, "	Display supports [%u] display modes:", display->getNumDisplayModes());
 			for (uint32_t j = 0; j < display->getNumDisplayModes(); ++j)
 			{
-				Log("	Properties for Display Mode [%u]:", j);
+				Log(LogLevel::Information, "	Properties for Display Mode [%u]:", j);
 				const pvrvk::DisplayMode& displayMode = display->getDisplayMode(j);
-				Log("		Refresh Rate: %f", displayMode->getParameters().getRefreshRate());
-				Log("		Visible Region: (%u, %u)", displayMode->getParameters().getVisibleRegion().getWidth(), displayMode->getParameters().getVisibleRegion().getHeight());
+				Log(LogLevel::Information, "		Refresh Rate: %f", displayMode->getParameters().getRefreshRate());
+				Log(LogLevel::Information, "		Visible Region: (%u, %u)", displayMode->getParameters().getVisibleRegion().getWidth(),
+					displayMode->getParameters().getVisibleRegion().getHeight());
 			}
 		}
 
@@ -2171,7 +2210,9 @@ pvrvk::Surface createSurface(const pvrvk::Instance& instance, const pvrvk::Physi
 
 			// if a valid display can be found and its supported then make use of it
 			if (display && std::find(supportedDisplaysForPlane.begin(), supportedDisplaysForPlane.end(), display) != supportedDisplaysForPlane.end())
-			{ displayMode = display->getDisplayMode(0); } // else find the first supported display and grab its first display mode
+			{
+				displayMode = display->getDisplayMode(0);
+			} // else find the first supported display and grab its first display mode
 			else if (supportedDisplaysForPlane.size())
 			{
 				pvrvk::Display& currentDisplay = supportedDisplaysForPlane[0];
@@ -2181,16 +2222,16 @@ pvrvk::Surface createSurface(const pvrvk::Instance& instance, const pvrvk::Physi
 			if (displayMode)
 			{
 				pvrvk::DisplayPlaneCapabilitiesKHR capabilities = physicalDevice->getDisplayPlaneCapabilities(displayMode, i);
-				Log("Capabilities for the chosen display mode for Display Plane [%u]:", i);
-				Log("	Supported Alpha Flags: %s", pvrvk::to_string(capabilities.getSupportedAlpha()).c_str());
-				Log("	Supported Min Src Position: (%u, %u)", capabilities.getMinSrcPosition().getX(), capabilities.getMinSrcPosition().getY());
-				Log("	Supported Max Src Position: (%u, %u)", capabilities.getMaxSrcPosition().getX(), capabilities.getMaxSrcPosition().getY());
-				Log("	Supported Min Src Extent: (%u, %u)", capabilities.getMinSrcExtent().getWidth(), capabilities.getMinSrcExtent().getHeight());
-				Log("	Supported Max Src Extent: (%u, %u)", capabilities.getMaxSrcExtent().getWidth(), capabilities.getMaxSrcExtent().getHeight());
-				Log("	Supported Min Dst Position: (%u, %u)", capabilities.getMinDstPosition().getX(), capabilities.getMinDstPosition().getY());
-				Log("	Supported Max Dst Position: (%u, %u)", capabilities.getMaxDstPosition().getX(), capabilities.getMaxDstPosition().getY());
-				Log("	Supported Min Dst Extent: (%u, %u)", capabilities.getMinDstExtent().getWidth(), capabilities.getMinDstExtent().getHeight());
-				Log("	Supported Max Dst Extent: (%u, %u)", capabilities.getMaxDstExtent().getWidth(), capabilities.getMaxDstExtent().getHeight());
+				Log(LogLevel::Information, "Capabilities for the chosen display mode for Display Plane [%u]:", i);
+				Log(LogLevel::Information, "	Supported Alpha Flags: %s", pvrvk::to_string(capabilities.getSupportedAlpha()).c_str());
+				Log(LogLevel::Information, "	Supported Min Src Position: (%u, %u)", capabilities.getMinSrcPosition().getX(), capabilities.getMinSrcPosition().getY());
+				Log(LogLevel::Information, "	Supported Max Src Position: (%u, %u)", capabilities.getMaxSrcPosition().getX(), capabilities.getMaxSrcPosition().getY());
+				Log(LogLevel::Information, "	Supported Min Src Extent: (%u, %u)", capabilities.getMinSrcExtent().getWidth(), capabilities.getMinSrcExtent().getHeight());
+				Log(LogLevel::Information, "	Supported Max Src Extent: (%u, %u)", capabilities.getMaxSrcExtent().getWidth(), capabilities.getMaxSrcExtent().getHeight());
+				Log(LogLevel::Information, "	Supported Min Dst Position: (%u, %u)", capabilities.getMinDstPosition().getX(), capabilities.getMinDstPosition().getY());
+				Log(LogLevel::Information, "	Supported Max Dst Position: (%u, %u)", capabilities.getMaxDstPosition().getX(), capabilities.getMaxDstPosition().getY());
+				Log(LogLevel::Information, "	Supported Min Dst Extent: (%u, %u)", capabilities.getMinDstExtent().getWidth(), capabilities.getMinDstExtent().getHeight());
+				Log(LogLevel::Information, "	Supported Max Dst Extent: (%u, %u)", capabilities.getMaxDstExtent().getWidth(), capabilities.getMaxDstExtent().getHeight());
 
 				return pvrvk::Surface(instance->createDisplayPlaneSurface(
 					displayMode, displayMode->getParameters().getVisibleRegion(), pvrvk::DisplaySurfaceCreateFlagsKHR::e_NONE, i, currentStackIndex));
@@ -2204,7 +2245,8 @@ pvrvk::Surface createSurface(const pvrvk::Instance& instance, const pvrvk::Physi
 }
 
 pvrvk::Buffer createBuffer(const pvrvk::Device& device, const pvrvk::BufferCreateInfo& createInfo, pvrvk::MemoryPropertyFlags requiredMemoryFlags,
-	pvrvk::MemoryPropertyFlags optimalMemoryFlags, const vma::Allocator& bufferAllocator, vma::AllocationCreateFlags vmaAllocationCreateFlags)
+	pvrvk::MemoryPropertyFlags optimalMemoryFlags, const vma::Allocator& bufferAllocator, vma::AllocationCreateFlags vmaAllocationCreateFlags,
+	pvrvk::MemoryAllocateFlags memoryAllocateFlags)
 {
 	// create the PVRVk Buffer
 	pvrvk::Buffer buffer = device->createBuffer(createInfo);
@@ -2234,7 +2276,7 @@ pvrvk::Buffer createBuffer(const pvrvk::Device& device, const pvrvk::BufferCreat
 			getMemoryTypeIndex(device->getPhysicalDevice(), memoryRequirements.getMemoryTypeBits(), requiredMemoryFlags, optimalMemoryFlags, memoryTypeIndex, memoryPropertyFlags);
 
 			// allocate the buffer memory using the retrieved memory type index and memory property flags
-			pvrvk::DeviceMemory deviceMemory = device->allocateMemory(pvrvk::MemoryAllocationInfo(buffer->getMemoryRequirement().getSize(), memoryTypeIndex));
+			pvrvk::DeviceMemory deviceMemory = device->allocateMemory(pvrvk::MemoryAllocationInfo(buffer->getMemoryRequirement().getSize(), memoryTypeIndex), memoryAllocateFlags);
 
 			// attach the memory to the buffer
 			buffer->bindMemory(deviceMemory, 0);

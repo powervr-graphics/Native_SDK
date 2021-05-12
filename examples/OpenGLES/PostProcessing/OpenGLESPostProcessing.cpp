@@ -332,7 +332,6 @@ struct StatuePass
 	bool isBufferStorageExtSupported;
 
 	GLint exposureUniformLocation;
-	GLint thresholdUniformLocation;
 
 	// 3D Model
 	pvr::assets::ModelHandle scene;
@@ -426,8 +425,7 @@ struct StatuePass
 		gl::Uniform1i(gl::GetUniformLocation(program, "sNormalMap"), 1);
 		gl::Uniform1i(gl::GetUniformLocation(program, "irradianceMap"), 2);
 
-		exposureUniformLocation = gl::GetUniformLocation(program, "linearExposure");
-		thresholdUniformLocation = gl::GetUniformLocation(program, "threshold");
+		exposureUniformLocation = gl::GetUniformLocation(program, "exposure");
 	}
 
 	/// <summary>Update the object animation.</summary>
@@ -485,7 +483,7 @@ struct StatuePass
 	/// <param name="irradianceSampler">A sampler to use for sampling the irradiance map</param>
 	/// <param name="exposure">The exposure value used to 'expose' the colour prior to post processing</param>
 	/// <param name="threshold">The threshold value used to determine how much of the colour to retain for the bloom</param>
-	void render(GLuint irradianceMap, GLuint samplerTrilinear, GLuint irradianceSampler, float exposure, float threshold)
+	void render(GLuint irradianceMap, GLuint samplerTrilinear, GLuint irradianceSampler, float exposure)
 	{
 		debugThrowOnApiError("StatuePass before render");
 		gl::BindBufferRange(GL_UNIFORM_BUFFER, 0, buffer, 0, static_cast<GLsizeiptr>(structuredBufferView.getSize()));
@@ -504,7 +502,6 @@ struct StatuePass
 
 		gl::UseProgram(program);
 		gl::Uniform1f(exposureUniformLocation, exposure);
-		gl::Uniform1f(thresholdUniformLocation, threshold);
 		renderMesh(0);
 		debugThrowOnApiError("StatuePass after render");
 	}
@@ -516,7 +513,6 @@ struct SkyboxPass
 	GLuint program;
 	GLuint skyBoxTextures[NumScenes];
 	GLint exposureUniformLocation;
-	GLint thresholdUniformLocation;
 
 	/// <summary>Initialises the skybox pass.</summary>
 	/// <param name="assetProvider">The pvr::IAssetProvider which will be used for loading resources from memory.</param>
@@ -544,8 +540,7 @@ struct SkyboxPass
 		program = pvr::utils::createShaderProgram(assetProvider, Files::SkyboxVertShaderSrcFile, Files::SkyboxFragShaderSrcFile, nullptr, nullptr, 0);
 		gl::UseProgram(program);
 		gl::Uniform1i(gl::GetUniformLocation(program, "skybox"), 0);
-		exposureUniformLocation = gl::GetUniformLocation(program, "linearExposure");
-		thresholdUniformLocation = gl::GetUniformLocation(program, "threshold");
+		exposureUniformLocation = gl::GetUniformLocation(program, "exposure");
 	}
 
 	/// <summary>Renders the skybox.</summary>
@@ -555,7 +550,7 @@ struct SkyboxPass
 	/// <param name="exposure">The exposure value used to 'expose' the colour prior to post processing</param>
 	/// <param name="threshold">The threshold value used to determine how much of the colour to retain for the bloom</param>
 	/// <param name="currentScene">The current scene to use.</param>
-	void render(GLuint sceneBuffer, GLsizeiptr sceneBufferSize, GLuint samplerTrilinear, float exposure, float threshold, uint32_t currentScene)
+	void render(GLuint sceneBuffer, GLsizeiptr sceneBufferSize, GLuint samplerTrilinear, float exposure, uint32_t currentScene)
 	{
 		debugThrowOnApiError("Skybox Pass before render");
 		gl::BindBufferRange(GL_UNIFORM_BUFFER, 0, sceneBuffer, 0, sceneBufferSize);
@@ -566,7 +561,6 @@ struct SkyboxPass
 
 		gl::UseProgram(program);
 		gl::Uniform1f(exposureUniformLocation, exposure);
-		gl::Uniform1f(thresholdUniformLocation, threshold);
 		gl::DrawArrays(GL_TRIANGLES, 0, 6);
 		debugThrowOnApiError("Skybox Pass after render");
 	}
@@ -2048,8 +2042,8 @@ class OpenGLESPostProcessing : public pvr::Shell
 	GLenum _drawBuffers[1];
 	GLenum _mrtDrawBuffers[2];
 
+	float _linearExposure;
 	float _exposure;
-	float _threshold;
 
 public:
 	OpenGLESPostProcessing() {}
@@ -2327,10 +2321,10 @@ pvr::Result OpenGLESPostProcessing::renderFrame()
 	gl::FrontFace(GL_CCW);
 	gl::Enable(GL_DEPTH_TEST);
 	gl::DepthFunc(GL_LESS);
-	_statuePass.render(_diffuseIrradianceTextures[_currentScene], _samplerTrilinear, _samplerTrilinear, _exposure, _threshold);
+	_statuePass.render(_diffuseIrradianceTextures[_currentScene], _samplerTrilinear, _samplerTrilinear, _exposure);
 
 	gl::DepthFunc(GL_LEQUAL);
-	_skyBoxPass.render(_sceneBuffer, static_cast<GLsizeiptr>(_sceneBufferView.getSize()), _samplerTrilinear, _exposure, _threshold, _currentScene);
+	_skyBoxPass.render(_sceneBuffer, static_cast<GLsizeiptr>(_sceneBufferView.getSize()), _samplerTrilinear, _exposure, _currentScene);
 
 	// Disable depth testing, from this point onwards we don't need depth
 	gl::Disable(GL_DEPTH_TEST);
@@ -2415,13 +2409,13 @@ pvr::Result OpenGLESPostProcessing::renderFrame()
 		case (BloomMode::DualFilter):
 		{
 			_dualFilterBlurPass.render(_offScreenFramebuffer.attachments[static_cast<uint32_t>(OffscreenAttachments::Luminance)], _offScreenTexture, _context->getOnScreenFbo(),
-				_samplerBilinear, _renderOnlyBloom, _exposure);
+				_samplerBilinear, _renderOnlyBloom, _linearExposure);
 			break;
 		}
 		case (BloomMode::TentFilter):
 		{
 			_downAndTentFilterBlurPass.render(_offScreenFramebuffer.attachments[static_cast<uint32_t>(OffscreenAttachments::Luminance)], _offScreenTexture,
-				_context->getOnScreenFbo(), _samplerBilinear, _renderOnlyBloom, _exposure);
+				_context->getOnScreenFbo(), _samplerBilinear, _renderOnlyBloom, _linearExposure);
 			break;
 		}
 		case (BloomMode::HybridGaussian):
@@ -2494,7 +2488,7 @@ pvr::Result OpenGLESPostProcessing::renderFrame()
 
 		gl::BindFramebuffer(GL_DRAW_FRAMEBUFFER, _context->getOnScreenFbo());
 		gl::Clear(GL_COLOR_BUFFER_BIT);
-		_postBloomPass.render(blurredTexture, _offScreenTexture, _samplerBilinear, _renderOnlyBloom, _exposure);
+		_postBloomPass.render(blurredTexture, _offScreenTexture, _samplerBilinear, _renderOnlyBloom, _linearExposure);
 	}
 
 	renderUI();
@@ -2857,8 +2851,12 @@ void OpenGLESPostProcessing::updateDynamicSceneData()
 	// Update object animations
 	updateAnimation();
 
-	_exposure = SceneTexFileNames[_currentScene].getLinearExposure();
-	_threshold = SceneTexFileNames[_currentScene].threshold;
+	_linearExposure = SceneTexFileNames[_currentScene].getLinearExposure();
+
+	// Calculate exposure from linear exposure value and apply threshold
+	_exposure = log2(std::max(_linearExposure, 0.0001f));
+	_exposure -= SceneTexFileNames[_currentScene].threshold;
+	_exposure = exp2(_exposure);
 
 	// Update the animation data used in the statue pass
 	_statuePass.updateAnimation(_objectAngleY, _viewProjectionMatrix);

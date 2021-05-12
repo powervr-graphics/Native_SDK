@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.3)
+cmake_minimum_required(VERSION 3.10)
 
 if(NOT PVR_PREBUILT_DEPENDENCIES)
 	include(../Common.cmake)

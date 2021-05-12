@@ -110,7 +110,7 @@ void makeDescriptors()
 
 void makeSingleMatrixBuffer(int bufferIndex, int numOfElements)
 {
-	_resources->MatrixBufferSSBOs[bufferIndex] =
+	_resources->matrixBufferSSBOs[bufferIndex] =
 		pvr::utils::createBuffer(_resources->device, pvrvk::BufferCreateInfo(sizeof(float) * numOfElements, pvrvk::BufferUsageFlags::e_STORAGE_BUFFER_BIT),
 			pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, _resources->vma, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 }
@@ -119,7 +119,7 @@ pvrvk::WriteDescriptorSet makeSingleMatrixDescSet(int bufferIndex, int numOfElem
 {
 	// the buffer index in the array stored on cpu side matches the binding points defined in the shaders
 	pvrvk::WriteDescriptorSet toWrite(pvrvk::DescriptorType::e_STORAGE_BUFFER, _resources->descriptorSet, bufferIndex, 0);
-	toWrite.setBufferInfo(0, pvrvk::DescriptorBufferInfo(_resources->MatrixBufferSSBOs[bufferIndex], 0, sizeof(float) * numOfElements));
+	toWrite.setBufferInfo(0, pvrvk::DescriptorBufferInfo(_resources->matrixBufferSSBOs[bufferIndex], 0, sizeof(float) * numOfElements));
 	return toWrite;
 }
 
@@ -151,6 +151,11 @@ void makeBuffers(uint32_t M, uint32_t N, uint32_t P)
 	// Vec4BT
 	makeSingleMatrixBuffer(7, N * P);
 
+	// Associate all of the buffers to their biffer views
+	for (uint32_t i = 0; i < _resources->matrixBufferCount; i++) 
+	{ 
+		_resources->matrixBufferViews[i].pointToMappedMemory(_resources->matrixBufferSSBOs[i]->getDeviceMemory()->getMappedData());
+	}
 	// update the descriptor sets using a writer to update them all in one go
 	std::vector<pvrvk::WriteDescriptorSet> descSetWriter;
 
@@ -167,10 +172,6 @@ void makeBuffers(uint32_t M, uint32_t N, uint32_t P)
 
 	// update the descriptor sets
 	_resources->device->updateDescriptorSets(descSetWriter.data(), (uint32_t)descSetWriter.size(), nullptr, 0);
-
-	// Now make the output buffer point to some managed memory space so it can be retrieved later
-	_resources->bufferViewProdMatrix[0].pointToMappedMemory(_resources->MatrixBufferSSBOs[2]->getDeviceMemory()->getMappedData());
-	_resources->bufferViewProdMatrix[1].pointToMappedMemory(_resources->MatrixBufferSSBOs[5]->getDeviceMemory()->getMappedData());
 }
 
 // Usually an asset stream would be gathered using a method belonging to the pvr::Shell
@@ -245,7 +246,7 @@ void makePipeline(int shaderIndex, int xWorkgroupSize, int yWorkgroupSize, int n
 	// Construct the header string with all the defines used for this shader
 	std::stringstream shaderSourceCode;
 	shaderSourceCode << "#"
-					 << "version 450";
+					 << "version 320 es";
 	shaderSourceCode << "\n#define M " << Mat_M;
 	shaderSourceCode << "\n#define N " << Mat_N;
 	shaderSourceCode << "\n#define P " << Mat_P;
@@ -311,28 +312,46 @@ void updateBuffers(Matrix LHS, Matrix RHS)
 {
 	// update the contents of the buffer
 	// A is (MxN) B is (NxP)
-	pvr::utils::updateHostVisibleBuffer(_resources->MatrixBufferSSBOs[0], LHS.data(), 0, sizeof(float) * Mat_M * Mat_N);
-	pvr::utils::updateHostVisibleBuffer(_resources->MatrixBufferSSBOs[1], RHS.data(), 0, sizeof(float) * Mat_N * Mat_P);
+	pvr::utils::updateHostVisibleBuffer(_resources->matrixBufferSSBOs[0], LHS.data(), 0, sizeof(float) * Mat_M * Mat_N);
+	pvr::utils::updateHostVisibleBuffer(_resources->matrixBufferSSBOs[1], RHS.data(), 0, sizeof(float) * Mat_N * Mat_P);
 	// transposed matrices
-	pvr::utils::updateHostVisibleBuffer(_resources->MatrixBufferSSBOs[3], Matrix::transpose(LHS).data(), 0, sizeof(float) * Mat_M * Mat_N);
-	pvr::utils::updateHostVisibleBuffer(_resources->MatrixBufferSSBOs[4], Matrix::transpose(RHS).data(), 0, sizeof(float) * Mat_N * Mat_P);
+	pvr::utils::updateHostVisibleBuffer(_resources->matrixBufferSSBOs[3], Matrix::transpose(LHS).data(), 0, sizeof(float) * Mat_M * Mat_N);
+	pvr::utils::updateHostVisibleBuffer(_resources->matrixBufferSSBOs[4], Matrix::transpose(RHS).data(), 0, sizeof(float) * Mat_N * Mat_P);
 	// the vec4 representations
-	pvr::utils::updateHostVisibleBuffer(_resources->MatrixBufferSSBOs[6], LHS.data(), 0, sizeof(float) * Mat_M * Mat_N);
-	pvr::utils::updateHostVisibleBuffer(_resources->MatrixBufferSSBOs[7], Matrix::transpose(RHS).data(), 0, sizeof(float) * Mat_N * Mat_P);
+	pvr::utils::updateHostVisibleBuffer(_resources->matrixBufferSSBOs[6], LHS.data(), 0, sizeof(float) * Mat_M * Mat_N);
+	pvr::utils::updateHostVisibleBuffer(_resources->matrixBufferSSBOs[7], Matrix::transpose(RHS).data(), 0, sizeof(float) * Mat_N * Mat_P);
+
+	//If the device doesn't have coherant memory, it has to be flushed.
+	if (static_cast<uint32_t>(_resources->matrixBufferSSBOs[0]->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0) 
+	{
+		//Flush the entire range of all of the SSBOS
+		for (size_t i = 0; i < 8; i++) 
+		{ 
+			_resources->matrixBufferSSBOs[i]->getDeviceMemory()->flushRange(0, _resources->matrixBufferViews[i].getSize());
+		}
+	}
 }
 
 Matrix fetchResult(bool transposed)
 {
+	// If the device doesn't have coherant memory, it has to be flushed.
+	if (static_cast<uint32_t>(_resources->matrixBufferSSBOs[0]->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
+	{
+		// Flush the entire range of all of the SSBOS
+		for (size_t i = 0; i < 8; i++) { _resources->matrixBufferSSBOs[i]->getDeviceMemory()->flushRange(0, _resources->matrixBufferViews[i].getSize()); }
+	}
+	// Get the correct result based on if the product was transposed or not
 	if (!transposed)
 	{
-		float* m = (float*)_resources->bufferViewProdMatrix[0].getMappedMemory();
+		float* m = (float*)_resources->matrixBufferViews[2].getMappedMemory();
 		// M is a (MxP)
 		Matrix Prod(Mat_M, Mat_P, m);
 		return Prod;
 	}
 	else
 	{
-		float* m = (float*)_resources->bufferViewProdMatrix[1].getMappedMemory();
+		//float* m = (float*)_resources->bufferViewProdMatrix[1].getMappedMemory();
+		float* m = (float*)_resources->matrixBufferViews[5].getMappedMemory();
 		// MT is a (PxM) Matrix
 		Matrix ProdT(Mat_P, Mat_M, m);
 		return Matrix::transpose(ProdT);
@@ -341,29 +360,29 @@ Matrix fetchResult(bool transposed)
 
 void emptyResultBuffers()
 {
-	float* productBuffer1 = (float*)_resources->bufferViewProdMatrix[0].getMappedMemory();
-	float* productBuffer2 = (float*)_resources->bufferViewProdMatrix[1].getMappedMemory();
+	float* productBuffer1 = (float*)_resources->matrixBufferViews[2].getMappedMemory();
+	float* productBuffer2 = (float*)_resources->matrixBufferViews[5].getMappedMemory();
 	for (uint32_t i = 0; i < Mat_M * Mat_P; i++)
 	{
 		productBuffer1[i] = 0;
 		productBuffer2[i] = 0;
 	}
+	// If the device doesn't have coherant memory, it has to be flushed.
+	if (static_cast<uint32_t>(_resources->matrixBufferSSBOs[0]->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
+	{
+		// Flush the entire range of all of the SSBOS
+		for (size_t i = 0; i < 8; i++) { _resources->matrixBufferSSBOs[i]->getDeviceMemory()->flushRange(0, _resources->matrixBufferViews[i].getSize()); }
+	}
 }
 
 void doComputeWork(int xWorkgroupNumber, int yWorkgroupNumber)
 {
-	// Fill the command buffers
-	_resources->secondaryCommandBuffer->reset();
-	_resources->secondaryCommandBuffer->begin();
-
-	_resources->secondaryCommandBuffer->bindPipeline(_resources->computePipeline);
-	_resources->secondaryCommandBuffer->bindDescriptorSet(pvrvk::PipelineBindPoint::e_COMPUTE, _resources->pipelineLayout, 0, _resources->descriptorSet);
-	_resources->secondaryCommandBuffer->dispatch(xWorkgroupNumber, yWorkgroupNumber, 1);
-	_resources->secondaryCommandBuffer->end();
-
+	// Fill the command buffer
 	_resources->primaryCommandBuffer->reset();
 	_resources->primaryCommandBuffer->begin();
-	_resources->primaryCommandBuffer->executeCommands(_resources->secondaryCommandBuffer);
+	_resources->primaryCommandBuffer->bindPipeline(_resources->computePipeline);
+	_resources->primaryCommandBuffer->bindDescriptorSet(pvrvk::PipelineBindPoint::e_COMPUTE, _resources->pipelineLayout, 0, _resources->descriptorSet);
+	_resources->primaryCommandBuffer->dispatch(xWorkgroupNumber, yWorkgroupNumber, 1);
 	_resources->primaryCommandBuffer->end();
 
 	// create the submit command queue

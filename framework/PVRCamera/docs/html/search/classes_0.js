@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['camerainterface',['CameraInterface',['../classpvr_1_1_camera_interface.html',1,'pvr']]]
+  ['camerainterface_24',['CameraInterface',['../classpvr_1_1_camera_interface.html',1,'pvr']]]
 ];

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.3)
+cmake_minimum_required(VERSION 3.10)
 project(OpenGLESExamples)
 
 if (PVR_BUILD_OPENGLES2_EXAMPLES)
@@ -25,8 +25,6 @@ else()
 	Skinning
 	ParticleSystem
 	GaussianBlur
-	Navigation2D
-	Navigation3D
 	DeferredShading
 	PVRScopeExample
 	PVRScopeRemote

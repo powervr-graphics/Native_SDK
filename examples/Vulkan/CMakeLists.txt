@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.3)
+cmake_minimum_required(VERSION 3.10)
 project(VulkanExamples)
 
 set(VULKAN_EXAMPLES 
@@ -14,8 +14,6 @@ set(VULKAN_EXAMPLES
 	ParticleSystem
 	Bumpmap
 	GaussianBlur
-	Navigation2D
-	Navigation3D
 	Multithreading
 	ExampleUI
 	DeferredShading
@@ -29,6 +27,10 @@ set(VULKAN_EXAMPLES
 	GameOfLife
 	PipelineCache
 	MatrixMultiplication
+	HelloRayTracing
+	HybridHardShadows
+	HybridReflections
+	HybridSoftShadows
 )
 
 foreach(EXAMPLE ${VULKAN_EXAMPLES})

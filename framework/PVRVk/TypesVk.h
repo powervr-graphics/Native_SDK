@@ -10,6 +10,7 @@
 #include <vector>
 #include <algorithm>
 #include <cassert>
+#include <map>
 
 namespace pvrvk {
 /// <summary>Internal helper class that is used for unknown size arrays, utilising a small statically
@@ -77,7 +78,6 @@ enum Enum
 	MaxViewportRegions = 8, //!< Max viewports regions supported by the pipeline
 	MaxScissorViewports = 8, //!< Max scissor-viewports supported by the pipeline
 	MaxSwapChains = 4, //!< Max swapchain supported
-	MaxDynamicStates = 8, //!< Max Dynamic states supported
 	MaxSpecialisationInfos = 7, //!< Max specialisation infos suported by the pipeline
 	MaxSpecialisationInfoDataSize = 1024, //!< Max specialisation info data size suported by the pipeline
 	MaxSpecialisationMapEntries = 4, //!< Max specialisation map entries suported by the pipeline
@@ -949,8 +949,29 @@ public:
 	/// <returns>Return true if it is enabled</returns>
 	bool containsExtension(const VulkanExtension& extension) const { return std::find(_extensions.begin(), _extensions.end(), extension) != _extensions.end(); }
 
+	/// <summary>Get the extension feature pointer</summary>
+	/// <returns>The extension feature pointer</returns>
+	inline void* getLastRequestedExtensionFeature() const { return _lastRequestedExtensionFeature; }
+
+	template<class T>
+	void addExtensionFeature(VkStructureType type, T* extension)
+	{
+		// Insert the extension feature into the extension feature map so its ownership is held
+		_extensionFeatures.insert({ type, (void*)extension });
+
+		// Pull out the dereferenced void pointer, we can assume its type based on the template
+		T* extensionPtr = static_cast<T*>(_extensionFeatures.find(type)->second);
+
+		// If an extension feature has already been requested, we shift the linked list down by one
+		// Making this current extension the new base pointer
+		if (_lastRequestedExtensionFeature) { extensionPtr->pNext = _lastRequestedExtensionFeature; }
+		_lastRequestedExtensionFeature = extensionPtr;
+	}
+
 private:
 	std::vector<pvrvk::VulkanExtension> _extensions;
+	std::map<VkStructureType, void*> _extensionFeatures; ///!< Map with extension type and void pointer to a struct of that type
+	void* _lastRequestedExtensionFeature{ nullptr }; ///!< The extension feature pointer
 };
 
 /// <summary>A wrapper for a list of Vulkan layers</summary>
@@ -1019,6 +1040,7 @@ private:
 	std::vector<DeviceQueueCreateInfo> queueCreateInfos; //!< Pointer to an array of DeviceQueueCreateInfo structures describing the queues that are requested to be created along with the logical device
 	VulkanExtensionList enabledExtensions; //!< Array of extensions to enable
 	const PhysicalDeviceFeatures* enabledFeatures; //!< NULL or a pointer to a PhysicalDeviceFeatures structure that contains boolean indicators of all the features to be enabled
+	void* lastRequestedExtensionFeature; //!< The extension feature pointer
 
 public:
 	/// <summary>Constructor for the creation information structure for a Device</summary>
@@ -1029,7 +1051,7 @@ public:
 	/// <param name="flags">A set of reserved device creation flags.</param>
 	explicit DeviceCreateInfo(const std::vector<DeviceQueueCreateInfo>& queueCreateInfos = std::vector<DeviceQueueCreateInfo>(),
 		const VulkanExtensionList& enabledExtensions = VulkanExtensionList(), const PhysicalDeviceFeatures* enabledFeatures = nullptr, DeviceCreateFlags flags = DeviceCreateFlags::e_NONE)
-		: flags(flags), enabledFeatures(enabledFeatures)
+		: flags(flags), enabledFeatures(enabledFeatures), lastRequestedExtensionFeature(nullptr)
 	{
 		setDeviceQueueCreateInfos(queueCreateInfos);
 		setExtensionList(enabledExtensions);
@@ -1095,6 +1117,14 @@ public:
 	/// <summary>Sets the enabled physical device features</summary>
 	/// <param name="inEnabledFeatures">A pointer to a set of PhysicalDeviceFeatures.</param>
 	inline void setEnabledFeatures(const PhysicalDeviceFeatures* inEnabledFeatures) { this->enabledFeatures = inEnabledFeatures; }
+
+	/// <summary>Sets the pointer to the extension feature</summary>
+	/// <param name="inLastRequestedExtensionFeature">A pointer to the extension feature.</param>
+	inline void setLastRequestedExtensionFeature(void* inLastRequestedExtensionFeature) { this->lastRequestedExtensionFeature = inLastRequestedExtensionFeature; }
+
+	/// <summary>Get a pointer to the extension feature</summary>
+	/// <returns>A pointer to the extension feature</returns>
+	inline const void* getLastRequestedExtensionFeature() const { return lastRequestedExtensionFeature; }
 };
 
 /// <summary>The ClearValue struct. Color or depth/stencil value to clear the attachment to.</summary>

@@ -35,11 +35,12 @@ struct DeviceResources
 	pvrvk::PipelineLayout pipelineLayout;
 	pvrvk::ComputePipeline computePipeline;
 
-	// Vulkan buffer objects
-	pvrvk::Buffer MatrixBufferSSBOs[8];
-	// mapped memory view of the product of the matrix multiplication, so that it can be retrieved
-	// One each for if the product is transposed or not
-	pvr::utils::StructuredBufferView bufferViewProdMatrix[2];
+	// Objects to store information about the matricies 
+	const uint32_t matrixBufferCount = 8;
+	// Buffers on the Device, storing a series of transposed versions of the matricies A,B,C
+	pvrvk::Buffer matrixBufferSSBOs[8];
+	// Mapped memory views of those buffers, so that they can be read and flushed.
+	pvr::utils::StructuredBufferView matrixBufferViews[8];
 
 	~DeviceResources()
 	{

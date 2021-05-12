@@ -1,0 +1,118 @@
+#version 460
+#extension GL_EXT_ray_tracing : require
+
+#define REFLECTIONS_HIT_OFFSET 0
+#define REFLECTIONS_MISS_INDEX 0
+#define SHADOW_HIT_OFFSET 1
+#define SHADOW_MISS_INDEX 1
+
+struct ReflectionRayPayload
+{
+	vec3 Li;
+	uint depth;
+};
+
+struct LightData
+{
+	highp vec4 vLightColor;
+	highp vec4 vLightPosition;
+	highp vec4 vAmbientColor;
+};
+
+layout(location = 0) rayPayloadEXT ReflectionRayPayload reflectionRayPayload;
+layout(location = 2) rayPayloadEXT bool visiblityRayPayload;
+
+layout(set = 0, binding = 0) uniform sampler2D gbufferAlbedo;
+layout(set = 0, binding = 1) uniform sampler2D gbufferNormal_Roughness;
+layout(set = 0, binding = 2) uniform sampler2D gbufferWorldPosition_Metallic;
+
+layout(set = 1, binding = 0, rgba16f) uniform image2D outputImage;
+
+layout(set = 2, binding = 0) uniform GlobalUBO
+{
+	highp mat4 mViewMatrix;
+	highp mat4 mProjectionMatrix;
+	highp mat4 mInvVPMatrix;
+	highp vec4 vCameraPosition;
+};
+
+layout(set = 2, binding = 1) uniform LightDataUBO
+{
+	LightData lightData;
+};
+
+layout(set = 2, binding = 5) uniform accelerationStructureEXT topLevelAS;
+
+void main() 
+{
+	const vec2 pixelCenter = vec2(gl_LaunchIDEXT.xy) + vec2(0.5);
+    const vec2 inUV = pixelCenter/vec2(gl_LaunchSizeEXT.xy);
+
+	// Fetch the normal, world position from the G-buffer
+	vec3 normal    = texture(gbufferNormal_Roughness, inUV).xyz;
+    vec3 origin    = texture(gbufferWorldPosition_Metallic, inUV).xyz;
+	float foregroundFlag = texture(gbufferAlbedo, inUV).w;
+
+	reflectionRayPayload.Li = vec3(0.0f);
+	reflectionRayPayload.depth = 0;
+
+	// Offset origin in the direction of the normal to prevent self-intersection
+	origin += normal * 0.1f;
+
+	// If the foregroundFlag is 0.0f, the fragment belongs to the skybox and we don't need to trace rays
+	if (foregroundFlag != 0.0f)
+	{
+		// Compute view direction
+		vec3 viewDir = normalize(origin - vCameraPosition.xyz);
+    
+		// Compute the reflection direction
+		vec3 direction = reflect(viewDir, normal);
+
+		uint  rayFlags = gl_RayFlagsOpaqueEXT;
+		float tMin     = 0.001;
+		float tMax     = 10000.0;
+
+		// Start the raytrace
+		traceRayEXT(topLevelAS,				// acceleration structure
+					rayFlags,				// rayFlags
+					0xFF,					// cullMask
+					REFLECTIONS_HIT_OFFSET, // sbtRecordOffset
+					0,						// sbtRecordStride
+					REFLECTIONS_MISS_INDEX,	// missIndex
+					origin.xyz,				// ray origin
+					tMin,					// ray min range
+					direction.xyz,			// ray direction
+					tMax,					// ray max range
+					0						// payload (location = 0)
+			);
+	}
+
+	// Trace a shadow ray for this pixel
+	visiblityRayPayload = false;
+
+	// Compute the reflection direction
+	vec3 direction = normalize(lightData.vLightPosition.xyz - origin);
+
+	uint  rayFlags = gl_RayFlagsOpaqueEXT | gl_RayFlagsTerminateOnFirstHitEXT;
+	float tMin     = 0.001;
+	float tMax     = 10000.0;
+
+	// Start the raytrace
+	traceRayEXT(topLevelAS,		   // acceleration structure
+				rayFlags,		   // rayFlags
+				0xFF,			   // cullMask
+				SHADOW_HIT_OFFSET, // sbtRecordOffset
+				0,				   // sbtRecordStride
+				SHADOW_MISS_INDEX, // missIndex
+				origin.xyz,		   // ray origin
+				tMin,			   // ray min range
+				direction.xyz,	   // ray direction
+				tMax,			   // ray max range
+				2				   // payload (location = 2)
+		);
+
+	float visiblity = float(visiblityRayPayload);
+	
+	// Store the incoming radiance into the output image
+	imageStore(outputImage, ivec2(gl_LaunchIDEXT.xy), vec4(reflectionRayPayload.Li, visiblity));
+}

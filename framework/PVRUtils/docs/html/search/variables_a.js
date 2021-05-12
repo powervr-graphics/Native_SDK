@@ -1,7 +1,6 @@
 var searchData=
 [
-  ['offsetinbytes',['offsetInBytes',['../structpvr_1_1utils_1_1_vertex_attribute_info.html#a1d09071242cb59f67cca571f054fb1c8',1,'pvr::utils::VertexAttributeInfo']]],
-  ['offsetx',['offsetX',['../structpvr_1_1utils_1_1_image_update_info.html#a9c2480ee85781549db081da54c7cbf7b',1,'pvr::utils::ImageUpdateInfo']]],
-  ['offsety',['offsetY',['../structpvr_1_1utils_1_1_image_update_info.html#a3bae3542769781673b17522db91c19b0',1,'pvr::utils::ImageUpdateInfo']]],
-  ['offsetz',['offsetZ',['../structpvr_1_1utils_1_1_image_update_info.html#af9bdb2f2512ec72d5669ae3b870d7fa5',1,'pvr::utils::ImageUpdateInfo']]]
+  ['nativedisplay_1300',['nativeDisplay',['../structpvr_1_1platform_1_1_native_display_handle__.html#a7996de2ec6692e1addfc46f59078e03b',1,'pvr::platform::NativeDisplayHandle_']]],
+  ['nativewindow_1301',['nativeWindow',['../structpvr_1_1platform_1_1_native_window_handle__.html#a9a8bfae237ff5fe2f048f53ab6c2490a',1,'pvr::platform::NativeWindowHandle_']]],
+  ['nrm_1302',['nrm',['../structpvr_1_1utils_1_1_a_s_vertex_format.html#af28245f50c6aec209c8b0f7dd3162376',1,'pvr::utils::ASVertexFormat']]]
 ];

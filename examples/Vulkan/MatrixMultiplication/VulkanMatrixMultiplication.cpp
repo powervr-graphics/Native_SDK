@@ -89,10 +89,7 @@ void printHelp()
 int main(int argc, char** argv)
 {
 	// All the defaults for the demo are set inside of MatrixMultiplication.h, then any edits made by the command line are changed
-	// which demos to run, initially set to none, but if the commandline doesn't specify a specific benchmark then a demo of all will run
-	bool testToRun[TestVariables::numberOfTotalTests] = { false, false, false, false, false, false, false, false, false, false, false, false, false };
-
-	// create the command line parser
+	// Start by creating the command line parser
 	pvr::platform::CommandLineParser parser(argc - 1, argv + 1);
 	const pvr::CommandLine& cmdLine = parser.getParsedCommandLine();
 
@@ -140,7 +137,8 @@ int main(int argc, char** argv)
 		exit(0);
 	}
 
-	// Now take the the user input for which shader to run
+	// Decide which demos to run, start by turning all the demos off, if the user doesn't specify any arugments, then all demos are turned back on
+	bool testToRun[TestVariables::numberOfTotalTests] = { false, false, false, false, false, false, false, false, false, false, false, false, false };
 	std::vector<std::string> shaderNames;
 	if (cmdLine.getStringOptionList("-shaders", shaderNames))
 	{

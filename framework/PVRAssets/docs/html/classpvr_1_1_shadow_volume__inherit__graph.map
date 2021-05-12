@@ -1,3 +1,4 @@
 <map id="pvr::ShadowVolume" name="pvr::ShadowVolume">
+<area shape="rect" id="node1" title="Represents data for handling Shadow volumes of a single Mesh." alt="" coords="5,80,156,107"/>
 <area shape="rect" id="node2" href="$classpvr_1_1_volume.html" title="Represents data for handling volumes of a single Mesh." alt="" coords="31,5,131,32"/>
 </map>

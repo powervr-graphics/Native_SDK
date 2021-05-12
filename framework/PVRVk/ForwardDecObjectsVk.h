@@ -16,6 +16,7 @@ class Image_;
 class SwapchainImage_;
 class Framebuffer_;
 class Buffer_;
+class AccelerationStructure_;
 class BufferView_;
 class Sampler_;
 class ImageView_;
@@ -30,6 +31,7 @@ class SecondaryCommandBuffer_;
 class Pipeline_;
 class GraphicsPipeline_;
 class ComputePipeline_;
+class RaytracingPipeline_;
 class PipelineLayout_;
 class PipelineCache_;
 class CommandPool_;
@@ -63,6 +65,7 @@ struct MemoryBarrierSet;
 struct GraphicsPipelineCreateInfo;
 struct RenderPassCreateInfo;
 struct ComputePipelineCreateInfo;
+struct RaytracingPipelineCreateInfo;
 struct FramebufferCreateInfo;
 struct DescriptorSetLayoutCreateInfo;
 struct DescriptorPoolCreateInfo;
@@ -76,6 +79,7 @@ struct DebugUtilsMessengerCreateInfo;
 struct DisplayModeCreateInfo;
 struct ImageCreateInfo;
 struct BufferCreateInfo;
+struct AccelerationStructureCreateInfo;
 struct ImageViewCreateInfo;
 struct BufferViewCreateInfo;
 struct PipelineCacheCreateInfo;
@@ -94,11 +98,17 @@ typedef std::shared_ptr<impl::Framebuffer_> Framebuffer;
 /// <summary>Forwared-declared reference-counted handle to a Buffer. For detailed documentation, see PVRVk module</summary>
 typedef std::shared_ptr<impl::Buffer_> Buffer;
 
+/// <summary>Forwared-declared reference-counted handle to an Acceleration Structure. For detailed documentation, see PVRVk module</summary>
+typedef std::shared_ptr<impl::AccelerationStructure_> AccelerationStructure;
+
 /// <summary>Forwared-declared reference-counted handle to a GraphicsPipeline. For detailed documentation, see PVRVk module</summary>
 typedef std::shared_ptr<impl::GraphicsPipeline_> GraphicsPipeline;
 
 /// <summary>Forwared-declared reference-counted handle to a ComputePipeline. For detailed documentation, see PVRVk module</summary>
 typedef std::shared_ptr<impl::ComputePipeline_> ComputePipeline;
+
+/// <summary>Forwared-declared reference-counted handle to a RaytracingPipeline. For detailed documentation, see PVRVk module</summary>
+typedef std::shared_ptr<impl::RaytracingPipeline_> RaytracingPipeline;
 
 /// <summary>Forwared-declared reference-counted handle to a Sampler. For detailed documentation, see PVRVk module</summary>
 typedef std::shared_ptr<impl::Sampler_> Sampler;

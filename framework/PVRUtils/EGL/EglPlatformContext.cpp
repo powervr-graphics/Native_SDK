@@ -1009,10 +1009,9 @@ void EglContext_::init(OSWindow window, OSDisplay display, DisplayAttributes& at
 	default: break;
 	}
 
-	_isDiscardSupported = ((_apiType >= Api::OpenGLES3) || gl::isGlExtensionSupported("GL_EXT_discard_framebuffer"));
-
-	_initialized = true;
 	makeCurrent();
+	_isDiscardSupported = ((_apiType >= Api::OpenGLES3) || gl::isGlExtensionSupported("GL_EXT_discard_framebuffer"));
+	_initialized = true;
 }
 
 Api EglContext_::getMaxApiVersion()

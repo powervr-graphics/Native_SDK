@@ -5,8 +5,7 @@ layout(set = 0, binding = 1) uniform mediump sampler2D sNormalMap;
 layout(set = 0, binding = 2) uniform mediump samplerCube irradianceMap;
 
 layout(push_constant) uniform pushConstantsBlock{
-	mediump float linearExposure;
-	mediump float threshold;
+	mediump float exposure;
 };
 
 layout(location = 0) in mediump vec2 vTexCoord;
@@ -32,14 +31,6 @@ void main()
 	
 	oColor = vec4(diffuseIrradiance, 1.0);
 
-	// Calculate an exposure value
-	// linearExposure = keyValue / averageLuminance
-	mediump float exposure = log2(max(linearExposure, 0.0001f));
-
-	// Reduce by the threshold value
-	exposure -= threshold;
-
 	// Apply the exposure value
-	exposure = exp2(exposure);
-	oFilter = luma(exposure * oColor.rgb);;
+	oFilter = luma(exposure * oColor.rgb);
 }

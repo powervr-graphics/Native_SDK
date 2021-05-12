@@ -86,7 +86,7 @@ android {
 	externalNativeBuild {
 		cmake {
 			path "../CMakeLists.txt"
-			version "3.10.2"
+			version "3.10.0+"
 		}
 	}
 	// Ensure that the icons are copied early - we do this by making the preBuild task depends on the copyIcons task

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.3)
+cmake_minimum_required(VERSION 3.10)
 project(VulkanPVRScopeRemote)
 if(IOS)
 	message("Skipping VulkanPVRScopeRemote : Not supported on iOS")
@@ -51,6 +51,7 @@ add_spirv_shaders_to_target(VulkanPVRScopeRemote
 	SPIRV_SOURCE_GROUP "shaders_generated"
 	ASSET_FOLDER ${ASSET_FOLDER} 
 	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/
+	VULKAN_TARGET_ENV vulkan1.0
 	FILE_LIST
 		FragShader.fsh
 		VertShader.vsh)

@@ -31,7 +31,7 @@ struct TBuiltInResourceInitialiser
 	TBuiltInResourceInitialiser(pvrvk::Device device) : tBuiltInResourcePtr(std::make_unique<TBuiltInResource>())
 	{
 		// Copied from StandAlone/ResourceLimits.cpp
-		TBuiltInResource defaultTBuiltInResource = { /* .MaxLights = */ 32,
+		const TBuiltInResource defaultTBuiltInResource = { /* .MaxLights = */ 32,
 			/* .MaxClipPlanes = */ 6,
 			/* .MaxTextureUnits = */ 32,
 			/* .MaxTextureCoords = */ 32,
@@ -123,6 +123,7 @@ struct TBuiltInResourceInitialiser
 			/* .maxTaskWorkGroupSizeY_NV = */ 1,
 			/* .maxTaskWorkGroupSizeZ_NV = */ 1,
 			/* .maxMeshViewCountNV = */ 4,
+			/* .maxDualSourceDrawBuffersEXT = */ 1,
 
 			/* .limits = */
 			{

@@ -3,8 +3,7 @@
 layout(set = 0, binding = 0) uniform mediump samplerCube skybox;
 
 layout(push_constant) uniform pushConstantsBlock{
-	mediump float linearExposure;
-	mediump float threshold;
+	mediump float exposure;
 };
 
 layout(location = 0) in mediump vec3 rayDirection;
@@ -22,14 +21,6 @@ void main()
 	// Sample skybox cube map
 	oColor = texture(skybox, rayDirection);
 
-	// Calculate an exposure value
-	// linearExposure = keyValue / averageLuminance
-	mediump float exposure = log2(max(linearExposure, 0.0001f));
-
-	// Reduce by the threshold value
-	exposure -= threshold;
-
 	// Apply the exposure value
-	exposure = exp2(exposure);
 	oFilter = luma(exposure * oColor.rgb);
 }

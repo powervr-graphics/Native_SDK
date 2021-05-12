@@ -1,0 +1,53 @@
+#version 460
+#extension GL_EXT_ray_tracing : require
+
+layout(binding = 0, set = 0) uniform accelerationStructureEXT topLevelAS;
+layout(binding = 1, set = 0, rgba32f) uniform image2D image;
+
+layout(binding = 0, set = 1) uniform CameraData
+{
+  mat4 viewMatrixInverse;
+  mat4 projectionMatrixInverse;
+}
+camera;
+
+struct hitPayload
+{
+  vec3 hitValue;
+};
+
+layout(location = 0) rayPayloadEXT hitPayload prd;
+
+void main() 
+{
+	const vec2 pixelCenter = vec2(gl_LaunchIDEXT.xy) + vec2(0.5);
+    const vec2 inUV = pixelCenter/vec2(gl_LaunchSizeEXT.xy);
+    vec2 d = inUV * 2.0 - 1.0;
+
+    vec4 origin    = camera.viewMatrixInverse * vec4(0, 0, 0, 1);
+    vec4 target    = camera.projectionMatrixInverse * vec4(d.x, d.y, 1, 1);
+    vec4 direction = camera.viewMatrixInverse * vec4(normalize(target.xyz), 0);
+
+    uint rayFlags = gl_RayFlagsOpaqueEXT;
+
+    prd.hitValue   = vec3(0);
+
+    traceRayEXT(topLevelAS, // acceleration structure
+      rayFlags,         // rayFlags
+      0xFF,             // cullMask
+      0,                // sbtRecordOffset
+      0,                // sbtRecordStride
+      0,                // missIndex
+      origin.xyz,       // ray origin
+      0.001,            // ray min range
+      direction.xyz,    // ray direction
+      10000.0,          // ray max range
+      0                 // payload (location = 0)
+      );
+    
+    // gamma correct
+    float gamma = 1.0 / 2.2;
+    vec3 color = pow(prd.hitValue, vec3(gamma));
+
+    imageStore(image, ivec2(gl_LaunchIDEXT.xy), vec4(color, 1.0));
+}

@@ -1,0 +1,92 @@
+#version 460
+#extension GL_EXT_ray_tracing : require
+
+// maximum number of light sources supported
+#define MAXIMUM_LIGHTS 3
+
+struct VisibilityRayPayload
+{
+	float visibility;
+};
+
+struct PerLightData
+{
+	highp vec4 lightPosition;
+	highp vec4 lightColor;
+	highp float lightIntensity;
+};
+
+layout(location = 0) rayPayloadEXT VisibilityRayPayload visibilityRayPayload;
+
+layout(set = 0, binding = 0) uniform sampler2D gbufferAlbedo_Metallic;
+layout(set = 0, binding = 1) uniform sampler2D gbufferNormal_Reflectivity;
+layout(set = 0, binding = 2) uniform sampler2D gbufferWorldPosition_F90;
+layout(set = 0, binding = 3) uniform sampler2D gbufferF0_Roughness;
+
+layout(set = 1, binding = 0, rgba8) uniform image2D outputImage;
+
+layout(set = 2, binding = 0) uniform GlobalUBO
+{
+	highp mat4 mViewMatrix;
+	highp mat4 mProjectionMatrix;
+	highp vec4 vAmbientLightColor;
+	highp vec4 vCameraPosition;
+	uint uNumLights;
+};
+
+layout(set = 2, binding = 1) uniform LightDataUBO
+{
+	PerLightData lightData[MAXIMUM_LIGHTS];
+};
+
+layout(set = 2, binding = 4) uniform accelerationStructureEXT topLevelAS;
+
+void main() 
+{
+	const vec2 pixelCenter = vec2(gl_LaunchIDEXT.xy) + vec2(0.5);
+    const vec2 inUV = pixelCenter/vec2(gl_LaunchSizeEXT.xy);
+
+	// Fetch the normal, world position from the G-buffer
+	vec3 normal    = normalize(texture(gbufferNormal_Reflectivity, inUV).xyz);
+    vec3 worldPosition    = texture(gbufferWorldPosition_F90, inUV).xyz;
+	
+	// Offset origin in the direction of the normal to prevent self-intersection
+	vec3 rayOrigin = worldPosition + normal * 0.1f;
+
+	vec4 outputVisibility = vec4(1.0f);
+
+	// Iterate over the scene lights and fire shadow rays at each
+	for (uint i = 0u; i < uNumLights; i++)
+	{
+		PerLightData currentLight = lightData[i];
+
+		// calculate the direction to the current light source
+		highp vec3 directionToLight = normalize(currentLight.lightPosition.xyz - worldPosition);
+		highp vec3 normalisedDirectionToLight = normalize(directionToLight);
+
+		uint  rayFlags = gl_RayFlagsOpaqueEXT;
+		float tMin     = 1.0;
+		float tMax     = 10000.0;
+
+		visibilityRayPayload.visibility = 1.0;
+
+		// Start the raytrace
+		traceRayEXT(topLevelAS,						// acceleration structure
+					rayFlags,						// rayFlags
+					0xFF,							// cullMask
+					0,								// sbtRecordOffset
+					0,								// sbtRecordStride
+					0,								// missIndex
+					rayOrigin.xyz,					// ray origin
+					tMin,							// ray min range
+					normalisedDirectionToLight.xyz, // ray direction
+					tMax,							// ray max range
+					0								// payload (location = 0)
+			);
+
+		outputVisibility[i] = visibilityRayPayload.visibility;
+	}
+
+	// Store the visibility results into the output image
+	imageStore(outputImage, ivec2(gl_LaunchIDEXT.xy), outputVisibility);
+}

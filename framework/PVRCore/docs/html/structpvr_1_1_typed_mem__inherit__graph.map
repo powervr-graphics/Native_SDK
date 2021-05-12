@@ -1,3 +1,4 @@
 <map id="pvr::TypedMem" name="pvr::TypedMem">
+<area shape="rect" id="node1" title="Represents Free Value View that is backed by a (usually small) dynamically allocated block." alt="" coords="17,80,140,107"/>
 <area shape="rect" id="node2" href="$classpvr_1_1_free_value_view.html" title="Represents a runtime&#45;known number of elements of a runtime&#45;known type, with functions to handle and c..." alt="" coords="5,5,152,32"/>
 </map>

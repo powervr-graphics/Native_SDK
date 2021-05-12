@@ -1,0 +1,6 @@
+<map id="pvrvk::impl::AccelerationStructure_" name="pvrvk::impl::AccelerationStructure_">
+<area shape="rect" id="node1" title="Top level acceleration structure implementation for the Vulkan Ray Tracing extension" alt="" coords="599,60,784,101"/>
+<area shape="rect" id="node2" href="$classpvrvk_1_1impl_1_1_p_v_r_vk_device_object_base.html" title=" " alt="" coords="281,5,549,76"/>
+<area shape="rect" id="node3" href="$classpvrvk_1_1impl_1_1_p_v_r_vk_object_base.html" title=" " alt="" coords="5,13,232,69"/>
+<area shape="rect" id="node4" href="$classpvrvk_1_1impl_1_1_device_object_debug_utils.html" title=" " alt="" coords="280,100,551,141"/>
+</map>

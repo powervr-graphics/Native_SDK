@@ -45,6 +45,10 @@ void createXcbWindowSurface(VulkanHelloAPI& vulkanExample)
 		printf("Failed to find a valid XCB screen");
 		exit(0);
 	}
+	
+	// Resize width and height if they're out of bounds
+	vulkanExample.surfaceData.width = std::min(static_cast<float>(vulkanExample.surfaceData.screen->width_in_pixels), vulkanExample.surfaceData.width);
+	vulkanExample.surfaceData.height = std::min(static_cast<float>(vulkanExample.surfaceData.screen->height_in_pixels), vulkanExample.surfaceData.height);
 
 	// Allocate an XID for the window
 	vulkanExample.surfaceData.window = xcb_generate_id(vulkanExample.surfaceData.connection);

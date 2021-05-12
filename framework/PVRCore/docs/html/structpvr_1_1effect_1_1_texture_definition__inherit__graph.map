@@ -1,2 +1,4 @@
 <map id="pvr::effect::TextureDefinition" name="pvr::effect::TextureDefinition">
+<area shape="rect" id="node1" title="Stores effect texture information." alt="" coords="43,80,249,107"/>
+<area shape="rect" id="node2" title=" " alt="" coords="5,5,287,32"/>
 </map>

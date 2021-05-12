@@ -9,10 +9,10 @@
 #ifndef _PVRSCOPECOMMS_H_
 #define _PVRSCOPECOMMS_H_
 
-#ifdef _WIN32
-#define PVRSCOPE_EXPORT
-#else
+#if defined(__GNUC__)
 #define PVRSCOPE_EXPORT __attribute__((visibility("default")))
+#else
+#define PVRSCOPE_EXPORT
 #endif
 
 #ifdef __cplusplus

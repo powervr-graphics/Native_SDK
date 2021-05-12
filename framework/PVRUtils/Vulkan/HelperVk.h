@@ -320,10 +320,11 @@ inline LogLevel mapDebugReportFlagsToLogLevel(pvrvk::DebugReportFlagsEXT flags)
 /// Valid flags include e_DEDICATED_MEMORY_BIT and e_MAPPED_BIT. e_DEDICATED_MEMORY_BIT indicates that the allocation should have its own memory block.
 /// e_MAPPED_BIT indicates memory will be persistently mapped respectively.
 /// The default vma::AllocationCreateFlags::e_MAPPED_BIT is valid even if HOST_VISIBLE is not used - these flags will be ignored in this case.</param>
+/// <param name="memoryAllocateFlags">A bitmask of pvrvk::MemoryAllocateFlagBits controlling the allocation.</param>
 /// <returns>Return a valid object if success</returns>.
 pvrvk::Buffer createBuffer(const pvrvk::Device& device, const pvrvk::BufferCreateInfo& createInfo, pvrvk::MemoryPropertyFlags requiredMemoryFlags,
 	pvrvk::MemoryPropertyFlags optimalMemoryFlags = pvrvk::MemoryPropertyFlags::e_NONE, const vma::Allocator& bufferAllocator = nullptr,
-	vma::AllocationCreateFlags vmaAllocationCreateFlags = vma::AllocationCreateFlags::e_MAPPED_BIT);
+	vma::AllocationCreateFlags vmaAllocationCreateFlags = vma::AllocationCreateFlags::e_MAPPED_BIT, pvrvk::MemoryAllocateFlags memoryAllocateFlags = pvrvk::MemoryAllocateFlags::e_NONE);
 
 /// <summary>create a new Image(sparse or with memory backing, depending on <paramref name="flags"/>. The user should not call bindMemory on the image if sparse flags are used.
 /// <paramref name="requiredMemoryFlags"/> is ignored if <paramref name="flags"/> contains sparse binding flags.</summary>

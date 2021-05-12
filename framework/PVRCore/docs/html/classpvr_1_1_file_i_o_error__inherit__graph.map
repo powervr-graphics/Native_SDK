@@ -1,3 +1,5 @@
 <map id="pvr::FileIOError" name="pvr::FileIOError">
+<area shape="rect" id="node1" title="A simple std::runtime_error wrapper for throwing exceptions when undertaking File IO operations" alt="" coords="15,155,134,181"/>
 <area shape="rect" id="node2" href="$classpvr_1_1_pvr_error.html" title="A simple std::runtime_error wrapper for throwing generic PVR exceptions" alt="" coords="23,80,126,107"/>
+<area shape="rect" id="node3" title=" " alt="" coords="5,5,144,32"/>
 </map>

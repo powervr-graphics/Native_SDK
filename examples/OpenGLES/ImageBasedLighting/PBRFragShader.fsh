@@ -149,7 +149,7 @@ mediump vec3 prefilteredReflection(mediump float roughness, mediump vec3 R)
 	if(roughness <= cutoff)
 	{
 		mediump float lod = roughness * maxmip;
-		return mix(texture(environmentMap, R).rgb, textureLod(prefilteredMap, R, 0.).rgb, lod);
+		return mix(textureLod(environmentMap, R, 0.).rgb, textureLod(prefilteredMap, R, 0.).rgb, lod);
 	}
 	else
 	{

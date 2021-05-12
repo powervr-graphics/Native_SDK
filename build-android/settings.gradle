@@ -60,7 +60,10 @@ ext.PVR_VULKAN_EXAMPLES = [
 	'ImageBasedLightingMapGenerator',
 	'GameOfLife',
 	'PipelineCache',
-	'MatrixMultiplication'
+	'MatrixMultiplication',
+	'VulkanHybridHardShadows',
+	'VulkanHybridReflections',
+	'VulkanHelloRayTracing'
 ]
 
 ext.PVR_OPENCL_EXAMPLES = [ 

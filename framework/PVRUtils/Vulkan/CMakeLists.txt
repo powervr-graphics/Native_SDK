@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.3)
+cmake_minimum_required(VERSION 3.10)
 # Copyright (c) Imagination Technologies Limited.
 
 project(PVRUtilsVk)
@@ -27,6 +27,7 @@ set(PVRUtilsVk_HEADERS
 	../PVRUtilsTypes.h
 	../PVRUtilsVk.h
 	../StructuredMemory.h
+	AccelerationStructure.h
 	AsynchronousVk.h
 	ConvertToPVRVkTypes.h
 	HelperVk.h
@@ -43,6 +44,7 @@ set(PVRUtilsVk_HEADERS
 	
 # PVRUtilsVk sources
 set(PVRUtilsVk_SRC
+	AccelerationStructure.cpp
 	HelperVk.cpp
 	MemoryAllocator.cpp
 	PBRUtilsVk.cpp

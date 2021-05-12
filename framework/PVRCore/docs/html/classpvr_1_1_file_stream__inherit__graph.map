@@ -1,3 +1,4 @@
 <map id="pvr::FileStream" name="pvr::FileStream">
-<area shape="rect" id="node2" href="$classpvr_1_1_stream.html" title="This class is used to abstract streams of data (files, blocks of memory, resources etc..." alt="" coords="16,5,115,32"/>
+<area shape="rect" id="node1" title="A FileStream is a Stream that is used to access a File in the filesystem of the platform." alt="" coords="5,80,127,107"/>
+<area shape="rect" id="node2" href="$classpvr_1_1_stream.html" title="This class is used to abstract streams of data (files, blocks of memory, resources etc...." alt="" coords="17,5,115,32"/>
 </map>

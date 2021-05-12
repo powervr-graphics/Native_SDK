@@ -452,86 +452,21 @@ switch to displaying the statue from the Bumpmap demo.</p>
 </ul>
 </div>
 </div>
-<div class="section" id="navigation2d">
-<h2>Navigation2D<a class="headerlink" href="#navigation2d" title="Permalink to this headline">¶</a></h2>
-<div class="figure align-default">
-<a class="reference internal image-reference" href="https://github.com/powervr-graphics/Native_SDK/blob/master/examples/OpenGLES/Navigation2D/Navigation2D.png?raw=true"><img alt="https://github.com/powervr-graphics/Native_SDK/blob/master/examples/OpenGLES/Navigation2D/Navigation2D.png?raw=true" src="https://github.com/powervr-graphics/Native_SDK/blob/master/examples/OpenGLES/Navigation2D/Navigation2D.png?raw=true" style="width: 320.0px; height: 200.0px;" /></a>
-</div>
-<p>Demonstrates parsing, processing and rendering of raw OSM data as a 2D navigational map.</p>
-<div class="section" id="id43">
-<h3>API<a class="headerlink" href="#id43" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
-<li><p>OpenGL ES 2.0+</p></li>
-</ul>
-</div>
-<div class="section" id="id44">
-<h3>Description<a class="headerlink" href="#id44" title="Permalink to this headline">¶</a></h3>
-<p>The 2D navigation example shows the complete process of creating a navigational map from raw data, in this
-case Open Street Map (OSM) data.</p>
-<p>The example demonstrates:</p>
-<ul class="simple">
-<li><p>loading and parsing of the XML</p></li>
-<li><p>the processing of the raw data</p></li>
-<li><p>triangulation with the ear-clipping algorithm to generate triangles</p></li>
-<li><p>defining the roads</p></li>
-<li><p>batching everything into tiles as renderable polygons.</p></li>
-</ul>
-<p>This example also shows several rendering techniques such as:</p>
-<ul class="simple">
-<li><p>anti-aliased lines with outline for roads</p></li>
-<li><p>UI elements for road names and places of interest</p></li>
-<li><p>an effective tile-based approach to batching and culling the geometry.</p></li>
-</ul>
-</div>
-<div class="section" id="id45">
-<h3>Controls<a class="headerlink" href="#id45" title="Permalink to this headline">¶</a></h3>
-<p>Q- Quit- Close the application</p>
-</div>
-</div>
-<div class="section" id="navigation3d">
-<h2>Navigation3D<a class="headerlink" href="#navigation3d" title="Permalink to this headline">¶</a></h2>
-<div class="figure align-default">
-<a class="reference internal image-reference" href="https://github.com/powervr-graphics/Native_SDK/blob/master/examples/OpenGLES/Navigation3D/Navigation3D.png?raw=true"><img alt="https://github.com/powervr-graphics/Native_SDK/blob/master/examples/OpenGLES/Navigation3D/Navigation3D.png?raw=true" src="https://github.com/powervr-graphics/Native_SDK/blob/master/examples/OpenGLES/Navigation3D/Navigation3D.png?raw=true" style="width: 320.0px; height: 200.0px;" /></a>
-</div>
-<p>Demonstrates parsing, processing and rendering of raw OSM data as a 3D navigational map.</p>
-<div class="section" id="id46">
-<h3>API<a class="headerlink" href="#id46" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
-<li><p>OpenGL ES 2.0+</p></li>
-</ul>
-</div>
-<div class="section" id="id47">
-<h3>Description<a class="headerlink" href="#id47" title="Permalink to this headline">¶</a></h3>
-<p>The 3D navigation example demonstrates the entire process of creating a navigational map from raw XML data,
-in this case using Open Street Map (OSM) data.</p>
-<p>The example shows how to load and parse the XML. It then shows how to process the raw data into renderable polygons which can be used by the GPU. This is achieved through triangulation, which uses the ear-clipping algorithm to generate triangles from lists of points.</p>
-<p>This example also shows several rendering techniques such as:</p>
-<ul class="simple">
-<li><p>anti-aliased lines with GRLAA for road outlines</p></li>
-<li><p>handling of UI elements for road names and places of interest</p></li>
-<li><p>an effective tile based approach to batching and culling the geometry.</p></li>
-</ul>
-</div>
-<div class="section" id="id48">
-<h3>Controls<a class="headerlink" href="#id48" title="Permalink to this headline">¶</a></h3>
-<p>Q- Quit- Close the application</p>
-</div>
-</div>
 <div class="section" id="openclexample">
 <h2>OpenCLExample<a class="headerlink" href="#openclexample" title="Permalink to this headline">¶</a></h2>
 <div class="figure align-default">
 <a class="reference internal image-reference" href="https://github.com/powervr-graphics/Native_SDK/blob/master/examples/OpenGLES/OpenCLExample/OpenCLExample.png?raw=true"><img alt="https://github.com/powervr-graphics/Native_SDK/blob/master/examples/OpenGLES/OpenCLExample/OpenCLExample.png?raw=true" src="https://github.com/powervr-graphics/Native_SDK/blob/master/examples/OpenGLES/OpenCLExample/OpenCLExample.png?raw=true" style="width: 320.0px; height: 200.0px;" /></a>
 </div>
 <p>This example demonstrates using small image convolution OpenCL kernels.</p>
-<div class="section" id="id49">
-<h3>API<a class="headerlink" href="#id49" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id43">
+<h3>API<a class="headerlink" href="#id43" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>OpenGL ES 2.0+</p></li>
 <li><p>OpenCL</p></li>
 </ul>
 </div>
-<div class="section" id="id50">
-<h3>Description<a class="headerlink" href="#id50" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id44">
+<h3>Description<a class="headerlink" href="#id44" title="Permalink to this headline">¶</a></h3>
 <p>This example shows how to structure an application with OpenCL / OpenGL interoperability (or if necessary, CPU fallback) to process images on the GPU using OpenCL.</p>
 <p>Several 3x3 convolution filters are shown:</p>
 <ul class="simple">
@@ -541,8 +476,8 @@ in this case using Open Street Map (OSM) data.</p>
 <li><p>emboss</p></li>
 </ul>
 </div>
-<div class="section" id="id51">
-<h3>Controls<a class="headerlink" href="#id51" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id45">
+<h3>Controls<a class="headerlink" href="#id45" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Left/Right- Change the convolution filter</p></li>
 <li><p>Quit- Close the application</p></li>
@@ -555,18 +490,18 @@ in this case using Open Street Map (OSM) data.</p>
 <a class="reference internal image-reference" href="https://github.com/powervr-graphics/Native_SDK/blob/master/examples/OpenGLES/PVRScopeExample/PVRScopeExample.png?raw=true"><img alt="https://github.com/powervr-graphics/Native_SDK/blob/master/examples/OpenGLES/PVRScopeExample/PVRScopeExample.png?raw=true" src="https://github.com/powervr-graphics/Native_SDK/blob/master/examples/OpenGLES/PVRScopeExample/PVRScopeExample.png?raw=true" style="width: 320.0px; height: 200.0px;" /></a>
 </div>
 <p>Demonstrates the use of PVRScope and the example graphing code.</p>
-<div class="section" id="id52">
-<h3>API<a class="headerlink" href="#id52" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id46">
+<h3>API<a class="headerlink" href="#id46" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>OpenGL ES 2.0+</p></li>
 </ul>
 </div>
-<div class="section" id="id53">
-<h3>Description<a class="headerlink" href="#id53" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id47">
+<h3>Description<a class="headerlink" href="#id47" title="Permalink to this headline">¶</a></h3>
 <p>This example uses a simple PBR-style shader, and shows the use of PVRScope to allow an application to return performance statistics from the GPU in real time. It uses the example graphing code to render a graph of the selected counters on the screen. For further details, refer to the PVRScope User Manual.</p>
 </div>
-<div class="section" id="id54">
-<h3>Controls<a class="headerlink" href="#id54" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id48">
+<h3>Controls<a class="headerlink" href="#id48" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Quit- Close demo</p></li>
 <li><p>Up/Down- Select a counter from the available list of HW counters</p></li>
@@ -580,19 +515,19 @@ in this case using Open Street Map (OSM) data.</p>
 <a class="reference internal image-reference" href="https://github.com/powervr-graphics/Native_SDK/blob/master/examples/OpenGLES/PVRScopeRemote/PVRScopeRemote.png?raw=true"><img alt="https://github.com/powervr-graphics/Native_SDK/blob/master/examples/OpenGLES/PVRScopeRemote/PVRScopeRemote.png?raw=true" src="https://github.com/powervr-graphics/Native_SDK/blob/master/examples/OpenGLES/PVRScopeRemote/PVRScopeRemote.png?raw=true" style="width: 320.0px; height: 200.0px;" /></a>
 </div>
 <p>Demonstrates the use of PVRScope’s remote communication features.</p>
-<div class="section" id="id55">
-<h3>API<a class="headerlink" href="#id55" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id49">
+<h3>API<a class="headerlink" href="#id49" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>OpenGL ES 2.0+</p></li>
 </ul>
 </div>
-<div class="section" id="id56">
-<h3>Description<a class="headerlink" href="#id56" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id50">
+<h3>Description<a class="headerlink" href="#id50" title="Permalink to this headline">¶</a></h3>
 <p>This example shows how to use the editable data and custom mark functionality of PVRScope. PVRTune must be running and connected to an instance of PVRPerfServer running on the target device for this example to function.</p>
 <p>A simple physically-based shader is provided with properties of Albedo, Metallicity and Glossiness. These, together with the shaders, can be edited from the PVRTune GUI. This allows immediate modification of the appearance of the statue.</p>
 </div>
-<div class="section" id="id57">
-<h3>Controls<a class="headerlink" href="#id57" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id51">
+<h3>Controls<a class="headerlink" href="#id51" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Quit- Close demo</p></li>
 <li><p>PVRTune- Control example variables through PVRTune</p></li>
@@ -605,19 +540,19 @@ in this case using Open Street Map (OSM) data.</p>
 <a class="reference internal image-reference" href="https://github.com/powervr-graphics/Native_SDK/blob/master/examples/OpenGLES/ParticleSystem/ParticleSystem.png?raw=true"><img alt="https://github.com/powervr-graphics/Native_SDK/blob/master/examples/OpenGLES/ParticleSystem/ParticleSystem.png?raw=true" src="https://github.com/powervr-graphics/Native_SDK/blob/master/examples/OpenGLES/ParticleSystem/ParticleSystem.png?raw=true" style="width: 320.0px; height: 200.0px;" /></a>
 </div>
 <p>This example shows how to implement a simple particle system using GPGPU.</p>
-<div class="section" id="id58">
-<h3>API<a class="headerlink" href="#id58" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id52">
+<h3>API<a class="headerlink" href="#id52" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>OpenGL ES 3.1+</p></li>
 </ul>
 </div>
-<div class="section" id="id59">
-<h3>Description<a class="headerlink" href="#id59" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id53">
+<h3>Description<a class="headerlink" href="#id53" title="Permalink to this headline">¶</a></h3>
 <p>Particle systems are techniques that use a large amount of sprites to simulate phenomena that would be difficult to reproduce with conventional rendering techniques.</p>
 <p>This example uses GPGPU (GPU compute) to implement a particle system. This is a simple integration-based simulation which is advanced and then rendered every frame strictly on the GPU, without any CPU access of that data. It also highlights the interaction between the compute and the rendering part of a simulation.</p>
 </div>
-<div class="section" id="id60">
-<h3>Controls<a class="headerlink" href="#id60" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id54">
+<h3>Controls<a class="headerlink" href="#id54" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><dl class="simple">
 <dt>Quit- Close demo</dt><dd><ul>
@@ -636,14 +571,14 @@ in this case using Open Street Map (OSM) data.</p>
 <a class="reference internal image-reference" href="https://github.com/powervr-graphics/Native_SDK/blob/master/examples/OpenGLES/PostProcessing/PostProcessing.png?raw=true"><img alt="https://github.com/powervr-graphics/Native_SDK/blob/master/examples/OpenGLES/PostProcessing/PostProcessing.png?raw=true" src="https://github.com/powervr-graphics/Native_SDK/blob/master/examples/OpenGLES/PostProcessing/PostProcessing.png?raw=true" style="width: 320.0px; height: 200.0px;" /></a>
 </div>
 <p>This example demonstrates a set of heavily-optimised bloom post-processing implementations.</p>
-<div class="section" id="id61">
-<h3>API<a class="headerlink" href="#id61" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id55">
+<h3>API<a class="headerlink" href="#id55" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>OpenGL ES 3.0+</p></li>
 </ul>
 </div>
-<div class="section" id="id62">
-<h3>Description<a class="headerlink" href="#id62" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id56">
+<h3>Description<a class="headerlink" href="#id56" title="Permalink to this headline">¶</a></h3>
 <p>This example demonstrates a set of heavily optimised bloom post-processing implementations including:</p>
 <ul class="simple">
 <li><p>Reference implementation of a separated Gaussian Blur.</p></li>
@@ -662,8 +597,8 @@ in this case using Open Street Map (OSM) data.</p>
 <li><p>The resulting blurred image is then composited onto the original image to create a smooth bloom around the brighter regions.</p></li>
 </ol>
 </div>
-<div class="section" id="id63">
-<h3>Controls<a class="headerlink" href="#id63" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id57">
+<h3>Controls<a class="headerlink" href="#id57" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Left/Right - Cycle through the various bloom implementations</p></li>
 <li><p>Up/Down - Increase/decrease the size of the bloom intensity</p></li>
@@ -679,20 +614,20 @@ in this case using Open Street Map (OSM) data.</p>
 <a class="reference internal image-reference" href="https://github.com/powervr-graphics/Native_SDK/blob/master/examples/OpenGLES/Skinning/Skinning.png?raw=true"><img alt="https://github.com/powervr-graphics/Native_SDK/blob/master/examples/OpenGLES/Skinning/Skinning.png?raw=true" src="https://github.com/powervr-graphics/Native_SDK/blob/master/examples/OpenGLES/Skinning/Skinning.png?raw=true" style="width: 320.0px; height: 200.0px;" /></a>
 </div>
 <p>This example shows a scene with a combination of a skinned, bumpmapped character with non-skinned, non-bumpmapped objects.</p>
-<div class="section" id="id64">
-<h3>API<a class="headerlink" href="#id64" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id58">
+<h3>API<a class="headerlink" href="#id58" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>OpenGL ES 3.0+</p></li>
 </ul>
 </div>
-<div class="section" id="id65">
-<h3>Description<a class="headerlink" href="#id65" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id59">
+<h3>Description<a class="headerlink" href="#id59" title="Permalink to this headline">¶</a></h3>
 <p>Skinning is the act of animating a vertex over time given a set (palette) of matrices, and a known set of blend weights assigned to those matrices.</p>
 <p>The Skinning example shows a skinned character in combination with bump mapping. For each frame, the matrix palette is recomputed based on time.</p>
 <p>PVRAssets and POD files support skinning with either full transformation matrices, or Quaternion rotation with scaling and translation vectors. The provided POD file contains matrix animation. A shader storage buffer object is used to support a dynamic number of bones.</p>
 </div>
-<div class="section" id="id66">
-<h3>Controls<a class="headerlink" href="#id66" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id60">
+<h3>Controls<a class="headerlink" href="#id60" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Action1/2/3- Pause</p></li>
 <li><p>Esc- Close</p></li>

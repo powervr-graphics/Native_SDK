@@ -451,7 +451,7 @@ struct StatuePass
 
 		pvrvk::PushConstantRange pushConstantsRange;
 		pushConstantsRange.setOffset(0);
-		pushConstantsRange.setSize(static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::Float) * 2));
+		pushConstantsRange.setSize(static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::Float)));
 		pushConstantsRange.setStageFlags(pvrvk::ShaderStageFlags::e_FRAGMENT_BIT);
 		pipelineLayoutInfo.setPushConstantRange(0, pushConstantsRange);
 
@@ -582,15 +582,13 @@ struct StatuePass
 	/// <param name="framebuffer">The framebuffer to render into</param>
 	/// <param name="exposure">The exposure value used to 'expose' the colour prior to post processing</param>
 	/// <param name="threshold">The threshold value used to determine how much of the colour to retain for the bloom</param>
-	void recordCommandBuffer(uint32_t swapchainIndex, pvrvk::Framebuffer& framebuffer, float exposure, float threshold)
+	void recordCommandBuffer(uint32_t swapchainIndex, pvrvk::Framebuffer& framebuffer, float exposure)
 	{
 		cmdBuffers[swapchainIndex]->begin(framebuffer, 0, pvrvk::CommandBufferUsageFlags::e_RENDER_PASS_CONTINUE_BIT);
 		pvr::utils::beginCommandBufferDebugLabel(cmdBuffers[swapchainIndex], pvrvk::DebugUtilsLabel("Statue"));
 		cmdBuffers[swapchainIndex]->bindPipeline(pipeline);
 		cmdBuffers[swapchainIndex]->bindDescriptorSet(pvrvk::PipelineBindPoint::e_GRAPHICS, pipelineLayout, 0u, descriptorSets[swapchainIndex]);
 		cmdBuffers[swapchainIndex]->pushConstants(pipelineLayout, pvrvk::ShaderStageFlags::e_FRAGMENT_BIT, 0, static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::Float)), &exposure);
-		cmdBuffers[swapchainIndex]->pushConstants(pipelineLayout, pvrvk::ShaderStageFlags::e_FRAGMENT_BIT, static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::Float)),
-			static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::Float)), &threshold);
 		drawMesh(cmdBuffers[swapchainIndex], 0);
 		pvr::utils::endCommandBufferDebugLabel(cmdBuffers[swapchainIndex]);
 		cmdBuffers[swapchainIndex]->end();
@@ -670,7 +668,7 @@ struct SkyboxPass
 
 		pvrvk::PushConstantRange pushConstantsRange;
 		pushConstantsRange.setOffset(0);
-		pushConstantsRange.setSize(static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::Float) * 2));
+		pushConstantsRange.setSize(static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::Float)));
 		pushConstantsRange.setStageFlags(pvrvk::ShaderStageFlags::e_FRAGMENT_BIT);
 		pipelineLayoutInfo.setPushConstantRange(0, pushConstantsRange);
 
@@ -746,15 +744,13 @@ struct SkyboxPass
 	/// <param name="framebuffer">The framebuffer to render into</param>
 	/// <param name="exposure">The exposure value used to 'expose' the colour prior to post processing</param>
 	/// <param name="threshold">The threshold value used to determine how much of the colour to retain for the bloom</param>
-	void recordCommandBuffer(uint32_t swapchainIndex, pvrvk::Framebuffer& framebuffer, float exposure, float threshold)
+	void recordCommandBuffer(uint32_t swapchainIndex, pvrvk::Framebuffer& framebuffer, float exposure)
 	{
 		cmdBuffers[swapchainIndex]->begin(framebuffer, 0, pvrvk::CommandBufferUsageFlags::e_RENDER_PASS_CONTINUE_BIT);
 		pvr::utils::beginCommandBufferDebugLabel(cmdBuffers[swapchainIndex], pvrvk::DebugUtilsLabel("Skybox"));
 		cmdBuffers[swapchainIndex]->bindPipeline(pipeline);
 		cmdBuffers[swapchainIndex]->bindDescriptorSet(pvrvk::PipelineBindPoint::e_GRAPHICS, pipelineLayout, 0u, descriptorSets[swapchainIndex]);
 		cmdBuffers[swapchainIndex]->pushConstants(pipelineLayout, pvrvk::ShaderStageFlags::e_FRAGMENT_BIT, 0, static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::Float)), &exposure);
-		cmdBuffers[swapchainIndex]->pushConstants(pipelineLayout, pvrvk::ShaderStageFlags::e_FRAGMENT_BIT, static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::Float)),
-			static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::Float)), &threshold);
 		cmdBuffers[swapchainIndex]->draw(0, 6);
 		pvr::utils::endCommandBufferDebugLabel(cmdBuffers[swapchainIndex]);
 		cmdBuffers[swapchainIndex]->end();
@@ -3411,8 +3407,8 @@ class VulkanPostProcessing : public pvr::Shell
 
 	bool _useMultiQueue;
 
+	float _linearExposure;
 	float _exposure;
-	float _threshold;
 	size_t _pingPongImageIndices[2];
 
 public:
@@ -3523,9 +3519,24 @@ pvr::Result VulkanPostProcessing::initView()
 		return pvr::Result::UnknownError;
 	}
 
+	// Choose the physical device
+	uint32_t physicalDevice = 0;
+	if (_deviceResources->instance->getNumPhysicalDevices() > 1)
+	{
+		for (uint32_t i = 0; i < _deviceResources->instance->getNumPhysicalDevices(); ++i)
+		{
+			// Prefer discrete gpu
+			if (_deviceResources->instance->getPhysicalDevice(i)->getProperties().getDeviceType() == pvrvk::PhysicalDeviceType::e_DISCRETE_GPU)
+			{
+				physicalDevice = i;
+				break;
+			}
+		}
+	}
+
 	// Create the surface
-	pvrvk::Surface surface =
-		pvr::utils::createSurface(_deviceResources->instance, _deviceResources->instance->getPhysicalDevice(0), this->getWindow(), this->getDisplay(), this->getConnection());
+	pvrvk::Surface surface = pvr::utils::createSurface(
+		_deviceResources->instance, _deviceResources->instance->getPhysicalDevice(physicalDevice), this->getWindow(), this->getDisplay(), this->getConnection());
 
 	// Create a default set of debug utils messengers or debug callbacks using either VK_EXT_debug_utils or VK_EXT_debug_report respectively
 	_deviceResources->debugUtilsCallbacks = pvr::utils::createDebugUtilsCallbacks(_deviceResources->instance);
@@ -3535,7 +3546,7 @@ pvr::Result VulkanPostProcessing::initView()
 		{ pvrvk::QueueFlags::e_GRAPHICS_BIT | pvrvk::QueueFlags::e_COMPUTE_BIT, surface } // Queue 1
 	};
 	pvr::utils::QueueAccessInfo queueAccessInfos[2];
-	_deviceResources->device = pvr::utils::createDeviceAndQueues(_deviceResources->instance->getPhysicalDevice(0), queueCreateInfos, 2, queueAccessInfos);
+	_deviceResources->device = pvr::utils::createDeviceAndQueues(_deviceResources->instance->getPhysicalDevice(physicalDevice), queueCreateInfos, 2, queueAccessInfos);
 
 	_deviceResources->queues[0] = _deviceResources->device->getQueue(queueAccessInfos[0].familyId, queueAccessInfos[0].queueId);
 	_deviceResources->queues[1] = _deviceResources->device->getQueue(queueAccessInfos[1].familyId, queueAccessInfos[1].queueId);
@@ -3563,7 +3574,7 @@ pvr::Result VulkanPostProcessing::initView()
 	{
 		Log(LogLevel::Information, "Only a single queue supports e_GRAPHICS_BIT + e_COMPUTE_BIT + WSI. We cannot ping-pong work each frame");
 	}
-	pvrvk::SurfaceCapabilitiesKHR surfaceCapabilities = _deviceResources->instance->getPhysicalDevice(0)->getSurfaceCapabilities(surface);
+	pvrvk::SurfaceCapabilitiesKHR surfaceCapabilities = _deviceResources->device->getPhysicalDevice()->getSurfaceCapabilities(surface);
 
 	// validate the supported swapchain image usage
 	pvrvk::ImageUsageFlags swapchainImageUsage = pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT;
@@ -3624,10 +3635,10 @@ pvr::Result VulkanPostProcessing::initView()
 	// Ideally we would choose e_R16_SFLOAT but the physical device must have support for features.ShaderStorageImageExtendedFormats
 	// If features.ShaderStorageImageExtendedFormats isn't supported then we'll fallback to e_R16G16B16A16_SFLOAT
 	// e_R16G16B16A16_SFLOAT may already be preferred as it allows for the handling of coloured blooms i.e. coloured light sources
-	if (_deviceResources->instance->getPhysicalDevice(0)->getFeatures().getShaderStorageImageExtendedFormats())
+	if (_deviceResources->device->getPhysicalDevice()->getFeatures().getShaderStorageImageExtendedFormats())
 	{
 		pvrvk::Format extendedFormat = _luminanceColorFormat;
-		pvrvk::FormatProperties prop = _deviceResources->instance->getPhysicalDevice(0)->getFormatProperties(extendedFormat);
+		pvrvk::FormatProperties prop = _deviceResources->device->getPhysicalDevice()->getFormatProperties(extendedFormat);
 		if ((prop.getOptimalTilingFeatures() & pvrvk::FormatFeatureFlags::e_STORAGE_IMAGE_BIT) != 0)
 		{
 			_storageImageLuminanceColorFormat = extendedFormat;
@@ -3645,7 +3656,7 @@ pvr::Result VulkanPostProcessing::initView()
 	else
 	{
 		pvrvk::Format format = pvrvk::Format::e_R16G16B16A16_SFLOAT;
-		pvrvk::FormatProperties prop = _deviceResources->instance->getPhysicalDevice(0)->getFormatProperties(format);
+		pvrvk::FormatProperties prop = _deviceResources->device->getPhysicalDevice()->getFormatProperties(format);
 		if ((prop.getOptimalTilingFeatures() & pvrvk::FormatFeatureFlags::e_STORAGE_IMAGE_BIT) != 0)
 		{
 			_storageImageLuminanceColorFormat = format;
@@ -4059,8 +4070,8 @@ void VulkanPostProcessing::recordMainCommandBuffer(uint32_t swapchainIndex)
 		_deviceResources->device, swapchainIndex, _deviceResources->samplerTrilinear, _deviceResources->sceneBuffer, _deviceResources->sceneBufferView);
 
 	// record command buffers used for rendering the main scene
-	_deviceResources->statuePass.recordCommandBuffer(swapchainIndex, _deviceResources->offScreenFramebuffers[swapchainIndex], _exposure, _threshold);
-	_deviceResources->skyBoxPass.recordCommandBuffer(swapchainIndex, _deviceResources->offScreenFramebuffers[swapchainIndex], _exposure, _threshold);
+	_deviceResources->statuePass.recordCommandBuffer(swapchainIndex, _deviceResources->offScreenFramebuffers[swapchainIndex], _exposure);
+	_deviceResources->skyBoxPass.recordCommandBuffer(swapchainIndex, _deviceResources->offScreenFramebuffers[swapchainIndex], _exposure);
 
 	// Render the main scene
 	_deviceResources->mainCommandBuffers[swapchainIndex]->beginRenderPass(_deviceResources->offScreenFramebuffers[swapchainIndex], _deviceResources->offScreenRenderPass,
@@ -4233,7 +4244,7 @@ void VulkanPostProcessing::recordMainCommandBuffer(uint32_t swapchainIndex)
 		default: throw pvr::UnsupportedOperationError("Unsupported BlurMode.");
 		}
 
-		_deviceResources->postBloomPass.recordCommandBuffer(swapchainIndex, _deviceResources->onScreenFramebuffers[swapchainIndex], _renderOnlyBloom, _exposure);
+		_deviceResources->postBloomPass.recordCommandBuffer(swapchainIndex, _deviceResources->onScreenFramebuffers[swapchainIndex], _renderOnlyBloom, _linearExposure);
 		_deviceResources->mainCommandBuffers[swapchainIndex]->executeCommands(_deviceResources->postBloomPass.cmdBuffers[swapchainIndex]);
 	}
 
@@ -4270,12 +4281,12 @@ void VulkanPostProcessing::recordBlurCommands(BloomMode blurMode, uint32_t swapc
 		break;
 	}
 	case (BloomMode::DualFilter): {
-		_deviceResources->dualFilterBlurPass.recordCommands(swapchainIndex, _deviceResources->onScreenFramebuffers[swapchainIndex], _renderOnlyBloom, _exposure);
+		_deviceResources->dualFilterBlurPass.recordCommands(swapchainIndex, _deviceResources->onScreenFramebuffers[swapchainIndex], _renderOnlyBloom, _linearExposure);
 		break;
 	}
 	case (BloomMode::TentFilter): {
 		_deviceResources->downAndTentFilterBlurPass.recordCommands(swapchainIndex, _deviceResources->onScreenFramebuffers[swapchainIndex], _renderOnlyBloom,
-			_deviceResources->queues[_queueIndex], _deviceResources->luminanceImageViews[_deviceResources->swapchain->getSwapchainIndex()], _exposure);
+			_deviceResources->queues[_queueIndex], _deviceResources->luminanceImageViews[_deviceResources->swapchain->getSwapchainIndex()], _linearExposure);
 		break;
 	}
 	case (BloomMode::HybridGaussian): {
@@ -4513,8 +4524,12 @@ void VulkanPostProcessing::updateDynamicSceneData()
 	_deviceResources->sceneBufferView.getElementByName(BufferEntryNames::Scene::InverseViewProjectionMatrix, 0, _swapchainIndex).setValue(glm::inverse(_viewProjectionMatrix));
 	_deviceResources->sceneBufferView.getElementByName(BufferEntryNames::Scene::EyePosition, 0, _swapchainIndex).setValue(_camera.getCameraPosition());
 
-	_exposure = SceneTexFileNames[_currentScene].getLinearExposure();
-	_threshold = SceneTexFileNames[_currentScene].threshold;
+	_linearExposure = SceneTexFileNames[_currentScene].getLinearExposure();
+
+	// Calculate exposure from linear exposure value and apply threshold
+	_exposure = log2(std::max(_linearExposure, 0.0001f));
+	_exposure -= SceneTexFileNames[_currentScene].threshold;
+	_exposure = exp2(_exposure);
 
 	// Update any bloom configuration buffers currently required
 	if (_mustUpdatePerSwapchainDemoConfig[_deviceResources->swapchain->getSwapchainIndex()])

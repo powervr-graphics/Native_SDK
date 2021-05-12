@@ -12,8 +12,7 @@ layout(location = 3) in highp vec3 N;
 layout(location = 0) out mediump vec4 oColor;
 layout(location = 1) out mediump float oFilter;
 
-layout(location = 0) uniform mediump float linearExposure;
-layout(location = 1) uniform mediump float threshold;
+layout(location = 0) uniform mediump float exposure;
 
 mediump float luma(mediump vec3 color)
 {
@@ -35,15 +34,6 @@ void main()
 
 	oColor = vec4(directionalLight, 1.0);
 
-	// Calculate an exposure value
-	// linearExposure = keyValue / averageLuminance
-	mediump float exposure = log2(max(linearExposure, 0.0001f));
-
-	// Reduce by the threshold value
-	exposure -= threshold;
-
 	// Apply the exposure value
-	exposure = exp2(exposure);
-	mediump float luminance = luma(exposure * oColor.rgb);
-	oFilter = mix(0.0, luminance, dot(luminance, 1.0/3.0) > 0.001);
+	oFilter = luma(exposure * oColor.rgb);
 }

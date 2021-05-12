@@ -21,10 +21,6 @@ Github
 To create a local git repository use:
 ``git clone https://github.com/powervr-graphics/Native_SDK.git``
 
-Installer
-~~~~~~~~~
-Download the platform specific PowerVR SDK Installer from ``https://www.imgtec.com/developers/powervr-sdk-tools/installers/``
-
 Repository Dependencies
 -----------------------
 Other than the platform specific build tools specified below the SDK satisfies all of its own required dependencies internally either by distributing them as part of the SDK or via the use of cmake external projects (externalproject_add).
@@ -45,14 +41,14 @@ Android
 Windows, Linux and macOS
 ~~~~~~~~~~~~~~~~~~~~~~~~
 * Download and install `CMake <https://cmake.org/download>`__
-	* Version 3.3 or above is required.
+	* Version 3.10 or above is required.
 	 
 Windows
 .......
 * Download and install Visual Studio
-	* Versions known to be supported 2015, 2017, 2019
+	* Versions known to be supported 2017, 2019
 	* Community versions should suffice with more capable versions also being supported. 
-* The SDK has been built and tested on Windows 10 using Visual Studio versions 2015, 2017 and 2019 as well as MinGW.
+* The SDK has been built and tested on Windows 10 using Visual Studio versions 2017 and 2019 as well as MinGW.
 	* Other versions of Windows may also work.
 	* Other Windows-based build systems may also work.
 	
@@ -62,16 +58,29 @@ Linux
 	* This may include X11 packages, Wayland packages, libc++, libdl, and other libraries depending on the build configuration.
 * The SDK has been built and tested on Ubuntu 16.04 and Ubuntu 18.04 LTS versions.
 	* Other Linux distributions may also work else adaptions to the SDK should be straightforward.
+* Wayland specific instructions
+  * Make sure XDG_RUNTIME_DIR has been set (e.g. XDG_RUNTIME_DIR=/tmp/wayland) and unfortunately the examples can only be run as root.
 	
 macOS
 .....
+**Note:** Due to Apple depreciating OpenGL on their platforms, PVRVFrame no longer works meaning the GLES sdk framework/examples are no longer supported on macos and ios.
+
 * Download a version of Apple's iOS SDK from `http://developer.apple.com/ios/ <http://developer.apple.com/ios/>`__. It is necessary to become a member of Apple's developer program in order to access this page. Details of how to join can be found at http://developer.apple.com.
 * Install the Apple SDK on the Mac as specified by Apple's instructions. This will include Xcode and any other development tools required.
 * To build for an iOS device, a valid Apple developer certificate is required in the machine's keychain. The ``Properties | Identifier`` property may need to be changed from ``Project | Edit Active Target...`` to match what was set up through Apple's Program Portal.
 * If you do not have a developer certificate from Apple, then it is still possible to build and launch applications in the iOS Simulator. Choose this configuration from the dropdown menu at the top left and then choose Build and Run from the dropdown menu.
+**Note:** The Scheme being built under may need to be set up for the SDK's projects to run.
 
-***Note:** The Scheme being built under may need to be set up for the SDK's projects to run.
-	  
+* To build the vulkan examples you'll need the macOS Lunarg vulkan SDK found at https://vulkan.lunarg.com/. Mount vulkansdk-macos-<version>.dmg and then set the environment variable VULKAN_SDK to the macOS folder in the sdk mount location before running cmake e.g.
+
+.. code-block:: bash
+
+  export VULKAN_SDK=/Volumes/vulkansdk-macos-1.2.170.0/macOS
+  # inside your build directory
+  cmake .. # generate a Makefile
+  cmake .. -GXcode # or generate a xcode project
+
+
 Build Options
 -------------
 Several options can be used to customise the build of the SDK or to control which modules/examples are built. Some of these options are binary enable/disable whilst others require the use of strings as inputs. 
@@ -94,8 +103,6 @@ The following build options can be passed to CMake via the command line using th
      ``PVR_BUILD_OPENGLES_EXAMPLES``                         All            N/A            Pass this parameter if both Vulkan and OpenGL examples are downloaded but, for whatever reason, only a solution for the OpenGL ES ones is required
     ------------------------------------------------------- -------------- -------------- --------------
      ``PVR_BUILD_VULKAN_EXAMPLES``                           All            N/A            Pass this parameter if both Vulkan and OpenGL examples are downloaded but, for whatever reason, only a solution for the Vulkan ones is required
-    ------------------------------------------------------- -------------- -------------- --------------
-     ``WS`` (Deprecated - Please prefer PVR_WINDOW_SYSTEM)   Linux/QNX      N/A            Can be used to control the windowing system used. Supported values: [NullWS, X11, Wayland, Screen]. Usually, desktop Linux systems will be running an X11/XCB or using a Wayland server. Development platforms often use a NullWS system which is where the GPU renders to the screen directly without using a windowing system. Screen is commonly used on QNX.
     ------------------------------------------------------- -------------- -------------- --------------
      ``PVR_WINDOW_SYSTEM``                                   Linux/QNX      N/A            Can be used to control the windowing system used. Supported values: [NullWS, X11, Wayland, Screen]. Usually, desktop Linux systems will be running an X11/XCB or using a Wayland server. Development platforms often use a NullWS system which is where the GPU renders to the screen directly without using a windowing system. Screen is commonly used on QNX.
     ------------------------------------------------------- -------------- -------------- --------------
@@ -127,7 +134,7 @@ The following build options can be passed via gradle using the ``-P[PARAM_NAME]=
 
 See the CMake and gradle documentation for more information on advanced usage.
 	
-Cross Compiliation
+Cross Compilation
 ------------------
 CMake uses toolchain files for cross-compiling. These are usually not necessary when targeting the machine that is being built on, also known as native or host compilation.
 For cross-compiling, The SDK includes a number of CMake toolchain files in ``[path-to-sdk]/cmake/toolchains``. Alternatively these toolchain files can be used as a reference for making other toolchain files. 
@@ -174,7 +181,7 @@ CMake Configuration Instructions
 * Create a directory to use for the files CMake will generate, and navigate to this directory. 
 * Execute CMake, pointing it to the directory where the ``CMakeLists.txt`` is located.
 
-For example: from ``[path-to-sdk]/cmake-build/``, or from ``[path-to-sdk]/examples/[example_api]/[example_name]/cmake-build/`` folder:
+For example: from ``[path-to-sdk]/build/``, or from ``[path-to-sdk]/examples/[example_api]/[example_name]/build/`` folder:
 
   ``cmake ..`` (optionally specifying the CMake Generator i.e. ``-G`` Unix Makefiles, Visual Studio, Xcode, Eclipse, Ninja etc. and architecture)
 

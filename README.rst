@@ -30,7 +30,8 @@ The examples themselves are mostly code samples intended to:
 The examples are built on top of the Framework and optimised so that only the relevant code is left. The examples range from setting up a simple application using the Framework to implementing more advanced graphics techniques, such as physically-based rendering.
 Examples are available using Vulkan, OpenGL ES, and OpenCL.
 
-Developers can interact with our online Community at `www.imgtec.com/developers <https://www.imgtec.com/developers/>`_.
+Developers can interact with our online Community at `developer.imaginationtech.com <https://developer.imaginationtech.com/>`_.
+
 
 Graphics Drivers
 ----------------
@@ -46,6 +47,11 @@ To build the SDK navigate to the root of the SDK or alternatively to the root fo
 For Android, navigate to the ``build-android`` folder of the item to build, and run the platform specific Gradle wrapper script provided (gradlew.bat/gradlew.sh).
 
 For detailed instructions for building the SDK, see `here <BUILD.rst>`_.
+
+Ray Tracing
+-----------
+
+Some of our examples; HelloRayTracing, HybridHardShadows, HybridSoftShadows and HybridReflections, implement ray tracing techniques. Currently they are only compatible with RT ready desktops and laptops running Windows 10 or Linux. They also require hardware/drivers supporting a minimum Vulkan version of 1.2.162.1.
 
 PVRVFrame
 ---------
@@ -82,4 +88,4 @@ The PowerVR SDK has a number of third-party dependencies, each of which may have
 Release notes
 -------------
 
-For the latest version of the Release Notes detailing what has changed in this release, please visit `Release Notes <https://www.imgtec.com/developers/powervr-sdk-tools/whats-new/>`_.
+For the latest version of the Release Notes detailing what has changed in this release, please visit `Release Notes <https://developer.imaginationtech.com/tools/release-notes/>`_.

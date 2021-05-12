@@ -34,10 +34,10 @@ For more information on PVRScope, see the <em>PVRScope User Manual</em>.
 #ifndef _PVRSCOPESTATS_H_
 #define _PVRSCOPESTATS_H_
 
-#ifdef WIN32
-#define PVRSCOPE_EXPORT
-#else
+#if defined(__GNUC__)
 #define PVRSCOPE_EXPORT __attribute__((visibility("default")))
+#else
+#define PVRSCOPE_EXPORT
 #endif
 
 #ifdef __cplusplus

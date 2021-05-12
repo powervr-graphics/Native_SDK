@@ -802,6 +802,9 @@ void readGLTF(const ::pvr::Stream& stream, const IAssetProvider& assetProvider, 
 
 	uint32_t cameraNodeIndex = 0;
 
+	// Cameras
+	parseAllCameras(tinyModel, asset);
+
 	// parse the nodes
 	uint32_t nodeIndex = asset.getNumMeshNodes();
 	uint32_t meshNodeIndex = 0;
@@ -824,8 +827,6 @@ void readGLTF(const ::pvr::Stream& stream, const IAssetProvider& assetProvider, 
 	// Skins
 	parseAllSkins(tinyModel, asset);
 
-	// Cameras
-	parseAllCameras(tinyModel, asset);
 } // namespace assets
 } // namespace assets
 } // namespace pvr

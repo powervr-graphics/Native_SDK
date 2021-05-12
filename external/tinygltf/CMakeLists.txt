@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.3)
+cmake_minimum_required(VERSION 3.10)
 # Copyright (c) Imagination Technologies Limited.
 
 if(NOT PVR_PREBUILT_DEPENDENCIES)

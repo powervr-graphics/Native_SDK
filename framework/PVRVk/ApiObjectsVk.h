@@ -24,6 +24,7 @@
 #include "PVRVk/GraphicsPipelineVk.h"
 #include "PVRVk/CommandBufferVk.h"
 #include "PVRVk/ComputePipelineVk.h"
+#include "PVRVk/RaytracingPipelineVk.h"
 #include "PVRVk/PipelineCacheVk.h"
 #include "PVRVk/EventVk.h"
 #include "PVRVk/FenceVk.h"

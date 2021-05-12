@@ -90,6 +90,22 @@ public:
 	/// cache is enabled for the duration of the command.</param>
 	void createComputePipelines(const ComputePipelineCreateInfo* createInfo, uint32_t numCreateInfos, const PipelineCache& pipelineCache, ComputePipeline* outPipelines);
 
+	/// <summary>createRaytracingPipeline</summary>
+	/// <param name="createInfo">create info</param>
+	/// <returns>Return a valid ray tracing pipeline on success</returns>
+	/// <param name="pipelineCache">Either null handle, indicating that pipeline caching is disabled; or the handle of a valid pipeline cache object, in which case use of that
+	/// cache is enabled for the duration of the command.</param>
+	/// <returns>Return a valid pipeline on success</returns>.
+	RaytracingPipeline createRaytracingPipeline(const RaytracingPipelineCreateInfo& createInfo, const PipelineCache& pipelineCache = PipelineCache());
+
+	/// <summary>create array of ray tracing pipelines</summary>
+	/// <param name="createInfo">Raytracing pipeline create Infos</param>
+	/// <param name="numCreateInfos">Number of ray tracing pipeline to create</param>
+	/// <param name="outPipelines">Out pipelines</param>
+	/// <param name="pipelineCache">Either null handle, indicating that pipeline caching is disabled; or the handle of a valid pipeline cache object, in which case use of that
+	/// cache is enabled for the duration of the command.</param>
+	void createRaytracingPipelines(const RaytracingPipelineCreateInfo* createInfo, uint32_t numCreateInfos, const PipelineCache& pipelineCache, RaytracingPipeline* outPipelines);
+
 	/// <summary>create graphicsPipeline</summary>
 	/// <param name="createInfo">Pipeline create info</param>
 	/// <param name="pipelineCache">Either null handle, indicating that pipeline caching is disabled; or the handle of a valid pipeline cache object, in which case use of that
@@ -130,10 +146,16 @@ public:
 	/// <returns>Return a valid object if success</returns>.
 	Buffer createBuffer(const BufferCreateInfo& createInfo);
 
+	/// <summary>Create a new acceleration structure object</summary>
+	/// <param name="createInfo">The acceleration structure creation descriptor</param>
+	/// <param name="asBuffer">The acceleration structure buffer needed to build the acceleration structure</param>
+	/// <returns>Return a valid object if success</returns>.
+	AccelerationStructure createAccelerationStructure(const AccelerationStructureCreateInfo& createInfo, pvrvk::Buffer asBuffer);
+
 	/// <summary>Create device memory block</summary>
 	/// <param name="allocationInfo">memory allocation info</param>
 	/// <returns>Return a valid object if success</returns>.
-	DeviceMemory allocateMemory(const MemoryAllocationInfo& allocationInfo);
+	DeviceMemory allocateMemory(const MemoryAllocationInfo& allocationInfo, const pvrvk::MemoryAllocateFlags memoryAllocateFlags = pvrvk::MemoryAllocateFlags::e_NONE);
 
 	/// <summary>Create Shader Object</summary>
 	/// <param name="createInfo">Shader module createInfo</param>

@@ -7,6 +7,8 @@
 #	  SPIRV
 #	  OGLCompiler
 #	  OSDependent
+#	  GenericCodeGen
+#     MachineIndependent
 
 if(PVR_PREBUILT_DEPENDENCIES)
 	if(ANDROID)
@@ -15,7 +17,10 @@ if(PVR_PREBUILT_DEPENDENCIES)
 		set(SPIRV_DIR "${CMAKE_CURRENT_LIST_DIR}/../../../external/glslang/build-android/.cxx/cmake/${PVR_ANDROID_BUILD_TYPE}/${ANDROID_ABI}/build")
 		set(OGLCompiler_DIR "${CMAKE_CURRENT_LIST_DIR}/../../../external/glslang/build-android/.cxx/cmake/${PVR_ANDROID_BUILD_TYPE}/${ANDROID_ABI}/build")
 		set(OSDependent_DIR "${CMAKE_CURRENT_LIST_DIR}/../../../external/glslang/build-android/.cxx/cmake/${PVR_ANDROID_BUILD_TYPE}/${ANDROID_ABI}/build")
-	endif()
+		set(GenericCodeGen_DIR "${CMAKE_CURRENT_LIST_DIR}/../../../external/glslang/build-android/.cxx/cmake/${PVR_ANDROID_BUILD_TYPE}/${ANDROID_ABI}/build")
+		set(MachineIndependent_DIR "${CMAKE_CURRENT_LIST_DIR}/../../../external/glslang/build-android/.cxx/cmake/${PVR_ANDROID_BUILD_TYPE}/${ANDROID_ABI}/build")
+		message("${CMAKE_CURRENT_LIST_DIR}/../../../external/glslang/build-android/.cxx/cmake/${PVR_ANDROID_BUILD_TYPE}/${ANDROID_ABI}/build")
+	endif()	
 endif()
 
 if(NOT TARGET OGLCompiler)
@@ -26,6 +31,14 @@ if(NOT TARGET OSDependent)
 	find_package(OSDependent REQUIRED CONFIG)
 endif()
 
+if(NOT TARGET GenericCodeGen)
+	find_package(GenericCodeGen REQUIRED CONFIG)
+endif()
+
+if(NOT TARGET MachineIndependent)
+	find_package(MachineIndependent REQUIRED CONFIG)
+endif()
+
 if(NOT TARGET glslang)
 	find_package(glslang REQUIRED CONFIG)
 endif()
@@ -33,3 +46,4 @@ endif()
 if(NOT TARGET SPIRV)
 	find_package(SPIRV REQUIRED CONFIG)
 endif()
+

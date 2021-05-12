@@ -272,6 +272,7 @@ pvr::Result VulkanIntroducingUIRenderer::initApplication()
 	// so it is safe to check for null character.
 	textStream->readIntoCharBuffer(_text);
 	size_t current = 0;
+	size_t formerCurrent = 0;
 	while (current < _text.size())
 	{
 		const char* start = _text.data() + current;
@@ -282,6 +283,10 @@ pvr::Result VulkanIntroducingUIRenderer::initApplication()
 		if (current < _text.size() && (_text[current] == '\r')) { _text[current++] = '\0'; }
 		// null-term the strings!!!
 		if (current < _text.size() && (_text[current] == '\n' || _text[current] == '\0')) { _text[current++] = '\0'; }
+		// remove empty strings at the end of each paragraph and at the end of _text
+		if ((((current - 1) - formerCurrent == 1) || (current == _text.size())) && (_text[formerCurrent] == '\0')) { _textLines.pop_back(); }
+
+		formerCurrent = current;
 	}
 
 	_titleLang = Language::English;

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.3)
+cmake_minimum_required(VERSION 3.10)
 
 if(NOT TARGET PVRScopeDeveloper OR NOT TARGET PVRScopeDeveloperShared)
 	# Create an imported target for PVRScopeDeveloper
@@ -34,7 +34,11 @@ if(NOT TARGET PVRScopeDeveloper OR NOT TARGET PVRScopeDeveloperShared)
 		endif()
 		set(PVR_SCOPE_LIB_FOLDER "${CMAKE_CURRENT_LIST_DIR}/../../lib/${PLATFORM_FOLDER}")
 	elseif(UNIX)
-		set(PVR_SCOPE_LIB_FOLDER "${CMAKE_CURRENT_LIST_DIR}/../../lib/${CMAKE_SYSTEM_NAME}_${CMAKE_SYSTEM_PROCESSOR}")
+		set(PLATFORM_FOLDER ${CMAKE_SYSTEM_NAME}_${CMAKE_SYSTEM_PROCESSOR})
+		if (${PLATFORM_FOLDER} EQUAL "Linux_aarch64")
+			set(PLATFORM_FOLDER Linux_armv8_64)
+		endif() 
+		set(PVR_SCOPE_LIB_FOLDER "${CMAKE_CURRENT_LIST_DIR}/../../lib/${PLATFORM_FOLDER}")
 	endif()
 
 	set_target_properties(PVRScopeDeveloper PROPERTIES

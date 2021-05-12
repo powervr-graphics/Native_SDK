@@ -447,6 +447,10 @@ struct WriteDescriptorSet
 		{
 			_infoType = InfoType::TexelBufferView;
 		}
+		else if (_descType == pvrvk::DescriptorType::e_ACCELERATION_STRUCTURE_KHR)
+		{
+			_infoType = InfoType::AccelerationStructureInfo;
+		}
 		else
 		{
 			assert(false && "Cannot resolve Info type from descriptor type");
@@ -531,6 +535,22 @@ struct WriteDescriptorSet
 		return *this;
 	}
 
+	/// <summary>If the target descriptor is an acceleration structure, sets the acceleration structure</summary>
+	/// <param name="arrayIndex">If an array, the target array index</param>
+	/// <param name="accelerationStructure">The acceleration structure to set</param>
+	/// <returns>This object(allow chaining)</returns>
+	WriteDescriptorSet& setAccelerationStructureInfo(uint32_t arrayIndex, const AccelerationStructure& accelerationStructure)
+	{
+#ifdef DEBUG
+		assert(_descType == pvrvk::DescriptorType::e_ACCELERATION_STRUCTURE_KHR);
+		assert(accelerationStructure && "Acceleration Structure must be valid");
+#endif
+		DescriptorInfos info;
+		info.accelerationStructure = accelerationStructure;
+		_infos.set(arrayIndex, info);
+		return *this;
+	}
+
 	/// <summary>If the target descriptor is a Texel buffer, set the Texel Buffer info</summary>
 	/// <param name="arrayIndex">If an array, the target array index</param>
 	/// <param name="bufferView">The Texel Buffer view to set</param>
@@ -591,9 +611,10 @@ private:
 		DescriptorImageInfo imageInfo;
 		DescriptorBufferInfo bufferInfo;
 		BufferView texelBuffer;
+		AccelerationStructure accelerationStructure;
 
 		DescriptorInfos() = default;
-		bool isValid() const { return imageInfo.imageView || imageInfo.sampler || bufferInfo.buffer || texelBuffer; }
+		bool isValid() const { return imageInfo.imageView || imageInfo.sampler || bufferInfo.buffer || texelBuffer || accelerationStructure; }
 	};
 
 	impl::DescriptorStore<DescriptorInfos, 4> _infos;
@@ -602,7 +623,8 @@ private:
 	{
 		ImageInfo,
 		BufferInfo,
-		TexelBufferView
+		TexelBufferView,
+		AccelerationStructureInfo
 	};
 	InfoType _infoType;
 

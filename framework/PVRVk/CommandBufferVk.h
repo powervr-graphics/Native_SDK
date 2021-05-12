@@ -9,6 +9,7 @@
 #include "PVRVk/DescriptorSetVk.h"
 #include "PVRVk/GraphicsPipelineVk.h"
 #include "PVRVk/ComputePipelineVk.h"
+#include "PVRVk/RaytracingPipelineVk.h"
 #include "PVRVk/EventVk.h"
 #include "PVRVk/FramebufferVk.h"
 #include "PVRVk/RenderPassVk.h"
@@ -200,6 +201,14 @@ public:
 	{
 		_objectReferences.emplace_back(pipeline);
 		getDevice()->getVkBindings().vkCmdBindPipeline(getVkHandle(), static_cast<VkPipelineBindPoint>(PipelineBindPoint::e_COMPUTE), pipeline->getVkHandle());
+	}
+
+	/// <summary>Bind a ray tracing pipeline</summary>
+	/// <param name="pipeline">The RaytracingPipeline to bind</param>
+	void bindPipeline(RaytracingPipeline& pipeline)
+	{
+		_objectReferences.emplace_back(pipeline);
+		getDevice()->getVkBindings().vkCmdBindPipeline(getVkHandle(), static_cast<VkPipelineBindPoint>(PipelineBindPoint::e_RAY_TRACING_KHR), pipeline->getVkHandle());
 	}
 
 	/// <summary>Bind descriptorsets</summary>
@@ -672,6 +681,18 @@ public:
 	/// <summary>Const getter for the command pool used to allocate this command buffer.</summary>
 	/// <returns>The command pool used to allocate this command buffer.</returns>
 	const CommandPool getCommandPool() const { return _pool; }
+
+	void setFragmentShadingRate(Extent2D fragmentSize, FragmentShadingRateCombinerOpKHR combinerOps[2]);
+
+	void traceRays(pvrvk::StridedDeviceAddressRegionKHR& raygenTable, pvrvk::StridedDeviceAddressRegionKHR& missTable, pvrvk::StridedDeviceAddressRegionKHR& hitTable,
+		pvrvk::StridedDeviceAddressRegionKHR& callableTable, int width, int height, int depth)
+	{
+		VkStridedDeviceAddressRegionKHR raygen = VkStridedDeviceAddressRegionKHR{ raygenTable.getDeviceAddress(), raygenTable.getStride(), raygenTable.getSize() };
+		VkStridedDeviceAddressRegionKHR miss = VkStridedDeviceAddressRegionKHR{ missTable.getDeviceAddress(), missTable.getStride(), missTable.getSize() };
+		VkStridedDeviceAddressRegionKHR hit = VkStridedDeviceAddressRegionKHR{ hitTable.getDeviceAddress(), hitTable.getStride(), hitTable.getSize() };
+		VkStridedDeviceAddressRegionKHR callable = VkStridedDeviceAddressRegionKHR{ callableTable.getDeviceAddress(), callableTable.getStride(), callableTable.getSize() };
+		getDevice()->getVkBindings().vkCmdTraceRaysKHR(getVkHandle(), &raygen, &miss, &hit, &callable, width, height, depth);
+	}
 };
 
 /// <summary>Contains all the commands and states that need to be recorded for later submission to the gpu including pipelines,

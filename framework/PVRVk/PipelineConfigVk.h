@@ -10,8 +10,6 @@
 namespace pvrvk {
 //!\cond NO_DOXYGEN
 
-const uint32_t dynamicStateSize = 16; // Number of elements in enum class DynamicState
-
 struct VertexAttributeInfoCmp_BindingLess_IndexLess
 {
 	bool operator()(const VertexInputAttributeDescription& lhs, const VertexInputAttributeDescription& rhs) const
@@ -865,24 +863,42 @@ public:
 struct DynamicStatesCreateInfo
 {
 private:
-	bool _dynamicStates[dynamicStateSize];
+	std::vector<DynamicState> _dynamicStates;
 
 public:
 	/// <summary>Constructor</summary>
-	DynamicStatesCreateInfo() { memset(_dynamicStates, 0, sizeof(_dynamicStates)); }
+	DynamicStatesCreateInfo() {}
 
 	/// <summary>Check if a specific dynamic state is enabled.</summary>
 	/// <param name="state">The state to check</param>
 	/// <returns>true if <paramref name="state"/>is enabled, otherwise false</returns>
-	bool isDynamicStateEnabled(pvrvk::DynamicState state) const { return (_dynamicStates[static_cast<uint32_t>(state)]); }
+	bool isDynamicStateEnabled(DynamicState state) const
+	{
+		for (DynamicState setState : _dynamicStates)
+		{
+			if (setState == state) { return true; }
+		}
+		return false;
+	}
+
+	/// <summary>Get a copy of the dynamic states that have been enabled</summary>
+	/// <returns>Vector containing the dynamic states that have been enabled</returns>
+	const std::vector<DynamicState>& getDynamicStates() const { return _dynamicStates; }
 
 	/// <summary>Enable/disable a dynamic state</summary>
 	/// <param name="state">The state to enable or disable</param>
 	/// <param name="enable">True to enable, false to disable</param>
 	/// <returns>Return this object(allows chained calls)</returns>
-	DynamicStatesCreateInfo& setDynamicState(pvrvk::DynamicState state, bool enable)
+	DynamicStatesCreateInfo& setDynamicState(DynamicState state, bool enable)
 	{
-		_dynamicStates[static_cast<uint32_t>(state)] = enable;
+		if (enable)
+		{
+			if (std::find(_dynamicStates.begin(), _dynamicStates.end(), state) == _dynamicStates.end()) { _dynamicStates.push_back(state); }
+		}
+		else
+		{
+			_dynamicStates.erase(std::remove(_dynamicStates.begin(), _dynamicStates.end(), state), _dynamicStates.end());
+		}
 		return *this;
 	}
 };
@@ -912,6 +928,77 @@ struct ShaderConstantInfo
 	}
 };
 
+/// <summary>Ray tracing shader group create info parameter.</summary>
+struct RayTracingShaderGroupCreateInfo
+{
+private:
+	RayTracingShaderGroupTypeKHR _type;
+	uint32_t _generalShader;
+	uint32_t _closestHitShader;
+	uint32_t _anyHitShader;
+	uint32_t _intersectionShader;
+	const void* _pShaderGroupCaptureReplayHandle;
+
+public:
+	RayTracingShaderGroupCreateInfo()
+		: _type(RayTracingShaderGroupTypeKHR::e_MAX_ENUM), _generalShader(VK_SHADER_UNUSED_KHR), _closestHitShader(VK_SHADER_UNUSED_KHR), _anyHitShader(VK_SHADER_UNUSED_KHR),
+		  _intersectionShader(VK_SHADER_UNUSED_KHR), _pShaderGroupCaptureReplayHandle(nullptr)
+	{}
+
+	RayTracingShaderGroupCreateInfo(RayTracingShaderGroupTypeKHR type)
+		: _type(type), _generalShader(VK_SHADER_UNUSED_KHR), _closestHitShader(VK_SHADER_UNUSED_KHR), _anyHitShader(VK_SHADER_UNUSED_KHR),
+		  _intersectionShader(VK_SHADER_UNUSED_KHR), _pShaderGroupCaptureReplayHandle(nullptr)
+	{}
+
+	/// <summary>Get the shader group type</summary>
+	/// <returns>The shader group type</returns>
+	pvrvk::RayTracingShaderGroupTypeKHR getType() const { return _type; }
+
+	/// <summary>Set the shader group type</summary>
+	/// <param name="type">New value for the shader group type</param>
+	void setType(pvrvk::RayTracingShaderGroupTypeKHR type) { _type = type; }
+
+	/// <summary>Get the general shader amount</summary>
+	/// <returns>The general shader amount</returns>
+	uint32_t getGeneralShader() const { return _generalShader; }
+
+	/// <summary>Set the general shader amount</summary>
+	/// <param name="generalShader">New value for the general shader amount</param>
+	void setGeneralShader(uint32_t generalShader) { _generalShader = generalShader; }
+
+	/// <summary>Get the closest hit shader amount</summary>
+	/// <returns>The closest hit shader amount</returns>
+	uint32_t getClosestHitShader() const { return _closestHitShader; }
+
+	/// <summary>Set the closest hit shader amount</summary>
+	/// <param name="closestHitShader">New value for the closest hit shader amount</param>
+	void setClosestHitShader(uint32_t closestHitShader) { _closestHitShader = closestHitShader; }
+
+	/// <summary>Get the any hit shader amount</summary>
+	/// <returns>The any hit shader amount</returns>
+	uint32_t getAnyHitShader() const { return _anyHitShader; }
+
+	/// <summary>Set the any hit shader amount</summary>
+	/// <param name="anyHitShader">New value for the any hit shader amount</param>
+	void setAnyHitShader(uint32_t anyHitShader) { _anyHitShader = anyHitShader; }
+
+	/// <summary>Get the intersection hit shader amount</summary>
+	/// <returns>The intersection hit shader amount</returns>
+	uint32_t getIntersectionShader() const { return _intersectionShader; }
+
+	/// <summary>Set the intersection hit shader amount</summary>
+	/// <param name="intersectionShader">New value for the intersection hit shader amount</param>
+	void setIntersectionShader(uint32_t intersectionShader) { _intersectionShader = intersectionShader; }
+
+	/// <summary>Get the shader group capture replay handle</summary>
+	/// <returns>The shader group capture replay handle</returns>
+	const void* getShaderGroupCaptureReplayHandle() const { return _pShaderGroupCaptureReplayHandle; }
+
+	/// <summary>Set the shader group capture replay handle</summary>
+	/// <param name="pShaderGroupCaptureReplayHandle">New value for the shader group capture replay handle</param>
+	void setShaderGroupCaptureReplayHandle(void* pShaderGroupCaptureReplayHandle) { _pShaderGroupCaptureReplayHandle = pShaderGroupCaptureReplayHandle; }
+};
+
 /// <summary>Pipeline vertex ShaderModule stage create param.</summary>
 struct PipelineShaderStageCreateInfo
 {
@@ -921,14 +1008,15 @@ private:
 	pvrvk::ShaderModule _shaderModule;
 	std::vector<ShaderConstantInfo> _shaderConsts;
 	std::string _entryPoint;
+	pvrvk::ShaderStageFlags _shaderStage;
 
 public:
 	/// <summary>Constructor.</summary>
-	PipelineShaderStageCreateInfo() : _entryPoint("main") {}
+	PipelineShaderStageCreateInfo() : _entryPoint("main"), _shaderStage(pvrvk::ShaderStageFlags::e_NONE) {}
 
 	/// <summary>Construct from a pvrvk::ShaderModule object</summary>
 	/// <param name="shader">A vertex shader</param>
-	PipelineShaderStageCreateInfo(const ShaderModule& shader) : _shaderModule(shader), _entryPoint("main") {}
+	PipelineShaderStageCreateInfo(const ShaderModule& shader) : _shaderModule(shader), _entryPoint("main"), _shaderStage(pvrvk::ShaderStageFlags::e_NONE) {}
 
 	/// <summary>Get the shader of this shader stage object</summary>
 	/// <returns>The shader</returns>
@@ -994,6 +1082,14 @@ public:
 	/// <summary>Get the number of shader constants</summary>
 	/// <returns>The number of shader constants</returns>
 	uint32_t getNumShaderConsts() const { return (uint32_t)_shaderConsts.size(); }
+
+	/// <summary>Get the shader stage </summary>
+	/// <returns>The shader stage</returns>
+	pvrvk::ShaderStageFlags getShaderStage() const { return _shaderStage; }
+
+	/// <summary>Set the shader stage </summary>
+	/// <param name="shaderStage">New value for the shader stage</param>
+	void setShaderStage(pvrvk::ShaderStageFlags shaderStage) { _shaderStage = shaderStage; }
 };
 
 /// <summary>Creation parameters for all Tesselation shaders</summary>
@@ -1163,5 +1259,98 @@ public:
 	/// <summary>Get control shader entry point</summary>
 	/// <returns>const char*</returns>
 	const char* getControlShaderEntryPoint() const { return _controlShaderEntryPoint.c_str(); }
+};
+
+/// <summary>Creation parameters for fragment shading rate functionality.</summary>
+/// <remarks>Be sure to check wherever FSR is supported by the physical device in use and enable the feature during logical device creation as FSR is an extension and is not in core vulkan</remarks>
+struct FragmentShadingRateStateCreateInfo
+{
+private:
+	bool _fragmentShadingRateEnabled;
+	Extent2D _fragmentSize;
+	FragmentShadingRateCombinerOpKHR _combinerOpPipelinePrimitive;
+	FragmentShadingRateCombinerOpKHR _combinerOpResultAttachment;
+
+public:
+	/// <summary>Constructor. Initialise with inidividual values</summary>
+	/// <param name="fragmentShadingRateEnabled">Determines wherever fragment shading rate is enabled</param>
+	/// <param name="fragmentSize">The fragment size to be used for pipeline fragment shading rate</param>
+	/// <param name="combinerOpPipelinePrimitive">Defines how the pipeline fragment shading rate (Axy) interacts with the primitive fragment shading rate (Bxy).
+	/// The resulting fragment size is Cxy = CombineOp(Axy, Bxy) as described in the vulkan spec.</param>
+	/// <param name="combinerOpResultAttachment">Defines how the resulting fragment size from the pipeline/primitive combine operation (Axy) interacts with the attachment fragment
+	/// shading rate (Bxy). The final fragment size is Cxy = CombineOp(Axy, Bxy) as described in the vulkan spec.</param>
+	/// <remarks>Disabled by default<remarks>
+	explicit FragmentShadingRateStateCreateInfo(bool fragmentShadingRateEnabled = false, Extent2D fragmentSize = Extent2D(1, 1),
+		FragmentShadingRateCombinerOpKHR combinerOpPipelinePrimitive = FragmentShadingRateCombinerOpKHR::e_KEEP_KHR,
+		FragmentShadingRateCombinerOpKHR combinerOpResultAttachment = FragmentShadingRateCombinerOpKHR::e_KEEP_KHR)
+		: _fragmentShadingRateEnabled(fragmentShadingRateEnabled), _fragmentSize(fragmentSize), _combinerOpPipelinePrimitive(combinerOpPipelinePrimitive),
+		  _combinerOpResultAttachment(combinerOpResultAttachment)
+	{}
+
+	/// <summary>Is fragment shading rate functionality enabled?</summary>
+	/// <returns>Boolean is true if enabled</returns>
+	bool isEnabled() const { return _fragmentShadingRateEnabled; }
+
+	/// <summary>Get the pipeline FSR fragment size</summary>
+	/// <returns>{X,Y} value indicating fragment size</returns>
+	const Extent2D& getFragmentSize() const { return _fragmentSize; }
+
+	/// <summary>Get the currently set primitive/pipeline combiner op.
+	/// This value defines the first of 2 combine-operations performed to determine the final fragment size to be rendered at.
+	/// The first input Axy is the pipeline fragment size, the second input Bxy is the primitive fragment size and they are combined according to this combiner op resulting in
+	/// Cxy = CombineOp(Axy, Bxy). For example if this combiner op is set to KEEP then Cxy = Axy.</summary>
+	/// <returns>The first combiner operation</returns>
+	FragmentShadingRateCombinerOpKHR getCombinerOpPipelinePrimitive() const { return _combinerOpPipelinePrimitive; }
+
+	/// <summary>Get the currently set result/attachment combiner op.
+	/// This value defines the second of 2 combine-operations performed to determine the final fragment size to be rendered at.
+	/// The first input Axy is the result of the first combiner op (combinerOpPipelinePrimitive), the second input Bxy is the attachment fragment size and they are combined according
+	/// to this combiner op resulting in Cxy = CombineOp(Axy, Bxy). For example if this combiner op is set to KEEP then Cxy = Axy.</summary>
+	/// <returns>The second combiner opteration</returns>
+	FragmentShadingRateCombinerOpKHR getCombinerOpResultAttachment() const { return _combinerOpResultAttachment; }
+
+	/// <summary>Enables fragment shading rate functionality</summary>
+	FragmentShadingRateStateCreateInfo& enable()
+	{
+		_fragmentShadingRateEnabled = true;
+		return *this;
+	}
+
+	/// <summary>Disables fragment shading rate functionality</summary>
+	FragmentShadingRateStateCreateInfo& disable()
+	{
+		_fragmentShadingRateEnabled = false;
+		return *this;
+	}
+
+	/// <summary>Sets the pipeline FSR fragment size</summary>
+	/// <param name="fragmentSize">{X,Y} value indicating fragment size</param>
+	FragmentShadingRateStateCreateInfo& setFragmentSize(Extent2D fragmentSize)
+	{
+		_fragmentSize = fragmentSize;
+		return *this;
+	}
+
+	/// <summary>Set the primitive/pipeline combiner op.
+	/// This value defines the first of 2 combine-operations performed to determine the final fragment size to be rendered at.
+	/// The first input Axy is the pipeline fragment size, the second input Bxy is the primitive fragment size and they are combined according to this combiner op resulting in
+	/// Cxy = CombineOp(Axy, Bxy). For example if this combiner op is set to KEEP then Cxy = Axy.</summary>
+	/// <param name="combinerOpPipelinePrimitive">The first combiner operation</param>
+	FragmentShadingRateStateCreateInfo& setCombinerOpPipelinePrimitive(FragmentShadingRateCombinerOpKHR combinerOpPipelinePrimitive)
+	{
+		_combinerOpPipelinePrimitive = combinerOpPipelinePrimitive;
+		return *this;
+	}
+
+	/// <summary>Get the currently set result/attachment combiner op.
+	/// This value defines the second of 2 combine-operations performed to determine the final fragment size to be rendered at.
+	/// The first input Axy is the result of the first combiner op (combinerOpPipelinePrimitive), the second input Bxy is the attachment fragment size and they are combined according
+	/// to this combiner op resulting in Cxy = CombineOp(Axy, Bxy). For example if this combiner op is set to KEEP then Cxy = Axy.</summary>
+	/// <param name="combinerOpResultAttachment">The second combiner opteration</param>
+	FragmentShadingRateStateCreateInfo& setCombinerOpResultAttachment(FragmentShadingRateCombinerOpKHR combinerOpResultAttachment)
+	{
+		_combinerOpResultAttachment = combinerOpResultAttachment;
+		return *this;
+	}
 };
 } // namespace pvrvk

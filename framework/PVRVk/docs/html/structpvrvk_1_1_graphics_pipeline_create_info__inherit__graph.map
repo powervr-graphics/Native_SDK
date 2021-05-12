@@ -1,3 +1,4 @@
 <map id="pvrvk::GraphicsPipelineCreateInfo" name="pvrvk::GraphicsPipelineCreateInfo">
-<area shape="rect" id="node2" href="$structpvrvk_1_1_pipeline_create_info.html" title="pvrvk::PipelineCreateInfo\l\&lt; GraphicsPipeline \&gt;" alt="" coords="34,5,221,47"/>
+<area shape="rect" id="node1" title="This represents all the information needed to create a GraphicsPipeline. All items must have proper v..." alt="" coords="5,95,249,121"/>
+<area shape="rect" id="node2" href="$structpvrvk_1_1_pipeline_create_info.html" title=" " alt="" coords="34,5,221,47"/>
 </map>

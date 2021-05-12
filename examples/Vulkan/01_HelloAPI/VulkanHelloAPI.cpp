@@ -1945,11 +1945,6 @@ void VulkanHelloAPI::drawFrame()
 	// This is where the recorded command buffers are executed. The recorded operations will end up rendering
 	// and presenting the frame to the surface.
 
-	// Wait for the fence to be signalled before starting to render the current frame, then reset it so it can be reused.
-	debugAssertFunctionResult(vk::WaitForFences(appManager.device, 1, &appManager.frameFences[frameId], true, FENCE_TIMEOUT), "Fence - Signalled");
-
-	vk::ResetFences(appManager.device, 1, &appManager.frameFences[frameId]);
-
 	// currentBuffer will be used to point to the correct frame/command buffer/uniform buffer data.
 	// It is going to be the general index of the data being worked on.
 	uint32_t currentBuffer = 0;
@@ -1959,6 +1954,11 @@ void VulkanHelloAPI::drawFrame()
 	debugAssertFunctionResult(
 		vk::AcquireNextImageKHR(appManager.device, appManager.swapchain, std::numeric_limits<uint64_t>::max(), appManager.acquireSemaphore[frameId], VK_NULL_HANDLE, &currentBuffer),
 		"Draw - Acquire Image");
+
+	// Wait for the fence to be signalled before starting to render the current frame, then reset it so it can be reused.
+	debugAssertFunctionResult(vk::WaitForFences(appManager.device, 1, &appManager.frameFences[currentBuffer], true, FENCE_TIMEOUT), "Fence - Signalled");
+
+	vk::ResetFences(appManager.device, 1, &appManager.frameFences[currentBuffer]);
 
 	// Use a helper function with the current frame index to calculate the transformation matrix and write it into the correct
 	// slice of the uniform buffer.
@@ -1978,7 +1978,7 @@ void VulkanHelloAPI::drawFrame()
 	submitInfo.commandBufferCount = 1;
 	submitInfo.pCommandBuffers = &appManager.cmdBuffers[currentBuffer];
 
-	debugAssertFunctionResult(vk::QueueSubmit(appManager.graphicQueue, 1, &submitInfo, appManager.frameFences[frameId]), "Draw - Submit to Graphic Queue");
+	debugAssertFunctionResult(vk::QueueSubmit(appManager.graphicQueue, 1, &submitInfo, appManager.frameFences[currentBuffer]), "Draw - Submit to Graphic Queue");
 
 	// Queue the rendered image for presentation to the surface.
 	// The currentBuffer is again used to select the correct swapchain images to present. A wait

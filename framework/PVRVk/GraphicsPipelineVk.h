@@ -33,6 +33,7 @@ public:
 	TesselationStageCreateInfo tesselationStates; //!< Tesselation Control and evaluation shader information
 	PipelineMultisampleStateCreateInfo multiSample; //!< Multisampling information
 	DynamicStatesCreateInfo dynamicStates; //!< Dynamic state Information
+	FragmentShadingRateStateCreateInfo fragmentShadingRate; //!< Fragment shading rate information (added to pNext chain if enabled)
 	RenderPass renderPass; //!< The RenderPass
 	uint32_t subpass; //!< The subpass index
 

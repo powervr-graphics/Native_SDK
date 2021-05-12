@@ -182,6 +182,16 @@ public:
 	/// <summary>Get thus buffer memory requirements</summary>
 	/// <returns>VkMemoryRequirements</returns>
 	const MemoryRequirements& getMemoryRequirement() const { return _memRequirements; }
+
+	/// <summary>Helper function to obtain the device adddress of a buffer.</summary>
+	/// <param name="device">Device this acceleration structure was built with.</param>
+	/// <returns>The device address of the buffer given as parameter.</returns>
+	VkDeviceAddress getDeviceAddress(const Device device)
+	{
+		VkBufferDeviceAddressInfo bufferDeviceAddressInfo =
+			VkBufferDeviceAddressInfo({ static_cast<VkStructureType>(StructureType::e_BUFFER_DEVICE_ADDRESS_INFO), nullptr, getVkHandle() });
+		return device->getVkBindings().vkGetBufferDeviceAddress(device->getVkHandle(), &bufferDeviceAddressInfo);
+	}
 };
 } // namespace impl
 

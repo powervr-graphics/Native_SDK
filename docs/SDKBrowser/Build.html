@@ -208,17 +208,29 @@ Alternatively the CMakeLists.txt and android-build folder can be used to incorpo
 </dd>
 </dl>
 </li>
+<li><p>Wayland specific instructions
+* Make sure XDG_RUNTIME_DIR has been set (e.g. XDG_RUNTIME_DIR=/tmp/wayland) and unfortunately the examples can only be run as root.</p></li>
 </ul>
 </div>
 <div class="section" id="macos">
 <h4>macOS<a class="headerlink" href="#macos" title="Permalink to this headline">¶</a></h4>
+<p><strong>Note:</strong> Due to Apple depreciating OpenGL on their platforms, PVRVFrame no longer works meaning the GLES sdk framework/examples are no longer supported on macos and ios.</p>
 <ul class="simple">
 <li><p>Download a version of Apple’s iOS SDK from <a class="reference external" href="http://developer.apple.com/ios/">http://developer.apple.com/ios/</a>. It is necessary to become a member of Apple’s developer program in order to access this page. Details of how to join can be found at <a class="reference external" href="http://developer.apple.com">http://developer.apple.com</a>.</p></li>
 <li><p>Install the Apple SDK on the Mac as specified by Apple’s instructions. This will include Xcode and any other development tools required.</p></li>
 <li><p>To build for an iOS device, a valid Apple developer certificate is required in the machine’s keychain. The <code class="docutils literal notranslate"><span class="pre">Properties</span> <span class="pre">|</span> <span class="pre">Identifier</span></code> property may need to be changed from <code class="docutils literal notranslate"><span class="pre">Project</span> <span class="pre">|</span> <span class="pre">Edit</span> <span class="pre">Active</span> <span class="pre">Target...</span></code> to match what was set up through Apple’s Program Portal.</p></li>
 <li><p>If you do not have a developer certificate from Apple, then it is still possible to build and launch applications in the iOS Simulator. Choose this configuration from the dropdown menu at the top left and then choose Build and Run from the dropdown menu.</p></li>
 </ul>
-<p><strong>*Note:</strong> The Scheme being built under may need to be set up for the SDK’s projects to run.</p>
+<p><strong>Note:</strong> The Scheme being built under may need to be set up for the SDK’s projects to run.</p>
+<ul class="simple">
+<li><p>To build the vulkan examples you’ll need the macOS Lunarg vulkan SDK found at <a class="reference external" href="https://vulkan.lunarg.com/">https://vulkan.lunarg.com/</a>. Mount vulkansdk-macos-&lt;version&gt;.dmg and then set the environment variable VULKAN_SDK to the macOS folder in the sdk mount location before running cmake e.g.</p></li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">VULKAN_SDK</span><span class="o">=</span>/Volumes/vulkansdk-macos-1.2.170.0/macOS
+<span class="c1"># inside your build directory</span>
+cmake .. <span class="c1"># generate a Makefile</span>
+cmake .. -GXcode <span class="c1"># or generate a xcode project</span>
+</pre></div>
+</div>
 </div>
 </div>
 </div>
