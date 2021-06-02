@@ -9,6 +9,7 @@
 #include "vk_getProcAddrs.h"
 #include <string>
 #include <array>
+#include <limits>
 
 #include <sstream>
 #include <iostream>
