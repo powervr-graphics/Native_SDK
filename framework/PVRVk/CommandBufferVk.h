@@ -682,7 +682,13 @@ public:
 	/// <returns>The command pool used to allocate this command buffer.</returns>
 	const CommandPool getCommandPool() const { return _pool; }
 
-	void setFragmentShadingRate(Extent2D fragmentSize, FragmentShadingRateCombinerOpKHR combinerOps[2]);
+	/// <summary>Set pipeline fragment shading rate.</summary>
+	/// <param name="fragmentSize">The fragment size to be used for pipeline fragment shading rate.</param>
+	/// <param name="combinerOpPipelinePrimitive">Defines how the pipeline fragment size (Axy) interacts with the primitive fragment size (Bxy).
+	/// The resulting fragment size is Cxy = CombineOp(Axy, Bxy) as described in the vulkan spec. Default value is KEEP, resulting in Cxy = Axy.</param>
+	/// <param name="combinerOpResultAttachment">Defines how the resulting fragment size from the pipeline/primitive combine operation (Axy) interacts with the attachment fragment
+	/// size (Bxy). The final fragment size is Cxy = CombineOp(Axy, Bxy) as described in the vulkan spec. Default value is KEEP, resulting in Cxy = Axy.</param>
+	void setFragmentShadingRate(Extent2D fragmentSize, FragmentShadingRateCombinerOpKHR combinerOpPipelinePrimitive, FragmentShadingRateCombinerOpKHR combinerOpResultAttachment);
 
 	void traceRays(pvrvk::StridedDeviceAddressRegionKHR& raygenTable, pvrvk::StridedDeviceAddressRegionKHR& missTable, pvrvk::StridedDeviceAddressRegionKHR& hitTable,
 		pvrvk::StridedDeviceAddressRegionKHR& callableTable, int width, int height, int depth)

@@ -188,12 +188,16 @@ void VulkanMultiSampling::createMultiSampleFramebufferAndRenderPass()
 	// The second dependency is defined for operations occurring inside a subpass and after the render pass.
 	// it transition the barrier from colour read/ write operation to memory read so the presentation engine can read
 	// them.
-	pvrvk::SubpassDependency dependencies[2] = {
+	pvrvk::SubpassDependency dependencies[] = {
 		pvrvk::SubpassDependency(pvrvk::SubpassExternal, 0, pvrvk::PipelineStageFlags::e_BOTTOM_OF_PIPE_BIT, pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT,
 			pvrvk::AccessFlags::e_NONE, pvrvk::AccessFlags::e_COLOR_ATTACHMENT_READ_BIT | pvrvk::AccessFlags::e_COLOR_ATTACHMENT_WRITE_BIT, pvrvk::DependencyFlags::e_BY_REGION_BIT),
 
 		pvrvk::SubpassDependency(0, pvrvk::SubpassExternal, pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT, pvrvk::PipelineStageFlags::e_BOTTOM_OF_PIPE_BIT,
-			pvrvk::AccessFlags::e_COLOR_ATTACHMENT_READ_BIT | pvrvk::AccessFlags::e_COLOR_ATTACHMENT_WRITE_BIT, pvrvk::AccessFlags::e_NONE, pvrvk::DependencyFlags::e_BY_REGION_BIT)
+			pvrvk::AccessFlags::e_COLOR_ATTACHMENT_READ_BIT | pvrvk::AccessFlags::e_COLOR_ATTACHMENT_WRITE_BIT, pvrvk::AccessFlags::e_NONE, pvrvk::DependencyFlags::e_BY_REGION_BIT),
+
+		pvrvk::SubpassDependency(pvrvk::SubpassExternal, 0, pvrvk::PipelineStageFlags::e_LATE_FRAGMENT_TESTS_BIT, pvrvk::PipelineStageFlags::e_EARLY_FRAGMENT_TESTS_BIT,
+			pvrvk::AccessFlags::e_NONE, pvrvk::AccessFlags::e_DEPTH_STENCIL_ATTACHMENT_READ_BIT | pvrvk::AccessFlags::e_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
+			pvrvk::DependencyFlags::e_BY_REGION_BIT)
 	};
 
 	// multi sample colour attachment
@@ -228,7 +232,7 @@ void VulkanMultiSampling::createMultiSampleFramebufferAndRenderPass()
 			pvrvk::AttachmentLoadOp::e_DONT_CARE, pvrvk::AttachmentStoreOp::e_DONT_CARE, pvrvk::AttachmentLoadOp::e_DONT_CARE, pvrvk::AttachmentStoreOp::e_DONT_CARE));
 
 	rpInfo.setSubpass(0, subpass);
-	rpInfo.addSubpassDependencies(dependencies, 2);
+	rpInfo.addSubpassDependencies(dependencies, 3);
 
 	// create the renderpass
 	pvrvk::RenderPass renderPass = _deviceResources->device->createRenderPass(rpInfo);

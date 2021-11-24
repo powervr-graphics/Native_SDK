@@ -1,10 +1,10 @@
-===============
-DeferredShading
-===============
+=================
+HybridSoftShadows
+=================
 
-.. figure:: ./DeferredShading.png
+.. figure:: ./HybridSoftShadows.png
 
-This example demonstrates optimal deferred shading using Pixel Local Storage (PLS), or Subpasses with Transient Attachments (Vulkan)
+This example demonstrates Ray Traced Soft Shadows using Vulkan Ray Queries and a simple denoiser.
 
 API
 ---
@@ -12,16 +12,19 @@ API
 
 Description
 -----------	
-Traditional rendering algorithms submit geometry and immediately apply shading effects to the rasterized primitives. Complex shading effects may require multiple draw calls (one per object per light) or render passes to produce the final pixel colour, with the geometry submitted every pass. 
+In this demo we present a method for generating Soft Shadows using 1-sample-per-pixel (1spp) Ray Tracing within a Deferred Shaded application. 
 
-Deferred shading is an alternative rendering technique that submits the scene geometry once, storing per-pixel attributes into local video memory to be used in the subsequent rendering passes. 
+The ray tracing pass is integrated into the G-Buffer pass and generates a shadow mask using Ray Queries which eliminates the bandwidth cost that would otherwise be present if used with a separate ray tracing pass.
 
-In these later passes, light volume primitives are rendered, and the per-pixel attributes contained in the buffer are retrieved at a 1:1 mapping ratio so that each pixel is shaded individually.
+The ray direction is computed using a random number that is based on the world position as to retain image stability when objects are stationary.
 
-With the PowerVR architecture, the developer can use fast on-chip memory instead of the render target by using Subpasses with input attachments corresponding to transient, lazily allocated images.
+A few mip levels for this shadow mask is generated which is used to determine if a pixel belongs to the penumbra region. This prevents the denoiser from being used on every fragment shader invocation.
+
+The actual denoising is performed using a poisson disk blur with random rotations based on world position. The blur radius is determined by the ray hit distance. 
+The denoising step itself is integrated into the deferred shading pass, thus minimizing the number of new passes required.
 
 Controls
 --------
-- Action1- Pause
-- Action2- Orbit camera
+- Action1- Cycle light radius
+- Action2- Toggle animation
 - Quit- Close the application

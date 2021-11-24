@@ -15,6 +15,9 @@ const mediump float VignetteRadius = 0.85;
 // Soft for our vignette, between 0.0 and 1.0
 const mediump float VignetteSoftness = 0.35;
 
+// Scale value to prevent the luminance from overflowing
+const mediump float FP16Scale = 10.0;
+
 layout(push_constant) uniform pushConstantsBlock{
 	mediump float linearExposure;
 };
@@ -23,15 +26,19 @@ void main()
 {
 	highp vec3 hdrColor;
 
+	highp vec3 bloomTexture = vec3(texture(sBlurTexture, vTexCoords).r);
+
+	// Multiply by the FP16 scale value to restore the original luminance
+	bloomTexture *= FP16Scale;
+
 	if(RenderBloom == 1)
 	{
-		hdrColor = vec3(texture(sBlurTexture, vTexCoords).r);
+		hdrColor = bloomTexture;
 	}
 	else
 	{
 		// Retrieve the two hdr colour attachments and combine them
 		highp vec3 offscreenTexture = texture(sOffScreenTexture, vTexCoords).rgb;
-		highp vec3 bloomTexture = vec3(texture(sBlurTexture, vTexCoords).r);
 		hdrColor = offscreenTexture * linearExposure + bloomTexture;
 	}
 

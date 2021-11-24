@@ -181,6 +181,14 @@ void ParticleSystemGPU::setNumberOfParticles(uint32_t numParticles_)
 	for (uint32_t i = 0; i < MultiBuffers; ++i)
 	{
 		commandStaging->fillBuffer(particleSystemBuffers[i], 0, 0, particleSystemBuffers[i]->getSize());
+
+		{
+			pvrvk::MemoryBarrierSet barriers;
+			barriers.addBarrier(pvrvk::BufferMemoryBarrier(pvrvk::AccessFlags::e_TRANSFER_WRITE_BIT, pvrvk::AccessFlags::e_TRANSFER_WRITE_BIT, particleSystemBuffers[i], 0,
+				static_cast<uint32_t>(particleSystemBuffers[i]->getSize())));
+			commandStaging->pipelineBarrier(pvrvk::PipelineStageFlags::e_TRANSFER_BIT, pvrvk::PipelineStageFlags::e_TRANSFER_BIT, barriers, true);
+		}
+
 		pvrvk::BufferCopy bufferCopy = pvrvk::BufferCopy(0, 0, sizeof(Particle) * numParticles);
 		// Second copy the staging buffer contents up into the particle system buffers
 		commandStaging->copyBuffer(stagingBuffer, particleSystemBuffers[i], 1, &bufferCopy);

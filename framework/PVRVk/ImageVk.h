@@ -163,6 +163,9 @@ public:
 	/// <summary>Get a pointer to a list of queue family inidices for the image</summary>
 	/// <returns>A pointer to the list of Image queue families</returns>
 	inline const uint32_t* getQueueFamilyIndices() const { return _queueFamilyIndices; }
+	/// <summary>Set a pointer to a list of queue family inidices for the image</summary>
+	/// <param name="queueFamilyIndices">A pointer to the list of Image queue families</param>
+	inline void setQueueFamilyIndices(const uint32_t* queueFamilyIndices) { _queueFamilyIndices = queueFamilyIndices; }
 
 private:
 	/// <summary>Flags to use for creating the image</summary>

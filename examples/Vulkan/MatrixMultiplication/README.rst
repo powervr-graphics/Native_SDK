@@ -23,7 +23,6 @@ the size of workgroups launched, in some cases the default sizes can be too larg
 Notes
 -----
 The Workgroup sizes have been optimised for PowerVR hardware, meaning that the workgroup sizes are set to 32. However, this can still be changed to suit the platform via a command line argument. On Windows, when computing the product of very large matrices, the computation can take too long and the driver will *"loose"* the Vulkan device, so just be weary of the sizes you pick.
-
 Unlike most examples in the SDK, this demo is entirely command line based, so you might find that you require different instructions to run it. On android this does not compile into a .apk but instead to a resource folder and an executable, this is more similar to a linux executable the SDK builds and as such the instructions to run it are a bit more involved.
 
 1. first push it onto the device:

@@ -84,6 +84,7 @@ tasks.whenTaskAdded { task ->
 						copy{
 							from inputPath
 							into outputPath
+							fileMode 0664
 							include "**"
 						}
 					})

@@ -1,4 +1,0 @@
-<map id="pvr::PointerLocation" name="pvr::PointerLocation">
-<area shape="rect" id="node1" title="Mouse pointer coordinates." alt="" coords="23,80,175,107"/>
-<area shape="rect" id="node2" href="$structpvr_1_1_pointer_location_store.html" title="A storage structure for the pointer location" alt="" coords="5,5,192,32"/>
-</map>

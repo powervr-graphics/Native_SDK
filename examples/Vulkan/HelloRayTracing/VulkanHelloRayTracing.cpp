@@ -165,10 +165,14 @@ struct DeviceResources
 	~DeviceResources()
 	{
 		if (device) { device->waitIdle(); }
-		uint32_t l = swapchain->getSwapchainLength();
-		for (uint32_t i = 0; i < l; ++i)
+
+		if (swapchain)
 		{
-			if (perFrameResourcesFences[i]) perFrameResourcesFences[i]->wait();
+			uint32_t l = swapchain->getSwapchainLength();
+			for (uint32_t i = 0; i < l; ++i)
+			{
+				if (perFrameResourcesFences[i]) perFrameResourcesFences[i]->wait();
+			}
 		}
 	}
 };
@@ -219,8 +223,12 @@ public:
 	/// needed in the sample including those neccessary for Ray Tracing.</summary>
 	/// <param name="physicalDevice">Physical device.</param>
 	/// <param name="queuePopulateInfo">Information for the type of GPU queues to gather information about for later submission of commands.</param>
-	/// <returns>Return a structure encapsulating the family id and queue id of a particular queue retrieved.</returns>
-	pvr::utils::QueueAccessInfo buildDeviceAndQueues(pvrvk::PhysicalDevice physicalDevice, pvr::utils::QueuePopulateInfo* queuePopulateInfo);
+	/// <param name="queueAccessInfo">Helper struct with information for GPU queue family and queue ID access.</param>
+	/// <param name="vectorExtensionNames">Vector with the names of the extensions needed.</param>
+	/// <returns>pvr::Result Success if initialisation succeeded, pvr::Result UnsupportedRequest if the extensions are not
+	/// supported by the physical device.</returns>
+	pvr::Result buildDeviceAndQueues(pvrvk::PhysicalDevice physicalDevice, pvr::utils::QueuePopulateInfo* queuePopulateInfo, pvr::utils::QueueAccessInfo& queueAccessInfo,
+		std::vector<std::string> vectorExtensionNames);
 
 	/// <summary>This function will be fired once before the main Graphics Context is lost. The user should use this callback as his main callback to
 	/// release all API objects as they will be invalid afterwards. In simple applications where all objects are created in initView, it should release
@@ -356,14 +364,6 @@ public:
 	/// <param name="imageIndex">Swap chain image index to copy to the contents of _deviceResources::renderImage.</param>
 	void recordRenderImageCopy(pvrvk::CommandBuffer& cmdBuf, uint32_t imageIndex);
 
-	/// <summary>Build a pvrvk::Buffer with memory flag e_DEVICE_ADDRESS_BIT. This means the built memory for this buffer can be
-	/// attached to a buffer object with usage flag e_SHADER_DEVICE_ADDRESS_BIT, needed as well to retrieve the
-	/// buffer address through vkGetBufferDeviceAddress API call. This allows to access this buffer's information from a shader.</summary>
-	/// <param name="createInfo">Buffer create info struct.</param>
-	/// <param name="memoryPropertyFlags">Buffer memory property flags.</param>
-	/// <returns>Return the built buffer.</returns>
-	pvrvk::Buffer createDeviceAddressBuffer(const pvrvk::BufferCreateInfo& createInfo, pvrvk::MemoryPropertyFlags memoryPropertyFlags);
-
 	/// <summary>Utility function to allocate a new command buffer and start recording, returning it.</summary>
 	/// <returns>Return the allocated command buffer.</returns>
 	pvrvk::CommandBuffer beginCommandBuffer();
@@ -377,11 +377,7 @@ public:
 	void recordCommandUIRenderer(pvrvk::CommandBuffer& cmdBuffers);
 };
 
-pvr::Result VulkanHelloRayTracing::initApplication()
-{
-	this->setDimensions(800, 600);
-	return pvr::Result::Success;
-}
+pvr::Result VulkanHelloRayTracing::initApplication() { return pvr::Result::Success; }
 
 pvr::Result VulkanHelloRayTracing::initView()
 {
@@ -397,16 +393,62 @@ pvr::Result VulkanHelloRayTracing::initView()
 		return pvr::Result::UnknownError;
 	}
 
+	// One important step is the device extensions that are required. Some of them follow the latest Vulkan approach, building a linked list of
+	// structs through the pNext field in all of them. This linked list is built in this SDK through the addExtensionFeature() method and used in the
+	// Device constructor (Device_::Device_), being assigned to the pNext VkDeviceCreateInfo struct used to create the device in the call to vkCreateDevice
+	// Note that the extensions needed for this Ray Tracing sample are:
+	//
+	// VK_KHR_RAY_TRACING_EXTENSION_NAME:              Allows the use of all the Vulkan API calls from the Ray Tracing extension.
+	//
+	// VK_KHR_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME:    Allows to obtain the address of a GPU buffer (device) through the call to vkGetBufferDeviceAddress,
+	//                                                 needed for many of the operations to setup bottom and top level acceleration structures.
+	//
+	// VK_EXT_SCALAR_BLOCK_LAYOUT_EXTENSION_NAME:      Modifies the alignment rules for uniform buffers, storage buffers and push constants, allowing non-scalar
+	//                                                 types to be aligned solely based on the size of their components, without additional requirements.
+	//
+	// VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME:      Allows to bind all textures at once as an unsized array, and later in the shader to index into any
+	//                                                 of those textures. This is due to the fact that, when a ray hits a triangle, we don't knw oin advance what
+	//                                                 textures will be assigned to the material assigned to tha triangle, meaning any ray could access any
+	//                                                 texture in a single ray trace pass.
+	//
+	// VK_KHR_MAINTENANCE3_EXTENSION_NAME:             Adds detail to the limits of some functionalities, like the maximum number of descriptors supported in a single
+	//                                                 descritpr set layout (some implementations only have a limit for the total size of descriptors). Also adds a
+	//                                                 limit to the maximum size of a memory allocation, being this sometimes limited by the kernel in some platforms.
+	//
+	// VK_KHR_PIPELINE_LIBRARY_EXTENSION_NAME:         Allows a special pipeline that defines shaders / shader groups that can be linked into other pipelines
+	//                                                 (a "pipeline library" is a special pipeline that cannot be bound, instead it defines a set of shaders and
+	//                                                 shader groups which can be linked into other pipelines.)
+	//
+	// VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME: Defines the infrastructure and usage patterns for deferrable commands, but does not specify
+	//                                                 any commands as deferrable. This is left to additional dependant extensions (more information in
+	//                                                 https://www.khronos.org/registry/vulkan/specs/1.2-extensions/html/vkspec.html#deferred-host-operations-requesting)
+
+	std::vector<std::string> vectorExtensionNames{ VK_KHR_MAINTENANCE3_EXTENSION_NAME, VK_KHR_GET_MEMORY_REQUIREMENTS_2_EXTENSION_NAME, VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME,
+		VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME, VK_KHR_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME, VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME,
+		VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME, VK_KHR_PIPELINE_LIBRARY_EXTENSION_NAME, VK_KHR_DEDICATED_ALLOCATION_EXTENSION_NAME, VK_EXT_SCALAR_BLOCK_LAYOUT_EXTENSION_NAME };
+
+	std::vector<int> vectorPhysicalDevicesIndex = pvr::utils::validatePhysicalDeviceExtensions(_deviceResources->instance, vectorExtensionNames);
+
+	if (vectorPhysicalDevicesIndex.size() == 0)
+	{
+		throw pvrvk::ErrorInitializationFailed("Could not find all the required Vulkan extensions.");
+		return pvr::Result::UnsupportedRequest;
+	}
+
 	// Create the surface
-	pvrvk::Surface surface =
-		pvr::utils::createSurface(_deviceResources->instance, _deviceResources->instance->getPhysicalDevice(0), this->getWindow(), this->getDisplay(), this->getConnection());
+	pvrvk::Surface surface = pvr::utils::createSurface(
+		_deviceResources->instance, _deviceResources->instance->getPhysicalDevice(vectorPhysicalDevicesIndex[0]), this->getWindow(), this->getDisplay(), this->getConnection());
 
 	// Create a default set of debug utils messengers or debug callbacks using either VK_EXT_debug_utils or VK_EXT_debug_report respectively
 	_deviceResources->debugUtilsCallbacks = pvr::utils::createDebugUtilsCallbacks(_deviceResources->instance);
 
 	// create device and queues
 	pvr::utils::QueuePopulateInfo queuePopulateInfo = { pvrvk::QueueFlags::e_GRAPHICS_BIT, surface };
-	pvr::utils::QueueAccessInfo queueAccessInfo = buildDeviceAndQueues(_deviceResources->instance->getPhysicalDevice(0), &queuePopulateInfo);
+	pvr::utils::QueueAccessInfo queueAccessInfo;
+	pvr::Result resultDeviceAndQueues =
+		buildDeviceAndQueues(_deviceResources->instance->getPhysicalDevice(vectorPhysicalDevicesIndex[0]), &queuePopulateInfo, queueAccessInfo, vectorExtensionNames);
+
+	if (resultDeviceAndQueues != pvr::Result::Success) { return resultDeviceAndQueues; }
 
 	// get queue
 	_deviceResources->queue = _deviceResources->device->getQueue(queueAccessInfo.familyId, queueAccessInfo.queueId);
@@ -415,7 +457,7 @@ pvr::Result VulkanHelloRayTracing::initView()
 	_deviceResources->vmaAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
 
 	// validate the supported swapchain image usage
-	pvrvk::SurfaceCapabilitiesKHR surfaceCapabilities = _deviceResources->instance->getPhysicalDevice(0)->getSurfaceCapabilities(surface);
+	pvrvk::SurfaceCapabilitiesKHR surfaceCapabilities = _deviceResources->instance->getPhysicalDevice(vectorPhysicalDevicesIndex[0])->getSurfaceCapabilities(surface);
 	pvrvk::ImageUsageFlags swapchainImageUsage = pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_TRANSFER_DST_BIT;
 	if (pvr::utils::isImageUsageSupportedBySurface(surfaceCapabilities, pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT))
 	{
@@ -468,7 +510,7 @@ pvr::Result VulkanHelloRayTracing::initView()
 	_rtProperties.pNext = nullptr;
 	VkPhysicalDeviceProperties2 properties{ static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_PROPERTIES_2) };
 	properties.pNext = &_rtProperties;
-	_deviceResources->instance->getVkBindings().vkGetPhysicalDeviceProperties2(_deviceResources->instance->getPhysicalDevice(0)->getVkHandle(), &properties);
+	_deviceResources->instance->getVkBindings().vkGetPhysicalDeviceProperties2(_deviceResources->instance->getPhysicalDevice(vectorPhysicalDevicesIndex[0])->getVkHandle(), &properties);
 
 	// Setup ray tracing resources
 	buildOffscreenRenderImage();
@@ -496,57 +538,19 @@ pvr::Result VulkanHelloRayTracing::initView()
 	return pvr::Result::Success;
 }
 
-pvr::utils::QueueAccessInfo VulkanHelloRayTracing::buildDeviceAndQueues(pvrvk::PhysicalDevice physicalDevice, pvr::utils::QueuePopulateInfo* queuePopulateInfo)
+pvr::Result VulkanHelloRayTracing::buildDeviceAndQueues(pvrvk::PhysicalDevice physicalDevice, pvr::utils::QueuePopulateInfo* queuePopulateInfo,
+	pvr::utils::QueueAccessInfo& queueAccessInfo, std::vector<std::string> vectorExtensionNames)
 {
-	// This method builds the device and finds the available queues from the GPU.
-	// One important step is the device extensions that are required. Some of them follow the latest Vulkan approach, building a linked list of
-	// structs through the pNext field in all of them. This linked list is built in this SDK through the addExtensionFeature() method and used in the
-	// Device constructor (Device_::Device_), being assigned to the pNext VkDeviceCreateInfo struct used to create the device in the call to vkCreateDevice
-	// Note that the extensions needed for this Ray Tracing sample are:
-	//
-	// VK_KHR_RAY_TRACING_EXTENSION_NAME:              Allows the use of all the Vulkan API calls from the Ray Tracing extension.
-	//
-	// VK_KHR_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME:    Allows to obtain the address of a GPU buffer (device) through the call to vkGetBufferDeviceAddress,
-	//                                                 needed for many of the operations to setup bottom and top level acceleration structures.
-	//
-	// VK_EXT_SCALAR_BLOCK_LAYOUT_EXTENSION_NAME:      Modifies the alignment rules for uniform buffers, storage buffers and push constants, allowing non-scalar
-	//                                                 types to be aligned solely based on the size of their components, without additional requirements.
-	//
-	// VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME:      Allows to bind all textures at once as an unsized array, and later in the shader to index into any
-	//                                                 of those textures. This is due to the fact that, when a ray hits a triangle, we don't knw oin advance what
-	//                                                 textures will be assigned to the material assigned to tha triangle, meaning any ray could access any
-	//                                                 texture in a single ray trace pass.
-	//
-	// VK_KHR_MAINTENANCE3_EXTENSION_NAME:             Adds detail to the limits of some functionalities, like the maximum number of descriptors supported in a single
-	//                                                 descritpr set layout (some implementations only have a limit for the total size of descriptors). Also adds a
-	//                                                 limit to the maximum size of a memory allocation, being this sometimes limited by the kernel in some platforms.
-	//
-	// VK_KHR_PIPELINE_LIBRARY_EXTENSION_NAME:         Allows a special pipeline that defines shaders / shader groups that can be linked into other pipelines
-	//                                                 (a "pipeline library" is a special pipeline that cannot be bound, instead it defines a set of shaders and
-	//                                                 shader groups which can be linked into other pipelines.)
-	//
-	// VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME: Defines the infrastructure and usage patterns for deferrable commands, but does not specify
-	//                                                 any commands as deferrable. This is left to additional dependant extensions (more information in
-	//                                                 https://www.khronos.org/registry/vulkan/specs/1.2-extensions/html/vkspec.html#deferred-host-operations-requesting)
-
 	pvr::utils::DeviceExtensions deviceExtensions = pvr::utils::DeviceExtensions();
-	deviceExtensions.addExtension(VK_KHR_MAINTENANCE3_EXTENSION_NAME);
-	deviceExtensions.addExtension(VK_KHR_GET_MEMORY_REQUIREMENTS_2_EXTENSION_NAME);
-	deviceExtensions.addExtension(VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME);
-	deviceExtensions.addExtension(VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME);
-	deviceExtensions.addExtension(VK_KHR_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME);
-	deviceExtensions.addExtension(VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME);
-	deviceExtensions.addExtension(VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME);
-	deviceExtensions.addExtension(VK_KHR_PIPELINE_LIBRARY_EXTENSION_NAME);
-	deviceExtensions.addExtension(VK_KHR_DEDICATED_ALLOCATION_EXTENSION_NAME);
-	deviceExtensions.addExtension(VK_EXT_SCALAR_BLOCK_LAYOUT_EXTENSION_NAME);
+
+	for (const std::string& extensionName : vectorExtensionNames) { deviceExtensions.addExtension(extensionName); }
 
 	// Ray tracing pipeline feature
 	VkPhysicalDeviceFeatures2KHR physical_device_features_3{ static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_FEATURES_2_KHR) };
 	VkPhysicalDeviceRayTracingPipelineFeaturesKHR raytracingPipeline{ static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR) };
 	physical_device_features_3.pNext = &raytracingPipeline;
-	_deviceResources->instance->getVkBindings().vkGetPhysicalDeviceFeatures2KHR(_deviceResources->instance->getPhysicalDevice(0)->getVkHandle(), &physical_device_features_3);
-	deviceExtensions.addExtensionFeature<VkPhysicalDeviceRayTracingPipelineFeaturesKHR>(
+	_deviceResources->instance->getVkBindings().vkGetPhysicalDeviceFeatures2KHR(physicalDevice->getVkHandle(), &physical_device_features_3);
+	deviceExtensions.addExtensionFeatureVk<VkPhysicalDeviceRayTracingPipelineFeaturesKHR>(
 		static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR), &raytracingPipeline);
 
 	// Ray tracing physical device
@@ -554,38 +558,37 @@ pvr::utils::QueueAccessInfo VulkanHelloRayTracing::buildDeviceAndQueues(pvrvk::P
 	VkPhysicalDeviceAccelerationStructureFeaturesKHR accelerationStructureFeatures{ static_cast<VkStructureType>(
 		pvrvk::StructureType::e_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR) };
 	physical_device_features_5.pNext = &accelerationStructureFeatures;
-	_deviceResources->instance->getVkBindings().vkGetPhysicalDeviceFeatures2KHR(_deviceResources->instance->getPhysicalDevice(0)->getVkHandle(), &physical_device_features_5);
-	deviceExtensions.addExtensionFeature<VkPhysicalDeviceAccelerationStructureFeaturesKHR>(
+	_deviceResources->instance->getVkBindings().vkGetPhysicalDeviceFeatures2KHR(physicalDevice->getVkHandle(), &physical_device_features_5);
+	deviceExtensions.addExtensionFeatureVk<VkPhysicalDeviceAccelerationStructureFeaturesKHR>(
 		static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR), &accelerationStructureFeatures);
 
 	// Buffer device extension extension feature
 	VkPhysicalDeviceFeatures2KHR physical_device_features{ static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_FEATURES_2_KHR) };
 	VkPhysicalDeviceBufferDeviceAddressFeatures extension{ static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_BUFFER_DEVICE_ADDRESS_FEATURES) };
 	physical_device_features.pNext = &extension;
-	_deviceResources->instance->getVkBindings().vkGetPhysicalDeviceFeatures2KHR(_deviceResources->instance->getPhysicalDevice(0)->getVkHandle(), &physical_device_features);
-	deviceExtensions.addExtensionFeature<VkPhysicalDeviceBufferDeviceAddressFeatures>(
+	_deviceResources->instance->getVkBindings().vkGetPhysicalDeviceFeatures2KHR(physicalDevice->getVkHandle(), &physical_device_features);
+	deviceExtensions.addExtensionFeatureVk<VkPhysicalDeviceBufferDeviceAddressFeatures>(
 		static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_BUFFER_DEVICE_ADDRESS_FEATURES), &extension);
 
 	// Scalar block extension feature
 	VkPhysicalDeviceFeatures2KHR physical_device_features_4{ static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_FEATURES_2_KHR) };
 	VkPhysicalDeviceScalarBlockLayoutFeaturesEXT scalarFeature{ static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_SCALAR_BLOCK_LAYOUT_FEATURES) };
 	physical_device_features_4.pNext = &scalarFeature;
-	_deviceResources->instance->getVkBindings().vkGetPhysicalDeviceFeatures2KHR(_deviceResources->instance->getPhysicalDevice(0)->getVkHandle(), &physical_device_features_4);
-	deviceExtensions.addExtensionFeature<VkPhysicalDeviceScalarBlockLayoutFeaturesEXT>(
+	_deviceResources->instance->getVkBindings().vkGetPhysicalDeviceFeatures2KHR(physicalDevice->getVkHandle(), &physical_device_features_4);
+	deviceExtensions.addExtensionFeatureVk<VkPhysicalDeviceScalarBlockLayoutFeaturesEXT>(
 		static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_SCALAR_BLOCK_LAYOUT_FEATURES), &scalarFeature);
 
 	// Descriptor indexing extension feature
 	VkPhysicalDeviceFeatures2KHR physical_device_features_2{ static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_FEATURES_2_KHR) };
 	VkPhysicalDeviceDescriptorIndexingFeatures indexFeature{ static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES) };
 	physical_device_features_2.pNext = &indexFeature;
-	_deviceResources->instance->getVkBindings().vkGetPhysicalDeviceFeatures2KHR(_deviceResources->instance->getPhysicalDevice(0)->getVkHandle(), &physical_device_features_2);
+	_deviceResources->instance->getVkBindings().vkGetPhysicalDeviceFeatures2KHR(physicalDevice->getVkHandle(), &physical_device_features_2);
 	VkPhysicalDeviceDescriptorIndexingFeatures* pIndexFeature = &indexFeature;
-	deviceExtensions.addExtensionFeature<VkPhysicalDeviceDescriptorIndexingFeatures>(
+	deviceExtensions.addExtensionFeatureVk<VkPhysicalDeviceDescriptorIndexingFeatures>(
 		static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES), pIndexFeature);
 
-	pvr::utils::QueueAccessInfo queueAccessInfo;
 	_deviceResources->device = pvr::utils::createDeviceAndQueues(physicalDevice, queuePopulateInfo, 1, &queueAccessInfo, deviceExtensions);
-	return queueAccessInfo;
+	return pvr::Result::Success;
 }
 
 pvr::Result VulkanHelloRayTracing::releaseView()
@@ -700,7 +703,9 @@ void VulkanHelloRayTracing::buildVertexBuffer()
 
 	// The generated pvrvk::Buffer buffer is assigned to DeviceResources::vertexBuffer since it'll be needed later to build the
 	// bottom level acceleration structure.
-	_deviceResources->vertexBuffer = createDeviceAddressBuffer(vertexBufferInfo, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT);
+	_deviceResources->vertexBuffer = pvr::utils::createBuffer(_deviceResources->device, vertexBufferInfo, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT,
+		pvrvk::MemoryPropertyFlags::e_NONE, nullptr, pvr::utils::vma::AllocationCreateFlags::e_NONE, pvrvk::MemoryAllocateFlags::e_DEVICE_ADDRESS_BIT);
+
 	pvr::utils::updateBufferUsingStagingBuffer(_deviceResources->device, _deviceResources->vertexBuffer, uploadCmd, vertices.data(), 0, vertexBufferSize);
 
 	endAndSubmitCommandBuffer(uploadCmd);
@@ -724,7 +729,9 @@ void VulkanHelloRayTracing::buildIndexBuffer()
 
 	// The generated pvrvk::Buffer buffer is assigned to DeviceResources::indexBuffer since it'll be needed later to build the
 	// bottom level acceleration structure.
-	_deviceResources->indexBuffer = createDeviceAddressBuffer(indexBufferInfo, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT);
+	_deviceResources->indexBuffer = pvr::utils::createBuffer(_deviceResources->device, indexBufferInfo, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT,
+		pvrvk::MemoryPropertyFlags::e_NONE, nullptr, pvr::utils::vma::AllocationCreateFlags::e_NONE, pvrvk::MemoryAllocateFlags::e_DEVICE_ADDRESS_BIT);
+
 	pvr::utils::updateBufferUsingStagingBuffer(_deviceResources->device, _deviceResources->indexBuffer, uploadCmd, indices.data(), 0, indexBufferSize);
 
 	endAndSubmitCommandBuffer(uploadCmd);
@@ -865,9 +872,11 @@ void VulkanHelloRayTracing::buildBottomLevelASModel()
 		static_cast<VkAccelerationStructureBuildTypeKHR>(pvrvk::AccelerationStructureBuildTypeKHR::e_DEVICE_KHR), &accelerationStructureBuildGeometryInfo, maxPrimitiveCount.data(),
 		&asBuildSizesInfo);
 
-	pvrvk::Buffer blasBuffer = createDeviceAddressBuffer(pvrvk::BufferCreateInfo(asBuildSizesInfo.accelerationStructureSize,
-															 pvrvk::BufferUsageFlags::e_SHADER_DEVICE_ADDRESS_BIT | pvrvk::BufferUsageFlags::e_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR),
-		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT);
+	pvrvk::Buffer blasBuffer = pvr::utils::createBuffer(_deviceResources->device,
+		pvrvk::BufferCreateInfo(
+			asBuildSizesInfo.accelerationStructureSize, pvrvk::BufferUsageFlags::e_SHADER_DEVICE_ADDRESS_BIT | pvrvk::BufferUsageFlags::e_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR),
+		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_NONE, nullptr, pvr::utils::vma::AllocationCreateFlags::e_NONE,
+		pvrvk::MemoryAllocateFlags::e_DEVICE_ADDRESS_BIT);
 
 	pvrvk::AccelerationStructureCreateInfo accelerationStructureCreateInfo;
 	accelerationStructureCreateInfo.setType(pvrvk::AccelerationStructureTypeKHR::e_BOTTOM_LEVEL_KHR);
@@ -881,9 +890,10 @@ void VulkanHelloRayTracing::buildBottomLevelASModel()
 
 	// A scratch buffer with the size of the biggest bottom level acceleration structure geometry element needs to be built and provided
 	// to build the bottom level acceleration structure, in this case, there's only a single element to be ray traced.
-	pvrvk::Buffer scratchBuffer =
-		createDeviceAddressBuffer(pvrvk::BufferCreateInfo(scratchSize, pvrvk::BufferUsageFlags::e_SHADER_DEVICE_ADDRESS_BIT | pvrvk::BufferUsageFlags::e_STORAGE_BUFFER_BIT),
-			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT);
+	pvrvk::Buffer scratchBuffer = pvr::utils::createBuffer(_deviceResources->device,
+		pvrvk::BufferCreateInfo(scratchSize, pvrvk::BufferUsageFlags::e_SHADER_DEVICE_ADDRESS_BIT | pvrvk::BufferUsageFlags::e_STORAGE_BUFFER_BIT),
+		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_NONE, nullptr, pvr::utils::vma::AllocationCreateFlags::e_NONE,
+		pvrvk::MemoryAllocateFlags::e_DEVICE_ADDRESS_BIT);
 
 	// Get the address of the scratch buffer.
 	VkDeviceAddress scratchAddress = scratchBuffer->getDeviceAddress(_deviceResources->device);
@@ -918,9 +928,11 @@ void VulkanHelloRayTracing::buildTopLevelASAndInstances(pvrvk::BuildAcceleration
 	pvrvk::CommandBuffer commandBuffer = beginCommandBuffer();
 
 	// The instance information is put in a buffer
-	pvrvk::Buffer instancesBuffer = createDeviceAddressBuffer(pvrvk::BufferCreateInfo(sizeof(VkAccelerationStructureInstanceKHR) * vectorAccelerationStructureInstances.size(),
-																  pvrvk::BufferUsageFlags::e_SHADER_DEVICE_ADDRESS_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT),
-		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT);
+	pvrvk::Buffer instancesBuffer = pvr::utils::createBuffer(_deviceResources->device,
+		pvrvk::BufferCreateInfo(sizeof(VkAccelerationStructureInstanceKHR) * vectorAccelerationStructureInstances.size(),
+			pvrvk::BufferUsageFlags::e_SHADER_DEVICE_ADDRESS_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT),
+		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
+		pvrvk::MemoryPropertyFlags::e_NONE, nullptr, pvr::utils::vma::AllocationCreateFlags::e_NONE, pvrvk::MemoryAllocateFlags::e_DEVICE_ADDRESS_BIT);
 
 	pvr::utils::updateHostVisibleBuffer(
 		instancesBuffer, vectorAccelerationStructureInstances.data(), 0, sizeof(VkAccelerationStructureInstanceKHR) * vectorAccelerationStructureInstances.size(), true);
@@ -962,20 +974,22 @@ void VulkanHelloRayTracing::buildTopLevelASAndInstances(pvrvk::BuildAcceleration
 	accelerationStructureCreateInfo.setType(pvrvk::AccelerationStructureTypeKHR::e_TOP_LEVEL_KHR);
 	accelerationStructureCreateInfo.setSize(accelerationStructureBuildSizesInfo.accelerationStructureSize);
 
-	pvrvk::Buffer asBuffer = createDeviceAddressBuffer(
+	pvrvk::Buffer asBuffer = pvr::utils::createBuffer(_deviceResources->device,
 		pvrvk::BufferCreateInfo(accelerationStructureBuildSizesInfo.accelerationStructureSize,
 			pvrvk::BufferUsageFlags::e_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR | pvrvk::BufferUsageFlags::e_SHADER_DEVICE_ADDRESS_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT),
-		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT);
+		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
+		pvrvk::MemoryPropertyFlags::e_NONE, nullptr, pvr::utils::vma::AllocationCreateFlags::e_NONE, pvrvk::MemoryAllocateFlags::e_DEVICE_ADDRESS_BIT);
 
 	accelerationStructureCreateInfo.setBuffer(asBuffer->getVkHandle());
 
 	_deviceResources->_tlas = _deviceResources->device->createAccelerationStructure(accelerationStructureCreateInfo, asBuffer);
 	_deviceResources->_tlas->setAccelerationStructureBuffer(asBuffer);
 
-	pvrvk::Buffer scratchBuffer = createDeviceAddressBuffer(
+	pvrvk::Buffer scratchBuffer = pvr::utils::createBuffer(_deviceResources->device,
 		pvrvk::BufferCreateInfo(accelerationStructureBuildSizesInfo.buildScratchSize,
 			pvrvk::BufferUsageFlags::e_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR | pvrvk::BufferUsageFlags::e_SHADER_DEVICE_ADDRESS_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT),
-		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT);
+		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
+		pvrvk::MemoryPropertyFlags::e_NONE, nullptr, pvr::utils::vma::AllocationCreateFlags::e_NONE, pvrvk::MemoryAllocateFlags::e_DEVICE_ADDRESS_BIT);
 
 	// Get scratch buffer device address, reuse instancesDeviceAddressInfo struct
 	VkDeviceAddress scratchAddress = scratchBuffer->getDeviceAddress(_deviceResources->device);
@@ -1422,23 +1436,6 @@ void VulkanHelloRayTracing::recordRenderImageCopy(pvrvk::CommandBuffer& cmdBuf, 
 
 	// Submit barriers to transition layout
 	cmdBuf->pipelineBarrier(pvrvk::PipelineStageFlags::e_ALL_COMMANDS_BIT, pvrvk::PipelineStageFlags::e_ALL_COMMANDS_BIT, barrierSet);
-}
-
-pvrvk::Buffer VulkanHelloRayTracing::createDeviceAddressBuffer(const pvrvk::BufferCreateInfo& createInfo, pvrvk::MemoryPropertyFlags memoryPropertyFlags)
-{
-	pvrvk::Buffer buffer = _deviceResources->device->createBuffer(createInfo);
-
-	const pvrvk::MemoryRequirements memoryRequirements = buffer->getMemoryRequirement();
-	uint32_t memoryTypeIndex;
-	pvrvk::MemoryPropertyFlags temp;
-	pvr::utils::getMemoryTypeIndex(
-		_deviceResources->device->getPhysicalDevice(), memoryRequirements.getMemoryTypeBits(), memoryPropertyFlags, pvrvk::MemoryPropertyFlags::e_NONE, memoryTypeIndex, temp);
-
-	pvrvk::DeviceMemory deviceMemory = _deviceResources->device->allocateMemory(
-		pvrvk::MemoryAllocationInfo(buffer->getMemoryRequirement().getSize(), memoryTypeIndex), pvrvk::MemoryAllocateFlags::e_DEVICE_ADDRESS_BIT);
-	buffer->bindMemory(deviceMemory, 0);
-
-	return buffer;
 }
 
 pvrvk::CommandBuffer VulkanHelloRayTracing::beginCommandBuffer()

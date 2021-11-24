@@ -724,8 +724,9 @@ void CommandBufferBase_::drawIndirectByteCount(
 		getVkHandle(), instanceCount, firstInstance, counterBuffer->getVkHandle(), counterBufferOffset, counterOffset, vertexStride);
 }
 
-void CommandBufferBase_::setFragmentShadingRate(Extent2D fragmentSize, FragmentShadingRateCombinerOpKHR combinerOps[2])
+void CommandBufferBase_::setFragmentShadingRate(Extent2D fragmentSize, FragmentShadingRateCombinerOpKHR combinerOpPipelinePrimitive, FragmentShadingRateCombinerOpKHR combinerOpResultAttachment)
 {
+	FragmentShadingRateCombinerOpKHR combinerOps[2] = { combinerOpPipelinePrimitive, combinerOpResultAttachment };
 	getDevice()->getVkBindings().vkCmdSetFragmentShadingRateKHR(getVkHandle(), &fragmentSize.get(), (VkFragmentShadingRateCombinerOpKHR*)combinerOps);
 }
 

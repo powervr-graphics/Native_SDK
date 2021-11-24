@@ -381,7 +381,7 @@ pvr::Result VulkanIntroducingUIRenderer::initView()
 	_deviceResources->onScreenFramebuffer = swapChainCreateOutput.framebuffer;
 
 	_deviceResources->uiRenderer.init(getWidth(), getHeight(), isFullScreen(), swapChainCreateOutput.renderPass, 0, getBackBufferColorspace() == pvr::ColorSpace::sRGB,
-		_deviceResources->commandPool, _deviceResources->queue, true, true, true, 128);
+		_deviceResources->commandPool, _deviceResources->queue, true, true, true, 256, 256);
 
 	// Create the sync objects and the commandbuffer
 	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)

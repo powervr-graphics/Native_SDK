@@ -18,6 +18,7 @@
 #include "PVRShell/StateMachine.h"
 #include "PVRShell/OS/Windows/WindowsOSData.h"
 #include <windows.h>
+#include <fcntl.h>
 #include <io.h>
 
 /// <summary>The entry point for Microsoft Windows (Windowed application). See the Win32 spec for
@@ -45,6 +46,31 @@ int CALLBACK WinMain(_In_ HINSTANCE hInstance, _In_ HINSTANCE, _In_ LPSTR lpCmdL
 	*/
 	//_CrtSetBreakAlloc(30145);
 #endif
+
+	// Attach stdout and stderr to a console, so that the log can output data to the user.
+	// If the user called this through VS studio or file manager than there won't be a console so we have to create one.
+	// However, if the user called the application from the console, don't create a new one and instead attach to the calling console.
+	if (!AttachConsole(ATTACH_PARENT_PROCESS))
+	{
+		// Spawn a new console
+		AllocConsole();
+
+		// If the user closes a spawned console, the application quits immediatley without disposing of API resources.
+		// This gives warning of memory leaks, so prevent the user from pressing the close button on the console
+		HWND handle = GetConsoleWindow();
+		if (handle)
+		{
+			HMENU hmenu = GetSystemMenu(handle, FALSE);
+			if (hmenu) { DeleteMenu(hmenu, SC_CLOSE, MF_BYCOMMAND); }
+		}
+	}
+
+	// redirect stdout and stderr to the console
+	HWND handle = GetConsoleWindow();
+	FILE* handle_out = freopen("CON", "w", stdout);
+	FILE* handle_err = freopen("CON", "w", stderr);
+	FILE* handle_in = freopen("CON", "r", stdin);
+
 	int retval;
 	{
 		pvr::platform::WindowsOSData data;
@@ -60,5 +86,12 @@ int CALLBACK WinMain(_In_ HINSTANCE hInstance, _In_ HINSTANCE, _In_ LPSTR lpCmdL
 		// Enter our loop
 		retval = (stateMachine.execute() == pvr::Result::Success) ? 0 : 1;
 	}
+
+	// Close the console and the iostreams
+	FreeConsole();
+	if (handle_out) { fclose(handle_out); }
+	if (handle_err) { fclose(handle_err); }
+	if (handle_in) { fclose(handle_in); }
+
 	return retval;
 }

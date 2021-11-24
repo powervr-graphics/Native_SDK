@@ -34,9 +34,9 @@ Android
      * Android NDK bundle
      * The Android SDK Platform package for API level 26 (used as our targetSdkVersion)
 	 * The Android SDK Build-Tools version 29 (used as our compileSdkVersion)
-     * CMake
+     * CMake version 3.10.2
      * LLDB [optional] - only required for on-device debugging
-     * If you plan on using gradleW from the command-line make sure that %JavaHome% points to a valid Java JDK directory 
+     * If you plan on using gradleW from the command-line, make sure that the environment variable ``JavaHome`` points to a valid Java JDK directory
 
 Windows, Linux and macOS
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -64,6 +64,7 @@ Linux
 macOS
 .....
 **Note:** Due to Apple depreciating OpenGL on their platforms, PVRVFrame no longer works meaning the GLES sdk framework/examples are no longer supported on macos and ios.
+**Note:** Due to Apple not natively supporting Vulkan, the Vulkan sdk examples framework/examples might fail on macos for no reason depending on MoltenVK's version used. In future releases the support for macos and ios will be removed from the sdk.
 
 * Download a version of Apple's iOS SDK from `http://developer.apple.com/ios/ <http://developer.apple.com/ios/>`__. It is necessary to become a member of Apple's developer program in order to access this page. Details of how to join can be found at http://developer.apple.com.
 * Install the Apple SDK on the Mac as specified by Apple's instructions. This will include Xcode and any other development tools required.
@@ -187,7 +188,7 @@ For example: from ``[path-to-sdk]/build/``, or from ``[path-to-sdk]/examples/[ex
 
 Windows Visual Studio
 .....................
-Microsoft Visual Studio is the default generator on Windows. CMake cannot generate multi-architecture projects (ones that support both 32-bit and 64-bit) as is conventional for those familiar with MSVC, so only one can be selected. It is recommended to use 64-bit if it is available, but both are fully supported. 
+Microsoft Visual Studio is the default generator on Windows. CMake cannot generate multi-architecture projects (ones that support both 32-bit and 64-bit) as is conventional for those familiar with MSVC, so only one can be selected. It is recommended to use 64-bit if it is available. 
 
 The default CMake architecture is 32-bit. It can be set to 64-bit by passing the ``-A[x64]`` parameter.
 
@@ -231,15 +232,19 @@ Android Build Instructions
 --------------------------
 Android uses its own build system, which uses CMake internally. Instead of calling CMake directly, Gradle is used which makes use of CMake as appropriate internally.
 
-The easiest way to build, run, and debug Android applications is to download and use Android Studio from Google. This is highly recommended, if nothing else for the easy on-device debugging that it offers.
-Alternatively building from the command-line is also very easy. The ``gradle wrapper`` is used to avoid downloading and installing ``gradle``. The wrapper is a small script located in the corresponding ``build-android`` folder. The wrapper will automatically download (if not present) the required Gradle version and run it.
+This version of the SDK is incompatable with the latest version of CMake supplied by the Android SDK, thus you must use CMake 3.10.2 from the Android SDK. When building, gradle will try to use the highest version of CMake available. If you happen to have CMake 3.18 installed when attempting to build the SDK you will need to override the CMake version.
+To do this, simply add a *local.properties* file to the build-android folder and point CMake to version 3.10.2 by adding the following line: ``cmake.dir=[Your-path-to-android-sdk]/cmake/3.10.2.4988404``  
+
+Most Android developers will be familiar with Android Studio, it provides tools to build, run and debug apps on Android. However, in order to import the SDK into Android Studio the dependencies must first be downloaded. The easiest way to do that is to build the project on command-line beforehand, and allow our build scripts to do all the work.
+
+Building from the command-line is very easy. The ``gradle wrapper`` is used to avoid downloading and installing ``gradle``. The wrapper is a small script located in the corresponding ``build-android`` folder. The wrapper will automatically download (if not present) the required Gradle version and run it.
 **Note:** Using the Gradle wrapper is optional, Gradle can still be downloaded, installed and used manually.
 
-* To build from Android Studio, use the ``Import project`` dialog, and select the desired ``build-android`` folder for the SDK, a particular example or a framework module.
-	* The required Gradle build scripts will be found in the ``[path-to-sdk]/build-android`` folder, in each example's corresponding ``build-android`` folder or in the framework module's corresponding ``build-android`` folder. 
-	* Android Studio will prompt for any missing packages when attempting to build.
+* To open in Android Studio, use the ``Import project`` dialog, and select the desired ``build-android`` folder for the SDK, a particular example or a framework module.
+    * The required Gradle build scripts will be found in the ``[path-to-sdk]/build-android`` folder, in each example's corresponding ``build-android`` folder or in the framework module's corresponding ``build-android`` folder. 
+    * Android Studio will prompt for any missing packages when attempting to build.
 * To build from command-line, navigate to the ``build-android`` folder and run ``gradlew assemble[Debug/Release]``
-	* Create a ``local.properties`` file, and add the line ``sdk-dir=[path-to-the-ANDROID-sdk]``, or add an environment variable ``ANDROID_HOME=[path-to-the-ANDROID-sdk]``.
+    * Create a ``local.properties`` file, and add the line ``sdk-dir=[path-to-the-ANDROID-sdk]``, or add an environment variable ``ANDROID_HOME=[path-to-the-ANDROID-sdk]``.
 
 Android Quickstart
 ~~~~~~~~~~~~~~~~~~

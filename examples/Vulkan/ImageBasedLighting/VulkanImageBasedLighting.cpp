@@ -358,11 +358,13 @@ public:
 		model = pvr::assets::loadModel(assetProvider, HelmetModelFileName);
 
 		// create the vbo and ibo for the meshes.
-		vbos.resize(model->getNumMeshes());
-		ibos.resize(model->getNumMeshes());
+		uint32_t numMeshes = model->getNumMeshes();
+		vbos.resize(numMeshes);
+		ibos.resize(numMeshes);
 
-		pvr::utils::createSingleBuffersFromMesh(device, model->getMesh(0), vbos[0], ibos[0], uploadCmdBuffer, requireSubmission, allocator);
-
+		for (uint32_t m = 0; m < numMeshes; ++m)
+		{ pvr::utils::createSingleBuffersFromMesh(device, model->getMesh(m), vbos[m], ibos[m], uploadCmdBuffer, requireSubmission, allocator); }
+		
 		// Load the texture
 		loadTextures(assetProvider, device, uploadCmdBuffer, allocator);
 

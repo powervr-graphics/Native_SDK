@@ -1,5 +1,0 @@
-<map id="pvr::InvalidArgumentError" name="pvr::InvalidArgumentError">
-<area shape="rect" id="node1" title="A simple std::runtime_error wrapper for throwing exceptions when invalid arguments are provided" alt="" coords="5,155,196,181"/>
-<area shape="rect" id="node2" href="$classpvr_1_1_pvr_error.html" title="A simple std::runtime_error wrapper for throwing generic PVR exceptions" alt="" coords="49,80,152,107"/>
-<area shape="rect" id="node3" title=" " alt="" coords="31,5,170,32"/>
-</map>

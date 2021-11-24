@@ -149,7 +149,10 @@ bool OpenGLESBinaryShaders::loadShaderBinary()
 
 	GLint status;
 	gl::GetProgramiv(_deviceResources->program, GL_LINK_STATUS, &status);
-	if (GL_FALSE == status) { throw pvr::InvalidDataError("Shader Binary not Valid."); }
+	if (GL_FALSE == status)
+	{
+		throw pvr::InvalidDataError("Shader Binary not Valid. Consider deleting the existing shader.bin shaderformat.bin files if they were generated with a different driver version.");
+	}
 
 	return true;
 }

@@ -77,6 +77,12 @@ void getColorBits(pvrvk::Format format, uint32_t& redBits, uint32_t& greenBits, 
 		blueBits = 5;
 		alphaBits = 0;
 		break;
+	case pvrvk::Format::e_A2B10G10R10_UNORM_PACK32:
+		alphaBits = 2;
+		blueBits = 10;
+		greenBits = 10;
+		redBits = 10;
+		break;
 	default: assertion(0, "UnSupported pvrvk::Format");
 	}
 }
@@ -241,6 +247,32 @@ inline pvrvk::AccessFlags getAccesFlagsFromLayout(pvrvk::ImageLayout layout)
 	default: return (pvrvk::AccessFlags)0;
 	}
 }
+
+inline pvrvk::PipelineStageFlags getPipelineStageFlagsFromLayout(pvrvk::ImageLayout layout)
+{
+	// Image memory barriers require the correct pipeline stage flags to be set for the access mask
+	// However, when using the function getAccesFlagsFromLayout() above, the access flags are determined by layout
+	// This means that the stageflags can also be determined by the layout
+
+	// Decide the flags that would be trigger for any shader read or write.
+	pvrvk::PipelineStageFlags shaderReadWrite = pvrvk::PipelineStageFlags::e_VERTEX_SHADER_BIT | pvrvk::PipelineStageFlags::e_COMPUTE_SHADER_BIT |
+		pvrvk::PipelineStageFlags::e_RAY_TRACING_SHADER_BIT_KHR | pvrvk::PipelineStageFlags::e_ACCELERATION_STRUCTURE_BUILD_BIT_KHR;
+	switch (layout)
+	{
+	case pvrvk::ImageLayout::e_UNDEFINED: return pvrvk::PipelineStageFlags::e_TOP_OF_PIPE_BIT;
+	case pvrvk::ImageLayout::e_GENERAL: return pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT | shaderReadWrite;
+	case pvrvk::ImageLayout::e_COLOR_ATTACHMENT_OPTIMAL: return pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT;
+	case pvrvk::ImageLayout::e_DEPTH_STENCIL_ATTACHMENT_OPTIMAL:
+		return pvrvk::PipelineStageFlags::e_EARLY_FRAGMENT_TESTS_BIT | pvrvk::PipelineStageFlags::e_LATE_FRAGMENT_TESTS_BIT;
+	case pvrvk::ImageLayout::e_TRANSFER_DST_OPTIMAL: return pvrvk::PipelineStageFlags::e_TRANSFER_BIT | pvrvk::PipelineStageFlags::e_ACCELERATION_STRUCTURE_BUILD_BIT_KHR;
+	case pvrvk::ImageLayout::e_TRANSFER_SRC_OPTIMAL: return pvrvk::PipelineStageFlags::e_TRANSFER_BIT | pvrvk::PipelineStageFlags::e_ACCELERATION_STRUCTURE_BUILD_BIT_KHR;
+	case pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL: return shaderReadWrite;
+	case pvrvk::ImageLayout::e_PRESENT_SRC_KHR: return pvrvk::PipelineStageFlags::e_TOP_OF_PIPE_BIT;
+	case pvrvk::ImageLayout::e_PREINITIALIZED: return pvrvk::PipelineStageFlags::e_HOST_BIT;
+	default: return pvrvk::PipelineStageFlags::e_ALL_COMMANDS_BIT;
+	}
+}
+
 inline pvrvk::Format getDepthStencilFormat(const DisplayAttributes& displayAttribs)
 {
 	uint32_t depthBpp = displayAttribs.depthBPP;
@@ -708,17 +740,18 @@ void setImageLayoutAndQueueFamilyOwnership(pvrvk::CommandBufferBase srccmd, pvrv
 		imageMemBarrier.setSrcQueueFamilyIndex(srcQueueFamily);
 		imageMemBarrier.setDstQueueFamilyIndex(dstQueueFamily);
 	}
+
 	barriers.clearAllBarriers();
 	// Support any one of the command buffers being NOT null - either first or second is fine.
 	if (srccmd)
 	{
 		barriers.addBarrier(imageMemBarrier);
-		srccmd->pipelineBarrier(pvrvk::PipelineStageFlags::e_ALL_COMMANDS_BIT, pvrvk::PipelineStageFlags::e_ALL_COMMANDS_BIT, barriers, true);
+		srccmd->pipelineBarrier(getPipelineStageFlagsFromLayout(oldLayout), getPipelineStageFlagsFromLayout(newLayout), barriers, true);
 	}
 	if (dstcmd)
 	{
 		barriers.addBarrier(imageMemBarrier);
-		dstcmd->pipelineBarrier(pvrvk::PipelineStageFlags::e_ALL_COMMANDS_BIT, pvrvk::PipelineStageFlags::e_ALL_COMMANDS_BIT, barriers, true);
+		dstcmd->pipelineBarrier(getPipelineStageFlagsFromLayout(oldLayout), getPipelineStageFlagsFromLayout(newLayout), barriers, true);
 	}
 } // namespace utils
 pvrvk::Image uploadImageHelper(pvrvk::Device& device, const Texture& texture, bool allowDecompress, pvrvk::CommandBufferBase commandBuffer, pvrvk::ImageUsageFlags usageFlags,
@@ -1387,6 +1420,9 @@ pvrvk::Device createDeviceAndQueues(pvrvk::PhysicalDevice physicalDevice, const 
 			Log(LogLevel::Warning, "Note that not all requested Logical device extensions are supported");
 		}
 	}
+
+	// add device extension features to DeviceCreateInfo pnext chain
+	if (deviceExtensions.getLastRequestedExtensionFeature()) { deviceInfo.setLastRequestedExtensionFeature(deviceExtensions.getLastRequestedExtensionFeature()); }
 
 	pvrvk::Device outDevice = physicalDevice->createDevice(deviceInfo);
 	outDevice->retrieveQueues();
@@ -2423,6 +2459,36 @@ DeviceExtensions::DeviceExtensions() : VulkanExtensionList()
 #endif
 }
 
+void DeviceExtensions::addExtensionFeature(pvrvk::ExtensionFeatures& extensionFeature)
+{
+	// Insert the extension feature into the extension feature map
+	void* extensionFeaturePtr = extensionFeature.getVkPtr();
+	_extensionFeatures.insert({ static_cast<VkStructureType>(extensionFeature.getSType()), extensionFeaturePtr });
+
+	// If an extension feature has already been requested, we shift the linked list down by one
+	// Making this current extension the new base pointer
+	if (_lastRequestedExtensionFeature) { extensionFeature.setPNext(_lastRequestedExtensionFeature); }
+	_lastRequestedExtensionFeature = extensionFeaturePtr;
+}
+
+DeviceExtensions& DeviceExtensions::addFragmentShadingRateExtensionAndFeature(pvrvk::PhysicalDevice& physicalDevice)
+{
+	// add the extension
+	addExtension(VK_KHR_FRAGMENT_SHADING_RATE_EXTENSION_NAME);
+
+	// store shared pointer to ensure the features struct survives for the lifetime of this instance
+	std::shared_ptr<pvrvk::FragmentShadingRateFeatures> featuresPtr = std::make_shared<pvrvk::FragmentShadingRateFeatures>(pvrvk::FragmentShadingRateFeatures());
+	_featureReferences.emplace_back(featuresPtr);
+
+	// get extension features
+	physicalDevice->populateExtensionFeatures(*featuresPtr.get());
+
+	// add the extension feature
+	addExtensionFeature(*featuresPtr.get());
+
+	return *this;
+}
+
 InstanceLayers::InstanceLayers(bool forceLayers)
 {
 	if (forceLayers)
@@ -2431,8 +2497,7 @@ InstanceLayers::InstanceLayers(bool forceLayers)
 		addLayer(pvrvk::VulkanLayer("VK_LAYER_KHRONOS_validation", static_cast<uint32_t>(-1)));
 		addLayer(pvrvk::VulkanLayer("VK_LAYER_LUNARG_standard_validation", static_cast<uint32_t>(-1)));
 		addLayer(pvrvk::VulkanLayer("VK_LAYER_LUNARG_assistant_layer", static_cast<uint32_t>(-1)));
-		// Add whatever perfdocs are supported
-		addLayer(pvrvk::VulkanLayer("VK_LAYER_ARM_mali_perf_doc", static_cast<uint32_t>(-1)));
+		// Add IMG specific best practices layer, if supported
 		addLayer(pvrvk::VulkanLayer("VK_LAYER_IMG_powervr_perf_doc", static_cast<uint32_t>(-1)));
 	}
 }
@@ -2476,6 +2541,40 @@ InstanceExtensions::InstanceExtensions()
 #endif
 #endif
 }
+
+std::vector<int> validatePhysicalDeviceExtensions(const pvrvk::Instance instance, const std::vector<std::string>& vectorExtensionNames)
+{
+	std::vector<int> vectorResult;
+
+	for (uint32_t i = 0; i < instance->getNumPhysicalDevices(); i++)
+	{
+		pvrvk::PhysicalDevice physicalDevice = instance->getPhysicalDevice(i);
+
+		bool deviceHasAllExtensions = true;
+
+		// Get the full list of extensions supported by the current physical device
+		std::vector<pvrvk::ExtensionProperties> supportedExtensions = physicalDevice->getDeviceExtensionsProperties();
+
+		// For each of the requested extensions, check that its name is contained within the list of extensions supported by the device
+		for (std::string requested : vectorExtensionNames)
+		{
+			bool found =
+				std::any_of(supportedExtensions.begin(), supportedExtensions.end(), [&requested = requested](auto& supported) { return requested == supported.getExtensionName(); });
+
+			if (!found)
+			{
+				Log(LogLevel::Information, "Physical Device : %s Failed to find the extension : %s ", physicalDevice->getProperties().getDeviceName(), requested.c_str());
+				deviceHasAllExtensions = false;
+				break;
+			}
+		}
+
+		if (deviceHasAllExtensions) { vectorResult.push_back(i); }
+	}
+
+	return vectorResult;
+}
+
 #pragma endregion
 } // namespace utils
 } // namespace pvr

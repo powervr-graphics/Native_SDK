@@ -209,17 +209,17 @@ public:
 			vsnprintf(buffer, 4095, formatString, argumentList);
 			buffer[4095] = 0;
 
-#if defined(_WIN32) && !defined(_CONSOLE)
+#if defined(_WIN32)
 			if (isDebuggerPresent())
 			{
 				OutputDebugString(messageTypes[static_cast<int>(severity)]);
 				OutputDebugString(buffer);
 				OutputDebugString("\n");
 			}
-#else
+#endif
 			vprintf(formatString, tempList);
 			printf("\n");
-#endif
+
 #if defined(PVR_PLATFORM_IS_DESKTOP) && !defined(TARGET_OS_MAC)
 			{
 				if (file)

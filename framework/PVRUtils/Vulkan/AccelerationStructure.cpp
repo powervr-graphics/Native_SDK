@@ -11,36 +11,17 @@
 namespace pvr {
 namespace utils {
 
-pvrvk::Buffer createDeviceAddressBuffer(const pvrvk::Device& device, const pvrvk::BufferCreateInfo& createInfo, pvrvk::MemoryPropertyFlags memoryPropertyFlags)
+void AccelerationStructureWrapper::buildASModelDescription(std::vector<pvrvk::Buffer> vertexBuffers, std::vector<pvrvk::Buffer> indexBuffers, std::vector<int> verticesSize,
+	std::vector<int> indicesSize, const std::vector<glm::mat4>& vectorInstanceTransform)
 {
-	pvrvk::Buffer buffer = device->createBuffer(createInfo);
-
-	const pvrvk::MemoryRequirements memoryRequirements = buffer->getMemoryRequirement();
-	uint32_t memoryTypeIndex;
-	pvrvk::MemoryPropertyFlags temp;
-	pvr::utils::getMemoryTypeIndex(device->getPhysicalDevice(), memoryRequirements.getMemoryTypeBits(), memoryPropertyFlags, pvrvk::MemoryPropertyFlags::e_NONE, memoryTypeIndex, temp);
-
-	pvrvk::DeviceMemory deviceMemory =
-		device->allocateMemory(pvrvk::MemoryAllocationInfo(buffer->getMemoryRequirement().getSize(), memoryTypeIndex), pvrvk::MemoryAllocateFlags::e_DEVICE_ADDRESS_BIT);
-	buffer->bindMemory(deviceMemory, 0);
-
-	return buffer;
-}
-
-void AccelerationStructureWrapper::buildASModelDescription(
-	std::vector<pvrvk::Buffer> vertexBuffers, std::vector<pvrvk::Buffer> indexBuffers, std::vector<int> verticesSize, std::vector<int> indicesSize)
-{
-	glm::mat4 instanceTransform = glm::mat4(1.0);
-	glm::mat4 instanceTransformInverse = glm::transpose(glm::inverse(instanceTransform));
-
 	for (uint32_t i = 0; i < vertexBuffers.size(); i++)
 	{
 		_rtModelInfos.push_back(RTModelInfo{ vertexBuffers[i], indexBuffers[i], static_cast<uint32_t>(indicesSize[i] / 3 + (indicesSize[i] % 3 == 0 ? 0 : 1)),
 			static_cast<uint32_t>(verticesSize[i]), sizeof(ASVertexFormat) });
 
-		_instances.push_back(RTInstance{ i, i, 0, 0xFF, pvrvk::GeometryInstanceFlagsKHR::e_TRIANGLE_FACING_CULL_DISABLE_BIT_KHR, instanceTransform });
+		_instances.push_back(RTInstance{ i, i, 0, 0xFF, pvrvk::GeometryInstanceFlagsKHR::e_TRIANGLE_FACING_CULL_DISABLE_BIT_KHR, glm::mat4(vectorInstanceTransform[i]) });
 
-		_sceneDescriptions.push_back(SceneDescription{ i, instanceTransform, instanceTransformInverse });
+		_sceneDescriptions.push_back(SceneDescription{ i, glm::mat4(vectorInstanceTransform[i]), glm::transpose(glm::inverse(glm::mat4(vectorInstanceTransform[i]))) });
 	}
 }
 
@@ -54,7 +35,7 @@ void AccelerationStructureWrapper::clearASModelDescriptionData()
 void AccelerationStructureWrapper::buildAS(pvrvk::Device device, pvrvk::Queue queue, pvrvk::CommandBuffer commandBuffer, pvrvk::BuildAccelerationStructureFlagsKHR buildASFlags)
 {
 	buildBottomLevelASModels(device, commandBuffer, queue);
-	buildTopLevelASAndInstances(device, commandBuffer, queue, buildASFlags);
+	buildTopLevelASAndInstances(device, commandBuffer, queue, buildASFlags, false);
 }
 
 void AccelerationStructureWrapper::buildBottomLevelASModels(pvrvk::Device device, pvrvk::CommandBuffer commandBuffer, pvrvk::Queue queue)
@@ -100,10 +81,11 @@ void AccelerationStructureWrapper::buildBottomLevelASModels(pvrvk::Device device
 			static_cast<VkAccelerationStructureBuildTypeKHR>(pvrvk::AccelerationStructureBuildTypeKHR::e_DEVICE_KHR), &vectorASBuildGeometryInfo[i], maxPrimCount.data(),
 			&asBuildSizesInfo);
 
-		pvrvk::Buffer blasBuffer = createDeviceAddressBuffer(device,
+		pvrvk::Buffer blasBuffer = pvr::utils::createBuffer(device,
 			pvrvk::BufferCreateInfo(asBuildSizesInfo.accelerationStructureSize,
 				pvrvk::BufferUsageFlags::e_SHADER_DEVICE_ADDRESS_BIT | pvrvk::BufferUsageFlags::e_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR),
-			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT);
+			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_NONE, nullptr, pvr::utils::vma::AllocationCreateFlags::e_NONE,
+			pvrvk::MemoryAllocateFlags::e_DEVICE_ADDRESS_BIT);
 
 		pvrvk::AccelerationStructureCreateInfo asCreateInfo;
 		asCreateInfo.setType(pvrvk::AccelerationStructureTypeKHR::e_BOTTOM_LEVEL_KHR);
@@ -120,9 +102,10 @@ void AccelerationStructureWrapper::buildBottomLevelASModels(pvrvk::Device device
 
 	// A scratch buffer with the size of the biggest bottom level acceleration structure geometry element needs to be built and provided
 	// to build the bottom level acceleration structure.
-	pvrvk::Buffer scratchBuffer = createDeviceAddressBuffer(device,
+	pvrvk::Buffer scratchBuffer = pvr::utils::createBuffer(device,
 		pvrvk::BufferCreateInfo(maximumScratchSize, pvrvk::BufferUsageFlags::e_SHADER_DEVICE_ADDRESS_BIT | pvrvk::BufferUsageFlags::e_STORAGE_BUFFER_BIT),
-		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT);
+		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_NONE, nullptr, pvr::utils::vma::AllocationCreateFlags::e_NONE,
+		pvrvk::MemoryAllocateFlags::e_DEVICE_ADDRESS_BIT);
 
 	// Get the address of the scratch buffer.
 	VkDeviceAddress scratchAddress = scratchBuffer->getDeviceAddress(device);
@@ -157,7 +140,7 @@ void AccelerationStructureWrapper::buildBottomLevelASModels(pvrvk::Device device
 }
 
 void AccelerationStructureWrapper::buildTopLevelASAndInstances(
-	pvrvk::Device device, pvrvk::CommandBuffer commandBuffer, pvrvk::Queue queue, pvrvk::BuildAccelerationStructureFlagsKHR flags)
+	pvrvk::Device device, pvrvk::CommandBuffer commandBuffer, pvrvk::Queue queue, pvrvk::BuildAccelerationStructureFlagsKHR flags, bool update)
 {
 	// Now, build the information needed by the top level acceleration structure, which is, for each scene element, it's transform and some flags
 	std::vector<VkAccelerationStructureInstanceKHR> geometryInstances;
@@ -166,16 +149,21 @@ void AccelerationStructureWrapper::buildTopLevelASAndInstances(
 
 	commandBuffer->begin();
 
-	// The instance information is put in a buffer
-	pvrvk::Buffer instancesBuffer = createDeviceAddressBuffer(device,
-		pvrvk::BufferCreateInfo(sizeof(VkAccelerationStructureInstanceKHR) * geometryInstances.size(),
-			pvrvk::BufferUsageFlags::e_SHADER_DEVICE_ADDRESS_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT),
-		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT);
+	if (!update)
+	{
+		// The instance information is put in a buffer
+		_instancesBuffer = pvr::utils::createBuffer(device,
+			pvrvk::BufferCreateInfo(sizeof(VkAccelerationStructureInstanceKHR) * geometryInstances.size(),
+				pvrvk::BufferUsageFlags::e_SHADER_DEVICE_ADDRESS_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT),
+			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, nullptr, pvr::utils::vma::AllocationCreateFlags::e_NONE,
+			pvrvk::MemoryAllocateFlags::e_DEVICE_ADDRESS_BIT);
+	}
 
-	pvr::utils::updateHostVisibleBuffer(instancesBuffer, geometryInstances.data(), 0, sizeof(VkAccelerationStructureInstanceKHR) * geometryInstances.size(), true);
+	pvr::utils::updateBufferUsingStagingBuffer(
+		device, _instancesBuffer, commandBuffer, geometryInstances.data(), 0, sizeof(VkAccelerationStructureInstanceKHR) * geometryInstances.size());
 
 	// As with the scratch buffer, the address of the instance buffer is retrieved and will be used to build the top level acceleration structure.
-	VkDeviceAddress instanceBufferAddress = instancesBuffer->getDeviceAddress(device);
+	VkDeviceAddress instanceBufferAddress = _instancesBuffer->getDeviceAddress(device);
 
 	pvrvk::MemoryBarrierSet barriers;
 	barriers.addBarrier(pvrvk::MemoryBarrier(pvrvk::AccessFlags::e_TRANSFER_WRITE_BIT, pvrvk::AccessFlags::e_ACCELERATION_STRUCTURE_WRITE_BIT_KHR));
@@ -196,9 +184,10 @@ void AccelerationStructureWrapper::buildTopLevelASAndInstances(
 	accelerationStructureBuildGeometryTopLevel.flags = static_cast<VkBuildAccelerationStructureFlagsKHR>(flags);
 	accelerationStructureBuildGeometryTopLevel.geometryCount = 1;
 	accelerationStructureBuildGeometryTopLevel.pGeometries = &accelerationStructureGeometryTopLevel;
-	accelerationStructureBuildGeometryTopLevel.mode = static_cast<VkBuildAccelerationStructureModeKHR>(pvrvk::BuildAccelerationStructureModeKHR::e_BUILD_KHR);
+	accelerationStructureBuildGeometryTopLevel.mode = update ? static_cast<VkBuildAccelerationStructureModeKHR>(pvrvk::BuildAccelerationStructureModeKHR::e_UPDATE_KHR)
+															 : static_cast<VkBuildAccelerationStructureModeKHR>(pvrvk::BuildAccelerationStructureModeKHR::e_BUILD_KHR);
 	accelerationStructureBuildGeometryTopLevel.type = static_cast<VkAccelerationStructureTypeKHR>(pvrvk::AccelerationStructureTypeKHR::e_TOP_LEVEL_KHR);
-	accelerationStructureBuildGeometryTopLevel.srcAccelerationStructure = VK_NULL_HANDLE;
+	accelerationStructureBuildGeometryTopLevel.srcAccelerationStructure = update ? _tlas->getVkHandle() : VK_NULL_HANDLE;
 
 	uint32_t count = uint32_t(_instances.size());
 	VkAccelerationStructureBuildSizesInfoKHR asBuildSizesInfo{ static_cast<VkStructureType>(pvrvk::StructureType::e_ACCELERATION_STRUCTURE_BUILD_SIZES_INFO_KHR) };
@@ -206,24 +195,29 @@ void AccelerationStructureWrapper::buildTopLevelASAndInstances(
 		static_cast<VkAccelerationStructureBuildTypeKHR>(pvrvk::AccelerationStructureBuildTypeKHR::e_DEVICE_KHR), &accelerationStructureBuildGeometryTopLevel, &count,
 		&asBuildSizesInfo);
 
-	pvrvk::AccelerationStructureCreateInfo createInfo;
-	createInfo.setType(pvrvk::AccelerationStructureTypeKHR::e_TOP_LEVEL_KHR);
-	createInfo.setSize(asBuildSizesInfo.accelerationStructureSize);
+	if (!update)
+	{
+		pvrvk::AccelerationStructureCreateInfo createInfo;
+		createInfo.setType(pvrvk::AccelerationStructureTypeKHR::e_TOP_LEVEL_KHR);
+		createInfo.setSize(asBuildSizesInfo.accelerationStructureSize);
 
-	pvrvk::Buffer asBuffer = createDeviceAddressBuffer(device,
-		pvrvk::BufferCreateInfo(asBuildSizesInfo.accelerationStructureSize,
-			pvrvk::BufferUsageFlags::e_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR | pvrvk::BufferUsageFlags::e_SHADER_DEVICE_ADDRESS_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT),
-		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT);
+		pvrvk::Buffer asBuffer = pvr::utils::createBuffer(device,
+			pvrvk::BufferCreateInfo(asBuildSizesInfo.accelerationStructureSize,
+				pvrvk::BufferUsageFlags::e_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR | pvrvk::BufferUsageFlags::e_SHADER_DEVICE_ADDRESS_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT),
+			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
+			pvrvk::MemoryPropertyFlags::e_NONE, nullptr, pvr::utils::vma::AllocationCreateFlags::e_NONE, pvrvk::MemoryAllocateFlags::e_DEVICE_ADDRESS_BIT);
 
-	createInfo.setBuffer(asBuffer->getVkHandle());
+		createInfo.setBuffer(asBuffer->getVkHandle());
 
-	_tlas = device->createAccelerationStructure(createInfo, asBuffer);
-	_tlas->setAccelerationStructureBuffer(asBuffer);
+		_tlas = device->createAccelerationStructure(createInfo, asBuffer);
+		_tlas->setAccelerationStructureBuffer(asBuffer);
+	}
 
-	pvrvk::Buffer scratchBuffer = createDeviceAddressBuffer(device,
+	pvrvk::Buffer scratchBuffer = pvr::utils::createBuffer(device,
 		pvrvk::BufferCreateInfo(asBuildSizesInfo.buildScratchSize,
 			pvrvk::BufferUsageFlags::e_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR | pvrvk::BufferUsageFlags::e_SHADER_DEVICE_ADDRESS_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT),
-		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT);
+		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
+		pvrvk::MemoryPropertyFlags::e_NONE, nullptr, pvr::utils::vma::AllocationCreateFlags::e_NONE, pvrvk::MemoryAllocateFlags::e_DEVICE_ADDRESS_BIT);
 
 	VkDeviceAddress scratchAddress = scratchBuffer->getDeviceAddress(device);
 
@@ -265,6 +259,17 @@ void AccelerationStructureWrapper::setupGeometryInstances(pvrvk::Device device, 
 		accelerationStructureInstance.flags = static_cast<VkGeometryInstanceFlagsKHR>(inst.flags);
 		accelerationStructureInstance.accelerationStructureReference = bottomLevelASAddress;
 		geometryInstances.push_back(accelerationStructureInstance);
+	}
+}
+
+void AccelerationStructureWrapper::updateInstanceTransformData(const std::vector<glm::mat4>& vectorTransform)
+{
+	assert(_instances.size() == vectorTransform.size());
+	for (int i = 0; i < _instances.size(); ++i)
+	{
+		_instances[i].transform = vectorTransform[i];
+		_sceneDescriptions[i].transform = vectorTransform[i];
+		_sceneDescriptions[i].transformIT = glm::transpose(glm::inverse(vectorTransform[i]));
 	}
 }
 

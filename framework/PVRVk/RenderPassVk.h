@@ -7,6 +7,7 @@
 
 #pragma once
 #include "PVRVk/DeviceVk.h"
+#include "CommonHelpers.h"
 
 namespace pvrvk {
 
@@ -14,30 +15,26 @@ namespace pvrvk {
 struct RenderPassCreateInfo
 {
 private:
-	enum
-	{
-		total_max_attachments = static_cast<uint32_t>(FrameworkCaps::MaxColorAttachments) + static_cast<uint32_t>(FrameworkCaps::MaxDepthStencilAttachments)
-	};
 	friend class impl::RenderPass_;
-	AttachmentDescription _attachmentDescriptions[total_max_attachments];
-	std::vector<SubpassDescription> _subpass;
-	std::vector<SubpassDependency> _subpassDependency;
-	uint32_t _numAttachmentDescription;
+	std::vector<AttachmentDescription> _attachmentDescriptions;
+	std::vector<SubpassDescription> _subpasses;
+	std::vector<SubpassDependency> _subpassDependencies;
 
 public:
 	/// <summary>RenderPassCreateInfo</summary>
-	RenderPassCreateInfo() : _numAttachmentDescription(0) {}
+	RenderPassCreateInfo() {}
 
 	/// <summary>Clear all entries</summary>
 	void clear()
 	{
-		_subpass.clear();
-		_subpassDependency.clear();
+		_attachmentDescriptions.clear();
+		_subpasses.clear();
+		_subpassDependencies.clear();
 	}
 
 	/// <summary>Return number of subpasses (const)</summary>
 	/// <returns>Number of subpasses</returns>
-	uint32_t getNumSubpasses() const { return static_cast<uint32_t>(_subpass.size()); }
+	uint32_t getNumSubpasses() const { return static_cast<uint32_t>(_subpasses.size()); }
 
 	/// <summary>Get subpass (const)</summary>
 	/// <param name="index">Subpass index</param>
@@ -45,12 +42,12 @@ public:
 	const SubpassDescription& getSubpass(uint32_t index) const
 	{
 		assert(index < getNumSubpasses() && "Invalid subpass index");
-		return _subpass[index];
+		return _subpasses[index];
 	}
 
 	/// <summary>Get number of subpass dependencies (const)</summary>
 	/// <returns>Number of subpass dependencies</returns>
-	uint32_t getNumSubpassDependencies() const { return static_cast<uint32_t>(_subpassDependency.size()); }
+	uint32_t getNumSubpassDependencies() const { return static_cast<uint32_t>(_subpassDependencies.size()); }
 
 	/// <summary>Get subpass dependency (const)</summary>
 	/// <param name="index">Subpass dependency index</param>
@@ -58,12 +55,12 @@ public:
 	const SubpassDependency& getSubpassDependency(uint32_t index) const
 	{
 		assert(index < getNumSubpassDependencies() && "Invalid subpass dependency index");
-		return _subpassDependency[index];
+		return _subpassDependencies[index];
 	}
 
 	/// <summary>Return number of color attachments (const)</summary>
 	/// <returns>Number of color attachments</returns>
-	uint32_t getNumAttachmentDescription() const { return _numAttachmentDescription; }
+	uint32_t getNumAttachmentDescription() const { return static_cast<uint32_t>(_attachmentDescriptions.size()); }
 
 	/// <summary>Get render pass color info (const)</summary>
 	/// <param name="index">Color info index</param>
@@ -80,9 +77,7 @@ public:
 	/// <returns>Reference to this object. (allow chaining)</returns>
 	RenderPassCreateInfo& setAttachmentDescription(uint32_t index, const AttachmentDescription& attachmentDescription)
 	{
-		if (index >= total_max_attachments) { assert(false && "AttachmentDescription exceeds the max attachment limit"); }
-		_numAttachmentDescription += static_cast<uint32_t>(this->_attachmentDescriptions[index].getFormat() == pvrvk::Format::e_UNDEFINED);
-		this->_attachmentDescriptions[index] = attachmentDescription;
+		setElementAtIndex<AttachmentDescription>(index, attachmentDescription, _attachmentDescriptions);
 		return *this;
 	}
 
@@ -92,8 +87,7 @@ public:
 	/// <returns>Reference to this object. (allow chaining)</returns>
 	RenderPassCreateInfo& setSubpass(uint32_t index, const SubpassDescription& subpass)
 	{
-		if (index >= this->_subpass.size()) { this->_subpass.resize(index + 1); }
-		this->_subpass[index] = subpass;
+		setElementAtIndex<SubpassDescription>(index, subpass, _subpasses);
 		return *this;
 	}
 
@@ -103,7 +97,8 @@ public:
 	RenderPassCreateInfo& addSubpassDependency(const SubpassDependency& subPassDependency)
 	{
 		if ((subPassDependency.getSrcSubpass() != pvrvk::SubpassExternal) && (subPassDependency.getSrcSubpass() > subPassDependency.getDstSubpass()))
-		{ assert(false && " Source Sub pass must be less than or equal to destination Sub pass"); } _subpassDependency.emplace_back(subPassDependency);
+		{ assert(false && " Source Sub pass must be less than or equal to destination Sub pass"); }
+		_subpassDependencies.emplace_back(subPassDependency);
 		return *this;
 	}
 
@@ -115,6 +110,15 @@ public:
 	{
 		for (uint32_t i = 0; i < numDependencies; ++i) { addSubpassDependency(subPassDependencies[i]); }
 		return *this;
+	}
+
+	bool extendedSupportRequired() const {
+		for (const SubpassDescription subpass : _subpasses)
+		{
+			if (subpass.getFragmentShadingRateAttachment().getEnabled())
+			{ return true; }
+		}
+		return false; 
 	}
 };
 
@@ -149,6 +153,9 @@ private:
 	{
 		return std::make_shared<RenderPass_>(make_shared_enabler{}, device, createInfo);
 	}
+
+	void createRenderPass(const RenderPassCreateInfo& createInfo);
+	void createRenderPass2(const RenderPassCreateInfo& createInfo);
 
 	RenderPassCreateInfo _createInfo;
 

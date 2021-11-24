@@ -26,11 +26,14 @@ set(VULKAN_EXAMPLES
 	ImageBasedLightingMapGenerator
 	GameOfLife
 	PipelineCache
+	AmbientOcclusion
 	MatrixMultiplication
 	HelloRayTracing
 	HybridHardShadows
 	HybridReflections
 	HybridSoftShadows
+	RayTracedHardShadows
+	HybridRefractions
 )
 
 foreach(EXAMPLE ${VULKAN_EXAMPLES})

@@ -6,6 +6,7 @@
 */
 #pragma once
 #include "PVRVk/HeadersVk.h"
+#include "CommonHelpers.h"
 #include <memory>
 #include <vector>
 #include <algorithm>
@@ -954,7 +955,7 @@ public:
 	inline void* getLastRequestedExtensionFeature() const { return _lastRequestedExtensionFeature; }
 
 	template<class T>
-	void addExtensionFeature(VkStructureType type, T* extension)
+	void addExtensionFeatureVk(VkStructureType type, T* extension)
 	{
 		// Insert the extension feature into the extension feature map so its ownership is held
 		_extensionFeatures.insert({ type, (void*)extension });
@@ -968,7 +969,7 @@ public:
 		_lastRequestedExtensionFeature = extensionPtr;
 	}
 
-private:
+protected:
 	std::vector<pvrvk::VulkanExtension> _extensions;
 	std::map<VkStructureType, void*> _extensionFeatures; ///!< Map with extension type and void pointer to a struct of that type
 	void* _lastRequestedExtensionFeature{ nullptr }; ///!< The extension feature pointer
@@ -1329,21 +1330,17 @@ struct AttachmentDescription : private VkAttachmentDescription
 
 	/// <summary>Constructor</summary>
 	/// <param name="format">Attachment format</param>
-	/// <param name="loadOp">Color/Depth attachment looad operation. Default is Clear. For performance, prefer Ignore if possible for
-	/// your application.</param>
-	/// <param name="storeOp">Color/Depth attachment store operator. Default is Store. For performance, prefer Ignore if possible
-	/// for your application.</param>
-	/// <param name="stencilLoadOp">Stencil load operation. Default is Clear. For performance, prefer Ignore if possible for
-	/// your application.</param>
-	/// <param name="stencilStoreOp">Stencil store operator. Default is Store. For performance, prefer Ignore if possible
-	/// for your application.</param>
-	/// <param name="numSamples">Number of samples. Default is 1.</param>
 	/// <param name="initialLayout">The initial layout that the output image will be on. Must match the actual layout
-	/// of the Image. Default is ColorAttachmentOptimal.</param>
-	/// <param name="finalLayout">A layout to transition the image to at the end of this renderpass. Default is
-	/// ColorAttachmentOptimal.</param>
-	AttachmentDescription(pvrvk::Format format, pvrvk::ImageLayout initialLayout, pvrvk::ImageLayout finalLayout, pvrvk::AttachmentLoadOp loadOp, pvrvk::AttachmentStoreOp storeOp,
-		pvrvk::AttachmentLoadOp stencilLoadOp, pvrvk::AttachmentStoreOp stencilStoreOp, pvrvk::SampleCountFlags numSamples)
+	/// of the Image.</param>
+	/// <param name="finalLayout">A layout to transition the image to at the end of this renderpass.</param>
+	/// <param name="loadOp">Color/Depth attachment load operation. For performance, prefer 'Don't Care' if possible for your application.</param>
+	/// <param name="storeOp">Color/Depth attachment store operator. For performance, prefer 'Don't Care' if possible for your application.</param>
+	/// <param name="stencilLoadOp">Stencil load operation. Default is 'Don't Care'. Don't forget to change this if you're using stencil components.</param>
+	/// <param name="stencilStoreOp">Stencil store operator. Default is 'Don't Care'. Don't forget to change this if you're using stencil components.</param>
+	/// <param name="numSamples">Number of samples. Default is 1.</param>
+	AttachmentDescription(const pvrvk::Format format, const pvrvk::ImageLayout initialLayout, const pvrvk::ImageLayout finalLayout,
+		const pvrvk::AttachmentLoadOp loadOp, const pvrvk::AttachmentStoreOp storeOp, const pvrvk::AttachmentLoadOp stencilLoadOp = pvrvk::AttachmentLoadOp::e_DONT_CARE,
+		const pvrvk::AttachmentStoreOp stencilStoreOp = pvrvk::AttachmentStoreOp::e_DONT_CARE, const pvrvk::SampleCountFlags numSamples = pvrvk::SampleCountFlags::e_1_BIT)
 	{
 		this->flags = static_cast<VkAttachmentDescriptionFlags>(AttachmentDescriptionFlags::e_NONE);
 		this->format = static_cast<VkFormat>(format);
@@ -1364,9 +1361,9 @@ struct AttachmentDescription : private VkAttachmentDescription
 	/// <param name="storeOp">Attachment storeop</param>
 	/// <param name="numSamples">Number of samples</param>
 	/// <returns>AttachmentDescription</returns>
-	static AttachmentDescription createColorDescription(pvrvk::Format format, pvrvk::ImageLayout initialLayout = pvrvk::ImageLayout::e_COLOR_ATTACHMENT_OPTIMAL,
-		pvrvk::ImageLayout finalLayout = pvrvk::ImageLayout::e_COLOR_ATTACHMENT_OPTIMAL, pvrvk::AttachmentLoadOp loadOp = pvrvk::AttachmentLoadOp::e_CLEAR,
-		pvrvk::AttachmentStoreOp storeOp = pvrvk::AttachmentStoreOp::e_STORE, pvrvk::SampleCountFlags numSamples = pvrvk::SampleCountFlags::e_1_BIT)
+	static AttachmentDescription createColorDescription(const pvrvk::Format format, const pvrvk::ImageLayout initialLayout = pvrvk::ImageLayout::e_COLOR_ATTACHMENT_OPTIMAL,
+		const pvrvk::ImageLayout finalLayout = pvrvk::ImageLayout::e_COLOR_ATTACHMENT_OPTIMAL, const pvrvk::AttachmentLoadOp loadOp = pvrvk::AttachmentLoadOp::e_CLEAR,
+		const pvrvk::AttachmentStoreOp storeOp = pvrvk::AttachmentStoreOp::e_STORE, const pvrvk::SampleCountFlags numSamples = pvrvk::SampleCountFlags::e_1_BIT)
 	{
 		return AttachmentDescription(format, initialLayout, finalLayout, loadOp, storeOp, AttachmentLoadOp::e_DONT_CARE, AttachmentStoreOp::e_DONT_CARE, numSamples);
 	}
@@ -1381,10 +1378,10 @@ struct AttachmentDescription : private VkAttachmentDescription
 	/// <param name="stencilStoreOp">Stencil store op</param>
 	/// <param name="numSamples">Number of samples</param>
 	/// <returns>AttachmentDescription</returns>
-	static AttachmentDescription createDepthStencilDescription(pvrvk::Format format, pvrvk::ImageLayout initialLayout = pvrvk::ImageLayout::e_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
-		pvrvk::ImageLayout finalLayout = pvrvk::ImageLayout::e_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, pvrvk::AttachmentLoadOp loadOp = pvrvk::AttachmentLoadOp::e_CLEAR,
-		pvrvk::AttachmentStoreOp storeOp = pvrvk::AttachmentStoreOp::e_DONT_CARE, pvrvk::AttachmentLoadOp stencilLoadOp = pvrvk::AttachmentLoadOp::e_CLEAR,
-		pvrvk::AttachmentStoreOp stencilStoreOp = pvrvk::AttachmentStoreOp::e_DONT_CARE, pvrvk::SampleCountFlags numSamples = pvrvk::SampleCountFlags::e_1_BIT)
+	static AttachmentDescription createDepthStencilDescription(const pvrvk::Format format, const pvrvk::ImageLayout initialLayout = pvrvk::ImageLayout::e_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+		const pvrvk::ImageLayout finalLayout = pvrvk::ImageLayout::e_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, const pvrvk::AttachmentLoadOp loadOp = pvrvk::AttachmentLoadOp::e_CLEAR,
+		const pvrvk::AttachmentStoreOp storeOp = pvrvk::AttachmentStoreOp::e_DONT_CARE, const pvrvk::AttachmentLoadOp stencilLoadOp = pvrvk::AttachmentLoadOp::e_CLEAR,
+		const pvrvk::AttachmentStoreOp stencilStoreOp = pvrvk::AttachmentStoreOp::e_DONT_CARE, const pvrvk::SampleCountFlags numSamples = pvrvk::SampleCountFlags::e_1_BIT)
 	{
 		return AttachmentDescription(format, initialLayout, finalLayout, loadOp, storeOp, stencilLoadOp, stencilStoreOp, numSamples);
 	}
@@ -1445,6 +1442,82 @@ struct AttachmentDescription : private VkAttachmentDescription
 	inline void setFinalLayout(const ImageLayout& inFinalLayout) { this->finalLayout = static_cast<VkImageLayout>(inFinalLayout); }
 };
 
+struct AttachmentReference2 : private VkAttachmentReference2
+{
+	AttachmentReference2()
+	{
+		this->sType = static_cast<VkStructureType>(StructureType::e_ATTACHMENT_REFERENCE_2);
+		this->pNext = nullptr;
+		this->attachment = VK_ATTACHMENT_UNUSED;
+		this->layout = static_cast<VkImageLayout>(ImageLayout::e_UNDEFINED);
+		this->aspectMask = static_cast<VkImageAspectFlags>(ImageAspectFlags::e_NONE);
+	}
+
+	AttachmentReference2(const uint32_t attachment, const ImageLayout layout, const ImageAspectFlags aspectMask)
+	{
+		this->sType = static_cast<VkStructureType>(StructureType::e_ATTACHMENT_REFERENCE_2);
+		this->pNext = nullptr;
+		this->attachment = attachment;
+		this->layout = static_cast<VkImageLayout>(layout);
+		this->aspectMask = static_cast<VkImageAspectFlags>(aspectMask);
+	}
+
+	VkAttachmentReference2 get() { return *this; }
+	VkAttachmentReference2* getVkPtr() { return dynamic_cast<VkAttachmentReference2*>(this); }
+
+	// setters
+	void setAttachment(const uint32_t inAttachment) { this->attachment = inAttachment; }
+	void setLayout(const ImageLayout inLayout) { this->layout = static_cast<VkImageLayout>(inLayout); }
+	void setAspectMask(const ImageAspectFlags inAspectMask) { this->aspectMask = static_cast<VkImageAspectFlags>(inAspectMask); }
+
+	// getters
+	uint32_t getAttachment() const { return attachment; }
+	ImageLayout getLayout() const { return static_cast<ImageLayout>(layout); }
+	ImageAspectFlags getAspectMask() const { return static_cast<ImageAspectFlags>(aspectMask); }
+};
+
+struct FragmentShadingRateAttachmentInfo
+{
+private:
+	bool _enabled;
+	AttachmentReference2 _attachment;
+	Extent2D _texelSize;
+
+public:
+	FragmentShadingRateAttachmentInfo() : _enabled(false) {}
+
+	FragmentShadingRateAttachmentInfo(bool enabled, const AttachmentReference2& attachment, const Extent2D texelSize = Extent2D(1u, 1u))
+		: _enabled(enabled), _attachment(attachment), _texelSize(texelSize)
+	{}
+
+	FragmentShadingRateAttachmentInfo(
+		const bool enabled, const uint32_t attachment, const ImageLayout imageLayout, const ImageAspectFlags aspectMask, const Extent2D texelSize = Extent2D(1u, 1u))
+		: _enabled(enabled), _attachment(AttachmentReference2(attachment, imageLayout, aspectMask)), _texelSize(texelSize)
+	{}
+
+	// setters
+	FragmentShadingRateAttachmentInfo& setEnabled(const bool enabled)
+	{
+		this->_enabled = enabled;
+		return *this;
+	}
+	FragmentShadingRateAttachmentInfo& setFragmentShadingRateAttachment(const AttachmentReference2& attachment)
+	{
+		this->_attachment = attachment;
+		return *this;
+	}
+	FragmentShadingRateAttachmentInfo& setTexelSize(const Extent2D texelSize)
+	{
+		this->_texelSize = texelSize;
+		return *this;
+	}
+
+	// getters
+	bool getEnabled() const { return _enabled; }
+	AttachmentReference2 getAttachment() const { return _attachment; }
+	Extent2D getTexelSize() const { return _texelSize; }
+};
+
 /// <summary>Render pass subpass. Subpasses allow intermediate draws to be chained and communicating with techniques
 /// like Pixel Local Storage without outputting to the FrameBuffer until the end of the RenderPass.</summary>
 struct SubpassDescription
@@ -1452,11 +1525,7 @@ struct SubpassDescription
 public:
 	/// <summary>Constructor</summary>
 	/// <param name="pipeBindPoint">The binding point for this subpass (Graphics, Compute). Default Graphics.</param>
-	SubpassDescription(pvrvk::PipelineBindPoint pipeBindPoint = pvrvk::PipelineBindPoint::e_GRAPHICS)
-		: _pipelineBindPoint(pipeBindPoint), _numInputAttachments(0), _numColorAttachments(0), _numResolveAttachments(0), _numPreserveAttachments(0)
-	{
-		for (uint32_t i = 0; i < FrameworkCaps::MaxPreserveAttachments; ++i) { _preserveAttachment[i] = static_cast<uint32_t>(-1); }
-	}
+	SubpassDescription(pvrvk::PipelineBindPoint pipeBindPoint = pvrvk::PipelineBindPoint::e_GRAPHICS) : _pipelineBindPoint(pipeBindPoint), _fragmentShadingRateAttachment({}) {}
 
 	/// <summary>Set the pipeline binding point.</summary>
 	/// <param name="bindingPoint">New pipeline binding point</param>
@@ -1474,7 +1543,7 @@ public:
 	/// <returns>Reference to this(allows chaining)</returns>
 	SubpassDescription& setColorAttachmentReference(uint32_t bindingIndex, const AttachmentReference& attachmentReference)
 	{
-		_numColorAttachments += static_cast<uint8_t>(setAttachment(bindingIndex, attachmentReference, _colorAttachment));
+		setElementAtIndex<AttachmentReference>(bindingIndex, attachmentReference, _colorAttachments);
 		return *this;
 	}
 
@@ -1485,7 +1554,7 @@ public:
 	/// <returns>Reference to this(allows chaining)</returns>
 	SubpassDescription& setInputAttachmentReference(uint32_t bindingIndex, const AttachmentReference& attachmentReference)
 	{
-		_numInputAttachments += static_cast<uint8_t>(setAttachment(bindingIndex, attachmentReference, _inputAttachment));
+		setElementAtIndex<AttachmentReference>(bindingIndex, attachmentReference, _inputAttachments);
 		return *this;
 	}
 
@@ -1496,7 +1565,7 @@ public:
 	/// <returns>this (allow chaining)</returns>
 	SubpassDescription& setResolveAttachmentReference(uint32_t bindingIndex, const AttachmentReference& attachmentReference)
 	{
-		_numResolveAttachments += static_cast<uint8_t>(setAttachment(bindingIndex, attachmentReference, _resolveAttachments));
+		setElementAtIndex<AttachmentReference>(bindingIndex, attachmentReference, _resolveAttachments);
 		return *this;
 	}
 
@@ -1507,8 +1576,7 @@ public:
 	/// <returns>this (allow chaining)</returns>
 	SubpassDescription& setPreserveAttachmentReference(uint32_t bindingIndex, const uint32_t preserveAttachment)
 	{
-		_numPreserveAttachments += (this->_preserveAttachment[bindingIndex] == static_cast<uint32_t>(-1) && preserveAttachment != static_cast<uint32_t>(-1)) ? 1 : 0;
-		this->_preserveAttachment[bindingIndex] = preserveAttachment;
+		setElementAtIndex<uint32_t>(bindingIndex, preserveAttachment, _preserveAttachments);
 		return *this;
 	}
 
@@ -1521,21 +1589,27 @@ public:
 		return *this;
 	}
 
+	SubpassDescription& setFragmentShadingRateAttachment(const FragmentShadingRateAttachmentInfo& attachmentInfo)
+	{
+		_fragmentShadingRateAttachment = attachmentInfo;
+		return *this;
+	}
+
 	/// <summary>Return number of color attachments</summary>
 	/// <returns>Return number of color attachment references</returns>
-	uint8_t getNumColorAttachmentReference() const { return _numColorAttachments; }
+	uint8_t getNumColorAttachmentReference() const { return static_cast<uint8_t>(_colorAttachments.size()); }
 
 	/// <summary>Return number of input attachments</summary>
 	/// <returns>Return number of input attachment references</returns>
-	uint8_t getNumInputAttachmentReference() const { return _numInputAttachments; }
+	uint8_t getNumInputAttachmentReference() const { return static_cast<uint8_t>(_inputAttachments.size()); }
 
 	/// <summary>Get number of resolve attachments (const)</summary>
 	/// <returns>Number of resolve attachments</returns>
-	uint8_t getNumResolveAttachmentReference() const { return _numResolveAttachments; }
+	uint8_t getNumResolveAttachmentReference() const { return static_cast<uint8_t>(_resolveAttachments.size()); }
 
 	/// <summary>Return number of preserve attachments (const)</summary>
 	//// <returns>Number of preserve attachments</returns>
-	uint8_t getNumPreserveAttachmentReference() const { return _numPreserveAttachments; }
+	uint8_t getNumPreserveAttachmentReference() const { return static_cast<uint8_t>(_preserveAttachments.size()); }
 
 	/// <summary>Get pipeline binding point (const)</summary>
 	/// <returns>Returns Pipeline binding point</returns>
@@ -1546,8 +1620,8 @@ public:
 	/// <returns>Input attachment id</returns>
 	const AttachmentReference& getInputAttachmentReference(uint8_t index) const
 	{
-		assert(index < _numInputAttachments && "Invalid index");
-		return _inputAttachment[index];
+		assert(index < getNumInputAttachmentReference() && "Invalid input attachment index");
+		return _inputAttachments[index];
 	}
 
 	/// <summary>Get depth stencil attachment reference (const).</summary>
@@ -1559,8 +1633,8 @@ public:
 	/// <returns>Color attachment id</returns>
 	const AttachmentReference& getColorAttachmentReference(uint8_t index) const
 	{
-		assert(index < _numColorAttachments && "Invalid index");
-		return _colorAttachment[index];
+		assert(index < getNumColorAttachmentReference() && "Invalid color attachment index");
+		return _colorAttachments[index];
 	}
 
 	/// <summary>Get resolve attachment id (const)</summary>
@@ -1568,7 +1642,7 @@ public:
 	/// <returns>Resolve attachment id</returns>
 	const AttachmentReference& getResolveAttachmentReference(uint8_t index) const
 	{
-		assert(index < _numResolveAttachments && "Invalid index");
+		assert(index < getNumResolveAttachmentReference() && "Invalid resolve attachment index");
 		return _resolveAttachments[index];
 	}
 
@@ -1577,43 +1651,35 @@ public:
 	/// <returns>Preserve attachment id</returns>
 	uint32_t getPreserveAttachmentReference(uint8_t index) const
 	{
-		assert(index < _numPreserveAttachments && "Invalid index");
-		return _preserveAttachment[index];
+		assert(index < getNumPreserveAttachmentReference() && "Invalid preserve attachment index");
+		return _preserveAttachments[index];
 	}
 
 	/// <summary>Get all preserve attahments ids (const)</summary>(const)
 	/// <returns>Return all preserve attachments id</returns>
-	const uint32_t* getAllPreserveAttachments() const { return _preserveAttachment; }
+	const uint32_t* getAllPreserveAttachments() const { return _preserveAttachments.data(); }
+
+	const FragmentShadingRateAttachmentInfo& getFragmentShadingRateAttachment() const { return _fragmentShadingRateAttachment; }
 
 	/// <summary>clear all entries</summary>
 	/// <returns>Returns this object (allows chained calls)</returns>
 	SubpassDescription& clear()
 	{
-		_numInputAttachments = _numResolveAttachments = _numPreserveAttachments = _numColorAttachments = 0;
-		memset(_inputAttachment, 0, sizeof(_inputAttachment[0]) * (FrameworkCaps::MaxInputAttachments));
-		memset(_colorAttachment, 0, sizeof(_colorAttachment[0]) * (FrameworkCaps::MaxColorAttachments));
-		memset(_preserveAttachment, 0, sizeof(_preserveAttachment[0]) * (FrameworkCaps::MaxPreserveAttachments));
+		_inputAttachments.clear();
+		_colorAttachments.clear();
+		_resolveAttachments.clear();
+		_preserveAttachments.clear();
 		return *this;
 	}
 
 private:
-	uint32_t setAttachment(uint32_t bindingId, const AttachmentReference& newAttachment, AttachmentReference* attachments)
-	{
-		const uint32_t oldId = attachments[bindingId].getAttachment();
-		attachments[bindingId] = newAttachment;
-		return (oldId == static_cast<uint32_t>(-1) ? 1u : 0u);
-	}
-
 	pvrvk::PipelineBindPoint _pipelineBindPoint;
-	AttachmentReference _inputAttachment[FrameworkCaps::MaxInputAttachments];
-	AttachmentReference _colorAttachment[FrameworkCaps::MaxColorAttachments];
-	AttachmentReference _resolveAttachments[FrameworkCaps::MaxResolveAttachments];
-	uint32_t _preserveAttachment[FrameworkCaps::MaxPreserveAttachments];
+	std::vector<AttachmentReference> _inputAttachments;
+	std::vector<AttachmentReference> _colorAttachments;
+	std::vector<AttachmentReference> _resolveAttachments;
+	std::vector<uint32_t> _preserveAttachments;
 	AttachmentReference _depthStencilAttachment;
-	uint8_t _numInputAttachments;
-	uint8_t _numColorAttachments;
-	uint8_t _numResolveAttachments;
-	uint8_t _numPreserveAttachments;
+	FragmentShadingRateAttachmentInfo _fragmentShadingRateAttachment;
 };
 
 /// <summary>Pipeline cache creation descriptor.</summary>

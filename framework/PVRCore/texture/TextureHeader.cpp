@@ -113,7 +113,9 @@ uint32_t TextureHeader::getBitsPerPixel() const
 		case static_cast<uint64_t>(CompressedPixelFormat::BC5):
 		case static_cast<uint64_t>(CompressedPixelFormat::EAC_RG11):
 		case static_cast<uint64_t>(CompressedPixelFormat::ETC2_RGBA):
-		case static_cast<uint64_t>(CompressedPixelFormat::BASISU_UASTC): return 8;
+		case static_cast<uint64_t>(CompressedPixelFormat::BASISU_UASTC):
+		case static_cast<uint64_t>(CompressedPixelFormat::PVRTCI_HDR_8bpp):
+		case static_cast<uint64_t>(CompressedPixelFormat::PVRTCII_HDR_8bpp): return 8;
 		case static_cast<uint64_t>(CompressedPixelFormat::YUY2):
 		case static_cast<uint64_t>(CompressedPixelFormat::UYVY):
 		case static_cast<uint64_t>(CompressedPixelFormat::RGBG8888):
@@ -121,6 +123,8 @@ uint32_t TextureHeader::getBitsPerPixel() const
 		case static_cast<uint64_t>(CompressedPixelFormat::SharedExponentR9G9B9E5): 
 		case static_cast<uint64_t>(CompressedPixelFormat::RGBM):
 		case static_cast<uint64_t>(CompressedPixelFormat::RGBD): return 32;
+		case static_cast<uint64_t>(CompressedPixelFormat::PVRTCI_HDR_6bpp):
+		case static_cast<uint64_t>(CompressedPixelFormat::PVRTCII_HDR_6bpp): return 6;
 		default: return 0;
 		}
 	}
@@ -161,22 +165,26 @@ void TextureHeader::getMinDimensionsForFormat(uint32_t& minX, uint32_t& minY, ui
 			break;
 		case static_cast<uint64_t>(CompressedPixelFormat::PVRTCI_4bpp_RGB):
 		case static_cast<uint64_t>(CompressedPixelFormat::PVRTCI_4bpp_RGBA):
+		case static_cast<uint64_t>(CompressedPixelFormat::PVRTCI_HDR_8bpp):
 			minX = 8;
 			minY = 8;
 			minZ = 1;
 			break;
 		case static_cast<uint64_t>(CompressedPixelFormat::PVRTCI_2bpp_RGB):
 		case static_cast<uint64_t>(CompressedPixelFormat::PVRTCI_2bpp_RGBA):
+		case static_cast<uint64_t>(CompressedPixelFormat::PVRTCI_HDR_6bpp):
 			minX = 16;
 			minY = 8;
 			minZ = 1;
 			break;
 		case static_cast<uint64_t>(CompressedPixelFormat::PVRTCII_4bpp):
+		case static_cast<uint64_t>(CompressedPixelFormat::PVRTCII_HDR_8bpp):
 			minX = 4;
 			minY = 4;
 			minZ = 1;
 			break;
 		case static_cast<uint64_t>(CompressedPixelFormat::PVRTCII_2bpp):
+		case static_cast<uint64_t>(CompressedPixelFormat::PVRTCII_HDR_6bpp):
 			minX = 8;
 			minY = 4;
 			minZ = 1;

@@ -858,8 +858,8 @@ void VulkanParticleSystem::recordMainCommandBuffer(uint32_t swapchainIndex)
 
 	_deviceResources->graphicsCommandBuffers[swapchainIndex]->executeCommands(_deviceResources->renderFloorCommandBuffers[swapchainIndex]);
 	_deviceResources->graphicsCommandBuffers[swapchainIndex]->executeCommands(_deviceResources->renderSpheresCommandBuffers[swapchainIndex]);
-	_deviceResources->graphicsCommandBuffers[swapchainIndex]->executeCommands(_deviceResources->renderParticlesCommandBuffers[swapchainIndex]);
 	_deviceResources->graphicsCommandBuffers[swapchainIndex]->executeCommands(_deviceResources->uiRendererCommandBuffers[swapchainIndex]);
+	_deviceResources->graphicsCommandBuffers[swapchainIndex]->executeCommands(_deviceResources->renderParticlesCommandBuffers[swapchainIndex]);
 
 	_deviceResources->graphicsCommandBuffers[swapchainIndex]->endRenderPass();
 	_deviceResources->graphicsCommandBuffers[swapchainIndex]->end();

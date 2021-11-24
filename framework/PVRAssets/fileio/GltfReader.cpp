@@ -1,5 +1,6 @@
 #include "GltfReader.h"
 #include "PVRAssets/Model.h"
+#include "PVRCore/stream/FilePath.h"
 #define TINYGLTF_IMPLEMENTATION
 #define TINYGLTF_NO_STB_IMAGE
 #define TINYGLTF_NO_EXTERNAL_IMAGE
@@ -73,6 +74,7 @@ struct MeshprimitivesIterator
 struct NodeMapping
 {
 	pvr::assets::Model::Node* node;
+	uint32_t nodeId;
 	NodeMapping() : node(nullptr) {}
 };
 
@@ -225,8 +227,9 @@ void parseAllAnimation(const tinygltf::Model& tinyModel, pvr::assets::Model& mod
 						// switch the w component of the quaternion for glm.
 						for (uint32_t q = 0; q < tinyOutAccessor.count; ++q)
 						{
+							const std::size_t stride = tinyGltf_getTypeNumComponents(tinyOutAccessor.type) * tinyGltf_getComponentTypeToDataType(tinyOutAccessor.componentType).second;
 							const float* data =
-								(const float*)(tinyOutBuffer.data.data() + tinyOutAccessor.byteOffset + tinyOutBufferView.byteOffset + (q * tinyOutBufferView.byteStride));
+								(const float*)(tinyOutBuffer.data.data() + tinyOutAccessor.byteOffset + tinyOutBufferView.byteOffset + (q * stride));
 
 							keyFrameData.rotate[q] = glm::quat(data[3], data[0], data[1], data[2]); // wxyz
 							keyFrameData.rotate[q] = glm::normalize(keyFrameData.rotate[q]);
@@ -328,9 +331,13 @@ void parseNode(tinygltf::Model& tinyModel, uint32_t tinyNodeId, std::vector<Mesh
 	nodeParentId = nodeId;
 
 	// Camera
-	if (tinyNode.camera >= 0)
+	if (tinyNode.camera != -1)
 	{
-		outModel.getCameraNode(cameraNodeIndex).setIndex(tinyNode.camera);
+		pvr::assets::Model::Node& cameraNode = outModel.getCameraNode(cameraNodeIndex);
+		cameraNode.setName(tinyNode.name);
+		cameraNode.setIndex(tinyNode.camera);
+		cameraNode.setParentID(nodeParentId);
+
 		++cameraNodeIndex;
 	}
 
@@ -350,6 +357,7 @@ void parseNode(tinygltf::Model& tinyModel, uint32_t tinyNodeId, std::vector<Mesh
 		for (uint32_t i = 0; i < primitive.numPrimitives; ++i, ++meshNodeIndex)
 		{
 			pvr::assets::Model::Node& meshnode = outModel.getMeshNode(meshNodeIndex);
+			meshnode.setName(tinyNode.name);
 			meshnode.setParentID(nodeParentId);
 			pvr::assets::Mesh* mesh = (primitive.begin + i);
 			if (tinySkin != nullptr)
@@ -366,11 +374,14 @@ void parseNode(tinygltf::Model& tinyModel, uint32_t tinyNodeId, std::vector<Mesh
 
 	// create a node mapping between the gltf node and the framework node.
 	nodeMapping[tinyNodeId].node = &node;
+	nodeMapping[tinyNodeId].nodeId = nodeId;
 	processedNodes[tinyNodeId] = true;
 	++nodeId;
 	// do child nodes recursively.
 	for (uint32_t child = 0; child < tinyNode.children.size(); ++child)
-	{ parseNode(tinyModel, tinyNode.children[child], meshPrimitives, nodeId, nodeParentId, meshNodeIndex, cameraNodeIndex, outModel, nodeMapping, processedNodes); }
+	{
+		parseNode(tinyModel, tinyNode.children[child], meshPrimitives, nodeId, nodeParentId, meshNodeIndex, cameraNodeIndex, outModel, nodeMapping, processedNodes);
+	}
 }
 
 inline glm::vec4 getColorFactor(const tinygltf::Parameter& parameter)
@@ -473,7 +484,7 @@ void parseAllTextureAndMaterials(const tinygltf::Model& tinyModel, pvr::assets::
 	}
 }
 
-void parseAllSkins(const tinygltf::Model& tinyModel, pvr::assets::Model& outModel)
+void parseAllSkins(const tinygltf::Model& tinyModel, pvr::assets::Model& outModel, std::vector<NodeMapping>& nodeMapping)
 {
 	const size_t numSkins = tinyModel.skins.size();
 	if (numSkins == 0) { return; }
@@ -489,7 +500,12 @@ void parseAllSkins(const tinygltf::Model& tinyModel, pvr::assets::Model& outMode
 		memcpy(skeleton.bones.data(), tinySkin.joints.data(), tinySkin.joints.size() * sizeof(uint32_t));
 
 		// remap the bones ids
-		for (uint32_t bones = 0; bones < skeleton.bones.size(); ++bones) { skeleton.bones[bones] += outModel.getNumMeshNodes(); }
+		uint32_t offset = outModel.getNumMeshNodes() + outModel.getNumCameraNodes() + outModel.getNumLightNodes();
+		for (uint32_t bones = 0; bones < skeleton.bones.size(); ++bones)
+		{
+			const uint32_t originalId = skeleton.bones[bones];
+			skeleton.bones[bones] = nodeMapping[originalId].nodeId;
+		}
 
 		const tinygltf::Accessor& tinyAccessor = tinyModel.accessors[tinySkin.inverseBindMatrices];
 		const tinygltf::BufferView& tinyView = tinyModel.bufferViews[tinyAccessor.bufferView];
@@ -692,8 +708,6 @@ void parseAllCameras(const tinygltf::Model& tinyModel, pvr::assets::Model& asset
 {
 	if (tinyModel.cameras.size())
 	{
-		asset.allocCameras(static_cast<uint32_t>(tinyModel.cameras.size()));
-
 		// parse the cameras
 		for (uint32_t i = 0; i < tinyModel.cameras.size(); ++i)
 		{
@@ -717,7 +731,7 @@ public:
 	bool loadExternalFile(std::vector<unsigned char>* out, std::string* err, const std::string& filename, const std::string& basedir, size_t reqBytes, bool checkSize)
 	{
 		(void)basedir; // UNREFERENCE_VARIABLE
-		auto stream = assetProvider->getAssetStream(filename);
+		auto stream = assetProvider->getAssetStream(filename); // basedir + std::string(1, pvr::FilePath::getDirectorySeparator()) + filename todo investigate. e.g. results in //damagedHelmet.bin
 		if (!stream) { return false; }
 		const uint32_t sz = static_cast<uint32_t>(stream->getSize());
 		out->resize(sz);
@@ -781,18 +795,24 @@ void readGLTF(const ::pvr::Stream& stream, const IAssetProvider& assetProvider, 
 	// Calculate how many nodes required.
 	uint32_t numNodes = 0;
 	uint32_t numMeshNodes = 0;
+	uint32_t numLightNodes = 0;
 	uint32_t numCameraNodes = 0;
 	for (size_t m = 0; m < tinyModel.nodes.size(); ++m)
 	{
 		++numNodes;
 		if (tinyModel.nodes[m].mesh >= 0) { numMeshNodes += static_cast<uint32_t>(tinyModel.meshes[tinyModel.nodes[m].mesh].primitives.size()); }
 		if (tinyModel.nodes[m].camera >= 0) { ++numCameraNodes; }
+		if (!tinyModel.nodes[m].extLightsValues.empty()) { ++numLightNodes; }
 	}
 
 	// allocate meshes and nodes.
 	asset.allocMeshes(totalNumMeshes);
 	asset.allocMeshNodes(numMeshNodes);
-	asset.allocNodes(numMeshNodes + numNodes + numCameraNodes);
+	asset.allocCameras(numCameraNodes);
+	asset.allocLights(numLightNodes);
+	
+	const uint32_t numAssetNodes = numMeshNodes + numLightNodes + numCameraNodes;
+	asset.allocNodes(numNodes + numAssetNodes);
 
 	// Parse all the meshes
 	// Keep a list which maps between the gltf mesh with the framework meshes.
@@ -806,7 +826,7 @@ void readGLTF(const ::pvr::Stream& stream, const IAssetProvider& assetProvider, 
 	parseAllCameras(tinyModel, asset);
 
 	// parse the nodes
-	uint32_t nodeIndex = asset.getNumMeshNodes();
+	uint32_t nodeIndex = numAssetNodes;
 	uint32_t meshNodeIndex = 0;
 	std::vector<NodeMapping> nodeMappings(tinyModel.nodes.size());
 	// start from the root node and recursively parse the sub nodes.
@@ -815,7 +835,9 @@ void readGLTF(const ::pvr::Stream& stream, const IAssetProvider& assetProvider, 
 	{
 		const tinygltf::Scene& tinyScene = tinyModel.scenes[scene];
 		for (uint32_t rootNode = 0; rootNode < tinyScene.nodes.size(); ++rootNode)
-		{ parseNode(tinyModel, tinyScene.nodes[rootNode], meshPrimitives, nodeIndex, -1, meshNodeIndex, cameraNodeIndex, asset, nodeMappings, processedNodes); }
+		{
+			parseNode(tinyModel, tinyScene.nodes[rootNode], meshPrimitives, nodeIndex, -1, meshNodeIndex, cameraNodeIndex, asset, nodeMappings, processedNodes); 
+		}
 	}
 
 	//  Animation
@@ -825,7 +847,7 @@ void readGLTF(const ::pvr::Stream& stream, const IAssetProvider& assetProvider, 
 	parseAllTextureAndMaterials(tinyModel, asset);
 
 	// Skins
-	parseAllSkins(tinyModel, asset);
+	parseAllSkins(tinyModel, asset, nodeMappings);
 
 } // namespace assets
 } // namespace assets

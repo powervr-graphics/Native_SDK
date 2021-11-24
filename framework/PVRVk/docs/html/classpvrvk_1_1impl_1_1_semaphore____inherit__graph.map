@@ -1,6 +1,0 @@
-<map id="pvrvk::impl::Semaphore_" name="pvrvk::impl::Semaphore_">
-<area shape="rect" id="node1" title="Vulkan implementation of the Semaphore class. Use to &quot;serialize&quot; access between CommandBuffer submiss..." alt="" coords="573,57,759,84"/>
-<area shape="rect" id="node2" href="$classpvrvk_1_1impl_1_1_p_v_r_vk_device_object_base.html" title=" " alt="" coords="307,5,525,61"/>
-<area shape="rect" id="node3" href="$classpvrvk_1_1impl_1_1_p_v_r_vk_object_base.html" title=" " alt="" coords="5,5,259,61"/>
-<area shape="rect" id="node4" href="$classpvrvk_1_1impl_1_1_device_object_debug_utils.html" title=" " alt="" coords="313,86,519,127"/>
-</map>

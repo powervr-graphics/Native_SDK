@@ -1,4 +1,0 @@
-<map id="clutils::OpenCLError" name="clutils::OpenCLError">
-<area shape="rect" id="node1" title="A simple std::runtime_error wrapper for throwing exceptions when receiving OpenCL errors." alt="" coords="5,80,156,107"/>
-<area shape="rect" id="node2" title=" " alt="" coords="29,5,132,32"/>
-</map>

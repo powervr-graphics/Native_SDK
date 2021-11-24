@@ -1,4 +1,0 @@
-<map id="pvr::platform::StateMachine" name="pvr::platform::StateMachine">
-<area shape="rect" id="node1" title="The StateMachine controlling the PowerVR Shell. Provides the application main loop and callbacks." alt="" coords="5,80,209,107"/>
-<area shape="rect" id="node2" href="$classpvr_1_1platform_1_1_shell_o_s.html" title="Internal class Implements a lot of the functionality and forwards to the platform from PVRShell...." alt="" coords="25,5,190,32"/>
-</map>

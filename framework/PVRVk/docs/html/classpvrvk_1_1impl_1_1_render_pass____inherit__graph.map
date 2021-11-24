@@ -1,6 +1,0 @@
-<map id="pvrvk::impl::RenderPass_" name="pvrvk::impl::RenderPass_">
-<area shape="rect" id="node1" title="Vulkan implementation of the RenderPass class. Use through the Reference counted framework object pvr..." alt="" coords="585,57,772,84"/>
-<area shape="rect" id="node2" href="$classpvrvk_1_1impl_1_1_p_v_r_vk_device_object_base.html" title=" " alt="" coords="308,5,537,61"/>
-<area shape="rect" id="node3" href="$classpvrvk_1_1impl_1_1_p_v_r_vk_object_base.html" title=" " alt="" coords="5,5,260,61"/>
-<area shape="rect" id="node4" href="$classpvrvk_1_1impl_1_1_device_object_debug_utils.html" title=" " alt="" coords="319,86,526,127"/>
-</map>

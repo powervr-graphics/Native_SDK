@@ -125,14 +125,14 @@ static Keys X11_To_Keycode[255] = {
 	Keys::F11,
 	Keys::F12,
 	Keys::Unknown,
-	Keys::Unknown,
+	Keys::Up,
 	Keys::Unknown,
 
-	Keys::Unknown, // 100
+	Keys::Left, // 100
 	Keys::Unknown,
+	Keys::Right,
 	Keys::Unknown,
-	Keys::Unknown,
-	Keys::Return,
+	Keys::Down,
 	Keys::Control,
 	Keys::NumDiv,
 	Keys::PrintScreen,
@@ -352,58 +352,71 @@ bool X11InternalOS::handleOSEvents(std::unique_ptr<Shell>& shell)
 
 		switch (xEvent.type)
 		{
-		case ClientMessage:
-		{
+		case ClientMessage: {
 			atoms = XGetAtomName(_display, xEvent.xclient.message_type);
 			if (*atoms == *"WM_PROTOCOLS") { shell->onSystemEvent(SystemEvent::SystemEvent_Quit); }
 			XFree(atoms);
 			break;
 		}
-		case ButtonPress:
-		{
+		case ButtonPress: {
 			XButtonEvent* buttonEvent = reinterpret_cast<XButtonEvent*>(&xEvent);
 			switch (buttonEvent->button)
 			{
-			case 1:
-			{
+			// Left click
+			case 1: {
 				shell->onPointingDeviceDown(0);
+				break;
 			}
-			break;
+			// Middle mouse button click
+			case 2: {
+				shell->onPointingDeviceDown(2);
+				break;
+			}
+			// Right click
+			case 3: {
+				shell->onPointingDeviceDown(1);
+				break;
+			}
 			default: break;
 			}
 			break;
 		}
-		case ButtonRelease:
-		{
+		case ButtonRelease: {
 			XButtonEvent* buttonEvent = reinterpret_cast<XButtonEvent*>(&xEvent);
 			switch (buttonEvent->button)
 			{
-			case 1:
-			{
+			// Left click
+			case 1: {
 				shell->onPointingDeviceUp(0);
+				break;
 			}
-			break;
+			// Middle mouse button click
+			case 2: {
+				shell->onPointingDeviceUp(2);
+				break;
+			}
+			// Right click
+			case 3: {
+				shell->onPointingDeviceUp(1);
+				break;
+			}
 			default: break;
 			}
 			break;
 		}
-		case KeyPress:
-		{
+		case KeyPress: {
 			shell->onKeyDown(X11_To_Keycode[xEvent.xkey.keycode]);
 		}
 		break;
-		case KeyRelease:
-		{
+		case KeyRelease: {
 			shell->onKeyUp(X11_To_Keycode[xEvent.xkey.keycode]);
 		}
 		break;
-		case ConfigureNotify:
-		{
+		case ConfigureNotify: {
 			XConfigureEvent* configureEvent = reinterpret_cast<XConfigureEvent*>(&xEvent);
 			shell->onConfigureEvent(ConfigureEvent{ configureEvent->x, configureEvent->y, configureEvent->width, configureEvent->height, configureEvent->border_width });
 		}
-		case MappingNotify:
-		{
+		case MappingNotify: {
 			// Notifies if the keyboard mapping has changed
 			// Call XRefreshKeyboardMapping to refresh our keyboard mapping
 			XMappingEvent* mappingEvent = reinterpret_cast<XMappingEvent*>(&xEvent);
@@ -419,11 +432,13 @@ bool X11InternalOS::handleOSEvents(std::unique_ptr<Shell>& shell)
 
 void X11InternalOS::updatePointingDeviceLocation()
 {
-	int x, y, dummy0, dummy1;
+	int root_x, root_y, win_x, win_y;
 	uint dummy2;
 	Window child_return, root_return;
-	if (XQueryPointer(_display, getWindow(), &root_return, &child_return, &x, &y, &dummy0, &dummy1, &dummy2))
-	{ setPointerLocation(static_cast<int16_t>(x), static_cast<int16_t>(y)); }
+	if (XQueryPointer(_display, getWindow(), &root_return, &child_return, &root_x, &root_y, &win_x, &win_y, &dummy2))
+	{
+		setPointerLocation(static_cast<int16_t>(win_x), static_cast<int16_t>(win_y));
+	}
 }
 
 void X11InternalOS::releaseWindow()

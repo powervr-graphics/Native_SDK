@@ -1,6 +1,0 @@
-<map id="pvrvk::impl::QueryPool_" name="pvrvk::impl::QueryPool_">
-<area shape="rect" id="node1" title="Vulkan implementation of the Query Pool class. Destroying the query pool will also destroy the querie..." alt="" coords="571,57,749,84"/>
-<area shape="rect" id="node2" href="$classpvrvk_1_1impl_1_1_p_v_r_vk_device_object_base.html" title=" " alt="" coords="300,5,523,61"/>
-<area shape="rect" id="node3" href="$classpvrvk_1_1impl_1_1_p_v_r_vk_object_base.html" title=" " alt="" coords="5,5,252,61"/>
-<area shape="rect" id="node4" href="$classpvrvk_1_1impl_1_1_device_object_debug_utils.html" title=" " alt="" coords="312,86,511,127"/>
-</map>

@@ -95,6 +95,7 @@ class OpenGLESBumpmap : public pvr::Shell
 			if (samplerTrilinear) { gl::DeleteSamplers(1, &samplerTrilinear); }
 			if (onScreenFbo) { gl::DeleteFramebuffers(1, &onScreenFbo); }
 
+			uiRenderer.release();
 			context.reset();
 		}
 	};

@@ -4,10 +4,7 @@
 .. image:: https://img.shields.io/github/license/powervr-graphics/Native_SDK.svg
     :target: https://github.com/powervr-graphics/Native_SDK/blob/master/LICENSE.md
 
-.. image:: https://travis-ci.org/powervr-graphics/Native_SDK.svg?branch=master
-     :target: https://travis-ci.org/powervr-graphics/Native_SDK
-
-.. figure:: ./docs/images/WelcomeGraphic.png
+.. figure:: ./examples/assets/Documentation/WelcomeGraphic.png
 
 ===============
 The PowerVR SDK
@@ -51,7 +48,7 @@ For detailed instructions for building the SDK, see `here <BUILD.rst>`_.
 Ray Tracing
 -----------
 
-Some of our examples; HelloRayTracing, HybridHardShadows, HybridSoftShadows and HybridReflections, implement ray tracing techniques. Currently they are only compatible with RT ready desktops and laptops running Windows 10 or Linux. They also require hardware/drivers supporting a minimum Vulkan version of 1.2.162.1.
+Some of our examples; HelloRayTracing, HybridHardShadows, HybridSoftShadows, HybridReflections, HybridRefractions and Ray Traced Hard Shadows, implement ray tracing techniques. Currently they are only compatible with RT ready desktops and laptops running Windows 10 or Linux. They also require hardware/drivers supporting a minimum Vulkan version of 1.2.162.1.
 
 PVRVFrame
 ---------
@@ -60,7 +57,7 @@ PVRVFrame is included as part of the PowerVR SDK and provides a set of desktop e
 ***Note:** As  PVRVFrame provides an OpenGL ES wrapper for desktop OpenGL performance and capabilities depend on the 3D acceleration present in the system.
 ***Note:** The PVRVFrame libraries are not intended to be a completely accurate replication of the behaviour of PowerVR hardware.
 
-* The PVRVFrame libraries can be found pre-installed in the ``[path-to-sdk]/libs`` folder.
+* The PVRVFrame libraries can be found pre-installed in the ``[path-to-sdk]/lib`` folder.
 * If the SDK was installed using the PowerVR SDK installer, the PVRVFrame emulation libraries may already be present in the PATH environment variable if this was requested during installation.
 * Otherwise, the PVRVFrame libraries can be manually added to the PATH or can be copied to a DLL-accessible directory prior to running the SDK applications - This may be anywhere in the path, next to the executable, system default folders etc. 
 
@@ -84,6 +81,11 @@ The PowerVR SDK has a number of third-party dependencies, each of which may have
 - `tinygltf <https://github.com/syoyo/tinygltf>`_: Header only C++11 tiny glTF 2.0 library
 - `vma <https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator>`_: Vulkan Memory Allocator
 - `vulkan <https://github.com/KhronosGroup/Vulkan-Docs>`_: Sources for the formal documentation of the Vulkan API
+
+Documentation
+----------------
+
+The documentation from this repository has been moved to a new repository covering exclusively documentation, the URL will be specified once it is released.
 
 Release notes
 -------------

@@ -1,7 +1,0 @@
-<map id="pvrvk::impl::ComputePipeline_" name="pvrvk::impl::ComputePipeline_">
-<area shape="rect" id="node1" title="Vulkan Computepipeline wrapper" alt="" coords="937,60,1160,87"/>
-<area shape="rect" id="node2" href="$classpvrvk_1_1impl_1_1_pipeline.html" title=" " alt="" coords="623,45,889,101"/>
-<area shape="rect" id="node3" href="$classpvrvk_1_1impl_1_1_p_v_r_vk_device_object_base.html" title=" " alt="" coords="333,5,526,61"/>
-<area shape="rect" id="node4" href="$classpvrvk_1_1impl_1_1_p_v_r_vk_object_base.html" title=" " alt="" coords="5,5,236,61"/>
-<area shape="rect" id="node5" href="$classpvrvk_1_1impl_1_1_device_object_debug_utils.html" title=" " alt="" coords="284,85,575,141"/>
-</map>

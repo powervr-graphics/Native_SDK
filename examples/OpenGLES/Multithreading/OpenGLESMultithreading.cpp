@@ -279,7 +279,7 @@ pvr::Result OpenGLESMultithreading::releaseView()
 
 	_deviceResources.reset();
 	uiRenderer.release();
-	_scene.reset();
+	loadingDone = false;
 	return pvr::Result::Success;
 }
 
@@ -354,7 +354,6 @@ pvr::Result OpenGLESMultithreading::renderFrame()
 	if (this->shouldTakeScreenshot()) { pvr::utils::takeScreenshot(this->getScreenshotFileName(), this->getWidth(), this->getHeight()); }
 
 	_deviceResources->context->swapBuffers();
-
 	return pvr::Result::Success;
 }
 

@@ -73,6 +73,9 @@ private:
 	/// <summary>Top level information about the instances in the scene for the scnee descriptor buffer used.</summary>
 	std::vector<SceneDescription> _sceneDescriptions;
 
+	/// <summary>Buffer with the vector of VkAccelerationStructureInstanceKHR elements that define the TLAS instance data.</summary>
+	pvrvk::Buffer _instancesBuffer;
+
 public:
 	/// <summary>Constructor.</summary>
 	explicit AccelerationStructureWrapper() {}
@@ -83,7 +86,9 @@ public:
 	/// <param name="indexBuffers">Array with an index buffer for each scene model.</param>
 	/// <param name="verticesSize">Array with the amount of vertices of the geometry for this scene model.</param>
 	/// <param name="indicesSize">Array with the amount of indices of the geometry for this scene model.</param>
-	void buildASModelDescription(std::vector<pvrvk::Buffer> vertexBuffers, std::vector<pvrvk::Buffer> indexBuffers, std::vector<int> verticesSize, std::vector<int> indicesSize);
+	/// <param name="vectorInstanceTransform">Array with the transforms of each TLAS node, information will be stored in _instances and _sceneDescriptions.</param>
+	void buildASModelDescription(std::vector<pvrvk::Buffer> vertexBuffers, std::vector<pvrvk::Buffer> indexBuffers, std::vector<int> verticesSize, std::vector<int> indicesSize,
+		const std::vector<glm::mat4>& vectorInstanceTransform);
 
 	/// <summary>Clear the information in _rtModelInfos, _instances and _sceneDescriptions filled in the call to buildASModelDescription once that
 	/// information is no longer needed.</summary>
@@ -92,8 +97,8 @@ public:
 	/// <summary>Build the acceleration structures _tlas and _blas (both the top and the bottom level ones).</summary>
 	/// <param name="device">Device to build this acceleration structure for.</param>
 	/// <param name="queue">Queue to submit commands.</param>
-	/// <param name="buildASFlags">Build options for the acceleration structure. NOTE: Some flags are not implemented yet like e_ALLOW_COMPACTION_BIT_KHR, currently intended use
-	/// is e_PREFER_FAST_TRACE_BIT_KHR.</param> <param name="commandBuffer">Command buffer to record commands submitted to the provided queue.</param>
+	/// <param name="buildASFlags">Build options for the acceleration structure. NOTE: Some flags are not implemented yet like e_ALLOW_COMPACTION_BIT_KHR, currently intended use is
+	/// e_PREFER_FAST_TRACE_BIT_KHR.</param> <param name="commandBuffer">Command buffer to record commands submitted to the provided queue.</param>
 	void buildAS(pvrvk::Device device, pvrvk::Queue queue, pvrvk::CommandBuffer commandBuffer,
 		pvrvk::BuildAccelerationStructureFlagsKHR buildASFlags = pvrvk::BuildAccelerationStructureFlagsKHR::e_PREFER_FAST_TRACE_BIT_KHR);
 
@@ -108,7 +113,8 @@ public:
 	/// <param name="commandBuffer">Command buffer to record commands submitted to the provided queue.</param>
 	/// <param name="queue">Queue to submit commands.</param>
 	/// <param name="flags">Flags for the acceleration struct to be built.</param>
-	void buildTopLevelASAndInstances(pvrvk::Device device, pvrvk::CommandBuffer commandBuffer, pvrvk::Queue queue, pvrvk::BuildAccelerationStructureFlagsKHR flags);
+	/// <param name="update">Flag to know whether to update or create the TLAS.</param>
+	void buildTopLevelASAndInstances(pvrvk::Device device, pvrvk::CommandBuffer commandBuffer, pvrvk::Queue queue, pvrvk::BuildAccelerationStructureFlagsKHR flags, bool update);
 
 	/// <summary>Helper function to convert information from elements in _instances to VkAccelerationStructureInstanceKHR equivalents.</summary>
 	/// <param name="device">Device needed for the buffer address for the instance.</param>
@@ -126,6 +132,10 @@ public:
 	/// <summary>Get the array with the bottom level acceleration structures.</summary>
 	/// <returns>The array with the bottom level acceleration structures.</returns>
 	inline std::vector<pvrvk::AccelerationStructure>& getBlas() { return _blas; }
+
+	/// <summary>Update the RTInstance::transform field of each element.</summary>
+	/// <param name="update">Vector with the transform data to update, has to match the size of AccelerationStructureWrapper::_instances.</param>
+	void updateInstanceTransformData(const std::vector<glm::mat4>& vectorTransform);
 };
 
 } // namespace utils

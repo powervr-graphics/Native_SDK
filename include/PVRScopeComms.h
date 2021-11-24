@@ -154,7 +154,7 @@ void pplShutdown(
 ****************************************************************************/
 PVRSCOPE_EXPORT
 void pplWaitForConnection(
-	struct SSPSCommsData	* const psData,			///< Array of context data pointers
+	struct SSPSCommsData	** const ppsData,		///< Array of context data pointers
 	int						* const pnBoolResults,	///< Array of results - false (0) if timeout
 	const unsigned int		nCount,					///< Array length
 	const unsigned int		nTimeOutMS				///< Time-out length in milliseconds

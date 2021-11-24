@@ -1,6 +1,0 @@
-<map id="pvr::async::TextureLoadFuture_" name="pvr::async::TextureLoadFuture_">
-<area shape="rect" id="node1" title="A class wrapping the operations necessary to retrieve an asynchronously loaded texture,..." alt="" coords="576,46,800,73"/>
-<area shape="rect" id="node2" href="$classpvr_1_1async_1_1_i_framework_async_result.html" title=" " alt="" coords="297,5,511,47"/>
-<area shape="rect" id="node3" href="$classpvr_1_1async_1_1_i_framework_cleanup_object.html" title=" " alt="" coords="5,5,232,47"/>
-<area shape="rect" id="node4" title=" " alt="" coords="280,71,528,112"/>
-</map>

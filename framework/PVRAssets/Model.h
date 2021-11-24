@@ -1098,7 +1098,7 @@ public:
 	{
 		// Camera nodes are after the mesh and light nodes in the array
 		assertion(cameraNodeIndex < getNumCameraNodes(), "Invalid camera node index");
-		return getNumMeshes() + getNumLights() + cameraNodeIndex;
+		return getNumMeshNodes() + getNumLights() + cameraNodeIndex;
 	}
 
 	/// <summary>Get the number of distinct Light objects. May be different than the actual number of Light Instances

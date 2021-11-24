@@ -20,6 +20,7 @@ set(PVRVk_HEADERS
 	CommandBufferVk.h
 	CommandPoolVk.h
 	ComputePipelineVk.h
+	CommonHelpers.h
 	DebugReportCallbackVk.h
 	DebugUtilsMessengerVk.h
 	DebugUtilsVk.h

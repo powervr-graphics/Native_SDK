@@ -1,6 +1,0 @@
-<map id="pvrvk::impl::Event_" name="pvrvk::impl::Event_">
-<area shape="rect" id="node1" title="Vulkan implementation of the Event class. Event can be used by the host to do fine&#45;grained synchroniz..." alt="" coords="608,57,756,84"/>
-<area shape="rect" id="node2" href="$classpvrvk_1_1impl_1_1_p_v_r_vk_device_object_base.html" title=" " alt="" coords="315,5,560,61"/>
-<area shape="rect" id="node3" href="$classpvrvk_1_1impl_1_1_p_v_r_vk_object_base.html" title=" " alt="" coords="5,13,267,54"/>
-<area shape="rect" id="node4" href="$classpvrvk_1_1impl_1_1_device_object_debug_utils.html" title=" " alt="" coords="342,86,533,127"/>
-</map>

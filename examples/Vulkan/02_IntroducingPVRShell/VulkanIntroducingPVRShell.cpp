@@ -219,8 +219,8 @@ const std::string InstanceLayers[] = {
 	// VK_LAYER_LUNARG_parameter_validation, VK_LAYER_LUNARG_object_tracker, VK_LAYER_LUNARG_core_validation, and VK_LAYER_GOOGLE_unique_objects.
 	"VK_LAYER_LUNARG_standard_validation",
 	// PerfDoc is a Vulkan layer which attempts to identify API usage is may be discouraged primarily by validating applications
-	// against the rules set out in the Mali Application Developer Best Practices document
-	"VK_LAYER_ARM_mali_perf_doc",
+	// against the rules set out for Imagination GPUs, generic API best practices are validated through extending the features of the validation
+	// layers when creating the instance.
 	"VK_LAYER_IMG_powervr_perf_doc", //
 
 #else
@@ -1127,7 +1127,7 @@ void VulkanIntroducingPVRShell::createInstance()
 	// disable the validation layers prior to being released.
 
 	// This application makes use of The Khronos Vulkan-LoaderAndValidationLayers: https://github.com/KhronosGroup/Vulkan-LoaderAndValidationLayers
-	// Other layers exist for various other reasons such as VK_LAYER_POWERVR_carbon and VK_LAYER_ARM_mali_perf_doc.
+	// Other layers exist for various other reasons such as VK_LAYER_POWERVR_carbon and VK_LAYER_IMG_powervr_perf_doc
 	uint32_t numLayers = 0;
 	vulkanSuccessOrDie(_vkBindings.vkEnumerateInstanceLayerProperties(&numLayers, nullptr), "Failed to enumerate Instance Layer properties");
 	std::vector<VkLayerProperties> layerProps(numLayers);
@@ -1215,6 +1215,44 @@ void VulkanIntroducingPVRShell::createInstance()
 	instanceInfo.ppEnabledExtensionNames = enabledExtensions.data();
 	instanceInfo.enabledLayerCount = static_cast<uint32_t>(enableLayers.size());
 	instanceInfo.ppEnabledLayerNames = enableLayers.data();
+
+	// If the enabled instance layers contain the Khronos validation layer, then attempt to extend the functionality of
+	// that layer by using the validation feature extension. This can be used to enable/disable features of the
+	// validation layers. In this instance, the aim is to add best practice checking to ensure that Vulkan's best
+	// practices are being followed.
+
+	// Find out if validation features are supported
+	bool validationFeaturesSupported = false;
+
+	if (requestedStdValidation && supportsKhronosValidation)
+	{
+		std::vector<VkExtensionProperties> validationLayerInstanceExtensions;
+		uint32_t extensionCount;
+		vulkanSuccessOrDie(_vkBindings.vkEnumerateInstanceExtensionProperties("VK_LAYER_KHRONOS_validation", &extensionCount, nullptr), "Enumerate instance extension properties");
+
+		validationLayerInstanceExtensions.resize(extensionCount);
+		vulkanSuccessOrDie(_vkBindings.vkEnumerateInstanceExtensionProperties("VK_LAYER_KHRONOS_validation", &extensionCount, validationLayerInstanceExtensions.data()),
+			"Enumerate instance extension properties");
+
+		// Check each of the extensions provided by the Khronos validation layer and ensure one of them is the validation features.
+		for (auto it = validationLayerInstanceExtensions.begin(); !validationFeaturesSupported && it != validationLayerInstanceExtensions.end(); it++)
+		{ validationFeaturesSupported = !strcmp(it->extensionName, "VK_EXT_validation_features"); }
+	}
+
+	// If the validation features are availble, then enable the best practices feature
+
+	if (validationFeaturesSupported)
+	{
+		VkValidationFeatureEnableEXT enabledValidationFeatures = VK_VALIDATION_FEATURE_ENABLE_BEST_PRACTICES_EXT;
+		VkValidationFeaturesEXT validationFeatures = {};
+		validationFeatures.sType = VK_STRUCTURE_TYPE_VALIDATION_FEATURES_EXT;
+		validationFeatures.enabledValidationFeatureCount = 1;
+		validationFeatures.pEnabledValidationFeatures = &enabledValidationFeatures;
+		validationFeatures.pDisabledValidationFeatures = nullptr;
+
+		// The validation features are added by being attached to the vulkan instance.
+		instanceInfo.pNext = &validationFeatures;
+	}
 
 	// Create our Vulkan Application Instance.
 	vulkanSuccessOrDie(_vkBindings.vkCreateInstance(&instanceInfo, nullptr, &_instance), "Failed to create the Vulkan Instance");

@@ -1,7 +1,0 @@
-<map id="pvrvk::impl::RaytracingPipeline_" name="pvrvk::impl::RaytracingPipeline_">
-<area shape="rect" id="node1" title="Vulkan RaytracingPipeline wrapper" alt="" coords="913,60,1147,87"/>
-<area shape="rect" id="node2" href="$classpvrvk_1_1impl_1_1_pipeline.html" title=" " alt="" coords="635,45,865,101"/>
-<area shape="rect" id="node3" href="$classpvrvk_1_1impl_1_1_p_v_r_vk_device_object_base.html" title=" " alt="" coords="339,5,532,61"/>
-<area shape="rect" id="node4" href="$classpvrvk_1_1impl_1_1_p_v_r_vk_object_base.html" title=" " alt="" coords="5,5,236,61"/>
-<area shape="rect" id="node5" href="$classpvrvk_1_1impl_1_1_device_object_debug_utils.html" title=" " alt="" coords="284,85,587,141"/>
-</map>

@@ -1,5 +1,0 @@
-<map id="pvr::IndexOutOfRange" name="pvr::IndexOutOfRange">
-<area shape="rect" id="node1" title="A simple std::runtime_error wrapper for throwing exceptions when attempting to use index out of range" alt="" coords="5,155,172,181"/>
-<area shape="rect" id="node2" href="$classpvr_1_1_pvr_error.html" title="A simple std::runtime_error wrapper for throwing generic PVR exceptions" alt="" coords="37,80,140,107"/>
-<area shape="rect" id="node3" title=" " alt="" coords="19,5,158,32"/>
-</map>

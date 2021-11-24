@@ -25,6 +25,7 @@
 #include "PVRVk/SwapchainVk.h"
 #include "PVRUtils/Vulkan/MemoryAllocator.h"
 #include "PVRUtils/MultiObject.h"
+#include "PVRVk/ExtensionsVk.h"
 namespace pvr {
 namespace utils {
 extern bool PVRUtils_Throw_On_Validation_Error;
@@ -179,7 +180,9 @@ inline void insertDebugUtilsLabel(pvrvk::CommandBufferBase commandBufferBase, co
 {
 	// if the VK_EXT_debug_utils extension is supported then insert the queue label region
 	if (commandBufferBase->getDevice()->getPhysicalDevice()->getInstance()->getEnabledExtensionTable().extDebugUtilsEnabled)
-	{ commandBufferBase->insertDebugUtilsLabel(labelInfo); } // else if the VK_EXT_debug_marker extension is supported then insert the debug marker
+	{
+		commandBufferBase->insertDebugUtilsLabel(labelInfo);
+	} // else if the VK_EXT_debug_marker extension is supported then insert the debug marker
 	else if (commandBufferBase->getDevice()->getEnabledExtensionTable().extDebugMarkerEnabled)
 	{
 		pvrvk::DebugMarkerMarkerInfo markerInfo(labelInfo.getLabelName(), labelInfo.getR(), labelInfo.getG(), labelInfo.getB(), labelInfo.getA());
@@ -736,6 +739,25 @@ struct DeviceExtensions : public pvrvk::VulkanExtensionList
 {
 	/// <summary>Default constructor. Initialises a list of device extensions to be used by default when using the Framework.</summary>
 	DeviceExtensions();
+
+	/// <summary></summary>
+	/// <param name="extensionFeature"></param>
+	void addExtensionFeature(pvrvk::ExtensionFeatures& extensionFeature);
+
+	/// <summary>Helper function to add the fragment shading rate extension and feature.</summary>
+	/// <param name="physicalDevice">Reference to a physical device. Make sure it is capable of performing FSR with PhysicalDevice_::getFragmentShadingRateFeatures()</param>
+	/// <returns>Self</returns>
+	DeviceExtensions& addFragmentShadingRateExtensionAndFeature(pvrvk::PhysicalDevice& physicalDevice);
+
+	/// <summary>Helper function to add the ray tracing extension and feature.</summary>
+	/// <param name="physicalDevice">Reference to a physical device.</param>
+	/// <returns>Self</returns>
+	// DeviceExtensions& addRayTracingExtensionAndFeature(pvrvk::PhysicalDevice& physicalDevice);
+
+private:
+	/// <summary>Holds a list of references to the extension feature structs currently set. This ensures that structs are kept alive through
+	/// reference counting until the DeviceExtensions instance goes out of scope.</summary>
+	std::vector<std::shared_ptr<void>> _featureReferences;
 };
 
 /// <summary>Utility function for creating a Vulkan instance and supported physical devices using the appropriately set parameters.</summary>
@@ -1139,9 +1161,13 @@ inline ContainerType createOnscreenFramebuffers(const pvrvk::Swapchain& swapchai
 
 	bool multisample = (renderPass->getCreateInfo().getSubpass(0).getNumResolveAttachmentReference() > 0);
 	if (multisample && !colorMultisampledImages)
-	{ throw InvalidArgumentError("colorResolveImages", "pvr::utils::createOnScreenFramebuffers: On a multisampled swapchain, color resolve images cannot be null be provided"); }
+	{
+		throw InvalidArgumentError("colorResolveImages", "pvr::utils::createOnScreenFramebuffers: On a multisampled swapchain, color resolve images cannot be null be provided");
+	}
 	if (!multisample && colorMultisampledImages)
-	{ throw InvalidArgumentError("colorResolveImages", "pvr::utils::createOnScreenFramebuffers: On a non-multisampled swapchain, color resolve images must be null"); }
+	{
+		throw InvalidArgumentError("colorResolveImages", "pvr::utils::createOnScreenFramebuffers: On a non-multisampled swapchain, color resolve images must be null");
+	}
 	if (multisample && depthStencilImages && !depthStencilMultisampledImages)
 	{
 		throw InvalidArgumentError("depthStencilResolveImages",
@@ -1361,7 +1387,9 @@ inline void createSingleBuffersFromMesh(pvrvk::Device& device, const assets::Mes
 	for (uint32_t i = 0; i < mesh.getNumDataElements(); ++i)
 	{
 		if (isVboHostVisible)
-		{ updateHostVisibleBuffer(outVbo, static_cast<const void*>(mesh.getData(i)), static_cast<uint32_t>(current), static_cast<uint32_t>(mesh.getDataSize(i)), true); }
+		{
+			updateHostVisibleBuffer(outVbo, static_cast<const void*>(mesh.getData(i)), static_cast<uint32_t>(current), static_cast<uint32_t>(mesh.getDataSize(i)), true);
+		}
 		else
 		{
 			updateBufferUsingStagingBuffer(device, outVbo, pvrvk::CommandBufferBase(uploadCmdBuffer), static_cast<const void*>(mesh.getData(i)), static_cast<uint32_t>(current),
@@ -1382,7 +1410,9 @@ inline void createSingleBuffersFromMesh(pvrvk::Device& device, const assets::Mes
 		if (!isIboHostVisible) { requiresCommandBufferSubmission = true; }
 
 		if (isIboHostVisible)
-		{ updateHostVisibleBuffer(outIbo, static_cast<const void*>(mesh.getFaces().getData()), 0, static_cast<uint32_t>(mesh.getFaces().getDataSize()), true); }
+		{
+			updateHostVisibleBuffer(outIbo, static_cast<const void*>(mesh.getFaces().getData()), 0, static_cast<uint32_t>(mesh.getFaces().getDataSize()), true);
+		}
 		else
 		{
 			updateBufferUsingStagingBuffer(device, outIbo, pvrvk::CommandBufferBase(uploadCmdBuffer), static_cast<const void*>(mesh.getFaces().getData()), 0,
@@ -1446,7 +1476,9 @@ inline void createMultipleBuffersFromMesh(pvrvk::Device& device, const assets::M
 		if (!isBufferHostVisible) { requiresCommandBufferSubmission = true; }
 
 		if (isBufferHostVisible)
-		{ updateHostVisibleBuffer(outIbo, static_cast<const void*>(mesh.getFaces().getData()), 0, static_cast<uint32_t>(mesh.getFaces().getDataSize()), true); }
+		{
+			updateHostVisibleBuffer(outIbo, static_cast<const void*>(mesh.getFaces().getData()), 0, static_cast<uint32_t>(mesh.getFaces().getDataSize()), true);
+		}
 		else
 		{
 			updateBufferUsingStagingBuffer(device, outIbo, pvrvk::CommandBufferBase(uploadCmdBuffer), static_cast<const void*>(mesh.getFaces().getData()), 0,
@@ -1677,6 +1709,12 @@ void saveImage(pvrvk::Queue& queue, pvrvk::CommandPool& commandPool, pvrvk::Imag
 /// <returns>True if the screenshot could be taken successfully</returns>
 bool takeScreenshot(pvrvk::Queue& queue, pvrvk::CommandPool& commandPool, pvrvk::Swapchain& swapchain, const uint32_t swapIndex, const std::string& screenshotFileName,
 	vma::Allocator bufferAllocator = nullptr, vma::Allocator imageAllocator = nullptr, const uint32_t screenshotScale = 1);
+
+/// <summary>Tests if any of the physical devices available through the instance given as parameter supports all the requested device extensions in vectorExtensionNames.</summary>
+/// <param name="instance">Instance to validate the extension names in vectorExtensionNames for each of the available physical devices.</param>
+/// <param name="vectorExtensionName">The physical device extensions to test availability</param>
+/// <returns>Vector with the indices of the physical devices that support all the extensions given in vectorExtensionNames.</returns>
+std::vector<int> validatePhysicalDeviceExtensions(const pvrvk::Instance instance, const std::vector<std::string>& vectorExtensionNames);
 
 #pragma endregion
 } // namespace utils

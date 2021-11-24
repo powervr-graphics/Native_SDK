@@ -15,9 +15,15 @@ layout(location = 2) in highp mat3 TBN_worldSpace;
 layout(location = 0) out mediump vec4 oColor;
 layout(location = 1) out mediump float oFilter;
 
+// Max value that can be stored in an FP16 render target
+const mediump float FP16Max = 65000.0;
+
+// Scale value to prevent the luminance from overflowing
+const mediump float FP16Scale = 10.0;
+
 mediump float luma(mediump vec3 color)
 {
-	return max(dot(color, vec3(0.2126, 0.7152, 0.0722)), 0.0001);
+	return clamp(dot(color, vec3(0.2126, 0.7152, 0.0722)), 0.0001, FP16Max);
 }
 
 void main()
@@ -32,5 +38,5 @@ void main()
 	oColor = vec4(diffuseIrradiance, 1.0);
 
 	// Apply the exposure value
-	oFilter = luma(exposure * oColor.rgb);
+	oFilter = luma(exposure * oColor.rgb) / FP16Scale;
 }

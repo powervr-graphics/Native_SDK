@@ -34,4 +34,148 @@ void enumerateInstanceExtensions(std::vector<ExtensionProperties>& outExtensions
 /// <returns>True if the instance supports the extension, otherwise false</param>
 bool isInstanceExtensionSupported(const std::string& extension);
 } // namespace Extensions
+
+/// <summary>Base class for physical device extension features abstractions</summary>
+class ExtensionFeatures
+{
+public:
+	/// <summary>Get the location of the vulkan physical device features struct</summary>
+	/// <returns>Pointer to the beginning of the vulkan struct data (the sType member)</returns>
+	virtual inline void* getVkPtr() = 0;
+
+	/// <summary>Get sType</summary>
+	/// <returns>Vulkan struct type</returns>
+	virtual inline StructureType getSType() const = 0;
+
+	/// <summary>Get pNext</summary>
+	/// <returns>pNext pointer</returns>
+	virtual inline void* getPNext() const = 0;
+
+	/// <summary>Set pNext</summary>
+	/// <param name="pNext">pNext pointer</param>
+	virtual ExtensionFeatures& setPNext(void* pNext) = 0;
+};
+
+/// <summary>Fragment shading rate physical device features abstraction</summary>
+class FragmentShadingRateFeatures : private VkPhysicalDeviceFragmentShadingRateFeaturesKHR, public ExtensionFeatures
+{
+public:
+	FragmentShadingRateFeatures(void* pNext = nullptr)
+	{
+		sType = static_cast<VkStructureType>(StructureType::e_PHYSICAL_DEVICE_FRAGMENT_SHADING_RATE_FEATURES_KHR);
+		this->pNext = pNext;
+		pipelineFragmentShadingRate = (VkBool32) false;
+		primitiveFragmentShadingRate = (VkBool32) false;
+		attachmentFragmentShadingRate = (VkBool32) false;
+	}
+
+	FragmentShadingRateFeatures(VkPhysicalDeviceFragmentShadingRateFeaturesKHR vkType) : VkPhysicalDeviceFragmentShadingRateFeaturesKHR(vkType) {}
+
+	/// <summary>Get the location of the vulkan physical device features struct</summary>
+	/// <returns>Pointer to the beginning of the vulkan struct data (the sType member)</returns>
+	inline void* getVkPtr() { return (void*)((char*)this + offsetof(FragmentShadingRateFeatures, sType)); }
+
+	/// <summary>Get sType</summary>
+	/// <returns>Vulkan struct type</returns>
+	inline StructureType getSType() const { return static_cast<StructureType>(sType); }
+
+	/// <summary>Get pNext</summary>
+	/// <returns>pNext pointer</returns>
+	inline void* getPNext() const { return pNext; }
+
+	/// <summary>Set pNext</summary>
+	/// <param name="pNext">pNext pointer</param>
+	ExtensionFeatures& setPNext(void* pNextPointer)
+	{
+		this->pNext = pNextPointer;
+		return *this;
+	}
+
+	/// <summary>Set pipeline fsr feature</summary>
+	/// <param name"pipelineFragmentShadingRate">boolean state</param>
+	inline void setPipelineFeature(bool inPipelineFragmentShadingRate) { this->pipelineFragmentShadingRate = inPipelineFragmentShadingRate; }
+
+	/// <summary>Set primitive fsr feature</summary>
+	/// <param name"primitiveFragmentShadingRate">boolean state</param>
+	inline void setPrimitiveFeature(bool inPrimitiveFragmentShadingRate) { this->primitiveFragmentShadingRate = inPrimitiveFragmentShadingRate; }
+
+	/// <summary>Set attachment fsr feature</summary>
+	/// <param name"attachmentFragmentShadingRate">boolean state</param>
+	inline void setAttachmentFeature(bool inAttachmentFragmentShadingRate) { this->attachmentFragmentShadingRate = inAttachmentFragmentShadingRate; }
+
+	/// <summary>Get the vulkan struct equivilent of this class.</summary>
+	/// <returns>VkPhysicalDeviceFragmentShadingRateFeaturesKHR struct</returns>
+	inline VkPhysicalDeviceFragmentShadingRateFeaturesKHR& get() { return *this; }
+	
+	/// <summary>If members have been populated, returns wherever the pipeline fragment shading rate feature is enabled</summary>
+	/// <returns>Bool is true if feature is enabled</returns>
+	inline bool getPipelineFeature() const { return (bool)pipelineFragmentShadingRate; }
+
+	/// <summary>If members have been populated, returns wherever the primitive fragment shading rate feature is enabled</summary>
+	/// <returns>Bool is true if feature is enabled</returns>
+	inline bool getPrimitiveFeature() const { return (bool)primitiveFragmentShadingRate; }
+
+	/// <summary>If members have been populated, returns wherever the attachment fragment shading rate feature is enabled</summary>
+	/// <returns>Bool is true if feature is enabled</returns>
+	inline bool getAttachmentFeature() const { return (bool)attachmentFragmentShadingRate; }
+};
+
+class RayTracingPipelineFeatures : private VkPhysicalDeviceRayTracingPipelineFeaturesKHR, public ExtensionFeatures
+{
+public:
+	RayTracingPipelineFeatures(void* pNext = nullptr)
+	{
+		sType = static_cast<VkStructureType>(StructureType::e_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR);
+		this->pNext = pNext;
+		rayTracingPipeline = (VkBool32)false;
+		rayTracingPipelineShaderGroupHandleCaptureReplay = (VkBool32)false;
+		rayTracingPipelineShaderGroupHandleCaptureReplayMixed = (VkBool32)false;
+		rayTracingPipelineTraceRaysIndirect = (VkBool32)false;
+		rayTraversalPrimitiveCulling = (VkBool32)false;
+	}
+
+	RayTracingPipelineFeatures(VkPhysicalDeviceRayTracingPipelineFeaturesKHR vkType) : VkPhysicalDeviceRayTracingPipelineFeaturesKHR(vkType) {}
+
+	/// <summary>Get the location of the vulkan physical device features struct</summary>
+	/// <returns>Pointer to the beginning of the vulkan struct data (the sType member)</returns>
+	inline void* getVkPtr() { return (void*)((char*)this + offsetof(RayTracingPipelineFeatures, sType)); }
+
+	/// <summary>Get sType</summary>
+	/// <returns>Vulkan struct type</returns>
+	inline StructureType getSType() const { return static_cast<StructureType>(sType); }
+
+	/// <summary>Get pNext</summary>
+	/// <returns>pNext pointer</returns>
+	inline void* getPNext() const { return pNext; }
+
+	/// <summary>Set pNext</summary>
+	/// <param name="pNext">pNext pointer</param>
+	ExtensionFeatures& setPNext(void* pNextPointer)
+	{
+		this->pNext = pNextPointer;
+		return *this;
+	}
+
+	/// <summary>Get the vulkan struct equivilent of this class.</summary>
+	/// <returns>VkPhysicalDeviceFragmentShadingRateFeaturesKHR struct</returns>
+	inline VkPhysicalDeviceRayTracingPipelineFeaturesKHR& get() { return *this; }
+
+	/// <summary>Get boolean value indicating ray tracing pipeline support</summary>
+	/// <returns>Indicates whether the implementation supports the ray tracing pipeline functionality</returns>
+	inline bool getRayTracingPipeline() { return static_cast<bool>(rayTracingPipeline); }
+	/// <summary>Get boolean value indicating ray tracing pipeline shader group handle capture replay support</summary>
+	/// <returns>Indicates whether the implementation supports saving and reusing shader group handles</returns>
+	inline bool getRayTracingPipelineShaderGroupHandleCaptureReplay() { return static_cast<bool>(rayTracingPipelineShaderGroupHandleCaptureReplay); }
+	/// <summary>Get boolean value indicating ray tracing pipeline shader group handle capture replay mixed support</summary>
+	/// <returns>Indicates whether the implementation supports reuse of shader group handles being arbitrarily mixed with creation of non-reused shader group handles.
+	/// If this is VK_FALSE, all reused shader group handles must be specified before any non-reused handles may be created.</returns>
+	inline bool getRayTracingPipelineShaderGroupHandleCaptureReplayMixed() { return static_cast<bool>(rayTracingPipelineShaderGroupHandleCaptureReplayMixed); }
+	/// <summary>Get boolean value indicating ray tracing pipeline indirect trace rays support</summary>
+	/// <returns>Indicates whether the implementation supports indirect trace ray commands e.g. vkCmdTraceRaysIndirect</returns>
+	inline bool getRayTracingPipelineTraceRaysIndirect() { return static_cast<bool>(rayTracingPipelineTraceRaysIndirect); }
+	/// <summary>Get boolean value indicating ray traversal primitive culling support</summary>
+	/// <returns>Indicates whether the implementation supports primitive culling during ray traversal</returns>
+	inline bool getRayTraversalPrimitiveCulling() { return static_cast<bool>(rayTraversalPrimitiveCulling); }
+};
+
 } // namespace pvrvk

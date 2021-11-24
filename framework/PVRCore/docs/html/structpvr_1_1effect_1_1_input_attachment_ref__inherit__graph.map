@@ -1,4 +1,0 @@
-<map id="pvr::effect::InputAttachmentRef" name="pvr::effect::InputAttachmentRef">
-<area shape="rect" id="node1" title="A Reference to an Input Attachment." alt="" coords="5,80,232,107"/>
-<area shape="rect" id="node2" href="$structpvr_1_1effect_1_1_descriptor_ref.html" title="Base class for classes that represent semantic references to an image or buffer" alt="" coords="26,5,211,32"/>
-</map>

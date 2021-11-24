@@ -1,4 +1,0 @@
-<map id="pvr::math::ViewingFrustum" name="pvr::math::ViewingFrustum">
-<area shape="rect" id="node1" title="This class provides specialized functionality for when a frustum is a &quot;normal&quot;viewing frustum,..." alt="" coords="5,80,204,107"/>
-<area shape="rect" id="node2" href="$structpvr_1_1math_1_1_frustum.html" title="This class provides functionality to handle the volume enclosed by 6 planes, normally the viewing fru..." alt="" coords="31,5,178,32"/>
-</map>

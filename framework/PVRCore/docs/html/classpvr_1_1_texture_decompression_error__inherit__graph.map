@@ -1,5 +1,0 @@
-<map id="pvr::TextureDecompressionError" name="pvr::TextureDecompressionError">
-<area shape="rect" id="node1" title="A simple std::runtime_error wrapper for throwing exceptions when invalid operations are attempted" alt="" coords="5,155,205,196"/>
-<area shape="rect" id="node2" href="$classpvr_1_1_pvr_error.html" title="A simple std::runtime_error wrapper for throwing generic PVR exceptions" alt="" coords="54,80,157,107"/>
-<area shape="rect" id="node3" title=" " alt="" coords="36,5,175,32"/>
-</map>

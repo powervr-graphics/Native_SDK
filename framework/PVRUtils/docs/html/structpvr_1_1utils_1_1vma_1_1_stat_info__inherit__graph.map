@@ -1,4 +1,0 @@
-<map id="pvr::utils::vma::StatInfo" name="pvr::utils::vma::StatInfo">
-<area shape="rect" id="node1" title="Calculated statistics of memory usage in entire allocator." alt="" coords="5,80,180,107"/>
-<area shape="rect" id="node2" title=" " alt="" coords="23,5,163,32"/>
-</map>

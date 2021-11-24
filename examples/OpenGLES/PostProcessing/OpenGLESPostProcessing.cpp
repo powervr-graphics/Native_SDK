@@ -40,7 +40,7 @@ enum class OffscreenAttachments
 {
 	Offscreen = 0,
 	Luminance = 1,
-	DepthStencil = 2,
+	Depth = 2,
 	NumAttachments
 };
 
@@ -48,7 +48,7 @@ enum class OffscreenWithIMGFramebufferDownsampleAttachments
 {
 	Offscreen = 0,
 	DownsampledLuminance = 1,
-	DepthStencil = 2,
+	Depth = 2,
 	NumAttachments
 };
 
@@ -312,6 +312,8 @@ void generateGaussianCoefficients(uint32_t kernelSize, bool useLinearOptimisatio
 	assertion(kernelSize <= MaxGaussianKernel);
 
 	// generate a new set of weights and offsets based on the given configuration
+	gaussianWeights.clear();
+	gaussianOffsets.clear();
 	pvr::math::generateGaussianKernelWeightsAndOffsets(kernelSize, truncateCoefficients, useLinearOptimisation, gaussianWeights, gaussianOffsets, MinimumAcceptibleCoefficient);
 }
 
@@ -1972,7 +1974,7 @@ class OpenGLESPostProcessing : public pvr::Shell
 	GLuint _samplerBilinear;
 	GLuint _samplerTrilinear;
 
-	GLuint _depthStencilTexture;
+	GLuint _depthTexture;
 
 	// UIRenderers used to display text
 	pvr::ui::UIRenderer _uiRenderer;
@@ -2332,7 +2334,6 @@ pvr::Result OpenGLESPostProcessing::renderFrame()
 	{
 		std::vector<GLenum> invalidateAttachments;
 		invalidateAttachments.push_back(GL_DEPTH_ATTACHMENT);
-		invalidateAttachments.push_back(GL_STENCIL_ATTACHMENT);
 		gl::InvalidateFramebuffer(GL_FRAMEBUFFER, (GLsizei)invalidateAttachments.size(), &invalidateAttachments[0]);
 	}
 
@@ -2496,7 +2497,6 @@ pvr::Result OpenGLESPostProcessing::renderFrame()
 	{
 		std::vector<GLenum> invalidateAttachments;
 		invalidateAttachments.push_back(GL_DEPTH);
-		invalidateAttachments.push_back(GL_STENCIL);
 		gl::InvalidateFramebuffer(GL_FRAMEBUFFER, (GLsizei)invalidateAttachments.size(), &invalidateAttachments[0]);
 	}
 
@@ -2774,15 +2774,15 @@ void OpenGLESPostProcessing::createOffScreenFramebuffers()
 	gl::TexStorage2D(GL_TEXTURE_2D, 1, _offscreenColorFormat, static_cast<GLsizei>(getWidth()), static_cast<GLsizei>(getHeight()));
 	debugThrowOnApiError("createOffScreenFramebuffers - created offscreen colour texture");
 
-	gl::GenTextures(1, &_depthStencilTexture);
-	gl::BindTexture(GL_TEXTURE_2D, _depthStencilTexture);
-	gl::TexStorage2D(GL_TEXTURE_2D, 1, GL_DEPTH24_STENCIL8, static_cast<GLsizei>(getWidth()), static_cast<GLsizei>(getHeight()));
-	debugThrowOnApiError("createOffScreenFramebuffers - created depth stencil texture");
+	gl::GenTextures(1, &_depthTexture);
+	gl::BindTexture(GL_TEXTURE_2D, _depthTexture);
+	gl::TexStorage2D(GL_TEXTURE_2D, 1, GL_DEPTH_COMPONENT24, static_cast<GLsizei>(getWidth()), static_cast<GLsizei>(getHeight()));
+	debugThrowOnApiError("createOffScreenFramebuffers - created depth texture");
 
 	// Make use of the previously created textures
 	_offScreenFramebuffer.attachments.resize(static_cast<uint32_t>(OffscreenAttachments::NumAttachments));
 	_offScreenFramebuffer.attachments[static_cast<uint32_t>(OffscreenAttachments::Offscreen)] = _offScreenTexture;
-	_offScreenFramebuffer.attachments[static_cast<uint32_t>(OffscreenAttachments::DepthStencil)] = _depthStencilTexture;
+	_offScreenFramebuffer.attachments[static_cast<uint32_t>(OffscreenAttachments::Depth)] = _depthTexture;
 
 	// Full size luminance texture
 	gl::GenTextures(1, &_offScreenFramebuffer.attachments[static_cast<uint32_t>(OffscreenAttachments::Luminance)]);
@@ -2795,7 +2795,7 @@ void OpenGLESPostProcessing::createOffScreenFramebuffers()
 	gl::BindFramebuffer(GL_DRAW_FRAMEBUFFER, _offScreenFramebuffer.framebuffer);
 	gl::FramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _offScreenFramebuffer.attachments[static_cast<uint32_t>(OffscreenAttachments::Offscreen)], 0);
 	gl::FramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, _offScreenFramebuffer.attachments[static_cast<uint32_t>(OffscreenAttachments::Luminance)], 0);
-	gl::FramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, _offScreenFramebuffer.attachments[static_cast<uint32_t>(OffscreenAttachments::DepthStencil)], 0);
+	gl::FramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, _offScreenFramebuffer.attachments[static_cast<uint32_t>(OffscreenAttachments::Depth)], 0);
 
 	_offScreenFramebuffer.dimensions.x = getWidth();
 	_offScreenFramebuffer.dimensions.y = getHeight();
@@ -2811,7 +2811,7 @@ void OpenGLESPostProcessing::createOffScreenFramebuffers()
 		// Make use of the previously created textures
 		_offScreenFramebufferUsingIMGDownsample.attachments.resize(static_cast<uint32_t>(OffscreenWithIMGFramebufferDownsampleAttachments::NumAttachments));
 		_offScreenFramebuffer.attachments[static_cast<uint32_t>(OffscreenWithIMGFramebufferDownsampleAttachments::Offscreen)] = _offScreenTexture;
-		_offScreenFramebuffer.attachments[static_cast<uint32_t>(OffscreenWithIMGFramebufferDownsampleAttachments::DepthStencil)] = _depthStencilTexture;
+		_offScreenFramebuffer.attachments[static_cast<uint32_t>(OffscreenWithIMGFramebufferDownsampleAttachments::Depth)] = _depthTexture;
 
 		// Create the downsampled luminance texture
 		gl::GenTextures(1, &_offScreenFramebufferUsingIMGDownsample.attachments[static_cast<uint32_t>(OffscreenWithIMGFramebufferDownsampleAttachments::DownsampledLuminance)]);
@@ -2831,7 +2831,7 @@ void OpenGLESPostProcessing::createOffScreenFramebuffers()
 			_offScreenFramebufferUsingIMGDownsample.attachments[static_cast<uint32_t>(OffscreenWithIMGFramebufferDownsampleAttachments::DownsampledLuminance)], 0u,
 			static_cast<GLint>(_IMGFramebufferScale), static_cast<GLint>(_IMGFramebufferScale));
 		gl::FramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
-			_offScreenFramebuffer.attachments[static_cast<uint32_t>(OffscreenWithIMGFramebufferDownsampleAttachments::DepthStencil)], 0);
+			_offScreenFramebuffer.attachments[static_cast<uint32_t>(OffscreenWithIMGFramebufferDownsampleAttachments::Depth)], 0);
 
 		_offScreenFramebufferUsingIMGDownsample.dimensions.x = getWidth();
 		_offScreenFramebufferUsingIMGDownsample.dimensions.y = getHeight();

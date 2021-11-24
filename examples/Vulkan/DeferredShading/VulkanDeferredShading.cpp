@@ -613,13 +613,17 @@ pvr::Result VulkanDeferredShading::initView()
 
 	const pvr::CommandLine& commandOptions = getCommandLine();
 	int32_t intFramebufferWidth = -1;
+	if (commandOptions.getIntOption("-fbowidth", intFramebufferWidth))
+	{
+		intFramebufferWidth = glm::max<int32_t>(intFramebufferWidth, 0);
+		_framebufferWidth = glm::min<uint32_t>(static_cast<uint32_t>(intFramebufferWidth), _windowWidth);
+	}
 	int32_t intFramebufferHeight = -1;
-	commandOptions.getIntOption("-fbowidth", intFramebufferWidth);
-	_framebufferWidth = static_cast<uint32_t>(intFramebufferWidth);
-	_framebufferWidth = glm::min<int32_t>(_framebufferWidth, _windowWidth);
-	commandOptions.getIntOption("-fboheight", intFramebufferHeight);
-	_framebufferHeight = static_cast<uint32_t>(intFramebufferHeight);
-	_framebufferHeight = glm::min<int32_t>(_framebufferHeight, _windowHeight);
+	if (commandOptions.getIntOption("-fboheight", intFramebufferHeight))
+	{
+		intFramebufferHeight = glm::max<int32_t>(intFramebufferHeight, 0);
+		_framebufferHeight = glm::min<uint32_t>(static_cast<uint32_t>(intFramebufferHeight), _windowHeight);
+	}
 	commandOptions.getIntOption("-numlights", PointLightConfiguration::NumProceduralPointLights);
 	commandOptions.getFloatOption("-lightintensity", PointLightConfiguration::PointlightIntensity);
 

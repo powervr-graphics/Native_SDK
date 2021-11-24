@@ -131,7 +131,7 @@ public:
 
 	/// <summary>Get the azimuth of the camera around the target (angle around the Z axis). Angle zero is on the X axis.</summary>
 	/// <returns>The camera's azimuth in degrees</returns>
-	float getAzimuth() { return _azimuth; }
+	float getAzimuth() const { return _azimuth; }
 
 	/// <summary>Set the azimuth of the camera along the target's XZ plane. 0 is on the X axis.</summary>
 	/// <param name="azimuth">The azimuth of the camera along the target's XZ plane</param>
@@ -150,7 +150,7 @@ public:
 
 	/// <summary>Get the inclination of the camera (vertical angle). 90 is top, -90 is bottom, 0 is horizontal.</summary>
 	/// <returns>The camera's inclination in the range of -90..90</returns>
-	float getInclination() { return _inclination; }
+	float getInclination() const { return _inclination; }
 
 	/// <summary>Set the vertical angle of the camera. 0 is on the target's XZ plane, -90 is below the target, 90 is above the target. Values over 90 or under -90 are
 	/// clamped.</summary>
@@ -168,6 +168,10 @@ public:
 	/// or greater than (90-epsilon) are clamped.</summary>
 	/// <param name="deltaInclination">An inclination to add to the vertical angle of the camera.</param>
 	void addInclination(float deltaInclination) { setInclination(_inclination + deltaInclination); }
+
+	/// <summary>Get the camera distance from the target</summary>
+	/// <returns">The distance from the target</param>
+	float getDistanceFromTarget() const { return _distance; }
 
 	/// <summary>Set the camera distance from the target</summary>
 	/// <param name="distance">The distance from the target</param>
@@ -194,7 +198,7 @@ public:
 
 	/// <summary>Get the camera target position i.e. the 'lookat' value.</summary>
 	/// <returns>The target's position</returns>
-	const glm::vec3& getTargetPosition() { return _targetPos; }
+	const glm::vec3& getTargetPosition() const { return _targetPos; }
 
 	/// <summary>Update the camera target position i.e. the 'lookat' value by a delta amount.</summary>
 	/// <param name="pos">The targets new position</param>

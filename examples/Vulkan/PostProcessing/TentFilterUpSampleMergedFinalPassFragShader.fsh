@@ -16,6 +16,9 @@ const mediump float VignetteRadius = 0.85;
 // Soft for our vignette, between 0.0 and 1.0
 const mediump float VignetteSoftness = 0.35;
 
+// Scale value to prevent the luminance from overflowing
+const mediump float FP16Scale = 10.0;
+
 layout(push_constant) uniform pushConstantsBlock{
 	mediump vec2 upSampleConfigs[8];
 	mediump float linearExposure;
@@ -29,6 +32,9 @@ void main()
 	{
 		blurredColor += texture(sCurrentBlurredImage, vTexCoords[i]).r * weights[i];
 	}
+		
+	// Multiply by the FP16 scale value to restore the original luminance
+	blurredColor *= FP16Scale;
 
 	highp vec3 hdrColor;
 

@@ -7,6 +7,7 @@
 #pragma once
 #include "PVRVk/TypesVk.h"
 #include "PVRVk/ForwardDecObjectsVk.h"
+#include "CommonHelpers.h"
 namespace pvrvk {
 //!\cond NO_DOXYGEN
 
@@ -373,8 +374,7 @@ struct PipelineColorBlendStateCreateInfo
 {
 private:
 	friend class ::pvrvk::impl::GraphicsPipeline_;
-	PipelineColorBlendAttachmentState _attachmentStates[FrameworkCaps::MaxColorAttachments];
-	uint32_t _numAttachmentStates;
+	std::vector<PipelineColorBlendAttachmentState> _attachmentStates;
 	bool _alphaToCoverageEnable;
 	bool _logicOpEnable;
 	pvrvk::LogicOp _logicOp;
@@ -383,7 +383,7 @@ private:
 public:
 	/// <summary>Get color blend attachment states</summary>
 	/// <returns>const PipelineColorBlendAttachmentState*</returns>
-	const PipelineColorBlendAttachmentState* getAttachmentStates() const { return _attachmentStates; }
+	const PipelineColorBlendAttachmentState* getAttachmentStates() const { return _attachmentStates.data(); }
 
 	/// <summary>Create a Color Blend state object.</summary>
 	/// <param name="alphaToCoverageEnable">enable/ disable alpa to coverage (default:disable)</param>
@@ -394,11 +394,9 @@ public:
 	/// <param name="numAttachmentStates">Number of color attachment states in array (default: 0)</param>
 	PipelineColorBlendStateCreateInfo(bool alphaToCoverageEnable, bool logicOpEnable, pvrvk::LogicOp logicOp, Color colorBlendConstants,
 		PipelineColorBlendAttachmentState* attachmentStates, uint32_t numAttachmentStates)
-		: _numAttachmentStates(0), _alphaToCoverageEnable(alphaToCoverageEnable), _logicOpEnable(logicOpEnable), _logicOp(logicOp), _colorBlendConstants(colorBlendConstants)
+		: _alphaToCoverageEnable(alphaToCoverageEnable), _logicOpEnable(logicOpEnable), _logicOp(logicOp), _colorBlendConstants(colorBlendConstants)
 	{
-		assert(numAttachmentStates < FrameworkCaps::MaxColorAttachments && "Blend Attachments out of range.");
-		for (uint32_t i = 0; i < numAttachmentStates; i++) { _attachmentStates[i] = attachmentStates[i]; }
-		_numAttachmentStates = numAttachmentStates;
+		for (uint32_t i = 0; i < numAttachmentStates; i++) { _attachmentStates.emplace_back(attachmentStates[i]); }
 	}
 
 	/// <summary>Create a Color Blend state object.</summary>
@@ -408,7 +406,7 @@ public:
 	/// <param name="colorBlendConstants">Set color blend constants. Default (0,0,0,0)</param>
 	explicit PipelineColorBlendStateCreateInfo(
 		bool alphaToCoverageEnable = false, bool logicOpEnable = false, pvrvk::LogicOp logicOp = pvrvk::LogicOp::e_SET, Color colorBlendConstants = Color(0., 0., 0., 0.))
-		: _numAttachmentStates(0), _alphaToCoverageEnable(alphaToCoverageEnable), _logicOpEnable(logicOpEnable), _logicOp(logicOp), _colorBlendConstants(colorBlendConstants)
+		: _alphaToCoverageEnable(alphaToCoverageEnable), _logicOpEnable(logicOpEnable), _logicOp(logicOp), _colorBlendConstants(colorBlendConstants)
 	{}
 
 	/// <summary>Set a constant for color blending</summary>
@@ -431,7 +429,7 @@ public:
 
 	/// <summary>Get number of attachment states</summary>
 	/// <returns>uint32_t</returns>
-	uint32_t getNumAttachmentStates() const { return _numAttachmentStates; }
+	uint32_t getNumAttachmentStates() const { return static_cast<uint32_t>(_attachmentStates.size()); }
 
 	/// <summary>Enable/ disable alpha to coverage.</summary>
 	/// <param name="alphaToCoverageEnable">Boolean flags indicating to enable/ disable alpha coverage</param>
@@ -464,8 +462,7 @@ public:
 	/// <returns>this object (allows chained calls)</returns>
 	PipelineColorBlendStateCreateInfo& clearAttachments()
 	{
-		for (uint32_t i = 0; i < FrameworkCaps::MaxColorAttachments; i++) { _attachmentStates[i] = PipelineColorBlendAttachmentState(); }
-		_numAttachmentStates = 0;
+		_attachmentStates.clear();
 		return *this;
 	}
 
@@ -475,9 +472,7 @@ public:
 	/// <returns>this object (allows chained calls)</returns>
 	PipelineColorBlendStateCreateInfo& setAttachmentState(uint32_t index, const PipelineColorBlendAttachmentState& state)
 	{
-		assert(index < FrameworkCaps::MaxColorAttachments && "Blend config out of range.");
-		_attachmentStates[index] = state;
-		if (index >= _numAttachmentStates) { _numAttachmentStates = index + 1; }
+		setElementAtIndex<PipelineColorBlendAttachmentState>(index, state, _attachmentStates);
 		return *this;
 	}
 
@@ -485,11 +480,9 @@ public:
 	/// <param name="state">An array of color attachment states</param>
 	/// <param name="count">The number of color attachment states in (state)</param>
 	/// <returns>this object (allows chained calls)</returns>
-	PipelineColorBlendStateCreateInfo& setAttachmentStates(uint32_t count, PipelineColorBlendAttachmentState const* state)
+	PipelineColorBlendStateCreateInfo& setAttachmentStates(uint32_t count, PipelineColorBlendAttachmentState const* states)
 	{
-		assert(count < FrameworkCaps::MaxColorAttachments && "Blend config out of range.");
-		for (uint32_t i = 0; i < count; i++) { _attachmentStates[i] = state[i]; }
-		_numAttachmentStates = count;
+		for (uint32_t i = 0; i < count; i++) { _attachmentStates.emplace_back(states[i]); }
 		return *this;
 	}
 
@@ -1275,10 +1268,10 @@ public:
 	/// <summary>Constructor. Initialise with inidividual values</summary>
 	/// <param name="fragmentShadingRateEnabled">Determines wherever fragment shading rate is enabled</param>
 	/// <param name="fragmentSize">The fragment size to be used for pipeline fragment shading rate</param>
-	/// <param name="combinerOpPipelinePrimitive">Defines how the pipeline fragment shading rate (Axy) interacts with the primitive fragment shading rate (Bxy).
-	/// The resulting fragment size is Cxy = CombineOp(Axy, Bxy) as described in the vulkan spec.</param>
+	/// <param name="combinerOpPipelinePrimitive">Defines how the pipeline fragment size (Axy) interacts with the primitive fragment size (Bxy).
+	/// The resulting fragment size is Cxy = CombineOp(Axy, Bxy) as described in the vulkan spec. Default value is KEEP, resulting in Cxy = Axy.</param>
 	/// <param name="combinerOpResultAttachment">Defines how the resulting fragment size from the pipeline/primitive combine operation (Axy) interacts with the attachment fragment
-	/// shading rate (Bxy). The final fragment size is Cxy = CombineOp(Axy, Bxy) as described in the vulkan spec.</param>
+	/// size (Bxy). The final fragment size is Cxy = CombineOp(Axy, Bxy) as described in the vulkan spec. Default value is KEEP, resulting in Cxy = Axy.</param>
 	/// <remarks>Disabled by default<remarks>
 	explicit FragmentShadingRateStateCreateInfo(bool fragmentShadingRateEnabled = false, Extent2D fragmentSize = Extent2D(1, 1),
 		FragmentShadingRateCombinerOpKHR combinerOpPipelinePrimitive = FragmentShadingRateCombinerOpKHR::e_KEEP_KHR,

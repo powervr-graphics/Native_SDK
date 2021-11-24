@@ -1,4 +1,0 @@
-<map id="pvr::effect::BufferRef" name="pvr::effect::BufferRef">
-<area shape="rect" id="node1" title="A Reference to a buffer object inside the effect. Can be accessed either in its entirety through a Se..." alt="" coords="19,80,177,107"/>
-<area shape="rect" id="node2" href="$structpvr_1_1effect_1_1_descriptor_ref.html" title="Base class for classes that represent semantic references to an image or buffer" alt="" coords="5,5,191,32"/>
-</map>

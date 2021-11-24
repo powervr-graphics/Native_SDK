@@ -82,6 +82,11 @@ enum class CompressedPixelFormat
 	RGBM,
 	RGBD,
 
+	PVRTCI_HDR_6bpp,
+	PVRTCI_HDR_8bpp,
+	PVRTCII_HDR_6bpp,
+	PVRTCII_HDR_8bpp,
+
 	// Invalid value
 	NumCompressedPFs
 };
@@ -157,6 +162,11 @@ inline std::string to_string(CompressedPixelFormat format)
 
 	case CompressedPixelFormat::RGBM: return "RGBM";
 	case CompressedPixelFormat::RGBD: return "RGBD";
+
+	case CompressedPixelFormat::PVRTCI_HDR_6bpp: return "PVRTCI_HDR_6bpp";
+	case CompressedPixelFormat::PVRTCI_HDR_8bpp: return "PVRTCI_HDR_8bpp";
+	case CompressedPixelFormat::PVRTCII_HDR_6bpp: return "PVRTCII_HDR_6bpp";
+	case CompressedPixelFormat::PVRTCII_HDR_8bpp: return "PVRTCII_HDR_8bpp";
 	default: return "UNKNOWN_FORMAT";
 	}
 }

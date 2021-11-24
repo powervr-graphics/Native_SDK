@@ -19,8 +19,6 @@ ext.PVR_OPENGLES_EXAMPLES = [
 	'Skinning',
 	'ParticleSystem',
 	'GaussianBlur',
-	'Navigation2D',
-	'Navigation3D',
 	'DeferredShading',
 	'PVRScopeExample',
 	'PVRScopeRemote',
@@ -46,8 +44,6 @@ ext.PVR_VULKAN_EXAMPLES = [
 	'ParticleSystem',
 	'Bumpmap',
 	'GaussianBlur',
-	'Navigation2D',
-	'Navigation3D',
 	'Multithreading',
 	'ExampleUI',
 	'DeferredShading',
@@ -60,10 +56,13 @@ ext.PVR_VULKAN_EXAMPLES = [
 	'ImageBasedLightingMapGenerator',
 	'GameOfLife',
 	'PipelineCache',
+	'AmbientOcclusion',
 	'MatrixMultiplication',
 	'VulkanHybridHardShadows',
 	'VulkanHybridReflections',
-	'VulkanHelloRayTracing'
+	'VulkanHelloRayTracing',
+	'VulkanRayTracedHardShadows',
+	'VulkanHybridRefractions'
 ]
 
 ext.PVR_OPENCL_EXAMPLES = [ 

@@ -221,7 +221,7 @@ void MultiviewVR::LoadVbos()
 {
 	_vbo.resize(_scene->getNumMeshes());
 	_indexVbo.resize(_scene->getNumMeshes());
-	gl::GenBuffers(_scene->getNumMeshes(), &_vbo[0]);
+	gl::GenBuffers(_scene->getNumMeshes(), _vbo.data());
 
 	// Load vertex data of all meshes in the scene into VBOs
 	// The meshes have been exported with the "Interleave Vectors" option,
@@ -407,11 +407,13 @@ pvr::Result MultiviewVR::releaseView()
 	if (_texQuadProgram.handle) gl::DeleteProgram(_texQuadProgram.handle);
 
 	// Delete buffer objects
-	_scene->destroy();
 	if (_vbo.size()) gl::DeleteBuffers(static_cast<GLuint>(_vbo.size()), _vbo.data());
 	if (_indexVbo.size()) gl::DeleteBuffers(static_cast<GLuint>(_indexVbo.size()), _indexVbo.data());
 	if (_vboQuad) gl::DeleteBuffers(1, &_vboQuad);
 	if (_iboQuad) gl::DeleteBuffers(1, &_iboQuad);
+
+	_vbo.clear();
+	_indexVbo.clear();
 
 	_uiRenderer.release();
 

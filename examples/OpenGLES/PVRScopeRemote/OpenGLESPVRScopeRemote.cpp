@@ -250,7 +250,7 @@ pvr::Result OpenGLESPVRScopeRemote::initApplication()
 		// This is entirely optional. Wait for the connection to succeed, it will
 		// timeout if e.g. PVRPerfServer is not running.
 		int isConnected;
-		pplWaitForConnection(_spsCommsData, &isConnected, 1, 200);
+		pplWaitForConnection(&_spsCommsData, &isConnected, 1, 200);
 	}
 	CPPLProcessingScoped PPLProcessingScoped(_spsCommsData, __FUNCTION__, static_cast<uint32_t>(strlen(__FUNCTION__)), _frameCounter);
 

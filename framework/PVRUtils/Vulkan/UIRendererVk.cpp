@@ -68,11 +68,15 @@ void UIRenderer::initCreatePipeline(bool isFrameBufferSrgb)
 	VertexInputAttributeDescription texAttrib(1, 0, pvrvk::Format::e_R32G32_SFLOAT, sizeof(float) * 4);
 	pipelineDesc.vertexInput.addInputBinding(VertexInputBindingDescription(0, sizeof(float) * 6, pvrvk::VertexInputRate::e_VERTEX)).addInputAttribute(posAttrib).addInputAttribute(texAttrib);
 
+	// render to first color attachment
 	PipelineColorBlendAttachmentState attachmentState(true, pvrvk::BlendFactor::e_SRC_ALPHA, pvrvk::BlendFactor::e_ONE_MINUS_SRC_ALPHA, pvrvk::BlendOp::e_ADD,
 		pvrvk::BlendFactor::e_ZERO, pvrvk::BlendFactor::e_ONE, pvrvk::BlendOp::e_ADD,
 		pvrvk::ColorComponentFlags::e_R_BIT | pvrvk::ColorComponentFlags::e_G_BIT | pvrvk::ColorComponentFlags::e_B_BIT | pvrvk::ColorComponentFlags::e_A_BIT);
-
 	pipelineDesc.colorBlend.setAttachmentState(0, attachmentState);
+	// declare any unused color attachments
+	for (uint32_t i = 1; i < _renderpass->getCreateInfo().getSubpass(_subpass).getNumColorAttachmentReference(); ++i)
+	{ pipelineDesc.colorBlend.setAttachmentState(i, PipelineColorBlendAttachmentState()); }
+
 	pipelineDesc.depthStencil.enableDepthTest(false).enableDepthWrite(false);
 	pipelineDesc.rasterizer.setCullMode(pvrvk::CullModeFlags::e_NONE);
 	pipelineDesc.inputAssembler.setPrimitiveTopology(pvrvk::PrimitiveTopology::e_TRIANGLE_LIST);

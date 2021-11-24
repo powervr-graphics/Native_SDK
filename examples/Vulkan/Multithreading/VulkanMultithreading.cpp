@@ -101,7 +101,7 @@ struct DeviceResources
 
 	// UIRenderer used to display text
 	pvr::ui::UIRenderer uiRenderer;
-	pvr::ui::Text loadingText[3];
+	pvr::Multi<pvr::ui::Text> loadingText;
 	pvr::utils::StructuredBufferView structuredMemoryView;
 	pvrvk::Buffer ubo;
 	pvrvk::DescriptorSet uboDescSet[4];
@@ -479,6 +479,7 @@ pvr::Result VulkanMultithreading::initView()
 pvr::Result VulkanMultithreading::releaseView()
 {
 	_deviceResources.reset();
+	_loadingDone = false;
 	return pvr::Result::Success;
 }
 

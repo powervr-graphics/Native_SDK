@@ -1,4 +1,0 @@
-<map id="pvr::effect::UniformSemantic" name="pvr::effect::UniformSemantic">
-<area shape="rect" id="node1" title="A Reference to a Uniform semantic (a free&#45;standing shader variable)." alt="" coords="5,80,216,107"/>
-<area shape="rect" id="node2" href="$structpvr_1_1effect_1_1_descriptor_ref.html" title="Base class for classes that represent semantic references to an image or buffer" alt="" coords="18,5,203,32"/>
-</map>

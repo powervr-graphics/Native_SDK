@@ -280,8 +280,8 @@ struct InstanceLayers : public pvrvk::VulkanLayerList
 		// VK_LAYER_LUNARG_parameter_validation, VK_LAYER_LUNARG_object_tracker, VK_LAYER_LUNARG_core_validation, and VK_LAYER_GOOGLE_unique_objects.
 		addLayer("VK_LAYER_LUNARG_standard_validation");
 		// PerfDoc is a Vulkan layer which attempts to identify API usage is may be discouraged primarily by validating applications
-		// against the rules set out in the Mali Application Developer Best Practices document
-		addLayer("VK_LAYER_ARM_mali_perf_doc");
+		// against the rules set out for Imagination GPUs, generic API best practices are validated through extending the features of the validation
+		// layers when creating the instance.
 		addLayer("VK_LAYER_IMG_powervr_perf_doc");
 #endif
 	}
@@ -825,7 +825,7 @@ void VulkanIntroducingPVRVk::createInstance()
 	// disable the validation layers prior to being released.
 
 	// This application makes use of The Khronos Vulkan-LoaderAndValidationLayers: https://github.com/KhronosGroup/Vulkan-LoaderAndValidationLayers
-	// Other layers exist for various other reasons such as VK_LAYER_POWERVR_carbon and VK_LAYER_ARM_mali_perf_doc.
+	// Other layers exist for various other reasons such as VK_LAYER_POWERVR_carbon and VK_LAYER_IMG_powervr_perf_doc.
 	std::vector<pvrvk::LayerProperties> layerProperties;
 	pvrvk::Layers::enumerateInstanceLayers(layerProperties);
 
@@ -888,6 +888,27 @@ void VulkanIntroducingPVRVk::createInstance()
 			}
 		}
 
+		// If the newer VK_LAYER_KHRONOS_validation is requested and supported, attempt to support the best practices feature of the validation layers
+		if (requestedStandardValidation && supportsKhronosValidation)
+		{
+			// Enumerate the instance extensions provdied by the Khronos validation layer.
+			std::vector<pvrvk::ExtensionProperties> validationLayerInstanceExtensions;
+			pvrvk::Extensions::enumerateInstanceExtensions(validationLayerInstanceExtensions, "VK_LAYER_KHRONOS_validation");
+
+			// Check if the validation layers provide support for the validation features instance extensions
+			bool validationFeatures = false;
+			for (auto it = validationLayerInstanceExtensions.begin(); !validationFeatures && it != validationLayerInstanceExtensions.end(); it++)
+			{ validationFeatures = !strcmp(it->getExtensionName(), "VK_EXT_validation_features"); }
+
+			// If the validation features are supported, then append the best practices info to the instance create info
+			if (validationFeatures)
+			{
+				pvrvk::ValidationFeatures feature;
+				feature.addEnabledValidationFeature(pvrvk::ValidationFeatureEnableEXT::e_BEST_PRACTICES_EXT);
+				instanceCreateInfo.setValidationFeatures(feature);
+			}
+		}
+
 		instanceCreateInfo.setLayerList(supportedLayers);
 
 		Log(LogLevel::Information, "Supported Instance Layers to be Enabled:");
@@ -897,6 +918,11 @@ void VulkanIntroducingPVRVk::createInstance()
 				instanceCreateInfo.getLayerList().getLayer(i).getSpecVersion(), instanceCreateInfo.getLayerList().getLayer(i).getImplementationVersion());
 		}
 	}
+
+	// Extend the features of the validation layers to enable generic best practices validation
+	pvrvk::ValidationFeatures validationFeatures;
+	validationFeatures.addEnabledValidationFeature(pvrvk::ValidationFeatureEnableEXT::e_BEST_PRACTICES_EXT);
+	instanceCreateInfo.setValidationFeatures(validationFeatures);
 
 	_deviceResources->instance = pvrvk::createInstance(instanceCreateInfo);
 	_deviceResources->instance->retrievePhysicalDevices();
@@ -2083,7 +2109,7 @@ void VulkanIntroducingPVRVk::createTexture()
 	{
 		// We create a barrier to make sure that the Image layout is Shader read only.
 		pvrvk::MemoryBarrierSet barriers;
-		barriers.addBarrier(pvrvk::ImageMemoryBarrier(pvrvk::AccessFlags::e_NONE, pvrvk::AccessFlags::e_TRANSFER_WRITE_BIT, image, subResourceRange,
+		barriers.addBarrier(pvrvk::ImageMemoryBarrier(pvrvk::AccessFlags::e_TRANSFER_WRITE_BIT, pvrvk::AccessFlags::e_TRANSFER_WRITE_BIT, image, subResourceRange,
 			pvrvk::ImageLayout::e_TRANSFER_DST_OPTIMAL, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, _graphicsQueueFamilyIndex, _graphicsQueueFamilyIndex));
 
 		// We use a pipeline barrier to change the image layout to be optimized to be read by the shader.
@@ -2223,6 +2249,8 @@ void VulkanIntroducingPVRVk::createRenderPass()
 		// Adds an explicit subpass dependency from the first subpass that uses an attachment which is the first subpass (0) to VK_SUBPASS_EXTERNAL.
 		{ 0, pvrvk::SubpassExternal, pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT, pvrvk::PipelineStageFlags::e_BOTTOM_OF_PIPE_BIT,
 			pvrvk::AccessFlags::e_COLOR_ATTACHMENT_WRITE_BIT, pvrvk::AccessFlags::e_NONE, pvrvk::DependencyFlags::e_BY_REGION_BIT },
+		{ pvrvk::SubpassExternal, 0, pvrvk::PipelineStageFlags::e_LATE_FRAGMENT_TESTS_BIT, pvrvk::PipelineStageFlags::e_EARLY_FRAGMENT_TESTS_BIT, pvrvk::AccessFlags::e_NONE,
+			pvrvk::AccessFlags::e_DEPTH_STENCIL_ATTACHMENT_READ_BIT | pvrvk::AccessFlags::e_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT, pvrvk::DependencyFlags::e_BY_REGION_BIT }
 	};
 
 	// Add the set of dependencies to the RenderPass creation.

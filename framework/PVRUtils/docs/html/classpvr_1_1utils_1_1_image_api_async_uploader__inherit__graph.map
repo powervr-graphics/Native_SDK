@@ -1,4 +1,0 @@
-<map id="pvr::utils::ImageApiAsyncUploader" name="pvr::utils::ImageApiAsyncUploader">
-<area shape="rect" id="node1" title="This class wraps a worker thread that uploads texture to the GPU asynchronously and returns futures t..." alt="" coords="311,13,499,54"/>
-<area shape="rect" id="node2" title=" " alt="" coords="5,5,263,61"/>
-</map>
