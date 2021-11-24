@@ -1,0 +1,185 @@
+#version 460
+#extension GL_EXT_ray_tracing : require
+
+#define REFLECTIONS_HIT_OFFSET 0
+#define REFLECTIONS_MISS_INDEX 0
+#define SHADOW_HIT_OFFSET 1
+#define SHADOW_MISS_INDEX 1
+#define RAY_RANGE_MIN 0.001
+#define RAY_RANGE_MAX 10000.0
+
+struct ReflectionRayPayload
+{
+	vec3 Li; // Incident radiance
+	uint depth;
+	bool inside;
+	float indexOfRefraction;
+};
+
+struct LightData
+{
+	highp vec4 lightColor;
+	highp vec4 lightPosition;
+	highp vec4 ambientColorIntensity;
+};
+
+layout(location = 0) rayPayloadEXT ReflectionRayPayload reflectionRayPayload;
+layout(location = 2) rayPayloadEXT bool visiblityRayPayload;
+
+layout(set = 0, binding = 0) uniform sampler2D gBufferReflectance;
+layout(set = 0, binding = 1) uniform sampler2D gBufferNormalMaterialID;
+layout(set = 0, binding = 2) uniform sampler2D gBufferWorldPositionIOR;
+
+layout(set = 1, binding = 0, rgba8) uniform image2D outputImage;
+
+layout(set = 2, binding = 0) uniform GlobalUBO
+{
+	highp mat4 viewMatrix;
+	highp mat4 projectionMatrix;
+	highp mat4 inverseViewProjectionMatrix;
+	highp vec4 cameraPosition;
+};
+layout(set = 2, binding = 1) uniform LightDataUBO { LightData lightData; };
+layout(set = 2, binding = 5) uniform accelerationStructureEXT topLevelAS;
+
+float fresnel(vec3 wi, vec3 normal, float ior)
+{
+	float kr             = 0.0;
+	float etaIncident    = 1.0;
+	float etaTransmitted = ior;
+	float cosIncident    = clamp(-1.0, 1.0, dot(wi, normal));
+	
+	if (cosIncident > 0)
+	{
+		float temp     = etaIncident;
+		etaIncident    = etaTransmitted;
+		etaTransmitted = temp;
+	}
+
+	float sinTransmitted = etaIncident / etaTransmitted * sqrt(max(0.0, 1.0 - cosIncident * cosIncident));
+
+	if (sinTransmitted >= 1.0)
+	{
+		kr = 1.0; // Total internal reflection
+	}
+	else
+	{
+		float cosTransmitted = sqrt(max(0.0, 1.0 - sinTransmitted * sinTransmitted));
+		cosIncident          = abs(cosIncident);
+		float Rs             = ((etaTransmitted * cosIncident) - (etaIncident    * cosTransmitted)) / ((etaTransmitted * cosIncident) + (etaIncident    * cosTransmitted));
+		float Rp             = ((etaIncident    * cosIncident) - (etaTransmitted * cosTransmitted)) / ((etaIncident    * cosIncident) + (etaTransmitted * cosTransmitted));
+		kr                   = (Rs * Rs + Rp * Rp) / 2.0;
+	}
+
+	// Due to conservation of energy, kr + kt = 1 -> kt = 1 - kr
+	return kr;
+}
+
+vec3 refractFunction(vec3 wi, vec3 normal, float eta)
+{
+	// Snell's law is used to compute the cosine
+	float cosThetaIncident           = dot(normal, wi);
+	float sinSquaredThetaIncident    = max(0.0, 1.0 - cosThetaIncident * cosThetaIncident);
+	float sinSquaredThetaTransmitted = sinSquaredThetaIncident / sqrt(eta);
+
+	// Handle total internal reflection case
+	if (sinSquaredThetaTransmitted >= 1.0)
+	{
+		return vec3(0.0);
+	}
+
+	float cosThetaTransmitted = sqrt(1.0 - sinSquaredThetaTransmitted);
+
+	vec3 wt = -wi / eta + (cosThetaIncident / eta - cosThetaTransmitted) * vec3(normal);
+
+	return wt;
+}
+
+void traceRay(vec3 rayOrigin, vec3 rayDirection, bool inside, float indexOfRefraction)
+{
+	reflectionRayPayload.Li                = vec3(0.0);
+	reflectionRayPayload.depth             = 0;
+	reflectionRayPayload.inside            = inside;
+	reflectionRayPayload.indexOfRefraction = indexOfRefraction;
+
+	traceRayEXT(topLevelAS,     // acceleration structure
+		gl_RayFlagsOpaqueEXT,   // rayFlags
+		0xFF,                   // cullMask
+		REFLECTIONS_HIT_OFFSET, // sbtRecordOffset
+		0,                      // sbtRecordStride
+		REFLECTIONS_MISS_INDEX, // missIndex
+		rayOrigin,              // ray origin
+		RAY_RANGE_MIN,          // ray min range
+		rayDirection,           // ray direction
+		RAY_RANGE_MAX,          // ray max range
+		0                       // payload (location = 0)
+	);
+}
+
+bool traceShadowRay(vec3 rayOrigin, vec3 rayEnd)
+{
+	visiblityRayPayload = false;
+	vec3 rayDirection   = rayEnd - rayOrigin;
+
+	traceRayEXT(topLevelAS,                                       // acceleration structure
+		gl_RayFlagsOpaqueEXT | gl_RayFlagsTerminateOnFirstHitEXT, // rayFlags
+		0xFF,                                                     // cullMask
+		SHADOW_HIT_OFFSET,                                        // sbtRecordOffset
+		0,                                                        // sbtRecordStride
+		SHADOW_MISS_INDEX,                                        // missIndex
+		rayOrigin,                                                // ray origin
+		0.001,                                                    // ray min range
+		normalize(rayDirection),                                  // ray direction
+		length(rayDirection),                                     // ray max range
+		2                                                         // payload (location = 2)
+	);
+
+	return visiblityRayPayload;
+}
+
+void main()
+{
+	const vec2 pixelCenter = vec2(gl_LaunchIDEXT.xy) + vec2(0.5);
+	const vec2 inUV        = pixelCenter / vec2(gl_LaunchSizeEXT.xy);
+	float foregroundFlag   = texture(gBufferReflectance, inUV).w;
+	vec3 reflectance       = texture(gBufferReflectance, inUV).xyz;
+
+	// If the texel from the deferred pass does not contain any scene geometry, return;
+	if (foregroundFlag == 0.0)
+	{
+		imageStore(outputImage, ivec2(gl_LaunchIDEXT.xy), vec4(0.0, 0.0, 0.0, 1.0));
+		return;
+	}
+
+	vec4 originIndexOfRefraction = texture(gBufferWorldPositionIOR, inUV);
+	float indexOfRefraction      = originIndexOfRefraction.w;
+	vec3 normal                  = normalize(texture(gBufferNormalMaterialID, inUV).xyz);
+	vec3 origin                  = originIndexOfRefraction.xyz;
+	float visiblity              = float(traceShadowRay(origin.xyz + normal * 0.1, lightData.lightPosition.xyz));
+
+	// Only dielectrics are ray traced, the remaining scene elements are rasterized.
+	if (indexOfRefraction == 0.0)
+	{
+		// Set flag "visiblity" with shadow ray result for the fragment shader pass 
+		imageStore(outputImage, ivec2(gl_LaunchIDEXT.xy), vec4(0.0, 0.0, 0.0, visiblity));
+		return;
+	}
+
+	// From this point, taking information from the GBuffer from only dielectrics
+	vec3 wi  = normalize(cameraPosition.xyz - originIndexOfRefraction.xyz);
+	float kr = fresnel(wi, normal, 1.0 / indexOfRefraction);
+
+	vec3 LiAccumulated = vec3(0.0);
+
+	// First trace a reflection ray
+	vec3 direction = normalize(reflect(-1.0 * wi, normal));  // NOTE: In GLSL's implementation of reflect, incident direction points towards the sample and not outwards
+	traceRay(origin + 0.1 * normal, direction, false, 1.0);
+	LiAccumulated += reflectance * kr * reflectionRayPayload.Li * abs(clamp(0.0, 1.0, dot(normal, direction)));
+
+	// Second, trace a refracted ray
+	direction = normalize(refractFunction(wi, normal, indexOfRefraction));
+	traceRay(origin - 0.1 * normal, direction, true, indexOfRefraction);
+	LiAccumulated += reflectance * (1.0 - kr) * reflectionRayPayload.Li * abs(clamp(0.0, 1.0, dot(normal, direction)));
+
+	imageStore(outputImage, ivec2(gl_LaunchIDEXT.xy), vec4(LiAccumulated, visiblity));
+}

@@ -1,0 +1,60 @@
+#version 460
+#extension GL_EXT_ray_tracing : require
+// maximum number of light sources supported
+#define MAXIMUM_LIGHTS 3
+
+struct PerLightData
+{
+	highp vec4 lightPosition;
+	highp vec4 lightColor;
+	highp float lightIntensity;
+};
+
+struct hitPayload
+{
+	vec3 hitValue;
+};
+
+layout(location = 0) rayPayloadEXT hitPayload prd;
+
+layout(set = 0, binding = 0, rgba8) uniform image2D outputImage;
+
+layout(set = 1, binding = 0) uniform cameraUBO
+{
+	highp mat4 mInvViewMatrix;
+	highp mat4 mInvProjectionMatrix;
+};
+
+layout(set = 2, binding = 0) uniform accelerationStructureEXT topLevelAS;
+
+void main()
+{
+	const vec2 pixelCenter = vec2(gl_LaunchIDEXT.xy) + vec2(0.5);
+	const vec2 inUV = pixelCenter / vec2(gl_LaunchSizeEXT.xy);
+	vec2 d = inUV * 2.0 - 1.0;
+
+	vec4 origin = mInvViewMatrix * vec4(0, 0, 0, 1);
+	vec4 target = mInvProjectionMatrix * vec4(d.x, d.y, 1, 1);
+	vec4 direction = mInvViewMatrix * vec4(normalize(target.xyz), 0);
+
+	uint rayFlags = gl_RayFlagsOpaqueEXT;
+	float tMin = 0.001;
+	float tMax = 10000.0;
+
+	// Trace the rays
+	traceRayEXT(topLevelAS, // acceleration structure
+		rayFlags, // rayFlags
+		0xFF, // cullMask
+		0, // sbtRecordOffset
+		0, // sbtRecordStride
+		0, // missIndex
+		origin.xyz, // ray origin
+		tMin, // ray min range
+		direction.xyz, // ray direction
+		tMax, // ray max range
+		0 // payload (location = 0)
+	);
+
+	// Output the color of this ray to the render target
+	imageStore(outputImage, ivec2(gl_LaunchIDEXT.xy), vec4(prd.hitValue, 1.0));
+}
