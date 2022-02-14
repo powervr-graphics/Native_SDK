@@ -7,43 +7,41 @@ The PowerVR Framework is a complete framework source code. It targets Windows, L
 
 The majority of the code is written in C++ and tested across different compilers (Visual Studio 2013-2017, GNU Compiler Collection, and Clang) using modern C++ style. It provides a complete framework for application development. There is also supporting per-platform code such as Objective-C code for iOS and macOS, and Java code for Android. CMake files are also supplied.
 
-The Framework consists of libraries divided by functionality, as shown in the figure below. These modules are provided to be configured as static libraries, but they can be used differently if required.
-
-.. figure:: ./docs/images/PowerVRFrameworkComponents.png
+The Framework consists of libraries divided by functionality. These modules are provided to be configured as static libraries, but they can be used differently if required.
 
 PVRCore
 ~~~~~~~
-`Source code documentation <PVRCore/docs/Index.html>`__
+`Source code documentation <https://powervr-graphics.github.io/Documentation/Framework%20Manuals/PVRCore_Manual/PVRCore_intro.html>`__
 
 This is the supporting code of the library for developers to use as they wish. PVRCore is also used by the rest of the Framework, so therefore all examples using any other part of the Framework should always link with PVRCore.
 
 PVRAssets
 ~~~~~~~~~
-`Source code documentation <PVRAssets/docs/Index.html>`__
+`Source code documentation <https://powervr-graphics.github.io/Documentation/Framework%20Manuals/PVRAssets_Manual/PVRAssets_intro.html>`__
 
 This is the Framework’s asset code. It includes classes and helpers for scene, mesh, light, camera, animations, and asset loading code.  PVRAssets supports the loading of POD and glTF 2.0 files, PVR and PFX materials format, as well as support for a number of texture formats.
 
 PVRShell
 ~~~~~~~~
-`Source code documentation <PVRShell/docs/Index.html>`__
+`Source code documentation <https://powervr-graphics.github.io/Documentation/Framework%20Manuals/PVRShell_Manual/PVRShell_intro.html>`__
 
 This is the native system abstraction (such as event loops, surfaces, and windows) which simplifies cross-platform compatibility. PVRShell provides useful scaffolding for cross-platform development.
 
 PVRVk
 ~~~~~
-`Source code documentation <PVRVk/docs/Index.html>`__
+`Source code documentation <https://powervr-graphics.github.io/Documentation/Framework%20Manuals/PVRVk_Manual/PVRVk_intro.html>`__
 
 This is a Vulkan C++ wrapper providing reference-counted objects with lifetime management, strongly typed enums, and other useful functionality.
 
 PVRUtils
 ~~~~~~~~
-`Source code documentation <PVRUtils/docs/Index.html>`__
+`Source code documentation <https://powervr-graphics.github.io/Documentation/Framework%20Manuals/PVRUtils_Manual/PVRUtils_intro.html>`__
 
 This contains two libraries (OpenGL ES and Vulkan) providing very convenient helpers and wrappers. These simplify common Vulkan and OpenGL tasks such as Instance-Device-Surface/Context creation, texture loading and VBO/IBO generation. The Vulkan version is written against PVRVk. Both versions each contain a version of the UIRenderer, a 2D/3D printing library that can be used for text or sprite renderering. There are similarities between the OpenGL ES and Vulkan interfaces, taking into account the core differences between the two APIs.
 
 PVRCamera
 ~~~~~~~~~
-`Source code documentation <PVRCamera/docs/Index.html>`__
+`Source code documentation <https://powervr-graphics.github.io/Documentation/Framework%20Manuals/PVRCamera_Manual/PVRCamera_intro.html>`__
 
 This is the code for interfacing with the camera on mobile platforms. A dummy desktop version is provided to ease development. OpenGL ES only at present.
 
