@@ -85,7 +85,7 @@ The PowerVR SDK has a number of third-party dependencies, each of which may have
 Documentation
 ----------------
 
-The documentation from this repository has been moved to a new repository covering exclusively documentation, the URL will be specified once it is released.
+The documentation from this repository has been moved to https://powervr-graphics.github.io/
 
 Release notes
 -------------
