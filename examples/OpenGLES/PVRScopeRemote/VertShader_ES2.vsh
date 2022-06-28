@@ -5,7 +5,7 @@ attribute highp vec2 inTexCoord;
 uniform highp mat4 mVPMatrix;
 uniform highp mat3 mVITMatrix;
 
-varying mediump vec3 viewNormal;
+varying highp vec3 viewNormal;
 varying mediump vec2 texCoord;
 
 void main()

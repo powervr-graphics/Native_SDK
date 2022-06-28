@@ -35,6 +35,96 @@ void enumerateInstanceExtensions(std::vector<ExtensionProperties>& outExtensions
 bool isInstanceExtensionSupported(const std::string& extension);
 } // namespace Extensions
 
+/// <summary>Defines a fragment shading rate as a fragment size and a bitmask of the MSAA sample counts that can be used with that fragment size.
+/// Use pvrvk::PhysicalDevice::getAvailableFragmentShadingRates() to get the available fragment shading rates for a particular physical devices</summary>
+class FragmentShadingRate : private VkPhysicalDeviceFragmentShadingRateKHR
+{
+public:
+	FragmentShadingRate()
+	{
+		sampleCounts = static_cast<VkSampleCountFlags>(SampleCountFlags::e_NONE);
+		fragmentSize = Extent2D().get();
+	}
+	FragmentShadingRate(VkPhysicalDeviceFragmentShadingRateKHR vkType) : VkPhysicalDeviceFragmentShadingRateKHR(vkType) {}
+	FragmentShadingRate(SampleCountFlags sampleCounts, Extent2D fragmentSize)
+	{
+		this->sampleCounts = static_cast<VkSampleCountFlags>(sampleCounts);
+		this->fragmentSize = fragmentSize.get();
+	}
+
+	/// <summary>Get the vulkan struct equivilent of this class.</summary>
+	/// <returns>VkPhysicalDeviceFragmentShadingRateKHR struct.</returns>
+	inline VkPhysicalDeviceFragmentShadingRateKHR& get() { return *this; }
+
+	/// <summary>Get the vulkan struct equivilent of this class.</summary>
+	/// <returns>Const VkPhysicalDeviceFragmentShadingRateKHR struct.</returns>
+	inline const VkPhysicalDeviceFragmentShadingRateKHR& get() const { return *this; }
+
+	/// <summary>Get the [x,y] fragment size that can be used for fragment shading rate functionality.</summary>
+	/// <returns>[x,y] integers corresponding to a fragment size.</returns>
+	inline Extent2D getFragmentSize() const { return static_cast<Extent2D>(fragmentSize); }
+
+	/// <summary>Get a bitmask of the possible MSAA sample counts that can be used with the associated fragment size.</summary>
+	/// <returns>Bitmask of sample counts.</returns>
+	inline SampleCountFlags getSampleCount() const { return static_cast<SampleCountFlags>(sampleCounts); }
+};
+
+/// <summary>Set of fragment shading rate properties for a physical device</summary>
+class FragmentShadingRateProperties : public VkPhysicalDeviceFragmentShadingRatePropertiesKHR
+{
+public:
+	FragmentShadingRateProperties(void* pNext = nullptr)
+	{
+		sType = static_cast<VkStructureType>(StructureType::e_PHYSICAL_DEVICE_FRAGMENT_SHADING_RATE_PROPERTIES_KHR);
+		this->pNext = pNext;
+		minFragmentShadingRateAttachmentTexelSize = VkExtent2D();
+		maxFragmentShadingRateAttachmentTexelSize = VkExtent2D();
+		maxFragmentShadingRateAttachmentTexelSizeAspectRatio = 0;
+		primitiveFragmentShadingRateWithMultipleViewports = (VkBool32) false;
+		layeredShadingRateAttachments = (VkBool32) false;
+		fragmentShadingRateNonTrivialCombinerOps = (VkBool32) false;
+		maxFragmentSize = VkExtent2D();
+		maxFragmentSizeAspectRatio = 0;
+		maxFragmentShadingRateCoverageSamples = 0;
+		maxFragmentShadingRateRasterizationSamples = VkSampleCountFlagBits();
+		fragmentShadingRateWithShaderDepthStencilWrites = (VkBool32) false;
+		fragmentShadingRateWithSampleMask = (VkBool32) false;
+		fragmentShadingRateWithShaderSampleMask = (VkBool32) false;
+		fragmentShadingRateWithConservativeRasterization = (VkBool32) false;
+		fragmentShadingRateWithFragmentShaderInterlock = (VkBool32) false;
+		fragmentShadingRateWithCustomSampleLocations = (VkBool32) false;
+		fragmentShadingRateStrictMultiplyCombiner = (VkBool32) false;
+	}
+	FragmentShadingRateProperties(VkPhysicalDeviceFragmentShadingRatePropertiesKHR vkType) : VkPhysicalDeviceFragmentShadingRatePropertiesKHR(vkType) {}
+
+	/// <summary>Get the location of the vulkan physical device features struct</summary>
+	/// <returns>Pointer to the beginning of the vulkan struct data (the sType member)</returns>
+	inline VkPhysicalDeviceFragmentShadingRatePropertiesKHR* getVkPtr()
+	{
+		return (VkPhysicalDeviceFragmentShadingRatePropertiesKHR*)((char*)this + offsetof(FragmentShadingRateProperties, sType));
+	}
+
+	/// <summary>Get the vulkan struct equivilent of this class.</summary>
+	/// <returns>VkPhysicalDeviceFragmentShadingRatePropertiesKHR struct.</returns>
+	inline VkPhysicalDeviceFragmentShadingRatePropertiesKHR& get() { return *this; }
+
+	/// <summary>Get the vulkan struct equivilent of this class.</summary>
+	/// <returns>Const VkPhysicalDeviceFragmentShadingRatePropertiesKHR struct.</returns>
+	inline const VkPhysicalDeviceFragmentShadingRatePropertiesKHR& get() const { return *this; }
+
+	/// <summary>Get pNext</summary>
+	/// <returns>pNext pointer</returns>
+	inline void* getPNext() const { return pNext; }
+
+	/// <summary>Set pNext</summary>
+	/// <param name="pNext">pNext pointer</param>
+	FragmentShadingRateProperties& setPNext(void* pNextPointer)
+	{
+		this->pNext = pNextPointer;
+		return *this;
+	}
+};
+
 /// <summary>Base class for physical device extension features abstractions</summary>
 class ExtensionFeatures
 {
@@ -56,7 +146,7 @@ public:
 	virtual ExtensionFeatures& setPNext(void* pNext) = 0;
 };
 
-/// <summary>Fragment shading rate physical device features abstraction</summary>
+/// <summary>List of supported fragment shading rate features for a physical device</summary>
 class FragmentShadingRateFeatures : private VkPhysicalDeviceFragmentShadingRateFeaturesKHR, public ExtensionFeatures
 {
 public:
@@ -73,7 +163,7 @@ public:
 
 	/// <summary>Get the location of the vulkan physical device features struct</summary>
 	/// <returns>Pointer to the beginning of the vulkan struct data (the sType member)</returns>
-	inline void* getVkPtr() { return (void*)((char*)this + offsetof(FragmentShadingRateFeatures, sType)); }
+	inline void* getVkPtr() { return static_cast<void*>((char*)this + offsetof(FragmentShadingRateFeatures, sType)); }
 
 	/// <summary>Get sType</summary>
 	/// <returns>Vulkan struct type</returns>
@@ -120,6 +210,7 @@ public:
 	inline bool getAttachmentFeature() const { return (bool)attachmentFragmentShadingRate; }
 };
 
+/// <summary>List of supported ray tracing features for a physical device</summary>
 class RayTracingPipelineFeatures : private VkPhysicalDeviceRayTracingPipelineFeaturesKHR, public ExtensionFeatures
 {
 public:
@@ -133,12 +224,11 @@ public:
 		rayTracingPipelineTraceRaysIndirect = (VkBool32)false;
 		rayTraversalPrimitiveCulling = (VkBool32)false;
 	}
-
 	RayTracingPipelineFeatures(VkPhysicalDeviceRayTracingPipelineFeaturesKHR vkType) : VkPhysicalDeviceRayTracingPipelineFeaturesKHR(vkType) {}
 
 	/// <summary>Get the location of the vulkan physical device features struct</summary>
 	/// <returns>Pointer to the beginning of the vulkan struct data (the sType member)</returns>
-	inline void* getVkPtr() { return (void*)((char*)this + offsetof(RayTracingPipelineFeatures, sType)); }
+	inline void* getVkPtr() { return static_cast<void*>((char*)this + offsetof(RayTracingPipelineFeatures, sType)); }
 
 	/// <summary>Get sType</summary>
 	/// <returns>Vulkan struct type</returns>

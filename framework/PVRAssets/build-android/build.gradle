@@ -3,16 +3,16 @@ apply plugin: 'com.android.library'
 def projectDependencies = ["PVRCore", "tinygltf"]
 
 android {
-	compileSdkVersion 28
+	compileSdkVersion 29
 	defaultConfig {
 		minSdkVersion 21
-		targetSdkVersion 26
+		targetSdkVersion 29
 		versionCode 1
 		versionName "1.0"
 		externalNativeBuild {
 			cmake {
 				cppFlags "-fexceptions"
-				arguments "-DANDROID_STL=c++_static", "-DPVR_PREBUILT_DEPENDENCIES=ON", "-DPVR_ENABLE_INSTALL=ON"
+				arguments "-DANDROID_STL=c++_static"
 				targets "PVRAssets"
 			}
 		}
@@ -24,7 +24,7 @@ android {
 	externalNativeBuild {
 		cmake {
 			path "../CMakeLists.txt"
-			version "3.10.0+"
+			version "3.18.0+"
 		}
 	}
 }
@@ -60,7 +60,7 @@ buildscript {
 		jcenter()
 	}
 	dependencies {
-		classpath 'com.android.tools.build:gradle:3.5.3'
+		classpath 'com.android.tools.build:gradle:4.1.2'
 	}
 }
 

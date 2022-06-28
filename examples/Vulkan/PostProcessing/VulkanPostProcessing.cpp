@@ -297,7 +297,9 @@ bool isCompatibleImageView(pvrvk::ImageView& imageView, pvrvk::ImageType imageTy
 			imageView->getImage()->getNumMipLevels() == layerSize.getNumMipLevels() && imageView->getImage()->getNumSamples() == samples &&
 			static_cast<uint32_t>(imageView->getImage()->getDeviceMemory()->getMemoryFlags() & memoryFlags) != 0 && imageView->getImage()->getSharingMode() == sharingMode &&
 			imageView->getImage()->getTiling() == tiling && queueFamiliesCompatible(imageView, queueFamilyIndices, numQueueFamilyIndices))
-		{ return true; }
+		{
+			return true;
+		}
 	}
 	return false;
 }
@@ -319,7 +321,9 @@ void addImageToSharedImages(std::vector<pvr::Multi<pvrvk::ImageView>>& sharedIma
 					imageView->getImage()->getUsageFlags(), pvrvk::ImageLayersSize(imageView->getImage()->getNumArrayLayers(), imageView->getImage()->getNumMipLevels()),
 					imageView->getImage()->getNumSamples(), imageView->getImage()->getDeviceMemory()->getMemoryFlags(), imageView->getImage()->getSharingMode(),
 					imageView->getImage()->getTiling(), imageView->getImage()->getQueueFamilyIndices(), imageView->getImage()->getNumQueueFamilyIndices()))
-			{ sharedImageViews[i].add(imageView); }
+			{
+				sharedImageViews[i].add(imageView);
+			}
 		}
 	}
 }
@@ -391,7 +395,9 @@ struct StatuePass
 
 		// if the memory property flags used by the buffers' device memory do not contain e_HOST_COHERENT_BIT then we must flush the memory
 		if (static_cast<uint32_t>(buffer->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
-		{ buffer->getDeviceMemory()->flushRange(structuredBufferView.getDynamicSliceOffset(swapchainIndex), structuredBufferView.getDynamicSliceSize()); }
+		{
+			buffer->getDeviceMemory()->flushRange(structuredBufferView.getDynamicSliceOffset(swapchainIndex), structuredBufferView.getDynamicSliceSize());
+		}
 	}
 
 	/// <summary>Creates any required buffers.</summary>
@@ -2407,7 +2413,9 @@ struct GaussianBlurPass
 	virtual void generatePerConfigGaussianCoefficients()
 	{
 		for (uint32_t i = 0; i < DemoConfigurations::NumDemoConfigurations; ++i)
-		{ generateGaussianCoefficients(DemoConfigurations::Configurations[i].gaussianConfig, false, false, gaussianWeights[i], gaussianOffsets[i]); }
+		{
+			generateGaussianCoefficients(DemoConfigurations::Configurations[i].gaussianConfig, false, false, gaussianWeights[i], gaussianOffsets[i]);
+		}
 	}
 
 	/// <summary>Generates the Gaussian weights and offsets strings used by the various Gaussian shaders.</summary>
@@ -2641,7 +2649,9 @@ struct ComputeBlurPass : public GaussianBlurPass
 	void generatePerConfigGaussianCoefficients() override
 	{
 		for (uint32_t i = 0; i < DemoConfigurations::NumDemoConfigurations; ++i)
-		{ generateGaussianCoefficients(DemoConfigurations::Configurations[i].computeGaussianConfig, false, false, gaussianWeights[i], gaussianOffsets[i]); }
+		{
+			generateGaussianCoefficients(DemoConfigurations::Configurations[i].computeGaussianConfig, false, false, gaussianWeights[i], gaussianOffsets[i]);
+		}
 	}
 
 	void createDescriptorSetLayout(pvrvk::Device& device) override
@@ -2848,7 +2858,9 @@ struct LinearGaussianBlurPass : public GaussianBlurPass
 	void generatePerConfigGaussianCoefficients() override
 	{
 		for (uint32_t i = 0; i < DemoConfigurations::NumDemoConfigurations; ++i)
-		{ generateGaussianCoefficients(DemoConfigurations::Configurations[i].linearGaussianConfig, true, false, gaussianWeights[i], gaussianOffsets[i]); }
+		{
+			generateGaussianCoefficients(DemoConfigurations::Configurations[i].linearGaussianConfig, true, false, gaussianWeights[i], gaussianOffsets[i]);
+		}
 	}
 
 	/// <summary>Generates the Gaussian weights and offsets strings used by the various Gaussian shaders.</summary>
@@ -3003,7 +3015,9 @@ struct TruncatedLinearGaussianBlurPass : public LinearGaussianBlurPass
 	void generatePerConfigGaussianCoefficients() override
 	{
 		for (uint32_t i = 0; i < DemoConfigurations::NumDemoConfigurations; ++i)
-		{ generateGaussianCoefficients(DemoConfigurations::Configurations[i].truncatedLinearGaussianConfig, true, true, gaussianWeights[i], gaussianOffsets[i]); }
+		{
+			generateGaussianCoefficients(DemoConfigurations::Configurations[i].truncatedLinearGaussianConfig, true, true, gaussianWeights[i], gaussianOffsets[i]);
+		}
 	}
 	virtual ~TruncatedLinearGaussianBlurPass(){};
 };
@@ -3510,8 +3524,9 @@ pvr::Result VulkanPostProcessing::initView()
 {
 	_deviceResources = std::make_unique<DeviceResources>();
 
-	// Create instance and retrieve compatible physical devices
-	_deviceResources->instance = pvr::utils::createInstance(this->getApplicationName());
+	// Create a Vulkan 1.0 instance and retrieve compatible physical devices
+	pvr::utils::VulkanVersion VulkanVersion(1, 0, 0);
+	_deviceResources->instance = pvr::utils::createInstance(this->getApplicationName(), VulkanVersion, pvr::utils::InstanceExtensions(VulkanVersion));
 
 	if (_deviceResources->instance->getNumPhysicalDevices() == 0)
 	{
@@ -3579,7 +3594,9 @@ pvr::Result VulkanPostProcessing::initView()
 	// validate the supported swapchain image usage
 	pvrvk::ImageUsageFlags swapchainImageUsage = pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT;
 	if (pvr::utils::isImageUsageSupportedBySurface(surfaceCapabilities, pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT))
-	{ swapchainImageUsage |= pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT; }
+	{
+		swapchainImageUsage |= pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT;
+	}
 	_luminanceColorFormat = pvrvk::Format::e_R16_SFLOAT;
 
 	// Create memory allocator
@@ -3848,7 +3865,9 @@ pvr::Result VulkanPostProcessing::initView()
 	}
 
 	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
-	{ _deviceResources->mainCommandBuffers.add(_deviceResources->commandPool->allocateCommandBuffer()); }
+	{
+		_deviceResources->mainCommandBuffers.add(_deviceResources->commandPool->allocateCommandBuffer());
+	}
 	return pvr::Result::Success;
 }
 
@@ -4018,7 +4037,9 @@ void VulkanPostProcessing::updateBlurDescription()
 		uint32_t numIterations = _deviceResources->kawaseBlurPass.blurIterations;
 
 		for (uint32_t i = 0; i < numIterations - 1; ++i)
-		{ kernelString += pvr::strings::createFormatted("%u,", DemoConfigurations::Configurations[_currentDemoConfiguration].kawaseConfig.kernel[i]); }
+		{
+			kernelString += pvr::strings::createFormatted("%u,", DemoConfigurations::Configurations[_currentDemoConfiguration].kawaseConfig.kernel[i]);
+		}
 		kernelString += pvr::strings::createFormatted("%u", DemoConfigurations::Configurations[_currentDemoConfiguration].kawaseConfig.kernel[numIterations - 1]);
 
 		_currentBlurString = BloomStrings[static_cast<uint32_t>(_blurMode)] + "\n" + pvr::strings::createFormatted("%u Iterations: %s", numIterations, kernelString.c_str());

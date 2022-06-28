@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.18)
 project(VulkanHybridHardShadows)
 if(ANDROID)
 	message("Skipping VulkanHybridHardShadows : Not supported on Android")
@@ -54,7 +54,7 @@ add_spirv_shaders_to_target(VulkanHybridHardShadows
 	SPIRV_SOURCE_GROUP "shaders_generated"
 	ASSET_FOLDER ${ASSET_FOLDER} 
 	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/
-	VULKAN_TARGET_ENV vulkan1.2
+	VULKAN_TARGET_ENV spirv1.4
 	FILE_LIST
 		DeferredShadingFragmentShader.fsh
 		ForwardShadingFragmentShader.fsh

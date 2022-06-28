@@ -350,7 +350,7 @@ Device PhysicalDevice_::createDevice(const DeviceCreateInfo& deviceCreateInfo)
 	return Device_::constructShared(physicalDevice, deviceCreateInfo);
 }
 
-std::vector<PhysicalDeviceFragmentShadingRate> PhysicalDevice_::getAvailableFragmentShadingRates()
+std::vector<FragmentShadingRate> PhysicalDevice_::getAvailableFragmentShadingRates()
 {
 	uint32_t shadingRatesCount = 0;
 	getInstance()->getVkBindings().vkGetPhysicalDeviceFragmentShadingRatesKHR(getVkHandle(), &shadingRatesCount, NULL);
@@ -358,23 +358,38 @@ std::vector<PhysicalDeviceFragmentShadingRate> PhysicalDevice_::getAvailableFrag
 	fragmentShadingRatesVk.resize(shadingRatesCount, VkPhysicalDeviceFragmentShadingRateKHR{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_SHADING_RATE_KHR });
 	getInstance()->getVkBindings().vkGetPhysicalDeviceFragmentShadingRatesKHR(getVkHandle(), &shadingRatesCount, fragmentShadingRatesVk.data());
 
-	std::vector<PhysicalDeviceFragmentShadingRate> fragmentShadingRates;
+	std::vector<FragmentShadingRate> fragmentShadingRates;
 	fragmentShadingRates.reserve(shadingRatesCount);
-	for (int i = 0; i < shadingRatesCount; ++i) { fragmentShadingRates.push_back(PhysicalDeviceFragmentShadingRate(fragmentShadingRatesVk[i])); }
+	for (int i = 0; i < shadingRatesCount; ++i) { fragmentShadingRates.push_back(FragmentShadingRate(fragmentShadingRatesVk[i])); }
 	return fragmentShadingRates;
 }
 
-void PhysicalDevice_::populateExtensionFeatures(ExtensionFeatures& extensionFeatures)
+bool PhysicalDevice_::populateExtensionFeatures(ExtensionFeatures& extensionFeatures)
 {
-	VkPhysicalDeviceFeatures2 physicalDeviceFeatures{ static_cast<VkStructureType>(StructureType::e_PHYSICAL_DEVICE_FEATURES_2), extensionFeatures.getVkPtr() };
-	getInstance()->getVkBindings().vkGetPhysicalDeviceFeatures2KHR(getVkHandle(), &physicalDeviceFeatures);
+	return _populateExtensionFeaturesVk(extensionFeatures.getVkPtr());
 }
 
-template<typename VkPhysicalDeviceExtensionFeatures>
-void PhysicalDevice_::populateExtensionFeaturesVk(VkPhysicalDeviceExtensionFeatures& featuresStruct)
+
+bool PhysicalDevice_::_populateExtensionFeaturesVk(void* featuresStruct)
 {
-	VkPhysicalDeviceFeatures2KHR physicalDeviceFeatures{ static_cast<VkStructureType>(StructureType::e_PHYSICAL_DEVICE_FEATURES_2), &featuresStruct };
-	getInstance()->getVkBindings().vkGetPhysicalDeviceFeatures2KHR(getVkHandle(), &physicalDeviceFeatures);
+	if (getInstance()->getEnabledExtensionTable().khrGetPhysicalDeviceProperties2Enabled)
+	{
+		VkPhysicalDeviceFeatures2KHR physicalDeviceFeatures{ static_cast<VkStructureType>(StructureType::e_PHYSICAL_DEVICE_FEATURES_2), featuresStruct };
+		getInstance()->getVkBindings().vkGetPhysicalDeviceFeatures2KHR(getVkHandle(), &physicalDeviceFeatures);
+		return true;
+	}
+	return false;
+}
+
+bool PhysicalDevice_::_populateExtensionPropertiesVk(void* propertiesStruct)
+{
+	if (getInstance()->getEnabledExtensionTable().khrGetPhysicalDeviceProperties2Enabled)
+	{
+		VkPhysicalDeviceProperties2 deviceProperties{ static_cast<VkStructureType>(StructureType::e_PHYSICAL_DEVICE_PROPERTIES_2_KHR), propertiesStruct };
+		getInstance()->getVkBindings().vkGetPhysicalDeviceProperties2KHR(getVkHandle(), &deviceProperties);
+		return true;
+	}
+	return false;
 }
 
 } // namespace impl

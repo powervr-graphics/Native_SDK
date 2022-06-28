@@ -48,7 +48,7 @@ layout(std140,set = 2, binding = 0) uniform Statics
     highp vec3 LightPos;
 };
 
-layout(location = 0) out mediump vec3 vLight;
+layout(location = 0) out highp vec3 vLight;
 layout(location = 1) out mediump vec2 vTexCoord;
 layout(location = 2) out mediump float vOneOverAttenuation;
 
@@ -64,11 +64,11 @@ void main()
 	highp mat4 boneMatrix;
 	mediump mat3 normalMatrix;
 	
-	mediump vec3 worldTangent = vec3(0,0,0);
-	mediump vec3 worldBiNormal = vec3(0,0,0);
+	highp vec3 worldTangent = vec3(0,0,0);
+	highp vec3 worldBiNormal = vec3(0,0,0);
 	
 	highp vec4 position = vec4(0,0,0,0);
-	mediump vec3 worldNormal = vec3(0,0,0);
+	highp vec3 worldNormal = vec3(0,0,0);
 	
 	for (mediump int i = 0; i < BoneCount; ++i)
 	{
@@ -89,7 +89,7 @@ void main()
 	gl_Position = ViewProjMatrix * position;
 
 	// lighting
-	mediump vec3 tmpLightDir = LightPos - position.xyz;
+	highp vec3 tmpLightDir = LightPos - position.xyz;
 	mediump float light_distance = length(tmpLightDir);
 	tmpLightDir /= light_distance;
 

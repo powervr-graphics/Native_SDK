@@ -2,8 +2,8 @@
 
 layout(set = 0, binding = 0) uniform mediump sampler2D sTexture;
 layout(location = 0) in mediump vec2 vTexCoord;
-layout(location = 1) in mediump vec3 vWorldNormal;
-layout(location = 2) in mediump vec3 vLightDir;
+layout(location = 1) in highp vec3 vWorldNormal;
+layout(location = 2) in highp vec3 vLightDir;
 layout(location = 3) in mediump float vOneOverAttenuation;
 
 layout(location = 0) out mediump vec4 oColor;

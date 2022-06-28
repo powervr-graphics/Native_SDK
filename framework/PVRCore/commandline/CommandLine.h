@@ -428,8 +428,7 @@ protected:
 		opt.val = nullptr;
 		nIn = static_cast<uint32_t>(-1);
 		nOut = 0;
-		do
-		{
+		do {
 			++nIn;
 			if (cmdLine[nIn] == '"') { bInQuotes = !bInQuotes; }
 			else

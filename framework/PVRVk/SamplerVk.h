@@ -20,7 +20,7 @@ struct SamplerCreateInfo
 		: magFilter(pvrvk::Filter::e_LINEAR), minFilter(pvrvk::Filter::e_NEAREST), mipMapMode(pvrvk::SamplerMipmapMode::e_LINEAR), wrapModeU(pvrvk::SamplerAddressMode::e_REPEAT),
 		  wrapModeV(pvrvk::SamplerAddressMode::e_REPEAT), wrapModeW(pvrvk::SamplerAddressMode::e_REPEAT), compareOp(pvrvk::CompareOp::e_NEVER), compareOpEnable(false),
 		  enableAnisotropy(false), anisotropyMaximum(1.0f), lodBias(0.0f), lodMinimum(0.0f), lodMaximum(100.0f), unnormalizedCoordinates(false),
-		  borderColor(pvrvk::BorderColor::e_FLOAT_TRANSPARENT_BLACK)
+		  borderColor(pvrvk::BorderColor::e_FLOAT_TRANSPARENT_BLACK), pNext(nullptr)
 	{}
 
 	/// <summary>Constructor that sets the filters. Set the filtering mode explicitly. Wrap. Creates a Sampler with
@@ -36,7 +36,7 @@ struct SamplerCreateInfo
 		pvrvk::SamplerAddressMode wrapModeW = pvrvk::SamplerAddressMode::e_REPEAT)
 		: magFilter(magniFilter), minFilter(miniFilter), mipMapMode(mipMapFilter), wrapModeU(wrapModeU), wrapModeV(wrapModeV), wrapModeW(wrapModeW),
 		  compareOp(pvrvk::CompareOp::e_NEVER), compareOpEnable(false), enableAnisotropy(false), anisotropyMaximum(1.0f), lodBias(0.0f), lodMinimum(0.0f), lodMaximum(100.0f),
-		  unnormalizedCoordinates(false), borderColor(pvrvk::BorderColor::e_FLOAT_TRANSPARENT_BLACK)
+		  unnormalizedCoordinates(false), borderColor(pvrvk::BorderColor::e_FLOAT_TRANSPARENT_BLACK), pNext(nullptr)
 	{}
 
 	pvrvk::Filter magFilter; //!< Texture Magnification interpolation filter. Nearest or Linear. Default Nearest.
@@ -54,6 +54,7 @@ struct SamplerCreateInfo
 	float lodMaximum; //!< Texture maximum level-of-detail (mipmap). Default 0.
 	bool unnormalizedCoordinates; //!< Texture Coordinates are Un-Normalized
 	pvrvk::BorderColor borderColor; //!< In case of a border address mode, the border color
+	const void* pNext;  //!< pNext chain for samplers
 };
 
 namespace impl {

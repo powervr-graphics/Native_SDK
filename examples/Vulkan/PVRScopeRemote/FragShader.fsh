@@ -18,7 +18,7 @@ layout(std140, set = 1, binding = 0) uniform Lighting
 	mediump vec3 viewLightDirection;
 };
 
-layout(location = 0) in mediump vec3 viewNormal;
+layout(location = 0) in highp vec3 viewNormal;
 layout(location = 1) in mediump vec2 texCoord;
 
 layout(location = 0) out mediump vec4 oColor;

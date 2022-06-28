@@ -3,7 +3,7 @@
 layout(constant_id = 0) const bool HAS_MATERIAL_TEXTURES = false;
 
 layout(location = 0) in highp vec3 inVertex;
-layout(location = 1) in mediump vec3 inNormal;
+layout(location = 1) in highp vec3 inNormal;
 layout(location = 2) in mediump vec2 inTexCoord;
 layout(location = 3) in mediump vec4 inTangent;
 
@@ -22,7 +22,7 @@ layout(std140, set = 0, binding = 1) uniform Model
 };
 
 layout(location = 0) out highp vec3 outWorldPos;
-layout(location = 1) out mediump vec3 outNormal;
+layout(location = 1) out highp vec3 outNormal;
 layout(location = 2) flat out mediump int outInstanceIndex;
 
 // Material textures

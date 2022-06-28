@@ -1,7 +1,7 @@
 #version 300 es
 
-in mediump vec3 vNormal;
-in mediump vec3 vLightDirection;
+in highp vec3 vNormal;
+in highp vec3 vLightDirection;
 
 layout(location = 0) out mediump vec4 oColor;
 

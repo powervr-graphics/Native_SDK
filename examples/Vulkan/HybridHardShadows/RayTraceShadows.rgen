@@ -39,7 +39,7 @@ layout(set = 2, binding = 1) uniform LightDataUBO
 	PerLightData lightData[MAXIMUM_LIGHTS];
 };
 
-layout(set = 2, binding = 4) uniform accelerationStructureEXT topLevelAS;
+layout(set = 2, binding = 3) uniform accelerationStructureEXT topLevelAS;
 
 void main() 
 {

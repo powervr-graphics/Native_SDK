@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.18)
 project(VulkanMatrixMultiplication)
 if(IOS)
 	message ("Skipping VulkanMatrixMultiplication : Vulkan is not supported on iOS.")

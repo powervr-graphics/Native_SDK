@@ -1,5 +1,5 @@
 attribute highp vec3 inVertex;
-attribute mediump vec3 inNormal;
+attribute highp vec3 inNormal;
 attribute mediump vec2 inTexCoord;
 
 uniform highp mat4 WVPMatrix;

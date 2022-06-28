@@ -20,10 +20,10 @@ layout(binding = 0) uniform StaticPerDirectionalLight
 
 layout(binding = 1) uniform DynamicPerDirectionalLight
 {	
-	mediump vec4 vViewSpaceLightDirection;
+	highp vec4 vViewSpaceLightDirection;
 };
 
-layout(location = 0) in mediump vec2 vViewDirVS;
+layout(location = 0) in highp vec2 vViewDirVS;
 
 void main()
 {
@@ -31,7 +31,7 @@ void main()
 
 	// Fetch required gbuffer attributes
 	mediump vec4 albedoSpec = pls.albedo;
-	mediump vec3 normalTex = pls.normal.rgb;
+	highp vec3 normalTex = pls.normal.rgb;
 	mediump vec3 normal = normalize(normalTex.xyz * 2.0 - 1.0);
 
 	mediump vec3 lightdir = normalize(-vViewSpaceLightDirection.xyz);

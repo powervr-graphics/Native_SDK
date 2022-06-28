@@ -19,8 +19,8 @@ layout(std140, set = 2, binding = 0) uniform Statics
 };
 
 layout(location = 0) out mediump vec2 vTexCoord;
-layout(location = 1) out mediump vec3 vWorldNormal;
-layout(location = 2) out mediump vec3 vLightDir;
+layout(location = 1) out highp vec3 vWorldNormal;
+layout(location = 2) out highp vec3 vLightDir;
 layout(location = 3) out mediump float vOneOverAttenuation;
 
 void main()

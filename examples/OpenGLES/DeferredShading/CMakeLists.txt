@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.18)
 project(OpenGLESDeferredShading)
 if(IOS)
 	message("Skipping OpenGLESDeferredShading : Not supported on iOS")

@@ -135,7 +135,9 @@ int main(int argc, char** argv)
 
 		cout << "Setting up Vulkan headless context\n";
 		// Create the instance and retrieve the physical device
-		pvrvk::Instance instance = pvr::utils::createInstance("IBLMapsGenerator");
+		// Create a Vulkan 1.0 instance and retrieve compatible physical devices
+		pvr::utils::VulkanVersion VulkanVersion(1, 0, 0);
+		pvrvk::Instance instance = pvr::utils::createInstance("IBLMapsGenerator", VulkanVersion, pvr::utils::InstanceExtensions(VulkanVersion));
 
 		// Create a default set of debug utils messengers or debug callbacks using either VK_EXT_debug_utils or VK_EXT_debug_report respectively
 		pvr::utils::DebugUtilsCallbacks debugUtilsCallbacks = pvr::utils::createDebugUtilsCallbacks(instance);

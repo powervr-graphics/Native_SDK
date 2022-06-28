@@ -1,6 +1,6 @@
 #version 320 es
 
-layout(location = 0) out mediump vec2 vViewDirVS;
+layout(location = 0) out highp vec2 vViewDirVS;
 void main()
 {
 	mediump vec2 texcoord = vec2((gl_VertexIndex << 1) & 2, gl_VertexIndex & 2);

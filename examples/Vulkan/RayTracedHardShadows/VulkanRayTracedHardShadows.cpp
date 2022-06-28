@@ -231,7 +231,7 @@ class VulkanRayTracedHardShadows : public pvr::Shell
 	uint32_t _shaderGroupCount = 0;
 
 	/// <summary>The memory alignment of shader groups within the shader binding table, calculated from the rtProperties </summary>
-	uint32_t _sbtBufferStride = 0;
+	uint32_t _shaderGroupHandleSizeAligned = 0;
 
 	/// <summary>Which index in the swapchain is the current frame on </summary>
 	uint32_t _frameId = 0;
@@ -280,6 +280,36 @@ class VulkanRayTracedHardShadows : public pvr::Shell
 
 	/// <summary> The pvr assets handle for the scene</summary>
 	pvr::assets::ModelHandle _scene;
+
+	/// <summary>Filter performance warning UNASSIGNED-BestPractices-vkAllocateMemory-small-allocation Best Practices which
+	/// has ID -602362517 for TLAS buffer build and update. This warning recommends buffer allocations to be of size at least
+	/// 256KB which collides with each BLAS node built for each scene element and the size of the TLAS buffer, details of the warning:
+	/// https://github.com/KhronosGroup/Vulkan-ValidationLayers/blob/master/layers/best_practices_validation.h</summary>
+	std::vector<int> vectorValidationIDFilter;
+	
+	/// <summary>Number of ray generation shaders used</summary>
+	uint32_t _numberRayGenShaders;
+
+	/// <summary>Number of ray miss shaders used</summary>
+	uint32_t _numberRayMissShaders;
+
+	/// <summary>Number of ray hit shaders used</summary>
+	uint32_t _numberRayHitShaders;
+
+	/// <summary>Queried value of the member of VkPhysicalDeviceRayTracingPipelinePropertiesKHR::shaderGroupBaseAlignment</summary>
+	uint32_t _shaderGroupBaseAlignment;
+
+	/// <summary>Queried value of the member of VkPhysicalDeviceRayTracingPipelinePropertiesKHR::shaderGroupHandleAlignment</summary>
+	uint32_t _shaderGroupHandleAlignment;
+
+	/// <summary>Size in bytes of the ray generation shader group in the shader binding table buffer</summary>
+	uint32_t _sizeRayGenGroup;
+
+	/// <summary>Size in bytes of the ray miss shader group in the shader binding table buffer</summary>
+	uint32_t _sizeRayMissGroup;
+
+	/// <summary>Size in bytes of the ray hit shader group in the shader binding table buffer</summary>
+	uint32_t _sizeRayHitGroup;
 
 public:
 	/// <summary> Code in initApplication() will be called by pvr::Shell once per run, before the rendering context is created. Used to
@@ -350,6 +380,12 @@ public:
 	/// <summary>Creates the pipeline for copying the raytraced image to the onscreen framebuffer</summary>
 	void createOnScreenPipeline();
 
+	/// <summary>Computes a common multiple of a and b parameters.</summary>
+	/// <param name="a">One of the two values to make a common multiple.</param>
+	/// <param name="b">One of the two values to make a common multiple.</param>
+	/// <returns>Value which is a common multiple of a and b parameters.</returns>
+	uint32_t makeMultipleOf(uint32_t a, uint32_t b);
+
 	/// <summary>Creates the shader binding table for the Ray-Traced shadows pass. This is used to know which shader to call depending on
 	/// which event happens to the ray as it traces the acceleration structure. The sbt also associates an offset to each shader group so
 	///  that the traceRaysExt call in the shaders can call different hit and miss groups, ie tracing primary rays from the raygen and then
@@ -411,9 +447,9 @@ pvr::Result VulkanRayTracedHardShadows::initView()
 {
 	_deviceResources = std::make_unique<DeviceResources>();
 
-	// Create instance and retrieve compatible physical devices
-	_deviceResources->instance =
-		pvr::utils::createInstance(this->getApplicationName(), pvr::utils::VulkanVersion(), pvr::utils::InstanceExtensions(), pvr::utils::InstanceLayers(true));
+	// Create instance and targetting Vulkan version 1.1 and retrieve compatible physical devices
+	pvr::utils::VulkanVersion vulkanVersion(1, 1, 0);
+	_deviceResources->instance = pvr::utils::createInstance(this->getApplicationName(), vulkanVersion, pvr::utils::InstanceExtensions(vulkanVersion));
 
 	if (_deviceResources->instance->getNumPhysicalDevices() == 0)
 	{
@@ -421,8 +457,13 @@ pvr::Result VulkanRayTracedHardShadows::initView()
 		return pvr::Result::UnknownError;
 	}
 
+	// Filter UNASSIGNED-BestPractices-vkAllocateMemory-small-allocation Best Practices performance warning which has ID -602362517 for TLAS buffer build and
+	// update (VkBufferDeviceAddressInfo requires VkBuffer handle so in general it's not possible to make a single buffer to put all information
+	// and use offsets inside it
+	vectorValidationIDFilter.push_back(-602362517);
+
 	// Create a default set of debug utils messengers or debug callbacks using either VK_EXT_debug_utils or VK_EXT_debug_report respectively
-	_deviceResources->debugUtilsCallbacks = pvr::utils::createDebugUtilsCallbacks(_deviceResources->instance);
+	_deviceResources->debugUtilsCallbacks = pvr::utils::createDebugUtilsCallbacks(_deviceResources->instance, (void*)&vectorValidationIDFilter);
 
 	// Create a Vulkan enabled device with the right queues and extensions to be raytracing enabled.
 	std::pair<pvrvk::PhysicalDevice, pvrvk::Surface> deviceSurfacePair = createRaytracingEnabledDevice();
@@ -645,8 +686,8 @@ std::pair<pvrvk::PhysicalDevice, pvrvk::Surface> VulkanRayTracedHardShadows::cre
 	// VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME: Defines the infrastructure and usage patterns for deferrable commands, but does not specify
 	//                                                 any commands as deferrable. This is left to additional dependant extensions (more information in
 	//                                                 https://www.khronos.org/registry/vulkan/specs/1.2-extensions/html/vkspec.html#deferred-host-operations-requesting)
-	std::vector<std::string> raytracingExtensionNames{ VK_KHR_MAINTENANCE3_EXTENSION_NAME, VK_KHR_GET_MEMORY_REQUIREMENTS_2_EXTENSION_NAME, VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME,
-		VK_KHR_RAY_QUERY_EXTENSION_NAME, VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME, VK_KHR_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME, VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME,
+	std::vector<std::string> raytracingExtensionNames{ VK_KHR_SHADER_FLOAT_CONTROLS_EXTENSION_NAME, VK_KHR_SPIRV_1_4_EXTENSION_NAME, VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME,
+		VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME, VK_KHR_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME, VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME,
 		VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME, VK_KHR_PIPELINE_LIBRARY_EXTENSION_NAME, VK_KHR_DEDICATED_ALLOCATION_EXTENSION_NAME, VK_EXT_SCALAR_BLOCK_LAYOUT_EXTENSION_NAME };
 
 	// Find the first device with raytracing extensions supported
@@ -667,55 +708,35 @@ std::pair<pvrvk::PhysicalDevice, pvrvk::Surface> VulkanRayTracedHardShadows::cre
 	pvr::utils::DeviceExtensions deviceExtensions = pvr::utils::DeviceExtensions();
 	for (auto raytracingExtension : raytracingExtensionNames) { deviceExtensions.addExtension(raytracingExtension); }
 
-	// Query the selected device for its raytracing device features
-	// Ray tracing pipeline feature
-	VkPhysicalDeviceFeatures2KHR physical_device_features_3{ static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_FEATURES_2_KHR) };
-	VkPhysicalDeviceRayTracingPipelineFeaturesKHR raytracingPipeline{ static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR) };
-	physical_device_features_3.pNext = &raytracingPipeline;
-	_deviceResources->instance->getVkBindings().vkGetPhysicalDeviceFeatures2KHR(physicalDevice->getVkHandle(), &physical_device_features_3);
-	deviceExtensions.addExtensionFeatureVk<VkPhysicalDeviceRayTracingPipelineFeaturesKHR>(
-		static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR), &raytracingPipeline);
+	// Get the physical device features for all of the raytracing extensions through a continual pNext chain
+	VkPhysicalDeviceFeatures2 deviceFeatures{ static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_FEATURES_2) };
 
-	// Ray tracing physical device
-	VkPhysicalDeviceFeatures2KHR physical_device_features_5{ static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_FEATURES_2_KHR) };
+	// Raytracing Pipeline Features
+	VkPhysicalDeviceRayTracingPipelineFeaturesKHR raytracingPipelineFeatures{ static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR) };
+	deviceFeatures.pNext = &raytracingPipelineFeatures;
+
+	// Acceleration Structure Features
 	VkPhysicalDeviceAccelerationStructureFeaturesKHR accelerationStructureFeatures{ static_cast<VkStructureType>(
 		pvrvk::StructureType::e_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR) };
-	physical_device_features_5.pNext = &accelerationStructureFeatures;
-	_deviceResources->instance->getVkBindings().vkGetPhysicalDeviceFeatures2KHR(physicalDevice->getVkHandle(), &physical_device_features_5);
-	deviceExtensions.addExtensionFeatureVk<VkPhysicalDeviceAccelerationStructureFeaturesKHR>(
-		static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR), &accelerationStructureFeatures);
+	raytracingPipelineFeatures.pNext = &accelerationStructureFeatures;
 
-	// Buffer device extension extension feature
-	VkPhysicalDeviceFeatures2KHR physical_device_features{ static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_FEATURES_2_KHR) };
-	VkPhysicalDeviceBufferDeviceAddressFeatures extension{ static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_BUFFER_DEVICE_ADDRESS_FEATURES) };
-	physical_device_features.pNext = &extension;
-	_deviceResources->instance->getVkBindings().vkGetPhysicalDeviceFeatures2KHR(physicalDevice->getVkHandle(), &physical_device_features);
-	deviceExtensions.addExtensionFeatureVk<VkPhysicalDeviceBufferDeviceAddressFeatures>(
-		static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_BUFFER_DEVICE_ADDRESS_FEATURES), &extension);
+	// Device Address Features
+	VkPhysicalDeviceBufferDeviceAddressFeatures deviceBufferAddressFeatures{ static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_BUFFER_DEVICE_ADDRESS_FEATURES) };
+	accelerationStructureFeatures.pNext = &deviceBufferAddressFeatures;
 
-	// Scalar block extension feature
-	VkPhysicalDeviceFeatures2KHR physical_device_features_4{ static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_FEATURES_2_KHR) };
-	VkPhysicalDeviceScalarBlockLayoutFeaturesEXT scalarFeature{ static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_SCALAR_BLOCK_LAYOUT_FEATURES) };
-	physical_device_features_4.pNext = &scalarFeature;
-	_deviceResources->instance->getVkBindings().vkGetPhysicalDeviceFeatures2KHR(physicalDevice->getVkHandle(), &physical_device_features_4);
-	deviceExtensions.addExtensionFeatureVk<VkPhysicalDeviceScalarBlockLayoutFeaturesEXT>(
-		static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_SCALAR_BLOCK_LAYOUT_FEATURES), &scalarFeature);
+	// Scalar Block Layout Features
+	VkPhysicalDeviceScalarBlockLayoutFeaturesEXT scalarFeatures{ static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_SCALAR_BLOCK_LAYOUT_FEATURES) };
+	deviceBufferAddressFeatures.pNext = &scalarFeatures;
 
-	// Descriptor indexing extension feature
-	VkPhysicalDeviceFeatures2KHR physical_device_features_2{ static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_FEATURES_2_KHR) };
-	VkPhysicalDeviceDescriptorIndexingFeatures indexFeature{ static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES) };
-	physical_device_features_2.pNext = &indexFeature;
-	_deviceResources->instance->getVkBindings().vkGetPhysicalDeviceFeatures2KHR(physicalDevice->getVkHandle(), &physical_device_features_2);
-	VkPhysicalDeviceDescriptorIndexingFeatures* pIndexFeature = &indexFeature;
-	deviceExtensions.addExtensionFeatureVk<VkPhysicalDeviceDescriptorIndexingFeatures>(
-		static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES), pIndexFeature);
+	// Descriptor Indexing Features
+	VkPhysicalDeviceDescriptorIndexingFeatures indexFeatures{ static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES) };
+	scalarFeatures.pNext = &indexFeatures;
 
-	// Ray query features
-	VkPhysicalDeviceFeatures2KHR physical_device_features_6{ static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_FEATURES_2_KHR) };
-	VkPhysicalDeviceRayQueryFeaturesKHR rayQuery{ static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_RAY_QUERY_FEATURES_KHR) };
-	physical_device_features_6.pNext = &rayQuery;
-	_deviceResources->instance->getVkBindings().vkGetPhysicalDeviceFeatures2KHR(physicalDevice->getVkHandle(), &physical_device_features_6);
-	deviceExtensions.addExtensionFeatureVk<VkPhysicalDeviceRayQueryFeaturesKHR>(static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_RAY_QUERY_FEATURES_KHR), &rayQuery);
+	// Fill in all of these device features with one call
+	physicalDevice->getInstance()->getVkBindings().vkGetPhysicalDeviceFeatures2(physicalDevice->getVkHandle(), &deviceFeatures);
+
+	// Add these device features to the physical device, since they're all connected by a pNext chain, we only need to explicitly attach the top feature
+	deviceExtensions.addExtensionFeatureVk<VkPhysicalDeviceRayTracingPipelineFeaturesKHR>(&raytracingPipelineFeatures);
 
 	// Create the physical device, queues and surface using the required extensions and extension features
 	// Create the surface
@@ -739,6 +760,8 @@ std::pair<pvrvk::PhysicalDevice, pvrvk::Surface> VulkanRayTracedHardShadows::cre
 	VkPhysicalDeviceProperties2 properties{ static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_PROPERTIES_2) };
 	properties.pNext = &_rtProperties;
 	_deviceResources->instance->getVkBindings().vkGetPhysicalDeviceProperties2(physicalDevice->getVkHandle(), &properties);
+	_shaderGroupBaseAlignment = _rtProperties.shaderGroupBaseAlignment;
+	_shaderGroupHandleAlignment = _rtProperties.shaderGroupHandleAlignment;
 
 	Log(LogLevel::Information, "Physical device selected was : %s", physicalDevice->getProperties().getDeviceName());
 
@@ -945,6 +968,11 @@ void VulkanRayTracedHardShadows::createRayTracingPipelines()
 	raytracingPipeline.shaderGroups = { rg, mg, smg, hg, shg };
 	_shaderGroupCount = static_cast<uint32_t>(raytracingPipeline.shaderGroups.size());
 
+	// Set the variables below with data needed for the shader binding table
+	_numberRayGenShaders = 1;
+	_numberRayMissShaders = 2;
+	_numberRayHitShaders = 2;	
+
 	// Allow primary hit group to fire another ray
 	raytracingPipeline.maxRecursionDepth = 2;
 
@@ -993,53 +1021,89 @@ void VulkanRayTracedHardShadows::createOnScreenPipeline()
 	_deviceResources->onScreenPipeline = _deviceResources->device->createGraphicsPipeline(pipelineCreateInfo, _deviceResources->pipelineCache);
 }
 
+uint32_t VulkanRayTracedHardShadows::makeMultipleOf(uint32_t a, uint32_t b) {
+	return (a + (b - 1)) & ~uint32_t(b - 1);
+}
+
 void VulkanRayTracedHardShadows::createShaderBindingTable()
 {
-	// Creates the shader binding table for the Ray-Traced shadows pass. This is used to know which shader to call depending on
-	// which event happens to the ray as it traces the acceleration structure. The sbt also associates an offset to each shader group so
-	// that the traceRaysExt call in the shaders can call different hit and miss groups, ie tracing primary rays from the raygen and then
-	// tracing the shadow rays from the primary hit shader
+	// All shader groups in the shader binding table (i.e., all ray gen shaders, all ray miss shaders, all closest hit shaders) have to be aligned in memory,
+	// having a size multiple of shaderGroupBaseAlignment
+	// Inside each shader group, each shader handle in the shader binding table has to be aligned in memory as well, with a size multiple of shaderGroupHandleAlignment
+	// An example for the ray generation shader group and any set of ray generation shaders is shown below:
+	// |------------------------------------------------------------Ray gen shader group-----------------------------------------------------|
+	// |------------------------------------------------------Multiple of shaderGroupBaseAlignment-------------------------------------------|
+	// ||-------------RayGenShader0-----------||--------------RayGenShader1-----------|...|--------------RayGenShaderN-----------|-----------|
+	// |Multiple of shaderGroupHandleAlignment||Multiple of shaderGroupHandleAlignment|...|Multiple of shaderGroupHandleAlignment|-----------|
+	
+	// This appplies for all the shader groups used, in this case, ray gen, ray miss and ray hit
+	// |-----------Ray gen shader group------------||------------Ray miss shader group-----------||-----------Ray hit shader group-------------|
+	// |---Multiple of shaderGroupBaseAlignment----||----Multiple of shaderGroupBaseAlignment----||----Multiple of shaderGroupBaseAlignment----|
 
-	// Each entry into the shader binding table has a size of shaderGroupHandleSize but is aligned to shaderGroupBaseAlignment
-	// These values are queried when creating the raytraced enabled device
-	uint32_t groupHandleSize = _rtProperties.shaderGroupHandleSize;
-	uint32_t baseAlignment = _rtProperties.shaderGroupBaseAlignment;
-
-	// Depending on the hardware the base alignment may not divide the group handle size.
-	// Calculate the stride of entries in the shaderbinding table by rounding the group handle size up to the next base alignment
-	_sbtBufferStride = (groupHandleSize + baseAlignment - 1) & ~uint32_t(baseAlignment - 1);
-
-	// The shader binding table has one entry for each shader group
-	uint32_t sbtSize = _shaderGroupCount * _sbtBufferStride;
-	std::vector<uint8_t> shaderHandleStorage(sbtSize);
+	uint32_t shaderGroupHandleSize = _rtProperties.shaderGroupHandleSize;
 
 	// Use the Vulkan bindings to get the handles for the shader groups which are attached to the raytracing pipeline
+	uint32_t shaderGroupHandlesSize = _shaderGroupCount * shaderGroupHandleSize;
+	std::vector<uint8_t> shaderHandleStorage(shaderGroupHandlesSize);
+
 	_deviceResources->device->getVkBindings().vkGetRayTracingShaderGroupHandlesKHR(
-		_deviceResources->device->getVkHandle(), _deviceResources->raytracePipeline->getVkHandle(), 0, _shaderGroupCount, sbtSize, shaderHandleStorage.data());
+		_deviceResources->device->getVkHandle(), _deviceResources->raytracePipeline->getVkHandle(), 0, _shaderGroupCount, shaderGroupHandlesSize, shaderHandleStorage.data());
+
+	// We know the amount of ray generation, miss and hit shaders built at createRayTracingPipelines, and also that the order in which they are setup
+	// in the pipeline is ray generation shaders, ray miss shaders and then ray hit shaders (this order has to be reproduced as well in the shader binding table).
+	// So basically, for each group, count how many shaders are there, compute its size with shaderGroupHandleAlignment and round it up to a multiple
+	// of _shaderGroupBaseAlignment
+
+	_shaderGroupHandleSizeAligned = makeMultipleOf(shaderGroupHandleSize, _shaderGroupHandleAlignment);
+
+	_sizeRayGenGroup = makeMultipleOf(_shaderGroupHandleSizeAligned * _numberRayGenShaders, _shaderGroupBaseAlignment);
+	_sizeRayMissGroup = makeMultipleOf(_shaderGroupHandleSizeAligned * _numberRayMissShaders, _shaderGroupBaseAlignment);
+	_sizeRayHitGroup = makeMultipleOf(_shaderGroupHandleSizeAligned * _numberRayHitShaders, _shaderGroupBaseAlignment);
 
 	// Use pvr::utils to create a buffer to store the shader binding table in which is of sixe sbtSize
+	uint32_t shaderBindingTableSize = _sizeRayGenGroup + _sizeRayMissGroup + _sizeRayHitGroup;
 	_deviceResources->raytraceShaderBindingTable = pvr::utils::createBuffer(_deviceResources->device,
-		pvrvk::BufferCreateInfo(
-			sbtSize, pvrvk::BufferUsageFlags::e_TRANSFER_SRC_BIT | pvrvk::BufferUsageFlags::e_SHADER_BINDING_TABLE_BIT_KHR | pvrvk::BufferUsageFlags::e_SHADER_DEVICE_ADDRESS_BIT),
+		pvrvk::BufferCreateInfo(shaderBindingTableSize,
+			pvrvk::BufferUsageFlags::e_TRANSFER_SRC_BIT | pvrvk::BufferUsageFlags::e_SHADER_BINDING_TABLE_BIT_KHR | pvrvk::BufferUsageFlags::e_SHADER_DEVICE_ADDRESS_BIT),
 		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
 		pvrvk::MemoryPropertyFlags::e_NONE, nullptr, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT, pvrvk::MemoryAllocateFlags::e_DEVICE_ADDRESS_BIT);
 
 	// Map the memory from this new buffer so it can be written to.
 	void* mapped = _deviceResources->raytraceShaderBindingTable->getDeviceMemory()->map(0, VK_WHOLE_SIZE);
-	auto* pData = reinterpret_cast<uint8_t*>(mapped);
+	uint8_t* pData = reinterpret_cast<uint8_t*>(mapped);
+	uint32_t shaderGroupCounter = 0;
 
-	// For each shader group, write the data contained in its handle to the shader binding table
-	// Each shader group has groupHandleSize bytes to write into the shader binding table, but the pointer to the next element in the table
-	// has to be alligned to the sbtStride, so move the mapped memory pointer forward by sbtStride to get the the start of the next element in
-	// the sbt
-	// Need to write the elements to the shader binding table in the same order that they are in the raytracing pipeline
-	for (uint32_t g = 0; g < _shaderGroupCount; g++)
+	// Take into account that the information in shaderHandleStorage follows the shader group setup done when building the
+	// ray tracing pipeline, in this case, (ray gen shader, ray miss shader, ray miss shader, ray hit shader, ray hit shader)
+
+	// Copy ray generation shader handle information present in shaderHandleStorage into the shader binding table
+	for (uint32_t i = 0; i < _numberRayGenShaders; i++)
 	{
-		memcpy(pData, shaderHandleStorage.data() + g * static_cast<size_t>(groupHandleSize), groupHandleSize);
-		pData += _sbtBufferStride;
+		memcpy(pData, shaderHandleStorage.data() + shaderGroupCounter * static_cast<size_t>(shaderGroupHandleSize), shaderGroupHandleSize);
+		shaderGroupCounter++;
+		pData += _shaderGroupHandleSizeAligned;
 	}
 
-	// Unmap the shader binding table memory
+	// Copy ray miss shader handle information present in shaderHandleStorage into the shader binding table
+	pData = reinterpret_cast<uint8_t*>(mapped);
+	pData += _sizeRayGenGroup;
+	for (uint32_t i = 0; i < _numberRayMissShaders; i++)
+	{
+		memcpy(pData, shaderHandleStorage.data() + shaderGroupCounter * static_cast<size_t>(shaderGroupHandleSize), shaderGroupHandleSize);
+		shaderGroupCounter++;
+		pData += _shaderGroupHandleSizeAligned;
+	}
+
+	// Copy ray hit shader handle information present in shaderHandleStorage into the shader binding table
+	pData = reinterpret_cast<uint8_t*>(mapped);
+	pData += _sizeRayGenGroup + _sizeRayMissGroup;
+	for (uint32_t i = 0; i < _numberRayHitShaders; i++)
+	{
+		memcpy(pData, shaderHandleStorage.data() + shaderGroupCounter * static_cast<size_t>(shaderGroupHandleSize), shaderGroupHandleSize);
+		shaderGroupCounter++;
+		pData += _shaderGroupHandleSizeAligned;
+	}
+
 	_deviceResources->raytraceShaderBindingTable->getDeviceMemory()->unmap();
 }
 
@@ -1056,7 +1120,7 @@ void VulkanRayTracedHardShadows::createRayTracedImage()
 
 	// Create image
 	pvrvk::Image raytracedImage = pvr::utils::createImage(_deviceResources->device,
-		pvrvk::ImageCreateInfo(pvrvk::ImageType::e_2D, pvrvk::Format::e_R32G32B32A32_SFLOAT, dimension, pvrvk::ImageUsageFlags::e_STORAGE_BIT | pvrvk::ImageUsageFlags::e_SAMPLED_BIT),
+		pvrvk::ImageCreateInfo(pvrvk::ImageType::e_2D, pvrvk::Format::e_R8G8B8A8_UNORM, dimension, pvrvk::ImageUsageFlags::e_STORAGE_BIT | pvrvk::ImageUsageFlags::e_SAMPLED_BIT),
 		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, _deviceResources->vmaAllocator,
 		pvr::utils::vma::AllocationCreateFlags::e_DEDICATED_MEMORY_BIT);
 
@@ -1147,7 +1211,7 @@ void VulkanRayTracedHardShadows::createModelBuffers(pvrvk::CommandBuffer& upload
 		pvrvk::BufferCreateInfo vertexBufferInfo;
 		vertexBufferInfo.setSize(sizeof(pvr::utils::ASVertexFormat) * vertices.size());
 		vertexBufferInfo.setUsageFlags(pvrvk::BufferUsageFlags::e_VERTEX_BUFFER_BIT | pvrvk::BufferUsageFlags::e_STORAGE_BUFFER_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT |
-			pvrvk::BufferUsageFlags::e_SHADER_DEVICE_ADDRESS_BIT);
+			pvrvk::BufferUsageFlags::e_SHADER_DEVICE_ADDRESS_BIT | pvrvk::BufferUsageFlags::e_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR);
 		_deviceResources->vertexBuffers.push_back(pvr::utils::createBuffer(_deviceResources->device, vertexBufferInfo, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT,
 			pvrvk::MemoryPropertyFlags::e_NONE, nullptr, pvr::utils::vma::AllocationCreateFlags::e_NONE, pvrvk::MemoryAllocateFlags::e_DEVICE_ADDRESS_BIT));
 		pvr::utils::updateBufferUsingStagingBuffer(
@@ -1157,7 +1221,7 @@ void VulkanRayTracedHardShadows::createModelBuffers(pvrvk::CommandBuffer& upload
 		pvrvk::BufferCreateInfo indexBufferInfo;
 		indexBufferInfo.setSize(sizeof(uint32_t) * indices.size());
 		indexBufferInfo.setUsageFlags(pvrvk::BufferUsageFlags::e_INDEX_BUFFER_BIT | pvrvk::BufferUsageFlags::e_STORAGE_BUFFER_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT |
-			pvrvk::BufferUsageFlags::e_SHADER_DEVICE_ADDRESS_BIT);
+			pvrvk::BufferUsageFlags::e_SHADER_DEVICE_ADDRESS_BIT | pvrvk::BufferUsageFlags::e_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR);
 		_deviceResources->indexBuffers.push_back(pvr::utils::createBuffer(_deviceResources->device, indexBufferInfo, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT,
 			pvrvk::MemoryPropertyFlags::e_NONE, nullptr, pvr::utils::vma::AllocationCreateFlags::e_NONE, pvrvk::MemoryAllocateFlags::e_DEVICE_ADDRESS_BIT));
 		pvr::utils::updateBufferUsingStagingBuffer(_deviceResources->device, _deviceResources->indexBuffers[meshID], uploadCmd, indices.data(), 0, sizeof(uint32_t) * indices.size());
@@ -1381,17 +1445,11 @@ void VulkanRayTracedHardShadows::recordCommandBufferRaytraces(pvrvk::SecondaryCo
 	// Shaders in the shader binding table are grouped together by stage, need to find the address of the first shader group for each stage
 	VkDeviceAddress sbtAddress = _deviceResources->raytraceShaderBindingTable->getDeviceAddress(_deviceResources->device);
 
-	// RayGen shader group is the first entry in the SBT
-	VkDeviceSize rayGenOffset = 0u * static_cast<uint64_t>(_sbtBufferStride);
-	// The RayMiss shader groups start after the raygen shader group
-	VkDeviceSize missOffset = 1u * static_cast<uint64_t>(_sbtBufferStride);
-	// The RayHit shader groups start after the miss groups, there are 2 miss groups plus skipping over the raygen
-	VkDeviceSize hitGroupOffset = 3u * static_cast<uint64_t>(_sbtBufferStride);
-
 	// The address of the shader groups is the start of the sbt + the offset calculated above
-	pvrvk::StridedDeviceAddressRegionKHR raygenShaderBindingTable = { sbtAddress + rayGenOffset, _sbtBufferStride, _sbtBufferStride };
-	pvrvk::StridedDeviceAddressRegionKHR missShaderBindingTable = { sbtAddress + missOffset, _sbtBufferStride, _sbtBufferStride };
-	pvrvk::StridedDeviceAddressRegionKHR hitShaderBindingTable = { sbtAddress + hitGroupOffset, _sbtBufferStride, _sbtBufferStride };
+	// Note that the stride and the size of the ray generation group have to have the same value, this is a special case that has to be always covered
+	pvrvk::StridedDeviceAddressRegionKHR raygenShaderBindingTable = { sbtAddress, _sizeRayGenGroup, _sizeRayGenGroup };
+	pvrvk::StridedDeviceAddressRegionKHR missShaderBindingTable = { sbtAddress + _sizeRayGenGroup, _shaderGroupHandleSizeAligned, _sizeRayMissGroup };
+	pvrvk::StridedDeviceAddressRegionKHR hitShaderBindingTable = { sbtAddress + _sizeRayGenGroup + _sizeRayMissGroup, _shaderGroupHandleSizeAligned, _sizeRayHitGroup };
 	pvrvk::StridedDeviceAddressRegionKHR callableShaderBindingTable = {};
 
 	// Trace the rays

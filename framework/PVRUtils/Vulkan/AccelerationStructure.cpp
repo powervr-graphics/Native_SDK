@@ -154,7 +154,8 @@ void AccelerationStructureWrapper::buildTopLevelASAndInstances(
 		// The instance information is put in a buffer
 		_instancesBuffer = pvr::utils::createBuffer(device,
 			pvrvk::BufferCreateInfo(sizeof(VkAccelerationStructureInstanceKHR) * geometryInstances.size(),
-				pvrvk::BufferUsageFlags::e_SHADER_DEVICE_ADDRESS_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT),
+				pvrvk::BufferUsageFlags::e_SHADER_DEVICE_ADDRESS_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT |
+					pvrvk::BufferUsageFlags::e_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR),
 			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, nullptr, pvr::utils::vma::AllocationCreateFlags::e_NONE,
 			pvrvk::MemoryAllocateFlags::e_DEVICE_ADDRESS_BIT);
 	}
@@ -215,7 +216,8 @@ void AccelerationStructureWrapper::buildTopLevelASAndInstances(
 
 	pvrvk::Buffer scratchBuffer = pvr::utils::createBuffer(device,
 		pvrvk::BufferCreateInfo(asBuildSizesInfo.buildScratchSize,
-			pvrvk::BufferUsageFlags::e_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR | pvrvk::BufferUsageFlags::e_SHADER_DEVICE_ADDRESS_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT),
+			pvrvk::BufferUsageFlags::e_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR | pvrvk::BufferUsageFlags::e_SHADER_DEVICE_ADDRESS_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT |
+				pvrvk::BufferUsageFlags::e_STORAGE_BUFFER_BIT),
 		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
 		pvrvk::MemoryPropertyFlags::e_NONE, nullptr, pvr::utils::vma::AllocationCreateFlags::e_NONE, pvrvk::MemoryAllocateFlags::e_DEVICE_ADDRESS_BIT);
 

@@ -10,8 +10,8 @@ uniform highp mat3 ModelWorldIT3x3;
 uniform highp vec3 LightPos;
 
 out mediump vec2 vTexCoord;
-out mediump vec3 vWorldNormal;
-out mediump vec3 vLightDir;
+out highp vec3 vWorldNormal;
+out highp vec3 vLightDir;
 out mediump float vOneOverAttenuation;
 
 void main()

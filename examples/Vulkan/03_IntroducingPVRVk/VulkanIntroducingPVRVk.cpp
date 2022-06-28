@@ -94,7 +94,9 @@ VKAPI_ATTR VkBool32 VKAPI_CALL throwOnErrorDebugUtilsMessengerCallback(VkDebugUt
 	// throw an exception if the type of DebugUtilsMessageSeverityFlagsEXT contains the ERROR_BIT
 	if ((static_cast<pvrvk::DebugUtilsMessageSeverityFlagsEXT>(inMessageSeverity) & (pvrvk::DebugUtilsMessageSeverityFlagsEXT::e_ERROR_BIT_EXT)) !=
 		pvrvk::DebugUtilsMessageSeverityFlagsEXT::e_NONE)
-	{ throw pvrvk::ErrorValidationFailedEXT(debugUtilsMessengerCallbackToString(inMessageSeverity, inMessageTypes, pCallbackData)); }
+	{
+		throw pvrvk::ErrorValidationFailedEXT(debugUtilsMessengerCallbackToString(inMessageSeverity, inMessageTypes, pCallbackData));
+	}
 	return VK_FALSE;
 }
 
@@ -777,18 +779,18 @@ void VulkanIntroducingPVRVk::createInstance()
 		minor = VK_VERSION_MINOR(supportedApiVersion);
 		patch = VK_VERSION_PATCH(supportedApiVersion);
 
-		Log(LogLevel::Information, "The function pointer for 'vkEnumerateInstanceVersion' was valid. Supported instance version: ([%d].[%d].[%d]).", major, minor, patch);
+		Log(LogLevel::Information, "The function pointer for 'vkEnumerateInstanceVersion' was valid. Supported Vulkan loader instance version: ([%d].[%d].[%d]).", major, minor, patch);
 	}
 	else
 	{
 		major = 1;
 		minor = 0;
 		patch = 0;
-		Log(LogLevel::Information, "Could not find a function pointer for 'vkEnumerateInstanceVersion'. Setting instance version to: ([%d].[%d].[%d]).", major, minor, patch);
+		Log(LogLevel::Information, "Could not find a function pointer for 'vkEnumerateInstanceVersion'. Maximum instance version: ([%d].[%d].[%d]).", major, minor, patch);
 	}
 
 	// Create the application creation info structure, specifying the application name and the intended Vulkan API version to be used.
-	pvrvk::ApplicationInfo applicationInfo("VulkanIntroducingPVRVk", 1, "VulkanIntroducingPVRVk", 1, VK_MAKE_VERSION(major, minor, patch));
+	pvrvk::ApplicationInfo applicationInfo("VulkanIntroducingPVRVk", 1, "VulkanIntroducingPVRVk", 1, VK_MAKE_VERSION(1, 0, 0));
 
 	// Create the instance creation info structure
 	pvrvk::InstanceCreateInfo instanceCreateInfo(applicationInfo);
@@ -799,7 +801,9 @@ void VulkanIntroducingPVRVk::createInstance()
 
 	Log(LogLevel::Information, "Supported Instance Extensions:");
 	for (uint32_t i = 0; i < static_cast<uint32_t>(extensionProperties.size()); ++i)
-	{ Log(LogLevel::Information, "\t%s : version [%u]", extensionProperties[i].getExtensionName(), extensionProperties[i].getSpecVersion()); }
+	{
+		Log(LogLevel::Information, "\t%s : version [%u]", extensionProperties[i].getExtensionName(), extensionProperties[i].getSpecVersion());
+	}
 
 	// Retrieve a list of supported instance extensions and filter them based on a set of requested instance extension to be enabled.
 	InstanceExtensions instanceExtensions;
@@ -809,7 +813,9 @@ void VulkanIntroducingPVRVk::createInstance()
 
 		Log(LogLevel::Information, "Supported Instance Extensions to be Enabled:");
 		for (uint32_t i = 0; i < instanceCreateInfo.getExtensionList().getNumExtensions(); ++i)
-		{ Log(LogLevel::Information, "\t%s", instanceCreateInfo.getExtensionList().getExtension(i).getName().c_str()); }
+		{
+			Log(LogLevel::Information, "\t%s", instanceCreateInfo.getExtensionList().getExtension(i).getName().c_str());
+		}
 	}
 
 	// Vulkan, by nature of its minimalistic design, provides very little information to the developer regarding API issues. Error checking and validation of state is minimal.
@@ -855,7 +861,9 @@ void VulkanIntroducingPVRVk::createInstance()
 		if (requestedStandardValidation && !supportsStandardValidation && !supportsKhronosValidation)
 		{
 			for (auto it = layerProperties.begin(); !supportsStandardValidation && it != layerProperties.end(); ++it)
-			{ supportsStandardValidation = !strcmp(it->getLayerName(), "VK_LAYER_LUNARG_standard_validation"); }
+			{
+				supportsStandardValidation = !strcmp(it->getLayerName(), "VK_LAYER_LUNARG_standard_validation");
+			}
 			if (!supportsStandardValidation)
 			{
 				for (uint32_t i = 0; stdValidationRequiredIndex == static_cast<uint32_t>(-1) && i < layerProperties.size(); ++i)
@@ -898,7 +906,9 @@ void VulkanIntroducingPVRVk::createInstance()
 			// Check if the validation layers provide support for the validation features instance extensions
 			bool validationFeatures = false;
 			for (auto it = validationLayerInstanceExtensions.begin(); !validationFeatures && it != validationLayerInstanceExtensions.end(); it++)
-			{ validationFeatures = !strcmp(it->getExtensionName(), "VK_EXT_validation_features"); }
+			{
+				validationFeatures = !strcmp(it->getExtensionName(), "VK_EXT_validation_features");
+			}
 
 			// If the validation features are supported, then append the best practices info to the instance create info
 			if (validationFeatures)
@@ -1051,7 +1061,9 @@ void VulkanIntroducingPVRVk::createSurface(void* window, void* display, void* co
 
 		// if a valid display can be found and its supported then make use of it
 		if (display && std::find(supportedDisplaysForPlane.begin(), supportedDisplaysForPlane.end(), display) != supportedDisplaysForPlane.end())
-		{ displayMode = display->getDisplayMode(0); } // else find the first supported display and grab its first display mode
+		{
+			displayMode = display->getDisplayMode(0);
+		} // else find the first supported display and grab its first display mode
 		else if (supportedDisplaysForPlane.size())
 		{
 			pvrvk::Display& currentDisplay = supportedDisplaysForPlane[0];
@@ -1146,17 +1158,23 @@ void VulkanIntroducingPVRVk::createLogicalDevice()
 
 	Log(LogLevel::Information, "Supported Device Extensions:");
 	for (uint32_t i = 0; i < static_cast<uint32_t>(extensionProperties.size()); ++i)
-	{ Log(LogLevel::Information, "\t%s : version [%u]", extensionProperties[i].getExtensionName(), extensionProperties[i].getSpecVersion()); }
+	{
+		Log(LogLevel::Information, "\t%s : version [%u]", extensionProperties[i].getExtensionName(), extensionProperties[i].getSpecVersion());
+	}
 	DeviceExtensions deviceExtensions;
 	if (deviceExtensions.getNumExtensions())
 	{
 		deviceCreateInfo.setExtensionList(pvrvk::Extensions::filterExtensions(extensionProperties, deviceExtensions));
 
 		if (deviceCreateInfo.getExtensionList().getNumExtensions() != deviceExtensions.getNumExtensions())
-		{ Log(LogLevel::Warning, "Not all requested Logical device extensions are supported"); }
+		{
+			Log(LogLevel::Warning, "Not all requested Logical device extensions are supported");
+		}
 		Log(LogLevel::Information, "Supported Device Extensions:");
 		for (uint32_t i = 0; i < deviceCreateInfo.getExtensionList().getNumExtensions(); ++i)
-		{ Log(LogLevel::Information, "\t%s", deviceCreateInfo.getExtensionList().getExtension(i).getName().c_str()); }
+		{
+			Log(LogLevel::Information, "\t%s", deviceCreateInfo.getExtensionList().getExtension(i).getName().c_str());
+		}
 	}
 
 	// A physical device may well support a set of fine grained features which are not mandated by the specification, support for these features is retrieved and then enabled
@@ -1229,10 +1247,14 @@ void selectPresentMode(std::vector<pvrvk::PresentModeKHR>& modes, pvrvk::Present
 		// Secondary matches : Immediate and Mailbox are better fits for each other than FIFO, so set them as secondary
 		// If the user asked for Mailbox, and we found Immediate, set it (in case Mailbox is not found) and keep looking
 		if ((desiredSwapMode == pvrvk::PresentModeKHR::e_MAILBOX_KHR) && (currentPresentMode == pvrvk::PresentModeKHR::e_IMMEDIATE_KHR))
-		{ presentationMode = pvrvk::PresentModeKHR::e_IMMEDIATE_KHR; }
+		{
+			presentationMode = pvrvk::PresentModeKHR::e_IMMEDIATE_KHR;
+		}
 		// ... And vice versa: If the user asked for Immediate, and we found Mailbox, set it (in case Immediate is not found) and keep looking
 		if ((desiredSwapMode == pvrvk::PresentModeKHR::e_IMMEDIATE_KHR) && (currentPresentMode == pvrvk::PresentModeKHR::e_MAILBOX_KHR))
-		{ presentationMode = pvrvk::PresentModeKHR::e_MAILBOX_KHR; }
+		{
+			presentationMode = pvrvk::PresentModeKHR::e_MAILBOX_KHR;
+		}
 	}
 	switch (presentationMode)
 	{
@@ -1320,7 +1342,9 @@ void VulkanIntroducingPVRVk::createSwapchain()
 	// Check for a supported composite alpha value in a predefined order
 	pvrvk::CompositeAlphaFlagsKHR supportedCompositeAlphaFlags = pvrvk::CompositeAlphaFlagsKHR::e_NONE;
 	if ((surfaceCapabilities.getSupportedCompositeAlpha() & pvrvk::CompositeAlphaFlagsKHR::e_OPAQUE_BIT_KHR) != 0)
-	{ supportedCompositeAlphaFlags = pvrvk::CompositeAlphaFlagsKHR::e_OPAQUE_BIT_KHR; }
+	{
+		supportedCompositeAlphaFlags = pvrvk::CompositeAlphaFlagsKHR::e_OPAQUE_BIT_KHR;
+	}
 	else if ((surfaceCapabilities.getSupportedCompositeAlpha() & pvrvk::CompositeAlphaFlagsKHR::e_INHERIT_BIT_KHR) != 0)
 	{
 		supportedCompositeAlphaFlags = pvrvk::CompositeAlphaFlagsKHR::e_INHERIT_BIT_KHR;
@@ -1332,7 +1356,9 @@ void VulkanIntroducingPVRVk::createSwapchain()
 	displayAttributes.swapLength = std::min<uint32_t>(displayAttributes.swapLength, pvrvk::FrameworkCaps::MaxSwapChains);
 
 	if ((surfaceCapabilities.getSupportedTransforms() & pvrvk::SurfaceTransformFlagsKHR::e_IDENTITY_BIT_KHR) == 0)
-	{ throw pvr::InvalidOperationError("Surface does not support pvrvk::SurfaceTransformFlagsKHR::e_IDENTITY_BIT_KHR transformation"); }
+	{
+		throw pvr::InvalidOperationError("Surface does not support pvrvk::SurfaceTransformFlagsKHR::e_IDENTITY_BIT_KHR transformation");
+	}
 	pvrvk::SwapchainCreateInfo createInfo;
 	createInfo.clipped = true;
 	createInfo.compositeAlpha = supportedCompositeAlphaFlags;
@@ -1918,7 +1944,9 @@ void VulkanIntroducingPVRVk::allocateDescriptorSets()
 	{
 		// Check the physical device limit specifying the maximum number of descriptor sets using dynamic buffers.
 		if (_deviceResources->device->getPhysicalDevice()->getProperties().getLimits().getMaxDescriptorSetUniformBuffersDynamic() < 1)
-		{ throw pvr::PvrError("The physical device must support at least 1 dynamic uniform buffer"); }
+		{
+			throw pvr::PvrError("The physical device must support at least 1 dynamic uniform buffer");
+		}
 
 		pvrvk::WriteDescriptorSet writeDescSet(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, _deviceResources->dynamicDescriptorSet, 0, 0);
 		writeDescSet.setBufferInfo(0, pvrvk::DescriptorBufferInfo(_deviceResources->modelViewProjectionBuffer, 0, _dynamicBufferAlignedSize));

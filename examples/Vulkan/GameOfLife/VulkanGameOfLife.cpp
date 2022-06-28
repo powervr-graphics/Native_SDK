@@ -694,7 +694,10 @@ pvr::Result VulkanGameOfLife::initView()
 {
 	// Initialise device resources.
 	_deviceResources = std::unique_ptr<DeviceResources>(new DeviceResources());
-	_deviceResources->instance = pvr::utils::createInstance(this->getApplicationName());
+
+	// Create a Vulkan 1.0 instance and retrieve compatible physical devices
+	pvr::utils::VulkanVersion VulkanVersion(1, 0, 0);
+	_deviceResources->instance = pvr::utils::createInstance(this->getApplicationName(), VulkanVersion, pvr::utils::InstanceExtensions(VulkanVersion));
 
 	// Query the number of physical devices available. if none, exit.
 	if (_deviceResources->instance->getNumPhysicalDevices() == 0)
@@ -742,7 +745,9 @@ pvr::Result VulkanGameOfLife::initView()
 	// validate the supported swapchain image usage
 	pvrvk::ImageUsageFlags swapchainImageUsage = pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT;
 	if (pvr::utils::isImageUsageSupportedBySurface(surfaceCapabilities, pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT))
-	{ swapchainImageUsage |= pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT; } // Create the swapchain
+	{
+		swapchainImageUsage |= pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT;
+	} // Create the swapchain
 	// Create the Swapchain, its renderpass, attachments and framebuffers. Will support MSAA if enabled through command line.
 	auto swapChainCreateOutput = pvr::utils::createSwapchainRenderpassFramebuffers(_deviceResources->device, surface, getDisplayAttributes(),
 		pvr::utils::CreateSwapchainParameters().setAllocator(_deviceResources->vmaAllocator).setColorImageUsageFlags(swapchainImageUsage).enableDepthBuffer(false));

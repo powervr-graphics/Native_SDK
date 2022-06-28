@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.18)
 project(OpenGLESMultiviewVR)
 if(IOS)
 	message("Skipping OpenGLESMultiviewVR : Not supported on iOS")

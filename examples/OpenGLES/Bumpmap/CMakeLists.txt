@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.18)
 project(OpenGLESBumpmap)
 if(IOS)
 	message("Skipping OpenGLESBumpmap : Not supported on iOS")

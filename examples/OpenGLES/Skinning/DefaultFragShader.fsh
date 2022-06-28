@@ -3,8 +3,8 @@
 uniform mediump sampler2D sTexture;
 
 in mediump vec2 vTexCoord;
-in mediump vec3 vWorldNormal;
-in mediump vec3 vLightDir;
+in highp vec3 vWorldNormal;
+in highp vec3 vLightDir;
 in mediump float vOneOverAttenuation;
 
 layout(location = 0) out mediump vec4 oColor;

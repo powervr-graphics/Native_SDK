@@ -55,6 +55,7 @@ public:
 	uint32_t numSurfaces; //!< Number of members in a Texture Array.
 	uint32_t numFaces; //!< Number of faces in a Cube Map. Maybe be a value other than 6.
 	uint32_t numMipMaps; //!< Number of MIP Maps in the texture - NB: Includes top level.
+	uint32_t numPlanes; //!< Number of planes in the texture - NB: Includes top level.
 	uint32_t metaDataSize; //!< Size of the accompanying meta data.
 
 	// Header _header; //!< Texture header as laid out in a file.
@@ -84,7 +85,7 @@ public:
 	/// <param name="metaDataSize">Texture meta data size</param>
 	TextureHeader(PixelFormat pixelFormat, uint32_t width, uint32_t height, uint32_t depth = 1, uint32_t numMipMaps = 1, ColorSpace colorSpace = ColorSpace::lRGB,
 		VariableType channelType = VariableType::UnsignedByteNorm, uint32_t numSurfaces = 1, uint32_t numFaces = 1, uint32_t flags = 0, TextureMetaData* metaData = NULL,
-		uint32_t metaDataSize = 0);
+		uint32_t metaDataSize = 0, uint32_t numPlanes = 1);
 
 	/// <summary>Gets the pixel type ID of the texture.</summary>
 	/// <returns>Return a 64-bit pixel type ID.</returns>
@@ -152,9 +153,10 @@ public:
 	/// <returns>Return the size in PIXELS of the specified texture area.</returns>
 	/// <remarks>User can retrieve the total size of either all surfaces or a single surface, all faces or a single
 	/// face and all MIP-Maps or a single specified MIP level. All of these</remarks>
-	uint32_t getTextureSize(int32_t mipMapLevel = pvrTextureAllMipMaps, bool allSurfaces = true, bool allFaces = true) const
+	uint32_t getTextureSize(int32_t mipMapLevel = pvrTextureAllMipMaps, bool allSurfaces = true, bool allFaces = true, bool allPlanes = true, uint32_t planeIndex = 0) const
 	{
-		return static_cast<uint32_t>((static_cast<uint64_t>(8) * static_cast<uint64_t>(getDataSize(mipMapLevel, allSurfaces, allFaces))) / static_cast<uint64_t>(getBitsPerPixel()));
+		return static_cast<uint32_t>(
+			(static_cast<uint64_t>(8) * static_cast<uint64_t>(getDataSize(mipMapLevel, allSurfaces, allFaces, allPlanes, planeIndex))) / static_cast<uint64_t>(getBitsPerPixel()));
 	}
 
 	/// <summary>Gets the size in BYTES of the texture, given various input parameters.</summary>
@@ -163,17 +165,18 @@ public:
 	/// <param name="allSurfaces">The Size of all surfaces is calculated if true, only a single surface if false.
 	///</param>
 	/// <param name="allFaces">The Size of all faces is calculated if true, only a single face if false.</param>
+	/// <param name="allPlanes">The Size of all planes is calculated if true, only a single plane if false.</param>
 	/// <returns>Return the size in BYTES of the specified texture area.</returns>
 	/// <remarks>User can retrieve the size of either all surfaces or a single surface, all faces or a single face and
 	/// all MIP-Maps or a single specified MIP level.</remarks>
-	uint32_t getDataSize(int32_t mipLevel = pvrTextureAllMipMaps, bool allSurfaces = true, bool allFaces = true) const;
+	uint32_t getDataSize(int32_t mipLevel = pvrTextureAllMipMaps, bool allSurfaces = true, bool allFaces = true, bool allPlanes = true, uint32_t planeIndex = 0) const;
 
 	/// <summary>Get a offset in the data</summary>
 	/// <param name="mipMapLevel">The mip map level of the offset</param>
 	/// <param name="arrayMember">The array index of the offset</param>
 	/// <param name="face">The face of the offset</param>
 	/// <returns>Return data offset</returns>
-	ptrdiff_t getDataOffset(uint32_t mipMapLevel = 0, uint32_t arrayMember = 0, uint32_t face = 0) const;
+	ptrdiff_t getDataOffset(uint32_t mipMapLevel = 0, uint32_t arrayMember = 0, uint32_t face = 0, uint32_t plane = 0) const;
 
 	/// <summary>Gets the number of array members stored in this texture.</summary>
 	/// <returns>Return the number of array members in this texture.</returns>
@@ -190,6 +193,10 @@ public:
 	/// <summary>Gets the number of faces stored in this texture.</summary>
 	/// <returns>Return the number of faces in this texture.</returns>
 	uint32_t getNumFaces() const { return numFaces; }
+
+	/// <summary>Gets the number of planes stored in this texture.</summary>
+	/// <returns>Return the number of planes in this texture.</returns>
+	uint32_t getNumPlanes() const { return numPlanes; }
 
 	/// <summary>Gets the cube map face order.</summary>
 	/// <returns>Returns cube map order.</returns>
@@ -274,6 +281,10 @@ public:
 	/// <summary>Sets the number of faces stored in this texture.</summary>
 	/// <param name="numNewFaces">New number of faces for this texture.</param>
 	void setNumFaces(uint32_t numNewFaces) { numFaces = numNewFaces; }
+
+	/// <summary>Sets the number of planes stored in this texture.</summary>
+	/// <param name="numNewPlanes">New number of planes for this texture.</param>
+	void setNumPlanes(uint32_t numNewPlanes) { numPlanes = numNewPlanes; }
 
 	/// <summary>Sets the data orientation for a given axis in this texture.</summary>
 	/// <param name="axisOrientation">Specifying axis and orientation.</param>

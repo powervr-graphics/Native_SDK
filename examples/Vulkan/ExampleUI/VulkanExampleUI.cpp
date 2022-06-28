@@ -298,7 +298,9 @@ void PageWindow::update(glm::mat4& proj, uint32_t swapchain, float width, float 
 
 	// if the memory property flags used by the buffers' device memory do not contain e_HOST_COHERENT_BIT then we must flush the memory
 	if (static_cast<uint32_t>(renderQuadUboBuffer->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
-	{ renderQuadUboBuffer->getDeviceMemory()->flushRange(renderQuadUboBufferView.getDynamicSliceOffset(swapchain), renderQuadUboBufferView.getDynamicSliceSize()); }
+	{
+		renderQuadUboBuffer->getDeviceMemory()->flushRange(renderQuadUboBufferView.getDynamicSliceOffset(swapchain), renderQuadUboBufferView.getDynamicSliceSize());
+	}
 }
 
 /// <summary>Update the weather page.</summary>
@@ -987,8 +989,9 @@ pvr::Result VulkanExampleUI::initView()
 {
 	_deviceResources = std::make_unique<DeviceResources>();
 
-	// Create instance and retrieve compatible physical devices
-	_deviceResources->instance = pvr::utils::createInstance(this->getApplicationName());
+	// Create a Vulkan 1.0 instance and retrieve compatible physical devices
+	pvr::utils::VulkanVersion VulkanVersion(1, 0, 0);
+	_deviceResources->instance = pvr::utils::createInstance(this->getApplicationName(), VulkanVersion, pvr::utils::InstanceExtensions(VulkanVersion));
 
 	if (_deviceResources->instance->getNumPhysicalDevices() == 0)
 	{
@@ -1018,7 +1021,9 @@ pvr::Result VulkanExampleUI::initView()
 	// validate the supported swapchain image usage
 	pvrvk::ImageUsageFlags swapchainImageUsage = pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT;
 	if (pvr::utils::isImageUsageSupportedBySurface(surfaceCapabilities, pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT))
-	{ swapchainImageUsage |= pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT; } // Create the swapchain and depth stencil attachments
+	{
+		swapchainImageUsage |= pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT;
+	} // Create the swapchain and depth stencil attachments
 
 	auto swapChainCreateOutput = pvr::utils::createSwapchainRenderpassFramebuffers(_deviceResources->device, surface, getDisplayAttributes(),
 		pvr::utils::CreateSwapchainParameters().setAllocator(_deviceResources->vmaAllocator).setColorImageUsageFlags(swapchainImageUsage));
@@ -1127,7 +1132,9 @@ void VulkanExampleUI::loadSprites(pvrvk::CommandBuffer& uploadCmd)
 		if (tex.getPixelFormat().getPixelTypeId() == (uint64_t)pvr::CompressedPixelFormat::PVRTCI_2bpp_RGBA ||
 			tex.getPixelFormat().getPixelTypeId() == (uint64_t)pvr::CompressedPixelFormat::PVRTCI_4bpp_RGBA || pixelString[0] == 'a' || pixelString[1] == 'a' ||
 			pixelString[2] == 'a' || pixelString[3] == 'a')
-		{ _deviceResources->spritesDesc[i].bHasAlpha = true; }
+		{
+			_deviceResources->spritesDesc[i].bHasAlpha = true;
+		}
 		else
 		{
 			_deviceResources->spritesDesc[i].bHasAlpha = false;

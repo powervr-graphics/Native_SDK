@@ -14,7 +14,7 @@ layout(set = 1, binding = 0) uniform StaticPerMaterial
 };
 
 layout(location = 0) in mediump vec2 vTexCoord;
-layout(location = 1) in mediump vec3 vNormal;
+layout(location = 1) in highp vec3 vNormal;
 layout(location = 2) in highp vec3 vViewPosition;
 
 layout(location = 0) out mediump vec4 oAlbedo;

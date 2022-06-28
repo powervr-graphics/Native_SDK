@@ -21,7 +21,7 @@
 #define MODEL_MAT_ARRAY_SIZE 25
 
 layout (location = 0) in highp vec3 inWorldPos;
-layout (location = 1) in mediump vec3 inNormal;
+layout (location = 1) in highp vec3 inNormal;
 layout (location = 2) flat in mediump int inInstanceIndex;
 
 layout (location = 3) in mediump vec2 inTexCoords;
@@ -40,7 +40,7 @@ layout(std140, set = 0, binding = 0) uniform Dynamics
 
 layout (std140, set = 1, binding = 0) uniform UboScene
 {
-	mediump vec3 lightDir;
+	highp vec3 lightDir;
 	mediump vec3 lightColor;
 	uint numPrefilteredMipLevels;
 } uboScene;
@@ -106,11 +106,11 @@ mediump vec3 f_schlickR(mediump float cosTheta, mediump vec3 F0, mediump float r
 	return F0 + (max(vec3(1.0 - roughness), F0) - F0) * pow(1.0 - cosTheta, 5.0);
 }
 
-mediump vec3 computeLight(mediump vec3 V, mediump vec3 N, mediump vec3 F0, mediump vec3 albedo, mediump float metallic, mediump float roughness)
+mediump vec3 computeLight(highp vec3 V, mediump vec3 N, mediump vec3 F0, mediump vec3 albedo, mediump float metallic, mediump float roughness)
 {
 	// Directional light
 	// NOTE: we negate the light direction here because the direction was from the light source.
-	mediump vec3 L = normalize(-uboScene.lightDir);
+	highp vec3 L = normalize(-uboScene.lightDir);
 	// half vector
 	mediump vec3 H = normalize (V + L);
 
@@ -183,19 +183,19 @@ mediump vec3 computeEnvironmentLighting(mediump vec3 N, mediump vec3 V, mediump 
 mediump vec3 perturbNormal()
 {
 	// transform the tangent space normal into model space. 
-	mediump vec3 tangentNormal = texture(normalMap, inTexCoords).xyz * 2.0 - 1.0;
-	mediump vec3 n = normalize(inNormal);
-	mediump vec3 t = normalize(inTangent);
-	mediump vec3 b = normalize(inBitTangent);
+	highp vec3 tangentNormal = texture(normalMap, inTexCoords).xyz * 2.0 - 1.0;
+	highp vec3 n = normalize(inNormal);
+	highp vec3 t = normalize(inTangent);
+	highp vec3 b = normalize(inBitTangent);
 	return normalize(mat3(t, b, n) * tangentNormal);
 }
 
 void main()
 {
-	 mediump vec3 N = HAS_MATERIAL_TEXTURES ? perturbNormal() : normalize(inNormal);
+	 highp vec3 N = HAS_MATERIAL_TEXTURES ? perturbNormal() : normalize(inNormal);
 
 	// calculate the view direction, the direction from the surface towards the camera in world space.
-	mediump vec3 V = normalize(ubo.camPos - inWorldPos);
+	highp vec3 V = normalize(ubo.camPos - inWorldPos);
 	mediump vec3 R = -normalize(reflect(V, N));
 
 	mediump float metallic;

@@ -1,0 +1,1 @@
+..\..\..\UtilitiesSrc\PVRCarbon\Scripts\generator.py -r vkgen/registry -tp vkgen/templates -t vk/vk_bindings.h vk/vk_bindings_helper.h vk/pvrvk_vulkan_wrapper.h -o ../../include/vk_bindings.h ../../include/vk_bindings_helper.h ../PVRVk/pvrvk_vulkan_wrapper.h

@@ -18,13 +18,13 @@ layout(std140, binding = 2) uniform UboPerModel
 } uboPerModel;
 
 layout(location = 0) out highp vec3 outWorldPos;
-layout(location = 1) out mediump vec3 outNormal;
+layout(location = 1) out highp vec3 outNormal;
 layout(location = 2) flat out mediump int outInstanceIndex;
 
 // Material textures
 layout(location = 3) out mediump vec2 outTexCoord;
-layout(location = 4) out mediump vec3 outTangent;
-layout(location = 5) out mediump vec3 outBitTangent;
+layout(location = 4) out highp vec3 outTangent;
+layout(location = 5) out highp vec3 outBitTangent;
 
 void main()
 {

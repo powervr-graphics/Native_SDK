@@ -4,7 +4,7 @@ uniform mediump sampler2D sTexture;
 uniform mediump sampler2D sNormalMap;
 
 in highp vec3 worldPosition;
-in mediump vec3 vLight;
+in highp vec3 vLight;
 in mediump vec2 vTexCoord;
 in mediump float vOneOverAttenuation;
 

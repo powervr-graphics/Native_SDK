@@ -112,7 +112,9 @@ VKAPI_ATTR VkBool32 VKAPI_CALL throwOnErrorDebugReportCallback(VkDebugReportFlag
 
 	// Throw an exception if the type of VkDebugReportFlagsEXT contains the ERROR_BIT.
 	if ((flags & (VK_DEBUG_REPORT_ERROR_BIT_EXT)) != VkDebugReportFlagsEXT(0))
-	{ throw pvr::PvrError(std::string(mapDebugReportObjectTypeToString(objectType) + std::string(". VULKAN_LAYER_VALIDATION: ") + pMessage)); }
+	{
+		throw pvr::PvrError(std::string(mapDebugReportObjectTypeToString(objectType) + std::string(". VULKAN_LAYER_VALIDATION: ") + pMessage));
+	}
 	// Return false so that there is no differences in the behaviour observed with or without validation layers enabled.
 	return VK_FALSE;
 }
@@ -186,6 +188,9 @@ const std::string InstanceExtensions[] = {
 	// The VK_KHR_xlib_surface extension provides the necessary mechanism for creating a VkSurfaceKHR object which refers to an X11 Window using Xlib in addition to functions
 	// for querying the support for rendering via Xlib
 	VK_KHR_XLIB_SURFACE_EXTENSION_NAME,
+#elif defined(VK_USE_PLATFORM_XCB_KHR)
+	// The VK_KHR_xcb_surface extension provides the necassary mechanism for creating a VkSurfaceKHR object which refers to an X11 Window using xcb
+	VK_KHR_XCB_SURFACE_EXTENSION_NAME,
 #elif defined(VK_USE_PLATFORM_WAYLAND_KHR)
 	// The VK_KHR_wayland_surface extension provides the necessary mechanism for creating a VkSurfaceKHR object which refers to a Wayland wl_surface in addition to functions
 	// for querying the support for rendering to a Wayland compositor
@@ -1086,14 +1091,14 @@ void VulkanIntroducingPVRShell::createInstance()
 		minor = VK_VERSION_MINOR(supportedApiVersion);
 		patch = VK_VERSION_PATCH(supportedApiVersion);
 
-		Log(LogLevel::Information, "The function pointer for 'vkEnumerateInstanceVersion' was valid. Supported instance version: ([%d].[%d].[%d]).", major, minor, patch);
+		Log(LogLevel::Information, "The function pointer for 'vkEnumerateInstanceVersion' was valid. Supported Vulkan loader instance version: ([%d].[%d].[%d]).", major, minor, patch);
 	}
 	else
 	{
 		major = 1;
 		minor = 0;
 		patch = 0;
-		Log(LogLevel::Information, "Could not find a function pointer for 'vkEnumerateInstanceVersion'. Setting instance version to: ([%d].[%d].[%d]).", major, minor, patch);
+		Log(LogLevel::Information, "Could not find a function pointer for 'vkEnumerateInstanceVersion'. Maximum instance version : ([%d].[%d].[%d]).", major, minor, patch);
 	}
 
 	// Fill in the application info structure which can help an implementation recognise behaviour inherent to various classes of applications
@@ -1103,7 +1108,7 @@ void VulkanIntroducingPVRShell::createInstance()
 	appInfo.engineVersion = 1;
 	appInfo.pEngineName = "VulkanIntroducingPVRShell";
 	appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-	appInfo.apiVersion = VK_MAKE_VERSION(major, minor, patch);
+	appInfo.apiVersion = VK_MAKE_VERSION(1, 0, 0);
 
 	// Retrieve a list of supported instance extensions and filter them based on a set of requested instance extension to be enabled.
 	uint32_t numExtensions = 0;
@@ -1163,7 +1168,9 @@ void VulkanIntroducingPVRShell::createInstance()
 		// This code is to cover cases where VK_LAYER_LUNARG_standard_validation is requested but is not supported, where on some platforms the
 		// component layers enabled via VK_LAYER_LUNARG_standard_validation may still be supported even though VK_LAYER_LUNARG_standard_validation is not.
 		for (auto it = layerProps.begin(); !supportsStdValidation && it != layerProps.end(); ++it)
-		{ supportsStdValidation = !strcmp(it->layerName, "VK_LAYER_LUNARG_standard_validation"); }
+		{
+			supportsStdValidation = !strcmp(it->layerName, "VK_LAYER_LUNARG_standard_validation");
+		}
 		if (!supportsStdValidation)
 		{
 			for (uint32_t i = 0; stdValidationRequiredIndex == static_cast<uint32_t>(-1) && i < layerProps.size(); ++i)
@@ -1236,7 +1243,9 @@ void VulkanIntroducingPVRShell::createInstance()
 
 		// Check each of the extensions provided by the Khronos validation layer and ensure one of them is the validation features.
 		for (auto it = validationLayerInstanceExtensions.begin(); !validationFeaturesSupported && it != validationLayerInstanceExtensions.end(); it++)
-		{ validationFeaturesSupported = !strcmp(it->extensionName, "VK_EXT_validation_features"); }
+		{
+			validationFeaturesSupported = !strcmp(it->extensionName, "VK_EXT_validation_features");
+		}
 	}
 
 	// If the validation features are availble, then enable the best practices feature
@@ -1780,7 +1789,9 @@ void VulkanIntroducingPVRShell::createSwapchain()
 	swapChainInfo.imageFormat = _swapchainColorFormat;
 	swapChainInfo.preTransform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
 	if ((surfaceCaps.supportedTransforms & VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR) == 0)
-	{ throw pvr::InvalidOperationError("Vulkan Surface does not support VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR transformation"); }
+	{
+		throw pvr::InvalidOperationError("Vulkan Surface does not support VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR transformation");
+	}
 
 	VkCompositeAlphaFlagBitsKHR supportedCompositeAlphaFlags = (VkCompositeAlphaFlagBitsKHR)0;
 	if ((surfaceCaps.supportedCompositeAlpha & VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR) != 0) { supportedCompositeAlphaFlags = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR; }
@@ -2014,7 +2025,9 @@ void VulkanIntroducingPVRShell::allocateDeviceMemory(VkDevice& device, VkMemoryR
 	// resource consuming resources from the heap indicated by that memory type's heap index.
 	getMemoryTypeIndex(physicalDeviceMemoryProperties, memoryRequirements.memoryTypeBits, requiredMemFlags, optimalMemFlags, memAllocateInfo.memoryTypeIndex, outMemFlags);
 	if (memAllocateInfo.memoryTypeIndex == static_cast<uint32_t>(-1))
-	{ throw pvr::PvrError("Could not get a Memory Type Index for the specified combination specified memory bits, properties and flags"); } // Allocate the device memory.
+	{
+		throw pvr::PvrError("Could not get a Memory Type Index for the specified combination specified memory bits, properties and flags");
+	} // Allocate the device memory.
 	vulkanSuccessOrDie(_deviceVkFunctions.vkAllocateMemory(device, &memAllocateInfo, nullptr, &outMemory), "Failed to allocate buffer memory");
 }
 
@@ -2688,7 +2701,9 @@ void VulkanIntroducingPVRShell::allocateDescriptorSets()
 	{
 		// Check the physical device limit specifying the maximum number of descriptor sets using dynamic buffers.
 		if (_physicalDeviceProperties.limits.maxDescriptorSetUniformBuffersDynamic < 1)
-		{ throw pvr::PvrError("The physical device must support at least 1 dynamic uniform buffer"); }
+		{
+			throw pvr::PvrError("The physical device must support at least 1 dynamic uniform buffer");
+		}
 
 		// We use this info struct to define the info we'll be using to write the actual data to the descriptor set we created (we take info from uniform buffer).
 		descriptorSetWrites[1] = {};

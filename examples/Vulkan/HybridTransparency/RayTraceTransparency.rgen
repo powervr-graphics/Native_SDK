@@ -1,0 +1,168 @@
+#version 460
+#extension GL_EXT_ray_tracing : require
+#extension GL_EXT_scalar_block_layout : enable
+
+#define TRANSPARENCY_HIT_OFFSET 0
+#define TRANSPARENCY_MISS_INDEX 0
+#define RAY_RANGE_MIN 0.001
+#define RAY_RANGE_MAX 10000.0
+#define OIT_WEIGHT_MAX_DISTANCE 300.0
+
+struct TransparencyRayPayload
+{
+	vec4 transparencyColor;         // Where to accumulate merged samples of transparent scene elements following the weighted blended order-independent transparency implementation
+	float reveal;                   // Used to weight the contributions from all the transparent scene elements and the opaque scene element intersected in the final color
+	bool isShadowRay;               // True means shadow ray casted from every texel in the GBuffer corresponding to an opaque scene element in the direction of the emitter. False means the ray is casted from the camera towards the direction of a transparent scene element in the GBuffer, to see through it
+	int numTransparentIntersection; // Flag to count how many intersections with transparent scene elements happened
+};
+
+struct LightData
+{
+	highp vec4 lightColor;
+	highp vec4 lightPosition;
+	highp vec4 ambientColorIntensity;
+};
+
+struct Material
+{
+	mediump vec4 baseColor;              // Base color in case no texture is available to sample
+	mediump int reflectanceTextureIndex; // Reflectance texture index
+	mediump int isTransparent;           // Flag to know if the material is transparent or opaque
+	mediump float transparency;          // 0.0 means totally transparent surface, 1.0 means totally opaque (but not light blocking) surface
+};
+
+layout(location = 0) rayPayloadEXT TransparencyRayPayload rayPayload;
+layout(location = 2) rayPayloadEXT bool visiblityRayPayload;
+
+layout(set = 0, binding = 0) uniform sampler2D gBufferReflectance;
+layout(set = 0, binding = 1) uniform sampler2D gBufferNormalMaterialID;
+layout(set = 0, binding = 2) uniform sampler2D gBufferWorldPositionTransparency;
+
+layout(set = 1, binding = 0, rgba8) uniform image2D outputImage;
+
+layout(set = 2, binding = 0) uniform GlobalUBO
+{
+	highp mat4 viewMatrix;
+	highp mat4 projectionMatrix;
+	highp mat4 inverseViewProjectionMatrix;
+	highp vec4 cameraPosition;
+};
+layout(set = 2, binding = 1) uniform LightDataUBO { LightData lightData; };
+layout(set = 2, binding = 2, scalar) buffer MateralDataBufferBuffer { Material m[]; } materials;
+layout(set = 2, binding = 5) uniform accelerationStructureEXT topLevelAS;
+
+highp vec3 evaluateDiffuseMaterial(highp vec3 worldPosition, highp vec3 normal, highp vec3 reflectance, highp vec3 lightColor)
+{
+	highp vec3 originToLightPosition = lightData.lightPosition.xyz - worldPosition;
+	highp float distSquared          = dot(originToLightPosition, originToLightPosition);
+	originToLightPosition            = normalize(originToLightPosition);
+	highp float thetaLight           = clamp(0.0, 1.0, dot(normal, originToLightPosition));
+	highp vec3 Li                    = ((lightData.ambientColorIntensity.w * lightColor * thetaLight * reflectance) / distSquared);
+
+	return Li;
+}
+
+void traceRay(vec3 rayDirection, vec3 rayOrigin, float rayMaxRange)
+{
+	traceRayEXT(topLevelAS,  	 // acceleration structure
+		gl_RayFlagsOpaqueEXT,    // rayFlags
+		0xFF,                    // cullMask
+		TRANSPARENCY_HIT_OFFSET, // sbtRecordOffset
+		0,                       // sbtRecordStride
+		TRANSPARENCY_MISS_INDEX, // missIndex
+		rayOrigin,               // ray origin
+		RAY_RANGE_MIN,           // ray min range
+		rayDirection,            // ray direction
+		rayMaxRange,             // ray max range
+		0                        // payload (location = 0)
+	);
+}
+
+void main()
+{
+	const vec2 pixelCenter = vec2(gl_LaunchIDEXT.xy) + vec2(0.5);
+	const vec2 inUV        = pixelCenter / vec2(gl_LaunchSizeEXT.xy);
+	float foregroundFlag   = texture(gBufferReflectance, inUV).w;
+
+	if (foregroundFlag == 0.0)
+	{
+		// If the texel from the deferred pass does not contain any scene geometry, return;
+		imageStore(outputImage, ivec2(gl_LaunchIDEXT.xy), vec4(0.0, 0.0, 0.0, 1.0));
+		return;
+	}
+
+	vec3 reflectance               = texture(gBufferReflectance, inUV).xyz;
+	vec4 worldPositionTransparency = texture(gBufferWorldPositionTransparency, inUV);
+	vec4 normalMaterialID          = texture(gBufferNormalMaterialID, inUV);
+	vec3 normal                    = normalize(normalMaterialID.xyz);
+	int materialID                 = int(normalMaterialID.w);
+	vec3 worldPosition             = worldPositionTransparency.xyz;
+	Material mat                   = materials.m[materialID];
+	bool isTransparent             = (mat.isTransparent == 1);
+	float transparency             = mat.transparency;
+
+	rayPayload.transparencyColor          = vec4(0.0, 0.0, 0.0, 1.0);
+	rayPayload.isShadowRay                = false;
+	rayPayload.reveal                     = 1.0;
+	rayPayload.numTransparentIntersection = 0;
+
+	vec3 rayDirection;
+	vec3 rayOrigin;
+
+	if (isTransparent)
+	{
+		// Add the first transparent element following the Weighted blended order-independent transparency implementation
+		float weight                  = 1.0 - transparency;
+		rayPayload.transparencyColor  = vec4(reflectance.xyz * transparency * rayPayload.transparencyColor.w, weight);
+		rayPayload.reveal             = rayPayload.reveal * (1.0 - transparency);
+
+		// Trace a ray in the direction "camera origin" -> "sample generated during the G-Buffer pass"until opaque object / environment is reach
+		rayDirection                  = normalize(worldPosition - cameraPosition.xyz);
+		rayOrigin                     = worldPosition - normal * 0.2;
+
+		traceRay(rayDirection, rayOrigin, RAY_RANGE_MAX);
+
+		// In the first opaque ray hit / environment ray miss, the final color with the contribution of opaque and all previous transparent scene elements has been resolved and stored in rayPayload.transparencyColor.xyz
+		imageStore(outputImage, ivec2(gl_LaunchIDEXT.xy), vec4(rayPayload.transparencyColor.xyz, 0.2));
+	}
+	else
+	{
+		// Trace a ray in the direction of the emitter following the Weighted blended order-independent transparency implementation. If an opaque object is found, the contribution will be 0
+		rayPayload.transparencyColor = vec4(0.0, 0.0, 0.0, 1.0);
+		rayPayload.isShadowRay       = true;
+
+		rayOrigin                    = worldPosition + normal * 0.1;
+		rayDirection                 = lightData.lightPosition.xyz - rayOrigin;
+
+		traceRay(normalize(rayDirection), rayOrigin, length(rayDirection));
+
+		if(rayPayload.numTransparentIntersection == -1)
+		{
+			// Shadow ray either blocked by an opaque object or not blocked at all (i.e, seeing emitter)
+			imageStore(outputImage, ivec2(gl_LaunchIDEXT.xy), vec4(0.0, 0.0, 0.0, 0.0));
+		}
+		else
+		{
+			// Possible cases:
+			// 1. Shadow ray came across transparent scene elements and was not blocked by any opaque scene element: Compute the final contribution, so it is just sampled in the final deferred shading pass
+			// 2. Shadow ray is seeing direclty the emitter, mark it so direct lighting is computed in the deferred shading pass
+
+			vec4 finalColor;
+
+			if(rayPayload.numTransparentIntersection > 0)
+			{
+				// Use original Weighted blended order-independent transparency color contribution for transparencyFinal value
+				vec3 transparencyFinal = vec3(rayPayload.transparencyColor.xyz / max(rayPayload.transparencyColor.w, 1e-5));
+				finalColor.xyz         = reflectance.xyz * rayPayload.reveal + transparencyFinal * (1.0 - rayPayload.reveal);
+				finalColor.xyz         = evaluateDiffuseMaterial(worldPosition, normal, reflectance, finalColor.xyz) + lightData.ambientColorIntensity.xyz * reflectance.xyz;
+				finalColor.w           = 0.4;
+			}
+			else
+			{
+				finalColor = vec4(0.0, 0.0, 0.0, 1.0);
+			}
+
+			imageStore(outputImage, ivec2(gl_LaunchIDEXT.xy), finalColor);
+		}
+	}
+}

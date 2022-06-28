@@ -129,7 +129,7 @@ void main()
 	}
 	else
 	{
-		mediump vec3 v = particle.vVelocity;
+		highp vec3 v = particle.vVelocity;
 
 		//Simulate particle movement: 
 		// Mass is implicitly "1" just to simplify calculations.

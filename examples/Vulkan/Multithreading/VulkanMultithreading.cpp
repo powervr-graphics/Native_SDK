@@ -353,8 +353,9 @@ pvr::Result VulkanMultithreading::initView()
 {
 	_deviceResources = std::make_unique<DeviceResources>();
 
-	// Create instance and retrieve compatible physical devices
-	_deviceResources->instance = pvr::utils::createInstance(this->getApplicationName());
+	// Create a Vulkan 1.0 instance and retrieve compatible physical devices
+	pvr::utils::VulkanVersion VulkanVersion(1, 0, 0);
+	_deviceResources->instance = pvr::utils::createInstance(this->getApplicationName(), VulkanVersion, pvr::utils::InstanceExtensions(VulkanVersion));
 
 	if (_deviceResources->instance->getNumPhysicalDevices() == 0)
 	{
@@ -384,8 +385,7 @@ pvr::Result VulkanMultithreading::initView()
 	_deviceResources->vmaAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
 
 	// Create the command pool & Descriptor pool
-	_deviceResources->commandPool = _deviceResources->device->createCommandPool(
-		pvrvk::CommandPoolCreateInfo(_deviceResources->queue->getFamilyIndex(), pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT));
+	_deviceResources->commandPool = _deviceResources->device->createCommandPool(pvrvk::CommandPoolCreateInfo(_deviceResources->queue->getFamilyIndex()));
 
 	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(pvrvk::DescriptorPoolCreateInfo()
 																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 16)
@@ -407,7 +407,9 @@ pvr::Result VulkanMultithreading::initView()
 	// validate the supported swapchain image usage
 	pvrvk::ImageUsageFlags swapchainImageUsage = pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT;
 	if (pvr::utils::isImageUsageSupportedBySurface(surfaceCapabilities, pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT))
-	{ swapchainImageUsage |= pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT; } // Create the swapchain image and depth-stencil image
+	{
+		swapchainImageUsage |= pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT;
+	} // Create the swapchain image and depth-stencil image
 	auto swapChainCreateOutput = pvr::utils::createSwapchainRenderpassFramebuffers(_deviceResources->device, surface, getDisplayAttributes(),
 		pvr::utils::CreateSwapchainParameters().setAllocator(_deviceResources->vmaAllocator).setColorImageUsageFlags(swapchainImageUsage));
 
@@ -431,18 +433,22 @@ pvr::Result VulkanMultithreading::initView()
 		_deviceResources->cmdBuffers[i] = _deviceResources->commandPool->allocateCommandBuffer();
 	}
 
-	// load the vbo and ibo data
-	_deviceResources->cmdBuffers[0]->begin();
-	bool requiresCommandBufferSubmission = false;
-	pvr::utils::appendSingleBuffersFromModel(_deviceResources->device, *_scene, _deviceResources->vbos, _deviceResources->ibos, _deviceResources->cmdBuffers[0],
-		requiresCommandBufferSubmission, _deviceResources->vmaAllocator);
+	// Allocate a single use command buffer to upload resources to the GPU
+	pvrvk::CommandBuffer uploadBuffer = _deviceResources->commandPool->allocateCommandBuffer();
+	uploadBuffer->setObjectName("InitView : Resource Upload Command Buffer");
+	uploadBuffer->begin(pvrvk::CommandBufferUsageFlags::e_ONE_TIME_SUBMIT_BIT);
 
-	_deviceResources->cmdBuffers[0]->end();
+	// load the vbo and ibo data
+	bool requiresCommandBufferSubmission = false;
+	pvr::utils::appendSingleBuffersFromModel(
+		_deviceResources->device, *_scene, _deviceResources->vbos, _deviceResources->ibos, uploadBuffer, requiresCommandBufferSubmission, _deviceResources->vmaAllocator);
+
+	uploadBuffer->end();
 
 	if (requiresCommandBufferSubmission)
 	{
 		pvrvk::SubmitInfo submitInfo;
-		submitInfo.commandBuffers = &_deviceResources->cmdBuffers[0];
+		submitInfo.commandBuffers = &uploadBuffer;
 		submitInfo.numCommandBuffers = 1;
 
 		// submit the queue and wait for it to become idle

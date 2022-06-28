@@ -1414,6 +1414,19 @@ Texture readPVR(const Stream& stream)
 			// Read the number of MIP maps
 			stream.readExact(sizeof(textureFileHeader.numMipMaps), 1, &textureFileHeader.numMipMaps);
 
+			// Read the number of planes
+			std::string ycbcrFormat = to_string(textureFileHeader.pixelFormat);
+			uint32_t numplanes = 1;
+			if (ycbcrFormat.find("2P") != std::string::npos)
+			{
+				numplanes = 2;
+			}
+			else if (ycbcrFormat.find("3P") != std::string::npos)
+			{
+				numplanes = 3;
+			}
+			textureFileHeader.setNumPlanes(numplanes);
+
 			// Read the meta data size, but store it for now.
 			uint32_t tempMetaDataSize = 0;
 			stream.readExact(sizeof(tempMetaDataSize), 1, &tempMetaDataSize);
@@ -1509,7 +1522,7 @@ Texture readPVR(const Stream& stream)
 					{
 						for(uint32_t mipMap = 0; mipMap < asset.getNumMipMapLevels(); ++mipMap)
 						{
-							uint32_t surfaceSize = asset.getDataSize(mipMap, false, false) / asset.getDepth();
+							uint32_t surfaceSize = asset.getDataSize(mipMap, false, false, false) / asset.getDepth();
 							unsigned char* surfacePointer = asset.getDataPointer(mipMap, surface, face) + depth * surfaceSize;
 
 							// Write each surface, one at a time

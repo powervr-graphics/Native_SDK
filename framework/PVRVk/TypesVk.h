@@ -81,7 +81,6 @@ enum Enum
 	MaxSwapChains = 4, //!< Max swapchain supported
 	MaxSpecialisationInfos = 7, //!< Max specialisation infos suported by the pipeline
 	MaxSpecialisationInfoDataSize = 1024, //!< Max specialisation info data size suported by the pipeline
-	MaxSpecialisationMapEntries = 4, //!< Max specialisation map entries suported by the pipeline
 	MaxVertexAttributes = 8, //!< Max Vertex attribute supported by the pipeline
 	MaxVertexBindings = 8, //!< Max Vertex bindings supported by the pipeline
 };
@@ -967,6 +966,16 @@ public:
 		// Making this current extension the new base pointer
 		if (_lastRequestedExtensionFeature) { extensionPtr->pNext = _lastRequestedExtensionFeature; }
 		_lastRequestedExtensionFeature = extensionPtr;
+	}
+
+	template<class T>
+	void addExtensionFeatureVk(T* extension)
+	{
+		// Get the structure type from the sType member
+		VkStructureType type = static_cast<VkStructureType>(extension->sType);
+
+		// Use this structure type to make a call to the above function
+		addExtensionFeatureVk(type, extension);
 	}
 
 protected:

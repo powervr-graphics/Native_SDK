@@ -13,7 +13,7 @@ layout(std140, binding = 0) uniform DynamicsPerPointLight
 };
 
 layout(location = 0) out highp vec3 vPositionVS;
-layout(location = 1) out mediump vec3 vViewDirVS;
+layout(location = 1) out highp vec3 vViewDirVS;
 
 void main()
 {

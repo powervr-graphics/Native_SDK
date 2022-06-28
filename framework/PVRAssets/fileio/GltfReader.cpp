@@ -8,7 +8,7 @@
 
 #pragma warning(push)
 #pragma warning(disable : 4456 4189 4774)
-#include "../../../external/tinygltf/tiny_gltf.h"
+#include "tiny_gltf.h"
 #pragma warning(pop)
 #ifdef ANDROID
 #include "PVRCore/Android/AndroidAssetStream.h"
@@ -228,8 +228,7 @@ void parseAllAnimation(const tinygltf::Model& tinyModel, pvr::assets::Model& mod
 						for (uint32_t q = 0; q < tinyOutAccessor.count; ++q)
 						{
 							const std::size_t stride = tinyGltf_getTypeNumComponents(tinyOutAccessor.type) * tinyGltf_getComponentTypeToDataType(tinyOutAccessor.componentType).second;
-							const float* data =
-								(const float*)(tinyOutBuffer.data.data() + tinyOutAccessor.byteOffset + tinyOutBufferView.byteOffset + (q * stride));
+							const float* data = (const float*)(tinyOutBuffer.data.data() + tinyOutAccessor.byteOffset + tinyOutBufferView.byteOffset + (q * stride));
 
 							keyFrameData.rotate[q] = glm::quat(data[3], data[0], data[1], data[2]); // wxyz
 							keyFrameData.rotate[q] = glm::normalize(keyFrameData.rotate[q]);
@@ -525,6 +524,7 @@ enum class VertexAttributeIndex
 	UV0,
 	UV1,
 	Tangent,
+	Color,
 	BoneIndices,
 	BoneWeights,
 	Count,
@@ -573,6 +573,7 @@ void parseAllMesh(const tinygltf::Model& tinyModel, pvr::assets::Model& asset, s
 			bool texAttrib1Found = false;
 			bool normalAttribFound = false;
 			bool tangentAttribFound = false;
+			bool colorAttribFound = false;
 			bool boneIndicesAttribFound = false;
 			bool boneWeightsAttribFound = false;
 
@@ -627,6 +628,11 @@ void parseAllMesh(const tinygltf::Model& tinyModel, pvr::assets::Model& asset, s
 					attribIndex = VertexAttributeIndex::Tangent;
 					tangentAttribFound = true;
 				}
+				else if (!colorAttribFound && attrib.first == "COLOR")
+				{
+					attribIndex = VertexAttributeIndex::Color;
+					colorAttribFound = true;
+				}
 				gltfAttributes[static_cast<uint32_t>(attribIndex)].data = tinyBuffer.data.data() + tinyBufferView.byteOffset + tinyAccessor.byteOffset;
 				gltfAttributes[static_cast<uint32_t>(attribIndex)].strideInBytes = tinyBufferView.byteStride
 					? static_cast<uint32_t>(tinyBufferView.byteStride)
@@ -639,7 +645,9 @@ void parseAllMesh(const tinygltf::Model& tinyModel, pvr::assets::Model& asset, s
 
 				if (gltfAttributes[static_cast<uint32_t>(attribIndex)].strideInBytes >
 					(gltfAttributes[static_cast<uint32_t>(attribIndex)].N * gltfAttributes[static_cast<uint32_t>(attribIndex)].dataType.second))
-				{ isInterleaved = true; }
+				{
+					isInterleaved = true;
+				}
 			}
 
 			totalBufferSizeInBytes = dataAttribsStride * numvertices;
@@ -731,7 +739,7 @@ public:
 	bool loadExternalFile(std::vector<unsigned char>* out, std::string* err, const std::string& filename, const std::string& basedir, size_t reqBytes, bool checkSize)
 	{
 		(void)basedir; // UNREFERENCE_VARIABLE
-		auto stream = assetProvider->getAssetStream(filename); // basedir + std::string(1, pvr::FilePath::getDirectorySeparator()) + filename todo investigate. e.g. results in //damagedHelmet.bin
+		auto stream = assetProvider->getAssetStream(basedir == "" ? filename : basedir + std::string(1, pvr::FilePath::getDirectorySeparator()) + filename);
 		if (!stream) { return false; }
 		const uint32_t sz = static_cast<uint32_t>(stream->getSize());
 		out->resize(sz);
@@ -810,7 +818,7 @@ void readGLTF(const ::pvr::Stream& stream, const IAssetProvider& assetProvider, 
 	asset.allocMeshNodes(numMeshNodes);
 	asset.allocCameras(numCameraNodes);
 	asset.allocLights(numLightNodes);
-	
+
 	const uint32_t numAssetNodes = numMeshNodes + numLightNodes + numCameraNodes;
 	asset.allocNodes(numNodes + numAssetNodes);
 
@@ -821,9 +829,6 @@ void readGLTF(const ::pvr::Stream& stream, const IAssetProvider& assetProvider, 
 	parseAllMesh(tinyModel, asset, meshPrimitives);
 
 	uint32_t cameraNodeIndex = 0;
-
-	// Cameras
-	parseAllCameras(tinyModel, asset);
 
 	// parse the nodes
 	uint32_t nodeIndex = numAssetNodes;
@@ -836,7 +841,7 @@ void readGLTF(const ::pvr::Stream& stream, const IAssetProvider& assetProvider, 
 		const tinygltf::Scene& tinyScene = tinyModel.scenes[scene];
 		for (uint32_t rootNode = 0; rootNode < tinyScene.nodes.size(); ++rootNode)
 		{
-			parseNode(tinyModel, tinyScene.nodes[rootNode], meshPrimitives, nodeIndex, -1, meshNodeIndex, cameraNodeIndex, asset, nodeMappings, processedNodes); 
+			parseNode(tinyModel, tinyScene.nodes[rootNode], meshPrimitives, nodeIndex, -1, meshNodeIndex, cameraNodeIndex, asset, nodeMappings, processedNodes);
 		}
 	}
 
@@ -849,6 +854,8 @@ void readGLTF(const ::pvr::Stream& stream, const IAssetProvider& assetProvider, 
 	// Skins
 	parseAllSkins(tinyModel, asset, nodeMappings);
 
+	// Cameras
+	parseAllCameras(tinyModel, asset);
 } // namespace assets
 } // namespace assets
 } // namespace pvr

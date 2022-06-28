@@ -208,6 +208,29 @@ public:
 	void init(uint32_t width, uint32_t height, bool fullscreen, const pvrvk::RenderPass& renderpass, uint32_t subpass, bool isFrameBufferSrgb, pvrvk::CommandPool& commandPool,
 		pvrvk::Queue& queue, bool createDefaultLogo = true, bool createDefaultTitle = true, bool createDefaultFont = true, uint32_t maxNumInstances = 64, uint32_t maxNumSprites = 64);
 
+	/// <summary> Initialize the UIRenderer with a graphics context. MUST BE called exactly once before use, after a valid graphics context is available (usually, during initView).
+	/// Allows the user to override the default dont easily</summary>
+	/// <param name="width">The width of the screen used for rendering.</param>
+	/// <param name="height">The height of the screen used for rendering</param>
+	/// <param name="fullscreen">Indicates whether the rendering is occuring in full screen mode.</param>
+	/// <param name="renderpass">A renderpass to use for this UIRenderer</param>
+	/// <param name="subpass">The subpass to use for this UIRenderer</param>
+	/// <param name="isFrameBufferSrgb">Specifies whether the render target is sRGB format. If not then a gamma correction is performed</param>
+	/// <param name="commandPool">The pvrvk::CommandPool object to use for allocating command buffers</param>
+	/// <param name="queue">The pvrvk::Queue object to use for submitting command buffers</param>
+	/// <param name="fontView">Valid Image view for the default font's texture atlas</param>
+	/// <param name="fontView">The texture header in a pvr style format</param>
+	/// <param name="fontSampler">Valid sampler for the default font</param>
+	/// <param name="createDefaultLogo">Specifies whether a default logo should be initialised</param>
+	/// <param name="createDefaultTitle">Specifies whether a default title should be initialised</param>
+	/// <param name="maxNumInstances"> maximum number of sprite instances to be allocated from this uirenderer.
+	/// it must be atleast maxNumSprites becasue each sprites is an instance on its own.</param>
+	/// <param name="maxNumSprites"> maximum number of renderable sprites (Text and Images)
+	/// to be allocated from this uirenderer</param>
+	void init(uint32_t width, uint32_t height, bool fullscreen, const pvrvk::RenderPass& renderpass, uint32_t subpass, bool isFrameBufferSrgb, pvrvk::CommandPool& commandPool,
+		pvrvk::Queue& queue, const pvrvk::ImageView& fontView, const pvr::TextureHeader& textureHeader , const pvrvk::Sampler& fontSampler = pvrvk::Sampler(), bool createDefaultLogo = true, bool createDefaultTitle = true,
+		uint32_t maxNumInstances = 64, uint32_t maxNumSprites = 64);
+
 	/// <summary>Destructor for the UIRenderer which will release all resources currently in use.</summary>
 	~UIRenderer()
 	{

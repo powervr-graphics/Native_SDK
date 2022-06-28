@@ -15,7 +15,7 @@ layout(std140, set = 0, binding = 0) uniform Dynamic
    highp mat3 MVITMatrix;
 };
 
-layout(location = 0)out mediump vec3 ViewNormal;
+layout(location = 0)out highp vec3 ViewNormal;
 layout(location = 1)out mediump vec2 TexCoord;
 
 void main()

@@ -548,8 +548,9 @@ pvr::Result VulkanDeferredShading::initView()
 {
 	_deviceResources = std::make_unique<DeviceResources>();
 
-	// Create instance and retrieve compatible physical devices
-	_deviceResources->instance = pvr::utils::createInstance(this->getApplicationName());
+	// Create Vulkan 1.0 instance and retrieve compatible physical devices
+	pvr::utils::VulkanVersion VulkanVersion(1, 0, 0);
+	_deviceResources->instance = pvr::utils::createInstance(this->getApplicationName(), VulkanVersion, pvr::utils::InstanceExtensions(VulkanVersion));
 
 	if (_deviceResources->instance->getNumPhysicalDevices() == 0)
 	{
@@ -581,7 +582,9 @@ pvr::Result VulkanDeferredShading::initView()
 	// validate the supported swapchain image usage
 	pvrvk::ImageUsageFlags swapchainImageUsage = pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT;
 	if (pvr::utils::isImageUsageSupportedBySurface(surfaceCapabilities, pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT))
-	{ swapchainImageUsage |= pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT; } // create the swapchain
+	{
+		swapchainImageUsage |= pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT;
+	} // create the swapchain
 
 	// We do not support automatic MSAA for this demo.
 	if (getDisplayAttributes().aaSamples > 1)
@@ -589,7 +592,7 @@ pvr::Result VulkanDeferredShading::initView()
 		Log(LogLevel::Warning, "Full Screen Multisample Antialiasing requested, but not supported for this demo's configuration.");
 		getDisplayAttributes().aaSamples = 1;
 	}
-	
+
 	// Create the Swapchain
 	_deviceResources->swapchain = pvr::utils::createSwapchain(_deviceResources->device, surface, getDisplayAttributes(), swapchainImageUsage);
 	// Get the number of swap images
@@ -634,8 +637,7 @@ pvr::Result VulkanDeferredShading::initView()
 	Log(LogLevel::Information, "On-screen Framebuffer dimensions: %d x %d\n", _windowWidth, _windowHeight);
 
 	// create the command pool
-	_deviceResources->commandPool =
-		_deviceResources->device->createCommandPool(pvrvk::CommandPoolCreateInfo(queueAccessInfo.familyId, pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT));
+	_deviceResources->commandPool = _deviceResources->device->createCommandPool(pvrvk::CommandPoolCreateInfo(queueAccessInfo.familyId));
 
 	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(pvrvk::DescriptorPoolCreateInfo()
 																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 48)
@@ -676,16 +678,20 @@ pvr::Result VulkanDeferredShading::initView()
 	// Create static scene wide descriptor set
 	createStaticSceneDescriptorSet();
 
-	_deviceResources->cmdBufferMain[0]->begin();
+	// Create a one time command buffer used to upload resources to the GPU
+	pvrvk::CommandBuffer uploadBuffer = _deviceResources->commandPool->allocateCommandBuffer();
+	uploadBuffer->setObjectName("InitView : Resource Upload Command Buffer");
+	uploadBuffer->begin(pvrvk::CommandBufferUsageFlags::e_ONE_TIME_SUBMIT_BIT);
+
 	// Create the descriptor sets used for the GBuffer pass
-	createMaterialsAndDescriptorSets(_deviceResources->cmdBufferMain[0]);
+	createMaterialsAndDescriptorSets(uploadBuffer);
 
 	//  Load objects from the scene into VBOs
-	loadVbos(_deviceResources->cmdBufferMain[0]);
+	loadVbos(uploadBuffer);
 
-	_deviceResources->cmdBufferMain[0]->end();
+	uploadBuffer->end();
 	pvrvk::SubmitInfo submitInfo;
-	submitInfo.commandBuffers = &_deviceResources->cmdBufferMain[0];
+	submitInfo.commandBuffers = &uploadBuffer;
 	submitInfo.numCommandBuffers = 1;
 	_deviceResources->queue->submit(&submitInfo, 1);
 	_deviceResources->queue->waitIdle(); // wait
@@ -1815,7 +1821,9 @@ void VulkanDeferredShading::uploadStaticSceneData()
 
 	// if the memory property flags used by the buffers' device memory do not contain e_HOST_COHERENT_BIT then we must flush the memory
 	if (static_cast<uint32_t>(_deviceResources->farClipDistanceBuffer->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
-	{ _deviceResources->farClipDistanceBuffer->getDeviceMemory()->flushRange(0, _deviceResources->farClipDistanceBufferView.getDynamicSliceSize()); }
+	{
+		_deviceResources->farClipDistanceBuffer->getDeviceMemory()->flushRange(0, _deviceResources->farClipDistanceBufferView.getDynamicSliceSize());
+	}
 }
 
 /// <summary>Upload the static data to the buffers which do not change per frame.</summary>
@@ -1830,7 +1838,9 @@ void VulkanDeferredShading::uploadStaticModelData()
 
 	// if the memory property flags used by the buffers' device memory do not contain e_HOST_COHERENT_BIT then we must flush the memory
 	if (static_cast<uint32_t>(_deviceResources->modelMaterialBuffer->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
-	{ _deviceResources->modelMaterialBuffer->getDeviceMemory()->flushRange(0, _deviceResources->modelMaterialBufferView.getSize()); }
+	{
+		_deviceResources->modelMaterialBuffer->getDeviceMemory()->flushRange(0, _deviceResources->modelMaterialBufferView.getSize());
+	}
 }
 
 /// <summary>Upload the static data to the buffers which do not change per frame.</summary>
@@ -1847,7 +1857,9 @@ void VulkanDeferredShading::uploadStaticDirectionalLightData()
 
 	// if the memory property flags used by the buffers' device memory do not contain e_HOST_COHERENT_BIT then we must flush the memory
 	if (static_cast<uint32_t>(_deviceResources->staticDirectionalLightBuffer->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
-	{ _deviceResources->staticDirectionalLightBuffer->getDeviceMemory()->flushRange(0, _deviceResources->staticDirectionalLightBufferView.getSize()); }
+	{
+		_deviceResources->staticDirectionalLightBuffer->getDeviceMemory()->flushRange(0, _deviceResources->staticDirectionalLightBufferView.getSize());
+	}
 }
 
 /// <summary>Upload the static data to the buffers which do not change per frame.</summary>
@@ -1868,7 +1880,9 @@ void VulkanDeferredShading::uploadStaticPointLightData()
 
 	// if the memory property flags used by the buffers' device memory do not contain e_HOST_COHERENT_BIT then we must flush the memory
 	if (static_cast<uint32_t>(_deviceResources->staticPointLightBuffer->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
-	{ _deviceResources->staticPointLightBuffer->getDeviceMemory()->flushRange(0, _deviceResources->staticPointLightBufferView.getSize()); }
+	{
+		_deviceResources->staticPointLightBuffer->getDeviceMemory()->flushRange(0, _deviceResources->staticPointLightBufferView.getSize());
+	}
 }
 
 /// <summary>Upload the static data to the buffers which do not change per frame.</summary>
@@ -1958,7 +1972,9 @@ void VulkanDeferredShading::updateDynamicSceneData()
 	}
 
 	for (; pointLight < numSceneLights + PointLightConfiguration::NumProceduralPointLights; ++pointLight)
-	{ updateProceduralPointLight(pass.pointLightPasses.initialData[pointLight], _deviceResources->renderInfo.pointLightPasses.lightProperties[pointLight], false); }
+	{
+		updateProceduralPointLight(pass.pointLightPasses.initialData[pointLight], _deviceResources->renderInfo.pointLightPasses.lightProperties[pointLight], false);
+	}
 	{
 		// directional Light data
 		for (uint32_t i = 0; i < _numberOfDirectionalLights; ++i)
@@ -2029,13 +2045,21 @@ void VulkanDeferredShading::updateProceduralPointLight(PointLightPasses::Initial
 	{
 		float dt = static_cast<float>(std::min(getFrameTime(), uint64_t(30)));
 		if (data.distance < PointLightConfiguration::LightMinDistance)
-		{ data.axial_vel = glm::abs(data.axial_vel) + (PointLightConfiguration::LightMaxAxialVelocity * dt * .001f); }
+		{
+			data.axial_vel = glm::abs(data.axial_vel) + (PointLightConfiguration::LightMaxAxialVelocity * dt * .001f);
+		}
 		if (data.distance > PointLightConfiguration::LightMaxDistance)
-		{ data.axial_vel = -glm::abs(data.axial_vel) - (PointLightConfiguration::LightMaxAxialVelocity * dt * .001f); }
+		{
+			data.axial_vel = -glm::abs(data.axial_vel) - (PointLightConfiguration::LightMaxAxialVelocity * dt * .001f);
+		}
 		if (data.height < PointLightConfiguration::LightMinHeight)
-		{ data.vertical_vel = glm::abs(data.vertical_vel) + (PointLightConfiguration::LightMaxAxialVelocity * dt * .001f); }
+		{
+			data.vertical_vel = glm::abs(data.vertical_vel) + (PointLightConfiguration::LightMaxAxialVelocity * dt * .001f);
+		}
 		if (data.height > PointLightConfiguration::LightMaxHeight)
-		{ data.vertical_vel = -glm::abs(data.vertical_vel) - (PointLightConfiguration::LightMaxAxialVelocity * dt * .001f); }
+		{
+			data.vertical_vel = -glm::abs(data.vertical_vel) - (PointLightConfiguration::LightMaxAxialVelocity * dt * .001f);
+		}
 
 		data.axial_vel += pvr::randomrange(-PointLightConfiguration::LightAxialVelocityChange, PointLightConfiguration::LightAxialVelocityChange) * dt;
 
@@ -2193,7 +2217,9 @@ void VulkanDeferredShading::allocateLights()
 	_deviceResources->renderInfo.pointLightPasses.initialData.resize(countPoint);
 
 	for (uint32_t i = countPoint - PointLightConfiguration::NumProceduralPointLights; i < countPoint; ++i)
-	{ updateProceduralPointLight(_deviceResources->renderInfo.pointLightPasses.initialData[i], _deviceResources->renderInfo.pointLightPasses.lightProperties[i], true); }
+	{
+		updateProceduralPointLight(_deviceResources->renderInfo.pointLightPasses.initialData[i], _deviceResources->renderInfo.pointLightPasses.lightProperties[i], true);
+	}
 }
 
 /// <summary>Record all the secondary command buffers.</summary>
@@ -2201,7 +2227,9 @@ void VulkanDeferredShading::recordSecondaryCommandBuffers()
 {
 	pvrvk::Rect2D renderArea(0, 0, _framebufferWidth, _framebufferHeight);
 	if ((_framebufferWidth != _windowWidth) || (_framebufferHeight != _windowHeight))
-	{ renderArea = pvrvk::Rect2D(_viewportOffsets[0], _viewportOffsets[1], _framebufferWidth, _framebufferHeight); }
+	{
+		renderArea = pvrvk::Rect2D(_viewportOffsets[0], _viewportOffsets[1], _framebufferWidth, _framebufferHeight);
+	}
 
 	pvrvk::ClearValue clearStenciLValue(pvrvk::ClearValue::createStencilClearValue(0));
 

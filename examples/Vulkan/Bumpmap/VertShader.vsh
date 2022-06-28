@@ -12,7 +12,7 @@ layout(location = TANGENT_ARRAY) in mediump vec3 inTangent;
 layout (set = 1, binding = 0)uniform PerMesh
 {
 	highp mat4 MVPMatrix; // model view projection transformation
-	mediump vec3 LightDirModel;	// Light position (point light) in model space
+	highp vec3 LightDirModel;	// Light position (point light) in model space
 };
 layout(location = 0) out mediump vec3 LightVec;
 layout(location = 1) out mediump vec2 TexCoord;

@@ -4,12 +4,12 @@
 #define ONE_OVER_PI (1.0 / 3.1415926535897932384626433832795)
 
 layout(location = 0) in highp vec3 inWorldPos;
-layout(location = 1) in mediump vec3 inNormal;
+layout(location = 1) in highp vec3 inNormal;
 layout(location = 2) flat in mediump int inInstanceIndex;
 
 layout(location = 3) in mediump vec2 inTexCoord;
-layout(location = 4) in mediump vec3 inTangent;
-layout(location = 5) in mediump vec3 inBitTangent;
+layout(location = 4) in highp vec3 inTangent;
+layout(location = 5) in highp vec3 inBitTangent;
 
 #ifdef MATERIAL_TEXTURES
 layout(binding = 0) uniform mediump sampler2D albedoMap;
@@ -27,7 +27,7 @@ layout(location = 0) out mediump vec4 outColor;
 
 layout(std140, binding = 0) uniform UboStatic
 {
-	mediump vec3 lightDir;
+	highp vec3 lightDir;
 	mediump vec3 lightColor;
 	uint numPrefilteredMipLevels;
 } uboStatic;
@@ -97,11 +97,11 @@ mediump vec3 f_schlickR(mediump float cosTheta, mediump vec3 F0, mediump float r
 	return F0 + (max(vec3(1.0 - roughness), F0) - F0) * pow(1.0 - cosTheta, 5.0);
 }
 
-mediump vec3 computeLight(mediump vec3 V, mediump vec3 N, mediump vec3 F0, mediump vec3 albedo, mediump float metallic, mediump float roughness)
+mediump vec3 computeLight(highp vec3 V, mediump vec3 N, mediump vec3 F0, mediump vec3 albedo, mediump float metallic, mediump float roughness)
 {
 	// Directional light
 	// NOTE: we negate the light direction here because the direction was from the light source.
-	mediump vec3 L = normalize(-uboStatic.lightDir);
+	highp vec3 L = normalize(-uboStatic.lightDir);
 	// half vector
 	mediump vec3 H = normalize (V + L);
 
@@ -176,10 +176,10 @@ mediump vec3 computeEnvironmentLighting(mediump vec3 N, mediump vec3 V, mediump 
 mediump vec3 perturbNormal()
 {
 	// transform the tangent space normal into model space. 
-	mediump vec3 tangentNormal = texture(normalMap, inTexCoord).xyz * 2.0 - 1.0;
-	mediump vec3 n = normalize(inNormal);
-	mediump vec3 t = normalize(inTangent);
-	mediump vec3 b = normalize(inBitTangent);
+	highp vec3 tangentNormal = texture(normalMap, inTexCoord).xyz * 2.0 - 1.0;
+	highp vec3 n = normalize(inNormal);
+	highp vec3 t = normalize(inTangent);
+	highp vec3 b = normalize(inBitTangent);
 	return normalize(mat3(t, b, n) * tangentNormal);
 }
 #endif
@@ -187,12 +187,12 @@ mediump vec3 perturbNormal()
 void main()
 {
 #ifdef NORMAL_MAP
-	mediump vec3 N = perturbNormal();    
+	highp vec3 N = perturbNormal();    
 #else
-	mediump vec3 N = normalize(inNormal);
+	highp vec3 N = normalize(inNormal);
 #endif
 	// calculate the view direction, the direction from the surface towards the camera in world space.
-	mediump vec3 V = normalize(uboDynamic.camPos - inWorldPos);
+	highp vec3 V = normalize(uboDynamic.camPos - inWorldPos);
 
 	// calculate the reflection vector. The reflection vector is a reflected View vector on the surface.
 	mediump vec3 R = -normalize(reflect(V, N));

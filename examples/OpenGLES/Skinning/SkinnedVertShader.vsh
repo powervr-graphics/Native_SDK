@@ -61,11 +61,11 @@ void main()
 	mediump ivec4 boneIndex = ivec4(inBoneIndex);
 	mediump vec4 boneWeights = inBoneWeights;
 
-	mediump vec3 worldTangent = vec3(0, 0, 0);
-	mediump vec3 worldBiNormal = vec3(0, 0, 0);
+	highp vec3 worldTangent = vec3(0, 0, 0);
+	highp vec3 worldBiNormal = vec3(0, 0, 0);
 
 	highp vec4 position = vec4(0, 0, 0, 0);
-	mediump vec3 worldNormal = vec3(0, 0, 0);
+	highp vec3 worldNormal = vec3(0, 0, 0);
 
 	for (mediump int i = 0; i < 4; ++i)
 	{
@@ -86,7 +86,7 @@ void main()
 	gl_Position = ViewProjMatrix * position;
 
 	// lighting
-	mediump vec3 tmpLightDir = LightPos - position.xyz;
+	highp vec3 tmpLightDir = LightPos - position.xyz;
 	mediump float light_distance = length(tmpLightDir);
 	tmpLightDir /= light_distance;
 

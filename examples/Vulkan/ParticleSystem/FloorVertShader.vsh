@@ -3,8 +3,8 @@
 layout(location = 0) in highp vec3 inVertex;
 layout(location = 1) in mediump vec3 inNormal;
 
-layout(location = 0) out mediump vec3 vNormal;
-layout(location = 1) out mediump vec3 vLightDirection;
+layout(location = 0) out highp vec3 vNormal;
+layout(location = 1) out highp vec3 vLightDirection;
 
 layout (std140, set = 0, binding = 0) uniform DynamicModel
 {

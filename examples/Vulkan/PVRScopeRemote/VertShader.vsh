@@ -14,7 +14,7 @@ layout(std140, set = 0, binding = 0) uniform UboMVP
 	highp mat3 mVITMatrix;
 };
 
-layout(location = 0) out mediump vec3 viewNormal;
+layout(location = 0) out highp vec3 viewNormal;
 layout(location = 1) out mediump vec2 texCoord;
 
 void main()

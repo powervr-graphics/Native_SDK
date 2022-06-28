@@ -28,7 +28,7 @@ layout(input_attachment_index = 2, set = 2, binding = 2) uniform highp subpassIn
 layout(location = 0) out mediump vec4 oColorFbo;
 
 layout(location = 0) in highp vec3 vPositionVS;
-layout(location = 1) in mediump vec3 vViewDirVS;
+layout(location = 1) in highp vec3 vViewDirVS;
 
 void main()
 {		
@@ -49,7 +49,7 @@ void main()
 	//
 	// Calculate view space light direction
 	//
-	mediump vec3 lightDirection = vViewPosition.xyz - positionVS;
+	highp vec3 lightDirection = vViewPosition.xyz - positionVS;
 	mediump float lightDistance = length(lightDirection);
 	lightDirection /= lightDistance;
 

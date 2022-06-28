@@ -6,9 +6,9 @@
 #define TANGENT_ARRAY	3
 
 layout(location = VERTEX_ARRAY) in highp vec3 inVertex;
-layout(location = NORMAL_ARRAY) in mediump vec3 inNormal;
+layout(location = NORMAL_ARRAY) in highp vec3 inNormal;
 layout(location = TEXCOORD_ARRAY) in mediump vec2 inTexCoord;
-layout(location = TANGENT_ARRAY) in mediump vec3 inTangent;
+layout(location = TANGENT_ARRAY) in highp vec3 inTangent;
 
 layout(set = 0, binding = 3) uniform PerMesh
 {

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.18)
 project(OpenGLESMultithreading)
 if(IOS)
 	message("Skipping OpenGLESMultithreading : Not supported on iOS")

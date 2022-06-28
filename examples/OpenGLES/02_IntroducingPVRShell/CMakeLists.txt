@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.18)
 project(OpenGLESIntroducingPVRShell)
 
 add_subdirectory(../../.. ${CMAKE_CURRENT_BINARY_DIR}/sdk)

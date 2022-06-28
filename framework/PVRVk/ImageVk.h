@@ -348,7 +348,9 @@ public:
 	{
 		if ((_createInfo.getFlags() &
 				(pvrvk::ImageCreateFlags::e_SPARSE_ALIASED_BIT | pvrvk::ImageCreateFlags::e_SPARSE_BINDING_BIT | pvrvk::ImageCreateFlags::e_SPARSE_RESIDENCY_BIT)) != 0)
-		{ throw ErrorValidationFailedEXT("Cannot bind memory: Image is Sparce so cannot have bound memory."); }
+		{
+			throw ErrorValidationFailedEXT("Cannot bind memory: Image is Sparce so cannot have bound memory.");
+		}
 		if (_memory) { throw ErrorValidationFailedEXT("Cannot bind memory: A memory block is already bound"); }
 		vkThrowIfFailed(getDevice()->getVkBindings().vkBindImageMemory(getDevice()->getVkHandle(), getVkHandle(), memory->getVkHandle(), offset),
 			"Failed to bind a memory block to this image");
@@ -420,13 +422,14 @@ public:
 	/// <summary>Constructor (zero initialization)</summary>
 	ImageViewCreateInfo()
 		: _viewType(ImageViewType::e_2D), _format(Format::e_UNDEFINED), _components(ComponentMapping()), _subresourceRange(ImageSubresourceRange()),
-		  _flags(ImageViewCreateFlags::e_NONE)
+		  _flags(ImageViewCreateFlags::e_NONE), _pNext(nullptr)
 	{}
 
 	/// <summary>Constructor</summary>
 	/// <param name="image">Image to use in the ImageView</param>
 	/// <param name="components">Specifies a set of remappings of color components</param>
-	ImageViewCreateInfo(const Image& image, const ComponentMapping& components = ComponentMapping()) : _image(image), _components(components), _flags(ImageViewCreateFlags::e_NONE)
+	ImageViewCreateInfo(const Image& image, const ComponentMapping& components = ComponentMapping(), const void* pNext = nullptr)
+		: _image(image), _components(components), _flags(ImageViewCreateFlags::e_NONE), _pNext(pNext)
 	{
 		_viewType = convertToPVRVkImageViewType(_image->getImageType(), _image->getNumArrayLayers(), _image->isCubeMap());
 		_format = _image->getFormat();
@@ -441,8 +444,8 @@ public:
 	/// <param name="components">Specifies a set of remappings of color components</param>
 	/// <param name="flags">A set of pvrvk::ImageViewCreateFlags controlling how the ImageView will be created</param>
 	ImageViewCreateInfo(const Image& image, pvrvk::ImageViewType viewType, pvrvk::Format format, const ImageSubresourceRange& subresourceRange,
-		const ComponentMapping& components = ComponentMapping(), ImageViewCreateFlags flags = ImageViewCreateFlags::e_NONE)
-		: _image(image), _viewType(viewType), _format(format), _components(components), _subresourceRange(subresourceRange), _flags(flags)
+		const ComponentMapping& components = ComponentMapping(), ImageViewCreateFlags flags = ImageViewCreateFlags::e_NONE, const void* pNext = nullptr)
+		: _image(image), _viewType(viewType), _format(format), _components(components), _subresourceRange(subresourceRange), _flags(flags), _pNext(pNext)
 	{}
 
 	/// <summary>Get Image view creation Flags</summary>
@@ -484,6 +487,12 @@ public:
 	/// <summary>Set PVRVk Image view creation sub resource range</summary>
 	/// <param name="subresourceRange">Selects the set of mipmap levels and array layers to be accessible to the view</param>
 	inline void setSubresourceRange(const ImageSubresourceRange& subresourceRange) { this->_subresourceRange = subresourceRange; }
+	/// <summary>Get pNext chain for samplers</summary>
+	/// <returns>Get pNext chain for samplers</returns>
+	inline const void* getpNext() const { return _pNext; }
+	/// <summary>Set pNext chain for samplers</summary>
+	/// <param name="subresourceRange">Set pNext chain for samplers</param>
+	inline void setpNext(const void* pNext) { this->_pNext = pNext; }
 
 private:
 	/// <summary>The image to use in the image view</summary>
@@ -498,6 +507,8 @@ private:
 	ImageSubresourceRange _subresourceRange;
 	/// <summary>Flags to use for creating the image view</summary>
 	ImageViewCreateFlags _flags;
+	/// <summary>pNext chain for samplers</summary>
+	const void* _pNext;
 };
 
 namespace impl {

@@ -14,9 +14,9 @@ buildscript {
 		jcenter()
 	}
 
-	// Adds the Android plugin for Gradle version 3.5.0 as a classpath dependency
+	// Adds the Android plugin for Gradle as a classpath dependency
 	dependencies {
-		classpath 'com.android.tools.build:gradle:3.5.3'
+		classpath 'com.android.tools.build:gradle:4.1.2'
 	}
 }
 
@@ -32,11 +32,11 @@ android {
 	compileSdkVersion 29
 	defaultConfig {
 		minSdkVersion 21
-		targetSdkVersion 26
+		targetSdkVersion 29
 		externalNativeBuild {
 			cmake {
 				cppFlags "-fexceptions"
-				arguments "-DANDROID_STL=c++_static", "-DPVR_PREBUILT_DEPENDENCIES=ON"
+				arguments "-DANDROID_STL=c++_static"
 			}
 		}
 		ndk
@@ -47,7 +47,7 @@ android {
 	externalNativeBuild {
 		cmake {
 			path "../CMakeLists.txt"
-			version "3.10.0+"
+			version "3.18.0+"
 		}
 	}
 }

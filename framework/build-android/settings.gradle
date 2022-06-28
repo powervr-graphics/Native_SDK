@@ -1,0 +1,53 @@
+rootProject.name='PowerVR_SDK Framework'
+
+
+// Set the paths for the external projects used by PVRCore
+include('glm')
+project(':glm').projectDir=file('../../external/glm/build-android')
+include('pugixml')
+project(':pugixml').projectDir=file('../../external/pugixml/build-android')
+include('tinygltf')
+project(':tinygltf').projectDir=file('../../external/tinygltf/build-android')
+
+// Set the path for PVRCore 
+include('PVRCore')
+project(':PVRCore').projectDir=file('../PVRCore/build-android')
+
+// Set the path for PVRCamera
+include('PVRCamera')
+project(':PVRCamera').projectDir=file('../PVRCamera/build-android')
+
+// Set the path for PVRAssets 
+include('PVRAssets')
+project(':PVRAssets').projectDir=file('../PVRAssets/build-android')
+
+// Set the path for PVRShell
+include('PVRShell')
+project(':PVRShell').projectDir=file('../PVRShell/build-android')
+
+// Add in GLES parts of the framework 
+//if(hasProperty('PVR_BUILD_FRAMEWORK_GLES')){
+	include('PVRUtilsGles')
+	project(':PVRUtilsGles').projectDir=file('../PVRUtils/OpenGLES/build-android')
+//}
+
+// Add in the OpenCL parts of the framework
+//if(hasProperty('PVR_BUILD_FRAMEWORK_OPENCL')){
+	include('PVRUtilsCL')
+	project(':PVRUtilsCL').projectDir=file('../framework/PVRUtils/OpenCL/build-android')
+//}
+
+// Add in the Vulkan parts of the framework
+//if(hasProperty('PVR_BUILD_FRAMEWORK_VULKAN')){
+	include('glslang')
+	project(':glslang').projectDir=file('../../external/glslang/build-android')
+
+	include('VulkanMemoryAllocator')
+	project(':VulkanMemoryAllocator').projectDir=file('../../external/VulkanMemoryAllocator/build-android')
+
+	include(':PVRVk')
+	project(':PVRVk').projectDir=file('../PVRVk/build-android')
+
+	include(':PVRUtilsVk')
+	project(':PVRUtilsVk').projectDir=file('../PVRUtils/Vulkan/build-android')
+//}

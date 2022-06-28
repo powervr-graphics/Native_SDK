@@ -4,7 +4,7 @@
 #extension GL_EXT_ray_query : enable
 
 layout(location = 0) in mediump vec2 vTexCoord;
-layout(location = 1) in mediump vec3 vNormal;
+layout(location = 1) in highp vec3 vNormal;
 layout(location = 2) in highp vec3 vWorldPosition;
 
 layout(location = 0) out mediump vec4 oColor;
@@ -17,7 +17,6 @@ const highp float PI = 3.14159265359;
 
 struct Material
 {
-	ivec4 textureIndices;
 	vec4 baseColor;
 	vec4 metallicRoughnessReflectivity;
 	vec4 f0f90;
@@ -45,11 +44,10 @@ layout(set = 0, binding = 1) uniform LightDataUBO
 };
 
 layout(set = 0, binding = 2) buffer MateralDataBufferBuffer { Material materials[]; } ;
-layout(set = 0, binding = 3) uniform sampler2D textureSamplers[1];
-layout(set = 0, binding = 4) uniform accelerationStructureEXT topLevelAS;
+layout(set = 0, binding = 3) uniform accelerationStructureEXT topLevelAS;
 
 layout(push_constant) uniform PushConsts {
-	layout(offset = 64) uint materialID;
+	layout(offset = 4) uint materialID;
 };
 
 // [Walter et al. 2007, "Microfacet models for refraction through rough surfaces"].
@@ -111,13 +109,7 @@ void main()
 	// Retrieve material properties		
 	const Material mat = materials[materialID];
 
-	highp vec3 baseColor;
-
-	// If a valid texture index does not exist, use the albedo color stored in the Material structure
-	if (mat.textureIndices.x == -1)
-		baseColor = mat.baseColor.rgb;
-	else // If a valid texture index exists, use it to index into the image sampler array and sample the texture
-		baseColor = texture(textureSamplers[mat.textureIndices.x], vTexCoord).rgb;
+	highp vec3 baseColor = mat.baseColor.rgb;
 
 	highp float reflectivity = mat.metallicRoughnessReflectivity.b;
 	highp float roughness = mat.metallicRoughnessReflectivity.g;

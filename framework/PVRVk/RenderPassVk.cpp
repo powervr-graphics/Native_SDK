@@ -194,7 +194,7 @@ void RenderPass_::createRenderPass2(const RenderPassCreateInfo& createInfo)
 	// Subpass
 	renderPassInfoVk.subpassCount = createInfo.getNumSubpasses();
 	pvrvk::ArrayOrVector<VkSubpassDescription2, 2> subPassesVk(renderPassInfoVk.subpassCount);
-	std::vector<VkFragmentShadingRateAttachmentInfoKHR> fragmentShadingRateAttachmentInfos;
+	pvrvk::ArrayOrVector<VkFragmentShadingRateAttachmentInfoKHR, 2> fragmentShadingRateAttachmentInfos(renderPassInfoVk.subpassCount);
 
 	// calculate the attachmentRefs total sizes
 	uint32_t totalNumAttachmentRef = 0;
@@ -207,6 +207,7 @@ void RenderPass_::createRenderPass2(const RenderPassCreateInfo& createInfo)
 		totalNumAttachmentRef += static_cast<uint32_t>(subpass.getDepthStencilAttachmentReference().getLayout() != ImageLayout::e_UNDEFINED);
 		totalNumAttachmentRef += subpass.getNumResolveAttachmentReference();
 		totalNumAttachmentRef += subpass.getNumPreserveAttachmentReference();
+		totalNumAttachmentRef += static_cast<uint32_t>(subpass.getFragmentShadingRateAttachment().getEnabled());
 	}
 	pvrvk::ArrayOrVector<VkAttachmentReference2, 4> attachmentReferenceVk(totalNumAttachmentRef);
 
@@ -218,20 +219,6 @@ void RenderPass_::createRenderPass2(const RenderPassCreateInfo& createInfo)
 		subPassVk.sType = static_cast<VkStructureType>(StructureType::e_SUBPASS_DESCRIPTION_2);
 		subPassVk.pNext = nullptr;
 		subPassVk.pipelineBindPoint = static_cast<VkPipelineBindPoint>(subpass.getPipelineBindPoint());
-
-		// pNext chain
-		if (subpass.getFragmentShadingRateAttachment().getEnabled())
-		{
-			// fragment shading rate attachment info
-			VkFragmentShadingRateAttachmentInfoKHR fragmentShadingRateAttachmentInfoVk{};
-			fragmentShadingRateAttachmentInfoVk.sType = static_cast<VkStructureType>(StructureType::e_FRAGMENT_SHADING_RATE_ATTACHMENT_INFO_KHR);
-			fragmentShadingRateAttachmentInfoVk.pNext = subPassVk.pNext;
-			fragmentShadingRateAttachmentInfoVk.pFragmentShadingRateAttachment = subpass.getFragmentShadingRateAttachment().getAttachment().getVkPtr();
-			fragmentShadingRateAttachmentInfoVk.shadingRateAttachmentTexelSize = subpass.getFragmentShadingRateAttachment().getTexelSize().get();
-
-			fragmentShadingRateAttachmentInfos.emplace_back(fragmentShadingRateAttachmentInfoVk);
-			subPassVk.pNext = (void*)&fragmentShadingRateAttachmentInfos[fragmentShadingRateAttachmentInfos.size() - 1];
-		}
 
 		// multiview not currently supported by the pvrsdk
 		subPassVk.viewMask = 0;
@@ -246,6 +233,7 @@ void RenderPass_::createRenderPass2(const RenderPassCreateInfo& createInfo)
 				attachmentReferenceVk[attachmentOffset].pNext = nullptr;
 				attachmentReferenceVk[attachmentOffset].attachment = subpass.getInputAttachmentReference(j).getAttachment();
 				attachmentReferenceVk[attachmentOffset].layout = static_cast<VkImageLayout>(subpass.getInputAttachmentReference(j).getLayout());
+				attachmentReferenceVk[attachmentOffset].aspectMask = static_cast<VkImageAspectFlags>(pvrvk::ImageAspectFlags::e_ALL_BITS);
 				++attachmentOffset;
 			}
 			subPassVk.inputAttachmentCount = subpass.getNumInputAttachmentReference();
@@ -261,6 +249,7 @@ void RenderPass_::createRenderPass2(const RenderPassCreateInfo& createInfo)
 				attachmentReferenceVk[attachmentOffset].pNext = nullptr;
 				attachmentReferenceVk[attachmentOffset].attachment = subpass.getColorAttachmentReference(j).getAttachment();
 				attachmentReferenceVk[attachmentOffset].layout = static_cast<VkImageLayout>(subpass.getColorAttachmentReference(j).getLayout());
+				attachmentReferenceVk[attachmentOffset].aspectMask = static_cast<VkImageAspectFlags>(pvrvk::ImageAspectFlags::e_ALL_BITS);
 				++attachmentOffset;
 			}
 			subPassVk.colorAttachmentCount = subpass.getNumColorAttachmentReference();
@@ -276,6 +265,7 @@ void RenderPass_::createRenderPass2(const RenderPassCreateInfo& createInfo)
 				attachmentReferenceVk[attachmentOffset].pNext = nullptr;
 				attachmentReferenceVk[attachmentOffset].attachment = subpass.getResolveAttachmentReference(j).getAttachment();
 				attachmentReferenceVk[attachmentOffset].layout = static_cast<VkImageLayout>(subpass.getResolveAttachmentReference(j).getLayout());
+				attachmentReferenceVk[attachmentOffset].aspectMask = static_cast<VkImageAspectFlags>(pvrvk::ImageAspectFlags::e_ALL_BITS);
 				++attachmentOffset;
 			}
 		}
@@ -295,8 +285,30 @@ void RenderPass_::createRenderPass2(const RenderPassCreateInfo& createInfo)
 			attachmentReferenceVk[attachmentOffset].pNext = nullptr;
 			attachmentReferenceVk[attachmentOffset].attachment = subpass.getDepthStencilAttachmentReference().getAttachment();
 			attachmentReferenceVk[attachmentOffset].layout = static_cast<VkImageLayout>(subpass.getDepthStencilAttachmentReference().getLayout());
+			attachmentReferenceVk[attachmentOffset].aspectMask = static_cast<VkImageAspectFlags>(pvrvk::ImageAspectFlags::e_ALL_BITS);
 			++attachmentOffset;
 		}
+
+		// fragment shading rate attachment
+		if (subpass.getFragmentShadingRateAttachment().getEnabled())
+		{
+			subpass.getFragmentShadingRateAttachment().getAttachment();
+			attachmentReferenceVk[attachmentOffset].sType = static_cast<VkStructureType>(StructureType::e_ATTACHMENT_REFERENCE_2);
+			attachmentReferenceVk[attachmentOffset].pNext = nullptr;
+			attachmentReferenceVk[attachmentOffset].attachment = subpass.getFragmentShadingRateAttachment().getAttachment().getAttachment();
+			attachmentReferenceVk[attachmentOffset].layout = static_cast<VkImageLayout>(subpass.getFragmentShadingRateAttachment().getAttachment().getLayout());
+			attachmentReferenceVk[attachmentOffset].aspectMask = static_cast<VkImageAspectFlags>(pvrvk::ImageAspectFlags::e_ALL_BITS);
+
+			// fragment shading rate attachment info
+			fragmentShadingRateAttachmentInfos[subpassId].sType = static_cast<VkStructureType>(StructureType::e_FRAGMENT_SHADING_RATE_ATTACHMENT_INFO_KHR);
+			fragmentShadingRateAttachmentInfos[subpassId].pNext = subPassVk.pNext;
+			fragmentShadingRateAttachmentInfos[subpassId].pFragmentShadingRateAttachment = &attachmentReferenceVk[attachmentOffset];
+			fragmentShadingRateAttachmentInfos[subpassId].shadingRateAttachmentTexelSize = subpass.getFragmentShadingRateAttachment().getTexelSize().get();
+
+			subPassVk.pNext = static_cast<void*>(&fragmentShadingRateAttachmentInfos[subpassId]);
+			++attachmentOffset;
+		}
+
 		subPassesVk[subpassId] = subPassVk;
 	} // next subpass
 	renderPassInfoVk.pSubpasses = subPassesVk.get();

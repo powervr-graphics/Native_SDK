@@ -16,7 +16,7 @@ layout(std140, binding = 1) uniform StaticPerMaterial
 };
 
 layout(location = 0) in mediump vec2 vTexCoord;
-layout(location = 1) in mediump vec3 vNormal;
+layout(location = 1) in highp vec3 vNormal;
 layout(location = 2) in highp vec3 vViewPosition;
 
 layout(rgba8)  __pixel_localEXT FragDataLocal {

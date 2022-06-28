@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.18)
 project(VulkanDeferredShadingPFX)
 if(IOS)
 	message ("Skipping VulkanDeferredShadingPFX : Vulkan is not supported on iOS.")

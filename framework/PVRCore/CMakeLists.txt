@@ -1,22 +1,15 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.18.0 FATAL_ERROR)
+project(PVRCore)
+include(GNUInstallDirs)
+include(../FrameworkCommon.cmake)
 # Copyright (c) Imagination Technologies Limited.
 
-project(PVRCore)
-
-include(GNUInstallDirs)
-include(CMakeFindDependencyMacro)
-include(../Common.cmake)
-
-if(NOT EXISTS "${CMAKE_CURRENT_LIST_DIR}/../../external/glm")
-	message("GLM not present in ../../external/glm. Skipping parts of PVRCore requiring geometry and math.")
-	set(PVRCore_NO_GLM 1)
+# Prevent PVRCore being added multiple times
+if(TARGET PVRCore)
+	return()
 endif()
 
-
-if(NOT EXISTS "${CMAKE_CURRENT_LIST_DIR}/../../external/pugixml")
-	message("PugiXML not present in ../../external/pugixml. Skipping parts of PVRCore that require XML parsing.")
-	set(PVRCore_NO_PUGIXML 1)
-endif()
+message(STATUS "Adding PVRCore")
 
 # PVRCore include files
 set(PVRCore_HEADERS
@@ -81,33 +74,30 @@ set(PVRCore_SRC
 	textureio/TextureWriterPVR.cpp
 	Time.cpp)
 
-#Only include math in GLM is present
-if (NOT PVRCore_NO_GLM)
-	list(APPEND PVRCore_HEADERS
-		glm.h
-		cameras/CameraKeyFrame.h
-		cameras/FPSCamera.h
-		cameras/TPSCamera.h
-		math/AxisAlignedBox.h
-		math/MathUtils.h
-		math/Plane.h
-		math/Rectangle.h
-		math/Rectangle3D.h
-		pfx/Effect.h
-	)
-endif()
+# Add GLM and pugixml to the cmake build system
+add_submodule_to_sdk(${SDK_ROOT_INTERNAL_DIR}/external/glm)
+add_submodule_to_sdk(${SDK_ROOT_INTERNAL_DIR}/external/pugixml)
 
-#Only include PFXParser if both GLM and PugiXML are present
-if (NOT PVRCore_NO_GLM AND NOT PVRCore_NO_PUGIXML)
-	list(APPEND PVRCore_HEADERS
-		pfx/PFXParser.h
-	)
-	list(APPEND PVRCore_SRC
-		pfx/PFXParser.cpp
-	)
-endif()
+# Append the GLM wrappers to the PVRCore headers
+list(APPEND PVRCore_HEADERS
+	glm.h
+	cameras/CameraKeyFrame.h
+	cameras/FPSCamera.h
+	cameras/TPSCamera.h
+	math/AxisAlignedBox.h
+	math/MathUtils.h
+	math/Plane.h
+	math/Rectangle.h
+	math/Rectangle3D.h
+	pfx/Effect.h)
 
-# Add platform specific PVRCore sources
+
+# Append Pugixml source files and headers to PVRCore	
+list(APPEND PVRCore_HEADERS pfx/PFXParser.h)
+list(APPEND PVRCore_SRC	pfx/PFXParser.cpp)
+
+
+# Add platform specific PVRCore sources which handle asset finding
 if(WIN32)
 	list(APPEND PVRCore_HEADERS
 	Windows/WindowsResourceStream.h)
@@ -120,80 +110,41 @@ elseif(ANDROID)
 endif()
 
 
-# Create the library
+# Create the PVRCore library
 add_library(PVRCore STATIC ${PVRCore_SRC} ${PVRCore_HEADERS})
 
+# Link to the libraries that contain dlopen and dlclose, 
+# this allows PVRCore to dynamically open shared libraries, such as libvulkan.so
 target_link_libraries(PVRCore PRIVATE ${CMAKE_DL_LIBS})
 
+# Link to GLM and Pugixml
+target_link_libraries(PVRCore PUBLIC glm)
+target_link_libraries(PVRCore PRIVATE pugixml)
 
+# Link to the platform specific libraries 
 if (WIN32)
-# No extra libraries for windows. We need this if though as if it is an unknown platform we error out
+	# No extra libraries for windows. We need this so that windows 
+	# isn't treated as an unknown platform
 elseif (ANDROID)
+	# On Android we need extra logging libraries to log out to the logcat
 	find_library(lib-log log)
 	target_link_libraries(PVRCore PRIVATE ${lib-log})
-elseif (APPLE)
-	if (IOS)
-		find_library(lib-foundation Foundation)
-		find_library(lib-avfoundation AVFoundation)
-		target_link_libraries(PVRCore PRIVATE ${lib-foundation} ${lib-avfoundation})
-	endif()
 elseif (UNIX)
-	if(NOT CMAKE_SYSTEM_NAME MATCHES "QNX")
-		find_package(Threads)
-		target_link_libraries(PVRCore PRIVATE ${CMAKE_THREAD_LIBS_INIT})
-		target_link_libraries(PVRCore PRIVATE "rt")
-	endif()
+	# On Unix we need to specifically link to threads library
+	find_package(Threads)
+	target_link_libraries(PVRCore PRIVATE ${CMAKE_THREAD_LIBS_INIT})
+	target_link_libraries(PVRCore PRIVATE "rt")
 else()
 	message(FATAL_ERROR "Unknown Platform - Please set this up with platform-specific dependencies")
 endif()
 
-if(PVR_PREBUILT_DEPENDENCIES)
-	list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/../cmake/modules")
-	if (NOT PVRCore_NO_GLM)
-		find_dependency(glm MODULE REQUIRED)
-	endif()
-	if (NOT PVRCore_NO_PUGIXML)
-		find_dependency(pugixml MODULE REQUIRED)
-	endif()
-endif()
+# Set the include directories of PVRCore to allow it to see the rest of the framework
+# And also GLM and pugixml
+target_include_directories(PVRCore PUBLIC ${CMAKE_CURRENT_LIST_DIR}/..
+	${SDK_ROOT_INTERNAL_DIR}/external/glm/source
+	${SDK_ROOT_INTERNAL_DIR}/external/pugixml/source)
 
+# Apply the common framework compile definitions to PVRCore
+# This sets certain warnings on/off and adds appropriate
+# debug and release flags in the compiler and linker  
 apply_framework_compile_options_to_target(PVRCore)
-
-if(PVRCore_NO_GLM)
-	target_compile_definitions(PVRCore PUBLIC PVRCORE_NO_GLM=1)
-else()
-	target_link_libraries(PVRCore PUBLIC glm)
-endif()
-
-if(PVRCore_NO_PUGIXML)
-	target_compile_definitions(PVRCore PUBLIC PVRCORE_NO_PUGIXML=1)
-else()
-	target_link_libraries(PVRCore PRIVATE pugixml)
-endif()
-
-# Set the include directories for PVRCore
-target_include_directories(PVRCore 
-	PUBLIC 
-		$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../>
-		$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
-
-if(PVR_ENABLE_INSTALL)
-	install(TARGETS PVRCore EXPORT PVRCoreTargets
-		ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-		LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-		RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-		INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-		OPTIONAL)
-
-	foreach(file ${PVRCore_HEADERS})
-		get_filename_component(dir ${file} DIRECTORY)
-		install(FILES ${file} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/PVRCore/${dir})
-	endforeach()
-	install(EXPORT PVRCoreTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/PVRCore OPTIONAL)
-
-	export(EXPORT PVRCoreTargets FILE "${CMAKE_CURRENT_BINARY_DIR}/PVRCore/PVRCoreTargets.cmake")
-	# build tree package config
-	file(COPY cmake/PVRCoreConfig.cmake.in DESTINATION "${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/PVRCore/" NO_SOURCE_PERMISSIONS)
-	configure_file("${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/PVRCore/PVRCoreConfig.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/PVRCore/PVRCoreConfig.cmake" COPYONLY)
-	install(FILES "${CMAKE_CURRENT_BINARY_DIR}/PVRCore/PVRCoreTargets.cmake" DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/PVRCore OPTIONAL)
-endif()

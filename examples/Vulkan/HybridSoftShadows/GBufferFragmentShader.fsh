@@ -5,6 +5,7 @@
 
 #define M_PI 3.14159
 #define NUMBER_OF_RANDOM_ROTATIONS (32 * 32)
+#define NUMBER_OF_MESHES 4
 
 highp float constantAttenuation = 1.0;
 highp float linearAttenuation = 0.00002;
@@ -43,16 +44,17 @@ layout(set = 0, binding = 1) uniform LightUBO
 };
 
 layout(set = 0, binding = 2) buffer MateralDataBufferBuffer { Material materials[]; } ;
-layout(set = 0, binding = 3) uniform sampler2D textureSamplers[2];
+layout(set = 0, binding = 3) uniform sampler2D textureSamplers[5];
 layout(set = 0, binding = 4) uniform accelerationStructureEXT topLevelAS;
 layout(set = 0, binding = 5, std140) uniform UboPoissonRotation { highp vec4 poissonRotation[NUMBER_OF_RANDOM_ROTATIONS]; };
+layout(set = 0, binding = 6, std140) uniform UboMeshTransforms { highp mat4 worldMatrix[NUMBER_OF_MESHES]; };
 
 layout(push_constant) uniform PushConsts {
-	layout(offset = 64) uint materialID;
+	layout(offset = 4) uint materialID;
 };
 
 layout(location = 0) in mediump vec2 vTexCoord;
-layout(location = 1) in mediump vec3 vNormal;
+layout(location = 1) in highp vec3 vNormal;
 layout(location = 2) in highp vec3 vWorldPosition;
 
 layout(location = 0) out highp vec4 oAlbedo_Shininess;

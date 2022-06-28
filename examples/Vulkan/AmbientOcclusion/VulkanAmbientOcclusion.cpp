@@ -188,7 +188,7 @@ private:
 	// upload any data that remains constant across the runtime of the project
 	void createBuffers();
 	void updateBuffers();
-	void uploadStaticData(pvrvk::CommandBuffer cmdBuffer);
+	void uploadStaticData();
 
 	// Once all the buffers have been created, create all the descriptor sets
 	void createUBODescriptorSets();
@@ -207,8 +207,9 @@ pvr::Result VulkanAmbientOcclusion::initView()
 {
 	_resources = std::make_unique<DeviceResources>();
 
-	// create an instance and query for any Vulkan compatible devices
-	_resources->instance = pvr::utils::createInstance(this->getApplicationName());
+	// create a Vulkan 1.0 instance and query for any Vulkan compatible devices
+	pvr::utils::VulkanVersion VulkanVersion(1, 0, 0);
+	_resources->instance = pvr::utils::createInstance(this->getApplicationName(), VulkanVersion, pvr::utils::InstanceExtensions(VulkanVersion));
 	if (_resources->instance->getNumPhysicalDevices() == 0)
 	{
 		setExitMessage("Unable to find a compatible Vulkan physical device.");
@@ -249,7 +250,7 @@ pvr::Result VulkanAmbientOcclusion::initView()
 	_swapLength = _resources->swapchain->getSwapchainLength();
 
 	// create the command pool and descriptor pool
-	_resources->commandPool = _resources->device->createCommandPool(pvrvk::CommandPoolCreateInfo(queueAccessInfo.familyId, pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT));
+	_resources->commandPool = _resources->device->createCommandPool(pvrvk::CommandPoolCreateInfo(queueAccessInfo.familyId));
 	if (!_resources->commandPool) { return pvr::Result::UnknownError; }
 
 	// Allocate enough descriptor pool memory for the application
@@ -278,7 +279,7 @@ pvr::Result VulkanAmbientOcclusion::initView()
 
 	// Buffers and static data such as textures and meshes
 	createBuffers();
-	uploadStaticData(_resources->cmdBuffers[0]);
+	uploadStaticData();
 
 	// Descriptor sets
 	createUBODescriptorSets();
@@ -559,20 +560,22 @@ std::vector<glm::vec3> createRandomRotations(uint32_t size)
 }
 
 /// <summary>Uploads data to the GPU that doesn't change over time, for this demo this includes the meshes, material data and the sampling buffers</summary>
-void VulkanAmbientOcclusion::uploadStaticData(pvrvk::CommandBuffer cmdBuffer)
+void VulkanAmbientOcclusion::uploadStaticData()
 {
+	// Allocate a command buffer that is only used once
+	pvrvk::CommandBuffer cmdBuffer = _resources->commandPool->allocateCommandBuffer();
+
 	// Upload the mesh vertices
 	bool requiresSubmission = false;
 	cmdBuffer->begin();
 
-	pvr::utils::appendSingleBuffersFromModel(
-		_resources->device, *_sceneHandle, _resources->sceneVbos, _resources->sceneIbos, _resources->cmdBuffers[0], requiresSubmission, _resources->vmaAllocator);
+	pvr::utils::appendSingleBuffersFromModel(_resources->device, *_sceneHandle, _resources->sceneVbos, _resources->sceneIbos, cmdBuffer, requiresSubmission, _resources->vmaAllocator);
 
 	cmdBuffer->end();
 
 	// submit the upload command buffer
 	pvrvk::SubmitInfo submitInfo;
-	submitInfo.commandBuffers = &_resources->cmdBuffers[0];
+	submitInfo.commandBuffers = &cmdBuffer;
 	submitInfo.numCommandBuffers = 1;
 	_resources->queue->submit(&submitInfo, 1);
 	_resources->queue->waitIdle();

@@ -1,7 +1,7 @@
 #version 320 es
 
 layout(set = 1, binding = 2) uniform mediump sampler2D sTexture;
-layout(set = 1, binding = 3) uniform mediump sampler2D sBumpMap;
+layout(set = 1, binding = 3) uniform highp sampler2D sBumpMap;
 
 layout(set = 0, binding = 0) uniform StaticPerScene
 {
@@ -15,7 +15,7 @@ layout(set = 1, binding = 0) uniform StaticPerMaterial
 };
 
 layout(location = 0) in mediump vec2 vTexCoord;
-layout(location = 1) in mediump vec3 vNormal;
+layout(location = 1) in highp vec3 vNormal;
 layout(location = 2) in highp vec3 vTangent;
 layout(location = 3) in highp vec3 vBinormal;
 layout(location = 4) in highp vec3 vViewPosition;
@@ -30,7 +30,7 @@ void main()
 	oAlbedo = vec4(texture(sTexture, vTexCoord).rgb * vDiffuseColor.rgb, fSpecularStrength);
 
 	// Calculate view space perturbed normal
-	mediump vec3 bumpmap = normalize(texture(sBumpMap, vTexCoord).rgb * 2.0 - 1.0);
+	highp vec3 bumpmap = normalize(texture(sBumpMap, vTexCoord).rgb * 2.0 - 1.0);
 	highp mat3 tangentSpace = mat3(normalize(vTangent), normalize(vBinormal), normalize(vNormal));
 	oNormal = normalize(tangentSpace * bumpmap);
 

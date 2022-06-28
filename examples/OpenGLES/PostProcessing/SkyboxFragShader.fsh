@@ -11,7 +11,7 @@ layout(location = 0) uniform mediump float exposure;
 
 mediump float luma(mediump vec3 color)
 {
-	return dot(vec3(0.2126, 0.7152, 0.0722), color);
+	return clamp(dot(vec3(0.2126, 0.7152, 0.0722), color), 0.0, 65504.0);
 }
 
 void main()
@@ -20,5 +20,5 @@ void main()
 	oColor = texture(skybox, rayDirection);
 
 	// Apply the exposure value
-	oFilter = luma(exposure * oColor.rgb);
+	oFilter = luma(clamp(exposure * oColor.rgb, 0.0, 65504.0));
 }

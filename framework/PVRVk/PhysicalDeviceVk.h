@@ -13,41 +13,6 @@
 #include "PVRVk/DebugUtilsVk.h"
 
 namespace pvrvk {
-
-/// <summary>Defines a fragment shading rate as a fragment size and a bitmask of the MSAA sample counts that can be used with that fragment size.
-/// Use pvrvk::PhysicalDevice::getAvailableFragmentShadingRates() to get the available fragment shading rates for a particular physical devices</summary>
-class PhysicalDeviceFragmentShadingRate : private VkPhysicalDeviceFragmentShadingRateKHR
-{
-public:
-	PhysicalDeviceFragmentShadingRate()
-	{
-		sampleCounts = static_cast<VkSampleCountFlags>(SampleCountFlags::e_NONE);
-		fragmentSize = Extent2D().get();
-	}
-	PhysicalDeviceFragmentShadingRate(VkPhysicalDeviceFragmentShadingRateKHR vkType) : VkPhysicalDeviceFragmentShadingRateKHR(vkType) {}
-	PhysicalDeviceFragmentShadingRate(SampleCountFlags sampleCounts, Extent2D fragmentSize)
-	{
-		this->sampleCounts = static_cast<VkSampleCountFlags>(sampleCounts);
-		this->fragmentSize = fragmentSize.get();
-	}
-
-	/// <summary>Get the vulkan struct equivilent of this class.</summary>
-	/// <returns>VkPhysicalDeviceFragmentShadingRateKHR struct.</returns>
-	inline VkPhysicalDeviceFragmentShadingRateKHR& get() { return *this; }
-
-	/// <summary>Get the vulkan struct equivilent of this class.</summary>
-	/// <returns>Const VkPhysicalDeviceFragmentShadingRateKHR struct.</returns>
-	inline const VkPhysicalDeviceFragmentShadingRateKHR& get() const { return *this; }
-
-	/// <summary>Get the [x,y] fragment size that can be used for fragment shading rate functionality.</summary>
-	/// <returns>[x,y] integers corresponding to a fragment size.</returns>
-	inline Extent2D getFragmentSize() const { return static_cast<Extent2D>(fragmentSize); }
-
-	/// <summary>Get a bitmask of the possible MSAA sample counts that can be used with the associated fragment size.</summary>
-	/// <returns>Bitmask of sample counts.</returns>
-	inline SampleCountFlags getSampleCount() const { return static_cast<SampleCountFlags>(sampleCounts); }
-};
-
 namespace impl {
 
 /// <summary>The representation of an entire actual, physical GPU device (as opposed to Device,
@@ -237,21 +202,44 @@ public:
 
 	/// <summary>Populate an extension features class with the enabled features for this physical device.</summary>
 	/// <param name="extensionFeatures">A physical device extension features instance.</param>
-	void populateExtensionFeatures(ExtensionFeatures& extensionFeatures);
+	/// <returns>True if features were populated</returns>
+	bool populateExtensionFeatures(ExtensionFeatures& extensionFeatures);
 
-	/// <summary>Populate an extension features struct with the enabled features for this physical device using vkGetPhysicalDeviceFeatures2KHR.
-	/// Make sure you set the sType parameter before passing the struct to this function!</summary>
-	/// <typeparam name="VkPhysicalDeviceExtensionFeatures">A vulkan physical device extension features structure that can be pointed to by the pNext member of
-	/// VkPhysicalDeviceFeatures2KHR.</typeparam>
+	/// <summary>Populate an extension features struct with the enabled features for this physical device using vkGetPhysicalDeviceFeatures2KHR.</summary>
+	/// <typeparam name="VkPhysicalDeviceExtensionFeatures">A vulkan VkPhysicalDevice*Features structure.</typeparam>
 	/// <param name="featuresStruct">Physical device extension features struct to be put in the pNext chain of VkPhysicalDeviceFeatures2KHR.
-	/// Make sure you set the sType parameter before passing the struct to this function!</param>
-	template<typename VkPhysicalDeviceExtensionFeatures>
-	void populateExtensionFeaturesVk(VkPhysicalDeviceExtensionFeatures& featuresStruct);
+	/// Make sure pNext has been set! Easiest way is to initialize the struct as your_vk_features_struct = {};</param>
+	/// <returns>True if struct was populated</returns>
+	template<class VkPhysicalDeviceExtensionFeatures>
+	bool populateExtensionFeaturesVk(pvrvk::StructureType type, VkPhysicalDeviceExtensionFeatures* featuresStruct)
+	{
+		featuresStruct->sType = static_cast<VkStructureType>(type);
+		return _populateExtensionFeaturesVk(static_cast<void*>(featuresStruct));
+	}
+
+	/// <summary>Populate an extension properties struct for this physical device using vkGetPhysicalDeviceProperties2KHR.</summary>
+	/// <typeparam name="VkPhysicalDeviceExtensionProperties">A vulkan VkPhysicalDevice*Properties structure.</typeparam>
+	/// <param name="propertiesStruct">Physical device extension properties struct to be put in the pNext chain of vkGetPhysicalDeviceProperties2KHR.
+	/// Make sure pNext has been set! Easiest way is to initialize the struct as your_vk_properties_struct = {};</param>
+	/// <returns>True if struct was populated</returns>
+	template<class VkPhysicalDeviceExtensionProperties>
+	bool populateExtensionPropertiesVk(pvrvk::StructureType type, VkPhysicalDeviceExtensionProperties* propertiesStruct)
+	{
+		propertiesStruct->sType = static_cast<VkStructureType>(type);
+		return _populateExtensionPropertiesVk(static_cast<void*>(propertiesStruct));
+	}
 
 	/// <summary>Returns the possible fragment shading rate combinations for this physical device. Each member returned contains a possible fragment size and 
 	/// a bitmask of the possible MSAA sample counts that can be used with that FSR fragment size.</summary>
 	/// <returns>Vector of available fragment shading rates.</returns>
-	std::vector<PhysicalDeviceFragmentShadingRate> getAvailableFragmentShadingRates();
+	std::vector<FragmentShadingRate> getAvailableFragmentShadingRates();
+
+private:
+	/// <summary>Helper for populateExtensionFeaturesVk to avoid error: invalid use of incomplete type 'class pvrvk::impl::Instance_'</summary>
+	bool _populateExtensionFeaturesVk(void* featuresStruct);
+
+	/// <summary>Helper for populateExtensionPropertiesVk to avoid error: invalid use of incomplete type 'class pvrvk::impl::Instance_'</summary>
+	bool _populateExtensionPropertiesVk(void* propertiesStruct);
 };
 } // namespace impl
 } // namespace pvrvk

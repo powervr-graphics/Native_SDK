@@ -87,6 +87,213 @@ enum class CompressedPixelFormat
 	PVRTCII_HDR_6bpp,
 	PVRTCII_HDR_8bpp,
 
+	// The memory layout for 10 and 12 bit YUV formats that are packed into a WORD (16 bits) is denoted by MSB or LSB:
+	// MSB denotes that the sample is stored in the most significant <N> bits
+	// LSB denotes that the sample is stored in the least significant <N> bits
+	// All YUV formats are little endian
+
+	// Packed YUV formats
+	VYUA10MSB_444,
+	VYUA10LSB_444,
+	VYUA12MSB_444,
+	VYUA12LSB_444,
+	UYV10A2_444,	// Y410
+	UYVA16_444,		// Y416
+	YUYV16_422,		// Y216
+	UYVY16_422,
+	YUYV10MSB_422,	// Y210
+	YUYV10LSB_422,
+	UYVY10MSB_422,
+	UYVY10LSB_422,
+	YUYV12MSB_422,
+	YUYV12LSB_422,
+	UYVY12MSB_422,
+	UYVY12LSB_422,
+
+	// 3 Plane (Planar) YUV formats
+	YUV_3P_444 = 270,
+	YUV10MSB_3P_444,
+	YUV10LSB_3P_444,
+	YUV12MSB_3P_444,
+	YUV12LSB_3P_444,
+	YUV16_3P_444,
+	YUV_3P_422,
+	YUV10MSB_3P_422,
+	YUV10LSB_3P_422,
+	YUV12MSB_3P_422,
+	YUV12LSB_3P_422,
+	YUV16_3P_422,
+	YUV_3P_420,
+	YUV10MSB_3P_420,
+	YUV10LSB_3P_420,
+	YUV12MSB_3P_420,
+	YUV12LSB_3P_420,
+	YUV16_3P_420,
+	YVU_3P_420,
+
+	// 2 Plane (Biplanar/semi-planar) YUV formats
+	YUV_2P_422 = 480,	// P208
+	YUV10MSB_2P_422,	// P210
+	YUV10LSB_2P_422,
+	YUV12MSB_2P_422,
+	YUV12LSB_2P_422,
+	YUV16_2P_422,		// P216
+	YUV_2P_420,			// NV12
+	YUV10MSB_2P_420,	// P010
+	YUV10LSB_2P_420,
+	YUV12MSB_2P_420,
+	YUV12LSB_2P_420,
+	YUV16_2P_420,		// P016
+	YUV_2P_444,
+	YVU_2P_444,
+	YUV10MSB_2P_444,
+	YUV10LSB_2P_444,
+	YVU10MSB_2P_444,
+	YVU10LSB_2P_444,
+	YVU_2P_422,
+	YVU10MSB_2P_422,
+	YVU10LSB_2P_422,
+	YVU_2P_420,			// NV21
+	YVU10MSB_2P_420,
+	YVU10LSB_2P_420,
+
+	// IMG image compression (IMGIC)
+	IMGIC_A8_8x8 = 700,
+	IMGIC_A8_16x4,
+	IMGIC_A8_32x2,
+	IMGIC_R8_8x8,
+	IMGIC_R8_16x4,
+	IMGIC_R8_32x2,
+	IMGIC_R16_8x8,
+	IMGIC_R16_16x4,
+	IMGIC_R16_32x2,
+	IMGIC_R32_8x8,
+	IMGIC_R32_16x4,
+	IMGIC_R32_32x2,
+	IMGIC_R8G8_8x8,
+	IMGIC_R8G8_16x4,
+	IMGIC_R8G8_32x2,
+	IMGIC_R16G16_8x8,
+	IMGIC_R16G16_16x4,
+	IMGIC_R16G16_32x2,
+	IMGIC_R32G32_8x8,
+	IMGIC_R32G32_16x4,
+	IMGIC_R32G32_32x2,
+	IMGIC_R8G8B8_8x8,
+	IMGIC_R8G8B8_16x4,
+	IMGIC_R8G8B8_32x2,
+	IMGIC_R16G16B16_8x8,
+	IMGIC_R16G16B16_16x4,
+	IMGIC_R16G16B16_32x2,
+	IMGIC_R32G32B32_8x8,
+	IMGIC_R32G32B32_16x4,
+	IMGIC_R32G32B32_32x2,
+	IMGIC_R8G8B8A8_8x8,
+	IMGIC_R8G8B8A8_16x4,
+	IMGIC_R8G8B8A8_32x2,
+	IMGIC_R16G16B16A16_8x8,
+	IMGIC_R16G16B16A16_16x4,
+	IMGIC_R16G16B16A16_32x2,
+	IMGIC_R32G32B32A32_8x8,
+	IMGIC_R32G32B32A32_16x4,
+	IMGIC_R32G32B32A32_32x2,
+	IMGIC_A4R4G4B4_8x8,
+	IMGIC_A4R4G4B4_16x4,
+	IMGIC_A4R4G4B4_32x2,
+	IMGIC_A8R3G3B2_8x8,
+	IMGIC_A8R3G3B2_16x4,
+	IMGIC_A8R3G3B2_32x2,
+	IMGIC_A1R5G5B5_8x8,
+	IMGIC_A1R5G5B5_16x4,
+	IMGIC_A1R5G5B5_32x2,
+	IMGIC_R5G5B5A1_8x8,
+	IMGIC_R5G5B5A1_16x4,
+	IMGIC_R5G5B5A1_32x2,
+	IMGIC_R5G6B5_8x8,
+	IMGIC_R5G6B5_16x4,
+	IMGIC_R5G6B5_32x2,
+	IMGIC_A2B10G10R10_8x8,
+	IMGIC_A2B10G10R10_16x4,
+	IMGIC_A2B10G10R10_32x2,
+	IMGIC_R10B10G10A2_8x8,
+	IMGIC_R10B10G10A2_16x4,
+	IMGIC_R10B10G10A2_32x2,
+	IMGIC_X8D24_8x8,
+	IMGIC_X8D24_16x4,
+	IMGIC_X8D24_32x2,
+	IMGIC_S8D24_8x8,
+	IMGIC_S8D24_16x4,
+	IMGIC_S8D24_32x2,
+	IMGIC_S8X24_8x8,
+	IMGIC_S8X24_16x4,
+	IMGIC_S8X24_32x2,
+	IMGIC_D24S8_8x8,
+	IMGIC_D24S8_16x4,
+	IMGIC_D24S8_32x2,
+	IMGIC_R9G9B9E5_8x8,
+	IMGIC_R9G9B9E5_16x4,
+	IMGIC_R9G9B9E5_32x2,
+	IMGIC_R11G11B10_8x8,
+	IMGIC_R11G11B10_16x4,
+	IMGIC_R11G11B10_32x2,
+	IMGIC_B10G11R11_8x8,
+	IMGIC_B10G11R11_16x4,
+	IMGIC_B10G11R11_32x2,
+	IMGIC_B8G8R8A8_8x8,
+	IMGIC_B8G8R8A8_16x4,
+	IMGIC_B8G8R8A8_32x2,
+	IMGIC_R8G8B8G8_8x8,
+	IMGIC_R8G8B8G8_16x4,
+	IMGIC_R8G8B8G8_32x2,
+	IMGIC_G8R8G8B8_8x8,
+	IMGIC_G8R8G8B8_16x4,
+	IMGIC_G8R8G8B8_32x2,
+	IMGIC_UYVY_8x8,
+	IMGIC_UYVY_16x4,
+	IMGIC_UYVY_32x2,
+	IMGIC_YUYV_8x8,
+	IMGIC_YUYV_16x4,
+	IMGIC_YUYV_32x2,
+	IMGIC_YUV_2P_444_8x8,
+	IMGIC_YUV_2P_444_16x4,
+	IMGIC_YUV_2P_444_32x2,
+	IMGIC_YVU_2P_444_8x8,
+	IMGIC_YVU_2P_444_16x4,
+	IMGIC_YVU_2P_444_32x2,
+	IMGIC_YVU10_2P_444_PK16_8x8,
+	IMGIC_YVU10_2P_444_PK16_16x4,
+	IMGIC_YVU10_2P_444_PK16_32x2,
+	IMGIC_YUV_2P_422_8x8,
+	IMGIC_YUV_2P_422_16x4,
+	IMGIC_YUV_2P_422_32x2,
+	IMGIC_YVU_2P_422_8x8,
+	IMGIC_YVU_2P_422_16x4,
+	IMGIC_YVU_2P_422_32x2,
+	IMGIC_YVU10_2P_422_PK16_8x8,
+	IMGIC_YVU10_2P_422_PK16_16x4,
+	IMGIC_YVU10_2P_422_PK16_32x2,
+	IMGIC_YUV_2P_420_8x8,
+	IMGIC_YUV_2P_420_16x4,
+	IMGIC_YUV_2P_420_32x2,
+	IMGIC_YVU_2P_420_8x8,
+	IMGIC_YVU_2P_420_16x4,
+	IMGIC_YVU_2P_420_32x2,
+	IMGIC_YVU10_2P_420_PK16_8x8,
+	IMGIC_YVU10_2P_420_PK16_16x4,
+	IMGIC_YVU10_2P_420_PK16_32x2,
+	IMGIC_YUV_3P_444_8x8,
+	IMGIC_YUV_3P_444_16x4,
+	IMGIC_YUV_3P_444_32x2,
+	IMGIC_YUV10_3P_444_PK16_8x8,
+	IMGIC_YUV10_3P_444_PK16_16x4,
+	IMGIC_YUV10_3P_444_PK16_32x2,
+	IMGIC_YUV_3P_420_8x8,
+	IMGIC_YUV_3P_420_16x4,
+	IMGIC_YUV_3P_420_32x2,
+	IMGIC_YVU_3P_420_8x8,
+	IMGIC_YVU_3P_420_16x4,
+	IMGIC_YVU_3P_420_32x2,
+
 	// Invalid value
 	NumCompressedPFs
 };
@@ -167,6 +374,209 @@ inline std::string to_string(CompressedPixelFormat format)
 	case CompressedPixelFormat::PVRTCI_HDR_8bpp: return "PVRTCI_HDR_8bpp";
 	case CompressedPixelFormat::PVRTCII_HDR_6bpp: return "PVRTCII_HDR_6bpp";
 	case CompressedPixelFormat::PVRTCII_HDR_8bpp: return "PVRTCII_HDR_8bpp";
+
+	// Packed YUV formats
+	case CompressedPixelFormat::VYUA10MSB_444: return "VYUA10MSB_444";
+	case CompressedPixelFormat::VYUA10LSB_444: return "VYUA10LSB_444";
+	case CompressedPixelFormat::VYUA12MSB_444: return "VYUA12MSB_444";
+	case CompressedPixelFormat::VYUA12LSB_444: return "VYUA12LSB_444";
+	case CompressedPixelFormat::UYV10A2_444: return "UYV10A2_444";			// Y410
+	case CompressedPixelFormat::UYVA16_444: return "UYVA16_444";			// Y416
+	case CompressedPixelFormat::YUYV16_422: return "YUYV16_422";			// Y216
+	case CompressedPixelFormat::UYVY16_422: return "UYVY16_422";
+	case CompressedPixelFormat::YUYV10MSB_422: return "YUYV10MSB_422";		// Y210
+	case CompressedPixelFormat::YUYV10LSB_422: return "YUYV10LSB_422";
+	case CompressedPixelFormat::UYVY10MSB_422: return "UYVY10MSB_422";
+	case CompressedPixelFormat::UYVY10LSB_422: return "UYVY10LSB_422";
+	case CompressedPixelFormat::YUYV12MSB_422: return "YUYV12MSB_422";
+	case CompressedPixelFormat::YUYV12LSB_422: return "YUYV12LSB_422";
+	case CompressedPixelFormat::UYVY12MSB_422: return "UYVY12MSB_422";
+	case CompressedPixelFormat::UYVY12LSB_422: return "UYVY12LSB_422";
+
+	// 3 Plane (Planar) YUV formats
+	case CompressedPixelFormat::YUV_3P_444: return "YUV_3P_444";
+	case CompressedPixelFormat::YUV10MSB_3P_444: return "YUV10MSB_3P_444";
+	case CompressedPixelFormat::YUV10LSB_3P_444: return "YUV10LSB_3P_444";
+	case CompressedPixelFormat::YUV12MSB_3P_444: return "YUV12MSB_3P_444";
+	case CompressedPixelFormat::YUV12LSB_3P_444: return "YUV12LSB_3P_444";
+	case CompressedPixelFormat::YUV16_3P_444: return "YUV16_3P_444";
+	case CompressedPixelFormat::YUV_3P_422: return "YUV_3P_422";
+	case CompressedPixelFormat::YUV10MSB_3P_422: return "YUV10MSB_3P_422";
+	case CompressedPixelFormat::YUV10LSB_3P_422: return "YUV10LSB_3P_422";
+	case CompressedPixelFormat::YUV12MSB_3P_422: return "YUV12MSB_3P_422";
+	case CompressedPixelFormat::YUV12LSB_3P_422: return "YUV12LSB_3P_422";
+	case CompressedPixelFormat::YUV16_3P_422: return "YUV16_3P_422";
+	case CompressedPixelFormat::YUV_3P_420: return "YUV_3P_420";
+	case CompressedPixelFormat::YUV10MSB_3P_420: return "YUV10MSB_3P_420";
+	case CompressedPixelFormat::YUV10LSB_3P_420: return "YUV10LSB_3P_420";
+	case CompressedPixelFormat::YUV12MSB_3P_420: return "YUV12MSB_3P_420";
+	case CompressedPixelFormat::YUV12LSB_3P_420: return "YUV12LSB_3P_420";
+	case CompressedPixelFormat::YUV16_3P_420: return "YUV16_3P_420";
+	case CompressedPixelFormat::YVU_3P_420: return "YVU_3P_420";
+
+	// 2 Plane (Biplanar/semi-planar) YUV formats
+	case CompressedPixelFormat::YUV_2P_422: return "YUV_2P_422";			// P208
+	case CompressedPixelFormat::YUV10MSB_2P_422: return "YUV10MSB_2P_422";	// P210
+	case CompressedPixelFormat::YUV10LSB_2P_422: return "YUV10LSB_2P_422";
+	case CompressedPixelFormat::YUV12MSB_2P_422: return "YUV12MSB_2P_422";
+	case CompressedPixelFormat::YUV12LSB_2P_422: return "YUV12LSB_2P_422";
+	case CompressedPixelFormat::YUV16_2P_422: return "YUV16_2P_422";		// P216
+	case CompressedPixelFormat::YUV_2P_420: return "YUV_2P_420";			// NV12
+	case CompressedPixelFormat::YUV10MSB_2P_420: return "YUV10MSB_2P_420";	// P010
+	case CompressedPixelFormat::YUV10LSB_2P_420: return "YUV10LSB_2P_420";
+	case CompressedPixelFormat::YUV12MSB_2P_420: return "YUV12MSB_2P_420";
+	case CompressedPixelFormat::YUV12LSB_2P_420: return "YUV12LSB_2P_420";
+	case CompressedPixelFormat::YUV16_2P_420: return "YUV16_2P_420";		// P016
+	case CompressedPixelFormat::YUV_2P_444: return "YUV_2P_444";
+	case CompressedPixelFormat::YVU_2P_444: return "YVU_2P_444";
+	case CompressedPixelFormat::YUV10MSB_2P_444: return "YUV10MSB_2P_444";
+	case CompressedPixelFormat::YUV10LSB_2P_444: return "YUV10LSB_2P_444";
+	case CompressedPixelFormat::YVU10MSB_2P_444: return "YVU10MSB_2P_444";
+	case CompressedPixelFormat::YVU10LSB_2P_444: return "YVU10LSB_2P_444";
+	case CompressedPixelFormat::YVU_2P_422: return "YVU_2P_422";
+	case CompressedPixelFormat::YVU10MSB_2P_422: return "YVU10MSB_2P_422";
+	case CompressedPixelFormat::YVU10LSB_2P_422: return "YVU10LSB_2P_422";
+	case CompressedPixelFormat::YVU_2P_420: return "YVU_2P_420";			// NV21
+	case CompressedPixelFormat::YVU10MSB_2P_420: return "YVU10MSB_2P_420";
+	case CompressedPixelFormat::YVU10LSB_2P_420: return "YVU10LSB_2P_420";
+
+	// IMG image compression (IMGIC)
+	case CompressedPixelFormat::IMGIC_A8_8x8: return "IMGIC_A8_8x8";
+	case CompressedPixelFormat::IMGIC_A8_16x4: return "IMGIC_A8_16x4";
+	case CompressedPixelFormat::IMGIC_A8_32x2: return "IMGIC_A8_32x2";
+	case CompressedPixelFormat::IMGIC_R8_8x8: return "IMGIC_R8_8x8";
+	case CompressedPixelFormat::IMGIC_R8_16x4: return "IMGIC_R8_16x4";
+	case CompressedPixelFormat::IMGIC_R8_32x2: return "IMGIC_R8_32x2";
+	case CompressedPixelFormat::IMGIC_R16_8x8: return "IMGIC_R16_8x8";
+	case CompressedPixelFormat::IMGIC_R16_16x4: return "IMGIC_R16_16x4";
+	case CompressedPixelFormat::IMGIC_R16_32x2: return "IMGIC_R16_32x2";
+	case CompressedPixelFormat::IMGIC_R32_8x8: return "IMGIC_R32_8x8";
+	case CompressedPixelFormat::IMGIC_R32_16x4: return "IMGIC_R32_16x4";
+	case CompressedPixelFormat::IMGIC_R32_32x2: return "IMGIC_R32_32x2";
+	case CompressedPixelFormat::IMGIC_R8G8_8x8: return "IMGIC_R8G8_8x8";
+	case CompressedPixelFormat::IMGIC_R8G8_16x4: return "IMGIC_R8G8_16x4";
+	case CompressedPixelFormat::IMGIC_R8G8_32x2: return "IMGIC_R8G8_32x2";
+	case CompressedPixelFormat::IMGIC_R16G16_8x8: return "IMGIC_R16G16_8x8";
+	case CompressedPixelFormat::IMGIC_R16G16_16x4: return "IMGIC_R16G16_16x4";
+	case CompressedPixelFormat::IMGIC_R16G16_32x2: return "IMGIC_R16G16_32x2";
+	case CompressedPixelFormat::IMGIC_R32G32_8x8: return "IMGIC_R32G32_8x8";
+	case CompressedPixelFormat::IMGIC_R32G32_16x4: return "IMGIC_R32G32_16x4";
+	case CompressedPixelFormat::IMGIC_R32G32_32x2: return "IMGIC_R32G32_32x2";
+	case CompressedPixelFormat::IMGIC_R8G8B8_8x8: return "IMGIC_R8G8B8_8x8";
+	case CompressedPixelFormat::IMGIC_R8G8B8_16x4: return "IMGIC_R8G8B8_16x4";
+	case CompressedPixelFormat::IMGIC_R8G8B8_32x2: return "IMGIC_R8G8B8_32x2";
+	case CompressedPixelFormat::IMGIC_R16G16B16_8x8: return "IMGIC_R16G16B16_8x8";
+	case CompressedPixelFormat::IMGIC_R16G16B16_16x4: return "IMGIC_R16G16B16_16x4";
+	case CompressedPixelFormat::IMGIC_R16G16B16_32x2: return "IMGIC_R16G16B16_32x2";
+	case CompressedPixelFormat::IMGIC_R32G32B32_8x8: return "IMGIC_R32G32B32_8x8";
+	case CompressedPixelFormat::IMGIC_R32G32B32_16x4: return "IMGIC_R32G32B32_16x4";
+	case CompressedPixelFormat::IMGIC_R32G32B32_32x2: return "IMGIC_R32G32B32_32x2";
+	case CompressedPixelFormat::IMGIC_R8G8B8A8_8x8: return "IMGIC_R8G8B8A8_8x8";
+	case CompressedPixelFormat::IMGIC_R8G8B8A8_16x4: return "IMGIC_R8G8B8A8_16x4";
+	case CompressedPixelFormat::IMGIC_R8G8B8A8_32x2: return "IMGIC_R8G8B8A8_32x2";
+	case CompressedPixelFormat::IMGIC_R16G16B16A16_8x8: return "IMGIC_R16G16B16A16_8x8";
+	case CompressedPixelFormat::IMGIC_R16G16B16A16_16x4: return "IMGIC_R16G16B16A16_16x4";
+	case CompressedPixelFormat::IMGIC_R16G16B16A16_32x2: return "IMGIC_R16G16B16A16_32x2";
+	case CompressedPixelFormat::IMGIC_R32G32B32A32_8x8: return "IMGIC_R32G32B32A32_8x8";
+	case CompressedPixelFormat::IMGIC_R32G32B32A32_16x4: return "IMGIC_R32G32B32A32_16x4";
+	case CompressedPixelFormat::IMGIC_R32G32B32A32_32x2: return "IMGIC_R32G32B32A32_32x2";
+	case CompressedPixelFormat::IMGIC_A4R4G4B4_8x8: return "IMGIC_A4R4G4B4_8x8";
+	case CompressedPixelFormat::IMGIC_A4R4G4B4_16x4: return "IMGIC_A4R4G4B4_16x4";
+	case CompressedPixelFormat::IMGIC_A4R4G4B4_32x2: return "IMGIC_A4R4G4B4_32x2";
+	case CompressedPixelFormat::IMGIC_A8R3G3B2_8x8: return "IMGIC_A8R3G3B2_8x8";
+	case CompressedPixelFormat::IMGIC_A8R3G3B2_16x4: return "IMGIC_A8R3G3B2_16x4";
+	case CompressedPixelFormat::IMGIC_A8R3G3B2_32x2: return "IMGIC_A8R3G3B2_32x2";
+	case CompressedPixelFormat::IMGIC_A1R5G5B5_8x8: return "IMGIC_A1R5G5B5_8x8";
+	case CompressedPixelFormat::IMGIC_A1R5G5B5_16x4: return "IMGIC_A1R5G5B5_16x4";
+	case CompressedPixelFormat::IMGIC_A1R5G5B5_32x2: return "IMGIC_A1R5G5B5_32x2";
+	case CompressedPixelFormat::IMGIC_R5G5B5A1_8x8: return "IMGIC_R5G5B5A1_8x8";
+	case CompressedPixelFormat::IMGIC_R5G5B5A1_16x4: return "IMGIC_R5G5B5A1_16x4";
+	case CompressedPixelFormat::IMGIC_R5G5B5A1_32x2: return "IMGIC_R5G5B5A1_32x2";
+	case CompressedPixelFormat::IMGIC_R5G6B5_8x8: return "IMGIC_R5G6B5_8x8";
+	case CompressedPixelFormat::IMGIC_R5G6B5_16x4: return "IMGIC_R5G6B5_16x4";
+	case CompressedPixelFormat::IMGIC_R5G6B5_32x2: return "IMGIC_R5G6B5_32x2";
+	case CompressedPixelFormat::IMGIC_A2B10G10R10_8x8: return "IMGIC_A2B10G10R10_8x8";
+	case CompressedPixelFormat::IMGIC_A2B10G10R10_16x4: return "IMGIC_A2B10G10R10_16x4";
+	case CompressedPixelFormat::IMGIC_A2B10G10R10_32x2: return "IMGIC_A2B10G10R10_32x2";
+	case CompressedPixelFormat::IMGIC_R10B10G10A2_8x8: return "IMGIC_R10B10G10A2_8x8";
+	case CompressedPixelFormat::IMGIC_R10B10G10A2_16x4: return "IMGIC_R10B10G10A2_16x4";
+	case CompressedPixelFormat::IMGIC_R10B10G10A2_32x2: return "IMGIC_R10B10G10A2_32x2";
+	case CompressedPixelFormat::IMGIC_X8D24_8x8: return "IMGIC_X8D24_8x8";
+	case CompressedPixelFormat::IMGIC_X8D24_16x4: return "IMGIC_X8D24_16x4";
+	case CompressedPixelFormat::IMGIC_X8D24_32x2: return "IMGIC_X8D24_32x2";
+	case CompressedPixelFormat::IMGIC_S8D24_8x8: return "IMGIC_S8D24_8x8";
+	case CompressedPixelFormat::IMGIC_S8D24_16x4: return "IMGIC_S8D24_16x4";
+	case CompressedPixelFormat::IMGIC_S8D24_32x2: return "IMGIC_S8D24_32x2";
+	case CompressedPixelFormat::IMGIC_S8X24_8x8: return "IMGIC_S8X24_8x8";
+	case CompressedPixelFormat::IMGIC_S8X24_16x4: return "IMGIC_S8X24_16x4";
+	case CompressedPixelFormat::IMGIC_S8X24_32x2: return "IMGIC_S8X24_32x2";
+	case CompressedPixelFormat::IMGIC_D24S8_8x8: return "IMGIC_D24S8_8x8";
+	case CompressedPixelFormat::IMGIC_D24S8_16x4: return "IMGIC_D24S8_16x4";
+	case CompressedPixelFormat::IMGIC_D24S8_32x2: return "IMGIC_D24S8_32x2";
+	case CompressedPixelFormat::IMGIC_R9G9B9E5_8x8: return "IMGIC_R9G9B9E5_8x8";
+	case CompressedPixelFormat::IMGIC_R9G9B9E5_16x4: return "IMGIC_R9G9B9E5_16x4";
+	case CompressedPixelFormat::IMGIC_R9G9B9E5_32x2: return "IMGIC_R9G9B9E5_32x2";
+	case CompressedPixelFormat::IMGIC_R11G11B10_8x8: return "IMGIC_R11G11B10_8x8";
+	case CompressedPixelFormat::IMGIC_R11G11B10_16x4: return "IMGIC_R11G11B10_16x4";
+	case CompressedPixelFormat::IMGIC_R11G11B10_32x2: return "IMGIC_R11G11B10_32x2";
+	case CompressedPixelFormat::IMGIC_B10G11R11_8x8: return "IMGIC_B10G11R11_8x8";
+	case CompressedPixelFormat::IMGIC_B10G11R11_16x4: return "IMGIC_B10G11R11_16x4";
+	case CompressedPixelFormat::IMGIC_B10G11R11_32x2: return "IMGIC_B10G11R11_32x2";
+	case CompressedPixelFormat::IMGIC_B8G8R8A8_8x8: return "IMGIC_B8G8R8A8_8x8";
+	case CompressedPixelFormat::IMGIC_B8G8R8A8_16x4: return "IMGIC_B8G8R8A8_16x4";
+	case CompressedPixelFormat::IMGIC_B8G8R8A8_32x2: return "IMGIC_B8G8R8A8_32x2";
+	case CompressedPixelFormat::IMGIC_R8G8B8G8_8x8: return "IMGIC_R8G8B8G8_8x8";
+	case CompressedPixelFormat::IMGIC_R8G8B8G8_16x4: return "IMGIC_R8G8B8G8_16x4";
+	case CompressedPixelFormat::IMGIC_R8G8B8G8_32x2: return "IMGIC_R8G8B8G8_32x2";
+	case CompressedPixelFormat::IMGIC_G8R8G8B8_8x8: return "IMGIC_G8R8G8B8_8x8";
+	case CompressedPixelFormat::IMGIC_G8R8G8B8_16x4: return "IMGIC_G8R8G8B8_16x4";
+	case CompressedPixelFormat::IMGIC_G8R8G8B8_32x2: return "IMGIC_G8R8G8B8_32x2";
+	case CompressedPixelFormat::IMGIC_UYVY_8x8: return "IMGIC_UYVY_8x8";
+	case CompressedPixelFormat::IMGIC_UYVY_16x4: return "IMGIC_UYVY_16x4";
+	case CompressedPixelFormat::IMGIC_UYVY_32x2: return "IMGIC_UYVY_32x2";
+	case CompressedPixelFormat::IMGIC_YUYV_8x8: return "IMGIC_YUYV_8x8";
+	case CompressedPixelFormat::IMGIC_YUYV_16x4: return "IMGIC_YUYV_16x4";
+	case CompressedPixelFormat::IMGIC_YUYV_32x2: return "IMGIC_YUYV_32x2";
+	case CompressedPixelFormat::IMGIC_YUV_2P_444_8x8: return "IMGIC_YUV_2P_444_8x8";
+	case CompressedPixelFormat::IMGIC_YUV_2P_444_16x4: return "IMGIC_YUV_2P_444_16x4";
+	case CompressedPixelFormat::IMGIC_YUV_2P_444_32x2: return "IMGIC_YUV_2P_444_32x2";
+	case CompressedPixelFormat::IMGIC_YVU_2P_444_8x8: return "IMGIC_YVU_2P_444_8x8";
+	case CompressedPixelFormat::IMGIC_YVU_2P_444_16x4: return "IMGIC_YVU_2P_444_16x4";
+	case CompressedPixelFormat::IMGIC_YVU_2P_444_32x2: return "IMGIC_YVU_2P_444_32x2";
+	case CompressedPixelFormat::IMGIC_YVU10_2P_444_PK16_8x8: return "IMGIC_YVU10_2P_444_PK16_8x8";
+	case CompressedPixelFormat::IMGIC_YVU10_2P_444_PK16_16x4: return "IMGIC_YVU10_2P_444_PK16_16x4";
+	case CompressedPixelFormat::IMGIC_YVU10_2P_444_PK16_32x2: return "IMGIC_YVU10_2P_444_PK16_32x2";
+	case CompressedPixelFormat::IMGIC_YUV_2P_422_8x8: return "IMGIC_YUV_2P_422_8x8";
+	case CompressedPixelFormat::IMGIC_YUV_2P_422_16x4: return "IMGIC_YUV_2P_422_16x4";
+	case CompressedPixelFormat::IMGIC_YUV_2P_422_32x2: return "IMGIC_YUV_2P_422_32x2";
+	case CompressedPixelFormat::IMGIC_YVU_2P_422_8x8: return "IMGIC_YVU_2P_422_8x8";
+	case CompressedPixelFormat::IMGIC_YVU_2P_422_16x4: return "IMGIC_YVU_2P_422_16x4";
+	case CompressedPixelFormat::IMGIC_YVU_2P_422_32x2: return "IMGIC_YVU_2P_422_32x2";
+	case CompressedPixelFormat::IMGIC_YVU10_2P_422_PK16_8x8: return "IMGIC_YVU10_2P_422_PK16_8x8";
+	case CompressedPixelFormat::IMGIC_YVU10_2P_422_PK16_16x4: return "IMGIC_YVU10_2P_422_PK16_16x4";
+	case CompressedPixelFormat::IMGIC_YVU10_2P_422_PK16_32x2: return "IMGIC_YVU10_2P_422_PK16_32x2";
+	case CompressedPixelFormat::IMGIC_YUV_2P_420_8x8: return "IMGIC_YUV_2P_420_8x8";
+	case CompressedPixelFormat::IMGIC_YUV_2P_420_16x4: return "IMGIC_YUV_2P_420_16x4";
+	case CompressedPixelFormat::IMGIC_YUV_2P_420_32x2: return "IMGIC_YUV_2P_420_32x2";
+	case CompressedPixelFormat::IMGIC_YVU_2P_420_8x8: return "IMGIC_YVU_2P_420_8x8";
+	case CompressedPixelFormat::IMGIC_YVU_2P_420_16x4: return "IMGIC_YVU_2P_420_16x4";
+	case CompressedPixelFormat::IMGIC_YVU_2P_420_32x2: return "IMGIC_YVU_2P_420_32x2";
+	case CompressedPixelFormat::IMGIC_YVU10_2P_420_PK16_8x8: return "IMGIC_YVU10_2P_420_PK16_8x8";
+	case CompressedPixelFormat::IMGIC_YVU10_2P_420_PK16_16x4: return "IMGIC_YVU10_2P_420_PK16_16x4";
+	case CompressedPixelFormat::IMGIC_YVU10_2P_420_PK16_32x2: return "IMGIC_YVU10_2P_420_PK16_32x2";
+	case CompressedPixelFormat::IMGIC_YUV_3P_444_8x8: return "IMGIC_YUV_3P_444_8x8";
+	case CompressedPixelFormat::IMGIC_YUV_3P_444_16x4: return "IMGIC_YUV_3P_444_16x4";
+	case CompressedPixelFormat::IMGIC_YUV_3P_444_32x2: return "IMGIC_YUV_3P_444_32x2";
+	case CompressedPixelFormat::IMGIC_YUV10_3P_444_PK16_8x8: return "IMGIC_YUV10_3P_444_PK16_8x8";
+	case CompressedPixelFormat::IMGIC_YUV10_3P_444_PK16_16x4: return "IMGIC_YUV10_3P_444_PK16_16x4";
+	case CompressedPixelFormat::IMGIC_YUV10_3P_444_PK16_32x2: return "IMGIC_YUV10_3P_444_PK16_32x2";
+	case CompressedPixelFormat::IMGIC_YUV_3P_420_8x8: return "IMGIC_YUV_3P_420_8x8";
+	case CompressedPixelFormat::IMGIC_YUV_3P_420_16x4: return "IMGIC_YUV_3P_420_16x4";
+	case CompressedPixelFormat::IMGIC_YUV_3P_420_32x2: return "IMGIC_YUV_3P_420_32x2";
+	case CompressedPixelFormat::IMGIC_YVU_3P_420_8x8: return "IMGIC_YVU_3P_420_8x8";
+	case CompressedPixelFormat::IMGIC_YVU_3P_420_16x4: return "IMGIC_YVU_3P_420_16x4";
+	case CompressedPixelFormat::IMGIC_YVU_3P_420_32x2: return "IMGIC_YVU_3P_420_32x2";
+
 	default: return "UNKNOWN_FORMAT";
 	}
 }

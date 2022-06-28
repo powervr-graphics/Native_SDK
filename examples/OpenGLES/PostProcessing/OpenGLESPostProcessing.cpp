@@ -332,7 +332,8 @@ struct StatuePass
 	GLuint buffer;
 	void* mappedMemory;
 	bool isBufferStorageExtSupported;
-
+	bool mapBufferCoherent;
+	bool mapBufferPersistent;
 	GLint exposureUniformLocation;
 
 	// 3D Model
@@ -341,10 +342,13 @@ struct StatuePass
 	/// <summary>Initialises the Statue pass.</summary>
 	/// <param name="assetProvider">The pvr::IAssetProvider which will be used for loading resources from memory.</param>
 	/// <param name="isBufferStorageExtSupported">True if GL_EXT_buffer_storage is supported.</param>
-	void init(pvr::IAssetProvider& assetProvider, bool isBufferStorageExtSupported_)
+	/// <param name="mapBufferCoherent">True if -coherent command line flag is detected.</param>
+	/// <param name="mapBufferPersistent">True if GL_EXT_buffer_storage is supported.</param>
+	void init(pvr::IAssetProvider& assetProvider, bool isBufferStorageExtSupported_, bool mapBufferCoherent_, bool mapBufferPersistent_)
 	{
 		this->isBufferStorageExtSupported = isBufferStorageExtSupported_;
-
+		this->mapBufferCoherent = mapBufferCoherent_;
+		this->mapBufferPersistent = mapBufferPersistent_;
 		// Load the scene
 		scene = pvr::assets::loadModel(assetProvider, SceneFile);
 		pvr::utils::appendSingleBuffersFromModel(*scene, vbos, ibos);
@@ -399,14 +403,16 @@ struct StatuePass
 		gl::BindBuffer(GL_UNIFORM_BUFFER, buffer);
 		gl::BufferData(GL_UNIFORM_BUFFER, (size_t)structuredBufferView.getSize(), nullptr, GL_DYNAMIC_DRAW);
 
-		// if GL_EXT_buffer_storage is supported then map the buffer upfront and never unmap it
+		// if GL_EXT_buffer_storage is supported then map the buffer upfront (persistent) and never unmap it, if -coherent flag is detected, then map coherently
 		if (isBufferStorageExtSupported)
 		{
 			gl::BindBuffer(GL_COPY_READ_BUFFER, buffer);
-			gl::ext::BufferStorageEXT(GL_COPY_READ_BUFFER, (GLsizei)structuredBufferView.getSize(), 0, GL_MAP_WRITE_BIT_EXT | GL_MAP_PERSISTENT_BIT_EXT | GL_MAP_COHERENT_BIT_EXT);
+			gl::ext::BufferStorageEXT(GL_COPY_READ_BUFFER, (GLsizei)structuredBufferView.getSize(), 0,
+				GL_MAP_WRITE_BIT_EXT | GL_MAP_PERSISTENT_BIT_EXT * mapBufferPersistent | GL_MAP_COHERENT_BIT_EXT * mapBufferCoherent);
 
-			mappedMemory = gl::MapBufferRange(
-				GL_COPY_READ_BUFFER, 0, static_cast<GLsizeiptr>(structuredBufferView.getSize()), GL_MAP_WRITE_BIT_EXT | GL_MAP_PERSISTENT_BIT_EXT | GL_MAP_COHERENT_BIT_EXT);
+			mappedMemory = gl::MapBufferRange(GL_COPY_READ_BUFFER, 0, static_cast<GLsizeiptr>(structuredBufferView.getSize()),
+				GL_MAP_WRITE_BIT_EXT | GL_MAP_PERSISTENT_BIT_EXT * mapBufferPersistent | GL_MAP_COHERENT_BIT_EXT * mapBufferCoherent |
+					GL_MAP_FLUSH_EXPLICIT_BIT_EXT * mapBufferPersistent);
 			structuredBufferView.pointToMappedMemory(mappedMemory);
 		}
 	}
@@ -441,7 +447,7 @@ struct StatuePass
 		glm::mat4 worldMatrix = mModel * scene->getWorldMatrix(scene->getNode(0).getObjectId());
 		glm::mat4 mvpMatrix = viewProjectionMatrix * worldMatrix;
 
-		if (!isBufferStorageExtSupported)
+		if (!mapBufferPersistent)
 		{
 			gl::BindBuffer(GL_UNIFORM_BUFFER, buffer);
 			mappedMemory = gl::MapBufferRange(GL_UNIFORM_BUFFER, 0, (size_t)structuredBufferView.getSize(), GL_MAP_WRITE_BIT);
@@ -451,7 +457,19 @@ struct StatuePass
 		structuredBufferView.getElementByName(BufferEntryNames::PerMesh::MVPMatrix).setValue(mvpMatrix);
 		structuredBufferView.getElementByName(BufferEntryNames::PerMesh::WorldMatrix).setValue(worldMatrix);
 
-		if (!isBufferStorageExtSupported) { gl::UnmapBuffer(GL_UNIFORM_BUFFER); }
+		// Deal with buffer writes based on memory properties (coherent/persistent)
+		if (mapBufferPersistent && !mapBufferCoherent)
+		{
+			gl::BindBuffer(GL_UNIFORM_BUFFER, buffer);
+			gl::FlushMappedBufferRange(GL_UNIFORM_BUFFER, 0, static_cast<GLsizeiptr>(structuredBufferView.getSize()));
+		}
+		else if (mapBufferCoherent)
+		{
+			GLsync sync = gl::FenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
+			gl::ClientWaitSync(sync, GL_SYNC_FLUSH_COMMANDS_BIT, GL_TIMEOUT_IGNORED);
+			gl::DeleteSync(sync);
+		}
+		if (!mapBufferPersistent) { gl::UnmapBuffer(GL_UNIFORM_BUFFER); }
 	}
 
 	/// <summary>Draws an assets::Mesh after the model view matrix has been set and the material prepared.</summary>
@@ -1042,7 +1060,9 @@ struct DualFilterBlurPass
 	void getUpSampleConfigUniformLocations(GLint upSampleBlurConfigLocations_[8], GLuint program, const std::string& uniformLocationName)
 	{
 		for (uint32_t i = 0; i < 8; ++i)
-		{ upSampleBlurConfigLocations_[i] = gl::GetUniformLocation(program, pvr::strings::createFormatted(std::string(uniformLocationName + "[%i]").c_str(), i).c_str()); }
+		{
+			upSampleBlurConfigLocations_[i] = gl::GetUniformLocation(program, pvr::strings::createFormatted(std::string(uniformLocationName + "[%i]").c_str(), i).c_str());
+		}
 	}
 
 	void setUpSampleConfigUniforms(GLint upSampleBlurConfigLocations_[8], const glm::vec2 upSampleConfigs[8])
@@ -1479,7 +1499,9 @@ struct GaussianBlurPass
 	virtual void generatePerConfigGaussianCoefficients()
 	{
 		for (uint32_t i = 0; i < DemoConfigurations::NumDemoConfigurations; ++i)
-		{ generateGaussianCoefficients(DemoConfigurations::Configurations[i].gaussianConfig, false, false, gaussianWeights[i], gaussianOffsets[i]); }
+		{
+			generateGaussianCoefficients(DemoConfigurations::Configurations[i].gaussianConfig, false, false, gaussianWeights[i], gaussianOffsets[i]);
+		}
 	}
 
 	/// <summary>Generates the Gaussian weights and offsets strings used by the various Gaussian shaders.</summary>
@@ -1593,7 +1615,9 @@ struct ComputeBlurPass : public GaussianBlurPass
 	void generatePerConfigGaussianCoefficients() override
 	{
 		for (uint32_t i = 0; i < DemoConfigurations::NumDemoConfigurations; ++i)
-		{ generateGaussianCoefficients(DemoConfigurations::Configurations[i].computeGaussianConfig, false, false, gaussianWeights[i], gaussianOffsets[i]); }
+		{
+			generateGaussianCoefficients(DemoConfigurations::Configurations[i].computeGaussianConfig, false, false, gaussianWeights[i], gaussianOffsets[i]);
+		}
 	}
 
 	/// <summary>Generates the Gaussian weights and offsets strings used by the various Gaussian shaders.</summary>
@@ -1704,7 +1728,9 @@ struct LinearGaussianBlurPass : public GaussianBlurPass
 	void generatePerConfigGaussianCoefficients() override
 	{
 		for (uint32_t i = 0; i < DemoConfigurations::NumDemoConfigurations; ++i)
-		{ generateGaussianCoefficients(DemoConfigurations::Configurations[i].linearGaussianConfig, true, false, gaussianWeights[i], gaussianOffsets[i]); }
+		{
+			generateGaussianCoefficients(DemoConfigurations::Configurations[i].linearGaussianConfig, true, false, gaussianWeights[i], gaussianOffsets[i]);
+		}
 	}
 
 	/// <summary>Generates the Gaussian weights and offsets strings used by the various Gaussian shaders.</summary>
@@ -1821,7 +1847,9 @@ struct TruncatedLinearGaussianBlurPass : public LinearGaussianBlurPass
 	void generatePerConfigGaussianCoefficients() override
 	{
 		for (uint32_t i = 0; i < DemoConfigurations::NumDemoConfigurations; ++i)
-		{ generateGaussianCoefficients(DemoConfigurations::Configurations[i].truncatedLinearGaussianConfig, true, true, gaussianWeights[i], gaussianOffsets[i]); }
+		{
+			generateGaussianCoefficients(DemoConfigurations::Configurations[i].truncatedLinearGaussianConfig, true, true, gaussianWeights[i], gaussianOffsets[i]);
+		}
 	}
 };
 
@@ -2035,7 +2063,6 @@ class OpenGLESPostProcessing : public pvr::Shell
 	uint32_t _currentScene;
 
 	bool _isIMGFramebufferDownsampleSupported;
-	bool _isBufferStorageExtSupported;
 
 	bool _renderOnlyBloom;
 
@@ -2046,6 +2073,17 @@ class OpenGLESPostProcessing : public pvr::Shell
 
 	float _linearExposure;
 	float _exposure;
+
+	//// Platform agnostic command line arguement parser
+	// pvr::CommandLine _cmdLine{};
+
+	// If set to true, coherent buffer mapping is enabled otherwise it is disabled
+	bool _mapBufferCoherent;
+
+	// If set to true, persistent buffer mapping is enabled otherwise it is disabled
+	bool _mapBufferPersistent;
+
+	bool _isBufferStorageExtSupported;
 
 public:
 	OpenGLESPostProcessing() {}
@@ -2102,6 +2140,8 @@ pvr::Result OpenGLESPostProcessing::initApplication()
 
 	_isIMGFramebufferDownsampleSupported = false;
 	_isBufferStorageExtSupported = false;
+	_mapBufferCoherent = false;
+	_mapBufferPersistent = true;
 
 	// Handle command line arguments including "blurmode", "blursize" and "bloom"
 	const pvr::CommandLine& commandOptions = getCommandLine();
@@ -2177,6 +2217,17 @@ pvr::Result OpenGLESPostProcessing::initView()
 	// We make use of GL_EXT_buffer_storage wherever possible
 	_isBufferStorageExtSupported = gl::isGlExtensionSupported("GL_EXT_buffer_storage");
 
+	// Handle command line arguments
+	const pvr::CommandLine& commandOptions = getCommandLine();
+
+	// If GL_EXT_buffer_storage is supported, allow for persistent and coherent mapping, else disable both.
+	if (_isBufferStorageExtSupported) { _mapBufferPersistent = _mapBufferPersistent || commandOptions.getBoolOptionSetTrueIfPresent("-coherent", _mapBufferCoherent); }
+	else
+	{
+		_mapBufferCoherent = false;
+		_mapBufferPersistent = false;
+	}
+
 	_luminanceColorFormat = GL_R16F;
 	// Only a subset of formats have support for Image Load Store.
 	// A subset of these also support linear filtering.
@@ -2214,7 +2265,7 @@ pvr::Result OpenGLESPostProcessing::initView()
 	// Create the samplers used for various texture sampling
 	createSamplers();
 
-	_statuePass.init(*this, _isBufferStorageExtSupported);
+	_statuePass.init(*this, _isBufferStorageExtSupported, _mapBufferCoherent, _mapBufferPersistent);
 	_skyBoxPass.init(*this);
 
 	createBlurFramebuffers();
@@ -2379,48 +2430,40 @@ pvr::Result OpenGLESPostProcessing::renderFrame()
 		// Render the bloom
 		switch (_blurMode)
 		{
-		case (BloomMode::GaussianOriginal):
-		{
+		case (BloomMode::GaussianOriginal): {
 			_gaussianBlurPass.render(_blurFramebuffers[1].attachments[static_cast<uint32_t>(BloomAttachments::Bloom)], _blurFramebuffers[0], _blurFramebuffers[1], _samplerNearest);
 			break;
 		}
 
-		case (BloomMode::GaussianLinear):
-		{
+		case (BloomMode::GaussianLinear): {
 			_linearGaussianBlurPass.render(_blurFramebuffers[1].attachments[static_cast<uint32_t>(BloomAttachments::Bloom)], _blurFramebuffers[0], _blurFramebuffers[1], _samplerBilinear);
 			break;
 		}
-		case (BloomMode::GaussianLinearTruncated):
-		{
+		case (BloomMode::GaussianLinearTruncated): {
 			_truncatedLinearGaussianBlurPass.render(
 				_blurFramebuffers[1].attachments[static_cast<uint32_t>(BloomAttachments::Bloom)], _blurFramebuffers[0], _blurFramebuffers[1], _samplerBilinear);
 			break;
 		}
-		case (BloomMode::Compute):
-		{
+		case (BloomMode::Compute): {
 			_computeBlurPass.render(_computeBlurFramebuffers[1].attachments[static_cast<uint32_t>(BloomAttachments::Bloom)], _computeBlurFramebuffers[0],
 				_computeBlurFramebuffers[1], _computeLuminanceColorFormat);
 			break;
 		}
-		case (BloomMode::Kawase):
-		{
+		case (BloomMode::Kawase): {
 			_kawaseBlurPass.render(_blurFramebuffers[1].attachments[static_cast<uint32_t>(BloomAttachments::Bloom)], _blurFramebuffers, 2, _samplerBilinear);
 			break;
 		}
-		case (BloomMode::DualFilter):
-		{
+		case (BloomMode::DualFilter): {
 			_dualFilterBlurPass.render(_offScreenFramebuffer.attachments[static_cast<uint32_t>(OffscreenAttachments::Luminance)], _offScreenTexture, _context->getOnScreenFbo(),
 				_samplerBilinear, _renderOnlyBloom, _linearExposure);
 			break;
 		}
-		case (BloomMode::TentFilter):
-		{
+		case (BloomMode::TentFilter): {
 			_downAndTentFilterBlurPass.render(_offScreenFramebuffer.attachments[static_cast<uint32_t>(OffscreenAttachments::Luminance)], _offScreenTexture,
 				_context->getOnScreenFbo(), _samplerBilinear, _renderOnlyBloom, _linearExposure);
 			break;
 		}
-		case (BloomMode::HybridGaussian):
-		{
+		case (BloomMode::HybridGaussian): {
 			_hybridGaussianBlurPass.render(_computeBlurFramebuffers[1].attachments[static_cast<uint32_t>(BloomAttachments::Bloom)], _computeBlurFramebuffers[0],
 				_computeBlurFramebuffers[1], _samplerBilinear, _computeLuminanceColorFormat);
 			break;
@@ -2437,48 +2480,39 @@ pvr::Result OpenGLESPostProcessing::renderFrame()
 		// Ensure the post bloom pass uses the correct blurred image for the current blur mode
 		switch (_blurMode)
 		{
-		case (BloomMode::GaussianOriginal):
-		{
+		case (BloomMode::GaussianOriginal): {
 			blurredTexture = _blurFramebuffers[1].attachments[static_cast<uint32_t>(BloomAttachments::Bloom)];
 			break;
 		}
-		case (BloomMode::GaussianLinear):
-		{
+		case (BloomMode::GaussianLinear): {
 			blurredTexture = _blurFramebuffers[1].attachments[static_cast<uint32_t>(BloomAttachments::Bloom)];
 			break;
 		}
-		case (BloomMode::GaussianLinearTruncated):
-		{
+		case (BloomMode::GaussianLinearTruncated): {
 			blurredTexture = _blurFramebuffers[1].attachments[static_cast<uint32_t>(BloomAttachments::Bloom)];
 			break;
 		}
-		case (BloomMode::Compute):
-		{
+		case (BloomMode::Compute): {
 			blurredTexture = _computeBlurFramebuffers[1].attachments[static_cast<uint32_t>(BloomAttachments::Bloom)];
 			break;
 		}
-		case (BloomMode::Kawase):
-		{
+		case (BloomMode::Kawase): {
 			blurredTexture = _blurFramebuffers[_kawaseBlurPass.getBlurredImageIndex()].attachments[static_cast<uint32_t>(BloomAttachments::Bloom)];
 			break;
 		}
-		case (BloomMode::HybridGaussian):
-		{
+		case (BloomMode::HybridGaussian): {
 			blurredTexture = _computeBlurFramebuffers[1].attachments[static_cast<uint32_t>(BloomAttachments::Bloom)];
 			break;
 		}
-		case (BloomMode::DualFilter):
-		{
+		case (BloomMode::DualFilter): {
 			blurredTexture = _dualFilterBlurPass.getBlurredTexture();
 			break;
 		}
-		case (BloomMode::TentFilter):
-		{
+		case (BloomMode::TentFilter): {
 			blurredTexture = _downAndTentFilterBlurPass.getBlurredTexture();
 			break;
 		}
-		case (BloomMode::NoBloom):
-		{
+		case (BloomMode::NoBloom): {
 			blurredTexture = _blurFramebuffers[1].attachments[static_cast<uint32_t>(BloomAttachments::Bloom)];
 			break;
 		}
@@ -2544,72 +2578,65 @@ void OpenGLESPostProcessing::updateBlurDescription()
 {
 	switch (_blurMode)
 	{
-	case (BloomMode::NoBloom):
-	{
+	case (BloomMode::NoBloom): {
 		_currentBlurString = BloomStrings[static_cast<uint32_t>(_blurMode)];
 		break;
 	}
-	case (BloomMode::GaussianOriginal):
-	{
+	case (BloomMode::GaussianOriginal): {
 		uint32_t numSamples = static_cast<uint32_t>(_gaussianBlurPass.gaussianOffsets[_currentDemoConfiguration].size());
 		_currentBlurString = BloomStrings[static_cast<uint32_t>(_blurMode)] + "\n" +
 			pvr::strings::createFormatted("Kernel Size = %u (%u + %u taps)", DemoConfigurations::Configurations[_currentDemoConfiguration].gaussianConfig, numSamples, numSamples);
 		break;
 	}
-	case (BloomMode::GaussianLinear):
-	{
+	case (BloomMode::GaussianLinear): {
 		uint32_t numSamples = static_cast<uint32_t>(_linearGaussianBlurPass.gaussianOffsets[_currentDemoConfiguration].size());
 		_currentBlurString = BloomStrings[static_cast<uint32_t>(_blurMode)] + "\n" +
 			pvr::strings::createFormatted("Kernel Size = %u (%u + %u taps)", DemoConfigurations::Configurations[_currentDemoConfiguration].linearGaussianConfig, numSamples, numSamples);
 		break;
 	}
-	case (BloomMode::GaussianLinearTruncated):
-	{
+	case (BloomMode::GaussianLinearTruncated): {
 		uint32_t numSamples = static_cast<uint32_t>(_truncatedLinearGaussianBlurPass.gaussianOffsets[_currentDemoConfiguration].size());
 		_currentBlurString = BloomStrings[static_cast<uint32_t>(_blurMode)] + "\n" +
 			pvr::strings::createFormatted(
 				"Kernel Size = %u (%u + %u taps)", DemoConfigurations::Configurations[_currentDemoConfiguration].truncatedLinearGaussianConfig, numSamples, numSamples);
 		break;
 	}
-	case (BloomMode::Compute):
-	{
+	case (BloomMode::Compute): {
 		uint32_t numSamples = static_cast<uint32_t>(_computeBlurPass.gaussianOffsets[_currentDemoConfiguration].size());
 		_currentBlurString = BloomStrings[static_cast<uint32_t>(_blurMode)] + "\n" +
 			pvr::strings::createFormatted(
 				"Kernel Size = %u (Sliding Average)", DemoConfigurations::Configurations[_currentDemoConfiguration].computeGaussianConfig, numSamples, numSamples);
 		break;
 	}
-	case (BloomMode::DualFilter):
-	{
+	case (BloomMode::DualFilter): {
 		uint32_t numSamples = _dualFilterBlurPass.blurIterations / 2;
 		_currentBlurString = BloomStrings[static_cast<uint32_t>(_blurMode)] + "\n" +
 			pvr::strings::createFormatted(
 				"Iterations = %u (%u Downsamples, %u Upsamples)", DemoConfigurations::Configurations[_currentDemoConfiguration].dualFilterConfig, numSamples, numSamples);
 		break;
 	}
-	case (BloomMode::TentFilter):
-	{
+	case (BloomMode::TentFilter): {
 		uint32_t numSamples = _downAndTentFilterBlurPass.blurIterations / 2;
 		_currentBlurString = BloomStrings[static_cast<uint32_t>(_blurMode)] + "\n" +
 			pvr::strings::createFormatted(
 				"Iterations = %u (%u Downsamples, %u Upsamples)", DemoConfigurations::Configurations[_currentDemoConfiguration].tentFilterConfig, numSamples, numSamples);
 		break;
 	}
-	case (BloomMode::HybridGaussian):
-	{
+	case (BloomMode::HybridGaussian): {
 		uint32_t numComputeSamples = static_cast<uint32_t>(_hybridGaussianBlurPass.computeBlurPass->gaussianOffsets[_currentDemoConfiguration].size());
 		uint32_t numLinearSamples = static_cast<uint32_t>(_hybridGaussianBlurPass.linearBlurPass->gaussianOffsets[_currentDemoConfiguration].size());
 		_currentBlurString = BloomStrings[static_cast<uint32_t>(_blurMode)] + "\n" +
 			pvr::strings::createFormatted("Horizontal Compute %u taps, Vertical Linear Gaussian %u taps)", numComputeSamples, numLinearSamples);
 		break;
 	}
-	case (BloomMode::Kawase):
-	{
+	case (BloomMode::Kawase): {
 		std::string kernelString = "";
 		uint32_t numIterations = _kawaseBlurPass.blurIterations;
 
 		for (uint32_t i = 0; i < numIterations - 1; ++i)
-		{ kernelString += pvr::strings::createFormatted("%u,", DemoConfigurations::Configurations[_currentDemoConfiguration].kawaseConfig.kernel[i]); }
+		{
+			kernelString += pvr::strings::createFormatted("%u,", DemoConfigurations::Configurations[_currentDemoConfiguration].kawaseConfig.kernel[i]);
+		}
 		kernelString += pvr::strings::createFormatted("%u", DemoConfigurations::Configurations[_currentDemoConfiguration].kawaseConfig.kernel[numIterations - 1]);
 
 		_currentBlurString = BloomStrings[static_cast<uint32_t>(_blurMode)] + "\n" + pvr::strings::createFormatted("%u Iterations: %s", numIterations, kernelString.c_str());
@@ -2635,14 +2662,15 @@ void OpenGLESPostProcessing::createSceneBuffer()
 	gl::BindBuffer(GL_UNIFORM_BUFFER, _sceneBuffer);
 	gl::BufferData(GL_UNIFORM_BUFFER, static_cast<GLsizeiptr>(_sceneBufferView.getSize()), nullptr, GL_DYNAMIC_DRAW);
 
-	// if GL_EXT_buffer_storage is supported then map the buffer upfront and never unmap it
+	// if GL_EXT_buffer_storage is supported and -coherent option is selected then map the buffer upfront and never unmap it
 	if (_isBufferStorageExtSupported)
 	{
 		gl::BindBuffer(GL_COPY_READ_BUFFER, _sceneBuffer);
-		gl::ext::BufferStorageEXT(GL_COPY_READ_BUFFER, (GLsizei)_sceneBufferView.getSize(), 0, GL_MAP_WRITE_BIT_EXT | GL_MAP_PERSISTENT_BIT_EXT | GL_MAP_COHERENT_BIT_EXT);
+		gl::ext::BufferStorageEXT(GL_COPY_READ_BUFFER, (GLsizei)_sceneBufferView.getSize(), 0,
+			GL_MAP_WRITE_BIT_EXT | GL_MAP_PERSISTENT_BIT_EXT * _mapBufferPersistent | GL_MAP_COHERENT_BIT_EXT * _mapBufferCoherent);
 
-		void* memory = gl::MapBufferRange(
-			GL_COPY_READ_BUFFER, 0, static_cast<GLsizeiptr>(_sceneBufferView.getSize()), GL_MAP_WRITE_BIT_EXT | GL_MAP_PERSISTENT_BIT_EXT | GL_MAP_COHERENT_BIT_EXT);
+		void* memory = gl::MapBufferRange(GL_COPY_READ_BUFFER, 0, static_cast<GLsizeiptr>(_sceneBufferView.getSize()),
+			GL_MAP_WRITE_BIT_EXT | GL_MAP_PERSISTENT_BIT_EXT * _mapBufferPersistent | GL_MAP_COHERENT_BIT_EXT * _mapBufferCoherent | GL_MAP_FLUSH_EXPLICIT_BIT_EXT * _mapBufferPersistent);
 		_sceneBufferView.pointToMappedMemory(memory);
 	}
 }
@@ -2863,7 +2891,7 @@ void OpenGLESPostProcessing::updateDynamicSceneData()
 
 	{
 		void* mappedMemory = nullptr;
-		if (!_isBufferStorageExtSupported)
+		if (!_mapBufferPersistent)
 		{
 			gl::BindBuffer(GL_UNIFORM_BUFFER, _sceneBuffer);
 			mappedMemory = gl::MapBufferRange(GL_UNIFORM_BUFFER, 0, static_cast<GLsizeiptr>(_sceneBufferView.getSize()), GL_MAP_WRITE_BIT);
@@ -2873,7 +2901,14 @@ void OpenGLESPostProcessing::updateDynamicSceneData()
 		_sceneBufferView.getElementByName(BufferEntryNames::Scene::InverseViewProjectionMatrix).setValue(glm::inverse(_viewProjectionMatrix));
 		_sceneBufferView.getElementByName(BufferEntryNames::Scene::EyePosition).setValue(_camera.getCameraPosition());
 
-		if (!_isBufferStorageExtSupported) { gl::UnmapBuffer(GL_UNIFORM_BUFFER); }
+		if (_mapBufferPersistent && !_mapBufferCoherent) { gl::FlushMappedBufferRange(GL_UNIFORM_BUFFER, 0, static_cast<GLsizeiptr>(_sceneBufferView.getSize())); }
+		else if (_mapBufferCoherent)
+		{
+			GLsync sync = gl::FenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
+			gl::ClientWaitSync(sync, GL_SYNC_FLUSH_COMMANDS_BIT, GL_TIMEOUT_IGNORED);
+			gl::DeleteSync(sync);
+		}
+		if (!_mapBufferPersistent) { gl::UnmapBuffer(GL_UNIFORM_BUFFER); }
 	}
 }
 
@@ -2930,44 +2965,36 @@ void OpenGLESPostProcessing::updateDemoConfigs()
 {
 	switch (_blurMode)
 	{
-	case (BloomMode::GaussianOriginal):
-	{
+	case (BloomMode::GaussianOriginal): {
 		_gaussianBlurPass.updateKernelConfig(_currentDemoConfiguration);
 		break;
 	}
-	case (BloomMode::GaussianLinear):
-	{
+	case (BloomMode::GaussianLinear): {
 		_linearGaussianBlurPass.updateKernelConfig(_currentDemoConfiguration);
 		break;
 	}
-	case (BloomMode::GaussianLinearTruncated):
-	{
+	case (BloomMode::GaussianLinearTruncated): {
 		_truncatedLinearGaussianBlurPass.updateKernelConfig(_currentDemoConfiguration);
 		break;
 	}
-	case (BloomMode::Kawase):
-	{
+	case (BloomMode::Kawase): {
 		_kawaseBlurPass.updateConfig(DemoConfigurations::Configurations[_currentDemoConfiguration].kawaseConfig.kernel,
 			DemoConfigurations::Configurations[_currentDemoConfiguration].kawaseConfig.numIterations);
 		break;
 	}
-	case (BloomMode::Compute):
-	{
+	case (BloomMode::Compute): {
 		_computeBlurPass.updateKernelConfig(_currentDemoConfiguration);
 		break;
 	}
-	case (BloomMode::DualFilter):
-	{
+	case (BloomMode::DualFilter): {
 		_dualFilterBlurPass.updateConfig(DemoConfigurations::Configurations[_currentDemoConfiguration].dualFilterConfig);
 		break;
 	}
-	case (BloomMode::TentFilter):
-	{
+	case (BloomMode::TentFilter): {
 		_downAndTentFilterBlurPass.updateConfig(DemoConfigurations::Configurations[_currentDemoConfiguration].dualFilterConfig);
 		break;
 	}
-	case (BloomMode::HybridGaussian):
-	{
+	case (BloomMode::HybridGaussian): {
 		_truncatedLinearGaussianBlurPass.updateKernelConfig(_currentDemoConfiguration);
 		_computeBlurPass.updateKernelConfig(_currentDemoConfiguration);
 		break;
@@ -3007,23 +3034,20 @@ void OpenGLESPostProcessing::eventMappedInput(pvr::SimplifiedInput e)
 {
 	switch (e)
 	{
-	case pvr::SimplifiedInput::Up:
-	{
+	case pvr::SimplifiedInput::Up: {
 		_currentDemoConfiguration = (_currentDemoConfiguration + 1) % DemoConfigurations::NumDemoConfigurations;
 		updateBloomConfiguration();
 		_isManual = true;
 		break;
 	}
-	case pvr::SimplifiedInput::Down:
-	{
+	case pvr::SimplifiedInput::Down: {
 		if (_currentDemoConfiguration == 0) { _currentDemoConfiguration = DemoConfigurations::NumDemoConfigurations; }
 		_currentDemoConfiguration = (_currentDemoConfiguration - 1) % DemoConfigurations::NumDemoConfigurations;
 		updateBloomConfiguration();
 		_isManual = true;
 		break;
 	}
-	case pvr::SimplifiedInput::Left:
-	{
+	case pvr::SimplifiedInput::Left: {
 		uint32_t currentBloomMode = static_cast<uint32_t>(_blurMode);
 		currentBloomMode -= 1;
 		currentBloomMode = (currentBloomMode + static_cast<uint32_t>(BloomMode::NumBloomModes)) % static_cast<uint32_t>(BloomMode::NumBloomModes);
@@ -3032,8 +3056,7 @@ void OpenGLESPostProcessing::eventMappedInput(pvr::SimplifiedInput e)
 		_isManual = true;
 		break;
 	}
-	case pvr::SimplifiedInput::Right:
-	{
+	case pvr::SimplifiedInput::Right: {
 		uint32_t currentBloomMode = static_cast<uint32_t>(_blurMode);
 		currentBloomMode += 1;
 		currentBloomMode = (currentBloomMode + static_cast<uint32_t>(BloomMode::NumBloomModes)) % static_cast<uint32_t>(BloomMode::NumBloomModes);
@@ -3042,29 +3065,24 @@ void OpenGLESPostProcessing::eventMappedInput(pvr::SimplifiedInput e)
 		_isManual = true;
 		break;
 	}
-	case pvr::SimplifiedInput::ActionClose:
-	{
+	case pvr::SimplifiedInput::ActionClose: {
 		this->exitShell();
 		break;
 	}
-	case pvr::SimplifiedInput::Action1:
-	{
+	case pvr::SimplifiedInput::Action1: {
 		_renderOnlyBloom = !_renderOnlyBloom;
 		break;
 	}
-	case pvr::SimplifiedInput::Action2:
-	{
+	case pvr::SimplifiedInput::Action2: {
 		_animateObject = !_animateObject;
 		_animateCamera = !_animateCamera;
 		break;
 	}
-	case pvr::SimplifiedInput::Action3:
-	{
+	case pvr::SimplifiedInput::Action3: {
 		(++_currentScene) %= NumScenes;
 		break;
 	}
-	default:
-	{
+	default: {
 		break;
 	}
 	}

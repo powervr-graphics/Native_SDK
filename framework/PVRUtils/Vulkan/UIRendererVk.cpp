@@ -278,6 +278,40 @@ void UIRenderer::init(uint32_t width, uint32_t height, bool fullscreen, const Re
 	pvr::utils::endQueueDebugLabel(queue);
 }
 
+void UIRenderer::init(uint32_t width, uint32_t height, bool fullscreen, const pvrvk::RenderPass& renderpass, uint32_t subpass, bool isFrameBufferSrgb,
+	pvrvk::CommandPool& commandPool, pvrvk::Queue& queue, const pvrvk::ImageView& fontView, const pvr::TextureHeader& textureHeader, const pvrvk::Sampler& fontSampler,
+	bool createDefaultLogo, bool createDefaultTitle, uint32_t maxNumInstances, uint32_t maxNumSprites)
+{
+	// Start by initialising a basic UI render with no defaults being allocated
+	init(width, height, fullscreen, renderpass, subpass, isFrameBufferSrgb, commandPool, queue, false, false, false, maxNumInstances, maxNumSprites);
+
+	// Using the now established UI render, create the font
+	_defaultFont = createFont(fontView, textureHeader, fontSampler);
+	fontView->setObjectName("Custom user font for Ui Renderer");
+
+	// create the commandbuffer
+	CommandBuffer cmdBuffer = commandPool->allocateCommandBuffer();
+	cmdBuffer->setObjectName("PVRUtilsVk::UIRenderer::initCommandBufferPart2");
+	cmdBuffer->begin();
+	pvr::utils::beginCommandBufferDebugLabel(cmdBuffer, pvrvk::DebugUtilsLabel("PVRUtilsVk::UIRenderer::Batching UIRenderer Resource Upload"));
+
+	// Now that the font has been created we can create the defaults based on user input and they should use the correct font
+	if (createDefaultLogo) { initCreateDefaultSdkLogo(cmdBuffer); }
+	if (createDefaultTitle) { initCreateDefaultTitle(); }
+	pvr::utils::endCommandBufferDebugLabel(cmdBuffer);
+	cmdBuffer->end();
+
+	Fence fence = queue->getDevice()->createFence();
+
+	SubmitInfo submitInfo;
+	submitInfo.commandBuffers = &cmdBuffer;
+	submitInfo.numCommandBuffers = 1;
+	queue->submit(&submitInfo, 1, fence);
+	fence->wait();
+
+	pvr::utils::endQueueDebugLabel(queue);
+}
+
 void UIRenderer::initCreateDefaultSampler()
 {
 	pvrvk::SamplerCreateInfo samplerDesc;

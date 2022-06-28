@@ -18,7 +18,7 @@ layout(set = 3, binding = 0) uniform _per_frame
 perFrame;
 
 layout(location = 0) in highp vec3 inVertexPosition;
-layout(location = 1) in mediump vec3 inNormal;
+layout(location = 1) in highp vec3 inNormal;
 layout(location = 2) in mediump vec2 inTexCoords;
 
 layout(location = 0) out mediump vec2 uvs;

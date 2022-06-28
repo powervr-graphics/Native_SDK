@@ -120,7 +120,9 @@ public:
 		if (_isDirty[swapchain] & 0x01)
 		{
 			if (_text[_lastUpdateText]->getTextElement()->getString().length())
-			{ _text[swapchain]->getTextElement()->setText(_text[_lastUpdateText]->getTextElement()->getString()); }
+			{
+				_text[swapchain]->getTextElement()->setText(_text[_lastUpdateText]->getTextElement()->getString());
+			}
 			else
 			{
 				_text[swapchain]->getTextElement()->setText(_text[_lastUpdateText]->getTextElement()->getWString());
@@ -339,8 +341,9 @@ pvr::Result VulkanIntroducingUIRenderer::initView()
 	// Create the empty API objects.
 	_deviceResources = std::make_unique<DeviceResources>();
 
-	// Create instance and retrieve compatible physical devices
-	_deviceResources->instance = pvr::utils::createInstance(this->getApplicationName());
+	// Create a Vulkan 1.0 instance and retrieve compatible physical devices
+	pvr::utils::VulkanVersion VulkanVersion(1, 0, 0);
+	_deviceResources->instance = pvr::utils::createInstance(this->getApplicationName(), VulkanVersion, pvr::utils::InstanceExtensions(VulkanVersion));
 
 	if (_deviceResources->instance->getNumPhysicalDevices() == 0)
 	{
@@ -373,7 +376,9 @@ pvr::Result VulkanIntroducingUIRenderer::initView()
 	// validate the supported swapchain image usage
 	pvrvk::ImageUsageFlags swapchainImageUsage = pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT;
 	if (pvr::utils::isImageUsageSupportedBySurface(surfaceCapabilities, pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT))
-	{ swapchainImageUsage |= pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT; } // Retrieve the swapchain images and create corresponding depth stencil images per swap chain
+	{
+		swapchainImageUsage |= pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT;
+	} // Retrieve the swapchain images and create corresponding depth stencil images per swap chain
 	auto swapChainCreateOutput = pvr::utils::createSwapchainRenderpassFramebuffers(_deviceResources->device, surface, getDisplayAttributes(),
 		pvr::utils::CreateSwapchainParameters().setAllocator(_deviceResources->vmaAllocator).setColorImageUsageFlags(swapchainImageUsage));
 

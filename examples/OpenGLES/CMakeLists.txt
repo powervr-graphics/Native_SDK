@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.18)
 project(OpenGLESExamples)
 
 if (PVR_BUILD_OPENGLES2_EXAMPLES)
@@ -35,6 +35,7 @@ else()
 	BinaryShaders
 	Multithreading
 	Bumpmap
+	Shadows
 	)
 endif()
 

@@ -7,7 +7,7 @@ layout(location = 0) out mediump vec3 RayDir;
 layout(std140, set = 0, binding = 1) uniform Dynamic
 {
 	highp mat4 InvVPMatrix;
-	mediump vec4 EyePos;
+	highp vec4 EyePos;
 };
 
 void main()

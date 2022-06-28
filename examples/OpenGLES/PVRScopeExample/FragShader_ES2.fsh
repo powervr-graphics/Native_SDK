@@ -6,7 +6,7 @@ uniform mediump float SpecularExponent;  //How smooth is the object
 uniform mediump float Metallicity;  //How much is the specular light colored by the object's color
 uniform mediump float Reflectivity; //How much of the light is diffuse/specular
 
-varying mediump vec3 ViewNormal;
+varying highp vec3 ViewNormal;
 varying mediump vec2 TexCoord;
 
 const mediump float AMBIENT = 0.125;

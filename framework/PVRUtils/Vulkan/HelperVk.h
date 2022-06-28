@@ -89,7 +89,7 @@ inline uint8_t getNumSamplesFromSampleCountFlags(pvrvk::SampleCountFlags sampleC
 /// <summary>Infers the pvrvk::ImageAspectFlags from the pvrvk::Format.</summary>
 /// <param name="format">A format to infer pvrvk::ImageAspectFlags from</param>
 /// <returns>pvrvk::ImageAspectFlags inferred based on the pvrvk::Format provided</returns>
-pvrvk::ImageAspectFlags inferAspectFromFormat(pvrvk::Format format);
+pvrvk::ImageAspectFlags inferAspectFromFormat(pvrvk::Format format, uint32_t planeIndex = 0);
 
 /// <summary>Determines the number of color bits per pixel for the given pvrvk::Format.</summary>
 /// <param name="format">A format to calculate the number of bits for</param>
@@ -123,8 +123,9 @@ public:
 /// <summary>Creates a default set of debug utils messengers or debug callbacks using either VK_EXT_debug_utils or VK_EXT_debug_report respectively.
 /// The first callback will trigger an exception to be thrown when an error message is returned. The second callback will Log a message for errors and warnings.</summary>
 /// <param name="instance">The instance from which the debug utils messengers or debug callbacks will be created depending on support for VK_EXT_debug_utils or
+/// <param name="pUserData">Pointer to the user data supplied for the callback.</param>
 /// VK_EXT_debug_report respectively.</param> <returns>A pvr::utils::DebugUtilsCallbacks structure which keeps alive the debug utils callbacks created.</returns>
-DebugUtilsCallbacks createDebugUtilsCallbacks(pvrvk::Instance& instance);
+DebugUtilsCallbacks createDebugUtilsCallbacks(pvrvk::Instance& instance, void* pUserData = nullptr);
 
 /// <summary>Begins identifying a region of work submitted to this queue. The calls to beginDebugUtilsLabel and endDebugUtilsLabel must be matched and
 /// balanced.</summary>
@@ -473,7 +474,7 @@ pvrvk::Image uploadImage(pvrvk::Device& device, const Texture& texture, bool all
 pvrvk::ImageView loadAndUploadImageAndView(pvrvk::Device& device, const char* fileName, bool allowDecompress, pvrvk::CommandBuffer& commandBuffer, IAssetProvider& assetProvider,
 	pvrvk::ImageUsageFlags usageFlags = pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout finalLayout = pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL,
 	Texture* outAssetTexture = nullptr, vma::Allocator stagingBufferAllocator = nullptr, vma::Allocator imageAllocator = nullptr,
-	vma::AllocationCreateFlags imageAllocationCreateFlags = vma::AllocationCreateFlags::e_NONE);
+	vma::AllocationCreateFlags imageAllocationCreateFlags = vma::AllocationCreateFlags::e_NONE, const void* pNext = nullptr);
 
 /// <summary>Load and upload image to gpu. The upload command and staging buffers are recorded in the commandbuffer.</summary>
 /// <param name="device">The device to use to create the image and image view.</param>
@@ -536,7 +537,7 @@ pvrvk::Image loadAndUploadImage(pvrvk::Device& device, const std::string& fileNa
 pvrvk::ImageView loadAndUploadImageAndView(pvrvk::Device& device, const char* fileName, bool allowDecompress, pvrvk::SecondaryCommandBuffer& commandBuffer,
 	IAssetProvider& assetProvider, pvrvk::ImageUsageFlags usageFlags = pvrvk::ImageUsageFlags::e_SAMPLED_BIT,
 	pvrvk::ImageLayout finalLayout = pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, Texture* outAssetTexture = nullptr, vma::Allocator stagingBufferAllocator = nullptr,
-	vma::Allocator imageAllocator = nullptr, vma::AllocationCreateFlags imageAllocationCreateFlags = vma::AllocationCreateFlags::e_NONE);
+	vma::Allocator imageAllocator = nullptr, vma::AllocationCreateFlags imageAllocationCreateFlags = vma::AllocationCreateFlags::e_NONE, const void* pNext = nullptr);
 
 /// <summary>Load and upload image to gpu. The upload command and staging buffers are recorded in the commandbuffer.</summary>
 /// <param name="device">The device to use to create the image and image view.</param>
@@ -582,8 +583,13 @@ struct ImageUpdateInfo
 	// 3D texture Only. Derive all states above Except arrayIndex
 	int32_t offsetZ; //!< Valid for 3D texture updates only
 	uint32_t depth; //!< Valid for texture updates only
+
+	// YCbCr texture only
+	uint32_t numPlanes; //!< Valid for YCbCr texture updates only
+	uint32_t planeIndex; //!< Valid for YCbCr texture updates only
+
 	ImageUpdateInfo()
-		: offsetX(0), imageWidth(1), dataWidth(1), mipLevel(0), data(nullptr), dataSize(0), offsetY(0), imageHeight(1), dataHeight(1), cubeFace(0), offsetZ(0), depth(1)
+		: offsetX(0), imageWidth(1), dataWidth(1), mipLevel(0), data(nullptr), dataSize(0), offsetY(0), imageHeight(1), dataHeight(1), cubeFace(0), offsetZ(0), depth(1), numPlanes(1)
 	{}
 };
 
@@ -706,7 +712,7 @@ struct VulkanVersion
 	/// <param name="majorV">The major Vulkan version.</param>
 	/// <param name="minorV">The minor Vulkan version.</param>
 	/// <param name="patchV">The Vulkan patch version.</param>
-	VulkanVersion(uint32_t majorV = 1, uint32_t minorV = 1, uint32_t patchV = 0) : majorV(majorV), minorV(minorV), patchV(patchV) {}
+	VulkanVersion(uint32_t majorV = 1, uint32_t minorV = 0, uint32_t patchV = 0) : majorV(majorV), minorV(minorV), patchV(patchV) {}
 
 	/// <summary>Converts the major, minor and patch versions to a uint32_t which can be directly used when creating a Vulkan instance.</summary>
 	/// <returns>A uint32_t value which can be directly as the vulkan api version when creating a Vulkan instance set as pvrvk::ApplicationInfo.apiVersion</returns>
@@ -730,19 +736,24 @@ struct InstanceLayers : public pvrvk::VulkanLayerList
 /// <summary>Container for a list of instance extensions to be used for initiailising an instance using the helper function 'createInstanceAndSurface'.</summary>
 struct InstanceExtensions : public pvrvk::VulkanExtensionList
 {
-	/// <summary>Default constructor. Initialises a list of instance extensions to be used by default when using the Framework.</summary>
-	InstanceExtensions();
+	/// <summary>Default constructor. Initialises a list of instance extensions to be used by default when using the Framework. Changes based on the targetted instance
+	/// version</summary>
+	/// <param name="vkVersion">Targetted Vulkan version, defaults to 1.1</param>
+	InstanceExtensions(VulkanVersion vkVersion = VulkanVersion());
 };
 
 /// <summary>Container for a list of device extensions to be used for initiailising a device using the helper function 'createDeviceAndQueues'.</summary>
 struct DeviceExtensions : public pvrvk::VulkanExtensionList
 {
-	/// <summary>Default constructor. Initialises a list of device extensions to be used by default when using the Framework.</summary>
-	DeviceExtensions();
+	/// <summary>Default constructor. Initialises a list of device extensions to be used by default when using the Framework. Changes based on the targetted instance
+	/// version</summary>
+	/// <param name="vkVersion">Targetted Vulkan version, defaults to 1.1</param>
+	DeviceExtensions(VulkanVersion vkVersion = VulkanVersion());
 
-	/// <summary></summary>
-	/// <param name="extensionFeature"></param>
-	void addExtensionFeature(pvrvk::ExtensionFeatures& extensionFeature);
+	/// <summary>Add extension feature to the device extensions.</summary>
+	/// <param name="extensionFeature">Extension features for a physical device.</param>
+	/// <returns>Self</returns>
+	DeviceExtensions& addExtensionFeature(pvrvk::ExtensionFeatures& extensionFeature);
 
 	/// <summary>Helper function to add the fragment shading rate extension and feature.</summary>
 	/// <param name="physicalDevice">Reference to a physical device. Make sure it is capable of performing FSR with PhysicalDevice_::getFragmentShadingRateFeatures()</param>
@@ -767,9 +778,12 @@ private:
 /// current Vulkan implementation before setting as the ppEnabledExtensionNames member of the pvrvk::InstanceCreateInfo used when creating the Vulkan instance.</param>
 /// <param name="instanceLayers">An InstanceLayers structure which holds a list of instance layers which will be checked for compatibility with the current Vulkan
 /// implementation before setting as the ppEnabledLayerNames member of the pvrvk::InstanceCreateInfo used when creating the Vulkan instance.</param>
+/// <param name="InstanceValidationFlags">The flags required for the debug callback to log a message during instance creation and destruction</param>
 /// <returns>A pointer to the created Instance.</returns>
 pvrvk::Instance createInstance(const std::string& applicationName, VulkanVersion apiVersion = VulkanVersion(), const InstanceExtensions& instanceExtensions = InstanceExtensions(),
-	const InstanceLayers& instanceLayers = InstanceLayers());
+	const InstanceLayers& instanceLayers = InstanceLayers(),
+	const pvrvk::DebugUtilsMessageSeverityFlagsEXT InstanceValidationFlags = pvrvk::DebugUtilsMessageSeverityFlagsEXT::e_WARNING_BIT_EXT |
+		pvrvk::DebugUtilsMessageSeverityFlagsEXT::e_ERROR_BIT_EXT);
 
 /// <summary>A structure encapsulating the set of queue flags required for a particular queue retrieved via the helper function 'createDeviceAndQueues'.
 /// Optionally additionally providing a surface will indicate that the queue must support presentation via the provided surface.</summary>
@@ -1715,6 +1729,15 @@ bool takeScreenshot(pvrvk::Queue& queue, pvrvk::CommandPool& commandPool, pvrvk:
 /// <param name="vectorExtensionName">The physical device extensions to test availability</param>
 /// <returns>Vector with the indices of the physical devices that support all the extensions given in vectorExtensionNames.</returns>
 std::vector<int> validatePhysicalDeviceExtensions(const pvrvk::Instance instance, const std::vector<std::string>& vectorExtensionNames);
+
+/// <summary>Analyse if the image format provided with the image tiling option provided supports the format features provided as parameter.</summary>
+/// <param name="imageFormat">Image format to analyse.</param>
+/// <param name="imageTiling">Image tiling option to use when querying the format feature flags to query, currently implemented for tiling linear and tiling optimal options.</param>
+/// <param name="formatFeatureFlags">Format feature flags to query for the provided format and image tiling option.</param>
+/// <param name="instance">Vulkan instance.</param>
+/// <param name="physicalDevice">Physical device used for the test.</param>
+/// <returns>True if the image format given covers the requirements, false otherwise.</returns>
+bool formatWithTilingSupportsFeatureFlags(pvrvk::Format imageFormat, pvrvk::ImageTiling imageTiling, pvrvk::FormatFeatureFlags formatFeatureFlags, const pvrvk::Instance instance, pvrvk::PhysicalDevice physicalDevice);
 
 #pragma endregion
 } // namespace utils

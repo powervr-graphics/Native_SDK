@@ -148,7 +148,7 @@ private:
 	VkViewport _viewports[FrameworkCaps::MaxViewportRegions];
 	VkSpecializationInfo specializationInfos[FrameworkCaps::MaxSpecialisationInfos];
 	unsigned char specializationInfoData[FrameworkCaps::MaxSpecialisationInfos][FrameworkCaps::MaxSpecialisationInfoDataSize];
-	VkSpecializationMapEntry specilizationEntries[FrameworkCaps::MaxSpecialisationInfos][FrameworkCaps::MaxSpecialisationMapEntries];
+	std::vector<VkSpecializationMapEntry> specilizationEntries[FrameworkCaps::MaxSpecialisationInfos];
 
 public:
 	/// <summary>Default constructor</summary>
@@ -258,37 +258,43 @@ public:
 			uint32_t shaderIndex = 0;
 			if (gpcp.vertexShader.isActive())
 			{
+				specilizationEntries[0].resize(gpcp.vertexShader.getNumShaderConsts());
 				populateShaderInfo(gpcp.vertexShader.getShader()->getVkHandle(), ShaderStageFlags::e_VERTEX_BIT, gpcp.vertexShader.getEntryPoint(),
-					gpcp.vertexShader.getAllShaderConstants(), gpcp.vertexShader.getNumShaderConsts(), specializationInfos[0], specializationInfoData[0], specilizationEntries[0],
-					_shaders[shaderIndex]);
+					gpcp.vertexShader.getAllShaderConstants(), gpcp.vertexShader.getNumShaderConsts(), specializationInfos[0], specializationInfoData[0],
+					specilizationEntries[0].data(), _shaders[shaderIndex]);
 				++shaderIndex;
 			}
 			if (gpcp.fragmentShader.isActive())
 			{
+				specilizationEntries[1].resize(gpcp.fragmentShader.getNumShaderConsts());
 				populateShaderInfo(gpcp.fragmentShader.getShader()->getVkHandle(), ShaderStageFlags::e_FRAGMENT_BIT, gpcp.fragmentShader.getEntryPoint(),
 					gpcp.fragmentShader.getAllShaderConstants(), gpcp.fragmentShader.getNumShaderConsts(), specializationInfos[1], specializationInfoData[1],
-					specilizationEntries[1], _shaders[shaderIndex]);
+					specilizationEntries[1].data(), _shaders[shaderIndex]);
 				++shaderIndex;
 			}
 			if (gpcp.geometryShader.isActive())
 			{
+				specilizationEntries[2].resize(gpcp.geometryShader.getNumShaderConsts());
 				populateShaderInfo(gpcp.geometryShader.getShader()->getVkHandle(), ShaderStageFlags::e_GEOMETRY_BIT, gpcp.geometryShader.getEntryPoint(),
 					gpcp.geometryShader.getAllShaderConstants(), gpcp.geometryShader.getNumShaderConsts(), specializationInfos[2], specializationInfoData[2],
-					specilizationEntries[2], _shaders[shaderIndex]);
+					specilizationEntries[2].data(), _shaders[shaderIndex]);
 				++shaderIndex;
 			}
 			if (gpcp.tesselationStates.isControlShaderActive())
 			{
+				specilizationEntries[3].resize(gpcp.tesselationStates.getNumControlShaderConstants());
 				populateShaderInfo(gpcp.tesselationStates.getControlShader()->getVkHandle(), ShaderStageFlags::e_TESSELLATION_CONTROL_BIT,
 					gpcp.tesselationStates.getControlShaderEntryPoint(), gpcp.tesselationStates.getAllControlShaderConstants(),
-					gpcp.tesselationStates.getNumControlShaderConstants(), specializationInfos[3], specializationInfoData[3], specilizationEntries[3], _shaders[shaderIndex]);
+					gpcp.tesselationStates.getNumControlShaderConstants(), specializationInfos[3], specializationInfoData[3], specilizationEntries[3].data(), _shaders[shaderIndex]);
 				++shaderIndex;
 			}
 			if (gpcp.tesselationStates.isEvaluationShaderActive())
 			{
+				specilizationEntries[4].resize(gpcp.tesselationStates.getNumEvaluatinonShaderConstants());
 				populateShaderInfo(gpcp.tesselationStates.getEvaluationShader()->getVkHandle(), ShaderStageFlags::e_TESSELLATION_EVALUATION_BIT,
 					gpcp.tesselationStates.getEvaluationShaderEntryPoint(), gpcp.tesselationStates.getAllEvaluationShaderConstants(),
-					gpcp.tesselationStates.getNumEvaluatinonShaderConstants(), specializationInfos[4], specializationInfoData[4], specilizationEntries[4], _shaders[shaderIndex]);
+					gpcp.tesselationStates.getNumEvaluatinonShaderConstants(), specializationInfos[4], specializationInfoData[4], specilizationEntries[4].data(),
+					_shaders[shaderIndex]);
 				++shaderIndex;
 			}
 		}
@@ -440,7 +446,7 @@ struct ComputePipelinePopulate
 	unsigned char specializationInfoData[FrameworkCaps::MaxSpecialisationInfoDataSize];
 
 	/// <summary>Specialization entry mappings</summary>
-	VkSpecializationMapEntry specilizationEntries[FrameworkCaps::MaxSpecialisationMapEntries];
+	std::vector<VkSpecializationMapEntry> specilizationEntries;
 
 	/// <summary>Dereference operator - returns the underlying vulkan object</summary>
 	/// <returns>The vulkan object</returns>
@@ -459,8 +465,10 @@ struct ComputePipelinePopulate
 		createInfo.basePipelineIndex = cpcp.basePipelineIndex;
 		createInfo.layout = cpcp.pipelineLayout->getVkHandle();
 
+		specilizationEntries.resize(cpcp.computeShader.getNumShaderConsts());
+
 		populateShaderInfo(cpcp.computeShader.getShader()->getVkHandle(), ShaderStageFlags::e_COMPUTE_BIT, cpcp.computeShader.getEntryPoint(),
-			cpcp.computeShader.getAllShaderConstants(), cpcp.computeShader.getNumShaderConsts(), specializationInfos, specializationInfoData, specilizationEntries, _shader);
+			cpcp.computeShader.getAllShaderConstants(), cpcp.computeShader.getNumShaderConsts(), specializationInfos, specializationInfoData, specilizationEntries.data(), _shader);
 
 		createInfo.stage = _shader;
 	}

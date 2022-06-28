@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.18)
 project(VulkanIntroducingPVRVk)
 if(IOS)
 	message ("Skipping VulkanIntroducingPVRVk : Vulkan is not supported on iOS.")

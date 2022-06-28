@@ -7,7 +7,7 @@ layout(location = 0) out mediump vec3 outRayDir;
 layout(std140, binding = 0) uniform Dynamic
 {
 	highp mat4 InvVPMatrix;
-	mediump vec3 EyePos;
+	highp vec3 EyePos;
 }dynamicUbo;
 
 void main()
@@ -25,7 +25,7 @@ void main()
 	// Set position
 	gl_Position = vec4(positions[gl_VertexID], 1.0);
 
-	mediump vec4 WorldPos = dynamicUbo.InvVPMatrix * gl_Position;
+	highp vec4 WorldPos = dynamicUbo.InvVPMatrix * gl_Position;
 	WorldPos /= WorldPos.w;
 
 	// Calculate ray direction

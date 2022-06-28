@@ -56,7 +56,7 @@ void main()
 	mediump vec3 ldrColor = hdrColor / (1.0 + hdrColor);
 
 	// apply a simple vignette
-	mediump vec2 vtc = vec2(vTexCoords[0] - vec2(0.5));
+	highp vec2 vtc = vec2(vTexCoords[0] - vec2(0.5));
 	// determine the vector length of the centre position
 	mediump float lenPos = length(vtc);
 	mediump float vignette = smoothstep(VignetteRadius, VignetteRadius - VignetteSoftness, lenPos);

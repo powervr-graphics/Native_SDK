@@ -5,7 +5,7 @@ layout(set = 0, binding = 1) uniform mediump sampler2D modelAlbedoTexture;
 
 // Vertex shader inputs
 layout(location = 0) in mediump vec2 vTexCoord;
-layout(location = 1) in mediump vec3 vNormal;
+layout(location = 1) in highp vec3 vNormal;
 
 // fragment shader outputs
 layout(location = 0) out highp vec4 outAlbedo;

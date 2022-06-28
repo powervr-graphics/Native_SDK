@@ -11,7 +11,7 @@ layout(location = TEXCOORD_ARRAY) in highp vec2	inTexCoord;
 uniform highp mat4 MVPMatrix;
 uniform highp mat3 MVITMatrix;
 
-out mediump vec3 ViewNormal;
+out highp vec3 ViewNormal;
 out mediump vec2 TexCoord;
 
 void main()

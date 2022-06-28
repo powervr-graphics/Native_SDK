@@ -29,7 +29,7 @@ mediump float luma(mediump vec3 color)
 void main()
 {
 	// read the per-pixel normal from the normal map and expand to [-1, 1]
-	mediump vec3 normal = texture(sNormalMap, vTexCoord).rgb * 2.0 - 1.0;
+	highp vec3 normal = texture(sNormalMap, vTexCoord).rgb * 2.0 - 1.0;
 	mediump vec3 worldSpaceNormal = normalize(TBN_worldSpace * normal);
 
 	mediump vec3 texColor = texture(sBaseTex, vTexCoord).rgb;

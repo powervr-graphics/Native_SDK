@@ -12,8 +12,8 @@ uniform highp mat4 uModelViewProjectionMatrix;
 
 uniform highp vec3 uLightPosition;
 
-out mediump vec3 vNormal;
-out mediump vec3 vLightDirection;
+out highp vec3 vNormal;
+out highp vec3 vLightDirection;
 
 void main()
 {

@@ -31,12 +31,12 @@ layout(rgba8)  __pixel_localEXT FragDataLocal {
 } pls;
 
 layout(location = 0) in highp vec3 vPositionVS;
-layout(location = 1) in mediump vec3 vViewDirVS;
+layout(location = 1) in highp vec3 vViewDirVS;
 
 void main()
 {
 	// Fetch required gbuffer attributes
-	mediump vec3 normalTex = pls.normal.rgb;
+	highp vec3 normalTex = pls.normal.rgb;
 	mediump vec4 albedoSpec = pls.albedo;
 	mediump vec3 normal = normalize(normalTex.xyz * 2.0 - 1.0);
 	mediump float depth = pls.depth;
@@ -50,7 +50,7 @@ void main()
 	//
 	// Calculate view space light direction
 	//
-	mediump vec3 lightDirection = vViewPosition.xyz - positionVS;
+	highp vec3 lightDirection = vViewPosition.xyz - positionVS;
 	mediump float lightDistance = length(lightDirection);
 	lightDirection /= lightDistance;
 

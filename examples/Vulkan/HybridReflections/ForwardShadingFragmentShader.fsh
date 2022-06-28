@@ -11,9 +11,10 @@
 #define MAX_REFLECTION_SHADOW_RAY_DEPTH 0
 #define PI 3.1415926535897932384626433832795
 #define ONE_OVER_PI (1.0 / PI)
+#define NUMBER_OF_MESHES 4
 
 layout(location = 0) in mediump vec2 vTexCoord;
-layout(location = 1) in mediump vec3 vNormal;
+layout(location = 1) in highp vec3 vNormal;
 layout(location = 2) in highp vec3 vWorldPosition;
 
 layout(location = 0) out mediump vec4 oColor;
@@ -54,11 +55,12 @@ layout(set = 0, binding = 1) uniform LightDataUBO
 };
 
 layout(set = 0, binding = 2) buffer MateralDataBufferBuffer { Material materials[]; };
-layout(set = 0, binding = 3) buffer MatIndexColorBuffer { int i[]; } matIndex[1];
+layout(set = 0, binding = 3) buffer MatIndexColorBuffer { int i[]; } matIndex[NUMBER_OF_MESHES];
 layout(set = 0, binding = 4) uniform sampler2D textureSamplers[4];
 layout(set = 0, binding = 5) uniform accelerationStructureEXT topLevelAS;
-layout(set = 0, binding = 6, scalar) buffer Vertices { Vertex v[]; } vertices[1];
-layout(set = 0, binding = 7) buffer Indices { uint i[]; } indices[1];
+layout(set = 0, binding = 6, scalar) buffer Vertices { Vertex v[]; } vertices[NUMBER_OF_MESHES];
+layout(set = 0, binding = 7) buffer Indices { uint i[]; } indices[NUMBER_OF_MESHES];
+layout(set = 0, binding = 8, std140) uniform UboMeshTransforms { highp mat4 worldMatrix[NUMBER_OF_MESHES]; };
 
 layout(set = 1, binding = 0) uniform samplerCube skyboxImage;
 layout(set = 1, binding = 1) uniform samplerCube prefilteredImage;
@@ -66,7 +68,7 @@ layout(set = 1, binding = 2) uniform samplerCube irradianceImage;
 layout(set = 1, binding = 3) uniform sampler2D brdfLUT;
 
 layout(push_constant) uniform PushConsts {
-	layout(offset = 64) uint materialID;
+	layout(offset = 4) uint materialID;
 };
 
 // Normal Distribution function
@@ -139,13 +141,22 @@ bool traceRay(vec3 origin, vec3 direction, out vec3 hitPos, out vec3 normal, out
 		// Material of the object
 		matID = matIndex[nonuniformEXT(instanceId)].i[primitiveId];
 	
+		// Get the world matrix for this instance 
+		mat4 worldMat = worldMatrix[nonuniformEXT(instanceId)];
+
 		const vec3 barycentrics = vec3(1.0 - attribs.x - attribs.y, attribs.x, attribs.y);
 	
 		// Computing the normal at hit position
 		normal = v0.nrm * barycentrics.x + v1.nrm * barycentrics.y + v2.nrm * barycentrics.z;
+		
+		// Transform normal to world space 
+		normal = mat3(worldMat) * normal;
 
 		// Computing the coordinates of the hit position
 		hitPos = v0.pos * barycentrics.x + v1.pos * barycentrics.y + v2.pos * barycentrics.z;
+		
+		// Transform hitPos to world space 
+		hitPos = (worldMat * vec4(hitPos, 1.0f)).xyz;
 
 		// Computing the coordinates of the hit position
 		texCoord = v0.texCoord * barycentrics.x + v1.texCoord * barycentrics.y + v2.texCoord * barycentrics.z;
@@ -177,7 +188,7 @@ bool traceShadowRay(vec3 origin, vec3 direction)
 	return false;
 }
 
-mediump vec3 directLighting(mediump vec3 P, mediump vec3 V, mediump vec3 N, mediump vec3 L, mediump vec3 F0, mediump vec3 albedo, mediump float metallic, mediump float roughness, int rayDepth)
+mediump vec3 directLighting(mediump vec3 P, highp vec3 V, mediump vec3 N, highp vec3 L, mediump vec3 F0, mediump vec3 albedo, mediump float metallic, mediump float roughness, int rayDepth)
 {
 	// half vector
 	mediump vec3 H = normalize(V + L);
@@ -255,13 +266,13 @@ mediump vec3 indirectLightingIBL(mediump vec3 N, mediump vec3 V, mediump vec3 R,
 	return albedo * kD  * diffIR + specularIR * (F * brdf.x + brdf.y);
 }
 
-mediump vec3 indirectSpecular(mediump vec3 N, mediump vec3 R)
+mediump vec3 indirectSpecular(highp vec3 N, mediump vec3 R)
 {
 	mediump vec3 Li = vec3(0.0f);
 	mediump vec3 T = vec3(1.0f);
 
 	mediump vec3 origin = vWorldPosition + N * 0.1f;
-	mediump vec3 direction = R;
+	highp vec3 direction = R;
 
 	for (int i = 0; i < NUM_REFLECTION_RAYS; i++)
 	{

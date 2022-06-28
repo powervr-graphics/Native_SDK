@@ -14,10 +14,10 @@ layout(set = 0, binding = 0) uniform StaticPerDirectionalLight
 
 layout(set = 0, binding = 1) uniform DynamicPerDirectionalLight
 {	
-	mediump vec4 vViewDirection;
+	highp vec4 vViewDirection;
 };
 
-layout(location = 0) in mediump vec2 vViewDirVS;
+layout(location = 0) in highp vec2 vViewDirVS;
 
 void main()
 {

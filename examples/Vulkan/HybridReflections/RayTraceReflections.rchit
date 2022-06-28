@@ -12,6 +12,7 @@
 #define REFLECTIONS_MISS_INDEX 0
 #define SHADOW_HIT_OFFSET 1
 #define SHADOW_MISS_INDEX 1
+#define NUMBER_OF_MESHES 4
 
 struct ReflectionRayPayload
 {
@@ -54,11 +55,12 @@ layout(set = 2, binding = 1) uniform LightDataUBO
 };
 
 layout(set = 2, binding = 2) buffer MateralDataBufferBuffer { Material materials[]; } ;
-layout(set = 2, binding = 3) buffer MatIndexColorBuffer { int i[]; } matIndex[1];
+layout(set = 2, binding = 3) buffer MatIndexColorBuffer { int i[]; } matIndex[NUMBER_OF_MESHES];
 layout(set = 2, binding = 4) uniform sampler2D textureSamplers[4];
 layout(set = 2, binding = 5) uniform accelerationStructureEXT topLevelAS;
-layout(set = 2, binding = 6, scalar) buffer Vertices { Vertex v[]; } vertices[1];
-layout(set = 2, binding = 7) buffer Indices { uint i[]; } indices[1];
+layout(set = 2, binding = 6, scalar) buffer Vertices { Vertex v[]; } vertices[NUMBER_OF_MESHES];
+layout(set = 2, binding = 7) buffer Indices { uint i[]; } indices[NUMBER_OF_MESHES];
+layout(set = 2, binding = 8, std140) uniform UboMeshTransforms { highp mat4 worldMatrix[NUMBER_OF_MESHES]; };
 
 layout(set = 3, binding = 0) uniform samplerCube skyboxImage;
 layout(set = 3, binding = 1) uniform samplerCube prefilteredImage;
@@ -101,7 +103,7 @@ mediump vec3 f_schlickR(mediump float cosTheta, mediump vec3 F0, mediump float r
 	return F0 + (max(vec3(1.0 - roughness), F0) - F0) * pow(1.0 - cosTheta, 5.0);
 }
 
-mediump vec3 directLighting(mediump vec3 P, mediump vec3 V, mediump vec3 N, mediump vec3 L, mediump vec3 F0, mediump vec3 albedo, mediump float metallic, mediump float roughness)
+mediump vec3 directLighting(mediump vec3 P, highp vec3 V, mediump vec3 N, highp vec3 L, mediump vec3 F0, mediump vec3 albedo, mediump float metallic, mediump float roughness)
 {
 	// half vector
 	mediump vec3 H = normalize(V + L);
@@ -257,6 +259,9 @@ void main()
 	Vertex v1 = vertices[nonuniformEXT(gl_InstanceID)].v[ind.y];
 	Vertex v2 = vertices[nonuniformEXT(gl_InstanceID)].v[ind.z];
 
+	// Get the world matrix for this instance 
+	mat4 worldMat = worldMatrix[nonuniformEXT(gl_InstanceID)];
+
 	// Material of the object
     int matID = matIndex[nonuniformEXT(gl_InstanceID)].i[gl_PrimitiveID];
 	
@@ -265,8 +270,14 @@ void main()
 	// Computing the normal at hit position
 	vec3 normal = v0.nrm * barycentrics.x + v1.nrm * barycentrics.y + v2.nrm * barycentrics.z;
 
+	// Transform normal to world space 
+	normal = mat3(worldMat) * normal;
+
 	// Computing the coordinates of the hit position
-    vec3 worldPos = v0.pos * barycentrics.x + v1.pos * barycentrics.y + v2.pos * barycentrics.z;
+    vec3 objectPos = v0.pos * barycentrics.x + v1.pos * barycentrics.y + v2.pos * barycentrics.z;
+	
+	// Transform objectPos to world space 
+	vec3 worldPos = (worldMat * vec4(objectPos, 1.0f)).xyz;
 
 	// Computing the coordinates of the hit position
     vec2 texCoord = v0.texCoord * barycentrics.x + v1.texCoord * barycentrics.y + v2.texCoord * barycentrics.z;

@@ -14,7 +14,7 @@ uniform mediump float metallicity;
 // How much of the light is diffuse/specular
 uniform mediump float reflectivity; 
 
-in mediump vec3 viewNormal;
+in highp vec3 viewNormal;
 in mediump vec2 texCoord;
 
 layout(location = 0) out mediump vec4 oColor;

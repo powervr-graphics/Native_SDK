@@ -4,7 +4,7 @@
 layout(num_views = NUM_VIEWS) in;
 
 in highp vec3 inVertex;
-in mediump vec3 inNormal;
+in highp vec3 inNormal;
 in mediump vec2 inTexCoord;
 
 uniform highp mat4 MVPMatrix[NUM_VIEWS];

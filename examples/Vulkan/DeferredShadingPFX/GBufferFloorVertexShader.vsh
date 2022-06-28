@@ -16,7 +16,7 @@ layout(set = 1, binding = 1) uniform DynamicsPerModel
 };
 
 layout(location = 0) out mediump vec2 vTexCoord;
-layout(location = 1) out mediump vec3 vNormal;
+layout(location = 1) out highp vec3 vNormal;
 layout(location = 2) out highp vec3 vViewPosition;
 
 void main() 

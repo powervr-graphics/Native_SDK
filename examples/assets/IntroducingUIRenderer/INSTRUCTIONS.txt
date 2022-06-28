@@ -1,0 +1,58 @@
+/*!*******************************************************************************************
+\summary Generating the font textures
+**********************************************************************************************
+\details
+
+==== Generating the font textures =====
+
+GENERAL:
+In order to create a Font texture, you can use PVRTexTool to create the "glyphs" of the font and pack together all data that the
+UIRenderer needs to use them as metadata in the font inside the generated .pvr file. Because it is impossible to generate a font
+that contains all the UTF-8 characters (the texture would be way bigger than we could reasonably support) we need to select which
+characters we will be generating in the font texture.
+Supported options are:
+  1) 7-bit ASCII character set: The common case - If no international support is required, this is the easiest solution. All 
+     printable lower ASCII characters are generated (english characters and symbols in the range of 0-127)
+  2) User-defined string: You input a specific string containing UTF-8 characters (using any language). For example, you could
+     input the string "abcdefgABCDEFG.επμ", in which case you could create a font that would only be able to print the english 
+     capital letters A-G, the english lowercase letters a-g, the period and the greek Epsilon, Pi and Mu. Any other characters
+     used with UIRenderer would appear as spaces. For example the phrase "2nd Anchorage" would appear as " d A c  age" as the
+     characters 2,n,h,o,r, are not generated and cannot be printed
+  3) Text file: Exactly like the previous option, but the string comes from a text file instead of a string typed by the user.
+     This is what we used to generate the UIRenderer fonts following the following steps.
+
+
+THIS EXAMPLE
+========
+I. Generate the main title text (specific string with the Starjout font)
+  1) Open PVRTextTool GUI
+  2) Select File>Create Font Texture
+  3) File: (click Browse, select the font from assets/Media/Starjout.ttf)
+  4) FontOptions: [Size: 60px, Border: 0px, Grid fitting: no, Anti Aliasing: yes]
+  5) Character Set: [Select "User-Defined String" from the dropdown]
+     [Type "introducing uirenderer" in the text box"]
+  6) Click OK
+  7) Click the "Generate Mipmaps" button from the toolbox, linear, full mipmap chain, click Generate MIP Maps
+  8) Save your generated file as "Starjout_60.pvr"
+	 
+II. Generate the subtitle text (Text file with the Arial font)
+  1) Open PVRTextTool GUI
+  2) Select File>Create Font Texture
+  3) File: (click Browse, select the font from assets/Media/Arial Unicode.ttf)
+  4) FontOptions: [Size: 36px, Border: 0px, Grid fitting: no, Anti Aliasing: yes]
+  5) Character Set: [Select "Text File" from the dropdown, browse to .../ProcessedAssets/TitleText.txt]
+  6) Click OK
+  7) Click the "Generate Mipmaps" button from the toolbox, linear, full mipmap chain, click Generate MIP Maps
+  8) Save your generated file as "title_36.pvr"
+
+III. Generate the main scrolling text (Text file with the Arial font)
+  1) Open PVRTextTool GUI
+  2) Select File>Create Font Texture
+  3) File: (click Browse, select the font from assets/Media/Arial Unicode.ttf)
+  4) FontOptions: [Size: 36px, Border: 0px, Grid fitting: no, Anti Aliasing: yes]
+  5) Character Set: [Select "Text File" from the dropdown, browse to .../ProcessedAssets/Text.txt]
+  6) Click OK
+  7) Click the "Generate Mipmaps" button from the toolbox, linear, full mipmap chain, click Generate MIP Maps
+  8) Save your generated file as "arial_36.pvr"
+
+You can now use these file directly with pvr::UIRenderer to generate fonts.

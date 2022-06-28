@@ -28,7 +28,8 @@ ext.PVR_OPENGLES_EXAMPLES = [
 	'GameOfLife',
 	'BinaryShaders',
 	'Multithreading',
-	'Bumpmap'
+	'Bumpmap',
+	'Shadows'
 ]
 
 ext.PVR_VULKAN_EXAMPLES = [ 
@@ -58,11 +59,7 @@ ext.PVR_VULKAN_EXAMPLES = [
 	'PipelineCache',
 	'AmbientOcclusion',
 	'MatrixMultiplication',
-	'VulkanHybridHardShadows',
-	'VulkanHybridReflections',
-	'VulkanHelloRayTracing',
-	'VulkanRayTracedHardShadows',
-	'VulkanHybridRefractions'
+	'Shadows'
 ]
 
 ext.PVR_OPENCL_EXAMPLES = [ 

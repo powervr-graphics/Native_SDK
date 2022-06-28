@@ -33,7 +33,7 @@ layout(set = 1, binding = 3) uniform mediump samplerCube skyboxImage;
 layout(set = 2, binding = 0) uniform sampler2D refractionsImage;
 
 layout(location = 0) in mediump vec2 inUV;
-layout(location = 1) in mediump vec3 inRayDir;
+layout(location = 1) in highp vec3 inRayDir;
 
 layout(location = 0) out mediump vec4 outFragColor;
 

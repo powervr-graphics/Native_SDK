@@ -1,0 +1,15 @@
+[submodule "external/concurrent_queue/source"]
+	path = external/concurrent_queue/source
+	url = https://github.com/cameron314/concurrentqueue.git
+[submodule "external/glm/source"]
+	path = external/glm/source
+	url = https://github.com/g-truc/glm.git
+[submodule "external/glslang/source"]
+	path = external/glslang/source
+	url = https://github.com/KhronosGroup/glslang.git
+[submodule "external/pugixml/source"]
+	path = external/pugixml/source
+	url = https://github.com/zeux/pugixml.git
+[submodule "external/VulkanMemoryAllocator/source"]
+	path = external/VulkanMemoryAllocator/source
+	url = https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git

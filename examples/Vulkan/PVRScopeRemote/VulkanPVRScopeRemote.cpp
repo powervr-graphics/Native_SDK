@@ -279,7 +279,9 @@ pvr::Result VulkanPVRScopeRemote::initApplication()
 
 		// OK, submit our library
 		if (!pplLibraryCreate(_spsCommsData, communicableItems.data(), static_cast<uint32_t>(communicableItems.size())))
-		{ Log(LogLevel::Debug, "PVRScopeRemote: pplLibraryCreate() failed\n"); } // User defined counters
+		{
+			Log(LogLevel::Debug, "PVRScopeRemote: pplLibraryCreate() failed\n");
+		} // User defined counters
 		SSPSCommsCounterDef counterDefines[CounterDefs::NumCounter];
 		for (uint32_t i = 0; i < CounterDefs::NumCounter; ++i)
 		{
@@ -299,8 +301,9 @@ pvr::Result VulkanPVRScopeRemote::initView()
 {
 	_deviceResources = std::make_unique<DeviceResources>();
 
-	// Create instance and retrieve compatible physical devices
-	_deviceResources->instance = pvr::utils::createInstance(this->getApplicationName());
+	// Create a Vulkan 1.0 instance and retrieve compatible physical devices
+	pvr::utils::VulkanVersion VulkanVersion(1, 0, 0);
+	_deviceResources->instance = pvr::utils::createInstance(this->getApplicationName(), VulkanVersion, pvr::utils::InstanceExtensions(VulkanVersion));
 
 	if (_deviceResources->instance->getNumPhysicalDevices() == 0)
 	{
@@ -329,7 +332,9 @@ pvr::Result VulkanPVRScopeRemote::initView()
 	// validate the supported swapchain image usage
 	pvrvk::ImageUsageFlags swapchainImageUsage = pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT;
 	if (pvr::utils::isImageUsageSupportedBySurface(surfaceCapabilities, pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT))
-	{ swapchainImageUsage |= pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT; } // create the swapchain
+	{
+		swapchainImageUsage |= pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT;
+	} // create the swapchain
 	// Create the Swapchain, its renderpass, attachments and framebuffers. Will support MSAA if enabled through command line.
 	auto swapChainCreateOutput = pvr::utils::createSwapchainRenderpassFramebuffers(_deviceResources->device, surface, getDisplayAttributes(),
 		pvr::utils::CreateSwapchainParameters().setAllocator(_deviceResources->vmaAllocator).setColorImageUsageFlags(swapchainImageUsage));
@@ -338,8 +343,7 @@ pvr::Result VulkanPVRScopeRemote::initView()
 	_deviceResources->onScreenFramebuffer = swapChainCreateOutput.framebuffer;
 
 	// Create the Command pool and Descriptor pool
-	_deviceResources->commandPool = _deviceResources->device->createCommandPool(
-		pvrvk::CommandPoolCreateInfo(_deviceResources->queue->getFamilyIndex(), pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT));
+	_deviceResources->commandPool = _deviceResources->device->createCommandPool(pvrvk::CommandPoolCreateInfo(_deviceResources->queue->getFamilyIndex()));
 
 	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(pvrvk::DescriptorPoolCreateInfo()
 																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 16)
@@ -357,17 +361,20 @@ pvr::Result VulkanPVRScopeRemote::initView()
 
 	CPPLProcessingScoped PPLProcessingScoped(_spsCommsData, __FUNCTION__, static_cast<uint32_t>(strlen(__FUNCTION__)), _frameCounter);
 
-	_deviceResources->cmdBuffers[0]->begin();
+	// Allocate a single use command buffer to upload resources to the GPU
+	pvrvk::CommandBuffer uploadBuffer = _deviceResources->commandPool->allocateCommandBuffer();
+	uploadBuffer->setObjectName("InitView : Resource Upload Command Buffer");
+	uploadBuffer->begin(pvrvk::CommandBufferUsageFlags::e_ONE_TIME_SUBMIT_BIT);
 
 	//	Initialize VBO data
-	loadVbos(_deviceResources->cmdBuffers[0]);
+	loadVbos(uploadBuffer);
 
-	_deviceResources->texture = pvr::utils::loadAndUploadImageAndView(_deviceResources->device, TextureFile, true, _deviceResources->cmdBuffers[0], *this,
-		pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, nullptr, _deviceResources->vmaAllocator, _deviceResources->vmaAllocator);
-	_deviceResources->cmdBuffers[0]->end();
+	_deviceResources->texture = pvr::utils::loadAndUploadImageAndView(_deviceResources->device, TextureFile, true, uploadBuffer, *this, pvrvk::ImageUsageFlags::e_SAMPLED_BIT,
+		pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, nullptr, _deviceResources->vmaAllocator, _deviceResources->vmaAllocator);
+	uploadBuffer->end();
 	// submit the texture upload commands
 	pvrvk::SubmitInfo submitInfo;
-	submitInfo.commandBuffers = &_deviceResources->cmdBuffers[0];
+	submitInfo.commandBuffers = &uploadBuffer;
 	submitInfo.numCommandBuffers = 1;
 	_deviceResources->queue->submit(&submitInfo, 1);
 	_deviceResources->queue->waitIdle();
@@ -388,7 +395,9 @@ pvr::Result VulkanPVRScopeRemote::initView()
 
 	// if the memory property flags used by the buffers' device memory do not contain e_HOST_COHERENT_BIT then we must flush the memory
 	if (static_cast<uint32_t>(_deviceResources->uboLighting->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
-	{ _deviceResources->uboLighting->getDeviceMemory()->flushRange(0, _deviceResources->uboLightingBufferView.getSize()); } //	Initialize the UI Renderer
+	{
+		_deviceResources->uboLighting->getDeviceMemory()->flushRange(0, _deviceResources->uboLightingBufferView.getSize());
+	} //	Initialize the UI Renderer
 	_deviceResources->uiRenderer.init(getWidth(), getHeight(), isFullScreen(), _deviceResources->onScreenFramebuffer[0]->getRenderPass(), 0,
 		getBackBufferColorspace() == pvr::ColorSpace::sRGB, _deviceResources->commandPool, _deviceResources->queue);
 
@@ -815,7 +824,9 @@ void VulkanPVRScopeRemote::updateUbo(uint32_t swapchain)
 
 		// if the memory property flags used by the buffers' device memory do not contain e_HOST_COHERENT_BIT then we must flush the memory
 		if (static_cast<uint32_t>(_deviceResources->uboMaterial->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
-		{ _deviceResources->uboMaterial->getDeviceMemory()->flushRange(0, _deviceResources->uboMaterialBufferView.getSize()); }
+		{
+			_deviceResources->uboMaterial->getDeviceMemory()->flushRange(0, _deviceResources->uboMaterialBufferView.getSize());
+		}
 	}
 }
 

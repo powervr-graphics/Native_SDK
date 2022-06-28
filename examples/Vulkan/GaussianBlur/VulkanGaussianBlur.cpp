@@ -280,7 +280,9 @@ void VulkanGaussianBlur::updateResources()
 
 		// if the memory property flags used by the buffers' device memory do not contain e_HOST_COHERENT_BIT then we must flush the memory
 		if (static_cast<uint32_t>(_deviceResources->graphicsGaussianConfigBuffer->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
-		{ _deviceResources->graphicsGaussianConfigBuffer->getDeviceMemory()->flushRange(0, _graphicsSsboSize); }
+		{
+			_deviceResources->graphicsGaussianConfigBuffer->getDeviceMemory()->flushRange(0, _graphicsSsboSize);
+		}
 	}
 }
 
@@ -470,8 +472,9 @@ pvr::Result VulkanGaussianBlur::initView()
 {
 	_deviceResources = std::make_unique<DeviceResources>();
 
-	// Create instance and retrieve compatible physical devices
-	_deviceResources->instance = pvr::utils::createInstance(this->getApplicationName());
+	// Create a Vulkan 1.0 instance and retrieve compatible physical devices
+	pvr::utils::VulkanVersion VulkanVersion(1, 0, 0);
+	_deviceResources->instance = pvr::utils::createInstance(this->getApplicationName(), VulkanVersion, pvr::utils::InstanceExtensions(VulkanVersion));
 
 	if (_deviceResources->instance->getNumPhysicalDevices() == 0)
 	{
@@ -526,7 +529,9 @@ pvr::Result VulkanGaussianBlur::initView()
 	// validate the supported swapchain image usage
 	pvrvk::ImageUsageFlags swapchainImageUsage = pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT;
 	if (pvr::utils::isImageUsageSupportedBySurface(surfaceCapabilities, pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT))
-	{ swapchainImageUsage |= pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT; } // Create the swapchain
+	{
+		swapchainImageUsage |= pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT;
+	} // Create the swapchain
 
 	auto swapChainCreateOutput = pvr::utils::createSwapchainRenderpassFramebuffers(_deviceResources->device, surface, getDisplayAttributes(),
 		pvr::utils::CreateSwapchainParameters().setAllocator(_deviceResources->vmaAllocator).setColorImageUsageFlags(swapchainImageUsage).enableDepthBuffer(false));
@@ -534,8 +539,7 @@ pvr::Result VulkanGaussianBlur::initView()
 	_deviceResources->swapchain = swapChainCreateOutput.swapchain;
 	_deviceResources->onScreenFramebuffer = swapChainCreateOutput.framebuffer;
 
-	_deviceResources->commandPool = _deviceResources->device->createCommandPool(
-		pvrvk::CommandPoolCreateInfo(_deviceResources->queues[0]->getFamilyIndex(), pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT));
+	_deviceResources->commandPool = _deviceResources->device->createCommandPool(pvrvk::CommandPoolCreateInfo(_deviceResources->queues[0]->getFamilyIndex()));
 
 	_deviceResources->descriptorPool =
 		_deviceResources->device->createDescriptorPool(pvrvk::DescriptorPoolCreateInfo(10).addDescriptorInfo(pvrvk::DescriptorType::e_STORAGE_IMAGE, 16));
@@ -553,19 +557,20 @@ pvr::Result VulkanGaussianBlur::initView()
 		_deviceResources->perFrameResourcesFences[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
 	}
 
-	// Load the textures used by in the demo
-	_deviceResources->mainCommandBuffers[0]->begin();
-	loadTextures(_deviceResources->mainCommandBuffers[0]);
-	_deviceResources->mainCommandBuffers[0]->end();
+	// Allocate a single use command buffer to upload the texture to the GPU
+	pvrvk::CommandBuffer uploadBuffer = _deviceResources->commandPool->allocateCommandBuffer();
+	uploadBuffer->setObjectName("InitView : Resource Upload Command Buffer");
+	uploadBuffer->begin(pvrvk::CommandBufferUsageFlags::e_ONE_TIME_SUBMIT_BIT);
+
+	loadTextures(uploadBuffer);
+	uploadBuffer->end();
 
 	// Submit the image upload command buffer
 	pvrvk::SubmitInfo submit;
-	submit.commandBuffers = &_deviceResources->mainCommandBuffers[0];
+	submit.commandBuffers = &uploadBuffer;
 	submit.numCommandBuffers = 1;
 	_deviceResources->queues[0]->submit(&submit, 1);
 	_deviceResources->queues[0]->waitIdle();
-
-	_deviceResources->mainCommandBuffers[0]->reset(pvrvk::CommandBufferResetFlags::e_RELEASE_RESOURCES_BIT);
 
 	// Create the pipeline cache
 	_deviceResources->pipelineCache = _deviceResources->device->createPipelineCache();
@@ -615,7 +620,7 @@ pvr::Result VulkanGaussianBlur::renderFrame()
 
 	// Submit
 	pvrvk::SubmitInfo submitInfo;
-	pvrvk::PipelineStageFlags pipeWaitStageFlags = pvrvk::PipelineStageFlags::e_ALL_GRAPHICS_BIT | pvrvk::PipelineStageFlags::e_COMPUTE_SHADER_BIT;
+	pvrvk::PipelineStageFlags pipeWaitStageFlags = pvrvk::PipelineStageFlags::e_FRAGMENT_SHADER_BIT | pvrvk::PipelineStageFlags::e_COMPUTE_SHADER_BIT;
 	submitInfo.commandBuffers = &_deviceResources->mainCommandBuffers[swapchainIndex];
 	submitInfo.numCommandBuffers = 1;
 	submitInfo.waitSemaphores = &_deviceResources->imageAcquiredSemaphores[_frameId];

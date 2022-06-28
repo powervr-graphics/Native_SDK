@@ -2047,38 +2047,27 @@ void VulkanHelloAPI::getCompatibleQueueFamilies(uint32_t& graphicsfamilyindex, u
 	// This function iterates through all the queue families available on the selected device and selects a graphics queue
 	// family and a present queue family by selecting their associated indices. It also checks that the present queue family
 	// supports presenting.
-
 	int i = 0;
-	VkBool32 compatible = VK_FALSE;
-
-	// Check if the family has queues, and that they are graphical and not compute queues.
-	for (const auto& queuefamily : appManager.queueFamilyProperties)
+	bool presentFound = false, graphicsFound = false;
+	for (const auto& queueFamily : appManager.queueFamilyProperties)
 	{
-		// Look for a graphics queue.
-		if (queuefamily.queueCount > 0 && queuefamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)
+		// Check for graphical operations support.
+		if ((queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) && !graphicsFound)
 		{
 			graphicsfamilyindex = i;
-			break;
+			graphicsFound = true;
 		}
-		i++;
-	}
 
-	i = 0;
-
-	// Check if the family has queues, and that they are graphical and not compute queues.
-	for (const auto& queuefamily : appManager.queueFamilyProperties)
-	{
-		if (queuefamily.queueCount > 0 && queuefamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)
+		// Check if the queue family supports presenting to our surface.
+		VkBool32 compatible = VK_FALSE;
+		debugAssertFunctionResult(vk::GetPhysicalDeviceSurfaceSupportKHR(appManager.physicalDevice, i, appManager.surface, &compatible), "Querying Physical Device Surface Support");
+		if (compatible && !presentFound)
 		{
-			// Check if the queue family supports presenting.
-			debugAssertFunctionResult(vk::GetPhysicalDeviceSurfaceSupportKHR(appManager.physicalDevice, i, appManager.surface, &compatible), "Querying Physical Device Surface Support");
-
-			if (compatible)
-			{
-				presentfamilyindex = i;
-				break;
-			}
+			presentfamilyindex = i;
+			presentFound = true;
 		}
+
+		if (graphicsFound && presentFound) break;
 		i++;
 	}
 }

@@ -40,7 +40,7 @@ void main()
 	mediump vec3 ldrColor = hdrColor / (1.0 + hdrColor);
 
 	// apply a simple vignette
-	mediump vec2 vtc = vec2(vTexCoords[8] - vec2(0.5));
+	highp vec2 vtc = vec2(vTexCoords[8] - vec2(0.5));
 	// determine the vector length of the center position
 	mediump float lenPos = length(vtc);
 	mediump float vignette = smoothstep(VignetteRadius, VignetteRadius - VignetteSoftness, lenPos);
@@ -50,5 +50,5 @@ void main()
 	color = pow(color, vec3(0.4545454545)); // Do gamma correction
 #endif	
 
-	oColor = vec4(color, 1.0);
+	oColor = vec4(clamp(color, 0.0, 65504.0), 1.0);
 }

@@ -25,7 +25,19 @@ namespace pvr {
 namespace utils {
 #pragma region ////////////// BASIC HELPERS /////////////////
 
-pvrvk::ImageAspectFlags inferAspectFromFormat(pvrvk::Format format)
+void getNumberOfPlanesFromFormat(pvrvk::Format format, uint32_t& numPlanes)
+{
+	// Read the number of planes
+	std::string ycbcrFormat = to_string(format);
+	numPlanes = 1;
+	if (ycbcrFormat.find("2PLANE") != std::string::npos) { numPlanes = 2; }
+	else if (ycbcrFormat.find("3PLANE") != std::string::npos)
+	{
+		numPlanes = 3;
+	}
+}
+
+pvrvk::ImageAspectFlags inferAspectFromFormat(pvrvk::Format format, uint32_t planeIndex)
 {
 	pvrvk::ImageAspectFlags imageAspect = pvrvk::ImageAspectFlags::e_COLOR_BIT;
 
@@ -43,6 +55,19 @@ pvrvk::ImageAspectFlags inferAspectFromFormat(pvrvk::Format format)
 		// (Depthstenil format end) - format
 		imageAspect = aspects[static_cast<uint32_t>(pvrvk::Format::e_D32_SFLOAT_S8_UINT) - static_cast<uint32_t>(format)];
 	}
+
+	uint32_t numPlanes = 1;
+	getNumberOfPlanesFromFormat(format, numPlanes);
+	if (numPlanes > 1)
+	{
+		switch (planeIndex)
+		{
+			case 0: return pvrvk::ImageAspectFlags::e_PLANE_0_BIT;
+			case 1: return pvrvk::ImageAspectFlags::e_PLANE_1_BIT;
+			case 2: return pvrvk::ImageAspectFlags::e_PLANE_2_BIT;
+		}
+	}
+
 	return imageAspect;
 }
 
@@ -784,6 +809,7 @@ pvrvk::Image uploadImageHelper(pvrvk::Device& device, const Texture& texture, bo
 	uint16_t texMipLevels = static_cast<uint16_t>(textureToUse->getNumMipMapLevels());
 	uint16_t texArraySlices = static_cast<uint16_t>(textureToUse->getNumArrayMembers());
 	uint16_t texFaces = static_cast<uint16_t>(textureToUse->getNumFaces());
+	uint16_t texPlanes = static_cast<uint16_t>(textureToUse->getNumPlanes());
 	pvrvk::Image image;
 
 	usageFlags |= pvrvk::ImageUsageFlags::e_TRANSFER_DST_BIT;
@@ -817,7 +843,7 @@ pvrvk::Image uploadImageHelper(pvrvk::Device& device, const Texture& texture, bo
 		// Faces are considered array elements, so each Framework array slice in a cube array will be 6 vulkan array slices.
 
 		// Edit the info to be the small, linear images that we are using.
-		std::vector<ImageUpdateInfo> imageUpdates(texMipLevels * texArraySlices * texFaces);
+		std::vector<ImageUpdateInfo> imageUpdates(texMipLevels * texArraySlices * texFaces * texPlanes);
 		uint32_t imageUpdateIndex = 0;
 		for (uint32_t mipLevel = 0; mipLevel < texMipLevels; ++mipLevel)
 		{
@@ -828,22 +854,46 @@ pvrvk::Image uploadImageHelper(pvrvk::Device& device, const Texture& texture, bo
 			texWidth = textureToUse->getWidth(mipLevel);
 			texHeight = textureToUse->getHeight(mipLevel);
 			texDepth = textureToUse->getDepth(mipLevel);
+
 			for (uint32_t arraySlice = 0; arraySlice < texArraySlices; ++arraySlice)
 			{
 				for (uint32_t face = 0; face < texFaces; ++face)
 				{
-					ImageUpdateInfo& update = imageUpdates[imageUpdateIndex];
-					update.imageWidth = texWidth;
-					update.imageHeight = texHeight;
-					update.dataWidth = dataWidth;
-					update.dataHeight = dataHeight;
-					update.depth = texDepth;
-					update.arrayIndex = arraySlice;
-					update.cubeFace = face;
-					update.mipLevel = mipLevel;
-					update.data = textureToUse->getDataPointer(mipLevel, arraySlice, face);
-					update.dataSize = textureToUse->getDataSize(mipLevel, false, false);
-					++imageUpdateIndex;
+					for (uint32_t plane = 0; plane < texPlanes; ++plane)
+					{
+						if (plane > 0)
+						{
+							std::string ycbcrFormat = to_string(texture.getPixelFormat().getPixelTypeId());
+
+							if (ycbcrFormat.find("420") != std::string::npos) // 420
+							{
+								dataWidth = static_cast<uint32_t>(std::max(textureToUse->getWidth(mipLevel), minWidth)) / 2;
+								dataHeight = static_cast<uint32_t>(std::max(textureToUse->getHeight(mipLevel), minHeight)) / 2;
+								texWidth = textureToUse->getWidth(mipLevel) / 2;
+								texHeight = textureToUse->getHeight(mipLevel) / 2;
+							}
+							else if (ycbcrFormat.find("422") != std::string::npos) // 422
+							{
+								dataWidth = static_cast<uint32_t>(std::max(textureToUse->getWidth(mipLevel), minWidth)) / 2;
+								texWidth = textureToUse->getWidth(mipLevel) / 2;
+							}
+						}
+
+						ImageUpdateInfo& update = imageUpdates[imageUpdateIndex];
+						update.imageWidth = texWidth;
+						update.imageHeight = texHeight;
+						update.dataWidth = dataWidth;
+						update.dataHeight = dataHeight;
+						update.depth = texDepth;
+						update.arrayIndex = arraySlice;
+						update.cubeFace = face;
+						update.mipLevel = mipLevel;
+						update.planeIndex = plane;
+						update.numPlanes = texPlanes;
+						update.data = textureToUse->getDataPointer(mipLevel, arraySlice, face, plane);
+						update.dataSize = textureToUse->getDataSize(mipLevel, false, false, false, plane);
+						++imageUpdateIndex;
+					} // next plane
 				} // next face
 			} // next arrayslice
 		} // next miplevel
@@ -856,7 +906,7 @@ pvrvk::Image uploadImageHelper(pvrvk::Device& device, const Texture& texture, bo
 
 pvrvk::ImageView uploadImageAndViewHelper(pvrvk::Device& device, const Texture& texture, bool allowDecompress, pvrvk::CommandBufferBase commandBuffer,
 	pvrvk::ImageUsageFlags usageFlags, pvrvk::ImageLayout finalLayout, vma::Allocator bufferAllocator = nullptr, vma::Allocator imageAllocator = nullptr,
-	vma::AllocationCreateFlags imageAllocationCreateFlags = vma::AllocationCreateFlags::e_NONE)
+	vma::AllocationCreateFlags imageAllocationCreateFlags = vma::AllocationCreateFlags::e_NONE, const void* pNext = nullptr)
 {
 	pvrvk::ComponentMapping components = {
 		pvrvk::ComponentSwizzle::e_IDENTITY,
@@ -891,12 +941,12 @@ pvrvk::ImageView uploadImageAndViewHelper(pvrvk::Device& device, const Texture& 
 	}
 
 	return device->createImageView(pvrvk::ImageViewCreateInfo(
-		uploadImageHelper(device, texture, allowDecompress, commandBuffer, usageFlags, finalLayout, bufferAllocator, imageAllocator, imageAllocationCreateFlags), components));
+		uploadImageHelper(device, texture, allowDecompress, commandBuffer, usageFlags, finalLayout, bufferAllocator, imageAllocator, imageAllocationCreateFlags), components, pNext));
 }
 
 inline pvrvk::ImageView loadAndUploadImageAndViewHelper(pvrvk::Device& device, const char* fileName, bool allowDecompress, pvrvk::CommandBufferBase commandBuffer,
 	IAssetProvider& assetProvider, pvrvk::ImageUsageFlags usageFlags, pvrvk::ImageLayout finalLayout, Texture* outAssetTexture = nullptr, vma::Allocator imageAllocator = nullptr,
-	vma::Allocator bufferAllocator = nullptr, vma::AllocationCreateFlags imageAllocationCreateFlags = vma::AllocationCreateFlags::e_NONE)
+	vma::Allocator bufferAllocator = nullptr, vma::AllocationCreateFlags imageAllocationCreateFlags = vma::AllocationCreateFlags::e_NONE, const void* pNext = nullptr)
 {
 	Texture outTexture;
 	Texture* pOutTexture = &outTexture;
@@ -904,7 +954,7 @@ inline pvrvk::ImageView loadAndUploadImageAndViewHelper(pvrvk::Device& device, c
 	auto assetStream = assetProvider.getAssetStream(fileName);
 	*pOutTexture = pvr::textureLoad(*assetStream, pvr::getTextureFormatFromFilename(fileName));
 	pvrvk::ImageView imageView =
-		uploadImageAndViewHelper(device, *pOutTexture, allowDecompress, commandBuffer, usageFlags, finalLayout, bufferAllocator, imageAllocator, imageAllocationCreateFlags);
+		uploadImageAndViewHelper(device, *pOutTexture, allowDecompress, commandBuffer, usageFlags, finalLayout, bufferAllocator, imageAllocator, imageAllocationCreateFlags, pNext);
 	imageView->setObjectName(fileName);
 	return imageView;
 }
@@ -926,18 +976,18 @@ inline pvrvk::Image loadAndUploadImageHelper(pvrvk::Device& device, const char* 
 
 pvrvk::ImageView loadAndUploadImageAndView(pvrvk::Device& device, const char* fileName, bool allowDecompress, pvrvk::CommandBuffer& commandBuffer, IAssetProvider& assetProvider,
 	pvrvk::ImageUsageFlags usageFlags, pvrvk::ImageLayout finalLayout, Texture* outAssetTexture, vma::Allocator stagingBufferAllocator, vma::Allocator imageAllocator,
-	vma::AllocationCreateFlags imageAllocationCreateFlags)
+	vma::AllocationCreateFlags imageAllocationCreateFlags, const void* pNext)
 {
 	return loadAndUploadImageAndViewHelper(device, fileName, allowDecompress, pvrvk::CommandBufferBase(commandBuffer), assetProvider, usageFlags, finalLayout, outAssetTexture,
-		imageAllocator, stagingBufferAllocator, imageAllocationCreateFlags);
+		imageAllocator, stagingBufferAllocator, imageAllocationCreateFlags, pNext);
 }
 
 pvrvk::ImageView loadAndUploadImageAndView(pvrvk::Device& device, const char* fileName, bool allowDecompress, pvrvk::SecondaryCommandBuffer& commandBuffer,
 	IAssetProvider& assetProvider, pvrvk::ImageUsageFlags usageFlags, pvrvk::ImageLayout finalLayout, Texture* outAssetTexture, vma::Allocator stagingBufferAllocator,
-	vma::Allocator imageAllocator, vma::AllocationCreateFlags imageAllocationCreateFlags)
+	vma::Allocator imageAllocator, vma::AllocationCreateFlags imageAllocationCreateFlags, const void* pNext)
 {
 	return loadAndUploadImageAndViewHelper(device, fileName, allowDecompress, pvrvk::CommandBufferBase(commandBuffer), assetProvider, usageFlags, finalLayout, outAssetTexture,
-		imageAllocator, stagingBufferAllocator, imageAllocationCreateFlags);
+		imageAllocator, stagingBufferAllocator, imageAllocationCreateFlags, pNext);
 }
 
 pvrvk::Image loadAndUploadImage(pvrvk::Device& device, const char* fileName, bool allowDecompress, pvrvk::CommandBuffer& commandBuffer, IAssetProvider& assetProvider,
@@ -1259,7 +1309,7 @@ void updateImage(pvrvk::Device& device, pvrvk::CommandBufferBase cbuffTransfer, 
 			// Will write the switch layout commands from the universal queue to the transfer queue to both the
 			// transfer command buffer and the universal command buffer
 			setImageLayoutAndQueueFamilyOwnership(pvrvk::CommandBufferBase(), cbuffTransfer, static_cast<uint32_t>(-1), static_cast<uint32_t>(-1), pvrvk::ImageLayout::e_UNDEFINED,
-				pvrvk::ImageLayout::e_TRANSFER_DST_OPTIMAL, image, mipLevelUpdate.mipLevel, 1, hwSlice, 1, inferAspectFromFormat(format));
+				pvrvk::ImageLayout::e_TRANSFER_DST_OPTIMAL, image, mipLevelUpdate.mipLevel, 1, hwSlice, 1, inferAspectFromFormat(format, updateInfos[i].planeIndex));
 
 			// Create a staging buffer to use as the source of a copyBufferToImage
 			stagingBuffers[i] = createBuffer(device, pvrvk::BufferCreateInfo(mipLevelUpdate.dataSize, pvrvk::BufferUsageFlags::e_TRANSFER_SRC_BIT),
@@ -1269,7 +1319,7 @@ void updateImage(pvrvk::Device& device, pvrvk::CommandBufferBase cbuffTransfer, 
 			imgcp.setImageOffset(pvrvk::Offset3D(mipLevelUpdate.offsetX, mipLevelUpdate.offsetY, mipLevelUpdate.offsetZ));
 			imgcp.setImageExtent(pvrvk::Extent3D(mipLevelUpdate.imageWidth, mipLevelUpdate.imageHeight, 1));
 
-			imgcp.setImageSubresource(pvrvk::ImageSubresourceLayers(inferAspectFromFormat(format), updateInfos[i].mipLevel, hwSlice, 1));
+			imgcp.setImageSubresource(pvrvk::ImageSubresourceLayers(inferAspectFromFormat(format, updateInfos[i].planeIndex), updateInfos[i].mipLevel, hwSlice, 1));
 			imgcp.setBufferRowLength(mipLevelUpdate.dataWidth);
 			imgcp.setBufferImageHeight(mipLevelUpdate.dataHeight);
 
@@ -1287,7 +1337,7 @@ void updateImage(pvrvk::Device& device, pvrvk::CommandBufferBase cbuffTransfer, 
 			// Will write the switch layout commands from the transfer queue to the universal queue to both the
 			// transfer command buffer and the universal command buffer
 			setImageLayoutAndQueueFamilyOwnership(cbuffTransfer, pvrvk::CommandBufferBase(), static_cast<uint32_t>(-1), static_cast<uint32_t>(-1),
-				pvrvk::ImageLayout::e_TRANSFER_DST_OPTIMAL, layout, image, mipLevelUpdate.mipLevel, 1, hwSlice, 1, inferAspectFromFormat(format));
+				pvrvk::ImageLayout::e_TRANSFER_DST_OPTIMAL, layout, image, mipLevelUpdate.mipLevel, 1, hwSlice, 1, inferAspectFromFormat(format, updateInfos[i].planeIndex));
 		}
 		pvr::utils::endCommandBufferDebugLabel(cbuffTransfer);
 	}
@@ -1814,8 +1864,6 @@ std::string debugUtilsMessengerCallbackToString(
 VKAPI_ATTR VkBool32 VKAPI_CALL throwOnErrorDebugUtilsMessengerCallback(
 	VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT msgTypes, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData)
 {
-	(void)pUserData;
-
 	// throw an exception if the type of DebugUtilsMessageSeverityFlagsEXT contains the ERROR_BIT
 	if (PVRUtils_Throw_On_Validation_Error &&
 		((static_cast<pvrvk::DebugUtilsMessageSeverityFlagsEXT>(messageSeverity) & (pvrvk::DebugUtilsMessageSeverityFlagsEXT::e_ERROR_BIT_EXT)) !=
@@ -1831,7 +1879,12 @@ VKAPI_ATTR VkBool32 VKAPI_CALL throwOnErrorDebugUtilsMessengerCallback(
 VKAPI_ATTR VkBool32 VKAPI_CALL logMessageDebugUtilsMessengerCallback(
 	VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT msgTypes, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData)
 {
-	(void)pUserData;
+	std::vector<int>* vectorValidationIDFilter = static_cast<std::vector<int>*>(pUserData);
+	if ((vectorValidationIDFilter != nullptr) &&
+		(std::find(vectorValidationIDFilter->begin(), vectorValidationIDFilter->end(), pCallbackData->messageIdNumber) != vectorValidationIDFilter->end()))
+	{
+		return VK_FALSE;
+	}
 
 	Log(mapDebugUtilsMessageSeverityFlagsToLogLevel(static_cast<pvrvk::DebugUtilsMessageSeverityFlagsEXT>(messageSeverity)),
 		debugUtilsMessengerCallbackToString(messageSeverity, msgTypes, pCallbackData).c_str());
@@ -1878,7 +1931,7 @@ VKAPI_ATTR VkBool32 VKAPI_CALL logMessageDebugReportCallback(VkDebugReportFlagsE
 	return VK_FALSE;
 }
 
-DebugUtilsCallbacks createDebugUtilsCallbacks(pvrvk::Instance& instance)
+DebugUtilsCallbacks createDebugUtilsCallbacks(pvrvk::Instance& instance, void* pUserData)
 {
 	DebugUtilsCallbacks debugUtilsCallbacks;
 
@@ -1895,7 +1948,7 @@ DebugUtilsCallbacks createDebugUtilsCallbacks(pvrvk::Instance& instance)
 			// Create a Debug Utils Messenger which will trigger our callback for logging messages for events of warning and error types of all severities
 			pvrvk::DebugUtilsMessengerCreateInfo createInfo =
 				pvrvk::DebugUtilsMessengerCreateInfo(pvrvk::DebugUtilsMessageSeverityFlagsEXT::e_ERROR_BIT_EXT | pvrvk::DebugUtilsMessageSeverityFlagsEXT::e_WARNING_BIT_EXT,
-					pvrvk::DebugUtilsMessageTypeFlagsEXT::e_ALL_BITS, logMessageDebugUtilsMessengerCallback);
+					pvrvk::DebugUtilsMessageTypeFlagsEXT::e_ALL_BITS, logMessageDebugUtilsMessengerCallback, pUserData);
 
 			debugUtilsCallbacks.debugUtilsMessengers[0] = instance->createDebugUtilsMessenger(createInfo);
 		}
@@ -1925,7 +1978,8 @@ DebugUtilsCallbacks createDebugUtilsCallbacks(pvrvk::Instance& instance)
 #pragma endregion
 
 #pragma region ////////////// OBJECT_CREATION ///////////////
-pvrvk::Instance createInstance(const std::string& applicationName, VulkanVersion version, const InstanceExtensions& instanceExtensions, const InstanceLayers& instanceLayers)
+pvrvk::Instance createInstance(const std::string& applicationName, VulkanVersion version, const InstanceExtensions& instanceExtensions, const InstanceLayers& instanceLayers,
+	const pvrvk::DebugUtilsMessageSeverityFlagsEXT InstanceValidationFlags)
 {
 	pvrvk::InstanceCreateInfo instanceInfo;
 	pvrvk::ApplicationInfo appInfo;
@@ -1940,8 +1994,8 @@ pvrvk::Instance createInstance(const std::string& applicationName, VulkanVersion
 	uint32_t minor = -1;
 	uint32_t patch = -1;
 
-	// If a valid function pointer for vkEnumerateInstanceVersion cannot be retrieved then Vulkan only 1.0 is supported by the implementation otherwise we can use
-	// vkEnumerateInstanceVersion to determine the api version supported.
+	// Retrive the version of the vulkan loader, this can be done through vkEnumerateInstanceVersion, this function was supplied by Vulkan 1.1, so if the function pointer is not
+	// valid, then we know Vulkan loader is only version 1.0. Otherwise we can use vkEnumerateInstanceVersion to determine the maximum instance version supported by the loader.
 	if (pvrvk::getVkBindings().vkEnumerateInstanceVersion)
 	{
 		uint32_t supportedApiVersion;
@@ -1951,14 +2005,29 @@ pvrvk::Instance createInstance(const std::string& applicationName, VulkanVersion
 		minor = VK_VERSION_MINOR(supportedApiVersion);
 		patch = VK_VERSION_PATCH(supportedApiVersion);
 
-		Log(LogLevel::Information, "The function pointer for 'vkEnumerateInstanceVersion' was valid. Supported instance version: ([%d].[%d].[%d]).", major, minor, patch);
+		Log(LogLevel::Information, "The function pointer for 'vkEnumerateInstanceVersion' was valid. Vulkan loader instance version : ([%d].[%d].[%d]).", major, minor, patch);
 	}
 	else
 	{
 		major = 1;
 		minor = 0;
 		patch = 0;
-		Log(LogLevel::Information, "Could not find a function pointer for 'vkEnumerateInstanceVersion'. Setting instance version to: ([%d].[%d].[%d]).", major, minor, patch);
+		Log(LogLevel::Information, "Could not find a function pointer for 'vkEnumerateInstanceVersion'. Vulkan loader instance version is : ([%d].[%d].[%d]).", major, minor, patch);
+	}
+
+	// Check the maximum supported instance version against the version requested by the application
+	VulkanVersion LoaderVersion = VulkanVersion(major, minor, patch);
+	if (LoaderVersion.toVulkanVersion() < version.toVulkanVersion())
+	{
+		Log(LogLevel::Warning, "The instance version supported by the Vulkan loader on your device is less than the Application's requested Vulkan version : ([%d].[%d].[%d])",
+			version.majorV, version.minorV, version.patchV);
+		// Attempt to continue by forcing the application to use the maximum supported instance version
+		version = LoaderVersion;
+	}
+	else
+	{
+		Log(LogLevel::Information, "The instance version requested by the application ([%d].[%d].[%d]) is supported by the Vulkan loader on your device ", version.majorV,
+			version.minorV, version.patchV);
 	}
 
 	// Print out the supported instance extensions
@@ -2042,7 +2111,7 @@ pvrvk::Instance createInstance(const std::string& applicationName, VulkanVersion
 		if (debugUtilsSupported)
 		{
 			pvrvk::DebugUtilsMessengerCreateInfo debugUtilsMessengerCreateInfo(
-				pvrvk::DebugUtilsMessageSeverityFlagsEXT::e_ALL_BITS, pvrvk::DebugUtilsMessageTypeFlagsEXT::e_ALL_BITS, pvr::utils::logMessageDebugUtilsMessengerCallback);
+				InstanceValidationFlags, pvrvk::DebugUtilsMessageTypeFlagsEXT::e_ALL_BITS, pvr::utils::logMessageDebugUtilsMessengerCallback);
 			instanceInfo.setDebugUtilsMessengerCreateInfo(debugUtilsMessengerCreateInfo);
 		}
 
@@ -2103,7 +2172,6 @@ pvrvk::Instance createInstance(const std::string& applicationName, VulkanVersion
 		}
 	}
 
-	version = VulkanVersion(major, minor, patch);
 	appInfo.setApiVersion(version.toVulkanVersion());
 	instanceInfo.setApplicationInfo(appInfo);
 
@@ -2116,7 +2184,7 @@ pvrvk::Instance createInstance(const std::string& applicationName, VulkanVersion
 	Log(LogLevel::Information, "	Application Version: %d.", instanceAppInfo.getApplicationVersion());
 	Log(LogLevel::Information, "	Engine Name: %s.", instanceAppInfo.getEngineName().c_str());
 	Log(LogLevel::Information, "	Engine Version: %d.", instanceAppInfo.getEngineVersion());
-	Log(LogLevel::Information, "	Version: %d / ([%d].[%d].[%d]).", instanceAppInfo.getApiVersion(), major, minor, patch);
+	Log(LogLevel::Information, "	Version: %d / ([%d].[%d].[%d]).", instanceAppInfo.getApiVersion(), version.majorV, version.minorV, version.patchV);
 
 	const std::vector<pvrvk::PhysicalDevice>& physicalDevices = outInstance->getPhysicalDevices();
 
@@ -2144,13 +2212,13 @@ pvrvk::Instance createInstance(const std::string& applicationName, VulkanVersion
 		{
 			auto heap = memprop.getMemoryHeaps()[heapIdx];
 			std::string s = to_string(heap.getFlags());
-			Log(LogLevel::Information, "		Heap:[%d] Size:[%dMB] Flags: [%d (%s) ]", heapIdx, static_cast<uint32_t>(heap.getSize() / 1024ull * 1024ull),
+			Log(LogLevel::Information, "		Heap:[%d] Size:[%zuMB] Flags: [%d (%s) ]", heapIdx, static_cast<uint32_t>(heap.getSize() / 1024ull * 1024ull),
 				static_cast<uint32_t>(heap.getFlags()), s.c_str());
 			for (uint32_t typeIdx = 0; typeIdx < memprop.getMemoryTypeCount(); ++typeIdx)
 			{
 				auto type = memprop.getMemoryTypes()[typeIdx];
 				if (type.getHeapIndex() == heapIdx)
-					Log(LogLevel::Information, "			Memory Type: [%d] Flags: [%d (%s) ] ", typeIdx, type.getPropertyFlags(), to_string(type.getPropertyFlags()).c_str());
+					Log(LogLevel::Information, "			Memory Type: [%d] Flags: [ %d (%s) ] ", typeIdx, type.getPropertyFlags(), to_string(type.getPropertyFlags()).c_str());
 			}
 		}
 	}
@@ -2424,7 +2492,7 @@ void getMemoryTypeIndex(const pvrvk::PhysicalDevice& physicalDevice, const uint3
 #pragma endregion
 
 #pragma region //////////// EXTENSIONS AND LAYERS ///////////
-DeviceExtensions::DeviceExtensions() : VulkanExtensionList()
+DeviceExtensions::DeviceExtensions(VulkanVersion vkVersion) : VulkanExtensionList()
 {
 #ifdef VK_KHR_swapchain
 	// enable the swap chain extension
@@ -2441,25 +2509,28 @@ DeviceExtensions::DeviceExtensions() : VulkanExtensionList()
 	addExtension(pvrvk::VulkanExtension(VK_IMG_FILTER_CUBIC_EXTENSION_NAME, (uint32_t)-1));
 #endif
 
-#ifdef VK_KHR_get_memory_requirements2
-	// attempt to enable VK_KHR_get_memory_requirements2 extension
-	addExtension(pvrvk::VulkanExtension(VK_KHR_GET_MEMORY_REQUIREMENTS_2_EXTENSION_NAME, (uint32_t)-1));
-#endif
-
-#ifdef VK_KHR_dedicated_allocation
-	// attempt to enable VK_KHR_dedicated_allocation extension
-	addExtension(pvrvk::VulkanExtension(VK_KHR_DEDICATED_ALLOCATION_EXTENSION_NAME, (uint32_t)-1));
-#endif
-
 #ifdef DEBUG
 #ifdef VK_EXT_debug_marker
 	// if the build is Debug then enable the DEBUG_MARKER extension to aid with debugging
 	addExtension(pvrvk::VulkanExtension(VK_EXT_DEBUG_MARKER_EXTENSION_NAME, (uint32_t)-1));
 #endif
 #endif
+
+	// After changing extension loading : Ensure that only device extenions that were depricated in 1.1 are only added when targetting Vulkan 1.0
+	// if (vkVersion.toVulkanVersion() < VK_MAKE_VERSION(1, 1, 0))
+	{
+#ifdef VK_KHR_get_memory_requirements2
+		// attempt to enable VK_KHR_get_memory_requirements2 extension
+		addExtension(pvrvk::VulkanExtension(VK_KHR_GET_MEMORY_REQUIREMENTS_2_EXTENSION_NAME, (uint32_t)-1));
+#endif
+#ifdef VK_KHR_dedicated_allocation
+		// attempt to enable VK_KHR_dedicated_allocation extension
+		addExtension(pvrvk::VulkanExtension(VK_KHR_DEDICATED_ALLOCATION_EXTENSION_NAME, (uint32_t)-1));
+#endif
+	}
 }
 
-void DeviceExtensions::addExtensionFeature(pvrvk::ExtensionFeatures& extensionFeature)
+DeviceExtensions& DeviceExtensions::addExtensionFeature(pvrvk::ExtensionFeatures& extensionFeature)
 {
 	// Insert the extension feature into the extension feature map
 	void* extensionFeaturePtr = extensionFeature.getVkPtr();
@@ -2469,6 +2540,8 @@ void DeviceExtensions::addExtensionFeature(pvrvk::ExtensionFeatures& extensionFe
 	// Making this current extension the new base pointer
 	if (_lastRequestedExtensionFeature) { extensionFeature.setPNext(_lastRequestedExtensionFeature); }
 	_lastRequestedExtensionFeature = extensionFeaturePtr;
+
+	return *this;
 }
 
 DeviceExtensions& DeviceExtensions::addFragmentShadingRateExtensionAndFeature(pvrvk::PhysicalDevice& physicalDevice)
@@ -2502,7 +2575,7 @@ InstanceLayers::InstanceLayers(bool forceLayers)
 	}
 }
 
-InstanceExtensions::InstanceExtensions()
+InstanceExtensions::InstanceExtensions(VulkanVersion vkVersion)
 {
 #ifdef VK_KHR_surface
 	addExtension(pvrvk::VulkanExtension(VK_KHR_SURFACE_EXTENSION_NAME, (uint32_t)-1));
@@ -2522,9 +2595,6 @@ InstanceExtensions::InstanceExtensions()
 #elif defined(VK_KHR_display) // NullWS
 	addExtension(pvrvk::VulkanExtension(VK_KHR_DISPLAY_EXTENSION_NAME, (uint32_t)-1));
 #endif
-#ifdef VK_KHR_get_physical_device_properties2
-	addExtension(pvrvk::VulkanExtension(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME, (uint32_t)-1));
-#endif
 
 #ifdef DEBUG
 	// if the build is Debug then attempt to enable the VK_EXT_debug_report extension to aid with debugging
@@ -2540,6 +2610,14 @@ InstanceExtensions::InstanceExtensions()
 	addExtension(pvrvk::VulkanExtension(VK_EXT_VALIDATION_FEATURES_EXTENSION_NAME, (uint32_t)-1));
 #endif
 #endif
+
+	// After changing extension loading : Ensure that instance extensions depreciated in 1.1 are only added if targetting vulkan version 1.0
+	// if (vkVersion.toVulkanVersion() < VK_MAKE_VERSION(1, 1, 0))
+	{
+#ifdef VK_KHR_get_physical_device_properties2
+		addExtension(pvrvk::VulkanExtension(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME, (uint32_t)-1));
+#endif
+	}
 }
 
 std::vector<int> validatePhysicalDeviceExtensions(const pvrvk::Instance instance, const std::vector<std::string>& vectorExtensionNames)
@@ -2573,6 +2651,45 @@ std::vector<int> validatePhysicalDeviceExtensions(const pvrvk::Instance instance
 	}
 
 	return vectorResult;
+}
+
+bool formatWithTilingSupportsFeatureFlags(pvrvk::Format imageFormat, pvrvk::ImageTiling imageTiling, pvrvk::FormatFeatureFlags formatFeatureFlags, const pvrvk::Instance instance, pvrvk::PhysicalDevice physicalDevice)
+{
+	VkFormatProperties formatProperties = {};
+
+	instance->getVkBindings().vkGetPhysicalDeviceFormatProperties(physicalDevice->getVkHandle(), static_cast<VkFormat>(imageFormat), &formatProperties);
+
+	switch (imageTiling)
+	{
+		case pvrvk::ImageTiling::e_LINEAR:
+		{
+			if (formatProperties.linearTilingFeatures & static_cast<VkFormatFeatureFlags>(formatFeatureFlags))
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		case pvrvk::ImageTiling::e_OPTIMAL:
+		{
+			if (formatProperties.optimalTilingFeatures & static_cast<VkFormatFeatureFlags>(formatFeatureFlags))
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		default:
+		{
+			return false;
+		}
+	}
+
+	return false;
 }
 
 #pragma endregion

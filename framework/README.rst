@@ -7,7 +7,9 @@ The PowerVR Framework is a complete framework source code. It targets Windows, L
 
 The majority of the code is written in C++ and tested across different compilers (Visual Studio 2013-2017, GNU Compiler Collection, and Clang) using modern C++ style. It provides a complete framework for application development. There is also supporting per-platform code such as Objective-C code for iOS and macOS, and Java code for Android. CMake files are also supplied.
 
-The Framework consists of libraries divided by functionality. These modules are provided to be configured as static libraries, but they can be used differently if required.
+The Framework consists of libraries divided by functionality, as shown in the figure below. These modules are provided to be configured as static libraries, but they can be used differently if required.
+
+.. figure:: ../docs/images/PowerVRFrameworkComponents.png
 
 PVRCore
 ~~~~~~~

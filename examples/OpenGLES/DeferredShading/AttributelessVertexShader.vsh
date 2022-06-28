@@ -1,6 +1,6 @@
 #version 310 es
 
-layout(location = 0) out mediump vec2 vViewDirVS;
+layout(location = 0) out highp vec2 vViewDirVS;
 
 void main()
 {

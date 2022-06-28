@@ -6,7 +6,7 @@
 #endif
 
 uniform mediump sampler2D sTexture;
-uniform mediump sampler2D sBumpMap;
+uniform highp sampler2D sBumpMap;
 
 uniform highp float fFarClipDistance;
 
@@ -17,7 +17,7 @@ layout(std140, binding = 1) uniform StaticPerMaterial
 };
 
 layout(location = 0) in mediump vec2 vTexCoord;
-layout(location = 1) in mediump vec3 vNormal;
+layout(location = 1) in highp vec3 vNormal;
 layout(location = 2) in highp vec3 vTangent;
 layout(location = 3) in highp vec3 vBinormal;
 layout(location = 4) in highp vec3 vViewPosition;

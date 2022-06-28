@@ -249,7 +249,7 @@ enum
 	retry_NoStencil,
 	retry_StencilBpp,
 	retry_ColorBpp,
-	retry_reduceAlphaBpp,
+	retry_ReduceAlphaBpp,
 	retry_NoAlpha,
 	retry_DepthBpp,
 	retry_DONE
@@ -270,13 +270,13 @@ void fix_attributes(const DisplayAttributes& origAttr, DisplayAttributes& attr, 
 		attr.greenBits = origAttr.greenBits;
 		attr.blueBits = origAttr.blueBits;
 	}
-	if (!(retries[retry_reduceAlphaBpp] == 3) && !(retries[retry_NoAlpha] == 3)) // fixed. leave it alone..
+
+	if (!(retries[retry_ReduceAlphaBpp] == 3) && !(retries[retry_NoAlpha] == 3)) // fixed. leave it alone..
 	{
-		if (retries[retry_reduceAlphaBpp] == 0 && retries[retry_NoAlpha] == 0) // reset.
-		{ attr.alphaBits = origAttr.alphaBits; } // mutually exclusiv if (retries[retry_reduceAlphaBpp] == 1) // test one
-		{
-			attr.alphaBits = 1;
-		} // mutually exclusive
+		if (retries[retry_ReduceAlphaBpp] == 0 && retries[retry_NoAlpha] == 0) // reset.
+		{ attr.alphaBits = origAttr.alphaBits; } // mutually exclusive
+		if (retries[retry_ReduceAlphaBpp] == 1) // test one
+		{ attr.alphaBits = 1; } // mutually exclusive
 		if (retries[retry_NoAlpha] == 1) // test two
 		{ attr.alphaBits = 0; } // mutually exclusive
 	}
@@ -286,6 +286,7 @@ void fix_attributes(const DisplayAttributes& origAttr, DisplayAttributes& attr, 
 	{
 		attr.depthBPP = origAttr.depthBPP;
 	}
+
 	if (!(retries[retry_ReduceStencilBpp] == 3) && !(retries[retry_NoStencil] == 3)) // fixed. leave it alone..
 	{
 		if (retries[retry_ReduceStencilBpp] == 0 && retries[retry_NoStencil] == 0) // reset.
@@ -308,6 +309,7 @@ void fix_attributes(const DisplayAttributes& origAttr, DisplayAttributes& attr, 
 	{
 		attr.aaSamples = origAttr.aaSamples;
 	}
+
 #ifdef DEBUG
 	bool ORIG_DEBUG_BIT = true;
 #else
@@ -382,7 +384,7 @@ static inline void initializeContext(bool wantWindow, DisplayAttributes& origina
 
 	if (!debugBit) { retries[retry_RemoveDebugBit] = 4; }
 	if (attributes.aaSamples == 0) { retries[retry_DisableAA] = 3; }
-	if (attributes.alphaBits == 0) { retries[retry_reduceAlphaBpp] = 3; }
+	if (attributes.alphaBits == 0) { retries[retry_ReduceAlphaBpp] = 3; }
 	if (attributes.alphaBits == 0) { retries[retry_NoAlpha] = 3; }
 	if (attributes.stencilBPP == 0) { retries[retry_StencilBpp] = 3; }
 	if (attributes.stencilBPP == 0) { retries[retry_NoStencil] = 3; }
@@ -612,7 +614,7 @@ static inline void initializeContext(bool wantWindow, DisplayAttributes& origina
 			// clear the EGL error
 			eglerror = egl::GetError();
 			if (eglerror != EGL_SUCCESS) { Log(LogLevel::Debug, "Context not created yet. Clearing EGL errors."); }
-		} // eglChooseConfif failed.
+		} // eglChooseConfig failed.
 
 		//// FAILURE ////
 		if (attributes.configID > 0)

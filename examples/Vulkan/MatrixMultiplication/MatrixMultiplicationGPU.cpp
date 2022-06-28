@@ -36,8 +36,10 @@ void initiateVulkan(char* pathToExecutable)
 
 	_resources = std::make_unique<DeviceResources>();
 
-	// create the vulkan instance
-	_resources->instance = pvr::utils::createInstance("MatrixMultiplication");
+	// Create a Vulkan 1.0 instance and retrieve compatible physical devices
+	pvr::utils::VulkanVersion VulkanVersion(1, 0, 0);
+	_resources->instance = pvr::utils::createInstance("VulkanMatrixMultiplication", VulkanVersion, pvr::utils::InstanceExtensions(VulkanVersion));
+
 	if (_resources->instance->getNumPhysicalDevices() == 0)
 	{
 		std::cout << std::endl << "There are no vulkan enabled devices connected" << std::endl;
@@ -58,8 +60,7 @@ void initiateVulkan(char* pathToExecutable)
 	_resources->vma = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_resources->device));
 
 	// create and allocate the command pool from the command queue
-	_resources->commandPool =
-		_resources->device->createCommandPool(pvrvk::CommandPoolCreateInfo(_resources->commandQueue->getFamilyIndex(), pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT));
+	_resources->commandPool = _resources->device->createCommandPool(pvrvk::CommandPoolCreateInfo(_resources->commandQueue->getFamilyIndex()));
 
 	// allocate the command buffers out of the command pool
 	_resources->primaryCommandBuffer = _resources->commandPool->allocateCommandBuffer();
@@ -152,8 +153,8 @@ void makeBuffers(uint32_t M, uint32_t N, uint32_t P)
 	makeSingleMatrixBuffer(7, N * P);
 
 	// Associate all of the buffers to their biffer views
-	for (uint32_t i = 0; i < _resources->matrixBufferCount; i++) 
-	{ 
+	for (uint32_t i = 0; i < _resources->matrixBufferCount; i++)
+	{
 		_resources->matrixBufferViews[i].pointToMappedMemory(_resources->matrixBufferSSBOs[i]->getDeviceMemory()->getMappedData());
 	}
 	// update the descriptor sets using a writer to update them all in one go
@@ -321,14 +322,11 @@ void updateBuffers(Matrix LHS, Matrix RHS)
 	pvr::utils::updateHostVisibleBuffer(_resources->matrixBufferSSBOs[6], LHS.data(), 0, sizeof(float) * Mat_M * Mat_N);
 	pvr::utils::updateHostVisibleBuffer(_resources->matrixBufferSSBOs[7], Matrix::transpose(RHS).data(), 0, sizeof(float) * Mat_N * Mat_P);
 
-	//If the device doesn't have coherant memory, it has to be flushed.
-	if (static_cast<uint32_t>(_resources->matrixBufferSSBOs[0]->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0) 
+	// If the device doesn't have coherant memory, it has to be flushed.
+	if (static_cast<uint32_t>(_resources->matrixBufferSSBOs[0]->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
 	{
-		//Flush the entire range of all of the SSBOS
-		for (size_t i = 0; i < 8; i++) 
-		{ 
-			_resources->matrixBufferSSBOs[i]->getDeviceMemory()->flushRange(0, _resources->matrixBufferViews[i].getSize());
-		}
+		// Flush the entire range of all of the SSBOS
+		for (size_t i = 0; i < 8; i++) { _resources->matrixBufferSSBOs[i]->getDeviceMemory()->flushRange(0, _resources->matrixBufferViews[i].getSize()); }
 	}
 }
 
@@ -350,7 +348,7 @@ Matrix fetchResult(bool transposed)
 	}
 	else
 	{
-		//float* m = (float*)_resources->bufferViewProdMatrix[1].getMappedMemory();
+		// float* m = (float*)_resources->bufferViewProdMatrix[1].getMappedMemory();
 		float* m = (float*)_resources->matrixBufferViews[5].getMappedMemory();
 		// MT is a (PxM) Matrix
 		Matrix ProdT(Mat_P, Mat_M, m);
@@ -378,7 +376,7 @@ void emptyResultBuffers()
 void doComputeWork(int xWorkgroupNumber, int yWorkgroupNumber)
 {
 	// Fill the command buffer
-	_resources->primaryCommandBuffer->reset();
+	_resources->commandPool->reset(pvrvk::CommandPoolResetFlags::e_RELEASE_RESOURCES_BIT);
 	_resources->primaryCommandBuffer->begin();
 	_resources->primaryCommandBuffer->bindPipeline(_resources->computePipeline);
 	_resources->primaryCommandBuffer->bindDescriptorSet(pvrvk::PipelineBindPoint::e_COMPUTE, _resources->pipelineLayout, 0, _resources->descriptorSet);

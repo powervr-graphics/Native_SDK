@@ -81,7 +81,7 @@ mediump vec3 f_schlickR(mediump float cosTheta, mediump vec3 F0, mediump float r
 	return F0 + (max(vec3(1.0 - roughness), F0) - F0) * pow(1.0 - cosTheta, 5.0);
 }
 
-mediump vec3 directLighting(mediump vec3 V, mediump vec3 N, mediump vec3 L, mediump vec3 F0, mediump vec3 albedo, mediump float metallic, mediump float roughness, mediump float visibility)
+mediump vec3 directLighting(highp vec3 V, mediump vec3 N, highp vec3 L, mediump vec3 F0, mediump vec3 albedo, mediump float metallic, mediump float roughness, mediump float visibility)
 {
 	// half vector
 	mediump vec3 H = normalize(V + L);

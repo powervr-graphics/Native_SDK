@@ -10,7 +10,7 @@ layout(std140, set = 2, binding = 0) uniform Material
    mediump float Reflectivity; //How much of the light is diffuse/specular
 };
 
-layout(location = 0) in mediump vec3 ViewNormal;
+layout(location = 0) in highp vec3 ViewNormal;
 layout(location = 1) in mediump vec2 TexCoord;
 
 layout(location = 0) out mediump vec4 oColor;

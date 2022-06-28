@@ -113,7 +113,7 @@ public:
 	}
 
 	bool extendedSupportRequired() const {
-		for (const SubpassDescription subpass : _subpasses)
+		for (const SubpassDescription& subpass : _subpasses)
 		{
 			if (subpass.getFragmentShadingRateAttachment().getEnabled())
 			{ return true; }

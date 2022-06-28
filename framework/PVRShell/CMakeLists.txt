@@ -1,14 +1,20 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.18.0 FATAL_ERROR)
+project(PVRShell)
+include(GNUInstallDirs)
+include(../FrameworkCommon.cmake)
 # Copyright (c) Imagination Technologies Limited.
 
-project(PVRShell)
+# Prevent PVRShell being added multiple times
+if(TARGET PVRShell)
+	return()
+endif()
 
-include(GNUInstallDirs)
-include(CMakeFindDependencyMacro)
-include(../Common.cmake)
+# Add PVRCore
+add_subdirectory(../PVRCore PVRCore)
 
-set(PVRShell_PRIVATE_LINK_LIBS "")
+message(STATUS "Adding PVRShell")
 
+# Set the common source list for PVRShell
 set(PVRShell_HEADERS
 	../../include/sdkver.h
 	PVRShell.h
@@ -21,40 +27,19 @@ set(PVRShell_SRC
 	Shell.cpp
 	StateMachine.cpp)
 
+# Each platform links against different libraries
+# So we have to initialise an empty list of libraries to track
+set(PVRShell_PRIVATE_LINK_LIBS "")
+
 # Each platform has its own implementation of PVRShell
+# So we have to append a different list of headers, sources
+# and link libraries for each platform
 if(WIN32)
 	list(APPEND PVRShell_HEADERS
 		OS/Windows/WindowsOSData.h)
 	list(APPEND PVRShell_SRC
 		OS/Windows/ShellOS.cpp
 		EntryPoint/WinMain/main.cpp)
-elseif(APPLE)
-	find_library(lib-quartz QuartzCore)
-	list(APPEND PVRShell_PRIVATE_LINK_LIBS ${lib-quartz})
-	if(IOS)
-		list(APPEND PVRShell_HEADERS
-			EntryPoint/UIApplicationMain/AppController.h)
-		list(APPEND PVRShell_SRC
-			EntryPoint/UIApplicationMain/AppController.mm
-			EntryPoint/UIApplicationMain/main.m
-			OS/UIKit/ShellOS.mm)
-			
-		find_library(lib-uikit UIKit)
-		list(APPEND PVRShell_PRIVATE_LINK_LIBS ${lib-uikit})
-	else()
-		list(APPEND PVRShell_HEADERS
-			EntryPoint/NSApplicationMain/AppController.h
-			OS/AppKit/ViewMTL.h)
-		list(APPEND PVRShell_SRC
-			EntryPoint/NSApplicationMain/AppController.mm
-			EntryPoint/NSApplicationMain/main.m
-			OS/AppKit/ShellOS.mm
-			OS/AppKit/ViewMTL.mm)
-			
-		find_library(lib-Metal Metal)
-		find_library(lib-appkit AppKit)
-		list(APPEND PVRShell_PRIVATE_LINK_LIBS ${lib-appkit} ${lib-Metal})
-	endif()
 elseif(ANDROID)
 	find_library(lib-android android)
 	list(APPEND PVRShell_PRIVATE_LINK_LIBS ${lib-android})
@@ -65,24 +50,25 @@ elseif(ANDROID)
 	
 	list(APPEND PVRShell_PRIVATE_INCLUDE_DIRECTORIES ${ANDROID_NDK}/sources/android/native_app_glue)
 elseif(UNIX)
-	if(NOT CMAKE_SYSTEM_NAME MATCHES "QNX")
-		list(APPEND PVRShell_OS_HEADERS
-			OS/Linux/InternalOS.h)
-		list(APPEND PVRShell_SRC
-			OS/Linux/InternalOS.cpp)
-	endif()
+	list(APPEND PVRShell_OS_HEADERS
+		OS/Linux/InternalOS.h)
+	list(APPEND PVRShell_SRC
+		OS/Linux/InternalOS.cpp)
 
-	# We support building for several Windowing Systems. Typical desktop systems support X11 and Wayland is catching on. NullWS is used by some development platforms/testchip.
-	if(WS OR PVR_WINDOW_SYSTEM)
-		if(WS AND NOT PVR_WINDOW_SYSTEM)
-			set(PVR_WINDOW_SYSTEM ${WS})
-			message("The WS variable has been deprecated. Please move to using PVR_WINDOW_SYSTEM instead.")
-		endif()
+	# We support building for several Windowing Systems. 
+	# Typical desktop systems support X11 and Wayland is catching on. 
+	# NullWS is used by some development platforms/testchip.
+	if(PVR_WINDOW_SYSTEM)
 		
 		set(PVR_WINDOW_SYSTEM_DEFINE "" CACHE INTERNAL "")
-		# Validate the use of -DPVR_WINDOW_SYSTEM
-		if(${PVR_WINDOW_SYSTEM} STREQUAL X11 OR ${PVR_WINDOW_SYSTEM} STREQUAL XCB OR ${PVR_WINDOW_SYSTEM} STREQUAL Wayland OR ${PVR_WINDOW_SYSTEM} STREQUAL NullWS OR ${PVR_WINDOW_SYSTEM} STREQUAL Screen)
-			set(PVR_WINDOW_SYSTEM_DEFINE "${PVR_WINDOW_SYSTEM}" CACHE INTERNAL "")
+		
+		# Validate that the user has passed a supported value into-DPVR_WINDOW_SYSTEM
+		if(${PVR_WINDOW_SYSTEM} STREQUAL X11 
+			OR ${PVR_WINDOW_SYSTEM} STREQUAL XCB 
+			OR ${PVR_WINDOW_SYSTEM} STREQUAL Wayland 
+			OR ${PVR_WINDOW_SYSTEM} STREQUAL NullWS 
+			OR ${PVR_WINDOW_SYSTEM} STREQUAL Screen)
+			set(PVR_WINDOW_SYSTEM_DEFINE "${PVR_WINDOW_SYSTEM}" CACHE INTERNAL "Windowing system define for Linux")
 		else()
 			message(FATAL_ERROR "Unrecognised PVR_WINDOW_SYSTEM: Valid values are NullWS, X11, XCB, Wayland, Screen.")
 		endif()
@@ -117,7 +103,8 @@ elseif(UNIX)
 					message(FATAL_ERROR "XCB libraries could not be found. Please try setting: -DCMAKE_PREFIX_PATH pointing towards your XCB libraries")
 				endif()
 			endif()
-		elseif(${PVR_WINDOW_SYSTEM} STREQUAL Wayland) # The user has requested the Wayland libraries
+		# The user has requested the Wayland libraries
+		elseif(${PVR_WINDOW_SYSTEM} STREQUAL Wayland)
 			find_package(Wayland REQUIRED)
 			
 			if(NOT ${WAYLAND_FOUND})
@@ -128,26 +115,19 @@ elseif(UNIX)
 			
 			list(APPEND PVRShell_PRIVATE_LINK_LIBS ${WAYLAND_CLIENT_LIBRARIES} ${lib-ffi})
 			list(APPEND PVRShell_PRIVATE_INCLUDE_DIRECTORIES ${WAYLAND_CLIENT_INCLUDE_DIR})
-		elseif(${PVR_WINDOW_SYSTEM} STREQUAL Screen)
-			if(CMAKE_SYSTEM_NAME MATCHES "QNX")
-				list(APPEND PVRShell_PRIVATE_LINK_LIBS "screen")
-			endif()
-		elseif(${PVR_WINDOW_SYSTEM} STREQUAL NullWS) # The user has requested no windowing system(direct-to-framebuffer)
+		# The user has requested no windowing system(direct-to-framebuffer)
+		elseif(${PVR_WINDOW_SYSTEM} STREQUAL NullWS) 
 		else()
-			message(FATAL_ERROR "Unrecognised PVR_WINDOW_SYSTEM: Valid values are NullWS(default), X11, Wayland, Screen." )
+			message(FATAL_ERROR "Unrecognised PVR_WINDOW_SYSTEM: Valid values are NullWS(default), X11, XCB, Wayland." )
 		endif()
 
+		# Now that the windowing system has been validated
+		# Add the PVRShell platform specific sources 
 		if("${PVR_WINDOW_SYSTEM}" STREQUAL "NullWS")
 			message("CMake: Generating PVRShell for NullWS")
-			if(CMAKE_SYSTEM_NAME MATCHES "QNX")
-				list(APPEND PVRShell_SRC
-					OS/QNXNullWS/ShellOS.cpp
-					EntryPoint/main/main.cpp)
-			else()
-				list(APPEND PVRShell_SRC
-					OS/Linux/NullWS/ShellOS.cpp
-					EntryPoint/main/main.cpp)
-			endif()
+			list(APPEND PVRShell_SRC
+				OS/Linux/NullWS/ShellOS.cpp
+				EntryPoint/main/main.cpp)
 		elseif("${PVR_WINDOW_SYSTEM}" STREQUAL "X11")
 			message("CMake: Generating PVRShell for X11")
 			list(APPEND PVRShell_SRC
@@ -163,71 +143,31 @@ elseif(UNIX)
 			list(APPEND PVRShell_SRC
 				OS/Linux/Wayland/ShellOS.cpp
 				EntryPoint/main/main.cpp)
-		elseif("${PVR_WINDOW_SYSTEM}" STREQUAL "Screen")
-			if(CMAKE_SYSTEM_NAME MATCHES "QNX")
-				message("CMake: Generating PVRShell for Screen")
-				list(APPEND PVRShell_SRC
-					OS/QNXScreen/ShellOS.cpp
-					EntryPoint/main/main.cpp)
-			else()
-				message(FATAL_ERROR "[PVR_WINDOW_SYSTEM] variable set to [${PVR_WINDOW_SYSTEM}] which is only supported on QNX platforms.")
-			endif()
 		endif()	
 	else()
-		message(WARNING "PVR_WINDOW_SYSTEM (Window System) Variable has been not set for PVRShell. Supported windowing systems can be enabled by passing: -DPVR_WINDOW_SYSTEM=NullWS, -DPVR_WINDOW_SYSTEM=X11, -DPVR_WINDOW_SYSTEM=XCB, -DPVR_WINDOW_SYSTEM=Wayland, -DPVR_WINDOW_SYSTEM=Screen to CMake")
+		message(FATAL_ERROR "PVR_WINDOW_SYSTEM (Window System) Variable has been not set for PVRShell. Supported windowing systems can be enabled by passing: -DPVR_WINDOW_SYSTEM=NullWS, -DPVR_WINDOW_SYSTEM=X11, -DPVR_WINDOW_SYSTEM=XCB, -DPVR_WINDOW_SYSTEM=Wayland, -DPVR_WINDOW_SYSTEM=Screen to CMake")
 	endif()
 endif()
 
 # Create the library
 add_library(PVRShell STATIC ${PVRShell_SRC} ${PVRShell_HEADERS})
 
-if(PVR_PREBUILT_DEPENDENCIES)
-	list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/../cmake/modules")
-	find_dependency(PVRCore MODULE REQUIRED)
-endif()
+# Link PVRShell to PVRCore and it's windowing specific libraries
+target_link_libraries(PVRShell PUBLIC PVRCore PRIVATE ${PVRShell_PRIVATE_LINK_LIBS})
 
-apply_framework_compile_options_to_target(PVRShell)
-
-target_link_libraries(PVRShell 
-	PUBLIC
-		PVRCore
-	PRIVATE
-		${PVRShell_PRIVATE_LINK_LIBS})
-
-if(APPLE)
-	target_link_libraries(PVRShell PUBLIC "-ObjC")
-endif()
-
-set(PVRShell_INCLUDE_DIRECTORIES 
-	${CMAKE_CURRENT_LIST_DIR}/..
-	${CMAKE_CURRENT_LIST_DIR}/../../include)
-
+# Allow PVRShell to see the rest of the framework 
+# And the windowing system specific include directories
 target_include_directories(PVRShell 
 	PUBLIC 
-		"$<BUILD_INTERFACE:${PVRShell_INCLUDE_DIRECTORIES}>"
-		$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+		${CMAKE_CURRENT_LIST_DIR}/..
+		${CMAKE_CURRENT_LIST_DIR}/../../include
 	PRIVATE
 		${PVRShell_PRIVATE_INCLUDE_DIRECTORIES})
 
-target_compile_definitions(PVRShell 
-	PUBLIC ${PVR_WINDOW_SYSTEM_DEFINE})
+# Add the windowing system define variable, so that the source can know which Windowing was requsted
+target_compile_definitions(PVRShell PUBLIC ${PVR_WINDOW_SYSTEM_DEFINE})
 
-if(PVR_ENABLE_INSTALL)
-	install(TARGETS PVRShell EXPORT PVRShellTargets
-		ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-		LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-		RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-		INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-		OPTIONAL)
-	foreach(file ${PVRShell_HEADERS})
-		get_filename_component(dir ${file} DIRECTORY)
-		install(FILES ${file} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/PVRShell/${dir})
-	endforeach()
-	install(EXPORT PVRShellTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/PVRShell OPTIONAL)
-
-	export(EXPORT PVRShellTargets FILE "${CMAKE_CURRENT_BINARY_DIR}/PVRShell/PVRShellTargets.cmake")
-	# build tree package config
-	file(COPY cmake/PVRShellConfig.cmake.in DESTINATION "${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/PVRShell/" NO_SOURCE_PERMISSIONS)
-	configure_file("${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/PVRShell/PVRShellConfig.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/PVRShell/PVRShellConfig.cmake" COPYONLY)
-	install(FILES "${CMAKE_CURRENT_BINARY_DIR}/PVRShell/PVRShellTargets.cmake" DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/PVRShell OPTIONAL)
-endif()
+# Apply the common framework compile definitions to PVRShell
+# This sets certain warnings on/off and adds appropriate
+# debug and release flags in the compiler and linker  
+apply_framework_compile_options_to_target(PVRShell)

@@ -1,5 +1,5 @@
 /*!
-\brief Implements a deferred shading technique supporting point and directional lights.
+\brief Implements Ray Traced Hard Shadows using the Vulkan Ray Tracing Pipeline and Ray Queries.
 \file VulkanHybridHardShadows.cpp
 \author PowerVR by Imagination, Developer Technology Team
 \copyright Copyright (c) Imagination Technologies Limited.
@@ -74,6 +74,10 @@ const char* const CameraPosition = "vCameraPosition";
 const char* const NumLights = "uNumLights";
 } // namespace PerScene
 
+namespace PerMesh {
+const char* const WorldMatrix = "mWorldMatrix";
+} // namespace PerMesh
+
 namespace PerPointLightData {
 const char* const LightColor = "vLightColor";
 const char* const LightPosition = "vLightPosition";
@@ -131,23 +135,6 @@ struct PerLightData
 	float height;
 };
 
-struct Material
-{
-	glm::ivec4 textureIndices = glm::ivec4(-1);
-	glm::vec4 baseColor = glm::vec4(1.0f);
-	glm::vec4 metallicRoughnessReflectivity = glm::vec4(0.0f, 1.0f, 0.0f, 0.0f);
-	glm::vec4 f0f90;
-};
-
-// Texture description structure
-struct TextureAS
-{
-	std::string name;
-	pvrvk::Format format = pvrvk::Format::e_R8G8B8A8_SRGB;
-	pvrvk::Image image;
-	pvrvk::ImageView imageView;
-};
-
 // Mesh description structure
 struct MeshAS
 {
@@ -156,12 +143,6 @@ struct MeshAS
 	int numIndices;
 	glm::mat4 worldMatrix;
 	pvrvk::IndexType indexType;
-};
-
-// Model description structure
-struct ModelAS
-{
-	std::vector<MeshAS> meshes;
 };
 
 struct DeviceResources
@@ -225,10 +206,9 @@ struct DeviceResources
 	// Bindless scene resources
 	std::vector<pvrvk::Buffer> vertexBuffers;
 	std::vector<pvrvk::Buffer> indexBuffers;
-	std::vector<ModelAS> models;
+	std::vector<MeshAS> meshes;
 	std::vector<int> verticesSize;
 	std::vector<int> indicesSize;
-	std::vector<TextureAS> textures;
 	pvr::utils::AccelerationStructureWrapper accelerationStructure;
 
 	//// Structured Memory Views ////
@@ -240,6 +220,10 @@ struct DeviceResources
 	// light buffer
 	pvr::utils::StructuredBufferView lightDataBufferView;
 	pvrvk::Buffer lightDataBuffer;
+
+	// mesh data
+	pvr::utils::StructuredBufferView perMeshBufferView;
+	pvrvk::Buffer perMeshBuffer;
 
 	pvrvk::Semaphore imageAcquiredSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
 	pvrvk::Semaphore presentationSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
@@ -301,6 +285,7 @@ public:
 	float _frameNumber;
 	bool _animateCamera;
 	bool _useDeferred;
+	float _frame = 0.0f;
 
 	// Projection and Model View matrices
 	glm::mat4 _viewMatrix;
@@ -308,6 +293,7 @@ public:
 	glm::mat4 _viewProjectionMatrix;
 	glm::mat4 _inverseViewMatrix;
 	glm::vec3 _cameraPosition;
+	std::vector<glm::mat4> _meshTransforms;
 	float _farClipDistance;
 
 	uint32_t _windowWidth;
@@ -319,6 +305,12 @@ public:
 
 	// Scene models
 	pvr::assets::ModelHandle _scene;
+
+	/// <summary>Filter performance warning UNASSIGNED-BestPractices-vkAllocateMemory-small-allocation Best Practices which
+	/// has ID -602362517 for TLAS buffer build and update. This warning recommends buffer allocations to be of size at least
+	/// 256KB which collides with each BLAS node built for each scene element and the size of the TLAS buffer, details of the warning:
+	/// https://github.com/KhronosGroup/Vulkan-ValidationLayers/blob/master/layers/best_practices_validation.h</summary>
+	std::vector<int> vectorValidationIDFilter;
 
 	VulkanHybridHardShadows()
 	{
@@ -333,6 +325,7 @@ public:
 	virtual pvr::Result quitApplication();
 	virtual pvr::Result renderFrame();
 
+	void updateScene();
 	void createFramebufferAndRenderPass();
 	void createPipelines();
 	void createGBufferPipelines();
@@ -352,12 +345,11 @@ public:
 	void uploadDynamicSceneData();
 	void createCameraBuffer();
 	void initializeLights();
+	void createMeshTransformBuffer();
 	void createLightBuffer();
 	void updateAnimation();
 	void updateProceduralLights();
 	void createModelBuffers(pvrvk::CommandBuffer& uploadCmd);
-	void createTextures(pvrvk::CommandBuffer& uploadCmd);
-	uint32_t getTextureIndex(const std::string textureName);
 
 	void eventMappedInput(pvr::SimplifiedInput key)
 	{
@@ -408,9 +400,9 @@ pvr::Result VulkanHybridHardShadows::initView()
 
 	_deviceResources = std::make_unique<DeviceResources>();
 
-	// Create instance and retrieve compatible physical devices
-	_deviceResources->instance =
-		pvr::utils::createInstance(this->getApplicationName(), pvr::utils::VulkanVersion(), pvr::utils::InstanceExtensions(), pvr::utils::InstanceLayers(false));
+	// Create instance and targetting Vulkan version 1.1 and retrieve compatible physical devices
+	pvr::utils::VulkanVersion vulkanVersion(1, 1, 0);
+	_deviceResources->instance = pvr::utils::createInstance(this->getApplicationName(), vulkanVersion, pvr::utils::InstanceExtensions(vulkanVersion));
 
 	if (_deviceResources->instance->getNumPhysicalDevices() == 0)
 	{
@@ -419,9 +411,10 @@ pvr::Result VulkanHybridHardShadows::initView()
 	}
 
 	// device extensions
-	std::vector<std::string> vectorExtensionNames{ VK_KHR_MAINTENANCE3_EXTENSION_NAME, VK_KHR_GET_MEMORY_REQUIREMENTS_2_EXTENSION_NAME, VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME,
-		VK_KHR_RAY_QUERY_EXTENSION_NAME, VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME, VK_KHR_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME, VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME,
-		VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME, VK_KHR_PIPELINE_LIBRARY_EXTENSION_NAME, VK_KHR_DEDICATED_ALLOCATION_EXTENSION_NAME, VK_EXT_SCALAR_BLOCK_LAYOUT_EXTENSION_NAME };
+	std::vector<std::string> vectorExtensionNames{ VK_KHR_SHADER_FLOAT_CONTROLS_EXTENSION_NAME, VK_KHR_SPIRV_1_4_EXTENSION_NAME, VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME,
+		VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME, VK_KHR_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME, VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME,
+		VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME, VK_KHR_PIPELINE_LIBRARY_EXTENSION_NAME, VK_KHR_DEDICATED_ALLOCATION_EXTENSION_NAME, VK_EXT_SCALAR_BLOCK_LAYOUT_EXTENSION_NAME,
+		VK_KHR_RAY_QUERY_EXTENSION_NAME };
 
 	std::vector<int> vectorPhysicalDevicesIndex = pvr::utils::validatePhysicalDeviceExtensions(_deviceResources->instance, vectorExtensionNames);
 
@@ -435,8 +428,13 @@ pvr::Result VulkanHybridHardShadows::initView()
 	pvrvk::Surface surface = pvr::utils::createSurface(
 		_deviceResources->instance, _deviceResources->instance->getPhysicalDevice(vectorPhysicalDevicesIndex[0]), this->getWindow(), this->getDisplay(), this->getConnection());
 
+	// Filter UNASSIGNED-BestPractices-vkAllocateMemory-small-allocation Best Practices performance warning which has ID -602362517 for TLAS buffer build and
+	// update (VkBufferDeviceAddressInfo requires VkBuffer handle so in general it's not possible to make a single buffer to put all information
+	// and use offsets inside it
+	vectorValidationIDFilter.push_back(-602362517);
+
 	// Create a default set of debug utils messengers or debug callbacks using either VK_EXT_debug_utils or VK_EXT_debug_report respectively
-	_deviceResources->debugUtilsCallbacks = pvr::utils::createDebugUtilsCallbacks(_deviceResources->instance);
+	_deviceResources->debugUtilsCallbacks = pvr::utils::createDebugUtilsCallbacks(_deviceResources->instance, (void*)&vectorValidationIDFilter);
 
 	const pvr::utils::QueuePopulateInfo queuePopulateInfo = { pvrvk::QueueFlags::e_GRAPHICS_BIT, surface };
 	pvr::utils::QueueAccessInfo queueAccessInfo;
@@ -445,60 +443,39 @@ pvr::Result VulkanHybridHardShadows::initView()
 
 	for (const std::string& extensionName : vectorExtensionNames) { deviceExtensions.addExtension(extensionName); }
 
-	// Ray tracing pipeline feature
-	VkPhysicalDeviceFeatures2KHR physical_device_features_3{ static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_FEATURES_2_KHR) };
-	VkPhysicalDeviceRayTracingPipelineFeaturesKHR raytracingPipeline{ static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR) };
-	physical_device_features_3.pNext = &raytracingPipeline;
-	_deviceResources->instance->getVkBindings().vkGetPhysicalDeviceFeatures2KHR(
-		_deviceResources->instance->getPhysicalDevice(vectorPhysicalDevicesIndex[0])->getVkHandle(), &physical_device_features_3);
-	deviceExtensions.addExtensionFeatureVk<VkPhysicalDeviceRayTracingPipelineFeaturesKHR>(
-		static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR), &raytracingPipeline);
+	// Get the physical device features for all of the raytracing extensions through a continual pNext chain
+	VkPhysicalDeviceFeatures2 deviceFeatures{ static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_FEATURES_2) };
 
-	// Ray tracing physical device
-	VkPhysicalDeviceFeatures2KHR physical_device_features_5{ static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_FEATURES_2_KHR) };
+	// Raytracing Pipeline Features
+	VkPhysicalDeviceRayTracingPipelineFeaturesKHR raytracingPipelineFeatures{ static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR) };
+	deviceFeatures.pNext = &raytracingPipelineFeatures;
+
+	// Acceleration Structure Features
 	VkPhysicalDeviceAccelerationStructureFeaturesKHR accelerationStructureFeatures{ static_cast<VkStructureType>(
 		pvrvk::StructureType::e_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR) };
-	physical_device_features_5.pNext = &accelerationStructureFeatures;
-	_deviceResources->instance->getVkBindings().vkGetPhysicalDeviceFeatures2KHR(
-		_deviceResources->instance->getPhysicalDevice(vectorPhysicalDevicesIndex[0])->getVkHandle(), &physical_device_features_5);
-	deviceExtensions.addExtensionFeatureVk<VkPhysicalDeviceAccelerationStructureFeaturesKHR>(
-		static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR), &accelerationStructureFeatures);
+	raytracingPipelineFeatures.pNext = &accelerationStructureFeatures;
 
-	// Buffer device extension extension feature
-	VkPhysicalDeviceFeatures2KHR physical_device_features{ static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_FEATURES_2_KHR) };
-	VkPhysicalDeviceBufferDeviceAddressFeatures extension{ static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_BUFFER_DEVICE_ADDRESS_FEATURES) };
-	physical_device_features.pNext = &extension;
-	_deviceResources->instance->getVkBindings().vkGetPhysicalDeviceFeatures2KHR(
-		_deviceResources->instance->getPhysicalDevice(vectorPhysicalDevicesIndex[0])->getVkHandle(), &physical_device_features);
-	deviceExtensions.addExtensionFeatureVk<VkPhysicalDeviceBufferDeviceAddressFeatures>(
-		static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_BUFFER_DEVICE_ADDRESS_FEATURES), &extension);
+	// Device Address Features
+	VkPhysicalDeviceBufferDeviceAddressFeatures deviceBufferAddressFeatures{ static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_BUFFER_DEVICE_ADDRESS_FEATURES) };
+	accelerationStructureFeatures.pNext = &deviceBufferAddressFeatures;
 
-	// Scalar block extension feature
-	VkPhysicalDeviceFeatures2KHR physical_device_features_4{ static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_FEATURES_2_KHR) };
-	VkPhysicalDeviceScalarBlockLayoutFeaturesEXT scalarFeature{ static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_SCALAR_BLOCK_LAYOUT_FEATURES) };
-	physical_device_features_4.pNext = &scalarFeature;
-	_deviceResources->instance->getVkBindings().vkGetPhysicalDeviceFeatures2KHR(
-		_deviceResources->instance->getPhysicalDevice(vectorPhysicalDevicesIndex[0])->getVkHandle(), &physical_device_features_4);
-	deviceExtensions.addExtensionFeatureVk<VkPhysicalDeviceScalarBlockLayoutFeaturesEXT>(
-		static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_SCALAR_BLOCK_LAYOUT_FEATURES), &scalarFeature);
+	// Scalar Block Layout Features
+	VkPhysicalDeviceScalarBlockLayoutFeaturesEXT scalarFeatures{ static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_SCALAR_BLOCK_LAYOUT_FEATURES) };
+	deviceBufferAddressFeatures.pNext = &scalarFeatures;
 
-	// Descriptor indexing extension feature
-	VkPhysicalDeviceFeatures2KHR physical_device_features_2{ static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_FEATURES_2_KHR) };
-	VkPhysicalDeviceDescriptorIndexingFeatures indexFeature{ static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES) };
-	physical_device_features_2.pNext = &indexFeature;
-	_deviceResources->instance->getVkBindings().vkGetPhysicalDeviceFeatures2KHR(
-		_deviceResources->instance->getPhysicalDevice(vectorPhysicalDevicesIndex[0])->getVkHandle(), &physical_device_features_2);
-	VkPhysicalDeviceDescriptorIndexingFeatures* pIndexFeature = &indexFeature;
-	deviceExtensions.addExtensionFeatureVk<VkPhysicalDeviceDescriptorIndexingFeatures>(
-		static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES), pIndexFeature);
+	// Ray Querey
+	VkPhysicalDeviceRayQueryFeaturesKHR queryFeatures{ static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_RAY_QUERY_FEATURES_KHR) };
+	scalarFeatures.pNext = &queryFeatures;
 
-	// Ray query features
-	VkPhysicalDeviceFeatures2KHR physical_device_features_6{ static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_FEATURES_2_KHR) };
-	VkPhysicalDeviceRayQueryFeaturesKHR rayQuery{ static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_RAY_QUERY_FEATURES_KHR) };
-	physical_device_features_6.pNext = &rayQuery;
-	_deviceResources->instance->getVkBindings().vkGetPhysicalDeviceFeatures2KHR(
-		_deviceResources->instance->getPhysicalDevice(vectorPhysicalDevicesIndex[0])->getVkHandle(), &physical_device_features_6);
-	deviceExtensions.addExtensionFeatureVk<VkPhysicalDeviceRayQueryFeaturesKHR>(static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_RAY_QUERY_FEATURES_KHR), &rayQuery);
+	// Descriptor Indexing Features
+	VkPhysicalDeviceDescriptorIndexingFeatures indexFeatures{ static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES) };
+	queryFeatures.pNext = &indexFeatures;
+
+	// Fill in all of these device features with one call
+	_deviceResources->instance->getVkBindings().vkGetPhysicalDeviceFeatures2(_deviceResources->instance->getPhysicalDevice(vectorPhysicalDevicesIndex[0])->getVkHandle(), &deviceFeatures);
+
+	// Add these device features to the physical device, since they're all connected by a pNext chain, we only need to explicitly attach the top feature
+	deviceExtensions.addExtensionFeatureVk<VkPhysicalDeviceRayTracingPipelineFeaturesKHR>(&raytracingPipelineFeatures);
 
 	// create device and queues
 	_deviceResources->device =
@@ -621,7 +598,6 @@ pvr::Result VulkanHybridHardShadows::initView()
 	_deviceResources->cmdBufferMainDeferred[0]->begin();
 
 	createModelBuffers(_deviceResources->cmdBufferMainDeferred[0]);
-	createTextures(_deviceResources->cmdBufferMainDeferred[0]);
 
 	_deviceResources->cmdBufferMainDeferred[0]->end();
 
@@ -633,17 +609,16 @@ pvr::Result VulkanHybridHardShadows::initView()
 
 	createFramebufferAndRenderPass();
 	createLightBuffer();
+	createMeshTransformBuffer();
 	createCameraBuffer();
 	createDescriptorSetLayouts();
 	createPipelines();
 	createShaderBindingTable();
 
-	std::vector<glm::mat4> vectorInstanceTransform(_deviceResources->vertexBuffers.size());
-	for (int i = 0; i < vectorInstanceTransform.size(); ++i) { vectorInstanceTransform[i] = glm::mat4(1.0); }
-
 	_deviceResources->accelerationStructure.buildASModelDescription(
-		_deviceResources->vertexBuffers, _deviceResources->indexBuffers, _deviceResources->verticesSize, _deviceResources->indicesSize, vectorInstanceTransform);
-	_deviceResources->accelerationStructure.buildAS(_deviceResources->device, _deviceResources->queue, _deviceResources->cmdBufferMainDeferred[0]);
+		_deviceResources->vertexBuffers, _deviceResources->indexBuffers, _deviceResources->verticesSize, _deviceResources->indicesSize, _meshTransforms);
+	_deviceResources->accelerationStructure.buildAS(_deviceResources->device, _deviceResources->queue, _deviceResources->cmdBufferMainDeferred[0],
+		pvrvk::BuildAccelerationStructureFlagsKHR::e_PREFER_FAST_TRACE_BIT_KHR | pvrvk::BuildAccelerationStructureFlagsKHR::e_ALLOW_UPDATE_BIT_KHR);
 
 	createDescriptorSets();
 	recordSecondaryCommandBuffers();
@@ -683,6 +658,9 @@ pvr::Result VulkanHybridHardShadows::renderFrame()
 	//  Handle user input and update object animations
 	updateAnimation();
 	updateProceduralLights();
+
+	// Update Acceleration Structure
+	updateScene();
 
 	// Upload dynamic data
 	uploadDynamicSceneData();
@@ -726,6 +704,39 @@ pvr::Result VulkanHybridHardShadows::renderFrame()
 	return pvr::Result::Success;
 }
 
+/// <summary>Updates the scene animation and takes the new mesh transforms and updates the TLAS.</summary>
+void VulkanHybridHardShadows::updateScene()
+{
+	pvr::assets::AnimationInstance& animInst = _scene->getAnimationInstance(0);
+
+	//  Calculates the _frame number to animate in a time-based manner.
+	//  get the time in milliseconds.
+	_frame += static_cast<float>(getFrameTime()); // design-time target fps for animation
+
+	if (_frame >= animInst.getTotalTimeInMs()) { _frame = 0; }
+
+	// Sets the _scene animation to this _frame
+	animInst.updateAnimation(_frame);
+
+	for (int i = 0; i < _scene->getNumMeshes(); i++)
+	{
+		const pvr::assets::Model::Node& node = _scene->getNode(i);
+
+		// get the transform matrix of the current mesh
+		glm::mat4 transform = _scene->getWorldMatrix(node.getObjectId());
+
+		_meshTransforms[i] = transform;
+		_deviceResources->meshes[i].worldMatrix = transform;
+	}
+
+	_deviceResources->accelerationStructure.updateInstanceTransformData(_meshTransforms);
+
+	pvrvk::CommandBuffer commandBuffer = _deviceResources->commandPool->allocateCommandBuffer();
+
+	_deviceResources->accelerationStructure.buildTopLevelASAndInstances(_deviceResources->device, commandBuffer, _deviceResources->queue,
+		pvrvk::BuildAccelerationStructureFlagsKHR::e_PREFER_FAST_TRACE_BIT_KHR | pvrvk::BuildAccelerationStructureFlagsKHR::e_ALLOW_UPDATE_BIT_KHR, true);
+}
+
 /// <summary>Creates descriptor set layouts.</summary>
 void VulkanHybridHardShadows::createDescriptorSetLayouts()
 {
@@ -741,11 +752,10 @@ void VulkanHybridHardShadows::createDescriptorSetLayouts()
 	// Static material data buffer
 	commonDescSetInfo.setBinding(2, pvrvk::DescriptorType::e_STORAGE_BUFFER, 1u,
 		pvrvk::ShaderStageFlags::e_FRAGMENT_BIT | pvrvk::ShaderStageFlags::e_CLOSEST_HIT_BIT_KHR | pvrvk::ShaderStageFlags::e_ANY_HIT_BIT_KHR);
-	// Textures
-	commonDescSetInfo.setBinding(3, pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, static_cast<uint16_t>(_deviceResources->textures.size()),
-		pvrvk::ShaderStageFlags::e_FRAGMENT_BIT | pvrvk::ShaderStageFlags::e_CLOSEST_HIT_BIT_KHR | pvrvk::ShaderStageFlags::e_ANY_HIT_BIT_KHR);
 	// TLAS
-	commonDescSetInfo.setBinding(4, pvrvk::DescriptorType::e_ACCELERATION_STRUCTURE_KHR, 1u, pvrvk::ShaderStageFlags::e_RAYGEN_BIT_KHR | pvrvk::ShaderStageFlags::e_FRAGMENT_BIT);
+	commonDescSetInfo.setBinding(3, pvrvk::DescriptorType::e_ACCELERATION_STRUCTURE_KHR, 1u, pvrvk::ShaderStageFlags::e_RAYGEN_BIT_KHR | pvrvk::ShaderStageFlags::e_FRAGMENT_BIT);
+	// Dynamic per mesh buffer
+	commonDescSetInfo.setBinding(4, pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 1u, pvrvk::ShaderStageFlags::e_VERTEX_BIT | pvrvk::ShaderStageFlags::e_FRAGMENT_BIT);
 
 	_deviceResources->commonDescriptorSetLayout = _deviceResources->device->createDescriptorSetLayout(commonDescSetInfo);
 
@@ -817,15 +827,11 @@ void VulkanHybridHardShadows::createDescriptorSets()
 	writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_STORAGE_BUFFER, _deviceResources->commonDescriptorSet, 2)
 								.setBufferInfo(0, pvrvk::DescriptorBufferInfo(_deviceResources->materialBuffer, 0, _deviceResources->materialBuffer->getSize())));
 
-	pvrvk::WriteDescriptorSet textureSetWrite = pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, _deviceResources->commonDescriptorSet, 3);
-
-	for (int i = 0; i < _deviceResources->textures.size(); i++)
-		textureSetWrite.setImageInfo(i, pvrvk::DescriptorImageInfo(_deviceResources->textures[i].imageView, samplerTrilinear, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL));
-
-	writeDescSets.push_back(textureSetWrite);
-
-	writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_ACCELERATION_STRUCTURE_KHR, _deviceResources->commonDescriptorSet, 4)
+	writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_ACCELERATION_STRUCTURE_KHR, _deviceResources->commonDescriptorSet, 3)
 								.setAccelerationStructureInfo(0, _deviceResources->accelerationStructure.getTopLevelAccelerationStructure()));
+	writeDescSets.push_back(
+		pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, _deviceResources->commonDescriptorSet, 4)
+			.setBufferInfo(0, pvrvk::DescriptorBufferInfo(_deviceResources->perMeshBuffer, 0, _deviceResources->perMeshBufferView.getDynamicSliceSize() * _meshTransforms.size())));
 
 	// Write GBuffer Descriptor Set
 
@@ -857,8 +863,8 @@ void VulkanHybridHardShadows::createGBufferPipelines()
 	pvrvk::PipelineLayoutCreateInfo pipeLayoutInfo;
 
 	pipeLayoutInfo.setDescSetLayout(0, _deviceResources->commonDescriptorSetLayout);
-	pipeLayoutInfo.addPushConstantRange(pvrvk::PushConstantRange(pvrvk::ShaderStageFlags::e_VERTEX_BIT, 0, sizeof(glm::mat4)));
-	pipeLayoutInfo.addPushConstantRange(pvrvk::PushConstantRange(pvrvk::ShaderStageFlags::e_FRAGMENT_BIT, sizeof(glm::mat4), sizeof(uint32_t)));
+	pipeLayoutInfo.addPushConstantRange(pvrvk::PushConstantRange(pvrvk::ShaderStageFlags::e_VERTEX_BIT, 0, sizeof(uint32_t)));
+	pipeLayoutInfo.addPushConstantRange(pvrvk::PushConstantRange(pvrvk::ShaderStageFlags::e_FRAGMENT_BIT, sizeof(uint32_t), sizeof(uint32_t)));
 
 	_deviceResources->gbufferPipelineLayout = _deviceResources->device->createPipelineLayout(pipeLayoutInfo);
 
@@ -1091,8 +1097,8 @@ void VulkanHybridHardShadows::createForwardShadingPipelines()
 	pvrvk::PipelineLayoutCreateInfo pipeLayoutInfo;
 
 	pipeLayoutInfo.setDescSetLayout(0, _deviceResources->commonDescriptorSetLayout);
-	pipeLayoutInfo.addPushConstantRange(pvrvk::PushConstantRange(pvrvk::ShaderStageFlags::e_VERTEX_BIT, 0, sizeof(glm::mat4)));
-	pipeLayoutInfo.addPushConstantRange(pvrvk::PushConstantRange(pvrvk::ShaderStageFlags::e_FRAGMENT_BIT, sizeof(glm::mat4), sizeof(uint32_t)));
+	pipeLayoutInfo.addPushConstantRange(pvrvk::PushConstantRange(pvrvk::ShaderStageFlags::e_VERTEX_BIT, 0, sizeof(uint32_t)));
+	pipeLayoutInfo.addPushConstantRange(pvrvk::PushConstantRange(pvrvk::ShaderStageFlags::e_FRAGMENT_BIT, sizeof(uint32_t), sizeof(uint32_t)));
 
 	_deviceResources->forwardShadingPipelineLayout = _deviceResources->device->createPipelineLayout(pipeLayoutInfo);
 
@@ -1333,166 +1339,26 @@ void VulkanHybridHardShadows::createFramebufferAndRenderPass()
 		pvrvk::FramebufferCreateInfo(dimension.getWidth(), dimension.getHeight(), 1, _deviceResources->gbufferRenderPass, 5, &imageViews[0]));
 }
 
-/// <summary>Add a texture to the list of textures if it doesn't already exist.</summary>
-/// <param name="texturePath">String containing the path to the texture.</param>
-/// <returns>Return the index of the added texture.</returns>
-uint32_t VulkanHybridHardShadows::getTextureIndex(const std::string texturePath)
-{
-	// search in existing textures
-	for (uint32_t i = 0; i < static_cast<uint32_t>(_deviceResources->textures.size()); i++)
-	{
-		if (_deviceResources->textures[i].name == texturePath) return i;
-	}
-
-	// texture not added yet
-	_deviceResources->textures.push_back(TextureAS{});
-	uint32_t texIndex = static_cast<uint32_t>(_deviceResources->textures.size()) - 1;
-	_deviceResources->textures[texIndex].name = texturePath;
-	return texIndex;
-}
-
-/// <summary>Takes the list of populated textures used in the scene and loads them into memory, uploads them into a Vulkan image and creates image views.</summary>
-/// <param name="uploadCmd">Command Buffer used to record the image upload commands.</param>
-void VulkanHybridHardShadows::createTextures(pvrvk::CommandBuffer& uploadCmd)
-{
-	// load textures
-	for (TextureAS& tex : _deviceResources->textures)
-	{
-		pvr::Texture textureObject = pvr::textureLoad(*getAssetStream(tex.name.c_str()), pvr::TextureFileFormat::PVR);
-
-		tex.imageView = pvr::utils::uploadImageAndView(_deviceResources->device, textureObject, true, uploadCmd, pvrvk::ImageUsageFlags::e_SAMPLED_BIT,
-			pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, _deviceResources->vmaAllocator, _deviceResources->vmaAllocator);
-		tex.image = tex.imageView->getImage();
-	}
-
-	// dummy texture
-	if (_deviceResources->textures.size() == 0)
-	{
-		TextureAS dummyTexture;
-		dummyTexture.name = "empty";
-		std::array<unsigned char, 8> color{ 255u, 255u, 255u, 255u, 255u, 255u, 255u, 255u };
-		pvr::Texture tex(pvr::TextureHeader(pvr::PixelFormat::RGBA_8888(), 1, 2), color.data()); // height = 2 so the sdk interprets as 2d image
-
-		// image
-		dummyTexture.imageView =
-			pvr::utils::uploadImageAndView(_deviceResources->device, tex, false, uploadCmd, pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL);
-		dummyTexture.image = dummyTexture.imageView->getImage();
-
-		_deviceResources->textures.push_back(dummyTexture);
-	}
-}
-
 /// <summary>Loads the mesh data required for this example into vertex and index buffer objects and populates material data.</summary>
 /// <param name="uploadCmd">Command Buffer used to record the buffer upload commands.</param>
 void VulkanHybridHardShadows::createModelBuffers(pvrvk::CommandBuffer& uploadCmd)
 {
-	_deviceResources->models.reserve(1);
-	_deviceResources->vertexBuffers.reserve(1);
-	_deviceResources->indexBuffers.reserve(1);
-	_deviceResources->verticesSize.reserve(1);
-	_deviceResources->indicesSize.reserve(1);
-
-	ModelAS modelAS;
-	std::vector<Material> materials;
-	std::vector<pvr::utils::ASVertexFormat> vertices;
-	std::vector<uint32_t> indices;
-	std::unordered_map<uint32_t, SceneNodes::MeshNodes> materialIdToMeshNode;
-
-	// populate vertices, indices and material indices
-	uint32_t numMeshes = _scene->getNumMeshes();
-	uint32_t previousVertexCount = 0;
-	uint32_t totalIndices = 0;
-
-	for (int meshIdx = 0; meshIdx < numMeshes; meshIdx++)
+	struct Material
 	{
-		pvr::assets::Mesh mesh = _scene->getMesh(meshIdx);
+		glm::vec4 baseColor = glm::vec4(1.0f);
+		glm::vec4 metallicRoughnessReflectivity = glm::vec4(0.0f, 1.0f, 0.0f, 0.0f);
+		glm::vec4 f0f90;
+	};
 
-		// populate mesh
-		const pvr::assets::Model::Node& node = _scene->getNode(meshIdx);
+	uint32_t numMeshes = _scene->getNumMeshes();
 
-		glm::mat4 modelMat = _scene->getWorldMatrix(node.getObjectId());
-
-		// indices
-		uint32_t numIndices = mesh.getNumIndices();
-		auto indicesWrapper = mesh.getFaces();
-
-		if (indicesWrapper.getDataType() == pvr::IndexType::IndexType16Bit)
-		{
-			uint16_t* indicesPointer = (uint16_t*)indicesWrapper.getData();
-			for (int i = 0; i < numIndices; i++)
-			{
-				uint16_t index = *(indicesPointer++);
-				indices.push_back(static_cast<uint32_t>(index) + previousVertexCount);
-			}
-		}
-		else
-		{
-			uint32_t* indicesPointer = (uint32_t*)indicesWrapper.getData();
-			for (int i = 0; i < numIndices; i++)
-			{
-				uint32_t index = *(indicesPointer++);
-				indices.push_back(static_cast<uint32_t>(index) + previousVertexCount);
-			}
-		}
-
-		// vertices
-		pvr::StridedBuffer verticesWrapper = mesh.getVertexData(0);
-		uint32_t vertexStrideBytes = static_cast<uint32_t>(verticesWrapper.stride);
-		uint32_t vertexStrideFloats = vertexStrideBytes / sizeof(float);
-		uint32_t numVertices = static_cast<uint32_t>(verticesWrapper.size()) / vertexStrideBytes;
-
-		float* baseVertexPointer = (float*)verticesWrapper.data();
-		for (int v = 0; v < numVertices; v++)
-		{
-			float* vertexPointer = baseVertexPointer;
-
-			float posx = *(vertexPointer++);
-			float posy = *(vertexPointer++);
-			float posz = *(vertexPointer++);
-
-			float normx = *(vertexPointer++);
-			float normy = *(vertexPointer++);
-			float normz = *(vertexPointer++);
-
-			float texu = *(vertexPointer++);
-			float texv = *(vertexPointer++);
-
-			float tangentx = *(vertexPointer++);
-			float tangenty = *(vertexPointer++);
-			float tangentz = *(vertexPointer++);
-			float tangentw = *(vertexPointer++);
-
-			glm::vec4 position = modelMat * glm::vec4(posx, posy, posz, 1.0f);
-			glm::vec3 normal = glm::mat3(modelMat) * glm::vec3(normx, normy, normz);
-			glm::vec3 tangent = glm::mat3(modelMat) * (glm::vec3(tangentx, tangenty, tangentz) * tangentw);
-
-			auto vert = pvr::utils::ASVertexFormat{
-				glm::vec3(position.x, position.y, position.z), // pos
-				normal, // normal
-				glm::vec2(texu, texv), // texCoord
-				tangent // tangent
-			};
-			vertices.push_back(vert);
-
-			baseVertexPointer += vertexStrideFloats;
-		}
-		previousVertexCount = static_cast<uint32_t>(vertices.size());
-
-		MeshAS meshAS;
-
-		// convert local material index to global material index
-		meshAS.materialIdx = static_cast<int32_t>(node.getMaterialIndex()) + static_cast<int32_t>(materials.size());
-		meshAS.indexOffset = totalIndices;
-		meshAS.numIndices = numIndices;
-		meshAS.worldMatrix = modelMat;
-		meshAS.indexType = pvrvk::IndexType::e_UINT32;
-
-		materialIdToMeshNode[meshAS.materialIdx] = static_cast<SceneNodes::MeshNodes>(meshIdx);
-
-		modelAS.meshes.push_back(meshAS);
-
-		totalIndices += numIndices;
-	}
+	std::vector<Material> materials;
+	_deviceResources->meshes.reserve(numMeshes);
+	_deviceResources->vertexBuffers.reserve(numMeshes);
+	_deviceResources->indexBuffers.reserve(numMeshes);
+	_deviceResources->verticesSize.reserve(numMeshes);
+	_deviceResources->indicesSize.reserve(numMeshes);
+	_meshTransforms.reserve(numMeshes);
 
 	// populate material data
 	for (int i = 0; i < _scene->getNumMaterials(); i++)
@@ -1503,17 +1369,7 @@ void VulkanHybridHardShadows::createModelBuffers(pvrvk::CommandBuffer& uploadCmd
 
 		mat.baseColor = glm::vec4(material.defaultSemantics().getDiffuse(), 1.0f);
 		mat.baseColor = glm::vec4(glm::pow(glm::vec3(mat.baseColor.x, mat.baseColor.y, mat.baseColor.z), glm::vec3(2.2f)), 0.0f); // Srgb to linear
-
-		if (materialIdToMeshNode[i] == SceneNodes::MeshNodes::Satyr)
-			mat.metallicRoughnessReflectivity = glm::vec4(1.0f, 0.2f, 0.85f, 0.0f);
-		else if (materialIdToMeshNode[i] == SceneNodes::MeshNodes::Table)
-			mat.metallicRoughnessReflectivity = glm::vec4(0.0f, 0.5f, 0.45f, 0.0f);
-		else if (materialIdToMeshNode[i] == SceneNodes::MeshNodes::Box)
-			mat.metallicRoughnessReflectivity = glm::vec4(0.0f, 0.75f, 0.15f, 0.0f);
-		else if (materialIdToMeshNode[i] == SceneNodes::MeshNodes::Torus)
-			mat.metallicRoughnessReflectivity = glm::vec4(1.0f, 0.3f, 0.85f, 0.0f);
-		else if (materialIdToMeshNode[i] == SceneNodes::MeshNodes::Hedra)
-			mat.metallicRoughnessReflectivity = glm::vec4(0.0f, 0.4f, 0.5f, 0.0f);
+		mat.metallicRoughnessReflectivity = glm::vec4(1.0f, 0.1f, 0.85f, 0.0f);
 
 		mat.metallicRoughnessReflectivity.r = mat.metallicRoughnessReflectivity.r > 0.001f ? 0.04f : mat.metallicRoughnessReflectivity.r;
 		mat.f0f90 = glm::vec4(glm::vec3((0.16f * pow(mat.metallicRoughnessReflectivity.b, 2.0f))), 0.0f);
@@ -1524,38 +1380,104 @@ void VulkanHybridHardShadows::createModelBuffers(pvrvk::CommandBuffer& uploadCmd
 
 		materials.emplace_back(mat);
 	}
+
 	// If there were none, add a default
 	if (materials.empty()) materials.emplace_back(Material());
 
-	_deviceResources->models.push_back(modelAS);
+	// populate vertices, indices and material indices
+	for (int meshIdx = 0; meshIdx < numMeshes; meshIdx++)
+	{
+		std::vector<pvr::utils::ASVertexFormat> vertices;
+		std::vector<uint32_t> indices;
+		std::vector<uint32_t> materialIndices;
 
-	// create vertex buffer
-	pvrvk::BufferCreateInfo vertexBufferInfo;
-	vertexBufferInfo.setSize(sizeof(pvr::utils::ASVertexFormat) * vertices.size());
-	vertexBufferInfo.setUsageFlags(pvrvk::BufferUsageFlags::e_VERTEX_BUFFER_BIT | pvrvk::BufferUsageFlags::e_STORAGE_BUFFER_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT |
-		pvrvk::BufferUsageFlags::e_SHADER_DEVICE_ADDRESS_BIT);
-	_deviceResources->vertexBuffers.push_back(pvr::utils::createBuffer(_deviceResources->device, vertexBufferInfo, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT,
-		pvrvk::MemoryPropertyFlags::e_NONE, nullptr, pvr::utils::vma::AllocationCreateFlags::e_NONE, pvrvk::MemoryAllocateFlags::e_DEVICE_ADDRESS_BIT));
-	pvr::utils::updateBufferUsingStagingBuffer(
-		_deviceResources->device, _deviceResources->vertexBuffers[0], uploadCmd, vertices.data(), 0, sizeof(pvr::utils::ASVertexFormat) * vertices.size());
+		pvr::assets::Mesh& mesh = _scene->getMesh(meshIdx);
 
-	// create index buffer
-	pvrvk::BufferCreateInfo indexBufferInfo;
-	indexBufferInfo.setSize(sizeof(uint32_t) * indices.size());
-	indexBufferInfo.setUsageFlags(pvrvk::BufferUsageFlags::e_INDEX_BUFFER_BIT | pvrvk::BufferUsageFlags::e_STORAGE_BUFFER_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT |
-		pvrvk::BufferUsageFlags::e_SHADER_DEVICE_ADDRESS_BIT);
-	_deviceResources->indexBuffers.push_back(pvr::utils::createBuffer(_deviceResources->device, indexBufferInfo, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT,
-		pvrvk::MemoryPropertyFlags::e_NONE, nullptr, pvr::utils::vma::AllocationCreateFlags::e_NONE, pvrvk::MemoryAllocateFlags::e_DEVICE_ADDRESS_BIT));
-	pvr::utils::updateBufferUsingStagingBuffer(_deviceResources->device, _deviceResources->indexBuffers[0], uploadCmd, indices.data(), 0, sizeof(uint32_t) * indices.size());
+		// populate mesh
+		const pvr::assets::Model::Node& node = _scene->getNode(meshIdx);
 
-	_deviceResources->verticesSize.push_back(static_cast<int32_t>(vertices.size()));
-	_deviceResources->indicesSize.push_back(static_cast<int32_t>(indices.size()));
+		// get the transform matrix of the current mesh
+		glm::mat4 modelMat = _scene->getWorldMatrix(node.getObjectId());
+		_meshTransforms.push_back(modelMat);
+
+		// indices
+		uint32_t numIndices = mesh.getNumIndices();
+		auto indicesWrapper = mesh.getFaces();
+
+		if (indicesWrapper.getDataType() == pvr::IndexType::IndexType16Bit)
+		{
+			uint16_t* indicesPointer = (uint16_t*)indicesWrapper.getData();
+			indices.insert(indices.begin(), indicesPointer, indicesPointer + numIndices);
+		}
+		else
+		{
+			uint32_t* indicesPointer = (uint32_t*)indicesWrapper.getData();
+			indices.insert(indices.begin(), indicesPointer, indicesPointer + numIndices);
+		}
+
+		// vertices
+		pvr::StridedBuffer verticesWrapper = mesh.getVertexData(0);
+		uint32_t vertexStrideBytes = static_cast<uint32_t>(verticesWrapper.stride);
+		uint32_t vertexStrideFloats = vertexStrideBytes / sizeof(float);
+		uint32_t numVertices = static_cast<uint32_t>(verticesWrapper.size()) / vertexStrideBytes;
+
+		auto verticesStart = reinterpret_cast<float*>(verticesWrapper.data());
+		auto verticesEnd = verticesStart + static_cast<size_t>(numVertices) * vertexStrideFloats;
+		uint32_t vertexIndex = 0;
+		for (auto v = verticesStart; v < verticesEnd; v += vertexStrideFloats)
+		{
+			vertices.insert(vertices.begin() + vertexIndex,
+				{
+					glm::vec3(v[0], v[1], v[2]), // position
+					glm::vec3(v[3], v[4], v[5]), // normals
+					glm::vec2(v[6], v[7]), // texture coordinates
+					glm::vec3(1.0) // tangent
+				});
+			vertexIndex++;
+		}
+
+		MeshAS meshAS = { static_cast<int32_t>(node.getMaterialIndex()), 0, static_cast<int32_t>(numIndices), modelMat, pvrvk::IndexType::e_UINT32 };
+
+		_deviceResources->meshes.push_back(meshAS);
+
+		// material indices
+		std::vector<uint32_t> materialIndicesTemp(static_cast<size_t>(numIndices / 3 + (numIndices % 3 == 0 ? 0 : 1)), meshAS.materialIdx);
+		materialIndices.insert(materialIndices.end(), materialIndicesTemp.begin(), materialIndicesTemp.end());
+
+		// create vertex buffer
+		pvrvk::BufferCreateInfo vertexBufferInfo;
+		vertexBufferInfo.setSize(sizeof(pvr::utils::ASVertexFormat) * vertices.size());
+		vertexBufferInfo.setUsageFlags(pvrvk::BufferUsageFlags::e_VERTEX_BUFFER_BIT | pvrvk::BufferUsageFlags::e_STORAGE_BUFFER_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT |
+			pvrvk::BufferUsageFlags::e_SHADER_DEVICE_ADDRESS_BIT | pvrvk::BufferUsageFlags::e_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR);
+
+		_deviceResources->vertexBuffers.push_back(pvr::utils::createBuffer(_deviceResources->device, vertexBufferInfo, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT,
+			pvrvk::MemoryPropertyFlags::e_NONE, nullptr, pvr::utils::vma::AllocationCreateFlags::e_NONE, pvrvk::MemoryAllocateFlags::e_DEVICE_ADDRESS_BIT));
+
+		pvr::utils::updateBufferUsingStagingBuffer(
+			_deviceResources->device, _deviceResources->vertexBuffers[meshIdx], uploadCmd, vertices.data(), 0, sizeof(pvr::utils::ASVertexFormat) * vertices.size());
+
+		// create index buffer
+		pvrvk::BufferCreateInfo indexBufferInfo;
+		indexBufferInfo.setSize(sizeof(uint32_t) * indices.size());
+		indexBufferInfo.setUsageFlags(pvrvk::BufferUsageFlags::e_INDEX_BUFFER_BIT | pvrvk::BufferUsageFlags::e_STORAGE_BUFFER_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT |
+			pvrvk::BufferUsageFlags::e_SHADER_DEVICE_ADDRESS_BIT | pvrvk::BufferUsageFlags::e_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR);
+
+		_deviceResources->indexBuffers.push_back(pvr::utils::createBuffer(_deviceResources->device, indexBufferInfo, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT,
+			pvrvk::MemoryPropertyFlags::e_NONE, nullptr, pvr::utils::vma::AllocationCreateFlags::e_NONE, pvrvk::MemoryAllocateFlags::e_DEVICE_ADDRESS_BIT));
+
+		pvr::utils::updateBufferUsingStagingBuffer(_deviceResources->device, _deviceResources->indexBuffers[meshIdx], uploadCmd, indices.data(), 0, sizeof(uint32_t) * indices.size());
+
+		_deviceResources->verticesSize.push_back(static_cast<int32_t>(vertices.size()));
+		_deviceResources->indicesSize.push_back(static_cast<int32_t>(indices.size()));
+	}
 
 	// create material data buffer
 	pvrvk::BufferCreateInfo materialColorBufferInfo;
 	materialColorBufferInfo.setSize(sizeof(Material) * materials.size());
 	materialColorBufferInfo.setUsageFlags(pvrvk::BufferUsageFlags::e_STORAGE_BUFFER_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT);
+
 	_deviceResources->materialBuffer = pvr::utils::createBuffer(_deviceResources->device, materialColorBufferInfo, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT);
+
 	pvr::utils::updateBufferUsingStagingBuffer(_deviceResources->device, _deviceResources->materialBuffer, uploadCmd, materials.data(), 0, sizeof(Material) * materials.size());
 }
 
@@ -1642,6 +1564,23 @@ void VulkanHybridHardShadows::initializeLights()
 	_averageLightColor *= LightConfiguration::AmbientColorScaler;
 }
 
+/// <summary>Creates the scene wide buffer used throughout the demo.</summary>
+void VulkanHybridHardShadows::createMeshTransformBuffer()
+{
+	pvr::utils::StructuredMemoryDescription desc;
+	desc.addElement(BufferEntryNames::PerMesh::WorldMatrix, pvr::GpuDatatypes::mat4x4);
+
+	_deviceResources->perMeshBufferView.initDynamic(desc, _deviceResources->swapchain->getSwapchainLength() * _meshTransforms.size(), pvr::BufferUsageFlags::UniformBuffer,
+		static_cast<uint32_t>(_deviceResources->device->getPhysicalDevice()->getProperties().getLimits().getMinUniformBufferOffsetAlignment()));
+
+	_deviceResources->perMeshBuffer = pvr::utils::createBuffer(_deviceResources->device,
+		pvrvk::BufferCreateInfo(_deviceResources->perMeshBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
+		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
+		_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+
+	_deviceResources->perMeshBufferView.pointToMappedMemory(_deviceResources->perMeshBuffer->getDeviceMemory()->getMappedData());
+}
+
 /// <summary>Creates the Light data buffer.</summary>
 void VulkanHybridHardShadows::createLightBuffer()
 {
@@ -1701,6 +1640,25 @@ void VulkanHybridHardShadows::uploadDynamicSceneData()
 	{
 		_deviceResources->lightDataBuffer->getDeviceMemory()->flushRange(
 			_deviceResources->lightDataBufferView.getDynamicSliceOffset(lightDynamicSliceIdx), _deviceResources->lightDataBufferView.getDynamicSliceSize() * _lightData.size());
+	}
+
+	// upload per mesh data
+	uint32_t meshDynamicSliceIdx = _deviceResources->swapchain->getSwapchainIndex() * _meshTransforms.size();
+	memory = static_cast<uint8_t*>(_deviceResources->perMeshBuffer->getDeviceMemory()->getMappedData()) + _deviceResources->perMeshBufferView.getDynamicSliceOffset(meshDynamicSliceIdx);
+
+	_deviceResources->perMeshBufferView.pointToMappedMemory(memory, meshDynamicSliceIdx);
+
+	for (uint32_t i = 0; i < _meshTransforms.size(); i++)
+	{
+		uint32_t dynamicSlice = i + meshDynamicSliceIdx;
+		_deviceResources->perMeshBufferView.getElementByName(BufferEntryNames::PerMesh::WorldMatrix, 0, dynamicSlice).setValue(_meshTransforms[i]);
+	}
+
+	// if the memory property flags used by the buffers' device memory do not contain e_HOST_COHERENT_BIT then we must flush the memory
+	if (static_cast<uint32_t>(_deviceResources->perMeshBuffer->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
+	{
+		_deviceResources->perMeshBuffer->getDeviceMemory()->flushRange(
+			_deviceResources->perMeshBufferView.getDynamicSliceOffset(meshDynamicSliceIdx), _deviceResources->perMeshBufferView.getDynamicSliceSize() * _meshTransforms.size());
 	}
 }
 
@@ -1879,32 +1837,27 @@ void VulkanHybridHardShadows::recordCommandBufferRenderGBuffer(pvrvk::SecondaryC
 {
 	pvr::utils::beginCommandBufferDebugLabel(cmdBuffers, pvrvk::DebugUtilsLabel(pvr::strings::createFormatted("G-Buffer - Swapchain (%i)", swapchainIndex)));
 
-	uint32_t offsets[2] = {};
+	uint32_t offsets[3] = {};
 	offsets[0] = _deviceResources->globalBufferView.getDynamicSliceOffset(swapchainIndex);
 	offsets[1] = _deviceResources->lightDataBufferView.getDynamicSliceOffset(swapchainIndex * LightConfiguration::MaxNumLights);
+	offsets[2] = _deviceResources->perMeshBufferView.getDynamicSliceOffset(swapchainIndex * _meshTransforms.size());
 
-	cmdBuffers->bindDescriptorSet(pvrvk::PipelineBindPoint::e_GRAPHICS, _deviceResources->gbufferPipelineLayout, 0u, _deviceResources->commonDescriptorSet, offsets, 2);
+	cmdBuffers->bindDescriptorSet(pvrvk::PipelineBindPoint::e_GRAPHICS, _deviceResources->gbufferPipelineLayout, 0u, _deviceResources->commonDescriptorSet, offsets, 3);
 
-	for (uint32_t modelIdx = 0; modelIdx < _deviceResources->models.size(); modelIdx++)
+	for (uint32_t meshIdx = 0; meshIdx < _deviceResources->meshes.size(); meshIdx++)
 	{
-		auto& model = _deviceResources->models[modelIdx];
+		auto& mesh = _deviceResources->meshes[meshIdx];
 
-		for (uint32_t meshIdx = 0; meshIdx < model.meshes.size(); ++meshIdx)
-		{
-			auto& mesh = model.meshes[meshIdx];
+		cmdBuffers->bindPipeline(_deviceResources->gbufferPipeline);
 
-			cmdBuffers->bindPipeline(_deviceResources->gbufferPipeline);
+		cmdBuffers->pushConstants(_deviceResources->gbufferPipeline->getPipelineLayout(), pvrvk::ShaderStageFlags::e_VERTEX_BIT, 0, sizeof(uint32_t), &meshIdx);
 
-			glm::mat4 worldMatrix = glm::mat4(1.0f);
-			cmdBuffers->pushConstants(_deviceResources->gbufferPipeline->getPipelineLayout(), pvrvk::ShaderStageFlags::e_VERTEX_BIT, 0, sizeof(glm::mat4), &worldMatrix);
+		int32_t matID = static_cast<uint32_t>(mesh.materialIdx);
+		cmdBuffers->pushConstants(_deviceResources->gbufferPipeline->getPipelineLayout(), pvrvk::ShaderStageFlags::e_FRAGMENT_BIT, sizeof(uint32_t), sizeof(uint32_t), &matID);
 
-			int32_t matID = mesh.materialIdx;
-			cmdBuffers->pushConstants(_deviceResources->gbufferPipeline->getPipelineLayout(), pvrvk::ShaderStageFlags::e_FRAGMENT_BIT, sizeof(glm::mat4), sizeof(int32_t), &matID);
-
-			cmdBuffers->bindVertexBuffer(_deviceResources->vertexBuffers[modelIdx], 0, 0);
-			cmdBuffers->bindIndexBuffer(_deviceResources->indexBuffers[modelIdx], 0, mesh.indexType);
-			cmdBuffers->drawIndexed(mesh.indexOffset, mesh.numIndices, 0, 0, 1);
-		}
+		cmdBuffers->bindVertexBuffer(_deviceResources->vertexBuffers[meshIdx], 0, 0);
+		cmdBuffers->bindIndexBuffer(_deviceResources->indexBuffers[meshIdx], 0, mesh.indexType);
+		cmdBuffers->drawIndexed(mesh.indexOffset, mesh.numIndices, 0, 0, 1);
 	}
 
 	pvr::utils::endCommandBufferDebugLabel(cmdBuffers);
@@ -1917,32 +1870,27 @@ void VulkanHybridHardShadows::recordCommandBufferForwardShading(pvrvk::Secondary
 {
 	pvr::utils::beginCommandBufferDebugLabel(cmdBuffers, pvrvk::DebugUtilsLabel(pvr::strings::createFormatted("Forward Shading - Swapchain (%i)", swapchainIndex)));
 
-	uint32_t offsets[2] = {};
+	uint32_t offsets[3] = {};
 	offsets[0] = _deviceResources->globalBufferView.getDynamicSliceOffset(swapchainIndex);
 	offsets[1] = _deviceResources->lightDataBufferView.getDynamicSliceOffset(swapchainIndex * LightConfiguration::MaxNumLights);
+	offsets[2] = _deviceResources->perMeshBufferView.getDynamicSliceOffset(swapchainIndex * _meshTransforms.size());
 
-	cmdBuffers->bindDescriptorSet(pvrvk::PipelineBindPoint::e_GRAPHICS, _deviceResources->forwardShadingPipelineLayout, 0u, _deviceResources->commonDescriptorSet, offsets, 2);
+	cmdBuffers->bindDescriptorSet(pvrvk::PipelineBindPoint::e_GRAPHICS, _deviceResources->forwardShadingPipelineLayout, 0u, _deviceResources->commonDescriptorSet, offsets, 3);
 
-	for (uint32_t modelIdx = 0; modelIdx < _deviceResources->models.size(); modelIdx++)
+	for (uint32_t meshIdx = 0; meshIdx < _deviceResources->meshes.size(); meshIdx++)
 	{
-		auto& model = _deviceResources->models[modelIdx];
+		auto& mesh = _deviceResources->meshes[meshIdx];
 
-		for (uint32_t meshIdx = 0; meshIdx < model.meshes.size(); ++meshIdx)
-		{
-			auto& mesh = model.meshes[meshIdx];
+		cmdBuffers->bindPipeline(_deviceResources->forwardShadingPipeline);
 
-			cmdBuffers->bindPipeline(_deviceResources->forwardShadingPipeline);
+		cmdBuffers->pushConstants(_deviceResources->forwardShadingPipeline->getPipelineLayout(), pvrvk::ShaderStageFlags::e_VERTEX_BIT, 0, sizeof(uint32_t), &meshIdx);
 
-			glm::mat4 worldMatrix = glm::mat4(1.0f);
-			cmdBuffers->pushConstants(_deviceResources->forwardShadingPipeline->getPipelineLayout(), pvrvk::ShaderStageFlags::e_VERTEX_BIT, 0, sizeof(glm::mat4), &worldMatrix);
+		uint32_t matID = static_cast<uint32_t>(mesh.materialIdx);
+		cmdBuffers->pushConstants(_deviceResources->forwardShadingPipeline->getPipelineLayout(), pvrvk::ShaderStageFlags::e_FRAGMENT_BIT, sizeof(uint32_t), sizeof(uint32_t), &matID);
 
-			int32_t matID = mesh.materialIdx;
-			cmdBuffers->pushConstants(_deviceResources->forwardShadingPipeline->getPipelineLayout(), pvrvk::ShaderStageFlags::e_FRAGMENT_BIT, sizeof(glm::mat4), sizeof(int32_t), &matID);
-
-			cmdBuffers->bindVertexBuffer(_deviceResources->vertexBuffers[modelIdx], 0, 0);
-			cmdBuffers->bindIndexBuffer(_deviceResources->indexBuffers[modelIdx], 0, mesh.indexType);
-			cmdBuffers->drawIndexed(mesh.indexOffset, mesh.numIndices, 0, 0, 1);
-		}
+		cmdBuffers->bindVertexBuffer(_deviceResources->vertexBuffers[meshIdx], 0, 0);
+		cmdBuffers->bindIndexBuffer(_deviceResources->indexBuffers[meshIdx], 0, mesh.indexType);
+		cmdBuffers->drawIndexed(mesh.indexOffset, mesh.numIndices, 0, 0, 1);
 	}
 
 	pvr::utils::endCommandBufferDebugLabel(cmdBuffers);
@@ -1976,11 +1924,12 @@ void VulkanHybridHardShadows::recordCommandBufferRayTraceShadows(pvrvk::Secondar
 
 	pvrvk::DescriptorSet arrayDS[] = { _deviceResources->gbufferDescriptorSet, _deviceResources->imageDescriptorSet, _deviceResources->commonDescriptorSet };
 
-	uint32_t offsets[2] = {};
+	uint32_t offsets[3] = {};
 	offsets[0] = _deviceResources->globalBufferView.getDynamicSliceOffset(swapchainIndex);
 	offsets[1] = _deviceResources->lightDataBufferView.getDynamicSliceOffset(swapchainIndex * LightConfiguration::MaxNumLights);
+	offsets[2] = _deviceResources->perMeshBufferView.getDynamicSliceOffset(swapchainIndex * _meshTransforms.size());
 
-	cmdBuffers->bindDescriptorSets(pvrvk::PipelineBindPoint::e_RAY_TRACING_KHR, _deviceResources->raytraceShadowPipelineLayout, 0, arrayDS, 3, offsets, 2);
+	cmdBuffers->bindDescriptorSets(pvrvk::PipelineBindPoint::e_RAY_TRACING_KHR, _deviceResources->raytraceShadowPipelineLayout, 0, arrayDS, 3, offsets, 3);
 
 	VkDeviceAddress sbtAddress = _deviceResources->raytraceShadowShaderBindingTable->getDeviceAddress(_deviceResources->device);
 
@@ -2024,11 +1973,12 @@ void VulkanHybridHardShadows::recordCommandBufferDeferredShading(pvrvk::Secondar
 
 	pvrvk::DescriptorSet arrayDS[] = { _deviceResources->commonDescriptorSet, _deviceResources->deferredShadingDescriptorSet };
 
-	uint32_t offsets[2] = {};
+	uint32_t offsets[3] = {};
 	offsets[0] = _deviceResources->globalBufferView.getDynamicSliceOffset(swapchainIndex);
 	offsets[1] = _deviceResources->lightDataBufferView.getDynamicSliceOffset(swapchainIndex * LightConfiguration::MaxNumLights);
+	offsets[2] = _deviceResources->perMeshBufferView.getDynamicSliceOffset(swapchainIndex * _meshTransforms.size());
 
-	cmdBuffers->bindDescriptorSets(pvrvk::PipelineBindPoint::e_GRAPHICS, _deviceResources->deferredShadingPipelineLayout, 0, arrayDS, 2, offsets, 2);
+	cmdBuffers->bindDescriptorSets(pvrvk::PipelineBindPoint::e_GRAPHICS, _deviceResources->deferredShadingPipelineLayout, 0, arrayDS, 2, offsets, 3);
 
 	cmdBuffers->draw(0, 3);
 

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.18)
 project(VulkanExamples)
 
 set(VULKAN_EXAMPLES 
@@ -7,33 +7,37 @@ set(VULKAN_EXAMPLES
 	03_IntroducingPVRVk
 	04_IntroducingPVRUtils
 	05_IntroducingUIRenderer
-	Skinning
-	MultiSampling
-	PostProcessing
-	GnomeHorde
-	ParticleSystem
+	AmbientOcclusion
 	Bumpmap
-	GaussianBlur
-	Multithreading
-	ExampleUI
 	DeferredShading
 	DeferredShadingPFX
-	Glass
-	PVRScopeExample
-	PVRScopeRemote
-	ImageBasedLighting
-	IMGTextureFilterCubic
-	ImageBasedLightingMapGenerator
+	ExampleUI
 	GameOfLife
-	PipelineCache
-	AmbientOcclusion
-	MatrixMultiplication
+	GaussianBlur
+	Glass
+	GnomeHorde
 	HelloRayTracing
 	HybridHardShadows
 	HybridReflections
-	HybridSoftShadows
-	RayTracedHardShadows
 	HybridRefractions
+	HybridSoftShadows
+	HybridTransparency
+	ImageBasedLighting
+	ImageBasedLightingMapGenerator
+	IMGTextureFilterCubic
+	MatrixMultiplication
+	MultiSampling
+	Multithreading
+	ParticleSystem
+	PipelineCache
+	PostProcessing
+	PVRScopeExample
+	PVRScopeRemote
+	RayTracedHardShadows
+	Skinning
+	RayTracingDenoising
+	Shadows
+	Subgroups
 )
 
 foreach(EXAMPLE ${VULKAN_EXAMPLES})

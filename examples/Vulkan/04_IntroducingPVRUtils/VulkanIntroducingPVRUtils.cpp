@@ -140,7 +140,9 @@ pvr::Result VulkanIntroducingPVRUtils::initApplication()
 	for (uint32_t i = 0; i < _scene->getNumMeshes(); ++i)
 	{
 		if (_scene->getMesh(i).getPrimitiveType() != pvr::PrimitiveTopology::TriangleList || _scene->getMesh(i).getFaces().getDataSize() == 0)
-		{ throw pvr::InvalidDataError("ERROR: The meshes in the scene should use an indexed triangle list\n"); }
+		{
+			throw pvr::InvalidDataError("ERROR: The meshes in the scene should use an indexed triangle list\n");
+		}
 	}
 
 	// Initialize variables used for the animation
@@ -166,8 +168,9 @@ pvr::Result VulkanIntroducingPVRUtils::initView()
 {
 	_deviceResources = std::make_unique<DeviceResources>();
 
-	// Create instance and retrieve compatible physical devices
-	_deviceResources->instance = pvr::utils::createInstance(this->getApplicationName());
+	// Create a Vulkan 1.0 instance and retrieve compatible physical devices
+	pvr::utils::VulkanVersion VulkanVersion(1, 0, 0);
+	_deviceResources->instance = pvr::utils::createInstance(this->getApplicationName(), VulkanVersion, pvr::utils::InstanceExtensions(VulkanVersion));
 
 	if (_deviceResources->instance->getNumPhysicalDevices() == 0)
 	{
@@ -198,7 +201,9 @@ pvr::Result VulkanIntroducingPVRUtils::initView()
 	// validate the supported swapchain image usage
 	pvrvk::ImageUsageFlags swapchainImageUsage = pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT;
 	if (pvr::utils::isImageUsageSupportedBySurface(surfaceCapabilities, pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT))
-	{ swapchainImageUsage |= pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT; } // Create the swapchain and depth stencil images
+	{
+		swapchainImageUsage |= pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT;
+	} // Create the swapchain and depth stencil images
 
 	// Create the Swapchain, its renderpass, attachments and framebuffers. Will support MSAA if enabled through command line.
 	auto swapChainCreateOutput = pvr::utils::createSwapchainRenderpassFramebuffers(_deviceResources->device, surface, getDisplayAttributes(),
@@ -208,8 +213,7 @@ pvr::Result VulkanIntroducingPVRUtils::initView()
 	_deviceResources->onScreenFramebuffer = swapChainCreateOutput.framebuffer;
 
 	// Create the Command pool & Descriptor pool
-	_deviceResources->commandPool =
-		_deviceResources->device->createCommandPool(pvrvk::CommandPoolCreateInfo(queueAccessInfo.familyId, pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT));
+	_deviceResources->commandPool = _deviceResources->device->createCommandPool(pvrvk::CommandPoolCreateInfo(queueAccessInfo.familyId));
 
 	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(pvrvk::DescriptorPoolCreateInfo()
 																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 16)
@@ -230,20 +234,24 @@ pvr::Result VulkanIntroducingPVRUtils::initView()
 		_deviceResources->cmdBuffers[i] = _deviceResources->commandPool->allocateCommandBuffer();
 	}
 
-	_deviceResources->cmdBuffers[0]->begin();
+	// Allocate a single use command buffer to upload resources to the GPU
+	pvrvk::CommandBuffer uploadBuffer = _deviceResources->commandPool->allocateCommandBuffer();
+	uploadBuffer->setObjectName("InitView : Resource Upload Command Buffer");
+	uploadBuffer->begin(pvrvk::CommandBufferUsageFlags::e_ONE_TIME_SUBMIT_BIT);
+
 	bool requiresCommandBufferSubmission = false;
-	pvr::utils::appendSingleBuffersFromModel(_deviceResources->device, *_scene, _deviceResources->vbos, _deviceResources->ibos, _deviceResources->cmdBuffers[0],
-		requiresCommandBufferSubmission, _deviceResources->vmaAllocator);
+	pvr::utils::appendSingleBuffersFromModel(
+		_deviceResources->device, *_scene, _deviceResources->vbos, _deviceResources->ibos, uploadBuffer, requiresCommandBufferSubmission, _deviceResources->vmaAllocator);
 
 	// create the descriptor set layouts and pipeline layouts
 	createDescriptorSetLayouts();
 
 	// create the descriptor sets
-	createDescriptorSets(_deviceResources->cmdBuffers[0]);
-	_deviceResources->cmdBuffers[0]->end();
+	createDescriptorSets(uploadBuffer);
+	uploadBuffer->end();
 
 	pvrvk::SubmitInfo submitInfo;
-	submitInfo.commandBuffers = &_deviceResources->cmdBuffers[0];
+	submitInfo.commandBuffers = &uploadBuffer;
 	submitInfo.numCommandBuffers = 1;
 
 	// submit the queue and wait for it to become idle
@@ -253,7 +261,6 @@ pvr::Result VulkanIntroducingPVRUtils::initView()
 	_deviceResources->uiRenderer.init(getWidth(), getHeight(), isFullScreen(), _deviceResources->onScreenFramebuffer[0]->getRenderPass(), 0,
 		getBackBufferColorspace() == pvr::ColorSpace::sRGB, _deviceResources->commandPool, _deviceResources->queue);
 	_deviceResources->uiRenderer.getDefaultTitle()->setText("IntroducingPVRUtils").commitUpdates();
-	_deviceResources->cmdBuffers[0]->reset(pvrvk::CommandBufferResetFlags::e_RELEASE_RESOURCES_BIT);
 
 	// Create the pipeline cache
 	_deviceResources->pipelineCache = _deviceResources->device->createPipelineCache();

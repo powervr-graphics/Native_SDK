@@ -24,7 +24,7 @@ layout(set = 0, binding = 9) uniform SceneTransform
 };
 
 layout(location = 0) out mediump vec2 vTexCoord;
-layout(location = 1) out mediump vec3 vNormal;
+layout(location = 1) out highp vec3 vNormal;
 layout(location = 2) out highp vec3 vWorldPosition;
 
 void main()

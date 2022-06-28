@@ -25,7 +25,7 @@ layout(set = 0, binding = 4) uniform mediump sampler2D textureSamplers[];
 layout(push_constant) uniform PushConsts { uint materialID; };
 
 layout(location = 0) in mediump vec2 vTexCoord;
-layout(location = 1) in mediump vec3 vNormal;
+layout(location = 1) in highp vec3 vNormal;
 layout(location = 2) in highp vec3 vWorldPosition;
 
 layout(location = 0) out highp vec4 outReflectance;

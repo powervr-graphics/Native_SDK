@@ -28,6 +28,7 @@ Sampler_::Sampler_(make_shared_enabler, const DeviceWeakPtr& device, const pvrvk
 	samplerInfo.mipLodBias = samplerDesc.lodBias;
 	samplerInfo.mipmapMode = static_cast<VkSamplerMipmapMode>(samplerDesc.mipMapMode);
 	samplerInfo.unnormalizedCoordinates = samplerDesc.unnormalizedCoordinates;
+	samplerInfo.pNext = samplerDesc.pNext;
 	vkThrowIfFailed(getDevice()->getVkBindings().vkCreateSampler(getDevice()->getVkHandle(), &samplerInfo, nullptr, &_vkHandle), "Sampler Creation failed");
 }
 

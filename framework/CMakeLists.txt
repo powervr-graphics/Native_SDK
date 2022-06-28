@@ -1,53 +1,35 @@
-cmake_minimum_required(VERSION 3.10)
-# Copyright (c) Imagination Technologies Limited.
-
+cmake_minimum_required(VERSION 3.18.0 FATAL_ERROR)
 project(PowerVR_Framework)
 
-include(Common.cmake)
+# Add the default parts of the framework
+add_subdirectory(PVRCore)
+add_subdirectory(PVRAssets)
+add_subdirectory(PVRShell)
+add_subdirectory(PVRCamera)
 
-add_subdirectory_if_exists(PVRCore PVRCore)
-add_subdirectory_if_exists(PVRAssets PVRAssets)
-add_subdirectory_if_exists(PVRShell PVRShell)
-add_subdirectory_if_exists(PVRCamera PVRCamera)
-add_subdirectory_if_exists(PVRUtilsGles PVRUtils/OpenGLES)
-
-set_property(GLOBAL APPEND PROPERTY PVR_FRAMEWORK_TARGETS PVRCore PVRShell PVRAssets PVRCamera PVRUtilsGles)
-
-if(NOT IOS)
-	add_subdirectory_if_exists(PVRUtilsCL PVRUtils/OpenCL)
-	#set_property(GLOBAL APPEND PROPERTY PVR_FRAMEWORK_TARGETS PVRUtilsCL) -- DISABLED AS PVRUtilsCL is currently an interface target
+# Add in the APIs requested by the user 
+if(${PVR_BUILD_FRAMEWORK_GLES})
+	add_subdirectory(PVRUtils/OpenGLES)
 endif()
 
-if(((${MOLTENVK_FOUND}) OR (NOT APPLE)) AND NOT CMAKE_SYSTEM_NAME MATCHES "QNX")
-	add_subdirectory_if_exists(PVRUtilsVk PVRUtils/Vulkan)
-	add_subdirectory_if_exists(PVRPfx PVRPfx)
-	set(PVRVK_USE_PLATFORM "" CACHE INTERNAL "")
+if(${PVR_BUILD_FRAMEWORK_OPENCL})
+	add_subdirectory(PVRUtils/OpenCL)
+endif()
 
-	if (WIN32)
-		list(APPEND PVRVK_USE_PLATFORM "VK_USE_PLATFORM_WIN32_KHR")
-	elseif(ANDROID)
-		list(APPEND PVRVK_USE_PLATFORM "VK_USE_PLATFORM_ANDROID_KHR")
-	elseif(APPLE)
-		if (${MOLTENVK_FOUND})
-			list(APPEND PVRVK_USE_PLATFORM "VK_USE_PLATFORM_MACOS_MVK")
-		endif()	
-	elseif(UNIX)
-		if(PVR_WINDOW_SYSTEM)
-			if (${PVR_WINDOW_SYSTEM} STREQUAL X11)
-				list(APPEND PVRVK_USE_PLATFORM "VK_USE_PLATFORM_XLIB_KHR")
-			elseif (${PVR_WINDOW_SYSTEM} STREQUAL XCB)
-				list(APPEND PVRVK_USE_PLATFORM "VK_USE_PLATFORM_XCB_KHR")
-			elseif (${PVR_WINDOW_SYSTEM} STREQUAL Wayland)
-				list(APPEND PVRVK_USE_PLATFORM "VK_USE_PLATFORM_WAYLAND_KHR")
-			endif()
-		endif()
-	endif()
+# Vulkan is a special case as it requires the Surface extension be specified 
+# This is to ensure the correct headers for the surface are included
+# Usually this is fixed depending on the operating system
+# However Linux can use multiple different types surface 
+# As a result, when building the Vulkan framework on linux
+# The user is required to pass -DPVR_WINDOW_SYSTEM
+if(${PVR_BUILD_FRAMEWORK_VULKAN})
 
-	if(${PVR_ENABLE_INSTALL})
-		if(NOT PVRVK_SKIP_INSTALL)
-  			set(PVRVK_SKIP_INSTALL OFF)
-		endif()
-	endif()
-	add_subdirectory_if_exists(PVRVk PVRVk)
-	set_property(GLOBAL APPEND PROPERTY PVR_FRAMEWORK_TARGETS PVRVk PVRUtilsVk PVRPfx)
+	# Since we know the user is requesting Vulkan framework components 
+	# Add in the submodules that are requirements in Vulkan
+	add_submodule_to_sdk(${SDK_ROOT_INTERNAL_DIR}/external/VulkanMemoryAllocator)
+	add_submodule_to_sdk(${SDK_ROOT_INTERNAL_DIR}/external/glslang)
+
+	add_subdirectory(PVRVk)
+	add_subdirectory(PVRUtils/Vulkan)
+	add_subdirectory(PVRPfx)
 endif()

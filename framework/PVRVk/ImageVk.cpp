@@ -120,6 +120,7 @@ ImageView_::ImageView_(make_shared_enabler, const DeviceWeakPtr& device, const I
 	vkCreateInfo.format = static_cast<VkFormat>(_createInfo.getFormat());
 	vkCreateInfo.components = (VkComponentMapping&)_createInfo.getComponents();
 	vkCreateInfo.subresourceRange = (VkImageSubresourceRange&)_createInfo.getSubresourceRange();
+	vkCreateInfo.pNext = (void*)_createInfo.getpNext();
 
 	vkThrowIfFailed(getDevice()->getVkBindings().vkCreateImageView(getDevice()->getVkHandle(), &vkCreateInfo, nullptr, &_vkHandle), "Failed to create ImageView");
 }

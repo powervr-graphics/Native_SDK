@@ -188,9 +188,21 @@ public:
 	/// <returns>The device address of the buffer given as parameter.</returns>
 	VkDeviceAddress getDeviceAddress(const Device device)
 	{
-		VkBufferDeviceAddressInfo bufferDeviceAddressInfo =
-			VkBufferDeviceAddressInfo({ static_cast<VkStructureType>(StructureType::e_BUFFER_DEVICE_ADDRESS_INFO), nullptr, getVkHandle() });
-		return device->getVkBindings().vkGetBufferDeviceAddress(device->getVkHandle(), &bufferDeviceAddressInfo);
+		// Extension struct is just an alias for the core version, so the extension struct can be used for both functions
+		VkBufferDeviceAddressInfoEXT bufferDeviceAddressInfo =
+			VkBufferDeviceAddressInfoKHR({ static_cast<VkStructureType>(StructureType::e_BUFFER_DEVICE_ADDRESS_INFO_KHR), nullptr, getVkHandle() });
+
+		// Depending on the instance version, use the extension version or the core version
+		if (device->getPhysicalDevice()->getInstance()->getCreateInfo().getApplicationInfo().getApiVersion() <= VK_MAKE_VERSION(1, 2, 0))
+		{
+			// Attempt to use extension version
+			return device->getVkBindings().vkGetBufferDeviceAddressKHR(device->getVkHandle(), &bufferDeviceAddressInfo);
+		}
+		else
+		{
+			// Attempt to use the promoted to core version
+			return device->getVkBindings().vkGetBufferDeviceAddress(device->getVkHandle(), &bufferDeviceAddressInfo);
+		}
 	}
 };
 } // namespace impl

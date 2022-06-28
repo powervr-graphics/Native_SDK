@@ -186,9 +186,6 @@ class VulkanHelloRayTracing : public pvr::Shell
 	/// <summary>Swapchain image index, in interval [0, numSwapChainImages - 1].</summary>
 	uint32_t _frameId;
 
-	/// <summary>Format for the offscreen ray tracing render target where to store the results of the Ray Tracing pass.</summary>
-	pvrvk::Format _renderImageFormat;
-
 	/// <summary>Ray Tracing properties struct holding important information like the size of a sahder group for the Shader Binding Table.</summary>
 	VkPhysicalDeviceRayTracingPipelinePropertiesKHR _rtProperties;
 
@@ -198,9 +195,15 @@ class VulkanHelloRayTracing : public pvr::Shell
 	/// <summary>Struct holding the inverse of the camera view and projection matrices, needed in a device buffer for the ray generation shader.</summary>
 	CameraData _camera;
 
+	/// <summary>Platform agnostic command line argument parser.</summary>
+	pvr::CommandLine _cmdLine{};
+
+	/// <summary>format of the texture used to render the offscreen ray tracing pass results to.</summary>
+	pvrvk::Format _renderImageFormat;
+
 public:
 	/// <summary>Default constructor.</summary>
-	VulkanHelloRayTracing() : _frameId(0), _renderImageFormat(pvrvk::Format::e_UNDEFINED), _rtProperties({}), _shaderGroupCount(0) {}
+	VulkanHelloRayTracing() : _frameId(0), _rtProperties({}), _shaderGroupCount(0) {}
 
 	/// <summary>This event represents application start.When implementing, return a suitable error code to signify failure. If pvr::Result::Success
 	/// is not returned, the Shell will detect that, clean up, and exit. It will be fired once, on start, before any other callback and before
@@ -209,6 +212,16 @@ public:
 	/// <returns>When implementing, return a suitable error code to signify failure. If pvr::Result::Success is not
 	/// returned , the Shell will detect that, clean up, and exit.</returns>
 	virtual pvr::Result initApplication();
+
+	/// <summary>Allow the user to set through command line the format of the offscreen texture where the results of the ray tracing
+	/// pass are stored. Command line format options are R8G8B8A8_SRGB, B8G8R8A8_UNORM and B8G8R8A8_SRGB.
+	/// Use as command line options one of the following to specify the format (if the format does not support optimal tiling and
+	/// image store operations, it will be discarded and the final format picked will default to R8G8B8A8_UNORM):
+	/// -offscreenTextureFormat=R8G8B8A8_SRGB
+	/// -offscreenTextureFormat=B8G8R8A8_UNORM
+	/// -offscreenTextureFormat=B8G8R8A8_SRGB</summary>
+	/// <param name="physicalDevice">Physical device used for the test.</param>
+	void setOffscreenRTTextureFormat(pvrvk::PhysicalDevice physicalDevice);
 
 	/// <summary> If pvr::Result::Success is not returned, the Shell will detect that, clean up, and exit. This function will be fired once after
 	/// every time the main Graphics Context (the one the Application Window is using) is initialized. This is usually once per application run,
@@ -377,7 +390,59 @@ public:
 	void recordCommandUIRenderer(pvrvk::CommandBuffer& cmdBuffers);
 };
 
-pvr::Result VulkanHelloRayTracing::initApplication() { return pvr::Result::Success; }
+pvr::Result VulkanHelloRayTracing::initApplication()
+{
+	_cmdLine = this->getCommandLine();
+	return pvr::Result::Success;
+}
+
+void VulkanHelloRayTracing::setOffscreenRTTextureFormat(pvrvk::PhysicalDevice physicalDevice)
+{
+	pvrvk::Format tempFormat = pvrvk::Format::e_MAX_ENUM;
+	std::string textureFormat;
+	
+	if (_cmdLine.hasOption("-offscreenTextureFormat"))
+	{
+		bool stringOptionResult = _cmdLine.getStringOption("-offscreenTextureFormat", textureFormat);
+
+		if (stringOptionResult)
+		{
+			if (textureFormat == "R8G8B8A8_SRGB")
+			{
+				tempFormat  = pvrvk::Format::e_R8G8B8A8_SRGB;
+			}
+			else if (textureFormat == "B8G8R8A8_UNORM")
+			{
+				tempFormat = pvrvk::Format::e_B8G8R8A8_UNORM;
+			}
+			else if (textureFormat == "B8G8R8A8_SRGB")
+			{
+				tempFormat = pvrvk::Format::e_B8G8R8A8_SRGB;
+			}
+			else
+			{
+				Log(LogLevel::Warning, "Format chosen for the offscreen render target %s not recognized, options are R8G8B8A8_SRGB, B8G8R8A8_UNORM and B8G8R8A8_SRGB. Fallback format R8G8B8A8_UNORM will be used.", textureFormat.c_str());
+			}
+		}
+	}
+	else
+	{
+		Log(LogLevel::Information, "No offscreen render target format specified, using default R8G8B8A8_UNORM. Use -offscreenTextureFormat=Format with Format either R8G8B8A8_SRGB, B8G8R8A8_UNORM or B8G8R8A8_SRGB to specify it.");
+	}
+
+	if (tempFormat != pvrvk::Format::e_MAX_ENUM)
+	{
+		if (pvr::utils::formatWithTilingSupportsFeatureFlags(
+			tempFormat, pvrvk::ImageTiling::e_OPTIMAL, pvrvk::FormatFeatureFlags::e_STORAGE_IMAGE_BIT, _deviceResources->instance, physicalDevice))
+		{
+			_renderImageFormat = tempFormat;
+		}
+		else
+		{
+			Log(LogLevel::Warning, "Format chosen for the offscreen render target %s does not support image store feature (VK_FORMAT_FEATURE_STORAGE_IMAGE_BIT) for image optimal tiling, fallback format R8G8B8A8_UNORM will be used.", textureFormat.c_str());
+		}
+	}
+}
 
 pvr::Result VulkanHelloRayTracing::initView()
 {
@@ -385,7 +450,7 @@ pvr::Result VulkanHelloRayTracing::initView()
 
 	// Create instance and retrieve compatible physical devices
 	_deviceResources->instance =
-		pvr::utils::createInstance(this->getApplicationName(), pvr::utils::VulkanVersion(), pvr::utils::InstanceExtensions(), pvr::utils::InstanceLayers(false));
+		pvr::utils::createInstance(this->getApplicationName(), pvr::utils::VulkanVersion(1, 1), pvr::utils::InstanceExtensions(), pvr::utils::InstanceLayers(true));
 
 	if (_deviceResources->instance->getNumPhysicalDevices() == 0)
 	{
@@ -423,7 +488,7 @@ pvr::Result VulkanHelloRayTracing::initView()
 	//                                                 any commands as deferrable. This is left to additional dependant extensions (more information in
 	//                                                 https://www.khronos.org/registry/vulkan/specs/1.2-extensions/html/vkspec.html#deferred-host-operations-requesting)
 
-	std::vector<std::string> vectorExtensionNames{ VK_KHR_MAINTENANCE3_EXTENSION_NAME, VK_KHR_GET_MEMORY_REQUIREMENTS_2_EXTENSION_NAME, VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME,
+	std::vector<std::string> vectorExtensionNames{ VK_KHR_SHADER_FLOAT_CONTROLS_EXTENSION_NAME, VK_KHR_SPIRV_1_4_EXTENSION_NAME, VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME,
 		VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME, VK_KHR_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME, VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME,
 		VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME, VK_KHR_PIPELINE_LIBRARY_EXTENSION_NAME, VK_KHR_DEDICATED_ALLOCATION_EXTENSION_NAME, VK_EXT_SCALAR_BLOCK_LAYOUT_EXTENSION_NAME };
 
@@ -435,9 +500,11 @@ pvr::Result VulkanHelloRayTracing::initView()
 		return pvr::Result::UnsupportedRequest;
 	}
 
+	// Cache the selected physical device
+	pvrvk::PhysicalDevice physicalDevice = _deviceResources->instance->getPhysicalDevice(vectorPhysicalDevicesIndex[0]);
+
 	// Create the surface
-	pvrvk::Surface surface = pvr::utils::createSurface(
-		_deviceResources->instance, _deviceResources->instance->getPhysicalDevice(vectorPhysicalDevicesIndex[0]), this->getWindow(), this->getDisplay(), this->getConnection());
+	pvrvk::Surface surface = pvr::utils::createSurface(_deviceResources->instance, physicalDevice, this->getWindow(), this->getDisplay(), this->getConnection());
 
 	// Create a default set of debug utils messengers or debug callbacks using either VK_EXT_debug_utils or VK_EXT_debug_report respectively
 	_deviceResources->debugUtilsCallbacks = pvr::utils::createDebugUtilsCallbacks(_deviceResources->instance);
@@ -445,8 +512,7 @@ pvr::Result VulkanHelloRayTracing::initView()
 	// create device and queues
 	pvr::utils::QueuePopulateInfo queuePopulateInfo = { pvrvk::QueueFlags::e_GRAPHICS_BIT, surface };
 	pvr::utils::QueueAccessInfo queueAccessInfo;
-	pvr::Result resultDeviceAndQueues =
-		buildDeviceAndQueues(_deviceResources->instance->getPhysicalDevice(vectorPhysicalDevicesIndex[0]), &queuePopulateInfo, queueAccessInfo, vectorExtensionNames);
+	pvr::Result resultDeviceAndQueues = buildDeviceAndQueues(physicalDevice, &queuePopulateInfo, queueAccessInfo, vectorExtensionNames);
 
 	if (resultDeviceAndQueues != pvr::Result::Success) { return resultDeviceAndQueues; }
 
@@ -456,25 +522,26 @@ pvr::Result VulkanHelloRayTracing::initView()
 	// create vulkan memory allocatortea
 	_deviceResources->vmaAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
 
+	pvrvk::SurfaceCapabilitiesKHR surfaceCapabilities = physicalDevice->getSurfaceCapabilities(surface);
+
 	// validate the supported swapchain image usage
-	pvrvk::SurfaceCapabilitiesKHR surfaceCapabilities = _deviceResources->instance->getPhysicalDevice(vectorPhysicalDevicesIndex[0])->getSurfaceCapabilities(surface);
 	pvrvk::ImageUsageFlags swapchainImageUsage = pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_TRANSFER_DST_BIT;
-	if (pvr::utils::isImageUsageSupportedBySurface(surfaceCapabilities, pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT))
+	if (pvr::utils::isImageUsageSupportedBySurface(surfaceCapabilities, swapchainImageUsage | pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT))
 	{
-		swapchainImageUsage |= pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT; // TODO why is this here?
+		// Add screenshot support if is supported.
+		swapchainImageUsage |= pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT;
 	}
 
-	// Create the swapchain, on screen framebuffers
-	auto swapChainConfiguration = pvr::utils::CreateSwapchainParameters().setAllocator(_deviceResources->vmaAllocator).setColorImageUsageFlags(swapchainImageUsage);
-	swapChainConfiguration.addPreferredColorFormat(pvrvk::Format::e_B8G8R8A8_UNORM);
-	swapChainConfiguration.colorLoadOp = pvrvk::AttachmentLoadOp::e_LOAD;
-	pvr::DisplayAttributes displayAttributes = getDisplayAttributes();
-	displayAttributes.frameBufferSrgb = false;
-	auto swapChainCreateOutput = pvr::utils::createSwapchainRenderpassFramebuffers(_deviceResources->device, surface, displayAttributes, swapChainConfiguration);
-	_deviceResources->swapchain = swapChainCreateOutput.swapchain;
-	_deviceResources->onScreenFramebuffer = swapChainCreateOutput.framebuffer;
+	// The swapchain image will be blitted to, so there are extra imae flags that need to be supported.
+	pvr::utils::CreateSwapchainParameters swapchainCreationPreferences = pvr::utils::CreateSwapchainParameters().setAllocator(_deviceResources->vmaAllocator);
+	swapchainCreationPreferences.setColorImageUsageFlags(swapchainImageUsage);
+	swapchainCreationPreferences.colorLoadOp = pvrvk::AttachmentLoadOp::e_LOAD;
 
-	_renderImageFormat = _deviceResources->swapchain->getImageFormat();
+	// Create the swapchain, on screen framebuffers
+	auto swapchainCreateOutput = pvr::utils::createSwapchainRenderpassFramebuffers(_deviceResources->device, surface, getDisplayAttributes(), swapchainCreationPreferences);
+
+	_deviceResources->swapchain = swapchainCreateOutput.swapchain;
+	_deviceResources->onScreenFramebuffer = swapchainCreateOutput.framebuffer;
 
 	// Create command pool
 	_deviceResources->commandPool = _deviceResources->device->createCommandPool(
@@ -512,6 +579,9 @@ pvr::Result VulkanHelloRayTracing::initView()
 	properties.pNext = &_rtProperties;
 	_deviceResources->instance->getVkBindings().vkGetPhysicalDeviceProperties2(_deviceResources->instance->getPhysicalDevice(vectorPhysicalDevicesIndex[0])->getVkHandle(), &properties);
 
+	_renderImageFormat = pvrvk::Format::e_R8G8B8A8_UNORM;
+	setOffscreenRTTextureFormat(physicalDevice);
+
 	// Setup ray tracing resources
 	buildOffscreenRenderImage();
 	buildVertexBuffer();
@@ -545,48 +615,37 @@ pvr::Result VulkanHelloRayTracing::buildDeviceAndQueues(pvrvk::PhysicalDevice ph
 
 	for (const std::string& extensionName : vectorExtensionNames) { deviceExtensions.addExtension(extensionName); }
 
-	// Ray tracing pipeline feature
-	VkPhysicalDeviceFeatures2KHR physical_device_features_3{ static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_FEATURES_2_KHR) };
-	VkPhysicalDeviceRayTracingPipelineFeaturesKHR raytracingPipeline{ static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR) };
-	physical_device_features_3.pNext = &raytracingPipeline;
-	_deviceResources->instance->getVkBindings().vkGetPhysicalDeviceFeatures2KHR(physicalDevice->getVkHandle(), &physical_device_features_3);
-	deviceExtensions.addExtensionFeatureVk<VkPhysicalDeviceRayTracingPipelineFeaturesKHR>(
-		static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR), &raytracingPipeline);
+	// Get the physical device features for all of the raytracing extensions through a continual pNext chain
+	VkPhysicalDeviceFeatures2 deviceFeatures{ static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_FEATURES_2) };
 
-	// Ray tracing physical device
-	VkPhysicalDeviceFeatures2KHR physical_device_features_5{ static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_FEATURES_2_KHR) };
+	// Raytracing Pipeline Features
+	VkPhysicalDeviceRayTracingPipelineFeaturesKHR raytracingPipelineFeatures{ static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR) };
+	deviceFeatures.pNext = &raytracingPipelineFeatures;
+
+	// Acceleration Structure Features
 	VkPhysicalDeviceAccelerationStructureFeaturesKHR accelerationStructureFeatures{ static_cast<VkStructureType>(
 		pvrvk::StructureType::e_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR) };
-	physical_device_features_5.pNext = &accelerationStructureFeatures;
-	_deviceResources->instance->getVkBindings().vkGetPhysicalDeviceFeatures2KHR(physicalDevice->getVkHandle(), &physical_device_features_5);
-	deviceExtensions.addExtensionFeatureVk<VkPhysicalDeviceAccelerationStructureFeaturesKHR>(
-		static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR), &accelerationStructureFeatures);
+	raytracingPipelineFeatures.pNext = &accelerationStructureFeatures;
 
-	// Buffer device extension extension feature
-	VkPhysicalDeviceFeatures2KHR physical_device_features{ static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_FEATURES_2_KHR) };
-	VkPhysicalDeviceBufferDeviceAddressFeatures extension{ static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_BUFFER_DEVICE_ADDRESS_FEATURES) };
-	physical_device_features.pNext = &extension;
-	_deviceResources->instance->getVkBindings().vkGetPhysicalDeviceFeatures2KHR(physicalDevice->getVkHandle(), &physical_device_features);
-	deviceExtensions.addExtensionFeatureVk<VkPhysicalDeviceBufferDeviceAddressFeatures>(
-		static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_BUFFER_DEVICE_ADDRESS_FEATURES), &extension);
+	// Device Address Features
+	VkPhysicalDeviceBufferDeviceAddressFeatures deviceBufferAddressFeatures{ static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_BUFFER_DEVICE_ADDRESS_FEATURES) };
+	accelerationStructureFeatures.pNext = &deviceBufferAddressFeatures;
 
-	// Scalar block extension feature
-	VkPhysicalDeviceFeatures2KHR physical_device_features_4{ static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_FEATURES_2_KHR) };
-	VkPhysicalDeviceScalarBlockLayoutFeaturesEXT scalarFeature{ static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_SCALAR_BLOCK_LAYOUT_FEATURES) };
-	physical_device_features_4.pNext = &scalarFeature;
-	_deviceResources->instance->getVkBindings().vkGetPhysicalDeviceFeatures2KHR(physicalDevice->getVkHandle(), &physical_device_features_4);
-	deviceExtensions.addExtensionFeatureVk<VkPhysicalDeviceScalarBlockLayoutFeaturesEXT>(
-		static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_SCALAR_BLOCK_LAYOUT_FEATURES), &scalarFeature);
+	// Scalar Block Layout Features
+	VkPhysicalDeviceScalarBlockLayoutFeaturesEXT scalarFeatures{ static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_SCALAR_BLOCK_LAYOUT_FEATURES) };
+	deviceBufferAddressFeatures.pNext = &scalarFeatures;
 
-	// Descriptor indexing extension feature
-	VkPhysicalDeviceFeatures2KHR physical_device_features_2{ static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_FEATURES_2_KHR) };
-	VkPhysicalDeviceDescriptorIndexingFeatures indexFeature{ static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES) };
-	physical_device_features_2.pNext = &indexFeature;
-	_deviceResources->instance->getVkBindings().vkGetPhysicalDeviceFeatures2KHR(physicalDevice->getVkHandle(), &physical_device_features_2);
-	VkPhysicalDeviceDescriptorIndexingFeatures* pIndexFeature = &indexFeature;
-	deviceExtensions.addExtensionFeatureVk<VkPhysicalDeviceDescriptorIndexingFeatures>(
-		static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES), pIndexFeature);
+	// Descriptor Indexing Features
+	VkPhysicalDeviceDescriptorIndexingFeatures indexFeatures{ static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES) };
+	scalarFeatures.pNext = &indexFeatures;
 
+	// Fill in all of these device features with one call
+	physicalDevice->getInstance()->getVkBindings().vkGetPhysicalDeviceFeatures2(physicalDevice->getVkHandle(), &deviceFeatures);
+
+	// Add these device features to the physical device, since they're all connected by a pNext chain, we only need to explicitly attach the top feature
+	deviceExtensions.addExtensionFeatureVk<VkPhysicalDeviceRayTracingPipelineFeaturesKHR>(&raytracingPipelineFeatures);
+
+	// create the device
 	_deviceResources->device = pvr::utils::createDeviceAndQueues(physicalDevice, queuePopulateInfo, 1, &queueAccessInfo, deviceExtensions);
 	return pvr::Result::Success;
 }
@@ -643,6 +702,7 @@ std::unique_ptr<pvr::Shell> pvr::newDemo() { return std::make_unique<VulkanHello
 void VulkanHelloRayTracing::buildOffscreenRenderImage()
 {
 	// Build a new image _deviceResources::renderImage where to store the Ray Tracing offscreen pass
+	
 	pvrvk::ImageCreateInfo imageInfo;
 	imageInfo.setImageType(pvrvk::ImageType::e_2D);
 	imageInfo.setFormat(_renderImageFormat);
@@ -696,7 +756,8 @@ void VulkanHelloRayTracing::buildVertexBuffer()
 		sizeof(pvr::utils::ASVertexFormat) * vertices.size(); // The buffer size is the size of the ASVertexFormat struct multiplied by the amount of vertices, three in this case
 	vertexBufferInfo.setSize(vertexBufferSize);
 	pvrvk::BufferUsageFlags vertexBufferUsageFlags = pvrvk::BufferUsageFlags::e_VERTEX_BUFFER_BIT | pvrvk::BufferUsageFlags::e_STORAGE_BUFFER_BIT |
-		pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT | pvrvk::BufferUsageFlags::e_SHADER_DEVICE_ADDRESS_BIT;
+		pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT | pvrvk::BufferUsageFlags::e_SHADER_DEVICE_ADDRESS_BIT |
+		pvrvk::BufferUsageFlags::e_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR;
 	vertexBufferInfo.setUsageFlags(vertexBufferUsageFlags);
 
 	pvrvk::CommandBuffer uploadCmd = beginCommandBuffer();
@@ -722,7 +783,8 @@ void VulkanHelloRayTracing::buildIndexBuffer()
 	pvrvk::DeviceSize indexBufferSize = sizeof(uint32_t) * indices.size();
 	indexBufferInfo.setSize(indexBufferSize);
 	pvrvk::BufferUsageFlags indexBufferUsageFlags = pvrvk::BufferUsageFlags::e_INDEX_BUFFER_BIT | pvrvk::BufferUsageFlags::e_STORAGE_BUFFER_BIT |
-		pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT | pvrvk::BufferUsageFlags::e_SHADER_DEVICE_ADDRESS_BIT;
+		pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT | pvrvk::BufferUsageFlags::e_SHADER_DEVICE_ADDRESS_BIT |
+		pvrvk::BufferUsageFlags::e_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR;
 	indexBufferInfo.setUsageFlags(indexBufferUsageFlags);
 
 	pvrvk::CommandBuffer uploadCmd = beginCommandBuffer();
@@ -930,7 +992,8 @@ void VulkanHelloRayTracing::buildTopLevelASAndInstances(pvrvk::BuildAcceleration
 	// The instance information is put in a buffer
 	pvrvk::Buffer instancesBuffer = pvr::utils::createBuffer(_deviceResources->device,
 		pvrvk::BufferCreateInfo(sizeof(VkAccelerationStructureInstanceKHR) * vectorAccelerationStructureInstances.size(),
-			pvrvk::BufferUsageFlags::e_SHADER_DEVICE_ADDRESS_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT),
+			pvrvk::BufferUsageFlags::e_SHADER_DEVICE_ADDRESS_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT |
+				pvrvk::BufferUsageFlags::e_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR),
 		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
 		pvrvk::MemoryPropertyFlags::e_NONE, nullptr, pvr::utils::vma::AllocationCreateFlags::e_NONE, pvrvk::MemoryAllocateFlags::e_DEVICE_ADDRESS_BIT);
 
@@ -987,7 +1050,8 @@ void VulkanHelloRayTracing::buildTopLevelASAndInstances(pvrvk::BuildAcceleration
 
 	pvrvk::Buffer scratchBuffer = pvr::utils::createBuffer(_deviceResources->device,
 		pvrvk::BufferCreateInfo(accelerationStructureBuildSizesInfo.buildScratchSize,
-			pvrvk::BufferUsageFlags::e_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR | pvrvk::BufferUsageFlags::e_SHADER_DEVICE_ADDRESS_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT),
+			pvrvk::BufferUsageFlags::e_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR | pvrvk::BufferUsageFlags::e_STORAGE_BUFFER_BIT |
+				pvrvk::BufferUsageFlags::e_SHADER_DEVICE_ADDRESS_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT),
 		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
 		pvrvk::MemoryPropertyFlags::e_NONE, nullptr, pvr::utils::vma::AllocationCreateFlags::e_NONE, pvrvk::MemoryAllocateFlags::e_DEVICE_ADDRESS_BIT);
 
@@ -1417,9 +1481,10 @@ void VulkanHelloRayTracing::recordRenderImageCopy(pvrvk::CommandBuffer& cmdBuf, 
 
 	// Copy from _deviceResources::renderImage to the corresponding swapchain image
 	pvrvk::ImageSubresourceLayers subresourceLayers(pvrvk::ImageAspectFlags::e_COLOR_BIT, 0, 0, 1);
-	pvrvk::ImageCopy imageRegion(subresourceLayers, pvrvk::Offset3D(0, 0, 0), subresourceLayers, pvrvk::Offset3D(0, 0, 0), pvrvk::Extent3D(getWidth(), getHeight(), 1));
-	cmdBuf->copyImage(_deviceResources->renderImage, _deviceResources->swapchain->getImage(imageIndex), pvrvk::ImageLayout::e_TRANSFER_SRC_OPTIMAL,
-		pvrvk::ImageLayout::e_TRANSFER_DST_OPTIMAL, 1, &imageRegion);
+	pvrvk::Offset3D offsets[2] = { pvrvk::Offset3D(0, 0, 0), pvrvk::Offset3D(getWidth(), getHeight(), 1) };
+	pvrvk::ImageBlit imageRegion(subresourceLayers, offsets, subresourceLayers, offsets);
+	cmdBuf->blitImage(_deviceResources->renderImage, _deviceResources->swapchain->getImage(imageIndex), &imageRegion, 1, pvrvk::Filter::e_LINEAR,
+		pvrvk::ImageLayout::e_TRANSFER_SRC_OPTIMAL, pvrvk::ImageLayout::e_TRANSFER_DST_OPTIMAL);
 
 	barrierSet.clearAllBarriers();
 

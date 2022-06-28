@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.18)
 project(VulkanIMGTextureFilterCubic)
 if(IOS)
 	message ("Skipping VulkanIMGTextureFilterCubic : Vulkan is not supported on iOS.")

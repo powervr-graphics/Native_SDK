@@ -17,7 +17,7 @@ layout(location = TEX_COORD) in mediump vec2 inTexCoord;
 
 // Vertex shader outputs
 layout(location = 0) out mediump vec2 vTexCoord;
-layout(location = 1) out mediump vec3 vNormal;
+layout(location = 1) out highp vec3 vNormal;
 
 void main()
 {

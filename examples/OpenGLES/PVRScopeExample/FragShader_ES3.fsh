@@ -8,7 +8,7 @@ uniform mediump float SpecularExponent;  //How smooth is the object
 uniform mediump float Metallicity;  //How much is the specular light colored by the object's color
 uniform mediump float Reflectivity; //How much of the light is diffuse/specular
 
-in mediump vec3 ViewNormal;
+in highp vec3 ViewNormal;
 in mediump vec2 TexCoord;
 
 layout(location = 0) out mediump vec4 oColor;

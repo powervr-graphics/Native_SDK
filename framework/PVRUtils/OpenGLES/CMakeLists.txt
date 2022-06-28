@@ -1,11 +1,18 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.18.0 FATAL_ERROR)
+project(PVRUtilsGles)
+include(GNUInstallDirs)
+include(../../FrameworkCommon.cmake)
 # Copyright (c) Imagination Technologies Limited.
 
-project(PVRUtilsGles)
+# Prevent PVRUtilsGles being added multiple times
+if(TARGET PVRUtilsGles)
+	return()
+endif()
 
-include(GNUInstallDirs)
-include(CMakeFindDependencyMacro)
-include(../../Common.cmake)
+# Add PVRCore
+add_subdirectory(../../PVRCore PVRCore)
+
+message(STATUS "Adding PVRUtilsGles")
 
 set(PVRUtils_HEADERS 
 	../ArialBoldFont.h
@@ -43,19 +50,12 @@ set(PVRUtilsGles_SRC
 	TextureUtilsGles.cpp
 	UIRendererGles.cpp)
 
-# Platform specific PVRUtilsGles sources
-if (IOS)
-	list(APPEND PVRUtilsGles_SRC
-		../EAGL/EaglPlatformContext.mm)
-	list(APPEND PVRUtilsGles_EAGL_HEADERS
-		../EAGL/EaglPlatformHandles.h)
-else()
-	list(APPEND PVRUtilsGles_SRC
-		../EGL/EglPlatformContext.cpp)
-	list(APPEND PVRUtilsGles_EGL_HEADERS
-		../EGL/EglPlatformContext.h
-		../EGL/EglPlatformHandles.h)
-endif()
+# Append EGL sources to PVRUtils
+list(APPEND PVRUtilsGles_SRC
+	../EGL/EglPlatformContext.cpp)
+list(APPEND PVRUtilsGles_EGL_HEADERS
+	../EGL/EglPlatformContext.h
+	../EGL/EglPlatformHandles.h)
 
 set(PVRUtilsGles_PRIVATE_LINK_LIBS "")
 set(PVRUtilsGles_INCLUDE_DIRECTORIES 
@@ -63,14 +63,8 @@ set(PVRUtilsGles_INCLUDE_DIRECTORIES
 	${CMAKE_CURRENT_LIST_DIR}/../../)
 set(PVRUtilsGles_PRIVATE_INCLUDE_DIRECTORIES "")
 
-# Handle any platform specific api specific libraries
-if(ANDROID)
-elseif(APPLE)
-	if (IOS)
-		find_library(lib-gles OpenGLES)
-		list(APPEND PVRUtilsGles_PRIVATE_LINK_LIBS ${lib-gles})
-	endif()
-elseif(UNIX)
+# Handle the UNIX platform specific api specific libraries
+if(UNIX)
 	if(PVR_WINDOW_SYSTEM AND ("${PVR_WINDOW_SYSTEM}" STREQUAL Wayland))
 		list(APPEND PVRUtilsGles_PRIVATE_LINK_LIBS ${WAYLAND_EGL_LIBRARIES})
 		list(APPEND PVRUtilsGles_PRIVATE_INCLUDE_DIRECTORIES ${WAYLAND_EGL_INCLUDE_DIR})
@@ -85,14 +79,7 @@ add_library(PVRUtilsGles STATIC
 	${PVRUtilsGles_EAGL_HEADERS}
 	${PVRUtilsGles_EGL_HEADERS})
 
-if(PVR_PREBUILT_DEPENDENCIES)
-	list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/../../cmake/modules")
-	find_dependency(PVRCore MODULE REQUIRED)
-	find_dependency(PVRAssets MODULE REQUIRED)
-endif()
-
-apply_framework_compile_options_to_target(PVRUtilsGles)
-
+# Link PVRUtilsGLES with PVRAssets and PVRCore, along with the platform dependant libraries
 target_link_libraries(PVRUtilsGles 
 	PUBLIC
 		PVRAssets 
@@ -100,46 +87,22 @@ target_link_libraries(PVRUtilsGles
 	PRIVATE
 		${PVRUtilsGles_PRIVATE_LINK_LIBS})
 
-if(WS OR PVR_WINDOW_SYSTEM)
-	if(WS AND NOT PVR_WINDOW_SYSTEM)
-		set(PVR_WINDOW_SYSTEM ${WS})
-		message("The WS variable has been deprecated. Please move to using PVR_WINDOW_SYSTEM instead.")
-	endif()
-	
+# Handle the PVR_WINDOW_SYSTEM variable on Unix
+if(PVR_WINDOW_SYSTEM)
 	set(PVR_WINDOW_SYSTEM_DEFINE "" CACHE INTERNAL "")
 	# Validate the use of -DPVR_WINDOW_SYSTEM
-	if(${PVR_WINDOW_SYSTEM} STREQUAL X11 OR ${PVR_WINDOW_SYSTEM} STREQUAL XCB OR ${PVR_WINDOW_SYSTEM} STREQUAL Wayland OR ${PVR_WINDOW_SYSTEM} STREQUAL NullWS OR ${PVR_WINDOW_SYSTEM} STREQUAL Screen)
+	if(${PVR_WINDOW_SYSTEM} STREQUAL X11 OR ${PVR_WINDOW_SYSTEM} STREQUAL XCB OR ${PVR_WINDOW_SYSTEM} STREQUAL Wayland OR ${PVR_WINDOW_SYSTEM} STREQUAL NullWS)
 		set(PVR_WINDOW_SYSTEM_DEFINE "${PVR_WINDOW_SYSTEM}" CACHE INTERNAL "")
 	else()
-		message(FATAL_ERROR "Unrecognised PVR_WINDOW_SYSTEM: Valid values are NullWS, X11, XCB, Wayland, Screen.")
+		message(FATAL_ERROR "Unrecognised PVR_WINDOW_SYSTEM: Valid values are NullWS, X11, XCB, Wayland.")
 	endif()
 	target_compile_definitions(PVRUtilsGles PUBLIC ${PVR_WINDOW_SYSTEM_DEFINE})
 endif()
 
-if(APPLE)
-	target_compile_definitions(PVRUtilsGles PUBLIC GLES_SILENCE_DEPRECATION=1)
-endif()
+# Allow PVRUtilsGles to see the rest of the framework and it's platform specific headers
+target_include_directories(PVRUtilsGles PUBLIC ${PVRUtilsGles_INCLUDE_DIRECTORIES})
 
-target_include_directories(PVRUtilsGles 
-	PUBLIC 
-		"$<BUILD_INTERFACE:${PVRUtilsGles_INCLUDE_DIRECTORIES}>"
-		$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
-	
-if(PVR_ENABLE_INSTALL)
-	install(TARGETS PVRUtilsGles EXPORT PVRUtilsGlesTargets
-		ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-		LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-		RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-		OPTIONAL)
-	install(FILES ${PVRUtils_HEADERS} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/PVRUtils OPTIONAL)
-	install(FILES ${PVRUtilsGles_HEADERS} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/PVRUtils/OpenGLES OPTIONAL)
-	install(FILES ${PVRUtilsGles_EAGL_HEADERS} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/PVRUtils/EAGL OPTIONAL)
-	install(FILES ${PVRUtilsGles_EGL_HEADERS} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/PVRUtils/EGL OPTIONAL)
-	install(EXPORT PVRUtilsGlesTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/PVRUtilsGles OPTIONAL)
-
-	export(EXPORT PVRUtilsGlesTargets FILE "${CMAKE_CURRENT_BINARY_DIR}/PVRUtilsGles/PVRUtilsGlesTargets.cmake")
-	# build tree package config
-	file(COPY cmake/PVRUtilsGlesConfig.cmake.in DESTINATION "${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/PVRUtilsGles/" NO_SOURCE_PERMISSIONS)
-	configure_file("${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/PVRUtilsGles/PVRUtilsGlesConfig.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/PVRUtilsGles/PVRUtilsGlesConfig.cmake" COPYONLY)
-	install(FILES "${CMAKE_CURRENT_BINARY_DIR}/PVRUtilsGles/PVRUtilsGlesTargets.cmake" DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/PVRUtilsGles OPTIONAL)
-endif()
+# Apply the common framework compile definitions to PVRUtilsGles
+# This sets certain warnings on/off and adds appropriate
+# debug and release flags in the compiler and linker  
+apply_framework_compile_options_to_target(PVRUtilsGles)

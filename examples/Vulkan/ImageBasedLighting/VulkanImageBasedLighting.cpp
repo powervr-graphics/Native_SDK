@@ -224,7 +224,9 @@ public:
 		uboView.getElement(1, 0, swapchainIndex).setValue(glm::vec4(eyePos, 0.0f));
 		uboView.getElement(2, 0, swapchainIndex).setValue(exposure);
 		if (uint32_t(ubo->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
-		{ ubo->getDeviceMemory()->flushRange(uboView.getDynamicSliceOffset(swapchainIndex), uboView.getDynamicSliceSize()); }
+		{
+			ubo->getDeviceMemory()->flushRange(uboView.getDynamicSliceOffset(swapchainIndex), uboView.getDynamicSliceSize());
+		}
 	}
 
 	/// <summary>Record commands.</summary>
@@ -363,8 +365,10 @@ public:
 		ibos.resize(numMeshes);
 
 		for (uint32_t m = 0; m < numMeshes; ++m)
-		{ pvr::utils::createSingleBuffersFromMesh(device, model->getMesh(m), vbos[m], ibos[m], uploadCmdBuffer, requireSubmission, allocator); }
-		
+		{
+			pvr::utils::createSingleBuffersFromMesh(device, model->getMesh(m), vbos[m], ibos[m], uploadCmdBuffer, requireSubmission, allocator);
+		}
+
 		// Load the texture
 		loadTextures(assetProvider, device, uploadCmdBuffer, allocator);
 
@@ -622,8 +626,9 @@ pvr::Result VulkanImageBasedLighting::initView()
 {
 	_deviceResources = std::make_unique<DeviceResources>();
 
-	// Create vulkan instance and surface
-	_deviceResources->instance = pvr::utils::createInstance(this->getApplicationName());
+	// Create a Vulkan 1.0 instance and retrieve compatible physical devices
+	pvr::utils::VulkanVersion VulkanVersion(1, 0, 0);
+	_deviceResources->instance = pvr::utils::createInstance(this->getApplicationName(), VulkanVersion, pvr::utils::InstanceExtensions(VulkanVersion));
 	pvrvk::Surface surface =
 		pvr::utils::createSurface(_deviceResources->instance, _deviceResources->instance->getPhysicalDevice(0), this->getWindow(), this->getDisplay(), this->getConnection());
 
@@ -646,7 +651,9 @@ pvr::Result VulkanImageBasedLighting::initView()
 	pvrvk::SurfaceCapabilitiesKHR surfaceCapabilities = physicalDevice->getSurfaceCapabilities(surface);
 	pvrvk::ImageUsageFlags swapchainImageUsage = pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT;
 	if (pvr::utils::isImageUsageSupportedBySurface(surfaceCapabilities, pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT)) // Transfer operation supported.
-	{ swapchainImageUsage |= pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT; }
+	{
+		swapchainImageUsage |= pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT;
+	}
 
 	// initialise the vma allocator
 	_deviceResources->vmaAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
@@ -771,14 +778,18 @@ pvr::Result VulkanImageBasedLighting::initView()
 	_camera.setInclination(10.f);
 
 	if (_currentModel == Models::Helmet)
-	{ _deviceResources->uboWorld.view.getElement(0, 0).setValue(glm::eulerAngleXY(glm::radians(0.f), glm::radians(120.f)) * glm::scale(glm::vec3(22.0f))); }
+	{
+		_deviceResources->uboWorld.view.getElement(0, 0).setValue(glm::eulerAngleXY(glm::radians(0.f), glm::radians(120.f)) * glm::scale(glm::vec3(22.0f)));
+	}
 	else
 	{
 		_deviceResources->uboWorld.view.getElement(0, 0).setValue(glm::scale(glm::vec3(4.5f)));
 	}
 
 	if ((_deviceResources->uboWorld.buffer->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
-	{ _deviceResources->uboWorld.buffer->getDeviceMemory()->flushRange(); }
+	{
+		_deviceResources->uboWorld.buffer->getDeviceMemory()->flushRange();
+	}
 
 	return pvr::Result::Success;
 }
@@ -806,28 +817,36 @@ pvr::Result VulkanImageBasedLighting::renderFrame()
 	_deviceResources->perFrameResourcesFences[swapchainIndex]->reset();
 
 	if (_currentModel == Models::Helmet)
-	{ _deviceResources->uboWorld.view.getElement(0, 0).setValue(glm::eulerAngleXY(glm::radians(0.f), glm::radians(120.f)) * glm::scale(glm::vec3(22.0f))); }
+	{
+		_deviceResources->uboWorld.view.getElement(0, 0).setValue(glm::eulerAngleXY(glm::radians(0.f), glm::radians(120.f)) * glm::scale(glm::vec3(22.0f)));
+	}
 	else
 	{
 		_deviceResources->uboWorld.view.getElement(0, 0).setValue(glm::scale(glm::vec3(4.5f)));
 	}
 
 	if ((_deviceResources->uboWorld.buffer->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
-	{ _deviceResources->uboWorld.buffer->getDeviceMemory()->flushRange(); }
+	{
+		_deviceResources->uboWorld.buffer->getDeviceMemory()->flushRange();
+	}
 
 	if (_updateDescriptors)
 	{
 		updateDescriptors();
 
 		if (_currentModel == Models::Helmet)
-		{ _deviceResources->uboWorld.view.getElement(0, 0).setValue(glm::eulerAngleXY(glm::radians(0.f), glm::radians(120.f)) * glm::scale(glm::vec3(22.0f))); }
+		{
+			_deviceResources->uboWorld.view.getElement(0, 0).setValue(glm::eulerAngleXY(glm::radians(0.f), glm::radians(120.f)) * glm::scale(glm::vec3(22.0f)));
+		}
 		else
 		{
 			_deviceResources->uboWorld.view.getElement(0, 0).setValue(glm::scale(glm::vec3(4.5f)));
 		}
 
 		if ((_deviceResources->uboWorld.buffer->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
-		{ _deviceResources->uboWorld.buffer->getDeviceMemory()->flushRange(); }
+		{
+			_deviceResources->uboWorld.buffer->getDeviceMemory()->flushRange();
+		}
 		_updateDescriptors = false;
 	}
 
@@ -1053,7 +1072,9 @@ void VulkanImageBasedLighting::createUbos()
 		_deviceResources->uboLights.view.getElement(2).setValue(_deviceResources->skyBoxPass.getNumPrefilteredMipLevels());
 
 		if (uint32_t(_deviceResources->uboLights.buffer->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
-		{ _deviceResources->uboLights.buffer->getDeviceMemory()->flushRange(); }
+		{
+			_deviceResources->uboLights.buffer->getDeviceMemory()->flushRange();
+		}
 	}
 
 	// ubo material
@@ -1108,7 +1129,9 @@ void VulkanImageBasedLighting::createUbos()
 		}
 
 		if ((_deviceResources->uboMaterial.buffer->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
-		{ _deviceResources->uboMaterial.buffer->getDeviceMemory()->flushRange(); }
+		{
+			_deviceResources->uboMaterial.buffer->getDeviceMemory()->flushRange();
+		}
 	}
 }
 

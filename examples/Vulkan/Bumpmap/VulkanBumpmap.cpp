@@ -275,8 +275,9 @@ pvr::Result VulkanBumpmap::initView()
 {
 	_deviceResources = std::make_unique<DeviceResources>();
 
-	// Create instance and retrieve compatible physical devices
-	_deviceResources->instance = pvr::utils::createInstance(this->getApplicationName());
+	// Create Vulkan 1.0 instance and retrieve compatible physical devices
+	pvr::utils::VulkanVersion VulkanVersion(1, 0, 0);
+	_deviceResources->instance = pvr::utils::createInstance(this->getApplicationName(), VulkanVersion, pvr::utils::InstanceExtensions(VulkanVersion));
 
 	if (_deviceResources->instance->getNumPhysicalDevices() == 0)
 	{
@@ -316,8 +317,7 @@ pvr::Result VulkanBumpmap::initView()
 
 	//---------------
 	// Create the command pool and descriptor set pool
-	_deviceResources->commandPool = _deviceResources->device->createCommandPool(
-		pvrvk::CommandPoolCreateInfo(_deviceResources->queue->getFamilyIndex(), pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT));
+	_deviceResources->commandPool = _deviceResources->device->createCommandPool(pvrvk::CommandPoolCreateInfo(_deviceResources->queue->getFamilyIndex()));
 	_deviceResources->commandPool->setObjectName("Main Command Pool");
 
 	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(pvrvk::DescriptorPoolCreateInfo()
@@ -339,7 +339,6 @@ pvr::Result VulkanBumpmap::initView()
 		// create the per swapchain command buffers
 		_deviceResources->cmdBuffers[i] = _deviceResources->commandPool->allocateCommandBuffer();
 		_deviceResources->cmdBuffers[i]->setObjectName(std::string("Main CommandBuffer [") + std::to_string(i) + "]");
-		if (i == 0) { _deviceResources->cmdBuffers[0]->begin(); }
 
 		_deviceResources->presentationSemaphores[i] = _deviceResources->device->createSemaphore();
 		_deviceResources->presentationSemaphores[i]->setObjectName(std::string("Presentation Semaphore [") + std::to_string(i) + "]");
@@ -349,19 +348,24 @@ pvr::Result VulkanBumpmap::initView()
 		_deviceResources->perFrameResourcesFences[i]->setObjectName(std::string("Per Frame Command Buffer Fence [") + std::to_string(i) + "]");
 	}
 
+	// Create a single time submit command buffer for uploading resources
+	pvrvk::CommandBuffer uploadBuffer = _deviceResources->commandPool->allocateCommandBuffer();
+	uploadBuffer->setObjectName("InitView : Upload Command Buffer");
+	uploadBuffer->begin(pvrvk::CommandBufferUsageFlags::e_ONE_TIME_SUBMIT_BIT);
+
 	// load the vbo and ibo data
 	bool requiresCommandBufferSubmission = false;
-	pvr::utils::appendSingleBuffersFromModel(_deviceResources->device, *_scene, _deviceResources->vbos, _deviceResources->ibos, _deviceResources->cmdBuffers[0],
-		requiresCommandBufferSubmission, _deviceResources->vmaAllocator);
+	pvr::utils::appendSingleBuffersFromModel(
+		_deviceResources->device, *_scene, _deviceResources->vbos, _deviceResources->ibos, uploadBuffer, requiresCommandBufferSubmission, _deviceResources->vmaAllocator);
 
 	// create the image samplers
-	createImageSamplerDescriptor(_deviceResources->cmdBuffers[0]);
-	_deviceResources->cmdBuffers[0]->end();
+	createImageSamplerDescriptor(uploadBuffer);
+	uploadBuffer->end();
 
 	pvr::utils::beginQueueDebugLabel(_deviceResources->queue, pvrvk::DebugUtilsLabel("Batching Application Resource Upload"));
 
 	pvrvk::SubmitInfo submitInfo;
-	submitInfo.commandBuffers = &_deviceResources->cmdBuffers[0];
+	submitInfo.commandBuffers = &uploadBuffer;
 	submitInfo.numCommandBuffers = 1;
 	_deviceResources->queue->submit(&submitInfo, 1);
 	_deviceResources->queue->waitIdle();

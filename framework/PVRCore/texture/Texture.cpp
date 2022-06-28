@@ -51,33 +51,37 @@ void Texture::initializeWithHeader(const TextureHeader& sHeader)
 	_pTextureData.resize(getDataSize());
 }
 
-const unsigned char* Texture::getDataPointer(uint32_t mipMapLevel /*= 0*/, uint32_t arrayMember /*= 0*/, uint32_t face /*= 0*/) const
+const unsigned char* Texture::getDataPointer(uint32_t mipMapLevel /*= 0*/, uint32_t arrayMember /*= 0*/, uint32_t face /*= 0*/, uint32_t plane /*= 0*/) const
 {
 	if ((static_cast<int32_t>(mipMapLevel) == pvrTextureAllMipMaps) || mipMapLevel >= getNumMipMapLevels())
 	{ throw InvalidArgumentError("mipmapLevel", "Texture::getDataPointer: Specified mipmap level did not exist"); }
 	if (arrayMember >= getNumArrayMembers()) { throw InvalidArgumentError("arrayMember", "Texture::getDataPointer: Specified array member did not exist"); }
 	if (face >= getNumFaces()) { throw InvalidArgumentError("face", "Texture::getDataPointer: Specified face did not exist"); }
+	if (plane >= getNumPlanes()) { throw InvalidArgumentError("plane", "Texture::getDataPointer: Specified plane did not exist"); }
 	uint32_t offSet = 0;
-	// File is organised by MIP Map levels, then surfaces, then faces.
+	// File is organised by MIP Map levels, then surfaces, then faces, then planes.
 
 	// Get the start of the MIP level.
 	if (mipMapLevel != 0)
 	{
 		// Get the size for all MIP Map levels up to this one.
-		for (uint32_t uiCurrentMipMap = 0; uiCurrentMipMap < mipMapLevel; ++uiCurrentMipMap) { offSet += getDataSize(static_cast<int32_t>(uiCurrentMipMap), true, true); }
+		for (uint32_t uiCurrentMipMap = 0; uiCurrentMipMap < mipMapLevel; ++uiCurrentMipMap) { offSet += getDataSize(static_cast<int32_t>(uiCurrentMipMap), true, true, true); }
 	}
 
 	// Get the start of the array.
-	if (arrayMember != 0) { offSet += arrayMember * getDataSize(static_cast<int32_t>(mipMapLevel), false, true); }
+	if (arrayMember != 0) { offSet += arrayMember * getDataSize(static_cast<int32_t>(mipMapLevel), false, true, true); }
 
 	// Get the start of the face.
-	if (face != 0) { offSet += face * getDataSize(static_cast<int32_t>(mipMapLevel), false, false); }
+	if (face != 0) { offSet += face * getDataSize(static_cast<int32_t>(mipMapLevel), false, false, true); }
+
+	// Get the total size of the previous planes.
+	while (plane > 0) { offSet += getDataSize(static_cast<int32_t>(mipMapLevel), false, false, false, --plane); }
 
 	// Return the data pointer plus whatever offSet has been specified.
 	return &_pTextureData[offSet];
 }
 
-unsigned char* Texture::getDataPointer(uint32_t mipMapLevel /*= 0*/, uint32_t arrayMember /*= 0*/, uint32_t face /*= 0*/)
+unsigned char* Texture::getDataPointer(uint32_t mipMapLevel /*= 0*/, uint32_t arrayMember /*= 0*/, uint32_t face /*= 0*/, uint32_t plane /*= 0*/)
 {
 	// Initialize the offSet value.
 	uint32_t offSet = 0;
@@ -86,21 +90,25 @@ unsigned char* Texture::getDataPointer(uint32_t mipMapLevel /*= 0*/, uint32_t ar
 	if ((static_cast<int32_t>(mipMapLevel) == pvrTextureAllMipMaps) || mipMapLevel >= getNumMipMapLevels())
 	{ throw InvalidArgumentError("mipmapLevel", "Texture::getDataPointer: Specified mipmap level did not exist"); }
 	if (arrayMember >= getNumArrayMembers()) { throw InvalidArgumentError("arrayMember", "Texture::getDataPointer: Specified array member did not exist"); }
-	if (face >= getNumFaces())
-	{ throw InvalidArgumentError("face", "Texture::getDataPointer: Specified face did not exist"); } // File is organised by MIP Map levels, then surfaces, then faces.
+	if (face >= getNumFaces()) { throw InvalidArgumentError("face", "Texture::getDataPointer: Specified face did not exist"); }
+	if (plane >= getNumPlanes()) { throw InvalidArgumentError("plane", "Texture::getDataPointer: Specified plane did not exist"); }
+	// File is organised by MIP Map levels, then surfaces, then faces.
 
 	// Get the start of the MIP level.
 	if (mipMapLevel != 0)
 	{
 		// Get the size for all MIP Map levels up to this one.
-		for (uint32_t uiCurrentMipMap = 0; uiCurrentMipMap < mipMapLevel; ++uiCurrentMipMap) { offSet += getDataSize(static_cast<int32_t>(uiCurrentMipMap), true, true); }
+		for (uint32_t uiCurrentMipMap = 0; uiCurrentMipMap < mipMapLevel; ++uiCurrentMipMap) { offSet += getDataSize(static_cast<int32_t>(uiCurrentMipMap), true, true, true); }
 	}
 
 	// Get the start of the array.
-	if (arrayMember != 0) { offSet += arrayMember * getDataSize(mipMapLevel, false, true); }
+	if (arrayMember != 0) { offSet += arrayMember * getDataSize(mipMapLevel, false, true, true); }
 
 	// Get the start of the face.
-	if (face != 0) { offSet += face * getDataSize(mipMapLevel, false, false); }
+	if (face != 0) { offSet += face * getDataSize(mipMapLevel, false, false, true); }
+
+	// Get the start of the plane.
+	if (plane != 0) { offSet += plane * getDataSize(mipMapLevel, false, false, false, plane); }
 
 	// Return the data pointer plus whatever offSet has been specified.
 	return &_pTextureData[offSet];

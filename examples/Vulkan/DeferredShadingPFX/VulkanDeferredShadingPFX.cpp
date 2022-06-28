@@ -391,8 +391,9 @@ pvr::Result VulkanDeferredShadingPFX::initView()
 	// Create the empty API objects.
 	_deviceResources = std::make_unique<DeviceResources>();
 
-	// Create instance and retrieve compatible physical devices
-	_deviceResources->instance = pvr::utils::createInstance(this->getApplicationName());
+	// Create a Vulkan 1.0 instance and retrieve compatible physical devices
+	pvr::utils::VulkanVersion VulkanVersion(1, 0, 0);
+	_deviceResources->instance = pvr::utils::createInstance(this->getApplicationName(), VulkanVersion, pvr::utils::InstanceExtensions(VulkanVersion));
 
 	if (_deviceResources->instance->getNumPhysicalDevices() == 0)
 	{
@@ -421,7 +422,9 @@ pvr::Result VulkanDeferredShadingPFX::initView()
 	// validate the supported swapchain image usage
 	pvrvk::ImageUsageFlags swapchainImageUsage = pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT;
 	if (pvr::utils::isImageUsageSupportedBySurface(surfaceCapabilities, pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT))
-	{ swapchainImageUsage |= pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT; } // Create the swapchain
+	{
+		swapchainImageUsage |= pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT;
+	} // Create the swapchain
 	_deviceResources->swapchain = pvr::utils::createSwapchain(_deviceResources->device, surface, getDisplayAttributes(), swapchainImageUsage);
 
 	_deviceResources->vmaAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
@@ -454,9 +457,14 @@ pvr::Result VulkanDeferredShadingPFX::initView()
 	_deviceResources->vmaAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
 
 	// create the command pool
-	_deviceResources->commandPool =
-		_deviceResources->device->createCommandPool(pvrvk::CommandPoolCreateInfo(queueAccessInfo.familyId, pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT));
+	_deviceResources->commandPool = _deviceResources->device->createCommandPool(pvrvk::CommandPoolCreateInfo(queueAccessInfo.familyId));
 
+	// Allocate a single use command buffer to upload resources to the GPU
+	pvrvk::CommandBuffer uploadBuffer = _deviceResources->commandPool->allocateCommandBuffer();
+	uploadBuffer->setObjectName("InitView : Resource Upload Command Buffer");
+	uploadBuffer->begin(pvrvk::CommandBufferUsageFlags::e_ONE_TIME_SUBMIT_BIT);
+
+	// Allocate descriptor pool
 	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(pvrvk::DescriptorPoolCreateInfo()
 																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 48)
 																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 48)
@@ -475,8 +483,7 @@ pvr::Result VulkanDeferredShadingPFX::initView()
 		_deviceResources->imageAcquiredSemaphores[i] = _deviceResources->device->createSemaphore();
 		_deviceResources->perFrameResourcesFences[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
 
-		if (i == 0) { _deviceResources->cmdBufferMain[0]->begin(); }
-		pvr::utils::setImageLayout(_deviceResources->swapchain->getImage(i), pvrvk::ImageLayout::e_UNDEFINED, pvrvk::ImageLayout::e_PRESENT_SRC_KHR, _deviceResources->cmdBufferMain[0]);
+		pvr::utils::setImageLayout(_deviceResources->swapchain->getImage(i), pvrvk::ImageLayout::e_UNDEFINED, pvrvk::ImageLayout::e_PRESENT_SRC_KHR, uploadBuffer);
 	}
 
 	const float_t aspectRatio = (float_t)_deviceResources->swapchain->getDimension().getWidth() / _deviceResources->swapchain->getDimension().getHeight();
@@ -495,7 +502,7 @@ pvr::Result VulkanDeferredShadingPFX::initView()
 	pvr::Effect effect = pvr::pfx::readPFX(*getAssetStream(Files::EffectPfx), this);
 
 	if (!_deviceResources->render_mgr.init(*this, _deviceResources->swapchain, _deviceResources->descriptorPool)) { return pvr::Result::UnknownError; }
-	_deviceResources->render_mgr.addEffect(effect, _deviceResources->cmdBufferMain[0]);
+	_deviceResources->render_mgr.addEffect(effect, uploadBuffer);
 
 	//--- Gbuffer renders the scene
 	_deviceResources->render_mgr.addModelForAllSubpassGroups(_mainScene, 0, static_cast<uint32_t>(RenderPassSubpass::GBuffer), 0);
@@ -515,11 +522,11 @@ pvr::Result VulkanDeferredShadingPFX::initView()
 		_pointLightModel, 0, static_cast<uint32_t>(RenderPassSubpass::Lighting), static_cast<uint32_t>(LightingSubpassGroup::PointLightStep3));
 
 	// build all the renderman objects
-	_deviceResources->render_mgr.buildRenderObjects(_deviceResources->cmdBufferMain[0]);
+	_deviceResources->render_mgr.buildRenderObjects(uploadBuffer);
 
-	_deviceResources->cmdBufferMain[0]->end();
+	uploadBuffer->end();
 	pvrvk::SubmitInfo submitInfo;
-	submitInfo.commandBuffers = &_deviceResources->cmdBufferMain[0];
+	submitInfo.commandBuffers = &uploadBuffer;
 	submitInfo.numCommandBuffers = 1;
 
 	_deviceResources->queue->submit(&submitInfo, 1);
@@ -857,7 +864,9 @@ void VulkanDeferredShadingPFX::updateDynamicLightData(uint32_t swapchain)
 
 	// update the procedural point lights
 	for (; pointLight < numSceneLights + _numberOfPointLights; ++pointLight)
-	{ updateProceduralPointLight(pass.pointLightPasses.initialData[pointLight], _renderInfo.pointLightPasses.lightProperties[pointLight], pointLight); }
+	{
+		updateProceduralPointLight(pass.pointLightPasses.initialData[pointLight], _renderInfo.pointLightPasses.lightProperties[pointLight], pointLight);
+	}
 }
 
 void VulkanDeferredShadingPFX::setProceduralPointLightInitialData(PointLightPasses::InitialData& data, PointLightPasses::PointLightProperties& pointLightProperties)
@@ -885,13 +894,21 @@ void VulkanDeferredShadingPFX::updateProceduralPointLight(PointLightPasses::Init
 	{
 		float_t dt = static_cast<float>(std::min(getFrameTime(), uint64_t(30)));
 		if (data.distance < PointLightConfiguration::LightMinDistance)
-		{ data.axial_vel = glm::abs(data.axial_vel) + (PointLightConfiguration::LightMaxAxialVelocity * dt * .001f); }
+		{
+			data.axial_vel = glm::abs(data.axial_vel) + (PointLightConfiguration::LightMaxAxialVelocity * dt * .001f);
+		}
 		if (data.distance > PointLightConfiguration::LightMaxDistance)
-		{ data.axial_vel = -glm::abs(data.axial_vel) - (PointLightConfiguration::LightMaxAxialVelocity * dt * .001f); }
+		{
+			data.axial_vel = -glm::abs(data.axial_vel) - (PointLightConfiguration::LightMaxAxialVelocity * dt * .001f);
+		}
 		if (data.height < PointLightConfiguration::LightMinHeight)
-		{ data.vertical_vel = glm::abs(data.vertical_vel) + (PointLightConfiguration::LightMaxAxialVelocity * dt * .001f); }
+		{
+			data.vertical_vel = glm::abs(data.vertical_vel) + (PointLightConfiguration::LightMaxAxialVelocity * dt * .001f);
+		}
 		if (data.height > PointLightConfiguration::LightMaxHeight)
-		{ data.vertical_vel = -glm::abs(data.vertical_vel) - (PointLightConfiguration::LightMaxAxialVelocity * dt * .001f); }
+		{
+			data.vertical_vel = -glm::abs(data.vertical_vel) - (PointLightConfiguration::LightMaxAxialVelocity * dt * .001f);
+		}
 
 		data.axial_vel += pvr::randomrange(-PointLightConfiguration::LightAxialVelocityChange, PointLightConfiguration::LightAxialVelocityChange) * dt;
 
@@ -1067,7 +1084,9 @@ void VulkanDeferredShadingPFX::allocateLights()
 	_renderInfo.pointLightPasses.initialData.resize(countPoint);
 
 	for (uint32_t i = countPoint - PointLightConfiguration::NumProceduralPointLights; i < countPoint; ++i)
-	{ setProceduralPointLightInitialData(_renderInfo.pointLightPasses.initialData[i], _renderInfo.pointLightPasses.lightProperties[i]); }
+	{
+		setProceduralPointLightInitialData(_renderInfo.pointLightPasses.initialData[i], _renderInfo.pointLightPasses.lightProperties[i]);
+	}
 }
 
 /// <summary>Records main command buffer.</summary>
@@ -1142,7 +1161,9 @@ void VulkanDeferredShadingPFX::recordCommandsPointLightGeometryStencil(pvrvk::Co
 {
 	pvrvk::ClearRect clearArea(pvrvk::Rect2D(0, 0, _framebufferWidth, _framebufferHeight));
 	if ((_framebufferWidth != _windowWidth) || (_framebufferHeight != _windowHeight))
-	{ clearArea.setRect(pvrvk::Rect2D(_viewportOffsets[0], _viewportOffsets[1], _framebufferWidth, _framebufferHeight)); }
+	{
+		clearArea.setRect(pvrvk::Rect2D(_viewportOffsets[0], _viewportOffsets[1], _framebufferWidth, _framebufferHeight));
+	}
 
 	// clear stencil to 0's to make use of it again for point lights
 	cmdBuffers->clearAttachment(pvrvk::ClearAttachment::createStencilClearAttachment(0u), clearArea);
