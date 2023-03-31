@@ -90,4 +90,4 @@ The documentation from this repository has been moved to [a different repository
 Release notes
 -------------
 
-For the latest version of the Release Notes detailing what has changed in this release, please visit [Release Notes](https://developer.imaginationtech.com/tools/release-notes/2022-r1/).
+For the latest version of the Release Notes detailing what has changed in this release, please visit [Release Notes](https://developer.imaginationtech.com/tools/release-notes/2023-r1/).

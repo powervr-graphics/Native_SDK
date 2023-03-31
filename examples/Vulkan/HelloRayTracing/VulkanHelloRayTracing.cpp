@@ -91,10 +91,10 @@ struct DeviceResources
 	pvrvk::Fence perFrameResourcesFences[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
 
 	/// <summary>Offscreen ray tracing render target, image resouce.</summary>
-	pvrvk::Image renderImage;
+	pvrvk::Image renderImages[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
 
 	/// <summary>Offscreen ray tracing render target, image view resouce.</summary>
-	pvrvk::ImageView renderImageView;
+	pvrvk::ImageView renderImageViews[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
 
 	/// <summary>This buffer will contain the vertex data for the geometry to be ray traced, in this case, just the three vertices of the triangle.</summary>
 	pvrvk::Buffer vertexBuffer;
@@ -132,7 +132,7 @@ struct DeviceResources
 	pvrvk::DescriptorSet descriptorSet;
 
 	/// <summary>One of the two descriptor sets used in the ray tracing pass.</summary>
-	pvrvk::DescriptorSet descriptorSetRT;
+	pvrvk::DescriptorSet descriptorSetRTs[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
 
 	/// <summary>UIRenderer used to display text.</summary>
 	pvr::ui::UIRenderer uiRenderer;
@@ -268,7 +268,7 @@ public:
 	/// be logged.</returns>
 	virtual pvr::Result renderFrame();
 
-	/// <summary>Builds the image _deviceResources::renderImage where to store the Ray Tracing offscreen pass and its corresponding
+	/// <summary>Builds the image _deviceResources::renderImages where to store the Ray Tracing offscreen pass and its corresponding
 	/// image view _deviceResources::renderImageViewfor.</summary>
 	void buildOffscreenRenderImage();
 
@@ -348,7 +348,7 @@ public:
 
 	/// <summary>Allocate the descriptor set _deviceResources::descriptorSetRT which comprises the acceleration structure needed in the raygen.rgen shader and
 	/// the image where to store the results of the ray tracing offscreen pass.</summary>
-	void buildRayTracingDescriptorSet();
+	void buildRayTracingDescriptorSets();
 
 	/// <summary>Build the pipeline used for the offscreen ray tracing pass, using the ray tracing shaders for ray generation,
 	/// ray hit and ray miss, and the descriptor sets _deviceResources::descSetLayoutRT and _deviceResources::descSetLayout.</summary>
@@ -365,13 +365,14 @@ public:
 	/// Ray Tracing pass are stored (during an offscreen pass) to the corresponding swapchain image for display, and the UI.</summary>
 	void recordCommandBuffer();
 
-	/// <summary>Trace rays, here the ray tracing pipeline _deviceResources::pipelineRT and the two descriptor sets _deviceResources::descriptorSetRT
+	/// <summary>Trace rays, here the ray tracing pipeline _deviceResources::pipelineRT and the two descriptor sets _deviceResources::descriptorSetRTs
 	/// and _deviceResources::descriptorSet are used, together with a set of four structs reproducing the information in the Shader Binding Table
 	/// (the shader groups and its sizes).</summary>
 	/// <param name="cmdBuf">Command buffer to record to the Ray Tracing commands.</param>
-	void raytrace(const pvrvk::CommandBuffer& cmdBuf);
+	/// <param name="imageIndex">Swap chain image index to index into _deviceResources::descriptorSetRTs.</param>
+	void raytrace(const pvrvk::CommandBuffer& cmdBuf, uint32_t imageIndex);
 
-	/// <summary>Copy the results of the Ray Tracing offscreen pass stored in _deviceResources::renderImage to the swapchain image with
+	/// <summary>Copy the results of the Ray Tracing offscreen pass stored in _deviceResources::renderImages to the swapchain image with
 	/// index given by the imageIndex parameter.</summary>
 	/// <param name="cmdBuf">Command buffer to record all the required commands.</param>
 	/// <param name="imageIndex">Swap chain image index to copy to the contents of _deviceResources::renderImage.</param>
@@ -532,10 +533,10 @@ pvr::Result VulkanHelloRayTracing::initView()
 		swapchainImageUsage |= pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT;
 	}
 
-	// The swapchain image will be blitted to, so there are extra imae flags that need to be supported.
+	// The swapchain image will be blitted to, so there are extra image flags that need to be supported.
 	pvr::utils::CreateSwapchainParameters swapchainCreationPreferences = pvr::utils::CreateSwapchainParameters().setAllocator(_deviceResources->vmaAllocator);
 	swapchainCreationPreferences.setColorImageUsageFlags(swapchainImageUsage);
-	swapchainCreationPreferences.colorLoadOp = pvrvk::AttachmentLoadOp::e_LOAD;
+	swapchainCreationPreferences.colorLoadOp = pvrvk::AttachmentLoadOp::e_DONT_CARE;
 
 	// Create the swapchain, on screen framebuffers
 	auto swapchainCreateOutput = pvr::utils::createSwapchainRenderpassFramebuffers(_deviceResources->device, surface, getDisplayAttributes(), swapchainCreationPreferences);
@@ -569,9 +570,6 @@ pvr::Result VulkanHelloRayTracing::initView()
 	_deviceResources->uiRenderer.getDefaultTitle()->setText("Hello Ray Tracing");
 	_deviceResources->uiRenderer.getDefaultTitle()->commitUpdates();
 
-	// Is the screen rotated
-	const bool bRotate = this->isScreenRotated();
-
 	// Get ray tracing properties
 	_rtProperties.sType = static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_PROPERTIES_KHR);
 	_rtProperties.pNext = nullptr;
@@ -598,7 +596,7 @@ pvr::Result VulkanHelloRayTracing::initView()
 	buildDescriptorSetLayout();
 	buildDescriptorSet();
 	buildRayTracingDescriptorSetLayout();
-	buildRayTracingDescriptorSet();
+	buildRayTracingDescriptorSets();
 	buildRayTracingPipeline();
 	buildShaderBindingTable();
 
@@ -701,8 +699,8 @@ std::unique_ptr<pvr::Shell> pvr::newDemo() { return std::make_unique<VulkanHello
 
 void VulkanHelloRayTracing::buildOffscreenRenderImage()
 {
-	// Build a new image _deviceResources::renderImage where to store the Ray Tracing offscreen pass
-	
+	// Build a set of new images _deviceResources::renderImages where to store the Ray Tracing offscreen pass
+
 	pvrvk::ImageCreateInfo imageInfo;
 	imageInfo.setImageType(pvrvk::ImageType::e_2D);
 	imageInfo.setFormat(_renderImageFormat);
@@ -712,20 +710,23 @@ void VulkanHelloRayTracing::buildOffscreenRenderImage()
 		pvrvk::ImageUsageFlags::e_STORAGE_BIT | pvrvk::ImageUsageFlags::e_TRANSFER_SRC_BIT | pvrvk::ImageUsageFlags::e_SAMPLED_BIT | pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT);
 	imageInfo.setSharingMode(pvrvk::SharingMode::e_EXCLUSIVE);
 
-	_deviceResources->renderImage = pvr::utils::createImage(_deviceResources->device, imageInfo, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT,
-		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, nullptr, pvr::utils::vma::AllocationCreateFlags::e_DEDICATED_MEMORY_BIT);
-
 	pvrvk::CommandBuffer uploadCmd = beginCommandBuffer();
-	pvr::utils::setImageLayout(_deviceResources->renderImage, pvrvk::ImageLayout::e_UNDEFINED, pvrvk::ImageLayout::e_GENERAL, uploadCmd);
+	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
+	{
+		_deviceResources->renderImages[i] = pvr::utils::createImage(_deviceResources->device, imageInfo, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT,
+			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, nullptr, pvr::utils::vma::AllocationCreateFlags::e_DEDICATED_MEMORY_BIT);
 
+		pvr::utils::setImageLayout(_deviceResources->renderImages[i], pvrvk::ImageLayout::e_UNDEFINED, pvrvk::ImageLayout::e_GENERAL, uploadCmd);
+
+		// Build an image view _deviceResources::renderImageViewfor the newly built image
+		pvrvk::ImageViewCreateInfo imageViewInfo;
+		imageViewInfo.setFormat(_renderImageFormat);
+		imageViewInfo.setSubresourceRange(pvrvk::ImageSubresourceRange(pvrvk::ImageAspectFlags::e_COLOR_BIT));
+		imageViewInfo.setImage(_deviceResources->renderImages[i]);
+		_deviceResources->renderImageViews[i] = _deviceResources->device->createImageView(imageViewInfo);
+	}
+	
 	endAndSubmitCommandBuffer(uploadCmd);
-
-	// Build an image view _deviceResources::renderImageViewfor the newly built image
-	pvrvk::ImageViewCreateInfo imageViewInfo;
-	imageViewInfo.setFormat(_renderImageFormat);
-	imageViewInfo.setSubresourceRange(pvrvk::ImageSubresourceRange(pvrvk::ImageAspectFlags::e_COLOR_BIT));
-	imageViewInfo.setImage(_deviceResources->renderImage);
-	_deviceResources->renderImageView = _deviceResources->device->createImageView(imageViewInfo);
 }
 
 void VulkanHelloRayTracing::buildVertexBuffer()
@@ -1152,19 +1153,17 @@ void VulkanHelloRayTracing::buildSceneDescriptionBuffer()
 
 void VulkanHelloRayTracing::buildDescriptorPool()
 {
-	// Build the descriptor pool to generate the two descriptor sets used in this sample. The nuber of textures and ojects
-	// influence the descriptor pool info. In this case, just one texture and one object is being used in the scene.
+	// Build the descriptor pool to generate the descriptor sets used in this sample
 
 	uint32_t numTextures = 1;
-	uint32_t numObjects = 1;
 
-	// create descriptor pool
 	pvrvk::DescriptorPoolCreateInfo descriptorPoolCreateInfo = pvrvk::DescriptorPoolCreateInfo();
 	descriptorPoolCreateInfo.addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 1);
-	descriptorPoolCreateInfo.addDescriptorInfo(pvrvk::DescriptorType::e_STORAGE_BUFFER, static_cast<uint16_t>(numObjects * 4 + 2));
+	descriptorPoolCreateInfo.addDescriptorInfo(pvrvk::DescriptorType::e_STORAGE_BUFFER, 5);
+	descriptorPoolCreateInfo.addDescriptorInfo(pvrvk::DescriptorType::e_STORAGE_IMAGE, _deviceResources->swapchain->getSwapchainLength());
 	descriptorPoolCreateInfo.addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, static_cast<uint16_t>(numTextures));
-	descriptorPoolCreateInfo.addDescriptorInfo(pvrvk::DescriptorType::e_ACCELERATION_STRUCTURE_KHR, 1);
-	descriptorPoolCreateInfo.setMaxDescriptorSets(static_cast<uint16_t>(4 + numObjects * 4 + numTextures));
+	descriptorPoolCreateInfo.addDescriptorInfo(pvrvk::DescriptorType::e_ACCELERATION_STRUCTURE_KHR, _deviceResources->swapchain->getSwapchainLength());
+	descriptorPoolCreateInfo.setMaxDescriptorSets(1 + _deviceResources->swapchain->getSwapchainLength());
 
 	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(descriptorPoolCreateInfo);
 }
@@ -1186,9 +1185,9 @@ void VulkanHelloRayTracing::buildDescriptorSetLayout()
 
 	pvrvk::DescriptorSetLayoutCreateInfo descSetInfo;
 	pvrvk::ShaderStageFlags shaderStageFlags = pvrvk::ShaderStageFlags::e_VERTEX_BIT | pvrvk::ShaderStageFlags::e_FRAGMENT_BIT | pvrvk::ShaderStageFlags::e_CLOSEST_HIT_BIT_KHR;
-	descSetInfo.setBinding(0, pvrvk::DescriptorType::e_UNIFORM_BUFFER, 1u, pvrvk::ShaderStageFlags::e_VERTEX_BIT | pvrvk::ShaderStageFlags::e_RAYGEN_BIT_KHR);
+	descSetInfo.setBinding(0, pvrvk::DescriptorType::e_UNIFORM_BUFFER, 1, pvrvk::ShaderStageFlags::e_VERTEX_BIT | pvrvk::ShaderStageFlags::e_RAYGEN_BIT_KHR);
 	descSetInfo.setBinding(1, pvrvk::DescriptorType::e_STORAGE_BUFFER, 1, shaderStageFlags);
-	descSetInfo.setBinding(2, pvrvk::DescriptorType::e_STORAGE_BUFFER, 1u, shaderStageFlags);
+	descSetInfo.setBinding(2, pvrvk::DescriptorType::e_STORAGE_BUFFER, 1, shaderStageFlags);
 	descSetInfo.setBinding(3, pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 1, pvrvk::ShaderStageFlags::e_FRAGMENT_BIT | pvrvk::ShaderStageFlags::e_CLOSEST_HIT_BIT_KHR);
 	descSetInfo.setBinding(4, pvrvk::DescriptorType::e_STORAGE_BUFFER, 1, pvrvk::ShaderStageFlags::e_FRAGMENT_BIT | pvrvk::ShaderStageFlags::e_CLOSEST_HIT_BIT_KHR);
 	descSetInfo.setBinding(5, pvrvk::DescriptorType::e_STORAGE_BUFFER, 1, pvrvk::ShaderStageFlags::e_CLOSEST_HIT_BIT_KHR);
@@ -1253,24 +1252,25 @@ void VulkanHelloRayTracing::buildRayTracingDescriptorSetLayout()
 	_deviceResources->descSetLayoutRT = _deviceResources->device->createDescriptorSetLayout(descriptorSetLayout);
 }
 
-void VulkanHelloRayTracing::buildRayTracingDescriptorSet()
+void VulkanHelloRayTracing::buildRayTracingDescriptorSets()
 {
-	// Allocate the descriptor set _deviceResources::descriptorSetRT which comprises the acceleration structure needed in the raygen.rgen shader and
-	// the image where to store the results of the ray tracing offscreen pass
-	_deviceResources->descriptorSetRT = _deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->descSetLayoutRT);
+	std::vector<pvrvk::WriteDescriptorSet> writes;
+	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
+	{
+		// Allocate the descriptor set _deviceResources::descriptorSetRT which comprises the acceleration structure needed in the raygen.rgen shader and
+		// the image where to store the results of the ray tracing offscreen pass
+		_deviceResources->descriptorSetRTs[i] = _deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->descSetLayoutRT);
 
-	// The descriptors used in this descriptor set are described below:
-	// Aceleration structure (binding = 0)
-	// Image to store offscreen Ray Tracing pass (binding = 1)
-	pvrvk::WriteDescriptorSet topLevelAccelerationStructure = pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_ACCELERATION_STRUCTURE_KHR, _deviceResources->descriptorSetRT, 0);
-	pvrvk::WriteDescriptorSet renderImage = pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_STORAGE_IMAGE, _deviceResources->descriptorSetRT, 1);
+		// The descriptors used in this descriptor set are described below:
+		// Aceleration structure (binding = 0)
+		// Image to store offscreen Ray Tracing pass (binding = 1)
+		writes.emplace_back(pvrvk::DescriptorType::e_ACCELERATION_STRUCTURE_KHR, _deviceResources->descriptorSetRTs[i], 0);
+		writes.back().setAccelerationStructureInfo(0, _deviceResources->_tlas);
 
-	topLevelAccelerationStructure.setAccelerationStructureInfo(0, _deviceResources->_tlas);
-	renderImage.setImageInfo(0, pvrvk::DescriptorImageInfo(_deviceResources->renderImageView, pvrvk::ImageLayout::e_GENERAL));
-
-	// Build the array of write descriptor sets to update _deviceResources::descriptorSetRT
-	std::vector<pvrvk::WriteDescriptorSet> writes = { topLevelAccelerationStructure, renderImage };
-
+		writes.emplace_back(pvrvk::DescriptorType::e_STORAGE_IMAGE, _deviceResources->descriptorSetRTs[i], 1);
+		writes.back().setImageInfo(0, pvrvk::DescriptorImageInfo(_deviceResources->renderImageViews[i], pvrvk::ImageLayout::e_GENERAL));
+	}
+	
 	// Write the information
 	_deviceResources->device->updateDescriptorSets(writes.data(), static_cast<uint32_t>(writes.size()), nullptr, 0);
 }
@@ -1381,7 +1381,7 @@ void VulkanHelloRayTracing::buildShaderBindingTable()
 	// _rtProperties.shaderGroupHandleSize is the size of a shader program identifier
 	// shaderGroupSize is the size of alligned shader group
 	// Following the pipeline where the ray generation, ray miss and ray hit where considered, we map that order
-	// (which can be cnahged as long as is respected) to the shader binding table.
+	// (which can be changed as long as is respected) to the shader binding table.
 	for (uint32_t i = 0; i < _shaderGroupCount; i++)
 	{
 		memcpy(castedMappedData, shaderHandleStorage.data() + i * _rtProperties.shaderGroupHandleSize, _rtProperties.shaderGroupHandleSize);
@@ -1404,7 +1404,7 @@ void VulkanHelloRayTracing::recordCommandBuffer()
 		_deviceResources->cmdBuffers[i]->begin();
 
 		// This is the actual method that performs the ray tracing
-		raytrace(_deviceResources->cmdBuffers[i]);
+		raytrace(_deviceResources->cmdBuffers[i], i);
 
 		// Ray Tracing results are stored in an offscreen texture, copy the results to the corresponding swapchain image
 		recordRenderImageCopy(_deviceResources->cmdBuffers[i], i);
@@ -1419,13 +1419,13 @@ void VulkanHelloRayTracing::recordCommandBuffer()
 	}
 }
 
-void VulkanHelloRayTracing::raytrace(const pvrvk::CommandBuffer& cmdBuf)
+void VulkanHelloRayTracing::raytrace(const pvrvk::CommandBuffer& cmdBuf, uint32_t imageIndex)
 {
 	// Last step of the Ray Tracing setup, here the ray tracing pipeline is bound together with the two descriptor sets
 	// _deviceResources::descriptorSetRT and _deviceResources::descriptorSet.
 	cmdBuf->bindPipeline(_deviceResources->pipelineRT);
 
-	pvrvk::DescriptorSet descSets[2] = { _deviceResources->descriptorSetRT, _deviceResources->descriptorSet };
+	pvrvk::DescriptorSet descSets[2] = { _deviceResources->descriptorSetRTs[imageIndex], _deviceResources->descriptorSet };
 	cmdBuf->bindDescriptorSets(pvrvk::PipelineBindPoint::e_RAY_TRACING_KHR, _deviceResources->pipelineLayoutRT, 0, descSets, ARRAY_SIZE(descSets), 0, 0);
 
 	// The way to compute the proper shader group aligned size is alignedSize = (size + (alignment - 1)) & (~alignment - 1), rounding up to guarantee
@@ -1462,7 +1462,7 @@ void VulkanHelloRayTracing::recordRenderImageCopy(pvrvk::CommandBuffer& cmdBuf, 
 	pvrvk::ImageMemoryBarrier renderImageBarrier;
 	renderImageBarrier.setDstAccessMask(pvrvk::AccessFlags::e_TRANSFER_WRITE_BIT);
 	renderImageBarrier.setNewLayout(pvrvk::ImageLayout::e_TRANSFER_SRC_OPTIMAL);
-	renderImageBarrier.setImage(_deviceResources->renderImage);
+	renderImageBarrier.setImage(_deviceResources->renderImages[imageIndex]);
 	renderImageBarrier.setSubresourceRange(pvrvk::ImageSubresourceRange(pvrvk::ImageAspectFlags::e_COLOR_BIT));
 
 	// Transition swapchain image from e_PRESENT_SRC_KHR to e_TRANSFER_DST_OPTIMAL to receive the offscreen ray
@@ -1479,16 +1479,16 @@ void VulkanHelloRayTracing::recordRenderImageCopy(pvrvk::CommandBuffer& cmdBuf, 
 	barrierSet.addBarrier(swapchainBarrier);
 	cmdBuf->pipelineBarrier(pvrvk::PipelineStageFlags::e_ALL_COMMANDS_BIT, pvrvk::PipelineStageFlags::e_ALL_COMMANDS_BIT, barrierSet);
 
-	// Copy from _deviceResources::renderImage to the corresponding swapchain image
+	// Copy from _deviceResources::renderImages[imageIndex] to the corresponding swapchain image
 	pvrvk::ImageSubresourceLayers subresourceLayers(pvrvk::ImageAspectFlags::e_COLOR_BIT, 0, 0, 1);
 	pvrvk::Offset3D offsets[2] = { pvrvk::Offset3D(0, 0, 0), pvrvk::Offset3D(getWidth(), getHeight(), 1) };
 	pvrvk::ImageBlit imageRegion(subresourceLayers, offsets, subresourceLayers, offsets);
-	cmdBuf->blitImage(_deviceResources->renderImage, _deviceResources->swapchain->getImage(imageIndex), &imageRegion, 1, pvrvk::Filter::e_LINEAR,
+	cmdBuf->blitImage(_deviceResources->renderImages[imageIndex], _deviceResources->swapchain->getImage(imageIndex), &imageRegion, 1, pvrvk::Filter::e_LINEAR,
 		pvrvk::ImageLayout::e_TRANSFER_SRC_OPTIMAL, pvrvk::ImageLayout::e_TRANSFER_DST_OPTIMAL);
 
 	barrierSet.clearAllBarriers();
 
-	// Transition back _deviceResources::renderImage from e_TRANSFER_SRC_OPTIMAL to e_GENERAL
+	// Transition back _deviceResources::renderImages[imageIndex] from e_TRANSFER_SRC_OPTIMAL to e_GENERAL
 	renderImageBarrier.setDstAccessMask(pvrvk::AccessFlags::e_SHADER_WRITE_BIT);
 	renderImageBarrier.setNewLayout(pvrvk::ImageLayout::e_GENERAL);
 

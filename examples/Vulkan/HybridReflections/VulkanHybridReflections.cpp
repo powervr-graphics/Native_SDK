@@ -1374,11 +1374,13 @@ void VulkanHybridReflections::createShaderBindingTable()
 	uint32_t baseAlignment = _rtProperties.shaderGroupBaseAlignment; // Size of shader alignment
 
 	// Fetch all the shader handles used in the pipeline, so that they can be written in the SBT
-	uint32_t sbtSize = _shaderGroupCount * baseAlignment;
+	uint32_t dataSize = _shaderGroupCount * groupHandleSize;
 
-	std::vector<uint8_t> shaderHandleStorage(sbtSize);
+	std::vector<uint8_t> shaderHandleStorage(dataSize);
 	_deviceResources->device->getVkBindings().vkGetRayTracingShaderGroupHandlesKHR(
-		_deviceResources->device->getVkHandle(), _deviceResources->raytraceReflectionPipeline->getVkHandle(), 0, _shaderGroupCount, sbtSize, shaderHandleStorage.data());
+		_deviceResources->device->getVkHandle(), _deviceResources->raytraceReflectionPipeline->getVkHandle(), 0, _shaderGroupCount, dataSize, shaderHandleStorage.data());
+
+	uint32_t sbtSize = _shaderGroupCount * baseAlignment;
 
 	// Create a buffer to store Shader Binding Table in
 	_deviceResources->raytraceReflectionShaderBindingTable = pvr::utils::createBuffer(_deviceResources->device,
@@ -1430,8 +1432,11 @@ void VulkanHybridReflections::createFramebufferAndRenderPass()
 			pvrvk::ImageViewCreateInfo(image, pvrvk::ImageViewType::e_2D, image->getFormat(), pvrvk::ImageSubresourceRange(pvrvk::ImageAspectFlags::e_COLOR_BIT)));
 	}
 
+	const std::vector<pvrvk::Format> preferredDepthFormats = { pvrvk::Format::e_D24_UNORM_S8_UINT, pvrvk::Format::e_D32_SFLOAT_S8_UINT, pvrvk::Format::e_D16_UNORM_S8_UINT };
+	const pvrvk::Format depthStencilFormat = pvr::utils::getSupportedDepthStencilFormat(_deviceResources->device, preferredDepthFormats);
+
 	pvrvk::Image image = pvr::utils::createImage(_deviceResources->device,
-		pvrvk::ImageCreateInfo(pvrvk::ImageType::e_2D, pvrvk::Format::e_D24_UNORM_S8_UINT, dimension, pvrvk::ImageUsageFlags::e_DEPTH_STENCIL_ATTACHMENT_BIT),
+		pvrvk::ImageCreateInfo(pvrvk::ImageType::e_2D, depthStencilFormat, dimension, pvrvk::ImageUsageFlags::e_DEPTH_STENCIL_ATTACHMENT_BIT),
 		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, _deviceResources->vmaAllocator,
 		pvr::utils::vma::AllocationCreateFlags::e_DEDICATED_MEMORY_BIT);
 
@@ -1460,8 +1465,8 @@ void VulkanHybridReflections::createFramebufferAndRenderPass()
 		pvrvk::AttachmentDescription gbufferAttachment2 =
 			pvrvk::AttachmentDescription::createColorDescription(renderpassStorageFormats[FramebufferGBufferAttachments::WorldPosition_Metallic], pvrvk::ImageLayout::e_UNDEFINED,
 				pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, pvrvk::AttachmentLoadOp::e_CLEAR, pvrvk::AttachmentStoreOp::e_STORE, pvrvk::SampleCountFlags::e_1_BIT);
-		pvrvk::AttachmentDescription gbufferAttachmentDepth = pvrvk::AttachmentDescription::createDepthStencilDescription(pvrvk::Format::e_D24_UNORM_S8_UINT,
-			pvrvk::ImageLayout::e_UNDEFINED, pvrvk::ImageLayout::e_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, pvrvk::AttachmentLoadOp::e_CLEAR, pvrvk::AttachmentStoreOp::e_DONT_CARE);
+		pvrvk::AttachmentDescription gbufferAttachmentDepth = pvrvk::AttachmentDescription::createDepthStencilDescription(depthStencilFormat, pvrvk::ImageLayout::e_UNDEFINED,
+			pvrvk::ImageLayout::e_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, pvrvk::AttachmentLoadOp::e_CLEAR, pvrvk::AttachmentStoreOp::e_DONT_CARE);
 
 		pvrvk::AttachmentReference gbufferAttachmentRef0 = pvrvk::AttachmentReference(0, pvrvk::ImageLayout::e_COLOR_ATTACHMENT_OPTIMAL);
 		pvrvk::AttachmentReference gbufferAttachmentRef1 = pvrvk::AttachmentReference(1, pvrvk::ImageLayout::e_COLOR_ATTACHMENT_OPTIMAL);
@@ -1774,9 +1779,9 @@ void VulkanHybridReflections::createLightBuffer()
 void VulkanHybridReflections::createMeshTransformBuffer()
 {
 	pvr::utils::StructuredMemoryDescription desc;
-	desc.addElement(BufferEntryNames::PerMesh::WorldMatrix, pvr::GpuDatatypes::mat4x4);
+	desc.addElement(BufferEntryNames::PerMesh::WorldMatrix, pvr::GpuDatatypes::mat4x4, _meshTransforms.size());
 
-	_deviceResources->perMeshBufferView.initDynamic(desc, _deviceResources->swapchain->getSwapchainLength() * _meshTransforms.size(), pvr::BufferUsageFlags::UniformBuffer,
+	_deviceResources->perMeshBufferView.initDynamic(desc, _deviceResources->swapchain->getSwapchainLength(), pvr::BufferUsageFlags::UniformBuffer,
 		static_cast<uint32_t>(_deviceResources->device->getPhysicalDevice()->getProperties().getLimits().getMinUniformBufferOffsetAlignment()));
 
 	_deviceResources->perMeshBuffer = pvr::utils::createBuffer(_deviceResources->device,
@@ -1819,23 +1824,16 @@ void VulkanHybridReflections::uploadDynamicSceneData()
 	}
 
 	// upload per mesh data
-	uint32_t meshDynamicSliceIdx = _deviceResources->swapchain->getSwapchainIndex() * _meshTransforms.size();
-	uint8_t* memory =
-		static_cast<uint8_t*>(_deviceResources->perMeshBuffer->getDeviceMemory()->getMappedData()) + _deviceResources->perMeshBufferView.getDynamicSliceOffset(meshDynamicSliceIdx);
-
-	_deviceResources->perMeshBufferView.pointToMappedMemory(memory, meshDynamicSliceIdx);
-
 	for (uint32_t i = 0; i < _meshTransforms.size(); i++)
 	{
-		uint32_t dynamicSlice = i + meshDynamicSliceIdx;
-		_deviceResources->perMeshBufferView.getElementByName(BufferEntryNames::PerMesh::WorldMatrix, 0, dynamicSlice).setValue(_meshTransforms[i]);
+		_deviceResources->perMeshBufferView.getElementByName(BufferEntryNames::PerMesh::WorldMatrix, i, dynamicSliceIdx).setValue(_meshTransforms[i]);
 	}
 
 	// if the memory property flags used by the buffers' device memory do not contain e_HOST_COHERENT_BIT then we must flush the memory
 	if (static_cast<uint32_t>(_deviceResources->perMeshBuffer->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
 	{
 		_deviceResources->perMeshBuffer->getDeviceMemory()->flushRange(
-			_deviceResources->perMeshBufferView.getDynamicSliceOffset(meshDynamicSliceIdx), _deviceResources->perMeshBufferView.getDynamicSliceSize() * _meshTransforms.size());
+			_deviceResources->perMeshBufferView.getDynamicSliceOffset(dynamicSliceIdx), _deviceResources->perMeshBufferView.getDynamicSliceSize());
 	}
 }
 
@@ -1967,7 +1965,7 @@ void VulkanHybridReflections::recordCommandBufferRenderGBuffer(pvrvk::SecondaryC
 	uint32_t offsets[3] = {};
 	offsets[0] = _deviceResources->globalBufferView.getDynamicSliceOffset(swapchainIndex);
 	offsets[1] = _deviceResources->lightDataBufferView.getDynamicSliceOffset(swapchainIndex);
-	offsets[2] = _deviceResources->perMeshBufferView.getDynamicSliceOffset(swapchainIndex * _meshTransforms.size());
+	offsets[2] = _deviceResources->perMeshBufferView.getDynamicSliceOffset(swapchainIndex);
 
 	cmdBuffers->bindDescriptorSet(pvrvk::PipelineBindPoint::e_GRAPHICS, _deviceResources->gbufferPipelineLayout, 0u, _deviceResources->commonDescriptorSet, offsets, 3);
 
@@ -2002,7 +2000,7 @@ void VulkanHybridReflections::recordCommandBufferForwardShading(pvrvk::Secondary
 	uint32_t offsets[3] = {};
 	offsets[0] = _deviceResources->globalBufferView.getDynamicSliceOffset(swapchainIndex);
 	offsets[1] = _deviceResources->lightDataBufferView.getDynamicSliceOffset(swapchainIndex);
-	offsets[2] = _deviceResources->perMeshBufferView.getDynamicSliceOffset(swapchainIndex * _meshTransforms.size());
+	offsets[2] = _deviceResources->perMeshBufferView.getDynamicSliceOffset(swapchainIndex);
 
 	cmdBuffers->bindDescriptorSets(pvrvk::PipelineBindPoint::e_GRAPHICS, _deviceResources->forwardShadingPipelineLayout, 0u, dsArray, 2, offsets, 3);
 
@@ -2039,7 +2037,7 @@ void VulkanHybridReflections::recordCommandBufferSkybox(pvrvk::SecondaryCommandB
 	uint32_t offsets[3] = {};
 	offsets[0] = _deviceResources->globalBufferView.getDynamicSliceOffset(swapchainIndex);
 	offsets[1] = _deviceResources->lightDataBufferView.getDynamicSliceOffset(swapchainIndex);
-	offsets[2] = _deviceResources->perMeshBufferView.getDynamicSliceOffset(swapchainIndex * _meshTransforms.size());
+	offsets[2] = _deviceResources->perMeshBufferView.getDynamicSliceOffset(swapchainIndex);
 
 	cmdBuffers->bindDescriptorSets(pvrvk::PipelineBindPoint::e_GRAPHICS, _deviceResources->skyboxPipelineLayout, 0u, dsArray, 2, offsets, 3);
 
@@ -2080,7 +2078,7 @@ void VulkanHybridReflections::recordCommandBufferRayTraceReflections(pvrvk::Seco
 	uint32_t offsets[3] = {};
 	offsets[0] = _deviceResources->globalBufferView.getDynamicSliceOffset(swapchainIndex);
 	offsets[1] = _deviceResources->lightDataBufferView.getDynamicSliceOffset(swapchainIndex);
-	offsets[2] = _deviceResources->perMeshBufferView.getDynamicSliceOffset(swapchainIndex * _meshTransforms.size());
+	offsets[2] = _deviceResources->perMeshBufferView.getDynamicSliceOffset(swapchainIndex);
 
 	cmdBuffers->bindDescriptorSets(pvrvk::PipelineBindPoint::e_RAY_TRACING_KHR, _deviceResources->raytraceReflectionsPipelineLayout, 0, arrayDS, 4, offsets, 3);
 
@@ -2129,7 +2127,7 @@ void VulkanHybridReflections::recordCommandBufferDeferredShading(pvrvk::Secondar
 	uint32_t offsets[3] = {};
 	offsets[0] = _deviceResources->globalBufferView.getDynamicSliceOffset(swapchainIndex);
 	offsets[1] = _deviceResources->lightDataBufferView.getDynamicSliceOffset(swapchainIndex);
-	offsets[2] = _deviceResources->perMeshBufferView.getDynamicSliceOffset(swapchainIndex * _meshTransforms.size());
+	offsets[2] = _deviceResources->perMeshBufferView.getDynamicSliceOffset(swapchainIndex);
 
 	cmdBuffers->bindDescriptorSets(pvrvk::PipelineBindPoint::e_GRAPHICS, _deviceResources->deferredShadingPipelineLayout, 0u, dsArray, 3, offsets, 3);
 

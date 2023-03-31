@@ -112,9 +112,28 @@ elseif(UNIX)
 			endif()
 			
 			find_library(lib-ffi ffi HINTS ${PKG_WAYLAND_LIBRARY_DIRS})
+
+			find_program(WAYLAND_SCANNER wayland-scanner REQUIRED)
+			# 1.15 adds support for xdg-decoration
+			pkg_check_modules(WAYLAND_PROTOCOLS REQUIRED wayland-protocols>=1.15)
+			pkg_get_variable(WAYLAND_PROTOCOLS_BASE wayland-protocols pkgdatadir)
+
+			add_custom_command(OUTPUT xdg-shell-client-protocol.h
+				COMMAND ${WAYLAND_SCANNER} client-header ${WAYLAND_PROTOCOLS_BASE}/stable/xdg-shell/xdg-shell.xml xdg-shell-client-protocol.h
+				DEPENDS ${WAYLAND_PROTOCOLS_BASE}/stable/xdg-shell/xdg-shell.xml)
+
+			add_custom_command(OUTPUT xdg-shell-protocol.c
+            	COMMAND ${WAYLAND_SCANNER} private-code ${WAYLAND_PROTOCOLS_BASE}/stable/xdg-shell/xdg-shell.xml xdg-shell-protocol.c
+            	DEPENDS ${WAYLAND_PROTOCOLS_BASE}/stable/xdg-shell/xdg-shell.xml)
+
+			list(APPEND PVRShell_HEADERS
+				xdg-shell-client-protocol.h)
+
+			list(APPEND PVRShell_SRC
+				xdg-shell-protocol.c)
 			
 			list(APPEND PVRShell_PRIVATE_LINK_LIBS ${WAYLAND_CLIENT_LIBRARIES} ${lib-ffi})
-			list(APPEND PVRShell_PRIVATE_INCLUDE_DIRECTORIES ${WAYLAND_CLIENT_INCLUDE_DIR})
+			list(APPEND PVRShell_PRIVATE_INCLUDE_DIRECTORIES ${WAYLAND_CLIENT_INCLUDE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 		# The user has requested no windowing system(direct-to-framebuffer)
 		elseif(${PVR_WINDOW_SYSTEM} STREQUAL NullWS) 
 		else()

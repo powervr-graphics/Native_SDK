@@ -268,11 +268,7 @@ public:
 
 	/// <summary>Return true if this memory block is mappable by the host (const).</summary>
 	/// <returns>bool</returns>
-	bool isMappable() const
-	{
-		return (static_cast<uint32_t>(_flags & pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT) != 0) ||
-			(static_cast<uint32_t>(_flags & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) != 0);
-	}
+	bool isMappable() const { return static_cast<uint32_t>(_flags & pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT) != 0; }
 
 	/// <summary>Return the memory flags(const)</summary>
 	/// <returns>pvrvk::MemoryPropertyFlags</returns>

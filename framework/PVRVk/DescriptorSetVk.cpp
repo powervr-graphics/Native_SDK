@@ -33,13 +33,13 @@ DescriptorPool_::DescriptorPool_(make_shared_enabler, const DeviceWeakPtr& devic
 	descPoolInfo.flags = static_cast<VkDescriptorPoolCreateFlags>(DescriptorPoolCreateFlags::e_FREE_DESCRIPTOR_SET_BIT);
 	VkDescriptorPoolSize poolSizes[descriptorTypeSize];
 	uint32_t poolIndex = 0;
-	for (uint32_t i = 0; i < descriptorTypeSize; ++i)
+	for (uint32_t i = 0; i < _createInfo.getNumPoolSizes(); ++i)
 	{
-		uint32_t count = _createInfo.getNumDescriptorTypes(DescriptorType(i));
-		if (count)
+		const auto& poolSize = _createInfo.getPoolSize(i);
+		if (poolSize.getDescriptorCount() > 0)
 		{
-			poolSizes[poolIndex].type = static_cast<VkDescriptorType>(i);
-			poolSizes[poolIndex].descriptorCount = count;
+			poolSizes[poolIndex].type = static_cast<VkDescriptorType>(poolSize.getType());
+			poolSizes[poolIndex].descriptorCount = poolSize.getDescriptorCount();
 			++poolIndex;
 		}
 	} // next type

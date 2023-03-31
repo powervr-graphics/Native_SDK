@@ -486,7 +486,7 @@ QueryPool Device_::createQueryPool(const QueryPoolCreateInfo& createInfo)
 	return QueryPool_::constructShared(device, createInfo);
 }
 
-void Device_::waitIdle() { getVkBindings().vkDeviceWaitIdle(getVkHandle()); }
+void Device_::waitIdle() { vkThrowIfFailed(getVkBindings().vkDeviceWaitIdle(getVkHandle()), "Failed to wait idle"); }
 
 // CAUTION - We will be abusing queueFamilyProperties[...].numQueues as a counter for queues remaining.
 struct QueueFamilyCreateInfo

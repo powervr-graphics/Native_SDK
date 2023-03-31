@@ -1024,9 +1024,11 @@ void VulkanHybridSoftShadows::createFramebufferAndRenderPass()
 		}
 	}
 
+	const std::vector<pvrvk::Format> preferredDepthFormats = { pvrvk::Format::e_D24_UNORM_S8_UINT, pvrvk::Format::e_D32_SFLOAT_S8_UINT, pvrvk::Format::e_D16_UNORM_S8_UINT };
+	const pvrvk::Format depthStencilFormat = pvr::utils::getSupportedDepthStencilFormat(_deviceResources->device, preferredDepthFormats);
+
 	pvrvk::Image depthImage = pvr::utils::createImage(_deviceResources->device,
-		pvrvk::ImageCreateInfo(
-			pvrvk::ImageType::e_2D, pvrvk::Format::e_D24_UNORM_S8_UINT, dimension, pvrvk::ImageUsageFlags::e_DEPTH_STENCIL_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_SAMPLED_BIT),
+		pvrvk::ImageCreateInfo(pvrvk::ImageType::e_2D, depthStencilFormat, dimension, pvrvk::ImageUsageFlags::e_DEPTH_STENCIL_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_SAMPLED_BIT),
 		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, _deviceResources->vmaAllocator,
 		pvr::utils::vma::AllocationCreateFlags::e_DEDICATED_MEMORY_BIT);
 
@@ -1042,8 +1044,8 @@ void VulkanHybridSoftShadows::createFramebufferAndRenderPass()
 	pvrvk::AttachmentDescription gbufferAttachment1 =
 		pvrvk::AttachmentDescription::createColorDescription(renderpassStorageFormats[FramebufferGBufferAttachments::Normal_Visibility_HitDistance], pvrvk::ImageLayout::e_UNDEFINED,
 			pvrvk::ImageLayout::e_TRANSFER_SRC_OPTIMAL, pvrvk::AttachmentLoadOp::e_CLEAR, pvrvk::AttachmentStoreOp::e_STORE, pvrvk::SampleCountFlags::e_1_BIT);
-	pvrvk::AttachmentDescription gbufferAttachmentDepth = pvrvk::AttachmentDescription::createDepthStencilDescription(pvrvk::Format::e_D24_UNORM_S8_UINT,
-		pvrvk::ImageLayout::e_UNDEFINED, pvrvk::ImageLayout::e_DEPTH_STENCIL_READ_ONLY_OPTIMAL, pvrvk::AttachmentLoadOp::e_CLEAR, pvrvk::AttachmentStoreOp::e_STORE);
+	pvrvk::AttachmentDescription gbufferAttachmentDepth = pvrvk::AttachmentDescription::createDepthStencilDescription(depthStencilFormat, pvrvk::ImageLayout::e_UNDEFINED,
+		pvrvk::ImageLayout::e_DEPTH_STENCIL_READ_ONLY_OPTIMAL, pvrvk::AttachmentLoadOp::e_CLEAR, pvrvk::AttachmentStoreOp::e_STORE);
 
 	pvrvk::AttachmentReference gbufferAttachmentRef0 = pvrvk::AttachmentReference(0, pvrvk::ImageLayout::e_COLOR_ATTACHMENT_OPTIMAL);
 	pvrvk::AttachmentReference gbufferAttachmentRef1 = pvrvk::AttachmentReference(1, pvrvk::ImageLayout::e_COLOR_ATTACHMENT_OPTIMAL);
@@ -1349,9 +1351,9 @@ void VulkanHybridSoftShadows::createCameraBuffer()
 void VulkanHybridSoftShadows::createMeshTransformBuffer()
 {
 	pvr::utils::StructuredMemoryDescription desc;
-	desc.addElement(BufferEntryNames::PerMesh::WorldMatrix, pvr::GpuDatatypes::mat4x4);
+	desc.addElement(BufferEntryNames::PerMesh::WorldMatrix, pvr::GpuDatatypes::mat4x4, _meshTransforms.size());
 
-	_deviceResources->perMeshBufferView.initDynamic(desc, _deviceResources->swapchain->getSwapchainLength() * _meshTransforms.size(), pvr::BufferUsageFlags::UniformBuffer,
+	_deviceResources->perMeshBufferView.initDynamic(desc, _deviceResources->swapchain->getSwapchainLength(), pvr::BufferUsageFlags::UniformBuffer,
 		static_cast<uint32_t>(_deviceResources->device->getPhysicalDevice()->getProperties().getLimits().getMinUniformBufferOffsetAlignment()));
 
 	_deviceResources->perMeshBuffer = pvr::utils::createBuffer(_deviceResources->device,
@@ -1466,23 +1468,16 @@ void VulkanHybridSoftShadows::uploadDynamicSceneData()
 	}
 
 	// upload per mesh data
-	uint32_t meshDynamicSliceIdx = _deviceResources->swapchain->getSwapchainIndex() * _meshTransforms.size();
-	uint8_t* memory =
-		static_cast<uint8_t*>(_deviceResources->perMeshBuffer->getDeviceMemory()->getMappedData()) + _deviceResources->perMeshBufferView.getDynamicSliceOffset(meshDynamicSliceIdx);
-
-	_deviceResources->perMeshBufferView.pointToMappedMemory(memory, meshDynamicSliceIdx);
-
 	for (uint32_t i = 0; i < _meshTransforms.size(); i++)
 	{
-		uint32_t dynamicSlice = i + meshDynamicSliceIdx;
-		_deviceResources->perMeshBufferView.getElementByName(BufferEntryNames::PerMesh::WorldMatrix, 0, dynamicSlice).setValue(_meshTransforms[i]);
+		_deviceResources->perMeshBufferView.getElementByName(BufferEntryNames::PerMesh::WorldMatrix, i, dynamicSliceIdx).setValue(_meshTransforms[i]);
 	}
 
 	// if the memory property flags used by the buffers' device memory do not contain e_HOST_COHERENT_BIT then we must flush the memory
 	if (static_cast<uint32_t>(_deviceResources->perMeshBuffer->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
 	{
 		_deviceResources->perMeshBuffer->getDeviceMemory()->flushRange(
-			_deviceResources->perMeshBufferView.getDynamicSliceOffset(meshDynamicSliceIdx), _deviceResources->perMeshBufferView.getDynamicSliceSize() * _meshTransforms.size());
+			_deviceResources->perMeshBufferView.getDynamicSliceOffset(dynamicSliceIdx), _deviceResources->perMeshBufferView.getDynamicSliceSize());
 	}
 }
 
@@ -1588,7 +1583,7 @@ void VulkanHybridSoftShadows::recordCommandBufferRenderGBuffer(pvrvk::SecondaryC
 	uint32_t offsets[3] = {};
 	offsets[0] = _deviceResources->cameraBufferView.getDynamicSliceOffset(swapchainIndex);
 	offsets[1] = _deviceResources->perLightBufferView.getDynamicSliceOffset(swapchainIndex);
-	offsets[2] = _deviceResources->perMeshBufferView.getDynamicSliceOffset(swapchainIndex * _meshTransforms.size());
+	offsets[2] = _deviceResources->perMeshBufferView.getDynamicSliceOffset(swapchainIndex);
 
 	pvrvk::DescriptorSet arrayDS[] = { _deviceResources->commonDescriptorSet };
 
@@ -1621,7 +1616,7 @@ void VulkanHybridSoftShadows::recordCommandBufferDeferredShading(pvrvk::Secondar
 	uint32_t offsets[3] = {};
 	offsets[0] = _deviceResources->cameraBufferView.getDynamicSliceOffset(swapchainIndex);
 	offsets[1] = _deviceResources->perLightBufferView.getDynamicSliceOffset(swapchainIndex);
-	offsets[2] = _deviceResources->perMeshBufferView.getDynamicSliceOffset(swapchainIndex * _meshTransforms.size());
+	offsets[2] = _deviceResources->perMeshBufferView.getDynamicSliceOffset(swapchainIndex);
 
 	pvrvk::DescriptorSet arrayDS[] = { _deviceResources->commonDescriptorSet, _deviceResources->gbufferDescriptorSet };
 

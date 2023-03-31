@@ -1503,7 +1503,7 @@ bool isSupportedDepthStencilFormat(const pvrvk::Device& device, pvrvk::Format fo
 	return (prop.getOptimalTilingFeatures() & pvrvk::FormatFeatureFlags::e_DEPTH_STENCIL_ATTACHMENT_BIT) != 0;
 };
 
-pvrvk::Format getSupportedDepthStencilFormat(const pvrvk::Device& device, pvr::DisplayAttributes& displayAttributes, std::vector<pvrvk::Format> preferredDepthFormats)
+pvrvk::Format getSupportedDepthStencilFormat(const pvrvk::Device& device, std::vector<pvrvk::Format> preferredDepthFormats)
 {
 	if (preferredDepthFormats.empty())
 	{
@@ -1517,6 +1517,17 @@ pvrvk::Format getSupportedDepthStencilFormat(const pvrvk::Device& device, pvr::D
 		};
 	}
 
+	pvrvk::Format supportedDepthStencilFormat = pvrvk::Format::e_UNDEFINED;
+
+	auto it =
+		std::find_if(preferredDepthFormats.begin(), preferredDepthFormats.end(), [&device](pvrvk::Format format) -> bool { return isSupportedDepthStencilFormat(device, format); });
+	if (it != preferredDepthFormats.end()) { supportedDepthStencilFormat = *it; }
+
+	return supportedDepthStencilFormat;
+}
+
+pvrvk::Format getSupportedDepthStencilFormat(const pvrvk::Device& device, pvr::DisplayAttributes& displayAttributes, std::vector<pvrvk::Format> preferredDepthFormats)
+{
 	pvrvk::Format depthStencilFormatRequested = getDepthStencilFormat(displayAttributes);
 	pvrvk::Format supportedDepthStencilFormat = pvrvk::Format::e_UNDEFINED;
 
@@ -1524,10 +1535,7 @@ pvrvk::Format getSupportedDepthStencilFormat(const pvrvk::Device& device, pvr::D
 	if (isSupportedDepthStencilFormat(device, depthStencilFormatRequested)) { supportedDepthStencilFormat = depthStencilFormatRequested; }
 	else
 	{
-		auto it = std::find_if(
-			preferredDepthFormats.begin(), preferredDepthFormats.end(), [&device](pvrvk::Format format) -> bool { return isSupportedDepthStencilFormat(device, format); });
-		if (it != preferredDepthFormats.end()) { supportedDepthStencilFormat = *it; }
-
+		supportedDepthStencilFormat = getSupportedDepthStencilFormat(device, preferredDepthFormats);
 		Log(LogLevel::Information, "Requested DepthStencil VkFormat %s is not supported. Falling back to %s", to_string(depthStencilFormatRequested).c_str(),
 			to_string(supportedDepthStencilFormat).c_str());
 	}
@@ -2488,6 +2496,8 @@ void getMemoryTypeIndex(const pvrvk::PhysicalDevice& physicalDevice, const uint3
 			}
 		}
 	}
+
+	assertion(minCost != std::numeric_limits<uint32_t>::max(), "Could not find compatible memory type");
 }
 #pragma endregion
 

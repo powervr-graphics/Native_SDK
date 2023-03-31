@@ -1820,8 +1820,6 @@ void VulkanIntroducingPVRShell::createSwapchain()
 	// Retrieve the number of presentation images used by the presentation engine.
 	vulkanSuccessOrDie(_deviceVkFunctions.vkGetSwapchainImagesKHR(_device, _swapchain, &_swapchainLength, nullptr), "Failed to get swapchain images");
 
-	if (_swapchainLength <= 1 || _swapchainLength > 8) { throw pvr::PvrError("This application requires between 2 and 8 swapchain images"); }
-
 	// Retrieve the _swapchainLength presentation images used by the presentation engine.
 	vulkanSuccessOrDie(_deviceVkFunctions.vkGetSwapchainImagesKHR(_device, _swapchain, &_swapchainLength, &_swapchainImages[0]), "Failed to get swapchain images");
 

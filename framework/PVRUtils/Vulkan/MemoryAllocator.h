@@ -938,11 +938,7 @@ inline uint32_t Allocation_::getMemoryType() const { return _allocInfo.memoryTyp
 
 inline bool Allocation_::isMapped() const { return _mappedSize > 0; }
 
-inline bool Allocation_::isMappable() const
-{
-	return (static_cast<uint32_t>(getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT) != 0) ||
-		(static_cast<uint32_t>(getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) != 0);
-}
+inline bool Allocation_::isMappable() const { return static_cast<uint32_t>(getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT) != 0; }
 
 inline pvrvk::MemoryPropertyFlags Allocation_::getMemoryFlags() const { return _flags; }
 

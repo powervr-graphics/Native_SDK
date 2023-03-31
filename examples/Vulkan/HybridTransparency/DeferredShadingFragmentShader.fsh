@@ -65,7 +65,7 @@ void main()
 	{
 		mediump vec4 transparencyAndShadowRay = texture(transparencyImage, inUV);
 
-		if((int(transparencyAndShadowRay.w * 10.0) == 2) || (int(transparencyAndShadowRay.w * 10.0) == 4))
+		if((transparencyAndShadowRay.w == 0.2) || (transparencyAndShadowRay.w == 0.4))
 		{
 			// Use a step function to add ambient contribution to the projected transparency only (the flag value to identify see-through transparency is 0.2, for the projected transparency is .w = 0.4)
 			Li = step(0.3, transparencyAndShadowRay.w) * lightData.ambientColorIntensity.xyz * reflectanceAndForegroundFlag.xyz + transparencyAndShadowRay.xyz;

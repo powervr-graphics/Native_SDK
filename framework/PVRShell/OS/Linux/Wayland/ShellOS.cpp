@@ -12,6 +12,7 @@
 #include <linux/input.h>
 #include <wayland-client.h>
 #include <wayland-server.h>
+#include "xdg-shell-client-protocol.h"
 
 namespace pvr {
 namespace platform {
@@ -40,9 +41,9 @@ public:
 
 	wl_compositor* getCompositor() const { return _compositor; }
 
-	void setShell(wl_shell* shell) { _shell = shell; }
+	void setShell(xdg_wm_base* shell) { _shell = shell; }
 
-	wl_shell* getShell() const { return _shell; }
+	xdg_wm_base* getShell() const { return _shell; }
 
 	void setSeat(wl_seat* seat) { _seat = seat; }
 
@@ -58,7 +59,7 @@ public:
 
 	wl_surface* getSurface() const { return _waylandSurface; }
 
-	wl_shell_surface* getShellSurface() const { return _shellSurface; }
+	xdg_surface* getShellSurface() const { return _shellSurface; }
 
 	void setPointerLocation(int32_t x, int32_t y)
 	{
@@ -76,12 +77,13 @@ private:
 	wl_display* _display;
 	wl_registry* _registry;
 	wl_compositor* _compositor;
-	wl_shell* _shell;
+	xdg_wm_base* _shell;
 	wl_seat* _seat;
 	wl_pointer* _pointer;
 	wl_keyboard* _keyboard;
 	wl_surface* _waylandSurface;
-	wl_shell_surface* _shellSurface;
+	xdg_surface* _shellSurface;
+	xdg_toplevel* _xdgToplevel;
 	int32_t _pointerXY[2];
 };
 
@@ -107,18 +109,9 @@ static void pointerHandleButton(void* data, struct wl_pointer* wl_pointer, uint3
 	if (internalOS)
 	{
 		if (button == BTN_LEFT && state == WL_POINTER_BUTTON_STATE_PRESSED) { internalOS->getShellOS()->getShell()->onPointingDeviceDown(0); }
-		else if (button == BTN_LEFT && state == WL_POINTER_BUTTON_STATE_RELEASED)
-		{
-			internalOS->getShellOS()->getShell()->onPointingDeviceUp(0);
-		}
-		else if (button == BTN_RIGHT && state == WL_POINTER_BUTTON_STATE_PRESSED)
-		{
-			internalOS->getShellOS()->getShell()->onPointingDeviceDown(1);
-		}
-		else if (button == BTN_RIGHT && state == WL_POINTER_BUTTON_STATE_RELEASED)
-		{
-			internalOS->getShellOS()->getShell()->onPointingDeviceUp(1);
-		}
+		else if (button == BTN_LEFT && state == WL_POINTER_BUTTON_STATE_RELEASED) { internalOS->getShellOS()->getShell()->onPointingDeviceUp(0); }
+		else if (button == BTN_RIGHT && state == WL_POINTER_BUTTON_STATE_PRESSED) { internalOS->getShellOS()->getShell()->onPointingDeviceDown(1); }
+		else if (button == BTN_RIGHT && state == WL_POINTER_BUTTON_STATE_RELEASED) { internalOS->getShellOS()->getShell()->onPointingDeviceUp(1); }
 	}
 }
 
@@ -151,10 +144,7 @@ static void keyboardHandleKey(void* data, struct wl_keyboard* keyboard, uint32_t
 		uint32_t keyState = (state == WL_POINTER_BUTTON_STATE_PRESSED) ? WL_KEYBOARD_KEY_STATE_PRESSED : WL_KEYBOARD_KEY_STATE_RELEASED;
 
 		if (keyState == WL_POINTER_BUTTON_STATE_PRESSED) { internalOS->getShellOS()->getShell()->onKeyDown(internalOS->getKeyFromEVCode(key)); }
-		else
-		{
-			internalOS->getShellOS()->getShell()->onKeyUp(internalOS->getKeyFromEVCode(key));
-		}
+		else { internalOS->getShellOS()->getShell()->onKeyUp(internalOS->getKeyFromEVCode(key)); }
 	}
 }
 
@@ -209,6 +199,12 @@ static void seatHandleName(void* data, struct wl_seat* seat, const char* name) {
 
 static const struct wl_seat_listener seatListener = { seatHandleCapabilities, seatHandleName };
 
+static void xdg_wm_base_ping(void* data, struct xdg_wm_base* shell, uint32_t serial) { xdg_wm_base_pong(shell, serial); }
+
+static const struct xdg_wm_base_listener xdg_wm_base_listener = {
+	xdg_wm_base_ping,
+};
+
 // Global registry callbacks. Handle the creation and destruction of proxy objects
 static void globalRegistryCallback(void* data, wl_registry* registry, uint32_t id, const char* interface, uint32_t version)
 {
@@ -216,12 +212,16 @@ static void globalRegistryCallback(void* data, wl_registry* registry, uint32_t i
 
 	if (internalOS)
 	{
-		if (strcmp(interface, "wl_compositor") == 0) { internalOS->setCompositor(reinterpret_cast<wl_compositor*>(wl_registry_bind(registry, id, &wl_compositor_interface, 1))); }
-		else if (strcmp(interface, "wl_shell") == 0)
+		if (strcmp(interface, wl_compositor_interface.name) == 0)
 		{
-			internalOS->setShell(reinterpret_cast<wl_shell*>(wl_registry_bind(registry, id, &wl_shell_interface, 1)));
+			internalOS->setCompositor(reinterpret_cast<wl_compositor*>(wl_registry_bind(registry, id, &wl_compositor_interface, 1)));
 		}
-		else if (strcmp(interface, "wl_seat") == 0)
+		else if (strcmp(interface, xdg_wm_base_interface.name) == 0)
+		{
+			internalOS->setShell(reinterpret_cast<xdg_wm_base*>(wl_registry_bind(registry, id, &xdg_wm_base_interface, 1)));
+			xdg_wm_base_add_listener(internalOS->getShell(), &xdg_wm_base_listener, nullptr);
+		}
+		else if (strcmp(interface, wl_seat_interface.name) == 0)
 		{
 			internalOS->setSeat(reinterpret_cast<wl_seat*>(wl_registry_bind(registry, id, &wl_seat_interface, 1)));
 			wl_seat_add_listener(internalOS->getSeat(), &seatListener, data);
@@ -242,7 +242,34 @@ static void configureCallback(void* /*data*/, struct wl_shell_surface* /*shell_s
 // The popup_done event is sent out when a popup grab is broken, that is, when the user clicks a surface that doesn't belong to the client owning the popup surface.
 static void popupDoneCallback(void* /*data*/, struct wl_shell_surface* /*shell_surface*/) {}
 
-static const struct wl_shell_surface_listener shellSurfaceListeners = { pingCallback, configureCallback, popupDoneCallback };
+static void xdg_surface_handle_configure(void* data, struct xdg_surface* surface, uint32_t serial) { xdg_surface_ack_configure(surface, serial); }
+
+static const struct xdg_surface_listener xdg_surface_listener = {
+	.configure = xdg_surface_handle_configure,
+};
+
+static void xdg_toplevel_handle_configure(void* data, struct xdg_toplevel* toplevel, int32_t width, int32_t height, struct wl_array* states)
+{
+	auto shell = (Shell*)data;
+	shell->setDimensions(width, height);
+}
+
+static void xdg_toplevel_handle_close(void* data, struct xdg_toplevel* xdg_toplevel)
+{
+	auto shell = (Shell*)data;
+	shell->exitShell();
+}
+
+static const struct xdg_toplevel_listener xdg_toplevel_listener = {
+	.configure = xdg_toplevel_handle_configure,
+	.close = xdg_toplevel_handle_close,
+};
+
+static const struct wl_shell_surface_listener shellSurfaceListeners = {
+	.ping = pingCallback,
+	.configure = configureCallback,
+	.popup_done = popupDoneCallback,
+};
 
 bool WaylandInternalOS::handleOSEvents(std::unique_ptr<Shell>& shell)
 {
@@ -282,10 +309,7 @@ bool WaylandInternalOS::initWaylandConnection()
 		Log(LogLevel::Error, "Failed to connect to Wayland display");
 		return false;
 	}
-	else
-	{
-		Log(LogLevel::Information, "Successfully connected the Wayland display");
-	}
+	else { Log(LogLevel::Information, "Successfully connected the Wayland display"); }
 
 	// Connect to the Wayland registry which will allow access to various high level proxy objects
 	if ((_registry = wl_display_get_registry(getDisplay())) == nullptr)
@@ -293,10 +317,7 @@ bool WaylandInternalOS::initWaylandConnection()
 		Log(LogLevel::Error, "Failed to get Wayland registry");
 		return false;
 	}
-	else
-	{
-		Log(LogLevel::Information, "Successfully retrieved the Wayland registry");
-	}
+	else { Log(LogLevel::Information, "Successfully retrieved the Wayland registry"); }
 
 	// Add registry listeners
 	// 1. New proxy objects
@@ -313,22 +334,13 @@ bool WaylandInternalOS::initWaylandConnection()
 		Log(LogLevel::Error, "Could not find Wayland compositor");
 		return false;
 	}
-	else
-	{
-		Log(LogLevel::Information, "Successfully retrieved the Wayland compositor");
-	}
+	else { Log(LogLevel::Information, "Successfully retrieved the Wayland compositor"); }
 
 	if (!_shell) { Log(LogLevel::Warning, "Could not find Wayland shell"); }
-	else
-	{
-		Log(LogLevel::Debug, "Successfully retrieved the Wayland shell");
-	}
+	else { Log(LogLevel::Debug, "Successfully retrieved the Wayland shell"); }
 
 	if (!_seat) { Log(LogLevel::Warning, "Could not find Wayland seat"); }
-	else
-	{
-		Log(LogLevel::Debug, "Successfully retrieved the Wayland seat");
-	}
+	else { Log(LogLevel::Debug, "Successfully retrieved the Wayland seat"); }
 
 	return true;
 }
@@ -345,32 +357,31 @@ bool WaylandInternalOS::initializeWindow(DisplayAttributes& data)
 		Log("Failed to create Wayland surface");
 		return false;
 	}
-	else
-	{
-		Log(LogLevel::Information, "Successfully create the Wayland surface");
-	}
+	else { Log(LogLevel::Information, "Successfully create the Wayland surface"); }
 
-	_shellSurface = wl_shell_get_shell_surface(_shell, _waylandSurface);
+	_shellSurface = xdg_wm_base_get_xdg_surface(_shell, _waylandSurface);
 	if (_shellSurface == nullptr)
 	{
 		Log("Failed to get Wayland shell surface");
 		return false;
 	}
-	else
-	{
-		Log(LogLevel::Information, "Successfully create the Wayland shell surface");
-	}
-	wl_shell_surface_set_toplevel(_shellSurface);
+	else { Log(LogLevel::Information, "Successfully create the Wayland shell surface"); }
 
-	wl_shell_surface_add_listener(_shellSurface, &shellSurfaceListeners, this);
-	wl_shell_surface_set_title(_shellSurface, data.windowTitle.c_str());
+	xdg_surface_add_listener(_shellSurface, &xdg_surface_listener, getShellOS()->getShell());
+	_xdgToplevel = xdg_surface_get_toplevel(_shellSurface);
+	xdg_toplevel_add_listener(_xdgToplevel, &xdg_toplevel_listener, getShellOS()->getShell());
+
+	xdg_toplevel_set_title(_xdgToplevel, data.windowTitle.c_str());
+	xdg_toplevel_set_app_id(_xdgToplevel, data.windowTitle.c_str());
+	wl_surface_commit(_waylandSurface);
 
 	return true;
 }
 
 void WaylandInternalOS::releaseWindow()
 {
-	wl_shell_surface_destroy(_shellSurface);
+	xdg_toplevel_destroy(_xdgToplevel);
+	xdg_surface_destroy(_shellSurface);
 	wl_surface_destroy(_waylandSurface);
 
 	// Release the Wayland connection
@@ -382,7 +393,7 @@ void WaylandInternalOS::releaseWaylandConnection()
 	if (getKeyboard()) { wl_keyboard_destroy(getKeyboard()); }
 	if (getPointer()) { wl_pointer_destroy(getPointer()); }
 	wl_seat_destroy(getSeat());
-	wl_shell_destroy(getShell());
+	xdg_wm_base_destroy(getShell());
 	wl_compositor_destroy(getCompositor());
 	wl_registry_destroy(getRegistry());
 	wl_display_disconnect(getDisplay());

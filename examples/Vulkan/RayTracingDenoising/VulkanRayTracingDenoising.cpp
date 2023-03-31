@@ -1664,12 +1664,12 @@ void VulkanRayTracingDenoising::createCameraBuffer()
 void VulkanRayTracingDenoising::createMeshTransformBuffer()
 {
 	pvr::utils::StructuredMemoryDescription desc;
-	desc.addElement(BufferEntryNames::PerMesh::WorldMatrix, pvr::GpuDatatypes::mat4x4);
+	desc.addElement(BufferEntryNames::PerMesh::WorldMatrix, pvr::GpuDatatypes::mat4x4, _meshTransforms.size());
 
-	_deviceResources->perMeshBufferView.initDynamic(desc, _deviceResources->swapchain->getSwapchainLength() * _meshTransforms.size(), pvr::BufferUsageFlags::UniformBuffer,
+	_deviceResources->perMeshBufferView.initDynamic(desc, _deviceResources->swapchain->getSwapchainLength(), pvr::BufferUsageFlags::UniformBuffer,
 		static_cast<uint32_t>(_deviceResources->device->getPhysicalDevice()->getProperties().getLimits().getMinUniformBufferOffsetAlignment()));
-	_deviceResources->perMeshPrevTransformBufferView.initDynamic(desc, _deviceResources->swapchain->getSwapchainLength() * _meshTransforms.size(),
-		pvr::BufferUsageFlags::UniformBuffer, static_cast<uint32_t>(_deviceResources->device->getPhysicalDevice()->getProperties().getLimits().getMinUniformBufferOffsetAlignment()));
+	_deviceResources->perMeshPrevTransformBufferView.initDynamic(desc, _deviceResources->swapchain->getSwapchainLength(), pvr::BufferUsageFlags::UniformBuffer,
+		static_cast<uint32_t>(_deviceResources->device->getPhysicalDevice()->getProperties().getLimits().getMinUniformBufferOffsetAlignment()));
 
 	_deviceResources->perMeshBuffer = pvr::utils::createBuffer(_deviceResources->device,
 		pvrvk::BufferCreateInfo(_deviceResources->perMeshBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
@@ -1751,10 +1751,6 @@ void VulkanRayTracingDenoising::uploadDynamicSceneData()
 	// upload light data
 	{
 		uint32_t lightDynamicSliceIdx = _deviceResources->swapchain->getSwapchainIndex();
-		uint8_t* memory = static_cast<uint8_t*>(_deviceResources->lightDataBuffer->getDeviceMemory()->getMappedData()) +
-			_deviceResources->lightDataBufferView.getDynamicSliceOffset(lightDynamicSliceIdx);
-
-		_deviceResources->lightDataBufferView.pointToMappedMemory(memory, lightDynamicSliceIdx);
 
 		_deviceResources->lightDataBufferView.getElementByName(BufferEntryNames::PerPointLightData::LightPosition, 0, lightDynamicSliceIdx).setValue(_lightData.lightPosition);
 		_deviceResources->lightDataBufferView.getElementByName(BufferEntryNames::PerPointLightData::LightColor, 0, lightDynamicSliceIdx).setValue(_lightData.lightColor);
@@ -1772,45 +1768,33 @@ void VulkanRayTracingDenoising::uploadDynamicSceneData()
 
 	// upload per mesh data
 	{
-		uint32_t meshDynamicSliceIdx = _deviceResources->swapchain->getSwapchainIndex() * _meshTransforms.size();
-		uint8_t* memory = static_cast<uint8_t*>(_deviceResources->perMeshBuffer->getDeviceMemory()->getMappedData()) +
-			_deviceResources->perMeshBufferView.getDynamicSliceOffset(meshDynamicSliceIdx);
-
-		_deviceResources->perMeshBufferView.pointToMappedMemory(memory, meshDynamicSliceIdx);
-
 		for (uint32_t i = 0; i < _meshTransforms.size(); i++)
 		{
-			uint32_t dynamicSlice = i + meshDynamicSliceIdx;
-			_deviceResources->perMeshBufferView.getElementByName(BufferEntryNames::PerMesh::WorldMatrix, 0, dynamicSlice).setValue(_meshTransforms[i]);
+			_deviceResources->perMeshBufferView.getElementByName(BufferEntryNames::PerMesh::WorldMatrix, i, _deviceResources->swapchain->getSwapchainIndex()).setValue(_meshTransforms[i]);
 		}
 
 		// if the memory property flags used by the buffers' device memory do not contain e_HOST_COHERENT_BIT then we must flush the memory
 		if (static_cast<uint32_t>(_deviceResources->perMeshBuffer->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
 		{
-			_deviceResources->perMeshBuffer->getDeviceMemory()->flushRange(
-				_deviceResources->perMeshBufferView.getDynamicSliceOffset(meshDynamicSliceIdx), _deviceResources->perMeshBufferView.getDynamicSliceSize() * _meshTransforms.size());
+			_deviceResources->perMeshBuffer->getDeviceMemory()->flushRange(_deviceResources->perMeshBufferView.getDynamicSliceOffset(_deviceResources->swapchain->getSwapchainIndex()),
+				_deviceResources->perMeshBufferView.getDynamicSliceSize());
 		}
 	}
 
 	// upload prev per mesh data
 	{
-		uint32_t meshDynamicSliceIdx = _deviceResources->swapchain->getSwapchainIndex() * _prevMeshTransforms.size();
-		uint8_t* memory = static_cast<uint8_t*>(_deviceResources->perMeshPrevTransformBuffer->getDeviceMemory()->getMappedData()) +
-			_deviceResources->perMeshPrevTransformBufferView.getDynamicSliceOffset(meshDynamicSliceIdx);
-
-		_deviceResources->perMeshPrevTransformBufferView.pointToMappedMemory(memory, meshDynamicSliceIdx);
-
 		for (uint32_t i = 0; i < _prevMeshTransforms.size(); i++)
 		{
-			uint32_t dynamicSlice = i + meshDynamicSliceIdx;
-			_deviceResources->perMeshPrevTransformBufferView.getElementByName(BufferEntryNames::PerMesh::WorldMatrix, 0, dynamicSlice).setValue(_prevMeshTransforms[i]);
+			_deviceResources->perMeshPrevTransformBufferView.getElementByName(BufferEntryNames::PerMesh::WorldMatrix, i, _deviceResources->swapchain->getSwapchainIndex())
+				.setValue(_prevMeshTransforms[i]);
 		}
 
 		// if the memory property flags used by the buffers' device memory do not contain e_HOST_COHERENT_BIT then we must flush the memory
 		if (static_cast<uint32_t>(_deviceResources->perMeshPrevTransformBuffer->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
 		{
-			_deviceResources->perMeshPrevTransformBuffer->getDeviceMemory()->flushRange(_deviceResources->perMeshPrevTransformBufferView.getDynamicSliceOffset(meshDynamicSliceIdx),
-				_deviceResources->perMeshPrevTransformBufferView.getDynamicSliceSize() * _prevMeshTransforms.size());
+			_deviceResources->perMeshPrevTransformBuffer->getDeviceMemory()->flushRange(
+				_deviceResources->perMeshPrevTransformBufferView.getDynamicSliceOffset(_deviceResources->swapchain->getSwapchainIndex()),
+				_deviceResources->perMeshPrevTransformBufferView.getDynamicSliceSize());
 		}
 	}
 }
@@ -1932,8 +1916,8 @@ void VulkanRayTracingDenoising::recordCommandBufferRenderGBuffer(pvrvk::Secondar
 	uint32_t offsets[4] = {};
 	offsets[0] = _deviceResources->globalBufferView.getDynamicSliceOffset(swapchainIndex);
 	offsets[1] = _deviceResources->lightDataBufferView.getDynamicSliceOffset(swapchainIndex);
-	offsets[2] = _deviceResources->perMeshBufferView.getDynamicSliceOffset(swapchainIndex * _meshTransforms.size());
-	offsets[3] = _deviceResources->perMeshPrevTransformBufferView.getDynamicSliceOffset(swapchainIndex * _prevMeshTransforms.size());
+	offsets[2] = _deviceResources->perMeshBufferView.getDynamicSliceOffset(swapchainIndex);
+	offsets[3] = _deviceResources->perMeshPrevTransformBufferView.getDynamicSliceOffset(swapchainIndex);
 
 	cmdBuffers->bindDescriptorSet(pvrvk::PipelineBindPoint::e_GRAPHICS, _deviceResources->gbufferPipelineLayout, 0u, _deviceResources->commonDescriptorSet, offsets, 4);
 
@@ -2048,8 +2032,8 @@ void VulkanRayTracingDenoising::recordCommandBufferShadowsTemporal(pvrvk::Second
 	uint32_t offsets[4] = {};
 	offsets[0] = _deviceResources->globalBufferView.getDynamicSliceOffset(swapchainIndex);
 	offsets[1] = _deviceResources->lightDataBufferView.getDynamicSliceOffset(swapchainIndex);
-	offsets[2] = _deviceResources->perMeshBufferView.getDynamicSliceOffset(swapchainIndex * _meshTransforms.size());
-	offsets[3] = _deviceResources->perMeshPrevTransformBufferView.getDynamicSliceOffset(swapchainIndex * _prevMeshTransforms.size());
+	offsets[2] = _deviceResources->perMeshBufferView.getDynamicSliceOffset(swapchainIndex);
+	offsets[3] = _deviceResources->perMeshPrevTransformBufferView.getDynamicSliceOffset(swapchainIndex);
 
 	cmdBuffers->bindDescriptorSets(pvrvk::PipelineBindPoint::e_COMPUTE, _deviceResources->shadowsTemporalPipelineLayout, 0, arrayDS, 4, offsets, 4);
 
@@ -2100,8 +2084,8 @@ void VulkanRayTracingDenoising::recordCommandBufferShadowsSpatial(pvrvk::Seconda
 	uint32_t offsets[4] = {};
 	offsets[0] = _deviceResources->globalBufferView.getDynamicSliceOffset(swapchainIndex);
 	offsets[1] = _deviceResources->lightDataBufferView.getDynamicSliceOffset(swapchainIndex);
-	offsets[2] = _deviceResources->perMeshBufferView.getDynamicSliceOffset(swapchainIndex * _meshTransforms.size());
-	offsets[3] = _deviceResources->perMeshPrevTransformBufferView.getDynamicSliceOffset(swapchainIndex * _prevMeshTransforms.size());
+	offsets[2] = _deviceResources->perMeshBufferView.getDynamicSliceOffset(swapchainIndex);
+	offsets[3] = _deviceResources->perMeshPrevTransformBufferView.getDynamicSliceOffset(swapchainIndex);
 
 	cmdBuffers->bindDescriptorSets(pvrvk::PipelineBindPoint::e_COMPUTE, _deviceResources->shadowsSpatialPipelineLayout, 0, arrayDS, 4, offsets, 4);
 
@@ -2142,8 +2126,8 @@ void VulkanRayTracingDenoising::recordCommandBufferDeferredShading(pvrvk::Second
 	uint32_t offsets[4] = {};
 	offsets[0] = _deviceResources->globalBufferView.getDynamicSliceOffset(swapchainIndex);
 	offsets[1] = _deviceResources->lightDataBufferView.getDynamicSliceOffset(swapchainIndex);
-	offsets[2] = _deviceResources->perMeshBufferView.getDynamicSliceOffset(swapchainIndex * _meshTransforms.size());
-	offsets[3] = _deviceResources->perMeshPrevTransformBufferView.getDynamicSliceOffset(swapchainIndex * _prevMeshTransforms.size());
+	offsets[2] = _deviceResources->perMeshBufferView.getDynamicSliceOffset(swapchainIndex);
+	offsets[3] = _deviceResources->perMeshPrevTransformBufferView.getDynamicSliceOffset(swapchainIndex);
 
 	cmdBuffers->bindDescriptorSets(pvrvk::PipelineBindPoint::e_GRAPHICS, _deviceResources->deferredShadingPipelineLayout, 0, arrayDS, 2, offsets, 4);
 

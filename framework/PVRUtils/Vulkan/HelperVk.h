@@ -869,6 +869,7 @@ pvrvk::Swapchain createSwapchain(const pvrvk::Device& device, const pvrvk::Surfa
 
 bool isSupportedDepthStencilFormat(const pvrvk::Device& device, pvrvk::Format format);
 
+pvrvk::Format getSupportedDepthStencilFormat(const pvrvk::Device& device, std::vector<pvrvk::Format> preferredDepthFormats = {});
 pvrvk::Format getSupportedDepthStencilFormat(const pvrvk::Device& device, pvr::DisplayAttributes& displayAttributes, std::vector<pvrvk::Format> preferredDepthFormats = {});
 
 /// <summary>Helper function to create a collection of images intended to be used as attachments, e.g. Depth/Stencil images, resolve attachments etc.</summary>

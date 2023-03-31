@@ -36,7 +36,7 @@ The SDK is hosted on github, which means you can pull a local copy of the reposi
 git clone https://github.com/powervr-graphics/Native_SDK.git
 ```
 
-In case you opt to download the source directly as a .zip package, the 5.9 release the SDK uses submodules to clone several of the dependencies present in the /external folder (glm, glslang, pugixml and VulkanMemoryAllocator). You will need to fill the /source folders with the correct commit of each external repository. We recommend you do it pulling the SDK through git separately and running CMake which will download the content for you on the git version. Then you can place the contents of corresponding /source folder on your .zip download.
+In case you opt to download the source directly as a .zip package, since the 5.9 release the SDK uses submodules to clone several of the dependencies present in the /external folder (glm, glslang, pugixml and VulkanMemoryAllocator). You will need to fill the /source folders with the correct commit of each external repository. We recommend you do it pulling the SDK through git separately and running CMake which will download the content for you on the git version. Then you can place the contents of corresponding /source folder on your .zip download.
 
 ##  Repository Dependencies
 
@@ -70,7 +70,7 @@ However, if you are targeting Linux or Windows, it is recommended that you add C
   * Versions know to be supported are: 2017, 2019, 2022
   * Community Versions should suffice
 
-* The SDK has been built and tested on Windows 10, using Visual studio versions 2019 and 2022 and MinGW as well.
+* The SDK has been built and tested on Windows 10, using Visual studio version 2022.
 
   * Other versions of Windows may also work
   * Other Windows-based build systems may also work

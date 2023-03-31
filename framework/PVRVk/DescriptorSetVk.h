@@ -332,17 +332,14 @@ public:
 		return *this;
 	}
 
-	/// <summary>Get the number of allocations of a descriptor type is supported on this pool (const).</summary>
-	/// <param name="descType">DescriptorType</param>
-	/// <returns>Number of allocations.</returns>
-	uint32_t getNumDescriptorTypes(pvrvk::DescriptorType descType) const
-	{
-		for (uint16_t i = 0; i < _numDescriptors; i++)
-		{
-			if (_descriptorPoolSizes[i].getType() == descType) { return _descriptorPoolSizes[i].getDescriptorCount(); }
-		}
-		return 0;
-	}
+	/// <summary>Get the number of descriptor pool sizes (const).</summary>
+	/// <returns>Number of descriptor pool sizes.</returns>
+	uint32_t getNumPoolSizes() const { return _numDescriptors; }
+
+	/// <summary>Get the pool size at the given index (const).</summary>
+	/// <param name="index">The pool index</param>
+	/// <returns>The DescriptorPoolSize at index</returns>
+	const pvrvk::DescriptorPoolSize& getPoolSize(uint32_t index) const { return _descriptorPoolSizes[index]; }
 
 	/// <summary>Get maximum sets supported on this pool.</summary>
 	/// <returns>uint32_t</returns>

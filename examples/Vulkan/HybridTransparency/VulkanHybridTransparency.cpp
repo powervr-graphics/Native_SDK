@@ -466,7 +466,10 @@ public:
 	/// has ID -602362517 for TLAS buffer build and update. This warning recommends buffer allocations to be of size at least
 	/// 256KB which collides with each BLAS node built for each scene element and the size of the TLAS buffer, details of the warning:
 	/// https://github.com/KhronosGroup/Vulkan-ValidationLayers/blob/master/layers/best_practices_validation.h</summary>
-	std::vector<int> vectorValidationIDFilter;
+	std::vector<int> _vectorValidationIDFilter;
+
+	/// <summary>Depth stencil format to use.</summary>
+	pvrvk::Format _depthStencilFormat;
 
 	/// <summary>Default constructor.</summary>
 	VulkanHybridTransparency()
@@ -475,7 +478,7 @@ public:
 		  _viewProjectionMatrix(glm::mat4(1.0f)), _windowWidth(0), _windowHeight(0), _framebufferWidth(0), _framebufferHeight(0), _viewportOffsets{ 0 },
 		  _positiveYAxis(glm::vec3(0.0f, 1.0f, 0.0f)), _positiveXAxis(glm::vec3(1.0f, 0.0f, 0.0f)), _renderpassStorageFormats{ pvrvk::Format::e_R8G8B8A8_UNORM,
 			  pvrvk::Format::e_R16G16B16A16_SFLOAT, pvrvk::Format::e_R16G16B16A16_SFLOAT },
-		  _updateScene(true), _rotationAngleRadian(0.0f)
+		  _updateScene(true), _rotationAngleRadian(0.0f), _depthStencilFormat(pvrvk::Format::e_UNDEFINED)
 	{}
 
 	/// <summary>This event represents application start. When implementing, return a suitable error code to signify failure. If pvr::Result::Success
@@ -800,11 +803,10 @@ pvr::Result VulkanHybridTransparency::initView()
 	// Filter UNASSIGNED-BestPractices-vkAllocateMemory-small-allocation Best Practices performance warning which has ID -602362517 for TLAS buffer build and
 	// update (VkBufferDeviceAddressInfo requires VkBuffer handle so in general it's not possible to make a single buffer to put all information
 	// and use offsets inside it
-	vectorValidationIDFilter.push_back(-602362517);
-	vectorValidationIDFilter.push_back(-1277938581);
+	_vectorValidationIDFilter.push_back(-602362517);
 
 	// Create a default set of debug utils messengers or debug callbacks using either VK_EXT_debug_utils or VK_EXT_debug_report respectively
-	_deviceResources->debugUtilsCallbacks = pvr::utils::createDebugUtilsCallbacks(_deviceResources->instance, (void*)&vectorValidationIDFilter);
+	_deviceResources->debugUtilsCallbacks = pvr::utils::createDebugUtilsCallbacks(_deviceResources->instance, (void*)&_vectorValidationIDFilter);
 
 	// Create device and queues
 	pvr::Result resultDeviceAndQueues = buildDeviceAndQueues();
@@ -1610,8 +1612,11 @@ void VulkanHybridTransparency::buildFramebufferAndRayTracingStoreImage()
 			pvrvk::ImageViewCreateInfo(image, pvrvk::ImageViewType::e_2D, image->getFormat(), pvrvk::ImageSubresourceRange(pvrvk::ImageAspectFlags::e_COLOR_BIT)));
 	}
 
+	const std::vector<pvrvk::Format> preferredDepthFormats = { pvrvk::Format::e_D24_UNORM_S8_UINT, pvrvk::Format::e_D32_SFLOAT_S8_UINT, pvrvk::Format::e_D16_UNORM_S8_UINT };
+	_depthStencilFormat = pvr::utils::getSupportedDepthStencilFormat(_deviceResources->device, preferredDepthFormats);
+
 	pvrvk::Image image = pvr::utils::createImage(_deviceResources->device,
-		pvrvk::ImageCreateInfo(pvrvk::ImageType::e_2D, pvrvk::Format::e_D24_UNORM_S8_UINT, dimension, pvrvk::ImageUsageFlags::e_DEPTH_STENCIL_ATTACHMENT_BIT),
+		pvrvk::ImageCreateInfo(pvrvk::ImageType::e_2D, _depthStencilFormat, dimension, pvrvk::ImageUsageFlags::e_DEPTH_STENCIL_ATTACHMENT_BIT),
 		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, _deviceResources->vmaAllocator,
 		pvr::utils::vma::AllocationCreateFlags::e_DEDICATED_MEMORY_BIT);
 
@@ -1650,8 +1655,8 @@ void VulkanHybridTransparency::buildRenderPass()
 	pvrvk::AttachmentDescription gbufferAttachment2 =
 		pvrvk::AttachmentDescription::createColorDescription(_renderpassStorageFormats[GBuffer::worldPositionTransparency], pvrvk::ImageLayout::e_UNDEFINED,
 			pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, pvrvk::AttachmentLoadOp::e_CLEAR, pvrvk::AttachmentStoreOp::e_STORE, pvrvk::SampleCountFlags::e_1_BIT);
-	pvrvk::AttachmentDescription gbufferAttachmentDepth = pvrvk::AttachmentDescription::createDepthStencilDescription(pvrvk::Format::e_D24_UNORM_S8_UINT,
-		pvrvk::ImageLayout::e_UNDEFINED, pvrvk::ImageLayout::e_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, pvrvk::AttachmentLoadOp::e_CLEAR, pvrvk::AttachmentStoreOp::e_DONT_CARE);
+	pvrvk::AttachmentDescription gbufferAttachmentDepth = pvrvk::AttachmentDescription::createDepthStencilDescription(_depthStencilFormat, pvrvk::ImageLayout::e_UNDEFINED,
+		pvrvk::ImageLayout::e_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, pvrvk::AttachmentLoadOp::e_CLEAR, pvrvk::AttachmentStoreOp::e_DONT_CARE);
 
 	pvrvk::AttachmentReference gbufferAttachmentRef0 = pvrvk::AttachmentReference(0, pvrvk::ImageLayout::e_COLOR_ATTACHMENT_OPTIMAL);
 	pvrvk::AttachmentReference gbufferAttachmentRef1 = pvrvk::AttachmentReference(1, pvrvk::ImageLayout::e_COLOR_ATTACHMENT_OPTIMAL);
