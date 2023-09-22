@@ -112,10 +112,15 @@ android {
 	"${project.projectDir}/../RayTraceTransparency.rgen.spv",
 	"${project.projectDir}/../RayTraceTransparency.rmiss.spv",
 	"${project.projectDir}/../../../assets/RayTracing/Alabaster.pvr",
+	"${project.projectDir}/../../../assets/RayTracing/Alabaster_astc.pvr",
 	"${project.projectDir}/../../../assets/RayTracing/DarkWood.pvr",
+	"${project.projectDir}/../../../assets/RayTracing/DarkWood_astc.pvr",
 	"${project.projectDir}/../../../assets/RayTracing/LancellottiChapel.pvr",
+	"${project.projectDir}/../../../assets/RayTracing/LancellottiChapel_astc.pvr",
 	"${project.projectDir}/../../../assets/RayTracing/StainedGlass_01.pvr",
+	"${project.projectDir}/../../../assets/RayTracing/StainedGlass_01_astc.pvr",
 	"${project.projectDir}/../../../assets/RayTracing/StainedGlass_02.pvr",
+	"${project.projectDir}/../../../assets/RayTracing/StainedGlass_02_astc.pvr",
 	"${project.projectDir}/../../../assets/RayTracing/Translucency.POD",
 	)
 	

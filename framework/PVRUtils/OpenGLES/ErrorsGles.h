@@ -5,7 +5,11 @@
 \copyright Copyright (c) Imagination Technologies Limited.
 */
 #pragma once
+#if SC_ENABLED
+#include "PVRUtils/OpenGLSC/BindingsGlsc.h"
+#else 
 #include "PVRUtils/OpenGLES/BindingsGles.h"
+#endif
 namespace pvr {
 namespace utils {
 /// <summary>Retrieves a string representation of an OpenGLES error code.</summary>

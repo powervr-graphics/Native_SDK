@@ -32,10 +32,11 @@ const uint32_t sceneVertexInputLength = 3;
 namespace RenderPasses {
 enum Enum
 {
-	GBuffer,
+	GBuffer = 0,
 	AmbientOcclusion,
 	HorizontalBlur,
 	Presentation,
+	RenderPassesSize
 };
 } // namespace RenderPasses
 
@@ -43,11 +44,12 @@ enum Enum
 namespace Subpasses {
 enum Enum
 {
-	GBuffer,
+	GBuffer = 0,
 	AmbientOcclusion,
 	HorizontalBlur,
 	VerticalBlur,
-	Composite
+	Composite,
+	SubpassesSize
 };
 } // namespace Subpasses
 
@@ -75,14 +77,14 @@ struct DeviceResources
 	pvrvk::DescriptorPool descriptorPool;
 
 	// command buffers
-	pvr::Multi<pvrvk::CommandBuffer> cmdBuffers;
+	std::vector<pvrvk::CommandBuffer> cmdBuffers;
 
 	// synchronization objects
 	// semaphores for when the image is ready to be drawn to and when it is ready for presenting
 	// Create a resource for each of the framebuffers in the swapchain, take the maximum number of buffers this windowing system supports
-	pvrvk::Semaphore imageAcquiredSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
-	pvrvk::Semaphore presentationSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
-	pvrvk::Fence perFrameResourcesFences[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	std::vector<pvrvk::Semaphore> imageAcquiredSemaphores;
+	std::vector<pvrvk::Semaphore> presentationSemaphores;
+	std::vector<pvrvk::Fence> perFrameResourcesFences;
 
 	// vertex buffer and index buffer objects for the scene
 	std::vector<pvrvk::Buffer> sceneVbos;
@@ -97,21 +99,21 @@ struct DeviceResources
 
 	// For each render pass there is N framebuffers, where N is the length of the swapchain
 	// There is one image view per frameBuffer attachment, and one image view per material
-	pvr::Multi<pvrvk::RenderPass> renderPasses;
-	pvr::Multi<pvr::Multi<pvrvk::Framebuffer>> framebuffers;
-	pvr::Multi<pvrvk::ImageView> modelTextureViews;
-	pvr::Multi<pvrvk::ImageView> albedoAttachment;
-	pvr::Multi<pvrvk::ImageView> normalsAttachment;
-	pvr::Multi<pvrvk::ImageView> depthAttachment;
-	pvr::Multi<pvrvk::ImageView> ambientOcclusionAttachment;
-	pvr::Multi<pvrvk::ImageView> horizontalBlurredAttachment;
-	pvr::Multi<pvrvk::ImageView> verticalBlurredAttachment;
-	pvr::Multi<pvrvk::ImageView> compositeAttachment;
+	std::vector<pvrvk::RenderPass> renderPasses;
+	std::vector<std::vector<pvrvk::Framebuffer>> framebuffers;
+	std::vector<pvrvk::ImageView> modelTextureViews;
+	std::vector<pvrvk::ImageView> albedoAttachment;
+	std::vector<pvrvk::ImageView> normalsAttachment;
+	std::vector<pvrvk::ImageView> depthAttachment;
+	std::vector<pvrvk::ImageView> ambientOcclusionAttachment;
+	std::vector<pvrvk::ImageView> horizontalBlurredAttachment;
+	std::vector<pvrvk::ImageView> verticalBlurredAttachment;
+	std::vector<pvrvk::ImageView> compositeAttachment;
 
 	// For each subpass there is one input descriptor set layout, that layout is then used for multiple sets.
 	// on Gpass the input sets are per material, the other subpasses input sets are per frame buffer.
 	pvr::Multi<pvrvk::DescriptorSetLayout, 5> inputDescSetLayouts;
-	pvr::Multi<pvr::Multi<pvrvk::DescriptorSet>, 5> inputDescSets;
+	std::vector<std::vector<pvrvk::DescriptorSet>> inputDescSets;
 
 	// Use a dynamic buffer to store the per model uniform buffer objects
 	pvrvk::Buffer modelBuffer;
@@ -168,6 +170,9 @@ class VulkanAmbientOcclusion : public pvr::Shell
 	uint32_t _compositeParamsCount = 3;
 	uint32_t _compositeParamsID = 0;
 	bool _updateAoParams = true;
+
+	/// <summary>Flag to know whether astc iss upported by the physical device.</summary>
+	bool _astcSupported;
 
 public:
 	// Overridden from PVRShell
@@ -229,6 +234,8 @@ pvr::Result VulkanAmbientOcclusion::initView()
 	_resources->device = pvr::utils::createDeviceAndQueues(physicalDevice, &queuePopulateInfo, 1, &queueAccessInfo);
 	_resources->queue = _resources->device->getQueue(queueAccessInfo.familyId, queueAccessInfo.queueId);
 
+	_astcSupported = pvr::utils::isSupportedFormat(_resources->device->getPhysicalDevice(), pvrvk::Format::e_ASTC_4x4_UNORM_BLOCK);
+
 	// An addition for SDK examples is to validate that the swapchain supports screen shots
 	pvrvk::SurfaceCapabilitiesKHR surfaceCapabilities = physicalDevice->getSurfaceCapabilities(surface);
 	pvrvk::ImageUsageFlags swapchainImageUsage = pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT;
@@ -244,10 +251,32 @@ pvr::Result VulkanAmbientOcclusion::initView()
 	auto swapchainCreateOutput = pvr::utils::createSwapchainRenderpassFramebuffers(_resources->device, surface, getDisplayAttributes(),
 		pvr::utils::CreateSwapchainParameters().setAllocator(_resources->vmaAllocator).setColorImageUsageFlags(swapchainImageUsage));
 	_resources->swapchain = swapchainCreateOutput.swapchain;
-	_resources->framebuffers[RenderPasses::Presentation] = swapchainCreateOutput.framebuffer;
 
 	// Store the swapchain length for repeated use
 	_swapLength = _resources->swapchain->getSwapchainLength();
+
+	_resources->imageAcquiredSemaphores.resize(_swapLength);
+	_resources->presentationSemaphores.resize(_swapLength);
+	_resources->perFrameResourcesFences.resize(_swapLength);
+
+	uint32_t numberRenderPasses = static_cast<uint32_t>(RenderPasses::RenderPassesSize);
+	uint32_t numberSubpasses = static_cast<uint32_t>(Subpasses::SubpassesSize);
+
+	_resources->renderPasses.resize(numberRenderPasses);
+	_resources->albedoAttachment.resize(_swapLength);
+	_resources->normalsAttachment.resize(_swapLength);
+	_resources->depthAttachment.resize(_swapLength);
+	_resources->ambientOcclusionAttachment.resize(_swapLength);
+	_resources->horizontalBlurredAttachment.resize(_swapLength);
+	_resources->verticalBlurredAttachment.resize(_swapLength);
+	_resources->compositeAttachment.resize(_swapLength);
+	_resources->cmdBuffers.resize(_swapLength);
+	_resources->framebuffers = std::vector<std::vector<pvrvk::Framebuffer>>(numberRenderPasses, std::vector<pvrvk::Framebuffer>(_swapLength, 0));
+	_resources->inputDescSets = std::vector<std::vector<pvrvk::DescriptorSet>>(numberSubpasses, std::vector<pvrvk::DescriptorSet>(_swapLength, 0));
+
+	_resources->framebuffers[RenderPasses::Presentation] = swapchainCreateOutput.framebuffer;
+
+	_resources->modelTextureViews.resize(_sceneHandle->getNumMaterials());
 
 	// create the command pool and descriptor pool
 	_resources->commandPool = _resources->device->createCommandPool(pvrvk::CommandPoolCreateInfo(queueAccessInfo.familyId));
@@ -587,7 +616,8 @@ void VulkanAmbientOcclusion::uploadStaticData()
 		pvr::assets::Material material = _sceneHandle->getMaterial(i);
 		uint32_t textureID = material.defaultSemantics().getDiffuseTextureIndex();
 		// Get the file path of the texture
-		const char* filePath = _sceneHandle->getTexture(textureID).getName().c_str();
+		std::string filePath = _sceneHandle->getTexture(textureID).getName().c_str();
+		pvr::assets::helper::getTextureNameWithExtension(filePath, _astcSupported);
 
 		// use the asset loader to get the texture
 		std::unique_ptr<pvr::Stream> textureStream = getAssetStream(filePath);

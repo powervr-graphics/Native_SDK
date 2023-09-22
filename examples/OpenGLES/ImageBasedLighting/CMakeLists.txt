@@ -36,14 +36,18 @@ add_assets_to_target(OpenGLESImageBasedLighting
 		damagedHelmet.bin
 		damagedHelmet.gltf
 		Default_albedo.pvr
+		Default_albedo_astc.pvr
 		Default_emissive.pvr
+		Default_emissive_astc.pvr
 		Default_occlusionRoughnessMetallic.pvr
-		Default_normal.pvr)
+		Default_occlusionRoughnessMetallic_astc.pvr
+		Default_normal.pvr
+		Default_normal_astc.pvr)
 
 add_assets_to_target(OpenGLESImageBasedLighting
 	SOURCE_GROUP "assets" 
 	ASSET_FOLDER ${ASSET_FOLDER} 
-	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/HdrScenes
+	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/Environments
 	FILE_LIST 
 		misty_pines_rgb9e5.pvr
 		misty_pines_rgb9e5_Irradiance.pvr
@@ -55,14 +59,14 @@ add_assets_to_target(OpenGLESImageBasedLighting
 add_assets_to_target(OpenGLESImageBasedLighting
 	SOURCE_GROUP "assets" 
 	ASSET_FOLDER ${ASSET_FOLDER} 
-	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/ParticleSystem
+	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/GeneralPurposeMesh
 	FILE_LIST 
 		sphere.pod)
 
 add_assets_to_target(OpenGLESImageBasedLighting
 	SOURCE_GROUP "assets" 
 	ASSET_FOLDER ${ASSET_FOLDER} 
-	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets
+	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/PBR
 	FILE_LIST 
 		brdfLUT.pvr)
 

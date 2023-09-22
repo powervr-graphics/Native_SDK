@@ -105,7 +105,7 @@ android {
 	"${project.projectDir}/../VertShader.vsh.spv",
 	"${project.projectDir}/../FragShader.fsh.spv",
 	"${project.projectDir}/../CompShader.csh.spv",
-	"${project.projectDir}/../../../assets/Media/Fonts/Inconsolata.pvr",
+	"${project.projectDir}/../../../assets/Fonts/Inconsolata.pvr",
 	)
 	
 	// Add a task for copying our assets from their original location (${project.projectDir}...) to the assets/ folder for packaging

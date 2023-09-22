@@ -35,8 +35,8 @@ const char FragShaderSrcFile[] = "FragShader.fsh.spv";
 const char VertShaderSrcFile[] = "VertShader.vsh.spv";
 
 // PVR texture files
-const char StatueTexFile[] = "Marble.pvr";
-const char StatueNormalMapFile[] = "MarbleNormalMap.pvr";
+const std::string StatueTexFile = "Marble";
+const std::string StatueNormalMapFile = "MarbleNormalMap";
 
 // POD _scene files
 const char SceneFile[] = "Satyr.pod";
@@ -54,9 +54,9 @@ class VulkanBumpmap : public pvr::Shell
 		pvrvk::DescriptorPool descriptorPool;
 		pvrvk::Queue queue;
 		pvr::utils::vma::Allocator vmaAllocator;
-		pvrvk::Semaphore imageAcquiredSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
-		pvrvk::Semaphore presentationSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
-		pvrvk::Fence perFrameResourcesFences[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+		std::vector<pvrvk::Semaphore> imageAcquiredSemaphores;
+		std::vector<pvrvk::Semaphore> presentationSemaphores;
+		std::vector<pvrvk::Fence> perFrameResourcesFences;
 		std::vector<pvrvk::Buffer> vbos;
 		std::vector<pvrvk::Buffer> ibos;
 		pvrvk::DescriptorSetLayout texLayout;
@@ -64,9 +64,9 @@ class VulkanBumpmap : public pvr::Shell
 		pvrvk::PipelineLayout pipelayout;
 		pvrvk::DescriptorSet texDescSet;
 		pvrvk::GraphicsPipeline pipe;
-		pvr::Multi<pvrvk::CommandBuffer> cmdBuffers; // per swapchain
-		pvr::Multi<pvrvk::Framebuffer> onScreenFramebuffer; // per swapchain
-		pvr::Multi<pvrvk::DescriptorSet> uboDescSets;
+		std::vector<pvrvk::CommandBuffer> cmdBuffers; // per swapchain
+		std::vector<pvrvk::Framebuffer> onScreenFramebuffer; // per swapchain
+		std::vector<pvrvk::DescriptorSet> uboDescSets;
 		pvr::utils::StructuredBufferView structuredBufferView;
 		pvrvk::Buffer ubo;
 		pvrvk::PipelineCache pipelineCache;
@@ -102,6 +102,8 @@ class VulkanBumpmap : public pvr::Shell
 	float _angleY;
 	std::unique_ptr<DeviceResources> _deviceResources;
 
+	uint32_t _swapchainLength;
+
 public:
 	virtual pvr::Result initApplication();
 	virtual pvr::Result initView();
@@ -134,10 +136,12 @@ void VulkanBumpmap::createImageSamplerDescriptor(pvrvk::CommandBuffer& imageUplo
 	samplerInfo.mipMapMode = pvrvk::SamplerMipmapMode::e_LINEAR;
 	pvrvk::Sampler samplerTrilinear = device->createSampler(samplerInfo);
 
-	texBase = pvr::utils::loadAndUploadImageAndView(_deviceResources->device, StatueTexFile, true, imageUploadCmd, *this, pvrvk::ImageUsageFlags::e_SAMPLED_BIT,
-		pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, nullptr, _deviceResources->vmaAllocator, _deviceResources->vmaAllocator);
-	texNormalMap = pvr::utils::loadAndUploadImageAndView(_deviceResources->device, StatueNormalMapFile, true, imageUploadCmd, *this, pvrvk::ImageUsageFlags::e_SAMPLED_BIT,
-		pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, nullptr, _deviceResources->vmaAllocator, _deviceResources->vmaAllocator);
+	bool astcSupported = pvr::utils::isSupportedFormat(_deviceResources->device->getPhysicalDevice(), pvrvk::Format::e_ASTC_4x4_UNORM_BLOCK);
+
+	texBase = pvr::utils::loadAndUploadImageAndView(_deviceResources->device, (StatueTexFile + (astcSupported ? "_astc.pvr" : ".pvr")).c_str(), true, imageUploadCmd, *this,
+		pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, nullptr, _deviceResources->vmaAllocator, _deviceResources->vmaAllocator);
+	texNormalMap = pvr::utils::loadAndUploadImageAndView(_deviceResources->device, (StatueNormalMapFile + (astcSupported ? "_astc.pvr" : ".pvr")).c_str(), true, imageUploadCmd, *this,
+		pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, nullptr, _deviceResources->vmaAllocator, _deviceResources->vmaAllocator);
 
 	texBase->setObjectName("Base diffuse ImageView");
 	texNormalMap->setObjectName("Normal map ImgaeView");
@@ -156,13 +160,13 @@ void VulkanBumpmap::createImageSamplerDescriptor(pvrvk::CommandBuffer& imageUplo
 
 void VulkanBumpmap::createUbo()
 {
-	pvrvk::WriteDescriptorSet descUpdate[pvrvk::FrameworkCaps::MaxSwapChains];
+	std::vector<pvrvk::WriteDescriptorSet> descUpdate{ _swapchainLength };
 	{
 		pvr::utils::StructuredMemoryDescription desc;
 		desc.addElement("MVPMatrix", pvr::GpuDatatypes::mat4x4);
 		desc.addElement("LightDirModel", pvr::GpuDatatypes::vec3);
 
-		_deviceResources->structuredBufferView.initDynamic(desc, _scene->getNumMeshNodes() * _deviceResources->swapchain->getSwapchainLength(), pvr::BufferUsageFlags::UniformBuffer,
+		_deviceResources->structuredBufferView.initDynamic(desc, _scene->getNumMeshNodes() * _swapchainLength, pvr::BufferUsageFlags::UniformBuffer,
 			static_cast<uint32_t>(_deviceResources->device->getPhysicalDevice()->getProperties().getLimits().getMinUniformBufferOffsetAlignment()));
 		_deviceResources->ubo = pvr::utils::createBuffer(_deviceResources->device,
 			pvrvk::BufferCreateInfo(_deviceResources->structuredBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
@@ -172,16 +176,16 @@ void VulkanBumpmap::createUbo()
 		_deviceResources->ubo->setObjectName("Object Ubo");
 	}
 
-	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
+	for (uint32_t i = 0; i < _swapchainLength; ++i)
 	{
-		_deviceResources->uboDescSets.add(_deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->uboLayoutDynamic));
+		_deviceResources->uboDescSets.push_back(_deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->uboLayoutDynamic));
 		_deviceResources->uboDescSets[i]->setObjectName(std::string("Ubo DescriptorSet [") + std::to_string(i) + "]");
 
 		descUpdate[i]
 			.set(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, _deviceResources->uboDescSets[i])
 			.setBufferInfo(0, pvrvk::DescriptorBufferInfo(_deviceResources->ubo, 0, _deviceResources->structuredBufferView.getDynamicSliceSize()));
 	}
-	_deviceResources->device->updateDescriptorSets(descUpdate, _deviceResources->swapchain->getSwapchainLength(), nullptr, 0);
+	_deviceResources->device->updateDescriptorSets(static_cast<const pvrvk::WriteDescriptorSet*>(descUpdate.data()), _swapchainLength, nullptr, 0);
 }
 
 /// <summary>Loads and compiles the shaders and create a pipeline.</summary>
@@ -313,7 +317,15 @@ pvr::Result VulkanBumpmap::initView()
 	auto swapChainCreateOutput = pvr::utils::createSwapchainRenderpassFramebuffers(_deviceResources->device, surface, getDisplayAttributes(),
 		pvr::utils::CreateSwapchainParameters().setAllocator(_deviceResources->vmaAllocator).setColorImageUsageFlags(swapchainImageUsage));
 	_deviceResources->swapchain = swapChainCreateOutput.swapchain;
+
+	_swapchainLength = _deviceResources->swapchain->getSwapchainLength();
+
 	_deviceResources->onScreenFramebuffer = swapChainCreateOutput.framebuffer;
+
+	_deviceResources->imageAcquiredSemaphores.resize(_swapchainLength);
+	_deviceResources->presentationSemaphores.resize(_swapchainLength);
+	_deviceResources->perFrameResourcesFences.resize(_swapchainLength);
+	_deviceResources->cmdBuffers.resize(_swapchainLength);
 
 	//---------------
 	// Create the command pool and descriptor set pool
@@ -334,7 +346,7 @@ pvr::Result VulkanBumpmap::initView()
 	// load the pipeline
 	createPipeline();
 
-	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
+	for (uint32_t i = 0; i < _swapchainLength; ++i)
 	{
 		// create the per swapchain command buffers
 		_deviceResources->cmdBuffers[i] = _deviceResources->commandPool->allocateCommandBuffer();
@@ -490,7 +502,7 @@ pvr::Result VulkanBumpmap::renderFrame()
 
 	pvr::utils::endQueueDebugLabel(_deviceResources->queue);
 
-	_frameId = (_frameId + 1) % _deviceResources->swapchain->getSwapchainLength();
+	_frameId = (_frameId + 1) % _swapchainLength;
 
 	pvr::utils::endQueueDebugLabel(_deviceResources->queue);
 
@@ -550,7 +562,7 @@ void VulkanBumpmap::drawMesh(pvrvk::CommandBuffer& cmdBuffers, int nodeIndex)
 /// <summary>Pre-record the commands.</summary>
 void VulkanBumpmap::recordCommandBuffer()
 {
-	const uint32_t numSwapchains = _deviceResources->swapchain->getSwapchainLength();
+	const uint32_t numSwapchains = _swapchainLength;
 	pvrvk::ClearValue clearValues[2] = { pvrvk::ClearValue(0.0f, 0.45f, 0.41f, 1.f), pvrvk::ClearValue(1.f, 0u) };
 	for (uint32_t i = 0; i < numSwapchains; ++i)
 	{

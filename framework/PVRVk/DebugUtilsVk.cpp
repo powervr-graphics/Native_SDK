@@ -15,7 +15,7 @@ namespace impl {
 void DeviceDebugUtilsImpl::setObjectName(const Device_& device, uint64_t vkHandle, ObjectType objectType, const std::string& objectName)
 {
 	assert(device.getVkHandle() != VK_NULL_HANDLE);
-	assert(vkHandle != VK_NULL_HANDLE);
+	assert(vkHandle != 0);
 
 	_objectName = objectName;
 
@@ -53,7 +53,7 @@ void DeviceDebugUtilsImpl::setObjectName(const Device_& device, uint64_t vkHandl
 void DeviceDebugUtilsImpl::setObjectTag(const Device_& device, uint64_t vkHandle, ObjectType objectType, uint64_t tagName, size_t tagSize, const void* tag)
 {
 	assert(device.getVkHandle() != VK_NULL_HANDLE);
-	assert(vkHandle != VK_NULL_HANDLE);
+	assert(vkHandle != 0);
 	// if VK_EXT_debug_utils is supported then use otherwise fallback to VK_EXT_debug_marker
 	if (device.getPhysicalDevice()->getInstance()->getEnabledExtensionTable().extDebugUtilsEnabled)
 	{

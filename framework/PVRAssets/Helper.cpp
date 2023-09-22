@@ -173,6 +173,23 @@ pvr::assets::ModelFileFormat getModelFormatFromFilename(const std::string& model
 	return pvr::assets::ModelFileFormat::UNKNOWN;
 }
 
+void getTextureNameWithExtension(std::string& textureName, bool astcSupported)
+{
+	if (astcSupported)
+	{
+		size_t period = textureName.rfind(".");
+		if (period != std::string::npos)
+		{
+			textureName = textureName.substr(0, period);
+			textureName += "_astc.pvr";
+		}
+		else
+		{
+			Log(LogLevel::Error, "Trying to load astc texture %s with no extension.", textureName.c_str());
+		}
+	}
+}
+
 } // namespace helper
 
 using ModelHandle = std::shared_ptr<Model>;

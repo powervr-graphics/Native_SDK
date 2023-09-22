@@ -14,7 +14,7 @@ const char FragShaderSrcFile[] = "FragShader.fsh.spv";
 const char VertShaderSrcFile[] = "VertShader.vsh.spv";
 
 // PVR texture files
-const char TextureFile[] = "Marble.pvr";
+const std::string TextureFile = "Marble";
 
 // POD scene files
 const char SceneFile[] = "Satyr.pod";
@@ -66,11 +66,9 @@ struct DeviceResources
 	pvrvk::CommandPool commandPool;
 	pvrvk::DescriptorPool descriptorPool;
 
-	pvr::Multi<pvrvk::ImageView> depthStencilImages;
-
-	pvrvk::Semaphore imageAcquiredSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
-	pvrvk::Semaphore presentationSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
-	pvrvk::Fence perFrameResourcesFences[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	std::vector<pvrvk::Semaphore> imageAcquiredSemaphores;
+	std::vector<pvrvk::Semaphore> presentationSemaphores;
+	std::vector<pvrvk::Fence> perFrameResourcesFences;
 
 	pvrvk::GraphicsPipeline pipeline;
 	pvrvk::ImageView texture;
@@ -94,7 +92,7 @@ struct DeviceResources
 	pvrvk::DescriptorSet lightingDescriptorSet;
 
 	pvrvk::DescriptorSetLayout descriptorSetLayout;
-	pvr::Multi<pvrvk::Framebuffer> onScreenFramebuffer;
+	std::vector<pvrvk::Framebuffer> onScreenFramebuffer;
 
 	pvrvk::PipelineCache pipelineCache;
 
@@ -150,6 +148,7 @@ class VulkanPVRScopeRemote : public pvr::Shell
 	uint32_t _frameCounter;
 	uint32_t _frame10Counter;
 	uint32_t _counterReadings[CounterDefs::NumCounter];
+	uint32_t _swapchainLength;
 
 public:
 	virtual pvr::Result initApplication();
@@ -342,13 +341,19 @@ pvr::Result VulkanPVRScopeRemote::initView()
 	_deviceResources->swapchain = swapChainCreateOutput.swapchain;
 	_deviceResources->onScreenFramebuffer = swapChainCreateOutput.framebuffer;
 
+	_swapchainLength = _deviceResources->swapchain->getSwapchainLength();
+
+	_deviceResources->imageAcquiredSemaphores.resize(_swapchainLength);
+	_deviceResources->presentationSemaphores.resize(_swapchainLength);
+	_deviceResources->perFrameResourcesFences.resize(_swapchainLength);
+
 	// Create the Command pool and Descriptor pool
 	_deviceResources->commandPool = _deviceResources->device->createCommandPool(pvrvk::CommandPoolCreateInfo(_deviceResources->queue->getFamilyIndex()));
 
 	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(pvrvk::DescriptorPoolCreateInfo()
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 16)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 16)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 16));
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 8 * _swapchainLength)
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 8 * _swapchainLength)
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 8 * _swapchainLength));
 	const uint32_t swapchainLength = _deviceResources->swapchain->getSwapchainLength();
 	_deviceResources->cmdBuffers.resize(swapchainLength);
 	for (uint32_t i = 0; i < swapchainLength; ++i)
@@ -369,8 +374,10 @@ pvr::Result VulkanPVRScopeRemote::initView()
 	//	Initialize VBO data
 	loadVbos(uploadBuffer);
 
-	_deviceResources->texture = pvr::utils::loadAndUploadImageAndView(_deviceResources->device, TextureFile, true, uploadBuffer, *this, pvrvk::ImageUsageFlags::e_SAMPLED_BIT,
-		pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, nullptr, _deviceResources->vmaAllocator, _deviceResources->vmaAllocator);
+	bool isASTCSupported = pvr::utils::isSupportedFormat(_deviceResources->device->getPhysicalDevice(), pvrvk::Format::e_ASTC_4x4_UNORM_BLOCK);
+
+	_deviceResources->texture = pvr::utils::loadAndUploadImageAndView(_deviceResources->device, (TextureFile + (isASTCSupported ? "_astc.pvr" : ".pvr")).c_str(), true, uploadBuffer,
+		*this, pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, nullptr, _deviceResources->vmaAllocator, _deviceResources->vmaAllocator);
 	uploadBuffer->end();
 	// submit the texture upload commands
 	pvrvk::SubmitInfo submitInfo;

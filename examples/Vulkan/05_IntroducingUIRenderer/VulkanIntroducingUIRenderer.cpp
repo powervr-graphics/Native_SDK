@@ -56,8 +56,9 @@ const wchar_t* Titles[Language::Count] = {
 
 class MultiBufferTextManager
 {
-	pvr::ui::Text _text[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
-	uint8_t _isDirty[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	std::vector<pvr::ui::Text> _text;
+	std::vector<uint8_t> _isDirty;
+
 	uint32_t _lastUpdateText;
 	uint32_t _numElement;
 
@@ -68,7 +69,15 @@ class MultiBufferTextManager
 	};
 
 public:
-	MultiBufferTextManager() : _numElement(0) {}
+	MultiBufferTextManager() : _numElement(0)
+	{}
+
+	void initBufferStructures(uint32_t numBuffer)
+	{
+		_text.resize(numBuffer);
+		_isDirty.resize(numBuffer);
+	}
+
 	MultiBufferTextManager& addText(pvr::ui::Text text)
 	{
 		_text[_numElement++] = text;
@@ -148,7 +157,6 @@ struct DeviceResources
 	pvr::utils::vma::Allocator vmaAllocator;
 
 	pvrvk::CommandPool commandPool;
-	pvrvk::DescriptorPool descriptorPool;
 
 	// UIRenderer used to display text
 	pvr::ui::UIRenderer uiRenderer;
@@ -157,22 +165,21 @@ struct DeviceResources
 	MultiBufferTextManager titleText2;
 
 	pvr::ui::Image background;
-	pvr::Multi<pvr::ui::MatrixGroup> centralTextGroup;
+	std::vector<pvr::ui::MatrixGroup> centralTextGroup;
 	std::vector<pvr::ui::Text> centralTextLines;
 	pvr::ui::Text centralTitleLine1;
 	pvr::ui::Text centralTitleLine2;
 
-	pvr::Multi<pvrvk::ImageView> depthStencilImages;
-	pvr::Multi<pvrvk::Framebuffer> onScreenFramebuffer;
+	std::vector<pvrvk::Framebuffer> onScreenFramebuffer;
 
-	pvrvk::Semaphore imageAcquiredSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
-	pvrvk::Semaphore presentationSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
-	pvrvk::Fence perFrameResourcesFences[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	std::vector<pvrvk::Semaphore> imageAcquiredSemaphores;
+	std::vector<pvrvk::Semaphore> presentationSemaphores;
+	std::vector<pvrvk::Fence> perFrameResourcesFences;
 
-	pvr::Multi<pvrvk::SecondaryCommandBuffer> cmdBufferWithIntro;
-	pvr::Multi<pvrvk::SecondaryCommandBuffer> cmdBufferWithText;
-	pvr::Multi<pvrvk::SecondaryCommandBuffer> commandBufferSubtitle;
-	pvr::Multi<pvrvk::CommandBuffer> primaryCommandBuffer;
+	std::vector<pvrvk::SecondaryCommandBuffer> cmdBufferWithIntro;
+	std::vector<pvrvk::SecondaryCommandBuffer> cmdBufferWithText;
+	std::vector<pvrvk::SecondaryCommandBuffer> commandBufferSubtitle;
+	std::vector<pvrvk::CommandBuffer> primaryCommandBuffer;
 
 	~DeviceResources()
 	{
@@ -204,8 +211,8 @@ class VulkanIntroducingUIRenderer : public pvr::Shell
 
 	uint32_t _frameId;
 
-	bool _centralTextRecorded[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
-	bool _centralTitleRecorded[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	std::vector<bool> _centralTextRecorded;
+	std::vector<bool> _centralTitleRecorded;
 
 public:
 	virtual pvr::Result initApplication();
@@ -387,6 +394,25 @@ pvr::Result VulkanIntroducingUIRenderer::initView()
 
 	_deviceResources->uiRenderer.init(getWidth(), getHeight(), isFullScreen(), swapChainCreateOutput.renderPass, 0, getBackBufferColorspace() == pvr::ColorSpace::sRGB,
 		_deviceResources->commandPool, _deviceResources->queue, true, true, true, 256, 256);
+
+	const uint32_t swapchainLength = _deviceResources->swapchain->getSwapchainLength();
+	
+	_deviceResources->centralTextGroup.resize(swapchainLength);
+
+	_deviceResources->presentationSemaphores.resize(swapchainLength);
+	_deviceResources->imageAcquiredSemaphores.resize(swapchainLength);
+	_deviceResources->perFrameResourcesFences.resize(swapchainLength);
+
+	_deviceResources->cmdBufferWithIntro.resize(swapchainLength);
+	_deviceResources->cmdBufferWithText.resize(swapchainLength);
+	_deviceResources->commandBufferSubtitle.resize(swapchainLength);
+	_deviceResources->primaryCommandBuffer.resize(swapchainLength);
+
+	_centralTextRecorded.resize(swapchainLength);
+	_centralTitleRecorded.resize(swapchainLength);
+
+	_deviceResources->titleText1.initBufferStructures(swapchainLength);
+	_deviceResources->titleText2.initBufferStructures(swapchainLength);
 
 	// Create the sync objects and the commandbuffer
 	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)

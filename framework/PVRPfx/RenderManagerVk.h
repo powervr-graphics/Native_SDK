@@ -236,9 +236,13 @@ struct RendermanBufferBinding
 /// <summary>Part of RendermanStructure. This class is a Material's instances as used by a pipeline</summary>
 struct RendermanMaterialSubpassPipeline
 {
+	RendermanMaterialSubpassPipeline()
+	{ 
+		sets = std::vector<std::vector<pvrvk::DescriptorSet>>(4, std::vector<pvrvk::DescriptorSet>(8, 0));
+	}
 	RendermanPipeline* pipeline_; //!< The pipeline
 	RendermanSubpassMaterial* materialSubpass_; //!< A Material / Subpass reference
-	Multi<pvrvk::DescriptorSet> sets[4]; //!< The descriptor sets where all the material objects are stored
+	std::vector<std::vector<pvrvk::DescriptorSet>> sets; //!< The descriptor sets where all the material objects are stored
 
 	/// <summary>Get RendermanPipeline object (const)</summary>
 	/// <returns>RendermanPipeline</returns>
@@ -408,8 +412,8 @@ struct AutomaticNodeBufferEntrySemantic
 	NodeSemanticSetter semanticSetFunc; //!< A function pointer used to actually set the value (for example, &getModelViewProjection
 	uint16_t setId; //!< The descriptor Set ID this buffer belongs to
 	int16_t dynamicOffsetNodeId; //!< The Dynamic Offset of this node - calculated automatically, it is the index of the slice that this Node owns in pvrvk::Buffer.
-	uint32_t bufferDynamicOffset[pvrvk::FrameworkCaps::MaxSwapChains]; //!< The list of dynamic buffer offsets
-	uint32_t bufferDynamicSlice[pvrvk::FrameworkCaps::MaxSwapChains]; //!< The list of dynamic buffer slices
+	std::vector<uint32_t> bufferDynamicOffset; //!< The list of dynamic buffer offsets
+	std::vector<uint32_t> bufferDynamicSlice; //!< The list of dynamic buffer slices
 };
 
 /// <summary>An Automatic Node Semantic is a semantic that has been defined in the Effect ("consumed" by
@@ -473,8 +477,8 @@ struct RendermanNode
 	RendermanMaterialSubpassPipeline* pipelineMaterial_; //!< The parent PipelineMaterial
 	uint32_t batchId; //!< The Bone Batch ID - if not using Bone Batching, always 0
 	std::vector<uint32_t> dynamicClientId[4]; //!< The indexes of each dynamic slice that this node owns in its buffers, respectively. Fixed index is pvrvk::DescriptorSet.
-	std::vector<uint32_t> dynamicOffset[4][pvrvk::FrameworkCaps::MaxSwapChains]; //!< The (pre-calculated) byte offsets of the dynamic slices that this node owns in its buffers, respectively. Fixed index is pvrvk::DescriptorSet.
-	std::vector<uint32_t> dynamicSliceId[4][pvrvk::FrameworkCaps::MaxSwapChains]; //!< The (pre-calculated) byte offsets of the dynamic slices that this node owns in its buffers, respectively. Fixed index is pvrvk::DescriptorSet.
+	std::vector<std::vector<std::vector<uint32_t>>> dynamicOffset; //!< The (pre-calculated) byte offsets of the dynamic slices that this node owns in its buffers, respectively. Fixed index is pvrvk::DescriptorSet.
+	std::vector<std::vector<std::vector<uint32_t>>> dynamicSliceId; //!< The (pre-calculated) byte offsets of the dynamic slices that this node owns in its buffers, respectively. Fixed index is pvrvk::DescriptorSet.
 	std::vector<RendermanBufferDefinition*> dynamicBuffer[4]; //!< The Dynamic Buffers that this node is being contained in. Fixed index is pvrvk::DescriptorSet.
 	std::map<StringHash, UniformSemantic> uniformSemantics; //!< Uniform semantics used by this node.
 
@@ -642,12 +646,17 @@ struct RendermanSubpassGroupModel
 /// after that it is used for rendering directly when traversing the scene.</summary>
 struct RendermanPipeline
 {
+	RendermanPipeline()
+	{
+		fixedDescSet = std::vector<std::vector<pvrvk::DescriptorSet>>(4, std::vector<pvrvk::DescriptorSet>(8, nullptr));
+	}
+
 	struct RendermanSubpassGroup* subpassGroup_; //!< The Subpass Group this pipeline belongs to
 	std::vector<RendermanSubpassMaterial*> subpassMaterials; //!< Pointers to the Subpass Materials that this pipeline makes use of
 	pvrvk::GraphicsPipeline apiPipeline; //!< The Vulkan Pipeline object
 	effectvk::PipelineDef* pipelineInfo; //!< Additional info on the pipeline
 
-	Multi<pvrvk::DescriptorSet> fixedDescSet[4]; //!< Storage for the Fixed descriptor sets. A set is fixed if it contains no members with semantics.
+	std::vector<std::vector<pvrvk::DescriptorSet>> fixedDescSet; //!< Storage for the Fixed descriptor sets. A set is fixed if it contains no members with semantics.
 	bool descSetIsFixed[4]; //!< If it is "fixed", it means that it is set by the PFX and no members of it are exported through semantics
 	bool descSetIsMultibuffered[4]; //!< If it is "multibuffered", it means that it points to different buffers based on the swapchain index
 	bool descSetExists[4]; //!< If it does not "exist", do not do anything for it...
@@ -1029,7 +1038,7 @@ struct RendermanSubpass
 /// <summary>Part of RendermanStructure. This class contains the different subpasses, exactly mirroring the PFX pass.</summary>
 struct RendermanPass
 {
-	pvrvk::Framebuffer framebuffer[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)]; //!< The Framebuffer object chain this pass renders to
+	std::vector<pvrvk::Framebuffer> framebuffer; //!< The Framebuffer object chain this pass renders to
 	RendermanEffect* renderEffect_; //!< The parent Effect this pass belongs to
 	std::deque<RendermanSubpass> subpasses; //!< The subpasses this pass contains
 
@@ -1503,6 +1512,7 @@ private:
 	std::map<assets::Mesh*, std::vector<AttributeLayout>*> meshAttributeLayout; // points to finalPipeAttributeLayouts
 	IAssetProvider* _assetProvider;
 	pvr::utils::vma::Allocator _vmaAllocator;
+	bool _astcSupported;
 
 	/// <summary>Generate the RenderManager, create the structure, add all rendering effects, create the API objects, and
 	/// in general, cook everything. Call AFTER any calls to addEffect(...) and addModel...(...). Call BEFORE any
@@ -1514,7 +1524,7 @@ private:
 public:
 	/// <summary>Constructor. Creates an empty rendermanager. In order to use it, you need to addEffect() and addModel() to
 	/// populate it, then buildRenderObjects(), then createAutomaticSemantics(), generate</summary>
-	RenderManager() {}
+	RenderManager() : _astcSupported(false) {}
 
 	/// <summary>Get the Asset Provider object that was set when initializing this RenderManager</summary>
 	/// <returns>The Asset Provider object that was set when initializing this RenderManager</returns>
@@ -1691,6 +1701,10 @@ public:
 	/// <returns>The allocator that this RenderManager uses.</returns>
 	const utils::vma::Allocator& getAllocator() const { return _vmaAllocator; }
 
+	/// <summary>Getter of RenderManager::_astcSupported.</summary>
+	/// <returns>Copy value of RenderManager::_astcSupported.</returns>
+	bool getASTCSupported() { return _astcSupported; }
+
 	/// <summary>Add a model for rendering. This method is a shortcut for adding a model to ALL renderpasses, ALL
 	/// subpasses.</summary>
 	/// <param name="model">A pvr::assets::Model handle to add for rendering. Default 0.</param>
@@ -1812,13 +1826,22 @@ public:
 
 		new_effect.passes.resize(effectapi->getNumPasses());
 
+		uint32_t swapchainLength = _swapchain->getSwapchainLength();
+
 		for (uint32_t passId = 0; passId < effectapi->getNumPasses(); ++passId)
 		{
 			RendermanPass& pass = new_effect.passes[passId];
 			pass.subpasses.resize(effectapi->getPass(passId).subpasses.size());
-			for (uint32_t i = 0; i < ARRAY_SIZE(pass.framebuffer); ++i) { pass.framebuffer[i] = effectapi->getPass(passId).framebuffers[i]; }
+			pass.framebuffer.resize(swapchainLength);
+
+			for (uint32_t i = 0; i < swapchainLength; ++i)
+			{ pass.framebuffer[i] = effectapi->getPass(passId).framebuffers[i];
+			}
+			
 			for (uint32_t subpassId = 0; subpassId < effectapi->getPass(passId).subpasses.size(); ++subpassId)
-			{ pass.subpasses[subpassId].groups.resize(effectapi->getPass(passId).subpasses[subpassId].groups.size()); }
+			{
+				pass.subpasses[subpassId].groups.resize(effectapi->getPass(passId).subpasses[subpassId].groups.size());
+			}
 		}
 
 		return static_cast<uint32_t>(_renderStructure.effects.size() - 1);
@@ -1899,6 +1922,10 @@ public:
 	{
 		for (RendermanEffect& effect : _renderStructure.effects) { effect.updateAutomaticSemantics(swapidx); }
 	}
+
+	/// <summary>Setter of RenderManager::_astcSupported
+	/// <param name="astcSupported">Value to set</param>
+	void setASTCSupported(bool astcSupported) { _astcSupported = astcSupported; }
 };
 
 // This command is used to update uniform semantics directly into the TypedMem objects
@@ -2243,8 +2270,9 @@ inline void RendermanNode::createAutomaticSemantics()
 			autosem.semanticSetFunc = setter;
 			autosem.structuredBufferView = reqsem.second.structuredBufferView;
 			autosem.semantic = &reqsem.first;
-			memset(autosem.bufferDynamicOffset, 0, sizeof(autosem.bufferDynamicOffset));
-			memset(autosem.bufferDynamicSlice, 0, sizeof(autosem.bufferDynamicSlice));
+			autosem.bufferDynamicOffset.resize(numSwapchains);
+			autosem.bufferDynamicSlice.resize(numSwapchains);
+			
 			uint32_t i = 0;
 			for (; i < this->dynamicBuffer[autosem.setId].size(); ++i)
 			{

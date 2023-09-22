@@ -108,11 +108,16 @@ android {
 	"${project.projectDir}/../GBufferVertexShader.vsh.spv",
 	"${project.projectDir}/../../../assets/RayTracing/SoftShadows.POD",
 	"${project.projectDir}/../../../assets/RayTracing/Bricks.pvr",
+	"${project.projectDir}/../../../assets/RayTracing/Bricks_astc.pvr",
 	"${project.projectDir}/../../../assets/RayTracing/Carpet.pvr",
-	"${project.projectDir}/../../../assets/RayTracing/marble.pvr",
+	"${project.projectDir}/../../../assets/RayTracing/Carpet_astc.pvr",
+	"${project.projectDir}/../../../assets/RayTracing/Marble.pvr",
 	"${project.projectDir}/../../../assets/RayTracing/Orange.pvr",
+	"${project.projectDir}/../../../assets/RayTracing/Orange_astc.pvr",
 	"${project.projectDir}/../../../assets/RayTracing/RustGreen.pvr",
+	"${project.projectDir}/../../../assets/RayTracing/RustGreen_astc.pvr",
 	"${project.projectDir}/../../../assets/RayTracing/Shadow.pvr",
+	"${project.projectDir}/../../../assets/RayTracing/Shadow_astc.pvr",
 	)
 	
 	// Add a task for copying our assets from their original location (${project.projectDir}...) to the assets/ folder for packaging

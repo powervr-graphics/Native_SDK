@@ -35,7 +35,7 @@ add_platform_specific_executable(VulkanParticleSystem ${SRC_FILES})
 add_assets_to_target(VulkanParticleSystem
 	SOURCE_GROUP "assets" 
 	ASSET_FOLDER ${ASSET_FOLDER} 
-	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/ParticleSystem
+	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/GeneralPurposeMesh
 	FILE_LIST 
 		sphere.pod)
 

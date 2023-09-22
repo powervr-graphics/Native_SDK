@@ -2,7 +2,7 @@
 IntroducingPVRUtils
 ===================
 
-.. figure:: ./.png
+.. figure:: ./PipelineCache.png
 
 This example renders a ``.pod`` scene using a a simple vertex and fragment shader, making use of the PVRUtils library for various utility functions.
 

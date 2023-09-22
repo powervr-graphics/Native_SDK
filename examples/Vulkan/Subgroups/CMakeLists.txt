@@ -31,7 +31,7 @@ add_platform_specific_executable(VulkanSubgroups ${SRC_FILES})
 add_assets_to_target(VulkanSubgroups
 	SOURCE_GROUP "assets" 
 	ASSET_FOLDER ${ASSET_FOLDER} 
-	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/Media/Fonts
+	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/Fonts
 	FILE_LIST 
 		Inconsolata.pvr)
 

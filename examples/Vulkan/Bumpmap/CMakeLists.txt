@@ -35,7 +35,9 @@ add_assets_to_target(VulkanBumpmap
 	FILE_LIST 
 		Satyr.pod
 		MarbleNormalMap.pvr
-		Marble.pvr)
+		MarbleNormalMap_astc.pvr
+		Marble.pvr
+		Marble_astc.pvr)
 
 ### Shaders that need to be compiled to SpirV (Vulkan) ###
 # During build time, glslangvalidator will be called to create a "<shadername.extension>.spv" file

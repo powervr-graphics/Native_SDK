@@ -52,22 +52,22 @@ struct DeviceResources
 
 	pvrvk::Buffer graphicsGaussianConfigBuffer;
 
-	pvrvk::Semaphore imageAcquiredSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
-	pvrvk::Semaphore presentationSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
-	pvrvk::Fence perFrameResourcesFences[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	std::vector<pvrvk::Semaphore> imageAcquiredSemaphores;
+	std::vector<pvrvk::Semaphore> presentationSemaphores;
+	std::vector<pvrvk::Fence> perFrameResourcesFences;
 
-	pvr::Multi<pvrvk::Framebuffer> onScreenFramebuffer;
-	pvr::Multi<pvrvk::CommandBuffer> mainCommandBuffers;
-	pvr::Multi<pvrvk::SecondaryCommandBuffer> uiRendererCommandBuffers;
-	pvr::Multi<pvrvk::SecondaryCommandBuffer> graphicsCommandBuffers;
-	pvr::Multi<pvrvk::SecondaryCommandBuffer> computeCommandBuffers;
-	pvr::Multi<pvrvk::ImageView> horizontallyBlurredImageViews;
-
-	// Compute based Horizontal Gaussian Blur pass
-	pvr::Multi<pvrvk::DescriptorSet> computeDescriptorSets;
+	std::vector<pvrvk::Framebuffer> onScreenFramebuffer;
+	std::vector<pvrvk::CommandBuffer> mainCommandBuffers;
+	std::vector<pvrvk::SecondaryCommandBuffer> uiRendererCommandBuffers;
+	std::vector<pvrvk::SecondaryCommandBuffer> graphicsCommandBuffers;
+	std::vector<pvrvk::SecondaryCommandBuffer> computeCommandBuffers;
+	std::vector<pvrvk::ImageView> horizontallyBlurredImageViews;
 
 	// Compute based Horizontal Gaussian Blur pass
-	pvr::Multi<pvrvk::DescriptorSet> graphicsDescriptorSets;
+	std::vector<pvrvk::DescriptorSet> computeDescriptorSets;
+
+	// Compute based Horizontal Gaussian Blur pass
+	std::vector<pvrvk::DescriptorSet> graphicsDescriptorSets;
 
 	// Descriptor set layouts
 	pvrvk::DescriptorSetLayout computeDescriptorSetLayout;
@@ -122,6 +122,8 @@ private:
 	uint32_t _graphicsSsboSize;
 	bool _useMultiQueue;
 
+	uint32_t _swapchainLength;
+
 public:
 	virtual pvr::Result initApplication();
 	virtual pvr::Result initView();
@@ -155,7 +157,7 @@ void VulkanGaussianBlur::loadTextures(pvrvk::CommandBuffer& cmdBuffers)
 			pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, _deviceResources->vmaAllocator, _deviceResources->vmaAllocator);
 
 	// Create 1 intermediate image per frame.
-	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); i++)
+	for (uint32_t i = 0; i < _swapchainLength; i++)
 	{
 		pvrvk::Image intermediateTexture = pvr::utils::createImage(_deviceResources->device,
 			pvrvk::ImageCreateInfo(pvrvk::ImageType::e_2D, pvr::utils::convertToPVRVkPixelFormat(texture.getPixelFormat(), texture.getColorSpace(), texture.getChannelType()),
@@ -233,7 +235,7 @@ void VulkanGaussianBlur::createResources()
 	{
 		// Update the descriptor sets
 		std::vector<pvrvk::WriteDescriptorSet> writeDescSets;
-		for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
+		for (uint32_t i = 0; i < _swapchainLength; ++i)
 		{
 			// Compute descriptor sets
 			{
@@ -341,7 +343,7 @@ void VulkanGaussianBlur::recordCommandBuffer()
 {
 	const pvrvk::ClearValue clearValue[] = { pvrvk::ClearValue(0.0f, 0.0f, 0.0f, 1.0f) };
 
-	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
+	for (uint32_t i = 0; i < _swapchainLength; ++i)
 	{
 		// UI Renderer
 		_deviceResources->uiRendererCommandBuffers[i]->begin(_deviceResources->onScreenFramebuffer[i], 0, pvrvk::CommandBufferUsageFlags::e_RENDER_PASS_CONTINUE_BIT);
@@ -539,13 +541,27 @@ pvr::Result VulkanGaussianBlur::initView()
 	_deviceResources->swapchain = swapChainCreateOutput.swapchain;
 	_deviceResources->onScreenFramebuffer = swapChainCreateOutput.framebuffer;
 
+	_swapchainLength = _deviceResources->swapchain->getSwapchainLength();
+
+	_deviceResources->imageAcquiredSemaphores.resize(_swapchainLength);
+	_deviceResources->presentationSemaphores.resize(_swapchainLength);
+	_deviceResources->perFrameResourcesFences.resize(_swapchainLength);
+
+	_deviceResources->mainCommandBuffers.resize(_swapchainLength);
+	_deviceResources->uiRendererCommandBuffers.resize(_swapchainLength);
+	_deviceResources->graphicsCommandBuffers.resize(_swapchainLength);
+	_deviceResources->computeCommandBuffers.resize(_swapchainLength);
+	_deviceResources->horizontallyBlurredImageViews.resize(_swapchainLength);
+	_deviceResources->computeDescriptorSets.resize(_swapchainLength);
+	_deviceResources->graphicsDescriptorSets.resize(_swapchainLength);
+
 	_deviceResources->commandPool = _deviceResources->device->createCommandPool(pvrvk::CommandPoolCreateInfo(_deviceResources->queues[0]->getFamilyIndex()));
 
-	_deviceResources->descriptorPool =
-		_deviceResources->device->createDescriptorPool(pvrvk::DescriptorPoolCreateInfo(10).addDescriptorInfo(pvrvk::DescriptorType::e_STORAGE_IMAGE, 16));
+	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(
+		pvrvk::DescriptorPoolCreateInfo(8 * _swapchainLength).addDescriptorInfo(pvrvk::DescriptorType::e_STORAGE_IMAGE, 8 * _swapchainLength));
 
 	// Create per frame resource
-	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
+	for (uint32_t i = 0; i < _swapchainLength; ++i)
 	{
 		_deviceResources->mainCommandBuffers[i] = _deviceResources->commandPool->allocateCommandBuffer();
 		_deviceResources->uiRendererCommandBuffers[i] = _deviceResources->commandPool->allocateSecondaryCommandBuffer();
@@ -663,7 +679,7 @@ pvr::Result VulkanGaussianBlur::renderFrame()
 	// As above we must present using the same VkQueue as submitted to previously
 	_deviceResources->queues[_queueIndex]->present(presentInfo);
 
-	_frameId = (_frameId + 1) % _deviceResources->swapchain->getSwapchainLength();
+	_frameId = (_frameId + 1) % _swapchainLength;
 
 	if (_useMultiQueue) { _queueIndex = (_queueIndex + 1) % 2; }
 

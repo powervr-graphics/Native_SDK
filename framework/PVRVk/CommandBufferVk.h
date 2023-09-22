@@ -10,6 +10,7 @@
 #include "PVRVk/GraphicsPipelineVk.h"
 #include "PVRVk/ComputePipelineVk.h"
 #include "PVRVk/RaytracingPipelineVk.h"
+#include "PVRVk/MemoryBarrierVk.h"
 #include "PVRVk/EventVk.h"
 #include "PVRVk/FramebufferVk.h"
 #include "PVRVk/RenderPassVk.h"
@@ -51,6 +52,9 @@ protected:
 	/// <summary>Specifies whether the command buffer is currently in the recording state which is controlled via calling the begin function.</summary>
 	bool _isRecording;
 
+	/// <summary>True in case the extension VK_KHR_synchronization2 is supported, needed to use synchronizaton APIs using this extension like pipelineBarrier2/// </summary>
+	bool _VKSynchronization2IsSupported;
+
 public:
 	//!\cond NO_DOXYGEN
 	DECLARE_NO_COPY_SEMANTICS(CommandBufferBase_)
@@ -60,7 +64,7 @@ public:
 	/// <param name="pool">The pool from which the command buffer was allocated.</param>
 	/// <param name="myHandle">The vulkan handle for this command buffer.</param>
 	CommandBufferBase_(make_shared_enabler, const DeviceWeakPtr& device, CommandPool pool, VkCommandBuffer myHandle)
-		: PVRVkDeviceObjectBase(device, myHandle), DeviceObjectDebugUtils(), _pool(pool), _isRecording(false)
+		: PVRVkDeviceObjectBase(device, myHandle), DeviceObjectDebugUtils(), _pool(pool), _isRecording(false), _VKSynchronization2IsSupported(false)
 	{}
 
 	/// <summary>Destructor. Virtual (for polymorphic use).</summary>
@@ -288,6 +292,12 @@ public:
 	/// <param name="barriers">A set of memory barriers to be used in the pipeline barrier.</param>
 	/// <param name="dependencyByRegion">A Specifes whether the dependencies in terms of how the execution and memory dependencies are formed.</param>
 	void pipelineBarrier(PipelineStageFlags srcStage, PipelineStageFlags dstStage, const MemoryBarrierSet& barriers, bool dependencyByRegion = true);
+
+	/// <summary>Add a memory barrier to the command stream, forcing preceeding commands to be written before
+	/// succeeding commands are executed, using the APIs from the extension VK_KHR_synchronization2.</summary>
+	/// <param name="barriers">A set of memory barriers to be used in the pipeline barrier.</param>
+	/// <param name="dependencyByRegion">A Specifes whether the dependencies in terms of how the execution and memory dependencies are formed.</param>
+	void pipelineBarrier2(const MemoryBarrierSet2& barriers, bool dependencyByRegion = true);
 
 	/// <summary>Defines a memory dependency between prior event signal operations and subsequent commands.</summary>
 	/// <param name="event">The event object to wait on.</param>
@@ -698,6 +708,13 @@ public:
 		VkStridedDeviceAddressRegionKHR hit = VkStridedDeviceAddressRegionKHR{ hitTable.getDeviceAddress(), hitTable.getStride(), hitTable.getSize() };
 		VkStridedDeviceAddressRegionKHR callable = VkStridedDeviceAddressRegionKHR{ callableTable.getDeviceAddress(), callableTable.getStride(), callableTable.getSize() };
 		getDevice()->getVkBindings().vkCmdTraceRaysKHR(getVkHandle(), &raygen, &miss, &hit, &callable, width, height, depth);
+	}
+
+	/// <summary>Setter of member variablle _VKSynchronization2IsSupported.</summary>
+	/// <param name="value">Value to set _VKSynchronization2IsSupported to.</param>
+	void setVKSynchronization2IsSupported(bool value)
+	{
+		_VKSynchronization2IsSupported = value;
 	}
 };
 

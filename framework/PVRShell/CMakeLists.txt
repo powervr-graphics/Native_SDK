@@ -50,10 +50,12 @@ elseif(ANDROID)
 	
 	list(APPEND PVRShell_PRIVATE_INCLUDE_DIRECTORIES ${ANDROID_NDK}/sources/android/native_app_glue)
 elseif(UNIX)
-	list(APPEND PVRShell_OS_HEADERS
-		OS/Linux/InternalOS.h)
-	list(APPEND PVRShell_SRC
-		OS/Linux/InternalOS.cpp)
+	if(NOT CMAKE_SYSTEM_NAME MATCHES "QNX")
+		list(APPEND PVRShell_OS_HEADERS
+			OS/Linux/InternalOS.h)
+		list(APPEND PVRShell_SRC
+			OS/Linux/InternalOS.cpp)
+	endif()
 
 	# We support building for several Windowing Systems. 
 	# Typical desktop systems support X11 and Wayland is catching on. 
@@ -134,6 +136,10 @@ elseif(UNIX)
 			
 			list(APPEND PVRShell_PRIVATE_LINK_LIBS ${WAYLAND_CLIENT_LIBRARIES} ${lib-ffi})
 			list(APPEND PVRShell_PRIVATE_INCLUDE_DIRECTORIES ${WAYLAND_CLIENT_INCLUDE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
+		elseif(${PVR_WINDOW_SYSTEM} STREQUAL Screen)
+			if(CMAKE_SYSTEM_NAME MATCHES "QNX")
+				list(APPEND PVRShell_PRIVATE_LINK_LIBS "screen")
+			endif()
 		# The user has requested no windowing system(direct-to-framebuffer)
 		elseif(${PVR_WINDOW_SYSTEM} STREQUAL NullWS) 
 		else()
@@ -144,9 +150,15 @@ elseif(UNIX)
 		# Add the PVRShell platform specific sources 
 		if("${PVR_WINDOW_SYSTEM}" STREQUAL "NullWS")
 			message("CMake: Generating PVRShell for NullWS")
-			list(APPEND PVRShell_SRC
-				OS/Linux/NullWS/ShellOS.cpp
-				EntryPoint/main/main.cpp)
+			if(CMAKE_SYSTEM_NAME MATCHES "QNX")
+				list(APPEND PVRShell_SRC
+					OS/QNXNullWS/ShellOS.cpp
+					EntryPoint/main/main.cpp)
+			else()
+				list(APPEND PVRShell_SRC
+					OS/Linux/NullWS/ShellOS.cpp
+					EntryPoint/main/main.cpp)
+			endif()
 		elseif("${PVR_WINDOW_SYSTEM}" STREQUAL "X11")
 			message("CMake: Generating PVRShell for X11")
 			list(APPEND PVRShell_SRC
@@ -162,7 +174,14 @@ elseif(UNIX)
 			list(APPEND PVRShell_SRC
 				OS/Linux/Wayland/ShellOS.cpp
 				EntryPoint/main/main.cpp)
-		endif()	
+		elseif("${PVR_WINDOW_SYSTEM}" STREQUAL "Screen")
+			if(CMAKE_SYSTEM_NAME MATCHES "QNX")
+				message("CMake: Generating PVRShell for Screen")
+				list(APPEND PVRShell_SRC
+					OS/QNXScreen/ShellOS.cpp
+					EntryPoint/main/main.cpp)
+			endif()
+		endif()
 	else()
 		message(FATAL_ERROR "PVR_WINDOW_SYSTEM (Window System) Variable has been not set for PVRShell. Supported windowing systems can be enabled by passing: -DPVR_WINDOW_SYSTEM=NullWS, -DPVR_WINDOW_SYSTEM=X11, -DPVR_WINDOW_SYSTEM=XCB, -DPVR_WINDOW_SYSTEM=Wayland, -DPVR_WINDOW_SYSTEM=Screen to CMake")
 	endif()

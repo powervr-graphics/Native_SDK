@@ -30,8 +30,6 @@ struct sceneDesc
 
 layout(location = 0) rayPayloadInEXT hitPayload prd;
 
-//layout(binding = 0, set = 0) uniform accelerationStructureEXT topLevelAS; // << REMOVE
-
 layout(binding = 1, set = 1, scalar) buffer MatColorBufferObject { Material m[]; } materials[];
 layout(binding = 2, set = 1, scalar) buffer ScnDesc { sceneDesc i[]; } scnDesc;
 layout(binding = 3, set = 1) uniform sampler2D textureSamplers[];

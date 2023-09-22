@@ -180,7 +180,7 @@ struct DeviceResources
 	pvrvk::Framebuffer gaussianBlurVerticalPassFramebuffer;
 
 	/// <summary>Array with the on screen framebuffers (as many as the swap chain number of images).</summary>
-	pvr::Multi<pvrvk::Framebuffer> onScreenFramebuffer;
+	std::vector<pvrvk::Framebuffer> onScreenFramebuffer;
 
 	/// <summary>render pass used for the GBuffer pass.</summary>
 	pvrvk::RenderPass gbufferRenderPass;
@@ -310,13 +310,13 @@ struct DeviceResources
 	std::vector<pvr::utils::SceneDescription> _sceneDescription;
 
 	/// <summary>Semaphores for when acquiring the next image from the swap chain, one per swapchain image.</summary>
-	pvrvk::Semaphore imageAcquiredSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	std::vector<pvrvk::Semaphore> imageAcquiredSemaphores;
 
 	/// <summary>Semaphores for when submitting the command buffer for the current swapchain image.</summary>
-	pvrvk::Semaphore presentationSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	std::vector<pvrvk::Semaphore> presentationSemaphores;
 
 	/// <summary>Fences for each of the per-frame command buffers, one per swapchain image.</summary>
-	pvrvk::Fence perFrameResourcesFences[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	std::vector<pvrvk::Fence> perFrameResourcesFences;
 
 	/// <summary>Graphics pipeline used in the Deferred shading pass to fill the G-Buffer.</summary>
 	pvrvk::GraphicsPipeline gbufferPipeline;
@@ -470,6 +470,9 @@ public:
 
 	/// <summary>Depth stencil format to use.</summary>
 	pvrvk::Format _depthStencilFormat;
+
+	/// <summary>Flag to know whether ASCT textures are supported in the current physical device.</summary>
+	bool _astcSupported;
 
 	/// <summary>Default constructor.</summary>
 	VulkanHybridTransparency()
@@ -820,12 +823,6 @@ pvr::Result VulkanHybridTransparency::initView()
 	_deviceResources->commandPool = _deviceResources->device->createCommandPool(
 		pvrvk::CommandPoolCreateInfo(_deviceResources->queueAccessInfo.familyId, pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT));
 
-	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(pvrvk::DescriptorPoolCreateInfo()
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 48)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 48)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 48)
-																						  .setMaxDescriptorSets(32));
-
 	// create vulkan memory allocator
 	_deviceResources->vmaAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
 
@@ -854,6 +851,16 @@ pvr::Result VulkanHybridTransparency::initView()
 
 	// Get the number of swap images
 	_numSwapImages = _deviceResources->swapchain->getSwapchainLength();
+
+	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(pvrvk::DescriptorPoolCreateInfo()
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 16 * _numSwapImages)
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 16 * _numSwapImages)
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 16 * _numSwapImages)
+																						  .setMaxDescriptorSets(16 * _numSwapImages));
+
+	_deviceResources->imageAcquiredSemaphores.resize(_numSwapImages);
+	_deviceResources->presentationSemaphores.resize(_numSwapImages);
+	_deviceResources->perFrameResourcesFences.resize(_numSwapImages);
 
 	// Get current swap index
 	_swapchainIndex = _deviceResources->swapchain->getSwapchainIndex();
@@ -911,6 +918,8 @@ pvr::Result VulkanHybridTransparency::initView()
 
 	// Create the pipeline cache
 	_deviceResources->pipelineCache = _deviceResources->device->createPipelineCache();
+
+	_astcSupported = pvr::utils::isSupportedFormat(_deviceResources->device->getPhysicalDevice(), pvrvk::Format::e_ASTC_4x4_UNORM_BLOCK);
 
 	_deviceResources->cmdBufferMainDeferred[0]->begin();
 
@@ -1002,7 +1011,7 @@ pvr::Result VulkanHybridTransparency::renderFrame()
 	presentInfo.imageIndices = &_swapchainIndex;
 	_deviceResources->queue->present(presentInfo);
 
-	_frameId = (_frameId + 1) % _deviceResources->swapchain->getSwapchainLength();
+	_frameId = (_frameId + 1) % _numSwapImages;
 
 	return pvr::Result::Success;
 }
@@ -1766,8 +1775,8 @@ void VulkanHybridTransparency::createTextures(pvrvk::CommandBuffer& uploadCmd)
 		tex.image = tex.imageView->getImage();
 	}
 
-	_deviceResources->skyBoxMap =
-		_deviceResources->device->createImageView(pvrvk::ImageViewCreateInfo(pvr::utils::loadAndUploadImage(_deviceResources->device, "LancellottiChapel.pvr", true, uploadCmd,
+	_deviceResources->skyBoxMap = _deviceResources->device->createImageView(
+		pvrvk::ImageViewCreateInfo(pvr::utils::loadAndUploadImage(_deviceResources->device, std::string("LancellottiChapel") + (_astcSupported ? "_astc.pvr" : ".pvr"), true, uploadCmd,
 			*this, pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, nullptr, _deviceResources->vmaAllocator, _deviceResources->vmaAllocator)));
 }
 
@@ -1921,7 +1930,7 @@ void VulkanHybridTransparency::buildCameraBuffer()
 	desc.addElement(ShaderStructFieldName::inverseViewProjectionMatrix, pvr::GpuDatatypes::mat4x4);
 	desc.addElement(ShaderStructFieldName::cameraPosition, pvr::GpuDatatypes::vec4);
 
-	_deviceResources->globalBufferView.initDynamic(desc, _deviceResources->swapchain->getSwapchainLength(), pvr::BufferUsageFlags::UniformBuffer,
+	_deviceResources->globalBufferView.initDynamic(desc, _numSwapImages, pvr::BufferUsageFlags::UniformBuffer,
 		static_cast<uint32_t>(_deviceResources->device->getPhysicalDevice()->getProperties().getLimits().getMinUniformBufferOffsetAlignment()));
 	_deviceResources->globalBuffer = pvr::utils::createBuffer(_deviceResources->device,
 		pvrvk::BufferCreateInfo(_deviceResources->globalBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
@@ -1933,7 +1942,6 @@ void VulkanHybridTransparency::buildCameraBuffer()
 
 void VulkanHybridTransparency::buildSceneElementTransformBuffer()
 {
-	pvrvk::WriteDescriptorSet descUpdate[pvrvk::FrameworkCaps::MaxSwapChains];
 	pvr::utils::StructuredMemoryDescription description;
 	description.addElement("ModelMatrix", pvr::GpuDatatypes::mat4x4);
 
@@ -1969,7 +1977,7 @@ void VulkanHybridTransparency::buildLightDataBuffer()
 	desc.addElement(ShaderStructFieldName::lightPosition, pvr::GpuDatatypes::vec4);
 	desc.addElement(ShaderStructFieldName::ambientColorIntensity, pvr::GpuDatatypes::vec4);
 
-	_deviceResources->lightDataBufferView.initDynamic(desc, _deviceResources->swapchain->getSwapchainLength(), pvr::BufferUsageFlags::UniformBuffer,
+	_deviceResources->lightDataBufferView.initDynamic(desc, _numSwapImages, pvr::BufferUsageFlags::UniformBuffer,
 		static_cast<uint32_t>(_deviceResources->device->getPhysicalDevice()->getProperties().getLimits().getMinUniformBufferOffsetAlignment()));
 
 	_deviceResources->lightDataBuffer = pvr::utils::createBuffer(_deviceResources->device,
@@ -1983,14 +1991,17 @@ void VulkanHybridTransparency::buildLightDataBuffer()
 void VulkanHybridTransparency::buildMaterialBuffer(pvrvk::CommandBuffer& uploadCmd)
 {
 	std::vector<std::string> vectorTextureName{
-		"Alabaster.pvr",
-		"DarkWood.pvr",
-		"marble.pvr",
-		"StainedGlass_01.pvr",
-		"StainedGlass_02.pvr",
+		"Alabaster",
+		"DarkWood",
+		"marble",
+		"StainedGlass_01",
+		"StainedGlass_02",
 	};
 
-	for (std::string& name : vectorTextureName) { _deviceResources->textures.push_back(TextureAS{ name, pvrvk::Format::e_R8G8B8A8_SRGB, VK_NULL_HANDLE, VK_NULL_HANDLE }); }
+	for (std::string& name : vectorTextureName)
+	{
+		_deviceResources->textures.push_back(TextureAS{ name + (_astcSupported ? "_astc.pvr" : ".pvr"), pvrvk::Format::e_R8G8B8A8_SRGB, VK_NULL_HANDLE, VK_NULL_HANDLE });
+	}
 
 	const int numMaterial = 6;
 	std::vector<Material> vectorMaterial(numMaterial);

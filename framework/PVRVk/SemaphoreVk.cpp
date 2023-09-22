@@ -17,6 +17,7 @@ Semaphore_::Semaphore_(make_shared_enabler, const DeviceWeakPtr& device, const S
 	VkSemaphoreCreateInfo vkCreateInfo = {};
 	vkCreateInfo.sType = static_cast<VkStructureType>(StructureType::e_SEMAPHORE_CREATE_INFO);
 	vkCreateInfo.flags = static_cast<VkSemaphoreCreateFlags>(_createInfo.getFlags());
+
 	vkThrowIfFailed(getDevice()->getVkBindings().vkCreateSemaphore(getDevice()->getVkHandle(), &vkCreateInfo, nullptr, &_vkHandle), "Failed to create Semaphore");
 }
 

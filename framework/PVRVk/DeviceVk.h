@@ -232,6 +232,11 @@ public:
 	/// <returns>Return a valid object if success</returns>.
 	Semaphore createSemaphore(const SemaphoreCreateInfo& createInfo = SemaphoreCreateInfo());
 
+	/// <summary>Create timeline semaphore</summary>
+	/// <param name="createInfo">Semaphore create info</param>
+	/// <returns>Return a valid object if success</returns>.
+	TimelineSemaphore createTimelineSemaphore(SemaphoreCreateInfo& createInfo);
+
 	/// <summary>Create QueryPool</summary>
 	/// <param name="createInfo">QueryPool create info</param>
 	/// <returns>return a valid object if success</returns>.

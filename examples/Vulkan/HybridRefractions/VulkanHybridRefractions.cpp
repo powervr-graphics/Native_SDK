@@ -176,7 +176,7 @@ struct DeviceResources
 	pvrvk::Framebuffer gaussianBlurVerticalPassFramebuffer;
 
 	/// <summary>Array with the on screen framebuffers (as many as the swap chain number of images).</summary>
-	pvr::Multi<pvrvk::Framebuffer> onScreenFramebuffer;
+	std::vector<pvrvk::Framebuffer> onScreenFramebuffer;
 
 	/// <summary>render pass used for the GBuffer pass.</summary>
 	pvrvk::RenderPass gbufferRenderPass;
@@ -306,13 +306,13 @@ struct DeviceResources
 	std::vector<pvr::utils::SceneDescription> _sceneDescription;
 
 	/// <summary>Semaphores for when acquiring the next image from the swap chain, one per swapchain image.</summary>
-	pvrvk::Semaphore imageAcquiredSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	std::vector<pvrvk::Semaphore> imageAcquiredSemaphores;
 
 	/// <summary>Semaphores for when submitting the command buffer for the current swapchain image.</summary>
-	pvrvk::Semaphore presentationSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	std::vector < pvrvk::Semaphore> presentationSemaphores;
 
 	/// <summary>Fences for each of the per-frame command buffers, one per swapchain image.</summary>
-	pvrvk::Fence perFrameResourcesFences[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	std::vector<pvrvk::Fence> perFrameResourcesFences;
 
 	/// <summary>Graphics pipeline used in the Deferred shading pass to fill the G-Buffer.</summary>
 	pvrvk::GraphicsPipeline gbufferPipeline;
@@ -453,6 +453,9 @@ public:
 
 	/// <summary>Weights for the sampling texture coordinates for the Gaussian blur passes using linear sampling.</summary>
 	std::vector<double> _gaussianWeights;
+
+	/// <summary>Flag to know whether astc iss upported by the physical device.</summary>
+	bool _astcSupported;
 
 	/// <summary>Filter performance warning UNASSIGNED-BestPractices-vkAllocateMemory-small-allocation Best Practices which
 	/// has ID -602362517 for TLAS buffer build and update. This warning recommends buffer allocations to be of size at least
@@ -663,7 +666,7 @@ public:
 pvr::Result VulkanHybridRefractions::initApplication()
 {
 	const char* const torusMeshFile = "Refractions.POD"; // Name of the POD scene file with the torus mesh
-	const char* const baloonMeshFile = "Balloon.POD"; // Name of the POD scene file with the balloon mesh
+	const char* const baloonMeshFile = "Balloon.pod"; // Name of the POD scene file with the balloon mesh
 
 	//  Load the scene, two torus mesh and three baloon mesh
 	_models.resize(5);
@@ -806,12 +809,6 @@ pvr::Result VulkanHybridRefractions::initView()
 	_deviceResources->commandPool = _deviceResources->device->createCommandPool(
 		pvrvk::CommandPoolCreateInfo(_deviceResources->queueAccessInfo.familyId, pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT));
 
-	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(pvrvk::DescriptorPoolCreateInfo()
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 48)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 48)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 48)
-																						  .setMaxDescriptorSets(32));
-
 	// create vulkan memory allocator
 	_deviceResources->vmaAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
 
@@ -841,8 +838,18 @@ pvr::Result VulkanHybridRefractions::initView()
 	// Get the number of swap images
 	_numSwapImages = _deviceResources->swapchain->getSwapchainLength();
 
+	_deviceResources->imageAcquiredSemaphores.resize(_numSwapImages);
+	_deviceResources->presentationSemaphores.resize(_numSwapImages);
+	_deviceResources->perFrameResourcesFences.resize(_numSwapImages);
+
 	// Get current swap index
 	_swapchainIndex = _deviceResources->swapchain->getSwapchainIndex();
+
+	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(pvrvk::DescriptorPoolCreateInfo()
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 16 * _numSwapImages)
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 16 * _numSwapImages)
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 16 * _numSwapImages)
+																						  .setMaxDescriptorSets(16 * _numSwapImages));
 
 	// calculate the frame buffer width and heights
 	_framebufferWidth = this->getWidth();
@@ -907,6 +914,8 @@ pvr::Result VulkanHybridRefractions::initView()
 	VkPhysicalDeviceProperties2 properties{ static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_PROPERTIES_2) };
 	properties.pNext = &_rtProperties;
 	_deviceResources->instance->getVkBindings().vkGetPhysicalDeviceProperties2(_deviceResources->device->getPhysicalDevice()->getVkHandle(), &properties);
+
+	_astcSupported = pvr::utils::isSupportedFormat(_deviceResources->device->getPhysicalDevice(), pvrvk::Format::e_ASTC_4x4_UNORM_BLOCK);
 
 	// Create the pipeline cache
 	_deviceResources->pipelineCache = _deviceResources->device->createPipelineCache();
@@ -1001,7 +1010,7 @@ pvr::Result VulkanHybridRefractions::renderFrame()
 	presentInfo.imageIndices = &_swapchainIndex;
 	_deviceResources->queue->present(presentInfo);
 
-	_frameId = (_frameId + 1) % _deviceResources->swapchain->getSwapchainLength();
+	_frameId = (_frameId + 1) % _numSwapImages;
 
 	return pvr::Result::Success;
 }
@@ -1779,8 +1788,8 @@ void VulkanHybridRefractions::createTextures(pvrvk::CommandBuffer& uploadCmd)
 		tex.image = tex.imageView->getImage();
 	}
 
-	_deviceResources->skyBoxMap =
-		_deviceResources->device->createImageView(pvrvk::ImageViewCreateInfo(pvr::utils::loadAndUploadImage(_deviceResources->device, "HeroesSquare.pvr", true, uploadCmd, *this,
+	_deviceResources->skyBoxMap = _deviceResources->device->createImageView(pvrvk::ImageViewCreateInfo(
+		pvr::utils::loadAndUploadImage(_deviceResources->device, (std::string("HeroesSquare") + (_astcSupported ? "_astc.pvr" : ".pvr")).c_str(), true, uploadCmd, *this,
 			pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, nullptr, _deviceResources->vmaAllocator, _deviceResources->vmaAllocator)));
 }
 
@@ -1937,7 +1946,7 @@ void VulkanHybridRefractions::buildCameraBuffer()
 	desc.addElement(ShaderStructFieldName::inverseViewProjectionMatrix, pvr::GpuDatatypes::mat4x4);
 	desc.addElement(ShaderStructFieldName::cameraPosition, pvr::GpuDatatypes::vec4);
 
-	_deviceResources->globalBufferView.initDynamic(desc, _deviceResources->swapchain->getSwapchainLength(), pvr::BufferUsageFlags::UniformBuffer,
+	_deviceResources->globalBufferView.initDynamic(desc, _numSwapImages, pvr::BufferUsageFlags::UniformBuffer,
 		static_cast<uint32_t>(_deviceResources->device->getPhysicalDevice()->getProperties().getLimits().getMinUniformBufferOffsetAlignment()));
 	_deviceResources->globalBuffer = pvr::utils::createBuffer(_deviceResources->device,
 		pvrvk::BufferCreateInfo(_deviceResources->globalBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
@@ -1949,7 +1958,7 @@ void VulkanHybridRefractions::buildCameraBuffer()
 
 void VulkanHybridRefractions::buildSceneElementTransformBuffer()
 {
-	pvrvk::WriteDescriptorSet descUpdate[pvrvk::FrameworkCaps::MaxSwapChains];
+	std::vector<pvrvk::WriteDescriptorSet> descUpdate{ _numSwapImages };
 	pvr::utils::StructuredMemoryDescription description;
 	description.addElement("ModelMatrix", pvr::GpuDatatypes::mat4x4);
 
@@ -1985,7 +1994,7 @@ void VulkanHybridRefractions::buildLightDataBuffer()
 	desc.addElement(ShaderStructFieldName::lightPosition, pvr::GpuDatatypes::vec4);
 	desc.addElement(ShaderStructFieldName::ambientColorIntensity, pvr::GpuDatatypes::vec4);
 
-	_deviceResources->lightDataBufferView.initDynamic(desc, _deviceResources->swapchain->getSwapchainLength(), pvr::BufferUsageFlags::UniformBuffer,
+	_deviceResources->lightDataBufferView.initDynamic(desc, _numSwapImages, pvr::BufferUsageFlags::UniformBuffer,
 		static_cast<uint32_t>(_deviceResources->device->getPhysicalDevice()->getProperties().getLimits().getMinUniformBufferOffsetAlignment()));
 
 	_deviceResources->lightDataBuffer = pvr::utils::createBuffer(_deviceResources->device,
@@ -2020,9 +2029,9 @@ void VulkanHybridRefractions::buildMaterialBuffer(pvrvk::CommandBuffer& uploadCm
 	vectorMaterial[4] = mat;
 
 	// Add also the textures for the balloon meshes, which are not in the exported .pod model
-	_deviceResources->textures.push_back(TextureAS{ "BalloonTex.pvr", pvrvk::Format::e_R8G8B8A8_SRGB, VK_NULL_HANDLE, VK_NULL_HANDLE });
-	_deviceResources->textures.push_back(TextureAS{ "BalloonTex2.pvr", pvrvk::Format::e_R8G8B8A8_SRGB, VK_NULL_HANDLE, VK_NULL_HANDLE });
-	_deviceResources->textures.push_back(TextureAS{ "BalloonTex3.pvr", pvrvk::Format::e_R8G8B8A8_SRGB, VK_NULL_HANDLE, VK_NULL_HANDLE });
+	_deviceResources->textures.push_back(TextureAS{ std::string("BalloonTex") + (_astcSupported ? "_astc.pvr" : ".pvr"), pvrvk::Format::e_R8G8B8A8_SRGB, VK_NULL_HANDLE, VK_NULL_HANDLE });
+	_deviceResources->textures.push_back(TextureAS{ std::string("BalloonTex2") + (_astcSupported ? "_astc.pvr" : ".pvr"), pvrvk::Format::e_R8G8B8A8_SRGB, VK_NULL_HANDLE, VK_NULL_HANDLE });
+	_deviceResources->textures.push_back(TextureAS{ std::string("BalloonTex3") + (_astcSupported ? "_astc.pvr" : ".pvr"), pvrvk::Format::e_R8G8B8A8_SRGB, VK_NULL_HANDLE, VK_NULL_HANDLE });
 	vectorMaterial[2].reflectanceTextureIndex = 0;
 	vectorMaterial[3].reflectanceTextureIndex = 1;
 	vectorMaterial[4].reflectanceTextureIndex = 2;

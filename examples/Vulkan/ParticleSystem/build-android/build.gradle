@@ -102,7 +102,7 @@ android {
 
 	// Add to this list files that will need to be read at runtime here: Textures, shaders, text files etc.
 	FileCollection assetFiles = files(
-	"${project.projectDir}/../../../assets/ParticleSystem/sphere.pod",
+	"${project.projectDir}/../../../assets/GeneralPurposeMesh/sphere.pod",
 	"${project.projectDir}/../FragShader.fsh.spv",
 	"${project.projectDir}/../VertShader.vsh.spv",
 	"${project.projectDir}/../ParticleFragShader.fsh.spv",

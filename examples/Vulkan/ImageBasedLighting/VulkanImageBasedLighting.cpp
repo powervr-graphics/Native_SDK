@@ -355,7 +355,7 @@ class HelmetPass
 {
 public:
 	void init(pvr::IAssetProvider& assetProvider, pvrvk::Device& device, const pvrvk::Framebuffer& framebuffer, const pvrvk::PipelineLayout& pipelineLayout,
-		const pvrvk::PipelineCache& pipelineCache, pvr::utils::vma::Allocator& allocator, pvrvk::CommandBuffer& uploadCmdBuffer, bool requireSubmission)
+		const pvrvk::PipelineCache& pipelineCache, pvr::utils::vma::Allocator& allocator, pvrvk::CommandBuffer& uploadCmdBuffer, bool requireSubmission, bool astcSupported)
 	{
 		model = pvr::assets::loadModel(assetProvider, HelmetModelFileName);
 
@@ -368,6 +368,8 @@ public:
 		{
 			pvr::utils::createSingleBuffersFromMesh(device, model->getMesh(m), vbos[m], ibos[m], uploadCmdBuffer, requireSubmission, allocator);
 		}
+
+		isASTCSupported = astcSupported;
 
 		// Load the texture
 		loadTextures(assetProvider, device, uploadCmdBuffer, allocator);
@@ -444,7 +446,9 @@ private:
 	{
 		for (uint32_t i = 0; i < model->getNumTextures(); ++i)
 		{
-			std::unique_ptr<pvr::Stream> stream = assetProvider.getAssetStream(model->getTexture(i).getName());
+			std::string textureName = model->getTexture(i).getName();
+			pvr::assets::helper::getTextureNameWithExtension(textureName, isASTCSupported);
+			std::unique_ptr<pvr::Stream> stream = assetProvider.getAssetStream(textureName.c_str());
 			pvr::Texture tex = pvr::textureLoad(*stream, pvr::TextureFileFormat::PVR);
 			images.push_back(pvr::utils::uploadImageAndView(device, tex, true, uploadCmdBuffer, pvrvk::ImageUsageFlags::e_SAMPLED_BIT,
 				pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, allocator, allocator, pvr::utils::vma::AllocationCreateFlags::e_DEDICATED_MEMORY_BIT));
@@ -456,6 +460,7 @@ private:
 	std::vector<pvrvk::Buffer> ibos;
 	pvr::assets::ModelHandle model;
 	pvrvk::GraphicsPipeline pipeline;
+	bool isASTCSupported;
 };
 
 /// <summary>Implementing the pvr::Shell functions.</summary>
@@ -477,21 +482,20 @@ class VulkanImageBasedLighting : public pvr::Shell
 		pvrvk::Device device;
 		pvrvk::Swapchain swapchain;
 		pvr::utils::vma::Allocator vmaAllocator;
-		pvr::Multi<pvrvk::ImageView> depthStencilImages;
 		pvrvk::Queue queue;
 
 		pvrvk::CommandPool commandPool;
 		pvrvk::DescriptorPool descriptorPool;
 
-		pvrvk::Semaphore imageAcquiredSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
-		pvrvk::Semaphore presentationSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
-		pvrvk::Fence perFrameResourcesFences[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+		std::vector<pvrvk::Semaphore> imageAcquiredSemaphores;
+		std::vector<pvrvk::Semaphore> presentationSemaphores;
+		std::vector<pvrvk::Fence> perFrameResourcesFences;
 
 		// the framebuffer used in the demo
-		pvr::Multi<pvrvk::Framebuffer> onScreenFramebuffer;
+		std::vector<pvrvk::Framebuffer> onScreenFramebuffer;
 
 		// main command buffer used to store rendering commands
-		pvr::Multi<pvrvk::CommandBuffer> cmdBuffers;
+		std::vector<pvrvk::CommandBuffer> cmdBuffers;
 
 		// Pipeline cache
 		pvrvk::PipelineCache pipelineCache;
@@ -531,7 +535,7 @@ class VulkanImageBasedLighting : public pvr::Shell
 
 	std::unique_ptr<DeviceResources> _deviceResources;
 
-	bool _updateCommands[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	std::vector<bool> _updateCommands;
 	bool _updateDescriptors = false;
 
 	// Projection and Model View matrices
@@ -544,6 +548,10 @@ class VulkanImageBasedLighting : public pvr::Shell
 	Models _currentModel = Models::Helmet;
 	bool _pause = false;
 	float exposure = 1.f;
+
+	bool _isASTCSupported;
+
+	uint32_t _swapchainLength;
 
 public:
 	virtual pvr::Result initApplication();
@@ -572,14 +580,14 @@ public:
 			currentModel += 1;
 			currentModel = (currentModel + static_cast<uint32_t>(Models::NumModels)) % static_cast<uint32_t>(Models::NumModels);
 			_currentModel = static_cast<Models>(currentModel);
-			memset(_updateCommands, 1, sizeof(_updateCommands));
+			std::fill(_updateCommands.begin(), _updateCommands.end(), true);
 			break;
 		}
 		case pvr::SimplifiedInput::Action3: {
 			(++currentSkybox) %= numSkyBoxes;
 			_deviceResources->skyBoxPass.setSkyboxImage(*this, _deviceResources->queue, _deviceResources->commandPool, _deviceResources->descriptorPool,
 				_deviceResources->vmaAllocator, _deviceResources->samplerTrilinear);
-			memset(_updateCommands, 1, sizeof(_updateCommands));
+			std::fill(_updateCommands.begin(), _updateCommands.end(), true);
 			_updateDescriptors = true;
 			break;
 		}
@@ -664,22 +672,30 @@ pvr::Result VulkanImageBasedLighting::initView()
 	_deviceResources->swapchain = swapChainCreateOutput.swapchain;
 	_deviceResources->onScreenFramebuffer = swapChainCreateOutput.framebuffer;
 
+	_swapchainLength = _deviceResources->swapchain->getSwapchainLength();
+
+	_updateCommands.resize(_swapchainLength);
+	_deviceResources->imageAcquiredSemaphores.resize(_swapchainLength);
+	_deviceResources->presentationSemaphores.resize(_swapchainLength);
+	_deviceResources->perFrameResourcesFences.resize(_swapchainLength);
+	_deviceResources->cmdBuffers.resize(_swapchainLength);
+
 	// Create the Command pool & Descriptor pool
 	_deviceResources->commandPool =
 		_deviceResources->device->createCommandPool(pvrvk::CommandPoolCreateInfo(queueAccessInfo.familyId, pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT));
 	if (!_deviceResources->commandPool) { return pvr::Result::UnknownError; }
 
 	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(pvrvk::DescriptorPoolCreateInfo()
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 16)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 16)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 16)
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 5 * _swapchainLength)
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 5 * _swapchainLength)
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 5 * _swapchainLength)
 																						  .addDescriptorInfo(pvrvk::DescriptorType::e_STORAGE_IMAGE, 2)
-																						  .setMaxDescriptorSets(16));
+																						  .setMaxDescriptorSets(5 * _swapchainLength));
 
 	if (!_deviceResources->descriptorPool) { return pvr::Result::UnknownError; }
 
 	// Create synchronization objects and command buffers
-	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
+	for (uint32_t i = 0; i < _swapchainLength; ++i)
 	{
 		_deviceResources->presentationSemaphores[i] = _deviceResources->device->createSemaphore();
 		_deviceResources->imageAcquiredSemaphores[i] = _deviceResources->device->createSemaphore();
@@ -708,6 +724,8 @@ pvr::Result VulkanImageBasedLighting::initView()
 
 	_deviceResources->cmdBuffers[0]->begin();
 
+	_isASTCSupported = pvr::utils::isSupportedFormat(_deviceResources->device->getPhysicalDevice(), pvrvk::Format::e_ASTC_4x4_UNORM_BLOCK);
+
 	// BRDF is of course pre-generated. To generate it
 	// pvr::Texture brdflut = pvr::utils::generateCookTorranceBRDFLUT();
 	// pvr::assetWriters::AssetWriterPVR(pvr::FileStream::createFileStream(BrdfLUTTexFile, "w")).writeAsset(brdflut);
@@ -728,11 +746,11 @@ pvr::Result VulkanImageBasedLighting::initView()
 	bool requireSubmission = false;
 
 	_deviceResources->skyBoxPass.init(*this, _deviceResources->device, _deviceResources->descriptorPool, _deviceResources->commandPool, _deviceResources->queue,
-		_deviceResources->onScreenFramebuffer[0]->getRenderPass(), _deviceResources->pipelineCache, _deviceResources->swapchain->getSwapchainLength(),
+		_deviceResources->onScreenFramebuffer[0]->getRenderPass(), _deviceResources->pipelineCache, _swapchainLength,
 		pvrvk::Extent2D(getWidth(), getHeight()), _deviceResources->samplerTrilinear, _deviceResources->vmaAllocator);
 
 	_deviceResources->helmetPass.init(*this, _deviceResources->device, _deviceResources->onScreenFramebuffer[0], _deviceResources->pipelineLayout, _deviceResources->pipelineCache,
-		_deviceResources->vmaAllocator, _deviceResources->cmdBuffers[0], requireSubmission);
+		_deviceResources->vmaAllocator, _deviceResources->cmdBuffers[0], requireSubmission, _isASTCSupported);
 
 	_deviceResources->spherePass.init(*this, _deviceResources->device, _deviceResources->helmetPass.getPipeline(), _deviceResources->pipelineCache, _deviceResources->vmaAllocator,
 		_deviceResources->cmdBuffers[0], requireSubmission);
@@ -922,7 +940,7 @@ pvr::Result VulkanImageBasedLighting::renderFrame()
 	presentInfo.imageIndices = &swapchainIndex;
 	_deviceResources->queue->present(presentInfo);
 
-	_frameId = (_frameId + 1) % _deviceResources->swapchain->getSwapchainLength();
+	_frameId = (_frameId + 1) % _swapchainLength;
 
 	return pvr::Result::Success;
 }
@@ -1028,7 +1046,7 @@ void VulkanImageBasedLighting::createUbos()
 		desc.addElement("emissiveIntensity", pvr::GpuDatatypes::Float);
 		desc.addElement("exposure", pvr::GpuDatatypes::Float);
 
-		_deviceResources->uboPerFrame.view.initDynamic(desc, _deviceResources->swapchain->getSwapchainLength(), pvr::BufferUsageFlags::UniformBuffer,
+		_deviceResources->uboPerFrame.view.initDynamic(desc, _swapchainLength, pvr::BufferUsageFlags::UniformBuffer,
 			static_cast<uint32_t>(_deviceResources->device->getPhysicalDevice()->getProperties().getLimits().getMinUniformBufferOffsetAlignment()));
 
 		const pvrvk::DeviceSize size = _deviceResources->uboPerFrame.view.getSize();

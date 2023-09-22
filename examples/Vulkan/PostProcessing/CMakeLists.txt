@@ -46,12 +46,14 @@ add_assets_to_target(VulkanPostProcessing
 	FILE_LIST 
 		Satyr.pod
 		MarbleNormalMap.pvr
-		Marble.pvr)
+		MarbleNormalMap_astc.pvr
+		Marble.pvr
+		Marble_astc.pvr)
 
 add_assets_to_target(VulkanPostProcessing
 	SOURCE_GROUP "assets" 
 	ASSET_FOLDER ${ASSET_FOLDER} 
-	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/HdrScenes
+	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/Environments
 	FILE_LIST 
 		satara_night_scale_0.305_rgb9e5.pvr
 		satara_night_scale_0.305_rgb9e5_Irradiance.pvr

@@ -39,14 +39,32 @@ add_platform_specific_executable(VulkanHybridRefractions ${SRC_FILES})
 add_assets_to_target(VulkanHybridRefractions
 	SOURCE_GROUP "assets" 
 	ASSET_FOLDER ${ASSET_FOLDER} 
-	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/RayTracing
+	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/Balloons
 	FILE_LIST 
 		BalloonTex.pvr
+		BalloonTex_astc.pvr
 		BalloonTex2.pvr
+		BalloonTex2_astc.pvr
 		BalloonTex3.pvr
+		BalloonTex3_astc.pvr
+		Balloon.pod)
+
+### Textures, scene files, generic resources... ###
+add_assets_to_target(VulkanHybridRefractions
+	SOURCE_GROUP "assets" 
+	ASSET_FOLDER ${ASSET_FOLDER} 
+	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/Environments
+	FILE_LIST 
 		HeroesSquare.pvr
-		Refractions.POD
-		Balloon.POD)
+		HeroesSquare_astc.pvr)
+
+### Textures, scene files, generic resources... ###
+add_assets_to_target(VulkanHybridRefractions
+	SOURCE_GROUP "assets" 
+	ASSET_FOLDER ${ASSET_FOLDER} 
+	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/RayTracingRefractions
+	FILE_LIST 
+		Refractions.pod)
 
 ### Shaders that need to be compiled to SpirV (Vulkan) ###
 # During build time, glslangvalidator will be called to create a "<shadername.extension>.spv" file

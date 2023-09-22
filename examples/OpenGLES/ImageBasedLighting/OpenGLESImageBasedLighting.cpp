@@ -386,6 +386,8 @@ public:
 
 		pvr::utils::appendSingleBuffersFromModel(*model, vbos, ibos);
 
+		_astcSupported = gl::isGlExtensionSupported("GL_KHR_texture_compression_astc_ldr") ? ".ktx" : ".pvr";
+
 		// Load the texture
 		loadTextures(assetProvider);
 
@@ -449,7 +451,9 @@ private:
 	{
 		for (uint32_t i = 0; i < model->getNumTextures(); ++i)
 		{
-			std::unique_ptr<pvr::Stream> stream = assetProvider.getAssetStream(model->getTexture(i).getName());
+			std::string textureName = model->getTexture(i).getName();
+			pvr::assets::helper::getTextureNameWithExtension(textureName, _astcSupported);
+			std::unique_ptr<pvr::Stream> stream = assetProvider.getAssetStream(textureName);
 			pvr::Texture tex = pvr::textureLoad(*stream, pvr::TextureFileFormat::PVR);
 			textures.push_back(pvr::utils::textureUpload(tex, false, true).image);
 		}
@@ -510,6 +514,9 @@ private:
 	std::vector<GLuint> ibos;
 	GLuint program;
 	std::vector<GLuint> textures;
+
+	/// <summary>Flag to know whether astc iss upported by the physical device.</summary>
+	bool _astcSupported;
 };
 
 /// <summary>Class implementing the pvr::Shell functions.</summary>

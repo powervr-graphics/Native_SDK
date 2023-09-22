@@ -8,7 +8,7 @@ This example demonstrates using a normal map to implement bumpmapping using the 
 
 API
 ---
-* Vulkan
+* OpenGL ES 3.0+
 
 Description
 -----------

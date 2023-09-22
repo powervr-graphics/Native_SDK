@@ -19,27 +19,31 @@ else()
 	03_IntroducingPVRUtils
 	04_IntroducingUIRenderer
 	05_IntroducingPVRCamera
-	MultiviewVR
-	PostProcessing
-	OpenCLExample
-	Skinning
-	ParticleSystem
-	GaussianBlur
+	AntiAliasing
+	BinaryShaders
+	Bumpmap
 	DeferredShading
-	PVRScopeExample
-	PVRScopeRemote
+	GameOfLife
+	GaussianBlur
+	ImageBasedLighting
 	IMGFramebufferDownsample
 	IMGTextureFilterCubic
-	ImageBasedLighting
-	GameOfLife
-	BinaryShaders
 	Multithreading
-	Bumpmap
+	MultiviewVR
+	OpenCLExample
+	ParticleSystem
+	PostProcessing
+	PVRScopeExample
+	PVRScopeRemote
 	Shadows
+	Skinning
 	)
 endif()
 
 foreach(EXAMPLE ${OPENGLES_EXAMPLES})
+	if(CMAKE_SYSTEM_NAME MATCHES "QNX" AND ((EXAMPLE MATCHES "PVRScopeExample") OR (EXAMPLE MATCHES "PVRScopeRemote")))
+		continue()
+	endif()
 	message ("==>CMake generation for OpenGLES/${EXAMPLE}...")
 	add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/${EXAMPLE}")
 endforeach()

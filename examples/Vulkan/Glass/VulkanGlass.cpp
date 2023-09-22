@@ -40,8 +40,8 @@ const float CamFar = 5000.0f;
 const float CamFov = glm::pi<float>() * 0.41f;
 
 // textures
-const char* BalloonTexFile[2] = { "BalloonTex.pvr", "BalloonTex2.pvr" };
-const char CubeTexFile[] = "SkyboxTex.pvr";
+const std::string BalloonTexFile[2] = { "BalloonTex", "BalloonTex2" };
+const std::string CubeTexFile = "SkyboxTex";
 
 // model files
 const char StatueFile[] = "Satyr.pod";
@@ -167,10 +167,10 @@ struct PassSkyBox
 	pvrvk::GraphicsPipeline _pipeline;
 	pvrvk::Buffer _vbo;
 	pvrvk::DescriptorSetLayout _descriptorSetLayout;
-	pvr::Multi<pvrvk::DescriptorSet> _descriptorSets;
+	std::vector<pvrvk::DescriptorSet> _descriptorSets;
 	pvrvk::ImageView _skyboxTex;
 	pvrvk::Sampler _trilinearSampler;
-	pvr::Multi<pvrvk::SecondaryCommandBuffer> secondaryCommandBuffers;
+	std::vector<pvrvk::SecondaryCommandBuffer> secondaryCommandBuffers;
 
 	enum
 	{
@@ -295,11 +295,11 @@ struct PassSkyBox
 
 	void createDescriptorSets(pvrvk::Device& device, pvrvk::DescriptorPool& descriptorPool, pvrvk::Sampler& sampler, uint32_t numSwapchain)
 	{
-		pvrvk::WriteDescriptorSet writeDescSets[pvrvk::FrameworkCaps::MaxSwapChains * 2];
+		std::vector<pvrvk::WriteDescriptorSet> writeDescSets{ numSwapchain * 2 };
 		// create a descriptor set per swapchain
 		for (uint32_t i = 0; i < numSwapchain; ++i)
 		{
-			_descriptorSets.add(descriptorPool->allocateDescriptorSet(_descriptorSetLayout));
+			_descriptorSets[i] = descriptorPool->allocateDescriptorSet(_descriptorSetLayout);
 			writeDescSets[i * 2]
 				.set(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, _descriptorSets[i], 0)
 				.setImageInfo(0, pvrvk::DescriptorImageInfo(_skyboxTex, sampler, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL));
@@ -308,19 +308,23 @@ struct PassSkyBox
 				.set(pvrvk::DescriptorType::e_UNIFORM_BUFFER, _descriptorSets[i], 1)
 				.setBufferInfo(0, pvrvk::DescriptorBufferInfo(_buffer, _bufferMemoryView.getDynamicSliceOffset(i), _bufferMemoryView.getDynamicSliceSize()));
 		}
-		device->updateDescriptorSets(writeDescSets, numSwapchain * 2, nullptr, 0);
+		device->updateDescriptorSets(static_cast<const pvrvk::WriteDescriptorSet*>(writeDescSets.data()), numSwapchain * 2, nullptr, 0);
 	}
 
-	void init(pvr::Shell& shell, pvrvk::Device& device, pvr::Multi<pvrvk::Framebuffer>& framebuffers, const pvrvk::RenderPass& renderpass, pvrvk::CommandBuffer setupCommandBuffer,
+	void init(pvr::Shell& shell, pvrvk::Device& device, std::vector<pvrvk::Framebuffer>& framebuffers, const pvrvk::RenderPass& renderpass, pvrvk::CommandBuffer setupCommandBuffer,
 		pvrvk::DescriptorPool& descriptorPool, pvrvk::CommandPool& commandPool, pvrvk::PipelineCache& pipelineCache, pvr::utils::vma::Allocator& vmaBufferAllocator,
-		pvr::utils::vma::Allocator& vmaImageAllocator)
+		pvr::utils::vma::Allocator& vmaImageAllocator, bool astcSupported, uint32_t swapchainLength)
 	{
+		_descriptorSets.resize(swapchainLength);
+		secondaryCommandBuffers.resize(swapchainLength);
+
 		_trilinearSampler = createTrilinearImageSampler(device);
 		initDescriptorSetLayout(device);
 		createBuffers(device, static_cast<uint32_t>(framebuffers.size()), vmaBufferAllocator);
 
 		// load the  skybox texture
-		_skyboxTex = pvr::utils::loadAndUploadImageAndView(device, CubeTexFile, true, setupCommandBuffer, shell, pvrvk::ImageUsageFlags::e_SAMPLED_BIT,
+		_skyboxTex = pvr::utils::loadAndUploadImageAndView(device, (CubeTexFile + (astcSupported ? "_astc.pvr" : ".pvr")).c_str(), true, setupCommandBuffer, shell,
+			pvrvk::ImageUsageFlags::e_SAMPLED_BIT,
 			pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, nullptr, vmaBufferAllocator, vmaImageAllocator);
 
 		createDescriptorSets(device, descriptorPool, _trilinearSampler, static_cast<uint32_t>(framebuffers.size()));
@@ -330,7 +334,7 @@ struct PassSkyBox
 
 	pvrvk::SecondaryCommandBuffer& getSecondaryCommandBuffer(uint32_t swapchain) { return secondaryCommandBuffers[swapchain]; }
 
-	void recordCommands(pvr::Multi<pvrvk::Framebuffer>& framebuffers, pvrvk::CommandPool& commandPool)
+	void recordCommands(std::vector<pvrvk::Framebuffer>& framebuffers, pvrvk::CommandPool& commandPool)
 	{
 		for (uint32_t i = 0; i < framebuffers.size(); ++i)
 		{
@@ -362,7 +366,7 @@ struct PassBalloon : public IModelPass
 
 	// descriptor set layout and per swap chain descriptor set
 	pvrvk::DescriptorSetLayout _matrixBufferDescriptorSetLayout;
-	pvr::Multi<pvrvk::DescriptorSet> _matrixDescriptorSets;
+	std::vector<pvrvk::DescriptorSet> _matrixDescriptorSets;
 
 	pvrvk::DescriptorSetLayout _textureBufferDescriptorSetLayout;
 	pvrvk::DescriptorSet _textureDescriptorSets[NumBalloon];
@@ -393,7 +397,7 @@ struct PassBalloon : public IModelPass
 	const glm::vec3 EyePos;
 	const glm::vec3 LightDir;
 
-	pvr::Multi<pvrvk::SecondaryCommandBuffer> _secondaryCommandBuffers;
+	std::vector<pvrvk::SecondaryCommandBuffer> _secondaryCommandBuffers;
 
 	PassBalloon() : EyePos(0.0f, 0.0f, 0.0f), LightDir(19.0f, 22.0f, -50.0f) {}
 
@@ -438,12 +442,12 @@ struct PassBalloon : public IModelPass
 
 	void createDescriptorSets(pvrvk::Device& device, pvrvk::Sampler& sampler, pvrvk::DescriptorPool& descpool, uint32_t numSwapchain)
 	{
-		pvrvk::WriteDescriptorSet writeDescSet[pvrvk::FrameworkCaps::MaxSwapChains + NumBalloon];
+		std::vector<pvrvk::WriteDescriptorSet> writeDescSet{ numSwapchain + NumBalloon };
 		uint32_t writeIndex = 0;
 		// create a descriptor set per swapchain
 		for (uint32_t i = 0; i < numSwapchain; ++i, ++writeIndex)
 		{
-			_matrixDescriptorSets.add(descpool->allocateDescriptorSet(_matrixBufferDescriptorSetLayout));
+			_matrixDescriptorSets[i] = descpool->allocateDescriptorSet(_matrixBufferDescriptorSetLayout);
 
 			writeDescSet[writeIndex]
 				.set(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, _matrixDescriptorSets[i])
@@ -458,7 +462,7 @@ struct PassBalloon : public IModelPass
 				.set(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, _textureDescriptorSets[i])
 				.setImageInfo(0, pvrvk::DescriptorImageInfo(_balloonTexures[i], sampler, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL));
 		}
-		device->updateDescriptorSets(writeDescSet, numSwapchain + NumBalloon, nullptr, 0);
+		device->updateDescriptorSets(static_cast<const pvrvk::WriteDescriptorSet*>(writeDescSet.data()), numSwapchain + NumBalloon, nullptr, 0);
 	}
 
 	void setPipeline(pvrvk::GraphicsPipeline& pipeline) { _pipeline = pipeline; }
@@ -507,11 +511,14 @@ struct PassBalloon : public IModelPass
 		_pipeline = device->createGraphicsPipeline(pipeInfo, pipelineCache);
 	}
 
-	void init(pvr::Shell& shell, pvrvk::Device& device, pvr::Multi<pvrvk::Framebuffer>& framebuffers, const pvrvk::RenderPass& renderpass, pvrvk::CommandBuffer& uploadCmdBuffer,
+	void init(pvr::Shell& shell, pvrvk::Device& device, std::vector<pvrvk::Framebuffer>& framebuffers, const pvrvk::RenderPass& renderpass, pvrvk::CommandBuffer& uploadCmdBuffer,
 		pvrvk::DescriptorPool& descriptorPool, pvrvk::CommandPool& commandPool, const pvr::assets::ModelHandle& modelBalloon, pvrvk::PipelineCache& pipelineCache,
-		pvr::utils::vma::Allocator& vmaBufferAllocator, pvr::utils::vma::Allocator& vmaImageAllocator)
+		pvr::utils::vma::Allocator& vmaBufferAllocator, pvr::utils::vma::Allocator& vmaImageAllocator, bool astcSupported, uint32_t swapchainLength)
 	{
 		_balloonScene = modelBalloon;
+
+		_matrixDescriptorSets.resize(swapchainLength);
+		_secondaryCommandBuffers.resize(swapchainLength);
 
 		_trilinearSampler = createTrilinearImageSampler(device);
 		initDescriptorSetLayout(device);
@@ -519,7 +526,8 @@ struct PassBalloon : public IModelPass
 
 		for (uint32_t i = 0; i < NumBalloon; ++i)
 		{
-			_balloonTexures[i] = pvr::utils::loadAndUploadImageAndView(device, BalloonTexFile[i], true, uploadCmdBuffer, shell, pvrvk::ImageUsageFlags::e_SAMPLED_BIT,
+			_balloonTexures[i] = pvr::utils::loadAndUploadImageAndView(device, (BalloonTexFile[i] + (astcSupported ? "_astc.pvr" : ".pvr")).c_str(), true, uploadCmdBuffer, shell,
+				pvrvk::ImageUsageFlags::e_SAMPLED_BIT,
 				pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, nullptr, vmaBufferAllocator, vmaImageAllocator);
 		}
 
@@ -528,7 +536,7 @@ struct PassBalloon : public IModelPass
 		recordCommands(framebuffers, commandPool);
 	}
 
-	void recordCommands(pvr::Multi<pvrvk::Framebuffer>& framebuffers, pvrvk::CommandPool& commandPool)
+	void recordCommands(std::vector<pvrvk::Framebuffer>& framebuffers, pvrvk::CommandPool& commandPool)
 	{
 		for (uint32_t i = 0; i < framebuffers.size(); ++i)
 		{
@@ -607,17 +615,17 @@ private:
 
 	PassBalloon _passes[NumParabloid];
 	pvrvk::GraphicsPipeline _pipelines[2];
-	pvr::Multi<pvrvk::Framebuffer> _framebuffer;
-	pvr::Multi<pvrvk::ImageView> _paraboloidTextures;
+	std::vector<pvrvk::Framebuffer> _framebuffer;
+	std::vector<pvrvk::ImageView> _paraboloidTextures;
 	pvrvk::RenderPass _renderPass;
 	pvrvk::Sampler _trilinearSampler;
 	pvrvk::DescriptorSetLayout _descriptorSetLayout;
 	pvr::utils::StructuredBufferView _bufferMemoryView;
 	pvrvk::Buffer _buffer;
-	pvr::Multi<pvrvk::DescriptorSet> _matrixDescriptorSets;
+	std::vector<pvrvk::DescriptorSet> _matrixDescriptorSets;
 	pvrvk::DescriptorSet _textureDescriptorSets[PassBalloon::NumBalloon];
 
-	pvr::Multi<pvrvk::SecondaryCommandBuffer> _secondaryCommandBuffers;
+	std::vector<pvrvk::SecondaryCommandBuffer> _secondaryCommandBuffers;
 
 	void initPipeline(pvr::Shell& shell, pvrvk::Device& device, const pvr::assets::ModelHandle& modelBalloon, pvrvk::PipelineCache& pipelineCache)
 	{
@@ -784,17 +792,17 @@ private:
 
 	void createDescriptorSets(pvrvk::Device& device, pvrvk::DescriptorPool& descriptorPool, uint32_t numSwapchain)
 	{
-		pvrvk::WriteDescriptorSet descSetWrites[pvrvk::FrameworkCaps::MaxSwapChains];
+		std::vector<pvrvk::WriteDescriptorSet> descSetWrites{ numSwapchain };
 
 		// create a descriptor set per swapchain
 		for (uint32_t i = 0; i < numSwapchain; ++i)
 		{
-			_matrixDescriptorSets.add(descriptorPool->allocateDescriptorSet(_descriptorSetLayout));
+			_matrixDescriptorSets[i] = descriptorPool->allocateDescriptorSet(_descriptorSetLayout);
 			descSetWrites[i]
 				.set(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, _matrixDescriptorSets[i], 0)
 				.setBufferInfo(0, pvrvk::DescriptorBufferInfo(_buffer, 0, _bufferMemoryView.getDynamicSliceSize()));
 		}
-		device->updateDescriptorSets(descSetWrites, numSwapchain, nullptr, 0);
+		device->updateDescriptorSets(static_cast<const pvrvk::WriteDescriptorSet*>(descSetWrites.data()), numSwapchain, nullptr, 0);
 	}
 
 public:
@@ -804,13 +812,18 @@ public:
 
 	void init(pvr::Shell& shell, pvrvk::Device& device, const pvr::assets::ModelHandle& modelBalloon, pvrvk::CommandBuffer& uploadCmdBuffer, pvrvk::CommandPool& commandPool,
 		pvrvk::DescriptorPool& descriptorPool, uint32_t numSwapchain, pvrvk::PipelineCache& pipelineCache, pvr::utils::vma::Allocator& vmaBufferAllocator,
-		pvr::utils::vma::Allocator& vmaImageAllocator)
+		pvr::utils::vma::Allocator& vmaImageAllocator, bool astcSupported, uint32_t swapchainLength)
 	{
+		_paraboloidTextures.resize(swapchainLength);
+		_matrixDescriptorSets.resize(swapchainLength);
+		_secondaryCommandBuffers.resize(swapchainLength);
+
 		initFramebuffer(device, numSwapchain, vmaImageAllocator);
 
 		for (uint32_t i = 0; i < NumParabloid; i++)
 		{
-			_passes[i].init(shell, device, _framebuffer, _renderPass, uploadCmdBuffer, descriptorPool, commandPool, modelBalloon, pipelineCache, vmaBufferAllocator, vmaImageAllocator);
+			_passes[i].init(shell, device, _framebuffer, _renderPass, uploadCmdBuffer, descriptorPool, commandPool, modelBalloon, pipelineCache, vmaBufferAllocator,
+				vmaImageAllocator, astcSupported, swapchainLength);
 		}
 
 		_trilinearSampler = createTrilinearImageSampler(device);
@@ -915,13 +928,13 @@ struct PassStatue : public IModelPass
 	pvr::utils::StructuredBufferView _bufferMemoryView;
 	pvrvk::Buffer _buffer;
 	pvrvk::DescriptorSetLayout _descriptorSetLayout;
-	pvr::Multi<pvrvk::DescriptorSet> _descriptorSets;
+	std::vector<pvrvk::DescriptorSet> _descriptorSets;
 	pvrvk::Sampler _trilinearSampler;
 
 	ModelBuffers _modelStatue;
 	pvr::assets::ModelHandle _modelHandle;
 
-	pvr::Multi<pvrvk::SecondaryCommandBuffer> _secondaryCommandBuffers;
+	std::vector<pvrvk::SecondaryCommandBuffer> _secondaryCommandBuffers;
 
 	enum
 	{
@@ -981,11 +994,11 @@ struct PassStatue : public IModelPass
 	void createDescriptorSets(
 		pvrvk::Device& device, PassParabloid& passParabloid, PassSkyBox& passSkybox, pvrvk::Sampler& sampler, pvrvk::DescriptorPool& descriptorPool, uint32_t numSwapchain)
 	{
-		pvrvk::WriteDescriptorSet writeDescSets[pvrvk::FrameworkCaps::MaxSwapChains * 3];
+		std::vector<pvrvk::WriteDescriptorSet> writeDescSets{ numSwapchain * 3 };
 		// create a descriptor set per swapchain
 		for (uint32_t i = 0; i < numSwapchain; ++i)
 		{
-			_descriptorSets.add(descriptorPool->allocateDescriptorSet(_descriptorSetLayout));
+			_descriptorSets[i] = descriptorPool->allocateDescriptorSet(_descriptorSetLayout);
 			writeDescSets[i * 3]
 				.set(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, _descriptorSets[i], 0)
 				.setBufferInfo(0, pvrvk::DescriptorBufferInfo(_buffer, 0, _bufferMemoryView.getDynamicSliceSize()));
@@ -998,7 +1011,7 @@ struct PassStatue : public IModelPass
 				.set(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, _descriptorSets[i], 2)
 				.setImageInfo(0, pvrvk::DescriptorImageInfo(passSkybox.getSkyBox(), sampler, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL));
 		}
-		device->updateDescriptorSets(writeDescSets, numSwapchain * 3, nullptr, 0);
+		device->updateDescriptorSets(static_cast<const pvrvk::WriteDescriptorSet*>(writeDescSets.data()), numSwapchain * 3, nullptr, 0);
 	}
 
 	void initEffectPipelines(pvr::Shell& shell, pvrvk::Device& device, const pvrvk::RenderPass& renderpass, const pvrvk::Extent2D& viewportDim, pvrvk::PipelineCache& pipelineCache)
@@ -1066,8 +1079,11 @@ struct PassStatue : public IModelPass
 
 	void init(pvr::Shell& shell, pvrvk::Device& device, pvrvk::CommandBuffer& uploadCmdBuffer, pvrvk::DescriptorPool& descriptorPool, uint32_t numSwapchain,
 		const pvr::assets::ModelHandle& modelStatue, PassParabloid& passParabloid, PassSkyBox& passSkybox, const pvrvk::RenderPass& renderpass, const pvrvk::Extent2D& viewportDim,
-		pvrvk::PipelineCache& pipelineCache, pvr::utils::vma::Allocator& vmaBufferAllocator)
+		pvrvk::PipelineCache& pipelineCache, pvr::utils::vma::Allocator& vmaBufferAllocator, uint32_t swapchainLength)
 	{
+		_descriptorSets.resize(swapchainLength);
+		_secondaryCommandBuffers.resize(swapchainLength);
+
 		_modelHandle = modelStatue;
 
 		_trilinearSampler = createTrilinearImageSampler(device);
@@ -1154,7 +1170,7 @@ struct DeviceResources
 	// UIRenderer used to display text
 	pvr::ui::UIRenderer uiRenderer;
 
-	pvr::Multi<pvrvk::Framebuffer> onScreenFramebuffer;
+	std::vector<pvrvk::Framebuffer> onScreenFramebuffer;
 
 	// related sets of drawing commands are grouped into "passes"
 	PassSkyBox passSkyBox;
@@ -1162,14 +1178,15 @@ struct DeviceResources
 	PassStatue passStatue;
 	PassBalloon passBalloon;
 
-	pvr::Multi<pvrvk::CommandBuffer> sceneCommandBuffers;
-	pvr::Multi<pvrvk::SecondaryCommandBuffer> uiSecondaryCommandBuffers;
-	pvr::Multi<pvrvk::ImageView> depthStencilImages;
+	std::vector<pvrvk::CommandBuffer> sceneCommandBuffers;
+	std::vector<pvrvk::SecondaryCommandBuffer> uiSecondaryCommandBuffers;
+	std::vector<pvrvk::ImageView> depthStencilImages;
 	pvrvk::Sampler samplerTrilinear;
 
-	pvrvk::Semaphore imageAcquiredSemaphores[uint32_t(pvrvk::FrameworkCaps::MaxSwapChains)];
-	pvrvk::Semaphore presentationSemaphores[uint32_t(pvrvk::FrameworkCaps::MaxSwapChains)];
-	pvrvk::Fence perFrameResourcesFences[uint32_t(pvrvk::FrameworkCaps::MaxSwapChains)];
+	std::vector<pvrvk::Semaphore> imageAcquiredSemaphores;
+	std::vector<pvrvk::Semaphore> presentationSemaphores;
+	std::vector<pvrvk::Fence> perFrameResourcesFences;
+
 	~DeviceResources()
 	{
 		if (device)
@@ -1204,6 +1221,10 @@ class VulkanGlass : public pvr::Shell
 
 	pvr::assets::ModelHandle _balloonScene;
 	pvr::assets::ModelHandle _statueScene;
+
+	bool _isASTCSupported;
+
+	uint32_t _swapchainLength;
 
 public:
 	VulkanGlass() : _tilt(0), _currentTilt(0) {}
@@ -1324,6 +1345,16 @@ pvr::Result VulkanGlass::initView()
 	_deviceResources->swapchain = swapChainCreateOutput.swapchain;
 	_deviceResources->onScreenFramebuffer = swapChainCreateOutput.framebuffer;
 
+	_swapchainLength = _deviceResources->swapchain->getSwapchainLength();
+
+	_deviceResources->imageAcquiredSemaphores.resize(_swapchainLength);
+	_deviceResources->presentationSemaphores.resize(_swapchainLength);
+	_deviceResources->perFrameResourcesFences.resize(_swapchainLength);
+
+	_deviceResources->sceneCommandBuffers.resize(_swapchainLength);
+	_deviceResources->uiSecondaryCommandBuffers.resize(_swapchainLength);
+	_deviceResources->depthStencilImages.resize(_swapchainLength);
+
 	//---------------
 	// Create the command pool
 	_deviceResources->commandPool = _deviceResources->device->createCommandPool(
@@ -1332,16 +1363,16 @@ pvr::Result VulkanGlass::initView()
 	//---------------
 	// Create the DescriptorPool
 	pvrvk::DescriptorPoolCreateInfo descPoolInfo;
-	descPoolInfo.addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 32)
-		.addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 32)
-		.addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 32)
-		.setMaxDescriptorSets(32);
+	descPoolInfo.addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 12 * _swapchainLength)
+		.addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 12 * _swapchainLength)
+		.addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 12 * _swapchainLength)
+		.setMaxDescriptorSets(12 * _swapchainLength);
 
 	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(descPoolInfo);
 
 	// Prepare the per swapchain resources
 	// set Swapchain and depth-stencil attachment image initial layout
-	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
+	for (uint32_t i = 0; i < _swapchainLength; ++i)
 	{
 		_deviceResources->sceneCommandBuffers[i] = _deviceResources->commandPool->allocateCommandBuffer();
 		_deviceResources->uiSecondaryCommandBuffers[i] = _deviceResources->commandPool->allocateSecondaryCommandBuffer();
@@ -1359,20 +1390,22 @@ pvr::Result VulkanGlass::initView()
 	uploadBuffer->setObjectName("InitView : Resource Upload Command Buffer");
 	uploadBuffer->begin(pvrvk::CommandBufferUsageFlags::e_ONE_TIME_SUBMIT_BIT);
 
+	_isASTCSupported = pvr::utils::isSupportedFormat(_deviceResources->device->getPhysicalDevice(), pvrvk::Format::e_ASTC_4x4_UNORM_BLOCK);
+
 	// set up the passes
-	_deviceResources->passSkyBox.init(*this, _deviceResources->device, _deviceResources->onScreenFramebuffer, _deviceResources->onScreenFramebuffer[0]->getRenderPass(), uploadBuffer,
-		_deviceResources->descriptorPool, _deviceResources->commandPool, _deviceResources->pipelineCache, _deviceResources->vmaAllocator, _deviceResources->vmaAllocator);
+	_deviceResources->passSkyBox.init(*this, _deviceResources->device, _deviceResources->onScreenFramebuffer, _deviceResources->onScreenFramebuffer[0]->getRenderPass(), uploadBuffer, _deviceResources->descriptorPool, _deviceResources->commandPool, _deviceResources->pipelineCache, _deviceResources->vmaAllocator,
+		_deviceResources->vmaAllocator, _isASTCSupported, _swapchainLength);
 
 	_deviceResources->passBalloon.init(*this, _deviceResources->device, _deviceResources->onScreenFramebuffer, _deviceResources->onScreenFramebuffer[0]->getRenderPass(),
 		uploadBuffer, _deviceResources->descriptorPool, _deviceResources->commandPool, _balloonScene, _deviceResources->pipelineCache, _deviceResources->vmaAllocator,
-		_deviceResources->vmaAllocator);
+		_deviceResources->vmaAllocator, _isASTCSupported, _swapchainLength);
 
 	_deviceResources->passParaboloid.init(*this, _deviceResources->device, _balloonScene, uploadBuffer, _deviceResources->commandPool, _deviceResources->descriptorPool,
-		_deviceResources->swapchain->getSwapchainLength(), _deviceResources->pipelineCache, _deviceResources->vmaAllocator, _deviceResources->vmaAllocator);
+		_swapchainLength, _deviceResources->pipelineCache, _deviceResources->vmaAllocator, _deviceResources->vmaAllocator, _isASTCSupported, _swapchainLength);
 
-	_deviceResources->passStatue.init(*this, _deviceResources->device, uploadBuffer, _deviceResources->descriptorPool, _deviceResources->swapchain->getSwapchainLength(),
+	_deviceResources->passStatue.init(*this, _deviceResources->device, uploadBuffer, _deviceResources->descriptorPool, _swapchainLength,
 		_statueScene, _deviceResources->passParaboloid, _deviceResources->passSkyBox, _deviceResources->onScreenFramebuffer[0]->getRenderPass(),
-		_deviceResources->onScreenFramebuffer[0]->getDimensions(), _deviceResources->pipelineCache, _deviceResources->vmaAllocator);
+		_deviceResources->onScreenFramebuffer[0]->getDimensions(), _deviceResources->pipelineCache, _deviceResources->vmaAllocator, _swapchainLength);
 
 	// Initialize UIRenderer
 	_deviceResources->uiRenderer.init(getWidth(), getHeight(), isFullScreen(), _deviceResources->onScreenFramebuffer[0]->getRenderPass(), 0,
@@ -1454,7 +1487,7 @@ pvr::Result VulkanGlass::renderFrame()
 	_deviceResources->queue->present(presentInfo);
 
 	++_frameId;
-	_frameId %= _deviceResources->swapchain->getSwapchainLength();
+	_frameId %= _swapchainLength;
 	return pvr::Result::Success;
 }
 
@@ -1498,7 +1531,7 @@ void VulkanGlass::recordCommands()
 	const pvrvk::ClearValue onScreenClearValues[2] = { pvrvk::ClearValue(ClearSkyColor.r, ClearSkyColor.g, ClearSkyColor.b, ClearSkyColor.a),
 		pvrvk::ClearValue::createDefaultDepthStencilClearValue() };
 
-	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
+	for (uint32_t i = 0; i < _swapchainLength; ++i)
 	{
 		//---------------
 		// Render the UIRenderer

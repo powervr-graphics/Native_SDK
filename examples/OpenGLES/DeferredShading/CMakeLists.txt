@@ -36,8 +36,11 @@ add_assets_to_target(OpenGLESDeferredShading
 		SatyrAndTable.pod
 		pointlight.pod
 		Marble.pvr
+		Marble_astc.pvr
 		MarbleNormalMap.pvr
-		Table.pvr)
+		MarbleNormalMap_astc.pvr
+		Table.pvr
+		Table_astc.pvr)
 
 ### Textural shaders (OpenGL ES) ###
 add_assets_to_target(OpenGLESDeferredShading 

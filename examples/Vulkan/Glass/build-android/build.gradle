@@ -120,8 +120,11 @@ android {
 	"${project.projectDir}/../../../assets/Balloons/Balloon.pod",
 	"${project.projectDir}/../../../assets/Satyr/Satyr.pod",
 	"${project.projectDir}/../../../assets/Balloons/BalloonTex.pvr",
+	"${project.projectDir}/../../../assets/Balloons/BalloonTex_astc.pvr",
 	"${project.projectDir}/../../../assets/Balloons/BalloonTex2.pvr",
+	"${project.projectDir}/../../../assets/Balloons/BalloonTex2_astc.pvr",
 	"${project.projectDir}/../../../assets/Balloons/SkyboxTex.pvr",
+	"${project.projectDir}/../../../assets/Balloons/SkyboxTex_astc.pvr",
 	)
 	
 	// Add a task for copying our assets from their original location (${project.projectDir}...) to the assets/ folder for packaging

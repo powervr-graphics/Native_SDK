@@ -43,9 +43,10 @@ add_platform_specific_executable(VulkanHelloRayTracing ${SRC_FILES})
 add_assets_to_target(VulkanHelloRayTracing
 	SOURCE_GROUP "assets" 
 	ASSET_FOLDER ${ASSET_FOLDER} 
-	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/RayTracing
+	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/OtherTextures
 	FILE_LIST 
-		albedo.pvr)
+		albedo.pvr
+		albedo_astc.pvr)
 
 ### Shaders that need to be compiled to SpirV (Vulkan) ###
 # During build time, glslangvalidator will be called to create a "<shadername.extension>.spv" file

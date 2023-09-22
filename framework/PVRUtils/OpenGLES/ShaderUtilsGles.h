@@ -5,6 +5,7 @@
 \copyright Copyright (c) Imagination Technologies Limited.
 */
 #pragma once
+#if !SC_ENABLED
 #include "BindingsGles.h"
 #include "PVRUtils/OpenGLES/ConvertToGlesTypes.h"
 #include "PVRCore/IAssetProvider.h"
@@ -30,6 +31,7 @@ GLuint loadShader(const Stream& shaderSource, ShaderType shaderType, const char*
 /// <returns>The shader object</returns>
 GLuint loadShader(const std::string& shaderSource, ShaderType shaderType, const char* const* defines, uint32_t numDefines);
 
+/// @cond Doxygen_skip
 /// <summary>Create a native shader program from an array of native shader handles. Will implicitly load on the current context.</summary>
 /// <param name="pShaders">An array of shaders</param>
 /// <param name="shadersCount">The number shaders in <paramref name="pShaders">pShaders</paramref></param>
@@ -40,6 +42,7 @@ GLuint loadShader(const std::string& shaderSource, ShaderType shaderType, const 
 /// <returns>The program object</returns>
 GLuint createShaderProgram(
 	const GLuint pShaders[], uint32_t shadersCount, const char** const attribNames, const uint16_t* attribIndices, uint32_t attribsCount, std::string* infolog = NULL);
+/// @endcond
 
 /// <summary>Create a native shader program from a compute shader</summary>
 /// <param name="app">An AssetProvider to use for loading shaders from memory</param>
@@ -68,6 +71,7 @@ inline GLuint createComputeShaderProgram(IAssetProvider& app, const char* compSh
 	return program;
 }
 
+/// @cond Doxygen_skip
 /// <summary>Create a native shader program from a vertex, fragment, tessellation control, tessellation evaluation and geometry shader</summary>
 /// <param name="app">An AssetProvider to use for loading shaders from memory</param>
 /// <param name="vertShaderFilename">The filename of a vertex shader</param>
@@ -123,7 +127,9 @@ inline GLuint createShaderProgram(const IAssetProvider& app, const char* vertSha
 
 	return program;
 }
+/// @endcond
 
+/// @cond Doxygen_skip
 /// <summary>Create a native shader program from a vertex and fragment shader</summary>
 /// <param name="app">An AssetProvider to use for loading shaders from memory</param>
 /// <param name="vertShaderFilename">The filename of a vertex shader</param>
@@ -139,5 +145,7 @@ inline GLuint createShaderProgram(const IAssetProvider& app, const char* vertSha
 {
 	return createShaderProgram(app, vertShaderFilename, nullptr, nullptr, nullptr, fragShaderFilename, attribNames, attribIndices, numAttribs, defines, numDefines);
 }
+/// @endcond
 } // namespace utils
 } // namespace pvr
+#endif

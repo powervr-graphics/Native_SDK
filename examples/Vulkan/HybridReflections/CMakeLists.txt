@@ -43,24 +43,42 @@ add_platform_specific_executable(VulkanHybridReflections ${SRC_FILES})
 add_assets_to_target(VulkanHybridReflections
 	SOURCE_GROUP "assets" 
 	ASSET_FOLDER ${ASSET_FOLDER} 
-	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets
+	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/PBR
 	FILE_LIST 
 		brdfLUT.pvr)
 
 add_assets_to_target(VulkanHybridReflections
 	SOURCE_GROUP "assets" 
 	ASSET_FOLDER ${ASSET_FOLDER} 
-	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/RayTracing
+	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/Environments
+	FILE_LIST 
+		LancellottiChapel.pvr
+		LancellottiChapel_astc.pvr
+		LancellottiChapel_Irradiance.pvr
+		LancellottiChapel_Prefiltered.pvr)
+
+add_assets_to_target(VulkanHybridReflections
+	SOURCE_GROUP "assets" 
+	ASSET_FOLDER ${ASSET_FOLDER} 
+	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/Satyr
+	FILE_LIST 
+		Marble.pvr
+		Marble_astc.pvr)
+
+add_assets_to_target(VulkanHybridReflections
+	SOURCE_GROUP "assets" 
+	ASSET_FOLDER ${ASSET_FOLDER} 
+	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/RayTracingReflections
 	FILE_LIST 
 		Reflections.POD
 		Alabaster.pvr
-		LancellottiChapel.pvr
-		LancellottiChapel_Irradiance.pvr
-		LancellottiChapel_Prefiltered.pvr
-		marble.pvr
+		Alabaster_astc.pvr
 		Orange.pvr
+		Orange_astc.pvr
 		RoundTable.pvr
-		RustGreen.pvr)
+		RoundTable_astc.pvr
+		RustGreen.pvr
+		RustGreen_astc.pvr)
 
 ### Shaders that need to be compiled to SpirV (Vulkan) ###
 # During build time, glslangvalidator will be called to create a "<shadername.extension>.spv" file

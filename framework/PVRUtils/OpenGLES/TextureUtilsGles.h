@@ -5,7 +5,11 @@
 \copyright Copyright (c) Imagination Technologies Limited.
 */
 #pragma once
+#if SC_ENABLED
+#include "PVRUtils/OpenGLSC/BindingsGlsc.h"
+#else
 #include "PVRUtils/OpenGLES/BindingsGles.h"
+#endif
 #include "PVRCore/texture/Texture.h"
 
 namespace pvr {

@@ -36,13 +36,13 @@ struct DeviceResources
 	// Rendering manager, putting together Effects with Models to render things
 	pvr::utils::RenderManager mgr;
 	// Asset loader
-	pvr::Multi<pvrvk::CommandBuffer> cmdBuffers;
+	std::vector<pvrvk::CommandBuffer> cmdBuffers;
 
-	pvr::Multi<pvrvk::Framebuffer> onScreenFramebuffer;
-	pvr::Multi<pvrvk::ImageView> depthStencilImages;
-	pvrvk::Semaphore imageAcquiredSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
-	pvrvk::Semaphore presentationSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
-	pvrvk::Fence perFrameResourcesFences[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	std::vector<pvrvk::Framebuffer> onScreenFramebuffer;
+	std::vector<pvrvk::ImageView> depthStencilImages;
+	std::vector<pvrvk::Semaphore> imageAcquiredSemaphores;
+	std::vector<pvrvk::Semaphore> presentationSemaphores;
+	std::vector<pvrvk::Fence> perFrameResourcesFences;
 
 	// UIRenderer used to display text
 	pvr::ui::UIRenderer uiRenderer;
@@ -73,6 +73,8 @@ class VulkanSkinning : public pvr::Shell
 
 	// Variables to handle the animation in a time-based manner
 	float _currentFrame;
+
+	uint32_t _swapchainLength;
 
 public:
 	VulkanSkinning() : _isPaused(false), _currentFrame(0) {}
@@ -171,8 +173,17 @@ pvr::Result VulkanSkinning::initView()
 	// Create the Swapchain
 	_deviceResources->swapchain = pvr::utils::createSwapchain(_deviceResources->device, surface, getDisplayAttributes(), swapchainImageUsage);
 
+	_swapchainLength = _deviceResources->swapchain->getSwapchainLength();
+
+	_deviceResources->onScreenFramebuffer.resize(_swapchainLength);
+	_deviceResources->depthStencilImages.resize(_swapchainLength);
+	_deviceResources->cmdBuffers.resize(_swapchainLength);
+	_deviceResources->imageAcquiredSemaphores.resize(_swapchainLength);
+	_deviceResources->presentationSemaphores.resize(_swapchainLength);
+	_deviceResources->perFrameResourcesFences.resize(_swapchainLength);
+
 	// Create the Depth/Stencil buffer images
-	pvr::utils::createAttachmentImages(_deviceResources->depthStencilImages, _deviceResources->device, _deviceResources->swapchain->getSwapchainLength(),
+	pvr::utils::createAttachmentImages(_deviceResources->depthStencilImages, _deviceResources->device, _swapchainLength,
 		pvr::utils::getSupportedDepthStencilFormat(_deviceResources->device, getDisplayAttributes()), _deviceResources->swapchain->getDimension(),
 		pvrvk::ImageUsageFlags::e_DEPTH_STENCIL_ATTACHMENT_BIT | pvrvk::ImageUsageFlags::e_TRANSIENT_ATTACHMENT_BIT, pvrvk::SampleCountFlags::e_1_BIT,
 		_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_DEDICATED_MEMORY_BIT, "DepthStencilBufferImages");
@@ -183,15 +194,15 @@ pvr::Result VulkanSkinning::initView()
 	pvr::Effect effect = pvr::pfx::readPFX(*getAssetStream(Configuration::EffectFile), this);
 
 	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(pvrvk::DescriptorPoolCreateInfo()
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 16)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 128)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 128)
-																						  .setMaxDescriptorSets(256));
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 8 * _swapchainLength)
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 32 * _swapchainLength)
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 32 * _swapchainLength)
+																						  .setMaxDescriptorSets(32 * _swapchainLength));
 
 	_deviceResources->commandPool = _deviceResources->device->createCommandPool(pvrvk::CommandPoolCreateInfo(_deviceResources->queue->getFamilyIndex()));
 
 	// create the command buffers, semaphores & the fence
-	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
+	for (uint32_t i = 0; i < _swapchainLength; ++i)
 	{
 		_deviceResources->cmdBuffers[i] = _deviceResources->commandPool->allocateCommandBuffer();
 		_deviceResources->presentationSemaphores[i] = _deviceResources->device->createSemaphore();
@@ -204,6 +215,8 @@ pvr::Result VulkanSkinning::initView()
 	uploadBuffer->setObjectName("InitView : Resource Upload Command Buffer");
 	uploadBuffer->begin(pvrvk::CommandBufferUsageFlags::e_ONE_TIME_SUBMIT_BIT);
 
+	_deviceResources->mgr.setASTCSupported(pvr::utils::isSupportedFormat(_deviceResources->device->getPhysicalDevice(), pvrvk::Format::e_ASTC_4x4_UNORM_BLOCK));
+
 	_deviceResources->mgr.init(*this, _deviceResources->swapchain, _deviceResources->descriptorPool);
 	_deviceResources->mgr.addEffect(effect, uploadBuffer);
 	_deviceResources->mgr.addModelForAllPasses(_scene);
@@ -212,7 +225,7 @@ pvr::Result VulkanSkinning::initView()
 	_deviceResources->mgr.createAutomaticSemantics();
 
 	// set the initial layout of the framebuffer from undefined to Present
-	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
+	for (uint32_t i = 0; i < _swapchainLength; ++i)
 	{
 		pvrvk::Framebuffer framebuffer = _deviceResources->mgr.toPass(0, 0).getFramebuffer(i);
 		if (framebuffer->getAttachment(0))
@@ -348,7 +361,7 @@ pvr::Result VulkanSkinning::renderFrame()
 	presentInfo.imageIndices = &swapchainIndex;
 	_deviceResources->queue->present(presentInfo);
 
-	_frameId = (_frameId + 1) % _deviceResources->swapchain->getSwapchainLength();
+	_frameId = (_frameId + 1) % _swapchainLength;
 
 	return pvr::Result::Success;
 }
@@ -392,7 +405,7 @@ inline void VulkanSkinning::recordCommandBuffer()
 		pvrvk::ClearValue(0.0f, 0.45f, 0.41f, 1.0f),
 		pvrvk::ClearValue(1.0f, 0u),
 	};
-	for (uint32_t swapidx = 0; swapidx < _deviceResources->swapchain->getSwapchainLength(); ++swapidx)
+	for (uint32_t swapidx = 0; swapidx < _swapchainLength; ++swapidx)
 	{
 		_deviceResources->cmdBuffers[swapidx]->begin();
 		// Clear the colour and depth buffer automatically.

@@ -12,6 +12,10 @@ if(${PVR_BUILD_FRAMEWORK_GLES})
 	add_subdirectory(PVRUtils/OpenGLES)
 endif()
 
+if(${PVR_BUILD_FRAMEWORK_GLES})
+	add_subdirectory(PVRUtils/OpenGLSC)
+endif()
+
 if(${PVR_BUILD_FRAMEWORK_OPENCL})
 	add_subdirectory(PVRUtils/OpenCL)
 endif()

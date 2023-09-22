@@ -32,8 +32,8 @@ const char VertexShaderFile[] = "VertShader_ES3.vsh";
 const char FragmentShaderFile[] = "FragShader_ES3.fsh";
 
 // PVR texture files
-const char TextureFileName[] = "Marble.pvr";
-const char BumpTextureFileName[] = "MarbleNormalMap.pvr";
+std::string TextureFileName = "Marble";
+std::string BumpTextureFileName = "MarbleNormalMap";
 
 // POD scene files
 const char SceneFileName[] = "Satyr.pod";
@@ -147,8 +147,10 @@ void OpenGLESMultithreading::loadTexturesOnThread()
 /// <returns>Returns true if no exceptions are thrown.</returns>
 bool OpenGLESMultithreading::loadtextures()
 {
-	_deviceResources->texture = pvr::utils::textureUpload(*this, TextureFileName, _deviceResources->sharedContext->getApiVersion() == pvr::Api::OpenGLES2);
-	_deviceResources->bumpTexture = pvr::utils::textureUpload(*this, BumpTextureFileName, _deviceResources->sharedContext->getApiVersion() == pvr::Api::OpenGLES2);
+	bool astcSupported = gl::isGlExtensionSupported("GL_KHR_texture_compression_astc_ldr");
+
+	_deviceResources->texture = pvr::utils::textureUpload(*this, TextureFileName + (astcSupported ? "_astc.pvr" : ".pvr"), _deviceResources->sharedContext->getApiVersion() == pvr::Api::OpenGLES2);
+	_deviceResources->bumpTexture = pvr::utils::textureUpload(*this, BumpTextureFileName + (astcSupported ? "_astc.pvr" : ".pvr"), _deviceResources->sharedContext->getApiVersion() == pvr::Api::OpenGLES2);
 	pvr::utils::throwOnGlError("Texture creation failed");
 
 	gl::GenSamplers(1, &_deviceResources->samplerTrilinear);

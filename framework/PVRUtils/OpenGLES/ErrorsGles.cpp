@@ -6,7 +6,6 @@
 */
 //!\cond NO_DOXYGEN
 #include "PVRUtils/OpenGLES/ErrorsGles.h"
-#include "PVRUtils/OpenGLES/BindingsGles.h"
 
 namespace pvr {
 namespace utils {

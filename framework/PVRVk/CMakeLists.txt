@@ -94,7 +94,9 @@ set(PVRVk_SRC
 	SemaphoreVk.cpp
 	ShaderModuleVk.cpp
 	SurfaceVk.cpp
-	SwapchainVk.cpp)
+	SwapchainVk.cpp
+	TimelineSemaphoreVk.cpp
+	TimelineSemaphoreVk.h)
 
 set(PVRVk_INCLUDE_DIRECTORIES 
 	${CMAKE_CURRENT_LIST_DIR}/../../include

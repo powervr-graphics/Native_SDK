@@ -1,0 +1,70 @@
+cmake_minimum_required(VERSION 3.18)
+project(OpenGLESAntiAliasing)
+if(IOS)
+	message("Skipping OpenGLESAntiAliasing : Not supported on iOS")
+	return()
+endif()
+
+add_subdirectory(../../.. ${CMAKE_CURRENT_BINARY_DIR}/sdk)
+
+if(PVR_PREBUILT_DEPENDENCIES)
+	find_package(PVRShell REQUIRED MODULE)
+	find_package(PVRUtilsGles REQUIRED MODULE)
+endif()
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
+
+set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT OpenGLESAntiAliasing)
+
+set(SRC_FILES OpenGLESAntiAliasing.cpp)
+
+set(ASSET_FOLDER ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Assets_OpenGLESAntiAliasing)
+
+# Adds an executable (or ndk library for Android) and necessary files like plists for Mac/iOS etc.
+add_platform_specific_executable(OpenGLESAntiAliasing ${SRC_FILES})
+
+#################################### ASSET FILES ##########################################
+# For platforms supporting it, will be packaged with the executable for runtime use.
+# Will be accessible from the app with their "relative path". One call per base path
+
+### Textures, scene files, generic resources... ###
+add_assets_to_target(OpenGLESAntiAliasing
+	SOURCE_GROUP "assets" 
+	ASSET_FOLDER ${ASSET_FOLDER} 
+	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/Satyr/
+	FILE_LIST 
+		Satyr.pod
+		MarbleNormalMap.pvr
+		MarbleNormalMap_astc.pvr
+		Marble.pvr
+		Marble_astc.pvr)
+
+### Textural shaders (OpenGL ES) ###
+add_assets_to_target(OpenGLESAntiAliasing 
+	SOURCE_GROUP "shaders" 
+	ASSET_FOLDER ${ASSET_FOLDER} 
+	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/
+	FILE_LIST 
+		AttributelessVertexShader.vsh
+		FragShader.fsh
+		VertShader.vsh
+		Offscreen_FragShader.fsh
+		NOAA_FragShader.fsh
+		NOAA_VertShader.vsh
+		MSAA_FragShader.fsh
+		FXAA_FragShader.fsh
+		ResolveTXAA_FragShader.fsh
+		VelocityTXAA_FragShader.fsh
+		VelocityTXAA_VertShader.vsh)
+
+# Create and adds a Windows resource file (Resources.rc) with all the assets that have been added to the target with the previous functions
+add_assets_resource_file(OpenGLESAntiAliasing)
+###########################################################################################
+
+# Apply SDK example specific compile and linker options
+apply_example_compile_options_to_target(OpenGLESAntiAliasing)
+
+target_link_libraries(OpenGLESAntiAliasing PUBLIC
+	PVRShell
+	PVRUtilsGles
+)

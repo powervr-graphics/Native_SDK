@@ -27,7 +27,7 @@ add_platform_specific_executable(OpenGLESIntroducingUIRenderer ${SRC_FILES})
 add_assets_to_target(OpenGLESIntroducingUIRenderer
 	SOURCE_GROUP "assets" 
 	ASSET_FOLDER ${ASSET_FOLDER} 
-	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/IntroducingUIRenderer
+	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/Fonts
 	FILE_LIST 
 		Text.txt
 		titletext.txt

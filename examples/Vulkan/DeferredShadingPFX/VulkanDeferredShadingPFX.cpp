@@ -210,13 +210,13 @@ struct DeviceResources
 	pvrvk::CommandPool commandPool;
 	pvrvk::DescriptorPool descriptorPool;
 
-	pvrvk::Semaphore imageAcquiredSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
-	pvrvk::Semaphore presentationSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
-	pvrvk::Fence perFrameResourcesFences[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	std::vector<pvrvk::Semaphore> imageAcquiredSemaphores;
+	std::vector<pvrvk::Semaphore> presentationSemaphores;
+	std::vector<pvrvk::Fence> perFrameResourcesFences;
 
 	//// Command Buffers ////
 	// Main Primary Command Buffer
-	pvr::Multi<pvrvk::CommandBuffer> cmdBufferMain;
+	std::vector<pvrvk::CommandBuffer> cmdBufferMain;
 	pvr::utils::RenderManager render_mgr;
 
 	// UIRenderer used to display text
@@ -427,6 +427,13 @@ pvr::Result VulkanDeferredShadingPFX::initView()
 	} // Create the swapchain
 	_deviceResources->swapchain = pvr::utils::createSwapchain(_deviceResources->device, surface, getDisplayAttributes(), swapchainImageUsage);
 
+	const uint32_t swapchainLength = _deviceResources->swapchain->getSwapchainLength();
+
+	_deviceResources->imageAcquiredSemaphores.resize(swapchainLength);
+	_deviceResources->presentationSemaphores.resize(swapchainLength);
+	_deviceResources->perFrameResourcesFences.resize(swapchainLength);
+	_deviceResources->cmdBufferMain.resize(swapchainLength);
+
 	_deviceResources->vmaAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
 
 	// Get the number of swap images
@@ -466,11 +473,11 @@ pvr::Result VulkanDeferredShadingPFX::initView()
 
 	// Allocate descriptor pool
 	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(pvrvk::DescriptorPoolCreateInfo()
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 48)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 48)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 48)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_INPUT_ATTACHMENT, 48)
-																						  .setMaxDescriptorSets(32));
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 16 * _numSwapImages)
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 16 * _numSwapImages)
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 16 * _numSwapImages)
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_INPUT_ATTACHMENT, 16 * _numSwapImages)
+																						  .setMaxDescriptorSets(16 * _numSwapImages));
 
 	// Initialise lighting structures
 	allocateLights();
@@ -502,6 +509,10 @@ pvr::Result VulkanDeferredShadingPFX::initView()
 	pvr::Effect effect = pvr::pfx::readPFX(*getAssetStream(Files::EffectPfx), this);
 
 	if (!_deviceResources->render_mgr.init(*this, _deviceResources->swapchain, _deviceResources->descriptorPool)) { return pvr::Result::UnknownError; }
+
+	bool astcSupported = pvr::utils::isSupportedFormat(_deviceResources->device->getPhysicalDevice(), pvrvk::Format::e_ASTC_4x4_UNORM_BLOCK);
+	_deviceResources->render_mgr.setASTCSupported(astcSupported);
+
 	_deviceResources->render_mgr.addEffect(effect, uploadBuffer);
 
 	//--- Gbuffer renders the scene

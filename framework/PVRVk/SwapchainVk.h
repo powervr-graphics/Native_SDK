@@ -93,7 +93,7 @@ private:
 
 	uint32_t _swapchainId;
 	uint32_t _swapChainLength;
-	ImageView _colorImageViews[static_cast<uint32_t>(FrameworkCaps::MaxSwapChains)];
+	std::vector<ImageView> _colorImageViews;
 	Surface _surface;
 	SwapchainCreateInfo _createInfo;
 
@@ -133,7 +133,6 @@ public:
 	/// <returns>ImageView</returns>
 	const ImageView& getImageView(uint32_t swapchain) const
 	{
-		assert(swapchain < FrameworkCaps::MaxSwapChains && "Index out of bound");
 		return _colorImageViews[swapchain];
 	}
 
@@ -142,7 +141,6 @@ public:
 	/// <returns>ImageView</returns>
 	ImageView& getImageView(uint32_t swapchain)
 	{
-		assert(swapchain < FrameworkCaps::MaxSwapChains && "Index out of bound");
 		return _colorImageViews[swapchain];
 	}
 

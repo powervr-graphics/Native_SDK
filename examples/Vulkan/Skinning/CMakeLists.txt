@@ -36,11 +36,17 @@ add_assets_to_target(VulkanSkinning
 	FILE_LIST 
 		Robot.pod
 		Arm.pvr
+		Arm_astc.pvr
 		Grid.pvr
+		Grid_astc.pvr
 		Pipes.pvr
+		Pipes_astc.pvr
 		RobotDiffuse.pvr
+		RobotDiffuse_astc.pvr
 		RobotNormal.pvr
-		Tiles.pvr)
+		RobotNormal_astc.pvr
+		Tiles.pvr
+		Tiles_astc.pvr)
 
 add_assets_to_target(VulkanSkinning
 	SOURCE_GROUP "assets" 

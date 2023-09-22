@@ -43,7 +43,7 @@ add_platform_specific_executable(VulkanRayTracingDenoising ${SRC_FILES})
 add_assets_to_target(VulkanRayTracingDenoising
 	SOURCE_GROUP "assets" 
 	ASSET_FOLDER ${ASSET_FOLDER} 
-	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/RayTracing
+	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/RayTracingHybridHardShadows
 	FILE_LIST 
 		HardShadows.POD)
 

@@ -35,8 +35,11 @@ add_assets_to_target(VulkanGlass
 	FILE_LIST 
 		Balloon.pod
 		BalloonTex.pvr
+		BalloonTex_astc.pvr
 		BalloonTex2.pvr
-		SkyboxTex.pvr)
+		BalloonTex2_astc.pvr
+		SkyboxTex.pvr
+		SkyboxTex_astc.pvr)
 
 add_assets_to_target(VulkanGlass
 	SOURCE_GROUP "assets" 

@@ -43,16 +43,14 @@ Swapchain_::Swapchain_(make_shared_enabler, const DeviceWeakPtr& device, Surface
 
 	swapchainCreate.pQueueFamilyIndices = queueFamilyIndices.get();
 
-	assert(swapchainCreate.minImageCount <= static_cast<uint32_t>(FrameworkCaps::MaxSwapChains) && "Minimum number of swapchain images is larger than Max set");
-
 	vkThrowIfFailed(getDevice()->getVkBindings().vkCreateSwapchainKHR(getDevice()->getVkHandle(), &swapchainCreate, NULL, &_vkHandle), "Could not create the swap chain");
 	vkThrowIfFailed(getDevice()->getVkBindings().vkGetSwapchainImagesKHR(getDevice()->getVkHandle(), getVkHandle(), &_swapChainLength, NULL), "Could not get swapchain length");
-
-	assert(_swapChainLength <= static_cast<uint32_t>(FrameworkCaps::MaxSwapChains) && "Number of swapchain images is larger than Max set");
-
-	VkImage swapchainImages[static_cast<uint32_t>(FrameworkCaps::MaxSwapChains)];
+	
+	std::vector<VkImage> swapchainImages{ _swapChainLength };
 	vkThrowIfFailed(
 		getDevice()->getVkBindings().vkGetSwapchainImagesKHR(getDevice()->getVkHandle(), getVkHandle(), &_swapChainLength, &swapchainImages[0]), "Could not get swapchain images");
+
+	_colorImageViews.resize(_swapChainLength);
 
 	for (uint32_t i = 0; i < _swapChainLength; ++i)
 	{

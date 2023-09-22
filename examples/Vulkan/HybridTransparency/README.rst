@@ -1,6 +1,6 @@
-=================
+===================
 Hybrid Transparency
-=================
+===================
 
 .. figure:: ./HybridTransparency.png
 

@@ -38,7 +38,17 @@ void ModelGles::init(pvr::IAssetProvider& assetProvider, pvr::assets::Model& inM
 	if ((flags & Flags::LoadTextures) == Flags::LoadTextures)
 	{
 		for (uint32_t i = 0; i < this->model->getNumTextures(); ++i)
-		{ textures[i] = pvr::utils::textureUpload(assetProvider, this->model->getTexture(i).getName().c_str(), (flags & Flags::GLES2Only) == Flags::GLES2Only); }
+		{
+			std::string textureName = this->model->getTexture(i).getName().c_str();
+
+			if (int(flags & pvr::utils::ModelGles::Flags::loadASTCTextures) > 0)
+			{
+				size_t period = textureName.rfind(".");
+				if (period != std::string::npos) { textureName = textureName.substr(0, period); }
+				textureName += "_astc.pvr";
+			}
+			textures[i] = pvr::utils::textureUpload(assetProvider, textureName.c_str(), (flags & Flags::GLES2Only) == Flags::GLES2Only);
+		}
 	}
 
 	if ((flags & Flags::LoadMeshes) == Flags::LoadMeshes)

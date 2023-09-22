@@ -129,6 +129,111 @@ void CommandBufferBase_::pipelineBarrier(PipelineStageFlags srcStage, PipelineSt
 #endif
 }
 
+VkMemoryBarrier2KHR memoryBarrier2(const MemoryBarrier2& memBarrier)
+{
+	VkMemoryBarrier2KHR barrier = {};
+	barrier.sType = VK_STRUCTURE_TYPE_MEMORY_BARRIER_2_KHR;
+	barrier.pNext = nullptr;
+	barrier.srcStageMask = static_cast<VkPipelineStageFlagBits2KHR>(memBarrier.getSrcStageMask());
+	barrier.srcAccessMask = static_cast<VkAccessFlagBits2KHR>(memBarrier.getSrcAccessMask());
+	barrier.dstStageMask = static_cast<VkPipelineStageFlagBits2KHR>(memBarrier.getDstStageMask());
+	barrier.dstAccessMask = static_cast<VkAccessFlagBits2KHR>(memBarrier.getDstAccessMask());
+	return barrier;
+}
+
+VkBufferMemoryBarrier2KHR bufferBarrier2(const BufferMemoryBarrier2& bufferBarrier)
+{
+	VkBufferMemoryBarrier2KHR barrier;
+	barrier.sType = VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER_2_KHR;
+	barrier.pNext = nullptr;
+	barrier.srcStageMask = static_cast<VkPipelineStageFlagBits2KHR>(bufferBarrier.getSrcStageMask());
+	barrier.srcAccessMask = static_cast<VkAccessFlagBits2KHR>(bufferBarrier.getSrcAccessMask());
+	barrier.dstStageMask = static_cast<VkPipelineStageFlagBits2KHR>(bufferBarrier.getDstStageMask());
+	barrier.dstAccessMask = static_cast<VkAccessFlagBits2KHR>(bufferBarrier.getDstAccessMask());
+	barrier.srcQueueFamilyIndex = bufferBarrier.getSrcQueueFamilyIndex();
+	barrier.dstQueueFamilyIndex = bufferBarrier.getDstQueueFamilyIndex();
+	barrier.buffer = bufferBarrier.getBuffer()->getVkHandle();
+	barrier.offset = bufferBarrier.getOffset();
+	barrier.size = bufferBarrier.getSize();
+	return barrier;
+}
+
+VkImageMemoryBarrier2KHR imageBarrier2(const ImageMemoryBarrier2& imgBarrier)
+{
+	VkImageMemoryBarrier2KHR barrier = {};
+	barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2_KHR;
+	barrier.pNext = nullptr;
+	barrier.srcStageMask = static_cast<VkPipelineStageFlagBits2KHR>(imgBarrier.getSrcStageMask());
+	barrier.srcAccessMask = static_cast<VkAccessFlagBits2KHR>(imgBarrier.getSrcAccessMask());
+	barrier.dstStageMask = static_cast<VkPipelineStageFlagBits2KHR>(imgBarrier.getDstStageMask());
+	barrier.dstAccessMask = static_cast<VkAccessFlagBits2KHR>(imgBarrier.getDstAccessMask());
+	barrier.oldLayout = static_cast<VkImageLayout>(imgBarrier.getOldLayout());
+	barrier.newLayout = static_cast<VkImageLayout>(imgBarrier.getNewLayout());
+	barrier.srcQueueFamilyIndex = imgBarrier.getSrcQueueFamilyIndex();
+	barrier.dstQueueFamilyIndex = imgBarrier.getDstQueueFamilyIndex();
+	barrier.image = imgBarrier.getImage()->getVkHandle();
+	barrier.subresourceRange.aspectMask = static_cast<VkImageAspectFlags>(imgBarrier.getSubresourceRange().getAspectMask());
+	barrier.subresourceRange.baseMipLevel = imgBarrier.getSubresourceRange().getBaseMipLevel();
+	barrier.subresourceRange.levelCount = imgBarrier.getSubresourceRange().getLevelCount();
+	barrier.subresourceRange.baseArrayLayer = imgBarrier.getSubresourceRange().getBaseArrayLayer();
+	barrier.subresourceRange.layerCount = imgBarrier.getSubresourceRange().getLayerCount();
+	return barrier;
+}
+
+void CommandBufferBase_::pipelineBarrier2(const MemoryBarrierSet2& barriers, bool dependencyByRegion)
+{
+	if (!_VKSynchronization2IsSupported)
+	{
+		assert(false && "Calling CommandBufferBase_::pipelineBarrier2 which requires support for extension VK_KHR_synchronization2 and to set as true CommandBufferBase_::_VKSynchronization2IsSupported");
+	}
+
+	const std::vector<MemoryBarrier2>& vectorMemoryBarrierData = barriers.getMemoryBarriers();
+	const std::vector<ImageMemoryBarrier2>& vectorImageMemoryBarrierData = barriers.getImageBarriers();
+	const std::vector<BufferMemoryBarrier2>& vectorBufferBarrierData = barriers.getBufferBarriers();
+
+	std::vector<VkMemoryBarrier2KHR> vectorMemoryBarrierVulkan = std::vector<VkMemoryBarrier2KHR>(barriers.getMemoryBarriers().size());
+	std::vector<VkImageMemoryBarrier2KHR> vectorImageMemoryBarrierVulkan = std::vector<VkImageMemoryBarrier2KHR>(barriers.getImageBarriers().size());
+	std::vector<VkBufferMemoryBarrier2KHR> vectorBufferMemoryBarrierVulkan = std::vector<VkBufferMemoryBarrier2KHR>(barriers.getBufferBarriers().size());
+
+	for (uint32_t i = 0; i < vectorMemoryBarrierData.size(); ++i)
+	{
+		vectorMemoryBarrierVulkan[i] = memoryBarrier2(vectorMemoryBarrierData[i]);
+	}
+
+	for (uint32_t i = 0; i < vectorImageMemoryBarrierData.size(); ++i)
+	{
+		vectorImageMemoryBarrierVulkan[i] = imageBarrier2(vectorImageMemoryBarrierData[i]);
+	}
+
+	for (uint32_t i = 0; i < vectorBufferBarrierData.size(); ++i)
+	{
+		vectorBufferMemoryBarrierVulkan[i] = bufferBarrier2(vectorBufferBarrierData[i]);
+	}
+
+	VkDependencyInfoKHR dependencyInfo = { VK_STRUCTURE_TYPE_DEPENDENCY_INFO_KHR, nullptr };
+
+	dependencyInfo.sType = VK_STRUCTURE_TYPE_DEPENDENCY_INFO_KHR;
+	dependencyInfo.pNext = nullptr;
+	dependencyInfo.dependencyFlags = dependencyByRegion ? VK_DEPENDENCY_BY_REGION_BIT : VK_DEPENDENCY_DEVICE_GROUP_BIT;
+	dependencyInfo.memoryBarrierCount = vectorMemoryBarrierVulkan.size();
+	dependencyInfo.pMemoryBarriers = vectorMemoryBarrierVulkan.data();
+	dependencyInfo.bufferMemoryBarrierCount = vectorBufferMemoryBarrierVulkan.size();
+	dependencyInfo.pBufferMemoryBarriers = vectorBufferMemoryBarrierVulkan.data();
+	dependencyInfo.imageMemoryBarrierCount = vectorImageMemoryBarrierVulkan.size();
+	dependencyInfo.pImageMemoryBarriers = vectorImageMemoryBarrierVulkan.data();
+
+	getDevice()->getVkBindings().vkCmdPipelineBarrier2KHR(getVkHandle(), &dependencyInfo);
+
+#ifdef DEBUG
+	const auto& imageBarriers = barriers.getImageBarriers();
+	for (uint32_t i = 0; i < barriers.getImageBarriers().size(); ++i)
+	{
+		const ImageMemoryBarrier2& currentImageMemoryBarrier = imageBarriers[i];
+		currentImageMemoryBarrier.getImage()->setImageLayout(currentImageMemoryBarrier.getNewLayout());
+	}
+#endif
+}
+
 void CommandBufferBase_::waitForEvent(const Event& event, PipelineStageFlags srcStage, PipelineStageFlags dstStage, const MemoryBarrierSet& barriers)
 {
 	uint32_t memoryBarrierCount = static_cast<uint32_t>(barriers.getMemoryBarriers().size());

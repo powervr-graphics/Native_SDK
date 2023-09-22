@@ -140,7 +140,13 @@ inline Api getCurrentGlesVersion()
 inline bool checkFboStatus()
 {
 	// check status
-	GLenum fboStatus = gl::CheckFramebufferStatus(GL_DRAW_FRAMEBUFFER);
+	GLenum fboStatus = gl::CheckFramebufferStatus(
+#if SC_ENABLED
+		GL_FRAMEBUFFER
+#else
+		GL_DRAW_FRAMEBUFFER
+#endif
+		);
 	switch (fboStatus)
 	{
 #ifdef GL_FRAMEBUFFER_UNDEFINED
@@ -320,8 +326,8 @@ inline pvr::Texture getTextureData(const IAssetProvider& app, const char* file)
 			// Use the decompressed texture instead
 			outTexture = cDecompressedTexture;
 			break;
-		}
 #endif
+		}
 	}
 	return outTexture;
 }
@@ -574,12 +580,15 @@ inline void generateTextureAtlas(
 		outDescriptor->setDepth(1);
 		outDescriptor->setPixelFormat(outFmt.format);
 	}
+#if SC_ENABLED
+	gl::Finish();
+#else
 	if (isEs2) { gl::Finish(); }
 	else
 	{
 		gl::FenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0x00000000);
 	}
-
+#endif
 	head->deleteArea();
 	delete head;
 

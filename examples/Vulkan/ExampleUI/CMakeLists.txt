@@ -31,7 +31,7 @@ add_platform_specific_executable(VulkanExampleUI ${SRC_FILES})
 add_assets_to_target(VulkanExampleUI
 	SOURCE_GROUP "assets" 
 	ASSET_FOLDER ${ASSET_FOLDER} 
-	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/ExampleUI
+	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/UI
 	FILE_LIST 
 		container-corner.pvr
 		container-filler.pvr
@@ -39,6 +39,7 @@ add_assets_to_target(VulkanExampleUI
 		container-horizontal.pvr
 		topbar.pvr
 		background.pvr
+		background_astc.pvr
 		clock-face.pvr
 		clock-face-small.pvr
 		hand.pvr

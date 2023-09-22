@@ -31,7 +31,7 @@ add_platform_specific_executable(VulkanGaussianBlur ${SRC_FILES})
 add_assets_to_target(VulkanGaussianBlur
 	SOURCE_GROUP "assets" 
 	ASSET_FOLDER ${ASSET_FOLDER} 
-	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets
+	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/Postprocessing
 	FILE_LIST 
 		Lenna.pvr)
 

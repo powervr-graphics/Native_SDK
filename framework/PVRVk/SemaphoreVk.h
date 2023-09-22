@@ -28,6 +28,7 @@ private:
 		return std::make_shared<Semaphore_>(make_shared_enabler{}, device, createInfo);
 	}
 
+protected:
 	/// <summary>Creation information used when creating the Semaphore.</summary>
 	SemaphoreCreateInfo _createInfo;
 
@@ -36,7 +37,11 @@ public:
 	DECLARE_NO_COPY_SEMANTICS(Semaphore_)
 	Semaphore_(make_shared_enabler, const DeviceWeakPtr& device, const SemaphoreCreateInfo& createInfo);
 
-	~Semaphore_();
+	Semaphore_(const DeviceWeakPtr& device, const SemaphoreCreateInfo& createInfo)
+		: PVRVkDeviceObjectBase(device), DeviceObjectDebugUtils(), _createInfo(createInfo)
+	{}
+
+	virtual ~Semaphore_();
 	//!\endcond
 
 	/// <summary>Get the Semaphore creation flags</summary>

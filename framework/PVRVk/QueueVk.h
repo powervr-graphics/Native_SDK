@@ -74,10 +74,11 @@ struct SubmitInfo
 	uint32_t numWaitSemaphores; //!<  The number of semaphores upon which to wait before executing the command buffers for the batch
 	const Semaphore* signalSemaphores; //!< Pointer to an array of semaphores which will be signaled when the command buffers for this batch have completed execution
 	uint32_t numSignalSemaphores; //!< Number of semaphores to be signaled once the commands specified in pCommandBuffers have completed execution
+	TimelineSemaphoreSubmitInfo* timelineSemaphoreSubmitInfo; //!< Additional struct required with timeline semaphores. It contains signal values
 
 	/// <summary>Constructor. Default initialised to 0.</summary>
 	SubmitInfo()
-		: waitDstStageMask(nullptr), commandBuffers(nullptr), numCommandBuffers(0), waitSemaphores(nullptr), numWaitSemaphores(0), signalSemaphores(nullptr), numSignalSemaphores(0)
+		: waitDstStageMask(nullptr), commandBuffers(nullptr), numCommandBuffers(0), waitSemaphores(nullptr), numWaitSemaphores(0), signalSemaphores(nullptr), numSignalSemaphores(0), timelineSemaphoreSubmitInfo(nullptr)
 	{}
 
 	/// <summary>Constructor. Initialise with inidividual values</summary>
@@ -91,7 +92,7 @@ struct SubmitInfo
 	SubmitInfo(const pvrvk::PipelineStageFlags* waitDstStageMask, const CommandBuffer* commandBuffers, uint32_t numCommandBuffers, const Semaphore* waitSemaphores,
 		uint32_t numWaitSemaphores, const Semaphore* signalSemaphores, uint32_t numSignalSemaphores)
 		: waitDstStageMask(waitDstStageMask), commandBuffers(commandBuffers), numCommandBuffers(numCommandBuffers), waitSemaphores(waitSemaphores),
-		  numWaitSemaphores(numWaitSemaphores), signalSemaphores(signalSemaphores), numSignalSemaphores(numSignalSemaphores)
+		  numWaitSemaphores(numWaitSemaphores), signalSemaphores(signalSemaphores), numSignalSemaphores(numSignalSemaphores), timelineSemaphoreSubmitInfo(nullptr)
 	{}
 };
 

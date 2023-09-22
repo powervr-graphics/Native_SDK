@@ -37,6 +37,7 @@ class PipelineCache_;
 class CommandPool_;
 class Fence_;
 class Semaphore_;
+class TimelineSemaphore_;
 class Event_;
 class IDeviceMemory_;
 class DeviceMemory_;
@@ -61,7 +62,6 @@ class DebugUtilsMessenger_;
 } // namespace impl
 //!\endcond
 
-struct MemoryBarrierSet;
 struct GraphicsPipelineCreateInfo;
 struct RenderPassCreateInfo;
 struct ComputePipelineCreateInfo;
@@ -91,6 +91,7 @@ struct QueryPoolCreateInfo;
 struct ShaderModuleCreateInfo;
 struct MemoryAllocationInfo;
 struct ExportMemoryAllocateInfoKHR;
+struct TimelineSemaphoreSubmitInfo;
 
 /// <summary>Forwared-declared reference-counted handle to a Framebuffer. For detailed documentation, see PVRVk module</summary>
 typedef std::shared_ptr<impl::Framebuffer_> Framebuffer;
@@ -240,6 +241,9 @@ typedef std::shared_ptr<impl::Queue_> Queue;
 
 /// <summary>Forwared-declared reference-counted handle to a Buffer. For detailed documentation, see PVRVk module</summary>
 typedef std::shared_ptr<impl::Semaphore_> Semaphore;
+
+/// <summary>Forwared-declared reference-counted handle to a Timeline Semaphore. For detailed documentation, see PVRVk module</summary>
+typedef std::shared_ptr<impl::TimelineSemaphore_> TimelineSemaphore;
 
 /// <summary>Forwared-declared reference-counted handle to a Device. For detailed documentation, see PVRVk module</summary>
 typedef std::shared_ptr<impl::Device_> Device;

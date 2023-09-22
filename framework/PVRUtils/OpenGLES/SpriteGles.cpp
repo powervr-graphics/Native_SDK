@@ -112,12 +112,14 @@ void Image_::onRender(uint64_t parentId) const
 		_uiRenderer->_uiStateTracker.boundTextureChanged = true;
 	}
 
+#if !SC_ENABLED
 	if (_uiRenderer->getApiVersion() > Api::OpenGLES2)
 	{
 		_uiRenderer->_uiStateTracker.sampler7 = getSampler();
 		gl::BindSampler(7, getSampler());
 		debugThrowOnApiError("Image_::onRender bind sampler");
 	}
+#endif
 
 	GLuint vbo = _uiRenderer->getImageVbo();
 	debugThrowOnApiError("Image_::onRender getImageVbo");
@@ -176,12 +178,14 @@ Image_::Image_(make_shared_enabler, UIRenderer& uiRenderer, const GLuint& textur
 		_uiRenderer->_uiStateTracker.boundTextureChanged = true;
 	}
 
+#if !SC_ENABLED
 	if (_uiRenderer->getApiVersion() > Api::OpenGLES2 && _sampler != 0)
 	{
 		_sampler = useMipmaps ? uiRenderer.getSamplerTrilinear() : uiRenderer.getSamplerBilinear();
 		gl::BindSampler(7, _sampler);
 		_uiRenderer->_uiStateTracker.sampler7 = _sampler;
 	}
+#endif
 	_boundingRect.setMinMax(glm::vec3(width * -.5f, height * -.5f, 0.0f), glm::vec3(width * .5f, height * .5f, 0.0f));
 }
 
@@ -281,6 +285,7 @@ Font_::Font_(make_shared_enabler, UIRenderer& uiRenderer, const GLuint& tex2D, c
 {
 	setUIRenderer(&uiRenderer);
 	_texture = tex2D;
+#if !SC_ENABLED
 	if (uiRenderer.getApiVersion() > Api::OpenGLES2)
 	{
 		_sampler = (sampler != 0) ? sampler : uiRenderer.getSamplerBilinear();
@@ -288,6 +293,7 @@ Font_::Font_(make_shared_enabler, UIRenderer& uiRenderer, const GLuint& tex2D, c
 		_uiRenderer->_uiStateTracker.sampler7 = static_cast<GLint>(_sampler);
 	}
 	else
+#endif
 	{
 		gl::BindTexture(GL_TEXTURE_2D, tex2D);
 		gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -470,7 +476,11 @@ void TextElement_::onRender() const
 
 		gl::VertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 6, reinterpret_cast<const void*>(sizeof(float) * 4)); // myUv
 
+#if SC_ENABLED
+		gl::DrawRangeElements(GL_TRIANGLES, 0, _vertices.size()-1, (glm::min<int32_t>(_numCachedVerts, 0xFFFC) >> 1) * 3, GL_UNSIGNED_SHORT, 0);
+#else
 		gl::DrawElements(GL_TRIANGLES, (glm::min<int32_t>(_numCachedVerts, 0xFFFC) >> 1) * 3, GL_UNSIGNED_SHORT, 0);
+#endif
 	}
 }
 
@@ -530,6 +540,7 @@ void Text_::calculateMvp(uint64_t parentIds, glm::mat4 const& srt, const glm::ma
 
 void Text_::onRender(uint64_t parentId) const
 {
+#if !SC_ENABLED
 	if (_uiRenderer->getApiVersion() > Api::OpenGLES2)
 	{
 		if (static_cast<GLuint>(_uiRenderer->_uiStateTracker.sampler7) != getFont()->getSampler())
@@ -539,7 +550,7 @@ void Text_::onRender(uint64_t parentId) const
 			_uiRenderer->_uiStateTracker.sampler7Changed = true;
 		}
 	}
-
+#endif
 	if (_uiRenderer->_uiStateTracker.activeTextureUnit != GL_TEXTURE7)
 	{
 		gl::ActiveTexture(GL_TEXTURE7);

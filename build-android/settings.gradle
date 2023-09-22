@@ -13,6 +13,7 @@ ext.PVR_OPENGLES_EXAMPLES = [
 	'03_IntroducingPVRUtils',
 	'04_IntroducingUIRenderer',
 	'05_IntroducingPVRCamera',
+	'AntiAliasing',
 	'MultiviewVR',
 	'PostProcessing',
 	'OpenCLExample',
@@ -32,7 +33,7 @@ ext.PVR_OPENGLES_EXAMPLES = [
 	'Shadows'
 ]
 
-ext.PVR_VULKAN_EXAMPLES = [ 
+ext.PVR_VULKAN_EXAMPLES = [
 	'01_HelloAPI',
 	'02_IntroducingPVRShell',
 	'03_IntroducingPVRVk',
@@ -42,6 +43,7 @@ ext.PVR_VULKAN_EXAMPLES = [
 	'MultiSampling',
 	'PostProcessing',
 	'GnomeHorde',
+	'GPUControlledRendering',
 	'ParticleSystem',
 	'Bumpmap',
 	'GaussianBlur',
@@ -59,7 +61,9 @@ ext.PVR_VULKAN_EXAMPLES = [
 	'PipelineCache',
 	'AmbientOcclusion',
 	'MatrixMultiplication',
-	'Shadows'
+	'Shadows',
+	'SPHFluidSimulation',
+	'TimelineSemaphores',
 ]
 
 ext.PVR_OPENCL_EXAMPLES = [ 

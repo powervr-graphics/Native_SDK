@@ -346,11 +346,13 @@ public:
 
 		if (_fontIboCreated && _fontIbo != static_cast<uint32_t>(-1)) { gl::DeleteBuffers(1, &_fontIbo); }
 		if (_imageVboCreated && _imageVbo != static_cast<uint32_t>(-1)) { gl::DeleteBuffers(1, &_imageVbo); }
+#if !SC_ENABLED
 		if (_api != Api::OpenGLES2)
 		{
 			if (_samplerBilinear) { gl::DeleteSamplers(1, &_samplerBilinear); }
 			if (_samplerTrilinear) { gl::DeleteSamplers(1, &_samplerTrilinear); }
 		}
+#endif
 
 		_screenRotation = .0f;
 		_program = 0;

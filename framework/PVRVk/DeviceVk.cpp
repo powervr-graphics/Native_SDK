@@ -24,6 +24,7 @@
 #include "PVRVk/EventVk.h"
 #include "PVRVk/FenceVk.h"
 #include "PVRVk/SemaphoreVk.h"
+#include "PVRVk/TimelineSemaphoreVk.h"
 #include "PVRVk/GraphicsPipelineVk.h"
 #include "PVRVk/ComputePipelineVk.h"
 #include "PVRVk/RaytracingPipelineVk.h"
@@ -183,7 +184,7 @@ pvrvk::Image Device_::createImage(const ImageCreateInfo& createInfo)
 void Device_::updateDescriptorSets(const WriteDescriptorSet* writeDescSets, uint32_t numWriteDescSets, const CopyDescriptorSet* copyDescSets, uint32_t numCopyDescSets)
 {
 	// WRITE DESCRIPTORSET
-	pvrvk::ArrayOrVector<VkWriteDescriptorSet, 4> vkWriteDescSets(numWriteDescSets);
+	std::vector<VkWriteDescriptorSet> vkWriteDescSets{ numWriteDescSets };
 	// Count number of image, buffer and texel buffer view needed
 	uint32_t numImageInfos = 0;
 	uint32_t numBufferInfos = 0;
@@ -337,7 +338,7 @@ void Device_::updateDescriptorSets(const WriteDescriptorSet* writeDescSets, uint
 	});
 
 	getVkBindings().vkUpdateDescriptorSets(
-		getVkHandle(), static_cast<uint32_t>(numWriteDescSets), vkWriteDescSets.get(), static_cast<uint32_t>(numCopyDescSets), vkCopyDescriptorSets.get());
+		getVkHandle(), static_cast<uint32_t>(numWriteDescSets), vkWriteDescSets.data(), static_cast<uint32_t>(numCopyDescSets), vkCopyDescriptorSets.get());
 }
 
 ImageView Device_::createImageView(const ImageViewCreateInfo& createInfo)
@@ -368,6 +369,12 @@ Semaphore Device_::createSemaphore(const SemaphoreCreateInfo& createInfo)
 {
 	Device device = shared_from_this();
 	return Semaphore_::constructShared(device, createInfo);
+}
+
+TimelineSemaphore Device_::createTimelineSemaphore(SemaphoreCreateInfo& createInfo)
+{
+	Device device = shared_from_this();
+	return TimelineSemaphore_::constructShared(device, createInfo);
 }
 
 Buffer Device_::createBuffer(const BufferCreateInfo& createInfo)

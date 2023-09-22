@@ -19,7 +19,7 @@ const char FragShaderSrcFile[] = "FragShader.fsh";
 const char VertShaderSrcFile[] = "VertShader.vsh";
 
 // PVR texture files
-const char TextureFile[] = "Marble.pvr";
+std::string TextureFile = "Marble";
 
 // POD scene files
 const char SceneFile[] = "Satyr.pod";
@@ -138,8 +138,10 @@ void OpenGLESPVRScopeExample::eventMappedInput(pvr::SimplifiedInput key)
 /// <returns>Return true if no error occurred.</returns>
 void OpenGLESPVRScopeExample::loadTextures()
 {
+	bool astcSupported = gl::isGlExtensionSupported("GL_KHR_texture_compression_astc_ldr");
+
 	// load the texture from disk
-	_deviceResources->texture = pvr::utils::textureUpload(*this, TextureFile, _deviceResources->context->getApiVersion() == pvr::Api::OpenGLES2);
+	_deviceResources->texture = pvr::utils::textureUpload(*this, TextureFile + (astcSupported ? "_astc.pvr" : ".pvr"), _deviceResources->context->getApiVersion() == pvr::Api::OpenGLES2);
 
 	// create the bilinear sampler
 	gl::BindTexture(GL_TEXTURE_2D, _deviceResources->texture);

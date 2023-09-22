@@ -32,8 +32,8 @@ const char VertexShaderFile[] = "VertShader_ES3.vsh";
 const char FragmentShaderFile[] = "FragShader_ES3.fsh";
 
 // PVR texture files
-const char TextureFileName[] = "Marble.pvr";
-const char BumpTextureFileName[] = "MarbleNormalMap.pvr";
+std::string TextureFileName = "Marble";
+std::string BumpTextureFileName = "MarbleNormalMap";
 
 // POD scene files
 const char SceneFileName[] = "Satyr.pod";
@@ -155,8 +155,10 @@ pvr::Result OpenGLESBumpmap::initView()
 	// create the default fbo using default params
 	_deviceResources->onScreenFbo = _deviceResources->context->getOnScreenFbo();
 
-	_deviceResources->texture = pvr::utils::textureUpload(*this, TextureFileName, _deviceResources->context->getApiVersion() == pvr::Api::OpenGLES2);
-	_deviceResources->bumpTexture = pvr::utils::textureUpload(*this, BumpTextureFileName, _deviceResources->context->getApiVersion() == pvr::Api::OpenGLES2);
+	bool astcSupported = gl::isGlExtensionSupported("GL_KHR_texture_compression_astc_ldr");
+
+	_deviceResources->texture = pvr::utils::textureUpload(*this, TextureFileName + (astcSupported ? "_astc.pvr" : ".pvr"), _deviceResources->context->getApiVersion() == pvr::Api::OpenGLES2);
+	_deviceResources->bumpTexture = pvr::utils::textureUpload(*this, BumpTextureFileName + (astcSupported ? "_astc.pvr" : ".pvr"), _deviceResources->context->getApiVersion() == pvr::Api::OpenGLES2);
 	pvr::utils::throwOnGlError("Texture creation failed");
 
 	gl::GenSamplers(1, &_deviceResources->samplerTrilinear);

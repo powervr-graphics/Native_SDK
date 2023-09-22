@@ -39,15 +39,39 @@ add_platform_specific_executable(VulkanHybridTransparency ${SRC_FILES})
 add_assets_to_target(VulkanHybridTransparency
 	SOURCE_GROUP "assets" 
 	ASSET_FOLDER ${ASSET_FOLDER} 
-	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/RayTracing
+	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/Environments
+	FILE_LIST 
+		LancellottiChapel.pvr
+		LancellottiChapel_astc.pvr)
+
+add_assets_to_target(VulkanHybridTransparency
+	SOURCE_GROUP "assets" 
+	ASSET_FOLDER ${ASSET_FOLDER} 
+	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/Satyr
+	FILE_LIST 
+		Marble.pvr
+		Marble_astc.pvr)
+
+add_assets_to_target(VulkanHybridTransparency
+	SOURCE_GROUP "assets" 
+	ASSET_FOLDER ${ASSET_FOLDER} 
+	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/RayTracingTransparency
+	FILE_LIST 
+		DarkWood.pvr
+		DarkWood_astc.pvr
+		StainedGlass_01.pvr
+		StainedGlass_01_astc.pvr
+		StainedGlass_02.pvr
+		StainedGlass_02_astc.pvr
+		Translucency.POD)
+
+add_assets_to_target(VulkanHybridTransparency
+	SOURCE_GROUP "assets" 
+	ASSET_FOLDER ${ASSET_FOLDER} 
+	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/RayTracingReflections
 	FILE_LIST 
 		Alabaster.pvr
-		DarkWood.pvr
-		LancellottiChapel.pvr
-		marble.pvr
-		StainedGlass_01.pvr
-		StainedGlass_02.pvr
-		Translucency.POD)
+		Alabaster_astc.pvr)
 
 ### Shaders that need to be compiled to SpirV (Vulkan) ###
 # During build time, glslangvalidator will be called to create a "<shadername.extension>.spv" file

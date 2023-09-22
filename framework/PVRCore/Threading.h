@@ -1,6 +1,6 @@
 /*!
 \brief MultiThreading tools, including abstract classes for tasks and scheduling, and adaptation of
-MoodyCamel's BlockingConcurrentQueue, and
+MoodyCamel's BlockingConcurrentQueue.
 \file PVRCore/Threading.h
 \author PowerVR by Imagination, Developer Technology Team
 \copyright Copyright (c) Imagination Technologies Limited.

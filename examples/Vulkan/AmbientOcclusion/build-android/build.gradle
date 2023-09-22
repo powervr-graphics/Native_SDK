@@ -111,7 +111,9 @@ android {
 	"${project.projectDir}/../Composite.fsh.spv",
 	"${project.projectDir}/../../../assets/Saloon/Saloon.pod",
 	"${project.projectDir}/../../../assets/Saloon/Terrain_Albedo.pvr",
+	"${project.projectDir}/../../../assets/Saloon/Terrain_Albedo_astc.pvr",
 	"${project.projectDir}/../../../assets/Saloon/Weston_Town_Albedo.pvr",
+	"${project.projectDir}/../../../assets/Saloon/Weston_Town_Albedo_astc.pvr",
 	)
 	
 	// Add a task for copying our assets from their original location (${project.projectDir}...) to the assets/ folder for packaging

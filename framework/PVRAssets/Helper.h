@@ -30,6 +30,11 @@ void VertexIndexRead(const uint8_t* data, const IndexType type, uint32_t* const 
 /// <param name="modelFile">The name of the model file to use for determining its model file format</param>
 pvr::assets::ModelFileFormat getModelFormatFromFilename(const std::string& modelFile);
 
+/// <summary>Change a texture name to have .astc or .pvr extension depending on whether .astc format is supported or not.</summary>
+/// <param name="textureName">Texture name to analyse</param>
+///<param name="astcSupported">flag to know whether astc is supported</param>
+void getTextureNameWithExtension(std::string& textureName, bool astcSupported);
+
 } // namespace helper
 /// <summary>Load a model file using the provided scene file name.</summary>
 /// <param name="app">An asset provider used to load the model file</param>

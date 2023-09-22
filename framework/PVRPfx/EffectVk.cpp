@@ -225,10 +225,10 @@ const effect::PipelineDefinition* getPipeline(const effect::Effect& effect, cons
 }
 
 bool getRenderPassAndFramebufferForPass(Effect_& effect, const effect::Effect& effectAsset, const effect::Pass& pass, Framebuffer* framebuffers, RenderPass& rp,
-	std::vector<std::pair<StringHash, uint32_t> /**/>& colorAttachmentIndex)
+	std::vector<std::pair<StringHash, uint32_t> /**/>& colorAttachmentIndex, uint32_t swapchainLength)
 {
 	Device device = effect.getDevice().lock();
-	FramebufferCreateInfo framebufferInfo[FrameworkCaps::MaxSwapChains];
+	std::vector<FramebufferCreateInfo> framebufferInfo{ swapchainLength };
 	RenderPassCreateInfo rpInfo;
 	Swapchain swapchain = effect.getSwapchain();
 	{
@@ -357,7 +357,7 @@ bool getRenderPassAndFramebufferForPass(Effect_& effect, const effect::Effect& e
 		//------------------------------------
 		// Depth stencil attachment
 		uint32_t depthStencilAttachmentIndex = static_cast<uint32_t>(-1);
-		ImageView dsAttachments[FrameworkCaps::MaxSwapChains];
+		std::vector<ImageView> dsAttachments{ swapchainLength };
 		if (!pass.targetDepthStencil.empty()) // depth stencil
 		{
 			const auto& found = effectAsset.textures.find(pass.targetDepthStencil);
@@ -616,9 +616,11 @@ void createPasses(Effect_& effect, std::vector<Pass>& passes, std::map<StringHas
 	for (auto pass_it = assetEffect.passes.begin(); pass_it != assetEffect.passes.end(); ++pass_it, ++pass_idx)
 	{
 		Pass& pass = passes[pass_idx];
+		pass.framebuffers.resize(swapchainLength);
+
 		// The color index keep an index in to the framebuffer's color attachments. will be used later
 		std::vector<std::pair<StringHash, uint32_t> /**/> colorIndex;
-		getRenderPassAndFramebufferForPass(effect, assetEffect, *pass_it, pass.framebuffers, pass.renderPass, colorIndex);
+		getRenderPassAndFramebufferForPass(effect, assetEffect, *pass_it, static_cast<Framebuffer*>(pass.framebuffers.data()), pass.renderPass, colorIndex, swapchainLength);
 
 		uint32_t subpass_idx = 0;
 		pass.subpasses.resize(static_cast<uint32_t>((pass_it->subpasses.end() - pass_it->subpasses.begin())));
@@ -649,6 +651,7 @@ void createPasses(Effect_& effect, std::vector<Pass>& passes, std::map<StringHas
 						continue;
 					}
 					PipelineDef& effectPipeDef = createParams[pipedef->name];
+					effectPipeDef.inputAttachments.resize(swapchainLength);
 					GraphicsPipelineCreateInfo& cp = effectPipeDef.createParam;
 
 					pipeline.pipeline = pipedef->name;
@@ -1085,7 +1088,7 @@ void createSamplers(Effect_& effect, std::map<StringHash, std::map<StringHash, T
 
 void createFixedDescriptorSets(Effect_& effect, std::map<StringHash, PipelineDef>& pipelines, std::map<StringHash, PipelineLayout>& pipelineLayouts, uint32_t swapchainLength)
 {
-	std::map<DescriptorSetLayout, Multi<DescriptorSet> /**/> sets;
+	std::map<DescriptorSetLayout, std::vector<DescriptorSet>> sets;
 	for (auto& pipeDef : pipelines)
 	{
 		auto layout_it = pipelineLayouts.find(pipeDef.first);
@@ -1108,6 +1111,12 @@ void createFixedDescriptorSets(Effect_& effect, std::map<StringHash, PipelineDef
 			{
 				auto& set = sets[setlayout];
 				uint32_t numsets = pipeDef.second.descSetIsMultibuffered[i] ? swapchainLength : 1;
+
+				if (set.size() == 0)
+				{
+					set.resize(numsets);
+				}
+
 				for (uint32_t swapindex = 0; swapindex < numsets; ++swapindex)
 				{
 					if (!set[swapindex]) { set[swapindex] = effect.getDescriptorPool()->allocateDescriptorSet(setlayout); }
@@ -1139,19 +1148,20 @@ void Effect_::buildRenderObjects(CommandBuffer& texUploadCmdBuffer, IAssetProvid
 	createSamplers(*this, samplersIndexedByPipeAndTexture);
 	// Create the pipeline cache
 	_pipelineCache = _device.lock()->createPipelineCache();
-	createPasses(*this, _passes, pipeLayoutsIndexed, _pipelineDefinitions, samplersIndexedByPipeAndTexture, _swapchain->getSwapchainLength());
+	uint32_t swapchainLength = _swapchain->getSwapchainLength();
+	createPasses(*this, _passes, pipeLayoutsIndexed, _pipelineDefinitions, samplersIndexedByPipeAndTexture, swapchainLength);
 	createTextures(*this, _textures, texUploadCmdBuffer, assetProvider);
-	createBuffers(*this, _pipelineDefinitions, _bufferDefinitions, _swapchain->getSwapchainLength());
+	createBuffers(*this, _pipelineDefinitions, _bufferDefinitions, swapchainLength);
 
 	_descriptorPool = _device.lock()->createDescriptorPool(DescriptorPoolCreateInfo()
-															   .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 32)
-															   .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 16)
-															   .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 16)
-															   .addDescriptorInfo(pvrvk::DescriptorType::e_STORAGE_BUFFER, 16)
-															   .addDescriptorInfo(pvrvk::DescriptorType::e_STORAGE_BUFFER_DYNAMIC, 16)
-															   .addDescriptorInfo(pvrvk::DescriptorType::e_INPUT_ATTACHMENT, 16));
+															   .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 8 * swapchainLength)
+															   .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 8 * swapchainLength)
+															   .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 8 * swapchainLength)
+															   .addDescriptorInfo(pvrvk::DescriptorType::e_STORAGE_BUFFER, 8 * swapchainLength)
+															   .addDescriptorInfo(pvrvk::DescriptorType::e_STORAGE_BUFFER_DYNAMIC, 8 * swapchainLength)
+															   .addDescriptorInfo(pvrvk::DescriptorType::e_INPUT_ATTACHMENT, 8 * swapchainLength));
 
-	createFixedDescriptorSets(*this, _pipelineDefinitions, pipeLayoutsIndexed, _swapchain->getSwapchainLength());
+	createFixedDescriptorSets(*this, _pipelineDefinitions, pipeLayoutsIndexed, swapchainLength);
 }
 
 Effect_::Effect_(const DeviceWeakPtr& device) : _device(device) {}

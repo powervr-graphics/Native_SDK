@@ -35,7 +35,9 @@ add_assets_to_target(OpenGLESMultithreading
 	FILE_LIST 
 		Satyr.pod
 		MarbleNormalMap.pvr
-		Marble.pvr)
+		MarbleNormalMap_astc.pvr
+		Marble.pvr
+		Marble_astc.pvr)
 
 ### Textural shaders (OpenGL ES) ###
 add_assets_to_target(OpenGLESMultithreading 

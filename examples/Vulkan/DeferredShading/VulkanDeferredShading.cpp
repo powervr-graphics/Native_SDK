@@ -8,12 +8,6 @@
 #include "PVRVk/PVRVk.h"
 #include "PVRUtils/PVRUtilsVk.h"
 
-// Maximum number of swap images supported
-enum CONSTANTS
-{
-	MAX_NUMBER_OF_SWAP_IMAGES = 4
-};
-
 // Shader vertex Bindings
 const pvr::utils::VertexBindings_Name vertexBindings[] = { { "POSITION", "inVertex" }, { "NORMAL", "inNormal" }, { "UV0", "inTexCoords" }, { "TANGENT", "inTangent" } };
 
@@ -283,12 +277,12 @@ struct DeviceResources
 	pvrvk::DescriptorPool descriptorPool;
 
 	// Local memory frame buffer
-	pvr::Multi<pvrvk::Framebuffer> onScreenLocalMemoryFramebuffer;
-	pvr::Multi<pvrvk::ImageView> depthStencilImages;
-	pvr::Multi<pvrvk::FramebufferCreateInfo> onScreenFramebufferCreateInfos;
+	std::vector<pvrvk::Framebuffer> onScreenLocalMemoryFramebuffer;
+	std::vector<pvrvk::ImageView> depthStencilImages;
+	std::vector<pvrvk::FramebufferCreateInfo> onScreenFramebufferCreateInfos;
 
 	// Stores Texture views for the Images used as attachments on the local memory frame buffer
-	pvr::Multi<pvrvk::ImageView> framebufferGbufferImages[FramebufferGBufferAttachments::Count];
+	std::vector<std::vector<pvrvk::ImageView>> framebufferGbufferImages;
 
 	// Common renderpass used for the demo
 	pvrvk::RenderPass onScreenLocalMemoryRenderPass;
@@ -299,11 +293,11 @@ struct DeviceResources
 
 	//// Command Buffers ////
 	// Main Primary Command Buffer
-	pvrvk::CommandBuffer cmdBufferMain[MAX_NUMBER_OF_SWAP_IMAGES];
+	std::vector<pvrvk::CommandBuffer> cmdBufferMain;
 
 	// Secondary command buffers used for each pass
-	pvrvk::SecondaryCommandBuffer cmdBufferRenderToLocalMemory[MAX_NUMBER_OF_SWAP_IMAGES];
-	pvrvk::SecondaryCommandBuffer cmdBufferLighting[MAX_NUMBER_OF_SWAP_IMAGES];
+	std::vector<pvrvk::SecondaryCommandBuffer> cmdBufferRenderToLocalMemory;
+	std::vector<pvrvk::SecondaryCommandBuffer> cmdBufferLighting;
 
 	////  Descriptor Set Layouts ////
 	// Layouts used for GBuffer rendering
@@ -329,14 +323,14 @@ struct DeviceResources
 	// GBuffer Materials structures
 	std::vector<Material> materials;
 	// Directional Lighting descriptor set
-	pvr::Multi<pvrvk::DescriptorSet> directionalLightingDescriptorSets;
+	std::vector<pvrvk::DescriptorSet> directionalLightingDescriptorSets;
 	// Point light stencil descriptor set
-	pvr::Multi<pvrvk::DescriptorSet> pointLightGeometryStencilDescriptorSets;
+	std::vector<pvrvk::DescriptorSet> pointLightGeometryStencilDescriptorSets;
 	// Point light Proxy descriptor set
-	pvr::Multi<pvrvk::DescriptorSet> pointLightProxyDescriptorSets;
-	pvr::Multi<pvrvk::DescriptorSet> pointLightProxyLocalMemoryDescriptorSets;
+	std::vector<pvrvk::DescriptorSet> pointLightProxyDescriptorSets;
+	std::vector<pvrvk::DescriptorSet> pointLightProxyLocalMemoryDescriptorSets;
 	// Point light Source descriptor set
-	pvr::Multi<pvrvk::DescriptorSet> pointLightSourceDescriptorSets;
+	std::vector<pvrvk::DescriptorSet> pointLightSourceDescriptorSets;
 	// Scene wide descriptor set
 	pvrvk::DescriptorSet sceneDescriptorSet;
 
@@ -386,9 +380,9 @@ struct DeviceResources
 	pvr::utils::StructuredBufferView dynamicDirectionalLightBufferView;
 	pvrvk::Buffer dynamicDirectionalLightBuffer;
 
-	pvrvk::Semaphore imageAcquiredSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
-	pvrvk::Semaphore presentationSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
-	pvrvk::Fence perFrameResourcesFences[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	std::vector<pvrvk::Semaphore> imageAcquiredSemaphores;
+	std::vector<pvrvk::Semaphore> presentationSemaphores;
+	std::vector<pvrvk::Fence> perFrameResourcesFences;
 
 	RenderData renderInfo;
 
@@ -449,6 +443,8 @@ public:
 
 	// Object model
 	pvr::assets::ModelHandle _mainScene;
+
+	bool _astcSupported;
 
 	VulkanDeferredShading()
 	{
@@ -598,6 +594,9 @@ pvr::Result VulkanDeferredShading::initView()
 	// Get the number of swap images
 	_numSwapImages = _deviceResources->swapchain->getSwapchainLength();
 
+	_deviceResources->depthStencilImages.resize(_numSwapImages);
+	_deviceResources->framebufferGbufferImages = std::vector<std::vector<pvrvk::ImageView>>(FramebufferGBufferAttachments::Count, std::vector<pvrvk::ImageView>(_numSwapImages, 0));
+
 	// Create the Depth/Stencil buffer images
 	pvr::utils::createAttachmentImages(_deviceResources->depthStencilImages, _deviceResources->device, _numSwapImages,
 		pvr::utils::getSupportedDepthStencilFormat(_deviceResources->device, getDisplayAttributes()), _deviceResources->swapchain->getDimension(),
@@ -640,28 +639,30 @@ pvr::Result VulkanDeferredShading::initView()
 	_deviceResources->commandPool = _deviceResources->device->createCommandPool(pvrvk::CommandPoolCreateInfo(queueAccessInfo.familyId));
 
 	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(pvrvk::DescriptorPoolCreateInfo()
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 48)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 48)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 48)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_INPUT_ATTACHMENT, 48)
-																						  .setMaxDescriptorSets(32));
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 12 * _numSwapImages)
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 12 * _numSwapImages)
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 12 * _numSwapImages)
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_INPUT_ATTACHMENT, 12 * _numSwapImages)
+																						  .setMaxDescriptorSets(32 * _numSwapImages));
 
 	// setup command buffers
 	for (uint32_t i = 0; i < _numSwapImages; ++i)
 	{
 		// main command buffer
-		_deviceResources->cmdBufferMain[i] = _deviceResources->commandPool->allocateCommandBuffer();
+		_deviceResources->cmdBufferMain.push_back(_deviceResources->commandPool->allocateCommandBuffer());
 
 		// Subpass 0
-		_deviceResources->cmdBufferRenderToLocalMemory[i] = _deviceResources->commandPool->allocateSecondaryCommandBuffer();
+		_deviceResources->cmdBufferRenderToLocalMemory.push_back(_deviceResources->commandPool->allocateSecondaryCommandBuffer());
 
 		// Subpass 1
-		_deviceResources->cmdBufferLighting[i] = _deviceResources->commandPool->allocateSecondaryCommandBuffer();
+		_deviceResources->cmdBufferLighting.push_back(_deviceResources->commandPool->allocateSecondaryCommandBuffer());
 
-		_deviceResources->presentationSemaphores[i] = _deviceResources->device->createSemaphore();
-		_deviceResources->imageAcquiredSemaphores[i] = _deviceResources->device->createSemaphore();
-		_deviceResources->perFrameResourcesFences[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
+		_deviceResources->presentationSemaphores.push_back(_deviceResources->device->createSemaphore());
+		_deviceResources->imageAcquiredSemaphores.push_back(_deviceResources->device->createSemaphore());
+		_deviceResources->perFrameResourcesFences.push_back(_deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT));
 	}
+
+	_astcSupported = pvr::utils::isSupportedFormat(_deviceResources->device->getPhysicalDevice(), pvrvk::Format::e_ASTC_4x4_UNORM_BLOCK);
 
 	// Create the renderpass using subpasses
 	createFramebufferAndRenderPass();
@@ -835,12 +836,12 @@ void VulkanDeferredShading::createDirectionalLightDescriptorSets()
 			pipeLayoutInfo.setDescSetLayout(0, _deviceResources->directionalLightingDescriptorLayout);
 			_deviceResources->directionalLightingPipelineLayout = _deviceResources->device->createPipelineLayout(pipeLayoutInfo);
 		}
-		pvrvk::WriteDescriptorSet descSetUpdate[pvrvk::FrameworkCaps::MaxSwapChains * 5];
+		std::vector<pvrvk::WriteDescriptorSet> descSetUpdate{ _numSwapImages * 5 };
 
 		// create the swapchain descriptor sets with corresponding buffers/images
 		for (uint32_t i = 0; i < _numSwapImages; ++i)
 		{
-			_deviceResources->directionalLightingDescriptorSets.add(_deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->directionalLightingDescriptorLayout));
+			_deviceResources->directionalLightingDescriptorSets.push_back(_deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->directionalLightingDescriptorLayout));
 			descSetUpdate[i * 5]
 				.set(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, _deviceResources->directionalLightingDescriptorSets[i], 0)
 				.setBufferInfo(
@@ -866,7 +867,7 @@ void VulkanDeferredShading::createDirectionalLightDescriptorSets()
 				.setImageInfo(0,
 					pvrvk::DescriptorImageInfo(_deviceResources->framebufferGbufferImages[FramebufferGBufferAttachments::Depth][i], pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL));
 		}
-		_deviceResources->device->updateDescriptorSets(descSetUpdate, _numSwapImages * 5, nullptr, 0);
+		_deviceResources->device->updateDescriptorSets(static_cast<const pvrvk::WriteDescriptorSet*>(descSetUpdate.data()), _numSwapImages * 5, nullptr, 0);
 	}
 }
 
@@ -891,13 +892,12 @@ void VulkanDeferredShading::createPointLightGeometryStencilPassDescriptorSets()
 			pipeLayoutInfo.setDescSetLayout(1, _deviceResources->pointLightGeometryStencilDescriptorLayout);
 			_deviceResources->pointLightGeometryStencilPipelineLayout = _deviceResources->device->createPipelineLayout(pipeLayoutInfo);
 		}
+		_deviceResources->pointLightGeometryStencilDescriptorSets.resize(_numSwapImages);
 		std::vector<pvrvk::WriteDescriptorSet> writeDescSets(_numSwapImages * 2);
 		// create the swapchain descriptor sets with corresponding buffers
 		for (uint32_t i = 0; i < _numSwapImages; ++i)
 		{
-			_deviceResources->pointLightGeometryStencilDescriptorSets.add(
-				_deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->pointLightGeometryStencilDescriptorLayout));
-
+			_deviceResources->pointLightGeometryStencilDescriptorSets[i] = _deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->pointLightGeometryStencilDescriptorLayout);
 			pvrvk::WriteDescriptorSet* descSetUpdate = &writeDescSets[i * 2];
 			descSetUpdate->set(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, _deviceResources->pointLightGeometryStencilDescriptorSets[i], 0);
 			descSetUpdate->setBufferInfo(
@@ -950,7 +950,7 @@ void VulkanDeferredShading::createPointLightProxyPassDescriptorSets()
 		std::vector<pvrvk::WriteDescriptorSet> descSetWrites;
 		for (uint32_t i = 0; i < _numSwapImages; ++i)
 		{
-			_deviceResources->pointLightProxyDescriptorSets.add(_deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->pointLightProxyDescriptorLayout));
+			_deviceResources->pointLightProxyDescriptorSets.push_back(_deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->pointLightProxyDescriptorLayout));
 
 			descSetWrites.push_back(
 				pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, _deviceResources->pointLightProxyDescriptorSets[i], 0)
@@ -965,8 +965,7 @@ void VulkanDeferredShading::createPointLightProxyPassDescriptorSets()
 		// create the swapchain descriptor sets with corresponding images
 		for (uint32_t i = 0; i < _numSwapImages; ++i)
 		{
-			_deviceResources->pointLightProxyLocalMemoryDescriptorSets.add(
-				_deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->pointLightProxyLocalMemoryDescriptorLayout));
+			_deviceResources->pointLightProxyLocalMemoryDescriptorSets.push_back(_deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->pointLightProxyLocalMemoryDescriptorLayout));
 			descSetWrites.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_INPUT_ATTACHMENT, _deviceResources->pointLightProxyLocalMemoryDescriptorSets[i], 0)
 										.setImageInfo(0,
 											pvrvk::DescriptorImageInfo(_deviceResources->framebufferGbufferImages[FramebufferGBufferAttachments::Albedo][i],
@@ -1011,7 +1010,7 @@ void VulkanDeferredShading::createPointLightSourcePassDescriptorSets()
 		std::vector<pvrvk::WriteDescriptorSet> descSetUpdate;
 		for (uint32_t i = 0; i < _numSwapImages; ++i)
 		{
-			_deviceResources->pointLightSourceDescriptorSets.add(_deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->pointLightSourceDescriptorLayout));
+			_deviceResources->pointLightSourceDescriptorSets.push_back(_deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->pointLightSourceDescriptorLayout));
 			descSetUpdate.push_back(
 				pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, _deviceResources->pointLightSourceDescriptorSets[i], 0)
 					.setBufferInfo(0, pvrvk::DescriptorBufferInfo(_deviceResources->staticPointLightBuffer, 0, _deviceResources->staticPointLightBufferView.getDynamicSliceSize())));
@@ -1125,16 +1124,20 @@ void VulkanDeferredShading::createMaterialsAndDescriptorSets(pvrvk::CommandBuffe
 		if (material.defaultSemantics().getDiffuseTextureIndex() != static_cast<uint32_t>(-1))
 		{
 			// Load the diffuse texture map
-			diffuseMap = pvr::utils::loadAndUploadImageAndView(_deviceResources->device,
-				_mainScene->getTexture(material.defaultSemantics().getDiffuseTextureIndex()).getName().c_str(), true, uploadCmd, *this, pvrvk::ImageUsageFlags::e_SAMPLED_BIT,
+			std::string textureName = _mainScene->getTexture(material.defaultSemantics().getDiffuseTextureIndex()).getName().c_str();
+			pvr::assets::helper::getTextureNameWithExtension(textureName, _astcSupported);
+
+			diffuseMap = pvr::utils::loadAndUploadImageAndView(_deviceResources->device, textureName.c_str(), true, uploadCmd, *this, pvrvk::ImageUsageFlags::e_SAMPLED_BIT,
 				pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, nullptr, _deviceResources->vmaAllocator, _deviceResources->vmaAllocator);
 			++numTextures;
 		}
 		if (material.defaultSemantics().getBumpMapTextureIndex() != static_cast<uint32_t>(-1))
 		{
 			// Load the bump map
-			bumpMap = pvr::utils::loadAndUploadImageAndView(_deviceResources->device,
-				_mainScene->getTexture(material.defaultSemantics().getBumpMapTextureIndex()).getName().c_str(), true, uploadCmd, *this, pvrvk::ImageUsageFlags::e_SAMPLED_BIT,
+			std::string textureName = _mainScene->getTexture(material.defaultSemantics().getBumpMapTextureIndex()).getName().c_str();
+			pvr::assets::helper::getTextureNameWithExtension(textureName, _astcSupported);
+
+			bumpMap = pvr::utils::loadAndUploadImageAndView(_deviceResources->device, textureName.c_str(), true, uploadCmd, *this, pvrvk::ImageUsageFlags::e_SAMPLED_BIT,
 				pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, nullptr, _deviceResources->vmaAllocator, _deviceResources->vmaAllocator);
 
 			++numTextures;
@@ -1636,14 +1639,14 @@ void VulkanDeferredShading::createFramebufferAndRenderPass()
 				pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_LAZILY_ALLOCATED_BIT,
 				_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_DEDICATED_MEMORY_BIT);
 
-			_deviceResources->framebufferGbufferImages[currentIndex].add(_deviceResources->device->createImageView(pvrvk::ImageViewCreateInfo(transientColorAttachmentTexture)));
+			_deviceResources->framebufferGbufferImages[currentIndex][i] = _deviceResources->device->createImageView(pvrvk::ImageViewCreateInfo(transientColorAttachmentTexture));
 			onScreenFramebufferCreateInfo.setAttachment(currentIndex + 1, _deviceResources->framebufferGbufferImages[currentIndex][i]);
 		}
 		onScreenFramebufferCreateInfo.setAttachment(FramebufferGBufferAttachments::Count + 1u, _deviceResources->depthStencilImages[i]);
 		onScreenFramebufferCreateInfo.setDimensions(_deviceResources->swapchain->getDimension());
 		onScreenFramebufferCreateInfo.setRenderPass(_deviceResources->onScreenLocalMemoryRenderPass);
-		_deviceResources->onScreenLocalMemoryFramebuffer[i] = _deviceResources->device->createFramebuffer(onScreenFramebufferCreateInfo);
-		_deviceResources->onScreenFramebufferCreateInfos.add(onScreenFramebufferCreateInfo);
+		_deviceResources->onScreenLocalMemoryFramebuffer.push_back(_deviceResources->device->createFramebuffer(onScreenFramebufferCreateInfo));
+		_deviceResources->onScreenFramebufferCreateInfos.push_back(onScreenFramebufferCreateInfo);
 	}
 }
 

@@ -36,7 +36,6 @@ const glm::vec4 DirectionToLight = glm::vec4(0.0f, 1.0f, 0.65f, 0.0f);
 
 enum CONSTANTS
 {
-	MAX_NUMBER_OF_SWAP_IMAGES = 4,
 	MAX_NUMBER_OF_THREADS = 16u,
 	TILE_SIZE_X = 150,
 	TILE_GAP_X = 20,
@@ -108,8 +107,8 @@ public:
 		TileResultsQueue::ConsumerToken processQConsumerToken;
 		TileResultsQueue::ProducerToken drawQProducerToken;
 		uint32_t lastSwapIndex;
-		std::array<std::vector<pvrvk::SecondaryCommandBuffer>, MAX_NUMBER_OF_SWAP_IMAGES> preFreeCmdBuffers;
-		std::array<std::vector<pvrvk::SecondaryCommandBuffer>, MAX_NUMBER_OF_SWAP_IMAGES> freeCmdBuffers;
+		std::vector<std::vector<pvrvk::SecondaryCommandBuffer>> preFreeCmdBuffers;
+		std::vector<std::vector<pvrvk::SecondaryCommandBuffer>> freeCmdBuffers;
 		ThreadApiObjects(TileResultsQueue& processQ, TileResultsQueue& drawQ)
 			: processQConsumerToken(processQ.getConsumerToken()), drawQProducerToken(drawQ.getProducerToken()), lastSwapIndex(-1)
 		{}
@@ -267,7 +266,7 @@ struct TileInfo
 {
 	// Per tile info
 	std::array<TileObject, NUM_OBJECTS_PER_TILE> objects;
-	std::array<std::pair<pvrvk::SecondaryCommandBuffer, std::mutex*>, MAX_NUMBER_OF_SWAP_IMAGES> cbs;
+	std::vector<std::pair<pvrvk::SecondaryCommandBuffer, std::mutex*>> cbs;
 	pvr::math::AxisAlignedBox aabb;
 	uint32_t threadId;
 	uint8_t lod;
@@ -286,8 +285,7 @@ struct DeviceResources
 	pvrvk::CommandPool commandPool;
 	pvrvk::DescriptorPool descriptorPool;
 	pvrvk::Queue queue;
-	pvr::Multi<pvrvk::Framebuffer> onScreenFramebuffer;
-	pvr::Multi<pvrvk::ImageView> depthStencilImages;
+	std::vector<pvrvk::Framebuffer> onScreenFramebuffer;
 	pvr::utils::StructuredBufferView uboPerObjectBufferView;
 	pvrvk::Buffer uboPerObject;
 	pvrvk::PipelineLayout pipeLayout;
@@ -304,7 +302,7 @@ struct DeviceResources
 	std::array<GnomeHordeVisibilityThreadData, MAX_NUMBER_OF_THREADS> visibilityThreadData;
 
 	std::array<std::array<TileInfo, NUM_TILES_X>, NUM_TILES_Z> tileInfos;
-	MultiBuffering multiBuffering[MAX_NUMBER_OF_SWAP_IMAGES];
+	std::vector<MultiBuffering> multiBuffering;
 
 	pvr::utils::StructuredBufferView uboBufferView;
 	pvrvk::Buffer ubo;
@@ -316,9 +314,9 @@ struct DeviceResources
 	LineTasksQueue::ProducerToken lineQproducerToken;
 	TileResultsQueue::ConsumerToken drawQconsumerToken;
 
-	pvrvk::Semaphore imageAcquiredSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
-	pvrvk::Semaphore presentationSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
-	pvrvk::Fence perFrameResourcesFences[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	std::vector<pvrvk::Semaphore> imageAcquiredSemaphores;
+	std::vector<pvrvk::Semaphore> presentationSemaphores;
+	std::vector<pvrvk::Fence> perFrameResourcesFences;
 
 	// UIRenderer used to display text
 	pvr::ui::UIRenderer uiRenderer;
@@ -365,6 +363,8 @@ public:
 	// Projection and Model View matrices
 	glm::mat4 _projMtx;
 	glm::mat4 _viewMtx;
+
+	uint32_t _swapchainLength;
 
 	VulkanGnomeHorde() : _isPaused(false), _numVisibilityThreads(0), _numTileThreads(0)
 	{
@@ -606,7 +606,7 @@ void VulkanGnomeHorde::setupUI()
 	_deviceResources->uiRenderer.getDefaultDescription()->setText("Multithreaded command buffer generation and rendering");
 	_deviceResources->uiRenderer.getDefaultDescription()->commitUpdates();
 
-	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
+	for (uint32_t i = 0; i < _swapchainLength; ++i)
 	{
 		_deviceResources->multiBuffering[i].cmdBufferUI = _deviceResources->commandPool->allocateSecondaryCommandBuffer();
 		// UIRenderer - the easy stuff first, but we still must create one command buffer per frame.
@@ -670,6 +670,12 @@ pvr::Result VulkanGnomeHorde::initView()
 	_deviceResources->swapchain = swapChainCreateOutput.swapchain;
 	_deviceResources->onScreenFramebuffer = swapChainCreateOutput.framebuffer;
 
+	_swapchainLength = _deviceResources->swapchain->getSwapchainLength();
+
+	_deviceResources->imageAcquiredSemaphores.resize(_swapchainLength);
+	_deviceResources->presentationSemaphores.resize(_swapchainLength);
+	_deviceResources->perFrameResourcesFences.resize(_swapchainLength);
+
 	//--------------------
 	// Create the command pool
 	_deviceResources->commandPool = _deviceResources->device->createCommandPool(
@@ -678,16 +684,18 @@ pvr::Result VulkanGnomeHorde::initView()
 	//--------------------
 	// Create the DescriptorPool
 	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(pvrvk::DescriptorPoolCreateInfo()
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 32)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 32)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 32)
-																						  .setMaxDescriptorSets(32));
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 8 * _swapchainLength)
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 8 * _swapchainLength)
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 8 * _swapchainLength)
+																						  .setMaxDescriptorSets(8 * _swapchainLength));
+
+	_deviceResources->multiBuffering.resize(_swapchainLength);
 
 	setupUI();
 
 	//--------------------
 	// create per swapchain resources
-	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
+	for (uint32_t i = 0; i < _swapchainLength; ++i)
 	{
 		_deviceResources->presentationSemaphores[i] = _deviceResources->device->createSemaphore();
 		_deviceResources->imageAcquiredSemaphores[i] = _deviceResources->device->createSemaphore();
@@ -815,6 +823,9 @@ pvr::Result VulkanGnomeHorde::initView()
 			_deviceResources->tileThreadData[i].threadApiObj = std::make_unique<GnomeHordeTileThreadData::ThreadApiObjects>(_tilesToProcessQ, _tilesToDrawQ);
 
 			_deviceResources->tileThreadData[i].thread = std::thread(&GnomeHordeTileThreadData::run, (GnomeHordeTileThreadData*)&_deviceResources->tileThreadData[i]);
+
+			_deviceResources->tileThreadData[i].threadApiObj->preFreeCmdBuffers.resize(_swapchainLength);
+			_deviceResources->tileThreadData[i].threadApiObj->freeCmdBuffers.resize(_swapchainLength);
 		}
 	}
 	printLog();
@@ -917,7 +928,7 @@ void GnomeHordeTileThreadData::generateTileBuffer(const TileProcessingResult* ti
 			TileInfo& tile = app->_deviceResources->tileInfos[y][x];
 
 			// Recreate the command buffer
-			for (uint32_t swapIdx = 0; swapIdx < app->_deviceResources->swapchain->getSwapchainLength(); ++swapIdx)
+			for (uint32_t swapIdx = 0; swapIdx < app->_swapchainLength; ++swapIdx)
 			{
 				MultiBuffering& multi = app->_deviceResources->multiBuffering[swapIdx];
 				tile.cbs[swapIdx].first = getFreeCommandBuffer(swapIdx);
@@ -1009,6 +1020,11 @@ void GnomeHordeVisibilityThreadData::determineLineVisibility(const int32_t* line
 
 			TileInfo& tile = tileInfos[id2d.y][id2d.x];
 
+			if (tile.cbs.size() == 0)
+			{
+				tile.cbs.resize(app->_swapchainLength);
+			}
+
 			// Compute tile lod
 			float dist = glm::distance(tile.aabb.center(), camPos); // Distance of the tile to the camera
 			float flod = glm::max((dist - MIN_LOD_DISTANCE) / (MAX_LOD_DISTANCE - MIN_LOD_DISTANCE), 0.0f) * MAX_LOD; // Cap the minimum to zero
@@ -1018,7 +1034,7 @@ void GnomeHordeVisibilityThreadData::determineLineVisibility(const int32_t* line
 
 			if (tile.visibility != tile.oldVisibility || tile.lod != tile.oldLod) // The tile has some change. Will need to do something.
 			{
-				for (uint32_t i = 0; i < app->_deviceResources->swapchain->getSwapchainLength(); ++i) // First, free its pre-existing command buffers (just mark free)
+				for (uint32_t i = 0; i < app->_swapchainLength; ++i) // First, free its pre-existing command buffers (just mark free)
 				{
 					if (tile.cbs[i].first)
 					{
@@ -1191,7 +1207,7 @@ pvr::Result VulkanGnomeHorde::renderFrame()
 	presentInfo.waitSemaphores = &_deviceResources->presentationSemaphores[_frameId];
 	_deviceResources->queue->present(presentInfo);
 	printLog();
-	_frameId = (_frameId + 1) % _deviceResources->swapchain->getSwapchainLength();
+	_frameId = (_frameId + 1) % _swapchainLength;
 	return pvr::Result::Success;
 }
 
@@ -1221,23 +1237,34 @@ void VulkanGnomeHorde::createDescSetsAndTiles(const pvrvk::DescriptorSetLayout& 
 		auto& nonMipmapped = _deviceResources->nonMipmapped =
 			device->createSampler(pvrvk::SamplerCreateInfo(pvrvk::Filter::e_LINEAR, pvrvk::Filter::e_LINEAR, pvrvk::SamplerMipmapMode::e_NEAREST));
 
-		_deviceResources->descSets.gnome = createDescriptorSetUtil(layoutImage, "gnome_texture.pvr", trilinear, nonMipmapped, uploadCmdBuffer);
+		bool isASTCSupported = pvr::utils::isSupportedFormat(device->getPhysicalDevice(), pvrvk::Format::e_ASTC_4x4_UNORM_BLOCK);
 
-		_deviceResources->descSets.gnomeShadow = createDescriptorSetUtil(layoutImage, "gnome_shadow.pvr", trilinear, nonMipmapped, uploadCmdBuffer);
+		_deviceResources->descSets.gnome =
+			createDescriptorSetUtil(layoutImage, (std::string("gnome_texture") + (isASTCSupported ? "_astc.pvr" : ".pvr")), trilinear, nonMipmapped, uploadCmdBuffer);
 
-		_deviceResources->descSets.rock = createDescriptorSetUtil(layoutImage, "rocks.pvr", trilinear, nonMipmapped, uploadCmdBuffer);
+		_deviceResources->descSets.gnomeShadow =
+			createDescriptorSetUtil(layoutImage, (std::string("gnome_shadow") + (isASTCSupported ? "_astc.pvr" : ".pvr")), trilinear, nonMipmapped, uploadCmdBuffer);
 
-		_deviceResources->descSets.fern = createDescriptorSetUtil(layoutImage, "fern.pvr", trilinear, nonMipmapped, uploadCmdBuffer);
+		_deviceResources->descSets.rock =
+			createDescriptorSetUtil(layoutImage, (std::string("rocks") + (isASTCSupported ? "_astc.pvr" : ".pvr")), trilinear, nonMipmapped, uploadCmdBuffer);
 
-		_deviceResources->descSets.fernShadow = createDescriptorSetUtil(layoutImage, "fern_shadow.pvr", trilinear, nonMipmapped, uploadCmdBuffer);
+		_deviceResources->descSets.fern =
+			createDescriptorSetUtil(layoutImage, (std::string("fern") + (isASTCSupported ? "_astc.pvr" : ".pvr")), trilinear, nonMipmapped, uploadCmdBuffer);
 
-		_deviceResources->descSets.mushroom = createDescriptorSetUtil(layoutImage, "mushroom_texture.pvr", trilinear, nonMipmapped, uploadCmdBuffer);
+		_deviceResources->descSets.fernShadow =
+			createDescriptorSetUtil(layoutImage, (std::string("fern_shadow") + (isASTCSupported ? "_astc.pvr" : ".pvr")), trilinear, nonMipmapped, uploadCmdBuffer);
 
-		_deviceResources->descSets.mushroomShadow = createDescriptorSetUtil(layoutImage, "mushroom_shadow.pvr", trilinear, nonMipmapped, uploadCmdBuffer);
+		_deviceResources->descSets.mushroom =
+			createDescriptorSetUtil(layoutImage, (std::string("mushroom_texture") + (isASTCSupported ? "_astc.pvr" : ".pvr")), trilinear, nonMipmapped, uploadCmdBuffer);
 
-		_deviceResources->descSets.bigMushroom = createDescriptorSetUtil(layoutImage, "bigMushroom_texture.pvr", trilinear, nonMipmapped, uploadCmdBuffer);
+		_deviceResources->descSets.mushroomShadow =
+			createDescriptorSetUtil(layoutImage, (std::string("mushroom_shadow") + (isASTCSupported ? "_astc.pvr" : ".pvr")), trilinear, nonMipmapped, uploadCmdBuffer);
 
-		_deviceResources->descSets.bigMushroomShadow = createDescriptorSetUtil(layoutImage, "bigMushroom_shadow.pvr", trilinear, nonMipmapped, uploadCmdBuffer);
+		_deviceResources->descSets.bigMushroom =
+			createDescriptorSetUtil(layoutImage, (std::string("bigMushroom_texture") + (isASTCSupported ? "_astc.pvr" : ".pvr")), trilinear, nonMipmapped, uploadCmdBuffer);
+
+		_deviceResources->descSets.bigMushroomShadow =
+			createDescriptorSetUtil(layoutImage, (std::string("bigMushroom_shadow") + (isASTCSupported ? "_astc.pvr" : ".pvr")), trilinear, nonMipmapped, uploadCmdBuffer);
 	}
 
 	// The ::pvr::utils::StructuredMemoryView is a simple class that allows us easy access to update members of a buffer - it keeps track of offsets,
@@ -1249,7 +1276,7 @@ void VulkanGnomeHorde::createDescSetsAndTiles(const pvrvk::DescriptorSetLayout& 
 	// CAUTION: The Range of the Buffer View for a Dynamic Uniform Buffer must be the BINDING size, not the TOTAL size, i.e. the size
 	// of the part of the buffer that will be bound each time, not the total size. That is why we cannot do a one-step creation (...createBufferAndView) like
 	// for static UBOs.
-	pvrvk::WriteDescriptorSet descSetWrites[pvrvk::FrameworkCaps::MaxSwapChains + 2];
+	std::vector<pvrvk::WriteDescriptorSet> descSetWrites{ _swapchainLength + 2 };
 
 	_deviceResources->descSetScene = _deviceResources->descriptorPool->allocateDescriptorSet(layoutScene);
 
@@ -1263,7 +1290,7 @@ void VulkanGnomeHorde::createDescSetsAndTiles(const pvrvk::DescriptorSetLayout& 
 		.set(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, _deviceResources->descSetAllObjects, 0)
 		.setBufferInfo(0, pvrvk::DescriptorBufferInfo(_deviceResources->uboPerObject, 0, _deviceResources->uboPerObjectBufferView.getDynamicSliceSize()));
 
-	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
+	for (uint32_t i = 0; i < _swapchainLength; ++i)
 	{
 		// The uboPerFrame is a small UniformBuffer that contains the camera (World->Projection) matrix.
 		// Since it is updated every frame, it is multi-buffered to avoid stalling the GPU
@@ -1274,7 +1301,7 @@ void VulkanGnomeHorde::createDescSetsAndTiles(const pvrvk::DescriptorSetLayout& 
 			.set(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, current.descSetPerFrame, 0)
 			.setBufferInfo(0, pvrvk::DescriptorBufferInfo(_deviceResources->ubo, 0, _deviceResources->uboBufferView.getDynamicSliceSize()));
 	}
-	_deviceResources->device->updateDescriptorSets(descSetWrites, _deviceResources->swapchain->getSwapchainLength() + 2, nullptr, 0);
+	_deviceResources->device->updateDescriptorSets(static_cast<const pvrvk::WriteDescriptorSet*>(descSetWrites.data()), _swapchainLength + 2, nullptr, 0);
 	// Create the UBOs/VBOs for the main objects. This automatically creates the VBOs.
 	_meshes.createApiObjects(device, uploadCmdBuffer, _deviceResources->vmaAllocator);
 
@@ -1462,7 +1489,7 @@ void VulkanGnomeHorde::initUboStructuredObjects()
 		pvr::utils::StructuredMemoryDescription desc;
 		desc.addElement("viewProjectionMat", pvr::GpuDatatypes::mat4x4);
 
-		_deviceResources->uboBufferView.initDynamic(desc, _deviceResources->swapchain->getSwapchainLength(), pvr::BufferUsageFlags::UniformBuffer,
+		_deviceResources->uboBufferView.initDynamic(desc, _swapchainLength, pvr::BufferUsageFlags::UniformBuffer,
 			static_cast<uint32_t>(_deviceResources->device->getPhysicalDevice()->getProperties().getLimits().getMinUniformBufferOffsetAlignment()));
 
 		_deviceResources->ubo = pvr::utils::createBuffer(_deviceResources->device,

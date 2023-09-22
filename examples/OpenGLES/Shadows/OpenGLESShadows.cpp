@@ -670,6 +670,9 @@ class OpenGLESShadows : public pvr::Shell
 	float _rotation = 75.0f;
 	bool _rotate = false;
 
+	/// <summary>Flag to know whether astc iss upported by the physical device.</summary>
+	bool _astcSupported;
+
 public:
 	OpenGLESShadows() {}
 
@@ -748,6 +751,8 @@ pvr::Result OpenGLESShadows::initView()
 	updateControlsUI();
 	_deviceResources->uiRenderer.getDefaultTitle()->commitUpdates();
 	_deviceResources->uiRenderer.getDefaultControls()->commitUpdates();
+
+	_astcSupported = gl::isGlExtensionSupported("GL_KHR_texture_compression_astc_ldr");
 
 	if (isScreenRotated())
 		_projMtx = pvr::math::perspectiveFov(
@@ -943,8 +948,11 @@ void OpenGLESShadows::loadResources()
 
 		const pvr::assets::Model::Material& material = _scene->getMaterial(i);
 
+		std::string textureName = _scene->getTexture(material.defaultSemantics().getDiffuseTextureIndex()).getName();
+		pvr::assets::helper::getTextureNameWithExtension(textureName, _astcSupported);
+
 		// Load the diffuse texture map
-		_deviceResources->materials[i].diffuseTexture = pvr::utils::textureUpload(*this, _scene->getTexture(material.defaultSemantics().getDiffuseTextureIndex()).getName().c_str());
+		_deviceResources->materials[i].diffuseTexture = pvr::utils::textureUpload(*this, textureName.c_str());
 	}
 
 	debugThrowOnApiError("ERROR: OpenGLESShadows::loadResources");

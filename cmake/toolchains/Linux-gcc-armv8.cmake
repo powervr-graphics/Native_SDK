@@ -13,6 +13,9 @@ set(CMAKE_CXX_COMPILER 	"${CROSS_COMPILE}g++")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=armv8-a" CACHE STRING "")
 set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -march=armv8-a" CACHE STRING "")
 
+set(CMAKE_C_COMPILER_FORCED TRUE)
+set(CMAKE_CXX_COMPILER_FORCED TRUE)
+
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -march=armv8-a" CACHE STRING "")
 
 # search for programs in the build host directories

@@ -2,7 +2,7 @@
 IntroducingPVRShell
 ===================
 
-.. figure:: ./IntroducingPVRShell.png
+.. figure:: ./IntroducingPVRShell-OpenGLES.png
 
 This example introduces the PVRShell library.
 

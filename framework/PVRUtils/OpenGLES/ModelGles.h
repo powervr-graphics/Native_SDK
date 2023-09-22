@@ -30,7 +30,8 @@ public:
 		None = 0,
 		LoadMeshes = 1,
 		LoadTextures = 2,
-		GLES2Only = 4
+		GLES2Only = 4,
+		loadASTCTextures = 8
 	};
 
 private:

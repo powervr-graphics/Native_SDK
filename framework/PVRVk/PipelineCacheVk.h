@@ -77,8 +77,8 @@ public:
 	/// <returns>Returns maximum cache size</returns>
 	size_t getCacheMaxDataSize() const
 	{
-		size_t dataSize;
-		getDevice()->getVkBindings().vkGetPipelineCacheData(getDevice()->getVkHandle(), getVkHandle(), &dataSize, nullptr);
+		size_t dataSize = 0;
+		vkThrowIfFailed(getDevice()->getVkBindings().vkGetPipelineCacheData(getDevice()->getVkHandle(), getVkHandle(), &dataSize, nullptr), "Failed to get max pipeline cache data size");
 		return dataSize;
 	}
 

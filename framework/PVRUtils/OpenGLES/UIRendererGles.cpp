@@ -44,6 +44,7 @@ void GLState::storeCurrentGlState(Api api)
 	gl::GetIntegerv(GL_ARRAY_BUFFER_BINDING, &vbo);
 	gl::GetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &ibo);
 	debugThrowOnApiError("glState::storeCurrentGlState: 1");
+#if !SC_ENABLED
 	if (api > Api::OpenGLES2)
 	{
 		gl::GetIntegerv(GL_VERTEX_ARRAY_BINDING, &vao);
@@ -65,6 +66,7 @@ void GLState::storeCurrentGlState(Api api)
 		}
 	}
 	debugThrowOnApiError("glState::storeCurrentGlState: 2");
+#endif
 
 	for (uint32_t i = 0; i < 8; i++)
 	{
@@ -215,6 +217,7 @@ void GLStateTracker::setUiState(Api api)
 	if (cullingEnabledChanged) { cullingEnabled ? gl::Enable(GL_CULL_FACE) : gl::Disable(GL_CULL_FACE); }
 	if (cullingChanged) { gl::CullFace(culling); }
 	if (windingOrderChanged) { gl::FrontFace(windingOrder); }
+#if !SC_ENABLED
 	if (sampler7Changed) { gl::BindSampler(7, sampler7); }
 	if (vaoChanged)
 	{
@@ -224,6 +227,7 @@ void GLStateTracker::setUiState(Api api)
 			gl::ext::BindVertexArrayOES(0);
 		}
 	}
+#endif
 	if (vboChanged) { gl::BindBuffer(GL_ARRAY_BUFFER, static_cast<GLuint>(vbo)); }
 	if (iboChanged) { gl::BindBuffer(GL_ELEMENT_ARRAY_BUFFER, static_cast<GLuint>(ibo)); }
 
@@ -321,11 +325,13 @@ void GLStateTracker::restoreState(const GLState& currentGlState, Api api)
 		gl::FrontFace(static_cast<GLenum>(currentGlState.windingOrder));
 		debugThrowOnApiError("glState::restoreState Exit");
 	}
+#if !SC_ENABLED
 	if (sampler7Changed)
 	{
 		gl::BindSampler(7, static_cast<GLuint>(currentGlState.sampler7));
 		debugThrowOnApiError("glState::restoreState Exit");
 	}
+#endif
 	if (vboChanged)
 	{
 		gl::BindBuffer(GL_ARRAY_BUFFER, static_cast<GLuint>(currentGlState.vbo));
@@ -359,7 +365,7 @@ void GLStateTracker::restoreState(const GLState& currentGlState, Api api)
 			}
 		}
 	}
-
+#if !SC_ENABLED
 	if (vaoChanged)
 	{
 		if (api > Api::OpenGLES2)
@@ -373,7 +379,7 @@ void GLStateTracker::restoreState(const GLState& currentGlState, Api api)
 			debugThrowOnApiError("glState::restoreState Exit");
 		}
 	}
-
+#endif
 	debugThrowOnApiError("glState::restoreState Exit");
 }
 
@@ -392,7 +398,7 @@ void UIRenderer::init_CreateShaders(bool framebufferSRGB)
 	debugThrowOnApiError("UIRenderer::init_CreateShaders entry");
 	// Text_ pipe
 	GLuint shaders[] = { 0, 0 };
-
+#if !SC_ENABLED
 	shaders[0] = pvr::utils::loadShader(BufferStream("", _print3DShader_glsles200_vsh, _print3DShader_glsles200_vsh_size), ShaderType::VertexShader, nullptr, 0);
 
 	// fragment shader
@@ -410,6 +416,7 @@ void UIRenderer::init_CreateShaders(bool framebufferSRGB)
 	const uint16_t attribIndices[] = { 0, 1 };
 
 	_program = pvr::utils::createShaderProgram(shaders, 2, attributes, attribIndices, 2);
+#endif
 
 	_uiStateTracker.activeProgram = _program;
 
@@ -536,6 +543,9 @@ inline Api getCurrentGlesVersion()
 
 void UIRenderer::init(uint32_t width, uint32_t height, bool fullscreen, bool isFrameBufferSRGB)
 {
+#if SC_ENABLED
+	throw OperationFailedError("Can't use UIRenderer with this API.");
+#endif
 	_api = pvr::utils::getCurrentGlesVersion();
 
 	debugThrowOnApiError("");
@@ -586,6 +596,7 @@ void UIRenderer::init(uint32_t width, uint32_t height, bool fullscreen, bool isF
 
 void UIRenderer::init_CreateDefaultSampler()
 {
+#if !SC_ENABLED
 	if (_api != Api::OpenGLES2)
 	{
 		debugThrowOnApiError("UIRenderer::init_CreateDefaultSampler Enter");
@@ -618,6 +629,7 @@ void UIRenderer::init_CreateDefaultSampler()
 
 		_uiStateTracker.sampler7 = _samplerBilinear;
 	}
+#endif
 }
 
 void UIRenderer::init_CreateDefaultSdkLogo()
@@ -694,6 +706,7 @@ void UIRenderer::init_CreateDefaultFont()
 
 	_defaultFont = createFont(fontTex);
 
+#if !SC_ENABLED
 	if (_api > Api::OpenGLES2)
 	{
 		gl::BindTexture(GL_TEXTURE_2D, _defaultFont->getTexture());
@@ -702,6 +715,7 @@ void UIRenderer::init_CreateDefaultFont()
 		gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_RED);
 		gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, GL_RED);
 	}
+#endif
 	gl::BindTexture(GL_TEXTURE_2D, 0);
 }
 } // namespace ui

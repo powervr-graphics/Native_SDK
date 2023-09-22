@@ -395,6 +395,9 @@ public:
 
 	glm::vec4 _clearColor;
 
+	/// <summary>Flag to know whether astc iss upported by the physical device.</summary>
+	bool _astcSupported;
+
 	OpenGLESDeferredShading()
 	{
 		_animateCamera = false;
@@ -549,6 +552,8 @@ pvr::Result OpenGLESDeferredShading::initView()
 	_deviceResources->renderInfo.renderGBuffer.objects.resize(_mainScene->getNumMeshNodes());
 
 	Log(LogLevel::Information, "Onscreen Framebuffer dimensions: %d x %d\n", _windowWidth, _windowHeight);
+
+	_astcSupported = gl::isGlExtensionSupported("GL_KHR_texture_compression_astc_ldr");
 
 	createSamplers();
 	createMaterialTextures();
@@ -1023,14 +1028,19 @@ void OpenGLESDeferredShading::createMaterialTextures()
 		if (material.defaultSemantics().getDiffuseTextureIndex() != static_cast<uint32_t>(-1))
 		{
 			// load the diffuse texture
-			_deviceResources->materials[i].diffuseTexture =
-				pvr::utils::textureUpload(*this, _mainScene->getTexture(material.defaultSemantics().getDiffuseTextureIndex()).getName().c_str());
+			std::string textureName = _mainScene->getTexture(material.defaultSemantics().getDiffuseTextureIndex()).getName();
+			pvr::assets::helper::getTextureNameWithExtension(textureName, _astcSupported);
+
+			_deviceResources->materials[i].diffuseTexture = pvr::utils::textureUpload(*this, textureName.c_str());
 
 			++numTextures;
 		}
 		if (material.defaultSemantics().getBumpMapTextureIndex() != static_cast<uint32_t>(-1))
 		{
 			// Load the bump map
+			std::string textureName = _mainScene->getTexture(material.defaultSemantics().getBumpMapTextureIndex()).getName();
+			pvr::assets::helper::getTextureNameWithExtension(textureName, _astcSupported);
+
 			_deviceResources->materials[i].bumpmapTexture =
 				pvr::utils::textureUpload(*this, _mainScene->getTexture(material.defaultSemantics().getBumpMapTextureIndex()).getName().c_str());
 		}

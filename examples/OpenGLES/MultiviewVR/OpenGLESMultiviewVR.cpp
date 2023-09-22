@@ -84,6 +84,9 @@ class MultiviewVR : public pvr::Shell
 	glm::mat4 _mvp[NumArraysPerView];
 	glm::mat4 _world;
 
+	/// <summary>Flag to know whether astc iss upported by the physical device.</summary>
+	bool _astcSupported;
+
 public:
 	MultiviewVR() : _vboQuad(0), _iboQuad(0) {}
 	// pvr::Shell implementation.
@@ -163,8 +166,11 @@ void MultiviewVR::loadTextures()
 		const pvr::assets::Model::Material& material = _scene->getMaterial(i);
 		if (material.defaultSemantics().getDiffuseTextureIndex() != static_cast<uint32_t>(-1))
 		{
+			std::string textureName = _scene->getTexture(material.defaultSemantics().getDiffuseTextureIndex()).getName();
+			pvr::assets::helper::getTextureNameWithExtension(textureName, _astcSupported);
+
 			// Load the diffuse texture map
-			_texDiffuse[i] = pvr::utils::textureUpload(*this, _scene->getTexture(material.defaultSemantics().getDiffuseTextureIndex()).getName().c_str());
+			_texDiffuse[i] = pvr::utils::textureUpload(*this, textureName.c_str());
 
 			gl::BindTexture(GL_TEXTURE_2D, _texDiffuse[i]);
 			gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
@@ -334,6 +340,8 @@ pvr::Result MultiviewVR::initView()
 		// Gamma correct the clear colour
 		_clearColor = pvr::utils::convertLRGBtoSRGB(clearColorLinearSpace);
 	}
+
+	_astcSupported = gl::isGlExtensionSupported("GL_KHR_texture_compression_astc_ldr");
 
 	createMultiViewFbo();
 	LoadVbos();

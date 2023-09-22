@@ -95,7 +95,7 @@ struct DeviceResources
 	pvrvk::DescriptorPool descriptorPool;
 
 	/// <summary>Frame buffers created that old the image presented to the screen, one per swapchain element</summary>
-	pvr::Multi<pvrvk::Framebuffer> onScreenFramebuffer;
+	std::vector<pvrvk::Framebuffer> onScreenFramebuffer;
 
 	/// <summary>Image view for the raytraced image, raygen shader writes to this image</summary>
 	pvrvk::ImageView raytracedImage;
@@ -187,13 +187,13 @@ struct DeviceResources
 	pvrvk::Buffer lightDataBuffer;
 
 	/// <summary>Semaphores for when acquiring the next image from the swap chain, one per swapchain image.</summary>
-	pvrvk::Semaphore imageAcquiredSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	std::vector<pvrvk::Semaphore> imageAcquiredSemaphores;
 
 	/// <summary>Semaphores for when submitting the command buffer for the current swapchain image.</summary>
-	pvrvk::Semaphore presentationSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	std::vector<pvrvk::Semaphore> presentationSemaphores;
 
 	/// <summary>Fences for each of the per-frame command buffers, one per swapchain image.</summary>
-	pvrvk::Fence perFrameResourcesFences[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	std::vector<pvrvk::Fence> perFrameResourcesFences;
 
 	/// <summary>The pvrvk wrapper for the UI renderer to display the text </summary>
 	pvr::ui::UIRenderer uiRenderer;
@@ -498,6 +498,10 @@ pvr::Result VulkanRayTracedHardShadows::initView()
 	// Get the number of swap images
 	_numSwapImages = _deviceResources->swapchain->getSwapchainLength();
 
+	_deviceResources->imageAcquiredSemaphores.resize(_numSwapImages);
+	_deviceResources->presentationSemaphores.resize(_numSwapImages);
+	_deviceResources->perFrameResourcesFences.resize(_numSwapImages);
+
 	// Get current swap index
 	_swapchainIndex = _deviceResources->swapchain->getSwapchainIndex();
 
@@ -524,11 +528,11 @@ pvr::Result VulkanRayTracedHardShadows::initView()
 
 	// Create a descriptor pool with enough space for this demo
 	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(pvrvk::DescriptorPoolCreateInfo()
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 48)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 48)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 48)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_INPUT_ATTACHMENT, 48)
-																						  .setMaxDescriptorSets(32));
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 16 * _numSwapImages)
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 16 * _numSwapImages)
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 16 * _numSwapImages)
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_INPUT_ATTACHMENT, 16 * _numSwapImages)
+																						  .setMaxDescriptorSets(16 * _numSwapImages));
 
 	// Allocate the command buffers out of the command pool
 	for (uint32_t i = 0; i < _numSwapImages; ++i)

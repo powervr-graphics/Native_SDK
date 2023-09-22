@@ -16,11 +16,13 @@
 #include <string>
 
 namespace pvr {
+/// @cond Doxygen_skip
 /// <summary>Flag interpreted as All mipmap levels.</summary>
 enum
 {
 	pvrTextureAllMipMaps = -1
 };
+/// @endcond
 
 /// <summary>A class mirroring the PVR Texture container format header, and which can in general represent any
 /// Texture asset. Contains accessors functions to facilitate using the Texture data in application code.

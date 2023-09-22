@@ -210,7 +210,14 @@ pvr::Result OpenGLESSkinning::initView()
 		_projectionMatrix = pvr::math::perspective(pvr::Api::OpenGLES2, fov, static_cast<float>(getWidth()) / static_cast<float>(getHeight()), nearClip, farClip);
 	}
 
-	_deviceResources->cookedScene.init(*this, *_scene);
+	pvr::utils::ModelGles::Flags flags = (pvr::utils::ModelGles::Flags)(pvr::utils::ModelGles::Flags::LoadMeshes | pvr::utils::ModelGles::Flags::LoadTextures);
+	
+	if (gl::isGlExtensionSupported("GL_KHR_texture_compression_astc_ldr"))
+	{
+		flags |= pvr::utils::ModelGles::Flags::loadASTCTextures;
+	} 
+
+	_deviceResources->cookedScene.init(*this, *_scene, flags);
 
 	const char* defines[] = { "FRAMEBUFFER_SRGB" };
 	uint32_t numDefines = 1;

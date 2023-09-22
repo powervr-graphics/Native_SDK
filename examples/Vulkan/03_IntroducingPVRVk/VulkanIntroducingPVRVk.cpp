@@ -405,14 +405,14 @@ struct DeviceResources
 	pvrvk::RenderPass renderPass;
 
 	// The framebuffer specifies a set of attachments used by the renderpass.
-	pvrvk::Framebuffer framebuffers[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	std::vector<pvrvk::Framebuffer> framebuffers;
 	// The depth stencil images and views used for rendering.
-	pvrvk::ImageView depthStencilImageViews[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	std::vector<pvrvk::ImageView> depthStencilImageViews;
 
 	// Synchronisation primitives used for specifying dependencies and ordering during rendering frames.
-	pvrvk::Semaphore imageAcquireSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
-	pvrvk::Semaphore presentationSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
-	pvrvk::Fence perFrameResourcesFences[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	std::vector<pvrvk::Semaphore> imageAcquireSemaphores;
+	std::vector<pvrvk::Semaphore> presentationSemaphores;
+	std::vector<pvrvk::Fence> perFrameResourcesFences;
 
 	// The pvrvk::ImageView handle created for the triangle texture.
 	pvrvk::ImageView triangleImageView;
@@ -421,7 +421,7 @@ struct DeviceResources
 	pvrvk::Sampler bilinearSampler;
 
 	// The commands buffers to which commands are rendered. The commands can then be submitted together.
-	pvrvk::CommandBuffer cmdBuffers[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	std::vector<pvrvk::CommandBuffer> cmdBuffers;
 
 	// The layout specifying the descriptors used by the graphics pipeline.
 	pvrvk::PipelineLayout pipelineLayout;
@@ -1350,11 +1350,6 @@ void VulkanIntroducingPVRVk::createSwapchain()
 		supportedCompositeAlphaFlags = pvrvk::CompositeAlphaFlagsKHR::e_INHERIT_BIT_KHR;
 	}
 
-	displayAttributes.swapLength = std::max<uint32_t>(displayAttributes.swapLength, surfaceCapabilities.getMinImageCount());
-	if (surfaceCapabilities.getMaxImageCount()) { displayAttributes.swapLength = std::min<uint32_t>(displayAttributes.swapLength, surfaceCapabilities.getMaxImageCount()); }
-
-	displayAttributes.swapLength = std::min<uint32_t>(displayAttributes.swapLength, pvrvk::FrameworkCaps::MaxSwapChains);
-
 	if ((surfaceCapabilities.getSupportedTransforms() & pvrvk::SurfaceTransformFlagsKHR::e_IDENTITY_BIT_KHR) == 0)
 	{
 		throw pvr::InvalidOperationError("Surface does not support pvrvk::SurfaceTransformFlagsKHR::e_IDENTITY_BIT_KHR transformation");
@@ -1378,6 +1373,15 @@ void VulkanIntroducingPVRVk::createSwapchain()
 	createInfo.queueFamilyIndices = &queueFamily;
 
 	_deviceResources->swapchain = _deviceResources->device->createSwapchain(createInfo, _deviceResources->surface);
+
+	uint32_t swapchainLength = _deviceResources->swapchain->getSwapchainLength();
+
+	_deviceResources->cmdBuffers.resize(swapchainLength);
+	_deviceResources->framebuffers.resize(swapchainLength);
+	_deviceResources->depthStencilImageViews.resize(swapchainLength);
+	_deviceResources->imageAcquireSemaphores.resize(swapchainLength);
+	_deviceResources->presentationSemaphores.resize(swapchainLength);
+	_deviceResources->perFrameResourcesFences.resize(swapchainLength);
 }
 
 /// <summary>Creates a set of pvrvk::Images and pvrvk::ImageViews which will be used as the depth/stencil buffers.</summary>

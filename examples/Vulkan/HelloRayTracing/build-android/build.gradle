@@ -106,6 +106,7 @@ android {
 	"${project.projectDir}/../raytrace.rgen.spv",
 	"${project.projectDir}/../raytrace.rmiss.spv",
 	"${project.projectDir}/../../../assets/Satyr/Marble.pvr",
+	"${project.projectDir}/../../../assets/Satyr/Marble_astc.pvr",
 	)
 	
 	// Add a task for copying our assets from their original location (${project.projectDir}...) to the assets/ folder for packaging

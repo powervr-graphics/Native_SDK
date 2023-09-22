@@ -160,7 +160,9 @@ enum class AllocationCreateFlags
 	e_USER_DATA_COPY_STRING_BIT = impl::VMA_ALLOCATION_CREATE_USER_DATA_COPY_STRING_BIT,
 	e_FLAG_BITS_MAX_ENUM = impl::VMA_ALLOCATION_CREATE_FLAG_BITS_MAX_ENUM
 };
+/// @cond Doxygen_skip
 DEFINE_ENUM_BITWISE_OPERATORS(AllocationCreateFlags)
+/// @endcond
 
 /// <summary>The AllocatorCreateFlags enum set defines a set of flags modifying the way in which a VmaAllocator will function.</summary>
 enum class AllocatorCreateFlags
@@ -198,7 +200,9 @@ enum class AllocatorCreateFlags
 
 	e_FLAG_BITS_MAX_ENUM = impl::VMA_ALLOCATOR_CREATE_FLAG_BITS_MAX_ENUM
 };
+/// @cond Doxygen_skip
 DEFINE_ENUM_BITWISE_OPERATORS(AllocatorCreateFlags)
+/// @endcond
 
 /// <summary>The MemoryUsage enum set provides a high level mechanism for specifying how created memory will be used</summary>
 enum class MemoryUsage
@@ -241,7 +245,9 @@ enum class PoolCreateFlags
 
 	e_FLAG_BITS_MAX_ENUM = impl::VMA_POOL_CREATE_FLAG_BITS_MAX_ENUM
 };
+/// @cond Doxygen_skip
 DEFINE_ENUM_BITWISE_OPERATORS(PoolCreateFlags)
+/// @endcond
 
 /// <summary>Debug Report flags to be used when creating the VmaAllocator object. These flags will effect the way in which vma will provide debug logging.<summary>
 enum class DebugReportFlags
@@ -256,7 +262,9 @@ enum class DebugReportFlags
 	Defragments = 0x4,
 	All = DeviceMemory | Allocation | Defragments,
 };
+/// @cond Doxygen_skip
 DEFINE_ENUM_BITWISE_OPERATORS(DebugReportFlags)
+/// @endcond
 
 /// <summary>The AllocationCreateInfo structure will control the way in which any one particular allocation is made.</summary>
 struct AllocationCreateInfo

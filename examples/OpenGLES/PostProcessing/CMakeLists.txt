@@ -46,12 +46,14 @@ add_assets_to_target(OpenGLESPostProcessing
 	FILE_LIST 
 		Satyr.pod
 		MarbleNormalMap.pvr
+		MarbleNormalMap_astc.pvr
+		Marble_astc.pvr
 		Marble.pvr)
 
 add_assets_to_target(OpenGLESPostProcessing
 	SOURCE_GROUP "assets" 
 	ASSET_FOLDER ${ASSET_FOLDER} 
-	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/HdrScenes
+	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/Environments
 	FILE_LIST 
 		satara_night_scale_0.305_rgb9e5.pvr
 		satara_night_scale_0.305_rgb9e5_Irradiance.pvr

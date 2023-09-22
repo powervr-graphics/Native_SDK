@@ -16,6 +16,7 @@ set(VULKAN_EXAMPLES
 	GaussianBlur
 	Glass
 	GnomeHorde
+	GPUControlledRendering
 	HelloRayTracing
 	HybridHardShadows
 	HybridReflections
@@ -34,10 +35,12 @@ set(VULKAN_EXAMPLES
 	PVRScopeExample
 	PVRScopeRemote
 	RayTracedHardShadows
-	Skinning
 	RayTracingDenoising
 	Shadows
+	Skinning
+  	SPHFluidSimulation
 	Subgroups
+	TimelineSemaphores
 )
 
 foreach(EXAMPLE ${VULKAN_EXAMPLES})

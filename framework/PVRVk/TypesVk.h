@@ -78,7 +78,6 @@ enum Enum
 	MaxScissorRegions = 8, //!< Max scissor regions supported by the pipeline
 	MaxViewportRegions = 8, //!< Max viewports regions supported by the pipeline
 	MaxScissorViewports = 8, //!< Max scissor-viewports supported by the pipeline
-	MaxSwapChains = 4, //!< Max swapchain supported
 	MaxSpecialisationInfos = 7, //!< Max specialisation infos suported by the pipeline
 	MaxSpecialisationInfoDataSize = 1024, //!< Max specialisation info data size suported by the pipeline
 	MaxVertexAttributes = 8, //!< Max Vertex attribute supported by the pipeline
@@ -1785,10 +1784,19 @@ public:
 	/// <summary>Set the Semaphore creation flags</summary>
 	/// <param name="flags">The Semaphore creation flags</param>
 	inline void setFlags(SemaphoreCreateFlags flags) { this->_flags = flags; }
+	/// <summary>Set the Semaphore type</summary>
+	/// <param name="semaphoreType">The Semaphore type</param>
+	inline void setSemaphoreType(SemaphoreType semaphoreType) { this->_semaphoreType  = semaphoreType; }
+	/// <summary>Get the Semaphore type</summary>
+	/// <returns>The Semaphore type</returns>
+	inline SemaphoreType getSemaphoreType() const { return this-> _semaphoreType; }
 
 private:
 	/// <summary>Flags to use for creating the Semaphore</summary>
 	SemaphoreCreateFlags _flags;
+
+	/// <summary>Type of semaphore, binary or timeline</summary>
+	SemaphoreType _semaphoreType{SemaphoreType::e_BINARY};
 };
 
 /// <summary>Containes a ValidationFeatures structure which specifies a set of validation features which should be enabled or disabled.</summary>

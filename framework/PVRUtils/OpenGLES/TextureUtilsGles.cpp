@@ -10,7 +10,6 @@
 #include "PVRCore/texture/Texture.h"
 #include "PVRCore/texture/PVRTDecompress.h"
 #include "PVRUtils/OpenGLES/ErrorsGles.h"
-#include "PVRUtils/OpenGLES/BindingsGles.h"
 #include "PVRUtils/OpenGLES/ConvertToGlesTypes.h"
 #include <algorithm>
 
@@ -46,8 +45,9 @@ TextureUploadResults textureUpload(const Texture& texture, bool isEs2, bool allo
 	// Whether we should use TexStorage or not.
 	bool useTexStorage = !isEs2;
 	bool needsSwizzling = false;
+#if !SC_ENABLED
 	GLenum swizzle_r = GL_RED, swizzle_g = GL_GREEN, swizzle_b = GL_BLUE, swizzle_a = GL_ALPHA;
-
+#endif
 	// Texture to use if we decompress in software.
 	Texture cDecompressedTexture;
 
@@ -57,6 +57,7 @@ TextureUploadResults textureUpload(const Texture& texture, bool isEs2, bool allo
 	retval.target = GL_TEXTURE_2D;
 	// Check that extension support exists for formats supported in this way.
 	{
+#if !SC_ENABLED
 		// Check for formats that cannot be supported by this context version
 		switch (glFormat)
 		{
@@ -126,7 +127,7 @@ TextureUploadResults textureUpload(const Texture& texture, bool isEs2, bool allo
 			}
 			break;
 		}
-
+#endif
 		// Check for formats only supported by extensions.
 		switch (glInternalFormat)
 		{
@@ -272,6 +273,7 @@ TextureUploadResults textureUpload(const Texture& texture, bool isEs2, bool allo
 		}
 #endif
 #if !defined(TARGET_OS_IPHONE)
+#if !SC_ENABLED
 		case GL_COMPRESSED_RGB_S3TC_DXT1_EXT:
 		case GL_COMPRESSED_RGBA_S3TC_DXT1_EXT:
 		{
@@ -291,6 +293,7 @@ TextureUploadResults textureUpload(const Texture& texture, bool isEs2, bool allo
 			{ throw GlExtensionNotSupportedError("GL_ANGLE_texture_compression_dxt5", "[textureUplodad] Format was unsupported in this implementation."); }
 			break;
 		}
+#endif
 #endif
 #ifdef GL_BGRA_EXT
 		case GL_BGRA_EXT:
@@ -372,6 +375,9 @@ TextureUploadResults textureUpload(const Texture& texture, bool isEs2, bool allo
 		// Check if it's a Cube Map.
 		if (textureToUse->getNumFaces() > 1)
 		{
+#if SC_ENABLED
+			throw InvalidDataError("[textureUpload]: cubemap textures not supported.");
+#else
 			// Make sure it's a complete cube, otherwise warn the user. We've already checked if it's a 3D texture or a texture array as well.
 			if (textureToUse->getNumFaces() < 6)
 			{
@@ -382,6 +388,7 @@ TextureUploadResults textureUpload(const Texture& texture, bool isEs2, bool allo
 				Log(LogLevel::Warning, "[textureUpload]: Textures with more than 6 faces are unsupported. Only the first 6 faces will be loaded into the API.\n");
 			}
 			retval.target = GL_TEXTURE_CUBE_MAP;
+#endif
 		}
 	}
 
@@ -401,11 +408,15 @@ TextureUploadResults textureUpload(const Texture& texture, bool isEs2, bool allo
 
 		if (needsSwizzling)
 		{
+#if SC_ENABLED
+			throw InvalidDataError("[textureUpload]: texture requires swizzling which is not supported.");
+#else
 			gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, static_cast<GLint>(swizzle_r));
 			gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, static_cast<GLint>(swizzle_g));
 			gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, static_cast<GLint>(swizzle_b));
 			gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, static_cast<GLint>(swizzle_a));
 			utils::throwOnGlError("[textureUpload]: GL has raised error attempting to swizzle a texture.");
+#endif
 		}
 
 		utils::throwOnGlError("[textureUpload]: GL has raised error attempting to bind the texture for first use.");
@@ -465,6 +476,7 @@ TextureUploadResults textureUpload(const Texture& texture, bool isEs2, bool allo
 				}
 			}
 			// Cube maps.
+#if! SC_ENABLED
 			else if (retval.target == GL_TEXTURE_CUBE_MAP)
 			{
 				if (useTexStorage)
@@ -533,6 +545,7 @@ TextureUploadResults textureUpload(const Texture& texture, bool isEs2, bool allo
 					}
 				}
 			}
+#endif
 #if defined(GL_TEXTURE_3D)
 			// 3D textures
 			else if (retval.target == GL_TEXTURE_3D)

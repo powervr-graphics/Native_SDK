@@ -16,7 +16,7 @@ const char VertShaderEs2SrcFile[] = "VertShader_ES2.vsh";
 const char VertShaderEs3SrcFile[] = "VertShader_ES3.vsh";
 
 // PVR texture files
-const char TextureFile[] = "Marble.pvr";
+std::string TextureFile = "Marble";
 
 // POD _scene files
 const char SceneFile[] = "Satyr.pod";
@@ -130,8 +130,10 @@ public:
 /// <returns>Return true if no error occurred.</returns>
 void OpenGLESPVRScopeRemote::createSamplerTexture()
 {
+	bool astcSupported = gl::isGlExtensionSupported("GL_KHR_texture_compression_astc_ldr");
+
 	CPPLProcessingScoped PPLProcessingScoped(_spsCommsData, __FUNCTION__, static_cast<uint32_t>(strlen(__FUNCTION__)), _frameCounter);
-	auto texStream = getAssetStream(TextureFile);
+	auto texStream = getAssetStream(TextureFile + (astcSupported ? "_astc.pvr" : ".pvr"));
 	pvr::Texture tex = pvr::textureLoad(*texStream, pvr::TextureFileFormat::PVR);
 	pvr::utils::TextureUploadResults uploadResults = pvr::utils::textureUpload(tex, _deviceResources->context->getApiVersion() == pvr::Api::OpenGLES2, true);
 	_deviceResources->texture = uploadResults.image;

@@ -160,7 +160,7 @@ struct DeviceResources
 	pvrvk::Framebuffer gbufferFramebuffer;
 
 	// Framebuffers created for the swapchain images
-	pvr::Multi<pvrvk::Framebuffer> onScreenFramebuffer;
+	std::vector<pvrvk::Framebuffer> onScreenFramebuffer;
 
 	// Renderpass for the G-buffer
 	pvrvk::RenderPass gbufferRenderPass;
@@ -207,9 +207,9 @@ struct DeviceResources
 	pvr::utils::StructuredBufferView perLightBufferView;
 
 	//// Synchronization Primitives ////
-	pvrvk::Semaphore imageAcquiredSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
-	pvrvk::Semaphore presentationSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
-	pvrvk::Fence perFrameResourcesFences[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	std::vector<pvrvk::Semaphore> imageAcquiredSemaphores;
+	std::vector<pvrvk::Semaphore> presentationSemaphores;
+	std::vector<pvrvk::Fence> perFrameResourcesFences;
 
 	//// Pipelines ////
 	pvrvk::GraphicsPipeline gbufferPipeline;
@@ -277,6 +277,9 @@ public:
 
 	/// <summary>Filter several Best Practices performance warnings incompatible with the buffer usage of this demo.</summary>
 	std::vector<int> vectorValidationIDFilter;
+
+	/// <summary>Flag to know whether astc iss upported by the physical device.</summary>
+	bool _astcSupported;
 
 	VulkanHybridSoftShadows() { _animateLight = false; }
 
@@ -470,12 +473,18 @@ pvr::Result VulkanHybridSoftShadows::initView()
 	// Get the number of swap images
 	_numSwapImages = _deviceResources->swapchain->getSwapchainLength();
 
+	_deviceResources->imageAcquiredSemaphores.resize(_numSwapImages);
+	_deviceResources->presentationSemaphores.resize(_numSwapImages);
+	_deviceResources->perFrameResourcesFences.resize(_numSwapImages);
+
 	// Get current swap index
 	_swapchainIndex = _deviceResources->swapchain->getSwapchainIndex();
 
 	// Calculate the frame buffer width and heights
 	_framebufferWidth = _windowWidth = this->getWidth();
 	_framebufferHeight = _windowHeight = this->getHeight();
+
+	_astcSupported = pvr::utils::isSupportedFormat(_deviceResources->device->getPhysicalDevice(), pvrvk::Format::e_ASTC_4x4_UNORM_BLOCK);
 
 	const pvr::CommandLine& commandOptions = getCommandLine();
 	int32_t intFramebufferWidth = -1;
@@ -497,11 +506,11 @@ pvr::Result VulkanHybridSoftShadows::initView()
 		_deviceResources->device->createCommandPool(pvrvk::CommandPoolCreateInfo(queueAccessInfo.familyId, pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT));
 
 	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(pvrvk::DescriptorPoolCreateInfo()
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 48)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 48)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 48)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_INPUT_ATTACHMENT, 48)
-																						  .setMaxDescriptorSets(32));
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 16 * _numSwapImages)
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 16 * _numSwapImages)
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 16 * _numSwapImages)
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_INPUT_ATTACHMENT, 16 * _numSwapImages)
+																						  .setMaxDescriptorSets(16 * _numSwapImages));
 
 	// Setup command buffers
 	for (uint32_t i = 0; i < _numSwapImages; ++i)
@@ -648,7 +657,7 @@ pvr::Result VulkanHybridSoftShadows::renderFrame()
 	presentInfo.imageIndices = &_swapchainIndex;
 	_deviceResources->queue->present(presentInfo);
 
-	_frameId = (_frameId + 1) % _deviceResources->swapchain->getSwapchainLength();
+	_frameId = (_frameId + 1) % _numSwapImages;
 	_frameNumber++;
 
 	return pvr::Result::Success;
@@ -1294,6 +1303,7 @@ void VulkanHybridSoftShadows::createModelBuffers(pvrvk::CommandBuffer& uploadCmd
 		if (diffuseIndex != -1)
 		{
 			std::string path = _scene->getTexture(diffuseIndex).getName().c_str();
+			pvr::assets::helper::getTextureNameWithExtension(path, _astcSupported);
 
 			mat.textureIndices.x = getTextureIndex(path);
 		}
@@ -1336,7 +1346,7 @@ void VulkanHybridSoftShadows::createCameraBuffer()
 	desc.addElement(BufferEntryNames::PerScene::ClipPlanes, pvr::GpuDatatypes::vec4);
 	desc.addElement(BufferEntryNames::PerScene::FrameIdx, pvr::GpuDatatypes::uinteger);
 
-	_deviceResources->cameraBufferView.initDynamic(desc, _deviceResources->swapchain->getSwapchainLength(), pvr::BufferUsageFlags::UniformBuffer,
+	_deviceResources->cameraBufferView.initDynamic(desc, _numSwapImages, pvr::BufferUsageFlags::UniformBuffer,
 		static_cast<uint32_t>(_deviceResources->device->getPhysicalDevice()->getProperties().getLimits().getMinUniformBufferOffsetAlignment()));
 
 	_deviceResources->cameraBuffer = pvr::utils::createBuffer(_deviceResources->device,
@@ -1353,7 +1363,7 @@ void VulkanHybridSoftShadows::createMeshTransformBuffer()
 	pvr::utils::StructuredMemoryDescription desc;
 	desc.addElement(BufferEntryNames::PerMesh::WorldMatrix, pvr::GpuDatatypes::mat4x4, _meshTransforms.size());
 
-	_deviceResources->perMeshBufferView.initDynamic(desc, _deviceResources->swapchain->getSwapchainLength(), pvr::BufferUsageFlags::UniformBuffer,
+	_deviceResources->perMeshBufferView.initDynamic(desc, _deviceResources->swapchain->getSwapchainLength() * _meshTransforms.size(), pvr::BufferUsageFlags::UniformBuffer,
 		static_cast<uint32_t>(_deviceResources->device->getPhysicalDevice()->getProperties().getLimits().getMinUniformBufferOffsetAlignment()));
 
 	_deviceResources->perMeshBuffer = pvr::utils::createBuffer(_deviceResources->device,
@@ -1414,7 +1424,7 @@ void VulkanHybridSoftShadows::createLightBuffer()
 	desc.addElement(BufferEntryNames::PerLightData::OuterConeAngle, pvr::GpuDatatypes::Float);
 	desc.addElement(BufferEntryNames::PerLightData::NumShadowRays, pvr::GpuDatatypes::Integer);
 
-	_deviceResources->perLightBufferView.initDynamic(desc, _deviceResources->swapchain->getSwapchainLength(), pvr::BufferUsageFlags::UniformBuffer,
+	_deviceResources->perLightBufferView.initDynamic(desc, _numSwapImages, pvr::BufferUsageFlags::UniformBuffer,
 		static_cast<uint32_t>(_deviceResources->device->getPhysicalDevice()->getProperties().getLimits().getMinUniformBufferOffsetAlignment()));
 
 	_deviceResources->perLightBuffer = pvr::utils::createBuffer(_deviceResources->device,

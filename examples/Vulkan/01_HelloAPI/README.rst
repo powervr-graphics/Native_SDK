@@ -2,7 +2,7 @@
 HelloAPI
 ========
 
-.. figure:: ./HelloAPI.png
+.. figure:: ./HelloAPI-Vulkan.png
 
 Draws a basic triangle to the screen.
 

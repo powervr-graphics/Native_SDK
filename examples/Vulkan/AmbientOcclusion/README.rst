@@ -1,5 +1,6 @@
+================
 AmbientOcclusion
-===============
+================
 
 .. figure:: ./AmbientOcclusion.png
 

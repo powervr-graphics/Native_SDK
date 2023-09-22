@@ -113,8 +113,8 @@ const char SkyboxVertShaderSrcFile[] = "SkyboxVertShader.vsh";
 const char SceneFile[] = "Satyr.pod";
 
 // Texture files
-const char StatueTexFile[] = "Marble.pvr";
-const char StatueNormalMapTexFile[] = "MarbleNormalMap.pvr";
+std::string StatueTexFile = "Marble";
+std::string StatueNormalMapTexFile = "MarbleNormalMap";
 
 struct EnvironmentTextures
 {
@@ -353,11 +353,13 @@ struct StatuePass
 		scene = pvr::assets::loadModel(assetProvider, SceneFile);
 		pvr::utils::appendSingleBuffersFromModel(*scene, vbos, ibos);
 
+		bool astcSupported = gl::isGlExtensionSupported("GL_KHR_texture_compression_astc_ldr");
+
 		bindVertexSpecification(scene->getMesh(0), VertexBindings, 4);
 
 		// Create and Allocate Textures.
-		albedoTexture = pvr::utils::textureUpload(assetProvider, StatueTexFile);
-		normalMapTexture = pvr::utils::textureUpload(assetProvider, StatueNormalMapTexFile);
+		albedoTexture = pvr::utils::textureUpload(assetProvider, StatueTexFile + (astcSupported ? "_astc.pvr" : ".pvr"));
+		normalMapTexture = pvr::utils::textureUpload(assetProvider, StatueNormalMapTexFile + (astcSupported ? "_astc.pvr" : ".pvr"));
 		createProgram(assetProvider);
 		createBuffer();
 

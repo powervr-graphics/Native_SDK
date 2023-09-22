@@ -90,7 +90,9 @@ android {
 	"${project.projectDir}/../VertShader_ES3.vsh",
 	"${project.projectDir}/../../../assets/Satyr/Satyr.pod",
 	"${project.projectDir}/../../../assets/Satyr/MarbleNormalMap.pvr",
+	"${project.projectDir}/../../../assets/Satyr/MarbleNormalMap_astc.pvr",
 	"${project.projectDir}/../../../assets/Satyr/Marble.pvr",
+	"${project.projectDir}/../../../assets/Satyr/Marble_astc.pvr",
 	)
 	
 	// Add a task for copying our assets from their original location (${project.projectDir}...) to the assets/ folder for packaging

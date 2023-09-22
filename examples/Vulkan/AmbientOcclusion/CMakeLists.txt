@@ -35,7 +35,9 @@ add_assets_to_target(VulkanAmbientOcclusion
 	FILE_LIST 
 		Saloon.pod
 		Terrain_Albedo.pvr
-		Weston_Town_Albedo.pvr)
+		Terrain_Albedo_astc.pvr
+		Weston_Town_Albedo.pvr
+		Weston_Town_Albedo_astc.pvr)
 
 ### Shaders that need to be compiled to SpirV (Vulkan) ###
 # During build time, glslangvalidator will be called to create a "<shadername.extension>.spv" file

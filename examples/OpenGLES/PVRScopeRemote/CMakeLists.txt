@@ -34,6 +34,7 @@ add_assets_to_target(OpenGLESPVRScopeRemote
 	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/Satyr
 	FILE_LIST 
 		Marble.pvr
+		Marble_astc.pvr
 		Satyr.pod)
 
 ### Textural shaders (OpenGL ES) ###

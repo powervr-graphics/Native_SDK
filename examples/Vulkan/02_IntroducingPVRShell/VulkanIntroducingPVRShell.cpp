@@ -391,11 +391,6 @@ inline VkImageAspectFlags formatToImageAspect(VkFormat format)
 const char* VertShaderName = "VertShader.vsh.spv";
 const char* FragShaderName = "FragShader.fsh.spv";
 
-enum
-{
-	MAX_SWAPCHAIN_IMAGES = 4
-};
-
 /// <summary>VulkanIntroducingPVRShell is the main demo class implementing the pvr::Shell functionality required for rendering to the screen.
 /// The PowerVR shell handles all OS specific initialisation code, and is extremely convenient for writing portable applications. It also has several built in
 /// command line features, which allow you to specify attributes such as the method of vsync to use. The demo is constructed around a "PVRShell" superclass.
@@ -429,7 +424,7 @@ class VulkanIntroducingPVRShell : public pvr::Shell
 	std::vector<std::string> _enabledLayerNames;
 
 	// Stores the set of created Debug Report Callbacks which provide a mechanism for the Vulkan layers and the implementation to call back to the application.
-	VkDebugReportCallbackEXT _debugReportCallbacks[MAX_SWAPCHAIN_IMAGES];
+	std::vector<VkDebugReportCallbackEXT> _debugReportCallbacks;
 
 	// A physical device usually corresponding to a single device in the system
 	VkPhysicalDevice _physicalDevice;
@@ -453,10 +448,10 @@ class VulkanIntroducingPVRShell : public pvr::Shell
 	VkFormat _swapchainColorFormat;
 
 	// The set of images used for presenting images via the implementation's presentation engine
-	VkImage _swapchainImages[MAX_SWAPCHAIN_IMAGES];
+	std::vector<VkImage> _swapchainImages;
 
 	// A set of VkImageViews used so the swapchain images can be used as framebuffer attachments
-	VkImageView _swapchainImageViews[MAX_SWAPCHAIN_IMAGES];
+	std::vector<VkImageView> _swapchainImageViews;
 
 	// The logical device representing a logical connection to an underlying physical device
 	VkDevice _device;
@@ -506,21 +501,21 @@ class VulkanIntroducingPVRShell : public pvr::Shell
 	VkRenderPass _renderPass;
 
 	// The framebuffer specifies a set of attachments used by the renderpass.
-	VkFramebuffer _framebuffers[MAX_SWAPCHAIN_IMAGES];
+	std::vector<VkFramebuffer> _framebuffers;
 	// The depth stencil images and views used for rendering.
-	VkImage _depthStencilImages[MAX_SWAPCHAIN_IMAGES];
-	VkImageView _depthStencilImageViews[MAX_SWAPCHAIN_IMAGES];
+	std::vector<VkImage> _depthStencilImages;
+	std::vector<VkImageView> _depthStencilImageViews;
 
 	// The format of the depth stencil images.
 	VkFormat _depthStencilFormat;
 
 	// The memory backing for the depth stencil images.
-	VkDeviceMemory _depthStencilImageMemory[MAX_SWAPCHAIN_IMAGES];
+	std::vector<VkDeviceMemory> _depthStencilImageMemory;
 
 	// Synchronisation primitives used for specifying dependencies and ordering during rendering frames.
-	VkSemaphore _imageAcquireSemaphores[MAX_SWAPCHAIN_IMAGES];
-	VkSemaphore _presentationSemaphores[MAX_SWAPCHAIN_IMAGES];
-	VkFence _perFrameResourcesFences[MAX_SWAPCHAIN_IMAGES];
+	std::vector<VkSemaphore> _imageAcquireSemaphores;
+	std::vector<VkSemaphore> _presentationSemaphores;
+	std::vector<VkFence> _perFrameResourcesFences;
 
 	// The queue to which various command buffers will be submitted to.
 	VkQueue _queue;
@@ -542,7 +537,7 @@ class VulkanIntroducingPVRShell : public pvr::Shell
 	VkCommandPool _commandPool;
 
 	// The commands buffers to which commands are rendered. The commands can then be submitted together.
-	VkCommandBuffer _cmdBuffers[MAX_SWAPCHAIN_IMAGES];
+	std::vector<VkCommandBuffer> _cmdBuffers;
 
 	// The layout specifying the descriptors used by the graphics pipeline.
 	VkPipelineLayout _pipelineLayout;
@@ -642,10 +637,10 @@ public:
 		  // initialise the other variables used throughout the demo
 		  _enabledInstanceExtensionNames(0), _enabledLayerNames(0), _enabledDeviceExtensionNames(0), _physicalDeviceMemoryProperties(), _physicalDeviceProperties(),
 		  _currentFrameIndex(0), _swapchainLength(0), _swapchainColorFormat(VK_FORMAT_UNDEFINED), _depthStencilFormat(VK_FORMAT_UNDEFINED),
-		  _triangleImageFormat(VK_FORMAT_UNDEFINED), _swapchainIndex(-1), _viewport(), _scissor(), _vboStride(-1), _graphicsQueueFamilyIndex(-1),
-		  _modelViewProjectionBufferSize(-1), _dynamicBufferAlignedSize(-1), _textureDimensions(), _textureData(0), _modelViewProjectionMappedMemory(0), _numDebugCallbacks(0)
+		  _triangleImageFormat(VK_FORMAT_UNDEFINED), _swapchainIndex(-1), _viewport(), _scissor(), _vboStride(-1), _graphicsQueueFamilyIndex(-1), _modelViewProjectionBufferSize(-1),
+		  _dynamicBufferAlignedSize(-1), _textureDimensions(), _textureData(0), _numDebugCallbacks(2), _modelViewProjectionMappedMemory(0)
 	{
-		for (uint32_t i = 0; i < MAX_SWAPCHAIN_IMAGES; ++i)
+		for (uint32_t i = 0; i < _swapchainLength; ++i)
 		{
 			// per swapchain Vulkan resource handles
 			_swapchainImages[i] = VK_NULL_HANDLE;
@@ -658,8 +653,9 @@ public:
 			_presentationSemaphores[i] = VK_NULL_HANDLE;
 			_perFrameResourcesFences[i] = VK_NULL_HANDLE;
 			_cmdBuffers[i] = VK_NULL_HANDLE;
-			_debugReportCallbacks[i] = VK_NULL_HANDLE;
 		}
+
+		_debugReportCallbacks = std::vector<VkDebugReportCallbackEXT>(2, VK_NULL_HANDLE);
 	}
 };
 
@@ -1299,7 +1295,6 @@ void VulkanIntroducingPVRShell::initDebugCallbacks()
 		// Register the callback
 		vulkanSuccessOrDie(
 			_instanceVkFunctions.vkCreateDebugReportCallbackEXT(_instance, &callbackCreateInfo, nullptr, &_debugReportCallbacks[1]), "Failed to create debug report callbacks");
-		_numDebugCallbacks = 2;
 	}
 }
 
@@ -1820,8 +1815,20 @@ void VulkanIntroducingPVRShell::createSwapchain()
 	// Retrieve the number of presentation images used by the presentation engine.
 	vulkanSuccessOrDie(_deviceVkFunctions.vkGetSwapchainImagesKHR(_device, _swapchain, &_swapchainLength, nullptr), "Failed to get swapchain images");
 
+	_swapchainImages.resize(_swapchainLength);
+
 	// Retrieve the _swapchainLength presentation images used by the presentation engine.
 	vulkanSuccessOrDie(_deviceVkFunctions.vkGetSwapchainImagesKHR(_device, _swapchain, &_swapchainLength, &_swapchainImages[0]), "Failed to get swapchain images");
+
+	_swapchainImageViews.resize(_swapchainLength);
+	_framebuffers.resize(_swapchainLength);
+	_depthStencilImages.resize(_swapchainLength);
+	_depthStencilImageViews.resize(_swapchainLength);
+	_depthStencilImageMemory.resize(_swapchainLength);
+	_imageAcquireSemaphores.resize(_swapchainLength);
+	_presentationSemaphores.resize(_swapchainLength);
+	_perFrameResourcesFences.resize(_swapchainLength);
+	_cmdBuffers.resize(_swapchainLength);
 
 	// For each presentation image create a VkImageView for it so it can be used as a descriptor or as a framebuffer attachment
 	{

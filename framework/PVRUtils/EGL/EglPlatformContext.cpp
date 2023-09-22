@@ -8,7 +8,11 @@ createEglContext function used to create the graphics context used for the main 
 //!\cond NO_DOXYGEN
 #include "PVRUtils/EGL/EglPlatformContext.h"
 #include "PVRCore/strings/StringFunctions.h"
+#if SC_ENABLED
+#include "PVRUtils/OpenGLSC/BindingsGlsc.h"
+#else
 #include "PVRUtils/OpenGLES/BindingsGles.h"
+#endif
 
 #ifndef EGL_CONTEXT_LOST_IMG
 /*! Extended error code EGL_CONTEXT_LOST_IMG generated when power management event has occurred. */
@@ -912,6 +916,83 @@ static inline void preInitialize(OSDisplay osDisplay, NativePlatformHandles& han
 	if (result != EGL_TRUE) { throw InvalidOperationError("[EglContext]: Error initialising context - Could not bind the OpenGL ES API"); }
 }
 
+void scContextCreation(NativePlatformHandles& handles, OSWindow window, DisplayAttributes& original_attributes)
+{
+	EGLConfig configs[2];
+	EGLBoolean eRetStatus;
+	EGLint major, minor;
+	EGLint context_attribs[] = { EGL_CONTEXT_CLIENT_VERSION, 2, EGL_NONE };
+	EGLint width, height;
+	EGLint config_count;
+	EGLint cfg_attribs[32];/* = { EGL_BUFFER_SIZE, EGL_DONT_CARE,
+		EGL_RED_SIZE, 8,
+		EGL_GREEN_SIZE, 8,
+		EGL_BLUE_SIZE, 8,
+		EGL_ALPHA_SIZE, 8,
+		EGL_DEPTH_SIZE, 16,
+		EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
+		EGL_NONE };*/
+	
+	uint32_t i = 0;
+	cfg_attribs[i++] = EGL_BUFFER_SIZE;
+	cfg_attribs[i++] = EGL_DONT_CARE;
+	cfg_attribs[i++] = EGL_RED_SIZE;
+	cfg_attribs[i++] = 8;
+	cfg_attribs[i++] = EGL_GREEN_SIZE;
+	cfg_attribs[i++] = 8;
+	cfg_attribs[i++] = EGL_BLUE_SIZE;
+	cfg_attribs[i++] = 8;
+	cfg_attribs[i++] = EGL_ALPHA_SIZE;
+	cfg_attribs[i++] = 8;
+	cfg_attribs[i++] = EGL_DEPTH_SIZE;
+	cfg_attribs[i++] = 16;
+	cfg_attribs[i++] = EGL_RENDERABLE_TYPE;
+	cfg_attribs[i++] = EGL_OPENGL_ES2_BIT;
+
+	// Append number of number of samples depending on AA samples value set
+	if (original_attributes.aaSamples > 0)
+	{
+		Log(LogLevel::Debug, "EGL context creation: EGL_SAMPLE_BUFFERS 1");
+		Log(LogLevel::Debug, "EGL context creation: EGL_SAMPLES %d", original_attributes.aaSamples);
+		cfg_attribs[i++] = EGL_SAMPLE_BUFFERS;
+		cfg_attribs[i++] = 1;
+		cfg_attribs[i++] = EGL_SAMPLES;
+		cfg_attribs[i++] = static_cast<EGLint>(original_attributes.aaSamples);
+	}
+	cfg_attribs[i++] = EGL_NONE;
+
+	eRetStatus = egl::ChooseConfig(handles->display, cfg_attribs, configs, 2, &config_count);
+	if (!eRetStatus)
+	{
+		assert(false && "eglChooseConfig");
+	}
+	else if (!config_count)
+	{
+		assert(false && "eglChooseConfig: no matching configs were returned by EGL (exiting).");
+	}
+
+	handles->drawSurface = handles->readSurface = egl::CreateWindowSurface(handles->display, configs[0], reinterpret_cast<EGLNativeWindowType>(window), NULL);
+	if (handles->drawSurface == EGL_NO_SURFACE)
+	{
+		assert(false && "eglCreateWindowSurface");
+	}
+	
+	egl::QuerySurface(handles->display, handles->drawSurface, EGL_WIDTH, &width);
+	egl::QuerySurface(handles->display, handles->drawSurface, EGL_HEIGHT, &height);
+
+	eRetStatus = egl::BindAPI(EGL_OPENGL_ES_API);
+	if (eRetStatus != EGL_TRUE)
+	{
+		assert(false && "eglBindAPI");
+	}
+	
+	handles->context = egl::CreateContext(handles->display, configs[0], EGL_NO_CONTEXT, context_attribs);
+	if (handles->context == EGL_NO_CONTEXT)
+	{
+		assert(false && "eglCreateContext");
+	}
+}
+
 /*This function assumes that the osManager's getDisplay() and getWindow() types are one and the same with NativePlatformHandles::NativeDisplay and
  * NativePlatformHandles::NativeWindow.*/
 void EglContext_::init(OSWindow window, OSDisplay display, DisplayAttributes& attributes, Api minApi, Api maxApi)
@@ -951,6 +1032,9 @@ void EglContext_::init(OSWindow window, OSDisplay display, DisplayAttributes& at
 		Log(LogLevel::Information, "Requested minimum API level : %s. Will actually create %s since it is supported.", apiName(minApi), apiName(_apiType));
 	}
 
+#if SC_ENABLED
+	scContextCreation(_platformContextHandles, window, attributes);
+#else
 	EGLConfig config;
 	initializeContext(true, attributes, _platformContextHandles, config, _apiType);
 
@@ -992,9 +1076,9 @@ void EglContext_::init(OSWindow window, OSDisplay display, DisplayAttributes& at
 		_platformContextHandles->eglWindow,
 #else
 		reinterpret_cast<EGLNativeWindowType>(window),
-#endif
+#endif // Wayland
 		eglattribs);
-
+#endif //SC_ENABLED
 	if (_platformContextHandles->drawSurface == EGL_NO_SURFACE) { throw InvalidOperationError("[EglContext::init] Could not create the EGL Surface."); }
 
 	// Update the attributes to the surface's
@@ -1059,6 +1143,9 @@ std::unique_ptr<EglContext_> EglContext_::createSharedContextFromEGLContext()
 
 void EglContext_::populateMaxApiVersion()
 {
+#if SC_ENABLED
+	_maxApiVersion = Api::OpenGLES2;
+#else
 	_maxApiVersion = Api::Unspecified;
 	Api graphicsapi = Api::OpenGLESMaxVersion;
 	bool supported;
@@ -1088,6 +1175,7 @@ void EglContext_::populateMaxApiVersion()
 		graphicsapi = static_cast<Api>(static_cast<int>(graphicsapi) - 1);
 	}
 	Log(LogLevel::Critical, "=== FATAL: COULD NOT FIND COMPATIBILITY WITH ANY OPENGL ES VERSION ===");
+#endif
 }
 
 bool EglContext_::isApiSupported(Api apiLevel)
@@ -1127,6 +1215,7 @@ void EglContext_::makeCurrent()
 
 void EglContext_::swapBuffers()
 {
+#if !SC_ENABLED
 	static const GLenum attachments[] = { GL_DEPTH, GL_STENCIL };
 
 	if (_isDiscardSupported)
@@ -1138,6 +1227,7 @@ void EglContext_::swapBuffers()
 			gl::ext::DiscardFramebufferEXT(GL_FRAMEBUFFER, 1, attachments);
 		}
 	}
+#endif
 
 	if (!egl::SwapBuffers(_platformContextHandles->display, _platformContextHandles->drawSurface))
 	{ throw InvalidOperationError("[SharedEglContext::swapBuffers]: eglSwapBuffers failed"); }

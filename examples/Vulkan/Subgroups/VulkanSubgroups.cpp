@@ -96,25 +96,25 @@ struct DeviceResources
 	pvrvk::DescriptorPool descriptorPool;
 
 	// Per swapchain image sync object for when an image is ready to be rendered to
-	pvrvk::Semaphore imageAcquiredSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	std::vector<pvrvk::Semaphore> imageAcquiredSemaphores;
 
 	// Per swapchain image sync object for when an image is finished rendering and ready to be presented
-	pvrvk::Semaphore presentationSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	std::vector<pvrvk::Semaphore> presentationSemaphores;
 
 	// Per swapchain image sync object between CPU and GPU
-	pvrvk::Fence perFrameResourcesFences[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	std::vector<pvrvk::Fence> perFrameResourcesFences;
 
 	// The primary command buffers that contains all the commands submitted to the GPU
-	pvr::Multi<pvrvk::CommandBuffer> primaryCmdBuffers;
+	std::vector<pvrvk::CommandBuffer> primaryCmdBuffers;
 
 	// The secondary command buffers that contain the commands for rendering the UI
-	pvr::Multi<pvrvk::SecondaryCommandBuffer> uiSecondaryCmdBuffers;
+	std::vector<pvrvk::SecondaryCommandBuffer> uiSecondaryCmdBuffers;
 
 	// The secondary command buffers that contain the commands for drawing to the backbuffer
-	pvr::Multi<pvrvk::SecondaryCommandBuffer> graphicsSecondaryCmdBuffers;
+	std::vector<pvrvk::SecondaryCommandBuffer> graphicsSecondaryCmdBuffers;
 
 	// The secondary command buffers that contain the commands for dispatching the compute tasks
-	pvr::Multi<pvrvk::SecondaryCommandBuffer> computeSecondaryCmdBuffers;
+	std::vector<pvrvk::SecondaryCommandBuffer> computeSecondaryCmdBuffers;
 
 	// Graphics pipeline which is responsible for copying the compute texture to the backbuffer
 	pvrvk::GraphicsPipeline graphicsPipeline;
@@ -136,16 +136,16 @@ struct DeviceResources
 
 	// Image view of the output from the compute pipeline, which allows the pipelines to access the image
 	// one for each image in the swapchain
-	pvr::Multi<pvrvk::ImageView> computeOutputImageViews;
+	std::vector<pvrvk::ImageView> computeOutputImageViews;
 
 	// Image of the output from the compute pipeline, one for each image in the swapchain
-	pvr::Multi<pvrvk::Image> computeOutputImages;
+	std::vector<pvrvk::Image> computeOutputImages;
 
 	// Descriptor set layout for the output of the compute shader, describes elements in the descriptor sets
 	pvrvk::DescriptorSetLayout computeOutputImageDescSetLayout;
 
 	// Per swapchain image descriptor set for the compute image output so we can have multiple in flight
-	pvr::Multi<pvrvk::DescriptorSet> computeOutputImageDescSets;
+	std::vector<pvrvk::DescriptorSet> computeOutputImageDescSets;
 
 	// Structured buffer view provided by the SDK which allows easier write access from the CPU
 	// for each of the slices of the buffer
@@ -166,10 +166,10 @@ struct DeviceResources
 	pvrvk::DescriptorSetLayout graphicsDescSetLayout;
 
 	// A list of descriptors for copying the compute image, one for each image in the swapchain
-	pvr::Multi<pvrvk::DescriptorSet> graphicsDescSet;
+	std::vector<pvrvk::DescriptorSet> graphicsDescSet;
 
 	// A list of onscreen framebuffers produced by SDK initialization, one for each image in the swapchain
-	pvr::Multi<pvrvk::Framebuffer> onScreenFramebuffer;
+	std::vector<pvrvk::Framebuffer> onScreenFramebuffer;
 
 	~DeviceResources()
 	{
@@ -232,7 +232,7 @@ public:
 	void eventMappedInput(pvr::SimplifiedInput key);
 
 	// Parse in the user command line args to calculate properties like the workgroup sizes etc
-	void calculateDemoSetting();
+	bool calculateDemoSetting();
 
 	// Helper functions that are used to show details to the user
 	std::string getUIRendererControlsText(bool showSubgroupSelection, uint8_t controlSelected, uint8_t pipelineIndex);
@@ -349,12 +349,24 @@ pvr::Result VulkanSubgroups::initView()
 	_deviceResources->onScreenFramebuffer = swapChainCreateOutput.framebuffer;
 	_swapLength = _deviceResources->swapchain->getSwapchainLength();
 
+	_deviceResources->imageAcquiredSemaphores.resize(_swapLength);
+	_deviceResources->presentationSemaphores.resize(_swapLength);
+	_deviceResources->perFrameResourcesFences.resize(_swapLength);
+	_deviceResources->primaryCmdBuffers.resize(_swapLength);
+	_deviceResources->uiSecondaryCmdBuffers.resize(_swapLength);
+	_deviceResources->graphicsSecondaryCmdBuffers.resize(_swapLength);
+	_deviceResources->computeSecondaryCmdBuffers.resize(_swapLength);
+	_deviceResources->computeOutputImageViews.resize(_swapLength);
+	_deviceResources->computeOutputImages.resize(_swapLength);
+	_deviceResources->computeOutputImageDescSets.resize(_swapLength);
+	_deviceResources->graphicsDescSet.resize(_swapLength);
+
 	// Create the resource pools
 	_deviceResources->commandPool =
 		_deviceResources->device->createCommandPool(pvrvk::CommandPoolCreateInfo(_deviceResources->queues[0]->getFamilyIndex(), pvrvk::CommandPoolCreateFlags::e_NONE));
 
 	_deviceResources->descriptorPool =
-		_deviceResources->device->createDescriptorPool(pvrvk::DescriptorPoolCreateInfo(10).addDescriptorInfo(pvrvk::DescriptorType::e_STORAGE_IMAGE, 16));
+		_deviceResources->device->createDescriptorPool(pvrvk::DescriptorPoolCreateInfo(10).addDescriptorInfo(pvrvk::DescriptorType::e_STORAGE_IMAGE, 8 * _swapLength));
 
 	// Create the per frame resources
 	for (uint32_t i = 0; i < _swapLength; i++)
@@ -372,7 +384,10 @@ pvr::Result VulkanSubgroups::initView()
 	}
 
 	// Before creating any resources specific to this demo, fill the demo settings namespace
-	calculateDemoSetting();
+	if (!calculateDemoSetting())
+	{
+		return pvr::Result::UnknownError;
+	}
 
 	// Upload the font texture
 	// We need to allocate an extra command buffer for a one time submit since we're not allowing command buffers to be reset
@@ -581,7 +596,7 @@ void VulkanSubgroups::eventMappedInput(pvr::SimplifiedInput key)
 
 /// <summary>Attempts to parse and sanitize the command line arguments received, after that properties related to the execution of the demo will be calculated
 /// if the user doesn't set a specific argument, then a best guess is calculated from physical device properties</summary>
-void VulkanSubgroups::calculateDemoSetting()
+bool VulkanSubgroups::calculateDemoSetting()
 {
 	// Set the off screen texture size
 	{
@@ -647,6 +662,13 @@ void VulkanSubgroups::calculateDemoSetting()
 		// Get the subgroup properties and device limits
 		VkPhysicalDeviceSubgroupProperties subgroupProperties{};
 		device->populateExtensionPropertiesVk(pvrvk::StructureType::e_PHYSICAL_DEVICE_SUBGROUP_PROPERTIES, &subgroupProperties);
+
+		if (subgroupProperties.subgroupSize == 0)
+		{
+			setExitMessage("subgroupSize must be at least 1.");
+			return false;
+		}
+
 		pvrvk::PhysicalDeviceLimits limits = device->getProperties().getLimits();
 
 		// Log the device limits supported by the hardware.
@@ -718,6 +740,8 @@ void VulkanSubgroups::calculateDemoSetting()
 			DemoSettings::workGroupWidth = width;
 			DemoSettings::workGroupHeight = height;
 		}
+
+		return true;
 	}
 
 	// Calculate the number of workgroups that need to be dispatched, which will be the off screen texture size divided by workgroup size

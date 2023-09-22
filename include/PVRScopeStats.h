@@ -206,7 +206,7 @@ void PVRScopeGetInfo(
 /*!**************************************************************************
  @brief         Query for the list of @ref ScopeStats HW performance counters, and
                 allocate memory in which the counter values will be received. This function
-                should only be called during initialisation.
+                should be called whenever PVRScopeReadCounters() returns more counters than expected.
 ****************************************************************************/
 PVRSCOPE_EXPORT
 int PVRScopeGetCounters(

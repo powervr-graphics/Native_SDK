@@ -31,8 +31,11 @@ add_assets_to_target(OpenGLESIntroducingPVRUtils
 	FILE_LIST 
 		GnomeToy.pod
 		GnomeWood.pvr
+		GnomeWood_astc.pvr
 		DarkWood.pvr
-		ClearWood.pvr)
+		DarkWood_astc.pvr
+		ClearWood.pvr
+		ClearWood_astc.pvr)
 
 ### Textural shaders (OpenGL ES) ###
 add_assets_to_target(OpenGLESIntroducingPVRUtils 

@@ -42,6 +42,7 @@ add_assets_to_target(VulkanPVRScopeRemote
 	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/Satyr
 	FILE_LIST 
 		Marble.pvr
+		Marble_astc.pvr
 		Satyr.pod)
 
 ### Shaders that need to be compiled to SpirV (Vulkan) ###

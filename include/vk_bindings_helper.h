@@ -8,7 +8,7 @@
 \copyright Copyright (c) Imagination Technologies Limited.
 */
 
-/* Corresponding to Vulkan registry file version #162# */
+/* Corresponding to Vulkan registry file version #192# */
 
 #pragma once
 #include <string>
@@ -131,13 +131,6 @@ static inline void initVkInstanceBindings(VkInstance instance, VkInstanceBinding
 #if (defined(VK_EXT_direct_mode_display))
 	bindings->vkReleaseDisplayEXT = (PFN_vkReleaseDisplayEXT)getInstanceProcAddr(instance, "vkReleaseDisplayEXT");
 #endif // VK_EXT_direct_mode_display
-
-#if (defined(VK_EXT_directfb_surface))
-#if (defined(VK_USE_PLATFORM_DIRECTFB_EXT))
-	bindings->vkCreateDirectFBSurfaceEXT = (PFN_vkCreateDirectFBSurfaceEXT)getInstanceProcAddr(instance, "vkCreateDirectFBSurfaceEXT");
-	bindings->vkGetPhysicalDeviceDirectFBPresentationSupportEXT = (PFN_vkGetPhysicalDeviceDirectFBPresentationSupportEXT)getInstanceProcAddr(instance, "vkGetPhysicalDeviceDirectFBPresentationSupportEXT");
-#endif // (VK_USE_PLATFORM_DIRECTFB_EXT)
-#endif // VK_EXT_directfb_surface
 
 #if (defined(VK_EXT_display_surface_counter))
 	bindings->vkGetPhysicalDeviceSurfaceCapabilities2EXT = (PFN_vkGetPhysicalDeviceSurfaceCapabilities2EXT)getInstanceProcAddr(instance, "vkGetPhysicalDeviceSurfaceCapabilities2EXT");
@@ -532,21 +525,6 @@ static inline void initVkDeviceBindings(VkDevice device, VkDeviceBindings *bindi
 	bindings->vkRegisterDisplayEventEXT = (PFN_vkRegisterDisplayEventEXT)getDeviceProcAddr(device, "vkRegisterDisplayEventEXT");
 #endif // VK_EXT_display_control
 
-#if (defined(VK_EXT_extended_dynamic_state))
-	bindings->vkCmdBindVertexBuffers2EXT = (PFN_vkCmdBindVertexBuffers2EXT)getDeviceProcAddr(device, "vkCmdBindVertexBuffers2EXT");
-	bindings->vkCmdSetCullModeEXT = (PFN_vkCmdSetCullModeEXT)getDeviceProcAddr(device, "vkCmdSetCullModeEXT");
-	bindings->vkCmdSetDepthBoundsTestEnableEXT = (PFN_vkCmdSetDepthBoundsTestEnableEXT)getDeviceProcAddr(device, "vkCmdSetDepthBoundsTestEnableEXT");
-	bindings->vkCmdSetDepthCompareOpEXT = (PFN_vkCmdSetDepthCompareOpEXT)getDeviceProcAddr(device, "vkCmdSetDepthCompareOpEXT");
-	bindings->vkCmdSetDepthTestEnableEXT = (PFN_vkCmdSetDepthTestEnableEXT)getDeviceProcAddr(device, "vkCmdSetDepthTestEnableEXT");
-	bindings->vkCmdSetDepthWriteEnableEXT = (PFN_vkCmdSetDepthWriteEnableEXT)getDeviceProcAddr(device, "vkCmdSetDepthWriteEnableEXT");
-	bindings->vkCmdSetFrontFaceEXT = (PFN_vkCmdSetFrontFaceEXT)getDeviceProcAddr(device, "vkCmdSetFrontFaceEXT");
-	bindings->vkCmdSetPrimitiveTopologyEXT = (PFN_vkCmdSetPrimitiveTopologyEXT)getDeviceProcAddr(device, "vkCmdSetPrimitiveTopologyEXT");
-	bindings->vkCmdSetScissorWithCountEXT = (PFN_vkCmdSetScissorWithCountEXT)getDeviceProcAddr(device, "vkCmdSetScissorWithCountEXT");
-	bindings->vkCmdSetStencilOpEXT = (PFN_vkCmdSetStencilOpEXT)getDeviceProcAddr(device, "vkCmdSetStencilOpEXT");
-	bindings->vkCmdSetStencilTestEnableEXT = (PFN_vkCmdSetStencilTestEnableEXT)getDeviceProcAddr(device, "vkCmdSetStencilTestEnableEXT");
-	bindings->vkCmdSetViewportWithCountEXT = (PFN_vkCmdSetViewportWithCountEXT)getDeviceProcAddr(device, "vkCmdSetViewportWithCountEXT");
-#endif // VK_EXT_extended_dynamic_state
-
 #if (defined(VK_EXT_external_memory_host))
 	bindings->vkGetMemoryHostPointerPropertiesEXT = (PFN_vkGetMemoryHostPointerPropertiesEXT)getDeviceProcAddr(device, "vkGetMemoryHostPointerPropertiesEXT");
 #endif // VK_EXT_external_memory_host
@@ -619,25 +597,6 @@ static inline void initVkDeviceBindings(VkDevice device, VkDeviceBindings *bindi
 	bindings->vkUninitializePerformanceApiINTEL = (PFN_vkUninitializePerformanceApiINTEL)getDeviceProcAddr(device, "vkUninitializePerformanceApiINTEL");
 #endif // VK_INTEL_performance_query
 
-#if (defined(VK_KHR_acceleration_structure))
-	bindings->vkBuildAccelerationStructuresKHR = (PFN_vkBuildAccelerationStructuresKHR)getDeviceProcAddr(device, "vkBuildAccelerationStructuresKHR");
-	bindings->vkCmdBuildAccelerationStructuresIndirectKHR = (PFN_vkCmdBuildAccelerationStructuresIndirectKHR)getDeviceProcAddr(device, "vkCmdBuildAccelerationStructuresIndirectKHR");
-	bindings->vkCmdBuildAccelerationStructuresKHR = (PFN_vkCmdBuildAccelerationStructuresKHR)getDeviceProcAddr(device, "vkCmdBuildAccelerationStructuresKHR");
-	bindings->vkCmdCopyAccelerationStructureKHR = (PFN_vkCmdCopyAccelerationStructureKHR)getDeviceProcAddr(device, "vkCmdCopyAccelerationStructureKHR");
-	bindings->vkCmdCopyAccelerationStructureToMemoryKHR = (PFN_vkCmdCopyAccelerationStructureToMemoryKHR)getDeviceProcAddr(device, "vkCmdCopyAccelerationStructureToMemoryKHR");
-	bindings->vkCmdCopyMemoryToAccelerationStructureKHR = (PFN_vkCmdCopyMemoryToAccelerationStructureKHR)getDeviceProcAddr(device, "vkCmdCopyMemoryToAccelerationStructureKHR");
-	bindings->vkCmdWriteAccelerationStructuresPropertiesKHR = (PFN_vkCmdWriteAccelerationStructuresPropertiesKHR)getDeviceProcAddr(device, "vkCmdWriteAccelerationStructuresPropertiesKHR");
-	bindings->vkCopyAccelerationStructureKHR = (PFN_vkCopyAccelerationStructureKHR)getDeviceProcAddr(device, "vkCopyAccelerationStructureKHR");
-	bindings->vkCopyAccelerationStructureToMemoryKHR = (PFN_vkCopyAccelerationStructureToMemoryKHR)getDeviceProcAddr(device, "vkCopyAccelerationStructureToMemoryKHR");
-	bindings->vkCopyMemoryToAccelerationStructureKHR = (PFN_vkCopyMemoryToAccelerationStructureKHR)getDeviceProcAddr(device, "vkCopyMemoryToAccelerationStructureKHR");
-	bindings->vkCreateAccelerationStructureKHR = (PFN_vkCreateAccelerationStructureKHR)getDeviceProcAddr(device, "vkCreateAccelerationStructureKHR");
-	bindings->vkDestroyAccelerationStructureKHR = (PFN_vkDestroyAccelerationStructureKHR)getDeviceProcAddr(device, "vkDestroyAccelerationStructureKHR");
-	bindings->vkGetAccelerationStructureBuildSizesKHR = (PFN_vkGetAccelerationStructureBuildSizesKHR)getDeviceProcAddr(device, "vkGetAccelerationStructureBuildSizesKHR");
-	bindings->vkGetAccelerationStructureDeviceAddressKHR = (PFN_vkGetAccelerationStructureDeviceAddressKHR)getDeviceProcAddr(device, "vkGetAccelerationStructureDeviceAddressKHR");
-	bindings->vkGetDeviceAccelerationStructureCompatibilityKHR = (PFN_vkGetDeviceAccelerationStructureCompatibilityKHR)getDeviceProcAddr(device, "vkGetDeviceAccelerationStructureCompatibilityKHR");
-	bindings->vkWriteAccelerationStructuresPropertiesKHR = (PFN_vkWriteAccelerationStructuresPropertiesKHR)getDeviceProcAddr(device, "vkWriteAccelerationStructuresPropertiesKHR");
-#endif // VK_KHR_acceleration_structure
-
 #if (defined(VK_KHR_bind_memory2))
 	bindings->vkBindBufferMemory2KHR = (PFN_vkBindBufferMemory2KHR)getDeviceProcAddr(device, "vkBindBufferMemory2KHR");
 	bindings->vkBindImageMemory2KHR = (PFN_vkBindImageMemory2KHR)getDeviceProcAddr(device, "vkBindImageMemory2KHR");
@@ -649,15 +608,6 @@ static inline void initVkDeviceBindings(VkDevice device, VkDeviceBindings *bindi
 	bindings->vkGetDeviceMemoryOpaqueCaptureAddressKHR = (PFN_vkGetDeviceMemoryOpaqueCaptureAddressKHR)getDeviceProcAddr(device, "vkGetDeviceMemoryOpaqueCaptureAddressKHR");
 #endif // VK_KHR_buffer_device_address
 
-#if (defined(VK_KHR_copy_commands2))
-	bindings->vkCmdBlitImage2KHR = (PFN_vkCmdBlitImage2KHR)getDeviceProcAddr(device, "vkCmdBlitImage2KHR");
-	bindings->vkCmdCopyBuffer2KHR = (PFN_vkCmdCopyBuffer2KHR)getDeviceProcAddr(device, "vkCmdCopyBuffer2KHR");
-	bindings->vkCmdCopyBufferToImage2KHR = (PFN_vkCmdCopyBufferToImage2KHR)getDeviceProcAddr(device, "vkCmdCopyBufferToImage2KHR");
-	bindings->vkCmdCopyImage2KHR = (PFN_vkCmdCopyImage2KHR)getDeviceProcAddr(device, "vkCmdCopyImage2KHR");
-	bindings->vkCmdCopyImageToBuffer2KHR = (PFN_vkCmdCopyImageToBuffer2KHR)getDeviceProcAddr(device, "vkCmdCopyImageToBuffer2KHR");
-	bindings->vkCmdResolveImage2KHR = (PFN_vkCmdResolveImage2KHR)getDeviceProcAddr(device, "vkCmdResolveImage2KHR");
-#endif // VK_KHR_copy_commands2
-
 #if (defined(VK_KHR_create_renderpass2))
 	bindings->vkCmdBeginRenderPass2KHR = (PFN_vkCmdBeginRenderPass2KHR)getDeviceProcAddr(device, "vkCmdBeginRenderPass2KHR");
 	bindings->vkCmdEndRenderPass2KHR = (PFN_vkCmdEndRenderPass2KHR)getDeviceProcAddr(device, "vkCmdEndRenderPass2KHR");
@@ -666,11 +616,13 @@ static inline void initVkDeviceBindings(VkDevice device, VkDeviceBindings *bindi
 #endif // VK_KHR_create_renderpass2
 
 #if (defined(VK_KHR_deferred_host_operations))
+#if (defined(VK_ENABLE_BETA_EXTENSIONS))
 	bindings->vkCreateDeferredOperationKHR = (PFN_vkCreateDeferredOperationKHR)getDeviceProcAddr(device, "vkCreateDeferredOperationKHR");
 	bindings->vkDeferredOperationJoinKHR = (PFN_vkDeferredOperationJoinKHR)getDeviceProcAddr(device, "vkDeferredOperationJoinKHR");
 	bindings->vkDestroyDeferredOperationKHR = (PFN_vkDestroyDeferredOperationKHR)getDeviceProcAddr(device, "vkDestroyDeferredOperationKHR");
 	bindings->vkGetDeferredOperationMaxConcurrencyKHR = (PFN_vkGetDeferredOperationMaxConcurrencyKHR)getDeviceProcAddr(device, "vkGetDeferredOperationMaxConcurrencyKHR");
 	bindings->vkGetDeferredOperationResultKHR = (PFN_vkGetDeferredOperationResultKHR)getDeviceProcAddr(device, "vkGetDeferredOperationResultKHR");
+#endif // (VK_ENABLE_BETA_EXTENSIONS)
 #endif // VK_KHR_deferred_host_operations
 
 #if (defined(VK_KHR_descriptor_update_template) || defined(VK_KHR_push_descriptor))
@@ -767,14 +719,37 @@ static inline void initVkDeviceBindings(VkDevice device, VkDeviceBindings *bindi
 	bindings->vkCmdPushDescriptorSetKHR = (PFN_vkCmdPushDescriptorSetKHR)getDeviceProcAddr(device, "vkCmdPushDescriptorSetKHR");
 #endif // VK_KHR_push_descriptor
 
+//#if (defined(VK_KHR_ray_tracing))
+//#if (defined(VK_ENABLE_BETA_EXTENSIONS))
+#if (defined(VK_KHR_acceleration_structure))
+	bindings->vkCreateAccelerationStructureKHR = (PFN_vkCreateAccelerationStructureKHR)getDeviceProcAddr(device, "vkCreateAccelerationStructureKHR");
+	bindings->vkDestroyAccelerationStructureKHR = (PFN_vkDestroyAccelerationStructureKHR)getDeviceProcAddr(device, "vkDestroyAccelerationStructureKHR");
+	bindings->vkCmdBuildAccelerationStructuresKHR = (PFN_vkCmdBuildAccelerationStructuresKHR)getDeviceProcAddr(device, "vkCmdBuildAccelerationStructuresKHR");
+	bindings->vkCmdBuildAccelerationStructuresIndirectKHR = (PFN_vkCmdBuildAccelerationStructuresIndirectKHR)getDeviceProcAddr(device, "vkCmdBuildAccelerationStructuresIndirectKHR");
+	bindings->vkBuildAccelerationStructuresKHR = (PFN_vkBuildAccelerationStructuresKHR)getDeviceProcAddr(device, "vkBuildAccelerationStructuresKHR");
+	bindings->vkCopyAccelerationStructureKHR = (PFN_vkCopyAccelerationStructureKHR)getDeviceProcAddr(device, "vkCopyAccelerationStructureKHR");
+	bindings->vkCopyAccelerationStructureToMemoryKHR = (PFN_vkCopyAccelerationStructureToMemoryKHR)getDeviceProcAddr(device, "vkCopyAccelerationStructureToMemoryKHR");
+	bindings->vkCopyMemoryToAccelerationStructureKHR = (PFN_vkCopyMemoryToAccelerationStructureKHR)getDeviceProcAddr(device, "vkCopyMemoryToAccelerationStructureKHR");
+	bindings->vkWriteAccelerationStructuresPropertiesKHR = (PFN_vkWriteAccelerationStructuresPropertiesKHR)getDeviceProcAddr(device, "vkWriteAccelerationStructuresPropertiesKHR");
+	bindings->vkCmdCopyAccelerationStructureKHR = (PFN_vkCmdCopyAccelerationStructureKHR)getDeviceProcAddr(device, "vkCmdCopyAccelerationStructureKHR");
+	bindings->vkCmdCopyAccelerationStructureToMemoryKHR = (PFN_vkCmdCopyAccelerationStructureToMemoryKHR)getDeviceProcAddr(device, "vkCmdCopyAccelerationStructureToMemoryKHR");
+	bindings->vkCmdCopyMemoryToAccelerationStructureKHR = (PFN_vkCmdCopyMemoryToAccelerationStructureKHR)getDeviceProcAddr(device, "vkCmdCopyMemoryToAccelerationStructureKHR");
+	bindings->vkGetAccelerationStructureDeviceAddressKHR = (PFN_vkGetAccelerationStructureDeviceAddressKHR)getDeviceProcAddr(device, "vkGetAccelerationStructureDeviceAddressKHR");
+	bindings->vkCmdWriteAccelerationStructuresPropertiesKHR = (PFN_vkCmdWriteAccelerationStructuresPropertiesKHR)getDeviceProcAddr(device, "vkCmdWriteAccelerationStructuresPropertiesKHR");
+	bindings->vkGetDeviceAccelerationStructureCompatibilityKHR = (PFN_vkGetDeviceAccelerationStructureCompatibilityKHR)getDeviceProcAddr(device, "vkGetDeviceAccelerationStructureCompatibilityKHR");
+	bindings->vkGetAccelerationStructureBuildSizesKHR = (PFN_vkGetAccelerationStructureBuildSizesKHR)getDeviceProcAddr(device, "vkGetAccelerationStructureBuildSizesKHR");
+//#endif // (VK_ENABLE_BETA_EXTENSIONS)
+//#endif // VK_KHR_ray_tracing
+#endif // VK_KHR_acceleration_structure
+
 #if (defined(VK_KHR_ray_tracing_pipeline))
-	bindings->vkCmdSetRayTracingPipelineStackSizeKHR = (PFN_vkCmdSetRayTracingPipelineStackSizeKHR)getDeviceProcAddr(device, "vkCmdSetRayTracingPipelineStackSizeKHR");
-	bindings->vkCmdTraceRaysIndirectKHR = (PFN_vkCmdTraceRaysIndirectKHR)getDeviceProcAddr(device, "vkCmdTraceRaysIndirectKHR");
 	bindings->vkCmdTraceRaysKHR = (PFN_vkCmdTraceRaysKHR)getDeviceProcAddr(device, "vkCmdTraceRaysKHR");
 	bindings->vkCreateRayTracingPipelinesKHR = (PFN_vkCreateRayTracingPipelinesKHR)getDeviceProcAddr(device, "vkCreateRayTracingPipelinesKHR");
 	bindings->vkGetRayTracingCaptureReplayShaderGroupHandlesKHR = (PFN_vkGetRayTracingCaptureReplayShaderGroupHandlesKHR)getDeviceProcAddr(device, "vkGetRayTracingCaptureReplayShaderGroupHandlesKHR");
-	bindings->vkGetRayTracingShaderGroupHandlesKHR = (PFN_vkGetRayTracingShaderGroupHandlesKHR)getDeviceProcAddr(device, "vkGetRayTracingShaderGroupHandlesKHR");
+	bindings->vkCmdTraceRaysIndirectKHR = (PFN_vkCmdTraceRaysIndirectKHR)getDeviceProcAddr(device, "vkCmdTraceRaysIndirectKHR");
 	bindings->vkGetRayTracingShaderGroupStackSizeKHR = (PFN_vkGetRayTracingShaderGroupStackSizeKHR)getDeviceProcAddr(device, "vkGetRayTracingShaderGroupStackSizeKHR");
+	bindings->vkCmdSetRayTracingPipelineStackSizeKHR = (PFN_vkCmdSetRayTracingPipelineStackSizeKHR)getDeviceProcAddr(device, "vkCmdSetRayTracingPipelineStackSizeKHR");
+	bindings->vkGetRayTracingShaderGroupHandlesKHR = (PFN_vkGetRayTracingShaderGroupHandlesKHR)getDeviceProcAddr(device, "vkGetRayTracingShaderGroupHandlesKHR");
 #endif // VK_KHR_ray_tracing_pipeline
 
 #if (defined(VK_KHR_sampler_ycbcr_conversion))
@@ -835,10 +810,6 @@ static inline void initVkDeviceBindings(VkDevice device, VkDeviceBindings *bindi
 #endif // (VK_USE_PLATFORM_WIN32_KHR)
 #endif // VK_NV_external_memory_win32
 
-#if (defined(VK_NV_fragment_shading_rate_enums))
-	bindings->vkCmdSetFragmentShadingRateEnumNV = (PFN_vkCmdSetFragmentShadingRateEnumNV)getDeviceProcAddr(device, "vkCmdSetFragmentShadingRateEnumNV");
-#endif // VK_NV_fragment_shading_rate_enums
-
 #if (defined(VK_NV_mesh_shader))
 	bindings->vkCmdDrawMeshTasksIndirectCountNV = (PFN_vkCmdDrawMeshTasksIndirectCountNV)getDeviceProcAddr(device, "vkCmdDrawMeshTasksIndirectCountNV");
 	bindings->vkCmdDrawMeshTasksIndirectNV = (PFN_vkCmdDrawMeshTasksIndirectNV)getDeviceProcAddr(device, "vkCmdDrawMeshTasksIndirectNV");
@@ -869,5 +840,14 @@ static inline void initVkDeviceBindings(VkDevice device, VkDeviceBindings *bindi
 	bindings->vkCmdSetCoarseSampleOrderNV = (PFN_vkCmdSetCoarseSampleOrderNV)getDeviceProcAddr(device, "vkCmdSetCoarseSampleOrderNV");
 	bindings->vkCmdSetViewportShadingRatePaletteNV = (PFN_vkCmdSetViewportShadingRatePaletteNV)getDeviceProcAddr(device, "vkCmdSetViewportShadingRatePaletteNV");
 #endif // VK_NV_shading_rate_image
+
+#if (defined(VK_KHR_synchronization2))
+	bindings->vkCmdSetEvent2KHR = (PFN_vkCmdSetEvent2KHR)getDeviceProcAddr(device, "vkCmdSetEvent2KHR");
+	bindings->vkCmdResetEvent2KHR = (PFN_vkCmdResetEvent2KHR)getDeviceProcAddr(device, "vkCmdResetEvent2KHR");
+	bindings->vkCmdWaitEvents2KHR = (PFN_vkCmdWaitEvents2KHR)getDeviceProcAddr(device, "vkCmdWaitEvents2KHR");
+	bindings->vkCmdPipelineBarrier2KHR = (PFN_vkCmdPipelineBarrier2KHR)getDeviceProcAddr(device, "vkCmdPipelineBarrier2KHR");
+	bindings->vkCmdWriteTimestamp2KHR = (PFN_vkCmdWriteTimestamp2KHR)getDeviceProcAddr(device, "vkCmdWriteTimestamp2KHR");
+	bindings->vkQueueSubmit2KHR = (PFN_vkQueueSubmit2KHR)getDeviceProcAddr(device, "vkQueueSubmit2KHR");
+#endif // VK_KHR_synchronization2
 
 }

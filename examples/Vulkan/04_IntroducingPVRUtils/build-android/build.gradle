@@ -106,8 +106,11 @@ android {
 	"${project.projectDir}/../FragShader.fsh.spv",
 	"${project.projectDir}/../../../assets/GnomeToy/GnomeToy.pod",
 	"${project.projectDir}/../../../assets/GnomeToy/GnomeWood.pvr",
+	"${project.projectDir}/../../../assets/GnomeToy/GnomeWood_astc.pvr",
 	"${project.projectDir}/../../../assets/GnomeToy/DarkWood.pvr",
+	"${project.projectDir}/../../../assets/GnomeToy/DarkWood_astc.pvr",
 	"${project.projectDir}/../../../assets/GnomeToy/ClearWood.pvr",
+	"${project.projectDir}/../../../assets/GnomeToy/ClearWood_astc.pvr",
 	)
 	
 	// Add a task for copying our assets from their original location (${project.projectDir}...) to the assets/ folder for packaging

@@ -112,7 +112,7 @@ struct Subpass
 struct Pass
 {
 	pvrvk::RenderPass renderPass; //!< The actual RenderPass object to use
-	pvrvk::Framebuffer framebuffers[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)]; //!< The Render Targets to use (one per swapchain)
+	std::vector<pvrvk::Framebuffer> framebuffers; //!< The Render Targets to use (one per swapchain)
 	std::vector<Subpass> subpasses; //!< The list of subpasses composing this render pass
 };
 
@@ -164,7 +164,7 @@ struct PipelineDef
 {
 	pvrvk::GraphicsPipelineCreateInfo createParam; //!< The Graphics Pipeline Create Param used by this pipeline
 
-	Multi<pvrvk::DescriptorSet> fixedDescSet[4]; //!< A "Fixed" descriptor set is a descriptor set that does not export any semantics, and is set by the PFX. For example, a
+	std::vector<std::vector<pvrvk::DescriptorSet>> fixedDescSet; //!< A "Fixed" descriptor set is a descriptor set that does not export any semantics, and is set by the PFX. For example, a
 												 //!< descriptor set containing only a texture "marble.pvr" which was set through the effect and has no semantic defined, would be
 												 //!< fixed. A fixed descriptor set will exist in this field. Non-fixed set IDs will be null here.
 	bool descSetIsFixed[4]; //!< Describes which set IDs are fixed. Equivalently, of the sets in fixedDescSet exist
@@ -172,7 +172,7 @@ struct PipelineDef
 	bool descSetExists[4]; //!< Describes which set IDs are actually used.
 	std::map<StringHash, TextureInfo> textureSamplersByTexName; //!< Mapping of textures to their texture names
 	std::map<StringHash, TextureInfo> textureSamplersByTexSemantic; //!< Mapping of texture references to their texture semantics
-	std::map<StringHash, InputAttachmentInfo> inputAttachments[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)]; //!< The inputs attachments used
+	std::vector<std::map<StringHash, InputAttachmentInfo>> inputAttachments; //!< The inputs attachments used
 	std::map<StringHash, BufferRef> modelScopeBuffers; //!< All model-scope buffers (buffers whose data are sourced by the model, or in general must be changed every time
 													   //!< the model changes). First item is buffer name
 	std::map<StringHash, BufferRef> effectScopeBuffers; //!< All effect-scope buffers (buffers whose data remain constant throughout the effect).First item is buffer name
@@ -188,6 +188,8 @@ struct PipelineDef
 		descSetIsFixed[0] = descSetIsFixed[1] = descSetIsFixed[2] = descSetIsFixed[3] = true;
 		descSetIsMultibuffered[0] = descSetIsMultibuffered[1] = descSetIsMultibuffered[2] = descSetIsMultibuffered[3] = false;
 		memset(descSetExists, 0, sizeof(bool) * ARRAY_SIZE(descSetExists));
+
+		fixedDescSet = std::vector<std::vector<pvrvk::DescriptorSet>>(4, std::vector<pvrvk::DescriptorSet>(8, 0));
 	}
 };
 namespace impl {

@@ -181,7 +181,7 @@ struct SpriteContainer
 
 struct PageClock
 {
-	pvr::ui::MatrixGroup group[(uint8_t)pvrvk::FrameworkCaps::MaxSwapChains]; // root group
+	std::vector<pvr::ui::MatrixGroup> group; // root group
 	void update(uint32_t swapchain, float frameTime, const glm::mat4& trans);
 	std::vector<SpriteClock> clocks;
 	SpriteContainer container;
@@ -190,7 +190,7 @@ struct PageClock
 
 struct PageWeather
 {
-	pvr::ui::MatrixGroup group[(uint8_t)pvrvk::FrameworkCaps::MaxSwapChains];
+	std::vector<pvr::ui::MatrixGroup> group;
 	void update(uint32_t swapchain, const glm::mat4& transMtx);
 	glm::mat4 _projMtx;
 	SpriteContainer containerTop, containerBottom;
@@ -198,10 +198,10 @@ struct PageWeather
 
 struct PageWindow
 {
-	pvr::ui::MatrixGroup group[(uint8_t)pvrvk::FrameworkCaps::MaxSwapChains];
+	std::vector<pvr::ui::MatrixGroup> group;
 	pvr::utils::StructuredBufferView renderQuadUboBufferView;
 	pvrvk::Buffer renderQuadUboBuffer;
-	pvrvk::DescriptorSet renderQuadUboDesc[4];
+	std::vector<pvrvk::DescriptorSet> renderQuadUboDesc;
 	void update(glm::mat4& proj, uint32_t swapchain, float width, float height, const glm::mat4& trans);
 	pvrvk::Rect2D renderArea;
 };
@@ -387,9 +387,9 @@ struct DeviceResources
 	pvrvk::Swapchain swapchain;
 	pvrvk::CommandPool commandPool;
 	pvrvk::DescriptorPool descriptorPool;
-	pvrvk::Semaphore imageAcquiredSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
-	pvrvk::Semaphore presentationSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
-	pvrvk::Fence perFrameResourcesFences[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	std::vector<pvrvk::Semaphore> imageAcquiredSemaphores;
+	std::vector<pvrvk::Semaphore> presentationSemaphores;
+	std::vector<pvrvk::Fence> perFrameResourcesFences;
 
 	pvrvk::GraphicsPipeline renderQuadPipe;
 	pvrvk::GraphicsPipeline renderWindowTextPipe;
@@ -414,16 +414,15 @@ struct DeviceResources
 	SpriteContainer containerTop;
 	pvrvk::Buffer quadVbo;
 
-	pvr::Multi<pvrvk::Framebuffer> onScreenFramebuffer;
-	pvr::Multi<pvrvk::ImageView> depthStencil;
-	pvr::Multi<pvrvk::CommandBuffer> cmdBuffers;
+	std::vector<pvrvk::Framebuffer> onScreenFramebuffer;
 
-	pvr::Multi<pvrvk::SecondaryCommandBuffer> cmdBufferTitleDesc;
-	pvr::Multi<pvrvk::SecondaryCommandBuffer> cmdBufferBaseUI;
-	pvr::Multi<pvrvk::SecondaryCommandBuffer> commandBufferClockPage;
-	pvr::Multi<pvrvk::SecondaryCommandBuffer> cmdBufferWeatherpage;
-	pvr::Multi<pvrvk::SecondaryCommandBuffer> cmdBufferWindow;
-	pvr::Multi<pvrvk::SecondaryCommandBuffer> cmdBufferRenderUI;
+	std::vector<pvrvk::CommandBuffer> cmdBuffers;
+	std::vector<pvrvk::SecondaryCommandBuffer> cmdBufferTitleDesc;
+	std::vector<pvrvk::SecondaryCommandBuffer> cmdBufferBaseUI;
+	std::vector<pvrvk::SecondaryCommandBuffer> commandBufferClockPage;
+	std::vector<pvrvk::SecondaryCommandBuffer> cmdBufferWeatherpage;
+	std::vector<pvrvk::SecondaryCommandBuffer> cmdBufferWindow;
+	std::vector<pvrvk::SecondaryCommandBuffer> cmdBufferRenderUI;
 
 	SpriteDesc spritesDesc[Sprites::Count + Ancillary::Count];
 
@@ -475,6 +474,10 @@ private:
 	uint64_t _prevTime;
 	bool _swipe;
 	glm::vec2 _screenScale;
+
+	bool _isASTCSupported;
+
+	uint32_t _swapchainLength;
 
 	void createFullScreenQuad(pvrvk::CommandBuffer& uploadCmd)
 	{
@@ -544,6 +547,7 @@ private:
 	void createPageClock();
 	void createClockSprite(SpriteClock& outClock, Sprites::Enum sprite);
 	void recordSecondaryCommandBuffers(uint32_t swapchain);
+	void getTextureNameWithExtension(std::string& textureName);
 	void loadSprites(pvrvk::CommandBuffer& uploadCmd);
 
 public:
@@ -1030,16 +1034,34 @@ pvr::Result VulkanExampleUI::initView()
 	_deviceResources->swapchain = swapChainCreateOutput.swapchain;
 	_deviceResources->onScreenFramebuffer = swapChainCreateOutput.framebuffer;
 
+	_swapchainLength = _deviceResources->swapchain->getSwapchainLength();
+
+	_deviceResources->pageClock.group.resize(_swapchainLength);
+	_deviceResources->pageWeather.group.resize(_swapchainLength);
+	_deviceResources->pageWindow.group.resize(_swapchainLength);
+	_deviceResources->pageWindow.renderQuadUboDesc.resize(_swapchainLength);
+
+	_deviceResources->imageAcquiredSemaphores.resize(_swapchainLength);
+	_deviceResources->presentationSemaphores.resize(_swapchainLength);
+	_deviceResources->perFrameResourcesFences.resize(_swapchainLength);
+	_deviceResources->cmdBuffers.resize(_swapchainLength);
+	_deviceResources->cmdBufferTitleDesc.resize(_swapchainLength);
+	_deviceResources->cmdBufferBaseUI.resize(_swapchainLength);
+	_deviceResources->commandBufferClockPage.resize(_swapchainLength);
+	_deviceResources->cmdBufferWeatherpage.resize(_swapchainLength);
+	_deviceResources->cmdBufferWindow.resize(_swapchainLength);
+	_deviceResources->cmdBufferRenderUI.resize(_swapchainLength);
+
 	// Create the command pool
 	_deviceResources->commandPool =
 		_deviceResources->device->createCommandPool(pvrvk::CommandPoolCreateInfo(queueAccessInfo.familyId, pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT));
 
 	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(pvrvk::DescriptorPoolCreateInfo()
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 16)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 16)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 16));
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 8 * _swapchainLength)
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 8 * _swapchainLength)
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 8 * _swapchainLength));
 
-	for (uint32_t swapchainIndex = 0, len = _deviceResources->swapchain->getSwapchainLength(); swapchainIndex < len; ++swapchainIndex)
+	for (uint32_t swapchainIndex = 0, len = _swapchainLength; swapchainIndex < len; ++swapchainIndex)
 	{
 		_deviceResources->cmdBuffers[swapchainIndex] = _deviceResources->commandPool->allocateCommandBuffer();
 		_deviceResources->cmdBufferTitleDesc[swapchainIndex] = _deviceResources->commandPool->allocateSecondaryCommandBuffer();
@@ -1050,6 +1072,8 @@ pvr::Result VulkanExampleUI::initView()
 
 	_screenScale = glm::vec2(glm::min(_deviceResources->uiRenderer.getRenderingDim().x / getWidth(), _deviceResources->uiRenderer.getRenderingDim().y / getHeight()));
 	_prevTransTime = this->getTime();
+
+	_isASTCSupported = pvr::utils::isSupportedFormat(_deviceResources->device->getPhysicalDevice(), pvrvk::Format::e_ASTC_4x4_UNORM_BLOCK);
 
 	// Load the sprites
 	_deviceResources->cmdBuffers[0]->begin(pvrvk::CommandBufferUsageFlags::e_ONE_TIME_SUBMIT_BIT);
@@ -1094,7 +1118,7 @@ pvr::Result VulkanExampleUI::initView()
 	createPageWeather();
 	createPageWindow();
 
-	for (uint32_t swapchainIndex = 0, len = _deviceResources->swapchain->getSwapchainLength(); swapchainIndex < len; ++swapchainIndex)
+	for (uint32_t swapchainIndex = 0, len = _swapchainLength; swapchainIndex < len; ++swapchainIndex)
 	{
 		recordSecondaryCommandBuffers(swapchainIndex);
 		_deviceResources->presentationSemaphores[swapchainIndex] = _deviceResources->device->createSemaphore();
@@ -1118,6 +1142,8 @@ void VulkanExampleUI::loadSprites(pvrvk::CommandBuffer& uploadCmd)
 	samplerInfo.wrapModeW = pvrvk::SamplerAddressMode::e_CLAMP_TO_EDGE;
 	pvrvk::Sampler samplerNearest = _deviceResources->device->createSampler(samplerInfo);
 
+	bool isASTCSupported = pvr::utils::isSupportedFormat(_deviceResources->device->getPhysicalDevice(), pvrvk::Format::e_ASTC_4x4_UNORM_BLOCK);
+
 	pvr::Texture tex;
 	// Load sprites and add to sprite array
 	for (uint32_t i = 0; i < Sprites::Count + Ancillary::Count; i++)
@@ -1125,7 +1151,15 @@ void VulkanExampleUI::loadSprites(pvrvk::CommandBuffer& uploadCmd)
 		// Copy some useful data out of the texture header.
 		_deviceResources->spritesDesc[i].uiWidth = tex.getWidth();
 		_deviceResources->spritesDesc[i].uiHeight = tex.getHeight();
-		_deviceResources->spritesDesc[i].imageView = pvr::utils::loadAndUploadImageAndView(_deviceResources->device, SpritesFileNames[i].c_str(), true, uploadCmd, *this,
+
+		std::string spriteName = SpritesFileNames[i].c_str();
+
+		if (spriteName == "background.pvr")
+		{
+			pvr::assets::helper::getTextureNameWithExtension(spriteName, _isASTCSupported);
+		}
+
+		_deviceResources->spritesDesc[i].imageView = pvr::utils::loadAndUploadImageAndView(_deviceResources->device, spriteName.c_str(), true, uploadCmd, *this,
 			pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, &tex, _deviceResources->vmaAllocator, _deviceResources->vmaAllocator);
 		const uint8_t* pixelString = tex.getPixelFormat().getPixelTypeChar();
 
@@ -1160,7 +1194,7 @@ void VulkanExampleUI::createSamplersAndDescriptorSet()
 	samplerInfo.magFilter = pvrvk::Filter::e_NEAREST;
 	_deviceResources->samplerNearest = _deviceResources->device->createSampler(samplerInfo);
 
-	pvrvk::WriteDescriptorSet writeDescSets[pvrvk::FrameworkCaps::MaxSwapChains];
+	std::vector<pvrvk::WriteDescriptorSet> writeDescSets{ _swapchainLength };
 
 	pvrvk::DescriptorSetLayoutCreateInfo descSetLayoutInfo;
 	descSetLayoutInfo.setBinding(0, pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 1, pvrvk::ShaderStageFlags::e_FRAGMENT_BIT);
@@ -1170,9 +1204,8 @@ void VulkanExampleUI::createSamplersAndDescriptorSet()
 
 	pvr::utils::StructuredMemoryDescription desc;
 	desc.addElement("MVP", pvr::GpuDatatypes::mat4x4);
-	uint32_t swapLength = _deviceResources->swapchain->getSwapchainLength();
 
-	ubo.initDynamic(desc, swapLength, pvr::BufferUsageFlags::UniformBuffer,
+	ubo.initDynamic(desc, _swapchainLength, pvr::BufferUsageFlags::UniformBuffer,
 		static_cast<uint32_t>(_deviceResources->device->getPhysicalDevice()->getProperties().getLimits().getMinUniformBufferOffsetAlignment()));
 
 	_deviceResources->pageWindow.renderQuadUboBuffer = pvr::utils::createBuffer(_deviceResources->device,
@@ -1182,7 +1215,7 @@ void VulkanExampleUI::createSamplersAndDescriptorSet()
 
 	ubo.pointToMappedMemory(_deviceResources->pageWindow.renderQuadUboBuffer->getDeviceMemory()->getMappedData());
 
-	for (uint32_t i = 0; i < swapLength; ++i)
+	for (uint32_t i = 0; i < _swapchainLength; ++i)
 	{
 		pvrvk::DescriptorSet& uboDesc = _deviceResources->pageWindow.renderQuadUboDesc[i];
 		uboDesc = _deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->renderQuadPipe->getPipelineLayout()->getDescriptorSetLayout(0));
@@ -1191,7 +1224,7 @@ void VulkanExampleUI::createSamplersAndDescriptorSet()
 			.set(pvrvk::DescriptorType::e_UNIFORM_BUFFER, uboDesc, 0)
 			.setBufferInfo(0, pvrvk::DescriptorBufferInfo(_deviceResources->pageWindow.renderQuadUboBuffer, ubo.getDynamicSliceOffset(i), ubo.getDynamicSliceSize()));
 	}
-	_deviceResources->device->updateDescriptorSets(writeDescSets, swapLength, nullptr, 0);
+	_deviceResources->device->updateDescriptorSets(static_cast<const pvrvk::WriteDescriptorSet*>(writeDescSets.data()), _swapchainLength, nullptr, 0);
 }
 
 /// <summary>create graphics pipelines.</summary>

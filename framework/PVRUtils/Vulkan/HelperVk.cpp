@@ -637,8 +637,6 @@ pvrvk::Swapchain createSwapchainHelper(const pvrvk::Device& device, const pvrvk:
 	displayAttributes.swapLength = std::max<uint32_t>(static_cast<uint32_t>(displayAttributes.swapLength), surfaceCapabilities.getMinImageCount());
 	if (surfaceCapabilities.getMaxImageCount()) { displayAttributes.swapLength = std::min<uint32_t>(displayAttributes.swapLength, surfaceCapabilities.getMaxImageCount()); }
 
-	displayAttributes.swapLength = std::min<uint32_t>(displayAttributes.swapLength, pvrvk::FrameworkCaps::MaxSwapChains);
-
 	createInfo.minImageCount = displayAttributes.swapLength;
 	createInfo.imageFormat = imageFormat.getFormat();
 
@@ -727,6 +725,12 @@ const Texture* decompressIfRequired(
 #pragma endregion
 
 #pragma region //////// IMAGE UPLOADING AND UPDATING ////////
+bool isSupportedFormat(const pvrvk::PhysicalDevice& pdev, pvrvk::Format fmt)
+{
+	pvrvk::FormatProperties props = pdev->getFormatProperties(fmt);
+	return (props.getOptimalTilingFeatures() & pvrvk::FormatFeatureFlags::e_SAMPLED_IMAGE_BIT) != 0;
+}
+
 void setImageLayoutAndQueueFamilyOwnership(pvrvk::CommandBufferBase srccmd, pvrvk::CommandBufferBase dstcmd, uint32_t srcQueueFamily, uint32_t dstQueueFamily,
 	pvrvk::ImageLayout oldLayout, pvrvk::ImageLayout newLayout, pvrvk::Image& image, uint32_t baseMipLevel, uint32_t numMipLevels, uint32_t baseArrayLayer, uint32_t numArrayLayers,
 	pvrvk::ImageAspectFlags aspect)
@@ -1652,18 +1656,24 @@ OnScreenObjects createSwapchainRenderpassFramebuffers(
 	pvrvk::Format supportedDepthStencilFormat = pvrvk::Format::e_UNDEFINED;
 	if (displayAttributes.aaSamples > 1)
 	{
+		retval.colorMultisampledAttachmentImages.resize(displayAttributes.swapLength);
+
 		// Since AA, THIS is actually the color attachemt. The backbuffer is the "resolve" attachment.
 		createAttachmentImages(retval.colorMultisampledAttachmentImages, device, displayAttributes.swapLength, retval.swapchain->getImageFormat(), retval.swapchain->getDimension(),
 			configuration.colorAttachmentFlagsIfMultisampled, samples, configuration.imageAllocator, configuration.imageAllocatorFlags, "PVRUtilsVk::ColorMSAAAttachment");
 	}
 	if (configuration.createDepthBuffer)
 	{
+		retval.depthStencilImages.resize(displayAttributes.swapLength);
+
 		// The only attachment, or the Resolve attachment if AA
 		supportedDepthStencilFormat = getSupportedDepthStencilFormat(device, displayAttributes, configuration.preferredDepthStencilFormats);
 		createAttachmentImages(retval.depthStencilImages, device, displayAttributes.swapLength, supportedDepthStencilFormat, retval.swapchain->getDimension(),
 			configuration.depthStencilImageUsageFlags, pvrvk::SampleCountFlags::e_1_BIT, configuration.imageAllocator, configuration.imageAllocatorFlags, "PVRUtilsVk::DepthStencil");
 		if (displayAttributes.aaSamples > 1)
 		{
+			retval.depthStencilMultisampledAttachmentImages.resize(displayAttributes.swapLength);
+
 			// Since AA, THIS is the depth attachment
 			createAttachmentImages(retval.depthStencilMultisampledAttachmentImages, device, displayAttributes.swapLength, supportedDepthStencilFormat,
 				retval.swapchain->getDimension(), configuration.depthStencilAttachmentFlagsIfMultisampled, samples, configuration.imageAllocator, configuration.imageAllocatorFlags,
@@ -1673,7 +1683,7 @@ OnScreenObjects createSwapchainRenderpassFramebuffers(
 
 	retval.renderPass = createOnScreenRenderPass(retval.swapchain, configuration.createDepthBuffer, supportedDepthStencilFormat, configuration.initialSwapchainLayout,
 		configuration.initialDepthStencilLayout, configuration.colorLoadOp, configuration.colorStoreOp, configuration.depthStencilLoadOp, configuration.depthStencilStoreOp, samples);
-	retval.framebuffer = createOnscreenFramebuffers<Multi<pvrvk::Framebuffer>>(retval.swapchain, retval.renderPass, retval.depthStencilImages.data(),
+	retval.framebuffer = createOnscreenFramebuffers<std::vector<pvrvk::Framebuffer>>(retval.swapchain, retval.renderPass, retval.depthStencilImages.data(),
 		retval.colorMultisampledAttachmentImages.data(), retval.depthStencilMultisampledAttachmentImages.data());
 	return retval;
 }

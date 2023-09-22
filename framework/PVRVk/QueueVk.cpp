@@ -9,6 +9,7 @@
 #include "PVRVk/SwapchainVk.h"
 #include "PVRVk/CommandBufferVk.h"
 #include "PVRVk/SemaphoreVk.h"
+#include "PVRVk/TimelineSemaphoreVk.h"
 #include "PVRVk/FenceVk.h"
 
 namespace pvrvk {
@@ -29,6 +30,8 @@ void Queue_::submit(const SubmitInfo* queueSubmitInfo, uint32_t numSubmitInfos, 
 
 	ArrayOrVector<VkSemaphore, 4> semaphoresVk(numTotalSemaphores);
 	ArrayOrVector<VkCommandBuffer, 4> commandBuffersVk(numTotalCommandBuffers);
+	
+	ArrayOrVector<VkTimelineSemaphoreSubmitInfo, 4> vkTimelineSemaphoreSubmitInfo(numSubmitInfos);
 
 	uint32_t currentSemaphoreIndex = 0;
 	uint32_t currentCommandbufferIndex = 0;
@@ -81,6 +84,20 @@ void Queue_::submit(const SubmitInfo* queueSubmitInfo, uint32_t numSubmitInfos, 
 		}
 		// increment the current semaphore index to use for the next submitInfo
 		currentSemaphoreIndex += submitInfo.numWaitSemaphores;
+
+		//check if SubmitInfo Contains TimelineSemaphoreSubmitInfo, it is necessary for timeline semaphores
+		if(submitInfo.timelineSemaphoreSubmitInfo){
+			TimelineSemaphoreSubmitInfo& timelineSemaphoreInfo = *submitInfo.timelineSemaphoreSubmitInfo;
+			
+			vkTimelineSemaphoreSubmitInfo[i].sType = VK_STRUCTURE_TYPE_TIMELINE_SEMAPHORE_SUBMIT_INFO;
+			vkTimelineSemaphoreSubmitInfo[i].pNext = nullptr;
+			vkTimelineSemaphoreSubmitInfo[i].waitSemaphoreValueCount = timelineSemaphoreInfo.waitSemaphoreValueCount;
+			vkTimelineSemaphoreSubmitInfo[i].pWaitSemaphoreValues = timelineSemaphoreInfo.waitSemaphoreValues;
+			vkTimelineSemaphoreSubmitInfo[i].signalSemaphoreValueCount = timelineSemaphoreInfo.signalSemaphoreValueCount;
+			vkTimelineSemaphoreSubmitInfo[i].pSignalSemaphoreValues = timelineSemaphoreInfo.signalSemaphoreValues;
+
+			vkSubmitInfos[i].pNext = &vkTimelineSemaphoreSubmitInfo[i];
+		}
 	}
 
 	vkThrowIfFailed(getDevice()->getVkBindings().vkQueueSubmit(getVkHandle(), numSubmitInfos, vkSubmitInfos.get(), (signalFence ? signalFence->getVkHandle() : VK_NULL_HANDLE)),
@@ -89,8 +106,9 @@ void Queue_::submit(const SubmitInfo* queueSubmitInfo, uint32_t numSubmitInfos, 
 
 void Queue_::present(const PresentInfo& presentInfo, Result* const results)
 {
-	VkSwapchainKHR swapchainsVector[FrameworkCaps::MaxSwapChains];
-	uint32_t imageIndices[FrameworkCaps::MaxSwapChains];
+	assert(presentInfo.numSwapchains > 0);
+	std::vector<VkSwapchainKHR> swapchainsVector{ presentInfo.swapchains[0]->getSwapchainLength() };
+	std::vector<uint32_t> imageIndices{ presentInfo.swapchains[0]->getSwapchainLength() };
 
 	for (uint32_t i = 0; i < presentInfo.numSwapchains; ++i)
 	{
@@ -105,8 +123,8 @@ void Queue_::present(const PresentInfo& presentInfo, Result* const results)
 	VkPresentInfoKHR presentInfoVk = {};
 	presentInfoVk.sType = static_cast<VkStructureType>(StructureType::e_PRESENT_INFO_KHR);
 	presentInfoVk.swapchainCount = presentInfo.numSwapchains;
-	presentInfoVk.pSwapchains = swapchainsVector;
-	presentInfoVk.pImageIndices = imageIndices;
+	presentInfoVk.pSwapchains = static_cast<VkSwapchainKHR*>(swapchainsVector.data());
+	presentInfoVk.pImageIndices = static_cast<uint32_t*>(imageIndices.data());
 	presentInfoVk.pWaitSemaphores = waitSemaphores.get();
 	presentInfoVk.waitSemaphoreCount = presentInfo.numWaitSemaphores;
 	presentInfoVk.pResults = (VkResult*)results;

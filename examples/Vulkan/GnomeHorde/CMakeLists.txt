@@ -50,14 +50,23 @@ add_assets_to_target(VulkanGnomeHorde
 		mushroom_shadow0.pod
 		rocks0.pod
 		bigMushroom_shadow.pvr
+		bigMushroom_shadow_astc.pvr
 		bigMushroom_texture.pvr
+		bigMushroom_texture_astc.pvr
 		fern.pvr
+		fern_astc.pvr
 		fern_shadow.pvr
+		fern_shadow_astc.pvr
 		gnome_shadow.pvr
+		gnome_shadow_astc.pvr
 		gnome_texture.pvr
+		gnome_texture_astc.pvr
 		mushroom_shadow.pvr
+		mushroom_shadow_astc.pvr
 		mushroom_texture.pvr
-		rocks.pvr)
+		mushroom_texture_astc.pvr
+		rocks.pvr
+		rocks_astc.pvr)
 
 ### Shaders that need to be compiled to SpirV (Vulkan) ###
 # During build time, glslangvalidator will be called to create a "<shadername.extension>.spv" file

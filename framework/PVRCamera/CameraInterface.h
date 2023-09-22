@@ -1,5 +1,5 @@
 /*!
-\brief Common interfaceof the PVRCamera camera streaming interface.
+\brief Common interface of the PVRCamera camera streaming interface.
 \file PVRCamera/CameraInterface.h
 \author PowerVR by Imagination, Developer Technology Team
 \copyright Copyright (c) Imagination Technologies Limited.

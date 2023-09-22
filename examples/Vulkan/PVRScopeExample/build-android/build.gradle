@@ -103,6 +103,7 @@ android {
 	// Add to this list files that will need to be read at runtime here: Textures, shaders, text files etc.
 	FileCollection assetFiles = files(
 	"${project.projectDir}/../../../assets/Satyr/Marble.pvr",
+	"${project.projectDir}/../../../assets/Satyr/Marble_astc.pvr",
 	"${project.projectDir}/../FragShader.fsh.spv",
 	"${project.projectDir}/../VertShader.vsh.spv",
 	"${project.projectDir}/../GraphFragShader.fsh.spv",

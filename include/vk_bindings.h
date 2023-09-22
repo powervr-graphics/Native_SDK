@@ -8,7 +8,7 @@
 \copyright Copyright (c) Imagination Technologies Limited.
 */
 
-/* Corresponding to Vulkan registry file version #162# */
+/* Corresponding to Vulkan registry file version #192# */
 
 #pragma once
 #ifndef VK_PROTOTYPES
@@ -112,13 +112,6 @@ typedef struct VkInstanceBindings_ {
 #if (defined(VK_EXT_direct_mode_display))
 	PFN_vkReleaseDisplayEXT vkReleaseDisplayEXT;
 #endif // VK_EXT_direct_mode_display
-
-#if (defined(VK_EXT_directfb_surface))
-#if (defined(VK_USE_PLATFORM_DIRECTFB_EXT))
-	PFN_vkCreateDirectFBSurfaceEXT vkCreateDirectFBSurfaceEXT;
-	PFN_vkGetPhysicalDeviceDirectFBPresentationSupportEXT vkGetPhysicalDeviceDirectFBPresentationSupportEXT;
-#endif // (VK_USE_PLATFORM_DIRECTFB_EXT)
-#endif // VK_EXT_directfb_surface
 
 #if (defined(VK_EXT_display_surface_counter))
 	PFN_vkGetPhysicalDeviceSurfaceCapabilities2EXT vkGetPhysicalDeviceSurfaceCapabilities2EXT;
@@ -513,21 +506,6 @@ typedef struct VkDeviceBindings_ {
 	PFN_vkRegisterDisplayEventEXT vkRegisterDisplayEventEXT;
 #endif // VK_EXT_display_control
 
-#if (defined(VK_EXT_extended_dynamic_state))
-	PFN_vkCmdBindVertexBuffers2EXT vkCmdBindVertexBuffers2EXT;
-	PFN_vkCmdSetCullModeEXT vkCmdSetCullModeEXT;
-	PFN_vkCmdSetDepthBoundsTestEnableEXT vkCmdSetDepthBoundsTestEnableEXT;
-	PFN_vkCmdSetDepthCompareOpEXT vkCmdSetDepthCompareOpEXT;
-	PFN_vkCmdSetDepthTestEnableEXT vkCmdSetDepthTestEnableEXT;
-	PFN_vkCmdSetDepthWriteEnableEXT vkCmdSetDepthWriteEnableEXT;
-	PFN_vkCmdSetFrontFaceEXT vkCmdSetFrontFaceEXT;
-	PFN_vkCmdSetPrimitiveTopologyEXT vkCmdSetPrimitiveTopologyEXT;
-	PFN_vkCmdSetScissorWithCountEXT vkCmdSetScissorWithCountEXT;
-	PFN_vkCmdSetStencilOpEXT vkCmdSetStencilOpEXT;
-	PFN_vkCmdSetStencilTestEnableEXT vkCmdSetStencilTestEnableEXT;
-	PFN_vkCmdSetViewportWithCountEXT vkCmdSetViewportWithCountEXT;
-#endif // VK_EXT_extended_dynamic_state
-
 #if (defined(VK_EXT_external_memory_host))
 	PFN_vkGetMemoryHostPointerPropertiesEXT vkGetMemoryHostPointerPropertiesEXT;
 #endif // VK_EXT_external_memory_host
@@ -600,25 +578,6 @@ typedef struct VkDeviceBindings_ {
 	PFN_vkUninitializePerformanceApiINTEL vkUninitializePerformanceApiINTEL;
 #endif // VK_INTEL_performance_query
 
-#if (defined(VK_KHR_acceleration_structure))
-	PFN_vkBuildAccelerationStructuresKHR vkBuildAccelerationStructuresKHR;
-	PFN_vkCmdBuildAccelerationStructuresIndirectKHR vkCmdBuildAccelerationStructuresIndirectKHR;
-	PFN_vkCmdBuildAccelerationStructuresKHR vkCmdBuildAccelerationStructuresKHR;
-	PFN_vkCmdCopyAccelerationStructureKHR vkCmdCopyAccelerationStructureKHR;
-	PFN_vkCmdCopyAccelerationStructureToMemoryKHR vkCmdCopyAccelerationStructureToMemoryKHR;
-	PFN_vkCmdCopyMemoryToAccelerationStructureKHR vkCmdCopyMemoryToAccelerationStructureKHR;
-	PFN_vkCmdWriteAccelerationStructuresPropertiesKHR vkCmdWriteAccelerationStructuresPropertiesKHR;
-	PFN_vkCopyAccelerationStructureKHR vkCopyAccelerationStructureKHR;
-	PFN_vkCopyAccelerationStructureToMemoryKHR vkCopyAccelerationStructureToMemoryKHR;
-	PFN_vkCopyMemoryToAccelerationStructureKHR vkCopyMemoryToAccelerationStructureKHR;
-	PFN_vkCreateAccelerationStructureKHR vkCreateAccelerationStructureKHR;
-	PFN_vkDestroyAccelerationStructureKHR vkDestroyAccelerationStructureKHR;
-	PFN_vkGetAccelerationStructureBuildSizesKHR vkGetAccelerationStructureBuildSizesKHR;
-	PFN_vkGetAccelerationStructureDeviceAddressKHR vkGetAccelerationStructureDeviceAddressKHR;
-	PFN_vkGetDeviceAccelerationStructureCompatibilityKHR vkGetDeviceAccelerationStructureCompatibilityKHR;
-	PFN_vkWriteAccelerationStructuresPropertiesKHR vkWriteAccelerationStructuresPropertiesKHR;
-#endif // VK_KHR_acceleration_structure
-
 #if (defined(VK_KHR_bind_memory2))
 	PFN_vkBindBufferMemory2KHR vkBindBufferMemory2KHR;
 	PFN_vkBindImageMemory2KHR vkBindImageMemory2KHR;
@@ -630,15 +589,6 @@ typedef struct VkDeviceBindings_ {
 	PFN_vkGetDeviceMemoryOpaqueCaptureAddressKHR vkGetDeviceMemoryOpaqueCaptureAddressKHR;
 #endif // VK_KHR_buffer_device_address
 
-#if (defined(VK_KHR_copy_commands2))
-	PFN_vkCmdBlitImage2KHR vkCmdBlitImage2KHR;
-	PFN_vkCmdCopyBuffer2KHR vkCmdCopyBuffer2KHR;
-	PFN_vkCmdCopyBufferToImage2KHR vkCmdCopyBufferToImage2KHR;
-	PFN_vkCmdCopyImage2KHR vkCmdCopyImage2KHR;
-	PFN_vkCmdCopyImageToBuffer2KHR vkCmdCopyImageToBuffer2KHR;
-	PFN_vkCmdResolveImage2KHR vkCmdResolveImage2KHR;
-#endif // VK_KHR_copy_commands2
-
 #if (defined(VK_KHR_create_renderpass2))
 	PFN_vkCmdBeginRenderPass2KHR vkCmdBeginRenderPass2KHR;
 	PFN_vkCmdEndRenderPass2KHR vkCmdEndRenderPass2KHR;
@@ -647,11 +597,13 @@ typedef struct VkDeviceBindings_ {
 #endif // VK_KHR_create_renderpass2
 
 #if (defined(VK_KHR_deferred_host_operations))
+#if (defined(VK_ENABLE_BETA_EXTENSIONS))
 	PFN_vkCreateDeferredOperationKHR vkCreateDeferredOperationKHR;
 	PFN_vkDeferredOperationJoinKHR vkDeferredOperationJoinKHR;
 	PFN_vkDestroyDeferredOperationKHR vkDestroyDeferredOperationKHR;
 	PFN_vkGetDeferredOperationMaxConcurrencyKHR vkGetDeferredOperationMaxConcurrencyKHR;
 	PFN_vkGetDeferredOperationResultKHR vkGetDeferredOperationResultKHR;
+#endif // (VK_ENABLE_BETA_EXTENSIONS)
 #endif // VK_KHR_deferred_host_operations
 
 #if (defined(VK_KHR_descriptor_update_template) || defined(VK_KHR_push_descriptor))
@@ -748,14 +700,33 @@ typedef struct VkDeviceBindings_ {
 	PFN_vkCmdPushDescriptorSetKHR vkCmdPushDescriptorSetKHR;
 #endif // VK_KHR_push_descriptor
 
+#if (defined(VK_KHR_acceleration_structure))
+	PFN_vkCreateAccelerationStructureKHR vkCreateAccelerationStructureKHR;
+	PFN_vkDestroyAccelerationStructureKHR vkDestroyAccelerationStructureKHR;
+	PFN_vkCmdBuildAccelerationStructuresKHR vkCmdBuildAccelerationStructuresKHR;
+	PFN_vkCmdBuildAccelerationStructuresIndirectKHR vkCmdBuildAccelerationStructuresIndirectKHR;
+	PFN_vkBuildAccelerationStructuresKHR vkBuildAccelerationStructuresKHR;
+	PFN_vkCopyAccelerationStructureKHR vkCopyAccelerationStructureKHR;
+	PFN_vkCopyAccelerationStructureToMemoryKHR vkCopyAccelerationStructureToMemoryKHR;
+	PFN_vkCopyMemoryToAccelerationStructureKHR vkCopyMemoryToAccelerationStructureKHR;
+	PFN_vkWriteAccelerationStructuresPropertiesKHR vkWriteAccelerationStructuresPropertiesKHR;
+	PFN_vkCmdCopyAccelerationStructureKHR vkCmdCopyAccelerationStructureKHR;
+	PFN_vkCmdCopyAccelerationStructureToMemoryKHR vkCmdCopyAccelerationStructureToMemoryKHR;
+	PFN_vkCmdCopyMemoryToAccelerationStructureKHR vkCmdCopyMemoryToAccelerationStructureKHR;
+	PFN_vkGetAccelerationStructureDeviceAddressKHR vkGetAccelerationStructureDeviceAddressKHR;
+	PFN_vkCmdWriteAccelerationStructuresPropertiesKHR vkCmdWriteAccelerationStructuresPropertiesKHR;
+	PFN_vkGetDeviceAccelerationStructureCompatibilityKHR vkGetDeviceAccelerationStructureCompatibilityKHR;
+	PFN_vkGetAccelerationStructureBuildSizesKHR vkGetAccelerationStructureBuildSizesKHR;
+#endif // VK_KHR_acceleration_structure
+
 #if (defined(VK_KHR_ray_tracing_pipeline))
-	PFN_vkCmdSetRayTracingPipelineStackSizeKHR vkCmdSetRayTracingPipelineStackSizeKHR;
-	PFN_vkCmdTraceRaysIndirectKHR vkCmdTraceRaysIndirectKHR;
 	PFN_vkCmdTraceRaysKHR vkCmdTraceRaysKHR;
 	PFN_vkCreateRayTracingPipelinesKHR vkCreateRayTracingPipelinesKHR;
 	PFN_vkGetRayTracingCaptureReplayShaderGroupHandlesKHR vkGetRayTracingCaptureReplayShaderGroupHandlesKHR;
-	PFN_vkGetRayTracingShaderGroupHandlesKHR vkGetRayTracingShaderGroupHandlesKHR;
+	PFN_vkCmdTraceRaysIndirectKHR vkCmdTraceRaysIndirectKHR;
 	PFN_vkGetRayTracingShaderGroupStackSizeKHR vkGetRayTracingShaderGroupStackSizeKHR;
+	PFN_vkCmdSetRayTracingPipelineStackSizeKHR vkCmdSetRayTracingPipelineStackSizeKHR;
+	PFN_vkGetRayTracingShaderGroupHandlesKHR vkGetRayTracingShaderGroupHandlesKHR;
 #endif // VK_KHR_ray_tracing_pipeline
 
 #if (defined(VK_KHR_sampler_ycbcr_conversion))
@@ -816,10 +787,6 @@ typedef struct VkDeviceBindings_ {
 #endif // (VK_USE_PLATFORM_WIN32_KHR)
 #endif // VK_NV_external_memory_win32
 
-#if (defined(VK_NV_fragment_shading_rate_enums))
-	PFN_vkCmdSetFragmentShadingRateEnumNV vkCmdSetFragmentShadingRateEnumNV;
-#endif // VK_NV_fragment_shading_rate_enums
-
 #if (defined(VK_NV_mesh_shader))
 	PFN_vkCmdDrawMeshTasksIndirectCountNV vkCmdDrawMeshTasksIndirectCountNV;
 	PFN_vkCmdDrawMeshTasksIndirectNV vkCmdDrawMeshTasksIndirectNV;
@@ -851,5 +818,13 @@ typedef struct VkDeviceBindings_ {
 	PFN_vkCmdSetViewportShadingRatePaletteNV vkCmdSetViewportShadingRatePaletteNV;
 #endif // VK_NV_shading_rate_image
 
-} VkDeviceBindings;
+#if (defined(VK_KHR_synchronization2))
+	PFN_vkCmdSetEvent2KHR vkCmdSetEvent2KHR;
+	PFN_vkCmdResetEvent2KHR vkCmdResetEvent2KHR;
+	PFN_vkCmdWaitEvents2KHR vkCmdWaitEvents2KHR;
+	PFN_vkCmdPipelineBarrier2KHR vkCmdPipelineBarrier2KHR;
+	PFN_vkCmdWriteTimestamp2KHR vkCmdWriteTimestamp2KHR;
+	PFN_vkQueueSubmit2KHR vkQueueSubmit2KHR;
+#endif // VK_KHR_synchronization2
 
+} VkDeviceBindings;

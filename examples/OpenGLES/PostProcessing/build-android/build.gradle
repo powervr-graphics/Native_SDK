@@ -115,13 +115,15 @@ android {
 	"${project.projectDir}/../ComputeGaussianBlurVerticalShader.csh.in",
 	"${project.projectDir}/../../../assets/Satyr/Satyr.pod",
 	"${project.projectDir}/../../../assets/Satyr/MarbleNormalMap.pvr",
+	"${project.projectDir}/../../../assets/Satyr/MarbleNormalMap_astc.pvr",
 	"${project.projectDir}/../../../assets/Satyr/Marble.pvr",
-	"${project.projectDir}/../../../assets/HdrScenes/satara_night_scale_0.305_rgb9e5.pvr",
-	"${project.projectDir}/../../../assets/HdrScenes/satara_night_scale_0.305_rgb9e5_Irradiance.pvr",
-	"${project.projectDir}/../../../assets/HdrScenes/pink_sunrise_rgb9e5.pvr",
-	"${project.projectDir}/../../../assets/HdrScenes/pink_sunrise_rgb9e5_Irradiance.pvr",
-	"${project.projectDir}/../../../assets/HdrScenes/signal_hill_sunrise_scale_0.312_rgb9e5.pvr",
-	"${project.projectDir}/../../../assets/HdrScenes/signal_hill_sunrise_scale_0.312_rgb9e5_Irradiance.pvr",
+	"${project.projectDir}/../../../assets/Satyr/Marble_astc.pvr",
+	"${project.projectDir}/../../../assets/Environments/satara_night_scale_0.305_rgb9e5.pvr",
+	"${project.projectDir}/../../../assets/Environments/satara_night_scale_0.305_rgb9e5_Irradiance.pvr",
+	"${project.projectDir}/../../../assets/Environments/pink_sunrise_rgb9e5.pvr",
+	"${project.projectDir}/../../../assets/Environments/pink_sunrise_rgb9e5_Irradiance.pvr",
+	"${project.projectDir}/../../../assets/Environments/signal_hill_sunrise_scale_0.312_rgb9e5.pvr",
+	"${project.projectDir}/../../../assets/Environments/signal_hill_sunrise_scale_0.312_rgb9e5_Irradiance.pvr",
 	)
 	
 	// Add a task for copying our assets from their original location (${project.projectDir}...) to the assets/ folder for packaging

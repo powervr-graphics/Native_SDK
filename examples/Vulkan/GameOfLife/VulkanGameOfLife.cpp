@@ -36,36 +36,35 @@ struct DeviceResources
 	pvrvk::CommandPool cmdPool;
 	pvrvk::CommandPool computeCmdPool;
 
-	pvrvk::Semaphore imageAcquiredSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
-	pvrvk::Semaphore presentationSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	std::vector<pvrvk::Semaphore> imageAcquiredSemaphores;
+	std::vector<pvrvk::Semaphore> presentationSemaphores;
 
-	pvrvk::Semaphore computeToComputeSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
-	pvrvk::Semaphore computeToRenderSemaphore[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
-	pvrvk::Semaphore renderToComputeSemaphore[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	std::vector<pvrvk::Semaphore> computeToComputeSemaphores;
+	std::vector<pvrvk::Semaphore> computeToRenderSemaphore;
+	std::vector<pvrvk::Semaphore> renderToComputeSemaphore;
 
-	pvrvk::Fence perFrameResourcesFences[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	std::vector<pvrvk::Fence> perFrameResourcesFences;
+	std::vector<pvrvk::Fence> computeFences;
 
-	pvrvk::Fence computeFences[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
-
-	pvr::Multi<pvrvk::Framebuffer> onScreenFramebuffer;
+	std::vector<pvrvk::Framebuffer> onScreenFramebuffer;
 
 	// Two primary Command Buffers one for Compute and one for Graphics
-	pvr::Multi<pvrvk::CommandBuffer> graphicsPrimaryCmdBuffers;
-	pvr::Multi<pvrvk::SecondaryCommandBuffer> uiRendererCmdBuffers;
-	pvr::Multi<pvrvk::SecondaryCommandBuffer> graphicsCmdBuffers;
+	std::vector<pvrvk::CommandBuffer> graphicsPrimaryCmdBuffers;
+	std::vector<pvrvk::SecondaryCommandBuffer> uiRendererCmdBuffers;
+	std::vector<pvrvk::SecondaryCommandBuffer> graphicsCmdBuffers;
 
-	pvr::Multi<pvrvk::CommandBuffer> computePrimaryCmdBuffers;
-	pvr::Multi<pvrvk::SecondaryCommandBuffer> computeCmdBuffers;
+	std::vector<pvrvk::CommandBuffer> computePrimaryCmdBuffers;
+	std::vector<pvrvk::SecondaryCommandBuffer> computeCmdBuffers;
 
 	// Image views for Board and Petri Dish effect.
-	pvr::Multi<pvrvk::ImageView> boardImageViews;
+	std::vector<pvrvk::ImageView> boardImageViews;
 	pvrvk::ImageView petriDishImageView;
 
 	// Compute descriptor sets
-	pvr::Multi<pvrvk::DescriptorSet> computeDescriptorSets;
+	std::vector<pvrvk::DescriptorSet> computeDescriptorSets;
 
 	// Graphics descriptor sets
-	pvr::Multi<pvrvk::DescriptorSet> graphicsDescriptorSets;
+	std::vector<pvrvk::DescriptorSet> graphicsDescriptorSets;
 
 	// Descriptor set layouts
 	pvrvk::DescriptorSetLayout computeDescriptorSetLayout;
@@ -130,6 +129,8 @@ class VulkanGameOfLife : public pvr::Shell
 	int boardOffSetX = 0;
 	int boardOffSetY = 0;
 
+	uint32_t _swapchainLength;
+
 public:
 	virtual pvr::Result initApplication();
 	virtual pvr::Result initView();
@@ -191,7 +192,7 @@ void VulkanGameOfLife::refreshBoard(bool regenData = false)
 		imgUpdateInfo.dataWidth = imgUpdateInfo.imageWidth = _deviceResources->boardImageViews[0]->getImage()->getWidth();
 		imgUpdateInfo.dataSize = static_cast<uint32_t>(board.size());
 
-		for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); i++)
+		for (uint32_t i = 0; i < _swapchainLength; i++)
 		{
 			pvr::utils::updateImage(_deviceResources->device, _deviceResources->graphicsPrimaryCmdBuffers[0], &imgUpdateInfo, 1, pvrvk::Format::e_R8G8B8A8_UNORM,
 				pvrvk::ImageLayout::e_GENERAL, false, _deviceResources->boardImageViews[i]->getImage());
@@ -399,7 +400,7 @@ void VulkanGameOfLife::generateTextures(pvrvk::CommandBuffer& cmdBuffer)
 	pvr::TextureHeader textureheader(pvr::PixelFormat::RGBA_8888(), boardWidth, boardHeight);
 	pvr::Texture boardTexture(textureheader, board.data());
 
-	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); i++)
+	for (uint32_t i = 0; i < _swapchainLength; i++)
 	{
 		_deviceResources->boardImageViews[i] =
 			pvr::utils::uploadImageAndView(_deviceResources->device, boardTexture, true, cmdBuffer, pvrvk::ImageUsageFlags::e_SAMPLED_BIT | pvrvk::ImageUsageFlags::e_STORAGE_BIT,
@@ -411,7 +412,7 @@ void VulkanGameOfLife::generateTextures(pvrvk::CommandBuffer& cmdBuffer)
 void VulkanGameOfLife::updateDesciptorSets()
 {
 	std::vector<pvrvk::WriteDescriptorSet> writeDescSets;
-	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
+	for (uint32_t i = 0; i < _swapchainLength; ++i)
 	{
 		{
 			writeDescSets.push_back(
@@ -420,14 +421,13 @@ void VulkanGameOfLife::updateDesciptorSets()
 
 			writeDescSets.push_back(
 				pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_STORAGE_IMAGE, _deviceResources->computeDescriptorSets[i], 1)
-					.setImageInfo(0,
-						pvrvk::DescriptorImageInfo(_deviceResources->boardImageViews[(i + 1) % _deviceResources->swapchain->getSwapchainLength()], pvrvk::ImageLayout::e_GENERAL)));
+					.setImageInfo(0, pvrvk::DescriptorImageInfo(_deviceResources->boardImageViews[(i + 1) % _swapchainLength], pvrvk::ImageLayout::e_GENERAL)));
 		}
 
 		{
 			writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, _deviceResources->graphicsDescriptorSets[i], 0)
 										.setImageInfo(0,
-											pvrvk::DescriptorImageInfo(_deviceResources->boardImageViews[(i + 1) % _deviceResources->swapchain->getSwapchainLength()],
+						pvrvk::DescriptorImageInfo(_deviceResources->boardImageViews[(i + 1) % _swapchainLength],
 												_deviceResources->graphicsSampler, pvrvk::ImageLayout::e_GENERAL)));
 
 			writeDescSets.push_back(
@@ -533,7 +533,7 @@ void VulkanGameOfLife::createResources()
 	std::vector<pvrvk::WriteDescriptorSet> writeDescSets;
 
 	// Update the descriptor Sets:
-	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
+	for (uint32_t i = 0; i < _swapchainLength; ++i)
 	{
 		_deviceResources->computeDescriptorSets[i] = _deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->computeDescriptorSetLayout);
 		_deviceResources->graphicsDescriptorSets[i] = _deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->graphicsDescriptorSetLayout);
@@ -545,7 +545,7 @@ void VulkanGameOfLife::createResources()
 /// <summary> Record the commands used for rendering the UI elements.</summary>
 void VulkanGameOfLife::recordUICmdBuffer()
 {
-	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
+	for (uint32_t i = 0; i < _swapchainLength; ++i)
 	{
 		_deviceResources->uiRendererCmdBuffers[i]->begin(_deviceResources->onScreenFramebuffer[i], 0, pvrvk::CommandBufferUsageFlags::e_RENDER_PASS_CONTINUE_BIT);
 		_deviceResources->uiRenderer.beginRendering(_deviceResources->uiRendererCmdBuffers[i]);
@@ -613,7 +613,7 @@ pvrvk::CommandBuffer VulkanGameOfLife::recordComputeCmdBuffer()
 /// <param name="submitCmdBuffer">The Command buffer used to submit compute work.</param>
 void VulkanGameOfLife::submitComputeWork(pvrvk::CommandBuffer submitCmdBuffer)
 {
-	const uint32_t swapchainLength = _deviceResources->swapchain->getSwapchainLength();
+	const uint32_t swapchainLength = _swapchainLength;
 
 	// Set the semaphores to be waited on and signalled
 	pvrvk::PipelineStageFlags computePipeWaitStageFlags[] = { pvrvk::PipelineStageFlags::e_COMPUTE_SHADER_BIT, pvrvk::PipelineStageFlags::e_COMPUTE_SHADER_BIT };
@@ -755,16 +755,35 @@ pvr::Result VulkanGameOfLife::initView()
 	_deviceResources->swapchain = swapChainCreateOutput.swapchain;
 	_deviceResources->onScreenFramebuffer = swapChainCreateOutput.framebuffer;
 
+	_swapchainLength = _deviceResources->swapchain->getSwapchainLength();
+
+	_deviceResources->imageAcquiredSemaphores.resize(_swapchainLength);
+	_deviceResources->presentationSemaphores.resize(_swapchainLength);
+	_deviceResources->computeToComputeSemaphores.resize(_swapchainLength);
+	_deviceResources->computeToRenderSemaphore.resize(_swapchainLength);
+	_deviceResources->renderToComputeSemaphore.resize(_swapchainLength);
+	_deviceResources->perFrameResourcesFences.resize(_swapchainLength);
+	_deviceResources->computeFences.resize(_swapchainLength);
+	_deviceResources->graphicsPrimaryCmdBuffers.resize(_swapchainLength);
+	_deviceResources->uiRendererCmdBuffers.resize(_swapchainLength);
+	_deviceResources->graphicsCmdBuffers.resize(_swapchainLength);
+	_deviceResources->computePrimaryCmdBuffers.resize(_swapchainLength);
+	_deviceResources->computeCmdBuffers.resize(_swapchainLength);
+	_deviceResources->boardImageViews.resize(_swapchainLength);
+	_deviceResources->computeDescriptorSets.resize(_swapchainLength);
+	_deviceResources->graphicsDescriptorSets.resize(_swapchainLength);
+
 	_deviceResources->cmdPool = _deviceResources->device->createCommandPool(
 		pvrvk::CommandPoolCreateInfo(_deviceResources->queues[0]->getFamilyIndex(), pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT));
 	_deviceResources->computeCmdPool = _deviceResources->device->createCommandPool(
 		pvrvk::CommandPoolCreateInfo(_deviceResources->queues[1]->getFamilyIndex(), pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT));
 
 	_deviceResources->descriptorPool =
-		_deviceResources->device->createDescriptorPool(pvrvk::DescriptorPoolCreateInfo(10).addDescriptorInfo(pvrvk::DescriptorType::e_STORAGE_IMAGE, 16));
+		_deviceResources->device->createDescriptorPool(
+			pvrvk::DescriptorPoolCreateInfo(8 * _swapchainLength).addDescriptorInfo(pvrvk::DescriptorType::e_STORAGE_IMAGE, 8 * _swapchainLength));
 
 	// Create per frame Resources.
-	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
+	for (uint32_t i = 0; i < _swapchainLength; ++i)
 	{
 		_deviceResources->graphicsPrimaryCmdBuffers[i] = _deviceResources->cmdPool->allocateCommandBuffer();
 		_deviceResources->computePrimaryCmdBuffers[i] = _deviceResources->computeCmdPool->allocateCommandBuffer();
@@ -829,7 +848,7 @@ pvr::Result VulkanGameOfLife::initView()
 pvr::Result VulkanGameOfLife::renderFrame()
 {
 	// Do Compute Work
-	const uint32_t swapchainLength = _deviceResources->swapchain->getSwapchainLength();
+	const uint32_t swapchainLength = _swapchainLength;
 
 	_deviceResources->computeFences[currentFrameId]->wait();
 	_deviceResources->computeFences[currentFrameId]->reset();

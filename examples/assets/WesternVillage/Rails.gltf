@@ -1,0 +1,174 @@
+{
+    "asset" : {
+        "copyright" : "Imagination_Technologies_Demo_Team",
+        "generator" : "Khronos glTF Blender I/O v1.6.4",
+        "version" : "2.0"
+    },
+    "extensionsUsed" : [
+        "KHR_materials_transmission"
+    ],
+    "scene" : 0,
+    "scenes" : [
+        {
+            "name" : "Scene",
+            "nodes" : [
+                0
+            ]
+        }
+    ],
+    "nodes" : [
+        {
+            "mesh" : 0,
+            "name" : "Rail_Tracks_Straight_e.001",
+            "scale" : [
+                -1,
+                1,
+                1
+            ],
+            "translation" : [
+                5,
+                0,
+                0
+            ]
+        }
+    ],
+    "materials" : [
+        {
+            "doubleSided" : true,
+            "extensions" : {
+                "KHR_materials_transmission" : {
+                    "transmissionFactor" : 0.6660000085830688
+                }
+            },
+            "name" : "Rails_Mat",
+            "normalTexture" : {
+                "index" : 0
+            },
+            "pbrMetallicRoughness" : {
+                "baseColorTexture" : {
+                    "index" : 1
+                },
+                "metallicRoughnessTexture" : {
+                    "index" : 2
+                }
+            }
+        }
+    ],
+    "meshes" : [
+        {
+            "name" : "Tracks_Straight_T1_e.002",
+            "primitives" : [
+                {
+                    "attributes" : {
+                        "POSITION" : 0,
+                        "NORMAL" : 1,
+                        "TEXCOORD_0" : 2
+                    },
+                    "indices" : 3,
+                    "material" : 0
+                }
+            ]
+        }
+    ],
+    "textures" : [
+        {
+            "sampler" : 0,
+            "source" : 0
+        },
+        {
+            "sampler" : 0,
+            "source" : 1
+        },
+        {
+            "sampler" : 0,
+            "source" : 2
+        }
+    ],
+    "images" : [
+        {
+            "mimeType" : "image/png",
+            "name" : "Rails_mat_lp_Normal",
+            "uri" : "Rails_mat_lp_Normal.png"
+        },
+        {
+            "mimeType" : "image/png",
+            "name" : "Rails_mat_lp_AlbedoTransparency",
+            "uri" : "Rails_mat_lp_AlbedoTransparency.png"
+        },
+        {
+            "mimeType" : "image/png",
+            "name" : "Rails_mat_lp_Metalness-Rails_mat_lp_Roughness",
+            "uri" : "Rails_mat_lp_Metalness-Rails_mat_lp_Roughness.png"
+        }
+    ],
+    "accessors" : [
+        {
+            "bufferView" : 0,
+            "componentType" : 5126,
+            "count" : 466,
+            "max" : [
+                9.999999046325684,
+                0.34326469898223877,
+                1.6417443752288818
+            ],
+            "min" : [
+                -9.522716482024407e-08,
+                3.507981816142092e-08,
+                -1.6393024921417236
+            ],
+            "type" : "VEC3"
+        },
+        {
+            "bufferView" : 1,
+            "componentType" : 5126,
+            "count" : 466,
+            "type" : "VEC3"
+        },
+        {
+            "bufferView" : 2,
+            "componentType" : 5126,
+            "count" : 466,
+            "type" : "VEC2"
+        },
+        {
+            "bufferView" : 3,
+            "componentType" : 5123,
+            "count" : 720,
+            "type" : "SCALAR"
+        }
+    ],
+    "bufferViews" : [
+        {
+            "buffer" : 0,
+            "byteLength" : 5592,
+            "byteOffset" : 0
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 5592,
+            "byteOffset" : 5592
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 3728,
+            "byteOffset" : 11184
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 1440,
+            "byteOffset" : 14912
+        }
+    ],
+    "samplers" : [
+        {
+            "magFilter" : 9729,
+            "minFilter" : 9987
+        }
+    ],
+    "buffers" : [
+        {
+            "byteLength" : 16352,
+            "uri" : "Rails.bin"
+        }
+    ]
+}

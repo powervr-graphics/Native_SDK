@@ -203,6 +203,7 @@ void getOpenGLFormat(PixelFormat pixelFormat, pvr::ColorSpace colorSpace, pvr::V
 			}
 			break;
 		}
+		#if !SC_ENABLED
 		case static_cast<uint64_t>(CompressedPixelFormat::SharedExponentR9G9B9E5):
 		{
 			// Not technically a compressed format by OpenGL ES standards.
@@ -259,6 +260,7 @@ void getOpenGLFormat(PixelFormat pixelFormat, pvr::ColorSpace colorSpace, pvr::V
 			}
 			return;
 		}
+#endif
 
 		case static_cast<uint64_t>(CompressedPixelFormat::ASTC_10x10):
 		{
@@ -631,6 +633,77 @@ void getOpenGLFormat(PixelFormat pixelFormat, pvr::ColorSpace colorSpace, pvr::V
 	{
 		switch (dataType)
 		{
+#if SC_ENABLED
+		case VariableType::UnsignedByteNorm:
+		{
+			glType = GL_UNSIGNED_BYTE;
+			glTypeSize = 1;
+			switch (pixelFormat.getPixelTypeId())
+			{
+			case GeneratePixelType4<'r', 'g', 'b', 'a', 8, 8, 8, 8>::ID:
+			{
+				glFormat = GL_RGBA;
+				glInternalFormat = GL_RGBA8;
+				return;
+			}
+			case GeneratePixelType3<'r', 'g', 'b', 8, 8, 8>::ID: { glFormat = glInternalFormat = GL_RGB;
+#ifdef GL_SRGB8
+				if (colorSpace == ColorSpace::sRGB) { glInternalFormat = GL_SRGB8; }
+				else
+				{
+					glInternalFormat = GL_RGB8;
+				}
+#endif
+				return;
+			}
+			case GeneratePixelType2<'r', 'g', 8, 8>::ID:
+			{
+				glFormat = GL_RG;
+				glInternalFormat = GL_RG8;
+				return;
+			}
+			case GeneratePixelType1<'r', 8>::ID:
+			{
+				glFormat = GL_RED;
+				glInternalFormat = GL_R8;
+				return;
+			}
+			}
+			break;
+		}
+		case VariableType::UnsignedShortNorm:
+		{
+			glType = GL_UNSIGNED_SHORT;
+			glTypeSize = 2;
+			switch (pixelFormat.getPixelTypeId())
+			{
+			case GeneratePixelType4<'r', 'g', 'b', 'a', 4, 4, 4, 4>::ID:
+			{
+				glType = GL_UNSIGNED_SHORT_4_4_4_4;
+				glFormat = GL_RGBA;
+				glInternalFormat = GL_RGBA4;
+				return;
+			}
+			case GeneratePixelType4<'r', 'g', 'b', 'a', 5, 5, 5, 1>::ID:
+			{
+				glType = GL_UNSIGNED_SHORT_5_5_5_1;
+				glFormat = GL_RGBA;
+				glInternalFormat = GL_RGB5_A1;
+				return;
+			}
+			case GeneratePixelType3<'r', 'g', 'b', 5, 6, 5>::ID:
+			{
+				glType = GL_UNSIGNED_SHORT_5_6_5;
+				glFormat = GL_RGB;
+				glInternalFormat = GL_RGB565;
+				return;
+			}
+			}
+			break;
+		}
+		default: {
+		}
+#else
 		case VariableType::UnsignedFloat:
 			if (pixelFormat.getPixelTypeId() == GeneratePixelType3<'b', 'g', 'r', 10, 11, 11>::ID || pixelFormat.getPixelTypeId() == GeneratePixelType3<'r', 'g', 'b', 11, 11, 10>::ID)
 			{
@@ -1308,6 +1381,7 @@ void getOpenGLFormat(PixelFormat pixelFormat, pvr::ColorSpace colorSpace, pvr::V
 		}
 		default: {
 		}
+#endif // SC_ENABLE
 		}
 	}
 	// Default (erroneous) return values.
@@ -1390,6 +1464,7 @@ void getOpenGLStorageFormat(PixelFormat pixelFormat, pvr::ColorSpace colorSpace,
 			return;
 		}
 #endif
+#if !SC_ENABLED
 		case static_cast<uint64_t>(CompressedPixelFormat::SharedExponentR9G9B9E5):
 		{
 			// Not technically a compressed format by OpenGL ES standards.
@@ -1443,6 +1518,7 @@ void getOpenGLStorageFormat(PixelFormat pixelFormat, pvr::ColorSpace colorSpace,
 			}
 			return;
 		}
+#endif // SC_ENABLED
 		// Formats not supported by opengl/opengles
 		case static_cast<uint64_t>(CompressedPixelFormat::BC4):
 		case static_cast<uint64_t>(CompressedPixelFormat::BC5):
@@ -1454,11 +1530,76 @@ void getOpenGLStorageFormat(PixelFormat pixelFormat, pvr::ColorSpace colorSpace,
 		case static_cast<uint64_t>(CompressedPixelFormat::YUY2):
 		case static_cast<uint64_t>(CompressedPixelFormat::BW1bpp):
 		case static_cast<uint64_t>(CompressedPixelFormat::NumCompressedPFs):
+		default:
 			throw InvalidOperationError("[getOpenGLStorageFormat]: Attempted to convert compressed format not supported on OpenGL ES");
 		}
 	}
 	else
 	{
+#if SC_ENABLED
+		switch (dataType)
+		{
+		case VariableType::UnsignedByteNorm:
+		{
+			switch (pixelFormat.getPixelTypeId())
+			{
+			case GeneratePixelType4<'r', 'g', 'b', 'a', 8, 8, 8, 8>::ID:
+			{
+				if (colorSpace == ColorSpace::sRGB) { break; }
+				else
+				{
+					glInternalFormat = GL_RGBA8;
+				}
+				return;
+			}
+			case GeneratePixelType3<'r', 'g', 'b', 8, 8, 8>::ID:
+			{
+				if (colorSpace == ColorSpace::sRGB) { break; }
+				else
+				{
+					glInternalFormat = GL_RGB8;
+				}
+				return;
+			}
+			case GeneratePixelType2<'r', 'g', 8, 8>::ID:
+			{
+				glInternalFormat = GL_RG8;
+				return;
+			}
+			case GeneratePixelType1<'r', 8>::ID:
+			{
+				glInternalFormat = GL_R8;
+				return;
+			}
+			}
+			break;
+		}
+		case VariableType::UnsignedShortNorm:
+		{
+			switch (pixelFormat.getPixelTypeId())
+			{
+			case GeneratePixelType4<'r', 'g', 'b', 'a', 4, 4, 4, 4>::ID:
+			{
+				glInternalFormat = GL_RGBA4;
+				return;
+			}
+			case GeneratePixelType4<'r', 'g', 'b', 'a', 5, 5, 5, 1>::ID:
+			{
+				glInternalFormat = GL_RGB5_A1;
+				return;
+			}
+			case GeneratePixelType3<'r', 'g', 'b', 5, 6, 5>::ID:
+			{
+				glInternalFormat = GL_RGB565;
+				return;
+			}
+			}
+			break;
+		}
+		default: {
+		}
+		}
+#else
 		switch (dataType)
 		{
 		case VariableType::UnsignedFloat:
@@ -1935,6 +2076,7 @@ void getOpenGLStorageFormat(PixelFormat pixelFormat, pvr::ColorSpace colorSpace,
 		default: {
 		}
 		}
+#endif // SC_ENABLED
 	}
 
 	// Default (erroneous) return values.
@@ -1967,7 +2109,9 @@ GLenum convertToGles(ImageAspectFlags type)
 	case ImageAspectFlags::Color: return GL_COLOR_ATTACHMENT0;
 	case ImageAspectFlags::Depth: return GL_DEPTH_ATTACHMENT;
 	case ImageAspectFlags::Stencil: return GL_STENCIL_ATTACHMENT;
+#if !SC_ENABLED
 	case ImageAspectFlags::DepthAndStencil: return GL_DEPTH_STENCIL_ATTACHMENT;
+#endif
 	default: assertion(0, "Invalid image aspect type"); return GL_COLOR_ATTACHMENT0;
 	}
 }
@@ -1977,8 +2121,9 @@ GLenum convertToGles(ImageViewType texType)
 #ifndef GL_TEXTURE_3D
 #define GL_TEXTURE_3D GL_TEXTURE_3D_OES
 #endif
-
-	static GLenum glTextureType[] = { GL_NONE, GL_NONE, GL_TEXTURE_2D, GL_TEXTURE_3D, GL_TEXTURE_CUBE_MAP, GL_NONE, GL_TEXTURE_2D_ARRAY, GL_NONE, GL_NONE,
+#if SC_ENABLED
+	// SC not support texture 3D, cube map and texture 2D array
+	static GLenum glTextureType[] = { GL_NONE, GL_NONE, GL_TEXTURE_2D, GL_NONE, GL_NONE, GL_NONE, GL_NONE, GL_NONE, GL_NONE,
 #ifdef GL_TEXTURE_EXTERNAL_OES
 		GL_TEXTURE_EXTERNAL_OES
 #else
@@ -1986,13 +2131,29 @@ GLenum convertToGles(ImageViewType texType)
 #endif
 	};
 
+#else
+	static GLenum glTextureType[] = { GL_NONE, GL_NONE, GL_TEXTURE_2D, GL_TEXTURE_3D, GL_TEXTURE_CUBE_MAP, GL_NONE, GL_TEXTURE_2D_ARRAY, GL_NONE, GL_NONE,
+#ifdef GL_TEXTURE_EXTERNAL_OES
+		GL_TEXTURE_EXTERNAL_OES
+#else
+		GL_NONE
+#endif
+	};
+#endif //SC_ENABLED
+
 	return glTextureType[static_cast<uint32_t>(texType)];
 }
 
 GLenum convertToGles(DataType dataType)
 {
+#if SC_ENABLED
+	// No GL_FIXD and GL_HALF_FLOAT
+	static const GLenum map[] = { GL_NONE, GL_FLOAT, GL_INT, GL_UNSIGNED_SHORT, GL_RGBA, GL_NONE, GL_NONE, GL_NONE, GL_NONE, GL_NONE, GL_UNSIGNED_BYTE, GL_SHORT, GL_SHORT,
+		GL_BYTE, GL_BYTE, GL_UNSIGNED_BYTE, GL_UNSIGNED_SHORT, GL_UNSIGNED_INT, GL_NONE, GL_NONE };
+#else
 	static const GLenum map[] = { GL_NONE, GL_FLOAT, GL_INT, GL_UNSIGNED_SHORT, GL_RGBA, GL_NONE, GL_NONE, GL_NONE, GL_NONE, GL_FIXED, GL_UNSIGNED_BYTE, GL_SHORT, GL_SHORT,
 		GL_BYTE, GL_BYTE, GL_UNSIGNED_BYTE, GL_UNSIGNED_SHORT, GL_UNSIGNED_INT, GL_NONE, GL_HALF_FLOAT };
+#endif
 	return map[static_cast<uint32_t>(dataType)];
 }
 
@@ -2016,7 +2177,12 @@ GLenum convertToGles(StencilOp stencilOp)
 
 GLenum convertToGles(BlendOp blendOp)
 {
+#if SC_ENABLED
+	// no GL_MIN and GL_MAX
+	static GLenum glOp[] = { GL_FUNC_ADD, GL_FUNC_SUBTRACT, GL_FUNC_REVERSE_SUBTRACT, GL_NONE, GL_NONE };
+#else
 	static GLenum glOp[] = { GL_FUNC_ADD, GL_FUNC_SUBTRACT, GL_FUNC_REVERSE_SUBTRACT, GL_MIN, GL_MAX };
+#endif
 	return glOp[static_cast<uint32_t>(blendOp)];
 }
 

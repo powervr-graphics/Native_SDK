@@ -119,7 +119,8 @@ uint32_t TextureHeader::getBitsPerPixel() const
 		case static_cast<uint64_t>(CompressedPixelFormat::ETC2_RGBA):
 		case static_cast<uint64_t>(CompressedPixelFormat::BASISU_UASTC):
 		case static_cast<uint64_t>(CompressedPixelFormat::PVRTCI_HDR_8bpp):
-		case static_cast<uint64_t>(CompressedPixelFormat::PVRTCII_HDR_8bpp): return 8;
+		case static_cast<uint64_t>(CompressedPixelFormat::PVRTCII_HDR_8bpp): 
+		case static_cast<uint64_t>(CompressedPixelFormat::ASTC_4x4): return 8;
 		case static_cast<uint64_t>(CompressedPixelFormat::YUY2):
 		case static_cast<uint64_t>(CompressedPixelFormat::UYVY):
 		case static_cast<uint64_t>(CompressedPixelFormat::RGBG8888):

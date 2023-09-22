@@ -118,8 +118,11 @@ android {
 	"${project.projectDir}/../../../assets/Satyr/SatyrAndTable.pod",
 	"${project.projectDir}/../../../assets/Satyr/pointlight.pod",
 	"${project.projectDir}/../../../assets/Satyr/Marble.pvr",
+	"${project.projectDir}/../../../assets/Satyr/Marble_astc.pvr",
 	"${project.projectDir}/../../../assets/Satyr/MarbleNormalMap.pvr",
+	"${project.projectDir}/../../../assets/Satyr/MarbleNormalMap_astc.pvr",
 	"${project.projectDir}/../../../assets/Satyr/Table.pvr",
+	"${project.projectDir}/../../../assets/Satyr/Table_astc.pvr",
 	)
 	
 	// Add a task for copying our assets from their original location (${project.projectDir}...) to the assets/ folder for packaging

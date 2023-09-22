@@ -36,8 +36,11 @@ add_assets_to_target(VulkanDeferredShading
 		SatyrAndTable.pod
 		pointlight.pod
 		Marble.pvr
+		Marble_astc.pvr
 		MarbleNormalMap.pvr
-		Table.pvr)
+		MarbleNormalMap_astc.pvr
+		Table.pvr
+		Table_astc.pvr)
 
 ### Shaders that need to be compiled to SpirV (Vulkan) ###
 # During build time, glslangvalidator will be called to create a "<shadername.extension>.spv" file

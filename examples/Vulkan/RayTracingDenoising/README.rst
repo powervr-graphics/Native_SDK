@@ -1,6 +1,6 @@
-=================
+===================
 RayTracingDenoising
-=================
+===================
 
 .. figure:: ./RayTracingDenoising.png
 

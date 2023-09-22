@@ -236,6 +236,7 @@ inline void insertDebugUtilsLabel(pvrvk::SecondaryCommandBuffer& secondaryComman
 	insertDebugUtilsLabel(static_cast<pvrvk::CommandBufferBase>(secondaryCommandBuffer), labelInfo);
 }
 
+/// @cond Doxygen_skip
 /// <summary>An application DebugUtilsMessengerCallback function providing logging for various events. The callback will also throw an exception when VkDebugUtilsMessageSeverityFlagBitsEXT includes the
 /// VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT.</summary>
 /// <param name="messageSeverity">Indicates the VkDebugUtilsMessageSeverityFlagBitsEXT which define the severity of any message.</param>
@@ -282,6 +283,7 @@ VKAPI_ATTR VkBool32 VKAPI_CALL throwOnErrorDebugReportCallback(VkDebugReportFlag
 /// same behavior with and without validation layers enabled.</returns>
 VKAPI_ATTR VkBool32 VKAPI_CALL logMessageDebugReportCallback(VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT objectType, uint64_t object, size_t location,
 	int32_t messageCode, const char* pLayerPrefix, const char* pMessage, void* pUserData);
+/// @endcond
 
 /// <summary>Maps a set of DebugUtilsMessageSeverityFlagsEXT to a particular type of log message.</summary>
 /// <param name="flags">The DebugUtilsMessageSeverityFlagsEXT to map to a LogLevel.</param>
@@ -351,6 +353,11 @@ pvrvk::Image createImage(const pvrvk::Device& device, const pvrvk::ImageCreateIn
 #pragma endregion
 
 #pragma region /////////////// IMAGES LAYOUTS AND QUEUES /////////////////
+/// <summary>Test whether the given texture format is supported by the physical device given as parameter.</summary>
+/// <param name="pdev">Physical device to test whether a format is supported.</param>
+/// <param name="fmt">Format to support.</param>
+bool isSupportedFormat(const pvrvk::PhysicalDevice& pdev, pvrvk::Format fmt);
+
 /// <summary>Set image layout and queue family ownership</summary>
 /// <param name="srccmd">The source command buffer from which to transition the image from.</param>
 /// <param name="dstcmd">The destination command buffer from which to transition the image to.</param>
@@ -1039,15 +1046,15 @@ struct OnScreenObjects
 	/// <summary>The renderpass object</summary>
 	pvrvk::RenderPass renderPass;
 	/// <summary>The collection of framebuffer objects</summary>
-	pvr::Multi<pvrvk::Framebuffer> framebuffer;
+	std::vector<pvrvk::Framebuffer> framebuffer;
 	/// <summary>The swapchain object</summary>
 	pvrvk::Swapchain swapchain;
 	/// <summary>The final depth stencil images. If multisampled, will contain the "Depth Resolve" attachments, not the "Depth" attachments</summary>
-	pvr::Multi<pvrvk::ImageView> depthStencilImages;
+	std::vector<pvrvk::ImageView> depthStencilImages;
 	/// <summary>If multisampled, the "Color Attachments" (this is where multisampled rendering will be happening), otherwise empty.</summary>
-	pvr::Multi<pvrvk::ImageView> colorMultisampledAttachmentImages;
+	std::vector<pvrvk::ImageView> colorMultisampledAttachmentImages;
 	/// <summary>If multisampled, the "Depth Attachments" (this is where multisampled rendering will be happening), otherwise empty.</summary>
-	pvr::Multi<pvrvk::ImageView> depthStencilMultisampledAttachmentImages;
+	std::vector<pvrvk::ImageView> depthStencilMultisampledAttachmentImages;
 	bool isMultisampled() { return colorMultisampledAttachmentImages.size() != 0; }
 	bool hasDepthStencil() { return depthStencilImages.size() != 0; }
 };

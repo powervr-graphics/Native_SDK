@@ -13,39 +13,45 @@ The Framework consists of libraries divided by functionality, as shown in the fi
 
 PVRCore
 ~~~~~~~
-`Source code documentation <https://powervr-graphics.github.io/Documentation/Framework%20Manuals/PVRCore_Manual/PVRCore_intro.html>`__
 
 This is the supporting code of the library for developers to use as they wish. PVRCore is also used by the rest of the Framework, so therefore all examples using any other part of the Framework should always link with PVRCore.
 
+See the full `PVRCore reference documentation <https://powervr-graphics.github.io/Documentation/Framework%20Manuals/PVRCore_Manual/PVRCore_intro.html>`__
+
 PVRAssets
 ~~~~~~~~~
-`Source code documentation <https://powervr-graphics.github.io/Documentation/Framework%20Manuals/PVRAssets_Manual/PVRAssets_intro.html>`__
 
 This is the Framework’s asset code. It includes classes and helpers for scene, mesh, light, camera, animations, and asset loading code.  PVRAssets supports the loading of POD and glTF 2.0 files, PVR and PFX materials format, as well as support for a number of texture formats.
 
+See the full `PVRAssets reference documentation <https://powervr-graphics.github.io/Documentation/Framework%20Manuals/PVRAssets_Manual/PVRAssets%20Manual.html>`__
+
 PVRShell
 ~~~~~~~~
-`Source code documentation <https://powervr-graphics.github.io/Documentation/Framework%20Manuals/PVRShell_Manual/PVRShell_intro.html>`__
 
 This is the native system abstraction (such as event loops, surfaces, and windows) which simplifies cross-platform compatibility. PVRShell provides useful scaffolding for cross-platform development.
 
+See the full `PVRShell reference documentation <https://powervr-graphics.github.io/Documentation/Framework%20Manuals/PVRShell_Manual/PVRShell%20Manual.html>`__
+
 PVRVk
 ~~~~~
-`Source code documentation <https://powervr-graphics.github.io/Documentation/Framework%20Manuals/PVRVk_Manual/PVRVk_intro.html>`__
 
 This is a Vulkan C++ wrapper providing reference-counted objects with lifetime management, strongly typed enums, and other useful functionality.
 
+See the full `PVRVk reference documentation <https://powervr-graphics.github.io/Documentation/Framework%20Manuals/PVRVk_Manual/PVRVk%20Manual.html>`__
+
 PVRUtils
 ~~~~~~~~
-`Source code documentation <https://powervr-graphics.github.io/Documentation/Framework%20Manuals/PVRUtils_Manual/PVRUtils_intro.html>`__
 
 This contains two libraries (OpenGL ES and Vulkan) providing very convenient helpers and wrappers. These simplify common Vulkan and OpenGL tasks such as Instance-Device-Surface/Context creation, texture loading and VBO/IBO generation. The Vulkan version is written against PVRVk. Both versions each contain a version of the UIRenderer, a 2D/3D printing library that can be used for text or sprite renderering. There are similarities between the OpenGL ES and Vulkan interfaces, taking into account the core differences between the two APIs.
 
+See the full `PVRUtils reference documentation <https://powervr-graphics.github.io/Documentation/Framework%20Manuals/PVRUtils_Manual/PVRUtils%20Manual.html>`__
+
 PVRCamera
 ~~~~~~~~~
-`Source code documentation <https://powervr-graphics.github.io/Documentation/Framework%20Manuals/PVRCamera_Manual/PVRCamera_intro.html>`__
 
 This is the code for interfacing with the camera on mobile platforms. A dummy desktop version is provided to ease development. OpenGL ES only at present.
+
+See the full `PVRCamera reference documentation <https://powervr-graphics.github.io/Documentation/Framework%20Manuals/PVRCamera_Manual/PVRCamera%20Manual.html>`__
 
 Building
 --------
@@ -54,6 +60,8 @@ All PowerVR examples for all platforms will build the PowerVR Framework librarie
 The PowerVR SDK ships with pre-built versions of the libraries in the folder ``[SDK]/framework/bin/[Platform]``, where ``[SDK]`` is the SDK root and ``[Platform]`` is the name of the platform of interest. This is the location normally linked to.
 
 All modules can be built separately, by navigating to ``[SDK]/framework/[ModuleName]``, where ``[ModuleName]`` is the name of the specific module of the PowerVR Framework. CMake or Gradle can be used as normal, as building the examples automatically builds the Framework.
+
+.. include_skip_start
 
 Creating an application using the Framework
 -------------------------------------------
@@ -73,7 +81,7 @@ To create a typical application, please follow these steps:
       + ``[SDK]/framework/PVRShell``
       + ``[SDK]/framework/PVRAssets``
       + ``[SDK]/framework/PVRCore``
-   * Alternatively, build the Framework modules as described, and add depependencies to them with ``target_link_libraries``
+   * Alternatively, build the Framework modules as described, and add dependencies to them with ``target_link_libraries``
    * Link against other libraries:
       + (Optional) ``[SDK]/libs/[Platform]/[Other libraries, e.g. PVRScope]``
 
@@ -83,7 +91,9 @@ To create a typical application, please follow these steps:
      +  ``PVRShell/PVRShell.h``
      +  ``PVRUtils/PVRUtilsGles.h`` or ``PVRUtils/PVRUtilsVk.h``
 
-#. Write the skeleton of the application. See description of PVRShell.
+#. Write the skeleton of the application.
+
+.. include_skip_end
 
 Guidelines and Recommendations
 ------------------------------

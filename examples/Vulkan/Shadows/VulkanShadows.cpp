@@ -108,7 +108,7 @@ struct DeviceResources
 	pvr::utils::DebugUtilsCallbacks debugUtilsCallbacks;
 	pvrvk::Device device;
 
-	pvr::Multi<pvrvk::CommandPool> commandPool;
+	std::vector<pvrvk::CommandPool> commandPool;
 	pvrvk::Swapchain swapchain;
 	pvrvk::DescriptorPool descriptorPool;
 	pvrvk::Queue queue[2];
@@ -158,13 +158,14 @@ struct DeviceResources
 	pvrvk::Surface surface;
 
 	// Asset loader
-	pvr::Multi<pvrvk::CommandBuffer> cmdBuffers;
+	std::vector<pvrvk::CommandBuffer> cmdBuffers;
 
-	pvr::Multi<pvrvk::Framebuffer> onScreenFramebuffer;
-	pvr::Multi<pvrvk::ImageView> depthStencilImages;
-	pvrvk::Semaphore imageAcquiredSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
-	pvrvk::Semaphore presentationSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
-	pvrvk::Fence perFrameResourcesFences[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	std::vector<pvrvk::Framebuffer> onScreenFramebuffer;
+	std::vector<pvrvk::ImageView> depthStencilImages;
+
+	std::vector<pvrvk::Semaphore> imageAcquiredSemaphores;
+	std::vector<pvrvk::Semaphore> presentationSemaphores;
+	std::vector<pvrvk::Fence> perFrameResourcesFences;
 
 	UBO globalUBO;
 
@@ -1366,6 +1367,12 @@ class VulkanShadows : public pvr::Shell
 	float _rotation = 75.0f;
 	bool _rotate = false;
 
+	/// <summary>Flag to know whether astc iss upported by the physical device.</summary>
+	bool _astcSupported;
+
+	/// <summary>How many swapchain images are available.</summary>
+	uint32_t _swapchainLength;
+
 public:
 	VulkanShadows() : _isPaused(false), _currentFrame(0) {}
 
@@ -1481,15 +1488,25 @@ pvr::Result VulkanShadows::initView()
 	_deviceResources->onScreenFramebuffer = swapChainCreateOutput.framebuffer;
 	_deviceResources->depthStencilImages = swapChainCreateOutput.depthStencilImages;
 
+	_swapchainLength = _deviceResources->swapchain->getSwapchainLength();
+
+	_deviceResources->imageAcquiredSemaphores.resize(_swapchainLength);
+	_deviceResources->presentationSemaphores.resize(_swapchainLength);
+	_deviceResources->perFrameResourcesFences.resize(_swapchainLength);
+	_deviceResources->commandPool.resize(_swapchainLength);
+	_deviceResources->cmdBuffers.resize(_swapchainLength);
+
 	_currentFrame = 0.;
 	_queueIndex = 0;
 
+	_astcSupported = pvr::utils::isSupportedFormat(_deviceResources->device->getPhysicalDevice(), pvrvk::Format::e_ASTC_4x4_UNORM_BLOCK);
+
 	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(pvrvk::DescriptorPoolCreateInfo()
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 64)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_STORAGE_IMAGE, 16)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 128)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 128)
-																						  .setMaxDescriptorSets(256));
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 32 * _swapchainLength)
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_STORAGE_IMAGE, 32 * _swapchainLength)
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 32 * _swapchainLength)
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 32 * _swapchainLength)
+																						  .setMaxDescriptorSets(32 * _swapchainLength));
 
 	// create the commandbuffers, semaphores & the fence
 	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
@@ -1763,9 +1780,11 @@ void VulkanShadows::createResources()
 		const pvr::assets::Model::Material& material = _scene->getMaterial(i);
 
 		// Load the diffuse texture map
-		const char* fileName = _scene->getTexture(material.defaultSemantics().getDiffuseTextureIndex()).getName().c_str();
+		std::string fileName = _scene->getTexture(material.defaultSemantics().getDiffuseTextureIndex()).getName().c_str();
+		pvr::assets::helper::getTextureNameWithExtension(fileName, _astcSupported);
 
-		_deviceResources->materials[i].diffuseImageView = pvr::utils::loadAndUploadImageAndView(_deviceResources->device, fileName, true, _deviceResources->cmdBuffers[0], *this,
+		_deviceResources->materials[i].diffuseImageView = pvr::utils::loadAndUploadImageAndView(_deviceResources->device, fileName.c_str(), true, _deviceResources->cmdBuffers[0],
+			*this,
 			pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, nullptr, _deviceResources->vmaAllocator, _deviceResources->vmaAllocator);
 
 		writeDescSets.push_back(pvrvk::WriteDescriptorSet());

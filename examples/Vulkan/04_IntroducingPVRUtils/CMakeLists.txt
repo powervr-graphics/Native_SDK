@@ -35,8 +35,11 @@ add_assets_to_target(VulkanIntroducingPVRUtils
 	FILE_LIST 
 		GnomeToy.pod
 		GnomeWood.pvr
+		GnomeWood_astc.pvr
 		DarkWood.pvr
-		ClearWood.pvr)
+		DarkWood_astc.pvr
+		ClearWood.pvr
+		ClearWood_astc.pvr)
 
 ### Shaders that need to be compiled to SpirV (Vulkan) ###
 # During build time, glslangvalidator will be called to create a "<shadername.extension>.spv" file

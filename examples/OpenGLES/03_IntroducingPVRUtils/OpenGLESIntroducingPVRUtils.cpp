@@ -84,6 +84,9 @@ class OpenGLESIntroducingPVRUtils : public pvr::Shell
 
 	int32_t _uniformLocations[Uniforms::Count];
 
+	/// <summary>Flag to know whether astc iss upported by the physical device.</summary>
+	bool _astcSupported;
+
 public:
 	virtual pvr::Result initApplication();
 	virtual pvr::Result initView();
@@ -190,6 +193,8 @@ pvr::Result OpenGLESIntroducingPVRUtils::initView()
 
 	for (auto it = _deviceResources->textures.begin(), end = _deviceResources->textures.end(); it != end; ++it) { *it = 0; }
 
+	_astcSupported = gl::isGlExtensionSupported("GL_KHR_texture_compression_astc_ldr");
+
 	while (i < _scene->getNumMaterials() && _scene->getMaterial(i).defaultSemantics().getDiffuseTextureIndex() != static_cast<uint32_t>(-1))
 	{
 		// create the texture object
@@ -197,9 +202,11 @@ pvr::Result OpenGLESIntroducingPVRUtils::initView()
 
 		const pvr::assets::Model::Material& material = _scene->getMaterial(i);
 
+		std::string textureName = _scene->getTexture(material.defaultSemantics().getDiffuseTextureIndex()).getName();
+		pvr::assets::helper::getTextureNameWithExtension(textureName, _astcSupported);
+
 		// Load the diffuse texture map
-		texture = pvr::utils::textureUpload(
-			*this, _scene->getTexture(material.defaultSemantics().getDiffuseTextureIndex()).getName().c_str(), _deviceResources->context->getApiVersion() == pvr::Api::OpenGLES2);
+		texture = pvr::utils::textureUpload(*this, textureName.c_str(), _deviceResources->context->getApiVersion() == pvr::Api::OpenGLES2);
 		gl::BindTexture(GL_TEXTURE_2D, texture);
 		gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 		gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);

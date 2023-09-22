@@ -43,15 +43,33 @@ add_platform_specific_executable(VulkanHybridSoftShadows ${SRC_FILES})
 add_assets_to_target(VulkanHybridSoftShadows
 	SOURCE_GROUP "assets" 
 	ASSET_FOLDER ${ASSET_FOLDER} 
-	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/RayTracing
+	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/HybridSoftShadows
 	FILE_LIST 
 		SoftShadows.POD
 		Bricks.pvr
+		Bricks_astc.pvr
 		Carpet.pvr
-		marble.pvr
+		Carpet_astc.pvr
+		Shadow.pvr
+		Shadow_astc.pvr)
+
+add_assets_to_target(VulkanHybridSoftShadows
+	SOURCE_GROUP "assets" 
+	ASSET_FOLDER ${ASSET_FOLDER} 
+	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/RayTracingReflections
+	FILE_LIST 
 		Orange.pvr
+		Orange_astc.pvr
 		RustGreen.pvr
-		Shadow.pvr)
+		RustGreen_astc.pvr)
+
+add_assets_to_target(VulkanHybridSoftShadows
+	SOURCE_GROUP "assets" 
+	ASSET_FOLDER ${ASSET_FOLDER} 
+	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/Satyr
+	FILE_LIST 
+		Marble.pvr
+		Marble_astc.pvr)
 
 ### Shaders that need to be compiled to SpirV (Vulkan) ###
 # During build time, glslangvalidator will be called to create a "<shadername.extension>.spv" file

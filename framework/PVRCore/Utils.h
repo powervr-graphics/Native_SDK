@@ -55,11 +55,11 @@ Toutput_ reinterpretBits(const Tinput_& value)
 	return ret;
 }
 
+/// @cond Doxygen_skip
 /// <summary>Store the bits of a value in a static array of char.</summary>
 /// <param name="value">The value to reinterpret</param>
 /// <typeparam name="T1_">Input value type. Should not need to be explicitly defined, can be inferred.</typeparam>
-/// <returns>A StaticArray<T1_> with a size exactly equal to the size of T1_ in characters, containing the bit
-/// representation of value.</returns>
+/// <returns>A StaticArray of type T1_ with a size exactly equal to the size of T1_ in characters, containing the bit representation of value.</returns>
 template<typename T1_>
 std::array<T1_, sizeof(T1_)> readBits(const T1_& value)
 {
@@ -67,6 +67,7 @@ std::array<T1_, sizeof(T1_)> readBits(const T1_& value)
 	memcpy(&retval[0], &value, sizeof(T1_));
 	return retval;
 }
+/// @endcond
 
 /// <summary>Typed memset. Sets each byte of the destination object to a source value.</summary>
 /// <typeparam name="T">Type of target object.</typeparam>

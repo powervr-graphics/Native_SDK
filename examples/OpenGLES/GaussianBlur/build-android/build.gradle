@@ -89,7 +89,7 @@ android {
 	"${project.projectDir}/../FragShader_ES3.fsh",
 	"${project.projectDir}/../VertShader_ES3.vsh",
 	"${project.projectDir}/../CompShader_ES3.csh",
-	"${project.projectDir}/../../../assets/Lenna.pvr",
+	"${project.projectDir}/../../../assets/Postprocessing/Lenna.pvr",
 	)
 	
 	// Add a task for copying our assets from their original location (${project.projectDir}...) to the assets/ folder for packaging

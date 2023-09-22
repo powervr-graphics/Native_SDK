@@ -5,6 +5,7 @@
 \copyright Copyright (c) Imagination Technologies Limited.
 */
 //!\cond NO_DOXYGEN
+#if !SC_ENABLED
 #include "PVRCore/stream/Stream.h"
 #include "PVRCore/strings/StringFunctions.h"
 #include "PVRUtils/OpenGLES/ShaderUtilsGles.h"
@@ -203,4 +204,5 @@ GLuint createShaderProgram(const GLuint pShaders[], uint32_t count, const char**
 }
 } // namespace utils
 } // namespace pvr
+#endif
 //!\endcond

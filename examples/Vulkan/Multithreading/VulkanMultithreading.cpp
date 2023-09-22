@@ -78,15 +78,14 @@ struct DeviceResources
 	pvrvk::DescriptorPool descriptorPool;
 	pvrvk::CommandPool commandPool;
 
-	pvr::Multi<pvrvk::CommandBuffer> cmdBuffers; // per swapchain
-	pvr::Multi<pvrvk::CommandBuffer> loadingTextCmdBuffer; // per swapchain
+	std::vector<pvrvk::CommandBuffer> cmdBuffers; // per swapchain
+	std::vector<pvrvk::CommandBuffer> loadingTextCmdBuffer; // per swapchain
 
-	pvr::Multi<pvrvk::Framebuffer> onScreenFramebuffer;
-	pvr::Multi<pvrvk::ImageView> depthStencilImages;
+	std::vector<pvrvk::Framebuffer> onScreenFramebuffer;
 
-	pvrvk::Semaphore imageAcquiredSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
-	pvrvk::Semaphore presentationSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
-	pvrvk::Fence perFrameResourcesFences[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	std::vector<pvrvk::Semaphore> imageAcquiredSemaphores;
+	std::vector<pvrvk::Semaphore> presentationSemaphores;
+	std::vector<pvrvk::Fence> perFrameResourcesFences;
 
 	pvrvk::GraphicsPipeline pipe;
 
@@ -101,7 +100,7 @@ struct DeviceResources
 
 	// UIRenderer used to display text
 	pvr::ui::UIRenderer uiRenderer;
-	pvr::Multi<pvr::ui::Text> loadingText;
+	std::vector<pvr::ui::Text> loadingText;
 	pvr::utils::StructuredBufferView structuredMemoryView;
 	pvrvk::Buffer ubo;
 	pvrvk::DescriptorSet uboDescSet[4];
@@ -158,6 +157,8 @@ class VulkanMultithreading : public pvr::Shell
 	uint32_t _frameId;
 	std::unique_ptr<DeviceResources> _deviceResources;
 
+	uint32_t _swapchainLength;
+
 public:
 	VulkanMultithreading() : _loadingDone(false) {}
 	virtual pvr::Result initApplication();
@@ -209,14 +210,13 @@ void VulkanMultithreading::createImageSamplerDescriptorSets()
 
 void VulkanMultithreading::createUbo()
 {
-	const uint32_t swapchainLength = _deviceResources->swapchain->getSwapchainLength();
-	pvrvk::WriteDescriptorSet descUpdate[pvrvk::FrameworkCaps::MaxSwapChains];
+	std::vector<pvrvk::WriteDescriptorSet> descUpdate{ _swapchainLength };
 	{
 		pvr::utils::StructuredMemoryDescription desc;
 		desc.addElement("MVPMatrix", pvr::GpuDatatypes::mat4x4);
 		desc.addElement("LightDirModel", pvr::GpuDatatypes::vec3);
 
-		_deviceResources->structuredMemoryView.initDynamic(desc, swapchainLength, pvr::BufferUsageFlags::UniformBuffer,
+		_deviceResources->structuredMemoryView.initDynamic(desc, _swapchainLength, pvr::BufferUsageFlags::UniformBuffer,
 			static_cast<uint32_t>(_deviceResources->device->getPhysicalDevice()->getProperties().getLimits().getMinUniformBufferOffsetAlignment()));
 		_deviceResources->ubo = pvr::utils::createBuffer(_deviceResources->device,
 			pvrvk::BufferCreateInfo(_deviceResources->structuredMemoryView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
@@ -226,7 +226,7 @@ void VulkanMultithreading::createUbo()
 		_deviceResources->structuredMemoryView.pointToMappedMemory(_deviceResources->ubo->getDeviceMemory()->getMappedData());
 	}
 
-	for (uint32_t i = 0; i < swapchainLength; ++i)
+	for (uint32_t i = 0; i < _swapchainLength; ++i)
 	{
 		_deviceResources->uboDescSet[i] = _deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->uboLayoutDynamic);
 		descUpdate[i]
@@ -236,7 +236,7 @@ void VulkanMultithreading::createUbo()
 					_deviceResources->ubo, _deviceResources->structuredMemoryView.getDynamicSliceOffset(i), _deviceResources->structuredMemoryView.getDynamicSliceSize()));
 	}
 
-	_deviceResources->device->updateDescriptorSets(descUpdate, swapchainLength, nullptr, 0);
+	_deviceResources->device->updateDescriptorSets(static_cast<const pvrvk::WriteDescriptorSet*>(descUpdate.data()), _swapchainLength, nullptr, 0);
 }
 
 /// <summary>Loads and compiles the shaders and create a pipeline.</summary>
@@ -387,20 +387,14 @@ pvr::Result VulkanMultithreading::initView()
 	// Create the command pool & Descriptor pool
 	_deviceResources->commandPool = _deviceResources->device->createCommandPool(pvrvk::CommandPoolCreateInfo(_deviceResources->queue->getFamilyIndex()));
 
-	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(pvrvk::DescriptorPoolCreateInfo()
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 16)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 16)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 16)
-																						  .setMaxDescriptorSets(16));
-
 	// create a new command pool for image uploading and upload the images in separate thread
 	_deviceResources->uploader.init(_deviceResources->device, _deviceResources->queue, &_hostMutex);
+	
+	bool isASTCSupported = pvr::utils::isSupportedFormat(_deviceResources->device->getPhysicalDevice(), pvrvk::Format::e_ASTC_4x4_UNORM_BLOCK);
 
-	_deviceResources->asyncUpdateInfo.diffuseTex = _deviceResources->uploader.uploadTextureAsync(
-		_deviceResources->loader.loadTextureAsync("Marble.pvr", this, pvr::TextureFileFormat::PVR), true, &DiffuseTextureDoneCallback, true);
+	_deviceResources->asyncUpdateInfo.diffuseTex = _deviceResources->uploader.uploadTextureAsync(_deviceResources->loader.loadTextureAsync(std::string("Marble") + (isASTCSupported ? "_astc.pvr" : ".pvr"), this, pvr::TextureFileFormat::PVR), true, &DiffuseTextureDoneCallback, true);
 
-	_deviceResources->asyncUpdateInfo.bumpTex = _deviceResources->uploader.uploadTextureAsync(
-		_deviceResources->loader.loadTextureAsync("MarbleNormalMap.pvr", this, pvr::TextureFileFormat::PVR), true, &NormalTextureDoneCallback, true);
+	_deviceResources->asyncUpdateInfo.bumpTex = _deviceResources->uploader.uploadTextureAsync(_deviceResources->loader.loadTextureAsync(std::string("MarbleNormalMap") + (isASTCSupported ? "_astc.pvr" : ".pvr"), this, pvr::TextureFileFormat::PVR), true, &NormalTextureDoneCallback, true);
 
 	pvrvk::SurfaceCapabilitiesKHR surfaceCapabilities = _deviceResources->instance->getPhysicalDevice(0)->getSurfaceCapabilities(surface);
 
@@ -416,6 +410,21 @@ pvr::Result VulkanMultithreading::initView()
 	_deviceResources->swapchain = swapChainCreateOutput.swapchain;
 	_deviceResources->onScreenFramebuffer = swapChainCreateOutput.framebuffer;
 
+	_swapchainLength = _deviceResources->swapchain->getSwapchainLength();
+
+	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(pvrvk::DescriptorPoolCreateInfo()
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 8 * _swapchainLength)
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 8 * _swapchainLength)
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 8 * _swapchainLength)
+																						  .setMaxDescriptorSets(8 * _swapchainLength));
+
+	_deviceResources->cmdBuffers.resize(_swapchainLength);
+	_deviceResources->loadingTextCmdBuffer.resize(_swapchainLength);
+	_deviceResources->imageAcquiredSemaphores.resize(_swapchainLength);
+	_deviceResources->presentationSemaphores.resize(_swapchainLength);
+	_deviceResources->perFrameResourcesFences.resize(_swapchainLength);
+	_deviceResources->loadingText.resize(_swapchainLength);
+
 	// Create the pipeline cache
 	_deviceResources->pipelineCache = _deviceResources->device->createPipelineCache();
 
@@ -423,7 +432,7 @@ pvr::Result VulkanMultithreading::initView()
 	loadPipeline();
 	createUbo();
 
-	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
+	for (uint32_t i = 0; i < _swapchainLength; ++i)
 	{
 		_deviceResources->presentationSemaphores[i] = _deviceResources->device->createSemaphore();
 		_deviceResources->imageAcquiredSemaphores[i] = _deviceResources->device->createSemaphore();
@@ -585,7 +594,7 @@ pvr::Result VulkanMultithreading::renderFrame()
 	present.numWaitSemaphores = 1;
 	_deviceResources->queue->present(present);
 
-	_frameId = (_frameId + 1) % _deviceResources->swapchain->getSwapchainLength();
+	_frameId = (_frameId + 1) % _swapchainLength;
 
 	return pvr::Result::Success;
 }
@@ -644,7 +653,7 @@ void VulkanMultithreading::drawMesh(pvrvk::CommandBuffer& cmdBuffers, int nodeIn
 void VulkanMultithreading::recordMainCommandBuffer()
 {
 	const pvrvk::ClearValue clearValues[] = { pvrvk::ClearValue(0.0f, 0.40f, .39f, 1.f), pvrvk::ClearValue(1.f, 0u) };
-	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
+	for (uint32_t i = 0; i < _swapchainLength; ++i)
 	{
 		pvrvk::CommandBuffer& cmdBuffers = _deviceResources->cmdBuffers[i];
 		cmdBuffers->begin();
@@ -670,7 +679,7 @@ void VulkanMultithreading::recordLoadingCommandBuffer()
 {
 	const pvrvk::ClearValue clearColor[2] = { pvrvk::ClearValue(0.0f, 0.40f, .39f, 1.f), pvrvk::ClearValue(1.f, 0u) };
 
-	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
+	for (uint32_t i = 0; i < _swapchainLength; ++i)
 	{
 		pvrvk::CommandBuffer& cmdBuffers = _deviceResources->loadingTextCmdBuffer[i];
 		cmdBuffers->begin();

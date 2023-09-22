@@ -30,10 +30,6 @@ enum
 	InitialNoParticles = 32768,
 	MaxNoParticles = 32768 * 15,
 	NumberOfSpheres = 8,
-	NumDescriptorSets = 25,
-	NumDynamicUniformBuffers = 25,
-	NumUniformBuffers = 25,
-	NumStorageBuffers = 25
 };
 
 const float CameraNear = .1f;
@@ -108,7 +104,7 @@ struct PassSphere
 	pvr::utils::StructuredBufferView uboLightPropBufferView;
 	pvrvk::Buffer uboLightProp;
 	pvrvk::DescriptorSet descriptorUboPerModel;
-	pvr::Multi<pvrvk::DescriptorSet> descriptorLighProp;
+	std::vector<pvrvk::DescriptorSet> descriptorLighProp;
 	pvrvk::GraphicsPipeline pipeline;
 	pvrvk::Buffer vbo;
 	pvrvk::Buffer ibo;
@@ -118,7 +114,7 @@ struct PassParticles
 {
 	pvr::utils::StructuredBufferView uboMvpBufferView;
 	pvrvk::Buffer uboMvp;
-	pvr::Multi<pvrvk::DescriptorSet> descriptorMvp;
+	std::vector<pvrvk::DescriptorSet> descriptorMvp;
 	pvrvk::GraphicsPipeline pipeline;
 };
 
@@ -126,7 +122,7 @@ struct PassFloor
 {
 	pvr::utils::StructuredBufferView uboPerModelBufferView;
 	pvrvk::Buffer uboPerModel;
-	pvr::Multi<pvrvk::DescriptorSet> descriptorUbo;
+	std::vector<pvrvk::DescriptorSet> descriptorUbo;
 	pvrvk::GraphicsPipeline pipeline;
 	pvrvk::Buffer vbo;
 };
@@ -150,13 +146,12 @@ private:
 
 		pvr::utils::vma::Allocator vmaAllocator;
 
-		pvr::Multi<pvrvk::CommandBuffer> graphicsCommandBuffers;
-		pvr::Multi<pvrvk::SecondaryCommandBuffer> renderSpheresCommandBuffers;
-		pvr::Multi<pvrvk::SecondaryCommandBuffer> renderFloorCommandBuffers;
-		pvr::Multi<pvrvk::SecondaryCommandBuffer> renderParticlesCommandBuffers;
-		pvr::Multi<pvrvk::SecondaryCommandBuffer> uiRendererCommandBuffers;
-		pvr::Multi<pvrvk::ImageView> depthStencilImages;
-		pvr::Multi<pvrvk::Framebuffer> onScreenFramebuffer;
+		std::vector<pvrvk::CommandBuffer> graphicsCommandBuffers;
+		std::vector<pvrvk::SecondaryCommandBuffer> renderSpheresCommandBuffers;
+		std::vector<pvrvk::SecondaryCommandBuffer> renderFloorCommandBuffers;
+		std::vector<pvrvk::SecondaryCommandBuffer> renderParticlesCommandBuffers;
+		std::vector<pvrvk::SecondaryCommandBuffer> uiRendererCommandBuffers;
+		std::vector<pvrvk::Framebuffer> onScreenFramebuffer;
 
 		PassSphere passSphere;
 		PassParticles passParticles;
@@ -166,11 +161,11 @@ private:
 
 		pvrvk::PipelineCache pipelineCache;
 
-		pvr::Multi<pvrvk::Semaphore> imageAcquiredSemaphores;
-		pvr::Multi<pvrvk::Semaphore> presentationSemaphores;
+		std::vector<pvrvk::Semaphore> imageAcquiredSemaphores;
+		std::vector<pvrvk::Semaphore> presentationSemaphores;
 		std::vector<pvrvk::Semaphore> particleSystemSemaphores;
 
-		pvr::Multi<pvrvk::Fence> perFrameResourcesFences;
+		std::vector<pvrvk::Fence> perFrameResourcesFences;
 
 		// UIRenderer used to display text
 		pvr::ui::UIRenderer uiRenderer;
@@ -201,6 +196,7 @@ private:
 	glm::vec3 _lightPos;
 	uint32_t _frameId;
 	float _angle;
+	uint32_t _swapchainLength;
 
 public:
 	VulkanParticleSystem() : _isCameraPaused(0), _angle(0.f) {}
@@ -433,8 +429,8 @@ void VulkanParticleSystem::createDescriptors()
 	}
 
 	{
-		_deviceResources->passSphere.uboPerModelBufferView.initDynamic(Configuration::SpherePipeUboMapping,
-			Configuration::NumberOfSpheres * _deviceResources->swapchain->getSwapchainLength(), pvr::BufferUsageFlags::UniformBuffer,
+		_deviceResources->passSphere.uboPerModelBufferView.initDynamic(Configuration::SpherePipeUboMapping, Configuration::NumberOfSpheres * _swapchainLength,
+			pvr::BufferUsageFlags::UniformBuffer,
 			static_cast<uint32_t>(_deviceResources->device->getPhysicalDevice()->getProperties().getLimits().getMinUniformBufferOffsetAlignment()));
 		_deviceResources->passSphere.uboPerModel = pvr::utils::createBuffer(_deviceResources->device,
 			pvrvk::BufferCreateInfo(_deviceResources->passSphere.uboPerModelBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT),
@@ -446,7 +442,7 @@ void VulkanParticleSystem::createDescriptors()
 	}
 
 	{
-		_deviceResources->passFloor.uboPerModelBufferView.initDynamic(Configuration::FloorPipeUboMapping, _deviceResources->swapchain->getSwapchainLength(),
+		_deviceResources->passFloor.uboPerModelBufferView.initDynamic(Configuration::FloorPipeUboMapping, _swapchainLength,
 			pvr::BufferUsageFlags::UniformBuffer,
 			static_cast<uint32_t>(_deviceResources->device->getPhysicalDevice()->getProperties().getLimits().getMinUniformBufferOffsetAlignment()));
 		_deviceResources->passFloor.uboPerModel = pvr::utils::createBuffer(_deviceResources->device,
@@ -462,7 +458,7 @@ void VulkanParticleSystem::createDescriptors()
 		pvr::utils::StructuredMemoryDescription desc;
 		desc.addElement("uLightPosition", pvr::GpuDatatypes::vec3);
 
-		_deviceResources->passSphere.uboLightPropBufferView.initDynamic(desc, _deviceResources->swapchain->getSwapchainLength(), pvr::BufferUsageFlags::UniformBuffer,
+		_deviceResources->passSphere.uboLightPropBufferView.initDynamic(desc, _swapchainLength, pvr::BufferUsageFlags::UniformBuffer,
 			static_cast<uint32_t>(_deviceResources->device->getPhysicalDevice()->getProperties().getLimits().getMinUniformBufferOffsetAlignment()));
 		_deviceResources->passSphere.uboLightProp = pvr::utils::createBuffer(_deviceResources->device,
 			pvrvk::BufferCreateInfo(_deviceResources->passSphere.uboLightPropBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT),
@@ -477,7 +473,7 @@ void VulkanParticleSystem::createDescriptors()
 		pvr::utils::StructuredMemoryDescription desc;
 		desc.addElement("uModelViewProjectionMatrix", pvr::GpuDatatypes::mat4x4);
 
-		_deviceResources->passParticles.uboMvpBufferView.initDynamic(desc, _deviceResources->swapchain->getSwapchainLength(), pvr::BufferUsageFlags::UniformBuffer,
+		_deviceResources->passParticles.uboMvpBufferView.initDynamic(desc, _swapchainLength, pvr::BufferUsageFlags::UniformBuffer,
 			static_cast<uint32_t>(_deviceResources->device->getPhysicalDevice()->getProperties().getLimits().getMinUniformBufferOffsetAlignment()));
 		_deviceResources->passParticles.uboMvp = pvr::utils::createBuffer(_deviceResources->device,
 			pvrvk::BufferCreateInfo(_deviceResources->passParticles.uboMvpBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT),
@@ -489,7 +485,6 @@ void VulkanParticleSystem::createDescriptors()
 	}
 
 	std::vector<pvrvk::WriteDescriptorSet> descSetWrites;
-	const uint32_t swapchainLength = _deviceResources->swapchain->getSwapchainLength();
 
 	// create the ubo dynamic descriptor set
 	_deviceResources->passSphere.descriptorUboPerModel = _deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->descLayoutUboPerModel);
@@ -498,7 +493,11 @@ void VulkanParticleSystem::createDescriptors()
 		pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, _deviceResources->passSphere.descriptorUboPerModel, 0)
 			.setBufferInfo(0, pvrvk::DescriptorBufferInfo(_deviceResources->passSphere.uboPerModel, 0, _deviceResources->passSphere.uboPerModelBufferView.getDynamicSliceSize())));
 
-	for (uint32_t i = 0; i < swapchainLength; ++i)
+	_deviceResources->passSphere.descriptorLighProp.resize(_swapchainLength);
+	_deviceResources->passParticles.descriptorMvp.resize(_swapchainLength);
+	_deviceResources->passFloor.descriptorUbo.resize(_swapchainLength);
+
+	for (uint32_t i = 0; i < _swapchainLength; ++i)
 	{
 		// sphere descriptors
 		{
@@ -578,15 +577,7 @@ pvr::Result VulkanParticleSystem::initView()
 
 	// Create the command pool
 	_deviceResources->commandPool = _deviceResources->device->createCommandPool(
-		pvrvk::CommandPoolCreateInfo(_deviceResources->graphicsQueue->getFamilyIndex(), pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT));
-
-	// Create the descriptor pool
-	pvrvk::DescriptorPoolCreateInfo poolInfo;
-	poolInfo.addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, Configuration::NumDynamicUniformBuffers)
-		.addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, Configuration::NumUniformBuffers)
-		.addDescriptorInfo(pvrvk::DescriptorType::e_STORAGE_BUFFER, Configuration::NumStorageBuffers)
-		.setMaxDescriptorSets(Configuration::NumDescriptorSets);
-	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(poolInfo);
+		pvrvk::CommandPoolCreateInfo(_deviceResources->graphicsQueue->getFamilyIndex(), pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT));	
 
 	pvrvk::SurfaceCapabilitiesKHR surfaceCapabilities = _deviceResources->instance->getPhysicalDevice(0)->getSurfaceCapabilities(surface);
 
@@ -604,9 +595,30 @@ pvr::Result VulkanParticleSystem::initView()
 	_deviceResources->swapchain = swapChainCreateOutput.swapchain;
 	_deviceResources->onScreenFramebuffer = swapChainCreateOutput.framebuffer;
 
+	_swapchainLength = _deviceResources->swapchain->getSwapchainLength();
+
+	_deviceResources->graphicsCommandBuffers.resize(_swapchainLength);
+	_deviceResources->renderSpheresCommandBuffers.resize(_swapchainLength);
+	_deviceResources->renderFloorCommandBuffers.resize(_swapchainLength);
+	_deviceResources->renderParticlesCommandBuffers.resize(_swapchainLength);
+	_deviceResources->uiRendererCommandBuffers.resize(_swapchainLength);
+	_deviceResources->onScreenFramebuffer.resize(_swapchainLength);
+	_deviceResources->imageAcquiredSemaphores.resize(_swapchainLength);
+	_deviceResources->presentationSemaphores.resize(_swapchainLength);
+	_deviceResources->particleSystemSemaphores.resize(_swapchainLength);
+	_deviceResources->perFrameResourcesFences.resize(_swapchainLength);
+
+	// Create the descriptor pool
+	pvrvk::DescriptorPoolCreateInfo poolInfo;
+	poolInfo.addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 8 * _swapchainLength)
+		.addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 8 * _swapchainLength)
+		.addDescriptorInfo(pvrvk::DescriptorType::e_STORAGE_BUFFER, 8 * _swapchainLength)
+		.setMaxDescriptorSets(8 * _swapchainLength);
+
+	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(poolInfo);
+
 	// Create the per swapchain command buffers, semaphores and fences.
-	_deviceResources->particleSystemSemaphores.reserve(_deviceResources->swapchain->getSwapchainLength());
-	for (uint8_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
+	for (uint8_t i = 0; i < _swapchainLength; ++i)
 	{
 		_deviceResources->graphicsCommandBuffers[i] = _deviceResources->commandPool->allocateCommandBuffer();
 		_deviceResources->renderSpheresCommandBuffers[i] = _deviceResources->commandPool->allocateSecondaryCommandBuffer();
@@ -615,7 +627,7 @@ pvr::Result VulkanParticleSystem::initView()
 		_deviceResources->uiRendererCommandBuffers[i] = _deviceResources->commandPool->allocateSecondaryCommandBuffer();
 
 		_deviceResources->presentationSemaphores[i] = _deviceResources->device->createSemaphore();
-		_deviceResources->particleSystemSemaphores.emplace_back(_deviceResources->device->createSemaphore());
+		_deviceResources->particleSystemSemaphores[i] = _deviceResources->device->createSemaphore();
 		_deviceResources->imageAcquiredSemaphores[i] = _deviceResources->device->createSemaphore();
 		_deviceResources->perFrameResourcesFences[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
 	}
@@ -661,7 +673,7 @@ pvr::Result VulkanParticleSystem::initView()
 	_deviceResources->uiRenderer.getDefaultControls()->commitUpdates();
 
 	// Record commands rendering the UI, drawing the floor and the spheres
-	for (uint8_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
+	for (uint8_t i = 0; i < _swapchainLength; ++i)
 	{
 		recordUIRendererCommandBuffer(i);
 		recordDrawFloorCommandBuffer(i);
@@ -757,7 +769,7 @@ pvr::Result VulkanParticleSystem::renderFrame()
 	presentInfo.imageIndices = &swapchainIndex;
 	_deviceResources->graphicsQueue->present(presentInfo);
 
-	_frameId = (_frameId + 1) % _deviceResources->swapchain->getSwapchainLength();
+	_frameId = (_frameId + 1) % _swapchainLength;
 
 	return pvr::Result::Success;
 }

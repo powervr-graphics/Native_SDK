@@ -188,21 +188,23 @@ public:
 	/// <returns>The device address of the buffer given as parameter.</returns>
 	VkDeviceAddress getDeviceAddress(const Device device)
 	{
-		// Extension struct is just an alias for the core version, so the extension struct can be used for both functions
-		VkBufferDeviceAddressInfoEXT bufferDeviceAddressInfo =
-			VkBufferDeviceAddressInfoKHR({ static_cast<VkStructureType>(StructureType::e_BUFFER_DEVICE_ADDRESS_INFO_KHR), nullptr, getVkHandle() });
+		VkBufferDeviceAddressInfo bufferDeviceAddressInfo = { static_cast<VkStructureType>(StructureType::e_BUFFER_DEVICE_ADDRESS_INFO_KHR), nullptr, getVkHandle() };
 
 		// Depending on the instance version, use the extension version or the core version
-		if (device->getPhysicalDevice()->getInstance()->getCreateInfo().getApplicationInfo().getApiVersion() <= VK_MAKE_VERSION(1, 2, 0))
+		if (device->getPhysicalDevice()->getInstance()->getCreateInfo().getApplicationInfo().getApiVersion() >= VK_MAKE_VERSION(1, 2, 0))
 		{
-			// Attempt to use extension version
-			return device->getVkBindings().vkGetBufferDeviceAddressKHR(device->getVkHandle(), &bufferDeviceAddressInfo);
-		}
-		else
-		{
-			// Attempt to use the promoted to core version
 			return device->getVkBindings().vkGetBufferDeviceAddress(device->getVkHandle(), &bufferDeviceAddressInfo);
 		}
+		else if (device->getEnabledExtensionTable().khrBufferDeviceAddressEnabled)
+		{
+			return device->getVkBindings().vkGetBufferDeviceAddressKHR(device->getVkHandle(), &bufferDeviceAddressInfo);
+		}
+		else if (device->getEnabledExtensionTable().extBufferDeviceAddressEnabled)
+		{
+			return device->getVkBindings().vkGetBufferDeviceAddressEXT(device->getVkHandle(), &bufferDeviceAddressInfo);
+		}
+
+		assert(false && "Cannot retrieve device address");
 	}
 };
 } // namespace impl

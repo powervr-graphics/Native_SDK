@@ -693,7 +693,9 @@ inline void fixDynamicOffsets(RenderManager& renderman)
 #if defined(PVR_RENDERMANAGER_DEBUG_BUFFERS) || defined(PVR_RENDERMANAGER_DEBUG_RENDERING_COMMANDS)
 									Log(LogLevel::Information, "\t\t\t\t\t\t\tDynamic client id: %d", dynamicClientId);
 #endif
-									for (uint32_t swapId = 0; swapId < pvrvk::FrameworkCaps::MaxSwapChains; ++swapId)
+									uint32_t swapchainLength = renderman.getSwapchain()->getSwapchainLength();
+
+									for (uint32_t swapId = 0; swapId < swapchainLength; ++swapId)
 									{
 #if defined(PVR_RENDERMANAGER_DEBUG_BUFFERS) || defined(PVR_RENDERMANAGER_DEBUG_RENDERING_COMMANDS)
 										Log(LogLevel::Information, "\t\t\t\t\t\t\tswapId: %d", swapId);
@@ -852,7 +854,18 @@ inline void createDescriptorSets(
 									if ((texIndex = materialeffect.material->assetMaterial->getTextureIndex(tex.first)) != -1)
 									{
 										const StringHash& texturePath = modeleffect.renderModel_->assetModel->getTexture(texIndex).getName();
-										auto imgView = utils::loadAndUploadImageAndView(device, texturePath.c_str(), true, cmdBuffer, renderman.getAssetProvider(),
+
+										std::string texturePathString = texturePath.str();
+										
+										// If ASTC is supported, load the texture with same .pvr format but name extension "_astc"
+										if (renderman.getASTCSupported())
+										{
+											size_t period = texturePathString.rfind(".");
+											if (period != std::string::npos) { texturePathString = texturePathString.substr(0, period); }
+											texturePathString += "_astc.pvr";
+										}
+
+										auto imgView = utils::loadAndUploadImageAndView(device, texturePathString.c_str(), true, cmdBuffer, renderman.getAssetProvider(),
 											pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, nullptr, renderman.getAllocator(),
 											renderman.getAllocator());
 
@@ -1129,7 +1142,7 @@ inline void addBufferDefinitions(RendermanEffect& renderEffect, effectvk::Effect
 	}
 }
 
-void addNodeDynamicClientToBuffers(RendermanSubpassGroupModel&, RendermanNode& node, RendermanPipeline& pipeline)
+void addNodeDynamicClientToBuffers(RendermanSubpassGroupModel& subpassGroupModel, RendermanNode& node, RendermanPipeline& pipeline)
 {
 	// Model buffer references are sorted by pipeline. No worries there.
 	uint32_t current_buffer[FrameworkCaps::MaxDescriptorSetBindings] = { 0, 0, 0, 0 }; // Number of buffers bound for each descriptor set
@@ -1142,11 +1155,19 @@ void addNodeDynamicClientToBuffers(RendermanSubpassGroupModel&, RendermanNode& n
 		{ ++current_buffer[buffer.set]; }
 	}
 
+	const uint32_t swapchainLength = pipeline.backToRendermanEffect().backToRenderManager().getSwapchain()->getSwapchainLength();
+
+	node.dynamicOffset.resize(FrameworkCaps::MaxDescriptorSetBindings);
+	node.dynamicSliceId.resize(FrameworkCaps::MaxDescriptorSetBindings);
+
 	for (uint32_t set = 0; set < FrameworkCaps::MaxDescriptorSetBindings; ++set)
 	{
+		node.dynamicOffset[set].resize(swapchainLength);
+		node.dynamicSliceId[set].resize(swapchainLength);
+
 		node.dynamicClientId[set].resize(current_buffer[set]);
 		node.dynamicBuffer[set].resize(current_buffer[set]);
-		for (uint32_t i = 0; i < pvrvk::FrameworkCaps::MaxSwapChains; ++i)
+		for (uint32_t i = 0; i < swapchainLength; ++i)
 		{
 			node.dynamicOffset[set][i].resize(current_buffer[set]);
 			node.dynamicSliceId[set][i].resize(current_buffer[set]);
@@ -1848,7 +1869,9 @@ void RendermanSubpassGroupModel::recordRenderingCommands(CommandBufferBase cmdBu
 
 	bool bindSets[FrameworkCaps::MaxDescriptorSetBindings] = { true, true, true, true };
 
-	const uint32_t* dynamicOffsets[FrameworkCaps::MaxDescriptorSetBindings][pvrvk::FrameworkCaps::MaxSwapChains] = { { 0 } };
+	const uint32_t swapchainLength = backToModel().backToRenderManager().getSwapchain()->getSwapchainLength();
+
+	std::vector<std::vector<const uint32_t*>> dynamicOffsets(FrameworkCaps::MaxDescriptorSetBindings, std::vector<const uint32_t*>(swapchainLength, 0));
 
 	GraphicsPipeline prev_pipeline = nullptr;
 	uint32_t nodeId = 0;

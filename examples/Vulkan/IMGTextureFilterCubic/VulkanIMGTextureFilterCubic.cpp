@@ -24,18 +24,18 @@ struct DeviceResources
 	pvrvk::DescriptorPool descriptorPool;
 	pvrvk::Queue queue;
 	pvr::utils::vma::Allocator vmaAllocator;
-	pvrvk::Semaphore imageAcquiredSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
-	pvrvk::Semaphore presentationSemaphores[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
-	pvrvk::Fence perFrameResourcesFences[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	std::vector<pvrvk::Semaphore> imageAcquiredSemaphores;
+	std::vector<pvrvk::Semaphore> presentationSemaphores;
+	std::vector<pvrvk::Fence> perFrameResourcesFences;
 
 	// The Vertex buffer object handle array.
 	pvrvk::Buffer quadVbo;
 
 	// the framebuffer used in the demo
-	pvr::Multi<pvrvk::Framebuffer> onScreenFramebuffer;
+	std::vector<pvrvk::Framebuffer> onScreenFramebuffer;
 
 	// main command buffer used to store rendering commands
-	pvr::Multi<pvrvk::CommandBuffer> cmdBuffers;
+	std::vector<pvrvk::CommandBuffer> cmdBuffers;
 
 	// Command buffer used to upload data to the GPU
 	pvrvk::CommandBuffer uploadCmdBuffer;
@@ -90,6 +90,8 @@ class VulkanIMGTextureFilterCubic : public pvr::Shell
 	glm::mat4 _projection;
 	glm::mat4 _viewProjection;
 	glm::mat4 _modelViewProjection;
+
+	uint32_t _swapchainLength;
 
 public:
 	virtual pvr::Result initApplication();
@@ -181,14 +183,21 @@ pvr::Result VulkanIMGTextureFilterCubic::initView()
 	_deviceResources->swapchain = swapChainCreateOutput.swapchain;
 	_deviceResources->onScreenFramebuffer = swapChainCreateOutput.framebuffer;
 
+	_swapchainLength = _deviceResources->swapchain->getSwapchainLength();
+
+	_deviceResources->imageAcquiredSemaphores.resize(_swapchainLength);
+	_deviceResources->presentationSemaphores.resize(_swapchainLength);
+	_deviceResources->perFrameResourcesFences.resize(_swapchainLength);
+	_deviceResources->cmdBuffers.resize(_swapchainLength);
+
 	// Create the Command pool & Descriptor pool
 	_deviceResources->cmdPool = _deviceResources->device->createCommandPool(pvrvk::CommandPoolCreateInfo(queueAccessInfo.familyId));
 
 	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(
-		pvrvk::DescriptorPoolCreateInfo().addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 16).setMaxDescriptorSets(16));
+		pvrvk::DescriptorPoolCreateInfo().addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 5 * _swapchainLength).setMaxDescriptorSets(5 * _swapchainLength));
 
 	// Create per swapchain resource
-	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
+	for (uint32_t i = 0; i < _swapchainLength; ++i)
 	{
 		_deviceResources->presentationSemaphores[i] = _deviceResources->device->createSemaphore();
 		_deviceResources->imageAcquiredSemaphores[i] = _deviceResources->device->createSemaphore();
@@ -307,7 +316,7 @@ pvr::Result VulkanIMGTextureFilterCubic::renderFrame()
 	presentInfo.imageIndices = &swapchainIndex;
 	_deviceResources->queue->present(presentInfo);
 
-	_frameId = (_frameId + 1) % _deviceResources->swapchain->getSwapchainLength();
+	_frameId = (_frameId + 1) % _swapchainLength;
 
 	return pvr::Result::Success;
 }
@@ -477,7 +486,7 @@ void VulkanIMGTextureFilterCubic::createTextures()
 void VulkanIMGTextureFilterCubic::recordCommandBuffers()
 {
 	pvrvk::ClearValue clearValue = pvrvk::ClearValue(_clearColor.x, _clearColor.y, _clearColor.z, 1.0f);
-	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
+	for (uint32_t i = 0; i < _swapchainLength; ++i)
 	{
 		// begin recording commands
 		_deviceResources->cmdBuffers[i]->begin();
