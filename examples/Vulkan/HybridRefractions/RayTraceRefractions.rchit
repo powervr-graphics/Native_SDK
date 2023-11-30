@@ -9,12 +9,11 @@
 #define SHADOW_MISS_INDEX 1
 #define RAY_RANGE_MIN 0.001
 #define RAY_RANGE_MAX 10000.0
-#define MAX_RAY_RECURSION 4
 
 struct ReflectionRayPayload
 {
 	vec3 Li; // Incident radiance
-	uint depth;
+	uint recursionDepth;
 	bool inside;
 	float indexOfRefraction;
 };
@@ -45,7 +44,7 @@ struct sceneDesc
 struct LightData
 {
 	highp vec4 lightColor;
-	highp vec4 lightPosition;
+	highp vec4 lightPositionMaxRayRecursion;
 	highp vec4 ambientColorIntensity;
 };
 
@@ -72,7 +71,6 @@ struct RayHit
 	bool isDiffuseMaterial;
 	float indexOfRefraction;
 	float attenuationCoefficient;
-	int currentDepth;
 };
 
 RayHit rayHit;
@@ -104,8 +102,6 @@ void getRayHitInfo()
 	rayHit.hitWorldPos = vec3(scnDesc.i[gl_InstanceID].transform * vec4(rayHit.hitWorldPos, 1.0));
 
 	rayHit.wi = normalize(-1.0 * gl_WorldRayDirectionEXT);
-
-	rayHit.currentDepth = int(reflectionRayPayload.depth);
 
 	// Retrieve material properties (reflectance, index of refraction, attenuation coefficient)
 	int matID           = matIndex[nonuniformEXT(gl_InstanceID)].i[gl_PrimitiveID];
@@ -163,9 +159,10 @@ float fresnel(vec3 wi, vec3 normal, float ior)
 void traceRay(vec3 rayOrigin, vec3 rayDirection, bool inside, float indexOfRefraction)
 {
 	reflectionRayPayload.Li                = vec3(0.0);
-	reflectionRayPayload.depth             = rayHit.currentDepth + 1;
 	reflectionRayPayload.inside            = inside;
 	reflectionRayPayload.indexOfRefraction = indexOfRefraction;
+
+	reflectionRayPayload.recursionDepth++;
 
 	traceRayEXT(topLevelAS,     // acceleration structure
 		gl_RayFlagsOpaqueEXT,   // rayFlags
@@ -206,6 +203,8 @@ bool traceShadowRay(vec3 rayStart, vec3 rayEnd)
 	visiblityRayPayload = false;
 	vec3 rayDirection   = rayEnd - rayStart;
 
+	reflectionRayPayload.recursionDepth++;
+
 	traceRayEXT(topLevelAS,                                       // acceleration structure
 		gl_RayFlagsOpaqueEXT | gl_RayFlagsTerminateOnFirstHitEXT, // rayFlags
 		0xFF,                                                     // cullMask
@@ -224,8 +223,8 @@ bool traceShadowRay(vec3 rayStart, vec3 rayEnd)
 
 vec3 evaluateDiffuseMaterial()
 {
-	bool visibility            = traceShadowRay(rayHit.hitWorldPos, lightData.lightPosition.xyz);
-	vec3 originToLightPosition = lightData.lightPosition.xyz - rayHit.hitWorldPos;
+	bool visibility            = traceShadowRay(rayHit.hitWorldPos, lightData.lightPositionMaxRayRecursion.xyz);
+	vec3 originToLightPosition = lightData.lightPositionMaxRayRecursion.xyz - rayHit.hitWorldPos;
 	float distSquared          = dot(originToLightPosition, originToLightPosition);
 	originToLightPosition      = normalize(originToLightPosition);
 	float thetaLight           = clamp(0.0, 1.0, dot(rayHit.hitWorldNormal, originToLightPosition));
@@ -240,13 +239,16 @@ void main()
 {
 	getRayHitInfo();
 
+	int maxRayRecursion = int(lightData.lightPositionMaxRayRecursion.w);
+
 	if(rayHit.isDiffuseMaterial)
 	{
-		reflectionRayPayload.Li = evaluateDiffuseMaterial();
+		// Evaluating the material involves casting another ray, which can go beyond the limit given by the physical device
+		reflectionRayPayload.Li = (reflectionRayPayload.recursionDepth < maxRayRecursion) ? evaluateDiffuseMaterial() : vec3(0.0, 0.0, 0.0);
 		return;
 	}
 
-	if (reflectionRayPayload.depth > MAX_RAY_RECURSION)
+	if (reflectionRayPayload.recursionDepth >= maxRayRecursion)
 	{
 		reflectionRayPayload.Li = vec3(0.0, 0.0, 0.0);
 		return;
@@ -276,8 +278,9 @@ void main()
 		{
 			// Trace a ray with the reflected direction
 			// IOR does not change, the ray stays inside the dielectric
-			traceRay(rayHit.hitWorldPos - rayHit.hitWorldNormal * 0.1, reflectedDirection, true, reflectionRayPayload.indexOfRefraction);
-			Li += rayHit.reflectance * kr * reflectionRayPayload.Li * abs(clamp(0.0, 1.0, dot(rayHit.hitWorldNormal, rayHit.wi))) * attenuation;
+			// This call is commented to save ray budget, it can be uncommented to add the contribution of ray paths relfected inside the dielectric after a TIR
+			// traceRay(rayHit.hitWorldPos - rayHit.hitWorldNormal * 0.1, reflectedDirection, true, reflectionRayPayload.indexOfRefraction);
+			// Li += rayHit.reflectance * kr * reflectionRayPayload.Li * abs(clamp(0.0, 1.0, dot(rayHit.hitWorldNormal, rayHit.wi))) * attenuation;
 
 			// Trace a ray with the refracted direction
 			// IOR is air's now, the ray gets out of the dielectric
@@ -292,8 +295,9 @@ void main()
 		vec3 reflectedDirection = normalize(reflect(-1.0 * rayHit.wi, rayHit.hitWorldNormal)); // NOTE: In GLSL's implementation of reflect, incident direction points towards the sample and not outwards
 
 		// Trace a reflected and a refracted ray, use Fresnel term to compute each's contribution to Li
-		traceRay(rayHit.hitWorldPos + rayHit.hitWorldNormal * 0.1, reflectedDirection, false, 1.0);
-		Li += rayHit.reflectance * kr * reflectionRayPayload.Li * abs(clamp(0.0, 1.0, dot(rayHit.hitWorldNormal, rayHit.wi)));
+		// This call is commented to save ray budget, it can be uncommented to add the contribution of ray paths reflected after coming outside of the dielectric
+		// traceRay(rayHit.hitWorldPos + rayHit.hitWorldNormal * 0.1, reflectedDirection, false, 1.0);
+		// Li += rayHit.reflectance * kr * reflectionRayPayload.Li * abs(clamp(0.0, 1.0, dot(rayHit.hitWorldNormal, rayHit.wi)));
 
 		// Use IOR of material used in new intersected mesh
 		traceRay(rayHit.hitWorldPos - rayHit.hitWorldNormal * 0.1, refractedDirection, true, rayHit.indexOfRefraction);

@@ -544,7 +544,7 @@ Result StateMachine::executeInitView()
 	}
 	if (_shellData.outputInfo) { _shell->showOutputInfo(); }
 	_currentState = StateReady;
-	_shellData.startTime = _shellData.timer.getCurrentTimeMilliSecs();
+	_shellData.startTime = _shellData.timer.getElapsedMilliSecs();
 	return result;
 }
 
@@ -591,8 +591,8 @@ Result StateMachine::executeFrame()
 
 	// Calculate our FPS
 	{
-		static uint64_t prevTime(_shellData.timer.getCurrentTimeMilliSecs()), NumFPSFrames(0);
-		uint64_t time(_shellData.timer.getCurrentTimeMilliSecs()), delta(time - prevTime);
+		static uint64_t prevTime(_shellData.timer.getElapsedMilliSecs()), NumFPSFrames(0);
+		uint64_t time(_shellData.timer.getElapsedMilliSecs()), delta(time - prevTime);
 
 		++NumFPSFrames;
 
@@ -609,7 +609,7 @@ Result StateMachine::executeFrame()
 
 	// Have we reached the point where we need to die?
 	if ((_shellData.dieAfterFrame >= 0 && _shellData.frameNo >= static_cast<uint32_t>(_shellData.dieAfterFrame)) ||
-		(_shellData.dieAfterTime >= 0 && ((_shellData.timer.getCurrentTimeMilliSecs() - _shellData.startTime) * 0.001f) > _shellData.dieAfterTime))
+		(_shellData.dieAfterTime >= 0 && ((_shellData.timer.getElapsedMilliSecs() - _shellData.startTime) * 0.001f) > _shellData.dieAfterTime))
 	{ _shellData.weAreDone = true; }
 	if (_shellData.forceReleaseInitWindow || _shellData.forceReleaseInitView)
 	{

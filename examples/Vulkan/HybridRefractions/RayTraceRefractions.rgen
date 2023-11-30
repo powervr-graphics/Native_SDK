@@ -11,7 +11,7 @@
 struct ReflectionRayPayload
 {
 	vec3 Li; // Incident radiance
-	uint depth;
+	uint recursionDepth;
 	bool inside;
 	float indexOfRefraction;
 };
@@ -19,7 +19,7 @@ struct ReflectionRayPayload
 struct LightData
 {
 	highp vec4 lightColor;
-	highp vec4 lightPosition;
+	highp vec4 lightPositionMaxRayRecursion;
 	highp vec4 ambientColorIntensity;
 };
 
@@ -98,9 +98,10 @@ vec3 refractFunction(vec3 wi, vec3 normal, float eta)
 void traceRay(vec3 rayOrigin, vec3 rayDirection, bool inside, float indexOfRefraction)
 {
 	reflectionRayPayload.Li                = vec3(0.0);
-	reflectionRayPayload.depth             = 0;
 	reflectionRayPayload.inside            = inside;
 	reflectionRayPayload.indexOfRefraction = indexOfRefraction;
+
+	reflectionRayPayload.recursionDepth++;
 
 	traceRayEXT(topLevelAS,     // acceleration structure
 		gl_RayFlagsOpaqueEXT,   // rayFlags
@@ -155,7 +156,7 @@ void main()
 	float indexOfRefraction      = originIndexOfRefraction.w;
 	vec3 normal                  = normalize(texture(gBufferNormalMaterialID, inUV).xyz);
 	vec3 origin                  = originIndexOfRefraction.xyz;
-	float visiblity              = float(traceShadowRay(origin.xyz + normal * 0.1, lightData.lightPosition.xyz));
+	float visiblity              = float(traceShadowRay(origin.xyz + normal * 0.1, lightData.lightPositionMaxRayRecursion.xyz));
 
 	// Only dielectrics are ray traced, the remaining scene elements are rasterized.
 	if (indexOfRefraction == 0.0)
@@ -170,6 +171,7 @@ void main()
 	float kr = fresnel(wi, normal, 1.0 / indexOfRefraction);
 
 	vec3 LiAccumulated = vec3(0.0);
+	reflectionRayPayload.recursionDepth = 0;
 
 	// First trace a reflection ray
 	vec3 direction = normalize(reflect(-1.0 * wi, normal));  // NOTE: In GLSL's implementation of reflect, incident direction points towards the sample and not outwards

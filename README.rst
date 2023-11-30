@@ -86,7 +86,7 @@ The PowerVR SDK has a number of third-party dependencies, each of which may have
 Documentation
 -------------
 
-For the full documentation, see `PowerVR SDK Documentation <https://docs.imgtec.com/>`__.
+For the full documentation, see `PowerVR SDK Documentation <https://docs.imgtec.com/sdk-documentation/html/introduction.html>`__.
 
 .. include_skip_end_2
 

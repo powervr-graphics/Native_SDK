@@ -213,12 +213,15 @@ struct DeviceResources
 			device->waitIdle();
 		}
 
-		uint32_t l = swapchain->getSwapchainLength();
-
-		for (uint32_t i = 0; i < l; ++i)
+		if (swapchain)
 		{
-			if (graphicsFences[i]) { graphicsFences[i]->wait(); }
-			if (computeFences[i]) { computeFences[i]->wait(); }
+			uint32_t l = swapchain->getSwapchainLength();
+
+			for (uint32_t i = 0; i < l; ++i)
+			{
+				if (graphicsFences[i]) { graphicsFences[i]->wait(); }
+				if (computeFences[i]) { computeFences[i]->wait(); }
+			}
 		}
 	}
 };

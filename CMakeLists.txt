@@ -28,7 +28,6 @@ option(PVR_BUILD_FRAMEWORK_GLSC "Build the GLSC part of the framework" ON)
 option(PVR_BUILD_FRAMEWORK_OPENCL "Build the OpenCL part of the framework" ON)
 option(PVR_BUILD_VULKAN_EXAMPLES "Build the Vulkan examples" ON)
 option(PVR_BUILD_OPENGLES_EXAMPLES "Build the GLES examples" ON)
-option(PVR_BUILD_OPENGLSC_EXAMPLES "Build the GLSC examples" ON)
 option(PVR_BUILD_OPENCL_EXAMPLES "Build the OpenCL examples" ON)
 
 # If this cmake file isn't the top level one, then the SDK is being used in another project
@@ -49,10 +48,6 @@ if(PVR_BUILD_EXAMPLES)
 
 	if(PVR_BUILD_OPENGLES_EXAMPLES)
 		option(PVR_BUILD_FRAMEWORK_GLES "Build the GLES part of the framework" ON)
-	endif()
-
-	if(PVR_BUILD_OPENGLSC_EXAMPLES)
-		option(PVR_BUILD_FRAMEWORK_GLSC "Build the GLSC part of the framework" ON)
 	endif()
 endif()
 

@@ -1878,7 +1878,7 @@ struct DualFilterBlurPass
 struct DownAndTentFilterBlurPass : public DualFilterBlurPass
 {
 	// Up sample pass image dependencies - these are dependencies on the downsampled mipmap i.e upsample D' is dependent on down sampled image D
-	std::vector<std::vector<pvrvk::ImageView>> upSampleIterationImageDependencies[MaxFilterIterations / 2 - 1];
+	std::vector<std::vector<pvrvk::ImageView>> upSampleIterationImageDependencies;
 
 	// Defines a scale to use for offsetting the tent offsets
 	glm::vec2 tentScales[MaxFilterIterations / 2];
@@ -1937,6 +1937,9 @@ struct DownAndTentFilterBlurPass : public DualFilterBlurPass
 			downsamplePasses[i].init(
 				assetProvider, device, swapchain, commandPool, descriptorPool, maxIterationDimensions[i], sourceImages, destinationImages, inSampler, pipelineCache, false);
 		}
+
+		uint32_t upSampleVectorSize = MaxFilterIterations / 2 - 1;
+		upSampleIterationImageDependencies.resize(upSampleVectorSize);
 	}
 
 	/// <summary>Creates the descriptor sets used for up/down sample passes.</summary>
@@ -2091,7 +2094,6 @@ struct DownAndTentFilterBlurPass : public DualFilterBlurPass
 
 		device->updateDescriptorSets(writeDescSets.data(), static_cast<uint32_t>(writeDescSets.size()), nullptr, 0);
 
-		upSampleIterationImageDependencies->clear();
 		uint32_t downsampledImageIndex = 0;
 
 		// The last entry into the downSampledImageViews array
@@ -2101,7 +2103,7 @@ struct DownAndTentFilterBlurPass : public DualFilterBlurPass
 
 		for (uint32_t i = blurIterations / 2 + 1; i < blurIterations; ++i)
 		{
-			upSampleIterationImageDependencies[downsampledImageIndex][swapchainIndex].push_back(currentImageViews[currentDownSampledImageIndex][swapchainIndex]);
+			upSampleIterationImageDependencies[downsampledImageIndex].push_back(currentImageViews[currentDownSampledImageIndex][swapchainIndex]);
 			currentDownSampledImageIndex--;
 			downsampledImageIndex++;
 		}
@@ -2305,11 +2307,11 @@ struct DownAndTentFilterBlurPass : public DualFilterBlurPass
 		for (uint32_t i = blurIterations / 2; i < blurIterations - 1; ++i)
 		{
 			// Take care of the extra image dependencies the up sample passes require
-			for (uint32_t j = 0; j < upSampleIterationImageDependencies[upSampleIndex][swapchainIndex].size(); ++j)
+			for (uint32_t j = 0; j < upSampleIterationImageDependencies[upSampleIndex].size(); ++j)
 			{
 				pvrvk::MemoryBarrierSet layoutTransition;
 				layoutTransition.addBarrier(pvrvk::ImageMemoryBarrier(pvrvk::AccessFlags::e_COLOR_ATTACHMENT_WRITE_BIT, pvrvk::AccessFlags::e_SHADER_READ_BIT,
-					upSampleIterationImageDependencies[upSampleIndex][swapchainIndex][j]->getImage(), pvrvk::ImageSubresourceRange(pvrvk::ImageAspectFlags::e_COLOR_BIT, 0u, 1u, 0u, 1u),
+					upSampleIterationImageDependencies[upSampleIndex][j]->getImage(), pvrvk::ImageSubresourceRange(pvrvk::ImageAspectFlags::e_COLOR_BIT, 0u, 1u, 0u, 1u),
 					sourceImageLayout, destinationImageLayout, queue->getFamilyIndex(), queue->getFamilyIndex()));
 				cmdBuffer->pipelineBarrier(pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT, pvrvk::PipelineStageFlags::e_FRAGMENT_SHADER_BIT, layoutTransition);
 			}

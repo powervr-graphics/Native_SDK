@@ -274,10 +274,11 @@ class OpenGLESAntiAliasing : public pvr::Shell
 	pvr::utils::VertexConfiguration _vertexConfiguration;
 
 	// Current selected AA method to be changed later with inputs
-	AntiAliasingMethod _currentMethod = AntiAliasingMethod::TXAA;
+	AntiAliasingMethod _currentMethod = AntiAliasingMethod::NOAA;
 
 	/// <summary>Flag to know whether astc iss upported by the physical device.</summary>
 	bool _astcSupported;
+	int _inputIndex = 0;
 
 public:
 	OpenGLESAntiAliasing() {}
@@ -290,6 +291,7 @@ public:
 	virtual pvr::Result renderFrame();
 
 	virtual void eventMappedInput(pvr::SimplifiedInput key);
+	void changeCurrentMethod();
 
 	void createProgram();
 
@@ -318,12 +320,20 @@ void OpenGLESAntiAliasing::eventMappedInput(pvr::SimplifiedInput key)
 {
 	switch (key)
 	{
-	case pvr::SimplifiedInput::Up: _currentMethod = AntiAliasingMethod::MSAA; break;
-	case pvr::SimplifiedInput::Left: _currentMethod = AntiAliasingMethod::FXAA; break;
-	case pvr::SimplifiedInput::Right: _currentMethod = AntiAliasingMethod::TXAA; break;
-	case pvr::SimplifiedInput::Down: _currentMethod = AntiAliasingMethod::NOAA; break;
+	case pvr::SimplifiedInput::ActionClose: exitShell(); break;
+	case pvr::SimplifiedInput::Action1: changeCurrentMethod(); break;
 	default: _currentMethod = AntiAliasingMethod::NOAA; break;
 	}
+}
+
+/// <summary>
+/// Changes current anti-aliasing method based on user input
+/// </summary>
+void OpenGLESAntiAliasing::changeCurrentMethod()
+{
+	_inputIndex++;
+	_inputIndex = _inputIndex % 4;
+	_currentMethod = static_cast<AntiAliasingMethod>(_inputIndex);
 }
 
 /// <summary>

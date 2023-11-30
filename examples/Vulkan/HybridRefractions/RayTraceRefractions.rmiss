@@ -4,7 +4,7 @@
 struct ReflectionRayPayload
 {
 	vec3 Li; // Incident radiance
-	uint depth;
+	uint recursionDepth;
 	bool inside;
 	float indexOfRefraction;
 };

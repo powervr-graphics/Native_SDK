@@ -209,9 +209,7 @@ Result Shell::shellInitView()
 		setExitMessage("InitView threw a runtime exception with message: '%s'", e.what());
 		res = pvr::Result::InitializationError;
 	}
-
-	_data->currentFrameTime = getTime() - 17; // Avoid first frame huge times
-	_data->lastFrameTime = getTime() - 32;
+	
 	return res;
 }
 
@@ -324,7 +322,7 @@ uint64_t Shell::getTime() const
 
 	if (data.forceFrameTime) { return data.frameNo * data.fakeFrameTime; }
 
-	return data.timer.getCurrentTimeMilliSecs();
+	return data.timer.getElapsedMilliSecs();
 }
 
 uint64_t Shell::getTimeAtInitApplication() const { return _data->timeAtInitApplication; }

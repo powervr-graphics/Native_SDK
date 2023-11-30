@@ -740,8 +740,6 @@ bool VulkanSubgroups::calculateDemoSetting()
 			DemoSettings::workGroupWidth = width;
 			DemoSettings::workGroupHeight = height;
 		}
-
-		return true;
 	}
 
 	// Calculate the number of workgroups that need to be dispatched, which will be the off screen texture size divided by workgroup size
@@ -774,6 +772,8 @@ bool VulkanSubgroups::calculateDemoSetting()
 			_computePipelineIndex = SubgroupFunctionalityFlags::Count;
 		}
 	}
+
+	return true;
 }
 
 /// <summary>Gets the text to display at the bottom of the screen based on the current demo parameters </summary>

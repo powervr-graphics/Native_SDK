@@ -26,8 +26,8 @@ struct LightData
 	/// <summary>Light color.</summary>
 	glm::vec4 lightColor;
 
-	/// <summary>Light position.</summary>
-	glm::vec4 lightPosition;
+	/// <summary>Light position and max ray recursion.</summary>
+	glm::vec4 lightPositionMaxRayRecursion;
 
 	/// <summary>Ambient color and light intensity.</summary>
 	glm::vec4 ambientColorIntensity;
@@ -114,8 +114,8 @@ const char* const cameraPosition = "cameraPosition";
 /// <summary>Material struct field name for the light color.</summary>
 const char* const lightColor = "lightColor";
 
-/// <summary>Material struct field name for the light position.</summary>
-const char* const lightPosition = "lightPosition";
+/// <summary>Material struct field name for the light position and max ray recursion.</summary>
+const char* const lightPositionMaxRayRecursion = "lightPositionMaxRayRecursion";
 
 /// <summary>Material struct field name for the light ambient color and intensity.</summary>
 const char* const ambientColorIntensity = "ambientColorIntensity";
@@ -466,6 +466,9 @@ public:
 	/// <summary>Depth stencil format to use.</summary>
 	pvrvk::Format _depthStencilFormat;
 
+	/// <summary>Value of VkPhysicalDeviceRayTracingPipelinePropertiesKHR::maxRayRecursionDepth to know the maximum recursion depth when using ray tracing.</summary>
+	uint32_t _maxRayRecursionDepth;
+
 	/// <summary>Default constructor.</summary>
 	VulkanHybridRefractions()
 		: _numSwapImages(0), _swapchainIndex(0), _rtProperties({}), _shaderGroupCount(0), _frameId(0), _cameraPosition(glm::vec3(0.0f)), _cameraLookAt(glm::vec3(0.0f)),
@@ -665,7 +668,7 @@ public:
 
 pvr::Result VulkanHybridRefractions::initApplication()
 {
-	const char* const torusMeshFile = "Refractions.POD"; // Name of the POD scene file with the torus mesh
+	const char* const torusMeshFile = "Refractions.pod"; // Name of the POD scene file with the torus mesh
 	const char* const baloonMeshFile = "Balloon.pod"; // Name of the POD scene file with the balloon mesh
 
 	//  Load the scene, two torus mesh and three baloon mesh
@@ -715,8 +718,7 @@ pvr::Result VulkanHybridRefractions::buildDeviceAndQueues()
 	// device extensions
 	std::vector<std::string> vectorExtensionNames{ VK_KHR_SHADER_FLOAT_CONTROLS_EXTENSION_NAME, VK_KHR_SPIRV_1_4_EXTENSION_NAME, VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME,
 		VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME, VK_KHR_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME, VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME,
-		VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME, VK_KHR_PIPELINE_LIBRARY_EXTENSION_NAME, VK_KHR_DEDICATED_ALLOCATION_EXTENSION_NAME, VK_EXT_SCALAR_BLOCK_LAYOUT_EXTENSION_NAME,
-		VK_KHR_RAY_QUERY_EXTENSION_NAME };
+		VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME, VK_KHR_PIPELINE_LIBRARY_EXTENSION_NAME, VK_KHR_DEDICATED_ALLOCATION_EXTENSION_NAME, VK_EXT_SCALAR_BLOCK_LAYOUT_EXTENSION_NAME };
 
 	std::vector<int> vectorPhysicalDevicesIndex = pvr::utils::validatePhysicalDeviceExtensions(_deviceResources->instance, vectorExtensionNames);
 
@@ -791,8 +793,10 @@ pvr::Result VulkanHybridRefractions::initView()
 
 	// Filter UNASSIGNED-BestPractices-vkAllocateMemory-small-allocation Best Practices performance warning which has ID -602362517 for TLAS buffer build and
 	// update (VkBufferDeviceAddressInfo requires VkBuffer handle so in general it's not possible to make a single buffer to put all information
-	// and use offsets inside it
+	// and use offsets inside it.
+	// Filter UNASSIGNED-BestPractices-vkBindMemory-small-dedicated-allocation with ID -1277938581 related with allocation sizes.
 	_vectorValidationIDFilter.push_back(-602362517);
+	_vectorValidationIDFilter.push_back(-1277938581);
 
 	// Create a default set of debug utils messengers or debug callbacks using either VK_EXT_debug_utils or VK_EXT_debug_report respectively
 	_deviceResources->debugUtilsCallbacks = pvr::utils::createDebugUtilsCallbacks(_deviceResources->instance, (void*)&_vectorValidationIDFilter);
@@ -932,6 +936,8 @@ pvr::Result VulkanHybridRefractions::initView()
 	submitInfo.numCommandBuffers = 1;
 	_deviceResources->queue->submit(&submitInfo, 1);
 	_deviceResources->queue->waitIdle(); // wait
+
+	_maxRayRecursionDepth = _rtProperties.maxRayRecursionDepth;
 
 	buildSceneDescriptionBuffer();
 	buildFramebufferAndRayTracingStoreImage();
@@ -1455,7 +1461,7 @@ void VulkanHybridRefractions::buildRayTracingPipeline()
 	raytracingPipeline.shaderGroups = { rayGenCI, missCI, missShadowCI, hitCI, hitShadowCI };
 	_shaderGroupCount = static_cast<uint32_t>(raytracingPipeline.shaderGroups.size());
 
-	raytracingPipeline.maxRecursionDepth = 2; // Ray depth
+	raytracingPipeline.maxRecursionDepth = _maxRayRecursionDepth; // Ray depth
 	raytracingPipeline.pipelineLayout = _deviceResources->raytraceRefractionsPipelineLayout;
 
 	_deviceResources->raytraceRefractionPipeline = _deviceResources->device->createRaytracingPipeline(raytracingPipeline, nullptr);
@@ -1985,13 +1991,14 @@ void VulkanHybridRefractions::buildSceneElementTransformBuffer()
 
 void VulkanHybridRefractions::buildLightDataBuffer()
 {
-	_models[0]->getLightPosition(0, _lightData.lightPosition);
+	_models[0]->getLightPosition(0, _lightData.lightPositionMaxRayRecursion);
+	_lightData.lightPositionMaxRayRecursion.w = float(_maxRayRecursionDepth);
 	_lightData.lightColor = glm::vec4(0.8f, 0.8f, 0.8f, 1.0);
 	_lightData.ambientColorIntensity = glm::vec4(0.1f, 0.1f, 0.1f, 80000.0);
 
 	pvr::utils::StructuredMemoryDescription desc;
 	desc.addElement(ShaderStructFieldName::lightColor, pvr::GpuDatatypes::vec4);
-	desc.addElement(ShaderStructFieldName::lightPosition, pvr::GpuDatatypes::vec4);
+	desc.addElement(ShaderStructFieldName::lightPositionMaxRayRecursion, pvr::GpuDatatypes::vec4);
 	desc.addElement(ShaderStructFieldName::ambientColorIntensity, pvr::GpuDatatypes::vec4);
 
 	_deviceResources->lightDataBufferView.initDynamic(desc, _numSwapImages, pvr::BufferUsageFlags::UniformBuffer,
@@ -2062,7 +2069,7 @@ void VulkanHybridRefractions::updateCameraLightData()
 	}
 
 	_deviceResources->lightDataBufferView.getElementByName(ShaderStructFieldName::lightColor, 0, dynamicSliceIdx).setValue(_lightData.lightColor);
-	_deviceResources->lightDataBufferView.getElementByName(ShaderStructFieldName::lightPosition, 0, dynamicSliceIdx).setValue(_lightData.lightPosition);
+	_deviceResources->lightDataBufferView.getElementByName(ShaderStructFieldName::lightPositionMaxRayRecursion, 0, dynamicSliceIdx).setValue(_lightData.lightPositionMaxRayRecursion);
 	_deviceResources->lightDataBufferView.getElementByName(ShaderStructFieldName::ambientColorIntensity, 0, dynamicSliceIdx).setValue(_lightData.ambientColorIntensity);
 
 	// if the memory property flags used by the buffers' device memory do not contain e_HOST_COHERENT_BIT then we must flush the memory

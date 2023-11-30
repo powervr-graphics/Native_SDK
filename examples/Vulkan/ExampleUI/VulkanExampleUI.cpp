@@ -1524,7 +1524,7 @@ void VulkanExampleUI::recordSecondaryCommandBuffers(uint32_t swapchain)
 	// record the base ui
 	{
 		_deviceResources->cmdBufferBaseUI[swapchain] = _deviceResources->commandPool->allocateSecondaryCommandBuffer();
-		_deviceResources->uiRenderer.beginRendering(_deviceResources->cmdBufferBaseUI[swapchain]);
+		_deviceResources->uiRenderer.beginRendering(_deviceResources->cmdBufferBaseUI[swapchain], _deviceResources->onScreenFramebuffer[swapchain]);
 		_deviceResources->groupBaseUI->render(); // render the base GUI
 		_deviceResources->uiRenderer.endRendering();
 	}
