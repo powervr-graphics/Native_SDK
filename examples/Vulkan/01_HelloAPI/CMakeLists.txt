@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.18)
+cmake_minimum_required(VERSION 3.3)
 project(VulkanHelloAPI)
 
 if(IOS)
@@ -8,7 +8,7 @@ endif()
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(SDK_ROOT ${CMAKE_CURRENT_LIST_DIR}/../../..)
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${SDK_ROOT}/framework/cmake/modules")  #for find_package
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${SDK_ROOT}/cmake/modules")  #for find_package
 
 if(NOT CMAKE_BUILD_TYPE) #Default to release if the user passes nothing.
 	set(CMAKE_BUILD_TYPE "Release")

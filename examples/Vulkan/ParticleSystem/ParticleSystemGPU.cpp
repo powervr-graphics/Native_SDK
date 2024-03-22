@@ -159,6 +159,8 @@ void ParticleSystemGPU::setNumberOfParticles(uint32_t numParticles_)
 
 	this->numParticles = numParticles_;
 
+	srand(34563464);
+
 	// Default initialise the particles in the staging buffer
 	Particle* tmpData = (Particle*)stagingBuffer->getDeviceMemory()->getMappedData();
 	for (uint32_t i = 0; i < numParticles; ++i)

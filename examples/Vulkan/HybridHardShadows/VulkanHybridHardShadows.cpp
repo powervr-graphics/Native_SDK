@@ -547,11 +547,11 @@ pvr::Result VulkanHybridHardShadows::initView()
 		_deviceResources->device->createCommandPool(pvrvk::CommandPoolCreateInfo(queueAccessInfo.familyId, pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT));
 
 	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(pvrvk::DescriptorPoolCreateInfo()
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 16 * _numSwapImages)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 16 * _numSwapImages)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 16 * _numSwapImages)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_INPUT_ATTACHMENT, 16 * _numSwapImages)
-																						  .setMaxDescriptorSets(16 * _numSwapImages));
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, static_cast<uint16_t>(16 * _numSwapImages))
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, static_cast<uint16_t>(16 * _numSwapImages))
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, static_cast<uint16_t>(16 * _numSwapImages))
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_INPUT_ATTACHMENT, static_cast<uint16_t>(16 * _numSwapImages))
+																						  .setMaxDescriptorSets(static_cast<uint16_t>(16 * _numSwapImages)));
 
 	// Setup command buffers
 	for (uint32_t i = 0; i < _numSwapImages; ++i)
@@ -1579,10 +1579,10 @@ void VulkanHybridHardShadows::initializeLights()
 void VulkanHybridHardShadows::createMeshTransformBuffer()
 {
 	pvr::utils::StructuredMemoryDescription desc;
-	desc.addElement(BufferEntryNames::PerMesh::WorldMatrix, pvr::GpuDatatypes::mat4x4, _meshTransforms.size());
+	desc.addElement(BufferEntryNames::PerMesh::WorldMatrix, pvr::GpuDatatypes::mat4x4, static_cast<uint32_t>(_meshTransforms.size()));
 
-	_deviceResources->perMeshBufferView.initDynamic(desc, _deviceResources->swapchain->getSwapchainLength() * _meshTransforms.size(), pvr::BufferUsageFlags::UniformBuffer,
-		static_cast<uint32_t>(_deviceResources->device->getPhysicalDevice()->getProperties().getLimits().getMinUniformBufferOffsetAlignment()));
+	_deviceResources->perMeshBufferView.initDynamic(desc, _deviceResources->swapchain->getSwapchainLength() * static_cast<uint32_t>(_meshTransforms.size()), pvr::BufferUsageFlags::UniformBuffer,
+		static_cast<uint64_t>(_deviceResources->device->getPhysicalDevice()->getProperties().getLimits().getMinUniformBufferOffsetAlignment()));
 
 	_deviceResources->perMeshBuffer = pvr::utils::createBuffer(_deviceResources->device,
 		pvrvk::BufferCreateInfo(_deviceResources->perMeshBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,

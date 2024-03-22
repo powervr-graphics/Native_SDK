@@ -8,7 +8,7 @@
 if(PVR_PREBUILT_DEPENDENCIES)
 	if(ANDROID)
 		string(TOLOWER ${CMAKE_BUILD_TYPE} PVR_ANDROID_BUILD_TYPE)
-		set(pugixml_DIR "${CMAKE_CURRENT_LIST_DIR}/../../../external/pugixml/build-android/.cxx/cmake/${PVR_ANDROID_BUILD_TYPE}/${ANDROID_ABI}/build")
+		set(pugixml_DIR "${CMAKE_CURRENT_LIST_DIR}/../../external/pugixml/build-android/.cxx/cmake/${PVR_ANDROID_BUILD_TYPE}/${ANDROID_ABI}/build")
 	endif()
 endif()
 

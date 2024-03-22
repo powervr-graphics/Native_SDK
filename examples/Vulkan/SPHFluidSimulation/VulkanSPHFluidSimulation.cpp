@@ -304,10 +304,10 @@ public:
 void VulkanSPHFluidSimulation::buildDescriptorPool()
 {
 	pvrvk::DescriptorPoolCreateInfo descPoolCreateInfo;
-	descPoolCreateInfo.addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, _swapchainLength * 2);
-	descPoolCreateInfo.addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, _swapchainLength * 2);
-	descPoolCreateInfo.addDescriptorInfo(pvrvk::DescriptorType::e_STORAGE_BUFFER, _swapchainLength * 2);
-	descPoolCreateInfo.setMaxDescriptorSets(_swapchainLength * 2);
+	descPoolCreateInfo.addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, static_cast<uint16_t>(_swapchainLength * 2));
+	descPoolCreateInfo.addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, static_cast<uint16_t>(_swapchainLength * 2));
+	descPoolCreateInfo.addDescriptorInfo(pvrvk::DescriptorType::e_STORAGE_BUFFER, static_cast<uint16_t>(_swapchainLength * 2));
+	descPoolCreateInfo.setMaxDescriptorSets(static_cast<uint16_t>(_swapchainLength * 2));
 	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(descPoolCreateInfo);
 }
 
@@ -667,8 +667,6 @@ void VulkanSPHFluidSimulation::recordComputeCommandBuffer()
 	// When using the VK_KHR_synchronization2 extension for memory barriers, the usual fields are present at the VkBufferMemoryBarrier memory barrier struct (source and
 	// destination access mask, source and destination queue familiy index), but VkBufferMemoryBarrier2KHR also incorporates source and destination pipeline stage, which is
 	// individually specified per buffer memory barrier struct (VkBufferMemoryBarrier2KHR), and per image memory barrier struct (VkImageMemoryBarrier2KHR)
-	VkAccessFlags2KHR srcAccessMask;
-
 	pvrvk::MemoryBarrierSet2 barrier2;
 	barrier2.addBarrier(pvrvk::BufferMemoryBarrier2(
 		pvrvk::PipelineStageFlagBits2KHR::e_2_COMPUTE_SHADER_BIT_KHR, // srcStageMask

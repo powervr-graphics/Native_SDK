@@ -298,7 +298,7 @@ public:
 	void recordMainCommandBuffer();
 	void recordCommandBufferRenderGBuffer(pvrvk::SecondaryCommandBuffer& cmdBuffers, uint32_t swapchainIndex);
 	void recordCommandBufferDeferredShading(pvrvk::SecondaryCommandBuffer& cmdBuffers, uint32_t swapchainIndex);
-	void recordCommandBufferDownsample(pvrvk::SecondaryCommandBuffer& cmdBuffers, uint32_t swapchainIndex);
+	void recordCommandBufferDownsample(pvrvk::SecondaryCommandBuffer& cmdBuffers);
 	void recordCommandUIRenderer(pvrvk::SecondaryCommandBuffer& cmdBuffers);
 	void recordSecondaryCommandBuffers();
 	void createDescriptorSetLayouts();
@@ -506,11 +506,11 @@ pvr::Result VulkanHybridSoftShadows::initView()
 		_deviceResources->device->createCommandPool(pvrvk::CommandPoolCreateInfo(queueAccessInfo.familyId, pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT));
 
 	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(pvrvk::DescriptorPoolCreateInfo()
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 16 * _numSwapImages)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 16 * _numSwapImages)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 16 * _numSwapImages)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_INPUT_ATTACHMENT, 16 * _numSwapImages)
-																						  .setMaxDescriptorSets(16 * _numSwapImages));
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, static_cast<uint16_t>(16 * _numSwapImages))
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, static_cast<uint16_t>(16 * _numSwapImages))
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, static_cast<uint16_t>(16 * _numSwapImages))
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_INPUT_ATTACHMENT, static_cast<uint16_t>(16 * _numSwapImages))
+																						  .setMaxDescriptorSets(static_cast<uint16_t>(16 * _numSwapImages)));
 
 	// Setup command buffers
 	for (uint32_t i = 0; i < _numSwapImages; ++i)
@@ -1003,7 +1003,6 @@ void VulkanHybridSoftShadows::createPipelines()
 void VulkanHybridSoftShadows::createFramebufferAndRenderPass()
 {
 	const pvrvk::Extent3D& dimension = pvrvk::Extent3D(_deviceResources->swapchain->getDimension().getWidth(), _deviceResources->swapchain->getDimension().getHeight(), 1u);
-	const pvrvk::Extent3D& rtDimension = pvrvk::Extent3D(_deviceResources->swapchain->getDimension().getWidth(), _deviceResources->swapchain->getDimension().getHeight(), 1u);
 
 	const pvrvk::Format renderpassStorageFormats[FramebufferGBufferAttachments::Count] = { pvrvk::Format::e_R8G8B8A8_UNORM, pvrvk::Format::e_R16G16B16A16_SFLOAT };
 
@@ -1361,10 +1360,10 @@ void VulkanHybridSoftShadows::createCameraBuffer()
 void VulkanHybridSoftShadows::createMeshTransformBuffer()
 {
 	pvr::utils::StructuredMemoryDescription desc;
-	desc.addElement(BufferEntryNames::PerMesh::WorldMatrix, pvr::GpuDatatypes::mat4x4, _meshTransforms.size());
+	desc.addElement(BufferEntryNames::PerMesh::WorldMatrix, pvr::GpuDatatypes::mat4x4, static_cast<uint32_t>(_meshTransforms.size()));
 
-	_deviceResources->perMeshBufferView.initDynamic(desc, _deviceResources->swapchain->getSwapchainLength() * _meshTransforms.size(), pvr::BufferUsageFlags::UniformBuffer,
-		static_cast<uint32_t>(_deviceResources->device->getPhysicalDevice()->getProperties().getLimits().getMinUniformBufferOffsetAlignment()));
+	_deviceResources->perMeshBufferView.initDynamic(desc, _deviceResources->swapchain->getSwapchainLength() * static_cast<uint32_t>(_meshTransforms.size()), pvr::BufferUsageFlags::UniformBuffer,
+		static_cast<uint64_t>(_deviceResources->device->getPhysicalDevice()->getProperties().getLimits().getMinUniformBufferOffsetAlignment()));
 
 	_deviceResources->perMeshBuffer = pvr::utils::createBuffer(_deviceResources->device,
 		pvrvk::BufferCreateInfo(_deviceResources->perMeshBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
@@ -1402,7 +1401,7 @@ void VulkanHybridSoftShadows::createRandomRotationsBuffer()
 	// Generate the 2D screen-space grid, with each entry having the next value in the halton sequence
 	for (unsigned int i = 0; i < poissonDiscNumberOfRandomnessValues; i++)
 	{
-		currentRandom = fRand(0.0f, 1.0f) * static_cast<float>(M_PI) * 2.0f;
+		currentRandom = static_cast<float>(fRand(0.0f, 1.0f)) * static_cast<float>(M_PI) * 2.0f;
 
 		rotations[i] = glm::vec4(cos(currentRandom), sin(currentRandom), 0.0, 0.0);
 	}
@@ -1580,7 +1579,7 @@ void VulkanHybridSoftShadows::recordSecondaryCommandBuffers()
 		_deviceResources->cmdBufferDeferredShading[i]->end();
 
 		_deviceResources->cmdBufferDownsample[i]->begin();
-		recordCommandBufferDownsample(_deviceResources->cmdBufferDownsample[i], i);
+		recordCommandBufferDownsample(_deviceResources->cmdBufferDownsample[i]);
 		_deviceResources->cmdBufferDownsample[i]->end();
 	}
 }
@@ -1638,7 +1637,7 @@ void VulkanHybridSoftShadows::recordCommandBufferDeferredShading(pvrvk::Secondar
 /// <summary>Record commands to downsample the Visibility/Hit Distance G-Buffer attachment so that the higher mip levels can be used to determine penumbra regions.</summary>
 /// <param name="cmdBuffers">SecondaryCommandbuffer to record.</param>
 /// <param name="swapchainIndex">Index of the current swapchain image.</param>
-void VulkanHybridSoftShadows::recordCommandBufferDownsample(pvrvk::SecondaryCommandBuffer& cmdBuffers, uint32_t swapchainIndex)
+void VulkanHybridSoftShadows::recordCommandBufferDownsample(pvrvk::SecondaryCommandBuffer& cmdBuffers)
 {
 	// The starting and ending image layouts of the image
 	pvrvk::ImageLayout srcLayout = pvrvk::ImageLayout::e_TRANSFER_SRC_OPTIMAL;

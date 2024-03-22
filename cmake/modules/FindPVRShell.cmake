@@ -16,7 +16,7 @@ endif()
 if(PVR_PREBUILT_DEPENDENCIES)
 	if(ANDROID)
 		string(TOLOWER ${CMAKE_BUILD_TYPE} PVR_ANDROID_BUILD_TYPE)
-		set(PVRShell_DIR "${CMAKE_CURRENT_LIST_DIR}/../../PVRShell/build-android/.cxx/cmake/${PVR_ANDROID_BUILD_TYPE}/${ANDROID_ABI}/PVRShell")
+		set(PVRShell_DIR "${CMAKE_CURRENT_LIST_DIR}/../../framework/PVRShell/build-android/.cxx/cmake/${PVR_ANDROID_BUILD_TYPE}/${ANDROID_ABI}/PVRShell")
 	endif()
 endif()
 

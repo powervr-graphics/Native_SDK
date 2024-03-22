@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.18)
+cmake_minimum_required(VERSION 3.3)
 project(OpenCLMatrixMultiplication)
 if(IOS)	
 	message("Skipping OpenCLMatrixMultiplication : Not supported on iOS")
@@ -6,6 +6,11 @@ if(IOS)
 endif()
 
 add_subdirectory(../../.. ${CMAKE_CURRENT_BINARY_DIR}/sdk)
+
+if(PVR_PREBUILT_DEPENDENCIES)
+	find_package(PVRCore REQUIRED MODULE)
+	find_package(PVRUtilsCL REQUIRED MODULE)
+endif()
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 

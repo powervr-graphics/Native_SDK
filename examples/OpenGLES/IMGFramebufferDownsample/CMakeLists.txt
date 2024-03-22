@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.18)
+cmake_minimum_required(VERSION 3.3)
 project(OpenGLESIMGFramebufferDownsample)
 if(IOS)
 	message("Skipping OpenGLESIMGFramebufferDownsample : Not supported on iOS")

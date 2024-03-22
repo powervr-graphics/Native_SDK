@@ -413,10 +413,10 @@ pvr::Result VulkanMultithreading::initView()
 	_swapchainLength = _deviceResources->swapchain->getSwapchainLength();
 
 	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(pvrvk::DescriptorPoolCreateInfo()
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 8 * _swapchainLength)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 8 * _swapchainLength)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 8 * _swapchainLength)
-																						  .setMaxDescriptorSets(8 * _swapchainLength));
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, static_cast<uint16_t>(8 * _swapchainLength))
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, static_cast<uint16_t>(8 * _swapchainLength))
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, static_cast<uint16_t>(8 * _swapchainLength))
+																						  .setMaxDescriptorSets(static_cast<uint16_t>(8 * _swapchainLength)));
 
 	_deviceResources->cmdBuffers.resize(_swapchainLength);
 	_deviceResources->loadingTextCmdBuffer.resize(_swapchainLength);

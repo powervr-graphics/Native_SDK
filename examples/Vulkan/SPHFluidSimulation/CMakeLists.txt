@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.18)
+cmake_minimum_required(VERSION 3.3)
 project(VulkanSPHFluidSimulation)
 if(IOS)
 	message ("Skipping VulkanSPHFluidSimulation : Vulkan is not supported on iOS.")

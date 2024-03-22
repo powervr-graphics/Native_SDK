@@ -569,6 +569,8 @@ pvr::Result OpenGLESDeferredShading::initView()
 			_mainScene->getCamera(0).getNear(), _mainScene->getCamera(0).getFar());
 	}
 
+	srand(34563464);
+
 	createPrograms();
 
 	// Initialise lighting structures

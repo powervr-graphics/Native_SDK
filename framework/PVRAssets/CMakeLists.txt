@@ -1,16 +1,15 @@
-cmake_minimum_required(VERSION 3.18.0 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.3)
+# Copyright (c) Imagination Technologies Limited.
+
 project(PVRAssets)
 include(GNUInstallDirs)
+include(CMakeFindDependencyMacro)
 include(../FrameworkCommon.cmake)
-# Copyright (c) Imagination Technologies Limited.
 
 # Prevent PVRAssets being added multiple times
 if(TARGET PVRAssets)
 	return()
 endif()
-
-# Add PVRCore
-add_subdirectory(../PVRCore PVRCore)
 
 message(STATUS "Adding PVRAssets")
 
@@ -52,9 +51,16 @@ set(PVRAssets_SRC
 # Create the library
 add_library(PVRAssets STATIC ${PVRAssets_SRC} ${PVRAssets_HEADERS})
 
-# Add tinygltf to the cmake build system
-message(STATUS "Adding submodule tinygltf")
-add_subdirectory(${SDK_ROOT_INTERNAL_DIR}/external/tinygltf tinygltf)
+if(PVR_PREBUILT_DEPENDENCIES)
+	list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/../../cmake/modules")
+	find_dependency(PVRCore MODULE REQUIRED)
+	find_dependency(tinygltf MODULE REQUIRED)
+endif()
+
+# Apply the common framework compile definitions to tinygltf
+# This sets certain warnings on/off and adds appropriate
+# debug and release flags in the compiler and linker
+apply_framework_compile_options_to_target(PVRAssets)
 
 # Link PVRAssets to PVRCore and tinygltf
 target_link_libraries(PVRAssets
@@ -65,10 +71,27 @@ target_link_libraries(PVRAssets
 
 # Set the include directories of PVRAssets to allow it to see the rest of the framework
 # As well as tinygltf
-target_include_directories(PVRCore PUBLIC ${CMAKE_CURRENT_LIST_DIR}/..
-	${SDK_ROOT_INTERNAL_DIR}/external/tinygltf/source)
+target_include_directories(PVRAssets 
+	PUBLIC 
+		$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../>
+		$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
-# Apply the common framework compile definitions to tinygltf
-# This sets certain warnings on/off and adds appropriate
-# debug and release flags in the compiler and linker
-apply_framework_compile_options_to_target(PVRAssets)
+if(PVR_ENABLE_INSTALL)
+	install(TARGETS PVRAssets EXPORT PVRAssetsTargets
+		ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+		LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+		RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+		INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+		OPTIONAL)
+	foreach(file ${PVRAssets_HEADERS})
+		get_filename_component(dir ${file} DIRECTORY)
+		install(FILES ${file} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/PVRAssets/${dir})
+	endforeach()
+	install(EXPORT PVRAssetsTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/PVRAssets OPTIONAL)
+
+	export(EXPORT PVRAssetsTargets FILE "${CMAKE_CURRENT_BINARY_DIR}/PVRAssets/PVRAssetsTargets.cmake")
+	# build tree package config
+	file(COPY cmake/PVRAssetsConfig.cmake.in DESTINATION "${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/PVRAssets/" NO_SOURCE_PERMISSIONS)
+	configure_file("${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/PVRAssets/PVRAssetsConfig.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/PVRAssets/PVRAssetsConfig.cmake" COPYONLY)
+	install(FILES "${CMAKE_CURRENT_BINARY_DIR}/PVRAssets/PVRAssetsTargets.cmake" DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/PVRAssets OPTIONAL)
+endif()

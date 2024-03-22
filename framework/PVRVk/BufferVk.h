@@ -205,6 +205,7 @@ public:
 		}
 
 		assert(false && "Cannot retrieve device address");
+		return 0;
 	}
 };
 } // namespace impl

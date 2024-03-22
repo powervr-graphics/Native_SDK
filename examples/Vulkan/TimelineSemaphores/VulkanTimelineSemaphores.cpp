@@ -97,10 +97,13 @@ class VulkanTimelineSemaphores : public pvr::Shell
 		~DeviceResources()
 		{
 			if (device) { device->waitIdle(); }
-			uint32_t l = swapchain->getSwapchainLength();
-			for (uint32_t i = 0; i < l; ++i)
+			if (swapchain)
 			{
-				if (perFrameResourcesFences[i]) perFrameResourcesFences[i]->wait();
+				uint32_t l = swapchain->getSwapchainLength();
+				for (uint32_t i = 0; i < l; ++i)
+				{
+					if (perFrameResourcesFences[i]) perFrameResourcesFences[i]->wait();
+				}
 			}
 		}
 	};
@@ -141,8 +144,8 @@ public:
 	void recordComputeCommandBuffer(const uint32_t& currentFrameId, const uint32_t& noiseTextureId);
 
 	void submitComputeWork(const uint32_t& currentFrameId, const uint64_t& semaphoreWaitValue, const uint64_t& semaphoreSignalValue, const uint16_t& textureIndex);
-	void updateComputeDescriptorSets(const uint16_t& readImageIndex, const uint16_t& writeImageIdex, const uint16_t& currentFrameIndex);
-	uint64_t getAccumulatedSemaphoreValueIncrease(const uint16_t& swapchainIndex) const;
+	void updateComputeDescriptorSets(const uint32_t& readImageIndex, const uint32_t& writeImageIdex, const uint32_t& currentFrameIndex);
+	uint64_t getAccumulatedSemaphoreValueIncrease(const uint32_t swapchainIndex) const;
 	bool checkTimelineSemaphoreCompatibility();
 
 private:
@@ -648,8 +651,8 @@ void VulkanTimelineSemaphores::checkIfTimelineSeamphoreFeatureWasEnabled()
 	if (timelineSemaphoreFeatures.timelineSemaphore) { Log_Info("VK_KHR_timeline_semaphore was enabled"); }
 	else
 	{
-		Log(LogLevel::Error, "VK_KHR_timeline_semaphore was not enabled");
-		throw pvrvk::ErrorInitializationFailed("VK_KHR_timeline_semaphore was not enabled");
+		Log(LogLevel::Error, "Required extension VK_KHR_timeline_semaphore not supported");
+		throw pvrvk::ErrorInitializationFailed("Required extension VK_KHR_timeline_semaphore not supported");
 	}
 }
 
@@ -723,9 +726,9 @@ pvr::Result VulkanTimelineSemaphores::renderFrame()
 	submitInfo.commandBuffers = &_deviceResources->graphicsCommandBuffers[swapchainIndex];
 	submitInfo.numCommandBuffers = 1;
 	submitInfo.waitSemaphores = &waitSemaphores[0];
-	submitInfo.numWaitSemaphores = waitSemaphores.size();
+	submitInfo.numWaitSemaphores = static_cast<uint32_t>(waitSemaphores.size());
 	submitInfo.signalSemaphores = &semaphoresToSignalAfterSubmit[0];
-	submitInfo.numSignalSemaphores = semaphoresToSignalAfterSubmit.size();
+	submitInfo.numSignalSemaphores = static_cast<uint32_t>(semaphoresToSignalAfterSubmit.size());
 	submitInfo.timelineSemaphoreSubmitInfo = &mySemaphoreSubmitInfo;
 
 	submitInfo.waitDstStageMask = pipeWaitStageFlags.data();
@@ -780,9 +783,9 @@ void VulkanTimelineSemaphores::renderComputeNoiseLayers(const uint32_t swapchain
 		updateComputeDescriptorSets((i == 0) ? 0 : i - 1, i, swapchainIndex);
 
 		recordComputeCommandBuffer(_frameId, i);
-		submitComputeWork(_frameId, waitValue, waitValue + 1, i);
+		submitComputeWork(_frameId, waitValue, waitValue + 1, static_cast<uint16_t>(i));
 
-		addTimelineInfoToUIOss(swapchainIndex, i, uiOss);
+		addTimelineInfoToUIOss(swapchainIndex, static_cast<uint16_t>(i), uiOss);
 	}
 	_deviceResources->uiDescription += uiOss.str();
 }
@@ -949,7 +952,7 @@ bool VulkanTimelineSemaphores::checkTimelineSemaphoreCompatibility()
 	deviceFeatures2.pNext = &timeLineSemaphoreFeature; // Fill in all of these device features with one call
 	_deviceResources->instance->getPhysicalDevice(0)->getInstance()->getVkBindings().vkGetPhysicalDeviceFeatures2(
 		_deviceResources->instance->getPhysicalDevice(0)->getVkHandle(), &deviceFeatures2); // Logic if feature is not supported
-	return timeLineSemaphoreFeature.timelineSemaphore = VK_TRUE;
+	return (timeLineSemaphoreFeature.timelineSemaphore == VK_TRUE);
 }
 
 /// <summary>Creates a compute pipeline and components it needs, like: compute descriptor set layout, compute shader, compute descriptor sets, sampler.</summary>
@@ -1138,12 +1141,12 @@ void VulkanTimelineSemaphores::submitComputeWork(const uint32_t& currentFrameId,
 /// <param name="readImageIndex">Index of the image to read.</param>
 /// <param name="writeImageIdex">Index of the image to write to.</param>
 /// <param name="currentFrameIndex">Current frame index.</param>
-void VulkanTimelineSemaphores::updateComputeDescriptorSets(const uint16_t& readImageIndex, const uint16_t& writeImageIdex, const uint16_t& currentFrameIndex)
+void VulkanTimelineSemaphores::updateComputeDescriptorSets(const uint32_t& readImageIndex, const uint32_t& writeImageIdex, const uint32_t& currentFrameIndex)
 {
 	assert(readImageIndex >= 0 && readImageIndex < _numberOfNoiseLayers);
 	assert(writeImageIdex >= 0 && writeImageIdex < _numberOfNoiseLayers);
 
-	const uint16_t descriptorPingPongIndex = 4 * currentFrameIndex + writeImageIdex;
+	const uint32_t descriptorPingPongIndex = 4 * currentFrameIndex + writeImageIdex;
 	std::vector<pvrvk::WriteDescriptorSet> writeDescSets;
 	{
 		const pvrvk::ImageView srcImageView =
@@ -1165,7 +1168,7 @@ void VulkanTimelineSemaphores::updateComputeDescriptorSets(const uint16_t& readI
 /// <summary>Calculates semaphore value over time for given swapchain index.</summary>
 /// <param name="swapchainIndex">Index of the swapchain.</param>
 /// <returns>The accumulated semaphore value increase.</returns>
-uint64_t VulkanTimelineSemaphores::getAccumulatedSemaphoreValueIncrease(const uint16_t& swapchainIndex) const
+uint64_t VulkanTimelineSemaphores::getAccumulatedSemaphoreValueIncrease(const uint32_t swapchainIndex) const
 {
 	return _deviceResources->semaphoreIterations[swapchainIndex] * _deviceResources->semaphoreCycleValue;
 }

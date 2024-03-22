@@ -473,11 +473,11 @@ pvr::Result VulkanDeferredShadingPFX::initView()
 
 	// Allocate descriptor pool
 	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(pvrvk::DescriptorPoolCreateInfo()
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 16 * _numSwapImages)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 16 * _numSwapImages)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 16 * _numSwapImages)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_INPUT_ATTACHMENT, 16 * _numSwapImages)
-																						  .setMaxDescriptorSets(16 * _numSwapImages));
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, static_cast<uint16_t>(16 * _numSwapImages))
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, static_cast<uint16_t>(16 * _numSwapImages))
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, static_cast<uint16_t>(16 * _numSwapImages))
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_INPUT_ATTACHMENT, static_cast<uint16_t>(16 * _numSwapImages))
+																						  .setMaxDescriptorSets(static_cast<uint16_t>(16 * _numSwapImages)));
 
 	// Initialise lighting structures
 	allocateLights();
@@ -1093,6 +1093,8 @@ void VulkanDeferredShadingPFX::allocateLights()
 	_renderInfo.directionalLightPass.lightProperties.resize(countDirectional);
 	_renderInfo.pointLightPasses.lightProperties.resize(countPoint);
 	_renderInfo.pointLightPasses.initialData.resize(countPoint);
+
+	srand(34563464);
 
 	for (uint32_t i = countPoint - PointLightConfiguration::NumProceduralPointLights; i < countPoint; ++i)
 	{

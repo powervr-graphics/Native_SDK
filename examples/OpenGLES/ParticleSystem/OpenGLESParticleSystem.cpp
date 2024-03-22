@@ -513,6 +513,8 @@ pvr::Result OpenGLESParticleSystem::initView()
 	_particleConfigData.minLifespan = .5f;
 	_particleConfigData.maxLifespan = 1.5f;
 
+	srand(34563464);
+
 	initializeParticles();
 
 	// Creates the projection matrix.

@@ -20,16 +20,16 @@
 	Defines
 *****************************************************************************/
 
-#define PVRSDK_VERSION "5.11.1"
-#define PVRSDK_BUILD "23.2.1@5e1e3bff3085"
-#define PVRVERSION_MAJ "23"
-#define PVRVERSION_MIN "2"
-#define PVRVERSION_BRANCH "232"
-#define PVRVERSION_BRANCH_DEC "23.2"
-#define PVRVERSION_BRANCH_NAME "23.2"
-#define PVRVERSION_BUILD "5e1e3bff3085"
-#define PVRVERSION_BUILD_HI "5e1e3bff3085"
-#define PVRVERSION_BUILD_LO "5e1e3bff3085"
+#define PVRSDK_VERSION "5.12"
+#define PVRSDK_BUILD "24.1@00ec8d1fd87e"
+#define PVRVERSION_MAJ "24"
+#define PVRVERSION_MIN "1"
+#define PVRVERSION_BRANCH "241"
+#define PVRVERSION_BRANCH_DEC "24.1"
+#define PVRVERSION_BRANCH_NAME "24.1"
+#define PVRVERSION_BUILD "00ec8d1fd87e"
+#define PVRVERSION_BUILD_HI "00ec8d1fd87e"
+#define PVRVERSION_BUILD_LO "00ec8d1fd87e"
 
 #define PVRSDK_COPYRIGHT_TXT "Copyright (c) Imagination Technologies Ltd. All Rights Reserved."
 

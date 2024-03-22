@@ -684,10 +684,10 @@ pvr::Result VulkanGnomeHorde::initView()
 	//--------------------
 	// Create the DescriptorPool
 	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(pvrvk::DescriptorPoolCreateInfo()
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 8 * _swapchainLength)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 8 * _swapchainLength)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 8 * _swapchainLength)
-																						  .setMaxDescriptorSets(8 * _swapchainLength));
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, static_cast<uint16_t>(8 * _swapchainLength))
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, static_cast<uint16_t>(8 * _swapchainLength))
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, static_cast<uint16_t>(8 * _swapchainLength))
+																						  .setMaxDescriptorSets(static_cast<uint16_t>(8 * _swapchainLength)));
 
 	_deviceResources->multiBuffering.resize(_swapchainLength);
 
@@ -790,6 +790,8 @@ pvr::Result VulkanGnomeHorde::initView()
 
 	pvrvk::CommandBuffer cb = _deviceResources->commandPool->allocateCommandBuffer();
 	cb->begin();
+
+	srand(34563464);
 
 	createDescSetsAndTiles(descLayoutImage, descLayoutUboScene, descLayoutUboDynamic, descLayoutUboStatic, cb);
 

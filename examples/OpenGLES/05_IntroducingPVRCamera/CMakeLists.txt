@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.18)
+cmake_minimum_required(VERSION 3.3)
 project(OpenGLESIntroducingPVRCamera)
 
 add_subdirectory(../../.. ${CMAKE_CURRENT_BINARY_DIR}/sdk)

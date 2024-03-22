@@ -1,6 +1,8 @@
-cmake_minimum_required(VERSION 3.18)
+cmake_minimum_required(VERSION 3.10)
 
 # EVERYTHING IN THIS FILE IS BASICALLY OPTIONAL. It is our recommended compiler configuration and some tools. This is applied to all targets via the "enable_sdk_options_for_target"
+
+include(CheckCXXCompilerFlag)
 
 # Options that can be set
 option(PVR_ENABLE_FAST_MATH "If enabled, attempt to enable fast-math." ON)
@@ -70,6 +72,5 @@ function(enable_sdk_options_for_target THETARGET)
 				endif()
 			endif()
 		endif()
-
 	endif()
 endfunction()

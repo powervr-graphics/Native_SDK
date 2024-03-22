@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.18.0 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.3)
 
 # Searches the SUBMODULE_PATH paramater to make sure the directory exists first. 
 # External dependencies are managed by a SUBMODULE_PATH/CMakeLists.txt with the 

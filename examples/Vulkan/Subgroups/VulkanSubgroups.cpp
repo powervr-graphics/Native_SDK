@@ -366,7 +366,7 @@ pvr::Result VulkanSubgroups::initView()
 		_deviceResources->device->createCommandPool(pvrvk::CommandPoolCreateInfo(_deviceResources->queues[0]->getFamilyIndex(), pvrvk::CommandPoolCreateFlags::e_NONE));
 
 	_deviceResources->descriptorPool =
-		_deviceResources->device->createDescriptorPool(pvrvk::DescriptorPoolCreateInfo(10).addDescriptorInfo(pvrvk::DescriptorType::e_STORAGE_IMAGE, 8 * _swapLength));
+		_deviceResources->device->createDescriptorPool(pvrvk::DescriptorPoolCreateInfo(10).addDescriptorInfo(pvrvk::DescriptorType::e_STORAGE_IMAGE, static_cast<uint16_t>(8 * _swapLength)));
 
 	// Create the per frame resources
 	for (uint32_t i = 0; i < _swapLength; i++)
@@ -730,7 +730,7 @@ bool VulkanSubgroups::calculateDemoSetting()
 			// In order to get full utilization of the hardware, we need to ensure that the workgroup size is divisible by the subgroup size
 			// First ensure that the workgroup size is divisible by subgroup count, if now then we need to make one of the dimensions divisble
 			// by the subgroup count, this will ensure that the product is divisible by the subgroup count
-			if ((width * height) % subgroupProperties.subgroupSize != 0)
+			if ((width > subgroupProperties.subgroupSize) && (width * height) % subgroupProperties.subgroupSize != 0)
 			{
 				// Knock the remainder off the width
 				width -= width % subgroupProperties.subgroupSize;

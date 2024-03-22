@@ -610,10 +610,10 @@ pvr::Result VulkanParticleSystem::initView()
 
 	// Create the descriptor pool
 	pvrvk::DescriptorPoolCreateInfo poolInfo;
-	poolInfo.addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 8 * _swapchainLength)
-		.addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 8 * _swapchainLength)
-		.addDescriptorInfo(pvrvk::DescriptorType::e_STORAGE_BUFFER, 8 * _swapchainLength)
-		.setMaxDescriptorSets(8 * _swapchainLength);
+	poolInfo.addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, static_cast<uint16_t>(8 * _swapchainLength))
+		.addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, static_cast<uint16_t>(8 * _swapchainLength))
+		.addDescriptorInfo(pvrvk::DescriptorType::e_STORAGE_BUFFER, static_cast<uint16_t>(8 * _swapchainLength))
+		.setMaxDescriptorSets(static_cast<uint16_t>(8 * _swapchainLength));
 
 	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(poolInfo);
 

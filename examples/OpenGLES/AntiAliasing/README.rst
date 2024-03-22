@@ -23,5 +23,8 @@ These techniques are used extensively in graphics applications to remove aliasin
 
 Controls
 --------
-- Tap to screen to change between various AA techniques.
+- Swipe Up/Up Arrow - MSAA
+- Swipe Right/Right Arrow - TXAA
+- Swipe Left/Left Arrow - FXAA
+- Swipe Down/Down Arrow - NO AA
 

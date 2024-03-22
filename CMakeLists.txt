@@ -1,37 +1,27 @@
-cmake_minimum_required(VERSION 3.18.0 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.10)
 project(PowerVR_SDK)
 
-# Ensure we are not building for apple targets 
-if(APPLE OR IOS)
-	message(FATAL_ERROR "Sorry, the PowerVR SDK is no longer supported on Apple devices")
-endif()
+include(GNUInstallDirs)
 
-# Avoids the SDK target being added multiple times
+option(PVR_BUILD_FRAMEWORK "Build the PowerVR Framework" ON)
+option(PVR_PREBUILT_DEPENDENCIES "Indicates that the PowerVR Framework and its dependencies have been prebuilt. Libraries will not be built and will instead be imported. The Examples will still be built" OFF)
+
+# Compile definitions, options that can be set  others
+include("${CMAKE_CURRENT_LIST_DIR}/Configuration.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/framework/FrameworkCommon.cmake")
+
+####################################################
+include(${CMAKE_CURRENT_LIST_DIR}/cmake/utilities/executable.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/cmake/utilities/assets.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/cmake/utilities/spirv.cmake)
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake/modules")
+####################################################
+
+# Avoids the SDK being added multiple times
 if(TARGET PowerVR_SDK)
 	return()
 endif()
 
-# Provides install directory variables to GNU standards
-include(GNUInstallDirs)
-
-# Store the root directory of the SDK framework, so configurable files can be found
-set(SDK_ROOT_INTERNAL_DIR ${CMAKE_CURRENT_LIST_DIR} CACHE INTERNAL "Path to the root of the SDK")
-
-# Make a top-level project file to build everything
-add_library(PowerVR_SDK INTERFACE)
-
-# Set default vakues for the options used by the SDK
-# These options configure which parts of the framework are built
-option(PVR_BUILD_FRAMEWORK_VULKAN "Build the Vulkan part of the framework" ON)
-option(PVR_BUILD_FRAMEWORK_GLES "Build the GLES part of the framework" ON)
-option(PVR_BUILD_FRAMEWORK_GLSC "Build the GLSC part of the framework" ON)
-option(PVR_BUILD_FRAMEWORK_OPENCL "Build the OpenCL part of the framework" ON)
-option(PVR_BUILD_VULKAN_EXAMPLES "Build the Vulkan examples" ON)
-option(PVR_BUILD_OPENGLES_EXAMPLES "Build the GLES examples" ON)
-option(PVR_BUILD_OPENCL_EXAMPLES "Build the OpenCL examples" ON)
-
-# If this cmake file isn't the top level one, then the SDK is being used in another project
-# And we can assume the user doesn't want to build the examples 
 get_directory_property(HAS_PARENT PARENT_DIRECTORY)
 if(HAS_PARENT)
 	option(PVR_BUILD_EXAMPLES "Build the PowerVR SDK Examples" OFF)
@@ -39,34 +29,67 @@ else()
 	option(PVR_BUILD_EXAMPLES "Build the PowerVR SDK Examples" ON)
 endif()
 
-# Ensure that if the user wants to build the examples for a specific API
-# Then the corrosponding part of the framework would also be built
-if(PVR_BUILD_EXAMPLES)
-	if(PVR_BUILD_VULKAN_EXAMPLES)
-		option(PVR_BUILD_FRAMEWORK_VULKAN "Build the Vulkan part of the framework" ON)
-	endif()
+# Make a top-level project file to build everything
+add_library(PowerVR_SDK INTERFACE)
 
-	if(PVR_BUILD_OPENGLES_EXAMPLES)
-		option(PVR_BUILD_FRAMEWORK_GLES "Build the GLES part of the framework" ON)
-	endif()
+# Default to release if the user passes nothing.
+if(NOT CMAKE_BUILD_TYPE) 
+	message("-DCMAKE_BUILD_TYPE not defined. Assuming Release")
+	set(CMAKE_BUILD_TYPE "Release" CACHE INTERNAL "CMAKE_BUILD_TYPE - Specifies the build type on single-configuration generators")
 endif()
 
-# Tell CMake where to find the SDK's cmake modules, ie when cmake calls find_package(*)
-# cmake needs to know where the SDK's custom scripts for this process are located
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
+if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+	set(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_LIST_DIR}/install/${INSTALL_SUFFIX} CACHE INTERNAL "")
+	# Ensure other projects don't set CMAKE_INSTALL_PREFIX
+	set(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT FALSE)
+endif()
 
-# Now we need to add in the CMake utilities, they're cmake files that provide helper functions
-include(cmake/utilities/assets.cmake)			# Provides add_assets_to_target
-include(cmake/utilities/executable.cmake)		# Provides add_platform_specific_executable
-include(cmake/utilities/spirv.cmake)			# Provides add_spirv_shaders_to_target
+set(GLSLANG_VALIDATOR_INSTALL_DIR "GLSLANG_VALIDATOR-NOTFOUND" CACHE PATH "Path to a prebuilt glslangValidator")
 
-# Add the framework source tree
-add_subdirectory(framework)
+if(NOT GLSLANG_VALIDATOR_INSTALL_DIR)
+	set(GLSLANG_VALIDATOR_INSTALL_DIR $ENV{GLSLANG_VALIDATOR_INSTALL_DIR})
+endif()
 
-# If the user has the examples option, then also add the examples source tree
+option(PVR_SKIP_INSTALL "Skip installation of the PowerVR SDK" ${PVR_SKIP_INSTALL})
+if(NOT ${PVR_SKIP_INSTALL})
+	set(PVR_ENABLE_INSTALL ON)
+endif()
+
+add_subdirectory(external EXCLUDE_FROM_ALL)
+
+if(NOT PVR_PREBUILT_DEPENDENCIES)
+	add_subdirectory(framework EXCLUDE_FROM_ALL)
+endif()
+
 if(PVR_BUILD_EXAMPLES)
+	option(PVR_BUILD_OPENGLES_EXAMPLES "Build the OpenGLES PowerVR SDK Examples - PVR_BUILD_EXAMPLES must also be enabled" OFF)
+	option(PVR_BUILD_VULKAN_EXAMPLES "Build the Vulkan PowerVR SDK Examples - PVR_BUILD_EXAMPLES must also be enabled" OFF)
+	option(PVR_BUILD_OPENCL_EXAMPLES "Build the OpenCL PowerVR SDK Examples - PVR_BUILD_EXAMPLES must also be enabled" OFF)
+	option(PVR_BUILD_OPENGLES2_EXAMPLES "Only build OpenGL ES 2.0 examples - PVR_BUILD_EXAMPLES must also be enabled. Assumes PVR_BUILD_OPENGLES_EXAMPLES to ON and disables Non-OpenGL ES examples as well." OFF)
+
+	if (PVR_BUILD_OPENGLES2_EXAMPLES)
+		set(PVR_BUILD_OPENGLES_EXAMPLES ON) 
+	endif()
+
+	if(NOT PVR_BUILD_OPENGLES_EXAMPLES AND NOT PVR_BUILD_VULKAN_EXAMPLES AND NOT PVR_BUILD_OPENCL_EXAMPLES)
+		if(EXISTS ${CMAKE_CURRENT_LIST_DIR}/examples/OpenGLES/CMakeLists.txt)
+			set(PVR_BUILD_OPENGLES_EXAMPLES 1)
+		endif()
+		if(EXISTS ${CMAKE_CURRENT_LIST_DIR}/examples/Vulkan/CMakeLists.txt)
+			set(PVR_BUILD_VULKAN_EXAMPLES 1)
+		endif()
+		if(EXISTS ${CMAKE_CURRENT_LIST_DIR}/examples/OpenCL/CMakeLists.txt)
+			set(PVR_BUILD_OPENCL_EXAMPLES 1)
+		endif()
+	endif()
+
 	add_subdirectory(examples)
 endif()
 
-# Add in the PVR Scope Developer external target.
-add_subdirectory(external/PVRScope)
+get_property(ALL_EXTERNAL_TARGETS GLOBAL PROPERTY PVR_EXTERNAL_TARGETS)
+get_property(ALL_FRAMEWORK_TARGETS GLOBAL PROPERTY PVR_FRAMEWORK_TARGETS)
+get_property(ALL_EXAMPLE_TARGETS GLOBAL PROPERTY PVR_EXAMPLE_TARGETS)
+
+foreach(TARGET_NAME ${ALL_EXTERNAL_TARGETS} ${ALL_FRAMEWORK_TARGETS} ${ALL_EXAMPLE_TARGETS})
+	enable_sdk_options_for_target(${TARGET_NAME})
+endforeach()

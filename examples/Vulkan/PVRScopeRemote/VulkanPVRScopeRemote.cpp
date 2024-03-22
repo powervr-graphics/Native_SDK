@@ -351,9 +351,9 @@ pvr::Result VulkanPVRScopeRemote::initView()
 	_deviceResources->commandPool = _deviceResources->device->createCommandPool(pvrvk::CommandPoolCreateInfo(_deviceResources->queue->getFamilyIndex()));
 
 	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(pvrvk::DescriptorPoolCreateInfo()
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 8 * _swapchainLength)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 8 * _swapchainLength)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 8 * _swapchainLength));
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, static_cast<uint16_t>(8 * _swapchainLength))
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, static_cast<uint16_t>(8 * _swapchainLength))
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, static_cast<uint16_t>(8 * _swapchainLength)));
 	const uint32_t swapchainLength = _deviceResources->swapchain->getSwapchainLength();
 	_deviceResources->cmdBuffers.resize(swapchainLength);
 	for (uint32_t i = 0; i < swapchainLength; ++i)

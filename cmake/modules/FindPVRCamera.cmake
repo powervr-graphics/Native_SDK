@@ -16,7 +16,7 @@ endif()
 if(PVR_PREBUILT_DEPENDENCIES)
 	if(ANDROID)
 		string(TOLOWER ${CMAKE_BUILD_TYPE} PVR_ANDROID_BUILD_TYPE)
-		set(PVRCamera_DIR "${CMAKE_CURRENT_LIST_DIR}/../../PVRCamera/build-android/.cxx/cmake/${PVR_ANDROID_BUILD_TYPE}/${ANDROID_ABI}/PVRCamera")
+		set(PVRCamera_DIR "${CMAKE_CURRENT_LIST_DIR}/../../framework/PVRCamera/build-android/.cxx/cmake/${PVR_ANDROID_BUILD_TYPE}/${ANDROID_ABI}/PVRCamera")
 	endif()
 endif()
 

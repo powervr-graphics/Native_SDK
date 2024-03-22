@@ -3475,7 +3475,7 @@ pvr::Result VulkanPostProcessing::initApplication()
 	_cameraAngle = 240.0f;
 	_camera.setDistanceFromTarget(200.f);
 	_camera.setHeight(-15.f);
-	_blurScale = 4;
+	_blurScale = 2;
 	_frameId = 0;
 	_queueIndex = 0;
 	_logicTime = 0.0f;
@@ -3711,10 +3711,10 @@ pvr::Result VulkanPostProcessing::initView()
 
 	// This demo application makes use of quite a large number of Images and Buffers and therefore we're making possible for the descriptor pool to allocate descriptors with various limits.maxDescriptorSet*
 	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(pvrvk::DescriptorPoolCreateInfo()
-																						  .setMaxDescriptorSets(60 * _swapchainLength)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 60 * _swapchainLength)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_STORAGE_IMAGE, 60 * _swapchainLength)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 60 * _swapchainLength));
+																						  .setMaxDescriptorSets(static_cast<uint16_t>(60 * _swapchainLength))
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, static_cast<uint16_t>(60 * _swapchainLength))
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_STORAGE_IMAGE, static_cast<uint16_t>(60 * _swapchainLength))
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, static_cast<uint16_t>(60 * _swapchainLength)));
 
 	// create the utility commandbuffer which will be used for image layout transitions and buffer/image uploads.
 	_deviceResources->utilityCommandBuffer = _deviceResources->commandPool->allocateCommandBuffer();

@@ -12,7 +12,7 @@
 #include <iomanip>
 #include <unordered_map>
 
-#define _PI 3.14159
+#define _PI 3.14159f
 
 // Configuration
 const float g_FOV = 65.0f;
@@ -180,10 +180,10 @@ struct ShadowMapPass
 			gl::BindBuffer(GL_ELEMENT_ARRAY_BUFFER, deviceResources->ibos[meshId]);
 
 			// set the vertex attribute pointers
-			for (size_t i = 0; i < deviceResources->vertexConfigurations[i].attributes.size(); ++i)
+			for (size_t j = 0; j < deviceResources->vertexConfigurations[j].attributes.size(); ++j)
 			{
-				auto& attrib = deviceResources->vertexConfigurations[i].attributes[i];
-				auto& binding = deviceResources->vertexConfigurations[i].bindings[0];
+				auto& attrib = deviceResources->vertexConfigurations[j].attributes[j];
+				auto& binding = deviceResources->vertexConfigurations[j].bindings[0];
 
 				gl::EnableVertexAttribArray(attrib.index);
 				gl::VertexAttribPointer(attrib.index, attrib.width, pvr::utils::convertToGles(attrib.format), dataTypeIsNormalised(attrib.format), binding.strideInBytes,
@@ -192,9 +192,9 @@ struct ShadowMapPass
 
 			gl::DrawElements(GL_TRIANGLES, pMesh->getNumFaces() * 3, pvr::utils::convertToGles(pMesh->getFaces().getDataType()), nullptr);
 
-			for (uint32_t i = 0; i < deviceResources->vertexConfigurations[i].attributes.size(); ++i)
+			for (uint32_t j = 0; j < deviceResources->vertexConfigurations[j].attributes.size(); ++j)
 			{
-				auto& attrib = deviceResources->vertexConfigurations[i].attributes[i];
+				auto& attrib = deviceResources->vertexConfigurations[j].attributes[j];
 				gl::DisableVertexAttribArray(attrib.index);
 			}
 		}
@@ -264,10 +264,10 @@ struct NoShadowsSample
 			gl::BindBuffer(GL_ELEMENT_ARRAY_BUFFER, deviceResources->ibos[meshId]);
 
 			// set the vertex attribute pointers
-			for (size_t i = 0; i < deviceResources->vertexConfigurations[i].attributes.size(); ++i)
+			for (size_t j = 0; j < deviceResources->vertexConfigurations[j].attributes.size(); ++j)
 			{
-				auto& attrib = deviceResources->vertexConfigurations[i].attributes[i];
-				auto& binding = deviceResources->vertexConfigurations[i].bindings[0];
+				auto& attrib = deviceResources->vertexConfigurations[j].attributes[j];
+				auto& binding = deviceResources->vertexConfigurations[j].bindings[0];
 
 				gl::EnableVertexAttribArray(attrib.index);
 				gl::VertexAttribPointer(attrib.index, attrib.width, pvr::utils::convertToGles(attrib.format), dataTypeIsNormalised(attrib.format), binding.strideInBytes,
@@ -276,9 +276,9 @@ struct NoShadowsSample
 
 			gl::DrawElements(GL_TRIANGLES, pMesh->getNumFaces() * 3, pvr::utils::convertToGles(pMesh->getFaces().getDataType()), nullptr);
 
-			for (uint32_t i = 0; i < deviceResources->vertexConfigurations[i].attributes.size(); ++i)
+			for (uint32_t j = 0; j < deviceResources->vertexConfigurations[j].attributes.size(); ++j)
 			{
-				auto& attrib = deviceResources->vertexConfigurations[i].attributes[i];
+				auto& attrib = deviceResources->vertexConfigurations[j].attributes[j];
 				gl::DisableVertexAttribArray(attrib.index);
 			}
 		}
@@ -364,10 +364,10 @@ struct PCFShadowsSample
 			gl::BindBuffer(GL_ELEMENT_ARRAY_BUFFER, deviceResources->ibos[meshId]);
 
 			// set the vertex attribute pointers
-			for (size_t i = 0; i < deviceResources->vertexConfigurations[i].attributes.size(); ++i)
+			for (size_t j = 0; j < deviceResources->vertexConfigurations[j].attributes.size(); ++j)
 			{
-				auto& attrib = deviceResources->vertexConfigurations[i].attributes[i];
-				auto& binding = deviceResources->vertexConfigurations[i].bindings[0];
+				auto& attrib = deviceResources->vertexConfigurations[j].attributes[j];
+				auto& binding = deviceResources->vertexConfigurations[j].bindings[0];
 
 				gl::EnableVertexAttribArray(attrib.index);
 				gl::VertexAttribPointer(attrib.index, attrib.width, pvr::utils::convertToGles(attrib.format), dataTypeIsNormalised(attrib.format), binding.strideInBytes,
@@ -376,9 +376,9 @@ struct PCFShadowsSample
 
 			gl::DrawElements(GL_TRIANGLES, pMesh->getNumFaces() * 3, pvr::utils::convertToGles(pMesh->getFaces().getDataType()), nullptr);
 
-			for (uint32_t i = 0; i < deviceResources->vertexConfigurations[i].attributes.size(); ++i)
+			for (uint32_t j = 0; j < deviceResources->vertexConfigurations[j].attributes.size(); ++j)
 			{
-				auto& attrib = deviceResources->vertexConfigurations[i].attributes[i];
+				auto& attrib = deviceResources->vertexConfigurations[j].attributes[j];
 				gl::DisableVertexAttribArray(attrib.index);
 			}
 		}
@@ -623,10 +623,10 @@ struct VSMShadowsSample
 			gl::BindBuffer(GL_ELEMENT_ARRAY_BUFFER, deviceResources->ibos[meshId]);
 
 			// set the vertex attribute pointers
-			for (size_t i = 0; i < deviceResources->vertexConfigurations[i].attributes.size(); ++i)
+			for (size_t j = 0; j < deviceResources->vertexConfigurations[j].attributes.size(); ++j)
 			{
-				auto& attrib = deviceResources->vertexConfigurations[i].attributes[i];
-				auto& binding = deviceResources->vertexConfigurations[i].bindings[0];
+				auto& attrib = deviceResources->vertexConfigurations[j].attributes[j];
+				auto& binding = deviceResources->vertexConfigurations[j].bindings[0];
 
 				gl::EnableVertexAttribArray(attrib.index);
 				gl::VertexAttribPointer(attrib.index, attrib.width, pvr::utils::convertToGles(attrib.format), dataTypeIsNormalised(attrib.format), binding.strideInBytes,
@@ -635,9 +635,9 @@ struct VSMShadowsSample
 
 			gl::DrawElements(GL_TRIANGLES, pMesh->getNumFaces() * 3, pvr::utils::convertToGles(pMesh->getFaces().getDataType()), nullptr);
 
-			for (uint32_t i = 0; i < deviceResources->vertexConfigurations[i].attributes.size(); ++i)
+			for (uint32_t j = 0; j < deviceResources->vertexConfigurations[j].attributes.size(); ++j)
 			{
-				auto& attrib = deviceResources->vertexConfigurations[i].attributes[i];
+				auto& attrib = deviceResources->vertexConfigurations[j].attributes[j];
 				gl::DisableVertexAttribArray(attrib.index);
 			}
 		}

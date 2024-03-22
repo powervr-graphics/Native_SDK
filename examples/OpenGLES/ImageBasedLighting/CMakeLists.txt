@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.18)
+cmake_minimum_required(VERSION 3.3)
 project(OpenGLESImageBasedLighting)
 if(IOS)
 	message("Skipping OpenGLESImageBasedLighting : Not supported on iOS")

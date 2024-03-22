@@ -1,16 +1,15 @@
-cmake_minimum_required(VERSION 3.18.0 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.3)
+# Copyright (c) Imagination Technologies Limited.
+
 project(PVRUtilsGles)
 include(GNUInstallDirs)
+include(CMakeFindDependencyMacro)
 include(../../FrameworkCommon.cmake)
-# Copyright (c) Imagination Technologies Limited.
 
 # Prevent PVRUtilsGles being added multiple times
 if(TARGET PVRUtilsGles)
 	return()
 endif()
-
-# Add PVRCore
-add_subdirectory(../../PVRCore PVRCore)
 
 message(STATUS "Adding PVRUtilsGles")
 
@@ -79,6 +78,14 @@ add_library(PVRUtilsGles STATIC
 	${PVRUtilsGles_EAGL_HEADERS}
 	${PVRUtilsGles_EGL_HEADERS})
 
+if(PVR_PREBUILT_DEPENDENCIES)
+	list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/../../../cmake/modules")
+	find_dependency(PVRCore MODULE REQUIRED)
+	find_dependency(PVRAssets MODULE REQUIRED)
+endif()
+
+apply_framework_compile_options_to_target(PVRUtilsGles)
+
 # Link PVRUtilsGLES with PVRAssets and PVRCore, along with the platform dependant libraries
 target_link_libraries(PVRUtilsGles 
 	PUBLIC
@@ -99,10 +106,26 @@ if(PVR_WINDOW_SYSTEM)
 	target_compile_definitions(PVRUtilsGles PUBLIC ${PVR_WINDOW_SYSTEM_DEFINE})
 endif()
 
-# Allow PVRUtilsGles to see the rest of the framework and it's platform specific headers
-target_include_directories(PVRUtilsGles PUBLIC ${PVRUtilsGles_INCLUDE_DIRECTORIES})
+target_include_directories(PVRUtilsGles 
+	PUBLIC 
+		"$<BUILD_INTERFACE:${PVRUtilsGles_INCLUDE_DIRECTORIES}>"
+		$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
-# Apply the common framework compile definitions to PVRUtilsGles
-# This sets certain warnings on/off and adds appropriate
-# debug and release flags in the compiler and linker  
-apply_framework_compile_options_to_target(PVRUtilsGles)
+if(PVR_ENABLE_INSTALL)
+	install(TARGETS PVRUtilsGles EXPORT PVRUtilsGlesTargets
+		ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+		LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+		RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+		OPTIONAL)
+	install(FILES ${PVRUtils_HEADERS} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/PVRUtils OPTIONAL)
+	install(FILES ${PVRUtilsGles_HEADERS} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/PVRUtils/OpenGLES OPTIONAL)
+	install(FILES ${PVRUtilsGles_EAGL_HEADERS} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/PVRUtils/EAGL OPTIONAL)
+	install(FILES ${PVRUtilsGles_EGL_HEADERS} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/PVRUtils/EGL OPTIONAL)
+	install(EXPORT PVRUtilsGlesTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/PVRUtilsGles OPTIONAL)
+
+	export(EXPORT PVRUtilsGlesTargets FILE "${CMAKE_CURRENT_BINARY_DIR}/PVRUtilsGles/PVRUtilsGlesTargets.cmake")
+	# build tree package config
+	file(COPY cmake/PVRUtilsGlesConfig.cmake.in DESTINATION "${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/PVRUtilsGles/" NO_SOURCE_PERMISSIONS)
+	configure_file("${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/PVRUtilsGles/PVRUtilsGlesConfig.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/PVRUtilsGles/PVRUtilsGlesConfig.cmake" COPYONLY)
+	install(FILES "${CMAKE_CURRENT_BINARY_DIR}/PVRUtilsGles/PVRUtilsGlesTargets.cmake" DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/PVRUtilsGles OPTIONAL)
+endif()

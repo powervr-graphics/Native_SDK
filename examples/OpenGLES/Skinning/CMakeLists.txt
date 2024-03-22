@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.18)
+cmake_minimum_required(VERSION 3.3)
 project(OpenGLESSkinning)
 if(IOS)
 	message("Skipping OpenGLESSkinning : Not supported on iOS")

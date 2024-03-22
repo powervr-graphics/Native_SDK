@@ -780,7 +780,7 @@ pvr::Result VulkanGameOfLife::initView()
 
 	_deviceResources->descriptorPool =
 		_deviceResources->device->createDescriptorPool(
-			pvrvk::DescriptorPoolCreateInfo(8 * _swapchainLength).addDescriptorInfo(pvrvk::DescriptorType::e_STORAGE_IMAGE, 8 * _swapchainLength));
+			pvrvk::DescriptorPoolCreateInfo(static_cast<uint16_t>(8 * _swapchainLength)).addDescriptorInfo(pvrvk::DescriptorType::e_STORAGE_IMAGE, static_cast<uint16_t>(8 * _swapchainLength)));
 
 	// Create per frame Resources.
 	for (uint32_t i = 0; i < _swapchainLength; ++i)
@@ -802,6 +802,8 @@ pvr::Result VulkanGameOfLife::initView()
 		_deviceResources->perFrameResourcesFences[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
 		_deviceResources->computeFences[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
 	}
+
+	srand(34563464);
 
 	board.resize(static_cast<size_t>(boardWidth * boardHeight * 4));
 	generateBoardData();

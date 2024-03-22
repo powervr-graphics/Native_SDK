@@ -1167,12 +1167,12 @@ void VulkanHelloRayTracing::buildDescriptorPool()
 	uint32_t numTextures = 1;
 
 	pvrvk::DescriptorPoolCreateInfo descriptorPoolCreateInfo = pvrvk::DescriptorPoolCreateInfo();
-	descriptorPoolCreateInfo.addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 1);
-	descriptorPoolCreateInfo.addDescriptorInfo(pvrvk::DescriptorType::e_STORAGE_BUFFER, 5);
-	descriptorPoolCreateInfo.addDescriptorInfo(pvrvk::DescriptorType::e_STORAGE_IMAGE, _swapchainLength);
+	descriptorPoolCreateInfo.addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, static_cast<uint16_t>(1));
+	descriptorPoolCreateInfo.addDescriptorInfo(pvrvk::DescriptorType::e_STORAGE_BUFFER, static_cast<uint16_t>(5));
+	descriptorPoolCreateInfo.addDescriptorInfo(pvrvk::DescriptorType::e_STORAGE_IMAGE, static_cast<uint16_t>(_swapchainLength));
 	descriptorPoolCreateInfo.addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, static_cast<uint16_t>(numTextures));
-	descriptorPoolCreateInfo.addDescriptorInfo(pvrvk::DescriptorType::e_ACCELERATION_STRUCTURE_KHR, _swapchainLength);
-	descriptorPoolCreateInfo.setMaxDescriptorSets(1 + _swapchainLength);
+	descriptorPoolCreateInfo.addDescriptorInfo(pvrvk::DescriptorType::e_ACCELERATION_STRUCTURE_KHR, static_cast<uint16_t>(_swapchainLength));
+	descriptorPoolCreateInfo.setMaxDescriptorSets(static_cast<uint16_t>(1 + _swapchainLength));
 
 	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(descriptorPoolCreateInfo);
 }

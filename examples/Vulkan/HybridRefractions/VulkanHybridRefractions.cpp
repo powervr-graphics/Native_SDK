@@ -850,10 +850,10 @@ pvr::Result VulkanHybridRefractions::initView()
 	_swapchainIndex = _deviceResources->swapchain->getSwapchainIndex();
 
 	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(pvrvk::DescriptorPoolCreateInfo()
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 16 * _numSwapImages)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 16 * _numSwapImages)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 16 * _numSwapImages)
-																						  .setMaxDescriptorSets(16 * _numSwapImages));
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, static_cast<uint16_t>(16 * _numSwapImages))
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, static_cast<uint16_t>(16 * _numSwapImages))
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, static_cast<uint16_t>(16 * _numSwapImages))
+																						  .setMaxDescriptorSets(static_cast<uint16_t>(16 * _numSwapImages)));
 
 	// calculate the frame buffer width and heights
 	_framebufferWidth = this->getWidth();

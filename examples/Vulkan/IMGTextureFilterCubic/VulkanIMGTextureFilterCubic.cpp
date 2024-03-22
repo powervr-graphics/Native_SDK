@@ -194,7 +194,7 @@ pvr::Result VulkanIMGTextureFilterCubic::initView()
 	_deviceResources->cmdPool = _deviceResources->device->createCommandPool(pvrvk::CommandPoolCreateInfo(queueAccessInfo.familyId));
 
 	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(
-		pvrvk::DescriptorPoolCreateInfo().addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 5 * _swapchainLength).setMaxDescriptorSets(5 * _swapchainLength));
+		pvrvk::DescriptorPoolCreateInfo().addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, static_cast<uint16_t>(5 * _swapchainLength)).setMaxDescriptorSets(static_cast<uint16_t>(5 * _swapchainLength)));
 
 	// Create per swapchain resource
 	for (uint32_t i = 0; i < _swapchainLength; ++i)

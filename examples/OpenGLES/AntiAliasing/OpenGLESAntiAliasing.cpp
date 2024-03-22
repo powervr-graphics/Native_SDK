@@ -43,7 +43,7 @@ std::string BumpTextureFileName = "MarbleNormalMap";
 const char SceneFileName[] = "Satyr.pod";
 
 // Anti-Aliasing methods
-enum AntiAliasingMethod
+enum class AntiAliasingMethod
 {
 	NOAA,
 	MSAA,
@@ -234,7 +234,7 @@ class OpenGLESAntiAliasing : public pvr::Shell
 			do {
 				f = f / base;
 				r = r + f * (current % base);
-				current = glm::floor(current / base);
+				current = static_cast<int>(glm::floor(static_cast<float>(current) / static_cast<float>(base)));
 			} while (current > 0);
 
 			return r;
@@ -453,8 +453,10 @@ pvr::Result OpenGLESAntiAliasing::initView()
 
 	_astcSupported = gl::isGlExtensionSupported("GL_KHR_texture_compression_astc_ldr");
 
-	_deviceResources->_texture = pvr::utils::textureUpload(*this, TextureFileName + (_astcSupported ? "_astc.pvr" : ".pvr"), _deviceResources->context->getApiVersion() == pvr::Api::OpenGLES31);
-	_deviceResources->_bumpTexture = pvr::utils::textureUpload(*this, BumpTextureFileName + (_astcSupported ? "_astc.pvr" : ".pvr"), _deviceResources->context->getApiVersion() == pvr::Api::OpenGLES31);
+	_deviceResources->_texture =
+		pvr::utils::textureUpload(*this, TextureFileName + (_astcSupported ? "_astc.pvr" : ".pvr"), _deviceResources->context->getApiVersion() == pvr::Api::OpenGLES31);
+	_deviceResources->_bumpTexture =
+		pvr::utils::textureUpload(*this, BumpTextureFileName + (_astcSupported ? "_astc.pvr" : ".pvr"), _deviceResources->context->getApiVersion() == pvr::Api::OpenGLES31);
 
 	_deviceResources->_uiRenderer.init(
 		getWidth(), getHeight(), isFullScreen(), (_deviceResources->context->getApiVersion() == pvr::Api::OpenGLES31) || (getBackBufferColorspace() == pvr::ColorSpace::sRGB));
@@ -498,8 +500,6 @@ pvr::Result OpenGLESAntiAliasing::initView()
 
 	// Load the vbo and ibo data
 	pvr::utils::appendSingleBuffersFromModel(*_scene, _deviceResources->_vbos, _deviceResources->_ibos);
-
-	auto lastError = gl::GetError();
 
 	bool isRotated = this->isScreenRotated();
 	if (!isRotated)
@@ -595,7 +595,6 @@ void OpenGLESAntiAliasing::createTXAAPipeline()
 	// Create framebuffer object for offscreen rendering
 	gl::GenFramebuffers(1, &_txaaResources->_offscreenFbo);
 	gl::BindFramebuffer(GL_FRAMEBUFFER, _txaaResources->_offscreenFbo);
-	auto bindingFramebufferError = gl::GetError();
 
 	// color texture for framebuffer object
 	gl::GenTextures(1, &_txaaResources->_offscreenTexture);
@@ -654,10 +653,10 @@ pvr::Result OpenGLESAntiAliasing::renderFrame()
 
 	switch (_currentMethod)
 	{
-	case NOAA: renderNOAA(); break;
-	case MSAA: renderMSAA(); break;
-	case FXAA: renderFXAA(); break;
-	case TXAA: renderTXAA(); break;
+	case AntiAliasingMethod::NOAA: renderNOAA(); break;
+	case AntiAliasingMethod::MSAA: renderMSAA(); break;
+	case AntiAliasingMethod::FXAA: renderFXAA(); break;
+	case AntiAliasingMethod::TXAA: renderTXAA(); break;
 	default: renderNOAA(); break;
 	}
 
@@ -929,8 +928,8 @@ void OpenGLESAntiAliasing::renderTXAA()
 	_txaaResources->_frameOffset++;
 	_txaaResources->_frameOffset = _txaaResources->_frameOffset % _txaaResources->_frameCount;
 
-	float jitterX = _txaaResources->_jitter[_txaaResources->_frameOffset][0] * (1.0 / getWidth());
-	float jitterY = _txaaResources->_jitter[_txaaResources->_frameOffset][1] * (1.0 / getHeight());
+	float jitterX = _txaaResources->_jitter[_txaaResources->_frameOffset][0] * (1.0f / static_cast<float>(getWidth()));
+	float jitterY = _txaaResources->_jitter[_txaaResources->_frameOffset][1] * (1.0f / static_cast<float>(getHeight()));
 
 	// add jitter moving dynamically
 	gl::Uniform2fv(_txaaResources->_uniformLocations[VertexUniforms::Jitter], 1, glm::value_ptr(glm::vec2(jitterX, jitterY)));

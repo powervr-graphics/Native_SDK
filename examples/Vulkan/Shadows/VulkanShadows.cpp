@@ -198,7 +198,7 @@ struct ShadowMapPass
 		createFramebuffers(deviceResources);
 		createShaderModules(deviceResources, shell);
 		createPipelineLayouts(deviceResources);
-		createPipelines(scene, deviceResources, shell);
+		createPipelines(scene, deviceResources);
 	}
 
 	void render(const pvr::assets::ModelHandle& scene, DeviceResources* deviceResources, uint32_t frameIndex, uint32_t queueIndex, uint32_t dynamicOffset)
@@ -313,7 +313,7 @@ struct ShadowMapPass
 		_fs = deviceResources->device->createShaderModule(pvrvk::ShaderModuleCreateInfo(shell.getAssetStream(ShadowFragShaderFileName)->readToEnd<uint32_t>()));
 	}
 
-	void createPipelines(const pvr::assets::ModelHandle& scene, DeviceResources* deviceResources, pvr::Shell& shell)
+	void createPipelines(const pvr::assets::ModelHandle& scene, DeviceResources* deviceResources)
 	{
 		_pipelines.resize(scene->getNumMeshes());
 
@@ -1502,11 +1502,11 @@ pvr::Result VulkanShadows::initView()
 	_astcSupported = pvr::utils::isSupportedFormat(_deviceResources->device->getPhysicalDevice(), pvrvk::Format::e_ASTC_4x4_UNORM_BLOCK);
 
 	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(pvrvk::DescriptorPoolCreateInfo()
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 32 * _swapchainLength)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_STORAGE_IMAGE, 32 * _swapchainLength)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 32 * _swapchainLength)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 32 * _swapchainLength)
-																						  .setMaxDescriptorSets(32 * _swapchainLength));
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, static_cast<uint16_t>(32 * _swapchainLength))
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_STORAGE_IMAGE, static_cast<uint16_t>(32 * _swapchainLength))
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, static_cast<uint16_t>(32 * _swapchainLength))
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, static_cast<uint16_t>(32 * _swapchainLength))
+																						  .setMaxDescriptorSets(static_cast<uint16_t>(32 * _swapchainLength)));
 
 	// create the commandbuffers, semaphores & the fence
 	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)

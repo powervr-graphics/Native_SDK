@@ -853,10 +853,10 @@ pvr::Result VulkanHybridTransparency::initView()
 	_numSwapImages = _deviceResources->swapchain->getSwapchainLength();
 
 	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(pvrvk::DescriptorPoolCreateInfo()
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 16 * _numSwapImages)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 16 * _numSwapImages)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 16 * _numSwapImages)
-																						  .setMaxDescriptorSets(16 * _numSwapImages));
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, static_cast<uint16_t>(16 * _numSwapImages))
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, static_cast<uint16_t>(16 * _numSwapImages))
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, static_cast<uint16_t>(16 * _numSwapImages))
+																						  .setMaxDescriptorSets(static_cast<uint16_t>(16 * _numSwapImages)));
 
 	_deviceResources->imageAcquiredSemaphores.resize(_numSwapImages);
 	_deviceResources->presentationSemaphores.resize(_numSwapImages);

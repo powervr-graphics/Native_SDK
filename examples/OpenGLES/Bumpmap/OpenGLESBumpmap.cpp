@@ -83,9 +83,9 @@ class OpenGLESBumpmap : public pvr::Shell
 		};
 		~DeviceResources()
 		{
-			if (!vbos.empty()) { gl::DeleteBuffers(vbos.size(), vbos.data()); }
+			if (!vbos.empty()) { gl::DeleteBuffers(static_cast<GLsizei>(vbos.size()), vbos.data()); }
 
-			if (!ibos.empty()) { gl::DeleteBuffers(ibos.size(), ibos.data()); }
+			if (!ibos.empty()) { gl::DeleteBuffers(static_cast<GLsizei>(ibos.size()), ibos.data()); }
 
 			if (program) { gl::DeleteProgram(program); }
 
@@ -157,8 +157,10 @@ pvr::Result OpenGLESBumpmap::initView()
 
 	bool astcSupported = gl::isGlExtensionSupported("GL_KHR_texture_compression_astc_ldr");
 
-	_deviceResources->texture = pvr::utils::textureUpload(*this, TextureFileName + (astcSupported ? "_astc.pvr" : ".pvr"), _deviceResources->context->getApiVersion() == pvr::Api::OpenGLES2);
-	_deviceResources->bumpTexture = pvr::utils::textureUpload(*this, BumpTextureFileName + (astcSupported ? "_astc.pvr" : ".pvr"), _deviceResources->context->getApiVersion() == pvr::Api::OpenGLES2);
+	_deviceResources->texture =
+		pvr::utils::textureUpload(*this, TextureFileName + (astcSupported ? "_astc.pvr" : ".pvr"), _deviceResources->context->getApiVersion() == pvr::Api::OpenGLES2);
+	_deviceResources->bumpTexture =
+		pvr::utils::textureUpload(*this, BumpTextureFileName + (astcSupported ? "_astc.pvr" : ".pvr"), _deviceResources->context->getApiVersion() == pvr::Api::OpenGLES2);
 	pvr::utils::throwOnGlError("Texture creation failed");
 
 	gl::GenSamplers(1, &_deviceResources->samplerTrilinear);
@@ -218,7 +220,7 @@ void OpenGLESBumpmap::createProgram()
 		numDefines = 0;
 	}
 
-	GLuint program = _deviceResources->program = pvr::utils::createShaderProgram(*this, VertexShaderFile, FragmentShaderFile, attribs, attribIndices, 3, defines, numDefines);
+	_deviceResources->program = pvr::utils::createShaderProgram(*this, VertexShaderFile, FragmentShaderFile, attribs, attribIndices, 3, defines, numDefines);
 
 	_uniformLocations[Uniforms::MVPMatrix] = gl::GetUniformLocation(_deviceResources->program, Uniforms::names[Uniforms::MVPMatrix]);
 	_uniformLocations[Uniforms::LightDir] = gl::GetUniformLocation(_deviceResources->program, Uniforms::names[Uniforms::LightDir]);

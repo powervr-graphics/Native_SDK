@@ -638,12 +638,13 @@ pvr::Result VulkanDeferredShading::initView()
 	// create the command pool
 	_deviceResources->commandPool = _deviceResources->device->createCommandPool(pvrvk::CommandPoolCreateInfo(queueAccessInfo.familyId));
 
-	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(pvrvk::DescriptorPoolCreateInfo()
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 12 * _numSwapImages)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 12 * _numSwapImages)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 12 * _numSwapImages)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_INPUT_ATTACHMENT, 12 * _numSwapImages)
-																						  .setMaxDescriptorSets(32 * _numSwapImages));
+	_deviceResources->descriptorPool =
+		_deviceResources->device->createDescriptorPool(pvrvk::DescriptorPoolCreateInfo()
+														   .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, static_cast<uint16_t>(12 * _numSwapImages))
+														   .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, static_cast<uint16_t>(12 * _numSwapImages))
+														   .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, static_cast<uint16_t>(12 * _numSwapImages))
+														   .addDescriptorInfo(pvrvk::DescriptorType::e_INPUT_ATTACHMENT, static_cast<uint16_t>(12 * _numSwapImages))
+														   .setMaxDescriptorSets(static_cast<uint16_t>(32 * _numSwapImages)));
 
 	// setup command buffers
 	for (uint32_t i = 0; i < _numSwapImages; ++i)
@@ -897,7 +898,8 @@ void VulkanDeferredShading::createPointLightGeometryStencilPassDescriptorSets()
 		// create the swapchain descriptor sets with corresponding buffers
 		for (uint32_t i = 0; i < _numSwapImages; ++i)
 		{
-			_deviceResources->pointLightGeometryStencilDescriptorSets[i] = _deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->pointLightGeometryStencilDescriptorLayout);
+			_deviceResources->pointLightGeometryStencilDescriptorSets[i] =
+				_deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->pointLightGeometryStencilDescriptorLayout);
 			pvrvk::WriteDescriptorSet* descSetUpdate = &writeDescSets[i * 2];
 			descSetUpdate->set(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, _deviceResources->pointLightGeometryStencilDescriptorSets[i], 0);
 			descSetUpdate->setBufferInfo(
@@ -965,7 +967,8 @@ void VulkanDeferredShading::createPointLightProxyPassDescriptorSets()
 		// create the swapchain descriptor sets with corresponding images
 		for (uint32_t i = 0; i < _numSwapImages; ++i)
 		{
-			_deviceResources->pointLightProxyLocalMemoryDescriptorSets.push_back(_deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->pointLightProxyLocalMemoryDescriptorLayout));
+			_deviceResources->pointLightProxyLocalMemoryDescriptorSets.push_back(
+				_deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->pointLightProxyLocalMemoryDescriptorLayout));
 			descSetWrites.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_INPUT_ATTACHMENT, _deviceResources->pointLightProxyLocalMemoryDescriptorSets[i], 0)
 										.setImageInfo(0,
 											pvrvk::DescriptorImageInfo(_deviceResources->framebufferGbufferImages[FramebufferGBufferAttachments::Albedo][i],
@@ -2218,6 +2221,8 @@ void VulkanDeferredShading::allocateLights()
 	_deviceResources->renderInfo.directionalLightPass.lightProperties.resize(countDirectional);
 	_deviceResources->renderInfo.pointLightPasses.lightProperties.resize(countPoint);
 	_deviceResources->renderInfo.pointLightPasses.initialData.resize(countPoint);
+
+	srand(34563464);
 
 	for (uint32_t i = countPoint - PointLightConfiguration::NumProceduralPointLights; i < countPoint; ++i)
 	{

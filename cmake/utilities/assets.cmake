@@ -1,4 +1,22 @@
-cmake_minimum_required(VERSION 3.18.0 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.3)
+
+set(SDK_ROOT_INTERNAL_DIR ${CMAKE_CURRENT_LIST_DIR}/../.. CACHE INTERNAL "")
+
+option(PVR_ENABLE_EXAMPLE_RECOMMENDED_WARNINGS "If enabled, pass /W4 to the compiler and disable specific unreasonable warnings." ON)
+option(PVR_ENABLE_EXAMPLE_FAST_MATH "If enabled, attempt to enable fast-math." ON)
+
+# Ensure the examples can find PVRVFrame OpenGL ES Emulation libraries.
+if(WIN32)
+	if("${CMAKE_SIZEOF_VOID_P}" EQUAL "8")
+		set(PVR_VFRAME_LIB_FOLDER "${SDK_ROOT_INTERNAL_DIR}/lib/Windows_x86_64" CACHE INTERNAL "")
+	else()
+		set(PVR_VFRAME_LIB_FOLDER "${SDK_ROOT_INTERNAL_DIR}/lib/Windows_x86_32" CACHE INTERNAL "")
+	endif()
+elseif(APPLE AND NOT IOS)
+	set(PVR_VFRAME_LIB_FOLDER "${SDK_ROOT_INTERNAL_DIR}/lib/macOS_x86" CACHE INTERNAL "")
+elseif(UNIX)
+	set(PVR_VFRAME_LIB_FOLDER "${SDK_ROOT_INTERNAL_DIR}/lib/${CMAKE_SYSTEM_NAME}_${CMAKE_SYSTEM_PROCESSOR}" CACHE INTERNAL "")
+endif()
 
 # Adds an asset to the resource list of TARGET_NAME (windows), and/or add rules to copy it to the asset folder of that target (unix etc.)
 # "Assets" in this context are files that we will make available for runtime use to the target. For example, for Windows we can embed them

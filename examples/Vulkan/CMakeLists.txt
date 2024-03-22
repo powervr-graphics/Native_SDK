@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.18)
+cmake_minimum_required(VERSION 3.3)
 project(VulkanExamples)
 
 set(VULKAN_EXAMPLES 
@@ -7,6 +7,7 @@ set(VULKAN_EXAMPLES
 	03_IntroducingPVRVk
 	04_IntroducingPVRUtils
 	05_IntroducingUIRenderer
+	AntiAliasing
 	AmbientOcclusion
 	Bumpmap
 	DeferredShading
@@ -38,7 +39,7 @@ set(VULKAN_EXAMPLES
 	RayTracingDenoising
 	Shadows
 	Skinning
-  	SPHFluidSimulation
+	SPHFluidSimulation
 	Subgroups
 	TimelineSemaphores
 )

@@ -10,7 +10,7 @@ android {
 		externalNativeBuild {
 			cmake {
 				cppFlags "-fexceptions"
-				arguments "-DANDROID_STL=c++_static"
+				arguments "-DANDROID_STL=c++_static", "-DPVRVK_USE_PLATFORM=VK_USE_PLATFORM_ANDROID_KHR", "-DPVRVK_ENABLE_INSTALL=ON"
 				targets "PVRVk"
 			}
 		}
@@ -22,7 +22,7 @@ android {
 	externalNativeBuild {
 		cmake {
 			path "../CMakeLists.txt"
-			version "3.18.0+"
+			version "3.10.2"
 		}
 	}
 }
@@ -47,7 +47,7 @@ buildscript {
 		jcenter()
 	}
 	dependencies {
-		classpath 'com.android.tools.build:gradle:4.1.2'
+		classpath 'com.android.tools.build:gradle:3.5.3'
 	}
 }
 

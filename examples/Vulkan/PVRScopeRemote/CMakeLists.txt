@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.18)
+cmake_minimum_required(VERSION 3.3)
 project(VulkanPVRScopeRemote)
 if(IOS)
 	message("Skipping VulkanPVRScopeRemote : Not supported on iOS")

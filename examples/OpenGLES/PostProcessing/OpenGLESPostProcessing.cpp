@@ -2127,7 +2127,7 @@ pvr::Result OpenGLESPostProcessing::initApplication()
 	_cameraAngle = 240.0f;
 	_camera.setDistanceFromTarget(200.f);
 	_camera.setHeight(-15.f);
-	_blurScale = 4;
+	_blurScale = 2;
 	_IMGFramebufferScale = -1;
 	_logicTime = 0.0f;
 	_modeSwitchTime = 0.0f;

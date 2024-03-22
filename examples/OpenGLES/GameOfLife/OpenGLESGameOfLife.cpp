@@ -229,6 +229,8 @@ void OpenGLESGameOfLife::createPetriDishEffect()
 /// <summary>Generates data as a starting state for the Game Of Life board.</summary>
 void OpenGLESGameOfLife::generateBoardData()
 {
+	srand(34563464);
+
 	generation = 0;
 
 	switch (currBoardConfig)

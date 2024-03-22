@@ -1,10 +1,10 @@
 apply plugin: 'com.android.library'
 
 android {
-	compileSdkVersion 29
+	compileSdkVersion 28
 	defaultConfig {
 		minSdkVersion 21
-		targetSdkVersion 29
+		targetSdkVersion 26
 		versionCode 1
 		versionName "1.0"
 		externalNativeBuild {
@@ -21,7 +21,7 @@ android {
 	externalNativeBuild {
 		cmake {
 			path "../CMakeLists.txt"
-			version "3.18.0+"
+			version "3.10.2"
 		}
 	}
 }
@@ -32,7 +32,7 @@ buildscript {
 		jcenter()
 	}
 	dependencies {
-		classpath 'com.android.tools.build:gradle:4.1.2'
+		classpath 'com.android.tools.build:gradle:3.5.3'
 	}
 }
 

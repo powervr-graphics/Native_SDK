@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.18)
+cmake_minimum_required(VERSION 3.3)
 project(VulkanMultiSampling)
 if(IOS)
 	message ("Skipping VulkanMultiSampling : Vulkan is not supported on iOS.")

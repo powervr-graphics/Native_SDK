@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.18)
+cmake_minimum_required(VERSION 3.3)
 project(VulkanGPUControlledRendering)
 if(IOS)
 	message ("Skipping VulkanGPUControlledRendering : Vulkan is not supported on iOS.")

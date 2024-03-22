@@ -148,7 +148,7 @@ bool OpenGLESBinaryShaders::loadShaderBinary()
 
 	_deviceResources->program = gl::CreateProgram();
 
-	gl::ProgramBinary(_deviceResources->program, shaderformat, shaderStream->readToEnd<GLubyte>().data(), shaderStream->getSize());
+	gl::ProgramBinary(_deviceResources->program, shaderformat, shaderStream->readToEnd<GLubyte>().data(), static_cast<GLsizei>(shaderStream->getSize()));
 
 	GLint status;
 	gl::GetProgramiv(_deviceResources->program, GL_LINK_STATUS, &status);
@@ -237,7 +237,6 @@ pvr::Result OpenGLESBinaryShaders::initView()
 	}
 
 	std::vector<GLubyte> binaryShaders;
-	GLenum shaderformat = 0;
 
 	if (!loadShaderBinary())
 	{

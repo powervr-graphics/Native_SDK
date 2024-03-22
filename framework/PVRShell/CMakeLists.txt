@@ -1,16 +1,16 @@
-cmake_minimum_required(VERSION 3.18.0 FATAL_ERROR)
-project(PVRShell)
-include(GNUInstallDirs)
-include(../FrameworkCommon.cmake)
+cmake_minimum_required(VERSION 3.3)
 # Copyright (c) Imagination Technologies Limited.
+
+project(PVRShell)
+
+include(GNUInstallDirs)
+include(CMakeFindDependencyMacro)
+include(../FrameworkCommon.cmake)
 
 # Prevent PVRShell being added multiple times
 if(TARGET PVRShell)
 	return()
 endif()
-
-# Add PVRCore
-add_subdirectory(../PVRCore PVRCore)
 
 message(STATUS "Adding PVRShell")
 
@@ -190,22 +190,49 @@ endif()
 # Create the library
 add_library(PVRShell STATIC ${PVRShell_SRC} ${PVRShell_HEADERS})
 
-# Link PVRShell to PVRCore and it's windowing specific libraries
-target_link_libraries(PVRShell PUBLIC PVRCore PRIVATE ${PVRShell_PRIVATE_LINK_LIBS})
+if(PVR_PREBUILT_DEPENDENCIES)
+	list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/../../cmake/modules")
+	find_dependency(PVRCore MODULE REQUIRED)
+endif()
 
-# Allow PVRShell to see the rest of the framework 
-# And the windowing system specific include directories
+apply_framework_compile_options_to_target(PVRShell)
+
+target_link_libraries(PVRShell 
+	PUBLIC
+		PVRCore
+	PRIVATE
+		${PVRShell_PRIVATE_LINK_LIBS})
+
+set(PVRShell_INCLUDE_DIRECTORIES 
+	${CMAKE_CURRENT_LIST_DIR}/..
+	${CMAKE_CURRENT_LIST_DIR}/../../include)
+
 target_include_directories(PVRShell 
 	PUBLIC 
-		${CMAKE_CURRENT_LIST_DIR}/..
-		${CMAKE_CURRENT_LIST_DIR}/../../include
+		"$<BUILD_INTERFACE:${PVRShell_INCLUDE_DIRECTORIES}>"
+		$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 	PRIVATE
 		${PVRShell_PRIVATE_INCLUDE_DIRECTORIES})
 
-# Add the windowing system define variable, so that the source can know which Windowing was requsted
-target_compile_definitions(PVRShell PUBLIC ${PVR_WINDOW_SYSTEM_DEFINE})
+target_compile_definitions(PVRShell 
+	PUBLIC ${PVR_WINDOW_SYSTEM_DEFINE})
 
-# Apply the common framework compile definitions to PVRShell
-# This sets certain warnings on/off and adds appropriate
-# debug and release flags in the compiler and linker  
-apply_framework_compile_options_to_target(PVRShell)
+if(PVR_ENABLE_INSTALL)
+	install(TARGETS PVRShell EXPORT PVRShellTargets
+		ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+		LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+		RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+		INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+		OPTIONAL)
+	foreach(file ${PVRShell_HEADERS})
+		get_filename_component(dir ${file} DIRECTORY)
+		install(FILES ${file} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/PVRShell/${dir})
+	endforeach()
+	install(EXPORT PVRShellTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/PVRShell OPTIONAL)
+
+	export(EXPORT PVRShellTargets FILE "${CMAKE_CURRENT_BINARY_DIR}/PVRShell/PVRShellTargets.cmake")
+	# build tree package config
+	file(COPY cmake/PVRShellConfig.cmake.in DESTINATION "${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/PVRShell/" NO_SOURCE_PERMISSIONS)
+	configure_file("${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/PVRShell/PVRShellConfig.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/PVRShell/PVRShellConfig.cmake" COPYONLY)
+	install(FILES "${CMAKE_CURRENT_BINARY_DIR}/PVRShell/PVRShellTargets.cmake" DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/PVRShell OPTIONAL)
+endif()

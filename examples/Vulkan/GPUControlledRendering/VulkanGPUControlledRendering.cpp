@@ -219,10 +219,10 @@ struct ForwardIndirectPass
 		createRenderPasses(deviceResources);
 		createImages(deviceResources, shell);
 		createImageViews(deviceResources);
-		createFramebuffers(deviceResources, shell);
+		createFramebuffers(deviceResources);
 		createShaderModules(deviceResources, shell);
 		createPipelineLayouts(deviceResources);
-		createPipelines(deviceResources, shell, scene);
+		createPipelines(deviceResources, scene);
 		createDescriptorSet(deviceResources);
 	};
 
@@ -307,7 +307,7 @@ struct ForwardIndirectPass
 	}
 
 	/// <summary> Create offscreen framebuffer for indirect draw pass.</summary>
-	void createFramebuffers(DeviceResources* deviceResources, pvr::Shell& shell)
+	void createFramebuffers(DeviceResources* deviceResources)
 	{
 		std::vector<pvrvk::FramebufferCreateInfo> framebufferInfo;
 		framebufferInfo.resize(2);
@@ -376,7 +376,7 @@ struct ForwardIndirectPass
 	}
 
 	/// <summary> Create the graphics pipeline to be used with the indirect draw pass.</summary>
-	void createPipelines(DeviceResources* deviceResources, pvr::Shell& shell, const pvr::assets::ModelHandle& scene)
+	void createPipelines(DeviceResources* deviceResources, const pvr::assets::ModelHandle& scene)
 	{
 		pvrvk::GraphicsPipelineCreateInfo pipelineCreateInfo;
 
@@ -469,7 +469,7 @@ struct OnScreenPass
 		createShaderModules(deviceResources, shell);
 		createDescriptorSetLayoutAndDescriptorSet(deviceResources);
 		createPipelineLayouts(deviceResources);
-		createPipelines(deviceResources, shell);
+		createPipelines(deviceResources);
 	}
 
 	/// <summary> Record full screen quad draw render commands.</summary>
@@ -536,7 +536,7 @@ struct OnScreenPass
 	}
 
 	/// <summary> Create the graphics pipeline to be used with the OnScreenPass.</summary>
-	void createPipelines(DeviceResources* deviceResources, pvr::Shell& shell)
+	void createPipelines(DeviceResources* deviceResources)
 	{
 		pvrvk::GraphicsPipelineCreateInfo pipelineCreateInfo;
 
@@ -637,12 +637,12 @@ struct IndirectCullComputePass
 		createUBOBuffer(deviceResources);
 		createDescriptorSetLayout(deviceResources);
 		createAndUpdateDescriptorSets(deviceResources);
-		createPipelineLayouts(deviceResources, shell);
+		createPipelineLayouts(deviceResources);
 		createPipeline(deviceResources);
 	}
 
 	/// <summary>Record commands for performing indirect cull compute tasks .</summary>
-	void indirectCullDispatch(DeviceResources* deviceResources, uint32_t queueIndex, uint32_t familyIndex, pvrvk::CommandBuffer& cmdBuffer)
+	void indirectCullDispatch(DeviceResources* deviceResources, pvrvk::CommandBuffer& cmdBuffer)
 	{
 		pvr::utils::beginCommandBufferDebugLabel(cmdBuffer, pvrvk::DebugUtilsLabel("Indirect Cull Pass"));
 		cmdBuffer->bindPipeline(_pipeline);
@@ -718,7 +718,7 @@ struct IndirectCullComputePass
 	}
 
 	/// <summary> Create the pipeline layouts to be used with the compute pipeline.</summary>
-	void createPipelineLayouts(DeviceResources* deviceResources, pvr::Shell& shell)
+	void createPipelineLayouts(DeviceResources* deviceResources)
 	{
 		pvrvk::PipelineLayoutCreateInfo pipeLayoutInfo;
 		pipeLayoutInfo.addDescSetLayout(deviceResources->indirectCullDescSetLayout); // set 0
@@ -822,7 +822,7 @@ public:
 	void updateGPUInstanceData();
 
 	/// <summary> Updates & resets per draw, per instance & the indirect command buffer data </summary>
-	void prepareCullData(const uint32_t swapchainIndex, pvrvk::CommandBuffer& cmdBuffer);
+	void prepareCullData(pvrvk::CommandBuffer& cmdBuffer);
 
 	/// <summary> Reads the culling results from the output instance buffer and logs the queried results </summary>
 	void logDebugData();
@@ -872,7 +872,6 @@ void VulkanGpuControlledRendering::createInstanceData()
 			for (int z = 0; z < ZSIZE; z++, index++)
 			{
 				glm::vec3 sphereSpawnPos = glm::vec3(x * gridXOffset, y * gridYOffset, z * gridZOffset);
-				float scales = 0.0f;
 				instancePoses.emplace_back(sphereSpawnPos);
 				instanceScales.emplace_back(7.0f);
 			}
@@ -895,7 +894,7 @@ void VulkanGpuControlledRendering::createInstanceData()
 		}
 	}
 
-	const int numInstances = _instanceData.size();
+	const int numInstances = static_cast<int>(_instanceData.size());
 	for (int i = 0; i < numInstances; i++)
 	{
 		_instanceData[i].pos = instancePoses[i];
@@ -972,7 +971,7 @@ void VulkanGpuControlledRendering::updateGPUInstanceData()
 	endAndSubmitCommandBuffer(uploadCmd);
 }
 
-void VulkanGpuControlledRendering::prepareCullData(const uint32_t swapchainIndex, pvrvk::CommandBuffer& cmdBuffer)
+void VulkanGpuControlledRendering::prepareCullData(pvrvk::CommandBuffer& cmdBuffer)
 {
 	// update model matrix & mesh bounds
 	refreshBoundsAndUpdateObjectSSBOData(cmdBuffer);
@@ -1018,7 +1017,7 @@ void VulkanGpuControlledRendering::mergeSceneIbosVbos(pvrvk::CommandBuffer uploa
 		pvr::utils::updateBufferUsingStagingBuffer(_deviceResources->device, _deviceResources->batchedIBO, uploadBuffer, (const void*)mesh.getFaces().getData(), currIndexOffset,
 			mesh.getFaces().getDataSize(), _deviceResources->vmaAllocator);
 
-		currVertexOffset += mesh.getDataSize(0);
+		currVertexOffset += static_cast<uint32_t>(mesh.getDataSize(0));
 		currIndexOffset += mesh.getFaces().getDataSize();
 	}
 }
@@ -1516,9 +1515,6 @@ pvr::Result VulkanGpuControlledRendering::initView()
 	uploadBuffer->setObjectName("InitView : Upload Command Buffer");
 	uploadBuffer->begin(pvrvk::CommandBufferUsageFlags::e_ONE_TIME_SUBMIT_BIT);
 
-	// load the vbo and ibo data
-	bool requiresCommandBufferSubmission = false;
-
 	// merge meshes into single IBO and VBOs
 	mergeSceneIbosVbos(uploadBuffer);
 
@@ -1596,7 +1592,10 @@ void VulkanGpuControlledRendering::logDebugData()
 		for (uint32_t i = 0; i < TOTAL_NUM_INSTANCES; ++i)
 		{
 			if (finalInstanceBufferData[i] == UINT32_MAX && i < NUM_INSTANCES_PER_DRAW) { ++numCulledInstancesSphere; }
-			else if (finalInstanceBufferData[i] == UINT32_MAX) { ++numCulledInstancesTorus; }
+			else if (finalInstanceBufferData[i] == UINT32_MAX)
+			{
+				++numCulledInstancesTorus;
+			}
 		}
 	}
 	std::string cullMode = {};
@@ -1650,11 +1649,11 @@ pvr::Result VulkanGpuControlledRendering::renderFrame()
 
 	computeCommandBuffer->begin();
 
-	prepareCullData(swapchainIndex, computeCommandBuffer);
+	prepareCullData(computeCommandBuffer);
 
 	updateDrawCullDataAndUBO(swapchainIndex);
 
-	_deviceResources->indirectCullComputePass->indirectCullDispatch(_deviceResources.get(), _queueIndex, swapchainIndex, computeCommandBuffer);
+	_deviceResources->indirectCullComputePass->indirectCullDispatch(_deviceResources.get(), computeCommandBuffer);
 
 	computeCommandBuffer->end();
 

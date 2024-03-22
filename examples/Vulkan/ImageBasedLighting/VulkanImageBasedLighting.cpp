@@ -686,11 +686,11 @@ pvr::Result VulkanImageBasedLighting::initView()
 	if (!_deviceResources->commandPool) { return pvr::Result::UnknownError; }
 
 	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(pvrvk::DescriptorPoolCreateInfo()
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 5 * _swapchainLength)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 5 * _swapchainLength)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 5 * _swapchainLength)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_STORAGE_IMAGE, 2)
-																						  .setMaxDescriptorSets(5 * _swapchainLength));
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, static_cast<uint16_t>(5 * _swapchainLength))
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, static_cast<uint16_t>(5 * _swapchainLength))
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, static_cast<uint16_t>(5 * _swapchainLength))
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_STORAGE_IMAGE, static_cast<uint16_t>(2))
+																						  .setMaxDescriptorSets(static_cast<uint16_t>(5 * _swapchainLength)));
 
 	if (!_deviceResources->descriptorPool) { return pvr::Result::UnknownError; }
 

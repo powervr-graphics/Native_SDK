@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.18.0 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.3)
 
 # Adds a shader that should be compiled to spirv.
 # Will create a rule that, at build time, will compile the provided shaders from at BASE_PATH/RELATIVE_PATH into spirv at ASSET_FOLDER/RELATIVE_PATH.

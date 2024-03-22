@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.18)
+cmake_minimum_required(VERSION 3.3)
 project(OpenGLESGameOfLife)
 if(IOS)
 	message("Skipping OpenGLESGameOfLife : Not supported on iOS")

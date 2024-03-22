@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.18)
+cmake_minimum_required(VERSION 3.3)
 project(VulkanRayTracedHardShadows)
 if(ANDROID)
 	message("Skipping VulkanRayTracedHardShadows : Not supported on Android")
