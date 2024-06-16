@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.3)
+cmake_minimum_required(VERSION 3.10)
 project(OpenGLESShadows)
 if(IOS)
 	message("Skipping OpenGLESShadows : Not supported on iOS")
