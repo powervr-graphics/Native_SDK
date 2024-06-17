@@ -754,7 +754,7 @@ public:
 	/// <param name="uiRenderer">The UIRenderer to use when creating the Font.</param>
 	/// <param name="font">The font to use for the text element.</param>
 	TextElement_(make_shared_enabler, UIRenderer& uiRenderer, const Font& font)
-		: _isTextDirty(false), _font(font), _vbo(static_cast<GLuint>(-1)), _vboCreated(false), _uiRenderer(&uiRenderer), _isUtf8(false)
+		: _isUtf8(false), _isTextDirty(false), _font(font), _vbo(static_cast<GLuint>(-1)), _vboCreated(false), _uiRenderer(&uiRenderer)
 	{}
 
 	/// <summary>Constructor for a Text element. Do not use - use the UIRenderer::createTextElement</summary>

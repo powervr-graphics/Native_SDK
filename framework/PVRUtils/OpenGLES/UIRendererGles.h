@@ -79,9 +79,12 @@ struct GLState
 
 	/// <summary>Default constructor for GLState which initialises the OpenGL ES states for the GLState structure.</summary>
 	GLState()
-		: activeProgram(-1), activeTextureUnit(-1), boundTexture(-1), blendDstAlpha(GL_ONE), blendDstRgb(GL_ONE_MINUS_SRC_ALPHA), blendEnabled(GL_TRUE),
-		  blendEqationAlpha(GL_FUNC_ADD), blendEqationRgb(GL_FUNC_ADD), blendSrcAlpha(GL_ZERO), blendSrcRgb(GL_SRC_ALPHA), depthMask(GL_FALSE), depthTest(GL_FALSE),
-		  stencilTest(GL_FALSE), cullingEnabled(GL_FALSE), culling(GL_BACK), windingOrder(GL_CCW), ibo(-1), sampler7(0), vbo(-1), vao(-1), vertexAttribArray(8, GL_FALSE),
+		: activeProgram(-1), activeTextureUnit(-1), boundTexture(-1), blendEnabled(GL_TRUE),
+		  blendSrcRgb(GL_SRC_ALPHA), blendSrcAlpha(GL_ZERO),
+		  blendDstRgb(GL_ONE_MINUS_SRC_ALPHA), blendDstAlpha(GL_ONE),
+		  blendEqationRgb(GL_FUNC_ADD), blendEqationAlpha(GL_FUNC_ADD), depthTest(GL_FALSE), depthMask(GL_FALSE),
+		  stencilTest(GL_FALSE), cullingEnabled(GL_FALSE), culling(GL_BACK), windingOrder(GL_CCW),
+		  sampler7(0), vbo(-1), ibo(-1), vao(-1), vertexAttribArray(8, GL_FALSE),
 		  vertexAttribBindings(8, -1), vertexAttribSizes(8, -1), vertexAttribTypes(8, -1), vertexAttribNormalized(8, -1), vertexAttribStride(8, -1),
 		  vertexAttribOffset(8, static_cast<GLvoid*>(nullptr))
 	{
@@ -265,7 +268,7 @@ public:
 	}
 
 	/// <summary>Constructor. Does not produce a ready-to-use object, use the init function before use.</summary>
-	UIRenderer() : _screenRotation(.0f), _program(0), _fontIboCreated(false), _imageVboCreated(false), _samplerBilinear(0), _samplerTrilinear(0), _fontIbo(-1), _imageVbo(-1) {}
+	UIRenderer() : _program(0), _samplerBilinear(0), _samplerTrilinear(0), _fontIbo(-1), _fontIboCreated(false), _imageVbo(-1), _imageVboCreated(false), _screenRotation(.0f) {}
 
 	/// <summary>Move Constructor. Does not produce a ready-to-use object, use the init function before use.</summary>
 	/// <param name="rhs">Another UIRenderer to initiialise from.</param>
@@ -273,9 +276,9 @@ public:
 		: _program(std::move(rhs._program)), _programData(std::move(rhs._programData)), _defaultFont(std::move(rhs._defaultFont)), _sdkLogo(std::move(rhs._sdkLogo)),
 		  _defaultTitle(std::move(rhs._defaultTitle)), _defaultDescription(std::move(rhs._defaultDescription)), _defaultControls(std::move(rhs._defaultControls)),
 		  _samplerBilinear(std::move(rhs._samplerBilinear)), _samplerTrilinear(std::move(rhs._samplerTrilinear)), _fontIbo(std::move(rhs._fontIbo)),
-		  _imageVbo(std::move(rhs._imageVbo)), _screenDimensions(std::move(rhs._screenDimensions)), _screenRotation(std::move(rhs._screenRotation)),
-		  _groupId(std::move(rhs._groupId)), _sprites(std::move(rhs._sprites)), _textElements(std::move(rhs._textElements)), _fonts(std::move(rhs._fonts)),
-		  _fontIboCreated(std::move(rhs._fontIboCreated)), _imageVboCreated(std::move(rhs._imageVboCreated))
+		  _fontIboCreated(std::move(rhs._fontIboCreated)), _imageVbo(std::move(rhs._imageVbo)), _imageVboCreated(std::move(rhs._imageVboCreated)),
+		  _screenDimensions(std::move(rhs._screenDimensions)), _screenRotation(std::move(rhs._screenRotation)), _groupId(std::move(rhs._groupId)),
+		  _sprites(std::move(rhs._sprites)), _textElements(std::move(rhs._textElements)), _fonts(std::move(rhs._fonts))
 	{
 		_program = std::move(rhs._program);
 		rhs._program = 0;
@@ -667,17 +670,13 @@ private:
 	void init_CreateDefaultTitle();
 	void init_CreateShaders(bool framebufferSRGB);
 
-	std::vector<SpriteWeakRef> _sprites;
-	std::vector<TextElementWeakRef> _textElements;
-	std::vector<FontWeakRef> _fonts;
-
+	GLuint _program;
 	ProgramData _programData;
 	Font _defaultFont;
 	Image _sdkLogo;
 	Text _defaultTitle;
 	Text _defaultDescription;
 	Text _defaultControls;
-	GLuint _program;
 
 	GLuint _samplerBilinear;
 	GLuint _samplerTrilinear;
@@ -688,6 +687,10 @@ private:
 	glm::vec2 _screenDimensions;
 	float _screenRotation;
 	uint64_t _groupId = 1;
+
+	std::vector<SpriteWeakRef> _sprites;
+	std::vector<TextElementWeakRef> _textElements;
+	std::vector<FontWeakRef> _fonts;
 
 	GLStateTracker _uiStateTracker;
 	GLState _currentState;
