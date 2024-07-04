@@ -180,6 +180,8 @@ bool createNativeWindow(xcb_connection_t* nativeConnection, xcb_screen_t* native
 
 	xcb_map_window(nativeConnection, nativeWindow);
 	xcb_flush(nativeConnection);
+
+	return true;
 }
 
 /*!*********************************************************************************************************************
