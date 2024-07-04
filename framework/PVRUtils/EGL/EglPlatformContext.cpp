@@ -920,7 +920,6 @@ void scContextCreation(NativePlatformHandles& handles, OSWindow window, DisplayA
 {
 	EGLConfig configs[2];
 	EGLBoolean eRetStatus;
-	EGLint major, minor;
 	EGLint context_attribs[] = { EGL_CONTEXT_CLIENT_VERSION, 2, EGL_NONE };
 	EGLint width, height;
 	EGLint config_count;

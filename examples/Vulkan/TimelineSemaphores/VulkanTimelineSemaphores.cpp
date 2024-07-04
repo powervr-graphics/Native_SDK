@@ -1017,8 +1017,6 @@ void VulkanTimelineSemaphores::createComputePipeline()
 /// <param name="noiseTextureId">Noise texture index</param>
 void VulkanTimelineSemaphores::recordComputeCommandBuffer(const uint32_t& currentFrameId, const uint32_t& noiseTextureId)
 {
-	const uint32_t numSwapchains = _deviceResources->swapchain->getSwapchainLength();
-
 	const uint32_t computeOperationIndex = currentFrameId * _numberOfNoiseLayers + noiseTextureId;
 	pvrvk::CommandBuffer& mainCmdBuffer = _deviceResources->computeCommandBuffers[computeOperationIndex];
 
