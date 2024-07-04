@@ -8,7 +8,7 @@
 #include "Matrix.h"
 #include <iomanip>
 
-Matrix::Matrix(uint32_t height, uint32_t width, float* m) : _height(height), _width(width) { _m = m; }
+Matrix::Matrix(uint32_t height, uint32_t width, float* m) : _width(width), _height(height) { _m = m; }
 
 float Matrix::operator()(size_t row, size_t column)
 {

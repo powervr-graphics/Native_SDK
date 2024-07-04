@@ -479,7 +479,7 @@ public:
 		: _numSwapImages(0), _swapchainIndex(0), _rtProperties({}), _shaderGroupCount(0), _frameId(0), _cameraPosition(glm::vec3(0.0f)), _cameraLookAt(glm::vec3(0.0f)),
 		  _cameraUpDirection(glm::vec3(0.0f)), _cameraFieldOfView(0.0f), _lightData({}), _viewMatrix(glm::mat4(1.0f)), _projectionMatrix(glm::mat4(1.0f)),
 		  _viewProjectionMatrix(glm::mat4(1.0f)), _windowWidth(0), _windowHeight(0), _framebufferWidth(0), _framebufferHeight(0), _viewportOffsets{ 0 },
-		  _positiveYAxis(glm::vec3(0.0f, 1.0f, 0.0f)), _positiveXAxis(glm::vec3(1.0f, 0.0f, 0.0f)), _renderpassStorageFormats{ pvrvk::Format::e_R8G8B8A8_UNORM,
+		  _positiveXAxis(glm::vec3(1.0f, 0.0f, 0.0f)), _positiveYAxis(glm::vec3(0.0f, 1.0f, 0.0f)), _renderpassStorageFormats{ pvrvk::Format::e_R8G8B8A8_UNORM,
 			  pvrvk::Format::e_R16G16B16A16_SFLOAT, pvrvk::Format::e_R16G16B16A16_SFLOAT },
 		  _updateScene(true), _rotationAngleRadian(0.0f), _depthStencilFormat(pvrvk::Format::e_UNDEFINED)
 	{}
