@@ -907,7 +907,7 @@ void VulkanTimelineSemaphores::recordGraphicsCommandBuffer()
 
 		std::array<glm::vec3, _numberOfNoiseLayers> planePositions{};
 
-		for (int j = 0; j < planePositions.size(); j++)
+		for (std::size_t j = 0; j < planePositions.size(); j++)
 		{
 			const float distanceBetweenTiles = 3.f;
 			const float xDisplacement = (_numberOfNoiseLayers * -0.5f) * distanceBetweenTiles + float(j) * distanceBetweenTiles + 1.5f;
