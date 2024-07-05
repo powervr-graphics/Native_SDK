@@ -917,7 +917,7 @@ void VulkanGpuControlledRendering::updateGPUIndirectObjectData(pvrvk::CommandBuf
 	int startVertexOffset = 0;
 
 	int m = 0;
-	for (int i = 0; i < _scene->getNumMeshes(); i++)
+	for (uint32_t i = 0; i < _scene->getNumMeshes(); i++)
 	{
 		GPUIndirectDrawCommandObject temp{};
 		VkDrawIndexedIndirectCommand indirectCommand;
@@ -995,7 +995,7 @@ void VulkanGpuControlledRendering::mergeSceneIbosVbos(pvrvk::CommandBuffer uploa
 	pvrvk::DeviceSize batchVBOSize = 0;
 	pvrvk::DeviceSize batchIBOSize = 0;
 
-	for (int i = 0; i < _scene->getNumMeshes(); i++)
+	for (uint32_t i = 0; i < _scene->getNumMeshes(); i++)
 	{
 		const pvr::assets::Mesh& mesh = _scene->getMesh(i);
 		batchVBOSize += mesh.getDataSize(0);
@@ -1017,7 +1017,7 @@ void VulkanGpuControlledRendering::mergeSceneIbosVbos(pvrvk::CommandBuffer uploa
 
 	uint32_t currVertexOffset = 0;
 	uint32_t currIndexOffset = 0;
-	for (int i = 0; i < _scene->getNumMeshes(); i++)
+	for (uint32_t i = 0; i < _scene->getNumMeshes(); i++)
 	{
 		const pvr::assets::Mesh& mesh = _scene->getMesh(i);
 		pvr::utils::updateBufferUsingStagingBuffer(_deviceResources->device, _deviceResources->batchedVBO, uploadBuffer, (const void*)mesh.getData(0), currVertexOffset,
@@ -1113,7 +1113,7 @@ MeshBounds VulkanGpuControlledRendering::calculateBoundingSphereMeshBounds(pvr::
 	// Center
 	glm::vec3 center = glm::vec3(0);
 	// go through the vertices to calculate the origin
-	for (int i = 0; i < numVertices; i++)
+	for (uint32_t i = 0; i < numVertices; i++)
 	{
 		glm::vec3 pos_tmp;
 		memcpy(&pos_tmp, data + offset + i * stride, sizeof(float) * 3);
@@ -1126,7 +1126,7 @@ MeshBounds VulkanGpuControlledRendering::calculateBoundingSphereMeshBounds(pvr::
 	// Radius
 	float radius = 0;
 	// go through the vertices again to calculate the bounding sphere radius
-	for (int i = 0; i < numVertices; i++)
+	for (uint32_t i = 0; i < numVertices; i++)
 	{
 		glm::vec3 pos_tmp;
 		memcpy(&pos_tmp, data + offset + i * stride, sizeof(float) * 3);
@@ -1566,7 +1566,7 @@ pvr::Result VulkanGpuControlledRendering::initView()
 	createScenePasses();
 
 	// generate model space sphere mesh bounds
-	for (int i = 0; i < _scene->getNumMeshes(); i++)
+	for (uint32_t i = 0; i < _scene->getNumMeshes(); i++)
 	{
 		pvr::assets::Model::Mesh mesh = _scene->getMesh(i);
 		_sceneMeshBounds.push_back(calculateBoundingSphereMeshBounds(mesh));

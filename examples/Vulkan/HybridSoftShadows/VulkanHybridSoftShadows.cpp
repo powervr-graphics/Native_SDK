@@ -688,7 +688,7 @@ void VulkanHybridSoftShadows::updateScene()
 	// Sets the _scene animation to this _frame
 	animInst.updateAnimation(_frame);
 
-	for (int i = 0; i < _scene->getNumMeshes(); i++)
+	for (uint32_t i = 0; i < _scene->getNumMeshes(); i++)
 	{
 		const pvr::assets::Model::Node& node = _scene->getNode(i);
 
@@ -792,7 +792,7 @@ void VulkanHybridSoftShadows::createDescriptorSets()
 
 	pvrvk::WriteDescriptorSet textureSetWrite = pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, _deviceResources->commonDescriptorSet, 3);
 
-	for (int i = 0; i < _deviceResources->textures.size(); i++)
+	for (size_t i = 0; i < _deviceResources->textures.size(); i++)
 		textureSetWrite.setImageInfo(i, pvrvk::DescriptorImageInfo(_deviceResources->textures[i].imageView, samplerTrilinear, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL));
 
 	writeDescSets.push_back(textureSetWrite);
@@ -1210,7 +1210,7 @@ void VulkanHybridSoftShadows::createModelBuffers(pvrvk::CommandBuffer& uploadCmd
 	glm::vec3 minExtents = glm::vec3(INFINITY);
 	glm::vec3 maxExtents = glm::vec3(-INFINITY);
 
-	for (int meshIdx = 0; meshIdx < numMeshes; meshIdx++)
+	for (uint32_t meshIdx = 0; meshIdx < numMeshes; meshIdx++)
 	{
 		std::vector<pvr::utils::ASVertexFormat> vertices;
 		std::vector<uint32_t> indices;
@@ -1310,7 +1310,7 @@ void VulkanHybridSoftShadows::createModelBuffers(pvrvk::CommandBuffer& uploadCmd
 	_satyrCenter = (maxExtents + minExtents) / 2.0f;
 
 	// populate material data
-	for (int i = 0; i < _scene->getNumMaterials(); i++)
+	for (uint32_t i = 0; i < _scene->getNumMaterials(); i++)
 	{
 		auto& material = _scene->getMaterial(i);
 

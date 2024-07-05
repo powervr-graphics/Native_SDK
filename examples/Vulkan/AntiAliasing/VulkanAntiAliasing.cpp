@@ -869,7 +869,7 @@ void VulkanAntiAliasing::createImagesAndFramebuffers()
 	pvrvk::ImageCreateInfo taaHistoryColorImageInfo = pvrvk::ImageCreateInfo(pvrvk::ImageType::e_2D, _deviceResources->swapchain->getImageFormat(),
 		pvrvk::Extent3D(getWidth(), getHeight(), 1u), pvrvk::ImageUsageFlags::e_SAMPLED_BIT | pvrvk::ImageUsageFlags::e_TRANSFER_DST_BIT);
 
-	for (int i = 0; i < _swapchainLength; ++i)
+	for (uint32_t i = 0; i < _swapchainLength; ++i)
 	{
 		// Build color and depth attachment image and image views for the offscreen pass of FXAA (1 sample per pixel)
 		pvrvk::Image colorImage1SPP = pvr::utils::createImage(_deviceResources->device, colorImageInfo1SPP, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT,
@@ -983,7 +983,7 @@ void VulkanAntiAliasing::changeTAAHistoryImageLayout(pvrvk::CommandBuffer utilit
 	imageBarrier.setSubresourceRange(pvrvk::ImageSubresourceRange(pvrvk::ImageAspectFlags::e_COLOR_BIT));
 
 	// TAA update history render pass
-	for (int i = 0; i < _swapchainLength; i++)
+	for (uint32_t i = 0; i < _swapchainLength; i++)
 	{
 		imageBarrier.setImage(_deviceResources->taaHistoryImage[i]);
 		barrier.addBarrier(imageBarrier);

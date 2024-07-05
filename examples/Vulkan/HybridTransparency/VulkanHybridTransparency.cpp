@@ -1180,12 +1180,12 @@ void VulkanHybridTransparency::buildCommonDescriptorSet()
 	lightDataWDS.setBufferInfo(0, pvrvk::DescriptorBufferInfo(_deviceResources->lightDataBuffer, 0, _deviceResources->lightDataBufferView.getDynamicSliceSize()));
 
 	materialBufferWDS.setBufferInfo(0, pvrvk::DescriptorBufferInfo(_deviceResources->materialBuffer, 0, VK_WHOLE_SIZE));
-	for (int i = 0; i < _deviceResources->materialIndexBuffers.size(); i++)
+	for (size_t i = 0; i < _deviceResources->materialIndexBuffers.size(); i++)
 	{
 		materialIndicesWDS.setBufferInfo(i, pvrvk::DescriptorBufferInfo(_deviceResources->materialIndexBuffers[i], 0, _deviceResources->materialIndexBuffers[i]->getSize()));
 	}
 
-	for (int i = 0; i < _deviceResources->textures.size(); i++)
+	for (size_t i = 0; i < _deviceResources->textures.size(); i++)
 	{
 		sampledTexturesWDS.setImageInfo(
 			i, pvrvk::DescriptorImageInfo(_deviceResources->textures[i].imageView, _deviceResources->samplerLinear, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL));
@@ -1193,12 +1193,12 @@ void VulkanHybridTransparency::buildCommonDescriptorSet()
 
 	accelerationStructureWDS.setAccelerationStructureInfo(0, _deviceResources->accelerationStructure.getTopLevelAccelerationStructure());
 
-	for (int i = 0; i < _deviceResources->vertexBuffers.size(); i++)
+	for (size_t i = 0; i < _deviceResources->vertexBuffers.size(); i++)
 	{
 		vertexBufferArrayWDS.setBufferInfo(i, pvrvk::DescriptorBufferInfo(_deviceResources->vertexBuffers[i], 0, _deviceResources->vertexBuffers[i]->getSize()));
 	}
 
-	for (int i = 0; i < _deviceResources->indexBuffers.size(); i++)
+	for (size_t i = 0; i < _deviceResources->indexBuffers.size(); i++)
 	{
 		indexBufferArrayWDS.setBufferInfo(i, pvrvk::DescriptorBufferInfo(_deviceResources->indexBuffers[i], 0, _deviceResources->indexBuffers[i]->getSize()));
 	}
@@ -1809,7 +1809,7 @@ void VulkanHybridTransparency::buildSceneDescriptionBuffer()
 {
 	_deviceResources->_sceneDescription.resize(_vectorModelTransform.size());
 
-	for (int i = 0; i < _vectorModelTransform.size(); ++i)
+	for (size_t i = 0; i < _vectorModelTransform.size(); ++i)
 	{
 		_deviceResources->_sceneDescription[i].modelIndex = 0;
 		_deviceResources->_sceneDescription[i].transform = _vectorModelTransform[i];
@@ -1984,7 +1984,7 @@ void VulkanHybridTransparency::buildSceneElementTransformBuffer()
 	_deviceResources->perMeshTransformBuffer->setObjectName("PerMeshTransformUBO");
 	_deviceResources->perMeshTransformBufferView.pointToMappedMemory(_deviceResources->perMeshTransformBuffer->getDeviceMemory()->getMappedData());
 
-	for (int i = 0; i < _vectorModelTransform.size(); ++i)
+	for (size_t i = 0; i < _vectorModelTransform.size(); ++i)
 	{
 		_deviceResources->perMeshTransformBufferView.getElementByName("ModelMatrix", 0, i).setValue(_vectorModelTransform[i]);
 	}
@@ -2096,7 +2096,7 @@ void VulkanHybridTransparency::updateScene()
 	if (_rotationAngleRadian >= 2.0f * glm::pi<float>()) { _rotationAngleRadian = 0.0f; }
 
 	// Update the transforms of the dynamic elements
-	for (int i = 2; i < _vectorModelTransform.size(); ++i)
+	for (size_t i = 2; i < _vectorModelTransform.size(); ++i)
 	{
 		_vectorModelTransform[i] = glm::translate(_vectorInitialModelTranslation[i]) * glm::rotate(1.5707f, glm::vec3(1.0, 0.0, 0.0)) *
 			glm::rotate(_rotationAngleRadian, glm::vec3(0.0, 0.0, 1.0)) * glm::scale(_vectorInitialModelScale[i]);
@@ -2109,7 +2109,7 @@ void VulkanHybridTransparency::updateScene()
 	_deviceResources->accelerationStructure.buildTopLevelASAndInstances(_deviceResources->device, commandBuffer, _deviceResources->queue,
 		pvrvk::BuildAccelerationStructureFlagsKHR::e_PREFER_FAST_TRACE_BIT_KHR | pvrvk::BuildAccelerationStructureFlagsKHR::e_ALLOW_UPDATE_BIT_KHR, true);
 
-	for (int i = 0; i < _vectorModelTransform.size(); ++i)
+	for (size_t i = 0; i < _vectorModelTransform.size(); ++i)
 	{
 		// Update scene element transforms through the structured buffer view
 		_deviceResources->perMeshTransformBufferView.getElementByName("ModelMatrix", 0, i).setValue(_vectorModelTransform[i]);

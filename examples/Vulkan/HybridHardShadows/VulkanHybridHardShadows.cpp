@@ -738,7 +738,7 @@ void VulkanHybridHardShadows::updateScene()
 	// Sets the _scene animation to this _frame
 	animInst.updateAnimation(_frame);
 
-	for (int i = 0; i < _scene->getNumMeshes(); i++)
+	for (uint32_t i = 0; i < _scene->getNumMeshes(); i++)
 	{
 		const pvr::assets::Model::Node& node = _scene->getNode(i);
 
@@ -1397,7 +1397,7 @@ void VulkanHybridHardShadows::createModelBuffers(pvrvk::CommandBuffer& uploadCmd
 	_meshTransforms.reserve(numMeshes);
 
 	// populate material data
-	for (int i = 0; i < _scene->getNumMaterials(); i++)
+	for (uint32_t i = 0; i < _scene->getNumMaterials(); i++)
 	{
 		auto& material = _scene->getMaterial(i);
 
@@ -1421,7 +1421,7 @@ void VulkanHybridHardShadows::createModelBuffers(pvrvk::CommandBuffer& uploadCmd
 	if (materials.empty()) materials.emplace_back(Material());
 
 	// populate vertices, indices and material indices
-	for (int meshIdx = 0; meshIdx < numMeshes; meshIdx++)
+	for (uint32_t meshIdx = 0; meshIdx < numMeshes; meshIdx++)
 	{
 		std::vector<pvr::utils::ASVertexFormat> vertices;
 		std::vector<uint32_t> indices;

@@ -217,7 +217,7 @@ const float LightMaxAxialVelocity = 5.f;
 const float LightMaxRadialVelocity = 1.5f;
 const float LightMaxVerticalVelocity = 5.f;
 
-int32_t MaxScenePointLights = 5;
+uint32_t MaxScenePointLights = 5;
 int32_t NumProceduralPointLights = 10;
 float PointlightIntensity = 20.f;
 const float PointLightMinIntensityForCuttoff = 10.f / 255.f;
@@ -1959,7 +1959,7 @@ void VulkanDeferredShading::updateDynamicSceneData()
 			_deviceResources->modelMatrixBufferView.getDynamicSliceSize() * _mainScene->getNumMeshNodes());
 	}
 
-	uint32_t pointLight = 0u;
+	uint32_t pointLight = 0;
 	uint32_t directionalLight = 0;
 
 	// update the lighting data
@@ -1970,7 +1970,7 @@ void VulkanDeferredShading::updateDynamicSceneData()
 		switch (light.getType())
 		{
 		case pvr::assets::Light::Point: {
-			if ((uint32_t)pointLight >= PointLightConfiguration::MaxScenePointLights) { continue; }
+			if (pointLight >= PointLightConfiguration::MaxScenePointLights) { continue; }
 
 			const glm::mat4& transMtx = _mainScene->getWorldMatrix(_mainScene->getNodeIdFromLightNodeId(i));
 			const glm::mat4& proxyScale = glm::scale(glm::vec3(PointLightConfiguration::PointLightMaxRadius));
@@ -2184,7 +2184,7 @@ void VulkanDeferredShading::initialiseStaticLightProperties()
 {
 	RenderData& pass = _deviceResources->renderInfo;
 
-	int32_t pointLight = 0;
+	uint32_t pointLight = 0;
 	uint32_t directionalLight = 0;
 	for (uint32_t i = 0; i < _mainScene->getNumLightNodes(); ++i)
 	{
@@ -2243,7 +2243,7 @@ void VulkanDeferredShading::allocateLights()
 
 	if (DirectionalLightConfiguration::AdditionalDirectionalLight) { ++countDirectional; }
 
-	if (countPoint >= static_cast<uint32_t>(PointLightConfiguration::MaxScenePointLights)) { countPoint = PointLightConfiguration::MaxScenePointLights; }
+	if (countPoint >= PointLightConfiguration::MaxScenePointLights) { countPoint = PointLightConfiguration::MaxScenePointLights; }
 
 	countPoint += PointLightConfiguration::NumProceduralPointLights;
 
