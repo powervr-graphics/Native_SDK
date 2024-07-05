@@ -410,7 +410,8 @@ void VulkanTimelineSemaphores::createDevicesAndQueues(pvrvk::Surface& surface)
 
 	_deviceResources->graphicsQueue = _deviceResources->device->getQueue(queueAccessInfos[0].familyId, queueAccessInfos[0].queueId);
 
-	if (!(queueAccessInfos[1].familyId != -1 && queueAccessInfos[1].queueId != -1))
+	if (!(queueAccessInfos[1].familyId != static_cast<uint32_t>(-1) &&
+		    queueAccessInfos[1].queueId != static_cast<uint32_t>(-1)))
 	{
 		Log(LogLevel::Error, "Multiple queues are not supported (e_GRAPHICS_BIT + e_COMPUTE_BIT + WSI)");
 	}
