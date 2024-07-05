@@ -583,10 +583,10 @@ void VulkanTimelineSemaphores::createSyncObjectsAndCommandBuffers()
 		_deviceResources->graphicsCommandBuffers[i]->setObjectName("MainCommandBufferSwapchain" + std::to_string(i));
 
 		// create compute command buffers
-		for (int k = 0; k < 4; k++)
+		for (int k = 0; k < _numberOfNoiseLayers; k++)
 		{
 			_deviceResources->computeCommandBuffers.push_back(_deviceResources->computeCommandPool->allocateCommandBuffer());
-			_deviceResources->computeCommandBuffers[4 * i + k]->setObjectName(std::string("Main Compute CommandBuffer [") + std::to_string(i) + "]" + "[" + std::to_string(k) + "]");
+			_deviceResources->computeCommandBuffers[_numberOfNoiseLayers * i + k]->setObjectName(std::string("Main Compute CommandBuffer [") + std::to_string(i) + "]" + "[" + std::to_string(k) + "]");
 		}
 
 		// create classic sync objects
@@ -632,7 +632,7 @@ void VulkanTimelineSemaphores::createPools()
 	_deviceResources->graphicsCommandPool->setObjectName("Main Command Pool");
 
 	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(pvrvk::DescriptorPoolCreateInfo()
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 16)
+																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, _swapchainLength * _numberOfNoiseLayers + _numberOfNoiseLayers)
 																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 16)
 																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 16)
 																						  .setMaxDescriptorSets(32));
@@ -973,7 +973,7 @@ void VulkanTimelineSemaphores::createComputePipeline()
 
 	//--- create the compute descritptor set
 	{
-		for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength() * 4; ++i)
+		for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength() * _numberOfNoiseLayers; ++i)
 		{
 			_deviceResources->computeDescriptorSets.push_back(_deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->computeDescriptorSetLayout));
 			_deviceResources->computeDescriptorSets.back()->setObjectName("ComputeSwapchain" + std::to_string(i) + "DescriptorSet");
@@ -1110,7 +1110,7 @@ pvrvk::ImageMemoryBarrier VulkanTimelineSemaphores::transitionFromReadOnlyToGene
 /// <param name="textureIndex">Index of the noise texture used</param>
 void VulkanTimelineSemaphores::submitComputeWork(const uint32_t& currentFrameId, const uint64_t& semaphoreWaitValue, const uint64_t& semaphoreSignalValue, const uint16_t& textureIndex)
 {
-	pvrvk::CommandBuffer& submitCmdBuffer = _deviceResources->computeCommandBuffers[currentFrameId * 4 + textureIndex];
+	pvrvk::CommandBuffer& submitCmdBuffer = _deviceResources->computeCommandBuffers[currentFrameId * _numberOfNoiseLayers + textureIndex];
 	pvrvk::PipelineStageFlags computePipeWaitStageFlags[] = { pvrvk::PipelineStageFlags::e_COMPUTE_SHADER_BIT, pvrvk::PipelineStageFlags::e_COMPUTE_SHADER_BIT };
 
 	// Set the timeline semaphores to be waited on and signalled
@@ -1154,7 +1154,7 @@ void VulkanTimelineSemaphores::updateComputeDescriptorSets(const uint32_t& readI
 	assert(readImageIndex >= 0 && readImageIndex < _numberOfNoiseLayers);
 	assert(writeImageIdex >= 0 && writeImageIdex < _numberOfNoiseLayers);
 
-	const uint32_t descriptorPingPongIndex = 4 * currentFrameIndex + writeImageIdex;
+	const uint32_t descriptorPingPongIndex = _numberOfNoiseLayers * currentFrameIndex + writeImageIdex;
 	std::vector<pvrvk::WriteDescriptorSet> writeDescSets;
 	{
 		const pvrvk::ImageView srcImageView =
