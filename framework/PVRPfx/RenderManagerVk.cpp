@@ -1816,7 +1816,7 @@ void RendermanPass::recordRenderingCommands(CommandBuffer& cmdBuffer, uint16_t s
 	if (beginEndRendermanPass)
 	{
 		// use the clear color from the model if found, else use the default
-		ClearValue clearColor(.0f, .0f, .0f, 1.0f);
+		ClearValue clearColor;
 		for (uint32_t i = 0; i < subpasses.size(); ++i)
 		{
 			for (uint32_t j = 0; j < subpasses[i].groups.size(); ++j)
@@ -1825,7 +1825,8 @@ void RendermanPass::recordRenderingCommands(CommandBuffer& cmdBuffer, uint16_t s
 				{
 					if (model)
 					{
-						memcpy(&clearColor, model->assetModel->getInternalData().clearColor, sizeof(model->assetModel->getInternalData().clearColor));
+						float *color = model->assetModel->getInternalData().clearColor;
+						clearColor.setColorValue(color[0], color[1], color[2], 1.0f);
 						i = j = static_cast<uint32_t>(-1); // break the outer loop as well.
 						break;
 					}
