@@ -695,18 +695,12 @@ bool VulkanSubgroups::calculateDemoSetting()
 			workgroupSizeSet = true;
 
 			// Retrieve the values set by the user
-			int32_t width = 0, height = 0;
-			_cmdLine.getIntOption("-wgWidth", width);
-			_cmdLine.getIntOption("-wgHeight", height);
+			uint32_t width = 0, height = 0;
+			_cmdLine.getUintOption("-wgWidth", width);
+			_cmdLine.getUintOption("-wgHeight", height);
 
-			// Are the values too small?
-			if (width <= 0 || height <= 0)
-			{
-				Log(LogLevel::Warning, "Workgroup sizes cannot be 0 or less, you have passed (%i, %i)", width, height);
-				workgroupSizeSet = false;
-			}
 			// Are the values too large?
-			else if (width > limits.getMaxComputeWorkGroupSize()[0] || height > limits.getMaxComputeWorkGroupSize()[1])
+			if (width > limits.getMaxComputeWorkGroupSize()[0] || height > limits.getMaxComputeWorkGroupSize()[1])
 			{
 				Log(LogLevel::Warning, "Workgroup dimensions are too large, (%i, %i) must be smaller than the max (%i, %i)", width, height, limits.getMaxComputeWorkGroupSize()[0],
 					limits.getMaxComputeWorkGroupSize()[1]);
