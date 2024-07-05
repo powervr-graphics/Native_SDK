@@ -1700,6 +1700,9 @@ pvr::Result VulkanShadows::renderFrame()
 			_scene, _deviceResources.get(), *this, swapchainIndex, _queueIndex, glm::vec4(g_EVSM4Bias, g_EVSM4LightBleedReduction, 0.0f, 0.0f));
 		break;
 	}
+	default: {
+		break;
+	}
 	}
 
 	_deviceResources->uiRenderer.beginRendering(_deviceResources->cmdBuffers[swapchainIndex]);
