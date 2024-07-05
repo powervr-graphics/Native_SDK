@@ -398,7 +398,7 @@ void VulkanTimelineSemaphores::createDevicesAndQueues(pvrvk::Surface& surface)
 	deviceFeatures.pNext = &timelineSemaphoreFeatures;
 
 	// Add these device features to the physical device, since they're all connected by a pNext chain, we only need to explicitly attach the top feature
-	deviceExtensions.addExtensionFeatureVk<VkPhysicalDeviceTimelineSemaphoreFeaturesKHR>(&timelineSemaphoreFeatures);
+	deviceExtensions.addExtensionFeatureVk<VkPhysicalDeviceFeatures2>(&deviceFeatures);
 	deviceExtensions.addExtension("VK_KHR_timeline_semaphore");
 
 	const pvr::utils::QueuePopulateInfo queuePopulateInfos[2] = { { pvrvk::QueueFlags::e_GRAPHICS_BIT, surface }, { pvrvk::QueueFlags::e_COMPUTE_BIT } };
