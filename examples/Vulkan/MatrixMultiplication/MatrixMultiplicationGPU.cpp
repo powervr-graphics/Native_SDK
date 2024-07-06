@@ -297,7 +297,7 @@ void makePipeline(int shaderIndex, int xWorkgroupSize, int yWorkgroupSize, int n
 		_resources->computePipeline = _resources->device->createComputePipeline(pipelineCreateInfo);
 		_resources->computePipeline->setObjectName("ComputePipeline");
 	}
-	catch (pvrvk::ErrorOutOfHostMemory err)
+	catch (pvrvk::ErrorOutOfHostMemory const& err)
 	{
 		std::cout << "\nError Ran out of host memory while trying to create pipeline for shader " << ShaderFilePaths[shaderIndex] << std::endl;
 		std::cout << "This can happen happen because shared memory used for this shader is too large for the device, try altering the tile sizes, use the option '-h' for more "
@@ -306,7 +306,7 @@ void makePipeline(int shaderIndex, int xWorkgroupSize, int yWorkgroupSize, int n
 		std::cout << err.what() << std::endl;
 		exit(-1);
 	}
-	catch (pvrvk::Error err)
+	catch (pvrvk::Error const& err)
 	{
 		std::cout << "\nUnexpected error occured when creating the compute pipeline for the shader" << ShaderFilePaths[shaderIndex] << std::endl;
 		std::cout << "\n" << err.what() << std::endl;
