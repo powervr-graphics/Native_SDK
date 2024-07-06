@@ -594,9 +594,8 @@ Device_::Device_(make_shared_enabler, PhysicalDevice& physicalDevice, const Devi
 				deviceFeatures.pNext = &physicalDeviceTransformFeedbackFeaturesEXT;
 				getPhysicalDevice()->getInstance()->getVkBindings().vkGetPhysicalDeviceFeatures2KHR(getPhysicalDevice()->getVkHandle(), &deviceFeatures);
 
-				// Bypass the VkBaseInStructure part of the returned properties
-				uint32_t offset = sizeof(VkBaseInStructure);
-				memcpy(&_transformFeedbackFeatures, &physicalDeviceTransformFeedbackFeaturesEXT + offset, sizeof(physicalDeviceTransformFeedbackFeaturesEXT) - offset);
+				_transformFeedbackFeatures.setTransformFeedback(physicalDeviceTransformFeedbackFeaturesEXT.transformFeedback);
+				_transformFeedbackFeatures.setGeometryStreams(physicalDeviceTransformFeedbackFeaturesEXT.geometryStreams);
 			}
 
 			{
@@ -607,9 +606,16 @@ Device_::Device_(make_shared_enabler, PhysicalDevice& physicalDevice, const Devi
 				deviceProperties.pNext = &physicalDeviceTransformFeedbackPropertiesEXT;
 				getPhysicalDevice()->getInstance()->getVkBindings().vkGetPhysicalDeviceProperties2(getPhysicalDevice()->getVkHandle(), &deviceProperties);
 
-				// Bypass the VkBaseInStructure part of the returned properties
-				uint32_t offset = sizeof(VkBaseInStructure);
-				memcpy(&_transformFeedbackProperties, &physicalDeviceTransformFeedbackPropertiesEXT + offset, sizeof(physicalDeviceTransformFeedbackPropertiesEXT) - offset);
+				_transformFeedbackProperties.setMaxTransformFeedbackStreams(physicalDeviceTransformFeedbackPropertiesEXT.maxTransformFeedbackStreams);
+				_transformFeedbackProperties.setMaxTransformFeedbackBuffers(physicalDeviceTransformFeedbackPropertiesEXT.maxTransformFeedbackBuffers);
+				_transformFeedbackProperties.setMaxTransformFeedbackBufferSize(physicalDeviceTransformFeedbackPropertiesEXT.maxTransformFeedbackBufferSize);
+				_transformFeedbackProperties.setMaxTransformFeedbackStreamDataSize(physicalDeviceTransformFeedbackPropertiesEXT.maxTransformFeedbackStreamDataSize);
+				_transformFeedbackProperties.setMaxTransformFeedbackBufferDataSize(physicalDeviceTransformFeedbackPropertiesEXT.maxTransformFeedbackBufferDataSize);
+				_transformFeedbackProperties.setMaxTransformFeedbackBufferDataStride(physicalDeviceTransformFeedbackPropertiesEXT.maxTransformFeedbackBufferDataStride);
+				_transformFeedbackProperties.setTransformFeedbackQueries(physicalDeviceTransformFeedbackPropertiesEXT.transformFeedbackQueries);
+				_transformFeedbackProperties.setTransformFeedbackStreamsLinesTriangles(physicalDeviceTransformFeedbackPropertiesEXT.transformFeedbackStreamsLinesTriangles);
+				_transformFeedbackProperties.setTransformFeedbackRasterizationStreamSelect(physicalDeviceTransformFeedbackPropertiesEXT.transformFeedbackRasterizationStreamSelect);
+				_transformFeedbackProperties.setTransformFeedbackDraw(physicalDeviceTransformFeedbackPropertiesEXT.transformFeedbackDraw);
 			}
 		}
 	}
