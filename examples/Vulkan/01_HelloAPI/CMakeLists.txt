@@ -127,10 +127,26 @@ elseif(UNIX)
 			message("Wayland libraries could not be found. Please try setting: -DCMAKE_PREFIX_PATH pointing towards your Wayland libraries")
 		endif()
 		
+		find_program(WAYLAND_SCANNER wayland-scanner REQUIRED)
+		# 1.15 adds support for xdg-decoration
+		pkg_check_modules(WAYLAND_PROTOCOLS REQUIRED wayland-protocols>=1.15)
+		pkg_get_variable(WAYLAND_PROTOCOLS_BASE wayland-protocols pkgdatadir)
+
+		add_custom_command(OUTPUT xdg-shell-client-protocol.h
+			COMMAND ${WAYLAND_SCANNER} client-header ${WAYLAND_PROTOCOLS_BASE}/stable/xdg-shell/xdg-shell.xml xdg-shell-client-protocol.h
+			DEPENDS ${WAYLAND_PROTOCOLS_BASE}/stable/xdg-shell/xdg-shell.xml)
+
+		add_custom_command(OUTPUT xdg-shell-protocol.c
+			COMMAND ${WAYLAND_SCANNER} private-code ${WAYLAND_PROTOCOLS_BASE}/stable/xdg-shell/xdg-shell.xml xdg-shell-protocol.c
+			DEPENDS ${WAYLAND_PROTOCOLS_BASE}/stable/xdg-shell/xdg-shell.xml)
+
 		list(APPEND PLATFORM_LIBS ${WAYLAND_CLIENT_LIBRARIES} ${lib-ffi})
 		list(APPEND HelloAPI_INCLUDE_DIRECTORIES ${WAYLAND_CLIENT_INCLUDE_DIR})
 		
-		list(APPEND SRC_FILES MainLinuxWayland.cpp)
+		list(APPEND SRC_FILES
+			xdg-shell-client-protocol.h
+			xdg-shell-protocol.c
+			MainLinuxWayland.cpp)
 		set(BUILD_DEFINITIONS BUILD_WAYLAND)
 	elseif(${PVR_WINDOW_SYSTEM} STREQUAL NullWS)
 		list(APPEND SRC_FILES MainNullWS.cpp)
@@ -145,5 +161,5 @@ set_target_properties(VulkanHelloAPI PROPERTIES
     CXX_STANDARD 14)
 
 target_link_libraries(VulkanHelloAPI ${PLATFORM_LIBS})
-target_include_directories(VulkanHelloAPI PRIVATE ${HelloAPI_INCLUDE_DIRECTORIES})
+target_include_directories(VulkanHelloAPI PRIVATE ${HelloAPI_INCLUDE_DIRECTORIES} ${PROJECT_BINARY_DIR})
 target_compile_definitions(VulkanHelloAPI PRIVATE $<$<CONFIG:Debug>:DEBUG=1> $<$<NOT:$<CONFIG:Debug>>:RELEASE=1> ) #Defines DEBUG=1 or RELEASE=1

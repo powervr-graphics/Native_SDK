@@ -13,6 +13,7 @@
 
 #include <sstream>
 #include <iostream>
+#include "xdg-shell-client-protocol.h"
 
 // The Surface Data structure is different based on the platform being used.
 // The structure is defined and its members, inside Vulkan-provided preprocessors.
@@ -77,10 +78,11 @@ struct SurfaceData
 	wl_surface* surface;
 	wl_registry* wlRegistry;
 	wl_compositor* wlCompositor;
-	wl_shell* wlShell;
+	xdg_wm_base *xdgWmBase;
+	xdg_surface *xdgSurface;
+	xdg_toplevel *xdgToplevel;
 	wl_seat* wlSeat;
 	wl_pointer* wlPointer;
-	wl_shell_surface* wlShellSurface;
 
 	SurfaceData()
 	{
@@ -89,10 +91,11 @@ struct SurfaceData
 		surface = NULL;
 		wlRegistry = NULL;
 		wlCompositor = NULL;
-		wlShell = NULL;
+		xdgWmBase = NULL;
+		xdgSurface = NULL;
+		xdgToplevel = NULL;
 		wlSeat = NULL;
 		wlPointer = NULL;
-		wlShellSurface = NULL;
 	}
 };
 #endif

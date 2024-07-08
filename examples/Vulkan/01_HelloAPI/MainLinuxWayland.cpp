@@ -31,10 +31,12 @@ static void seat_handle_capabilities(void* data, struct wl_seat* seat, uint32_t 
 
 static void seat_handle_name(void* data, struct wl_seat* seat, const char* name) {}
 
-static void handle_ping(void* data, struct wl_shell_surface* surface, uint32_t serial) { wl_shell_surface_pong(surface, serial); }
+static void xdg_wm_base_ping(void *data, struct xdg_wm_base *xdgWmBase, uint32_t serial) { xdg_wm_base_pong(xdgWmBase, serial); }
+static const struct xdg_wm_base_listener xdgWmBaseListener = {
+    .ping = xdg_wm_base_ping,
+};
 
-static void handle_configure(void* data, struct wl_shell_surface* surface, uint32_t edges, int32_t width, int32_t height) {}
-static void handle_popup_done(void* data, struct wl_shell_surface* surface) {}
+static void xdg_surface_configure(void* data, struct xdg_surface* xdg_surface, uint32_t serial) { }
 
 static const struct wl_seat_listener seatListener = {
 	.capabilities = seat_handle_capabilities,
@@ -46,20 +48,20 @@ static void registry_handle_global(void* data, struct wl_registry* registry, uin
 	SurfaceData* surfaceData = (SurfaceData*)data;
 
 	if (strcmp(interface, "wl_compositor") == 0) { surfaceData->wlCompositor = (wl_compositor*)wl_registry_bind(registry, name, &wl_compositor_interface, 1); }
-	else if (strcmp(interface, "wl_shell") == 0)
-	{
-		surfaceData->wlShell = (wl_shell*)wl_registry_bind(registry, name, &wl_shell_interface, 1);
-	}
 	else if (strcmp(interface, "wl_seat") == 0)
 	{
 		surfaceData->wlSeat = (wl_seat*)wl_registry_bind(registry, name, &wl_seat_interface, 1);
 		wl_seat_add_listener(surfaceData->wlSeat, &seatListener, data);
 	}
+	else if (strcmp(interface, xdg_wm_base_interface.name) == 0) {
+		surfaceData->xdgWmBase = (xdg_wm_base *)wl_registry_bind(registry, name, &xdg_wm_base_interface, 1);
+		xdg_wm_base_add_listener(surfaceData->xdgWmBase, &xdgWmBaseListener, surfaceData);
+	}
 }
 
 static void registry_handle_global_remove(void* data, struct wl_registry* registry, uint32_t name) {}
 
-static const struct wl_shell_surface_listener shellSurfaceListener = { .ping = handle_ping, .configure = handle_configure, .popup_done = handle_popup_done };
+static const struct xdg_surface_listener xdgSurfaceListener = { .configure = xdg_surface_configure };
 
 static const struct wl_registry_listener registryListener = {
 	.global = registry_handle_global,
@@ -95,21 +97,22 @@ void createWaylandWindowSurface(VulkanHelloAPI& vulkanExample)
 		exit(1);
 	}
 
-	vulkanExample.surfaceData.wlShellSurface = wl_shell_get_shell_surface(vulkanExample.surfaceData.wlShell, vulkanExample.surfaceData.surface);
-	if (!vulkanExample.surfaceData.wlShellSurface)
+	vulkanExample.surfaceData.xdgSurface = xdg_wm_base_get_xdg_surface(vulkanExample.surfaceData.xdgWmBase, vulkanExample.surfaceData.surface);
+	if (!vulkanExample.surfaceData.xdgSurface)
 	{
 		LOGE("Could create Wayland shell surface\n");
 		exit(1);
 	}
 
-	wl_shell_surface_add_listener(vulkanExample.surfaceData.wlShellSurface, &shellSurfaceListener, &vulkanExample.surfaceData);
-	wl_shell_surface_set_title(vulkanExample.surfaceData.wlShellSurface, "HelloApiVk");
-	wl_shell_surface_set_toplevel(vulkanExample.surfaceData.wlShellSurface);
+	xdg_surface_add_listener(vulkanExample.surfaceData.xdgSurface, &xdgSurfaceListener, &vulkanExample.surfaceData);
+
+	vulkanExample.surfaceData.xdgToplevel = xdg_surface_get_toplevel(vulkanExample.surfaceData.xdgSurface);
+	xdg_toplevel_set_title(vulkanExample.surfaceData.xdgToplevel, "HelloApiVk");
 }
 
 void releaseWaylandConnection(VulkanHelloAPI& vulkanExample)
 {
-	wl_shell_surface_destroy(vulkanExample.surfaceData.wlShellSurface);
+	xdg_surface_destroy(vulkanExample.surfaceData.xdgSurface);
 	wl_surface_destroy(vulkanExample.surfaceData.surface);
 	if (vulkanExample.surfaceData.wlPointer) { wl_pointer_destroy(vulkanExample.surfaceData.wlPointer); }
 	wl_seat_destroy(vulkanExample.surfaceData.wlSeat);
