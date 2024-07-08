@@ -18,6 +18,7 @@
 #include <memory>
 #include <wayland-client.h>
 #include <wayland-server.h>
+#include "xdg-shell-client-protocol.h"
 #include <wayland-egl.h>
 #include <linux/input.h>
 // Name of the application
@@ -33,11 +34,12 @@ const unsigned int VertexArray = 0;
 wl_display* wlDisplay = NULL;
 wl_registry* wlRegistry = NULL;
 wl_compositor* wlCompositor = NULL;
-wl_shell* wlShell = NULL;
+xdg_wm_base *xdgWmBase = NULL;
+xdg_surface *xdgSurface = NULL;
+xdg_toplevel *xdgToplevel = NULL;
 wl_seat* wlSeat = NULL;
 wl_surface* wlSurface = NULL;
 wl_pointer* wlPointer = NULL;
-wl_shell_surface* wlShellSurface = NULL;
 wl_egl_window* wlEglWindow = NULL;
 short pointerXY[2];
 
@@ -544,7 +546,7 @@ static void pointer_handle_motion(void* data, struct wl_pointer* pointer, uint32
 
 static void pointer_handle_button(void* data, struct wl_pointer* wl_pointer, uint32_t serial, uint32_t time, uint32_t button, uint32_t state)
 {
-	if (button == BTN_LEFT && state == WL_POINTER_BUTTON_STATE_PRESSED) { wl_shell_surface_move(wlShellSurface, wlSeat, serial); }
+	if (button == BTN_LEFT && state == WL_POINTER_BUTTON_STATE_PRESSED) { xdg_toplevel_move(xdgToplevel, wlSeat, serial); }
 }
 
 static void pointer_handle_axis(void* data, struct wl_pointer* wl_pointer, uint32_t time, uint32_t axis, wl_fixed_t value) {}
@@ -574,12 +576,16 @@ static void seat_handle_name(void* data, struct wl_seat* seat, const char* name)
 
 static const struct wl_seat_listener seatListener = { seat_handle_capabilities, seat_handle_name };
 
+static void xdg_wm_base_ping(void *data, struct xdg_wm_base *xdgWmBase, uint32_t serial) { xdg_wm_base_pong(xdgWmBase, serial); }
+static const struct xdg_wm_base_listener xdgWmBaseListener = { .ping = xdg_wm_base_ping };
+
 static void registerGlobalCallback(void* data, wl_registry* registry, uint32_t name, const char* interface, uint32_t version)
 {
 	if (strcmp(interface, "wl_compositor") == 0) { wlCompositor = (wl_compositor*)wl_registry_bind(registry, name, &wl_compositor_interface, 1); }
-	else if (strcmp(interface, "wl_shell") == 0)
+	else if (strcmp(interface, xdg_wm_base_interface.name) == 0)
 	{
-		wlShell = (wl_shell*)wl_registry_bind(registry, name, &wl_shell_interface, 1);
+		xdgWmBase = (xdg_wm_base *)wl_registry_bind(registry, name, &xdg_wm_base_interface, 1);
+		xdg_wm_base_add_listener(xdgWmBase, &xdgWmBaseListener, NULL);
 	}
 	else if (strcmp(interface, "wl_seat") == 0)
 	{
@@ -592,26 +598,14 @@ static void globalObjectRemove(void* data, struct wl_registry* wl_registry, uint
 
 static const wl_registry_listener registryListener = { registerGlobalCallback, globalObjectRemove };
 
-static void ping_cb(void* data, struct wl_shell_surface* shell_surface, uint32_t serial) { wl_shell_surface_pong(shell_surface, serial); }
-
-static void configure_cb(void* /*data*/, struct wl_shell_surface* /*shell_surface*/, uint32_t /*edges*/, int32_t /*width*/, int32_t /*height*/) {}
-
-static void popupDone_cb(void* /*data*/, struct wl_shell_surface* /*shell_surface*/) {}
-
 static void redraw(void* data, struct wl_callback* callback, uint32_t time) { printf("Redrawing\n"); }
 
-static const struct wl_callback_listener FrameListener = { redraw };
-
-static void configure_cb(void* data, struct wl_callback* callback, uint32_t time)
+static void xdg_surface_configure(void* data, struct xdg_surface* xdg_surface, uint32_t serial)
 {
-	if (callback == NULL) redraw(data, NULL, time);
+	if (xdg_surface == NULL) redraw(data, NULL, serial);
 }
 
-static struct wl_callback_listener ConfigureCbListener = {
-	configure_cb,
-};
-
-static const struct wl_shell_surface_listener shellSurfaceListeners = { ping_cb, configure_cb, popupDone_cb };
+static const struct xdg_surface_listener xdgSurfaceListener = { .configure = xdg_surface_configure };
 
 bool initWaylandConnection()
 {
@@ -649,26 +643,25 @@ bool initializeWindow()
 		return false;
 	}
 
-	wlShellSurface = wl_shell_get_shell_surface(wlShell, wlSurface);
-	if (wlShellSurface == NULL)
+	xdgSurface = xdg_wm_base_get_xdg_surface(xdgWmBase, wlSurface);
+	if (xdgSurface == NULL)
 	{
 		printf("Failed to get Wayland shell surface");
 		return false;
 	}
 
-	wl_shell_surface_add_listener(wlShellSurface, &shellSurfaceListeners, NULL);
-	wl_shell_surface_set_toplevel(wlShellSurface);
-	wl_shell_surface_set_title(wlShellSurface, "OpenGLESHelloApi");
+	xdg_surface_add_listener(xdgSurface, &xdgSurfaceListener, NULL);
+	xdgToplevel = xdg_surface_get_toplevel(xdgSurface);
+	xdg_toplevel_set_title(xdgToplevel, "OpenGLESHelloApi");
 	return true;
 }
 
 void releaseWaylandConnection()
 {
-	wl_shell_surface_destroy(wlShellSurface);
+	xdg_surface_destroy(xdgSurface);
 	wl_surface_destroy(wlSurface);
 	if (wlPointer) { wl_pointer_destroy(wlPointer); }
 	wl_seat_destroy(wlSeat);
-	wl_shell_destroy(wlShell);
 	wl_compositor_destroy(wlCompositor);
 	wl_registry_destroy(wlRegistry);
 	wl_display_disconnect(wlDisplay);

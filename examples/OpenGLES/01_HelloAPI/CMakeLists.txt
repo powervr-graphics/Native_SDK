@@ -140,10 +140,26 @@ elseif(UNIX)
 			message("Wayland libraries could not be found. Please try setting: -DCMAKE_PREFIX_PATH pointing towards your Wayland libraries")
 		endif()
 		
+		find_program(WAYLAND_SCANNER wayland-scanner REQUIRED)
+		# 1.15 adds support for xdg-decoration
+		pkg_check_modules(WAYLAND_PROTOCOLS REQUIRED wayland-protocols>=1.15)
+		pkg_get_variable(WAYLAND_PROTOCOLS_BASE wayland-protocols pkgdatadir)
+
+		add_custom_command(OUTPUT xdg-shell-client-protocol.h
+			COMMAND ${WAYLAND_SCANNER} client-header ${WAYLAND_PROTOCOLS_BASE}/stable/xdg-shell/xdg-shell.xml xdg-shell-client-protocol.h
+			DEPENDS ${WAYLAND_PROTOCOLS_BASE}/stable/xdg-shell/xdg-shell.xml)
+
+		add_custom_command(OUTPUT xdg-shell-protocol.c
+			COMMAND ${WAYLAND_SCANNER} private-code ${WAYLAND_PROTOCOLS_BASE}/stable/xdg-shell/xdg-shell.xml xdg-shell-protocol.c
+			DEPENDS ${WAYLAND_PROTOCOLS_BASE}/stable/xdg-shell/xdg-shell.xml)
+
 		list(APPEND PLATFORM_LIBS ${WAYLAND_CLIENT_LIBRARIES} ${WAYLAND_EGL_LIBRARIES} ${lib-ffi})
 		list(APPEND HelloAPI_INCLUDE_DIRECTORIES ${WAYLAND_CLIENT_INCLUDE_DIR} ${WAYLAND_EGL_INCLUDE_DIR})
 		
-		set(SRC_FILES OpenGLESHelloAPI_LinuxWayland.cpp)
+		set(SRC_FILES
+		    xdg-shell-client-protocol.h
+		    xdg-shell-protocol.c
+		    OpenGLESHelloAPI_LinuxWayland.cpp)
 	elseif(${PVR_WINDOW_SYSTEM} STREQUAL NullWS)
 		set(SRC_FILES OpenGLESHelloAPI_NullWS.cpp)
 	elseif(${PVR_WINDOW_SYSTEM} STREQUAL Screen)
@@ -166,5 +182,5 @@ set_target_properties(OpenGLESHelloAPI PROPERTIES
     CXX_STANDARD 14)
 
 target_link_libraries(OpenGLESHelloAPI ${PLATFORM_LIBS})
-target_include_directories(OpenGLESHelloAPI PUBLIC ${HelloAPI_INCLUDE_DIRECTORIES})
+target_include_directories(OpenGLESHelloAPI PUBLIC ${HelloAPI_INCLUDE_DIRECTORIES} ${PROJECT_BINARY_DIR})
 target_compile_definitions(OpenGLESHelloAPI PUBLIC $<$<CONFIG:Debug>:DEBUG=1> $<$<NOT:$<CONFIG:Debug>>:RELEASE=1> ) #Defines DEBUG=1 or RELEASE=1
