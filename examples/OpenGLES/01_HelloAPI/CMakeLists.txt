@@ -134,14 +134,35 @@ elseif(UNIX)
 		endif()
 	elseif(${PVR_WINDOW_SYSTEM} STREQUAL Wayland)
 		find_package(Wayland REQUIRED)
-		find_library(lib-ffi ffi HINTS ${PKG_WAYLAND_LIBRARY_DIRS})
 		
 		if(NOT ${WAYLAND_FOUND})
 			message("Wayland libraries could not be found. Please try setting: -DCMAKE_PREFIX_PATH pointing towards your Wayland libraries")
 		endif()
+
+		find_library(lib-ffi ffi HINTS ${PKG_WAYLAND_LIBRARY_DIRS})
+
+		find_program(WAYLAND_SCANNER wayland-scanner REQUIRED)
+		# 1.15 adds support for xdg-decoration
+		pkg_check_modules(WAYLAND_PROTOCOLS REQUIRED wayland-protocols>=1.15)
+		pkg_get_variable(WAYLAND_PROTOCOLS_BASE wayland-protocols pkgdatadir)
+
+		add_custom_command(OUTPUT xdg-shell-client-protocol.h
+			COMMAND ${WAYLAND_SCANNER} client-header ${WAYLAND_PROTOCOLS_BASE}/stable/xdg-shell/xdg-shell.xml xdg-shell-client-protocol.h
+			DEPENDS ${WAYLAND_PROTOCOLS_BASE}/stable/xdg-shell/xdg-shell.xml)
+
+		add_custom_command(OUTPUT xdg-shell-protocol.c
+           	COMMAND ${WAYLAND_SCANNER} private-code ${WAYLAND_PROTOCOLS_BASE}/stable/xdg-shell/xdg-shell.xml xdg-shell-protocol.c
+           	DEPENDS ${WAYLAND_PROTOCOLS_BASE}/stable/xdg-shell/xdg-shell.xml)
+
+		list(APPEND HEADER_FILES
+			xdg-shell-client-protocol.h)
+
+		list(APPEND HEADER_FILES
+			xdg-shell-protocol.c)
 		
 		list(APPEND PLATFORM_LIBS ${WAYLAND_CLIENT_LIBRARIES} ${WAYLAND_EGL_LIBRARIES} ${lib-ffi})
 		list(APPEND HelloAPI_INCLUDE_DIRECTORIES ${WAYLAND_CLIENT_INCLUDE_DIR} ${WAYLAND_EGL_INCLUDE_DIR})
+		list(APPEND HelloAPI_INCLUDE_DIRECTORIES ${WAYLAND_CLIENT_INCLUDE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 		
 		set(SRC_FILES OpenGLESHelloAPI_LinuxWayland.cpp)
 	elseif(${PVR_WINDOW_SYSTEM} STREQUAL NullWS)
@@ -155,7 +176,7 @@ elseif(UNIX)
 		message( FATAL_ERROR "Unrecognised PVR_WINDOW_SYSTEM: Valid values are NullWS(default), X11, XCB, Wayland, Screen." )
 	endif()
 	
-	add_executable(OpenGLESHelloAPI ${SRC_FILES})
+	add_executable(OpenGLESHelloAPI ${SRC_FILES} ${HEADER_FILES})
 	
 	if(CMAKE_SYSTEM_NAME MATCHES "QNX")
 		target_compile_options(OpenGLESHelloAPI PUBLIC -Wno-ignored-attributes)

@@ -19,25 +19,27 @@
 #include <wayland-client.h>
 #include <wayland-server.h>
 #include <wayland-egl.h>
+#include "xdg-shell-client-protocol.h"
 #include <linux/input.h>
 // Name of the application
 const char* ApplicationName = "HelloAPI";
 
 // Width and height of the window
-const unsigned int WindowWidth = 1280;
-const unsigned int WindowHeight = 800;
+unsigned int windowWidth = 1280;
+unsigned int windowHeight = 800;
 
 // Index to bind the attributes to vertex shaders
-const unsigned int VertexArray = 0;
+const unsigned int vertexArray = 0;
 
 wl_display* wlDisplay = NULL;
 wl_registry* wlRegistry = NULL;
 wl_compositor* wlCompositor = NULL;
-wl_shell* wlShell = NULL;
+xdg_wm_base* xdgShell = NULL;
 wl_seat* wlSeat = NULL;
 wl_surface* wlSurface = NULL;
 wl_pointer* wlPointer = NULL;
-wl_shell_surface* wlShellSurface = NULL;
+xdg_surface* xdgShellSurface = NULL;
+xdg_toplevel* xdgToplevel = NULL;
 wl_egl_window* wlEglWindow = NULL;
 short pointerXY[2];
 
@@ -165,7 +167,7 @@ bool chooseEGLConfig(EGLDisplay eglDisplay, EGLConfig& eglConfig)
 ***********************************************************************************************************************/
 bool createEGLSurface(EGLDisplay eglDisplay, EGLConfig eglConfig, EGLSurface& eglSurface)
 {
-	wlEglWindow = wl_egl_window_create(wlSurface, WindowWidth, WindowHeight);
+	wlEglWindow = wl_egl_window_create(wlSurface, windowWidth, windowHeight);
 	if (wlEglWindow == EGL_NO_SURFACE) { printf("Can't create egl window\n"); }
 	else
 	{
@@ -377,7 +379,7 @@ bool initializeShaders(GLuint& shaderProgram)
 	glAttachShader(shaderProgram, vertexShader);
 
 	// Bind the vertex attribute "myVertex" to location VertexArray (0)
-	glBindAttribLocation(shaderProgram, VertexArray, "myVertex");
+	glBindAttribLocation(shaderProgram, vertexArray, "myVertex");
 
 	// Link the program
 	glLinkProgram(shaderProgram);
@@ -453,10 +455,10 @@ bool renderScene(GLuint shaderProgram, GLuint vertexBuffer, EGLDisplay eglDispla
 	if (!testGLError("glUniformMatrix4fv")) { return false; }
 
 	// Enable the user-defined vertex array
-	glEnableVertexAttribArray(VertexArray);
+	glEnableVertexAttribArray(vertexArray);
 
 	// Sets the vertex data to this attribute index, with the number of floats in each position
-	glVertexAttribPointer(VertexArray, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glVertexAttribPointer(vertexArray, 3, GL_FLOAT, GL_FALSE, 0, 0);
 	if (!testGLError("glVertexAttribPointer")) { return false; }
 
 	//	Draw the triangle
@@ -542,10 +544,7 @@ static void pointer_handle_motion(void* data, struct wl_pointer* pointer, uint32
 	pointerXY[1] = (short)sy;
 }
 
-static void pointer_handle_button(void* data, struct wl_pointer* wl_pointer, uint32_t serial, uint32_t time, uint32_t button, uint32_t state)
-{
-	if (button == BTN_LEFT && state == WL_POINTER_BUTTON_STATE_PRESSED) { wl_shell_surface_move(wlShellSurface, wlSeat, serial); }
-}
+static void pointer_handle_button(void* data, struct wl_pointer* wl_pointer, uint32_t serial, uint32_t time, uint32_t button, uint32_t state) {}
 
 static void pointer_handle_axis(void* data, struct wl_pointer* wl_pointer, uint32_t time, uint32_t axis, wl_fixed_t value) {}
 
@@ -574,17 +573,24 @@ static void seat_handle_name(void* data, struct wl_seat* seat, const char* name)
 
 static const struct wl_seat_listener seatListener = { seat_handle_capabilities, seat_handle_name };
 
+static void xdg_wm_base_ping(void* data, struct xdg_wm_base* shell, uint32_t serial) { xdg_wm_base_pong(shell, serial); }
+
+static const struct xdg_wm_base_listener xdg_wm_base_listener = {
+	xdg_wm_base_ping,
+};
+
 static void registerGlobalCallback(void* data, wl_registry* registry, uint32_t name, const char* interface, uint32_t version)
 {
 	if (strcmp(interface, "wl_compositor") == 0) { wlCompositor = (wl_compositor*)wl_registry_bind(registry, name, &wl_compositor_interface, 1); }
-	else if (strcmp(interface, "wl_shell") == 0)
+	else if (strcmp(interface, xdg_wm_base_interface.name) == 0)
 	{
-		wlShell = (wl_shell*)wl_registry_bind(registry, name, &wl_shell_interface, 1);
+		xdgShell = (reinterpret_cast<xdg_wm_base*>(wl_registry_bind(registry, name, &xdg_wm_base_interface, 1)));
+		xdg_wm_base_add_listener(xdgShell, &xdg_wm_base_listener, NULL);
 	}
-	else if (strcmp(interface, "wl_seat") == 0)
+	else if (strcmp(interface, wl_seat_interface.name) == 0)
 	{
-		wlSeat = (wl_seat*)wl_registry_bind(registry, name, &wl_seat_interface, 1);
-		wl_seat_add_listener(wlSeat, &seatListener, NULL);
+		wlSeat = (reinterpret_cast<wl_seat*>(wl_registry_bind(registry, name, &wl_seat_interface, 1)));
+		wl_seat_add_listener(wlSeat, &seatListener, data);
 	}
 }
 
@@ -592,26 +598,37 @@ static void globalObjectRemove(void* data, struct wl_registry* wl_registry, uint
 
 static const wl_registry_listener registryListener = { registerGlobalCallback, globalObjectRemove };
 
-static void ping_cb(void* data, struct wl_shell_surface* shell_surface, uint32_t serial) { wl_shell_surface_pong(shell_surface, serial); }
+static void ping_cb(void* data, struct xdg_wm_base* xdg_wm_base, uint32_t serial) { xdg_wm_base_pong(xdg_wm_base, serial); }
 
-static void configure_cb(void* /*data*/, struct wl_shell_surface* /*shell_surface*/, uint32_t /*edges*/, int32_t /*width*/, int32_t /*height*/) {}
+static void configure_cb(void* /*data*/, struct xdg_surface* /*xdg_surface*/, uint32_t /*edges*/, int32_t /*width*/, int32_t /*height*/) {}
 
-static void popupDone_cb(void* /*data*/, struct wl_shell_surface* /*shell_surface*/) {}
+static void xdg_surface_handle_configure(void* data, struct xdg_surface* surface, uint32_t serial) { xdg_surface_ack_configure(surface, serial); }
 
-static void redraw(void* data, struct wl_callback* callback, uint32_t time) { printf("Redrawing\n"); }
-
-static const struct wl_callback_listener FrameListener = { redraw };
-
-static void configure_cb(void* data, struct wl_callback* callback, uint32_t time)
-{
-	if (callback == NULL) redraw(data, NULL, time);
-}
-
-static struct wl_callback_listener ConfigureCbListener = {
-	configure_cb,
+static const struct xdg_surface_listener xdg_surface_listener = {
+	.configure = xdg_surface_handle_configure,
 };
 
-static const struct wl_shell_surface_listener shellSurfaceListeners = { ping_cb, configure_cb, popupDone_cb };
+static void xdg_toplevel_handle_configure(void* data, struct xdg_toplevel* xdg_toplevel, int32_t width, int32_t height, struct wl_array* states)
+{
+	if (!width && !height) return;
+
+	if (windowWidth != width || windowHeight != height)
+	{
+		windowWidth = width;
+		windowHeight = height;
+
+		wl_egl_window_resize(wlEglWindow, width, height, 0, 0);
+
+		wl_surface_commit(wlSurface);
+	}
+}
+
+static void xdg_toplevel_handle_close(void* data, struct xdg_toplevel* xdg_toplevel) {}
+
+static const struct xdg_toplevel_listener xdg_toplevel_listener = {
+	.configure = xdg_toplevel_handle_configure,
+	.close = xdg_toplevel_handle_close,
+};
 
 bool initWaylandConnection()
 {
@@ -623,7 +640,7 @@ bool initWaylandConnection()
 
 	if ((wlRegistry = wl_display_get_registry(wlDisplay)) == NULL)
 	{
-		printf("Faield to get Wayland registry!");
+		printf("Failed to get Wayland registry!");
 		return false;
 	}
 
@@ -649,26 +666,30 @@ bool initializeWindow()
 		return false;
 	}
 
-	wlShellSurface = wl_shell_get_shell_surface(wlShell, wlSurface);
-	if (wlShellSurface == NULL)
+	xdgShellSurface = xdg_wm_base_get_xdg_surface(xdgShell, wlSurface);
+	if (xdgShellSurface == NULL)
 	{
 		printf("Failed to get Wayland shell surface");
 		return false;
 	}
 
-	wl_shell_surface_add_listener(wlShellSurface, &shellSurfaceListeners, NULL);
-	wl_shell_surface_set_toplevel(wlShellSurface);
-	wl_shell_surface_set_title(wlShellSurface, "OpenGLESHelloApi");
+	xdg_surface_add_listener(xdgShellSurface, &xdg_surface_listener, NULL);
+	xdgToplevel = xdg_surface_get_toplevel(xdgShellSurface);
+	xdg_toplevel_add_listener(xdgToplevel, &xdg_toplevel_listener, NULL);
+	xdg_toplevel_set_title(xdgToplevel, "OpenGLESHelloAPI");
+	xdg_toplevel_set_app_id(xdgToplevel, "OpenGLESHelloAPI");
+	wl_surface_commit(wlSurface);
 	return true;
 }
 
 void releaseWaylandConnection()
 {
-	wl_shell_surface_destroy(wlShellSurface);
+	xdg_toplevel_destroy(xdgToplevel);
+	xdg_surface_destroy(xdgShellSurface);
 	wl_surface_destroy(wlSurface);
 	if (wlPointer) { wl_pointer_destroy(wlPointer); }
 	wl_seat_destroy(wlSeat);
-	wl_shell_destroy(wlShell);
+	xdg_wm_base_destroy(xdgShell);
 	wl_compositor_destroy(wlCompositor);
 	wl_registry_destroy(wlRegistry);
 	wl_display_disconnect(wlDisplay);
@@ -711,26 +732,26 @@ int main(int /*argc*/, char** /*argv*/)
 	// Get access to a native display and...
 	initializeWindow() &&
 
-	// Create and Initialize an EGLDisplay from the native display and ...
-	createEGLDisplay(wlDisplay, eglDisplay) &&
+		// Create and Initialize an EGLDisplay from the native display and ...
+		createEGLDisplay(wlDisplay, eglDisplay) &&
 
-	// Choose an EGLConfig for the application, used when setting up the rendering surface and EGLContext
-	chooseEGLConfig(eglDisplay, eglConfig) &&
+		// Choose an EGLConfig for the application, used when setting up the rendering surface and EGLContext
+		chooseEGLConfig(eglDisplay, eglConfig) &&
 
-	// Create an EGLSurface for rendering from the native window
-	createEGLSurface(eglDisplay, eglConfig, eglSurface) &&
+		// Create an EGLSurface for rendering from the native window
+		createEGLSurface(eglDisplay, eglConfig, eglSurface) &&
 
-	// Setup the EGL Context from the other EGL constructs created so far, so that the application is ready to submit OpenGL ES commands
-	setupEGLContext(eglDisplay, eglConfig, eglSurface, context) &&
-	
-	// Initialize the vertex data in the application
-	initializeBuffer(vertexBuffer) &&
+		// Setup the EGL Context from the other EGL constructs created so far, so that the application is ready to submit OpenGL ES commands
+		setupEGLContext(eglDisplay, eglConfig, eglSurface, context) &&
 
-	// Initialize the fragment and vertex shaders used in the application
-	initializeShaders(shaderProgram) &&
+		// Initialize the vertex data in the application
+		initializeBuffer(vertexBuffer) &&
 
-	// If everything else succeeded, run the rendering loop.
-	render(shaderProgram, vertexBuffer, eglDisplay, eglSurface);
+		// Initialize the fragment and vertex shaders used in the application
+		initializeShaders(shaderProgram) &&
+
+		// If everything else succeeded, run the rendering loop.
+		render(shaderProgram, vertexBuffer, eglDisplay, eglSurface);
 
 	// Cleanup
 	deInitializeGLState(shaderProgram, vertexBuffer);

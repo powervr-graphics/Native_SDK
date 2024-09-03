@@ -14,6 +14,10 @@
 #include <sstream>
 #include <iostream>
 
+#ifdef VK_USE_PLATFORM_WAYLAND_KHR
+#include "xdg-shell-client-protocol.h"
+#endif
+
 // The Surface Data structure is different based on the platform being used.
 // The structure is defined and its members, inside Vulkan-provided preprocessors.
 
@@ -71,28 +75,31 @@ struct SurfaceData
 #ifdef VK_USE_PLATFORM_WAYLAND_KHR
 struct SurfaceData
 {
-	float width, height;
-
+	float width;
+	float height;
 	wl_display* display;
 	wl_surface* surface;
 	wl_registry* wlRegistry;
 	wl_compositor* wlCompositor;
-	wl_shell* wlShell;
 	wl_seat* wlSeat;
 	wl_pointer* wlPointer;
-	wl_shell_surface* wlShellSurface;
+	xdg_wm_base* xdgShell;
+	xdg_surface* xdgShellSurface;
+	xdg_toplevel* xdgToplevel;
 
 	SurfaceData()
 	{
-		width = height = 0;
+		width = 0;
+		height = 0;
 		display = NULL;
 		surface = NULL;
 		wlRegistry = NULL;
 		wlCompositor = NULL;
-		wlShell = NULL;
 		wlSeat = NULL;
 		wlPointer = NULL;
-		wlShellSurface = NULL;
+		xdgShell = NULL;
+		xdgShellSurface = NULL;
+		xdgToplevel = NULL;
 	}
 };
 #endif

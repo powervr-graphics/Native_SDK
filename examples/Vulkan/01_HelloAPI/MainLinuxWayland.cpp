@@ -26,7 +26,18 @@ static const struct wl_pointer_listener pointerListener = {
 
 static void seat_handle_capabilities(void* data, struct wl_seat* seat, uint32_t caps)
 {
-	if (caps & WL_SEAT_CAPABILITY_POINTER) { wl_pointer_add_listener(wl_seat_get_pointer(seat), &pointerListener, data); }
+	SurfaceData* surfaceData = static_cast<SurfaceData*>(data);
+
+	if ((caps & WL_SEAT_CAPABILITY_POINTER) && (surfaceData->wlPointer == NULL))
+	{
+		surfaceData->wlPointer = wl_seat_get_pointer(seat);
+		wl_pointer_add_listener(surfaceData->wlPointer, &pointerListener, NULL);
+	}
+	else if (!(caps & WL_SEAT_CAPABILITY_POINTER) && (surfaceData->wlPointer != NULL))
+	{
+		wl_pointer_destroy(surfaceData->wlPointer);
+		surfaceData->wlPointer = NULL;
+	}
 }
 
 static void seat_handle_name(void* data, struct wl_seat* seat, const char* name) {}
@@ -41,18 +52,25 @@ static const struct wl_seat_listener seatListener = {
 	.name = seat_handle_name,
 };
 
+static void xdg_wm_base_ping(void* data, struct xdg_wm_base* shell, uint32_t serial) { xdg_wm_base_pong(shell, serial); }
+
+static const struct xdg_wm_base_listener xdgWmBaseListener = {
+	xdg_wm_base_ping,
+};
+
 static void registry_handle_global(void* data, struct wl_registry* registry, uint32_t name, const char* interface, uint32_t version)
 {
-	SurfaceData* surfaceData = (SurfaceData*)data;
+	SurfaceData* surfaceData = static_cast<SurfaceData*>(data);
 
 	if (strcmp(interface, "wl_compositor") == 0) { surfaceData->wlCompositor = (wl_compositor*)wl_registry_bind(registry, name, &wl_compositor_interface, 1); }
-	else if (strcmp(interface, "wl_shell") == 0)
+	else if (strcmp(interface, xdg_wm_base_interface.name) == 0)
 	{
-		surfaceData->wlShell = (wl_shell*)wl_registry_bind(registry, name, &wl_shell_interface, 1);
+		surfaceData->xdgShell = (reinterpret_cast<xdg_wm_base*>(wl_registry_bind(registry, name, &xdg_wm_base_interface, 1)));
+		xdg_wm_base_add_listener(surfaceData->xdgShell, &xdgWmBaseListener, NULL);
 	}
-	else if (strcmp(interface, "wl_seat") == 0)
+	else if (strcmp(interface, wl_seat_interface.name) == 0)
 	{
-		surfaceData->wlSeat = (wl_seat*)wl_registry_bind(registry, name, &wl_seat_interface, 1);
+		surfaceData->wlSeat = (reinterpret_cast<wl_seat*>(wl_registry_bind(registry, name, &wl_seat_interface, 1)));
 		wl_seat_add_listener(surfaceData->wlSeat, &seatListener, data);
 	}
 }
@@ -64,6 +82,34 @@ static const struct wl_shell_surface_listener shellSurfaceListener = { .ping = h
 static const struct wl_registry_listener registryListener = {
 	.global = registry_handle_global,
 	.global_remove = registry_handle_global_remove,
+};
+
+static void xdg_surface_handle_configure(void* data, struct xdg_surface* surface, uint32_t serial) { xdg_surface_ack_configure(surface, serial); }
+
+static const struct xdg_surface_listener xdg_surface_listener = {
+	.configure = xdg_surface_handle_configure,
+};
+
+static void xdg_toplevel_handle_configure(void* data, struct xdg_toplevel* xdg_toplevel, int32_t width, int32_t height, struct wl_array* states)
+{
+	SurfaceData* surfaceData = static_cast<SurfaceData*>(data);
+
+	if (!width && !height) return;
+
+	if (surfaceData->width != width || surfaceData->height != height)
+	{
+		surfaceData->width = width;
+		surfaceData->height = height;
+
+		wl_surface_commit(surfaceData->surface);
+	}
+}
+
+static void xdg_toplevel_handle_close(void* data, struct xdg_toplevel* xdg_toplevel) {}
+
+static const struct xdg_toplevel_listener xdgToplevelListener = {
+	.configure = xdg_toplevel_handle_configure,
+	.close = xdg_toplevel_handle_close,
 };
 
 void createWaylandWindowSurface(VulkanHelloAPI& vulkanExample)
@@ -95,21 +141,25 @@ void createWaylandWindowSurface(VulkanHelloAPI& vulkanExample)
 		exit(1);
 	}
 
-	vulkanExample.surfaceData.wlShellSurface = wl_shell_get_shell_surface(vulkanExample.surfaceData.wlShell, vulkanExample.surfaceData.surface);
-	if (!vulkanExample.surfaceData.wlShellSurface)
+	vulkanExample.surfaceData.xdgShellSurface = xdg_wm_base_get_xdg_surface(vulkanExample.surfaceData.xdgShell, vulkanExample.surfaceData.surface);
+	if (!vulkanExample.surfaceData.xdgShellSurface)
 	{
 		LOGE("Could create Wayland shell surface\n");
 		exit(1);
 	}
 
-	wl_shell_surface_add_listener(vulkanExample.surfaceData.wlShellSurface, &shellSurfaceListener, &vulkanExample.surfaceData);
-	wl_shell_surface_set_title(vulkanExample.surfaceData.wlShellSurface, "HelloApiVk");
-	wl_shell_surface_set_toplevel(vulkanExample.surfaceData.wlShellSurface);
+	xdg_surface_add_listener(vulkanExample.surfaceData.xdgShellSurface, &xdg_surface_listener, &vulkanExample.surfaceData);
+	vulkanExample.surfaceData.xdgToplevel = xdg_surface_get_toplevel(vulkanExample.surfaceData.xdgShellSurface);
+	xdg_toplevel_add_listener(vulkanExample.surfaceData.xdgToplevel, &xdgToplevelListener, &vulkanExample.surfaceData);
+	xdg_toplevel_set_title(vulkanExample.surfaceData.xdgToplevel, "HelloApiVk");
+	xdg_toplevel_set_app_id(vulkanExample.surfaceData.xdgToplevel, "OpenGLESHelloAPI");
 }
 
 void releaseWaylandConnection(VulkanHelloAPI& vulkanExample)
 {
-	wl_shell_surface_destroy(vulkanExample.surfaceData.wlShellSurface);
+	xdg_surface_destroy(vulkanExample.surfaceData.xdgShellSurface);
+	xdg_wm_base_destroy(vulkanExample.surfaceData.xdgShell);
+	xdg_toplevel_destroy(vulkanExample.surfaceData.xdgToplevel);
 	wl_surface_destroy(vulkanExample.surfaceData.surface);
 	if (vulkanExample.surfaceData.wlPointer) { wl_pointer_destroy(vulkanExample.surfaceData.wlPointer); }
 	wl_seat_destroy(vulkanExample.surfaceData.wlSeat);
