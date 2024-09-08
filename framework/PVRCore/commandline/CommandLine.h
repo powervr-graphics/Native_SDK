@@ -121,13 +121,27 @@ public:
 		/// value is not present, allowing very easy use of default arguments.</summary>
 		/// <param name="name">The command line argument (e.g. "-captureFrames")</param>
 		/// <param name="outValue">The value passed with the argument interpreted as an integer. If the name was not
-		/// present, or no value was passed with the name, it remains unchanged. If it was not representing a float, it silently returns zero (0).</param>
+		/// present, or no value was passed with the name, it remains unchanged. If it was not representing an integer, it silently returns zero (0).</param>
 		/// <returns>True if the argument "name" was present, false otherwise</returns>
 		bool getIntOption(const char* name, int32_t& outValue) const
 		{
 			auto it = std::find(_options.begin(), _options.end(), name);
 			if (it == _options.end() || it->val == NULL) { return false; }
 			outValue = atoi(it->val);
+			return true;
+		}
+
+		/// <summary>Get an argument's value as an unsigned integer value. Returns false and leaves the value unchanged if the
+		/// value is not present, allowing very easy use of default arguments.</summary>
+		/// <param name="name">The command line argument (e.g. "-captureFrames")</param>
+		/// <param name="outValue">The value passed with the argument interpreted as an unsigned integer. If the name was not
+		/// present, or no value was passed with the name, it remains unchanged. If it was not representing an unsigned integer, it silently returns zero (0).</param>
+		/// <returns>True if the argument "name" was present, false otherwise</returns>
+		bool getUintOption(const char* name, uint32_t& outValue) const
+		{
+			auto it = std::find(_options.begin(), _options.end(), name);
+			if (it == _options.end() || it->val == NULL) { return false; }
+			outValue = std::stoul(it->val);
 			return true;
 		}
 

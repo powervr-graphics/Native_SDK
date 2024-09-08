@@ -44,7 +44,7 @@ public:
 	/// <param name="arraySize">The array size for a new element to add.</param>
 	/// <param name="children">A std::initializer_list<StructuredMemoryDescription> containing the description for a set of children to add.</param>
 	StructuredMemoryDescription(const std::string& name, uint32_t arraySize, std::initializer_list<StructuredMemoryDescription> children)
-		: _name(name), _children(std::move(children)), _numArrayElements(arraySize), _type(GpuDatatypes::none)
+		: _name(name), _children(std::move(children)), _type(GpuDatatypes::none), _numArrayElements(arraySize)
 	{}
 
 	/// <summary>The constructor for a StructuredMemoryDescription based on the provided name, arraySize and children</summary>
@@ -52,7 +52,7 @@ public:
 	/// <param name="arraySize">The array size for a new element to add.</param>
 	/// <param name="children">A std::initializer_list<StructuredMemoryDescription> containing the description for a set of children to add.</param>
 	StructuredMemoryDescription(std::string&& name, uint32_t arraySize, std::initializer_list<StructuredMemoryDescription> children)
-		: _name(std::move(name)), _children(std::move(children)), _numArrayElements(arraySize), _type(GpuDatatypes::none)
+		: _name(std::move(name)), _children(std::move(children)), _type(GpuDatatypes::none), _numArrayElements(arraySize)
 	{}
 
 	/// <summary>The constructor for a StructuredMemoryDescription based on the provided name and GpuDatatypes</summary>
@@ -354,8 +354,8 @@ private:
 public:
 	/// <summary>A default Constructor for a StructuredMemoryEntry.</summary>
 	StructuredMemoryEntry()
-		: _name(), _parent(0), _type(GpuDatatypes::none), _numArrayElements(0), _size(0), _arrayMemberSize(0), _singleElementSize(0), _offset(0), _mappedMemory(nullptr),
-		  _mappedDynamicSlice(0), _baseAlignment(0), _minDynamicAlignment(0), _variableArray(0)
+		: _name(), _parent(0), _type(GpuDatatypes::none), _baseAlignment(0), _numArrayElements(0), _variableArray(0), _size(0), _singleElementSize(0), _arrayMemberSize(0),
+		  _offset(0), _minDynamicAlignment(0), _mappedMemory(nullptr), _mappedDynamicSlice(0)
 	{}
 
 	/// <summary>A Copy constructor for a StructuredMemoryEntry.</summary>
@@ -909,8 +909,8 @@ public:
 class StructuredBufferView
 {
 private:
-	StructuredMemoryEntry _root;
 	uint32_t _numDynamicSlices;
+	StructuredMemoryEntry _root;
 
 public:
 	/// <summary>Constructor. Creates an empty StructuredBufferView.</summary>

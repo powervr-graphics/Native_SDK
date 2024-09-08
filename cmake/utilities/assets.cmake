@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.3)
+cmake_minimum_required(VERSION 3.10)
 
 set(SDK_ROOT_INTERNAL_DIR ${CMAKE_CURRENT_LIST_DIR}/../.. CACHE INTERNAL "")
 

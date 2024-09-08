@@ -80,7 +80,7 @@ ImageDataFormat getFormat(const pugi::xml_attribute& attr)
 	{
 		const StringHash fmtStr(strings::toLower(attr.value()));
 
-		for (const ImageFormat buffFmt : bufferFormats)
+		for (const ImageFormat &buffFmt : bufferFormats)
 		{
 			if (buffFmt.name == fmtStr)
 			{

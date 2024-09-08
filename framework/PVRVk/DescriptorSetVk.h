@@ -26,7 +26,7 @@ public:
 		uint16_t descriptorCount;
 		pvrvk::ShaderStageFlags stageFlags;
 		Sampler immutableSampler;
-		DescriptorSetLayoutBinding() : descriptorCount(1), stageFlags(pvrvk::ShaderStageFlags::e_ALL), descriptorType(pvrvk::DescriptorType::e_MAX_ENUM) {}
+		DescriptorSetLayoutBinding() : descriptorType(pvrvk::DescriptorType::e_MAX_ENUM), descriptorCount(1), stageFlags(pvrvk::ShaderStageFlags::e_ALL) {}
 		DescriptorSetLayoutBinding(uint16_t bindIndex, pvrvk::DescriptorType descType, uint16_t descriptorCount = 1,
 			pvrvk::ShaderStageFlags stageFlags = pvrvk::ShaderStageFlags::e_ALL, const Sampler& immutableSampler = Sampler())
 			: binding(bindIndex), descriptorType(descType), descriptorCount(descriptorCount), stageFlags(stageFlags), immutableSampler(immutableSampler)
@@ -164,7 +164,7 @@ public:
 	DescriptorStore() : _ptr(_tArray), _numItems(0) {}
 
 	// Copy Constructor
-	DescriptorStore(const DescriptorStore& descStore) : _numItems(descStore._numItems), _tVector(descStore._tVector)
+	DescriptorStore(const DescriptorStore& descStore) : _tVector(descStore._tVector), _numItems(descStore._numItems)
 	{
 		// Copy _tArray elements
 		std::copy(std::begin(descStore._tArray), std::end(descStore._tArray), _tArray);

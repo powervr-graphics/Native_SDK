@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.3)
+cmake_minimum_required(VERSION 3.10)
 project(VulkanMemoryAllocator)
 
 # Ensure The Vulkan Memory Allocator isn't added multiple times

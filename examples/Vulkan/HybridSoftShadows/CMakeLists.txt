@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.3)
+cmake_minimum_required(VERSION 3.10)
 project(VulkanHybridSoftShadows)
 if(ANDROID)
 	message("Skipping VulkanHybridSoftShadows : Not supported on Android")

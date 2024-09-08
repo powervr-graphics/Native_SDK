@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.3)
+cmake_minimum_required(VERSION 3.10)
 project(VulkanAntiAliasing)
 if(IOS)
 	message ("Skipping VulkanAntiAliasing : Vulkan is not supported on iOS.")

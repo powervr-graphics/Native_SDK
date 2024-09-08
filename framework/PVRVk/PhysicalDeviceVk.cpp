@@ -40,7 +40,7 @@ FormatProperties PhysicalDevice_::getFormatProperties(Format format)
 		formatProperties2KHR.sType = static_cast<VkStructureType>(StructureType::e_FORMAT_PROPERTIES_2_KHR);
 
 		instance->getVkBindings().vkGetPhysicalDeviceFormatProperties2KHR(getVkHandle(), static_cast<VkFormat>(format), &formatProperties2KHR);
-		memcpy(&formatProperties, &formatProperties2KHR.formatProperties, sizeof(formatProperties2KHR.formatProperties));
+		memcpy(&formatProperties.get(), &formatProperties2KHR.formatProperties, sizeof(formatProperties2KHR.formatProperties));
 	}
 	else
 	{
@@ -174,7 +174,7 @@ const ImageFormatProperties PhysicalDevice_::getImageFormatProperties(Format for
 		imageFormatProperties.sType = static_cast<VkStructureType>(StructureType::e_IMAGE_FORMAT_PROPERTIES_2_KHR);
 
 		result = instance->getVkBindings().vkGetPhysicalDeviceImageFormatProperties2KHR(getVkHandle(), &imageFormatInfo, &imageFormatProperties);
-		memcpy(&imageProperties, &imageFormatProperties.imageFormatProperties, sizeof(imageFormatProperties.imageFormatProperties));
+		memcpy(&imageProperties.get(), &imageFormatProperties.imageFormatProperties, sizeof(imageFormatProperties.imageFormatProperties));
 	}
 	else
 	{
@@ -249,7 +249,7 @@ PhysicalDevice_::PhysicalDevice_(make_shared_enabler, Instance& instance, const 
 		instance->getVkBindings().vkGetPhysicalDeviceMemoryProperties(getVkHandle(), &physicalDeviceMemoryProperties);
 	}
 
-	memcpy(&_deviceMemoryProperties, &physicalDeviceMemoryProperties, sizeof(physicalDeviceMemoryProperties));
+	memcpy(&_deviceMemoryProperties.get(), &physicalDeviceMemoryProperties, sizeof(physicalDeviceMemoryProperties));
 
 	uint32_t numQueueFamilies = 0;
 
@@ -281,7 +281,7 @@ PhysicalDevice_::PhysicalDevice_(make_shared_enabler, Instance& instance, const 
 			deviceFeatures.sType = static_cast<VkStructureType>(StructureType::e_PHYSICAL_DEVICE_FEATURES_2_KHR);
 
 			instance->getVkBindings().vkGetPhysicalDeviceFeatures2KHR(getVkHandle(), &deviceFeatures);
-			memcpy(&_deviceFeatures, &deviceFeatures.features, sizeof(deviceFeatures.features));
+			memcpy(&_deviceFeatures.get(), &deviceFeatures.features, sizeof(deviceFeatures.features));
 		}
 
 		{
@@ -289,7 +289,7 @@ PhysicalDevice_::PhysicalDevice_(make_shared_enabler, Instance& instance, const 
 			deviceProperties.sType = static_cast<VkStructureType>(StructureType::e_PHYSICAL_DEVICE_PROPERTIES_2_KHR);
 
 			instance->getVkBindings().vkGetPhysicalDeviceProperties2KHR(getVkHandle(), &deviceProperties);
-			memcpy(&_deviceProperties, &deviceProperties.properties, sizeof(deviceProperties.properties));
+			memcpy(&_deviceProperties.get(), &deviceProperties.properties, sizeof(deviceProperties.properties));
 		}
 	}
 	else

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.3)
+cmake_minimum_required(VERSION 3.10)
 
 # Apply various compile/link time options to the specified example target
 function(apply_example_compile_options_to_target THETARGET)

@@ -14,7 +14,7 @@
 ParticleSystemGPU::ParticleSystemGPU(pvr::Shell& assetLoader)
 	: computeShaderSrcFile("ParticleSolver.csh"), gravity(0.0f), numParticles(0), workgroupSize(32), assetProvider(assetLoader)
 {
-	memset(&particleConfigData, 0, sizeof(ParticleConfig));
+	particleConfigData = {};
 }
 
 ParticleSystemGPU::~ParticleSystemGPU()

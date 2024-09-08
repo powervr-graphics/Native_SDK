@@ -1151,6 +1151,14 @@ public:
 		memcpy(bytes + 12, &one, 4);
 	}
 
+	/// <summary>Constructor. Initialise with VkClearValue</summary>
+	/// <param name="clearValue">Vulkan clear value</param>
+	ClearValue(const VkClearValue clearValue)
+	{
+		static_assert(sizeof(clearValue) == sizeof(bytes), "VkClearValue wrong alignment");
+		memcpy(bytes, &clearValue, sizeof(clearValue));
+	}
+
 	/// <summary>Constructor. Initialise with depth stencil clear values</summary>
 	/// <param name="depth">Depth clear value</param>
 	/// <param name="stencil">Stencil clear value</param>
@@ -1309,8 +1317,7 @@ struct ClearAttachment : private VkClearAttachment
 	/// <returns>The attachment value value</returns>
 	inline ClearValue getClearValue() const
 	{
-		ClearValue retval;
-		memcpy(&retval, &clearValue, sizeof(ClearValue));
+		ClearValue retval(clearValue);
 		return retval;
 	}
 

@@ -465,26 +465,26 @@ class VulkanIntroducingPVRVk : public pvr::Shell
 	// A convenient way to store the Vulkan resources so that they can be initialised and freed automatically
 	std::unique_ptr<DeviceResources> _deviceResources;
 
-	// Per frame indices used for synchronisation.
-	uint32_t _currentFrameIndex;
-
-	// The index into the set of supported queue families which supports both graphics and presentation capabilities.
-	uint32_t _graphicsQueueFamilyIndex;
-
-	// The aligned size for the dynamic buffers taking into account the minUniformBufferOffsetAlignment member of the limits for the pvrvk::PhysicalDeviceProperties structure.
-	uint32_t _dynamicBufferAlignedSize;
-
 	// Matrices used for animation.
 	glm::mat4 _modelMatrix;
 	glm::mat4 _viewProjectionMatrix;
 	float _rotationAngle;
 
+	// Per frame indices used for synchronisation.
+	uint32_t _currentFrameIndex;
+
 	// The viewport and scissors used for rendering handling the portions of the surface written to.
 	pvrvk::Viewport _viewport;
 	pvrvk::Rect2D _scissor;
 
+	// The index into the set of supported queue families which supports both graphics and presentation capabilities.
+	uint32_t _graphicsQueueFamilyIndex;
+
 	// The size of a single vertex corresponding to the stride of a vertex.
 	uint32_t _vboStride;
+
+	// The aligned size for the dynamic buffers taking into account the minUniformBufferOffsetAlignment member of the limits for the pvrvk::PhysicalDeviceProperties structure.
+	uint32_t _dynamicBufferAlignedSize;
 
 	// The size and data included in the triangle texture.
 	pvrvk::Extent2D _textureDimensions;

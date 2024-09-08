@@ -8,8 +8,10 @@
 #include "PVRCore/Utils.h"
 #include <string>
 #include <cwchar>
+#if defined(_WIN32)
 #pragma warning(push)
 #pragma warning(disable : 4307)
+#endif
 
 namespace pvr {
 /// <summary>Function object hashing to 32 bit values into a 32 bit unsigned Integer.</summary>
@@ -145,4 +147,6 @@ public:
 	static const uint32_t value = hasher_helper<2166136261U, chars...>::value; //!< A hashed value
 };
 } // namespace pvr
+#if defined(_WIN32)
 #pragma warning(pop)
+#endif
