@@ -634,7 +634,7 @@ pvrvk::Swapchain createSwapchainHelper(const pvrvk::Device& device, const pvrvk:
 	createInfo.compositeAlpha = supportedCompositeAlphaFlags;
 	createInfo.surface = surface;
 
-	displayAttributes.swapLength = std::max<uint32_t>(static_cast<uint32_t>(displayAttributes.swapLength), surfaceCapabilities.getMinImageCount());
+	displayAttributes.swapLength = std::min<uint32_t>(static_cast<uint32_t>(displayAttributes.swapLength), surfaceCapabilities.getMinImageCount());
 	if (surfaceCapabilities.getMaxImageCount()) { displayAttributes.swapLength = std::min<uint32_t>(displayAttributes.swapLength, surfaceCapabilities.getMaxImageCount()); }
 
 	createInfo.minImageCount = displayAttributes.swapLength;
